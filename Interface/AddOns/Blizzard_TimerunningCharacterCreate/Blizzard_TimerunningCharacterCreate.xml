@@ -47,7 +47,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="TimerunningFirstTimeDialog" mixin="TimerunningFirstTimeDialogMixin" parent="GlueParent" frameStrata="DIALOG" setAllPoints="true" enableMouse="true" enableKeyboard="true">
+	<Frame name="TimerunningFirstTimeDialog" mixin="TimerunningFirstTimeDialogMixin" ignoreParentScale="true" parent="GlueParent" frameStrata="DIALOG" setAllPoints="true" enableMouse="true" enableKeyboard="true">
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="FullscreenDarken" setAllPoints="true" alpha="0.8">
@@ -183,7 +183,7 @@
 		</Scripts>
 	</Frame>
 	
-	<Frame name="TimerunningChoiceDialogTemplate" mixin="TimerunningChoiceDialogMixin" frameStrata="DIALOG" virtual="true">
+	<Frame name="TimerunningChoiceDialogTemplate" mixin="TimerunningChoiceDialogMixin" ignoreParentScale="true" frameStrata="DIALOG" virtual="true">
 		<Size x="220" y="190"/>
 		<Layers>
 			<Layer level="BORDER">

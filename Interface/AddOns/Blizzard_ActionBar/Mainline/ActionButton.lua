@@ -481,7 +481,7 @@ function ActionBarActionButtonMixin:UpdatePressAndHoldAction()
 	if self.action then
 		local actionType, id = GetActionInfo(self.action);
 		if actionType == "spell" then
-			pressAndHoldAction = IsPressHoldReleaseSpell(id);
+			pressAndHoldAction = C_Spell.IsPressHoldReleaseSpell(id);
 		end
 	end
 
@@ -763,7 +763,8 @@ function ActionButton_UpdateCooldown(self)
 		local spellCooldownInfo = C_Spell.GetSpellCooldown(self.spellID) or {startTime = 0, duration = 0, isEnabled = false, modRate = 0};
 		start, duration, enable, modRate = spellCooldownInfo.startTime, spellCooldownInfo.duration, spellCooldownInfo.isEnabled, spellCooldownInfo.modRate;
 
-		charges, maxCharges, chargeStart, chargeDuration, chargeModRate = GetSpellCharges(self.spellID);
+		local chargeInfo = C_Spell.GetSpellCharges(self.spellID) or {currentCharges = 0, maxCharges = 0, cooldownStartTime = 0, cooldownDuration = 0, chargeModRate = 0};
+		charges, maxCharges, chargeStart, chargeDuration, chargeModRate = chargeInfo.currentCharges, chargeInfo.maxCharges, chargeInfo.cooldownStartTime, chargeInfo.cooldownDuration, chargeInfo.chargeModRate;
 	else
 		locStart, locDuration = GetActionLossOfControlCooldown(self.action);
 		start, duration, enable, modRate = GetActionCooldown(self.action);
@@ -1678,4 +1679,12 @@ end
 ActionButtonCooldownFlashAnimMixin = { }; 
 function ActionButtonCooldownFlashAnimMixin:OnFinished()
 	self:GetParent():Hide(); 
+end
+
+-- This is done to preserve old hierarchy, while allowing for proper layering of the HotKey text
+ActionButtonTextOverlayContainerMixin = {};
+function ActionButtonTextOverlayContainerMixin:OnLoad()
+	local parentActionButton = self:GetParent();
+	parentActionButton.HotKey = self.HotKey;
+	parentActionButton.Count = self.Count;
 end

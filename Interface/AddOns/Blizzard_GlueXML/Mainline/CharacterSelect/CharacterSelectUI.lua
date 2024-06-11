@@ -11,13 +11,17 @@ function CharacterSelectUIMixin:OnLoad()
 	self.RotationConstant = 0.6;
 	self.ClampedHeightTopPercent = 0.8;
 	self.ClampedHeightBottomPercent = 0.2;
-	self.BottomOffsetYPercent = 0.05;
 	self.ListToggle:SetExpandTarget(self.CharacterList);
+
+	local function MapFadeInOnFinished()
+		self.FadeInBackground:Hide();
+		self:SetupCharacterOverlayFrames();
+	end
+
+	self.MapFadeIn:SetScript("OnFinished", MapFadeInOnFinished);
 
 	self.CharacterHeaderFramePool = CreateFramePool("BUTTON", self, "CharacterHeaderFrameTemplate", nil);
 	self.CharacterFooterFramePool = CreateFramePool("FRAME", self, "CharacterFooterFrameTemplate", nil);
-
-	self.CharacterBoundingBoxInfo = {};
 
 	self.currentMapSceneHoverGUID = nil;
 	self.mouseDownMapSceneHoverGUID = nil;
@@ -90,33 +94,7 @@ function CharacterSelectUIMixin:OnUpdate()
 
 	if self.mapSceneLoading and IsMapSceneLoaded() then
 		self.mapSceneLoading = false;
-
-		local selectedCharacterID = CharacterSelectListUtil.GetCharIDFromIndex(CharacterSelect.selectedIndex);
-		local elementData = CharacterSelectCharacterFrame.ScrollBox:FindElementDataByPredicate(function(elementData)
-			return CharacterSelectListUtil.ContainsCharacterID(selectedCharacterID, elementData);
-		end);
-
-		if elementData and elementData.isGroup then
-			for index, childElementData in ipairs(elementData.characterData) do
-				SetMapSceneCharPos(childElementData.characterID, index);
-			end
-
-			-- Set up the model scene first, so that valid model info is at the ready for character UI to reference if needed.
-			self:ShowModelScene();
-
-			-- Set up character UI before any animations are applied.
-			self:SetupCharacterOverlayFrames();
-
-			local isSceneChange = true;
-
-			for _, childElementData in ipairs(elementData.characterData) do
-				if childElementData.characterID == selectedCharacterID then
-					PlayRandomAnimation(childElementData.characterID, Enum.WarbandSceneAnimationEvent.Select, isSceneChange);
-				elseif not childElementData.isEmpty then
-					PlayRandomAnimation(childElementData.characterID, Enum.WarbandSceneAnimationEvent.StartingPose, isSceneChange);
-				end
-			end
-		end
+		self.MapFadeIn:Restart();
 	end
 end
 
@@ -139,46 +117,67 @@ function CharacterSelectUIMixin:OnMouseUp(button)
 	self.mouseDownMapSceneHoverGUID = nil;
 end
 
+function CharacterSelectUIMixin:ExpandCharacterList()
+	local isExpanded = true;
+	local isUserInput = false;
+	self.ListToggle:SetExpanded(isExpanded, isUserInput);
+end
+
 function CharacterSelectUIMixin:SetCharacterDisplay(selectedCharacterID)
 	local selectedElementData = CharacterSelectCharacterFrame.ScrollBox:FindElementDataByPredicate(function(elementData)
 		return CharacterSelectListUtil.ContainsCharacterID(selectedCharacterID, elementData);
 	end);
 
 	if selectedElementData then
+		local showModelFFX = true;
+		-- See if the map scene assets are present to load.
 		if selectedElementData.isGroup then
+			-- Only 1 map currently, when multiple are introduced this will update.
 			local mapSceneID = 1;
-			local loadedMapScene = GetLoadedMapScene();
-			local mapSceneLoaded = loadedMapScene and loadedMapScene == mapSceneID;
-			if mapSceneLoaded then
+
+			if LoadMapManifest(mapSceneID) then
+				showModelFFX = false;
+
+				local loadedMapScene = GetLoadedMapScene();
+				local mapSceneLoaded = loadedMapScene and loadedMapScene == mapSceneID;
+				-- No need to reload the same map every time.
+				if not mapSceneLoaded then
+					self.FadeInBackground:Show();
+					LoadMapScene(mapSceneID);
+					self.mapSceneLoading = true;
+				end
+
 				for index, childElementData in ipairs(selectedElementData.characterData) do
 					SetMapSceneCharPos(childElementData.characterID, index);
 				end
 
-				local isSceneChange = self.ModelFFX:IsShown();
-
 				-- Set up the model scene first, so that valid model info is at the ready for character UI to reference if needed.
+				local isSceneChange = self.ModelFFX:IsShown();
 				self:ShowModelScene();
 
-				-- Set up character UI before any animations are applied (updates things if there were character swaps).
-				self:SetupCharacterOverlayFrames();
+				-- We show the overlay frames at the end of MapFadeIn otherwise.
+				if mapSceneLoaded then
+					self:SetupCharacterOverlayFrames();
+				end
 
-				-- Note that just because we are attempting to play deselect, does not mean it necessarily will happen. See PlayRandomAnimation for details.
 				for _, childElementData in ipairs(selectedElementData.characterData) do
 					if childElementData.characterID == selectedCharacterID then
 						PlayRandomAnimation(childElementData.characterID, Enum.WarbandSceneAnimationEvent.Select, isSceneChange);
 					elseif not childElementData.isEmpty then
-						PlayRandomAnimation(childElementData.characterID, Enum.WarbandSceneAnimationEvent.Deselect, isSceneChange);
+						local pose = mapSceneLoaded and Enum.WarbandSceneAnimationEvent.Deselect or Enum.WarbandSceneAnimationEvent.StartingPose;
+						PlayRandomAnimation(childElementData.characterID, pose, isSceneChange);
 					end
 				end
-			else
-				LoadMapScene(mapSceneID);
-				self.mapSceneLoading = true;
-
-				SetCharSelectBackground(GetSelectBackgroundModel(selectedCharacterID));
-				self:ShowModelFFX();
 			end
-		else
+		end
+
+		if showModelFFX then
 			self.mapSceneLoading = false;
+			if self.MapFadeIn:IsPlaying() then
+				self.MapFadeIn:Stop();
+				self.FadeInBackground:Hide();
+			end
+
 			SetCharSelectBackground(GetSelectBackgroundModel(selectedCharacterID));
 			self:ShowModelFFX();
 		end
@@ -205,7 +204,6 @@ function CharacterSelectUIMixin:ShowModelFFX()
 	MoveCharactersToModelFFXFrame();
 	ResetModel(self.ModelFFX);
 	self:ReleaseCharacterOverlayFrames();
-	self.CharacterBoundingBoxInfo = {};
 end
 
 function CharacterSelectUIMixin:SetupCharacterOverlayFrames()
@@ -219,9 +217,7 @@ function CharacterSelectUIMixin:SetupCharacterOverlayFrames()
 		if elementData and elementData.isGroup then
 			for index, childElementData in ipairs(elementData.characterData) do
 				if not childElementData.isEmpty then
-					self:SetupOverlayFrameForCharacter(index, childElementData.characterID);
-				else
-					self.CharacterBoundingBoxInfo[index] = nil;
+					self:SetupOverlayFrameForCharacter(childElementData.characterID);
 				end
 			end
 		end
@@ -233,67 +229,42 @@ function CharacterSelectUIMixin:ReleaseCharacterOverlayFrames()
 	self.CharacterFooterFramePool:ReleaseAll();
 end
 
-function CharacterSelectUIMixin:SetupOverlayFrameForCharacter(index, characterID)
+function CharacterSelectUIMixin:SetupOverlayFrameForCharacter(characterID)
 	local selectedCharacterID = CharacterSelectListUtil.GetCharIDFromIndex(CharacterSelect.selectedIndex);
 
-	local boundingBoxInfo = self.CharacterBoundingBoxInfo[index];
-	local modelBoundingBox;
-	if boundingBoxInfo and boundingBoxInfo.characterID == characterID then
-		modelBoundingBox = boundingBoxInfo.boundingBox;
-	else
-		modelBoundingBox = MapSceneGetBoundingBox(index-1);
-		self.CharacterBoundingBoxInfo[index] = {
-			characterID = characterID,
-			boundingBox = modelBoundingBox
-		};
-	end
+	local positionTop, positionBottom = MapSceneGetCharacterOverlayFramePositions(characterID);
+	local topPoint2D = MapSceneProject3DPointTo2D(positionTop);
+	local bottomPoint2D = MapSceneProject3DPointTo2D(positionBottom);
 
-	if modelBoundingBox then
-		local bottomLeftVector = CreateVector3D(modelBoundingBox.b.x, modelBoundingBox.b.y, modelBoundingBox.b.z);
-		local topRightVector = CreateVector3D(modelBoundingBox.t.x, modelBoundingBox.t.y, modelBoundingBox.t.z);
+	-- Will need to scale by the current frame dimensions.
+	local width = self:GetWidth();
+	local height = self:GetHeight();
 
-		-- Use the bounding box's center point to determine the x position of various UI, to appear centered to the model.
-		local centerPointVector = CreateVector3D(bottomLeftVector:GetXYZ());
-		centerPointVector:Subtract(topRightVector);
-		centerPointVector:DivideBy(2);
-		centerPointVector:Add(topRightVector);
+	bottomPoint2D.x = bottomPoint2D.x * width;
+	bottomPoint2D.y = bottomPoint2D.y * height;
+	topPoint2D.x = topPoint2D.x * width;
+	topPoint2D.y = topPoint2D.y * height;
 
-		-- Will need to scale by the current frame dimensions.
-		local width = self:GetWidth();
-		local height = self:GetHeight();
+	-- Any custom nudging of the top and bottom values to get the spacings good across the board.
+	local clampedHeightTop = height * self.ClampedHeightTopPercent;
+	local clampedHeightBottom = height * self.ClampedHeightBottomPercent;
+	local clampedTopY = math.min(topPoint2D.y, clampedHeightTop);
+	local clampedBottomY = math.max(bottomPoint2D.y, clampedHeightBottom);
 
-		local bottomLeft, topRight = MapSceneProject3DBoxTo2D(modelBoundingBox);
-		bottomLeft.x = bottomLeft.x * width;
-		bottomLeft.y = bottomLeft.y * height;
-		topRight.x = topRight.x * width;
-		topRight.y = topRight.y * height;
+	-- Create and place the overlay frames.
+	local headerFrame = self.CharacterHeaderFramePool:Acquire();
 
-		local centerPoint2D = MapSceneProject3DPointTo2D(centerPointVector);
-		centerPoint2D.x = centerPoint2D.x * width;
-		centerPoint2D.y = centerPoint2D.y * height;
+	headerFrame:ClearAllPoints();
+	headerFrame:SetPoint("BOTTOM", self, "BOTTOMLEFT", topPoint2D.x, clampedTopY);
+	headerFrame:Initialize(characterID);
+	headerFrame:Show();
 
-		-- Any custom nudging of the top and bottom values to get the spacings good across the board.
-		local clampedHeightTop = height * self.ClampedHeightTopPercent;
-		local clampedHeightBottom = height * self.ClampedHeightBottomPercent;
-		local clampedTopY = math.min(topRight.y, clampedHeightTop);
-		local bottomOffsetY = (topRight.y - bottomLeft.y) * self.BottomOffsetYPercent;
-		local clampedBottomY = math.max(bottomLeft.y + bottomOffsetY, clampedHeightBottom);
+	if characterID == selectedCharacterID then
+		local footerFrame = self.CharacterFooterFramePool:Acquire();
+		footerFrame:ClearAllPoints();
 
-		-- Now that positions are calculated, actually set up any UI we need.
-		local headerFrame = self.CharacterHeaderFramePool:Acquire();
-
-		headerFrame:ClearAllPoints();
-		headerFrame:SetPoint("BOTTOM", self, "BOTTOMLEFT", centerPoint2D.x, clampedTopY);
-		headerFrame:Initialize(characterID);
-		headerFrame:Show();
-
-		if characterID == selectedCharacterID then
-			local footerFrame = self.CharacterFooterFramePool:Acquire();
-			footerFrame:ClearAllPoints();
-
-			footerFrame:SetPoint("TOP", self, "BOTTOMLEFT", centerPoint2D.x, clampedBottomY);
-			footerFrame:Show();
-		end
+		footerFrame:SetPoint("TOP", self, "BOTTOMLEFT", bottomPoint2D.x, clampedBottomY);
+		footerFrame:Show();
 	end
 end
 

@@ -277,6 +277,11 @@
 		<Frames>
 			<Frame parentKey="CharacterSelectUI" name="CharacterSelectUI" inherits="CharacterSelectUITemplate" setAllPoints="true" enableMouse="true" propagateMouseInput="Motion">
 				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="FadeInBackground" setAllPoints="true" hidden="true">
+							<Color r="0" g="0" b="0"/>
+						</Texture>
+					</Layer>
 					<Layer level="ARTWORK">
 						<FontString name="CharSelectCharacterName" inherits="GameFontNormalHuge4Outline">
 							<Anchors>
@@ -796,38 +801,53 @@
 					</Frame>
 
 					<Frame name="CharSelectServicesFlowFrame" mixin="CharSelectServicesFlowFrameMixin" frameStrata="DIALOG" enableMouse="true" hidden="true">
-						<Size x="421" y="724"/>
+						<Size x="362" y="668"/>
 						<Anchors>
-							<Anchor point="LEFT" x="8" y="16"/>
+							<Anchor point="LEFT" x="3" y="-7"/>
 						</Anchors>
 						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture parentKey="BackgroundDefault" inherits="services-cover" setAllPoints="true"/>
-								<Texture parentKey="BackgroundRPE" atlas="characterupdate_background" hidden="true">
+							<Layer level="BACKGROUND" textureSubLevel="1">
+								<Texture parentKey="BackgroundDefault" atlas="vas-bg" setAllPoints="true" hidden="true"/>
+								<Texture parentKey="BackgroundRPE" atlas="gearupdate-bg" useAtlasSize="true" hidden="true">
 									<Anchors>
-										<Anchor point="TOPLEFT" x="10" y="-10" />
-										<Anchor point="BOTTOMRIGHT" x="-10" y="10" />
+										<Anchor point="TOPLEFT"/>
 									</Anchors>
 								</Texture>
 							</Layer>
-							<Layer level="BORDER">
+							<Layer level="BACKGROUND" textureSubLevel="2">
+								<Texture parentKey="BackgroundHeader" atlas="vas-bg-header" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="6" y="-3"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="BORDER" textureSubLevel="1">
+								<Texture parentKey="BackgroundDivider" atlas="vas-bg-divider">
+									<Size x="348" y="14"/>
+									<Anchors>
+										<Anchor point="TOP" relativeKey="$parent.BackgroundHeader" relativePoint="BOTTOM" x="0" y="7"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="BORDER" textureSubLevel="2">
+								<Texture parentKey="BackgroundFrame" atlas="vas-bg-frame" setAllPoints="true"/>
+							</Layer>
+							<Layer level="ARTWORK">
 								<Texture parentKey="Icon">
 									<Size x="56" y="56"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" x="36" y="-35" />
+										<Anchor point="TOPLEFT" x="28" y="-24" />
 									</Anchors>
 								</Texture>
-							</Layer>
-							<Layer level="ARTWORK">
 								<Texture parentKey="IconBorder" atlas="tokens-frame-regular" useAtlasSize="true">
 									<Anchors>
-										<Anchor point="TOPLEFT" x="28" y="-30"/>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Icon" x="-8" y="5"/>
 									</Anchors>
 								</Texture>
 								<FontString parentKey="TitleText" inherits="GlueFontNormalLarge" justifyH="LEFT">
-									<Size x="260" y="0"/>
+									<Size x="230" y="0"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" relativeKey="$parent.IconBorder" relativePoint="RIGHT" x="5" y="21"/>
+										<Anchor point="TOPLEFT" relativeKey="$parent.IconBorder" relativePoint="RIGHT" x="11" y="10"/>
 									</Anchors>
 								</FontString>
 							</Layer>
@@ -840,7 +860,7 @@
 								</Anchors>
 								<Layers>
 									<Layer level="ARTWORK">
-										<FontString parentKey="Text" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP" setAllPoints="true">
+										<FontString parentKey="Text" inherits="GameFontNormal" justifyH="CENTER" justifyV="BOTTOM" setAllPoints="true">
 											<Color color="RED_FONT_COLOR"/>
 										</FontString>
 									</Layer>
@@ -850,32 +870,25 @@
 									<OnLeave method="OnLeave"/>
 								</Scripts>
 							</Frame>
-							<Button parentKey="CloseButton" inherits="UIPanelCloseButtonNoScripts">
+							<Button parentKey="CloseButton" inherits="BigRedExitButtonTemplate">
+								<Size x="32" y="32"/>
 								<Anchors>
-									<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-18" y="-18" />
+									<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-2" y="2" />
 								</Anchors>
-								<Scripts>
-									<OnClick>
-										self:GetParent():Hide();
-										CharacterSelect_SelectCharacter(CharacterSelect.selectedIndex); --reopens RPE upgrade if eligigble
-										CharacterServicesMaster_UpdateServiceButton();
-									</OnClick>
-								</Scripts>
 							</Button>
-							<Button parentKey="MinimizeButton" inherits="UIPanelHideButtonNoScripts" hidden="true">
+							<Button parentKey="MinimizeButton" inherits="UIButtonTemplate" hidden="true">
+								<Size x="32" y="32"/>
+								<KeyValues>
+									<KeyValue key="buttonArtKit" value="128-redbutton-minus" type="string"/>
+								</KeyValues>
 								<Anchors>
-									<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="18" y="-18" />
+									<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-10" y="-6" />
 								</Anchors>
-								<Scripts>
-									<OnClick>
-										CharSelectServicesFlow_Minimize(self:GetParent());
-									</OnClick>
-								</Scripts>
 							</Button>
 							<Frame name="CharacterServicesMaster">
-								<Size x="250" y="400"/>
+								<Size x="350" y="558"/>
 								<Anchors>
-									<Anchor point="TOP" x="0" y="-150"/>
+									<Anchor point="TOP" relativeKey="$parent.BackgroundHeader" relativePoint="BOTTOM" x="0" y="0"/>
 								</Anchors>
 								<Scripts>
 									<OnLoad function="CharacterServicesMaster_OnLoad"/>
@@ -884,6 +897,7 @@
 								</Scripts>
 							</Frame>
 							<Button parentKey="BackButton" inherits="GlueButtonSmallTemplate" text="BACK">
+								<Size x="143" y="32"/>
 								<Anchors>
 									<Anchor point="BOTTOMLEFT" x="40" y="57"/>
 								</Anchors>
@@ -892,117 +906,97 @@
 								</Scripts>
 							</Button>
 							<Button parentKey="NextButton" inherits="GlueButtonSmallTemplate" text="NEXT" hidden="true">
+								<Size x="143" y="32"/>
+								<Anchors>
+									<Anchor point="BOTTOMRIGHT" x="-25" y="26"/>
+								</Anchors>
+								<Layers>
+									<Layer level="OVERLAY" textureSubLevel="1">
+										<Texture parentKey="Flash" file="Interface\Buttons\UI-Panel-Button-Glow" alphaMode="ADD" alpha="0">
+											<Size x="166" y="43"/>
+											<Anchors>
+												<Anchor point="CENTER" x="-1" y="-1"/>
+											</Anchors>
+											<TexCoords left="0.0" right="0.75" top="0.0" bottom="0.609375"/>
+										</Texture>
+									</Layer>
+								</Layers>
 								<Animations>
 									<AnimationGroup parentKey="PulseAnim" setToFinalAlpha="true">
 										<Alpha childKey="Flash" fromAlpha="0" toAlpha="1" duration="0.5" order="1"/>
 										<Alpha childKey="Flash" fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
 									</AnimationGroup>
 								</Animations>
-								<Anchors>
-									<Anchor point="BOTTOMRIGHT" x="-40" y="57"/>
-								</Anchors>
-								<Layers>
-									<Layer level="OVERLAY" textureSubLevel="1">
-										<Texture parentKey="Flash" file="Interface\Buttons\UI-Panel-Button-Glow" alphaMode="ADD" alpha="0">
-											<Size x="1140" y="38"/>
-											<Anchors>
-												<Anchor point="CENTER"/>
-											</Anchors>
-											<TexCoords left="0.0" right="0.75" top="0.0" bottom="0.609375"/>
-										</Texture>
-									</Layer>
-								</Layers>
 								<Scripts>
 									<OnClick function="CharacterServicesMasterNextButton_OnClick"/>
-									<OnSizeChanged>
-										self.Flash:SetSize(self:GetWidth()*1.06, self:GetHeight()*1.15);
-									</OnSizeChanged>
 								</Scripts>
 							</Button>
 							<Button parentKey="FinishButton" inherits="UIPanelGoldButtonTemplate">
-								<Size x="164" y="32"/>
+								<Size x="172" y="33"/>
 								<Anchors>
-									<Anchor point="BOTTOMRIGHT" x="-28" y="53"/>
+									<Anchor point="BOTTOMRIGHT" x="-9" y="23"/>
 								</Anchors>
 								<Scripts>
 									<OnClick function="CharacterServicesMasterFinishButton_OnClick"/>
 									<OnLoad>
-										self.Text:SetPoint("BOTTOM", 0, 12);
+										self.Text:SetPoint("BOTTOM", 0, 13);
 									</OnLoad>
 								</Scripts>
 							</Button>
-							<Frame name="CharacterUpgradeSecondChanceWarningFrame" frameStrata="DIALOG" hidden="true">
-								<Size x="412" y="146"/>
+						</Frames>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnShow method="OnShow"/>
+							<OnHide method="OnHide"/>
+						</Scripts>
+					</Frame>
+
+					<Frame name="CharacterUpgradeSecondChanceWarningFrame" frameStrata="DIALOG" hidden="true">
+						<Size x="412" y="130"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeTo="GlueParent" relativePoint="CENTER"/>
+						</Anchors>
+						<Frames>
+							<Frame name="CharacterUpgradeSecondChanceWarningBackground">
+								<Size x="412" y="130"/>
 								<Anchors>
-									<Anchor point="CENTER" relativeTo="GlueParent" relativePoint="CENTER" x="0" y="0"/>
+									<Anchor point="CENTER" x="0" y="0"/>
 								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString parentKey="Text" inherits="GameFontNormalMed2" spacing="4" text="CHARACTER_UPGRADE_KRW_FINISH_BUTTON_POPUP_TEXT">
+											<Size x="360" y="0"/>
+											<Anchors>
+												<Anchor point="TOP" x="0" y="-24"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
 								<Frames>
-									<Frame name="CharacterUpgradeSecondChanceWarningBackground">
-										<Size x="412" y="146"/>
+									<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
+									<Button parentKey="ConfirmButton" inherits="GlueButtonSmallTemplate" text="CHARACTER_UPGRADE_FINISH_LABEL">
+										<Size x="160" y="28"/>
 										<Anchors>
-											<Anchor point="CENTER" x="0" y="0"/>
+											<Anchor point="BOTTOMRIGHT" relativeTo="CharacterUpgradeSecondChanceWarningBackground" relativePoint="BOTTOM">
+												<Offset x="20" y="16"/>
+											</Anchor>
 										</Anchors>
-										<Layers>
-											<Layer level="ARTWORK">
-												<FontString parentKey="Text" inherits="GameFontNormalMed2" text="CHARACTER_UPGRADE_KRW_FINISH_BUTTON_POPUP_TEXT">
-													<Size x="360" y="0"/>
-													<Anchors>
-														<Anchor point="TOP" x="0" y="-24"/>
-													</Anchors>
-													<Color r="1" g="1" b="1"/>
-												</FontString>
-											</Layer>
-										</Layers>
-										<Frames>
-											<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
-											<Button parentKey="ConfirmButton" inherits="GlueButtonSmallTemplate" text="CHARACTER_UPGRADE_FINISH_LABEL">
-												<Size x="160" y="28"/>
-												<Anchors>
-													<Anchor point="BOTTOMRIGHT" relativeTo="CharacterUpgradeSecondChanceWarningBackground" relativePoint="BOTTOM">
-														<Offset x="20" y="16"/>
-													</Anchor>
-												</Anchors>
-												<Scripts>
-													<OnClick function="CharacterUpgradeSecondChanceWarningFrameConfirmButton_OnClick"/>
-												</Scripts>
-											</Button>
-											<Button parentKey="CancelButton" inherits="GlueButtonSmallTemplate" text="CANCEL">
-												<Size x="100" y="28"/>
-												<Anchors>
-													<Anchor point="LEFT" relativeKey="$parent.ConfirmButton" relativePoint="RIGHT" x="6" y="0"/>
-												</Anchors>
-												<Scripts>
-													<OnClick function="CharacterUpgradeSecondChanceWarningFrameCancelButton_OnClick"/>
-												</Scripts>
-											</Button>
-										</Frames>
 										<Scripts>
-											<OnLoad>
-												self.Text:SetSpacing(4);
-											</OnLoad>
+											<OnClick function="CharacterUpgradeSecondChanceWarningFrameConfirmButton_OnClick"/>
 										</Scripts>
-									</Frame>
+									</Button>
+									<Button parentKey="CancelButton" inherits="GlueButtonSmallTemplate" text="CANCEL">
+										<Size x="100" y="28"/>
+										<Anchors>
+											<Anchor point="LEFT" relativeKey="$parent.ConfirmButton" relativePoint="RIGHT" x="6" y="0"/>
+										</Anchors>
+										<Scripts>
+											<OnClick function="CharacterUpgradeSecondChanceWarningFrameCancelButton_OnClick"/>
+										</Scripts>
+									</Button>
 								</Frames>
 							</Frame>
 						</Frames>
-						<Scripts>
-							<OnShow>
-								if self.IsMinimized then
-									CharSelectServicesFlow_Minimize();
-								else
-									PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
-									CharacterSelect_UpdateButtonState();
-									CharSelectServicesCover:Show();
-									CharacterServicesMaster_UpdateServiceButton();
-								end
-							</OnShow>
-							<OnHide>
-								PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
-								CharacterSelect_UpdateButtonState();
-								CharSelectServicesCover:Hide();
-								CharacterServicesMaster_UpdateServiceButton();
-							</OnHide>
-						</Scripts>
 					</Frame>
 
 					<Frame name="CharacterTemplatesFrame" hidden="true" inherits="TooltipBackdropTemplate">
@@ -1160,6 +1154,9 @@
 								CharacterSelectUI_ResetEnvironmentButton();
 							</OnFinished>
 						</Scripts>
+					</AnimationGroup>
+					<AnimationGroup parentKey="MapFadeIn" setToFinalAlpha="true">
+						<Alpha childKey="FadeInBackground" fromAlpha="1" toAlpha="0" duration=".3" order="1"/>
 					</AnimationGroup>
 				</Animations>
 			</Frame>

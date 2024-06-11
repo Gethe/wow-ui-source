@@ -170,7 +170,13 @@ function MajorFactionRenownMixin:OnHide()
 	self:CancelLevelEffect();
 
 	local cvarName = "lastRenownForMajorFaction".. currentFactionID;
-	SetCVar(cvarName, self.actualLevel);
+	local lastSeenRenownLevel = tonumber(GetCVar(cvarName)) or 0;
+	-- We should only update the CVar when the value is higher than what we have stored
+	-- For cases where renown is account wide, we want to remember the highest level you've seen on any character
+	local shouldOverwriteLastSeenRenown = self.actualLevel > lastSeenRenownLevel;
+	if shouldOverwriteLastSeenRenown then
+		SetCVar(cvarName, self.actualLevel);
+	end
 
 	C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.MajorFactionRenown);
 

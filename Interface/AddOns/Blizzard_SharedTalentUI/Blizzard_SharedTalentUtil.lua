@@ -67,7 +67,7 @@ function TalentUtil.GetTalentSubtext(overrideSubtext, spellID)
 	end
 
 	if spellID then
-		local spellSubtext = GetSpellSubtext(spellID);
+		local spellSubtext = C_Spell.GetSpellSubtext(spellID);
 		if spellSubtext then
 			return spellSubtext;
 		end

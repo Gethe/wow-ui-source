@@ -8,8 +8,9 @@ Mainline\BuilderSpenderFrame.lua
 Mainline\BuilderSpenderFrame.xml
 UnitPowerBarAlt.xml
 Mainline\PowerBarColorUtil.lua
-Mainline\StatusBarOverlaySegment.lua
-Mainline\StatusBarOverlaySegment.xml
+StatusBarOverlaySegment.lua
+StatusBarOverlaySegment.xml
+UnitFrame.lua
 UnitFrame.xml
 PlayerFrame.xml
 PartyFrame.xml

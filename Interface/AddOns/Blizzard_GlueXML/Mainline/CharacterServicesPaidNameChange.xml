@@ -2,7 +2,7 @@
 ..\..\Blizzard_SharedXML\UI.xsd">
 
 	<Frame name="PNCCharacterSelect" parent="CharSelectServicesFlowFrame" inherits="CharacterServicesBlockTemplate" hidden="true" frameStrata="DIALOG">
-		<Size x="300" y="250"/>
+		<Size x="350" y="250"/>
 		<Frames>
 			<Frame parentKey="ControlsFrame" setAllPoints="true"/>
 			<Frame parentKey="ResultsFrame">
@@ -14,14 +14,14 @@
 		</Frames>
 	</Frame>
 	<Frame name="PNCNameSelect" parent="CharSelectServicesFlowFrame" inherits="CharacterServicesBlockTemplate" hidden="true" frameStrata="DIALOG">
-		<Size x="300" y="250"/>
+		<Size x="350" y="250"/>
 		<Frames>
 			<Frame parentKey="ControlsFrame" setAllPoints="true">
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString parentKey="NewNameLabel" inherits="GameFontNormalMed3" justifyH="LEFT" text="PNC_FLOW_NEW_NAME_LABEL" maxLines="1">
 							<Anchors>
-								<Anchor point="TOPLEFT" x="112" y="-54"/>
+								<Anchor point="TOPLEFT" x="90" y="-100"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -29,8 +29,11 @@
 				<Frames>
 					<EditBox parentKey="NewNameEditbox" mixin="NewNameEditboxMixin" inherits="CharacterServicesEditBoxHorizontalLabelTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.NewNameLabel" relativePoint="BOTTOMLEFT" x="5" y="-4"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.NewNameLabel" relativePoint="BOTTOMLEFT" x="3" y="-7"/>
 						</Anchors>
+						<TextInsets>
+							<AbsInset left="9" right="9"/>
+						</TextInsets>
 						<Scripts>
 							<OnEnter method="OnEnter"/>
 							<OnLeave method="OnLeave"/>

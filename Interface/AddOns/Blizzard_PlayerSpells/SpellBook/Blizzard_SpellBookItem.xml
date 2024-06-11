@@ -2,6 +2,42 @@
 ..\..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_SpellBookItem.lua"/>
 
+	<Frame name="SpellBookItemAutoCastTemplate" mixin="AutoCastOverlayMixin" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="0">
+				<Texture parentKey="Shine" alphaMode="BLEND" atlas="UI-HUD-ActionBar-PetAutoCast-Ants" useAtlasSize="false" texelSnappingBias="0.0" snapToPixelGrid="false" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-10" y="10"/>
+						<Anchor point="BOTTOMRIGHT" x="10" y="-10"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim" looping="REPEAT" setToFinalAlpha="true">
+							<Rotation duration="4" order="1" degrees="-360">
+								<Origin point="CENTER"/>
+							</Rotation>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+				<MaskTexture parentKey="Mask" atlas="spellbook-item-petautocast-mask" useAtlasSize="false" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Shine"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="Corners" atlas="spellbook-item-petautocast-corners" useAtlasSize="false" setAllPoints="true" texelSnappingBias="0.0" snapToPixelGrid="false"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
 	<Frame name="SpellBookItemTemplate" mixin="SpellBookItemMixin" virtual="true">
 		<Size x="220" y="60"/>
 		<Anchors>
@@ -54,14 +90,24 @@
 					<Anchor point="LEFT"/>
 				</Anchors>
 				<Layers>
-					<Layer level="BACKGROUND">
+					<!-- FxModelScene is BACKGROUND sublevel 0 -->
+					<Layer level="BACKGROUND" textureSubLevel="-1">
+						<Texture parentKey="TrainableShadow" atlas="spellbook-item-needtrainer-shadow" hidden="true">
+							<Size x="56" y="56"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<!-- Cooldown frame texture is ARTWORK sublevel 0 -->
+					<Layer level="ARTWORK" textureSubLevel="-1">
 						<Texture parentKey="Icon">
 							<Size x="36" y="36"/>
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
 						</Texture>
-						<MaskTexture parentKey="IconMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" setAllPoints="true">
+						<MaskTexture parentKey="IconMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
 								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
@@ -73,11 +119,12 @@
 					</Layer>
 					<Layer level="OVERLAY" textureSubLevel="1">
 						<Texture parentKey="Border" setAllPoints="true" texelSnappingBias="0.0" snapToPixelGrid="false"/>
-						<Texture parentKey="TrainableBorder" file="Interface\Spellbook\Spellbook-Parts" hidden="true">
-							<Size x="77" y="110"/>
-							<TexCoords left="0.00390625" right="0.30468750" top="0.00390625" bottom="0.43359375"/>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="1">
+						<Texture parentKey="TrainableBackplate" hidden="true">
 							<Anchors>
-								<Anchor point="TOPLEFT" x="-35" y="35"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Border"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Border"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -172,10 +219,10 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Frame parentKey="AutoCastOverlay" inherits="AutoCastOverlayTemplate" hidden="true">
-						<Size x="41" y="39"/>
+					<Frame parentKey="AutoCastOverlay" inherits="SpellBookItemAutoCastTemplate" hidden="true">
 						<Anchors>
-							<Anchor point="CENTER" x="-1" y="1"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Icon" x="0" y="-1.5"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-1.5" y="1"/>
 						</Anchors>
 					</Frame>
 					<Cooldown parentKey="Cooldown" inherits="CooldownFrameTemplate" drawEdge="false" useParentLevel="true">
@@ -184,6 +231,12 @@
 							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-2" y="2"/>
 						</Anchors>		
 					</Cooldown>
+					<ModelScene parentKey="FxModelScene" inherits="ScriptAnimatedModelSceneTemplate" useParentLevel="true" drawLayer="BACKGROUND" >
+						<Anchors>
+							<Anchor point="TOPLEFT" x="-20" y="20"/>
+							<Anchor point="BOTTOMRIGHT" x="20" y="-20"/>
+						</Anchors>
+					</ModelScene>
 				</Frames>
 				<Scripts>
 					<OnLoad method="OnLoad"/>

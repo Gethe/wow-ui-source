@@ -50,6 +50,8 @@
 			</Layer>
 		</Layers>
 		<Scripts>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
 			<OnClick method="OnClick"/>
 		</Scripts>
 	</Button>
@@ -60,12 +62,13 @@
 			<Button parentKey="ToggleCollapseButton" mixin="ReputationSubHeaderToggleCollapseButtonMixin">
 				<Size x="20" y="20"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.AccountWideIcon" relativePoint="RIGHT" x="3"/>
+					<Anchor point="LEFT" relativeKey="$parent.Content.AccountWideIcon" relativePoint="RIGHT" x="3"/>
 				</Anchors>
 				<Scripts>
 					<OnClick method="OnClick"/>
 				</Scripts>
 				<NormalTexture atlas="campaign_headericon_closed" useAtlasSize="true"/>
+				<PushedTexture atlas="campaign_headericon_closedpressed" useAtlasSize="true"/>
 				<HighlightTexture file="Interface\Buttons\UI-PlusButton-Hilight" alphaMode="ADD"/>
 			</Button>
 		</Frames>
@@ -127,104 +130,120 @@
 	<Button name="ReputationEntryTemplate" mixin="ReputationEntryMixin" inherits="CallbackRegistrantTemplate" virtual="true">
 		<Size y="22"/>
 		<Frames>
-			<StatusBar parentKey="ReputationBar" inherits="ReputationBarTemplate">
-				<Anchors>
-					<Anchor point="RIGHT" x="-3"/>
-				</Anchors>
-			</StatusBar>
-			<Button parentKey="ParagonIcon" frameStrata="HIGH" frameLevel="10" enableMouse="true" mixin="ReputationBarParagonIconMixin">
-				<Size x="20" y="20"/>
-				<Anchors>
-					<Anchor point="RIGHT" x="5"/>
-				</Anchors>
+			<Frame parentKey="Content" setAllPoints="true">
+				<Frames>
+					<StatusBar parentKey="ReputationBar" inherits="ReputationBarTemplate">
+						<Anchors>
+							<Anchor point="RIGHT" x="-3"/>
+						</Anchors>
+					</StatusBar>
+					<Button parentKey="ParagonIcon" frameStrata="HIGH" frameLevel="10" enableMouse="true" propagateMouseInput="Both" mixin="ReputationBarParagonIconMixin">
+						<Size x="20" y="20"/>
+						<Anchors>
+							<Anchor point="RIGHT" x="5"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="Glow" atlas="ParagonReputation_Glow" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" x="-1" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<Texture parentKey="Icon" atlas="ParagonReputation_Bag" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<Texture parentKey="Check" atlas="ParagonReputation_Checkmark" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" x="5" y="-2"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="HIGHLIGHT">
+								<Texture parentKey="Highlight" atlas="ParagonReputation_Bag" useAtlasSize="true" alphaMode="ADD">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnUpdate method="OnUpdate"/>
+						</Scripts>
+					</Button>
+					<Frame parentKey="BackgroundHighlight" alpha="0" setAllPoints="true">
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="Left" atlas="charactercreate-customize-dropdown-linemouseover-side" parentArray="TextureRegions">
+									<Size x="6"/>
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+										<Anchor point="BOTTOMLEFT"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Right" atlas="charactercreate-customize-dropdown-linemouseover-side" parentArray="TextureRegions">
+									<Size x="6"/>
+									<TexCoords left="1" right="0" top="0" bottom="1"/>
+									<Anchors>
+										<Anchor point="TOPRIGHT"/>
+										<Anchor point="BOTTOMRIGHT"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Middle" atlas="charactercreate-customize-dropdown-linemouseover-middle" parentArray="TextureRegions">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
+										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame parentKey="AccountWideIcon" mixin="ReputationEntryAccountWideIconMixin" enableMouse="true" propagateMouseInput="Clicks" hidden="true">
+						<Size x="23" y="22"/>
+						<Anchors>
+							<Anchor point="LEFT" x="2"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BORDER">
+								<Texture parentKey="Icon" atlas="warbands-icon" useAtlasSize="true" scale="0.9">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnEnter method="OnEnter"/>
+						</Scripts>
+					</Frame>
+				</Frames>
 				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="Glow" atlas="ParagonReputation_Glow" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER" x="-1" y="0"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="ARTWORK">
-						<Texture parentKey="Icon" atlas="ParagonReputation_Bag" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-					</Layer>
 					<Layer level="OVERLAY">
-						<Texture parentKey="Check" atlas="ParagonReputation_Checkmark" useAtlasSize="true">
+						<FontString parentKey="Name" inherits="GameFontHighlight" justifyH="LEFT">
+							<Size y="15"/>
 							<Anchors>
-								<Anchor point="CENTER" x="5" y="-2"/>
+								<Anchor point="LEFT" relativeKey="$parent.AccountWideIcon" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeKey="$parent.ReputationBar" relativePoint="LEFT" x="-10"/>
 							</Anchors>
-						</Texture>
+						</FontString>
 					</Layer>
-					<Layer level="HIGHLIGHT">
-						<Texture parentKey="Highlight" atlas="ParagonReputation_Bag" useAtlasSize="true" alphaMode="ADD">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnClick method="OnClick"/>
-					<OnEnter method="OnEnter"/>
-					<OnLeave method="OnLeave"/>
-					<OnUpdate method="OnUpdate"/>
-				</Scripts>
-			</Button>
-			<Frame parentKey="BackgroundHighlight" alpha="0" setAllPoints="true">
-				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture parentKey="Left" atlas="charactercreate-customize-dropdown-linemouseover-side" parentArray="TextureRegions">
-							<Size x="6"/>
-							<Anchors>
-								<Anchor point="TOPLEFT"/>
-								<Anchor point="BOTTOMLEFT"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="Right" atlas="charactercreate-customize-dropdown-linemouseover-side" parentArray="TextureRegions">
-							<Size x="6"/>
-							<TexCoords left="1" right="0" top="0" bottom="1"/>
-							<Anchors>
-								<Anchor point="TOPRIGHT"/>
-								<Anchor point="BOTTOMRIGHT"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="Middle" atlas="charactercreate-customize-dropdown-linemouseover-middle" parentArray="TextureRegions">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
-							</Anchors>
+						<Texture parentKey="AtWarBackground" setAllPoints="true" hidden="true">
+							<Color r="0.27" g="0.01" b="0"/>
 						</Texture>
 					</Layer>
 				</Layers>
 			</Frame>
 		</Frames>
-		<Layers>
-			<Layer level="OVERLAY">
-				<FontString parentKey="Name" inherits="GameFontHighlight" justifyH="LEFT">
-					<Size y="15"/>
-					<Anchors>
-						<Anchor point="LEFT" x="25"/>
-						<Anchor point="RIGHT" relativeKey="$parent.ReputationBar" relativePoint="LEFT" x="-10"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="AtWarBackground" setAllPoints="true" hidden="true">
-					<Color r="0.27" g="0.01" b="0"/>
-				</Texture>
-				<Texture parentKey="AccountWideIcon" atlas="warbands-icon" useAtlasSize="true" scale="0.9" hidden="true">
-					<Anchors>
-						<Anchor point="LEFT" x="2"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
 			<OnClick method="OnClick"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>

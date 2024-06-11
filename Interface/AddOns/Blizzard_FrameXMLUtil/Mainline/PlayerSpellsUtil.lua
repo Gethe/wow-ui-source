@@ -128,6 +128,12 @@ function PlayerSpellsUtil.TogglePlayerSpellsFrame(suggestedTab, inspectUnit)
 	return true;
 end
 
+function PlayerSpellsUtil.SetPlayerSpellsFrameMinimizedOnNextShow(minimizedOnNextShow)
+	CheckLoadPlayerSpellsFrame();
+
+	PlayerSpellsFrame:SetMinimizedOnNextShow(minimizedOnNextShow);
+end
+
 -- suggestedTab expects a PlayerSpellsUtil.FrameTabs value or nil
 function TogglePlayerSpellsFrame(suggestedTab, inspectUnit)
 	PlayerSpellsUtil.TogglePlayerSpellsFrame(suggestedTab, inspectUnit);

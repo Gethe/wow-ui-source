@@ -357,7 +357,7 @@ end
 
 do
 	local function IsSelected(account)
-		return selectedSavedAccount.str == account.str;
+		return selectedSavedAccount and (selectedSavedAccount.str == account.str);
 	end
 
 	local function SetSelected(account)

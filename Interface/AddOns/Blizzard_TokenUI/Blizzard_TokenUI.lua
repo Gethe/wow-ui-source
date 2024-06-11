@@ -24,6 +24,14 @@ function TokenHeaderMixin:RefreshCollapseIcon()
 	self.HighlightRight:SetAtlas(self:IsCollapsed() and "Options_ListExpand_Right" or "Options_ListExpand_Right_Expanded", TextureKitConstants.UseAtlasSize);
 end
 
+function TokenHeaderMixin:OnMouseDown()
+	self.Name:AdjustPointsOffset(1, -1);
+end
+
+function TokenHeaderMixin:OnMouseUp()
+	self.Name:AdjustPointsOffset(-1, 1);
+end
+
 function TokenHeaderMixin:OnClick()
 	self:ToggleCollapsed();
 end
@@ -31,19 +39,24 @@ end
 TokenEntryMixin = {};
 
 function TokenEntryMixin:OnLoad()
-	self.BackgroundHighlight:SetFrameLevel(self:GetFrameLevel() - 1);
+	self.Content.BackgroundHighlight:SetFrameLevel(self:GetFrameLevel() - 1);
+
+	self.Content.AccountWideIcon:SetScript("OnLeave", function()
+		GameTooltip_Hide();
+		self:OnLeave();
+	end);
 end
 
 function TokenEntryMixin:Initialize(elementData)
 	self.elementData = elementData;
 	self.currencyIndex = elementData.currencyIndex;
 
-	self.Count:SetText(BreakUpLargeNumbers(elementData.quantity));
-	self.Name:SetText(elementData.name);
+	self.Content.Count:SetText(BreakUpLargeNumbers(elementData.quantity));
+	self.Content.Name:SetText(elementData.name);
 	self:RefreshTextColor();
 
-	self.CurrencyIcon:SetTexture(elementData.iconFileID);
-	self.WatchedCurrencyCheck:SetShown(elementData.isShowInBackpack);
+	self.Content.CurrencyIcon:SetTexture(elementData.iconFileID);
+	self.Content.WatchedCurrencyCheck:SetShown(elementData.isShowInBackpack);
 	
 	self:RefreshHighlightVisuals();
 end
@@ -54,26 +67,26 @@ end
 
 function TokenEntryMixin:RefreshBackgroundHighlight()
 	local entryNeedsHighlight = self:IsSelected() or self:IsMouseOver();
-	self.BackgroundHighlight:SetAlpha(entryNeedsHighlight and 0.10 or 0);
+	self.Content.BackgroundHighlight:SetAlpha(entryNeedsHighlight and 0.10 or 0);
 end
 
 function TokenEntryMixin:RefreshAccountCurrencyIcon()
 	if not (self:IsSelected() or self:IsMouseOver()) then
-		self.AccountWideIcon:Hide();
+		self.Content.AccountWideIcon:Hide();
 		return;
 	end
 
 	if self.elementData.isAccountWide then
-		self.AccountWideIcon:SetAtlas("warbands-icon", TextureKitConstants.UseAtlasSize);
-		self.AccountWideIcon:SetScale(0.9);
+		self.Content.AccountWideIcon.Icon:SetAtlas("warbands-icon", TextureKitConstants.UseAtlasSize);
+		self.Content.AccountWideIcon.Icon:SetScale(0.9);
 	elseif self.elementData.isAccountTransferable then
-		self.AccountWideIcon:SetAtlas("warbands-transferable-icon", TextureKitConstants.UseAtlasSize);
-		self.AccountWideIcon:SetScale(0.9);
+		self.Content.AccountWideIcon.Icon:SetAtlas("warbands-transferable-icon", TextureKitConstants.UseAtlasSize);
+		self.Content.AccountWideIcon.Icon:SetScale(0.9);
 	else
-		self.AccountWideIcon:SetAtlas(nil);
+		self.Content.AccountWideIcon.Icon:SetAtlas(nil);
 	end
 
-	self.AccountWideIcon:SetShown(self.AccountWideIcon:GetAtlas() ~= nil);
+	self.Content.AccountWideIcon:SetShown(self.Content.AccountWideIcon.Icon:GetAtlas() ~= nil);
 end
 
 function TokenEntryMixin:RefreshHighlightVisuals()
@@ -84,12 +97,20 @@ end
 function TokenEntryMixin:RefreshTextColor()
 	local hasCurrency = self.elementData.quantity > 0;
 	local textColor = hasCurrency and HIGHLIGHT_FONT_COLOR or DISABLED_FONT_COLOR;
-	self.Count:SetTextColor(textColor:GetRGBA());
-	self.Name:SetTextColor(textColor:GetRGBA());
+	self.Content.Count:SetTextColor(textColor:GetRGBA());
+	self.Content.Name:SetTextColor(textColor:GetRGBA());
+end
+
+function TokenEntryMixin:OnMouseDown()
+	self.Content:AdjustPointsOffset(1, -1);
+end
+
+function TokenEntryMixin:OnMouseUp()
+	self.Content:AdjustPointsOffset(-1, 1);
 end
 
 function TokenEntryMixin:OnClick()
-	TokenFrame.selectedToken = self.Name:GetText();
+	TokenFrame.selectedToken = self.Content.Name:GetText();
 	local linkedToChat = false;
 	if IsModifiedClick("CHATLINK") then
 		linkedToChat = HandleModifiedItemClick(C_CurrencyInfo.GetCurrencyListLink(self.currencyIndex));
@@ -116,11 +137,29 @@ function TokenEntryMixin:OnClick()
 			end
 		end
 	end
+
+	-- Hide this currency's tooltip if we're showing the options for this currency
+	local showingCurrencyOptions = self:IsSelected() and TokenFramePopup:IsShown();
+	if showingCurrencyOptions then
+		GameTooltip_Hide();
+	else
+		self:ShowCurrencyTooltip();
+	end
+
 	TokenFrame:Update();
 	TokenFramePopup:CloseIfHidden();
 end
 
 function TokenEntryMixin:OnEnter()
+	local showingCurrencyOptions = self:IsSelected() and TokenFramePopup:IsShown();
+	if not self:IsSelected() or not showingCurrencyOptions then
+		self:ShowCurrencyTooltip();
+	end
+
+	self:RefreshHighlightVisuals();
+end
+
+function TokenEntryMixin:ShowCurrencyTooltip()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetCurrencyToken(self.elementData.currencyIndex);
 
@@ -136,14 +175,33 @@ function TokenEntryMixin:OnEnter()
 	GameTooltip_AddInstructionLine(GameTooltip, CURRENCY_BUTTON_TOOLTIP_CLICK_INSTRUCTION);
 
 	GameTooltip:Show();
-
-	self:RefreshHighlightVisuals();
 end
 
 function TokenEntryMixin:OnLeave()
 	GameTooltip_Hide();
 
 	self:RefreshHighlightVisuals();
+end
+
+TokenEntryAccountWideIconMixin = {};
+
+function TokenEntryAccountWideIconMixin:OnEnter()
+	if not self:IsShown() then
+		return;
+	end
+
+	self:ShowTooltip();
+end
+
+function TokenEntryAccountWideIconMixin:ShowTooltip()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	local tooltipLine = self:GetCurrencyButton().elementData.isAccountTransferable and ACCOUNT_TRANSFERRABLE_CURRENCY or ACCOUNT_LEVEL_CURRENCY;
+	GameTooltip_AddNormalLine(GameTooltip, tooltipLine);
+	GameTooltip:Show();
+end
+
+function TokenEntryAccountWideIconMixin:GetCurrencyButton()
+	return self:GetParent():GetParent();
 end
 
 TokenSubHeaderMixin = {};
@@ -174,6 +232,7 @@ end
 function TokenSubHeaderToggleCollapseButtonMixin:RefreshIcon()
 	local header = self:GetHeader();
 	self:GetNormalTexture():SetAtlas(header:IsCollapsed() and "campaign_headericon_closed" or "campaign_headericon_open", TextureKitConstants.UseAtlasSize);
+	self:GetPushedTexture():SetAtlas(header:IsCollapsed() and "campaign_headericon_closedpressed" or "campaign_headericon_openpressed", TextureKitConstants.UseAtlasSize);
 end
 
 function TokenSubHeaderToggleCollapseButtonMixin:OnClick()

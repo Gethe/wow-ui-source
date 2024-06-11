@@ -143,23 +143,6 @@
 					</Frame>
 				</Frames>
 			</Frame>
-			<!-- SpellBookRevampTODO: Remove in-progress dev text -->
-			<Frame parentKey="InProgressDisclaimer" useParentLevel="true">
-				<Layers>
-					<Layer level="OVERLAY" textureSubLevel="3">
-						<FontString inherits="GameFontNormalLarge" text="New Spellbook is a Work in Progress, art and visuals are not finalized">
-							<Size y="0"/>
-							<Anchors>
-								<Anchor point="LEFT"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Size x="10" y="1"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" x="30" y="-85"/>
-				</Anchors>
-			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

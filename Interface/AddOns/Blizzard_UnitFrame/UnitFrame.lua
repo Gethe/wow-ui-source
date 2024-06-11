@@ -362,7 +362,7 @@ function UnitFrameManaCostPredictionBars_Update(frame, isStarting, startTime, en
             frame.predictedPowerCost = nil;
         end
 	else
-		local costTable = GetSpellPowerCost(spellID);
+		local costTable = C_Spell.GetSpellPowerCost(spellID) or {};
 		for _, costInfo in pairs(costTable) do
 			if (costInfo.type == frame.manabar.powerType) then
 				cost = costInfo.cost;

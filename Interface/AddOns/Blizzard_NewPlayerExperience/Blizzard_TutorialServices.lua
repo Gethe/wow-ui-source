@@ -54,9 +54,12 @@ function Class_AddSpellToActionBarService:OnBegin(args)
 		self.PointerID = self:ShowScreenTutorial(content, nil, NPE_TutorialMainFrameMixin.FramePositions.Low);
 	end
 
-	if PlayerSpellsFrame and PlayerSpellsFrame.SpellBookFrame:IsShown() then
-		self:SpellBookFrameShow()
+	if PlayerSpellsFrame and PlayerSpellsFrame.SpellBookFrame:IsVisible() then
+		self:SpellBookFrameShow();
 	else
+		-- Display the minimized version of the spells frame so it's less intimidating to a new player.
+		PlayerSpellsUtil.SetPlayerSpellsFrameMinimizedOnNextShow(true);
+
 		if self.spellIDString then
 			self:ShowPointerTutorial(TutorialHelper:FormatString(self.spellMicroButtonString:format(self.spellIDString)), "DOWN", PlayerSpellsMicroButton, 0, 0, nil, "DOWN");
 		end

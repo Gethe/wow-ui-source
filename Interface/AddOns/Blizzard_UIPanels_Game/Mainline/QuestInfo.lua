@@ -1260,14 +1260,14 @@ SmallQuestInfoRewardItemMixin = CreateFromMixins(QuestInfoRewardItemMixin);
 
 function SmallQuestInfoRewardItemMixin:UpdateQuestRewardContextIcon()
 	QuestInfoRewardItemMixin.UpdateQuestRewardContextIcon(self);
-	self.Name:SetWidth(self.QuestRewardContextIcon:IsShown() and 85 or 92);
+	self.Name:SetWidth(self.QuestRewardContextIcon:IsShown() and 82 or 92);
 end
 
 LargeQuestInfoRewardItemMixin = CreateFromMixins(QuestInfoRewardItemMixin);
 
 function LargeQuestInfoRewardItemMixin:UpdateQuestRewardContextIcon()
 	QuestInfoRewardItemMixin.UpdateQuestRewardContextIcon(self);
-	self.Name:SetWidth(self.QuestRewardContextIcon:IsShown() and 87 or 90);
+	self.Name:SetWidth(self.QuestRewardContextIcon:IsShown() and 86 or 90);
 end
 
 QuestInfoReputationRewardButtonMixin = { };

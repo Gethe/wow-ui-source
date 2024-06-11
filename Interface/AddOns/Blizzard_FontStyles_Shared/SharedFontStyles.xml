@@ -189,6 +189,9 @@
 	<Font name="GameFontHighlightHuge2" inherits="SystemFont_Huge2" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
+	<Font name="GameFontNormalHuge2Outline" inherits="SystemFont_Shadow_Huge2_Outline" virtual="true">
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
 	<Font name="GameFontNormalShadowHuge2" inherits="SystemFont_Shadow_Huge2" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>

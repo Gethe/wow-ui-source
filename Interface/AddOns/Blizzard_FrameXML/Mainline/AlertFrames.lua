@@ -512,6 +512,19 @@ function CreateContinuableContainerForLFGRewards()
 	return continuableContainer;
 end
 
+local function ShouldToastAchievement(achievementID, alreadyEarnedOnAccount)
+	local id, name, points, completed, month, day, year, description, flags, icon, rewardText, isGuildAchievement, wasEarnedByMe, earnedBy = GetAchievementInfo(achievementID);
+	local isAccountAchievement = FlagsUtil.IsSet(flags, ACHIEVEMENT_FLAGS_ACCOUNT);
+
+	-- By default we don't toast a character achievement if you already earned it on another character
+	local isCharacterAchievement = not isAccountAchievement and not isGuildAchievement;
+	if isCharacterAchievement and alreadyEarnedOnAccount then
+		return FlagsUtil.IsSet(flags, ACHIEVEMENT_FLAGS_TOAST_ON_REPEAT_COMPLETION);
+	end
+
+	return true;
+end
+
 function AlertFrameMixin:OnEvent(event, ...)
 	if ( event == "ACHIEVEMENT_EARNED" ) then
 		if (Kiosk.IsEnabled()) then
@@ -522,7 +535,10 @@ function AlertFrameMixin:OnEvent(event, ...)
 			AchievementFrame_LoadUI();
 		end
 
-		AchievementAlertSystem:AddAlert(...);
+		local achievementID, alreadyEarnedOnAccount = ...;
+		if ShouldToastAchievement(achievementID, alreadyEarnedOnAccount) then
+			AchievementAlertSystem:AddAlert(...);
+		end
 	elseif ( event == "CRITERIA_EARNED" ) then
 		if (Kiosk.IsEnabled()) then
 			return;

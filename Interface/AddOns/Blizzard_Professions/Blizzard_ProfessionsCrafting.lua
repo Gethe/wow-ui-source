@@ -29,7 +29,7 @@ function ProfessionsCraftingPageMixin:OnLoad()
 	PaperDollItemSlotButton_SetAutoEquipSlotIDs(self.Prof0ToolSlot, self.Prof0Gear0Slot, self.Prof0Gear1Slot);
 	PaperDollItemSlotButton_SetAutoEquipSlotIDs(self.Prof1ToolSlot, self.Prof1Gear0Slot, self.Prof1Gear1Slot);
 	PaperDollItemSlotButton_SetAutoEquipSlotIDs(self.CookingToolSlot, self.CookingGear0Slot);
-	PaperDollItemSlotButton_SetAutoEquipSlotIDs(self.FishingToolSlot, self.FishingGear0Slot, self.FishingGear1Slot);
+	PaperDollItemSlotButton_SetAutoEquipSlotIDs(self.FishingToolSlot--[[, self.FishingGear0Slot, self.FishingGear1Slot]]);
 
 	EventRegistry:RegisterCallback("ProfessionsRecipeListMixin.Event.OnRecipeSelected", self.OnRecipeSelected, self);
 

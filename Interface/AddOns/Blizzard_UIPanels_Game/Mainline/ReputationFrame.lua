@@ -225,6 +225,14 @@ function ReputationHeaderMixin:ToggleCollapsed()
 	end
 end
 
+function ReputationHeaderMixin:OnMouseDown()
+	self.Name:AdjustPointsOffset(1, -1);
+end
+
+function ReputationHeaderMixin:OnMouseUp()
+	self.Name:AdjustPointsOffset(-1, 1);
+end
+
 function ReputationHeaderMixin:OnClick()
 	self:ToggleCollapsed();
 end
@@ -235,7 +243,12 @@ function ReputationEntryMixin:OnLoad()
 	CallbackRegistryMixin.OnLoad(self);
 	self:AddDynamicEventMethod(EventRegistry, "ReputationFrame.NewFactionSelected", self.RefreshHighlightVisuals);
 
-	self.BackgroundHighlight:SetFrameLevel(self:GetFrameLevel() - 1);
+	self.Content.AccountWideIcon:SetScript("OnLeave", function()
+		GameTooltip_Hide();
+		self:OnLeave();
+	end);
+
+	self.Content.BackgroundHighlight:SetFrameLevel(self:GetFrameLevel() - 1);
 end
 
 function ReputationEntryMixin:Initialize(elementData)
@@ -243,7 +256,7 @@ function ReputationEntryMixin:Initialize(elementData)
 	self.factionID = elementData.factionID;
 	self.elementData = elementData;
 
-	self.Name:SetText(self.elementData.name or "");
+	self.Content.Name:SetText(self.elementData.name or "");
 
 	self.reputationType = GetReputationTypeFromElementData(self.elementData);
 	self:InitializeReputationBarForReputationType();
@@ -255,30 +268,50 @@ end
 
 function ReputationEntryMixin:TryInitParagonDisplay()
 	local factionID = self.factionID;
+	local paragonIcon = self.Content.ParagonIcon;
 	if not C_Reputation.IsFactionParagon(factionID) then
-		self.ParagonIcon:Hide();
+		paragonIcon:Hide();
 		return;
 	end
 
 	local currentValue, threshold, rewardQuestID, hasRewardPending, tooLowLevelForParagon = C_Reputation.GetFactionParagonInfo(factionID);
 	C_Reputation.RequestFactionParagonPreloadRewardData(factionID);
-	self.ParagonIcon.Glow:SetShown(not tooLowLevelForParagon and hasRewardPending);
-	self.ParagonIcon.Check:SetShown(not tooLowLevelForParagon and hasRewardPending);
-	self.ParagonIcon:Show();
+	paragonIcon.Glow:SetShown(not tooLowLevelForParagon and hasRewardPending);
+	paragonIcon.Check:SetShown(not tooLowLevelForParagon and hasRewardPending);
+	paragonIcon:Show();
 end
 
 function ReputationEntryMixin:OnClick()
 	local alreadySelected = self:IsSelected();
 	C_Reputation.SetSelectedFaction(not alreadySelected and self.factionIndex or 0);
+
+	-- Hide this faction's tooltip when it is selected (since we're showing the options for this reputation)
+	if self:IsSelected() then
+		self:HideTooltip();
+	-- If we just deselected the faction, then we're clear to show the tooltip again 
+	elseif self:IsMouseOver() then
+		self:ShowTooltipForReputationType();
+	end
+
 	EventRegistry:TriggerEvent("ReputationFrame.NewFactionSelected");
 end
 
+function ReputationEntryMixin:OnMouseDown()
+	self.Content:AdjustPointsOffset(1, -1);
+end
+
+function ReputationEntryMixin:OnMouseUp()
+	self.Content:AdjustPointsOffset(-1, 1);
+end
+
 function ReputationEntryMixin:OnEnter()
-	self.ReputationBar:TryShowBarProgressText();
+	self.Content.ReputationBar:TryShowBarProgressText();
 
 	self:RefreshHighlightVisuals();
 	
-	self:ShowTooltipForReputationType();
+	if not self:IsSelected() then
+		self:ShowTooltipForReputationType();
+	end
 end
 
 function ReputationEntryMixin:ShowTooltipForReputationType()
@@ -402,10 +435,14 @@ function ReputationEntryMixin:ShowStandardTooltip()
 end
 
 function ReputationEntryMixin:OnLeave()
-	self.ReputationBar:TryShowReputationStandingText();
+	self.Content.ReputationBar:TryShowReputationStandingText();
 
 	self:RefreshHighlightVisuals();
 
+	self:HideTooltip();
+end
+
+function ReputationEntryMixin:HideTooltip()
 	-- Hide the reputation progress tooltip or the paragon progress tooltip (whichever is up)
 	if GameTooltip:GetOwner() == self then
 		GameTooltip_Hide();
@@ -425,7 +462,7 @@ end
 
 function ReputationEntryMixin:RefreshAccountWideIcon()
 	local showAccountWideIcon = C_Reputation.IsAccountWideReputation(self.factionID) and (self:IsSelected() or self:IsMouseOver());
-	self.AccountWideIcon:SetShown(showAccountWideIcon);
+	self.Content.AccountWideIcon:SetShown(showAccountWideIcon);
 end
 
 function ReputationEntryMixin:RefreshBackgroundHighlight()
@@ -435,7 +472,7 @@ end
 
 function ReputationEntryMixin:RefreshBackgroundHighlightColor()
 	local highlightColor = self:IsAtWar() and FACTION_AT_WAR_COLOR or WHITE_FONT_COLOR;
-	for index, region in ipairs(self.BackgroundHighlight.TextureRegions) do
+	for index, region in ipairs(self.Content.BackgroundHighlight.TextureRegions) do
 		region:SetVertexColor(highlightColor:GetRGB());
 	end
 end
@@ -443,16 +480,32 @@ end
 function ReputationEntryMixin:RefreshBackgroundHighlightOpacity()
 	local entryNeedsHighlight = self:IsSelected() or self:IsMouseOver();
 	if not entryNeedsHighlight then
-		self.BackgroundHighlight:SetAlpha(0);
+		self.Content.BackgroundHighlight:SetAlpha(0);
 		return;
 	end
 
 	local alpha = self:IsAtWar() and 0.55 or 0.10;
-	self.BackgroundHighlight:SetAlpha(alpha);
+	self.Content.BackgroundHighlight:SetAlpha(alpha);
 end
 
 function ReputationEntryMixin:IsAtWar()
 	return self.elementData.atWarWith;
+end
+
+ReputationEntryAccountWideIconMixin = {};
+
+function ReputationEntryAccountWideIconMixin:OnEnter()
+	if not self:IsShown() then
+		return;
+	end
+
+	self:ShowTooltip();
+end
+
+function ReputationEntryAccountWideIconMixin:ShowTooltip()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip_AddNormalLine(GameTooltip, REPUTATION_TOOLTIP_ACCOUNT_WIDE_LABEL);
+	GameTooltip:Show();
 end
 
 local function NormalizeBarValues(minValue, maxValue, currentValue)
@@ -542,9 +595,9 @@ function ReputationEntryMixin:InitializeReputationBarForReputationType()
 		return;
 	end
 
-	BarInitializer(self.elementData, self.ReputationBar);
+	BarInitializer(self.elementData, self.Content.ReputationBar);
 
-	self.ReputationBar.BonusIcon:SetShown(self.elementData.hasBonusRepGain);
+	self.Content.ReputationBar.BonusIcon:SetShown(self.elementData.hasBonusRepGain);
 end
 
 ReputationSubHeaderMixin = CreateFromMixins(ReputationEntryMixin);
@@ -552,9 +605,13 @@ ReputationSubHeaderMixin = CreateFromMixins(ReputationEntryMixin);
 function ReputationSubHeaderMixin:Initialize(elementData)
 	ReputationEntryMixin.Initialize(self, elementData);
 
-	self.Name:ClearAllPoints();
-	self.Name:SetPoint("LEFT", self.ToggleCollapseButton, "RIGHT", 4, 0);
-	self.Name:SetPoint("RIGHT", self.ReputationBar, "LEFT", -10, 0);
+	self.Content.Name:ClearAllPoints();
+	self.Content.Name:SetPoint("LEFT", self.ToggleCollapseButton, "RIGHT", 4, 0);
+	self.Content.Name:SetPoint("RIGHT", self.Content.ReputationBar, "LEFT", -10, 0);
+
+	self.Content.ReputationBar:SetShown(elementData.isHeaderWithRep);
+	self.Content.BackgroundHighlight:SetShown(elementData.isHeaderWithRep);
+	self:EnableMouse(elementData.isHeaderWithRep);
 
 	self.ToggleCollapseButton:RefreshIcon();
 end
@@ -580,6 +637,7 @@ end
 function ReputationSubHeaderToggleCollapseButtonMixin:RefreshIcon()
 	local header = self:GetHeader();
 	self:GetNormalTexture():SetAtlas(header:IsCollapsed() and "campaign_headericon_closed" or "campaign_headericon_open", TextureKitConstants.UseAtlasSize);
+	self:GetPushedTexture():SetAtlas(header:IsCollapsed() and "campaign_headericon_closedpressed" or "campaign_headericon_openpressed", TextureKitConstants.UseAtlasSize);
 end
 
 function ReputationSubHeaderToggleCollapseButtonMixin:OnClick()
@@ -637,18 +695,6 @@ end
 
 ReputationBarParagonIconMixin = {};
 
-function ReputationBarParagonIconMixin:OnClick()
-	self:GetReputationButton():OnClick();
-end
-
-function ReputationBarParagonIconMixin:OnEnter()
-	self:GetReputationButton():OnEnter();
-end
-
-function ReputationBarParagonIconMixin:OnLeave()
-	self:GetReputationButton():OnLeave();
-end
-
 function ReputationBarParagonIconMixin:OnUpdate()
 	if not self.Glow:IsShown() then
 		return;
@@ -664,10 +710,6 @@ function ReputationBarParagonIconMixin:OnUpdate()
 		alpha = 1 - value;
 	end
 	self.Glow:SetAlpha(alpha);
-end
-
-function ReputationBarParagonIconMixin:GetReputationButton()
-	return self:GetParent();
 end
 
 function ReputationParagonFrame_SetupParagonTooltip(frame)

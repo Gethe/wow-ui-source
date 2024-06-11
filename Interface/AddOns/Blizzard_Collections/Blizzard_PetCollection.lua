@@ -351,7 +351,7 @@ end
 
 function PetJournalHealPetButton_UpdateUsability(self)
 	if (IsSpellKnown(self.spellID) and C_PetJournal.IsJournalUnlocked()) then
-		if (C_PetBattles.IsInBattle() or not IsUsableSpell(self.spellID) ) then
+		if (C_PetBattles.IsInBattle() or not C_Spell.IsSpellUsable(self.spellID) ) then
 			self:SetButtonState("NORMAL", true);
 			self.texture:SetDesaturated(true);
 			self.LockIcon:Show();

@@ -893,7 +893,7 @@ function MultiCastSpellButton_UpdateCooldown(self)
 end
 
 function MultiCastSpellButton_UpdateState(self)
-	if ( IsCurrentSpell(self.spellId) ) then
+	if ( C_Spell.IsCurrentSpell(self.spellId) ) then
 		self:SetChecked(true);
 	else
 		self:SetChecked(false);

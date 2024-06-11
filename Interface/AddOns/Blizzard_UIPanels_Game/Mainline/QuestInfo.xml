@@ -14,7 +14,7 @@
 	</Button>
 
 	<Texture name="QuestRewardContextIconTemplate" hidden="true" virtual="true">
-		<Size x="12" y="16"/>
+		<Size x="16" y="21"/>
 	</Texture>
 
 	<Button name="WarModeBonusFrameTemplate" virtual="true">
@@ -94,7 +94,7 @@
 				</Texture>
 				<Texture parentKey="QuestRewardContextIcon" inherits="QuestRewardContextIconTemplate" hidden="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="TOPRIGHT" y="-1"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="TOPRIGHT" y="3"/>
 					</Anchors>
 				</Texture>
 			</Layer>

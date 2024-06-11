@@ -45,10 +45,17 @@ local function SetTextureToDefaults(texture)
 	texture:SetHorizTile(false);
 	texture:SetVertTile(false);
 	texture:SetTexCoord(0,1,0,1);
+	texture:SetVertexColor(1,1,1,1);
+
+	for index = 1, 4 do
+		texture:SetVertexOffset(index,0,0);
+	end
+
 	texture:SetAtlas(nil);
 	texture:SetBlendMode("BLEND");
 	texture:SetDrawLayer("ARTWORK");
 	texture:SetDesaturation(0);
+	texture:ClearTextureSlice();
 end
 
 local function SetFontStringToDefaults(fontString)
@@ -95,7 +102,7 @@ local function SetCheckButtonToDefaults(checkButton)
 end
 
 local function SetStatusBarToDefaults(statusBar)
-	SetRegionToDefaults(statusBar);
+	SetFrameToDefaults(statusBar);
 
 	statusBar:SetFillStyle("STANDARD");
 	statusBar:SetOrientation("HORIZONTAL");
@@ -111,7 +118,7 @@ local function SetStatusBarToDefaults(statusBar)
 end
 
 local function SetEditBoxToDefaults(editBox)
-	SetRegionToDefaults(editBox);
+	SetFrameToDefaults(editBox);
 
 	editBox:SetFontObject("GameFontHighlight");
 	editBox:SetTextColor(1,1,1,1);
@@ -184,24 +191,37 @@ do
 	local regionDisallowedFunctions = tInvert(
 	{
 	});
+	
+	local fontStringDisallowedFunctions = tInvert(
+	{
+		"SetFont",
+	});
 
 	--[[
 	Disallow these functions from being called so that they don't create child regions
-	the compositor won't be aware of:
+	the compositor won't be aware of.
 	AttachTexture and AttachFontString should be used instead of CreateTexture and CreateFontString.
 	]]--
 	local frameDisallowedFunctions = tInvert(
 	{
+		"SetForbidden",
 		"CreateTexture",
+		"CreateMaskTexture",
 		"CreateFontString",
+		"CreateAnimationGroup",
+		"CreateLine",
 	});
 	
-	SetOriginalMetatable(frameDummy:CreateFontString());
 	SetOriginalMetatable(frameDummy:CreateTexture());
+	SetOriginalMetatable(frameDummy:CreateFontString());
 	SetOriginalMetatable(frameDummy);
 	SetOriginalMetatable(CreateFrame("Button"));
 	SetOriginalMetatable(CreateFrame("CheckButton"));
 	SetOriginalMetatable(CreateFrame("StatusBar"));
+
+	local editBox = CreateFrame("EditBox");
+	editBox:Hide();
+	SetOriginalMetatable(editBox);
 
 	defaultConfigurationTbl = CreateConfigurationTbl(SetFrameToDefaults, frameFactory, frameDisallowedFunctions, frameRedirectFunctions);
 	
@@ -210,7 +230,7 @@ do
 	native frame type. Expect the 'defaultFunction' to disappear in a future patch.
 	]]
 	SetupConfigurationTbl("Texture", SetTextureToDefaults, texturePool, regionDisallowedFunctions, regionRedirectFunctions);
-	SetupConfigurationTbl("FontString", SetFontStringToDefaults, fontStringPool, regionDisallowedFunctions, regionRedirectFunctions);
+	SetupConfigurationTbl("FontString", SetFontStringToDefaults, fontStringPool, fontStringDisallowedFunctions, regionRedirectFunctions);
 	SetupConfigurationTbl("Frame", SetFrameToDefaults, frameFactory, frameDisallowedFunctions, frameRedirectFunctions);
 	SetupConfigurationTbl("Button", SetButtonToDefaults, frameFactory, frameDisallowedFunctions, frameRedirectFunctions);
 	SetupConfigurationTbl("CheckButton", SetCheckButtonToDefaults, frameFactory, frameDisallowedFunctions, frameRedirectFunctions);
@@ -381,9 +401,14 @@ function CompositorMixin:CreateWithPool(parent, pool, defaultFunc, configFunc)
 	table.insert(self.attachments, region);
 
 	region:SetParent(parent);
-	region:Show();
 
+	--[[
+	Configure the region before showing, so that any scripts that were assigned to the region
+	previously are removed.
+	]]
 	Configure(self, region, parent);
+
+	region:Show();
 
 	return region;
 end

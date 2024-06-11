@@ -154,6 +154,34 @@ local DelvesUI =
 			},
 		},
 		{
+			Name = "HasActiveDelve",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "mapID", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsEligibleForActiveDelveRewards",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SaveSeenCuriosBySlotType",
 			Type = "Function",
 
@@ -167,6 +195,16 @@ local DelvesUI =
 
 	Events =
 	{
+		{
+			Name = "ActiveDelveDataUpdate",
+			Type = "Event",
+			LiteralName = "ACTIVE_DELVE_DATA_UPDATE",
+		},
+		{
+			Name = "WalkInDataUpdate",
+			Type = "Event",
+			LiteralName = "WALK_IN_DATA_UPDATE",
+		},
 	},
 
 	Tables =

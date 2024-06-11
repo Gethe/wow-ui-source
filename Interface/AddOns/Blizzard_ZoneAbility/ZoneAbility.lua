@@ -274,19 +274,18 @@ end
 function ZoneAbilityFrameSpellButtonMixin:Refresh()
 	local spellID = self:GetOverrideSpellID();
 
-	local charges, maxCharges, chargeStart, chargeDuration, chargeModRate = GetSpellCharges(spellID);
+	local chargeInfo = C_Spell.GetSpellCharges(spellID);
 	local cooldownInfo = C_Spell.GetSpellCooldown(spellID);
-	local usesCount = GetSpellCount(spellID);
+	local usesCount = C_Spell.GetSpellCastCount(spellID);
 
 	local icon = C_ZoneAbility.GetZoneAbilityIcon(spellID);
 	self.Icon:SetTexture(icon);
 
 	local spellCount = nil;
-	if maxCharges and maxCharges > 1 then
-		spellCount = charges;
-
-		if charges < maxCharges then
-			StartChargeCooldown(self, chargeStart, chargeDuration, chargeModRate);
+	if chargeInfo then
+		spellCount = chargeInfo.currentCharges;
+		if chargeInfo.currentCharges < chargeInfo.maxCharges then
+			StartChargeCooldown(self, chargeInfo.cooldownStartTime, chargeInfo.cooldownDuration, chargeInfo.chargeModRate);
 		end
 	elseif usesCount > 0 then
 		spellCount = usesCount;

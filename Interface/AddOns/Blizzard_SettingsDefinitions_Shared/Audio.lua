@@ -203,6 +203,10 @@ function MacMicrophoneAccessWarningMixin:OnLoad()
 end
 
 local function InitVoiceSettings(category, layout)
+	if not C_VoiceChat.IsEnabled() then
+		return;
+	end
+
 	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(CHAT_VOICE));
 
 	local function PopulateOptions(container, devices, defaultDeviceName)
@@ -398,7 +402,6 @@ local function Register()
 		end
 
 		Settings.SetupCVarDropdown(category, "Sound_OutputDriverIndex", Settings.VarType.Number, GetOptions, AUDIO_OUTPUT_DEVICE, OPTION_TOOLTIP_AUDIO_OUTPUT);
-		Settings.SetOnValueChangedCallback("Sound_OutputDriverIndex", Sound_GameSystem_RestartSoundSystem);
 	end
 	
 	do

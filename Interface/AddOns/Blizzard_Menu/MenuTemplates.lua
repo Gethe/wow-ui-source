@@ -57,7 +57,7 @@ end
 
 local function OnButtonClick(button, buttonName)
 	local description = button:GetElementDescription();
-	if not description:CanOpenSubmenu() then
+	if not description:CanOpenSubmenu() or description:ShouldPlaySoundOnSubmenuClick() then
 		PlaySound(description:GetSoundKit());
 	end
 
@@ -173,6 +173,10 @@ function MenuTemplates.SetHierarchyEnabled(frame, enabled)
 		end
 
 		local function SetAutoEnabled(region)
+			if region.noRecurseHierarchy then
+				return;
+			end
+
 			local objType = region:GetObjectType();
 			if objType == "FontString" and region.autoEnableTextColors then
 				local fontString = region;
@@ -366,6 +370,20 @@ function MenuTemplates.AttachNewFeatureFrame(parent)
 	
 	newFeatureFrame.noRecurseHierarchy = true;
 	return newFeatureFrame;
+end
+
+function MenuTemplates.AttachTexture(parent, textureOrAtlas, point, pointX, pointY)
+	local iconTexture = parent:AttachTexture();
+	iconTexture:SetPoint(point or "RIGHT", pointX or 0, pointY or 0);
+
+	if C_Texture.GetAtlasInfo(textureOrAtlas) then
+		local useAtlasSize = false;
+		iconTexture:SetAtlas(textureOrAtlas, useAtlasSize);
+	else
+		iconTexture:SetTexture(textureOrAtlas);
+	end
+
+	return iconTexture;
 end
 
 DropdownTextMixin = {};
@@ -668,6 +686,7 @@ function WowStyle2DropdownMixin:OnButtonStateChanged()
 		self.Text:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
 	end
 
+	self.Arrow:SetShown(self:IsOver());
 	self.Arrow:SetDesaturated(not enabled);
 
 	self.Background:SetAtlas(self:GetBackgroundAtlas(), TextureKitConstants.UseAtlasSize);

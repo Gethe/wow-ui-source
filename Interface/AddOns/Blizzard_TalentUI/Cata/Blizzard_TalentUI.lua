@@ -1396,7 +1396,7 @@ end
 function PlayerTalentFrameActivateButton_Update(numTalentGroups)
 	local spec = selectedSpec and specs[selectedSpec];
 	if (numTalentGroups > 1) then
-		if (IsCurrentSpell(TALENT_ACTIVATION_SPELLS[spec.talentGroup])) then
+		if (C_Spell.IsCurrentSpell(TALENT_ACTIVATION_SPELLS[spec.talentGroup])) then
 			PlayerTalentFrameActivateButton:Show();
 			PlayerTalentFrameActivateButton:Disable();
 		elseif (selectedSpec == activeSpec) then

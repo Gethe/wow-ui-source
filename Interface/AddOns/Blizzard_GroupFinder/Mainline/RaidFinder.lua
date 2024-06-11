@@ -248,12 +248,18 @@ function RaidFinderQueueFrame_OnShow(self)
 			end
 
 			local text = dungeon.name;
-			local icon, modifiedInstanceTooltipText = GetInstanceData(dungeon.mapID);
-			if icon then
-				text = CreateSimpleTextureMarkup(icon, 16, 16)..text;
-			end
+			local iconTexture, modifiedInstanceTooltipText = GetInstanceData(dungeon.mapID);
+			local radio = rootDescription:CreateRadio(dungeon.name, IsSelected, SetSelected, dungeon.id);
 
-			local radio = rootDescription:CreateRadio(text, IsSelected, SetSelected, dungeon.id);
+			if iconTexture then
+				radio:AddInitializer(function(button, description, menu)
+					local icon = button:AttachTexture();
+					icon.noRecurseHierarchy = true;
+					icon:SetPoint("RIGHT");
+					icon:SetSize(16, 16);
+					icon:SetTexture(iconTexture);
+				end);
+			end
 
 			if ( dungeon.isAvailable ) then
 				local encounters;

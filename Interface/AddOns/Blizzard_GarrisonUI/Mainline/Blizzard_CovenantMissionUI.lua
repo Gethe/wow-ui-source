@@ -5,9 +5,6 @@
 --This mission specifically has a tutorial flow to show 
 local STRATEGIC_POSITIONING_TUTORIAL_MISSION_ID = 2295;
 
---This file also represents the DF adventure map so we use these IDs to determine when we should apply DF style data.
-local DRAGONFLIGHT_MAP_IDS = {2057, 2147};
-
 -- These are follower options that depend on this AddOn being loaded, and so they can't be set in GarrisonBaseUtils.
 GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower].missionFollowerSortFunc =  GarrisonFollowerList_DefaultMissionSort;
 GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower].missionFollowerInitSortFunc = GarrisonFollowerList_InitializeDefaultMissionSort;
@@ -50,44 +47,97 @@ StaticPopupDialogs["COVENANT_MISSIONS_HEAL_ALL_CONFIRMATION"] = {
 	hideOnEscape = 1
 };
 
+local AdventureMapTextureKits = {
+	covenantGarrisonStyleData =
+	{
+		--Might do 4x for covenants, setting it up for this to be the possible way to express it, but also just because this'll be an easy way to replace the assets 1 to 1
+		closeButtonBorder = "UI-Frame-Oribos-ExitButtonBorder",
+		closeButtonX = 4,
+		closeButtonY = 5,
 
-local covenantGarrisonStyleData =
-{
-	--Might do 4x for covenants, setting it up for this to be the possible way to express it, but also just because this'll be an easy way to replace the assets 1 to 1
+		useOldNineSlice = true;
+		nineSliceLayout = "CovenantMissionFrame",
+	},
+
+	Dragonflight =
+	{
+		closeButtonX = -5,
+		closeButtonY = -6,
+		
+		useOldNineSlice = true;
+		nineSliceLayout = "DragonflightMissionFrame",
+	},
+
+	thewarwithin =
+	{
+		closeButtonX = -15,
+		closeButtonY = -15,
+	},
+}
+
+local defaultTextureKitInfo = {
 	closeButtonBorder = "UI-Frame-Oribos-ExitButtonBorder",
 	closeButtonBorderX = 0,
 	closeButtonBorderY = 1,
 	closeButtonX = 4,
 	closeButtonY = 5,
 
-	nineSliceLayout = "CovenantMissionFrame",
+	borderTopLeftXOffset = 0;
+	borderTopLeftYOffset = 0;
+
+	borderBottomRightXOffset = 0;
+	borderBottomRightYOffset = 0;
+	
 	materialFrameBG = "adventures_mission_materialframe",
 	BackgroundTile = "Adventures-Missions-BG-02",
 };
 
-local dragonflightStyleData =
-{
-	closeButtonX = -5,
-	closeButtonY = -6,
+local function GetAdventureMapTextureKitInfo(textureKit)
+	local kitInfo = AdventureMapTextureKits[textureKit] or {};
+	return setmetatable(kitInfo, {__index = defaultTextureKitInfo});
+end
 
-	nineSliceLayout = "DragonflightMissionFrame",
-};
+local borderFrameTextureKitRegion = "UI-Frame-%s-Border";
 
-local function SetupBorder(self, styleData)
+local function SetupBorder(self)
 	self.GarrCorners:Hide();
 	self.Bottom:SetTexCoord(0, 1, 1, 0);
 
-	local nineSliceLayout = NineSliceUtil.GetLayout(styleData.nineSliceLayout);
-	NineSliceUtil.ApplyLayout(self, nineSliceLayout);
-	self.BackgroundTile:SetAtlas(styleData.BackgroundTile);
+	local textureKitInfo = self.textureKitInfo;
 
+	self.Top:SetShown(textureKitInfo.useOldNineSlice);
+	self.Bottom:SetShown(textureKitInfo.useOldNineSlice);
+	self.Left:SetShown(textureKitInfo.useOldNineSlice);
+	self.Right:SetShown(textureKitInfo.useOldNineSlice);
+	self.TopLeftCorner:SetShown(textureKitInfo.useOldNineSlice);
+	self.TopRightCorner:SetShown(textureKitInfo.useOldNineSlice);
+	self.BotLeftCorner:SetShown(textureKitInfo.useOldNineSlice);
+	self.BotRightCorner:SetShown(textureKitInfo.useOldNineSlice);
+	self.TopBorder:SetShown(textureKitInfo.useOldNineSlice);
+	self.BottomBorder:SetShown(textureKitInfo.useOldNineSlice);
+	self.LeftBorder:SetShown(textureKitInfo.useOldNineSlice);
+	self.RightBorder:SetShown(textureKitInfo.useOldNineSlice);
+	
+	self.Border:SetShown(not textureKitInfo.useOldNineSlice);
+
+	if textureKitInfo.useOldNineSlice then
+		local nineSliceLayout = NineSliceUtil.GetLayout(textureKitInfo.nineSliceLayout);
+		NineSliceUtil.ApplyLayout(self, nineSliceLayout);
+	else
+		-- Border corner offsets are only supported on the new nine slice tech
+		self.Border:SetPoint("TOPLEFT", self, "TOPLEFT", textureKitInfo.borderTopLeftXOffset, textureKitInfo.borderTopLeftYOffset);
+		self.Border:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", textureKitInfo.borderBottomRightXOffset, textureKitInfo.borderBottomRightYOffset);
+		self.Border:SetAtlas(borderFrameTextureKitRegion:format(self.textureKit));
+	end
+
+	self.BackgroundTile:SetAtlas(textureKitInfo.BackgroundTile);
 	self.CloseButton:ClearAllPoints();
-	self.CloseButton:SetPoint("TOPRIGHT", self, "TOPRIGHT", styleData.closeButtonX, styleData.closeButtonY);
+	self.CloseButton:SetPoint("TOPRIGHT", self, "TOPRIGHT", textureKitInfo.closeButtonX, textureKitInfo.closeButtonY);
 	self.CloseButton:SetFrameLevel(self.RaisedBorder:GetFrameLevel() + 2);
 
-	self.OverlayElements.CloseButtonBorder:SetAtlas(styleData.closeButtonBorder, true);
+	self.OverlayElements.CloseButtonBorder:SetAtlas(textureKitInfo.closeButtonBorder, true);
 	self.OverlayElements.CloseButtonBorder:SetParent(self.CloseButton);
-	self.OverlayElements.CloseButtonBorder:SetPoint("CENTER", self.CloseButton, "CENTER", styleData.closeButtonBorderX, styleData.closeButtonBorderY);
+	self.OverlayElements.CloseButtonBorder:SetPoint("CENTER", self.CloseButton, "CENTER", textureKitInfo.closeButtonBorderX, textureKitInfo.closeButtonBorderY);
 end
 
 local function SetupTabOffset(self)
@@ -95,9 +145,9 @@ local function SetupTabOffset(self)
 	self.Tab1.yOffset = -33;
 end
 
-local function SetupMaterialFrame(materialFrame, currency, currencyTexture)
+local function SetupMaterialFrame(materialFrame, currency, currencyTexture, textureKitInfo)
 	materialFrame.currencyType = currency;
-	materialFrame.BG:SetAtlas(covenantGarrisonStyleData.materialFrameBG);
+	materialFrame.BG:SetAtlas(textureKitInfo.materialFrameBG);
 	materialFrame.Icon:SetTexture(currencyTexture);
 	materialFrame.Icon:SetSize(18, 18);
 	materialFrame.Icon:SetPoint("RIGHT", materialFrame, "RIGHT", -14, 0);
@@ -134,8 +184,8 @@ function CovenantMission:OnLoadMainFrame()
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.MissionTab.MissionList.ScrollBox, self.MissionTab.MissionList.ScrollBar, view);
 
 	self:SetupCompleteDialog();
-	self:UpdateCurrencyInfo();
 	self:UpdateTextures();
+	self:UpdateCurrencyInfo();
 	self.MissionTab.MissionList:Update();
 
 	PanelTemplates_SetNumTabs(self, 3);
@@ -199,8 +249,8 @@ function CovenantMission:OnShowMainFrame()
 
 	self:SetupTabs();
 
-	self:UpdateCurrency();
 	self:UpdateTextures();
+	self:UpdateCurrency();
 
 	PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_OPEN);
 end
@@ -600,14 +650,19 @@ function CovenantMission:UpdateCurrencyInfo()
 
 	self.FollowerList.HealAllButton.currencyID = secondaryCurrency;
 
-	SetupMaterialFrame(self.FollowerList.MaterialFrame, secondaryCurrency, currencyTexture);
-	SetupMaterialFrame(self.MissionTab.MissionList.MaterialFrame, secondaryCurrency, currencyTexture);
+	SetupMaterialFrame(self.FollowerList.MaterialFrame, secondaryCurrency, currencyTexture, self.textureKitInfo);
+	SetupMaterialFrame(self.MissionTab.MissionList.MaterialFrame, secondaryCurrency, currencyTexture, self.textureKitInfo);
 	self:GetCompleteDialog().BorderFrame.ViewButton:SetPoint("BOTTOM", 0, 88);
 
 	self:UpdateCurrency();
 end
 
+local DEFAULT_TEXTURE_KIT = "covenantGarrisonStyleData";
+
 function CovenantMission:UpdateTextures()
+	-- This texture kit is to be used when showing a scouting map / adventure map's border
+	self.textureKit = C_AdventureMap.GetAdventureMapTextureKit() or DEFAULT_TEXTURE_KIT;
+	self.textureKitInfo = GetAdventureMapTextureKitInfo(self.textureKit);
 	self.MissionTab.MissionPage.Stage.MissionEnvIcon:SetSize(48,48);
 	self.MissionTab.MissionPage.Stage.MissionEnvIcon:SetPoint("LEFT", self.MissionTab.MissionPage.Stage.MissionInfo.MissionEnv, "RIGHT", -11, 0);
 
@@ -646,14 +701,7 @@ function CovenantMission:UpdateTextures()
 	end
 
 	self.BackgroundTile:SetAtlas("Adventures-Missions-BG-02");
-
-	-- Check if the map is a Dragonflight map
-	local currentMapID = C_AdventureMap.GetMapID();
-	if tContains(DRAGONFLIGHT_MAP_IDS, currentMapID) then
-		SetupBorder(self, dragonflightStyleData);
-	else
-		SetupBorder(self, covenantGarrisonStyleData);
-	end
+	SetupBorder(self);
 end
 
 function CovenantMission:AssignFollowerToMission(frame, info)

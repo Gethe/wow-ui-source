@@ -6,9 +6,10 @@ local CreateProxyDirectory = ProxyUtil.CreateProxyDirectory;
 local CreateProxyMixin = ProxyUtil.CreateProxyMixin;
 local SetPrivateReference = ProxyUtil.SetPrivateReference;
 local ReleasePrivateReference = ProxyUtil.ReleasePrivateReference;
-local ProxyConvertableMixin = ProxyConvertableMixin;
+local ProxyConvertablePrivateMixin = Mixin(ProxyConvertableMixin);
+local CreateFromMixinsPrivate = CreateFromMixins;
 
-local MenuCallbackRegistry = CreateFromMixins(CallbackRegistryMixin);
+local MenuCallbackRegistry = CreateFromMixinsPrivate(CallbackRegistryMixin);
 MenuCallbackRegistry:SetUndefinedEventsAllowed(true);
 MenuCallbackRegistry:OnLoad();
 
@@ -176,7 +177,7 @@ the collections to store child element descriptions, and the initializers used t
 the description frame.the description frame. Child element description are also base menu descriptions.
 ]]
 
-local BaseMenuDescriptionMixin = CreateFromMixins(ProxyConvertableMixin);
+local BaseMenuDescriptionMixin = CreateFromMixinsPrivate(ProxyConvertablePrivateMixin);
 
 local function IsValidGridDirection(direction)
 	return (direction == MenuConstants.VerticalGridDirection) 
@@ -184,7 +185,7 @@ local function IsValidGridDirection(direction)
 end
 
 function BaseMenuDescriptionMixin:Init(proxy)
-	local tags = ProxyConvertableMixin.Init(self, proxy, Proxies);
+	local tags = ProxyConvertablePrivateMixin.Init(self, proxy, Proxies);
 	tags[proxy] = "BaseMenuDescriptionMixin";
 
 	self.gridDirection = MenuConstants.VerticalLinearDirection;
@@ -426,7 +427,7 @@ The root menu description is the start of the menu hierarchy. Although all of th
 child menu descriptions technically have access to the shared menu properties,
 it is expected that any menu event registration occur on this root description.
 ]]--
-local RootMenuDescriptionMixin = CreateFromMixins(BaseMenuDescriptionMixin);
+local RootMenuDescriptionMixin = CreateFromMixinsPrivate(BaseMenuDescriptionMixin);
 RootMenuDescriptionMixin.__index = RootMenuDescriptionMixin;
 
 function RootMenuDescriptionMixin:Init(proxy, menuMixin)
@@ -456,7 +457,7 @@ end
 Menu element descriptions represent each individual menu element. Adding menu element
 descriptions into an existing element description creates a submenu.
 ]]--
-local MenuElementDescriptionMixin = CreateFromMixins(BaseMenuDescriptionMixin);
+local MenuElementDescriptionMixin = CreateFromMixinsPrivate(BaseMenuDescriptionMixin);
 MenuElementDescriptionMixin.__index = MenuElementDescriptionMixin;
 
 function MenuElementDescriptionMixin:Init(proxy)
@@ -680,6 +681,22 @@ do
 
 		return self.soundKit(self);
 	end
+	
+	function MenuElementDescriptionProxyMixin:SetShouldRespondIfSubmenu(canRespond)
+		self.shouldRespondIfSubmenu = canRespond;
+	end
+
+	function MenuElementDescriptionProxyMixin:ShouldRespondIfSubmenu()
+		return self.shouldRespondIfSubmenu;
+	end
+
+	function MenuElementDescriptionProxyMixin:SetShouldPlaySoundOnSubmenuClick(canPlay)
+		self.playSoundOnSubmenuClick = canPlay;
+	end
+	
+	function MenuElementDescriptionProxyMixin:ShouldPlaySoundOnSubmenuClick()
+		return self.playSoundOnSubmenuClick;
+	end
 
 	function MenuElementDescriptionProxyMixin:SetOnEnter(onEnter)
 		self.onEnter = function(...)
@@ -818,10 +835,10 @@ be closed.
 local MenuElementFactory = CreateFrameFactory();
 MenuElementFactory.ReleaseAll = nil;
 
-MenuMixin = CreateFromMixins(ProxyConvertableMixin);
+MenuMixin = CreateFromMixinsPrivate(ProxyConvertablePrivateMixin);
 
 function MenuMixin:Init(menuManager, proxy, permitOverwrite)
-	local tags = ProxyConvertableMixin.Init(self, proxy, Proxies, permitOverwrite);
+	local tags = ProxyConvertablePrivateMixin.Init(self, proxy, Proxies, permitOverwrite);
 	tags[proxy] = "MenuMixin";
 
 	self.level = 0;
@@ -1395,7 +1412,7 @@ do
 
 	local function FlipPoint(frame, point, relativeKey, relativePoint, x, y)
 		frame:ClearPoint(point);
-		frame:SetPoint(relativePoint, relativeKey, point, x2, y2);
+		frame:SetPoint(relativePoint, relativeKey, point, x, y);
 	end
 
 	function MenuMixin:FlipPositionIfOffscreen()
@@ -1596,10 +1613,10 @@ function MenuProxyMixin:Close()
 	Menu.GetManager():CloseMenu(self);
 end
 
-local MenuManagerMixin = CreateFromMixins(ProxyConvertableMixin);
+local MenuManagerMixin = CreateFromMixinsPrivate(ProxyConvertablePrivateMixin);
 
 function MenuManagerMixin:Init(proxy)
-	local tags = ProxyConvertableMixin.Init(self, proxy, Proxies);
+	local tags = ProxyConvertablePrivateMixin.Init(self, proxy, Proxies);
 	tags[proxy] = "MenuManagerMixin";
 
 	self.menus = CreateSecureArray();
@@ -1802,7 +1819,7 @@ function MenuManagerMixin:AcquireMenu(params)
 
 	proxy:ClearScrollLayout();
 
-	local menu = CreateFromMixins(MenuMixin);
+	local menu = CreateFromMixinsPrivate(MenuMixin);
 
 	--[[
 	Normally all proxies are tables with private references to the object. Since the frame 
@@ -1890,10 +1907,15 @@ local function SecureReinitializeChildMenus(description)
 	end
 end
 
+local function CanSubmenuProxyRespond(description)
+	local descriptionProxy = description:ToProxy();
+	return descriptionProxy:ShouldRespondIfSubmenu();
+end
+
 function MenuManagerMixin:AttributeRespond(menu, description, response)
 	--[[
 	CloseAll and 'nil' are equivalent in behavior. For brevity, responders generally do not return
-	anything, which causes the entire menu to close. While that is frequently desirable, checkbox and radios
+	anything, which causes the entire menu to close. While that is frequently desirable, checkboxes
 	have a Refresh default behavior, so any of these controls that should cause the menu to close need
 	to explicitly return CloseAll (or set the default response type).
 	]]--
@@ -1907,7 +1929,12 @@ function MenuManagerMixin:AttributeRespond(menu, description, response)
 	if (response == nil) or (response == MenuResponse.CloseAll) then
 		-- If the description has elements, but the submenu is omitted, treat it as
 		-- if there are no elements.
-		if not description:HasElements() or description:IsSubmenuDeactivated() then
+		local canCloseMenus = not description:HasElements();
+		if not canCloseMenus then
+			canCloseMenus = description:IsSubmenuDeactivated() or securecallfunction(CanSubmenuProxyRespond, description);
+		end
+
+		if canCloseMenus then
 			self:CloseMenus();
 		end
 		canReinitializeHierarchy = false;
@@ -2227,7 +2254,7 @@ do
 	end
 
 	local function CreateMenuManager()
-		local menuManager = CreateFromMixins(MenuManagerMixin);
+		local menuManager = CreateFromMixinsPrivate(MenuManagerMixin);
 		local menuManagerProxy = CreateProxy(menuManager, MenuManagerProxyMixin);
 		menuManager:Init(menuManagerProxy);
 		return menuManagerProxy;

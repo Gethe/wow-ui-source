@@ -428,6 +428,16 @@
 			<OnHide method="OnHideMainFrame"/>
 			<OnEvent method="OnEventMainFrame"/>
 		</Scripts>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Border">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 		<Frames>
 			<Frame parentKey="OverlayElements" frameLevel="3010" setAllPoints="true">
 				<Layers>

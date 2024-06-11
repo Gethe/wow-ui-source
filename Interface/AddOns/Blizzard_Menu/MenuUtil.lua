@@ -24,7 +24,7 @@ do
 	CreateContextMenuUsingInserter = function(ownerRegion, inserter, ...)
 		local tbl = {...};
 
-		MenuUtil.CreateContextMenu(ownerRegion, function(ownerRegion, rootDescription)
+		return MenuUtil.CreateContextMenu(ownerRegion, function(ownerRegion, rootDescription)
 			VariadicInsert(rootDescription, inserter, unpack(tbl));
 		end);
 	end
@@ -153,6 +153,8 @@ function MenuUtil.CreateContextMenu(ownerRegion, generator, ...)
 	if menu then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	end
+
+	return menu;
 end
 
 --[[ Accessors so the implementation can change. Avoid grabbing .text off a description unless you're
@@ -229,13 +231,8 @@ end
 --[[
 Wrappers for convenience since all other create functions are in MenuUtil.
 ]]--
-function MenuUtil.CreateDivider()
-	return MenuTemplates.CreateDivider();
-end
-
-function MenuUtil.CreateSpacer(extent)
-	return MenuTemplates.CreateSpacer(extent);
-end
+MenuUtil.CreateDivider = MenuTemplates.CreateDivider;
+MenuUtil.CreateSpacer = MenuTemplates.CreateSpacer;
 
 MenuUtilPrivate.Inserters =
 {
@@ -260,37 +257,45 @@ local function DefaultTooltipInitializer(tooltip, elementDescription)
 end
 
 local function SetTooltip(elementDescription, initializer)
-	if not initializer then
-		initializer = DefaultTooltipInitializer;
-	end
-
 	elementDescription:SetOnEnter(function(frame)
-		MenuUtil.ShowTooltip(frame, initializer, elementDescription);
+		MenuUtil.ShowTooltip(frame, initializer or DefaultTooltipInitializer, elementDescription);
 	end);
 end
 
-local function QueueDescription(description, queueDesciption, clearQueue)
+local function TitleAndTextTooltipInitializer(tooltip, tooltipTitle, tooltipText)
+	GameTooltip_SetTitle(tooltip, tooltipTitle);
+	GameTooltip_AddNormalLine(tooltip, tooltipText, true);
+end
+
+local function SetTitleAndTextTooltip(elementDescription, tooltipTitle, tooltipText)
+	elementDescription:SetOnEnter(function(frame)
+		MenuUtil.ShowTooltip(frame, TitleAndTextTooltipInitializer, tooltipTitle, tooltipText);
+	end);
+end
+
+local function QueueDescription(description, queueDescription, clearQueue)
 	if clearQueue then
 		description:ClearQueuedDescriptions();
 	end
-	description:AddQueuedDescription(queueDesciption);
+	description:AddQueuedDescription(queueDescription);
 end
 
-function QueueTitle(description, text, color, clearQueue)
+local function QueueTitle(description, text, color, clearQueue)
 	QueueDescription(description, MenuUtil.CreateTitle(text, color), clearQueue);
 end
 
-function QueueDivider(description, clearQueue)
+local function QueueDivider(description, clearQueue)
 	QueueDescription(description, MenuUtil.CreateDivider(), clearQueue);
 end
 
-function QueueSpacer(description, extent, clearQueue)
+local function QueueSpacer(description, extent, clearQueue)
 	QueueDescription(description, MenuUtil.CreateSpacer(extent), clearQueue);
 end
 
 MenuUtilPrivate.Utilities =
 {
 	SetTooltip = SetTooltip,
+	SetTitleAndTextTooltip = SetTitleAndTextTooltip,
 	QueueTitle = QueueTitle,
 	QueueDivider = QueueDivider,
 	QueueSpacer = QueueSpacer,

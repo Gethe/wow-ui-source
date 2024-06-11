@@ -83,7 +83,7 @@ end
 
 local function GetSummonedPetStableSlot()
 	for i=1, Constants.PetConsts.MAX_SUMMONABLE_HUNTER_PETS do
-		if IsCurrentSpell(CALL_PET_SPELL_IDS[i]) then
+		if C_Spell.IsCurrentSpell(CALL_PET_SPELL_IDS[i]) then
 			return i;
 		end
 	end

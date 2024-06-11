@@ -1315,7 +1315,7 @@ end
 function BossTargetFrame_OpenMenu(self)
 	local contextData = {
 		fromTargetFrame = true;
-		unit = self:GetParent().unit,
+		unit = self.unit,
 	};
 	UnitPopup_OpenMenu("BOSS", contextData);
 end

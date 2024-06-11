@@ -102,7 +102,8 @@ function BonusObjectiveTrackerMixin:OnEvent(event, ...)
 			if block then
 				local id = ...;
 				for criteriaIndex = 1, numCriteria do
-					local _, _, _, _, _, _, _, _, criteriaID = C_Scenario.GetCriteriaInfoByStep(bonusStepIndex, criteriaIndex);
+					local criteriaInfo = C_ScenarioInfo.GetCriteriaInfoByStep(bonusStepIndex, criteriaIndex);
+					local criteriaID = criteriaInfo and criteriaInfo.criteriaID;
 					if id == criteriaID then
 						local questID = C_Scenario.GetBonusStepRewardQuestID(bonusStepIndex);
 						if questID ~= 0 then
@@ -245,9 +246,9 @@ function BonusObjectiveTrackerMixin:ProcessScenarioBonusObjectives()
 				local name, description, numCriteria, stepFailed, isBonusStep, isForCurrentStepOnly, shouldShowBonusObjective = C_Scenario.GetStepInfo(bonusStepIndex);
 				local completed = true;
 				for criteriaIndex = 1, numCriteria do
-					local criteriaString, criteriaType, criteriaCompleted, quantity, totalQuantity, flags, assetID, quantityString, criteriaID, duration, elapsed, criteriaFailed = C_Scenario.GetCriteriaInfoByStep(bonusStepIndex, criteriaIndex);
-					if criteriaString then
-						if not criteriaCompleted then
+					local criteriaInfo = C_ScenarioInfo.GetCriteriaInfoByStep(bonusStepIndex, criteriaIndex);
+					if criteriaInfo then
+						if not criteriaInfo.completed then
 							completed = false;
 							break;
 						end
@@ -276,20 +277,21 @@ function BonusObjectiveTrackerMixin:ProcessScenarioBonusObjectives()
 				local stepFinished = true;
 				local firstLine = nil;
 				for criteriaIndex = 1, numCriteria do
-					local criteriaString, criteriaType, criteriaCompleted, quantity, totalQuantity, flags, assetID, quantityString, criteriaID, duration, elapsed, criteriaFailed, isWeightedProgress = C_Scenario.GetCriteriaInfoByStep(bonusStepIndex, criteriaIndex);
-					if criteriaString then
+					local criteriaInfo = C_ScenarioInfo.GetCriteriaInfoByStep(bonusStepIndex, criteriaIndex);
+					if criteriaInfo then
 						local line;
-						if not isWeightedProgress then
-							criteriaString = string.format("%d/%d %s", quantity, totalQuantity, criteriaString);
+						local criteriaString = criteriaInfo.description;
+						if not criteriaInfo.isWeightedProgress and not criteriaInfo.isFormatted then
+							criteriaString = string.format("%d/%d %s", criteriaInfo.quantity, criteriaInfo.totalQuantity, criteriaString);
 						end
-						if criteriaCompleted then
+						if criteriaInfo.completed then
 							local existingLine = block:GetExistingLine(criteriaIndex);
 							line = block:AddObjective(criteriaIndex, criteriaString, nil, nil, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["Complete"]);
 							if existingLine and not line.finished then
 								line:SetState(ObjectiveTrackerAnimLineState.Completing);
 							end
 							line.finished = true;
-						elseif criteriaFailed then
+						elseif criteriaInfo.failed then
 							stepFinished = false;
 							line = block:AddObjective(criteriaIndex, criteriaString, nil, nil, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["Failed"]);
 						else
@@ -297,8 +299,8 @@ function BonusObjectiveTrackerMixin:ProcessScenarioBonusObjectives()
 							line = block:AddObjective(criteriaIndex, criteriaString, nil, nil, OBJECTIVE_DASH_STYLE_HIDE);
 						end
 						-- timer bar
-						if duration > 0 and elapsed <= duration and not (criteriaFailed or criteriaCompleted) then
-							block:AddTimerBar(duration, GetTime() - elapsed);
+						if criteriaInfo.duration > 0 and criteriaInfo.elapsed <= criteriaInfo.duration and not (criteriaInfo.failed or criteriaInfo.completed) then
+							block:AddTimerBar(criteriaInfo.duration, GetTime() - criteriaInfo.elapsed);
 						end
 						if criteriaIndex > 1 then
 							line:SetNoIcon(true);

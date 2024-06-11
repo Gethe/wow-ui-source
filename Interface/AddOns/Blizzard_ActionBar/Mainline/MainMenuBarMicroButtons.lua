@@ -678,7 +678,7 @@ function PlayerSpellsMicroButtonMixin:EvaluateAlertVisibility()
 	-- while PlayerSpellsFrame is already open (old behavior would force switch to SpellBook tab, which is very disruptive)
 
 	self.jumpToSpellID = nil;
-    self.suggestedTab = nil;
+	self.suggestedTab = nil;
 	return false;
 end
 
@@ -696,7 +696,7 @@ function PlayerSpellsMicroButtonMixin:OnEvent(event, ...)
 end
 
 function PlayerSpellsMicroButtonMixin:OnClick(button, down)
-    if not KeybindFrames_InQuickKeybindMode() then
+	if not KeybindFrames_InQuickKeybindMode() then
 		if self.jumpToSpellID and (not self.suggestedTab or self.suggestedTab == PlayerSpellsUtil.FrameTabs.SpellBook) then
 			local knownSpellsOnly, toggleFlyout, flyoutReason = true, false, nil;
 			PlayerSpellsUtil.OpenToSpellBookTabAtSpell(self.jumpToSpellID, knownSpellsOnly, toggleFlyout, flyoutReason)

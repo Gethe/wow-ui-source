@@ -163,8 +163,6 @@ function DelvesDashboardFrameMixin:UpdateTitles()
 		self.ReputationBarTitle:SetText(DELVES_REPUTATION_BAR_TITLE:format(expName, GetDisplaySeason()));
 		self.ReputationBarTitle:SetTextColor(WHITE_FONT_COLOR:GetRGB());
 	end
-
-    self.DashboardTitle:SetText(DELVES_LABEL_WITH_EXPANSION:format(expName));
 end
 
 --[[ Reputation Threshold + Reward Info ]]

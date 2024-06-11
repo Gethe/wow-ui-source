@@ -51,6 +51,8 @@
 			</Layer>
 		</Layers>
 		<Scripts>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
 			<OnClick method="OnClick"/>
 		</Scripts>
 	</Button>
@@ -67,6 +69,7 @@
 					<OnClick method="OnClick"/>
 				</Scripts>
 				<NormalTexture atlas="campaign_headericon_closed" useAtlasSize="true"/>
+				<PushedTexture atlas="campaign_headericon_closedpressed" useAtlasSize="true"/>
 				<HighlightTexture file="Interface\Buttons\UI-PlusButton-Hilight" alphaMode="ADD"/>
 			</Button>
 		</Frames>
@@ -85,62 +88,79 @@
 
 	<Button name="TokenEntryTemplate" mixin="TokenEntryMixin" virtual="true">
 		<Size y="22"/>
-		<Layers>
-			<Layer level="BORDER">
-				<Texture parentKey="AccountWideIcon" atlas="warbands-icon" useAtlasSize="true" scale="0.9" hidden="true">
-					<Anchors>
-						<Anchor point="LEFT" x="2"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="CurrencyIcon">
-					<Size x="20" y="20"/>
-					<Anchors>
-						<Anchor point="RIGHT" x="-20" y="0"/>
-					</Anchors>
-				</Texture>
-				<FontString parentKey="Count" inherits="GameFontHighlightRight">
-					<Anchors>
-						<Anchor point="RIGHT" relativeKey="$parent.CurrencyIcon" relativePoint="LEFT" x="-5" y="0"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="Name" inherits="GameFontHighlightLeft">
-					<Size y="11"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.AccountWideIcon" relativePoint="RIGHT" x="4" y="0"/>
-						<Anchor point="RIGHT" relativeKey="$parent.Count" relativePoint="LEFT" x="-10" y="0"/>
-					</Anchors>
-				</FontString>
-				<Texture parentKey="WatchedCurrencyCheck" file="Interface\Buttons\UI-CheckBox-Check">
-					<Size x="16" y="16"/>
-					<Anchors>
-						<Anchor point="RIGHT" x="-3" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
 		<Frames>
-			<Frame parentKey="BackgroundHighlight" alpha="0" setAllPoints="true">
+			<Frame parentKey="Content" setAllPoints="true">
+				<Frames>
+					<Frame parentKey="BackgroundHighlight" alpha="0" setAllPoints="true">
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="Left" atlas="charactercreate-customize-dropdown-linemouseover-side" parentArray="TextureRegions">
+									<Size x="6"/>
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+										<Anchor point="BOTTOMLEFT"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Right" atlas="charactercreate-customize-dropdown-linemouseover-side" parentArray="TextureRegions">
+									<Size x="6"/>
+									<TexCoords left="1" right="0" top="0" bottom="1"/>
+									<Anchors>
+										<Anchor point="TOPRIGHT"/>
+										<Anchor point="BOTTOMRIGHT"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Middle" atlas="charactercreate-customize-dropdown-linemouseover-middle" parentArray="TextureRegions">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
+										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame parentKey="AccountWideIcon" mixin="TokenEntryAccountWideIconMixin" enableMouse="true" propagateMouseInput="Clicks" hidden="true">
+						<Size x="23" y="22"/>
+						<Anchors>
+							<Anchor point="LEFT" x="2"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BORDER">
+								<Texture parentKey="Icon" atlas="warbands-icon" useAtlasSize="true" scale="0.9">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnEnter method="OnEnter"/>
+						</Scripts>
+					</Frame>
+				</Frames>
 				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="Left" atlas="charactercreate-customize-dropdown-linemouseover-side" parentArray="TextureRegions">
-							<Size x="6"/>
+					<Layer level="BORDER">
+						<Texture parentKey="CurrencyIcon">
+							<Size x="20" y="20"/>
 							<Anchors>
-								<Anchor point="TOPLEFT"/>
-								<Anchor point="BOTTOMLEFT"/>
+								<Anchor point="RIGHT" x="-20" y="0"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="Right" atlas="charactercreate-customize-dropdown-linemouseover-side" parentArray="TextureRegions">
-							<Size x="6"/>
-							<TexCoords left="1" right="0" top="0" bottom="1"/>
+						<FontString parentKey="Count" inherits="GameFontHighlightRight">
 							<Anchors>
-								<Anchor point="TOPRIGHT"/>
-								<Anchor point="BOTTOMRIGHT"/>
+								<Anchor point="RIGHT" relativeKey="$parent.CurrencyIcon" relativePoint="LEFT" x="-5" y="0"/>
 							</Anchors>
-						</Texture>
-						<Texture parentKey="Middle" atlas="charactercreate-customize-dropdown-linemouseover-middle" parentArray="TextureRegions">
+						</FontString>
+						<FontString parentKey="Name" inherits="GameFontHighlightLeft">
+							<Size y="11"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
+								<Anchor point="LEFT" relativeKey="$parent.AccountWideIcon" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeKey="$parent.Count" relativePoint="LEFT" x="-10" y="0"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="WatchedCurrencyCheck" file="Interface\Buttons\UI-CheckBox-Check">
+							<Size x="16" y="16"/>
+							<Anchors>
+								<Anchor point="RIGHT" x="-3" y="0"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -149,6 +169,8 @@
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
 			<OnClick method="OnClick"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>

@@ -2,6 +2,7 @@
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
 ## Dependencies: Blizzard_SharedXMLBase
+## LoadFirst: 1
 ## AllowLoad: Both
 ## AllowLoadGameType: mainline
 MenuConstants.lua

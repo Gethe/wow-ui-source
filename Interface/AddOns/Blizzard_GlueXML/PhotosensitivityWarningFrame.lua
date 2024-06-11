@@ -33,6 +33,10 @@ function PhotosensitivityWarningFrameMixin:GetLockedByOtherWarning()
 	return self.lockedByOtherWarning;
 end
 
+function PhotosensitivityWarningFrameMixin:OnClick()
+	self:ShowNextFrame();
+end
+
 function PhotosensitivityWarningFrameMixin:OnKeyDown()
 	self:ShowNextFrame();
 end

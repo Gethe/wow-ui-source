@@ -7,7 +7,7 @@
 			<Layer level="OVERLAY">
 				<Texture parentKey="Language">
 					<Anchors>
-						<Anchor point="LEFT" x="7" y="-1"/>
+						<Anchor point="LEFT" x="7" y="-3"/>
 					</Anchors>
 				</Texture>
 			</Layer>

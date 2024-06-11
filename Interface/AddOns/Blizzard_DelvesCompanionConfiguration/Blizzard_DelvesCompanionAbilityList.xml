@@ -61,24 +61,27 @@
                 </Texture>
             </Layer>
         </Layers>
-			<Frames>
-				<!-- Role Dropdown -->
-				<DropdownButton parentKey="DelvesCompanionRoleDropdown" mixin="DelvesCompanionRoleDropdownMixin" inherits="WowStyle1DropdownTemplate">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.CompanionAbilityListBackground" relativePoint="TOPRIGHT" y="4"/>
-					</Anchors>
-					<Scripts>
-						<OnLoad method="OnLoad"/>
-					</Scripts>
-				</DropdownButton>
+        <Frames>
+            <!-- Role Dropdown -->
+            <DropdownButton parentKey="DelvesCompanionRoleDropdown" mixin="DelvesCompanionRoleDropdownMixin" inherits="WowStyle1DropdownTemplate">
+                <Anchors>
+                    <Anchor point="BOTTOMRIGHT" relativeKey="$parent.CompanionAbilityListBackground" relativePoint="TOPRIGHT" y="4"/>
+                </Anchors>
+                <Scripts>
+                    <OnLoad method="OnLoad"/>
+                </Scripts>
+            </DropdownButton>
 
-				<!-- Ability list page controls -->
-				<Frame parentKey="DelvesCompanionAbilityListPagingControls" inherits="PagingControlsHorizontalTemplate" mixin="DelvesCompanionAbilityListPagingControlsMixin">
-					<Size x="33" y="32"/>
-					<Anchors>
-						<Anchor point="BOTTOM" y="10"/>
-					</Anchors>
-				</Frame>
-			</Frames>
-		</Frame>
-	</Ui>
+            <!-- Ability list page controls -->
+            <Frame parentKey="DelvesCompanionAbilityListPagingControls" inherits="PagingControlsHorizontalTemplate" mixin="DelvesCompanionAbilityListPagingControlsMixin">
+                <Size x="33" y="32"/>
+                <Anchors>
+                    <Anchor point="BOTTOM" y="10"/>
+                </Anchors>
+            </Frame>
+        </Frames>
+        <Scripts>
+            <OnMouseWheel method="OnMouseWheel"/>
+        </Scripts>
+    </Frame>
+</Ui>

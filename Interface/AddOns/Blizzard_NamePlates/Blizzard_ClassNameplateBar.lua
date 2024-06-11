@@ -158,7 +158,7 @@ function ClassNameplateBar:UpdatePredictedPowerCost(queryCurrentCastingInfo)
 		local spellID = select(9, UnitCastingInfo("player"));
 
 		if spellID then
-			local costTable = GetSpellPowerCost(spellID);
+			local costTable = C_Spell.GetSpellPowerCost(spellID) or {};
 			for _, costInfo in pairs(costTable) do
 				if costInfo.type == self.powerType then
 					cost = costInfo.cost;

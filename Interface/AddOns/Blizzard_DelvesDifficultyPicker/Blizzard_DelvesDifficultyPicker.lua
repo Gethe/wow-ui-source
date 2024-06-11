@@ -43,7 +43,9 @@ end
 function DelvesDifficultyPickerFrameMixin:OnLoad()
 	local panelAttributes = {
 		area = "center",
-        whileDead = 0,
+		whileDead = 0,
+		pushable = 0,
+		allowOtherPanels = 1,
 	};
 	RegisterUIPanel(self, panelAttributes);
 
@@ -91,6 +93,7 @@ function DelvesDifficultyPickerFrameMixin:SetupDropdown()
 			DelvesDifficultyPickerFrame:UpdateWidgets(option.gossipOptionID);
 			DelvesDifficultyPickerFrame:SetSelectedOption(option);
 			DelvesDifficultyPickerFrame.DelveRewardsContainerFrame:SetRewards();
+			DelvesDifficultyPickerFrame:UpdatePortalButtonState();
 		end
 
 		local function SetupButton(option, isLocked)
@@ -120,7 +123,10 @@ end
 
 -- TODO there may be other conditions for this in the future. We're no longer doing a ready check, but the continue screen might affect this
 function DelvesDifficultyPickerFrameMixin:UpdatePortalButtonState()
-	self.EnterDelveButton:SetEnabled(self.isPartyLeader and UnitLevel("player") >= Constants.DelvesConsts.MIN_PLAYER_LEVEL);
+	local optionSelected =  DelvesDifficultyPickerFrame:GetSelectedOption() ~= nil;
+	local playerAtOrAboveMinLevel =  UnitLevel("player") >= Constants.DelvesConsts.MIN_PLAYER_LEVEL;
+
+	self.EnterDelveButton:SetEnabled(self.isPartyLeader and playerAtOrAboveMinLevel and optionSelected);
 end
 
 function DelvesDifficultyPickerFrameMixin:GetOptions()
@@ -136,18 +142,20 @@ function DelvesDifficultyPickerFrameMixin:SetSelectedOption(option)
 end
 
 function DelvesDifficultyPickerFrameMixin:SetInitialLevel()
-	local highestUnlockedLevel = 0;
-	local highestUnlockedLevelOptionID;
+	DelvesDifficultyPickerFrame:SetSelectedLevel(nil);
+	DelvesDifficultyPickerFrame:SetSelectedOption(nil);
+	local highestUnlockedLevel = nil;
+	local highestUnlockedLevelOptionID = nil;
 
 	if self.gossipOptions then
 		highestUnlockedLevel = self.gossipOptions[1].orderIndex;
 		highestUnlockedLevelOptionID = self.gossipOptions[1].gossipOptionID;
-		DelvesDifficultyPickerFrame:SetSelectedOption(self.gossipOptions[1]);
 
 		for i, option in pairs(self.gossipOptions) do 
 			if option.status == Enum.GossipOptionStatus.Available or option.status == Enum.GossipOptionStatus.AlreadyComplete then
 				highestUnlockedLevel = option.orderIndex;
 				highestUnlockedLevelOptionID = option.gossipOptionID;
+				DelvesDifficultyPickerFrame:SetSelectedLevel(highestUnlockedLevel);
 				DelvesDifficultyPickerFrame:SetSelectedOption(option);
 			else
 				break;
@@ -155,13 +163,12 @@ function DelvesDifficultyPickerFrameMixin:SetInitialLevel()
 		end
 	end
 
-	DelvesDifficultyPickerFrame:SetSelectedLevel(highestUnlockedLevel);
-
 	self:SetupDropdown();
 
 	if highestUnlockedLevelOptionID then
 		DelvesDifficultyPickerFrame:UpdateWidgets(highestUnlockedLevelOptionID);
 		DelvesDifficultyPickerFrame.DelveRewardsContainerFrame:SetRewards();
+		DelvesDifficultyPickerFrame:UpdatePortalButtonState();
 	end
 end
 
@@ -174,6 +181,11 @@ function DelvesDifficultyPickerFrameMixin:UpdateWidgets(gossipOptionID)
 
 	for _, widgetSetInfo in pairs(widgetSetsForOption) do
 		if widgetSetInfo.widgetType == Enum.GossipOptionUIWidgetSetTypes.Modifiers then
+			-- If no level selected, or player ineligible, break out of showing modifers (but continue to show background and story text)
+			if not DelvesDifficultyPickerFrame:GetSelectedLevel() then
+				break;
+			end
+
 			self.DelveModifiersWidgetContainer:RegisterForWidgetSet(widgetSetInfo.uiWidgetSetID);
 		elseif widgetSetInfo.widgetType == Enum.GossipOptionUIWidgetSetTypes.Background then
 			self.DelveBackgroundWidgetContainer:RegisterForWidgetSet(widgetSetInfo.uiWidgetSetID);
@@ -251,7 +263,12 @@ function DelvesDifficultyPickerEnterDelveButtonMixin:OnEnter()
 		self:SetEnabled(false);
 		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", 225);
 		GameTooltip_AddErrorLine(GameTooltip, DELVES_ENTRANCE_LEVEL_REQUIREMENT_ERROR:format(Constants.DelvesConsts.MIN_PLAYER_LEVEL));
-		GameTooltip:Show(); 
+		GameTooltip:Show();
+	elseif not DelvesDifficultyPickerFrame:GetSelectedOption() then
+		self:SetEnabled(false);
+		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", 175);
+		GameTooltip_AddErrorLine(GameTooltip, DELVES_ERR_SELECT_TIER);
+		GameTooltip:Show();
 	end
 end 
 
@@ -286,6 +303,10 @@ function DelveRewardsContainerFrameMixin:OnLoad()
 end
 
 function DelveRewardsContainerFrameMixin:SetRewards()
+	if not DelvesDifficultyPickerFrame:GetSelectedOption() then
+		return;
+	end
+
 	local continuableContainer = ContinuableContainer:Create();
 	local optionRewards = DelvesDifficultyPickerFrame:GetSelectedOption().rewards;
 	local rewardInfo = {};

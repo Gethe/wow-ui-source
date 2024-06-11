@@ -29,12 +29,6 @@
 						<MaskedTexture childKey="Shine"/>
 					</MaskedTextures>
 				</MaskTexture>
-				<Texture parentKey="MaskDebug" atlas="UI-HUD-ActionBar-PetAutoCast-Mask" useAtlasSize="false" setAllPoints="true" texelSnappingBias="0.0" snapToPixelGrid="false" hidden="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Mask"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Mask"/>
-					</Anchors>
-				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="1">
 				<Texture parentKey="Corners" atlas="UI-HUD-ActionBar-PetAutoCast-Corners" useAtlasSize="false" setAllPoints="true" texelSnappingBias="0.0" snapToPixelGrid="false"/>

@@ -13,23 +13,23 @@
 			<Layer level="ARTWORK">
 				<Texture parentKey="WarningIcon" atlas="photosensitivitywarning-questbang-icon" useAtlasSize="true" nonBlocking="false">
 					<Anchors>
-						<Anchor point="TOP" x="0" y="-200" relativePoint="TOP"/>
+						<Anchor point="TOP" x="0" y="-180" relativePoint="TOP"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString parentKey="WarningTitle" inherits="GameFontHighlightLarge" text="PHOTOSENSITIVITY_WARNING_TITLE">
+				<FontString parentKey="WarningTitle" inherits="Game32Font_Shadow2" text="PHOTOSENSITIVITY_WARNING_TITLE">
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.WarningIcon" relativePoint="BOTTOM" x="0" y="-20"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="WarningText" justifyH="LEFT" inherits="GameFontHighlight" text="PHOTOSENSITIVITY_WARNING_DESCRIPTION">
-					<Size x="600" y="0"/>
+				<FontString parentKey="WarningText" justifyH="LEFT" inherits="GameFontHighlightHuge" text="PHOTOSENSITIVITY_WARNING_DESCRIPTION">
+					<Size x="800" y="0"/>
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.WarningTitle" relativePoint="BOTTOM" x="0" y="-20"/>
+						<Anchor point="TOP" relativeKey="$parent.WarningTitle" relativePoint="BOTTOM" x="0" y="-40"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="ContinueText" inherits="GameFontDisable" text="PHOTOSENSITIVITY_WARNING_CONTINUE">
+				<FontString parentKey="ContinueText" inherits="GameFontDisableHuge" text="PHOTOSENSITIVITY_WARNING_CONTINUE">
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.WarningText" relativePoint="BOTTOM" x="0" y="-160"/>
 					</Anchors>
@@ -46,6 +46,7 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
+			<OnClick method="OnClick"/>
 			<OnKeyDown method="OnKeyDown"/>
 			<OnGamePadButtonDown method="OnKeyDown"/>
 		</Scripts>

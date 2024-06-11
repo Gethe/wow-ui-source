@@ -9,8 +9,8 @@ local function RequestAssignPFCForResults(results, isValidationOnly)
 end
 
 local factionInfoTable = {
-	Alliance = { color = CreateColor(0, 0.439, 0.867), name = FACTION_ALLIANCE },
-	Horde = { color = CreateColor(1, 0, 0), name = FACTION_HORDE },
+	Alliance = { color = CreateColor(0, 0.439, 0.867), name = FACTION_ALLIANCE, icon = "glues-characterSelect-icon-faction-alliance" },
+	Horde = { color = CreateColor(1, 0, 0), name = FACTION_HORDE, icon = "glues-characterselect-icon-faction-horde" },
 }
 
 local PFCCharacterSelectBlock = CreateFromMixins(VASCharacterSelectBlockBase);
@@ -29,13 +29,17 @@ function PFCCharacterSelectBlock:SetResultsShown(shown)
 			local basicCharacterInfo = GetBasicCharacterInfo(result.selectedCharacterGUID);
 			for factionTag, factionInfo in pairs(factionInfoTable) do
 				local fontString;
+				local icon;
 				if factionTag == basicCharacterInfo.faction then
 					fontString = self.frame.ResultsFrame.CurrentFactionLabel;
+					icon = self.frame.ResultsFrame.CurrentFactionEmblem;
 				else
 					fontString = self.frame.ResultsFrame.NewFactionLabel;
+					icon = self.frame.ResultsFrame.NewFactionEmblem;
 				end
 				fontString:SetText(factionInfo.name);
 				fontString:SetTextColor(factionInfo.color:GetRGB());
+				icon:SetAtlas(factionInfo.icon, TextureKitConstants.UseAtlasSize);
 			end
 		end
 	end

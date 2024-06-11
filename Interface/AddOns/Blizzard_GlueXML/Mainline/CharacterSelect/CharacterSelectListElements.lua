@@ -776,7 +776,7 @@ function CharacterSelectListCharacterInnerContentMixin:UpdateCharacterDisplayInf
 			else
 				if IsRPEBoostEligible(self:GetParent():GetCharacterID()) then
 					statusText:SetFontObject("GlueFontHighlightLarge");
-					statusText:SetText(RPE_GEAR_UPDATE_GREEN);
+					statusText:SetText(RPE_GEAR_UPDATE);
 				else
 					statusText:SetFontObject("GlueFontDisableLarge");
 					statusText:SetText(zone);
@@ -869,7 +869,12 @@ function CharacterSelectListCharacterInnerContentMixin:SetEnabledState(isEnabled
 		if self.coloredClassName then
 			infoText:SetText(self.coloredClassName);
 		end
-		statusText:SetTextColor(0.5, 0.5, 0.5);
+
+		if IsRPEBoostEligible(self:GetParent():GetCharacterID()) then
+			statusText:SetTextColor(RPE_FONT_COLOR:GetRGBA());
+		else
+			statusText:SetTextColor(0.5, 0.5, 0.5);
+		end
 	else
 		nameText:SetTextColor(0.25, 0.25, 0.25);
 		if self.uncoloredClassName then

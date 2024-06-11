@@ -34,8 +34,8 @@ function AccountSelectorMixin:OnLoad()
 		self:CallOnSelectedCallback();
 	end;
 
-	self.DestinationDropdown:SetWidth(215);
-	self.BNetWoWAccountDropdown:SetWidth(188);
+	self.DestinationDropdown:SetWidth(228);
+	self.BNetWoWAccountDropdown:SetWidth(228);
 
 	EventRegistry:RegisterFrameEvent("VAS_TRANSFER_VALIDATION_UPDATE");
 	EventRegistry:RegisterCallback("VAS_TRANSFER_VALIDATION_UPDATE", self.OnVASTranferValidationUpdate, self);
@@ -75,6 +75,9 @@ function AccountSelectorMixin:Initialize(results, wasFromRewind)
 
 	self.DestinationBlizzardAccountEdit:SetText("");
 	self:SetSelectedWoWAccountData(nil);
+
+	-- The dropdown description element count is being used to determine visibility. Discard it
+	-- and expect the next PopulateBNetWoWAccountDropdown() call to reinitialize it before displaying it.
 	self.BNetWoWAccountDropdown:ClearMenuState();
 
 	-- Set the account destination before generating the menu.

@@ -78,7 +78,7 @@ end
 function TimerunningFirstTimeDialogMixin:UpdateState()
 	local activeTimerunningSeasonID = GetActiveTimerunningSeasonID();
 	local shouldShow = activeTimerunningSeasonID ~= nil and GetCVarNumberOrDefault("seenTimerunningFirstLoginPopup") ~= activeTimerunningSeasonID;
-	local canShow = IsConnectedToServer() and (CharacterSelect:IsShown() or CharacterCreateFrame:IsShown()) and (not TimerunningChoicePopup or not TimerunningChoicePopup:IsShown());
+	local canShow = (IsConnectedToServer() and (CharacterSelect:IsShown()) or (CharacterCreateFrame:IsShown() and (not TimerunningChoicePopup or not TimerunningChoicePopup:IsShown())) and (not IsBetaBuild()));
 	self:SetShown(canShow and shouldShow);
 	self.InfoPanel.CreateButton:SetEnabled(IsTimerunningEnabled());
 end
@@ -227,7 +227,8 @@ function TimerunningEventBannerMixin:OnLeave()
 end
 
 function TimerunningEventBannerMixin:OnClick()
-	TimerunningFirstTimeDialog:ShowFromClick();
+	local shownFromPopup = false;
+	TimerunningFirstTimeDialog:ShowFromClick(shownFromPopup);
 
 	C_LiveEvent.OnLiveEventBannerClicked(GetActiveTimerunningSeasonID());
 end

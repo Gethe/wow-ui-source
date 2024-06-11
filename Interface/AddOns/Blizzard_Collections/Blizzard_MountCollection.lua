@@ -1086,15 +1086,28 @@ MountJournalDynamicFlightModeButtonMixin = {};
 
 function MountJournalDynamicFlightModeButtonMixin:OnLoad()
 	self.spellID = C_MountJournal.GetDynamicFlightModeSpellID();
-	local spellIcon = C_Spell.GetSpellTexture(self.spellID);
-	self.texture:SetTexture(spellIcon);
 	self:RegisterForDrag("LeftButton");
 	self.NormalTexture:SetDrawLayer("OVERLAY");
 	self.PushedTexture:SetDrawLayer("OVERLAY");
 end
 
-function MountJournalDynamicFlightModeButtonMixin:SetFlyoutButton(flyoutButton)
-	self.flyoutButton = flyoutButton;
+function MountJournalDynamicFlightModeButtonMixin:OnShow()
+	self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED");
+
+	self:UpdateIcon();
+end
+
+function MountJournalDynamicFlightModeButtonMixin:OnHide()
+	self:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED");
+end
+
+function MountJournalDynamicFlightModeButtonMixin:OnEvent(event, ...)
+	if event == "UNIT_SPELLCAST_SUCCEEDED" then
+		self:UpdateIcon();
+		if GameTooltip:GetOwner() == self then
+			self:DisplayTooltip();
+		end
+	end
 end
 
 function MountJournalDynamicFlightModeButtonMixin:OnClick()
@@ -1108,6 +1121,19 @@ function MountJournalDynamicFlightModeButtonMixin:OnDragStart()
 end
 
 function MountJournalDynamicFlightModeButtonMixin:OnEnter()
+	self:DisplayTooltip();
+end
+
+function MountJournalDynamicFlightModeButtonMixin:SetFlyoutButton(flyoutButton)
+	self.flyoutButton = flyoutButton;
+end
+
+function MountJournalDynamicFlightModeButtonMixin:UpdateIcon()
+	local spellIcon = C_Spell.GetSpellTexture(self.spellID);
+	self.texture:SetTexture(spellIcon);
+end
+
+function MountJournalDynamicFlightModeButtonMixin:DisplayTooltip()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetSpellByID(self.spellID);
 	GameTooltip_AddBlankLineToTooltip(GameTooltip);

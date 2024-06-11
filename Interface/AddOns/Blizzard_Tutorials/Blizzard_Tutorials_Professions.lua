@@ -378,8 +378,10 @@ function Class_EquipProfessionGear:StartAnimation()
 		[26] = ProfessionsFrame.CraftingPage.CookingToolSlot,
 		[27] = ProfessionsFrame.CraftingPage.CookingGear0Slot,
 		[28] = ProfessionsFrame.CraftingPage.FishingToolSlot,
+		--[[
 		[29] = ProfessionsFrame.CraftingPage.FishingGear0Slot,
 		[30] = ProfessionsFrame.CraftingPage.FishingGear0Slot,
+		]]
 	}
 
 	self.destFrame = Slot[self.data.CharacterSlot];

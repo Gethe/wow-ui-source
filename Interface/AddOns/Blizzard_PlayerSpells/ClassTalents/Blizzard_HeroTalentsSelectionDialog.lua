@@ -512,6 +512,8 @@ function HeroTalentSpecContentMixin:SetActivationFlashPlaying(playFlash)
 	if playFlash then
 		self.ActivationFlash:Restart();
 		self.playingActivationFlash = true;
+
+		PlaySound(SOUNDKIT.UI_HERO_TALENT_SPEC_ACTIVATE);
 	else
 		self.ActivationFlash:Stop();
 		self.playingActivationFlash = false;

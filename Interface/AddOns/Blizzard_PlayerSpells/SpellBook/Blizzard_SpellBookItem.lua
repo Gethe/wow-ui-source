@@ -6,6 +6,8 @@ local SpellBookItemEvents = {
 	"CURSOR_CHANGED",
 }
 
+local TRAINABLE_FX_ID = 176;
+
 SpellBookItemMixin = {};
 
 function SpellBookItemMixin:OnLoad()
@@ -29,12 +31,14 @@ function SpellBookItemMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, SpellBookItemEvents);
 	self:UpdateActionBarAnim();
 	self:UpdateBorderAnim();
+	self:UpdateTrainableFX();
 end
 
 function SpellBookItemMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, SpellBookItemEvents);
 	self:UpdateActionBarAnim();
 	self:UpdateBorderAnim();
+	self:UpdateTrainableFX();
 end
 
 function SpellBookItemMixin:OnEvent(event, ...)
@@ -113,6 +117,7 @@ function SpellBookItemMixin:ClearSpellData()
 	self.activeGlyphCast = nil;
 	self.inClickBindMode = nil;
 	self.canClickBind = nil;
+	self.isTrainable = nil;
 end
 
 function SpellBookItemMixin:HasValidData()
@@ -189,7 +194,7 @@ function SpellBookItemMixin:UpdateVisuals()
 	self.Button.Icon:SetDesaturated(self.isUnlearned);
 	self.Button.FlyoutArrow:SetDesaturated(self.isUnlearned);
 
-	self.Button.TrainableBorder:Hide();
+	self.isTrainable = false;
 
 	if self.isUnlearned then
 		self.Name:SetAlpha(self.unlearnedTextAlpha);
@@ -211,8 +216,9 @@ function SpellBookItemMixin:UpdateVisuals()
 			subtext = string.format(SPELLBOOK_AVAILABLE_AT, levelLearned)
 		-- Spell available but needs to be learned at a trainer
 		elseif not self.isOffSpec then
+			self.isTrainable = true;
 			subtext = SPELLBOOK_TRAINABLE;
-			self.Button.TrainableBorder:Show();
+			self.Button.TrainableBackplate:SetAtlas(self.artSet.trainableBackplate, TextureKitConstants.IgnoreAtlasSize);
 		end
 
 		self.RequiredLevel:SetShown(subtext ~= "");
@@ -251,12 +257,16 @@ function SpellBookItemMixin:UpdateVisuals()
 	self.Button.LevelLinkLock:SetShown(isLevelLinkLocked);
 	self.Button.LevelLinkIconCover:SetShown(isLevelLinkLocked);
 
+	self.Button.TrainableShadow:SetShown(self.isTrainable);
+	self.Button.TrainableBackplate:SetShown(self.isTrainable);
+
 	self:UpdateActionBarStatus();
 	self:UpdateCooldown();
 	self:UpdateAutoCast();
 	self:UpdateGlyphState();
 	self:UpdateClickBindState();
 	self:UpdateBorderAnim();
+	self:UpdateTrainableFX();
 
 	-- If already being hovered, make sure to reset any on-hover state that needs to change
 	if self.Button:IsMouseMotionFocus() then
@@ -314,6 +324,16 @@ function SpellBookItemMixin:UpdateSynchronizedAnimState(animGroup, shouldBePlayi
 		animGroup:PlaySynced();
 	elseif not shouldBePlaying and isPlaying then
 		animGroup:Stop();
+	end
+end
+
+function SpellBookItemMixin:UpdateTrainableFX()
+	local shouldBePlaying = self.isTrainable and self:HasValidData() and self:IsShown();
+	if shouldBePlaying and not self.trainableFXController then
+		self.trainableFXController = self.Button.FxModelScene:AddEffect(TRAINABLE_FX_ID, self.Button, self.Button);
+	elseif not shouldBePlaying and self.trainableFXController then
+		self.trainableFXController:CancelEffect();
+		self.trainableFXController = nil;
 	end
 end
 
@@ -627,6 +647,7 @@ SpellBookItemMixin.ArtSet = {
 			CreateAnchor("TOPLEFT"),
 			CreateAnchor("BOTTOMRIGHT"),
 		},
+		trainableBackplate = "spellbook-item-needtrainer-iconframe-backplate",
 	},
 	Circle = {
 		iconMask = "talents-node-circle-mask",
@@ -638,13 +659,14 @@ SpellBookItemMixin.ArtSet = {
 		},
 		inactiveBorder = "spellbook-item-iconframe-passive-inactive",
 		inactiveBorderAnchors = {
-			CreateAnchor("TOPLEFT", nil, "TOPLEFT", 0.5, -0.5),
-			CreateAnchor("BOTTOMRIGHT", nil, "BOTTOMRIGHT", 0, 0),
+			CreateAnchor("TOPLEFT", nil, "TOPLEFT", 1, -1.5),
+			CreateAnchor("BOTTOMRIGHT", nil, "BOTTOMRIGHT", -1, 0),
 		},
 		borderSheenMask = "talents-node-circle-sheenmask",
 		borderSheenMaskAnchors = {
 			CreateAnchor("CENTER"),
 		},
+		trainableBackplate = "spellbook-item-needtrainer-passive-backplate",
 	},
 }
 

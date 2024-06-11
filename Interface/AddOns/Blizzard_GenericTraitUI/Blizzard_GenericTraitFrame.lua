@@ -22,12 +22,14 @@ local GenericTraitFrameLayoutOptions = {
 		CurrencyBackgroundAtlas = "dragonriding-talents-currencybg",
 		PanOffset = { x = 0, y = 0 },
 		ButtonPurchaseFXIDs = { 150, 142, 143 },
+		CloseButtonOffset = { x = -3, y = -10 },
+		UseOldNineSlice = true,
 	},
 
 	Dragonflight = {
 		NineSliceTextureKit = "Dragonflight",
 		DetailTopAtlas = "dragonflight-golddetailtop",
-		Title = GENERIC_TRAIT_FRAME_DRAGONRIDING_TITLE,
+		Title = "",
 		TitleDividerAtlas = "dragonriding-talents-line",
 		BackgroundAtlas = "dragonriding-talents-background",
 		HeaderSize = { Width = 500, Height = 130 },
@@ -37,12 +39,29 @@ local GenericTraitFrameLayoutOptions = {
 		CurrencyBackgroundAtlas = "dragonriding-talents-currencybg",
 		PanOffset = { x = -80, y = -35 },
 		ButtonPurchaseFXIDs = { 150, 142, 143 },
+		CloseButtonOffset = { x = -3, y = -10 },
+		UseOldNineSlice = true,
+	},
+
+	TheWarWithin = {
+		NineSliceTextureKit = "thewarwithin",
+		Title = GENERIC_TRAIT_FRAME_DRAGONRIDING_TITLE,
+		TitleDividerAtlas = "dragonriding-talents-line",
+		BackgroundAtlas = "ui-frame-thewarwithin-backgroundtile",
+		HeaderSize = { Width = 500, Height = 130 },
+		ShowInset = false,
+		HeaderOffset = { x = 0, y = -30 },
+		CurrencyOffset = { x = 0, y = -20 },
+		CurrencyBackgroundAtlas = "dragonriding-talents-currencybg",
+		PanOffset = { x = -80, y = -35 },
+		ButtonPurchaseFXIDs = { 150, 142, 143 },
+		CloseButtonOffset = { x = -9, y = -9 },
 	},
 };
 
 local GenericTraitFrameLayouts = {
 	-- Dragonriding
-	[672] = GenericTraitFrameLayoutOptions.Dragonflight,
+	[672] = GenericTraitFrameLayoutOptions.TheWarWithin,
 
 	-- Hero Talents test tree
 	[898] = GenericTraitFrameLayoutOptions.Default,
@@ -50,6 +69,7 @@ local GenericTraitFrameLayouts = {
 
 local GenericTraitFrameTutorials = {
 	-- Dragonriding TreeID
+	--[[ This tutorial is no longer needed or correct but keeping it here as an example of usage.
 	[672] = {
 		tutorial = {
 			text = DRAGON_RIDING_SKILLS_TUTORIAL,
@@ -60,6 +80,7 @@ local GenericTraitFrameTutorials = {
 			useParentStrata = false,
 		},
 	},
+	]]
 };
 
 local GenericTraitCurrencyTutorials = {
@@ -112,11 +133,22 @@ function GenericTraitFrameMixin:ApplyLayout(layoutInfo)
 	self.Currency:SetPoint("TOPRIGHT", self.Header, "BOTTOMRIGHT", layoutInfo.CurrencyOffset.x, layoutInfo.CurrencyOffset.y);
 	self.Currency.CurrencyBackground:SetAtlas(layoutInfo.CurrencyBackgroundAtlas, true);
 
-	self.NineSlice.DetailTop:SetAtlas(layoutInfo.DetailTopAtlas, true);
-	if layoutInfo.NineSliceTextureKit ~= nil then
-		NineSliceUtil.ApplyUniqueCornersLayout(self.NineSlice, layoutInfo.NineSliceTextureKit);
+	self.CloseButton:SetPoint("TOPRIGHT", self, "TOPRIGHT", layoutInfo.CloseButtonOffset.x, layoutInfo.CloseButtonOffset.y);
+
+	local useNewNineSlice = not layoutInfo.UseOldNineSlice;
+
+	self.NineSlice:SetShown(layoutInfo.NineSliceTextureKit ~= nil and not useNewNineSlice);
+	self.BorderOverlay:SetShown(useNewNineSlice);
+
+	if useNewNineSlice then
+		local borderFrameTextureKitRegion = "UI-Frame-%s-Border";
+		self.BorderOverlay:SetAtlas(borderFrameTextureKitRegion:format(layoutInfo.NineSliceTextureKit));
+	else
+		self.NineSlice.DetailTop:SetAtlas(layoutInfo.DetailTopAtlas, true);
+		if layoutInfo.NineSliceTextureKit ~= nil then
+			NineSliceUtil.ApplyUniqueCornersLayout(self.NineSlice, layoutInfo.NineSliceTextureKit);
+		end
 	end
-	self.NineSlice:SetShown(layoutInfo.NineSliceTextureKit ~= nil);
 
 	self.basePanOffsetX = layoutInfo.PanOffset.x;
 	self.basePanOffsetY = layoutInfo.PanOffset.y;

@@ -688,7 +688,7 @@
 					<Size x="256" y="256"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="0" y="-20"/>
-						<Anchor point="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" y="30"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -743,11 +743,37 @@
             </Button>
 			<!-- Bank Slots  -->
 			<Frame name="BankSlotsFrame" setAllPoints="true" useParentLevel="true" hidden="false">
+				<KeyValues>
+					<KeyValue key="layoutType" value="InsetFrameTemplate" type="string"/>
+				</KeyValues>
+
+				<Layers>
+					<Layer level="BORDER">
+						<FontString inherits="GameFontNormal" text="ITEMSLOTTEXT">
+							<Anchors>
+								<Anchor point="CENTER" x="-3" y="170"/>
+							</Anchors>
+						</FontString>
+						<FontString inherits="GameFontNormal" text="BAGSLOTTEXT">
+							<Anchors>
+								<Anchor point="CENTER" x="-3" y="-40"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+
 				<Frames>
+					<Frame parentKey="NineSlice" useParentLevel="true" inherits="NineSlicePanelTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" y="-20"/>
+							<Anchor point="BOTTOMRIGHT" y="30"/>
+						</Anchors>
+					</Frame>
+
 					<Frame parentKey="EdgeShadows" inherits="BankPanelEdgeShadowTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT"/>
-							<Anchor point="BOTTOMRIGHT" y="25"/>
+							<Anchor point="BOTTOMRIGHT" y="30"/>
 						</Anchors>
 					</Frame>
 
@@ -760,7 +786,7 @@
 
 					<ItemButton parentKey="Bag1" inherits="BankItemButtonBagTemplate" id="1">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.Item1" relativePoint="BOTTOMLEFT" x="0" y="-164"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Item1" relativePoint="BOTTOMLEFT" x="0" y="-174"/>
 						</Anchors>
 					</ItemButton>
 					<ItemButton parentKey="Bag2" inherits="BankItemButtonBagTemplate" id="2">
@@ -840,12 +866,6 @@
 							</Frame>
 						</Frames>
 					</Frame>
-					<Frame name="BankFrameMoneyFrameInset" inherits="InsetFrameTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="3" y="27"/>
-							<Anchor point="BOTTOMRIGHT" x="-5" y="5"/>
-						</Anchors>
-					</Frame>
 					<Frame name="BankFrameMoneyFrameBorder" inherits="ThinGoldEdgeTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="5" y="25"/>
@@ -864,6 +884,10 @@
 			</Frame>
 			<!-- Reagent Bank Slots  -->
 			<Frame name="ReagentBankFrame" setAllPoints="true" useParentLevel="true" hidden="true" mixin="BankFrameMixin">
+				<KeyValues>
+					<KeyValue key="layoutType" value="InsetFrameTemplate" type="string"/>
+				</KeyValues>
+
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture parentKey="BG1" atlas="bank-slots" useAtlasSize="true" >
@@ -881,12 +905,24 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Frame parentKey="EdgeShadows" inherits="BankPanelEdgeShadowTemplate"/>
+					<Frame parentKey="NineSlice" useParentLevel="true" inherits="NineSlicePanelTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" y="-20"/>
+							<Anchor point="BOTTOMRIGHT" y="30"/>
+						</Anchors>
+					</Frame>
+
+					<Frame parentKey="EdgeShadows" inherits="BankPanelEdgeShadowTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT" y="30"/>
+						</Anchors>
+					</Frame>
 
 					<Button parentKey="DespositButton" inherits="UIPanelButtonTemplate" virtual="true" text="REAGENTBANK_DEPOSIT">
 						<Size x="256" y="24"/>
 						<Anchors>
-							<Anchor point="BOTTOM" relativePoint="BOTTOM" x="0" y="12"/>
+							<Anchor point="BOTTOM" relativePoint="BOTTOM" x="0" y="48"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>
@@ -899,7 +935,7 @@
 					<Frame name="$parentUnlockInfo" parentKey="UnlockInfo" hidden="true">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="0" y="-56"/>
-							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="0" y="40"/>
+							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="0" y="85"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BORDER">

@@ -470,6 +470,22 @@
 		</CheckedTexture>
 	</CheckButton>
 
+	<CheckButton name="UIRadialButtonTemplate" virtual="true">
+		<Size x="18" y="18"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentText" inherits="GameFontNormalSmall" parentKey="text">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="5" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<NormalTexture parentKey="NormalTexture" atlas="common-dropdown-tickradial" useAtlasSize="true"/>
+		<HighlightTexture parentKey="HighlightTexture" atlas="common-dropdown-tickradial" useAtlasSize="true" alphaMode="ADD"/>
+		<CheckedTexture parentKey="CheckedTexture" atlas="common-dropdown-icon-radialtick-yellow" useAtlasSize="true"/>
+	</CheckButton>
+
 	<CheckButton name="UICheckButtonArtTemplate" virtual="true">
 		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
 		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>

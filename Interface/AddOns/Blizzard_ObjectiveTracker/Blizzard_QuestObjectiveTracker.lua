@@ -122,6 +122,10 @@ function QuestObjectiveTrackerMixin:OnBlockHeaderLeave(block)
 	GameTooltip:Hide();
 end
 
+function QuestObjectiveTrackerMixin:OnFreeBlock(block)
+	block.ItemButton = nil;
+end
+
 function QuestObjectiveTrackerMixin:GetDebugReportInfo(block)
 	return { debugType = "TrackedQuest", questID = block.id, };
 end
@@ -261,7 +265,7 @@ function QuestObjectiveTrackerMixin:UpdateSingle(quest)
 		block:AddRightEdgeFrame(self.findGroupButtonSettings, questID);
 	end
 	if QuestUtil.QuestShowsItemByIndex(questLogIndex, isComplete) then
-		block:AddRightEdgeFrame(self.questItemButtonSettings, questLogIndex);
+		block.ItemButton = block:AddRightEdgeFrame(self.questItemButtonSettings, questLogIndex);
 	end
 
 	block:SetHeader(quest.title);

@@ -847,7 +847,8 @@ function NameplateBuffContainerMixin:UpdateBuffs(unit, unitAuraUpdateInfo, auraS
 						buff.auraInstanceID = nil;
 						buff.Icon:SetTexture(spellInfo.iconID); 
 
-						local charges, maxCharges = GetSpellCharges(spellID);
+						local chargeInfo = C_Spell.GetSpellCharges(spellID) or {};
+						local charges, maxCharges = chargeInfo.currentCharges, chargeInfo.maxCharges;
 						buff.Cooldown:SetSwipeColor(0, 0, 0);
 
 						if (cooldownInfo and cooldownInfo.duration ~= 0) then

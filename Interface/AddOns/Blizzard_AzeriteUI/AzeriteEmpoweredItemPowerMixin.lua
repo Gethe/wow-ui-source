@@ -21,7 +21,7 @@ function AzeriteEmpoweredItemPowerMixin:Setup(owningTierFrame, azeriteItemDataSo
 		self.IconOff:SetAtlas("Azerite-CenterTrait-Off", true);
 		self.IconDesaturated:SetAtlas("Azerite-CenterTrait-On", true);
 	else
-		local spellTexture = GetSpellTexture(self:GetSpellID());
+		local spellTexture = C_Spell.GetSpellTexture(self:GetSpellID());
 		self.IconOn:SetTexture(spellTexture);
 		self.IconOff:SetTexture(spellTexture);
 		self.IconDesaturated:SetTexture(spellTexture);

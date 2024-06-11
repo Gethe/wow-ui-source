@@ -43,11 +43,11 @@ function SpellMixin:GetSpellName()
 end
 
 function SpellMixin:GetSpellTexture()
-	return (GetSpellTexture(self:GetSpellID()));
+	return (C_Spell.GetSpellTexture(self:GetSpellID()));
 end
 
 function SpellMixin:GetSpellSubtext()
-	return GetSpellSubtext(self:GetSpellID());
+	return C_Spell.GetSpellSubtext(self:GetSpellID());
 end
 
 function SpellMixin:GetSpellDescription()

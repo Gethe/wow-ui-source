@@ -1,8 +1,8 @@
 local PURCHASE_TAB_ID = -1;
 
 BANK_PANELS = {
-	{ name = "BankSlotsFrame", size = {x=386, y=415}, SetTitle=function() BankFrame:SetTitle(UnitName("npc")); end, bankType = Enum.BankType.Character },
-	{ name = "ReagentBankFrame", size = {x=738, y=415}, SetTitle=function() BankFrame:SetTitle(REAGENT_BANK); end, bankType = Enum.BankType.Character },
+	{ name = "BankSlotsFrame", size = {x=386, y=460}, SetTitle=function() BankFrame:SetTitle(UnitName("npc")); end, bankType = Enum.BankType.Character },
+	{ name = "ReagentBankFrame", size = {x=738, y=460}, SetTitle=function() BankFrame:SetTitle(REAGENT_BANK); end, bankType = Enum.BankType.Character },
 	{ name = "AccountBankPanel", size = {x=738, y=460}, SetTitle=function() BankFrame:SetTitle(ACCOUNT_BANK_PANEL_TITLE); end, bankType = Enum.BankType.Account },
 }
 
@@ -501,11 +501,7 @@ end
 
 function BankFrame_UpdateAnchoringForPanel()
 	local accountBankSelected = BankFrame.activeTabIndex == 3;
-
-	local xOffset, yOffset = 0, accountBankSelected and 30 or 0;
-	BankFrame.Background:SetPoint("BOTTOMRIGHT", BankFrame, "BOTTOMRIGHT", xOffset, yOffset);
-
-	xOffset, yOffset = accountBankSelected and -56 or -48, -33;
+	local xOffset, yOffset = accountBankSelected and -56 or -48, -33;
 	BankItemSearchBox:SetPoint("TOPRIGHT", BankItemSearchBox:GetParent(), "TOPRIGHT", xOffset, yOffset);
 end
 

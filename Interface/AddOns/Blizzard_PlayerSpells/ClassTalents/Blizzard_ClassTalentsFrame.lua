@@ -975,8 +975,10 @@ function ClassTalentsFrameMixin:SetCommitCompleteVisualsActive(active)
 
 				self:PlayPurchaseEffectOnNodes(self.stagedPurchaseNodes, "PlayPurchaseCompleteEffect", {NODE_PURCHASE_COMPLETE_FX_1});
 
-				-- Play sound for collective node purchase effects
-				PlaySound(SOUNDKIT.UI_CLASS_TALENT_APPLY_COMPLETE);
+				-- Play sound for collective node purchase effects unless the hero spec selection is displayed and playing its own animation and sound.
+				if not self.heroSpecSelectionDialog:IsActive() then
+					PlaySound(SOUNDKIT.UI_CLASS_TALENT_APPLY_COMPLETE);
+				end
 
 				self.stagedPurchaseNodes = nil;
 				self.stagedPurchaseTimer = nil;

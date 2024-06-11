@@ -345,13 +345,14 @@ function ScenarioObjectiveTrackerMixin:UpdateCriteria(numCriteria)
 
 	local objectivesBlock = self.ObjectivesBlock;
 	for criteriaIndex = 1, numCriteria do
-		local criteriaString, criteriaType, completed, quantity, totalQuantity, flags, assetID, quantityString, criteriaID, duration, elapsed, _, isWeightedProgress = C_Scenario.GetCriteriaInfo(criteriaIndex);
-		if criteriaString then
-			if not isWeightedProgress then
-				criteriaString = string.format("%d/%d %s", quantity, totalQuantity, criteriaString);
+		local criteriaInfo = C_ScenarioInfo.GetCriteriaInfo(criteriaIndex);
+		if criteriaInfo then
+			local criteriaString = criteriaInfo.description;
+			if not criteriaInfo.isWeightedProgress and not criteriaInfo.isFormatted then
+				criteriaString = string.format("%d/%d %s", criteriaInfo.quantity, criteriaInfo.totalQuantity, criteriaInfo.description);
 			end
 			local line;
-			if completed then
+			if criteriaInfo.completed then
 				local existingLine = objectivesBlock:GetExistingLine(criteriaIndex);
 				line = objectivesBlock:AddObjective(criteriaIndex, criteriaString, nil, nil, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["Complete"]);
 				line.Icon:Show();
@@ -366,13 +367,13 @@ function ScenarioObjectiveTrackerMixin:UpdateCriteria(numCriteria)
 			end
 
 			-- progress bar
-			if isWeightedProgress and not completed then
+			if criteriaInfo.isWeightedProgress and not criteriaInfo.completed then
 				objectivesBlock:AddProgressBar(criteriaIndex, self.progressBarLineSpacing);
 			end
 			
 			-- timer
-			if duration > 0 and elapsed <= duration then
-				objectivesBlock:AddTimerBar(duration, GetTime() - elapsed);
+			if criteriaInfo.duration > 0 and criteriaInfo.elapsed <= criteriaInfo.duration then
+				objectivesBlock:AddTimerBar(criteriaInfo.duration, GetTime() - criteriaInfo.elapsed);
 			end		
 		end
 	end
@@ -974,7 +975,8 @@ function ScenarioTrackerProgressBarMixin:OnGet(isNew, criteriaIndex)
 	-- percentage, value 0 - 100
 	local percentage;
 	if criteriaIndex then
-		percentage = select(4, C_Scenario.GetCriteriaInfo(criteriaIndex)) or 0;
+		local criteriaInfo = C_ScenarioInfo.GetCriteriaInfo(criteriaIndex);
+		percentage = criteriaInfo and criteriaInfo.quantity or 0;
 	else
 		percentage = select(10, C_Scenario.GetStepInfo()) or 0;
 	end

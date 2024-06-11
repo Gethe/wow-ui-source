@@ -979,7 +979,7 @@ function NewRecipeLearnedAlertFrame_SetUp(self, recipeID, recipeLevel)
 			self.Icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
 			self.Icon:SetTexture(C_TradeSkillUI.GetTradeSkillTexture(tradeSkillID));
 
-			local rank = GetSpellRank(recipeID);
+			local rank = C_Spell.GetSpellSkillLineAbilityRank(recipeID);
 			self.Title:SetText(rank and rank > 1 and UPGRADED_RECIPE_LEARNED_TITLE or NEW_RECIPE_LEARNED_TITLE);
 
 			local rankTexture = NewRecipeLearnedAlertFrame_GetStarTextureFromRank(rank);

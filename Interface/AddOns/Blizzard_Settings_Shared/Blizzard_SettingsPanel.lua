@@ -218,18 +218,27 @@ function SettingsPanelMixin:OnCVarChanged(cvar, cvarValue)
 	-- This handler is intended only for cvar updates originating from the console or through the cvar script api.
 	-- If the cvar was changed through the settings api, as recommended, this value will already be updated.
 	local setting = self:GetSetting(cvar);
-	if setting then
-		-- The value is forced because the setting will always evaluate the current state of this
-		-- cvar as unchanged due to the source of the value being the cvar that was just modified.
-		-- This won't produce a recursive overflow because when setting the value legimately through
-		-- the settings api, or through the controls, the setting will temporarily reject any changes
-		-- to it's value.
-		local force = true;
-		-- Value is converted from the cvar string representation into a format the setting expects. Note
-		-- this is done manually because we normally are strict about the value being the correct type.
-		local value = securecallfunction(setting.ConvertValueInternal, setting, cvarValue);
-		securecallfunction(setting.SetValue, setting, value, force);
+	if not setting then
+		return;
 	end
+
+	-- There are cases where a cvar value cannot always be retrieved. For example, output audio device will not be
+	-- retrievable if the sound system is in the process of reinitializing. Skip handling if this occurs.
+	if setting:GetValue() == nil then
+		return;
+	end
+	
+	-- The value is forced because the setting will always evaluate the current state of this
+	-- cvar as unchanged due to the source of the value being the cvar that was just modified.
+	-- This won't produce a recursive overflow because when setting the value legimately through
+	-- the settings api, or through the controls, the setting will temporarily reject any changes
+	-- to it's value.
+
+	local force = true;
+	-- Value is converted from the cvar string representation into a format the setting expects. Note
+	-- this is done manually because we normally are strict about the value being the correct type.
+	local value = securecallfunction(setting.ConvertValueInternal, setting, cvarValue);
+	securecallfunction(setting.SetValue, setting, value, force);
 end
 
 function SettingsPanelMixin:OnEvent(event, ...)

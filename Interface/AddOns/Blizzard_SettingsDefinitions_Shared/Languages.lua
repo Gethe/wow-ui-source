@@ -61,7 +61,7 @@ local function SetupDropdown(dropdown, setting, options, width, initTooltip)
 				button.Text:Hide();
 
 				local locTexture = button:AttachTexture();
-				locTexture:SetPoint("LEFT", button, "LEFT", 3, 0);
+				locTexture:SetPoint("LEFT", button, "LEFT", 3, -2);
 				SetupLanguageAtlas(locTexture, localeTbl);
 			end);
 		end

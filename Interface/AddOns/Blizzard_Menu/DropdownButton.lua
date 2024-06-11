@@ -16,7 +16,7 @@ This is recursive through the entire menu hierarchy.
 ]]--
 local function CollectSelectionData(menuDescription)
 	if not menuDescription then
-		return nil;
+		return nil, nil, {};
 	end
 
 	local firstSelected = nil;
@@ -101,7 +101,7 @@ function DropdownButtonMixin:OnMouseDown_Intrinsic()
 		return;
 	end
 
-	self:OpenMenu();
+	self:SetMenuOpen(not self:IsMenuOpen());
 end
 
 function DropdownButtonMixin:OpenMenu()
@@ -110,15 +110,10 @@ function DropdownButtonMixin:OpenMenu()
 	end
 
 	if self:IsMenuOpen() then
-		Menu.GetManager():CloseMenu(self.menu);
 		return;
 	end
 
-	--[[
-	Important! Regenerating menus each time they are opened is by design. The expense of recreating a menu description
-	is worth having less difficult to diagnose bugs related to stale menu state. 
-	]]--
-
+	-- Always regenerate the menu. This is important to avoid bugs related to stale menu state.
 	self:GenerateMenu();
 
 	if not self.menuDescription then
@@ -131,6 +126,24 @@ function DropdownButtonMixin:OpenMenu()
 		menu:SetClosedCallback(self.onMenuClosedCallback);
 
 		self:OnMenuOpened(menu);
+	end
+end
+
+function DropdownButtonMixin:CloseMenu()
+	if self.menu then
+		self.menu:Close();
+		self.menu = nil;
+	end
+
+	-- Contents of the menu may require an update when the menu is closed. 
+	self:SignalUpdate();
+end
+
+function DropdownButtonMixin:SetMenuOpen(open)
+	if open then
+		self:OpenMenu();
+	else
+		self:CloseMenu();
 	end
 end
 
@@ -190,16 +203,15 @@ function DropdownButtonMixin:RegisterMenu(menuDescription)
 	securecallfunction(self.OnMenuAssigned, self);
 end
 
+--[[ 
+Used rarely to restore the dropdown to an uninitialized state. 
+This should generally be ignored in the API.
+]]--
 function DropdownButtonMixin:ClearMenuState()
 	self.menuDescription = nil;
 	self.menuGenerator = nil;
 
-	if self:IsMenuOpen() then
-		Menu.GetManager():CloseMenu(self.menu);
-		return;
-	end
-
-	self:SignalUpdate();
+	self:CloseMenu();
 end
 
 --[[

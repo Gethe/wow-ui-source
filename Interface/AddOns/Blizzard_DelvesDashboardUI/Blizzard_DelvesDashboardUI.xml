@@ -206,18 +206,11 @@
             </Layer>
 
             <Layer level="ARTWORK">
-                <FontString parentKey="DashboardTitle" inherits="GameFontHighlightHuge">
-                    <Size x="300" y="25"/>
-                    <Anchors>
-                        <Anchor point="TOP" y="-40"/>
-                    </Anchors>
-                </FontString>
-
                 <FontString parentKey="ReputationBarTitle" inherits="GameFontHighlight">
                     <Size x="300" y="25"/>
                     <Anchors>
-                        <Anchor point="TOP" relativeKey="$parent.DashboardTitle" relativePoint="BOTTOM" y="-10"/>
-                        <Anchor point="LEFT" x="30"/>
+						<Anchor point="TOP" y="-55"/>
+						<Anchor point="LEFT" x="30"/>
                     </Anchors>
                 </FontString>
             </Layer>
@@ -308,7 +301,7 @@
                     <KeyValue key="spacing" value="35" type="number"/>
                 </KeyValues>
                 <Anchors>
-                    <Anchor point="BOTTOM" y="23"/>
+                    <Anchor point="BOTTOM" y="33"/>
                 </Anchors>
                 <Frames>
                     <!-- Companion Config Button Panel -->

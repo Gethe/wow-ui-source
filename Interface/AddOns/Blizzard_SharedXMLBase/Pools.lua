@@ -7,7 +7,8 @@ local CreateProxyDirectory = ProxyUtil.CreateProxyDirectory;
 local CreateProxyMixin = ProxyUtil.CreateProxyMixin;
 local SetPrivateReference = ProxyUtil.SetPrivateReference;
 local ReleasePrivateReference = ProxyUtil.ReleasePrivateReference;
-local ProxyConvertableMixin = ProxyConvertableMixin;
+local ProxyConvertablePrivateMixin = Mixin(ProxyConvertableMixin);
+local CreateFromMixinsPrivate = CreateFromMixins;
 
 local enableProxyReporting = false; -- For debugging purposes only.
 local Proxies = CreateProxyDirectory("Pools.lua", enableProxyReporting);
@@ -105,7 +106,7 @@ for any reason, you'll need to expose a function to create this.
 
 You'll also need to create a PoolCollectionMixin that doesn't make use of any secure types.
 ]]--
-local ObjectPoolMixin = CreateFromMixins(ObjectPoolBaseMixin);
+local ObjectPoolMixin = CreateFromMixinsPrivate(ObjectPoolBaseMixin);
 
 function ObjectPoolMixin:Init(createFunc, resetFunc, capacity)
 	self.createFunc = createFunc;
@@ -164,10 +165,10 @@ function ObjectPoolMixin:GetNumActive()
 	return self.activeObjectCount;
 end
 
-local SecureObjectPoolMixin = CreateFromMixins(ObjectPoolBaseMixin, ProxyConvertableMixin);
+local SecureObjectPoolMixin = CreateFromMixinsPrivate(ObjectPoolBaseMixin, ProxyConvertablePrivateMixin);
 
 function SecureObjectPoolMixin:Init(proxy, createFunc, resetFunc, capacity)
-	local tags = ProxyConvertableMixin.Init(self, proxy, Proxies);
+	local tags = ProxyConvertablePrivateMixin.Init(self, proxy, Proxies);
 	tags[proxy] = "SecureObjectPoolMixin";
 
 	self.createFunc = createFunc;
@@ -314,7 +315,7 @@ function PoolCollectionBaseMixin:Dump()
 	end
 end
 
-local PoolCollectionMixin = CreateFromMixins(PoolCollectionBaseMixin);
+local PoolCollectionMixin = CreateFromMixinsPrivate(PoolCollectionBaseMixin);
 
 function PoolCollectionMixin:Init(proxy)
 	self.pools = {};
@@ -373,10 +374,10 @@ function PoolCollectionMixin:EnumerateActive()
 	end, nil;
 end
 
-local SecurePoolCollectionMixin = CreateFromMixins(PoolCollectionBaseMixin, ProxyConvertableMixin);
+local SecurePoolCollectionMixin = CreateFromMixinsPrivate(PoolCollectionBaseMixin, ProxyConvertablePrivateMixin);
 
 function SecurePoolCollectionMixin:Init(proxy)
-	local tags = ProxyConvertableMixin.Init(self, proxy, Proxies);
+	local tags = ProxyConvertablePrivateMixin.Init(self, proxy, Proxies);
 	tags[proxy] = "SecurePoolCollectionMixin";
 
 	self.pools = CreateSecureMap();
@@ -457,7 +458,7 @@ function Pool_HideAndClearAnchors(pool, region)
 end
 
 local function CreateSecureObjectPoolInstance(createFunc, resetFunc, capacity)
-	local pool = CreateFromMixins(SecureObjectPoolMixin);
+	local pool = CreateFromMixinsPrivate(SecureObjectPoolMixin);
 	local proxy = CreateProxy(pool, ObjectPoolProxyMixin);
 	pool:Init(proxy, createFunc, resetFunc or nop, capacity);
 	return pool;
@@ -573,10 +574,10 @@ function FramePoolCollectionConverterMixin:CreatePool(...)
 	return SecurePoolCollectionMixin.CreatePoolWithArgs(self, args);
 end
 
-local FramePoolCollectionMixin = CreateFromMixins(PoolCollectionMixin, FramePoolCollectionConverterMixin);
+local FramePoolCollectionMixin = CreateFromMixinsPrivate(PoolCollectionMixin, FramePoolCollectionConverterMixin);
 
 local function CreateUnsecuredRegionPoolInstance(template, createFunc, resetFunc, capacity)
-	local pool = CreateFromMixins(ObjectPoolMixin);
+	local pool = CreateFromMixinsPrivate(ObjectPoolMixin);
 	pool:Init(createFunc, resetFunc or Pool_HideAndClearAnchors, capacity);
 	pool.GetTemplate = function(self)
 		return template;
@@ -608,14 +609,14 @@ do
 	end
 end
 
-local SecureFramePoolCollectionMixin = CreateFromMixins(SecurePoolCollectionMixin, FramePoolCollectionConverterMixin);
+local SecureFramePoolCollectionMixin = CreateFromMixinsPrivate(SecurePoolCollectionMixin, FramePoolCollectionConverterMixin);
 
 function SecureFramePoolCollectionMixin:CreatePoolInternal(args)
 	local frameInitializer = ConvertSpecializationToInitializer(args.specialization);
 	return CreateSecureFramePoolInstance(args.frameType, args.parent, args.template, args.resetFunc, args.forbidden, frameInitializer, args.capacity);
 end
 
-local SecureFontStringPoolCollectionMixin = CreateFromMixins(SecurePoolCollectionMixin);
+local SecureFontStringPoolCollectionMixin = CreateFromMixinsPrivate(SecurePoolCollectionMixin);
 
 function SecureFontStringPoolCollectionMixin:CreatePoolKeyFromPoolArgs(args)
 	return args.template;
@@ -700,7 +701,7 @@ do
 	end
 
 	local function CreatePoolCollectionInstance(collectionMixin)
-		local poolCollection = CreateFromMixins(collectionMixin);
+		local poolCollection = CreateFromMixinsPrivate(collectionMixin);
 		local proxy = CreateProxy(poolCollection, PoolCollectionProxyMixin);
 		poolCollection:Init(proxy);
 		return poolCollection;
@@ -730,7 +731,7 @@ function CreateUnsecuredFontStringPool(parent, layer, subLayer, template, resetF
 end
 
 function CreateUnsecuredFramePoolCollection()
-	local poolCollection = CreateFromMixins(FramePoolCollectionMixin);
+	local poolCollection = CreateFromMixinsPrivate(FramePoolCollectionMixin);
 	poolCollection:Init();
 	return poolCollection;
 end

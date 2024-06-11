@@ -4,6 +4,10 @@
 --]]
 
 local NewTicker = C_Timer.NewTicker;
+local nop = function(obj) end
+local securecall = securecall;
+local setmetatable = setmetatable;
+local ipairs = ipairs;
 
 local ProxyTags = {};
 setmetatable(ProxyTags, { __mode = 'k' });
@@ -11,8 +15,6 @@ setmetatable(ProxyTags, { __mode = 'k' });
 local ReportFrequency = 120;
 
 ProxyUtil = {};
-
-local nop = function(obj) end
 
 function ProxyUtil.SetPrivateReference(proxy, obj)
 	--[[ 

@@ -11,7 +11,7 @@ do
 		yoffset = 75,
 
 		autoMinimizeWithOtherPanels = 1,
-		autoMinimizeOnCondition = PlayerSpellsFrame.ShouldManuallyMinimize,
+		autoMinimizeOnCondition = PlayerSpellsFrame.ShouldAutoMinimize,
 		setMinimizedFunc = PlayerSpellsFrame.SetMinimized,
 	};
 

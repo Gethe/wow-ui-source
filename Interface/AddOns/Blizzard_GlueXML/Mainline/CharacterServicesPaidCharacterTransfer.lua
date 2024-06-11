@@ -134,7 +134,7 @@ function PCTDestinationSelectBlock:Initialize(results, wasFromRewind)
 
 		self.frame.ControlsFrame.LoadingSpinner:ClearAllPoints();
 		self.frame.ControlsFrame.LoadingSpinner:SetPoint("TOPLEFT", self.frame.ControlsFrame:GetParent().StepActiveLabel, "BOTTOMLEFT", 0, -10);
-		self.frame.ControlsFrame.FollowGuildCheckbox.Label:SetSize(250, 32);
+		self.frame.ControlsFrame.FollowGuildCheckbox.Label:SetSize(230, 30);
 	end
 
 	self.frame.ControlsFrame.TransferRealmEditbox:Initialize(results, wasFromRewind);
@@ -189,18 +189,19 @@ function PCTDestinationSelectBlock:UpdateVisibleState()
 	local willFollowGuild = hasGuildFollowOption and self:WillFollowGuild();
 	local showDestinationSelectFrames = not (isWaiting or willFollowGuild);
 
-	self.frame.ControlsFrame.TransferRealmLabel:SetShown(showDestinationSelectFrames);
-	self.frame.ControlsFrame.TransferRealmEditbox:SetShown(showDestinationSelectFrames);
-	self.frame.ControlsFrame.TransferAccountContainer:SetShown(showDestinationSelectFrames);
-	self.frame.ControlsFrame.FollowGuildCheckbox:SetShown(hasGuildFollowOption);
+	local controlsFrame = self.frame.ControlsFrame;
 
-	self.frame.ControlsFrame.LoadingSpinner:SetShown(isWaiting);
+	controlsFrame.TransferRealmLabel:SetShown(showDestinationSelectFrames);
+	controlsFrame.TransferRealmEditbox:SetShown(showDestinationSelectFrames);
+	controlsFrame.TransferAccountContainer:SetShown(showDestinationSelectFrames);
+	controlsFrame.FollowGuildCheckbox:SetShown(hasGuildFollowOption);
+	controlsFrame.LoadingSpinner:SetShown(isWaiting);
 
-	self.frame.ControlsFrame.TransferRealmLabel:ClearAllPoints();
+	controlsFrame.TransferRealmLabel:ClearAllPoints();
 	if hasGuildFollowOption then
-		self.frame.ControlsFrame.TransferRealmLabel:SetPoint("TOPLEFT", self.frame.ControlsFrame.FollowGuildCheckbox, "BOTTOMLEFT", 6, -9);
+		controlsFrame.TransferRealmLabel:SetPoint("TOPLEFT", controlsFrame.FollowGuildCheckbox, "BOTTOMLEFT", 1, -23);
 	else
-		self.frame.ControlsFrame.TransferRealmLabel:SetPoint("TOPLEFT", self.frame.ControlsFrame, "TOPLEFT", 112, -55);
+		controlsFrame.TransferRealmLabel:SetPoint("TOPLEFT", controlsFrame, "TOPLEFT", 90, -102);
 	end
 end
 

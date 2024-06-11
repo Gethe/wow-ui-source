@@ -118,9 +118,9 @@
 		<Size x="82" y="82" />
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="Background" atlas="dragonflight-majorfactions-emissary-empty" useAtlasSize="true">
+				<Texture parentKey="Background" atlas="generic-majorfactions-emissary-empty" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent" relativePoint="CENTER"/>
+						<Anchor point="CENTER" relativeKey="$parent" relativePoint="CENTER" x="-1" y="1"/>
 					</Anchors>
 				</Texture>
 					<MaskTexture parentKey="BackgroundMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMP" vWrapMode="CLAMP">

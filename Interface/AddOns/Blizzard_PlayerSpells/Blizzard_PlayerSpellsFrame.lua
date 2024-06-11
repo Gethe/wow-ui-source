@@ -22,6 +22,7 @@ function PlayerSpellsFrameMixin:OnLoad()
 
 	self.isMinimizingEnabled = true;
 	self.manualMinimizeEnabled = GetCVarBool("spellBookMinimize");
+	self.minimizedOnNextShow = false;
 
 	self.MaximizeMinimizeButton:SetOnMaximizedCallback(GenerateClosure(self.OnManualMaximizeClicked, self));
 	self.MaximizeMinimizeButton:SetOnMinimizedCallback(GenerateClosure(self.OnManualMinimizeClicked, self));
@@ -47,6 +48,9 @@ function PlayerSpellsFrameMixin:OnShow()
 	UpdateMicroButtons();
 	EventRegistry:TriggerEvent("PlayerSpellsFrame.OpenFrame");
 	PlaySound(SOUNDKIT.UI_CLASS_TALENT_OPEN_WINDOW);
+
+	-- This flag is intended for single-use only so reset it once the frame has been shown.
+	self.minimizedOnNextShow = false;
 end
 
 function PlayerSpellsFrameMixin:OnHide()
@@ -347,6 +351,22 @@ end
 
 function PlayerSpellsFrameMixin:IsMinimizingEnabled()
 	return self.isMinimizingEnabled;
+end
+
+-- Setting this to true means the next time the player spells frame is shown it will be automatically
+-- minimized and then minimizedOnNextShow will be set back to false.
+function PlayerSpellsFrameMixin:SetMinimizedOnNextShow(minimizedOnNextShow)
+	self.minimizedOnNextShow = minimizedOnNextShow;
+end
+
+function PlayerSpellsFrameMixin:ShouldAutoMinimize()
+	-- Has the player previously minimized the frame.
+	if self:ShouldManuallyMinimize() then
+		return true;
+	end
+
+	-- Has external code requested the frame be minimized next time its opened.
+	return self:IsMinimizingEnabled() and self.minimizedOnNextShow;
 end
 
 function PlayerSpellsFrameMixin:ShouldManuallyMinimize(tabID)

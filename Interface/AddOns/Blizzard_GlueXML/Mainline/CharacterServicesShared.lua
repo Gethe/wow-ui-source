@@ -52,7 +52,7 @@ end
 
 VASAssignConfirmationBlockBase = { 
 	AutoAdvance = true,
-	Back = true,
+	Back = false,
 	Next = false,
 	Finish = false,
 	HiddenStep = true,
@@ -73,7 +73,7 @@ function VASAssignConfirmationBlockBase:IsFinished()
 	if not self.isInitialized then
 		return false;
 	end
-	
+
 	local warningState = self:CheckFinishConfirmation();
 	if warningState == "accepted" then
 		local isValidationOnly = false;
@@ -83,8 +83,11 @@ function VASAssignConfirmationBlockBase:IsFinished()
 
 		return true;
 	elseif warningState == "declined" then
+		CharSelectServicesFlowFrame.CloseButton:Show();
 		CharacterServicesMaster.flow:RequestRewind();
 		self.warningState = "rewind";
+	elseif warningState == "unseen" then
+		CharSelectServicesFlowFrame.CloseButton:Hide();
 	end
 
 	return false;
@@ -137,6 +140,8 @@ function VASCharacterSelectBlockBase:Initialize(results, wasFromRewind)
 	self:SetResultsShown(false);
 
 	self:CheckEnable();
+
+	CharSelectServicesFlowFrame:ClearErrorMessage();
 end
 
 function VASCharacterSelectBlockBase:CheckEnable()
@@ -223,21 +228,26 @@ end
 
 function VASCharacterSelectBlockBase:FormatResult()
 	local result = self:GetResult();
-	if result.selectedCharacterGUID then
-		local name, raceName, raceFilename, className, classFilename, classID, experienceLevel, areaName, genderEnum, isGhost, hasCustomize, hasRaceChange,
-		hasFactionChange, raceChangeDisabled, guid, profession0, profession1, genderID, boostInProgress, hasNameChange, isLocked, isTrialBoost, isTrialBoostCompleted,
-		isRevokedCharacterUpgrade, vasServiceInProgress, lastLoginBuild, specID, isExpansionTrialCharacter, faction, isLockedByExpansion, mailSenders, customizeDisabled,
-		factionChangeDisabled, characterServiceRequiresLogin, eraChoiceState, lastActiveDay, lastActiveMonth, lastActiveYear = GetCharacterInfoByGUID(result.selectedCharacterGUID);
-
-		return SELECT_CHARACTER_RESULTS_FORMAT:format(RAID_CLASS_COLORS[classFilename].colorStr, name, experienceLevel, className);
+	if not result.selectedCharacterGUID then
+		return "";
 	end
 
-	return "";
+	local basicInfo = GetBasicCharacterInfo(result.selectedCharacterGUID);
+	if basicInfo.classFilename then
+		local coloredName = NORMAL_FONT_COLOR:WrapTextInColorCode(basicInfo.name);
+
+		local color = CreateColor(GetClassColor(basicInfo.classFilename));
+		local coloredClassName = color:WrapTextInColorCode(basicInfo.className);
+
+		return SELECT_CHARACTER_RESULTS_FORMAT:format(coloredName, basicInfo.experienceLevel, coloredClassName);
+	else
+		return "";
+	end
 end
 
 VASChoiceVerificationBlockBase =
 {
-	Back = true,
+	Back = false,
 	Next = false,
 	Finish = false,
 	HiddenStep = true,

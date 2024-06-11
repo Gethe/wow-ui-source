@@ -128,27 +128,27 @@ function CharacterSelectBlockBase:GetStepOptionFrames()
 		optionFrames = {
 			[self.OPTION_INDEX_STEP_LABEL] = {
 				frame = self.frame.StepActiveLabel,
-				point = "LEFT", relativeFrame = self.frame.StepNumber, relativePoint ="RIGHT", offsetX = 9, offsetY = 3,
-				offsetXConjunction = 0, offsetYConjunction = -8,
+				point = "LEFT", relativeFrame = self.frame.StepNumber, relativePoint ="RIGHT", offsetX = 30, offsetY = 2,
+				offsetXConjunction = 2, offsetYConjunction = -24,
 			},
 
 			[self.OPTION_INDEX_CREATE_NEW_CHARACTER] = {
 				frame = self.frame.ControlsFrame.CreateCharacterButton,
 				needsConjunction = true,
-				point = "LEFT", relativeFrame = self.frame.StepNumber, relativePoint ="RIGHT", offsetX = 9, offsetY = 3,
-				offsetXConjunction = 10, offsetYConjunction = -5,
+				point = "LEFT", relativeFrame = self.frame.StepNumber, relativePoint ="RIGHT", offsetX = 30, offsetY = 2,
+				offsetXConjunction = 0, offsetYConjunction = -10,
 			},
 
 			[self.OPTION_INDEX_CREATE_TRIAL_CHARACTER] = {
 				frame = self.frame.ControlsFrame.CreateCharacterClassTrialButton,
 				needsConjunction = true,
-				point = "TOPLEFT", relativeFrame = self.frame.StepNumber, relativePoint ="TOPRIGHT", offsetX = 10, offsetY = 0,
-				offsetXConjunction = 10, offsetYConjunction = -5,
+				point = "TOPLEFT", relativeFrame = self.frame.StepNumber, relativePoint ="TOPRIGHT", offsetX = 30, offsetY = 2,
+				offsetXConjunction = 0, offsetYConjunction = -10,
 			},
 
 			[self.OPTION_INDEX_CREATE_TRIAL_CHARACTER_HINT] = {
 				frame = self.frame.ControlsFrame.ClassTrialButtonHintText,
-				offsetXConjunction = 13, offsetYConjunction = -5,
+				offsetXConjunction = 2, offsetYConjunction = -5,
 			},
 		};
 
@@ -194,7 +194,7 @@ function CharacterSelectBlockBase:LayoutOptionFrames()
 				local conjunctionFrameData = conjunctionFrames[optionCount];
 				local conjunctionFrame = conjunctionFrameData.frame;
 				conjunctionFrame:Show();
-				conjunctionFrame:SetPoint("TOPLEFT", previousFrameData.frame, "BOTTOMLEFT", -previousFrameData.offsetXConjunction, previousFrameData.offsetYConjunction);
+				conjunctionFrame:SetPoint("TOPLEFT", previousFrameData.frame, "BOTTOMLEFT", previousFrameData.offsetXConjunction, previousFrameData.offsetYConjunction);
 				previousFrameData = conjunctionFrameData;
 			end
 
@@ -301,7 +301,7 @@ function CharacterSelectBlockBase:Initialize(results)
 	CharacterServicesCharacterSelector:UpdateDisplay(self);
 
 	self.frame.ControlsFrame.BonusLabel:SetHeight(self.frame.ControlsFrame.BonusLabel.BonusText:GetHeight());
-	self.frame.ControlsFrame.BonusLabel:SetPoint("BOTTOM", CharSelectServicesFlowFrame, "BOTTOM", 10, 60);
+	self.frame.ControlsFrame.BonusLabel:SetPoint("BOTTOM", CharSelectServicesFlowFrame, "BOTTOM", 0, 28);
 	self.frame.ControlsFrame.BonusLabel:SetShown(CharacterUpgradeFlow.hasVeteran);
 
 	-- Setup the step option frames
@@ -366,11 +366,16 @@ function CharacterSelectBlockBase:FormatResult()
 	end
 
 	local basicInfo = GetBasicCharacterInfo(characterGuid);
-	local classColor = NORMAL_FONT_COLOR;
-	if basicInfo.classFilename and RAID_CLASS_COLORS[basicInfo.classFilename] then
-		classColor = RAID_CLASS_COLORS[basicInfo.classFilename];
+	if basicInfo.classFilename then
+		local coloredName = NORMAL_FONT_COLOR:WrapTextInColorCode(basicInfo.name);
+
+		local color = CreateColor(GetClassColor(basicInfo.classFilename));
+		local coloredClassName = color:WrapTextInColorCode(basicInfo.className);
+
+		return SELECT_CHARACTER_RESULTS_FORMAT:format(coloredName, basicInfo.experienceLevel, coloredClassName);
+	else
+		return "";
 	end
-	return SELECT_CHARACTER_RESULTS_FORMAT:format(classColor.colorStr, basicInfo.name, basicInfo.experienceLevel, basicInfo.className);
 end
 
 function CharacterSelectBlockBase:OnHide()
@@ -443,18 +448,19 @@ end
 -- Unused fields left in place as documentation for what will be referenced.
 
 local defaultSpecButtonLayoutData = {
-	initialAnchor = { point = "TOPLEFT", relativeKey = nil, relativePoint = "TOPLEFT", x = 83, y = -73 },
-	subsequentAnchor = { point = "TOP", relativePoint = "BOTTOM", x = 0, y = -35 },
+	initialAnchor = { point = "TOPLEFT", relativeKey = nil, relativePoint = "TOPLEFT", x = 89, y = -115 },
+	subsequentAnchor = { point = "TOP", relativePoint = "BOTTOM", x = 0, y = -48 },
 	buttonInsets = nil, -- numerically indexed, ordering matches SetHitInsets API
 	specNameWidth = nil,
 	specNameFont = nil,
+	selectionGlowOffset = -53
 }
 
 local function CreateSpecButton(parent, buttonIndex, layoutData)
 	local frame = CreateFrame("CheckButton", nil, parent, "CharacterUpgradeSelectSpecRadioButtonTemplate");
 	local relativeFrame, anchorData;
 
-	if (buttonIndex == 1) then
+	if buttonIndex == 1 then
 		anchorData = layoutData.initialAnchor;
 		relativeFrame = parent;
 	else
@@ -462,22 +468,30 @@ local function CreateSpecButton(parent, buttonIndex, layoutData)
 		relativeFrame = parent.SpecButtons[buttonIndex - 1];
 	end
 
-	if (anchorData.relativeKey) then
+	if anchorData.relativeKey then
 		relativeFrame = relativeFrame[anchorData.relativeKey];
 	end
 
 	frame:SetPoint(anchorData.point, relativeFrame, anchorData.relativePoint, anchorData.x, anchorData.y);
 
-	if (layoutData.buttonInsets) then
+	if layoutData.buttonInsets then
 		frame:SetHitRectInsets(unpack(layoutData.buttonInsets));
 	end
 
-	if (layoutData.specNameWidth) then
+	if layoutData.specNameWidth then
 		frame.SpecName:SetWidth(layoutData.specNameWidth);
 	end
 
-	if (layoutData.specNameFont) then
+	if layoutData.specNameFont then
 		frame.SpecName:SetFontObject(layoutData.specNameFont);
+	end
+
+	if layoutData.selectionGlowOffset then
+		frame.HoverGlow:ClearAllPoints();
+		frame.HoverGlow:SetPoint("Left", layoutData.selectionGlowOffset, 0);
+
+		frame.SelectGlow:ClearAllPoints();
+		frame.SelectGlow:SetPoint("Left", layoutData.selectionGlowOffset, 0);
 	end
 
 	return frame;
@@ -549,7 +563,7 @@ function CharacterServices_UpdateSpecializationButtons(classID, gender, parentFr
 			button:SetID(specID);
 			button.SpecIcon:SetTexture(icon);
 			button.SpecIcon:SetDesaturated(not allowed);
-			button.Frame:SetDesaturated(not allowed);
+			button.SpecOverlay:SetDesaturated(not allowed);
 			button.SpecName:SetText(name);
 			button.RoleIcon:SetAtlas(GetMicroIconForRole(role), TextureKitConstants.IgnoreAtlasSize);
 			button.RoleIcon:SetDesaturated(not allowed);
@@ -576,14 +590,13 @@ function CharacterServices_UpdateSpecializationButtons(classID, gender, parentFr
 			end
 
 			if showRecommendedLabel then
-				button.SpecName:SetPoint("TOPLEFT", button.Frame, "TOPRIGHT", 6, -3);
-				button.RoleName:SetPoint("TOPLEFT", button.Recommended, "BOTTOMLEFT");
+				button.SpecName:SetPoint("TOPLEFT", button.SpecOverlay, "TOPRIGHT", 7, 1);
 			else
-				button.SpecName:SetPoint("TOPLEFT", button.Frame, "TOPRIGHT", 6, -8);
-				button.RoleName:SetPoint("TOPLEFT", button.SpecName, "BOTTOMLEFT");
+				button.SpecName:SetPoint("TOPLEFT", button.SpecOverlay, "TOPRIGHT", 6, -8);
 			end
 
 			button:SetChecked(false);
+			button.SelectGlow:Hide();
 			button:Show();
 			button.tooltipTitle = name;
 			button.tooltip = createTooltipText(description, gender, allowed, isTrialBoost);
@@ -773,24 +786,8 @@ end
 
 function CharacterUpgradeFlow:OnAdvance(controller, results)
 	if (self.step == 1) then
-		local characterGuid = GetCharacterGUID(results.charid);
-		local level = characterGuid and GetBasicCharacterInfo(characterGuid).experienceLevel or 1;
-		if (level >= UPGRADE_BONUS_LEVEL) then
-			self.Steps[2].ExtraOffset = 45;
-		else
-			self.Steps[2].ExtraOffset = 0;
-		end
 		local factionGroup = C_CharacterServices.GetFactionGroupByIndex(results.charid);
 		self.Steps[3].SkipOnRewind = (factionGroup ~= "Neutral");
-	end
-
-	local block = self:GetCurrentStep();
-	if not block.HiddenStep and self.step ~= 1 then
-		local extraOffset = 0;
-		if (self.step == 2) then
-			extraOffset = 15;
-		end
-		self:MoveBlock(block, -60 - extraOffset);
 	end
 end
 
@@ -823,6 +820,9 @@ function CharacterUpgradeFlow:Finish(controller)
 			end
 		end
 
+		CharSelectServicesFlowFrame.FinishButton:Hide();
+		CharSelectServicesFlowFrame.BackButton:Hide();
+		CharSelectServicesFlowFrame.CloseButton:Hide();
 		CharacterUpgradeSecondChanceWarningFrame:Show();
 		return false;
 	end
@@ -922,11 +922,9 @@ end
 
 function CharacterUpgradeSelectCharacterFrame_OnLoad(self)
 	local controls = self.ControlsFrame;
-	local buttonWidth = max(controls.CreateCharacterButton:GetTextWidth(), controls.CreateCharacterClassTrialButton:GetTextWidth()) + 50;
+	local buttonWidth = max(controls.CreateCharacterButton:GetTextWidth(), controls.CreateCharacterClassTrialButton:GetTextWidth()) + 73;
 	controls.CreateCharacterButton:SetWidth(buttonWidth);
 	controls.CreateCharacterClassTrialButton:SetWidth(buttonWidth);
-
-	controls.OrLabel2:SetPoint("TOPLEFT", controls.CreateCharacterButton, "BOTTOMLEFT", 0, -5);
 end
 
 function CharacterUpgrade_SetupFlowForNewCharacter(characterType)
@@ -955,7 +953,7 @@ end
 
 function CharacterUpgradeSpecSelectBlock:Initialize(results, wasFromRewind)
 	local allowAutoSelect = true;
-	self:SpecSelectBlockInitializeHelper(results, wasFromRewind, CharacterUpgradeFlow, self.frame.ControlsFrame, CharacterServicesMaster_Update, allowAutoSelect)
+	self:SpecSelectBlockInitializeHelper(results, wasFromRewind, CharacterUpgradeFlow, self.frame.ControlsFrame, CharacterServicesMaster_Update, allowAutoSelect);
 end
 
 function CharacterUpgradeSpecSelectBlock:SkipIf(results)
@@ -974,10 +972,12 @@ function CharacterUpgradeSelectSpecRadioButton_OnClick(self, button, down)
 	if owner then
 		if owner.selected == self:GetID() then
 			self:SetChecked(true);
+			self.SelectGlow:Show();
 			return;
 		else
 			owner.selected = self:GetID();
 			self:SetChecked(true);
+			self.SelectGlow:Show();
 		end
 
 		if owner.specButtonClickedCallback then
@@ -988,12 +988,15 @@ function CharacterUpgradeSelectSpecRadioButton_OnClick(self, button, down)
 	for _, specButton in ipairs(self:GetParent().SpecButtons) do
 		if specButton:GetID() ~= self:GetID() then
 			specButton:SetChecked(false);
+			specButton.SelectGlow:Hide();
 		end
 	end
 end
 
-function CharacterUpgradeFactionSelectBlock:Initialize(results)
-	self.selected = nil;
+function CharacterUpgradeFactionSelectBlock:Initialize(results, wasFromRewind)
+	if not wasFromRewind then
+		self.selected = nil;
+	end
 	self.SkipOnRewind = self:SkipIf(results);
 end
 
@@ -1027,6 +1030,7 @@ end
 function CharacterUpgradeSelectFactionFrame_ClearChecked()
 	for _, button in ipairs(CharacterUpgradeSelectFactionFrame.ControlsFrame.FactionButtons) do
 		button:SetChecked(false);
+		button.SelectGlow:Hide();
 	end
 
 	CharacterUpgradeFactionSelectBlock.selected = nil;
@@ -1037,6 +1041,7 @@ function CharacterUpgradeSelectFactionRadioButton_OnClick(self)
 
 	CharacterUpgradeSelectFactionFrame_ClearChecked();
 	self:SetChecked(true);
+	self.SelectGlow:Show();
 	CharacterUpgradeFactionSelectBlock.selected = self.factionID;
 	CharacterServicesMaster_Update();
 end
@@ -1064,9 +1069,10 @@ local RPEUPgradeInfoBlock = Mixin(
 	CharacterSelectBlockBase
 );
 local RPEUpgradeSpecSelectBlock = Mixin(
-	{ FrameName = "RPEUpgradeSelectSpecFrame", Back = true, Next = false, Finish = true, ActiveLabel = "", ResultsLabel = "", Popup = "BOOST_NOT_RECOMMEND_SPEC_WARNING" },
+	{ FrameName = "RPEUpgradeSelectSpecFrame", Back = true, Next = true, Finish = false, ActiveLabel = "", ResultsLabel = "", Popup = "BOOST_NOT_RECOMMEND_SPEC_WARNING" },
 	SpecSelectBlockBase
 );
+local RPEUpgradeReviewBlock = { FrameName = "RPEUpgradeReviewFrame", Back = true, Next = false, Finish = true, ActiveLabel = "", ResultsLabel = "" };
 
 RPEUpgradeFlow = Mixin(
 	{
@@ -1074,7 +1080,8 @@ RPEUpgradeFlow = Mixin(
 
 		Steps = {
 			[1] = RPEUPgradeInfoBlock,
-			[2] = RPEUpgradeSpecSelectBlock
+			[2] = RPEUpgradeSpecSelectBlock,
+			[3] = RPEUpgradeReviewBlock
 		},
 
 		MinimizedFrame = "RPEUpgradeMinimizedFrame"
@@ -1113,8 +1120,11 @@ end
 local function SetKeepQuestsAndContinue(keepQuests)
 	return function()
 		GlueDialog.data.keepQuests = keepQuests;
-		GlueDialog_Show("RPE_UPGRADE_CONFIRM", nil, GlueDialog.data);
-		CharSelectServicesFlowFrame:Hide()
+
+		local specName = GetSpecializationNameForSpecID(GlueDialog.data.spec);
+		local formattedText = string.format(StaticPopupDialogs["RPE_UPGRADE_CONFIRM"].text, specName);
+		GlueDialog_Show("RPE_UPGRADE_CONFIRM", formattedText, GlueDialog.data);
+		CharSelectServicesFlowFrame:Hide();
     end
 end
 
@@ -1137,7 +1147,7 @@ StaticPopupDialogs["RPE_UPGRADE_CONFIRM"] = {
     end,
     OnCancel = function()
 		BeginCharacterServicesFlow(RPEUpgradeFlow, {});
-		CharacterServicesMaster.flow:Advance(CharacterServicesMaster); 
+		CharacterServicesMaster.flow:Advance(CharacterServicesMaster);
 	end,
 }
 
@@ -1164,7 +1174,10 @@ function RPEUpgradeFlow:Finish(controller)
 		return false; --flow will be closed by the RPE_UPGRADE_QUEST_CLEAR_CONFIRM dialog.
 	else
 		results.keepQuests = true;
-		GlueDialog_Show("RPE_UPGRADE_CONFIRM", nil, results);
+
+		local specName = GetSpecializationNameForSpecID(results.spec);
+		local formattedText = string.format(StaticPopupDialogs["RPE_UPGRADE_CONFIRM"].text, specName);
+		GlueDialog_Show("RPE_UPGRADE_CONFIRM", formattedText, results);
 		return true;
 	end
 end
@@ -1243,68 +1256,42 @@ function RPEUPgradeInfoBlock:OnRewind()
 	--do not clear results
 end
 
-NineSliceUtil.AddLayout("CharacterUpdate", {
-	TopLeftCorner =	{ atlas = "characterupdate-9slice-topleftcorner", },
-	TopRightCorner =	{ atlas = "characterupdate-9slice-toprightcorner", },
-	BottomLeftCorner =	{ atlas = "characterupdate-9slice-bottomleftcorner", },
-	BottomRightCorner =	{ atlas = "characterupdate-9slice-bottomrightcorner", },
-	TopEdge = { atlas = "_characterupdate-9slice-topedge", },
-	BottomEdge = { atlas = "_characterupdate-9slice-bottomedge", },
-	LeftEdge = { atlas = "!characterupdate-9slice-leftedge", },
-	RightEdge = { atlas = "!characterupdate-9slice-rightedge",},
-});
-
-NineSliceUtil.AddLayout("CharacterUpdate-Selected", {
-	TopLeftCorner =	{ atlas = "characterupdate-9slice-topleftcorner-selected", },
-	TopRightCorner =	{ atlas = "characterupdate-9slice-toprightcorner-selected", },
-	BottomLeftCorner =	{ atlas = "characterupdate-9slice-bottomleftcorner-selected", },
-	BottomRightCorner =	{ atlas = "characterupdate-9slice-bottomrightcorner-selected", },
-	TopEdge = { atlas = "_characterupdate-9slice-topedge-selected", },
-	BottomEdge = { atlas = "_characterupdate-9slice-bottomedge-selected", },
-	LeftEdge = { atlas = "!characterupdate-9slice-leftedge-selected", },
-	RightEdge = { atlas = "!characterupdate-9slice-rightedge-selected",},
-});
-
 local RPESpecButtonLayoutData = {
-	initialAnchor = { point = "TOPLEFT", relativeKey = nil, relativePoint = "TOPLEFT", x = 15, y = -30 },
-	subsequentAnchor = { point = "TOP", relativePoint = "BOTTOM", x = 0, y = -35 },
+	initialAnchor = { point = "TOPLEFT", relativeKey = nil, relativePoint = "TOPLEFT", x = 24, y = -34 },
+	subsequentAnchor = { point = "TOP", relativePoint = "BOTTOM", x = 0, y = -50 },
 	buttonInsets = nil, -- numerically indexed, ordering matches SetHitInsets API
 	specNameWidth = nil,
 	specNameFont = nil,
+	selectionGlowOffset = -17
 }
 
 function RPEUpgradeSpecSelectBlock:Initialize(results, wasFromRewind)
-	local characterBlock = self.frame.ControlsFrame.CharacterBlock;
-	local specBlock = self.frame.ControlsFrame.SpecBlock;
-
-	specBlock.layoutData = RPESpecButtonLayoutData;
-
-	specBlock.SpecCheckmark:Hide();
-
-	NineSliceUtil.ApplyLayoutByName(characterBlock, "CharacterUpdate-Selected");
-	NineSliceUtil.ApplyLayoutByName(specBlock, "CharacterUpdate");
-
-	local allowAutoSelect = false;
-	local numSpecs = self:SpecSelectBlockInitializeHelper(results, wasFromRewind, RPEUpgradeFlow, specBlock,
-		function()
-			specBlock.SpecCheckmark:Show();
-			NineSliceUtil.ApplyLayoutByName(specBlock, "CharacterUpdate-Selected");
-			CharacterServicesMaster_Update();
-		end,
-		allowAutoSelect
-	);
-
-	specBlock:SetSize(250, 30 + 50*numSpecs);
-
 	local characterGuid = GetCharacterGUID(results.charid);
 	if not characterGuid then
 		return;
 	end
 
-	local basicInfo = GetBasicCharacterInfo(characterGuid);
+	-- Force expand character list if collapsed.
+	CharacterSelectUI:ExpandCharacterList();
 
-	characterBlock.Name:SetText(basicInfo.name);
-	characterBlock.Level:SetText(string.format(RPE_CHARACTER_LVL, basicInfo.experienceLevel, basicInfo.className));
+	local basicInfo = GetBasicCharacterInfo(characterGuid);
+	if basicInfo.classFilename then
+		local characterBlock = self.frame.ControlsFrame.CharacterBlock;
+		characterBlock.Name:SetText(basicInfo.name);
+
+		local color = CreateColor(GetClassColor(basicInfo.classFilename));
+		local coloredClassName = color:WrapTextInColorCode(basicInfo.className);
+		characterBlock.Level:SetText(string.format(RPE_CHARACTER_LVL, basicInfo.experienceLevel, coloredClassName));
+	end
+
+	local specBlock = self.frame.ControlsFrame.SpecBlock;
+	specBlock.layoutData = RPESpecButtonLayoutData;
+
+	local allowAutoSelect = wasFromRewind;
+	local numSpecs = self:SpecSelectBlockInitializeHelper(results, wasFromRewind, RPEUpgradeFlow, specBlock, CharacterServicesMaster_Update, allowAutoSelect);
+
+	local specBlockHeight = 68 + (18*numSpecs) + (50*(numSpecs-1));
+	specBlock:SetSize(296, specBlockHeight);
 end
 
 function RPEUpgradeSpecSelectBlock:GetSpecButtonContainer()
@@ -1313,4 +1300,97 @@ end
 
 function RPEUpgradeSpecSelectBlock:SkipIf(results)
 	return false; --no skip
+end
+
+function RPEUpgradeReviewBlock:Initialize(results, wasFromRewind)
+	local characterGuid = GetCharacterGUID(results.charid);
+	if not characterGuid then
+		return;
+	end
+
+	local basicInfo = GetBasicCharacterInfo(characterGuid);
+	if basicInfo.classFilename then
+		local characterBlock = self.frame.ControlsFrame.CharacterBlock;
+		characterBlock.Name:SetText(basicInfo.name);
+
+		local color = CreateColor(GetClassColor(basicInfo.classFilename));
+		local coloredClassName = color:WrapTextInColorCode(basicInfo.className);
+		characterBlock.Level:SetText(string.format(RPE_CHARACTER_LVL, basicInfo.experienceLevel, coloredClassName));
+	end
+
+	local specName = GetSpecializationNameForSpecID(results.spec);
+	local specBlock = self.frame.ControlsFrame.SpecBlock;
+	specBlock.SpecName:SetText(specName);
+end
+
+function RPEUpgradeReviewBlock:SkipIf(results)
+	return false; --no skip
+end
+
+function RPEUpgradeReviewBlock:IsFinished(wasFromRewind)
+	return not wasFromRewind;
+end
+
+function RPEUpgradeReviewBlock:GetResult()
+	return {};
+end
+
+
+CharacterUpgradeSelectSpecRadioButtonMixin = {};
+
+function CharacterUpgradeSelectSpecRadioButtonMixin:OnEnter()
+	if (self.tooltip) then
+		GlueTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 48, -4);
+		GlueTooltip:SetText(self.tooltipTitle);
+		GlueTooltip:AddLine(self.tooltip, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1, true);
+		GlueTooltip:Show();
+	end
+	self.HoverGlow:Show();
+end
+
+function CharacterUpgradeSelectSpecRadioButtonMixin:OnLeave()
+	if (self.tooltip) then
+		GlueTooltip:Hide();
+	end
+	self.HoverGlow:Hide();
+end
+
+
+CharacterUpgradeSelectFactionRadioButtonMixin = {};
+
+function CharacterUpgradeSelectFactionRadioButtonMixin:OnEnter()
+	self.HoverGlow:Show();
+end
+
+function CharacterUpgradeSelectFactionRadioButtonMixin:OnLeave()
+	self.HoverGlow:Hide();
+end
+
+
+RPEUpgradeMinimizedFrameMixin = {};
+
+function RPEUpgradeMinimizedFrameMixin:OnLoad()
+	self.ExpandButton:SetScript("OnClick", function()
+		self:OnClick();
+	end);
+end
+
+function RPEUpgradeMinimizedFrameMixin:OnShow()
+	AccountUpgradePanel_UpdateExpandState();
+end
+
+function RPEUpgradeMinimizedFrameMixin:OnHide()
+	AccountUpgradePanel_UpdateExpandState();
+end
+
+function RPEUpgradeMinimizedFrameMixin:OnEnter()
+	self.ExpandButton:LockHighlight();
+end
+
+function RPEUpgradeMinimizedFrameMixin:OnLeave()
+	self.ExpandButton:UnlockHighlight();
+end
+
+function RPEUpgradeMinimizedFrameMixin:OnClick()
+	CharSelectServicesFlow_Maximize()
 end

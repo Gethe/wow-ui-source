@@ -3,9 +3,7 @@
 local l10nTable = {
 	deDE = {
         localizeFrames = function()
-			RPEUpgradeMinimizedFrame:SetWidth(310);
-			RPEUpgradeMinimizedFrame.Title:SetWidth(160);
-			RPEUpgradeMinimizedFrame.Title:SetFontObject(GameFontNormalLarge);
+			RPEUpgradeMinimizedFrame.Title:SetFontObject(GameFontNormalLargeOutline);
         end,
 	},
 	enGB = {},

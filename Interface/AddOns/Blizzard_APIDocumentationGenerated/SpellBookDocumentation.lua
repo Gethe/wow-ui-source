@@ -103,6 +103,38 @@ local SpellBook =
 			},
 		},
 		{
+			Name = "GetSpellBookItemCastCount",
+			Type = "Function",
+			Documentation = { "Returns number of times a SpellBookItem can be cast, typically based on availability of things like required reagent items; Always returns 0 if item is not found or is not a spell" },
+
+			Arguments =
+			{
+				{ Name = "spellBookItemSlotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "spellBookItemSpellBank", Type = "SpellBookSpellBank", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "castCount", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpellBookItemCharges",
+			Type = "Function",
+			Documentation = { "Returns a table of info about the charges of a charge-accumulating SpellBookItem; May return nil if item is not found or is not charge-based" },
+
+			Arguments =
+			{
+				{ Name = "spellBookItemSlotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "spellBookItemSpellBank", Type = "SpellBookSpellBank", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "chargeInfo", Type = "SpellChargeInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSpellBookItemCooldown",
 			Type = "Function",
 			Documentation = { "Returns nil if item doesn't exist or if this kind of item doesn't display cooldowns (ex: future or offspec spells)" },
@@ -211,6 +243,22 @@ local SpellBook =
 			{
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "subName", Type = "string", Nilable = false, Documentation = { "May be empty if spell's data isn't loaded yet; Listen for SPELL_TEXT_UPDATE event, or use SpellMixin to load asynchronously" } },
+			},
+		},
+		{
+			Name = "GetSpellBookItemPowerCost",
+			Type = "Function",
+			Documentation = { "Returns a table containing one or more SpellPowerCostInfos, one for each power type a SpellBookItem costs; May return nil if item is not found or has no resource costs" },
+
+			Arguments =
+			{
+				{ Name = "spellBookItemSlotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "spellBookItemSpellBank", Type = "SpellBookSpellBank", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "powerCosts", Type = "table", InnerType = "SpellPowerCostInfo", Nilable = false },
 			},
 		},
 		{
@@ -328,6 +376,38 @@ local SpellBook =
 			},
 		},
 		{
+			Name = "IsClassTalentSpellBookItem",
+			Type = "Function",
+			Documentation = { "Returns true if the SpellBookItem comes from a Class Talent" },
+
+			Arguments =
+			{
+				{ Name = "spellBookItemSlotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "spellBookItemSpellBank", Type = "SpellBookSpellBank", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isClassTalent", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsPvPTalentSpellBookItem",
+			Type = "Function",
+			Documentation = { "Returns true if the SpellBookItem comes from a PvP Talent" },
+
+			Arguments =
+			{
+				{ Name = "spellBookItemSlotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "spellBookItemSpellBank", Type = "SpellBookSpellBank", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isPvPTalent", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsRangedAutoAttackSpellBookItem",
 			Type = "Function",
 			Documentation = { "Returns true if the SpellBookItem is the player's ranged Auto Attack spell (ex: Shoot, Auto Shot, etc)" },
@@ -344,6 +424,55 @@ local SpellBook =
 			},
 		},
 		{
+			Name = "IsSpellBookItemHarmful",
+			Type = "Function",
+			Documentation = { "Returns true if the SpellBookIem can be cast on hostile targets" },
+
+			Arguments =
+			{
+				{ Name = "spellBookItemSlotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "spellBookItemSpellBank", Type = "SpellBookSpellBank", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isHarmful", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSpellBookItemHelpful",
+			Type = "Function",
+			Documentation = { "Returns true if the SpellBookIem can be cast on the player or other friendly targets" },
+
+			Arguments =
+			{
+				{ Name = "spellBookItemSlotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "spellBookItemSpellBank", Type = "SpellBookSpellBank", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isHelpful", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSpellBookItemInRange",
+			Type = "Function",
+			Documentation = { "Returns true if the current target is within range of the SpellBookIem; False if out of range; Nil if range check was invalid" },
+
+			Arguments =
+			{
+				{ Name = "spellBookItemSlotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "spellBookItemSpellBank", Type = "SpellBookSpellBank", Nilable = false },
+				{ Name = "targetUnit", Type = "UnitToken", Nilable = true, Documentation = { "Optional specific target; If not supplied, player's current target (if any) will be used" } },
+			},
+
+			Returns =
+			{
+				{ Name = "inRange", Type = "bool", Nilable = true, Documentation = { "May be nil if the range check was invalid, ie due to invalid spell, missing/invalid target, unknown spell, etc" } },
+			},
+		},
+		{
 			Name = "IsSpellBookItemOffSpec",
 			Type = "Function",
 			Documentation = { "Returns true if the SpellBookItem belongs to a non-active class specialization" },
@@ -356,7 +485,7 @@ local SpellBook =
 
 			Returns =
 			{
-				{ Name = "isPassive", Type = "bool", Nilable = false },
+				{ Name = "isOffSpec", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -373,6 +502,23 @@ local SpellBook =
 			Returns =
 			{
 				{ Name = "isPassive", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSpellBookItemUsable",
+			Type = "Function",
+			Documentation = { "Returns whether the SpellBookIem is currently castable; Typically based on things like learned status, required resources, etc" },
+
+			Arguments =
+			{
+				{ Name = "spellBookItemSlotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "spellBookItemSpellBank", Type = "SpellBookSpellBank", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isUsable", Type = "bool", Nilable = false },
+				{ Name = "insufficientPower", Type = "bool", Nilable = false, Documentation = { "True if SpellBookIem is specifically unusable due to insufficient power (ie MANA, RAGE, etc)" } },
 			},
 		},
 		{
@@ -394,6 +540,22 @@ local SpellBook =
 				{ Name = "spellBookItemSlotIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "spellBookItemSpellBank", Type = "SpellBookSpellBank", Nilable = false },
 				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SpellBookItemHasRange",
+			Type = "Function",
+			Documentation = { "Returns true if the SpellBookIem has a min and/or max range greater than 0; Will always return false if it is not a spell" },
+
+			Arguments =
+			{
+				{ Name = "spellBookItemSlotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "spellBookItemSpellBank", Type = "SpellBookSpellBank", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasRange", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -468,15 +630,6 @@ local SpellBook =
 				{ Name = "spellID", Type = "number", Nilable = false },
 				{ Name = "slot", Type = "number", Nilable = false },
 				{ Name = "page", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "SpellTextUpdate",
-			Type = "Event",
-			LiteralName = "SPELL_TEXT_UPDATE",
-			Payload =
-			{
-				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 		},
 		{

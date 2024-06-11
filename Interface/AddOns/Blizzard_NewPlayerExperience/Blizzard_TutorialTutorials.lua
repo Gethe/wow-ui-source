@@ -972,10 +972,10 @@ function Class_UseQuestItem:InRange()
 	self:HideScreenTutorial();
 	Dispatcher:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
 
-	local module = QUEST_TRACKER_MODULE:GetBlock(self.questData.ItemQuest)
-	if (module and module.itemButton) then
+	local block = QuestObjectiveTracker:GetExistingBlock(self.questData.ItemQuest) or CampaignQuestObjectiveTracker:GetExistingBlock(self.questData.ItemQuest)
+	if (block and block.ItemButton) then
 		local pointerString = self.questData.PointerTutorialStringID;
-		self:ShowPointerTutorial(TutorialHelper:FormatString(pointerString), "UP", module.itemButton);
+		self:ShowPointerTutorial(TutorialHelper:FormatString(pointerString), "UP", block.ItemButton);
 	end
 end
 

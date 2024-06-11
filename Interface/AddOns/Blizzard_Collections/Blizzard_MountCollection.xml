@@ -1,7 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
-	<Script file="Blizzard_MountCollection.lua"/>
-
 	<Frame name="AlertMountEquipmentFeatureTemplate" inherits="NewFeatureLabelTemplate" mixin="AlertMountEquipmentFeatureMixin" virtual="true">
 		<Size x="1" y="1"/>
 	</Frame>
@@ -414,6 +412,9 @@
 						</Layers>
 						<Scripts>
 							<OnLoad method="OnLoad"/>
+							<OnShow method="OnShow"/>
+							<OnHide method="OnHide"/>
+							<OnEvent method="OnEvent"/>
 							<OnClick method="OnClick"/>
 							<OnDragStart method="OnDragStart"/>
 							<OnEnter method="OnEnter"/>

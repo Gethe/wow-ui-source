@@ -771,7 +771,7 @@ function UpdateCharacterList(skipSelect)
 end
 
 function CharacterSelect_ShowTimerunningChoiceWhenActive()
-	if GetActiveTimerunningSeasonID() then
+	if not IsBetaBuild() and GetActiveTimerunningSeasonID() then
 		C_AddOns.LoadAddOn("Blizzard_TimerunningCharacterCreate");
 		TimerunningChoicePopup:Show();
 		return true;
@@ -1868,6 +1868,12 @@ function BeginCharacterServicesFlow(flow, data)
     	CharSelectServicesFlowFrame:Show();
 		flow:SetTarget(data); -- NOTE: It seems like data can be changed in the middle of a flow, so keeping this here until that is determined.
 		CharacterServicesMaster_SetFlow(CharacterServicesMaster, flow);
+
+		-- RPE force expands the character list when player clicks the first 'next' button in the flow, since that is automatically started compared to other flows.
+		if flow ~= RPEUpgradeFlow then
+			-- In case the character select list was collapsed, ensure that it is now expanded.
+			CharacterSelectUI:ExpandCharacterList();
+		end
 	end
 end
 
@@ -1908,7 +1914,7 @@ function CharacterUpgradePopup_BeginVASFlow(data, guid)
 	elseif data.vasType == Enum.ValueAddedServiceType.PaidRaceChange then
 		BeginCharacterServicesFlow(PaidRaceChangeFlow, data);
 	elseif data.vasType == Enum.ValueAddedServiceType.PaidNameChange then
-		BeginCharacterServicesFlow(PaidNameChangeFlow, data);
+		BeginCharacterServicesFlow(PaidNameChangeFlowMainline, data);
 	else
 		error("Unsupported VAS Type Flow");
 	end
@@ -2008,8 +2014,6 @@ function CharacterServicesMaster_OnLoad(self)
     self:RegisterEvent("UPDATE_EXPANSION_LEVEL");
     self:RegisterEvent("PRODUCT_ASSIGN_TO_TARGET_FAILED");
 end
-
-local completedGuid;
 
 function CharacterServicesMaster_OnEvent(self, event, ...)
     if (event == "PRODUCT_DISTRIBUTIONS_UPDATED" or event == "UPDATE_EXPANSION_LEVEL") then
@@ -2319,12 +2323,16 @@ function CharacterUpgradeSecondChanceWarningFrameConfirmButton_OnClick(self)
 
     CharacterUpgradeSecondChanceWarningFrame:Hide();
 
-    CharacterServicesMasterFinishButton_OnClick(CharacterServicesMasterFinishButton);
+    CharacterServicesMasterFinishButton_OnClick();
 end
 
 function CharacterUpgradeSecondChanceWarningFrameCancelButton_OnClick(self)
     PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
+	local master = CharacterServicesMaster;
+	CharSelectServicesFlowFrame.FinishButton:Show(master.currentBlock.Finish);
+	CharSelectServicesFlowFrame.BackButton:Show(master.currentBlock.Back);
+	CharSelectServicesFlowFrame.CloseButton:Show();
     CharacterUpgradeSecondChanceWarningFrame:Hide();
 
     CharacterUpgradeSecondChanceWarningFrame.warningAccepted = false;
@@ -2702,9 +2710,39 @@ end
 
 CharSelectServicesFlowFrameMixin = {};
 
+function CharSelectServicesFlowFrameMixin:OnLoad()
+	self.CloseButton:SetScript("OnClick", function()
+		self:Hide();
+		CharacterSelect_SelectCharacter(CharacterSelect.selectedIndex); --reopens RPE upgrade if eligigble
+		CharacterServicesMaster_UpdateServiceButton();
+	end);
+
+	self.MinimizeButton:SetScript("OnClick", function()
+		CharSelectServicesFlow_Minimize();
+	end);
+end
+
+function CharSelectServicesFlowFrameMixin:OnShow()
+	if self.IsMinimized then
+		CharSelectServicesFlow_Minimize();
+	else
+		PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
+		CharacterSelect_UpdateButtonState();
+		CharSelectServicesCover:Show();
+		CharacterServicesMaster_UpdateServiceButton();
+	end
+end
+
+function CharSelectServicesFlowFrameMixin:OnHide()
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
+	CharacterSelect_UpdateButtonState();
+	CharSelectServicesCover:Hide();
+	CharacterServicesMaster_UpdateServiceButton();
+end
+
 function CharSelectServicesFlowFrameMixin:SetErrorMessage(msg)
 	self.ErrorMessageContainer.Text:SetText(msg);
-	self.ErrorMessageContainer.Text:SetJustifyH("LEFT");
+	self.ErrorMessageContainer.Text:SetJustifyH("CENTER");
 	self.ErrorMessageContainer.fullText = msg;
 
 	local isTruncated = self.ErrorMessageContainer.Text:IsTruncated();
@@ -2713,7 +2751,6 @@ function CharSelectServicesFlowFrameMixin:SetErrorMessage(msg)
 		-- HACK, avoid global string hotfix:
 		local errorLink = string.gsub('[' .. BLIZZARD_STORE_VAS_ERROR_LABEL .. ']', ':', '');
 		self.ErrorMessageContainer.Text:SetText(errorLink);
-		self.ErrorMessageContainer.Text:SetJustifyH("CENTER");
 	end
 end
 
@@ -2737,43 +2774,44 @@ function CharSelectServicesFlowFrameMixin:Initialize(flow)
 	local theme = flow:GetTheme();
 	if theme == "default" then
 		self.BackgroundDefault:Show();
+		self.BackgroundHeader:Show();
+		self.BackgroundDivider:Show();
 		self.Icon:Show();
 		self.IconBorder:Show();
 		self.TitleText:Show();
 		self.CloseButton:Show();
+
 		self.BackgroundRPE:Hide();
 		self.MinimizeButton:Hide();
 
-		local backNextX, backNextY = 40, 57;
+		local backNextX, backNextY = 25, 26;
 		self.NextButton:SetPoint("BOTTOMRIGHT", -backNextX, backNextY);
 		self.BackButton:SetPoint("BOTTOMLEFT", backNextX, backNextY);
 
-		self.FinishButton:SetPoint("BOTTOMRIGHT", -28, 53);
+		self.FinishButton:SetPoint("BOTTOMRIGHT", -9, 23);
 
-		NineSliceUtil.HideLayout(self);
-
-		self:SetSize(421, 724);
-		self:SetPoint("LEFT", 8, 16);
+		self:SetSize(362, 668);
+		self:SetPoint("LEFT", 3, -7);
 	elseif theme == "RPE" then
 		self.BackgroundDefault:Hide();
+		self.BackgroundHeader:Hide();
+		self.BackgroundDivider:Hide();
 		self.Icon:Hide();
 		self.IconBorder:Hide();
 		self.TitleText:Hide();
 		self.CloseButton:Hide();
+
 		self.BackgroundRPE:Show();
 		self.MinimizeButton:Show();
 
-		local backNextX, backNextY = 30, 20;
+		local backNextX, backNextY = 27, 31;
 		self.NextButton:SetPoint("BOTTOMRIGHT", -backNextX, backNextY);
 		self.BackButton:SetPoint("BOTTOMLEFT", backNextX, backNextY);
 
-		self.FinishButton:SetPoint("BOTTOMRIGHT", -18, 18);
+		self.FinishButton:SetPoint("BOTTOMRIGHT", -11, 28);
 
-		NineSliceUtil.ApplyLayout(self, NineSliceUtil.GetLayout("Dialog"));
-		NineSliceUtil.ShowLayout(self);
-
-		self:SetSize(360, 545);
-		self:SetPoint("LEFT", 8, -17);
+		self:SetSize(362, 598);
+		self:SetPoint("LEFT", 3, 85);
 	end
 end
 

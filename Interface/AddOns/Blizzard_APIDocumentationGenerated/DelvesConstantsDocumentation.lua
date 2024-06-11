@@ -38,6 +38,7 @@ local DelvesConstants =
 				{ Name = "DELVE_NORMAL_KEY_CURRENCY_ID", Type = "number", Value = 3028 },
 				{ Name = "DELVE_EPIC_KEY_CURRENCY_ID", Type = "number", Value = 3029 },
 				{ Name = "DELVE_COMPANION_TOOLTIP_WIDGET_SET_ID", Type = "number", Value = 1331 },
+				{ Name = "DELVES_COMPANION_TRAIT_SYSTEM_ID", Type = "number", Value = 6 },
 				{ Name = "BRANN_COMPANION_INFO_ID", Type = "number", Value = 1 },
 				{ Name = "BRANN_TRAIT_TREE_ID", Type = "number", Value = 874 },
 				{ Name = "BRANN_CREATURE_DISPLAY_ID", Type = "number", Value = 115505 },

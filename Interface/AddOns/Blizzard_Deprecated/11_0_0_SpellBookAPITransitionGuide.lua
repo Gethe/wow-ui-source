@@ -33,6 +33,19 @@ GetSpellTradeSkillLink(index, bookType) = C_SpellBook.GetSpellBookItemTradeSkill
 IsPassiveSpell(spellID/name) = C_Spell.IsSpellPassive(spellIdentifier)
 IsPassiveSpell(index, bookType) = C_SpellBook.IsSpellBookItemPassive(index, spellBank)
 
+IsHelpfulSpell(spellID/name) = C_Spell.IsSpellHelpful(spellIdentifier)
+IsHelpfulSpell(index, bookType) = C_SpellBook.IsSpellBookItemHelpful(index, spellBank)
+IsHarmfulSpell(spellID/name) = C_Spell.IsSpellHarmful(spellIdentifier)
+IsHarmfulSpell(index, bookType) = C_SpellBook.IsSpellBookItemHarmful(index, spellBank)
+
+IsUsableSpell(spellID/name) = C_Spell.IsSpellUsable(spellIdentifier)
+IsUsableSpell(index, bookType) = C_SpellBook.IsSpellBookItemUsable(index, spellBank)
+
+SpellHasRange(spellID/name) = C_Spell.SpellHasRange(spellIdentifier)
+SpellHasRange(index, bookType) C_SpellBook.SpellBookItemHasRange(index, spellBank)
+IsSpellInRange(spellID/name) C_Spell.IsSpellInRange(spellIdentifier)
+IsSpellInRange(index, bookType) C_SpellBook.IsSpellBookItemInRange(index, spellBank)
+
 GetSpellLevelLearned(spellID/name) = C_Spell.GetSpellLevelLearned(spellIdentifier)
 GetSpellLevelLearned(index, bookType) = C_SpellBook.GetSpellBookItemLevelLearned(index, spellBank)
 
@@ -42,6 +55,17 @@ GetSpellCooldown(index, bookType) = C_SpellBook.GetSpellBookItemCooldown(index, 
 
 GetSpellLossOfControlCooldown(spellID/name) = C_Spell.GetSpellLossOfControlCooldown(spellIdentifier)
 GetSpellLossOfControlCooldown(index, bookType) = C_SpellBook.GetSpellBookItemLossOfControlCooldown(index, spellBank)
+
+-- Both return new SpellChargeInfo table (see SpellSharedDocumentation.lua)
+GetSpellCharges(spellID/name) = C_Spell.GetSpellCharges(spellIdentifier)
+GetSpellCharges(index, bookType) = C_SpellBook.GetSpellBookItemCharges(index, spellBank)
+
+GetSpellCount(spellID/name) = C_Spell.GetSpellCastCount(spellIdentifier)
+GetSpellCount(index, bookType) = C_SpellBook.GetSpellBookItemCastCount(index, spellBank)
+
+-- Both return array of new SpellPowerCostInfo tables (see SpellSharedDocumentation.lua) which matches old return table structure
+GetSpellPowerCost(spellID/name) = C_Spell.GetSpellPowerCost(spellIdentifier)
+GetSpellPowerCost(index, bookType) = C_SpellBook.GetSpellBookItemPowerCost(index, spellBank)
 
 -- GetSpellAvailableLevel and GetSpellLevelLearned have been unified
 GetSpellAvailableLevel/GetSpellLevelLearned(spellID/name) = C_Spell.GetSpellLevelLearned(spellIdentifier)
@@ -70,18 +94,31 @@ GetSpellTabInfo(index) = C_SpellBook.GetSpellBookSkillLineInfo(index)
 GetSpellBookItemInfo(index, bookType) = C_SpellBook.GetSpellBookItemType(index, spellBank)
 
 GetSpellBookItemTexture(index, bookType) = C_SpellBook.GetSpellBookItemTexture(index, spellBank)
+GetSpellBookItemName(index, bookType) = C_SpellBook.GetSpellBookItemName(index, spellBank)
 
 DoesSpellExist(spellID/name) = C_Spell.DoesSpellExist(spellIdentifier)
 
 HasPetSpells() = C_SpellBook.HasPetSpells()
 
 GetSpellDescription(spellID) = C_Spell.GetSpellDescription(spellIdentifier);
+GetSpellSubtext(spellID) = C_Spell.GetSpellSubtext(spellIdentifier);
+GetSpellTexture(spellID) = C_Spell.GetSpellTexture(spellIdentifier);
+GetSpellRank(spellID) = C_Spell.GetSpellSkillLineAbilityRank(spellIdentifier);
 
 IsAttackSpell(spellName) = C_Spell.IsAutoAttackSpell(spellIdentifier)
 IsAttackSpell(index, bookType) = C_SpellBook.IsAutoAttackSpellBookItem(index, spellBank)
 -- Ranged Auto Attack functions have also been added
                             C_Spell.IsRangedAutoAttackSpell(spellIdentifier)
                             C_SpellBook.IsRangedAutoAttackSpellBookItem(index, spellBank)
+
+IsAutoRepeatSpell(spellID/name) = C_Spell.IsAutoRepeatSpell(spellIdentifier)
+IsCurrentSpell(spellID/name) = C_Spell.IsCurrentSpell(spellIdentifier)
+IsPressHoldReleaseSpell(spellID/name) = C_Spell.IsPressHoldReleaseSpell(spellIdentifier)
+
+IsTalentSpell(spellID/name) = C_Spell.IsClassTalentSpell(spellIdentifier)
+IsTalentSpell(index, bookType) = C_Spell.IsClassTalentSpellBookItem(index, spellBank)
+IsPvpTalentSpell(spellID/name) = C_Spell.IsPvPTalentSpell(spellIdentifier)
+IsPvpTalentSpell(index, bookType) = C_Spell.IsPvPTalentSpellBookItem(index, spellBank)
 
 GameTooltip:SetSpellBookItem(index, bookType) = GameTooltip:SetSpellBookItem(index, spellBank)
 

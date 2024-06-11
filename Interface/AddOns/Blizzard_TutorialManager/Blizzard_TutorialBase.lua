@@ -132,7 +132,7 @@ end
 -- Pointer Tutorials
 -- Arrow frame that points at something on screen
 -- Frame is automatically closed when tutorial is shutdown
--- This function clears any existing poitners before adding the new one
+-- This function clears any existing pointers before adding the new one
 function Class_TutorialBase:ShowPointerTutorial(content, direction, anchorFrame, ofsX, ofsY, relativePoint, backupDirection, showMovieName, loopMovie, resolution)
 	self:DebugLog("ShowPointerTutorial");
 
@@ -144,7 +144,7 @@ end
 -- Adds a pointer tutorial ontop of existing pointers
 function Class_TutorialBase:AddPointerTutorial(content, direction, anchorFrame, ofsX, ofsY, relativePoint, backupDirection, showMovieName, loopMovie, resolution)
 	self:DebugLog("AddPointerTutorial");
-	local pointer = TutorialPointerFrame:Show(content, direction, anchorFrame, ofsX, ofsY, relativePoint, backupDirection, showMovieName, loopMovie, resolution);	
+	local pointer = TutorialPointerFrame:Show(content, direction, anchorFrame, ofsX, ofsY, relativePoint, backupDirection, showMovieName, loopMovie, resolution);
 	table.insert(self._pointerTutorials, pointer);
 
 	return pointer;

@@ -1112,7 +1112,7 @@ local function CastRandomManager_OnEvent(self, event, ...)
 
 	if ( unit == "player" ) then
 		local name = strlower(C_Spell.GetSpellName(spellID));
-		local rank = strlower(GetSpellSubtext(spellID) or "");
+		local rank = strlower(C_Spell.GetSpellSubtext(spellID) or "");
 		local nameplus = name.."()";
 		local fullname = name.."("..rank..")";
 		for sequence, entry in pairs(CastRandomTable) do

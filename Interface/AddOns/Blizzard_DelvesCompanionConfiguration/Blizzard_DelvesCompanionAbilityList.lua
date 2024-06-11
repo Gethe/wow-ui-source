@@ -222,6 +222,21 @@ function DelvesCompanionAbilityListFrameMixin:InstantiateTalentButton(nodeID, no
 	end
 end
 
+function DelvesCompanionAbilityListFrameMixin:OnMouseWheel(direction)
+	local pagingControls = self.DelvesCompanionAbilityListPagingControls;
+
+	local currentPage = pagingControls.currentPage or 1;
+	local maxPages = pagingControls.maxPages or 1;
+
+	if direction > 0 and currentPage > 1 then
+		self.DelvesCompanionAbilityListPagingControls:SetCurrentPage(currentPage - 1);
+	elseif direction < 0 and currentPage < maxPages then
+		self.DelvesCompanionAbilityListPagingControls:SetCurrentPage(currentPage + 1);
+	end
+
+	self:Refresh(true, true);
+end
+
 --[[ Ability Template ]]
 DelvesCompanionAbilityMixin = CreateFromMixins(TalentDisplayMixin);
 

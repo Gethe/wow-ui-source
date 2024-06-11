@@ -46,7 +46,7 @@ Mainline\KioskModeSplash.lua
 Mainline\KioskModeSplash.xml
 Mainline\CharacterServicesShared.lua
 CharacterServicesTemplates.lua
-CharacterServicesTemplates.xml
+Mainline\CharacterServicesTemplates.xml
 Mainline\CharacterServicesCharacterSelector.lua
 Mainline\CharacterServicesCharacterSelector.xml
 Mainline\CharacterServicesFlowMixin.lua
@@ -57,11 +57,12 @@ Mainline\CharacterServicesAccountSelector.xml
 Mainline\CharacterServicesPaidCharacterTransfer.lua
 Mainline\CharacterServicesPaidCharacterTransfer.xml
 Mainline\CharacterServicesPaidFactionChange.lua
-CharacterServicesPaidFactionChange.xml
+Mainline\CharacterServicesPaidFactionChange.xml
 Mainline\CharacterServicesPaidRaceChange.lua
 Mainline\CharacterServicesPaidRaceChange.xml
 Shared\CharacterServicesPaidNameChange.lua
-Shared\CharacterServicesPaidNameChange.xml
+Mainline\CharacterServicesPaidNameChange.lua
+Mainline\CharacterServicesPaidNameChange.xml
 SocialContract.lua
 SocialContract.xml
 PromotionFrame.lua

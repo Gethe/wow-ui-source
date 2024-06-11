@@ -41,7 +41,9 @@ end
 local function ShowConfigTooltip(frame, data, offsetX, offsetY)
     GameTooltip:SetOwner(frame, "ANCHOR_RIGHT", offsetX, offsetY);
     if data.spellID then
-        GameTooltip:SetSpellByID(data.spellID);
+        local isPet = false;
+        local showSubtext = true;
+        GameTooltip:SetSpellByID(data.spellID, isPet, showSubtext);
     elseif data.name and data.description then
         GameTooltip_SetTitle(GameTooltip, data.name);
         GameTooltip_AddNormalLine(GameTooltip, data.description);

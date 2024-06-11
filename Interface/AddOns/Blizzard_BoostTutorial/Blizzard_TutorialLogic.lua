@@ -927,7 +927,7 @@ end
 
 function Class_ActionBarCallout:Warrior_AttemptPointer2()
 	local requiredRage = 25; -- fallback value, something decentish
-	local costTable = GetSpellPowerCost(TutorialData.StartingAbility.WARRIOR);
+	local costTable = C_Spell.GetSpellPowerCost(TutorialData.StartingAbility.WARRIOR) or {};
 	for _, costInfo in pairs(costTable) do
 		if (costInfo.type == Enum.PowerType.Rage) then
 			requiredRage = costInfo.cost;
@@ -2055,9 +2055,9 @@ end
 function Class_UseQuestItem:OnBegin(data)
 	self.Data = data;
 
-	local module = QUEST_TRACKER_MODULE:GetBlock(data.QuestID)
-	if (module and module.itemButton) then
-		self:ShowPointerTutorial(formatStr(NPE_USEQUESTITEM), "UP", module.itemButton);
+	local block = QuestObjectiveTracker:GetExistingBlock(data.QuestID) or CampaignQuestObjectiveTracker:GetExistingBlock(data.QuestID)
+	if (block and block.ItemButton) then
+		self:ShowPointerTutorial(formatStr(NPE_USEQUESTITEM), "UP", block.ItemButton);
 
 		Dispatcher:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
 	end

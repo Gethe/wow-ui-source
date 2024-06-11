@@ -50,8 +50,10 @@ local function Register()
 	local category, layout = Settings.RegisterVerticalLayoutCategory(TTS_LABEL);
 
 	local function InitSettings(category)
+		local voiceChatEnabled = C_VoiceChat.IsEnabled();
+
 		-- Transcribe Voice Chat
-		do
+		if voiceChatEnabled then
 			local setting = Settings.RegisterCVarSetting(category, "speechToText", Settings.VarType.Boolean, ENABLE_SPEECH_TO_TEXT_TRANSCRIPTION);
 			local options = nil;
 			local data = Settings.CreateSettingInitializerData(setting, options, OPTION_TOOLTIP_ENABLE_SPEECH_TO_TEXT_TRANSCRIPTION);
@@ -70,7 +72,7 @@ local function Register()
 		end
 
 		-- Speak for me in Voice Chat
-		do
+		if voiceChatEnabled then
 			local rtttSetting, rtttInitializer = Settings.SetupCVarCheckbox(category, "remoteTextToSpeech", ENABLE_REMOTE_TEXT_TO_SPEECH, OPTION_TOOLTIP_ENABLE_REMOTE_TEXT_TO_SPEECH);
 
 			local function IsSpeakForMeAllowed()
@@ -117,7 +119,10 @@ local function Register()
 			end
 		end
 
-		if C_VoiceChat.IsVoiceChatConnected() then
+		if not C_VoiceChat.IsEnabled() then
+			-- If voice chat is disabled, there is no async dependency for voices to get loaded.
+			InitSettings(category);
+		elseif C_VoiceChat.IsVoiceChatConnected() then
 			InitVoices();
 		else
 			EventUtil.RegisterOnceFrameEventAndCallback("VOICE_CHAT_CONNECTION_SUCCESS", function()

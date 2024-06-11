@@ -669,6 +669,7 @@ local glueScreenTags =
 		["MECHAGNOME"] = true,
 		["VULPERA"] = true,
 		["DRACTHYR"] = true,
+		["EARTHEN"] = true,
 	},
 };
 
@@ -723,6 +724,9 @@ local function UpdateGlueTag()
 	-- Once valid information is available, determine the current tag
 	if race and class and faction then
 		race, class, faction = strupper(race), strupper(class), strupper(faction);
+		
+		-- stripping out spaces for key lookup
+		race = string.gsub(race, "%s+", "");
 
 		-- Try lookup from current screen (current screen may have fixed bg's)
 		if UpdateGlueTagWithOrdering(glueScreenTags[currentScreen], class, race, faction) then

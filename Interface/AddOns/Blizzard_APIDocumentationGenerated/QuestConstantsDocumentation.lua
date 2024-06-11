@@ -5,9 +5,9 @@ local QuestConstants =
 		{
 			Name = "CombinedQuestLogStatus",
 			Type = "Enumeration",
-			NumValues = 7,
+			NumValues = 8,
 			MinValue = 0,
-			MaxValue = 6,
+			MaxValue = 7,
 			Fields =
 			{
 				{ Name = "Available", Type = "CombinedQuestLogStatus", EnumValue = 0 },
@@ -17,6 +17,7 @@ local QuestConstants =
 				{ Name = "CompleteMonthly", Type = "CombinedQuestLogStatus", EnumValue = 4 },
 				{ Name = "CompleteYearly", Type = "CombinedQuestLogStatus", EnumValue = 5 },
 				{ Name = "CompleteGameReset", Type = "CombinedQuestLogStatus", EnumValue = 6 },
+				{ Name = "Reset", Type = "CombinedQuestLogStatus", EnumValue = 7 },
 			},
 		},
 		{

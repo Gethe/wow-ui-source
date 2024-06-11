@@ -496,7 +496,7 @@ end
 
 function ClassSpecSpellMixin:Setup(index, spellID)
 	self.index = index;
-	local _, icon = GetSpellTexture(spellID);
+	local _, icon = C_Spell.GetSpellTexture(spellID);
 	SetPortraitToTexture(self.Icon, icon);
 	self.spellID = spellID;
 	self.extraTooltip = nil;

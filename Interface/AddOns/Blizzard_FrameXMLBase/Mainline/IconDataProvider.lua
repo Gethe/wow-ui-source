@@ -72,7 +72,7 @@ local function FillOutExtraIconsMapWithSpells(extraIconsMap)
 					for k = 1, numSlots do
 						local spellID, overrideSpellID, isSlotKnown = GetFlyoutSlotInfo(ID, k)
 						if isSlotKnown then
-							local fileID = GetSpellTexture(spellID);
+							local fileID = C_Spell.GetSpellTexture(spellID);
 							if fileID ~= nil then
 								extraIconsMap[fileID] = true;
 							end

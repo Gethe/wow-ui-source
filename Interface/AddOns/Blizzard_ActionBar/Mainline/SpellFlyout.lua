@@ -86,7 +86,7 @@ function SpellFlyoutButton_UpdateCooldown(self)
 end
 
 function SpellFlyoutButton_UpdateState(self)
-	if ( IsCurrentSpell(self.spellID) ) then
+	if ( C_Spell.IsCurrentSpell(self.spellID) ) then
 		self:SetChecked(true);
 	else
 		self:SetChecked(false);
@@ -94,7 +94,7 @@ function SpellFlyoutButton_UpdateState(self)
 end
 
 function SpellFlyoutButton_UpdateUsable(self)
-	local isUsable, notEnoughMana = IsUsableSpell(self.spellID);
+	local isUsable, notEnoughMana = C_Spell.IsSpellUsable(self.spellID);
 	local name = self:GetName();
 	local icon = _G[name.."Icon"];
 	if ( isUsable or not self:GetParent().isActionBar) then
@@ -133,7 +133,7 @@ end
 function SpellFlyoutButton_UpdateCount (self)
 	local text = _G[self:GetName().."Count"];
 	if ( IsConsumableSpell(self.spellID)) then
-		local count = GetSpellCount(self.spellID);
+		local count = C_Spell.GetSpellCastCount(self.spellID);
 		if ( count > (self.maxDisplayCount or 9999 ) ) then
 			text:SetText("*");
 		else
@@ -290,7 +290,7 @@ function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActio
 			button:Show();
 			button.showFullTooltip = showFullTooltip;
 
-			_G[button:GetName().."Icon"]:SetTexture(GetSpellTexture(overrideSpellID));
+			_G[button:GetName().."Icon"]:SetTexture(C_Spell.GetSpellTexture(overrideSpellID));
 			_G[button:GetName().."Icon"]:SetDesaturated(offSpec);
 			button.offSpec = offSpec;
 			button.spellID = spellID;
