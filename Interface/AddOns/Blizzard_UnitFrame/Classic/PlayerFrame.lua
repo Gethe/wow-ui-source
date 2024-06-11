@@ -10,9 +10,9 @@ function PlayerFrame_OnLoad(self)
 	local manaBar = PlayerFrame_GetManaBar();
 	UnitFrame_Initialize(self, "player", PlayerName, PlayerPortrait,
 						 healthBar,
-						 healthBar.HealthBarText,
+						 PlayerFrameHealthBarText,
 						 manaBar,
-						 manaBar.ManaBarText,
+						 PlayerFrameManaBarText,
 						 nil, nil, nil,
 						 healthBar.MyHealPredictionBar,
 						 healthBar.OtherHealPredictionBar,

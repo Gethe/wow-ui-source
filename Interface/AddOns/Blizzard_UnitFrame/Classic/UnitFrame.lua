@@ -117,9 +117,11 @@ function UnitFrame_Initialize (self, unit, name, portrait, healthbar, healthtext
 		self.healAbsorbBarRightShadow:ClearAllPoints();
 	end
 	if (self.healthbar) then
+		self.healthbar.breakUpLargeNumbers = C_CVar.GetCVarBool("breakUpLargeNumbers");
 		self.healthbar.capNumericDisplay = true;
 	end
 	if (self.manabar) then
+		self.manabar.breakUpLargeNumbers = C_CVar.GetCVarBool("breakUpLargeNumbers");
 		self.manabar.capNumericDisplay = true;
 	end
 	UnitFrameHealthBar_Initialize(unit, healthbar, healthtext, true);
