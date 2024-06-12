@@ -22,6 +22,36 @@ local ItemConstants_Classic =
 			},
 		},
 		{
+			Name = "ReforgeFailedReason",
+			Type = "Enumeration",
+			NumValues = 6,
+			MinValue = 0,
+			MaxValue = 5,
+			Fields =
+			{
+				{ Name = "None", Type = "ReforgeFailedReason", EnumValue = 0 },
+				{ Name = "ReforgeSrcStatNotFound", Type = "ReforgeFailedReason", EnumValue = 1 },
+				{ Name = "ReforgeInsufficientSrcStat", Type = "ReforgeFailedReason", EnumValue = 2 },
+				{ Name = "ReforgeAlreadyHasDstStat", Type = "ReforgeFailedReason", EnumValue = 3 },
+				{ Name = "ReforgeItemTooLowLevel", Type = "ReforgeFailedReason", EnumValue = 4 },
+				{ Name = "NumReforgeFailedReason", Type = "ReforgeFailedReason", EnumValue = 5 },
+			},
+		},
+		{
+			Name = "ScalingArmorType",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "Cloth", Type = "ScalingArmorType", EnumValue = 0 },
+				{ Name = "Leather", Type = "ScalingArmorType", EnumValue = 1 },
+				{ Name = "Mail", Type = "ScalingArmorType", EnumValue = 2 },
+				{ Name = "Plate", Type = "ScalingArmorType", EnumValue = 3 },
+			},
+		},
+		{
 			Name = "InventoryConstants",
 			Type = "Constants",
 			Values =

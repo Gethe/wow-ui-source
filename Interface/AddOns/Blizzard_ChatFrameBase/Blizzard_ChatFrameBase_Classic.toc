@@ -1,0 +1,17 @@
+## Title: Blizzard_ChatFrameBase
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_UIMenu, Blizzard_AutoComplete, Blizzard_FrameXML, Blizzard_UIParentPanelManager
+## AllowLoad: game
+## AllowLoadGameType: classic
+## LoadFirst: 1
+## SuppressLocalTableRef: 1
+Shared\HistoryKeeper.lua
+Classic\ChatFrame.lua
+Classic\ChatFrame.xml
+Shared\ChatAlertFrameMixin.lua
+Classic\ChannelFrameButtonMixin.lua
+Classic\FriendFrameButtonMixin.lua
+Shared\FloatingChatFrame.lua
+Classic\FloatingChatFrame.lua
+Classic\FloatingChatFrame.xml

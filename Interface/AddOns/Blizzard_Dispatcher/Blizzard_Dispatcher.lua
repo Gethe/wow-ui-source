@@ -40,10 +40,10 @@ function Dispatcher:Initialize()
 
 	-- When loaded in glue, this doesn't exist yet
 	if (SlashCmdList) then
-		SLASH_EVENT1 = "/event";
+		_G["SLASH_EVENT1"] = "/event";
 		SlashCmdList.EVENT = function(msg) self:OnSlash_Event(msg) end;
 
-		SLASH_EVENTVERBOSE1 = "/ev";
+		_G["SLASH_EVENTVERBOSE1"] = "/ev";
 		SlashCmdList.EVENTVERBOSE = function(msg) self:OnSlash_Verbose(msg) end;
 	end
 end
@@ -276,13 +276,13 @@ function Dispatcher:RegisterFunction(functionOwner, functionName, callback, oneT
 	end
 
 	-- Second, store off the callback for callback forwarding and unregistering
-	local callback = self:_CreateCallbackData(functionName, callback, oneTime);
+	local callbackData = self:_CreateCallbackData(functionName, callback, oneTime);
 	local id = self.NextFunctionID;
 
 	if (functionOwner) then
-		self.Functions[functionOwner][functionName][id] = callback;
+		self.Functions[functionOwner][functionName][id] = callbackData;
 	else
-		self.Functions.Global[functionName][id] = callback;
+		self.Functions.Global[functionName][id] = callbackData;
 	end
 
 	self.NextFunctionID = self.NextFunctionID + 1;
@@ -365,7 +365,7 @@ end
 
 -- ------------------------------------------------------------------------------------------------------------
 function Dispatcher:RegisterScript(frame, script, callback, oneTime)
-	if ((not frame) or (not type(frame) == "table") or (frame.IsObjectType and (not frame:IsObjectType("frame")))) then
+	if ((not frame) or (type(frame) ~= "table") or (frame.IsObjectType and (not frame:IsObjectType("frame")))) then
 		print("Dispatcher:RegisterScript - ERROR - object passed to frame is not a UI Frame");
 		return;
 	end

@@ -527,7 +527,7 @@ function ChannelFrameMixin:SetVoiceChannelActiveState(voiceChannelID, isActive)
 	self:UpdateVoiceChannelIfSelected(voiceChannelID);
 end
 
-function ChannelFrameMixin:OnCountUpdate(id, count)
+function ChannelFrameMixin:OnCountUpdate(id, _count)
 	local name, header, collapsed, channelNumber, count, active, category, channelType = GetChannelDisplayInfo(id);
 	if self:IsCategoryGroup(category) and count then
 		local channelButton = self:GetList():GetButtonForTextChannelID(id);

@@ -1,0 +1,15 @@
+## Title: Blizzard_SharedXMLGame
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_SharedXML
+## AllowLoad: Game
+## SuppressLocalTableRef: 1
+## AllowLoadGameType: tbc, wrath, cata
+LoopingSoundEffect.lua
+ScriptedAnimations\ScriptedAnimationEffects.lua
+ScriptedAnimations\ScriptAnimatedModelSceneActor.lua
+ScriptedAnimations\ScriptAnimatedEffectController.lua
+ScriptedAnimations\ScriptAnimatedModelScene.lua
+ScriptedAnimations\ScriptAnimatedModelScene.xml
+Shared\Localization.lua
+Tooltip\TooltipDataHandler.lua

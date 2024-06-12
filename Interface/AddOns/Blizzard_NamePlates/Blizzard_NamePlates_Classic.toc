@@ -1,0 +1,6 @@
+## Title: Blizzard NamePlates
+## Dependencies: Blizzard_UnitFrame
+## AllowLoad: game
+## AllowLoadGameType: tbc, wrath, cata
+TBC\Blizzard_NamePlates.lua
+TBC\Blizzard_NamePlates.xml

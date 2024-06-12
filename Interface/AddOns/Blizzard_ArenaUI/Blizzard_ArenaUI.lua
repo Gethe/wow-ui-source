@@ -127,6 +127,8 @@ function ArenaEnemyFrame_OnLoad(self)
 	self:RegisterEvent("UNIT_NAME_UPDATE");
 	self:RegisterEvent("ARENA_COOLDOWNS_UPDATE");
 	self:RegisterEvent("ARENA_CROWD_CONTROL_SPELL_UPDATE");
+	self:RegisterEvent("UNIT_MAXHEALTH");
+	self:RegisterEvent("UNIT_HEAL_PREDICTION");
 	
 	UIDropDownMenu_Initialize(self.DropDown, ArenaEnemyDropDown_Initialize, "MENU");
 	
@@ -135,7 +137,6 @@ function ArenaEnemyFrame_OnLoad(self)
 	end
 	SecureUnitButton_OnLoad(self, "arena"..self:GetID(), setfocus);
 	
-	local id = self:GetID();
 	if ( UnitClass("arena"..id) and (not UnitExists("arena"..id))) then	--It is possible for the unit itself to no longer exist on the client, but some of the information to remain (after reloading the UI)
 		self:Show();
 		ArenaEnemyFrame_Lock(self);
@@ -250,12 +251,14 @@ function ArenaEnemyFrame_OnEvent(self, event, unit, ...)
 			ArenaEnemyFrame_UpdatePlayer(self);
 		elseif ( event == "ARENA_COOLDOWNS_UPDATE" ) then
 			ArenaEnemyFrame_UpdateCrowdControl(self);
+		elseif ( event == "UNIT_MAXHEALTH" or event == "UNIT_HEAL_PREDICTION" ) then
+			ArenaEnemyFrame_UpdatePredictionBars(self);
 		elseif ( event == "ARENA_CROWD_CONTROL_SPELL_UPDATE" ) then
 			local unitTarget, spellID, itemID = ...;
 			if (spellID ~= self.CC.spellID) then
 				self.CC.spellID = spellID;
 
-				if(itemID ~= 0) then
+				if (itemID and itemID ~= 0) then
 					local itemTexture = C_Item.GetItemIconByID(itemID);
 					self.CC.Icon:SetTexture(itemTexture);
 				else
@@ -273,7 +276,7 @@ function ArenaEnemyFrame_UpdateCrowdControl(self)
 		if (spellID ~= self.CC.spellID) then
 			self.CC.spellID = spellID;
 
-			if(itemID ~= 0) then
+			if (itemID and itemID ~= 0) then
 				local itemTexture = C_Item.GetItemIconByID(itemID);
 				self.CC.Icon:SetTexture(itemTexture);
 			else
@@ -286,6 +289,130 @@ function ArenaEnemyFrame_UpdateCrowdControl(self)
 		else
 			self.CC.Cooldown:Clear();
 		end
+	end
+end
+
+--WARNING: This function is very similar to the function UnitFrameHealPredictionBars_Update in UnitFrame.lua.
+--If you are making changes here, it is possible you may want to make changes there as well.
+--In mainline, this is a mixin so we end up using the same method.  Long-term we should convert this to be the same.
+local MAX_INCOMING_HEAL_OVERFLOW = 1.0;
+function ArenaEnemyFrame_UpdatePredictionBars(frame)
+	if ( not frame.myHealPredictionBar and not frame.otherHealPredictionBar and not frame.healAbsorbBar and not frame.totalAbsorbBar ) then
+		return;
+	end
+
+	local _, maxHealth = frame.healthbar:GetMinMaxValues();
+	local health = frame.healthbar:GetValue();
+	if ( maxHealth <= 0 ) then
+		return;
+	end
+
+	local myIncomingHeal = UnitGetIncomingHeals(frame.unit, "player") or 0;
+	local allIncomingHeal = UnitGetIncomingHeals(frame.unit) or 0;
+	local totalAbsorb = 0;
+
+	local myCurrentHealAbsorb = 0;
+	if ( frame.healAbsorbBar ) then
+		totalAbsorb = UnitGetTotalAbsorbs(frame.unit) or 0;
+		myCurrentHealAbsorb = UnitGetTotalHealAbsorbs(frame.unit) or 0;
+
+		--We don't fill outside the health bar with healAbsorbs.  Instead, an overHealAbsorbGlow is shown.
+		if ( health < myCurrentHealAbsorb ) then
+			frame.overHealAbsorbGlow:Show();
+			myCurrentHealAbsorb = health;
+		else
+			frame.overHealAbsorbGlow:Hide();
+		end
+	end
+
+	--See how far we're going over the health bar and make sure we don't go too far out of the frame.
+	if ( health - myCurrentHealAbsorb + allIncomingHeal > maxHealth * MAX_INCOMING_HEAL_OVERFLOW ) then
+		allIncomingHeal = maxHealth * MAX_INCOMING_HEAL_OVERFLOW - health + myCurrentHealAbsorb;
+	end
+
+	local otherIncomingHeal = 0;
+
+	--Split up incoming heals.
+	if ( allIncomingHeal >= myIncomingHeal ) then
+		otherIncomingHeal = allIncomingHeal - myIncomingHeal;
+	else
+		myIncomingHeal = allIncomingHeal;
+	end
+
+	--We don't fill outside the the health bar with absorbs.  Instead, an overAbsorbGlow is shown.
+	local overAbsorb = false;
+	if ( health - myCurrentHealAbsorb + allIncomingHeal + totalAbsorb >= maxHealth or health + totalAbsorb >= maxHealth ) then
+		if ( totalAbsorb > 0 ) then
+			overAbsorb = true;
+		end
+
+		if ( allIncomingHeal > myCurrentHealAbsorb ) then
+			totalAbsorb = max(0,maxHealth - (health - myCurrentHealAbsorb + allIncomingHeal));
+		else
+			totalAbsorb = max(0,maxHealth - health);
+		end
+	end
+
+	if (frame.overAbsorbGlow) then
+		if ( overAbsorb ) then
+			frame.overAbsorbGlow:Show();
+		else
+			frame.overAbsorbGlow:Hide();
+		end
+	end
+
+	local healthTexture = frame.healthbar:GetStatusBarTexture();
+	local myCurrentHealAbsorbPercent = 0;
+	local healAbsorbTexture = nil;
+
+	if ( frame.healAbsorbBar ) then
+		myCurrentHealAbsorbPercent = myCurrentHealAbsorb / maxHealth;
+
+		--If allIncomingHeal is greater than myCurrentHealAbsorb, then the current
+		--heal absorb will be completely overlayed by the incoming heals so we don't show it.
+		if ( myCurrentHealAbsorb > allIncomingHeal ) then
+			local shownHealAbsorb = myCurrentHealAbsorb - allIncomingHeal;
+			local shownHealAbsorbPercent = shownHealAbsorb / maxHealth;
+
+			healAbsorbTexture = frame.healAbsorbBar:UpdateFillPosition(healthTexture, shownHealAbsorb, -shownHealAbsorbPercent);
+
+			--If there are incoming heals the left shadow would be overlayed by the incoming heals
+			--so it isn't shown.
+			frame.healAbsorbBar.LeftShadow:SetShown(allIncomingHeal <= 0);
+
+			-- The right shadow is only shown if there are absorbs on the health bar.
+			frame.healAbsorbBar.RightShadow:SetShown(totalAbsorb > 0)
+		else
+			frame.healAbsorbBar:Hide();
+		end
+	end
+
+	--Show myIncomingHeal on the health bar.
+	local incomingHealTexture;
+	if (frame.myHealPredictionBar and (frame.myHealPredictionBar.UpdateFillPosition ~= nil)) then
+		incomingHealTexture = frame.myHealPredictionBar:UpdateFillPosition(healthTexture, myIncomingHeal, -myCurrentHealAbsorbPercent);
+	end
+
+	local otherHealLeftTexture = (myIncomingHeal > 0) and incomingHealTexture or healthTexture;
+	local xOffset = (myIncomingHeal > 0) and 0 or -myCurrentHealAbsorbPercent;
+
+	--Append otherIncomingHeal on the health bar
+	if ( frame.otherHealPredictionBar and (frame.otherHealPredictionBar.UpdateFillPosition ~= nil) ) then
+		incomingHealTexture = frame.otherHealPredictionBar:UpdateFillPosition(otherHealLeftTexture, otherIncomingHeal, xOffset);
+	end
+
+	--Append absorbs to the correct section of the health bar.
+	local appendTexture = nil;
+	if ( healAbsorbTexture ) then
+		--If there is a healAbsorb part shown, append the absorb to the end of that.
+		appendTexture = healAbsorbTexture;
+	else
+		--Otherwise, append the absorb to the end of the the incomingHeals or health part;
+		appendTexture = incomingHealTexture or healthTexture;
+	end
+
+	if ( frame.totalAbsorbBar and (frame.totalAbsorbBar.UpdateFillPosition ~= nil) ) then
+		frame.totalAbsorbBar:UpdateFillPosition(appendTexture, totalAbsorb);
 	end
 end
 

@@ -24,6 +24,24 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "GetArenaRewards",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "teamSize", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "honor", Type = "number", Nilable = false },
+				{ Name = "experience", Type = "number", Nilable = false },
+				{ Name = "itemRewards", Type = "table", InnerType = "BattlefieldItemReward", Nilable = true },
+				{ Name = "currencyRewards", Type = "table", InnerType = "BattlefieldCurrencyReward", Nilable = true },
+				{ Name = "roleShortageBonus", Type = "RoleShortageReward", Nilable = true },
+			},
+		},
+		{
 			Name = "GetBattlefieldVehicleInfo",
 			Type = "Function",
 
@@ -79,6 +97,20 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "GetOutdoorPvPWaitTime",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "pvpWaitTime", Type = "time_t", Nilable = false },
+			},
+		},
+		{
 			Name = "GetRandomBGLossRewards",
 			Type = "Function",
 
@@ -102,6 +134,33 @@ local PvpInfo =
 				{ Name = "itemRewards", Type = "table", InnerType = "BattlefieldItemReward", Nilable = true },
 				{ Name = "currencyRewards", Type = "table", InnerType = "BattlefieldCurrencyReward", Nilable = true },
 				{ Name = "roleShortageBonus", Type = "RoleShortageReward", Nilable = true },
+			},
+		},
+		{
+			Name = "GetRatedBGRewards",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "honor", Type = "number", Nilable = false },
+				{ Name = "experience", Type = "number", Nilable = false },
+				{ Name = "itemRewards", Type = "table", InnerType = "BattlefieldItemReward", Nilable = true },
+				{ Name = "currencyRewards", Type = "table", InnerType = "BattlefieldCurrencyReward", Nilable = true },
+				{ Name = "roleShortageBonus", Type = "RoleShortageReward", Nilable = true },
+			},
+		},
+		{
+			Name = "GetWorldPvPWaitTime",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "pvpWaitTime", Type = "time_t", Nilable = false },
 			},
 		},
 		{
@@ -303,6 +362,28 @@ local PvpInfo =
 			LiteralName = "PVP_RATED_STATS_UPDATE",
 		},
 		{
+			Name = "PvpRewardsUpdate",
+			Type = "Event",
+			LiteralName = "PVP_REWARDS_UPDATE",
+		},
+		{
+			Name = "PvpRoleUpdate",
+			Type = "Event",
+			LiteralName = "PVP_ROLE_UPDATE",
+		},
+		{
+			Name = "PvpTypesEnabled",
+			Type = "Event",
+			LiteralName = "PVP_TYPES_ENABLED",
+			Payload =
+			{
+				{ Name = "wargameBattlegrounds", Type = "bool", Nilable = false },
+				{ Name = "ratedBattlegrounds", Type = "bool", Nilable = false },
+				{ Name = "ratedArenas", Type = "bool", Nilable = false },
+				{ Name = "ratedSoloShuffle", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "PvpVehicleInfoUpdated",
 			Type = "Event",
 			LiteralName = "PVP_VEHICLE_INFO_UPDATED",
@@ -311,6 +392,16 @@ local PvpInfo =
 			Name = "PvpWorldstateUpdate",
 			Type = "Event",
 			LiteralName = "PVP_WORLDSTATE_UPDATE",
+		},
+		{
+			Name = "PvpqueueAnywhereShow",
+			Type = "Event",
+			LiteralName = "PVPQUEUE_ANYWHERE_SHOW",
+		},
+		{
+			Name = "PvpqueueAnywhereUpdateAvailable",
+			Type = "Event",
+			LiteralName = "PVPQUEUE_ANYWHERE_UPDATE_AVAILABLE",
 		},
 		{
 			Name = "UpdateActiveBattlefield",

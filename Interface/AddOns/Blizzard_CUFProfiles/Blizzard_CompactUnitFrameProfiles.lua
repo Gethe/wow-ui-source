@@ -601,7 +601,6 @@ CUFProfileActionTable = {
 								DefaultCompactMiniFrameSetUpOptions.height = value / 2;
 							end,
 	displayBorder = function(value)
-								RAID_BORDERS_SHOWN = value;
 								DefaultCompactUnitFrameSetupOptions.displayBorder = value;
 								DefaultCompactMiniFrameSetUpOptions.displayBorder = value;
 								CompactRaidFrameManager_SetSetting("ShowBorders", value);

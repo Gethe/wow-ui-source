@@ -1,0 +1,17 @@
+## Title: Blizzard_FrameXMLBase
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_FontStyles_Frame, Blizzard_SharedXML, Blizzard_SharedXMLGame
+## SuppressLocalTableRef: 1
+## AllowLoad: Game
+## AllowLoadGameType: wrath
+Classic\IconDataProvider.lua
+AnimatedStatusBar.lua
+AnimatedStatusBar.xml
+FlowContainer.lua
+Classic\FrameLocks.lua
+PlayerMovementFrameFader.lua
+Classic\Constants.lua
+Shared\Constants.lua
+Wrath\Constants.lua
+TBC\Localization.lua

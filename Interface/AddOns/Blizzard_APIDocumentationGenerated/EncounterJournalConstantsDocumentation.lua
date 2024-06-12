@@ -5,9 +5,9 @@ local EncounterJournalConstants =
 		{
 			Name = "JournalEncounterFlags",
 			Type = "Enumeration",
-			NumValues = 6,
+			NumValues = 7,
 			MinValue = 1,
-			MaxValue = 32,
+			MaxValue = 64,
 			Fields =
 			{
 				{ Name = "Obsolete", Type = "JournalEncounterFlags", EnumValue = 1 },
@@ -16,6 +16,7 @@ local EncounterJournalConstants =
 				{ Name = "HordeOnly", Type = "JournalEncounterFlags", EnumValue = 8 },
 				{ Name = "NoMap", Type = "JournalEncounterFlags", EnumValue = 16 },
 				{ Name = "InternalOnly", Type = "JournalEncounterFlags", EnumValue = 32 },
+				{ Name = "DoNotDisplayEncounter", Type = "JournalEncounterFlags", EnumValue = 64 },
 			},
 		},
 		{
@@ -97,13 +98,14 @@ local EncounterJournalConstants =
 		{
 			Name = "JournalInstanceFlags",
 			Type = "Enumeration",
-			NumValues = 2,
+			NumValues = 3,
 			MinValue = 1,
-			MaxValue = 2,
+			MaxValue = 4,
 			Fields =
 			{
 				{ Name = "Timewalker", Type = "JournalInstanceFlags", EnumValue = 1 },
 				{ Name = "HideUserSelectableDifficulty", Type = "JournalInstanceFlags", EnumValue = 2 },
+				{ Name = "DoNotDisplayInstance", Type = "JournalInstanceFlags", EnumValue = 4 },
 			},
 		},
 		{

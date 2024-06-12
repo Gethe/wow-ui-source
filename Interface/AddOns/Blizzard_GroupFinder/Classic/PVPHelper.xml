@@ -1,0 +1,200 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="PVPHelperFrame">
+		<Scripts>
+			<OnLoad function="PVPHelperFrame_OnLoad"/>
+			<OnEvent function="PVPHelperFrame_OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="PVPFramePopup" inherits="BackdropTemplate" parent="UIParent" frameStrata="DIALOG" hidden="true">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+		</KeyValues>
+		<Size x="306" y="193"/>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture name="$parentBackground" file="Interface\PVPFrame\PVP-Conquest-Misc" >
+					<Size x="293" y="128"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-11"/>
+					</Anchors>
+					<TexCoords left="0.63867188" right="0.92480469" top="0.12304688" bottom="0.37304688"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentRingIcon" parentKey="ringIcon">
+					<Size x="60" y="60"/>
+					<Anchors>
+						<Anchor point="BOTTOM" x="-4" y="61"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentRing" file="Interface\PVPFrame\PVP-Conquest-Misc" >
+					<Size x="70" y="71"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentRingIcon"/>
+					</Anchors>
+					<TexCoords left="0.92675781" right="0.99511719" top="0.12304688" bottom="0.26171875"/>
+				</Texture>
+				<FontString name="$parentTitle" parentKey="title" inherits="GameFontHighlight" justifyH="CENTER" justifyV="MIDDLE">
+					<Size x="240" y="48"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-24"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentTimer" inherits="GameFontHighlightExtraSmall" parentKey="timer">
+					<Anchors>
+						<Anchor point="RIGHT" x="-40" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentCloseButton" parentKey="closeButton">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-4" y="-6"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
+						PVPFramePopup_OnResponse(false);
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+			</Button>
+			<Button name="$parentAcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
+				<Size x="115" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-7" y="25"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
+						PVPFramePopup_OnResponse(true);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentDeclineButton" inherits="UIPanelButtonTemplate" text="DECLINE">
+				<Size x="115" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM" x="7" y="25"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
+						PVPFramePopup_OnResponse(false);
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad inherit="prepend" function="PVPFramePopup_OnLoad"/>
+			<OnUpdate function="PVPFramePopup_OnUpdate"/>
+			<OnEvent function="PVPFramePopup_OnEvent"/>
+		</Scripts>
+	</Frame>
+	<Frame name="PVPReadyDialog" inherits="BackdropTemplate" parent="UIParent" frameStrata="DIALOG" toplevel="true" enableMouse="true">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_DARK_DIALOG_32_32" type="global"/>
+		</KeyValues>
+		<Size>
+			<AbsDimension x="320" y="110"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" parentKey="text" inherits="GameFontHighlight">
+					<Size>
+						<AbsDimension x="290" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-16"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="SubText" inherits="GameFontNormalSmall">
+					<Size x="290" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.text" relativePoint="BOTTOM" x="0" y="-6"/>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentAlertIcon">
+					<Size>
+						<AbsDimension x="36" y="36"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" x="24" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Separator" hidden="true">
+					<Size x="0" y="1"/>
+					<Anchors>
+						<Anchor point="LEFT" x="30" y="0"/>
+						<Anchor point="RIGHT" x="-30" y="0"/>
+						<Anchor point="BOTTOM" x="0" y="56"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="0.2"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="CoverFrame" frameLevel="1" enableMouse="true" enableKeyboard="true" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="UIParent"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="UIParent"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="-1">
+						<Texture setAllPoints="true">
+							<Color r="0" g="0" b="0" a="0.5"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnKeyDown function="nop"/>
+					<OnKeyUp function="nop"/>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentExtraFrame" parentKey="extraFrame" enableMouse="true"/>
+			<Button name="$parentEnterBattleButton" inherits="StaticPopupButtonTemplate" text="ENTER_BATTLE" parentKey="enterButton" id="1">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-7" y="17"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						if (self:GetParent().activeIndex and AcceptBattlefieldPort(self:GetParent().activeIndex, true )) then
+						if( StaticPopup_Visible( "DEATH" ) ) then
+						StaticPopup_Hide( "DEATH" );
+						end
+						StaticPopupSpecial_Hide(self:GetParent());
+						end
+						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentHideButton" inherits="StaticPopupButtonTemplate" text="HIDE" parentKey="hideButton" id="2">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM" x="7" y="17"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						StaticPopupSpecial_Hide(self:GetParent());
+						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad function="PVPReadyDialog_OnLoad" inherit="prepend"/>
+			<OnEvent function="PVPReadyDialog_OnEvent"/>
+			<OnHide function="PVPReadyDialog_OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

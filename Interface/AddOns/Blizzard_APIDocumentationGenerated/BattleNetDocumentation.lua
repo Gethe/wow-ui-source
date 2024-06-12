@@ -164,6 +164,7 @@ local BattleNet =
 				{ Name = "hasFocus", Type = "bool", Nilable = false },
 				{ Name = "regionID", Type = "number", Nilable = false },
 				{ Name = "isInCurrentRegion", Type = "bool", Nilable = false },
+				{ Name = "timerunningSeasonID", Type = "number", Nilable = true },
 			},
 		},
 	},

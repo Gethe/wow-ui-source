@@ -1,0 +1,11 @@
+## Title: Blizzard_Options_Glue
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_GlueXML
+## AllowLoad: Glue
+## AllowLoadGameType: classic
+## SuppressLocalTableRef: 1
+GlueOptions.lua
+OptionsFrameTemplates.xml
+OptionsPanelTemplates.xml
+VideoOptionsFrame.xml

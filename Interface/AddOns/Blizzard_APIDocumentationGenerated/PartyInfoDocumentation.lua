@@ -17,6 +17,20 @@ local PartyInfo =
 			},
 		},
 		{
+			Name = "DoCountdown",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "seconds", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetActiveCategories",
 			Type = "Function",
 
@@ -37,6 +51,16 @@ local PartyInfo =
 			Returns =
 			{
 				{ Name = "invalidQueues", Type = "table", InnerType = "QueueSpecificInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "InviteUnit",
+			Type = "Function",
+			Documentation = { "Attempt to invite the named unit to a party, requires confirmation in some cases (e.g. the party will convert to a raid, or if there is a party sync in progress)." },
+
+			Arguments =
+			{
+				{ Name = "targetName", Type = "cstring", Nilable = false },
 			},
 		},
 		{

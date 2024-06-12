@@ -221,12 +221,30 @@ local PlayerScript =
 			},
 		},
 		{
+			Name = "GetMastery",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetNormalizedRealmName",
 			Type = "Function",
 
 			Returns =
 			{
 				{ Name = "result", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "GetOverrideSpellPowerByAP",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -434,6 +452,10 @@ local PlayerScript =
 			},
 		},
 		{
+			Name = "PortGraveyard",
+			Type = "Function",
+		},
+		{
 			Name = "RandomRoll",
 			Type = "Function",
 
@@ -564,7 +586,7 @@ local PlayerScript =
 
 			Arguments =
 			{
-				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false, Default = "0" },
 				{ Name = "exactMatch", Type = "bool", Nilable = false, Default = false },
 			},
 		},

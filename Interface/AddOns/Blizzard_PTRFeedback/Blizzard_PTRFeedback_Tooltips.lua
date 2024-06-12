@@ -40,6 +40,16 @@ function PTR_IssueReporter.SetupSpellTooltips()
     end)
 end
 ----------------------------------------------------------------------------------------------------
+function PTR_IssueReporter.SetupCurrencyTooltips()
+    hooksecurefunc(GameTooltip, "SetCurrencyToken", function(self, index)
+        local id = tonumber(string.match(C_CurrencyInfo.GetCurrencyListLink(index),"currency:(%d+)"))
+        local name = C_CurrencyInfo.GetCurrencyInfo(id).name
+        if (id) and (name) then
+            PTR_IssueReporter.HookIntoTooltip(self, PTR_IssueReporter.TooltipTypes.currency, id, name)
+        end
+    end)
+end
+----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.SetupItemTooltips()
     local function attachItemTooltip(self)
         local name, link = self:GetItem()
@@ -163,5 +173,6 @@ function PTR_IssueReporter.InitializePTRTooltips()
     PTR_IssueReporter.SetupTalentTooltips()
     PTR_IssueReporter.SetupSkillTooltips()
     PTR_IssueReporter.SetupGlyphTooltips()
+    PTR_IssueReporter.SetupCurrencyTooltips()
 end
 ----------------------------------------------------------------------------------------------------

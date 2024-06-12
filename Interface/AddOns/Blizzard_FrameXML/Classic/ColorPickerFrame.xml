@@ -1,0 +1,308 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<ColorSelect name="ColorPickerFrame" mixin="ColorPickerFrameMixin" toplevel="true" inherits="BackdropTemplate" parent="UIParent" movable="true" enableMouse="true" enableKeyboard="true" hidden="true" frameStrata="DIALOG">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+		</KeyValues>
+		<Size>
+			<AbsDimension x="365" y="200"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="ColorSwatch">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="225" y="-32"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="1.0" g="1.0" b="1.0" a="1.0"/>
+				</Texture>
+				<Texture name="ColorPickerFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="256" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormal" text="COLOR_PICKER">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="ColorPickerFrameHeader">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="ColorPickerCancelButton" inherits="GameMenuButtonTemplate" text="CANCEL">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-10" y="10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						HideUIPanel(self:GetParent());
+						if ( ColorPickerFrame.cancelFunc ) then
+							ColorPickerFrame.cancelFunc(ColorPickerFrame.previousValues);
+						end
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="ColorPickerOkayButton" inherits="GameMenuButtonTemplate" text="OKAY">
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="ColorPickerCancelButton" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						HideUIPanel(self:GetParent());
+						ColorPickerFrame.swatchFunc();
+						if ( ColorPickerFrame.opacityFunc ) then
+							ColorPickerFrame.opacityFunc();
+						end
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Slider name="OpacitySliderFrame" inherits="BackdropTemplate" orientation="VERTICAL" minValue="0" maxValue="1" valueStep="0.01" defaultValue="1">
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_SLIDER_8_8" type="global"/>
+				</KeyValues>
+				<Size>
+					<AbsDimension x="16" y="128"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ColorSwatch" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="32" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP"/>
+							</Anchors>
+						</FontString>
+						<FontString inherits="GameFontNormalHuge" text="-">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+									<Offset>
+										<AbsDimension x="8" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<Color r="1" g="1" b="1" />
+						</FontString>
+						<FontString inherits="GameFontNormalHuge" text="+">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="6" y="-3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<Color r="1" g="1" b="1" />
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnValueChanged>
+						if ( ColorPickerFrame.opacityFunc ) then
+							ColorPickerFrame.opacityFunc();
+						end
+					</OnValueChanged>
+				</Scripts>
+				<ThumbTexture file="Interface\Buttons\UI-SliderBar-Button-Vertical">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+				</ThumbTexture>
+			</Slider>
+		</Frames>
+		<Scripts>
+			<OnShow>
+				if ( self.hasOpacity ) then
+					OpacitySliderFrame:Show();
+					OpacitySliderFrame:SetValue(self.opacity);
+					self:SetWidth(365);
+				else
+					OpacitySliderFrame:Hide();
+					self:SetWidth(305);
+				end
+			</OnShow>
+			<OnColorSelect>
+				ColorSwatch:SetColorTexture(r, g, b);
+				if ( self.swatchFunc ) then
+					self.swatchFunc();
+				end
+			</OnColorSelect>
+			<OnKeyDown>
+				if ( GetBindingFromClick(key) == "TOGGLEGAMEMENU" ) then
+					HideUIPanel(self);
+					if ( ColorPickerFrame.cancelFunc ) then
+						ColorPickerFrame.cancelFunc(ColorPickerFrame.previousValues);
+					end
+				end
+			</OnKeyDown>
+		</Scripts>
+		<ColorWheelTexture name="ColorPickerWheel">
+			<Size>
+				<AbsDimension x="128" y="128"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="16" y="-32"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</ColorWheelTexture>
+		<ColorWheelThumbTexture file="Interface\Buttons\UI-ColorPicker-Buttons">
+			<Size>
+				<AbsDimension x="10" y="10"/>
+			</Size>
+			<TexCoords left="0" right="0.15625" top="0" bottom="0.625"/>
+		</ColorWheelThumbTexture>
+		<ColorValueTexture>
+			<Size>
+				<AbsDimension x="32" y="128"/>
+			</Size>
+			<Anchors>
+				<Anchor point="LEFT" relativeTo="ColorPickerWheel" relativePoint="RIGHT">
+					<Offset>
+						<AbsDimension x="24" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</ColorValueTexture>
+		<ColorValueThumbTexture file="Interface\Buttons\UI-ColorPicker-Buttons">
+			<Size>
+				<AbsDimension x="48" y="14"/>
+			</Size>
+			<TexCoords left="0.25" right="1.0" top="0" bottom="0.875"/>
+		</ColorValueThumbTexture>
+	</ColorSelect>
+	<Frame name="OpacityFrame" inherits="BackdropTemplate" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true" clampedToScreen="true">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+		</KeyValues>
+		<Size>
+			<AbsDimension x="80" y="180"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPRIGHT">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Frames>
+			<Slider name="OpacityFrameSlider" inherits="BackdropTemplate" orientation="VERTICAL" minValue="0" maxValue="1" valueStep="0.01" defaultValue="1">
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_SLIDER_8_8" type="global"/>
+				</KeyValues>
+				<Size>
+					<AbsDimension x="16" y="128"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="-10" y="-35"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" inherits="GameFontNormalSmall" text="OPACITY">
+							<Anchors>
+								<Anchor point="TOP" relativeTo="OpacityFrame">
+									<Offset>
+										<AbsDimension x="0" y="-15"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString inherits="GameFontNormalHuge" text="-">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+									<Offset>
+										<AbsDimension x="8" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<Color r="1" g="1" b="1" />
+						</FontString>
+						<FontString inherits="GameFontNormalHuge" text="+">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="6" y="-3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<Color r="1" g="1" b="1" />
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnValueChanged>
+						if ( OpacityFrame.opacityFunc ) then
+							OpacityFrame.opacityFunc();
+						end
+					</OnValueChanged>
+				</Scripts>
+				<ThumbTexture file="Interface\Buttons\UI-SliderBar-Button-Vertical">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+				</ThumbTexture>
+			</Slider>
+			<Button name="OpacityFrameCloseButton" parent="UIParent" setAllPoints="true" hidden="true">
+				<Scripts>
+					<OnLoad>
+						self:SetFrameLevel(self:GetFrameLevel()-1);
+						self:RegisterForClicks("LeftButtonDown", "RightButtonDown");
+					</OnLoad>
+					<OnClick>
+						OpacityFrame:Hide();
+						if ( OpacityFrame.saveOpacityFunc ) then
+							OpacityFrame.saveOpacityFunc();
+						end
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow>
+				OpacityFrameCloseButton:Show();
+			</OnShow>
+			<OnHide>
+				OpacityFrameCloseButton:Hide();
+			</OnHide>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -1,0 +1,12 @@
+## Title: Blizzard_MoneyFrame
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_SharedXMLGame
+## SuppressLocalTableRef: 1
+## AllowLoad: Game
+## AllowLoadGameType: classic
+Classic\MoneyFrame.lua
+Classic\MoneyFrame.xml
+Classic\MoneyInputFrame.lua
+Classic\MoneyInputFrame.xml
+Classic\Localization.lua

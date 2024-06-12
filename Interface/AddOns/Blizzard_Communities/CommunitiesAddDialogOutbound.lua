@@ -13,16 +13,14 @@ function Outbound.HideGameTooltip()
 end
 
 local function CommunitiesAvatarPicker_OnOkay(self)
-	local communitiesAvatarPickerDialog = self:GetParent();
-	communitiesAvatarPickerDialog:Hide();
-	CommunitiesCreateDialog_SetAvatarId(communitiesAvatarPickerDialog:GetAvatarId());
+	CommunitiesAvatarPickerDialog:Hide();
+	CommunitiesCreateDialog_SetAvatarId(CommunitiesAvatarPickerDialog:GetAvatarId());
 	CommunitiesCreateDialog_SetShown(true);
 	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
 end
 
 local function CommunitiesAvatarPicker_OnCancel(self)
-	local communitiesAvatarPickerDialog = self:GetParent();
-	communitiesAvatarPickerDialog:Hide();
+	CommunitiesAvatarPickerDialog:Hide();
 	CommunitiesCreateDialog_SetShown(true);
 	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
 end
