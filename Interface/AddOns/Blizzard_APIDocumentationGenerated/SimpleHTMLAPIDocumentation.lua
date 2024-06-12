@@ -86,7 +86,7 @@ local SimpleHTMLAPI =
 
 			Returns =
 			{
-				{ Name = "justifyH", Type = "TBFStyleFlags", Nilable = false },
+				{ Name = "justifyH", Type = "JustifyHorizontal", Nilable = false },
 			},
 		},
 		{
@@ -100,7 +100,7 @@ local SimpleHTMLAPI =
 
 			Returns =
 			{
-				{ Name = "justifyV", Type = "TBFStyleFlags", Nilable = false },
+				{ Name = "justifyV", Type = "JustifyVertical", Nilable = false },
 			},
 		},
 		{
@@ -227,7 +227,7 @@ local SimpleHTMLAPI =
 			Arguments =
 			{
 				{ Name = "textType", Type = "HTMLTextType", Nilable = false },
-				{ Name = "justifyH", Type = "TBFStyleFlags", Nilable = false },
+				{ Name = "justifyH", Type = "JustifyHorizontal", Nilable = false },
 			},
 		},
 		{
@@ -237,7 +237,7 @@ local SimpleHTMLAPI =
 			Arguments =
 			{
 				{ Name = "textType", Type = "HTMLTextType", Nilable = false },
-				{ Name = "justifyV", Type = "TBFStyleFlags", Nilable = false },
+				{ Name = "justifyV", Type = "JustifyVertical", Nilable = false },
 			},
 		},
 		{

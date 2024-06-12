@@ -1,0 +1,6 @@
+## Title: Blizzard_FontStyles_Glue
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_Fonts_Glue, Blizzard_FontStyles_Shared
+## AllowLoad: Glue
+GlueFontStyles.xml

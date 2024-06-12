@@ -1,10 +1,6 @@
 ## Title: Blizzard WoW Token UI
-## LoadOnDemand: 0
-..\..\SharedXML\Mixin.lua
-..\..\SharedXML\PortraitFrame.lua
-..\..\SharedXML\NineSliceLayouts.lua
-..\..\SharedXML\NineSlice.lua
-..\..\SharedXML\SecureUIPanelTemplates.lua
-..\..\SharedXML\Spinner.lua
+## LoadFirst: 1
+## RequiredDep: Blizzard_SharedXML, Blizzard_UIParent
+## UseSecureEnvironment: 1
 Blizzard_WowTokenUI.xml
 Blizzard_WowTokenUIInsecure.xml

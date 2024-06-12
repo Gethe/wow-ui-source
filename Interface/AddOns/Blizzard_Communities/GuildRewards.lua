@@ -8,7 +8,7 @@ function CommunitiesGuildRewardsButtonMixin:Init(elementData)
 	local index = elementData.index;
 	local playerMoney = GetMoney();
 	local gender = UnitSex("player");
-	local standingID = select(3, GetGuildFactionInfo());
+	local guildFactionData = C_Reputation.GetGuildFactionData();
 	local achievementID, itemID, itemName, iconTexture, repLevel, moneyCost = GetGuildRewardInfo(index);
 	self.Name:SetText(itemName);
 	self.Icon:SetTexture(iconTexture);
@@ -40,7 +40,7 @@ function CommunitiesGuildRewardsButtonMixin:Init(elementData)
 		self.Icon:SetDesaturated(false);
 		self.Name:SetFontObject(GameFontNormal);
 		self.Lock:Hide();
-		if ( repLevel > standingID ) then
+		if ( repLevel > guildFactionData.reaction ) then
 			local factionStandingtext = GetText("FACTION_STANDING_LABEL"..repLevel, gender);
 			self.SubText:SetFormattedText(REQUIRES_GUILD_FACTION, factionStandingtext);
 			self.SubText:Show();
@@ -68,12 +68,6 @@ function CommunitiesGuildRewardsFrame_OnShow(self)
 	RequestGuildRewards();
 end
 
-function CommunitiesGuildRewardsFrame_OnHide(self)
-	if ( self.DropDown.rewardIndex ) then
-		CloseDropDownMenus();
-	end
-end
-
 function CommunitiesGuildRewardsFrame_OnEvent(self, event)
 	CommunitiesGuildRewards_Update(self);
 end
@@ -81,17 +75,12 @@ end
 function CommunitiesGuildRewards_Update(self)
 	local dataProvider = CreateDataProvider();
 	for index = 1, GetNumGuildRewards() do
-		local achievementID, itemID, itemName, iconTexture, repLevel, moneyCost = GetGuildRewardInfo(index);
-		if itemName then
+		if GetGuildRewardInfo(index) ~= nil then
 			dataProvider:Insert({index=index});
 		end
 	end
 	self.ScrollBox:SetDataProvider(dataProvider);
 
-	-- hide dropdown menu
-	if ( self.DropDown.rewardIndex ) then
-		CloseDropDownMenus();
-	end
 	-- update tooltip
 	if ( self.activeButton ) then
 		CommunitiesGuildRewardsButton_OnEnter(self.activeButton);
@@ -113,8 +102,8 @@ function CommunitiesGuildRewardsButton_OnEnter(self)
 		
 		hasAchievementRequirements = true;
 	end
-	local _, _, standingID = GetGuildFactionInfo();
-	if ( repLevel > standingID ) then
+	local guildFactionData = C_Reputation.GetGuildFactionData();
+	if ( repLevel > guildFactionData.reaction ) then
 		local gender = UnitSex("player");
 		local factionStandingtext = GetText("FACTION_STANDING_LABEL"..repLevel, gender);
 		
@@ -136,66 +125,33 @@ function CommunitiesGuildRewardsButton_OnLeave(self)
 	self:GetParent():GetParent():GetParent().activeButton = nil;
 	self.UpdateTooltip = nil;
 end
-
 function CommunitiesGuildRewardsButton_OnClick(self, button)
 	if ( IsModifiedClick("CHATLINK") ) then
-		local achievementID, itemID, itemName, iconTexture, repLevel, moneyCost = GetGuildRewardInfo(self.index);
+		local achievementID, itemID = GetGuildRewardInfo(self.index);
 		ChatEdit_LinkItem(itemID);
 	elseif (button == "LeftButton" and IsControlKeyDown()) then
-		local achievementID, itemID, itemName, iconTexture, repLevel, moneyCost = GetGuildRewardInfo(self.index);
-
+		local achievementID = GetGuildRewardInfo(self.index);
 		if(achievementID and achievementID > 0) then
 			OpenAchievementFrameToAchievement(achievementID);
 		end
 	elseif ( button == "RightButton" ) then
-		local dropDown = self:GetParent():GetParent():GetParent().DropDown;
-		if ( dropDown.rewardIndex ~= self.index ) then
-			CloseDropDownMenus();
-		end
-		dropDown.rewardIndex = self.index;
-		dropDown.onHide = function ()
-			CommunitiesGuildRewardsDropDown_OnHide(dropDown);
-		end;
-		ToggleDropDownMenu(1, nil, dropDown, "cursor", 3, -3);
+		MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
+			rootDescription:SetTag("MENU_GUILD_REWARDS");
+
+			local achievementID, itemID, itemName = GetGuildRewardInfo(self.index);
+			rootDescription:CreateTitle(itemName);
+
+			rootDescription:CreateButton(GUILD_NEWS_LINK_ITEM, function()
+				ChatEdit_LinkItem(itemID);
+			end);
+
+			if achievementID and achievementID > 0 then
+				rootDescription:CreateButton(GUILD_NEWS_VIEW_ACHIEVEMENT, function()
+					OpenAchievementFrameToAchievement(achievementID);
+				end);
+			end
+		end);
 	end
-end
-
---****** Dropdown **************************************************************
-
-function CommunitiesGuildRewardsDropDown_OnLoad(self)
-	UIDropDownMenu_Initialize(self, CommunitiesGuildRewardsDropDown_Initialize, "MENU");
-end
-
-function CommunitiesGuildRewardsDropDown_Initialize(self)
-	if ( not self.rewardIndex ) then
-		return;
-	end
-	
-	local achievementID, itemID, itemName, iconTexture, repLevel, moneyCost = GetGuildRewardInfo(self.rewardIndex);
-
-	local info = UIDropDownMenu_CreateInfo();
-	info.notCheckable = 1;
-	info.isTitle = 1;
-	info.text = itemName;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-	info = UIDropDownMenu_CreateInfo();
-	info.notCheckable = 1;
-
-	info.func = function (button, ...) ChatEdit_LinkItem(...) end;
-	info.text = GUILD_NEWS_LINK_ITEM;
-	info.arg1 = itemID;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-		
-	if ( achievementID and achievementID > 0 ) then
-		info.func = function (button, ...) OpenAchievementFrameToAchievement(...); end;
-		info.text = GUILD_NEWS_VIEW_ACHIEVEMENT;
-		info.arg1 = achievementID;
-		UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-	end
-end
-
-function CommunitiesGuildRewardsDropDown_OnHide(self)
-	self.rewardIndex = nil;
 end
 
 CommunitiesGuildFactionBarMixin = {};
@@ -210,7 +166,8 @@ function CommunitiesGuildFactionBarMixin:OnHide()
 end
 
 function CommunitiesGuildFactionBarMixin:OnEnter()
-	local name, description, standingID, barMin, barMax, barValue = GetGuildFactionInfo();
+	local guildFactionData = C_Reputation.GetGuildFactionData();
+	local barMin, barMax, barValue = guildFactionData.currentReactionThreshold, guildFactionData.nextReactionThreshold, guildFactionData.currentStanding;
 	
 	--Normalize Values
 	barMax = barMax - barMin;
@@ -223,10 +180,9 @@ function CommunitiesGuildFactionBarMixin:OnEnter()
 	
 	self.Label:SetText(GUILD_EXPERIENCE_LABEL:format(BreakUpLargeNumbers(barValue), BreakUpLargeNumbers(barMax)));
 	
-	local name, description = GetGuildFactionInfo();
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetText(GUILD_REPUTATION);
-	GameTooltip:AddLine(description, 1, 1, 1, true);
+	GameTooltip:AddLine(guildFactionData.description, 1, 1, 1, true);
 	local percentTotal = math.ceil((barValue / barMax) * 100);
 	GameTooltip:AddLine(GUILD_EXPERIENCE_CURRENT:format(BreakUpLargeNumbers(barValue), BreakUpLargeNumbers(barMax), percentTotal));
 	GameTooltip:Show();
@@ -234,8 +190,8 @@ end
 
 function CommunitiesGuildFactionBarMixin:OnLeave()
 	local gender = UnitSex("player");
-	local name, description, standingID, barMin, barMax, barValue = GetGuildFactionInfo();
-	local factionStandingtext = GetText("FACTION_STANDING_LABEL"..standingID, gender);
+	local guildFactionData = C_Reputation.GetGuildFactionData();
+	local factionStandingtext = GetText("FACTION_STANDING_LABEL"..guildFactionData.reaction, gender);
 	self.Label:SetText(factionStandingtext);
 	GameTooltip:Hide();
 end
@@ -247,15 +203,16 @@ function CommunitiesGuildFactionBarMixin:OnEvent(event)
 end
 
 function CommunitiesGuildFactionBarMixin:UpdateFaction()
-	local name, description, standingID, barMin, barMax, barValue = GetGuildFactionInfo();
+	local guildFactionData = C_Reputation.GetGuildFactionData();
 	
 	if not self:IsMouseOver() then
 		local gender = UnitSex("player");
-		local factionStandingtext = GetText("FACTION_STANDING_LABEL"..standingID, gender);
+		local factionStandingtext = GetText("FACTION_STANDING_LABEL"..guildFactionData.reaction, gender);
 		self.Label:SetText(factionStandingtext);
 	end
 	
 	--Normalize Values
+	local barMin, barMax, barValue = guildFactionData.currentReactionThreshold, guildFactionData.nextReactionThreshold, guildFactionData.currentStanding;
 	barMax = barMax - barMin;
 	barValue = barValue - barMin;
 	self:SetProgress(barValue, barMax);
@@ -282,8 +239,14 @@ end
 GuildAchievementPointDisplayMixin = {};
 
 function GuildAchievementPointDisplayMixin:OnShow()
-	self.SumText:SetText(BreakUpLargeNumbers(GetTotalAchievementPoints(true)));
-	self:SetWidth(self.SumText:GetWidth() + self.Icon:GetWidth() + 20);
+	local ap = GetTotalAchievementPoints(true);
+	if ap then
+		self.SumText:SetText(BreakUpLargeNumbers(ap));
+		self:SetWidth(self.SumText:GetWidth() + self.Icon:GetWidth() + 20);
+	else
+		self.SumText:Hide();
+		self.Icon:Hide();
+	end
 end
 
 function GuildAchievementPointDisplayMixin:OnEnter()

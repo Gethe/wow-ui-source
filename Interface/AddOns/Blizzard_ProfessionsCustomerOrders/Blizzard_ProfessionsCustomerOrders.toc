@@ -1,7 +1,7 @@
 ## Title: Blizzard Professions Customer Orders
 ## Author: Blizzard Entertainment
 ## LoadOnDemand: 1
-## Dependencies: Blizzard_ProfessionsTemplates, Blizzard_AuctionHouseShared
+## Dependencies: Blizzard_ProfessionsTemplates, Blizzard_AuctionHouseUI
 Blizzard_ProfessionsCustomerOrdersForm.xml
 Blizzard_ProfessionsCustomerOrdersRecipeCategoryList.xml
 Blizzard_ProfessionsCustomerOrdersRecipeList.xml

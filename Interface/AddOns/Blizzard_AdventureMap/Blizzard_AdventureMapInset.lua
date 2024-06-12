@@ -37,7 +37,7 @@ function AdventureMapInsetMixin:Initialize(mapCanvas, collapsed, insetIndex, map
 	self.normalizedX = normalizedX;
 	self.normalizedY = normalizedY;
 
-	self:BuildDetailTiles(insetIndex, tileIndex, numDetailTiles)
+	self:BuildDetailTiles(insetIndex, numDetailTiles)
 
 	self.ExpandedFrame.CloseButton:SetScale(1.0 / self:GetMap():GetScaleForMaxZoom());
 
@@ -65,7 +65,7 @@ function AdventureMapInsetMixin:OnReleased()
 	self:Hide();
 end
 
-function AdventureMapInsetMixin:BuildDetailTiles(insetIndex, tileIndex, numDetailTiles)
+function AdventureMapInsetMixin:BuildDetailTiles(insetIndex, numDetailTiles)
 	if not self.detailTilePool then
 		self.detailTilePool = CreateTexturePool(self.ExpandedFrame, "BACKGROUND", -6, "AdventureMapDetailTileTemplate");
 	end

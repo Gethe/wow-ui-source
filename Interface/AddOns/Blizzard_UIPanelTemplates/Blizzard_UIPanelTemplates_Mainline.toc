@@ -1,0 +1,10 @@
+## Title: Blizzard_UIPanelTemplates
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_SharedXMLGame
+## AllowLoad: game
+## AllowLoadGameType: mainline
+Mainline\AutoCastTemplates.lua
+Mainline\AutoCastTemplates.xml
+Mainline\UIPanelTemplates.lua
+Mainline\UIPanelTemplates.xml

@@ -78,6 +78,8 @@ function InspectPVPFrame_Update()
 		InspectPVPFrame.SmallWreath:Hide();
 		InspectPVPFrame.HonorLevel:Hide();
 		InspectPVPFrame.RatedBG:Hide();
+		InspectPVPFrame.RatedSoloShuffle:Hide();
+		InspectPVPFrame.RatedBGBlitz:Hide();
 		for i = 1, MAX_ARENA_TEAMS do
 			arenaFrames[i]:Hide();
 		end
@@ -96,10 +98,16 @@ function InspectPVPFrame_Update()
 			frame.Record:SetFormattedText(PVP_RECORD_DESCRIPTION, seasonWon, (seasonPlayed - seasonWon));
 			frame:Show();
 		end
+
 		local ratedSoloShuffleStats = C_PaperDollInfo.GetInspectRatedSoloShuffleData();
 		InspectPVPFrame.RatedSoloShuffle.Rating:SetText(ratedSoloShuffleStats.rating);
 		InspectPVPFrame.RatedSoloShuffle.Record:SetFormattedText(PVP_RECORD_DESCRIPTION, ratedSoloShuffleStats.roundsWon, (ratedSoloShuffleStats.roundsPlayed - ratedSoloShuffleStats.roundsWon));
 		InspectPVPFrame.RatedSoloShuffle:Show();
+
+		local ratedBGBlitzStats = C_PaperDollInfo.GetInspectRatedBGBlitzData();
+		InspectPVPFrame.RatedBGBlitz.Rating:SetText(ratedBGBlitzStats.rating);
+		InspectPVPFrame.RatedBGBlitz.Record:SetFormattedText(PVP_RECORD_DESCRIPTION, ratedBGBlitzStats.gamesWon, (ratedBGBlitzStats.gamesPlayed - ratedBGBlitzStats.gamesWon));
+		InspectPVPFrame.RatedBGBlitz:Show();
 		
 		InspectPVPFrame.talentGroup = GetActiveSpecGroup(true);
 		for i, slot in ipairs(InspectPVPFrame.Slots) do

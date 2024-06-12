@@ -45,6 +45,7 @@ PTR_IssueReporter.Assets = {
     FontString = "GameFontNormal",
     BossReportIcon = "Interface\\HelpFrame\\HelpIcon-Bug-Red",
     PetReportIcon = "Interface\\Icons\\tracking_wildpet",
+    RadiantChordIcon = 135948,
     EditModeIcon = "Interface\\Icons\\ability_siege_engineer_pattern_recognition",
     AIBotIcon = "Interface\\HelpFrame\\HelpIcon-Bug-Red",
 }
@@ -413,7 +414,7 @@ function PTR_IssueReporter.HandleMapEvents()
     local mapID = select(4, UnitPosition(PTR_IssueReporter.Data.UnitTokens.Player)) or 0
     local difficultyID = select(3, GetInstanceInfo()) or 0
     
-    if not (PTR_IssueReporter.Data.CurrentMapID == mapID) then
+    if PTR_IssueReporter.Data.CurrentMapID ~= mapID then
         PTR_IssueReporter.Data.PreviousMapID = PTR_IssueReporter.Data.CurrentMapID
         PTR_IssueReporter.Data.PreviousMapDifficultyID = PTR_IssueReporter.Data.CurrentMapDifficultyID
         PTR_IssueReporter.Data.PreviousMapName = PTR_IssueReporter.Data.CurrentMapName
@@ -449,6 +450,7 @@ function PTR_IssueReporter.HandleMapEvents()
     end
 end
 ----------------------------------------------------------------------------------------------------
+local groupHasAIBots;
 function PTR_IssueReporter.HandleGroupRosterChanged()
 	if IsInRaid() then
         return
@@ -574,7 +576,6 @@ function PTR_IssueReporter.GetTitleFromSurvey(survey, dataPackage)
             
             table.insert(titleTokens, tokenString)
         end
-        test = titleTokens
         titleString = string.format(survey.Title, unpack(titleTokens))
     elseif (survey.Title) then
         titleString = survey.Title
@@ -691,8 +692,8 @@ local function PlayerEnteringWorldHandler()
     PTR_IssueReporter.Init()
     PTR_IssueReporter:UnregisterEvent("PLAYER_ENTERING_WORLD")  
     
-    SLASH_PTRFEEDBACK1 = "/PTR"
-    SLASH_PTRFEEDBACK2 = "/PTRFEEDBACK"
+    _G["SLASH_PTRFEEDBACK1"] = "/PTR"
+    _G["SLASH_PTRFEEDBACK2"] = "/PTRFEEDBACK"
     SlashCmdList["PTRFEEDBACK"] = PTR_IssueReporter.SlashHandeler
 end
 if not(IsOnGlueScreen()) then

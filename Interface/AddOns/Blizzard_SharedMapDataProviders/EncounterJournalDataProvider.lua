@@ -15,7 +15,6 @@ function EncounterJournalDataProviderMixin:OnShow()
 
 	self:RegisterEvent("CONTENT_TRACKING_UPDATE");
 	self:RegisterEvent("TRACKING_TARGET_INFO_UPDATE");
-	self:RegisterEvent("SUPER_TRACKING_CHANGED");
 end
 
 function EncounterJournalDataProviderMixin:OnHide()
@@ -23,7 +22,6 @@ function EncounterJournalDataProviderMixin:OnHide()
 
 	self:UnregisterEvent("CONTENT_TRACKING_UPDATE");
 	self:UnregisterEvent("TRACKING_TARGET_INFO_UPDATE");
-	self:UnregisterEvent("SUPER_TRACKING_CHANGED");
 end
 
 function EncounterJournalDataProviderMixin:OnEvent(event, ...)
@@ -68,8 +66,9 @@ function EncounterJournalDataProviderMixin:CheckForContentTracking(encounterID)
 	local pin = self:GetMap():AcquirePin("EncounterMapTrackingPinTemplate");
 	pin:SetPinScale(1.5);
 	pin:Init(self, trackedItemMapInfos);
-	
-	pin.isSuperTracked = pin:IsSuperTracked();
+
+	local isSuperTracked = pin:IsSuperTracked();
+	pin.isSuperTracked = isSuperTracked;
 
 	if isSuperTracked then
 		pin:UseFrameLevelType("PIN_FRAME_LEVEL_SUPER_TRACKED_CONTENT");
@@ -77,8 +76,7 @@ function EncounterJournalDataProviderMixin:CheckForContentTracking(encounterID)
 		pin:UseFrameLevelType("PIN_FRAME_LEVEL_TRACKED_CONTENT");
 	end
 
-	pin.selected = isSuperTracked;
-	
+	pin:SetSelected(isSuperTracked);
 	pin:SetStyle(POIButtonUtil.Style.ContentTracking);
 
 	local trackableMapInfo = trackedItemMapInfos[1];

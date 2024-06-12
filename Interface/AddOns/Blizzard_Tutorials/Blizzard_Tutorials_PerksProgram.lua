@@ -16,16 +16,12 @@ function AddPerksProgramTutorials()
 		TutorialManager:AddWatcher(Class_PerksProgramProductPurchased:new(), true);
 	end
 
-	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PERKS_PROGRAM_ACTIVITIES_OPEN) then
+	if not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_PERKS_PROGRAM_ACTIVITIES_OPEN) then
 		TutorialManager:AddWatcher(Class_PerksProgramActivitiesPromptWatcher:new(), true);
 	end
 
-	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PERKS_PROGRAM_ACTIVITIES_INTRO) then
+	if not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_PERKS_PROGRAM_ACTIVITIES_INTRO) then
 		TutorialManager:AddWatcher(Class_PerksProgramActivitiesOpenWatcher:new(), true);
-	end
-
-	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PERKS_PROGRAM_ACTIVITIES_TRACKING) then
-		TutorialManager:AddWatcher(Class_PerksProgramActivitiesTrackingWatcher:new(), true);
 	end
 end
 
@@ -220,8 +216,9 @@ function Class_PerksProgramProductPurchased:OnInitialize()
 end
 
 function Class_PerksProgramProductPurchased:ShowHelpTip()
+	self.parent = MicroMenuContainer;
 	self.target = CollectionsMicroButton;
-	HelpTip:Show(self.target, self.helpTipInfo);
+	HelpTip:Show(self.parent, self.helpTipInfo, self.target);
 end
 
 function Class_PerksProgramProductPurchased:OnProductPurchased()
@@ -253,7 +250,7 @@ end
 
 function Class_PerksProgramProductPurchased:FinishTutorial()
 	TutorialManager:StopWatcher(self:Name(), true);
-	HelpTip:Hide(self.target, TUTORIAL_PERKS_PROGRAM_NEW_COLLECTION_ITEM);
+	HelpTip:Hide(self.parent, TUTORIAL_PERKS_PROGRAM_NEW_COLLECTION_ITEM);
 end
 
 -- ------------------------------------------------------------------------------------------------------------
@@ -275,19 +272,21 @@ function Class_PerksProgramActivitiesPromptWatcher:OnInitialize()
 	self.questID = QuestData[TutorialHelper:GetFaction()].IntroTradingPostQuestID;
 	self.helpTipInfo = {
 		text = TUTORIAL_PERKS_PROGRAM_ACTIVITIES_OPEN,
-		cvarBitfield = "closedInfoFrames",
-		bitfieldFlag = LE_FRAME_TUTORIAL_PERKS_PROGRAM_ACTIVITIES_OPEN,
+		cvarBitfield = "closedInfoFramesAccountWide",
+		bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_PERKS_PROGRAM_ACTIVITIES_OPEN,
 		buttonStyle = HelpTip.ButtonStyle.Close,
 		targetPoint = HelpTip.Point.TopEdgeCenter,
 		alignment = HelpTip.Alignment.Right,
 		onAcknowledgeCallback = GenerateClosure(self.FinishTutorial, self),
-		acknowledgeOnHide = false,
+		checkCVars = true,
+		acknowledgeOnHide = true,
 	};
 end
 
 function Class_PerksProgramActivitiesPromptWatcher:ShowHelpTip()
+	self.parent = MicroMenuContainer;
 	self.target = EJMicroButton;	
-	HelpTip:Show(self.target, self.helpTipInfo);
+	HelpTip:Show(self.parent, self.helpTipInfo, self.target);
 end
 
 function Class_PerksProgramActivitiesPromptWatcher:StartWatching()
@@ -324,7 +323,7 @@ end
 
 function Class_PerksProgramActivitiesPromptWatcher:FinishTutorial()
 	TutorialManager:StopWatcher(self:Name(), true);
-	HelpTip:Hide(self.target, TUTORIAL_PERKS_PROGRAM_ACTIVITIES_OPEN);
+	HelpTip:Hide(self.parent, TUTORIAL_PERKS_PROGRAM_ACTIVITIES_OPEN);
 end
 
 -- ------------------------------------------------------------------------------------------------------------
@@ -332,13 +331,14 @@ Class_PerksProgramActivitiesOpenWatcher = class("PerksProgramActivitiesOpenWatch
 function Class_PerksProgramActivitiesOpenWatcher:OnInitialize()
 	self.helpTipInfo = {
 		text = MONTHLY_ACTIVITIES_HELP_1,
-		cvarBitfield = "closedInfoFrames",
-		bitfieldFlag = LE_FRAME_TUTORIAL_PERKS_PROGRAM_ACTIVITIES_INTRO,
+		cvarBitfield = "closedInfoFramesAccountWide",
+		bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_PERKS_PROGRAM_ACTIVITIES_INTRO,
 		buttonStyle = HelpTip.ButtonStyle.Close,
 		targetPoint = HelpTip.Point.TopEdgeLeft,
 		onAcknowledgeCallback = GenerateClosure(self.FinishTutorial, self),
 		alignment = HelpTip.Alignment.Left,
-		acknowledgeOnHide = false,
+		checkCVars = true,
+		acknowledgeOnHide = true,
 	};
 end
 
@@ -379,23 +379,6 @@ end
 -- ------------------------------------------------------------------------------------------------------------
 Class_PerksProgramActivitiesTrackingWatcher = class("PerksProgramActivitiesTrackingWatcher", Class_TutorialBase);
 function Class_PerksProgramActivitiesTrackingWatcher:OnInitialize()
-	self.helpTipInfo = {
-		text = MONTHLY_ACTIVITIES_HELP_2,
-		cvarBitfield = "closedInfoFrames",
-		bitfieldFlag = LE_FRAME_TUTORIAL_PERKS_PROGRAM_ACTIVITIES_TRACKING,
-		buttonStyle = HelpTip.ButtonStyle.Close,
-		targetPoint = HelpTip.Point.RightEdgeCenter,
-		onAcknowledgeCallback = GenerateClosure(self.FinishTutorial, self),
-		alignment = HelpTip.Alignment.Left,
-		offsetX = -20,
-		offsetY	= 0,
-		acknowledgeOnHide = false,
-	};
-end
-
-function Class_PerksProgramActivitiesTrackingWatcher:ShowHelpTip()
-	self.target = EncounterJournalMonthlyActivitiesFrame;
-	HelpTip:Show(self.target, self.helpTipInfo);
 end
 
 function Class_PerksProgramActivitiesTrackingWatcher:StartWatching()
@@ -407,15 +390,6 @@ function Class_PerksProgramActivitiesTrackingWatcher:StopWatching()
 end
 
 function Class_PerksProgramActivitiesTrackingWatcher:OnEncounterJournalTabOpened(EJ, encounterJournalTabID)
-	if encounterJournalTabID == EncounterJournal.MonthlyActivitiesTab:GetID() then
-		C_Timer.After(0.1, function()
-			self:ShowHelpTip();
-		end);
-	else
-		if self.target then
-			HelpTip:Hide(self.target, TUTORIAL_PERKS_PROGRAM_ACTIVITIES_TRACKING);
-		end
-	end
 end
 
 function Class_PerksProgramActivitiesTrackingWatcher:OnInterrupt(interruptedBy)
@@ -424,5 +398,4 @@ end
 
 function Class_PerksProgramActivitiesTrackingWatcher:FinishTutorial()
 	TutorialManager:StopWatcher(self:Name(), true);
-	HelpTip:Hide(self.target, TUTORIAL_PERKS_PROGRAM_ACTIVITIES_TRACKING);
 end

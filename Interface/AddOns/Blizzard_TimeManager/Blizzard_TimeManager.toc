@@ -1,5 +1,0 @@
-## Title: Blizzard Time Manager
-## LoadOnDemand: 1
-## SavedVariablesPerCharacter: BlizzardStopwatchOptions
-Blizzard_TimeManager.xml
-Localization.lua

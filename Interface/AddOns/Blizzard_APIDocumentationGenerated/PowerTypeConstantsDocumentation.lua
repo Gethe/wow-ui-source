@@ -3,11 +3,23 @@ local PowerTypeConstants =
 	Tables =
 	{
 		{
+			Name = "BalanceType",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = -1,
+			MaxValue = 0,
+			Fields =
+			{
+				{ Name = "None", Type = "BalanceType", EnumValue = -1 },
+				{ Name = "Eclipse", Type = "BalanceType", EnumValue = 0 },
+			},
+		},
+		{
 			Name = "PowerType",
 			Type = "Enumeration",
-			NumValues = 26,
+			NumValues = 27,
 			MinValue = 0,
-			MaxValue = 25,
+			MaxValue = 26,
 			Fields =
 			{
 				{ Name = "Mana", Type = "PowerType", EnumValue = 0 },
@@ -36,6 +48,20 @@ local PowerTypeConstants =
 				{ Name = "AlternateQuest", Type = "PowerType", EnumValue = 23 },
 				{ Name = "AlternateEncounter", Type = "PowerType", EnumValue = 24 },
 				{ Name = "AlternateMount", Type = "PowerType", EnumValue = 25 },
+				{ Name = "Balance", Type = "PowerType", EnumValue = 26 },
+			},
+		},
+		{
+			Name = "PowerTypeSign",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = -1,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "None", Type = "PowerTypeSign", EnumValue = -1 },
+				{ Name = "Positive", Type = "PowerTypeSign", EnumValue = 0 },
+				{ Name = "Negative", Type = "PowerTypeSign", EnumValue = 1 },
 			},
 		},
 		{

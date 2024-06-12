@@ -1,0 +1,431 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="LootHistoryElementTemplate" mixin="LootHistoryElementMixin" virtual="true" frameLevel="500">
+		<Size x="218" y="58"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+		<Frames>
+			<ItemButton parentKey="Item" registerForClicks="LeftButtonUp, RightButtonUp">
+				<!-- Override ItemButton to have no normal texture -->
+				<NormalTexture/>
+				<Size x="48" y="48"/>
+				<Anchors>
+					<Anchor point="LEFT" x="6" y="0"/>
+				</Anchors>
+			</ItemButton>
+			<Frame parentKey="BackgroundArtFrame" setAllPoints="true" frameLevel="400">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="NameFrame" atlas="looting_itemcard_bg" useAtlasSize="false" setAllPoints="true"/>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture parentKey="BorderFrame" atlas="lootroll-itementry-background" useAtlasSize="false" setAllPoints="false"/>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="WinningRollInfo">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-7" y="14"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="WinningRoll" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+							<Size x="0" y="0"/>
+							<Anchors>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="Check" atlas="lootroll-icon-checkmark" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent.WinningRoll" relativePoint="LEFT" x="-4" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="PendingRollInfo">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-7" y="14"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="CurrentWinnerText" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+							<Color color="DISABLED_FONT_COLOR"/>
+							<Size x="0" y="0"/>
+							<Anchors>
+								<Anchor point="RIGHT" x="-2"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="WaitDot1" alpha="0" atlas="lootroll-pendingdot" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent.CurrentWinnerText" relativePoint="LEFT" x="-4" y="-1"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="WaitDot2" alpha="0" atlas="lootroll-pendingdot" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent.WaitDot1" relativePoint="LEFT" x="-3" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="WaitAnim" looping="REPEAT">
+						<Alpha childKey="WaitDot1" startDelay="0.65" duration="0.15" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="WaitDot2" startDelay="0.50" duration="0.15" order="2" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="WaitDot1" startDelay="0.50" duration="0.15" order="3" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="WaitDot2" startDelay="0.50" duration="0.15" order="4" fromAlpha="1" toAlpha="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="AllPassedInfo">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-7" y="14"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="AllPassedText" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP" text="LOOT_HISTORY_ALL_PASSED">
+							<Color color="RED_FONT_COLOR"/>
+							<Size x="0" y="0"/>
+							<Anchors>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="Icon" atlas="lootroll-icon-checkmark" useAtlasSize="false">
+							<Size x="15" y="13"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent.AllPassedText" relativePoint="LEFT" x="-4" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="PlayerRoll" frameStrata="HIGH" frameLevel="550">
+				<Size x="37" y="33"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Item" relativePoint="TOPLEFT" x="5" y="-4"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="PlayerRollIcon">
+							<Size x="37" y="33"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="ItemName" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+					<Size x="150" y="32"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Item" relativePoint="TOPRIGHT" x="6" y="-2"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="LootHistoryPassedHeaderPaddingTemplate" virtual="true">
+		<Size x="218" y="12"/>
+	</Frame>
+
+	<Frame name="LootHistoryPassedHeaderTemplate" virtual="true">
+		<Size x="218" y="14"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString inherits="GameFontNormalMed2" text="LOOT_HISTORY_PASSED">
+					<Color color="HIGHLIGHT_FONT_COLOR"/>
+					<Size x="0" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="LootHistoryRollTooltipLineTemplate" inherits="ResizeLayoutFrame" mixin="LootHistoryRollTooltipLineMixin" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="RollIcon">
+					<Size x="14" y="14"/>
+					<Anchors>
+						<Anchor point="LEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="RollText" inherits="GameFontNormal">
+					<Size x="0" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.RollIcon" relativePoint="RIGHT" x="5" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="PlayerName" inherits="GameFontHighlight">
+					<Size x="0" y="0"/>
+					<!-- Anchored dynamically -->
+				</FontString>
+				<Texture parentKey="Check" atlas="lootroll-icon-checkmark" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.PlayerName" relativePoint="RIGHT" x="-2" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	
+	<Frame name="GroupLootHistoryFrame" mixin="LootHistoryFrameMixin" inherits="DefaultPanelFlatTemplate" movable="true" resizable="true" registerForDrag="LeftButton" clampedToScreen="true" parent="UIParent" frameStrata="HIGH" toplevel="true" hidden="true">
+		<Size x="261" y="590"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" x="150" y="-150"/>
+		</Anchors>
+		<ResizeBounds>
+			<minResize>
+				<AbsDimension x="261" y="300"/>
+			</minResize>
+			<maxResize>
+				<AbsDimension x="261" y="800"/>
+			</maxResize>
+		</ResizeBounds>
+		<KeyValues>
+			<KeyValue key="panelMaxHeight" value="590" type="number"/>
+			<KeyValue key="panelWidth" value="261" type="number"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnDragStart method="OnDragStart"/>
+			<OnDragStop method="OnDragStop"/>
+			<!-- OnUpdate set dynamically -->
+		</Scripts>
+		<Frames>
+			<Button parentKey="ClosePanelButton" inherits="UIPanelCloseButtonDefaultAnchors"/>
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="6" y="-90"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="238" y="4"/>
+				</Anchors>
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="3" y="2"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="3"/>
+				</Anchors>
+			</EventFrame>
+			
+			<DropdownButton parentKey="EncounterDropdown" inherits="WowStyle1DropdownTemplate" parentArray="uncommittedRegions">
+				<Anchors>
+					<Anchor point="TOP" x="1" y="-32"/>
+				</Anchors>
+			</DropdownButton>
+
+			<Frame parentKey="Timer">
+				<Size x="238" y="13"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.EncounterDropdown" relativePoint="BOTTOM" x="0" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" atlas="lootroll-timer-background" setAllPoints="true"/>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Fill" atlas="lootroll-timer-fill" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="LEFT" x="2" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Border" atlas="lootroll-timer-border" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+			</Frame>
+			
+			<Button parentKey="ResizeButton" frameStrata="HIGH" frameLevel="600">
+				<Size x="32" y="12"/>
+				<Anchors>
+					<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="3"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture atlas="lootroll-resizehandle" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+			</Button>
+
+			<Frame parentKey="PerfectAnimFrame" mixin="LootHistoryElementAnimationMixin" inherits="LootHistoryElementTemplate" virtual="true" hidden="true">
+				<Size x="218" y="58"/>
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="0"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="PerfectRollFrame" setAllPoints="true" frameLevel="450">
+						<Size x="128" y="128"/>
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="outerGlow_2" alpha="0" atlas="roll100-outerGlow-2" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="BORDER" textureSubLevel="1">
+								<Texture parentKey="innerGlow" alpha="0" atlas="roll100-cardBG-glow-inner" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="BORDER" textureSubLevel="2">
+								<Texture parentKey="slamGlow" alpha="0" atlas="roll100-cardBG-slam-gradient" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="BORDER">
+								<Texture parentKey="outerGlow_1" alpha="0" atlas="roll100-outerGlow-1" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="outerGlow_3" alpha="0" atlas="roll100-outerGlow-3" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK" textureSubLevel="1">
+								<Texture parentKey="ShineSwipe" alpha="0" atlas="rolls100-shine-anim">
+									<Size x="219" y="59"/>
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<Texture parentKey="outlineTop" alpha="0" atlas="roll100-outline-top" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Animations>
+							<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
+								<FlipBook childKey="ShineSwipe" duration="0.4" order="1" startDelay="0.93" flipBookRows="3" flipBookColumns="4" flipBookFrames="12" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+								<Alpha childKey="ShineSwipe" duration="0.93" order="1" fromAlpha="0" toAlpha="0"/>
+								<Alpha childKey="ShineSwipe" duration="0.4" order="1" startDelay="0.93" fromAlpha="1" toAlpha="1"/>
+								<Alpha childKey="ShineSwipe" duration="0.3" order="1" startDelay="1.33" fromAlpha="1" toAlpha="0"/>
+								<Alpha childKey="outlineTop" duration="0.27" order="1" fromAlpha="0" toAlpha="0"/>
+								<Alpha childKey="outlineTop" duration="0.3" order="1" startDelay="0.27" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="outlineTop" duration="0.53" order="1" startDelay="0.57" fromAlpha="1" toAlpha="1"/>
+								<Alpha childKey="outlineTop" duration="0.67" order="1" startDelay="1.1" fromAlpha="1" toAlpha="0"/>
+								<Alpha childKey="slamGlow" duration="0.17" order="1" fromAlpha="0" toAlpha="0"/>
+								<Alpha childKey="slamGlow" duration="0.1" order="1" startDelay="0.17" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="slamGlow" duration="0.6" order="1" startDelay="0.27" fromAlpha="1" toAlpha="1"/>
+								<Alpha childKey="slamGlow" duration="0.43" order="1" startDelay="0.87" fromAlpha="1" toAlpha="0"/>
+								<Alpha childKey="innerGlow" duration="0.47" order="1" fromAlpha="0" toAlpha="0"/>
+								<Alpha childKey="innerGlow" duration="0.3" order="1" startDelay="0.47" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="innerGlow" duration="0.47" order="1" startDelay="0.77" fromAlpha="1" toAlpha="1"/>
+								<Alpha childKey="innerGlow" duration="0.4" order="1" startDelay="1.24" fromAlpha="1" toAlpha="0"/>
+								<Alpha childKey="outerGlow_1" duration="0.47" order="1" fromAlpha="0" toAlpha="0"/>
+								<Alpha childKey="outerGlow_1" duration="0.43" order="1" startDelay="0.47" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="outerGlow_1" duration="0.2" order="1" startDelay="0.9" fromAlpha="1" toAlpha="1"/>
+								<Alpha childKey="outerGlow_1" duration="0.2" order="1" startDelay="1.1" fromAlpha="1" toAlpha="0"/>
+								<Alpha childKey="outerGlow_2" duration="0.87" order="1" fromAlpha="0" toAlpha="0"/>
+								<Alpha childKey="outerGlow_2" duration="0.23" order="1" startDelay="0.87" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="outerGlow_2" duration="0.33" order="1" startDelay="1.1" fromAlpha="1" toAlpha="0"/>
+								<Alpha childKey="outerGlow_3" duration="0.17" order="1" fromAlpha="0" toAlpha="0"/>
+								<Alpha childKey="outerGlow_3" duration="0.1" order="1" startDelay="0.17" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="outerGlow_3" duration="0.2" order="1" startDelay="0.27" fromAlpha="1" toAlpha="1"/>
+								<Alpha childKey="outerGlow_3" duration="0.83" order="1" startDelay="0.47" fromAlpha="1" toAlpha="0.4"/>
+								<Alpha childKey="outerGlow_3" duration="0.2" order="1" startDelay="1.3" fromAlpha="0.4" toAlpha="0"/>
+							</AnimationGroup>
+						</Animations>
+					</Frame>
+					<Frame parentKey="PerfectRollTopFrame" setAllPoints="true" frameLevel="1500">
+						<Size x="128" y="128"/>
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BORDER" textureSubLevel="1">
+								<Texture parentKey="sparkSlam1" alpha="0" atlas="roll100-sparkFX-1" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<Texture parentKey="sparksTrail1" alpha="0" atlas="rolls100-sparks1-anim">
+									<Size x="130" y="20"/>
+									<Anchors>
+										<Anchor point="CENTER" x="-40" y="30"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="sparksTrail2" alpha="0" atlas="rolls100-sparks2-anim">
+									<Size x="170" y="22"/>
+									<Anchors>
+										<Anchor point="CENTER" x="0" y="-25"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="slamCard" alpha="0" atlas="roll100-cardBG-slam" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Animations>
+							<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
+								<FlipBook childKey="sparksTrail1" duration="1" order="1" startDelay="0.93" flipBookRows="5" flipBookColumns="6" flipBookFrames="30" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+								<Alpha childKey="sparksTrail1" duration="0.93" order="1" fromAlpha="0" toAlpha="0"/>
+								<Alpha childKey="sparksTrail1" duration="2" order="1" startDelay="0.93" fromAlpha="1" toAlpha="1"/>
+								<FlipBook childKey="sparksTrail2" duration="0.97" order="1" startDelay="1" flipBookRows="6" flipBookColumns="5" flipBookFrames="30" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+								<Alpha childKey="sparksTrail2" duration="1" order="1" fromAlpha="0" toAlpha="0"/>
+								<Alpha childKey="sparksTrail2" duration="2" order="1" startDelay="1" fromAlpha="1" toAlpha="1"/>
+								<Alpha childKey="slamCard" duration="0.27" order="1" fromAlpha="0.3" toAlpha="0.3"/>
+								<Alpha childKey="slamCard" duration="0.1" order="1" startDelay="0.27" fromAlpha="0.3" toAlpha="0"/>
+								<Scale childKey="slamCard" duration="0.27" order="1" smoothing="OUT" fromScaleX="1.9" fromScaleY="1.9" toScaleX="1" toScaleY="1"/>
+								<Alpha childKey="sparkSlam1" duration="0.27" order="1" fromAlpha="0" toAlpha="0"/>
+								<Alpha childKey="sparkSlam1" duration="0.3" order="1" startDelay="0.27" fromAlpha="1" toAlpha="0"/>
+								<Scale childKey="sparkSlam1" duration="0.27" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1" toScaleY="1"/>
+								<Scale childKey="sparkSlam1" duration="0.23" order="1" startDelay="0.27" fromScaleX="1" fromScaleY="1" toScaleX="1.02" toScaleY="1.02"/>
+							</AnimationGroup>
+						</Animations>
+					</Frame>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="NoInfoString" inherits="GameFontNormal" text="LOOT_HISTORY_INFO_TEXT" justifyH="CENTER" justifyV="TOP">
+					<Size x="200" y="0"/>
+					<Color color="DISABLED_FONT_COLOR"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-42"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+</Ui>

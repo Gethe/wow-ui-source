@@ -1,0 +1,639 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Button name="StableActivePetButtonTemplate" mixin="StableActivePetButtonTemplateMixin" registerForDrag="LeftButton" motionScriptsWhileDisabled="true" virtual="true">
+		<Size x="60" y="60"/>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="0">
+				<Texture parentKey="Background">
+					<Size x="70" y="70"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Color r="0.1" g="0.1" b="0.1" a="1"/>
+				</Texture>
+
+				<MaskTexture parentKey="BackgroundMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Size x="70" y="70"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Background"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="Icon" >
+					<Size x="70" y="70"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+
+			<Layer level="BORDER">
+				<Texture parentKey="Border" atlas="footer_inactive-ring" useAtlasSize="false">
+					<Size x="125" y="125"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+
+				<Texture parentKey="Highlight" atlas="footer_active-ring" useAtlasSize="false" alphaMode="ADD" alpha="0.7" hidden="true">
+					<Size x="85" y="100"/>
+					<Anchors>
+						<Anchor point="CENTER" x="-1"/>
+					</Anchors>
+				</Texture>
+
+				<Texture parentKey="Lock" atlas="worldquest-tracker-lock" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnDragStart method="OnDragStart"/>
+			<OnReceiveDrag method="OnReceiveDrag"/>
+		</Scripts>
+	</Button>
+
+	<Button name="StableStabledPetButtonTemplate" mixin="StableStabledPetButtonTemplateMixin" registerForDrag="LeftButton" virtual="true">
+		<Size x="260" y="56"/>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="0">
+				<Texture parentKey="Background">
+					<Size x="265" y="64"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="Selected" hidden="true">
+					<Size x="265" y="64"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+
+			<Layer level="ARTWORK" textureSubLevel="0">
+				<FontString parentKey="Name" inherits="GameFontHighlightMed2" justifyH="LEFT" maxLines="1">
+					<Size x="175"/>
+					<Anchors>
+						<Anchor point="RIGHT" x="-45" y="5"/>
+					</Anchors>
+				</FontString>
+
+				<FontString parentKey="Type" inherits="GameFontNormalSmall2" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" y="-5"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Portrait">
+				<Size x="60" y="60"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Background" relativePoint="LEFT" x="8"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Icon">
+							<Size x="60" y="60"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+
+					<Layer level="BORDER">
+						<Texture parentKey="Border" atlas="pet-list_default-ring" useAtlasSize="false">
+							<Size x="85" y="85"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+
+					<Layer level="OVERLAY">
+						<Texture parentKey="FavoriteIcon" atlas="PetJournal-FavoritesIcon" hidden="true">
+							<Size x="35" y="35"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-7" y="7"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<HighlightTexture parentKey="Highlight" alphaMode="ADD" alpha="0.4">
+			<Size x="265" y="64"/>
+			<Anchors>
+				<Anchor point="TOPRIGHT"/> 
+			</Anchors>
+		</HighlightTexture>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnClick method="OnClick"/>
+			<OnDragStart method="OnDragStart"/>
+			<OnReceiveDrag method="OnReceiveDrag"/>
+		</Scripts>
+	</Button>
+
+	<Button name="StableStabledPetListCategoryButtonTemplate" mixin="StabledPetListCategoryMixin" virtual="true">
+		<Size y="24"/>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<FontString parentKey="Label" inherits="GameFontNormal_NoShadow" justifyH="LEFT">
+					<Size y="10"/>
+					<Anchors>
+						<Anchor point="LEFT" x="10" y="2"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="LeftPiece" atlas="Professions-recipe-header-left" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT" y="2"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RightPiece" atlas="Professions-recipe-header-right" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="RIGHT" y="2"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="CenterPiece" atlas="Professions-recipe-header-middle" useAtlasSize="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeKey="$parent.LeftPiece"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" relativeKey="$parent.RightPiece"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="CollapseIcon">
+					<Anchors>
+						<Anchor point="RIGHT" x="-10" y="2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="CollapseIconAlphaAdd" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.CollapseIcon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="StablePetAbilityTemplate" mixin="StablePetAbilityMixin" virtual="true">
+		<Size y="22"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size x="22" y="22"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+
+				<FontString parentKey="Name" inherits="GameFontHighlight" justifyH="LEFT">
+					<Size y="22"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="8"/>
+					</Anchors> 
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="StableFrame" inherits="PortraitFrameTemplate" enableMouse="true" parent="UIParent" toplevel="true" mixin="StableFrameMixin" hidden="true">
+		<Size x="1040" y="638"/>
+		<KeyValues>
+			<KeyValue key="portraitIcon" value="Interface\Icons\ClassIcon_Hunter" type="string"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Frames>
+			<Button parentKey="MainHelpButton" inherits="MainHelpPlateButton" mixin="StableTutorialButtonMixin">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="38" y="23"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+
+			<ModelScene parentKey="PetModelScene" inherits="PanningModelSceneMixinTemplate" mixin="StablePetModelSceneMixin">
+				<Size x="708" y="550"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-2" y="5"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" alpha="0.8">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="PetShadow" atlas="perks-char-shadow" alpha="0.6">
+							<Size x="410" y="90"/>
+							<Anchors>
+								<Anchor point="CENTER" x="-8" y="-145"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="ControlFrame" inherits="ModelSceneControlFrameTemplate">
+						<Anchors>
+							<Anchor point="BOTTOM" y="90"/>
+						</Anchors>
+					</Frame>
+					
+					<Frame parentKey="Inset" useParentLevel="true" inherits="InsetFrameTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+					</Frame>
+
+					<Frame parentKey="PetModelSceneShadow" inherits="ShadowOverlayTemplate" useParentLevel="true">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT"  x="1" y="-1"/>
+						</Anchors>
+					</Frame>
+
+					<Frame parentKey="PetInfo" mixin="StablePetInfoMixin">
+						<Size y="70"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.$parent.PetModelScene" y="-10"/>
+							<Anchor point="TOPRIGHT" relativeKey="$parent.$parent.PetModelScene" y="-10"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Specialization" inherits="GameFontHighlightLarge" justifyH="LEFT">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" x="20"/>
+									</Anchors>
+									<Shadow>
+										<Offset x="1" y="-1" />
+									</Shadow>
+								</FontString>
+								<FontString parentKey="Exotic" inherits="GameFontHighlightLarge" justifyH="LEFT">
+									<Anchors>
+										<Anchor point="TOP" relativeKey="$parent.Specialization" relativePoint="BOTTOM" y="-25"/>
+										<Anchor point="BOTTOMLEFT" x="20"/>
+									</Anchors>
+									<Shadow>
+										<Offset x="1" y="-1" />
+									</Shadow>
+								</FontString>
+
+								<FontString parentKey="Type" inherits="GameFontHighlightLarge" justifyH="RIGHT" mixin="StablePetTypeStringMixin">
+									<Anchors>
+										<Anchor point="BOTTOMRIGHT" x="-20" y="35"/>
+									</Anchors>
+									<Shadow>
+										<Offset x="1" y="-1" />
+									</Shadow>
+									<Scripts>
+										<OnEnter method="OnEnter"/>
+										<OnLeave method="OnLeave"/>
+									</Scripts>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<CheckButton parentKey="FavoriteButton" mixin="StablePetFavoriteButtonMixin">
+								<Size x="20" y="18"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" x="20" y="-18"/>
+								</Anchors>
+								<NormalTexture parentKey="NormalTexture" atlas="auctionhouse-icon-favorite-off"/>
+								<HighlightTexture parentKey="HighlightTexture" atlas="auctionhouse-icon-favorite-off" alphaMode="ADD"/>
+								<Scripts>
+									<OnClick method="OnClick"/>
+								</Scripts>
+							</CheckButton>
+							<Frame parentKey="NameBox" mixin="StablePetNameBoxMixin">
+								<!-- The width of this button is dynamically set when the name is set -->
+								<Size y="40"/>
+								<Anchors>
+									<Anchor point="LEFT" relativeKey="$parent.FavoriteButton" relativePoint="RIGHT" x="10" y="-2"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString parentKey="Name" inherits="GameFontNormalHuge2" justifyH="LEFT">
+											<Anchors>
+												<Anchor point="LEFT"/>
+											</Anchors>
+											<Shadow>
+												<Offset x="1" y="-1" />
+											</Shadow>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Frames>
+									<Button parentKey="EditButton" mixin="StablePetNameEditButtonMixin" motionScriptsWhileDisabled="true">
+										<Size x="32" y="32"/>
+										<Anchors>
+											<Anchor point="LEFT" relativePoint="RIGHT" x="20"/>
+										</Anchors>
+										<NormalTexture parentKey="Icon" atlas="Pencil-Icon"/>
+										<Scripts>
+											<OnClick method="OnClick"/>
+										</Scripts>
+									</Button>
+								</Frames>
+							</Frame>
+						</Frames>
+					</Frame>
+
+					<Frame parentKey="AbilitiesList" inherits="ResizeLayoutFrame" mixin="StablePetAbilitiesListMixin">
+						<KeyValues>
+							<KeyValue key="fixedWidth" value="250" type="number"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" x="15" y="80"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="ListHeader" inherits="GameFontHighlightMedium" text="STABLE_PET_ABILITIES_LIST_HEADER" justifyH="LEFT">
+									<Size x="250"/>
+									<Anchors>
+										<Anchor point="BOTTOM" relativePoint="TOP" y="2"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+						</Scripts>
+					</Frame>
+				</Frames>
+			</ModelScene>
+
+			<Button parentKey="StableTogglePetButton" inherits="UIPanelButtonTemplate" mixin="StableTogglePetButtonMixin" frameLevel="100" text="STABLE_PET_BUTTON_LABEL">
+				<Size x="155" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.PetModelScene" relativePoint="BOTTOMRIGHT" x="-5" y="130"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnClick method="OnClick"/>
+					<OnEvent method="OnEvent"/>
+				</Scripts>
+			</Button>
+
+			<Button parentKey="ReleasePetButton" inherits="UIPanelButtonTemplate, DisabledTooltipButtonTemplate" mixin="StableReleasePetButtonMixin" frameLevel="100" text="RELEASE_PET_BUTTON_LABEL">
+				<Size x="155" y="22"/>
+				<KeyValues>
+					<KeyValue key="disabledTooltip" value="STABLE_RELEASE_PET_BUTTON_ERR_NOT_SUMMONED" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.StableTogglePetButton" relativePoint="BOTTOM" y="-10"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+
+			<Frame parentKey="StabledPetList" mixin="StableStabledPetListMixin">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.PetModelScene" relativePoint="TOPLEFT" x="0"/>
+					<Anchor point="BOTTOMLEFT" x="0" y="2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Backgroud" atlas="pet-list-bg" setAllPoints="true"/>
+					</Layer>
+
+					<Layer level="OVERLAY">
+						<FontString parentKey="ListName" inherits="Game36Font" text="STABLE_STABLED_PET_LIST_LABEL">
+							<Size x="145" y="30"/>
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP" x="-30" y="10"/>
+							</Anchors>
+							<Color color="NORMAL_FONT_COLOR"/>
+							<Shadow x="2" y="-2">
+								<Color r="0" g="0" b="0"/>
+							</Shadow>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="ListCounter" useParentLevel="true" inherits="InsetFrameTemplate3">
+						<Size x="110" y="27"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ListName" relativePoint="TOPLEFT" x="156" y="-3"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture atlas="paw-icon" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="LEFT" x="10"/>
+									</Anchors>
+								</Texture>
+								<FontString parentKey="Count" inherits="GameFontHighlightMedium">
+									<Anchors>
+										<Anchor point="CENTER" x="7"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+
+					<Frame parentKey="Inset" useParentLevel="true" inherits="InsetFrameTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+					</Frame>
+
+					<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+						<Anchors>
+							<Anchor point="TOPLEFT" y="-55"/>
+							<Anchor point="BOTTOMRIGHT" x="-20" y="3"/>
+						</Anchors>
+					</Frame>
+
+					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="3" y="-2"/>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="3" y="2"/>
+						</Anchors>
+					</EventFrame>
+
+					<Frame parentKey="FilterBar">
+						<Size x="280" y="32"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="3" y="-3"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="Background">
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+										<Anchor point="BOTTOMRIGHT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<EditBox parentKey="SearchBox" autoFocus="false" bytes="64" mixin="StableSearchBoxMixin" inherits="SearchBoxTemplate">
+								<Size x="180" y="22"/>
+								<Anchors>
+									<Anchor point="LEFT" x="16" y="-6"/>
+								</Anchors>
+								<Scripts>
+									<OnTextChanged method="OnTextChanged"/>
+									<OnEnterPressed method="OnEnterPressed"/>
+								</Scripts>
+							</EditBox>
+							<DropdownButton parentKey="FilterDropdown" inherits="WowStyle1FilterDropdownTemplate">
+								<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.SearchBox" relativePoint="RIGHT" x="20"/>
+								</Anchors>
+							</DropdownButton>
+						</Frames>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnShow method="OnShow"/>
+				</Scripts>
+			</Frame>
+
+			<Frame parentKey="ActivePetList" mixin="StableActivePetListMixin">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.PetModelScene" relativePoint="BOTTOMLEFT" y="45"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.PetModelScene" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="ActivePetListBG" atlas="footer-bg" useAtlasSize="false" alpha="0.6">
+							<Size y="92"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.$parent.PetModelScene" relativePoint="BOTTOMLEFT" y="90"/>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.$parent.PetModelScene" relativePoint="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="ActivePetListBGBar" atlas="gold-divide" useAtlasSize="false">
+							<Size x="250" y="2"/>
+							<Anchors>
+								<Anchor point="BOTTOM" relativeKey="$parent.ActivePetListBG" relativePoint="TOP" y="-2"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="ListName" inherits="GameFontNormalLarge" text="STABLE_ACTIVE_PET_LIST_LABEL">
+							<Anchors>
+								<Anchor point="LEFT" x="30"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="PetButton1" parentArray="PetButtons" inherits="StableActivePetButtonTemplate" id="1">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.ListName" relativePoint="RIGHT" x="35"/>
+						</Anchors>
+					</Button>
+
+					<Button parentKey="PetButton2" parentArray="PetButtons" inherits="StableActivePetButtonTemplate" id="2">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.PetButton1" relativePoint="RIGHT" x="25"/>
+						</Anchors>
+					</Button>
+
+					<Button parentKey="PetButton3" parentArray="PetButtons" inherits="StableActivePetButtonTemplate" id="3">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.PetButton2" relativePoint="RIGHT" x="25"/>
+						</Anchors>
+					</Button>
+
+					<Button parentKey="PetButton4" parentArray="PetButtons" inherits="StableActivePetButtonTemplate" id="4">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.PetButton3" relativePoint="RIGHT" x="25"/>
+						</Anchors>
+					</Button>
+
+					<Button parentKey="PetButton5" parentArray="PetButtons" inherits="StableActivePetButtonTemplate" id="5">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.PetButton4" relativePoint="RIGHT" x="25"/>
+						</Anchors>
+					</Button>
+
+					<Frame parentKey="Divider">
+						<Size x="60" y="3"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.PetButton5" relativePoint="RIGHT"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="Bar">
+									<Size x="30" y="2"/>
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+									<Color r="1" g="0.8" b="0" a="0.8"/>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+
+					<Button parentKey="BeastMasterSecondaryPetButton" inherits="StableActivePetButtonTemplate" mixin="StableBeastMasterSecondaryPetButtonMixin" id="6">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.Divider" relativePoint="RIGHT"/>
+						</Anchors>
+						<Scripts>
+							<OnShow method="OnShow"/>
+							<OnHide method="OnHide"/>
+							<OnEvent method="OnEvent"/>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Topper" atlas="wood-topper" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="3" y="-24"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

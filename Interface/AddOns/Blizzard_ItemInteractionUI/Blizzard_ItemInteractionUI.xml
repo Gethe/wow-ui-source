@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_ItemInteractionUI.lua"/>
 
 	<Frame name="ItemInteractionFrame" inherits="PortraitFrameTemplate" toplevel="true" parent="UIParent" enableMouse="true" mixin="ItemInteractionMixin" hidden="true">
@@ -116,14 +116,14 @@
 					<Layer level="BACKGROUND">
 						<Texture parentKey="Background_Flash" useAtlasSize="true" alphaMode="ADD" alpha="0">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.$parent.Background" relativePoint="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent.Background" relativePoint="BOTTOMRIGHT"/>
 							</Anchors>
 						</Texture>
 						<Texture parentKey="Background_Flash2" useAtlasSize="true" alphaMode="ADD" alpha="0">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.$parent.Background" relativePoint="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent.Background" relativePoint="BOTTOMRIGHT"/>
 							</Anchors>
 						</Texture>
 					</Layer>

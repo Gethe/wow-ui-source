@@ -34,6 +34,40 @@ local PetInfo =
 				{ Name = "spellID", Type = "number", Nilable = true },
 			},
 		},
+		{
+			Name = "IsPetActionPassive",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isPassive", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "PetAbandon",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "petNumber", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "PetRename",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "petNumber", Type = "number", Nilable = true },
+				{ Name = "declensions", Type = "table", InnerType = "cstring", Nilable = true },
+			},
+		},
 	},
 
 	Events =
@@ -79,6 +113,7 @@ local PetInfo =
 			Payload =
 			{
 				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "petNumber", Type = "number", Nilable = true },
 				{ Name = "declinedName1", Type = "cstring", Nilable = true },
 				{ Name = "declinedName2", Type = "cstring", Nilable = true },
 				{ Name = "declinedName3", Type = "cstring", Nilable = true },

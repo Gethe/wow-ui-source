@@ -1,0 +1,46 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="PNCCharacterSelect" parent="CharSelectServicesFlowFrame" inherits="CharacterServicesBlockTemplate" hidden="true" frameStrata="DIALOG">
+		<Size x="350" y="250"/>
+		<Frames>
+			<Frame parentKey="ControlsFrame" setAllPoints="true"/>
+			<Frame parentKey="ResultsFrame">
+				<Size x="260" y="250"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ResultsLabel" relativePoint="BOTTOMLEFT" y="-2"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+	<Frame name="PNCNameSelect" parent="CharSelectServicesFlowFrame" inherits="CharacterServicesBlockTemplate" hidden="true" frameStrata="DIALOG">
+		<Size x="350" y="250"/>
+		<Frames>
+			<Frame parentKey="ControlsFrame" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="NewNameLabel" inherits="GameFontNormalMed3" justifyH="LEFT" text="PNC_FLOW_NEW_NAME_LABEL" maxLines="1">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="90" y="-100"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<EditBox parentKey="NewNameEditbox" mixin="NewNameEditboxMixin" inherits="CharacterServicesEditBoxHorizontalLabelTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.NewNameLabel" relativePoint="BOTTOMLEFT" x="3" y="-7"/>
+						</Anchors>
+						<TextInsets>
+							<AbsInset left="9" right="9"/>
+						</TextInsets>
+						<Scripts>
+							<OnEnter method="OnEnter"/>
+							<OnLeave method="OnLeave"/>
+						</Scripts>
+					</EditBox>
+				</Frames>
+			</Frame>
+		</Frames>
+	</Frame>
+</Ui>

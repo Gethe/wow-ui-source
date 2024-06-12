@@ -1,6 +1,8 @@
 ## Title: Blizzard Professions
 ## Author: Blizzard Entertainment
 ## LoadOnDemand: 1
+## AllowLoad: game
+## AllowLoadGameType: mainline
 ## Dependencies: Blizzard_ProfessionsTemplates, Blizzard_SharedTalentUI
 ## SavedVariablesPerCharacter: g_professionsSpecsSelectedTabs, g_professionsSpecsSelectedPaths
 Blizzard_ProfessionsRankBar.xml

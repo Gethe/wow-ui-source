@@ -1,0 +1,18 @@
+## Title: Blizzard_EditMode
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_UIParent, Blizzard_UIPanelTemplates
+## AllowLoadGameType: standard
+Mainline\EditModePresetLayoutSystemUtils.lua
+Standard\EditModePresetLayouts.lua
+Mainline\EditModePresetLayoutsManager.lua
+Mainline\EditModeSettingDisplayInfo.lua
+Mainline\EditModeUtil.lua
+Mainline\EditModeTemplates.lua
+Mainline\EditModeTemplates.xml
+Mainline\EditModeSystemTemplates.lua
+Mainline\EditModeSystemTemplates.xml
+Mainline\EditModeDialogs.lua
+Mainline\EditModeDialogs.xml
+Mainline\EditModeManager.lua
+Mainline\EditModeManager.xml

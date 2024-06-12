@@ -20,6 +20,15 @@ local Unit =
 			},
 		},
 		{
+			Name = "CanShowSetRoleButton",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CanSwitchVehicleSeat",
 			Type = "Function",
 
@@ -306,6 +315,20 @@ local Unit =
 				{ Name = "runSpeed", Type = "number", Nilable = false },
 				{ Name = "flightSpeed", Type = "number", Nilable = false },
 				{ Name = "swimSpeed", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetUnitTotalModifiedMaxHealthPercent",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -1958,7 +1981,7 @@ local Unit =
 			Arguments =
 			{
 				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
-				{ Name = "powerType", Type = "PowerType", Nilable = false, Default = "NumPowerTypes" },
+				{ Name = "powerType", Type = "PowerType", Nilable = true },
 				{ Name = "unmodified", Type = "bool", Nilable = false, Default = false },
 			},
 
@@ -2050,9 +2073,9 @@ local Unit =
 
 			Returns =
 			{
-				{ Name = "x", Type = "number", Nilable = true },
-				{ Name = "y", Type = "number", Nilable = true },
-				{ Name = "z", Type = "number", Nilable = true },
+				{ Name = "positionX", Type = "number", Nilable = false },
+				{ Name = "positionY", Type = "number", Nilable = false },
+				{ Name = "positionZ", Type = "number", Nilable = false },
 				{ Name = "mapID", Type = "number", Nilable = false },
 			},
 		},
@@ -2063,7 +2086,7 @@ local Unit =
 			Arguments =
 			{
 				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
-				{ Name = "powerType", Type = "PowerType", Nilable = false, Default = "NumPowerTypes" },
+				{ Name = "powerType", Type = "PowerType", Nilable = true },
 				{ Name = "unmodified", Type = "bool", Nilable = false, Default = false },
 			},
 
@@ -2125,7 +2148,7 @@ local Unit =
 			Arguments =
 			{
 				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
-				{ Name = "powerType", Type = "PowerType", Nilable = false, Default = "NumPowerTypes" },
+				{ Name = "powerType", Type = "PowerType", Nilable = true },
 				{ Name = "unmodified", Type = "bool", Nilable = false, Default = false },
 			},
 
@@ -2705,6 +2728,11 @@ local Unit =
 			LiteralName = "CANCEL_SUMMON",
 		},
 		{
+			Name = "ComboTargetChanged",
+			Type = "Event",
+			LiteralName = "COMBO_TARGET_CHANGED",
+		},
+		{
 			Name = "ConfirmBinder",
 			Type = "Event",
 			LiteralName = "CONFIRM_BINDER",
@@ -2721,6 +2749,15 @@ local Unit =
 			{
 				{ Name = "summonReason", Type = "number", Nilable = false },
 				{ Name = "skippingStartExperience", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "EclipseDirectionChange",
+			Type = "Event",
+			LiteralName = "ECLIPSE_DIRECTION_CHANGE",
+			Payload =
+			{
+				{ Name = "direction", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -3345,6 +3382,16 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitMaxHealthModifiersChanged",
+			Type = "Event",
+			LiteralName = "UNIT_MAX_HEALTH_MODIFIERS_CHANGED",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "percentMaxHealthAdjusted", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitMaxhealth",
 			Type = "Event",
 			LiteralName = "UNIT_MAXHEALTH",
@@ -3797,45 +3844,6 @@ local Unit =
 				{ Name = "Sharding", Type = "PhaseReason", EnumValue = 1 },
 				{ Name = "WarMode", Type = "PhaseReason", EnumValue = 2 },
 				{ Name = "ChromieTime", Type = "PhaseReason", EnumValue = 3 },
-			},
-		},
-		{
-			Name = "PowerType",
-			Type = "Enumeration",
-			NumValues = 29,
-			MinValue = -2,
-			MaxValue = 26,
-			Fields =
-			{
-				{ Name = "HealthCost", Type = "PowerType", EnumValue = -2 },
-				{ Name = "None", Type = "PowerType", EnumValue = -1 },
-				{ Name = "Mana", Type = "PowerType", EnumValue = 0 },
-				{ Name = "Rage", Type = "PowerType", EnumValue = 1 },
-				{ Name = "Focus", Type = "PowerType", EnumValue = 2 },
-				{ Name = "Energy", Type = "PowerType", EnumValue = 3 },
-				{ Name = "ComboPoints", Type = "PowerType", EnumValue = 4 },
-				{ Name = "Runes", Type = "PowerType", EnumValue = 5 },
-				{ Name = "RunicPower", Type = "PowerType", EnumValue = 6 },
-				{ Name = "SoulShards", Type = "PowerType", EnumValue = 7 },
-				{ Name = "LunarPower", Type = "PowerType", EnumValue = 8 },
-				{ Name = "HolyPower", Type = "PowerType", EnumValue = 9 },
-				{ Name = "Alternate", Type = "PowerType", EnumValue = 10 },
-				{ Name = "Maelstrom", Type = "PowerType", EnumValue = 11 },
-				{ Name = "Chi", Type = "PowerType", EnumValue = 12 },
-				{ Name = "Insanity", Type = "PowerType", EnumValue = 13 },
-				{ Name = "Obsolete", Type = "PowerType", EnumValue = 14 },
-				{ Name = "Obsolete2", Type = "PowerType", EnumValue = 15 },
-				{ Name = "ArcaneCharges", Type = "PowerType", EnumValue = 16 },
-				{ Name = "Fury", Type = "PowerType", EnumValue = 17 },
-				{ Name = "Pain", Type = "PowerType", EnumValue = 18 },
-				{ Name = "Essence", Type = "PowerType", EnumValue = 19 },
-				{ Name = "RuneBlood", Type = "PowerType", EnumValue = 20 },
-				{ Name = "RuneFrost", Type = "PowerType", EnumValue = 21 },
-				{ Name = "RuneUnholy", Type = "PowerType", EnumValue = 22 },
-				{ Name = "AlternateQuest", Type = "PowerType", EnumValue = 23 },
-				{ Name = "AlternateEncounter", Type = "PowerType", EnumValue = 24 },
-				{ Name = "AlternateMount", Type = "PowerType", EnumValue = 25 },
-				{ Name = "NumPowerTypes", Type = "PowerType", EnumValue = 26 },
 			},
 		},
 		{

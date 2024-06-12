@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_ItemSocketingUI.lua"/>
 	<Button name="ItemSocketingSocketButtonTemplate" virtual="true">
 		<Size x="40" y="40"/>
@@ -383,11 +383,15 @@
 					<Frame name="ItemSocketingScrollChild">
 						<Size x="259" y="254"/>
 						<Frames>
-							<GameTooltip name="ItemSocketingDescription" inherits="GameTooltipTemplate" setAllPoints="true" hidden="false">
+							<GameTooltip name="ItemSocketingDescription" clampedToScreen="false" inherits="GameTooltipTemplate" setAllPoints="true" hidden="false">
 								<KeyValues>
+									<KeyValue key="supportsDataRefresh" value="true" type="boolean"/>
 									<KeyValue key="IsEmbedded" value="true" type="boolean"/>
 								</KeyValues>
-							</GameTooltip>							
+								<Scripts>
+									<OnUpdate function="GameTooltip_OnUpdate"/>
+								</Scripts>
+							</GameTooltip>
 						</Frames>
 					</Frame>
 				</ScrollChild>

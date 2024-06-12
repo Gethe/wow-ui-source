@@ -6,6 +6,15 @@ local AdventureMap =
 
 	Functions =
 	{
+		{
+			Name = "GetAdventureMapTextureKit",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "adventureMapTextureKit", Type = "textureKit", Nilable = false },
+			},
+		},
 	},
 
 	Events =

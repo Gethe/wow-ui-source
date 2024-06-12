@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 
-	<CheckButton name="PerksProgramCheckBoxTemplate" mixin="PerksProgramCheckBoxMixin" virtual="true">
+	<CheckButton name="PerksProgramCheckboxTemplate" mixin="PerksProgramCheckboxMixin" virtual="true">
 		<Size x="30" y="29"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -214,11 +214,15 @@
 								<Anchor point="LEFT" relativeKey="$parent.Label" relativePoint="RIGHT"/>
 							</Anchors>
 						</FontString>
-						<Texture parentKey="RefundIcon" atlas="common-icon-undo" hidden="true" alphaMode="ADD">
+						<Texture parentKey="RefundIcon" atlas="common-icon-undo" hidden="true" alphaMode="ADD" mixin="PerksRefundIconTooltipMixin">
 							<Size x="21" y="21"/>
 							<Anchors>
 								<Anchor point="RIGHT" relativeKey="$parent.Price"/>
 							</Anchors>
+							<Scripts>
+								<OnEnter method="OnEnter"/>
+								<OnLeave method="OnLeave"/>
+							</Scripts>
 						</Texture>
 						<Texture parentKey="PurchasedIcon" atlas="perks-owned-small" hidden="true" useAtlasSize="true" alphaMode="ADD">
 							<Anchors>
@@ -452,39 +456,6 @@
 		</Layers>
 	</Frame>
 
-	<Button name="PerksProgramFilterButtonTemplate" virtual="true">
-		<Size x="40" y="26"/>
-		<NormalTexture parentKey="NormalTexture" atlas="perks-dropdownbox"/>
-		<HighlightTexture parentKey="HighlightTexture" atlas="perks-dropdownbox-hover" alphaMode="ADD" alpha="0.5"/>
-		<PushedTextOffset x="2" y="-2"/>
-		<ButtonText parentKey="ButtonText">
-			<Anchors>
-				<Anchor point="TOPLEFT" x="10" y="-10"/>
-				<Anchor point="BOTTOMRIGHT" x="-10" y="10"/>
-			</Anchors>
-		</ButtonText>
-		<Scripts>
-			<OnMouseDown method="OnMouseDown"/>
-		</Scripts>
-		<NormalFont style="GameFontHighlight"/>
-		<HighlightFont style="GameFontHighlight"/>
-		<DisabledFont style="GameFontDisable"/>
-	</Button>
-
-	<Frame name="FilterDropDownContainerTemplate" mixin="FilterDropDownContainerMixin" virtual="true">
-		<Frames>
-			<DropDownToggleButton parentKey="FilterDropDownButton" mixin="FilterDropDownButtonMixin" inherits="PerksProgramFilterButtonTemplate" text="FILTER" setAllPoints="true">		
-				<Scripts>
-					<OnMouseDown method="OnMouseDown"/>
-				</Scripts>
-			</DropDownToggleButton>
-			<Frame name="FilterDropDown" parentKey="FilterDropDown" inherits="UIDropDownMenuTemplate" />
-		</Frames>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-		</Scripts>
-	</Frame>
-
 	<Button name="PerksProgramButtonTemplate" inherits="SharedButtonLargeTemplate" mixin="PerksProgramButtonMixin" virtual="true" >
 		<Size x="180" y="46"/>
 		<Scripts>
@@ -586,7 +557,7 @@
 				<Texture parentKey="Icon">
 					<Size x="48" y="48"/>
 					<Anchors>
-						<Anchor point="LEFT" x="16" y=""/>
+						<Anchor point="LEFT" x="16" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>

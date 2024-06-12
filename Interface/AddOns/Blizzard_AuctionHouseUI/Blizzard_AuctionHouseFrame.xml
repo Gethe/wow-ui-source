@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_AuctionHouseFrame.lua"/>
 
 	<Frame name="AuctionHouseFrame" toplevel="true" enableMouse="true" parent="UIParent" mixin="AuctionHouseFrameMixin" inherits="PortraitFrameTemplate" hidden="true">
@@ -67,11 +67,6 @@
 				</Anchors>
 			</Button>
 			<!-- Tabs -->
-
-			<!-- DropDowns -->
-			<!-- DropDowns need to be loaded first to be referenced by other subframes. -->
-			<Frame parentKey="FavoriteDropDown" inherits="FavoriteDropDownTemplate" hidden="true"/>
-			<!-- DropDowns -->
 
 			<!-- Browsing frames -->
 			<Frame parentKey="SearchBar" inherits="AuctionHouseSearchBarTemplate" hidden="true">

@@ -128,6 +128,20 @@ local Item =
 			},
 		},
 		{
+			Name = "DoesItemMatchTargetEnchantingSpell",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLoc", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "matchesTargetEnchantingSpell", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "DoesItemMatchTrackJump",
 			Type = "Function",
 
@@ -175,7 +189,7 @@ local Item =
 			Arguments =
 			{
 				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
-				{ Name = "dstSlot", Type = "number", Nilable = true },
+				{ Name = "dstSlot", Type = "luaIndex", Nilable = true },
 			},
 		},
 		{
@@ -401,6 +415,21 @@ local Item =
 			},
 		},
 		{
+			Name = "GetItemGemID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "gemID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetItemID",
 			Type = "Function",
 
@@ -535,6 +564,20 @@ local Item =
 			},
 		},
 		{
+			Name = "GetItemInventorySlotKey",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "inventorySlot", Type = "InventoryType", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "GetItemInventoryType",
 			Type = "Function",
 
@@ -560,6 +603,20 @@ local Item =
 			Returns =
 			{
 				{ Name = "inventoryType", Type = "InventoryType", Nilable = true },
+			},
+		},
+		{
+			Name = "GetItemLearnTransmogSet",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "setID", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -658,6 +715,34 @@ local Item =
 			Returns =
 			{
 				{ Name = "itemName", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "GetItemNumAddedSockets",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "socketCount", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetItemNumSockets",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "socketCount", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -915,6 +1000,20 @@ local Item =
 			},
 		},
 		{
+			Name = "IsBoundToAccountUntilEquip",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isBoundToAccountUntilEquip", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsConsumableItem",
 			Type = "Function",
 
@@ -945,6 +1044,21 @@ local Item =
 		{
 			Name = "IsCosmeticItem",
 			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = true },
+			},
+		},
+		{
+			Name = "IsCurioItem",
+			Type = "Function",
+			Documentation = { "Returns whether the item is a consumable curio that can be applied to a delves companion." },
 
 			Arguments =
 			{
@@ -1364,6 +1478,11 @@ local Item =
 			Name = "ConfirmBeforeUse",
 			Type = "Event",
 			LiteralName = "CONFIRM_BEFORE_USE",
+		},
+		{
+			Name = "ConvertToBindToAccountConfirm",
+			Type = "Event",
+			LiteralName = "CONVERT_TO_BIND_TO_ACCOUNT_CONFIRM",
 		},
 		{
 			Name = "DeleteItemConfirm",

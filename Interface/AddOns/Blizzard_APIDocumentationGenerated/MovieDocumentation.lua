@@ -59,6 +59,20 @@ local Movie =
 			},
 		},
 		{
+			Name = "IsMovieReadable",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "movieId", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "readable", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "PreloadMovie",
 			Type = "Function",
 

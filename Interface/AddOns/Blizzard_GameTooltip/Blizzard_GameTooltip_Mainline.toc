@@ -1,0 +1,8 @@
+## Title: Blizzard_GameTooltip
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_EditMode, Blizzard_GarrisonBase
+## AllowLoadGameType: mainline
+HealthBar.lua
+Mainline\GameTooltip.lua
+Mainline\GameTooltip.xml

@@ -1,0 +1,141 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Button name="GlueDialogButtonTemplate" inherits="GlueButtonTemplate" virtual="true">
+		<Scripts>
+			<OnClick function="GlueDialog_OnClick"/>
+		</Scripts>
+	</Button>
+
+	<ScopedModifier addToSecureEnv="true">
+		<Frame name="GlueDialog" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true">
+			<Frames>
+				<Frame name="GlueDialogBackground">
+					<Size x="512" y="256"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+					<Layers>
+						<Layer level="ARTWORK">
+							<FontString name="GlueDialogTitle" inherits="GlueFontNormalLarge">
+								<Size x="450" y="0"/>
+								<Anchors>
+									<Anchor point="TOP" x="0" y="-16"/>
+								</Anchors>
+							</FontString>
+							<FontString name="GlueDialogText" inherits="GlueFontNormalLarge">
+								<Size x="450" y="0"/>
+								<Anchors>
+									<Anchor point="TOP" x="0" y="-16"/>
+								</Anchors>
+							</FontString>
+							<Texture name="GlueDialogAlertIcon" file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew" hidden="true">
+								<Size x="48" y="48"/>
+								<Anchors>
+									<Anchor point="LEFT" x="24" y="0"/>
+								</Anchors>
+							</Texture>
+						</Layer>
+					</Layers>
+					<Frames>
+						<Frame parentKey="BG" inherits="DialogBorderTemplate"/>
+						<SimpleHTML name="GlueDialogHTML" hyperlinkFormat="|cff06ff07|H%s|h[%s]|h|r" hidden="true">
+							<Size x="450" y="30"/>
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-16"/>
+							</Anchors>
+							<Scripts>
+								<OnHyperlinkClick>
+									LaunchURL(link);
+								</OnHyperlinkClick>
+							</Scripts>
+							<FontString inherits="GlueFontNormalLarge" spacing="2"/>
+							<FontStringHeader1 inherits="GlueFontNormalLarge" spacing="4"/>
+							<FontStringHeader2 inherits="GlueFontHighlight" spacing="4"/>
+						</SimpleHTML>
+						<Button name="GlueDialogButton1" inherits="GlueDialogButtonTemplate" id="1" parentKey="button1"/>
+						<Button name="GlueDialogButton2" inherits="GlueDialogButtonTemplate" id="2" parentKey="button2"/>
+						<Button name="GlueDialogButton3" inherits="GlueDialogButtonTemplate" id="3" parentKey="button3"/>
+
+						<Frame name="GlueDialogSpinner" inherits="SpinnerTemplate" hidden="true">
+							<Size x="30" y="30"/>
+							<Anchors>
+								<Anchor point="BOTTOM" x="0" y="23" />
+							</Anchors>
+						</Frame>
+					</Frames>
+				</Frame>
+				<EditBox name="$parentEditBox" historyLines="1" hidden="true" inherits="AutoCompleteEditBoxTemplate">
+					<Size x="130" y="32"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Layers>
+						<Layer level="BACKGROUND">
+							<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Left">
+								<Size x="75" y="32"/>
+								<Anchors>
+									<Anchor point="LEFT" x="-10" y="0"/>
+								</Anchors>
+								<TexCoords left="0" right="0.29296875" top="0" bottom="1.0"/>
+							</Texture>
+							<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Right">
+								<Size x="75" y="32"/>
+								<Anchors>
+									<Anchor point="RIGHT" x="10" y="0"/>
+								</Anchors>
+								<TexCoords left="0.70703125" right="1.0" top="0" bottom="1.0"/>
+							</Texture>
+						</Layer>
+						<Layer level="ARTWORK">
+							<FontString parentKey="Instructions" justifyH="LEFT" justifyV="MIDDLE" inherits="GlueFontNormalExtraSmall" setAllPoints="true">
+								<Anchors>
+									<Anchor point="BOTTOM" relativeTo="$parent" relativePoint ="TOP" x="0" y="3" />
+								</Anchors>
+							</FontString>
+						</Layer>
+					</Layers>
+					<Scripts>
+						<OnEnterPressed>
+							GlueDialog_EditBoxOnEnterPressed(self);
+						</OnEnterPressed>
+						<OnEscapePressed>
+							GlueDialog_EditBoxOnEscapePressed(self);
+						</OnEscapePressed>
+						<OnTextChanged>
+							GlueDialog_EditBoxOnTextChanged(self, userInput);
+						</OnTextChanged>
+					</Scripts>
+					<FontString inherits="GlueFontHighlight"/>
+				</EditBox>
+				<Frame parentKey="Cover" setAllPoints="true" enableMouse="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0" />
+						<Anchor point="BOTTOMRIGHT" x="0" y="0" />
+					</Anchors>
+					<Layers>
+						<Layer level="ARTWORK">
+							<Texture parentKey="Texture" setAllPoints="true">
+								<Color r="0" g="0" b="0" a="0.7" />
+							</Texture>
+						</Layer>
+					</Layers>
+					<Scripts>
+						<OnShow>
+							self:SetFrameLevel(self:GetParent():GetFrameLevel()-1);
+						</OnShow>
+					</Scripts>
+				</Frame>
+			</Frames>
+			<Scripts>
+				<OnLoad function="GlueDialog_OnLoad"/>
+				<OnShow function="GlueDialog_OnShow"/>
+				<OnHide function="GlueDialog_OnHide"/>
+				<OnUpdate function="GlueDialog_OnUpdate"/>
+				<OnKeyDown function="GlueDialog_OnKeyDown"/>
+				<OnMouseWheel function="nop"/>
+			</Scripts>
+		</Frame>
+
+		<Frame name="GlueAnnouncementDialog" parent="GlueParent" inherits="BaseNineSliceDialog" mixin="GlueAnnouncementDialogMixin"/>
+	</ScopedModifier>
+</Ui>

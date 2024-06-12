@@ -1,0 +1,462 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<CheckButton name="GarrisonRecruiterRadioButtonTemplate" inherits="UIRadioButtonTemplate" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontHighlightLeft">
+					<Size x="100" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="2"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</CheckButton>
+
+	<Frame name="GarrisonRecruitAbilityTemplate" parentArray="Entries" virtual="true">
+		<Size x="168" y="28"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size x="23" y="23"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT" justifyV="MIDDLE">
+					<Size x="138" y="28"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="8" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				if ( self.abilityID ) then
+					ShowGarrisonFollowerAbilityTooltip(self.Icon, self.abilityID, Enum.GarrisonFollowerType.FollowerType_6_0_GarrisonFollower);
+					return;
+				end
+			</OnEnter>
+			<OnLeave>
+				HideGarrisonFollowerAbilityTooltip(Enum.GarrisonFollowerType.FollowerType_6_0_GarrisonFollower);
+			</OnLeave>
+		</Scripts>
+	</Frame>
+
+	<Frame name="GarrisonRecruitTemplate" virtual="true">
+		<Size x="188" y="540" />
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="Class" atlas="GarrMission_ClassIcon-DeathKnight" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a=".2"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT">
+					<Size x="120" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="TOPLEFT" x="66" y="-28"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="ILevel" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Size x="190" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" y="-4"/>
+					</Anchors>
+					<Color r="0.745" g="0.745" b="0.745" a="1"/>
+				</FontString>
+				<FontString parentKey="Status" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ILevel" relativePoint="BOTTOMLEFT" y="-3"/>
+					</Anchors>
+					<Color r="0.698" g="0.941" b="1" a="1"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="PortraitFrame" inherits="GarrisonFollowerPortraitTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="4" y="2"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad function="RaiseFrameLevelByTwo"/>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="Counter" hidden="true">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOP" x="0" y="8"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK" textureSubLevel="-1">
+						<Texture parentKey="Icon">
+							<Size x="23" y="23"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture atlas="Headhunter_AbilityBorderGlow" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="Abilities">
+				<Size x="188" y="160"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.PortraitFrame" x="8" y="-68"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Title" inherits="GameFontHighlight" justifyH="LEFT" text="GARRISON_RECRUIT_ABILITIES">
+							<Size x="188" y="16"/>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="Traits">
+				<Size x="188" y="160"/>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Title" inherits="GameFontHighlight" justifyH="LEFT" text="GARRISON_RECRUIT_TRAITS">
+							<Size x="188" y="16"/>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<CinematicModel parentKey="Model" hidden="true" inherits="ModelTemplate">
+				<Size x="188" y="300"/>
+				<Anchors>
+					<Anchor point="BOTTOM" y="-20"/>
+				</Anchors>
+					<Scripts>
+						<OnShow>
+							self:SetTargetDistance(0);
+							self:SetFacing(.2);
+						</OnShow>
+					</Scripts>
+			</CinematicModel>
+			<Button parentKey="HireRecruits" inherits="MagicButtonTemplate" text="GARRISON_HIRE_FOLLOWER">
+				<Size x="116" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="8"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="GarrisonRecruiterFrame_HireRecruit"/>
+					<OnLoad>
+						self:SetWidth(max(112, self:GetTextWidth() + 48));
+						self:SetFrameLevel(self:GetParent().Model:GetFrameLevel() + 1);
+					</OnLoad>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+
+	<Frame name="GarrisonRecruiterFrame" inherits="ButtonFrameTemplate" toplevel="true" parent="UIParent" enableMouse="true" hidden="true">
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BORDER" textureSubLevel="-1">
+				<Texture atlas="Headhunter_BG" parentKey="BG" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="PortraitTexture">
+					<Size x="60" y="60"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-5" y="5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Pick" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Title1" inherits="GameFontNormalLarge" justifyH="CENTER" justifyV="BOTTOM" text="GARRISON_PICK_TITLE" wordwrap="true">
+							<Size y="88"/>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT" x="44"/>
+								<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="-44" y="-116"/>
+							</Anchors>
+						</FontString>
+						<Texture atlas="Headhunter_LineHeader" parentKey="Line1" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.Title1" relativePoint="BOTTOM" x="0" y="-8"/>
+							</Anchors>
+						</Texture>
+
+						<FontString parentKey="Title2" inherits="GameFontNormalLarge" justifyH="CENTER" justifyV="BOTTOM" text="GARRISON_CHOOSE_THREAT" wordwrap="true">
+							<Size y="88"/>
+							<Anchors>
+								<Anchor point="TOP" relativePoint="CENTER" y="100"/>
+								<Anchor point="LEFT" relativePoint="LEFT" x="44"/>
+								<Anchor point="RIGHT" relativePoint="RIGHT" x="-44"/>
+							</Anchors>
+							<Color r="1" g=".82" b="0"/>
+						</FontString>
+						<Texture atlas="Headhunter_LineHeader" parentKey="Line2" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.Title2" relativePoint="BOTTOM" x="0" y="-8"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<CheckButton parentKey="Radio1" inherits="GarrisonRecruiterRadioButtonTemplate" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Line1" relativePoint="BOTTOMLEFT" x="0" y="-11"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="GarrisonRecruiterType_OnClick" />
+						</Scripts>
+					</CheckButton>
+					<CheckButton parentKey="Radio2" inherits="GarrisonRecruiterRadioButtonTemplate" id ="2">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.Line1" relativePoint="CENTER" x="6" y="-12"/>
+							<Anchor point="TOP" relativeKey="$parent.Radio1" relativePoint="TOP"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="GarrisonRecruiterType_OnClick" />
+						</Scripts>
+					</CheckButton>
+
+					<DropdownButton parentKey="ThreatDropdown" inherits="WowStyle1DropdownTemplate">
+						<Size x="223" y="32"/>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.Line2" relativePoint="BOTTOM" x="0" y="-12"/>
+						</Anchors>
+					</DropdownButton>
+
+					<Frame parentKey="Counter" inherits="GarrisonAbilityCounterTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Line2" relativePoint="BOTTOMLEFT" x="6" y="-47"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK" >
+								<FontString parentKey="Title" inherits="GameFontNormal" justifyH="LEFT" justifyV="MIDDLE">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="8" y="0"/>
+										<Anchor point="BOTTOM" relativePoint="BOTTOM" x="0" y="1"/>
+										<Anchor point="RIGHT" relativeKey="$parent.$parent.ThreatDropdown" relativePoint="RIGHT"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="Description" inherits="GameFontHighlight" justifyH="LEFT" justifyV="TOP" wordwrap="true">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="-6" y="-6"/>
+										<Anchor point="BOTTOM" x="0" y="-80"/>
+										<Anchor point="RIGHT" relativeKey="$parent.$parent.ThreatDropdown" x="-8" y="0"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+
+					<Button parentKey="ChooseRecruits" inherits="MagicButtonTemplate" text="GARRISON_CHOOSE_RECRUIT" >
+						<Size x="116" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOM" relativeTo="GarrisonRecruiterFrame" x="-4" y="4"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="GarrisonRecruiterFrame_ChooseRecruits"/>
+							<OnLoad>
+								self:SetWidth(max(116, self:GetTextWidth() + 24));
+							</OnLoad>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+
+			<Frame parentKey="Random" hidden="true" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Title" inherits="GameFontNormalLarge" justifyH="CENTER" justifyV="MIDDLE" text="GARRISON_RANDOM_RECRUIT" wordwrap="true">
+							<Size y="128"/>
+							<Anchors>
+								<Anchor point="CENTER" y="48"/>
+								<Anchor point="LEFT" relativePoint="LEFT" x="44"/>
+								<Anchor point="RIGHT" relativePoint="RIGHT" x="-44"/>
+							</Anchors>
+							<Color r="1" g=".82" b="0"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="ChooseRecruits" inherits="MagicButtonTemplate" text="GARRISON_CHOOSE_RECRUIT">
+						<Size x="116" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOM" relativeTo="GarrisonRecruiterFrame" x="-4" y="4"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="GarrisonRecruiterFrame_ChooseRandomRecruits"/>
+							<OnLoad>
+								self:SetWidth(max(116, self:GetTextWidth() + 24));
+							</OnLoad>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+
+			<Frame parentKey="UnavailableFrame" hidden="true" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Title" inherits="GameFontNormalLarge" justifyH="CENTER" justifyV="MIDDLE" text="GARRISON_RECRUIT_NEXT_WEEK" wordwrap="true">
+							<Size y="128"/>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT" x="54"/>
+								<Anchor point="RIGHT" relativePoint="RIGHT" x="-54"/>
+							</Anchors>
+							<Color r="1" g=".82" b="0"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button inherits="MagicButtonTemplate" text="GARRISON_CHOOSE_RECRUIT">
+						<Size x="116" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOM" relativeTo="GarrisonRecruiterFrame" x="-4" y="4"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self:SetWidth(max(116, self:GetTextWidth() + 24));
+								self:SetEnabled(false);
+							</OnLoad>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="GarrisonRecruiterFrame_OnLoad"/>
+			<OnEvent function="GarrisonRecruiterFrame_OnEvent"/>
+			<OnShow function="GarrisonRecruiterFrame_OnShow"/>
+			<OnHide function="GarrisonRecruiterFrame_OnHide"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="GarrisonRecruitSelectFrame" inherits="GarrisonUITemplate" toplevel="true" parent="UIParent" enableMouse="true" hidden="true">
+		<Size x="962" y="662"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Frames>
+			<Frame parentKey="FollowerList" inherits="GarrisonListTemplateHeader" mixin="GarrisonFollowerList">
+				<Size x="305" y="565"/>
+				<KeyValues>
+					 <KeyValue key="canExpand" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="33" y="-64"/>
+				</Anchors>
+				<Frames>
+					<EditBox parentKey="SearchBox" inherits="SearchBoxTemplate" letters="40">
+						<Size x="236" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.HeaderLeft" x="17" y="-10"/>
+						</Anchors>
+						<Scripts>
+							<OnTextChanged function="GarrisonFollowListEditBox_OnTextChanged"/>
+						</Scripts>
+					</EditBox>
+				</Frames>
+				<Scripts>
+					<OnShow method="OnShow"/>
+					<OnHide method="OnHide"/>
+					<OnEvent method="OnEvent"/>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="FollowerSelection" inherits="GarrisonMissionBaseFrameTemplate">
+				<Size x="580" y="565"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-35" y="-64"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER" textureSubLevel="3">
+						<Texture parentKey="HeaderBG" atlas="GarrMission_FollowerPageHeaderBG">
+							<Anchors>
+								<Anchor point="TOPLEFT" y="-5"/>
+								<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" y="-83"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="ChooseFollower" inherits="GameFontHighlightLarge2" justifyH="CENTER" text="GARRISON_CHOOSE_FOLLOWER">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" y="12"/>
+								<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" y="32"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+
+					<Layer level="ARTWORK">
+						<Texture parentKey="Line1">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="196" y="-8"/>
+								<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT"  x="198" y="8"/>
+							</Anchors>
+							<Color r="0.1608" g="0.1333" b="0.1098"/>
+						</Texture>
+						<Texture parentKey="Line2">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="386" y="-8"/>
+								<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="388" y="8"/>
+							</Anchors>
+							<Color r="0.1608" g="0.1333" b="0.1098"/>
+						</Texture>
+						<FontString parentKey="WaitText" inherits="GameFontNormalLarge" justifyH="CENTER" justifyV="MIDDLE" text="GARRISON_GATHERING_RECRUITS" wordwrap="true" hidden="true">
+							<Size y="128"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+								<Anchor point="LEFT" relativePoint="LEFT" x="44"/>
+								<Anchor point="RIGHT" relativePoint="RIGHT" x="-44"/>
+							</Anchors>
+							<Color r="1" g=".82" b="0"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="Recruit1" id="1" inherits="GarrisonRecruitTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="8" y="-16"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="Recruit2" id="2" inherits="GarrisonRecruitTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Recruit1" relativePoint="TOPRIGHT" x="1"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="Recruit3" id="3" inherits="GarrisonRecruitTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Recruit2" relativePoint="TOPRIGHT" x="1"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="GarrisonRecruitSelectFrame_OnLoad"/>
+			<OnEvent function="GarrisonRecruitSelectFrame_OnEvent"/>
+			<OnShow function="GarrisonRecruitSelectFrame_OnShow"/>
+			<OnHide function="GarrisonRecruitSelectFrame_OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

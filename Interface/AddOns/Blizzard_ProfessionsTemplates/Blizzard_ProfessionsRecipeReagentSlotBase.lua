@@ -63,7 +63,7 @@ function ProfessionsReagentSlotButtonMixin:UpdateOverlay()
 end
 
 function ProfessionsReagentSlotButtonMixin:UpdateCursor()
-	if GetMouseFocus() == self then
+	if self:IsMouseMotionFocus() then
 		local onEnterScript = self:GetScript("OnEnter");
 		if onEnterScript ~= nil then
 			onEnterScript(self);

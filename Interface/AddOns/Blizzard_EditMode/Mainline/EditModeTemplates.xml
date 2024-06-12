@@ -1,0 +1,180 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="EditModeCheckButtonTemplate" inherits="ResizeCheckButtonBehaviorTemplate" mixin="EditModeCheckButtonMixin" virtual="true">
+		<Frames>
+			<CheckButton parentKey="Button" motionScriptsWhileDisabled="true" mixin="EditModeCheckButtonButtonMixin">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="LEFT"/>
+				</Anchors>
+				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+				<Scripts>
+					<OnClick method="OnClick"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</CheckButton>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" wordwrap="false" justifyH="LEFT" inherits="GameFontHighlightMedium">
+					<Size y="32"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Button" relativePoint="RIGHT" x="5"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnShow method="EditModeCheckButton_OnShow" inherit="append"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="EditModeManagerSettingCheckButtonTemplate" inherits="EditModeCheckButtonTemplate" mixin="EditModeManagerSettingCheckButtonMixin" virtual="true">
+		<Size x="225" y="32"/>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+		<KeyValues>
+			<KeyValue key="fixedWidth" value="225" type="number"/>
+			<KeyValue key="fixedHeight" value="32" type="number"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="EditModeManagerSettingCheckButton_OnLoad" inherit="append"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="EditModeManagerSettingsOptionsContainerTemplate" inherits="GridLayoutFrame" virtual="true">
+		<Size x="1" y="1"/>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+		<KeyValues>
+			<KeyValue key="childXPadding" value="0" type="number"/>
+			<KeyValue key="childYPadding" value="0" type="number"/>
+			<KeyValue key="isHorizontal" value="true" type="boolean"/>
+			<KeyValue key="stride" value="2" type="number"/>
+			<KeyValue key="layoutFramesGoingRight" value="true" type="boolean"/>
+			<KeyValue key="layoutFramesGoingUp" value="false" type="boolean"/>
+			<KeyValue key="alwaysUpdateLayout" value="true" type="boolean"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="EditModeUnsavedChangesCheckerTemplate" mixin="EditModeUnsavedChangesCheckerMixin" virtual="true">
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+
+	<Button name="EditModeChangeLayoutButtonTemplate" inherits="UIButtonTemplate" hidden="true" virtual="true">
+		<Size x="14" y="14"/>
+	</Button>
+
+	<Button name="EditModeManagerFrameButtonTemplate" inherits="UIPanelButtonTemplate, UIButtonTemplate" virtual="true">
+		<Size x="220" y="28"/>
+	</Button>
+	
+	<Frame name="EditModeSettingDropdownTemplate" inherits="ResizeLayoutFrame" mixin="EditModeSettingDropdownMixin" hidden="true" virtual="true">
+		<KeyValues>
+			<KeyValue key="fixedHeight" value="32" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" inherits="GameFontHighlightMedium" justifyH="LEFT">
+					<Size x="100"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<DropdownButton parentKey="Dropdown" inherits="WowStyle1DropdownTemplate" >
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Label" relativePoint="RIGHT" x="5" />
+				</Anchors>
+			</DropdownButton>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="EditModeSettingSliderTemplate" mixin="EditModeSettingSliderMixin" hidden="true" virtual="true">
+		<Size x="343" y="32"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" inherits="GameFontHighlightMedium" justifyH="LEFT">
+					<Size x="100" y="32"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Slider" inherits="MinimalSliderWithSteppersTemplate" >
+				<Size x="200" y="32"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Label" relativePoint="RIGHT" x="5" />
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="EditModeSettingCheckboxTemplate" inherits="ResizeLayoutFrame" mixin="EditModeSettingCheckboxMixin" hidden="true" virtual="true">
+		<KeyValues>
+			<KeyValue key="widthPadding" value="-5" type="number"/>
+			<KeyValue key="fixedHeight" value="32" type="number"/>
+		</KeyValues>
+		<Frames>
+			<CheckButton parentKey="Button">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="LEFT" x="-5"/>
+				</Anchors>
+				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+				<Scripts>
+					<OnClick>
+						self:GetParent():OnCheckButtonClick();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" inherits="GameFontHighlightMedium" justifyH="LEFT">
+					<Size x="300" y="32"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Button" relativePoint="RIGHT" x="5"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+	
+	<Line name="EditModeGridLineTemplate" mixin="EditModeGridLineMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="isGridLine" value="true" type="boolean"/>
+		</KeyValues>
+	</Line>
+
+	<Line name="MagnetismPreviewLineTemplate" mixin="MagnetismPreviewLineMixin" virtual="true">
+		<Color r="1" g="0" b="0"/>
+	</Line>
+</Ui>

@@ -33,15 +33,16 @@ local ProfessionConstants =
 		{
 			Name = "CraftingOrderItemType",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 5,
 			MinValue = 0,
-			MaxValue = 3,
+			MaxValue = 4,
 			Fields =
 			{
 				{ Name = "Reagent", Type = "CraftingOrderItemType", EnumValue = 0 },
 				{ Name = "Recraft", Type = "CraftingOrderItemType", EnumValue = 1 },
 				{ Name = "CraftedResult", Type = "CraftingOrderItemType", EnumValue = 2 },
 				{ Name = "RemoveReagent", Type = "CraftingOrderItemType", EnumValue = 3 },
+				{ Name = "NpcProvided", Type = "CraftingOrderItemType", EnumValue = 4 },
 			},
 		},
 		{
@@ -160,14 +161,15 @@ local ProfessionConstants =
 		{
 			Name = "CraftingOrderType",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 3,
 			Fields =
 			{
 				{ Name = "Public", Type = "CraftingOrderType", EnumValue = 0 },
 				{ Name = "Guild", Type = "CraftingOrderType", EnumValue = 1 },
 				{ Name = "Personal", Type = "CraftingOrderType", EnumValue = 2 },
+				{ Name = "Npc", Type = "CraftingOrderType", EnumValue = 3 },
 			},
 		},
 		{
@@ -193,6 +195,18 @@ local ProfessionConstants =
 			Fields =
 			{
 				{ Name = "ItemRecraftFlagInvalid", Type = "ItemRecraftFlags", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "NpcCraftingOrderSetFlags",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 1,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "CraftingOrderFlagAllowMultiple", Type = "NpcCraftingOrderSetFlags", EnumValue = 1 },
+				{ Name = "CraftingOrderFlagAllowDuplicate", Type = "NpcCraftingOrderSetFlags", EnumValue = 2 },
 			},
 		},
 		{
@@ -235,9 +249,9 @@ local ProfessionConstants =
 		{
 			Name = "ProfessionEffect",
 			Type = "Enumeration",
-			NumValues = 26,
+			NumValues = 28,
 			MinValue = 0,
-			MaxValue = 25,
+			MaxValue = 27,
 			Fields =
 			{
 				{ Name = "Skill", Type = "ProfessionEffect", EnumValue = 0 },
@@ -266,6 +280,8 @@ local ProfessionConstants =
 				{ Name = "IncreaseDifficulty", Type = "ProfessionEffect", EnumValue = 23 },
 				{ Name = "ModSkillGain", Type = "ProfessionEffect", EnumValue = 24 },
 				{ Name = "AccumulateRanksByLabel", Type = "ProfessionEffect", EnumValue = 25 },
+				{ Name = "StatIngenuity", Type = "ProfessionEffect", EnumValue = 26 },
+				{ Name = "ModIngenuity", Type = "ProfessionEffect", EnumValue = 27 },
 			},
 		},
 		{
@@ -283,7 +299,7 @@ local ProfessionConstants =
 				{ Name = "Perception", Type = "ProfessionRating", EnumValue = 4 },
 				{ Name = "CraftingSpeed", Type = "ProfessionRating", EnumValue = 5 },
 				{ Name = "Multicraft", Type = "ProfessionRating", EnumValue = 6 },
-				{ Name = "Unused_1", Type = "ProfessionRating", EnumValue = 7 },
+				{ Name = "Ingenuity", Type = "ProfessionRating", EnumValue = 7 },
 				{ Name = "Unused_2", Type = "ProfessionRating", EnumValue = 8 },
 			},
 		},

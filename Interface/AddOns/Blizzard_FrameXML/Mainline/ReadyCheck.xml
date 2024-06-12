@@ -1,0 +1,120 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="ReadyCheckStatusTemplate" virtual="true">
+		<!-- <KeyValues>
+			The raid ready check icons are smaller and do not have a background shadow
+			<KeyValue key="useRaidIcons" value="true" type="boolean"/>
+		</KeyValues> -->
+		<Size x="36" y="36"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Texture" atlas="UI-LFG-PendingMark" useAtlasSize="true"/>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Frame name="ReadyCheckFrame" frameStrata="DIALOG" toplevel="true" parent="UIParent" hidden="true">
+		<Size x="323" y="100"/>
+		<Anchors>
+			<Anchor point="CENTER" x="0" y="-10"/>
+		</Anchors>
+		<Frames>
+			<Frame name="ReadyCheckListenerFrame" setAllPoints="true" hidden="true">
+				<KeyValues>
+					<KeyValue key="layoutType" value="PortraitFrameTemplate" type="string"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="-5">
+						<Texture parentKey="Bg" file="Interface\DialogFrame\UI-DialogBox-Background-Dark" horizTile="true" vertTile="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="3" y="-23"/>
+								<Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString name="ReadyCheckFrameText" inherits="GameFontNormal" justifyV="MIDDLE">
+							<Size x="240" y="0"/>
+							<Anchors>
+								<Anchor point="TOP" x="20" y="-37"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate"/>
+					<Frame parentKey="TitleContainer" frameLevel="510">
+						<Size x="0" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="58" y="-1"/>
+							<Anchor point="TOPRIGHT" x="-24" y="-1"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString inherits="GameFontNormal" text="READY_CHECK" parentKey="TitleText" wordwrap="false">
+									<Anchors>
+										<Anchor point="TOP" x="0" y="-5"/>
+										<Anchor point="LEFT"/>
+										<Anchor point="RIGHT"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame parentKey="PortraitContainer" frameLevel="495">
+						<Size x="1" y="1"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" />
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="ReadyCheckPortrait">
+									<Size x="54" y="54"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="0" y="3"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Button name="ReadyCheckFrameYesButton" inherits="UIPanelButtonTemplate" text="READY">
+						<Size x="119" y="24"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="11" y="16"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+								ConfirmReadyCheck(1);
+								ReadyCheckFrame:Hide();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="ReadyCheckFrameNoButton" inherits="UIPanelButtonTemplate" text="NOT_READY">
+						<Size x="119" y="24"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM" x="22" y="16"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+								ConfirmReadyCheck();
+								ReadyCheckFrame:Hide();
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnShow>
+						PlaySound(SOUNDKIT.READY_CHECK);
+						FlashClientIcon();
+					</OnShow>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="ReadyCheckFrame_OnLoad"/>
+			<OnEvent function="ReadyCheckFrame_OnEvent"/>
+			<OnHide function="ReadyCheckFrame_OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

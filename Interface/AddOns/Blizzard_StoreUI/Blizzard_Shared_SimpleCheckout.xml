@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI_shared.xsd">
+..\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_Shared_SimpleCheckout.lua"/>
 	<Line name="SimpleCheckoutBorder" thickness="1" virtual="true">
 	</Line>
@@ -9,7 +9,7 @@
 	<Line name="SimpleCheckoutOutsideBorder" virtual="true" inherits="SimpleCheckoutBorder">
 		<Color r="0.0" g="0.0" b="0.0" a="1.0"/>
 	</Line>
-	<ScopedModifier forbidden="true" scriptsUseGivenEnv="true">
+	<ScopedModifier forbidden="true">
 		<Checkout name="SimpleCheckout" parent="UIParent" frameStrata="FULLSCREEN_DIALOG" IMEFont="ChatFontNormal" toplevel="true" hidden="true" mixin="SimpleCheckoutMixin">
 			<Anchors>
 				<Anchor point="CENTER" relativePoint="CENTER" relativeTo="UIParent"/>

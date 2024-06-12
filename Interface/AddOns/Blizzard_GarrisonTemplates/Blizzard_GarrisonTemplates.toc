@@ -6,3 +6,4 @@
 Blizzard_GarrisonSharedTemplates.xml
 Blizzard_GarrisonMissionTemplates.xml
 Blizzard_CovenantMissionTemplates.xml
+Localization.lua

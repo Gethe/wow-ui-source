@@ -468,7 +468,21 @@ local Map =
 			},
 		},
 		{
-			Name = "IsMapValidForNavBarDropDown",
+			Name = "IsCityMap",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isCityMap", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsMapValidForNavBarDropdown",
 			Type = "Function",
 
 			Arguments =

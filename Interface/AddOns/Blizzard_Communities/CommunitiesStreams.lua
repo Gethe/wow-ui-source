@@ -1,5 +1,4 @@
-
-function CommunitiesStreamDropDownMenu_GetStreamName(clubId, stream)
+local function GetStreamName(clubId, stream)
 	local streamName = "";
 	local streamId = stream.streamId;
 	if stream.leadersAndModeratorsOnly then
@@ -20,78 +19,105 @@ function CommunitiesStreamDropDownMenu_GetStreamName(clubId, stream)
 	return streamName;
 end
 
-function CommunitiesStreamDropDownMenu_Initialize(self)
-	local clubId = self:GetCommunitiesFrame():GetSelectedClubId();
-	if not clubId then
-		return;
-	end
-	
-	local streams = C_Club.GetStreams(clubId);
-	CommunitiesUtil.SortStreams(streams);
-	
-	local streamToNotificationSetting = CommunitiesUtil.GetStreamNotificationSettingsLookup(clubId);
-	local canEditStream = self:GetCommunitiesFrame():GetPrivilegesForClub(clubId).canDestroyStream;
-	local info = UIDropDownMenu_CreateInfo();
-	info.minWidth = 170;
-	info.iconXOffset = -3;
-	for i, stream in ipairs(streams) do
-		local streamId = stream.streamId;
-		info.text = CommunitiesStreamDropDownMenu_GetStreamName(clubId, stream);
+CommunitiesStreamDropdownMixin = {}
+
+function CommunitiesStreamDropdownMixin:OnLoad()
+	WowStyle1DropdownMixin.OnLoad(self);
+
+	self:SetSelectionTranslator(function(selection)
+		return selection.data.dropdownText;
+	end);
+end
+
+function CommunitiesStreamDropdownMixin:SetupMenu()
+	WowStyle1DropdownMixin.SetupMenu(self, function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_COMMUNITIES_STREAM");
+
+		local communitiesFrame = self:GetCommunitiesFrame();
+		local clubId = communitiesFrame:GetSelectedClubId();
+		local selectedStream = communitiesFrame:GetSelectedStreamForClub(clubId);
+		if not selectedStream then
+			-- Cannot continue without a selected stream. This will be called again from
+			-- CLUB_STREAMS_LOADED or CLUB_STREAM_ADDED after the selection is made.
+			return;
+		end
+
+		local streams = C_Club.GetStreams(clubId);
+		CommunitiesUtil.SortStreams(streams);
+
+		local streamToNotificationSetting = CommunitiesUtil.GetStreamNotificationSettingsLookup(clubId);
+
+		local function IsChecked(stream)
+			local selectedStream = communitiesFrame:GetSelectedStreamForClub(clubId);
+			return selectedStream.streamId == stream.streamId;
+		end
 		
-		-- TODO:: Support mention-based notifications once we have support for mentions.
-		if streamToNotificationSetting[streamId] == Enum.ClubStreamNotificationFilter.All and
-			CommunitiesUtil.DoesCommunityStreamHaveUnreadMessages(clubId, streamId) then
-			info.text = info.text.." "..CreateAtlasMarkup("communities-icon-notification", 10, 10);
+		local function SetChecked(stream)
+			communitiesFrame:SelectStream(clubId, stream.streamId) 
 		end
-				
-		info.mouseOverIcon = canEditStream and stream.streamType == Enum.ClubStreamType.Other and "Interface\\WorldMap\\GEAR_64GREY" or nil;
-		info.value = streamId;
-		info.checked = streamId == UIDropDownMenu_GetSelectedValue(self);
-		info.func = function(button)
-			local gearIcon = button.Icon;
-			if button.mouseOverIcon ~= nil and gearIcon:IsMouseOver() then
-				self:GetCommunitiesFrame():ShowEditStreamDialog(clubId, streamId);
-			else
-				local communitiesFrame = self:GetCommunitiesFrame();
-				communitiesFrame:SelectStream(communitiesFrame:GetSelectedClubId(), button.value) 
+
+		for i, stream in ipairs(streams) do
+			local streamId = stream.streamId;
+
+			local text = GetStreamName(clubId, stream);
+			stream.dropdownText = text;
+			
+			-- TODO:: Support mention-based notifications once we have support for mentions.
+			local notifyAll = streamToNotificationSetting[streamId] == Enum.ClubStreamNotificationFilter.All;
+			if notifyAll and CommunitiesUtil.DoesCommunityStreamHaveUnreadMessages(clubId, streamId) then
+				text = CreateCommunitiesIconNotificationMarkup(text);
 			end
+
+			local radio = rootDescription:CreateRadio(text, IsChecked, SetChecked, stream);
+			radio:AddInitializer(function(button, description, menu)
+				local canEditStream = communitiesFrame:GetPrivilegesForClub(clubId).canDestroyStream;
+				if canEditStream and stream.streamType == Enum.ClubStreamType.Other then
+					local gearButton = MenuTemplates.AttachAutoHideGearButton(button);
+					gearButton:SetPoint("RIGHT");
+					gearButton:SetScript("OnClick", function()
+						communitiesFrame:ShowEditStreamDialog(clubId, streamId);
+					end);
+				end
+			end);
 		end
-		UIDropDownMenu_AddButton(info);
-	end
-	
-	info.mouseOverIcon = nil;
-	
-	local clubInfo = C_Club.GetClubInfo(clubId);
-	local maximumNumberOfStreams = C_Club.GetClubLimits(clubInfo and clubInfo.clubType or Enum.ClubType.Character).maximumNumberOfStreams;
-	if self:GetCommunitiesFrame():GetPrivilegesForClub(clubId).canCreateStream and #streams < maximumNumberOfStreams then
-		info.text = GREEN_FONT_COLOR:WrapTextInColorCode(COMMUNITIES_CREATE_CHANNEL);
-		info.value = nil;
-		info.customCheckIconAtlas = "communities-icon-addchannelplus";
-		info.func = function(button)
-			self:GetCommunitiesFrame():ShowCreateChannelDialog();
+		
+		local clubInfo = C_Club.GetClubInfo(clubId);
+		local maximumNumberOfStreams = C_Club.GetClubLimits(clubInfo and clubInfo.clubType or Enum.ClubType.Character).maximumNumberOfStreams;
+		if communitiesFrame:GetPrivilegesForClub(clubId).canCreateStream and #streams < maximumNumberOfStreams then
+			local text = GREEN_FONT_COLOR:WrapTextInColorCode(COMMUNITIES_CREATE_CHANNEL);
+			local button = rootDescription:CreateButton(text, function()
+				communitiesFrame:ShowCreateChannelDialog();
+			end);
+			
+			button:AddInitializer(function(button, description, menu)
+				local texture = button:AttachTexture();
+				texture:SetSize(16,16);
+				texture:SetPoint("LEFT");
+				texture:SetAtlas("communities-icon-addchannelplus");
+
+				local fontString = button.fontString;
+				fontString:SetPoint("LEFT", texture, "RIGHT", 3, 0);
+			end);
 		end
-		UIDropDownMenu_AddButton(info);
-	end
-	
-	info.customCheckIconAtlas = nil;
-	
-	info.text = COMMUNITIES_NOTIFICATION_SETTINGS;
-	info.value = nil;
-	info.customCheckIconTexture = "Interface\\WorldMap\\GEAR_64GREY";
-	info.func = function(button)
-		self:GetCommunitiesFrame():ShowNotificationSettingsDialog(clubId);
-	end
-	UIDropDownMenu_AddButton(info);
+		
+		local text = COMMUNITIES_NOTIFICATION_SETTINGS;
+		local button = rootDescription:CreateButton(text, function()
+			communitiesFrame:ShowNotificationSettingsDialog(clubId);
+		end);
+		
+		button:AddInitializer(function(button, description, menu)
+			local texture = button:AttachTexture();
+			texture:SetSize(16,16);
+			texture:SetPoint("LEFT");
+			texture:SetTexture([[Interface\WorldMap\GEAR_64GREY]]);
+
+			local fontString = button.fontString;
+			fontString:SetPoint("LEFT", texture, "RIGHT", 3, 0);
+		end);
+	end);
 end
 
-CommunitiesStreamDropDownMixin = {}
-
-function CommunitiesStreamDropDownMixin:OnLoad()
-	UIDropDownMenu_SetWidth(self, 115);
-	self.Text:SetJustifyH("LEFT");
-end
-
-function CommunitiesStreamDropDownMixin:UpdateUnreadNotification()
+function CommunitiesStreamDropdownMixin:UpdateUnreadNotification()
 	local clubId = self:GetCommunitiesFrame():GetSelectedClubId();
 	if clubId then
 		local ignoreStreamId = self:GetCommunitiesFrame():GetSelectedStreamId();
@@ -101,7 +127,7 @@ function CommunitiesStreamDropDownMixin:UpdateUnreadNotification()
 	end
 end
 
-function CommunitiesStreamDropDownMixin:GetCommunitiesFrame()
+function CommunitiesStreamDropdownMixin:GetCommunitiesFrame()
 	return self:GetParent();
 end
 
@@ -146,7 +172,7 @@ function CommunitiesEditStreamDialogMixin:ShowCreateDialog(clubId)
 	self.Description.EditBox:SetText("");
 	self.Accept:SetScript("OnClick", function(self)
 		local editStreamDialog = self:GetParent();
-		local leadersAndModeratorsOnly = editStreamDialog.TypeCheckBox:GetChecked();
+		local leadersAndModeratorsOnly = editStreamDialog.TypeCheckbox:GetChecked();
 		if editStreamDialog:ValidateText(clubId) then
 			C_Club.CreateStream(clubId, editStreamDialog.NameEdit:GetText(), editStreamDialog.Description.EditBox:GetText(), leadersAndModeratorsOnly);
 			editStreamDialog:Hide();
@@ -166,10 +192,10 @@ function CommunitiesEditStreamDialogMixin:ShowEditDialog(clubId, stream)
 	self.TitleLabel:SetText(COMMUNITIES_EDIT_CHANNEL);
 	self.NameEdit:SetText(stream.name);
 	self.Description.EditBox:SetText(stream.subject);
-	self.TypeCheckBox:SetChecked(stream.leadersAndModeratorsOnly);
+	self.TypeCheckbox:SetChecked(stream.leadersAndModeratorsOnly);
 	self.Accept:SetScript("OnClick", function(self)
 		local editStreamDialog = self:GetParent();
-		local leadersAndModeratorsOnly = editStreamDialog.TypeCheckBox:GetChecked();
+		local leadersAndModeratorsOnly = editStreamDialog.TypeCheckbox:GetChecked();
 		if editStreamDialog:ValidateText(clubId) then
 			C_Club.EditStream(clubId, stream.streamId, editStreamDialog.NameEdit:GetText(), editStreamDialog.Description.EditBox:GetText(), leadersAndModeratorsOnly)
 			editStreamDialog:Hide();
@@ -220,6 +246,8 @@ CommunitiesNotificationSettingsDialogMixin = {};
 
 function CommunitiesNotificationSettingsDialogMixin:OnLoad()
 	self.buttonPool = CreateFramePool("BUTTON", self.ScrollFrame.Child, "CommunitiesNotificationSettingsStreamEntryTemplate");
+
+	self.CommunitiesListDropdown:SetWidth(160);
 end
 
 function CommunitiesNotificationSettingsDialogMixin:OnShow()
@@ -300,7 +328,7 @@ function CommunitiesNotificationSettingsDialogMixin:SelectClub(clubId)
 		self.ScrollFrame.Child.SettingsLabel:SetPoint("TOP", 0, -19);
 	end
 
-	self.CommunitiesListDropDownMenu:OnClubSelected();
+	self.CommunitiesListDropdown:OnClubSelected();
 	self:Refresh();
 end
 
@@ -332,6 +360,105 @@ function CommunitiesAddToChatMixin:OnLoad()
 	SquareButton_SetIcon(self, "DOWN");
 end
 
+
+function CommunitiesAddToChatMixin:OnShow()
+	self:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_COMMUNITIES_ADD_TO_CHAT");
+
+		local clubId = self:GetParent():GetSelectedClubId();
+		local streamId = self:GetParent():GetSelectedStreamId();
+		local streamInfo = C_Club.GetStreamInfo(clubId, streamId);
+		local channelName = Chat_GetCommunitiesChannelName(clubId, streamId);
+		local isGuildStream = streamInfo.streamType == Enum.ClubStreamType.Guild or streamInfo.streamType == Enum.ClubStreamType.Officer;
+	
+		rootDescription:CreateTitle(COMMUNITIES_ADD_TO_CHAT_DROP_DOWN_TITLE);
+		
+		FCF_IterateActiveChatWindows(function(chatWindow, chatWindowIndex)
+			-- The only reserved chat window that allows communities channels is the general chat window.
+			if FCF_IsChatWindowIndexReserved(chatWindowIndex) and (chatWindowIndex ~= 1) then
+				return;
+			end
+
+			local chatTab = _G["ChatFrame"..chatWindowIndex.."Tab"];
+			local text = chatTab.Text:GetText();
+			
+			if isGuildStream then
+				local messageGroup = streamInfo.streamType == Enum.ClubStreamType.Guild and "GUILD" or "OFFICER";
+				
+				local function IsChecked(chatWindowIndex)
+					return ChatFrame_ContainsMessageGroup(chatWindow, messageGroup);
+				end
+
+				local function SetChecked(chatWindowIndex)
+					if IsChecked(chatWindowIndex) then
+						ChatFrame_RemoveMessageGroup(chatWindow, messageGroup);
+					else
+						ChatFrame_AddMessageGroup(chatWindow, messageGroup);
+					end
+					
+					chatTab:Click();
+				end
+
+				rootDescription:CreateCheckbox(text, IsChecked, SetChecked, chatWindowIndex);
+			else
+				local function IsChecked()
+					return ChatFrame_ContainsChannel(chatWindow, channelName);
+				end
+
+				local function SetChecked(chatWindowIndex)
+					if IsChecked() then
+						ChatFrame_RemoveCommunitiesChannel(chatWindow, clubId, streamId);
+					else
+						ChatFrame_AddNewCommunitiesChannel(chatWindowIndex, clubId, streamId);
+					end
+					
+					chatTab:Click();
+				end
+
+				rootDescription:CreateCheckbox(text, IsChecked, SetChecked, chatWindowIndex);
+			end
+
+		end);
+
+		local canCreateChatWindow = FCF_CanOpenNewWindow();
+		if canCreateChatWindow then
+			rootDescription:CreateButton(COMMUNITIES_ADD_TO_CHAT_DROP_DOWN_NEW_CHAT_WINDOW, function()
+				if isGuildStream then
+					local noDefaultChannels = true;
+					local chatFrameName = streamInfo.name;
+					local frame = FCF_OpenNewWindow(chatFrameName, noDefaultChannels);
+					local messageGroup = streamInfo.streamType == Enum.ClubStreamType.Guild and "GUILD" or "OFFICER";
+					ChatFrame_AddMessageGroup(frame, messageGroup);
+				else
+					local clubInfo = C_Club.GetClubInfo(clubId);
+					if clubInfo  then
+						local MAX_COMMUNITY_NAME_LENGTH = 12;
+						local MAX_CHAT_TAB_STREAM_NAME_LENGTH = 50; -- Arbitrarily large, since for now we don't want to truncate the stream part.
+						local communityPart = ChatFrame_TruncateToMaxLength(clubInfo.name, MAX_COMMUNITY_NAME_LENGTH);
+						local streamPart = ChatFrame_TruncateToMaxLength(streamInfo.name, MAX_CHAT_TAB_STREAM_NAME_LENGTH);
+						local chatFrameName = COMMUNITIES_NAME_AND_STREAM_NAME:format(communityPart, streamPart);
+						local noDefaultChannels = true;
+						local frame, chatFrameIndex = FCF_OpenNewWindow(chatFrameName, noDefaultChannels);
+						local setEditBoxToChannel = true;
+						ChatFrame_AddNewCommunitiesChannel(chatFrameIndex, clubId, streamId, setEditBoxToChannel);
+					end
+				end
+			end);
+		end
+
+		rootDescription:CreateDivider();
+		
+		rootDescription:CreateButton(COMMUNITIES_ADD_TO_CHAT_DROP_DOWN_CHAT_SETTINGS, function()
+			CURRENT_CHAT_FRAME_ID = SELECTED_CHAT_FRAME:GetID();
+			ShowUIPanel(ChatConfigFrame);
+			
+			if not isGuildStream then
+				ChatConfigCategory_OnClick(ChatConfigCategoryFrameButton3);
+			end
+		end);
+	end);
+end
+
 function CommunitiesAddToChatMixin:SetClubId(clubId)
 	self.clubId = clubId;
 end
@@ -346,138 +473,6 @@ end
 
 function CommunitiesAddToChatMixin:GetStreamId()
 	return self.streamId;
-end
-
-function CommunitiesAddToChatMixin:OnMouseDown(button)
-	UIMenuButtonStretchMixin.OnMouseDown(self, button);
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	local clubId = self:GetParent():GetSelectedClubId();
-	local streamId = self:GetParent():GetSelectedStreamId();
-	if clubId and streamId then
-		self:SetClubId(clubId);
-		self:SetStreamId(streamId);
-		ToggleDropDownMenu(nil, nil, self.DropDown, self, 0, 0);
-	end
-end
-
-function CommunitiesAddToChatDropDown_Initialize(self, level)
-	local clubId = self:GetParent():GetClubId();
-	local streamId = self:GetParent():GetStreamId();
-	if not clubId or not streamId then
-		return;
-	end
-	
-	local streamInfo = C_Club.GetStreamInfo(clubId, streamId);
-	if not streamInfo then
-		return;
-	end
-	
-	local isGuildStream = streamInfo.streamType == Enum.ClubStreamType.Guild or streamInfo.streamType == Enum.ClubStreamType.Officer;
-	
-	local info = UIDropDownMenu_CreateInfo();
-	info.text = COMMUNITIES_ADD_TO_CHAT_DROP_DOWN_TITLE;
-	info.isTitle = true;
-	info.notCheckable = true;
-	UIDropDownMenu_AddButton(info, level);
-	
-	local channelName = Chat_GetCommunitiesChannelName(clubId, streamId);
-	local function AddChatWindowToDropdown(chatWindow, chatWindowIndex)
-		-- The only reserved chat window that allows communities channels is the general chat window.
-		if FCF_IsChatWindowIndexReserved(chatWindowIndex) and (chatWindowIndex ~= 1) then
-			return;
-		end
-	
-		local info = UIDropDownMenu_CreateInfo();
-		local chatTab = _G["ChatFrame"..chatWindowIndex.."Tab"];
-		info.text = chatTab.Text:GetText();
-		info.value = chatWindowIndex;
-		
-		if isGuildStream then
-			local messageGroup = streamInfo.streamType == Enum.ClubStreamType.Guild and "GUILD" or "OFFICER";
-			info.func = function(button)
-				if button.checked then
-					ChatFrame_RemoveMessageGroup(chatWindow, messageGroup);
-				else
-					ChatFrame_AddMessageGroup(chatWindow, messageGroup);
-				end
-				
-				chatTab:Click();
-			end;
-			
-			
-			info.checked = ChatFrame_ContainsMessageGroup(chatWindow, messageGroup);
-		else
-			info.func = function(button)
-				if button.checked then
-					ChatFrame_RemoveCommunitiesChannel(chatWindow, clubId, streamId);
-				else
-					ChatFrame_AddNewCommunitiesChannel(chatWindowIndex, clubId, streamId);
-				end
-				
-				chatTab:Click();
-			end;
-			
-			info.checked = ChatFrame_ContainsChannel(chatWindow, channelName);
-		end
-		
-		info.isNotRadio = true;
-		UIDropDownMenu_AddButton(info, level);
-	end
-
-	FCF_IterateActiveChatWindows(AddChatWindowToDropdown);
-
-	local canCreateChatWindow = FCF_CanOpenNewWindow();
-	if canCreateChatWindow then
-		local info = UIDropDownMenu_CreateInfo();
-		info.text = COMMUNITIES_ADD_TO_CHAT_DROP_DOWN_NEW_CHAT_WINDOW;
-		info.func = function(button)
-			if isGuildStream then
-				local noDefaultChannels = true;
-				local chatFrameName = streamInfo.name;
-				local frame = FCF_OpenNewWindow(chatFrameName, noDefaultChannels);
-				local messageGroup = streamInfo.streamType == Enum.ClubStreamType.Guild and "GUILD" or "OFFICER";
-				ChatFrame_AddMessageGroup(frame, messageGroup);
-			else
-				local clubInfo = C_Club.GetClubInfo(clubId);
-				if clubInfo  then
-					local MAX_COMMUNITY_NAME_LENGTH = 12;
-					local MAX_CHAT_TAB_STREAM_NAME_LENGTH = 50; -- Arbitrarily large, since for now we don't want to truncate the stream part.
-					local communityPart = ChatFrame_TruncateToMaxLength(clubInfo.name, MAX_COMMUNITY_NAME_LENGTH);
-					local streamPart = ChatFrame_TruncateToMaxLength(streamInfo.name, MAX_CHAT_TAB_STREAM_NAME_LENGTH);
-					local chatFrameName = COMMUNITIES_NAME_AND_STREAM_NAME:format(communityPart, streamPart);
-					local noDefaultChannels = true;
-					local frame, chatFrameIndex = FCF_OpenNewWindow(chatFrameName, noDefaultChannels);
-					local setEditBoxToChannel = true;
-					ChatFrame_AddNewCommunitiesChannel(chatFrameIndex, clubId, streamId, setEditBoxToChannel);
-				end
-			end
-		end;
-
-		info.isNotRadio = true;
-		info.notCheckable = true;
-		UIDropDownMenu_AddButton(info, level);
-	end
-
-	UIDropDownMenu_AddSeparator();
-	
-	local info = UIDropDownMenu_CreateInfo();
-	info.text = COMMUNITIES_ADD_TO_CHAT_DROP_DOWN_CHAT_SETTINGS;
-	info.func = function()
-		CURRENT_CHAT_FRAME_ID = SELECTED_CHAT_FRAME:GetID();
-		ShowUIPanel(ChatConfigFrame);
-		
-		if not isGuildStream then
-			ChatConfigCategory_OnClick(ChatConfigCategoryFrameButton3);
-		end
-	end;
-		
-	info.isNotRadio = true;
-	info.notCheckable = true;
-	UIDropDownMenu_AddButton(info, level);
-end
-
-function CommunitiesAddToChatDropDown_OnLoad(self)
-	UIDropDownMenu_Initialize(self, CommunitiesAddToChatDropDown_Initialize, "MENU");
 end
 
 function CommunitiesAddToChatMixin:GetCommunitiesFrame()

@@ -1,0 +1,392 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Button name="RealmListTabButtonTemplate" parentArray="RealmSelectionTabs" virtual="true">
+		<Size x="115" y="32"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="LeftActive" atlas="uiframe-activetab-left" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-1"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RightActive" atlas="uiframe-activetab-right" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="8"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="MiddleActive" atlas="_uiframe-activetab-center" useAtlasSize="true" horizTile="true">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.LeftActive" relativePoint="RIGHT"/>
+						<Anchor point="RIGHT" relativeKey="$parent.RightActive" relativePoint="LEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Left" atlas="uiframe-tab-left" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-3"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Right" atlas="uiframe-tab-right" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="7"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Middle" atlas="_uiframe-tab-center" useAtlasSize="true" horizTile="true">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="LeftHighlight" atlas="uiframe-tab-left" useAtlasSize="true" alphaMode="ADD" alpha="0.4">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Left"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="MiddleHighlight" atlas="_uiframe-tab-center" useAtlasSize="true" horizTile="true" alphaMode="ADD" alpha="0.4">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Middle" relativePoint="LEFT"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Middle" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RightHighlight" atlas="uiframe-tab-right" useAtlasSize="true" alphaMode="ADD" alpha="0.4">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Right"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				RealmListTab_OnClick(self);
+			</OnClick>
+		</Scripts>
+		<ButtonText parentKey="Text">
+			<Anchors>
+				<Anchor point="CENTER" x="0" y="2"/>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GlueFontNormalSmall"/>
+		<HighlightFont style="GlueFontHighlightSmall"/>
+		<DisabledFont style="GlueFontDisableSmall"/>
+	</Button>
+	<Button name="RealmSortButtonTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentLeft" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size x="5" y="19"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.078125" top="0" bottom="0.59375"/>
+				</Texture>
+				<Texture name="$parentRight" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size x="4" y="19"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.90625" right="0.96875" top="0" bottom="0.59375"/>
+				</Texture>
+				<Texture name="$parentMiddle" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size x="10" y="19"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+						<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT"/>
+					</Anchors>
+					<TexCoords left="0.078125" right="0.90625" top="0" bottom="0.59375"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<ButtonText name="$parentText">
+			<Anchors>
+				<Anchor point="LEFT" x="8" y="0"/>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GlueFontHighlightSmall"/>
+		<NormalTexture name="$parentArrow" file="Interface\Buttons\UI-SortArrow">
+			<Size x="9" y="8"/>
+			<Anchors>
+				<Anchor point="LEFT" relativeTo="$parentText" relativePoint="RIGHT" x="3" y="-2"/>
+			</Anchors>
+			<TexCoords left="0" right="0.5625" top="0" bottom="1.0"/>
+		</NormalTexture>
+		<HighlightTexture file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
+			<Size x="5" y="24"/>
+			<Anchors>
+				<Anchor point="LEFT" x="0" y="0"/>
+				<Anchor point="RIGHT" x="4" y="0"/>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
+
+
+	<Button name="RealmListRealmButtonTemplate" virtual="true">
+		<Size x="512" y="20"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString parentKey="RealmType" name="$parentPVP" inherits="GlueFontRedSmall">
+					<Size x="60" y="12"/>
+					<Anchors>
+						<Anchor point="LEFT" x="235" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="PlayerCount" name="$parentPlayers" inherits="GlueFontHighlightSmall">
+					<Size x="32" y="12"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.RealmType" relativePoint="RIGHT" x="40" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Load" name="$parentLoad" inherits="GlueFontHighlightSmall">
+					<Size x="110" y="12"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.PlayerCount" relativePoint="RIGHT" x="45" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="SelectedTexture" file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD">
+					<Size x="557" y="16"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				local realmInfo = C_RealmList.GetRealmInfo(self.realmAddr);
+				if (realmInfo.version and realmInfo.version.major) then
+					GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", -50, 0);
+					GlueTooltip:SetText(realmInfo.version.major.."."..realmInfo.version.minor.."."..realmInfo.version.revision.."  "..realmInfo.version.build.." CfgID: "..realmInfo.version.cfgConfigsID);
+				end
+			</OnEnter>
+			<OnLeave>
+				if GlueTooltip:GetOwner() == self then
+				GlueTooltip:Hide();
+				end
+			</OnLeave>
+			<OnClick function="RealmSelectButton_OnClick"/>
+			<OnDoubleClick function="RealmSelectButton_OnDoubleClick"/>
+		</Scripts>
+		<ButtonText name="$parentNormalText">
+			<Size x="220" y="12"/>
+			<Anchors>
+				<Anchor point="LEFT" x="5" y="0"/>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GlueFontNormalLeft"/>
+		<HighlightFont style="GlueFontHighlightLeft"/>
+		<DisabledFont style="GlueFontDisableLeft"/>
+	</Button>
+	<ModelFFX name="RealmListUI" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" hidden="true" fogNear="0" fogFar="1200" glow="0.08">
+		<Frames>
+			<Frame name="RealmList" toplevel="true" setAllPoints="true" frameStrata="DIALOG">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture setAllPoints="true">
+							<Color a="0.75" r="0" g="0" b="0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="RealmListBackground">
+						<Size x="640" y="512"/>
+						<Anchors>
+							<Anchor point="CENTER" x="24" y="0"/>
+						</Anchors>
+						<HitRectInsets>
+							<AbsInset left="0" right="44" top="0" bottom="13"/>
+						</HitRectInsets>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture file="Interface\HelpFrame\HelpFrame-TopLeft">
+									<Size x="256" y="256"/>
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+									</Anchors>
+								</Texture>
+								<Texture file="Interface\HelpFrame\HelpFrame-Top">
+									<Size x="256" y="256"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="256" y="0"/>
+									</Anchors>
+								</Texture>
+								<Texture file="Interface\HelpFrame\HelpFrame-TopRight">
+									<Size x="128" y="256"/>
+									<Anchors>
+										<Anchor point="TOPRIGHT"/>
+									</Anchors>
+								</Texture>
+								<Texture file="Interface\HelpFrame\HelpFrame-BotLeft">
+									<Size x="256" y="256"/>
+									<Anchors>
+										<Anchor point="BOTTOMLEFT"/>
+									</Anchors>
+								</Texture>
+								<Texture file="Interface\HelpFrame\HelpFrame-Bottom">
+									<Size x="256" y="256"/>
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" x="256" y="0"/>
+									</Anchors>
+								</Texture>
+								<Texture file="Interface\HelpFrame\HelpFrame-BotRight">
+									<Size x="128" y="256"/>
+									<Anchors>
+										<Anchor point="BOTTOMRIGHT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame parentKey="Header" inherits="DialogHeaderTemplate">
+								<KeyValues>
+									<KeyValue key="textString" value="SERVER_SELECTION" type="global"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="TOP" x="-12" y="11"/>
+								</Anchors>
+							</Frame>
+							<Button name="RealmNameSort" inherits="RealmSortButtonTemplate" text="REALM_NAME">
+								<Size x="223" y="19"/>
+								<Anchors>
+									<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="21" y="-50"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										RealmList_PushSortOrdering("name");
+									</OnClick>
+									<OnEnter>
+										GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", -325, 0);
+										GlueTooltip:SetText(REALMLIST_REALMNAME_TOOLTIP);
+									</OnEnter>
+									<OnLeave>
+										GlueTooltip:Hide();
+									</OnLeave>
+								</Scripts>
+							</Button>
+							<Button name="RealmTypeSort" inherits="RealmSortButtonTemplate" text="REALM_TYPE">
+								<Size x="80" y="19"/>
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="RealmNameSort" relativePoint="RIGHT" x="0" y="0"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										RealmList_PushSortOrdering("realmType");
+									</OnClick>
+									<OnEnter>
+										GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", -200, 0);
+										GlueTooltip:SetText(REALMLIST_TYPE_TOOLTIP);
+									</OnEnter>
+									<OnLeave>
+										GlueTooltip:Hide();
+									</OnLeave>
+								</Scripts>
+							</Button>
+							<Button name="RealmCharactersSort" inherits="RealmSortButtonTemplate" text="REALM_CHARACTERS">
+								<Size x="100" y="19"/>
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="RealmTypeSort" relativePoint="RIGHT" x="0" y="0"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										RealmList_PushSortOrdering("numCharacters");
+									</OnClick>
+									<OnEnter>
+										GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", -165, 0);
+										GlueTooltip:SetText(REALMLIST_NUMCHARACTERS_TOOLTIP);
+									</OnEnter>
+									<OnLeave>
+										GlueTooltip:Hide();
+									</OnLeave>
+								</Scripts>
+							</Button>
+							<Button name="RealmLoadSort" inherits="RealmSortButtonTemplate" text="REALM_LOAD">
+								<Size x="138" y="19"/>
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="RealmCharactersSort" relativePoint="RIGHT" x="0" y="0"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										RealmList_PushSortOrdering("population");
+									</OnClick>
+									<OnEnter>
+										GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", -280, 0);
+										GlueTooltip:SetText(REALMLIST_POPULATION_TOOLTIP);
+									</OnEnter>
+									<OnLeave>
+										GlueTooltip:Hide();
+									</OnLeave>
+								</Scripts>
+							</Button>
+
+							<Button name="RealmListTab1" inherits="RealmListTabButtonTemplate" id="1">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="11" y="16"/>
+								</Anchors>
+							</Button>
+
+							<Button name="RealmListCloseButton" inherits="BigRedExitButtonTemplate">
+								<KeyValues>
+									<KeyValue key="onClickHandler" value="RealmList_OnCancel" type="global"/>
+								</KeyValues>
+								<Size x="32" y="32"/>
+								<Anchors>
+									<Anchor point="TOPRIGHT" x="-45" y="-5"/>
+								</Anchors>
+							</Button>
+							<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+								<Anchors>
+									<Anchor point="TOPLEFT" x="22" y="-56"/>
+									<Anchor point="BOTTOMRIGHT" relativePoint="TOPLEFT" x="564" y="-464"/>
+								</Anchors>
+							</Frame>
+							<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="5" y="-2"/>
+									<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="4"/>
+								</Anchors>
+							</EventFrame>
+							<Button name="RealmListCancelButton" inherits="GlueDialogButtonTemplate" text="CANCEL">
+								<Size x="125" y="26"/>
+								<Anchors>
+									<Anchor point="BOTTOMRIGHT" x="-53" y="19"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										PlaySound(SOUNDKIT.GS_LOGIN_CHANGE_REALM_CANCEL);
+										RealmList_OnCancel();
+									</OnClick>
+								</Scripts>
+							</Button>
+							<Button name="RealmListOkButton" inherits="GlueDialogButtonTemplate" text="OKAY">
+								<Size x="125" y="26"/>
+								<Anchors>
+									<Anchor point="RIGHT" relativeTo="RealmListCancelButton" relativePoint="LEFT" x="-5" y="0"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										PlaySound(SOUNDKIT.GS_LOGIN_CHANGE_REALM_OK);
+										RealmList_OnOk();
+									</OnClick>
+								</Scripts>
+							</Button>
+						</Frames>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad function="RealmList_OnLoad"/>
+					<OnEvent function="RealmList_OnEvent"/>
+					<OnKeyDown>
+						RealmList_OnKeyDown(key);
+					</OnKeyDown>
+					<OnShow function="RealmList_OnShow"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				SetLoginScreenModel(self);
+			</OnLoad>
+		</Scripts>
+	</ModelFFX>
+</Ui>

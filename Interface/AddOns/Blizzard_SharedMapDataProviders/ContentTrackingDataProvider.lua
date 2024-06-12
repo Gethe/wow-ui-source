@@ -17,13 +17,11 @@ function ContentTrackingDataProviderMixin:OnAdded(mapCanvas)
 
 	self:RegisterEvent("CONTENT_TRACKING_UPDATE");
 	self:RegisterEvent("TRACKING_TARGET_INFO_UPDATE");
-	self:RegisterEvent("SUPER_TRACKING_CHANGED");
+	EventRegistry:RegisterCallback("Supertracking.OnChanged", self.RefreshAllData, self);
 end
 
 function ContentTrackingDataProviderMixin:OnEvent(event, ...)
 	if (event == "CONTENT_TRACKING_UPDATE") or (event == "TRACKING_TARGET_INFO_UPDATE") then
-		self:RefreshAllData();
-	elseif event == "SUPER_TRACKING_CHANGED" then
 		self:RefreshAllData();
 	end
 end
@@ -97,7 +95,7 @@ function ContentTrackingDataProviderMixin:AddTrackable(trackableMapInfo, isWaypo
 		pin:UseFrameLevelType("PIN_FRAME_LEVEL_TRACKED_CONTENT");
 	end
 
-	pin.selected = isSuperTracked;
+	pin:SetSelected(isSuperTracked);
 	pin:SetStyle(isWaypoint and POIButtonUtil.Style.Waypoint or POIButtonUtil.Style.ContentTracking);
 	pin:SetTrackable(trackableMapInfo.trackableType, trackableMapInfo.trackableID);
 

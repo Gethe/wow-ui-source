@@ -1,0 +1,144 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\Blizzard_SharedXML\UI.xsd">
+	<Button name="CharacterSelectNavBarButtonTemplate" mixin="CharacterSelectNavBarButtonMixin" virtual="true">
+		<Size y="55"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Bar" atlas="glues-characterselect-tophud-bg-divider" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Highlight" hidden="true" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" y="5"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Backdrop" atlas="glues-characterselect-tophud-selected-middle" setAllPoints="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="-2"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" y="3"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Line" atlas="glues-characterselect-tophud-selected-line-middle" setAllPoints="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Backdrop" relativePoint="BOTTOMLEFT" y="2"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Backdrop" relativePoint="BOTTOMRIGHT" y="-4"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+		<NormalFont style="GlueFontNormal"/>
+		<HighlightFont style="GlueFontYellow"/>
+		<DisabledFont style="GlueFontDisable"/>
+	</Button>
+
+	<Frame name="CharacterSelectNavBarTemplate" mixin="CharacterSelectNavBarMixin" inherits="CallbackRegistrantTemplate" virtual="true">
+		<Size y="55"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Backdrop" atlas="glues-characterselect-tophud-bg">
+					<Size y="51"/>
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="ButtonTray" inherits="HorizontalButtonTrayTemplate">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="TOP"/>
+					<Anchor point="BOTTOM"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="expand" value="true" type="boolean"/>
+					<KeyValue key="widthPadding" value="4" type="number"/>
+					<KeyValue key="spacing" value="0" type="number"/>
+					<KeyValue key="templateType" value="BUTTON" type="string"/>
+					<KeyValue key="buttonTemplate" value="CharacterSelectNavBarButtonTemplate" type="string"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="CharacterCreateTimerunningGlowTemplate" useParentLevel="true" inherits="EasyFrameAnimationsTemplate" virtual="true">
+		<Size x="128" y="128"/>
+		<Frames>
+			<Frame parentKey="TimerunningButtonGlow" useParentLevel="true">
+				<Size x="128" y="128"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="BaseGlow" atlas="timerunning-TopHUD-button-glow">
+							<Size x="228" y="36"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="Animations" useParentLevel="true">
+				<Size x="128" y="128"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="SandTexture" alphaMode="ADD" atlas="timerunning-dialog-frameglow">
+							<Size x="300" y="300"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="45"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Glow" alpha="0.5" alphaMode="ADD" atlas="timerunning-TopHUD-fx-glow">
+							<Size x="300" y="300"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="-75"/>
+							</Anchors>
+						</Texture>
+						<MaskTexture parentKey="FXmask" atlas="timerunning-TopHUD-fx-mask" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+							<Size x="256" y="256"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="5"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="SandTexture"/>
+								<MaskedTexture childKey="Glow"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup looping="REPEAT" setToFinalAlpha="true">
+						<Rotation childKey="SandTexture" duration="8" order="1" degrees="-360">
+							<Origin point="CENTER"/>
+						</Rotation>
+						<Rotation childKey="Glow" duration="8" order="1" degrees="360">
+							<Origin point="CENTER"/>
+						</Rotation>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+		</Frames>
+	</Frame>	
+</Ui>

@@ -431,9 +431,9 @@ function ProfessionsMixin:OnShow()
 	EventRegistry:TriggerEvent("ItemButton.UpdateCraftedProfessionQualityShown");
 	PlaySound(SOUNDKIT.UI_PROFESSIONS_WINDOW_OPEN);
 
-	MicroButtonPulseStop(SpellbookMicroButton);
-	MainMenuMicroButton_HideAlert(SpellbookMicroButton);
-	SpellbookMicroButton.suggestedTabButton = nil;
+	MicroButtonPulseStop(ProfessionMicroButton);
+	MainMenuMicroButton_HideAlert(ProfessionMicroButton);
+	ProfessionMicroButton.showProfessionSpellHighlights = nil;
 end
 
 function ProfessionsMixin:OnHide()

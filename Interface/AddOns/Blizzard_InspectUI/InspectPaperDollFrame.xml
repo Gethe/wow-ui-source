@@ -1,39 +1,37 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
-    <Script file="InspectPaperDollFrame.lua"/>
-    <ItemButton name="InspectPaperDollItemSlotButtonTemplate" virtual="true">
-        <Scripts>
-            <OnLoad>
-				InspectPaperDollItemSlotButton_OnLoad(self);
-			</OnLoad>
-            <OnEvent>
-				InspectPaperDollItemSlotButton_OnEvent(self, event, ...);
-			</OnEvent>
-            <OnClick>
-				InspectPaperDollItemSlotButton_OnClick(self, button);
-			</OnClick>
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<ItemButton name="InspectPaperDollItemSlotButtonTemplate" virtual="true">
+		<Scripts>
+			<OnLoad function="InspectPaperDollItemSlotButton_OnLoad"/>
+			<OnEvent function="InspectPaperDollItemSlotButton_OnEvent"/>
+			<OnClick function="InspectPaperDollItemSlotButton_OnClick"/>
 			<OnUpdate>
 				CursorOnUpdate(self);
 				if ( GameTooltip:IsOwned(self) ) then
 					InspectPaperDollItemSlotButton_OnEnter(self);
 				end
 			</OnUpdate>
-            <OnEnter>
-				InspectPaperDollItemSlotButton_OnEnter(self, motion);
-			</OnEnter>
-            <OnLeave>
+			<OnEnter function="InspectPaperDollItemSlotButton_OnEnter"/>
+			<OnLeave>
 				GameTooltip:Hide();
 				ResetCursor();
 			</OnLeave>
-        </Scripts>
+		</Scripts>
 		<NormalTexture file="Interface\Buttons\UI-Quickslot2">
 			<Size x="64" y="64"/>
 			<Anchors>
 				<Anchor point="CENTER" x="0" y="-1"/>
 			</Anchors>
 		</NormalTexture>
-    </ItemButton>
+	</ItemButton>
 	<ItemButton name="InspectPaperDollItemSlotButtonLeftTemplate" inherits="InspectPaperDollItemSlotButtonTemplate" virtual="true">
+		<Frames>
+			<Frame parentKey="SocketDisplay" inherits="PaperDollItemSocketDisplayVerticalTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" x="7"/>
+				</Anchors>
+			</Frame>
+		</Frames>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-1">
 				<Texture name="$parentFrame" inherits="Char-LeftSlot">	
@@ -45,6 +43,13 @@
 		</Layers>
 	</ItemButton>
 	<ItemButton name="InspectPaperDollItemSlotButtonRightTemplate" inherits="InspectPaperDollItemSlotButtonTemplate" virtual="true">
+		<Frames>
+			<Frame parentKey="SocketDisplay" inherits="PaperDollItemSocketDisplayVerticalTemplate">
+				<Anchors>
+					<Anchor point="LEFT" x="-7"/>
+				</Anchors>
+			</Frame>
+		</Frames>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-1">
 				<Texture name="$parentFrame" inherits="Char-RightSlot">	
@@ -56,6 +61,13 @@
 		</Layers>
 	</ItemButton>
 	<ItemButton name="InspectPaperDollItemSlotButtonBottomTemplate" inherits="InspectPaperDollItemSlotButtonTemplate" virtual="true">
+		<Frames>
+			<Frame parentKey="SocketDisplay" inherits="PaperDollItemSocketDisplayHorizontalTemplate">
+				<Anchors>
+					<Anchor point="TOP" y="7"/>
+				</Anchors>
+			</Frame>
+		</Frames>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-1">
 				<Texture name="$parentFrame" inherits="Char-BottomSlot">	

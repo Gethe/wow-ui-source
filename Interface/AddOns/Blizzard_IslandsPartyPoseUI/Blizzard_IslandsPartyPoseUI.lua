@@ -11,7 +11,7 @@ function IslandsPartyPoseMixin:SetRewards()
 
 	local continuableContainer = ContinuableContainer:Create();
 	for i = 1, numRewards do
-		local texture, quantity, isBonus, bonusQuantity, name, quality, id, objectType = GetLFGCompletionRewardItem(i);
+		local texture, quantity, isBonus, bonusQuantity, itemName, quality, id, objectType = GetLFGCompletionRewardItem(i);
 		if objectType == "item" then
 			local item = Item:CreateFromItemID(id);
 			continuableContainer:AddContinuable(item);
@@ -20,16 +20,16 @@ function IslandsPartyPoseMixin:SetRewards()
 
 	continuableContainer:ContinueOnLoad(function()
 		for i = 1, numRewards do
-			local texture, quantity, isBonus, bonusQuantity, name, quality, id, objectType = GetLFGCompletionRewardItem(i);
+			local texture, quantity, isBonus, bonusQuantity, itemName, quality, id, objectType = GetLFGCompletionRewardItem(i);
 			local originalQuantity = quantity;
 			local isCurrencyContainer = false;
 			local objectLink = GetLFGCompletionRewardItemLink(i);
 			if (objectType == "currency") then
 				isCurrencyContainer = C_CurrencyInfo.IsCurrencyContainer(id, quantity);
-				name, texture, quantity, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(id, quantity, name, texture, quality);
+				itemName, texture, quantity, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(id, quantity, itemName, texture, quality);
 			end
 
-			self:AddReward(name, texture, quality, id, objectType, objectLink, quantity, originalQuantity, isCurrencyContainer);
+			self:AddReward(itemName, texture, quality, id, objectType, objectLink, quantity, originalQuantity, isCurrencyContainer);
 		end
 
 		table.sort(self.pendingRewardData, function(left, right)

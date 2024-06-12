@@ -1,0 +1,22 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+UI.xsd">
+	<ModelScene name="NonInteractableModelSceneMixinTemplate" mixin="ModelSceneMixin" virtual="true">
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnUpdate method="OnUpdate" />
+		</Scripts>
+	</ModelScene>
+	<ModelScene name="ModelSceneMixinTemplate" inherits="NonInteractableModelSceneMixinTemplate" virtual="true">
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseWheel method="OnMouseWheel" />
+		</Scripts>
+	</ModelScene>
+	<ModelScene name="NoZoomModelSceneMixinTemplate" inherits="ModelSceneMixinTemplate" mixin="NoZoomModelSceneMixin" virtual="true"/>
+	<ModelScene name="PanningModelSceneMixinTemplate" inherits="ModelSceneMixinTemplate" mixin="PanningModelSceneMixin" virtual="true" />
+	<ModelScene name="NoCameraControlModelSceneMixinTemplate" inherits="ModelSceneMixinTemplate" mixin="NoCameraControlModelSceneMixin" virtual="true" />
+	<Texture name="ModelSceneDropShadowTemplate" atlas="scoreboard-charactermodels-shadow" useAtlasSize="true" virtual="true"/>
+</Ui>

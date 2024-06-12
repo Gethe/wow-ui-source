@@ -7,6 +7,35 @@ local ScenarioInfo =
 	Functions =
 	{
 		{
+			Name = "GetCriteriaInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "criteriaIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "scenarioCriteriaInfo", Type = "ScenarioCriteriaInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCriteriaInfoByStep",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "stepID", Type = "number", Nilable = false },
+				{ Name = "criteriaIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "scenarioCriteriaInfo", Type = "ScenarioCriteriaInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetJailersTowerTypeString",
 			Type = "Function",
 
@@ -146,6 +175,26 @@ local ScenarioInfo =
 				{ Name = "ForgottenCatacombs", Type = "JailersTowerType", EnumValue = 12 },
 				{ Name = "Ossuary", Type = "JailersTowerType", EnumValue = 13 },
 				{ Name = "BossRush", Type = "JailersTowerType", EnumValue = 14 },
+			},
+		},
+		{
+			Name = "ScenarioCriteriaInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "description", Type = "string", Nilable = false },
+				{ Name = "criteriaType", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "completed", Type = "bool", Nilable = false, Default = false },
+				{ Name = "quantity", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "totalQuantity", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "flags", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "assetID", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "criteriaID", Type = "number", Nilable = false },
+				{ Name = "duration", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "elapsed", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "failed", Type = "bool", Nilable = false, Default = false },
+				{ Name = "isWeightedProgress", Type = "bool", Nilable = false, Default = false },
+				{ Name = "isFormatted", Type = "bool", Nilable = false, Default = false },
 			},
 		},
 		{

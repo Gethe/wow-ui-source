@@ -1,0 +1,14 @@
+## Title: Blizzard_GlueXMLBase
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_FontStyles_Glue, Blizzard_SharedXML
+## LoadFirst: 1
+## AllowLoad: Glue
+## AllowLoadGameType: mainline
+Mainline\Constants.lua
+Mainline\Localization.lua
+Mainline\GlueTemplates.lua
+Mainline\GlueTemplates.xml
+Mainline\GlueButtons.xml
+Shared\GlueContextMenu.lua
+Shared\GlueContextMenu.xml

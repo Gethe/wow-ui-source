@@ -1,5 +1,13 @@
+-- Inbound files need to load under the global environment
+SwapToGlobalEnvironment();
+
 --All of these functions should be safe to call by tainted code. They should only communicate with secure code via SetAttribute and GetAttribute.
-function StoreFrame_SetShown(shown)
+function StoreFrame_SetShown(shown, contextKey)
+	if shown then
+		local contextKeyString = contextKey and tostring(contextKey) or nil;
+		StoreFrame:SetAttribute("contextkey", contextKeyString);
+	end
+
 	StoreFrame:SetAttribute("action", shown and "Show" or "Hide");
 end
 

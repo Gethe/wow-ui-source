@@ -2,4 +2,5 @@
 ## Author: Blizzard Entertainment
 ## LoadOnDemand: 1
 ## AllowLoad: Glue
+## Dependencies: Blizzard_GlueXML
 Blizzard_AccountSaveUI.xml

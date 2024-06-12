@@ -6,12 +6,6 @@ CLASS_TRAINER_SKILL_BARBUTTON_WIDTH = 298
 CLASS_TRAINER_SKILL_HEIGHT = 47;
 MAX_LEARNABLE_PROFESSIONS = 2;
 
--- Trainer Filter Default Values
-TRAINER_FILTER_AVAILABLE = 1;
-TRAINER_FILTER_UNAVAILABLE = 1;
-TRAINER_FILTER_USED = 0;
-
-
 UIPanelWindows["ClassTrainerFrame"] = { area = "left", pushable = 0, allowOtherPanels = 1,};
 
 local TrainDisableReason = EnumUtil.MakeEnum("NoProfessionSlot", "CannotAfford");
@@ -69,8 +63,18 @@ function ClassTrainerFrame_OnLoad(self)
 	view:SetPadding(1,0,1,0,0);
 
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
+
+	self.FilterDropdown:SetWidth(100);
 end
 
+local function IsSelected(filter)
+	return GetTrainerServiceTypeFilter(filter);
+end
+
+local function SetSelected(filter)
+	ClassTrainerFrame.filterPending = true;
+	SetTrainerServiceTypeFilter(filter, not IsSelected(filter));
+end
 
 function ClassTrainerFrame_OnShow(self)
 	SetPortraitTexture(ClassTrainerFramePortrait, "npc");
@@ -87,8 +91,24 @@ function ClassTrainerFrame_OnShow(self)
 
 	ClassTrainer_SelectNearestLearnableSkill();
 	UpdateMicroButtons();
+
+	self.FilterDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_TRAINER_FILTER");
+
+		rootDescription:CreateCheckbox(GREEN_FONT_COLOR:WrapTextInColorCode(AVAILABLE), IsSelected, SetSelected, "available");
+		rootDescription:CreateCheckbox(RED_FONT_COLOR:WrapTextInColorCode(UNAVAILABLE), IsSelected, SetSelected, "unavailable");
+		rootDescription:CreateCheckbox(GRAY_FONT_COLOR:WrapTextInColorCode(USED), IsSelected, SetSelected, "used");
+	end);
 end
 
+function ClassTrainerFrame_OnHide(self)
+	CloseTrainer();
+	UpdateMicroButtons();
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
+	if ( StaticPopup_Visible("CONFIRM_PROFESSION") ) then
+		StaticPopup_Hide("CONFIRM_PROFESSION");
+	end
+end
 
 function ClassTrainerFrame_OnEvent(self, event, ...)
 	if ( event == "TRAINER_UPDATE" ) then
@@ -98,7 +118,7 @@ function ClassTrainerFrame_OnEvent(self, event, ...)
 			retainScrollPosition = false;
 		end
 
-		ClassTrainerFrame_Update(retainScrollPosition, ScrollBoxConstants.NoScrollInterpolation);
+		ClassTrainerFrame_Update(retainScrollPosition);
 	elseif ( event == "TRAINER_DESCRIPTION_UPDATE" ) then
 		ClassTrainer_SetSelection(GetTrainerSelectionIndex());
 	elseif ( event == "TRAINER_SERVICE_INFO_NAME_UPDATE" ) then
@@ -339,7 +359,7 @@ function ClassTrainer_SelectNearestLearnableSkill()
 
 		ClassTrainerFrame.ScrollBox:ScrollToElementDataByPredicate(function(elementData)
 			return elementData.skillIndex == ClassTrainerFrame.selectedService;
-		end, ScrollBoxConstants.AlignNearest, ScrollBoxConstants.NoScrollInterpolation);
+		end, ScrollBoxConstants.AlignNearest);
 	end
 end
 
@@ -381,7 +401,6 @@ function ClassTrainer_SetSelection(id)
 	end
 end
 
-
 function ClassTrainerSkillButton_OnClick(self, button)
 	if ( button == "LeftButton" ) then
 		ClassTrainer_SetSelection(self:GetID());
@@ -393,52 +412,5 @@ function ClassTrainerTrainButton_OnClick(self, button)
 		StaticPopup_Show("CONFIRM_PROFESSION");
 	else
 		BuyTrainerService(ClassTrainerFrame.selectedService);
-	end
-end
-
--- Dropdown functions
-function ClassTrainerFrameFilterDropDown_OnLoad(self)
-	UIDropDownMenu_Initialize(self, ClassTrainerFrameFilterDropDown_Initialize);
-	UIDropDownMenu_SetText(self, FILTER);
-	UIDropDownMenu_SetWidth(self, 100);
-end
-
-function ClassTrainerFrameFilterDropDown_Initialize()
-	local info = UIDropDownMenu_CreateInfo();
-
-	-- Available button
-	info.text = GREEN_FONT_COLOR_CODE..AVAILABLE..FONT_COLOR_CODE_CLOSE;
-	info.value = "available";
-	info.func = ClassTrainerFrameFilterDropDown_OnClick;
-	info.checked = GetTrainerServiceTypeFilter("available");
-	info.isNotRadio = true;
-	info.keepShownOnClick = 1;
-	UIDropDownMenu_AddButton(info);
-
-	-- Unavailable button
-	info.text = RED_FONT_COLOR_CODE..UNAVAILABLE..FONT_COLOR_CODE_CLOSE;
-	info.value = "unavailable";
-	info.func = ClassTrainerFrameFilterDropDown_OnClick;
-	info.checked = GetTrainerServiceTypeFilter("unavailable");
-	info.isNotRadio = true;
-	info.keepShownOnClick = 1;
-	UIDropDownMenu_AddButton(info);
-
-	-- Unavailable button
-	info.text = GRAY_FONT_COLOR_CODE..USED..FONT_COLOR_CODE_CLOSE;
-	info.value = "used";
-	info.func = ClassTrainerFrameFilterDropDown_OnClick;
-	info.checked = GetTrainerServiceTypeFilter("used");
-	info.isNotRadio = true;
-	info.keepShownOnClick = 1;
-	UIDropDownMenu_AddButton(info);
-end
-
-function ClassTrainerFrameFilterDropDown_OnClick(self)
-	ClassTrainerFrame.filterPending = true;
-	if ( UIDropDownMenuButton_GetChecked(self) ) then
-		SetTrainerServiceTypeFilter(self.value, 1);
-	else
-		SetTrainerServiceTypeFilter(self.value, 0);
 	end
 end

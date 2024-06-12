@@ -1,0 +1,8 @@
+## Title: Blizzard_DeclensionFrame
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_UIParent
+## AllowLoad: game
+## AllowLoadGameType: mainline
+Mainline\DeclensionFrame.lua
+Mainline\DeclensionFrame.xml

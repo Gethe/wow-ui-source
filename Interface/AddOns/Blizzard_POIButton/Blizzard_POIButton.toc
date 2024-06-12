@@ -1,0 +1,10 @@
+## Title: Blizzard_POIButton
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_FrameXMLBase
+## AllowLoad: Game
+
+POIButtonHighlightManager.lua
+POIButton.xml
+POIButtonOwner.xml
+POIButtonUtil.lua

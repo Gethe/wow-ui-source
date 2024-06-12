@@ -1,8 +1,8 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="VignetteDataProvider.lua"/>
 
-	<Frame name="VignettePinTemplate" enableMouseMotion="true" mixin="VignettePinMixin" virtual="true">
+	<Frame name="VignettePinTemplate" enableMouseMotion="true" inherits="SuperTrackableMapPinTemplate" mixin="VignettePinMixin" virtual="true">
 		<Size x="30" y="30"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -23,8 +23,8 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	
-	<Frame name="FyrakkFlightVignettePinTemplate" enableMouseMotion="true" mixin="FyrakkFlightVignettePinMixin" virtual="true">
+
+	<Frame name="FyrakkFlightVignettePinTemplate" enableMouseMotion="true" inherits="SuperTrackableMapPinTemplate" mixin="FyrakkFlightVignettePinMixin" virtual="true">
 		<Size x="40" y="40"/>
 		<Layers>
 			<Layer level="BACKGROUND">

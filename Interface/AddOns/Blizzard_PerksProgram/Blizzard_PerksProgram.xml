@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 
 	<Frame name="PerksProgramFrame" inherits="DefaultScaleFrame" mixin="PerksProgramMixin" toplevel="true" setAllPoints="true" ignoreParentScale="true" enableKeyboard="true" hidden="true">
 		<Anchors>
@@ -295,13 +295,15 @@
 							<OnLeave method="OnLeave"/>
 						</Scripts>
 					</Frame>
-					<Frame parentKey="PerksProgramFilter" inherits="FilterDropDownContainerTemplate" frameLevel="1000">
-						<Size x="172" y="48"/>
+					<DropdownButton parentKey="PerksProgramFilter" inherits="WowStyle2DropdownTemplate" frameLevel="1000">
+						<KeyValues>
+							<KeyValue key="menuMixin" value="MenuStyle1Mixin" type="global"/>
+						</KeyValues>
 						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.ProductsScrollBoxContainer" relativePoint="LEFT" x="-8"/>
-							<Anchor point="BOTTOM" relativeKey="$parent.ProductsScrollBoxContainer" relativePoint="TOP" y="15"/>
+							<Anchor point="LEFT" relativeKey="$parent.ProductsScrollBoxContainer" relativePoint="LEFT" x="9"/>
+							<Anchor point="BOTTOM" relativeKey="$parent.ProductsScrollBoxContainer" relativePoint="TOP" y="22"/>
 						</Anchors>
-					</Frame>
+					</DropdownButton>
 					<Frame parentKey="PerksProgramProductDetailsContainerFrame" inherits="VerticalLayoutFrame" frameLevel="1000">
 						<KeyValues>
 							<KeyValue key="fixedWidth" value="360" type="string"/>
@@ -337,23 +339,6 @@
 									<OnLoad method="OnLoad"/>
 								</Scripts>
 							</Frame>
-							<Frame parentKey="OverlayTextureContainer" mixin="PerksDetailsScrollBoxFadeMixin" frameLevel="2000" hidden="true" alpha="0.6">
-								<Anchors>
-									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="2" y="2"/>
-									<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" x="-2" y="107"/>
-								</Anchors>
-								<KeyValues>
-									<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
-								</KeyValues>
-								<Layers>
-									<Layer level="OVERLAY">
-										<Texture parentKey="OverlayFadeMask" atlas="perks-list-fademask" setAllPoints="true"/>
-									</Layer>
-								</Layers>
-								<Scripts>
-									<OnLoad method="OnLoad"/>
-								</Scripts>
-							</Frame>
 							<Frame parentKey="SetDetailsScrollBoxContainer" mixin="PerksProgramSetDetailsListMixin" hidden="true">
 								<KeyValues>
 									<KeyValue key="layoutIndex" value="40" type="number"/>
@@ -374,15 +359,11 @@
 								</Layers>
 								<Frames>
 									<Frame parentKey="ScrollBox" inherits="WowScrollBoxList" setAllPoints="true"/>
-									<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar" mixin="PerksDetailsScrollBarMixin" frameLevel="2500">
+									<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar" frameLevel="2500">
 										<Anchors>
 											<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="12" y="-4"/>
 											<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="12" y="8"/>
 										</Anchors>
-										<Scripts>
-											<OnShow method="OnShow"/>
-											<OnHide method="OnHide"/>
-										</Scripts>
 									</EventFrame>
 								</Frames>
 								<Scripts>
@@ -638,7 +619,7 @@
 							</Button>
 						</Frames>
 					</Frame>
-					<CheckButton parentKey="TogglePlayerPreview" inherits="PerksProgramCheckBoxTemplate" frameLevel="1000" hidden="true">
+					<CheckButton parentKey="TogglePlayerPreview" inherits="PerksProgramCheckboxTemplate" frameLevel="1000" hidden="true">
 						<KeyValues>
 							<KeyValue key="textString" value="PERKS_PROGRAM_PLAYER_PREVIEW" type="global"/>
 							<KeyValue key="perksProgramOnClickMethod" value="TogglePlayerPreviewOnClick" type="string"/>
@@ -646,10 +627,22 @@
 						</KeyValues>
 						<Anchors>
 							<Anchor point="BOTTOM" relativeKey="$parent.RotateButtonContainer" relativePoint="TOP" y="10"/>
-							<Anchor point="LEFT" relativeKey="$parent.RotateButtonContainer" relativePoint="LEFT" x="-18"/>
+							<Anchor point="CENTER" relativeKey="$parent.RotateButtonContainer" relativePoint="CENTER" x="18"/>
 						</Anchors>
 					</CheckButton>
-					<CheckButton parentKey="ToggleHideArmor" inherits="PerksProgramCheckBoxTemplate" frameLevel="1000" hidden="true">
+					<CheckButton parentKey="ToggleMountSpecial" inherits="PerksProgramCheckboxTemplate" frameLevel="1000" hidden="true">
+						<KeyValues>
+							<KeyValue key="textString" value="PERKS_PROGRAM_MOUNT_SPECIAL_ANIM" type="global"/>
+							<KeyValue key="perksProgramOnClickMethod" value="SetMountSpecialPreviewOnClick" type="string"/>
+							<KeyValue key="perksProgramOnShowMethod" value="GetMountSpecialPreviewSetting" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="BOTTOM" relativeKey="$parent.RotateButtonContainer" relativePoint="TOP" y="10"/>
+							<Anchor point="LEFT" relativeKey="$parent.TogglePlayerPreview.Text" relativePoint="RIGHT" x="18"/>
+						</Anchors>
+					</CheckButton>
+					
+					<CheckButton parentKey="ToggleHideArmor" inherits="PerksProgramCheckboxTemplate" frameLevel="1000" hidden="true">
 						<KeyValues>
 							<KeyValue key="textString" value="PERKS_PROGRAM_HIDE_ARMOR" type="global"/>
 							<KeyValue key="perksProgramOnClickMethod" value="PlayerToggledHideArmorOnClick" type="string"/>
@@ -658,6 +651,17 @@
 						<Anchors>
 							<Anchor point="BOTTOM" relativeKey="$parent.RotateButtonContainer" relativePoint="TOP" y="10"/>
 							<Anchor point="LEFT" relativeKey="$parent.RotateButtonContainer" relativePoint="LEFT" x="-18"/>
+						</Anchors>
+					</CheckButton>
+					<CheckButton parentKey="ToggleAttackAnimation" inherits="PerksProgramCheckboxTemplate" frameLevel="1000" hidden="true">
+						<KeyValues>
+								<KeyValue key="textString" value="PERKS_PROGRAM_PLAY_ATTACK_ANIM" type="global"/>
+								<KeyValue key="perksProgramOnClickMethod" value="PlayerSetAttackAnimationOnClick" type="string"/>
+								<KeyValue key="perksProgramOnShowMethod" value="GetAttackAnimationSetting" type="string"/>
+						</KeyValues>
+						<Anchors>
+								<Anchor point="BOTTOM" relativeKey="$parent.RotateButtonContainer" relativePoint="TOP" y="10"/>
+								<Anchor point="LEFT" relativeKey="$parent.ToggleHideArmor.Text" relativePoint="RIGHT" x="18"/>
 						</Anchors>
 					</CheckButton>
 					<Frame parentKey="PurchasedHistoryFrame" hidden="true" >

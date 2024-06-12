@@ -20,6 +20,20 @@ local Minimap =
 			Type = "Function",
 		},
 		{
+			Name = "GetDefaultTrackingValue",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "filterType", Type = "MinimapTrackingFilter", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "defaultValue", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetDrawGroundTextures",
 			Type = "Function",
 
@@ -105,12 +119,7 @@ local Minimap =
 
 			Returns =
 			{
-				{ Name = "name", Type = "cstring", Nilable = false },
-				{ Name = "textureFileID", Type = "fileID", Nilable = false },
-				{ Name = "active", Type = "bool", Nilable = false },
-				{ Name = "type", Type = "cstring", Nilable = false },
-				{ Name = "subType", Type = "number", Nilable = false },
-				{ Name = "spellID", Type = "number", Nilable = true },
+				{ Name = "trackingInfo", Type = "MinimapScriptTrackingInfo", Nilable = true },
 			},
 		},
 		{
@@ -152,6 +161,15 @@ local Minimap =
 			Returns =
 			{
 				{ Name = "isIgnored", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsTrackingAccountCompletedQuests",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "IsTrackingAccountCompletedQuests", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -253,7 +271,7 @@ local Minimap =
 			Fields =
 			{
 				{ Name = "name", Type = "cstring", Nilable = false },
-				{ Name = "textureFileID", Type = "fileID", Nilable = false },
+				{ Name = "texture", Type = "fileID", Nilable = false },
 				{ Name = "active", Type = "bool", Nilable = false },
 				{ Name = "type", Type = "cstring", Nilable = false },
 				{ Name = "subType", Type = "number", Nilable = false },

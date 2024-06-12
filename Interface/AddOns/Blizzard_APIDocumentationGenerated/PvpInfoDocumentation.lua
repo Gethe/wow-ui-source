@@ -284,6 +284,15 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "GetBrawlSoloRBGMinItemLevel",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "minItemLevel", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetCustomVictoryStatID",
 			Type = "Function",
 
@@ -413,6 +422,15 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "GetPersonalRatedBGBlitzSpecStats",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "specStats", Type = "RatedBGBlitzSpecStats", Nilable = true },
+			},
+		},
+		{
 			Name = "GetPersonalRatedSoloShuffleSpecStats",
 			Type = "Function",
 
@@ -535,6 +553,28 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "GetRatedSoloRBGMinItemLevel",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "minItemLevel", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetRatedSoloRBGRewards",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "honor", Type = "number", Nilable = false },
+				{ Name = "experience", Type = "number", Nilable = false },
+				{ Name = "itemRewards", Type = "table", InnerType = "BattlefieldItemReward", Nilable = true },
+				{ Name = "currencyRewards", Type = "table", InnerType = "BattlefieldCurrencyReward", Nilable = true },
+				{ Name = "roleShortageBonus", Type = "RoleShortageReward", Nilable = true },
+			},
+		},
+		{
 			Name = "GetRatedSoloShuffleMinItemLevel",
 			Type = "Function",
 
@@ -621,15 +661,6 @@ local PvpInfo =
 			Returns =
 			{
 				{ Name = "battlemasterListInfo", Type = "BattlemasterListInfo", Nilable = false },
-			},
-		},
-		{
-			Name = "GetSoloRBGMinItemLevel",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "minItemLevel", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -869,6 +900,15 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "IsRatedSoloRBG",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isRatedSoloRBG", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsRatedSoloShuffle",
 			Type = "Function",
 
@@ -941,6 +981,10 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "JoinRatedBGBlitz",
+			Type = "Function",
+		},
+		{
 			Name = "RequestCrowdControlSpell",
 			Type = "Function",
 
@@ -965,6 +1009,37 @@ local PvpInfo =
 			Arguments =
 			{
 				{ Name = "warModeDesired", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "StartSoloRBGWarGameByName",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "args", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "StartSpectatorSoloRBGWarGame",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "opaqueID1", Type = "number", Nilable = false },
+				{ Name = "opaqueID2", Type = "number", Nilable = false },
+				{ Name = "specifiedMap", Type = "cstring", Nilable = false },
+				{ Name = "tournamentRules", Type = "bool", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -1166,6 +1241,7 @@ local PvpInfo =
 				{ Name = "ratedBattlegrounds", Type = "bool", Nilable = false },
 				{ Name = "ratedArenas", Type = "bool", Nilable = false },
 				{ Name = "ratedSoloShuffle", Type = "bool", Nilable = false },
+				{ Name = "ratedBGBlitz", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1557,6 +1633,17 @@ local PvpInfo =
 				{ Name = "hasRandomWinToday", Type = "bool", Nilable = false },
 				{ Name = "minLevel", Type = "number", Nilable = false },
 				{ Name = "maxLevel", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "RatedBGBlitzSpecStats",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "weeklyMostPlayedSpecID", Type = "number", Nilable = false },
+				{ Name = "weeklyMostPlayedSpecGames", Type = "number", Nilable = false },
+				{ Name = "seasonMostPlayedSpecID", Type = "number", Nilable = false },
+				{ Name = "seasonMostPlayedSpecGames", Type = "number", Nilable = false },
 			},
 		},
 		{

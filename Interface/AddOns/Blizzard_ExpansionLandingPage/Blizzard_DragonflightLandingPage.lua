@@ -1,83 +1,8 @@
 DragonflightLandingOverlayMixin = {};
 
-local DRAGONRIDING_INTRO_QUEST_ID = 68798;
-local DRAGONRIDING_ACCOUNT_ACHIEVEMENT_ID = 15794;
-local DRAGONRIDING_TRAIT_SYSTEM_ID = 1;
-local DRAGONRIDING_TREE_ID = 672;
-
-local function IsDragonridingUnlocked()
-	local hasAccountAchievement = select(4, GetAchievementInfo(DRAGONRIDING_ACCOUNT_ACHIEVEMENT_ID));
-	return hasAccountAchievement or C_QuestLog.IsQuestFlaggedCompleted(DRAGONRIDING_INTRO_QUEST_ID)
-end
-
-local function IsDragonridingTreeOpen()
-	if not GenericTraitFrame or not GenericTraitFrame:IsShown()then
-		return false;
-	end
-
-	return GenericTraitFrame:GetConfigID() == C_Traits.GetConfigIDBySystemID(DRAGONRIDING_TRAIT_SYSTEM_ID);
-end
-
-local function CanSpendDragonridingGlyphs()
-	if not IsDragonridingUnlocked() then
-		return false;
-	end
-
-	local dragonridingConfigID = C_Traits.GetConfigIDBySystemID(DRAGONRIDING_TRAIT_SYSTEM_ID);
-	if not dragonridingConfigID then
-		return false;
-	end
-	
-	local excludeStagedChanges = false;
-	local treeCurrencies = C_Traits.GetTreeCurrencyInfo(dragonridingConfigID, DRAGONRIDING_TREE_ID, excludeStagedChanges);
-	if #treeCurrencies <= 0 then
-		return false;
-	end
-
-	local unspentGlyphCount = treeCurrencies[1].quantity;
-	local hasUnspentDragonridingGlyphs = unspentGlyphCount > 0;
-	if not hasUnspentDragonridingGlyphs then
-		return false;
-	end
-
-	-- We have unspent glyphs, but can we actually purchase something?
-	local dragonridingNodeIDs = C_Traits.GetTreeNodes(DRAGONRIDING_TREE_ID);
-	for index, nodeID in ipairs(dragonridingNodeIDs) do
-		local nodeCosts = C_Traits.GetNodeCost(dragonridingConfigID, nodeID);
-		local canAffordNode = (#nodeCosts == 0) or (unspentGlyphCount >= nodeCosts[1].amount);
-		if canAffordNode then
-			-- Some nodes give you multiple choices and let you pick one, let's see if you can purchase any of them
-			local nodeInfo = C_Traits.GetNodeInfo(dragonridingConfigID, nodeID);
-			for index, entryID in ipairs(nodeInfo.entryIDs) do
-				if C_Traits.CanPurchaseRank(dragonridingConfigID, nodeID, entryID) then
-					-- We can spend our glyphs on something!
-					return true;
-				end
-			end
-		end
-	end
-
-	return false;
-end
-
-local function TryShowUnspentDragonridingGlyphReminder()
-	if IsDragonridingTreeOpen() then
-		return;
-	end
-
-	if CanSpendDragonridingGlyphs() then
-		local helpTipInfo =
-		{
-			text = DRAGONFLIGHT_LANDING_PAGE_UNSPENT_GLYPHS,
-			buttonStyle = HelpTip.ButtonStyle.Close,
-			targetPoint = HelpTip.Point.LeftEdgeCenter,
-		};
-		HelpTip:Show(ExpansionLandingPageMinimapButton, helpTipInfo, ExpansionLandingPageMinimapButton);
-	end
-end
-
 local minimapDisplayInfo = {
-	useDefaultButtonSize = true;
+	useDefaultButtonSize = true,
+	expansionLandingPageType = Enum.ExpansionLandingPageType.Dragonflight,
 	["normalAtlas"] = "dragonflight-landingbutton-up",
 	["pushedAtlas"] = "dragonflight-landingbutton-down",
 	["highlightAtlas"] = "dragonflight-landingbutton-circlehighlight",
@@ -93,7 +18,6 @@ local unlockEvents = {
 local minimapAnimationEvents = {
 	"MAJOR_FACTION_UNLOCKED",
 	"QUEST_TURNED_IN",
-	"TRAIT_TREE_CURRENCY_INFO_UPDATED",
 };
 
 local minimapPulseLocks = EnumUtil.MakeEnum(
@@ -101,6 +25,8 @@ local minimapPulseLocks = EnumUtil.MakeEnum(
 	"DragonflightSummaryUnlocked",
 	"MajorFactionUnlocked"
 );
+
+local overlayFrame = nil;
 
 function DragonflightLandingOverlayMixin.IsOverlayUnlocked()
 	return C_PlayerInfo.IsExpansionLandingPageUnlockedForPlayer(LE_EXPANSION_DRAGONFLIGHT);
@@ -119,12 +45,16 @@ function DragonflightLandingOverlayMixin.GetUnlockEvents()
 end
 
 function DragonflightLandingOverlayMixin.CreateOverlay(parent)
-	return CreateFrame("Frame", nil, parent, "DragonflightLandingOverlayTemplate");
+	if not overlayFrame then
+		overlayFrame = CreateFrame("Frame", nil, parent, "DragonflightLandingOverlayTemplate");
+	end
+
+	return overlayFrame;
 end
 
 function DragonflightLandingOverlayMixin:TryCelebrateUnlock()
-	if not GetCVarBitfield("unlockedExpansionLandingPages", Enum.ExpansionLandingPageType.Dragonflight) then
-		SetCVarBitfield("unlockedExpansionLandingPages", Enum.ExpansionLandingPageType.Dragonflight, true);
+	if not GetCVarBitfield("unlockedExpansionLandingPages", minimapDisplayInfo.expansionLandingPageType) then
+		SetCVarBitfield("unlockedExpansionLandingPages", minimapDisplayInfo.expansionLandingPageType, true);
 		EventRegistry:TriggerEvent("ExpansionLandingPage.TriggerAlert", DRAGONFLIGHT_LANDING_PAGE_ALERT_SUMMARY_UNLOCKED);
 		EventRegistry:TriggerEvent("ExpansionLandingPage.TriggerPulseLock", minimapPulseLocks.DragonflightSummaryUnlocked);
 	end
@@ -143,11 +73,6 @@ function DragonflightLandingOverlayMixin.HandleMinimapAnimationEvent(event, ...)
 	elseif event == "MAJOR_FACTION_UNLOCKED" then
 		EventRegistry:TriggerEvent("ExpansionLandingPage.TriggerAlert", DRAGONFLIGHT_LANDING_PAGE_ALERT_MAJOR_FACTION_UNLOCKED);
 		EventRegistry:TriggerEvent("ExpansionLandingPage.TriggerPulseLock", minimapPulseLocks.MajorFactionUnlocked);
-	elseif event == "TRAIT_TREE_CURRENCY_INFO_UPDATED" then
-		local treeID = ...;
-		if treeID == DRAGONRIDING_TREE_ID then
-			TryShowUnspentDragonridingGlyphReminder();
-		end
 	end
 end
 
@@ -156,7 +81,6 @@ function DragonflightLandingOverlayMixin:OnLoad()
 	local xOffset, yOffset = -3, -10;
 	self.CloseButton:SetPoint("TOPRIGHT", self, "TOPRIGHT", xOffset, yOffset);
 	self:RefreshOverlay();
-	TryShowUnspentDragonridingGlyphReminder();
 end
 
 function DragonflightLandingOverlayMixin:OnShow()
@@ -209,7 +133,7 @@ end
 function DragonridingPanelSkillsButtonMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, DragonridingPanelSkillsButtonEvents);
 
-	self:SetEnabled(IsDragonridingUnlocked());
+	self:SetEnabled(DragonridingUtil.IsDragonridingUnlocked());
 	self:UpdateUnspentGlyphsAnimation();
 end
 
@@ -220,7 +144,7 @@ end
 function DragonridingPanelSkillsButtonMixin:OnEvent(event, ...)
 	if event == "TRAIT_TREE_CURRENCY_INFO_UPDATED" then
 		local treeID = ...;
-		if treeID == DRAGONRIDING_TREE_ID then
+		if treeID == Constants.MountDynamicFlightConsts.TREE_ID then
 			self:UpdateUnspentGlyphsAnimation();
 		end
 	end
@@ -229,12 +153,11 @@ end
 function DragonridingPanelSkillsButtonMixin:OnClick()
 	GenericTraitUI_LoadUI();
 
-	GenericTraitFrame:SetSystemID(DRAGONRIDING_TRAIT_SYSTEM_ID);
+	GenericTraitFrame:SetSystemID(Constants.MountDynamicFlightConsts.TRAIT_SYSTEM_ID);
+	GenericTraitFrame:SetTreeID(Constants.MountDynamicFlightConsts.TREE_ID);
 	ToggleFrame(GenericTraitFrame);
-
-	HelpTip:Acknowledge(ExpansionLandingPageMinimapButton, DRAGONFLIGHT_LANDING_PAGE_UNSPENT_GLYPHS);
 end
 
 function DragonridingPanelSkillsButtonMixin:UpdateUnspentGlyphsAnimation()
-	self.UnspentGlyphsAnim:SetPlaying(self:IsEnabled() and not IsDragonridingTreeOpen() and CanSpendDragonridingGlyphs());
+	self.UnspentGlyphsAnim:SetPlaying(self:IsEnabled() and not DragonridingUtil.IsDragonridingTreeOpen() and DragonridingUtil.CanSpendDragonridingGlyphs());
 end

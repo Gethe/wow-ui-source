@@ -6,6 +6,10 @@ PTR_IssueReporter.ReportEventTypes = {
     GameMenuButtonQuit = "GameMenuButtonQuit",
     GameMenuButtonLogout = "GameMenuButtonLogout",
     GameMenuFrameClosed = "GameMenuFrameClosed",
+    CharacterCustomizationShow = "CharacterCustomizationShow",
+    CharacterCustomizationHide = "CharacterCustomizationHide",
+    WarbandsShow = "WarbandsShow",
+    WarbandsHide = "WarbandsHide",
 }
 
 ----------------------------------------------------------------------------------------------------
@@ -41,3 +45,37 @@ local function PTR_Event_Frame_OnEvent(self, event, ...)
 end
 PTR_Event_Frame:SetScript("OnEvent", PTR_Event_Frame_OnEvent)
 ----------------------------------------------------------------------------------------------------
+
+local function PlayerEnteringCharacterCustomization()
+    PTR_IssueReporter:Show()
+    PTR_IssueReporter.TriggerEvent(PTR_IssueReporter.ReportEventTypes.CharacterCustomizationShow)
+end
+
+local function CustomizationScreenExit()
+    PTR_IssueReporter.TriggerEvent(PTR_IssueReporter.ReportEventTypes.CharacterCustomizationHide)
+    PTR_IssueReporter:Hide()
+end
+
+local function WarbandsShow()
+    PTR_IssueReporter:Show()
+    PTR_IssueReporter.TriggerEvent(PTR_IssueReporter.ReportEventTypes.WarbandsShow)
+end
+
+local function WarbandsHide()
+    PTR_IssueReporter.TriggerEvent(PTR_IssueReporter.ReportEventTypes.WarbandsHide)
+    PTR_IssueReporter:Hide()
+end
+
+if IsOnGlueScreen() then
+    -- Temporarily hiding until functionality built properly
+    CharCustomizeFrame:HookScript("OnShow", PlayerEnteringCharacterCustomization)
+    CharCustomizeFrame:HookScript("OnHide", CustomizationScreenExit)
+    
+    if (CharacterSelectMapScene) then
+        CharacterSelectMapScene:HookScript("OnShow", WarbandsShow)
+        CharacterSelectMapScene:HookScript("OnHide", WarbandsHide)
+    end
+end
+
+PTR_IssueReporter.GlueInit()
+PTR_IssueReporter:Hide()

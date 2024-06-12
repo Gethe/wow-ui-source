@@ -89,6 +89,25 @@ local function IsPerksVendorCategoryTransmog(perksVendorCategoryID)
 	return perksVendorCategoryID == Enum.PerksVendorCategoryType.Transmog or perksVendorCategoryID == Enum.PerksVendorCategoryType.Transmogset;
 end
 
+PerksRefundIconTooltipMixin = {};
+
+function PerksRefundIconTooltipMixin:OnEnter()
+	local productButtonFrameData = (self:GetParent():GetParent()).itemInfo;
+	
+	if not productButtonFrameData.refundable then
+		return;
+	end
+
+	local refundTimeLeft = PERKS_PROGRAM_REFUND_TIME_LEFT:format(PerksProgramFrame:FormatTimeLeft(C_PerksProgram.GetVendorItemInfoRefundTimeLeft(productButtonFrameData.perksVendorItemID), PerksProgramFrame.TimeLeftFooterFormatter));
+	PerksProgramFrame.PerksProgramTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	PerksProgramFrame.PerksProgramTooltip:SetText(refundTimeLeft);
+	PerksProgramFrame.PerksProgramTooltip:Show();
+end
+
+function PerksRefundIconTooltipMixin:OnLeave()
+	PerksProgramFrame.PerksProgramTooltip:Hide();
+end
+
 ----------------------------------------------------------------------------------
 -- PerksProgramProductButtonMixin
 ----------------------------------------------------------------------------------
@@ -223,9 +242,12 @@ function PerksProgramProductButtonMixin:UpdateTimeRemainingText()
 	local text;
 	if self.itemInfo.purchased or self.itemInfo.isPurchasePending then
 		text = PERKS_PROGRAM_PURCHASED_TIME_REMAINING;
+	elseif self.itemInfo.doesNotExpire or self.itemInfo.timeRemaining == 0 then
+		text = PERKS_PROGRAM_DOES_NOT_EXPIRE_TIME_REMAINING;
 	else
 		text = PerksProgramFrame:FormatTimeLeft(self.itemInfo.timeRemaining, PerksProgramFrame.TimeLeftListFormatter);
 	end
+
 	self.ContentsContainer.TimeRemaining:SetText(text);
 end
 
@@ -368,7 +390,6 @@ function PerksProgramFrozenProductButtonMixin:SetupFreezeDraggedItem()
 	self:SetItemInfo(draggedVendorItemInfo);
 
 	-- If we don't have a frozen vendor item already then just instantly freeze the dragged item
-	local frozenVendorItem = PerksProgramFrame:GetFrozenPerksVendorItemInfo();
 	if not frozenVendorItem then
 		self:FreezeDraggedItem();
 		return;
@@ -465,92 +486,6 @@ function PerksProgramPurchasePendingSpinnerMixin:OnLeave()
 
 	if PerksProgramTooltip:GetOwner() == self then
 		PerksProgramTooltip:Hide();
-	end
-end
-
-
-----------------------------------------------------------------------------------
--- FilterDropDownContainerMixin
-----------------------------------------------------------------------------------
-FilterDropDownContainerMixin = {};
-function FilterDropDownContainerMixin:OnLoad()
-	UIDropDownMenu_Initialize(FilterDropDown, GenerateClosure(self.InitializeDropDown, self), "MENU");
-end
-
-local function IsSortAscending()
-	return PerksProgramFrame:GetSortAscending();
-end
-
-local function SetSortAscending()
-	PerksProgramFrame:SetSortAscending(not PerksProgramFrame:GetSortAscending());
-	EventRegistry:TriggerEvent("PerksProgram.SortFieldSet");
-end
-
-local function IsSortFieldSet(filterInfo)
-	return PerksProgramFrame:GetSortField() == filterInfo;
-end
-
-local function SetSortField(value, filterInfo)
-	PerksProgramFrame:SetSortField(filterInfo);
-end
-
-local function SetFilterState(value, filterInfo)
-	PerksProgramFrame:SetFilterState(filterInfo, not PerksProgramFrame:GetFilterState(filterInfo));
-end
-
-local function IsFilterStateChecked(filterInfo)
-	return PerksProgramFrame:GetFilterState(filterInfo);
-end
-
-function FilterDropDownContainerMixin:InitializeDropDown(self, level)
-	local categories = PerksProgramFrame:GetCategories();
-	
-
-	local categoryFilters = {};
-	if categories then
-		for i, category in ipairs(categories) do
-			table.insert(categoryFilters, { type=FilterComponent.Checkbox, filter=category.ID, text=category.displayName, isSet=IsFilterStateChecked, set=function(value) SetFilterState(value, category.ID); end } );
-		end
-	end
-	
-	local filterSystem = {
-		onUpdate = MountJournalResetFiltersButton_UpdateVisibility,
-		filters = {
-			{ type=FilterComponent.Checkbox, text=PERKS_PROGRAM_COLLECTED, filter="collected", isSet=IsFilterStateChecked, set=function(value) SetFilterState(value, "collected"); end },
-			{ type=FilterComponent.Checkbox, text=PERKS_PROGRAM_NOT_COLLECTED, filter="uncollected", isSet=IsFilterStateChecked, set=function(value) SetFilterState(value, "uncollected"); end },
-			{ type=FilterComponent.Checkbox, text=PERKS_PROGRAM_USEABLE_ONLY, filter="useable", isSet=IsFilterStateChecked, set=function(value) SetFilterState(value, "useable"); end },
-			{ type=FilterComponent.Space },
-			{ type=FilterComponent.Submenu, text=PERKS_PROGRAM_TYPE, value=1, childrenInfo={
-					filters = categoryFilters
-				}
-			},
-			{ type=FilterComponent.Submenu, text=PERKS_PROGRAM_SORT_BY, value=2, childrenInfo={ 
-					filters = {
-						{ type=FilterComponent.Checkbox, text=PERKS_PROGRAM_ASCENDING, isSet=IsSortAscending, set=SetSortAscending},
-						{ type=FilterComponent.Space },
-						{ type=FilterComponent.Radio, text=PERKS_PROGRAM_NAME, set=function(value) SetSortField(value, "name"); end, isSet=IsSortFieldSet, filter="name" },
-						{ type=FilterComponent.Radio, text=PERKS_PROGRAM_PRICE, set=function(value) SetSortField(value, "price"); end, isSet=IsSortFieldSet, filter="price" },
-						{ type=FilterComponent.Radio, text=PERKS_PROGRAM_TIME_REMAINING, set=function(value) SetSortField(value, "timeRemaining"); end, isSet=IsSortFieldSet, filter="timeRemaining" },
-					}
-				}
-			},
-		},
-	};
-	FilterDropDownSystem.Initialize(self, filterSystem, level);
-end
-
-function FilterDropDownContainerMixin:SetFilterData(options)
-	self.options = options;
-end
-
-----------------------------------------------------------------------------------
--- FilterDropDownButtonMixin
-----------------------------------------------------------------------------------
-FilterDropDownButtonMixin = {};
-function FilterDropDownButtonMixin:OnMouseDown(button)
-	if self:IsEnabled() then
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-		ToggleDropDownMenu(1, nil, FilterDropDown, self, 74, 15);
 	end
 end
 
@@ -800,7 +735,7 @@ function PerksProgramSetDetailsListMixin:ClearData()
 end
 
 function PerksProgramSetDetailsListMixin:Init(data)
-	if not data or not #data.subItems == 0 or not data.subItemsLoaded then
+	if not data or #data.subItems == 0 or not data.subItemsLoaded then
 		self:ClearData();
 		self:Hide();
 		return;
@@ -991,59 +926,29 @@ function PerksProgramSetDetailsItemMixin:OnLeave()
 end
 
 ----------------------------------------------------------------------------------
--- PerksDetailsScrollBarMixin
+-- PerksProgramCheckboxMixin
 ----------------------------------------------------------------------------------
+PerksProgramCheckboxMixin = {};
 
-PerksDetailsScrollBarMixin = {}
-
-function PerksDetailsScrollBarMixin:OnShow()
-	EventRegistry:TriggerEvent("PerksProgram.SetDetailsScrollShownUpdated", true);
-end
-
-function PerksDetailsScrollBarMixin:OnHide()
-	EventRegistry:TriggerEvent("PerksProgram.SetDetailsScrollShownUpdated", false);
-end
-
-----------------------------------------------------------------------------------
--- PerksDetailsScrollBoxFadeMixin
-----------------------------------------------------------------------------------
-
-PerksDetailsScrollBoxFadeMixin = {}
-
-function PerksDetailsScrollBoxFadeMixin:OnLoad()
-	EventRegistry:RegisterCallback("PerksProgram.SetDetailsScrollShownUpdated", self.UpdateShown, self);
-end
-
-function PerksDetailsScrollBoxFadeMixin:UpdateShown(shown)
-	self:SetShown(shown);
-end
-
-----------------------------------------------------------------------------------
--- PerksProgramCheckBoxMixin
-----------------------------------------------------------------------------------
-PerksProgramCheckBoxMixin = {};
-
-function PerksProgramCheckBoxMixin:OnLoad()
+function PerksProgramCheckboxMixin:OnLoad()
 	if self.textString then
 		self.Text:SetText(self.textString);
 	end
 end
 
-function PerksProgramCheckBoxMixin:OnShow()
+function PerksProgramCheckboxMixin:OnShow()
 	if self.perksProgramOnShowMethod then
 		local isChecked = PerksProgramFrame[self.perksProgramOnShowMethod](PerksProgramFrame);
 		self:SetChecked(isChecked);
 	end
 end
 
-function PerksProgramCheckBoxMixin:OnClick()
+function PerksProgramCheckboxMixin:OnClick()
 	if self.perksProgramOnClickMethod then
 		local isChecked = self:GetChecked();
 		PerksProgramFrame[self.perksProgramOnClickMethod](PerksProgramFrame, isChecked);
 	end
 end
-
-
 
 ----------------------------------------------------------------------------------
 -- PerksProgramToyDetailsFrameMixin
@@ -1135,20 +1040,27 @@ function PerksProgramProductDetailsFrameMixin:Refresh()
 	self.DescriptionText:SetText(descriptionText);
 
 	local categoryText = PerksProgramFrame:GetCategoryText(self.data.perksVendorCategoryID);
+	if self.data.perksVendorCategoryID == Enum.PerksVendorCategoryType.Mount then
+		categoryText = MOUNT_ABILITY_TYPE_FORMAT:format(self.data.mountTypeName, categoryText);
+	end
 	self.CategoryText:SetText(categoryText);
 
-	local timeRemainingText;
-	if self.data.isFrozen then
-		timeRemainingText = format(WHITE_FONT_COLOR:WrapTextInColorCode(PERKS_PROGRAM_TIME_LEFT), PERKS_PROGRAM_FROZEN);
-	elseif self.data.purchased then
-		timeRemainingText = CreateAtlasMarkup("perks-owned-small", 18, 18).." "..GRAY_FONT_COLOR:WrapTextInColorCode(PERKS_PROGRAM_PURCHASED_TEXT);
-	else
-		local timeToShow = PerksProgramFrame:FormatTimeLeft(self.data.timeRemaining, PerksProgramFrame.TimeLeftDetailsFormatter);
-		local timeTextColor = self.timeTextColor or WHITE_FONT_COLOR;
-		local timeValueColor = self.timeValueColor or WHITE_FONT_COLOR;	
-		timeRemainingText = format(timeTextColor:WrapTextInColorCode(PERKS_PROGRAM_TIME_LEFT), timeValueColor:WrapTextInColorCode(timeToShow));
+	local shouldShowTimeRemaining = not (self.data.doesNotExpire or self.data.timeRemaining == 0);
+	self.TimeRemaining:SetShown(shouldShowTimeRemaining);
+	if shouldShowTimeRemaining then
+		local timeRemainingText;
+		if self.data.isFrozen then
+			timeRemainingText = format(WHITE_FONT_COLOR:WrapTextInColorCode(PERKS_PROGRAM_TIME_LEFT), PERKS_PROGRAM_FROZEN);
+		elseif self.data.purchased then
+			timeRemainingText = CreateAtlasMarkup("perks-owned-small", 18, 18).." "..GRAY_FONT_COLOR:WrapTextInColorCode(PERKS_PROGRAM_PURCHASED_TEXT);
+		else
+			local timeToShow = PerksProgramFrame:FormatTimeLeft(self.data.timeRemaining, PerksProgramFrame.TimeLeftDetailsFormatter);
+			local timeTextColor = self.timeTextColor or WHITE_FONT_COLOR;
+			local timeValueColor = self.timeValueColor or WHITE_FONT_COLOR;	
+			timeRemainingText = format(timeTextColor:WrapTextInColorCode(PERKS_PROGRAM_TIME_LEFT), timeValueColor:WrapTextInColorCode(timeToShow));
+		end
+		self.TimeRemaining:SetText(timeRemainingText);
 	end
-	self.TimeRemaining:SetText(timeRemainingText);
 
 	self:MarkDirty();
 end
@@ -1221,6 +1133,10 @@ function HeaderSortButtonMixin:UpdateColor(color)
 end
 
 function HeaderSortButtonMixin:OnEnter()
+	if not self:IsEnabled() then
+		return;
+	end
+
 	local color = self.highlightColor or WHITE_FONT_COLOR;
 	self:UpdateColor(color);
 end

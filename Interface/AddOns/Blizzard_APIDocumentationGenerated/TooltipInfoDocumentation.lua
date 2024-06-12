@@ -399,6 +399,20 @@ local TooltipInfo =
 			},
 		},
 		{
+			Name = "GetItemByItemModifiedAppearanceID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemModifiedAppearanceID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "data", Type = "TooltipData", Nilable = false },
+			},
+		},
+		{
 			Name = "GetItemInteractionItem",
 			Type = "Function",
 
@@ -880,8 +894,8 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "slot", Type = "luaIndex", Nilable = false },
-				{ Name = "spellBookType", Type = "cstring", Nilable = false },
+				{ Name = "spellBookItemSlotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "spellBookItemSpellBank", Type = "SpellBookSpellBank", Nilable = false },
 			},
 
 			Returns =

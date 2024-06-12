@@ -1,0 +1,111 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Button name="CharacterServicesAutoCompleteButtonTemplate" parentArray="Buttons" frameLevel="600" mixin="CharacterServicesAutoCompleteButtonMixin" virtual="true">
+		<Size x="140" y="14"/>
+		<ButtonText parentKey="Text" justifyH="LEFT"/>
+		<NormalFont style="GameFontWhiteTiny2"/>
+		<HighlightFont style="GameFontWhiteTiny2"/>
+		<DisabledFont style="GameFontDisableTiny2"/>
+		<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+		<Scripts>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+
+	<EditBox name="CharacterServicesEditBoxBaseTemplate" mixin="CharacterServicesEditBoxBaseMixin" autoFocus="false" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="vas-inputbox" setAllPoints="true">
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="EmptyText" inherits="GameFontDisable" hidden="true">
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEscapePressed method="OnEscapePressed"/>
+			<OnEditFocusLost method="OnEditFocusLost"/>
+			<OnEditFocusGained method="OnEditFocusGained"/>
+		</Scripts>
+		<FontString inherits="ChatFontNormal"/>
+	</EditBox>
+
+	<EditBox name="CharacterServicesEditBoxHorizontalLabelTemplate" inherits="CharacterServicesEditBoxBaseTemplate" virtual="true">
+		<Size x="227" y="25"/>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<FontString parentKey="Label" inherits="GameFontBlack" justifyH="LEFT">
+					<Size x="155" y="30"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT" x="-9" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</EditBox>
+
+	<EditBox name="CharacterServicesEditBoxWithAutoCompleteTemplate" mixin="CharacterServicesEditBoxWithAutoCompleteMixin" inherits="CharacterServicesEditBoxHorizontalLabelTemplate" letters="100" virtual="true">
+		<Frames>
+			<Frame parentKey="AutoCompleteBox" mixin="AutoCompleteBoxMixin" hidden="true">
+				<Size x="150" y="5"/>
+				<Anchors>
+					<Anchor point="TOP" relativePoint="BOTTOM" x="-2" y="0"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="Border" inherits="TooltipBackdropTemplate" setAllPoints="true" />
+					<Button inherits="CharacterServicesAutoCompleteButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" x="6" y="-12"/>
+						</Anchors>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnShow method="OnShow"/>
+					<OnHide method="OnHide"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnCursorChanged method="OnCursorChanged"/>
+			<OnTextChanged method="OnTextChanged"/>
+			<OnLeave method="OnLeave"/>
+			<OnShow method="OnShow"/>
+			<OnKeyDown method="OnKeyDown"/>
+		</Scripts>
+	</EditBox>
+
+	<CheckButton name="CharacterServicesCheckButtonTemplate" virtual="true">
+		<Size x="20" y="20"/>
+		<NormalTexture atlas="checkbox-minimal" useAtlasSize="true"/>
+		<PushedTexture atlas="checkbox-minimal" useAtlasSize="true"/>
+		<HighlightTexture atlas="checkbox-minimal" useAtlasSize="true" alphaMode="ADD"/>
+		<CheckedTexture atlas="checkmark-minimal" useAtlasSize="true"/>
+		<DisabledCheckedTexture atlas="checkmark-minimal-disabled" useAtlasSize="true"/>
+	</CheckButton>
+
+	<CheckButton name="CharacterServicesCheckButtonWithLabelTemplate" inherits="CharacterServicesCheckButtonTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Shade">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-7"/>
+						<Anchor point="BOTTOMRIGHT" x="-7" y="7"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a=".8"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" inherits="GameFontHighlightMed2" justifyH="LEFT" justifyV="TOP">
+					<Size x="230" y="14"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="RIGHT" x="3" y="7"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</CheckButton>
+</Ui>

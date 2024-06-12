@@ -20,12 +20,30 @@ local FrameScript =
 			},
 		},
 		{
+			Name = "GetCallstackHeight",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "height", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetCurrentEventID",
 			Type = "Function",
 
 			Returns =
 			{
 				{ Name = "eventID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetErrorCallstackHeight",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "height", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -52,6 +70,15 @@ local FrameScript =
 			Arguments =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "SetErrorCallstackHeight",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "height", Type = "number", Nilable = true },
 			},
 		},
 	},

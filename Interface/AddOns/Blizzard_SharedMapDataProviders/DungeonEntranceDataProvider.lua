@@ -47,14 +47,23 @@ function DungeonEntrancePinMixin:OnLoad()
 end
 
 function DungeonEntrancePinMixin:OnAcquired(dungeonEntranceInfo) -- override
-	BaseMapPoiPinMixin.OnAcquired(self, dungeonEntranceInfo);
+	SuperTrackablePoiPinMixin.OnAcquired(self, dungeonEntranceInfo);
 
 	self.journalInstanceID = dungeonEntranceInfo.journalInstanceID;
 end
 
-function DungeonEntrancePinMixin:OnMouseClickAction()
-	EncounterJournal_LoadUI();
-	EncounterJournal_OpenJournal(nil, self.journalInstanceID);
+function DungeonEntrancePinMixin:ShouldMouseButtonBePassthrough(button)
+	-- Dungeon entrances allow left click to super track and right click to open journal.
+	-- Other buttons don't matter at this time.
+	return false;
+end
+
+function DungeonEntrancePinMixin:OnMouseClickAction(button)
+	SuperTrackablePinMixin.OnMouseClickAction(self, button);
+	if button == "RightButton" then
+		EncounterJournal_LoadUI();
+		EncounterJournal_OpenJournal(nil, self.journalInstanceID);
+	end
 end
 
 function DungeonEntrancePinMixin:GetHighlightType() -- override

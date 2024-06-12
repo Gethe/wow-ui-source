@@ -1,0 +1,411 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="QueueStatusRoleCountTemplate" virtual="true">
+		<Size x="40" y="40"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="RoleIcon" atlas="UI-LFG-RoleIcon-Generic"/>
+				<FontString name="$parentCount" inherits="GameFontHighlight" parentKey="Count">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent" relativePoint="BOTTOM" x="0" y="-2"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Frame name="QueueStatusEntryTemplate" virtual="true">
+		<Size x="275" y="150"/> <!--Height changed dynamically-->
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="GameFontHighlightLarge" justifyH="LEFT" justifyV="TOP">
+					<Size x="260" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10" y="-10"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Status" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+					<Size x="260" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="SubTitle" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+					<Size x="260" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="RoleIcon1" atlas="UI-LFG-RoleIcon-Generic">
+					<Size x="23" y="23"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-7" y="-8"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RoleIcon2" atlas="UI-LFG-RoleIcon-Generic">
+					<Size x="23" y="23"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.RoleIcon1" relativePoint="LEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RoleIcon3" atlas="UI-LFG-RoleIcon-Generic">
+					<Size x="23" y="23"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.RoleIcon2" relativePoint="LEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="TimeInQueue" inherits="GameFontNormal" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/> <!--Anchored in Lua-->
+					</Anchors>
+				</FontString>
+				<FontString parentKey="AverageWait" inherits="GameFontNormal" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="0" y="0"/> <!--Anchored in Lua-->
+					</Anchors>
+				</FontString>
+				<FontString parentKey="ExtraText" inherits="GameFontNormalGraySmall" justifyH="LEFT">
+					<Size x="250" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="0" y="0"/> <!--Anchored in Lua-->
+					</Anchors>
+				</FontString>
+				<Texture parentKey="EntrySeparator"> <!--Hidden on the first entry-->
+					<Size x="275" y="2"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="4"/>
+						<Anchor point="TOPRIGHT" x="-4"/>
+					</Anchors>
+					<Color r="0.25" g="0.25" b="0.25"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="HealersFound" inherits="QueueStatusRoleCountTemplate">
+				<Anchors>
+					<Anchor point="TOP" x="0" y="0"/> <!--Anchored in Lua-->
+				</Anchors>
+			</Frame>
+			<Frame parentKey="TanksFound" inherits="QueueStatusRoleCountTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.HealersFound" relativePoint="LEFT" x="-10" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="DamagersFound" inherits="QueueStatusRoleCountTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.HealersFound" relativePoint="RIGHT" x="10" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="AssignedSpec" hidden="true">
+				<Size x="22" y="22"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-7" y="-8"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Icon">
+							<Size x="18" y="18"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture parentKey="Border" file="Interface\Minimap\MiniMap-TrackingBorder">
+							<Size x="38" y="38"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+	</Frame>
+	<Frame name="EyeTemplate" mixin="EyeTemplateMixin" virtual="true" hidden="true">
+		<Size x="45" y="45"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture setAllPoints="true" parentKey="texture" atlas="groupfinder-eye-single" useAtlasSize="false" hidden="true">
+					<Size x="43" y="43"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="EyeInitial" frameStrata="MEDIUM" alpha="1" setAllPoints="true" hidden="true">
+				<Size x="45" y="45"/>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="GlowFront" alpha="1" alphaMode="BLEND" atlas="groupfinder-eye-frontglow" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="1"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="CircShine" alpha="1" alphaMode="BLEND" atlas="groupfinder-eye-circshine" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="GlowBack" alpha="1" alphaMode="BLEND" atlas="groupfinder-eye-backglow" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture parentKey="EyeInitialTexture" alpha="1" alphaMode="BLEND" atlas="groupfinder-eye-flipbook-initial">
+							<Size x="44" y="44"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="EyeInitialAnim" looping="NONE" setToFinalAlpha="true">
+						<FlipBook startDelay="0" endDelay="0" smoothing="NONE" childKey="EyeInitialTexture" duration="1.5" order="1" flipBookRows="5" flipBookColumns="11" flipBookFrames="52" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<Alpha startDelay="0" endDelay="0" smoothing="NONE" childKey="GlowFront" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha smoothing="NONE" childKey="GlowBack" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+						<Rotation startDelay=".5" endDelay="0" smoothing="IN_OUT" childKey="CircShine" duration="1" order="1" degrees="360">
+							<Origin point="CENTER"/>
+						</Rotation>
+						<Alpha smoothing="NONE" childKey="CircShine" duration=".5" order="1" fromAlpha="1" toAlpha=".5"/>
+						<Rotation startDelay=".5" endDelay="0" smoothing="IN_OUT" childKey="CircShine" duration="1" order="1" degrees="360">
+							<Origin point="CENTER"/>
+						</Rotation>
+						<Alpha smoothing="NONE" childKey="CircShine" duration="2" order="1" fromAlpha="1" toAlpha="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="EyeSearchingLoop" frameStrata="MEDIUM" alpha="1" setAllPoints="true" hidden="true">
+				<Size x="45" y="45"/>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="EyeSearchingTexture" alpha="1" alphaMode="BLEND" atlas="groupfinder-eye-flipbook-searching">
+							<Size x="44" y="44"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="EyeSearchingLoopAnim" looping="REPEAT" setToFinalAlpha="true">
+						<FlipBook smoothing="NONE" childKey="EyeSearchingTexture" duration="2" order="1" flipBookRows="8" flipBookColumns="11" flipBookFrames="80" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="EyeMouseOver" frameStrata="MEDIUM" alpha="1" setAllPoints="true" hidden="true">
+				<Size x="45" y="45"/>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="EyeMouseOverTexture" alpha="1" alphaMode="BLEND" atlas="groupfinder-eye-flipbook-mouseover">
+							<Size x="44" y="44"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="EyeMouseOverAnim" looping="NONE" setToFinalAlpha="true">
+						<FlipBook smoothing="NONE" childKey="EyeMouseOverTexture" duration=".4" order="1" flipBookRows="1" flipBookColumns="12" flipBookFrames="12" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="EyeFoundInitial" frameStrata="MEDIUM" alpha="1" setAllPoints="true" hidden="true">
+				<Size x="45" y="45"/>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="SpriteShards" alpha="1" alphaMode="BLEND" atlas="groupfinder-eye-flipbook-foundfx">
+							<Size x="75" y="75"/>
+							<Anchors>
+								<Anchor point="CENTER" x="-1" y="37"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="GlowFront" alpha="1" alphaMode="BLEND" atlas="groupfinder-eye-frontglow" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="GlowBack" alpha="1" alphaMode="BLEND" atlas="groupfinder-eye-backglow" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="EyeFoundInitialTexture" alpha="1" alphaMode="BLEND" atlas="groupfinder-eye-flipbook-found-initial">
+							<Size x="44" y="44"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="EyeFoundInitialAnim" looping="NONE" setToFinalAlpha="true">
+						<FlipBook startDelay="0" smoothing="NONE" childKey="SpriteShards" duration="2" order="1" flipBookRows="5" flipBookColumns="15" flipBookFrames="75" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<FlipBook smoothing="NONE" childKey="EyeFoundInitialTexture" duration="2" order="1" flipBookRows="7" flipBookColumns="11" flipBookFrames="70" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<Alpha smoothing="NONE" childKey="GlowFront" duration="1.5" order="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha smoothing="NONE" childKey="GlowBack" duration="2" order="1" fromAlpha="1" toAlpha=".2"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="EyeFoundLoop" frameStrata="MEDIUM" alpha="1" setAllPoints="true" hidden="true">
+				<Size x="45" y="45"/>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="EyeFoundLoopTexture" alpha="1" alphaMode="BLEND" atlas="groupfinder-eye-flipbook-found-loop">
+							<Size x="44" y="44"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="EyeFoundLoopAnim" looping="REPEAT" setToFinalAlpha="true">
+						<FlipBook smoothing="NONE" childKey="EyeFoundLoopTexture" duration="1.5" order="1" flipBookRows="4" flipBookColumns="11" flipBookFrames="41" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="GlowBackLoop" frameStrata="MEDIUM" alpha="1" setAllPoints="true" hidden="true">
+				<Size x="45" y="45"/>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="GlowBack" alpha="1" alphaMode="BLEND" atlas="groupfinder-eye-backglow" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="GlowBackLoopAnim" looping="BOUNCE" setToFinalAlpha="true">
+						<Alpha smoothing="NONE" childKey="GlowBack" duration="1.5" order="1" fromAlpha=".2" toAlpha=".4"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="EyePokeInitial" frameStrata="MEDIUM" alpha="1" setAllPoints="true" hidden="true">
+				<Size x="45" y="45"/>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="EyePokeInitialTexture" alpha="1" alphaMode="BLEND" atlas="groupfinder-eye-flipbook-poke-initial">
+							<Size x="44" y="44"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="EyePokeInitialAnim" looping="NONE" setToFinalAlpha="true">
+						<FlipBook smoothing="NONE" childKey="EyePokeInitialTexture" duration="1.5" order="1" flipBookRows="6" flipBookColumns="11" flipBookFrames="66" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="EyePokeLoop" frameStrata="MEDIUM" alpha="1" setAllPoints="true" hidden="true">
+				<Size x="45" y="45"/>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="EyePokeLoopTexture" alpha="1" alphaMode="BLEND" atlas="groupfinder-eye-flipbook-poke-loop">
+							<Size x="44" y="44"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="EyePokeLoopAnim" looping="REPEAT" setToFinalAlpha="true">
+						<FlipBook smoothing="NONE" childKey="EyePokeLoopTexture" duration="1.5" order="1" flipBookRows="6" flipBookColumns="11" flipBookFrames="62" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="EyePokeEnd" frameStrata="MEDIUM" alpha="1" setAllPoints="true" hidden="true">
+				<Size x="45" y="45"/>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="EyePokeEndTexture" alpha="1" alphaMode="BLEND" atlas="groupfinder-eye-flipbook-poke-end">
+							<Size x="44" y="44"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="EyePokeEndAnim" looping="NONE" setToFinalAlpha="true">
+						<FlipBook smoothing="NONE" childKey="EyePokeEndTexture" duration="1.2" order="1" flipBookRows="4" flipBookColumns="11" flipBookFrames="38" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+	<Button name="QueueStatusButton" mixin="QueueStatusButtonMixin" parent="MicroMenuContainer" hidden="true">
+		<Size x="45" y="45"/>
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" x="-45" y="4"/>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Highlight" hidden="true" alpha="0" alphaMode="ADD" atlas="groupfinder-eye-highlight" useAtlasSize="false">
+					<Size x="96" y="96"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="EyeHighlightAnim" setToFinalAlpha="true" looping="REPEAT">
+				<Scale childKey="Highlight" startDelay="0.1" smoothing="NONE" duration="1.0" order="1" fromScaleX="0.39" fromScaleY="0.39" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="Highlight" startDelay="0.1" smoothing="NONE" duration="1.0" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scripts>
+					<OnLoop>
+						if ( QueueStatusButton:OnGlowPulse(self:GetParent()) ) then
+							PlaySound(SOUNDKIT.UI_GROUP_FINDER_RECEIVE_APPLICATION);
+						end
+					</OnLoop>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Frames>
+			<Frame name="$parentIcon" inherits="EyeTemplate" hidden="false" parentKey="Eye">
+				<Size x="30" y="30"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnUpdate method="OnUpdate"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Button>
+	<Frame name="QueueStatusFrame" mixin="QueueStatusFrameMixin" frameStrata="TOOLTIP" hidden="true" clampedToScreen="true" parent="UIParent" inherits="TooltipBackdropTemplate">
+		<Size x="275" y="150"/>
+		<Anchors>
+			<Anchor point="RIGHT" relativeTo="QueueStatusButton" relativePoint="LEFT" x="0" y="28"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad method="OnLoad" inherit="append" />
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

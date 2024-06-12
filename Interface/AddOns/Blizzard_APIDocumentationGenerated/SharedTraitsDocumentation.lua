@@ -262,6 +262,23 @@ local SharedTraits =
 			},
 		},
 		{
+			Name = "GetStagedChanges",
+			Type = "Function",
+			Documentation = { "Returns IDs of Trait Nodes with pending changes, grouped by the type of change; Returns nothing if there are no pending changes" },
+
+			Arguments =
+			{
+				{ Name = "configID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "nodeIDsWithPurchases", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "nodeIDsWithRefunds", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "nodeIDsWithSelectionSwaps", Type = "table", InnerType = "number", Nilable = false, Documentation = { "Selection nodes that had a previously committed selected entry, and now have a different selected entry pending" } },
+			},
+		},
+		{
 			Name = "GetStagedChangesCost",
 			Type = "Function",
 
@@ -276,17 +293,32 @@ local SharedTraits =
 			},
 		},
 		{
-			Name = "GetStagedPurchases",
+			Name = "GetSubTreeInfo",
 			Type = "Function",
 
 			Arguments =
 			{
 				{ Name = "configID", Type = "number", Nilable = false },
+				{ Name = "subTreeID", Type = "number", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "nodeIDsWithPurchases", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "subTreeInfo", Type = "TraitSubTreeInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSystemIDByTreeID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "treeID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "systemID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -636,6 +668,15 @@ local SharedTraits =
 			},
 		},
 		{
+			Name = "TraitSubTreeChanged",
+			Type = "Event",
+			LiteralName = "TRAIT_SUB_TREE_CHANGED",
+			Payload =
+			{
+				{ Name = "subTreeID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "TraitSystemInteractionStarted",
 			Type = "Event",
 			LiteralName = "TRAIT_SYSTEM_INTERACTION_STARTED",
@@ -688,6 +729,7 @@ local SharedTraits =
 				{ Name = "traitCurrencyID", Type = "number", Nilable = true },
 				{ Name = "spentAmountRequired", Type = "number", Nilable = true },
 				{ Name = "tooltipFormat", Type = "string", Nilable = true },
+				{ Name = "traitCondAccountElementID", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -730,7 +772,8 @@ local SharedTraits =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "definitionID", Type = "number", Nilable = false },
+				{ Name = "definitionID", Type = "number", Nilable = true, Documentation = { "Nil on SubTreeSelection Node Entries" } },
+				{ Name = "subTreeID", Type = "number", Nilable = true, Documentation = { "Populated only on SubTreeSelection Node Entries; This is the SubTree that is activated if this Entry is chosen" } },
 				{ Name = "type", Type = "TraitNodeEntryType", Nilable = false },
 				{ Name = "maxRanks", Type = "number", Nilable = false },
 				{ Name = "isAvailable", Type = "bool", Nilable = false },
@@ -783,6 +826,8 @@ local SharedTraits =
 				{ Name = "conditionIDs", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "isCascadeRepurchasable", Type = "bool", Nilable = false },
 				{ Name = "cascadeRepurchaseEntryID", Type = "number", Nilable = true },
+				{ Name = "subTreeID", Type = "number", Nilable = true, Documentation = { "The SubTree this Node belongs to; Nil if it is not part of a SubTree" } },
+				{ Name = "subTreeActive", Type = "bool", Nilable = true, Documentation = { "True if this node has a SubTreeID, and the SubTree is chosen or staged; May be nil if not part of a SubTree at all" } },
 			},
 		},
 		{
@@ -800,6 +845,7 @@ local SharedTraits =
 				{ Name = "meetsEdgeRequirements", Type = "bool", Nilable = true },
 				{ Name = "isCascadeRepurchasable", Type = "bool", Nilable = true },
 				{ Name = "activeEntryID", Type = "number", Nilable = true },
+				{ Name = "subTreeActive", Type = "bool", Nilable = true },
 			},
 		},
 		{
@@ -811,6 +857,22 @@ local SharedTraits =
 				{ Name = "type", Type = "number", Nilable = false },
 				{ Name = "visualStyle", Type = "number", Nilable = false },
 				{ Name = "isActive", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "TraitSubTreeInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "ID", Type = "number", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = true },
+				{ Name = "description", Type = "string", Nilable = true },
+				{ Name = "iconElementID", Type = "textureAtlas", Nilable = true },
+				{ Name = "traitCurrencyID", Type = "number", Nilable = true },
+				{ Name = "isActive", Type = "bool", Nilable = false },
+				{ Name = "subTreeSelectionNodeIDs", Type = "table", InnerType = "number", Nilable = false, Documentation = { "SubTreeSelectionNodes whose choice entries include this SubTree" } },
+				{ Name = "posX", Type = "number", Nilable = false, Documentation = { "Center X node position calculated from the posX values of all of this subTree's nodes" } },
+				{ Name = "posY", Type = "number", Nilable = false, Documentation = { "Topmost Y node position taken from the posY values of all of this subTree's nodes" } },
 			},
 		},
 		{

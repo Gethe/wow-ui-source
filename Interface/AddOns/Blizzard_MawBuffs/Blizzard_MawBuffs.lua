@@ -70,10 +70,18 @@ function MawBuffsContainerMixin:Update()
 end
 
 function MawBuffsContainerMixin:UpdateAlignment()
+	local isOnLeftSide = ObjectiveTrackerFrame and ObjectiveTrackerFrame.isOnLeftSideOfScreen;
+	-- initially self.isOnLeftSide is nil so the first time this check will fail, resulting in an update
+	if isOnLeftSide == self.isOnLeftSide then
+		return;
+	end
+
+	self.isOnLeftSide = isOnLeftSide;
+
 	self:ClearAllPoints();
 	self.List:ClearAllPoints();
 
-	if ObjectiveTrackerFrame and ObjectiveTrackerFrame.isOnLeftSideOfScreen then
+	if isOnLeftSide then
 		-- If tracker is on left side of screen make stuff face right
 		self:SetPoint("TOPLEFT", self:GetParent(), "TOPLEFT", 0, 0);
 		self.List:SetPoint("TOPLEFT", self, "TOPRIGHT", -15, 1);

@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_PetBattleUI.lua"/>
 
 	<Texture name="DebugTexture" virtual="true">
@@ -1326,7 +1326,7 @@
 							</Button>
 						</Frames>
 					</Frame>
-					<StatusBar name="$parentXPBar" parentKey="xpBar">
+					<StatusBar name="$parentXPBar" parentKey="xpBar" inherits="TextStatusBar">
 						<Size x="504" y="11"/>
 						<Anchors>
 							<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="6"/>
@@ -1372,18 +1372,18 @@
 						<BarTexture file="Interface\TargetingFrame\UI-StatusBar" />
 						<BarColor r="0.45" g="0.45" b="1.0" />
 						<Scripts>
-							<OnLoad>
-								SetTextStatusBarTextPrefix(self, XP);
+							<OnLoad inherit="prepend">
+								self:SetBarTextPrefix(XP);
 							</OnLoad>
 							<OnEnter>
-								ShowTextStatusBarText(self);
+								self:ShowStatusBarText();
 								if ( self.tooltip ) then
 									GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 									GameTooltip:SetText(self.tooltip);
 								end
 							</OnEnter>
 							<OnLeave>
-								HideTextStatusBarText(self);
+								self:HideStatusBarText();
 								GameTooltip:Hide();
 							</OnLeave>
 						</Scripts>
@@ -1678,13 +1678,5 @@
 				</Scripts>
 			</Frame>
 		</Frames>
-	</Frame>
-	<Frame name="PetBattleUnitFrameDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
-		<Scripts>
-			<OnLoad>
-				self.initialize = PetBattleUnitFrameDropDown_Initialize;
-				self.displayMode = "MENU";
-			</OnLoad>
-		</Scripts>
 	</Frame>
 </Ui>

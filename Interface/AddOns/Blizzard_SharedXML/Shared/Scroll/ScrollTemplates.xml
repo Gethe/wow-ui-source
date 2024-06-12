@@ -1,0 +1,67 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\UI.xsd">
+	<!--Intended for scroll boxes using a data provider.-->
+	<Frame name="WowScrollBoxList" inherits="ScrollBoxBaseTemplate" mixin="ScrollBoxListMixin" virtual="true">
+		<!--
+		A drag behavior will be created appropriate to it's view and assigned to .dragBehavior
+		<KeyValue key="enableDefaultDrag" value="true" type="boolean"/>
+		-->
+	</Frame>
+
+	<!--Intended for static scroll boxes such as a scroll box with a single frame containing a font string.-->
+	<Frame name="WowScrollBox" inherits="ScrollBoxBaseTemplate" mixin="ScrollBoxMixin" virtual="true"/>
+
+	<EventFrame name="VerticalScrollBarTemplate" inherits="ScrollBarBaseTemplate" mixin="ScrollBarMixin" virtual="true"/>
+	<EventFrame name="HorizontalScrollBarTemplate" inherits="ScrollBarBaseTemplate" mixin="ScrollBarMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="isHorizontal" value="true" type="boolean"/>
+		</KeyValues>
+	</EventFrame>
+
+	<Frame name="ScrollingEditBoxTemplate" mixin="ScrollingEditBoxMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="fontName" value="GameFontHighlight" type="string"/>
+			<KeyValue key="defaultFontName" value="GameFontDisable" type="string"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="ScrollBox" setAllPoints="true" inherits="WowScrollBox">
+				<Frames>
+					<EventEditBox parentKey="EditBox" multiLine="true" autoFocus="false">
+						<KeyValues>
+							<KeyValue key="scrollable" value="true" type="boolean"/>
+						</KeyValues>
+					</EventEditBox>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnMouseDown method="OnMouseDown"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="ScrollingFontTemplate" mixin="ScrollingFontMixin" virtual="true">
+		<Frames>
+			<Frame parentKey="ScrollBox" setAllPoints="true" inherits="WowScrollBox">
+				<Frames>
+					<Frame parentKey="FontStringContainer">
+						<Size y="1"/>
+						<KeyValues>
+							<KeyValue key="scrollable" value="true" type="boolean"/>
+						</KeyValues>
+						<Layers>
+							<Layer>
+								<FontString parentKey="FontString" nonspacewrap="true" justifyH="LEFT" justifyV="TOP"/>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnSizeChanged method="OnSizeChanged"/>
+		</Scripts>
+	</Frame>
+</Ui>

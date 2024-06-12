@@ -546,6 +546,7 @@ local FriendList =
 				{ Name = "area", Type = "string", Nilable = false },
 				{ Name = "filename", Type = "string", Nilable = true },
 				{ Name = "gender", Type = "number", Nilable = false },
+				{ Name = "timerunningSeasonID", Type = "number", Nilable = true },
 			},
 		},
 	},

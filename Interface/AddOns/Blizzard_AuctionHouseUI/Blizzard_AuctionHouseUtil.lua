@@ -16,6 +16,7 @@ end
 AUCTION_HOUSE_FILTER_STRINGS = {
 	[Enum.AuctionHouseFilter.UncollectedOnly] = AUCTION_HOUSE_FILTER_UNCOLLECTED_ONLY,
 	[Enum.AuctionHouseFilter.UsableOnly] = AUCTION_HOUSE_FILTER_USABLE_ONLY,
+	[Enum.AuctionHouseFilter.CurrentExpansionOnly] = AUCTION_HOUSE_FILTER_CURRENTEXPANSION_ONLY,
 	[Enum.AuctionHouseFilter.UpgradesOnly] = AUCTION_HOUSE_FILTER_UPGRADES_ONLY,
 	[Enum.AuctionHouseFilter.PoorQuality] = GetQualityFilterString(Enum.ItemQuality.Poor),
 	[Enum.AuctionHouseFilter.CommonQuality] = GetQualityFilterString(Enum.ItemQuality.Common),
@@ -26,6 +27,34 @@ AUCTION_HOUSE_FILTER_STRINGS = {
 	[Enum.AuctionHouseFilter.ArtifactQuality] = GetQualityFilterString(Enum.ItemQuality.Artifact),
 	[Enum.AuctionHouseFilter.LegendaryCraftedItemOnly] = AUCTION_HOUSE_FILTER_RUNECARVING,
 };
+
+AUCTION_HOUSE_DEFAULT_FILTERS = {
+	[Enum.AuctionHouseFilter.UncollectedOnly] = false,
+	[Enum.AuctionHouseFilter.UsableOnly] = false,
+	[Enum.AuctionHouseFilter.CurrentExpansionOnly] = false,
+	[Enum.AuctionHouseFilter.UpgradesOnly] = false,
+	[Enum.AuctionHouseFilter.PoorQuality] = true,
+	[Enum.AuctionHouseFilter.CommonQuality] = true,
+	[Enum.AuctionHouseFilter.UncommonQuality] = true,
+	[Enum.AuctionHouseFilter.RareQuality] = true,
+	[Enum.AuctionHouseFilter.EpicQuality] = true,
+	[Enum.AuctionHouseFilter.LegendaryQuality] = true,
+	[Enum.AuctionHouseFilter.ArtifactQuality] = true,
+};
+
+local AUCTION_HOUSE_FILTER_CATEGORY_STRINGS = {
+	[Enum.AuctionHouseFilterCategory.Uncategorized] = "",
+	[Enum.AuctionHouseFilterCategory.Equipment] = AUCTION_HOUSE_FILTER_CATEGORY_EQUIPMENT,
+	[Enum.AuctionHouseFilterCategory.Rarity] = AUCTION_HOUSE_FILTER_CATEGORY_RARITY,
+};
+
+function GetAHFilterCategoryName(category)
+	return AUCTION_HOUSE_FILTER_CATEGORY_STRINGS[category] or "";
+end
+
+function GetAHFilterName(filter)
+	return AUCTION_HOUSE_FILTER_STRINGS[filter] or "";
+end
 
 AuctionHouseSearchContext = tInvert({
 	"BrowseAll",

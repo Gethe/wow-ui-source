@@ -1,0 +1,6 @@
+## Title: Blizzard_Fonts_Shared
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## AllowLoad: Both
+## Dependencies: Blizzard_LoadLocale
+SharedFonts.xml

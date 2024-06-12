@@ -148,46 +148,36 @@ function ChannelRosterButtonMixin:ClearVoiceInfo()
 	self:SetVoiceMuted(nil);
 end
 
-local function ChannelRosterDropdown_Initialize(dropdown, level, menuList)
-	UnitPopup_ShowMenu(dropdown, "CHAT_ROSTER", nil, dropdown.name);
-end
-
 function ChannelRosterButtonMixin:OnClick(button)
 	if button == "RightButton" then
-		HideDropDownMenu(1);
-
 		local channel = ChannelFrame:GetList():GetSelectedChannelButton();
 		if not channel then
 			return;
 		end
 
-		local guid;
 		local playerLocation = self:GetMemberPlayerLocation();
-		if playerLocation then
-			guid = playerLocation:GetGUID();
+		local guid = playerLocation and playerLocation:GetGUID() or nil;
+
+		local contextData = {
+			name = self:GetMemberName(),
+			fromRosterFrame = true,
+			owner = self:IsMemberOwner(),
+			moderator = self:IsMemberModerator(),
+			channelName = channel:GetChannelName(),
+			category = channel:GetCategory(),
+			channelType = channel:GetChannelType(),
+			guid = guid,
+			isSelf = self:IsLocalPlayer(),
+			isOffline = (self:IsConnected() == false),
+			voiceChannel = channel:GetVoiceChannel(),
+		};
+
+		local voiceChannelID = channel:GetVoiceChannelID();
+		if voiceChannelID and guid then
+			contextData.voiceMemberID = C_VoiceChat.GetMemberID(voiceChannelID, guid);
 		end
 
-		local dropdown = self:GetRoster():GetChannelFrame():GetDropdown();
-		UIDropDownMenu_SetInitializeFunction(dropdown, ChannelRosterDropdown_Initialize);
-		dropdown.displayMode = "MENU";
-		dropdown.name = self:GetMemberName();
-		dropdown.owner = self:IsMemberOwner();
-		dropdown.moderator = self:IsMemberModerator();
-		dropdown.channelName = channel:GetChannelName();
-		dropdown.category = channel:GetCategory();
-		dropdown.channelType = channel:GetChannelType();
-		dropdown.guid = guid;
-		dropdown.isSelf = self:IsLocalPlayer();
-		dropdown.isOffline = (self:IsConnected() == false);
-		dropdown.voiceChannel = channel:GetVoiceChannel();
-		dropdown.voiceChannelID = channel:GetVoiceChannelID();
-		if dropdown.voiceChannelID and guid then
-			dropdown.voiceMemberID = C_VoiceChat.GetMemberID(dropdown.voiceChannelID, guid);
-		else
-			dropdown.voiceMemberID = nil;
-		end
-
-		ToggleDropDownMenu(1, nil, dropdown, "cursor");
+		UnitPopup_OpenMenu("CHAT_ROSTER", contextData);
 	end
 end
 
@@ -289,7 +279,6 @@ function ChannelRosterButtonMixin:GetMemberChannelRank()
 	if channel then
 		local ruleset = channel:GetChannelRuleset();
 		if ruleset == Enum.ChatChannelRuleset.Mentor then
-			local memberStatus = self:IsMemberModerator() and Enum.PlayerMentorshipStatus.Mentor or Enum.PlayerMentorshipStatus.Newcomer;
 			local memberStatus = ChatFrame_GetMentorChannelStatus(memberStatus, Enum.ChatChannelRuleset.Mentor);
 			if memberStatus == Enum.PlayerMentorshipStatus.Mentor then
 				return "mentor";

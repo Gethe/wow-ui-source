@@ -1,109 +1,3 @@
----------------
---NOTE - Please do not change this section without talking to Jacob
---We usually don't want to call out of this environment from this file. Calls should usually go through Outbound
-local _, tbl = ...;
-tbl.SecureCapsuleGet = SecureCapsuleGet;
-
-local function Import(name)
-	tbl[name] = tbl.SecureCapsuleGet(name);
-end
-
-setfenv(1, tbl);
-----------------
-
-Import("C_WowTokenSecure");
-Import("C_WowTokenPublic");
-Import("C_Timer");
-Import("C_StoreSecure");
-Import("C_RecruitAFriend");
-
-Import("assert");
-Import("math");
-Import("string");
-Import("pairs");
-Import("select");
-Import("unpack");
-Import("tostring");
-Import("tonumber");
-Import("date");
-Import("time");
-Import("type");
-Import("PlaySound");
-Import("GetCVar");
-Import("LoadURLIndex");
-Import("securecallfunction")
-Import("LOCALE_enGB");
-Import("TOKEN_REDEEM_LABEL");
-Import("TOKEN_REDEEM_GAME_TIME_TITLE");
-Import("TOKEN_REDEEM_GAME_TIME_DESCRIPTION");
-Import("TOKEN_REDEEM_GAME_TIME_EXPIRATION_FORMAT");
-Import("TOKEN_REDEEM_GAME_TIME_RENEWAL_FORMAT");
-Import("TOKEN_REDEEM_GAME_TIME_BUTTON_LABEL");
-Import("TOKEN_CONFIRMATION_TITLE");
-Import("TOKEN_COMPLETE_TITLE");
-Import("TOKEN_CREATE_AUCTION_TITLE");
-Import("TOKEN_BUYOUT_AUCTION_TITLE");
-Import("TOKEN_CONFIRM_CREATE_AUCTION");
-Import("TOKEN_CONFIRM_CREATE_AUCTION_LINE_2");
-Import("TOKEN_CONFIRM_GAME_TIME_DESCRIPTION");
-Import("TOKEN_CONFIRM_GAME_TIME_DESCRIPTION_MINUTES");
-Import("TOKEN_CONFIRM_GAME_TIME_EXPIRATION_CONFIRMATION_DESCRIPTION");
-Import("TOKEN_CONFIRM_GAME_TIME_RENEWAL_CONFIRMATION_DESCRIPTION");
-Import("TOKEN_COMPLETE_GAME_TIME_DESCRIPTION");
-Import("TOKEN_BUYOUT_AUCTION_CONFIRMATION_DESCRIPTION");
-Import("TOKEN_PRICE_LOCK_EXPIRE");
-Import("TOKEN_REDEEM_GAME_TIME_EXPIRATION_FORMAT_MINUTES");
-Import("TOKEN_COMPLETE_GAME_TIME_DESCRIPTION_MINUTES");
-Import("TOKEN_REDEEM_GAME_TIME_BUTTON_LABEL_MINUTES");
-Import("TOKEN_REDEEM_GAME_TIME_DESCRIPTION_MINUTES");
-Import("TOKEN_TRANSACTION_IN_PROGRESS");
-Import("TOKEN_YOU_WILL_BE_LOGGED_OUT");
-Import("TOKEN_REDEMPTION_UNAVAILABLE");
-Import("TOKEN_COMPLETE_BALANCE_DESCRIPTION")
-Import("TOKEN_CONFIRM_BALANCE_DESCRIPTION")
-Import("TOKEN_REDEEM_BALANCE_BUTTON_LABEL")
-Import("TOKEN_REDEEM_BALANCE_DESCRIPTION")
-Import("TOKEN_REDEEM_BALANCE_CONFIRMATION_DESCRIPTION")
-Import("TOKEN_REDEEM_BALANCE_ERROR_CAP_FORMAT")
-Import("TOKEN_REDEEM_BALANCE_FORMAT")
-Import("TOKEN_REDEEM_BALANCE_TITLE")
-Import("BLIZZARD_STORE_TRANSACTION_IN_PROGRESS");
-
-Import("GOLD_AMOUNT_SYMBOL");
-Import("GOLD_AMOUNT_TEXTURE");
-Import("GOLD_AMOUNT_TEXTURE_STRING");
-Import("SILVER_AMOUNT_SYMBOL");
-Import("SILVER_AMOUNT_TEXTURE");
-Import("SILVER_AMOUNT_TEXTURE_STRING");
-Import("COPPER_AMOUNT_SYMBOL");
-Import("COPPER_AMOUNT_TEXTURE");
-Import("COPPER_AMOUNT_TEXTURE_STRING");
-Import("SHORTDATE");
-Import("SHORTDATE_EU");
-Import("AUCTION_TIME_LEFT1_DETAIL");
-Import("AUCTION_TIME_LEFT2_DETAIL");
-Import("AUCTION_TIME_LEFT3_DETAIL");
-Import("AUCTION_TIME_LEFT4_DETAIL");
-Import("ACCEPT");
-Import("CANCEL");
-Import("OKAY");
-Import("LARGE_NUMBER_SEPERATOR");
-Import("DECIMAL_SEPERATOR");
-Import("CREATE_AUCTION");
-Import("WEEKS_ABBR");
-Import("DAYS_ABBR");
-Import("HOURS_ABBR");
-Import("MINUTES_ABBR");
-Import("HTML_START_CENTERED");
-Import("HTML_END");
-
-Import("LE_TOKEN_RESULT_SUCCESS");
-Import("LE_TOKEN_RESULT_ERROR_OTHER");
-Import("LE_TOKEN_RESULT_ERROR_DISABLED");
-Import("LE_TOKEN_RESULT_ERROR_BALANCE_NEAR_CAP");
-Import("LE_TOKEN_REDEEM_TYPE_GAME_TIME");
-Import("LE_TOKEN_REDEEM_TYPE_BALANCE");
-Import("SOUNDKIT");
 
 local BalanceEnabled = nil;
 local BalanceAmount = 0;
@@ -174,23 +68,11 @@ local currencySpecific = {
 };
 
 local function currencyInfo()
-	local currency = C_StoreSecure.GetCurrencyID();
-	if currency == 0 or C_StoreSecure.GetLastProductListResponseError() ~= 0 then
-		-- If currency hasn't been updated yet, this is fine, it will be updated eventually.
-		-- If there was an error updating currency, this is also fine, it will either remain broken for
-		-- the remainder of the session or will eventually update.
-		return nil;
-	end
-
 	local currencyInfo = C_StoreSecure.GetCurrencyInfo();
-	currencyRegion = currencyInfo.sharedData.regionID;
 	FormatCurrencyStringShort = currencyInfo.sharedData.formatShort;
 	FormatCurrencyStringLong = currencyInfo.sharedData.formatLong;
 	
-	-- If the currency has been set to a non-zero value and there was no error, then this assert still needs to check that the formatting data exists.
-	local info = currencySpecific[currencyRegion];
-	assert(info ~= nil, ("Missing currency info for currency ID '%d', bpay product list status '%d'"):format(currency, C_StoreSecure.GetLastProductListResponseError()));
-	return info;
+	return currencySpecific[currencyInfo.sharedData.regionID];
 end
 
 function SecureFormatShortDate(day, month, year)
@@ -440,19 +322,6 @@ function WowTokenRedemptionFrameCloseButton_OnClick(self)
 	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 end
 
-local function formatLargeNumber(amount)
-	amount = tostring(amount);
-	local newDisplay = "";
-	local strlen = amount:len();
-	--Add each thing behind a comma
-	for i=4, strlen, 3 do
-		newDisplay = LARGE_NUMBER_SEPERATOR..amount:sub(-(i - 1), -(i - 3))..newDisplay;
-	end
-	--Add everything before the first comma
-	newDisplay = amount:sub(1, (strlen % 3 == 0) and 3 or (strlen % 3))..newDisplay;
-	return newDisplay;
-end
-
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 -- This section is based on code from MoneyFrame.lua to keep it in the secure environment, if you change it there you should probably change it here as well.
 ------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -543,7 +412,7 @@ dialogs = {
 				C_WowTokenSecure.RedeemTokenConfirm(LE_TOKEN_REDEEM_TYPE_GAME_TIME);
 				WowTokenDialog_SetDialog(WowTokenDialog, "WOW_TOKEN_REDEEM_IN_PROGRESS");
 			else
-				Outbound.RedeemFailed(LE_TOKEN_RESULT_ERROR_OTHER);
+				WowTokenOutbound.RedeemFailed(LE_TOKEN_RESULT_ERROR_OTHER);
 			end
 			PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 		end,
@@ -591,7 +460,7 @@ dialogs = {
 				C_WowTokenSecure.RedeemTokenConfirm(LE_TOKEN_REDEEM_TYPE_BALANCE);
 				WowTokenDialog_SetDialog(WowTokenDialog, "WOW_TOKEN_REDEEM_IN_PROGRESS");
 			else
-				Outbound.RedeemFailed(LE_TOKEN_RESULT_ERROR_OTHER);
+				WowTokenOutbound.RedeemFailed(LE_TOKEN_RESULT_ERROR_OTHER);
 			end
 			PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 		end,
@@ -631,7 +500,7 @@ dialogs = {
 		end,
 		onHide = function(self)
 			self:SetAttribute("isauctiondialogshown", false);
-			Outbound.AuctionWowTokenUpdate();
+			WowTokenOutbound.AuctionWowTokenUpdate();
 		end,
 		onCancelled = function(self)
 			C_WowTokenSecure.ConfirmSellToken(false);
@@ -655,7 +524,7 @@ dialogs = {
 		end,
 		onHide = function(self)
 			self:SetAttribute("isauctiondialogshown", false);
-			Outbound.AuctionWowTokenUpdate();
+			WowTokenOutbound.AuctionWowTokenUpdate();
 			self.Title:SetFontObject("GameFontNormalLarge");
 			self.ConfirmationDesc:SetFontObject("GameFontNormal");
 		end,
@@ -688,15 +557,15 @@ dialogs = {
 			self:Hide();
 			local rafVersion = self.dialogData;
 			if rafVersion and C_RecruitAFriend.ClaimNextReward(rafVersion) then
-				Outbound.RecruitAFriendTryPlayClaimRewardFanfare(rafVersion);
+				WowTokenOutbound.RecruitAFriendTryPlayClaimRewardFanfare(rafVersion);
 			else
-				Outbound.RecruitAFriendTryCancelAutoClaim();
+				WowTokenOutbound.RecruitAFriendTryCancelAutoClaim();
 			end
 			PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 		end,
 		button2 = CANCEL,
 		button2OnClick = function(self)
-			Outbound.RecruitAFriendTryCancelAutoClaim();
+			WowTokenOutbound.RecruitAFriendTryCancelAutoClaim();
 			self:Hide();
 			PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 		end,
@@ -1000,10 +869,10 @@ end
 function WowTokenDialog_OnEvent(self, event, ...)
 	if (event == "TOKEN_SELL_CONFIRM_REQUIRED") then
 		WowTokenDialog_SetDialog(self, "WOW_TOKEN_CREATE_AUCTION");
-		Outbound.AuctionWowTokenUpdate();
+		WowTokenOutbound.AuctionWowTokenUpdate();
 	elseif (event == "TOKEN_BUY_CONFIRM_REQUIRED") then
 		WowTokenDialog_SetDialog(self, "WOW_TOKEN_BUYOUT_AUCTION");
-		Outbound.AuctionWowTokenUpdate();
+		WowTokenOutbound.AuctionWowTokenUpdate();
 	elseif (event == "TOKEN_REDEEM_CONFIRM_REQUIRED") then
 		local choice = ...;
 		local dialogKey, confirmationDescFunc;
@@ -1040,7 +909,7 @@ function WowTokenDialog_OnEvent(self, event, ...)
 			end
 			WowTokenDialog_SetDialog(self, dialogKey);
 		else
-			Outbound.RedeemFailed(result);
+			WowTokenOutbound.RedeemFailed(result);
 			C_WowTokenSecure.CancelRedeem();
 			self:Hide();
 		end

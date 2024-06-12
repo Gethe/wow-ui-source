@@ -14,6 +14,7 @@ local trackTextureKitRegions = {
 -- "Burst" effect on the renown reward as you unlock it
 local levelEffects = {
 	[LE_EXPANSION_DRAGONFLIGHT] = 144,
+	[LE_EXPANSION_WAR_WITHIN] = 144,
 }
 -- Animated Effects behind the renown reward;
 local finalToastSwirlEffects = {
@@ -22,6 +23,19 @@ local finalToastSwirlEffects = {
 local ExpansionLayoutInfo =
 {
 	[LE_EXPANSION_DRAGONFLIGHT] = {
+		textureKit = "Dragonflight",
+		renownFrameDecorations = {
+			["TopLeftBorderDecoration"] = "Dragonflight-DragonHeadLeft",
+			["TopRightBorderDecoration"] = "Dragonflight-DragonHeadRight",
+			["BottomBorderDecoration"] = "dragonflight-golddetailbottom",
+		},
+		renownFrameDecorationAnchors = {
+			["TopLeftBorderDecoration"] = { x = -40, y = 8, },
+			["TopRightBorderDecoration"] = { x = 40, y = 8, },
+			["BottomBorderDecoration"] = { x = 0, y = 10, },
+		},
+	},
+	[LE_EXPANSION_WAR_WITHIN] = {
 		textureKit = "Dragonflight",
 		renownFrameDecorations = {
 			["TopLeftBorderDecoration"] = "Dragonflight-DragonHeadLeft",
@@ -107,7 +121,6 @@ MajorFactionRenownMixin = {};
 local MajorFactionRenownEvents = {
 	"MAJOR_FACTION_RENOWN_LEVEL_CHANGED",
 	"MAJOR_FACTION_UNLOCKED",
-	"MAJOR_FACTION_RENOWN_CATCH_UP_STATE_UPDATE",
 	"UPDATE_FACTION",
 };
 
@@ -144,7 +157,6 @@ function MajorFactionRenownMixin:OnShow()
 	local fromOnShow = true;
 	self:Refresh(fromOnShow);
 	self:CheckTutorials();
-	C_MajorFactions.RequestCatchUpState();
 	FrameUtil.RegisterFrameForEvents(self, MajorFactionRenownEvents);
 
 	PlaySound(SOUNDKIT.UI_MAJOR_FACTION_RENOWN_OPEN_WINDOW);
@@ -158,7 +170,13 @@ function MajorFactionRenownMixin:OnHide()
 	self:CancelLevelEffect();
 
 	local cvarName = "lastRenownForMajorFaction".. currentFactionID;
-	SetCVar(cvarName, self.actualLevel);
+	local lastSeenRenownLevel = tonumber(GetCVar(cvarName)) or 0;
+	-- We should only update the CVar when the value is higher than what we have stored
+	-- For cases where renown is account wide, we want to remember the highest level you've seen on any character
+	local shouldOverwriteLastSeenRenown = self.actualLevel > lastSeenRenownLevel;
+	if shouldOverwriteLastSeenRenown then
+		SetCVar(cvarName, self.actualLevel);
+	end
 
 	C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.MajorFactionRenown);
 
@@ -171,10 +189,6 @@ function MajorFactionRenownMixin:OnEvent(event, ...)
 		self:Refresh();
 	elseif event == "MAJOR_FACTION_UNLOCKED" then
 		HideUIPanel(self);
-	elseif event == "MAJOR_FACTION_RENOWN_CATCH_UP_STATE_UPDATE" then 
-		if self.HeaderFrame:IsMouseOver() then 
-			MajorFactionRenownHeaderFrameMixin.OnEnter(self.HeaderFrame);
-		end 
 	elseif event == "UPDATE_FACTION" then
 		self:RefreshCurrentFactionData();
 		self.HeaderFrame.RenownProgressBar:RefreshBar();
@@ -223,7 +237,12 @@ function MajorFactionRenownMixin:SetUpMajorFactionData()
 			levelInfo.rewardInfo = C_MajorFactions.GetRenownRewardsForLevel(majorFactionID, i);
 		end
 		self.TrackFrame:Init(renownLevelsInfo);
+
 		self.TrackFrame.Title:SetText(majorFactionData.name or "");
+		local isAccountWideReputation = C_Reputation.IsAccountWideReputation(majorFactionID);
+		self.TrackFrame.Title:SetPoint("BOTTOM", self.TrackFrame, "TOP", 0, isAccountWideReputation and 20 or 15);
+		self.TrackFrame.AccountWideLabel:SetShown(isAccountWideReputation);
+
 		SetupTextureKit(self.TrackFrame, trackTextureKitRegions);
 
 		self.maxLevel = renownLevelsInfo[#renownLevelsInfo].level;
@@ -280,7 +299,6 @@ function MajorFactionRenownMixin:OnTrackUpdate(leftIndex, centerIndex, rightInde
 		self:Refresh();
 		return;
 	end
-	local elements = track:GetElements();
 	for i = leftIndex, rightIndex do
 		local selected = not self.moving and centerIndex == i;
 		local frame = elements[i];

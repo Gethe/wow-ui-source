@@ -35,8 +35,7 @@ function TalentSelectionChoiceFrameMixin:OnEvent(event, ...)
 		local buttonName = ...;
 		FrameUtil.DialogStyleGlobalMouseDown(self, buttonName);
 	elseif event == "GLOBAL_MOUSE_UP" then
-		local mouseFocus = GetMouseFocus();
-		if not DoesAncestryInclude(self, mouseFocus) then
+		if not DoesAncestryIncludeAny(self, GetMouseFoci()) then
 			self:Hide();
 		end
 	end
@@ -112,8 +111,8 @@ function TalentSelectionChoiceFrameMixin:UpdateVisualState()
 	end
 end
 
-function TalentSelectionChoiceFrameMixin:SetSelectedEntryID(selectedEntryID, selectedDefinitionInfo)
-	self.baseButton:SetSelectedEntryID(selectedEntryID, selectedDefinitionInfo);
+function TalentSelectionChoiceFrameMixin:SetSelectedEntryID(selectedEntryID)
+	self.baseButton:SetSelectedEntryID(selectedEntryID);
 	self:Hide();
 end
 
@@ -161,8 +160,12 @@ function TalentSelectionChoiceFrameMixin:GetBaseButton()
 	return self.baseButton;
 end
 
+function TalentSelectionChoiceFrameMixin:SetTalentFrame(talentFrame)
+	self.talentFrame = talentFrame;
+end
+
 function TalentSelectionChoiceFrameMixin:GetTalentFrame()
-	return self:GetParent();
+	return self.talentFrame;
 end
 
 
@@ -201,7 +204,7 @@ function TalentSelectionChoiceMixin:OnClick(button)
 				self:UpdateMouseOverInfo();
 			end
 		elseif IsModifiedClick("CHATLINK") then
-			local spellLink = GetSpellLink(self:GetSpellID());
+			local spellLink = C_Spell.GetSpellLink(self:GetSpellID());
 			ChatEdit_InsertLink(spellLink);
 		else
 			if not self:IsChoiceAvailable() then
@@ -212,7 +215,7 @@ function TalentSelectionChoiceMixin:OnClick(button)
 				return;
 			end
 
-			selectionChoiceFrame:SetSelectedEntryID(self:GetEntryID(), self:GetDefinitionInfo());
+			selectionChoiceFrame:SetSelectedEntryID(self:GetEntryID());
 		end
 	else
 		local baseButton = self:GetBaseButton();
@@ -229,9 +232,8 @@ end
 
 function TalentSelectionChoiceMixin:OnDragStart()
 	local spellID = self:GetSpellID();
-	if spellID then
-		local checkForPassive = true;
-		PickupSpell(spellID, checkForPassive);
+	if spellID and not C_Spell.IsSpellPassive(spellID) then
+		C_Spell.PickupSpell(spellID);
 	end
 end
 

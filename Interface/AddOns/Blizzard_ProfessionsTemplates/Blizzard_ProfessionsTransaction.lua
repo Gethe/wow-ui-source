@@ -76,8 +76,12 @@ function AllocationsMixin:Accumulate()
 	end);
 end
 
-function AllocationsMixin:HasAllocations()
+function AllocationsMixin:HasAnyAllocations()
 	return self:Accumulate() > 0;
+end
+
+function AllocationsMixin:HasAllAllocations(quantityRequired)
+	return self:Accumulate() >= quantityRequired;
 end
 
 function AllocationsMixin:Allocate(reagent, quantity)
@@ -126,6 +130,8 @@ function ProfessionsRecipeTransactionMixin:Init(recipeSchematic)
 		table.insert(self.reagentSlotSchematicTbls, reagentSlotSchematic);
 		self.reagentTbls[slotIndex] = {reagentSlotSchematic = reagentSlotSchematic, allocations = allocations};
 	end
+
+	self.applyConcentration = false;
 end
 
 function ProfessionsRecipeTransactionMixin:HasReagentSlots()
@@ -392,9 +398,15 @@ function ProfessionsRecipeTransactionMixin:ClearAllocations(slotIndex)
 	allocations:Clear();
 end
 
-function ProfessionsRecipeTransactionMixin:HasAllocations(slotIndex)
+function ProfessionsRecipeTransactionMixin:HasAnyAllocations(slotIndex)
 	local allocations = self:GetAllocations(slotIndex);
-	return allocations and allocations:HasAllocations();
+	return allocations and allocations:HasAnyAllocations();
+end
+
+function ProfessionsRecipeTransactionMixin:HasAllAllocations(slotIndex, quantityRequired)
+	local allocations = self:GetAllocations(slotIndex);
+	local reagentSlotSchematic = self:GetReagentSlotSchematic(slotIndex);
+	return allocations and allocations:HasAllAllocations(reagentSlotSchematic.quantityRequired);
 end
 
 function ProfessionsRecipeTransactionMixin:HasAllocatedReagent(reagent)
@@ -688,6 +700,22 @@ function ProfessionsRecipeTransactionMixin:CreateRegularReagentInfoTbl()
 		return reagentTbl.reagentSlotSchematic.dataSlotType == Enum.TradeskillSlotDataType.Reagent;
 	end
 	return self:CreateCraftingReagentInfoTblIf(IsRegularCraftingReagent);
+end
+
+function ProfessionsRecipeTransactionMixin:IsApplyingConcentration()
+	return self.applyConcentration;
+end
+
+function ProfessionsRecipeTransactionMixin:SetApplyConcentration(applyConcentration)
+	if self.applyConcentration ~= applyConcentration then
+		self.applyConcentration = applyConcentration;
+
+		-- Update stat lines
+		self:CallOnChangedHandler();
+
+		-- Update toggle button state
+		self:OnChanged();
+	end
 end
 
 function CreateProfessionsRecipeTransaction(recipeSchematic)

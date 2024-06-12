@@ -163,51 +163,29 @@ function GroupMembersPinMixin:OnCanvasClicked(button, cursorX, cursorY)
 		end
 
 		if #self.reportableUnits > 0 then
-			local function InitializeReportDropDown(self)
-				self:GetParent():InitializeReportDropDown();
-			end
-			UIDropDownMenu_Initialize(self.ReportDropDown, InitializeReportDropDown, "MENU");
-			ToggleDropDownMenu(1, nil, self.ReportDropDown, "cursor", 0, -5);
+			MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
+				rootDescription:SetTag("MENU_GROUP_MEMBERS_PIN");
+
+				rootDescription:CreateTitle(PVP_REPORT_AFK);
+
+				for i, unit in ipairs(self.reportableUnits) do
+					rootDescription:CreateButton(UnitName(unit), function()
+						ReportPlayerIsPVPAFK(unit);
+					end);
+				end
+
+				if #self.reportableUnits > 1 then
+					rootDescription:CreateButton(PVP_REPORT_AFK_ALL, function()
+						for i, unit in ipairs(self.reportableUnits) do
+							ReportPlayerIsPVPAFK(unit);
+						end
+					end);
+				end
+
+			end);
 			return true;
 		end
 	end
 
 	return false;
-end
-
-function GroupMembersPinMixin:InitializeReportDropDown()
-	local info = UIDropDownMenu_CreateInfo();
-	info.text = PVP_REPORT_AFK;
-	info.notClickable = 1;
-	info.isTitle = 1;
-	info.notCheckable = true;
-	UIDropDownMenu_AddButton(info);
-
-	for i, unit in ipairs(self.reportableUnits) do
-		info = UIDropDownMenu_CreateInfo();
-		info.func = function(self, unit)
-			ReportPlayerIsPVPAFK(unit);
-		end;
-		info.arg1 = unit;
-		info.text = UnitName(unit);
-		info.notCheckable = true;
-		UIDropDownMenu_AddButton(info);
-	end
-
-	if #self.reportableUnits > 1 then
-		info = UIDropDownMenu_CreateInfo();
-		info.func = function()
-			for i, unit in ipairs(self.reportableUnits) do
-				ReportPlayerIsPVPAFK(unit);
-			end
-		end;
-		info.text = PVP_REPORT_AFK_ALL;
-		info.notCheckable = true;
-		UIDropDownMenu_AddButton(info);
-	end
-
-	info = UIDropDownMenu_CreateInfo();
-	info.text = CANCEL;
-	info.notCheckable = true;
-	UIDropDownMenu_AddButton(info);
 end

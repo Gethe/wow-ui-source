@@ -1,0 +1,6 @@
+## Title: Blizzard_RaidFrame
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_UIPanels_Game, Blizzard_UnitFrame, Blizzard_FriendsFrame
+## AllowLoadGameType: mainline
+RaidFrame.xml

@@ -39,7 +39,9 @@ function GMChatFrame_OnLoad(self)
 	self:SetFont(DEFAULT_CHAT_FRAME:GetFont());
 	FCF_SetButtonSide(self, "left", true);
 	self.buttonFrame:SetAlpha(1);
-	self.buttonFrame.minimizeButton:Hide();
+	if self.buttonFrame.minimizeButton ~= nil then
+		self.buttonFrame.minimizeButton:Hide();
+	end
 
 	self.editBox:ClearAllPoints();
 	self.editBox:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 8, -2);
@@ -105,7 +107,6 @@ function GMChatFrame_OnEvent(self, event, ...)
 
 		self:AddMessage(body, info.r, info.g, info.b, info.id);
 	elseif ( event == "UPDATE_CHAT_COLOR" ) then
-		local arg1, arg2, arg3, arg4 = ...
 		local info = ChatTypeInfo[strupper(arg1)];
 		if ( info ) then
 			info.r = arg2;

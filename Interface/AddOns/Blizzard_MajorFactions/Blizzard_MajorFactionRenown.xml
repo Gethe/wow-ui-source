@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_MajorFactionRenown.lua"/>
 
 	<Frame name="MajorFactionRenownFrame" mixin="MajorFactionRenownMixin" parent="UIParent" hidden="true" toplevel="true" enableMouse="true">
@@ -142,13 +142,23 @@
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
-						<FontString parentKey="Title" inherits="Fancy40Font">
+						<FontString parentKey="Title" inherits="Fancy40Font" mixin="AutoScalingFontStringMixin" maxLines="1">
+							<Size x="700"/>
 							<Shadow x="1" y="-1">
 								<Color r="0" g="0" b="0"/>
 							</Shadow>
 							<Anchors>
 								<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="TOP" x="0" y="15"/>
 							</Anchors>
+						</FontString>
+						<FontString parentKey="AccountWideLabel" inherits="GameFontNormal" text="REPUTATION_TOOLTIP_ACCOUNT_WIDE_LABEL">
+							<Shadow x="1" y="-1">
+								<Color r="0" g="0" b="0"/>
+							</Shadow>
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-7"/>
+							</Anchors>
+							<Color color="ACCOUNT_WIDE_FONT_COLOR"/>
 						</FontString>
 					</Layer>
 				</Layers>

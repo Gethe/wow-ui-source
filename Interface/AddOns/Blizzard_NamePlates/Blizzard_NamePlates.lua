@@ -21,8 +21,9 @@ function NamePlateDriverMixin:OnLoad()
 	self:SetBaseNamePlateSize(110, 45);
 
 	self.pools = CreateFramePoolCollection();
-	-- Forbidden dictated by namePlateFrameBase.
-	self.pools:CreatePool("BUTTON", self, "ForbiddenNamePlateUnitFrameTemplate");
+
+	local forbidden = true;
+	self.pools:CreatePool("BUTTON", self, "ForbiddenNamePlateUnitFrameTemplate", nil, forbidden);
 	self.pools:CreatePool("BUTTON", self, "NamePlateUnitFrameTemplate");
 
 	self.namePlateSetupFunctions =
@@ -330,15 +331,15 @@ function NamePlateDriverMixin:SetupClassNameplateBars()
 	local bottomMostBar = nil;
 	local namePlatePlayer = C_NamePlate.GetNamePlateForUnit("player", issecure());
 	if namePlatePlayer then
-		bottomMostBar = namePlatePlayer.UnitFrame.healthBar;
+		bottomMostBar = namePlatePlayer.UnitFrame.HealthBarsContainer;
 	end
 
 	if self.classNamePlatePowerBar then
 		if namePlatePlayer then
 			self.classNamePlatePowerBar:SetParent(namePlatePlayer);
 			self.classNamePlatePowerBar:ClearAllPoints();
-			self.classNamePlatePowerBar:SetPoint("TOPLEFT", namePlatePlayer.UnitFrame.healthBar, "BOTTOMLEFT", 0, 0);
-			self.classNamePlatePowerBar:SetPoint("TOPRIGHT", namePlatePlayer.UnitFrame.healthBar, "BOTTOMRIGHT", 0, 0);
+			self.classNamePlatePowerBar:SetPoint("TOPLEFT", namePlatePlayer.UnitFrame.HealthBarsContainer, "BOTTOMLEFT", 0, 0);
+			self.classNamePlatePowerBar:SetPoint("TOPRIGHT", namePlatePlayer.UnitFrame.HealthBarsContainer, "BOTTOMRIGHT", 0, 0);
 			self.classNamePlatePowerBar:SetShown(not self.playerHideHealthandPowerBar);
 
 			bottomMostBar = self.classNamePlatePowerBar;
@@ -350,7 +351,7 @@ function NamePlateDriverMixin:SetupClassNameplateBars()
 	if self.classNamePlateAlternatePowerBar then
 		if namePlatePlayer then
 			local powerBar = self.classNamePlatePowerBar;
-			local attachTo = (powerBar and powerBar:IsShown() and powerBar) or namePlatePlayer.UnitFrame.healthBar;
+			local attachTo = (powerBar and powerBar:IsShown() and powerBar) or namePlatePlayer.UnitFrame.HealthBarsContainer;
 			self.classNamePlateAlternatePowerBar:SetParent(namePlatePlayer);
 			self.classNamePlateAlternatePowerBar:ClearAllPoints();
 			self.classNamePlateAlternatePowerBar:SetPoint("TOPLEFT", attachTo, "BOTTOMLEFT", 0, 0);
@@ -594,7 +595,7 @@ end
 
 function NamePlateBaseMixin:GetPreferredInsets()
 	local frame = self.UnitFrame;
-	local health = frame.healthBar;
+	local health = frame.HealthBarsContainer;
 
 	local left = health:GetLeft() - frame:GetLeft();
 	local right = frame:GetRight() - health:GetRight();
@@ -694,7 +695,7 @@ function NameplateBuffContainerMixin:UpdateAnchor()
 	if (self:GetParent().unit and ShouldShowName(self:GetParent())) then
 		self:SetPoint("BOTTOM", self:GetParent(), "TOP", 0, targetYOffset);
 	else
-		self:SetPoint("BOTTOM", self:GetParent().healthBar, "TOP", 0, 5 + targetYOffset);
+		self:SetPoint("BOTTOM", self:GetParent().HealthBarsContainer.healthBar, "TOP", 0, 5 + targetYOffset);
 	end
 end
 
@@ -834,10 +835,10 @@ function NameplateBuffContainerMixin:UpdateBuffs(unit, unitAuraUpdateInfo, auraS
 		local nameplateSpells = C_SpellBook.GetTrackedNameplateCooldownSpells(); 
 		for _, spellID in ipairs(nameplateSpells) do 
 			if (not self:HasActiveBuff(spellID) and buffIndex < BUFF_MAX_DISPLAY) then
-				local locStart, locDuration = GetSpellLossOfControlCooldown(spellID);
-				local start, duration, enable, modRate = GetSpellCooldown(spellID);
-				if (locDuration ~= 0 or duration ~= 0) then 
-					local spellInfo = C_SpellBook.GetSpellInfo(spellID);
+				local locStart, locDuration = C_Spell.GetSpellLossOfControlCooldown(spellID);
+				local cooldownInfo = C_Spell.GetSpellCooldown(spellID);
+				if ((locDuration and locDuration ~= 0) or (cooldownInfo and cooldownInfo.duration ~= 0)) then
+					local spellInfo = C_Spell.GetSpellInfo(spellID);
 					if(spellInfo) then 
 						local buff = self.buffPool:Acquire();
 						buff.isBuff = true;
@@ -846,9 +847,15 @@ function NameplateBuffContainerMixin:UpdateBuffs(unit, unitAuraUpdateInfo, auraS
 						buff.auraInstanceID = nil;
 						buff.Icon:SetTexture(spellInfo.iconID); 
 
-						local charges, maxCharges, chargeStart, chargeDuration, chargeModRate = GetSpellCharges(spellID);
+						local chargeInfo = C_Spell.GetSpellCharges(spellID) or {};
+						local charges, maxCharges = chargeInfo.currentCharges, chargeInfo.maxCharges;
 						buff.Cooldown:SetSwipeColor(0, 0, 0);
-						CooldownFrame_Set(buff.Cooldown, start, duration, enable, true, modRate);
+
+						if (cooldownInfo and cooldownInfo.duration ~= 0) then
+							CooldownFrame_Set(buff.Cooldown, cooldownInfo.startTime, cooldownInfo.duration, cooldownInfo.isEnabled, true, cooldownInfo.modRate);
+						else
+							CooldownFrame_Set(buff.Cooldown, locStart, locDuration, true, true);
+						end
 
 						if (maxCharges and maxCharges > 1) then
 							buff.CountFrame.Count:SetText(charges);
@@ -857,7 +864,7 @@ function NameplateBuffContainerMixin:UpdateBuffs(unit, unitAuraUpdateInfo, auraS
 							buff.CountFrame.Count:Hide();
 						end
 						buff:Show();
-						buffIndex = buffIndex + 1; 
+						buffIndex = buffIndex + 1;
 					end
 				end
 			end

@@ -54,9 +54,9 @@ local ItemConstants_Mainline =
 		{
 			Name = "PointsModifierSourceType",
 			Type = "Enumeration",
-			NumValues = 66,
+			NumValues = 67,
 			MinValue = 0,
-			MaxValue = 65,
+			MaxValue = 66,
 			Fields =
 			{
 				{ Name = "PlayerLevel", Type = "PointsModifierSourceType", EnumValue = 0 },
@@ -125,6 +125,7 @@ local ItemConstants_Mainline =
 				{ Name = "ProfessionTraitRanksByLabel", Type = "PointsModifierSourceType", EnumValue = 63 },
 				{ Name = "CreatureHealthMod", Type = "PointsModifierSourceType", EnumValue = 64 },
 				{ Name = "FirstTimeQuestCompletionRewards", Type = "PointsModifierSourceType", EnumValue = 65 },
+				{ Name = "PointsModifierSet", Type = "PointsModifierSourceType", EnumValue = 66 },
 			},
 		},
 		{
@@ -136,6 +137,8 @@ local ItemConstants_Mainline =
 				{ Name = "NumGenericBankSlots", Type = "number", Value = BANK_NUM_GENERIC_SLOTS },
 				{ Name = "NumBankBagSlots", Type = "number", Value = NUM_BANKBAG_SLOTS },
 				{ Name = "NumReagentBagSlots", Type = "number", Value = NUM_REAGENTBAG_SLOTS },
+				{ Name = "NumAccountBankSlots", Type = "number", Value = NUM_ACCOUNTBANK_SLOTS },
+				{ Name = "MAX_TRANSACTION_BANK_TABS", Type = "number", Value = 0 },
 			},
 		},
 	},

@@ -253,6 +253,15 @@ local ClubFinder =
 			},
 		},
 		{
+			Name = "IsCommunityFinderEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsEnabled",
 			Type = "Function",
 

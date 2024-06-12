@@ -20,6 +20,15 @@ local GossipInfo =
 			},
 		},
 		{
+			Name = "GetActiveDelveGossip",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "gossip", Type = "GossipOptionUIInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetActiveQuests",
 			Type = "Function",
 
@@ -84,6 +93,15 @@ local GossipInfo =
 			},
 		},
 		{
+			Name = "GetGossipDelveMapID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "mapID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetNumActiveQuests",
 			Type = "Function",
 
@@ -99,6 +117,20 @@ local GossipInfo =
 			Returns =
 			{
 				{ Name = "numQuests", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetOptionUIWidgetSetsAndTypesByOptionID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "gossipOptionID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "gossipOptionUIWidgetSetsAndTypes", Type = "table", InnerType = "GossipOptionUIWidgetSetAndType", Nilable = true },
 			},
 		},
 		{
@@ -280,6 +312,18 @@ local GossipInfo =
 			},
 		},
 		{
+			Name = "GossipOptionUIWidgetSetTypes",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Modifiers", Type = "GossipOptionUIWidgetSetTypes", EnumValue = 0 },
+				{ Name = "Background", Type = "GossipOptionUIWidgetSetTypes", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "FriendshipReputationInfo",
 			Type = "Structure",
 			Fields =
@@ -331,6 +375,16 @@ local GossipInfo =
 				{ Name = "overrideIconID", Type = "fileID", Nilable = true },
 				{ Name = "selectOptionWhenOnlyOption", Type = "bool", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
+				{ Name = "failureDescription", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "GossipOptionUIWidgetSetAndType",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "widgetType", Type = "number", Nilable = false },
+				{ Name = "uiWidgetSetID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -359,6 +413,7 @@ local GossipInfo =
 				{ Name = "isIgnored", Type = "bool", Nilable = false },
 				{ Name = "questID", Type = "number", Nilable = false },
 				{ Name = "isImportant", Type = "bool", Nilable = false },
+				{ Name = "isMeta", Type = "bool", Nilable = false },
 			},
 		},
 	},

@@ -227,7 +227,7 @@ function WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
 		self.matchWorldMapFilters = MapUtil.MapShouldShowWorldQuestFilters(mapID);
 	end
 
-	if taskInfo then
+	if taskInfo and GetCVarBool("questPOIWQ") then
 		for i, info in ipairs(taskInfo) do
 			if self:ShouldOverrideShowQuest(mapID, info.questId) or self:ShouldShowQuest(info) and HaveQuestData(info.questId) then
 				if QuestUtils_IsQuestWorldQuest(info.questId) then
@@ -490,16 +490,16 @@ function WorldQuestPinMixin:OnMouseClickAction(button)
 
 			if IsShiftKeyDown() then
 				if watchType == Enum.QuestWatchType.Manual or (watchType == Enum.QuestWatchType.Automatic and C_SuperTrack.GetSuperTrackedQuestID() == self.questID) then
-					BonusObjectiveTracker_UntrackWorldQuest(self.questID);
+					QuestUtil.UntrackWorldQuest(self.questID);
 				else
-					BonusObjectiveTracker_TrackWorldQuest(self.questID, Enum.QuestWatchType.Manual);
+					QuestUtil.TrackWorldQuest(self.questID, Enum.QuestWatchType.Manual);
 				end
 			else
-				if watchType == Enum.QuestWatchType.Manual then
-					C_SuperTrack.SetSuperTrackedQuestID(self.questID);
-				else
-					BonusObjectiveTracker_TrackWorldQuest(self.questID, Enum.QuestWatchType.Automatic);
+				if watchType ~= Enum.QuestWatchType.Manual then
+					QuestUtil.TrackWorldQuest(self.questID, Enum.QuestWatchType.Automatic);
 				end
+
+				C_SuperTrack.SetSuperTrackedQuestID(self.questID);
 			end
 		end
 	end

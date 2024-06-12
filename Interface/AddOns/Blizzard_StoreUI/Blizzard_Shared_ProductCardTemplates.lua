@@ -1,50 +1,3 @@
---------------------------------------------------
---NOTE - Please do not change this section without understanding the full implications of the secure environment
---We usually don't want to call out of this environment from this file. Calls should usually go through Outbound
-local _, tbl = ...;
-tbl.SecureCapsuleGet = SecureCapsuleGet;
-
-local function Import(name)
-	tbl[name] = tbl.SecureCapsuleGet(name);
-end
-
-Import("IsOnGlueScreen");
-
-if ( tbl.IsOnGlueScreen() ) then
-	tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
-	Import("C_StoreGlue");
-end
-
-setfenv(1, tbl);
-
---------------------------------------------------
-
---Imports
-Import("bit");
-Import("C_StoreSecure");
-Import("C_WowTokenPublic");
-Import("math");
-Import("table");
-Import("ipairs");
-Import("pairs");
-Import("select");
-Import("unpack");
-Import("type");
-Import("string");
-Import("strtrim");
-Import("PlaySound");
-Import("SetPortraitToTexture");
-Import("GetMouseFocus");
-Import("Enum");
-Import("SecureMixin");
-Import("CreateFromSecureMixins");
-Import("IsTrialAccount");
-Import("IsVeteranTrialAccount");
-Import("BLIZZARD_STORE_BUNDLE_TOOLTIP_HEADER");
-Import("GetScreenWidth");
-Import("GetScreenHeight");
-Import("IsShiftKeyDown");
-Import("BLIZZARD_STORE_CLICK_TO_OPEN_FAQ");
 
 local BATTLEPAY_SPLASH_BANNER_TEXT_FEATURED = 0;
 local BATTLEPAY_SPLASH_BANNER_TEXT_DISCOUNT = 1;
@@ -635,10 +588,10 @@ function StoreProductCardItem_OnEnter(self)
 	local entryInfo = card:GetEntryInfo()
 	local x, y, point, rpoint = card:GetTooltipOffsets();
 
-	if entryInfo.sharedData.itemID then
+	if entryInfo.sharedData.itemID  and not tbl.IsOnGlueScreen() then
 		self.hasItemTooltip = true;
 		StoreTooltip:Hide();
-		Outbound.SetItemTooltip(entryInfo.sharedData.itemID, x, y, rpoint);
+		StoreOutbound.SetItemTooltip(entryInfo.sharedData.itemID, x, y, rpoint);
 	end
 end
 
@@ -657,7 +610,7 @@ function StoreProductCardItem_OnLeave(self)
 	end
 
 	if self.hasItemTooltip then
-		Outbound.ClearItemTooltip();
+		StoreOutbound.ClearItemTooltip();
 		self.hasItemTooltip = false;
 	end
 end

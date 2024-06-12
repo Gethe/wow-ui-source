@@ -115,7 +115,8 @@ function PVPMatchResultsMixin:Init()
 	local factionIndex = GetBattlefieldArenaFaction();
 	local victoryStatID = C_PvP.GetCustomVictoryStatID();
 	local hasCustomVictoryStatID = victoryStatID > 0;
-	if hasCustomVictoryStatID then
+	local useGenericText = hasCustomVictoryStatID and not C_PvP.IsRatedSoloShuffle();
+	if useGenericText then
 		self.header:SetText(PVP_SCOREBOARD_MATCH_COMPLETE);
 	else
 		local function GetOutcomeText(winner, factionIndex)
@@ -386,33 +387,9 @@ function PVPMatchResultsMixin:OnUpdate()
 end
 
 local scoreWidgetSetID = 249;
-local function ScoreWidgetLayout(widgetContainer, sortedWidgets)
-	local widgetsHeight = 0;
-	local maxWidgetWidth = 1;
-
-	for index, widgetFrame in ipairs(sortedWidgets) do
-		if ( index == 1 ) then
-			widgetFrame:SetPoint("TOPRIGHT", widgetContainer, "TOPRIGHT", 0, 0);
-		else
-			local relative = sortedWidgets[index - 1];
-			widgetFrame:SetPoint("TOPRIGHT", relative, "BOTTOMRIGHT", 0, 0);
-		end
-
-		widgetsHeight = widgetsHeight + widgetFrame:GetWidgetHeight();
-
-		local widgetWidth = widgetFrame:GetWidgetWidth();
-		if widgetWidth > maxWidgetWidth then
-			maxWidgetWidth = widgetWidth;
-		end
-	end
-
-	widgetContainer:SetHeight(math.max(widgetsHeight, 1));
-	widgetContainer:SetWidth(maxWidgetWidth);
-end
-
 function PVPMatchResultsMixin:OnShow()
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
-	self.Score:RegisterForWidgetSet(scoreWidgetSetID, ScoreWidgetLayout);
+	self.Score:RegisterForWidgetSet(scoreWidgetSetID);
 end
 
 function PVPMatchResultsMixin:OnHide()
@@ -423,7 +400,7 @@ end
 function PVPMatchResultsMixin:AddItemReward(item)
 	local frame = self.itemPool:Acquire();
 
-	local unusedSpecID;
+	local unusedSpecID = nil;
 	local isCurrency = item.type == "currency";
 	local isIconBorderShown = true;
 	local isIconBorderDropShadowShown = true;

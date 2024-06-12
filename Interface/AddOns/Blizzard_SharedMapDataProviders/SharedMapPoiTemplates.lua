@@ -55,6 +55,7 @@ end
 
 function BaseMapPoiPinMixin:OnAcquired(poiInfo)
 	self:SetTexture(poiInfo);
+	self:SetDataProvider(poiInfo.dataProvider);
 
 	self.poiInfo = poiInfo;
 	self.name = poiInfo.name;
@@ -64,6 +65,10 @@ function BaseMapPoiPinMixin:OnAcquired(poiInfo)
 	self.textureKit = poiInfo.uiTextureKit;
 
 	self:SetPosition(poiInfo.position:GetXY());
+end
+
+function BaseMapPoiPinMixin:GetPoiInfo()
+	return self.poiInfo;
 end
 
 function BaseMapPoiPinMixin:OnMouseEnter()
@@ -274,4 +279,104 @@ function MapPinPingDriverAnimationMixin:OnFinished()
 	else
 		ping:Clear();
 	end
+end
+
+-- NOTE: Mouse scripts are managed entirely through MapCanvasMixin:AcquirePin.
+SuperTrackablePinMixin = {};
+
+function SuperTrackablePinMixin:OnAcquired(...)
+	self:UpdateSuperTrackedState(C_SuperTrack[self:GetSuperTrackAccessorAPIName()]());
+end
+
+function SuperTrackablePinMixin:OnMouseDownAction(button)
+
+end
+
+function SuperTrackablePinMixin:OnMouseUpAction(button, upInside)
+
+end
+
+function SuperTrackablePinMixin:OnMouseClickAction(button)
+	if button == "LeftButton" then
+		C_SuperTrack[self:GetSuperTrackMutatorAPIName()](self:GetSuperTrackData());
+	end
+end
+
+function SuperTrackablePinMixin:SuperTrack_OnShow()
+	EventRegistry:RegisterCallback("Supertracking.OnChanged", self.OnSuperTrackingChanged, self);
+end
+
+function SuperTrackablePinMixin:SuperTrack_OnHide()
+	EventRegistry:UnregisterCallback("Supertracking.OnChanged", self);
+end
+
+function SuperTrackablePinMixin:OnSuperTrackingChanged(manager)
+	self:UpdateSuperTrackedState(manager[self:GetSuperTrackAccessorAPIName()](manager));
+end
+
+function SuperTrackablePinMixin:UpdateSuperTrackedState(...)
+	self:SetSuperTracked(self:DoesSuperTrackDataMatch(...));
+end
+
+function SuperTrackablePinMixin:SetSuperTracked(superTracked)
+	if self.superTracked ~= superTracked then
+		self.superTracked = superTracked;
+
+		-- Defer anchoring to side-step inheritance issues (i.e. needing to define self.Texture before the supertrack textures).
+		self:UpdateSuperTrackTextureAnchors();
+
+		self.SuperTrackGlow:SetShown(superTracked);
+		self.SuperTrackMarker:SetShown(superTracked);
+	end
+end
+
+function SuperTrackablePinMixin:IsSuperTracked()
+	return self.superTracked;
+end
+
+function SuperTrackablePinMixin:UpdateSuperTrackTextureAnchors()
+	-- override
+	if self:IsSuperTracked() and not self.isAnchored then
+		self.isAnchored = true;
+		self.SuperTrackGlow:ClearAllPoints();
+		self.SuperTrackGlow:SetPoint("TOPLEFT", self.Texture, "TOPLEFT", -18, 18);
+		self.SuperTrackGlow:SetPoint("BOTTOMRIGHT", self.Texture, "BOTTOMRIGHT", 18, -18);
+
+		self.SuperTrackMarker:ClearAllPoints();
+		self.SuperTrackMarker:SetPoint("CENTER", self.Texture, "BOTTOMRIGHT", -5, 5);
+	end
+end
+
+function SuperTrackablePinMixin:GetSuperTrackData()
+	return nil; -- override
+end
+
+function SuperTrackablePinMixin:GetSuperTrackAccessorAPIName()
+	return "GetSuperTrackedMapPin"; -- override
+end
+
+function SuperTrackablePinMixin:GetSuperTrackMutatorAPIName()
+	return "SetSuperTrackedMapPin"; -- override
+end
+
+function SuperTrackablePinMixin:DoesSuperTrackDataMatch(...)
+	-- override
+	local pinType, pinTypeID = select(1, ...);
+	local myPinType, myPinTypeID = self:GetSuperTrackData();
+	if myPinType and myPinTypeID then
+		return pinType == myPinType and pinTypeID == myPinTypeID;
+	end
+
+	return false;
+end
+
+SuperTrackablePoiPinMixin = CreateFromMixins(SuperTrackablePinMixin);
+
+function SuperTrackablePoiPinMixin:OnAcquired(...)
+	BaseMapPoiPinMixin.OnAcquired(self, ...);
+	SuperTrackablePinMixin.OnAcquired(self, ...);
+end
+
+function SuperTrackablePoiPinMixin:GetSuperTrackData()
+	return Enum.SuperTrackingMapPinType.AreaPOI, self.poiInfo.areaPoiID;
 end

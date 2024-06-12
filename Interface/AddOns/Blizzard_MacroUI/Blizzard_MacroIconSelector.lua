@@ -10,7 +10,9 @@ function MacroPopupFrameMixin:OnShow()
 
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	self.iconDataProvider = self:GetMacroFrame():RefreshIconDataProvider();
-	self.BorderBox.IconTypeDropDown:SetSelectedValue(IconSelectorPopupFrameIconFilterTypes.All);
+
+	self:SetIconFilter(IconSelectorPopupFrameIconFilterTypes.All);
+
 	self:Update();
 	self.BorderBox.IconSelectorEditBox:OnTextChanged();
 

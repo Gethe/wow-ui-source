@@ -666,6 +666,20 @@ local QuestLog =
 			},
 		},
 		{
+			Name = "IsMetaQuest",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isMeta", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsOnMap",
 			Type = "Function",
 
@@ -780,6 +794,34 @@ local QuestLog =
 			},
 		},
 		{
+			Name = "IsQuestFlaggedCompletedOnAccount",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isCompletedOnAccount", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsQuestFromContentPush",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isFromContentPush", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsQuestInvasion",
 			Type = "Function",
 
@@ -791,6 +833,20 @@ local QuestLog =
 			Returns =
 			{
 				{ Name = "isInvasion", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsQuestRepeatableType",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isRepeatableType", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -951,6 +1007,20 @@ local QuestLog =
 			},
 		},
 		{
+			Name = "QuestIgnoresAccountCompletedFiltering",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "questIgnoresAccountCompletedFiltering", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ReadyForTurnIn",
 			Type = "Function",
 
@@ -1068,6 +1138,10 @@ local QuestLog =
 			{
 				{ Name = "isRelatedToActiveQuest", Type = "bool", Nilable = false },
 			},
+		},
+		{
+			Name = "UpdateCampaignHeaders",
+			Type = "Function",
 		},
 	},
 
@@ -1319,6 +1393,8 @@ local QuestLog =
 				{ Name = "readyForTranslation", Type = "bool", Nilable = false, Default = true },
 				{ Name = "isLegendarySort", Type = "bool", Nilable = false },
 				{ Name = "isInternalOnly", Type = "bool", Nilable = false },
+				{ Name = "isAbandonOnDisable", Type = "bool", Nilable = false },
+				{ Name = "headerSortKey", Type = "number", Nilable = true },
 			},
 		},
 		{

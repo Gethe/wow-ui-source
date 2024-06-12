@@ -1,0 +1,474 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Texture name="ActionBarFlyoutButton-IconFrame" file="Interface\Buttons\ActionBarFlyoutButton" virtual="true" >
+		<Size x="42" y="42"/>	
+		<TexCoords left="0.01562500" right="0.67187500" top="0.39843750" bottom="0.72656250"/>	
+	</Texture>
+
+	<Frame name="ActionBarButtonSpellActivationAlert" virtual="true" mixin="ActionBarButtonSpellActivationAlertMixin">
+			<Layers>
+				<Layer level="ARTWORK">
+					<Texture parentKey="ProcStartFlipbook" atlas="UI-HUD-ActionBar-Proc-Start-Flipbook" alpha="1">
+						<Size x="150" y="150"/>
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+					</Texture>
+					<Texture parentKey="ProcLoopFlipbook" atlas="UI-HUD-ActionBar-Proc-Loop-Flipbook" setAllPoints="true" alpha="0"/>
+				</Layer>
+			</Layers>
+			<Animations>
+				<AnimationGroup parentKey="ProcLoop" looping="REPEAT">
+					<Alpha childKey="ProcLoopFlipbook" duration=".001" order="0" fromAlpha="1" toAlpha="1"/>
+					<FlipBook parentKey="FlipAnim" childKey="ProcLoopFlipbook" duration="1" order="0" flipBookRows="6" flipBookColumns="5" flipBookFrames="30" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+				</AnimationGroup>
+					
+				<AnimationGroup parentKey="ProcStartAnim" setToFinalAlpha="true" mixin="ActionBarButtonSpellActivationAlertProcStartAnimMixin">
+					<Alpha childKey="ProcStartFlipbook" duration=".001" order="0" fromAlpha="1" toAlpha="1"/>
+					<FlipBook childKey="ProcStartFlipbook" duration="0.7" order="1" flipBookRows="6" flipBookColumns="5" flipBookFrames="30" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+					<Alpha childKey="ProcStartFlipbook" duration=".001" order="2" fromAlpha="1" toAlpha="0"/>
+					<Scripts>
+						<OnFinished method="OnFinished"/>
+					</Scripts>
+				</AnimationGroup>
+			</Animations>
+		<Scripts>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="ActionBarButtonEventsFrame" mixin="ActionBarButtonEventsDerivedFrameMixin">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="ActionBarActionEventsFrame" mixin="ActionBarActionEventsFrameMixin">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="ActionBarButtonUpdateFrame" mixin="ActionBarButtonUpdateFrameMixin">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="ActionBarButtonRangeCheckFrame" mixin="ActionBarButtonRangeCheckFrameMixin">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="ActionBarButtonUsableWatcherFrame" mixin="ActionBarButtonUsableWatcherFrameMixin">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="ActionButtonProfessionOverlayTemplate" mixin="ActionBarActionEventsFrameMixin" virtual="true">
+		<Size x="1" y="1"/>
+		<Layers>
+			<Layer>
+				<Texture parentKey="Texture">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Frame name="ActionButtonCastingAnimFrameTemplate" mixin="ActionButtonCastingAnimFrameMixin" virtual="true">
+		<Size x="128" y="128"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Frames>
+			<Frame parentKey="Fill" useParentLevel="true">
+				<Size x="128" y="128"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="InnerGlowTexture" atlas="UI-HUD-ActionBar-Casting-InnerGlow" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="CastFill" alphaMode="ADD" atlas="UI-HUD-ActionBar-Cast-Fill" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="-45" y="0"/>
+							</Anchors>
+						</Texture>
+						<MaskTexture parentKey="FillMask" atlas="UI-HUD-ActionBar-IconFrame-Mask" useAtlasSize="true" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="CastFill"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="CastingAnim" mixin="ActionButtonCastingAnimationFillMixin">
+						<Translation parentKey="CastFillTranslation" childKey="CastFill" duration="3" order="0" endDelay="0.5" offsetX="43" offsetY="0"/>
+						<Alpha childKey="CastFill" duration="0.25" order="2" smoothing="OUT" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="InnerGlowTexture" duration="0.25" order="2" smoothing="OUT" fromAlpha="1" toAlpha="0"/>
+						<Scripts>
+							<OnFinished method="OnFinished"/>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="EndBurst" useParentLevel="true" hidden="true">
+				<Size x="128" y="128"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="GlowRing" alphaMode="ADD" atlas="UI-HUD-ActionBar-Casting-Complete-Glow" useAtlasSize="true" scale="0.25">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<MaskTexture parentKey="EndMask" atlas="UI-HUD-ActionBar-CastingChannel-Complete-Mask" useAtlasSize="true" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="GlowRing"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="FinishCastAnim" mixin="ActionButtonCastingFinishAnimMixin">
+						<Scale childKey="GlowRing" duration="0.5" order="0" smoothing="OUT" fromScaleX="0" fromScaleY="0" toScaleX="5" toScaleY="5"/>
+						<Scripts>
+							<OnFinished method="OnFinished"/>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+	<Frame name="ActionButtonTargetReticleFrameTemplate" mixin="ActionButtonTargetReticleFrameMixin" virtual="true">
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Size x="128" y="128"/>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="Base" atlas="UI-HUD-ActionBar-Target" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="3">
+				<Texture parentKey="Highlight" alpha="0.8" alphaMode="ADD" useAtlasSize="true" snapToPixelGrid="false" texelSnappingBias="0.0" atlas="UI-HUD-ActionBar-Target-Highlight">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="Mask" atlas="UI-HUD-ActionBar-Target-Mask" useAtlasSize="true" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Highlight"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="HighlightAnim" looping="REPEAT">
+				<Rotation childKey="Highlight" duration="5" order="1" degrees="360">
+					<Origin point="CENTER"/>
+				</Rotation>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+	<Frame name="ActionButtonInterruptTemplate" mixin="ActionButtonInterruptFrameMixin" virtual="true">
+		<Frames>
+			<Frame parentKey="Highlight" useParentLevel="true">
+				<Size x="128" y="128"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="HighlightTexture" alpha="1" alphaMode="ADD" atlas="UI-HUD-ActionBar-Interrupt-Highlight" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="50"/>
+							</Anchors>
+						</Texture>
+						<MaskTexture parentKey="Mask" useAtlasSize="true" atlas="UI-HUD-ActionBar-Interrupt-Mask" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+							<Anchors>
+								<Anchor point="CENTER" x="2" y="-1"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="HighlightTexture"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="AnimIn">
+						<Translation childKey="HighlightTexture" duration="0.5" order="1" offsetX="0" offsetY="-150"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="Base" useParentLevel="true">
+				<Size x="128" y="128"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Base" atlas="UI-HUD-ActionBar-Interrupt" alpha="1" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="AnimIn" mixin="ActionButtonInterruptAnimInMixin">
+						<Alpha childKey="Base" duration="0.25" order="1" startDelay="1" smoothing="OUT" fromAlpha="1" toAlpha="0"/>
+						<Scripts>
+							<OnFinished method="OnFinished"/>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+	<Frame name="ActionButtonCooldownFlashTemplate" mixin="ActionButtonCooldownFlashMixin" virtual="true">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="0" y="1"/>
+			<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT" x="0" y="1"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Flipbook" atlas="UI-HUD-ActionBar-GCD-Flipbook"/>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="FlashAnim" mixin="ActionButtonCooldownFlashAnimMixin">
+				<FlipBook childKey="Flipbook" duration="0.75" order="1" flipBookRows="11" flipBookColumns="2" flipBookFrames="22" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+	<CheckButton name="ActionButtonSpellFXTemplate" virtual="true">
+		<Frames>
+			<Frame parentKey="InterruptDisplay" useParentLevel="true" inherits="ActionButtonInterruptTemplate" setAllPoints="true" hidden="true"/>
+			<Frame parentKey="SpellCastAnimFrame" useParentLevel="true" inherits="ActionButtonCastingAnimFrameTemplate" hidden="true"/>
+			<Frame parentKey="TargetReticleAnimFrame" useParentLevel="true" inherits="ActionButtonTargetReticleFrameTemplate" hidden="true"/>
+			<Frame parentKey="CooldownFlash" inherits="ActionButtonCooldownFlashTemplate" hidden="true"/>
+		</Frames>
+	</CheckButton>
+	<CheckButton name="ActionButtonTemplate" inherits="ActionButtonSpellFXTemplate" mixin="BaseActionButtonMixin" virtual="true">
+		<Size x="45" y="45"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentIcon" parentKey="icon" />
+				<MaskTexture parentKey="IconMask" atlas="UI-HUD-ActionBar-IconFrame-Mask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.icon"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+				<Texture parentKey="SlotBackground" atlas="UI-HUD-ActionBar-IconFrame-Background" setAllPoints="true"/>
+				<Texture parentKey="SlotArt" atlas="ui-hud-actionbar-iconframe-slot" setAllPoints="true"/>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture name="$parentFlash" parentKey="Flash" atlas="UI-HUD-ActionBar-IconFrame-Flash" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentFlyoutBorderShadow" parentKey="FlyoutBorderShadow" atlas="UI-HUD-ActionBar-IconFrame-FlyoutBorderShadow" hidden="true">
+					<Size x="52" y="52"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.icon" x="0.2" y="0.5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="$parentName" parentKey="Name" inherits="GameFontHighlightSmallOutline">
+					<Size x="36" y="10"/>
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="2"/>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentBorder" parentKey="Border" atlas="UI-HUD-ActionBar-IconFrame-Border" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="NewActionTexture" atlas="UI-HUD-ActionBar-IconFrame-Mouseover" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SpellHighlightTexture" atlas="UI-HUD-ActionBar-IconFrame-Mouseover" alphaMode="ADD" alpha="0.4" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LevelLinkLockIcon" atlas="QuestSharing-Padlock" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+
+		<Animations>
+			<AnimationGroup parentKey="SpellHighlightAnim" looping="REPEAT">
+				<Alpha childKey="SpellHighlightTexture" smoothing="OUT" duration=".35" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="SpellHighlightTexture" smoothing="IN" duration=".35" order="2" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
+
+		<Frames>
+			<Frame parentKey="TextOverlayContainer" mixin="ActionButtonTextOverlayContainerMixin" frameLevel="500" setAllPoints="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parentHotKey" inherits="NumberFontNormalSmallGray" parentKey="HotKey" justifyH="RIGHT">
+							<Size x="32" y="10"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="-5" y="-5"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentCount" inherits="NumberFontNormal" parentKey="Count" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="-5" y="5"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="FlyoutArrowContainer" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK" textureSubLevel="2">
+						<Texture parentKey="FlyoutArrowNormal" atlas="UI-HUD-ActionBar-Flyout" hidden="true">
+							<Size x="18" y="7"/>
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FlyoutArrowPushed" atlas="UI-HUD-ActionBar-Flyout-Down" hidden="true">
+							<Size x="19" y="8"/>
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FlyoutArrowHighlight" atlas="UI-HUD-ActionBar-Flyout-Mouseover" hidden="true">
+							<Size x="18" y="7"/>
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame parentKey="AutoCastOverlay" inherits="AutoCastOverlayTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="0"/>
+				</Anchors>
+				<Size x="45" y="45"/>
+			</Frame>
+
+			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" drawBling="false" useParentLevel="true" parentKey="cooldown">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.icon" x="3" y="-3"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon" x="-3" y="3"/>
+				</Anchors>				
+				<SwipeTexture>
+					<Color r="1" g="1" b="1" a="0.8"/>
+				</SwipeTexture>
+			</Cooldown>
+		</Frames>
+
+		<Scripts>
+			<OnLoad method="BaseActionButtonMixin_OnLoad" inherit="append"/>
+		</Scripts>
+
+		<NormalTexture name="$parentNormalTexture" parentKey="NormalTexture" atlas="UI-HUD-ActionBar-IconFrame">
+			<Size x="46" y="45"/>
+			<Anchors>
+				<Anchor point="TOPLEFT"/>
+			</Anchors>
+		</NormalTexture>
+		<PushedTexture atlas="UI-HUD-ActionBar-IconFrame-Down" parentKey="PushedTexture">
+			<Size x="46" y="45"/>
+			<Anchors>
+				<Anchor point="TOPLEFT"/>
+			</Anchors>
+		</PushedTexture>
+		<HighlightTexture atlas="UI-HUD-ActionBar-IconFrame-Mouseover" parentKey="HighlightTexture">
+			<Size x="46" y="45"/>
+			<Anchors>
+				<Anchor point="TOPLEFT"/>
+			</Anchors>
+		</HighlightTexture>
+		<CheckedTexture atlas="UI-HUD-ActionBar-IconFrame-Mouseover" parentKey="CheckedTexture">
+			<Size x="46" y="45"/>
+			<Anchors>
+				<Anchor point="TOPLEFT"/>
+			</Anchors>
+		</CheckedTexture>
+	</CheckButton>
+
+	<CheckButton name="ActionBarButtonCodeTemplate" inherits="SecureActionButtonTemplate, QuickKeybindButtonTemplate, ActionButtonSpellFXTemplate" virtual="true" mixin="ActionBarActionButtonDerivedMixin">
+		<Scripts>
+			<OnLoad method="OnLoad" inherit="append"/>
+			<OnAttributeChanged method="OnAttributeChanged"/>
+			<OnEvent method="OnEvent"/>
+			<OnClick method="OnClick" inherit="prepend"/>
+			<PostClick method="UpdateState"/>
+			<OnDragStart method="OnDragStart"/>
+			<OnReceiveDrag method="OnReceiveDrag"/>
+			<OnDragStop method="OnDragStop"/>
+			<OnEnter method="OnEnter" inherit="append"/>
+			<OnLeave method="OnLeave" inherit="append"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</CheckButton>
+
+	<CheckButton name="ActionBarButtonTemplate" inherits="ActionButtonTemplate, ActionBarButtonCodeTemplate" virtual="true"/>
+
+	<CheckButton name="SmallActionButtonTemplate" inherits="ActionButtonTemplate" mixin="SmallActionButtonMixin" virtual="true">
+		<Size x="30" y="30"/>
+		<Scripts>
+			<OnLoad method="SmallActionButtonMixin_OnLoad" inherit="prepend"/>
+		</Scripts>
+	</CheckButton>
+</Ui>

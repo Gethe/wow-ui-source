@@ -21,7 +21,7 @@ function AzeriteEmpoweredItemPowerMixin:Setup(owningTierFrame, azeriteItemDataSo
 		self.IconOff:SetAtlas("Azerite-CenterTrait-Off", true);
 		self.IconDesaturated:SetAtlas("Azerite-CenterTrait-On", true);
 	else
-		local spellTexture = GetSpellTexture(self:GetSpellID());
+		local spellTexture = C_Spell.GetSpellTexture(self:GetSpellID());
 		self.IconOn:SetTexture(spellTexture);
 		self.IconOff:SetTexture(spellTexture);
 		self.IconDesaturated:SetTexture(spellTexture);
@@ -552,7 +552,7 @@ end
 
 function AzeriteEmpoweredItemPowerMixin:OnClick()
 	if IsModifiedClick("CHATLINK") then
-		local spellLink = GetSpellLink(self:GetSpellID());
+		local spellLink = C_Spell.GetSpellLink(self:GetSpellID());
 		ChatEdit_InsertLink(spellLink);
 		return;
 	end
@@ -648,7 +648,7 @@ function AzeriteEmpoweredItemPowerMixin:OnSwirlAnimationFinished()
 	self.SwirlContainer:Hide();
 	self:PlayTransitionAnimation();
 
-	if GetMouseFocus() == self then
+	if self:IsMouseMotionFocus() then
 		self:OnEnter();
 	end
 end

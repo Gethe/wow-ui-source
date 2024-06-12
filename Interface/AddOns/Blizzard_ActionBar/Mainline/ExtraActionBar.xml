@@ -1,0 +1,113 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<CheckButton name="ExtraActionButtonTemplate" inherits="ActionBarButtonCodeTemplate" mixin="ExtraActionButtonMixin" virtual="true">
+		<Size x="52" y="52"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentIcon" parentKey="icon"/>
+				<MaskTexture parentKey="IconMask" atlas="UI-HUD-ActionBar-IconFrame-Mask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Size x="76" y="76"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.icon" x="0.5" y="-1.5"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<FontString name="$parentHotKey" parentKey="HotKey" inherits="NumberFontNormalGray" justifyH="RIGHT">
+					<Size x="0" y="0"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-6" y="-6"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentCount" parentKey="Count" inherits="NumberFontNormal" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="-6" y="6"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentFlash" parentKey="Flash" atlas="UI-HUD-ActionBar-IconFrame-Flash" hidden="true">
+					<Size x="52" y="52"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" x="1.8" y="-1"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\UnitPowerBarAlt\SpellPush-Frame" parentKey="style">
+					<Size x="256" y="128"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" useParentLevel="true" parentKey="cooldown">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="2" y="-2"/>
+					<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+				</Anchors>
+			</Cooldown>
+		</Frames>
+		<PushedTexture parentKey="PushedTexture" atlas="UI-HUD-ActionBar-IconFrame-Mouseover" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="TOPLEFT" x="0" y="-1"/>
+				<Anchor point="BOTTOMRIGHT" x="1.8" y="-1"/>
+			</Anchors>
+		</PushedTexture>
+		<HighlightTexture parentKey="HighlightTexture" atlas="UI-HUD-ActionBar-IconFrame-Mouseover" alphaMode="ADD" alpha="0.7">
+			<Anchors>
+				<Anchor point="TOPLEFT" x="0" y="-1"/>
+				<Anchor point="BOTTOMRIGHT" x="1.8" y="-1"/>
+			</Anchors>
+		</HighlightTexture>
+		<KeyValues>
+			<KeyValue key="isExtra" value="true" type="boolean"/>
+			<KeyValue key="buttonType" value="EXTRAACTIONBUTTON" type="string"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="ExtraActionButton_OnLoad" inherit="prepend"/>
+		</Scripts>
+	</CheckButton>
+
+
+	<Frame name="ExtraActionBarFrame" frameStrata="LOW" enableMouse="true" hidden="true">
+		<Size x="256" y="128"/>
+		<Animations>
+			<AnimationGroup parentKey="intro">
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.3" order="1"/>
+				<Scripts>
+					<OnFinished>
+						self:GetParent():SetAlpha(1.0);
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="outro">
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.3" order="1"/>
+				<Scripts>
+					<OnFinished>
+						self:GetParent():SetAlpha(0.0);
+						self:GetParent():Hide();
+						ExtraAbilityContainer:RemoveFrame(self:GetParent());
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Frames>
+			<CheckButton name="ExtraActionButton1" inherits="ExtraActionButtonTemplate" id="1" parentKey="button">
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="0"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="commandName" value="EXTRAACTIONBUTTON1" type="string"/>
+				</KeyValues>
+			</CheckButton>
+		</Frames>
+		<Scripts>
+			<OnLoad function="ExtraActionBar_OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>

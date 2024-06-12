@@ -39,8 +39,7 @@ end
 function TutorialHelper:FormatString(str)
 	-- Spell Names and Icons e.g. {$1234}
 	str = string.gsub(str, "{%$(%d+)}", function(spellID)
-			local name, _, icon = GetSpellInfo(spellID);
-			--return string.format("|cFF00FFFF%s|r |T%s:16|t", name, icon);
+			local name = C_Spell.GetSpellName(spellID);
 			return string.format("|cFF00FFFF%s|r", name);
 		end);
 
@@ -170,7 +169,7 @@ function TutorialHelper:FindEmptyButton(optionalPreferredActionBar)
 		end
 	end
 
-	for i, actionBar in pairs(actionBars) do
+	for _, actionBar in pairs(actionBars) do
 		for i = 1, 12 do
 			local btn = _G[actionBar .. i];
 			if btn then

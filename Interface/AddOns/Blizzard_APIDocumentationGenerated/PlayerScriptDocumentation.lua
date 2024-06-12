@@ -129,7 +129,15 @@ local PlayerScript =
 			},
 		},
 		{
+			Name = "ClearPendingBindConversionItem",
+			Type = "Function",
+		},
+		{
 			Name = "ConfirmTalentWipe",
+			Type = "Function",
+		},
+		{
+			Name = "ConvertItemToBindToAccount",
 			Type = "Function",
 		},
 		{
@@ -1232,6 +1240,15 @@ local PlayerScript =
 			},
 		},
 		{
+			Name = "PlayerGetTimerunningSeasonID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "timerunningSeasonID", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "PortGraveyard",
 			Type = "Function",
 		},
@@ -1420,7 +1437,7 @@ local PlayerScript =
 
 			Arguments =
 			{
-				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false, Default = "0" },
 				{ Name = "exactMatch", Type = "bool", Nilable = false, Default = false },
 			},
 		},

@@ -199,8 +199,7 @@ function ItemInteractionMixin:OnEvent(event, ...)
 			local buttonName = ...;
 			local isRightButton = buttonName == "RightButton";
 
-			local mouseFocus = GetMouseFocus();
-			local flyoutSelected = not isRightButton and DoesAncestryInclude(EquipmentFlyout_GetFrame(), mouseFocus);
+			local flyoutSelected = not isRightButton and DoesAncestryIncludeAny(EquipmentFlyout_GetFrame(), GetMouseFoci());
 			if not flyoutSelected then
 				EquipmentFlyout_Hide();
 			end
@@ -774,7 +773,7 @@ function ItemInteractionItemSlotMixin:RefreshIcon()
 end
 
 function ItemInteractionItemSlotMixin:RefreshTooltip()
-	if (GetMouseFocus() == self) then
+	if (self:IsMouseMotionFocus()) then
 		self:OnEnter();
 	else
 		self:OnLeave();
@@ -947,7 +946,7 @@ function ItemInteractionItemConversionInputSlotMixin:RefreshIcon()
 end
 
 function ItemInteractionItemConversionInputSlotMixin:RefreshTooltip()
-	if (GetMouseFocus() == self) then
+	if (self:IsMouseMotionFocus()) then
 		self:OnEnter();
 	else
 		self:OnLeave();

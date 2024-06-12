@@ -43,7 +43,7 @@ function CommentatorMixin:OnLoad()
 	
 	local resetterCb = function(pool, frame)
 		frame:Reset();
-		FramePool_HideAndClearAnchors(pool, frame);
+		Pool_HideAndClearAnchors(pool, frame);
 	end;
 
 	self.unitFramePool = CreateFramePool("BUTTON", self, "CommentatorUnitFrameTemplate", resetterCb);
@@ -335,7 +335,6 @@ function CommentatorMixin:InitUnitFrames()
 			local unitFrames = self.unitFrames[teamIndex];
 			for playerIndex = 1, playerCount do
 				local unitFrame = self.unitFramePool:Acquire();
-				lastFrameTest = unitFrame;
 				local playerData = C_Commentator.GetPlayerData(teamIndex, playerIndex);
 				unitFrame:Init(isAlignedLeft, playerData, teamIndex);
 				unitFrame.tempRole = unitFrame:GetRole();

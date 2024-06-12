@@ -484,7 +484,7 @@ function ArtifactPowerButtonMixin:SetLocked(locked)
 		
 		self.FirstPointWaitingAnimation:Stop();
 	else
-		if GetMouseFocus() == self then
+		if self:IsMouseMotionFocus() then
 			self:OnEnter();
 		end
 
@@ -500,7 +500,7 @@ function ArtifactPowerButtonMixin:UpdateIcon()
 		self.Icon:SetAtlas(finalAtlas, true);
 		self.IconDesaturated:SetAtlas(finalAtlas, true);
 	else
-		local name, _, texture = GetSpellInfo(self.spellID);
+		local texture = C_Spell.GetSpellTexture(self.spellID);
 		self.Icon:SetTexture(texture);
 		self.IconDesaturated:SetTexture(texture);
 	end

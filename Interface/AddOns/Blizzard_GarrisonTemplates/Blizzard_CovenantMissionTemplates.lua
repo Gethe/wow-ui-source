@@ -317,6 +317,7 @@ function CovenantMissionListMixin:Update()
 	-- If data provider exists with same number of missions, check if all existing mission ids match the current mission id list
 	if dataProvider and #self.combinedMissions == dataProvider:GetSize()  then
 		missionDataMatches = TableUtil.CompareValuesAsKeys(self.combinedMissions, dataProvider:GetCollection(), function(mission)
+			assertsafe(mission.missionID, "A valid missionID is required to generate a key.");
 			return mission.missionID;
 		end);
 	end

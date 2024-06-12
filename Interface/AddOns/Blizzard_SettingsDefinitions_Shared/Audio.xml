@@ -1,0 +1,90 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Script file="Audio.lua"/>
+
+	<Frame name="VoiceTestMicrophoneTemplate" inherits="SettingsListElementTemplate" mixin="VoiceTestMicrophoneMixin" virtual="true">
+		<Size x="280" y="26"/>
+		<Frames>
+			<Button parentKey="ToggleTest" inherits="UIPanelButtonTemplate">
+				<Size x="26" y="21"/>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="CENTER" x="-82"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Texture" file="Interface\OptionsFrame\VoiceChat-Play">
+							<Size x="10" y="10"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Button>
+			<Frame parentKey="VUMeter" inherits="TooltipBorderBackdropTemplate">
+				<Size x="100" y="25"/>
+				<KeyValues>
+					<KeyValue key="backdropBorderColor" value="DARKGRAY_COLOR" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.ToggleTest" relativePoint="RIGHT" x="3" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentTitle" inherits="GameFontHighlightSmall">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="5"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<StatusBar parentKey="Status" inherits="TextStatusBar">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="6" y="-6"/>
+							<Anchor point="BOTTOMRIGHT" x="-6" y="6"/>
+						</Anchors>
+						<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+					</StatusBar>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="VoicePushToTalkTemplate" inherits="SettingsListElementTemplate" mixin="VoicePushToTalkMixin" virtual="true">
+		<Size x="280" y="26"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="MacMicrophoneAccessWarningTemplate" mixin="MacMicrophoneAccessWarningMixin" virtual="true">
+		<Size y="80"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString parentKey="Label" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+					<Color color="RED_FONT_COLOR"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="OpenAccessButton" inherits="UIPanelButtonTemplate" text="MAC_MIC_PERMISSIONS_OPEN_BUTTON">
+				<Size x="200" y="22"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Label" relativePoint="BOTTOM" x="0" y="-20"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>

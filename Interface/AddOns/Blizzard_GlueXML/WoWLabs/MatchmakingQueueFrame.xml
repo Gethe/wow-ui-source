@@ -1,0 +1,178 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Script file="MatchmakingQueueFrame.lua"/>
+
+	<Button name="GameModeSelectionButtonTemplate" mixin="GameModeSelectionButtonMixin" inherits="SelectableButtonTemplate" motionScriptsWhileDisabled="true" enableMouse="true" virtual="true">
+		<Size x="76" y="76"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon" />
+				<FontString parentKey="ButtonName" inherits="GlueFontNormalLarge" justifyH="CENTER" text="FRONT_END_LOBBY_SOLO">
+					<Color color="NORMAL_FONT_COLOR" />
+					<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.Icon" relativePoint="BOTTOM" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="GameModeSettingsFrameTemplate" frameStrata="HIGH" mixin="GameModeSettingsFrameMixin" inherits="CallbackRegistrantTemplate" virtual="true" >
+		<Size x="270" y="155"/>
+		<Frames>
+			<Frame parentKey="QueueContainer" inherits="GridLayoutFrame">
+				<KeyValues>
+					<KeyValue key="childXPadding" value="0" type="number"/>
+					<KeyValue key="childYPadding" value="0" type="number"/>
+					<KeyValue key="isHorizontal" value="true" type="boolean"/>
+					<KeyValue key="stride" value="5" type="number"/>
+					<KeyValue key="layoutFramesGoingRight" value="true" type="boolean"/>
+				</KeyValues>	
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="TOP"/>
+				</Anchors>
+				<Frames>
+					<Button parentKey="Solo" inherits="GameModeSelectionButtonTemplate" enableMouse="true">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="1" type="number"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="45" y="0"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="gameModeSelection" value="solo" type="string"/>
+							<KeyValue key="gameModeString" value="FRONT_END_LOBBY_SOLOS" type="global"/>
+							<KeyValue key="gameModeIcon" value="plunderstorm-glues-queueselector-solo" type="string"/>
+							<KeyValue key="gameModeIconSelected" value="plunderstorm-glues-queueselector-solo-selected" type="string"/>
+						</KeyValues>
+					</Button>
+					<Button parentKey="Duo" inherits="GameModeSelectionButtonTemplate" enableMouse="true">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="2" type="number"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOP" x="45" y="0"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="gameModeSelection" value="duo" type="string"/>
+							<KeyValue key="gameModeString" value="FRONT_END_LOBBY_DUOS" type="global"/>
+							<KeyValue key="gameModeIcon" value="plunderstorm-glues-queueselector-duo" type="string"/>
+							<KeyValue key="gameModeIconSelected" value="plunderstorm-glues-queueselector-duo-selected" type="string"/>
+						</KeyValues>
+					</Button>
+					<Button parentKey="Trio" inherits="GameModeSelectionButtonTemplate" enableMouse="true">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="3" type="number"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="45" y="0"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="gameModeSelection" value="trio" type="string"/>
+							<KeyValue key="gameModeString" value="FRONT_END_LOBBY_TRIOS" type="global"/>
+							<KeyValue key="gameModeIcon" value="plunderstorm-glues-queueselector-trio" type="string"/>
+							<KeyValue key="gameModeIconSelected" value="plunderstorm-glues-queueselector-trio-selected" type="string"/>
+						</KeyValues>
+					</Button>
+				</Frames>
+			</Frame>			
+			<Button parentKey="GameReadyButton" mixin="PlunderstormReadyButtonMixin" inherits="GlueButtonTemplate" text="WOWLABS_JOIN_GAME">
+				<Size x="255" y="50"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="0"/>
+				</Anchors>
+				<NormalFont style="GlueFontNormalHuge"/>
+				<HighlightFont style="GlueFontHighlightHuge"/>
+				<DisabledFont style="GlueFontDisableHuge"/>
+				<Scripts>
+					<OnClick method="OnClick"/>
+					<OnShow method="OnShow"/>
+					<OnHide method="OnHide"/>
+					<OnEvent method="OnEvent"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+    <Frame name="QueueSpinnerTemplate" mixin="SpinnerMixin" virtual="true" >
+        <Size x="86" y="86"/>
+        <Layers>
+            <Layer level="ARTWORK">
+                <Texture parentKey="Ring" atlas="plunderstorm-glues-queue-pending-spinner-back" setAllPoints="true"/>
+                <Texture parentKey="QueueSizeIcon" atlas="plunderstorm-glues-queue-pending-spinner-front-solo" setAllPoints="true"/>
+            </Layer>
+        </Layers>
+        <Animations>
+            <AnimationGroup parentKey="Anim" looping="REPEAT" setToFinalAlpha="true">
+                <Rotation childKey="Ring" duration="2" order="1" degrees="-360">
+                    <Origin point="CENTER"/>
+                </Rotation>
+            </AnimationGroup>
+        </Animations>
+        <Scripts>
+            <OnShow method="OnShow"/>
+            <OnHide method="OnHide"/>
+        </Scripts>
+    </Frame>	
+	
+	<Frame name="MatchmakingQueueFrameTemplate" virtual="true" hidden="true" frameStrata="DIALOG" mixin="MatchmakingQueueFrameMixin" >
+		<Size x="270" y="155"/>
+		<Frames>
+			<Button parentKey="LeaveQueueButton" mixin="LeaveQueueButtonMixin" inherits="GlueButtonTemplate" text="CANCEL" frameStrata="DIALOG">
+				<Size x="255" y="50"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="0"/>
+				</Anchors>
+				<NormalFont style="GlueFontNormalHuge"/>
+				<HighlightFont style="GlueFontHighlightHuge"/>
+				<DisabledFont style="GlueFontDisableHuge"/>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>			
+			<Frame parentKey="QueueTimerSpinner" inherits="QueueSpinnerTemplate" hidden="false">
+				<Size x="86" y="86"/>
+				<Anchors>
+					<Anchor point="TOP" x="0" y="40"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Background" atlas="plunderstorm-glues-queue-pending-background" >
+					<Size x="240" y="110"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.QueueTimerSpinner"  relativePoint="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="QueueSquadSize" inherits="GlueFontNormalHuge" justifyH="CENTER" text="">
+					<Color color="WHITE_FONT_COLOR" />
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.QueueTimerSpinner"  relativePoint="BOTTOM" x="0" y="10"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="TimerTimeText" inherits="GlueFontNormalHuge" justifyH="CENTER" text="">
+					<Color color="NORMAL_FONT_COLOR" />
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.QueueSquadSize"  relativePoint="BOTTOM" x="0" y="-5"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>		
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+</Ui>

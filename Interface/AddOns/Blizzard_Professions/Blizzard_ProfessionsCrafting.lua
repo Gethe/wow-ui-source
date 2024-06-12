@@ -1,4 +1,5 @@
 
+
 local helpTipSystem = "Professions Crafting Helptips";
 
 ProfessionsGearSlotTemplateMixin = CreateFromMixins(PaperDollItemSlotButtonMixin);
@@ -28,18 +29,11 @@ function ProfessionsCraftingPageMixin:OnLoad()
 	PaperDollItemSlotButton_SetAutoEquipSlotIDs(self.Prof0ToolSlot, self.Prof0Gear0Slot, self.Prof0Gear1Slot);
 	PaperDollItemSlotButton_SetAutoEquipSlotIDs(self.Prof1ToolSlot, self.Prof1Gear0Slot, self.Prof1Gear1Slot);
 	PaperDollItemSlotButton_SetAutoEquipSlotIDs(self.CookingToolSlot, self.CookingGear0Slot);
-	PaperDollItemSlotButton_SetAutoEquipSlotIDs(self.FishingToolSlot);
+	PaperDollItemSlotButton_SetAutoEquipSlotIDs(self.FishingToolSlot--[[, self.FishingGear0Slot, self.FishingGear1Slot]]);
 
-	self.RecipeList.FilterButton:SetResetFunction(Professions.SetDefaultFilters);
-	self.RecipeList.FilterButton:SetScript("OnMouseDown", function(button, buttonName, down)
-		UIMenuButtonStretchMixin.OnMouseDown(self.RecipeList.FilterButton, buttonName);
-		ToggleDropDownMenu(1, nil, self.RecipeList.FilterDropDown, self.RecipeList.FilterButton, 74, 15);
-		PlaySound(SOUNDKIT.UI_PROFESSION_FILTER_MENU_OPEN_CLOSE);
-	end);
 	EventRegistry:RegisterCallback("ProfessionsRecipeListMixin.Event.OnRecipeSelected", self.OnRecipeSelected, self);
 
-	UIDropDownMenu_SetInitializeFunction(self.RecipeList.FilterDropDown, GenerateClosure(self.InitFilterMenu, self));
-	UIDropDownMenu_SetDisplayMode(self.RecipeList.FilterDropDown, "MENU");
+	Professions.InitFilterMenu(self.RecipeList.FilterDropdown);
 
 	self.CreateButton:SetScript("OnClick", GenerateClosure(self.Create, self));
 	self.CreateAllButton:SetScript("OnClick", GenerateClosure(self.CreateAll, self));
@@ -70,9 +64,6 @@ function ProfessionsCraftingPageMixin:OnLoad()
 			if ChatEdit_GetActiveWindow() then
 				local link = C_TradeSkillUI.GetTradeSkillListLink();
 				ChatEdit_InsertLink(link);
-			else
-				ToggleDropDownMenu(1, nil, self.LinkDropDown, self.LinkButton, 25, 25);
-				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 			end
 		end
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
@@ -100,21 +91,15 @@ function ProfessionsCraftingPageMixin:OnLoad()
 	EventRegistry:RegisterCallback("Professions.ReagentClicked", self.OnReagentClicked, self);
 	EventRegistry:RegisterCallback("Professions.TransactionUpdated", self.ValidateControls, self);
 
-	UIDropDownMenu_Initialize(self.LinkDropDown, GenerateClosure(self.InitLinkDropdown, self), "MENU");
-
 	self.flyoutSettings = 
 	{
 		onClickFunc = PaperDollFrameItemFlyoutButton_OnClick,
 		getItemsFunc = PaperDollFrameItemFlyout_GetItems,
 		postGetItemsFunc = PaperDollFrameItemFlyout_PostGetItems,
 		hasPopouts = true,
-		anchorX = 0,
+		parent = self:GetParent(),
+		anchorX = 6,
 		anchorY = -3,
-		verticalAnchorX = 0,
-		verticalAnchorY = 0,
-		highlightSizeX = 45,
-		highlightSizeY = 45,
-		highlightOfsY = 3,
 	};
 
 	self.CraftingOutputLog:SetScript("OnShow", function()
@@ -280,48 +265,6 @@ function ProfessionsCraftingPageMixin:OnEvent(event, ...)
 	end
 end
 
-function ProfessionsCraftingPageMixin:InitLinkDropdown()
-	local info = UIDropDownMenu_CreateInfo();
-	info.notCheckable = true;
-	info.text = TRADESKILL_POST;
-	info.isTitle = true;
-	UIDropDownMenu_AddButton(info);
-
-	info.isTitle = nil;
-	info.notCheckable = true;
-	info.func = function(_, channel)
-		local link = C_TradeSkillUI.GetTradeSkillListLink();
-		if link then
-			ChatFrame_OpenChat(channel.." "..link, DEFAULT_CHAT_FRAME);
-		end
-	end;
-
-	info.text = GUILD;
-	info.arg1 = SLASH_GUILD1;
-	info.disabled = not IsInGuild();
-	UIDropDownMenu_AddButton(info);
-
-	info.text = PARTY;
-	info.arg1 = SLASH_PARTY1;
-	info.disabled = (GetNumSubgroupMembers() == 0);
-	UIDropDownMenu_AddButton(info);
-
-	info.text = RAID;
-	info.disabled = not IsInRaid();
-	info.arg1 = SLASH_RAID1;
-	UIDropDownMenu_AddButton(info);
-
-	info.disabled = false
-
-	local channels = { GetChannelList() };
-	for i = 1, #channels, 3 do
-		info.text = ChatFrame_ResolveChannelName(channels[i + 1]);
-		info.arg1 = "/"..channels[i];
-		info.disabled = channels[i + 2];
-		UIDropDownMenu_AddButton(info);
-	end
-end
-
 function ProfessionsCraftingPageMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, ProfessionsCraftingPageEvents);
 
@@ -329,6 +272,42 @@ function ProfessionsCraftingPageMixin:OnShow()
 
 	self:SetTitle();
 	self.RecipeList.SearchBox:SetText(C_TradeSkillUI.GetRecipeItemNameFilter());
+
+
+	local function CreateChannelTbl(slashChannel, text, enabled)
+		return { slashChannel = slashChannel, text = text, enabled = enabled};
+	end
+
+	self.LinkButton:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_PROFESSIONS_CRAFTING_PAGE");
+
+		rootDescription:CreateTitle(TRADESKILL_POST);
+
+		local channelTbls =
+		{ 
+			CreateChannelTbl(SLASH_GUILD1, GUILD, IsInGuild()),
+			CreateChannelTbl(SLASH_PARTY1, PARTY, GetNumSubgroupMembers() > 0),
+			CreateChannelTbl(SLASH_RAID1, RAID, IsInRaid()),
+		};
+
+	local channels = { GetChannelList() };
+		for index = 1, #channels, 3 do
+			local slashChannel = "/"..channels[index];
+			local text = ChatFrame_ResolveChannelName(channels[index + 1]);
+			local enabled = not (channels[index + 2]);
+			table.insert(channelTbls, CreateChannelTbl(slashChannel, text, enabled));
+		end
+
+		for index, tbl in ipairs(channelTbls) do
+			local button = rootDescription:CreateButton(tbl.text, function()
+				local link = C_TradeSkillUI.GetTradeSkillListLink();
+				if link then
+					ChatFrame_OpenChat(string.format("%s %s", tbl.slashChannel, link), DEFAULT_CHAT_FRAME);
+	end
+			end);
+			button:SetEnabled(tbl.enabled);
+end
+	end);
 
 	FrameUtil.RegisterUpdateFunction(self, .75, GenerateClosure(self.Update, self));
 end
@@ -376,14 +355,6 @@ end
 
 function ProfessionsCraftingPageMixin:OnProfessionSelected(professionInfo)
 	self:Init(professionInfo);
-end
-
-function ProfessionsCraftingPageMixin:InitFilterMenu(dropdown, level)
-	Professions.InitFilterMenu(dropdown, level, GenerateClosure(self.UpdateFilterResetVisibility, self));
-end
-
-function ProfessionsCraftingPageMixin:UpdateFilterResetVisibility()
-	self.RecipeList.FilterButton.ResetButton:SetShown(not Professions.IsUsingDefaultFilters());
 end
 
 function ProfessionsCraftingPageMixin:OnRecipeSelected(recipeInfo, recipeList)
@@ -625,7 +596,7 @@ function ProfessionsCraftingPageMixin:ValidateCraftRequirements(currentRecipeInf
 	local optionalReagentSlots = self.SchematicForm:GetSlotsByReagentType(Enum.CraftingReagentType.Modifying);
 	for _, slot in ipairs(optionalReagentSlots or {}) do
 		local reagentSlotSchematic = slot:GetReagentSlotSchematic();
-		local hasAllocation = transaction:HasAllocations(reagentSlotSchematic.slotIndex);
+		local hasAllocation = transaction:HasAnyAllocations(reagentSlotSchematic.slotIndex);
 		if hasAllocation and slot.Button.locked then
 			return FailValidationReason.LockedReagentSlot;
 		end
@@ -916,6 +887,9 @@ function ProfessionsCraftingPageMixin:Init(professionInfo)
 	else
 		self.SchematicForm:Init(nil);
 	end
+
+	self.ConcentrationDisplay:ShowProfessionConcentration(professionInfo);
+
 	self:ValidateControls();
 end
 
@@ -971,12 +945,17 @@ function ProfessionsCraftingPageMixin:Refresh(professionInfo)
 	self.LinkButton:SetShown(C_TradeSkillUI.CanTradeSkillListLink() and Professions.InLocalCraftingMode());
 	end
 
+	if minimized then
+		self.ConcentrationDisplay:SetPoint("TOPLEFT", 74, -32);
+	else
+		self.ConcentrationDisplay:SetPoint("TOPLEFT", 120, -35);
+	end
+
 	self.TutorialButton:SetShown(not isRuneforging);
 
 	if self:IsTutorialShown() then
 		HelpPlate_Hide(false);
 	end
-	self:UpdateFilterResetVisibility();
 
 	self:ValidateControls();
 end
@@ -989,7 +968,9 @@ function ProfessionsCraftingPageMixin:CreateInternal(recipeID, count, recipeLeve
 		if salvageItem then
 			local itemLocation = C_Item.GetItemLocation(salvageItem:GetItemGUID());
 			if itemLocation then
-				C_TradeSkillUI.CraftSalvage(recipeID, count, itemLocation);
+				local craftingReagentTbl = transaction:CreateCraftingReagentInfoTbl();
+				local applyConcentration = transaction:IsApplyingConcentration();
+				C_TradeSkillUI.CraftSalvage(recipeID, count, itemLocation, craftingReagentTbl, applyConcentration);
 			end
 		end
 	else
@@ -1012,14 +993,15 @@ function ProfessionsCraftingPageMixin:CreateInternal(recipeID, count, recipeLeve
 				craftingReagentInfos = transaction:CreateOptionalOrFinishingCraftingReagentInfoTbl();
 			end
 
+			local applyConcentration = transaction:IsApplyingConcentration();
 			local enchantItem = transaction:GetEnchantAllocation();
 			if enchantItem then
 				if count > 1 and C_TradeSkillUI.CanStoreEnchantInItem(enchantItem:GetItemGUID()) then
 					self.vellumItemID = enchantItem:GetItemID();
 				end
-				C_TradeSkillUI.CraftEnchant(recipeID, count, craftingReagentInfos, enchantItem:GetItemLocation());
+				C_TradeSkillUI.CraftEnchant(recipeID, count, craftingReagentInfos, enchantItem:GetItemLocation(), applyConcentration);
 			else
-				C_TradeSkillUI.CraftRecipe(recipeID, count, craftingReagentInfos, recipeLevel);
+				C_TradeSkillUI.CraftRecipe(recipeID, count, craftingReagentInfos, recipeLevel, nil, applyConcentration);
 			end
 		end
 	end
@@ -1137,9 +1119,15 @@ function ProfessionsCraftingPageMixin:UpdateTutorial()
 		ProfessionsCraftingPage_HelpPlate[i] = nil;
 	end
 
-	if self.RecipeList:IsShown() then
-		table.insert(ProfessionsCraftingPage_HelpPlate, { ButtonPos = { x = 125,	y = -44 }, HighLightBox = { x = 0, y = -52, width = 271, height = 30 }, ToolTipDir = "DOWN", ToolTipText = ProfessionsFrame.professionType == Professions.ProfessionType.Gathering and PROFESSIONS_GATHERING_JOURNAL_LIST_HELP or PROFESSIONS_CRAFTING_HELP_FILTERS });
+	local recipeSearchBar = { ToolTipDir = "DOWN", ToolTipText = ProfessionsFrame.professionType == Professions.ProfessionType.Gathering and PROFESSIONS_GATHERING_JOURNAL_LIST_HELP or PROFESSIONS_CRAFTING_HELP_FILTERS };
+	if ProfessionsUtil.IsCraftingMinimized() then
+		recipeSearchBar.ButtonPos = { x = 250, y = -3 };
+		recipeSearchBar.HighLightBox = { x = 169, y = -9, width = 224, height = 30 };
+	else
+		recipeSearchBar.ButtonPos = { x = 125, y = -44 };
+		recipeSearchBar.HighLightBox = { x = 0, y = -52, width = 271, height = 30 };
 	end
+	table.insert(ProfessionsCraftingPage_HelpPlate, recipeSearchBar);
 
 	if self.SchematicForm.Reagents:IsShown() then
 		local reagentsTopPoint = self.SchematicForm.Reagents:GetTop() - self:GetTop() + 24;
@@ -1166,11 +1154,11 @@ function ProfessionsCraftingPageMixin:UpdateTutorial()
 
 		if self.SchematicForm.OptionalReagents:IsShown() then
 			local y = basicReagentsBoxTop - reagentsBoxHeight - 5;
-			local slots = self.SchematicForm:GetSlotsByReagentType(Enum.CraftingReagentType.Optional);
-			local slotCount = slots and #slots or 0;
-			local slotSpacing = (math.max(0, slotCount - 1) * -5);
-			local slotWidth = (50 * math.max(3, slotCount));
-			local width = 25 + slotWidth + slotSpacing;
+			local optionalSlots = self.SchematicForm:GetSlotsByReagentType(Enum.CraftingReagentType.Optional);
+			local optionalSlotCount = optionalSlots and #optionalSlots or 0;
+			local optionalSlotSpacing = (math.max(0, optionalSlotCount - 1) * -5);
+			local optionalSlotWidth = (50 * math.max(3, optionalSlotCount));
+			local width = 25 + optionalSlotWidth + optionalSlotSpacing;
 
 			local optionalReagentsSection =
 			{
@@ -1182,7 +1170,7 @@ function ProfessionsCraftingPageMixin:UpdateTutorial()
 			table.insert(ProfessionsCraftingPage_HelpPlate, optionalReagentsSection);
 		end
 
-		if self.SchematicForm.AllocateBestQualityCheckBox:IsShown() then
+		if self.SchematicForm.AllocateBestQualityCheckbox:IsShown() then
 			local width = 210;
 			local y = -545;
 			local bestQualityCheckboxSection =
@@ -1328,7 +1316,7 @@ function ProfessionsCraftingPageMixin:SchematicPostInit()
 	local optionalReagentSlots = self.SchematicForm:GetSlotsByReagentType(Enum.CraftingReagentType.Modifying);
 	for _, slot in ipairs(optionalReagentSlots or {}) do
 		local reagentSlotSchematic = slot:GetReagentSlotSchematic();
-		local hasAllocation = self.SchematicForm.transaction:HasAllocations(reagentSlotSchematic.slotIndex);
+		local hasAllocation = self.SchematicForm.transaction:HasAnyAllocations(reagentSlotSchematic.slotIndex);
 		if hasAllocation and slot.Button.locked then
 			slot:SetOverrideNameColor(ERROR_COLOR);
             slot:SetColorOverlay(ERROR_COLOR);

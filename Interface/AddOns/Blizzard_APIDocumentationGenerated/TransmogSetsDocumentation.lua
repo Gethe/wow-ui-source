@@ -76,16 +76,6 @@ local TransmogSets =
 			},
 		},
 		{
-			Name = "GetBaseSetsCounts",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "numCollected", Type = "number", Nilable = false },
-				{ Name = "numTotal", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "GetBaseSetsFilter",
 			Type = "Function",
 
@@ -107,6 +97,26 @@ local TransmogSets =
 			{
 				{ Name = "detailsCameraID", Type = "number", Nilable = true },
 				{ Name = "vendorCameraID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetFilteredBaseSetsCounts",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "numCollected", Type = "number", Nilable = false },
+				{ Name = "numTotal", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetFullBaseSetsCounts",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "numCollected", Type = "number", Nilable = false },
+				{ Name = "numTotal", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -220,12 +230,31 @@ local TransmogSets =
 			},
 		},
 		{
+			Name = "GetTransmogSetsClassFilter",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "classID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetUsableSets",
 			Type = "Function",
 
 			Returns =
 			{
 				{ Name = "sets", Type = "table", InnerType = "TransmogSetInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetValidBaseSetsCountsForCharacter",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "numCollected", Type = "number", Nilable = false },
+				{ Name = "numTotal", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -355,6 +384,15 @@ local TransmogSets =
 				{ Name = "isFavorite", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "SetTransmogSetsClassFilter",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "classID", Type = "number", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -382,6 +420,7 @@ local TransmogSets =
 				{ Name = "collected", Type = "bool", Nilable = false },
 				{ Name = "favorite", Type = "bool", Nilable = false },
 				{ Name = "limitedTimeSet", Type = "bool", Nilable = false },
+				{ Name = "validForCharacter", Type = "bool", Nilable = false },
 			},
 		},
 		{
