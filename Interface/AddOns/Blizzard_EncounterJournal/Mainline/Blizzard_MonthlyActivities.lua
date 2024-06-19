@@ -1593,7 +1593,11 @@ end
 function MonthlyActivitiesRewardButtonMixin:OnEnter()
 	if self.rewardItemId then
 		GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-		GameTooltip:SetItemByID(self.rewardItemId);
+		local tooltipInfo = CreateBaseTooltipInfo("GetItemByID", self.rewardItemId);
+		tooltipInfo.excludeLines = {
+				Enum.TooltipDataLineType.SellPrice,
+		};
+		GameTooltip:ProcessInfo(tooltipInfo);
 	end
 end
 

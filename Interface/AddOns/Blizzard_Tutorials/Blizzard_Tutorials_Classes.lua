@@ -223,10 +223,21 @@ Class_TalentPoints = class("TalentPoints", Class_TutorialBase);
 function Class_TalentPoints:OnInitialize()
 end
 
+function Class_TalentPoints:HasReachedMaxClassTalentPoints()
+	local _subTreeIDs, heroSpecUnlockLevel = C_ClassTalents.GetHeroTalentSpecsForClassSpec();
+	return heroSpecUnlockLevel and UnitLevel("player") >= heroSpecUnlockLevel;
+end
+
 function Class_TalentPoints:OnAdded(args)
 	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TALENT_CHANGES) then
+		-- The player has talent points to spend so show the tutorial.
 		if PlayerUtil.CanUseClassTalents() and C_ClassTalents.HasUnspentTalentPoints() then
 			TutorialManager:Queue(self:Name());
+		-- The player will not be getting any more talent points so clear the tutorial.
+		elseif self:HasReachedMaxClassTalentPoints() then
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TALENT_CHANGES, true);
+			TutorialManager:RemoveTutorial(self:Name());
+		-- Wait until a future time to show the tutorial.
 		else
 			Dispatcher:RegisterEvent("PLAYER_TALENT_UPDATE", self);
 			Dispatcher:RegisterEvent("PLAYER_LEVEL_CHANGED", self);
@@ -244,12 +255,16 @@ end
 function Class_TalentPoints:StartSelf()
 	local canUseTalents = PlayerUtil.CanUseClassTalents();
 	local hasUnspentTalentPoints = C_ClassTalents.HasUnspentTalentPoints();
+
+	-- The player has talent points to spend so show the tutorial.
 	if canUseTalents and hasUnspentTalentPoints then
-		Dispatcher:UnregisterEvent("PLAYER_TALENT_UPDATE", self);
-		Dispatcher:UnregisterEvent("PLAYER_LEVEL_CHANGED", self);
-		Dispatcher:UnregisterEvent("ACTIVE_COMBAT_CONFIG_CHANGED", self);
-		Dispatcher:UnregisterEvent("QUEST_TURNED_IN", self);
+		self:UnregisterDispatcherEvents();
 		TutorialManager:Queue(self:Name());
+	-- The player will not be getting any more talent points so clear the tutorial.
+	elseif self:HasReachedMaxClassTalentPoints() then
+		self:UnregisterDispatcherEvents();
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TALENT_CHANGES, true);
+		TutorialManager:RemoveTutorial(self:Name());
 	end
 end
 
@@ -283,7 +298,7 @@ function Class_TalentPoints:OnBegin()
 		EventRegistry:RegisterCallback("PlayerSpellsFrame.OpenFrame", self.EvaluateTalentFrame, self);
 		C_Timer.After(0.1, function()
 			self:EvaluateTalentFrame();
-		end);	
+		end);
 	else
 		self:TalentTutorialFinished();
 	end
@@ -302,13 +317,12 @@ function Class_TalentPoints:EvaluateTalentFrame()
 	if PlayerSpellsFrame and PlayerSpellsFrame:IsShown() and C_ClassTalents.HasUnspentTalentPoints() then
 		self:HidePointerTutorials();
 		EventRegistry:RegisterCallback("PlayerSpellsFrame.CloseFrame", self.TalentTutorialFinished, self);
+		EventRegistry:RegisterCallback("PlayerSpellsFrame.TabSet", self.TalentsFrameTabSet, self);
 
-		if PlayerSpellsFrame.SpecFrame:IsShown() then
-			EventRegistry:RegisterCallback("PlayerSpellsFrame.TalentTab.Show", self.ClassTalentsFrameShow, self);
+		-- Direct the player to the Talent Frame if any other tab is selected.
+		if not PlayerSpellsFrame.TalentsFrame:IsShown() then
 			local talentsTab = PlayerSpellsFrame:GetTalentsTabButton();
 			self:ShowPointerTutorial(NPEV2_SELECT_TALENTS_TAB, "DOWN", talentsTab, 0, -10, nil, "DOWN");
-		else
-			EventRegistry:RegisterCallback("PlayerSpellsFrame.SpecFrame.Show", self.ClassSpecializationsFrameShow, self);
 		end
 	else
 		if C_ClassTalents.HasUnspentTalentPoints() then
@@ -319,22 +333,16 @@ function Class_TalentPoints:EvaluateTalentFrame()
 	end
 end
 
-function Class_TalentPoints:ClassTalentsFrameShow()
-	EventRegistry:UnregisterCallback("PlayerSpellsFrame.TalentsFrame.Show", self);
+function Class_TalentPoints:TalentsFrameTabSet()
 	C_Timer.After(0.1, function()
 		self:EvaluateTalentFrame();
-	end);		
-end
-
-function Class_TalentPoints:ClassSpecializationsFrameShow()
-	EventRegistry:UnregisterCallback("PlayerSpellsFrame.SpecFrame.Show", self);
-	C_Timer.After(0.1, function()
-		self:EvaluateTalentFrame();
-	end);		
+	end);
 end
 
 function Class_TalentPoints:TalentTutorialFinished()
 	EventRegistry:UnregisterCallback("PlayerSpellsFrame.CloseFrame", self);
+	EventRegistry:UnregisterCallback("PlayerSpellsFrame.TabSet", self);
+
 	if C_ClassTalents.HasUnspentTalentPoints() then
 		C_Timer.After(0.1, function()
 			self:EvaluateTalentFrame();
@@ -348,14 +356,18 @@ function Class_TalentPoints:OnInterrupt(interruptedBy)
 	TutorialManager:Finished(self:Name());
 end
 
-function Class_TalentPoints:OnComplete()
-	self:HidePointerTutorials();
-	MicroButtonPulseStop(PlayerSpellsMicroButton);
+function Class_TalentPoints:UnregisterDispatcherEvents()
 	Dispatcher:UnregisterEvent("PLAYER_TALENT_UPDATE", self);
 	Dispatcher:UnregisterEvent("PLAYER_LEVEL_CHANGED", self);
 	Dispatcher:UnregisterEvent("ACTIVE_COMBAT_CONFIG_CHANGED", self);
-	EventRegistry:UnregisterCallback("PlayerSpellsFrame.SpecFrame.Show", self);
-	EventRegistry:UnregisterCallback("PlayerSpellsFrame.TalentTab.Show", self);
+	Dispatcher:UnregisterEvent("QUEST_TURNED_IN", self);
+end
+
+function Class_TalentPoints:OnComplete()
+	self:HidePointerTutorials();
+	MicroButtonPulseStop(PlayerSpellsMicroButton);
+	self:UnregisterDispatcherEvents();
+	EventRegistry:UnregisterCallback("PlayerSpellsFrame.TabSet", self);
 	EventRegistry:UnregisterCallback("PlayerSpellsFrame.OpenFrame", self);
 	EventRegistry:UnregisterCallback("PlayerSpellsFrame.CloseFrame", self);
 

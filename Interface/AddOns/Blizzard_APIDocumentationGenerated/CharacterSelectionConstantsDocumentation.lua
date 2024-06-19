@@ -3,6 +3,24 @@ local CharacterSelectionConstants =
 	Tables =
 	{
 		{
+			Name = "WarbandEventState",
+			Type = "Enumeration",
+			NumValues = 8,
+			MinValue = 0,
+			MaxValue = 7,
+			Fields =
+			{
+				{ Name = "None", Type = "WarbandEventState", EnumValue = 0 },
+				{ Name = "DelayingEvent", Type = "WarbandEventState", EnumValue = 1 },
+				{ Name = "SheathingWeapon", Type = "WarbandEventState", EnumValue = 2 },
+				{ Name = "DelayingStandStateTransition", Type = "WarbandEventState", EnumValue = 3 },
+				{ Name = "StandStateTransitioning", Type = "WarbandEventState", EnumValue = 4 },
+				{ Name = "ShowingWeapon", Type = "WarbandEventState", EnumValue = 5 },
+				{ Name = "StandStateLooping", Type = "WarbandEventState", EnumValue = 6 },
+				{ Name = "NumWarbandEventStates", Type = "WarbandEventState", EnumValue = 7 },
+			},
+		},
+		{
 			Name = "WarbandGroupFlags",
 			Type = "Enumeration",
 			NumValues = 2,
@@ -49,16 +67,17 @@ local CharacterSelectionConstants =
 		{
 			Name = "WarbandSceneAnimationStandState",
 			Type = "Enumeration",
-			NumValues = 5,
+			NumValues = 6,
 			MinValue = 0,
-			MaxValue = 4,
+			MaxValue = 5,
 			Fields =
 			{
 				{ Name = "Maintain", Type = "WarbandSceneAnimationStandState", EnumValue = 0 },
 				{ Name = "Stand", Type = "WarbandSceneAnimationStandState", EnumValue = 1 },
-				{ Name = "Sit", Type = "WarbandSceneAnimationStandState", EnumValue = 2 },
+				{ Name = "SitOnGround", Type = "WarbandSceneAnimationStandState", EnumValue = 2 },
 				{ Name = "Kneel", Type = "WarbandSceneAnimationStandState", EnumValue = 3 },
-				{ Name = "Sleep", Type = "WarbandSceneAnimationStandState", EnumValue = 4 },
+				{ Name = "ReadyStance", Type = "WarbandSceneAnimationStandState", EnumValue = 4 },
+				{ Name = "Sleep", Type = "WarbandSceneAnimationStandState", EnumValue = 5 },
 			},
 		},
 		{

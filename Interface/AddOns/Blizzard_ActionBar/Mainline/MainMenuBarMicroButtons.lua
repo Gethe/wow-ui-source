@@ -561,20 +561,50 @@ function PlayerSpellsMicroButtonMixin:OnLoad()
 	self:SetDirtyMethod(self.EvaluateAlertVisibility);
 end
 
-function PlayerSpellsMicroButtonMixin:GetAnyTalentAlert()
+function PlayerSpellsMicroButtonMixin:CanPlayerUseHeroTalentSpecUI()
+	local subTreeIDs, heroSpecUnlockLevel = C_ClassTalents.GetHeroTalentSpecsForClassSpec();
+	return subTreeIDs and #subTreeIDs > 0 and UnitLevel("player") >= heroSpecUnlockLevel;
+end
+
+function PlayerSpellsMicroButtonMixin:HasPlayerCompletedTalentTutorial()
+	return GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TALENT_CHANGES);
+end
+
+function PlayerSpellsMicroButtonMixin:HasPlayerDisabledTutorials()
+	local showTutorials = GetCVarBool("showTutorials");
+	return showTutorials == false;
+end
+
+function PlayerSpellsMicroButtonMixin:ShouldShowTalentAlerts()
 	if not IsPlayerInWorld() then
+		return false;
+	end
+
+	if not C_SpecializationInfo.CanPlayerUseTalentUI() then
+		return false;
+	end
+
+	-- Wait to show talent alerts until the player has completed the tutorial.However if a player has
+	-- turned off tutorials they might never complete them. But since these alerts are calls to action
+	-- the player should take, they should still see them.
+	return self:HasPlayerCompletedTalentTutorial() or self:HasPlayerDisabledTutorials();
+end
+
+function PlayerSpellsMicroButtonMixin:GetAnyTalentAlert()
+	if not self:ShouldShowTalentAlerts() then
 		return nil;
 	end
 
-	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TALENT_CHANGES) or not C_SpecializationInfo.CanPlayerUseTalentUI() then
+	local alert;
+	if self:CanPlayerUseHeroTalentSpecUI() and not C_ClassTalents.GetActiveHeroTalentSpec() then
+		alert = "TALENT_MICRO_BUTTON_NO_HERO_SPEC";
+	elseif C_SpecializationInfo.CanPlayerUseTalentSpecUI() and IsPlayerInitialSpec() then
+		alert = "NPEV2_SPEC_TUTORIAL_GOSSIP_CLOSED";
+	elseif C_ClassTalents.HasUnspentTalentPoints() or C_ClassTalents.HasUnspentHeroTalentPoints() then
+		alert = "TALENT_MICRO_BUTTON_UNSPENT_TALENTS";
+	else
 		return nil;
-	end
-
-	if not C_ClassTalents.HasUnspentTalentPoints() and not C_ClassTalents.HasUnspentHeroTalentPoints() then
-		return nil;
-	end
-
-	local alert = "TALENT_MICRO_BUTTON_UNSPENT_TALENTS";
+	end	
 
 	local suggestedTab = IsPlayerInitialSpec() and PlayerSpellsUtil.FrameTabs.ClassSpecializations or PlayerSpellsUtil.FrameTabs.ClassTalents;
 

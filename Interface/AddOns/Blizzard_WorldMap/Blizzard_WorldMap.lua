@@ -181,6 +181,7 @@ function WorldMapMixin:AddStandardDataProviders()
 	self:AddDataProvider(CreateFromMixins(DigSiteDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(GarrisonPlotDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(DungeonEntranceDataProviderMixin));
+	self:AddDataProvider(CreateFromMixins(DelveEntranceDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(BannerDataProvider));
 	self:AddDataProvider(CreateFromMixins(ContributionCollectorDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(MapLinkDataProviderMixin));
@@ -224,6 +225,7 @@ function WorldMapMixin:AddStandardDataProviders()
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_DEBUG", 4);
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_DIG_SITE");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_DUNGEON_ENTRANCE");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_DELVE_ENTRANCE");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_FLIGHT_POINT");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_INVASION");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_PET_TAMER");

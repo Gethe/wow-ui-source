@@ -2,9 +2,27 @@
 CharacterSelectListMixin = {};
 
 function CharacterSelectListMixin:OnLoad()
-	self.UndeleteButton:SetOnClickHandler(CharacterSelect_StartCharacterUndelete);
+	self.CreateCharacterButton:SetScript("OnEnter", function()
+		if self.CreateCharacterButton:IsEnabled() then
+			GlueTooltip:SetOwner(self.CreateCharacterButton, "ANCHOR_TOP");
+			GameTooltip_SetTitle(GlueTooltip, CHARACTER_SELECT_NAV_BAR_CREATE_CHARACTER_TOOLTIP:format(CharacterSelectUtil.GetFormattedCurrentRealmName()));
+			GlueTooltip:Show();
+		end
+	end);
+
+	self.CreateCharacterButton:SetScript("OnLeave", function()
+		GlueTooltip:Hide();
+	end);
+
+	self.CreateCharacterButton:SetScript("OnClick", function()
+		if not CharacterSelect_ShowTimerunningChoiceWhenActive() then
+			CharacterSelectUtil.CreateNewCharacter(Enum.CharacterCreateType.Normal);
+		end
+	end);
 
 	self.DeleteCharacterButton:SetScript("OnClick", GenerateFlatClosure(CharacterSelect_Delete));
+
+	self.UndeleteButton:SetOnClickHandler(CharacterSelect_StartCharacterUndelete);
 
 	self.BackToActiveButton:SetScript("OnClick", function()
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
@@ -12,17 +30,37 @@ function CharacterSelectListMixin:OnLoad()
 	end);
 
 	self:RegisterEvent("UPDATE_REALM_NAME_FOR_GUID");
+	self:RegisterEvent("CHARACTER_LIST_UPDATE");
+
+	-- This event handler can only be added after the CharacterSelectUI's OnLoad has run.
+	RunNextFrame(function ()
+		self:AddDynamicEventMethod(CharacterSelect.CharacterSelectUI, CharacterSelectUIMixin.Event.ExpansionTrialStateUpdated, CharacterSelectListMixin.OnExpansionTrialStateUpdated);
+	end);
 end
 
 function CharacterSelectListMixin:OnEvent(event, ...)
-	if (event == "UPDATE_REALM_NAME_FOR_GUID") then
+	if event == "UPDATE_REALM_NAME_FOR_GUID" then
 		local guid, realmName = ...;
 		CharacterSelectListUtil.ForEachCharacterDo(function(frame)
 			if frame:GetCharacterGUID() == guid then
 				frame.characterInfo.realmName = realmName;
 			end
 		end);
+	elseif event == "CHARACTER_LIST_UPDATE" then
+		CharacterLoginUtil.EvaluateNewAlliedRaces();
+		self:EvaluateCreateCharacterNewState();
 	end
+end
+
+-- Multiple things can trigger the 'new' text on the create character button, ensure that we show it if any pass.
+function CharacterSelectListMixin:EvaluateCreateCharacterNewState()
+	local isNew = self.isExpansionTrial or CharacterLoginUtil.HasNewAlliedRaces();
+	self.CreateCharacterButton.NewFeatureFrame:SetShown(isNew);
+end
+
+function CharacterSelectListMixin:OnExpansionTrialStateUpdated(isExpansionTrial)
+	self.isExpansionTrial = isExpansionTrial;
+	self:EvaluateCreateCharacterNewState();
 end
 
 function CharacterSelectListMixin:Init()
@@ -334,12 +372,31 @@ end
 function CharacterSelectListMixin:UpdateUndeleteState()
 	local isUndeleting = CharacterSelectUtil.IsUndeleting();
 
+	self.CreateCharacterButton:SetShown(not isUndeleting);
 	self.DeleteCharacterButton:SetShown(not isUndeleting);
 	self.UndeleteButton:SetShown(not isUndeleting);
 	self.UndeleteLabel:SetShown(isUndeleting);
+	self.UndeleteRealmLabel:SetShown(isUndeleting);
+	self.UndeleteRealmBackdrop:SetShown(isUndeleting);
 	self.BackToActiveButton:SetShown(isUndeleting);
 	self.SearchBox:SetShown(not isUndeleting);
 	self.SearchBox:SetText("");
+
+	if isUndeleting then
+		self.UndeleteRealmLabel:SetText(CHARACTER_SELECT_UNDELETE_REALM_LABEL:format(CharacterSelectUtil.GetFormattedCurrentRealmName()));
+		local helpTipInfo = {
+			text = CHARACTER_SELECT_UNDELETE_REALM_HELPTIP,
+			buttonStyle = HelpTip.ButtonStyle.None,
+			targetPoint = HelpTip.Point.LeftEdgeCenter,
+		};
+		HelpTip:Show(self, helpTipInfo, self.UndeleteRealmLabel);
+	else
+		HelpTip:Hide(self);
+	end
+end
+
+function CharacterSelectListMixin:SetCharacterCreateEnabled(enabled, disabledTooltip)
+	self.CreateCharacterButton:SetEnabled(enabled);
 end
 
 function CharacterSelectListMixin:SetDeleteEnabled(isEnabled, disabledTooltip)

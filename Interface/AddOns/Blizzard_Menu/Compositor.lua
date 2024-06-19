@@ -88,6 +88,8 @@ end
 local function SetButtonToDefaults(button)
 	SetFrameToDefaults(button);
 
+	button:RegisterForClicks("LeftButtonUp");
+
 	button:SetScript("OnClick", nil);
 	button:SetScript("OnDoubleClick", nil);
 	button:SetScript("OnEnable", nil);

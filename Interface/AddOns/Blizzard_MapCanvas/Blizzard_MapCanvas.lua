@@ -163,6 +163,9 @@ do
 
 		local pin, newPin = self.pinPools[pinTemplate]:Acquire();
 
+		pin.pinTemplate = pinTemplate;
+		pin.owningMap = self;
+
 		if newPin then
 			local isMouseClickEnabled = pin:IsMouseClickEnabled();
 			local isMouseMotionEnabled = pin:IsMouseMotionEnabled();
@@ -188,9 +191,6 @@ do
 			-- Most pins should pass through right clicks to allow the map to zoom out
 			pin:CheckMouseButtonPassthrough("RightButton");
 		end
-
-		pin.pinTemplate = pinTemplate;
-		pin.owningMap = self;
 
 		if newPin then
 			pin:OnLoad();

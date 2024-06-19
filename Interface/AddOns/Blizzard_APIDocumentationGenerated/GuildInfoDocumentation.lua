@@ -140,6 +140,15 @@ local GuildInfo =
 			},
 		},
 		{
+			Name = "IsGuildReputationEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "Leave",
 			Type = "Function",
 		},

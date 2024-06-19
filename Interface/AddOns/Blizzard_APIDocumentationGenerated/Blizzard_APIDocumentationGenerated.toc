@@ -426,6 +426,7 @@ CovenantCallingsConstantsDocumentation.lua
 CovenantSanctumConstantsDocumentation.lua
 CovenantsConstantsDocumentation.lua
 CraftingOrderUIConstantsDocumentation.lua
+CraftingOrderUISharedDocumentation.lua
 CurrencyConstants_MainlineDocumentation.lua
 GarrisonSharedDocumentation.lua
 ItemConstants_MainlineDocumentation.lua

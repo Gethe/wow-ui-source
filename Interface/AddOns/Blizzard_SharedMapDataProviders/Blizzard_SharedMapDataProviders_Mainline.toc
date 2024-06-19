@@ -42,3 +42,4 @@ MapIndicatorQuestDataProvider.xml
 QuestSessionDataProvider.lua
 WaypointLocationDataProvider.xml
 DragonridingRaceDataProvider.xml
+DelveEntranceDataProvider.xml

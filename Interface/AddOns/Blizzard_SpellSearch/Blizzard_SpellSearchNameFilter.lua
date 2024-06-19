@@ -109,9 +109,9 @@ function SpellSearchNameFilterMixin:DerivedGetMatchTypeForPvPTalent(pvpTalentID,
 	return pvpTalentResult;
 end
 
-function SpellSearchNameFilterMixin:DerivedGetMatchTypeForSpellBookItem(slotIndex, spellBank)
+function SpellSearchNameFilterMixin:DerivedGetMatchTypeForSpellBookItem(spellBookItemData)
 	local spellBookItemResult = {};
-	local spellBookItemInfo = C_SpellBook.GetSpellBookItemInfo(slotIndex, spellBank);
+	local spellBookItemInfo = spellBookItemData.spellBookItemInfo;
 	if not spellBookItemInfo or not spellBookItemInfo.name then
 		return spellBookItemResult;
 	end

@@ -200,7 +200,7 @@ end
 
 function ReactivateAccountDialog_Open()
 	local self = ReactivateAccountDialog;
-	if (not ReactivateAccountDialog_CanOpen()) then
+	if (not ReactivateAccountDialog_CanOpen() or CAN_BUY_RESULT_FOUND == LE_TOKEN_RESULT_ERROR_NOT_ENOUGH_PURCHASED_GAME_TIME) then
 		self:Hide();
 		return;
 	end

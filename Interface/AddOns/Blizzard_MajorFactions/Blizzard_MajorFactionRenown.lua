@@ -23,6 +23,7 @@ local finalToastSwirlEffects = {
 local ExpansionLayoutInfo =
 {
 	[LE_EXPANSION_DRAGONFLIGHT] = {
+		useOldNineSlice = true,
 		textureKit = "Dragonflight",
 		renownFrameDecorations = {
 			["TopLeftBorderDecoration"] = "Dragonflight-DragonHeadLeft",
@@ -34,25 +35,32 @@ local ExpansionLayoutInfo =
 			["TopRightBorderDecoration"] = { x = 40, y = 8, },
 			["BottomBorderDecoration"] = { x = 0, y = 10, },
 		},
+		closeButtonOffset = { x = -1, y = -6 },
 	},
 	[LE_EXPANSION_WAR_WITHIN] = {
-		textureKit = "Dragonflight",
+		textureKit = "thewarwithin",
+		borderAnchors = {
+			["TOPLEFT"] = { x = -6, y = 6, relativePoint = "TOPLEFT" },
+			["BOTTOMRIGHT"] = { x = 6, y = -6, relativePoint = "BOTTOMRIGHT" },
+		},
 		renownFrameDecorations = {
-			["TopLeftBorderDecoration"] = "Dragonflight-DragonHeadLeft",
-			["TopRightBorderDecoration"] = "Dragonflight-DragonHeadRight",
-			["BottomBorderDecoration"] = "dragonflight-golddetailbottom",
+			["TopLeftBorderDecoration"] = "ui-frame-thewarwithin-embellishmentleft",
+			["TopRightBorderDecoration"] = "ui-frame-thewarwithin-embellishmentright",
+			["BottomBorderDecoration"] = "ui-frame-thewarwithin-embellishmentbottom",
 		},
 		renownFrameDecorationAnchors = {
-			["TopLeftBorderDecoration"] = { x = -40, y = 8, },
-			["TopRightBorderDecoration"] = { x = 40, y = 8, },
-			["BottomBorderDecoration"] = { x = 0, y = 10, },
+			["TopLeftBorderDecoration"] = { x = -110, y = 17, point = "TOP", relativePoint = "TOP" },
+			["TopRightBorderDecoration"] = { x = 110, y = 17, point = "TOP", relativePoint = "TOP" },
+			["BottomBorderDecoration"] = { x = 0, y = 0, point = "BOTTOM", relativePoint = "BOTTOM" },
 		},
+		closeButtonOffset = { x = -9, y = -9 },
 	},
 };
 
 local TextureKitOverrideLayoutInfo =
 {
 	["plunderstorm"] = {
+		useOldNineSlice = true,
 		textureKit = "plunderstorm",
 		renownFrameDecorations = {
 			["TopLeftBorderDecoration"] = "plunderstorm-wavesleft",
@@ -64,6 +72,7 @@ local TextureKitOverrideLayoutInfo =
 			["TopRightBorderDecoration"] = { x = -9, y = 19, },
 			["BottomBorderDecoration"] = { x = 0, y = 4, },
 		},
+		closeButtonOffset = { x = -1, y = -6 },
 	},
 };
 
@@ -89,30 +98,90 @@ local function SetupTextureKit(frame, regions)
 	SetupTextureKitOnRegions(currentFactionData.textureKit, frame, regions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 end
 
-local function SetupRenownFrameNineSlice(frame, layoutInfo)
+local function ClearRenownFrameNineSlice(frame)
+	local previousLayoutInfo = frame.layoutInfo;
+	if not previousLayoutInfo then
+		return;
+	end
+
+	local useNewNineSlice = not previousLayoutInfo.useOldNineSlice;
+
+	if useNewNineSlice then
+		-- Hide all border decoration textures defined in the previous layout info in case they're not used in in the new layout info.
+		for textureKey, atlas in pairs(previousLayoutInfo.renownFrameDecorations) do
+			local texture = frame[textureKey];
+			if texture then
+				texture:SetShown(false);
+			end
+		end
+	end
+end
+
+local function SetupRenownFrameNineSlice(frame)
+	local layoutInfo = frame.layoutInfo;
+	if not layoutInfo then
+		return;
+	end
+
 	local textureKit = layoutInfo.textureKit;
 
-	NineSliceUtil.ApplyLayout(frame.NineSlice, MajorFactionsLayout, textureKit);
-	NineSliceUtil.DisableSharpening(frame.NineSlice);
+	-- For backwards compatibility, support art set up in either old or new nineSlice format.
+	local useNewNineSlice = not layoutInfo.useOldNineSlice;
 
-	-- Set up the custom top border
-	local topBorderFormat = "_%s-NineSlice-EdgeTop";
-	frame.NineSlice.TopLeftBorder:SetAtlas(topBorderFormat:format(textureKit), TextureKitConstants.IgnoreAtlasSize);
-	frame.NineSlice.TopLeftBorder:ClearAllPoints();
-	frame.NineSlice.TopLeftBorder:SetPoint("TOPLEFT", frame.NineSlice.TopLeftCorner, "TOPRIGHT");
-	frame.NineSlice.TopRightBorder:SetAtlas(topBorderFormat:format(textureKit), TextureKitConstants.IgnoreAtlasSize);
-	frame.NineSlice.TopRightBorder:ClearAllPoints();
-	frame.NineSlice.TopRightBorder:SetPoint("TOPRIGHT", frame.NineSlice.TopRightCorner, "TOPLEFT");
+	frame.NineSlice:SetShown(not useNewNineSlice);
+	frame.Border:SetShown(useNewNineSlice);
 
-	local renownFrameDecorations = layoutInfo.renownFrameDecorations;
-	if renownFrameDecorations then
-		SetupAtlasesOnRegions(frame.NineSlice, renownFrameDecorations, TextureKitConstants.UseAtlasSize);
+	if useNewNineSlice then
+		local borderFile = "UI-Frame-%s-Border";
+		frame.Border:SetAtlas(borderFile:format(textureKit));
 
-		for regionKey, offsets in pairs(layoutInfo.renownFrameDecorationAnchors) do
-			local region = frame.NineSlice[regionKey];
-			region:ClearPointsOffset();
-			region:AdjustPointsOffset(offsets.x, offsets.y);
+		-- Apply the anchoring data defined in the layout info for the Border texture.
+		frame.Border:ClearAllPoints();
+		for anchorKey, anchorPoint in pairs(layoutInfo.borderAnchors) do
+			frame.Border:SetPoint(anchorKey, frame, anchorPoint.relativePoint, anchorPoint.x, anchorPoint.y);
 		end
+
+		-- Apply the atlas and anchoring data defined in the layout info for all border decoration textures.
+		for textureKey, atlas in pairs(layoutInfo.renownFrameDecorations) do
+			local texture = frame[textureKey];
+			if texture then
+				texture:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
+				texture:SetShown(true);
+
+				local anchorPoint = layoutInfo.renownFrameDecorationAnchors[textureKey];
+				if anchorPoint then
+					texture:ClearAllPoints();
+					texture:SetPoint(anchorPoint.point, frame, anchorPoint.relativePoint, anchorPoint.x, anchorPoint.y);
+				end
+			end
+		end
+	else
+		NineSliceUtil.ApplyLayout(frame.NineSlice, MajorFactionsLayout, textureKit);
+		NineSliceUtil.DisableSharpening(frame.NineSlice);
+
+		-- Set up the custom top border
+		local topBorderFormat = "_%s-NineSlice-EdgeTop";
+		frame.NineSlice.TopLeftBorder:SetAtlas(topBorderFormat:format(textureKit), TextureKitConstants.IgnoreAtlasSize);
+		frame.NineSlice.TopLeftBorder:ClearAllPoints();
+		frame.NineSlice.TopLeftBorder:SetPoint("TOPLEFT", frame.NineSlice.TopLeftCorner, "TOPRIGHT");
+		frame.NineSlice.TopRightBorder:SetAtlas(topBorderFormat:format(textureKit), TextureKitConstants.IgnoreAtlasSize);
+		frame.NineSlice.TopRightBorder:ClearAllPoints();
+		frame.NineSlice.TopRightBorder:SetPoint("TOPRIGHT", frame.NineSlice.TopRightCorner, "TOPLEFT");
+
+		local renownFrameDecorations = layoutInfo.renownFrameDecorations;
+		if renownFrameDecorations then
+			SetupAtlasesOnRegions(frame.NineSlice, renownFrameDecorations, TextureKitConstants.UseAtlasSize);
+
+			for regionKey, offsets in pairs(layoutInfo.renownFrameDecorationAnchors) do
+				local region = frame.NineSlice[regionKey];
+				region:ClearPointsOffset();
+				region:AdjustPointsOffset(offsets.x, offsets.y);
+			end
+		end
+	end
+
+	if layoutInfo.closeButtonOffset then
+		frame.CloseButton:SetPoint("TOPRIGHT", frame, "TOPRIGHT", layoutInfo.closeButtonOffset.x, layoutInfo.closeButtonOffset.y);
 	end
 end
 
@@ -218,12 +287,14 @@ function MajorFactionRenownMixin:SetUpMajorFactionData()
 		currentFactionID = majorFactionID;
 		currentFactionData = majorFactionData;
 
-		local layoutInfo = TextureKitOverrideLayoutInfo[currentFactionData.textureKit] or ExpansionLayoutInfo[currentFactionData.expansionID];
-		SetupRenownFrameNineSlice(self, layoutInfo);
+		ClearRenownFrameNineSlice(self);
+
+		self.layoutInfo = TextureKitOverrideLayoutInfo[currentFactionData.textureKit] or ExpansionLayoutInfo[currentFactionData.expansionID];
+		SetupRenownFrameNineSlice(self);
 
 		local factionTextureKit = currentFactionData.textureKit;
 		local renownFrameTextureKitRegions = mainTextureKitRegions;
-		local backgroundFormat = layoutInfo.textureKit .. "-MajorFactions-%s-Background";
+		local backgroundFormat = self.layoutInfo.textureKit .. "-MajorFactions-%s-Background";
 		renownFrameTextureKitRegions.Background = backgroundFormat;
 		SetupTextureKit(self, renownFrameTextureKitRegions);
 

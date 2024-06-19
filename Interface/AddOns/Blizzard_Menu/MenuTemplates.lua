@@ -193,12 +193,12 @@ function MenuTemplates.SetHierarchyEnabled(frame, enabled)
 	Recurse(frame);
 end
 
-function MenuTemplates.CreateFrame(initializer)
-	return CreateMenuElementDescription("Frame", initializer);
+function MenuTemplates.CreateFrame(initializer, data)
+	return CreateMenuElementDescription("Frame", initializer, data);
 end
 
-function MenuTemplates.CreateTemplate(template, initializer)
-	return CreateMenuElementDescription(template, initializer);
+function MenuTemplates.CreateTemplate(template, initializer, data)
+	return CreateMenuElementDescription(template, initializer, data);
 end
 
 function MenuTemplates.CreateTitle(text)
@@ -520,7 +520,23 @@ end
 function DropdownSelectionTextMixin:OnEnter()
 	ButtonStateBehaviorMixin.OnEnter(self);
 
-	if self.Text:IsTruncated() then
+	if self:ShouldShowTooltip() then
+		self:ShowTooltip();
+	end
+end
+
+function DropdownSelectionTextMixin:ShouldShowTooltip()
+	return self.Text:IsTruncated() or self.tooltipFunc;
+end
+
+function DropdownSelectionTextMixin:SetTooltip(tooltipFunc)
+	self.tooltipFunc = tooltipFunc;
+end
+
+function DropdownSelectionTextMixin:ShowTooltip()
+	if self.tooltipFunc then
+		MenuUtil.ShowTooltip(self, self.tooltipFunc);
+	else
 		MenuUtil.ShowTooltip(self, function(tooltip)
 			GameTooltip_SetTitle(tooltip, self.Text:GetText());
 		end);

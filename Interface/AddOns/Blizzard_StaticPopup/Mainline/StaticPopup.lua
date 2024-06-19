@@ -395,7 +395,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		dialog.SubText.text_arg2 = text_arg2;
 	elseif ( which == "BILLING_NAG" ) then
 		text:SetFormattedText(info.text, text_arg1, MINUTES);
-	elseif ( which == "SPELL_CONFIRMATION_PROMPT" or which == "SPELL_CONFIRMATION_WARNING" ) then
+	elseif ( which == "SPELL_CONFIRMATION_PROMPT" or which == "SPELL_CONFIRMATION_WARNING" or which == "SPELL_CONFIRMATION_PROMPT_ALERT" or which == "SPELL_CONFIRMATION_WARNING_ALERT" ) then
 		text:SetText(text_arg1);
 		info.text = text_arg1;
 		info.timeout = text_arg2;

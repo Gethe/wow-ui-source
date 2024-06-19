@@ -341,7 +341,7 @@ StaticPopupDialogs["CONFIRM_UPGRADE_ITEM"] = {
 		ItemUpgradeFrame:OnConfirm();
 	end,
 	OnCancel = function()
-		ItemUpgradeFrame:Update();
+		ItemUpgradeFrame:UpdateUpgradeItemInfo();
 	end,
 	OnShow = function(self, data)
 		if data.isItemBound then
@@ -3733,7 +3733,7 @@ StaticPopupDialogs["GUILD_IMPEACH"] = {
 	exclusive = 1,
 }
 
-StaticPopupDialogs["SPELL_CONFIRMATION_PROMPT" ] = {
+StaticPopupDialogs["SPELL_CONFIRMATION_PROMPT"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function(self)
@@ -3747,7 +3747,23 @@ StaticPopupDialogs["SPELL_CONFIRMATION_PROMPT" ] = {
 	hideOnEscape = 1
 }
 
-StaticPopupDialogs["SPELL_CONFIRMATION_WARNING" ] = {
+StaticPopupDialogs["SPELL_CONFIRMATION_PROMPT_ALERT"] = {
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(self)
+		AcceptSpellConfirmationPrompt(self.data);
+	end,
+	OnCancel = function(self)
+		DeclineSpellConfirmationPrompt(self.data);
+	end,
+	exclusive = 0,
+	whileDead = 1,
+	hideOnEscape = 1,
+	showAlert = 1
+}
+
+
+StaticPopupDialogs["SPELL_CONFIRMATION_WARNING"] = {
 	button1 = OKAY,
 	OnAccept = function(self)
 		AcceptSpellConfirmationPrompt(self.data);
@@ -3755,6 +3771,17 @@ StaticPopupDialogs["SPELL_CONFIRMATION_WARNING" ] = {
 	exclusive = 0,
 	whileDead = 1,
 	hideOnEscape = 1
+}
+
+StaticPopupDialogs["SPELL_CONFIRMATION_WARNING_ALERT"] = {
+	button1 = OKAY,
+	OnAccept = function(self)
+		AcceptSpellConfirmationPrompt(self.data);
+	end,
+	exclusive = 0,
+	whileDead = 1,
+	hideOnEscape = 1,
+	showAlert = 1
 }
 
 StaticPopupDialogs["CONFIRM_LAUNCH_URL"] = {

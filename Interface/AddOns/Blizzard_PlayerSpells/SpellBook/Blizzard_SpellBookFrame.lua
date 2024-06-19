@@ -384,7 +384,7 @@ function SpellBookFrameMixin:UpdateDisplayedSpells(forceUpdateSpellGroups, reset
 	if didSpellGroupsChange or forceUpdateSpellGroups then
 		-- Spell groups updated, so recreate data provider for spell book items using them
 		local byDataGroup = true;
-		local categoryData = activeCategoryMixin:GetSpellBookItemData(byDataGroup, GenerateClosure(self.ShouldDisplaySpellBookItem, self));
+		local categoryData = activeCategoryMixin:GetSpellBookItemData(byDataGroup, self:GetSpellBookItemFilterInstance());
 		local categoryDataProvider = CreateDataProvider(categoryData);
 		self.PagedSpellsFrame:SetDataProvider(categoryDataProvider, not resetCurrentPage);
 	else
@@ -395,15 +395,22 @@ function SpellBookFrameMixin:UpdateDisplayedSpells(forceUpdateSpellGroups, reset
 	end
 end
 
-function SpellBookFrameMixin:ShouldDisplaySpellBookItem(slotIndex, spellBank)
-	if Kiosk.IsEnabled() then
+-- Creates an instance of ShouldDisplaySpellBookItem with injected state checks to prevent needlessly repeating expensive checks over every single SpellBookItem
+function SpellBookFrameMixin:GetSpellBookItemFilterInstance()
+	local isKioskEnabled = Kiosk.IsEnabled();
+	local isHidingPassives = self.HidePassivesCheckButton:IsControlEnabled() and self.HidePassivesCheckButton:IsControlChecked();
+	return GenerateClosure(self.ShouldDisplaySpellBookItem, self, isKioskEnabled, isHidingPassives);
+end
+
+function SpellBookFrameMixin:ShouldDisplaySpellBookItem(isKioskEnabled, isHidingPassives, slotIndex, spellBank)
+	if isKioskEnabled then
 		-- If in Kiosk mode, filter out any future spells
 		local spellBookItemType = C_SpellBook.GetSpellBookItemType(slotIndex, self.spellBank);
 		if not spellBookItemType or spellBookItemType == Enum.SpellBookItemType.FutureSpell then
 			return false;
 		end
 	end
-	if self.HidePassivesCheckButton:IsControlEnabled() and self.HidePassivesCheckButton:IsControlChecked() then
+	if isHidingPassives then
 		local isPassive = C_SpellBook.IsSpellBookItemPassive(slotIndex, spellBank);
 		if isPassive then
 			return false;

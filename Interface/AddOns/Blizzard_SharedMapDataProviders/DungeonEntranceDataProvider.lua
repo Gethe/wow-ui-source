@@ -2,10 +2,12 @@ DungeonEntranceDataProviderMixin = CreateFromMixins(CVarMapCanvasDataProviderMix
 DungeonEntranceDataProviderMixin:Init("showDungeonEntrancesOnMap");
 
 function DungeonEntranceDataProviderMixin:OnShow()
+	CVarMapCanvasDataProviderMixin.OnShow(self);
 	EventRegistry:RegisterCallback("Supertracking.OnChanged", self.OnSuperTrackingChanged, self);
 end
 
 function DungeonEntranceDataProviderMixin:OnHide()
+	CVarMapCanvasDataProviderMixin.OnHide(self);
 	EventRegistry:UnregisterCallback("Supertracking.OnChanged", self);
 end
 

@@ -16,11 +16,12 @@ the children to visually update.
 --]]
 MenuResponse = 
 {
-	Open = 1,
-	Refresh = 2,
-	Close = 3,
-	CloseAll = 4,
+	Open = 1, -- Menu remains open and unchanged
+	Refresh = 2, -- All frames in the menu are reinitialized
+	Close = 3, -- Parent menus remain open but this menu closes
+	CloseAll = 4, -- All menus close
 };
+
 
 --[[
 Passed to element handlers to inform which input is responsible for invoking the element handler,

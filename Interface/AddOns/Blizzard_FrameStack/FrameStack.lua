@@ -1,14 +1,10 @@
-do 
+do
 	local frameStackLoader = CreateFrame("FRAME");
 	frameStackLoader:RegisterEvent("TOGGLE_FRAMESTACK");
 
 	frameStackLoader:SetScript("OnEvent", function(self, event, ...)
 		if (event == "TOGGLE_FRAMESTACK") then
-			if (IsOnGlueScreen()) then
-				C_AddOns.LoadAddOn("Blizzard_DebugTools");
-			else
-				UIParentLoadAddOn("Blizzard_DebugTools");
-			end
+			C_AddOns.LoadAddOn("Blizzard_DebugTools");
 
 			local showHidden, showRegions, showAnchors = ...;
 			if (showHidden == nil) then

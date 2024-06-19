@@ -637,12 +637,12 @@ end
 
 function SecureFontStringPoolCollectionMixin:GetOrCreatePool(...)
 	local args = FontStringPoolCollection_ArgsToTable(...)
-	return PoolCollectionProxyMixin.GetOrCreatePool(self, args);
+	return SecurePoolCollectionMixin.GetOrCreatePoolWithArgs(self, args);
 end
 
 function SecureFontStringPoolCollectionMixin:CreatePool(...)
 	local args = FontStringPoolCollection_ArgsToTable(...);
-	return PoolCollectionProxyMixin.CreatePool(self, args);
+	return SecurePoolCollectionMixin.CreatePoolWithArgs(self, args);
 end
 
 function SecureFontStringPoolCollectionMixin:CreatePoolInternal(args)

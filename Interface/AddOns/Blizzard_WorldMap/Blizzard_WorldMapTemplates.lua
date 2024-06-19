@@ -219,9 +219,28 @@ function WorldMapTrackingOptionsButtonMixin:SetupMenu()
 		AddFilter(rootDescription, "questPOI");
 		AddFilter(rootDescription, "dragonRidingRacesFilter");
 		AddFilter(rootDescription, "showDungeonEntrancesOnMap");
+		AddFilter(rootDescription, "showDelveEntrancesOnMap");
 		AddFilter(rootDescription, "showTamers");
 		AddFilter(rootDescription, "trivialQuests");
-		AddFilter(rootDescription, "showAccountCompletedQuests");
+
+		local accountCompletedQuestsFilter = AddFilter(rootDescription, "showAccountCompletedQuests");		
+		accountCompletedQuestsFilter:AddInitializer(function(button, description, menu)
+			if not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_COMPLETED_QUESTS_FILTER_SEEN) then
+				button.newFeatureFrame = MenuTemplates.AttachNewFeatureFrame(button);
+				button.newFeatureFrame:SetPoint("RIGHT", button.leftTexture1, "LEFT", 0, 0);
+			end
+
+			button:SetScript("OnHide", function() SetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_COMPLETED_QUESTS_FILTER_SEEN, true); end)
+		end);
+		accountCompletedQuestsFilter:SetOnEnter(function(button)
+			GameTooltip:SetOwner(button.fontString, "ANCHOR_BOTTOMLEFT", -22, 75);
+			GameTooltip_AddHighlightLine(GameTooltip, ACCOUNT_COMPLETED_QUESTS_FILTER_DESCRIPTION);
+			GameTooltip:Show();
+		end);
+		accountCompletedQuestsFilter:SetOnLeave(function(button)
+			GameTooltip_Hide();
+		end);
+
 		AddFilter(rootDescription, "contentTrackingFilter");
 
 		if arch then
@@ -254,6 +273,7 @@ function WorldMapTrackingOptionsButtonMixin:BuildFilterTable()
 	AddFilter(DRAGONRIDING_RACES_MAP_TOGGLE, "dragonRidingRacesFilter");
 	AddFilter(DRAGONRIDING_RACES_MAP_TOGGLE, "dragonRidingRacesFilterWQ");
 	AddFilter(SHOW_DUNGEON_ENTRACES_ON_MAP_TEXT, "showDungeonEntrancesOnMap");
+	AddFilter(DELVES_SHOW_ENTRACES_ON_MAP_TEXT, "showDelveEntrancesOnMap");
 	AddFilter(CONTENT_TRACKING_MAP_TOGGLE, "contentTrackingFilter");
 	AddFilter(ARCHAEOLOGY_SHOW_DIG_SITES, "digSites", Enum.MinimapTrackingFilter.Digsites);
 	AddFilter(MINIMAP_TRACKING_TRIVIAL_QUESTS, "trivialQuests", Enum.MinimapTrackingFilter.TrivialQuests, true);

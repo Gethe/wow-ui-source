@@ -63,29 +63,45 @@ function CommunitiesGuildInfoFrame_UpdateText(self, infoText)
 	self.DetailsFrame:SetVerticalScroll(0);
 end
 
+function CommunitiesGuildInfoFrame_HideChallenges(self)
+	self.BG:Hide();
+	self.Header1Label:SetText(GUILD_MOTD_LABEL);
+	self.Header2Label:Hide();
+	self.Bar1Left:Hide();
+	self.HorizontalBar:Hide();
+	self.Header2:Hide();
+
+	self.EditMOTDButton:SetPoint("RIGHT", self.Header1, "RIGHT", -8, 0);
+	self.MOTDScrollFrame:SetPoint("TOPLEFT", self.Header1, "BOTTOMLEFT", 14, -1);
+end
+
 function CommunitiesGuildInfoFrame_UpdateChallenges(self)
-	for i = 1, #self.Challenges do
-		local frame = self.Challenges[i];
-		local orderIndex = GUILD_CHALLENGE_ORDER[i];
-		if orderIndex then
-			local id, current, max, desc = GetGuildChallengeInfo(orderIndex);
-			if id then
-				frame.orderIndex = orderIndex;
-				frame.label:SetText(_G["GUILD_CHALLENGE_TYPE"..id]);
-				if ( current == max ) then
-					frame.count:Hide();
-					frame.check:Show();
-					frame.label:SetTextColor(0.1, 1, 0.1);
-				else
-					frame.count:Show();
-					frame.count:SetFormattedText(GUILD_CHALLENGE_PROGRESS_FORMAT, current, max);
-					frame.check:Hide();
-					frame.label:SetTextColor(1, 1, 1);
-				end				
+	if (GetNumGuildChallenges() > 0) then
+		for i = 1, #self.Challenges do
+			local frame = self.Challenges[i];
+			local orderIndex = GUILD_CHALLENGE_ORDER[i];
+			if orderIndex then
+				local id, current, max, desc = GetGuildChallengeInfo(orderIndex);
+				if id then
+					frame.orderIndex = orderIndex;
+					frame.label:SetText(_G["GUILD_CHALLENGE_TYPE"..id]);
+					if ( current == max ) then
+						frame.count:Hide();
+						frame.check:Show();
+						frame.label:SetTextColor(0.1, 1, 0.1);
+					else
+						frame.count:Show();
+						frame.count:SetFormattedText(GUILD_CHALLENGE_PROGRESS_FORMAT, current, max);
+						frame.check:Hide();
+						frame.label:SetTextColor(1, 1, 1);
+					end				
+				end
+			else
+				frame:Hide();
 			end
-		else
-			frame:Hide();
 		end
+	else
+		CommunitiesGuildInfoFrame_HideChallenges(self);
 	end
 end
 

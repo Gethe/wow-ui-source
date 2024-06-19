@@ -131,7 +131,7 @@ function InspectFrame_UpdateTabs()
 	end
 
 	-- Guild tab
-	local _, _, guildName = GetInspectGuildInfo(InspectFrame.unit);
+	local _, _, guildName = C_PaperDollInfo.GetInspectGuildInfo(InspectFrame.unit);
 	if ( guildName and guildName ~= "" ) then
 		PanelTemplates_EnableTab(InspectFrame, 3);
 	else

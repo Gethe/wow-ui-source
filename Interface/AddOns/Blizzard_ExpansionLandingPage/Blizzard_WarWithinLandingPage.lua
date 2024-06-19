@@ -70,7 +70,7 @@ end
 
 function WarWithinLandingOverlayMixin:OnLoad()
 	self.CloseButton:ClearAllPoints();
-	local xOffset, yOffset = -3, -10;
+	local xOffset, yOffset = -9, -9;
 	self.CloseButton:SetPoint("TOPRIGHT", self, "TOPRIGHT", xOffset, yOffset);
 	self:RefreshOverlay();
 end
@@ -96,8 +96,9 @@ function WarWithinLandingOverlayMixin:SetUpMajorFactionList()
 	
 	self.MajorFactionList = LandingPageMajorFactionList.Create(self);
 	self.MajorFactionList:ClearAllPoints();
-	local xOffset, yOffset = 45, -20;
+	local xOffset, yOffset = 35, -10;
 	self.MajorFactionList:SetPoint("TOPRIGHT", self.Header.TitleDivider, "BOTTOMRIGHT", xOffset, yOffset);
+	self.MajorFactionList:SetSize(450, 488);
 
 	-- The ScrollFadeOverlay should be on top of the Major Faction List to fade out elements as you scroll
 	self.ScrollFadeOverlay:SetFrameLevel(self.MajorFactionList:GetFrameLevel() + 10);

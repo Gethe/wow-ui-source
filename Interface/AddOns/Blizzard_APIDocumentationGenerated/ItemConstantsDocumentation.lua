@@ -540,6 +540,23 @@ local ItemConstants =
 			},
 		},
 		{
+			Name = "SlotRegionMask",
+			Type = "Enumeration",
+			NumValues = 7,
+			MinValue = 1,
+			MaxValue = 64,
+			Fields =
+			{
+				{ Name = "Invalid", Type = "SlotRegionMask", EnumValue = 1 },
+				{ Name = "PlayerEquip", Type = "SlotRegionMask", EnumValue = 2 },
+				{ Name = "PlayerBags", Type = "SlotRegionMask", EnumValue = 4 },
+				{ Name = "PlayerInv", Type = "SlotRegionMask", EnumValue = 8 },
+				{ Name = "Bank", Type = "SlotRegionMask", EnumValue = 16 },
+				{ Name = "ReagentBank", Type = "SlotRegionMask", EnumValue = 32 },
+				{ Name = "AccountBank", Type = "SlotRegionMask", EnumValue = 64 },
+			},
+		},
+		{
 			Name = "SubcontainerType",
 			Type = "Enumeration",
 			NumValues = 37,

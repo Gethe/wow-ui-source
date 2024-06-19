@@ -113,6 +113,7 @@ function ClassTalentSearchMixin:UpdateFullSearchResults()
 		return;
 	end
 
+	self.cachedSearchableNodesMap = nil;
 	self.searchController:UpdateActiveSearchResults();
 	self:DisplayFullSearchResults();
 end
@@ -122,6 +123,7 @@ function ClassTalentSearchMixin:ClearActiveSearchState()
 		return;
 	end
 
+	self.cachedSearchableNodesMap = nil;
 	self.searchController:ClearActiveSearchResults();
 end
 
@@ -142,6 +144,7 @@ function ClassTalentSearchMixin:OnNotOnActionBarButtonClicked()
 end
 
 function ClassTalentSearchMixin:ActivateSearchFilter(filterType, ...)
+	self.cachedSearchableNodesMap = nil;
 	self.searchController:ActivateSearchFilter(filterType, ...);
 	self:DisplayFullSearchResults();
 end
@@ -171,13 +174,17 @@ function ClassTalentSearchMixin:GetSearchPreviewContainer()
 end
 
 function ClassTalentSearchMixin:GetAllSearchableNodeInfos()
-	local nodeInfoMap = {};
+	if self.cachedSearchableNodesMap then
+		return self.cachedSearchableNodesMap;
+	end
+
+	self.cachedSearchableNodesMap = {};
 	for talentButton in self:EnumerateAllTalentButtons() do
 		local nodeID = talentButton:GetNodeID();
 		local nodeInfo = talentButton:GetNodeInfo();
 		if nodeID and nodeInfo then
-			nodeInfoMap[nodeID] = nodeInfo;
+			self.cachedSearchableNodesMap[nodeID] = nodeInfo;
 		end
 	end
-	return nodeInfoMap;
+	return self.cachedSearchableNodesMap;
 end

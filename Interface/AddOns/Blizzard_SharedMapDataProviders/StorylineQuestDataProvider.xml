@@ -19,19 +19,19 @@
 			<Layer level="ARTWORK">
 				<Texture parentKey="Texture" atlas="QuestNormal"/>
 			</Layer>
-		</Layers>		
-	</Frame>			
+		</Layers>
+	</Frame>
 
 	<Frame name="QuestHubPinTemplate" inherits="AreaPOIPinTemplate, HeightIndicatorMapPinTemplate" mixin="QuestHubPinMixin" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="PriorityQuest" atlas="QuestNormal">
-					<Size x="16" y="16" />
+					<Size x="18" y="18" />
 					<Anchors>
-						<Anchor point="CENTER" relativePoint="TOPRIGHT" x="-5" y="-5"/>
+						<Anchor point="CENTER" relativePoint="BOTTOM" x="0" y="6"/>
 					</Anchors>
 				</Texture>
 			</Layer>
-		</Layers>		
+		</Layers>
 	</Frame>
 </Ui>

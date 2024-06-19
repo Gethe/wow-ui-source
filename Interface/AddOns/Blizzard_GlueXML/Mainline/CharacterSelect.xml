@@ -306,6 +306,7 @@
 						<Scripts>
 							<OnLoad method="OnLoad"/>
 							<OnUpdate method="OnUpdate"/>
+							<OnModelLoaded method="OnModelLoaded"/>
 						</Scripts>
 					</MapScene>
 					<ModelFFX parentKey="ModelFFX" name="CharacterSelectModelFFX" mixin="CharacterSelectModelFFXMixin" setAllPoints="true">

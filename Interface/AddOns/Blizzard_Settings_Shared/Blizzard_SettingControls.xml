@@ -21,6 +21,9 @@
 				</FontString>
 			</Layer>
 		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
 	</Frame>
 
 	<Frame name="SettingsAddOnDisabledLabelTemplate" virtual="true">

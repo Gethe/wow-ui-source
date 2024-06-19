@@ -42,4 +42,34 @@ do
 			return spellCooldownInfo.startTime, spellCooldownInfo.duration, spellCooldownInfo.isEnabled, spellCooldownInfo.modRate;
 		end
 	end
+
+	BOOKTYPE_SPELL = "spell";
+
+	GetSpellBookItemName = function(index, bookType)
+		local spellBank = (bookType == BOOKTYPE_SPELL) and Enum.SpellBookSpellBank.Player or Enum.SpellBookSpellBank.Pet;
+		return C_SpellBook.GetSpellBookItemName(index, spellBank);
+	end
+
+	GetSpellTexture = function(spellID)
+		return C_Spell.GetSpellTexture(spellID);
+	end
+
+	GetSpellCharges = function(spellID)
+		local spellChargeInfo = C_Spell.GetSpellCharges(spellID);
+		if spellChargeInfo then
+			return spellChargeInfo.currentCharges, spellChargeInfo.maxCharges, spellChargeInfo.cooldownStartTime, spellChargeInfo.cooldownDuration, spellChargeInfo.chargeModRate;
+		end
+	end
+
+	GetSpellDescription = function(spellID)
+		return C_Spell.GetSpellDescription(spellID);
+	end
+
+	GetSpellCount = function(spellID)
+		return C_Spell.GetSpellCastCount(spellID);
+	end
+
+	IsUsableSpell = function(spellID)
+		return C_Spell.IsSpellUsable(spellID);
+	end
 end

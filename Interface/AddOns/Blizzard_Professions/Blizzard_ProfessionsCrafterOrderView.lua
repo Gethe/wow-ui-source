@@ -1,4 +1,37 @@
 
+ProfessionsCrafterOrderRewardMixin = CreateFromMixins(ProfessionsReagentSlotButtonMixin);
+
+function ProfessionsCrafterOrderRewardMixin:SetReward(reward)
+	self.reward = reward;
+
+	if reward.itemLink then
+		self:SetItem(reward.itemLink);
+		local _, itemQuality, _ = self:GetItemInfo();
+		self:SetSlotQuality(self, itemQuality);
+		self.Count:SetText("");
+	elseif reward.currencyType then
+		self:SetCurrency(reward.currencyType);
+		self.Count:SetText(self.reward.currencyAmount);
+	end
+
+	self:Show();
+end
+
+function ProfessionsCrafterOrderRewardMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+
+	local itemLink = self:GetItemLink();
+	if itemLink then
+		GameTooltip:SetHyperlink(itemLink);
+	elseif self.reward.currencyType then
+		GameTooltip:SetCurrencyByID(self.reward.currencyType, self.reward.currencyAmount);
+	end
+end
+
+function ProfessionsCrafterOrderRewardMixin:OnLeave()
+	GameTooltip:Hide();
+end
+
 ProfessionsCrafterOrderViewMixin = {};
 local ownReagentsConfirmationReferenceKey = {};
 local ignoreConfirmationReferenceKey = {};
@@ -79,7 +112,7 @@ function ProfessionsCrafterOrderViewMixin:InitButtons()
 	self.OrderInfo.SocialDropdown:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_PROFESSIONS_CRAFTER_ORDER_VIEW");
 
-		if not self.order then
+		if not self.order or self.order.customerGuid == nil then
 			return;
 		end
 
@@ -725,6 +758,25 @@ function ProfessionsCrafterOrderViewMixin:SetOrder(order)
     self.OrderInfo.ConsortiumCutMoneyDisplayFrame:SetAmount(order.consortiumCut);
     self.OrderInfo.FinalTipMoneyDisplayFrame:SetAmount(order.tipAmount - order.consortiumCut);
 
+	for i, reward in ipairs(order.npcOrderRewards) do
+		if i <= #self.OrderInfo.NPCRewardsFrame.RewardItems then
+			self.OrderInfo.NPCRewardsFrame.RewardItems[i]:SetReward(reward);
+		end
+	end
+	for i = #order.npcOrderRewards + 1, #self.OrderInfo.NPCRewardsFrame.RewardItems do
+		self.OrderInfo.NPCRewardsFrame.RewardItems[i]:Hide();
+	end
+	self.OrderInfo.NPCRewardsFrame:SetShown(#order.npcOrderRewards > 0);
+
+	assertsafe(
+		#order.npcOrderRewards <= #self.OrderInfo.NPCRewardsFrame.RewardItems,
+		"Too many rewards (%d rewards > %d supported in UI) in NPC Crafting Order Set ID %d Treasure ID %d",
+		#order.npcOrderRewards,
+		#self.OrderInfo.NPCRewardsFrame.RewardItems,
+		order.npcCraftingOrderSetID, 
+		order.npcTreasureID
+	);
+
 	local warningText, atlas;
 	if self.order.reagentState == Enum.CraftingOrderReagentsType.All then
 		warningText = PROFESSIONS_CUSTOMER_ORDER_REAGENTS_ALL;
@@ -820,7 +872,7 @@ function ProfessionsCrafterOrderViewMixin:SetOrderState(orderState)
         showStartOrderButton = true;
         showSchematic = true;
         showDeclineOrderButton = self.order.orderType == Enum.CraftingOrderType.Personal;
-        showSocialDropdown = self.order.customerGuid ~= UnitGUID("player");
+        showSocialDropdown = self.order.customerGuid and self.order.customerGuid ~= UnitGUID("player ");
     elseif orderState == Enum.CraftingOrderState.Claimed then
         showTimeRemaining = true;
 		showSocialDropdown = true;

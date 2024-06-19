@@ -17,6 +17,7 @@ local CURRENCY_TRANSFER_TOGGLE_BUTTON_EVENTS = {
 local DISABLED_ERROR_MESSAGE = {
 	[Enum.AccountCurrencyTransferResult.MaxQuantity] = CURRENCY_TRANSFER_DISABLED_MAX_QUANTITY,
 	[Enum.AccountCurrencyTransferResult.NoValidSourceCharacter] = CURRENCY_TRANSFER_DISABLED_NO_VALID_SOURCES,
+	[Enum.AccountCurrencyTransferResult.CannotUseCurrency] = CURRENCY_TRANSFER_DISABLED_UNMET_REQUIREMENTS,
 };
 
 function CurrencyTransferToggleButtonMixin:GetDisabledErrorMessage(dataReady, failureReason)

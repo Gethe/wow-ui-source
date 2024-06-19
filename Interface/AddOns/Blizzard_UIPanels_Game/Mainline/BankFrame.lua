@@ -284,10 +284,25 @@ function CloseBankBagFrames ()
 	end
 end
 
+local function GetViewableBankTypes()
+	local usableBankTypes = {};
+	for key, bankType in pairs(Enum.BankType) do
+		if C_Bank.CanViewBank(bankType) then
+			table.insert(usableBankTypes, bankType);
+		end
+	end
+
+	return usableBankTypes;
+end
+
+local function HasAnyViewableBankTypes()
+	return #GetViewableBankTypes() > 0;
+end
+
 local function RefreshBankTabVisibility()
 	local usableBankTabIndicies = {};
 	for index, panelData in pairs(BANK_PANELS) do
-		if C_Bank.CanUseBank(panelData.bankType) then
+		if C_Bank.CanViewBank(panelData.bankType) then
 			table.insert(usableBankTabIndicies, index);
 		end
 	end
@@ -302,6 +317,13 @@ local function RefreshBankTabVisibility()
 end
 
 function BankFrame_Open()
+	if not HasAnyViewableBankTypes() then
+		HideUIPanel(BankFrame);
+		C_Bank.CloseBankFrame();
+		UIErrorsFrame:AddExternalErrorMessage(ERR_BANK_NOT_ACCESSIBLE);
+		return;
+	end
+
 	RefreshBankTabVisibility();
 
 	BankFrame:SetPortraitToUnit("npc");
@@ -371,7 +393,7 @@ function BankFrame_OnShow (self)
 	UpdateBagSlotStatus();
 	OpenAllBags(self);
 
-	if (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_REAGENT_BANK_UNLOCK)) then
+	if C_Bank.CanViewBank(Enum.BankType.Character) and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_REAGENT_BANK_UNLOCK) then
 		if (not IsReagentBankUnlocked()) then
 			local helpTipInfo = {
 				text = REAGENT_BANK_HELP,

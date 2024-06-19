@@ -152,7 +152,7 @@ local EXTRA_GUILD_COLUMNS = {
 		attribute = "achievementPoints",
 		width = 115,
 		CanShow = function()
-			return true;
+			return CanShowAchievementUI();
 		end,
 	};
 	[EXTRA_GUILD_COLUMN_PROFESSION] = {
@@ -463,7 +463,11 @@ function CommunitiesMemberListMixin:OnLoad()
 	self.ShowOfflineButton:SetChecked(self.showOfflinePlayers);
 
 	self:SetExpandedDisplay(false);
-	self:SetGuildColumnIndex(EXTRA_GUILD_COLUMN_ACHIEVEMENT);
+	if( CanShowAchievementUI() ) then
+		self:SetGuildColumnIndex(EXTRA_GUILD_COLUMN_ACHIEVEMENT);
+	else
+		self:SetGuildColumnIndex(nil);
+	end
 end
 
 function CommunitiesMemberListMixin:OnShow()
@@ -586,7 +590,11 @@ function CommunitiesMemberListMixin:RefreshLayout()
 			if clubInfo.clubType == Enum.ClubType.Guild then
 				guildColumnIndex = self:GetGuildColumnIndex();
 				self.columnInfo = GUILD_COLUMN_INFO;
-				self.ColumnDisplay:LayoutColumns(GUILD_COLUMN_INFO, EXTRA_GUILD_COLUMNS[guildColumnIndex]);
+				if (guildColumnIndex) then
+					self.ColumnDisplay:LayoutColumns(GUILD_COLUMN_INFO, EXTRA_GUILD_COLUMNS[guildColumnIndex]);
+				else
+					self.ColumnDisplay:LayoutColumns(GUILD_COLUMN_INFO);
+				end
 			elseif clubInfo.clubType == Enum.ClubType.Character then
 				self.columnInfo = CHARACTER_COLUMN_INFO;
 				self.ColumnDisplay:LayoutColumns(CHARACTER_COLUMN_INFO);
@@ -1517,7 +1525,14 @@ function GuildMemberListDropdownMixin:OnShow()
 	self:ResetGuildColumnIndex();
 	self:SetupMenu();
 
-	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.ClubSelected, self.OnCommunitiesClubSelected, self);
+	local communitiesFrame = self:GetCommunitiesFrame();
+	if( CanShowAchievementUI() ) then
+		communitiesFrame.MemberList:SetGuildColumnIndex(1);
+	else
+		communitiesFrame.MemberList:SetGuildColumnIndex(nil);
+	end
+
+	communitiesFrame:RegisterCallback(CommunitiesFrameMixin.Event.ClubSelected, self.OnCommunitiesClubSelected, self);
 end
 
 function GuildMemberListDropdownMixin:ResetGuildColumnIndex()

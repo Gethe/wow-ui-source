@@ -5,9 +5,9 @@ local BagConstants =
 		{
 			Name = "BagFlag",
 			Type = "Enumeration",
-			NumValues = 26,
+			NumValues = 27,
 			MinValue = 1,
-			MaxValue = 33554432,
+			MaxValue = 67108864,
 			Fields =
 			{
 				{ Name = "DontFindStack", Type = "BagFlag", EnumValue = 1 },
@@ -36,6 +36,7 @@ local BagConstants =
 				{ Name = "IgnoreSoulbound", Type = "BagFlag", EnumValue = 8388608 },
 				{ Name = "IgnoreReagentBags", Type = "BagFlag", EnumValue = 16777216 },
 				{ Name = "LookInAccountBankOnly", Type = "BagFlag", EnumValue = 33554432 },
+				{ Name = "HasRefund", Type = "BagFlag", EnumValue = 67108864 },
 			},
 		},
 		{

@@ -317,7 +317,12 @@ function Class_DracthyrLowHealthWatcher:ShouldUpdateTutorialState()
 	end
 
 	local isDeadOrGhost = UnitIsDeadOrGhost(playerUnitToken);
-	local healthPercent = UnitHealth(playerUnitToken) / UnitHealthMax(playerUnitToken);
+	local unitHealth = UnitHealth(playerUnitToken);
+	local unitMaxHealth = UnitHealthMax(playerUnitToken);
+	if unitMaxHealth == 0 then
+		return false;
+	end
+	local healthPercent = unitHealth / unitMaxHealth;
 	return not isDeadOrGhost and healthPercent <= LOW_HEALTH_PERCENTAGE;
 end
 

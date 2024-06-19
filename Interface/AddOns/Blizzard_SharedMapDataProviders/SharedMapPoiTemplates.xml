@@ -32,7 +32,7 @@
 	<Frame name="SuperTrackableMapPinTemplate" mixin="SuperTrackablePinMixin" enableMouseClicks="true" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="SuperTrackGlow" atlas="UI-QuestPoi-OuterGlow" hidden="true"/> <!-- Testing with this one, might change -->
+				<Texture parentKey="SuperTrackGlow" atlas="UI-QuestPoi-OuterGlow" hidden="true"/>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="7">
 				<Texture parentKey="SuperTrackMarker" atlas="Waypoint-MapPin-Tracked" hidden="true">

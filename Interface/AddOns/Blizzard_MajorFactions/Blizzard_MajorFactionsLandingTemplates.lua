@@ -8,17 +8,21 @@ local buttonAtlasFormatsByExpansion = {
 		progressBarFillAtlas = "dragonflight-landingpage-radial-%s",
 	},
 	[LE_EXPANSION_WAR_WITHIN] = {
-		normalAtlas = "dragonflight-landingpage-renownbutton-%s",
-		hoverAtlas = "dragonflight-landingpage-renownbutton-%s-hover",
-		lockedAtlas = "dragonflight-landingpage-renownbutton-locked",
-		progressBarBorderAtlas = "dragonflight-landingpage-radial-frame",
-		progressBarFillAtlas = "dragonflight-landingpage-radial-%s",
+		normalAtlas = "thewarwithin-landingpage-renownbutton-%s",
+		hoverAtlas = nil, --Reuses normalAtlas in additive mode.
+		lockedAtlas = "thewarwithin-landingpage-renownbutton-locked",
+		progressBarBorderAtlas = "thewarwithin-landingpage-radial-frame",
+		progressBarFillAtlas = "thewarwithin-landingpage-radial-%s",
 	},
 };
 
 local factionIconSize = {
 	["Default"] = 44,
 	["Dream"] = 48,
+	["flame"] = 64,
+	["storm"] = 54,
+	["candle"] = 58,
+	["web"] = 58,
 }
 
 LandingPageMajorFactionList = {};
@@ -139,7 +143,6 @@ function MajorFactionListMixin:ScrollToSelectedFaction()
 end
 
 ----------------------------------- Major Faction Button Base -----------------------------------
-
 MajorFactionButtonMixin = {};
 
 function MajorFactionButtonMixin:Init(majorFactionData)
@@ -152,25 +155,36 @@ function MajorFactionButtonMixin:Init(majorFactionData)
 	self.LockedState.Background:SetAtlas(atlasFormats.lockedAtlas, TextureKitConstants.UseAtlasSize);
 	self.LockedState.unlockDescription = majorFactionData.unlockDescription;
 	self.UnlockedState.normalAtlas = atlasFormats.normalAtlas:format(majorFactionData.textureKit);
-	self.UnlockedState.hoverAtlas = atlasFormats.hoverAtlas:format(majorFactionData.textureKit);
+	
+	-- Some expansions use a unique texture for hover, others reuse the normal texture.
+	if atlasFormats.hoverAtlas then
+		self.UnlockedState.hoverAtlas = atlasFormats.hoverAtlas:format(majorFactionData.textureKit);
+	else
+		self.UnlockedState.Hover:SetAtlas(self.UnlockedState.normalAtlas, TextureKitConstants.UseAtlasSize);
+	end
+
 	self.UnlockedState.Background:SetAtlas(self.UnlockedState.normalAtlas, TextureKitConstants.UseAtlasSize);
 
 	local progressBarBorderAtlas = atlasFormats.progressBarBorderAtlas;
 	self.UnlockedState.RenownProgressBar.Border:SetAtlas(progressBarBorderAtlas, TextureKitConstants.UseAtlasSize);
 	local fillAtlas = atlasFormats.progressBarFillAtlas:format(majorFactionData.textureKit);
+
 	local fillInfo = C_Texture.GetAtlasInfo(fillAtlas);
-	self.UnlockedState.RenownProgressBar:SetSwipeTexture(fillInfo.file or fillInfo.filename);
-	local lowTexCoords =
-	{
-		x = fillInfo.leftTexCoord,
-		y = fillInfo.topTexCoord,
-	};
-	local highTexCoords =
-	{
-		x = fillInfo.rightTexCoord,
-		y = fillInfo.bottomTexCoord,
-	};
-	self.UnlockedState.RenownProgressBar:SetTexCoordRange(lowTexCoords, highTexCoords);
+	if fillInfo then
+		self.UnlockedState.RenownProgressBar:SetSwipeTexture(fillInfo.file or fillInfo.filename);
+
+		local lowTexCoords =
+		{
+			x = fillInfo.leftTexCoord,
+			y = fillInfo.topTexCoord,
+		};
+		local highTexCoords =
+		{
+			x = fillInfo.rightTexCoord,
+			y = fillInfo.bottomTexCoord,
+		};
+		self.UnlockedState.RenownProgressBar:SetTexCoordRange(lowTexCoords, highTexCoords);
+	end
 	
 	local iconSize = factionIconSize[majorFactionData.textureKit] or factionIconSize["Default"];
 	self.UnlockedState.Icon:ClearAllPoints();
@@ -273,13 +287,25 @@ end
 function MajorFactionButtonUnlockedStateMixin:OnEnter()
 	self.WatchFactionButton:Show();
 
-	self.Background:SetAtlas(self.hoverAtlas, TextureKitConstants.UseAtlasSize);
+	-- Support two different methods of handling the hover image:
+	-- 1. It has its own unique file to be applied to Background Texture.
+	-- 2. It reuses the normal file in additive mode on the Hover Texture.
+	if self.hoverAtlas then
+		self.Background:SetAtlas(self.hoverAtlas, TextureKitConstants.UseAtlasSize);
+	else
+		self.Hover:SetShown(true);
+	end
 
 	self:RefreshTooltip();
 end
 
 function MajorFactionButtonUnlockedStateMixin:OnLeave()
-	self.Background:SetAtlas(self.normalAtlas, TextureKitConstants.UseAtlasSize);
+	-- Undo the logic from OnEnter depending on which method it used.
+	if self.hoverAtlas then
+		self.Background:SetAtlas(self.normalAtlas, TextureKitConstants.UseAtlasSize);
+	else
+		self.Hover:SetShown(false);
+	end
 
 	-- Hide the renown progress tooltip or the paragon progress tooltip (whichever is up)
 	if GameTooltip:GetOwner() == self then

@@ -115,7 +115,6 @@ function CharacterSelectUtil.SetTooltipForCharacterInfo(characterInfo)
 	local specID = characterInfo.specID;
 	local _, specName = GetSpecializationInfoForSpecID(specID);
 	local className = characterInfo.className;
-	-- Item Level
 	local areaName = characterInfo.areaName;
 
 	-- Block 3
@@ -124,8 +123,6 @@ function CharacterSelectUtil.SetTooltipForCharacterInfo(characterInfo)
 	local profession1 = characterInfo.profession1;
 	local professionName0 = profession0 ~= 0 and GetSkillLineDisplayNameForRace(profession0, raceID) or nil;
 	local professionName1 = profession1 ~= 0 and GetSkillLineDisplayNameForRace(profession1, raceID) or nil;
-	-- Mythic+ Rating
-	-- PvP Rating
 
 	-- Block 4
 	local money = characterInfo.money;

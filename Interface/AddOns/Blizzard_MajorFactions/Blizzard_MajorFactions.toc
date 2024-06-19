@@ -9,6 +9,7 @@ Blizzard_MajorFactionToasts.xml
 Blizzard_MajorFactionUnlockToast.xml
 Blizzard_MajorFactionRenownToast.xml
 
+Blizzard_MajorFactionRenown.lua
 Blizzard_MajorFactionRenown.xml
 
 Localization.lua

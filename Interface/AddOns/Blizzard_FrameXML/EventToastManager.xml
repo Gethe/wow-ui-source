@@ -50,9 +50,9 @@
 				</KeyValues>
 				<Scripts>
 					<OnShow>
-							if(self:GetParent().SubTitle) then 
+							if(self:GetParent().SubTitle) then
 								self:SetAllPoints(self:GetParent().SubTitle);
-							end 
+							end
 					</OnShow>
 					<OnEnter>
 						self:GetParent():MouseOverSubTitle();
@@ -212,11 +212,11 @@
 			<AnimationGroup parentKey="showAnim" inherits="ShowToastAnimGroupTemplate">
 				<Alpha childKey="BannerFrame" fromAlpha="0" toAlpha="1" duration="0.7" startDelay="0.7" order="2" parentKey="anim2"/>
 			</AnimationGroup>
-			
+
 			<AnimationGroup parentKey="hideAnim" inherits="HideToastAnimGroupTemplate">
 				<Alpha childKey="BannerFrame" fromAlpha="1" toAlpha="0" duration="0.5" startDelay="1.8" order="1" parentKey="anim2"/>
 			</AnimationGroup>
-			
+
 			<AnimationGroup parentKey="NewStageTextureKit" setToFinalAlpha="true">
 				<Scale childKey="BG1" duration="0.33" order="1" fromScaleX="0.001" fromScaleY="1" toScaleX="1" toScaleY="1"/>
 				<Scale childKey="BG2" duration="0.33" order="1" fromScaleX="0.001" fromScaleY="1" toScaleX="1" toScaleY="1"/>
@@ -540,6 +540,41 @@
 		</Layers>
 	</Frame>
 
+	<Frame name="EventToastManagerCapstoneUnlockedTemplate" mixin="EventToastManagerCapstoneUnlockedMixin" inherits="EventToastManagerFrameTemplateNormal" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Spacer" alpha="0">
+					<Size x="32" y="26"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Icon">
+					<Size x="1" y="1"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Spacer" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Title" inherits="GameFont_Gigantic" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="4" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="SubTitle" inherits="SystemFont_Shadow_Huge1" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="BottomSpacer" alpha="0">
+					<Size x="32" y="20"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.SubTitle" relativePoint="BOTTOM" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
 	<Frame name="EventToastManagerFrame" inherits="ResizeLayoutFrame" mixin="EventToastManagerFrameMixin" enableMouse="true" toplevel="true" parent="UIParent" hidden="true" frameStrata="HIGH">
 		<KeyValues>
 			<KeyValue key="fixedWidth" value="418" type="number"/>
@@ -701,7 +736,7 @@
 				<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="1" />
 				<Scripts>
 					<OnFinished>
-						self:GetParent():Hide(); 
+						self:GetParent():Hide();
 					</OnFinished>
 				</Scripts>
 			</AnimationGroup>

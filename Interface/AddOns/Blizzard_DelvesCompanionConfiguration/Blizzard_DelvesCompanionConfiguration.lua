@@ -535,7 +535,7 @@ function CompanionConfigListButtonMixin:OnHide()
 end
 
 function CompanionConfigListButtonMixin:OnShow()
-    if self.data.isUnseen then
+    if self.data and self.data.isUnseen then
         self.Name:SetTextColor(WHITE_FONT_COLOR:GetRGB());
         self.Name:SetShadowColor(NEW_FEATURE_SHADOW_COLOR:GetRGBA());
         

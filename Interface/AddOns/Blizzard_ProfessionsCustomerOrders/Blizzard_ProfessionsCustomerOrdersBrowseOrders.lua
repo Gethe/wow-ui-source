@@ -322,6 +322,7 @@ function ProfessionsCustomerOrdersBrowsePageMixin:StartSearch(isFavoritesSearch)
 		uncollectedOnly = filterDropdown.filters[Enum.AuctionHouseFilter.UncollectedOnly],
 		usableOnly = filterDropdown.filters[Enum.AuctionHouseFilter.UsableOnly],
 		upgradesOnly = filterDropdown.filters[Enum.AuctionHouseFilter.UpgradesOnly],
+		currentExpansionOnly = filterDropdown.filters[Enum.AuctionHouseFilter.CurrentExpansionOnly],
 		includePoor = filterDropdown.filters[Enum.AuctionHouseFilter.PoorQuality],
 		includeCommon = filterDropdown.filters[Enum.AuctionHouseFilter.CommonQuality],
 		includeUncommon = filterDropdown.filters[Enum.AuctionHouseFilter.UncommonQuality],

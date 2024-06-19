@@ -74,6 +74,23 @@ local PaperDollInfo =
 			},
 		},
 		{
+			Name = "GetInspectGuildInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitString", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "achievementPoints", Type = "number", Nilable = false },
+				{ Name = "numMembers", Type = "number", Nilable = false },
+				{ Name = "guildName", Type = "string", Nilable = false },
+				{ Name = "realmName", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GetInspectItemLevel",
 			Type = "Function",
 
@@ -296,6 +313,17 @@ local PaperDollInfo =
 
 	Tables =
 	{
+		{
+			Name = "InspectGuildInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "achievementPoints", Type = "number", Nilable = false },
+				{ Name = "numMembers", Type = "number", Nilable = false },
+				{ Name = "guildName", Type = "string", Nilable = false },
+				{ Name = "realmName", Type = "string", Nilable = false },
+			},
+		},
 		{
 			Name = "InspectPVPData",
 			Type = "Structure",

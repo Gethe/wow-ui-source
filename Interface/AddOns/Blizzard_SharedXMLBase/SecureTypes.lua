@@ -57,12 +57,12 @@ do
 	end
 	
 	function SecureMap:Enumerate()
-		local iterator, tbl, index = securecallfunction(pairs, self.tbl);
-		local function Iterator(tbl, key)
+		local iterator, tbl, index = next, self.tbl, nil;
+		local function Iterator(_, key)
 			return securecallfunction(iterator, tbl, key);
 		end
 
-		return Iterator, tbl, index;
+		return Iterator, nil, index;
 	end
 	
 	function SecureMap:ExecuteRange(func, ...)
@@ -154,30 +154,30 @@ do
 	end
 	
 	function SecureArray:Enumerate()
-		local iterator, tbl, index = securecallfunction(ipairs, self.tbl);
-		local function Iterator(tbl, index)
+		local iterator, tbl, index = next, self.tbl, nil;
+		local function Iterator(_, index)
 			return securecallfunction(iterator, tbl, index);
 		end
 
-		return Iterator, tbl, index;
+		return Iterator, nil, index;
 	end
 	
 	function SecureArray:EnumerateReverse()
 		local iterator, tbl, index = securecallfunction(ipairs_reverse, self.tbl);
-		local function Iterator(tbl, index)
+		local function Iterator(_, index)
 			return securecallfunction(iterator, tbl, index);
 		end
 
-		return Iterator, tbl, index;
+		return Iterator, nil, index;
 	end
 	
 	function SecureArray:EnumerateIterator(iter)
 		local iterator, tbl, index = securecallfunction(iter, self.tbl);
-		local function Iterator(tbl, index)
+		local function Iterator(_, index)
 			return securecallfunction(iterator, tbl, index);
 		end
 
-		return Iterator, tbl, index;
+		return Iterator, nil, index;
 	end
 	
 	function SecureArray:ExecuteRange(func, ...)

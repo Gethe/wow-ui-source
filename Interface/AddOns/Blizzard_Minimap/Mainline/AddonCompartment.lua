@@ -32,6 +32,8 @@ function AddonCompartmentMixin:OnLoad()
 			local text = addonData.text;
 			local button = rootDescription:CreateButton(text, addonData.func);
 			button:AddInitializer(function(button, description, menu)
+				button:RegisterForClicks("AnyUp");
+
 				local texture = button:AttachTexture();
 				texture:SetPoint("LEFT");
 
@@ -54,10 +56,10 @@ function AddonCompartmentMixin:OnLoad()
 				fontString:SetPoint("LEFT");
 				fontString:SetTextToFit(text);
 				fontString:SetWidth(fontString:GetWidth() + (hasIcon and 16 or 0));
-
-				button:SetScript("OnEnter", addonData.funcOnEnter);
-				button:SetScript("OnLeave", addonData.funcOnLeave);
 			end);
+
+			button:SetOnEnter(addonData.funcOnEnter);
+			button:SetOnLeave(addonData.funcOnLeave);
 		end
 	end);
 
@@ -91,8 +93,8 @@ function AddonCompartmentMixin:RegisterAddons()
 				_G[addonCompartmentFunc](addonName, ...);
 			end
 
-			addonData.func = function(btn, arg1, arg2, checked, mouseButton)
-				CallAddonGlobalFunc(addonCompartmentFunc, name, mouseButton, btn);
+			addonData.func = function(data, menuInputData, menu)
+				CallAddonGlobalFunc(addonCompartmentFunc, name, menuInputData.buttonName);
 			end;
 
 			local onEnterGlobal = C_AddOns.GetAddOnMetadata(addonIndex, "AddonCompartmentFuncOnEnter");

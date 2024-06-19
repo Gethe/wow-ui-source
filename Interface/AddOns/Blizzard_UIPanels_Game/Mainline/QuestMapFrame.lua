@@ -1135,6 +1135,14 @@ QuestLogScrollFrameMixin = { };
 function QuestLogScrollFrameMixin:OnLoad()
 	ScrollFrame_OnLoad(self);
 
+	self:RegisterCallback("OnVerticalScroll", function(offset)
+		self:UpdateBottomShadow(offset);
+	end);
+
+	self:RegisterCallback("OnScrollRangeChanged", function(offset)
+		self:UpdateBottomShadow(offset);
+	end);
+
 	self.titleFramePool = CreateFramePool("BUTTON", QuestMapFrame.QuestsFrame.Contents, "QuestLogTitleTemplate", function(framePool, frame)
 		Pool_HideAndClearAnchors(framePool, frame);
 		frame.info = nil;
@@ -1152,6 +1160,14 @@ end
 
 function QuestLogScrollFrameMixin:OnSizeChanged()
 	self:ResizeBackground();
+end
+
+function QuestLogScrollFrameMixin:UpdateBottomShadow(offset)
+	local shadow = self.BorderFrame.Shadow;
+	local height = shadow:GetHeight();
+	local delta = self:GetVerticalScrollRange() - self:GetVerticalScroll();
+	local alpha = Clamp(delta/height, 0, 1);
+	shadow:SetAlpha(alpha);
 end
 
 function QuestLogScrollFrameMixin:ResizeBackground()
@@ -1500,17 +1516,9 @@ local function QuestLogQuests_GetPOIButton(displayState, info, isDisabledQuest, 
 	return QuestScrollFrame.Contents:GetButtonForQuest(info.questID, POIButtonUtil.GetStyleFromQuestData(isComplete, isWayPoint, isDisabledQuest));
 end
 
-local function QuestLogQuests_GetBestTagID(questID, info, isComplete)
+local function QuestLogQuests_GetBestTagID(questID, info)
 	local tagInfo = C_QuestLog.GetQuestTagInfo(questID);
 	local questTagID = tagInfo and tagInfo.tagID;
-
-	if isComplete then
-		if questTagID == Enum.QuestTag.Legendary then
-			return "COMPLETED_LEGENDARY";
-		else
-			return "COMPLETED";
-		end
-	end
 
 	-- At this point, we know the quest is not complete, no need to check it any more.
 	if C_QuestLog.IsFailed(questID) then
@@ -1576,7 +1584,15 @@ local function QuestLogQuests_AddQuestButton(displayState, info)
 	local isTracked = C_QuestLog.GetQuestWatchType(questID) ~= nil;
 	button.Checkbox.CheckMark:SetShown(isTracked);
 
-	local isComplete = C_QuestLog.IsComplete(questID);
+	-- tag. daily icon can be alone or before other icons except for COMPLETED or FAILED
+	local tagID = QuestLogQuests_GetBestTagID(questID, info);
+	local tagAtlas = QuestUtils_GetQuestTagAtlas(tagID);
+	button.TagTexture:SetShown(tagAtlas ~= nil);
+
+	if tagAtlas then
+		button.TagTexture:SetAtlas(tagAtlas, TextureKitConstants.UseAtlasSize);
+		button.TagTexture:SetDesaturated(C_QuestLog.IsQuestDisabledForSession(questID));
+	end
 
 	-- POI/objectives
 	local requiredMoney = C_QuestLog.GetRequiredMoney(questID);
@@ -1586,6 +1602,7 @@ local function QuestLogQuests_AddQuestButton(displayState, info)
 	local totalHeight = 8 + button.Text:GetHeight();
 
 	-- objectives
+	local isComplete = C_QuestLog.IsComplete(questID);
 	local showObjectives = GetCVarBool("showQuestObjectivesInLog");
 	if not showObjectives then
 		totalHeight = totalHeight + 4; 

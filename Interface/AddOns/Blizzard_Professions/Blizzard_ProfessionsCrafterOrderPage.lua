@@ -149,7 +149,7 @@ function ProfessionsCraftingOrderPageMixin:InitOrderTypeTabs()
 		typeTab:HandleRotation();
 		local count = 0;
 		SetTabTitleWithCount(typeTab, typeTab.orderType, count);
-		local minWidth = 200;
+		local minWidth = 150;
 		local bufferWidth = 100;
 		local stretchWidth = typeTab.Text:GetWidth() + bufferWidth;
 		typeTab:SetTabWidth(math.max(minWidth, stretchWidth));

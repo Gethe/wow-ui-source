@@ -776,7 +776,10 @@ do
 		self.defaultResponse = response;
 	end
 	
-	function MenuElementDescriptionProxyMixin:GetDefaultResponse()
+	function MenuElementDescriptionProxyMixin:GetDefaultResponse(menuInputContext, menuInputButtonName)
+		if type(self.defaultResponse) == "function" then
+			return securecallfunction(self.defaultResponse, menuInputContext, menuInputButtonName);
+		end
 		return self.defaultResponse;
 	end
 
@@ -790,6 +793,10 @@ do
 		return descriptionProxy.responder(descriptionProxy:GetData(), menuInputData, menuProxy);
 	end
 
+	local function SecureGetDefaultResponse(descriptionProxy, menuInputContext, menuInputButtonName)
+		return descriptionProxy:GetDefaultResponse(menuInputContext, menuInputButtonName);
+	end
+
 	function MenuElementDescriptionProxyMixin:Pick(menuInputContext, menuInputButtonName)
 		assert(menuInputContext, "MenuElementDescriptionProxyMixin:Pick() called without an input context.")
 		--[[
@@ -800,7 +807,7 @@ do
 		local willRespond = self.responder ~= nil;
 		if willRespond then
 			-- Use the default response if it exists. This is supplied by checkbox and radio descriptions.
-			local descriptionResponse = self:GetDefaultResponse(menuInputContext, menuInputButtonName);
+			local descriptionResponse = securecallfunction(SecureGetDefaultResponse, self, menuInputContext, menuInputButtonName);
 			if descriptionResponse then
 				response = descriptionResponse;
 			end

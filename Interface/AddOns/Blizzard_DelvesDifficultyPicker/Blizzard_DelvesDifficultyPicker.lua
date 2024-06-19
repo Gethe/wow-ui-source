@@ -9,6 +9,8 @@ local DELVES_DIFFICULTY_PICKER_EVENTS = {
 	"UNIT_AREA_CHANGED",
 	"UNIT_PHASE", 
 	"GROUP_FORMED",
+	"WALK_IN_DATA_UPDATE",
+	"ACTIVE_DELVE_DATA_UPDATE",
 };
 local MAX_NUM_REWARDS = 4;
 local BOUNTIFUL_DELVE_WIDGET_TAG = "delveBountiful";
@@ -33,7 +35,6 @@ function GetPlayerKeyState()
 end
 
 --[[ Difficulty Picker ]]
--- ! TODO need continue screen + reset button
 DelvesDifficultyPickerFrameMixin = {};
 
 -- Required function, unused.
@@ -57,13 +58,13 @@ end
 -- TODO Will need to revisit this with continue screen
 function DelvesDifficultyPickerFrameMixin:OnEvent(event, ...)
 	if event == "PARTY_LEADER_CHANGED" or event == "GROUP_ROSTER_UPDATE" or event == "GROUP_FORMED" then 
-		C_GossipInfo.RefreshOptions(); 
-		local inParty = UnitInParty("player"); 
-		self.isPartyLeader = not inParty or UnitIsGroupLeader("player");
+		C_GossipInfo.RefreshOptions();
 	elseif event == "UNIT_AREA_CHANGED" or event == "UNIT_PHASE" then 
 		C_GossipInfo.RefreshOptions(); 
 	elseif event == "GOSSIP_OPTIONS_REFRESHED" then 
 		self:SetupOptions();
+	elseif event == "ACTIVE_DELVE_DATA_UPDATE" or event == "WALK_IN_DATA_UPDATE" then
+		self:CheckForActiveDelveAndUpdate();
 	end 
 end 
 
@@ -71,7 +72,24 @@ function DelvesDifficultyPickerFrameMixin:OnShow()
 	self.Border.Bg:Hide();
 	FrameUtil.RegisterFrameForEvents(self, DELVES_DIFFICULTY_PICKER_EVENTS);
 
-	DelvesDifficultyPickerFrame:SetInitialLevel();
+	self:SetInitialLevel();
+	self:CheckForActiveDelveAndUpdate();
+end
+
+function DelvesDifficultyPickerFrameMixin:CheckForActiveDelveAndUpdate()
+	if C_DelvesUI.HasActiveDelve() then
+		local activeDelveGossip = C_GossipInfo.GetActiveDelveGossip();
+
+		self:SetSelectedLevel(activeDelveGossip.orderIndex);
+		self:SetSelectedOption(activeDelveGossip);
+		self:UpdateWidgets(activeDelveGossip.gossipOptionID);
+		self.DelveRewardsContainerFrame:SetRewards();
+		self.Dropdown:Update();
+		self.Dropdown:SetEnabled(false);
+		self:UpdatePortalButtonState();
+	else
+		self.Dropdown:SetEnabled(true);
+	end
 end
 
 function DelvesDifficultyPickerFrameMixin:SetupDropdown()
@@ -121,12 +139,13 @@ function DelvesDifficultyPickerFrameMixin:SetupDropdown()
 	end);
 end
 
--- TODO there may be other conditions for this in the future. We're no longer doing a ready check, but the continue screen might affect this
 function DelvesDifficultyPickerFrameMixin:UpdatePortalButtonState()
-	local optionSelected =  DelvesDifficultyPickerFrame:GetSelectedOption() ~= nil;
-	local playerAtOrAboveMinLevel =  UnitLevel("player") >= Constants.DelvesConsts.MIN_PLAYER_LEVEL;
+	local optionSelected =  self:GetSelectedOption();
 
-	self.EnterDelveButton:SetEnabled(self.isPartyLeader and playerAtOrAboveMinLevel and optionSelected);
+	local playerAtOrAboveMinLevel =  UnitLevel("player") >= Constants.DelvesConsts.MIN_PLAYER_LEVEL;
+	local selectedOptionValid = optionSelected ~= nil and (optionSelected.status == Enum.GossipOptionStatus.Available or optionSelected.status == Enum.GossipOptionStatus.AlreadyComplete);
+	
+	self.EnterDelveButton:SetEnabled(playerAtOrAboveMinLevel and selectedOptionValid);
 end
 
 function DelvesDifficultyPickerFrameMixin:GetOptions()
@@ -232,8 +251,6 @@ function DelvesDifficultyPickerFrameMixin:TryShow(textureKit)
 	self.textureKit = textureKit; 
 	self.Title:SetText(C_GossipInfo.GetText());
 	self.Description:SetText(C_GossipInfo.GetCustomGossipDescriptionString());
-	local inParty = UnitInParty("player"); 
-	self.isPartyLeader = not inParty or UnitIsGroupLeader("player");
 	self:SetupOptions();
 	ShowUIPanel(self); 
 end 
@@ -253,21 +270,23 @@ end
 --[[ Enter Button ]]
 DelvesDifficultyPickerEnterDelveButtonMixin = {};
 
--- ! TODO Need to do range check for party members - put tooltip in if party members out of range
 function DelvesDifficultyPickerEnterDelveButtonMixin:OnEnter()
-	if not self:GetParent().isPartyLeader then
-		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", 225);
-		GameTooltip_AddNormalLine(GameTooltip, DELVES_LEVEL_PICKER_LEADER_ERROR);
-		GameTooltip:Show(); 
-	elseif UnitLevel("player") < Constants.DelvesConsts.MIN_PLAYER_LEVEL then
+	local selectedOption = self:GetParent():GetSelectedOption();
+
+	if UnitLevel("player") < Constants.DelvesConsts.MIN_PLAYER_LEVEL then
 		self:SetEnabled(false);
 		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", 225);
 		GameTooltip_AddErrorLine(GameTooltip, DELVES_ENTRANCE_LEVEL_REQUIREMENT_ERROR:format(Constants.DelvesConsts.MIN_PLAYER_LEVEL));
 		GameTooltip:Show();
-	elseif not DelvesDifficultyPickerFrame:GetSelectedOption() then
+	elseif not selectedOption then
 		self:SetEnabled(false);
 		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", 175);
 		GameTooltip_AddErrorLine(GameTooltip, DELVES_ERR_SELECT_TIER);
+		GameTooltip:Show();
+	elseif selectedOption.status == Enum.GossipOptionStatus.Locked or selectedOption.status == Enum.GossipOptionStatus.Unavailable then
+		self:SetEnabled(false);
+		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", 175);
+		GameTooltip_AddErrorLine(GameTooltip, DELVES_ERR_TIER_INELIGIBLE);
 		GameTooltip:Show();
 	end
 end 
@@ -276,7 +295,6 @@ function DelvesDifficultyPickerEnterDelveButtonMixin:OnLeave()
 	GameTooltip:Hide(); 
 end 
 
--- ! TODO Need to do range check for party members - don't allow enter unless party members in range
 function DelvesDifficultyPickerEnterDelveButtonMixin:OnClick()
 	local selectedLevel = DelvesDifficultyPickerFrame:GetSelectedLevel();
 	if not selectedLevel then
@@ -418,5 +436,20 @@ function DelveRewardsButtonMixin:OnLeave()
 		self.itemCancelFunc();
 		self.itemCancelFunc = nil;
 	end
+	GameTooltip:Hide();
+end
+
+--[[ Difficulty Dropdown ]]
+DelvesDifficultyPickerDropdownMixin = {};
+
+function DelvesDifficultyPickerDropdownMixin:OnEnter()
+	if not self:IsEnabled() then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip_AddErrorLine(GameTooltip, ERR_DELVE_IN_PROGRESS:format(self.text or ""));
+		GameTooltip:Show();
+	end
+end
+
+function DelvesDifficultyPickerDropdownMixin:OnLeave()
 	GameTooltip:Hide();
 end

@@ -76,6 +76,16 @@ local ClassTalents =
 			},
 		},
 		{
+			Name = "GetActiveHeroTalentSpec",
+			Type = "Function",
+			Documentation = { "Returns the SubTreeID of the player's active Hero Talent Specialization SubTree." },
+
+			Returns =
+			{
+				{ Name = "heroSpecID", Type = "number", Nilable = true, Documentation = { "SubTreeID of the player's active Hero Talent Specialization or nil if no Specialization is active." } },
+			},
+		},
+		{
 			Name = "GetConfigIDsBySpecID",
 			Type = "Function",
 
