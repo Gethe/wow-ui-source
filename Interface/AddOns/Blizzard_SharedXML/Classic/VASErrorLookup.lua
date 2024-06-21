@@ -230,7 +230,7 @@ local vasErrorData = {
 	[Enum.VasError.TooMuchMoneyForLevel] = {
 		msg = function(character)
 			-- If you update these gold thresholds, be sure to also update:
-			--   - UserAuth.cpp - TRANSFER_GOLD_LIMIT_BASE and related
+			--   - TRANSFER_GOLD_LIMIT_BASE and related
 			--   - The DB script / configs - Ask a DBE to help you
 			local str = "";
 			local moneyCapForLevel = 0;

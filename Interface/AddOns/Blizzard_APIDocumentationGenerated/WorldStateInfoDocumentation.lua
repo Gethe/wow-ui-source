@@ -17,6 +17,8 @@ local WorldStateInfo =
 			Payload =
 			{
 				{ Name = "initiatedBy", Type = "WOWGUID", Nilable = false },
+				{ Name = "informChat", Type = "bool", Nilable = false },
+				{ Name = "initiatedByName", Type = "string", Nilable = true },
 			},
 		},
 		{
@@ -28,6 +30,8 @@ local WorldStateInfo =
 				{ Name = "initiatedBy", Type = "WOWGUID", Nilable = false },
 				{ Name = "timeRemaining", Type = "time_t", Nilable = false },
 				{ Name = "totalTime", Type = "time_t", Nilable = false },
+				{ Name = "informChat", Type = "bool", Nilable = false },
+				{ Name = "initiatedByName", Type = "string", Nilable = true },
 			},
 		},
 		{

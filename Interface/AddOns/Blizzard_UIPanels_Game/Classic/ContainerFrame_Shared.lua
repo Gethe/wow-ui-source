@@ -1096,7 +1096,7 @@ function ContainerFrame_RefreshRuneIcons(self, enabled)
 			for s = 1, frame.size, 1 do
 				local itemButton = _G[name.."Item"..s];
 				local texture = "Interface\\PaperDoll\\UI-Backpack-EmptySlot";
-				if ( C_Engraving.IsEngravingEnabled() and enabled and C_Engraving.IsInventorySlotEngravable(frame:GetID(), itemButton:GetID()) ) then
+				if ( C_Engraving.IsEngravingEnabled() and enabled and frame:GetID() >= 0 and C_Engraving.IsInventorySlotEngravable(frame:GetID(), itemButton:GetID()) ) then
 					local engravingInfo = C_Engraving.GetRuneForInventorySlot(frame:GetID(), itemButton:GetID());
 					if(engravingInfo) then
 						texture = engravingInfo.iconTexture;
@@ -1119,7 +1119,7 @@ function ContainerFrame_EngravingTargetingModeChanged(self, enabled)
 			for s = 1, frame.size, 1 do
 				local itemButton = _G[name.."Item"..s];
 				if(enabled) then
-					local engravable = C_Engraving.IsInventorySlotEngravableByCurrentRuneCast(frame:GetID(), itemButton:GetID());
+					local engravable = frame:GetID() >= 0 and C_Engraving.IsInventorySlotEngravableByCurrentRuneCast(frame:GetID(), itemButton:GetID());
 					SetItemButtonDesaturated(itemButton, not engravable);
 				else
 					SetItemButtonDesaturated(itemButton, false);

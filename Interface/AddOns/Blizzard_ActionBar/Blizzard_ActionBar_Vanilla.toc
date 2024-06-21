@@ -5,6 +5,7 @@
 ## SuppressLocalTableRef: 1
 ## AllowLoadGameType: vanilla
 ## AllowLoad: Game
+Shared\MainMenuBarMicroButtons.lua
 Classic\MainMenuBarMicroButtons.lua
 Classic\MainMenuBarMicroButtons.xml
 Classic\MainMenuBar.lua

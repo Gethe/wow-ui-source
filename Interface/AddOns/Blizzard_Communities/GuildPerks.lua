@@ -57,6 +57,10 @@ function CommunitiesGuildPerksButton_OnClick(self)
 end
 
 function CommunitiesGuildPerks_Update(self)
-	local dataProvider = CreateDataProviderByIndexCount(GetNumGuildPerks());
-	self.ScrollBox:SetDataProvider(dataProvider);
+	if (GetNumGuildPerks() > 0) then
+		local dataProvider = CreateDataProviderByIndexCount(GetNumGuildPerks());
+		self.ScrollBox:SetDataProvider(dataProvider);		
+	else
+		self:Hide();
+	end
 end

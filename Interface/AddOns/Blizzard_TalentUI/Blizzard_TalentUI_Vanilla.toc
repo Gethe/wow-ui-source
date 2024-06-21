@@ -2,4 +2,4 @@
 ## LoadOnDemand: 1
 Classic\Blizzard_TalentUI.lua
 Classic\Blizzard_TalentUI.xml
-Localization.lua
+Classic\Localization.lua

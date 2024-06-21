@@ -6,6 +6,7 @@
 ## LoadFirst: 1
 ## AllowLoadGameType: wrath
 ## AllowLoad: Game
+Shared\MainMenuBarMicroButtons.lua
 Wrath\MainMenuBarMicroButtons.lua
 Wrath\MainMenuBarMicroButtons.xml
 Classic\MainMenuBar.lua

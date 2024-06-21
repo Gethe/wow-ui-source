@@ -6,6 +6,7 @@
 ## LoadFirst: 1
 ## AllowLoadGameType: cata
 ## AllowLoad: Game
+Shared\MainMenuBarMicroButtons.lua
 Cata\MainMenuBarMicroButtons.lua
 Cata\MainMenuBarMicroButtons.xml
 Classic\MainMenuBar.lua
