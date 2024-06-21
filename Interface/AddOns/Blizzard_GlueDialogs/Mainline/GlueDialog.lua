@@ -420,6 +420,17 @@ StaticPopupDialogs["SWAPPING_ENVIRONMENT"] = {
     spinner = true,
 }
 
+StaticPopupDialogs["ACCOUNT_CONVERSION_DISPLAY"] = {
+	text = ACCOUNT_CONVERSION_IN_PROGRESS,
+	button1 = BACK,
+	button2 = nil,
+	cover = true,
+	spinner = true,
+	OnAccept = function()
+		C_Login.DisconnectFromServer();
+	end
+}
+
 local function GlueDialog_SetCustomOnHideScript(self, script)
 	self.customOnHideScript = script;
 end
@@ -644,6 +655,13 @@ function GlueDialog_Show(which, text, data, customOnHideScript)
 	-- Spinner setup
 	if ( dialogInfo.spinner ) then
 		GlueDialogSpinner:Show();
+
+		GlueDialogSpinner:ClearAllPoints();
+		if dialogInfo.button1 or dialogInfo.button2 or dialogInfo.button3 then
+			GlueDialogSpinner:SetPoint("BOTTOM", 0, 61);
+		else
+			GlueDialogSpinner:SetPoint("BOTTOM", 0, 23);
+		end
 	else
 		GlueDialogSpinner:Hide();
 	end

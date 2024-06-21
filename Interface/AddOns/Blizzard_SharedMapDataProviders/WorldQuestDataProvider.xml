@@ -11,8 +11,8 @@
 
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-4">
-				<Texture parentKey="Glow" alphaMode="ADD" file="Interface/WorldMap/UI-QuestPoi-IconGlow">
-					<Size x="72" y="72" />
+				<Texture parentKey="Glow" atlas="UI-QuestPoi-OuterGlow" hidden="true">
+					<Size x="128" y="128" />
 					<Anchors>
 						<Anchor point="CENTER" />
 					</Anchors>
@@ -25,6 +25,12 @@
 						<Anchor point="CENTER" x="0" y="-3" />
 					</Anchors>
 				</Texture>
+				<Texture parentKey="UnderlayBanner" atlas="worldquest-Capstone-Banner">
+					<Size x="84" y="84" />
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="65" />
+					</Anchors>
+				</Texture>				
 			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="-2">
 				<Texture parentKey="BountyRing" atlas="worldquest-emissary-ring" hidden="true">
@@ -33,14 +39,22 @@
 						<Anchor point="CENTER" />
 					</Anchors>
 				</Texture>
+				<Texture parentKey="UnderlayBannerHighlight" atlas="worldquest-Capstone-Banner" alpha="0.4" alphaMode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.UnderlayBanner"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.UnderlayBanner"/>
+					</Anchors>
+				</Texture>				
 			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="-1">
 				<Texture parentKey="Background">
+					<Size x="72" y="72"/>
 					<Anchors>
 						<Anchor point="CENTER" />
 					</Anchors>
 				</Texture>
 				<Texture parentKey="PushedBackground" hidden="true">
+					<Size x="72" y="72"/>
 					<Anchors>
 						<Anchor point="CENTER" />
 					</Anchors>
@@ -54,7 +68,8 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="SelectedGlow" alphaMode="ADD">
+				<Texture parentKey="SelectedGlow" atlas="UI-QuestPoi-InnerGlow" alphaMode="ADD" alpha="0.2" hidden="true">
+					<Size x="72" y="72"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -67,7 +82,8 @@
 				</Texture>
 			</Layer>
 			<Layer level="HIGHLIGHT">
-				<Texture parentKey="Highlight" alphaMode="ADD">
+				<Texture parentKey="Highlight" alpha="0.2" alphaMode="ADD">
+					<Size x="72" y="72"/>
 					<Anchors>
 						<Anchor point="CENTER" />
 					</Anchors>

@@ -186,16 +186,6 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY">
-				 <!-- Warbands_Todo: Remove this -->
-                <FontString parentKey="WIPText" inherits="GameFontNormal" text="Work in Progress">
-                    <Size x="150"/>
-                    <Anchors>
-                        <Anchor point="TOPRIGHT" relativeKey="$parent.Background" y="-15"/>
-                    </Anchors>
-                    <Color color="RED_FONT_COLOR" a="1"/> 
-                </FontString>
-            </Layer>
 		</Layers>
 		<Frames>
 			<Button parentKey="ConfirmButton" inherits="CurrencyTransferConfirmButtonTemplate">
@@ -363,7 +353,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString parentKey="EmptyLogMessage" inherits="GameFontNormalMed2" text="CURRENCY_TRANSFER_LOG_EMPTY">
+				<FontString parentKey="EmptyLogMessage" inherits="GameFontNormalMed2" text="CURRENCY_TRANSFER_LOG_EMPTY" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>

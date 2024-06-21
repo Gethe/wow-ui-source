@@ -137,7 +137,7 @@ function MapPinHighlight_CreateAnimatedHighlightIfNeeded(parentPin, highlightTyp
 	frame.TopHighlight:SetDrawLayer("OVERLAY", 7);
 end
 
-local animatedHighlightTypeTextureKits = 
+local animatedHighlightTypeTextureKits =
 {
 	[MapPinHighlightType.SupertrackedHighlight] = "callings",
 	[MapPinHighlightType.DreamsurgeHighlight] = "dreamsurge",
@@ -173,7 +173,7 @@ function MapPinHighlight_CheckHighlightPin(highlightType, parentPin, regionToHig
 	if parentPin.BountyRing then
 		parentPin.BountyRing:SetShown(highlightType == MapPinHighlightType.BountyRing);
 	end
-	
+
 	MapPinHighlight_UpdateAnimatedHighlight(highlightType, parentPin, regionToHighlight, params);
 end
 
@@ -250,7 +250,7 @@ end
 function MapPinPingMixin:PlayLoop()
 	self.currentLoop = self.currentLoop - 1;
 	self.DriverAnimation:Play();
-	self.ScaleAnimation:Play();	
+	self.ScaleAnimation:Play();
 end
 
 function MapPinPingMixin:HasLoopsLeft()
@@ -284,7 +284,26 @@ end
 -- NOTE: Mouse scripts are managed entirely through MapCanvasMixin:AcquirePin.
 SuperTrackablePinMixin = {};
 
+function SuperTrackablePinMixin:IsSuperTrackAction(button, action)
+	return button == "LeftButton" and action == MapCanvasMixin.MouseAction.Click;
+end
+
+function SuperTrackablePinMixin:DoesMapTypeAllowSuperTrack()
+	local mapInfo = C_Map.GetMapInfo(self:GetMap():GetMapID());
+	if mapInfo then
+		-- Pins on maps above zone level shouldn't be super-trackable, because it makes it too hard to zoom in to the zone map.
+		return mapInfo.mapType >= Enum.UIMapType.Zone;
+	end
+
+	return false;
+end
+
+function SuperTrackablePinMixin:UpdateMousePropagation()
+	self:SetPropagateMouseClicks(not self:DoesMapTypeAllowSuperTrack());
+end
+
 function SuperTrackablePinMixin:OnAcquired(...)
+	self:UpdateMousePropagation();
 	self:UpdateSuperTrackedState(C_SuperTrack[self:GetSuperTrackAccessorAPIName()]());
 end
 
@@ -297,7 +316,7 @@ function SuperTrackablePinMixin:OnMouseUpAction(button, upInside)
 end
 
 function SuperTrackablePinMixin:OnMouseClickAction(button)
-	if button == "LeftButton" then
+	if self:IsSuperTrackAction(button, MapCanvasMixin.MouseAction.Click) and self:DoesMapTypeAllowSuperTrack() then
 		C_SuperTrack[self:GetSuperTrackMutatorAPIName()](self:GetSuperTrackData());
 	end
 end

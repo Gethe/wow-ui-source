@@ -1,21 +1,5 @@
 local indentSize = 15;
 
-local function InitializeSettingTooltip(initializer)
-	Settings.InitTooltip(initializer:GetName(), initializer:GetTooltip());
-end
-
-SettingsListSectionHeaderMixin = {};
-
-function SettingsListSectionHeaderMixin:Init(initializer)
-	local data = initializer:GetData();
-	self.Title:SetText(data.name);
-end
-
-function CreateSettingsListSectionHeaderInitializer(name)
-	local data = {name = name};
-	return Settings.CreateElementInitializer("SettingsListSectionHeaderTemplate", data);
-end
-
 DefaultTooltipMixin = {};
 
 function DefaultTooltipMixin:InitDefaultTooltipScriptHandlers()
@@ -71,6 +55,30 @@ function DefaultTooltipMixin:SetCustomTooltipAnchoring(parent, anchoring, xOffse
 	self.tooltipAnchoring = anchoring;
 	self.tooltipXOffset = xOffset;
 	self.tooltipYOffset = yOffset;
+end
+
+local function InitializeSettingTooltip(initializer)
+	Settings.InitTooltip(initializer:GetName(), initializer:GetTooltip());
+end
+
+SettingsListSectionHeaderMixin = CreateFromMixins(DefaultTooltipMixin);
+
+function SettingsListSectionHeaderMixin:OnLoad()
+	DefaultTooltipMixin.OnLoad(self);
+end
+
+function SettingsListSectionHeaderMixin:Init(initializer)
+	local data = initializer:GetData();
+	self.Title:SetTextToFit(data.name);
+
+	self:SetCustomTooltipAnchoring(self.Title, "ANCHOR_RIGHT");
+
+	self:SetTooltipFunc(GenerateClosure(InitializeSettingTooltip, initializer));
+end
+
+function CreateSettingsListSectionHeaderInitializer(name, tooltip)
+	local data = {name = name, tooltip = tooltip};
+	return Settings.CreateElementInitializer("SettingsListSectionHeaderTemplate", data);
 end
 
 SettingsElementHierarchyMixin = {};

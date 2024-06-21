@@ -3076,6 +3076,10 @@ function UnitPopupCommunitiesMemberNoteButtonMixin:GetText(contextData)
 end
 
 function UnitPopupCommunitiesMemberNoteButtonMixin:CanShow(contextData)
+	if GetCurrentRegionName() == "CN" then
+		return false;
+	end
+
 	if not contextData.clubInfo then
 		return false;
 	end

@@ -431,6 +431,11 @@ function CharacterSelectFrameMixin:OnEvent(event, ...)
             GlueDialog_Show("UNDELETE_NO_CHARACTERS");
             self.undeleteNoCharacters = false;
         end
+
+		-- If we get here then any account conversion should have completed.
+		-- Clear the dialog if showing as a fallback in case the usual close message gets lost to prevent confusion.
+		GlueDialog_Hide("ACCOUNT_CONVERSION_DISPLAY");
+
 		self.waitingforCharacterList = false;
         UpdateCharacterList();
         UpdateAddonButton();
@@ -681,7 +686,7 @@ end
 
 function UpdateCharacterList(skipSelect)
 	if CharacterSelect.waitingforCharacterList then
-		CharacterSelectUI:SetCharacterCreateEnabled(false);
+		CharacterSelectUI.CharacterList:SetCharacterCreateEnabled(false);
 		CharSelectUndeleteCharacterButton:Hide();
 		CharacterTemplatesFrame.CreateTemplateButton:Hide();
 		CharacterSelect.selectedIndex = 0;
@@ -739,7 +744,7 @@ function UpdateCharacterList(skipSelect)
 
     CharacterSelect.createIndex = 0;
 
-    CharacterSelectUI:SetCharacterCreateEnabled(false);
+    CharacterSelectUI.CharacterList:SetCharacterCreateEnabled(false);
     CharSelectUndeleteCharacterButton:Hide();
 	CharacterTemplatesFrame.CreateTemplateButton:Hide();
 
@@ -747,7 +752,7 @@ function UpdateCharacterList(skipSelect)
     if (CanCreateCharacter() and not CharacterSelect.undeleting) then
         CharacterSelect.createIndex = numChars + 1;
         if ( connected ) then
-			CharacterSelectUI:SetCharacterCreateEnabled(true);
+			CharacterSelectUI.CharacterList:SetCharacterCreateEnabled(true);
             CharSelectUndeleteCharacterButton:Show();
 			CharacterTemplatesFrame.CreateTemplateButton:Show();
         end
@@ -882,6 +887,7 @@ function CharacterSelect_EnterWorld()
 end
 
 function CharacterSelect_Exit()
+	CharacterSelect.CharacterSelectUI:ReleaseCharacterOverlayFrames();
 	CharacterSelectListUtil.SaveCharacterOrder();
 	PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_EXIT);
 	C_Login.DisconnectFromServer();
@@ -1419,17 +1425,17 @@ function CharacterSelect_UpdateButtonState()
 	local allowedToEnterWorld, enterWorldError = CharacterSelect_AllowedToEnterWorld();
 	local disabledTooltip = isAccountLocked and CHARACTER_SELECT_ACCOUNT_LOCKED or enterWorldError;
 
-    CharSelectEnterWorldButton:SetEnabled(allowedToEnterWorld);
-    CharacterSelectBackButton:SetEnabled(servicesEnabled and not undeleting and not boostInProgress);
+	CharSelectEnterWorldButton:SetEnabled(allowedToEnterWorld);
+	CharacterSelectBackButton:SetEnabled(servicesEnabled and not undeleting and not boostInProgress);
 	CharacterSelectCharacterFrame:SetDeleteEnabled(hasCharacters and servicesEnabled and not undeleting and not redemptionInProgress and not CharacterSelect_IsRetrievingCharacterList() and not isAccountLocked, disabledTooltip);
-    CharSelectUndeleteCharacterButton:SetEnabled(servicesEnabled and undeleteEnabled and not undeleteOnCooldown and not redemptionInProgress and not isAccountLocked);
+	CharacterSelectUI.CharacterList:SetCharacterCreateEnabled(servicesEnabled and not undeleting and not redemptionInProgress and not isAccountLocked, disabledTooltip);
+	CharSelectUndeleteCharacterButton:SetEnabled(servicesEnabled and undeleteEnabled and not undeleteOnCooldown and not redemptionInProgress and not isAccountLocked);
 	CopyCharacterButton:SetShownState(servicesEnabled and not undeleting and not redemptionInProgress and not isAccountLocked);
-    ActivateFactionChange:SetEnabled(servicesEnabled and not undeleting and not redemptionInProgress and not isAccountLocked);
-    ActivateFactionChange.texture:SetDesaturated(not (servicesEnabled and not undeleting and not redemptionInProgress and not isAccountLocked));
-    CharacterTemplatesFrame.CreateTemplateButton:SetEnabled(servicesEnabled and not undeleting and not redemptionInProgress and not isAccountLocked);
+	ActivateFactionChange:SetEnabled(servicesEnabled and not undeleting and not redemptionInProgress and not isAccountLocked);
+	ActivateFactionChange.texture:SetDesaturated(not (servicesEnabled and not undeleting and not redemptionInProgress and not isAccountLocked));
+	CharacterTemplatesFrame.CreateTemplateButton:SetEnabled(servicesEnabled and not undeleting and not redemptionInProgress and not isAccountLocked);
 	CharacterSelectUI:SetStoreEnabled(servicesEnabled and not undeleting and not redemptionInProgress and not isAccountLocked);
 	CharacterSelectUI:SetMenuEnabled(servicesEnabled and not redemptionInProgress);
-	CharacterSelectUI:SetCharacterCreateEnabled(servicesEnabled and not undeleting and not redemptionInProgress and not isAccountLocked, disabledTooltip);
 	CharacterSelectUI:SetChangeRealmEnabled(servicesEnabled and not undeleting and not redemptionInProgress);
 
 	if CharacterSelect.VASPools then

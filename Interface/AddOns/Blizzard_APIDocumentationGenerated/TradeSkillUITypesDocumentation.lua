@@ -176,6 +176,7 @@ local TradeSkillUITypes =
 				{ Name = "bonusStats", Type = "table", InnerType = "CraftingOperationBonusStatInfo", Nilable = false },
 				{ Name = "concentrationCurrencyID", Type = "number", Nilable = false },
 				{ Name = "concentrationCost", Type = "number", Nilable = false },
+				{ Name = "ingenuityRefund", Type = "number", Nilable = false },
 			},
 		},
 		{

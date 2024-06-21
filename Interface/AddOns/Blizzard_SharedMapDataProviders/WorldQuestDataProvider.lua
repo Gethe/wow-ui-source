@@ -321,7 +321,6 @@ function WorldQuestDataProviderMixin:AddWorldQuest(info)
 	local pin = self:GetMap():AcquirePin(self:GetPinTemplate());
 	pin.questID = info.questId;
 	pin.dataProvider = self;
-
 	pin.worldQuest = true;
 	pin.numObjectives = info.numObjectives;
 	pin:UseFrameLevelType("PIN_FRAME_LEVEL_WORLD_QUEST", self:GetMap():GetNumActivePinsByTemplate(self:GetPinTemplate()));
@@ -330,52 +329,8 @@ function WorldQuestDataProviderMixin:AddWorldQuest(info)
 	pin.tagInfo = tagInfo;
 	pin.worldQuestType = tagInfo.worldQuestType;
 
-	if tagInfo.quality ~= Enum.WorldQuestQuality.Common then
-		pin.Background:SetTexCoord(0, 1, 0, 1);
-		pin.PushedBackground:SetTexCoord(0, 1, 0, 1);
-		pin.Highlight:SetTexCoord(0, 1, 0, 1);
-
-		pin.Background:SetSize(45, 45);
-		pin.PushedBackground:SetSize(45, 45);
-		pin.Highlight:SetSize(45, 45);
-		pin.SelectedGlow:SetSize(45, 45);
-
-		if tagInfo.quality == Enum.WorldQuestQuality.Rare then
-			pin.Background:SetAtlas("worldquest-questmarker-rare");
-			pin.PushedBackground:SetAtlas("worldquest-questmarker-rare-down");
-			pin.Highlight:SetAtlas("worldquest-questmarker-rare");
-			pin.SelectedGlow:SetAtlas("worldquest-questmarker-rare");
-		elseif tagInfo.quality == Enum.WorldQuestQuality.Epic then
-			pin.Background:SetAtlas("worldquest-questmarker-epic");
-			pin.PushedBackground:SetAtlas("worldquest-questmarker-epic-down");
-			pin.Highlight:SetAtlas("worldquest-questmarker-epic");
-			pin.SelectedGlow:SetAtlas("worldquest-questmarker-epic");
-		end
-	else
-		pin.Background:SetSize(75, 75);
-		pin.PushedBackground:SetSize(75, 75);
-		pin.Highlight:SetSize(75, 75);
-
-		-- We are setting the texture without updating the tex coords.  Refresh visuals will handle
-		-- updating the tex coords based on whether this pin is selected or not.
-		pin.Background:SetTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons");
-		pin.PushedBackground:SetTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons");
-		pin.Highlight:SetTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons");
-
-		pin.Highlight:SetTexCoord(0.625, 0.750, 0.875, 1);
-	end
-
+	pin:InitializeVisuals();
 	pin:RefreshVisuals();
-
-	if tagInfo.isElite then
-		pin.Underlay:SetAtlas("worldquest-questmarker-dragon");
-		pin.Underlay:Show();
-	else
-		pin.Underlay:Hide();
-	end
-
-	pin.TimeLowFrame:SetShown(self:ShouldShowExpirationIcon(info.questId, tagInfo.worldQuestType));
-
 	pin:SetPosition(info.x, info.y);
 
 	pin.iconWidgetSet = C_TaskQuest.GetQuestIconUIWidgetSet(pin.questID);
@@ -414,27 +369,57 @@ function WorldQuestPinMixin:OnLoad()
 	self.widgetAnimationTexture = self.Background;
 end
 
+function WorldQuestPinMixin:GetButtonTextures(selected)
+	local isCapstone = self.worldQuestType == Enum.QuestTagType.Capstone;
+	local normalTexture = isCapstone and "worldquest-capstone-questmarker-epic" or "worldquest-questmarker-epic";
+	local pushedTexture = isCapstone and "worldquest-Capstone-questmarker-epic-down" or "worldquest-questmarker-epic-down";
+	local highlightTexture = isCapstone and "worldquest-capstone-questmarker-epic" or "worldquest-questmarker-epic";
+
+	if selected then
+		normalTexture = isCapstone and "worldquest-Capstone-questmarker-epic-supertrack" or "worldquest-questmarker-epic-supertracked";
+		pushedTexture = isCapstone and "worldquest-Capstone-questmarker-epic-down-supertrack" or "worldquest-questmarker-epic-down-supertracked";
+		highlightTexture = isCapstone and "worldquest-Capstone-questmarker-epic-supertrack" or "worldquest-questmarker-epic-supertracked";
+	end
+
+	return normalTexture, pushedTexture, highlightTexture;
+end
+
+function WorldQuestPinMixin:RefreshButtonTextures(selected)
+	local normal, pushed, highlight = self:GetButtonTextures(selected);
+	self.Background:SetAtlas(normal);
+	self.Highlight:SetAtlas(highlight);
+	self.PushedBackground:SetAtlas(pushed);
+end
+
+function WorldQuestPinMixin:InitializeVisuals()
+	self:RefreshButtonTextures(false);
+	self:SetHitRectInsets(0, 0, 0, 0);
+
+	if self.worldQuestType == Enum.QuestTagType.Capstone then
+		self:SetHitRectInsets(0, 0, 0, -8);
+	end
+
+	local tagInfo = self.tagInfo;
+	if tagInfo.isElite and self.worldQuestType ~= Enum.QuestTagType.Capstone then -- self.worldQuestType ~= Enum.QuestTagType.Capstone is a hack while i work on this remove it
+		self.Underlay:SetAtlas("worldquest-questmarker-dragon");
+	end
+
+	self.Underlay:SetShown(tagInfo.isElite);
+	self.UnderlayBanner:SetShown(self.worldQuestType == Enum.QuestTagType.Capstone);
+
+	self.TimeLowFrame:SetShown(self.dataProvider:ShouldShowExpirationIcon(self.questID, tagInfo.worldQuestType));
+end	
+
 function WorldQuestPinMixin:RefreshVisuals()
-	local tagInfo = C_QuestLog.GetQuestTagInfo(self.questID);
-	self.tagInfo = tagInfo;
 	local selected = self.questID == C_SuperTrack.GetSuperTrackedQuestID();
 	self.Glow:SetShown(selected);
-	self.SelectedGlow:SetShown(tagInfo.quality ~= Enum.WorldQuestQuality.Common and selected);
-
-	if tagInfo.quality == Enum.WorldQuestQuality.Common then
-		if selected then
-			self.Background:SetTexCoord(0.500, 0.625, 0.375, 0.5);
-			self.PushedBackground:SetTexCoord(0.375, 0.500, 0.375, 0.5);
-		else
-			self.Background:SetTexCoord(0.875, 1, 0.375, 0.5);
-			self.PushedBackground:SetTexCoord(0.750, 0.875, 0.375, 0.5);
-		end
-	end
+	self.SelectedGlow:SetShown(selected);
+	self:RefreshButtonTextures(selected);
 
 	MapPinHighlight_CheckHighlightPin(self:GetHighlightType(), self, self.Background);
 
 	local inProgress = self.dataProvider:IsMarkingActiveQuests() and C_QuestLog.IsOnQuest(self.questID);
-	local atlas, width, height = QuestUtil.GetWorldQuestAtlasInfo(self.worldQuestType, inProgress, tagInfo.tradeskillLineID, self.questID);
+	local atlas, width, height = QuestUtil.GetWorldQuestAtlasInfo(self.worldQuestType, inProgress, self.tagInfo.tradeskillLineID, self.questID);
 	self.Texture:SetAtlas(atlas);
 	if self.worldQuestType == Enum.QuestTagType.PetBattle then
 		self.Texture:SetSize(26, 22);
@@ -475,10 +460,12 @@ end
 
 function WorldQuestPinMixin:OnMouseEnter()
 	TaskPOI_OnEnter(self);
+	self.UnderlayBannerHighlight:SetShown(self.worldQuestType == Enum.QuestTagType.Capstone);
 end
 
 function WorldQuestPinMixin:OnMouseLeave()
 	TaskPOI_OnLeave(self);
+	self.UnderlayBannerHighlight:Hide();
 end
 
 function WorldQuestPinMixin:OnMouseClickAction(button)

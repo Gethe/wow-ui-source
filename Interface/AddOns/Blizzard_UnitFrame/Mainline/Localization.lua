@@ -44,7 +44,7 @@ local l10nTable = {
 			PlayerLevelText:SetPoint("TOPRIGHT", -24.5, -26);
 
 			local playerFrameHealthBar = PlayerFrame_GetHealthBar();
-			playerFrameHealthBar.HealthBarText:SetPoint("CENTER", 0, 1);
+			playerFrameHealthBar.TextString:SetPoint("CENTER", 0, 1);
 			playerFrameHealthBar.LeftText:SetPoint("LEFT", 2, 1);
 			playerFrameHealthBar.RightText:SetPoint("RIGHT", -2, 1);
 
@@ -58,7 +58,7 @@ local l10nTable = {
 			targetFrameContentMain.LevelText:SetPoint("TOPLEFT", targetFrameContentMain.ReputationColor, "TOPRIGHT", -133, 1);
 			targetFrameContentMain.Name:SetPoint("TOPLEFT", targetFrameContentMain.ReputationColor, "TOPRIGHT", -106, 1);
 
-			local targetFrameHealthBar = targetFrameContentMain.HealthBar;
+			local targetFrameHealthBar = targetFrameContentMain.HealthBarsContainer;
 			targetFrameHealthBar.HealthBarText:SetPoint("CENTER", 0, 2);
 			targetFrameHealthBar.LeftText:SetPoint("LEFT", 2, 2);
 			targetFrameHealthBar.RightText:SetPoint("RIGHT", -5, 2);
@@ -83,8 +83,8 @@ local l10nTable = {
 			local targetFrameContentMain = TargetFrame.TargetFrameContent.TargetFrameContentMain;
 			targetFrameContentMain.LevelText:SetPoint("TOPLEFT", targetFrameContentMain.ReputationColor, "TOPRIGHT", -133, 1);
 			targetFrameContentMain.Name:SetPoint("TOPLEFT", targetFrameContentMain.ReputationColor, "TOPRIGHT", -106, 2);
-			targetFrameContentMain.HealthBar.DeadText:SetPoint("CENTER", 0, 2);
-			targetFrameContentMain.HealthBar.UnconsciousText:SetPoint("CENTER", 0, 2);
+			targetFrameContentMain.HealthBarsContainer.DeadText:SetPoint("CENTER", 0, 2);
+			targetFrameContentMain.HealthBarsContainer.UnconsciousText:SetPoint("CENTER", 0, 2);
         end,
     },
 };

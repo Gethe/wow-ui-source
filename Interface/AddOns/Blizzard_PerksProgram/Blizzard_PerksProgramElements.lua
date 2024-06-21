@@ -194,7 +194,11 @@ end
 function PerksProgramProductButtonMixin:OnEnter()
 	if self.itemInfo then
 		self.tooltip:SetOwner(self, "ANCHOR_RIGHT", -16, 0);
-		self.tooltip:SetItemByID(self.itemInfo.itemID);
+		local tooltipInfo = CreateBaseTooltipInfo("GetItemByID", self.itemInfo.itemID);
+		tooltipInfo.excludeLines = {
+				Enum.TooltipDataLineType.SellPrice,
+		};
+		self.tooltip:ProcessInfo(tooltipInfo);
 		self.tooltip:Show();
 	end
 
@@ -916,7 +920,11 @@ function PerksProgramSetDetailsItemMixin:OnEnter()
 	self.HighlightTexture:Show();
 
 	PerksProgramTooltip:SetOwner(self, "ANCHOR_LEFT", -8, -20);
-	PerksProgramTooltip:SetItemByID(self.elementData.itemID);
+	local tooltipInfo = CreateBaseTooltipInfo("GetItemByID", self.elementData.itemID);
+	tooltipInfo.excludeLines = {
+			Enum.TooltipDataLineType.SellPrice,
+	};
+	PerksProgramTooltip:ProcessInfo(tooltipInfo);
 	PerksProgramTooltip:Show();
 end
 

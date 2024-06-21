@@ -75,7 +75,7 @@
 	<Button name="QuestLogHeaderTemplate" inherits="QuestLogHeaderCodeTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true">
 		<Size x="289" y="22"/>
 		<KeyValues>
-			<KeyValue key="leftPadding" value="11" type="number"/>
+			<KeyValue key="leftPadding" value="9" type="number"/>
 		</KeyValues>
 		<ButtonText parentKey="ButtonText" nonspacewrap="true" justifyH="LEFT">
 			<Size x="234" y="10"/>
@@ -97,9 +97,9 @@
 	</Button>
 
 	<Button name="CovenantCallingsHeaderTemplate" inherits="QuestLogHeaderTemplate" registerForClicks="LeftButtonUp" mixin="CovenantCallingsHeaderMixin" virtual="true">
-		<Size x="303" y="36"/>
+		<Size x="304" y="31"/>
 		<KeyValues>
-			<KeyValue key="leftPadding" value="3" type="number"/>
+			<KeyValue key="leftPadding" value="2" type="number"/>
 		</KeyValues>
 		<Anchors>
 			<Anchor point="TOPLEFT" x="1" y="1"/>
@@ -107,7 +107,7 @@
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Background">
-					<Size x="303" y="36"/>
+					<Size x="304" y="31"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -181,10 +181,17 @@
 	</Frame>
 	<Button name="QuestLogTitleTemplate" mixin="QuestLogTitleMixin" virtual="true">
 		<Size x="290" y="16"/>
+		<Frames>
+			<Frame parentKey="Checkbox" inherits="QuestLogTrackCheckBoxTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" y="-8"/>
+				</Anchors>
+			</Frame>
+		</Frames>	
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Text" inherits="GameFontNormalLeft">
-					<Size x="235" y="0"/>
+					<Size x="215" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="31" y="-8"/>
 					</Anchors>
@@ -195,15 +202,14 @@
 						<Anchor point="TOPRIGHT" relativeKey="$parent.Text" relativePoint="TOPLEFT" x="-5" y="4"/>
 					</Anchors>
 				</Texture>
+				<Texture parentKey="TagTexture" file="Interface\QuestFrame\QuestTypeIcons" hidden="true">
+					<Size x="18" y="18"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.Checkbox" relativePoint="LEFT" x="-4" y="0"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
-		<Frames>
-			<Frame parentKey="Checkbox" inherits="QuestLogTrackCheckboxTemplate">
-				<Anchors>
-					<Anchor point="TOPRIGHT" y="-6"/>
-				</Anchors>
-			</Frame>
-		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent>
@@ -261,7 +267,7 @@
 	</Button>
 	<Frame name="QuestLogBorderFrameTemplate" frameLevel="100" virtual="true">
 		<Anchors>
-			<Anchor point="TOPLEFT" x="-3" y="4"/>
+			<Anchor point="TOPLEFT" x="-3" y="7"/>
 			<Anchor point="BOTTOMRIGHT" x="3" y="-6"/>
 		</Anchors>
 		<Layers>
@@ -432,7 +438,7 @@
 					<OnMouseUp method="OnMouseUp"/>
 				</Scripts>
 			</DropdownButton>
-			<ScrollFrame parentKey="QuestsFrame" name="QuestScrollFrame" mixin="QuestLogScrollFrameMixin" inherits="ScrollFrameTemplate">
+			<EventScrollFrame parentKey="QuestsFrame" name="QuestScrollFrame" mixin="QuestLogScrollFrameMixin" inherits="ScrollFrameTemplate">
 				<KeyValues>
 					<KeyValue key="scrollBarX" value="8" type="number"/>
 					<KeyValue key="scrollBarTopY" value="2" type="number"/>
@@ -440,7 +446,7 @@
 				</KeyValues>
 				<!-- NOTE: See QuestMapFrame_UpdateQuestSessionState for anchor updates, these are default -->
 				<Anchors>
-					<Anchor point="TOPLEFT" y="-26"/>
+					<Anchor point="TOPLEFT" y="-29"/>
 					<Anchor point="BOTTOMRIGHT"/>
 				</Anchors>
 				<Layers>
@@ -476,15 +482,15 @@
 				</Layers>
 				<ScrollChild>
 					<Frame parentKey="Contents" inherits="VerticalLayoutFrame, POIButtonOwnerTemplate">
-						<Size x="303" y="454"/>
+						<Size x="304" y="454"/>
 						<Anchors>
 							<Anchor point="TOPLEFT"/>
 						</Anchors>
 						<Frames>
 							<Frame parentKey="Separator" hidden="true">								
-								<Size x="303" y="15"/>
+								<Size x="304" y="15"/>
 								<KeyValues>
-									<KeyValue key="leftPadding" value="3" type="number"/>
+									<KeyValue key="leftPadding" value="2" type="number"/>
 								</KeyValues>
 								<Layers>
 									<Layer level="OVERLAY">
@@ -493,18 +499,17 @@
 								</Layers>
 							</Frame>
 							<Frame parentKey="StoryHeader" mixin="StoryHeaderMixin" hidden="true">
-								<Size x="303" y="73"/>
+								<Size x="304" y="69"/>
 								<Anchors>
 									<Anchor point="TOPLEFT" x="1" y="1"/>
 								</Anchors>
 								<Layers>
 									<Layer level="BACKGROUND">
-										<Texture parentKey="Background" atlas="StoryHeader-BG" useAtlasSize="false">
-											<Size x="303" y="73"/>
+										<Texture parentKey="Background" atlas="StoryHeader-BG">
+											<Size x="304" y="69"/>
 											<Anchors>
 												<Anchor point="TOP" x="0" y="-5"/>
 											</Anchors>
-											<TexCoords left="0.01" right="0.97" top="0" bottom="1"/>
 										</Texture>
 									</Layer>
 									<Layer level="ARTWORK">
@@ -525,7 +530,6 @@
 												<Anchor point="TOPLEFT" relativeKey="$parent.Background"/>
 												<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background"/>
 											</Anchors>
-											<TexCoords left="0.01" right="0.97" top="0" bottom="1"/>
 										</Texture>
 									</Layer>
 									<Layer level="OVERLAY">
@@ -550,7 +554,7 @@
 					<EditBox parentKey="SearchBox" mixin="QuestLogSearchBoxMixin" inherits="SearchBoxTemplate" letters="60">
 						<Size x="301" y="20"/>
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="6" y="4"/>
+							<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="6" y="7"/>
 						</Anchors>
 						<Scripts>
 							<OnTextChanged method="OnTextChanged"/>
@@ -605,7 +609,7 @@
 					<OnLoad method="OnLoad"/>
 					<OnSizeChanged method="OnSizeChanged"/>
 				</Scripts>
-			</ScrollFrame>
+			</EventScrollFrame>
 			<Frame parentKey="QuestSessionManagement" mixin="QuestSessionManagementMixin">
 				<Size x="0" y="49"/>
 				<Anchors>

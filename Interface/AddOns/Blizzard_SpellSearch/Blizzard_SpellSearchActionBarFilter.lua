@@ -78,16 +78,16 @@ function SpellSearchActionBarFilterMixin:DerivedGetMatchTypeForPvPTalent(pvpTale
 	return pvpTalentResult;
 end
 
-function SpellSearchActionBarFilterMixin:DerivedGetMatchTypeForSpellBookItem(slotIndex, spellBank)
+function SpellSearchActionBarFilterMixin:DerivedGetMatchTypeForSpellBookItem(spellBookItemData)
 	local spellBookItemResult = {};
-	if not slotIndex or not spellBank then
+	if not spellBookItemData or not spellBookItemData.spellBookItemInfo then
 		return spellBookItemResult;
 	end
 
-	local actionBarStatus = SpellSearchUtil.GetActionbarStatusForSpellBookItem(slotIndex, spellBank);
+	local actionBarStatus = SpellSearchUtil.GetActionbarStatusForSpellBookItemInfo(spellBookItemData.spellBookItemInfo);
 	spellBookItemResult.matchType = SpellSearchUtil.ActionBarStatusMatchTypes[actionBarStatus];
-	spellBookItemResult.name = C_SpellBook.GetSpellBookItemName(slotIndex, spellBank);
-	spellBookItemResult.icon = C_SpellBook.GetSpellBookItemTexture(slotIndex, spellBank);
+	spellBookItemResult.name = spellBookItemData.spellBookItemInfo.name;
+	spellBookItemResult.icon = spellBookItemData.spellBookItemInfo.iconID;
 
 	return spellBookItemResult;
 end

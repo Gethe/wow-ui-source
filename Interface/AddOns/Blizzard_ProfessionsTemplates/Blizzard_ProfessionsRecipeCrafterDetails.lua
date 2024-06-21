@@ -319,6 +319,9 @@ function ProfessionsRecipeCrafterDetailsMixin:SetStats(operationInfo, supportsQu
 			return;
 		end
 
+		local hasConcentration = self.operationInfo.concentrationCurrencyID and self.operationInfo.concentrationCurrencyID ~= 0;
+		local applyConcentration = hasConcentration and self.transaction:IsApplyingConcentration();
+
 		self.statLinePool:ReleaseAll();
 		
 		if ProfessionsUtil.IsCraftingMinimized() then
@@ -353,7 +356,6 @@ function ProfessionsRecipeCrafterDetailsMixin:SetStats(operationInfo, supportsQu
 				self.CraftingChoicesContainer:Show();
 			end
 
-			local hasConcentration = operationInfo.concentrationCurrencyID and operationInfo.concentrationCurrencyID ~= 0;
 			self.CraftingChoicesContainer.ConcentrateContainer.ConcentrateToggleButton:SetOperationInfo(operationInfo);
 			self.CraftingChoicesContainer.ConcentrateContainer.ConcentrateToggleButton:SetRecipeInfo(self.recipeInfo);
 
@@ -368,10 +370,9 @@ function ProfessionsRecipeCrafterDetailsMixin:SetStats(operationInfo, supportsQu
 			self.StatLines.ConcentrationStatLine:SetShown(hasConcentration and supportsQualities);
 			self.StatLines.ConcentrationStatLine:SetProfessionType(professionType);
 
-			local applyConcentration = hasConcentration and self.transaction:IsApplyingConcentration();
 			if hasConcentration then
 				self.StatLines.ConcentrationStatLine:SetValue(operationInfo.concentrationCost);
-				self.StatLines.ConcentrationStatLine:SetLabelColor(applyConcentration and YELLOW_FONT_COLOR or DISABLED_FONT_COLOR);
+				self.StatLines.ConcentrationStatLine:SetLabelColor(applyConcentration and NORMAL_FONT_COLOR or DISABLED_FONT_COLOR);
 			end
 			
 			local nextStatLineIndex = 4;
@@ -382,7 +383,7 @@ function ProfessionsRecipeCrafterDetailsMixin:SetStats(operationInfo, supportsQu
 				statLine:Show();
 
 				if bonusStat.bonusStatValue == Enum.BonusStatIndex.ProfessionIngenuity then
-					statLine:SetLabelColor(applyConcentration and YELLOW_FONT_COLOR or DISABLED_FONT_COLOR);
+					statLine:SetLabelColor(applyConcentration and NORMAL_FONT_COLOR or DISABLED_FONT_COLOR);
 				end
 
 				nextStatLineIndex = nextStatLineIndex + 1;
@@ -399,7 +400,12 @@ function ProfessionsRecipeCrafterDetailsMixin:SetStats(operationInfo, supportsQu
 		self.QualityMeter:SetShown(supportsQualities);
 		self.Spacer:SetShown(not supportsQualities);
 		if supportsQualities then
-			self.QualityMeter:SetQuality(operationInfo.quality, self.recipeInfo.maxQuality);
+			local meterQuality = operationInfo.quality;
+			if applyConcentration then
+				-- When concentration is applied, max out the bar without actually setting to the next quality
+				meterQuality = math.floor(meterQuality + 1.0) - 0.01;
+			end
+			self.QualityMeter:SetQuality(meterQuality, self.recipeInfo.maxQuality);
 		end
 
 		self:Layout();

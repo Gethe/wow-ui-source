@@ -17,6 +17,19 @@ end
 TimerunningCreateCharacterButtonGlowMixin = {};
 
 function TimerunningCreateCharacterButtonGlowMixin:OnLoad()
+	-- Allow mask adjustments for different implementations.
+	if self.frameMaskOverrideHeight then
+		self.RotatingGlow.FrameMask:SetHeight(self.frameMaskOverrideHeight);
+	end
+
+	if self.frameMaskOverrideAnchorLeft then
+		self.RotatingGlow.FrameMask:SetPoint("LEFT", self.frameMaskOverrideAnchorLeft);
+	end
+
+	if self.frameMaskOverrideAnchorRight then
+		self.RotatingGlow.FrameMask:SetPoint("RIGHT", self.frameMaskOverrideAnchorRight);
+	end
+
 	self:UpdateHeight();
 end
 
@@ -187,6 +200,26 @@ function TimerunningTimeRemainingFormatter:GetMinInterval(seconds)
 end
 
 function TimerunningEventBannerMixin:OnLoad()
+	local createCharacterButton = CharacterSelectUI.CharacterList.CreateCharacterButton;
+
+	local onEnableScript = createCharacterButton:GetScript("OnEnable");
+	createCharacterButton:SetScript("OnEnable", function()
+		if onEnableScript then
+			onEnableScript(createCharacterButton);
+		end
+
+		self:UpdateShown();
+	end);
+
+	local onDisableScript = createCharacterButton:GetScript("OnDisable");
+	createCharacterButton:SetScript("OnDisable", function()
+		if onDisableScript then
+			onDisableScript(createCharacterButton);
+		end
+
+		self:UpdateShown();
+	end);
+
 	self:RegisterEvent("TIMERUNNING_SEASON_UPDATE");
 	self:UpdateShown();
 	self:UpdateTimeLeft();
@@ -202,6 +235,9 @@ end
 function TimerunningEventBannerMixin:UpdateShown()
 	local showTimerunning = GetActiveTimerunningSeasonID() ~= nil;
 	self:SetShown(showTimerunning);
+
+	local createCharacterEnabled = CharacterSelectUI.CharacterList.CreateCharacterButton:IsEnabled();
+	TimerunningCreateCharacterButtonGlow:SetShown(createCharacterEnabled and showTimerunning);
 end
 
 function TimerunningEventBannerMixin:UpdateTimeLeft()

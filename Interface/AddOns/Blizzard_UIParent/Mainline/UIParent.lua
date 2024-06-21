@@ -1661,8 +1661,12 @@ function UIParent_OnEvent(self, event, ...)
 			if spellConfirmation.spellID then
 				if spellConfirmation.confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_STATIC_TEXT then
 					StaticPopup_Show("SPELL_CONFIRMATION_PROMPT", spellConfirmation.text, spellConfirmation.duration, spellConfirmation.spellID);
+				elseif spellConfirmation.confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_STATIC_TEXT_ALERT then
+					StaticPopup_Show("SPELL_CONFIRMATION_PROMPT_ALERT", spellConfirmation.text, spellConfirmation.duration, spellConfirmation.spellID);
 				elseif spellConfirmation.confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_SIMPLE_WARNING then
 					StaticPopup_Show("SPELL_CONFIRMATION_WARNING", spellConfirmation.text, nil, spellConfirmation.spellID);
+				elseif spellConfirmation.confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_SIMPLE_WARNING_ALERT then
+					StaticPopup_Show("SPELL_CONFIRMATION_WARNING_ALERT", spellConfirmation.text, nil, spellConfirmation.spellID);
 				elseif spellConfirmation.confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_BONUS_ROLL then
 					BonusRollFrame_StartBonusRoll(spellConfirmation.spellID, spellConfirmation.text, spellConfirmation.duration, spellConfirmation.currencyID, spellConfirmation.currencyCost, spellConfirmation.difficultyID);
 				end
@@ -1827,8 +1831,12 @@ function UIParent_OnEvent(self, event, ...)
 		local spellID, confirmType, text, duration, currencyID, currencyCost, difficultyID = ...;
 		if ( confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_STATIC_TEXT ) then
 			StaticPopup_Show("SPELL_CONFIRMATION_PROMPT", text, duration, spellID);
+		elseif ( confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_STATIC_TEXT_ALERT ) then
+			StaticPopup_Show("SPELL_CONFIRMATION_PROMPT_ALERT", text, duration, spellID);
 		elseif ( confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_SIMPLE_WARNING ) then
 			StaticPopup_Show("SPELL_CONFIRMATION_WARNING", text, nil, spellID);
+		elseif ( confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_SIMPLE_WARNING_ALERT ) then
+			StaticPopup_Show("SPELL_CONFIRMATION_WARNING_ALERT", text, nil, spellID);
 		elseif ( confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_BONUS_ROLL ) then
 			BonusRollFrame_StartBonusRoll(spellID, text, duration, currencyID, currencyCost, difficultyID);
 		end

@@ -41,6 +41,7 @@ local ErrorMessages =
 	VRN_NVIDIA_UNSUPPORTED,
 	VRN_QUALCOMM_UNSUPPORTED,
 	VRN_GPU_DRIVER,
+	VRN_COMPAT_MODE,
 };
 
 local function IncrementByOne(value)
@@ -896,46 +897,6 @@ local function Register()
 		end
 	end
 
-	local function FormatPercentageRounded(value)
-		local roundToNearestInteger = true;
-		return FormatPercentage(value, roundToNearestInteger);
-	end
-
-	-- UI Scale
-	if not IsOnGlueScreen() then
-		do
-			local useUIScaleSetting = nil;
-			local uiScaleSliderSetting = nil;
-			do
-				-- Use UI Scale
-				local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("useUiScale", Settings.VarType.Boolean);
-				local commitValue = setValue;
-				useUIScaleSetting = Settings.RegisterProxySetting(category, "PROXY_USE_UI_SCALE", Settings.DefaultVarLocation,
-					Settings.VarType.Boolean, RENDER_SCALE, getDefaultValue(), getValue, nil, commitValue);
-				useUIScaleSetting:SetCommitFlags(Settings.CommitFlag.Apply, Settings.CommitFlag.Revertable);
-			end
-			
-			do
-				-- Resolution Scale
-				local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("uiscale", Settings.VarType.Number);
-				local commitValue = setValue;
-				uiScaleSliderSetting = Settings.RegisterProxySetting(category, "PROXY_UI_SCALE", Settings.DefaultVarLocation,
-					Settings.VarType.Number, RENDER_SCALE, getDefaultValue(), getValue, nil, commitValue);
-				uiScaleSliderSetting:SetCommitFlags(Settings.CommitFlag.Apply, Settings.CommitFlag.Revertable);
-			end
-
-			local minValue, maxValue, step = .65, 1.15, .01;
-			local options = Settings.CreateSliderOptions(minValue, maxValue, step);
-			options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, FormatPercentageRounded)
-
-			local initializer = CreateSettingsCheckboxSliderInitializer(
-				useUIScaleSetting, USE_UISCALE, OPTION_TOOLTIP_USE_UISCALE,
-				uiScaleSliderSetting, options, UI_SCALE, OPTION_TOOLTIP_UI_SCALE);
-			initializer:AddSearchTags(USE_UISCALE, UI_SCALE);
-			layout:AddInitializer(initializer);
-		end
-	end
-	
 	-- Graphics Quality
 	local function AddAdvancedQualitySetting(settings, category, cvar, name, proxyName, minQualityValue)
 		settings[cvar] = CreateAdvancedQualitySetting(category, cvar, name, proxyName, minQualityValue);
@@ -1356,6 +1317,35 @@ local function Register()
 				resScaleSetting:SetIgnoreApplyOverride(false);
 			end
 		end);
+	end
+
+	-- Compat Settings
+	if COMPATIBILITY_SETTINGS then -- check for the existence of the string for now, until they're copied over into all the classic data branches
+		layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(COMPATIBILITY_SETTINGS, OPTION_TOOLTIP_COMPATIBILITY_SETTINGS));
+
+		local function AddCompatSettingsCheckbox(cvar, proxyName, name, tooltip)
+			if C_CVar.GetCVar(cvar) then
+				local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures(cvar, Settings.VarType.Boolean);
+				local commitValue = setValue;
+				local setting = Settings.RegisterProxySetting(category, proxyName, Settings.DefaultVarLocation, Settings.VarType.Boolean, name, getDefaultValue(), getValue, nil, commitValue);
+				setting:SetCommitFlags(Settings.CommitFlag.Apply, Settings.CommitFlag.GxRestart);
+		
+				local function GetOptions()
+					local container = Settings.CreateControlTextContainer();
+					AddValidatedCVarOption(container, cvar, 0, VIDEO_OPTIONS_DISABLED);
+					AddValidatedCVarOption(container, cvar, 1, VIDEO_OPTIONS_ENABLED);
+					return container:GetData();
+				end
+		
+				Settings.CreateCheckboxWithOptions(category, setting, GetOptions, tooltip);
+			end
+		end
+
+		AddCompatSettingsCheckbox("GxCompatOptionalGpuFeatures",		"PROXY_OPT_GPU_FEATURES",	COMPAT_SETTING_OPTIONAL_GPU_FEATURES,	OPTION_TOOLTIP_COMPAT_SETTING_OPTIONAL_GPU_FEATURES);
+		AddCompatSettingsCheckbox("GxCompatDeviceMultiThreading",		"PROXY_DEVICE_MT",			COMPAT_SETTING_DEVICE_MULTITHREADING,	OPTION_TOOLTIP_COMPAT_SETTING_DEVICE_MULTITHREADING);
+		AddCompatSettingsCheckbox("GxCompatCommandListMultiThreading",	"PROXY_CMDLIST_MT",			COMPAT_SETTING_CMDLIST_MULTITHREADING,	OPTION_TOOLTIP_COMPAT_SETTING_CMDLIST_MULTITHREADING);
+		AddCompatSettingsCheckbox("GxCompatAsyncFrameEnd",				"PROXY_FRAME_OVERLAP",		COMPAT_SETTING_FRAME_OVERLAP,			OPTION_TOOLTIP_COMPAT_SETTING_FRAME_OVERLAP);
+		AddCompatSettingsCheckbox("GxCompatWorkSubmitOptimizations",	"PROXY_ADV_WORK_SUBMIT",	COMPAT_SETTING_ADV_WORK_SUBMIT,			OPTION_TOOLTIP_COMPAT_SETTING_ADV_WORK_SUBMIT);
 	end
 
 	Settings.RegisterCategory(category, SETTING_GROUP_SYSTEM);

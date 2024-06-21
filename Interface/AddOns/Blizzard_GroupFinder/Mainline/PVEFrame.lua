@@ -394,6 +394,7 @@ function PVEFrameMixin:OnLoad()
 	self:RegisterEvent("AJ_PVP_LFG_ACTION");
 	self:RegisterEvent("AJ_PVP_RBG_ACTION");
 	self:RegisterEvent("AJ_PVE_LFG_ACTION");
+	self:RegisterEvent("SHOW_DELVES_DISPLAY_UI");
 
 	self.maxTabWidth = (self:GetWidth() - 19) / #panels;
 end
@@ -456,5 +457,7 @@ function PVEFrameMixin:OnEvent(event, ...)
 		HonorFrame_SetType("bonus");
 
 		HonorFrameBonusFrame_SelectButton(HonorFrame.BonusFrame.RandomBGButton);
+	elseif ( event == "SHOW_DELVES_DISPLAY_UI" ) then
+		PVEFrame_ShowFrame("DelvesDashboardFrame");
 	end
 end

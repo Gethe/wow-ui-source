@@ -643,6 +643,14 @@ function CommunitiesFrameMixin:SetDisplayMode(displayMode)
 		HelpTip:Acknowledge(self, CLUB_FINDER_TUTORIAL_FINDER_BUTTONS_SCROLL);
 	end
 
+	if (displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_BENEFITS) then
+		if (not C_GuildInfo.IsGuildReputationEnabled()) then
+			self.GuildBenefitsFrame.Rewards:Hide();
+			self.GuildBenefitsFrame.GuildRewardsTutorialButton:Hide();
+			self.GuildBenefitsFrame.FactionFrame:Hide();
+		end					
+	end
+
 	self:TriggerEvent(CommunitiesFrameMixin.Event.DisplayModeChanged, displayMode);
 
 	self:DisplayReportedAlerts(clubId);
@@ -981,8 +989,13 @@ function CommunitiesFrameMixin:UpdateCommunitiesTabs()
 		if clubId then
 			local clubInfo = C_Club.GetClubInfo(clubId);
 			if clubInfo then
-				self.GuildBenefitsTab:SetShown(clubInfo.clubType == Enum.ClubType.Guild);
+				local benefitsEnabled = GetNumGuildPerks() > 0 or C_GuildInfo.IsGuildReputationEnabled();
+				self.GuildBenefitsTab:SetShown(clubInfo.clubType == Enum.ClubType.Guild and benefitsEnabled);
 				self.GuildInfoTab:SetShown(clubInfo.clubType == Enum.ClubType.Guild);
+
+				if(not benefitsEnabled) then
+					self.GuildInfoTab:SetPoint("TOPLEFT", self.RosterTab, "BOTTOMLEFT", 0, -20);
+				end
 			end
 			self:HideOrShowNotificationOverlay(clubId);
 		end

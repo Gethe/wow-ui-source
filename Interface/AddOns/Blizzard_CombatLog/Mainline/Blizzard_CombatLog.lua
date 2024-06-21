@@ -3388,7 +3388,7 @@ end
 
 -- The format of the data describing context menu entries was originally written for the legacy menus
 -- but is being funneled into the updated menu system to minimize any changes.
-local function CreateContextMenu(region, tbls)
+function CreateCombatLogContextMenu(region, tbls)
 	MenuUtil.CreateContextMenu(region, function(owner, rootDescription)
 		rootDescription:SetTag("MENU_COMBAT_LOG", tbls);
 
@@ -3436,7 +3436,7 @@ function SetItemRef(link, text, button, chatFrame)
 			return;
 		elseif( button == "RightButton") then
 			-- Show Popup Menu
-			CreateContextMenu(chatFrame, Blizzard_CombatLog_CreateUnitMenu(name, guid));
+			CreateCombatLogContextMenu(chatFrame, Blizzard_CombatLog_CreateUnitMenu(name, guid));
 			return;
 		end
 	elseif ( strsub(link, 1, 4) == "icon") then
@@ -3445,7 +3445,7 @@ function SetItemRef(link, text, button, chatFrame)
 		-- Show Popup Menu
 		if( button == "RightButton") then
 			-- need to fix this to be actual texture
-			CreateContextMenu(chatFrame, Blizzard_CombatLog_CreateUnitMenu(Blizzard_CombatLog_BitToBraceCode(tonumber(bit)), nil, tonumber(bit)));
+			CreateCombatLogContextMenu(chatFrame, Blizzard_CombatLog_CreateUnitMenu(Blizzard_CombatLog_BitToBraceCode(tonumber(bit)), nil, tonumber(bit)));
 		elseif ( IsModifiedClick("CHATLINK") ) then
 			ChatEdit_InsertLink (Blizzard_CombatLog_BitToBraceCode(tonumber(bit)));
 		end
@@ -3466,7 +3466,7 @@ function SetItemRef(link, text, button, chatFrame)
 			end
 		-- Show Popup Menu
 		elseif( button == "RightButton" and event ) then
-			CreateContextMenu(chatFrame, Blizzard_CombatLog_CreateSpellMenu(text, spellId, event));
+			CreateCombatLogContextMenu(chatFrame, Blizzard_CombatLog_CreateSpellMenu(text, spellId, event));
 			return;
 		end
 	elseif ( strsub(link, 1,6) == "action" ) then
@@ -3474,7 +3474,7 @@ function SetItemRef(link, text, button, chatFrame)
 
 		-- Show Popup Menu
 		if( button == "RightButton") then
-			CreateContextMenu(chatFrame, Blizzard_CombatLog_CreateActionMenu(event));
+			CreateCombatLogContextMenu(chatFrame, Blizzard_CombatLog_CreateActionMenu(event));
 		end
 		return;
 	elseif ( strsub(link, 1, 19) == "garrfollowerability") then

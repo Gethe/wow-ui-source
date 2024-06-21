@@ -537,6 +537,16 @@ local Map =
 			LiteralName = "NEW_WMO_CHUNK",
 		},
 		{
+			Name = "PlayerMapChanged",
+			Type = "Event",
+			LiteralName = "PLAYER_MAP_CHANGED",
+			Payload =
+			{
+				{ Name = "oldMapID", Type = "number", Nilable = false },
+				{ Name = "newMapID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "UserWaypointUpdated",
 			Type = "Event",
 			LiteralName = "USER_WAYPOINT_UPDATED",

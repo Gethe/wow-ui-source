@@ -201,6 +201,11 @@ local DelvesUI =
 			LiteralName = "ACTIVE_DELVE_DATA_UPDATE",
 		},
 		{
+			Name = "ShowDelvesDisplayUI",
+			Type = "Event",
+			LiteralName = "SHOW_DELVES_DISPLAY_UI",
+		},
+		{
 			Name = "WalkInDataUpdate",
 			Type = "Event",
 			LiteralName = "WALK_IN_DATA_UPDATE",

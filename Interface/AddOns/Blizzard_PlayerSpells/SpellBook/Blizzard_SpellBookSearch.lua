@@ -136,8 +136,8 @@ function SpellBookSearchMixin:SetPreviewResultSearch(previewSearchText)
 	if previewResults and #previewResults > 0 then
 		for _, previewResult in ipairs(previewResults) do
 			-- Show Future and offspec preview specs as desaturated to help differentiate between active/learned results
-			if C_SpellBook.IsSpellBookItemOffSpec(previewResult.resultID, previewResult.spellBank) 
-			or C_SpellBook.GetSpellBookItemType(previewResult.resultID, previewResult.spellBank) == Enum.SpellBookItemType.FutureSpell then
+			local itemInfo = previewResult.spellBookItemInfo;
+			if itemInfo.isOffSpec or itemInfo.itemType == Enum.SpellBookItemType.FutureSpell then
 				previewResult.desaturate = true;		
 			end
 		end
@@ -298,12 +298,17 @@ function SpellBookSearchMixin:GetAllDisplayableSpellBookItems()
 
 	self.cachedSpellBookItems = {};
 	local byDataGroup = false;
-	local filterFunc = GenerateClosure(self.ShouldDisplaySpellBookItem, self);
+	local filterFunc = self:GetSpellBookItemFilterInstance();
 
 	for _, categoryMixin in ipairs(self.categoryMixins) do
 		if categoryMixin:IsAvailable() then
 			categoryMixin:GetSpellBookItemData(byDataGroup, filterFunc, self.cachedSpellBookItems);
 		end
+	end
+
+	-- Add cached SpellBookItemInfo to avoid a lot of repeat C_SpellBook API calls throughout the search process
+	for _, spellBookItemData in ipairs(self.cachedSpellBookItems) do
+		spellBookItemData.spellBookItemInfo = C_SpellBook.GetSpellBookItemInfo(spellBookItemData.slotIndex, spellBookItemData.spellBank);
 	end
 
 	return self.cachedSpellBookItems;

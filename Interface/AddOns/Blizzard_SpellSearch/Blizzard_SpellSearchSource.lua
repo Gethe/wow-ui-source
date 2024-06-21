@@ -17,6 +17,12 @@ function SpellSearchSourceMixin:GetAllSourceDataEntries()
 	assert(false);
 end
 
+function SpellSearchSourceMixin:GetSourceDataEntry(...)
+	-- Required
+	-- Implement in source-specific derived mixin
+	assert(false);
+end
+
 
 TraitSearchSourceMixin = CreateFromMixins(SpellSearchSourceMixin);
 
@@ -32,6 +38,11 @@ end
 
 function TraitSearchSourceMixin:GetAllSourceDataEntries()
 	return self.allNodeInfosGetter();
+end
+
+function TraitSearchSourceMixin:GetSourceDataEntry(nodeID)
+	local allNodeInfos = self:GetAllSourceDataEntries();
+	return allNodeInfos and allNodeInfos[nodeID] or nil;
 end
 
 function TraitSearchSourceMixin:GetEntryDefinitionInfo(entryID)
@@ -54,6 +65,11 @@ function PvPTalentsSearchSourceMixin:GetAllSourceDataEntries()
 	return self.allPvPTalentInfosGetter();
 end
 
+function PvPTalentsSearchSourceMixin:GetSourceDataEntry(pvpTalentID)
+	local allPvPTalents = self:GetAllSourceDataEntries();
+	return allPvPTalents and allPvPTalents[pvpTalentID] or nil;
+end
+
 SpellBookItemSearchSourceMixin = CreateFromMixins(SpellSearchSourceMixin);
 
 -- spellBookItemsGetter: func<table<SpellBookItemElementData>>() (return ElementData for all SpellBookItems)
@@ -64,4 +80,19 @@ end
 
 function SpellBookItemSearchSourceMixin:GetAllSourceDataEntries()
 	return self.allSpellBookItemsGetter();
+end
+
+function SpellBookItemSearchSourceMixin:GetSourceDataEntry(slotIndex, spellBank)
+	local allSpellBookItems = self.allSpellBookItemsGetter();
+	if not allSpellBookItems then
+		return nil;
+	end
+
+	for _, spellBookItemData in ipairs(allSpellBookItems) do
+		if spellBookItemData and spellBookItemData.slotIndex == slotIndex and spellBookItemData.spellBank == spellBank then
+			return spellBookItemData;
+		end
+	end
+
+	return nil;
 end

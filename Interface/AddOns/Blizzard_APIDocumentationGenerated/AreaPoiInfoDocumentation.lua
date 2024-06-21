@@ -51,6 +51,21 @@ local AreaPoiInfo =
 			},
 		},
 		{
+			Name = "GetDelvesForMap",
+			Type = "Function",
+			Documentation = { "Returns all area POIInfos flagged as delves for the given map." },
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "areaPoiIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetDragonridingRacesForMap",
 			Type = "Function",
 			Documentation = { "Returns all area POIInfos flagged as dragonriding races for the given map." },

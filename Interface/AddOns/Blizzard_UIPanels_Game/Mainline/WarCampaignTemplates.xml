@@ -78,16 +78,15 @@
 	<Frame name="CampaignHeaderDisplayTemplate" inherits="ResizeLayoutFrame" mixin="CampaignHeaderDisplayMixin" virtual="true">
 		<Size x="1" y="1"/>
 		<KeyValues>
-			<KeyValue key="fixedWidth" value="303" type="number"/>
+			<KeyValue key="fixedWidth" value="304" type="number"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="Background" atlas="Campaign_Horde">
-					<Size x="303" y="73"/>
+				<Texture parentKey="Background">
+					<Size x="304" y="69"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" y="0"/>
 					</Anchors>
-					<TexCoords left="0.02" right="0.98" top="0" bottom="1"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
@@ -118,7 +117,6 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.Background"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background"/>
 					</Anchors>
-					<TexCoords left="0.02" right="0.98" top="0" bottom="1"/>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
@@ -162,8 +160,8 @@
 	<Frame name="CampaignHeaderTemplate" inherits="CampaignHeaderDisplayTemplate" mixin="CampaignHeaderMixin, CampaignHeaderCollapsibleMixin, CampaignHeaderTooltipableMixin" virtual="true">
 		<KeyValues>
 			<!-- NOTE: topPadding will be assigned programatically -->
-			<KeyValue key="fixedWidth" value="303" type="number"/>
-			<KeyValue key="leftPadding" value="3" type="number"/>
+			<KeyValue key="fixedWidth" value="304" type="number"/>
+			<KeyValue key="leftPadding" value="2" type="number"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="1">
@@ -172,7 +170,7 @@
  						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
  					</KeyValues>
 					<Anchors>
-						<Anchor point="BOTTOM" relativeKey="$parent.Background" y="12"/>
+						<Anchor point="BOTTOM" relativeKey="$parent.Background" y="9"/>
 					</Anchors>
 				</Texture>
 			</Layer>

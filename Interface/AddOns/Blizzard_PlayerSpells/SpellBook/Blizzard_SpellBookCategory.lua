@@ -59,8 +59,8 @@ end
 
 -- Creates a data for use with a PagedContent frame
 -- byDataGroup: [bool] - See Blizzard_PagedContentFrame.lua -> SetDataProvider for details on expected group data format
--- itemFilterFunc:
--- tableToAppendTo: [table] OPTIONAL - 
+-- itemFilterFunc: [func<bool>(slotIndex, spellBank)] - OPTIONAL - filter function that returns true if the passed SpellBookItem should be included in the data
+-- tableToAppendTo: [table] OPTIONAL - Existing table that data tables should be appended to (rather than a newly created table)
 function BaseSpellBookCategoryMixin:GetSpellBookItemData(byDataGroup, itemFilterFunc, tableToAppendTo)
 	if not self.spellGroups then
 		return nil;
@@ -77,7 +77,7 @@ function BaseSpellBookCategoryMixin:GetSpellBookItemData(byDataGroup, itemFilter
 			};
 		end
 		for _, slotIndex in pairs(spellGroup.orderedSpellBookItemSlotIndices) do
-			if itemFilterFunc(slotIndex, self.spellBank) then
+			if not itemFilterFunc or itemFilterFunc(slotIndex, self.spellBank) then
 				local itemEntry = self:GetElementDataForItem(slotIndex, self.spellBank, spellGroup);
 
 				if byDataGroup then

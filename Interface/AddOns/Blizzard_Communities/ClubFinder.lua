@@ -95,6 +95,7 @@ local CLUB_FINDER_FRAME_EVENTS = {
 	"CLUB_FINDER_RECRUIT_LIST_CHANGED",
 	"CLUB_FINDER_RECRUITS_UPDATED",
 	"CLUB_FINDER_CLUB_REPORTED",
+	"CLUB_FINDER_GUILD_REALM_NAME_UPDATED",
 };
 
 ClubsRecruitmentDialogMixin = {};
@@ -1277,8 +1278,12 @@ function ClubFinderGuildCardMixin:OnEnter()
 	local info = self.cardInfo;
 	GameTooltip:SetOwner(self:GetParent(), "ANCHOR_RIGHT", 10, -250);
 	GameTooltip_AddColoredLine(GameTooltip, info.name, GREEN_FONT_COLOR);
+	if (info.realmName) then
+		GameTooltip_AddNormalLine(GameTooltip, CLUB_FINDER_REALM_NAME:format(info.realmName));
+	end
 	GameTooltip_AddNormalLine(GameTooltip, CLUB_FINDER_ACTIVE_MEMBERS:format(info.numActiveMembers));
 	GameTooltip_AddNormalLine(GameTooltip, CLUB_FINDER_LEADER:format(info.guildLeader));
+	
 
 	GameTooltip_AddBlankLineToTooltip(GameTooltip);
 
@@ -1663,6 +1668,15 @@ function ClubFinderGuildCardsBaseMixin:FindAndSetReportedCard(clubFinderGUID)
 	end
 end
 
+function ClubFinderGuildCardsBaseMixin:FindAndUpdateGuildRealmName(clubFinderGUID, realmName)
+	for i = 1, #self.CardList do
+		if (self.CardList[i].clubFinderGUID == clubFinderGUID) then
+			self.CardList[i].realmName = realmName;
+			return;
+		end
+	end
+end
+
 function ClubFinderGuildCardsBaseMixin:RefreshLayout(cardPage)
 	if (not self:IsShown()) then
 		return;
@@ -1898,6 +1912,10 @@ function ClubFinderGuildAndCommunityMixin:OnEvent(event, ...)
 			self.PendingCommunityCards:FindAndSetReportedCard(clubFinderGUID);
 			self.PendingCommunityCards:RefreshLayout();
 		end
+	elseif(event == "CLUB_FINDER_GUILD_REALM_NAME_UPDATED") then
+		local clubFinderGUID, realmName = ...;
+		self.GuildCards:FindAndUpdateGuildRealmName(clubFinderGUID, realmName);
+		self.PendingGuildCards:FindAndUpdateGuildRealmName(clubFinderGUID, realmName);
 	end
 end
 

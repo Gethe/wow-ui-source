@@ -87,8 +87,7 @@ function SpellSearchTextFilterMixin:InternalGetExactSearchMatchDescription()
 	local allSpellBookItems = self:GetAllSourceDataEntriesByType(SpellSearchUtil.SourceType.SpellBookItem);
 	if allSpellBookItems then
 		for _, spellBookItem in ipairs(allSpellBookItems) do
-			local itemName = C_SpellBook.GetSpellBookItemName(spellBookItem.slotIndex, spellBookItem.spellBank);
-			if itemName and SpellSearchUtil.DoStringsMatch(itemName, self.searchString) then
+			if itemName and SpellSearchUtil.DoStringsMatch(spellBookItem.spellBookItemInfo.name, self.searchString) then
 				return C_SpellBook.GetSpellBookItemDescription(spellBookItem.slotIndex, spellBookItem.spellBank);
 			end
 		end
@@ -99,15 +98,20 @@ end
 
 -------------------------------- Derived Implementations -------------------------------
 
-function SpellSearchTextFilterMixin:GetMatchTypeForText(spellName, extraSpellName, spellDescription)
+function SpellSearchTextFilterMixin:GetMatchTypeForText(spellName, extraSpellName, getSpellDescriptionFunc)
 	-- Exact Match -> search matches name exactly
 	if SpellSearchUtil.DoStringsMatch(spellName, self.searchString) then
 		return SpellSearchUtil.MatchType.ExactMatch;
 	-- Name Match -> search is in name
 	elseif SpellSearchUtil.DoesStringContain(spellName, self.searchString) or (extraSpellName and SpellSearchUtil.DoesStringContain(extraSpellName, self.searchString)) then
 		return SpellSearchUtil.MatchType.NameMatch;
+	end
+	
+	-- Delay getting spell description until we know we're going to check it, because that can tend to be expensive
+	local spellDescription = getSpellDescriptionFunc();
+
 	-- Description Match -> search is in description
-	elseif spellDescription and SpellSearchUtil.DoesStringContain(spellDescription, self.searchString) then
+	if spellDescription and SpellSearchUtil.DoesStringContain(spellDescription, self.searchString) then
 		return SpellSearchUtil.MatchType.DescriptionMatch;
 	-- Related Match -> name is in exact match description
 	elseif self.searchStringExactMatchDescription and SpellSearchUtil.DoesStringContain(self.searchStringExactMatchDescription, spellName) then
@@ -145,17 +149,17 @@ function SpellSearchTextFilterMixin:DerivedGetMatchTypeForTraitNodeEntry(entryID
 	local entryResult = {};
 	local traitSearchSource = self:GetSearchSourceByType(SpellSearchUtil.SourceType.Trait);
 
-	local entryName, entryDescription, entryReplacesName = nil, nil, nil;
+	local entryName, getDescriptionFunc, entryReplacesName = nil, nil, nil;
 
 	-- Entries may have either a SubTree or a Definition associated depending on the node type
 	local subTreeInfo = traitSearchSource:GetEntrySubTreeInfo(entryID) or nil;
 	local definitionInfo = traitSearchSource:GetEntryDefinitionInfo(entryID) or nil;
 	if subTreeInfo then
 		entryName = subTreeInfo.name;
-		entryDescription = subTreeInfo.description;
+		getDescriptionFunc = function() return subTreeInfo.description; end;
 	elseif definitionInfo then
 		entryName = TalentUtil.GetTalentNameFromInfo(definitionInfo);
-		entryDescription = TalentUtil.GetTalentDescriptionFromInfo(definitionInfo);
+		getDescriptionFunc = function() return TalentUtil.GetTalentDescriptionFromInfo(definitionInfo); end;
 		entryReplacesName = TalentUtil.GetReplacesSpellNameFromInfo(definitionInfo);
 	end
 
@@ -163,7 +167,7 @@ function SpellSearchTextFilterMixin:DerivedGetMatchTypeForTraitNodeEntry(entryID
 		return entryResult;
 	end
 
-	entryResult.matchType = self:GetMatchTypeForText(entryName, entryReplacesName, entryDescription);
+	entryResult.matchType = self:GetMatchTypeForText(entryName, entryReplacesName, getDescriptionFunc);
 
 	entryResult.name = entryName;
 	entryResult.icon = TalentButtonUtil.CalculateIconTextureFromInfo(definitionInfo, subTreeInfo);
@@ -179,9 +183,8 @@ function SpellSearchTextFilterMixin:DerivedGetMatchTypeForPvPTalent(pvpTalentID,
 		return pvpTalentResult;
 	end
 
-	local talentDescription = C_Spell.GetSpellDescription(pvpTalentInfo.spellID) or nil;
-
-	pvpTalentResult.matchType = self:GetMatchTypeForText(pvpTalentName, nil, talentDescription);
+	local getDescriptionFunc = function() return C_Spell.GetSpellDescription(pvpTalentInfo.spellID); end
+	pvpTalentResult.matchType = self:GetMatchTypeForText(pvpTalentName, nil, getDescriptionFunc);
 
 	pvpTalentResult.name = pvpTalentName;
 	pvpTalentResult.icon = pvpTalentInfo.icon;
@@ -189,10 +192,10 @@ function SpellSearchTextFilterMixin:DerivedGetMatchTypeForPvPTalent(pvpTalentID,
 	return pvpTalentResult;
 end
 
-function SpellSearchTextFilterMixin:DerivedGetMatchTypeForSpellBookItem(slotIndex, spellBank)
+function SpellSearchTextFilterMixin:DerivedGetMatchTypeForSpellBookItem(spellBookItemData)
 	local spellBookItemResult = {};
 
-	local spellBookItemInfo = C_SpellBook.GetSpellBookItemInfo(slotIndex, spellBank);
+	local spellBookItemInfo = spellBookItemData.spellBookItemInfo;
 
 	if not spellBookItemInfo or not spellBookItemInfo.name then
 		return spellBookItemResult;
@@ -200,7 +203,6 @@ function SpellSearchTextFilterMixin:DerivedGetMatchTypeForSpellBookItem(slotInde
 
 	local name = spellBookItemInfo.name;
 	local subName = spellBookItemInfo.subName;
-	local description = C_SpellBook.GetSpellBookItemDescription(slotIndex, spellBank);
 
 	local flyoutMatchType, flyoutMatchName, flyoutMatchIcon = nil, nil, nil;
 	-- If this is a flyout, check the spells inside it for matches
@@ -208,7 +210,8 @@ function SpellSearchTextFilterMixin:DerivedGetMatchTypeForSpellBookItem(slotInde
 		flyoutMatchType, flyoutMatchName, flyoutMatchIcon = self:DerivedGetMatchTypeForFlyout(spellBookItemInfo.actionID);
 	end
 
-	spellBookItemResult.matchType = self:GetMatchTypeForText(name, subName, description);
+	local getDescriptionFunc = function() return C_SpellBook.GetSpellBookItemDescription(spellBookItemData.slotIndex, spellBookItemData.spellBank); end
+	spellBookItemResult.matchType = self:GetMatchTypeForText(name, subName, getDescriptionFunc);
 
 	-- If top level item didn't have a match or its flyout had a better one, use that
 	if flyoutMatchType and (not spellBookItemResult.matchType or flyoutMatchType > spellBookItemResult.matchType) then
@@ -234,8 +237,8 @@ function SpellSearchTextFilterMixin:DerivedGetMatchTypeForFlyout(flyoutID)
 		local spellID, _, isKnown, spellName = GetFlyoutSlotInfo(flyoutID, flyoutIndex);
 
 		if isKnown then
-			local spellDescription = C_Spell.GetSpellDescription(spellID);
-			local slotMatchType = self:GetMatchTypeForText(spellName, nil, spellDescription);
+			local getDescriptionFunc = function() return C_Spell.GetSpellDescription(spellID); end
+			local slotMatchType = self:GetMatchTypeForText(spellName, nil, getDescriptionFunc);
 
 			if slotMatchType and (not bestMatchType or slotMatchType > bestMatchType) then
 				bestMatchType = slotMatchType;

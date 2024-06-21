@@ -47,6 +47,19 @@
 		</Scripts>
 	</Frame>
 
+	<Frame name="TimerunningCreateCharacterButtonGlow" parent="CharSelectCreateCharacterButton" inherits="TimerunningCreateCharacterButtonGlowTemplate" frameLevel="3">
+		<KeyValues>
+			<KeyValue key="frameMaskOverrideHeight" value="296" type="number"/>
+			<KeyValue key="frameMaskOverrideAnchorLeft" value="0" type="number"/>
+			<KeyValue key="frameMaskOverrideAnchorRight" value="0" type="number"/>
+		</KeyValues>
+		<Size y="49"/>
+		<Anchors>
+			<Anchor point="LEFT" x="-3"/>
+			<Anchor point="RIGHT" x="3"/>
+		</Anchors>
+	</Frame>
+
 	<Frame name="TimerunningFirstTimeDialog" mixin="TimerunningFirstTimeDialogMixin" ignoreParentScale="true" parent="GlueParent" frameStrata="DIALOG" setAllPoints="true" enableMouse="true" enableKeyboard="true">
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -454,5 +467,4 @@
 			<OnClick method="OnClick"/>
 		</Scripts>
 	</Button>
-
 </Ui>

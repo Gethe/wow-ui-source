@@ -15,10 +15,11 @@ function InspectGuildFrame_OnShow()
 end
 
 function InspectGuildFrame_Update()
-	local guildPoints, guildNumMembers, guildName = GetInspectGuildInfo(InspectFrame.unit);
+	local guildPoints, guildNumMembers, guildName, guildRealmName = C_PaperDollInfo.GetInspectGuildInfo(InspectFrame.unit);
 	local _, guildFactionName = UnitFactionGroup(InspectFrame.unit);
 
 	InspectGuildFrame.guildName:SetText(guildName);
+	InspectGuildFrame.guildRealmName:SetFormattedText(INSPECT_GUILD_REALM, guildRealmName);
 
 	if ( guildFactionName and guildNumMembers ) then
 		InspectGuildFrame.guildLevel:SetFormattedText(INSPECT_GUILD_FACTION, guildFactionName);

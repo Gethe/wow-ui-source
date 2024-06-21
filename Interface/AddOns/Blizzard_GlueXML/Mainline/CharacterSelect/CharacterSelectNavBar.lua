@@ -20,9 +20,17 @@ function CharacterSelectNavBarButtonMixin:OnLeave()
 	end
 end
 
+function CharacterSelectNavBarButtonMixin:OnEnable()
+	self.NormalTexture:Show();
+	self.DisabledTexture:Hide();
+end
+
+function CharacterSelectNavBarButtonMixin:OnDisable()
+	self.NormalTexture:Hide();
+	self.DisabledTexture:Show();
+end
 
 CharacterSelectNavBarMixin = {
-	NavBarBackdropWidthBuffer = 270,
 	NavBarButtonWidthBuffer = 70,
 };
 
@@ -38,64 +46,39 @@ function CharacterSelectNavBarMixin:OnLoad()
 
 	self.ButtonTray:SetButtonSetup(NavBarButtonSetup);
 
-	local function CreateCharacterClicked()
-		if not CharacterSelect_ShowTimerunningChoiceWhenActive() then
-			CharacterSelectUtil.CreateNewCharacter(Enum.CharacterCreateType.Normal);
-		end
-	end
-
-	local createCharacterCallback = CreateCharacterClicked;
 	local realmsCallback = GenerateFlatClosure(CharacterSelectUtil.ChangeRealm);
-
 
 	self.StoreButton = self.ButtonTray:AddControl(nil, ToggleStoreUI);
 	self.MenuButton = self.ButtonTray:AddControl(CHARACTER_SELECT_NAV_BAR_MENU, GlueMenuFrameUtil.ShowMenu);
-	self.CreateCharacterButton = self.ButtonTray:AddControl(CHARACTER_SELECT_NAV_BAR_CREATE_CHARACTER, createCharacterCallback);
 	self.RealmsButton = self.ButtonTray:AddControl(CHARACTER_SELECT_NAV_BAR_REALMS, realmsCallback);
 
 	-- Any specific button setups.
 	self:SetButtonVisuals();
-
-	self:RegisterEvent("CHARACTER_LIST_UPDATE");
-	self:RegisterEvent("TIMERUNNING_SEASON_UPDATE");
-
-	-- Rebuild to get valid width calculation in time.
-	self.ButtonTray:Layout();
-	local totalWidth = CharacterSelectNavBarMixin.NavBarBackdropWidthBuffer + self.ButtonTray:GetWidth();
-	self.Backdrop:SetWidth(totalWidth);
-
-	-- This event handler can only be added after the parent's OnLoad has run.
-	RunNextFrame(function ()
-		local characterSelectUI = self:GetParent();
-		self:AddDynamicEventMethod(characterSelectUI, CharacterSelectUIMixin.Event.ExpansionTrialStateUpdated, CharacterSelectNavBarMixin.OnExpansionTrialStateUpdated);
-	end);
-end
-
-function CharacterSelectNavBarMixin:OnEvent(event, ...)
-	if event == "CHARACTER_LIST_UPDATE" then
-		CharacterLoginUtil.EvaluateNewAlliedRaces();
-		self:EvaluateCreateCharacterNewState();
-	elseif event == "TIMERUNNING_SEASON_UPDATE" then
-		self:EvaluateCreateCharacterTimerunningState();
-	end
 end
 
 function CharacterSelectNavBarMixin:SetButtonVisuals()
-	-- Do not show divider bar on rightmost option.
-	self.RealmsButton.Bar:Hide();
-
-	-- The leftmost and rightmost buttons in the nav bar have different highlight textures than the default.
+	-- The leftmost and rightmost buttons in the nav bar have different textures than the default.
 	self.StoreButton.Highlight:ClearAllPoints();
 	self.StoreButton.Highlight:SetPoint("TOPLEFT", -45, 0);
-	self.StoreButton.Highlight:SetPoint("BOTTOMRIGHT", 0, 5);
+	self.StoreButton.Highlight:SetPoint("BOTTOMRIGHT", 0, 0);
 	self.StoreButton.Highlight.Backdrop:SetAtlas("glues-characterselect-tophud-selected-left", TextureKitConstants.IgnoreAtlasSize);
 	self.StoreButton.Highlight.Line:SetAtlas("glues-characterselect-tophud-selected-line-left", TextureKitConstants.IgnoreAtlasSize);
+	self.StoreButton.NormalTexture:SetAtlas("glues-characterselect-tophud-left-bg", TextureKitConstants.IgnoreAtlasSize);
+	self.StoreButton.NormalTexture:SetPoint("TOPLEFT", -102, 0);
+	self.StoreButton.DisabledTexture:SetAtlas("glues-characterselect-tophud-left-dis-bg", TextureKitConstants.IgnoreAtlasSize);
+	self.StoreButton.DisabledTexture:SetPoint("TOPLEFT", -102, 0);
 
+	-- Do not show divider bar on rightmost option.
+	self.RealmsButton.Bar:Hide();
 	self.RealmsButton.Highlight:ClearAllPoints();
 	self.RealmsButton.Highlight:SetPoint("TOPLEFT", 0, 0);
-	self.RealmsButton.Highlight:SetPoint("BOTTOMRIGHT", 45, 5);
+	self.RealmsButton.Highlight:SetPoint("BOTTOMRIGHT", 45, 0);
 	self.RealmsButton.Highlight.Backdrop:SetAtlas("glues-characterselect-tophud-selected-right", TextureKitConstants.IgnoreAtlasSize);
 	self.RealmsButton.Highlight.Line:SetAtlas("glues-characterselect-tophud-selected-line-right", TextureKitConstants.IgnoreAtlasSize);
+	self.RealmsButton.NormalTexture:SetAtlas("glues-characterselect-tophud-right-bg", TextureKitConstants.IgnoreAtlasSize);
+	self.RealmsButton.NormalTexture:SetPoint("BOTTOMRIGHT", 102, 0);
+	self.RealmsButton.DisabledTexture:SetAtlas("glues-characterselect-tophud-right-dis-bg", TextureKitConstants.IgnoreAtlasSize);
+	self.RealmsButton.DisabledTexture:SetPoint("BOTTOMRIGHT", 102, 0);
 
 	-- The store button has a custom icon that must match the text state.
 	local function FormatStoreButtonText(self, enabled, highlight)
@@ -113,55 +96,23 @@ function CharacterSelectNavBarMixin:SetButtonVisuals()
 	local highlight = false;
 	self.StoreButton:formatButtonTextCallback(enabled, highlight);
 	self.StoreButton:SetWidth(self.StoreButton:GetTextWidth() + CharacterSelectNavBarMixin.NavBarButtonWidthBuffer);
-
-	-- Character create button has some unique logic, set that up separately.
-	self:InitCreateCharacterButton();
 end
 
-function CharacterSelectNavBarMixin:InitCreateCharacterButton()
-	self.CreateCharacterButton:SetScript("OnEnter", function()
-		self.CreateCharacterButton:OnEnter();
+function CharacterSelectNavBarMixin:UpdateButtonDividerState(button)
+	if not button.Bar or not button.Bar:IsShown() then
+		return;
+	end
 
-		GlueTooltip:SetOwner(self.CreateCharacterButton, "ANCHOR_BOTTOM");
-		GameTooltip_SetTitle(GlueTooltip, CHARACTER_SELECT_NAV_BAR_CREATE_CHARACTER_TOOLTIP:format(CharacterSelectUtil.GetFormattedCurrentRealmName()));
-		GlueTooltip:Show();
-	end);
+	-- The dividers between buttons should look enabled if either button next to it is also enabled, disabled otherwise.
+	local isDividerBarEnabled = button:IsEnabled();
 
-	self.CreateCharacterButton:SetScript("OnLeave", function()
-		self.CreateCharacterButton:OnLeave();
+	if button == self.StoreButton then
+		isDividerBarEnabled = isDividerBarEnabled or self.MenuButton:IsEnabled();
+	elseif button == self.MenuButton then
+		isDividerBarEnabled = isDividerBarEnabled or self.RealmsButton:IsEnabled();
+	end
 
-		GlueTooltip:Hide();
-	end);
-
-	local newFeatureFrame = CreateFrame("Frame", nil, self.CreateCharacterButton, "NewFeatureLabelNoAnimateTemplate");
-	newFeatureFrame:SetPoint("TOPLEFT", 18, -8);
-	self.CreateCharacterButton.NewFeatureFrame = newFeatureFrame;
-	self.CreateCharacterButton.NewFeatureFrame:Hide();
-
-	local createCharacterGlow = CreateFrame("Frame", nil, self.CreateCharacterButton, "CharacterCreateTimerunningGlowTemplate");
-	createCharacterGlow:SetPoint("BOTTOM", 0, -40);
-	self.CreateCharacterButton.CreateCharacterGlow = createCharacterGlow;
-	self:EvaluateCreateCharacterTimerunningState();
-end
-
--- Multiple things can trigger the 'new' text on the create character button, ensure that we show it if any pass.
-function CharacterSelectNavBarMixin:EvaluateCreateCharacterNewState()
-	local isNew = self.isExpansionTrial or CharacterLoginUtil.HasNewAlliedRaces();
-	self.CreateCharacterButton.NewFeatureFrame:SetShown(isNew);
-end
-
-function CharacterSelectNavBarMixin:EvaluateCreateCharacterTimerunningState()
-	local showTimerunning = GetActiveTimerunningSeasonID() ~= nil;
-	self.CreateCharacterButton.CreateCharacterGlow:SetShown(showTimerunning);
-end
-
-function CharacterSelectNavBarMixin:OnExpansionTrialStateUpdated(isExpansionTrial)
-	self.isExpansionTrial = isExpansionTrial;
-	self:EvaluateCreateCharacterNewState();
-end
-
-function CharacterSelectNavBarMixin:SetCharacterCreateButtonEnabled(enabled)
-	self.CreateCharacterButton:SetEnabled(enabled);
+	button.Bar:SetAtlas(isDividerBarEnabled and "glues-characterselect-tophud-bg-divider" or "glues-characterselect-tophud-bg-divider-dis", TextureKitConstants.UseAtlasSize);
 end
 
 function CharacterSelectNavBarMixin:SetStoreButtonEnabled(enabled)
@@ -169,12 +120,20 @@ function CharacterSelectNavBarMixin:SetStoreButtonEnabled(enabled)
 
 	local highlight = false;
 	self.StoreButton:formatButtonTextCallback(enabled, highlight);
+
+	self:UpdateButtonDividerState(self.StoreButton);
 end
 
 function CharacterSelectNavBarMixin:SetMenuButtonEnabled(enabled)
 	self.MenuButton:SetEnabled(enabled);
+
+	self:UpdateButtonDividerState(self.StoreButton);
+	self:UpdateButtonDividerState(self.MenuButton);
 end
 
 function CharacterSelectNavBarMixin:SetRealmsButtonEnabled(enabled)
 	self.RealmsButton:SetEnabled(enabled);
+
+	self:UpdateButtonDividerState(self.MenuButton);
+	self:UpdateButtonDividerState(self.RealmsButton);
 end

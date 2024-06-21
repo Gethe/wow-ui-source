@@ -22,6 +22,7 @@ area: [string]  --  Desired area of UIParent the frame should show in. Depending
 	center: Take up center area. Can't be shown with any other frames in the left/center/right areas, but may be replaced by other frames if allowOtherPanels is 1.
 	left: Take leftmost area of the screen. If pushable, may be shifted to center or right if other pushable frames are shown.
 	doublewide: Take up left and center areas. Can be shown with another single-area frame if it's pushable.
+	centerOrLeft: When no other panels are open, behaves as Center area panel, otherwise behaves as Left area panel
 centerFrameSkipAnchoring: [bool]  --  If true on a frame using area "center," skips updating the frame's anchors when positioned
 neverAllowOtherPanels: [0,1]  --  If 1 on a frame using area "center" or "full", prevents trying to show any other panel while that frame is shown
 allowOtherPanels: [0,1]   -- (default 0 for "center" frames, otherwise 1)

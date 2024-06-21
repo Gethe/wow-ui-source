@@ -49,6 +49,7 @@ function SuperTrackEventMixin:CacheCurrentSuperTrackInfo()
 	self.superTrackedQuestID = superTrackedQuestID;
 	self.superTrackedMapPinType, self.superTrackedMapPinTypeID = C_SuperTrack.GetSuperTrackedMapPin();
 	self.superTrackedVignetteGUID = C_SuperTrack.GetSuperTrackedVignette();
+	self.superTrackedContentType, self.superTrackedContentID = C_SuperTrack.GetSuperTrackedContent();
 	
 	if superTrackedQuestID then
 		self.isComplete = C_QuestLog.ReadyForTurnIn(superTrackedQuestID);
@@ -70,6 +71,10 @@ function SuperTrackEventMixin:GetSuperTrackedVignette()
 	return self.superTrackedVignetteGUID;
 end
 
+function SuperTrackEventMixin:GetSuperTrackedContent()
+	return self.superTrackedContentType, self.superTrackedContentID;
+end
+
 function SuperTrackEventMixin:OnQuestAccepted(questID)
 	QuestUtil.CheckAutoSuperTrackQuest(questID);
 end
@@ -79,6 +84,23 @@ function SuperTrackEventMixin:OnQuestWatchChanged(questID, tracked)
 	if tracked == false then
 		self:ClearMatchingSuperTrackedQuest(questID);
 	end
+end
+
+-- Global query functions that prefer to use a supertrack cache, but will fall back to the Lua binding
+local function GetSupertrackedData(supertracker, apiName)
+	if supertracker then
+		return supertracker[apiName](supertracker);
+	end
+
+	return C_SuperTrack[apiName]();
+end
+
+function QuestSuperTracking_GetSuperTrackedQuestID(supertracker)
+	return GetSupertrackedData(supertracker, "GetSuperTrackedQuestID");
+end
+
+function QuestSuperTracking_GetSuperTrackedContent(supertracker)
+	return GetSupertrackedData(supertracker, "GetSuperTrackedContent");
 end
 
 function QuestSuperTracking_ShouldHighlightWorldQuests(uiMapID)

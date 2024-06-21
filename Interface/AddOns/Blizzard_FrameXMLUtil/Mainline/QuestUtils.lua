@@ -64,6 +64,8 @@ function QuestUtil.GetWorldQuestAtlasInfo(worldQuestType, inProgress, tradeskill
 
 	if inProgress then
 		iconAtlas, width, height = "worldquest-questmarker-questionmark", 10, 15;
+	elseif worldQuestType == Enum.QuestTagType.Capstone then
+		iconAtlas =  "worldquest-Capstone";
 	elseif worldQuestType == Enum.QuestTagType.PvP then
 		iconAtlas =  "worldquest-icon-pvp-ffa";
 	elseif worldQuestType == Enum.QuestTagType.PetBattle then
@@ -862,5 +864,5 @@ function QuestUtils_GetTaskSortType(taskInfo)
 end
 
 function QuestUtil.IsFrequencyRecurring(frequency)
-	return frequency == Enum.QuestFrequency.Daily or frequency == Enum.QuestFrequency.Weekly;
+	return frequency == Enum.QuestFrequency.Daily or frequency == Enum.QuestFrequency.Weekly or frequency == Enum.QuestFrequency.ResetByScheduler;
 end

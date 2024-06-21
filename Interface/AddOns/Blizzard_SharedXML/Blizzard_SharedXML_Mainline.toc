@@ -124,7 +124,6 @@ ModelSceneActorMixin.lua
 ModelSceneActorMixin.xml
 SharedTooltipTemplates.lua
 SharedTooltipTemplates.xml
-FrameStack.lua
 
 Mainline\SoundKitConstants.lua
 

@@ -20,6 +20,7 @@ function CharacterSelectUIMixin:OnLoad()
 
 	self.MapFadeIn:SetScript("OnFinished", MapFadeInOnFinished);
 
+	self.LoadedOverlayFrameCharacterIDs = {};
 	self.CharacterHeaderFramePool = CreateFramePool("BUTTON", self, "CharacterHeaderFrameTemplate", nil);
 	self.CharacterFooterFramePool = CreateFramePool("FRAME", self, "CharacterFooterFrameTemplate", nil);
 
@@ -36,12 +37,12 @@ function CharacterSelectUIMixin:OnLoad()
 	self:RegisterEvent("CVAR_UPDATE");
 	self:RegisterEvent("CHARACTER_LIST_RESTRICTIONS_RECEIVED");
 	self:RegisterEvent("CHARACTER_LIST_MAIL_RECEIVED");
+	self:RegisterEvent("ACCOUNT_CONVERSION_DISPLAY_STATE");
 end
 
 function CharacterSelectUIMixin:OnEvent(event, ...)
 	if event == "UI_SCALE_CHANGED" or event == "DISPLAY_SIZE_CHANGED" then
 		if CharacterSelect.selectedIndex > 0 then
-			self:ReleaseCharacterOverlayFrames();
 			self:SetupCharacterOverlayFrames();
 		end
 	elseif event == "MAP_SCENE_CHARACTER_ON_MOUSE_ENTER" then
@@ -81,6 +82,14 @@ function CharacterSelectUIMixin:OnEvent(event, ...)
 	elseif event == "CHARACTER_LIST_MAIL_RECEIVED" then
 		-- Visually refresh character rendering.
 		CharacterSelectCharacterFrame:UpdateCharacterSelection();
+	elseif event == "ACCOUNT_CONVERSION_DISPLAY_STATE" then
+		local shouldDisplay = ...;
+
+		if shouldDisplay then
+			GlueDialog_Show("ACCOUNT_CONVERSION_DISPLAY");
+		else
+			GlueDialog_Hide("ACCOUNT_CONVERSION_DISPLAY");
+		end
 	end
 end
 
@@ -175,8 +184,8 @@ function CharacterSelectUIMixin:SetCharacterDisplay(selectedCharacterID)
 			self.mapSceneLoading = false;
 			if self.MapFadeIn:IsPlaying() then
 				self.MapFadeIn:Stop();
-				self.FadeInBackground:Hide();
 			end
+			self.FadeInBackground:Hide();
 
 			SetCharSelectBackground(GetSelectBackgroundModel(selectedCharacterID));
 			self:ShowModelFFX();
@@ -207,17 +216,24 @@ function CharacterSelectUIMixin:ShowModelFFX()
 end
 
 function CharacterSelectUIMixin:SetupCharacterOverlayFrames()
-	if self.MapScene:IsShown() then
+	if self.MapScene:IsShown() and not self.FadeInBackground:IsShown() then
 		self:ReleaseCharacterOverlayFrames();
-		local selectedCharacterID = CharacterSelectListUtil.GetCharIDFromIndex(CharacterSelect.selectedIndex);
-		local elementData = CharacterSelectCharacterFrame.ScrollBox:FindElementDataByPredicate(function(elementData)
-			return CharacterSelectListUtil.ContainsCharacterID(selectedCharacterID, elementData);
-		end);
+		if #self.LoadedOverlayFrameCharacterIDs > 0 then
+			for _, characterID in ipairs(self.LoadedOverlayFrameCharacterIDs) do
+				self:SetupOverlayFrameForCharacter(characterID);
+			end
+			self.LoadedOverlayFrameCharacterIDs = {};
+		else
+			local selectedCharacterID = CharacterSelectListUtil.GetCharIDFromIndex(CharacterSelect.selectedIndex);
+			local elementData = CharacterSelectCharacterFrame.ScrollBox:FindElementDataByPredicate(function(elementData)
+				return CharacterSelectListUtil.ContainsCharacterID(selectedCharacterID, elementData);
+			end);
 
-		if elementData and elementData.isGroup then
-			for index, childElementData in ipairs(elementData.characterData) do
-				if not childElementData.isEmpty then
-					self:SetupOverlayFrameForCharacter(childElementData.characterID);
+			if elementData and elementData.isGroup then
+				for _, childElementData in ipairs(elementData.characterData) do
+					if not childElementData.isEmpty then
+						self:SetupOverlayFrameForCharacter(childElementData.characterID);
+					end
 				end
 			end
 		end
@@ -268,6 +284,14 @@ function CharacterSelectUIMixin:SetupOverlayFrameForCharacter(characterID)
 	end
 end
 
+function CharacterSelectUIMixin:MapSceneModelLoaded(characterID)
+	if self.FadeInBackground:IsShown() then
+		table.insert(self.LoadedOverlayFrameCharacterIDs, characterID);
+	else
+		self:SetupOverlayFrameForCharacter(characterID);
+	end
+end
+
 function CharacterSelectUIMixin:SetStoreEnabled(enabled)
 	self.shouldStoreBeEnabled = enabled;
 	self.NavBar:SetStoreButtonEnabled(enabled);
@@ -307,6 +331,22 @@ end
 
 function CharacterSelectMapSceneMixin:OnUpdate()
     UpdateSelectionCustomizationScene();
+end
+
+function CharacterSelectMapSceneMixin:OnModelLoaded(mapSceneIndex)
+	local selectedCharacterID = CharacterSelectListUtil.GetCharIDFromIndex(CharacterSelect.selectedIndex);
+	local elementData = CharacterSelectCharacterFrame.ScrollBox:FindElementDataByPredicate(function(elementData)
+		return CharacterSelectListUtil.ContainsCharacterID(selectedCharacterID, elementData);
+	end);
+
+	if elementData and elementData.isGroup then
+		for index, childElementData in ipairs(elementData.characterData) do
+			if index == mapSceneIndex then
+				CharacterSelect.CharacterSelectUI:MapSceneModelLoaded(childElementData.characterID);
+				break;
+			end
+		end
+	end
 end
 
 

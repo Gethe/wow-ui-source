@@ -143,7 +143,7 @@
 		</Anchors>
 		
 		<Frames>
-			<Frame parentKey="HealthBarsContainer" inherits="SecureFrameParentPropagationTemplate">
+			<Frame parentKey="HealthBarsContainer">
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture parentKey="background">

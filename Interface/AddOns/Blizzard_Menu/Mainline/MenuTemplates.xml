@@ -14,7 +14,7 @@
 			<Layer level="OVERLAY">
 				<Texture parentKey="Arrow" atlas="common-dropdown-a-button" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="RIGHT" relativePoint="RIGHT" x="2" y="-3"/>
+						<Anchor point="RIGHT" relativePoint="RIGHT" x="1" y="-3"/>
 					</Anchors>
 				</Texture>
 				<FontString parentKey="Text" inherits="GameFontHighlight" wordwrap="false" justifyH="LEFT">

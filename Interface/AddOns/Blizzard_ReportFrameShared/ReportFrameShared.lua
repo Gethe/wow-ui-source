@@ -77,6 +77,14 @@ function SharedReportFrameMixin:InitiateReport(reportInfo, playerName, playerLoc
 	});
 end
 
+function SharedReportFrameMixin:UpdateHarmfulToMinorsMinorCategoryEnabled()
+	if (self.reportHarmfulToMinorsCategory and self.selectedMajorType == Enum.ReportMajorCategory.InappropriateName) then
+		local minorFlags = self.minorCategoryFlags:GetFlags();
+		local shouldEnable = bit.band(minorFlags, bit.bnot(Enum.ReportMinorCategory.HarmfulToMinors)) ~= 0;
+		self.reportHarmfulToMinorsCategory:SetMinorCategoryEnabled(shouldEnable);
+	end
+end
+
 function SharedReportFrameMixin:InitiateReportInternal(reportInfo, playerName, playerLocation, isBnetReport, sendReportWithoutDialog)
 	if(not reportInfo) then
 		return;
@@ -105,6 +113,7 @@ function SharedReportFrameMixin:InitiateReportInternal(reportInfo, playerName, p
 	self.Comment:Hide();
 	self.MinorReportDescription:Hide();
 	self.ReportButton:UpdateButtonState();
+	self:UpdateHarmfulToMinorsMinorCategoryEnabled();
 	self:Layout();
 end
 
@@ -129,10 +138,17 @@ function SharedReportFrameMixin:MajorTypeSelected(reportType, majorType)
 		return;
 	end
 	self.lastCategory = nil;
+	self.reportHarmfulToMinorsCategory = nil;
 	self.MinorCategoryButtonPool:ReleaseAll();
 	for index, minorCategory in ipairs(minorCategories) do
 		if (self:CanDisplayMinorCategory(minorCategory)) then
 			self.lastCategory = self:AnchorMinorCategory(index, minorCategory);
+
+			if (majorType == Enum.ReportMajorCategory.InappropriateName and minorCategory == Enum.ReportMinorCategory.HarmfulToMinors) then
+				self.reportHarmfulToMinorsCategory = self.lastCategory;
+				self.reportHarmfulToMinorsCategory.disabledTooltipText = HARMFUL_TO_MINORS_DISABLED_TOOLTIP;
+				self.reportHarmfulToMinorsCategory:SetMinorCategoryEnabled(false);
+			end
 		end
 	end
 	self.MinorReportDescription:Show();
@@ -140,6 +156,7 @@ function SharedReportFrameMixin:MajorTypeSelected(reportType, majorType)
 	self.Comment:SetPoint("TOP", self.lastCategory, "BOTTOM", 0, -10);
 	self.Comment:Show();
 	self.ReportButton:UpdateButtonState();
+	self:UpdateHarmfulToMinorsMinorCategoryEnabled();
 	self:Layout();
 end
 
@@ -194,6 +211,10 @@ function ReportingFrameMinorCategoryButtonMixin:SetupButton(minorCategory)
 	end
 
 	self:SetChecked(false);
+	self:SetEnabled(true);
+	self.Text:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+	self:SetAlpha(1.0);
+
 	self.Text:SetText(categoryName);
 	self:Show();
 end
@@ -205,7 +226,41 @@ function ReportingFrameMinorCategoryButtonMixin:OnClick()
 	self:GetParent():SetMinorCategoryFlag(self.minorCategory, self:GetChecked());
 	local parent = self:GetParent();
 	parent.ReportButton:UpdateButtonState();
+	parent:UpdateHarmfulToMinorsMinorCategoryEnabled();
 	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
+end
+
+function ReportingFrameMinorCategoryButtonMixin:OnEnter()
+	if self:IsEnabled() then
+		return;
+	end
+
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip_AddErrorLine(GameTooltip, self.disabledTooltipText);
+	GameTooltip:Show();
+end
+
+function ReportingFrameMinorCategoryButtonMixin:OnLeave()
+	GameTooltip:Hide();
+end
+
+function ReportingFrameMinorCategoryButtonMixin:SetMinorCategoryEnabled(enabled)
+	self:SetEnabled(enabled);
+
+	local alpha = enabled and 1.0 or 0.75;
+	self:SetAlpha(alpha);
+
+	local color = enabled and HIGHLIGHT_FONT_COLOR or DISABLED_FONT_COLOR;
+	self.Text:SetTextColor(color:GetRGB());
+
+
+	if (not enabled) then
+		self:SetChecked(false);
+	end
+
+	local parent = self:GetParent();
+	parent:SetMinorCategoryFlag(self.minorCategory, self:GetChecked());
+	parent.ReportButton:UpdateButtonState();
 end
 
 ReportButtonMixin = { };

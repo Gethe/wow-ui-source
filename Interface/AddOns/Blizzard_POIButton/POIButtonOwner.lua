@@ -136,6 +136,7 @@ function POIButtonOwnerMixin:GetButtonForTrackable(trackableType, trackableID)
 
 	poiButton:SetTrackable(trackableType, trackableID);
 	poiButton:UpdateButtonStyle();
+	poiButton:UpdateSelected();
 	poiButton.poiParent = self;
 	poiButton:Show();
 	return poiButton;

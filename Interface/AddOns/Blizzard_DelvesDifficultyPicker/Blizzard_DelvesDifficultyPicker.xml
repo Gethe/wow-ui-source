@@ -106,11 +106,16 @@
 				</Scripts>
 			</Button>
 
-			<DropdownButton parentKey="Dropdown" inherits="WowStyle1DropdownTemplate">
+			<!-- Difficulty Dropdown -->
+			<DropdownButton parentKey="Dropdown" inherits="WowStyle1DropdownTemplate" mixin="DelvesDifficultyPickerDropdownMixin" motionScriptsWhileDisabled="true">
 				<Anchors>
 					<Anchor point="CENTER"/>
 					<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-10"/>
 				</Anchors>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
 			</DropdownButton>
 
 			<!-- Delve Modifers -->

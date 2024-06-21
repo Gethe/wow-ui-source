@@ -231,6 +231,35 @@ levelRangeFrame:AddInitializer(function(frame, elementDescription, menu)
 	end);
 end);
 
+*** Custom Buttons and Handling ***
+If you want to use your own button template in the menu, you need to inform the menu description object when it has been
+chosen (clicked, mouse down, or otherwise). This is done by calling Pick() on the description object:
+
+local data = {...};
+local buttonDescription = rootDescription:CreateTemplate("YourButtonTemplate", data);
+buttonDescription:AddInitializer(function(button, description, menu)
+	button:SetScript("OnClick", function(button, buttonName)
+		local inputContext = MenuInputContext.MouseButton;
+		description:Pick(inputContext, buttonName);
+	end);
+end);
+
+You can additionally provide a responder function to take advantage of a custom response type depending on your use case.
+buttonDescription:SetResponder(function(data, menuInputData, menu)
+	-- Your handler here...
+
+	return MenuResponse.Close;
+end
+
+The current response types are:
+MenuResponse = 
+{
+	Open = 1, -- Menu remains open and unchanged
+	Refresh = 2, -- All frames in the menu are reinitialized
+	Close = 3, -- Parent menus remain open but this menu closes
+	CloseAll = 4, -- All menus close
+};
+
 *** Compositor ***
 Compositor facilitates restoring a region to its default state and enables composing a temporary hierarchy of regions that can be 
 disposed on demand. In the case of Menu, this is most useful for specializing common control types without having to create additional templates.

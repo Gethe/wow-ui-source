@@ -11,9 +11,9 @@ ProfessionsTableConstants.Name =
 };
 ProfessionsTableConstants.Tip = 
 {
-	Width = 130,
+	Width = 160,
 	Padding = ProfessionsTableConstants.StandardPadding,
-	LeftCellPadding = ProfessionsTableConstants.NoPadding,
+	LeftCellPadding = 25,
 	RightCellPadding = 25,
 };
 ProfessionsTableConstants.NumAvailable = 
@@ -339,6 +339,7 @@ ProfessionsCrafterTableCellCommissionMixin = CreateFromMixins(TableBuilderCellMi
 function ProfessionsCrafterTableCellCommissionMixin:Populate(rowData, dataIndex)
 	local order = rowData.option;
 	self.TipMoneyDisplayFrame:SetAmount(order[self.tipKey]);
+	self.RewardIcon:SetShown(#order.npcOrderRewards > 0);
 end
 
 ProfessionsCrafterTableCellItemNameMixin = CreateFromMixins(TableBuilderCellMixin);
@@ -668,8 +669,22 @@ function ProfessionsCurrencyMixin:OnQuantityChanged(currencyInfo)
 	-- Implemented in derived mixins
 end
 
+local ConcentrationHelpTipInfo =
+{
+	text = PROFESSIONS_CRAFTING_CONCENTRATION_HELPTIP,
+	buttonStyle = HelpTip.ButtonStyle.Close,
+	targetPoint = HelpTip.Point.TopEdgeCenter,
+	alignment = HelpTip.Alignment.Center,
+	offsetX = 0,
+	cvarBitfield = "closedInfoFramesAccountWide",
+	bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_CONCENTRATION_CURRENCY,
+	checkCVars = true,
+};
+
 function ProfessionsCurrencyMixin:OnShow()
 	self:UpdateQuantity();
+
+	HelpTip:Show(self, ConcentrationHelpTipInfo);
 end
 
 function ProfessionsCurrencyMixin:OnEnter()
@@ -788,7 +803,6 @@ function ProfessionsConcentrateToggleButtonMixin:OnEnter()
 	local nameFormat;
 	local descText = PROFESSIONS_CRAFTING_CONCENTRATION_TOGGLE_ON_DESC;
 	local descColor = NORMAL_FONT_COLOR;
-	local valueColor = HIGHLIGHT_FONT_COLOR;
 
 	if not self:IsEnabled() then
 		if self:AtMaxQuality() then
@@ -798,7 +812,6 @@ function ProfessionsConcentrateToggleButtonMixin:OnEnter()
 			nameFormat = PROFESSIONS_CRAFTING_CONCENTRATION_TOGGLE_DISABLED;
 		end
 		descColor = DISABLED_FONT_COLOR;
-		valueColor = DISABLED_FONT_COLOR;
 	elseif self:GetChecked() then
 		nameFormat = PROFESSIONS_CRAFTING_CONCENTRATION_TOGGLE_OFF;
 		descText = PROFESSIONS_CRAFTING_CONCENTRATION_TOGGLE_OFF_DESC;
@@ -806,8 +819,8 @@ function ProfessionsConcentrateToggleButtonMixin:OnEnter()
 		nameFormat = PROFESSIONS_CRAFTING_CONCENTRATION_TOGGLE_ON;
 	end
 
-	GameTooltip_AddColoredDoubleLine(GameTooltip, nameFormat:format(currencyInfo.name), self:GetConcentrationRequired(), HIGHLIGHT_FONT_COLOR, valueColor);
-	GameTooltip_AddColoredLine(GameTooltip, descText, descColor, true);
+	GameTooltip_AddColoredLine(GameTooltip, nameFormat:format(currencyInfo.name), HIGHLIGHT_FONT_COLOR, false);
+	GameTooltip_AddColoredLine(GameTooltip, descText:format(self:GetConcentrationRequired()), descColor, true);
 	GameTooltip:Show();
 end
 

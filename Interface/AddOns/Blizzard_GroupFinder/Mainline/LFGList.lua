@@ -52,7 +52,7 @@ LFG_LIST_PER_EXPANSION_TEXTURES = {
 	[7] = "battleforazeroth",
 	[8] = "shadowlands",
 	[9] = "dragonflight",
-	[10] = "classic",
+	[10] = "war-within",
 }
 
 LFG_LIST_GROUP_DATA_ATLASES = {
@@ -241,9 +241,12 @@ function LFGListFrame_OnEvent(self, event, ...)
 			local searchResultInfo = C_LFGList.GetSearchResultInfo(searchResultID);
 			self.declines = self.declines or {};
 			self.declines[searchResultInfo.partyGUID] = newStatus;
+			LFGListSearchPanel_UpdateResults(LFGListFrame.SearchPanel) --don't sort
+		else
+			LFGListSearchPanel_UpdateResultList(LFGListFrame.SearchPanel)
 		end
 
-		LFGListSearchPanel_UpdateResultList(LFGListFrame.SearchPanel)
+		
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
 		if ( not IsInGroup(LE_PARTY_CATEGORY_HOME) ) then
 			self.displayedAutoAcceptConvert = false;
@@ -732,6 +735,22 @@ function LFGListEntryCreation_OnLoad(self)
 		return nil;
 	end);
 
+	-- ActivityDropdown dropdown has a "More" option that requires us to set the text
+	-- manually if the option is not in the selected list.
+	self.ActivityDropdown:SetSelectionText(function(currentSelections)
+		-- overrideName assigned when an option is picked from the dialog.
+		if self.ActivityDropdown.overrideName then
+			return self.ActivityDropdown.overrideName;
+		end
+
+		local currentSelection = currentSelections[1];
+		if currentSelection then
+			return MenuUtil.GetElementText(currentSelection);
+		end
+
+		return nil;
+	end);
+
 	self.ActivityDropdown:SetWidth(138);
 	self.PlayStyleDropdown:SetWidth(144);
 
@@ -830,6 +849,7 @@ function LFGListEntryCreation_SetupGroupDropdown(self)
 end
 
 function LFGListEntryCreation_SetupActivityDropdown(self)
+	self.ActivityDropdown.overrideName = nil;
 	self.ActivityDropdown:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_LFG_FRAME_GROUP_ACTIVITY");
 
@@ -1014,6 +1034,7 @@ function LFGListEntryCreation_Select(self, filters, categoryID, groupID, activit
 
 	--Update the group dropdown. If the group dropdown is showing an activity, hide the activity dropdown
 	local groupName = C_LFGList.GetActivityGroupInfo(groupID);
+	self.ActivityDropdown.overrideName = activityInfo and activityInfo.shortName;
 	self.GroupDropdown.overrideName = groupName or activityInfo.shortName;
 
 	self.ActivityDropdown:SetShown(groupName and not categoryInfo.autoChooseActivity);

@@ -1,10 +1,10 @@
 local questOfferPinData =
 {
-	[QuestSortType.Daily] =		{ level = 1, atlas = "UI-QuestPoiRecurring-QuestBang", },
-	[QuestSortType.Normal] = 	{ level = 2, atlas = "QuestNormal", },
+	[QuestSortType.Normal] = 	{ level = 1, atlas = "QuestNormal", },
+	[QuestSortType.Daily] =		{ level = 2, atlas = "UI-QuestPoiRecurring-QuestBang", },
 	[QuestSortType.Calling] = 	{ level = 3, atlas = "Quest-DailyCampaign-Available", },
-	[QuestSortType.Campaign] = 	{ level = 4, atlas = "Quest-Campaign-Available", },
-	[QuestSortType.Meta] = 		{ level = 5, atlas = "UI-QuestPoiWrapper-QuestBang", },
+	[QuestSortType.Meta] = 		{ level = 4, atlas = "quest-wrapper-available", },
+	[QuestSortType.Campaign] = 	{ level = 5, atlas = "Quest-Campaign-Available", },
 	[QuestSortType.Legendary] =	{ level = 6, atlas = "UI-QuestPoiLegendary-QuestBang", },
 	[QuestSortType.Important] =	{ level = 7, atlas = "importantavailablequesticon", },
 };
@@ -120,7 +120,7 @@ local function CreateQuestOfferFromQuestLineInfo(mapID, info)
 		info.isQuestStart = true;
 		info.numObjectives = 0;
 		info.mapID = mapID;
-		info.childDepth = nil; -- Called out to maintain	
+		info.childDepth = nil; -- Called out to maintain
 		return info;
 	end
 end
@@ -175,7 +175,7 @@ function QuestOfferDataProviderMixin:GetAllQuestOffersForMap(mapID)
 	local questOffers = {};
 	self:AddQuestLinesToQuestOffers(questOffers, mapID);
 	self:AddTaskInfoToQuestOffers(questOffers, mapID);
-		
+
 	return questOffers;
 end
 
@@ -192,7 +192,7 @@ function QuestOfferDataProviderMixin:AddAllRelevantQuestHubs(mapID)
 		if poiInfo then
 			poiInfo.dataProvider = self;
 			self:GetQuestHubs()[hubAreaPoiID] = poiInfo;
-		end	
+		end
 	end
 end
 
@@ -402,15 +402,15 @@ function QuestHubPinMixin:OnAcquired(poiInfo)
 end
 
 local function SortConsolidatedQuestsComparator(questOffer1, questOffer2)
-	if questOffer1.questPriority ~= questOffer1.questPriority then
-		return questOffer1.questPriority > questOffer2.questPriority;
+	if questOffer1.pinLevel ~= questOffer2.pinLevel then
+		return questOffer1.pinLevel > questOffer2.pinLevel;
 	end
 
 	local strCmpResult = strcmputf8i(questOffer1.questName, questOffer2.questName);
 	if (strCmpResult ~= 0) then
 		return strCmpResult < 0;
-	end	
-	
+	end
+
 	if questOffer1.questLineID ~= questOffer2.questLineID then
 		if not questOffer1.questLineID then
 			return false;
@@ -436,7 +436,7 @@ end
 function QuestHubPinMixin:UpdatePriorityQuestDisplay()
 	local relatedQuests = self:GetRelatedQuests();
 	local priorityQuest = relatedQuests and relatedQuests[1];
-	
+
 	self.PriorityQuest:SetShown(priorityQuest ~= nil);
 	if priorityQuest then
 		self.PriorityQuest:SetAtlas(priorityQuest.questIcon);
@@ -459,7 +459,7 @@ function QuestHubPinMixin:AddRelatedQuestsToTooltip(tooltip)
 	if relatedQuestCount > 0 then
 		GameTooltip_AddBlankLineToTooltip(tooltip);
 		GameTooltip_AddHighlightLine(tooltip, QUEST_HUB_TOOLTIP_AVAILABLE_QUESTS_HEADER);
-		
+
 		local overflowQuestCount = #relatedQuests - MAX_DISPLAYED_QUESTS_IN_TOOLTIP;
 		local needsOverflowLine = overflowQuestCount > 1;
 
@@ -469,7 +469,7 @@ function QuestHubPinMixin:AddRelatedQuestsToTooltip(tooltip)
 			else
 				GameTooltip_AddNormalLine(tooltip, QUEST_HUB_TOOLTIP_MORE_QUESTS_REMAINING:format(relatedQuestCount - MAX_DISPLAYED_QUESTS_IN_TOOLTIP));
 				break;
-			end				
+			end
 		end
 	end
 end

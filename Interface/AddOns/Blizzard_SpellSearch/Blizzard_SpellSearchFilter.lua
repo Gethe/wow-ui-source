@@ -148,7 +148,7 @@ function BaseSpellSearchFilterMixin:GetAggregateMatchResults(customSortCompareFu
 							sourceType = SpellSearchUtil.SourceType.SpellBookItem,
 							matchType = resultInfo.matchType,
 							spellBank = spellBank,
-							spellBookItemInfo = C_SpellBook.GetSpellBookItemInfo(slotIndex, spellBank),
+							spellBookItemInfo = resultInfo.spellBookItemInfo,
 						});
 					end
 				end
@@ -205,8 +205,8 @@ function BaseSpellSearchFilterMixin:InternalGetMatchTypeForTrait(traitNodeID, tr
 
 	local cachedResults = self.resultsBySourceType[SpellSearchUtil.SourceType.Trait] or {};
 	if not cachedResults[traitNodeID] then
-		local allNodeInfos = self:GetAllSourceDataEntriesByType(SpellSearchUtil.SourceType.Trait);
-		local nodeInfo = allNodeInfos and allNodeInfos[traitNodeID];
+		local searchSource = self:GetSearchSourceByType(SpellSearchUtil.SourceType.Trait);
+		local nodeInfo = searchSource and searchSource:GetSourceDataEntry(traitNodeID);
 
 		if nodeInfo then
 			cachedResults[traitNodeID] = self:DerivedGetMatchTypeForTraitNode(nodeInfo);
@@ -234,8 +234,8 @@ function BaseSpellSearchFilterMixin:InternalGetMatchTypeForPvPTalent(pvpTalentID
 	local cachedResults = self.resultsBySourceType[SpellSearchUtil.SourceType.PvPTalent] or {};
 	if not cachedResults[pvpTalentID] then
 		if not pvpTalentInfo then
-			local allPvpTalents = self:GetAllSourceDataEntriesByType(SpellSearchUtil.SourceType.PvPTalent);
-			pvpTalentInfo = allPvpTalents and allPvpTalents[pvpTalentID];
+			local searchSource = self:GetSearchSourceByType(SpellSearchUtil.SourceType.PvPTalent);
+			pvpTalentInfo = searchSource and searchSource:GetSourceDataEntry(pvpTalentID);
 		end
 		if pvpTalentInfo then
 			local matchType, name = self:DerivedGetMatchTypeForPvPTalent(pvpTalentID, pvpTalentInfo);
@@ -255,9 +255,17 @@ function BaseSpellSearchFilterMixin:InternalGetMatchTypeForSpellBookItem(slotInd
 	local cachedResults = self.resultsBySourceType[SpellSearchUtil.SourceType.SpellBookItem] or {};
 	local cachedResultsBySpellBank = cachedResults and cachedResults[spellBank] or {};
 	if not cachedResultsBySpellBank[slotIndex] then
-		cachedMatchesBySpellBank[slotIndex] = self:DerivedGetMatchTypeForSpellBookItem(slotIndex, spellBank);
-		cachedResults[spellBank] = cachedResultsBySpellBank;
-		self.resultsBySourceType[SpellSearchUtil.SourceType.SpellBookItem] = cachedResults;
+		local searchSource = self:GetSearchSourceByType(SpellSearchUtil.SourceType.SpellBookItem);
+		local spellBookItemData = searchSource and searchSource:GetSourceDataEntry(slotIndex, spellBank);
+
+		if spellBookItemData then
+			local resultInfo = self:DerivedGetMatchTypeForSpellBookItem(spellBookItemData);
+			resultInfo.spellBookItemInfo = spellBookItemData.spellBookItemInfo;
+
+			cachedMatchesBySpellBank[slotIndex] = resultInfo;
+			cachedResults[spellBank] = cachedResultsBySpellBank;
+			self.resultsBySourceType[SpellSearchUtil.SourceType.SpellBookItem] = cachedResults;
+		end
 	end
 
 	return cachedResultsBySpellBank[slotIndex] and cachedResultsBySpellBank[slotIndex].matchType or nil;
@@ -314,7 +322,9 @@ function BaseSpellSearchFilterMixin:InternalSearchSpellBookItems()
 			spellBankResults = spellBookItemResults[spellBookItemData.spellBank];
 		end
 
-		spellBankResults[spellBookItemData.slotIndex] = self:DerivedGetMatchTypeForSpellBookItem(spellBookItemData.slotIndex, spellBookItemData.spellBank);
+		local cachedResult = self:DerivedGetMatchTypeForSpellBookItem(spellBookItemData);
+		cachedResult.spellBookItemInfo = spellBookItemData.spellBookItemInfo;
+		spellBankResults[spellBookItemData.slotIndex] = cachedResult;
 	end
 
 	self.resultsBySourceType[SpellSearchUtil.SourceType.SpellBookItem] = spellBookItemResults;
@@ -337,7 +347,7 @@ function BaseSpellSearchFilterMixin:DerivedGetMatchTypeForPvPTalent(pvpTalentID,
 	assert(false);
 end
 
-function BaseSpellSearchFilterMixin:DerivedGetMatchTypeForSpellBookItem(slotIndex, spellBank)
+function BaseSpellSearchFilterMixin:DerivedGetMatchTypeForSpellBookItem(spellBookItemData)
 	-- Required
 	assert(false);
 end

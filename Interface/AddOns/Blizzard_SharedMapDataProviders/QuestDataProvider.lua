@@ -9,15 +9,27 @@ function QuestDataProviderMixin:OnAdded(mapCanvas)
 
 	mapCanvas:SetPinTemplateType(self:GetPinTemplate(), "BUTTON");
 
-	self:RegisterEvent("QUEST_LOG_UPDATE");
-	self:RegisterEvent("QUEST_WATCH_LIST_CHANGED");
-	self:RegisterEvent("QUEST_POI_UPDATE");
-
 	if not self.poiQuantizer then
 		self.poiQuantizer = CreateFromMixins(WorldMapPOIQuantizerMixin);
 		self.poiQuantizer.size = 75;
 		self.poiQuantizer:OnLoad(self.poiQuantizer.size, self.poiQuantizer.size);
 	end
+end
+
+function QuestDataProviderMixin:OnShow()
+	MapCanvasDataProviderMixin.OnShow(self);
+	self:RegisterEvents();
+end
+
+function QuestDataProviderMixin:OnHide()
+	MapCanvasDataProviderMixin.OnHide(self);
+	self:UnregisterEvents();
+end
+
+function QuestDataProviderMixin:RegisterEvents()
+	self:RegisterEvent("QUEST_LOG_UPDATE");
+	self:RegisterEvent("QUEST_WATCH_LIST_CHANGED");
+	self:RegisterEvent("QUEST_POI_UPDATE");
 
 	self:GetMap():RegisterCallback("SetFocusedQuestID", self.RefreshAllData, self);
 	self:GetMap():RegisterCallback("ClearFocusedQuestID", self.RefreshAllData, self);
@@ -25,10 +37,14 @@ function QuestDataProviderMixin:OnAdded(mapCanvas)
 	self:GetMap():RegisterCallback("PingQuestID", self.OnPingQuestID, self);
 	EventRegistry:RegisterCallback("SetHighlightedQuestPOI", self.OnHighlightedQuestPOIChange, self);
 	EventRegistry:RegisterCallback("ClearHighlightedQuestPOI", self.OnHighlightedQuestPOIChange, self);
-	EventRegistry:RegisterCallback("Supertracking.OnChanged", self.RefreshAllData, self);
+	EventRegistry:RegisterCallback("Supertracking.OnChanged", function() self:RefreshAllData() end, self);
 end
 
-function QuestDataProviderMixin:OnRemoved(mapCanvas)
+function QuestDataProviderMixin:UnregisterEvents()
+	self:UnregisterEvent("QUEST_LOG_UPDATE");
+	self:UnregisterEvent("QUEST_WATCH_LIST_CHANGED");
+	self:UnregisterEvent("QUEST_POI_UPDATE");
+
 	self:GetMap():UnregisterCallback("SetFocusedQuestID", self);
 	self:GetMap():UnregisterCallback("ClearFocusedQuestID", self);
 	self:GetMap():UnregisterCallback("SetBounty", self);
@@ -36,8 +52,6 @@ function QuestDataProviderMixin:OnRemoved(mapCanvas)
 	EventRegistry:UnregisterCallback("SetHighlightedQuestPOI", self);
 	EventRegistry:UnregisterCallback("ClearHighlightedQuestPOI", self);
 	EventRegistry:UnregisterCallback("Supertracking.OnChanged", self);
-
-	MapCanvasDataProviderMixin.OnRemoved(self, mapCanvas);
 end
 
 function QuestDataProviderMixin:OnHighlightedQuestPOIChange(questID)

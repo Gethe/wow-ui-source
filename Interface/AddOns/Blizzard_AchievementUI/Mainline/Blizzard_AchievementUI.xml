@@ -2055,7 +2055,7 @@
 							</StatusBar>
 							<StatusBar name="$parentCategory11" inherits="AchievementFrameSummaryCategoryTemplate">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentCategory9" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+									<Anchor point="TOP" relativeTo="$parentCategory9" relativePoint="BOTTOMRIGHT" x="10" y="-10"/>
 								</Anchors>
 							</StatusBar>
 							<StatusBar name="$parentCategory12" inherits="AchievementFrameSummaryCategoryTemplate">
