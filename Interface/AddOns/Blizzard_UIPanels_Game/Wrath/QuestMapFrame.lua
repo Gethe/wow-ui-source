@@ -623,7 +623,6 @@ local function QuestLogQuests_ShouldShowQuestButton(info, index)
 	end
 
 	local mapID = QuestMapFrame:GetParent():GetMapID();	
-	local questID = select(8, GetQuestLogTitle(index));
 	local questMapID = GetQuestUiMapID(questID);
 	if(not(mapID == questMapID)) then
 		return false;
