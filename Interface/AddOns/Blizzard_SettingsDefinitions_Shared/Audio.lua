@@ -203,6 +203,10 @@ function MacMicrophoneAccessWarningMixin:OnLoad()
 end
 
 local function InitVoiceSettings(category, layout)
+	if not C_VoiceChat.IsEnabled() then
+		return;
+	end
+
 	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(CHAT_VOICE));
 
 	local function PopulateOptions(container, devices, defaultDeviceName)
