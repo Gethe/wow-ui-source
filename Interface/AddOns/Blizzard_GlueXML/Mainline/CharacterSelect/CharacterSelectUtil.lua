@@ -162,7 +162,7 @@ function CharacterSelectUtil.SetTooltipForCharacterInfo(characterInfo)
 	end
 
 	-- Add a blank line only if we have populated fields for the next section.
-	if money then
+	if money and money > 0 then
 		GameTooltip_AddBlankLineToTooltip(GlueTooltip);
 
 		SetTooltipMoney(GlueTooltip, money);

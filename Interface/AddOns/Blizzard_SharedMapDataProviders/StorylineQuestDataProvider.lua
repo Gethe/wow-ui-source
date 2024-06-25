@@ -82,6 +82,10 @@ function QuestOfferDataProviderMixin:ShouldAddQuestOffer(questOffer)
 		return false;
 	end
 
+	if questOffer.isLocalStory and not self:ShouldShowLocalStories() then
+		return false;
+	end
+
 	if self:IsQuestOfferAccountIgnored(questOffer) then
 		return false;
 	end
@@ -141,13 +145,14 @@ local function CreateQuestOfferFromTaskInfo(mapID, info)
 		info.isImportant = C_QuestLog.IsImportantQuest(info.questID);
 		info.isAccountCompleted = C_QuestLog.IsQuestFlaggedCompletedOnAccount(info.questID);
 		info.floorLocation = Enum.QuestLineFloorLocation.Same; -- This data may not be exposed yet
+		info.isLocalStory = false;
 		return info;
 	end
 end
 
 local function CheckAddOffer(questOffers, offer)
-	if offer then
-		table.insert(questOffers, offer);
+	if offer and not questOffers[offer.questID] then
+		questOffers[offer.questID] = offer;
 	end
 end
 
@@ -172,6 +177,12 @@ function QuestOfferDataProviderMixin:AddTaskInfoToQuestOffers(questOffers, mapID
 end
 
 function QuestOfferDataProviderMixin:GetAllQuestOffersForMap(mapID)
+	-- NOTE: This needs to process things in priority order:
+	-- 1. QuestLine
+	-- 2. Force Show
+	-- 3. Task Info
+	-- Never add duplicates, because the priority is ranked from most info to least info.
+	-- questOffers will be indexed by questID to make it easier to avoid adding duplicates
 	local questOffers = {};
 	self:AddQuestLinesToQuestOffers(questOffers, mapID);
 	self:AddTaskInfoToQuestOffers(questOffers, mapID);
@@ -180,7 +191,7 @@ function QuestOfferDataProviderMixin:GetAllQuestOffersForMap(mapID)
 end
 
 function QuestOfferDataProviderMixin:AddAllRelevantQuestOffers(mapID)
-	for _, questOffer in ipairs(self:GetAllQuestOffersForMap(mapID)) do
+	for questID, questOffer in pairs(self:GetAllQuestOffersForMap(mapID)) do
 		self:CheckAddQuestOffer(questOffer);
 	end
 end
@@ -263,11 +274,20 @@ function QuestOfferDataProviderMixin:CheckAddHubPins(mapID)
 	end
 end
 
+function QuestOfferDataProviderMixin:CacheFilterSettings()
+	self.showLocalStories = GetCVarBool("questPOILocalStory");
+end
+
+function QuestOfferDataProviderMixin:ShouldShowLocalStories()
+	return self.showLocalStories;
+end
+
 function QuestOfferDataProviderMixin:RefreshAllData(fromOnShow)
 	self:RemoveAllData();
 	local mapID = self:GetMap():GetMapID();
 	local mapInfo = C_Map.GetMapInfo(mapID);
 	if (mapInfo and MapUtil.ShouldMapTypeShowQuests(mapInfo.mapType)) then
+		self:CacheFilterSettings();
 		self:AddAllRelevantQuestOffers(mapID);
 		self:AddAllRelevantQuestHubs(mapID);
 		self:CheckAddHubPins(mapID);
@@ -383,14 +403,20 @@ end
 
 function QuestOfferPinMixin:OnMouseEnter()
 	TaskPOI_OnEnter(self);
+	self:OnLegendPinMouseEnter();
 end
 
 function QuestOfferPinMixin:OnMouseLeave()
 	TaskPOI_OnLeave(self);
+	self:OnLegendPinMouseLeave();
 end
 
 function QuestOfferPinMixin:GetSuperTrackData()
 	return Enum.SuperTrackingMapPinType.QuestOffer, self.questID;
+end
+
+function QuestOfferPinMixin:GetQuestType()
+    return POIButtonUtil.GetQuestTypeFromQuestSortType(self.questSortType);
 end
 
 QuestHubPinMixin = {};
@@ -470,6 +496,67 @@ function QuestHubPinMixin:AddRelatedQuestsToTooltip(tooltip)
 				GameTooltip_AddNormalLine(tooltip, QUEST_HUB_TOOLTIP_MORE_QUESTS_REMAINING:format(relatedQuestCount - MAX_DISPLAYED_QUESTS_IN_TOOLTIP));
 				break;
 			end
+		end
+	end
+end
+
+-- Hardcoding the QID for now since this is a rare case. If you find yourself
+-- adding more QIDs here, please consider making this data driven.
+local GLOW_HUB_QUESTS = {
+	[80592] = true, -- Severed Threads Pact
+};
+
+GLOW_HUB_QUESTS_ACKNOWLEDGED = {};
+
+QuestHubPinGlowMixin = {};
+
+function QuestHubPinGlowMixin:OnMouseEnter()
+	AreaPOIPinMixin.OnMouseEnter(self);
+	self:AcknowledgeGlow();
+end
+
+function QuestHubPinGlowMixin:OnReleased()
+	AreaPOIPinMixin.OnReleased(self);
+	if (self.AnimatedHighlight) then
+		self.AnimatedHighlight:EndBackgroundPulses();
+	end
+end
+
+function QuestHubPinGlowMixin:GetHighlightType() -- override
+	local highlightType = MapPinHighlightType.None;
+	local relatedQuests = self:GetRelatedQuests();
+	for _, quest in ipairs(relatedQuests) do
+		local shouldTryGlowQuest = GLOW_HUB_QUESTS[quest.questID];
+		if (shouldTryGlowQuest) then
+			local lastResetStartTimeAcknowledgement = GLOW_HUB_QUESTS_ACKNOWLEDGED[quest.questID];
+			local questAcknowledgedThisWeek = lastResetStartTimeAcknowledgement and lastResetStartTimeAcknowledgement == C_DateAndTime.GetWeeklyResetStartTime();
+			if (not questAcknowledgedThisWeek) then
+				highlightType = MapPinHighlightType.ImportantHubQuestHighlight;
+			end
+		end
+	end
+
+	if (highlightType == MapPinHighlightType.None) then
+		highlightType = AreaPOIPinMixin.GetHighlightType(self);
+	end
+
+	return highlightType;
+end
+
+function QuestHubPinGlowMixin:GetHighlightAnimType() -- override
+	return MapPinHighlightAnimType.BackgroundPulse;
+end
+
+function QuestHubPinGlowMixin:AcknowledgeGlow()
+	if (not self.AnimatedHighlight) then
+		return;
+	end
+
+	self.AnimatedHighlight:EndBackgroundPulses();
+	local relatedQuests = self:GetRelatedQuests();
+	for _, quest in ipairs(relatedQuests) do
+		if (GLOW_HUB_QUESTS[quest.questID]) then
+			GLOW_HUB_QUESTS_ACKNOWLEDGED[quest.questID] = C_DateAndTime.GetWeeklyResetStartTime();
 		end
 	end
 end

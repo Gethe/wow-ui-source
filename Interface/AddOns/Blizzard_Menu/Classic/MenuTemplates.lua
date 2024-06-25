@@ -73,5 +73,5 @@ function MenuStyle2Mixin:Generate()
 end
 
 function MenuStyle2Mixin:GetInset()
-	return 17, 15, 17, 15; -- L, T, R, B
+	return 14, 14, 14, 14; -- L, T, R, B
 end

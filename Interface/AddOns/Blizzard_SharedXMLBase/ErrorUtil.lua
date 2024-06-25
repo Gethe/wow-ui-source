@@ -1,5 +1,8 @@
 function CallErrorHandler(...)
-	return geterrorhandler()(...);
+	SetErrorCallstackHeight(GetCallstackHeight() - 1); -- report error from the previous function
+	local result = geterrorhandler()(...);
+	SetErrorCallstackHeight(nil);
+	return result;
 end
 
 function assertsafe(cond, msgStringOrFunction, ...)

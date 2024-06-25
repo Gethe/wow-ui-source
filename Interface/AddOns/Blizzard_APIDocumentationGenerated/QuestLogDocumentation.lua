@@ -152,6 +152,20 @@ local QuestLog =
 			},
 		},
 		{
+			Name = "GetHeaderIndexForQuest",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "index", Type = "luaIndex", Nilable = true },
+			},
+		},
+		{
 			Name = "GetInfo",
 			Type = "Function",
 
@@ -1322,9 +1336,9 @@ local QuestLog =
 		{
 			Name = "QuestTag",
 			Type = "Enumeration",
-			NumValues = 11,
+			NumValues = 12,
 			MinValue = 1,
-			MaxValue = 266,
+			MaxValue = 288,
 			Fields =
 			{
 				{ Name = "Group", Type = "QuestTag", EnumValue = 1 },
@@ -1338,6 +1352,7 @@ local QuestLog =
 				{ Name = "Scenario", Type = "QuestTag", EnumValue = 98 },
 				{ Name = "Account", Type = "QuestTag", EnumValue = 102 },
 				{ Name = "CombatAlly", Type = "QuestTag", EnumValue = 266 },
+				{ Name = "Delve", Type = "QuestTag", EnumValue = 288 },
 			},
 		},
 		{

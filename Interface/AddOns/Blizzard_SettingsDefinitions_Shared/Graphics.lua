@@ -467,12 +467,15 @@ local function Register()
 		local function GetOptions()
 			local container = Settings.CreateControlTextContainer();
 
-			local name = GetMonitorName(DEFAULT_MONITOR_VALUE + 1) or VIDEO_OPTIONS_MONITOR_PRIMARY;
-			container:Add(DEFAULT_MONITOR_VALUE, name);
-
-			for index = 2, GetMonitorCount() do
+			for index = 1, GetMonitorCount() do
 				local value = index - 1;
-				local label = GetMonitorName(index) or string.format(VIDEO_OPTIONS_MONITOR, value);
+				local label, isPrimary = GetMonitorName(index);
+				if (not label) then 
+					label = string.format(VIDEO_OPTIONS_MONITOR, index);
+				end
+				if (isPrimary) then
+					label = string.format("%s [%s]", label, VIDEO_OPTIONS_MONITOR_PRIMARY);
+				end
 				container:Add(value, label);
 			end
 			return container:GetData();

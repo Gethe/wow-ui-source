@@ -4,27 +4,27 @@
 		<KeyValues>
 			<KeyValue key="menuMixin" value="MenuStyle1Mixin" type="global"/>
 		</KeyValues>
-		<Size x="120" y="30"/>
+		<Size x="60" y="24"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Background" atlas="common-dropdown-classic-textholder" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-3" y="1"/>
-						<Anchor point="BOTTOMRIGHT" x="3" y="-5"/>
+						<Anchor point="TOPLEFT" x="-9" y="8"/>
+						<Anchor point="BOTTOMRIGHT" x="8" y="-9"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="Arrow" atlas="common-dropdown-classic-a-buttonDown" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="RIGHT" relativePoint="RIGHT" x="-1" y="-2"/>
+						<Anchor point="RIGHT" relativePoint="RIGHT" x="-1" y="0"/>
 					</Anchors>
 				</Texture>
 				<FontString parentKey="Text" inherits="GameFontHighlight" wordwrap="false" justifyH="LEFT">
 					<Size x="0" y="10"/>
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativeKey="$parent.Arrow" relativePoint="LEFT"/>
-						<Anchor point="TOPLEFT" x="9" y="-8"/>
+						<Anchor point="TOPLEFT" x="9" y="-7"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -65,8 +65,8 @@
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Background" atlas="common-dropdown-classic-b-button" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-3" y="1"/>
-						<Anchor point="BOTTOMRIGHT" x="3" y="-5"/>
+						<Anchor point="TOPLEFT" x="-2" y="2"/>
+						<Anchor point="BOTTOMRIGHT" x="2" y="-2"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -74,7 +74,7 @@
 				<FontString parentKey="Text" inherits="GameFontHighlight" wordwrap="false" justifyH="LEFT">
 					<Size x="0" y="20"/>
 					<Anchors>
-						<Anchor point="TOP"/>
+						<Anchor point="TOP" x="0" y="-2"/>
 					</Anchors>
 				</FontString>
 			</Layer>

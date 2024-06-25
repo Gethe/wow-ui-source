@@ -51,13 +51,13 @@ function QuestDataProviderMixin:UnregisterEvents()
 	self:GetMap():UnregisterCallback("PingQuestID", self);
 	EventRegistry:UnregisterCallback("SetHighlightedQuestPOI", self);
 	EventRegistry:UnregisterCallback("ClearHighlightedQuestPOI", self);
-	EventRegistry:UnregisterCallback("Supertracking.OnChanged", self);
 end
 
 function QuestDataProviderMixin:OnHighlightedQuestPOIChange(questID)
 	for pin in self:GetMap():EnumeratePinsByTemplate(self:GetPinTemplate()) do
 		if pin:GetQuestID() == questID then
 			pin:EvaluateManagedHighlight();
+			pin.LinkGlow:SetShown(POIButtonHighlightManager:GetQuestID() == questID);
 			break;
 		end
 	end
@@ -218,7 +218,6 @@ function QuestDataProviderMixin:AddQuest(questID, x, y, frameLevelOffset, isWayp
 	local pin = self:GetMap():AcquirePin(self:GetPinTemplate());
 	pin.questID = questID;
 	pin.dataProvider = self;
-	pin:SetPinScale(2.5);
 
 	local isSuperTracked = questID == C_SuperTrack.GetSuperTrackedQuestID();
 	local isComplete = QuestCache:Get(questID):IsComplete();
@@ -233,10 +232,8 @@ function QuestDataProviderMixin:AddQuest(questID, x, y, frameLevelOffset, isWayp
 
 	pin.Display:ClearAllPoints();
 	pin.Display:SetPoint("CENTER");
-	pin.moveHighlightOnMouseDown = false;
 	pin:SetSelected(isSuperTracked);
-	pin:SetStyle(POIButtonUtil.GetStyleFromQuestData(isComplete, isWaypoint));
-
+	pin:SetStyle(isWaypoint and POIButtonUtil.Style.Waypoint or POIButtonUtil.GetStyle(questID));
 	pin:UpdateButtonStyle();
 	pin:EvaluateManagedHighlight();
 
@@ -250,8 +247,7 @@ end
 QuestPinMixin = CreateFromMixins(MapCanvasPinMixin);
 
 function QuestPinMixin:OnLoad()
-	self:SetScalingLimits(1, 0.4125, 0.4125);
-
+	self:SetDefaultMapPinScale();
 	self.UpdateTooltip = self.OnMouseEnter;
 end
 
@@ -295,7 +291,8 @@ function QuestPinMixin:OnMouseEnter()
 	end
 	GameTooltip:Show();
 	POIButtonHighlightManager:SetHighlight(questID);
-    EventRegistry:TriggerEvent("MapCanvas.QuestPin.OnEnter", self, questID);
+    EventRegistry:TriggerEvent("MapCanvas.QuestPin.OnEnter", questID);
+    self:OnLegendPinMouseEnter();
 end
 
 function QuestPinMixin:OnMouseLeave()
@@ -303,19 +300,20 @@ function QuestPinMixin:OnMouseLeave()
 
 	GameTooltip:Hide();
 	POIButtonHighlightManager:ClearHighlight();
-end
-
-function QuestPinMixin:OnClick(...)
-	-- Overrides POIButtonMixin.
-	if not IsModifierKeyDown() then
-		EventRegistry:TriggerEvent("MapCanvas.QuestPin.OnClick", self, self.questID);
-	end
-
-	return MapCanvasPinMixin.OnClick(self, ...);
+    self:OnLegendPinMouseLeave();
+	EventRegistry:TriggerEvent("MapCanvas.QuestPin.OnLeave", questID);
 end
 
 function QuestPinMixin:OnMouseClickAction(...)
 	POIButtonMixin.OnClick(self, ...);
+end
+
+function QuestPinMixin:OnMouseDownAction(...)
+	POIButtonMixin.OnMouseDown(self, ...);
+end
+
+function QuestPinMixin:OnMouseUpAction(...)
+	POIButtonMixin.OnMouseUp(self, ...);
 end
 
 function QuestPinMixin:GetHighlightType() -- override
@@ -327,36 +325,6 @@ function QuestPinMixin:GetHighlightType() -- override
 	end
 
 	return MapPinHighlightType.None;
-end
-
-function QuestPinMixin:OnMouseDown(...)
-	-- Overrides POIButtonMixin.
-	return MapCanvasPinMixin.OnMouseDown(self, ...);
-end
-
-function QuestPinMixin:OnMouseDownAction(...)
-	POIButtonMixin.OnMouseDown(self, ...);
-
-	self.NormalTexture:Hide();
-	self.PushedTexture:Show();
-	if self.moveHighlightOnMouseDown then
-		self.HighlightTexture:SetPoint("CENTER", 2, -2);
-	end
-end
-
-function QuestPinMixin:OnMouseUp(...)
-	-- Overrides POIButtonMixin.
-	return MapCanvasPinMixin.OnMouseUp(self, ...);
-end
-
-function QuestPinMixin:OnMouseUpAction(...)
-	POIButtonMixin.OnMouseDown(self, ...);
-
-	self.NormalTexture:Show();
-	self.PushedTexture:Hide();
-	if self.moveHighlightOnMouseDown then
-		self.HighlightTexture:SetPoint("CENTER", 0, 0);
-	end
 end
 
 -- This is the misery that results when one POI button is an actual Button and the other is a Frame.  (See: QuestPOI.xml)

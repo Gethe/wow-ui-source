@@ -20,7 +20,7 @@ function WorldQuestObjectiveTrackerMixin:OnEvent(event, ...)
 	elseif event == "QUEST_WATCH_LIST_CHANGED" then
 		local questID = ...;
 		self:SetNeedsFanfare(questID);
-		self:MarkDirty();	
+		self:MarkDirty();
 	else
 		self:MarkDirty();
 	end

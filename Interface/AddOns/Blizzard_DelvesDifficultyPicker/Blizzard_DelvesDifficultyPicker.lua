@@ -1,7 +1,6 @@
 --! TODO sounds
 
 --[[ LOCALS ]]
--- TODO not sure all these events are needed, they were pulled from the torghast difficulty picker
 local DELVES_DIFFICULTY_PICKER_EVENTS = {
 	"PARTY_LEADER_CHANGED",
 	"GOSSIP_OPTIONS_REFRESHED",
@@ -12,8 +11,17 @@ local DELVES_DIFFICULTY_PICKER_EVENTS = {
 	"WALK_IN_DATA_UPDATE",
 	"ACTIVE_DELVE_DATA_UPDATE",
 };
+
+-- Max number of rewards shown on the right side of the UI
 local MAX_NUM_REWARDS = 4;
+
+-- Used to select the bountiful widget, in order to show VFX based on the tier of key owned.
+-- See DelvesKeyState enum and its usages
 local BOUNTIFUL_DELVE_WIDGET_TAG = "delveBountiful";
+
+-- Stores the last selected tier. If one hasn't been selected (value: 0), we'll force the player to select one.
+-- If the last selected isn't available, we'll default to the highest unlocked tier.
+local LAST_TIER_SELECTED_CVAR = "lastSelectedDelvesTier";
 
 local DelvesKeyState = EnumUtil.MakeEnum(
 	"None",
@@ -55,7 +63,6 @@ function DelvesDifficultyPickerFrameMixin:OnLoad()
 	CustomGossipFrameBaseMixin.OnLoad(self);
 end
 
--- TODO Will need to revisit this with continue screen
 function DelvesDifficultyPickerFrameMixin:OnEvent(event, ...)
 	if event == "PARTY_LEADER_CHANGED" or event == "GROUP_ROSTER_UPDATE" or event == "GROUP_FORMED" then 
 		C_GossipInfo.RefreshOptions();
@@ -112,6 +119,7 @@ function DelvesDifficultyPickerFrameMixin:SetupDropdown()
 			DelvesDifficultyPickerFrame:SetSelectedOption(option);
 			DelvesDifficultyPickerFrame.DelveRewardsContainerFrame:SetRewards();
 			DelvesDifficultyPickerFrame:UpdatePortalButtonState();
+			SetCVar(LAST_TIER_SELECTED_CVAR, option.orderIndex + 1); -- order index starts at 0, so we need to offset it.
 		end
 
 		local function SetupButton(option, isLocked)
@@ -148,6 +156,10 @@ function DelvesDifficultyPickerFrameMixin:UpdatePortalButtonState()
 	self.EnterDelveButton:SetEnabled(playerAtOrAboveMinLevel and selectedOptionValid);
 end
 
+-- gossipOptions are the individual gossip options returned from the gossip record.
+-- In the context of Delves, they represent the tiers, starting from the lowest to the highest.
+-- The order should mirror exactly how it is ordered in data.
+-- This data comes from CustomGossipFrameBase
 function DelvesDifficultyPickerFrameMixin:GetOptions()
 	return self.gossipOptions;
 end
@@ -165,19 +177,35 @@ function DelvesDifficultyPickerFrameMixin:SetInitialLevel()
 	DelvesDifficultyPickerFrame:SetSelectedOption(nil);
 	local highestUnlockedLevel = nil;
 	local highestUnlockedLevelOptionID = nil;
+	local lastSelectedTier = GetCVarNumberOrDefault(LAST_TIER_SELECTED_CVAR);
 
 	if self.gossipOptions then
 		highestUnlockedLevel = self.gossipOptions[1].orderIndex;
 		highestUnlockedLevelOptionID = self.gossipOptions[1].gossipOptionID;
 
-		for i, option in pairs(self.gossipOptions) do 
-			if option.status == Enum.GossipOptionStatus.Available or option.status == Enum.GossipOptionStatus.AlreadyComplete then
-				highestUnlockedLevel = option.orderIndex;
-				highestUnlockedLevelOptionID = option.gossipOptionID;
+		-- If last selected tier is 0, then the player is opening Delves for the first time. We'll force them to pick a tier.
+		-- Otherwise, try to use their last selected tier. Failing that, use the highest unlocked tier
+		if lastSelectedTier > 0 then
+			local lastSelectedTierOption = self.gossipOptions[lastSelectedTier];
+			local lastSelectedTierValid = lastSelectedTierOption.status == Enum.GossipOptionStatus.Available or lastSelectedTierOption.status == Enum.GossipOptionStatus.AlreadyComplete;
+
+			if lastSelectedTierOption and lastSelectedTierValid then
+				highestUnlockedLevel = lastSelectedTierOption.orderIndex;
+				highestUnlockedLevelOptionID = lastSelectedTierOption.gossipOptionID;
 				DelvesDifficultyPickerFrame:SetSelectedLevel(highestUnlockedLevel);
-				DelvesDifficultyPickerFrame:SetSelectedOption(option);
+				DelvesDifficultyPickerFrame:SetSelectedOption(lastSelectedTierOption);
 			else
-				break;
+				-- See DelvesDifficultyPickerFrameMixin:GetOptions 
+				for i, option in pairs(self.gossipOptions) do 
+					if option.status == Enum.GossipOptionStatus.Available or option.status == Enum.GossipOptionStatus.AlreadyComplete then
+						highestUnlockedLevel = option.orderIndex;
+						highestUnlockedLevelOptionID = option.gossipOptionID;
+						DelvesDifficultyPickerFrame:SetSelectedLevel(highestUnlockedLevel);
+						DelvesDifficultyPickerFrame:SetSelectedOption(option);
+					else
+						break;
+					end
+				end
 			end
 		end
 	end
@@ -200,13 +228,13 @@ function DelvesDifficultyPickerFrameMixin:UpdateWidgets(gossipOptionID)
 
 	for _, widgetSetInfo in pairs(widgetSetsForOption) do
 		if widgetSetInfo.widgetType == Enum.GossipOptionUIWidgetSetTypes.Modifiers then
-			-- If no level selected, or player ineligible, break out of showing modifers (but continue to show background and story text)
-			if not DelvesDifficultyPickerFrame:GetSelectedLevel() then
-				break;
+			-- If level selected or player eligible for tier, show modifiers
+			if DelvesDifficultyPickerFrame:GetSelectedLevel() then
+				self.DelveModifiersWidgetContainer:RegisterForWidgetSet(widgetSetInfo.uiWidgetSetID);
 			end
+		end
 
-			self.DelveModifiersWidgetContainer:RegisterForWidgetSet(widgetSetInfo.uiWidgetSetID);
-		elseif widgetSetInfo.widgetType == Enum.GossipOptionUIWidgetSetTypes.Background then
+		if widgetSetInfo.widgetType == Enum.GossipOptionUIWidgetSetTypes.Background then
 			self.DelveBackgroundWidgetContainer:RegisterForWidgetSet(widgetSetInfo.uiWidgetSetID);
 			self.Bg:Hide();
 		end

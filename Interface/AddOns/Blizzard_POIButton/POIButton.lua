@@ -45,7 +45,7 @@ end
 function POIButtonDisplayLayerMixin:UpdateInProgress()
 	local poiButton = self:GetParent();
 	local inProgressAtlas = poiButton:IsSelected() and "Quest-In-Progress-Icon-Brown" or "Quest-In-Progress-Icon-yellow";
-	self:SetAtlas(32, 32, inProgressAtlas);
+	self:SetAtlas(nil, nil, inProgressAtlas);
 	self:SetOffset(0, 0);
 end
 
@@ -153,6 +153,58 @@ local function POIButton_GetRecurringAtlasInfoPushed(poiButton)
 	end
 end
 
+local function POIButton_GetBonusObjectiveAtlasInfoNormal(poiButton)
+	if poiButton:IsSelected() then
+		return "worldquest-questmarker-epic-supertracked";
+	else
+		return "worldquest-questmarker-epic";
+	end
+end
+
+local function POIButton_GetBonusObjectiveAtlasInfoPushed(poiButton)
+	if poiButton:IsSelected() then
+		return "worldquest-questmarker-epic-down-supertracked";
+	else
+		return "worldquest-questmarker-epic-down";
+	end
+end
+
+local function POIButton_GetAreaPOIDisplay(poiButton)
+	-- TODO: This could need to support textures, it just won't for now.
+	local display = poiButton:GetPoiInfo().atlasName;
+
+	-- hacks for now...
+	if display == "minimap-genericevent-hornicon" then
+		return "UI-EventPoi-Horn-big";
+	end
+
+	return display;
+end
+
+local function POIButton_GetAreaPOIAtlasInfoNormal(poiButton)
+	if poiButton:IsSelected() then
+		return "worldquest-questmarker-epic-supertracked";
+	else
+		return "worldquest-questmarker-epic";
+	end
+end
+
+local function POIButton_GetAreaPOIAtlasInfoPushed(poiButton)
+	if poiButton:IsSelected() then
+		return "worldquest-questmarker-epic-down-supertracked";
+	else
+		return "worldquest-questmarker-epic-down";
+	end
+end
+
+local function POIButton_GetContentTrackingAtlas(poiButton)
+	if poiButton:IsSelected() then
+		return "waypoint-mappin-minimap-tracked";
+	else
+		return "waypoint-mappin-minimap-untracked";
+	end
+end
+
 local function POIButton_GetQuestCompleteAtlas(poiButton)
 	local questID = poiButton:GetQuestID();
 	local isLegendaryQuest = questID and C_QuestLog.IsLegendaryQuest(questID) or false;
@@ -162,106 +214,116 @@ end
 local function POIButton_UpdateQuestInProgressStyle(poiButton)
 	local questType = poiButton:GetQuestType();
 	if questType == POIButtonUtil.QuestTypes.Campaign or questType == POIButtonUtil.QuestTypes.Calling then
-		POIButton_SetAtlas(poiButton.Glow, 64, 64, "UI-QuestPoiCampaign-OuterGlow");
-		POIButton_SetAtlas(poiButton.NormalTexture, 32, 32, POIButton_GetCampaignAtlasInfoNormal(poiButton));
-		POIButton_SetAtlas(poiButton.PushedTexture, 32, 32, POIButton_GetCampaignAtlasInfoPushed(poiButton));
-		POIButton_SetAtlas(poiButton.HighlightTexture, 32, 32, "UI-QuestPoiCampaign-InnerGlow");
+		POIButton_SetAtlas(poiButton.Glow, nil, nil, "UI-QuestPoiCampaign-OuterGlow");
+		POIButton_SetAtlas(poiButton.NormalTexture, nil, nil, POIButton_GetCampaignAtlasInfoNormal(poiButton));
+		POIButton_SetAtlas(poiButton.PushedTexture, nil, nil, POIButton_GetCampaignAtlasInfoPushed(poiButton));
+		POIButton_SetAtlas(poiButton.HighlightTexture, nil, nil, "UI-QuestPoiCampaign-InnerGlow");
 	elseif questType == POIButtonUtil.QuestTypes.Recurring then
-		POIButton_SetAtlas(poiButton.Glow, 64, 64, "UI-QuestPoiRecurring-OuterGlow");
-		POIButton_SetAtlas(poiButton.NormalTexture, 32, 32, POIButton_GetRecurringAtlasInfoNormal(poiButton));
-		POIButton_SetAtlas(poiButton.PushedTexture, 32, 32, POIButton_GetRecurringAtlasInfoPushed(poiButton));
-		POIButton_SetAtlas(poiButton.HighlightTexture, 32, 32, "UI-QuestPoiRecurring-InnerGlow");
+		POIButton_SetAtlas(poiButton.Glow, nil, nil, "UI-QuestPoiRecurring-OuterGlow");
+		POIButton_SetAtlas(poiButton.NormalTexture, nil, nil, POIButton_GetRecurringAtlasInfoNormal(poiButton));
+		POIButton_SetAtlas(poiButton.PushedTexture, nil, nil, POIButton_GetRecurringAtlasInfoPushed(poiButton));
+		POIButton_SetAtlas(poiButton.HighlightTexture, nil, nil, "UI-QuestPoiRecurring-InnerGlow");
 	elseif questType == POIButtonUtil.QuestTypes.Important then
-		POIButton_SetAtlas(poiButton.Glow, 64, 64, "UI-QuestPoiImportant-OuterGlow");
-		POIButton_SetAtlas(poiButton.NormalTexture, 32, 36, POIButton_GetImportantAtlasInfoNormal(poiButton));
-		POIButton_SetAtlas(poiButton.PushedTexture, 32, 36, POIButton_GetImportantAtlasInfoPushed(poiButton));
-		POIButton_SetAtlas(poiButton.HighlightTexture, 32, 36, "UI-QuestPoiImportant-InnerGlow");
-	elseif questPOIType == POIButtonUtil.QuestTypes.Meta then
+		POIButton_SetAtlas(poiButton.Glow, nil, nil, "UI-QuestPoiImportant-OuterGlow");
+		POIButton_SetAtlas(poiButton.NormalTexture, nil, nil, POIButton_GetImportantAtlasInfoNormal(poiButton));
+		POIButton_SetAtlas(poiButton.PushedTexture, nil, nil, POIButton_GetImportantAtlasInfoPushed(poiButton));
+		POIButton_SetAtlas(poiButton.HighlightTexture, nil, nil, "UI-QuestPoiImportant-InnerGlow");
+	elseif questType == POIButtonUtil.QuestTypes.Meta then
 		poiButton.Display:SetOffset(0, 0);
-		POIButton_SetAtlas(poiButton.Glow, 64, 64, "UI-QuestPoiWrapper-OuterGlow");
-		POIButton_SetAtlas(poiButton.NormalTexture, 32, 36, POIButton_GetMetaAtlasInfoNormal(poiButton));
-		POIButton_SetAtlas(poiButton.PushedTexture, 32, 36, POIButton_GetMetaAtlasInfoPushed(poiButton));
-		POIButton_SetAtlas(poiButton.HighlightTexture, 32, 36, "UI-QuestPoiWrapper-InnerGlow");
+		POIButton_SetAtlas(poiButton.Glow, nil, nil, "UI-QuestPoiWrapper-OuterGlow");
+		POIButton_SetAtlas(poiButton.NormalTexture, nil, nil, POIButton_GetMetaAtlasInfoNormal(poiButton));
+		POIButton_SetAtlas(poiButton.PushedTexture, nil, nil, POIButton_GetMetaAtlasInfoPushed(poiButton));
+		POIButton_SetAtlas(poiButton.HighlightTexture, nil, nil, "UI-QuestPoiWrapper-InnerGlow");
 	else
-		POIButton_SetAtlas(poiButton.Glow, 50, 50, "UI-QuestPoi-OuterGlow");
-		POIButton_SetAtlas(poiButton.NormalTexture, 32, 32, POIButton_GetAtlasInfoNormal(poiButton));
-		POIButton_SetAtlas(poiButton.PushedTexture, 32, 32, POIButton_GetAtlasInfoPushed(poiButton));
-		POIButton_SetAtlas(poiButton.HighlightTexture, 32, 32, POIButton_GetAtlasInfoHighlight(poiButton));
+		POIButton_SetAtlas(poiButton.Glow, nil, nil, "UI-QuestPoi-OuterGlow");
+		POIButton_SetAtlas(poiButton.NormalTexture, nil, nil, POIButton_GetAtlasInfoNormal(poiButton));
+		POIButton_SetAtlas(poiButton.PushedTexture, nil, nil, POIButton_GetAtlasInfoPushed(poiButton));
+		POIButton_SetAtlas(poiButton.HighlightTexture, nil, nil, POIButton_GetAtlasInfoHighlight(poiButton));
 	end
 
 	 poiButton:UpdateInProgress();
 end
 
-local function POIButton_UpdateNormalStyleTexture(poiButton)
+local function POIButton_UpdateNormalStyle(poiButton)
 	-- This may be overridden later
 	poiButton.Display:SetOffset(0, 0);
 
-	local style = poiButton.style;
-	local isContentTracking = (style == POIButtonUtil.Style.ContentTracking);
-	poiButton.Display:SetIconShown(not isContentTracking);
-	if isContentTracking then
-		local atlas = poiButton:IsSelected() and "waypoint-mappin-minimap-tracked" or "waypoint-mappin-minimap-untracked";
-		POIButton_SetAtlas(poiButton.Glow, 32, 32, atlas);
-		POIButton_SetAtlas(poiButton.NormalTexture, 32, 32, atlas);
-		POIButton_SetAtlas(poiButton.PushedTexture, 32, 32, atlas);
-		POIButton_SetAtlas(poiButton.HighlightTexture, 32, 32, atlas);
+	local style = poiButton:GetStyle();
+	if style == POIButtonUtil.Style.ContentTracking then
+		poiButton.Display:SetAtlas(nil, nil, nil);
+		POIButton_SetAtlas(poiButton.Glow, 32, 32, POIButton_GetContentTrackingAtlas(poiButton));
+		POIButton_SetAtlas(poiButton.NormalTexture, 32, 32, POIButton_GetContentTrackingAtlas(poiButton));
+		POIButton_SetAtlas(poiButton.PushedTexture, 32, 32, POIButton_GetContentTrackingAtlas(poiButton));
+		POIButton_SetAtlas(poiButton.HighlightTexture, 32, 32, POIButton_GetContentTrackingAtlas(poiButton));
+	elseif style == POIButtonUtil.Style.BonusObjective then
+		poiButton.Display:SetAtlas(nil, nil, "Bonus-Objective-Star");
+		POIButton_SetAtlas(poiButton.Glow, nil, nil, "UI-QuestPoi-OuterGlow");
+		POIButton_SetAtlas(poiButton.NormalTexture, nil, nil, POIButton_GetBonusObjectiveAtlasInfoNormal(poiButton));
+		POIButton_SetAtlas(poiButton.PushedTexture, nil, nil, POIButton_GetBonusObjectiveAtlasInfoPushed(poiButton));
+		POIButton_SetAtlas(poiButton.HighlightTexture, nil, nil, POIButton_GetAtlasInfoHighlight(poiButton));
+	elseif style == POIButtonUtil.Style.AreaPOI then
+		poiButton.Display:SetAtlas(nil, nil, POIButton_GetAreaPOIDisplay(poiButton)); -- TODO: This could need to support textures, it just won't for now.
+		POIButton_SetAtlas(poiButton.Glow, nil, nil, "UI-QuestPoi-OuterGlow");
+		POIButton_SetAtlas(poiButton.NormalTexture, nil, nil, POIButton_GetAreaPOIAtlasInfoNormal(poiButton));
+		POIButton_SetAtlas(poiButton.PushedTexture, nil, nil, POIButton_GetAreaPOIAtlasInfoPushed(poiButton));
+		POIButton_SetAtlas(poiButton.HighlightTexture, nil, nil, POIButton_GetAtlasInfoHighlight(poiButton));
 	else
 		local questPOIType = poiButton:GetQuestType();
 		local questID = poiButton:GetQuestID();
 		if questPOIType == POIButtonUtil.QuestTypes.Campaign then
-			poiButton.Display:SetAtlas(32, 32, "UI-QuestPoiCampaign-QuestBangTurnIn");
+			poiButton.Display:SetAtlas(nil, nil, "UI-QuestPoiCampaign-QuestBangTurnIn");
 		elseif questPOIType == POIButtonUtil.QuestTypes.Calling then
-			poiButton.Display:SetAtlas(32, 32, "UI-DailyQuestPoiCampaign-QuestBangTurnIn");
+			poiButton.Display:SetAtlas(nil, nil, "UI-DailyQuestPoiCampaign-QuestBangTurnIn");
 		elseif questPOIType == POIButtonUtil.QuestTypes.Recurring then
-			poiButton.Display:SetAtlas(32, 32, "UI-QuestPoiRecurring-QuestBangTurnIn");
+			poiButton.Display:SetAtlas(nil, nil, "UI-QuestPoiRecurring-QuestBangTurnIn");
 		elseif questPOIType == POIButtonUtil.QuestTypes.Important then
-			poiButton.Display:SetAtlas(32, 36, "UI-QuestPoiImportant-QuestBangTurnIn");
+			poiButton.Display:SetAtlas(nil, nil, "UI-QuestPoiImportant-QuestBangTurnIn");
 		elseif questPOIType == POIButtonUtil.QuestTypes.Meta then
-			poiButton.Display:SetAtlas(32, 36, "UI-QuestPoiWrapper-QuestBangTurnIn");
+			poiButton.Display:SetAtlas(nil, nil, "UI-QuestPoiWrapper-QuestBangTurnIn");
 		end
 
 		if not questPOIType or (questPOIType == POIButtonUtil.QuestTypes.Normal) then
-			poiButton.Display:SetAtlas(24, 24, POIButton_GetQuestCompleteAtlas(poiButton));
-			POIButton_SetAtlas(poiButton.Glow, 50, 50, "UI-QuestPoi-OuterGlow");
-			POIButton_SetAtlas(poiButton.NormalTexture, 32, 32, POIButton_GetAtlasInfoNormal(poiButton));
-			POIButton_SetAtlas(poiButton.PushedTexture, 32, 32, POIButton_GetAtlasInfoPushed(poiButton));
-			POIButton_SetAtlas(poiButton.HighlightTexture, 32, 32, POIButton_GetAtlasInfoHighlight(poiButton));
+			poiButton.Display:SetAtlas(nil, nil, POIButton_GetQuestCompleteAtlas(poiButton));
+			POIButton_SetAtlas(poiButton.Glow, nil, nil, "UI-QuestPoi-OuterGlow");
+			POIButton_SetAtlas(poiButton.NormalTexture, nil, nil, POIButton_GetAtlasInfoNormal(poiButton));
+			POIButton_SetAtlas(poiButton.PushedTexture, nil, nil, POIButton_GetAtlasInfoPushed(poiButton));
+			POIButton_SetAtlas(poiButton.HighlightTexture, nil, nil, POIButton_GetAtlasInfoHighlight(poiButton));
 		elseif questPOIType == POIButtonUtil.QuestTypes.Recurring then
 			poiButton.Display:SetOffset(0, 0);
-			POIButton_SetAtlas(poiButton.Glow, 64, 64, "UI-QuestPoiRecurring-OuterGlow");
-			POIButton_SetAtlas(poiButton.NormalTexture, 32, 32, POIButton_GetRecurringAtlasInfoNormal(poiButton));
-			POIButton_SetAtlas(poiButton.PushedTexture, 32, 32, POIButton_GetRecurringAtlasInfoPushed(poiButton));
-			POIButton_SetAtlas(poiButton.HighlightTexture, 32, 32, "UI-QuestPoiRecurring-InnerGlow");
+			POIButton_SetAtlas(poiButton.Glow, nil, nil, "UI-QuestPoiRecurring-OuterGlow");
+			POIButton_SetAtlas(poiButton.NormalTexture, nil, nil, POIButton_GetRecurringAtlasInfoNormal(poiButton));
+			POIButton_SetAtlas(poiButton.PushedTexture, nil, nil, POIButton_GetRecurringAtlasInfoPushed(poiButton));
+			POIButton_SetAtlas(poiButton.HighlightTexture, nil, nil, "UI-QuestPoiRecurring-InnerGlow");
 		elseif questPOIType == POIButtonUtil.QuestTypes.Important then
 			poiButton.Display:SetOffset(0, 0);
-			POIButton_SetAtlas(poiButton.Glow, 64, 64, "UI-QuestPoiImportant-OuterGlow");
-			POIButton_SetAtlas(poiButton.NormalTexture, 32, 36, POIButton_GetImportantAtlasInfoNormal(poiButton));
-			POIButton_SetAtlas(poiButton.PushedTexture, 32, 36, POIButton_GetImportantAtlasInfoPushed(poiButton));
-			POIButton_SetAtlas(poiButton.HighlightTexture, 32, 36, "UI-QuestPoiImportant-InnerGlow");
+			POIButton_SetAtlas(poiButton.Glow, nil, nil, "UI-QuestPoiImportant-OuterGlow");
+			POIButton_SetAtlas(poiButton.NormalTexture, nil, nil, POIButton_GetImportantAtlasInfoNormal(poiButton));
+			POIButton_SetAtlas(poiButton.PushedTexture, nil, nil, POIButton_GetImportantAtlasInfoPushed(poiButton));
+			POIButton_SetAtlas(poiButton.HighlightTexture, nil, nil, "UI-QuestPoiImportant-InnerGlow");
 		elseif questPOIType == POIButtonUtil.QuestTypes.Meta then
 			poiButton.Display:SetOffset(0, 0);
-			POIButton_SetAtlas(poiButton.Glow, 64, 64, "UI-QuestPoiWrapper-OuterGlow");
-			POIButton_SetAtlas(poiButton.NormalTexture, 32, 36, POIButton_GetMetaAtlasInfoNormal(poiButton));
-			POIButton_SetAtlas(poiButton.PushedTexture, 32, 36, POIButton_GetMetaAtlasInfoPushed(poiButton));
-			POIButton_SetAtlas(poiButton.HighlightTexture, 32, 36, "UI-QuestPoiWrapper-InnerGlow");
-		elseif questPOIType == POIButtonUtil.QuestTypes.Rare then
+			POIButton_SetAtlas(poiButton.Glow, nil, nil, "UI-QuestPoiWrapper-OuterGlow");
+			POIButton_SetAtlas(poiButton.NormalTexture, nil, nil, POIButton_GetMetaAtlasInfoNormal(poiButton));
+			POIButton_SetAtlas(poiButton.PushedTexture, nil, nil, POIButton_GetMetaAtlasInfoPushed(poiButton));
+			POIButton_SetAtlas(poiButton.HighlightTexture, nil, nil, "UI-QuestPoiWrapper-InnerGlow");
+		elseif questPOIType == POIButtonUtil.QuestTypes.Rare then -- TODO: Double check, rare/epic quality on world quests might not be a thing any more
 			poiButton.Display:SetOffset(0, 0);
-			POIButton_SetAtlas(poiButton.Glow, 50, 50, "UI-QuestPoi-OuterGlow");
-			POIButton_SetAtlas(poiButton.NormalTexture, 18, 18, "worldquest-questmarker-rare");
-			POIButton_SetAtlas(poiButton.PushedTexture, 18, 18, "worldquest-questmarker-rare-down");
-			POIButton_SetAtlas(poiButton.HighlightTexture, 32, 32, POIButton_GetAtlasInfoHighlight(poiButton));
-		elseif questPOIType == POIButtonUtil.QuestTypes.Epic then
+			POIButton_SetAtlas(poiButton.Glow, nil, nil, "UI-QuestPoi-OuterGlow");
+			POIButton_SetAtlas(poiButton.NormalTexture, nil, nil, "worldquest-questmarker-rare");
+			POIButton_SetAtlas(poiButton.PushedTexture, nil, nil, "worldquest-questmarker-rare-down");
+			POIButton_SetAtlas(poiButton.HighlightTexture, nil, nil, POIButton_GetAtlasInfoHighlight(poiButton));
+		elseif questPOIType == POIButtonUtil.QuestTypes.Epic then -- TODO: Double check, rare/epic quality on world quests might not be a thing any more
 			poiButton.Display:SetOffset(0, 0);
-			POIButton_SetAtlas(poiButton.Glow, 50, 50, "UI-QuestPoi-OuterGlow");
-			POIButton_SetAtlas(poiButton.NormalTexture, 18, 18, "worldquest-questmarker-epic");
-			POIButton_SetAtlas(poiButton.PushedTexture, 18, 18, "worldquest-questmarker-epic-down");
-			POIButton_SetAtlas(poiButton.HighlightTexture, 32, 32, POIButton_GetAtlasInfoHighlight(poiButton));
+			POIButton_SetAtlas(poiButton.Glow, nil, nil, "UI-QuestPoi-OuterGlow");
+			POIButton_SetAtlas(poiButton.NormalTexture, nil, nil, "worldquest-questmarker-epic");
+			POIButton_SetAtlas(poiButton.PushedTexture, nil, nil, "worldquest-questmarker-epic-down");
+			POIButton_SetAtlas(poiButton.HighlightTexture, nil, nil, POIButton_GetAtlasInfoHighlight(poiButton));
 		else
 			poiButton.Display:SetOffset(0, 0);
-			POIButton_SetAtlas(poiButton.Glow, 64, 64, "UI-QuestPoiCampaign-OuterGlow");
-			POIButton_SetAtlas(poiButton.NormalTexture, 32, 32, POIButton_GetCampaignAtlasInfoNormal(poiButton));
-			POIButton_SetAtlas(poiButton.PushedTexture, 32, 32, POIButton_GetCampaignAtlasInfoPushed(poiButton));
-			POIButton_SetAtlas(poiButton.HighlightTexture, 32, 32, "UI-QuestPoiCampaign-InnerGlow");
+			POIButton_SetAtlas(poiButton.Glow, nil, nil, "UI-QuestPoiCampaign-OuterGlow");
+			POIButton_SetAtlas(poiButton.NormalTexture, nil, nil, POIButton_GetCampaignAtlasInfoNormal(poiButton));
+			POIButton_SetAtlas(poiButton.PushedTexture, nil, nil, POIButton_GetCampaignAtlasInfoPushed(poiButton));
+			POIButton_SetAtlas(poiButton.HighlightTexture, nil, nil, "UI-QuestPoiCampaign-InnerGlow");
 		end
 
 		local buttonAlpha = poiButton:CalculateButtonAlpha();
@@ -283,17 +345,22 @@ local function POIButton_UpdateNormalStyleTexture(poiButton)
 		elseif style == POIButtonUtil.Style.WorldQuest then
 			local info = C_QuestLog.GetQuestTagInfo(questID);
 			poiButton:SetQuestTagInfo(info);
-			local atlas, width, height = QuestUtil.GetWorldQuestAtlasInfo(info.worldQuestType, false, info.tradeskillLineID);
-			poiButton.Display:SetAtlas(width, height, atlas);
+			if info then
+				-- NOTE: In-progress isn't really used any more, but this should be stored on the poiButton as some kind of state
+				-- it can't be passed in as a hardcoded false.
+				local atlas, width, height = QuestUtil.GetWorldQuestAtlasInfo(questID, info, false);
+				poiButton.Display:SetAtlas(width, height, atlas);
+
+				-- Update the glow if this is an elite quest, the size needs to be hardcoded for now
+				if info.isElite then
+					POIButton_SetAtlas(poiButton.Glow, nil, nil, "worldquest-questmarker-dragon-glow");
+				end
+			end
 		end
-
-		poiButton:UpdateUnderlay();
 	end
-end
 
-local function POIButton_UpdateNormalStyle(poiButton)
-	-- Start with the defaults and shared pieces, some of these may change from the other update functions
-	POIButton_UpdateNormalStyleTexture(poiButton);
+	poiButton:UpdateUnderlay();
+	poiButton:UpdateSubTypeIcon();
 end
 
 POIButtonMixin = {};
@@ -327,7 +394,11 @@ function POIButtonMixin:OnMouseUp()
 	self.Glow:SetPoint("CENTER");
 end
 
-function POIButtonMixin:OnClick()
+function POIButtonMixin:OnClick(button)
+	if button ~= "LeftButton" then
+		return;
+	end
+
 	local questID = self:GetQuestID();
 	if questID then
 		if ChatEdit_TryInsertQuestLinkForQuestID(questID) then
@@ -345,29 +416,36 @@ function POIButtonMixin:OnClick()
 		end
 
 		C_SuperTrack.SetSuperTrackedQuestID(questID);
-		if self.pingWorldMap then
+		if self:GetPingWorldMap() then
 			WorldMapPing_StartPingQuest(questID);
 		end
-	else
-		local trackableType, trackableID = self:GetTrackable();
-		if trackableType and trackableID then
-			if ContentTrackingUtil.ProcessChatLink(trackableType, trackableID) then
+		return;
+	end
+
+	local trackableType, trackableID = self:GetTrackable();
+	if trackableType and trackableID then
+		if ContentTrackingUtil.ProcessChatLink(trackableType, trackableID) then
+			return;
+		end
+
+		if C_ContentTracking.IsTracking(trackableType, trackableID) then
+			if IsShiftKeyDown() then
+				C_ContentTracking.StopTracking(trackableType, trackableID, Enum.ContentTrackingStopType.Manual);
 				return;
 			end
-
-			if C_ContentTracking.IsTracking(trackableType, trackableID) then
-				if IsShiftKeyDown() then
-					C_ContentTracking.StopTracking(trackableType, trackableID, Enum.ContentTrackingStopType.Manual);
-					return;
-				end
-			else
-				-- Note: this case shouldn't be possible with the current design since we'll
-				-- only ever show a POI Button for things that are already tracked.
-				C_ContentTracking.StartTracking(trackableType, trackableID);
-			end
+		else
+			-- Note: this case shouldn't be possible with the current design since we'll
+			-- only ever show a POI Button for things that are already tracked.
+			C_ContentTracking.StartTracking(trackableType, trackableID);
 		end
 
 		C_SuperTrack.SetSuperTrackedContent(trackableType, trackableID);
+		return;
+	end
+
+	local areaPOIID = self:GetAreaPOIID();
+	if areaPOIID then
+		C_SuperTrack.SetSuperTrackedMapPin(Enum.SuperTrackingMapPinType.AreaPOI, areaPOIID);
 	end
 end
 
@@ -383,6 +461,10 @@ function POIButtonMixin:OnEnter()
 			POIButtonHighlightManager:SetHighlight(questID);
 		else
 			self.HighlightTexture:Show();
+
+			if self.UnderlayBannerAtlasHighlight then
+				self.UnderlayBannerAtlasHighlight:Show();
+			end
 		end
 	end
 end
@@ -396,6 +478,10 @@ function POIButtonMixin:OnLeave()
 		POIButtonHighlightManager:ClearHighlight();
 	else
 		self.HighlightTexture:Hide();
+
+		if self.UnderlayBannerAtlasHighlight then
+			self.UnderlayBannerAtlasHighlight:Hide();
+		end
 	end
 end
 
@@ -444,6 +530,10 @@ function POIButtonMixin:GetQuestType()
 		return POIButtonUtil.QuestTypes.Important;
 	elseif self:IsForWorldQuest() then
 		local info = C_QuestLog.GetQuestTagInfo(questID);
+		if not info then
+			return nil;
+		end
+
 		if info.quality == Enum.WorldQuestQuality.Rare then
 			return POIButtonUtil.QuestTypes.Rare;
 		elseif info.quality == Enum.WorldQuestQuality.Epic then
@@ -481,6 +571,23 @@ function POIButtonMixin:GetTrackable()
 	return self.trackableType, self.trackableID;
 end
 
+function POIButtonMixin:SetAreaPOIInfo(info)
+	self.areaPOIInfo = info;
+	self:SetAreaPOIID(info.areaPoiID);
+end
+
+function POIButtonMixin:GetAreaPOIInfo()
+	return self.areaPOIInfo;
+end
+
+function POIButtonMixin:SetAreaPOIID(areaPOIID)
+	self.areaPOIID = areaPOIID;
+end
+
+function POIButtonMixin:GetAreaPOIID()
+	return self.areaPOIID;
+end
+
 function POIButtonMixin:SetPinScale(scale)
 	self.pinScale = scale;
 end
@@ -489,42 +596,49 @@ function POIButtonMixin:GetPinScale()
 	return self.pinScale or 1;
 end
 
+function POIButtonMixin:SetPingWorldMap(ping)
+	self.pingWorldMap = ping;
+end
+
+function POIButtonMixin:GetPingWorldMap()
+	return self.pingWorldMap;
+end
+
 function POIButtonMixin:SetStyle(poiButtonStyle)
 	self.style = poiButtonStyle;
+	self.type = POIButtonUtil.GetTypeFromStyle(poiButtonStyle);
 end
 
 function POIButtonMixin:GetStyle()
 	return self.style;
 end
 
+function POIButtonMixin:GetButtonType()
+	return self.type;
+end
+
 function POIButtonMixin:IsForWorldQuest()
-	return self.style == POIButtonUtil.Style.WorldQuest;
+	return self:GetStyle() == POIButtonUtil.Style.WorldQuest;
 end
 
 function POIButtonMixin:SetSelected(selected)
 	self.selected = selected;
 end
 
+function POIButtonMixin:ClearSelected()
+	self:SetSelected(nil);
+end
+
 function POIButtonMixin:IsSelected()
-	return not not self.selected;
+	-- This can be returned as true/false/nil
+	-- Nil indicates that it has not been initialized yet so that the selected update can easily work.
+	return self.selected;
 end
 
 function POIButtonMixin:ChangeSelected(selected)
 	if self:IsSelected() ~= selected then
 		self:SetSelected(selected);
 		self:UpdateButtonStyle();
-	end
-end
-
-function POIButtonMixin:GetButtonType()
-	local questID = self:GetQuestID();
-	if questID then
-		return "quest";
-	end
-
-	local trackableType, trackableID = self:GetTrackable();
-	if trackableType and trackableID then
-		return "content";
 	end
 end
 
@@ -543,36 +657,48 @@ end
 do
 	local function CreateUnderlay(self)
 		local t = self:CreateTexture(nil, "BORDER");
-		t:SetSize(34, 34);
-		t:SetPoint("CENTER", 0, -2);
+		t:SetPoint("CENTER");
 		return t;
 	end
 
-	local function GetUnderlayAtlas(info)
+	local function GetUnderlayAtlas(self)
+		local info = self:GetQuestTagInfo();
 		if info and info.isElite then
-			return "worldquest-questmarker-dragon";
+			return "worldquest-questmarker-dragon", TextureKitConstants.UseAtlasSize;
 		end
 	end
 
-	local function CreateUnderlayBanner(self)
-		local t = self:CreateTexture(nil, "BACKGROUND", nil, -3);
-		t:SetSize(34, 34);
+	local function CreateUnderlayBannerInternal(self, sublevel)
+		local t = self:CreateTexture(nil, "BACKGROUND", nil, sublevel);
+		t:SetSize(34, 34); -- TODO: Would be ideal to avoid hardcoding these sizes/offsets
 		t:SetPoint("TOP", self, "TOP", 0, 5);
 		return t;
 	end
 
-	local function GetUnderlayBannerAtlas(info)
+	local function CreateUnderlayBanner(self)
+		return CreateUnderlayBannerInternal(self, -4);
+	end
+
+	local function CreateUnderlayBannerHighlight(self)
+		local t = CreateUnderlayBannerInternal(self, -3);
+		t:SetBlendMode("ADD");
+		t:SetAlpha(0.3);
+		return t;
+	end
+
+	local function GetUnderlayBannerAtlas(self)
+		local info = self:GetQuestTagInfo();
 		if info and (info.worldQuestType == Enum.QuestTagType.Capstone) then
-			return "worldquest-Capstone-Banner";
+			return "worldquest-Capstone-Banner", TextureKitConstants.IgnoreAtlasSize;
 		end
 	end
 
-	local function CheckCreateUnderlay(self, parentKey, getAtlas, factory)
-		local atlas = getAtlas(self:GetQuestTagInfo());
+	local function CheckCreateExtraTexture(self, parentKey, getAtlas, factory)
+		local atlas, useAtlasSize = getAtlas(self);
 		local texture = self[parentKey];
 		if atlas and not texture then
 			texture = factory(self);
-			texture:SetAtlas(atlas);
+			texture:SetAtlas(atlas, useAtlasSize);
 			self[parentKey] = texture;
 		end
 
@@ -582,13 +708,34 @@ do
 	end
 
 	function POIButtonMixin:UpdateUnderlay()
-		CheckCreateUnderlay(self, "UnderlayAtlas", GetUnderlayAtlas, CreateUnderlay);
-		CheckCreateUnderlay(self, "UnderlayBannerAtlas", GetUnderlayBannerAtlas, CreateUnderlayBanner);
+		CheckCreateExtraTexture(self, "UnderlayAtlas", GetUnderlayAtlas, CreateUnderlay);
+		CheckCreateExtraTexture(self, "UnderlayBannerAtlas", GetUnderlayBannerAtlas, CreateUnderlayBanner);
+		CheckCreateExtraTexture(self, "UnderlayBannerAtlasHighlight", GetUnderlayBannerAtlas, CreateUnderlayBannerHighlight);
+	end
+
+	local function GetSubTypeAtlas(self)
+		local areaPOIInfo = self:GetAreaPOIInfo();
+		if areaPOIInfo and areaPOIInfo.isCurrentEvent then
+			-- TODO: The 2x atlases weren't made correctly, must override size...remove this when the fix propagates
+			-- return "UI-EventPoi-Horn-small-corner", TextureKitConstants.UseAtlasSize;
+			return "UI-EventPoi-Horn-small-corner", TextureKitConstants.IgnoreAtlasSize;
+		end
+	end
+
+	local function CreateSubTypeIcon(self)
+		local t = self:CreateTexture(nil, "ARTWORK", nil, 2);
+		t:SetSize(32, 32); -- TODO: The 2x atlases weren't made correctly, must override size...remove this when the fix propagates
+		t:SetPoint("CENTER", self, "CENTER", 0, 0); -- TODO: Would be ideal to avoid hardcoding these sizes/offsets
+		return t;
+	end
+
+	function POIButtonMixin:UpdateSubTypeIcon()
+		CheckCreateExtraTexture(self, "SubTypeIcon", GetSubTypeAtlas, CreateSubTypeIcon);
 	end
 end
 
 local function OnSuperTrackingChanged_Quest(self, supertracker)
-	assertsafe(self:GetButtonType() == "quest");
+	assertsafe(self:GetButtonType() == POIButtonUtil.Type.Quest);
 
 	local supertrackedQuestID = QuestSuperTracking_GetSuperTrackedQuestID(supertracker);
 	local isSelected = self:GetQuestID() == supertrackedQuestID;
@@ -596,7 +743,7 @@ local function OnSuperTrackingChanged_Quest(self, supertracker)
 end
 
 local function OnSuperTrackingChanged_Content(self, supertracker)
-	assertsafe(self:GetButtonType() == "content");
+	assertsafe(self:GetButtonType() == POIButtonUtil.Type.Content);
 
 	local supertrackedType, supertrackedID = QuestSuperTracking_GetSuperTrackedContent(supertracker);
 	local poiType, poiID = self:GetTrackable();
@@ -604,10 +751,20 @@ local function OnSuperTrackingChanged_Content(self, supertracker)
 	self:ChangeSelected(isSelected);
 end
 
+local function OnSuperTrackingChanged_AreaPOI(self, supertracker)
+	assertsafe(self:GetButtonType() == POIButtonUtil.Type.AreaPOI);
+
+	local supertrackedType, supertrackedID = QuestSuperTracking_GetSuperTrackedMapPin(supertracker);
+	local areaPOIID = self:GetAreaPOIID();
+	local isSelected = (supertrackedType == Enum.SuperTrackingMapPinType.AreaPOI) and (supertrackedID == self:GetAreaPOIID());
+	self:ChangeSelected(isSelected);
+end
+
 local superTrackerChangeHandlers =
 {
-	quest = OnSuperTrackingChanged_Quest,
-	content = OnSuperTrackingChanged_Content,
+	[POIButtonUtil.Type.Quest] = OnSuperTrackingChanged_Quest,
+	[POIButtonUtil.Type.Content] = OnSuperTrackingChanged_Content,
+	[POIButtonUtil.Type.AreaPOI] = OnSuperTrackingChanged_AreaPOI,
 };
 
 function POIButtonMixin:OnSuperTrackingChanged(supertracker)
@@ -625,13 +782,25 @@ function POIButtonMixin:UpdateSelected()
 end
 
 function POIButtonMixin:Reset()
-	self.poiParent = nil;
 	self.pingWorldMap = nil;
 	self.pinScale = nil;
 	self.index = nil;
 	self.questID = nil;
+	self.areaPOIID = nil;
 	self.trackableType = nil;
 	self.trackableID = nil;
 	self.style = nil;
+	self.type = nil;
 	self.selected = nil;
+end
+
+-- Override methods for when a POIButton is used in the context of a map canvas
+
+function POIButtonMixin:SetMapPinScale(scale, scaleFactor, startScale, endScale)
+	self:SetScalingLimits(scaleFactor, startScale, endScale);
+	self:SetPinScale(scale);
+end
+
+function POIButtonMixin:SetDefaultMapPinScale()
+	self:SetMapPinScale(1, 1, 1, 1);
 end

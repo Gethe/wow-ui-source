@@ -88,7 +88,7 @@ function QuestMixin:IsMeta()
 		self.isMeta = C_QuestLog.IsMetaQuest(self:GetID());
 	end
 
-	return self.isMeta;	
+	return self.isMeta;
 end
 
 function QuestMixin:IsRepeatableQuest()

@@ -162,7 +162,7 @@ local SpellBook =
 
 			Returns =
 			{
-				{ Name = "description", Type = "string", Nilable = false },
+				{ Name = "description", Type = "string", Nilable = false, Documentation = { "May be empty if spell's data isn't loaded yet; Listen for SPELL_TEXT_UPDATE event, or use SpellMixin to load asynchronously" } },
 			},
 		},
 		{

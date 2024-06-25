@@ -2907,6 +2907,11 @@ function ExpandBarMixin:SetOnToggleCallback(onToggleCallback)
 	self.onToggleCallback = onToggleCallback;
 end
 
+function ExpandBarMixin:SetEnabledState(isEnabled)
+	self:SetEnabled(isEnabled);
+	self.ExpandButton:SetEnabled(isEnabled);
+end
+
 LevelRangeFrameMixin = {};
 
 function LevelRangeFrameMixin:OnLoad()

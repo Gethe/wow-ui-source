@@ -624,12 +624,21 @@ function UIWidgetBaseSpellTemplateMixin:OnEnter()
 	local parent = self:GetParent(); 
 	local shouldUseSpellOrLootObjectTooltip = not self.tooltip or self.tooltip == "";
 	if shouldUseSpellOrLootObjectTooltip then 
-		self:SetTooltipOwner();
 		local attachedUnit = parent and parent.attachedUnit;
-		-- If the tooltip does not successfully set the loot object, set it by spell id.
-		if not attachedUnit or not EmbeddedItemTooltip:SetWorldLootObject(attachedUnit) then
+		local displayingWorldLootObjectTooltip = false;
+
+		if attachedUnit then
+			self:SetTooltipOwner();
+			displayingWorldLootObjectTooltip = EmbeddedItemTooltip:SetWorldLootObject(attachedUnit);
+		end
+
+		-- If the tooltip does not successfully set the loot object, set it by spell id
+		if not displayingWorldLootObjectTooltip then
+			-- MUST have SetTooltipOwner above both calls because if SetWorldLootObject is called & fails, the previously set owner will be cleared
+			self:SetTooltipOwner();
 			EmbeddedItemTooltip:SetSpellByID(self.spellID, false, true);
 		end
+
 		EmbeddedItemTooltip:Show();
 	else
 		UIWidgetTemplateTooltipFrameMixin.OnEnter(self);

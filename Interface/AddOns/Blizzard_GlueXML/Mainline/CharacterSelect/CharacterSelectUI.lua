@@ -24,6 +24,8 @@ function CharacterSelectUIMixin:OnLoad()
 	self.CharacterHeaderFramePool = CreateFramePool("BUTTON", self, "CharacterHeaderFrameTemplate", nil);
 	self.CharacterFooterFramePool = CreateFramePool("FRAME", self, "CharacterFooterFrameTemplate", nil);
 
+	self.loadedMapManifest = nil;
+
 	self.currentMapSceneHoverGUID = nil;
 	self.mouseDownMapSceneHoverGUID = nil;
 
@@ -60,7 +62,7 @@ function CharacterSelectUIMixin:OnEvent(event, ...)
 
 		-- Trigger any updates on the character list entry, if visible.
 		local isHighlight = true;
-		CharacterSelectListUtil:UpdateCharacterHighlight(guid, isHighlight);
+		CharacterSelectListUtil.UpdateCharacterHighlight(guid, isHighlight);
 	elseif event == "MAP_SCENE_CHARACTER_ON_MOUSE_LEAVE" then
 		local guid = ...;
 
@@ -70,7 +72,7 @@ function CharacterSelectUIMixin:OnEvent(event, ...)
 
 		-- Trigger any updates on the character list entry, if visible.
 		local isHighlight = false;
-		CharacterSelectListUtil:UpdateCharacterHighlight(guid, isHighlight);
+		CharacterSelectListUtil.UpdateCharacterHighlight(guid, isHighlight);
 	elseif event == "CVAR_UPDATE" then
 		local cvarName, cvarValue = ...;
 		if cvarName == "debugTargetInfo" then
@@ -121,7 +123,7 @@ function CharacterSelectUIMixin:OnMouseUp(button)
     end
 
 	if self.mouseDownMapSceneHoverGUID and self.mouseDownMapSceneHoverGUID == self.currentMapSceneHoverGUID then
-		CharacterSelectListUtil:ClickCharacterFrameByGUID(self.mouseDownMapSceneHoverGUID);
+		CharacterSelectListUtil.ClickCharacterFrameByGUID(self.mouseDownMapSceneHoverGUID);
 	end
 	self.mouseDownMapSceneHoverGUID = nil;
 end
@@ -130,6 +132,10 @@ function CharacterSelectUIMixin:ExpandCharacterList()
 	local isExpanded = true;
 	local isUserInput = false;
 	self.ListToggle:SetExpanded(isExpanded, isUserInput);
+end
+
+function CharacterSelectUIMixin:SetCharacterListToggleEnabled(isEnabled)
+	self.ListToggle:SetEnabledState(isEnabled);
 end
 
 function CharacterSelectUIMixin:SetCharacterDisplay(selectedCharacterID)
@@ -144,7 +150,15 @@ function CharacterSelectUIMixin:SetCharacterDisplay(selectedCharacterID)
 			-- Only 1 map currently, when multiple are introduced this will update.
 			local mapSceneID = 1;
 
-			if LoadMapManifest(mapSceneID) then
+			if self.loadedMapManifest ~= mapSceneID and LoadMapManifest(mapSceneID) then
+				self.loadedMapManifest = mapSceneID;
+				if not CheckMapManifestLocality() then
+					PreloadMapManifest();
+				end
+			end
+
+			-- Explicitly check as the above load could have failed, and we only want to fire off LoadMapManifest until loaded successfully.
+			if self.loadedMapManifest == mapSceneID and CheckMapManifestLocality() then
 				showModelFFX = false;
 
 				local loadedMapScene = GetLoadedMapScene();
@@ -313,10 +327,6 @@ function CharacterSelectUIMixin:SetMenuEnabled(enabled)
 	self.NavBar:SetMenuButtonEnabled(enabled);
 end
 
-function CharacterSelectUIMixin:SetCharacterCreateEnabled(enabled, disabledTooltip)
-	self.NavBar:SetCharacterCreateButtonEnabled(enabled, disabledTooltip);
-end
-
 function CharacterSelectUIMixin:SetChangeRealmEnabled(enabled)
 	self.NavBar:SetRealmsButtonEnabled(enabled);
 end
@@ -375,7 +385,7 @@ function CharacterSelectHeaderMixin:OnEnter()
 
 	-- Trigger any updates on the character list entry, if visible.
 	local isHighlight = true;
-	CharacterSelectListUtil:UpdateCharacterHighlight(self.basicCharacterInfo.guid, isHighlight);
+	CharacterSelectListUtil.UpdateCharacterHighlight(self.basicCharacterInfo.guid, isHighlight);
 
 	-- Update character model as needed.
 	MapSceneCharacterHighlightStart(self.basicCharacterInfo.guid);
@@ -390,7 +400,7 @@ function CharacterSelectHeaderMixin:OnLeave()
 
 	-- Trigger any updates on the character list entry, if visible.
 	local isHighlight = false;
-	CharacterSelectListUtil:UpdateCharacterHighlight(self.basicCharacterInfo.guid, isHighlight);
+	CharacterSelectListUtil.UpdateCharacterHighlight(self.basicCharacterInfo.guid, isHighlight);
 
 	-- Update character model as needed.
 	MapSceneCharacterHighlightEnd(self.basicCharacterInfo.guid);
@@ -401,7 +411,7 @@ function CharacterSelectHeaderMixin:OnClick()
 		return;
 	end
 
-	CharacterSelectListUtil:ClickCharacterFrameByGUID(self.basicCharacterInfo.guid);
+	CharacterSelectListUtil.ClickCharacterFrameByGUID(self.basicCharacterInfo.guid);
 end
 
 function CharacterSelectHeaderMixin:Initialize(characterID)

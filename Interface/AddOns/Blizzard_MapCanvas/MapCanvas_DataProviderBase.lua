@@ -179,7 +179,7 @@ function MapCanvasPinMixin:OnClick(...)
 	end
 	if self.OnMouseClickAction then
 		self:OnMouseClickAction(...);
-	end	
+	end
 end
 
 function MapCanvasPinMixin:DisableInheritedMotionScriptsWarning()
@@ -438,7 +438,7 @@ end
 
 function MapCanvasPinMixin:ApplyCurrentScale()
 	local scale;
-	if self.startScale and self.startScale and self.endScale then
+	if self.startScale and self.endScale then
 		local parentScaleFactor = 1.0 / self:GetMap():GetCanvasScale();
 		scale = parentScaleFactor * Lerp(self.startScale, self.endScale, Saturate(self.scaleFactor * self:GetMap():GetCanvasZoomPercent()));
 	elseif not self:IsIgnoringGlobalPinScale() then
@@ -489,6 +489,11 @@ end
 function MapCanvasPinMixin:GetHighlightType()
 	-- Override this in your mixin if your pin needs highlight functionality, determines what kind of highlight to apply to the pin (See MapPinHighlightType)
 	return MapPinHighlightType.None;
+end
+
+function MapCanvasPinMixin:GetHighlightAnimType()
+	-- Override this to change the type of highlight animation to play
+	return MapPinHighlightAnimType.ExpandAndFade;
 end
 
 function MapCanvasPinMixin:GetDataProvider()

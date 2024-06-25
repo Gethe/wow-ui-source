@@ -1133,9 +1133,7 @@ function StoreFrame_OnLoad(self)
 		self:SetScript("OnKeyDown",
 			function(self, key)
 				if ( key == "ESCAPE" ) then
-					if ( ModelPreviewFrame:IsShown() ) then
-						ModelPreviewFrame:Hide();
-					else
+					if not StoreOutbound.TryHideModelPreviewFrame() then
 						StoreFrame:SetAttribute("action", "EscapePressed");
 					end
 				end
@@ -1337,7 +1335,7 @@ function StoreFrame_OnHide(self)
 		StoreOutbound.UpdateMicroButtons();
 	else
 		GlueParent_RemoveModalFrame(self);
-		GlueParent_UpdateDialogs();
+		StoreOutbound.UpdateDialogs();
 	end
 
 	if (VASReady) then
@@ -1369,7 +1367,7 @@ function StoreFrame_OnMouseWheel(self, value)
 end
 
 function StoreFrame_OnCharacterBoostDelivered(self)
-	if (IsOnGlueScreen() and BoostDeliveredUsageReason and not CharacterSelect.undeleting) then
+	if (IsOnGlueScreen() and BoostDeliveredUsageReason and not StoreOutbound.IsCharacterSelectUndeleting()) then
 		self:Hide();
 
 		CharacterUpgradePopup_OnCharacterBoostDelivered(BoostType, BoostDeliveredUsageGUID, BoostDeliveredUsageReason);
@@ -2529,7 +2527,7 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 			JustFinishedOrdering = WaitingOnVASToComplete == WaitingOnVASToCompleteToken;
 			local fromVASPurchaseCompletion = true;
 			StoreFrame_UpdateActivePanel(StoreFrame, fromVASPurchaseCompletion);
-		elseif (IsOnGlueScreen() and CharacterSelect:IsVisible()) then
+		elseif (IsOnGlueScreen() and StoreOutbound.IsCharacterSelectVisible()) then
 			StoreVASValidationFrame_OnVasProductComplete(StoreVASValidationFrame);
 		end
 	elseif ( event == "VAS_TRANSFER_VALIDATION_UPDATE" ) then

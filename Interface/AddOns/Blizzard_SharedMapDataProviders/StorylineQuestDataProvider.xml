@@ -14,7 +14,7 @@
 		</Layers>
 	</Frame>
 
-	<Frame name="QuestOfferPinTemplate" inherits="HeightIndicatorMapPinTemplate, SuperTrackableMapPinTemplate" mixin="QuestOfferPinMixin" virtual="true">
+	<Frame name="QuestOfferPinTemplate" inherits="LegendHighlightableMapPoiPinTemplate, HeightIndicatorMapPinTemplate, SuperTrackableMapPinTemplate" mixin="QuestOfferPinMixin" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Texture" atlas="QuestNormal"/>
@@ -22,7 +22,7 @@
 		</Layers>
 	</Frame>
 
-	<Frame name="QuestHubPinTemplate" inherits="AreaPOIPinTemplate, HeightIndicatorMapPinTemplate" mixin="QuestHubPinMixin" virtual="true">
+	<Frame name="QuestHubPinTemplate" inherits="AreaPOIPinTemplate, HeightIndicatorMapPinTemplate" mixin="QuestHubPinMixin, QuestHubPinGlowMixin" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="PriorityQuest" atlas="QuestNormal">

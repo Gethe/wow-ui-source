@@ -774,7 +774,10 @@ function CharacterSelectListCharacterInnerContentMixin:UpdateCharacterDisplayInf
 			if characterInfo.isLockedByExpansion then
 				statusText:SetText(CHARACTER_SELECT_INFO_EXPANSION_TRIAL_BOOST_BUY_EXPANSION);
 			else
-				if IsRPEBoostEligible(self:GetParent():GetCharacterID()) then
+				if areCharServicesShown and CharacterServicesMaster.flow ~= RPEUpgradeFlow then
+					statusText:SetFontObject("GlueFontHighlightLarge");
+					statusText:SetText(characterInfo.realmName);
+				elseif IsRPEBoostEligible(self:GetParent():GetCharacterID()) then
 					statusText:SetFontObject("GlueFontHighlightLarge");
 					statusText:SetText(RPE_GEAR_UPDATE);
 				else
@@ -870,7 +873,7 @@ function CharacterSelectListCharacterInnerContentMixin:SetEnabledState(isEnabled
 			infoText:SetText(self.coloredClassName);
 		end
 
-		if IsRPEBoostEligible(self:GetParent():GetCharacterID()) then
+		if statusText:GetText() == RPE_GEAR_UPDATE then
 			statusText:SetTextColor(RPE_FONT_COLOR:GetRGBA());
 		else
 			statusText:SetTextColor(0.5, 0.5, 0.5);

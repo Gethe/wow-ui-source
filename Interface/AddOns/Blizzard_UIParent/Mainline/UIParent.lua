@@ -9,7 +9,7 @@ SHINES_TO_ANIMATE = {};
 
 -- Macros
 MAX_ACCOUNT_MACROS = 120;
-MAX_CHARACTER_MACROS = 18;
+MAX_CHARACTER_MACROS = 30;
 
 CVarCallbackRegistry:SetCVarCachable("showCastableBuffs");
 CVarCallbackRegistry:SetCVarCachable("showDispelDebuffs");

@@ -81,6 +81,21 @@ local AreaPoiInfo =
 			},
 		},
 		{
+			Name = "GetEventsForMap",
+			Type = "Function",
+			Documentation = { "Returns all area POIInfos flagged as events for the given map." },
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "areaPoiIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetQuestHubsForMap",
 			Type = "Function",
 			Documentation = { "Returns all area POIInfos flagged as quest hubs for the given map." },
@@ -145,6 +160,7 @@ local AreaPoiInfo =
 				{ Name = "addPaddingAboveTooltipWidgets", Type = "bool", Nilable = true },
 				{ Name = "highlightWorldQuestsOnHover", Type = "bool", Nilable = false },
 				{ Name = "highlightVignettesOnHover", Type = "bool", Nilable = false },
+				{ Name = "isCurrentEvent", Type = "bool", Nilable = false },
 			},
 		},
 	},

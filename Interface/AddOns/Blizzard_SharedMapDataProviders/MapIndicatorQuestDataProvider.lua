@@ -53,7 +53,7 @@ function MapIndicatorQuestDataProviderMixin:AddMapIndicatorQuest(info)
 	local inProgress = false; --We don't want this to display like a normal quest that's in progress.
 	local tagInfo = C_QuestLog.GetQuestTagInfo(pin.questID);
 
-	local atlas, width, height = QuestUtil.GetWorldQuestAtlasInfo(worldQuestType, inProgress, tagInfo.tradeSkillLineID, pin.questID);
+	local atlas, width, height = QuestUtil.GetWorldQuestAtlasInfo(pin.questID, info, inProgress);
 	pin.Icon:SetAtlas(atlas);
 	pin.Icon:SetSize(width, height);
 	pin:SetPosition(info.x, info.y);

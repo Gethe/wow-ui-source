@@ -61,6 +61,8 @@ Mainline\WarCampaignTemplates.lua
 Mainline\WarCampaignTemplates.xml
 Mainline\CampaignOverview.lua
 Mainline\CampaignOverview.xml
+Mainline\MapLegendFrame.lua
+Mainline\MapLegendFrame.xml
 Mainline\QuestMapFrame.lua
 Mainline\QuestMapFrame.xml
 Mainline\TabardModelControlButtonMixin.lua

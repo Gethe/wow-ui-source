@@ -339,7 +339,12 @@ ProfessionsCrafterTableCellCommissionMixin = CreateFromMixins(TableBuilderCellMi
 function ProfessionsCrafterTableCellCommissionMixin:Populate(rowData, dataIndex)
 	local order = rowData.option;
 	self.TipMoneyDisplayFrame:SetAmount(order[self.tipKey]);
-	self.RewardIcon:SetShown(#order.npcOrderRewards > 0);
+
+	if order.npcOrderRewards then
+		self.RewardIcon:SetShown(#order.npcOrderRewards > 0);
+	else 
+		self.RewardIcon:SetShown(false);
+	end
 end
 
 ProfessionsCrafterTableCellItemNameMixin = CreateFromMixins(TableBuilderCellMixin);

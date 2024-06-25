@@ -100,6 +100,7 @@ function WorldQuestDataProviderMixin:OnAdded(mapCanvas)
 	self.suppressedQuests = {};
 	MapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
 
+	self:GetMap():SetPinTemplateType(self:GetPinTemplate(), "Button");
 	self:GetMap():SetPinTemplateType("WorldQuestSpellEffectPinTemplate", "CinematicModel");
 
 	self:RegisterEvent("SUPER_TRACKING_CHANGED");
@@ -318,19 +319,22 @@ function WorldQuestDataProviderMixin:ShouldShowExpirationIcon(questID, worldQues
 end
 
 function WorldQuestDataProviderMixin:AddWorldQuest(info)
-	local pin = self:GetMap():AcquirePin(self:GetPinTemplate());
-	pin.questID = info.questId;
+	local pinTemplate = self:GetPinTemplate();
+	local pin = self:GetMap():AcquirePin(pinTemplate);
+	pin:UseFrameLevelType("PIN_FRAME_LEVEL_WORLD_QUEST", self:GetMap():GetNumActivePinsByTemplate(pinTemplate));
+
+	local questID = info.questId;
+	local tagInfo = C_QuestLog.GetQuestTagInfo(questID);
+
+	pin.info = info;
+	pin.questID = questID;
 	pin.dataProvider = self;
 	pin.worldQuest = true;
 	pin.numObjectives = info.numObjectives;
-	pin:UseFrameLevelType("PIN_FRAME_LEVEL_WORLD_QUEST", self:GetMap():GetNumActivePinsByTemplate(self:GetPinTemplate()));
-
-	local tagInfo = C_QuestLog.GetQuestTagInfo(pin.questID);
 	pin.tagInfo = tagInfo;
 	pin.worldQuestType = tagInfo.worldQuestType;
 
 	pin:InitializeVisuals();
-	pin:RefreshVisuals();
 	pin:SetPosition(info.x, info.y);
 
 	pin.iconWidgetSet = C_TaskQuest.GetQuestIconUIWidgetSet(pin.questID);
@@ -364,68 +368,33 @@ end
 --[[ World Quest Pin ]]--
 WorldQuestPinMixin = CreateFromMixins(MapCanvasPinMixin);
 
+function WorldQuestPinMixin:DisableInheritedMotionScriptsWarning()
+	return true;
+end
+
 function WorldQuestPinMixin:OnLoad()
+	self:SetDefaultMapPinScale();
 	self.UpdateTooltip = self.OnMouseEnter;
-	self.widgetAnimationTexture = self.Background;
-end
-
-function WorldQuestPinMixin:GetButtonTextures(selected)
-	local isCapstone = self.worldQuestType == Enum.QuestTagType.Capstone;
-	local normalTexture = isCapstone and "worldquest-capstone-questmarker-epic" or "worldquest-questmarker-epic";
-	local pushedTexture = isCapstone and "worldquest-Capstone-questmarker-epic-down" or "worldquest-questmarker-epic-down";
-	local highlightTexture = isCapstone and "worldquest-capstone-questmarker-epic" or "worldquest-questmarker-epic";
-
-	if selected then
-		normalTexture = isCapstone and "worldquest-Capstone-questmarker-epic-supertrack" or "worldquest-questmarker-epic-supertracked";
-		pushedTexture = isCapstone and "worldquest-Capstone-questmarker-epic-down-supertrack" or "worldquest-questmarker-epic-down-supertracked";
-		highlightTexture = isCapstone and "worldquest-Capstone-questmarker-epic-supertrack" or "worldquest-questmarker-epic-supertracked";
-	end
-
-	return normalTexture, pushedTexture, highlightTexture;
-end
-
-function WorldQuestPinMixin:RefreshButtonTextures(selected)
-	local normal, pushed, highlight = self:GetButtonTextures(selected);
-	self.Background:SetAtlas(normal);
-	self.Highlight:SetAtlas(highlight);
-	self.PushedBackground:SetAtlas(pushed);
+	self.widgetAnimationTexture = self.NormalTexture;
 end
 
 function WorldQuestPinMixin:InitializeVisuals()
-	self:RefreshButtonTextures(false);
+	self:SetStyle(POIButtonUtil.Style.WorldQuest);
+	self:ClearSelected();
+	self:RefreshVisuals();
+
+	-- Consider moving to POIButton
 	self:SetHitRectInsets(0, 0, 0, 0);
 
 	if self.worldQuestType == Enum.QuestTagType.Capstone then
 		self:SetHitRectInsets(0, 0, 0, -8);
 	end
-
-	local tagInfo = self.tagInfo;
-	if tagInfo.isElite and self.worldQuestType ~= Enum.QuestTagType.Capstone then -- self.worldQuestType ~= Enum.QuestTagType.Capstone is a hack while i work on this remove it
-		self.Underlay:SetAtlas("worldquest-questmarker-dragon");
-	end
-
-	self.Underlay:SetShown(tagInfo.isElite);
-	self.UnderlayBanner:SetShown(self.worldQuestType == Enum.QuestTagType.Capstone);
-
-	self.TimeLowFrame:SetShown(self.dataProvider:ShouldShowExpirationIcon(self.questID, tagInfo.worldQuestType));
-end	
+end
 
 function WorldQuestPinMixin:RefreshVisuals()
-	local selected = self.questID == C_SuperTrack.GetSuperTrackedQuestID();
-	self.Glow:SetShown(selected);
-	self.SelectedGlow:SetShown(selected);
-	self:RefreshButtonTextures(selected);
-
-	MapPinHighlight_CheckHighlightPin(self:GetHighlightType(), self, self.Background);
-
-	local inProgress = self.dataProvider:IsMarkingActiveQuests() and C_QuestLog.IsOnQuest(self.questID);
-	local atlas, width, height = QuestUtil.GetWorldQuestAtlasInfo(self.worldQuestType, inProgress, self.tagInfo.tradeskillLineID, self.questID);
-	self.Texture:SetAtlas(atlas);
-	if self.worldQuestType == Enum.QuestTagType.PetBattle then
-		self.Texture:SetSize(26, 22);
-	else
-		self.Texture:SetSize(width * 2, height * 2);
-	end
+	self:UpdateSelected();
+	MapPinHighlight_CheckHighlightPin(self:GetHighlightType(), self, self.NormalTexture);
+	self.TimeLowFrame:SetShown(self.dataProvider:ShouldShowExpirationIcon(self.questID, self.tagInfo.worldQuestType));
 end
 
 function WorldQuestPinMixin:GetHighlightType() -- override
@@ -438,7 +407,7 @@ function WorldQuestPinMixin:GetHighlightType() -- override
 	if bountyFrameType == BountyFrameType.BountyBoard then
 		local countsForBounty = bountyQuestID and C_QuestLog.IsQuestCriteriaForBounty(self.questID, bountyQuestID);
 		if countsForBounty then
-			return MapPinHighlightType.BountyRing;
+			return MapPinHighlightType.SupertrackedHighlight;
 		end
 	elseif bountyFrameType == BountyFrameType.ActivityTracker then
 		local countsForBounty = (bountyQuestID and C_QuestLog.IsQuestCriteriaForBounty(self.questID, bountyQuestID)) or (taskFactionID == bountyFactionID);
@@ -446,7 +415,7 @@ function WorldQuestPinMixin:GetHighlightType() -- override
 			return MapPinHighlightType.SupertrackedHighlight;
 		end
 	end
-	
+
 	if self.dataProvider:ShouldSupertrackHighlightInfo(self.questID, self.tagInfo) then
 		return MapPinHighlightType.SupertrackedHighlight;
 	end
@@ -455,17 +424,19 @@ function WorldQuestPinMixin:GetHighlightType() -- override
 end
 
 function WorldQuestPinMixin:UpdateSupertrackedHighlight()
-	MapPinHighlight_CheckHighlightPin(self:GetHighlightType(), self, self.Background);
+	MapPinHighlight_CheckHighlightPin(self:GetHighlightType(), self, self.NormalTexture);
 end
 
 function WorldQuestPinMixin:OnMouseEnter()
 	TaskPOI_OnEnter(self);
-	self.UnderlayBannerHighlight:SetShown(self.worldQuestType == Enum.QuestTagType.Capstone);
+	POIButtonMixin.OnEnter(self);
+	self:OnLegendPinMouseEnter();
 end
 
 function WorldQuestPinMixin:OnMouseLeave()
 	TaskPOI_OnLeave(self);
-	self.UnderlayBannerHighlight:Hide();
+	POIButtonMixin.OnLeave(self);
+	self:OnLegendPinMouseLeave();
 end
 
 function WorldQuestPinMixin:OnMouseClickAction(button)
@@ -493,15 +464,11 @@ function WorldQuestPinMixin:OnMouseClickAction(button)
 end
 
 function WorldQuestPinMixin:OnMouseDownAction()
-	self.Background:Hide();
-	self.PushedBackground:Show();
-	self.Texture:SetPoint("CENTER", 2, -2);
+	POIButtonMixin.OnMouseDown(self);
 end
 
 function WorldQuestPinMixin:OnMouseUpAction()
-	self.Background:Show();
-	self.PushedBackground:Hide();
-	self.Texture:SetPoint("CENTER", 0, 0);
+	POIButtonMixin.OnMouseUp(self);
 end
 
 function WorldQuestPinMixin:GetDebugReportInfo()

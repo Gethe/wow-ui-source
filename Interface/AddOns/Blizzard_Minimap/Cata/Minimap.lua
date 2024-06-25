@@ -342,11 +342,13 @@ function MiniMapTrackingButtonMixin:OnLoad()
 	MiniMapTrackingBackground:SetAlpha(0.6);
 	
 	local function IsSelected(trackingInfo)
-		return C_Minimap.GetTrackingInfo(trackingInfo.index);
+		local info = C_Minimap.GetTrackingInfo(trackingInfo.index);
+		return info and info.active;
 	end
 
 	local function SetSelected(trackingInfo)
-		C_Minimap.SetTracking(trackingInfo.index, not IsSelected(trackingInfo));
+		local selected = IsSelected(trackingInfo);
+		C_Minimap.SetTracking(trackingInfo.index, not selected);
 	end
 
 	self:SetupMenu(function(dropdown, rootDescription)

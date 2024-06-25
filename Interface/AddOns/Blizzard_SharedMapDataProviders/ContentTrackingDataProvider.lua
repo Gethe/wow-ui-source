@@ -82,7 +82,6 @@ end
 
 function ContentTrackingDataProviderMixin:AddTrackable(trackableMapInfo, isWaypoint)
 	local pin = self:GetMap():AcquirePin(self:GetPinTemplate());
-	pin:SetPinScale(2.5);
 	pin:Init(self, trackableMapInfo, isWaypoint);
 
 	local trackableType, trackableID = C_SuperTrack.GetSuperTrackedContent();
@@ -109,7 +108,7 @@ end
 ContentTrackingPinMixin = CreateFromMixins(MapCanvasPinMixin);
 
 function ContentTrackingPinMixin:OnLoad()
-	self:SetScalingLimits(1, 0.4125, 0.4125);
+	self:SetDefaultMapPinScale();
 
 	self:SetNudgeTargetFactor(0.01);
 	self:SetNudgeZoomedOutFactor(1.0);

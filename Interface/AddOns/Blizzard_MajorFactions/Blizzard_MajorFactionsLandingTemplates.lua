@@ -86,6 +86,7 @@ function MajorFactionListMixin:Refresh()
 	end
 
 	local function MajorFactionSort(faction1, faction2)
+		-- Higher priority factions will be sorted to the top of the list.
 		if faction1.uiPriority ~= faction2.uiPriority then
 			return faction1.uiPriority > faction2.uiPriority;
 		end

@@ -42,6 +42,14 @@ function ModelPreviewFrame_OnHide(self)
 	end
 end
 
+function ModelPreviewFrame_TryHide()
+	if ( ModelPreviewFrame:IsShown() ) then
+		ModelPreviewFrame:Hide();
+		return true;
+	end
+	return false;
+end
+
 function ModelPreviewFrame_SetStyle(self, style)
 	self.style = style;
 	if style == "carousel" then

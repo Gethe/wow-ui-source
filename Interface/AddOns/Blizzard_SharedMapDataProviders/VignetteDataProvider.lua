@@ -406,10 +406,12 @@ function VignettePinMixin:OnMouseEnter()
 			GameTooltip:SetPadding(0, verticalPadding);
 		end
 	end
+    self:OnLegendPinMouseEnter();
 end
 
 function VignettePinMixin:OnMouseLeave()
 	GameTooltip:Hide();
+    self:OnLegendPinMouseLeave();
 end
 
 function VignettePinMixin:DisplayNormalTooltip()
