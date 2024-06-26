@@ -84,8 +84,8 @@ function LootJournalItemSetsMixin:SetupClassDropdown()
 	local getClassFilter = GenerateClosure(self.GetClassFilter, self);
 	local getSpecFilter = GenerateClosure(self.GetSpecFilter, self);
 	local setClassAndSpecFilter = GenerateClosure(self.SetClassAndSpecFilters, self);
-	local excludeAllSpecOption = true;
-	ClassMenu.InitClassSpecDropdown(self.ClassDropdown, getClassFilter, getSpecFilter, setClassAndSpecFilter, excludeAllSpecOption);
+	local excludeSpec, excludeAllSpecOption = false, true;
+	ClassMenu.InitClassSpecDropdown(self.ClassDropdown, getClassFilter, getSpecFilter, setClassAndSpecFilter, excludeSpec, excludeAllSpecOption);
 end
 
 function LootJournalItemSetsMixin:GetClassAndSpecFilters()

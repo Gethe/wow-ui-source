@@ -156,8 +156,6 @@ function MountJournal_OnLoad(self)
 
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 
-	self.ScrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnUpdate, MountJournal_EvaluateListHelpTip, self);
-	
 	MountJournal_InitFilterButton(self);
 
 	MountJournal.MountDisplay.ModelScene:SetResetCallback(MountJournal_ModelScene_OnReset);
@@ -632,7 +630,7 @@ function MountJournal_FullUpdate(self)
 		MountJournal_UpdateMountList();
 
 		if (not MountJournal.selectedSpellID) then
-			MountJournal_Select(self.dragonridingHelpTipMountIndex or 1);
+			MountJournal_Select(1);
 		end
 
 		MountJournal_UpdateMountDisplay();
@@ -640,25 +638,7 @@ function MountJournal_FullUpdate(self)
 end
 
 function MountJournal_OnShow(self)
-	self.needsDragonridingHelpTip = not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_MOUNT_COLLECTION_DRAGONRIDING);
-	if self.needsDragonridingHelpTip then
-		-- Force this to clear right now. There could be one done at end of frame due to the MountJournal_ClearSearch that ran last time
-		-- the UI was closed, and if so that could change the number of entries after the automatic scroll to a dragonriding mount
-		C_MountJournal.SetSearch("");
-	end
-
 	MountJournal_FullUpdate(self);
-
-	-- If no dragonriding mounts are visible in the list when there are some collected, reset the filters to force them
-	if self.needsDragonridingHelpTip and not self.dragonridingHelpTipMountIndex then
-		C_MountJournal.SetDefaultFilters();
-		self.FilterDropdown:Reset();
-	end
-
-	-- Finally, if there is one, scroll to it
-	if self.dragonridingHelpTipMountIndex then
-		MountJournal.ScrollBox:ScrollToElementDataIndex(self.dragonridingHelpTipMountIndex);
-	end
 
 	self.ToggleDynamicFlightFlyoutButton:UpdateVisibility();
 
@@ -677,25 +657,12 @@ function MountJournal_OnHide(self)
 end
 
 function MountJournal_UpdateMountList()
-	local dragonridingMounts = nil;
-	local dragonridingHelpTipMountIndex = nil;
-	if MountJournal.needsDragonridingHelpTip then
-		dragonridingMounts = C_MountJournal.GetCollectedDragonridingMounts();
-	end
-
 	local newDataProvider = CreateDataProvider();
 	for index = 1, C_MountJournal.GetNumDisplayedMounts() do
 		local mountID = C_MountJournal.GetDisplayedMountID(index);
 		newDataProvider:Insert({index = index, mountID = mountID});
-		if dragonridingMounts and not dragonridingHelpTipMountIndex then
-			if tContains(dragonridingMounts, mountID) then
-				dragonridingHelpTipMountIndex = index;
-			end
-		end
 	end
 	MountJournal.ScrollBox:SetDataProvider(newDataProvider, ScrollBoxConstants.RetainScrollPosition);
-
-	MountJournal.dragonridingHelpTipMountIndex = dragonridingHelpTipMountIndex;
 
 	local numMounts = C_MountJournal.GetNumMounts();
 	MountJournal.numOwned = 0;
@@ -722,49 +689,6 @@ function MountJournal_UpdateMountList()
 		MountJournal.selectedMountID = nil;
 		MountJournal_UpdateMountDisplay();
 		MountJournal.MountCount.Count:SetText(0);
-	end
-
-	MountJournal_EvaluateListHelpTip(MountJournal);
-end
-
-function MountJournal_EvaluateListHelpTip(self)
-	HelpTip:Hide(self, MOUNT_JOURNAL_DRAGONRIDING_HELPTIP);
-
-	if self.dragonridingHelpTipMountIndex then
-		local frame = self.ScrollBox:FindFrameByPredicate(function(entry, elementData)
-			return entry.index == self.dragonridingHelpTipMountIndex;
-		end);
-
-		if not frame or not frame:IsShown() then
-			return;
-		end
-
-		local frameTop = frame:GetTop();
-		local frameBottom = frame:GetBottom();
-		if not frameTop or not frameBottom then
-			return;
-		end
-
-		local scrollTop = self.ScrollBox:GetTop();
-		local scrollBottom = self.ScrollBox:GetBottom();
-		if not scrollTop or not scrollBottom then
-			return;
-		end
-
-		if (frameTop <= scrollTop + 4) and (frameBottom >= scrollBottom - 4) then
-			local helpTipInfo = {
-				text = MOUNT_JOURNAL_DRAGONRIDING_HELPTIP,
-				buttonStyle = HelpTip.ButtonStyle.Close,
-				cvarBitfield = "closedInfoFramesAccountWide",
-				bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_MOUNT_COLLECTION_DRAGONRIDING,
-				targetPoint = HelpTip.Point.RightEdgeCenter,
-				offsetX = -4,
-				onAcknowledgeCallback = function() self.dragonridingHelpTipMountIndex = nil; end;
-				checkCVars = true,
-			};
-			HelpTip:Show(self, helpTipInfo, frame);
-			return;
-		end
 	end
 end
 

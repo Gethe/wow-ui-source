@@ -96,11 +96,11 @@ function WorldMapFilterMixin:Get()
 	if self.cvarName and not GetCVarBool(self.cvarName) then
 		return false;
 	end
-	
+
 	if self.minimapTrackingFilter and C_Minimap.IsFilteredOut(self.minimapTrackingFilter) then
 		return false;
 	end
-	
+
 	return true;
 end
 
@@ -161,13 +161,13 @@ function WorldMapTrackingOptionsButtonMixin:SetupMenu()
 
 		return true;
 	end);
-	
+
 	self:SetDefaultCallback(function()
 		for cvarName, filter in pairs(self:GetWorldMapFilters()) do
 			filter:ResetToDefault();
 		end
 	end);
-	
+
 	DropdownButtonMixin.SetupMenu(self, function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_WORLD_MAP_TRACKING");
 
@@ -179,7 +179,7 @@ function WorldMapTrackingOptionsButtonMixin:SetupMenu()
 		local function AddFilter(parent, cvarName)
 			local filter = self:GetWorldMapFilter(cvarName);
 			return parent:CreateCheckbox(filter:GetText(), IsFilterChecked, SetFilterChecked, filter);
-	end
+		end
 
 		if self:ShouldShowWorldQuestFilters(mapID) then
 			local submenu = AddFilter(rootDescription, "questPOIWQ");
@@ -221,9 +221,10 @@ function WorldMapTrackingOptionsButtonMixin:SetupMenu()
 		AddFilter(rootDescription, "showDungeonEntrancesOnMap");
 		AddFilter(rootDescription, "showDelveEntrancesOnMap");
 		AddFilter(rootDescription, "showTamers");
+		AddFilter(rootDescription, "questPOILocalStory");
 		AddFilter(rootDescription, "trivialQuests");
 
-		local accountCompletedQuestsFilter = AddFilter(rootDescription, "showAccountCompletedQuests");		
+		local accountCompletedQuestsFilter = AddFilter(rootDescription, "showAccountCompletedQuests");
 		accountCompletedQuestsFilter:AddInitializer(function(button, description, menu)
 			if not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_COMPLETED_QUESTS_FILTER_SEEN) then
 				button.newFeatureFrame = MenuTemplates.AttachNewFeatureFrame(button);
@@ -276,6 +277,7 @@ function WorldMapTrackingOptionsButtonMixin:BuildFilterTable()
 	AddFilter(DELVES_SHOW_ENTRACES_ON_MAP_TEXT, "showDelveEntrancesOnMap");
 	AddFilter(CONTENT_TRACKING_MAP_TOGGLE, "contentTrackingFilter");
 	AddFilter(ARCHAEOLOGY_SHOW_DIG_SITES, "digSites", Enum.MinimapTrackingFilter.Digsites);
+	AddFilter(SHOW_LOCAL_STORY_OFFERS_ON_MAP_TEXT, "questPOILocalStory");
 	AddFilter(MINIMAP_TRACKING_TRIVIAL_QUESTS, "trivialQuests", Enum.MinimapTrackingFilter.TrivialQuests, true);
 	AddFilter(MINIMAP_TRACKING_ACCOUNT_COMPLETED_QUESTS, "showAccountCompletedQuests", Enum.MinimapTrackingFilter.AccountCompletedQuests, true);
 end
@@ -352,7 +354,7 @@ function WorldMapTrackingPinButtonMixin:OnMouseDown(button)
 end
 
 function WorldMapTrackingPinButtonMixin:OnMouseUp()
-	self.Icon:SetPoint("TOPLEFT", self, "TOPLEFT", 6, -6);
+	self.Icon:SetPoint("TOPLEFT", self, "TOPLEFT", 7, -6);
 	self.IconOverlay:Hide();
 end
 
@@ -401,6 +403,56 @@ function WorldMapTrackingPinButtonMixin:SetActive(isActive)
 	self:GetParent():TriggerEvent("WaypointLocationToggleUpdate", isActive);
 end
 
+WorldMapShowLegendButtonMixin = { };
+
+function WorldMapShowLegendButtonMixin:OnLoad()
+	EventRegistry:RegisterCallback("MapLegendHidden", self.Refresh, self);
+end
+
+function WorldMapShowLegendButtonMixin:OnMouseDown(button)
+	if self:IsEnabled() then
+		self.Icon:SetPoint("TOPLEFT", 8, -8);
+		self.IconOverlay:Show();
+	end
+end
+
+function WorldMapShowLegendButtonMixin:OnMouseUp()
+	self.Icon:SetPoint("TOPLEFT", self, "TOPLEFT", 7, -6);
+	self.IconOverlay:Hide();
+end
+
+function WorldMapShowLegendButtonMixin:OnClick()
+	local shouldSetActive = not self.isActive;
+	self:SetActive(shouldSetActive);
+	if shouldSetActive then
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		EventRegistry:TriggerEvent("ShowMapLegend");
+		if (not self:GetParent().QuestLog:IsShown()) then
+			self:GetParent():HandleUserActionToggleSidePanel();
+		end
+	else
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+		EventRegistry:TriggerEvent("HideMapLegend");
+	end
+end
+
+function WorldMapShowLegendButtonMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip_SetTitle(GameTooltip, MAP_LEGEND_FRAME_LABEL);
+	GameTooltip:Show();
+end
+
+function WorldMapShowLegendButtonMixin:Refresh()
+	if (not self:GetParent().QuestLog.MapLegend:IsShown()) then
+		self:SetActive(false);
+	end
+end
+
+function WorldMapShowLegendButtonMixin:SetActive(isActive)
+	self.isActive = isActive;
+	self.ActiveTexture:SetShown(isActive);
+end
+
 WorldMapNavBarMixin = { };
 
 function WorldMapNavBarMixin:OnLoad()
@@ -441,7 +493,7 @@ function WorldMapNavBarMixin:Refresh()
 						break;
 					end
 				end
-			end	
+			end
 		elseif ( C_Map.IsMapValidForNavBarDropdown(mapInfo.mapID) ) then
 			buttonData.listFunc = WorldMapNavBarButtonMixin.GetDropdownList;
 		end

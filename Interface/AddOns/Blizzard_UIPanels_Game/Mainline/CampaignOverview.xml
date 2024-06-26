@@ -14,7 +14,7 @@
 				<Frames>
 					<Button parentKey="BackButton" inherits="LoreButtonTemplate" hidden="false">
 						<Anchors>
-							<Anchor point="RIGHT" relativeKey="$parent.Background" x="-10" y="7"/>
+							<Anchor point="LEFT" relativeKey="$parent.Text" relativePoint="RIGHT" x="6" y="0"/>
 						</Anchors>
 					</Button>
 				</Frames>

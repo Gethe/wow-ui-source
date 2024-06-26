@@ -158,14 +158,11 @@ function QuestInfo_ShowTitle()
 end
 
 function QuestInfo_ShowType()
-	local questTypeMarkup = QuestUtils_GetQuestTypeIconMarkupString(C_QuestLog.GetSelectedQuest());
-	local showType = questTypeMarkup ~= nil;
+	local questID = QuestInfo_GetQuestID();
+	local added = QuestUtil.SetQuestLegendToFontString(questID, QuestInfoQuestType);
+	QuestInfoQuestType:SetShown(added);
 
-	QuestInfoQuestType:SetShown(showType);
-
-	if ( showType ) then
-		QuestInfoQuestType:SetText(questTypeMarkup);
-
+	if added then
 		if QuestUtil.QuestTextContrastUseLightText() then
 			local textColor, titleTextColor = GetMaterialTextColors("Stone");
 			QuestInfoQuestType:SetTextColor(textColor[1], textColor[2], textColor[3]);
@@ -1079,6 +1076,7 @@ QUEST_TEMPLATE_DETAIL = { questLog = nil, chooseItems = nil, contentWidth = 275,
 	canHaveSealMaterial = true, sealXOffset = 160, sealYOffset = -6,
 	elements = {
 		QuestInfo_ShowTitle, 10, -10,
+		QuestInfo_ShowType, 0, -5,
 		QuestInfo_ShowDescriptionText, 0, -5,
 		QuestInfo_ShowSeal, 0, 0,
 		QuestInfo_ShowObjectivesHeader, 0, -15,
@@ -1123,7 +1121,7 @@ QUEST_TEMPLATE_REWARD = { questLog = nil, chooseItems = true, contentWidth = 285
 QUEST_TEMPLATE_MAP_DETAILS = { questLog = true, chooseItems = nil, contentWidth = 289,
 	canHaveSealMaterial = true, sealXOffset = 156, sealYOffset = -6,
 	elements = {
-		QuestInfo_ShowTitle, 5, -5,
+		QuestInfo_ShowTitle, 5, -10,
 		QuestInfo_ShowType, 0, -5,
 		QuestInfo_ShowObjectivesText, 0, -5,
 		QuestInfo_ShowTimer, 0, -10,

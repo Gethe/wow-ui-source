@@ -3,26 +3,6 @@ function toCharacterNameCasing(name)
 	return C_CharacterServices.CapitalizeCharName(name);
 end
 
-function DoesClientThinkTheCharacterIsEligibleForPNC(characterID)
-	local playerguid = GetCharacterGUID(characterID);
-	local errors = {};
-
-	local characterInfo = CharacterSelectUtil.GetCharacterInfoTable(characterID);
-	if not characterInfo then
-		return false, errors, playerGuid, false;
-	end
-
-	CheckAddVASErrorCode(errors, Enum.VasError.UnderMinLevelReq, characterInfo.experienceLevel >= 10);
-	if IsCharacterNPERestricted then
-		CheckAddVASErrorCode(errors, Enum.VasError.IsNpeRestricted, not IsCharacterNPERestricted(playerguid));
-	end
-	CheckAddVASErrorCode(errors, Enum.VasError.IneligibleMapID, not IsCharacterInTutorialMap(playerguid));
-	CheckAddVASErrorString(errors, BLIZZARD_STORE_VAS_ERROR_CHARACTER_INELIGIBLE_FOR_THIS_SERVICE, not IsCharacterVASRestricted(playerguid, Enum.ValueAddedServiceType.PaidNameChange));
-
-	local canTransfer = #errors == 0;
-	return canTransfer, errors, playerguid, characterInfo.characterServiceRequiresLogin;
-end
-
 function RequestAssignPNCForResults(results, isValidationOnly)
 	return C_CharacterServices.AssignNameChangeDistribution(
 		results.selectedCharacterGUID,

@@ -127,7 +127,7 @@ function BonusObjectiveTrackerMixin:OnEvent(event, ...)
 		self:MarkDirty();
 	end
 end
-	
+
 function BonusObjectiveTrackerMixin:OnQuestAccepted(questID)
 	if ObjectiveTrackerTopBannerFrame:DisplayForQuest(questID, self) then
 		-- banner is gonna play, no need to update yet
@@ -216,7 +216,7 @@ function BonusObjectiveTrackerMixin:ShowRewardsToast(block, questID)
 		t.font = "GameFontHighlight";
 		tinsert(rewards, t);
 	end
-	
+
 	local headerText = nil;  -- use default
 	local callback = nil;
 	if block then
@@ -310,7 +310,7 @@ function BonusObjectiveTrackerMixin:ProcessScenarioBonusObjectives()
 						end
 					end
 				end
-				
+
 				if not self:LayoutBlock(block) then
 					return;
 				end
@@ -340,10 +340,10 @@ function BonusObjectiveTrackerMixin:SetUpQuestBlock(block, forceShowCompleted)
 	local questID = block.id;
 	local questLogIndex = C_QuestLog.GetLogIndexForQuestID(questID);
 	local isQuestComplete = C_QuestLog.IsComplete(questID);
-	
+
 	block:SetHeader(block.taskName);
 	block:EnableMouse(not block.taskName);
-		
+
 	if QuestUtil.CanCreateQuestGroup(questID) then
 		block:AddRightEdgeFrame(self.findGroupButtonSettings, questID);
 	end
@@ -437,7 +437,7 @@ function BonusObjectiveTrackerMixin:AddQuest(questID, isTrackedWorldQuest)
 		local block = self:GetBlock(questID);
 		block.taskName = taskName;
 		block.numObjectives = numObjectives;
-		
+
 		local forceShowCompleted = false;
 		self:SetUpQuestBlock(block, forceShowCompleted);
 
@@ -471,7 +471,7 @@ function BonusObjectiveTrackerMixin:LayoutContents()
 			end
 		end
 	end
-	
+
 	if self:HasContents() then
 		self:SetHeader(self.headerText);
 	end
@@ -496,7 +496,7 @@ function BonusObjectiveTrackerProgressBarMixin:SetValue(percent)
 		local delta = percent - oldPercent;
 		if delta > 0 then
 			self:PlayFlareAnim(delta);
-		end	
+		end
 	end
 end
 
@@ -510,7 +510,7 @@ function BonusObjectiveTrackerProgressBarMixin:OnGet(isNew, questID, finished)
 	if isNew or self.needsReward then
 		self:UpdateReward();
 	end
-	self:SetValue(percent);	
+	self:SetValue(percent);
 end
 
 function BonusObjectiveTrackerProgressBarMixin:UpdateReward()
@@ -706,7 +706,7 @@ function ObjectiveTrackerTopBannerMixin:DisplayForQuest(questID, module)
 	TopBannerManager_Show(ObjectiveTrackerTopBannerFrame);
 	return true;
 end
-			
+
 -- called by TopBannerManager
 function ObjectiveTrackerTopBannerMixin:PlayBanner()
 	self.Title:SetText(self.questTitle);
@@ -717,7 +717,7 @@ function ObjectiveTrackerTopBannerMixin:PlayBanner()
 		self.Subtitle:SetText(BONUS_OBJECTIVE_BANNER);
 		PlaySound(SOUNDKIT.UI_SCENARIO_STAGE_END);
 	end
-	-- offsets for anims	
+	-- offsets for anims
 	local container = ObjectiveTrackerManager:GetContainerForModule(self.module);
 	local height = container:GetHeightToModule(self.module);
 	local xOffset = container:GetLeft() - self:GetRight();
@@ -735,7 +735,7 @@ function ObjectiveTrackerTopBannerMixin:PlayBanner()
 	self.Subtitle:SetAlpha(0);
 	-- show and play
 	self:Show();
-	self:SetAlpha(1);	
+	self:SetAlpha(1);
 	self.Anim:Restart();
 	-- timer to put the quest in the tracker
 	C_Timer.After(2.15, GenerateClosure(self.OnFinish, self));

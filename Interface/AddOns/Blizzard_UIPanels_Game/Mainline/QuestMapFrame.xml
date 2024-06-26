@@ -162,6 +162,9 @@
 	</Button>
 	<Frame name="QuestLogTrackCheckboxTemplate" propagateMouseInput="Motion" virtual="true">
 		<Size x="14" y="14"/>
+		<HitRectInsets>
+			<AbsInset left="-10" right="-10" top="-10" bottom="-10"/>
+		</HitRectInsets>		
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture atlas="questlog-icon-ticksquare" useAtlasSize="true">
@@ -174,6 +177,13 @@
 				<Texture parentKey="CheckMark" atlas="questlog-icon-checkmark-yellow" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER" x="1" y="1"/>
+					</Anchors>					
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture atlas="questlog-icon-ticksquare" useAtlasSize="true" inherits="QuestLogHighlightTextureTemplate">
+					<Anchors>
+						<Anchor point="CENTER"/>
 					</Anchors>					
 				</Texture>
 			</Layer>
@@ -190,10 +200,22 @@
 		</Frames>	
 		<Layers>
 			<Layer level="ARTWORK">
+				<Texture parentKey="TagTexture" file="Interface\QuestFrame\QuestTypeIcons" hidden="true">
+					<Size x="18" y="18"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.Checkbox" relativePoint="LEFT" x="-4" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="StorylineTexture" atlas="questlog-storylineicon" hidden="false">
+					<Size x="20" y="20"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.TagTexture" relativePoint="LEFT" x="-2" y="0"/>
+					</Anchors>
+				</Texture>
 				<FontString parentKey="Text" inherits="GameFontNormalLeft">
 					<Size x="215" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="31" y="-8"/>
+						<Anchor point="TOP" x="0" y="-8"/>
 					</Anchors>
 					<Color r="0.75" g="0.61" b="0"/>
 				</FontString>
@@ -202,10 +224,12 @@
 						<Anchor point="TOPRIGHT" relativeKey="$parent.Text" relativePoint="TOPLEFT" x="-5" y="4"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="TagTexture" file="Interface\QuestFrame\QuestTypeIcons" hidden="true">
-					<Size x="18" y="18"/>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="HighlightTexture" atlas="questlog-quest-glow-yellow" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="RIGHT" relativeKey="$parent.Checkbox" relativePoint="LEFT" x="-4" y="0"/>
+						<Anchor point="TOP" relativeKey="$parent.Text" y="4"/>
+						<Anchor point="BOTTOM" relativeKey="$parent.Text" y="-4"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -654,7 +678,12 @@
 				</Frames>
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture parentKey="BG" atlas="QuestSharing-QuestLog-Background" setAllPoints="true"/>
+						<Texture parentKey="BG" atlas="QuestSharing-QuestLog-Background">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-3"/>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
 						<FontString parentKey="CommandText" inherits="GameFontNormalLeft" maxLines="1">
 							<Anchors>
 								<Anchor point="BOTTOMLEFT" relativeKey="$parent.ExecuteSessionCommand" relativePoint="RIGHT" x="10" y="2"/>
@@ -886,6 +915,12 @@
 				</Scripts>
 			</Frame>
 			<Frame parentKey="CampaignOverview" inherits="CampaignOverviewTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.QuestsFrame"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.QuestsFrame"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="MapLegend" inherits="MapLegendFrameTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.QuestsFrame"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.QuestsFrame"/>

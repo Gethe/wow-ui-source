@@ -69,7 +69,7 @@ AreaPOIPinMixin = BaseMapPoiPinMixin:CreateSubPin("PIN_FRAME_LEVEL_AREA_POI");
 
 local AREAPOI_HIGHLIGHT_PARAMS = { backgroundPadding = 20 };
 
-local customOnClickHandlers = 
+local customOnClickHandlers =
 {
 	OribosGreatVault = function(self, button, upInside)
 		if upInside and (button == "LeftButton") then
@@ -145,6 +145,7 @@ function AreaPOIPinMixin:OnMouseEnter()
 	end
 
 	EventRegistry:TriggerEvent("AreaPOIPin.MouseOver", self, tooltipShown, self.areaPoiID, self.name);
+    self:OnLegendPinMouseEnter();
 
 	if self.highlightWorldQuestsOnHover then
 		self:GetMap():TriggerEvent("HighlightMapPins.WorldQuests", self.pinHoverHighlightType);
@@ -230,7 +231,7 @@ end
 
 function AreaPOIPinMixin:OnMouseLeave()
 	self:GetMap():TriggerEvent("ClearAreaLabel", MAP_AREA_LABEL_TYPE.POI);
-	
+
 	if self.highlightWorldQuestsOnHover then
 		self:GetMap():TriggerEvent("HighlightMapPins.WorldQuests", nil);
 	end
@@ -238,6 +239,8 @@ function AreaPOIPinMixin:OnMouseLeave()
 	if self.highlightVignettesOnHover then
 		self:GetMap():TriggerEvent("HighlightMapPins.Vignettes", nil);
 	end
+
+    self:OnLegendPinMouseLeave();
 
 	GameTooltip:Hide();
 end

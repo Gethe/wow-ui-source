@@ -316,6 +316,14 @@ function CharacterSelect_IsRetrievingCharacterList()
     return CharacterSelect.retrievingCharacters;
 end
 
+function CharacterSelect_IsVisible()
+	return CharacterSelect:IsVisible();
+end
+
+function CharacterSelect_IsUndeleting()
+	return CharacterSelect.undeleting;
+end
+
 function CharacterSelectFrameMixin:OnUpdate(elapsed)
     if ( self.undeleteFailed ) then
         if (not GlueDialog:IsShown()) then
@@ -368,7 +376,7 @@ function CharacterSelectFrameMixin:OnKeyDown(key)
 		elseif GlobalGlueContextMenu_IsShown() then
 			GlobalGlueContextMenu_Release();
         else
-            CharacterSelect_Exit();
+			GlueMenuFrameUtil.ToggleMenu();
         end
     elseif key == "ENTER" then
         if CharacterSelect_AllowedToEnterWorld() then
@@ -1879,6 +1887,7 @@ function BeginCharacterServicesFlow(flow, data)
 		if flow ~= RPEUpgradeFlow then
 			-- In case the character select list was collapsed, ensure that it is now expanded.
 			CharacterSelectUI:ExpandCharacterList();
+			CharacterSelectUI:SetCharacterListToggleEnabled(false);
 		end
 	end
 end
@@ -1891,6 +1900,8 @@ function EndCharacterServicesFlow(shouldMaximize)
 			CharSelectServicesFlowFrame.IsMinimized = false;
 		end
 	end
+	CharacterSelectUI:SetCharacterListToggleEnabled(true);
+
 	CharacterServicesMaster_ClearFlow(CharacterServicesMaster);
 	CharacterSelectCharacterFrame.ScrollBox.dragBehavior:SetDragEnabled(CharacterSelectListUtil.CanReorder());
 end
@@ -2718,7 +2729,7 @@ CharSelectServicesFlowFrameMixin = {};
 
 function CharSelectServicesFlowFrameMixin:OnLoad()
 	self.CloseButton:SetScript("OnClick", function()
-		self:Hide();
+		EndCharacterServicesFlow(false);
 		CharacterSelect_SelectCharacter(CharacterSelect.selectedIndex); --reopens RPE upgrade if eligigble
 		CharacterServicesMaster_UpdateServiceButton();
 	end);

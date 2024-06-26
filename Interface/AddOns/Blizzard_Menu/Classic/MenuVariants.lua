@@ -7,33 +7,45 @@ function MenuVariants.GetDefaultContextMenuMixin()
 end
 
 function MenuVariants.CreateCheckbox(text, frame, isSelected, data)
-	local leftTexture1, leftTexture2 = MenuTemplates.CreateSelectionTextures(frame, isSelected, data, 
-		"common-dropdown-ticksquare-classic", "common-dropdown-icon-checkmark-yellow-classic");
+	local leftTexture1 = frame:AttachTexture();
+	frame.leftTexture1 = leftTexture1;
 	leftTexture1:SetPoint("LEFT");
-	if leftTexture2 then
-		leftTexture2:SetPoint("CENTER", leftTexture1, "CENTER", 2, 1);
+
+	local atlas = nil;
+	if isSelected(data) then
+		atlas = "common-dropdown-icon-checkmark-yellow-classic";
+	else
+		atlas = "common-dropdown-ticksquare-classic";
 	end
+	
+	leftTexture1:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
 
 	local fontString = frame:AttachFontString();
 	frame.fontString = fontString;
-	fontString:SetPoint("LEFT", leftTexture1, "RIGHT", 7, 1);
+	fontString:SetPoint("LEFT", leftTexture1, "RIGHT", 2, -1);
 	fontString:SetHeight(20);
 	fontString:SetTextToFit(text);
 
-	return leftTexture1, leftTexture2;
+	return leftTexture1;
 end
 
 function MenuVariants.CreateRadio(text, frame, isSelected, data)
-	local leftTexture1, leftTexture2 = MenuTemplates.CreateSelectionTextures(frame, isSelected, data, 
-		"common-dropdown-tickradial-classic", "common-dropdown-icon-radialtick-yellow-classic");
-	leftTexture1:SetPoint("LEFT", -3, 0);
-	if leftTexture2 then
-		leftTexture2:SetPoint("TOPLEFT", leftTexture1, "TOPLEFT");
+	local leftTexture1 = frame:AttachTexture();
+	frame.leftTexture1 = leftTexture1;
+	leftTexture1:SetPoint("LEFT");
+
+	local atlas = nil;
+	if isSelected(data) then
+		atlas = "common-dropdown-icon-radialtick-yellow-classic";
+	else
+		atlas = "common-dropdown-tickradial-classic";
 	end
+	
+	leftTexture1:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
 
 	local fontString = frame:AttachFontString();
 	frame.fontString = fontString;
-	fontString:SetPoint("LEFT", leftTexture1, "RIGHT", 3, 0);
+	fontString:SetPoint("LEFT", leftTexture1, "RIGHT", 2, 0);
 	fontString:SetHeight(20);
 	fontString:SetTextToFit(text);
 

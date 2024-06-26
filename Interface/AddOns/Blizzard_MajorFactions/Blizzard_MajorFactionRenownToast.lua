@@ -1,3 +1,44 @@
+local ExpansionLayoutInfo = {
+	[LE_EXPANSION_DRAGONFLIGHT] = {
+		textureDataTable = {
+			["GlowLineBottom"] =  {
+				atlas = "majorfaction-celebration-bottomglowline",
+				useAtlasSize = true,
+			},
+			["RewardIconRing"] =  {
+				atlas = "majorfaction-celebration-content-ring",
+				useAtlasSize = false,
+			},
+			["ToastBG"] = {
+				atlas = "majorfaction-celebration-toastBG",
+				useAtlasSize = true,
+				anchors = {
+					["TOP"] = { x = 0, y = -77, relativePoint = "TOP" },
+				},
+			},
+		},
+	},
+	[LE_EXPANSION_WAR_WITHIN] = {
+		textureDataTable = {
+			["GlowLineBottom"] =  {
+				atlas = "majorfaction-celebration-thewarwithin-bottomglowline",
+				useAtlasSize = true,
+			},
+			["RewardIconRing"] =  {
+				atlas = "majorfaction-celebration-thewarwithin-content-ring",
+				useAtlasSize = false,
+			},
+			["ToastBG"] = {
+				atlas = "majorfaction-celebration-toastBG",
+				useAtlasSize = true,
+				anchors = {
+					["TOP"] = { x = 0, y = -57, relativePoint = "TOP" },
+				},
+			},
+		},
+	},
+};
+
 MajorFactionsRenownToastMixin = {};
 
 function MajorFactionsRenownToastMixin:OnLoad()
@@ -38,12 +79,13 @@ function MajorFactionsRenownToastMixin:ShowRenownLevelUpToast(majorFactionID, re
 		if MajorFactionRenownFrame then
 			HideUIPanel(MajorFactionRenownFrame);
 		end
-		TopBannerManager_Show(self, { 
+		TopBannerManager_Show(self, {
 			majorFactionID = majorFactionID,
 			renownLevel = renownLevel,
 			factionColor = self:GetFactionColorByTextureKit(majorFactionData.textureKit),
 			textureKit = majorFactionData.textureKit,
 			celebrationSoundKit = majorFactionData.celebrationSoundKit,
+			expansionID = majorFactionData.expansionID,
 		});
 	end
 end
@@ -94,11 +136,8 @@ function MajorFactionsRenownToastMixin:PlayBanner(data)
 	self.RenownLabel:SetTextColor(data.factionColor:GetRGB());
 	self:SetMajorFactionTextureKit(data.textureKit);
 
-	local textureKitRegions = {
-		[self.GlowLineBottom] = "majorfaction-celebration-bottomglowline",
-	};
-
-	SetupTextureKitOnFrames(data.textureKit, textureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+	local expansionLayoutInfo = ExpansionLayoutInfo[data.expansionID] or ExpansionLayoutInfo[LE_EXPANSION_DRAGONFLIGHT];
+	self:SetMajorFactionExpansionLayoutInfo(expansionLayoutInfo);
 
 	self.ToastBG:SetAlpha(0);
 	self.IconSwirlModelScene:SetAlpha(0);

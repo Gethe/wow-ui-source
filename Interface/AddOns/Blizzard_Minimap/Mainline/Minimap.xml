@@ -233,6 +233,8 @@
 									<Button name="ExpansionLandingPageMinimapButton" mixin="ExpansionLandingPageMinimapButtonMixin" hidden="true">
 										<Size x="53" y="53"/>
 										<KeyValues>
+											<KeyValue key="defaultOffsetX" value="-3" type="number"/>
+											<KeyValue key="defaultOffsetY" value="-150" type="number"/>
 											<KeyValue key="defaultWidth" value="53" type="number"/>
 											<KeyValue key="defaultHeight" value="53" type="number"/>
 											<KeyValue key="defaultGlowWidth" value="46" type="number"/>

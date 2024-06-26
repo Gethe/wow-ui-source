@@ -116,6 +116,15 @@ local DateAndTime =
 				{ Name = "serverTimeLocal", Type = "time_t", Nilable = false },
 			},
 		},
+		{
+			Name = "GetWeeklyResetStartTime",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "seconds", Type = "time_t", Nilable = false },
+			},
+		},
 	},
 
 	Events =

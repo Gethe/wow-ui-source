@@ -431,6 +431,17 @@ StaticPopupDialogs["ACCOUNT_CONVERSION_DISPLAY"] = {
 	end
 }
 
+StaticPopupDialogs["CREATE_CHARACTER_REALM_CONFIRMATION"] = {
+	text = CREATE_CHARACTER_REALM_CONFIRM_DIALOG_TEXT,
+	button1 = CONTINUE,
+	button2 = CANCEL,
+	OnAccept = function()
+		if GlueDialog.data then
+			GlueDialog.data();
+		end
+	end
+}
+
 local function GlueDialog_SetCustomOnHideScript(self, script)
 	self.customOnHideScript = script;
 end

@@ -140,8 +140,9 @@ function CharacterServicesCharacterSelectorMixin:ProcessCharacterFromBlock(frame
 		if #serviceInfo.errors > 0 then
 			local tooltip = GetAppropriateTooltip();
 			tooltip:SetOwner(frame, "ANCHOR_BOTTOMLEFT", -25, 70);
-			GameTooltip_SetTitle(tooltip, BLIZZARD_STORE_VAS_ERROR_LABEL);
-			for index, errorMsg in pairs(serviceInfo.errors) do
+			local tooltipTitle = #serviceInfo.errors == 1 and BLIZZARD_STORE_VAS_ERROR_SINGULAR_LABEL or BLIZZARD_STORE_VAS_ERROR_LABEL;
+			GameTooltip_SetTitle(tooltip, tooltipTitle);
+			for _, errorMsg in pairs(serviceInfo.errors) do
 				GameTooltip_AddErrorLine(tooltip, errorMsg);
 			end
 

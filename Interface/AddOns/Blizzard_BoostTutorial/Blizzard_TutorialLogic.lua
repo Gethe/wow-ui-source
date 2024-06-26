@@ -1839,29 +1839,21 @@ function Class_ShowMapQuestTurnIn:Display()
 	local currentMap = self.MapProvider:GetMap():GetMapID();
 	local desiredMap = self.QuestData:GetTurnInMapID();
 
-	local poiButton;
-
 	-- Get the PoI Pin from the map map
 	if (currentMap == desiredMap) then
 		for pin in self.MapProvider:GetMap():EnumeratePinsByTemplate("QuestPinTemplate") do
 			if (pin.questID == self.QuestData.QuestID) then
-				poiButton = pin;
+				local posX, posY = pin:GetPosition();
+				local direction = (posX and (posX > 0.5)) and "LEFT" or "RIGHT";
+				self:ShowPointerTutorial(formatStr(NPE_QUESTCOMPELTELOCATION), direction, pin);
+				Tutorials.SelectQuestDifferentZone:Complete();
+				return;
 			end
 		end
 	end
 
-	if (poiButton) then
-		local direction = "LEFT";
-		local _, posX, posY = QuestPOIGetIconInfo(self.QuestData.QuestID);
-		if (posX and (posX > 0.5)) then -- sometimes QuestPOIGetIconInfo returns nil;
-			direction = "RIGHT";
-		end
-
-		self:ShowPointerTutorial(formatStr(NPE_QUESTCOMPELTELOCATION), direction, poiButton);
-		Tutorials.SelectQuestDifferentZone:Complete();
-	else
-		Tutorials.SelectQuestDifferentZone:ForceBegin(self.QuestData);
-	end
+	-- This isn't hit unless the pin didn't exist.
+	Tutorials.SelectQuestDifferentZone:ForceBegin(self.QuestData);
 end
 
 -- ------------------------------------------------------------------------------------------------------------

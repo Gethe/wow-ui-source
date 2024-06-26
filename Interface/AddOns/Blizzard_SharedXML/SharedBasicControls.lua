@@ -218,7 +218,8 @@ function ScriptErrorsFrameMixin:OnError(msg, warnType, keepHidden)
 	-- Stack at time of error: [1, 2] (these are currently now index 4 and 5, but at the time of error the stack height is 2)
 	-- To calcuate the level to debug (4): curentStackHeight - (errorStackHeight - 1) = 5 - (2 - 1) = 4
 	local currentStackHeight = GetCallstackHeight();
-	local errorStackOffset = GetErrorCallstackHeight() - 1;
+	local errorCallStackHeight = GetErrorCallstackHeight();
+	local errorStackOffset = errorCallStackHeight and (errorCallStackHeight - 1);
 	local debugStackLevel = currentStackHeight - (errorStackOffset or 0);
 	local skipFunctionsAndUserdata = true;
 

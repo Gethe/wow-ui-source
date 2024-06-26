@@ -376,6 +376,7 @@ function EncounterJournal_OnLoad(self)
 	self.encounter.info.difficulty:SetWidth(100);
 
 	local lootContainer = self.encounter.info.LootContainer;
+	lootContainer.filter:SetWidth(120);
 	lootContainer.filter:SetPoint("TOPLEFT", self, "TOPRIGHT", -356, -77);
 
 	lootContainer.slotFilter:SetWidth(90);
@@ -422,7 +423,8 @@ do
 
 	function EncounterJournal_SetupLootFilterDropdown(self)
 		local dropdown = self.encounter.info.LootContainer.filter;
-		ClassMenu.InitClassSpecDropdown(dropdown, GetClassFilter, GetSpecFilter, SetClassAndSpecFilter);
+		local excludeSpecs, excludeAllSpecOption = true, true;
+		ClassMenu.InitClassSpecDropdown(dropdown, GetClassFilter, GetSpecFilter, SetClassAndSpecFilter, excludeSpecs, excludeAllSpecOption);
 	end
 end
 

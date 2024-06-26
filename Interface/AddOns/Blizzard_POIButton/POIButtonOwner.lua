@@ -95,7 +95,7 @@ function POIButtonOwnerMixin:CallOnCreateFunction(poiButton)
 	end
 end
 
-function POIButtonOwnerMixin:GetButtonForQuestInternal(questID, style)
+function POIButtonOwnerMixin:GetButtonForStyleInternal(style)
 	local poiButton, isNewButton = self.buttonPool:Acquire();
 	poiButton:SetStyle(style);
 
@@ -103,10 +103,20 @@ function POIButtonOwnerMixin:GetButtonForQuestInternal(questID, style)
 		self:CallOnCreateFunction(poiButton);
 	end
 
+	return poiButton;
+end
+
+function POIButtonOwnerMixin:PostInitButtonInternal(poiButton)
+	poiButton:UpdateSelected();
+	poiButton:Show();
+	return poiButton;
+end
+
+function POIButtonOwnerMixin:GetButtonForQuestInternal(questID, style)
+	local poiButton = self:GetButtonForStyleInternal(style);
+
 	poiButton:SetEnabled(style ~= POIButtonUtil.Style.QuestDisabled);
-	poiButton.questID = questID;
-	poiButton.poiParent = self;
-	poiButton.pingWorldMap = false;
+	poiButton:SetQuestID(questID);
 	poiButton:EvaluateManagedHighlight();
 	return poiButton;
 end
@@ -121,23 +131,17 @@ function POIButtonOwnerMixin:GetButtonForQuest(questID, style)
 	end
 
 	local poiButton = self:GetButtonForQuestInternal(questID, style);
-	poiButton:UpdateButtonStyle();
-	poiButton:Show();
-	return poiButton;
+	return self:PostInitButtonInternal(poiButton);
 end
 
 function POIButtonOwnerMixin:GetButtonForTrackable(trackableType, trackableID)
-	local poiButton, isNewButton = self.buttonPool:Acquire();
-	poiButton:SetStyle(POIButtonUtil.Style.ContentTracking);
-
-	if isNewButton then
-		self:CallOnCreateFunction(poiButton);
-	end
-
+	local poiButton = self:GetButtonForStyleInternal(POIButtonUtil.Style.ContentTracking);
 	poiButton:SetTrackable(trackableType, trackableID);
-	poiButton:UpdateButtonStyle();
-	poiButton:UpdateSelected();
-	poiButton.poiParent = self;
-	poiButton:Show();
-	return poiButton;
+	return self:PostInitButtonInternal(poiButton);
+end
+
+function POIButtonOwnerMixin:GetButtonForAreaPOI(areaPOIID)
+	local poiButton = self:GetButtonForStyleInternal(POIButtonUtil.Style.AreaPOI);
+	poiButton:SetAreaPOIID(areaPOIID);
+	return self:PostInitButtonInternal(poiButton);
 end

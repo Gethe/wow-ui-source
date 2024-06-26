@@ -678,6 +678,7 @@ local CharacterUpgradeCharacterSelectBlock = Mixin(
 	{ FrameName = "CharacterUpgradeSelectCharacterFrame", Back = false, Next = false, Finish = false, AutoAdvance = true, ResultsLabel = SELECT_CHARACTER_RESULTS_LABEL, ActiveLabel = SELECT_CHARACTER_ACTIVE_LABEL, Popup = "BOOST_ALLIED_RACE_HERITAGE_ARMOR_WARNING" },
 	CharacterSelectBlockBase
 );
+
 local CharacterUpgradeSpecSelectBlock = Mixin(
 	{ FrameName = "CharacterUpgradeSelectSpecFrame", Back = true, Next = true, Finish = false, ActiveLabel = SELECT_SPEC_ACTIVE_LABEL, ResultsLabel = SELECT_SPEC_RESULTS_LABEL, Popup = "BOOST_NOT_RECOMMEND_SPEC_WARNING" },
 	SpecSelectBlockBase
@@ -865,6 +866,35 @@ function CharacterUpgradeFlow:GetFinishLabel()
 	end
 
 	return CharacterServicesFlowMixin.GetFinishLabel(self);
+end
+
+function DoesClientThinkTheCharacterIsEligibleForCharacterUpgrade(characterID)
+	local characterInfo = CharacterSelectUtil.GetCharacterInfoTable(characterID);
+	local errors = {};
+
+	if characterInfo then
+		local currentRealm = CharacterSelectUtil.GetFormattedCurrentRealmName();
+		local characterRealm = characterInfo.realmName;
+		CheckAddVASErrorString(errors, BLIZZARD_STORE_VAS_ERROR_CHARACTER_ON_DIFFERENT_REALM_1, currentRealm == characterRealm);
+		CheckAddVASErrorString(errors, BLIZZARD_STORE_VAS_ERROR_CHARACTER_ON_DIFFERENT_REALM_2, currentRealm == characterRealm);
+
+		-- CanBoostCharacter could be broken down into individual VAS error checks to match other flows.  At the moment they just return false with no associated error.
+		local canTransfer = #errors == 0 and CanBoostCharacter(characterInfo.experienceLevel, characterInfo.boostInProgress, characterInfo.isTrialBoost, characterInfo.isRevokedCharacterUpgrade, characterInfo.vasServiceInProgress, characterInfo.isExpansionTrialCharacter, characterInfo.raceFilename, characterInfo.hasWowToken, characterInfo.guid);
+		return canTransfer, errors, characterInfo.guid, characterInfo.characterServiceRequiresLogin, characterInfo.isTrialBoost, IsCharacterEligibleForVeteranBonus(characterInfo.experienceLevel, characterInfo.isTrialBoost, characterInfo.isRevokedCharacterUpgrade);
+	end
+	return false, errors, nil, false, false, false;
+end
+
+function CharacterUpgradeCharacterSelectBlock:GetServiceInfoByCharacterID(characterID)
+	local serviceInfo = { checkAutoSelect = true, checkTrialBoost = true, checkErrors = true };
+	local canUpgradeCharacter, errors, playerguid, characterServiceRequiresLogin, isTrialBoost, hasBonus = DoesClientThinkTheCharacterIsEligibleForCharacterUpgrade(characterID);
+	serviceInfo.isEligible = canUpgradeCharacter;
+	serviceInfo.errors = errors;
+	serviceInfo.playerguid = playerguid;
+	serviceInfo.requiresLogin = characterServiceRequiresLogin;
+	serviceInfo.isTrialBoost = isTrialBoost;
+	serviceInfo.hasBonus = hasBonus;
+	return serviceInfo;
 end
 
 function CharacterUpgrade_IsCreatedCharacterUpgrade()
@@ -1114,7 +1144,7 @@ function RPEUpgradeFlow:AllowCharacterReordering()
 end
 
 function RPEUpgradeFlow:CanInitialize()
-	return CharacterSelectListUtil:GetSelectedCharacterFrame() ~= nil;
+	return CharacterSelectListUtil.GetSelectedCharacterFrame() ~= nil;
 end
 
 local function SetKeepQuestsAndContinue(keepQuests)
@@ -1192,11 +1222,12 @@ local RPEUPgradeInfoBlockSubFrameText = {
 function RPEUPgradeInfoBlock:Initialize(results)
 	self.seenPopup = false;
 	CharacterSelectCharacterFrame:SetScrollEnabled(true);
+	CharacterSelectUI:SetCharacterListToggleEnabled(true);
 
 	--dont clear results
 	--self:ClearResultInfo();
 
-	local frame = CharacterSelectListUtil:GetSelectedCharacterFrame();
+	local frame = CharacterSelectListUtil.GetSelectedCharacterFrame();
 	if frame then
 		local characterID = CharacterSelectListUtil.GetCharIDFromIndex(CharacterSelect.selectedIndex);
 		local characterSelectButton = frame;
@@ -1273,6 +1304,7 @@ function RPEUpgradeSpecSelectBlock:Initialize(results, wasFromRewind)
 
 	-- Force expand character list if collapsed.
 	CharacterSelectUI:ExpandCharacterList();
+	CharacterSelectUI:SetCharacterListToggleEnabled(false);
 
 	local basicInfo = GetBasicCharacterInfo(characterGuid);
 	if basicInfo.classFilename then

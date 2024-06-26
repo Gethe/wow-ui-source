@@ -2,7 +2,7 @@
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="VignetteDataProvider.lua"/>
 
-	<Frame name="VignettePinTemplate" enableMouseMotion="true" inherits="SuperTrackableMapPinTemplate" mixin="VignettePinMixin" virtual="true">
+	<Frame name="VignettePinTemplate" enableMouseMotion="true" inherits="LegendHighlightableMapPoiPinTemplate, SuperTrackableMapPinTemplate" mixin="VignettePinMixin" virtual="true">
 		<Size x="30" y="30"/>
 		<Layers>
 			<Layer level="ARTWORK">

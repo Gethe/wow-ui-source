@@ -352,8 +352,8 @@ function ArenaUnitFrameCcRemoverMixin:SetSpellId(spellId)
 		return;
 	end
 
-	local texture = C_Spell.GetSpellTexture(newSpellId) or QUESTION_MARK_ICON;
-	self.Icon:SetTexture(texture);
+	local texture = newSpellId and C_Spell.GetSpellTexture(newSpellId) or nil;
+	self.Icon:SetTexture(texture or QUESTION_MARK_ICON);
 	self.spellId = newSpellId;
 	self:UpdateShownState();
 end

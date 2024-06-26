@@ -22,21 +22,26 @@ end
 function DoesClientThinkTheCharacterIsEligibleForPCT(characterID)
 	local characterInfo = CharacterSelectUtil.GetCharacterInfoTable(characterID);
 	local errors = {};
-	if not characterInfo then
-		return false, errors, nil, false;
+
+	if characterInfo then
+		local currentRealm = CharacterSelectUtil.GetFormattedCurrentRealmName();
+		local characterRealm = characterInfo.realmName;
+		CheckAddVASErrorString(errors, BLIZZARD_STORE_VAS_ERROR_CHARACTER_ON_DIFFERENT_REALM_1, currentRealm == characterRealm);
+		CheckAddVASErrorString(errors, BLIZZARD_STORE_VAS_ERROR_CHARACTER_ON_DIFFERENT_REALM_2, currentRealm == characterRealm);
+
+		if characterInfo.mailSenders then
+			CheckAddVASErrorCode(errors, Enum.VasError.HasMail, #characterInfo.mailSenders == 0);
+		end
+
+		CheckAddVASErrorCode(errors, Enum.VasError.CharLocked, not characterInfo.hasVasRevoked)
+		CheckAddVASErrorCode(errors, Enum.VasError.UnderMinLevelReq, characterInfo.experienceLevel >= 10);
+		CheckAddVASErrorCode(errors, Enum.VasError.IsNpeRestricted, not IsCharacterNPERestricted(characterInfo.guid));
+		CheckAddVASErrorString(errors, BLIZZARD_STORE_VAS_ERROR_CHARACTER_INELIGIBLE_FOR_THIS_SERVICE, not IsCharacterVASRestricted(characterInfo.guid, Enum.ValueAddedServiceType.PaidCharacterTransfer));
+
+		local canTransfer = #errors == 0;
+		return canTransfer, errors, characterInfo.guid, characterInfo.characterServiceRequiresLogin;
 	end
-
-	if characterInfo.mailSenders then
-		CheckAddVASErrorCode(errors, Enum.VasError.HasMail, #characterInfo.mailSenders == 0);
-	end
-
-	CheckAddVASErrorCode(errors, Enum.VasError.CharLocked, not characterInfo.hasVasRevoked)
-	CheckAddVASErrorCode(errors, Enum.VasError.UnderMinLevelReq, characterInfo.experienceLevel >= 10);
-	CheckAddVASErrorCode(errors, Enum.VasError.IsNpeRestricted, not IsCharacterNPERestricted(characterInfo.guid));
-	CheckAddVASErrorString(errors, BLIZZARD_STORE_VAS_ERROR_CHARACTER_INELIGIBLE_FOR_THIS_SERVICE, not IsCharacterVASRestricted(characterInfo.guid, Enum.ValueAddedServiceType.PaidCharacterTransfer));
-
-	local canTransfer = #errors == 0;
-	return canTransfer, errors, characterInfo.guid, characterInfo.characterServiceRequiresLogin;
+	return false, errors, nil, false;
 end
 
 function PCTCharacterSelectBlock:GetServiceInfoByCharacterID(characterID)

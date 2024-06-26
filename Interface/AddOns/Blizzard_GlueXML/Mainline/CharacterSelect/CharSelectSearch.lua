@@ -120,14 +120,16 @@ function CharSelectSearchMixin:GenerateFilteredCharacters(dataProvider)
 		return;
 	end
 
-	for _, elementData in CharacterSelectCharacterFrame.ScrollBox:EnumerateDataProviderEntireRange() do
+	local filteredDataProvider = CreateDataProvider();
+
+	for _, elementData in dataProvider:EnumerateEntireRange() do
 		if elementData.isGroup then
 			for _, characterElementData in ipairs(elementData.characterData) do
 				local characterGuid = GetCharacterGUID(characterElementData.characterID);
 				if characterGuid then
 					local data = GetBasicCharacterInfo(characterGuid);
 					if CheckCharacterDataForMatch(data, words) then
-						dataProvider:Insert(characterElementData);
+						filteredDataProvider:Insert(characterElementData);
 					end
 				end
 			end
@@ -136,9 +138,11 @@ function CharSelectSearchMixin:GenerateFilteredCharacters(dataProvider)
 			if characterGuid then
 				local data = GetBasicCharacterInfo(characterGuid);
 				if CheckCharacterDataForMatch(data, words) then
-					dataProvider:Insert(elementData);
+					filteredDataProvider:Insert(elementData);
 				end
 			end
 		end
 	end
+
+	return filteredDataProvider;
 end

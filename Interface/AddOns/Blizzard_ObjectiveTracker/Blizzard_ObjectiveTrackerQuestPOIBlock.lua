@@ -11,7 +11,7 @@ function ObjectiveTrackerQuestPOIBlockMixin:OnLayout()
 	else
 		self:CheckAndReleasePOIButton();
 	end
-	
+
 	-- this could play anim on POI button so it has to run last
 	ObjectiveTrackerAnimBlockMixin.OnLayout(self);
 end
@@ -27,7 +27,7 @@ function ObjectiveTrackerQuestPOIBlockMixin:AddPOIButton(questID, isComplete, is
 	end
 	local poiButton = self:GetPOIButton(style);
 	poiButton:SetPoint("TOPRIGHT", self.HeaderText, "TOPLEFT", -7, 5);
-	poiButton.pingWorldMap = isWorldQuest;
+	poiButton:SetPingWorldMap(isWorldQuest);
 end
 
 function ObjectiveTrackerQuestPOIBlockMixin:GetPOIButton(style)

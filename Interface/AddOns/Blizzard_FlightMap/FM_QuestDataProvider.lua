@@ -25,7 +25,6 @@ function FlightMap_QuestPinMixin:OnLoad()
 	QuestPinMixin.OnLoad(self);
 
 	self:SetAlphaLimits(2.0, 0.0, 1.0);
-	self:SetScalingLimits(1, 0.4125, 0.425);
 
 	-- Flight points can nudge quest pins.
 	self:SetNudgeTargetFactor(0.015);

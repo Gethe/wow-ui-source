@@ -15,8 +15,17 @@ function CharacterSelectListMixin:OnLoad()
 	end);
 
 	self.CreateCharacterButton:SetScript("OnClick", function()
-		if not CharacterSelect_ShowTimerunningChoiceWhenActive() then
-			CharacterSelectUtil.CreateNewCharacter(Enum.CharacterCreateType.Normal);
+		local createCharacterCallback = function()
+			if not CharacterSelect_ShowTimerunningChoiceWhenActive() then
+				CharacterSelectUtil.CreateNewCharacter(Enum.CharacterCreateType.Normal);
+			end
+		end;
+
+		if GetCVar("showCreateCharacterRealmConfirmDialog") == "1" then
+			local formattedText = string.format(StaticPopupDialogs["CREATE_CHARACTER_REALM_CONFIRMATION"].text, CharacterSelectUtil.GetFormattedCurrentRealmName());
+			GlueDialog_Show("CREATE_CHARACTER_REALM_CONFIRMATION", formattedText, createCharacterCallback);
+		else
+			createCharacterCallback();
 		end
 	end);
 
@@ -31,6 +40,8 @@ function CharacterSelectListMixin:OnLoad()
 
 	self:RegisterEvent("UPDATE_REALM_NAME_FOR_GUID");
 	self:RegisterEvent("CHARACTER_LIST_UPDATE");
+
+	self:EvaluateIntroHelptip();
 
 	-- This event handler can only be added after the CharacterSelectUI's OnLoad has run.
 	RunNextFrame(function ()
@@ -383,6 +394,8 @@ function CharacterSelectListMixin:UpdateUndeleteState()
 	self.SearchBox:SetText("");
 
 	if isUndeleting then
+		HelpTip:Hide(self, CHARACTER_SELECT_WARBAND_INTRO_HELPTIP);
+
 		self.UndeleteRealmLabel:SetText(CHARACTER_SELECT_UNDELETE_REALM_LABEL:format(CharacterSelectUtil.GetFormattedCurrentRealmName()));
 		local helpTipInfo = {
 			text = CHARACTER_SELECT_UNDELETE_REALM_HELPTIP,
@@ -391,7 +404,9 @@ function CharacterSelectListMixin:UpdateUndeleteState()
 		};
 		HelpTip:Show(self, helpTipInfo, self.UndeleteRealmLabel);
 	else
-		HelpTip:Hide(self);
+		HelpTip:Hide(self, CHARACTER_SELECT_UNDELETE_REALM_HELPTIP);
+
+		self:EvaluateIntroHelptip();
 	end
 end
 
@@ -439,4 +454,19 @@ end
 
 function CharacterSelectListMixin:SetScrollEnabled(enabled)
 	self.ScrollBox:SetScrollAllowed(enabled);
+end
+
+function CharacterSelectListMixin:EvaluateIntroHelptip()
+	if IsCharacterSelectListModeRealmless() then
+		local helpTipInfo = {
+			text = CHARACTER_SELECT_WARBAND_INTRO_HELPTIP,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			targetPoint = HelpTip.Point.LeftEdgeTop,
+			cvar = "seenCharacterSelectWarbandHelpTip",
+			cvarValue = "1",
+			checkCVars = true,
+			offsetY = -153
+		};
+		HelpTip:Show(self, helpTipInfo, self);
+	end
 end

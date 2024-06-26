@@ -48,11 +48,21 @@ function TimerunningFirstTimeDialogMixin:OnLoad()
 	self.InfoPanel.CreateButton:SetText(TimerunningUtil.AddLargeIcon(TIMERUNNING_POPUP_CREATE));
 
 	self.InfoPanel.CreateButton:SetScript("OnClick", function()
-		-- Don't show the popup with the create character choice since the player just selected timerunner.
 		local timerunningSeasonID  = GetActiveTimerunningSeasonID();
 		local suppressPopup = true;
 		self:Dismiss(suppressPopup);
-		CharacterSelectUtil.CreateNewCharacter(Enum.CharacterCreateType.Normal, timerunningSeasonID);
+
+		local createCharacterCallback = function()
+			-- Don't show the popup with the create character choice since the player just selected timerunner.
+			CharacterSelectUtil.CreateNewCharacter(Enum.CharacterCreateType.Normal, timerunningSeasonID);
+		end;
+
+		if GetCVar("showCreateCharacterRealmConfirmDialog") == "1" then
+			local formattedText = string.format(StaticPopupDialogs["CREATE_CHARACTER_REALM_CONFIRMATION"].text, CharacterSelectUtil.GetFormattedCurrentRealmName());
+			GlueDialog_Show("CREATE_CHARACTER_REALM_CONFIRMATION", formattedText, createCharacterCallback);
+		else
+			createCharacterCallback();
+		end
 
 		C_LiveEvent.OnLiveEventPopupClicked(timerunningSeasonID);
 	end);

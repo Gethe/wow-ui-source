@@ -728,6 +728,10 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 	local optionalReagentHelptipShown = GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PROFESSIONS_CO_OPTIONAL_REAGENTS);
 	for slotIndex, reagentSlotSchematic in ipairs(recipeSchematic.reagentSlotSchematics) do
 		local orderSource = reagentSlotSchematic.orderSource;
+		if orderSource == Enum.CraftingOrderReagentSource.Any and self.order.orderType == Enum.CraftingOrderType.Public then
+			-- For public orders, only the customer can provide "Any" sourced reagents
+			orderSource = Enum.CraftingOrderReagentSource.Customer;
+		end
 
 		local reagentType = reagentSlotSchematic.reagentType;
 		if reagentType ~= Enum.CraftingReagentType.Finishing then

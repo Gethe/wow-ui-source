@@ -5,6 +5,8 @@
 ## AllowLoad: Game
 
 POIButtonHighlightManager.lua
-POIButton.xml
-POIButtonOwner.xml
 POIButtonUtil.lua
+POIButton.lua
+POIButton.xml
+POIButtonOwner.lua
+POIButtonOwner.xml

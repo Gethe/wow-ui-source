@@ -837,7 +837,7 @@ function ExpansionLandingPageMinimapButtonMixin:OnOverlayChanged()
 	self:RefreshButton(forceUpdateIcon);
 end
 
-local function SetLandingPageIconFromAtlases(self, up, down, highlight, glow, useDefaultButtonSize)
+function ExpansionLandingPageMinimapButtonMixin:SetLandingPageIconFromAtlases(up, down, highlight, glow, useDefaultButtonSize)
 	local width, height;
 	if useDefaultButtonSize then
 		width = self.defaultWidth;
@@ -857,10 +857,21 @@ local function SetLandingPageIconFromAtlases(self, up, down, highlight, glow, us
 	self.LoopingGlow:SetAtlas(glow, useAtlasSize);
 end
 
+function ExpansionLandingPageMinimapButtonMixin:SetLandingPageIconOffset(customOffset)
+	local offsetX = customOffset and customOffset.x or self.defaultOffsetX;
+	local offsetY = customOffset and customOffset.y or self.defaultOffsetY;
+	self:SetPoint("TOPLEFT", offsetX, offsetY);
+end
+
+function ExpansionLandingPageMinimapButtonMixin:ResetLandingPageIconOffset()
+	self:SetLandingPageIconOffset(nil);
+end
+
 function ExpansionLandingPageMinimapButtonMixin:UpdateIcon()
 	if self:IsInMajorFactionRenownMode() then
 		local useDefaultButtonSize = true;
-		SetLandingPageIconFromAtlases(self, "plunderstorm-landingpagebutton-up", "plunderstorm-landingpagebutton-down", "plunderstorm-landingpagebutton-up", "plunderstorm-landingpagebutton-up", useDefaultButtonSize);
+		self:SetLandingPageIconFromAtlases("plunderstorm-landingpagebutton-up", "plunderstorm-landingpagebutton-down", "plunderstorm-landingpagebutton-up", "plunderstorm-landingpagebutton-up", useDefaultButtonSize);
+		self:ResetLandingPageIconOffset();
 		self.title = "";
 		self.description = "";
 	elseif self:IsInGarrisonMode() then
@@ -868,7 +879,8 @@ function ExpansionLandingPageMinimapButtonMixin:UpdateIcon()
 	else
 		local minimapDisplayInfo = ExpansionLandingPage:GetOverlayMinimapDisplayInfo();
 		if minimapDisplayInfo then
-			SetLandingPageIconFromAtlases(self, minimapDisplayInfo.normalAtlas, minimapDisplayInfo.pushedAtlas, minimapDisplayInfo.highlightAtlas, minimapDisplayInfo.glowAtlas, minimapDisplayInfo.useDefaultButtonSize);
+			self:SetLandingPageIconFromAtlases(minimapDisplayInfo.normalAtlas, minimapDisplayInfo.pushedAtlas, minimapDisplayInfo.highlightAtlas, minimapDisplayInfo.glowAtlas, minimapDisplayInfo.useDefaultButtonSize);
+			self:SetLandingPageIconOffset(minimapDisplayInfo.anchorOffset);
 			self.title = minimapDisplayInfo.title;
 			self.description = minimapDisplayInfo.description;
 		end
@@ -1073,13 +1085,13 @@ function ExpansionLandingPageMinimapButtonMixin:UpdateIconForGarrison()
 		self.description = MINIMAP_ORDER_HALL_LANDING_PAGE_TOOLTIP;
 	elseif (garrisonType == Enum.GarrisonType.Type_8_0_Garrison) then
 		self.faction = UnitFactionGroup("player");
-		SetLandingPageIconFromAtlases(self, GetMinimapAtlases_GarrisonType8_0(self.faction));
+		self:SetLandingPageIconFromAtlases(GetMinimapAtlases_GarrisonType8_0(self.faction));
 		self.title = GARRISON_TYPE_8_0_LANDING_PAGE_TITLE;
 		self.description = GARRISON_TYPE_8_0_LANDING_PAGE_TOOLTIP;
 	elseif (garrisonType == Enum.GarrisonType.Type_9_0_Garrison) then
 		local covenantData = C_Covenants.GetCovenantData(C_Covenants.GetActiveCovenantID());
 		if covenantData then
-			SetLandingPageIconFromAtlases(self, GetMinimapAtlases_GarrisonType9_0(covenantData));
+			self:SetLandingPageIconFromAtlases(GetMinimapAtlases_GarrisonType9_0(covenantData));
 		end
 
 		self.title = GARRISON_TYPE_9_0_LANDING_PAGE_TITLE;

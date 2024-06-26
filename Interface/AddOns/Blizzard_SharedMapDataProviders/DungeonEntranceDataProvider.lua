@@ -52,6 +52,7 @@ function DungeonEntrancePinMixin:OnAcquired(dungeonEntranceInfo) -- override
 	SuperTrackablePoiPinMixin.OnAcquired(self, dungeonEntranceInfo);
 
 	self.journalInstanceID = dungeonEntranceInfo.journalInstanceID;
+    self.isRaid = select(11, EJ_GetInstanceInfo(self.journalInstanceID));
 end
 
 function DungeonEntrancePinMixin:ShouldMouseButtonBePassthrough(button)

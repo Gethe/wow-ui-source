@@ -10,9 +10,9 @@ local CALL_PET_SPELL_IDS = { -- Each "active" pet slot corresponds to a "call pe
 local ANIMAL_COMPANION_NODE_ID = 79947; -- BM talent required for secondary pet slot
 local STABLE_FRAME_SWAP_TIMEOUT_SECONDS = 0.3; -- 300ms
 
-local STABLED_PETS_FIRST_SLOT_LUA_INDEX = Constants.PetConsts.STABLED_PETS_FIRST_SLOT_INDEX + 1;
-local EXTRA_PET_STABLE_SLOT_LUA_INDEX = Constants.PetConsts.EXTRA_PET_STABLE_SLOT + 1;
-local MAX_PET_SLOT_LUA_INDEX = Constants.PetConsts.NUM_PET_SLOTS + 1;
+local STABLED_PETS_FIRST_SLOT_LUA_INDEX = Constants.PetConsts_PostCata.STABLED_PETS_FIRST_SLOT_INDEX + 1;
+local EXTRA_PET_STABLE_SLOT_LUA_INDEX = Constants.PetConsts_PostCata.EXTRA_PET_STABLE_SLOT + 1;
+local MAX_PET_SLOT_LUA_INDEX = Constants.PetConsts_PostCata.NUM_PET_SLOTS + 1;
 
 local STABLE_FRAME_ON_LOAD_EVENTS = {
 	"PET_STABLE_SHOW",
@@ -82,7 +82,7 @@ local function IsActivePetSlot(slot)
 end
 
 local function GetSummonedPetStableSlot()
-	for i=1, Constants.PetConsts.MAX_SUMMONABLE_HUNTER_PETS do
+	for i=1, Constants.PetConsts_PostCata.MAX_SUMMONABLE_HUNTER_PETS do
 		if C_Spell.IsCurrentSpell(CALL_PET_SPELL_IDS[i]) then
 			return i;
 		end
@@ -146,7 +146,7 @@ local function GetFirstActivePetSlot()
 end
 
 local function FindFirstUnusedActivePetSlot()
-	for slot=1, Constants.PetConsts.MAX_SUMMONABLE_HUNTER_PETS do
+	for slot=1, Constants.PetConsts_PostCata.MAX_SUMMONABLE_HUNTER_PETS do
 		if IsActivePetSlotUnlocked(slot) then
 			local petInfo = C_StableInfo.GetStablePetInfo(slot);
 			if not petInfo then
@@ -339,12 +339,12 @@ function StableFrameMixin:SetupPetCounter()
 	local totalActive = #self.ActivePetList.pets;
 
 	-- Don't count the secondary "bonus" pet twice, if it is slotted
-	if totalActive > Constants.PetConsts.MAX_SUMMONABLE_HUNTER_PETS then
-		totalActive = Constants.PetConsts.MAX_SUMMONABLE_HUNTER_PETS;
+	if totalActive > Constants.PetConsts_PostCata.MAX_SUMMONABLE_HUNTER_PETS then
+		totalActive = Constants.PetConsts_PostCata.MAX_SUMMONABLE_HUNTER_PETS;
 	end
 
 	local totalNumPets = totalStabled + totalActive;
-	local counterText = STABLE_PET_COUNTER:format(totalNumPets, Constants.PetConsts.NUM_PET_SLOTS);
+	local counterText = STABLE_PET_COUNTER:format(totalNumPets, Constants.PetConsts_PostCata.NUM_PET_SLOTS);
 	self.StabledPetList.ListCounter.Count:SetText(counterText);
 end
 
@@ -470,7 +470,7 @@ function StablePetNameEditButtonMixin:OnClick()
 	ClearPetCursor();
 	local selectedPet = GetSelectedPet();
 
-	if selectedPet then 
+	if selectedPet then
 		StaticPopup_Show("RENAME_PET", nil, nil, {petNumber = selectedPet.petNumber});
 		ClearSelectedPetNewSlot();
 		SetSelectedPet(selectedPet);
@@ -525,7 +525,7 @@ function StableStabledPetButtonTemplateMixin:SetPet(petData)
 	if not self.petData then
 		return;
 	end
-	
+
 	SetPortraitTextureFromCreatureDisplayIDFlipped(self.Portrait.Icon, self.petData.displayID);
 	self.Name:SetText(petData.name);
 	self.Type:SetText(petData.familyName);
@@ -875,8 +875,8 @@ function StableStabledPetListMixin:BuildListCategories()
 	local nonFavoritesSortOrder = 1;
 	local defaultSortOrder = 2;
 
-	local categories = { 
-		-- Use sort order to enforce a sort that should happen after the default alphabetical sort. 
+	local categories = {
+		-- Use sort order to enforce a sort that should happen after the default alphabetical sort.
 		favorites = {displayName = FAVORITES, sortOrder = favoritesSortOrder},
 		nonfavorites = {displayName = STABLE_PET_UNCATEGORIZED, sortOrder = nonFavoritesSortOrder}, -- nonfavorites is only displayed when sort mode is alphabetical or reverse alphabetical
 	};
@@ -887,11 +887,11 @@ function StableStabledPetListMixin:BuildListCategories()
 			categories[pet.specialization] = {displayName = pet.specialization, sortOrder = defaultSortOrder};
 		end
 	elseif sortMode == PetSortMode.Family then
-		for i, pet in ipairs(C_StableInfo.GetStabledPetList()) do 
+		for i, pet in ipairs(C_StableInfo.GetStabledPetList()) do
 			categories[pet.familyName] = {displayName = pet.familyName, sortOrder = defaultSortOrder};
 		end
 	end
-	
+
 	return categories;
 end
 
@@ -1095,7 +1095,7 @@ function StablePetAbilityMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	local spell = Spell:CreateFromSpellID(self.spellID);
 	self.spellCancelFunc = spell:ContinueWithCancelOnSpellLoad(function()
-		if GameTooltip:GetOwner() == self then	
+		if GameTooltip:GetOwner() == self then
 			GameTooltip:SetSpellByID(self.spellID, true, true);
 			GameTooltip:Show();
 		end

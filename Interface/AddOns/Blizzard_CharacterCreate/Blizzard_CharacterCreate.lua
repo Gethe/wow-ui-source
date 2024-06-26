@@ -120,6 +120,9 @@ function CharacterCreateMixin:OnEvent(event, ...)
 				CharacterSelect.selectLast = true;
 			end
 
+			-- Make sure realm confirmation dialog is marked to not show from now on.
+			SetCVar("showCreateCharacterRealmConfirmDialog", 0);
+
 			self.RaceAndClassFrame.ClassTrialCheckButton:ResetDesiredState();
 			GlueParent_SetScreen("charselect");
 		else

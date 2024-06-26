@@ -563,7 +563,7 @@ end
 
 function PlayerSpellsMicroButtonMixin:CanPlayerUseHeroTalentSpecUI()
 	local subTreeIDs, heroSpecUnlockLevel = C_ClassTalents.GetHeroTalentSpecsForClassSpec();
-	return subTreeIDs and #subTreeIDs > 0 and UnitLevel("player") >= heroSpecUnlockLevel;
+	return subTreeIDs and #subTreeIDs > 0 and heroSpecUnlockLevel and UnitLevel("player") >= heroSpecUnlockLevel;
 end
 
 function PlayerSpellsMicroButtonMixin:HasPlayerCompletedTalentTutorial()

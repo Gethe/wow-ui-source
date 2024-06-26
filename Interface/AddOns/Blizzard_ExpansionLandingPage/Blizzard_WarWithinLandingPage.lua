@@ -9,6 +9,7 @@ local minimapDisplayInfo = {
 	["glowAtlas"] = "warwithin-landingbutton-glow",
 	["title"] = WAR_WITHIN_LANDING_PAGE_TITLE,
 	["description"] = WAR_WITHIN_LANDING_PAGE_TOOLTIP,
+	["anchorOffset"] = { x = 12, y = -152 },
 };
 
 local unlockEvents = {

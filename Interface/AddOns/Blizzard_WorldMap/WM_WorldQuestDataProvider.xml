@@ -2,5 +2,5 @@
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="WM_WorldQuestDataProvider.lua"/>
 
-	<Frame name="WorldMap_WorldQuestPinTemplate" inherits="WorldQuestPinTemplate" mixin="WorldMap_WorldQuestPinMixin" virtual="true"/>
+	<Frame name="WorldMap_WorldQuestPinTemplate" inherits="LegendHighlightableMapPoiPinTemplate, WorldQuestPinTemplate" mixin="WorldMap_WorldQuestPinMixin" virtual="true"/>
 </Ui>

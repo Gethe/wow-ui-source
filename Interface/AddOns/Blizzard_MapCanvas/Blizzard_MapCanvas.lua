@@ -173,6 +173,12 @@ do
 			if isMouseClickEnabled then
 				pin:SetScript("OnMouseUp", OnPinMouseUp);
 				pin:SetScript("OnMouseDown", pin.OnMouseDown);
+
+				-- Prevent OnClick handlers from being run twice, once a frame is in the mapCanvas ecosystem it needs
+				-- to process mouse events only via the map system.
+				if pin:IsObjectType("Button") then
+					pin:SetScript("OnClick", nil);
+				end
 			end
 
 			if isMouseMotionEnabled then

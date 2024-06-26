@@ -105,7 +105,7 @@ end
 
 
 function PVPMatchScoreboardMixin:UpdateTable()
-	local forceNewDataProvider = false;
+	local forceNewDataProvider = true;
 	PVPMatchUtil.UpdateDataProvider(self.ScrollBox, forceNewDataProvider);
 
 	self:UpdateTabs();

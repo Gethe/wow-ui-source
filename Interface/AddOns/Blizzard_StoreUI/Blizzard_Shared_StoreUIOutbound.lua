@@ -37,6 +37,22 @@ function StoreOutbound.IsExpansionTrialUpgradeDialogShowing()
 	return securecall("ClassTrial_IsExpansionTrialUpgradeDialogShowing");
 end
 
+function StoreOutbound.IsCharacterSelectVisible()
+	return securecall("CharacterSelect_IsVisible");
+end
+
+function StoreOutbound.IsCharacterSelectUndeleting()
+	return securecall("CharacterSelect_IsUndeleting");
+end
+
+function StoreOutbound.UpdateDialogs()
+	securecall("GlueParent_UpdateDialogs");
+end
+
+function StoreOutbound.TryHideModelPreviewFrame()
+	return securecall("ModelPreviewFrame_TryHide");
+end
+
 function StoreOutbound.CloseAllWindows()
 	securecall("CloseAllWindows");
 end

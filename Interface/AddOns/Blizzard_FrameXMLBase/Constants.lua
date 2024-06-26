@@ -709,6 +709,7 @@ QUEST_TAG_ATLAS = {
 	[Enum.QuestTag.Raid] = "questlog-questtypeicon-raid",
 	[Enum.QuestTag.Raid10] = "questlog-questtypeicon-raid",
 	[Enum.QuestTag.Raid25] = "questlog-questtypeicon-raid",
+	[Enum.QuestTag.Delve] = "questlog-questtypeicon-delves",
 };
 
 WORLD_QUEST_TYPE_ATLAS = {

@@ -50,7 +50,7 @@ function SuperTrackEventMixin:CacheCurrentSuperTrackInfo()
 	self.superTrackedMapPinType, self.superTrackedMapPinTypeID = C_SuperTrack.GetSuperTrackedMapPin();
 	self.superTrackedVignetteGUID = C_SuperTrack.GetSuperTrackedVignette();
 	self.superTrackedContentType, self.superTrackedContentID = C_SuperTrack.GetSuperTrackedContent();
-	
+
 	if superTrackedQuestID then
 		self.isComplete = C_QuestLog.ReadyForTurnIn(superTrackedQuestID);
 		self.uiMapID, self.worldQuests, self.worldQuestsElite, self.dungeons, self.treasures = C_QuestLog.GetQuestAdditionalHighlights(superTrackedQuestID);
@@ -101,6 +101,10 @@ end
 
 function QuestSuperTracking_GetSuperTrackedContent(supertracker)
 	return GetSupertrackedData(supertracker, "GetSuperTrackedContent");
+end
+
+function QuestSuperTracking_GetSuperTrackedMapPin(supertracker)
+	return GetSupertrackedData(supertracker, "GetSuperTrackedMapPin");
 end
 
 function QuestSuperTracking_ShouldHighlightWorldQuests(uiMapID)

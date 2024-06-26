@@ -87,7 +87,7 @@ function SpellSearchTextFilterMixin:InternalGetExactSearchMatchDescription()
 	local allSpellBookItems = self:GetAllSourceDataEntriesByType(SpellSearchUtil.SourceType.SpellBookItem);
 	if allSpellBookItems then
 		for _, spellBookItem in ipairs(allSpellBookItems) do
-			if itemName and SpellSearchUtil.DoStringsMatch(spellBookItem.spellBookItemInfo.name, self.searchString) then
+			if spellBookItem.spellBookItemInfo and SpellSearchUtil.DoStringsMatch(spellBookItem.spellBookItemInfo.name, self.searchString) then
 				return C_SpellBook.GetSpellBookItemDescription(spellBookItem.slotIndex, spellBookItem.spellBank);
 			end
 		end

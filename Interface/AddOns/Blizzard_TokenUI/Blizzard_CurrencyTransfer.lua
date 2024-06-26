@@ -204,6 +204,10 @@ function CurrencyTransferMenuMixin:SetCurrency(currencyID)
 	self.currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyID);
 end
 
+function CurrencyTransferMenuMixin:RefreshMenuTitle()
+	self:SetTitle(CURRENCY_TRANSFER_MENU_TITLE:format(self.currencyInfo and self.currencyInfo.name or ""));
+end
+
 function CurrencyTransferMenuMixin:RefreshCurrencyInfo()
 	if not self.currencyInfo then
 		return;
@@ -292,6 +296,7 @@ function CurrencyTransferMenuMixin:FullRefresh()
 	end
 
 	self:RefreshCurrencyInfo();
+	self:RefreshMenuTitle();
 	self:RefreshPlayerBalancePreview();
 	self.SourceSelector:RefreshRosterCurrencyData();
 	self.SourceSelector:AutoSelectHighestQuantitySource();

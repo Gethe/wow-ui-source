@@ -1746,7 +1746,6 @@
 								</Anchors>
 							</EventFrame>
 							<DropdownButton name="$parentDifficulty" parentKey="difficulty" inherits="WowStyle1DropdownTemplate" frameLevel="10">
-								<Size x="75" y="26"/>
 								<Anchors>
 									<Anchor point="TOPRIGHT" x="-19" y="-13"/>
 								</Anchors>

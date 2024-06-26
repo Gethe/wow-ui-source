@@ -14,71 +14,77 @@ function CharacterSelectListUtil.CanReorder()
 	not CharacterSelectUtil.IsUndeleting() and CharacterServicesMaster_AllowCharacterReordering(CharacterServicesMaster);
 end
 
+function CharacterSelectListUtil.CreateCompleteDataProvider()
+	local dataProvider = CreateDataProvider();
+
+	-- The starting index for ungrouped characters.
+	local ungroupedCharacterIndex = 1;
+	
+	if not CharacterSelect.undeleting then
+		local groupID = 1;
+		local collapsedState = GetWarbandGroupCollapsedState(groupID);
+	
+		-- Group info
+		local groupData = {
+			isGroup = true,
+			name = CHARACTER_SELECT_LIST_GROUP_HEADER,
+			groupID = groupID,
+			collapsed = collapsedState,
+			heightExpanded = CharacterSelectListUtil.GroupHeightExpanded,
+			heightCollapsed = CharacterSelectListUtil.GroupHeightCollapsed,
+			characterSlots = 4,
+			characterData = {}
+		};
+	
+		for index = 1, groupData.characterSlots do
+			local characterID = CharacterSelectListUtil.GetCharIDFromIndex(index);
+			local isEmpty = characterID == 0;
+	
+			local characterData = {
+				characterID = characterID,
+				isEmpty = isEmpty,
+				height = CharacterSelectListUtil.CharacterHeight
+			}
+	
+			table.insert(groupData.characterData, characterData);
+		end
+		ungroupedCharacterIndex = ungroupedCharacterIndex + groupData.characterSlots;
+	
+		dataProvider:Insert(groupData);
+	
+		-- Divider info
+		local dividerData = {
+			isDivider = true,
+			height = CharacterSelectListUtil.DividerHeight
+		};
+		dataProvider:Insert(dividerData);
+	end
+	
+	-- Non-group character info
+	-- Reference the translation table instead of GetNumCharacters, as this ensures any newly
+	-- added empty card slots are caught in the count, and we don't drop the end characters.
+	for index = ungroupedCharacterIndex, #s_characterReorderTranslation do
+		local characterID = CharacterSelectListUtil.GetCharIDFromIndex(index);
+		local characterData = {
+			characterID = characterID,
+			isEmpty = false,
+			height = CharacterSelectListUtil.CharacterHeight
+		}
+		dataProvider:Insert(characterData);
+	end
+
+	return dataProvider;
+end
+
 function CharacterSelectListUtil.GenerateCharactersDataProvider()
-	local newDataProvider = CreateDataProvider();
+	local completeDataProvider = CharacterSelectListUtil.CreateCompleteDataProvider();
 
 	-- If we are searching, that takes priority over all other setups.
 	if CharacterSelectCharacterFrame.SearchBox:IsShown() and CharacterSelectCharacterFrame.SearchBox:GetText() ~= "" then
-		CharacterSelectCharacterFrame.SearchBox:GenerateFilteredCharacters(newDataProvider);
-	else
-		-- The starting index for ungrouped characters.
-		local ungroupedCharacterIndex = 1;
-
-		if not CharacterSelect.undeleting then
-			local groupID = 1;
-			local collapsedState = GetWarbandGroupCollapsedState(groupID);
-
-			-- Group info
-			local groupData = {
-				isGroup = true,
-				name = CHARACTER_SELECT_LIST_GROUP_HEADER,
-				groupID = groupID,
-				collapsed = collapsedState,
-				heightExpanded = CharacterSelectListUtil.GroupHeightExpanded,
-				heightCollapsed = CharacterSelectListUtil.GroupHeightCollapsed,
-				characterSlots = 4,
-				characterData = {}
-			};
-
-			for index = 1, groupData.characterSlots do
-				local characterID = CharacterSelectListUtil.GetCharIDFromIndex(index);
-				local isEmpty = characterID == 0;
-
-				local characterData = {
-					characterID = characterID,
-					isEmpty = isEmpty,
-					height = CharacterSelectListUtil.CharacterHeight
-				}
-
-				table.insert(groupData.characterData, characterData);
-			end
-			ungroupedCharacterIndex = ungroupedCharacterIndex + groupData.characterSlots;
-
-			newDataProvider:Insert(groupData);
-
-			-- Divider info
-			local dividerData = {
-				isDivider = true,
-				height = CharacterSelectListUtil.DividerHeight
-			};
-			newDataProvider:Insert(dividerData);
-		end
-
-		-- Non-group character info
-		-- Reference the translation table instead of GetNumCharacters, as this ensures any newly
-		-- added empty card slots are caught in the count, and we don't drop the end characters.
-		for index = ungroupedCharacterIndex, #s_characterReorderTranslation do
-			local characterID = CharacterSelectListUtil.GetCharIDFromIndex(index);
-			local characterData = {
-				characterID = characterID,
-				isEmpty = false,
-				height = CharacterSelectListUtil.CharacterHeight
-			}
-			newDataProvider:Insert(characterData);
-		end
+		return CharacterSelectCharacterFrame.SearchBox:GenerateFilteredCharacters(completeDataProvider);
 	end
 
-	return newDataProvider;
+	return completeDataProvider;
 end
 
 function CharacterSelectListUtil.GetCharIDFromIndex(index)
@@ -480,7 +486,7 @@ function CharacterSelectListUtil.GetNextCharacterIndex(direction)
 	end
 end
 
-function CharacterSelectListUtil:GetVASInfoForGUID(guid)
+function CharacterSelectListUtil.GetVASInfoForGUID(guid)
 	if not guid then
 		return nil;
 	end
@@ -490,7 +496,7 @@ function CharacterSelectListUtil:GetVASInfoForGUID(guid)
 	return vasServiceState, vasServiceErrors, vasProductInfo;
 end
 
-function CharacterSelectListUtil:GetSelectedCharacterFrame()
+function CharacterSelectListUtil.GetSelectedCharacterFrame()
 	local characterID = CharacterSelectListUtil.GetCharIDFromIndex(CharacterSelect.selectedIndex);
 	local frame = CharacterSelectCharacterFrame.ScrollBox:FindFrameByPredicate(function(frame, elementData)
 		return CharacterSelectListUtil.ContainsCharacterID(characterID, elementData);
@@ -499,7 +505,7 @@ function CharacterSelectListUtil:GetSelectedCharacterFrame()
 	return frame;
 end
 
-function CharacterSelectListUtil:UpdateCharacterHighlight(guid, isHighlight)
+function CharacterSelectListUtil.UpdateCharacterHighlight(guid, isHighlight)
 	CharacterSelectListUtil.ForEachCharacterDo(function(frame)
 		if frame.characterInfo.guid == guid then
 			frame:UpdateHighlightUI(isHighlight);
@@ -508,7 +514,7 @@ function CharacterSelectListUtil:UpdateCharacterHighlight(guid, isHighlight)
 end
 
 -- Click the actual character button in the scroll list, in case it may be otherwise disabled.
-function CharacterSelectListUtil:ClickCharacterFrameByGUID(guid)
+function CharacterSelectListUtil.ClickCharacterFrameByGUID(guid)
 	-- First scroll to the character to have the frame present.
 	local characterElementData = CharacterSelectCharacterFrame.ScrollBox:FindElementDataByPredicate(function(elementData)
 		return CharacterSelectListUtil.GetCharacterPositionData(guid, elementData) ~= nil;
@@ -538,7 +544,7 @@ function CharacterSelectListUtil:ClickCharacterFrameByGUID(guid)
 end
 
 -- Force select a character, regardless of state.
-function CharacterSelectListUtil:SelectCharacterByGUID(guid)
+function CharacterSelectListUtil.SelectCharacterByGUID(guid)
 	local characterID;
 	local elementData = CharacterSelectCharacterFrame.ScrollBox:FindElementDataByPredicate(function(elementData)
 		characterID = CharacterSelectListUtil.GetCharacterPositionData(guid, elementData);

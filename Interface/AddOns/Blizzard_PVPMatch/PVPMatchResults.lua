@@ -381,7 +381,7 @@ function PVPMatchResultsMixin:OnUpdate()
 	end
 
 	if C_PvP.IsActiveBattlefield() then
-		local forceNewDataProvider = false;
+		local forceNewDataProvider = true;
 		PVPMatchUtil.UpdateDataProvider(self.scrollBox, forceNewDataProvider);
 	end
 end

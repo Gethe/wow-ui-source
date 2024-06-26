@@ -177,10 +177,12 @@ function TaskPOI_OnEnter(self, skipSetOwner)
 
 	GameTooltip_AddQuest(self);
 	EventRegistry:TriggerEvent("TaskPOI.TooltipShown", self, self.questID, self);
+	self:OnLegendPinMouseEnter();
 end
 
 function TaskPOI_OnLeave(self)
 	GameTooltip:Hide();
+    self:OnLegendPinMouseLeave();
 end
 
 function WorldMapPing_StartPingQuest(questID)
