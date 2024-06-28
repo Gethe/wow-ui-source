@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
-	<Button name="TotemButtonTemplate" virtual="true" hidden="true">
+	<Button name="TotemButtonTemplate" virtual="true" hidden="true" mixin="TotemButtonMixin">
 		<Size>
 			<AbsDimension x="37" y="37"/>
 		</Size>
@@ -13,8 +13,9 @@
 							<Offset x="0" y="0"/>
 						</Anchor>
 					</Anchors>
+					<Color r="1" g="1" b="1" a="0.6"/>
 				</Texture>
-				<FontString name="$parentDuration" inherits="GameFontNormalSmall">
+				<FontString name="$parentDuration" parentKey="duration" inherits="GameFontNormalSmall">
 					<Anchors>
 						<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$parent">
 							<Offset x="0" y="0"/>
@@ -24,7 +25,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="$parentIcon">
+			<Frame name="$parentIcon" parentKey="icon">
 				<Size x="22" y="22"/>
 				<Anchors>
 					<Anchor point="CENTER">
@@ -33,11 +34,11 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture name="$parentTexture"/>
+						<Texture name="$parentTexture" parentKey="texture"/>
 					</Layer>
 				</Layers>
 				<Frames>
-					<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" reverse="true"/>
+					<Cooldown name="$parentCooldown" parentKey="cooldown" inherits="CooldownFrameTemplate" reverse="true"/>
 				</Frames>
 			</Frame>
 			<Frame>
@@ -60,21 +61,13 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnClick function="TotemButton_OnClick"/>
-			<OnLoad>
-				self:RegisterForClicks("RightButtonUp");
-				getglobal(self:GetName().."Background"):SetAlpha(0.6);
-			</OnLoad>
-			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
-				GameTooltip:SetTotem(self.slot);
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
 		</Scripts>
 	</Button>
-	<Frame name="TotemFrame" toplevel="true" parent="PlayerFrame" hidden="true">
+	<Frame name="TotemFrame" toplevel="true" parent="PlayerFrame" hidden="true" mixin="TotemFrameMixin">
 		<Size>
 			<AbsDimension x="128" y="53"/>
 		</Size>
@@ -124,8 +117,10 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad function="TotemFrame_OnLoad"/>
-			<OnEvent function="TotemFrame_OnEvent"/>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
 </Ui>
