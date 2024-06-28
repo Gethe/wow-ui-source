@@ -615,14 +615,13 @@ end
 
 local function QuestLogQuests_ShouldShowQuestButton(info, index)
 	-- If it's not a quest, then it shouldn't show as a quest button
-	local title, _, _, isHeader, isCollapsed, isComplete, _, _questID, _, _, isOnMap, _, isTask, isBounty, _, isHidden = GetQuestLogTitle(index);
+	local title, _, _, isHeader, isCollapsed, isComplete, _, questID, _, _, isOnMap, _, isTask, isBounty, _, isHidden = GetQuestLogTitle(index);
 
 	if isHeader or not questID then
 		return false;
 	end
 
 	local mapID = QuestMapFrame:GetParent():GetMapID();	
-	local questID = select(8, GetQuestLogTitle(index));
 	local questMapID = GetQuestUiMapID(questID);
 	if mapID ~= questMapID then
 		return false;

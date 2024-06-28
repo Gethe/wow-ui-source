@@ -22,7 +22,7 @@ local PetConstants =
 			Values =
 			{
 				{ Name = "MAX_STABLE_SLOTS", Type = "number", Value = 2 },
-				{ Name = "MAX_SUMMONABLE_PETS", Type = "number", Value = 1 },
+				{ Name = "MAX_SUMMONABLE_PETS", Type = "number", Value = 25 },
 				{ Name = "MAX_SUMMONABLE_HUNTER_PETS", Type = "number", Value = 1 },
 				{ Name = "NUM_PET_SLOTS_THAT_NEED_LEARNED_SPELL", Type = "number", Value = 1 },
 				{ Name = "NUM_PET_SLOTS", Type = "number", Value = MAX_STABLE_SLOTS + NUM_PET_SLOTS_THAT_NEED_LEARNED_SPELL },
@@ -36,7 +36,7 @@ local PetConstants =
 			Values =
 			{
 				{ Name = "MAX_STABLE_SLOTS", Type = "number", Value = 4 },
-				{ Name = "MAX_SUMMONABLE_PETS", Type = "number", Value = 1 },
+				{ Name = "MAX_SUMMONABLE_PETS", Type = "number", Value = 25 },
 				{ Name = "MAX_SUMMONABLE_HUNTER_PETS", Type = "number", Value = 1 },
 				{ Name = "NUM_PET_SLOTS_THAT_NEED_LEARNED_SPELL", Type = "number", Value = 1 },
 				{ Name = "NUM_PET_SLOTS", Type = "number", Value = MAX_STABLE_SLOTS + NUM_PET_SLOTS_THAT_NEED_LEARNED_SPELL },

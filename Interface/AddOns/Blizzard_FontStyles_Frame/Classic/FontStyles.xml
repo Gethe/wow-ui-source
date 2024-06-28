@@ -102,6 +102,9 @@
 	<Font name="NumberFontNormalSmallGray" inherits="NumberFontNormalSmall" virtual="true">
 		<Color r="0.6" g="0.6" b="0.6"/>
 	</Font>
+	<Font name="LetterAndNumberFontNormalSmallGray" inherits="LetterAndNumberFont_OutlineThick_Mono_Small" virtual="true">
+		<Color r="0.6" g="0.6" b="0.6"/>
+	</Font>
 	<Font name="NumberFontNormalGray" inherits="NumberFont_Outline_Med" virtual="true" >
 		<Color r="0.6" g="0.6" b="0.6"/>
 	</Font>

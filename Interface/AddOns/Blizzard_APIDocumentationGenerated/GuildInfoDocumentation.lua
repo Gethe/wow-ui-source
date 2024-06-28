@@ -116,6 +116,15 @@ local GuildInfo =
 			},
 		},
 		{
+			Name = "IsEncounterGuildNewsEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsGuildOfficer",
 			Type = "Function",
 

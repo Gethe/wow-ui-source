@@ -888,15 +888,16 @@ function FCF_SetWindowName(frame, name, doNotSave)
 	else
 		FCFDock_SetDirty(GENERAL_CHAT_DOCK);
 	end
+	if ( not doNotSave ) then
+		SetChatWindowName(frame:GetID(), name);
+		name = GetChatWindowInfo(frame:GetID());
+	end
 	frame.name = name;
 	local tab = _G[frame:GetName().."Tab"];
 	tab:SetText(name);
 	PanelTemplates_TabResize(tab, tab.sizePadding or 0);
 	-- Save this off so we know how big the tab should always be, even if it gets shrunken on the dock.
 	tab.textWidth = _G[tab:GetName().."Text"]:GetWidth();
-	if ( not doNotSave ) then
-		SetChatWindowName(frame:GetID(), name);
-	end
 	if ( frame.minFrame ) then
 		frame.minFrame:SetText(name);
 	end
