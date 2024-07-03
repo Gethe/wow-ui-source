@@ -170,7 +170,7 @@ function CharacterSelectUtil.SetTooltipForCharacterInfo(characterInfo)
 end
 
 function CharacterSelectUtil.GetFormattedCurrentRealmName()
-	local formattedRealmName;
+	local formattedRealmName = "";
 
 	local serverName, _, isRP = GetServerName();
 	local connected = IsConnectedToServer();

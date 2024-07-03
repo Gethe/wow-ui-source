@@ -107,15 +107,6 @@
 								<Anchor point="CENTER"/>
 							</Anchors>
 						</Texture>
-						<MaskTexture parentKey="IconMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
-							</Anchors>
-							<MaskedTextures>
-								<MaskedTexture childKey="Icon"/>
-							</MaskedTextures>
-						</MaskTexture>
 					</Layer>
 					<Layer level="OVERLAY" textureSubLevel="1">
 						<Texture parentKey="Border" setAllPoints="true" texelSnappingBias="0.0" snapToPixelGrid="false"/>
@@ -177,6 +168,17 @@
 								<Anchor point="CENTER"/>
 							</Anchors>
 						</Texture>
+						<MaskTexture parentKey="IconMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="Icon"/>
+								<MaskedTexture childKey="LevelLinkIconCover"/>
+								<MaskedTexture childKey="ClickBindingIconCover"/>
+							</MaskedTextures>
+						</MaskTexture>
 					</Layer>
 					<Layer level="OVERLAY" textureSubLevel="5">
 						<Texture parentKey="LevelLinkLock" atlas="QuestSharing-Padlock" useAtlasSize="true" hidden="true">

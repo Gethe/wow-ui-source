@@ -291,6 +291,8 @@ function CommunitiesGuildNewsFiltersFrame_OnShow(self)
 			checkbox:SetChecked(false);
 		end
 	end
+
+	CommunitiesGuildNewsFiltersFrame_HideInvalidFilters(self);
 end
 
 function CommunitiesGuildNewsFilter_OnClick(self)
@@ -303,4 +305,19 @@ function CommunitiesGuildNewsFilter_OnClick(self)
 		setting = 0;
 	end
 	SetGuildNewsFilter(self:GetID(), setting);
+end
+
+function CommunitiesGuildNewsFiltersFrame_HideInvalidFilters(self)
+	if not C_AchievementInfo.AreGuildAchievementsEnabled() then
+		self.GuildAchievement:Hide();
+	end
+
+	if not CanShowAchievementUI() then
+		self.Achievement:Hide();
+	end
+
+	if not C_GuildInfo.IsEncounterGuildNewsEnabled() then
+		self.DungeonEncounter:Hide();
+	end
+
 end

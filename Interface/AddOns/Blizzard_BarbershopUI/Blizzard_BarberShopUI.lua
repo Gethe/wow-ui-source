@@ -40,13 +40,11 @@ end
 
 function BarberShopMixin:OnShow()
 	self.oldErrorFramePointInfo = {UIErrorsFrame:GetPoint(1)};
+	
+	SetAlternateTopLevelParent(self);
 
-	UIErrorsFrame:SetParent(self);
-	UIErrorsFrame:SetFrameStrata("DIALOG");
 	UIErrorsFrame:ClearAllPoints();
 	UIErrorsFrame:SetPoint("TOP", self.BodyTypes, "BOTTOM", 0, 0);
-
-	ActionStatus:SetParent(self);
 
 	self:UpdateSex();
 
@@ -84,12 +82,9 @@ function BarberShopMixin:UpdateSex()
 end
 
 function BarberShopMixin:OnHide()
-	UIErrorsFrame:SetParent(UIParent);
-	UIErrorsFrame:SetFrameStrata("DIALOG");
+	ClearAlternateTopLevelParent();
 	UIErrorsFrame:ClearAllPoints();
 	UIErrorsFrame:SetPoint(unpack(self.oldErrorFramePointInfo));
-
-	ActionStatus:SetParent(UIParent);
 
 	self:UnregisterEvent("BARBER_SHOP_CAMERA_VALUES_UPDATED");
 end

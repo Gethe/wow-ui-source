@@ -229,7 +229,8 @@ function MenuUtil.CreateColorSwatch(text, callback, colorInfo)
 end
 
 --[[
-Wrappers for convenience since all other create functions are in MenuUtil.
+Wrappers for convenience since all other create functions are in MenuUtil. Note that these
+are not accompanied by any additional utilities or inserters.
 ]]--
 MenuUtil.CreateDivider = MenuTemplates.CreateDivider;
 MenuUtil.CreateSpacer = MenuTemplates.CreateSpacer;

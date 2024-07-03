@@ -1010,6 +1010,7 @@ local TradeSkillUI =
 				{ Name = "itemGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "craftingReagents", Type = "table", InnerType = "CraftingReagentInfo", Nilable = true },
 				{ Name = "removedModifications", Type = "table", InnerType = "CraftingItemSlotModification", Nilable = true },
+				{ Name = "applyConcentration", Type = "bool", Nilable = true },
 			},
 
 			Returns =
@@ -1027,6 +1028,7 @@ local TradeSkillUI =
 				{ Name = "itemGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "craftingReagents", Type = "table", InnerType = "CraftingReagentInfo", Nilable = true },
 				{ Name = "removedModifications", Type = "table", InnerType = "CraftingItemSlotModification", Nilable = true },
+				{ Name = "applyConcentration", Type = "bool", Nilable = true },
 			},
 
 			Returns =

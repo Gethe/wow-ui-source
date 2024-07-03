@@ -1673,7 +1673,8 @@ function CharCustomizeMixin:UpdateOptionButtons(forceReset)
 		end
 	end
 
-	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.RaceAlteredFormsEnabled) then
+	local raceAlteredFormsDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.RaceAlteredFormsDisabled);
+	if not raceAlteredFormsDisabled then
 		self:UpdateAlteredFormButtons();
 	end
 

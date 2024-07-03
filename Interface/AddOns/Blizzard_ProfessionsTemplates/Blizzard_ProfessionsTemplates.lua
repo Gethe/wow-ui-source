@@ -749,7 +749,9 @@ function ProfessionsConcentrateToggleButtonMixin:GetConcentrationRequired()
 end
 
 function ProfessionsConcentrateToggleButtonMixin:AtMaxQuality()
-	return self.quality == self.maxQuality;
+	-- Since concentration cost is based on the skill needed to get to next quality, the cost is 0 when at max quality.
+	-- Can't be based on operation quality since concentration itself can increase the quality to max.
+	return self:GetConcentrationRequired() <= 0;
 end
 
 function ProfessionsConcentrateToggleButtonMixin:HasEnoughConcentration()

@@ -1,12 +1,3 @@
---! TODO sounds
---! TODO art
---! TODO [PH] strings still exist in data
-
--- TODO / NOTE : To test that the GV button opens the GV frame properly, ensure that active TimeEvent matches live, and the current live season is selected. Revist closer to ship
--- TODO / NOTE : To test the current/max rewards tooltip properly on the GV button, ensure that active TimeEvent is 11.0 Season 1 start, and run BeginSeason_WarWithin_Season1 in console. Use weeklyRewardsActivity 8 1 1 1 to fake unlocks
--- ^ The GV frame will be broken because TWW S1 lacks Ranked PVP activities, but that is changing soon.
---! TODO ^ revisit both of these closer to launch
-
 -- Season/reward data
 local MIN_REP_RANK_FOR_REWARDS = 2;
 local MAX_REP_RANK_FOR_REWARDS = 11;
@@ -23,7 +14,7 @@ local DASHBOARD_ON_LOAD_EVENTS = {
 };
 
 local function HasActiveSeason()
-	DelvesDashboardFrame.uiDisplaySeason = PVPUtil.GetCurrentSeasonNumber();
+	DelvesDashboardFrame.uiDisplaySeason = C_DelvesUI.GetCurrentDelvesSeasonNumber();
     return DelvesDashboardFrame.uiDisplaySeason and DelvesDashboardFrame.uiDisplaySeason > 0;
 end
 
@@ -48,14 +39,14 @@ end
 function DelvesDashboardFrameMixin:OnEvent(event)
 	if event == "UPDATE_FACTION" and self:IsVisible() then
 		C_Timer.After(REPUTATION_UPDATE_TIMEOUT_SECONDS, function()
-			self.renownInfo = C_MajorFactions.GetMajorFactionRenownInfo(Constants.DelvesConsts.DELVES_S1_FACTION_ID);
+			self.renownInfo = C_MajorFactions.GetMajorFactionRenownInfo(C_DelvesUI.GetDelvesFactionForSeason());
 			self:SetThresholds();
 		end);
 	end
 end
 
 function DelvesDashboardFrameMixin:OnShow()
-	self.renownInfo = C_MajorFactions.GetMajorFactionRenownInfo(Constants.DelvesConsts.DELVES_S1_FACTION_ID);
+	self.renownInfo = C_MajorFactions.GetMajorFactionRenownInfo(C_DelvesUI.GetDelvesFactionForSeason());
 	self.rewardsInfo = self:GetRewardsInfo();
 
     PVEFrame:SetPortraitToAsset("Interface\\ICONS\\INV_Cape_Special_Explorer_B_03");
@@ -66,13 +57,14 @@ function DelvesDashboardFrameMixin:OnShow()
 end
 
 function DelvesDashboardFrameMixin:SetThresholds()
-	local oldThresholdValue = tonumber(GetCVar(DELVES_SEASON_RENOWN_CVAR));
-	local thresholdValue = self.renownInfo.renownLevel + (self.renownInfo.renownReputationEarned / self.renownInfo.renownLevelThreshold);
+	local oldThresholdValue = math.floor(GetCVarNumberOrDefault(DELVES_SEASON_RENOWN_CVAR));
+	local thresholdValueForBar = self.renownInfo and (self.renownInfo.renownLevel + (self.renownInfo.renownReputationEarned / self.renownInfo.renownLevelThreshold)) or 0;
+	local thresholdValue = math.floor(thresholdValueForBar);
 	self.shouldPlayAnims = thresholdValue > oldThresholdValue;
 	SetCVar(DELVES_SEASON_RENOWN_CVAR, thresholdValue);
 
 	self.ThresholdBar:SetMinMaxValues(1, MAX_REP_RANK_FOR_REWARDS);
-	self.ThresholdBar:SetValue(thresholdValue);
+	self.ThresholdBar:SetValue(thresholdValueForBar);
 	self.ThresholdBar.BarEnd:SetShown(self.ThresholdBar:GetValue() > 1);
 
 	if not self.thresholdFrames then
@@ -108,16 +100,17 @@ function DelvesDashboardFrameMixin:SetThresholds()
 		currentThreshold = currentThreshold + 1;
 	end
 
-	if ShouldPlayAnims() then
+	if ShouldPlayAnims() and thresholdValue >= MIN_REP_RANK_FOR_REWARDS then
 		self.ThresholdBar.GlowAnim:Play(true);
 	end
 end
 
 function DelvesDashboardFrameMixin:GetRewardsInfo()
 	local rewardsInfo = {};
+	local seasonFactionID = C_DelvesUI.GetDelvesFactionForSeason();
 	
 	for i = MIN_REP_RANK_FOR_REWARDS, MAX_REP_RANK_FOR_REWARDS do
-		local renownLevelRewards = C_MajorFactions.GetRenownRewardsForLevel(Constants.DelvesConsts.DELVES_S1_FACTION_ID, i);
+		local renownLevelRewards = C_MajorFactions.GetRenownRewardsForLevel(seasonFactionID, i);
 
 		-- There should only ever be one reward per level for Delves, up to a maximum of 10 levels (MAX_REP_RANK_FOR_REWARDS)
 		-- There *can* be multiple rewards per level, but we only care about the first.
@@ -137,7 +130,7 @@ function DelvesDashboardFrameMixin:UpdateGreatVaultVisibility()
 	local greatVaultPanel = self.ButtonPanelLayoutFrame.GreatVaultButtonPanel;
 
 
-	if playerLevel < maxLevel then
+	if playerLevel < maxLevel or not HasActiveSeason() then
 		greatVaultPanel.ButtonPanelBackground:SetDesaturated(true);
         greatVaultPanel.PanelTitle:SetTextColor(GRAY_FONT_COLOR:GetRGB());
         greatVaultPanel.PanelDescription:SetTextColor(GRAY_FONT_COLOR:GetRGB());
@@ -178,39 +171,49 @@ function ReputationThresholdMixin:Setup(thresholdInfo, renownInfo, thresholdLeve
 	if not HasActiveSeason() then
 		self.Reward.Icon:SetDesaturated(true);
 		self.Reward.EarnedCheckmark:SetAlpha(0);
-		if isFinalReward then
-			self.Reward.IconBorder:SetDesaturated(true);
-		end
+		self.Reward.IconBorder:SetDesaturated(true);
 		return;
 	else
 		self.Reward.Icon:SetDesaturated(false);
-		if isFinalReward then
-			self.Reward.IconBorder:SetDesaturated(false);
-		end
+		self.Reward.IconBorder:SetDesaturated(false);
 	end
 
 	if renownInfo.renownLevel >= thresholdLevel then
+		self.Reward.IconBorder:SetDesaturated(false);
 		if not isFinalReward then
 			self.LineIncomplete:Hide();
 			self.LineComplete:Show();
+			self.Reward.IconBorder:SetAtlas("delves-dashboard-bar-diamond-complete");
 		else
-			self.Reward.IconBorder:SetDesaturated(false);
+			self.Reward.IconBorder:SetAtlas("delves-dashboard-bar-reward-border");
 		end
+
+		local oldThresholdValue = math.floor(GetCVarNumberOrDefault(DELVES_SEASON_RENOWN_CVAR));
+		self.animPlayed = thresholdLevel < oldThresholdValue;
 
 		if ShouldPlayAnims() and not self.animPlayed then
 			self.Reward.EarnedAnim:Play();
 			self.animPlayed = true;
+			local forceNoDuplicates = true;
+
+			if isFinalReward then
+				PlaySound(SOUNDKIT.TRADING_POST_UI_COMPLETED_PROGRESS, nil, forceNoDuplicates);
+			else
+				PlaySound(SOUNDKIT.TRADING_POST_UI_REWARD_TIER_COMPLETE, nil, forceNoDuplicates);
+			end
 		else
 			self.Reward.Icon:SetDesaturated(false);
 			self.Reward.Glow:SetAlpha(1);
 			self.Reward.EarnedCheckmark:SetAlpha(1);
 		end
 	else
+		self.Reward.IconBorder:SetDesaturated(true);
 		if not isFinalReward then
 			self.LineIncomplete:Show();
 			self.LineComplete:Hide();
+			self.Reward.IconBorder:SetAtlas("delves-dashboard-bar-diamond-incomplete");
 		else
-			self.Reward.IconBorder:SetDesaturated(true);
+			self.Reward.IconBorder:SetAtlas("delves-dashboard-bar-reward-border-disabled");
 		end
 		self.Reward.Icon:SetDesaturated(true);
 		self.Reward.Glow:SetAlpha(0);
@@ -231,12 +234,16 @@ end
 CompanionConfigButtonPanelMixin = {};
 
 function CompanionConfigButtonPanelMixin:OnShow()
-    local companionFactionInfo = C_Reputation.GetFactionDataByID(Constants.DelvesConsts.BRANN_FACTION_ID);
+	--! TODO BRANN_COMPANION_INFO_ID to be replaced with other data source in the future, keeping it explicit for now
+	local traitTreeID = C_DelvesUI.GetTraitTreeForCompanion(Constants.DelvesConsts.BRANN_COMPANION_INFO_ID);
+	local companionFactionID = C_DelvesUI.GetFactionForCompanion(Constants.DelvesConsts.BRANN_COMPANION_INFO_ID);
+
+    local companionFactionInfo = C_Reputation.GetFactionDataByID(companionFactionID);
 
     self.PanelTitle:SetText(companionFactionInfo.name);
     self.PanelDescription:SetText(DELVES_COMPANION_LABEL);
 
-	if not C_Traits.GetConfigIDByTreeID(Constants.DelvesConsts.BRANN_TRAIT_TREE_ID) then
+	if not C_Traits.GetConfigIDByTreeID(traitTreeID) then
 		self.CompanionConfigButton.disabled = true;
 		self.CompanionConfigButton:SetEnabled(false);
 		self.CompanionConfigButton.ButtonText:SetTextColor(GRAY_FONT_COLOR:GetRGB());
@@ -244,6 +251,16 @@ function CompanionConfigButtonPanelMixin:OnShow()
 		self.CompanionConfigButton.disabled = false;
 		self.CompanionConfigButton:SetEnabled(true);
 		self.CompanionConfigButton.ButtonText:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
+	end
+
+	self:InitBackground();
+end
+
+function CompanionConfigButtonPanelMixin:InitBackground()
+	if self.isCompanionButtonPanelFrame then
+		self.ButtonPanelBackground:SetAtlas("delves-dashboard-card-companion");
+	else
+		self.ButtonPanelBackground:SetAtlas("delves-dashboard-card");
 	end
 end
 
@@ -273,7 +290,9 @@ function CompanionConfigButtonPanelModelSceneMixin:OnShow()
 	if actor then
 		actor:Hide();
 		actor:SetOnModelLoadedCallback(GenerateClosure(self.OnModelLoaded, actor));
-		actor:SetModelByCreatureDisplayID(Constants.DelvesConsts.BRANN_CREATURE_DISPLAY_ID);
+
+		--! TODO BRANN_COMPANION_INFO_ID to be replaced with other data source in the future, keeping it explicit for now
+		actor:SetModelByCreatureDisplayID(C_DelvesUI.GetCreatureDisplayInfoForCompanion(Constants.DelvesConsts.BRANN_COMPANION_INFO_ID));
 	end
 end
 
@@ -288,12 +307,12 @@ function GreatVaultButtonPanelMixin:OnShow()
    self.PanelTitle:SetText(DELVES_GREAT_VAULT_LABEL);
 
     if not HasActiveSeason() then
-        self.ButtonPanelBackground:SetDesaturated(true);
+        self.ButtonPanelBackground:SetAtlas("delves-dashboard-card-disabled");
         self.PanelTitle:SetTextColor(GRAY_FONT_COLOR:GetRGB());
         self.PanelDescription:SetTextColor(GRAY_FONT_COLOR:GetRGB());
 		self.PanelDescription:SetText(DELVES_GREAT_VAULT_UNAVAILABLE_LABEL);
     else
-        self.ButtonPanelBackground:SetDesaturated(false);
+        self.ButtonPanelBackground:SetAtlas("delves-dashboard-card");
         self.PanelTitle:SetTextColor(WHITE_FONT_COLOR:GetRGB());
         self.PanelDescription:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
 		self.PanelDescription:SetText(DELVES_GREAT_VAULT_DESCRIPTION_SEASON_STARTED);

@@ -181,7 +181,7 @@ end
 
 function AchievementFrame_ToggleAchievementFrame(toggleStatFrame, toggleGuildView)
 	AchievementFrameComparison:Hide();
-	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.AchievementsPanel) then
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.AchievementsPanelDisabled) then
 		return;
 	end
 

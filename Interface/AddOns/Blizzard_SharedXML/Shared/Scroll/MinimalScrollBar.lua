@@ -55,11 +55,11 @@ function MinimalScrollBarThumbScriptsMixin:OnSizeChanged(width, height)
 	local info = C_Texture.GetAtlasInfo(self.Middle:GetAtlas());
 	if self.isHorizontal then
 		self.Middle:SetWidth(width);
-		local u = width / info.width;
+		local u = math.min(width / info.width, 1);
 		self.Middle:SetTexCoord(0, u, 0, 1);
 	else
 		self.Middle:SetHeight(height);
-		local v = height / info.height;
+		local v = math.min(height / info.height, 1);
 		self.Middle:SetTexCoord(0, 1, 0, v);
 	end
 end

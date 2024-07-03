@@ -4420,3 +4420,8 @@ StaticPopupDialogs["PERKS_PROGRAM_DISABLED"] = {
 	showAlertGear = 1,
 	hideOnEscape = 1
 };
+
+StaticPopupDialogs["REMIX_END_OF_EVENT_NOTICE"] = {
+    text = REMIX_END_OF_EVENT_NOTICE,
+    button1 = OKAY,
+}

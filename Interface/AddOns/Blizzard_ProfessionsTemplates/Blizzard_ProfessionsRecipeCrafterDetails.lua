@@ -319,6 +319,11 @@ function ProfessionsRecipeCrafterDetailsMixin:SetStats(operationInfo, supportsQu
 			return;
 		end
 
+		-- Update Concentrate button first since it may change state and various elements below depend on it.
+		-- This can't be done while the StatLines are being created, otherwise a bad recursive ApplyLayout can occur.
+		self.CraftingChoicesContainer.ConcentrateContainer.ConcentrateToggleButton:SetOperationInfo(operationInfo);
+		self.CraftingChoicesContainer.ConcentrateContainer.ConcentrateToggleButton:SetRecipeInfo(self.recipeInfo);
+
 		local hasConcentration = self.operationInfo.concentrationCurrencyID and self.operationInfo.concentrationCurrencyID ~= 0;
 		local applyConcentration = hasConcentration and self.transaction:IsApplyingConcentration();
 
@@ -355,9 +360,6 @@ function ProfessionsRecipeCrafterDetailsMixin:SetStats(operationInfo, supportsQu
 			if self.CraftingChoicesContainer.shouldShow then
 				self.CraftingChoicesContainer:Show();
 			end
-
-			self.CraftingChoicesContainer.ConcentrateContainer.ConcentrateToggleButton:SetOperationInfo(operationInfo);
-			self.CraftingChoicesContainer.ConcentrateContainer.ConcentrateToggleButton:SetRecipeInfo(self.recipeInfo);
 
 			self.StatLines.DifficultyStatLine:SetShown(supportsQualities or isGatheringRecipe);
 			self.StatLines.DifficultyStatLine:SetProfessionType(professionType);
@@ -403,7 +405,7 @@ function ProfessionsRecipeCrafterDetailsMixin:SetStats(operationInfo, supportsQu
 			local meterQuality = operationInfo.quality;
 			if applyConcentration then
 				-- When concentration is applied, max out the bar without actually setting to the next quality
-				meterQuality = math.floor(meterQuality + 1.0) - 0.01;
+				meterQuality = math.floor(meterQuality) - 0.01;
 			end
 			self.QualityMeter:SetQuality(meterQuality, self.recipeInfo.maxQuality);
 		end

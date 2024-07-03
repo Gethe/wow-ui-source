@@ -1019,10 +1019,12 @@ function WardrobeCollectionFrameMixin:InitItemsFilterButton()
 	local function CreateSourceFilters(description)
 		description:CreateButton(CHECK_ALL, function()
 			C_TransmogCollection.SetAllSourceTypeFilters(true);
+			return MenuResponse.Refresh;
 		end);
 
 		description:CreateButton(UNCHECK_ALL, function()
 			C_TransmogCollection.SetAllSourceTypeFilters(false);
+			return MenuResponse.Refresh;
 		end);
 		
 		local function IsChecked(filter)

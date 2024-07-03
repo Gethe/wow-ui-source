@@ -591,13 +591,13 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 
 				self.MinimizedCooldown:SetPoint("TOPLEFT", anchorTo, "BOTTOMLEFT", 0, -5);
 			else
-			if not isCooldownOrganized then
-				isCooldownOrganized = true;
-				organizer:Add(self.Cooldown, LayoutEntry.Cooldown);
-				organizer:Layout();
+				if not isCooldownOrganized then
+					isCooldownOrganized = true;
+					organizer:Add(self.Cooldown, LayoutEntry.Cooldown);
+					organizer:Layout();
+				end
 			end
 		end
-	end
 	end
 
 	if not self.isInspection then
@@ -1387,8 +1387,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 
 	Professions.LayoutAndShowReagentSlotContainer(optionalSlots, self.OptionalReagents);
 
-	local concentrationCurrency = professionInfo and C_TradeSkillUI.GetConcentrationCurrencyID(professionInfo.professionID);
-	local hasConcentration = concentrationCurrency ~= 0;
+	local hasConcentration = operationInfo ~= nil and operationInfo.concentrationCurrencyID ~= 0;
 
 	if minimized then
 		if self.OptionalReagents:IsShown() then
@@ -1411,7 +1410,37 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		self.Concentrate:Hide();
 	end
 
+	self:InitDetails(recipeInfo);
+	self:UpdateRecraftSlot(operationInfo);
+
+	local shouldShowAllocateBestQuality = (not minimized) and (not alwaysUsesLowestQuality) and professionLearned and Professions.DoesSchematicIncludeReagentQualities(self.recipeSchematic);
+	self.AllocateBestQualityCheckbox:SetShown(shouldShowAllocateBestQuality);
+	if shouldShowAllocateBestQuality then
+		self.AllocateBestQualityCheckbox:SetChecked(shouldAllocateBest);
+	end
+
+	self.transaction:SetAllocationsChangedHandler(self.statsChangedHandler);
+
+	organizer:Layout();
+
+	if self.postInit then
+		self.postInit();
+	end
+end
+
+function ProfessionsRecipeSchematicFormMixin:InitDetails(recipeInfo)
+	local minimized = ProfessionsUtil.IsCraftingMinimized();
+	local finishingSlots = self:GetSlotsByReagentType(Enum.CraftingReagentType.Finishing);
+	local professionInfo = Professions.GetProfessionInfo();
+	local operationInfo;
+	local professionLearned = not self.isInspection and professionInfo.skillLevel > 0;
+	if professionLearned then
+		operationInfo = self:GetRecipeOperationInfo();
+	end
+
 	local hasFinishingSlots = finishingSlots ~= nil;
+	local hasConcentration = operationInfo ~= nil and operationInfo.concentrationCurrencyID ~= 0;
+
 	if professionLearned and Professions.InLocalCraftingMode() and recipeInfo.supportsCraftingStats and ((operationInfo ~= nil and #operationInfo.bonusStats > 0) or recipeInfo.supportsQualities or recipeInfo.isGatheringRecipe or hasFinishingSlots) then
 		if not minimized then
 			Professions.LayoutFinishingSlots(finishingSlots, self.Details.CraftingChoicesContainer.FinishingReagentSlotContainer);
@@ -1431,28 +1460,16 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 			self.Details:Show();
 			self:UpdateDetailsStats(operationInfo);
 		end
-	end
-
-	self:UpdateRecraftSlot(operationInfo);
-
-	local shouldShowAllocateBestQuality = (not minimized) and (not alwaysUsesLowestQuality) and professionLearned and Professions.DoesSchematicIncludeReagentQualities(self.recipeSchematic);
-	self.AllocateBestQualityCheckbox:SetShown(shouldShowAllocateBestQuality);
-	if shouldShowAllocateBestQuality then
-		self.AllocateBestQualityCheckbox:SetChecked(shouldAllocateBest);
-	end
-
-	self.transaction:SetAllocationsChangedHandler(self.statsChangedHandler);
-
-	organizer:Layout();
-
-	if self.postInit then
-		self.postInit();
+	else
+		self.Details:Hide();
 	end
 end
 
 function ProfessionsRecipeSchematicFormMixin:OnAllocationsChanged()
 	local operationInfo = self:GetRecipeOperationInfo();
-	self:UpdateDetailsStats(operationInfo);
+
+	-- Change in Allocations can affect whether Details appears or not at all due to bonus stats changing based on allocations
+	self:InitDetails(self.currentRecipeInfo);
 	self:UpdateRecraftSlot(operationInfo);
 end
 
@@ -1502,6 +1519,14 @@ function ProfessionsRecipeSchematicFormMixin:UpdateRecipeDescription()
 
 		if description and description ~= "" then
 			self.Description:SetText(description);
+
+			-- Prevent Description overlap with Details panel if shown.
+			if self.Details:IsShown() then
+				self.Description:SetWidth(340);
+			else
+				self.Description:SetWidth(460);
+			end
+
 			self.Description:SetHeight(600);
 			self.Description:SetHeight(self.Description:GetStringHeight() + 1);
 			self.Description:Show();

@@ -52,11 +52,12 @@ function ProfessionsCraftingOutputLogElementMixin:Init()
 
 	continuableContainer:ContinueOnLoad(OnItemLoaded);
 	
-	if resultData.isCrit then
+	-- Inspiration has been replaced with Ingenuity
+	if resultData.hasIngenuityProc and resultData.ingenuityRefund > 0 then
 		self.ItemContainer.CritText:SetScript("OnEnter", function(text)
 			GameTooltip:SetOwner(text, "ANCHOR_RIGHT");
-			GameTooltip_AddHighlightLine(GameTooltip, PROFESSIONS_OUTPUT_INSPIRATION_TITLE);
-			GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_OUTPUT_INSPIRATION_DESC);
+			GameTooltip_AddHighlightLine(GameTooltip, PROFESSIONS_OUTPUT_INGENUITY_TITLE);
+			GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_OUTPUT_INGENUITY_DESC:format(resultData.ingenuityRefund));
 			GameTooltip:Show();
 		end);
 

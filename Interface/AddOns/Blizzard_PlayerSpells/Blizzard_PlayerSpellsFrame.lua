@@ -1,5 +1,7 @@
 PlayerSpellsFrameMixin = {};
 
+local PLAYER_SPELLS_HELP_SYSTEM = "PlayerSpellsHelpSystem"
+
 local PlayerSpellsFrameEvents = {
 };
 
@@ -68,6 +70,8 @@ function PlayerSpellsFrameMixin:OnHide()
 	self.lockInspect = false;
 
 	EventRegistry:TriggerEvent("PlayerSpellsFrame.CloseFrame");
+
+	HelpTip:HideAllSystem(PLAYER_SPELLS_HELP_SYSTEM);
 end
 
 function PlayerSpellsFrameMixin:OnEvent(event)
@@ -142,6 +146,7 @@ function PlayerSpellsFrameMixin:SetTab(tabID)
 
 	self.MaximizeMinimizeButton:SetShown(canNewTabBeMinimized);
 
+	self:UpdateMinimizeHelpTip();
 	self:UpdateFrameTitle();
 	EventRegistry:TriggerEvent("PlayerSpellsFrame.TabSet", PlayerSpellsFrame, tabID);
 	
@@ -345,6 +350,23 @@ function PlayerSpellsFrameMixin:CheckConfirmResetAction(callback, cancelCallback
 	end
 end
 
+function PlayerSpellsFrameMixin:UpdateMinimizeHelpTip()
+	if self.MaximizeMinimizeButton:IsShown() and not self.MaximizeMinimizeButton:IsMinimized() then
+		local helpTipInfo = {
+			text = PLAYER_SPELLS_FRAME_MINIMIZE_TIP,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			targetPoint = HelpTip.Point.BottomEdgeCenter,
+			system = PLAYER_SPELLS_HELP_SYSTEM,
+			checkCVars = true,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_PLAYER_SPELLS_MINIMIZE,
+		};
+		HelpTip:Show(UIParent, helpTipInfo, self.MaximizeMinimizeButton);
+	else
+		HelpTip:Hide(UIParent, PLAYER_SPELLS_FRAME_MINIMIZE_TIP);
+	end
+end
+
 function PlayerSpellsFrameMixin:IsMinimized()
 	return self.isMinimized;
 end
@@ -378,6 +400,9 @@ function PlayerSpellsFrameMixin:OnManualMinimizeClicked()
 	if not self.isMinimized and self:ShouldManuallyMinimize() then
 		self:SetMinimized(true);
 	end
+
+	-- Clicking the Minimize Button should automatically close the minimize help tip and flag it as seen.
+	HelpTip:AcknowledgeSystem(PLAYER_SPELLS_HELP_SYSTEM, PLAYER_SPELLS_FRAME_MINIMIZE_TIP);
 end
 
 function PlayerSpellsFrameMixin:OnManualMaximizeClicked()

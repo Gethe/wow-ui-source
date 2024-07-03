@@ -374,6 +374,9 @@ function UIParent_OnLoad(self)
 
 	-- Events(s) for updating spell based item contexts
 	self:RegisterEvent("UPDATE_SPELL_TARGET_ITEM_CONTEXT");
+
+	-- Events(s) for Remix Event
+	self:RegisterEvent("REMIX_END_OF_EVENT");
 end
 
 function UIParent_OnShow(self)
@@ -769,7 +772,8 @@ function ShowMacroFrame()
 		return;
 	end
 
-	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.Macros) then
+	local macrosDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.MacrosDisabled);
+	if macrosDisabled then
 		return;
 	end
 
@@ -1413,7 +1417,8 @@ function UIParent_OnEvent(self, event, ...)
 		if ( not StaticPopup_Visible("DEATH") ) then
 			CloseAllWindows(1);
 		end
-		if (C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.ReleaseSpiritGhost)) then
+		local releaseSpiritGhostDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.ReleaseSpiritGhostDisabled);
+		if (not releaseSpiritGhostDisabled) then
 			if ( (GetReleaseTimeRemaining() > 0 or GetReleaseTimeRemaining() == -1) and (not ResurrectGetOfferer()) ) then
 				StaticPopup_Show("DEATH");
 			end
@@ -1427,7 +1432,9 @@ function UIParent_OnEvent(self, event, ...)
 		StaticPopup_Hide("RESURRECT_NO_SICKNESS");
 		StaticPopup_Hide("RESURRECT_NO_TIMER");
 		StaticPopup_Hide("RESURRECT");
-		if ( C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.ReleaseSpiritGhost) and UnitIsGhost("player") ) then
+
+		local releaseSpiritGhostDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.ReleaseSpiritGhostDisabled);
+		if ( not releaseSpiritGhostDisabled and UnitIsGhost("player") ) then
 			GhostFrame:Show();
 		else
 			GhostFrame:Hide();
@@ -1625,7 +1632,8 @@ function UIParent_OnEvent(self, event, ...)
 			end
 		end
 
-	    if ( C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.ReleaseSpiritGhost) ) then
+		local releaseSpiritGhostDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.ReleaseSpiritGhostDisabled);
+	    if ( not releaseSpiritGhostDisabled ) then
 			if ( UnitIsGhost("player") ) then
 				GhostFrame:Show();
 			else
@@ -2331,7 +2339,7 @@ function UIParent_OnEvent(self, event, ...)
 	elseif (event == "REPORT_PLAYER_RESULT") then
 		local success = ...;
 		if (success) then
-			UIErrorsFrame:AddExternalErrorMessage(ERR_REPORT_SUBMITTED_SUCCESSFULLY);
+			UIErrorsFrame:AddExternalWarningMessage(ERR_REPORT_SUBMITTED_SUCCESSFULLY);
 			DEFAULT_CHAT_FRAME:AddMessage(COMPLAINT_ADDED);
 		else
 			UIErrorsFrame:AddExternalErrorMessage(ERR_REPORT_SUBMISSION_FAILED);
@@ -2414,6 +2422,8 @@ function UIParent_OnEvent(self, event, ...)
 		ItemButtonUtil.OpenAndFilterCharacterFrame();
 	elseif event == "UPDATE_SPELL_TARGET_ITEM_CONTEXT" then
 		ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
+	elseif event == "REMIX_END_OF_EVENT" then
+		StaticPopup_Show("REMIX_END_OF_EVENT_NOTICE");
 	end
 end
 

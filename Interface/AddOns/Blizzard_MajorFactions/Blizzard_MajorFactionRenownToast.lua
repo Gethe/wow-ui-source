@@ -48,9 +48,14 @@ end
 function MajorFactionsRenownToastMixin:OnEvent(event, ...)
 	if event == "MAJOR_FACTION_RENOWN_LEVEL_CHANGED" then
 		local majorFactionID, newRenownLevel, oldRenownLevel = ...;
+		local majorFactionData = C_MajorFactions.GetMajorFactionData(majorFactionID);
+		if not majorFactionData or not majorFactionData.isUnlocked then
+			return;
+		end
+
 		if newRenownLevel > oldRenownLevel and newRenownLevel > 1 then
 			-- Wait a second for achievements to be granted, quests to be turned in, etc. (for reward player conditions)
-			C_Timer.After(1, function() self:ShowRenownLevelUpToast(majorFactionID, newRenownLevel); end);
+			C_Timer.After(1, function() self:ShowRenownLevelUpToast(majorFactionData, newRenownLevel); end);
 		end
 	end
 end
@@ -73,8 +78,7 @@ function MajorFactionsRenownToastMixin:AddSwirlEffects(textureKit) -- override
 	end
 end
 
-function MajorFactionsRenownToastMixin:ShowRenownLevelUpToast(majorFactionID, renownLevel)
-	local majorFactionData = C_MajorFactions.GetMajorFactionData(majorFactionID);
+function MajorFactionsRenownToastMixin:ShowRenownLevelUpToast(majorFactionData, renownLevel)
 	if majorFactionData then
 		if MajorFactionRenownFrame then
 			HideUIPanel(MajorFactionRenownFrame);

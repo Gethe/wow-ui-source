@@ -254,7 +254,8 @@ function FriendsFrame_OnLoad(self)
 	self.selectedFriend = 1;
 
 	self:SetParent(GetAppropriateTopLevelParent());
-	if IsOnGlueScreen() or not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.InGameFriendsList) then
+	local inGameFriendsListDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.IngameFriendsListDisabled);
+	if IsOnGlueScreen() or inGameFriendsListDisabled then
 		self:ClearAllPoints();
 		self:SetPoint("TOPLEFT", 50, -50);
 
@@ -539,7 +540,8 @@ end
 
 function FriendsTabHeaderMixin:SetRAFSystemEnabled(rafEnabled)
 	if rafEnabled then
-		rafEnabled = not IsOnGlueScreen() and C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.InGameFriendsList);
+		local inGameFriendsListDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.IngameFriendsListDisabled);
+		rafEnabled = not IsOnGlueScreen() and (not inGameFriendsListDisabled);
 	end
 
 	FRIEND_HEADER_TAB_COUNT = rafEnabled and 3 or 2;
@@ -1279,7 +1281,8 @@ function ToggleFriendsFrame(tab)
 		return;
 	end
 
-	if not IsOnGlueScreen() and not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.InGameFriendsList) then
+	local inGameFriendsListDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.IngameFriendsListDisabled);
+	if not IsOnGlueScreen() and inGameFriendsListDisabled then
 		return;
 	end
 

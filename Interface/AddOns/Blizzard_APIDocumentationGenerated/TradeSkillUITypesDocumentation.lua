@@ -132,6 +132,7 @@ local TradeSkillUITypes =
 				{ Name = "hasIngenuityProc", Type = "bool", Nilable = false, Default = false },
 				{ Name = "concentrationCurrencyID", Type = "number", Nilable = false, Default = 0 },
 				{ Name = "concentrationSpent", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "ingenuityRefund", Type = "number", Nilable = false, Default = 0 },
 			},
 		},
 		{

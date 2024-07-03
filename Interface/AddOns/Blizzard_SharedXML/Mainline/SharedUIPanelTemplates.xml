@@ -2370,6 +2370,7 @@
 		<Scripts>
 			<OnLoad method="OnScaleFrameLoad" inherit="prepend"/>
 			<OnEvent method="OnScaleFrameEvent" inherit="prepend"/>
+			<OnShow method="OnScaleFrameShow" inherit="prepend"/>
 		</Scripts>
 	</Frame>
 

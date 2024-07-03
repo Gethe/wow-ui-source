@@ -497,21 +497,24 @@ end
 
 local function CreateSecureActorPoolInstance(parent, template, resetFunc, capacity)
 	local function Create()
-		return parent:CreateActor(nil, template);
+		local name = nil;
+		return parent:CreateActor(name, template);
 	end
 	return CreateSecureRegionPoolInstance(template, Create, resetFunc or ActorPool_HideAndClearModel, capacity);
 end
 
 local function CreateSecureTexturePoolInstance(parent, layer, subLayer, template, resetFunc, capacity)
 	local function Create()
-		return parent:CreateTexture(nil, layer, template, subLayer);
+		local name = nil;
+		return parent:CreateTexture(name, layer, template, subLayer);
 	end
 	return CreateSecureRegionPoolInstance(template, Create, resetFunc, capacity);
 end
 
 local function CreateSecureFontStringPoolInstance(parent, layer, subLayer, template, resetFunc, capacity)
 	local function Create()
-		return parent:CreateFontString(nil, layer, template, subLayer);
+		local name = nil;
+		return parent:CreateFontString(name, layer, template, subLayer);
 	end
 	return CreateSecureRegionPoolInstance(template, Create, resetFunc, capacity);
 end
@@ -576,7 +579,7 @@ end
 
 local FramePoolCollectionMixin = CreateFromMixinsPrivate(PoolCollectionMixin, FramePoolCollectionConverterMixin);
 
-local function CreateUnsecuredRegionPoolInstance(template, createFunc, resetFunc, capacity)
+function CreateUnsecuredRegionPoolInstance(template, createFunc, resetFunc, capacity)
 	local pool = CreateFromMixinsPrivate(ObjectPoolMixin);
 	pool:Init(createFunc, resetFunc or Pool_HideAndClearAnchors, capacity);
 	pool.GetTemplate = function(self)
@@ -716,17 +719,33 @@ do
 	end
 end
 
+function CreateUnsecuredObjectPool(createFunc, resetFunc, capacity)
+	local pool = CreateFromMixinsPrivate(ObjectPoolMixin);
+	pool:Init(createFunc, resetFunc, capacity);
+	return pool;
+end
+
 function CreateUnsecuredTexturePool(parent, layer, subLayer, template, resetFunc, capacity)
 	local function Create()
-		return parent:CreateTexture(nil, layer, template, subLayer);
+		local name = nil;
+		return parent:CreateTexture(name, layer, template, subLayer);
 	end
 	return CreateUnsecuredRegionPoolInstance(template, Create, resetFunc, capacity);
 end
 
 function CreateUnsecuredFontStringPool(parent, layer, subLayer, template, resetFunc, capacity)
 	local function Create()
-		return parent:CreateFontString(nil, layer, template, subLayer);
+		local name = nil;
+		return parent:CreateFontString(name, layer, template, subLayer);
 	end	
+	return CreateUnsecuredRegionPoolInstance(template, Create, resetFunc, capacity);
+end
+
+function CreateUnsecuredFramePool(frameType, parent, template, resetFunc, capacity)
+	local function Create()
+		local name = nil;
+		return CreateFrame(frameType, name, parent, template);
+	end
 	return CreateUnsecuredRegionPoolInstance(template, Create, resetFunc, capacity);
 end
 
@@ -735,7 +754,7 @@ function CreateUnsecuredFramePoolCollection()
 	poolCollection:Init();
 	return poolCollection;
 end
-	
+
 -- Aliases until we determine if we want to change any code to explicitly create
 -- the secure or unsecured variant of pools and pool collections.
 CreateObjectPool = CreateSecureObjectPool;

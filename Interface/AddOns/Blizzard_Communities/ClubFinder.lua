@@ -538,10 +538,12 @@ function ClubLookingForDropdownMixin:SetupMenu(checkedList)
 			local submenu = rootDescription:CreateCheckbox(tbl.text, IsSelected, SetSelected, tbl.role);
 			submenu:CreateButton(CHECK_ALL, function()
 				self:CheckOrUncheckAll(nil, tbl.role, true);
+				return MenuResponse.Refresh;
 			end);
 
 			submenu:CreateButton(UNCHECK_ALL, function()
 				self:CheckOrUncheckAll(nil, tbl.role, false);
+				return MenuResponse.Refresh;
 			end);
 
 			for classID = 1, GetNumClasses() do

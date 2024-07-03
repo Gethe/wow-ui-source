@@ -143,7 +143,7 @@ local MountJournal =
 				{ Name = "shouldHideOnChar", Type = "bool", Nilable = false },
 				{ Name = "isCollected", Type = "bool", Nilable = false },
 				{ Name = "mountID", Type = "number", Nilable = false },
-				{ Name = "isForDragonriding", Type = "bool", Nilable = false },
+				{ Name = "isSteadyFlight", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -275,7 +275,7 @@ local MountJournal =
 				{ Name = "shouldHideOnChar", Type = "bool", Nilable = false },
 				{ Name = "isCollected", Type = "bool", Nilable = false },
 				{ Name = "mountID", Type = "number", Nilable = false },
-				{ Name = "isForDragonriding", Type = "bool", Nilable = false },
+				{ Name = "isSteadyFlight", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -656,7 +656,7 @@ local MountJournal =
 				{ Name = "shouldHideOnChar", Type = "bool", Nilable = false },
 				{ Name = "isCollected", Type = "bool", Nilable = false },
 				{ Name = "mountID", Type = "number", Nilable = false },
-				{ Name = "isForDragonriding", Type = "bool", Nilable = false },
+				{ Name = "isSteadyFlight", Type = "bool", Nilable = false },
 			},
 		},
 		{

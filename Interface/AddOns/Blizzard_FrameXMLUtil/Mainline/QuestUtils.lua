@@ -390,9 +390,12 @@ function QuestUtil.GetDefaultQuestMapBackgroundTexture()
 	end
 end
 
+function QuestUtil.IsShowingQuestDetails(questID)
+	return QuestLogPopupDetailFrame_IsShowingQuest(questID);
+end
+
 function QuestUtil.OpenQuestDetails(questID)
-	local questLogIndex = C_QuestLog.GetLogIndexForQuestID(questID);
-	QuestLogPopupDetailFrame_Show(questLogIndex);
+	QuestLogPopupDetailFrame_Show(questID);
 end
 
 function QuestUtil.ShareQuest(questID)
@@ -531,31 +534,83 @@ end
 
 local QUEST_LEGEND_SEPARATOR = "    ";
 
-local function GetCombinedQuestLegendText(classificationText, questTypeText, isMultiLine)
-	if classificationText and questTypeText then
+local function GetCombinedQuestLegendText(legendStrings, isMultiLine)
+	if not legendStrings or #legendStrings <= 0 then
+		return;
+	end
+
+	if #legendStrings == 1 then
+		return legendStrings[1];
+	end
+
+	local combinedText;
+	for index, string in ipairs(legendStrings) do
 		if isMultiLine then
-			return classificationText.."|n"..questTypeText;
+			combinedText = combinedText and (combinedText.."|n"..string) or string;
 		else
-			return classificationText..QUEST_LEGEND_SEPARATOR..questTypeText;
+			combinedText = combinedText and (combinedText..QUEST_LEGEND_SEPARATOR..string) or string;
 		end
-	else
-		return classificationText or questTypeText;
+	end
+
+	return combinedText;
+end
+
+function QuestUtil.GetAccountQuestText(questID)
+	if not C_QuestLog.IsAccountQuest(questID) then
+		return nil;
+	end
+
+	local accountWideIcon = CreateAtlasMarkup("questlog-questtypeicon-account", 18, 18);
+	local accountQuestString = accountWideIcon .. " " .. ACCOUNT_QUEST_LABEL;
+
+	local factionGroup = GetQuestFactionGroup(questID);
+	-- Faction-specific account quests also include the faction icon
+	if factionGroup then
+		local isHorde = factionGroup == LE_QUEST_FACTION_HORDE;
+		local factionString = isHorde and FACTION_HORDE or FACTION_ALLIANCE;
+		local factionIcon = CreateAtlasMarkup(isHorde and "questlog-questtypeicon-horde" or "questlog-questtypeicon-alliance", 18, 18);
+		accountQuestString = accountQuestString .. QUEST_LEGEND_SEPARATOR .. factionIcon .. " " .. factionString;
+	end
+
+	return accountQuestString;
+end
+
+function QuestUtil.GetQuestLegendStrings(questID)
+	local legendStrings = {};
+	-- Is it a campaign quest, or part of a questline, etc.
+	local classificationText = QuestUtil.GetQuestClassificationString(questID);
+	if classificationText then
+		table.insert(legendStrings, classificationText);
+	end
+
+	-- Is it a dungeon quest, or a raid quest, etc.
+	local questTypeText = QuestUtils_GetQuestTypeIconMarkupString(questID);
+	if questTypeText then
+		table.insert(legendStrings, questTypeText);
+	end
+
+	-- Is it an account wide quest, and does it require a specific faction?
+	local accountQuestText = QuestUtil.GetAccountQuestText(questID);
+	if accountQuestText then
+		table.insert(legendStrings, accountQuestText);
+	end
+
+	if #legendStrings > 0 then
+		return legendStrings;
 	end
 end
 
 function QuestUtil.SetQuestLegendToFontString(questID, fontString)
-	local classificationText = QuestUtil.GetQuestClassificationString(questID);
-	local questTypeText = QuestUtils_GetQuestTypeIconMarkupString(questID);
-	local legendText = GetCombinedQuestLegendText(classificationText, questTypeText);
+	local legendStrings = QuestUtil.GetQuestLegendStrings(questID);
+	local legendText = GetCombinedQuestLegendText(legendStrings);
 	if not legendText then
 		return false;
 	end
 
 	fontString:SetText(legendText);
-	if questTypeText and fontString:GetNumLines() > 1 then
+	if legendText and fontString:GetNumLines() > 1 then
 		local isMultiLine = true;
-		legendText = GetCombinedQuestLegendText(classificationText, questTypeText, isMultiLine);
-		fontString:SetText(legendText);
+		fontString:SetText(GetCombinedQuestLegendText(legendStrings, isMultiLine));
 	end
 	return true;
 end
@@ -563,7 +618,8 @@ end
 function QuestUtil.SetQuestLegendToTooltip(questID, tooltip)
 	local classificationText = QuestUtil.GetQuestClassificationString(questID);
 	local questTypeText = QuestUtils_GetQuestTypeIconMarkupString(questID);
-	if not classificationText and not questTypeText then
+	local accountQuestText = QuestUtil.GetAccountQuestText(questID);
+	if not classificationText and not questTypeText and not accountQuestText then
 		return false;
 	end
 
@@ -577,8 +633,23 @@ function QuestUtil.SetQuestLegendToTooltip(questID, tooltip)
 		end
 	end
 
-	local legendText = GetCombinedQuestLegendText(classificationText, questTypeText);
+	local stringsToCombine = {};
+	if classificationText then
+		table.insert(stringsToCombine, classificationText);
+	end
+
+	if questTypeText then
+		table.insert(stringsToCombine, questTypeText);
+	end
+
+	local legendText = GetCombinedQuestLegendText(stringsToCombine);
 	GameTooltip_AddNormalLine(tooltip, legendText);
+
+	-- The account quest text also gets a line by itself becaues it can contain both an "Account" tag and a "Faction" tag
+	if accountQuestText then
+		GameTooltip_AddNormalLine(tooltip, accountQuestText);
+	end
+
 	return true;
 end
 
@@ -606,28 +677,7 @@ end
 function QuestUtils_GetQuestTypeIconMarkupString(questID, iconWidth, iconHeight)
 	local info = C_QuestLog.GetQuestTagInfo(questID);
 	if info then
-		local tagName = info.tagName;
-		local factionGroup = GetQuestFactionGroup(questID);
-		-- Faction-specific account quests have additional info
-		if info.tagID == Enum.QuestTag.Account and factionGroup then
-			local factionString = FACTION_ALLIANCE;
-			if ( factionGroup == LE_QUEST_FACTION_HORDE ) then
-				factionString = FACTION_HORDE;
-			end
-			tagName = format("%s (%s)", tagName, factionString);
-		end
-
-		local overrideQuestTag = info.tagID;
-		if QuestUtils_GetQuestTagAtlas(info.tagID) then
-			if info.tagID == Enum.QuestTag.Account and factionGroup then
-				overrideQuestTag = "ALLIANCE";
-				if factionGroup == LE_QUEST_FACTION_HORDE then
-					overrideQuestTag = "HORDE";
-				end
-			end
-		end
-
-		return GetQuestTypeIconMarkupStringFromTagData(overrideQuestTag, info.worldQuestType, tagName, iconWidth, iconHeight);
+		return GetQuestTypeIconMarkupStringFromTagData(info.tagID, info.worldQuestType, info.tagName, iconWidth, iconHeight);
 	end
 end
 

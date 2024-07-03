@@ -107,7 +107,8 @@ function ContainerFrame_GetContainerNumSlots(bagId)
 end
 
 function ContainerFrame_AllowedToOpenBags()
-	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.Bags) then
+	local bagsUIDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.BagsUIDisabled);
+	if bagsUIDisabled then
 		return false;
 	end
 

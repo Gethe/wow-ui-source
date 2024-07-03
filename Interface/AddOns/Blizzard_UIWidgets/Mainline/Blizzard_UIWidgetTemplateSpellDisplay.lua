@@ -1,6 +1,6 @@
 local function GetSpellDisplayVisInfoData(widgetID, attachedUnit)
 	local widgetInfo = C_UIWidgetManager.GetSpellDisplayVisualizationInfo(widgetID);
-	if widgetInfo and widgetInfo.shownState ~= Enum.WidgetShownState.Hidden then
+	if widgetInfo and widgetInfo.spellInfo.shownState ~= Enum.WidgetShownState.Hidden then
 		widgetInfo.attachedUnit = attachedUnit;
 		return widgetInfo;
 	end
@@ -29,7 +29,7 @@ function UIWidgetTemplateSpellDisplayMixin:Setup(widgetInfo, widgetContainer)
 
 	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo, widgetContainer);
 
-	self.Spell:Setup(widgetContainer, widgetInfo.spellInfo, widgetInfo.enabledState, widgetInfo.widgetSizeSetting, widgetInfo.textureKit);
+	self.Spell:Setup(widgetContainer, widgetInfo.spellInfo, widgetInfo.widgetSizeSetting, widgetInfo.textureKit);
 	self.Spell:SetTooltipLocation(widgetInfo.tooltipLoc);
 
 	self:SetWidth(self.Spell:GetWidth());
@@ -93,7 +93,7 @@ function UIWidgetTemplateSpellDisplayMixin:OnUpdate()
 	local widgetInfo = C_UIWidgetManager.GetSpellDisplayVisualizationInfo(self.widgetID);
 
 	if widgetInfo.spellInfo.spellID ~= 0 then
-		self.Spell:Setup(widgetInfo, widgetInfo.spellInfo, widgetInfo.enabledState, widgetInfo.widgetSizeSetting, widgetInfo.textureKit);
+		self.Spell:Setup(widgetInfo, widgetInfo.spellInfo, widgetInfo.widgetSizeSetting, widgetInfo.textureKit);
 		self.hadSpellID = true;
 	end
 end

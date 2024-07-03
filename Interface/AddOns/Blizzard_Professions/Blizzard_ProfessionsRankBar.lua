@@ -41,7 +41,8 @@ function ProfessionsRankBarDropdownMixin:OnLoad()
 		local title = rootDescription:CreateTitle(baseProfessionInfo.professionName);
 		title:AddInitializer(function(frame, description, menu)
 			local fontString = frame.fontString;
-			fontString:SetWidth(200);
+			fontString:SetPoint("RIGHT");
+			fontString:SetPoint("LEFT")
 			fontString:SetFontObject("GameFontNormal");
 			fontString:SetJustifyH("CENTER");
 		end);
@@ -60,7 +61,9 @@ function ProfessionsRankBarDropdownMixin:OnLoad()
 				fontString2:SetFontObject("GameFontHighlightOutline");
 				fontString2:SetTextToFit(string.format("%d/%d", professionInfo.skillLevel, professionInfo.maxSkillLevel));
 			end);
-	end
+		end
+
+		rootDescription:SetMinimumWidth(250);
 	end)
 end
 

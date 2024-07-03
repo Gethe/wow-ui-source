@@ -676,7 +676,7 @@ function EncounterJournal_ResetDisplay(instanceID, instanceType, difficultyID)
 end
 
 function EncounterJournal_OnShow(self)
-	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.EncounterJournal) then
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.EncounterJournalDisabled) then
 		return;
 	end
 

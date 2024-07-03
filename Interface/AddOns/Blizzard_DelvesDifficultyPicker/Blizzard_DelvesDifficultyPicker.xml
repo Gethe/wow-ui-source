@@ -62,9 +62,6 @@
 	<!-- Delve Difficulty Picker -->
 	<Frame name="DelvesDifficultyPickerFrame" hidden="true" inherits="CustomGossipFrameBaseTemplate, InsetFrameTemplate" mixin="DelvesDifficultyPickerFrameMixin">
 		<Size x="584" y="384"/>
-		<Anchors>
-			<Anchor point="CENTER" y="60"/>
-		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Title" justifyV="BOTTOM" justifyH="CENTER" inherits="GameFontHighlightHuge2">
@@ -99,7 +96,6 @@
 					<Anchor point="TOPRIGHT" relativeKey="$parent.Border" relativePoint="TOPRIGHT" x="-1" y="-3"/>
 				</Anchors>
 				<Scripts>
-					<!-- TODO sound -->
 					<OnClick>
 						HideUIPanel(self:GetParent());
 					</OnClick>

@@ -2194,7 +2194,8 @@ SlashCmdList["CHAT_DND"] = function(msg)
 end
 
 SlashCmdList["WHO"] = function(msg)
-	if (Kiosk.IsEnabled() or not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.InGameWhoList)) then
+	local inGameWhoListDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.IngameWhoListDisabled);
+	if (Kiosk.IsEnabled() or inGameWhoListDisabled) then
 		return;
 	end
 	if ( msg == "" ) then
@@ -2211,7 +2212,8 @@ SlashCmdList["CHANNEL"] = function(msg, editBox)
 end
 
 SlashCmdList["FRIENDS"] = function(msg)
-	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.InGameFriendsList) then
+	local inGameFriendsListDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.IngameFriendsListDisabled);
+	if inGameFriendsListDisabled then
 		return;
 	end
 
@@ -2258,7 +2260,8 @@ SlashCmdList["UNIGNORE"] = function(msg)
 end
 
 SlashCmdList["SCRIPT"] = function(msg)
-	if ( not C_AddOns.GetScriptsDisallowedForBeta() and C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.UserScripts) ) then
+	local userScriptsDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.UserScriptsDisabled);
+	if ( not C_AddOns.GetScriptsDisallowedForBeta() and not userScriptsDisabled ) then
 		if ( not AreDangerousScriptsAllowed() ) then
 			StaticPopup_Show("DANGEROUS_SCRIPTS_WARNING");
 			return;
@@ -2404,7 +2407,8 @@ SlashCmdList["STOPWATCH"] = function(msg)
 end
 
 SlashCmdList["CALENDAR"] = function(msg)
-	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.InGameCalendar) then
+	local inGameCalendarDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.IngameCalendarDisabled);
+	if inGameCalendarDisabled then
 		return;
 	end
 
@@ -2488,7 +2492,8 @@ if IsGMClient() then
 end
 
 SlashCmdList["TABLEINSPECT"] = function(msg)
-	if ( Kiosk.IsEnabled() or C_AddOns.GetScriptsDisallowedForBeta() or not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.UserScripts) ) then
+	local userScriptsDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.UserScriptsDisabled);
+	if ( Kiosk.IsEnabled() or C_AddOns.GetScriptsDisallowedForBeta() or userScriptsDisabled ) then
 		return;
 	end
 	if ( not AreDangerousScriptsAllowed() ) then
@@ -2518,7 +2523,8 @@ end
 
 
 SlashCmdList["DUMP"] = function(msg)
-	if (not Kiosk.IsEnabled() and not C_AddOns.GetScriptsDisallowedForBeta() and C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.UserScripts)) then
+	local userScriptsDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.UserScriptsDisabled);
+	if (not Kiosk.IsEnabled() and not C_AddOns.GetScriptsDisallowedForBeta() and not userScriptsDisabled) then
 		if ( not AreDangerousScriptsAllowed() ) then
 			StaticPopup_Show("DANGEROUS_SCRIPTS_WARNING");
 			return;
@@ -3360,7 +3366,7 @@ function ChatFrame_UpdateDefaultChatTarget(self)
 end
 
 function ChatFrame_ConfigEventHandler(self, event, ...)
-	if IsOnGlueScreen() and not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.FrontEndChat) then
+	if IsOnGlueScreen() and not C_GameRules.IsGameRuleActive(Enum.GameRule.FrontEndChat) then
 		return;
 	end
 
@@ -3467,7 +3473,8 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 		local oldLevel, newLevel, real = ...;
 		if real and oldLevel ~= 0 and newLevel ~= 0 then
 			if newLevel > oldLevel then
-				local levelstring = C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.ChatLinkLevelToasts) and format(LEVEL_UP, newLevel, newLevel) or format(LEVEL_UP_NO_LINK, newLevel);
+				local chatLinkLevelToastsDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.ChatLinkLevelToastsDisabled);
+				local levelstring = not chatLinkLevelToastsDisabled and format(LEVEL_UP, newLevel, newLevel) or format(LEVEL_UP_NO_LINK, newLevel);
 				local info = ChatTypeInfo["SYSTEM"];
 				self:AddMessage(levelstring, info.r, info.g, info.b, info.id);
 			end
@@ -5625,7 +5632,8 @@ function ChatMenu_OnLoad(self)
 	UIMenu_AddButton(self, REPLY_MESSAGE, SLASH_REPLY1, ChatMenu_Reply);
 
 	if not isOnGlueScreen then
-		if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.Macros) then
+		local macrosDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.MacrosDisabled);
+		if not macrosDisabled then
 			UIMenu_AddButton(self, MACRO, SLASH_MACRO1, ShowMacroFrame);
 		end
 

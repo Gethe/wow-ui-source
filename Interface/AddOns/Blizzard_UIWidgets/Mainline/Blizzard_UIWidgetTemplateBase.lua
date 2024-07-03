@@ -324,6 +324,18 @@ function UIWidgetBaseResourceTemplateMixin:Setup(widgetContainer, resourceInfo)
 	self:SetHeight(self.Icon:GetHeight());
 end
 
+local currencyIconSizes =
+{
+	[Enum.WidgetIconSizeType.Small]	= 16,
+	[Enum.WidgetIconSizeType.Medium] = 20,
+	[Enum.WidgetIconSizeType.Large]	= 22,
+	[Enum.WidgetIconSizeType.Standard] = 18,
+}
+
+local function GetCurrencyIconSize(iconSizeType)
+	return currencyIconSizes[iconSizeType] or currencyIconSizes[Enum.WidgetIconSizeType.Small];
+end
+
 UIWidgetBaseCurrencyTemplateMixin = CreateFromMixins(UIWidgetTemplateTooltipFrameMixin, UIWidgetBaseEnabledFrameMixin);
 
 function UIWidgetBaseCurrencyTemplateMixin:Setup(widgetContainer, currencyInfo, enabledState, tooltipEnabledState, hideIcon, customFont, overrideFontColor)
@@ -343,22 +355,28 @@ function UIWidgetBaseCurrencyTemplateMixin:Setup(widgetContainer, currencyInfo, 
 	SetUpFontString(self.Text, currencyInfo.text);
 
 	self:SetTooltip(currencyInfo.tooltip, GetTextColorForEnabledState(tooltipEnabledState or enabledState));
+
 	self.Icon:SetTexture(currencyInfo.iconFileID);
 	self.Icon:SetDesaturated(enabledState == Enum.WidgetEnabledState.Disabled);
 
+	local iconSize = GetCurrencyIconSize(currencyInfo.iconSizeType);
+	self.Icon:SetSize(iconSize, iconSize);
+
 	self:SetEnabledState(enabledState);
 
-	local totalWidth = self.Icon:GetWidth() + self.Text:GetWidth() + 5;
+	local totalWidth = self.Text:GetWidth();
+	local widgetHeight = self.Text:GetHeight();
 
 	if currencyInfo.leadingText ~= "" then
 		SetUpFontString(self.LeadingText, currencyInfo.leadingText);
 
 		self.LeadingText:Show();
-		self.Icon:SetPoint("TOPLEFT", self, "TOPLEFT", self.LeadingText:GetWidth() + 5, 0);
+		self.Icon:SetPoint("LEFT", self, "RIGHT", 5, 0);
 		totalWidth = totalWidth + self.LeadingText:GetWidth() + 5;
+		widgetHeight = math.max(widgetHeight, self.LeadingText:GetHeight());
 	else
 		self.LeadingText:Hide();
-		self.Icon:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
+		self.Icon:SetPoint("LEFT", self, "LEFT", 0, 0);
 	end
 
 	if hideIcon then
@@ -367,10 +385,11 @@ function UIWidgetBaseCurrencyTemplateMixin:Setup(widgetContainer, currencyInfo, 
 	else
 		self.Icon:Show();
 		self.Text:SetPoint("LEFT", self.Icon, "RIGHT", 5, 0);
+		totalWidth = totalWidth + self.Icon:GetWidth() + 5;
 	end
 
 	self:SetWidth(totalWidth);
-	self:SetHeight(self.Icon:GetHeight());
+	self:SetHeight(widgetHeight);
 end
 
 local iconSizes =
@@ -454,7 +473,7 @@ function UIWidgetBaseSpellTemplateMixin:ShouldContinueOnUpdate()
 	return self.updateTimeRemaining and (self.updateTimeRemaining > 0);
 end
 
-function UIWidgetBaseSpellTemplateMixin:Setup(widgetContainer, spellInfo, enabledState, width, textureKit)
+function UIWidgetBaseSpellTemplateMixin:Setup(widgetContainer, spellInfo, width, textureKit)
 	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
 	SetupTextureKitsFromRegionInfo(textureKit, self, spellTextureKitRegionInfo);
 	local hasAmountBorderTexture = self.AmountBorder:IsShown();
@@ -469,7 +488,7 @@ function UIWidgetBaseSpellTemplateMixin:Setup(widgetContainer, spellInfo, enable
 
 	local spellData = C_Spell.GetSpellInfo(spellInfo.spellID);
 	self.Icon:SetTexture(spellData.iconID);
-	self.Icon:SetDesaturated(enabledState == Enum.WidgetEnabledState.Disabled);
+	self.Icon:SetDesaturated(spellInfo.enabledState == Enum.WidgetEnabledState.Disabled);
 
 	local iconSize = GetWidgetIconSize(spellInfo.iconSizeType);
 	self.Icon:SetSize(iconSize, iconSize);
@@ -532,7 +551,7 @@ function UIWidgetBaseSpellTemplateMixin:Setup(widgetContainer, spellInfo, enable
 
 	if textShown then
 		local text = (spellInfo.text == "") and spellData.name or spellInfo.text;
-		self.Text:Setup(text, spellInfo.textFontType, spellInfo.textSizeType, enabledState, spellInfo.hAlignType);
+		self.Text:Setup(text, spellInfo.textFontType, spellInfo.textSizeType, spellInfo.enabledState, spellInfo.hAlignType);
 
 		if textWidth == 0 then
 			textWidth = self.Text:GetWidth();
@@ -577,7 +596,7 @@ function UIWidgetBaseSpellTemplateMixin:Setup(widgetContainer, spellInfo, enable
 	self.CircleMask:SetShown(spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Circular);
 
 	local widgetHeight = math.max(self.Icon:GetHeight(), self.Text:GetHeight());
-	self:SetEnabledState(enabledState);
+	self:SetEnabledState(spellInfo.enabledState);
 	self.spellID = spellInfo.spellID;
 	self:SetTooltip(spellInfo.tooltip);
 
@@ -1189,6 +1208,7 @@ local scenarioHeaderTextureKitInfo =
 	["dragonflight-scenario"] = {fontObject = GameFontNormalMed3, fontMinLineHeight = 10, headerTextHeight = 20},
 	["plunderstorm-scenariotracker-active"] = {fontObject = SystemFont_Shadow_Large, fontMinLineHeight = 16, headerTextHeight = 20, headerTextWidth = 300, textAnchorOffsets = {xOffset = 40, yOffset = -25}},
 	["plunderstorm-scenariotracker-waiting"] = {fontObject = SystemFont_Shadow_Large, fontMinLineHeight = 16, headerTextHeight = 20, headerTextWidth = 300, textAnchorOffsets = {xOffset = 40, yOffset = -25}},
+	["delves-scenario"] = {fontObject = SystemFont_Shadow_Large, fontColor = DELVES_SCENARIO_NAME_COLOR, fontMinLineHeight = 16, headerTextHeight = 20, textAnchorOffsets = {xOffset = 24, yOffset = -16}},
 }
 
 local scenarioHeaderDefaultFontObject = Game18Font;

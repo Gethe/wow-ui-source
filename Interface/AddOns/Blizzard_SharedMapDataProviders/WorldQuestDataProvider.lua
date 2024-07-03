@@ -441,23 +441,31 @@ end
 
 function WorldQuestPinMixin:OnMouseClickAction(button)
 	if not self.dataProvider:HandleClick(self) then
-		if ( not ChatEdit_TryInsertQuestLinkForQuestID(self.questID) ) then
-			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-
+		if not ChatEdit_TryInsertQuestLinkForQuestID(self.questID) then
 			local watchType = C_QuestLog.GetQuestWatchType(self.questID);
+			local isSuperTracked = C_SuperTrack.GetSuperTrackedQuestID() == self.questID;
 
 			if IsShiftKeyDown() then
-				if watchType == Enum.QuestWatchType.Manual or (watchType == Enum.QuestWatchType.Automatic and C_SuperTrack.GetSuperTrackedQuestID() == self.questID) then
+				if watchType == Enum.QuestWatchType.Manual or (watchType == Enum.QuestWatchType.Automatic and isSuperTracked) then
+					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 					QuestUtil.UntrackWorldQuest(self.questID);
 				else
+					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 					QuestUtil.TrackWorldQuest(self.questID, Enum.QuestWatchType.Manual);
 				end
 			else
-				if watchType ~= Enum.QuestWatchType.Manual then
-					QuestUtil.TrackWorldQuest(self.questID, Enum.QuestWatchType.Automatic);
-				end
+				if isSuperTracked then
+					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+					C_SuperTrack.SetSuperTrackedQuestID(0);
+				else
+					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
-				C_SuperTrack.SetSuperTrackedQuestID(self.questID);
+					if watchType ~= Enum.QuestWatchType.Manual then
+						QuestUtil.TrackWorldQuest(self.questID, Enum.QuestWatchType.Automatic);
+					end
+
+					C_SuperTrack.SetSuperTrackedQuestID(self.questID);
+				end
 			end
 		end
 	end

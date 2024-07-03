@@ -947,7 +947,9 @@ function ProfessionsCrafterOrderViewMixin:RecraftOrder()
 	-- for unmodified reagent slots.
 	Professions.PrepareRecipeRecraft(transaction, craftingReagentTbl);
 
-    C_TradeSkillUI.RecraftRecipeForOrder(self.order.orderID, self.order.outputItemGUID, craftingReagentTbl);
+	local removedModificationsNone = nil;
+	local applyConcentration = transaction:IsApplyingConcentration();
+    C_TradeSkillUI.RecraftRecipeForOrder(self.order.orderID, self.order.outputItemGUID, craftingReagentTbl, removedModificationsNone, applyConcentration);
 end
 
 function ProfessionsCrafterOrderViewMixin:IsRecrafting()

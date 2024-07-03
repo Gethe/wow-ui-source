@@ -148,6 +148,7 @@ local AreaPoiInfo =
 				{ Name = "position", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
 				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "description", Type = "cstring", Nilable = true },
+				{ Name = "linkedUiMapID", Type = "number", Nilable = true },
 				{ Name = "textureIndex", Type = "number", Nilable = true },
 				{ Name = "tooltipWidgetSet", Type = "number", Nilable = true },
 				{ Name = "iconWidgetSet", Type = "number", Nilable = true },

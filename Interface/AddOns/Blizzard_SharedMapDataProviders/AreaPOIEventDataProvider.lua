@@ -53,8 +53,10 @@ AreaPOIEventPinMixin = CreateFromMixins(AreaPOIPinMixin);
 function AreaPOIEventPinMixin:OnAcquired(poiInfo) -- override
 	AreaPOIPinMixin.OnAcquired(self, poiInfo);
 
+	self:SetMapPinScale(1.3, 1, 1.3, 1.3);
 	self:SetStyle(POIButtonUtil.Style.AreaPOI);
 	self:SetAreaPOIInfo(poiInfo);
+	self:UpdateButtonStyle();
 	self:UpdateSelected();
 end
 

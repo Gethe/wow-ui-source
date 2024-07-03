@@ -315,7 +315,8 @@ function TargetFrameMixin:CheckFaction()
 		end
 	end
 
-	if (self.showPVP and C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.UnitFramePvPContextual)) then
+	local unitFramePvPContextualDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.UnitFramePvPContextualDisabled);
+	if (self.showPVP and (not unitFramePvPContextualDisabled)) then
 		local factionGroup = UnitFactionGroup(self.unit);
 		local targetFrameContentContextual = self.TargetFrameContent.TargetFrameContentContextual;
 		if (UnitIsPVPFreeForAll(self.unit)) then
@@ -672,7 +673,8 @@ function TargetFrameMixin:UpdateAuras(unitAuraUpdateInfo)
 end
 
 function TargetFrameMixin:ShouldShowBuffs()
-	return C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.TargetFrameBuffs);
+	local targetFrameBuffsDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.TargetFrameBuffsDisabled);
+	return not targetFrameBuffsDisabled;
 end
 
 --

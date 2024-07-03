@@ -71,17 +71,9 @@
         </Layers>
     </Frame>
 
-    <Button name="MapLegendButtonTemplate" virtual="true" mixin="MapLegendButtonMixin" inherits="ResizeLayoutFrame">
-		<Size x="143" y="30"/>
+    <Button name="MapLegendButtonTemplate" virtual="true" mixin="MapLegendButtonMixin">
+		<Size x="143" y="32"/>
 		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="Icon" file="Interface\QuestFrame\UI-Quest-BulletPoint">
-					<Size x="30" y="30"/>
-					<Anchors>
-						<Anchor point="LEFT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
             <Layer level="BACKGROUND" textureSubLevel="-1">
                 <Texture parentKey="IconBack" file="Interface\QuestFrame\UI-Quest-BulletPoint" hidden="true">
 					<Size x="30" y="30"/>
@@ -90,6 +82,14 @@
 					</Anchors>
 				</Texture>
             </Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon" file="Interface\QuestFrame\UI-Quest-BulletPoint">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.IconBack"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Scripts>
 			<OnEnter method="OnEnter"/>

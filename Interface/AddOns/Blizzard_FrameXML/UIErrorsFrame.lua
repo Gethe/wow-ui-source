@@ -5,7 +5,17 @@ function UIErrorsMixin:OnLoad()
 	self:RegisterEvent("UI_INFO_MESSAGE");
 	self:RegisterEvent("UI_ERROR_MESSAGE");
 
+	EventRegistry:RegisterCallback("UI.AlternateTopLevelParentChanged", self.UpdateParent, self);
+
 	self.flashingFontStrings = {};
+end
+
+function UIErrorsMixin:UpdateParent()
+	local oldParent = self:GetParent();
+	local newParent = GetAppropriateTopLevelParent();
+	if newParent and newParent ~= oldParent then
+		FrameUtil.SetParentMaintainRenderLayering(self, newParent);
+	end
 end
 
 function UIErrorsMixin:OnEvent(event, ...)

@@ -23,11 +23,11 @@ end
 --      Note: when adding new meta data types, be sure to update MapLegendButtonMixin:MetaDataMatches to check the new data comparison
 --  BackgroundAtlas - Optional Atlas name for background to icon
 local QuestsCategoryData = {
-  {Atlas = "UI-QuestPoiCampaign-QuestBang",   Name = MAP_LEGEND_CAMPAIGN,   Tooltip = MAP_LEGEND_CAMPAIGN_TOOLTIP,    TemplateNames = {"QuestPinTemplate","QuestOfferPinTemplate"}, MetaData = {QuestType = POIButtonUtil.QuestTypes.Campaign},   BackgroundAtlas = "UI-QuestPoiCampaign-QuestNumber"},
-  {Atlas = "UI-QuestPoiImportant-QuestBang",  Name = MAP_LEGEND_IMPORTANT,  Tooltip = MAP_LEGEND_IMPORTANT_TOOLTIP,   TemplateNames = {"QuestPinTemplate","QuestOfferPinTemplate"}, MetaData = {QuestType = POIButtonUtil.QuestTypes.Important}},
+  {Atlas = "Quest-Campaign-Available", fixedWidth = 28, fixedHeight = 28, Name = MAP_LEGEND_CAMPAIGN,   Tooltip = MAP_LEGEND_CAMPAIGN_TOOLTIP,    TemplateNames = {"QuestPinTemplate","QuestOfferPinTemplate"}, MetaData = {QuestType = POIButtonUtil.QuestTypes.Campaign}},
+  {Atlas = "UI-QuestPoiImportant-QuestBang", fixedWidth = 28, fixedHeight = 32,  Name = MAP_LEGEND_IMPORTANT,  Tooltip = MAP_LEGEND_IMPORTANT_TOOLTIP,   TemplateNames = {"QuestPinTemplate","QuestOfferPinTemplate"}, MetaData = {QuestType = POIButtonUtil.QuestTypes.Important}},
   {Atlas = "UI-QuestPoiLegendary-QuestBang",  Name = MAP_LEGEND_LEGENDARY,  Tooltip = MAP_LEGEND_LEGENDARY_TOOLTIP,   TemplateNames = {"QuestPinTemplate","QuestOfferPinTemplate"}, MetaData = {QuestType = POIButtonUtil.QuestTypes.Legendary}},
   {Atlas = "UI-QuestPoiWrapper-QuestBang",    Name = MAP_LEGEND_META,       Tooltip = MAP_LEGEND_META_TOOLTIP,        TemplateNames = {"QuestPinTemplate","QuestOfferPinTemplate"}, MetaData = {QuestType = POIButtonUtil.QuestTypes.Meta}},
-  {Atlas = "QuestNormal",                     Name = MAP_LEGEND_LOCALSTORY, Tooltip = MAP_LEGEND_LOCALSTORY_TOOLTIP,  TemplateNames = {"QuestPinTemplate","QuestOfferPinTemplate"}, MetaData = {QuestType = POIButtonUtil.QuestTypes.Normal}},
+  {Atlas = "QuestNormal", fixedWidth = 28, fixedHeight = 28, Name = MAP_LEGEND_LOCALSTORY, Tooltip = MAP_LEGEND_LOCALSTORY_TOOLTIP,  TemplateNames = {"QuestPinTemplate","QuestOfferPinTemplate"}, MetaData = {QuestType = POIButtonUtil.QuestTypes.Normal}},
   {Atlas = "Quest-In-Progress-Icon-yellow",   Name = MAP_LEGEND_INPROGRESS, Tooltip = MAP_LEGEND_INPROGRESS_TOOLTIP,  TemplateNames = {"QuestPinTemplate"},                         MetaData = {Style = POIButtonUtil.Style.QuestInProgress},     BackgroundAtlas = "UI-QuestPoi-QuestNumber"},
   {Atlas = "UI-QuestPoi-QuestBangTurnIn",     Name = MAP_LEGEND_TURNIN,     Tooltip = MAP_LEGEND_TURNIN_TOOLTIP,      TemplateNames = {"QuestPinTemplate"},                         MetaData = {Style = POIButtonUtil.Style.QuestComplete},       BackgroundAtlas = "UI-QuestPoi-QuestNumber"}
 };
@@ -35,7 +35,7 @@ local QuestsCategoryData = {
 local LimitedCategoryData = {
   {Atlas = "worldquest-icon",               Name = MAP_LEGEND_WORLDQUEST,     Tooltip = MAP_LEGEND_WORLDQUEST_TOOLTIP,      TemplateNames = {"WorldQuestPinTemplate", "WorldMap_WorldQuestPinTemplate"},  BackgroundAtlas = "UI-QuestPoi-QuestNumber"},
   {Atlas = "vignettekillboss",              Name = MAP_LEGEND_WORLDBOSS,      Tooltip = MAP_LEGEND_WORLDBOSS_TOOLTIP,       TemplateNames = {"WorldQuestPinTemplate", "WorldMap_WorldQuestPinTemplate"},  MetaData = {worldQuestType = Enum.QuestTagType.WorldBoss}},
-  {Atlas = "QuestBonusObjective",           Name = MAP_LEGEND_BONUSOBJECTIVE, Tooltip = MAP_LEGEND_BONUSOBJECTIVE_TOOLTIP,  TemplateNames = {"BonusObjectivePinTemplate"}},
+  {Atlas = "Bonus-Objective-Star",           Name = MAP_LEGEND_BONUSOBJECTIVE, Tooltip = MAP_LEGEND_BONUSOBJECTIVE_TOOLTIP,  TemplateNames = {"BonusObjectivePinTemplate"}, BackgroundAtlas = "UI-QuestPoi-QuestNumber"},
   {Atlas = "minimap-genericevent-hornicon", Name = MAP_LEGEND_EVENT,          Tooltip = MAP_LEGEND_EVENT_TOOLTIP,           TemplateNames = {"AreaPOIPinTemplate"},                                       MetaData = {AtlasPrefix="UI-EventPoi"}},
   {Atlas = "VignetteKill",                  Name = MAP_LEGEND_RARE,           Tooltip = MAP_LEGEND_RARE_TOOLTIP,            TemplateNames = {"VignettePinTemplate"},                                      MetaData = {Atlas="VignetteKill"}},
   {Atlas = "VignetteKillElite",             Name = MAP_LEGEND_RAREELITE,      Tooltip = MAP_LEGEND_RAREELITE_TOOLTIP,       TemplateNames = {"VignettePinTemplate"},                                      MetaData = {Atlas="VignetteKillElite"}},
@@ -46,7 +46,7 @@ local ActivitiesCategoryData = {
   {Atlas = "Raid",                     Name = MAP_LEGEND_RAID,      Tooltip = MAP_LEGEND_RAID_TOOLTIP,      TemplateNames = {"DungeonEntrancePinTemplate"}, MetaData = {isRaid = true}},
   {Atlas = "poi-hub",                  Name = MAP_LEGEND_HUB,       Tooltip = MAP_LEGEND_HUB_TOOLTIP,       TemplateNames = {"QuestHubPinTemplate"}},
   {Atlas = "ArchBlob",                 Name = MAP_LEGEND_DIGSITE,   Tooltip = MAP_LEGEND_DIGSITE_TOOLTIP,   TemplateNames = {"DigSitePinTemplate"}},
-  {Atlas = "WildBattlePetCapturable",  Name = MAP_LEGEND_PETBATTLE, Tooltip = MAP_LEGEND_PETBATTLE_TOOLTIP, TemplateNames = {"PetTamerPinTemplate"}},
+  {Atlas = "WildBattlePetCapturable", fixedWidth = 28, fixedHeight = 28, Name = MAP_LEGEND_PETBATTLE, Tooltip = MAP_LEGEND_PETBATTLE_TOOLTIP, TemplateNames = {"PetTamerPinTemplate"}},
 };
 
 local MovementCategoryData = {
@@ -108,13 +108,16 @@ function MapLegendButtonMixin:OnLeave()
 end
 
 function MapLegendButtonMixin:InitilizeButton(buttonInfo, index)
-    self.Icon:SetAtlas(buttonInfo.Atlas);
+    self.Icon:SetAtlas(buttonInfo.Atlas, TextureKitConstants.UseAtlasSize);
+	if buttonInfo.fixedWidth and buttonInfo.fixedHeight then
+		self.Icon:SetSize(buttonInfo.fixedWidth, buttonInfo.fixedHeight);
+	end
+
     if (buttonInfo.BackgroundAtlas) then
-        self.IconBack:SetAtlas(buttonInfo.BackgroundAtlas);
+        self.IconBack:SetAtlas(buttonInfo.BackgroundAtlas, TextureKitConstants.UseAtlasSize);
         self.IconBack:Show();
     end
     self:SetText(buttonInfo.Name);
-    self:Layout();
     self:Show();
     self.layoutIndex = index;
     self.tooltipText = buttonInfo.Tooltip;

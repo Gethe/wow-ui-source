@@ -209,7 +209,8 @@ function CompactRaidFrameManager_OnEvent(self, event, ...)
 end
 
 function CompactRaidFrameManager_UpdateShown()
-	if ( not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CompactRaidFrameManager) ) then
+	local compactRaidFrameManagerDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.CompactRaidFrameManagerDisabled);
+	if compactRaidFrameManagerDisabled then
 		CompactRaidFrameManager:Hide();
 		return;
 	end

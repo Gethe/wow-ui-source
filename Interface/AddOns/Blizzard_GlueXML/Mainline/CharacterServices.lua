@@ -1174,11 +1174,17 @@ StaticPopupDialogs["RPE_UPGRADE_CONFIRM"] = {
         local results = GlueDialog.data;
 		C_CharacterServices.RPEResetCharacter(results.playerguid, results.faction, results.spec, results.keepQuests);
 		CharacterSelectCharacterFrame:UpdateCharacterMatchingGUID(results.playerguid); --update the character button so it says 'processing'
+		GlueDialog_Show("RPE_UPGRADE_COMPLETE_WARNING");
     end,
     OnCancel = function()
 		BeginCharacterServicesFlow(RPEUpgradeFlow, {});
 		CharacterServicesMaster.flow:Advance(CharacterServicesMaster);
 	end,
+}
+
+StaticPopupDialogs["RPE_UPGRADE_COMPLETE_WARNING"] = {
+    text = RPE_UPGRADE_COMPLETE_WARNING,
+    button1 = OKAY,
 }
 
 function RPEUpgradeFlow:Finish(controller)

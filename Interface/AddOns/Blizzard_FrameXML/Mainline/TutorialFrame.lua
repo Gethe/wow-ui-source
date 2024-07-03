@@ -620,7 +620,8 @@ function TutorialFrame_ClearTextures()
 end
 
 function TutorialFrame_NewTutorial(tutorialID, forceShow)
-	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.TutorialFrame) or C_PlayerInfo.IsPlayerNPERestricted() then
+	local tutorialFrameDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.TutorialFrameDisabled);
+	if tutorialFrameDisabled or C_PlayerInfo.IsPlayerNPERestricted() then
 		return;
 	end	
 

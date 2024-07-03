@@ -1,6 +1,3 @@
---! TODO sounds
---! TODO art
-
 --[[ LOCALS ]]
 -- NOTE: This creature is used to open the companion config panel, but may be changed to a gameobject in the near future
 local DELVES_SUPPLIES_CREATURE_ID = 207283;
@@ -14,6 +11,7 @@ local COMPANION_CONFIG_ON_SHOW_EVENTS = {
     "UPDATE_FACTION",
     "QUEST_LOG_UPDATE",
     "UNIT_SPELLCAST_SUCCEEDED",
+    "TRAIT_CONFIG_UPDATED",
 };
 
 local borderColorForRarity = {
@@ -48,6 +46,11 @@ local function ShowConfigTooltip(frame, data, offsetX, offsetY)
         GameTooltip_SetTitle(GameTooltip, data.name);
         GameTooltip_AddNormalLine(GameTooltip, data.description);
     end
+
+    if data.tooltipError then
+        GameTooltip_AddErrorLine(GameTooltip, data.tooltipError);
+    end
+
     GameTooltip:Show();
 end
 
@@ -69,7 +72,7 @@ DelvesCompanionConfigurationFrameMixin = {};
 function DelvesCompanionConfigurationFrameMixin:OnLoad()
     local panelAttributes = {
         area = "left",
-		pushable = 2,
+		pushable = 1,
 		allowOtherPanels = 1,
         whileDead = 0,
 	};
@@ -81,14 +84,14 @@ function DelvesCompanionConfigurationFrameMixin:OnShow()
     AcknowledgeUnseenCurios();
     self:Refresh();
     FrameUtil.RegisterFrameForEvents(self, COMPANION_CONFIG_ON_SHOW_EVENTS);
+    PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 end
 
 function DelvesCompanionConfigurationFrameMixin:OnEvent(event)
-    -- TODO this event may change if/when that GameObject changes (see OnHide comment)
     if self:IsShown() then
         if event == "TRAIT_SYSTEM_NPC_CLOSED" then
             HideUIPanel(self);
-        elseif event == "UPDATE_FACTION" then
+        elseif event == "UPDATE_FACTION" or event == "TRAIT_CONFIG_UPDATED" then
             self:Refresh();
         elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
             C_Timer.After(REFRESH_SEEN_CURIOS_DELAY, function()
@@ -101,16 +104,19 @@ function DelvesCompanionConfigurationFrameMixin:OnEvent(event)
 end
 
 function DelvesCompanionConfigurationFrameMixin:Refresh()
-    local companionRankInfo = C_GossipInfo.GetFriendshipReputationRanks(Constants.DelvesConsts.BRANN_FACTION_ID);
+	--! TODO BRANN_COMPANION_INFO_ID to be replaced with other data source in the future, keeping it explicit for now
+    local companionFactionID = C_DelvesUI.GetFactionForCompanion(Constants.DelvesConsts.BRANN_COMPANION_INFO_ID);
+
+    local companionRankInfo = C_GossipInfo.GetFriendshipReputationRanks(companionFactionID);
     DelvesCompanionConfigurationFrame.companionLevel = companionRankInfo and companionRankInfo.currentLevel or 0;
 
-    local companionRepInfo = C_GossipInfo.GetFriendshipReputation(Constants.DelvesConsts.BRANN_FACTION_ID);
+    local companionRepInfo = C_GossipInfo.GetFriendshipReputation(companionFactionID);
     DelvesCompanionConfigurationFrame.companionExperienceInfo = {
         currentExperience = companionRepInfo.standing - companionRepInfo.reactionThreshold,
         nextLevelAt = companionRepInfo.nextThreshold - companionRepInfo.reactionThreshold,
     };
 
-    local companionFactionInfo = C_Reputation.GetFactionDataByID(Constants.DelvesConsts.BRANN_FACTION_ID);
+    local companionFactionInfo = C_Reputation.GetFactionDataByID(companionFactionID);
     DelvesCompanionConfigurationFrame.companionInfo = {
         name = companionFactionInfo.name,
         description = companionFactionInfo.description,
@@ -122,23 +128,24 @@ function DelvesCompanionConfigurationFrameMixin:Refresh()
     self.CompanionInfoFrame:Refresh();
 end
 
--- TODO / NOTE : GameObject we're using to open this frame currently uses gossip, ClearInteraction call may need to be removed in the near future
 function DelvesCompanionConfigurationFrameMixin:OnHide()
     UnacknowledgeUnseenCurios();
     C_PlayerInteractionManager.ClearInteraction();
     FrameUtil.UnregisterFrameForEvents(self, COMPANION_CONFIG_ON_SHOW_EVENTS);
+    PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 end
 
 --[[ Companion Portrait ]]
 CompanionPortraitFrameMixin = {};
 
 function CompanionPortraitFrameMixin:Refresh()
-    SetPortraitTextureFromCreatureDisplayID(self.Icon, Constants.DelvesConsts.BRANN_CREATURE_DISPLAY_ID);
+    --! TODO BRANN_COMPANION_INFO_ID to be replaced with other data source in the future, keeping it explicit for now
+    SetPortraitTextureFromCreatureDisplayID(self.Icon, C_DelvesUI.GetCreatureDisplayInfoForCompanion(Constants.DelvesConsts.BRANN_COMPANION_INFO_ID));
 end
 
 function CompanionPortraitFrameMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -5, -50);
-	GameTooltip_AddWidgetSet(GameTooltip, Constants.DelvesConsts.DELVE_COMPANION_TOOLTIP_WIDGET_SET_ID);
+	GameTooltip_AddWidgetSet(GameTooltip, Constants.DelvesConsts.DELVES_COMPANION_TOOLTIP_WIDGET_SET_ID);
 	GameTooltip:Show();
 end
 
@@ -174,6 +181,19 @@ end
 
 --[[ Role and Trinket Slots , Options List ]]
 CompanionConfigSlotTemplateMixin = {};
+
+function CompanionConfigSlotTemplateMixin:OnEvent(event)
+    if event == "GLOBAL_MOUSE_DOWN" then
+        if self.OptionsList:IsShown() and (not self:IsMouseOver() and not self.OptionsList:IsMouseOver()) then
+            self.OptionsList:Hide();
+
+            if self.NewLabel:IsShown() then
+                self.NewLabel:Hide();
+                self.NewGlowHighlight:Hide();
+            end
+        end
+    end
+end
 
 function CompanionConfigSlotTemplateMixin:OnLoad()
     local view = CreateScrollBoxListLinearView(1, 0, 0, 0, 0, 1);
@@ -218,7 +238,10 @@ end
 
 function CompanionConfigSlotTemplateMixin:SetSeenCurios()
     C_Timer.After(SET_SEEN_CURIOS_DELAY, function()
-        self.configID = C_Traits.GetConfigIDByTreeID(Constants.DelvesConsts.BRANN_TRAIT_TREE_ID);
+        --! TODO BRANN_COMPANION_INFO_ID to be replaced with other data source in the future, keeping it explicit for now
+	    local traitTreeID = C_DelvesUI.GetTraitTreeForCompanion(Constants.DelvesConsts.BRANN_COMPANION_INFO_ID);
+
+        self.configID = C_Traits.GetConfigIDByTreeID(traitTreeID);
         
         if not self.configID or not self.type then
             return;
@@ -237,13 +260,18 @@ function CompanionConfigSlotTemplateMixin:SetSeenCurios()
 end
 
 function CompanionConfigSlotTemplateMixin:OnShow()
-    self.configID = self.configID or C_Traits.GetConfigIDByTreeID(Constants.DelvesConsts.BRANN_TRAIT_TREE_ID);
+    --! TODO BRANN_COMPANION_INFO_ID to be replaced with other data source in the future, keeping it explicit for now
+    local traitTreeID = C_DelvesUI.GetTraitTreeForCompanion(Constants.DelvesConsts.BRANN_COMPANION_INFO_ID);
+
+    self:RegisterEvent("GLOBAL_MOUSE_DOWN");
+    self.configID = self.configID or C_Traits.GetConfigIDByTreeID(traitTreeID);
     self.NewLabel:Hide();
     self.NewGlowHighlight:Hide();
     self:Refresh();
 end
 
 function CompanionConfigSlotTemplateMixin:OnHide()
+    self:UnregisterEvent("GLOBAL_MOUSE_DOWN");
     self.OptionsList:Hide();
 end
 
@@ -256,6 +284,7 @@ function CompanionConfigSlotTemplateMixin:HasSelectionAndInfo()
 end
 
 function CompanionConfigSlotTemplateMixin:OnEnter()
+    self:CheckToggleAllowed();
     if self:HasSelectionAndInfo() then
         local selection = self.selectionNodeOptions[self.selectionNodeInfo.activeEntry.entryID];
 
@@ -263,7 +292,12 @@ function CompanionConfigSlotTemplateMixin:OnEnter()
             spellID = selection.overriddenSpellID or selection.spellID,
             name = selection.name,
             description = selection.description,
-        }, 0, -60);
+            tooltipError = self.tooltipError,
+        }, -5, -30);
+    elseif self.toggleNotAllowed and self.tooltipError then
+        ShowConfigTooltip(self, {
+            tooltipError = self.tooltipError,
+        }, -5, -30);
     end
 
     self.HighlightTexture:Show();
@@ -277,20 +311,42 @@ function CompanionConfigSlotTemplateMixin:OnLeave()
 end
 
 function CompanionConfigSlotTemplateMixin:OnMouseDown()
+    -- Slot is disabled if it hasn't been unlocked yet
     if not self:IsEnabled() then
         return;
     end
-    
-    if self.OptionsList:IsShown() then
-        self.OptionsList:Hide();
-        
-        if self.NewLabel:IsShown() then
-            self.NewLabel:Hide();
-            self.NewGlowHighlight:Hide();
+
+    -- If slot enabled, make sure we can open it (not in combat, not too far away from supplies during delve)
+    self:CheckToggleAllowed();
+
+    if not self.toggleNotAllowed then
+        if self.OptionsList:IsShown() then
+            self.OptionsList:Hide();
+            
+            if self.NewLabel:IsShown() then
+                self.NewLabel:Hide();
+                self.NewGlowHighlight:Hide();
+            end
+        else
+            EventRegistry:TriggerEvent("CompanionConfiguration.ListShown");
+            self.OptionsList:Show();
         end
-    else
-        EventRegistry:TriggerEvent("CompanionConfiguration.ListShown");
-        self.OptionsList:Show();
+    end
+end
+
+function CompanionConfigSlotTemplateMixin:CheckToggleAllowed()
+    local _, _, distance = ClosestUnitPosition(DELVES_SUPPLIES_CREATURE_ID);
+    local delveInProgress = C_PartyInfo.IsDelveInProgress();
+    local playerMustInteractWithSupplies = delveInProgress and distance > DELVES_SUPPLIES_MAX_DISTANCE;
+    self.tooltipError = nil;
+    self.toggleNotAllowed = false;
+
+    if UnitAffectingCombat("player") then
+        self.tooltipError = ERR_NOT_IN_COMBAT;
+        self.toggleNotAllowed = true;
+    elseif playerMustInteractWithSupplies then
+        self.tooltipError = DELVES_ERR_MUST_USE_SUPPLIES;
+        self.toggleNotAllowed = true;
     end
 end
 
@@ -323,7 +379,7 @@ function CompanionConfigSlotTemplateMixin:Refresh(keepOptionsListOpen)
             self.Value:SetText(lockedText);
             self.Value:SetTextColor(GRAY_FONT_COLOR:GetRGB());
             self.Label:SetTextColor(GRAY_FONT_COLOR:GetRGB());
-            self.Border:SetAtlas("talents-node-pvp-locked"); -- todo art
+            self.Border:SetAtlas("talents-node-pvp-locked");
             self.Texture:SetAtlas(nil);
             self.Texture:SetTexture(nil);
             self.HighlightTexture:SetAtlas(nil);
@@ -432,13 +488,14 @@ function CompanionConfigSlotTemplateMixin:GetSlotLabelText()
     end
 end
 
+--! TODO BRANN_COMPANION_INFO_ID to be replaced with other data source in the future, keeping it explicit for now
 function CompanionConfigSlotTemplateMixin:GetSelectionNodeID()
     if Enum.CompanionConfigSlotTypes[self.type] == Enum.CompanionConfigSlotTypes.Role then
-        return Constants.DelvesConsts.BRANN_ROLE_NODE_ID;
+        return C_DelvesUI.GetRoleNodeForCompanion(Constants.DelvesConsts.BRANN_COMPANION_INFO_ID);
     elseif Enum.CompanionConfigSlotTypes[self.type] == Enum.CompanionConfigSlotTypes.Utility then
-        return Constants.DelvesConsts.BRANN_UTILITY_TRINKET_NODE_ID;
+        return C_DelvesUI.GetCurioNodeForCompanion(Constants.DelvesConsts.BRANN_COMPANION_INFO_ID, Enum.CurioType.Utility);
     elseif Enum.CompanionConfigSlotTypes[self.type] == Enum.CompanionConfigSlotTypes.Combat then
-        return Constants.DelvesConsts.BRANN_COMBAT_TRINKET_NODE_ID;
+        return C_DelvesUI.GetCurioNodeForCompanion(Constants.DelvesConsts.BRANN_COMPANION_INFO_ID, Enum.CurioType.Combat);
     else
         return nil;
     end
@@ -476,6 +533,10 @@ end
 
 CompanionConfigSlotOptionsListMixin = {};
 
+function CompanionConfigSlotOptionsListMixin:OnShow()
+    PlaySound(MenuVariants.GetDropdownOpenSoundKit());
+end
+
 function CompanionConfigSlotOptionsListMixin:OnHide()
     local slot = self:GetParent();
 
@@ -483,27 +544,20 @@ function CompanionConfigSlotOptionsListMixin:OnHide()
         slot.NewLabel:Hide();
         slot.NewGlowHighlight:Hide();
     end
+    PlaySound(MenuVariants.GetDropdownCloseSoundKit());
 end
 
 --[[ Config List Button ]]
 CompanionConfigListButtonMixin = {};
 
 function CompanionConfigListButtonMixin:OnClick()
-    local _, _, distance = ClosestUnitPosition(DELVES_SUPPLIES_CREATURE_ID);
-    local delveInProgress = C_PartyInfo.IsDelveInProgress();
-    local playerMustInteractWithSupplies = delveInProgress and distance > DELVES_SUPPLIES_MAX_DISTANCE;
-
-    if UnitAffectingCombat("player") then
-        UIErrorsFrame:AddExternalErrorMessage(ERR_NOT_IN_COMBAT);
-    elseif playerMustInteractWithSupplies then
-        UIErrorsFrame:AddExternalErrorMessage(DELVES_ERR_MUST_USE_SUPPLIES);
-    else
-        if TrySelectTrait(self.data.configID, self.data.selectionNodeID, self.data.entryID) then
-            EventRegistry:TriggerEvent("CompanionConfigListButton.Commit");
-        else
-            UIErrorsFrame:AddExternalErrorMessage(GENERIC_TRAIT_FRAME_INTERNAL_ERROR);
-        end
+    if TrySelectTrait(self.data.configID, self.data.selectionNodeID, self.data.entryID) then
+        PlaySound(SOUNDKIT.UI_CLASS_TALENT_NODE_SPEND_MAJOR);
+        EventRegistry:TriggerEvent("CompanionConfigListButton.Commit");
     end
+
+    local optionsList = self:GetParent():GetParent():GetParent();
+    optionsList:Hide();
 end
 
 function CompanionConfigListButtonMixin:OnEnter()

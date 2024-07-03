@@ -90,7 +90,7 @@ function TalentDisplayMixin:SetTooltipInternal(ignoreTooltipInfo)
 	if not ignoreTooltipInfo then
 		self:AddTooltipInfo(tooltip);
 	end
-	self:AddTooltipDescription(tooltip);
+	self:AddTooltipDescription(tooltip, ignoreTooltipInfo);
 	self:AddTooltipCost(tooltip);
 
 	if not self:IsInspecting() then
@@ -274,8 +274,8 @@ function TalentDisplayMixin:AddTooltipInfo(tooltip)
 	end
 end
 
-function TalentDisplayMixin:AddTooltipDescription(tooltip)
-	local blankLineAdded = false;
+function TalentDisplayMixin:AddTooltipDescription(tooltip, tooltipInfoIgnored)
+	local blankLineAdded = tooltipInfoIgnored or false;
 	if self:ShouldShowSubText() then
 		local talentSubtext = self:GetSubtext();
 		if talentSubtext and (talentSubtext ~= "") then

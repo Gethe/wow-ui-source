@@ -54,7 +54,7 @@ function SpellBookFrameTutorialsMixin:UpdateHelpPlates()
 	SpellBookFrame_HelpPlates.FrameSize = { width = width * relativeScale, height = self:GetHeight() * relativeScale };
 
 	-- SpellBookRevampTODO: Add more help plates as new UI is finished and desired new help text determined with design
-	local maxTutorializedAreas = 1;
+	local maxTutorializedAreas = 2;
 	for i = 1, maxTutorializedAreas do
 		SpellBookFrame_HelpPlates[i] = nil;
 	end
@@ -74,6 +74,17 @@ function SpellBookFrameTutorialsMixin:UpdateHelpPlates()
 		ToolTipText = SPELLBOOK_HELP_1,
 	}
 	table.insert(SpellBookFrame_HelpPlates, pagedSpellsSection);
+
+	if not self.isMinimized then
+		local minimizeButtonSection =
+		{
+			ButtonPos = { x = pagedSpellsLeft + pagedSpellsWidth - 50, y = pagedSpellsTop + 70 },
+			HighLightBox = { x = pagedSpellsLeft + pagedSpellsWidth - 105, y = pagedSpellsTop + 95, width = 100, height = 70 },
+			ToolTipDir = "DOWN",
+			ToolTipText = PLAYER_SPELLS_FRAME_MINIMIZE_TIP,
+		}
+		table.insert(SpellBookFrame_HelpPlates, minimizeButtonSection);
+	end
 end
 
 function SpellBookFrameTutorialsMixin:CheckShowHelpTips()

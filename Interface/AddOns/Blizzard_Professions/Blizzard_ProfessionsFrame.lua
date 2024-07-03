@@ -273,7 +273,8 @@ function ProfessionsMixin:UpdateTabs()
 		local specTabInfo = C_ProfSpecs.GetSpecTabInfo();
 		self.TabSystem:SetTabEnabled(self.specializationsTabID, specTabInfo.enabled, specTabInfo.errorReason);
 		local specTab = self:GetTabButton(self.specializationsTabID);
-		local specCurrencyInfo = C_ProfSpecs.GetCurrencyInfoForSkillLine(C_ProfSpecs.GetDefaultSpecSkillLine());
+		local specSkillLine = C_ProfSpecs.GetDefaultSpecSkillLine();
+		local specCurrencyInfo = specSkillLine and C_ProfSpecs.GetCurrencyInfoForSkillLine(specSkillLine);
 		local currencyAvailableText = specCurrencyInfo and PROFESSIONS_CURRENCY_AVAILABLE:format(specCurrencyInfo.numAvailable, specCurrencyInfo.currencyName);
 		specTab:SetTooltipText(currencyAvailableText);
 		forceAwayFromSpec = not specTabInfo.enabled;

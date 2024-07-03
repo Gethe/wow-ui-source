@@ -963,13 +963,13 @@ end
 function ProfessionsCraftingPageMixin:CreateInternal(recipeID, count, recipeLevel)
 	self:SetOverrideCastBarActive(true);
 	local transaction = self.SchematicForm:GetTransaction();
+	local applyConcentration = transaction:IsApplyingConcentration();
 	if transaction:IsRecipeType(Enum.TradeskillRecipeType.Salvage) then
 		local salvageItem = transaction:GetSalvageAllocation();
 		if salvageItem then
 			local itemLocation = C_Item.GetItemLocation(salvageItem:GetItemGUID());
 			if itemLocation then
 				local craftingReagentTbl = transaction:CreateCraftingReagentInfoTbl();
-				local applyConcentration = transaction:IsApplyingConcentration();
 				C_TradeSkillUI.CraftSalvage(recipeID, count, itemLocation, craftingReagentTbl, applyConcentration);
 			end
 		end
@@ -978,7 +978,7 @@ function ProfessionsCraftingPageMixin:CreateInternal(recipeID, count, recipeLeve
 			local craftingReagentTbl = transaction:CreateCraftingReagentInfoTbl();
 			local removedModifications = Professions.PrepareRecipeRecraft(transaction, craftingReagentTbl);
 			
-			local result = C_TradeSkillUI.RecraftRecipe(transaction:GetRecraftAllocation(), craftingReagentTbl, removedModifications);
+			local result = C_TradeSkillUI.RecraftRecipe(transaction:GetRecraftAllocation(), craftingReagentTbl, removedModifications, applyConcentration);
 			if result then
 				-- Create an expected table of item modifications so that we don't incorrectly deallocate
 				-- an item modification slot on form refresh that has just been installed but hasn't been stamped
@@ -993,7 +993,6 @@ function ProfessionsCraftingPageMixin:CreateInternal(recipeID, count, recipeLeve
 				craftingReagentInfos = transaction:CreateOptionalOrFinishingCraftingReagentInfoTbl();
 			end
 
-			local applyConcentration = transaction:IsApplyingConcentration();
 			local enchantItem = transaction:GetEnchantAllocation();
 			if enchantItem then
 				if count > 1 and C_TradeSkillUI.CanStoreEnchantInItem(enchantItem:GetItemGUID()) then

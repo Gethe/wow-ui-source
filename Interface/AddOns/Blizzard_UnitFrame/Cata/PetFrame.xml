@@ -190,13 +190,13 @@
 			<OnShow>
 				UnitFrame_Update(self);
 				PetFrame_Update(self);
-				TotemFrame_Update(self);
-				-- this will happen in TotemFrame_Update
+				TotemFrame:Update();
+				-- this will happen in TotemFrame:Update
 				--PlayerFrame_AdjustAttachments();
 			</OnShow>
 			<OnHide>
-				TotemFrame_Update(self);
-				-- this will happen in TotemFrame_Update
+				TotemFrame:Update();
+				-- this will happen in TotemFrame:Update
 				--PlayerFrame_AdjustAttachments();
 			</OnHide>
 			<OnUpdate function="PetFrame_OnUpdate"/>

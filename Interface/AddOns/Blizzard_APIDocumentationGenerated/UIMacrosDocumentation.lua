@@ -7,6 +7,16 @@ local UIMacros =
 	Functions =
 	{
 		{
+			Name = "RunMacroText",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "text", Type = "cstring", Nilable = false },
+				{ Name = "button", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "SetMacroExecuteLineCallback",
 			Type = "Function",
 

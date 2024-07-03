@@ -560,7 +560,7 @@ function CompactUnitFrame_UpdateHealthColor(frame)
 	if ( not unitIsConnected or (unitIsDead and not unitIsPlayer) ) then
 		--Color it gray
 		r, g, b = 0.5, 0.5, 0.5;
-	elseif ( C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.PlayerNamePlateAlternateHealthColor) and unitIsPlayer and not unitIsActivePlayer and UnitCanAttack("player", frame.unit) ) then
+	elseif ( C_GameRules.IsGameRuleActive(Enum.GameRule.PlayerNameplateAlternateHealthColor) and unitIsPlayer and not unitIsActivePlayer and UnitCanAttack("player", frame.unit) ) then
 		r, g, b  = PLAYER_NAMEPLATE_ALTERNATE_HEALTH_COLOR:GetRGBA();
 	else
 		if ( frame.optionTable.healthBarColorOverride ) then
@@ -1355,7 +1355,8 @@ function CompactUnitFrame_UpdatePlayerLevelDiff(frame)
 		local levelDiffText = frame.PlayerLevelDiffFrame.playerLevelDiffText;
 
 		local isActivePlayer = UnitIsUnit(frame.unit, "player");
-		if (C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.PlayerNamePlateDifficultyIcon) and UnitIsPlayer(frame.unit) and not isActivePlayer and not UnitInParty(frame.unit)) then
+		local playerNameplateDifficultyIcon = C_GameRules.IsGameRuleActive(Enum.GameRule.PlayerNameplateDifficultyIcon);
+		if (playerNameplateDifficultyIcon and UnitIsPlayer(frame.unit) and not isActivePlayer and not UnitInParty(frame.unit)) then
 			local otherUnitLevel = UnitEffectiveLevel(frame.unit);
 			local playerTargetLevelDiff = otherUnitLevel - UnitEffectiveLevel("player");
 			

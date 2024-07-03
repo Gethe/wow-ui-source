@@ -272,6 +272,12 @@
 					</Anchors>
 					<Color r="0.0" g="0.0" b="0.0"/>
 				</Texture>
+				<Texture parentKey="TopBlackBar">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT"/>
+					</Anchors>
+					<Color r="0.0" g="0.0" b="0.0"/>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -631,15 +637,21 @@
 						<NormalTexture file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew" />
 						<HighlightTexture file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew" alphaMode="ADD" />
 					</Button>
-					<Button name="CharacterSelectBackButton" inherits="GlueButtonTemplate" text="CHARACTER_SELECT_BACK">
+					<Button name="CharacterSelectBackButton" inherits="GlueButtonTemplate" mixin="CharacterSelectBackButtonMixin" text="CHARACTER_SELECT_BACK">
 						<Size x="188" y="42"/>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" x="12" y="12"/>
 						</Anchors>
+						<Layers>
+							<Layer level="BORDER">
+								<Texture parentKey="Arrow" atlas="common-icon-backarrow" useAtlasSize="false"/>
+							</Layer>
+						</Layers>
 						<Scripts>
-							<OnClick>
-								CharacterSelect_Exit();
-							</OnClick>
+							<OnLoad method="OnLoad"/>
+							<OnClick method="OnClick"/>
+							<OnEnable method="OnEnable"/>
+							<OnDisable method="OnDisable"/>
 						</Scripts>
 					</Button>
 					<Button name="CopyCharacterButton" mixin="CopyCharacterButtonMixin" inherits="GlueButtonSmallTemplate" hidden="true" text="COPY_CHARACTER">

@@ -2,7 +2,7 @@
 ..\..\Blizzard_SharedXML\UI.xsd">
 	<Script file="PlunderstormLobby.lua"/>
 
-<Frame name="PlunderstormLobbyFrame" hidden="true" setAllPoints="true" parent="GlueParent" inherits="CallbackRegistrantTemplate, DefaultScaleFrame" mixin="PlunderstormLobbyMixin">
+<Frame name="PlunderstormLobbyFrame" hidden="true" setAllPoints="true" parent="GlueParent" inherits="CallbackRegistrantTemplate" mixin="PlunderstormLobbyMixin">
 	<Frames>
 		<Frame parentKey="GameEnvironmentToggleFrame" inherits="GameEnvironmentFrameTemplate" />
 

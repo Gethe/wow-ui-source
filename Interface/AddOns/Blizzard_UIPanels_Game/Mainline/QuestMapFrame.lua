@@ -1258,7 +1258,7 @@ function QuestLogScrollFrameMixin:ScrollToQuest(questID)
 				lastTitleInHeader = titleFrame;
 			else
 				break;
-			end			
+			end
 		elseif titleFrame.questID == questID then
 			targetTitle = titleFrame;
 			lastTitleInHeader = titleFrame;
@@ -1314,12 +1314,12 @@ function QuestLogScrollFrameMixin:ScrollToQuest(questID)
 		return;
 	end
 
-	-- check if the bottom of the section is scrolled below the bottom	
+	-- check if the bottom of the section is scrolled below the bottom
 	local deltaBottom = scrollFrameBottom - sectionBottom;
 	if deltaBottom > 0 then
 		QuestScrollFrame:SetVerticalScroll(math.min(offset + deltaBottom, scrollRange));
 		-- done
-		return;		
+		return;
 	end
 
 	-- at this point the section is fully visible, nothing to do
@@ -1370,7 +1370,11 @@ function QuestMapQuestOptions_TrackQuest(questID)
 	if QuestUtils_IsQuestWatched(questID) then
 		C_QuestLog.RemoveQuestWatch(questID);
 	else
-		C_QuestLog.AddQuestWatch(questID, Enum.QuestWatchType.Manual);
+		if C_QuestLog.GetNumQuestWatches() >= Constants.QuestWatchConsts.MAX_QUEST_WATCHES then
+			UIErrorsFrame:AddMessage(OBJECTIVES_WATCH_TOO_MANY, 1.0, 0.1, 0.1, 1.0);
+		else
+			C_QuestLog.AddQuestWatch(questID, Enum.QuestWatchType.Manual);
+		end
 	end
 end
 
@@ -1694,15 +1698,6 @@ local function QuestLogQuests_GetBestTagID(questID, info)
 		end
 	end
 
-	if questTagID == Enum.QuestTag.Account then
-		local factionGroup = GetQuestFactionGroup(questID);
-		if factionGroup then
-			return factionGroup == LE_QUEST_FACTION_HORDE and "HORDE" or "ALLIANCE";
-		else
-			return Enum.QuestTag.Account;
-		end
-	end
-
 	if questTagID then
 		return questTagID;
 	end
@@ -1737,8 +1732,14 @@ local function QuestLogQuests_AddQuestButton(displayState, info)
 	local textWidth = 234;
 
 	-- tag. daily icon can be alone or before other icons except for COMPLETED or FAILED
-	local tagID = QuestLogQuests_GetBestTagID(questID, info);
-	local tagAtlas = QuestUtils_GetQuestTagAtlas(tagID);
+	local tagAtlas;
+	if C_QuestLog.IsAccountQuest(questID) then
+		-- If this is an account wide quest, prioritize the account icon over everything else
+		tagAtlas = "questlog-questtypeicon-account";
+	else
+		local tagID = QuestLogQuests_GetBestTagID(questID, info);
+		tagAtlas = QuestUtils_GetQuestTagAtlas(tagID);
+	end
 	button.TagTexture:SetShown(tagAtlas ~= nil);
 
 	if tagAtlas then
@@ -2231,7 +2232,7 @@ function QuestMapLogTitleButton_CreateContextMenu(self)
 		rootDescription:SetTag("MENU_QUEST_MAP_LOG_TITLE");
 
 		local text = QuestUtils_IsQuestWatched(self.questID) and UNTRACK_QUEST or TRACK_QUEST;
-		rootDescription:CreateButton(TRACK_QUEST, function()
+		rootDescription:CreateButton(text, function()
 			QuestMapQuestOptions_TrackQuest(self.questID);
 		end);
 
@@ -2302,9 +2303,18 @@ function QuestLogPopupDetailFrame_OnHide(self)
 	PlaySound(SOUNDKIT.IG_QUEST_LOG_CLOSE);
 end
 
-function QuestLogPopupDetailFrame_Show(questLogIndex)
-	local questID = C_QuestLog.GetQuestIDForLogIndex(questLogIndex);
-	if ( QuestLogPopupDetailFrame.questID == questID and QuestLogPopupDetailFrame:IsShown() ) then
+function QuestLogPopupDetailFrame_IsShowingQuest(questID)
+	if QuestLogPopupDetailFrame:IsShown() then
+		if QuestLogPopupDetailFrame.questID == questID then
+			return true;
+		end
+	end
+
+	return false;
+end
+
+function QuestLogPopupDetailFrame_Show(questID)
+	if QuestLogPopupDetailFrame_IsShowingQuest(questID) then
 		HideUIPanel(QuestLogPopupDetailFrame);
 		return;
 	end

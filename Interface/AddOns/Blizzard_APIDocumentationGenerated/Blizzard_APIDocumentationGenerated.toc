@@ -309,6 +309,7 @@ SplashScreenDocumentation.lua
 SuperTrackManagerDocumentation.lua
 SystemDocumentation.lua
 TalkingHeadDocumentation.lua
+TimerunningUIDocumentation.lua
 TradeSkillUIDocumentation.lua
 TransmogItemsDocumentation.lua
 TransmogSetsDocumentation.lua
@@ -334,6 +335,7 @@ CameraConstantsDocumentation.lua
 CharacterCustomizationSharedDocumentation.lua
 CharacterSelectionConstantsDocumentation.lua
 ChatConstantsDocumentation.lua
+CinematicConstantsDocumentation.lua
 ClientSettingsDocumentation.lua
 ClubSharedDocumentation.lua
 ColorDocumentation.lua
@@ -351,6 +353,7 @@ GARRISON_FOLLOWER_TYPEConstantsDocumentation.lua
 GARRISON_TYPEConstantsDocumentation.lua
 GameEnvironmentConstantsDocumentation.lua
 GamePadConstDocumentation.lua
+GameRulesConstantsDocumentation.lua
 GarrisonConstantsDocumentation.lua
 GossipConstantsDocumentation.lua
 GuildInfoSharedDocumentation.lua

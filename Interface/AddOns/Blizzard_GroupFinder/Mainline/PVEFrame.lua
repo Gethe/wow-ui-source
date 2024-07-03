@@ -8,7 +8,7 @@ local panels = {
 	{ name = "GroupFinderFrame", addon = nil },
 	{ name = "PVPUIFrame", addon = "Blizzard_PVPUI" },
 	{ name = "ChallengesFrame", addon = "Blizzard_ChallengesUI", check = function() return UnitLevel("player") >= GetMaxLevelForPlayerExpansion(); end, hideLeftInset = true },
-	{ name = "DelvesDashboardFrame", addon = "Blizzard_DelvesDashboardUI", check = function() return GetExpansionLevel() >= LE_EXPANSION_WAR_WITHIN end, hideLeftInset = true, width = 680 },
+	{ name = "DelvesDashboardFrame", addon = "Blizzard_DelvesDashboardUI", check = function() return GetExpansionLevel() >= LE_EXPANSION_WAR_WITHIN end, hideLeftInset = true },
 }
 
 function LFGListPVPStub_OnShow(self)

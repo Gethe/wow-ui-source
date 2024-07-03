@@ -1431,8 +1431,8 @@ function EditModeManagerFrameMixin:UnblockEnteringEditMode(blockingFrame)
 end
 
 function EditModeManagerFrameMixin:CanEnterEditMode()
-	return C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.EditMode) and
-			not C_PlayerInfo.IsPlayerNPERestricted() and TableIsEmpty(self.FramesBlockingEditMode);
+	local editModeDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.EditModeDisabled);
+	return (not editModeDisabled) and (not C_PlayerInfo.IsPlayerNPERestricted()) and TableIsEmpty(self.FramesBlockingEditMode);
 end
 
 EditModeGridMixin = {}

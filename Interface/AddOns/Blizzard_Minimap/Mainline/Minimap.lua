@@ -429,10 +429,11 @@ end
 MiniMapMailFrameMixin = { };
 
 function MiniMapMailFrameMixin:OnLoad()
-	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.InGameMailNotification) then
-	self:RegisterEvent("UPDATE_PENDING_MAIL");
-	self:SetFrameLevel(self:GetFrameLevel()+1);
-end
+	local inGameMailNotificationDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.IngameMailNotificationDisabled);
+	if not inGameMailNotificationDisabled then
+		self:RegisterEvent("UPDATE_PENDING_MAIL");
+		self:SetFrameLevel(self:GetFrameLevel()+1);
+	end
 end
 
 function MiniMapMailFrameMixin:OnEvent(event)
@@ -569,8 +570,8 @@ end
 MiniMapTrackingButtonMixin = { };
 
 function MiniMapTrackingButtonMixin:OnLoad()
-	local featureEnabled = C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.InGameTracking);
-	if featureEnabled then
+	local inGameTrackingDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.IngameTrackingDisabled);
+	if not inGameTrackingDisabled then
 		self:RegisterEvent("VARIABLES_LOADED");
 		self:RegisterEvent("CVAR_UPDATE");
 
@@ -692,7 +693,7 @@ function MiniMapTrackingButtonMixin:OnLoad()
 		end);
 	end
 
-	MinimapCluster.Tracking:SetShown(featureEnabled);
+	MinimapCluster.Tracking:SetShown(not inGameTrackingDisabled);
 end
 
 function MiniMapTrackingButtonMixin:OnEvent(event, arg1)
@@ -755,7 +756,7 @@ function ExpansionLandingPageMinimapButtonMixin:OnLoad()
 
 	self.pulseLocks = {};
 
-	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.LandingPageFactionID) then
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.LandingPageFactionID) then
 		self:RefreshButton();
 	else
 		FrameUtil.RegisterFrameForEvents(self, GarrisonLandingPageEvents);
@@ -778,9 +779,9 @@ end
 function ExpansionLandingPageMinimapButtonMixin:RefreshButton(forceUpdateIcon)
 	local previousMode = self.mode;
 	local wasInGarrisonMode = self:IsInGarrisonMode();
-	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.LandingPageFactionID) then
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.LandingPageFactionID) then
 		self.mode = ExpansionLandingPageMode.MajorFactionRenown;
-		self.majorFactionID = C_GameModeManager.GetFeatureSetting(Enum.GameModeFeatureSetting.LandingPageFactionID);
+		self.majorFactionID = C_GameRules.GetGameRuleAsFloat(Enum.GameRule.LandingPageFactionID);
 	elseif ExpansionLandingPage:IsOverlayApplied() then
 		self.mode = ExpansionLandingPageMode.ExpansionOverlay;
 	else

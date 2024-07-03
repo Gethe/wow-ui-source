@@ -293,7 +293,7 @@
 			</Layer>
 		</Layers>
 		<Animations>
-			<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
+			<AnimationGroup parentKey="PopAnim" setToFinalAlpha="true">
 				<Scale childKey="FiligreeGlow" duration="0.1" order="1" smoothing="IN" fromScaleX="0.9" fromScaleY="0.9" toScaleX="1.2" toScaleY="1.2"/>
 				<Scale childKey="FiligreeGlow" duration="0.1" order="1" startDelay="0.1" smoothing="IN" fromScaleX="1.2" fromScaleY="1.2" toScaleX="0.9" toScaleY="0.9"/>
 				<Alpha childKey="FiligreeGlow" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
@@ -311,14 +311,16 @@
 				<Alpha childKey="Spark" duration="0.45" order="1" startDelay="0.6" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="Title" startDelay="0.17" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="Subtitle" startDelay="0.17" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
-				<!-- order 2 -->
-				<Scale startDelay="0.7" smoothing="IN" duration="0.35" order="2" fromScaleX="1" fromScaleY="1" toScaleX="0.55" toScaleY="0.55"/>
-				<Alpha startDelay="0.7" smoothing="IN" duration="0.35" order="2" fromAlpha="1" toAlpha="0"/>
-				<Translation parentKey="Translation" startDelay="0.7" smoothing="IN" duration="0.35" order="2" offsetX="269.1" offsetY="-84.7"/>
+			</AnimationGroup>		
+			<AnimationGroup parentKey="SlideAnim" setToFinalAlpha="true">
+				<Scale startDelay="0.7" smoothing="IN" duration="0.35" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.55" toScaleY="0.55"/>
+				<Alpha startDelay="0.7" smoothing="IN" duration="0.35" order="1" fromAlpha="1" toAlpha="0"/>
+				<Translation parentKey="Translation" startDelay="0.7" smoothing="IN" duration="0.35" order="1" offsetX="0" offsetY="0"/>
 			</AnimationGroup>
 		</Animations>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
 	
