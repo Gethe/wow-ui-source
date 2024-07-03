@@ -176,11 +176,25 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.Border" x="-2" y="1"/>
 					</Anchors>					
 				</Texture>
+                <Texture parentKey="Glow" file="Interface\Minimap\UI-Minimap-ZoomButton-Toggle" alphaMode="ADD">
+                    <Size x="37" y="37"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Border" x="-2" y="1"/>
+					</Anchors>
+				</Texture>
 			</Layer>			
 		</Layers>
+        <Animations>
+			<AnimationGroup parentKey="Fade" looping="REPEAT">
+				<Alpha childKey="Glow" duration="1.0" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Glow" duration="1.0" order="2" fromAlpha="0" toAlpha="1"/>
+			</AnimationGroup>
+		</Animations>
 		<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+            <OnShow method="OnShow"/>
+            <OnHide method="OnHide"/>
 			<OnMouseDown method="OnMouseDown"/>
 			<OnMouseUp method="OnMouseUp"/>
 			<OnClick method="OnClick"/>

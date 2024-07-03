@@ -1,8 +1,8 @@
 local SpecializationVisuals = {
 	-- DK
-	[250] = { background = "talents-background-deathknight-blood", heroContainerOffset = 15, },
+	[250] = { background = "talents-background-deathknight-blood", heroContainerOffset = -15, },
 	[251] = { background = "talents-background-deathknight-frost", heroContainerOffset = -15, },
-	[252] = { background = "talents-background-deathknight-unholy", heroContainerOffset = 15, },
+	[252] = { background = "talents-background-deathknight-unholy", heroContainerOffset = -15, },
 
 	-- DH
 	[577] = { background = "talents-background-demonhunter-havoc", heroContainerOffset = -15, },

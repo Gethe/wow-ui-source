@@ -61,6 +61,18 @@ function DungeonEntrancePinMixin:ShouldMouseButtonBePassthrough(button)
 	return false;
 end
 
+function DungeonEntrancePinMixin:UseTooltip()
+	return true;
+end
+
+function DungeonEntrancePinMixin:GetFallbackName()
+	return DUNGEON_MAP_PIN_FALLBACK_NAME;
+end
+
+function DungeonEntrancePinMixin:GetTooltipInstructions()
+	return DUNGEON_POI_TOOLTIP_INSTRUCTION_LINE;
+end
+
 function DungeonEntrancePinMixin:OnMouseClickAction(button)
 	SuperTrackablePinMixin.OnMouseClickAction(self, button);
 	if button == "RightButton" then
@@ -73,7 +85,7 @@ function DungeonEntrancePinMixin:GetHighlightType() -- override
 	if QuestSuperTracking_ShouldHighlightDungeons(self:GetMap():GetMapID()) then
 		return MapPinHighlightType.SupertrackedHighlight;
 	end
-	
+
 	return MapPinHighlightType.None;
 end
 

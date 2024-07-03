@@ -57,6 +57,9 @@ function CharacterSelectListMixin:OnEvent(event, ...)
 				frame.characterInfo.realmName = realmName;
 			end
 		end);
+
+		-- Update VAS tokens, in case not having a realm had the token disabled.
+		CharacterServicesMaster_UpdateServiceButton();
 	elseif event == "CHARACTER_LIST_UPDATE" then
 		CharacterLoginUtil.EvaluateNewAlliedRaces();
 		self:EvaluateCreateCharacterNewState();

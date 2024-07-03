@@ -9,7 +9,7 @@ local MOUNT_FACTION_TEXTURES = {
 	[1] = "MountJournalIcons-Alliance"
 };
 
-local mountTypeStrings = {
+local mountFilterTypeStrings = {
 	[Enum.MountType.Ground] = MOUNT_JOURNAL_FILTER_GROUND,
 	[Enum.MountType.Flying] = MOUNT_JOURNAL_FILTER_FLYING,
 	[Enum.MountType.Aquatic] = MOUNT_JOURNAL_FILTER_AQUATIC,
@@ -240,10 +240,9 @@ function MountJournal_InitFilterButton(self)
 		end
 
 		for filterIndex = 1, Enum.MountTypeMeta.NumValues do
-			if not C_MountJournal.IsValidTypeFilter(filterIndex) then
-				break;
+			if C_MountJournal.IsValidTypeFilter(filterIndex) then
+				rootDescription:CreateCheckbox(mountFilterTypeStrings[filterIndex - 1], IsTypeChecked, SetTypeChecked, filterIndex);
 			end
-			rootDescription:CreateCheckbox(mountTypeStrings[filterIndex - 1], IsTypeChecked, SetTypeChecked, filterIndex);
 		end
 
 		local sourceSubmenu = rootDescription:CreateButton(SOURCES);
@@ -327,7 +326,7 @@ function MountJournal_ResetMountButton(button)
 end
 
 function MountJournal_InitMountButton(button, elementData)
-	local creatureName, spellID, icon, active, isUsable, sourceType, isFavorite, isFactionSpecific, faction, isFiltered, isCollected, mountID, isForDragonriding = C_MountJournal.GetDisplayedMountInfo(elementData.index);
+	local creatureName, spellID, icon, active, isUsable, sourceType, isFavorite, isFactionSpecific, faction, isFiltered, isCollected, mountID, isSteadyFlight = C_MountJournal.GetDisplayedMountInfo(elementData.index);
 	local needsFanfare = C_MountJournal.NeedsFanfare(mountID);
 
 	button.name:SetText(creatureName);
@@ -336,7 +335,7 @@ function MountJournal_InitMountButton(button, elementData)
 	button.newGlow:SetShown(needsFanfare);
 
 	local yOffset = 1;
-	if isForDragonriding then
+	if isSteadyFlight then
 		if button.name:GetNumLines() == 1 then
 			yOffset = 6;
 		else
@@ -345,7 +344,7 @@ function MountJournal_InitMountButton(button, elementData)
 	end
 	button.name:SetPoint("LEFT", button.icon, "RIGHT", 10, yOffset);
 
-	button.DragonRidingLabel:SetShown(isForDragonriding);
+	button.SteadyFlightLabel:SetShown(isSteadyFlight);
 
 	button.index = elementData.index;
 	button.spellID = spellID;
@@ -976,6 +975,7 @@ end
 
 function MountJournal_SetAllSourceFilters(value)
 	C_MountJournal.SetAllSourceFilters(value); 
+	return MenuResponse.Refresh;
 end
 
 --------------------------------------------------

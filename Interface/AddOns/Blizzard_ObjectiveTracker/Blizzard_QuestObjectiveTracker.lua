@@ -80,9 +80,11 @@ function QuestObjectiveTrackerMixin:OnBlockHeaderClick(block, mouseButton)
 				rootDescription:CreateButton(STOP_SUPER_TRACK_QUEST, function()
 					C_SuperTrack.SetSuperTrackedQuestID(0);
 				end);
-			end				
+			end
 
-			rootDescription:CreateButton(OBJECTIVES_VIEW_IN_QUESTLOG, function()
+			local toggleDetailsText = QuestUtil.IsShowingQuestDetails(questID) and OBJECTIVES_HIDE_VIEW_IN_QUESTLOG or OBJECTIVES_VIEW_IN_QUESTLOG;
+
+			rootDescription:CreateButton(toggleDetailsText, function()
 				QuestUtil.OpenQuestDetails(questID);
 			end);
 

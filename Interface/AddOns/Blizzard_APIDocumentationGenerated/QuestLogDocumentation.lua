@@ -17,7 +17,6 @@ local QuestLog =
 			Arguments =
 			{
 				{ Name = "questID", Type = "number", Nilable = false },
-				{ Name = "watchType", Type = "QuestWatchType", Nilable = true },
 			},
 
 			Returns =

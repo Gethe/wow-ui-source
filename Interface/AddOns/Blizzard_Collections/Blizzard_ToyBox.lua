@@ -53,8 +53,19 @@ function ToyBox_InitFilterDropdown(self)
 	-- Values are inverted because Usable is implemented in terms of the Unusable API.
 	local function SetUsableOnlyShown(value)
 		C_ToyBox.SetUnusableShown(not value);
+		return MenuResponse.Refresh;
 	end
 	
+	local function SetAllSourceTypeFilters(selected)
+		C_ToyBox.SetAllSourceTypeFilters(selected);
+		return MenuResponse.Refresh;
+	end
+
+	local function SetAllExpansionTypeFilters(selected)
+		C_ToyBox.SetAllExpansionTypeFilters(selected);
+		return MenuResponse.Refresh;
+	end
+
 	local function GetUsableOnlyShown()
 		return not C_ToyBox.GetUnusableShown();
 	end
@@ -106,8 +117,8 @@ function ToyBox_InitFilterDropdown(self)
 		end);
 
 		local sourceSubmenu = rootDescription:CreateButton(SOURCES);
-		sourceSubmenu:CreateButton(CHECK_ALL, C_ToyBox.SetAllSourceTypeFilters, true);
-		sourceSubmenu:CreateButton(UNCHECK_ALL, C_ToyBox.SetAllSourceTypeFilters, false);
+		sourceSubmenu:CreateButton(CHECK_ALL, SetAllSourceTypeFilters, true);
+		sourceSubmenu:CreateButton(UNCHECK_ALL, SetAllSourceTypeFilters, false);
 
 		local filterIndexList = CollectionsUtil.GetSortedFilterIndexList("TOYS", toySourceOrderPriorities);
 		for index = 1, C_PetJournal.GetNumPetSources() do
@@ -118,8 +129,8 @@ function ToyBox_InitFilterDropdown(self)
 		end
 
 		local expansionSubmenu = rootDescription:CreateButton(EXPANSION_FILTER_TEXT);
-		expansionSubmenu:CreateButton(CHECK_ALL, C_ToyBox.SetAllExpansionTypeFilters, true);
-		expansionSubmenu:CreateButton(UNCHECK_ALL, C_ToyBox.SetAllExpansionTypeFilters, false);
+		expansionSubmenu:CreateButton(CHECK_ALL, SetAllExpansionTypeFilters, true);
+		expansionSubmenu:CreateButton(UNCHECK_ALL, SetAllExpansionTypeFilters, false);
 
 		for filterIndex = 1, GetNumExpansions() do
 			if C_ToyBoxInfo.IsToySourceValid(filterIndex) then

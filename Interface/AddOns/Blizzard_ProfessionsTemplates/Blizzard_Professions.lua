@@ -951,6 +951,8 @@ function Professions.SetAllInventorySlotsFiltered(filtered)
 	for i = 1, numSources do
 		C_TradeSkillUI.SetInventorySlotFilter(i, filtered);
 	end
+
+	return MenuResponse.Refresh;
 end
 
 function Professions.SetAllSourcesFiltered(filtered)
@@ -964,6 +966,8 @@ function Professions.SetAllSourcesFiltered(filtered)
 	else
 		C_TradeSkillUI.ClearRecipeSourceTypeFilter();
 	end
+
+	return MenuResponse.Refresh;
 end
 
 function Professions.AreAllSourcesFiltered()
@@ -1132,7 +1136,7 @@ function Professions.InitFilterMenu(dropdown, onUpdate, onDefault, ignoreSkillLi
 
 		if not isNPCCrafting then
 			local sourceSubmenu = rootDescription:CreateButton(SOURCES);
-			local button = sourceSubmenu:CreateButton(CHECK_ALL, Professions.SetAllSourcesFiltered, false);
+			sourceSubmenu:CreateButton(CHECK_ALL, Professions.SetAllSourcesFiltered, false);
 			sourceSubmenu:CreateButton(UNCHECK_ALL, Professions.SetAllSourcesFiltered, true);
 
 			for filterIndex = 1, C_PetJournal.GetNumPetSources() do

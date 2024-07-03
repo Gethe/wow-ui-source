@@ -142,10 +142,12 @@ function HeirloomsMixin:InitFilterDropdown()
 		local submenu = rootDescription:CreateButton(SOURCES);
 		submenu:CreateButton(CHECK_ALL, function()
 			self:SetAllSourcesChecked(true);
+			return MenuResponse.Refresh;
 		end);
 
 		submenu:CreateButton(UNCHECK_ALL, function()
 			self:SetAllSourcesChecked(false);
+			return MenuResponse.Refresh;
 		end);
 
 		for filterIndex = 1, C_PetJournal.GetNumPetSources() do

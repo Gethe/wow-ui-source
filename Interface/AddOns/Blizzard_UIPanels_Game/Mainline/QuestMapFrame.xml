@@ -216,6 +216,7 @@
 					<Size x="215" y="0"/>
 					<Anchors>
 						<Anchor point="TOP" x="0" y="-8"/>
+						<Anchor point="RIGHT" relativeKey="$parent.StorylineTexture" relativePoint="LEFT" x="-4"/>
 					</Anchors>
 					<Color r="0.75" g="0.61" b="0"/>
 				</FontString>

@@ -8,10 +8,12 @@ local SetPrivateReference = ProxyUtil.SetPrivateReference;
 local ReleasePrivateReference = ProxyUtil.ReleasePrivateReference;
 local ProxyConvertablePrivateMixin = Mixin(ProxyConvertableMixin);
 local CreateFromMixinsPrivate = CreateFromMixins;
+local assert = assert;
+local type = type;
 
-local MenuCallbackRegistry = CreateFromMixinsPrivate(CallbackRegistryMixin);
-MenuCallbackRegistry:SetUndefinedEventsAllowed(true);
-MenuCallbackRegistry:OnLoad();
+local ModifyMenuRegistry = CreateFromMixinsPrivate(CallbackRegistryMixin);
+ModifyMenuRegistry:SetUndefinedEventsAllowed(true);
+ModifyMenuRegistry:OnLoad();
 
 local MenuAttributeDelegate = CreateFrame("FRAME");
 MenuAttributeDelegate:SetForbidden();
@@ -497,6 +499,7 @@ local StandardBaseMenuAPI =
 	"AddInitializer",
 	"SetFinalInitializer",
 	"SetMinimumWidth",
+	"GetMinimumWidth",
 	"SetMaximumWidth",
 	"SetGridMode",
 };
@@ -635,10 +638,6 @@ do
 			return false;
 		end
 
-		if type(self.isSelected) == "boolean" then
-			return self.isSelected;
-		end
-
 		return self.isSelected(self:GetData());
 	end
 	
@@ -699,11 +698,23 @@ do
 	end
 
 	function MenuElementDescriptionProxyMixin:SetOnEnter(onEnter)
+		if onEnter == nil then
+			return false;
+		end
+
 		self.onEnter = function(...)
 			onEnter(...);
 		end
 	end
 	
+	function MenuElementDescriptionProxyMixin:HookOnEnter(callback)
+		if self.onEnter then
+			hooksecurefunction(self, "onEnter", callback);
+		else
+			self:SetOnEnter(callback);
+		end
+	end
+
 	function MenuElementDescriptionProxyMixin:GetOnEnter()
 		return self.onEnter;
 	end
@@ -719,11 +730,23 @@ do
 	end
 
 	function MenuElementDescriptionProxyMixin:SetOnLeave(onLeave)
+		if onLeave == nil then
+			return false;
+		end
+
 		self.onLeave = function(...)
 			onLeave(...);
 		end
 	end
 	
+	function MenuElementDescriptionProxyMixin:HookOnLeave(callback)
+		if self.onLeave then
+			hooksecurefunction(self, "onLeave", callback);
+		else
+			self:SetOnLeave(callback);
+		end
+	end
+
 	function MenuElementDescriptionProxyMixin:GetOnLeave()
 		return self.onLeave;
 	end
@@ -772,6 +795,14 @@ do
 		self.responder = callback;
 	end
 	
+	function MenuElementDescriptionProxyMixin:HookResponder(callback)
+		if self.responder then
+			hooksecurefunction(self, "responder", callback);
+		else
+			self:SetResponder(callback);
+		end
+	end
+
 	function MenuElementDescriptionProxyMixin:SetResponse(response)
 		self.defaultResponse = response;
 	end
@@ -2316,7 +2347,7 @@ do
 
 		generatedDescriptions[tag] = {description, ownerRegion};
 
-		MenuCallbackRegistry:TriggerEvent("ModifyMenu", ownerRegion, description);
+		ModifyMenuRegistry:TriggerEvent(tag, ownerRegion, description);
 	end
 
 	function Menu.PopulateDescription(menuGenerator, ownerRegion, description, ...)
@@ -2325,6 +2356,8 @@ do
 	end
 
 	function Menu.ModifyMenu(tag, callback)
+		assert(type(tag) == "string");
+
 		local tbl = generatedDescriptions[tag];
 		if tbl then
 			local description = tbl[1];
@@ -2337,13 +2370,12 @@ do
 		end
 
 		local function Callback(subscriber, ownerRegion, description)
-			if description.tag == tag then
-				callback(ownerRegion, description, description.contextData);
-			end
+			callback(ownerRegion, description, description.contextData);
 		end
 		
-		local handle = callback;
-		return MenuCallbackRegistry:RegisterCallbackWithHandle("ModifyMenu", Callback, handle);
+		-- Do not provide an owner context as we want one auto-generated to enable addons to use
+		-- the same callback if they choose to do so.
+		return ModifyMenuRegistry:RegisterCallbackWithHandle(tag, Callback);
 	end
 
 	function Menu.GetOpenMenuTags()

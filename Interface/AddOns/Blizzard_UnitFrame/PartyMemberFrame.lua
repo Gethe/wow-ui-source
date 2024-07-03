@@ -222,7 +222,7 @@ function PartyMemberFrameMixin:ToVehicleArt()
 	self.PartyMemberOverlay.Status:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOn-Vehicle-Status", TextureKitConstants.UseAtlasSize);
 	self.PartyMemberOverlay.Status:SetPoint("TOPLEFT", self, "TOPLEFT", -3, 3);
 
-	self.HealthBar.HealthBarTexture:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOn-Vehicle-Bar-Health", TextureKitConstants.UseAtlasSize);
+	self.HealthBarContainer.HealthBar.HealthBarTexture:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOn-Vehicle-Bar-Health", TextureKitConstants.UseAtlasSize);
 	self.HealthBarContainer:SetWidth(67);
 	self.HealthBarContainer:SetPoint("TOPLEFT", self, "TOPLEFT", 48, -18);
 	self:UpdateHealthBarTextAnchors();

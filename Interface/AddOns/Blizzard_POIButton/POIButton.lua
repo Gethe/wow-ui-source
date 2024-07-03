@@ -171,14 +171,20 @@ end
 
 local function POIButton_GetAreaPOIDisplay(poiButton)
 	-- TODO: This could need to support textures, it just won't for now.
-	local display = poiButton:GetPoiInfo().atlasName;
+	-- Also, note that these currently all have to be map pins, that's where the
+	local info = poiButton:GetAreaPOIInfo();
 
-	-- hacks for now...
-	if display == "minimap-genericevent-hornicon" then
+	-- Events that aren't current only use the default icon
+	if not info.isCurrentEvent then
 		return "UI-EventPoi-Horn-big";
 	end
 
-	return display;
+	-- Hack: Overrides for older events that haven't been updated
+	if info.atlasName == "minimap-genericevent-hornicon" then
+		return "UI-EventPoi-Horn-big";
+	end
+
+	return info.atlasName;
 end
 
 local function POIButton_GetAreaPOIAtlasInfoNormal(poiButton)
@@ -315,8 +321,8 @@ local function POIButton_UpdateNormalStyle(poiButton)
 		elseif questPOIType == POIButtonUtil.QuestTypes.Epic then -- TODO: Double check, rare/epic quality on world quests might not be a thing any more
 			poiButton.Display:SetOffset(0, 0);
 			POIButton_SetAtlas(poiButton.Glow, nil, nil, "UI-QuestPoi-OuterGlow");
-			POIButton_SetAtlas(poiButton.NormalTexture, nil, nil, "worldquest-questmarker-epic");
-			POIButton_SetAtlas(poiButton.PushedTexture, nil, nil, "worldquest-questmarker-epic-down");
+			POIButton_SetAtlas(poiButton.NormalTexture, nil, nil, POIButton_GetAtlasInfoNormal(poiButton));
+			POIButton_SetAtlas(poiButton.PushedTexture, nil, nil, POIButton_GetAtlasInfoPushed(poiButton));
 			POIButton_SetAtlas(poiButton.HighlightTexture, nil, nil, POIButton_GetAtlasInfoHighlight(poiButton));
 		else
 			poiButton.Display:SetOffset(0, 0);
@@ -399,20 +405,27 @@ function POIButtonMixin:OnClick(button)
 		return;
 	end
 
+	if self:IsSelected() then
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+		C_SuperTrack.ClearAllSuperTracked();
+		return;
+	end
+
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+
 	local questID = self:GetQuestID();
 	if questID then
 		if ChatEdit_TryInsertQuestLinkForQuestID(questID) then
 			return;
 		end
 
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		if QuestUtils_IsQuestWatched(questID) then
 			if IsShiftKeyDown() then
 				C_QuestLog.RemoveQuestWatch(questID);
 				return;
 			end
 		else
-			C_QuestLog.AddQuestWatch(questID, Enum.QuestWatchType.Manual);
+			C_QuestLog.AddQuestWatch(questID);
 		end
 
 		C_SuperTrack.SetSuperTrackedQuestID(questID);

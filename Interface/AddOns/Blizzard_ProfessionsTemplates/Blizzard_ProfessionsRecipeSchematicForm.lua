@@ -1387,8 +1387,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 
 	Professions.LayoutAndShowReagentSlotContainer(optionalSlots, self.OptionalReagents);
 
-	local concentrationCurrency = professionInfo and C_TradeSkillUI.GetConcentrationCurrencyID(professionInfo.professionID);
-	local hasConcentration = concentrationCurrency ~= 0;
+	local hasConcentration = operationInfo ~= nil and operationInfo.concentrationCurrencyID ~= 0;
 
 	if minimized then
 		if self.OptionalReagents:IsShown() then
@@ -1502,6 +1501,14 @@ function ProfessionsRecipeSchematicFormMixin:UpdateRecipeDescription()
 
 		if description and description ~= "" then
 			self.Description:SetText(description);
+
+			-- Prevent Description overlap with Details panel if shown.
+			if self.Details:IsShown() then
+				self.Description:SetWidth(340);
+			else
+				self.Description:SetWidth(460);
+			end
+
 			self.Description:SetHeight(600);
 			self.Description:SetHeight(self.Description:GetStringHeight() + 1);
 			self.Description:Show();

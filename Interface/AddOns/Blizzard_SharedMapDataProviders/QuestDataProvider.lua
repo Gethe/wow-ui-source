@@ -291,7 +291,7 @@ function QuestPinMixin:OnMouseEnter()
 	end
 	GameTooltip:Show();
 	POIButtonHighlightManager:SetHighlight(questID);
-    EventRegistry:TriggerEvent("MapCanvas.QuestPin.OnEnter", questID);
+    EventRegistry:TriggerEvent("MapCanvas.QuestPin.OnEnter", self, questID);
     self:OnLegendPinMouseEnter();
 end
 

@@ -71,21 +71,105 @@ function BaseMapPoiPinMixin:GetPoiInfo()
 	return self.poiInfo;
 end
 
-function BaseMapPoiPinMixin:OnMouseEnter()
-	if self.name then
-		self:GetMap():TriggerEvent("SetAreaLabel", MAP_AREA_LABEL_TYPE.POI, self.name, self.description);
+function BaseMapPoiPinMixin:UseSetAreaLabel()
+	return true; -- default, override as needed
+end
+
+function BaseMapPoiPinMixin:UseMapLegend()
+	return true; -- default, override as needed
+end
+
+function BaseMapPoiPinMixin:UseTooltip()
+	return false; -- default, override as needed
+end
+
+function BaseMapPoiPinMixin:GetFallbackName()
+	return nil; -- default, override as needed
+end
+
+function BaseMapPoiPinMixin:GetTooltipInstructions()
+	return nil; -- default, override as needed
+end
+
+function BaseMapPoiPinMixin:CheckSetAreaLabel()
+	if self:UseSetAreaLabel() then
+		if self.name then
+			self:GetMap():TriggerEvent("SetAreaLabel", MAP_AREA_LABEL_TYPE.POI, self.name, self.description);
+		end
 	end
-	if self.OnLegendPinMouseEnter then
+end
+
+function BaseMapPoiPinMixin:CheckClearAreaLabel()
+	if self:UseSetAreaLabel() then
+		self:GetMap():TriggerEvent("ClearAreaLabel", MAP_AREA_LABEL_TYPE.POI);
+	end
+end
+
+function BaseMapPoiPinMixin:CheckMapLegendMouseEnter()
+	if self:UseMapLegend() and self.OnLegendPinMouseEnter then
 		self:OnLegendPinMouseEnter();
 	end
 end
 
-function BaseMapPoiPinMixin:OnMouseLeave()
-	self:GetMap():TriggerEvent("ClearAreaLabel", MAP_AREA_LABEL_TYPE.POI);
-
-	if self.OnLegendPinMouseLeave then
+function BaseMapPoiPinMixin:CheckMapLegendMouseLeave()
+	if self:UseMapLegend() and self.OnLegendPinMouseLeave then
 		self:OnLegendPinMouseLeave();
 	end
+end
+
+function BaseMapPoiPinMixin:CheckShowTooltip()
+	if self:UseTooltip() then
+		local tooltip = GetAppropriateTooltip();
+		tooltip:SetOwner(self, "ANCHOR_RIGHT");
+		local name, description = self:GetBestNameAndDescription();
+		GameTooltip_SetTitle(tooltip, name);
+
+		if description then
+			GameTooltip_AddNormalLine(tooltip, description);
+		end
+
+		local instructionLine = self:GetTooltipInstructions();
+		if instructionLine then
+			GameTooltip_AddInstructionLine(tooltip, instructionLine, false);
+		end
+
+		tooltip:Show();
+	end
+end
+
+function BaseMapPoiPinMixin:CheckHideTooltip()
+	if self:UseTooltip() then
+		GetAppropriateTooltip():Hide();
+	end
+end
+
+function BaseMapPoiPinMixin:OnMouseEnter()
+	self:CheckSetAreaLabel();
+	self:CheckMapLegendMouseEnter();
+	self:CheckShowTooltip();
+end
+
+function BaseMapPoiPinMixin:OnMouseLeave()
+	self:CheckClearAreaLabel();
+	self:CheckMapLegendMouseLeave();
+	self:CheckHideTooltip();
+end
+
+function BaseMapPoiPinMixin:GetBestNameAndDescription()
+	local info = self:GetPoiInfo();
+	local name = info.name;
+	local description = info.description;
+	if not name or name == "" then
+		name = description;
+		description = nil;
+	end
+
+	if not name or name == "" then
+		name = self:GetFallbackName();
+		description = nil;
+	end
+
+	return name, description;
 end
 
 MapPinAnimatedHighlightMixin = {};
@@ -382,17 +466,15 @@ function SuperTrackablePinMixin:OnAcquired(...)
 	end
 end
 
-function SuperTrackablePinMixin:OnMouseDownAction(button)
-
-end
-
-function SuperTrackablePinMixin:OnMouseUpAction(button, upInside)
-
-end
-
 function SuperTrackablePinMixin:OnMouseClickAction(button)
 	if self:IsSuperTrackAction(button, MapCanvasMixin.MouseAction.Click) and self:DoesMapTypeAllowSuperTrack() then
-		C_SuperTrack[self:GetSuperTrackMutatorAPIName()](self:GetSuperTrackData());
+		if self:IsSuperTracked() then
+			C_SuperTrack.ClearAllSuperTracked();
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+		else
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+			C_SuperTrack[self:GetSuperTrackMutatorAPIName()](self:GetSuperTrackData());
+		end
 	end
 end
 
@@ -494,7 +576,9 @@ function LegendHighlightablePoiPinMixin:ShowMapLegendGlow()
 end
 
 function LegendHighlightablePoiPinMixin:HideMapLegendGlow()
-	self.LegendGlow:Hide();
+	if self.LegendGlow then
+		self.LegendGlow:Hide();
+	end
 end
 
 function LegendHighlightablePoiPinMixin:OnLegendPinMouseEnter()

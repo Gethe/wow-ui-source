@@ -261,7 +261,7 @@ local function Register()
 			return container:GetData();
 		end
 
-		local defaultValue = 3;
+		local defaultValue = 1;
 		local setting = Settings.RegisterProxySetting(category, "PROXY_INTERACT_ICONS", Settings.DefaultVarLocation,
 			Settings.VarType.Number, INTERACT_ICONS_OPTION, defaultValue, GetValue, SetValue);
 		Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_INTERACT_ICONS);

@@ -963,13 +963,13 @@ end
 function ProfessionsCraftingPageMixin:CreateInternal(recipeID, count, recipeLevel)
 	self:SetOverrideCastBarActive(true);
 	local transaction = self.SchematicForm:GetTransaction();
+	local applyConcentration = transaction:IsApplyingConcentration();
 	if transaction:IsRecipeType(Enum.TradeskillRecipeType.Salvage) then
 		local salvageItem = transaction:GetSalvageAllocation();
 		if salvageItem then
 			local itemLocation = C_Item.GetItemLocation(salvageItem:GetItemGUID());
 			if itemLocation then
 				local craftingReagentTbl = transaction:CreateCraftingReagentInfoTbl();
-				local applyConcentration = transaction:IsApplyingConcentration();
 				C_TradeSkillUI.CraftSalvage(recipeID, count, itemLocation, craftingReagentTbl, applyConcentration);
 			end
 		end
@@ -978,7 +978,7 @@ function ProfessionsCraftingPageMixin:CreateInternal(recipeID, count, recipeLeve
 			local craftingReagentTbl = transaction:CreateCraftingReagentInfoTbl();
 			local removedModifications = Professions.PrepareRecipeRecraft(transaction, craftingReagentTbl);
 			
-			local result = C_TradeSkillUI.RecraftRecipe(transaction:GetRecraftAllocation(), craftingReagentTbl, removedModifications);
+			local result = C_TradeSkillUI.RecraftRecipe(transaction:GetRecraftAllocation(), craftingReagentTbl, removedModifications, applyConcentration);
 			if result then
 				-- Create an expected table of item modifications so that we don't incorrectly deallocate
 				-- an item modification slot on form refresh that has just been installed but hasn't been stamped
@@ -993,7 +993,6 @@ function ProfessionsCraftingPageMixin:CreateInternal(recipeID, count, recipeLeve
 				craftingReagentInfos = transaction:CreateOptionalOrFinishingCraftingReagentInfoTbl();
 			end
 
-			local applyConcentration = transaction:IsApplyingConcentration();
 			local enchantItem = transaction:GetEnchantAllocation();
 			if enchantItem then
 				if count > 1 and C_TradeSkillUI.CanStoreEnchantInItem(enchantItem:GetItemGUID()) then
@@ -1187,7 +1186,7 @@ function ProfessionsCraftingPageMixin:UpdateTutorial()
 	local details = self.SchematicForm.Details;
 	local detailsShown = details:IsShown();
 	local qualityMeter = self.SchematicForm.Details.QualityMeter;
-	local finishingReagents = self.SchematicForm.Details.FinishingReagentSlotContainer;
+	local finishingReagents = self.SchematicForm.Details.CraftingChoicesContainer.FinishingReagentSlotContainer;
 	if detailsShown and qualityMeter:IsShown() then
 		local qualityMeterTopPoint = qualityMeter:GetTop() - self:GetTop() + 14;
 		local qualityMeterLeftPoint = qualityMeter:GetLeft() - self:GetLeft() - 7;
@@ -1225,8 +1224,8 @@ function ProfessionsCraftingPageMixin:UpdateTutorial()
 
 	if detailsShown and finishingReagents:IsShown() then
 		local finishingReagentsTopPoint = finishingReagents:GetTop() - self:GetTop();
-		local finishingReagentsLeftPoint = finishingReagents:GetLeft() - self:GetLeft() + 50;
-		local width = 150;
+		local finishingReagentsLeftPoint = finishingReagents:GetLeft() - self:GetLeft() - 5;
+		local width = 130;
 		local finishingReagentsSection =
 		{
 			ButtonPos = { x = finishingReagentsLeftPoint + width - 25, y = finishingReagentsTopPoint - 30 },

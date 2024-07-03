@@ -3126,6 +3126,7 @@ function LFGListSearchEntry_UpdateExpiration(self)
 end
 
 function LFGListSearchEntry_CreateContextMenu(self)
+	local panel = LFGListFrame.SearchPanel;
 	MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
 		rootDescription:SetTag("MENU_LFG_FRAME_SEARCH_ENTRY");
 

@@ -254,7 +254,7 @@ function MajorFactionRenownMixin:OnHide()
 end
 
 function MajorFactionRenownMixin:OnEvent(event, ...)
-	if event == "MAJOR_FACTION_SANCTUM_RENOWN_LEVEL_CHANGED" then
+	if event == "MAJOR_FACTION_RENOWN_LEVEL_CHANGED" then
 		self:Refresh();
 	elseif event == "MAJOR_FACTION_UNLOCKED" then
 		HideUIPanel(self);

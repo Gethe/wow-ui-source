@@ -17,10 +17,10 @@ function InstanceDifficultyMixin:OnEvent(event, ...)
 		local isGuildGroup = ...;
 		self:SetIsGuildGroup(isGuildGroup);
 	elseif ( event == "PLAYER_DIFFICULTY_CHANGED") then
-		self:Update();
+		self:DeferredUpdate();
 	elseif ( event == "UPDATE_INSTANCE_INFO" or event == "INSTANCE_GROUP_SIZE_CHANGED" or event == "GROUP_ROSTER_UPDATE") then
 		RequestGuildPartyState();
-		self:Update();
+		self:DeferredUpdate();
 	elseif ( event == "PLAYER_GUILD_UPDATE" ) then
 		local tabard = self.Guild;
 		SetSmallGuildTabardTextures("player", tabard.Emblem, tabard.Background, tabard.Border);
@@ -45,6 +45,11 @@ function InstanceDifficultyMixin:IsGuildGroup()
 	return self.isGuildGroup;
 end
 
+function InstanceDifficultyMixin:IsInDelve()
+	local _x, _y, _z, mapID = UnitPosition("player");
+	return C_DelvesUI.HasActiveDelve(mapID);
+end
+
 function InstanceDifficultyMixin:GetDifficultyTexture(difficultyTextureFrame, displayChallengeMode, displayMythic, displayHeroic)
 	if ( not difficultyTextureFrame) then
 		return nil;
@@ -54,13 +59,30 @@ function InstanceDifficultyMixin:GetDifficultyTexture(difficultyTextureFrame, di
 		return difficultyTextureFrame.MythicTexture;
 	elseif ( difficultyTextureFrame.HeroicTexture and displayHeroic ) then
 		return difficultyTextureFrame.HeroicTexture;
-	elseif ( difficultyTextureFrame.WalkInTexture and C_PartyInfo.IsPartyWalkIn() ) then
+	elseif ( difficultyTextureFrame.WalkInTexture and self:IsInDelve()) then
 		return difficultyTextureFrame.WalkInTexture;
 	elseif (difficultyTextureFrame.NormalTexture ) then
 		return difficultyTextureFrame.NormalTexture;
 	end
 
 	return nil;
+end
+
+function InstanceDifficultyMixin:DeferredUpdate()
+	-- Deferring the update prevents several visual pops that can happen because not all
+	-- information to generate the correct visuals is available at the same time and also
+	-- avoids calling Update redundantly up to six times when entering a dungeon.
+	if self.deferredUpdate then
+		return;
+	end
+
+	self.deferredUpdate = true;
+
+	local DEFERRED_UPDATE_DELAY = 0.25; --250 ms, arbitrarily enough time to get all the needed data.
+	C_Timer.After(DEFERRED_UPDATE_DELAY, function()
+		self:Update();
+		self.deferredUpdate = nil;
+	end);
 end
 
 function InstanceDifficultyMixin:Update()

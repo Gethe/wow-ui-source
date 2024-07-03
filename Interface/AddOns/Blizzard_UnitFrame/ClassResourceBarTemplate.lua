@@ -129,6 +129,8 @@ function ClassResourceBarMixin:UpdateMaxPower()
 		self.classResourceButtonPool:ReleaseAll();
 		self.classResourceButtonTable = { };
 	
+		assertsafe(self.maxUsablePoints < 100, "MaxUsablePoints unexpectedly high maxUsablePoints = " .. self.maxUsablePoints .. " powerType = " .. self.powerType);
+
 		for i = 1, self.maxUsablePoints do
 			local resourcePoint = self.classResourceButtonPool:Acquire();
 			self.classResourceButtonTable[i] = resourcePoint;

@@ -28,6 +28,7 @@ CharacterSelectFrameMixin = { };
 function CharacterSelectFrameMixin:OnLoad()
 	self.LeftBlackBar:SetPoint("TOPLEFT", nil);
 	self.RightBlackBar:SetPoint("TOPRIGHT", nil);
+	self.TopBlackBar:SetPoint("TOPLEFT", nil);
 
     self.createIndex = 0;
     self.selectedIndex = 0;
@@ -813,21 +814,21 @@ function CharacterSelect_SelectCharacter(index, noCreate)
         -- Update the text of the EnterWorld button based on the type of character that's selected, default to "enter world"
         local text = ENTER_WORLD;
 
-		local guid = GetCharacterGUID(GetCharacterSelection());
-		if not guid then
+		local characterInfo = CharacterSelectUtil.GetCharacterInfoTable(selectedCharacterID);
+		if not characterInfo then
 			return; --character selection is zero on startup.
 		end
-		local serviceInfo = GetServiceCharacterInfo(guid);
-        if serviceInfo.isTrialBoostCompleted then
+
+        if characterInfo.isTrialBoostCompleted then
             text = ENTER_WORLD_UNLOCK_TRIAL_CHARACTER;
-		elseif serviceInfo.revokedCharacterUpgrade then
+		elseif characterInfo.revokedCharacterUpgrade then
 			text = ENTER_WORLD_UNLOCK_REVOKED_CHARACTER_UPGRADE;
         end
 
         CharSelectEnterWorldButton:SetText(text);
 
-		if serviceInfo.boostInProgress == false and (not CharacterServicesFlow_IsShowing() or not CharacterServicesMaster.flow:UsesSelector()) then
-			if IsRPEBoostEligible(selectedCharacterID) then
+		if characterInfo.boostInProgress == false and (not CharacterServicesFlow_IsShowing() or not CharacterServicesMaster.flow:UsesSelector()) then
+			if IsRPEBoostEligible(selectedCharacterID) and characterInfo.realmName == CharacterSelectUtil.GetFormattedCurrentRealmName() then
 				BeginCharacterServicesFlow(RPEUpgradeFlow, {});
 				if IsVeteranTrialAccount() then
 					CharSelectServicesFlow_Minimize() --if they need to resubscribe, get the RPE flow out of the way.
@@ -1183,21 +1184,19 @@ function AccountUpgradePanel_SetLastUserExpandedFrame(frame)
 	s_lastUserExpandedFrame = frame;
 end
 
-local WAR_WITHIN_EXPANSION_NUMBER = 10;
-
 function AccountUpgradePanel_Update(isExpanded, isUserInput)
 	if isUserInput then
 		SetCVar("expandUpgradePanel", isExpanded and "1" or "0");
 		AccountUpgradePanel_SetLastUserExpandedFrame(isExpanded and CharSelectAccountUpgradeButton or nil);
 	end
 	CharacterSelect_UpdateLogo();
-	
+
 	local currentExpansionLevel, shouldShowBanner, upgradeButtonText, upgradeLogo, upgradeBanner, features = AccountUpgradePanel_GetBannerInfo();
     if ( shouldShowBanner ) then
 		CharSelectAccountUpgradeButton:SetText(upgradeButtonText);
-		
+
 		local gameEnvironmentToggleShown = CharacterSelect.CharacterSelectUI.GameEnvironmentToggleFrame:IsShown();
-		local showChains = not gameEnvironmentToggleShown and currentExpansionLevel < WAR_WITHIN_EXPANSION_NUMBER;
+		local showChains = not gameEnvironmentToggleShown and (not currentExpansionLevel or currentExpansionLevel < LE_EXPANSION_WAR_WITHIN);
 
 		CharSelectAccountUpgradeButton.TopChain1:SetShown(showChains);
 		CharSelectAccountUpgradeButton.TopChain2:SetShown(showChains);
@@ -1415,6 +1414,28 @@ function CharacterSelect_CheckVeteranStatus()
             C_WowTokenPublic.UpdateMarketPrice();
         end
     end
+end
+
+CharacterSelectBackButtonMixin = {};
+
+function CharacterSelectBackButtonMixin:OnLoad()
+	self.Arrow:SetSize(11, 16);
+	self.Arrow:ClearAllPoints();
+	self.Arrow:SetPoint("RIGHT", self:GetFontString(), "LEFT");
+end
+
+function CharacterSelectBackButtonMixin:OnEnable()
+	ThreeSliceButtonMixin.UpdateButton(self);
+	self.Arrow:SetDesaturation(0);
+end
+
+function CharacterSelectBackButtonMixin:OnDisable()
+	ThreeSliceButtonMixin.UpdateButton(self);
+	self.Arrow:SetDesaturation(1);
+end
+
+function CharacterSelectBackButtonMixin:OnClick()
+	CharacterSelect_Exit();
 end
 
 function CharacterSelect_UpdateButtonState()
@@ -1876,10 +1897,20 @@ function CharacterUpgradePopup_OnCharacterBoostDelivered(boostType, guid, reason
     end
 end
 
+function CharSelectServices_ShowFlowFrame()
+	CharSelectServicesFlowFrame:Show();
+
+	-- Moved out of the CharSelectServicesFlowFrame OnShow handler because a flow can be requested while another flow is
+	-- already shown. See Gear Update as an example.
+	CharacterServicesMaster_UpdateServiceButton();
+end
+
 function BeginCharacterServicesFlow(flow, data)
 	if flow:CanInitialize() then
 		CharSelectServicesFlowFrame:Initialize(flow);
-    	CharSelectServicesFlowFrame:Show();
+
+		CharSelectServices_ShowFlowFrame();
+		
 		flow:SetTarget(data); -- NOTE: It seems like data can be changed in the middle of a flow, so keeping this here until that is determined.
 		CharacterServicesMaster_SetFlow(CharacterServicesMaster, flow);
 
@@ -2070,7 +2101,8 @@ function CharacterServicesMaster_OnCharacterListUpdate()
 			end
 
 			if CharacterUpgradeFlow.data and CharacterUpgradeFlow:CanInitialize() then
-				CharSelectServicesFlowFrame:Show();
+				CharSelectServices_ShowFlowFrame();
+
 				CharacterUpgradeFlow:SetTarget(CharacterUpgradeFlow.data);
 				CharacterServicesMaster_SetFlow(CharacterServicesMaster, CharacterUpgradeFlow);
 			end
@@ -2746,7 +2778,6 @@ function CharSelectServicesFlowFrameMixin:OnShow()
 		PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 		CharacterSelect_UpdateButtonState();
 		CharSelectServicesCover:Show();
-		CharacterServicesMaster_UpdateServiceButton();
 	end
 end
 

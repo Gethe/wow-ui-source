@@ -1,6 +1,3 @@
---! todo art
---! todo sounds
-
 --[[ LOCALS ]]
 local MAX_DISPLAYED_BUTTONS = 12;
 local LAST_LOCKED_ABILITIES_CVAR = "lastLockedDelvesCompanionAbilities";
@@ -13,16 +10,19 @@ local COMPANION_ABILITY_LIST_ON_SHOW_EVENTS = {
 
 -- Update the cvar list of locked abilities, so we know when to show the "new" ability glow
 local function UpdateLastLockedAbilities()
-	C_Timer.After(UPDATE_LAST_LOCKED_ABILITIES_DELAY, function() 
+	C_Timer.After(UPDATE_LAST_LOCKED_ABILITIES_DELAY, function()
+		--! TODO BRANN_COMPANION_INFO_ID to be replaced with other data source in the future, keeping it explicit for now
+		local traitTreeID = C_DelvesUI.GetTraitTreeForCompanion(Constants.DelvesConsts.BRANN_COMPANION_INFO_ID);
+
 		local lastLockedAbilities = "";
-		local configID = C_Traits.GetConfigIDByTreeID(Constants.DelvesConsts.BRANN_TRAIT_TREE_ID);
+		local configID = C_Traits.GetConfigIDByTreeID(traitTreeID);
 
 		-- configID can be nil if player has not set up their companion yet
 		if not configID then
 			return;
 		end
 
-		local nodes = C_Traits.GetTreeNodes(Constants.DelvesConsts.BRANN_TRAIT_TREE_ID);
+		local nodes = C_Traits.GetTreeNodes(traitTreeID);
 		for _, node in ipairs(nodes) do
 			local nodeInfo = C_Traits.GetNodeInfo(configID, node);
 			if nodeInfo and nodeInfo.activeRank < 1 then
@@ -39,7 +39,7 @@ DelvesCompanionAbilityListFrameMixin = {};
 function DelvesCompanionAbilityListFrameMixin:OnLoad()
 	local panelAttributes = {
 		area = "left",
-		pushable = 3,
+		pushable = 2,
 		allowOtherPanels = 1,
 		whileDead = 0,
 	};
@@ -48,7 +48,8 @@ function DelvesCompanionAbilityListFrameMixin:OnLoad()
 	self.DelvesCompanionAbilityListPagingControls:Init();
 	self:ClearButtons();
 
-	SetPortraitTextureFromCreatureDisplayID(self:GetPortrait(), Constants.DelvesConsts.BRANN_CREATURE_DISPLAY_ID);
+	--! TODO BRANN_COMPANION_INFO_ID to be replaced with other data source in the future, keeping it explicit for now
+	SetPortraitTextureFromCreatureDisplayID(self:GetPortrait(), C_DelvesUI.GetCreatureDisplayInfoForCompanion(Constants.DelvesConsts.BRANN_COMPANION_INFO_ID));
 	self:SetTitle(DELVES_COMPANION_ABILITY_LIST_TITLE);
 	UpdateLastLockedAbilities();
 end
@@ -58,9 +59,13 @@ function DelvesCompanionAbilityListFrameMixin:ClearButtons()
 end
 
 function DelvesCompanionAbilityListFrameMixin:OnShow()
+	--! TODO BRANN_COMPANION_INFO_ID to be replaced with other data source in the future, keeping it explicit for now
+	local traitTreeID = C_DelvesUI.GetTraitTreeForCompanion(Constants.DelvesConsts.BRANN_COMPANION_INFO_ID);
+
 	FrameUtil.RegisterFrameForEvents(self, COMPANION_ABILITY_LIST_ON_SHOW_EVENTS);
-	self:SetConfigID(C_Traits.GetConfigIDByTreeID(Constants.DelvesConsts.BRANN_TRAIT_TREE_ID));
-	self:SetTalentTreeID(Constants.DelvesConsts.BRANN_TRAIT_TREE_ID);
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
+	self:SetConfigID(C_Traits.GetConfigIDByTreeID(traitTreeID));
+	self:SetTalentTreeID(traitTreeID);
 	TalentFrameBaseMixin.OnShow(self);
 	self.DelvesCompanionAbilityListPagingControls:SetCurrentPage(1);
 	self:Refresh();
@@ -116,8 +121,9 @@ function DelvesCompanionAbilityListFrameMixin:Refresh(ignoreDropdown, ignoreLoad
 	-- If the ability list is opened and a player has not selected Brann's role yet, refresh with the first option selected instead
 	-- so that we show *something*
 	if #self.buttons == 0 and #self.DelvesCompanionRoleDropdown.options > 0 then
-		self:SetSelection(Constants.DelvesConsts.BRANN_ROLE_NODE_ID, self.DelvesCompanionRoleDropdown.options[1].entryID);
-		self:Refresh(true);
+		--! TODO BRANN_COMPANION_INFO_ID to be replaced with other data source in the future, keeping it explicit for now
+		self:SetSelection(C_DelvesUI.GetRoleNodeForCompanion(Constants.DelvesConsts.BRANN_COMPANION_INFO_ID), self.DelvesCompanionRoleDropdown.options[1].entryID);
+		self:Refresh();
 		self:RollbackConfig(self, true);
 	end
 end
@@ -160,6 +166,7 @@ end
 function DelvesCompanionAbilityListFrameMixin:OnHide()
 	UpdateLastLockedAbilities();
 	FrameUtil.UnregisterFrameForEvents(self, COMPANION_ABILITY_LIST_ON_SHOW_EVENTS);
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 	TalentFrameBaseMixin.OnHide(self);
 
 	-- We set the selection with the dropdown to preview abilities, but we don't want to save that selection, so roll it back
@@ -225,6 +232,10 @@ end
 function DelvesCompanionAbilityListFrameMixin:OnMouseWheel(direction)
 	local pagingControls = self.DelvesCompanionAbilityListPagingControls;
 
+	if not pagingControls:IsShown() then
+		return;
+	end
+
 	local currentPage = pagingControls.currentPage or 1;
 	local maxPages = pagingControls.maxPages or 1;
 
@@ -234,6 +245,7 @@ function DelvesCompanionAbilityListFrameMixin:OnMouseWheel(direction)
 		self.DelvesCompanionAbilityListPagingControls:SetCurrentPage(currentPage + 1);
 	end
 
+	PlaySound(MenuVariants.GetDropdownOpenSoundKit());
 	self:Refresh(true, true);
 end
 
@@ -269,6 +281,16 @@ function DelvesCompanionAbilityMixin:InitAdditionalElements()
 			self.Rank:SetText("");
 		end
 	end
+
+	-- Override how TalentDisplayMixin anchors the tooltip
+	local ReanchorTooltip = function(frame)
+		if GameTooltip:GetOwner() == frame then
+			GameTooltip:ClearAllPoints();
+			GameTooltip:SetPoint("BOTTOMLEFT", frame.Icon, "TOPRIGHT");
+		end
+	end;
+
+	EventRegistry:RegisterCallback("TalentDisplay.TooltipCreated", ReanchorTooltip, self);
 end
 
 --[[ Ability Template: SharedTalentButton Overrides ]]
@@ -308,18 +330,20 @@ local function GetRoleOptionText(option)
 	return option.name;
 				end
 
+--! TODO BRANN_COMPANION_INFO_ID to be replaced with other data source in the future, keeping it explicit for now
 local function GetRoleIconAtlas(entryInfo)
-	if entryInfo.subTreeID == Constants.DelvesConsts.BRANN_DPS_SUBTREE_ID then
-		return "roleicon-tiny-dps";
-	elseif entryInfo.subTreeID == Constants.DelvesConsts.BRANN_HEALER_SUBTREE_ID then
-		return "roleicon-tiny-healer";
-			end
+	if entryInfo.subTreeID == C_DelvesUI.GetRoleSubtreeForCompanion(Constants.DelvesConsts.BRANN_COMPANION_INFO_ID, Enum.CompanionRoleType.Dps) then
+		return "ui-lfg-roleicon-dps-micro-raid";
+	elseif entryInfo.subTreeID == C_DelvesUI.GetRoleSubtreeForCompanion(Constants.DelvesConsts.BRANN_COMPANION_INFO_ID, Enum.CompanionRoleType.Heal) then
+		return "ui-lfg-roleicon-healer-micro-raid";
+	end
 	return nil;
-		end
+end
 
+--! TODO BRANN_COMPANION_INFO_ID to be replaced with other data source in the future, keeping it explicit for now
 function DelvesCompanionRoleDropdownMixin:Refresh()
 	local abilityListFrame = self:GetParent();
-	local roleNode = abilityListFrame:GetAndCacheNodeInfo(Constants.DelvesConsts.BRANN_ROLE_NODE_ID);
+	local roleNode = abilityListFrame:GetAndCacheNodeInfo(C_DelvesUI.GetRoleNodeForCompanion(Constants.DelvesConsts.BRANN_COMPANION_INFO_ID));
 
 	self.options = {};
 	for idx, entryID in ipairs(roleNode.entryIDs) do
@@ -347,7 +371,7 @@ function DelvesCompanionRoleDropdownMixin:Refresh()
 			self.selectedEntryID = option.entryID;
 
 			if not option.isActive then
-				abilityListFrame:SetSelection(Constants.DelvesConsts.BRANN_ROLE_NODE_ID, option.entryID);
+				abilityListFrame:SetSelection(C_DelvesUI.GetRoleNodeForCompanion(Constants.DelvesConsts.BRANN_COMPANION_INFO_ID), option.entryID);
 			end
 
 			abilityListFrame:Refresh(true);
@@ -374,11 +398,13 @@ function DelvesCompanionAbilityListPagingControlsMixin:Init()
 	self.NextPageButton:SetScript("OnClick", function()
 		self.currentPage = Clamp(self.currentPage + 1, 1, self.maxPages);
 		self:GetParent():Refresh(true, true);
+		PlaySound(MenuVariants.GetDropdownOpenSoundKit());
 	end);
 
 	self.PrevPageButton:SetScript("OnClick", function()
 		self.currentPage = Clamp(self.currentPage - 1, 1, self.maxPages);
 		self:GetParent():Refresh(true, true);
+		PlaySound(MenuVariants.GetDropdownOpenSoundKit());
 	end);
 end
 
@@ -394,4 +420,10 @@ function DelvesCompanionAbilityListPagingControlsMixin:Refresh()
 	self.PageText:SetText(DELVES_ABILITY_LIST_CURRENT_PAGE:format(self.currentPage, self.maxPages));
 	self.NextPageButton:SetEnabled(self.maxPages > 1 and self.currentPage < self.maxPages);
 	self.PrevPageButton:SetEnabled(self.currentPage > 1);
+
+	if self.maxPages == 1 then
+		self:Hide();
+	else
+		self:Show();
+	end
 end

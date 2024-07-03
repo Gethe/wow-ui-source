@@ -356,6 +356,7 @@ function MiniMapTrackingButtonMixin:OnLoad()
 
 		rootDescription:CreateButton(UNCHECK_ALL, function()
 			C_Minimap.ClearAllTracking();
+			return MenuResponse.Refresh;
 		end);
 
 		local hunterInfo = {};

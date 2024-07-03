@@ -439,6 +439,7 @@ function ClassTalentsFrameMixin:InitializeLoadSystem()
 	local dropdown = self.LoadSystem:GetDropdown();
 	dropdown:SetWidth(200);
 
+	self.LoadSystem:SetMenuTag("MENU_CLASS_TALENT_PROFILE");
 	self.LoadSystem:SetDropdownDefaultText(WrapTextInColor(TALENT_FRAME_DROP_DOWN_DEFAULT, GRAY_FONT_COLOR));
 	
 	local function SelectionEnabledCallback(selectionID, isUserInput)

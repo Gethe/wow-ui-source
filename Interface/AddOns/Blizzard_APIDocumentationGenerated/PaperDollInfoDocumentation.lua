@@ -213,6 +213,7 @@ local PaperDollInfo =
 			Payload =
 			{
 				{ Name = "slot", Type = "number", Nilable = false },
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
 			},
 		},
 		{

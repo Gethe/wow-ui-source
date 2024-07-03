@@ -700,7 +700,6 @@ QUEST_TAG_ATLAS = {
 	["EXPIRING"] = "questlog-questtypeicon-expiring",
 	[Enum.QuestTag.Dungeon] = "questlog-questtypeicon-dungeon",
 	[Enum.QuestTag.Scenario] = "questlog-questtypeicon-scenario",
-	[Enum.QuestTag.Account] = "questlog-questtypeicon-account",
 	[Enum.QuestTag.Legendary] = "questlog-questtypeicon-legendary",
 	[Enum.QuestTag.Group] = "questlog-questtypeicon-group",
 	[Enum.QuestTag.PvP] = "questlog-questtypeicon-pvp",

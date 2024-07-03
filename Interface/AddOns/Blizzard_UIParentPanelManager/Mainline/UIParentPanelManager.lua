@@ -139,10 +139,10 @@ end
 
 local function GetUIPanelAttribute(frame, name)
 	if not frame:GetAttribute("UIPanelLayout-defined") then
-	    local attributes = UIPanelWindows[frame:GetName()];
-	    if not attributes then
+		local attributes = UIPanelWindows[frame:GetName()];
+		if not attributes then
 			return;
-	    end
+		end
 		SetFrameAttributes(frame, attributes);
 	end
 	return frame:GetAttribute("UIPanelLayout-"..name);
@@ -298,9 +298,9 @@ function FramePositionDelegate:ShowUIPanel(frame, force, contextKey)
 			if ( leftPushable > 0 and CanShowRightUIPanel(leftFrame) ) then
 				-- Push left to right
 				self:MoveUIPanel("left", "right", UIPANEL_SKIP_SET_POINT);
-			elseif ( centerFrame and CanShowRightUIPanel(centerFrame) ) then
-				self:MoveUIPanel("center", "right", UIPANEL_SKIP_SET_POINT);
 			end
+		elseif ( centerFrame and CanShowRightUIPanel(centerFrame) ) then
+			self:MoveUIPanel("center", "right", UIPANEL_SKIP_SET_POINT);
 		end
 		self:SetUIPanel("doublewide", frame);
 		return;
@@ -526,9 +526,22 @@ function FramePositionDelegate:HideUIPanelImplementation(frame, skipSetPoint)
 	if ( frame == self:GetUIPanel("right") ) then
 		self:SetUIPanel("right", nil, skipSetPoint);
 		return;
-	elseif ( frame == self:GetUIPanel("doublewide") ) then
-		-- Slide over any right frame (hides the doublewide)
-		self:MoveUIPanel("right", "left", skipSetPoint);
+	end
+
+	-- If we're hiding the doublewide frame, determine where the right frame should go.
+	if ( frame == self:GetUIPanel("doublewide") ) then
+		local newLocation = "left";
+
+		local rightFrame = self:GetUIPanel("right");
+		if ( rightFrame ) then
+			local area = GetUIPanelAttribute(rightFrame, "area");
+			if ( area and area == "centerOrLeft" ) then
+				newLocation = "center";
+			end
+		end
+
+		-- Even if there's not a right frame call MoveUIPanel to hide the doublewide frame.
+		self:MoveUIPanel("right", newLocation, skipSetPoint);
 		return;
 	end
 

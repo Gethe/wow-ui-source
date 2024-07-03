@@ -407,6 +407,21 @@ WorldMapShowLegendButtonMixin = { };
 
 function WorldMapShowLegendButtonMixin:OnLoad()
 	EventRegistry:RegisterCallback("MapLegendHidden", self.Refresh, self);
+    self.showNewGlow = not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_MAP_LEGEND_OPENED);
+end
+
+function WorldMapShowLegendButtonMixin:OnShow()
+	if self.showNewGlow then
+		self.Fade:Play();
+    else
+        self.Glow:SetShown(false);
+    end
+end
+
+function WorldMapShowLegendButtonMixin:OnHide()
+	if self.showNewGlow then
+		self.Fade:Stop();
+	end
 end
 
 function WorldMapShowLegendButtonMixin:OnMouseDown(button)
@@ -427,6 +442,9 @@ function WorldMapShowLegendButtonMixin:OnClick()
 	if shouldSetActive then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		EventRegistry:TriggerEvent("ShowMapLegend");
+        SetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_MAP_LEGEND_OPENED, true);
+        self.Fade:Stop();
+        self.Glow:SetShown(false);
 		if (not self:GetParent().QuestLog:IsShown()) then
 			self:GetParent():HandleUserActionToggleSidePanel();
 		end

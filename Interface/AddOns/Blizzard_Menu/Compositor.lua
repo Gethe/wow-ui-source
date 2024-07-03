@@ -137,6 +137,7 @@ local originalMetatables = {};
 local function SetOriginalMetatable(region)
 	local objType = region:GetObjectType();
 	originalMetatables[objType] = getmetatable(region);
+	region:Hide();
 end
 
 local configurationTbls = {};
@@ -220,10 +221,7 @@ do
 	SetOriginalMetatable(CreateFrame("Button"));
 	SetOriginalMetatable(CreateFrame("CheckButton"));
 	SetOriginalMetatable(CreateFrame("StatusBar"));
-
-	local editBox = CreateFrame("EditBox");
-	editBox:Hide();
-	SetOriginalMetatable(editBox);
+	SetOriginalMetatable(CreateFrame("EditBox"));
 
 	defaultConfigurationTbl = CreateConfigurationTbl(SetFrameToDefaults, frameFactory, frameDisallowedFunctions, frameRedirectFunctions);
 	

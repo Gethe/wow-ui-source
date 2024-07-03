@@ -1818,7 +1818,7 @@ end
 
 function PVPUIHonorLevelDisplayMixin:OnMouseUp(button)
 	if button == "RightButton" then
-		MenuUtil.CreateContextMenu(function(owner, rootDescription)
+		MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
 			rootDescription:SetTag("MENU_PVPUI_HONOR_LEVEL");
 
 			local function IsSelected()

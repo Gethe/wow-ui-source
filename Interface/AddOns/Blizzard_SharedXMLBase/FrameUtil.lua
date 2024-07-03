@@ -240,8 +240,9 @@ function ClearAlternateTopLevelParent()
 	EventRegistry:TriggerEvent("UI.AlternateTopLevelParentChanged");
 end
 
-function GetAppropriateTopLevelParent()
-	if alternateTopLevelParent and alternateTopLevelParent:IsShown() then
+-- optionalExcludedParent: Frame to avoid returning if it is currently the alternateTopLevelParent; Useful for frames that might currently be the alternate but need the root top for scaling
+function GetAppropriateTopLevelParent(optionalExcludedParent)
+	if alternateTopLevelParent and alternateTopLevelParent:IsShown() and (not optionalExcludedParent or alternateTopLevelParent ~= optionalExcludedParent) then
 		return alternateTopLevelParent;
 	end
 
@@ -523,4 +524,13 @@ function UIFrameFlashStop(frame)
 	else
 		frame:Hide();
 	end
+end
+
+-- Sets a frame parent, but retains old frame strata and frame level
+function FrameUtil.SetParentMaintainRenderLayering(frame, parent)
+	local origStrata = frame:GetFrameStrata();
+	local origFrameLevel = frame:GetFrameLevel();
+	frame:SetParent(parent);
+	frame:SetFrameStrata(origStrata);
+	frame:SetFrameLevel(origFrameLevel);
 end

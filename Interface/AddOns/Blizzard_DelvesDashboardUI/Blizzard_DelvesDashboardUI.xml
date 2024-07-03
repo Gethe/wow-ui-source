@@ -16,10 +16,14 @@
 
     <!-- Button Panel Template -->
     <Frame name="DelvesDashboardButtonPanelFrame" virtual="true">
-        <Size x="190" y="240"/>
+		<KeyValues>
+			<!-- If true, this button panel frame will use a highlighted background -->
+			<KeyValue type="boolean" key="isCompanionButtonPanelFrame" value="false"/> 
+		</KeyValues>
+        <Size x="215" y="283"/>
         <Layers>
             <Layer level="BACKGROUND">
-                <Texture parentKey="ButtonPanelBackground" atlas="guildfinder-card" useAtlasSize="false">
+                <Texture parentKey="ButtonPanelBackground" atlas="delves-dashboard-card" useAtlasSize="false">
                     <Anchors>
                         <Anchor point="TOPLEFT"/>
                         <Anchor point="BOTTOMRIGHT"/>
@@ -30,7 +34,7 @@
                 <FontString parentKey="PanelTitle" inherits="GameFontHighlightLarge">
                     <Size x="180" y="32"/>
                     <Anchors>
-                        <Anchor point="TOP" y="-5"/>
+                        <Anchor point="TOP" y="-25"/>
                     </Anchors>
                 </FontString>
                 <FontString parentKey="PanelDescription" inherits="GameFontNormalMed2" wordwrap="true" justifyV="TOP">
@@ -49,14 +53,14 @@
 		<Size x="20" y="20"/>
 		<Layers>
 			<Layer level="ARTWORK" textureSubLevel="1">
-				<Texture parentKey="LineComplete" atlas="activities-complete-line" useAtlasSize="true" hidden="true">
+				<Texture parentKey="LineComplete" atlas="delves-dashboard-bar-divider-complete" useAtlasSize="true" hidden="true">
 					<Anchors>
-						<Anchor point="CENTER" x="0" y="20"/>
+						<Anchor point="CENTER" x="-2" y="20"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="LineIncomplete" atlas="activities-incomplete-line" useAtlasSize="true">
+				<Texture parentKey="LineIncomplete" atlas="delves-dashboard-bar-divider-incomplete" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="CENTER" x="0" y="20"/>
+						<Anchor point="CENTER" x="-2" y="20"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -65,23 +69,21 @@
 			<Frame parentKey="Reward" mixin="ReputationThresholdRewardMixin" enableMouse="true" frameStrata="HIGH" setAllPoints="true">
 				<Layers>
 					<Layer level="BORDER">
-						<Texture parentKey="Glow" alpha="0" alphaMode="ADD" atlas="activities-complete-glow" useAtlasSize="true">
+						<Texture parentKey="Glow" alpha="0" alphaMode="ADD" atlas="delves-dashboard-bar-diamond-complete-glow" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER" x="0" y="1"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
-                        <!-- TODO will want a mask or a border texture for this, since we can't reuse activities atlases / TODO will want to rename this and others -->
-                        <!-- TODO using a circle mask for now -->
 						<Texture parentKey="Icon">
-                            <Size x="32" y="32"/>
+                            <Size x="30" y="30"/>
 							<Anchors>
 								<Anchor point="CENTER" x="1" y="0"/>
 							</Anchors>
 						</Texture>
                         <MaskTexture parentKey="CircleMask" atlas="CircleMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
-							<Size x="22" y="22"/>
+							<Size x="20" y="20"/>
 							<Anchors>
 								<Anchor point="CENTER" x="0" y="2"/>
 							</Anchors>
@@ -91,6 +93,11 @@
 						</MaskTexture>
 					</Layer>
 					<Layer level="OVERLAY">
+						<Texture parentKey="IconBorder" atlas="delves-dashboard-bar-diamond-incomplete" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
+							</Anchors>
+						</Texture>
 						<Texture parentKey="Sparkles" alpha="0" alphaMode="ADD" atlas="activities-complete-diamond-sparkles">
 							<Size x="70" y="70"/>
 							<Anchors>
@@ -99,15 +106,15 @@
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY" textureSubLevel="1">
-						<Texture parentKey="CheckmarkFlipbook" alpha="0" alphaMode="BLEND" atlas="activities-checkmark_flipbook-small">
+						<Texture parentKey="CheckmarkFlipbook" alpha="0" alphaMode="BLEND" atlas="delves-dashboard-checkmark_flipbook">
 							<Size x="59" y="59"/>
 							<Anchors>
-								<Anchor point="CENTER" x="7" y="-9"/>
+								<Anchor point="CENTER" x="7" y="-5"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="EarnedCheckmark" atlas="activities-icon-checkmark-small" useAtlasSize="true">
+						<Texture parentKey="EarnedCheckmark" atlas="delves-dashboard-checkmark" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativePoint="CENTER" x="0" y="-2"/>
+								<Anchor point="TOPLEFT" relativePoint="CENTER" x="0" y="2"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -130,24 +137,23 @@
 			<Frame parentKey="Reward" mixin="ReputationThresholdRewardMixin" enableMouse="true" frameStrata="HIGH" setAllPoints="true">
 				<Layers>
 					<Layer level="BORDER">
-						<Texture parentKey="Glow" alpha="0" alphaMode="ADD" atlas="activities-complete-glow" useAtlasSize="true">
+						<Texture parentKey="Glow" alpha="0" alphaMode="ADD" atlas="delves-dashboard-bar-diamond-complete-glow" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER" x="0" y="1"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
-                        <!-- TODO art -->
 						<Texture parentKey="Icon">
                             <Size x="48" y="48"/>
 							<Anchors>
-								<Anchor point="CENTER" x="1" y="0"/>
+								<Anchor point="CENTER" x="0" y="0"/>
 							</Anchors>
 						</Texture>
                         <MaskTexture parentKey="CircleMask" atlas="CircleMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
-							<Size x="36" y="36"/>
+							<Size x="40" y="40"/>
 							<Anchors>
-								<Anchor point="CENTER" x="0" y="2"/>
+								<Anchor point="CENTER" x="-1" y="0"/>
 							</Anchors>
 							<MaskedTextures>
 								<MaskedTexture childKey="Icon"/>
@@ -155,10 +161,10 @@
 						</MaskTexture>
 					</Layer>
 					<Layer level="OVERLAY">
-						<Texture parentKey="IconBorder" atlas="activities-reward-border" useAtlasSize="false">
+						<Texture parentKey="IconBorder" atlas="delves-dashboard-bar-reward-border-disabled" useAtlasSize="false">
 							<Size x="56" y="56"/>
 							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
+								<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER" y="3"/>
 							</Anchors>
 						</Texture>
 						<Texture parentKey="Sparkles" alpha="0" alphaMode="ADD" atlas="activities-complete-diamond-sparkles">
@@ -169,15 +175,15 @@
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY" textureSubLevel="1">
-						<Texture parentKey="CheckmarkFlipbook" alpha="0" alphaMode="BLEND" atlas="activities-checkmark_flipbook-small">
+						<Texture parentKey="CheckmarkFlipbook" alpha="0" alphaMode="BLEND" atlas="delves-dashboard-checkmark_flipbook">
 							<Size x="59" y="59"/>
 							<Anchors>
-								<Anchor point="CENTER" x="7" y="-9"/>
+								<Anchor point="CENTER" x="17" y="-10"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="EarnedCheckmark" atlas="activities-icon-checkmark-small" useAtlasSize="true">
+						<Texture parentKey="EarnedCheckmark" atlas="delves-dashboard-checkmark" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativePoint="CENTER" x="0" y="-2"/>
+								<Anchor point="TOPLEFT" relativePoint="CENTER" x="10" y="-3"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -197,7 +203,7 @@
     <Frame name="DelvesDashboardFrame" useParentLevel="true" setAllPoints="true" mixin="DelvesDashboardFrameMixin" parent="PVEFrame" hidden="true">
         <Layers>
             <Layer level="BACKGROUND">
-                <Texture parentKey="DashboardBackground" atlas="auctionhouse-background-index" useAtlasSize="false">
+                <Texture parentKey="DashboardBackground" atlas="delves-dashboard-background" useAtlasSize="false">
                     <Anchors>
                         <Anchor point="TOPLEFT" y="-10"/>
                         <Anchor point="BOTTOMRIGHT" y="4"/>
@@ -218,7 +224,7 @@
         <Frames>
             <!-- Reputation ThresholdBar -->
 			<StatusBar parentKey="ThresholdBar" frameBuffer="true">
-				<BarTexture parentKey="BarFill" atlas="activities-bar-fill"/>
+				<BarTexture parentKey="BarFill" atlas="delves-dashboard-bar-fill"/>
 				<Size x="600" y="25"/>
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.ReputationBarTitle" relativePoint="BOTTOM"/>
@@ -226,39 +232,39 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture parentKey="BarBackgroundGlow" atlas="activities-bar-background-glow" alpha="0">
-                            <Size x="600" y="25"/>
-							<Anchors>
-								<Anchor point="CENTER" x="0" y="-1"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="BACKGROUND" textureSubLevel="1">
-						<Texture parentKey="BarBackground" atlas="activities-bar-background">
+						<Texture parentKey="BarBackgroundGlow" atlas="delves-dashboard-bar-background-glow" alpha="0">
                             <Size x="600" y="25"/>
 							<Anchors>
 								<Anchor point="CENTER" x="0" y="0"/>
 							</Anchors>
 						</Texture>
 					</Layer>
-					<Layer level="OVERLAY">
-						<Texture parentKey="BarBorder" atlas="activities-bar-border">
-                            <Size x="612" y="38"/>
+					<Layer level="BACKGROUND" textureSubLevel="1">
+						<Texture parentKey="BarBackground" atlas="delves-dashboard-bar-background">
+                            <Size x="610" y="25"/>
 							<Anchors>
-								<Anchor point="CENTER" x="1" y="-2"/>
+								<Anchor point="CENTER" x="8" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="BarBorder" atlas="delves-dashboard-bar-border">
+                            <Size x="612" y="28"/>
+							<Anchors>
+								<Anchor point="CENTER" x="7" y="-1"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY" textureSubLevel="1">
-						<Texture parentKey="BarBorderGlow" atlas="activities-bar-border-glow" alphaMode="ADD" alpha="0">
-                            <Size x="612" y="38"/>
+						<Texture parentKey="BarBorderGlow" atlas="delves-dashboard-bar-border-glow" alphaMode="ADD" alpha="0">
+                            <Size x="612" y="28"/>
 							<Anchors>
-								<Anchor point="CENTER" x="-2" y="1"/>
+								<Anchor point="CENTER" x="7" y="-1"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
-						<Texture parentKey="BarFillGlow" atlas="activities-bar-fill-glow" alphaMode="ADD" alpha="0">
+						<Texture parentKey="BarFillGlow" atlas="delves-dashboard-bar-fill-glow" alphaMode="ADD" alpha="0">
                              <Size x="600" y="25"/>
 							<Anchors>
 								<Anchor point="LEFT"/>
@@ -269,11 +275,11 @@
 				</Layers>
 				<Frames>
 					<Frame parentKey="BarEnd" useParentLevel="true">
-						<Size x="16" y="38"/>
+						<Size x="16" y="28"/>
 						<Layers>
 							<Layer level="OVERLAY">
-								<Texture parentKey="line" atlas="activities-bar-end">
-                                    <Size x="16" y="38"/>
+								<Texture parentKey="line" atlas="delves-dashboard-bar-end">
+                                    <Size x="16" y="28"/>
 									<Anchors>
 										<Anchor point="CENTER" x="0" y="0"/>
 									</Anchors>
@@ -298,21 +304,22 @@
             <!-- Button Panels -->
             <Frame parentKey="ButtonPanelLayoutFrame" inherits="HorizontalLayoutFrame">
                 <KeyValues>
-                    <KeyValue key="spacing" value="35" type="number"/>
+                    <KeyValue key="spacing" value="25" type="number"/>
                 </KeyValues>
                 <Anchors>
-                    <Anchor point="BOTTOM" y="33"/>
+                    <Anchor point="BOTTOM" y="15"/>
                 </Anchors>
                 <Frames>
                     <!-- Companion Config Button Panel -->
                     <Frame parentKey="CompanionConfigButtonPanel" inherits="DelvesDashboardButtonPanelFrame" mixin="CompanionConfigButtonPanelMixin">
                         <KeyValues>
                             <KeyValue key="layoutIndex" value="1" type="number"/>
+							<KeyValue type="boolean" key="isCompanionButtonPanelFrame" value="true"/> 
                         </KeyValues>
                         <Frames>
                             <!-- Companion Display -->
                             <ModelScene parentKey="CompanionModelScene" inherits="NoCameraControlModelSceneMixinTemplate" mixin="CompanionConfigButtonPanelModelSceneMixin">
-                                <Size x="125" y="150"/>
+                                <Size x="125" y="155"/>
                                 <Anchors>
                                     <Anchor point="CENTER" y="-4"/>
                                 </Anchors>
@@ -324,7 +331,7 @@
                             <Button parentKey="CompanionConfigButton" inherits="MagicButtonTemplate" mixin="CompanionConfigButtonPanelMixin" motionScriptsWhileDisabled="true">
                                 <Size x="130" y="30"/>
                                 <Anchors>
-                                    <Anchor point="BOTTOM"  y="13"/>
+                                    <Anchor point="BOTTOM"  y="32"/>
                                 </Anchors>
                                 <Layers>
                                     <Layer level="OVERLAY">

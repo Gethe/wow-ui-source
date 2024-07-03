@@ -11,7 +11,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="WarningIcon" atlas="photosensitivitywarning-questbang-icon" useAtlasSize="true" nonBlocking="false">
+				<Texture parentKey="WarningIcon" atlas="photosensitivitywarning-questbang-icon" useAtlasSize="true" nonBlocking="false" scale="0.8">
 					<Anchors>
 						<Anchor point="TOP" x="0" y="-180" relativePoint="TOP"/>
 					</Anchors>

@@ -7,6 +7,10 @@ local SuperTrackManager =
 	Functions =
 	{
 		{
+			Name = "ClearAllSuperTracked",
+			Type = "Function",
+		},
+		{
 			Name = "ClearSuperTrackedContent",
 			Type = "Function",
 		},

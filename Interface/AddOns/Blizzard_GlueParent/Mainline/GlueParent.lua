@@ -26,9 +26,20 @@ local function GlueParent_SetSecondaryScreen(secondaryScreen, contextKey)
 	GlueParent.currentSecondaryScreenContextKey = contextKey;
 end
 
+local function GetNotchHeight()
+    if (C_UI.ShouldUIParentAvoidNotch()) then
+		local pixelHeight = select(4, C_UI.GetTopLeftNotchSafeRegion());
+		local scale = PixelUtil.GetPixelToUIUnitFactor() / GlueParent:GetEffectiveScale();
+		return pixelHeight * scale;
+    end
+
+	return 0;
+end
+
 local function OnDisplaySizeChanged(self)
 	local width = GetScreenWidth();
-	local height = GetScreenHeight();
+	local notchHeight = GetNotchHeight();
+	local height = GetScreenHeight() - notchHeight;
 
 	local MIN_ASPECT = 5 / 4;
 	local MAX_ASPECT = 16 / 9;
@@ -39,7 +50,7 @@ local function OnDisplaySizeChanged(self)
 	if ( currentAspect > MAX_ASPECT ) then
 		local maxWidth = height * MAX_ASPECT;
 		local barWidth = ( width - maxWidth ) / 2;
-		self:SetPoint("TOPLEFT", barWidth, 0);
+		self:SetPoint("TOPLEFT", barWidth, -notchHeight);
 		self:SetPoint("BOTTOMRIGHT", -barWidth, 0);
 	elseif ( currentAspect < MIN_ASPECT ) then
 		local maxHeight = width / MIN_ASPECT;
@@ -49,10 +60,11 @@ local function OnDisplaySizeChanged(self)
 		-- Note: we're overriding the default scaling behavior, but this is necessary for this edge case
 		self:SetScale(maxHeight/height);
 
-		self:SetPoint("TOPLEFT", 0, -barHeight);
+		self:SetPoint("TOPLEFT", 0, -barHeight - notchHeight);
 		self:SetPoint("BOTTOMRIGHT", 0, barHeight);
 	else
-		self:SetAllPoints();
+		self:SetPoint("TOPLEFT", 0, -notchHeight);
+		self:SetPoint("BOTTOMRIGHT");
 	end
 end
 
@@ -78,6 +90,8 @@ function GlueParentMixin:OnLoad()
 	self:RegisterEvent("KIOSK_SESSION_EXPIRED");
 	self:RegisterEvent("KIOSK_SESSION_EXPIRATION_CHANGED");
 	self:RegisterEvent("SCRIPTED_ANIMATIONS_UPDATE");
+
+	self:RegisterEvent("NOTCHED_DISPLAY_MODE_CHANGED");
 
 	self:AddStaticEventMethod(EventRegistry, "GlueParent.SecondaryScreenClosed", GlueParentMixin.OnSecondaryScreenClosed);
 	self:AddStaticEventMethod(EventRegistry, "AddonList.FrameHidden", GlueParentMixin.OnAddonListClosed);
@@ -136,7 +150,7 @@ function GlueParentMixin:OnEvent(event, ...)
 	elseif ( event == "OPEN_STATUS_DIALOG" ) then
 		local dialog, text = ...;
 		GlueDialog_Show(dialog, text);
-	elseif ( event == "DISPLAY_SIZE_CHANGED" ) then
+	elseif ( event == "DISPLAY_SIZE_CHANGED" or event == "NOTCHED_DISPLAY_MODE_CHANGED" ) then
 		OnDisplaySizeChanged(self);
 	elseif ( event == "UI_SCALE_CHANGED" ) then
 		local secondaryScreen = GlueParent_GetSecondaryScreen();

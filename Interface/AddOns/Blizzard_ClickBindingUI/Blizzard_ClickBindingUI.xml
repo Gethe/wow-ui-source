@@ -237,7 +237,7 @@
 					<OnLeave method="OnLeave"/>
 				</Scripts>
 			</DropdownButton>
-			<Button parentKey="MacrosPortrait" inherits="ClickBindingFramePortraitTemplate">
+			<Button parentKey="PlayerSpellsPortrait" inherits="ClickBindingFramePortraitTemplate">
 				<KeyValues>
 					<KeyValue key="FrameName" value="PlayerSpellsFrame" type="string"/>
 					<KeyValue key="PortraitAtlas" value="UI-HUD-MicroMenu-SpecTalents-Up" type="string"/>

@@ -112,7 +112,7 @@
 						<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.icon" x="10" y="1"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="DragonRidingLabel" inherits="GameFontDisableSmall" justifyH="LEFT" text="MOUNT_JOURNAL_FILTER_DRAGONRIDING" maxLines="1" hidden="true">
+				<FontString parentKey="SteadyFlightLabel" inherits="GameFontDisableSmall" justifyH="LEFT" text="MOUNT_JOURNAL_STEADY_FLIGHT_ONLY" maxLines="1" hidden="true">
 					<Size x="147"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.name" x="0" y="0"/>

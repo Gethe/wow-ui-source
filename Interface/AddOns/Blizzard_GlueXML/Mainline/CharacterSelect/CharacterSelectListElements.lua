@@ -252,6 +252,11 @@ function CharacterSelectListCharacterMixin:SetData(elementData, inGroup)
 			tooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", -12, 95);
 			GameTooltip_AddNormalLine(tooltip, RPE_TOOLTIP_LINE1);
 			GameTooltip_AddNormalLine(tooltip, RPE_TOOLTIP_LINE2);
+
+			if self.characterInfo.realmName ~= CharacterSelectUtil.GetFormattedCurrentRealmName() then
+				GameTooltip_AddErrorLine(tooltip, RPE_TOOLTIP_CHARACTER_ON_DIFFERENT_REALM);
+			end
+
 			tooltip:Show();
 		else
 			self:SetTooltipAndShow();
@@ -917,7 +922,9 @@ function CharacterSelectListCharacterInnerContentMixin:ShowMoveButtons()
 	upButton:SetEnabledState(not isFirstButton);
 
 	local last = true;
-	local isLastButton = index == CharacterSelectListUtil.GetFirstOrLastCharacterIndex(last);
+	local lastCharacterIndex = CharacterSelectListUtil.GetFirstOrLastCharacterIndex(last);
+	local lastIndex = math.max(CharacterSelectListUtil.CharacterGroupSlotCount + 1, lastCharacterIndex);
+	local isLastButton = index == lastIndex;
 	downButton:SetEnabledState(not isLastButton);
 end
 
@@ -1050,7 +1057,7 @@ end
 CharacterSelectListMailIndicationButtonMixin = {};
 
 function CharacterSelectListMailIndicationButtonMixin:OnEnter()
-	if #self.mailSenders >= 1 then
+	if self.mailSenders and #self.mailSenders >= 1 then
 		GlueTooltip:SetOwner(self, "ANCHOR_LEFT");
 		FormatUnreadMailTooltip(GlueTooltip, HAVE_MAIL_FROM, self.mailSenders);
 		GlueTooltip:Show();

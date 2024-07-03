@@ -108,7 +108,7 @@
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY" textureSubLevel="2">
-						<FontString parentKey="CritText" inherits="GameFontNormalTiny" text="PROFESSIONS_OUTPUT_INSPIRED_CREATION" justifyH="RIGHT" enableMouse="true">
+						<FontString parentKey="CritText" inherits="GameFontNormalTiny" text="PROFESSIONS_OUTPUT_INGENUITY" justifyH="RIGHT" enableMouse="true">
 							<Size x="140" y="0"/>
 							<Anchors>
 								<Anchor point="BOTTOMRIGHT" x="-8" y="1"/>

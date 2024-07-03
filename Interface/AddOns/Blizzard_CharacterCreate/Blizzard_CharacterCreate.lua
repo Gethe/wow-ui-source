@@ -69,6 +69,7 @@ function CharacterCreateMixin:OnLoad()
 
 	self.LeftBlackBar:SetPoint("TOPLEFT", nil);
 	self.RightBlackBar:SetPoint("TOPRIGHT", nil);
+	self.TopBlackBar:SetPoint("TOPLEFT", nil);
 
 	C_CharacterCreation.SetCharCustomizeFrame("CharacterCreateFrame");
 

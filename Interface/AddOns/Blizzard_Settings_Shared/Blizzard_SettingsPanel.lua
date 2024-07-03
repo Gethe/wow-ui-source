@@ -403,7 +403,7 @@ function SettingsPanelMixin:CommitBindings()
 		SaveBindings(GetCurrentBindingSet());
 
 		local shouldSave = true;
-		SaveAllCustomBindings(shouldSave);
+		securecallfunction(SaveAllCustomBindings, shouldSave);
 	end
 end
 

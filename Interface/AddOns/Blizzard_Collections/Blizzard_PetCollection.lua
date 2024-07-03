@@ -1584,10 +1584,12 @@ end
 
 function PetJournalFilterDropdown_SetAllPetTypes(value)
 	C_PetJournal.SetAllPetTypesChecked(value);
+	return MenuResponse.Refresh;
 end 
 
 function PetJournalFilterDropdown_SetAllPetSources(value)
 	C_PetJournal.SetAllPetSourcesChecked(value);
+	return MenuResponse.Refresh;
 end
 
 ---------------------------------------

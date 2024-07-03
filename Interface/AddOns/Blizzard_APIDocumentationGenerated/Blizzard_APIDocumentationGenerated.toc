@@ -334,6 +334,7 @@ CameraConstantsDocumentation.lua
 CharacterCustomizationSharedDocumentation.lua
 CharacterSelectionConstantsDocumentation.lua
 ChatConstantsDocumentation.lua
+CinematicConstantsDocumentation.lua
 ClientSettingsDocumentation.lua
 ClubSharedDocumentation.lua
 ColorDocumentation.lua

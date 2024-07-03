@@ -313,6 +313,12 @@
 					</Anchors>
 					<Color r="0.0" g="0.0" b="0.0"/>
 				</Texture>
+				<Texture parentKey="TopBlackBar">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT"/>
+					</Anchors>
+					<Color r="0.0" g="0.0" b="0.0"/>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>

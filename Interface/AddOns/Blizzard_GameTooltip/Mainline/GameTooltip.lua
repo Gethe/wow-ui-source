@@ -604,6 +604,11 @@ function GameTooltip_AddQuest(self, questIDArg)
 		local quality = tagInfo and tagInfo.quality or Enum.WorldQuestQuality.Common;
 		local color = WORLD_QUEST_QUALITY_COLORS[quality].color;
 		GameTooltip_SetTitle(GameTooltip, title, color);
+
+		if C_QuestLog.IsAccountQuest(questID) then
+			GameTooltip_AddColoredLine(GameTooltip, ACCOUNT_QUEST_LABEL, ACCOUNT_WIDE_FONT_COLOR);
+		end
+
 		QuestUtils_AddQuestTypeToTooltip(GameTooltip, questID, NORMAL_FONT_COLOR);
 
 		local factionData = factionID and C_Reputation.GetFactionDataByID(factionID);

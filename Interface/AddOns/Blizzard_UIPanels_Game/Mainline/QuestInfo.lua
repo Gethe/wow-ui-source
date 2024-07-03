@@ -383,8 +383,7 @@ end
 
 function QuestInfo_ShowAccountCompletedNotice()
 	local questID = GetQuestID();
-	-- We only want to display this notice on non-repeatable quests
-	local startingAccountCompletedQuest = C_QuestLog.IsQuestFlaggedCompletedOnAccount(questID) and not C_QuestLog.IsQuestRepeatableType(questID);
+	local startingAccountCompletedQuest = C_QuestLog.IsQuestFlaggedCompletedOnAccount(questID);
 	QuestInfoAccountCompletedNotice:SetShown(startingAccountCompletedQuest);
 	return startingAccountCompletedQuest and QuestInfoAccountCompletedNotice or nil;
 end

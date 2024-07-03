@@ -1753,8 +1753,18 @@ function TopLevelParentScaleFrameMixin:OnScaleFrameEvent(event, ...)
 	end
 end
 
+function TopLevelParentScaleFrameMixin:OnScaleFrameShow()
+	self:UpdateScale();
+end
+
 function TopLevelParentScaleFrameMixin:UpdateScale()
-	self:SetScale(GetAppropriateTopLevelParent():GetScale());
+	-- Avoid getting ourselves as the top parent for scaling, in case we're currently the alternate top
+	local optionalExcludedParent = self;
+	local topLevelParent = GetAppropriateTopLevelParent(optionalExcludedParent);
+
+	if topLevelParent then
+		self:SetScale(topLevelParent:GetScale());
+	end
 end
 
 -- Click to drag directly attached to frame itself.

@@ -34,9 +34,17 @@ function DropdownLoadSystemMixin:ClearSelection()
 	self:SetSelectionIDInternal(nil);
 end
 
+function DropdownLoadSystemMixin:SetMenuTag(menuTag)
+	self.menuTag = menuTag;
+end
+
 function DropdownLoadSystemMixin:UpdateSelectionOptions()
 	self.Dropdown:SetDefaultText(self.dropdownDefaultText);
 	self.Dropdown:SetupMenu(function(dropdown, rootDescription)
+		if self.menuTag then
+			rootDescription:SetTag(self.menuTag);
+		end
+
 		do
 			local function IsSelected(selectionID)
 				return self:GetSelectionID() == selectionID;

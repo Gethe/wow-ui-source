@@ -181,8 +181,8 @@ function BonusObjectivePinMixin:OnMouseUpAction()
 	POIButtonMixin.OnMouseUp(self);
 end
 
-function BonusObjectivePinMixin:OnMouseClickAction()
-	C_SuperTrack.SetSuperTrackedQuestID(self:GetQuestID());
+function BonusObjectivePinMixin:OnMouseClickAction(button)
+	POIButtonMixin.OnClick(self, button);
 end
 
 --[[ Threat Objective Pin ]]--

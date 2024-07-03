@@ -32,7 +32,7 @@ local DelvesUI =
 
 			Returns =
 			{
-				{ Name = "subTreeID", Type = "number", Nilable = false },
+				{ Name = "nodeID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -47,6 +47,15 @@ local DelvesUI =
 			Returns =
 			{
 				{ Name = "rarity", Type = "CurioRarity", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCurrentDelvesSeasonNumber",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "seasonNumber", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -65,6 +74,16 @@ local DelvesUI =
 			Returns =
 			{
 				{ Name = "factionID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetDelvesMinRequiredLevel",
+			Type = "Function",
+			Documentation = { "Players must be at or above the min level + offset to enter Delves. This function returns that min level." },
+
+			Returns =
+			{
+				{ Name = "minRequiredLevel", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -199,6 +218,7 @@ local DelvesUI =
 			Name = "ActiveDelveDataUpdate",
 			Type = "Event",
 			LiteralName = "ACTIVE_DELVE_DATA_UPDATE",
+			Documentation = { "Signaled when SpellScript calls change the data for players/parties owning a delve or when the delve is shut down." },
 		},
 		{
 			Name = "ShowDelvesDisplayUI",
@@ -209,6 +229,7 @@ local DelvesUI =
 			Name = "WalkInDataUpdate",
 			Type = "Event",
 			LiteralName = "WALK_IN_DATA_UPDATE",
+			Documentation = { "Signaled when the player or a private party member join a new walk-in instance or when the instance is shut down." },
 		},
 	},
 

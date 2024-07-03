@@ -1939,7 +1939,7 @@ function CombatConfig_CreateCombatFilter(name, filter)
 	else
 		newFilter = CopyTable(filter);
 	end
-	if ( not name or name == "" ) then
+	if ( not name or name == "" or not C_ChatInfo.IsValidCombatFilterName(name) ) then
 		name = format(DEFAULT_COMBATLOG_FILTER_NAME, #Blizzard_CombatLog_Filters.filters);
 	end
 	newFilter.name = name;

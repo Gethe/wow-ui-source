@@ -29,6 +29,7 @@ function QuestOfferDataProviderMixin:RemoveAllData()
 	self:GetMap():RemoveAllPinsByTemplate("QuestHubPinTemplate");
 	self:ResetQuestLines();
 	self:ResetQuestHubs();
+	self:ResetSuppressor();
 end
 
 function QuestOfferDataProviderMixin:ResetQuestLines()
@@ -37,6 +38,10 @@ end
 
 function QuestOfferDataProviderMixin:ResetQuestHubs()
 	self.questHubs = nil;
+end
+
+function QuestOfferDataProviderMixin:ResetSuppressor()
+	self.pinSuppressor = nil;
 end
 
 function QuestOfferDataProviderMixin:GetQuestOffers()
@@ -211,11 +216,6 @@ function QuestOfferDataProviderMixin:GetPinSuppressor()
 	return GetOrCreateTableEntry(self, "pinSuppressor");
 end
 
-function QuestOfferDataProviderMixin:IsQuestSuppressedByHub(questOffer)
-	local suppression = self:GetPinSuppressor();
-	return suppression[questOffer.questID] ~= nil;
-end
-
 function QuestOfferDataProviderMixin:IsCityMap(mapID)
 	local cityMaps = GetOrCreateTableEntry(self, "cityMaps");
 	local isCityMap = cityMaps[mapID];
@@ -228,31 +228,53 @@ function QuestOfferDataProviderMixin:IsCityMap(mapID)
 	return isCityMap;
 end
 
-function QuestOfferDataProviderMixin:IsQuestOfferSuppressed(mapID, questOffer)
+function QuestOfferDataProviderMixin:IsSuppressionDisabled(mapID, questHubPin)
 	if self:IsCityMap(mapID) then
+		return true;
+	end
+
+	-- Optional
+	if questHubPin and self:IsAtMaxZoom() then
+		local hubMapID = questHubPin:GetLinkedUIMapID();
+		if not hubMapID or not self:IsCityMap(hubMapID) then
+			return true;
+		end
+	end
+
+	return false;
+end
+
+function QuestOfferDataProviderMixin:IsQuestOfferSuppressed(mapID, questOffer)
+	local hubPinThatSuppressedOffer = self:GetPinSuppressor()[questOffer.questID];
+	if self:IsSuppressionDisabled(mapID, hubPinThatSuppressedOffer) then
 		return false;
 	end
 
-	return self:IsQuestSuppressedByHub(questOffer);
+	return hubPinThatSuppressedOffer ~= nil;
 end
 
-function QuestOfferDataProviderMixin:CheckQuestIsRelatedToHub(suppressor, questID, areaPoiID)
-	local isRelated = suppressor[questID] == areaPoiID;
+function QuestOfferDataProviderMixin:CheckQuestIsRelatedToHub(questID, questHubPin)
+	local suppressor = self:GetPinSuppressor();
+	local isRelated = suppressor[questID] == questHubPin;
 	if not isRelated then
-		isRelated = C_QuestHub.IsQuestCurrentlyRelatedToHub(questID, areaPoiID);
+		isRelated = C_QuestHub.IsQuestCurrentlyRelatedToHub(questID, questHubPin:GetPoiInfo().areaPoiID);
 		if isRelated then
-			suppressor[questID] = areaPoiID;
+			suppressor[questID] = questHubPin;
 		end
 	end
 
 	return isRelated;
 end
 
-function QuestOfferDataProviderMixin:GetRelatedQuests(poiInfo)
+function QuestOfferDataProviderMixin:RefreshRelatedQuests(questHubPin)
+	-- Early out if nothing could be related to this hub
+	if self:IsSuppressionDisabled(self:GetMap():GetMapID(), questHubPin) then
+		return {};
+	end
+
 	local relatedQuests = {};
-	local suppressor = self:GetPinSuppressor();
 	for questID, questOffer in pairs(self:GetQuestOffers()) do
-		if self:CheckQuestIsRelatedToHub(suppressor, questID, poiInfo.areaPoiID) then
+		if self:CheckQuestIsRelatedToHub(questID, questHubPin) then
 			table.insert(relatedQuests, questOffer);
 		end
 	end
@@ -332,6 +354,27 @@ function QuestOfferDataProviderMixin:RequestQuestLinesForMap()
 	if (mapInfo and MapUtil.ShouldMapTypeShowQuests(mapInfo.mapType)) then
 		C_QuestLine.RequestQuestLinesForMap(mapID)
 	end
+end
+
+function QuestOfferDataProviderMixin:OnCanvasScaleChanged()
+	if self:CheckUpdateMaxZoom() then
+		self:RefreshAllData();
+	end
+end
+
+function QuestOfferDataProviderMixin:CheckUpdateMaxZoom()
+	local isMaxZoom = self:GetMap():IsAtMaxZoom();
+	if self.isMaxZoom ~= isMaxZoom then
+		self.isMaxZoom = isMaxZoom;
+		return true;
+	end
+
+	return false;
+end
+
+function QuestOfferDataProviderMixin:IsAtMaxZoom()
+	self:CheckUpdateMaxZoom();
+	return self.isMaxZoom;
 end
 
 -- TODO: Hoping to find a better way to get this implemented, but copy paste is the way for now.
@@ -454,9 +497,8 @@ local function SortConsolidatedQuestsComparator(questOffer1, questOffer2)
 end
 
 function QuestHubPinMixin:ConsolidateRelatedQuests()
-	local relatedQuests = self:GetDataProvider():GetRelatedQuests(self:GetPoiInfo());
-	table.sort(relatedQuests, SortConsolidatedQuestsComparator);
-	self.relatedQuests = relatedQuests;
+	self.relatedQuests = self:GetDataProvider():RefreshRelatedQuests(self);
+	table.sort(self.relatedQuests, SortConsolidatedQuestsComparator);
 end
 
 function QuestHubPinMixin:UpdatePriorityQuestDisplay()
@@ -473,8 +515,21 @@ function QuestHubPinMixin:GetRelatedQuests()
 	return GetOrCreateTableEntry(self, "relatedQuests");
 end
 
+function QuestHubPinMixin:ShouldMouseButtonBePassthrough(button)
+	return false;
+end
+
+function QuestHubPinMixin:GetLinkedUIMapID()
+	return self:GetPoiInfo().linkedUiMapID;
+end
+
 function QuestHubPinMixin:AddCustomTooltipData(tooltip)
 	self:AddRelatedQuestsToTooltip(tooltip);
+
+	-- Since this isn't using the base pin, just have it add the instructions manually.
+	if self:GetLinkedUIMapID() then
+		GameTooltip_AddInstructionLine(tooltip, MAP_LINK_POI_TOOLTIP_INSTRUCTION_LINE, false);
+	end
 end
 
 local MAX_DISPLAYED_QUESTS_IN_TOOLTIP = 3;
@@ -498,6 +553,11 @@ function QuestHubPinMixin:AddRelatedQuestsToTooltip(tooltip)
 			end
 		end
 	end
+end
+
+function QuestHubPinMixin:OnMouseClickAction(button)
+	-- Trust that this will work and that QuestHubPinMixin implements all necessary APIs
+	MapLinkPinMixin.OnMouseClickAction(self, button);
 end
 
 -- Hardcoding the QID for now since this is a rare case. If you find yourself

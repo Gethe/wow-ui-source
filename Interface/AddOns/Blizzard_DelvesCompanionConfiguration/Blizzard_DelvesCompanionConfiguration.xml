@@ -93,6 +93,7 @@
                     <Anchor point="TOP" relativeKey="$parent.Texture" relativePoint="CENTER" x="-2" y="-20"/>
                 </Anchors>
                 <Scripts>
+                    <OnShow method="OnShow"/>
                     <OnHide method="OnHide"/>
                 </Scripts>
             </Frame>
@@ -104,6 +105,7 @@
             </AnimationGroup>
         </Animations>
         <Scripts>
+            <OnEvent method="OnEvent"/>
             <OnLoad method="OnLoad"/>
             <OnShow method="OnShow"/>
             <OnHide method="OnHide"/>
@@ -174,7 +176,7 @@
                 </Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="Border" file="Interface\Common\WhiteIconFrame">
+				<Texture parentKey="Border" atlas="delves-curios-icon-border">
 					<Size x="36" y="36"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="2" y="-2"/>
@@ -193,30 +195,19 @@
 	</Button>
 
     <!-- Delves Configuration Frame -->
-    <Frame name="DelvesCompanionConfigurationFrame" mixin="DelvesCompanionConfigurationFrameMixin" parent="UIParent" toplevel="true" enableMouse="true" hidden="true">
+    <Frame name="DelvesCompanionConfigurationFrame" inherits="InsetFrameTemplate" mixin="DelvesCompanionConfigurationFrameMixin" parent="UIParent" toplevel="true" enableMouse="true" hidden="true">
         <Size x="385" y="495"/>
         <Layers>
             <Layer level="BACKGROUND">
-                <!-- TODO temporary until art comes in -->
-                <Texture parentKey="DefaultBackground" atlas="auctionhouse-background-index" useAtlasSize="false"/>
-            </Layer>
-            <Layer level="OVERLAY">
-                <FontString parentKey="PLACEHOLDER-TEXT" justifyH="CENTER" inherits="GameFontHighlight" text="UI: Work in Progress"> <!-- TODO remove me, eventually -->
-                    <Size x="200" y="0"/>
-                    <Anchors>
-                        <Anchor point="TOP" y="70"/>
-                    </Anchors>
-                    <Color r="1"/> 
-                </FontString>
+                <Texture parentKey="Background" atlas="delves-companion-background" useAtlasSize="false"/>
             </Layer>
         </Layers>
         <Frames>
             <Button parentKey="CloseButton" inherits="UIPanelCloseButton" frameLevel="510">
 				<Anchors>
-					<Anchor point="TOPRIGHT"/>
+					<Anchor point="TOPRIGHT" x="1" y="1"/>
 				</Anchors>
 				<Scripts>
-					<!-- TODO sound -->
 					<OnClick>
 						HideUIPanel(self:GetParent());
 					</OnClick>
@@ -240,8 +231,7 @@
 					</Layer>
 
 					<Layer level="BORDER">
-						<Texture parentKey="Border" atlas="pet-list_default-ring" useAtlasSize="false"> <!-- TODO need different art here -->
-							<Size x="150" y="150"/>
+						<Texture parentKey="Border" atlas="delves-companion-portrait-frame" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.Icon"/>
 							</Anchors>
@@ -255,48 +245,32 @@
             </Frame>
 
             <!-- Companion Experience Ring -->
-            <Cooldown parentKey="CompanionExperienceRingFrame" mixin="CompanionExperienceRingFrameMixin" reverse="true" hideCountdownNumbers="true" rotation="180" frameLevel="100">
-                <Size x="121" y="121"/>
+            <Cooldown parentKey="CompanionExperienceRingFrame" mixin="CompanionExperienceRingFrameMixin" reverse="true" hideCountdownNumbers="true" rotation="180">
+                <Size x="128" y="128"/>
                 <Anchors>
-                    <Anchor point="LEFT" relativeKey="$parent.CompanionPortraitFrame" relativePoint="LEFT" x="-2" y="-1"/>
+                    <Anchor point="CENTER" relativeKey="$parent.CompanionPortraitFrame" relativePoint="CENTER" y="9"/>
                 </Anchors>
-                <SwipeTexture file="Interface\PVPFrame\pvpqueue-sidebar-honorbar-fill"/> <!-- TODO art, may need to change size/anchors, too -->
+                <SwipeTexture file="Interface\Delves\delves-companion-progress-fill"/>
             </Cooldown>
 
             <!-- Companion Level -->
-            <Frame parentKey="CompanionLevelFrame" mixin="CompanionLevelFrameMixin" frameLevel="200">
-                <Size x="45" y="45"/>
+            <Frame parentKey="CompanionLevelFrame" mixin="CompanionLevelFrameMixin" frameLevel="100">
+                <Size x="45" y="40"/>
                 <Anchors>
-                    <Anchor point="TOP" relativeKey="$parent.CompanionPortraitFrame.Icon" relativePoint="BOTTOM" y="20"/>
+                    <Anchor point="TOP" relativeKey="$parent.CompanionPortraitFrame" relativePoint="BOTTOM" y="27"/>
                 </Anchors>
                 <Layers>
-                    <Layer level="BACKGROUND">
-                        <!-- TODO temporary until art comes in -->
-                        <Texture parentKey="DefaultBackground" atlas="auctionhouse-background-index" useAtlasSize="false"/>
-                        <MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" setAllPoints="true">
-                            <MaskedTextures>
-                                <MaskedTexture childKey="DefaultBackground"/>
-                            </MaskedTextures>
-                        </MaskTexture>
-                    </Layer>
-                    <Layer level="BORDER">
-						<Texture parentKey="Border" atlas="pet-list_default-ring" useAtlasSize="false"> <!-- TODO art -->
-							<Size x="60" y="60"/>
-							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.DefaultBackground"/>
-							</Anchors>
-						</Texture>
-					</Layer>
                     <Layer level="ARTWORK">
-                        <FontString parentKey="CompanionLevel" justifyH="CENTER" inherits="GameFontNormal">
+                        <FontString parentKey="CompanionLevel" justifyH="CENTER" inherits="GameFontNormalMed1">
                             <Size x="30" y="25"/>
                             <Anchors>
-                                <Anchor point="CENTER" x="1"/> 
+                                <Anchor point="CENTER"/> 
                             </Anchors>
                         </FontString>
                     </Layer>
                 </Layers>
             </Frame>
+
             <!-- Companion Info -->
             <Frame parentKey="CompanionInfoFrame" mixin="CompanionInfoFrameMixin">
                 <Size x="340" y="90"/>
@@ -320,7 +294,7 @@
                             </Anchors>
                         </FontString>
 
-                        <Texture name="CompanionInfoGLine" atlas="UI-World-Quest-golden-line" useAtlasSize="false"> <!-- TODO art-->
+                        <Texture name="CompanionInfoGLine" atlas="UI-World-Quest-golden-line" useAtlasSize="false">
                             <Size x="285" y="5"/>
                             <Anchors>
                                 <Anchor point="TOP" relativeKey="$parent.CompanionDescription" relativePoint="BOTTOM" y="-10"/>

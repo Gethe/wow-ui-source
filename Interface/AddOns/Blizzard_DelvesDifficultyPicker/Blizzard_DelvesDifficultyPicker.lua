@@ -1,5 +1,3 @@
---! TODO sounds
-
 --[[ LOCALS ]]
 local DELVES_DIFFICULTY_PICKER_EVENTS = {
 	"PARTY_LEADER_CHANGED",
@@ -25,17 +23,13 @@ local LAST_TIER_SELECTED_CVAR = "lastSelectedDelvesTier";
 
 local DelvesKeyState = EnumUtil.MakeEnum(
 	"None",
-	"Normal",
-	"Epic"
+	"Normal"
 );
 
 function GetPlayerKeyState()
-	local normalKeyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.DelvesConsts.DELVE_NORMAL_KEY_CURRENCY_ID);
-	local epicKeyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.DelvesConsts.DELVE_EPIC_KEY_CURRENCY_ID);
+	local normalKeyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.DelvesConsts.DELVES_NORMAL_KEY_CURRENCY_ID);
 
-	if epicKeyInfo and epicKeyInfo.quantity > 0 then
-		return DelvesKeyState.Epic;
-	elseif normalKeyInfo and normalKeyInfo.quantity > 0 then
+	if normalKeyInfo and normalKeyInfo.quantity > 0 then
 		return DelvesKeyState.Normal;
 	else
 		return DelvesKeyState.None;
@@ -77,7 +71,10 @@ end
 
 function DelvesDifficultyPickerFrameMixin:OnShow()
 	self.Border.Bg:Hide();
+	self:ClearAllPoints();
+	self:SetPoint("CENTER", UIParent, "CENTER", 0, 110);
 	FrameUtil.RegisterFrameForEvents(self, DELVES_DIFFICULTY_PICKER_EVENTS);
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 
 	self:SetInitialLevel();
 	self:CheckForActiveDelveAndUpdate();
@@ -149,8 +146,9 @@ end
 
 function DelvesDifficultyPickerFrameMixin:UpdatePortalButtonState()
 	local optionSelected =  self:GetSelectedOption();
+	local minLevel = C_DelvesUI.GetDelvesMinRequiredLevel();
 
-	local playerAtOrAboveMinLevel =  UnitLevel("player") >= Constants.DelvesConsts.MIN_PLAYER_LEVEL;
+	local playerAtOrAboveMinLevel = minLevel and UnitLevel("player") >= minLevel;
 	local selectedOptionValid = optionSelected ~= nil and (optionSelected.status == Enum.GossipOptionStatus.Available or optionSelected.status == Enum.GossipOptionStatus.AlreadyComplete);
 	
 	self.EnterDelveButton:SetEnabled(playerAtOrAboveMinLevel and selectedOptionValid);
@@ -187,9 +185,9 @@ function DelvesDifficultyPickerFrameMixin:SetInitialLevel()
 		-- Otherwise, try to use their last selected tier. Failing that, use the highest unlocked tier
 		if lastSelectedTier > 0 then
 			local lastSelectedTierOption = self.gossipOptions[lastSelectedTier];
-			local lastSelectedTierValid = lastSelectedTierOption.status == Enum.GossipOptionStatus.Available or lastSelectedTierOption.status == Enum.GossipOptionStatus.AlreadyComplete;
+			local lastSelectedTierValid = lastSelectedTierOption and (lastSelectedTierOption.status == Enum.GossipOptionStatus.Available or lastSelectedTierOption.status == Enum.GossipOptionStatus.AlreadyComplete);
 
-			if lastSelectedTierOption and lastSelectedTierValid then
+			if lastSelectedTierValid then
 				highestUnlockedLevel = lastSelectedTierOption.orderIndex;
 				highestUnlockedLevelOptionID = lastSelectedTierOption.gossipOptionID;
 				DelvesDifficultyPickerFrame:SetSelectedLevel(highestUnlockedLevel);
@@ -247,13 +245,13 @@ function DelvesDifficultyPickerFrameMixin:UpdateBountifulWidgetVisualization()
 	for _, widgetFrame in UIWidgetManager:EnumerateWidgetsByWidgetTag(BOUNTIFUL_DELVE_WIDGET_TAG) do
 		local playerKeyState = GetPlayerKeyState();
 		
-		-- Cancel the model scene effect if player does not own any epic keys
-		if playerKeyState ~= DelvesKeyState.Epic and widgetFrame.effectController then
+		-- Cancel the model scene effect if player does not own any keys
+		if playerKeyState ~= DelvesKeyState.Normal and widgetFrame.effectController then
 			widgetFrame.effectController:CancelEffect();
 			widgetFrame.effectController = nil;
 		end
 
-		-- Add glow animation if player owns any key
+		-- Add glow animation if player owns at least one key
 		if playerKeyState >= DelvesKeyState.Normal and not self.bountifulAnimFrame then
 			self.bountifulAnimFrame = CreateFrame("FRAME", "BountifulWidgetAnimationFrame", widgetFrame, "BountifulWidgetAnimationTemplate");
 			self.bountifulAnimFrame.FadeIn:Play();
@@ -293,6 +291,7 @@ function DelvesDifficultyPickerFrameMixin:OnHide()
 		self.bountifulAnimFrame:Hide();
 		self.bountifulAnimFrame = nil;
 	end
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 end		
 
 --[[ Enter Button ]]
@@ -300,11 +299,12 @@ DelvesDifficultyPickerEnterDelveButtonMixin = {};
 
 function DelvesDifficultyPickerEnterDelveButtonMixin:OnEnter()
 	local selectedOption = self:GetParent():GetSelectedOption();
+	local minLevel = C_DelvesUI.GetDelvesMinRequiredLevel();
 
-	if UnitLevel("player") < Constants.DelvesConsts.MIN_PLAYER_LEVEL then
+	if minLevel and UnitLevel("player") < minLevel then
 		self:SetEnabled(false);
 		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", 225);
-		GameTooltip_AddErrorLine(GameTooltip, DELVES_ENTRANCE_LEVEL_REQUIREMENT_ERROR:format(Constants.DelvesConsts.MIN_PLAYER_LEVEL));
+		GameTooltip_AddErrorLine(GameTooltip, DELVES_ENTRANCE_LEVEL_REQUIREMENT_ERROR:format(minLevel));
 		GameTooltip:Show();
 	elseif not selectedOption then
 		self:SetEnabled(false);
@@ -328,6 +328,7 @@ function DelvesDifficultyPickerEnterDelveButtonMixin:OnClick()
 	if not selectedLevel then
 		return; 
 	end
+	PlaySound(SOUNDKIT.PVP_ENTER_QUEUE);
 	C_GossipInfo.SelectOptionByIndex(selectedLevel);
 end 
 

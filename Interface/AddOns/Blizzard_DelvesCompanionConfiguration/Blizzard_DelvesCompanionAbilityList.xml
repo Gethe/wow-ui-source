@@ -52,9 +52,8 @@
         <Size x="430" y="520"/>
         <Layers>
             <Layer level="BACKGROUND">
-                <Texture parentKey="CompanionAbilityListBackground" alpha="0.7">
+                <Texture parentKey="CompanionAbilityListBackground" atlas="character-panel-background" useAtlasSize="false">
                     <Size x="420" y="457"/>
-                    <Color color="BLACK"/>
                     <Anchors>
                         <Anchor point="BOTTOM" y="7"/>
                     </Anchors>
