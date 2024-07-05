@@ -19,8 +19,9 @@ Cata\PartyFrameTemplates.xml
 Classic\PartyFrame.xml
 Wrath\TargetFrame.lua
 Cata\TargetFrame.xml
-Classic\TotemFrame.lua
-Classic\TotemFrame.xml
+Shared\TotemFrame.lua
+Cata\TotemFrame.lua
+Shared\TotemFrame.xml
 Cata\PetFrame.lua
 Classic\PetFrame_Shared.lua
 Cata\PetFrame.xml

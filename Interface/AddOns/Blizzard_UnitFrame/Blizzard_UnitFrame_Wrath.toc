@@ -18,8 +18,9 @@ Classic\PartyFrameTemplates.xml
 Classic\PartyFrame.xml
 Wrath\TargetFrame.lua
 Wrath\TargetFrame.xml
-Classic\TotemFrame.lua
-Classic\TotemFrame.xml
+Shared\TotemFrame.lua
+Wrath\TotemFrame.lua
+Shared\TotemFrame.xml
 Wrath\PetFrame.lua
 Classic\PetFrame_Shared.lua
 Wrath\PetFrame.xml
