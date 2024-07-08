@@ -106,10 +106,9 @@ function AdventureMapQuestChoiceDialogMixin:RefreshRewards()
 		self:AddReward(BreakUpLargeNumbers(xp), "Interface\\Icons\\XP_Icon", nil, 0, "NumberFontNormal");
 	end
 
-	for currencyIndex = 1, GetNumQuestLogRewardCurrencies(self.questID) do
-		local name, texture, count, currencyID = GetQuestLogRewardCurrencyInfo(currencyIndex, self.questID);
-		local rewardFrame = self:AddReward(name, texture, nil, count, "GameFontHighlightSmall");
-		local currencyColor = GetColorForCurrencyReward(currencyID, count);
+	for index, currencyReward in ipairs(C_QuestLog.GetQuestRewardCurrencies(self.questID)) do
+		local rewardFrame = self:AddReward(currencyReward.name, currencyReward.texture, nil, currencyReward.totalRewardAmount, "GameFontHighlightSmall");
+		local currencyColor = GetColorForCurrencyReward(currencyReward.currencyID, currencyReward.totalRewardAmount);
 		rewardFrame.Count:SetTextColor(currencyColor:GetRGB());
 	end
 

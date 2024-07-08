@@ -828,6 +828,8 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 									transaction:OverwriteAllocations(reagentSlotSchematic.slotIndex, allocations);
 
 									slot:Update();
+
+									self:UpdateListOrderButton();
 								end
 
 								self.QualityDialog:RegisterCallback(ProfessionsQualityDialogMixin.Event.Accepted, OnAllocationsAccepted, slot);
@@ -1431,7 +1433,7 @@ function ProfessionsCustomerOrderFormMixin:AreRequiredReagentsProvided()
 	local transaction = self.transaction;
 	local recipeSchematic = transaction:GetRecipeSchematic();
 	for slotIndex, reagentSlotSchematic in ipairs(recipeSchematic.reagentSlotSchematics) do
-		local mustProvide = reagentSlotSchematic.required and (reagentSlotSchematic.orderSource == Enum.CraftingOrderReagentSource.Customer);
+		local mustProvide = (reagentSlotSchematic.required and ((reagentSlotSchematic.orderSource == Enum.CraftingOrderReagentSource.Customer) or ((reagentSlotSchematic.orderSource == Enum.CraftingOrderReagentSource.Any) and (self.order.orderType == Enum.CraftingOrderType.Public))));
 		if mustProvide and not transaction:HasAllAllocations(slotIndex) then
 			return false;
 		end

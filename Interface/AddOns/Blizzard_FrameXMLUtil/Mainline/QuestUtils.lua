@@ -797,8 +797,7 @@ function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style)
 	-- items
 	local showRetrievingData = false;
 	local numQuestRewards = GetNumQuestLogRewards(questID);
-	local numCurrencyRewards = GetNumQuestLogRewardCurrencies(questID);
-	if numQuestRewards > 0 and (not style.prioritizeCurrencyOverItem or numCurrencyRewards == 0) then
+	if numQuestRewards > 0 and (not style.prioritizeCurrencyOverItem or C_QuestInfoSystem.HasQuestRewardCurrencies(questID)) then
 		if style.fullItemDescription then
 			-- we want to do a full item description
 			local itemIndex, rewardType = QuestUtils_GetBestQualityItemRewardIndex(questID);  -- Only support one item reward currently
@@ -854,18 +853,17 @@ end
 
 --currencyContainerTooltip should be an InternalEmbeddedItemTooltipTemplate
 function QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, currencyContainerTooltip)
-	local numQuestCurrencies = GetNumQuestLogRewardCurrencies(questID);
 	local currencies = { };
 	local uniqueCurrencyIDs = { };
-	for i = 1, numQuestCurrencies do
-		local name, texture, numItems, currencyID = GetQuestLogRewardCurrencyInfo(i, questID);
-		local rarity = C_CurrencyInfo.GetCurrencyInfo(currencyID).quality;
-		local firstInstance = not uniqueCurrencyIDs[currencyID];
+	local currencyRewards = C_QuestLog.GetQuestRewardCurrencies(questID);
+	for index, currencyReward in ipairs(currencyRewards) do
+		local rarity = C_CurrencyInfo.GetCurrencyInfo(currencyReward.currencyID).quality;
+		local firstInstance = not uniqueCurrencyIDs[currencyReward.currencyID];
 		if firstInstance then
-			uniqueCurrencyIDs[currencyID] = true;
+			uniqueCurrencyIDs[currencyReward.currencyID] = true;
 		end
-		local currencyInfo = { name = name, texture = texture, numItems = numItems, currencyID = currencyID, rarity = rarity, firstInstance = firstInstance };
-		if(currencyID ~= ECHOS_OF_NYLOTHA_CURRENCY_ID or numQuestCurrencies == 1) then
+		local currencyInfo = { name = currencyReward.name, texture = currencyReward.texture, numItems = currencyReward.totalRewardAmount, currencyID = currencyReward.currencyID, rarity = rarity, firstInstance = firstInstance };
+		if(currencyInfo.currencyID ~= ECHOS_OF_NYLOTHA_CURRENCY_ID or #currencyRewards == 1) then
 			tinsert(currencies, currencyInfo);
 		end
 	end

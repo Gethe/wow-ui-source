@@ -105,6 +105,22 @@ local function POIButton_GetCampaignAtlasInfoPushed(poiButton)
 	end
 end
 
+local function POIButton_GetLegendaryAtlasInfoNormal(poiButton)
+	if poiButton:IsSelected() then
+		return "UI-QuestPoiLegendary-QuestNumber-SuperTracked";
+	else
+		return "UI-QuestPoiLegendary-QuestNumber";
+	end
+end
+
+local function POIButton_GetLegendaryAtlasInfoPushed(poiButton)
+	if poiButton:IsSelected() then
+		return "UI-QuestPoiLegendary-QuestNumber-Pressed-SuperTracked";
+	else
+		return "UI-QuestPoiLegendary-QuestNumber-Pressed";
+	end
+end
+
 local function POIButton_GetImportantAtlasInfoNormal(poiButton)
 	if poiButton:IsSelected() then
 		return "UI-QuestPoiImportant-QuestNumber-SuperTracked";
@@ -219,7 +235,12 @@ end
 
 local function POIButton_UpdateQuestInProgressStyle(poiButton)
 	local questType = poiButton:GetQuestType();
-	if questType == POIButtonUtil.QuestTypes.Campaign or questType == POIButtonUtil.QuestTypes.Calling then
+	if questType == POIButtonUtil.QuestTypes.Legendary then
+		POIButton_SetAtlas(poiButton.Glow, nil, nil, "UI-QuestPoiLegendary-OuterGlow");
+		POIButton_SetAtlas(poiButton.NormalTexture, nil, nil, POIButton_GetLegendaryAtlasInfoNormal(poiButton));
+		POIButton_SetAtlas(poiButton.PushedTexture, nil, nil, POIButton_GetLegendaryAtlasInfoPushed(poiButton));
+		POIButton_SetAtlas(poiButton.HighlightTexture, nil, nil, "UI-QuestPoiLegendary-InnerGlow");
+	elseif questType == POIButtonUtil.QuestTypes.Campaign or questType == POIButtonUtil.QuestTypes.Calling then
 		POIButton_SetAtlas(poiButton.Glow, nil, nil, "UI-QuestPoiCampaign-OuterGlow");
 		POIButton_SetAtlas(poiButton.NormalTexture, nil, nil, POIButton_GetCampaignAtlasInfoNormal(poiButton));
 		POIButton_SetAtlas(poiButton.PushedTexture, nil, nil, POIButton_GetCampaignAtlasInfoPushed(poiButton));
@@ -276,7 +297,10 @@ local function POIButton_UpdateNormalStyle(poiButton)
 	else
 		local questPOIType = poiButton:GetQuestType();
 		local questID = poiButton:GetQuestID();
-		if questPOIType == POIButtonUtil.QuestTypes.Campaign then
+
+		if questPOIType == POIButtonUtil.QuestTypes.Legendary then
+			poiButton.Display:SetAtlas(nil, nil, "UI-QuestPoiLegendary-QuestBangTurnIn");
+		elseif questPOIType == POIButtonUtil.QuestTypes.Campaign then
 			poiButton.Display:SetAtlas(nil, nil, "UI-QuestPoiCampaign-QuestBangTurnIn");
 		elseif questPOIType == POIButtonUtil.QuestTypes.Calling then
 			poiButton.Display:SetAtlas(nil, nil, "UI-DailyQuestPoiCampaign-QuestBangTurnIn");
@@ -312,6 +336,12 @@ local function POIButton_UpdateNormalStyle(poiButton)
 			POIButton_SetAtlas(poiButton.NormalTexture, nil, nil, POIButton_GetMetaAtlasInfoNormal(poiButton));
 			POIButton_SetAtlas(poiButton.PushedTexture, nil, nil, POIButton_GetMetaAtlasInfoPushed(poiButton));
 			POIButton_SetAtlas(poiButton.HighlightTexture, nil, nil, "UI-QuestPoiWrapper-InnerGlow");
+		elseif questPOIType == POIButtonUtil.QuestTypes.Legendary then
+			poiButton.Display:SetOffset(0, 0);
+			POIButton_SetAtlas(poiButton.Glow, nil, nil, "UI-QuestPoiLegendary-OuterGlow");
+			POIButton_SetAtlas(poiButton.NormalTexture, nil, nil, POIButton_GetLegendaryAtlasInfoNormal(poiButton));
+			POIButton_SetAtlas(poiButton.PushedTexture, nil, nil, POIButton_GetLegendaryAtlasInfoPushed(poiButton));
+			POIButton_SetAtlas(poiButton.HighlightTexture, nil, nil, "UI-QuestPoiLegendary-InnerGlow");
 		elseif questPOIType == POIButtonUtil.QuestTypes.Rare then -- TODO: Double check, rare/epic quality on world quests might not be a thing any more
 			poiButton.Display:SetOffset(0, 0);
 			POIButton_SetAtlas(poiButton.Glow, nil, nil, "UI-QuestPoi-OuterGlow");
@@ -533,6 +563,8 @@ function POIButtonMixin:GetQuestType()
 	local quest = QuestCache:Get(questID);
 	if QuestUtil.ShouldQuestIconsUseCampaignAppearance(questID) then
 		return POIButtonUtil.QuestTypes.Campaign;
+	elseif quest:IsLegendary() then
+		return POIButtonUtil.QuestTypes.Legendary;
 	elseif quest:IsCalling() then
 		return POIButtonUtil.QuestTypes.Calling;
 	elseif quest:IsMeta() then

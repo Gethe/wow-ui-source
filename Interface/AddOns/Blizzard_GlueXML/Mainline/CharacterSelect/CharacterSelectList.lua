@@ -443,6 +443,10 @@ function CharacterSelectListMixin:UpdateCharacterSelection()
 	CharacterSelect_UpdateButtonState();
 end
 
+function CharacterSelectListMixin:ClearCharacterSelection()
+	self.ScrollBox:SetDataProvider(CreateDataProvider());
+end
+
 function CharacterSelectListMixin:ScrollToCharacter(characterGUID)
 	local elementData = self.ScrollBox:FindElementDataByPredicate(function(elementData)
 		return CharacterSelectListUtil.GetCharacterPositionData(characterGUID, elementData) ~= nil;

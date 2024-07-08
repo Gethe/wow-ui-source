@@ -21,6 +21,20 @@ local QuestInfoSystem =
 			},
 		},
 		{
+			Name = "GetQuestRewardCurrencies",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "questRewardCurrencyInfo", Type = "table", InnerType = "QuestRewardCurrencyInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetQuestRewardSpellInfo",
 			Type = "Function",
 
@@ -64,6 +78,20 @@ local QuestInfoSystem =
 			},
 		},
 		{
+			Name = "HasQuestRewardCurrencies",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "hasQuestRewardCurrencies", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "HasQuestRewardSpells",
 			Type = "Function",
 
@@ -101,22 +129,6 @@ local QuestInfoSystem =
 				{ Name = "Recurring", Type = "QuestClassification", EnumValue = 5 },
 				{ Name = "Questline", Type = "QuestClassification", EnumValue = 6 },
 				{ Name = "Normal", Type = "QuestClassification", EnumValue = 7 },
-			},
-		},
-		{
-			Name = "QuestRewardSpellInfo",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "texture", Type = "fileID", Nilable = false },
-				{ Name = "name", Type = "cstring", Nilable = false },
-				{ Name = "garrFollowerID", Type = "number", Nilable = true },
-				{ Name = "isTradeskill", Type = "bool", Nilable = false },
-				{ Name = "isSpellLearned", Type = "bool", Nilable = false },
-				{ Name = "hideSpellLearnText", Type = "bool", Nilable = false },
-				{ Name = "isBoostSpell", Type = "bool", Nilable = false },
-				{ Name = "genericUnlock", Type = "bool", Nilable = false },
-				{ Name = "type", Type = "QuestCompleteSpellType", Nilable = false },
 			},
 		},
 	},

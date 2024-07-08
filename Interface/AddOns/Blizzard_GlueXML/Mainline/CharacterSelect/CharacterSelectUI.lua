@@ -46,9 +46,12 @@ end
 
 function CharacterSelectUIMixin:OnEvent(event, ...)
 	if event == "UI_SCALE_CHANGED" or event == "DISPLAY_SIZE_CHANGED" then
-		if CharacterSelect.selectedIndex > 0 then
-			self:SetupCharacterOverlayFrames();
-		end
+		-- Defer this until the next frame so that any pending map frame projection changes have taken effect.
+		RunNextFrame(function()
+			if CharacterSelect.selectedIndex > 0 then
+				self:SetupCharacterOverlayFrames();
+			end
+		end);
 	elseif event == "MAP_SCENE_CHARACTER_ON_MOUSE_ENTER" then
 		local guid = ...;
 
@@ -238,6 +241,7 @@ function CharacterSelectUIMixin:ShowModelFFX()
 	ResetModel(self.ModelFFX);
 	self:ReleaseCharacterOverlayFrames();
 end
+
 
 function CharacterSelectUIMixin:SetupCharacterOverlayFrames()
 	if self.MapScene:IsShown() and not self.FadeInBackground:IsShown() then

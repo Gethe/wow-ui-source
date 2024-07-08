@@ -277,11 +277,13 @@ function QuestFrameProgressItems_Update()
 			requiredItem.type = "required";
 			requiredItem.objectType = "currency";
 			requiredItem:SetID(i);
-			local name, texture, numItems = GetQuestCurrencyInfo(requiredItem.type, i);
-			SetItemButtonCount(requiredItem, numItems);
-			SetItemButtonTexture(requiredItem, texture);
-			requiredItem:Show();
-			_G[questItemName..buttonIndex.."Name"]:SetText(name);
+			local requiredCurrencyInfo = C_QuestOffer.GetQuestRequiredCurrencyInfo(i);
+			if requiredCurrencyInfo then
+				SetItemButtonCount(requiredItem, requiredCurrencyInfo.requiredAmount);
+				SetItemButtonTexture(requiredItem, requiredCurrencyInfo.texture);
+				requiredItem:Show();
+				_G[questItemName..buttonIndex.."Name"]:SetText(requiredCurrencyInfo.name);
+			end
 			buttonIndex = buttonIndex+1;
 		end
 

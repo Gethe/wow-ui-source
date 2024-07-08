@@ -50,7 +50,7 @@ local SpecializationVisuals = {
 	[261] = { background = "talents-background-rogue-subtlety", heroContainerOffset = -45, },
 
 	-- Shaman
-	[262] = { background = "talents-background-shaman-elemental", heroContainerOffset = -15, },
+	[262] = { background = "talents-background-shaman-elemental", heroContainerOffset = 15, },
 	[263] = { background = "talents-background-shaman-enhancement", heroContainerOffset = 15, },
 	[264] = { background = "talents-background-shaman-restoration", heroContainerOffset = 15, },
 

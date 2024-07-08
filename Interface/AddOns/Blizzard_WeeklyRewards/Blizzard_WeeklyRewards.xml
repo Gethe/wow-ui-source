@@ -88,7 +88,7 @@
 		<Layers>
 			<Layer level="BORDER">
 				<Texture parentKey="Border"/>
-				<Texture parentKey="Orb">
+				<Texture parentKey="Orb" atlas="weeklyrewards-orb-locked" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT"/>
 					</Anchors>

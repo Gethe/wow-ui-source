@@ -748,7 +748,7 @@ function CharCustomizeDropdownWithSteppersAndLabelMixin:OnLoad()
 	DropdownWithSteppersAndLabelMixin.OnLoad(self);
 
 	self.Dropdown:SetMenuAnchor(AnchorUtil.CreateAnchor("TOPRIGHT", self.Dropdown, "BOTTOMRIGHT"));
-	self.Dropdown:SetMouseWheelEnabled(true);
+	self.Dropdown:EnableMouseWheel(true);
 
 	EventRegistry:RegisterCallback("CharCustomize.SetMissingOptionWarningEnabled", self.SetMissingOptionWarningEnabled, self);
 end

@@ -506,7 +506,7 @@ function WeeklyRewardsActivityMixin:Refresh(activityInfo)
 		self.LockIcon:SetAtlas("weeklyrewards-icon-unlocked", useAtlasSize);
 		self.ItemFrame:Hide();
 		if self.hasRewards then
-			self.Orb:SetTexture(nil);
+			self.Orb:Hide();
 			self.ItemFrame:SetRewards(activityInfo.rewards);
 			self.ItemGlow:Show();
 			self:ClearActiveEffect();
@@ -529,7 +529,7 @@ function WeeklyRewardsActivityMixin:Refresh(activityInfo)
 			self.SheenAnim:Play();
 		end
 	else
-		self.Orb:SetAtlas("weeklyrewards-orb-locked", useAtlasSize);
+		self.Orb:Show();
 		self.Background:SetAtlas("weeklyrewards-background-reward-locked", useAtlasSize);
 		self.Border:SetAtlas("weeklyrewards-frame-reward-locked", useAtlasSize);
 		self.Threshold:SetTextColor(DISABLED_FONT_COLOR:GetRGB());

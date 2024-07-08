@@ -896,9 +896,12 @@ function CharacterSelect_EnterWorld()
 end
 
 function CharacterSelect_Exit()
-	CharacterSelect.CharacterSelectUI:ReleaseCharacterOverlayFrames();
-	CharacterSelectListUtil.SaveCharacterOrder();
 	PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_EXIT);
+
+	CharacterSelectListUtil.SaveCharacterOrder();
+
+	CharacterSelectCharacterFrame:ClearCharacterSelection();
+	CharacterSelect.CharacterSelectUI:ReleaseCharacterOverlayFrames();
 	C_Login.DisconnectFromServer();
 end
 

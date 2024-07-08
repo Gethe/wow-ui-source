@@ -952,8 +952,9 @@ function ScenarioTrackerProgressBarMixin:OnGet(isNew, criteriaIndex)
 				texture = icon or "Interface\\Icons\\INV_Misc_QuestionMark";
 			end
 			-- currency
-			if not texture and GetNumQuestLogRewardCurrencies(rewardQuestID) > 0 then
-				_, texture = GetQuestLogRewardCurrencyInfo(1, rewardQuestID);
+			local questRewardCurrencies = C_QuestInfoSystem.GetQuestRewardCurrencies(questID);
+			if not texture and #questRewardCurrencies > 0 then
+				texture = questRewardCurrencies[1].texture;
 			end
 			-- money?
 			if not texture and GetQuestLogRewardMoney(rewardQuestID) > 0 then

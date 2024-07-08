@@ -91,13 +91,13 @@ function CompactRaidFrameManager_OnLoad(self)
 
 		local HalfNumMarkers = NUM_RAID_MARKERS / 2;
 		local raidMarkerRemove = self.raidMarkerPool:Acquire();
-		raidMarkerRemove.markerTexture:SetAtlas("GM-raidMarker-remove", false);
+		raidMarkerRemove.markerTexture:SetAtlas("GM-raidMarker-remove", TextureKitConstants.IgnoreAtlasSize);
 		raidMarkerRemove:SetID(0);
 		MakeRow(1, HalfNumMarkers, raidMarkerRemove);
 		raidMarkerRemove:SetParentKey("raidMarkerRemove");
 
 		local raidMarkerReset = self.raidMarkerPool:Acquire();
-		raidMarkerReset.markerTexture:SetAtlas("GM-raidMarker-reset", false);
+		raidMarkerReset.markerTexture:SetAtlas("GM-raidMarker-reset", TextureKitConstants.IgnoreAtlasSize);
 		raidMarkerReset:SetID(RAID_MARKER_RESET_ID);
 		MakeRow(HalfNumMarkers + 1, NUM_RAID_MARKERS, raidMarkerReset);
 		raidMarkerReset:SetParentKey("raidMarkerReset");
@@ -470,7 +470,7 @@ function CompactRaidFrameManager_UpdateRoleFilterButton(button)
 
 	local function SetChecked(checked)
 		button.checked = checked;
-		button:GetNormalTexture():SetAtlas(checked and "common-button-tertiary-selected-small" or (button.hovered and "common-button-tertiary-hover-small" or "common-button-tertiary-normal-small"), false);
+		button:GetNormalTexture():SetAtlas(checked and "common-button-tertiary-selected-small" or (button.hovered and "common-button-tertiary-hover-small" or "common-button-tertiary-normal-small"), TextureKitConstants.IgnoreAtlasSize);
 	end
 
 	if ( totalCount == 0 or showSeparateGroups ) then
@@ -522,34 +522,13 @@ function CompactRaidFrameManager_UpdateRaidIcons()
 	local raidMarkers = CompactRaidFrameManager.displayFrame.raidMarkers;
 
 	if raidMarkers.activeTab == raidMarkers.raidMarkerUnitTab then 
-		local unit = "target";
-		local disableAll = not CanBeRaidTarget(unit);
 		for i=1, NUM_RAID_ICONS do
 			local button = raidMarkers["raidMarker"..i];
-			if disableAll then
-				button.markerTexture:SetDesaturated(true);
-				button.backgroundTexture:SetAtlas("GM-button-marker-disabled", false);
-				button:Disable();
-			else
-				local applied = false;--IsRaidMarkerActive is for WORLD MARKERS. Leaving this here in case we decide to write an API for unit markers.
-				local selected = (button:GetID() == GetRaidTargetIndex(unit));
-
-				button.markerTexture:SetDesaturated(false);
-				button:Enable();
-				if applied and selected then
-					button.backgroundTexture:SetAtlas("GM-button-marker-appliedSelected", false);
-				elseif applied then
-					button.backgroundTexture:SetAtlas("GM-button-marker-applied", false);
-				elseif selected then
-					button.backgroundTexture:SetAtlas("GM-button-marker-selected", false);
-				else
-					button.backgroundTexture:SetAtlas("GM-button-marker-available", false);
-				end
-			end
+			button:UpdateRaidIconUnit();
 		end
 
 		local removeButton = raidMarkers.raidMarkerRemove;
-		if not GetRaidTargetIndex(unit) then
+		if not GetRaidTargetIndex("target") then
 			removeButton.markerTexture:SetDesaturated(true);
 			removeButton:Disable();
 		else
@@ -564,13 +543,8 @@ function CompactRaidFrameManager_UpdateRaidIcons()
 		for i=1, NUM_RAID_ICONS do
 			local button = raidMarkers["raidMarker"..i];
 			local applied = IsRaidMarkerActive(WORLD_RAID_MARKER_ORDER[i]); 
-			button.markerTexture:SetDesaturated(false);
-			button:Enable();
-			if applied then
-				button.backgroundTexture:SetAtlas("GM-button-marker-applied", false);
-			else
-				button.backgroundTexture:SetAtlas("GM-button-marker-available", false);
-			end
+
+			button:UpdateRaidIconWorld(applied);
 		end
 
 		local removeButton = raidMarkers.raidMarkerRemove;
@@ -596,7 +570,7 @@ function CompactRaidFrameManager_UpdateDifficulty()
 		atlas = isAssist and "GM-icon-difficulty-mythicAssist" or "GM-icon-difficulty-mythic";
 	end
 
-	dropdown:GetNormalTexture():SetAtlas(atlas, false);
+	dropdown:GetNormalTexture():SetAtlas(atlas, TextureKitConstants.IgnoreAtlasSize);
 end
 
 function CompactRaidFrameManager_MouseDownDifficulty(self)
@@ -613,7 +587,7 @@ function CompactRaidFrameManager_MouseDownDifficulty(self)
 			atlas = shown and "GM-icon-difficulty-mythicSelected" or "GM-icon-difficulty-mythic";
 		end
 
-		self:GetNormalTexture():SetAtlas(atlas, false);
+		self:GetNormalTexture():SetAtlas(atlas, TextureKitConstants.IgnoreAtlasSize);
 	end
 end
 
@@ -851,7 +825,7 @@ end
 local function FilterButtonOnEnter(self, atlas)
 	self.hovered = true;
 	if not self.checked then
-		self:GetNormalTexture():SetAtlas(atlas, false);
+		self:GetNormalTexture():SetAtlas(atlas, TextureKitConstants.IgnoreAtlasSize);
 	end
 end
 
@@ -903,7 +877,7 @@ function CRFManagerRaidIconButtonMixin:GetMarker()
 end
 
 function CRFManagerRaidIconButtonMixin:OnShow()
-	self.markerTexture:SetAtlas("GM-raidMarker"..self:GetMarker(), false);
+	self.markerTexture:SetAtlas("GM-raidMarker"..self:GetMarker(), TextureKitConstants.IgnoreAtlasSize);
 end
 
 function CRFManagerRaidIconButtonMixin:OnClick()
@@ -919,27 +893,69 @@ function CRFManagerRaidIconButtonMixin:OnClick()
 	CompactRaidFrameManager_UpdateRaidIcons();
 end
 
+function CRFManagerRaidIconButtonMixin:UpdateRaidIconUnit()
+	local unit = "target";
+	local disableAll = not CanBeRaidTarget(unit);
+
+	if disableAll then
+		self.markerTexture:SetDesaturated(true);
+		self.backgroundTexture:SetAtlas("GM-button-marker-disabled", TextureKitConstants.IgnoreAtlasSize);
+		self:Disable();
+	else
+		local applied = false;--IsRaidMarkerActive is for WORLD MARKERS. Leaving this here in case we decide to write an API for unit markers.
+		local selected = (self:GetID() == GetRaidTargetIndex(unit));
+
+		self.markerTexture:SetDesaturated(false);
+		self:Enable();
+		if applied and selected then
+			self.backgroundTexture:SetAtlas("GM-button-marker-appliedSelected", TextureKitConstants.IgnoreAtlasSize);
+		elseif applied then
+			self.backgroundTexture:SetAtlas("GM-button-marker-applied", TextureKitConstants.IgnoreAtlasSize);
+		elseif selected then
+			self.backgroundTexture:SetAtlas("GM-button-marker-selected", TextureKitConstants.IgnoreAtlasSize);
+		else
+			self.backgroundTexture:SetAtlas("GM-button-marker-available", TextureKitConstants.IgnoreAtlasSize);
+		end
+	end
+end
+
+function CRFManagerRaidIconButtonMixin:UpdateRaidIconWorld(applied)
+	self.markerTexture:SetDesaturated(false);
+	self:Enable();
+	if applied then
+		self.backgroundTexture:SetAtlas("GM-button-marker-applied", TextureKitConstants.IgnoreAtlasSize);
+	else
+		self.backgroundTexture:SetAtlas("GM-button-marker-available", TextureKitConstants.IgnoreAtlasSize);
+	end
+end
+
 function CRFManagerRaidIconButtonMixin:OnMouseDown()
 	if self:IsEnabled() then
 		self.markerTexture:SetPoint("CENTER", self, "CENTER", -1, -1);
-		self.backgroundTexture:SetAtlas("GM-button-marker-pressed", false);
+		self.backgroundTexture:SetAtlas("GM-button-marker-pressed", TextureKitConstants.IgnoreAtlasSize);
 	end
 end
 
 function CRFManagerRaidIconButtonMixin:OnMouseUp()
 	self.markerTexture:SetPoint("CENTER", self, "CENTER", 0, 0);
-	self.backgroundTexture:SetAtlas("GM-button-marker-available", false);
+	self.backgroundTexture:SetAtlas("GM-button-marker-available", TextureKitConstants.IgnoreAtlasSize);
+
+	local raidMarkers = CompactRaidFrameManager.displayFrame.raidMarkers;
+	if raidMarkers.activeTab == raidMarkers.raidMarkerUnitTab then 
+		self:UpdateRaidIconUnit();
+	end
+	
 end
 
 function CRFManagerRaidIconButtonMixin:OnEnter()
 	if self.backgroundTexture:GetAtlas() == "GM-button-marker-available" then
-		self.backgroundTexture:SetAtlas("GM-button-marker-hover", false);
+		self.backgroundTexture:SetAtlas("GM-button-marker-hover", TextureKitConstants.IgnoreAtlasSize);
 	end
 end
 
 function CRFManagerRaidIconButtonMixin:OnLeave()
 	if self.backgroundTexture:GetAtlas() == "GM-button-marker-hover" then
-		self.backgroundTexture:SetAtlas("GM-button-marker-available", false);
+		self.backgroundTexture:SetAtlas("GM-button-marker-available", TextureKitConstants.IgnoreAtlasSize);
 	end
 end
 
@@ -956,7 +972,7 @@ function CRFRaidMarkersMixin:SetTab(frame)
 	if self.activeTab ~= frame then
 		self.activeTab = frame;
 		for _, tab in ipairs(self.Tabs) do
-			tab:GetNormalTexture():SetAtlas(tab == frame and "GM-tab-active" or "GM-tab-inActive", false);
+			tab:GetNormalTexture():SetAtlas(tab == frame and "GM-tab-active" or "GM-tab-inActive", TextureKitConstants.IgnoreAtlasSize);
 			tab:SetNormalFontObject(tab == frame and GameFontHighlightSmall or GameFontNormalSmall);
 		end
 	end

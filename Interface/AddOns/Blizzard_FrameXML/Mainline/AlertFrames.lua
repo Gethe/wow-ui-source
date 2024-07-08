@@ -784,14 +784,11 @@ function AlertFrameMixin:BuildQuestData(questID)
 		displayAsObjective = displayAsObjective,
 	};
 
-	local currencyRewardCount = GetNumQuestLogRewardCurrencies(questID);
-	if currencyRewardCount > 0 then
+	local currencyRewards = C_QuestLog.GetQuestRewardCurrencies(questID);
+	if #currencyRewards > 0 then
 		questData.currencyRewards = {};
-		local currencyRewards = questData.currencyRewards;
-
-		for currencyIndex = 1, currencyRewardCount do
-			local name, texture, count = GetQuestLogRewardCurrencyInfo(currencyIndex, questID);
-			currencyRewards[currencyIndex] = texture;
+		for index, currencyReward in ipairs(currencyRewards) do
+			questData.currencyRewards[index] = currencyReward.texture;
 		end
 	end
 
