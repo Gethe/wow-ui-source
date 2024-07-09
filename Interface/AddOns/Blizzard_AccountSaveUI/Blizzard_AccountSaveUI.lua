@@ -1,6 +1,6 @@
 ACCOUNT_SAVE_KICK_ERROR_CODE = 241;
 
-GlueDialogTypes["ACCOUNT_SAVE_IN_PROGRESS"] = {
+StaticPopupDialogs["ACCOUNT_SAVE_IN_PROGRESS"] = {
 	text = ACCOUNT_SAVE_IN_PROGRESS,
 	ignoreKeys = true,
 	spinner = true,
@@ -9,7 +9,7 @@ GlueDialogTypes["ACCOUNT_SAVE_IN_PROGRESS"] = {
 	explicitAcknowledge = true,
 }
 
-GlueDialogTypes["ACCOUNT_SAVE_SUCCESS"] = {
+StaticPopupDialogs["ACCOUNT_SAVE_SUCCESS"] = {
 	text = "",
 	button1 = ACCOUNT_SAVE_FILE_BUTTON,
 	button2 = ACCOUNT_SAVE_CLOSE_BUTTON,

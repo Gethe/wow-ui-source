@@ -15,6 +15,21 @@ local Item =
 			Type = "Function",
 		},
 		{
+			Name = "CanItemTransmogAppearance",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLoc", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canTransmog", Type = "bool", Nilable = false },
+				{ Name = "errorCode", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "ConfirmBindOnUse",
 			Type = "Function",
 		},
@@ -108,6 +123,34 @@ local Item =
 			},
 		},
 		{
+			Name = "GetAppliedItemTransmogInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLoc", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "ItemTransmogInfo", Mixin = "ItemTransmogInfoMixin", Nilable = true },
+			},
+		},
+		{
+			Name = "GetBaseItemTransmogInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLoc", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "ItemTransmogInfo", Mixin = "ItemTransmogInfoMixin", Nilable = true },
+			},
+		},
+		{
 			Name = "GetCurrentItemLevel",
 			Type = "Function",
 
@@ -119,6 +162,20 @@ local Item =
 			Returns =
 			{
 				{ Name = "currentItemLevel", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetCurrentItemTransmogInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLoc", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "ItemTransmogInfo", Mixin = "ItemTransmogInfoMixin", Nilable = true },
 			},
 		},
 		{
@@ -243,6 +300,21 @@ local Item =
 			},
 		},
 		{
+			Name = "GetItemGemID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "gemID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetItemID",
 			Type = "Function",
 
@@ -363,6 +435,20 @@ local Item =
 			},
 		},
 		{
+			Name = "GetItemInventorySlotKey",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "inventorySlot", Type = "InventoryType", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "GetItemInventoryType",
 			Type = "Function",
 
@@ -458,6 +544,34 @@ local Item =
 			Returns =
 			{
 				{ Name = "itemName", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "GetItemNumAddedSockets",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "socketCount", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetItemNumSockets",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "socketCount", Type = "number", Nilable = false },
 			},
 		},
 		{

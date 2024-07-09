@@ -1,0 +1,8 @@
+## Title: Blizzard_ReportFrameShared
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## OptionalDep: Blizzard_UIParent, GlueParent
+## AllowLoad: Both
+## SuppressLocalTableRef: 1
+ReportFrameShared.lua
+ReportFrameShared.xml

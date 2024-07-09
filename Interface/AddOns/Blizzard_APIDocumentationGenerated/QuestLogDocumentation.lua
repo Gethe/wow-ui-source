@@ -106,6 +106,20 @@ local QuestLog =
 			},
 		},
 		{
+			Name = "IsQuestFromContentPush",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isFromContentPush", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetMapForQuestPOIs",
 			Type = "Function",
 

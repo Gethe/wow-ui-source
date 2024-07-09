@@ -122,7 +122,7 @@ local EngravingInfo =
 
 			Arguments =
 			{
-				{ Name = "equipmentSlot", Type = "number", Nilable = false },
+				{ Name = "equipmentSlot", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -189,7 +189,7 @@ local EngravingInfo =
 
 			Arguments =
 			{
-				{ Name = "equipmentSlot", Type = "number", Nilable = false },
+				{ Name = "equipmentSlot", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =

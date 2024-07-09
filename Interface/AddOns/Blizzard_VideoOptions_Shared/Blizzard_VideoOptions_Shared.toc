@@ -1,0 +1,8 @@
+## Title: VideoOptions_Shared
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## OptionalDep: Blizzard_Options_Glue, Blizzard_Options_Frame
+## AllowLoad: Both
+## AllowLoadGameType: classic
+## SuppressLocalTableRef: 1
+VideoOptionsPanels.xml

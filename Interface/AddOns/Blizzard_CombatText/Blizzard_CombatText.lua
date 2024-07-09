@@ -16,6 +16,7 @@ COMBAT_TEXT_LOCATIONS = {};
 COMBAT_TEXT_X_ADJUSTMENT = 80;
 COMBAT_TEXT_Y_SCALE = 1;
 COMBAT_TEXT_X_SCALE = 1;
+COMBAT_TEXT_SCROLL_FUNCTION = nop;
 
 CVarCallbackRegistry:SetCVarCachable("floatingCombatTextLowManaHealth");
 CVarCallbackRegistry:SetCVarCachable("floatingCombatTextAuras");

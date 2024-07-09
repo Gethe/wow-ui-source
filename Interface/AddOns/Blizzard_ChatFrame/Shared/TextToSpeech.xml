@@ -1,0 +1,40 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<ContainedAlertFrame  name="TextToSpeechButtonFrame" frameStrata="LOW" frameLevel="4" parent="UIParent">
+		<Size x="26" y="26"/>
+		<KeyValues>
+			<KeyValue key="commandName" value="TOGGLETEXTTOSPEECH" type="string"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad function="TextToSpeechButtonFrame_OnLoad"/>
+		</Scripts>
+		<Frames>
+			<Button name="TextToSpeechButton" parentKey="Button" inherits="VoiceToggleButtonTemplate" mixin="TextToSpeechButtonMixin" setAllPoints="true" hidden="false">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="2" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="4" y="-4"/>
+								<Anchor point="BOTTOMRIGHT" x="-4" y="4"/>
+							</Anchors>
+							<Color color="BLACK_FONT_COLOR"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<KeyValues>
+					<KeyValue key="fixedIconWidth" value="20" type="number"/>
+					<KeyValue key="fixedIconHeight" value="20" type="number"/>
+				</KeyValues>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnEnter method="OnEnter" inherit="append"/>
+					<OnEvent method="OnEvent"/>
+					<OnLeave method="OnLeave" inherit="append"/>
+				</Scripts>
+			</Button>
+		</Frames>
+	</ContainedAlertFrame>
+</Ui>

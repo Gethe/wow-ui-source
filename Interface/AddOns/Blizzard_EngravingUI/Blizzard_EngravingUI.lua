@@ -77,7 +77,7 @@ function EngravingFrame_UpdateRuneList (self)
 			local button = buttons[currButton];
 			if button then
 				button:Hide();
-				header = _G["EngravingFrameHeader"..currentHeader];
+				local header = _G["EngravingFrameHeader"..currentHeader];
 				if header then
 					header:SetPoint("BOTTOM", button, 0 , 0);
 					header:Show();

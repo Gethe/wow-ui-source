@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<CheckButton name="CharacterCreateIconButtonTemplate" virtual="true">
 		<Size x="38" y="38"/> 
 		<Layers>
@@ -170,6 +170,88 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<CheckButton name="BarberShopAlternateFormTop" hidden="true">
+						<Size x="82" y="79"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeTo="BarberShopFrame" relativePoint="TOPLEFT" x="55" y="-25"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="$parentPortrait">
+									<Size x="60" y="60"/>	
+									<Anchors>
+										<Anchor point="CENTER" x="5" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<Texture name="$parentTop" file="Interface\Glues\CharacterCreate\AlternateForm">
+									<Size x="82" y="79"/>	
+									<TexCoords left="0.00781250" right="0.64843750" top="0.00390625" bottom="0.310546875"/>	
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnClick>
+								BarberShop_SetViewingAlteredForm(false);
+							</OnClick>
+						</Scripts>
+						<HighlightTexture name="$parentHighlight" file="Interface\Glues\CharacterCreate\AlternateForm" alphaMode="ADD">
+							<Size x="60" y="60"/>	
+							<Anchors>
+								<Anchor point="CENTER" x="5" y="0"/>
+							</Anchors>
+							<TexCoords left="0.49218750" right="0.96093750" top="0.62890625" bottom="0.86328125"/>	
+						</HighlightTexture>
+						<CheckedTexture name="$parentPushedTexture" file="Interface\Glues\CharacterCreate\AlternateForm" alphaMode="ADD">
+							<Size x="60" y="60"/>	
+							<Anchors>
+								<Anchor point="CENTER" x="5" y="0"/>
+							</Anchors>
+							<TexCoords left="0.00781250" right="0.47656250" top="0.62890625" bottom="0.86328125"/>	
+						</CheckedTexture>
+					</CheckButton>
+					<CheckButton name="BarberShopAlternateFormBottom" hidden="true">
+						<Size x="82" y="79"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeTo="BarberShopAlternateFormTop" relativePoint="BOTTOMRIGHT" x="-3" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="$parentPortrait">
+									<Size x="60" y="60"/>	
+									<Anchors>
+										<Anchor point="CENTER" x="-1" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<Texture name="$parentBottom" file="Interface\Glues\CharacterCreate\AlternateForm">
+									<Size x="82" y="158"/>	
+									<TexCoords left="0.00781250" right="0.64843750" top="0.310546875" bottom="0.62109375"/>	
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnClick>
+								BarberShop_SetViewingAlteredForm(true);
+							</OnClick>
+						</Scripts>
+						<HighlightTexture name="$parentHighlight" file="Interface\Glues\CharacterCreate\AlternateForm" alphaMode="ADD">
+							<Size x="60" y="60"/>	
+							<Anchors>
+								<Anchor point="CENTER" x="-1" y="0"/>
+							</Anchors>
+							<TexCoords left="0.49218750" right="0.96093750" top="0.62890625" bottom="0.86328125"/>	
+						</HighlightTexture>
+						<CheckedTexture name="$parentPushedTexture" file="Interface\Glues\CharacterCreate\AlternateForm" alphaMode="ADD">
+							<Size x="60" y="60"/>	
+							<Anchors>
+								<Anchor point="CENTER" x="-1" y="0"/>
+							</Anchors>
+							<TexCoords left="0.00781250" right="0.47656250" top="0.62890625" bottom="0.86328125"/>	
+						</CheckedTexture>
+					</CheckButton>
 			<CheckButton name="$parentMaleButton" inherits="CharacterCreateGenderButtonTemplate">
 				<KeyValues>
 					<KeyValue key="layoutIndex" value="1" type="number"/>
@@ -386,38 +468,6 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<PlayerModel name="BarberShopAltFormFrame" hidden="true" inherits="ModelTemplate">
-				<Size x="100" y="116"/>
-				<Anchors>
-					<Anchor point="BOTTOM" relativePoint="TOP" x="2" y="-37"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="$parentBackground" file="Interface\BarberShop\Barbershop-AltForm">
-							<Size x="103" y="118"/>
-							<Anchors>
-								<Anchor point="CENTER" x="0" y="0"/>
-							</Anchors>
-							<TexCoords left="0.00390625" right="0.40625000" top="0.32226563" bottom="0.55273438"/>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Frame name="$parentBorder">
-						<Size x="165" y="162"/>	
-						<Anchors>
-							<Anchor point="CENTER" x="0" y="0"/>
-						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK">
-								<Texture name="$parentTexture" file="Interface\BarberShop\Barbershop-AltForm" setAllPoints="true">
-									<TexCoords left="0.00390625" right="0.64843750" top="0.00195313" bottom="0.31835938"/>
-								</Texture>
-							</Layer>
-						</Layers>
-					</Frame>
-				</Frames>
-			</PlayerModel>
 		</Frames>
 		<Scripts>
 			<OnLoad function="BarberShop_OnLoad"/>

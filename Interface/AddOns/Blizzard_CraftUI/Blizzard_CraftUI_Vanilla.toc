@@ -1,4 +1,8 @@
 ## Title: Blizzard Craft UI
+## Author: Blizzard Entertainment
 ## LoadOnDemand: 1
-..\..\..\Interface_Vanilla\AddOns\Blizzard_CraftUI\Blizzard_CraftUI.xml
+## AllowLoad: Game
+## AllowLoadGameType: vanilla
+Vanilla\Blizzard_CraftUI.lua
+Vanilla\Blizzard_CraftUI.xml
 Localization.lua

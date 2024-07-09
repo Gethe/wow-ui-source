@@ -146,6 +146,15 @@ local ChatInfo =
 			},
 		},
 		{
+			Name = "GetNumReservedChatWindows",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "numReserved", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetRegisteredAddonMessagePrefixes",
 			Type = "Function",
 
@@ -197,6 +206,20 @@ local ChatInfo =
 			},
 		},
 		{
+			Name = "IsTimerunningPlayer",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "playerGUID", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isTimerunning", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsValidChatLine",
 			Type = "Function",
 
@@ -211,6 +234,20 @@ local ChatInfo =
 			},
 		},
 		{
+			Name = "IsValidCombatFilterName",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isApproved", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "RegisterAddonMessagePrefix",
 			Type = "Function",
 			Documentation = { "Registers interest in addon messages with this prefix, cannot be an empty string." },
@@ -222,7 +259,7 @@ local ChatInfo =
 
 			Returns =
 			{
-				{ Name = "successfulRequest", Type = "bool", Nilable = false },
+				{ Name = "result", Type = "RegisterAddonMessagePrefixResult", Nilable = false },
 			},
 		},
 		{
@@ -244,7 +281,7 @@ local ChatInfo =
 
 			Returns =
 			{
-				{ Name = "success", Type = "bool", Nilable = false },
+				{ Name = "result", Type = "SendAddonMessageResult", Nilable = false },
 			},
 		},
 		{
@@ -262,7 +299,7 @@ local ChatInfo =
 
 			Returns =
 			{
-				{ Name = "success", Type = "bool", Nilable = false },
+				{ Name = "result", Type = "SendAddonMessageResult", Nilable = true },
 			},
 		},
 		{
@@ -2166,6 +2203,40 @@ local ChatInfo =
 
 	Tables =
 	{
+		{
+			Name = "RegisterAddonMessagePrefixResult",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "Success", Type = "RegisterAddonMessagePrefixResult", EnumValue = 0 },
+				{ Name = "DuplicatePrefix", Type = "RegisterAddonMessagePrefixResult", EnumValue = 1 },
+				{ Name = "InvalidPrefix", Type = "RegisterAddonMessagePrefixResult", EnumValue = 2 },
+				{ Name = "MaxPrefixes", Type = "RegisterAddonMessagePrefixResult", EnumValue = 3 },
+			},
+		},
+		{
+			Name = "SendAddonMessageResult",
+			Type = "Enumeration",
+			NumValues = 10,
+			MinValue = 0,
+			MaxValue = 9,
+			Fields =
+			{
+				{ Name = "Success", Type = "SendAddonMessageResult", EnumValue = 0 },
+				{ Name = "InvalidPrefix", Type = "SendAddonMessageResult", EnumValue = 1 },
+				{ Name = "InvalidMessage", Type = "SendAddonMessageResult", EnumValue = 2 },
+				{ Name = "AddonMessageThrottle", Type = "SendAddonMessageResult", EnumValue = 3 },
+				{ Name = "InvalidChatType", Type = "SendAddonMessageResult", EnumValue = 4 },
+				{ Name = "NotInGroup", Type = "SendAddonMessageResult", EnumValue = 5 },
+				{ Name = "TargetRequired", Type = "SendAddonMessageResult", EnumValue = 6 },
+				{ Name = "InvalidChannel", Type = "SendAddonMessageResult", EnumValue = 7 },
+				{ Name = "ChannelThrottle", Type = "SendAddonMessageResult", EnumValue = 8 },
+				{ Name = "GeneralError", Type = "SendAddonMessageResult", EnumValue = 9 },
+			},
+		},
 		{
 			Name = "AddonMessageParams",
 			Type = "Structure",

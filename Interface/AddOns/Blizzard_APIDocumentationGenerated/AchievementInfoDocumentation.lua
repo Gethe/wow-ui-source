@@ -7,6 +7,15 @@ local AchievementInfo =
 	Functions =
 	{
 		{
+			Name = "AreGuildAchievementsEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetRewardItemID",
 			Type = "Function",
 
@@ -32,6 +41,20 @@ local AchievementInfo =
 			Returns =
 			{
 				{ Name = "supercedingAchievements", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "IsGuildAchievement",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "achievementId", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isGuild", Type = "bool", Nilable = false },
 			},
 		},
 		{

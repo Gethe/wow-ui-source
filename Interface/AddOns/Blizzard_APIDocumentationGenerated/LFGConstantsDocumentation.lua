@@ -19,15 +19,19 @@ local LFGConstants =
 		{
 			Name = "LFGListFilter",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 8,
 			MinValue = 1,
-			MaxValue = 8,
+			MaxValue = 128,
 			Fields =
 			{
 				{ Name = "Recommended", Type = "LFGListFilter", EnumValue = 1 },
 				{ Name = "NotRecommended", Type = "LFGListFilter", EnumValue = 2 },
 				{ Name = "PvE", Type = "LFGListFilter", EnumValue = 4 },
 				{ Name = "PvP", Type = "LFGListFilter", EnumValue = 8 },
+				{ Name = "Timerunning", Type = "LFGListFilter", EnumValue = 16 },
+				{ Name = "CurrentExpansion", Type = "LFGListFilter", EnumValue = 32 },
+				{ Name = "CurrentSeason", Type = "LFGListFilter", EnumValue = 64 },
+				{ Name = "NotCurrentSeason", Type = "LFGListFilter", EnumValue = 128 },
 			},
 		},
 		{

@@ -126,7 +126,7 @@ local SimpleFontStringAPI =
 
 			Returns =
 			{
-				{ Name = "justifyH", Type = "TBFStyleFlags", Nilable = false },
+				{ Name = "justifyH", Type = "JustifyHorizontal", Nilable = false },
 			},
 		},
 		{
@@ -139,7 +139,7 @@ local SimpleFontStringAPI =
 
 			Returns =
 			{
-				{ Name = "justifyH", Type = "TBFStyleFlags", Nilable = false },
+				{ Name = "justifyV", Type = "JustifyVertical", Nilable = false },
 			},
 		},
 		{
@@ -412,7 +412,7 @@ local SimpleFontStringAPI =
 
 			Arguments =
 			{
-				{ Name = "justifyH", Type = "TBFStyleFlags", Nilable = false },
+				{ Name = "justifyH", Type = "JustifyHorizontal", Nilable = false },
 			},
 		},
 		{
@@ -421,7 +421,7 @@ local SimpleFontStringAPI =
 
 			Arguments =
 			{
-				{ Name = "justifyV", Type = "TBFStyleFlags", Nilable = false },
+				{ Name = "justifyV", Type = "JustifyVertical", Nilable = false },
 			},
 		},
 		{

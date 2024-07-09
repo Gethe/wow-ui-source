@@ -11,9 +11,20 @@ WORLD_RAID_MARKER_ORDER[6] = 3;
 WORLD_RAID_MARKER_ORDER[7] = 6;
 WORLD_RAID_MARKER_ORDER[8] = 5;
 
+NUM_WORLD_RAID_MARKERS_CATA = 5;
+WORLD_RAID_MARKER_ORDER_CATA = {};
+WORLD_RAID_MARKER_ORDER_CATA[1] = 4;
+WORLD_RAID_MARKER_ORDER_CATA[2] = 1;
+WORLD_RAID_MARKER_ORDER_CATA[3] = 2;
+WORLD_RAID_MARKER_ORDER_CATA[4] = 3;
+WORLD_RAID_MARKER_ORDER_CATA[5] = 5;
+
 MINIMUM_RAID_CONTAINER_HEIGHT = 72;
 local RESIZE_HORIZONTAL_OUTSETS = 4;
 local RESIZE_VERTICAL_OUTSETS = 7;
+
+CUF_SHOW_BORDER = nil;
+CUF_HORIZONTAL_GROUPS = nil;
 
 function CompactRaidFrameManager_OnLoad(self)
 	self.container = CompactRaidFrameContainer;
@@ -242,8 +253,15 @@ function CRFManager_RaidWorldMarkerDropDown_Update()
 
 	info.isNotRadio = true;
 
-	for i=1, NUM_WORLD_RAID_MARKERS do
-		local index = WORLD_RAID_MARKER_ORDER[i];
+	local markerCount = NUM_WORLD_RAID_MARKERS;
+	local markerOrder = WORLD_RAID_MARKER_ORDER;
+	if GetClassicExpansionLevel() <= LE_EXPANSION_CATACLYSM then
+		markerCount = NUM_WORLD_RAID_MARKERS_CATA;
+		markerOrder = WORLD_RAID_MARKER_ORDER_CATA;
+	end
+
+	for i=1, markerCount do
+		local index = markerOrder[i];
 		info.text = _G["WORLD_MARKER"..index];
 		info.func = RaidWorldMarker_OnClick;
 		info.checked = IsRaidMarkerActive(index);

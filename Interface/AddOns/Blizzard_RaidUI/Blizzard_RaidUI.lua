@@ -435,8 +435,8 @@ function RaidGroupFrame_Update()
 
 				button.jobs = button.jobs or {};
 
-				for i, j in next, button.jobs do
-					button.jobs[i] = nil;
+				for j in next, button.jobs do
+					button.jobs[j] = nil;
 				end
 
 				buttonCount = 0;
@@ -463,13 +463,13 @@ function RaidGroupFrame_Update()
 				end
 
 
-				for i=1, buttonCount, 1 do
-					if ( i == 1 ) then
-						button.jobs[i]:SetPoint("LEFT", button, "LEFT", 2, 0);
+				for j=1, buttonCount, 1 do
+					if ( j == 1 ) then
+						button.jobs[j]:SetPoint("LEFT", button, "LEFT", 2, 0);
 					else
-						button.jobs[i]:SetPoint("LEFT", button.jobs[i-1], "RIGHT", -1, 0);
+						button.jobs[j]:SetPoint("LEFT", button.jobs[j-1], "RIGHT", -1, 0);
 					end
-					button.jobs[i]:Show();
+					button.jobs[j]:Show();
 				end
 
 				-- Sets the Ready Check Icon
@@ -857,7 +857,7 @@ function RaidPullout_Update(pullOutFrame)
 
 	-- Fill out the buttons
 	local pulloutButton, pulloutButtonName, color, unit, target;
-	local pulloutHealthBar, pulloutManaBar, pulloutThreatIndicator;
+	local pulloutHealthBar, pulloutManaBar;
 	local pulloutClearButton;
 	if ( numPulloutEntries > pullOutFrame.numPulloutButtons ) then
 		local index = pullOutFrame.numPulloutButtons + 1;
@@ -883,7 +883,6 @@ function RaidPullout_Update(pullOutFrame)
 			pulloutButtonName = pulloutButton.nameLabel;
 			pulloutHealthBar = pulloutButton.healthbar;
 			pulloutManaBar = pulloutButton.manabar;
-			pulloutThreatIndicator = pulloutButton.threatIndicator;
 			if ( pulloutList ) then
 				id = pulloutList[i];
 			elseif ( single ) then
@@ -961,8 +960,8 @@ function RaidPullout_Update(pullOutFrame)
 				end
 
 				-- hide auras while ready check is up
-				for i=1, MAX_RAID_AURAS do
-					_G[pulloutButton:GetName().."Aura"..i]:Hide();
+				for j=1, MAX_RAID_AURAS do
+					_G[pulloutButton:GetName().."Aura"..j]:Hide();
 				end
 			else
 				_G[pulloutButton:GetName().."ReadyCheck"]:Hide();

@@ -1,6 +1,8 @@
-## Title: Blizzard Raid UI
+## Title: Blizzard_RaidUI
 ## LoadOnDemand: 1
 ## SavedVariablesPerCharacter: RAID_PULLOUT_POSITIONS, RAID_SINGLE_POSITIONS
+## AllowLoad: game
+## AllowLoadGameType: wrath
 Blizzard_RaidUI.lua
-..\..\..\Interface_Wrath\AddOns\Blizzard_RaidUI\Blizzard_RaidUI.xml
+Wrath\Blizzard_RaidUI.xml
 Localization.lua

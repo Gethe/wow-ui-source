@@ -35,6 +35,8 @@ CinematicDocumentation.lua
 ClassTrialDocumentation.lua
 ClientDocumentation.lua
 ClientSceneDocumentation.lua
+ClubDocumentation.lua
+ClubFinderDocumentation.lua
 CombatLogDocumentation.lua
 CompactUnitFramesDocumentation.lua
 ConfigurationWarningsDocumentation.lua
@@ -53,6 +55,7 @@ DebugToggleDocumentation.lua
 DuelInfoDocumentation.lua
 EditModeManagerDocumentation.lua
 EncounterInfoDocumentation.lua
+EncounterJournalDocumentation.lua
 EquipmentManagerDocumentation.lua
 EventUtilsDocumentation.lua
 ExpansionDocumentation.lua
@@ -72,7 +75,9 @@ FrameAPIUnitPositionFrameDocumentation.lua
 FrameScriptDocumentation.lua
 GMTicketInfoDocumentation.lua
 GameCursorDocumentation.lua
+GameEnvironmentManagerDocumentation.lua
 GameErrorDocumentation.lua
+GameModeManagerDocumentation.lua
 GamePadDocumentation.lua
 GameRulesDocumentation.lua
 GameUIDocumentation.lua
@@ -137,6 +142,7 @@ RaidLocksDocumentation.lua
 RecruitAFriendDocumentation.lua
 ReportSystemDocumentation.lua
 ReputationInfoDocumentation.lua
+ResearchInfoDocumentation.lua
 RestrictedActionsDocumentation.lua
 ScreenDocumentation.lua
 ScriptWarningsDocumentation.lua
@@ -210,8 +216,10 @@ ToyBoxInfoDocumentation.lua
 TradeInfoDocumentation.lua
 TrainerDocumentation.lua
 TraitConfigDocumentation.lua
+TransmogDocumentation.lua
 TutorialDocumentation.lua
 UIColorDocumentation.lua
+UIEventToastManagerDocumentation.lua
 UIGenericWidgetDisplayDocumentation.lua
 UIMacrosDocumentation.lua
 UIManagerDocumentation.lua
@@ -228,17 +236,18 @@ VideoDocumentation.lua
 VignetteInfoDocumentation.lua
 VoiceChatDocumentation.lua
 VoidStorageInfoDocumentation.lua
+WorldLootObjectDocumentation.lua
 WorldStateInfoDocumentation.lua
 WowEntitlementInfoDocumentation.lua
 WowTokenUIDocumentation.lua
 XMLUtilDocumentation.lua
 ZoneScriptDocumentation.lua
 CVarDocumentation.lua
-ClubDocumentation.lua
 CommentatorFrameDocumentation.lua
 CraftInfoDocumentation.lua
 DateAndTimeDocumentation.lua
 EngravingInfoDocumentation.lua
+FrameAPIArchaeologyDigsiteDocumentation.lua
 FrameAPICharacterModelBaseDocumentation.lua
 FrameAPIDressUpModelDocumentation.lua
 FrameAPIModelSceneFrameActorDocumentation.lua
@@ -246,11 +255,13 @@ FrameAPITabardModelDocumentation.lua
 FriendListDocumentation.lua
 MailInfoDocumentation.lua
 MapDocumentation.lua
+ReforgeDocumentation.lua
 ScriptedAnimationsDocumentation.lua
 SeasonsDocumentation.lua
 SocialRestrictionsDocumentation.lua
 SystemDocumentation.lua
 TradeSkillUIDocumentation.lua
+TransmogItemsDocumentation.lua
 AccountConstantsDocumentation.lua
 ActionDocumentation.lua
 AppearanceSourceDocumentation.lua
@@ -265,6 +276,7 @@ CalendarConstantsDocumentation.lua
 CameraConstantsDocumentation.lua
 CharacterCustomizationSharedDocumentation.lua
 ChatConstantsDocumentation.lua
+ClientSettingsDocumentation.lua
 ClubSharedDocumentation.lua
 ColorDocumentation.lua
 CommentatorSharedDocumentation.lua
@@ -278,7 +290,7 @@ ExpansionLandingPageConstantsDocumentation.lua
 FrameAPIModelSceneFrameSharedDocumentation.lua
 GARRISON_FOLLOWER_TYPEConstantsDocumentation.lua
 GARRISON_TYPEConstantsDocumentation.lua
-GameModeConstantsDocumentation.lua
+GameEnvironmentConstantsDocumentation.lua
 GamePadConstDocumentation.lua
 GarrisonConstantsDocumentation.lua
 GossipConstantsDocumentation.lua
@@ -298,6 +310,7 @@ PVPMgrConstantsDocumentation.lua
 PartyConstantsDocumentation.lua
 PerksVendorConstantsDocumentation.lua
 PetBattleConstantsDocumentation.lua
+PetConstantsDocumentation.lua
 PetScalingConstantsDocumentation.lua
 PingConstantsDocumentation.lua
 PlayerDocumentation.lua
@@ -322,6 +335,7 @@ SocialConstantsDocumentation.lua
 SoftTargetConstantsDocumentation.lua
 TextureSharedDocumentation.lua
 TimeDocumentation.lua
+TimerunningConstantsDocumentation.lua
 TooltipConstantsDocumentation.lua
 TooltipInfoSharedDocumentation.lua
 TradeSkillUITypesDocumentation.lua
@@ -346,4 +360,6 @@ CurrencyConstants_ClassicDocumentation.lua
 ItemConstants_ClassicDocumentation.lua
 QuestConstants_ClassicDocumentation.lua
 SeasonsConstantsDocumentation.lua
+TalentAndGlyphConstantsDocumentation.lua
+TransmogConstantsDocumentation.lua
 # End documentation files here

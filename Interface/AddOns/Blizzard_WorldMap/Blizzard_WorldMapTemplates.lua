@@ -123,13 +123,13 @@ function WorldMapTrackingOptionsButtonMixin:InitializeDropDown()
 	info.checked = GetCVarBool("questPOI");
 	UIDropDownMenu_AddButton(info);
 
-	--[[local prof1, prof2, arch, fish, cook, firstAid = GetProfessions();
+	local prof1, prof2, arch, fish, cook, firstAid = GetProfessions();
 	if arch then
 		info.text = ARCHAEOLOGY_SHOW_DIG_SITES;
 		info.value = "digsites";
 		info.checked = GetCVarBool("digSites");
 		UIDropDownMenu_AddButton(info);
-	end]]
+	end
 
 	--[[if C_Minimap.CanTrackBattlePets() then
 		info.text = SHOW_PET_BATTLES_ON_MAP_TEXT;
@@ -290,7 +290,7 @@ end
 WorldMapZoneTimerMixin = {};
 
 function WorldMapZoneTimerMixin:OnUpdate(elapsed)
-	--[[local nextBattleTime = C_PvP.GetOutdoorPvPWaitTime(self:GetParent():GetMapID());
+	local nextBattleTime = C_PvP.GetOutdoorPvPWaitTime(self:GetParent():GetMapID());
 	if nextBattleTime and not IsInInstance() then
 		local battleSec = nextBattleTime % 60;
 		local battleMin = math.floor(nextBattleTime / 60) % 60;
@@ -299,7 +299,7 @@ function WorldMapZoneTimerMixin:OnUpdate(elapsed)
 		self.TimeLabel:Show();
 	else
 		self.TimeLabel:Hide();
-	end]]
+	end
 end
 
 function WorldMapZoneTimerMixin:Refresh()

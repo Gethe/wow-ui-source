@@ -1,0 +1,6 @@
+## Title: Blizzard_IME
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## OptionalDep: Blizzard_FrameXML, Blizzard_GlueXML
+## AllowLoad: Both
+IME.xml

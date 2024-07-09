@@ -67,6 +67,15 @@ local Spell =
 			},
 		},
 		{
+			Name = "TargetSpellJumpsUpgradeTrack",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "jumpsUpgradeTrack", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "TargetSpellReplacesBonusTree",
 			Type = "Function",
 

@@ -1,0 +1,282 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\UI.xsd">
+	<Button name="ModelControlButtonTemplate" virtual="true">
+		<Size x="18" y="18"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBg" file="Interface\Common\UI-ModelControlPanel" parentKey="bg">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<TexCoords left="0.29687500" right="0.54687500" top="0.14843750" bottom="0.27343750"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentIcon" file="Interface\Common\UI-ModelControlPanel" virtual="true" parentKey="icon">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<TexCoords left="0.01562500" right="0.26562500" top="0.00781250" bottom="0.13281250"/>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture file="Interface\Common\UI-ModelControlPanel">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<TexCoords left="0.57812500" right="0.82812500" top="0.00781250" bottom="0.13281250"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnMouseDown function="ModelControlButton_OnMouseDown"/>
+			<OnMouseUp function="ModelControlButton_OnMouseUp"/>
+			<OnEnter>
+				self:GetParent():SetAlpha(1);
+				if ( GetCVar("UberTooltips") == "1" ) then
+					GameTooltip_SetDefaultAnchor(GameTooltip, UIParent);
+					GameTooltip:SetText(self.tooltip, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+					if ( self.tooltipText ) then
+						GameTooltip:AddLine(self.tooltipText, _, _, _, 1, 1);
+					end
+					GameTooltip:Show();
+				end
+			</OnEnter>
+			<OnLeave>
+				self:GetParent():SetAlpha(0.5);
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	<PlayerModel name="MouseDisabledModelTemplate" virtual="true">
+		<Scripts>
+			<OnLoad function="Model_OnLoad"/>
+			<OnEvent function="Model_OnEvent"/>
+			<OnUpdate function="Model_OnUpdate"/>
+		</Scripts>
+	</PlayerModel>
+	<PlayerModel name="ModelTemplate" inherits="MouseDisabledModelTemplate" virtual="true">
+		<Scripts>
+			<OnMouseUp function="Model_OnMouseUp"/>
+			<OnMouseDown function="Model_OnMouseDown"/>
+		</Scripts>
+	</PlayerModel>
+
+	<PlayerModel name="ModelWithZoomTemplate" inherits="ModelTemplate" virtual="true">
+		<Scripts>
+			<OnMouseWheel function="Model_OnMouseWheel"/>
+		</Scripts>
+	</PlayerModel>
+	<PlayerModel name="ModelWithControlsTemplate" virtual="true">
+		<Frames>
+			<Frame name="$parentControlFrame" parentKey="controlFrame" alpha="0.5" hidden="true">
+				<Size x="112" y="23"/>
+				<Anchors>
+					<Anchor point="TOP" x="0" y="-2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentRight" file="Interface\Common\UI-ModelControlPanel">
+							<Size x="23" y="23"/>
+							<Anchors>
+								<Anchor point="RIGHT" x="0" y="0"/>
+							</Anchors>
+							<TexCoords left="0.01562500" right="0.37500000" top="0.42968750" bottom="0.60937500"/>
+						</Texture>
+						<Texture name="$parentLeft" file="Interface\Common\UI-ModelControlPanel">
+							<Size x="23" y="23"/>
+							<Anchors>
+								<Anchor point="LEFT" x="0" y="0"/>
+							</Anchors>
+							<TexCoords left="0.40625000" right="0.76562500" top="0.42968750" bottom="0.60937500"/>
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\Common\UI-ModelControlPanel">
+							<Size x="32" y="23"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT" x="0" y="0"/>
+								<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT" x="0" y="0"/>
+							</Anchors>
+							<TexCoords left="0" right="1" top="0.62500000" bottom="0.80468750"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="$parentZoomInButton" inherits="ModelControlButtonTemplate">
+						<Anchors>
+							<Anchor point="LEFT" x="2" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self:RegisterForClicks("AnyUp");
+								self.icon:SetTexCoord(0.57812500, 0.82812500, 0.14843750, 0.27343750);
+								self.tooltip = ZOOM_IN;
+								self.tooltipText = KEY_MOUSEWHEELUP;
+							</OnLoad>
+							<OnClick>
+								local model = self:GetParent():GetParent();
+								Model_OnMouseWheel(model, 1);
+								PlaySound(SOUNDKIT.IG_INVENTORY_ROTATE_CHARACTER);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="$parentZoomOutButton" inherits="ModelControlButtonTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentZoomInButton" relativePoint="RIGHT" x="0" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self:RegisterForClicks("AnyUp");
+								self.icon:SetTexCoord(0.29687500, 0.54687500, 0.00781250, 0.13281250);
+								self.tooltip = ZOOM_OUT;
+								self.tooltipText = KEY_MOUSEWHEELDOWN;
+							</OnLoad>
+							<OnClick>
+								local model = self:GetParent():GetParent();
+								Model_OnMouseWheel(model, -1);
+								PlaySound(SOUNDKIT.IG_INVENTORY_ROTATE_CHARACTER);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="$parentPanButton" inherits="ModelControlButtonTemplate" parentKey="panButton">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentZoomOutButton" relativePoint="RIGHT" x="0" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self:RegisterForClicks("AnyUp");
+								self.icon:SetTexCoord(0.29687500, 0.54687500, 0.28906250, 0.41406250);
+								self.tooltip = DRAG_MODEL;
+								self.tooltipText = DRAG_MODEL_TOOLTIP;
+							</OnLoad>
+							<OnMouseDown>
+								ModelControlButton_OnMouseDown(self);
+								Model_StartPanning(self:GetParent():GetParent(), true);
+							</OnMouseDown>
+							<OnMouseUp>
+								PlaySound(SOUNDKIT.IG_INVENTORY_ROTATE_CHARACTER);
+							</OnMouseUp>
+						</Scripts>
+					</Button>
+					<Button name="$parentRotateLeftButton" inherits="ModelControlButtonTemplate" parentKey="rotateLeftButton">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentPanButton" relativePoint="RIGHT" x="0" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self:RegisterForClicks("AnyUp");
+								self.icon:SetTexCoord(0.01562500, 0.26562500, 0.28906250, 0.41406250);
+								self.tooltip = ROTATE_LEFT;
+								self.tooltipText = ROTATE_TOOLTIP;
+							</OnLoad>
+							<OnClick>
+								Model_RotateLeft(self:GetParent():GetParent());
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="$parentRotateRightButton" inherits="ModelControlButtonTemplate" parentKey="rotateRightButton">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentRotateLeftButton" relativePoint="RIGHT" x="0" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self:RegisterForClicks("AnyUp");
+								self.icon:SetTexCoord(0.57812500, 0.82812500, 0.28906250, 0.41406250);
+								self.tooltip = ROTATE_RIGHT;
+								self.tooltipText = ROTATE_TOOLTIP;
+							</OnLoad>
+							<OnClick>
+								Model_RotateRight(self:GetParent():GetParent());
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="$parentRotateResetButton" inherits="ModelControlButtonTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentRotateRightButton" relativePoint="RIGHT" x="0" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self:RegisterForClicks("AnyUp");
+								self.tooltip = RESET_POSITION;
+							</OnLoad>
+							<OnClick>
+								Model_Reset(self:GetParent():GetParent());
+								PlaySound(SOUNDKIT.IG_INVENTORY_ROTATE_CHARACTER);
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnHide>
+						if ( self.buttonDown ) then
+							ModelControlButton_OnMouseUp(self.buttonDown);
+						end
+					</OnHide>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="Model_OnLoad"/>
+			<OnEvent function="Model_OnEvent"/>
+			<OnUpdate function="Model_OnUpdate"/>
+			<OnMouseUp>
+				if ( button == "RightButton" and self.panning ) then
+					Model_StopPanning(self);
+				elseif ( self.mouseDown ) then
+					self.onMouseUpFunc(self, button);
+				end
+			</OnMouseUp>
+			<OnMouseDown>
+				if ( button == "RightButton" and not self.mouseDown ) then
+					Model_StartPanning(self);
+				else
+					Model_OnMouseDown(self, button);
+				end
+			</OnMouseDown>
+			<OnMouseWheel>
+				Model_OnMouseWheel(self, delta);
+			</OnMouseWheel>
+			<OnEnter>
+				self.controlFrame:Show();
+			</OnEnter>
+			<OnLeave>
+				if ( not self.controlFrame:IsMouseOver() and not ModelPanningFrame:IsShown() ) then
+					self.controlFrame:Hide();
+				end
+			</OnLeave>
+			<OnHide>
+				if ( self.panning ) then
+					Model_StopPanning(self);
+				end
+				self.mouseDown = false;
+				self.controlFrame:Hide();
+			</OnHide>
+		</Scripts>
+	</PlayerModel>
+
+	<Frame name="ModelPanningFrame" hidden="true" frameStrata="DIALOG" clampedToScreen="true" enableMouse="true">
+		<Size x="32" y="32"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\Cursor\UI-Cursor-Move" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnUpdate>
+				local model = self.model;
+				local controlFrame = model.controlFrame;
+				if ( not IsMouseButtonDown(controlFrame.panButton) ) then
+					Model_StopPanning(model);
+					if ( controlFrame.buttonDown ) then
+						ModelControlButton_OnMouseUp(controlFrame.buttonDown);
+					end
+					if ( not controlFrame:IsMouseOver() ) then
+						controlFrame:Hide();
+					end
+				end
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+</Ui>

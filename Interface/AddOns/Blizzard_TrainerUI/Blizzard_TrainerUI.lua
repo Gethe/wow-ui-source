@@ -209,6 +209,7 @@ function ClassTrainerFrame_Update()
 				end
 
 				-- Cost Stuff
+				local _;
 				moneyCost, _ = GetTrainerServiceCost(skillIndex);
 				if ( serviceType == "available" ) then
 					skillButton:SetNormalFontObject("GameFontNormalLeftGreen");

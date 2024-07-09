@@ -158,7 +158,7 @@ function PTR_IssueReporter.CreateReports()
             table.insert(IDString, s)
         end
         
-        local name, icon, _, _, _, _, _, _, _, _, tID = GetTalentInfo(talentTabID, tonumber(IDString[2]))
+        local name, icon, _, _, _, _, _, _, _, _, _, tID = GetTalentInfo(talentTabID, tonumber(IDString[2]))
         talentID = tID
 
         if icon then

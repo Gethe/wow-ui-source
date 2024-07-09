@@ -1,0 +1,57 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Button name="CollectionsJournalTab" inherits="CharacterFrameTabButtonTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				CollectionsJournal_SetTab(self:GetParent(), self:GetID());
+				PlaySound(SOUNDKIT.UI_TOYBOX_TABS);
+			</OnClick>
+		</Scripts>
+	</Button>
+
+	<Frame name="CollectionsJournal" inherits="PortraitFrameTemplate" toplevel="true" frameStrata="HIGH" enableMouse="true" parent="UIParent" hidden="true">
+		<Size x="703" y="606"/>
+		<Anchors>
+			<Anchor point="CENTER" x="0" y="0"/>
+		</Anchors>
+		<Frames>
+			<Button name="$parentTab1" inherits="CollectionsJournalTab" text="MOUNTS" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="BOTTOMLEFT" x="11" y="2"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentTab2" inherits="CollectionsJournalTab" text="PET_JOURNAL" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT" x="-16" y="0"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentTab3" inherits="CollectionsJournalTab" text="TOY_BOX" id="3">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentTab2" relativePoint="RIGHT" x="-16" y="0"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentTab4" inherits="CollectionsJournalTab" text="HEIRLOOMS" id="4">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentTab3" relativePoint="RIGHT" x="-16" y="0"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentTab5" inherits="CollectionsJournalTab" text="WARDROBE" id="5">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentTab4" relativePoint="RIGHT" x="-16" y="0"/>
+				</Anchors>
+			</Button>
+		</Frames>
+
+		<Scripts>
+			<OnLoad>
+				self:SetTitle(COLLECTIONS);
+				PanelTemplates_SetNumTabs(self, 5);
+
+				SetPortraitToTexture(self.portrait, "Interface\\CHARACTERFRAME\\TempPortrait");
+				PanelTemplates_SetTab(self, tonumber(GetCVar("petJournalTab")) or 1);
+			</OnLoad>
+			<OnShow function="CollectionsJournal_OnShow"/>
+			<OnHide function="CollectionsJournal_OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

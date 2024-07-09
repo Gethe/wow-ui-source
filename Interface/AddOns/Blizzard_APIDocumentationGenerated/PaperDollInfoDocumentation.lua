@@ -124,6 +124,11 @@ local PaperDollInfo =
 			},
 		},
 		{
+			Name = "MasteryUpdate",
+			Type = "Event",
+			LiteralName = "MASTERY_UPDATE",
+		},
+		{
 			Name = "PetSpellPowerUpdate",
 			Type = "Event",
 			LiteralName = "PET_SPELL_POWER_UPDATE",
@@ -175,6 +180,15 @@ local PaperDollInfo =
 				{ Name = "tabIndex", Type = "number", Nilable = false },
 				{ Name = "groupIndex", Type = "number", Nilable = false },
 				{ Name = "points", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "PreviewTalentPrimaryTreeChanged",
+			Type = "Event",
+			LiteralName = "PREVIEW_TALENT_PRIMARY_TREE_CHANGED",
+			Payload =
+			{
+				{ Name = "newTabID", Type = "number", Nilable = false },
 			},
 		},
 		{

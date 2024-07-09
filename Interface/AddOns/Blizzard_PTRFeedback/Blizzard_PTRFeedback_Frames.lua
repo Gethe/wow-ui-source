@@ -26,7 +26,7 @@ function PTR_IssueReporter.AttachStandaloneQuestion(frame, question, characterLi
         questionFrame.text:SetHeight(questionFrame:GetHeight())
         questionFrame.text:SetPoint("TOP", questionFrame, "TOP", 0, 0)        
         questionFrame.text:SetSize(questionFrame:GetWidth(), questionFrame:GetHeight())
-        questionFrame.text:SetJustifyV("CENTER")
+        questionFrame.text:SetJustifyV("MIDDLE")
         questionFrame.text:SetJustifyH("CENTER")
 
         PTR_IssueReporter.AddBorder(questionFrame)
@@ -127,7 +127,7 @@ function PTR_IssueReporter.AttachMultipleChoiceQuestion(frame, question, answers
         questionFrame.text:SetWidth(questionFrame:GetWidth())
         questionFrame.text:SetHeight(questionFrame:GetHeight())                
         questionFrame.text:SetSize(questionFrame:GetWidth(), questionFrame:GetHeight())
-        questionFrame.text:SetJustifyV("CENTER")
+        questionFrame.text:SetJustifyV("MIDDLE")
         questionFrame.text:SetJustifyH("CENTER")
 
         PTR_IssueReporter.AddBorder(questionFrame)
@@ -217,7 +217,7 @@ function PTR_IssueReporter.AttachCheckBoxToQuestion(questionFrame, answer, canSe
         newCheckBox = CreateFrame("CheckButton", nil, questionFrame.QuestionBackground, "UICheckButtonTemplate")
         newCheckBox.Text = newCheckBox:CreateFontString(nil, "OVERLAY", "GameTooltipText")        
         newCheckBox.Text:SetJustifyH("CENTER")
-        newCheckBox.Text:SetJustifyV("CENTER")
+        newCheckBox.Text:SetJustifyV("MIDDLE")
         newCheckBox.Text:SetTextColor(1, 1, 1)
     end
     
@@ -261,7 +261,6 @@ function PTR_IssueReporter.AttachModelViewer(surveyFrame, survey, dataPackage)
             modelViewer.FrameType = "ModelViewer"
             PTR_IssueReporter.AddBackground(modelViewer, PTR_IssueReporter.Assets.BackgroundTexture)            
         end
-        test = modelViewer
         modelViewer:SetParent(surveyFrame)
         modelViewer:ClearAllPoints()
         modelViewer:SetPoint("TOP", surveyFrame, "TOP", 0, 0)
@@ -293,7 +292,7 @@ function PTR_IssueReporter.AttachIconViewer(surveyFrame, survey, dataPackage)
         
         local numberOfUnusedFrames = #PTR_IssueReporter.Data.UnusedFrameComponents.IconViewer
         local iconViewerHeight = 100
-        local IconViewer
+        local iconViewer
         
         if  numberOfUnusedFrames > 0 then -- Check if there is a frame we should reuse
             iconViewer = PTR_IssueReporter.Data.UnusedFrameComponents.IconViewer[numberOfUnusedFrames]
@@ -332,10 +331,10 @@ end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.CleanReportFrame(frame)
     if (frame) and (frame.FrameComponents) then
-        for key, component in pairs (frame.FrameComponents) do
+        for _, component in pairs (frame.FrameComponents) do
             if (component.FrameType) then
                 if (component.FrameType == "MultipleChoice") then
-                    for key, checkbox in pairs (component.Checkboxes) do
+                    for _, checkbox in pairs (component.Checkboxes) do
                         checkbox:SetParent(UIParent)
                         checkbox:Hide()            
                         table.insert(PTR_IssueReporter.Data.UnusedFrameComponents.Checkbox, checkbox)
@@ -738,7 +737,6 @@ function PTR_IssueReporter.HookIntoTooltip(tooltip, tooltipType, tooltipID, tool
         end
         -- Check if we already added to this tooltip. Happens on the talent frame
         local found = false
-        local foundFrame
         for i = 1,15 do
             local frame = _G[tooltip:GetName() .. "TextLeft" .. i]
             local text
@@ -748,7 +746,6 @@ function PTR_IssueReporter.HookIntoTooltip(tooltip, tooltipType, tooltipID, tool
                 local contains = string.gmatch(text, PTR_IssueReporter.BugTooltipPartialString)() 
                 if (contains) then
                     found = true
-                    foundFrame = frame
                     break
                 end
             end            

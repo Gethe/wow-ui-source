@@ -1,0 +1,184 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+  <Script file="PaladinPowerBar.lua"/>
+
+  
+  
+<!--	 size=256,128
+<Texture name="Paladin-BG-Gold.png" >
+	<Size x="136" y="39"/>	
+	<TexCoords left="0.00390625" right="0.53515625" top="0.00781250" bottom="0.31250000"/>	
+</Texture>
+<Texture name="Paladin-BG.png" >
+	<Size x="136" y="39"/>	
+	<TexCoords left="0.00390625" right="0.53515625" top="0.32812500" bottom="0.63281250"/>	
+</Texture>
+<Texture name="Paladin-Rune01.png" >
+	<Size x="36" y="22"/>	
+	<TexCoords left="0.00390625" right="0.14453125" top="0.64843750" bottom="0.82031250"/>	
+</Texture>
+<Texture name="Paladin-Rune02.png" >
+	<Size x="31" y="17"/>	
+	<TexCoords left="0.00390625" right="0.12500000" top="0.83593750" bottom="0.96875000"/>	
+</Texture>
+<Texture name="Paladin-Rune03.png" >
+	<Size x="27" y="21"/>	
+	<TexCoords left="0.15234375" right="0.25781250" top="0.64843750" bottom="0.81250000"/>	
+</Texture>
+-->
+ 
+	<Frame name="PaladinPowerBar" parent="PlayerFrame" useParentLevel="true">
+		<Animations>
+			<AnimationGroup parentKey="showAnim">
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.5" order="1"/>
+				<Scripts>
+					<OnFinished>
+						self:GetParent():SetAlpha(1.0);
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Size x="136" y="39"/>
+		<Anchors>
+			<Anchor point="TOP" relativeTo="PlayerFrame" relativePoint="BOTTOM" x="43" y="39"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-5">
+				<Texture name="$parentBG" file="Interface\PlayerFrame\PaladinPowerTextures">
+					<Anchors>
+						<Anchor point="TOP" />
+					</Anchors>
+					<Size x="136" y="39"/>
+					<TexCoords left="0.00390625" right="0.53515625" top="0.32812500" bottom="0.63281250"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentGlowBG" setAllPoints="true"  useParentLevel="true" parentKey="glow">
+				<Animations>
+					<AnimationGroup parentKey="pulse">
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.5" order="1"/>
+						<Alpha fromAlpha="1" toAlpha="0" startDelay="0.3" duration="0.6" order="2"/>
+						<Scripts>
+							<OnFinished>
+								if not self.stopPulse then
+									self:Play();
+								end
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="-1">
+						<Texture name="$parentTexture" file="Interface\PlayerFrame\PaladinPowerTextures">
+							<Anchors>
+								<Anchor point="TOP" />
+							</Anchors>
+							<Size x="136" y="39"/>
+							<TexCoords left="0.00390625" right="0.53515625" top="0.00781250" bottom="0.31250000"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="$parentRune1" parentKey="rune1">
+				<Animations>
+					<AnimationGroup parentKey="activate">
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
+						<Scripts>
+							<OnFinished>
+								self:GetParent():SetAlpha(1);
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+					<AnimationGroup parentKey="deactivate">
+						<Alpha fromAlpha="1" toAlpha="0" duration="0.3" order="1"/>
+						<Scripts>
+							<OnFinished>
+								self:GetParent():SetAlpha(0);
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="21" y="-11"/>
+				</Anchors>
+				<Size x="36" y="22"/>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="$parentTexture" file="Interface\PlayerFrame\PaladinPowerTextures" parentKey="rune1">
+							<TexCoords left="0.00390625" right="0.14453125" top="0.64843750" bottom="0.82031250"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="$parentRune2" parentKey="rune2">
+				<Animations>
+					<AnimationGroup parentKey="activate">
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
+						<Scripts>
+							<OnFinished>
+								self:GetParent():SetAlpha(1);
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+					<AnimationGroup parentKey="deactivate">
+						<Alpha fromAlpha="1" toAlpha="0" duration="0.3" order="1"/>
+						<Scripts>
+							<OnFinished>
+								self:GetParent():SetAlpha(0);
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentRune1" relativePoint="RIGHT"/>
+				</Anchors>
+				<Size x="31" y="17"/>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="$parentTexture" file="Interface\PlayerFrame\PaladinPowerTextures" parentKey="rune2">
+							<TexCoords left="0.00390625" right="0.12500000" top="0.83593750" bottom="0.96875000"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="$parentRune3" parentKey="rune3">
+				<Animations>
+					<AnimationGroup parentKey="activate">
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
+						<Scripts>
+							<OnFinished>
+								self:GetParent():SetAlpha(1);
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+					<AnimationGroup parentKey="deactivate">
+						<Alpha fromAlpha="1" toAlpha="0" duration="0.3" order="1"/>
+						<Scripts>
+							<OnFinished>
+								self:GetParent():SetAlpha(0);
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
+				<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentRune2" relativePoint="RIGHT" x="2" y="-1"/>
+					</Anchors>
+					<Size x="27" y="21"/>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="$parentTexture" file="Interface\PlayerFrame\PaladinPowerTextures">
+							<TexCoords left="0.15234375" right="0.25781250" top="0.64843750" bottom="0.81250000"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="PaladinPowerBar_OnLoad"/>
+			<OnEvent function="PaladinPowerBar_OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>
+
+

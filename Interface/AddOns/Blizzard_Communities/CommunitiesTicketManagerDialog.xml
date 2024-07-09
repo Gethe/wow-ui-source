@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="CommunitiesTicketManagerDialog.lua"/>
 	
 	<Button name="CommunitiesTicketEntryTemplate" mixin="CommunitiesTicketEntryMixin" virtual="true">
@@ -11,22 +11,16 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString parentKey="Channel" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false">
-					<Size x="50" y="0"/>
+				<FontString parentKey="Creator" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false">
+					<Size x="80" y="0"/>
 					<Anchors>
 						<Anchor point="LEFT" x="9" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="Creator" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false">
-					<Size x="55" y="0"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Channel" relativePoint="RIGHT" x="8" y="0"/>
-					</Anchors>
-				</FontString>
 				<FontString parentKey="Link" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false">
-					<Size x="245" y="0"/>
+					<Size x="270" y="0"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Creator" relativePoint="RIGHT" x="8" y="0"/>
+						<Anchor point="LEFT" relativeKey="$parent.Creator" relativePoint="RIGHT" x="12" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="Expires" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false">
@@ -50,7 +44,7 @@
 					<Anchor point="CENTER" relativeKey="$parent.Link"/>
 				</Anchors>
 				<Layers>
-					<Layer level="BACKGROUND" textureSubLevel="-100">
+					<Layer level="BACKGROUND" textureSubLevel="-8">
 						<Texture parentKey="Background">
 							<Anchors>
 								<Anchor point="TOPLEFT" x="3" y="-2"/>
@@ -109,7 +103,7 @@
 		<Frames>
 			<Frame parentKey="ArtOverlay" frameLevel="300" setAllPoints="true">
 				<Layers>
-					<Layer level="OVERLAY" textureSubLevel="100">
+					<Layer level="OVERLAY" textureSubLevel="7">
 						<Texture parentKey="TopLeft" atlas="macropopup-intersect-left" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="TOPLEFT"/>
@@ -129,41 +123,28 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<ScrollFrame parentKey="ListScrollFrame">
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="13" y="-41"/>
 					<Anchor point="BOTTOMRIGHT" x="-36" y="0"/>
 				</Anchors>
 				<Layers>
-					<Layer level="BACKGROUND" textureSubLevel="-100">
+					<Layer level="BACKGROUND" textureSubLevel="-8">
 						<Texture parentKey="Background" file="Interface\FrameGeneral\UI-Background-Marble" horizTile="true" vertTile="true"/>
 					</Layer>
 				</Layers>
-				<Frames>
-					<Slider parentKey="scrollBar" inherits="HybridScrollBarTemplate" frameLevel="200">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="1" y="12"/>
-							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="1" y="14"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BORDER">
-								<Texture parentKey="Background" file="Interface\FrameGeneral\UI-Background-Marble" horizTile="true" vertTile="true" setAllPoints="true"/>
-							</Layer>
-						</Layers>
-					</Slider>
-				</Frames>
-				<Scripts>
-					<OnLoad function="HybridScrollFrame_OnLoad"/>
-					<OnMouseWheel function="HybridScrollFrame_OnMouseWheel"/>
-				</Scripts>
-				<ScrollChild>
-					<Frame name="$parentScrollChild" parentKey="ScrollChild">
-						<Scripts>
-							<OnLoad function="HybridScrollFrameScrollChild_OnLoad"/>
-						</Scripts>
-					</Frame>
-				</ScrollChild>
-			</ScrollFrame>
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="7" y="-3"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="7" y="4"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" file="Interface\FrameGeneral\UI-Background-Marble" horizTile="true" vertTile="true" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+			</EventFrame>
 			<Frame parentKey="ColumnDisplay" inherits="ColumnDisplayTemplate" frameLevel="100">
 				<Size x="0" y="34"/>
 				<Anchors>
@@ -208,7 +189,7 @@
 		</Scripts>
 	</Frame>
 	
-	<Frame name="CommunitiesTicketManagerDialog" frameStrata="DIALOG" parent="UIParent" mixin="CommunitiesTicketManagerDialogMixin" topLevel="true" hidden="true">
+	<Frame name="CommunitiesTicketManagerDialog" frameStrata="DIALOG" parent="UIParent" mixin="CommunitiesTicketManagerDialogMixin" toplevel="true" hidden="true">
 		<Size x="633" y="484"/>
 		<Anchors>
 			<Anchor point="TOP" relativeTo="UIParent" x="0" y="-140"/>
