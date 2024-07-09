@@ -242,6 +242,10 @@ function VoiceChatHeadsetButtonMixin:ShowTooltip()
 end
 
 function VoiceChatHeadsetButtonMixin:ShouldShow()
+	if not C_VoiceChat.IsEnabled() then
+		return false;
+	end
+
 	if self:GetVoiceChannel() or self:IsCommunityChannel() then
 		return true;
 	end
