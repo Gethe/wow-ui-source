@@ -209,7 +209,7 @@
 						<Texture parentKey="FlyoutArrow" file="Interface\Buttons\ActionBarFlyoutButton" hidden="true" rotation="-90">
 							<Size x="23" y="11"/>
 							<Anchors>
-								<Anchor point="RIGHT" x="2" y="0"/>
+								<Anchor point="RIGHT" x="14" y="0"/>
 							</Anchors>
 							<TexCoords left="0.62500000" right="0.98437500" top="0.74218750" bottom="0.82812500"/>
 						</Texture>

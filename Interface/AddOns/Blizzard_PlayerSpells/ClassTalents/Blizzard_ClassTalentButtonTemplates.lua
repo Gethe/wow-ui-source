@@ -131,6 +131,29 @@ function ClassTalentButtonBaseMixin:IsInspecting()
 	return baseIsInspecting or self:IsInPreviewedSubTree();
 end
 
+function ClassTalentButtonBaseMixin:IsSearchMatchTypeAllowed(matchType)
+	-- Don't display the missing from action bar results for talents that belong to inactive Hero
+	-- specs. It's not expected that players have these talents on their action bars and can be
+	-- confusing to report that information to them.
+	if SpellSearchUtil.IsActionBarMatchType(matchType) then
+		local talentFrame = self:GetTalentFrame();
+		local subTreeID = self:GetNodeSubTreeID();
+		if talentFrame and subTreeID and not talentFrame:IsHeroSpecActive(subTreeID) then
+			return false;
+		end
+	end
+
+	return true;
+end
+
+function ClassTalentButtonBaseMixin:SetSearchMatchType(matchType)
+	if not self:IsSearchMatchTypeAllowed(matchType) then
+		matchType = nil;
+	end
+
+	TalentDisplayMixin.SetSearchMatchType(self, matchType)
+end
+
 --------------------------------------------------
 -- Spend Mixin (standard select/deselect)
 ClassTalentButtonSpendMixin = CreateFromMixins(TalentButtonSpendMixin, ClassTalentButtonBaseMixin);

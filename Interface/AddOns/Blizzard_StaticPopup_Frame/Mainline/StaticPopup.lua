@@ -1747,18 +1747,37 @@ StaticPopupDialogs["LOOT_BIND"] = {
 	exclusive = 1,
 	hideOnEscape = 1
 };
+
+local function GetBindWarning(itemLocation)
+	local item = Item:CreateFromItemLocation(itemLocation);
+	if not item then
+		return;
+	end
+
+	local isArmor = select(6, C_Item.GetItemInfoInstant(item:GetItemID())) == Enum.ItemClass.Armor;
+	if isArmor and not IsItemPreferredArmorType(item:GetItemLocation()) then
+		return NOT_BEST_ARMOR_TYPE_WARNING;
+	end
+end
+
 StaticPopupDialogs["EQUIP_BIND"] = {
 	text = EQUIP_NO_DROP,
 	button1 = OKAY,
 	button2 = CANCEL,
-	OnAccept = function(self, slot)
-		EquipPendingItem(slot);
+	OnShow = function(self, data)
+		local warning = GetBindWarning(data.itemLocation);
+		if warning then
+			self.text:SetText(EQUIP_NO_DROP .. "|n|n" .. warning);
+		end
 	end,
-	OnCancel = function(self, slot)
-		CancelPendingEquip(slot);
+	OnAccept = function(self, data)
+		EquipPendingItem(data.slot);
 	end,
-	OnHide = function(self, slot)
-		CancelPendingEquip(slot);
+	OnCancel = function(self, data)
+		CancelPendingEquip(data.slot);
+	end,
+	OnHide = function(self, data)
+		CancelPendingEquip(data.slot);
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -1769,14 +1788,20 @@ StaticPopupDialogs["EQUIP_BIND_REFUNDABLE"] = {
 	text = END_REFUND,
 	button1 = OKAY,
 	button2 = CANCEL,
-	OnAccept = function(self, slot)
-		EquipPendingItem(slot);
+	OnShow = function(self, data)
+		local warning = GetBindWarning(data.itemLocation);
+		if warning then
+			self.text:SetText(END_REFUND .. "|n|n" .. warning);
+		end
 	end,
-	OnCancel = function(self, slot)
-		CancelPendingEquip(slot);
+	OnAccept = function(self, data)
+		EquipPendingItem(data.slot);
 	end,
-	OnHide = function(self, slot)
-		CancelPendingEquip(slot);
+	OnCancel = function(self, data)
+		CancelPendingEquip(data.slot);
+	end,
+	OnHide = function(self, data)
+		CancelPendingEquip(data.slot);
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -1787,14 +1812,20 @@ StaticPopupDialogs["EQUIP_BIND_TRADEABLE"] = {
 	text = END_BOUND_TRADEABLE,
 	button1 = OKAY,
 	button2 = CANCEL,
-	OnAccept = function(self, slot)
-		EquipPendingItem(slot);
+	OnShow = function(self, data)
+		local warning = GetBindWarning(data.itemLocation);
+		if warning then
+			self.text:SetText(END_BOUND_TRADEABLE .. "|n|n" .. warning);
+		end
 	end,
-	OnCancel = function(self, slot)
-		CancelPendingEquip(slot);
+	OnAccept = function(self, data)
+		EquipPendingItem(data.slot);
 	end,
-	OnHide = function(self, slot)
-		CancelPendingEquip(slot);
+	OnCancel = function(self, data)
+		CancelPendingEquip(data.slot);
+	end,
+	OnHide = function(self, data)
+		CancelPendingEquip(data.slot);
 	end,
 	timeout = 0,
 	exclusive = 1,

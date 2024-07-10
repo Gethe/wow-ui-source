@@ -43,6 +43,7 @@ extraHeight: [number]  --  Extra buffer height to add when checking frame's heig
 xoffset: [number]  --  X offset to add when positioning the frame within the UI parent.
 yoffset: [number]  --  Y offset to add when positioning the frame within the UI parent. Actual y position is also clamped based on minYOffset & bottomClampOverride.
 minYOffset: [number]  --  (default -10) Custom minimum amount of y offset the frame should have. Since Y offsets from the top are negative, this is numerically a "max" (ex: -20 is "more" offset than -10).
+centerXOffset: [number]  --  X offset to add when positioning a centered frame. Useful for centerOrLeft frames to have a different value from xoffset when centered.
 bottomClampOverride: [number]  --  (default 140) Custom bottom-most edge that a frame can be positioned to reach. Frame's y offset is calculated by taking this + minYOffset into account.
 maximizePoint: [string]  --  [WARNING: Don't use this; this maximize/restore flow is very one-off specific to the World Map] Point that's passed to SetPoint if the frame is maximized via MaximizeUIPanel.
 checkFit: [0,1]  --  If 1, frame is scaled down if needed to fit within the current size of the UIParent. This can help large frames stay visible on varying screen sizes/UI scales.
@@ -139,10 +140,10 @@ end
 
 local function GetUIPanelAttribute(frame, name)
 	if not frame:GetAttribute("UIPanelLayout-defined") then
-	    local attributes = UIPanelWindows[frame:GetName()];
-	    if not attributes then
+		local attributes = UIPanelWindows[frame:GetName()];
+		if not attributes then
 			return;
-	    end
+		end
 		SetFrameAttributes(frame, attributes);
 	end
 	return frame:GetAttribute("UIPanelLayout-"..name);
@@ -298,9 +299,9 @@ function FramePositionDelegate:ShowUIPanel(frame, force, contextKey)
 			if ( leftPushable > 0 and CanShowRightUIPanel(leftFrame) ) then
 				-- Push left to right
 				self:MoveUIPanel("left", "right", UIPANEL_SKIP_SET_POINT);
-			elseif ( centerFrame and CanShowRightUIPanel(centerFrame) ) then
-				self:MoveUIPanel("center", "right", UIPANEL_SKIP_SET_POINT);
 			end
+		elseif ( centerFrame and CanShowRightUIPanel(centerFrame) ) then
+			self:MoveUIPanel("center", "right", UIPANEL_SKIP_SET_POINT);
 		end
 		self:SetUIPanel("doublewide", frame);
 		return;
@@ -526,9 +527,22 @@ function FramePositionDelegate:HideUIPanelImplementation(frame, skipSetPoint)
 	if ( frame == self:GetUIPanel("right") ) then
 		self:SetUIPanel("right", nil, skipSetPoint);
 		return;
-	elseif ( frame == self:GetUIPanel("doublewide") ) then
-		-- Slide over any right frame (hides the doublewide)
-		self:MoveUIPanel("right", "left", skipSetPoint);
+	end
+
+	-- If we're hiding the doublewide frame, determine where the right frame should go.
+	if ( frame == self:GetUIPanel("doublewide") ) then
+		local newLocation = "left";
+
+		local rightFrame = self:GetUIPanel("right");
+		if ( rightFrame ) then
+			local area = GetUIPanelAttribute(rightFrame, "area");
+			if ( area and area == "centerOrLeft" ) then
+				newLocation = "center";
+			end
+		end
+
+		-- Even if there's not a right frame call MoveUIPanel to hide the doublewide frame.
+		self:MoveUIPanel("right", newLocation, skipSetPoint);
 		return;
 	end
 
@@ -657,7 +671,10 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 				frame:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", (centerOffset + xOff)/scale, yPos/scale);
 			elseif not skipSetPoints then
 				frame:ClearAllPoints();
-				frame:SetPoint("TOP", "UIParent", "TOP", 0, yPos/scale);
+				-- Centered frames don't use xoffset to prevent undesired positioning (especially in
+				-- centerOrLeft cases) but can use the centerXOffset attribute for special case positioning.
+				local centerXOffset = GetUIPanelAttribute(frame,"centerXOffset") or 0;
+				frame:SetPoint("TOP", "UIParent", "TOP", centerXOffset, yPos/scale);
 			end
 			rightOffset = centerOffset + GetUIPanelWidth(frame) + xOff;
 		else

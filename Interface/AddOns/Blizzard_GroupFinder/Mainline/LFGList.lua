@@ -916,11 +916,6 @@ function LFGListEntryCreation_SetupPlayStyleDropdown(self)
 	
 	local function SetSelected(playstyle)
 		LFGListEntryCreation_OnPlayStyleSelectedInternal(self, playstyle);
-		local previousPlaystyle = self.selectedPlaystyle;
-		self.selectedPlaystyle = playstyle;
-		if(C_LFGList.DoesEntryTitleMatchPrebuiltTitle(self.selectedActivity, self.selectedGroup, previousPlaystyle)) then
-			LFGListEntryCreation_SetTitleFromActivityInfo(self);
-		end
 	end
 
 	local function CreateRadio(rootDescription, activityInfo, playstyle)
@@ -1132,8 +1127,7 @@ function LFGListEntryCreation_SetPlaystyleLabelTextFromActivityInfo(self, activi
 end
 
 function LFGListEntryCreation_OnPlayStyleSelectedInternal(self, playstyle)
-	local activityInfo = C_LFGList.GetActivityInfoTable(self.selectedActivity);
-	local previousPlaystyle = self.selectedPlaystyle
+	local previousPlaystyle = self.selectedPlaystyle;
 	self.selectedPlaystyle = playstyle;
 	if(C_LFGList.DoesEntryTitleMatchPrebuiltTitle(self.selectedActivity, self.selectedGroup, previousPlaystyle)) then
 		LFGListEntryCreation_SetTitleFromActivityInfo(self);
@@ -1345,7 +1339,7 @@ function LFGListEntryCreation_SetEditMode(self, editMode)
 		self.PrivateGroup.CheckButton:SetChecked(activeEntryInfo.privateGroup);
 		self.CrossFactionGroup.CheckButton:SetChecked(not activeEntryInfo.isCrossFactionListing);
 		if(self.PlayStyleDropdown:IsShown()) then
-			LFGListEntryCreation_OnPlayStyleSelected(self, self.PlayStyleDropdown, activeEntryInfo.playstyle);
+			LFGListEntryCreation_OnPlayStyleSelected(self, activeEntryInfo.playstyle);
 		end
 
 		self.ListGroupButton:SetText(DONE_EDITING);

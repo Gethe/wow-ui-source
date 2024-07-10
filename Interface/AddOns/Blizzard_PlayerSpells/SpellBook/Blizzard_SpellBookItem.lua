@@ -150,9 +150,12 @@ function SpellBookItemMixin:ToggleFlyout(reason)
 	end
 
 	local offSpecID = self.isOffSpec and self.elementData.specID or nil;
-	local distance, isActionBar, showFullTooltip = 1, false, true;
+	local distance, isActionBar, showFullTooltip = -2, false, true;
 	SpellFlyout:Toggle(self.spellBookItemInfo.actionID, self.Button, "RIGHT", distance, isActionBar, offSpecID, showFullTooltip, reason);
 	SpellFlyout:SetBorderSize(42);
+
+	local rotation = SpellFlyout:IsShown() and 180 or 0;
+	SetClampedTextureRotation(self.Button.FlyoutArrow, rotation);
 end
 
 function SpellBookItemMixin:UpdateVisuals()

@@ -24,8 +24,7 @@ function UIWidgetTemplateItemDisplayMixin:Setup(widgetInfo, widgetContainer)
 	self.continuableContainer:ContinueOnLoad(function()
 		UIWidgetBaseTemplateMixin.Setup(self, widgetInfo, widgetContainer);
 
-		self.Item:Setup(widgetContainer, widgetInfo.itemInfo, widgetInfo.widgetSizeSetting);
-		self.Item:SetTooltipLocation(widgetInfo.tooltipLoc);
+		self.Item:Setup(widgetContainer, widgetInfo.itemInfo, widgetInfo.widgetSizeSetting, widgetInfo.tooltipLoc);
 
 		self:SetWidth(self.Item:GetWidth());
 		self:SetHeight(self.Item:GetHeight());

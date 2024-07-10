@@ -84,7 +84,7 @@ function SplashFrameMixin:OpenQuestDialog()
 	ShowQuestOffer(questID);
 	QuestObjectiveTracker:RemoveAutoQuestPopUp(questID);
 
-	C_QuestLog.AddQuestWatch(questID, Enum.QuestWatchType.Automatic);
+	C_QuestLog.AddQuestWatch(questID);
 end
 
 function SplashFrameMixin:Close()

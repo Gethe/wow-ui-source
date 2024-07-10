@@ -277,11 +277,13 @@ function QuestFrameProgressItems_Update()
 			requiredItem.type = "required";
 			requiredItem.objectType = "currency";
 			requiredItem:SetID(i);
-			local name, texture, numItems = GetQuestCurrencyInfo(requiredItem.type, i);
-			SetItemButtonCount(requiredItem, numItems);
-			SetItemButtonTexture(requiredItem, texture);
-			requiredItem:Show();
-			_G[questItemName..buttonIndex.."Name"]:SetText(name);
+			local requiredCurrencyInfo = C_QuestOffer.GetQuestRequiredCurrencyInfo(i);
+			if requiredCurrencyInfo then
+				SetItemButtonCount(requiredItem, requiredCurrencyInfo.requiredAmount);
+				SetItemButtonTexture(requiredItem, requiredCurrencyInfo.texture);
+				requiredItem:Show();
+				_G[questItemName..buttonIndex.."Name"]:SetText(requiredCurrencyInfo.name);
+			end
 			buttonIndex = buttonIndex+1;
 		end
 
@@ -376,9 +378,11 @@ function QuestFrameGreetingPanel_OnShow()
 			if ( isTrivial ) then
 				questTitleButton:SetFormattedText(TRIVIAL_QUEST_DISPLAY, title);
 				questTitleButton.Icon:SetVertexColor(0.5,0.5,0.5);
+				questTitleButton.Icon:SetAlpha(1);
 			else
 				questTitleButton:SetFormattedText(NORMAL_QUEST_DISPLAY, title);
 				questTitleButton.Icon:SetVertexColor(1,1,1);
+				questTitleButton.Icon:SetAlpha(QuestUtil.GetAvailableQuestIconAlpha(questID));
 			end
 			if QuestUtil.QuestTextContrastUseLightText() then
 				questTitleButton:GetFontString():SetFixedColor(true);

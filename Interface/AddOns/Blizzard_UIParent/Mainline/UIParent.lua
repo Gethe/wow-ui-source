@@ -1540,24 +1540,18 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "EQUIP_BIND_CONFIRM" ) then
 		StaticPopup_Hide("EQUIP_BIND_REFUNDABLE");
 		StaticPopup_Hide("EQUIP_BIND_TRADEABLE");
-		local dialog = StaticPopup_Show("EQUIP_BIND");
-		if ( dialog ) then
-			dialog.data = arg1;
-		end
+		local textArg1, textArg2 = nil, nil;
+		StaticPopup_Show("EQUIP_BIND", textArg1, textArg2, { slot = arg1, itemLocation = arg2 });
 	elseif ( event == "EQUIP_BIND_REFUNDABLE_CONFIRM" ) then
 		StaticPopup_Hide("EQUIP_BIND");
 		StaticPopup_Hide("EQUIP_BIND_TRADEABLE");
-		local dialog = StaticPopup_Show("EQUIP_BIND_REFUNDABLE");
-		if ( dialog ) then
-			dialog.data = arg1;
-		end
+		local textArg1, textArg2 = nil, nil;
+		StaticPopup_Show("EQUIP_BIND_REFUNDABLE", textArg1, textArg2, { slot = arg1, itemLocation = arg2 });
 	elseif ( event == "EQUIP_BIND_TRADEABLE_CONFIRM" ) then
 		StaticPopup_Hide("EQUIP_BIND");
 		StaticPopup_Hide("EQUIP_BIND_REFUNDABLE");
-		local dialog = StaticPopup_Show("EQUIP_BIND_TRADEABLE");
-		if ( dialog ) then
-			dialog.data = arg1;
-		end
+		local textArg1, textArg2 = nil, nil;
+		StaticPopup_Show("EQUIP_BIND_TRADEABLE", textArg1, textArg2, { slot = arg1, itemLocation = arg2 });
 	elseif ( event == "USE_BIND_CONFIRM" ) then
 		StaticPopup_Show("USE_BIND");
 	elseif ( event == "CONVERT_TO_BIND_TO_ACCOUNT_CONFIRM" ) then

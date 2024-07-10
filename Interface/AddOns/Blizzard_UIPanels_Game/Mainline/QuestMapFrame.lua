@@ -246,6 +246,7 @@ end
 function QuestLogMixin:ShowMapLegend()
 	self.MapLegend:Show();
 	self:HideCampaignOverview();
+	self.DetailsFrame:Hide();
 	QuestScrollFrame:Hide();
 end
 
@@ -284,7 +285,7 @@ function QuestLogMixin:SetHeaderQuestsTracked(headerLogIndex, setTracked)
 			if questID then
 				local questTracked = QuestUtils_IsQuestWatched(questID);
 				if setTracked and not questTracked then
-					C_QuestLog.AddQuestWatch(questID, Enum.QuestWatchType.Manual);
+					C_QuestLog.AddQuestWatch(questID);
 				elseif not setTracked and questTracked then
 					C_QuestLog.RemoveQuestWatch(questID);
 				end
@@ -531,7 +532,7 @@ function QuestMapFrame_OnEvent(self, event, ...)
 			end
 		end
 		if questLogIndex and GetCVarBool("autoQuestWatch") and GetNumQuestLeaderBoards(questLogIndex) > 0 and C_QuestLog.GetNumQuestWatches() < Constants.QuestWatchConsts.MAX_QUEST_WATCHES then
-			C_QuestLog.AddQuestWatch(questID, Enum.QuestWatchType.Automatic);
+			C_QuestLog.AddQuestWatch(questID);
 		end
 	elseif ( event == "QUEST_WATCH_LIST_CHANGED" and not self.ignoreQuestWatchListChanged ) then
 		QuestMapFrame_UpdateQuestDetailsButtons();
@@ -1157,10 +1158,12 @@ function QuestLogScrollFrameMixin:OnLoad()
 
 	self:RegisterCallback("OnVerticalScroll", function(offset)
 		self:UpdateBottomShadow(offset);
+		self:CheckHelpTips(offset);
 	end);
 
 	self:RegisterCallback("OnScrollRangeChanged", function(offset)
 		self:UpdateBottomShadow(offset);
+		self:CheckHelpTips(offset);
 	end);
 
 	self.titleFramePool = CreateFramePool("BUTTON", QuestMapFrame.QuestsFrame.Contents, "QuestLogTitleTemplate", function(framePool, frame)
@@ -1333,6 +1336,44 @@ function QuestLogScrollFrameMixin:UpdateBottomShadow(offset)
 	shadow:SetAlpha(alpha);
 end
 
+function QuestLogScrollFrameMixin:CheckHelpTips()
+	if GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_CAMPAIGN_LORE_TEXT) then
+		return;
+	end
+
+	-- hide it now, might have to be repositioned if it's showing
+	HelpTip:Hide(QuestScrollFrame, CAMPAIGN_LORE_BUTTON_HELPTIP);
+		
+	if QuestSearcher:IsActive() then
+		return;
+	end
+
+	local campaignHeaders = { };
+	for header in QuestScrollFrame.campaignHeaderFramePool:EnumerateActive() do
+		if header:HasLoreEntries() then
+			table.insert(campaignHeaders, header);
+		end
+	end
+
+	if #campaignHeaders == 0 then
+		return;
+	end
+
+	-- sort the headers, want the helptip on the one closest to the top
+	table.sort(campaignHeaders, function(lhs, rhs)
+		return lhs.questLogIndex < rhs.questLogIndex;
+	end);
+
+	local top = self:GetTop();
+	local bottom = self:GetBottom();
+	for i, header in ipairs(campaignHeaders) do
+		if header:TryShowLoreHelpTip(top, bottom) then
+			-- helptip is showing, we're done
+			return;
+		end
+	end
+end
+
 function QuestLogScrollFrameMixin:ResizeBackground()
 	local atlasHeight = self.Background:GetHeight();
 	local frameHeight = self:GetHeight();
@@ -1373,7 +1414,7 @@ function QuestMapQuestOptions_TrackQuest(questID)
 		if C_QuestLog.GetNumQuestWatches() >= Constants.QuestWatchConsts.MAX_QUEST_WATCHES then
 			UIErrorsFrame:AddMessage(OBJECTIVES_WATCH_TOO_MANY, 1.0, 0.1, 0.1, 1.0);
 		else
-			C_QuestLog.AddQuestWatch(questID, Enum.QuestWatchType.Manual);
+			C_QuestLog.AddQuestWatch(questID);
 		end
 	end
 end
@@ -1605,23 +1646,13 @@ local function QuestLogQuests_BuildSingleQuestInfo(questLogIndex, questInfoConta
 
 		local isCampaign = info.campaignID ~= nil;
 		info.shouldDisplay = isCampaign and not QuestSearcher:IsActive(); -- Always display campaign headers (unless searching), the rest start as hidden
-		info.questSortType = QuestUtils_GetQuestSortType(info);
 	else
-		info.isCalling = C_QuestLog.IsQuestCalling(info.questID);
-		info.questSortType = QuestUtils_GetQuestSortType(info);
-
 		if lastHeader and not lastHeader.shouldDisplay then
 			lastHeader.shouldDisplay = QuestLogQuests_ShouldShowQuestButton(info);
 		end
 
 		-- Make it easy for a quest to look up its header
 		info.header = lastHeader;
-
-		-- Might as well just keep this in Lua
-		if info.isCalling and info.header then
-			info.header.isCalling = true;
-			info.header.questSortType = QuestUtils_GetQuestSortType(info.header);
-		end
 	end
 
 	return lastHeader;
@@ -1644,7 +1675,7 @@ local function QuestLogQuests_GetCampaignInfos(questInfoContainer)
 
 	-- questInfoContainer is sorted with all campaigns coming first
 	for index, info in ipairs(questInfoContainer) do
-		if info.questSortType == QuestSortType.Campaign then
+		if info.questClassification == Enum.QuestClassification.Campaign then
 			table.insert(infos, info);
 		else
 			break;
@@ -1658,7 +1689,7 @@ local function QuestLogQuests_GetCovenantCallingsInfos(questInfoContainer)
 	local infos = {};
 
 	for index, info in ipairs(questInfoContainer) do
-		if info.questSortType == QuestSortType.Calling then
+		if info.questClassification == Enum.QuestClassification.Calling then
 			table.insert(infos, info);
 		end
 	end
@@ -1666,11 +1697,17 @@ local function QuestLogQuests_GetCovenantCallingsInfos(questInfoContainer)
 	return infos;
 end
 
+local nonNormalQuestClassifications =
+{
+	[Enum.QuestClassification.Campaign] = true,
+	[Enum.QuestClassification.Calling] = true,
+};
+
 local function QuestLogQuests_GetQuestInfos(questInfoContainer)
 	local infos = {};
 
 	for index, info in ipairs(questInfoContainer) do
-		if info.questSortType == QuestSortType.Normal or info.questSortType == QuestSortType.Legendary then
+		if not nonNormalQuestClassifications[info.questClassification] then
 			table.insert(infos, info);
 		end
 	end
@@ -1687,7 +1724,7 @@ local function QuestLogQuests_GetBestTagID(questID, info)
 		return "FAILED";
 	end
 
-	if info.isCalling then
+	if info.questClassification == Enum.QuestClassification.Calling then
 		local secondsRemaining = C_TaskQuest.GetQuestTimeLeftSeconds(questID);
 		if secondsRemaining then
 			if secondsRemaining < 3600 then -- 1 hour
@@ -1729,8 +1766,6 @@ local function QuestLogQuests_AddQuestButton(displayState, info)
 	local isTracked = C_QuestLog.GetQuestWatchType(questID) ~= nil;
 	button.Checkbox.CheckMark:SetShown(isTracked);
 
-	local textWidth = 234;
-
 	-- tag. daily icon can be alone or before other icons except for COMPLETED or FAILED
 	local tagAtlas;
 	if C_QuestLog.IsAccountQuest(questID) then
@@ -1745,18 +1780,22 @@ local function QuestLogQuests_AddQuestButton(displayState, info)
 	if tagAtlas then
 		button.TagTexture:SetAtlas(tagAtlas, TextureKitConstants.UseAtlasSize);
 		button.TagTexture:SetDesaturated(C_QuestLog.IsQuestDisabledForSession(questID));
-		textWidth = textWidth - 18;
 	end
 
 	local classification = C_QuestInfoSystem.GetQuestClassification(questID);
 	local isQuestline = classification == Enum.QuestClassification.Questline;
 	button.StorylineTexture:SetShown(isQuestline);
-	if isQuestline then
-		textWidth = textWidth - 20;
+
+	button.StorylineTexture:ClearAllPoints();
+	if isQuestline and tagAtlas then
+		button.StorylineTexture:SetPoint("RIGHT", button.TagTexture, "LEFT", -2, 0);
+	elseif isQuestline then
+		button.StorylineTexture:SetPoint("RIGHT", button.Checkbox, "LEFT", -4, 0);
+	elseif tagAtlas then
+		button.StorylineTexture:SetPoint("LEFT", button.TagTexture, "LEFT", 0, 0);
+	else
+		button.StorylineTexture:SetPoint("LEFT", button.Checkbox, "LEFT", 0, 0);
 	end
-
-	button.Text:SetWidth(textWidth);
-
 
 	-- POI/objectives
 	local requiredMoney = C_QuestLog.GetRequiredMoney(questID);
@@ -1933,9 +1972,9 @@ local function QuestLogQuests_AddHeaderButton(displayState, info)
 	displayState.hasShownAnyHeader = true;
 
 	local button;
-	if info.questSortType == QuestSortType.Campaign then
+	if info.questClassification == Enum.QuestClassification.Campaign then
 		button = QuestLogQuests_AddCampaignHeaderButton(displayState, info);
-	elseif info.questSortType == QuestSortType.Calling then
+	elseif info.questClassification == Enum.QuestClassification.Calling then
 		button = QuestLogQuests_AddCovenantCallingsHeaderButton(displayState, info);
 	else
 		button = QuestLogQuests_AddStandardHeaderButton(displayState, info);
@@ -2037,6 +2076,8 @@ function QuestLogQuests_Update()
 	QuestScrollFrame:UpdateBackground(displayState);
 	QuestScrollFrame.Contents:SelectButtonByQuestID(C_SuperTrack.GetSuperTrackedQuestID());
 	QuestScrollFrame.Contents:Layout();
+
+	QuestScrollFrame:CheckHelpTips();
 end
 
 function ToggleQuestLog()

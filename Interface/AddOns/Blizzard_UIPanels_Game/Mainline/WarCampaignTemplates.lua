@@ -339,32 +339,13 @@ function CampaignHeaderMixin:HasLoreEntries()
 	return self.hasLoreEntries;
 end
 
-function CampaignHeaderMixin:UpdateLoreButtonVisibility()
-	local showLore = self:HasLoreEntries();
-	self.LoreButton:SetShown(showLore);
-	self:SetDrawLayerEnabled("HIGHLIGHT", mouseOver);
-
-	if showLore then
-		self:CheckShowLoreTutorial();
+function CampaignHeaderMixin:TryShowLoreHelpTip(boundsTop, boundsBottom)
+	if self.LoreButton:GetTop() > boundsTop then
+		return false;
 	end
-end
 
-local function UnlockLoreButtonFromHelpTip(acknowledged, campaignHeader)
-	campaignHeader:SetLoreButtonLocked(false);
-	campaignHeader:UpdateLoreButtonVisibility();
-end
-
-function CampaignHeaderMixin:SetLoreButtonLocked(locked)
-	self.loreButtonLocked = locked;
-end
-
-function CampaignHeaderMixin:IsLoreButtonLocked()
-	return self.loreButtonLocked;
-end
-
-function CampaignHeaderMixin:CheckShowLoreTutorial()
-	if HelpTip:IsShowing(QuestScrollFrame, CAMPAIGN_LORE_BUTTON_HELPTIP) then
-		return;
+	if self.LoreButton:GetBottom() < boundsBottom then
+		return false;
 	end
 
 	local helpTipInfo =
@@ -375,13 +356,19 @@ function CampaignHeaderMixin:CheckShowLoreTutorial()
 		cvarBitfield = "closedInfoFrames",
 		bitfieldFlag = LE_FRAME_TUTORIAL_CAMPAIGN_LORE_TEXT,
 		checkCVars = true,
-		onHideCallback = UnlockLoreButtonFromHelpTip,
 		callbackArg = self,
-		system = "LoreTextButton",
 	};
 
-	if HelpTip:Show(QuestScrollFrame, helpTipInfo, self.LoreButton) then
-		self:SetLoreButtonLocked(true);
+	return HelpTip:Show(QuestScrollFrame, helpTipInfo, self.LoreButton);
+end
+
+function CampaignHeaderMixin:UpdateLoreButtonVisibility()
+	local showLore = self:HasLoreEntries();
+	self.LoreButton:SetShown(showLore);
+	self:SetDrawLayerEnabled("HIGHLIGHT", mouseOver);
+
+	if showLore and self:IsShown() then
+		QuestScrollFrame:CheckHelpTips();
 	end
 end
 

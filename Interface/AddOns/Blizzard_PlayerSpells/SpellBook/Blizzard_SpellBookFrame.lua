@@ -157,23 +157,30 @@ function SpellBookFrameMixin:SetMinimized(shouldBeMinimized)
 	local minimizedChanged = self.isMinimized ~= shouldBeMinimized;
 	if not self.isMinimized and shouldBeMinimized then
 		self.isMinimized = true;
+		self:SetWidth(self.minimizedWidth);
+
 		-- Collapse down to one paged view (ie left half of book)
-		self.PagedSpellsFrame.ViewFrames[1]:SetPoint("TOPLEFT", self.view1MinimizedXOffset, self.view1YOffset);
 		self.PagedSpellsFrame:SetViewsPerPage(1, true);
 		self.PagedSpellsFrame.ViewFrames[2]:Hide();
+
+		-- Minimizing requires shortening TopBar and adjusting the right UV to prevent it from looking squished.
+		self.TopBar:SetTexCoord(0, self.minimizedWidth / self.topBarFullWidth, 0, 1);
+		self.TopBar:SetWidth(self.minimizedWidth);
 
 		self.SearchBox:ClearAllPoints();
 		self.SearchBox:SetPoint("RIGHT", self.HidePassivesCheckButton, "LEFT", -15, 0);
 		self.SearchBox:SetPoint("LEFT", self.CategoryTabSystem, "RIGHT", 10, 10);
-
-		self:SetWidth(self.minimizedWidth);
 	elseif self.isMinimized and not shouldBeMinimized then
 		self.isMinimized = false;
 		self:SetWidth(self.maximizedWidth);
+
 		-- Expand back up to two paged views (ie whole book)
 		self.PagedSpellsFrame.ViewFrames[2]:Show();
-		self.PagedSpellsFrame.ViewFrames[1]:SetPoint("TOPLEFT", self.view1MaximizedXOffset, self.view1YOffset);
 		self.PagedSpellsFrame:SetViewsPerPage(2, true);
+
+		-- Maximizing requires lenghtening TopBar and adjusting the right UV to prevent it from looking stretched.
+		self.TopBar:SetTexCoord(0, self.maximizedWidth / self.topBarFullWidth, 0, 1);
+		self.TopBar:SetWidth(self.maximizedWidth);
 
 		self.SearchBox:ClearAllPoints();
 		self.SearchBox:SetPoint("RIGHT", self.HidePassivesCheckButton, "LEFT", -30, 0);

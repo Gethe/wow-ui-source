@@ -242,7 +242,13 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 
 		local tooltipFunc = GenerateClosure(Settings.InitTooltip, name, tooltip);
 		containerFrame:SetTooltipFunc(tooltipFunc);
+
+		local function OnSettingValueChanged(o, setting, value)
+			control.Dropdown:GenerateMenu();
 		end
+
+		self.cbrHandles:SetOnValueChangedCallback(setting:GetVariable(), OnSettingValueChanged);
+	end
 
 
 	local function InitControlSlider(containerFrame, setting, name, tooltip, options)
@@ -285,7 +291,7 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 			end
 
-			containerFrame.SliderWithSteppers:SetEnabled_(value);
+			containerFrame.SliderWithSteppers:SetEnabled(value);
 		end
 
 		local cbInitTooltip = GenerateClosure(Settings.InitTooltip, cbName, cbTooltip);
@@ -467,7 +473,9 @@ local function Register()
 		local function GetOptions()
 			local container = Settings.CreateControlTextContainer();
 
-			for index = 1, GetMonitorCount() do
+			container:Add(DEFAULT_MONITOR_VALUE, VIDEO_OPTIONS_MONITOR_PRIMARY); -- index 0 is a fake monitor for defaulting to the primary monitor
+
+			for index = 2, GetMonitorCount() do
 				local value = index - 1;
 				local label, isPrimary = GetMonitorName(index);
 				if (not label) then 

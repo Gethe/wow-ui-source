@@ -154,7 +154,7 @@ function ObjectPoolMixin:EnumerateActive()
 end
 
 function ObjectPoolMixin:GetNextActive(current)
-	return next(activeObjects, current);
+	return next(self.activeObjects, current);
 end
 
 function ObjectPoolMixin:IsActive(object)

@@ -332,6 +332,19 @@ local unspentPointsHelpTipInfo =
 	onAcknowledgeCallback = function() ProfessionsFrame.unspentPointsHelptipAcknowledged = true; end,
 };
 
+local npcCraftingOrdersHelpTipInfo =
+{
+	text = PROFESSIONS_CRAFTING_ORDERS_NPC_HELPTIP,
+	buttonStyle = HelpTip.ButtonStyle.Close,
+	targetPoint = HelpTip.Point.TopEdgeCenter,
+	alignment = HelpTip.Alignment.Center,
+	offsetX = 0,
+	cvarBitfield = "closedInfoFramesAccountWide",
+	bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_NPC_CRAFTING_ORDERS,
+	checkCVars = true,
+	system = helptipSystemName,
+};
+
 function ProfessionsMixin:SetTab(tabID, forcedOpen)
 	if self.changingTabs then
 		return;
@@ -355,6 +368,7 @@ function ProfessionsMixin:SetTab(tabID, forcedOpen)
 	StaticPopup_Hide("PROFESSIONS_SPECIALIZATION_CONFIRM_CLOSE");
 
 	local tabAlreadyShown = (tabID == previousTab);
+	local specHelpTipShown = false;
 
 	HelpTip:HideAllSystem(helptipSystemName);
 	if (hasUnlockableTab or hasPendingSpecChanges) and specTabEnabled then
@@ -380,8 +394,16 @@ function ProfessionsMixin:SetTab(tabID, forcedOpen)
 			end
 			if helpTipInfo then
 				HelpTip:Show(specializationTab, helpTipInfo, specializationTab);
+				specHelpTipShown = true;
 			end
 		end
+	end
+
+	if isCraftingOrderTab then
+		SetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_NPC_CRAFTING_ORDERS, true);
+	elseif not specHelpTipShown then
+		local craftingOrderTab = self:GetTabButton(self.craftingOrdersTabID);
+		HelpTip:Show(craftingOrderTab, npcCraftingOrdersHelpTipInfo, craftingOrderTab);
 	end
 
 	local selectedPage = self:GetElementsForTab(tabID)[1];

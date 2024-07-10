@@ -797,8 +797,7 @@ function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style)
 	-- items
 	local showRetrievingData = false;
 	local numQuestRewards = GetNumQuestLogRewards(questID);
-	local numCurrencyRewards = GetNumQuestLogRewardCurrencies(questID);
-	if numQuestRewards > 0 and (not style.prioritizeCurrencyOverItem or numCurrencyRewards == 0) then
+	if numQuestRewards > 0 and (not style.prioritizeCurrencyOverItem or C_QuestInfoSystem.HasQuestRewardCurrencies(questID)) then
 		if style.fullItemDescription then
 			-- we want to do a full item description
 			local itemIndex, rewardType = QuestUtils_GetBestQualityItemRewardIndex(questID);  -- Only support one item reward currently
@@ -854,18 +853,17 @@ end
 
 --currencyContainerTooltip should be an InternalEmbeddedItemTooltipTemplate
 function QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, currencyContainerTooltip)
-	local numQuestCurrencies = GetNumQuestLogRewardCurrencies(questID);
 	local currencies = { };
 	local uniqueCurrencyIDs = { };
-	for i = 1, numQuestCurrencies do
-		local name, texture, numItems, currencyID = GetQuestLogRewardCurrencyInfo(i, questID);
-		local rarity = C_CurrencyInfo.GetCurrencyInfo(currencyID).quality;
-		local firstInstance = not uniqueCurrencyIDs[currencyID];
+	local currencyRewards = C_QuestLog.GetQuestRewardCurrencies(questID);
+	for index, currencyReward in ipairs(currencyRewards) do
+		local rarity = C_CurrencyInfo.GetCurrencyInfo(currencyReward.currencyID).quality;
+		local firstInstance = not uniqueCurrencyIDs[currencyReward.currencyID];
 		if firstInstance then
-			uniqueCurrencyIDs[currencyID] = true;
+			uniqueCurrencyIDs[currencyReward.currencyID] = true;
 		end
-		local currencyInfo = { name = name, texture = texture, numItems = numItems, currencyID = currencyID, rarity = rarity, firstInstance = firstInstance };
-		if(currencyID ~= ECHOS_OF_NYLOTHA_CURRENCY_ID or numQuestCurrencies == 1) then
+		local currencyInfo = { name = currencyReward.name, texture = currencyReward.texture, numItems = currencyReward.totalRewardAmount, currencyID = currencyReward.currencyID, rarity = rarity, firstInstance = firstInstance };
+		if(currencyInfo.currencyID ~= ECHOS_OF_NYLOTHA_CURRENCY_ID or #currencyRewards == 1) then
 			tinsert(currencies, currencyInfo);
 		end
 	end
@@ -1005,47 +1003,21 @@ function QuestUtils_IsQuestWatched(questID)
 	return questID and C_QuestLog.GetQuestWatchType(questID) ~= nil;
 end
 
-QuestSortType = EnumUtil.MakeEnum( "Normal", "Campaign", "Calling", "Legendary", "Threat", "BonusObjective", "WorldQuest", "Important", "Daily", "Meta" );
-
-function QuestUtils_GetQuestSortType(questInfo)
-	if questInfo.isCalling then
-		return QuestSortType.Calling;
-	elseif questInfo.isLegendarySort then
-		return QuestSortType.Legendary;
-	elseif questInfo.campaignID and questInfo.campaignID > 0 then
-		if not C_CampaignInfo.SortAsNormalQuest(questInfo.campaignID) then
-			return QuestSortType.Campaign;
-		end
-	end
-
-	return QuestSortType.Normal;
-end
-
--- This should be unified with QuestUtils_GetQuestSortType, or completely implemented in the C++ API
-function QuestUtils_GetTaskSortType(taskInfo)
-	local questID = taskInfo.questID or taskInfo.questId;
-
-	if C_QuestLog.IsWorldQuest(questID) then
-		return QuestSortType.WorldQuest;
-	elseif C_QuestLog.IsThreatQuest(questID) then
-		return QuestSortType.Threat;
-	elseif C_QuestLog.IsQuestCalling(questID) then
-		return QuestSortType.Calling;
-	elseif C_QuestLog.IsImportantQuest(questID) then
-		return QuestSortType.Important;
-	elseif QuestUtil.ShouldQuestIconsUseCampaignAppearance(questID) then
-		return QuestSortType.Campaign; -- NOTE: This is different than the logic above which is only used to display quests in the log, should be unified somehow.
-	elseif taskInfo.isDaily then
-		return QuestSortType.Daily;
-	elseif taskInfo.isMeta then
-		return QuestSortType.Meta;
-	elseif taskInfo.isQuestStart then
-		return QuestSortType.Normal;
-	end
-
-	return QuestSortType.BonusObjective;
-end
-
 function QuestUtil.IsFrequencyRecurring(frequency)
 	return frequency == Enum.QuestFrequency.Daily or frequency == Enum.QuestFrequency.Weekly or frequency == Enum.QuestFrequency.ResetByScheduler;
+end
+
+-- This determines the alpha of quest icons when a quest giver has a list of available quests
+function QuestUtil.GetAvailableQuestIconAlpha(questID)
+	local questIgnoresAccountCompletedFilter = C_QuestLog.QuestIgnoresAccountCompletedFiltering(questID);
+	-- We're making an assumption here:
+	-- If you're talking to an NPC with an available quest, then the map you're currently on is the correct map for the quest line (if the quest has one)
+	local questLineInfo = C_QuestLine.GetQuestLineInfo(C_Map.GetBestMapForUnit("player"), questID);
+	local questLineIgnoresAccountCompletedFilter = questLineInfo and C_QuestLine.QuestLineIgnoresAccountCompletedFiltering(questLineInfo.questLineID) or false;
+	local isQuestAccountFiltered = not C_Minimap.IsTrackingAccountCompletedQuests() and not questIgnoresAccountCompletedFilter and not questLineIgnoresAccountCompletedFilter;
+	if C_QuestLog.IsQuestFlaggedCompletedOnAccount(questID) and isQuestAccountFiltered then
+		return 0.5;
+	end
+
+	return 1.0;
 end

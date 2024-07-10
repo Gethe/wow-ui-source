@@ -1186,7 +1186,7 @@ function ProfessionsCraftingPageMixin:UpdateTutorial()
 	local details = self.SchematicForm.Details;
 	local detailsShown = details:IsShown();
 	local qualityMeter = self.SchematicForm.Details.QualityMeter;
-	local finishingReagents = self.SchematicForm.Details.FinishingReagentSlotContainer;
+	local finishingReagents = self.SchematicForm.Details.CraftingChoicesContainer.FinishingReagentSlotContainer;
 	if detailsShown and qualityMeter:IsShown() then
 		local qualityMeterTopPoint = qualityMeter:GetTop() - self:GetTop() + 14;
 		local qualityMeterLeftPoint = qualityMeter:GetLeft() - self:GetLeft() - 7;
@@ -1224,8 +1224,8 @@ function ProfessionsCraftingPageMixin:UpdateTutorial()
 
 	if detailsShown and finishingReagents:IsShown() then
 		local finishingReagentsTopPoint = finishingReagents:GetTop() - self:GetTop();
-		local finishingReagentsLeftPoint = finishingReagents:GetLeft() - self:GetLeft() + 50;
-		local width = 150;
+		local finishingReagentsLeftPoint = finishingReagents:GetLeft() - self:GetLeft() - 5;
+		local width = 130;
 		local finishingReagentsSection =
 		{
 			ButtonPos = { x = finishingReagentsLeftPoint + width - 25, y = finishingReagentsTopPoint - 30 },

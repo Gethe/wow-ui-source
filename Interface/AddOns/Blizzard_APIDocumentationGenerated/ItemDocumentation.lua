@@ -249,6 +249,21 @@ local Item =
 			},
 		},
 		{
+			Name = "GetDelvePreviewItemLink",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false },
+				{ Name = "context", Type = "ItemCreationContext", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemLink", Type = "string", Nilable = true },
+			},
+		},
+		{
 			Name = "GetDetailedItemLevelInfo",
 			Type = "Function",
 

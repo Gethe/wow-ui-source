@@ -57,6 +57,9 @@ function CharacterSelectListMixin:OnEvent(event, ...)
 				frame.characterInfo.realmName = realmName;
 			end
 		end);
+
+		-- Update VAS tokens, in case not having a realm had the token disabled.
+		CharacterServicesMaster_UpdateServiceButton();
 	elseif event == "CHARACTER_LIST_UPDATE" then
 		CharacterLoginUtil.EvaluateNewAlliedRaces();
 		self:EvaluateCreateCharacterNewState();
@@ -438,6 +441,10 @@ function CharacterSelectListMixin:UpdateCharacterSelection()
 	self.ScrollBox.dragBehavior:SetDragEnabled(CharacterSelectListUtil.CanReorder());
 
 	CharacterSelect_UpdateButtonState();
+end
+
+function CharacterSelectListMixin:ClearCharacterSelection()
+	self.ScrollBox:SetDataProvider(CreateDataProvider());
 end
 
 function CharacterSelectListMixin:ScrollToCharacter(characterGUID)

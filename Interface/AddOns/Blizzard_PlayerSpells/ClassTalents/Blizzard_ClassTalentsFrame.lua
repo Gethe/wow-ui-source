@@ -1556,6 +1556,10 @@ function ClassTalentsFrameMixin:OnHeroSpecSelectionClosed()
 	self:UpdateConfigButtonsState();
 end
 
+function ClassTalentsFrameMixin:IsHeroSpecActive(subTreeID)
+	return self.HeroTalentsContainer:IsHeroSpecActive(subTreeID);
+end
+
 function ClassTalentsFrameMixin:IsPreviewingSubTree(subTreeID)
 	return self.HeroTalentsContainer:IsPreviewingSubTree(subTreeID);
 end

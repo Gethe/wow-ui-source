@@ -33,7 +33,7 @@ function UIWidgetTemplateUnitPowerBarMixin:Setup(widgetInfo, widgetContainer)
 	self.fillTotalWidth = self.Fill:GetWidth();
 	self.fillWidth = self.fillTotalWidth - (self.insetAmount * 2);
 
-	UIWidgetBaseStatusBarTemplateMixin.Setup(self, widgetContainer, widgetInfo);
+	UIWidgetBaseStatusBarTemplateMixin.Setup(self, widgetContainer, widgetInfo, widgetInfo.tooltipLoc);
 
 	self:Layout();
 end

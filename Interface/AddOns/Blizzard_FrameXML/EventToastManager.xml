@@ -84,11 +84,6 @@
 						<Anchor point="LEFT" y="-2"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="middleName" inherits="GameFontNormalLarge" justifyH="LEFT">
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="10" y="0"/>
-					</Anchors>
-				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
@@ -571,6 +566,24 @@
 						<Anchor point="TOP" relativeKey="$parent.SubTitle" relativePoint="BOTTOM" x="0" y="0"/>
 					</Anchors>
 				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="EventToastManagerSingleLineWithIconTemplate" mixin="EventToastManagerSingleLineWithIconMixin" inherits="EventToastManagerFrameTemplateNormal" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size x="24" y="24"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Title" inherits="GameFontNormalHuge" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT"  relativeKey="$parent.Icon" relativePoint="RIGHT" x="10" />
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers>
 	</Frame>

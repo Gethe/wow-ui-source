@@ -223,7 +223,11 @@
 
 	<Frame name="ScenarioObjectiveTracker" mixin="ScenarioObjectiveTrackerMixin" inherits="ObjectiveTrackerModuleTemplate">
 		<Frames>
-			<Frame parentKey="ObjectivesBlock" parentArray="FixedBlocks" inherits="ObjectiveTrackerBlockTemplate" hidden="true"/>
+			<Frame parentKey="ObjectivesBlock" parentArray="FixedBlocks" inherits="ObjectiveTrackerBlockTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="offsetX" value="32" type="number"/>
+				</KeyValues>
+			</Frame>
 			<Frame parentKey="StageBlock" mixin="ScenarioObjectiveTrackerStageMixin" parentArray="FixedBlocks" hidden="true">
 				<Size x="201" y="83"/>
 				<KeyValues>
@@ -238,7 +242,7 @@
 						</Texture>
 					</Layer>
 					<Layer level="BORDER">
-						<Texture parentKey="FinalBG" atlas="evergreen-scenario-trackertoast-final-filigree" useAtlasSize="true">
+						<Texture parentKey="FinalBG" atlas="evergreen-scenario-trackerheader-final-filigree" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="TOPLEFT" x="-10" y="3"/>
 							</Anchors>

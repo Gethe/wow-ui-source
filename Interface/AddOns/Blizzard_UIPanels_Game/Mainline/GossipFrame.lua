@@ -34,18 +34,9 @@ end
 
 GossipAvailableQuestButtonMixin = CreateFromMixins(GossipSharedAvailableQuestButtonMixin);
 
-local function GetAvailableQuestIconAlpha(questInfo)
-	local isQuestAccountFiltered = C_QuestLog.IsQuestFlaggedCompletedOnAccount(questInfo.questID) and not C_Minimap.IsTrackingAccountCompletedQuests();
-	if isQuestAccountFiltered then
-		return 0.5;
-	end
-
-	return 1.0;
-end
-
 function GossipAvailableQuestButtonMixin:Setup(questInfo)
 	QuestUtil.ApplyQuestIconOfferToTextureForQuestID(self.Icon, questInfo.questID, questInfo.isLegendary, questInfo.frequency, questInfo.isRepeatable, questInfo.isImportant, questInfo.isMeta);
-	self.Icon:SetAlpha(GetAvailableQuestIconAlpha(questInfo));
+	self.Icon:SetAlpha(QuestUtil.GetAvailableQuestIconAlpha(questInfo.questID));
 	GossipSharedAvailableQuestButtonMixin.Setup(self, questInfo);
 end
 

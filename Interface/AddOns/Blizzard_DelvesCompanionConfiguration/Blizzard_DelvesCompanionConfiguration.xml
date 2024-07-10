@@ -91,7 +91,7 @@
             </Frame>
             <Frame parentKey="OptionsList" inherits="CompanionConfigListTemplate" mixin="CompanionConfigSlotOptionsListMixin" hidden="true">
                 <Anchors>
-                    <Anchor point="TOP" relativeKey="$parent.Texture" relativePoint="CENTER" x="-2" y="-20"/>
+                    <Anchor point="TOP" relativeKey="$parent.Texture" relativePoint="BOTTOM" x="-2" y="-1"/>
                 </Anchors>
                 <Scripts>
                     <OnShow method="OnShow"/>

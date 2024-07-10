@@ -498,7 +498,7 @@ function ScenarioObjectiveTrackerStageMixin:UpdateStageBlock(scenarioID, scenari
 		self.NormalBG:SetPoint("TOPLEFT", 0, 0);
 	else
 		self.Stage:SetTextColor(1, 0.914, 0.682);
-		self.NormalBG:SetAtlas("evergreen-scenario-trackertoast", true);
+		self.NormalBG:SetAtlas("evergreen-scenario-trackerheader", true);
 		self.NormalBG:SetPoint("TOPLEFT", -7, 3);
 	end
 	
@@ -952,8 +952,9 @@ function ScenarioTrackerProgressBarMixin:OnGet(isNew, criteriaIndex)
 				texture = icon or "Interface\\Icons\\INV_Misc_QuestionMark";
 			end
 			-- currency
-			if not texture and GetNumQuestLogRewardCurrencies(rewardQuestID) > 0 then
-				_, texture = GetQuestLogRewardCurrencyInfo(1, rewardQuestID);
+			local questRewardCurrencies = C_QuestInfoSystem.GetQuestRewardCurrencies(questID);
+			if not texture and #questRewardCurrencies > 0 then
+				texture = questRewardCurrencies[1].texture;
 			end
 			-- money?
 			if not texture and GetQuestLogRewardMoney(rewardQuestID) > 0 then

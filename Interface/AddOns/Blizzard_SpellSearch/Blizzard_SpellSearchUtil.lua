@@ -147,3 +147,9 @@ function SpellSearchUtil.GetActionBarStatusForTraitNodeEntry(talentEntryID, tale
 
 	return SpellSearchUtil.GetActionbarStatusForSpell(spellID);
 end
+
+function SpellSearchUtil.IsActionBarMatchType(matchType)
+	return matchType == SpellSearchUtil.MatchType.NotOnActionBar
+		or matchType == SpellSearchUtil.MatchType.OnInactiveBonusBar
+		or matchType == SpellSearchUtil.MatchType.OnDisabledActionBar;
+end

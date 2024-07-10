@@ -336,14 +336,47 @@ end
 
 ProfessionsCrafterTableCellCommissionMixin = CreateFromMixins(TableBuilderCellMixin);
 
+local function OrderRewardFrameReset(pool, frame)
+	frame.Reward:Reset();
+	frame:ClearAllPoints();
+	frame:Hide();
+	frame:SetParent(nil);
+end
+local orderRewardFramePool = CreateFramePool("FRAME", nil, "ProfessionsCrafterOrderRewardTooltipTemplate", OrderRewardFrameReset);
+
 function ProfessionsCrafterTableCellCommissionMixin:Populate(rowData, dataIndex)
 	local order = rowData.option;
 	self.TipMoneyDisplayFrame:SetAmount(order[self.tipKey]);
 
-	if order.npcOrderRewards then
-		self.RewardIcon:SetShown(#order.npcOrderRewards > 0);
-	else 
-		self.RewardIcon:SetShown(false);
+	local hasRewards = order.npcOrderRewards and #order.npcOrderRewards > 0;
+	self.RewardIcon:SetShown(hasRewards);
+
+	if hasRewards then
+		local function ShowOrderRewardTooltip()
+			self:GetParent().HighlightTexture:Show();
+
+			for idx, reward in ipairs(order.npcOrderRewards) do
+				local orderRewardFrame = orderRewardFramePool:Acquire();
+				orderRewardFrame:SetReward(reward);
+				orderRewardFrame.layoutIndex = idx;
+				orderRewardFrame:SetParent(self.RewardsContainer);
+				orderRewardFrame:Show();
+			end
+
+			self.RewardsContainer:Layout();
+
+			GameTooltip:SetOwner(self.RewardIcon, "ANCHOR_BOTTOMRIGHT");
+			GameTooltip_InsertFrame(GameTooltip, self.RewardsContainer);
+			
+			GameTooltip:Show();
+		end
+
+		self.RewardIcon:SetScript("OnEnter", ShowOrderRewardTooltip);
+		self.RewardIcon:SetScript("OnLeave", function()
+			self:GetParent().HighlightTexture:Hide();
+			GameTooltip:Hide();
+			orderRewardFramePool:ReleaseAll();
+		end);
 	end
 end
 

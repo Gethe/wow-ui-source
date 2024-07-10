@@ -51,10 +51,7 @@ function DelvesDifficultyPickerFrameMixin:OnLoad()
 		allowOtherPanels = 1,
 	};
 	RegisterUIPanel(self, panelAttributes);
-
 	self.Dropdown:SetWidth(130);
-
-	CustomGossipFrameBaseMixin.OnLoad(self);
 end
 
 function DelvesDifficultyPickerFrameMixin:OnEvent(event, ...)
@@ -302,7 +299,7 @@ function DelvesDifficultyPickerFrameMixin:TryShow(textureKit)
 	self.Title:SetText(C_GossipInfo.GetText());
 	self.Description:SetText(C_GossipInfo.GetCustomGossipDescriptionString());
 	self:SetupOptions();
-	ShowUIPanel(self); 
+	ShowUIPanel(self);
 end 
 
 function DelvesDifficultyPickerFrameMixin:OnHide()

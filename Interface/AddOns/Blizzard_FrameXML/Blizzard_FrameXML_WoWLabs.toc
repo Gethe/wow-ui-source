@@ -26,7 +26,6 @@ TabardModelFrameMixin.lua
 WardrobeOutfits.xml
 Mainline\NavigationBar.lua
 Mainline\NavigationBar.xml
-FilterDropDown.lua
 UIErrorsFrame.xml
 Mainline\Sound.lua
 DeprecatedTemplates.lua

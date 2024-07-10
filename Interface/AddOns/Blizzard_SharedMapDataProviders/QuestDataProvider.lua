@@ -30,6 +30,7 @@ function QuestDataProviderMixin:RegisterEvents()
 	self:RegisterEvent("QUEST_LOG_UPDATE");
 	self:RegisterEvent("QUEST_WATCH_LIST_CHANGED");
 	self:RegisterEvent("QUEST_POI_UPDATE");
+	self:RegisterEvent("CVAR_UPDATE");
 
 	self:GetMap():RegisterCallback("SetFocusedQuestID", self.RefreshAllData, self);
 	self:GetMap():RegisterCallback("ClearFocusedQuestID", self.RefreshAllData, self);
@@ -44,6 +45,7 @@ function QuestDataProviderMixin:UnregisterEvents()
 	self:UnregisterEvent("QUEST_LOG_UPDATE");
 	self:UnregisterEvent("QUEST_WATCH_LIST_CHANGED");
 	self:UnregisterEvent("QUEST_POI_UPDATE");
+	self:UnregisterEvent("CVAR_UPDATE");
 
 	self:GetMap():UnregisterCallback("SetFocusedQuestID", self);
 	self:GetMap():UnregisterCallback("ClearFocusedQuestID", self);
@@ -119,11 +121,20 @@ function QuestDataProviderMixin:OnEvent(event, ...)
 		self:RefreshAllData();
 	elseif event == "QUEST_POI_UPDATE" then
 		self:RefreshAllData();
+	elseif event == "CVAR_UPDATE" then
+		local cvar, value = ...;
+		self:OnCVarUpdate(cvar, value);
 	end
 end
 
 function QuestDataProviderMixin:RemoveAllData()
 	self:GetMap():RemoveAllPinsByTemplate(self:GetPinTemplate());
+end
+
+function QuestDataProviderMixin:OnCVarUpdate(cvar, _value)
+	if cvar == "questPOI" then
+		self:RefreshAllData();
+	end
 end
 
 function QuestDataProviderMixin:RefreshAllData(fromOnShow)
@@ -291,7 +302,7 @@ function QuestPinMixin:OnMouseEnter()
 	end
 	GameTooltip:Show();
 	POIButtonHighlightManager:SetHighlight(questID);
-    EventRegistry:TriggerEvent("MapCanvas.QuestPin.OnEnter", questID);
+    EventRegistry:TriggerEvent("MapCanvas.QuestPin.OnEnter", self, questID);
     self:OnLegendPinMouseEnter();
 end
 

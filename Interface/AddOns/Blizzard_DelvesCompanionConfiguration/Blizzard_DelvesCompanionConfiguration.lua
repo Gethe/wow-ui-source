@@ -3,14 +3,12 @@
 local DELVES_SUPPLIES_CREATURE_ID = 207283;
 local DELVES_SUPPLIES_MAX_DISTANCE = 10;
 
-local SET_SEEN_CURIOS_DELAY = 0.2; -- 200ms
-local REFRESH_SEEN_CURIOS_DELAY = 0.5 -- 500ms
+local SET_SEEN_CURIOS_DELAY = 0.5; -- 500ms
 
 local COMPANION_CONFIG_ON_SHOW_EVENTS = {
     "TRAIT_SYSTEM_NPC_CLOSED",
     "UPDATE_FACTION",
     "QUEST_LOG_UPDATE",
-    "UNIT_SPELLCAST_SUCCEEDED",
     "TRAIT_CONFIG_UPDATED",
 };
 
@@ -77,6 +75,8 @@ function DelvesCompanionConfigurationFrameMixin:OnLoad()
         whileDead = 0,
 	};
 	RegisterUIPanel(self, panelAttributes);
+    self:RegisterEvent("SHOW_DELVES_COMPANION_CONFIGURATION_UI");
+    self:RegisterEvent("DELVES_ACCOUNT_DATA_ELEMENT_CHANGED");
     self.unseenCuriosAcknowledged = false;
 end
 
@@ -91,14 +91,19 @@ function DelvesCompanionConfigurationFrameMixin:OnEvent(event)
     if self:IsShown() then
         if event == "TRAIT_SYSTEM_NPC_CLOSED" then
             HideUIPanel(self);
-        elseif event == "UPDATE_FACTION" or event == "TRAIT_CONFIG_UPDATED" then
+        elseif event == "UPDATE_FACTION" or event == "TRAIT_CONFIG_UPDATED" or event == "QUEST_LOG_UPDATE" then
             self:Refresh();
-        elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
-            C_Timer.After(REFRESH_SEEN_CURIOS_DELAY, function()
-                UnacknowledgeUnseenCurios();
-                self.CompanionCombatTrinketSlot:Refresh();
-                self.CompanionUtilityTrinketSlot:Refresh();
-            end);
+        elseif event == "DELVES_ACCOUNT_DATA_ELEMENT_CHANGED" then
+            UnacknowledgeUnseenCurios();
+            self.CompanionCombatTrinketSlot:Refresh();
+            self.CompanionUtilityTrinketSlot:Refresh();
+            AcknowledgeUnseenCurios();
+            self.CompanionCombatTrinketSlot:SetSeenCurios();
+            self.CompanionUtilityTrinketSlot:SetSeenCurios();
+        end
+    else
+        if event == "SHOW_DELVES_COMPANION_CONFIGURATION_UI" then
+            ShowUIPanel(self);
         end
     end
 end
@@ -111,10 +116,19 @@ function DelvesCompanionConfigurationFrameMixin:Refresh()
     DelvesCompanionConfigurationFrame.companionLevel = companionRankInfo and companionRankInfo.currentLevel or 0;
 
     local companionRepInfo = C_GossipInfo.GetFriendshipReputation(companionFactionID);
-    DelvesCompanionConfigurationFrame.companionExperienceInfo = {
-        currentExperience = companionRepInfo.standing - companionRepInfo.reactionThreshold,
-        nextLevelAt = companionRepInfo.nextThreshold - companionRepInfo.reactionThreshold,
-    };
+
+    if companionRepInfo.nextThreshold then
+        DelvesCompanionConfigurationFrame.companionExperienceInfo = {
+            currentExperience = companionRepInfo.standing - companionRepInfo.reactionThreshold,
+            nextLevelAt = companionRepInfo.nextThreshold - companionRepInfo.reactionThreshold,
+        };
+    else
+        -- If nextThreshold doesn't exist, we're at max level. Set both values to 1 so we show a full EXP bar
+        DelvesCompanionConfigurationFrame.companionExperienceInfo = {
+            currentExperience = 1,
+            nextLevelAt = 1,
+        };
+    end
 
     local companionFactionInfo = C_Reputation.GetFactionDataByID(companionFactionID);
     DelvesCompanionConfigurationFrame.companionInfo = {
@@ -314,6 +328,17 @@ function CompanionConfigSlotTemplateMixin:OnMouseDown()
     -- Slot is disabled if it hasn't been unlocked yet
     if not self:IsEnabled() then
         return;
+    end
+
+    -- TODO: Not supported currently, but being able to show spell subtext in chatlinks would be nice for showing curio ranks...
+    --       ...or being able to pass in a rarity color or something. Since we're stuck with the spellID and not the itemID
+    if IsModifiedClick("CHATLINK") and self:HasSelectionAndInfo() then
+        local selection = self.selectionNodeOptions[self.selectionNodeInfo.activeEntry.entryID];
+        if selection.spellID then
+            local curioSpellLink = C_Spell.GetSpellLink(selection.spellID);
+            ChatEdit_InsertLink(curioSpellLink);
+            return;
+        end
     end
 
     -- If slot enabled, make sure we can open it (not in combat, not too far away from supplies during delve)
@@ -550,7 +575,15 @@ end
 --[[ Config List Button ]]
 CompanionConfigListButtonMixin = {};
 
+-- TODO: Not supported currently, but being able to show spell subtext in chatlinks would be nice for showing curio ranks...
+--       ...or being able to pass in a rarity color or something. Since we're stuck with the spellID and not the itemID
 function CompanionConfigListButtonMixin:OnClick()
+    if IsModifiedClick("CHATLINK") and self.data and self.data.spellID then
+        local curioSpellLink = C_Spell.GetSpellLink(self.data.spellID);
+        ChatEdit_InsertLink(curioSpellLink);
+        return;
+    end
+
     if TrySelectTrait(self.data.configID, self.data.selectionNodeID, self.data.entryID) then
         PlaySound(SOUNDKIT.UI_CLASS_TALENT_NODE_SPEND_MAJOR);
         EventRegistry:TriggerEvent("CompanionConfigListButton.Commit");

@@ -51,7 +51,7 @@ function UIWidgetTemplateDoubleStateIconRowMixin:SetupIcons(widgetContainer, ico
 
 	for index, iconInfo in ipairs(icons) do
 		local iconFrame = self.iconPool:Acquire();
-		local iconShowing = iconFrame:Setup(widgetContainer, textureKit, textureKitFormatter..index, iconInfo);
+		local iconShowing = iconFrame:Setup(widgetContainer, textureKit, textureKitFormatter..index, iconInfo, tooltipLoc);
 
 		if iconShowing then
 			if previousIconFrame then
@@ -65,8 +65,6 @@ function UIWidgetTemplateDoubleStateIconRowMixin:SetupIcons(widgetContainer, ico
 			previousIconFrame = iconFrame;
 
 			biggestHeight = math.max(biggestHeight, iconFrame:GetHeight());
-
-			iconFrame:SetTooltipLocation(tooltipLoc);
 		end
 	end
 

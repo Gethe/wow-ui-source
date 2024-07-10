@@ -821,6 +821,31 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "UIWidgetOverrideState",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Inactive", Type = "UIWidgetOverrideState", EnumValue = 0 },
+				{ Name = "Active", Type = "UIWidgetOverrideState", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "UIWidgetRewardShownState",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Hidden", Type = "UIWidgetRewardShownState", EnumValue = 0 },
+				{ Name = "ShownEarned", Type = "UIWidgetRewardShownState", EnumValue = 1 },
+				{ Name = "ShownUnearned", Type = "UIWidgetRewardShownState", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "UIWidgetTextSizeType",
 			Type = "Enumeration",
 			NumValues = 9,
@@ -1347,7 +1372,6 @@ local UIWidgetManager =
 				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
 				{ Name = "modelSceneLayer", Type = "UIWidgetModelSceneLayer", Nilable = false },
 				{ Name = "scriptedAnimationEffectID", Type = "number", Nilable = false },
-				{ Name = "updateAnimType", Type = "UIWidgetUpdateAnimType", Nilable = false },
 			},
 		},
 		{
@@ -1494,9 +1518,13 @@ local UIWidgetManager =
 			{
 				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
 				{ Name = "headerText", Type = "string", Nilable = false },
+				{ Name = "tooltip", Type = "string", Nilable = false },
+				{ Name = "tooltipLoc", Type = "UIWidgetTooltipLocation", Nilable = false },
 				{ Name = "tierText", Type = "string", Nilable = false },
+				{ Name = "tierTooltipSpellID", Type = "number", Nilable = true },
 				{ Name = "currencies", Type = "table", InnerType = "UIWidgetCurrencyInfo", Nilable = false },
 				{ Name = "spells", Type = "table", InnerType = "UIWidgetSpellInfo", Nilable = false },
+				{ Name = "rewardInfo", Type = "UIWidgetRewardInfo", Nilable = false },
 				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
 				{ Name = "textureKit", Type = "textureKit", Nilable = false },
 				{ Name = "frameTextureKit", Type = "textureKit", Nilable = false },
@@ -1868,6 +1896,7 @@ local UIWidgetManager =
 				{ Name = "textSizeType", Type = "UIWidgetTextSizeType", Nilable = false },
 				{ Name = "textEnabledState", Type = "WidgetEnabledState", Nilable = false },
 				{ Name = "iconSizeType", Type = "WidgetIconSizeType", Nilable = false },
+				{ Name = "updateAnimType", Type = "UIWidgetUpdateAnimType", Nilable = false },
 			},
 		},
 		{
@@ -1912,6 +1941,18 @@ local UIWidgetManager =
 				{ Name = "itemNameTextSizeType", Type = "UIWidgetTextSizeType", Nilable = false },
 				{ Name = "infoTextFontType", Type = "UIWidgetFontType", Nilable = false },
 				{ Name = "infoTextSizeType", Type = "UIWidgetTextSizeType", Nilable = false },
+				{ Name = "itemNameCustomColor", Type = "WidgetEnabledState", Nilable = false },
+				{ Name = "itemNameCustomColorOverrideState", Type = "UIWidgetOverrideState", Nilable = false },
+			},
+		},
+		{
+			Name = "UIWidgetRewardInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "shownState", Type = "UIWidgetRewardShownState", Nilable = false },
+				{ Name = "earnedTooltip", Type = "string", Nilable = false },
+				{ Name = "unearnedTooltip", Type = "string", Nilable = false },
 			},
 		},
 		{

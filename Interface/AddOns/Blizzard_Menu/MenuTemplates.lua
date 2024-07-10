@@ -549,11 +549,11 @@ function DropdownSelectionTextMixin:OnLeave()
 	MenuUtil.HideTooltip(self);
 end
 
-WowDropdownFilterMixin = CreateFromMixins(DropdownButtonMixin);
+-- Inherited by dropdown buttons that require the reset button behavior. The reset button
+-- needs to be defined/created prior to the OnLoad call.
+WowDropdownFilterBehaviorMixin = {};
 
-function WowDropdownFilterMixin:OnLoad()
-	assert(self.ResetButton);
-
+function WowDropdownFilterBehaviorMixin:OnLoad()
 	self.ResetButton:SetScript("OnClick", function(button, buttonName, down)
 		if self.defaultCallback then
 			 self.defaultCallback();
@@ -563,66 +563,53 @@ function WowDropdownFilterMixin:OnLoad()
 	end);
 end
 
-function WowDropdownFilterMixin:OnShow()
+function WowDropdownFilterBehaviorMixin:OnShow()
 	self:ValidateResetState();
 end
 
 -- Callback to set all filters to default state.
-function WowDropdownFilterMixin:SetDefaultCallback(callback)
+function WowDropdownFilterBehaviorMixin:SetDefaultCallback(callback)
 	self.defaultCallback = callback;
 end
 
 -- Callback to return if the filters are in their default state.
-function WowDropdownFilterMixin:SetIsDefaultCallback(callback)
+function WowDropdownFilterBehaviorMixin:SetIsDefaultCallback(callback)
 	self.isDefaultCallback = callback;
 end
 
 -- Called in response to any menu option change. 
-function WowDropdownFilterMixin:SetUpdateCallback(callback)
+function WowDropdownFilterBehaviorMixin:SetUpdateCallback(callback)
 	self.notifyUpdateCallback = callback;
 end
 
-function WowDropdownFilterMixin:NotifyUpdate(description)
+function WowDropdownFilterBehaviorMixin:NotifyUpdate(description)
 	if self.notifyUpdateCallback then
 		self.notifyUpdateCallback(description);
 	end
 end
 
-function WowDropdownFilterMixin:OnMenuResponse(menu, description)
-	DropdownButtonMixin.OnMenuResponse(self, menu, description);
-
-	self:ValidateResetState();
-	self:NotifyUpdate(description);
-end
-
-function WowDropdownFilterMixin:OnMenuAssigned()
-	DropdownButtonMixin.OnMenuAssigned(self);
-
-	self:ValidateResetState();
-end
-
-function WowDropdownFilterMixin:OnMenuResponse(menu, description)
-	DropdownButtonMixin.OnMenuResponse(self, menu, description);
-
-	self:ValidateResetState();
-	self:NotifyUpdate(description);
-end
-
-function WowDropdownFilterMixin:Reset()
+function WowDropdownFilterBehaviorMixin:Reset()
 	self.ResetButton:Hide();
 end
 
-function WowDropdownFilterMixin:ValidateResetState()
+function WowDropdownFilterBehaviorMixin:ValidateResetState()
 	if self.isDefaultCallback then
 		self.ResetButton:SetShown(not self.isDefaultCallback());
 	end
 end
 
-WowStyle1DropdownMixin = CreateFromMixins(ButtonStateBehaviorMixin, DropdownSelectionTextMixin);
-
-function WowStyle1DropdownMixin:SetupMenu(generator)
-	DropdownButtonMixin.SetupMenu(self, generator);
+-- Call in derived
+function WowDropdownFilterBehaviorMixin:OnMenuResponse(menu, description)
+	self:ValidateResetState();
+	self:NotifyUpdate(description);
 end
+
+-- Call in derived
+function WowDropdownFilterBehaviorMixin:OnMenuAssigned()
+	self:ValidateResetState();
+end
+
+WowStyle1DropdownMixin = CreateFromMixins(DropdownButtonMixin, ButtonStateBehaviorMixin, DropdownSelectionTextMixin);
 
 function WowStyle1DropdownMixin:OnLoad()
 	ValidateIsDropdownButtonIntrinsic(self);
@@ -642,19 +629,29 @@ function WowStyle1DropdownMixin:OnButtonStateChanged()
 end
 
 --[[
-The standard "filter" dropdown style. It's text does not reflect the selected option(s) and
+The standard "filter" dropdown style. Its text does not reflect the selected option(s) and
 instead is generally initialized to fixed text.
 ]]--
-WowStyle1FilterDropdownMixin = CreateFromMixins(ButtonStateBehaviorMixin, DropdownTextMixin, WowDropdownFilterMixin);
+WowStyle1FilterDropdownMixin = CreateFromMixins(DropdownButtonMixin, ButtonStateBehaviorMixin, DropdownTextMixin, WowDropdownFilterBehaviorMixin);
 
 function WowStyle1FilterDropdownMixin:OnLoad()
 	ValidateIsDropdownButtonIntrinsic(self);
 	ButtonStateBehaviorMixin.OnLoad(self);
 	DropdownTextMixin.OnLoad(self);
-	WowDropdownFilterMixin.OnLoad(self);
+	WowDropdownFilterBehaviorMixin.OnLoad(self);
 
 	local x, y = 2, -1;
 	self:SetDisplacedRegions(x, y, self.Text);
+end
+
+function WowStyle1FilterDropdownMixin:OnMenuResponse(menu, description)
+	DropdownButtonMixin.OnMenuResponse(self, menu, description);
+	WowDropdownFilterBehaviorMixin.OnMenuResponse(self, menu, description);
+end
+
+function WowStyle1FilterDropdownMixin:OnMenuAssigned()
+	DropdownButtonMixin.OnMenuAssigned(self);
+	WowDropdownFilterBehaviorMixin.OnMenuAssigned(self);
 end
 
 function WowStyle1FilterDropdownMixin:OnButtonStateChanged()
@@ -666,11 +663,12 @@ A special style used in Settings and Character Creation/Customization. Note that
 contents (color swatches, icons, etc.) are not defined here but are instead added as a child
 within this template. See "WowStyle2DropdownTemplate" in Blizzard_CharacterCustomize.xml.
 ]]--
-WowStyle2DropdownMixin = CreateFromMixins(ButtonStateBehaviorMixin, DropdownSelectionTextMixin);
+WowStyle2DropdownMixin = CreateFromMixins(DropdownButtonMixin, ButtonStateBehaviorMixin, DropdownSelectionTextMixin, WowDropdownFilterBehaviorMixin);
 
 function WowStyle2DropdownMixin:OnLoad()
 	ButtonStateBehaviorMixin.OnLoad(self);
 	DropdownSelectionTextMixin.OnLoad(self);
+	WowDropdownFilterBehaviorMixin.OnLoad(self);
 
 	local x, y = 2, -1;
 	self:SetDisplacedRegions(x, y, self.Text);

@@ -699,7 +699,8 @@ do
 
 	function MenuElementDescriptionProxyMixin:SetOnEnter(onEnter)
 		if onEnter == nil then
-			return false;
+			self.onEnter = nil;
+			return;
 		end
 
 		self.onEnter = function(...)
@@ -709,7 +710,7 @@ do
 	
 	function MenuElementDescriptionProxyMixin:HookOnEnter(callback)
 		if self.onEnter then
-			hooksecurefunction(self, "onEnter", callback);
+			hooksecurefunc(self, "onEnter", callback);
 		else
 			self:SetOnEnter(callback);
 		end
@@ -731,7 +732,8 @@ do
 
 	function MenuElementDescriptionProxyMixin:SetOnLeave(onLeave)
 		if onLeave == nil then
-			return false;
+			self.onLeave = nil;
+			return;
 		end
 
 		self.onLeave = function(...)
@@ -741,7 +743,7 @@ do
 	
 	function MenuElementDescriptionProxyMixin:HookOnLeave(callback)
 		if self.onLeave then
-			hooksecurefunction(self, "onLeave", callback);
+			hooksecurefunc(self, "onLeave", callback);
 		else
 			self:SetOnLeave(callback);
 		end
@@ -797,7 +799,7 @@ do
 	
 	function MenuElementDescriptionProxyMixin:HookResponder(callback)
 		if self.responder then
-			hooksecurefunction(self, "responder", callback);
+			hooksecurefunc(self, "responder", callback);
 		else
 			self:SetResponder(callback);
 		end

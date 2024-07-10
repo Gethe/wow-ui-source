@@ -232,6 +232,7 @@ function PTR_IssueReporter.CreateReports()
         return returnValue
     end    
     
+    --[[
     local aiFollowerReport = PTR_IssueReporter.CreateSurvey(18, "Issue Report: %s")
     aiFollowerReport:PopulateDynamicTitleToken(1, "Name")
     aiFollowerReport:AttachModelViewer("ID")
@@ -251,6 +252,7 @@ function PTR_IssueReporter.CreateReports()
     aiGroupReport:SetButton("I have found an issue with an AI Follower.", PTR_IssueReporter.Assets.AIBotIcon)
     aiGroupReport:RegisterButtonEvent(event.AIBotsJoinedParty)
     aiGroupReport:RegisterButtonEventEnd(event.AIBotsLeftParty)
+    ]]--
     
     --------------------------------------- Quest Reporting -------------------------------------------
     local IsQuestDisabledFromQuestSync = function(dataPackage)

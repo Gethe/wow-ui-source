@@ -35,8 +35,7 @@ function UIWidgetTemplateTextureAndTextRowMixin:Setup(widgetInfo, widgetContaine
 	local animateEntries = {};
 	for index, entryInfo in ipairs(widgetInfo.entries) do
 		local entryFrame = self.entryPool:Acquire();
-		entryFrame:Setup(widgetContainer, entryInfo.text, entryInfo.tooltip, widgetInfo.frameTextureKit, widgetInfo.textureKit, widgetInfo.textSizeType, index);
-		entryFrame:SetTooltipLocation(widgetInfo.tooltipLoc);
+		entryFrame:Setup(widgetContainer, entryInfo.text, entryInfo.tooltip, widgetInfo.frameTextureKit, widgetInfo.textureKit, widgetInfo.textSizeType, index, widgetInfo.tooltipLoc);
 
 		if self.animationInfo then
 			if not self.lastShownEntries[index] then

@@ -30,7 +30,7 @@ function ItemUpgradeMixin:OnLoad()
 	self.Ring:SetPoint("CENTER", self.UpgradeButton, "CENTER", 0, 0);
 
 	self.Dropdown = self.ItemInfo.Dropdown;
-	self.Dropdown:SetMouseWheelEnabled(true);
+	self.Dropdown:EnableMouseWheel(true);
 end
 
 function ItemUpgradeMixin:OnShow()

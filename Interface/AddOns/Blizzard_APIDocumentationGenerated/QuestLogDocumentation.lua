@@ -17,7 +17,6 @@ local QuestLog =
 			Arguments =
 			{
 				{ Name = "questID", Type = "number", Nilable = false },
-				{ Name = "watchType", Type = "QuestWatchType", Nilable = true },
 			},
 
 			Returns =
@@ -411,7 +410,7 @@ local QuestLog =
 
 			Returns =
 			{
-				{ Name = "reputationRewards", Type = "table", InnerType = "QuestReputationRewardInfo", Nilable = false },
+				{ Name = "reputationRewards", Type = "table", InnerType = "QuestRewardReputationInfo", Nilable = false },
 			},
 		},
 		{
@@ -444,6 +443,36 @@ local QuestLog =
 			Returns =
 			{
 				{ Name = "objectives", Type = "table", InnerType = "QuestObjectiveInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetQuestRewardCurrencies",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "questRewardCurrencies", Type = "table", InnerType = "QuestRewardCurrencyInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetQuestRewardCurrencyInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+				{ Name = "currencyIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "isChoice", Type = "bool", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "questRewardCurrencyInfo", Type = "QuestRewardCurrencyInfo", Nilable = true },
 			},
 		},
 		{
@@ -1395,6 +1424,7 @@ local QuestLog =
 				{ Name = "frequency", Type = "QuestFrequency", Nilable = true },
 				{ Name = "isHeader", Type = "bool", Nilable = false },
 				{ Name = "useMinimalHeader", Type = "bool", Nilable = false },
+				{ Name = "sortAsNormalQuest", Type = "bool", Nilable = false },
 				{ Name = "isCollapsed", Type = "bool", Nilable = false },
 				{ Name = "startEvent", Type = "bool", Nilable = false },
 				{ Name = "isTask", Type = "bool", Nilable = false },
@@ -1407,10 +1437,10 @@ local QuestLog =
 				{ Name = "isAutoComplete", Type = "bool", Nilable = false },
 				{ Name = "overridesSortOrder", Type = "bool", Nilable = false },
 				{ Name = "readyForTranslation", Type = "bool", Nilable = false, Default = true },
-				{ Name = "isLegendarySort", Type = "bool", Nilable = false },
 				{ Name = "isInternalOnly", Type = "bool", Nilable = false },
 				{ Name = "isAbandonOnDisable", Type = "bool", Nilable = false },
 				{ Name = "headerSortKey", Type = "number", Nilable = true },
+				{ Name = "questClassification", Type = "QuestClassification", Nilable = false },
 			},
 		},
 		{

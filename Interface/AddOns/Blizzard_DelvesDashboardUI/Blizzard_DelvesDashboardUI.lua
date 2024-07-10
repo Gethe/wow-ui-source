@@ -49,7 +49,7 @@ function DelvesDashboardFrameMixin:OnShow()
 	self.renownInfo = C_MajorFactions.GetMajorFactionRenownInfo(C_DelvesUI.GetDelvesFactionForSeason());
 	self.rewardsInfo = self:GetRewardsInfo();
 
-    PVEFrame:SetPortraitToAsset("Interface\\ICONS\\INV_Cape_Special_Explorer_B_03");
+    PVEFrame:SetPortraitToAsset("Interface\\ICONS\\UI_Delves");
 	self:UpdateTitles();
 	self:SetThresholds();
 	self:UpdateGreatVaultVisibility();

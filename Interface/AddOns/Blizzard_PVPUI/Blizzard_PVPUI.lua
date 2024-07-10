@@ -1410,7 +1410,7 @@ function ConquestFrame_UpdateJoinButton()
 						break;
 					elseif ( UnitLevel(token..i) < maxLevel ) then
 						validGroup = false;
-						button.tooltip = PVP_NO_QUEUE_GROUP;
+						button.tooltip = QUEUE_UNAVAILABLE_PARTY_MIN_LEVEL:format(maxLevel);
 						break;
 					end
 				end
@@ -2249,12 +2249,10 @@ function PVPQuestRewardMixin:Init(questID)
 	local rewards = { };
 	rewards.currencyRewards = { };
 	local continuableContainer = ContinuableContainer:Create();
-	local numCurrencies = GetNumQuestLogRewardCurrencies(self.questID);
-	for i = 1, numCurrencies do
-		local name, texture, count, currencyID, quality = GetQuestLogRewardCurrencyInfo(i, questID);
+	for index, currencyReward in ipairs(C_QuestLog.GetQuestRewardCurrencies(self.questID)) do
 		local reward = { };
-		reward.texture = texture;
-		reward.quality = quality;
+		reward.texture = currencyReward.texture;
+		reward.quality = currencyReward.quality;
 		tinsert(rewards.currencyRewards, reward);
 	end
 

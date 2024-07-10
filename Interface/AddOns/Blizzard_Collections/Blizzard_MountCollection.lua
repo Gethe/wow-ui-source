@@ -14,6 +14,7 @@ local mountFilterTypeStrings = {
 	[Enum.MountType.Flying] = MOUNT_JOURNAL_FILTER_FLYING,
 	[Enum.MountType.Aquatic] = MOUNT_JOURNAL_FILTER_AQUATIC,
 	[Enum.MountType.Dragonriding] = MOUNT_JOURNAL_FILTER_DRAGONRIDING,
+	[Enum.MountType.RideAlong] = MOUNT_JOURNAL_FILTER_RIDEALONG,
 };
 
 StaticPopupDialogs["DIALOG_REPLACE_MOUNT_EQUIPMENT"] = {

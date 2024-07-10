@@ -185,13 +185,11 @@ function BonusObjectiveTrackerMixin:ShowRewardsToast(block, questID)
 		tinsert(rewards, t);
 	end
 	-- currencies
-	local numCurrencies = GetNumQuestLogRewardCurrencies(questID);
-	for i = 1, numCurrencies do
-		local name, texture, count = GetQuestLogRewardCurrencyInfo(i, questID);
+	for index, currencyReward in ipairs(C_QuestLog.GetQuestRewardCurrencies(questID)) do
 		local t = { };
-		t.label = name;
-		t.texture = texture;
-		t.count = count;
+		t.label = currencyReward.name;
+		t.texture = currencyReward.texture;
+		t.count = currencyReward.totalRewardAmount;
 		t.font = "GameFontHighlightSmall";
 		tinsert(rewards, t);
 	end
@@ -526,8 +524,9 @@ function BonusObjectiveTrackerProgressBarMixin:UpdateReward()
 			texture = icon or "Interface\\Icons\\INV_Misc_QuestionMark";
 		end
 		-- currency
-		if not texture and GetNumQuestLogRewardCurrencies(questID) > 0 then
-			_, texture = GetQuestLogRewardCurrencyInfo(1, questID);
+		local questRewardCurrencies = C_QuestInfoSystem.GetQuestRewardCurrencies(questID);
+		if not texture and #questRewardCurrencies > 0 then
+			texture = questRewardCurrencies[1].texture;
 		end
 		-- money?
 		if not texture and GetQuestLogRewardMoney(questID) > 0 then
@@ -645,7 +644,7 @@ function BonusObjectiveBlockMixin:TryShowRewardsTooltip()
 		end
 	end
 
-	if HaveQuestRewardData(questID) and GetQuestLogRewardXP(questID) == 0 and GetNumQuestLogRewardCurrencies(questID) == 0
+	if HaveQuestRewardData(questID) and GetQuestLogRewardXP(questID) == 0 and (not C_QuestInfoSystem.HasQuestRewardCurrencies(questID))
 								and GetNumQuestLogRewards(questID) == 0 and GetQuestLogRewardMoney(questID) == 0 and GetQuestLogRewardArtifactXP(questID) == 0 then
 		GameTooltip:Hide();
 		return;

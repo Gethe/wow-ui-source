@@ -19,7 +19,7 @@ function ObjectiveTrackerFrameMixin:OnEvent(event, ...)
 		local questID = ...;
 		if not C_QuestLog.IsQuestBounty(questID) and not C_QuestLog.IsQuestTask(questID) then
 			if GetCVarBool("autoQuestWatch") and C_QuestLog.GetNumQuestWatches() < Constants.QuestWatchConsts.MAX_QUEST_WATCHES then
-				C_QuestLog.AddQuestWatch(questID, Enum.QuestWatchType.Automatic);
+				C_QuestLog.AddQuestWatch(questID);
 			end
 		end
 	end

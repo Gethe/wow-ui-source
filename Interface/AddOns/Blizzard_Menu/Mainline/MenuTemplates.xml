@@ -49,7 +49,7 @@
 			<KeyValue key="resizeToTextPadding" type="number" value="60"/>
 		</KeyValues>
 		<Frames>
-			<Button parentKey="ResetButton" inherits="UIResetButtonTemplate">
+			<Button parentKey="ResetButton" inherits="UIResetButtonTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="CENTER" relativePoint="TOPRIGHT" x="-3" y="0"/>
 				</Anchors>

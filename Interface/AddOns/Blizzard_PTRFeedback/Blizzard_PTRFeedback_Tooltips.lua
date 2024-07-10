@@ -133,7 +133,7 @@ end
 function PTR_IssueReporter.SetupQuestTooltips()
     local function HookIntoQuestTooltip(sender, self, questID, isGroup)
         local title = C_QuestLog.GetTitleForQuestID(questID)
-        if (isGroup ~= null and not isGroup) then
+        if (isGroup ~= nil and not isGroup) then
             --If isGroup is null, that means the event always shows tooltip
             --If isGroup is a bool, it only shows a tooltip if true, so when false we must provide our own
             GameTooltip:ClearAllPoints()
