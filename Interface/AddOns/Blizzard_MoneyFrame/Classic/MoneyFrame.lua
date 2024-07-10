@@ -576,9 +576,9 @@ function MoneyFrame_AccumulateAlignmentWidths(frameName, widths)
 	end
 
 	local prefixFrame = _G[frameName.."PrefixText"];
-	local goldButton = self.GoldButton;
-	local silverButton = self.SilverButton;
-	local copperButton = self.CopperButton;
+	local goldButton = frame.GoldButton;
+	local silverButton = frame.SilverButton;
+	local copperButton = frame.CopperButton;
 
 	if (prefixFrame) then
 		widths.prefix = math.max(widths.prefix or 0, prefixFrame:GetWidth());
@@ -621,9 +621,9 @@ function MoneyFrame_UpdateAlignment(frameName, widths)
 	frame.alignMoneyWidth = widths.money;
 
 	local prefixFrame = _G[frameName.."PrefixText"];
-	local goldButton = self.GoldButton;
-	local silverButton = self.SilverButton;
-	local copperButton = self.CopperButton;
+	local goldButton = frame.GoldButton;
+	local silverButton = frame.SilverButton;
+	local copperButton = frame.CopperButton;
 
 	local update = false;
 
