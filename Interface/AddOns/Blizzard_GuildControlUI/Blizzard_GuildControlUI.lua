@@ -23,6 +23,9 @@ function GuildControlUI_OnLoad(self)
 	self.currentRank = 2;
 	GuildControlSetRank(2);
 	GuildControlUINavigationDropDown_OnSelect(nil, 1, GUILDCONTROL_GUILDRANKS);
+	if not C_GuildBank.IsGuildBankEnabled() then
+		GuildControlUIRankPermissions_HideGuildBankOptions(self);
+	end
 	self:RegisterEvent("GUILDBANK_UPDATE_TABS");
 end
 
@@ -464,12 +467,14 @@ function GuildControlUINavigationDropDown_Initialize()
 	info.checked = GuildControlUI.selectedTab == 2;
 	UIDropDownMenu_AddButton(info);
 	
-	info.text = GUILDCONTROL_BANK_PERMISSIONS;
-	info.arg1 = 3;
-	info.arg2 = GUILDCONTROL_BANK_PERMISSIONS;
-	info.func = GuildControlUINavigationDropDown_OnSelect;
-	info.checked = GuildControlUI.selectedTab == 3;
-	UIDropDownMenu_AddButton(info);
+	if C_GuildBank.IsGuildBankEnabled() then
+		info.text = GUILDCONTROL_BANK_PERMISSIONS;
+		info.arg1 = 3;
+		info.arg2 = GUILDCONTROL_BANK_PERMISSIONS;
+		info.func = GuildControlUINavigationDropDown_OnSelect;
+		info.checked = GuildControlUI.selectedTab == 3;
+		UIDropDownMenu_AddButton(info);
+	end
 end
 
 function GuildControlUIRankDropDown_Initialize(self)
@@ -494,4 +499,13 @@ function GuildControlUIRankDropDown_OnClick(self)
 	GuildControlUI.currentRank = self:GetID()+1; --igonre officer
 	GuildControlSetRank(GuildControlUI.currentRank);
 	GuildControlUI.rankUpdate(GuildControlUI.currFrame);
+end
+
+function GuildControlUIRankPermissions_HideGuildBankOptions(self)
+	GuildControlUIRankSettingsFrameBankBg:Hide();
+	GuildControlUIRankSettingsFrameBankLabel:Hide();
+	GuildControlUIRankSettingsFrameCheckbox15:Hide();
+	GuildControlUIRankSettingsFrameCheckbox16:Hide();
+	GuildControlUIRankSettingsFrameCheckbox19:Hide();
+	GuildControlUIRankSettingsFrameGoldBox:Hide();
 end

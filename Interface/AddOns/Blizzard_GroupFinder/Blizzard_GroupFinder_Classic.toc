@@ -3,7 +3,8 @@
 ## DefaultState: enabled
 ## Dependencies: Blizzard_GameTooltip, Blizzard_UIPanelTemplates
 ## AllowLoad: game
-## AllowLoadGameType: classic
+## AllowLoadGameType: tbc, wrath, cata
+Classic\Constants.lua
 Classic\QueueUpdater.lua
 Classic\PVEFrame.lua
 Classic\PVEFrame.xml

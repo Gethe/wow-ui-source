@@ -668,6 +668,10 @@ function FCF_SetTemporaryWindowType(chatFrame, chatType, chatTarget)
 		chatFrame.isRegistered = false;
 	end
 
+	--Set up the window to receive the message types we want.
+	chatFrame.chatType = chatType;
+	chatFrame.chatTarget = chatTarget;
+
 	--Set the title text
 	local name;
 	if ( chatType == "WHISPER" or chatType == "BN_WHISPER" ) then
@@ -676,11 +680,6 @@ function FCF_SetTemporaryWindowType(chatFrame, chatType, chatTarget)
 		name = PET_BATTLE_COMBAT_LOG;
 	end
 	FCF_SetWindowName(chatFrame, name);
-
-
-	--Set up the window to receive the message types we want.
-	chatFrame.chatType = chatType;
-	chatFrame.chatTarget = chatTarget;
 
 	ChatFrame_RemoveAllMessageGroups(chatFrame);
 	ChatFrame_RemoveAllChannels(chatFrame);
@@ -888,7 +887,8 @@ function FCF_SetWindowName(frame, name, doNotSave)
 	else
 		FCFDock_SetDirty(GENERAL_CHAT_DOCK);
 	end
-	if ( not doNotSave ) then
+	-- "name" for whisper tabs is the player name
+	if ( not doNotSave and frame.chatType ~= "WHISPER" and frame.chatType ~= "BN_WHISPER") then
 		SetChatWindowName(frame:GetID(), name);
 		name = GetChatWindowInfo(frame:GetID());
 	end
