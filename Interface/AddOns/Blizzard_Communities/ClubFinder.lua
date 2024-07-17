@@ -470,7 +470,7 @@ local FocusRoleFlags = {
 ClubFocusDropdownMixin = {};
 
 function ClubFocusDropdownMixin:SetupMenu()
-	WowStyle1DropdownMixin.SetupMenu(self, function(dropdown, rootDescription)
+	DropdownButtonMixin.SetupMenu(self, function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_CLUB_FOCUS");
 
 		local function IsSelected(value)
@@ -516,7 +516,7 @@ function ClubLookingForDropdownMixin:SetupMenu(checkedList)
 		return CLUB_FINDER_ANY_FLAG;
 	end);
 
-	WowStyle1DropdownMixin.SetupMenu(self, function(dropdown, rootDescription)
+	DropdownButtonMixin.SetupMenu(self, function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_CLUB_LOOKING_FOR");
 
 		local sex = UnitSex("player");
@@ -691,7 +691,7 @@ function ClubFinderFilterDropdownMixin:SetupMenu(localeFlags)
 		return tbl.text;
 	end);
 
-	WowStyle1DropdownMixin.SetupMenu(self, function(dropdown, rootDescription)
+	DropdownButtonMixin.SetupMenu(self, function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_CLUB_FILTER");
 
 		-- Cross Faction

@@ -285,14 +285,39 @@ function ProfessionsRecipeSchematicFormMixin:GetRecipeOperationInfo()
 			return C_TradeSkillUI.GetGatheringOperationInfo(recipeInfo.recipeID);
 		elseif self.recipeSchematic.hasCraftingOperationInfo then
 			local recraftItemGUID, recraftOrderID = self.transaction:GetRecraftAllocation();
-			local applyConcentration = self.transaction:IsApplyingConcentration();
-			if recraftOrderID then
-				return C_TradeSkillUI.GetCraftingOperationInfoForOrder(recipeInfo.recipeID, self.transaction:CreateCraftingReagentInfoTbl(), recraftOrderID, applyConcentration);
-			else
-				return C_TradeSkillUI.GetCraftingOperationInfo(recipeInfo.recipeID, self.transaction:CreateCraftingReagentInfoTbl(), self.transaction:GetAllocationItemGUID(), applyConcentration);
+			local attemptToApplyConcentration = self.transaction:IsApplyingConcentration();
+
+			local function GetCraftingOperationInfo(applyConcentration)
+				if recraftOrderID then
+					return C_TradeSkillUI.GetCraftingOperationInfoForOrder(recipeInfo.recipeID, self.transaction:CreateCraftingReagentInfoTbl(), recraftOrderID, applyConcentration);
+				else
+					return C_TradeSkillUI.GetCraftingOperationInfo(recipeInfo.recipeID, self.transaction:CreateCraftingReagentInfoTbl(), self.transaction:GetAllocationItemGUID(), applyConcentration);
+				end
 			end
+
+			local operationInfo = GetCraftingOperationInfo(attemptToApplyConcentration);
+			if not operationInfo and attemptToApplyConcentration then
+				-- Changing reagents can increase the concentration cost and cause the operation to fail.
+				-- Retry without concentration and disable concentration if the operation succeeds without it.
+				operationInfo = GetCraftingOperationInfo(false);
+				if operationInfo then
+					self.transaction:SetApplyConcentration(false);
+				end
+			end
+			return operationInfo;
 		end
 	end
+end
+
+-- OverrideQuality has to be passed into GameTooltip:SetRecipeResultItem in order for applyConcentration to be respected.
+-- Otherwise, the tooltip code automatically determines the current output item quality without applying concentration.
+function ProfessionsRecipeSchematicFormMixin:GetOutputOverrideQuality()
+	local operationInfo = self:GetRecipeOperationInfo();
+	if not operationInfo or not self.currentRecipeInfo.qualityIDs then
+		return nil;
+	end
+
+	return self.currentRecipeInfo.qualityIDs[operationInfo.craftingQuality];
 end
 
 function ProfessionsRecipeSchematicFormMixin:ClearTransaction()
@@ -677,7 +702,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		local reagents = self.transaction:CreateCraftingReagentInfoTbl();
 
 		self.OutputIcon:SetScript("OnUpdate", function() 
-			GameTooltip:SetRecipeResultItem(self.recipeSchematic.recipeID, reagents, self.transaction:GetAllocationItemGUID(), self:GetCurrentRecipeLevel());
+			GameTooltip:SetRecipeResultItem(self.recipeSchematic.recipeID, reagents, self.transaction:GetAllocationItemGUID(), self:GetCurrentRecipeLevel(), self:GetOutputOverrideQuality());
 		end);
 	end);
 
@@ -687,7 +712,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 	end);
 
 	self.OutputIcon:SetScript("OnClick", function()
-		local outputItemInfo = C_TradeSkillUI.GetRecipeOutputItemData(recipeID, self.transaction:CreateCraftingReagentInfoTbl(), self.transaction:GetAllocationItemGUID());
+		local outputItemInfo = C_TradeSkillUI.GetRecipeOutputItemData(recipeID, self.transaction:CreateCraftingReagentInfoTbl(), self.transaction:GetAllocationItemGUID(), self:GetOutputOverrideQuality());
 		HandleModifiedItemClick(outputItemInfo.hyperlink);
 	end);
 
@@ -837,7 +862,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 				GameTooltip:SetOwner(self.recraftSlot.OutputSlot, "ANCHOR_RIGHT");
 
 				local reagents = self.transaction:CreateCraftingReagentInfoTbl();
-				GameTooltip:SetRecipeResultItem(self.recipeSchematic.recipeID, reagents, self.transaction:GetRecraftAllocation(), self:GetCurrentRecipeLevel());
+				GameTooltip:SetRecipeResultItem(self.recipeSchematic.recipeID, reagents, self.transaction:GetRecraftAllocation(), self:GetCurrentRecipeLevel(), self:GetOutputOverrideQuality());
 			end
 		end);
 

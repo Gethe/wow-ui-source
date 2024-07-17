@@ -102,8 +102,10 @@ function AccountSelectorMixin:Initialize(results, wasFromRewind)
 		local isLocalAccount = true;
 		GenerateAccountOptions(rootDescription, C_Login.GetGameAccounts(), isLocalAccount, IsSelected, SetSelected);
 
-		local differentAccountData = MakeAccountData(InvalidGUID, PCT_FLOW_DESTINATION_ACCOUNT_DROPDOWN_DIFFERENT);
-		rootDescription:CreateRadio(differentAccountData.name, IsSelected, SetSelected, differentAccountData);
+		if C_CharacterServices.ArePaidCharacterTransfersBetweenBnetAccountsEnabled() then
+			local differentAccountData = MakeAccountData(InvalidGUID, PCT_FLOW_DESTINATION_ACCOUNT_DROPDOWN_DIFFERENT);
+			rootDescription:CreateRadio(differentAccountData.name, IsSelected, SetSelected, differentAccountData);
+		end
 	end);
 
 	self.anyAccountSelectedCallback();

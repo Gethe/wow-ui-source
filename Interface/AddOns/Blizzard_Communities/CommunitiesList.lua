@@ -833,7 +833,7 @@ function CommunitiesListDropdownMixin:OnHide()
 end
 
 function CommunitiesListDropdownMixin:SetupMenu()
-	WowStyle1DropdownMixin.SetupMenu(self, function(dropdown, rootDescription)
+	DropdownButtonMixin.SetupMenu(self, function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_COMMUNITIES_LIST");
 
 		local clubs = C_Club.GetSubscribedClubs();

@@ -526,7 +526,7 @@
                 <Texture parentKey="Border" atlas="BossBanner-PortraitBorder" setAllPoints="true"/>
             </Layer>
             <Layer level="OVERLAY" textureSubLevel="1">
-                 <Texture parentKey="RoleIcon" atlas="UI-LFG-RoleIcon-Generic-Micro">
+                 <Texture parentKey="RoleIcon" atlas="UI-LFG-RoleIcon-Generic-Micro-GroupFinder">
 					<Size x="20" y="20"/>
 					<Anchors>
 						<Anchor point="BOTTOM" relativeKey="$parent.Border" x="0" y="-8"/>
@@ -863,28 +863,29 @@
 												<Anchor point="TOP" relativePoint="TOP" y="43"/>
 											</Anchors>
 										</FontString>
-										<Texture parentKey="Icon">
+										<Texture parentKey="Icon" scale="0.6" useAtlasSize="true">
+											<Size x="257" y="226"/>
 											<Anchors>
 												<Anchor point="CENTER"/>
 											</Anchors>
 										</Texture>
 									</Layer>
 									<Layer level="HIGHLIGHT">
-										<Texture parentKey="Highlight" alphaMode="ADD" alpha=".2">
+										<Texture parentKey="Highlight" alphaMode="ADD" alpha=".2" scale="0.6" useAtlasSize="true">
 											<Anchors>
 												<Anchor point="CENTER"/>
 											</Anchors>
 										</Texture>
 									</Layer>
 									<Layer level="OVERLAY">
-										<Texture parentKey="AnimTexture" atlas="mythicplus-dragonflight-greatvault-collect" useAtlasSize="true" alphaMode="ADD">
+										<Texture parentKey="AnimTexture" atlas="gficon-chest-evergreen-greatvault-collect" useAtlasSize="true" alphaMode="ADD" scale="0.6">
 											<Anchors>
 												<Anchor point="CENTER"/>
 											</Anchors>
 											<Animations>
 												<AnimationGroup parentKey="Anim" looping="REPEAT">
-													<Alpha childKey="CollectGlow" startDelay="0" duration="1" order="1" fromAlpha="0" toAlpha="0.3"/>
-													<Alpha childKey="CollectGlow" startDelay="1" duration="1" order="1" fromAlpha="0.3" toAlpha="0"/>
+													<Alpha startDelay="0" duration="1" order="1" fromAlpha="0" toAlpha="0.5"/>
+													<Alpha startDelay="1" duration="1" order="1" fromAlpha="0.5" toAlpha="0"/>
 												</AnimationGroup>
 											</Animations>
 										</Texture>
@@ -892,7 +893,7 @@
 								</Layers>
 								<Scripts>
 									<OnEnter method="OnEnter"/>
-									<OnLeave function="GameTooltip_Hide"/>
+									<OnLeave method="OnLeave"/>
 									<OnMouseUp method="OnMouseUp"/>
 								</Scripts>
 							</Frame>

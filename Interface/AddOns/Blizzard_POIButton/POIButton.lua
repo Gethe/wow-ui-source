@@ -311,7 +311,8 @@ local function POIButton_UpdateNormalStyle(poiButton)
 			poiButton.Display:SetAtlas(nil, nil, "UI-QuestPoiWrapper-QuestBangTurnIn");
 		end
 
-		if not questClassification or (questClassification == Enum.QuestClassification.Normal) then
+		local basicLook = not questClassification or (questClassification == Enum.QuestClassification.Normal) or (questClassification == Enum.QuestClassification.Questline);
+		if basicLook then
 			poiButton.Display:SetAtlas(nil, nil, POIButton_GetQuestCompleteAtlas(poiButton));
 			POIButton_SetAtlas(poiButton.Glow, nil, nil, "UI-QuestPoi-OuterGlow");
 			POIButton_SetAtlas(poiButton.NormalTexture, nil, nil, POIButton_GetAtlasInfoNormal(poiButton));

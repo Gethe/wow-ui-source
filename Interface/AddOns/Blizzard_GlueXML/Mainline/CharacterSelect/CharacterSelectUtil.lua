@@ -125,7 +125,7 @@ function CharacterSelectUtil.SetTooltipForCharacterInfo(characterInfo)
 	local professionName1 = profession1 ~= 0 and GetSkillLineDisplayNameForRace(profession1, raceID) or nil;
 
 	-- Block 4
-	local money = characterInfo.money;
+	local money = realmName == CharacterSelectUtil.GetFormattedCurrentRealmName() and characterInfo.money or 0;
 
 	GameTooltip_AddColoredLine(GlueTooltip, name, WHITE_FONT_COLOR);
 	GameTooltip_AddColoredLine(GlueTooltip, CHARACTER_SELECT_REALM_TOOLTIP:format(realmName), GRAY_FONT_COLOR);

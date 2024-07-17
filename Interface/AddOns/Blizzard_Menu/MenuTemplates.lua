@@ -609,7 +609,19 @@ function WowDropdownFilterBehaviorMixin:OnMenuAssigned()
 	self:ValidateResetState();
 end
 
-WowStyle1DropdownMixin = CreateFromMixins(DropdownButtonMixin, ButtonStateBehaviorMixin, DropdownSelectionTextMixin);
+WowFilterButtonMixin = CreateFromMixins(WowDropdownFilterBehaviorMixin);
+
+function WowFilterButtonMixin:OnMenuResponse(menu, description)
+	DropdownButtonMixin.OnMenuResponse(self, menu, description);
+	WowDropdownFilterBehaviorMixin.OnMenuResponse(self, menu, description);
+end
+
+function WowFilterButtonMixin:OnMenuAssigned()
+	DropdownButtonMixin.OnMenuAssigned(self);
+	WowDropdownFilterBehaviorMixin.OnMenuAssigned(self);
+end
+
+WowStyle1DropdownMixin = CreateFromMixins(ButtonStateBehaviorMixin, DropdownSelectionTextMixin);
 
 function WowStyle1DropdownMixin:OnLoad()
 	ValidateIsDropdownButtonIntrinsic(self);
@@ -632,26 +644,16 @@ end
 The standard "filter" dropdown style. Its text does not reflect the selected option(s) and
 instead is generally initialized to fixed text.
 ]]--
-WowStyle1FilterDropdownMixin = CreateFromMixins(DropdownButtonMixin, ButtonStateBehaviorMixin, DropdownTextMixin, WowDropdownFilterBehaviorMixin);
+WowStyle1FilterDropdownMixin = CreateFromMixins(ButtonStateBehaviorMixin, DropdownTextMixin, WowFilterButtonMixin);
 
 function WowStyle1FilterDropdownMixin:OnLoad()
 	ValidateIsDropdownButtonIntrinsic(self);
 	ButtonStateBehaviorMixin.OnLoad(self);
 	DropdownTextMixin.OnLoad(self);
-	WowDropdownFilterBehaviorMixin.OnLoad(self);
+	WowFilterButtonMixin.OnLoad(self);
 
 	local x, y = 2, -1;
 	self:SetDisplacedRegions(x, y, self.Text);
-end
-
-function WowStyle1FilterDropdownMixin:OnMenuResponse(menu, description)
-	DropdownButtonMixin.OnMenuResponse(self, menu, description);
-	WowDropdownFilterBehaviorMixin.OnMenuResponse(self, menu, description);
-end
-
-function WowStyle1FilterDropdownMixin:OnMenuAssigned()
-	DropdownButtonMixin.OnMenuAssigned(self);
-	WowDropdownFilterBehaviorMixin.OnMenuAssigned(self);
 end
 
 function WowStyle1FilterDropdownMixin:OnButtonStateChanged()
@@ -663,15 +665,20 @@ A special style used in Settings and Character Creation/Customization. Note that
 contents (color swatches, icons, etc.) are not defined here but are instead added as a child
 within this template. See "WowStyle2DropdownTemplate" in Blizzard_CharacterCustomize.xml.
 ]]--
-WowStyle2DropdownMixin = CreateFromMixins(DropdownButtonMixin, ButtonStateBehaviorMixin, DropdownSelectionTextMixin, WowDropdownFilterBehaviorMixin);
+WowStyle2DropdownMixin = CreateFromMixins(ButtonStateBehaviorMixin, DropdownSelectionTextMixin, WowFilterButtonMixin);
 
 function WowStyle2DropdownMixin:OnLoad()
 	ButtonStateBehaviorMixin.OnLoad(self);
 	DropdownSelectionTextMixin.OnLoad(self);
-	WowDropdownFilterBehaviorMixin.OnLoad(self);
+	WowFilterButtonMixin.OnLoad(self);
 
 	local x, y = 2, -1;
 	self:SetDisplacedRegions(x, y, self.Text);
+end
+
+function WowStyle2DropdownMixin:OnShow()
+	DropdownSelectionTextMixin.OnShow(self);
+	WowFilterButtonMixin.OnShow(self);
 end
 
 function WowStyle2DropdownMixin:GetBackgroundAtlas()

@@ -117,6 +117,7 @@ function ObjectiveTrackerBlockMixin:SetStringText(fontString, text, useFullHeigh
 	else
 		fontString:SetMaxLines(2);
 	end
+	fontString:SetHeight(0);	-- force a clear of internals or GetHeight() might return an incorrect value
 	fontString:SetText(text);
 
 	local stringHeight = fontString:GetHeight();

@@ -10,62 +10,68 @@ local GenericTraitFrameLayoutOptions = {
 	-- Note: It might be a good idea to have a more generic style in the future but for
 	-- now we're just going to use what we have.
 	Default = {
-		NineSliceTextureKit = "Dragonflight",
-		DetailTopAtlas = "dragonflight-golddetailtop",
-		Title = "",
+		NineSliceTextureKit = "thewarwithin",
 		TitleDividerAtlas = "dragonriding-talents-line",
-		BackgroundAtlas = "ui-frame-dragonflight-backgroundtile",
-		HeaderSize = { Width = 500, Height = 80	},
+		BackgroundAtlas = "ui-frame-thewarwithin-backgroundtile",
+		HeaderSize = { Width = 500, Height = 50 },
 		ShowInset = false,
-		HeaderOffset = { x = 0, y = 0 },
-		CurrencyOffset = { x = 0, y = 50 },
+		HeaderOffset = { x = 0, y = -30 },
+		CurrencyOffset = { x = 0, y = -20 },
 		CurrencyBackgroundAtlas = "dragonriding-talents-currencybg",
 		PanOffset = { x = 0, y = 0 },
 		ButtonPurchaseFXIDs = { 150, 142, 143 },
-		CloseButtonOffset = { x = -3, y = -10 },
-		UseOldNineSlice = true,
+		CloseButtonOffset = { x = -9, y = -9 },
 	},
 
 	Dragonflight = {
 		NineSliceTextureKit = "Dragonflight",
 		DetailTopAtlas = "dragonflight-golddetailtop",
-		Title = "",
-		TitleDividerAtlas = "dragonriding-talents-line",
 		BackgroundAtlas = "dragonriding-talents-background",
 		HeaderSize = { Width = 500, Height = 130 },
-		ShowInset = false,
-		HeaderOffset = { x = 0, y = -30 },
-		CurrencyOffset = { x = 0, y = -20 },
-		CurrencyBackgroundAtlas = "dragonriding-talents-currencybg",
 		PanOffset = { x = -80, y = -35 },
-		ButtonPurchaseFXIDs = { 150, 142, 143 },
 		CloseButtonOffset = { x = -3, y = -10 },
 		UseOldNineSlice = true,
 	},
 
-	TheWarWithin = {
-		NineSliceTextureKit = "thewarwithin",
+	Skyriding = {
 		Title = GENERIC_TRAIT_FRAME_DRAGONRIDING_TITLE,
-		TitleDividerAtlas = "dragonriding-talents-line",
-		BackgroundAtlas = "ui-frame-thewarwithin-backgroundtile",
 		HeaderSize = { Width = 500, Height = 130 },
-		ShowInset = false,
-		HeaderOffset = { x = 0, y = -30 },
-		CurrencyOffset = { x = 0, y = -20 },
-		CurrencyBackgroundAtlas = "dragonriding-talents-currencybg",
 		PanOffset = { x = -80, y = -35 },
-		ButtonPurchaseFXIDs = { 150, 142, 143 },
-		CloseButtonOffset = { x = -9, y = -9 },
+	},
+
+	TheWeaver = {
+		Title = GENERIC_TRAIT_FRAME_THE_WEAVER_TITLE,
+	},
+
+	TheGeneral = {
+		Title = GENERIC_TRAIT_FRAME_THE_GENERAL_TITLE,
+	},
+
+	TheVizier = {
+		Title = GENERIC_TRAIT_FRAME_THE_VIZIER_TITLE,
 	},
 };
 
 local GenericTraitFrameLayouts = {
-	-- Dragonriding
-	[672] = GenericTraitFrameLayoutOptions.TheWarWithin,
+	-- Add custom layouts in here
 
-	-- Hero Talents test tree
-	[898] = GenericTraitFrameLayoutOptions.Default,
+	-- Skyriding
+	[672] = GenericTraitFrameLayoutOptions.Skyriding,
+
+	-- Pact: The Weaver
+	[1042] = GenericTraitFrameLayoutOptions.TheWeaver,
+
+	-- Pact: The General
+	[1045] = GenericTraitFrameLayoutOptions.TheGeneral,
+
+	-- Pact: The Vizier
+	[1046] = GenericTraitFrameLayoutOptions.TheVizier,
 };
+
+function GetGenericTraitFrameLayoutInfo(treeID)
+	local layoutInfo = GenericTraitFrameLayouts[treeID] or {};
+	return setmetatable(layoutInfo, {__index = GenericTraitFrameLayoutOptions.Default});
+end
 
 local GenericTraitFrameTutorials = {
 	-- Dragonriding TreeID
@@ -125,7 +131,7 @@ end
 
 function GenericTraitFrameMixin:ApplyLayout(layoutInfo)
 	self.Background:SetAtlas(layoutInfo.BackgroundAtlas);
-	self.Header.Title:SetText(layoutInfo.Title);
+	self.Header.Title:SetText(layoutInfo.Title or "");
 	self.Header:SetSize(layoutInfo.HeaderSize.Width, layoutInfo.HeaderSize.Height);
 	self.Header.TitleDivider:SetAtlas(layoutInfo.TitleDividerAtlas, true);
 	self.Inset:SetShown(layoutInfo.ShowInset);
@@ -159,7 +165,7 @@ end
 function GenericTraitFrameMixin:OnShow()
 	-- 11.0 Placeholder
 	local treeID = self.traitTreeID;
-	local layout = GenericTraitFrameLayouts[treeID] or GenericTraitFrameLayoutOptions.Default;
+	local layout = GetGenericTraitFrameLayoutInfo(treeID);
 	self:ApplyLayout(layout);
 
 	TalentFrameBaseMixin.OnShow(self);

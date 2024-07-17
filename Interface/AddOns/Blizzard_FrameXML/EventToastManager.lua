@@ -509,7 +509,6 @@ function EventToastScenarioBaseToastMixin:PlayAnim()
 end
 
 function EventToastScenarioBaseToastMixin:SetupGLineAtlas(useWhiteGLineAtlas)
-	local atlas = useWhiteGLineAtlas and "levelup-bar-white" or "levelup-bar-gold"
 	local parent = self:GetParent();
 	parent.GLine:SetAtlas("evergreen-scenario-line-bottom", TextureKitConstants.UseAtlasSize);
 	parent.GLine:SetPoint("BOTTOM", 0, -4);

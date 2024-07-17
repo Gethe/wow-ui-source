@@ -306,12 +306,12 @@
 				</KeyValues>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture atlas="evergreen-scenario-pattern-background" useAtlasSize="true" alphaMode="ADD">
+						<Texture atlas="evergreen-scenario-pattern-background" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-6"/>
 							</Anchors>
 						</Texture>
-						<Texture atlas="evergreen-scenario-pattern-background" useAtlasSize="true" alphaMode="ADD">
+						<Texture atlas="evergreen-scenario-pattern-background" useAtlasSize="true" alpha="0.5">
 							<Anchors>
 								<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="-2"/>
 							</Anchors>

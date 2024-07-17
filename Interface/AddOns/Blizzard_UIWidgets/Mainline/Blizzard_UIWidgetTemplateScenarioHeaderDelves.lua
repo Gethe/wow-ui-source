@@ -30,7 +30,7 @@ function UIWidgetTemplateScenarioHeaderDelvesMixin:Setup(widgetInfo, widgetConta
 	SetupTextureKitOnFrame(widgetInfo.frameTextureKit, self.TierFrame.Flag, tierFlagTextureKitString, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize)
 	self.TierFrame.Text:SetText(widgetInfo.tierText);
 	self.TierFrame.tooltipSpellID = widgetInfo.tierTooltipSpellID;
-	self.TierFrame:MarkDirty();
+	self.TierFrame:Layout();
 
 	self.currencyPool:ReleaseAll();
 

@@ -1273,7 +1273,7 @@ function Professions.CanTrackRecipe(recipeInfo)
 		return false;
 	end
 
-	if recipeInfo.isSalvageRecipe or recipeInfo.isDummyRecipe or recipeInfo.isGatheringRecipe then
+	if recipeInfo.isSalvageRecipe or recipeInfo.isDummyRecipe or recipeInfo.isGatheringRecipe or recipeInfo.isRecraft then
 		return false;
 	end
 

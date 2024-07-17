@@ -718,7 +718,7 @@
 					<Frame parentKey="WarningText" hidden="true">
 						<Size x="340" y="20"/>
 						<Anchors>
-							<Anchor point="TOP" relativeTo="CharacterSelectUI" relativePoint="TOP" x="-70" y="-20"/>
+							<Anchor point="TOP" relativeTo="CharacterSelectUI" relativePoint="TOP" x="0" y="-65"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
@@ -1173,11 +1173,11 @@
 					</AnimationGroup>
 				</Animations>
 			</Frame>
-			<Frame name="GameRoomBillingFrame" hidden="true" inherits="TooltipBackdropTemplate">
+			<Frame name="GameRoomBillingFrame" inherits="TooltipBackdropTemplate" frameLevel="3" hidden="true">
 				<Size x="255" y="60"/>
 				<Anchors>
 					<!-- Anchor is also conditionally updated in lua -->
-					<Anchor point="TOP" relativeTo="CharacterSelectServerAlertFrame" relativePoint="BOTTOM" x="0" y="0"/>
+					<Anchor point="BOTTOMLEFT" relativeTo="CharacterSelectBackButton" relativePoint="TOPLEFT" x="0" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">

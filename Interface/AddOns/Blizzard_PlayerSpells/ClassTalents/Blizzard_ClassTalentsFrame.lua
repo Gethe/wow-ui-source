@@ -709,10 +709,8 @@ function ClassTalentsFrameMixin:UpdateTreeCurrencyInfo(skipButtonUpdates)
 
 	if not skipButtonUpdates then
 		for condID, condInfo in pairs(self.condInfoCache) do
-			if condInfo.isGate then
-				self:MarkCondInfoCacheDirty(condID);
-				self:ForceCondInfoUpdate(condID);
-			end
+			self:MarkCondInfoCacheDirty(condID);
+			self:ForceCondInfoUpdate(condID);
 		end
 
 		self:RefreshGates();

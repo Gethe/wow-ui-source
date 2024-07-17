@@ -114,6 +114,14 @@ function PlayerSpellsFrameMixin:SetToDefaultAvailableTab()
 	end
 end
 
+function PlayerSpellsFrameMixin:SetOpenToSpecTab(openToSpecTab)
+	self.openToSpecTab = openToSpecTab;
+end
+
+function PlayerSpellsFrameMixin:ShouldOpenToSpecTab()
+	return self.openToSpecTab;
+end
+
 function PlayerSpellsFrameMixin:UpdateFrameTitle()
 	local tabID = self:GetTab();
 	if self:IsInspecting() then

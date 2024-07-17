@@ -187,8 +187,8 @@ function DropdownButtonMixin:RegisterMenu(menuDescription)
 		self:OnMenuChanged();
 	end);
 
-	local minimumWidth = menuDescription:GetMinimumWidth();
-	if not minimumWidth then
+	local minimumWidth = menuDescription:GetMinimumWidth() or 0;
+	if minimumWidth == 0 then
 		menuDescription:SetMinimumWidth(self:GetWidth());
 	end
 

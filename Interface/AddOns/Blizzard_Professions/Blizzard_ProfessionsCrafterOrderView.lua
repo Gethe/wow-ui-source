@@ -307,6 +307,7 @@ local ProfessionsCrafterOrderViewEvents =
     "CRAFTINGORDERS_CLAIM_ORDER_RESPONSE",
     "CRAFTINGORDERS_RELEASE_ORDER_RESPONSE",
     "CRAFTINGORDERS_REJECT_ORDER_RESPONSE",
+	"CRAFTINGORDERS_CRAFT_ORDER_RESPONSE",
 	"CRAFTINGORDERS_FULFILL_ORDER_RESPONSE",
     "CRAFTINGORDERS_UPDATE_CUSTOMER_NAME",
     "CRAFTINGORDERS_CLAIMED_ORDER_ADDED",
@@ -357,6 +358,17 @@ function ProfessionsCrafterOrderViewMixin:OnEvent(event, ...)
 		else
 			UIErrorsFrame:AddExternalErrorMessage(PROFESSIONS_ORDER_OP_FAILED);
         end
+	elseif event == "CRAFTINGORDERS_CRAFT_ORDER_RESPONSE" then
+		local result, orderID = ...;
+        if orderID ~= self.order.orderID then
+            return;
+        end
+
+		if result == Enum.CraftingOrderResult.NoAccountItems then
+			UIErrorsFrame:AddExternalErrorMessage(CRAFTING_ORDER_FAILED_ACCOUNT_ITEMS);
+		else
+			UIErrorsFrame:AddExternalErrorMessage(PROFESSIONS_ORDER_OP_FAILED);
+		end
 	elseif event == "CRAFTINGORDERS_FULFILL_ORDER_RESPONSE" then
 		local result, orderID = ...;
 		if orderID ~= self.order.orderID then

@@ -82,25 +82,22 @@ function CompactRaidFrameManager_OnLoad(self)
 				tinsert(buttons, button);
 				button:Show();
 			end
-
-			finalButton:SetParent(parent);
-			finalButton.backgroundTexture:SetAlpha(0);
-			tinsert(buttons, finalButton);
-			finalButton:Show();
 		end
 
 		local HalfNumMarkers = NUM_RAID_MARKERS / 2;
+
+		MakeRow(1, HalfNumMarkers);
+
 		local raidMarkerRemove = self.raidMarkerPool:Acquire();
 		raidMarkerRemove.markerTexture:SetAtlas("GM-raidMarker-remove", TextureKitConstants.IgnoreAtlasSize);
 		raidMarkerRemove:SetID(0);
-		MakeRow(1, HalfNumMarkers, raidMarkerRemove);
+		raidMarkerRemove:SetParent(parent);
+		raidMarkerRemove.backgroundTexture:SetAlpha(0);
+		tinsert(buttons, raidMarkerRemove);
+		raidMarkerRemove:Show();
 		raidMarkerRemove:SetParentKey("raidMarkerRemove");
 
-		local raidMarkerReset = self.raidMarkerPool:Acquire();
-		raidMarkerReset.markerTexture:SetAtlas("GM-raidMarker-reset", TextureKitConstants.IgnoreAtlasSize);
-		raidMarkerReset:SetID(RAID_MARKER_RESET_ID);
-		MakeRow(HalfNumMarkers + 1, NUM_RAID_MARKERS, raidMarkerReset);
-		raidMarkerReset:SetParentKey("raidMarkerReset");
+		MakeRow(HalfNumMarkers + 1, NUM_RAID_MARKERS);
 
 		local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRight, NUM_RAID_MARKERS / 2 + 1, 3, 0);
 		local anchor = CreateAnchor("TOPLEFT", parent.raidMarkerUnitTab, "BOTTOMLEFT", 3, -4);
@@ -407,6 +404,7 @@ function CompactRaidFrameManager_UpdateOptionsFlowContainer()
 		Space(32);
 		AddAndShow(displayFrame.RestrictPingsDropdown);
 	else
+		displayFrame.RestrictPingsLabel:Hide();
 		displayFrame.RestrictPingsDropdown:Hide();
 	end
 
@@ -529,6 +527,8 @@ function CompactRaidFrameManager_UpdateRaidIcons()
 		end
 
 		local removeButton = raidMarkers.raidMarkerRemove;
+		removeButton.markerTexture:SetAtlas("GM-raidMarker-remove", TextureKitConstants.IgnoreAtlasSize);
+		removeButton:SetID(0);
 		if not GetRaidTargetIndex("target") then
 			removeButton.markerTexture:SetDesaturated(true);
 			removeButton:Disable();
@@ -536,10 +536,6 @@ function CompactRaidFrameManager_UpdateRaidIcons()
 			removeButton.markerTexture:SetDesaturated(false);
 			removeButton:Enable();
 		end
-
-		local clearButton = raidMarkers.raidMarkerReset;
-		clearButton.markerTexture:SetDesaturated(true);
-		clearButton:Disable();
 	else --world markers
 		for i=1, NUM_RAID_ICONS do
 			local button = raidMarkers["raidMarker"..i];
@@ -547,12 +543,10 @@ function CompactRaidFrameManager_UpdateRaidIcons()
 		end
 
 		local removeButton = raidMarkers.raidMarkerRemove;
-		removeButton.markerTexture:SetDesaturated(true);
-		removeButton:Disable();
-
-		local clearButton = raidMarkers.raidMarkerReset;
-		clearButton.markerTexture:SetDesaturated(false);
-		clearButton:Enable();
+		removeButton.markerTexture:SetAtlas("GM-raidMarker-reset", TextureKitConstants.IgnoreAtlasSize);
+		removeButton:SetID(RAID_MARKER_RESET_ID);
+		removeButton.markerTexture:SetDesaturated(false);
+		removeButton:Enable();
 	end
 end
 
@@ -887,7 +881,9 @@ function CRFManagerRaidIconButtonMixin:OnClick()
 	elseif raidMarkers.activeTab == raidMarkers.raidMarkerUnitTab then
 		SetRaidTarget("target", self:GetID());
 	else
-		PlaceRaidMarker(WORLD_RAID_MARKER_ORDER[self:GetMarker()]);
+		local marker = WORLD_RAID_MARKER_ORDER[self:GetMarker()];
+		ClearRaidMarker(marker);
+		PlaceRaidMarker(marker);
 	end
 	CompactRaidFrameManager_UpdateRaidIcons();
 end
@@ -931,8 +927,8 @@ function CRFManagerRaidIconButtonMixin:UpdateRaidIcon()
 end
 
 function CRFManagerRaidIconButtonMixin:OnMouseDown()
+	self.markerTexture:SetPoint("CENTER", self, "CENTER", -1, -1);
 	if self:IsEnabled() then
-		self.markerTexture:SetPoint("CENTER", self, "CENTER", -1, -1);
 		self.backgroundTexture:SetAtlas("GM-button-marker-pressed", TextureKitConstants.IgnoreAtlasSize);
 	end
 end

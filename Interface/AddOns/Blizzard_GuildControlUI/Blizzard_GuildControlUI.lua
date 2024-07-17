@@ -49,7 +49,9 @@ function GuildControlUI_OnLoad(self)
 		rootDescription:SetTag("MENU_GUILD_PERMISSIONS");
 		rootDescription:CreateRadio(GUILDCONTROL_GUILDRANKS, IsSelected, SetSelected, 1);
 		rootDescription:CreateRadio(GUILDCONTROL_RANK_PERMISSIONS, IsSelected, SetSelected, 2);
-		rootDescription:CreateRadio(GUILDCONTROL_BANK_PERMISSIONS, IsSelected, SetSelected, 3);
+		if C_GuildBank.IsGuildBankEnabled() then
+			rootDescription:CreateRadio(GUILDCONTROL_BANK_PERMISSIONS, IsSelected, SetSelected, 3);
+		end
 	end);
 	
 	local buttonText;
@@ -62,6 +64,10 @@ function GuildControlUI_OnLoad(self)
 	
 	self.currentRank = 2;
 	GuildControlSetRank(2);
+
+	if not C_GuildBank.IsGuildBankEnabled() then
+		GuildControlUIRankPermissions_HideGuildBankOptions(self);
+	end
 
 	self:RegisterEvent("GUILDBANK_UPDATE_TABS");
 end
@@ -469,4 +475,13 @@ function GuildControlUIRankDropdown_OnClick(self)
 	GuildControlUI.currentRank = self:GetID()+1; --igonre officer
 	GuildControlSetRank(GuildControlUI.currentRank);
 	GuildControlUI.rankUpdate(GuildControlUI.currFrame);
+end
+
+function GuildControlUIRankPermissions_HideGuildBankOptions(self)
+	GuildControlUIRankSettingsFrameBankBg:Hide();
+	GuildControlUIRankSettingsFrameBankLabel:Hide();
+	GuildControlUIRankSettingsFrameCheckbox15:Hide();
+	GuildControlUIRankSettingsFrameCheckbox16:Hide();
+	GuildControlUIRankSettingsFrameCheckbox19:Hide();
+	GuildControlUIRankSettingsFrameGoldBox:Hide();
 end

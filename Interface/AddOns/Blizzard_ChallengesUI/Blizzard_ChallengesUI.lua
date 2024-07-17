@@ -284,28 +284,32 @@ ChallengeModeWeeklyChestMixin = CreateFromMixins(WeeklyRewardMixin);
 function ChallengeModeWeeklyChestMixin:Update(bestMapID, dungeonScore)
 	local chestState = CHEST_STATE_WALL_OF_TEXT;
 
+	local vaultIconState = "";
 	if C_WeeklyRewards.HasAvailableRewards() then
 		chestState = CHEST_STATE_COLLECT;
 
-		self.Icon:SetAtlas("mythicplus-dragonflight-greatvault-collect", TextureKitConstants.UseAtlasSize);
-		self.Highlight:SetAtlas("mythicplus-dragonflight-greatvault-collect", TextureKitConstants.UseAtlasSize);
+		vaultIconState = "collect";
 		self.RunStatus:SetText(MYTHIC_PLUS_COLLECT_GREAT_VAULT);
 		self.AnimTexture:Show();
 		self.AnimTexture.Anim:Play();
 	elseif self:HasUnlockedRewards(Enum.WeeklyRewardChestThresholdType.Activities) then
 		chestState = CHEST_STATE_COMPLETE;
 
-		self.Icon:SetAtlas("mythicplus-dragonflight-greatvault-complete", TextureKitConstants.UseAtlasSize);
-		self.Highlight:SetAtlas("mythicplus-dragonflight-greatvault-complete", TextureKitConstants.UseAtlasSize);
+		vaultIconState = "complete";
 		self.RunStatus:SetText(MYTHIC_PLUS_COMPLETE_MYTHIC_DUNGEONS);
 		self.AnimTexture:Hide();
 	elseif C_MythicPlus.GetOwnedKeystoneLevel() or (dungeonScore and dungeonScore > 0) then
 		chestState = CHEST_STATE_INCOMPLETE;
 
-		self.Icon:SetAtlas("mythicplus-dragonflight-greatvault-incomplete", TextureKitConstants.UseAtlasSize);
-		self.Highlight:SetAtlas("mythicplus-dragonflight-greatvault-incomplete", TextureKitConstants.UseAtlasSize);
+		vaultIconState = "incomplete";
 		self.RunStatus:SetText(MYTHIC_PLUS_COMPLETE_MYTHIC_DUNGEONS);
 		self.AnimTexture:Hide();
+	end
+
+	local vaultIconAtlas = "gficon-chest-evergreen-greatvault-";
+	if vaultIconState ~= "" then
+		self.Icon:SetAtlas(vaultIconAtlas..vaultIconState, TextureKitConstants.UseAtlasSize);
+		self.Highlight:SetAtlas(vaultIconAtlas..vaultIconState, TextureKitConstants.UseAtlasSize);
 	end
 
 	self.state = chestState;
@@ -345,6 +349,20 @@ function ChallengeModeWeeklyChestMixin:OnEnter()
 
 	GameTooltip_AddInstructionLine(GameTooltip, WEEKLY_REWARDS_CLICK_TO_PREVIEW_INSTRUCTIONS);
 	GameTooltip:Show();
+
+	if self.AnimTexture.Anim:IsPlaying() then
+		self.AnimTexture:Hide();
+		self.AnimTexture.Anim:Stop();
+	end
+end
+
+function ChallengeModeWeeklyChestMixin:OnLeave()
+	GameTooltip_Hide();
+	
+	if C_WeeklyRewards.HasAvailableRewards() then
+		self.AnimTexture:Show();
+		self.AnimTexture.Anim:Play();
+	end
 end
 
 ChallengeModeLegacyWeeklyChestMixin = {};

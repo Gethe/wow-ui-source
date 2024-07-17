@@ -813,6 +813,7 @@ local SharedTraits =
 				{ Name = "canRefundRank", Type = "bool", Nilable = false },
 				{ Name = "isAvailable", Type = "bool", Nilable = false },
 				{ Name = "isVisible", Type = "bool", Nilable = false },
+				{ Name = "isDisplayError", Type = "bool", Nilable = false, Documentation = { "True if this node fails the TRAIT_CONDITION_TYPE_DISPLAY_ERROR condition check. Used to communicate a problem with the node to the player (e.g. A prerequisite node has not been purchased.) but will not prevent the player from spending points on the node." } },
 				{ Name = "ranksPurchased", Type = "number", Nilable = false },
 				{ Name = "activeRank", Type = "number", Nilable = false },
 				{ Name = "currentRank", Type = "number", Nilable = false },

@@ -105,6 +105,7 @@ local SheenAlphaByVisualState = {
 	[TalentButtonUtil.BaseVisualState.Maxed] = 1,
 	[TalentButtonUtil.BaseVisualState.Invisible] = 0,
 	[TalentButtonUtil.BaseVisualState.RefundInvalid] = 0,
+	[TalentButtonUtil.BaseVisualState.DisplayError] = 1,
 };
 
 ClassTalentUtil = {};

@@ -76,7 +76,13 @@ local function CreatePredictedTrackingState()
 	tbl.SetSelected = function(self, index, selected)
 		state[index] = selected;
 
-		C_Minimap.SetTracking(index, selected);
+		MinimapUtil.SetTrackingFilterByFilterIndex(index, selected);
+	end
+
+	-- Some filters (like trivial quest tracking) can be changed from other places in the UI (like the Options panel or the World Map)
+	-- If a filter is changed from an external system, then all we need to do is update the predicted state
+	tbl.OverrideSelectedState = function(self, index, selected)
+		state[index] = selected;
 	end
 
 	tbl.IsSelected = function(self, index)
@@ -694,6 +700,31 @@ function MiniMapTrackingButtonMixin:OnLoad()
 	end
 
 	MinimapCluster.Tracking:SetShown(not inGameTrackingDisabled);
+
+	self:RegisterSettingEntryCallbacks();
+end
+
+-- Some filters (like trivial quest tracking) can be changed from the "Options" panel
+-- If a filter is changed from that system, then those changes need to be reflected here as well
+function MiniMapTrackingButtonMixin:RegisterSettingEntryCallbacks()
+	local function TryUpdateFilterStateForExternalChange(filterID, value)
+		local filterChangedFromExternalSystem = not self:IsMenuOpen();
+		if filterChangedFromExternalSystem then
+			local filterIndex = MinimapUtil.GetFilterIndexForFilterID(filterID);
+			if filterIndex then
+				-- The filter has already been changed by the Settings system so we just need to force update our tracking state
+				trackingState:OverrideSelectedState(filterIndex, value);
+			end
+		end
+	end
+
+	Settings.SetOnValueChangedCallback("PROXY_ACCOUNT_COMPLETED_QUEST_FILTERING", function(_o, _setting, value)
+		TryUpdateFilterStateForExternalChange(Enum.MinimapTrackingFilter.AccountCompletedQuests, value);
+	end);
+
+	Settings.SetOnValueChangedCallback("PROXY_TRIVIAL_QUEST_FILTERING", function(_o, _setting, value) 
+		TryUpdateFilterStateForExternalChange(Enum.MinimapTrackingFilter.TrivialQuests, value);
+	end);
 end
 
 function MiniMapTrackingButtonMixin:OnEvent(event, arg1)

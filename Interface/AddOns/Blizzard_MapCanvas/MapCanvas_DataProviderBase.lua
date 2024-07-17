@@ -219,10 +219,19 @@ function MapCanvasPinMixin:ShouldMouseButtonBePassthrough(button)
 	return button == "RightButton"; -- override if necessary
 end
 
-function MapCanvasPinMixin:CheckMouseButtonPassthrough(button)
-	if self:ShouldMouseButtonBePassthrough(button) then
-		self:SetPassThroughButtons(button);
+function MapCanvasPinMixin:CheckMouseButtonPassthrough(...)
+	-- Pins get reused, so this needs to be updated each time a pin is acquired.
+	self:SetPassThroughButtons(); -- Clear existing passthrough buttons
+
+	local passthroughButtons = {};
+	for i = 1, select("#", ...) do
+		local button = select(i, ...);
+		if self:ShouldMouseButtonBePassthrough(button) then
+			table.insert(passthroughButtons, button);
+		end
 	end
+
+	self:SetPassThroughButtons(unpack(passthroughButtons));
 end
 
 function MapCanvasPinMixin:OnMapInsetSizeChanged(mapInsetIndex, expanded)

@@ -49,6 +49,17 @@ local MapConstants =
 			},
 		},
 		{
+			Name = "UIMapGroupFlag",
+			Type = "Enumeration",
+			NumValues = 1,
+			MinValue = 1,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "ShowIconsAcrossFloors", Type = "UIMapGroupFlag", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "UIMapSystem",
 			Type = "Enumeration",
 			NumValues = 4,

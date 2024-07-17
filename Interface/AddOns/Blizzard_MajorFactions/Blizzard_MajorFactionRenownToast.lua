@@ -84,7 +84,7 @@ function MajorFactionsRenownToastMixin:ShowRenownLevelUpToast(majorFactionData, 
 			HideUIPanel(MajorFactionRenownFrame);
 		end
 		TopBannerManager_Show(self, {
-			majorFactionID = majorFactionID,
+			majorFactionID = majorFactionData.factionID,
 			renownLevel = renownLevel,
 			factionColor = self:GetFactionColorByTextureKit(majorFactionData.textureKit),
 			textureKit = majorFactionData.textureKit,

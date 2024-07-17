@@ -38,3 +38,4 @@ Cooldown.lua
 Mainline\Cooldown.xml
 Localization.lua
 DragonridingUtil.lua
+Mainline\MinimapUtil.lua

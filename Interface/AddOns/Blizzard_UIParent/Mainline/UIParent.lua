@@ -69,9 +69,6 @@ UISpecialFrames = {
 };
 
 UIMenus = {
-	"ChatMenu",
-	"EmoteMenu",
-	"LanguageMenu",
 	"DropDownList1",
 	"DropDownList2",
 	"DropDownList3",
@@ -2497,11 +2494,15 @@ function UIParentManagedFrameContainerMixin:UpdateFrame(frame)
 end
 
 function UIParentManagedFrameContainerMixin:AddManagedFrame(frame)
+	if frame.ignoreFramePositionManager then
+		return;
+	end
+
 	if frame.IsInDefaultPosition and not frame:IsInDefaultPosition() then
 		return;
 	end
 
-	if frame.ignoreFramePositionManager then
+	if not frame:IsShown() then
 		return;
 	end
 

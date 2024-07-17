@@ -475,6 +475,8 @@ function SuperTrackablePinMixin:OnMouseClickAction(button)
 			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 			C_SuperTrack[self:GetSuperTrackMutatorAPIName()](self:GetSuperTrackData());
 		end
+
+		return true;
 	end
 end
 

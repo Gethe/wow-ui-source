@@ -345,7 +345,11 @@ function HeroTalentsContainerMixin:UpdateSearchDisplay(skipCheckingCollapseState
 				if nodeInfo.subTreeActive then
 					self.anyActiveSubTreeMatches = true;
 				elseif not bestInactiveSubTreeMatch or nodeMatchType > bestInactiveSubTreeMatch then
-					bestInactiveSubTreeMatch = nodeMatchType;
+					-- For nodes not in the active sub tree, ensure the node is contained within one
+					-- of the sub trees for the current spec.
+					if tContains(self.availableHeroSpecSubTreeIDs, nodeInfo.subTreeID) then
+						bestInactiveSubTreeMatch = nodeMatchType;
+					end
 				end
 			end
 		end

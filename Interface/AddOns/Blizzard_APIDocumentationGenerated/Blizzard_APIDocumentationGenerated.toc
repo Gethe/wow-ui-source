@@ -404,6 +404,7 @@ SpellBookConstantsDocumentation.lua
 SpellSharedDocumentation.lua
 TextureSharedDocumentation.lua
 TimeDocumentation.lua
+TimerConstantsDocumentation.lua
 TimerunningConstantsDocumentation.lua
 TooltipConstantsDocumentation.lua
 TooltipInfoSharedDocumentation.lua

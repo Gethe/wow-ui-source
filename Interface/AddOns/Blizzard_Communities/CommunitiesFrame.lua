@@ -588,8 +588,8 @@ function CommunitiesFrameMixin:SetDisplayMode(displayMode)
 
 	local subframesToUpdate = {};
 	for i, mode in pairs(COMMUNITIES_FRAME_DISPLAY_MODES) do
-		for j, subframe in ipairs(mode) do
-			subframesToUpdate[subframe] = subframesToUpdate[subframe] or mode == displayMode;
+		for j, subframeName in ipairs(mode) do
+			subframesToUpdate[subframeName] = subframesToUpdate[subframeName] or mode == displayMode;
 		end
 	end
 
@@ -597,8 +597,12 @@ function CommunitiesFrameMixin:SetDisplayMode(displayMode)
 		self:UpdateSeenApplicants();
 	end
 
-	for subframe, shouldShow in pairs(subframesToUpdate) do
-		self[subframe]:SetShown(shouldShow);
+	for subframeName, shouldShow in pairs(subframesToUpdate) do
+		local subframe = self[subframeName];
+		if (shouldShow and (subframe.ShouldEverShow ~= nil)) then
+			shouldShow = subframe:ShouldEverShow();
+		end
+		subframe:SetShown(shouldShow);
 	end
 
 	self.PostingExpirationText:Hide();

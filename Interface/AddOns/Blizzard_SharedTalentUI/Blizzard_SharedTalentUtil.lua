@@ -221,6 +221,7 @@ TalentButtonUtil.BaseVisualState = {
 	Maxed = 6,
 	Invisible = 7,
 	RefundInvalid = 8,
+	DisplayError = 9,
 };
 
 local HoverAlphaByVisualState = {
@@ -232,6 +233,7 @@ local HoverAlphaByVisualState = {
 	[TalentButtonUtil.BaseVisualState.Maxed] = 1,
 	[TalentButtonUtil.BaseVisualState.Invisible] = 0,
 	[TalentButtonUtil.BaseVisualState.RefundInvalid] = 0.4,
+	[TalentButtonUtil.BaseVisualState.DisplayError] = 1,
 };
 
 function TalentButtonUtil.GetTemplateForTalentType(nodeInfo, talentType, useLarge)
@@ -290,6 +292,8 @@ function TalentButtonUtil.GetColorForBaseVisualState(visualState)
 	elseif visualState == TalentButtonUtil.BaseVisualState.Selectable then
 		return GREEN_FONT_COLOR;
 	elseif visualState == TalentButtonUtil.BaseVisualState.RefundInvalid then
+		return RED_FONT_COLOR;
+	elseif visualState == TalentButtonUtil.BaseVisualState.DisplayError then
 		return RED_FONT_COLOR;
 	end
 

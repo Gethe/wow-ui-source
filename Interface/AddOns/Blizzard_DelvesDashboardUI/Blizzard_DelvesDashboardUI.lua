@@ -334,9 +334,19 @@ end
 
 function GreatVaultButtonMixin:OnShow()
 	local state = self:GetState();
-	local atlas = "pvpqueue-chest-dragonflight-greatvault-"..state;
-	self.ChestTexture:SetAtlas(atlas);
-	self.Highlight:SetAtlas(atlas);
+	
+	if C_WeeklyRewards.HasAvailableRewards() then
+		self.AnimTexture:Show();
+		self.AnimTexture.Anim:Play();
+	else
+		self.AnimTexture.Anim:Stop();
+		self.AnimTexture:Hide();
+	end
+
+	local atlas = "gficon-chest-evergreen-greatvault-"..state;
+	local useAtlasSize = true;
+	self.ChestTexture:SetAtlas(atlas, useAtlasSize);
+	self.Highlight:SetAtlas(atlas, useAtlasSize);
 
 	local desaturated = not HasActiveSeason();
 	self.ChestTexture:SetDesaturated(desaturated);
@@ -365,7 +375,6 @@ function GreatVaultButtonMixin:OnEnter()
 		return;
 	end
 
-	local state = self:GetState();
 	local maxUnlocks = self:GetMaxNumRewards(Enum.WeeklyRewardChestThresholdType.World);
 	local unlocksCompleted = self:GetNumUnlockedRewards(Enum.WeeklyRewardChestThresholdType.World);
 	local description = DELVES_GREAT_VAULT_TOOLTIP:format(unlocksCompleted, maxUnlocks);
@@ -379,6 +388,20 @@ function GreatVaultButtonMixin:OnEnter()
 
 	GameTooltip_AddInstructionLine(GameTooltip, WEEKLY_REWARDS_CLICK_TO_PREVIEW_INSTRUCTIONS);
 	GameTooltip:Show();
+
+	if self.AnimTexture.Anim:IsPlaying() then
+		self.AnimTexture.Anim:Stop();
+		self.AnimTexture:Hide();
+	end
+end
+
+function GreatVaultButtonMixin:OnLeave()
+	GameTooltip:Hide();
+
+	if C_WeeklyRewards.HasAvailableRewards() then
+		self.AnimTexture:Show();
+		self.AnimTexture.Anim:Play();
+	end
 end
 
 function GreatVaultButtonMixin:OnMouseUp(...)

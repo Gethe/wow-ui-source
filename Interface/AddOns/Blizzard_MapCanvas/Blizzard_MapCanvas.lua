@@ -193,9 +193,6 @@ do
 
 			pin:SetMouseClickEnabled(isMouseClickEnabled);
 			pin:SetMouseMotionEnabled(isMouseMotionEnabled);
-
-			-- Most pins should pass through right clicks to allow the map to zoom out
-			pin:CheckMouseButtonPassthrough("RightButton");
 		end
 
 		if newPin then
@@ -205,6 +202,11 @@ do
 		self.ScrollContainer:MarkCanvasDirty();
 		pin:Show();
 		pin:OnAcquired(...);
+
+		-- Most pins should pass through right clicks to allow the map to zoom out
+		-- This needs to be checked after OnAcquired because re-used pins can have
+		-- dynamic setups that requires input propagation adjustment.
+		pin:CheckMouseButtonPassthrough("RightButton");
 
 		return pin;
 	end

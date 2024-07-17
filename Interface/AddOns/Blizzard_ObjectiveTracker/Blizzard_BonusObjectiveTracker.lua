@@ -82,7 +82,8 @@ function BonusObjectiveTrackerMixin:OnBlockHeaderClick(block, button)
 			MenuUtil.CreateContextMenu(self:GetContextMenuParent(), function(owner, rootDescription)
 				rootDescription:SetTag("MENU_BONUS_OBJECTIVE_TRACKER", block);
 
-				rootDescription:CreateTitle(C_TaskQuest.GetQuestInfoByQuestID(questID));
+				local questTitle = C_TaskQuest.GetQuestInfoByQuestID(questID);
+				rootDescription:CreateTitle(questTitle);
 				rootDescription:CreateButton(OBJECTIVES_STOP_TRACKING, function()
 					QuestUtil.UntrackWorldQuest(questID);
 				end);

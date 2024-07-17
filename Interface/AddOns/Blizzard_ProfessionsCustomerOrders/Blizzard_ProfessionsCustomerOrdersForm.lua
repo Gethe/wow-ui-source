@@ -486,6 +486,8 @@ function ProfessionsCustomerOrderFormMixin:OnEvent(event, ...)
 					errorText = CRAFTING_ORDER_FAILED_TARGET_CANT_CRAFT;
 				elseif result == Enum.CraftingOrderResult.MaxOrdersReached then
 					errorText = PROFESSIONS_MAX_ORDERS_REACHED;
+				elseif result == Enum.CraftingOrderResult.NoAccountItems then
+					errorText = CRAFTING_ORDER_FAILED_ACCOUNT_ITEMS;
 				else
 					errorText = PROFESSIONS_ORDER_PLACEMENT_FAILED;
 				end

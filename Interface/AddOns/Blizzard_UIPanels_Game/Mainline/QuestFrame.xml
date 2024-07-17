@@ -283,102 +283,44 @@
 		</Scripts>
 	</Frame>
 	<ModelScene name="QuestModelScene" inherits="PanningModelSceneMixinTemplate" hidden="true">
-		<Size x="198" y="230"/>
+		<Size x="198" y="240"/>
 		<KeyValues>
 			<KeyValue key="normalIntensity" value="0.75" type="number"/>
 			<KeyValue key="highlightIntensity" value="1.2" type="number"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="QuestNPCModelBg" inherits="QuestPortrait-MrBrownstone">
+				<Texture parentKey="ModelBackground" atlas="ui-frame-bossportrait-background" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="-1">
-				<Texture name="QuestNPCModelShadowOverlay" file="Interface\TalentFrame\PetTalent-ShadowOverlay" setAllPoints="true">
-					<TexCoords left="0.00000000" right="0.537109375" top="0" bottom="0.791015625"/>
-				</Texture>
-				<Texture name="QuestNPCModelTopBg" inherits="QuestPortrait-StoneSwirls-Top">
-					<Anchors>
-						<Anchor point="TOPLEFT" y="16"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture name="QuestNPCModelBotLeftCorner" inherits="UI-Frame-BotCornerLeft" parentKey="BorderBottomLeft">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="-5" y="-5"/>
-					</Anchors>
-				</Texture>
-				<Texture name="QuestNPCModelBotRightCorner" inherits="UI-Frame-BotCornerRight" parentKey="BorderBottomRight">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="2" y="-5"/>
-					</Anchors>
-				</Texture>
-				<Texture name="QuestNPCModelTopBorder" inherits="_UI-Frame-TitleTile" parentKey="BorderTop">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-1" y="20"/>
-						<Anchor point="TOPRIGHT" x="1" y="20"/>
-					</Anchors>
-				</Texture>
-				<Texture name="QuestNPCModelBottomBorder" inherits="_UI-Frame-Bot" parentKey="BorderBottom">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeTo="QuestNPCModelBotLeftCorner" relativePoint="BOTTOMRIGHT" y="0"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="QuestNPCModelBotRightCorner" relativePoint="BOTTOMLEFT" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture name="QuestNPCModelLeftBorder" inherits="!UI-Frame-LeftTile" parentKey="BorderLeft">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-5"/>
-						<Anchor point="BOTTOMLEFT" relativeTo="QuestNPCModelBotLeftCorner" relativePoint="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="QuestNPCModelRightBorder" inherits="!UI-Frame-RightTile" parentKey="BorderRight">
-					<Anchors>
-						<Anchor point="TOPRIGHT" x="3"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="QuestNPCModelBotRightCorner" relativePoint="TOPRIGHT" x="1"/>
-					</Anchors>
-				</Texture>
-			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="1">
-				<Texture name="QuestNPCModelNameplate" inherits="QuestPortrait-Nameplate">
+				<Texture parentKey="ModelNameDivider" atlas="ui-frame-bossportrait-divider" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="-216"/>
-					</Anchors>
-				</Texture>
-				<Texture name="QuestNPCModelBlankNameplate" inherits="QuestPortrait-Divider_noname">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="0" y="12"/>
+						<Anchor point="CENTER" relativeKey="$parent.ModelBackground" relativePoint="BOTTOM" y="-6"/>
 					</Anchors>
 				</Texture>
 				<FontString name="QuestNPCModelNameText" inherits="GameFontNormal">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="QuestNPCModelNameplate" x="22" y="-12"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="QuestNPCModelNameplate" x="-22" y="12"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ModelNameDivider" x="25" y="-12"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ModelNameDivider" x="-25" y="12"/>
 					</Anchors>
 				</FontString>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="2">
-				<Texture name="QuestNPCCornerTopLeft" inherits="QuestPortrait-Corner_UL">
+			<Layer level="OVERLAY" textureSubLevel="-1">
+				<Texture parentKey="ShadowOverlay" file="Interface\TalentFrame\PetTalent-ShadowOverlay" setAllPoints="true">
+					<TexCoords left="0.00000000" right="0.537109375" top="0" bottom="0.791015625"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-6" y="24"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ModelBackground" relativePoint="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ModelBackground" relativePoint="BOTTOMRIGHT" x="1" y="0"/>
 					</Anchors>
 				</Texture>
-				<Texture name="QuestNPCCornerTopRight" inherits="QuestPortrait-Corner_UR">
+				<Texture parentKey="ModelNameBackground" atlas="ui-frame-bossportrait-divider-middle-tile" horizTile="true" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOPRIGHT" x="7" y="24"/>
-					</Anchors>
-				</Texture>
-				<Texture name="QuestNPCCornerBottomLeft" inherits="QuestPortrait-Corner_BL">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="-6" y="-26"/>
-					</Anchors>
-				</Texture>
-				<Texture name="QuestNPCCornerBottomRight" inherits="QuestPortrait-Corner_BR">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="7" y="-26"/>
+						<Anchor point="LEFT" relativeKey="$parent.ModelNameDivider" relativePoint="LEFT" y="-2"/>
+						<Anchor point="RIGHT" relativeKey="$parent.ModelNameDivider" relativePoint="RIGHT" y="-2"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -401,71 +343,42 @@
 					</OnLeave>
 				</Scripts>
 			</Frame>
-			<Frame name="QuestNPCModelTextFrame" useParentLevel="true">
-				<Size x="198" y="84"/>
+			<Frame parentKey="ModelTextFrame" useParentLevel="true">
+				<Size x="198" y="165"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="QuestNPCModelNameplate" relativePoint="BOTTOMLEFT" y="12"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ModelNameDivider" relativePoint="BOTTOMLEFT" y="8"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="QuestNPCModelTextFrameBg" inherits="QuestPortrait-MrBrownstone">
-							<Size x="197" y="64"/>
-							<TexCoords left="0.00390625" right="0.77343750" top="0.00195313" bottom="0.126953125"/>
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY">
-						<Texture name="QuestNPCModelTextBotLeftCorner" inherits="UI-Frame-BotCornerLeft" parentKey="BorderBottomLeft">
+						<Texture parentKey="TextBackground" atlas="ui-frame-bossportrait-text-background">
 							<Anchors>
-								<Anchor point="BOTTOMLEFT" x="-5" y="-5"/>
-							</Anchors>
-						</Texture>
-						<Texture name="QuestNPCModelTextBotRightCorner" inherits="UI-Frame-BotCornerRight" parentKey="BorderBottomRight">
-							<Anchors>
-								<Anchor point="BOTTOMRIGHT" x="2" y="-5"/>
-							</Anchors>
-						</Texture>
-						<Texture name="QuestNPCModelTextBottomBorder" inherits="_UI-Frame-Bot" parentKey="BorderBottom">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativeTo="QuestNPCModelTextBotLeftCorner" relativePoint="BOTTOMRIGHT" y="0"/>
-								<Anchor point="BOTTOMRIGHT" relativeTo="QuestNPCModelTextBotRightCorner" relativePoint="BOTTOMLEFT" y="0"/>
-							</Anchors>
-						</Texture>
-						<Texture name="QuestNPCModelTextLeftBorder" inherits="!UI-Frame-LeftTile" parentKey="BorderLeft">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="-5"/>
-								<Anchor point="BOTTOMLEFT" relativeTo="QuestNPCModelTextBotLeftCorner" relativePoint="TOPLEFT"/>
-							</Anchors>
-						</Texture>
-						<Texture name="QuestNPCModelTextRightBorder" inherits="!UI-Frame-RightTile" parentKey="BorderRight">
-							<Anchors>
-								<Anchor point="TOPRIGHT" x="3"/>
-								<Anchor point="BOTTOMRIGHT" relativeTo="QuestNPCModelTextBotRightCorner" relativePoint="TOPRIGHT" x="1"/>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 				</Layers>
 				<Frames>
 					<ScrollFrame name="QuestNPCModelTextScrollFrame" inherits="ScrollFrameTemplate" useParentLevel="true">
-						<Size x="178" y="75"/>
+						<Size x="178"/>
 						<KeyValues>
-							<KeyValue key="scrollBarHideIfUnscrollable" value="true" type="boolean"/>
 							<KeyValue key="scrollBarX" value="-4" type="number"/>
-							<KeyValue key="scrollBarTopY" value="-1" type="number"/>
-							<KeyValue key="scrollBarBottomY" value="-5" type="number"/>
+							<KeyValue key="scrollBarTopY" value="10" type="number"/>
+							<KeyValue key="scrollBarBottomY" value="-10" type="number"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="TOPLEFT" x="10" y="-3"/>
+							<Anchor point="TOPLEFT" x="10" y="-18"/>
+							<Anchor point="BOTTOMRIGHT" x="-10" y="18"/>
 						</Anchors>
 						<ScrollChild>
 							<Frame name="QuestNPCModelTextScrollChildFrame">
-								<Size x="178" y="1"/>
+								<Size x="168"/>
 								<Layers>
 									<Layer level="ARTWORK">
 										<FontString name="QuestNPCModelText" inherits="GameFontHighlight" justifyH="LEFT" justifyV="TOP">
-											<Size x="178"/>
+											<Size x="168"/>
 											<Anchors>
 												<Anchor point="TOPLEFT"/>
-												<Anchor point="TOPRIGHT" x="-5"/>
 											</Anchors>
 											<Color r="0.96875" g="0.8984375" b="0.578125"/>
 										</FontString>
@@ -475,17 +388,25 @@
 						</ScrollChild>
 					</ScrollFrame>
 				</Frames>
-				<Scripts>
-					<OnShow>
-						QuestNPCCornerBottomLeft:SetPoint("BOTTOMLEFT", self, -6, -6);
-						QuestNPCCornerBottomRight:SetPoint("BOTTOMRIGHT", self, 7, -6);
-					</OnShow>
-					<OnHide>
-						QuestNPCCornerBottomLeft:SetPoint("BOTTOMLEFT", QuestModelScene, -6, -29);
-						QuestNPCCornerBottomRight:SetPoint("BOTTOMRIGHT", QuestModelScene, 7, -29);
-					</OnHide>
-				</Scripts>
 			</Frame>
 		</Frames>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="3">
+				<Texture parentKey="Border" atlas="ui-frame-bossportrait-9slice" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ModelBackground" x="-9" y="27"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ModelTextFrame.TextBackground" x="10" y="-6"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="TopBarBg" atlas="ui-frame-bossportrait-tile" horizTile="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Border" x="11" y="-8"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Border" relativePoint="TOPRIGHT" x="-11" y="-26"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 	</ModelScene>
 </Ui>

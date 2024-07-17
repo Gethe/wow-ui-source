@@ -1430,5 +1430,5 @@ function RPEUpgradeMinimizedFrameMixin:OnLeave()
 end
 
 function RPEUpgradeMinimizedFrameMixin:OnClick()
-	CharSelectServicesFlow_Maximize()
+	CharSelectServicesFlow_Maximize();
 end

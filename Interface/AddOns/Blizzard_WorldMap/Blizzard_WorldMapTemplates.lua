@@ -81,15 +81,7 @@ end
 
 function WorldMapFilterMixin:SetTrackingFilter(set)
 	assertsafe(self.minimapTrackingFilter);
-	local filter = self.minimapTrackingFilter;
-
-	for id = 1, C_Minimap.GetNumTrackingTypes() do
-		local filterInfo = C_Minimap.GetTrackingFilter(id);
-		if filterInfo and filterInfo.filterID == filter then
-			C_Minimap.SetTracking(id, set);
-			return;
-		end
-	end
+	MinimapUtil.SetTrackingFilterByFilterID(self.minimapTrackingFilter, set);
 end
 
 function WorldMapFilterMixin:Get()
