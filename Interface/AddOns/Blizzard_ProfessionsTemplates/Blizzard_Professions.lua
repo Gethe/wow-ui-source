@@ -173,12 +173,12 @@ function Professions.FlyoutOnElementEnterImplementation(elementData, tooltip, re
 	
 	Professions.AddCommonOptionalTooltipInfo(item, tooltip, recipeID, recraftItemGUID, transaction);
 
-	local count = ItemUtil.GetCraftingReagentCount(item:GetItemID());
+	local count = ItemUtil.GetCraftingReagentCount(item:GetItemID(), transaction:ShouldUseCharacterInventoryOnly());
 	if count <= 0 then
 		GameTooltip_AddErrorLine(tooltip, OPTIONAL_REAGENT_NONE_AVAILABLE);
 	else
 		local reagent = Professions.CreateCraftingReagentByItemID(item:GetItemID());
-		local quantityOwned = ProfessionsUtil.GetReagentQuantityInPossession(reagent);
+		local quantityOwned = ProfessionsUtil.GetReagentQuantityInPossession(reagent, transaction:ShouldUseCharacterInventoryOnly());
 		if quantityOwned < reagentSlotSchematic.quantityRequired then
 			GameTooltip_AddErrorLine(tooltip, OPTIONAL_REAGENT_INSUFFICIENT_AVAILABLE);
 		end
@@ -493,13 +493,13 @@ function Professions.SetupOptionalReagentTooltip(slot, recipeID, reagentSlotSche
 	end
 end
 
-local function AllocateReagents(allocations, reagentSlotSchematic, useBestQuality)
+local function AllocateReagents(allocations, reagentSlotSchematic, useBestQuality, useCharacterInventoryOnly)
 	allocations:Clear();
 
 	local quantityRequired = reagentSlotSchematic.quantityRequired;
 	local iterator = useBestQuality and ipairs_reverse or ipairs;
 	for reagentIndex, reagent in iterator(reagentSlotSchematic.reagents) do
-		local quantity = ProfessionsUtil.GetReagentQuantityInPossession(reagent);
+		local quantity = ProfessionsUtil.GetReagentQuantityInPossession(reagent, useCharacterInventoryOnly);
 		allocations:Allocate(reagent, math.min(quantity, quantityRequired));
 		quantityRequired = quantityRequired - quantity;
 
@@ -516,7 +516,7 @@ end
 local function AllocateBasicReagents(transaction, reagentSlotSchematic, slotIndex, useBestQuality)
 	if reagentSlotSchematic.reagentType == Enum.CraftingReagentType.Basic then
 		local allocations = transaction:GetAllocations(slotIndex);
-		AllocateReagents(allocations, reagentSlotSchematic, useBestQuality);
+		AllocateReagents(allocations, reagentSlotSchematic, useBestQuality, transaction:ShouldUseCharacterInventoryOnly());
 	end
 end
 
@@ -538,7 +538,7 @@ function Professions.CanAllocateReagents(transaction, slotIndex)
 	local reagentSlotSchematic = transaction:GetReagentSlotSchematic(slotIndex);
 	local quantityRequired = reagentSlotSchematic.quantityRequired;
 	for reagentIndex, reagent in ipairs(reagentSlotSchematic.reagents) do
-		local quantity = ProfessionsUtil.GetReagentQuantityInPossession(reagent);
+		local quantity = ProfessionsUtil.GetReagentQuantityInPossession(reagent, transaction:ShouldUseCharacterInventoryOnly());
 		quantityRequired = quantityRequired - quantity;
 
 		if quantityRequired <= 0 then

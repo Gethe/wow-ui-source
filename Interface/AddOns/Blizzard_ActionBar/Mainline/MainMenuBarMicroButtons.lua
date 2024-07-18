@@ -1680,12 +1680,14 @@ end
 function MicroMenuMixin:GetEdgeButton(rightMost, topMost)
 	local firstButton = nil;
 	local lastButton = nil;
-	for i, child in ipairs({self:GetChildren()}) do
-		if not firstButton or (child.layoutIndex < firstButton.layoutIndex) then
-			firstButton = child;
-		end
-		if not lastButton or (child.layoutIndex > lastButton.layoutIndex) then
-			lastButton = child;
+	for _, child in ipairs({self:GetChildren()}) do
+		if child.layoutIndex then
+			if not firstButton or (child.layoutIndex < firstButton.layoutIndex) then
+				firstButton = child;
+			end
+			if not lastButton or (child.layoutIndex > lastButton.layoutIndex) then
+				lastButton = child;
+			end
 		end
 	end
 

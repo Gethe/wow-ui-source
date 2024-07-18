@@ -486,6 +486,8 @@ function ProfessionsCustomerOrderFormMixin:OnEvent(event, ...)
 					errorText = CRAFTING_ORDER_FAILED_TARGET_CANT_CRAFT;
 				elseif result == Enum.CraftingOrderResult.MaxOrdersReached then
 					errorText = PROFESSIONS_MAX_ORDERS_REACHED;
+				elseif result == Enum.CraftingOrderResult.NoAccountItems then
+					errorText = CRAFTING_ORDER_FAILED_ACCOUNT_ITEMS;
 				else
 					errorText = PROFESSIONS_ORDER_PLACEMENT_FAILED;
 				end
@@ -835,7 +837,9 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 								self.QualityDialog:RegisterCallback(ProfessionsQualityDialogMixin.Event.Accepted, OnAllocationsAccepted, slot);
 								
 								local allocationsCopy = transaction:GetAllocationsCopy(slotIndex);
-								self.QualityDialog:Open(recipeID, reagentSlotSchematic, allocationsCopy, slotIndex);
+								local disallowZeroAllocations = false;
+								local characterInventoryOnly = true;
+								self.QualityDialog:Open(recipeID, reagentSlotSchematic, allocationsCopy, slotIndex, disallowZeroAllocations, characterInventoryOnly);
 							end
 						end
 					end);
@@ -902,7 +906,7 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 				end
 
 				local function OverwriteAllocationWithQuantityInPossession(slotIndex, reagent, reagentSlotSchematic)
-					local quantityOwned = ProfessionsUtil.GetReagentQuantityInPossession(reagent);
+					local quantityOwned = ProfessionsUtil.GetReagentQuantityInPossession(reagent, self.transaction:ShouldUseCharacterInventoryOnly());
 					local quantity = math.min(quantityOwned, reagentSlotSchematic.quantityRequired);
 					self.transaction:OverwriteAllocation(slotIndex, reagent, quantity);
 				end
@@ -959,12 +963,12 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 										itemIDs = ItemUtil.FilterOwnedItems(itemIDs);
 									end
 									local items = ItemUtil.TransformItemIDsToItems(itemIDs);
-									local elementData = {items = items};
+									local elementData = {items = items, useCharacterInventoryOnly = self.transaction:ShouldUseCharacterInventoryOnly()};
 									return elementData;
 								end
 								
 								flyout.OnElementEnterImplementation = function(elementData, tooltip)
-									Professions.FlyoutOnElementEnterImplementation(elementData, tooltip, recipeID, nil, self.transaction, reagentSlotSchematic);
+									Professions.FlyoutOnElementEnterImplementation(elementData, tooltip, recipeID, nil, self.transaction, reagentSlotSchematic, self.transaction:ShouldUseCharacterInventoryOnly());
 								end
 	
 								flyout.OnElementEnabledImplementation = function(button, elementData, displayCount)
@@ -982,7 +986,7 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 										return false;
 									end
 
-									local quantityOwned = ProfessionsUtil.GetReagentQuantityInPossession(reagent);
+									local quantityOwned = ProfessionsUtil.GetReagentQuantityInPossession(reagent, self.transaction:ShouldUseCharacterInventoryOnly());
 									if quantityOwned < reagentSlotSchematic.quantityRequired then
 										return false;
 									end
@@ -1090,6 +1094,7 @@ function ProfessionsCustomerOrderFormMixin:InitSchematic()
 
 	local recipeSchematic = self.order.spellID and C_TradeSkillUI.GetRecipeSchematic(self.order.spellID, self.order.isRecraft);
 	self.transaction = recipeSchematic and CreateProfessionsRecipeTransaction(recipeSchematic);
+	self.transaction:SetUseCharacterInventoryOnly(true);
 
 	if self.order.isRecraft then
 		if self.recraftGUID then

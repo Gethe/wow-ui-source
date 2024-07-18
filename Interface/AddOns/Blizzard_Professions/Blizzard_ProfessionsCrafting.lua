@@ -428,7 +428,7 @@ function ProfessionsCraftingPageMixin:GetCraftableCount()
 
 	local function ClampAllocations(allocations)
 		for slotIndex, allocation in allocations:Enumerate() do
-			local quantity = ProfessionsUtil.GetReagentQuantityInPossession(allocation:GetReagent());
+			local quantity = ProfessionsUtil.GetReagentQuantityInPossession(allocation:GetReagent(), transaction:ShouldUseCharacterInventoryOnly());
 			local quantityMax = allocation:GetQuantity();
 			ClampInvervals(quantity, quantityMax);
 		end
@@ -452,7 +452,7 @@ function ProfessionsCraftingPageMixin:GetCraftableCount()
 		for slotIndex, reagents in transaction:EnumerateAllSlotReagents() do
 			if transaction:IsSlotBasicReagentType(slotIndex) then
 				local quantity = AccumulateOp(reagents, function(reagent)
-					return ProfessionsUtil.GetReagentQuantityInPossession(reagent);
+					return ProfessionsUtil.GetReagentQuantityInPossession(reagent, transaction:ShouldUseCharacterInventoryOnly());
 				end);
 
 				local quantityMax = transaction:GetQuantityRequiredInSlot(slotIndex);
@@ -465,7 +465,7 @@ function ProfessionsCraftingPageMixin:GetCraftableCount()
 					local quantity = AccumulateOp(reagents, function(reagent)
 						-- Only include the allocated reagents for modifying-required slots.
 						if transaction:IsReagentAllocated(slotIndex, reagent) then
-							return ProfessionsUtil.GetReagentQuantityInPossession(reagent);
+							return ProfessionsUtil.GetReagentQuantityInPossession(reagent, transaction:ShouldUseCharacterInventoryOnly());
 						end
 						return 0;
 					end);
@@ -528,7 +528,7 @@ function ProfessionsCraftingPageMixin:GetCraftableCount()
 		local enchantItem = transaction:GetEnchantAllocation();
 		if enchantItem then
 			if enchantItem:IsStackable() then
-				local quantity = ItemUtil.GetCraftingReagentCount(enchantItem:GetItemID());
+				local quantity = ItemUtil.GetCraftingReagentCount(enchantItem:GetItemID(), transaction:ShouldUseCharacterInventoryOnly())
 				local quantityMax = 1;
 				ClampInvervals(quantity, quantityMax); 
 			else

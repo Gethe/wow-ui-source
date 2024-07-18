@@ -29,7 +29,7 @@ function ProfessionsItemFlyoutButtonMixin:Init(elementData, onElementEnabledImpl
 	local forceAccumulateInventory = elementData.forceAccumulateInventory;
 	local accumulateInventory = forceAccumulateInventory or not itemLocation or (item:IsStackable() and not elementData.onlyCountStack);
 	if accumulateInventory then
-		count = ItemUtil.GetCraftingReagentCount(item:GetItemID());
+		count = ItemUtil.GetCraftingReagentCount(item:GetItemID(), elementData.useCharacterInventoryOnly);
 	elseif itemLocation then
 		count = C_Item.GetStackCount(itemLocation);
 	end

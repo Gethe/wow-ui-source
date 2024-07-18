@@ -233,11 +233,12 @@ function ItemUtil.PickupBagItem(itemLocation)
 	end
 end
 
-function ItemUtil.GetCraftingReagentCount(itemID)
+function ItemUtil.GetCraftingReagentCount(itemID, characterInventoryOnly)
 	local includeBank = true;
 	local includeUses = false;
 	local includeReagentBank = true;
-	return C_Item.GetItemCount(itemID, includeBank, includeUses, includeReagentBank);
+	local includeAccountBank = not characterInventoryOnly;
+	return C_Item.GetItemCount(itemID, includeBank, includeUses, includeReagentBank, includeAccountBank);
 end
 
 function ItemUtil.IterateBagSlots(bag, callback)

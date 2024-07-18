@@ -388,6 +388,16 @@ local CraftingOrderUI =
 			},
 		},
 		{
+			Name = "CraftingordersCraftOrderResponse",
+			Type = "Event",
+			LiteralName = "CRAFTINGORDERS_CRAFT_ORDER_RESPONSE",
+			Payload =
+			{
+				{ Name = "result", Type = "CraftingOrderResult", Nilable = false },
+				{ Name = "orderID", Type = "BigUInteger", Nilable = false },
+			},
+		},
+		{
 			Name = "CraftingordersCustomerFavoritesChanged",
 			Type = "Event",
 			LiteralName = "CRAFTINGORDERS_CUSTOMER_FAVORITES_CHANGED",

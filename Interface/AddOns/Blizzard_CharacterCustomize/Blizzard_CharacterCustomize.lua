@@ -926,13 +926,15 @@ do
 				button.HighlightBGTex:SetAlpha(0);
 	
 				button:SetScript("OnClick", function(button, buttonName)
-					description:Pick(MenuInputContext.MouseButton, buttonName);
+					if CanSelect(choiceData) then
+						description:Pick(MenuInputContext.MouseButton, buttonName);
+					end 
 				end);
-	
+				
 				local selected = IsSelected(choiceData);
 				
 				button.SelectionDetails:Init(choiceData, choiceIndex, selected, hasAFailedReq, hasALockedChoice);
-				
+
 				--[[
 				We will have 2 Layout() calls. One for the reference width, and another to account
 				for the column count changing in FinalizeLayout below.
@@ -1589,23 +1591,23 @@ function CharCustomizeMixin:UpdateOptionButtons(forceReset)
 
 	local optionsToSetup = {};
 	for _, categoryData in ipairs(self:GetCategories()) do
-			local categoryPool = self:GetCategoryPool(categoryData);
-			local button = categoryPool:Acquire();
+		local categoryPool = self:GetCategoryPool(categoryData);
+		local button = categoryPool:Acquire();
 
-			if categoryData.chrModelID then
-				self.hasChrModels = true;
-				if not self.firstChrModelID then
-					self.firstChrModelID = categoryData.chrModelID;
-				end
+		if categoryData.chrModelID then
+			self.hasChrModels = true;
+			if not self.firstChrModelID then
+				self.firstChrModelID = categoryData.chrModelID;
 			end
+		end
 
-			if categoryData.spellShapeshiftFormID then
-				self.hasShapeshiftForms = true;
-			end
+		if categoryData.spellShapeshiftFormID then
+			self.hasShapeshiftForms = true;
+		end
 
-			if categoryData.needsNativeFormCategory then
-				self.needsNativeFormCategory = true;
-			end
+		if categoryData.needsNativeFormCategory then
+			self.needsNativeFormCategory = true;
+		end
 
 		local selectedSubcategoryDataID = 0;
 		if self.selectedSubcategoryData then
@@ -1619,37 +1621,37 @@ function CharCustomizeMixin:UpdateOptionButtons(forceReset)
 			button:SetCategory(categoryData, self.selectedCategoryData.id);
 		end
 
-			button:Show();
+		button:Show();
 
 		local fallbackToCategory = not selectedSubcategoryDataID;
 		local categoryMatches = self.selectedCategoryData.id == categoryData.id;
 		local subcategoryMatches = selectedSubcategoryDataID == categoryData.id;
 
 		if (fallbackToCategory and categoryMatches) or subcategoryMatches then
-				for _, optionData in ipairs(categoryData.options) do
-					local optionPool = self:GetOptionPool(optionData.optionType);
-					if optionPool then
-						local optionFrame;
+			for _, optionData in ipairs(categoryData.options) do
+				local optionPool = self:GetOptionPool(optionData.optionType);
+				if optionPool then
+					local optionFrame;
 
-						if interactingOption and interactingOption.optionData.id == optionData.id then
-							-- This option is being interacted with and so was not released.
-							optionFrame = interactingOption;
-						else
-							optionFrame = optionPool:Acquire();
-						end
-						-- This is only to guarantee that the frame has a resolvable rect prior to layout. Intended to disappear
-						-- in a future version of LayoutFrame.
-						optionFrame:SetPoint("TOPLEFT");
-
-						-- Just set layoutIndex on the option and add it to optionsToSetup for now.
-						-- Setup will be called on each one, but it needs to happen after self.Options:Layout() is called
-						optionFrame.layoutIndex = optionData.orderIndex;
-						optionsToSetup[optionFrame] = optionData;
-						optionFrame:Show();
+					if interactingOption and interactingOption.optionData.id == optionData.id then
+						-- This option is being interacted with and so was not released.
+						optionFrame = interactingOption;
+					else
+						optionFrame = optionPool:Acquire();
 					end
+					-- This is only to guarantee that the frame has a resolvable rect prior to layout. Intended to disappear
+					-- in a future version of LayoutFrame.
+					optionFrame:SetPoint("TOPLEFT");
+
+					-- Just set layoutIndex on the option and add it to optionsToSetup for now.
+					-- Setup will be called on each one, but it needs to happen after self.Options:Layout() is called
+					optionFrame.layoutIndex = optionData.orderIndex;
+					optionsToSetup[optionFrame] = optionData;
+					optionFrame:Show();
 				end
 			end
 		end
+	end
 
 	self.Categories:Layout();
 

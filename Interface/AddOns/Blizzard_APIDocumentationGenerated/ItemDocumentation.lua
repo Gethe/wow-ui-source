@@ -348,6 +348,7 @@ local Item =
 				{ Name = "includeBank", Type = "bool", Nilable = false, Default = false },
 				{ Name = "includeUses", Type = "bool", Nilable = false, Default = false },
 				{ Name = "includeReagentBank", Type = "bool", Nilable = false, Default = false },
+				{ Name = "includeAccountBank", Type = "bool", Nilable = false, Default = false },
 			},
 
 			Returns =
