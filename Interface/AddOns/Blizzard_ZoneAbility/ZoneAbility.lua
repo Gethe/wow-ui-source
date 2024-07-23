@@ -105,7 +105,7 @@ end
 
 function ZoneAbilityFrameMixin:UpdateDisplayedZoneAbilities()
 	-- Leaving this as a surgical fix for timerunning for now.
-	local hideZoneAbilities = PlayerGetTimerunningSeasonID and HasVehicleActionBar();
+	local hideZoneAbilities = PlayerGetTimerunningSeasonID() and HasVehicleActionBar();
 
 	local zoneAbilities = hideZoneAbilities and {} or GetActiveZoneAbilities();
 	table.sort(zoneAbilities, SortByUIPriority);
@@ -116,7 +116,8 @@ function ZoneAbilityFrameMixin:UpdateDisplayedZoneAbilities()
 	for i, zoneAbilityInfo in ipairs(zoneAbilities) do
 		local spellID = zoneAbilityInfo.spellID;
 		local excludeNonPlayerBars = true;
-		local hasZoneAbilityOnBar = ActionButtonUtil.IsSpellOnAnyActiveActionBar(spellID, excludeNonPlayerBars);
+		local excludeSpecialPlayerBars = true;
+		local hasZoneAbilityOnBar = ActionButtonUtil.IsSpellOnAnyActiveActionBar(spellID, excludeNonPlayerBars, excludeSpecialPlayerBars);
 		activeAbilityIsDisplayedOnBar[spellID] = hasZoneAbilityOnBar;
 		if not hasZoneAbilityOnBar then
 			if #displayedZoneAbilities == 0 then
@@ -265,7 +266,7 @@ function ZoneAbilityFrameSpellButtonMixin:OnClick()
 end
 
 function ZoneAbilityFrameSpellButtonMixin:OnDragStart()
-	PickupSpell(self:GetSpellID());
+	C_Spell.PickupSpell(self:GetSpellID());
 	SetCVarBitfield("closedExtraAbiltyTutorials", self.zoneAbilityInfo.zoneAbilityID, true);
 	HideZoneAbilityTutorial();
 end
@@ -273,19 +274,18 @@ end
 function ZoneAbilityFrameSpellButtonMixin:Refresh()
 	local spellID = self:GetOverrideSpellID();
 
-	local charges, maxCharges, chargeStart, chargeDuration = GetSpellCharges(spellID);
-	local start, duration, enable = GetSpellCooldown(spellID);
-	local usesCount = GetSpellCount(spellID);
+	local chargeInfo = C_Spell.GetSpellCharges(spellID);
+	local cooldownInfo = C_Spell.GetSpellCooldown(spellID);
+	local usesCount = C_Spell.GetSpellCastCount(spellID);
 
 	local icon = C_ZoneAbility.GetZoneAbilityIcon(spellID);
 	self.Icon:SetTexture(icon);
 
 	local spellCount = nil;
-	if maxCharges and maxCharges > 1 then
-		spellCount = charges;
-
-		if charges < maxCharges then
-			StartChargeCooldown(self, chargeStart, chargeDuration, enable);
+	if chargeInfo then
+		spellCount = chargeInfo.currentCharges;
+		if chargeInfo.currentCharges < chargeInfo.maxCharges then
+			StartChargeCooldown(self, chargeInfo.cooldownStartTime, chargeInfo.cooldownDuration, chargeInfo.chargeModRate);
 		end
 	elseif usesCount > 0 then
 		spellCount = usesCount;
@@ -293,8 +293,8 @@ function ZoneAbilityFrameSpellButtonMixin:Refresh()
 
 	self.Count:SetText(spellCount and spellCount or "");
 
-	if start then
-		CooldownFrame_Set(self.Cooldown, start, duration, enable);
+	if cooldownInfo then
+		CooldownFrame_Set(self.Cooldown, cooldownInfo.startTime, cooldownInfo.duration, cooldownInfo.isEnabled);
 	end
 end
 

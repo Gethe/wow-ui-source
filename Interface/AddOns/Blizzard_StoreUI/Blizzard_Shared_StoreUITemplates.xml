@@ -3,7 +3,7 @@
 	
 	<Script file="Blizzard_Shared_StoreUITemplates.lua" />
 	
-	<ScopedModifier forbidden="true" scriptsUseGivenEnv="true">
+	<ScopedModifier forbidden="true">
 
 		<Frame name="StoreTooltipBackdrop" inherits="NineSlicePanelTemplate" mixin="StoreTooltipBackdropMixin" virtual="true">
 			<KeyValues>
@@ -413,7 +413,7 @@
 			</Scripts>
 		</EditBox>
 		
-		<Button name="StoreDropDownMenuButtonTemplate" virtual="true" parentArray="Buttons">
+		<Button name="StoreDropdownMenuButtonTemplate" virtual="true" parentArray="Buttons">
 			<Size x="100" y="16"/>
 			<Layers>
 				<Layer level="ARTWORK">
@@ -445,15 +445,15 @@
 			<DisabledFont style="GameFontDisableSmallLeft"/>
 		</Button>
 		
-		<Button name="StoreDropDownListTemplate" hidden="true" enableMouse="true" virtual="true" clampedToScreen="true">
+		<Button name="StoreDropdownListTemplate" hidden="true" enableMouse="true" virtual="true" clampedToScreen="true">
 			<Frames>
 				<Frame parentKey="Border" inherits="SecureDialogBorderDarkTemplate"/>
-				<Button inherits="StoreDropDownMenuButtonTemplate" id="1">
+				<Button inherits="StoreDropdownMenuButtonTemplate" id="1">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="16" y="-16"/>
 					</Anchors>
 					<Scripts>
-						<OnLoad function="StoreDropDownMenuMenuButton_OnLoad"/>
+						<OnLoad function="StoreDropdownMenuMenuButton_OnLoad"/>
 					</Scripts>
 				</Button>
 			</Frames>
@@ -464,7 +464,7 @@
 			</Scripts>
 		</Button>
 		
-		<Frame name="StoreDropDownMenuTemplate" virtual="true">
+		<Frame name="StoreDropdownMenuTemplate" virtual="true">
 			<Size x="40" y="32"/>
 			<Layers>
 				<Layer level="BACKGROUND">
@@ -543,7 +543,7 @@
 						</Anchors>
 					</HighlightTexture>
 				</Button>
-				<Button parentKey="List" frameLevel="1500" inherits="StoreDropDownListTemplate" hidden="true">
+				<Button parentKey="List" frameLevel="1500" inherits="StoreDropdownListTemplate" hidden="true">
 					<Size x="266" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="8" y="-8"/>
@@ -551,7 +551,7 @@
 				</Button>
 			</Frames>
 			<Scripts>
-				<OnHide function="StoreDropDownMenu_OnHide"/>
+				<OnHide function="StoreDropdownMenu_OnHide"/>
 			</Scripts>
 		</Frame>
 		

@@ -2,8 +2,67 @@ local forceinsecure = forceinsecure;
 
 AddonCompartmentMixin = { };
 
+local function SortAddons(addonData1, addonData2)
+	return strcmputf8i(StripHyperlinks(addonData1.text), StripHyperlinks(addonData2.text)) < 0;
+end
+
 function AddonCompartmentMixin:OnLoad()
 	self.registeredAddons = { };
+	
+	self:SetScript("OnEnter", function()
+		GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+		GameTooltip_SetTitle(GameTooltip, ADDONS);
+		GameTooltip:Show();
+	end);
+
+	self:SetScript("OnLeave", function()
+		GameTooltip:Hide();
+	end);
+
+	self:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_ADDON_COMPARTMENT");
+
+		if not self.registeredAddons then
+			return;
+		end
+
+		table.sort(self.registeredAddons, SortAddons);
+
+		for index, addonData in ipairs(self.registeredAddons) do
+			local text = addonData.text;
+			local button = rootDescription:CreateButton(text, addonData.func);
+			button:AddInitializer(function(button, description, menu)
+				button:RegisterForClicks("AnyUp");
+
+				local texture = button:AttachTexture();
+				texture:SetPoint("LEFT");
+
+				local icon = addonData.icon;
+				local hasIcon = icon ~= nil;
+				if hasIcon then
+					texture:ClearAllPoints();
+					texture:SetPoint("RIGHT");
+					texture:SetSize(16, 16);
+					if C_Texture.GetAtlasInfo(icon) then
+						texture:SetAtlas(icon);
+					else
+						texture:SetTexture(icon);
+					end
+				end 
+				texture:SetShown(hasIcon);
+
+				local fontString = button.fontString;
+				fontString:ClearAllPoints();
+				fontString:SetPoint("LEFT");
+				fontString:SetTextToFit(text);
+				fontString:SetWidth(fontString:GetWidth() + (hasIcon and 16 or 0));
+			end);
+
+			button:SetOnEnter(addonData.funcOnEnter);
+			button:SetOnLeave(addonData.funcOnLeave);
+		end
+	end);
+
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 end
 
@@ -16,18 +75,15 @@ function AddonCompartmentMixin:OnEvent(event, ...)
 end
 
 function AddonCompartmentMixin:RegisterAddons()
-	local addonCount = C_AddOns.GetNumAddOns();
 	local character = UnitName("player");
-	for addon = 1, addonCount do
-		local addonEnabled = C_AddOns.GetAddOnEnableState(addon, character) == Enum.AddOnEnableState.All;
-		local addonCompartmentFunc = C_AddOns.GetAddOnMetadata(addon, "AddonCompartmentFunc");
-		local name, title, notes, loadable, reason, security = C_AddOns.GetAddOnInfo(addon);
+	for addonIndex = 1, C_AddOns.GetNumAddOns() do
+		local addonEnabled = C_AddOns.GetAddOnEnableState(addonIndex, character) == Enum.AddOnEnableState.All;
+		local addonCompartmentFunc = C_AddOns.GetAddOnMetadata(addonIndex, "AddonCompartmentFunc");
+		local name, title, notes, loadable, reason, security = C_AddOns.GetAddOnInfo(addonIndex);
 		if addonEnabled and addonCompartmentFunc and (loadable or reason == "DEMAND_LOADED") then
-			local info = UIDropDownMenu_CreateInfo();
-			info.text = title;
-			info.icon = C_AddOns.GetAddOnMetadata(addon, "IconTexture") or C_AddOns.GetAddOnMetadata(addon, "IconAtlas");
-			info.notCheckable = true;
-			info.registerForAnyClick = true;
+			local addonData = {};
+			addonData.text = title;
+			addonData.icon = C_AddOns.GetAddOnMetadata(addonIndex, "IconTexture") or C_AddOns.GetAddOnMetadata(addonIndex, "IconAtlas");
 
 			local function CallAddonGlobalFunc(addonCompartmentFunc, addonName, ...)
 				forceinsecure();
@@ -37,50 +93,42 @@ function AddonCompartmentMixin:RegisterAddons()
 				_G[addonCompartmentFunc](addonName, ...);
 			end
 
-			info.func = function(btn, arg1, arg2, checked, mouseButton)
-				CallAddonGlobalFunc(addonCompartmentFunc, name, mouseButton, btn);
+			addonData.func = function(data, menuInputData, menu)
+				CallAddonGlobalFunc(addonCompartmentFunc, name, menuInputData.buttonName);
 			end;
 
-			local onEnterGlobal = C_AddOns.GetAddOnMetadata(addon, "AddonCompartmentFuncOnEnter");
+			local onEnterGlobal = C_AddOns.GetAddOnMetadata(addonIndex, "AddonCompartmentFuncOnEnter");
 			if onEnterGlobal then
-				info.funcOnEnter = function(btn)
+				addonData.funcOnEnter = function(btn)
 					CallAddonGlobalFunc(onEnterGlobal, name, btn);
 				end
 			end
 
-			local onLeaveGlobal = C_AddOns.GetAddOnMetadata(addon, "AddonCompartmentFuncOnLeave");
+			local onLeaveGlobal = C_AddOns.GetAddOnMetadata(addonIndex, "AddonCompartmentFuncOnLeave");
 			if onLeaveGlobal then
-				info.funcOnLeave = function(btn)
+				addonData.funcOnLeave = function(btn)
 					CallAddonGlobalFunc(onLeaveGlobal, name, btn);
 				end
 			end
 
-			table.insert(self.registeredAddons, info);
+			table.insert(self.registeredAddons, addonData);
 		end
 	end
 
 	self:UpdateDisplay();
-
-	UIDropDownMenu_SetAnchor(self.DropDown, 0, 0, "TOPRIGHT", self, "BOTTOMRIGHT");
-
-	self:SetScript("OnEnter", function()
-		GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-		GameTooltip_SetTitle(GameTooltip, ADDONS);
-		GameTooltip:Show();
-	end);
-
-	self:SetScript("OnLeave", function()
-		GameTooltip:Hide();
-	end);
 end
 
-function AddonCompartmentMixin:OnClick()
-	ToggleDropDownMenu(1, nil, self.DropDown, self, 0, 0);
-end
+--[[
+Custom registration expects a table with the following keys:
+text: Name of your addon
+icon: Icon to appear to the right of the name
+func: Click callback
+funcOnEnter: OnEnter callback
+funcOnLeave: OnLeave callback
+]]--
 
--- Custom registration, insert your own UIDropDownMenu Info!
-function AddonCompartmentMixin:RegisterAddon(info)
-	table.insert(self.registeredAddons, info);
+function AddonCompartmentMixin:RegisterAddon(addonData)
+	table.insert(self.registeredAddons, addonData);
 	self:UpdateDisplay();
 end
 
@@ -90,26 +138,4 @@ function AddonCompartmentMixin:UpdateDisplay()
 
 	local featureEnabled = IsTestBuild() or C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.UserAddOns);
 	self:SetShown(featureEnabled and (addonCount > 0));
-end
-
-function AddonCompartmentDropDown_OnLoad(self)
-	UIDropDownMenu_Initialize(self, AddonCompartmentDropDown_Initialize, "MENU");
-end
-
-function AddonCompartmentDropDown_Initialize(self, level, menuList)
-	if level == 1 then
-		local addonCompartment = self:GetParent();
-
-		if addonCompartment.registeredAddons then
-			table.sort(addonCompartment.registeredAddons, function(infoA, infoB) return strcmputf8i(StripHyperlinks(infoA.text), StripHyperlinks(infoB.text)) < 0; end);
-
-			for _, info in ipairs(addonCompartment.registeredAddons) do
-				UIDropDownMenu_AddButton(info, level);
-			end
-		end
-	elseif menuList ~= nil then
-		for _, info in ipairs(menuList) do
-			UIDropDownMenu_AddButton(info, level);
-		end
-	end
 end

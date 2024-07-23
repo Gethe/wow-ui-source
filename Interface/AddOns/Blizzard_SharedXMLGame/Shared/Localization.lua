@@ -1,3 +1,5 @@
+-- luacheck: ignore 111 (setting non-standard global variable)
+
 local function UseEuropeanNumbers()
 	-- Keeping the behavior the same as it was, but it seems like this would ideally be in localize, not localizeFrames
 	SetEuropeanNumbers(true);

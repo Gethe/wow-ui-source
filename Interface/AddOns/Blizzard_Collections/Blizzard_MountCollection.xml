@@ -1,7 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
-	<Script file="Blizzard_MountCollection.lua"/>
-
 	<Frame name="AlertMountEquipmentFeatureTemplate" inherits="NewFeatureLabelTemplate" mixin="AlertMountEquipmentFeatureMixin" virtual="true">
 		<Size x="1" y="1"/>
 	</Frame>
@@ -114,7 +112,7 @@
 						<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.icon" x="10" y="1"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="DragonRidingLabel" inherits="GameFontDisableSmall" justifyH="LEFT" text="MOUNT_JOURNAL_FILTER_DRAGONRIDING" maxLines="1" hidden="true">
+				<FontString parentKey="SteadyFlightLabel" inherits="GameFontDisableSmall" justifyH="LEFT" text="MOUNT_JOURNAL_STEADY_FLIGHT_ONLY" maxLines="1" hidden="true">
 					<Size x="147"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.name" x="0" y="0"/>
@@ -191,9 +189,34 @@
 		</Scripts>
 	</Button>
 
+	<Button name="DynamicFlightFlyoutButtonTemplate" virtual="true">
+		<Size x="30" y="30"/>
+		<KeyValues>
+			<KeyValue key="align" value="center" type="string"/>
+		</KeyValues>
+		<NormalTexture parentKey="NormalTexture" atlas="UI-HUD-ActionBar-IconFrame">
+			<Size x="31" y="31"/>
+			<Anchors>
+				<Anchor point="TOPLEFT"/>
+			</Anchors>
+		</NormalTexture>
+		<PushedTexture atlas="UI-HUD-ActionBar-IconFrame-Down" parentKey="PushedTexture">
+			<Size x="31" y="31"/>
+			<Anchors>
+				<Anchor point="TOPLEFT"/>
+			</Anchors>
+		</PushedTexture>
+		<HighlightTexture atlas="UI-HUD-ActionBar-IconFrame-Mouseover" parentKey="HighlightTexture">
+			<Size x="31" y="31"/>
+			<Anchors>
+				<Anchor point="TOPLEFT"/>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
+	
 	<Frame name="MountJournal" parent="CollectionsJournal" setAllPoints="true">
 		<Frames>
-			<Button name="$parentSummonRandomFavoriteButton" parentKey="SummonRandomFavoriteButton" inherits="SecureFrameTemplate">
+			<Button name="$parentSummonRandomFavoriteButton" parentKey="SummonRandomFavoriteButton" inherits="SecureFrameTemplate" mixin="MountJournalSummonRandomFavoriteButtonMixin">
 				<Size x="33" y="33"/>
 				<Anchors>
 					<Anchor point="CENTER" relativePoint="TOPRIGHT" x="-24" y="-42"/>
@@ -215,7 +238,7 @@
 							</Anchors>
 						</Texture>
 						<Texture name="$parentLockIcon" parentKey="LockIcon" file="Interface\PetBattles\PetBattle-LockIcon" setAllPoints="true" hidden="true"/>
-						<FontString name="$parentSpellName" inherits="GameFontNormal" maxLines="2" justifyH="RIGHT" parentKey="spellname" text="Summon Random Favorite Mount">
+						<FontString name="$parentSpellName" inherits="GameFontNormal" maxLines="2" justifyH="RIGHT" parentKey="spellname" >
 							<Size x="170" y="0"/>
 							<Color r="1" g="1" b="1"/>
 							<Anchors>
@@ -225,17 +248,181 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad function="MountJournalSummonRandomFavoriteButton_OnLoad"/>
-					<OnClick function="MountJournalSummonRandomFavoriteButton_OnClick"/>
-					<OnDragStart function="MountJournalSummonRandomFavoriteButton_OnDragStart"/>
-					<OnEnter function="MountJournalSummonRandomFavoriteButton_OnEnter"/>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLoad method="OnLoad"/>
+					<OnClick method="OnClick"/>
+					<OnDragStart method="OnDragStart"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
 				<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 			</Button>
+			<Button parentKey="ToggleDynamicFlightFlyoutButton" mixin="MountJournalToggleDynamicFlightFlyoutButtonMixin" frameLevel="1000">
+				<Size x="33" y="33"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeKey="$parent.SummonRandomFavoriteButton" x="-210"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="openArrowOffset" value="-3" type="number"/>
+					<KeyValue key="closedArrowOffset" value="-5" type="number"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture file="Interface/ICONS/Ability_DragonRiding_UpwardFlap01" setAllPoints="true"/>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="Border" inherits="ActionBarFlyoutButton-IconFrame">
+							<Size x="35" y="35"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<FontString inherits="GameFontNormal" text="DYNAMIC_FLIGHT" maxLines="2" justifyH="RIGHT">
+							<Size x="170" y="0"/>
+							<Color r="1" g="1" b="1"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT" relativeKey="$parent.Border" x="-2" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="2">
+						<Texture parentKey="FlyoutArrowNormal" atlas="UI-HUD-ActionBar-Flyout" rotation="180">
+							<Size x="15" y="6"/>
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="UnspentGlyphsHighlight" atlas="newplayertutorial-drag-slotgreen" useAtlasSize="true" alphaMode="ADD" alpha="0">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FlyoutArrowPushed" atlas="UI-HUD-ActionBar-Flyout-Down" rotation="180">
+							<Size x="15" y="6"/>
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="HIGHLIGHT" textureSubLevel="2">
+						<Texture parentKey="FlyoutArrowHighlight" atlas="UI-HUD-ActionBar-Flyout-Mouseover" rotation="180">
+							<Size x="15" y="6"/>
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="UnspentGlyphsAnim" setToFinalAlpha="true" looping="REPEAT">
+						<Alpha childKey="UnspentGlyphsHighlight" smoothing="OUT" duration=".75" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="UnspentGlyphsHighlight" smoothing="IN" duration=".75" order="2" fromAlpha="1" toAlpha="0"/>
+					</AnimationGroup>
+				</Animations>
+				<Scripts>
+					<OnEvent method="OnEvent"/>
+					<OnClick method="OnClick"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+					<OnMouseDown method="OnMouseDown"/>
+					<OnMouseUp method="OnMouseUp"/>
+					<OnHide method="OnHide"/>
+					<OnShow method="OnShow"/>
+				</Scripts>
+				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+			</Button>
+			<Frame parentKey="DynamicFlightFlyout" inherits="VerticalLayoutFrame" hidden="true" frameLevel="9">
+				<KeyValues>
+					<KeyValue key="topPadding" value="5" type="number"/>
+					<KeyValue key="bottomPadding" value="6" type="number"/>
+					<KeyValue key="leftPadding" value="3" type="number"/>
+					<KeyValue key="rightPadding" value="6" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeKey="$parent.ToggleDynamicFlightFlyoutButton" x="0" y="0"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="Background" setAllPoints="true">
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="Start" atlas="UI-HUD-ActionBar-IconFrame-FlyoutBottom" useAtlasSize="true" rotation="180">
+									<Anchors>
+										<Anchor point="TOP" y="10"/>
+										<Anchor point="LEFT"/>
+										<Anchor point="RIGHT"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="End" atlas="UI-HUD-ActionBar-IconFrame-FlyoutButton" useAtlasSize="true" rotation="180">
+									<Anchors>
+										<Anchor point="BOTTOM"/>
+										<Anchor point="LEFT"/>
+										<Anchor point="RIGHT"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="VerticalMiddle" atlas="!UI-HUD-ActionBar-IconFrame-FlyoutMid" vertTile="true" rotation="180">
+									<Anchors>
+										<Anchor point="TOP" relativeKey="$parent.Start" relativePoint="BOTTOM" />
+										<Anchor point="BOTTOM" relativeKey="$parent.End" relativePoint="TOP" />
+										<Anchor point="LEFT"/>
+										<Anchor point="RIGHT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Button parentKey="OpenDynamicFlightSkillTreeButton" inherits="DynamicFlightFlyoutButtonTemplate" mixin="MountJournalOpenDynamicFlightSkillTreeButtonMixin">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="0" type="number"/>
+						</KeyValues>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture file="Interface/ICONS/Ability_DragonRiding_Glyph01" setAllPoints="true"/>
+							</Layer>
+							<Layer level="OVERLAY">
+								<Texture parentKey="UnspentGlyphsHighlight" atlas="newplayertutorial-drag-slotgreen" alphaMode="ADD" alpha="0">
+									<Size x="54" y="54"/>
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Animations>
+							<AnimationGroup parentKey="UnspentGlyphsAnim" setToFinalAlpha="true" looping="REPEAT">
+								<Alpha childKey="UnspentGlyphsHighlight" smoothing="OUT" duration=".75" order="1" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="UnspentGlyphsHighlight" smoothing="IN" duration=".75" order="2" fromAlpha="1" toAlpha="0"/>
+							</AnimationGroup>
+						</Animations>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnClick method="OnClick"/>
+							<OnEnter method="OnEnter"/>
+							<OnLeave method="OnLeave"/>
+						</Scripts>
+					</Button>
+					<Button parentKey="DynamicFlightModeButton"  inherits="DynamicFlightFlyoutButtonTemplate" mixin="MountJournalDynamicFlightModeButtonMixin">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="1" type="number"/>
+						</KeyValues>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="texture" setAllPoints="true"/>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnShow method="OnShow"/>
+							<OnHide method="OnHide"/>
+							<OnEvent method="OnEvent"/>
+							<OnClick method="OnClick"/>
+							<OnDragStart method="OnDragStart"/>
+							<OnEnter method="OnEnter"/>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
 			<Frame parentKey="LeftInset" useParentLevel="true" inherits="InsetFrameTemplate">
 				<Size x="260" y="496"/>
 				<Anchors>
@@ -316,24 +503,11 @@
 					<OnHide function="MountJournal_ClearSearch"/>
 				</Scripts>
 			</EditBox>
-			<DropDownToggleButton name="$parentFilterButton" inherits="UIResettableDropdownButtonTemplate" text="FILTER">
-				<KeyValues>
-					<KeyValue key="resetFunction" value="MountJournalFilterDropdown_ResetFilters" type="global"/>
-				</KeyValues>
+			<DropdownButton parentKey="FilterDropdown" inherits="WowStyle1FilterDropdownTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.LeftInset" x="-5" y="-9"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.LeftInset" x="-5" y="-10"/>
 				</Anchors>
-				<Scripts>
-					<OnMouseDown inherit="prepend">
-						ToggleDropDownMenu(1, nil, MountJournalFilterDropDown, "MountJournalFilterButton", 74, 15);
-					</OnMouseDown>
-				</Scripts>
-			</DropDownToggleButton>
-			<Frame name="$parentFilterDropDown" inherits="UIDropDownMenuTemplate">
-				<Scripts>
-					<OnLoad function="MountJournalFilterDropDown_OnLoad"/>
-				</Scripts>
-			</Frame>
+			</DropdownButton>
 			<Frame parentKey="MountCount" useParentLevel="true" inherits="InsetFrameTemplate3">
 				<Size x="130" y="20"/>
 				<Anchors>
@@ -506,7 +680,6 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
-			<Frame name="$parentMountOptionsMenu" inherits="UIDropDownMenuTemplate" enableMouse="true" parentKey="mountOptionsMenu"/>
 		</Frames>
 		<Scripts>
 			<OnLoad function="MountJournal_OnLoad"/>

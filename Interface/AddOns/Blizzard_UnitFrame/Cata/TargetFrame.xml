@@ -1,5 +1,11 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="TargetFrameBarSegmentTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="fillTexture" value="Interface\TargetingFrame\UI-StatusBar" type="string"/>
+		</KeyValues>
+	</Frame>
 	<Frame name="TargetofTargetDebuffFrameTemplate" virtual="true" enableMouse="true" hidden="true">
 		<Size x="12" y="12"/>
 		<Layers>
@@ -282,17 +288,15 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
-				<Size x="10" y="10"/>
-				<Anchors>
-					<Anchor point="TOP" x="10" y="-60"/>
-				</Anchors>
-			</Frame>
 			<StatusBar name="$parentHealthBar" inherits="TextStatusBar" parentKey="HealthBar" useParentLevel="true">
 				<Size x="119" y="12"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-106" y="-41"/>
 				</Anchors>
+				<Frames>
+					<Frame parentKey="MyHealPredictionBar" inherits="TargetFrameBarSegmentTemplate, MyHealPredictionBarTemplate"/>
+					<Frame parentKey="OtherHealPredictionBar" inherits="TargetFrameBarSegmentTemplate, OtherHealPredictionBarTemplate"/>
+				</Frames>
 				<Scripts>
 					<OnLoad>
 						TextStatusBar_Initialize(self);
@@ -311,8 +315,6 @@
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
-			<StatusBar name="$parentMyHealPredictionBar" inherits="MyHealPredictionBarTemplate" useParentLevel="true"/>
-			<StatusBar name="$parentOtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate" useParentLevel="true"/>
 			<StatusBar name="$parentManaBar" inherits="TextStatusBar" parentKey="PowerBar" useParentLevel="true">
 				<Size x="119" y="12"/>
 				<Anchors>
@@ -541,7 +543,7 @@
 				self.showClassification = true;
 				self.showAuraCount = true;
 				self:SetHitRectInsets(96, 40, 10, 9);		-- allows mouseover over health and mana bars
-				TargetFrame_OnLoad(self, "target", TargetFrameDropDown_Initialize);
+				TargetFrame_OnLoad(self, "target", TargetFrameDropdown_Initialize);
 				TargetFrame_CreateSpellbar(self, "PLAYER_TARGET_CHANGED");
 				TargetFrame_CreateTargetofTarget(self, "targettarget");
 				self:RegisterEvent("PLAYER_TARGET_CHANGED");
@@ -579,7 +581,7 @@
 				self.showPortrait = true;
 				self.showClassification = true;
 				self.showAuraCount = true;
-				TargetFrame_OnLoad(self, "focus", FocusFrameDropDown_Initialize);
+				TargetFrame_OnLoad(self, "focus", FocusFrameDropdown_Initialize);
 				TargetFrame_CreateSpellbar(self, "PLAYER_FOCUS_CHANGED");
 				TargetFrame_CreateTargetofTarget(self, "focustarget");
 				self:RegisterEvent("PLAYER_FOCUS_CHANGED");

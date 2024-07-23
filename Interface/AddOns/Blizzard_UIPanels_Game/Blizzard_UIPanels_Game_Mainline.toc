@@ -1,8 +1,7 @@
 ## Title: Blizzard_UIPanels_Game
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_EditMode, Blizzard_GameTooltip, Blizzard_UIPanelTemplates
-## SuppressLocalTableRef: 1
+## Dependencies: Blizzard_FrameXML, Blizzard_EditMode, Blizzard_GameTooltip, Blizzard_UIPanelTemplates, Blizzard_POIButton
 ## AllowLoad: game
 ## AllowLoadGameType: mainline
 Mainline\CastingBarFrame.lua
@@ -11,8 +10,6 @@ Mainline\DressUpFrames.lua
 Mainline\DressUpFrames.xml
 Mainline\ExtraAbilityContainer.lua
 Mainline\ExtraAbilityContainer.xml
-Mainline\SpellBookFrame.lua
-Mainline\SpellBookFrame.xml
 Mainline\CharacterFrame.lua
 Mainline\CharacterFrame.xml
 Mainline\AzeritePaperDollItemOverlay.lua
@@ -64,6 +61,8 @@ Mainline\WarCampaignTemplates.lua
 Mainline\WarCampaignTemplates.xml
 Mainline\CampaignOverview.lua
 Mainline\CampaignOverview.xml
+Mainline\MapLegendFrame.lua
+Mainline\MapLegendFrame.xml
 Mainline\QuestMapFrame.lua
 Mainline\QuestMapFrame.xml
 Mainline\TabardModelControlButtonMixin.lua

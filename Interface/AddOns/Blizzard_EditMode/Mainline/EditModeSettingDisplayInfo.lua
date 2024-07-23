@@ -257,7 +257,6 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			{
 				{value = Enum.ViewArenaSize.Two, text = HUD_EDIT_MODE_SETTING_UNIT_FRAME_VIEW_ARENA_SIZE_TWO},
 				{value = Enum.ViewArenaSize.Three, text = HUD_EDIT_MODE_SETTING_UNIT_FRAME_VIEW_ARENA_SIZE_THREE},
-				{value = Enum.ViewArenaSize.Five, text = HUD_EDIT_MODE_SETTING_UNIT_FRAME_VIEW_ARENA_SIZE_FIVE},
 			},
 		},
 
@@ -516,6 +515,17 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			stepSize = 1,
 			ConvertValue = ConvertValueDefault,
 			formatter = ShowAsPercentage,
+			hideSystemSelectionOnInteract = true,
+		},
+		-- Text Size
+		{
+			setting = Enum.EditModeObjectiveTrackerSetting.TextSize,
+			name = HUD_EDIT_MODE_SETTING_OBJECTIVE_TRACKER_TEXT_SIZE,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 12,
+			maxValue = 20,
+			stepSize = 1,
+			ConvertValue = ConvertValueDefault,
 			hideSystemSelectionOnInteract = true,
 		},
 	},

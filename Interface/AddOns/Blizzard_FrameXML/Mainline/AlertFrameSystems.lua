@@ -1,4 +1,5 @@
 function AlertFrameSystems_Register()
+	-- luacheck: ignore 111 (setting non-standard global variable)
 	GuildChallengeAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("GuildChallengeAlertFrameTemplate", GuildChallengeAlertFrame_SetUp);
 	DungeonCompletionAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("DungeonCompletionAlertFrameTemplate", DungeonCompletionAlertFrame_SetUp);
 	ScenarioAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("ScenarioAlertFrameTemplate", ScenarioAlertFrame_SetUp);
@@ -468,7 +469,8 @@ LOOTWONALERTFRAME_VALUES={
 
 -- NOTE - This may also be called for an externally created frame. (E.g. bonus roll has its own frame)
 function LootWonAlertFrame_SetUp(self, itemLink, originalQuantity, rollType, roll, specID, isCurrency, showFactionBG, lootSource, lessAwesome, isUpgraded, isCorrupted, wonRoll, showRatedBG, isSecondaryResult)
-	local itemName, itemTexture, quantity, itemRarity, itemLink = ItemUtil.GetItemDetails(itemLink, originalQuantity, isCurrency, lootSource);
+	local itemName, itemTexture, quantity, itemRarity;
+	itemName, itemTexture, quantity, itemRarity, itemLink = ItemUtil.GetItemDetails(itemLink, originalQuantity, isCurrency, lootSource);
 
 	self.isCurrency = isCurrency;
 
@@ -966,7 +968,7 @@ end
 function NewRecipeLearnedAlertFrame_SetUp(self, recipeID, recipeLevel)
 	local tradeSkillID, skillLineName, parentTradeSkillID = C_TradeSkillUI.GetTradeSkillLineForRecipe(recipeID);
 	if tradeSkillID then
-		local recipeName = GetSpellInfo(recipeID);
+		local recipeName = C_Spell.GetSpellName(recipeID);
 		if recipeName then
 			if recipeLevel ~= nil then
 				recipeName = TRADESKILL_RECIPE_LEVEL_RECIPE_FORMAT:format(recipeName, recipeLevel);
@@ -977,7 +979,7 @@ function NewRecipeLearnedAlertFrame_SetUp(self, recipeID, recipeLevel)
 			self.Icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
 			self.Icon:SetTexture(C_TradeSkillUI.GetTradeSkillTexture(tradeSkillID));
 
-			local rank = GetSpellRank(recipeID);
+			local rank = C_Spell.GetSpellSkillLineAbilityRank(recipeID);
 			self.Title:SetText(rank and rank > 1 and UPGRADED_RECIPE_LEARNED_TITLE or NEW_RECIPE_LEARNED_TITLE);
 
 			local rankTexture = NewRecipeLearnedAlertFrame_GetStarTextureFromRank(rank);

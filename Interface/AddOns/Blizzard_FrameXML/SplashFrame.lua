@@ -19,10 +19,17 @@ function SplashFrameMixin:OnShow()
 end
 
 function SplashFrameMixin:OnHide()
+	local fromGameMenu = self.screenInfo and self.screenInfo.gameMenuRequest;
 	self.screenInfo = nil;
 	C_TalkingHead.SetConversationsDeferred(false);
 	AlertFrame:SetAlertsEnabled(true, "splashFrame");
-	ObjectiveTracker_Update();
+	ObjectiveTrackerFrame:Update();
+
+	if not self.showingQuestDialog and fromGameMenu then
+		ShowUIPanel(GameMenuFrame);
+	end
+
+	self.showingQuestDialog = nil;
 end
 
 function SplashFrameMixin:OnEvent(event, ...)
@@ -63,7 +70,7 @@ function SplashFrameMixin:SetupFrame(screenInfo)
 	self.RightFeature:Setup(screenInfo);
 	self:Show();
 
-	ObjectiveTracker_Update();
+	ObjectiveTrackerFrame:Update();
 	if( QuestFrame:IsShown() )then
 		HideUIPanel(QuestFrame);
 	end
@@ -75,15 +82,15 @@ end
 function SplashFrameMixin:OpenQuestDialog()
 	local questID = self.RightFeature.questID;
 	ShowQuestOffer(questID);
-	AutoQuestPopupTracker_RemovePopUp(questID);
+	QuestObjectiveTracker:RemoveAutoQuestPopUp(questID);
 
-	C_QuestLog.AddQuestWatch(questID, Enum.QuestWatchType.Automatic);
-	C_SuperTrack.SetSuperTrackedQuestID(questID);
+	C_QuestLog.AddQuestWatch(questID);
 end
 
 function SplashFrameMixin:Close()
 	local questID = self.RightFeature.questID;
 	local showQuestDialog = questID and (self.RightFeature.StartQuestButton:IsShown() and self.RightFeature.StartQuestButton:IsEnabled());
+	self.showingQuestDialog = showQuestDialog;
 	HideUIPanel(self);
 
 	if (showQuestDialog) then

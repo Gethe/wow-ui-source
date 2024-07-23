@@ -36,25 +36,11 @@
 					<OnTextChanged function="ToyBox_OnSearchTextChanged"/>
 				</Scripts>
 			</EditBox>
-			<DropDownToggleButton name="$parentFilterButton" inherits="UIResettableDropdownButtonTemplate" text="FILTER">
-				<KeyValues>
-					<KeyValue key="resetFunction" value="ToyBoxFilterDropDown_ResetFilters" type="global"/>
-				</KeyValues>
+			<DropdownButton parentKey="FilterDropdown" inherits="WowStyle1FilterDropdownTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-12" y="-34"/>
+					<Anchor point="TOPRIGHT" x="-12" y="-35"/>
 				</Anchors>
-				<Scripts>
-					<OnMouseDown inherit="prepend">
-						ToggleDropDownMenu(1, nil, ToyBoxFilterDropDown, "ToyBoxFilterButton", 74, 15);
-					</OnMouseDown>
-				</Scripts>
-			</DropDownToggleButton>
-			<Frame name="$parentFilterDropDown" inherits="UIDropDownMenuTemplate">
-				<Scripts>
-					<OnLoad function="ToyBoxFilterDropDown_OnLoad"/>
-				</Scripts>
-			</Frame>
-
+			</DropdownButton>
 			<Frame parentKey="iconsFrame" inherits="CollectionsBackgroundTemplate">
 				<Layers>
 					<Layer level="BORDER" textureSubLevel="1">
@@ -166,7 +152,6 @@
 					<Anchor point="BOTTOM" x="21" y="43"/>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentToyOptionsMenu" inherits="UIDropDownMenuTemplate" enableMouse="true" parentKey="toyOptionsMenu"/>
 		</Frames>
 		<Scripts>
 			<OnLoad function="ToyBox_OnLoad"/>

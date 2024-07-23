@@ -114,7 +114,6 @@ function BNToastMixin:OnClick()
 			ChatFrame_SendBNetTell(accountInfo.accountName);
 		end
 	elseif toastType == BN_TOAST_TYPE_CLUB_INVITATION then
-		Communities_LoadUI();
 		ShowUIPanel(CommunitiesFrame);
 		CommunitiesFrame:SelectClub(toastData.club.clubId);
 	end
@@ -195,7 +194,6 @@ function BNToastMixin:ShowToast()
 	local toast = tremove(self.BNToasts, 1);
 	local toastType, toastData = toast.toastType, toast.toastData;
 
-	local self = BNToastFrame;
 	local topLine = self.TopLine;
 	local middleLine = self.MiddleLine;
 	local bottomLine = self.BottomLine;

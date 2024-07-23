@@ -559,9 +559,10 @@ function WorldMapBountyBoardMixin:AreBountiesAvailable()
 end
 
 local function SortActivityBountiesAlphabetical(bounty1, bounty2)
-	local faction1Name = select(1, GetFactionInfoByID(bounty1.factionID));
-	local faction2Name = select(1, GetFactionInfoByID(bounty2.factionID));
-	return strcmputf8i(faction1Name, faction2Name) < 0;
+	local faction1Data = C_Reputation.GetFactionDataByID(bounty1.factionID);
+	local faction2Data = C_Reputation.GetFactionDataByID(bounty2.factionID);
+	assert(faction1Data and faction2Data); -- No data for one of the bounty factions!
+	return strcmputf8i(faction1Data.name, faction2Data.name) < 0;
 end
 
 WorldMapActivityTrackerMixin = CreateFromMixins(BountyFrameMixin);
@@ -650,14 +651,33 @@ function WorldMapActivityTrackerMixin:TryShowingTutorials()
 				helpTipInfo.targetPoint = HelpTip.Point.TopEdgeCenter;
 			end
 
-			HelpTip:Show(self.BountyDropdownButton, helpTipInfo);
+			HelpTip:Show(self.BountyDropdown, helpTipInfo);
 		end
 	end
 end
 
 function WorldMapActivityTrackerMixin:SetLockType(lockType)
 	self.lockType = lockType;
-	self.BountyDropdownButton:SetShown(self.lockType == BountyLockType.None);
+
+	local bounties = self.bounties;
+	if bounties and #bounties > 0 then
+		self.BountyDropdown:SetupMenu(function(dropdown, rootDescription)
+			rootDescription:SetTag("MENU_WORLD_MAP_ACTIVITY_TRACKER");
+
+			for _, bountyInfo in ipairs(bounties) do
+				local iconMarkup = CreateSimpleTextureMarkup(bountyInfo.icon or [[Interface\Icons\INV_Misc_QuestionMark]], 16, 16, 0, 0);
+				local factionData = C_Reputation.GetFactionDataByID(bountyInfo.factionID);
+				local buttonText = factionData and string.format("%s %s", iconMarkup, factionData.name) or iconMarkup;
+				rootDescription:CreateButton(buttonText, function()
+					self:SetSelectedBounty(bountyInfo); 
+					local isNewSelection = true;
+					self:SetNextMapForSelectedBounty(isNewSelection);
+				end);
+			end
+		end);
+	end
+
+	self.BountyDropdown:SetShown(self.lockType == BountyLockType.None);
 end
 
 function WorldMapActivityTrackerMixin:OnClick(button, down)
@@ -685,10 +705,10 @@ function WorldMapActivityTrackerMixin:OnEnter()
 end
 
 function WorldMapActivityTrackerMixin:ShowMapJumpTooltip()
-	local factionName = select(1, GetFactionInfoByID(self.selectedBounty.factionID));
-	if factionName then
+	local factionData = C_Reputation.GetFactionDataByID(self.selectedBounty.factionID);
+	if factionData then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip_AddHighlightLine(GameTooltip, factionName);
+		GameTooltip_AddHighlightLine(GameTooltip, factionData.name);
 		local wrapText = false;
 		GameTooltip_AddInstructionLine(GameTooltip, WORLD_MAP_ACTIVITY_TRACKER_RING_TOOLTIP, wrapText);
 		GameTooltip:Show();
@@ -766,45 +786,4 @@ function WorldMapActivityTrackerMixin:CalculateNumActivitiesForSelectedBountyByM
 	local numActiveQuests = self:CalculateNumActiveQuestsForSelectedBountyFactionByMap(mapID);
 
 	return numTaskQuests + numAreaPOIs + numActiveQuests;
-end
-
-WorldMapActivityTrackerDropDownMixin = {};
-
-function WorldMapActivityTrackerDropDownMixin:OnShow()
-	local xOffset, yOffset, point, relativeTo, relativePoint = -5, -5, "BOTTOMLEFT", self:GetParent().BountyDropdownButton, "TOPRIGHT";
-	UIDropDownMenu_SetAnchor(self, xOffset, yOffset, point, relativeTo, relativePoint);
-	UIDropDownMenu_Initialize(self, self.InitializeDropDown, "MENU");
-end
-
-function WorldMapActivityTrackerDropDownMixin:InitializeDropDown(level)
-	if not self:GetParent().bounties then
-		return;
-	end
-
-	local filterSystem = {
-		onUpdate = nil,
-		filters = {
-		},
-	};
-
-	for _, bountyInfo in ipairs(self:GetParent().bounties) do
-		local activityIcon = CreateSimpleTextureMarkup(bountyInfo.icon or [[Interface\Icons\INV_Misc_QuestionMark]], 16, 16);
-		local buttonText = activityIcon .. " " .. select(1, GetFactionInfoByID(bountyInfo.factionID));
-		local function SetBounty()
-			self:GetParent():SetSelectedBounty(bountyInfo); 
-			local isNewSelection = true;
-			self:GetParent():SetNextMapForSelectedBounty(isNewSelection);
-		end
-		table.insert(filterSystem.filters, { type = FilterComponent.TextButton, text = buttonText, set = SetBounty, hideMenuOnClick = true, });
-	end
-
-	FilterDropDownSystem.Initialize(self, filterSystem, level);
-end
-
-WorldMapActivityTrackerBountyDropdownButtonMixin = {};
-
-function WorldMapActivityTrackerBountyDropdownButtonMixin:OnMouseDown()
-	local dropDownLevel = 1;
-	local xOffset, yOffset = 0, 0;
-	ToggleDropDownMenu(dropDownLevel, nil, self:GetParent().BountyDropDown, self, xOffset, yOffset);
 end

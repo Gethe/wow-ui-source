@@ -2,7 +2,6 @@
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
 ## Dependencies: Blizzard_SharedXMLGame
-## SuppressLocalTableRef: 1
 ## AllowLoad: Game
 ## AllowLoadGameType: mainline
 Mainline\ArenaUtil.lua
@@ -28,5 +27,14 @@ AdventureGuideUtil.lua
 CampaignUtil.lua
 AnimationSystem.lua
 CurrencyContainer.lua
+CurrencyUtil.lua
 Mainline\RAFUtil.lua
+Mainline\PlayerSpellsUtil.lua
 Mainline\ExpansionUtil.lua
+Mainline\Blizzard_QuestSuperTracking.lua
+FadingFrame.lua
+Mainline\RaidWarning.lua
+Cooldown.lua
+Mainline\Cooldown.xml
+Localization.lua
+DragonridingUtil.lua

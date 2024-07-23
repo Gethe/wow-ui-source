@@ -33,7 +33,7 @@ function IconIntroTrackerMixin:OnEvent(event, ...)
 
 		MarkNewActionHighlight(slotIndex);
 
-		local _, _, icon = GetSpellInfo(spellID);
+		local icon = C_Spell.GetSpellTexture(spellID);
 		local freeIcon;
 
 		for a,b in pairs(self.iconList) do

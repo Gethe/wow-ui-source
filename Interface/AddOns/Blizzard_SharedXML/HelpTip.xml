@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 UI.xsd">
 	<Script file="HelpTip.lua"/>
-	<Frame name="HelpTipTemplate" inherits="GlowBoxTemplate" hidden="true" mixin="HelpTipTemplateMixin" virtual="true" enableMouse="true" flattenRenderLayers="true">
+	<Frame name="HelpTipTemplate" inherits="GlowBoxTemplate" hidden="true" mixin="HelpTipTemplateMixin" toplevel="true" virtual="true" enableMouse="true" flattenRenderLayers="true">
 		<Size x="226" y="10"/>
 		<Layers>
 			<Layer level="OVERLAY">

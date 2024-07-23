@@ -121,36 +121,35 @@
 				<Size x="300" y="20"/>
 				<!-- Repositioned dynamically -->
 				<Frames>
-					<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate">
-						<Size x="50" y="30"/>
+					<DropdownButton parentKey="Dropdown" inherits="WowStyle1DropdownTemplate" parentArray="uncommittedRegions">
 						<Anchors>
 							<Anchor point="RIGHT"/>
 						</Anchors>
-					</Frame>
+					</DropdownButton>
 				</Frames>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString parentKey="Text" inherits="GameFontNormal" justifyH="RIGHT" text="PROFESSIONS_CRAFTING_FORM_MIN_QUALITY">
 							<Size x="250" y="20"/>
 							<Anchors>
-								<Anchor point="RIGHT" relativeKey="$parent.DropDown" relativePoint="LEFT" x="15" y="0"/>
+								<Anchor point="RIGHT" relativeKey="$parent.Dropdown" relativePoint="LEFT" x="-5" y="0"/>
 							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
 			</Frame>
 
-			<Frame parentKey="OrderRecipientDropDown" inherits="UIDropDownMenuTemplate" parentArray="uncommittedRegions">
-				<Size x="152" y="24"/>
+			<DropdownButton parentKey="OrderRecipientDropdown" inherits="WowStyle1DropdownTemplate" parentArray="uncommittedRegions">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="5" y="-10"/>
+					<Anchor point="TOPRIGHT" x="-10" y="-11"/>
 				</Anchors>
-			</Frame>
+			</DropdownButton>
+			
 			<EditBox parentKey="OrderRecipientTarget" letters="77" historyLines="0" autoFocus="false" inherits="InputBoxTemplate, AutoCompleteEditBoxTemplate" frameLevel="500" hidden="true"
 			parentArray="uncommittedRegions">
 				<Size x="145" y="25"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.OrderRecipientDropDown" relativePoint="BOTTOMRIGHT" x="-17" y="5"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.OrderRecipientDropdown" relativePoint="BOTTOMRIGHT" x="0" y="-1"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -220,7 +219,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<DropDownToggleButton parentKey="SocialDropdownButton" inherits="UIMenuButtonStretchTemplate">
+					<DropdownButton parentKey="SocialDropdown" inherits="UIMenuButtonStretchTemplate">
 						<Size x="22" y="22"/>
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.CrafterValue" relativePoint="RIGHT" x="5" y="0"/>
@@ -236,13 +235,8 @@
 								</Texture>
 							</Layer>
 						</Layers>
-						<Frames>
-							<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate">
-								<Size x="10" y="10"/>
-							</Frame>
-						</Frames>
 						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-					</DropDownToggleButton>
+					</DropdownButton>
 				</Frames>
 			</Frame>
 
@@ -424,13 +418,12 @@
 						</KeyValues>
 					</Frame>
 
-					<Frame parentKey="DurationDropDown" inherits="LargeUIDropDownMenuTemplate" parentArray="uncommittedRegions">
-						<Size x="140" y="30"/>
+					<DropdownButton parentKey="DurationDropdown" inherits="WowStyle1DropdownTemplate" parentArray="uncommittedRegions">
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.Duration" relativePoint="RIGHT" x="10"/>
 						</Anchors>
-					</Frame>
-
+					</DropdownButton>
+					
 					<Frame parentKey="TimeRemainingDisplay" parentArray="committedRegions">
 						<Size x="140" y="30"/>
 						<KeyValues>
@@ -495,7 +488,7 @@
 				</Frames>
 			</Frame>
 
-			<Frame parentKey="TrackRecipeCheckBox" inherits="ResizeLayoutFrame" scale="0.9">
+			<Frame parentKey="TrackRecipeCheckbox" inherits="ResizeLayoutFrame" scale="0.9">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativeKey="$parent.RecipeHeader" x="5" y="2"/>
 				</Anchors>
@@ -519,7 +512,7 @@
 				</Frames>
 			</Frame>
 
-			<CheckButton parentKey="AllocateBestQualityCheckBox" inherits="UICheckButtonTemplate">
+			<CheckButton parentKey="AllocateBestQualityCheckbox" inherits="UICheckButtonTemplate">
 				<Size x="26" y="26"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ReagentContainer" x="6" y="-3"/>

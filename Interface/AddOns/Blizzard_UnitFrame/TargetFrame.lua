@@ -54,7 +54,8 @@ function TargetFrameMixin:OnLoad(unit, menuFunc)
 	end
 
 	local targetFrameContentMain = self.TargetFrameContent.TargetFrameContentMain;
-	local healthBar = targetFrameContentMain.HealthBar;
+	local healthBar = targetFrameContentMain.HealthBarsContainer.HealthBar;
+	local tempMaxHealthLossBar = targetFrameContentMain.HealthBarsContainer.TempMaxHealthLoss;
 	local manaBar = targetFrameContentMain.ManaBar;
 	UnitFrame_Initialize(self, unit, targetFrameContentMain.Name, self.frameType, portraitFrame,
 						 healthBar,
@@ -67,16 +68,27 @@ function TargetFrameMixin:OnLoad(unit, menuFunc)
 						 healthBar.TotalAbsorbBar,
 						 healthBar.OverAbsorbGlow,
 						 healthBar.OverHealAbsorbGlow,
-						 healthBar.HealAbsorbBar);
+						 healthBar.HealAbsorbBar,
+						nil,
+						tempMaxHealthLossBar);
 
 	self.auraPools = CreateFramePoolCollection();
 	self.auraPools:CreatePool("FRAME", self, "TargetDebuffFrameTemplate");
 	self.auraPools:CreatePool("FRAME", self, "TargetBuffFrameTemplate");
 
+	healthBar:SetBarText(targetFrameContentMain.HealthBarsContainer.HealthBarText, targetFrameContentMain.HealthBarsContainer.LeftText, targetFrameContentMain.HealthBarsContainer.RightText);
+
+	tempMaxHealthLossBar:InitalizeMaxHealthLossBar(targetFrameContentMain.HealthBarsContainer, healthBar);
+
 	local healthBarTexture = healthBar:GetStatusBarTexture();
-	healthBarTexture:AddMaskTexture(healthBar.HealthBarMask);
+	healthBarTexture:AddMaskTexture(targetFrameContentMain.HealthBarsContainer.HealthBarMask);
 	healthBarTexture:SetTexelSnappingBias(0);
 	healthBarTexture:SetSnapToPixelGrid(false);
+
+	local tempMaxHealthLossBarTexture = tempMaxHealthLossBar:GetStatusBarTexture();
+	tempMaxHealthLossBarTexture:AddMaskTexture(targetFrameContentMain.HealthBarsContainer.HealthBarMask);
+	tempMaxHealthLossBarTexture:SetTexelSnappingBias(0);
+	tempMaxHealthLossBarTexture:SetSnapToPixelGrid(false);
 
 	local manaBarTexture = manaBar:GetStatusBarTexture();
 	manaBarTexture:AddMaskTexture(manaBar.ManaBarMask);
@@ -102,18 +114,7 @@ function TargetFrameMixin:OnLoad(unit, menuFunc)
 	self:RegisterUnitEvent("UNIT_AURA", unit);
 	self:RegisterUnitEvent("UNIT_TARGET", unit);
 
-	local showmenu;
-	if (menuFunc) then
-		local dropdown = self.DropDown;
-		UIDropDownMenu_SetInitializeFunction(dropdown, menuFunc);
-		UIDropDownMenu_SetDisplayMode(dropdown, "MENU");
-
-		local thisName = self:GetName();
-		showmenu = function()
-			ToggleDropDownMenu(1, nil, dropdown, thisName, 120, 10);
-		end
-	end
-	SecureUnitButton_OnLoad(self, self.unit, showmenu);
+	SecureUnitButton_OnLoad(self, self.unit, menuFunc);
 end
 
 local function ShouldShowTargetFrame(targetFrame)
@@ -166,7 +167,6 @@ function TargetFrameMixin:OnEvent(event, ...)
 		self:Update();
 		self:UpdateRaidTargetIcon(self);
 		self:UpdateAuras();
-		CloseDropDownMenus();
 
 		if (UnitExists(self.unit) and not C_PlayerInteractionManager.IsReplacingUnit()) then
 			if (UnitIsEnemy(self.unit, "player")) then
@@ -183,13 +183,11 @@ function TargetFrameMixin:OnEvent(event, ...)
 			bossTargetFrame:Update();
 			bossTargetFrame:UpdateRaidTargetIcon(bossTargetFrame);
 		end
-		CloseDropDownMenus();
 		UIParent_ManageFramePositions();
 		BossTargetFrameContainer:Show();
 	elseif (event == "UNIT_TARGETABLE_CHANGED" and arg1 == self.unit) then
 		self:Update();
 		self:UpdateRaidTargetIcon(self);
-		CloseDropDownMenus();
 		UIParent_ManageFramePositions();
 	elseif (event == "UNIT_HEALTH") then
 		if (arg1 == self.unit) then
@@ -247,7 +245,6 @@ function TargetFrameMixin:OnEvent(event, ...)
 		else
 			self:Hide();
 		end
-		CloseDropDownMenus();
 	end
 end
 
@@ -257,7 +254,6 @@ function TargetFrameMixin:OnHide()
 		local forceNoDuplicates = true;
 		PlaySound(SOUNDKIT.INTERFACE_SOUND_LOST_TARGET_UNIT, nil, forceNoDuplicates);
 	end
-	CloseDropDownMenus();
 end
 
 function TargetFrameMixin:CheckPartyLeader()
@@ -376,7 +372,8 @@ end
 
 function TargetFrameMixin:CheckClassification()
 	local classification = UnitClassification(self.unit);
-	local healthBar = self.TargetFrameContent.TargetFrameContentMain.HealthBar;
+	local healthBarsContainer = self.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer;
+	local healthBar = healthBarsContainer.HealthBar;
 	local manaBar = self.TargetFrameContent.TargetFrameContentMain.ManaBar;
 
 	-- Base frame/health/mana pieces
@@ -392,13 +389,14 @@ function TargetFrameMixin:CheckClassification()
 			self.threatIndicator:SetAtlas("UI-HUD-UnitFrame-Target-MinusMob-PortraitOn-InCombat", TextureKitConstants.UseAtlasSize);
 		end
 
+		healthBarsContainer.TempMaxHealthLoss.TempMaxHealthLossTexture:SetAtlas("UI-HUD-UnitFrame-Target-MinusMob-PortraitOn-Bar-TempHPLoss", TextureKitConstants.UseAtlasSize);
 		healthBar.HealthBarTexture:SetAtlas("UI-HUD-UnitFrame-Target-MinusMob-PortraitOn-Bar-Health", TextureKitConstants.UseAtlasSize);
-		healthBar:SetHeight(12);
-		healthBar:SetWidth(125);
-		healthBar:SetPoint("BOTTOMRIGHT", self.TargetFrameContainer, "LEFT", 148, -1);
+		healthBarsContainer:SetHeight(12);
+		healthBarsContainer:SetWidth(125);
+		healthBarsContainer:SetPoint("BOTTOMRIGHT", self.TargetFrameContainer, "LEFT", 148, -1);
 
-		healthBar.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Target-MinusMob-PortraitOn-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);
-		healthBar.HealthBarMask:SetPoint("TOPLEFT", -1, 2);
+		healthBarsContainer.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Target-MinusMob-PortraitOn-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);
+		healthBarsContainer.HealthBarMask:SetPoint("TOPLEFT", -1, 2);
 
 		manaBar.pauseUpdates = true;
 		manaBar:Hide();
@@ -417,13 +415,14 @@ function TargetFrameMixin:CheckClassification()
 			self.threatIndicator:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-InCombat", TextureKitConstants.UseAtlasSize);
 		end
 
+		healthBarsContainer.TempMaxHealthLoss.TempMaxHealthLossTexture:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Bar-TempHPLoss", TextureKitConstants.UseAtlasSize);
 		healthBar.HealthBarTexture:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health", TextureKitConstants.UseAtlasSize);
-		healthBar:SetHeight(20);
-		healthBar:SetWidth(126);
-		healthBar:SetPoint("BOTTOMRIGHT", self.TargetFrameContainer, "LEFT", 149, -10);
+		healthBarsContainer:SetHeight(20);
+		healthBarsContainer:SetWidth(126);
+		healthBarsContainer:SetPoint("BOTTOMRIGHT", self.TargetFrameContainer, "LEFT", 149, -10);
 
-		healthBar.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);
-		healthBar.HealthBarMask:SetPoint("TOPLEFT", -1, 6);
+		healthBarsContainer.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);
+		healthBarsContainer.HealthBarMask:SetPoint("TOPLEFT", -1, 6);
 	end
 
 	-- Boss frame pieces (dragon frame, icons)
@@ -463,19 +462,19 @@ function TargetFrameMixin:CheckClassification()
 end
 
 function TargetFrameMixin:CheckDead()
-	local healthBar = self.TargetFrameContent.TargetFrameContentMain.HealthBar;
+	local healthBarsContainer = self.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer;
 
 	if ((UnitHealth(self.unit) <= 0) and UnitIsConnected(self.unit)) then
 		if (UnitIsUnconscious(self.unit)) then
-			healthBar.UnconsciousText:Show();
-			healthBar.DeadText:Hide();
+			healthBarsContainer.UnconsciousText:Show();
+			healthBarsContainer.DeadText:Hide();
 		else
-			healthBar.UnconsciousText:Hide();
-			healthBar.DeadText:Show();
+			healthBarsContainer.UnconsciousText:Hide();
+			healthBarsContainer.DeadText:Show();
 		end
 	else
-		healthBar.DeadText:Hide();
-		healthBar.UnconsciousText:Hide();
+		healthBarsContainer.DeadText:Hide();
+		healthBarsContainer.UnconsciousText:Hide();
 	end
 end
 
@@ -900,51 +899,55 @@ function TargetFrameMixin:HealthUpdate(elapsed, unit)
 	end
 end
 
-function TargetFrameDropDown_Initialize(self)
-	local menu;
+function TargetFrame_OpenMenu(self)
+	local which;
 	local name;
-	local id = nil;
 	if (UnitIsUnit("target", "player")) then
-		menu = "SELF";
+		which = "SELF";
 	elseif (UnitIsUnit("target", "vehicle")) then
 		-- NOTE: vehicle check must come before pet check for accuracy's sake because
 		-- a vehicle may also be considered your pet
-		menu = "VEHICLE";
+		which = "VEHICLE";
 	elseif (UnitIsUnit("target", "pet")) then
-		menu = "PET";
+		which = "PET";
 	elseif (UnitIsOtherPlayersBattlePet("target")) then
-		menu = "OTHERBATTLEPET";
+		which = "OTHERBATTLEPET";
 	elseif (UnitIsBattlePet("target")) then
-		menu = "BATTLEPET";
+		which = "BATTLEPET";
 	elseif (UnitIsOtherPlayersPet("target")) then
-		menu = "OTHERPET";
+		which = "OTHERPET";
 	elseif (UnitIsPlayer("target")) then
-		id = UnitInRaid("target");
-		if (id) then
-			menu = "RAID_PLAYER";
+		if (UnitInRaid("target")) then
+			which = "RAID_PLAYER";
 		elseif (UnitInParty("target")) then
-			menu = "PARTY";
+			which = "PARTY";
 		else
 			if (not UnitIsMercenary("player")) then
 				if (UnitCanCooperate("player", "target")) then
-					menu = "PLAYER";
+					which = "PLAYER";
 				else
-					menu = "ENEMY_PLAYER"
+					which = "ENEMY_PLAYER"
 				end
 			else
 				if (UnitCanAttack("player", "target")) then
-					menu = "ENEMY_PLAYER"
+					which = "ENEMY_PLAYER"
 				else
-					menu = "PLAYER";
+					which = "PLAYER";
 				end
 			end
 		end
 	else
-		menu = "TARGET";
+		which = "TARGET";
 		name = RAID_TARGET_ICON;
 	end
-	if (menu) then
-		UnitPopup_ShowMenu(self, menu, "target", name, id);
+	if (which) then
+		local contextData = {
+			fromTargetFrame = true;
+			unit = "target",
+			name = name,
+		};
+
+		UnitPopup_OpenMenu(which, contextData);
 	end
 end
 
@@ -1230,7 +1233,7 @@ function BossTargetFrameMixin:OnLoad()
 	self.maxDebuffs = 0;
 	self.showPortrait = false;
 
-	TargetFrameMixin.OnLoad(self, "boss"..id, BossTargetFrameDropDown_Initialize);
+	TargetFrameMixin.OnLoad(self, "boss"..id, BossTargetFrame_OpenMenu);
 	TargetFrameMixin.CheckDead(self);
 
 	self:UnregisterEvent("UNIT_AURA"); -- Boss frames do not display auras
@@ -1252,20 +1255,21 @@ function BossTargetFrameMixin:OnLoad()
 	targetFrameContentMain.Name:SetWidth(55);
 	targetFrameContentMain.Name:SetPoint("TOPLEFT", reputationBar, "TOPRIGHT", -56, -1);
 
-	local healthBar = targetFrameContentMain.HealthBar;
+	local healthBarsContainer = targetFrameContentMain.HealthBarsContainer;
+	local healthBar = healthBarsContainer.HealthBar;
 	healthBar.HealthBarTexture:SetAtlas("UI-HUD-UnitFrame-Target-Boss-Small-PortraitOff-Bar-Health", TextureKitConstants.UseAtlasSize);
-	healthBar:SetWidth(84);
-	healthBar:SetHeight(10);
-	healthBar:SetPoint("BOTTOMRIGHT", self.TargetFrameContainer, "LEFT", 145, -6);
+	healthBarsContainer:SetWidth(84);
+	healthBarsContainer:SetHeight(10);
+	healthBarsContainer:SetPoint("BOTTOMRIGHT", self.TargetFrameContainer, "LEFT", 145, -6);
 
 	-- The boss frame mask is the same shape as the party frame, so we just use that.
-	healthBar.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOff-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);
-	healthBar.HealthBarMask:SetPoint("TOPLEFT", targetFrameContentMain, "TOPLEFT", 40, -43);
+	healthBarsContainer.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOff-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);
+	healthBarsContainer.HealthBarMask:SetPoint("TOPLEFT", targetFrameContentMain, "TOPLEFT", 40, -43);
 
 	local manaBar = targetFrameContentMain.ManaBar;
 	manaBar:SetWidth(84);
 	manaBar:SetHeight(7);
-	manaBar:SetPoint("TOPRIGHT", healthBar, "BOTTOMRIGHT", 0, -1);
+	manaBar:SetPoint("TOPRIGHT", healthBarsContainer, "BOTTOMRIGHT", 0, -1);
 	manaBar.ManaBarText:SetPoint("CENTER", 0, 0);
 	manaBar.RightText:SetPoint("RIGHT", -5, 0);
 
@@ -1308,8 +1312,12 @@ function BossTargetFrameMixin:SetCastBarPosition(castBarOnSide)
 	self.spellbar:AdjustPosition();
 end
 
-function BossTargetFrameDropDown_Initialize(self)
-	UnitPopup_ShowMenu(self, "BOSS", self:GetParent().unit);
+function BossTargetFrame_OpenMenu(self)
+	local contextData = {
+		fromTargetFrame = true;
+		unit = self.unit,
+	};
+	UnitPopup_OpenMenu("BOSS", contextData);
 end
 
 BossTargetFrameContainerMixin = { };
@@ -1381,11 +1389,17 @@ end
 --
 
 local FOCUS_FRAME_LOCKED = true;
+local FOCUS_FRAME_MOVING = false;
 
 FocusFrameMixin = {};
 
-function FocusFrameDropDown_Initialize(self)
-	UnitPopup_ShowMenu(self, "FOCUS", "focus", SET_FOCUS);
+function FocusFrame_OpenMenu(self)
+	local contextData = {
+		fromFocusFrame = true;
+		unit = "focus",
+		name = SET_FOCUS,
+	};
+	UnitPopup_OpenMenu("FOCUS", contextData);
 end
 
 function FocusFrameMixin:IsLocked()
@@ -1415,7 +1429,7 @@ function FocusFrameMixin:SetSmallSize(smallSize)
 		self.spellbar:SetScale(SMALL_FOCUS_UPSCALE);
 
 		self.totFrame:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 20, 8);
-		focusFrameContentMain.HealthBar.TextString:SetFontObject(TextStatusBarTextLarge);
+		focusFrameContentMain.HealthBarsContainer.HealthBar.TextString:SetFontObject(TextStatusBarTextLarge);
 		focusFrameContentContextual.NumericalThreat:SetPoint("BOTTOM", focusFrameContentMain.ReputationColor, "TOP", 0, -1);
 		focusFrameContentContextual.PvpIcon:Hide();
 		focusFrameContentContextual.PrestigePortrait:Hide();
@@ -1438,7 +1452,7 @@ function FocusFrameMixin:SetSmallSize(smallSize)
 		self.spellbar:SetScale(LARGE_FOCUS_SCALE);
 
 		self.totFrame:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 12, 10);
-		focusFrameContentMain.HealthBar.TextString:SetFontObject(TextStatusBarText);
+		focusFrameContentMain.HealthBarsContainer.HealthBar.TextString:SetFontObject(TextStatusBarText);
 		focusFrameContentContextual.NumericalThreat:SetPoint("BOTTOM", focusFrameContentMain.ReputationColor, "TOP", 0, 0);
 
 		self:RegisterEvent("UNIT_CLASSIFICATION_CHANGED");

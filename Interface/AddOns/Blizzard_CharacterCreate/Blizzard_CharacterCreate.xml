@@ -1,5 +1,14 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<GameTooltip name="CharCustomizeTooltip" inherits="SharedTooltipTemplate" parent="GlueParent">
+		<KeyValues>
+			<KeyValue key="textLeft1Font" value="GameFontNormalLarge2" type="string"/>
+			<KeyValue key="textRight1Font" value="GameFontNormalLarge2" type="string"/>
+			<KeyValue key="textLeft2Font" value="GameFontNormalMed2" type="string"/>
+			<KeyValue key="textRight2Font" value="GameFontNormalMed2" type="string"/>
+		</KeyValues>
+	</GameTooltip>
+
 	<Button name="CharacterCreateNavButtonTemplate" inherits="CharCustomizeBaseButtonTemplate, GlueButtonTemplate" mixin="CharacterCreateNavButtonMixin" frameLevel="10" virtual="true">
 		<NormalFont style="GameFontNormalOutline22"/>
 		<HighlightFont style="GameFontHighlightOutline22"/>
@@ -70,7 +79,7 @@
 		</Layers>
 	</CheckButton>
 
-	<CheckButton name="CharacterCreateRaceButtonTemplate" inherits="CharCustomizeMaskedButtonTemplate" mixin="CharacterCreateRaceButtonMixin" virtual="true">
+	<CheckButton name="CharacterCreateRaceButtonTemplate" inherits="CharCustomizeMaskedButtonTemplate" mixin="CharacterCreateRaceButtonMixin" flattenRenderLayers="true" virtual="true">
 		<Size x="79" y="79"/>
 		<KeyValues>
 			<KeyValue key="ringWidth" value="139" type="number"/>
@@ -225,15 +234,16 @@
 		</Frames>
 	</Frame>
 
-	<Frame name="CharacterCreateVerticalLayoutFrame" inherits="VerticalLayoutFrame" virtual="true">
+	<Frame name="CharacterCreateVerticalLayoutFrame" inherits="SpaceToFitVerticalLayoutFrame" virtual="true">
+		<Size x="1" y="1"/>
 		<KeyValues>
-			<KeyValue key="spacing" value="18" type="number"/>
+			<KeyValue key="baseSpacing" value="18" type="number"/>
 		</KeyValues>
 	</Frame>
 
 	<Texture name="CharacterCreateBackgroundOverlayTexture" parentArray="BGTex" virtual="true"/>
 
-	<ModelFFX name="CharacterCreateFrame" inherits="DefaultScaleFrame" mixin="CharacterCreateMixin" toplevel="true" parent="GlueParent" setAllPoints="true" enableKeyboard="true" hidden="true">
+	<ModelFFX name="CharacterCreateFrame" mixin="CharacterCreateMixin" toplevel="true" parent="GlueParent" setAllPoints="true" enableKeyboard="true" hidden="true">
 		<KeyValues>
 			<KeyValue key="maxScale" value="CHAR_CUSTOMIZE_MAX_SCALE" type="global"/>
 		</KeyValues>
@@ -303,6 +313,12 @@
 					</Anchors>
 					<Color r="0.0" g="0.0" b="0.0"/>
 				</Texture>
+				<Texture parentKey="TopBlackBar">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT"/>
+					</Anchors>
+					<Color r="0.0" g="0.0" b="0.0"/>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -326,6 +342,15 @@
 				</Scripts>
 			</Button>
 			<Frame parentKey="RaceAndClassFrame" mixin="CharacterCreateRaceAndClassMixin" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="CurrentRealmText" inherits="GameFontHighlightLarge2" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="-50" y="110"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
 				<Frames>
 					<Frame parentKey="AllianceHeader" inherits="ResizeLayoutFrame, CharCustomizeFrameWithTooltipTemplate" mixin="CharacterCreateFactionHeaderMixin">
 						<KeyValues>
@@ -404,8 +429,10 @@
 						</Anchors>
 					</Frame>
 					<Frame parentKey="Classes">
-						<Size x="1051" y="67" />
+						<Size x="0" y="67" />
 						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.$parent.BackButton" relativePoint="RIGHT" x="10" y="0"/>
+							<Anchor point="RIGHT" relativeKey="$parent.$parent.ForwardButton" relativePoint="LEFT" x="-10" y="0"/>
 							<Anchor point="BOTTOM" y="62"/>
 						</Anchors>
 					</Frame>

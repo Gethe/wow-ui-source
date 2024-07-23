@@ -1,10 +1,9 @@
 ## Title: Blizzard_PingUI
 ## LoadFirst: 1
-## RequiredDep: Blizzard_SecureCapsule
+## RequiredDep: Blizzard_SharedXML
+## UseSecureEnvironment: 1
 ## AllowLoadGameType: mainline
-..\Blizzard_SharedXML\Pools.lua
-..\Blizzard_SharedXML\Blizzard_RadialWheel.lua
-..\Blizzard_SharedXML\PingUtil.lua
+
 Blizzard_PingManager.lua
 Blizzard_PingUI.lua
 Blizzard_PingUI.xml

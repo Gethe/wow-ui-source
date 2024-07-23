@@ -83,6 +83,14 @@ function QuestMixin:IsImportant()
 	return self.isImportant;
 end
 
+function QuestMixin:IsMeta()
+	if self.isMeta == nil then
+		self.isMeta = C_QuestLog.IsMetaQuest(self:GetID());
+	end
+
+	return self.isMeta;
+end
+
 function QuestMixin:IsRepeatableQuest()
 	return self.isRepeatable;
 end

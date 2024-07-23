@@ -64,21 +64,8 @@
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>
 
-	<Font name="NumberFontNormal" inherits="NumberFont_Outline_Med" virtual="true" >
-		<Color r="1.0" g="1.0" b="1.0"/>
-	</Font>
-	<Font name="NumberFontNormalRight" inherits="NumberFontNormal" justifyH="RIGHT" virtual="true"/>
-	<Font name="NumberFontNormalRightRed" inherits="NumberFontNormalRight" virtual="true" >
-		<Color r="1.0" g="0.1" b="0.1"/>
-	</Font>
 	<Font name="NumberFontNormalRightGreen" inherits="NumberFontNormalRight" virtual="true" >
 		<Color r="0.1" g="1.0" b="0.1"/>
-	</Font>
-	<Font name="NumberFontNormalRightYellow" inherits="NumberFontNormalRight" virtual="true" >
-		<Color r="1.0" g="0.82" b="0"/>
-	</Font>
-	<Font name="NumberFontNormalRightGray" inherits="NumberFontNormalRight" virtual="true" >
-		<Color r="0.6" g="0.6" b="0.6"/>
 	</Font>
 	<Font name="NumberFontNormalYellow" inherits="NumberFontNormal" virtual="true" >
 		<Color r="1.0" g="0.82" b="0"/>
@@ -92,19 +79,7 @@
 	<Font name="NumberFontNormalGray" inherits="NumberFont_Outline_Med" virtual="true" >
 		<Color r="0.6" g="0.6" b="0.6"/>
 	</Font>
-	<Font name="NumberFontNormalLarge" inherits="NumberFont_Outline_Large" virtual="true">
-		<Color r="1.0" g="1.0" b="1.0"/>
-	</Font>
-	<Font name="NumberFontNormalLargeRight" inherits="NumberFontNormalLarge" justifyH="RIGHT" virtual="true"/>
-	<Font name="NumberFontNormalLargeRightRed" inherits="NumberFontNormalLargeRight" virtual="true" >
-		<Color r="1.0" g="0.1" b="0.1"/>
-	</Font>
-	<Font name="NumberFontNormalLargeRightYellow" inherits="NumberFontNormalLargeRight" virtual="true" >
-		<Color r="1.0" g="0.82" b="0.0"/>
-	</Font>
-	<Font name="NumberFontNormalLargeRightGray" inherits="NumberFontNormalLargeRight" virtual="true" >
-		<Color r="0.6" g="0.6" b="0.6"/>
-	</Font>
+
 	<Font name="NumberFontNormalLargeYellow" inherits="NumberFontNormalLarge" virtual="true">
 		<Color r="1.0" g="0.82" b="0.0"/>
 	</Font>
@@ -411,6 +386,22 @@
 	</Font>
 	<Font name="ObjectiveFont" inherits="GameFontHighlight" justifyH="LEFT" justifyV="TOP" virtual="true">
 		<Color r="0.8" g="0.8" b="0.8"/>
+	</Font>
+	<Font name="ObjectiveTrackerLineFont" inherits="GameFontHighlight" justifyH="LEFT" justifyV="TOP" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+	</Font>
+	<Font name="ObjectiveTrackerHeaderFont" inherits="GameFontNormalMed2" justifyH="LEFT" justifyV="TOP" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
 	</Font>
 	<Font name="ArtifactAppearanceSetNormalFont" inherits="Fancy24Font" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>

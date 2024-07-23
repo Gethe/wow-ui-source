@@ -210,53 +210,6 @@ function SecureButton_GetEffectiveButton(self)
     return "LeftButton";
 end
 
--- Open a dropdown menu without tainting it in the process
-local secureDropdown;
-local InitializeSecureMenu = function(self)
-	local unit = self.unit;
-	if( not unit ) then return end
-
-	local unitType = string.match(unit, "^([a-z]+)[0-9]+$") or unit;
-
-	-- Mimic the default UI and prefer the relevant units menu when possible
-	local menu;
-	if( unitType == "party" ) then
-		menu = "PARTY";
-	elseif( unitType == "boss" ) then
-		menu = "BOSS";
-	elseif( unitType == "focus" ) then
-		menu = "FOCUS";
-	elseif( unitType == "arenapet" or unitType == "arena" ) then
-		menu = "ARENAENEMY";
-	-- Then try and detect the unit type and show the most relevant menu we can find
-	elseif( UnitIsUnit(unit, "player") ) then
-		menu = "SELF";
-	elseif( UnitIsUnit(unit, "vehicle") ) then
-		menu = "VEHICLE";
-	elseif( UnitIsUnit(unit, "pet") ) then
-		menu = "PET";
-	elseif( UnitIsOtherPlayersBattlePet(unit) ) then
-		menu = "OTHERBATTLEPET";
-	elseif( UnitIsOtherPlayersPet(unit) ) then
-		menu = "OTHERPET";
-	-- Last ditch checks
-	elseif( UnitIsPlayer(unit) ) then
-		if( UnitInRaid(unit) ) then
-			menu = "RAID_PLAYER";
-		elseif( UnitInParty(unit) ) then
-			menu = "PARTY";
-		else
-			menu = "PLAYER";
-		end
-	elseif( UnitIsUnit(unit, "target") ) then
-		menu = "TARGET";
-	end
-
-	if( menu ) then
-		UnitPopup_ShowMenu(self, menu, unit);
-	end
-end
-
 --
 -- SecureActionButton
 --
@@ -266,10 +219,6 @@ end
 -- For example, you could set up the button to respond to left clicks by targeting the focus:
 -- self:SetAttribute("unit", "focus");
 -- self:SetAttribute("type1", "target");
---
--- You could set up all other buttons to bring up a menu like this:
--- self:SetAttribute("type*", "menu");
--- self.showmenu = menufunc;
 --
 -- SecureActionButtons are also able to perform different actions depending on whether you can
 -- attack the unit or assist the unit associated with the action button.  It does so by mapping
@@ -304,27 +253,56 @@ local forceinsecure = forceinsecure;
 -- Table of supported action functions
 local SECURE_ACTIONS = {};
 
-
 SECURE_ACTIONS.togglemenu = function(self, unit, button)
-	-- Load the dropdown
-	if( not secureDropdown ) then
-		secureDropdown = CreateFrame("Frame", "SecureTemplatesDropdown", nil, "UIDropDownMenuTemplate");
-		secureDropdown:SetID(1);
-
-		UIDropDownMenu_Initialize(secureDropdown, InitializeSecureMenu, "MENU");
+	if not unit then 
+		return;
 	end
 
-	-- Since we use one dropdown menu for all secure menu actions, if we open a menu on A then click B
-	-- it will close the menu rather than closing A and opening it on B.
-	-- This fixes that so it opens it on B while still preserving toggling to close.
-	if( secureDropdown.openedFor and secureDropdown.openedFor ~= self ) then
-		CloseDropDownMenus();
+	unit = string.lower(unit);
+
+	local unitType = string.match(unit, "^([a-z]+)[0-9]+$") or unit;
+
+	-- Mimic the default UI and prefer the relevant units menu when possible
+	local which;
+	if unitType == "party" then
+		which = "PARTY";
+	elseif unitType == "boss" then
+		which = "BOSS";
+	elseif unitType == "focus" then
+		which = "FOCUS";
+	elseif unitType == "arenapet" or unitType == "arena" then
+		which = "ARENAENEMY";
+	-- Then try and detect the unit type and show the most relevant menu we can find
+	elseif UnitIsUnit(unit, "player") then
+		which = "SELF";
+	elseif UnitIsUnit(unit, "vehicle") then
+		which = "VEHICLE";
+	elseif UnitIsUnit(unit, "pet") then
+		which = "PET";
+	elseif UnitIsOtherPlayersBattlePet(unit) then
+		which = "OTHERBATTLEPET";
+	elseif UnitIsOtherPlayersPet(unit) then
+		which = "OTHERPET";
+	-- Last ditch checks
+	elseif UnitIsPlayer(unit) then
+		if UnitInRaid(unit) then
+			which = "RAID_PLAYER";
+		elseif UnitInParty(unit) then
+			which = "PARTY";
+		else
+			which = "PLAYER";
+		end
+	elseif UnitIsUnit(unit, "target") then
+		which = "TARGET";
 	end
 
-	secureDropdown.unit = string.lower(unit);
-	secureDropdown.openedFor = self;
-
-	ToggleDropDownMenu(1, nil, secureDropdown, "cursor");
+	if( which ) then
+		local contextData = 
+		{
+			unit = unit,
+		}
+		UnitPopup_OpenMenu(which, contextData);
+	end
 end
 
 SECURE_ACTIONS.actionbar =
@@ -462,10 +440,9 @@ SECURE_ACTIONS.macro =
 
             RunMacro(macro, button);
         else
-            local text =
-                SecureButton_GetModifiedAttribute(self, "macrotext", button);
+            local text = SecureButton_GetModifiedAttribute(self, "macrotext", button);
             if ( text ) then
-                RunMacroText(text, button);
+                C_Macro.RunMacroText(text, button);
             end
         end
     end;

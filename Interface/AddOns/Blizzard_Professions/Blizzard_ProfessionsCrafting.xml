@@ -121,6 +121,12 @@
 	
 	<Frame name="ProfessionsCraftingPageTemplate" parent="ProfessionsFrame" setAllPoints="true" mixin="ProfessionsCraftingPageMixin" virtual="true">
 		<Frames>
+			<Frame parentKey="ConcentrationDisplay" inherits="ProfessionsCurrencyTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="120" y="-35"/>
+				</Anchors>
+			</Frame>
+
 			<Button parentKey="TutorialButton" inherits="MainHelpPlateButton">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="39" y="20" />
@@ -320,6 +326,26 @@
 					<Anchor point="TOPRIGHT" x="-26" y="-31"/>
 				</Anchors>
 			</ItemButton>
+			<!--
+			<ItemButton parentKey="FishingGear0Slot" inherits="ProfessionsGearSlotTemplate">
+				<KeyValues>
+					<KeyValue key="slotName" value="FishingGear0Slot" type="string"/>
+					<KeyValue key="slotID" value="29" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="LEFT" relativeKey="$parent.FishingToolSlot" x="-21" y="0"/>
+				</Anchors>
+			</ItemButton>
+			<ItemButton parentKey="FishingGear1Slot" inherits="ProfessionsGearSlotTemplate">
+				<KeyValues>
+					<KeyValue key="slotName" value="FishingGear1Slot" type="string"/>
+					<KeyValue key="slotID" value="30" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="LEFT" relativeKey="$parent.FishingGear0Slot" x="-5" y="0"/>
+				</Anchors>
+			</ItemButton>
+			-->
 
 			<Frame parentKey="GearSlotDivider">
 				<Size x="5" y="37"/>
@@ -333,7 +359,7 @@
 				</Layers>
 			</Frame>
 
-			<Button parentKey="LinkButton" mixin="DropDownToggleButtonMixin">
+			<DropdownButton parentKey="LinkButton">
 				<Size x="30" y="30"/>
 				<Anchors>
 					<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.RankBar" x="0" y="-2"/>
@@ -349,8 +375,7 @@
 				<NormalTexture file="Interface\Buttons\UI-LinkProfession-Up"/>
 				<PushedTexture file="Interface\Buttons\UI-LinkProfession-Down"/>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-			</Button>
-			<Frame parentKey="LinkDropDown" inherits="UIDropDownMenuTemplate"/>
+			</DropdownButton>
 
 			<Frame parentKey="OverlayCastBarAnchor">
 				<Size x="1" y="1"/>

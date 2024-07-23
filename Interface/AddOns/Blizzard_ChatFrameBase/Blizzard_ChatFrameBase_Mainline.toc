@@ -5,7 +5,6 @@
 ## OptionalDeps: Blizzard_GlueStubs, Blizzard_EditMode
 ## AllowLoad: both
 ## AllowLoadGameType: mainline
-## SuppressLocalTableRef: 1
 Shared\HistoryKeeper.lua
 Mainline\ChatFrame.lua
 Mainline\ChatFrame.xml

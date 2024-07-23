@@ -5,6 +5,7 @@ CHATCONFIG_SELECTED_FILTER = nil;
 CHATCONFIG_SELECTED_FILTER_OLD_SETTINGS = nil;
 MAX_COMBATLOG_FILTERS = 20;
 CHATCONFIG_CHANNELS_MAXWIDTH = 145;
+CHAT_CONFIG_CURRENT_COLOR_SWATCH = nil;
 
 local function ShouldDisplayDisabled()
 	return not C_SocialRestrictions.IsMuted() and C_SocialRestrictions.IsChatDisabled();
@@ -593,56 +594,56 @@ COMBAT_CONFIG_MESSAGETYPES_RIGHT = {
 				func = function (self, checked) ToggleMessageType(checked, "SPELL_ENERGIZE"); end;
 				tooltip = SPELL_DRAIN_COMBATLOG_TOOLTIP,
 			},
-			[5] = {
+			[6] = {
 				text = INTERRUPTS,
 				type = {"SPELL_INTERRUPT"};
 				checked = function () return HasMessageType("SPELL_INTERRUPT"); end;
 				func = function (self, checked) ToggleMessageType(checked, "SPELL_INTERRUPT"); end;
 				tooltip = SPELL_INTERRUPT_COMBATLOG_TOOLTIP,
 			},
-			[5] = {
+			[7] = {
 				text = SPECIAL,
 				type = {"SPELL_INSTAKILL"};
 				checked = function () return HasMessageType("SPELL_INSTAKILL"); end;
 				func = function (self, checked) ToggleMessageType(checked, "SPELL_INSTAKILL"); end;
 				tooltip = SPELL_INSTAKILL_COMBATLOG_TOOLTIP,
 			},
-			[6] = {
+			[8] = {
 				text = EXTRA_ATTACKS,
 				type = {"SPELL_EXTRA_ATTACKS"};
 				checked = function () return HasMessageType("SPELL_EXTRA_ATTACKS"); end;
 				func = function (self, checked) ToggleMessageType(checked, "SPELL_EXTRA_ATTACKS"); end;
 				tooltip = SPELL_EXTRA_ATTACKS_COMBATLOG_TOOLTIP,
 			},
-			[7] = {
+			[9] = {
 				text = SUMMONS,
 				type = {"SPELL_SUMMON"};
 				checked = function () return HasMessageType("SPELL_SUMMON"); end;
 				func = function (self, checked) ToggleMessageType(checked, "SPELL_SUMMON"); end;
 				tooltip = SPELL_SUMMON_COMBATLOG_TOOLTIP,
 			},
-			[8] = {
+			[10] = {
 				text = RESURRECT,
 				type = {"SPELL_RESURRECT"};
 				checked = function () return HasMessageType("SPELL_RESURRECT"); end;
 				func = function (self, checked) ToggleMessageType(checked, "SPELL_RESURRECT"); end;
 				tooltip = SPELL_RESURRECT_COMBATLOG_TOOLTIP,
 			},
-			[9] = {
+			[11] = {
 				text = BUILDING_DAMAGE,
 				type = {"SPELL_BUILDING_DAMAGE"};
 				checked = function () return HasMessageType("SPELL_BUILDING_DAMAGE"); end;
 				func = function (self, checked) ToggleMessageType(checked, "SPELL_BUILDING_DAMAGE"); end;
 				tooltip = BUILDING_DAMAGE_COMBATLOG_TOOLTIP,
 			},
-			[10] = {
+			[12] = {
 				text = BUILDING_HEAL,
 				type = {"SPELL_BUILDING_HEAL"};
 				checked = function () return HasMessageType("SPELL_BUILDING_HEAL"); end;
 				func = function (self, checked) ToggleMessageType(checked, "SPELL_BUILDING_HEAL"); end;
 				tooltip = BUILDING_HEAL_COMBATLOG_TOOLTIP,
 			},
-			[11] = {
+			[13] = {
 				text = EMPOWERS,
 				type = {"SPELL_EMPOWER_START", "SPELL_EMPOWER_END", "SPELL_EMPOWER_INTERRUPT"};
 				checked = function () return HasMessageType("SPELL_EMPOWER_START"); end;
@@ -752,15 +753,15 @@ function ChatConfigFrame_OnEvent(self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		-- Chat Settings
 		ChatConfigFrame_ReplaceChatConfigLeftTooltips(C_SocialRestrictions.IsChatDisabled());
-		ChatConfig_CreateCheckboxes(ChatConfigChatSettingsLeft, CHAT_CONFIG_CHAT_LEFT, "ChatConfigWideCheckBoxWithSwatchTemplate", PLAYER_MESSAGES);
-		ChatConfig_CreateCheckboxes(ChatConfigOtherSettingsCombat, CHAT_CONFIG_OTHER_COMBAT, "ChatConfigCheckBoxWithSwatchTemplate", COMBAT);
-		ChatConfig_CreateCheckboxes(ChatConfigOtherSettingsPVP, CHAT_CONFIG_OTHER_PVP, "ChatConfigCheckBoxWithSwatchTemplate", PVP);
-		ChatConfig_CreateCheckboxes(ChatConfigOtherSettingsSystem, CHAT_CONFIG_OTHER_SYSTEM, "ChatConfigCheckBoxWithSwatchTemplate", OTHER);
-		ChatConfig_CreateCheckboxes(ChatConfigOtherSettingsCreature, CHAT_CONFIG_CHAT_CREATURE_LEFT, "ChatConfigCheckBoxWithSwatchTemplate", CREATURE_MESSAGES);
+		ChatConfig_CreateCheckboxes(ChatConfigChatSettingsLeft, CHAT_CONFIG_CHAT_LEFT, "ChatConfigWideCheckboxWithSwatchTemplate", PLAYER_MESSAGES);
+		ChatConfig_CreateCheckboxes(ChatConfigOtherSettingsCombat, CHAT_CONFIG_OTHER_COMBAT, "ChatConfigCheckboxWithSwatchTemplate", COMBAT);
+		ChatConfig_CreateCheckboxes(ChatConfigOtherSettingsPVP, CHAT_CONFIG_OTHER_PVP, "ChatConfigCheckboxWithSwatchTemplate", PVP);
+		ChatConfig_CreateCheckboxes(ChatConfigOtherSettingsSystem, CHAT_CONFIG_OTHER_SYSTEM, "ChatConfigCheckboxWithSwatchTemplate", OTHER);
+		ChatConfig_CreateCheckboxes(ChatConfigOtherSettingsCreature, CHAT_CONFIG_CHAT_CREATURE_LEFT, "ChatConfigCheckboxWithSwatchTemplate", CREATURE_MESSAGES);
 
 		-- CombatLog Settings
-		ChatConfig_CreateCheckboxes(CombatConfigMessageSourcesDoneBy, COMBAT_CONFIG_MESSAGESOURCES_BY, "ChatConfigCheckBoxTemplate", DONE_BY);
-		ChatConfig_CreateCheckboxes(CombatConfigMessageSourcesDoneTo, COMBAT_CONFIG_MESSAGESOURCES_TO, "ChatConfigCheckBoxTemplate", DONE_TO);
+		ChatConfig_CreateCheckboxes(CombatConfigMessageSourcesDoneBy, COMBAT_CONFIG_MESSAGESOURCES_BY, "ChatConfigCheckboxTemplate", DONE_BY);
+		ChatConfig_CreateCheckboxes(CombatConfigMessageSourcesDoneTo, COMBAT_CONFIG_MESSAGESOURCES_TO, "ChatConfigCheckboxTemplate", DONE_TO);
 		ChatConfig_CreateTieredCheckboxes(CombatConfigMessageTypesLeft, COMBAT_CONFIG_MESSAGETYPES_LEFT, "ChatConfigCheckButtonTemplate", "ChatConfigSmallCheckButtonTemplate");
 		ChatConfig_CreateTieredCheckboxes(CombatConfigMessageTypesRight, COMBAT_CONFIG_MESSAGETYPES_RIGHT, "ChatConfigCheckButtonTemplate", "ChatConfigSmallCheckButtonTemplate");
 		ChatConfig_CreateTieredCheckboxes(CombatConfigMessageTypesMisc, COMBAT_CONFIG_MESSAGETYPES_MISC, "ChatConfigSmallCheckButtonTemplate", "ChatConfigSmallCheckButtonTemplate");
@@ -795,7 +796,7 @@ function ChatConfigFrame_OnEvent(self, event, ...)
 end
 
 function ChatConfig_CreateCheckboxes(frame, checkBoxTable, checkBoxTemplate, title)
-	local checkBoxNameString = frame:GetName().."CheckBox";
+	local checkBoxNameString = frame:GetName().."Checkbox";
 	local checkBoxName, checkBox, check;
 	local width, height;
 	local padding = 8;
@@ -869,9 +870,9 @@ function ChatConfig_CreateCheckboxes(frame, checkBoxTable, checkBoxTemplate, tit
 	end
 end
 
-function ChatConfig_CreateTieredCheckboxes(frame, checkBoxTable, checkBoxTemplate, subCheckBoxTemplate, columns, spacing)
-	local checkBoxNameString = frame:GetName().."CheckBox";
-	local checkBoxName, checkBox, subCheckBoxName, subCheckBox, subCheckBoxNameString;
+function ChatConfig_CreateTieredCheckboxes(frame, checkBoxTable, checkBoxTemplate, subCheckboxTemplate, columns, spacing)
+	local checkBoxNameString = frame:GetName().."Checkbox";
+	local checkBoxName, checkBox, subCheckboxName, subCheckbox, subCheckboxNameString;
 	local width, height;
 	local padding = 8;
 	local count = 0;
@@ -879,10 +880,6 @@ function ChatConfig_CreateTieredCheckboxes(frame, checkBoxTable, checkBoxTemplat
 	local yOffset;
 	local numColumns = 2;
 	local columnIndex = 1;
-	local itemsPerColumn;
-	if ( columns ) then
-		itemsPerColumn = ceil(#checkBoxTable/columns);
-	end
 	frame.checkBoxTable = checkBoxTable;
 	for index, value in ipairs(checkBoxTable) do
 		--If no checkbox then create it
@@ -912,29 +909,29 @@ function ChatConfig_CreateTieredCheckboxes(frame, checkBoxTable, checkBoxTemplat
 			end
 			_G[checkBoxName.."Text"]:SetText(text);
 			if ( value.subTypes ) then
-				subCheckBoxNameString = checkBoxName.."_";
+				subCheckboxNameString = checkBoxName.."_";
 				for k, v in ipairs(value.subTypes) do
-					subCheckBoxName = subCheckBoxNameString..k;
-					if ( not _G[subCheckBoxName] ) then
-						subCheckBox = CreateFrame("CheckButton", subCheckBoxName, checkBox, subCheckBoxTemplate);
+					subCheckboxName = subCheckboxNameString..k;
+					if ( not _G[subCheckboxName] ) then
+						subCheckbox = CreateFrame("CheckButton", subCheckboxName, checkBox, subCheckboxTemplate);
 					end
 					if ( k > 1 ) then
 						if ( mod(k, numColumns) == 0 ) then
-							subCheckBox:SetPoint("LEFT", subCheckBoxNameString..(k-1), "RIGHT", 60, 0);
+							subCheckbox:SetPoint("LEFT", subCheckboxNameString..(k-1), "RIGHT", 60, 0);
 						else
-							subCheckBox:SetPoint("TOPLEFT", subCheckBoxNameString..(k-2), "BOTTOMLEFT", 0, 2);
+							subCheckbox:SetPoint("TOPLEFT", subCheckboxNameString..(k-2), "BOTTOMLEFT", 0, 2);
 						end
 					else
-						subCheckBox:SetPoint("TOPLEFT", checkBox, "BOTTOMLEFT", 15, 2);
+						subCheckbox:SetPoint("TOPLEFT", checkBox, "BOTTOMLEFT", 15, 2);
 					end
-					subCheckBox.func = v.func;
-					subCheckBox.tooltip = v.tooltip;
+					subCheckbox.func = v.func;
+					subCheckbox.tooltip = v.tooltip;
 					if ( v.text ) then
 						subText = v.text;
 					else
 						subText = _G[v.type];
 					end
-					_G[subCheckBoxName.."Text"]:SetText(subText);
+					_G[subCheckboxName.."Text"]:SetText(subText);
 					count = count+0.6;
 				end
 				yOffset = -(22*ceil(#value.subTypes/numColumns) + 16);
@@ -1004,7 +1001,7 @@ function ChatConfig_UpdateCheckboxes(frame)
 	end
 	local height;
 	local checkBoxTable = frame.checkBoxTable;
-	local checkBoxNameString = frame:GetName().."CheckBox";
+	local checkBoxNameString = frame:GetName().."Checkbox";
 	local baseFrame, checkBoxName, checkBox, baseName, colorSwatch;
 	local topnum, padding = 0, 8;
 	for index, value in ipairs(checkBoxTable) do
@@ -1110,7 +1107,7 @@ end
 function ChatConfig_UpdateTieredCheckboxes(frame, index)
 	local group = frame.checkBoxTable[index];
 	local groupChecked;
-	local baseName = frame:GetName().."CheckBox"..index;
+	local baseName = frame:GetName().."Checkbox"..index;
 	local checkBox = _G[baseName];
 	if ( checkBox ) then
 		groupChecked = group.checked;
@@ -1136,30 +1133,30 @@ function ChatConfig_UpdateTieredCheckboxes(frame, index)
 			end
 		end
 	end
-	local subCheckBox;
+	local subCheckbox;
 	if ( group.subTypes ) then
 		for k, v in ipairs(group.subTypes) do
-			subCheckBox = _G[baseName.."_"..k];
+			subCheckbox = _G[baseName.."_"..k];
 			if ( type(v.checked) == "function" ) then
-				subCheckBox:SetChecked(v.checked());
+				subCheckbox:SetChecked(v.checked());
 			else
-				subCheckBox:SetChecked(v.checked);
+				subCheckbox:SetChecked(v.checked);
 			end
 			if ( type(v.disabled) == "function" ) then
 				if( v.disabled() ) then
-					subCheckBox:Disable();
+					subCheckbox:Disable();
 				else
-					subCheckBox:Enable();
+					subCheckbox:Enable();
 				end
 			else
 				if ( v.disabled ) then
-					subCheckBox:Disable();
+					subCheckbox:Disable();
 				else
-					subCheckBox:Enable();
+					subCheckbox:Enable();
 				end
 			end
 
-			subCheckBox:SetEnabled(groupChecked);
+			subCheckbox:SetEnabled(groupChecked);
 		end
 	end
 end
@@ -1453,7 +1450,7 @@ COMBATCONFIG_COLORPICKER_FUNCTIONS = {
 }
 
 function ChatUnitColor_OpenColorPicker(self)
-	local info = UIDropDownMenu_CreateInfo();
+	local info = {};
 	info.r, info.g, info.b = GetChatUnitColor(self.type);
 	CHAT_CONFIG_CURRENT_COLOR_SWATCH = self;
 	info.swatchFunc = COMBATCONFIG_COLORPICKER_FUNCTIONS.chatUnitColorSwatch;
@@ -1462,7 +1459,7 @@ function ChatUnitColor_OpenColorPicker(self)
 end
 
 function SpellColor_OpenColorPicker(self)
-	local info = UIDropDownMenu_CreateInfo();
+	local info = {};
 	CHAT_CONFIG_CURRENT_COLOR_SWATCH = self;
 	info.r, info.g, info.b = GetTableColor(CHATCONFIG_SELECTED_FILTER.colors.defaults.spell);
 	info.swatchFunc = COMBATCONFIG_COLORPICKER_FUNCTIONS.spellColorSwatch;
@@ -1471,7 +1468,7 @@ function SpellColor_OpenColorPicker(self)
 end
 
 function DamageColor_OpenColorPicker(self)
-	local info = UIDropDownMenu_CreateInfo();
+	local info = {};
 	CHAT_CONFIG_CURRENT_COLOR_SWATCH = self;
 	info.r, info.g, info.b = GetTableColor(CHATCONFIG_SELECTED_FILTER.colors.defaults.damage);
 	info.swatchFunc = COMBATCONFIG_COLORPICKER_FUNCTIONS.damageColorSwatch;
@@ -1480,7 +1477,7 @@ function DamageColor_OpenColorPicker(self)
 end
 
 function MessageTypeColor_OpenColorPicker(self)
-	local info = UIDropDownMenu_CreateInfo();
+	local info = {};
 	local messageTypeTable;
 	info.r, info.g, info.b, messageTypeTable = GetMessageTypeColor(self.type);
 	CHAT_CONFIG_CURRENT_COLOR_SWATCH = self;
@@ -1942,7 +1939,7 @@ function CombatConfig_CreateCombatFilter(name, filter)
 	else
 		newFilter = CopyTable(filter);
 	end
-	if ( not name or name == "" ) then
+	if ( not name or name == "" or not C_ChatInfo.IsValidCombatFilterName(name) ) then
 		name = format(DEFAULT_COMBATLOG_FILTER_NAME, #Blizzard_CombatLog_Filters.filters);
 	end
 	newFilter.name = name;
@@ -2120,7 +2117,7 @@ end
 
 function ChatConfigChannelSettings_UpdateCheckboxes()
 	CreateChatChannelList(ChatConfigChannelSettings, GetChannelList());
-	ChatConfig_CreateCheckboxes(ChatConfigChannelSettingsLeft, CHAT_CONFIG_CHANNEL_LIST, "MovableChatConfigWideCheckBoxWithSwatchTemplate", CHAT_CONFIG_CHANNEL_SETTINGS_TITLE_WITH_DRAG_INSTRUCTIONS);
+	ChatConfig_CreateCheckboxes(ChatConfigChannelSettingsLeft, CHAT_CONFIG_CHANNEL_LIST, "MovableChatConfigWideCheckboxWithSwatchTemplate", CHAT_CONFIG_CHANNEL_SETTINGS_TITLE_WITH_DRAG_INSTRUCTIONS);
 	ChatConfig_UpdateCheckboxes(ChatConfigChannelSettingsLeft);
 	ChatConfigChannelSettingsLeft:UpdateStates();
 end
@@ -2176,7 +2173,7 @@ end
 
 function ChatConfigTextToSpeechChannelSettings_UpdateCheckboxes()
 	CreateChatTextToSpeechChannelList(ChatConfigTextToSpeechChannelSettings, GetChannelList());
-	ChatConfig_CreateCheckboxes(ChatConfigTextToSpeechChannelSettingsLeft, CHAT_CONFIG_TEXT_TO_SPEECH_CHANNEL_LIST, "ChatConfigCheckBoxSmallTemplate", CHANNELS);
+	ChatConfig_CreateCheckboxes(ChatConfigTextToSpeechChannelSettingsLeft, CHAT_CONFIG_TEXT_TO_SPEECH_CHANNEL_LIST, "ChatConfigCheckboxSmallTemplate", CHANNELS);
 	ChatConfig_UpdateCheckboxes(ChatConfigTextToSpeechChannelSettingsLeft);
 end
 
@@ -2344,9 +2341,9 @@ function ChatConfigFrameTabManagerMixin:CalculateCurrentWidth()
 	self.currentWidth = currentWidth;
 end
 
-ChatConfigWideCheckBoxManagerMixin = {};
+ChatConfigWideCheckboxManagerMixin = {};
 
-function ChatConfigWideCheckBoxManagerMixin:OnUpdate(dt)
+function ChatConfigWideCheckboxManagerMixin:OnUpdate(dt)
 	if self.movingIndex > #CHAT_CONFIG_CHANNEL_LIST then
 		self:StopMovingEntry();
 	end
@@ -2386,31 +2383,31 @@ function ChatConfigWideCheckBoxManagerMixin:OnUpdate(dt)
 	end
 end
 
-function ChatConfigWideCheckBoxManagerMixin:UpdateStates()
+function ChatConfigWideCheckboxManagerMixin:UpdateStates()
 	if not self.movingIndex then
-		for i, button in ipairs(self.WideCheckBoxes) do
-			button:SetState(ChatConfigWideCheckBoxState.Normal);
+		for i, button in ipairs(self.WideCheckboxes) do
+			button:SetState(ChatConfigWideCheckboxState.Normal);
 		end
 
 		return;
 	end
 
-	for i, button in ipairs(self.WideCheckBoxes) do
+	for i, button in ipairs(self.WideCheckboxes) do
 		if button:GetID() == self.movingIndex then
-			button:SetState(ChatConfigWideCheckBoxState.Normal);
+			button:SetState(ChatConfigWideCheckboxState.Normal);
 		else
-			button:SetState(ChatConfigWideCheckBoxState.GrayedOut);
+			button:SetState(ChatConfigWideCheckboxState.GrayedOut);
 		end
 	end
 end
 
-function ChatConfigWideCheckBoxManagerMixin:StartMovingEntry(index)
+function ChatConfigWideCheckboxManagerMixin:StartMovingEntry(index)
 	self.movingIndex = index;
-	self:SetScript("OnUpdate", ChatConfigWideCheckBoxManagerMixin.OnUpdate);
+	self:SetScript("OnUpdate", ChatConfigWideCheckboxManagerMixin.OnUpdate);
 	self:UpdateStates();
 end
 
-function ChatConfigWideCheckBoxManagerMixin:StopMovingEntry()
+function ChatConfigWideCheckboxManagerMixin:StopMovingEntry()
 	self.movingIndex = nil;
 	self:SetScript("OnUpdate", nil);
 	self:UpdateStates();
@@ -2418,12 +2415,12 @@ function ChatConfigWideCheckBoxManagerMixin:StopMovingEntry()
 	ChatEdit_CheckUpdateNewcomerEditBoxHint();
 end
 
-function ChatConfigWideCheckBoxManagerMixin:GetMovingEntry()
+function ChatConfigWideCheckboxManagerMixin:GetMovingEntry()
 	if self.movingIndex == nil then
 		return nil;
 	end
 
-	for i, button in ipairs(self.WideCheckBoxes) do
+	for i, button in ipairs(self.WideCheckboxes) do
 		if button:GetID() == self.movingIndex then
 			return button;
 		end
@@ -2432,21 +2429,21 @@ function ChatConfigWideCheckBoxManagerMixin:GetMovingEntry()
 	return nil;
 end
 
-ChatConfigWideCheckBoxMixin = {};
+ChatConfigWideCheckboxMixin = {};
 
-ChatConfigWideCheckBoxState = {
+ChatConfigWideCheckboxState = {
 	Normal = 1,
 	GrayedOut = 2,
 };
 
-function ChatConfigWideCheckBoxMixin:OnLoad()
+function ChatConfigWideCheckboxMixin:OnLoad()
 	self.CheckButton:SetHitRectInsets(0, 0, 0, 0);
 	self:RegisterForDrag("LeftButton");
 	self.CheckButton.Text:SetPoint("LEFT", self.CheckButton, "RIGHT", 1, 1);
 end
 
-function ChatConfigWideCheckBoxMixin:SetState(state)
-	self.ArtOverlay.GrayedOut:SetShown(state == ChatConfigWideCheckBoxState.GrayedOut);
+function ChatConfigWideCheckboxMixin:SetState(state)
+	self.ArtOverlay.GrayedOut:SetShown(state == ChatConfigWideCheckboxState.GrayedOut);
 
 	-- Allow certain rulesets to modify state behavior
 	local enabled = self:GetChannelRuleset() == Enum.ChatChannelRuleset.None and not self:GetChannelDisabled();
@@ -2454,13 +2451,13 @@ function ChatConfigWideCheckBoxMixin:SetState(state)
 	self.CloseChannel:DesaturateHierarchy(enabled and 0 or 1);
 end
 
-function ChatConfigWideCheckBoxMixin:GetChannelIndex()
+function ChatConfigWideCheckboxMixin:GetChannelIndex()
 	local channelIndex = self:GetID();
 	local channelData = CHAT_CONFIG_CHANNEL_LIST[channelIndex];
 	return channelData and channelData.channelID or nil;
 end
 
-function ChatConfigWideCheckBoxMixin:GetChannelDisabled()
+function ChatConfigWideCheckboxMixin:GetChannelDisabled()
 	local channelIndex = self:GetID();
 	local channelData = CHAT_CONFIG_CHANNEL_LIST[channelIndex];
 	if not channelData then 
@@ -2469,16 +2466,16 @@ function ChatConfigWideCheckBoxMixin:GetChannelDisabled()
 	return type(channelData.disabled) == "function" and channelData.disabled() or channelData.disabled;
 end
 
-function ChatConfigWideCheckBoxMixin:GetChannelRuleset()
+function ChatConfigWideCheckboxMixin:GetChannelRuleset()
 	local channelIndex = self:GetChannelIndex();
 	return channelIndex and C_ChatInfo.GetChannelRuleset(channelIndex) or Enum.ChatChannelRuleset.None;
 end
 
-function ChatConfigWideCheckBoxMixin:OnDragStart()
+function ChatConfigWideCheckboxMixin:OnDragStart()
 	self:GetParent():StartMovingEntry(self:GetID());
 end
 
-function ChatConfigWideCheckBoxMixin:LeaveChannel()
+function ChatConfigWideCheckboxMixin:LeaveChannel()
 	local channelIndex = self:GetID();
 	if CHAT_CONFIG_CHANNEL_LIST[channelIndex].isBlank then
 		for i = channelIndex, #CHAT_CONFIG_CHANNEL_LIST - 1 do

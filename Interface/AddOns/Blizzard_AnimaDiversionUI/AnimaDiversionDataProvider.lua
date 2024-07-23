@@ -10,13 +10,13 @@ local reinforceNodeTextureKitAnimationEffectId = {
 	["Kyrian"] = 22,
 	["NightFae"] = 28,
 	["Venthyr"] = 25,
-	["Necrolord"] = 31, 
-}; 
+	["Necrolord"] = 31,
+};
 
-local animaConnectionShowBlackLink = { 
+local animaConnectionShowBlackLink = {
 	["Venthyr"] = true,
-	["Necrolord"] = true, 
-}; 
+	["Necrolord"] = true,
+};
 
 local ANIMA_DIVERSION_DATA_PROVIDER_FRAME_EVENTS = {
 	"ANIMA_DIVERSION_TALENT_UPDATED",
@@ -35,16 +35,16 @@ AnimaDiversionDataProviderMixin = CreateFromMixins(MapCanvasDataProviderMixin);
 
 function AnimaDiversionDataProviderMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, ANIMA_DIVERSION_DATA_PROVIDER_FRAME_EVENTS);
-end 
+end
 
 function AnimaDiversionDataProviderMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, ANIMA_DIVERSION_DATA_PROVIDER_FRAME_EVENTS);
 	self:ResetModelScene();
-end 
+end
 
 function AnimaDiversionDataProviderMixin:OnEvent(event, ...)
-	self:RefreshAllData(); 
-end 
+	self:RefreshAllData();
+end
 
 function AnimaDiversionDataProviderMixin:SetupConnectionOnPin(pin)
 	local connection = self.connectionPool:Acquire();
@@ -104,9 +104,9 @@ function AnimaDiversionDataProviderMixin:RemoveAllData()
 	self:GetMap():RemoveAllPinsByTemplate("AnimaDiversionModelScenePinTemplate");
 end
 
-function AnimaDiversionDataProviderMixin:CanReinforceNode() 
+function AnimaDiversionDataProviderMixin:CanReinforceNode()
 	return self.bolsterProgress >= 10;
-end 
+end
 
 function AnimaDiversionDataProviderMixin:RefreshAllData(fromOnShow)
 	self:RemoveAllData();
@@ -115,7 +115,7 @@ function AnimaDiversionDataProviderMixin:RefreshAllData(fromOnShow)
 	if not self.connectionPool then
 		self.connectionPool = CreateFramePool("FRAME", self:GetMap():GetCanvas(), "AnimaDiversionConnectionTemplate");
 	else
-		self.connectionPool:ReleaseAll(); 
+		self.connectionPool:ReleaseAll();
 	end
 
 	self.textureKit = C_AnimaDiversion.GetTextureKit();
@@ -127,20 +127,15 @@ function AnimaDiversionDataProviderMixin:RefreshAllData(fromOnShow)
 		return;
 	end
 
-	local animaNodes = C_AnimaDiversion.GetAnimaDiversionNodes(); 
-	if not animaNodes then 
+	local animaNodes = C_AnimaDiversion.GetAnimaDiversionNodes();
+	if not animaNodes then
 		return;
-	end 
+	end
 
 	self:AddOrigin(originPosition);
 
-	local hasAnyChanneledNodes = false;
 	for _, nodeData in ipairs(animaNodes) do
-		local wasChanneled = self:AddNode(nodeData);
-
-		if wasChanneled then
-			hasAnyChanneledNodes = true;
-		end
+		self:AddNode(nodeData);
 	end
 end
 
@@ -165,32 +160,32 @@ function AnimaDiversionDataProviderMixin:AddOrigin(position)
 
 	pin:SetPosition(position.x, position.y);
 	pin.nodeData = nil;
-	pin.owner = self; 
+	pin.owner = self;
 	pin.textureKit = self.textureKit;
-	pin:SetSize(175,175); 
+	pin:SetSize(175,175);
 	pin:SetupOrigin();
 
-	self.origin = pin; 
-end 
+	self.origin = pin;
+end
 
 function AnimaDiversionDataProviderMixin:AddModelScene()
 	local pin = self:GetMap():AcquirePin("AnimaDiversionModelScenePinTemplate");
 	pin:SetPosition(0.5, 0.5);
-	self.modelScenePin = pin; 
-	local width = self:GetMap():DenormalizeHorizontalSize(1.0); 
+	self.modelScenePin = pin;
+	local width = self:GetMap():DenormalizeHorizontalSize(1.0);
 	local height = self:GetMap():DenormalizeVerticalSize(1.0);
 	pin:SetSize(width, height);
 	pin.ModelScene:SetSize(width, height);
 	pin.ModelScene:SetFrameLevel(1000);
 	pin.ModelScene:RefreshModelScene();
-end 
+end
 
-AnimaDiversionModelScenePinMixin = CreateFromMixins(MapCanvasPinMixin); 
+AnimaDiversionModelScenePinMixin = CreateFromMixins(MapCanvasPinMixin);
 function AnimaDiversionModelScenePinMixin:OnLoad()
 	self:UseFrameLevelType("PIN_FRAME_LEVEL_ANIMA_DIVERSION_MODELSCENE_PIN");
-end 
+end
 
-AnimaDiversionPinMixin = CreateFromMixins(MapCanvasPinMixin); 
+AnimaDiversionPinMixin = CreateFromMixins(MapCanvasPinMixin);
 function AnimaDiversionPinMixin:OnLoad()
 	self:UseFrameLevelType("PIN_FRAME_LEVEL_ANIMA_DIVERSION_PIN");
 	self:SetNudgeSourceRadius(1);
@@ -199,7 +194,7 @@ function AnimaDiversionPinMixin:OnLoad()
 	local zoomedInNudge = 4;
 	local zoomedOutNudge = zoomedInNudge;
 	self:SetNudgeSourceMagnitude(zoomedInNudge, zoomedOutNudge);
-end 
+end
 
 function AnimaDiversionPinMixin:SetupOrigin()
 	self.visualState = nil;
@@ -209,15 +204,15 @@ function AnimaDiversionPinMixin:SetupOrigin()
 	self.IconBorder:Hide();
 	self.IconDisabledOverlay:Hide();
 	self:Show();
-end 
+end
 
-function AnimaDiversionPinMixin:IsConnected() 
+function AnimaDiversionPinMixin:IsConnected()
 	return AnimaDiversionUtil.IsNodeActive(self.nodeData.state);
-end 
+end
 
 function AnimaDiversionPinMixin:SetupNode()
 	local useState = self.nodeData.state;
-	
+
 	if self.nodeData.state == Enum.AnimaDiversionNodeState.SelectedPermanent then
 		local permanent = true;
 		self:SetReinforceState(true, permanent);
@@ -240,7 +235,7 @@ function AnimaDiversionPinMixin:SetupNode()
 	self.IconBorder:Hide();
 
 	self:Show();
-end 
+end
 
 function AnimaDiversionPinMixin:SetVisualState(state)
 	self.visualState = state;
@@ -256,13 +251,13 @@ function AnimaDiversionPinMixin:SetVisualState(state)
 	end
 end
 
-function AnimaDiversionPinMixin:SetReinforceState(reinforce, permanent) 
+function AnimaDiversionPinMixin:SetReinforceState(reinforce, permanent)
 	if reinforce then
 		self.owner:AddEffectOnPin(reinforceNodeTextureKitAnimationEffectId[self.textureKit], self, permanent);
 	else
 		self.owner:ClearEffectOnPin(reinforceNodeTextureKitAnimationEffectId[self.textureKit], self);
 	end
-end 
+end
 
 function AnimaDiversionPinMixin:SetSelectedState(selected, leaveOtherSelections)
 	if selected then
@@ -277,9 +272,9 @@ function AnimaDiversionPinMixin:SetSelectedState(selected, leaveOtherSelections)
 	else
 		self.owner:ClearEffectOnPin(ANIMA_SELECTION_MODEL_EFFECT_ID, self);
 	end
-end 
+end
 
-function AnimaDiversionPinMixin:OnMouseEnter() 
+function AnimaDiversionPinMixin:OnMouseEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	self:RefreshTooltip();
 end
@@ -293,7 +288,7 @@ function AnimaDiversionPinMixin:HaveEnoughAnimaToActivate()
 	if talentInfo and animaCurrencyInfo then
 		for _, researchCostInfo in ipairs(talentInfo.researchCurrencyCosts) do
 			if researchCostInfo.currencyType == animaCurrencyID then
-				if animaCurrencyInfo.quantity < researchCostInfo.currencyQuantity then 
+				if animaCurrencyInfo.quantity < researchCostInfo.currencyQuantity then
 					return false;
 				else
 					return true;
@@ -305,27 +300,27 @@ function AnimaDiversionPinMixin:HaveEnoughAnimaToActivate()
 	end
 
 	return false;
-end 
+end
 
 function AnimaDiversionPinMixin:RefreshTooltip()
 	GameTooltip:ClearLines();
 	self.UpdateTooltip = nil;
 
-	if not self.nodeData then -- If we are the origin pin we want to show a special tooltip. 
+	if not self.nodeData then -- If we are the origin pin we want to show a special tooltip.
 		GameTooltip_AddHighlightLine(GameTooltip, ANIMA_DIVERSION_ORIGIN_TOOLTIP);
 	else
 		GameTooltip_AddNormalLine(GameTooltip, self.nodeData.name);
 		GameTooltip_AddHighlightLine(GameTooltip, self.nodeData.description);
-		if self.nodeData.state == Enum.AnimaDiversionNodeState.Unavailable then 
+		if self.nodeData.state == Enum.AnimaDiversionNodeState.Unavailable then
 			GameTooltip_AddBlankLineToTooltip(GameTooltip);
 			GameTooltip_AddErrorLine(GameTooltip, ANIMA_DIVERSION_NODE_UNAVAILABLE);
 		elseif self.nodeData.state == Enum.AnimaDiversionNodeState.Cooldown and not self.owner:CanReinforceNode() then
 			GameTooltip_AddBlankLineToTooltip(GameTooltip);
 			GameTooltip_AddErrorLine(GameTooltip, ANIMA_DIVERSION_NODE_COOLDOWN);
-		elseif self.nodeData.state == Enum.AnimaDiversionNodeState.SelectedPermanent then 
+		elseif self.nodeData.state == Enum.AnimaDiversionNodeState.SelectedPermanent then
 			GameTooltip_AddBlankLineToTooltip(GameTooltip);
 			GameTooltip_AddColoredLine(GameTooltip, ANIMA_DIVERSION_POI_REINFORCED, GREEN_FONT_COLOR);
-		elseif self.nodeData.state == Enum.AnimaDiversionNodeState.Available then 
+		elseif self.nodeData.state == Enum.AnimaDiversionNodeState.Available then
 			local notEnoughAnima = not self:HaveEnoughAnimaToActivate();
 
 			local talentInfo = C_Garrison.GetTalentInfo(self.nodeData.talentID);
@@ -352,32 +347,32 @@ function AnimaDiversionPinMixin:RefreshTooltip()
 				self.UpdateTooltip = self.RefreshTooltip;
 			end
 		end
-	end 
+	end
 
-	GameTooltip:Show(); 
+	GameTooltip:Show();
 end
 
-function AnimaDiversionPinMixin:OnMouseLeave() 
+function AnimaDiversionPinMixin:OnMouseLeave()
 	GameTooltip:Hide();
 end
 
-function AnimaDiversionPinMixin:OnClick(button) 
+function AnimaDiversionPinMixin:OnClick(button)
 	if not self.nodeData then -- If we are the origin pin, don't do anything.
 		return;
-	end 
+	end
 
 	if AnimaDiversionFrame.disallowSelection or button ~= "LeftButton" then	-- if selection is disabled or they didn't use left button, don't do anything.
 		return;
 	end
 
-	if self.owner:CanReinforceNode() then 
-		if self.nodeData.state == Enum.AnimaDiversionNodeState.Unavailable or self.nodeData.state == Enum.AnimaDiversionNodeState.SelectedPermanent then 
+	if self.owner:CanReinforceNode() then
+		if self.nodeData.state == Enum.AnimaDiversionNodeState.Unavailable or self.nodeData.state == Enum.AnimaDiversionNodeState.SelectedPermanent then
 			return;
 		end
 
 		AnimaDiversionFrame.ReinforceInfoFrame:SelectNodeToReinforce(self);
 	else
-		if self.nodeData.state == Enum.AnimaDiversionNodeState.Available and self:HaveEnoughAnimaToActivate() then 
+		if self.nodeData.state == Enum.AnimaDiversionNodeState.Available and self:HaveEnoughAnimaToActivate() then
 			StaticPopup_Show("ANIMA_DIVERSION_CONFIRM_CHANNEL", self.nodeData.name, nil, self);
 		end
 	end

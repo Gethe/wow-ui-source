@@ -3,6 +3,7 @@
 ## Version: 1.0
 ## LoadOnDemand: 1
 ## AllowLoad: game
+## Dependencies: Blizzard_ClassMenu
 ## AllowLoadGameType: mainline
 Mainline\Blizzard_MonthlyActivities.lua
 Mainline\Blizzard_MonthlyActivities.xml

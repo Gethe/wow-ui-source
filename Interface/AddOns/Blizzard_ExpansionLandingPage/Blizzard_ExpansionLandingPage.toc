@@ -4,4 +4,8 @@
 ## LoadOnDemand: 0
 
 Blizzard_DragonflightLandingPage.xml
+Blizzard_DragonflightLandingPage.lua
+Blizzard_WarWithinLandingPage.xml
+Blizzard_WarWithinLandingPage.lua
+Blizzard_ExpansionLandingPage.lua
 Blizzard_ExpansionLandingPage.xml

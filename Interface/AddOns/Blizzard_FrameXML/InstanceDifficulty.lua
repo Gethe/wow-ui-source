@@ -1,7 +1,3 @@
---
--- Dungeon Difficulty
---
-
 InstanceDifficultyMixin = { };
 
 function InstanceDifficultyMixin:OnLoad()
@@ -19,104 +15,139 @@ end
 function InstanceDifficultyMixin:OnEvent(event, ...)
 	if ( event == "GUILD_PARTY_STATE_UPDATED" ) then
 		local isGuildGroup = ...;
-		if ( isGuildGroup ~= self.isGuildGroup ) then
-			self.isGuildGroup = isGuildGroup;
-			self:Update();
-		end
+		self:SetIsGuildGroup(isGuildGroup);
 	elseif ( event == "PLAYER_DIFFICULTY_CHANGED") then
-		self:Update();
-	elseif ( event == "UPDATE_INSTANCE_INFO" or event == "INSTANCE_GROUP_SIZE_CHANGED" ) then
+		self:DeferredUpdate();
+	elseif ( event == "UPDATE_INSTANCE_INFO" or event == "INSTANCE_GROUP_SIZE_CHANGED" or event == "GROUP_ROSTER_UPDATE") then
 		RequestGuildPartyState();
-		self:Update();
+		self:DeferredUpdate();
 	elseif ( event == "PLAYER_GUILD_UPDATE" ) then
 		local tabard = self.Guild;
 		SetSmallGuildTabardTextures("player", tabard.Emblem, tabard.Background, tabard.Border);
 		if ( IsInGuild() ) then
 			RequestGuildPartyState();
 		else
-			IS_GUILD_GROUP = nil;
-			self:Update();
+			self:SetIsGuildGroup(false);
 		end
 	else
 		RequestGuildPartyState();
 	end
 end
 
+function InstanceDifficultyMixin:SetIsGuildGroup(isGuildGroup)
+	if ( isGuildGroup ~= self.isGuildGroup ) then
+		self.isGuildGroup = isGuildGroup;
+		self:Update();
+	end
+end
+
+function InstanceDifficultyMixin:IsGuildGroup()
+	return self.isGuildGroup;
+end
+
+function InstanceDifficultyMixin:IsInDelve()
+	local _x, _y, _z, mapID = UnitPosition("player");
+	return C_DelvesUI.HasActiveDelve(mapID);
+end
+
+function InstanceDifficultyMixin:GetDifficultyTexture(difficultyTextureFrame, displayChallengeMode, displayMythic, displayHeroic)
+	if ( not difficultyTextureFrame) then
+		return nil;
+	elseif ( difficultyTextureFrame.ChallengeModeTexture and displayChallengeMode ) then
+		return difficultyTextureFrame.ChallengeModeTexture;
+	elseif ( difficultyTextureFrame.MythicTexture and displayMythic ) then
+		return difficultyTextureFrame.MythicTexture;
+	elseif ( difficultyTextureFrame.HeroicTexture and displayHeroic ) then
+		return difficultyTextureFrame.HeroicTexture;
+	elseif ( difficultyTextureFrame.WalkInTexture and self:IsInDelve()) then
+		return difficultyTextureFrame.WalkInTexture;
+	elseif (difficultyTextureFrame.NormalTexture ) then
+		return difficultyTextureFrame.NormalTexture;
+	end
+
+	return nil;
+end
+
+function InstanceDifficultyMixin:DeferredUpdate()
+	-- Deferring the update prevents several visual pops that can happen because not all
+	-- information to generate the correct visuals is available at the same time and also
+	-- avoids calling Update redundantly up to six times when entering a dungeon.
+	if self.deferredUpdate then
+		return;
+	end
+
+	self.deferredUpdate = true;
+
+	local DEFERRED_UPDATE_DELAY = 0.25; --250 ms, arbitrarily enough time to get all the needed data.
+	C_Timer.After(DEFERRED_UPDATE_DELAY, function()
+		self:Update();
+		self.deferredUpdate = nil;
+	end);
+end
+
 function InstanceDifficultyMixin:Update()
 	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.InstanceDifficultyBanner) then
-		self.Instance:Hide();
-		self.Guild:Hide();
-		self.ChallengeMode:Hide();
+		for _, frame in ipairs(self.ContentModes) do
+			frame:Hide();
+		end
 		return;
 	end
 
 	local _, instanceType, difficulty, _, maxPlayers, playerDifficulty, isDynamicInstance, _, instanceGroupSize = GetInstanceInfo();
 	local _, _, isHeroic, isChallengeMode, displayHeroic, displayMythic = GetDifficultyInfo(difficulty);
 
-	local instanceFrame = self.Instance;
+	-- The frames for the different modes of content the player can engage in.
+	local defaultFrame = self.Default;
 	local guildFrame = self.Guild;
 	local challengeModeFrame = self.ChallengeMode;
 
-	local showDifficultyFrame = nil;
+	-- The frame for the content the player is currently engaging in.
+	local contentFrame = nil;
+
+	-- The frame that contains the text and textures showing the content information.
+	local instanceFrame = nil;
+
 	if ( self.isGuildGroup ) then
-		showDifficultyFrame = guildFrame;
+		contentFrame = guildFrame;
+		instanceFrame = guildFrame.Instance;
 	elseif ( isChallengeMode ) then
-		showDifficultyFrame = challengeModeFrame;
+		contentFrame = challengeModeFrame;
 	elseif (instanceType ~= "none") then
-		showDifficultyFrame = instanceFrame;
+		contentFrame = defaultFrame;
+		instanceFrame = defaultFrame;
 	end
 
-	if ( showDifficultyFrame == guildFrame ) then
-		local guildInstance = guildFrame.Instance;
-
+	if ( contentFrame == guildFrame ) then
 		if ( instanceGroupSize == 0 ) then
-			guildInstance.Text:SetText("");
+			instanceFrame.Text:SetText("");
 		else
-			guildInstance.Text:SetText(instanceGroupSize);
+			instanceFrame.Text:SetText(instanceGroupSize);
 		end
-
-		local challengeModeTexture = guildInstance.ChallengeModeTexture;
-		local mythicTexture = guildInstance.MythicTexture;
-		local heroicTexture = guildInstance.HeroicTexture;
-		local normalTexture = guildInstance.NormalTexture;
-
-		local symbolTexture = nil;
-		if ( isChallengeMode ) then
-			symbolTexture = challengeModeTexture;
-		elseif ( displayMythic ) then
-			symbolTexture = mythicTexture;
-		elseif ( isHeroic or displayHeroic ) then
-			symbolTexture = heroicTexture;
-		else
-			symbolTexture = normalTexture;
-		end
-		
-		challengeModeTexture:SetShown(symbolTexture == challengeModeTexture);
-		mythicTexture:SetShown(symbolTexture == mythicTexture);
-		heroicTexture:SetShown(symbolTexture == heroicTexture);
-		normalTexture:SetShown(symbolTexture == normalTexture);
-
-		guildInstance:Layout();
-		guildFrame:Layout();
 
 		SetSmallGuildTabardTextures("player", guildFrame.Emblem, guildFrame.Background, guildFrame.Border);
-
-	elseif ( showDifficultyFrame == instanceFrame ) then
+	elseif ( contentFrame == defaultFrame ) then
 		instanceFrame.Text:SetText(instanceGroupSize);
-		instanceFrame.HeroicTexture:SetShown((isHeroic or displayHeroic) and not displayMythic);
-		instanceFrame.MythicTexture:SetShown(displayMythic);
-		instanceFrame.NormalTexture:SetShown(not isHeroic and not displayHeroic and not displayMythic);
+	end
+	
+	if (instanceFrame) then
+		local difficultyTexture = self:GetDifficultyTexture(instanceFrame, isChallengeMode, displayMythic, isHeroic or displayHeroic);
+
+		-- Only one difficulty texture should ever be shown.
+		for _, texture in ipairs(instanceFrame.DifficultyTextures) do
+			texture:SetShown(difficultyTexture == texture);
+		end
 
 		instanceFrame:Layout();
 	end
-	
-	instanceFrame:SetShown(showDifficultyFrame == instanceFrame);
-	guildFrame:SetShown(showDifficultyFrame == guildFrame);
-	challengeModeFrame:SetShown(showDifficultyFrame == challengeModeFrame);
+
+	-- Only one mode should ever be shown.
+	for _, frame in ipairs(self.ContentModes) do
+		frame:SetShown(contentFrame == frame);
+	end
 end
 
 function InstanceDifficultyMixin:OnEnter()
-	if ( not self.Instance:IsShown() ) then
+	if ( not self.Default:IsShown() ) then
 		return;
 	end
 	local _, instanceType, difficulty, _, maxPlayers, playerDifficulty, isDynamicInstance, _, instanceGroupSize, lfgID = GetInstanceInfo();
@@ -143,12 +174,12 @@ function InstanceDifficultyMixin:SetFlipped(flipped)
 	local background = flipped and "ui-hud-minimap-guildbanner-background-bottom" or "ui-hud-minimap-guildbanner-background-top";
 	local border = flipped and "ui-hud-minimap-guildbanner-border-bottom" or "ui-hud-minimap-guildbanner-border-top";
 
-	local instanceFrame = self.Instance;
+	local defaultFrame = self.Default;
 	local guildFrame = self.Guild;
 	local challengeModeFrame = self.ChallengeMode;
 
-	instanceFrame.Background:SetAtlas(background);
-	instanceFrame.Border:SetAtlas(border);
+	defaultFrame.Background:SetAtlas(background);
+	defaultFrame.Border:SetAtlas(border);
 	guildFrame.Background:SetAtlas(background);
 	guildFrame.Border:SetAtlas(border);
 	challengeModeFrame.Background:SetAtlas(background);

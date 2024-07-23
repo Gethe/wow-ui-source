@@ -33,9 +33,9 @@ Settings.RegisterAddOnCategory(subcategory);
 local myVariableTable = {}; -- Saved in your .toc
 
 -- check box
-local variable, name, tooltip = "MyCheckBox", "My CheckBox", "My CheckBox Tooltip";
+local variable, name, tooltip = "MyCheckbox", "My Checkbox", "My Checkbox Tooltip";
 local setting = Settings.RegisterProxySetting(category, variable, myVariableTable, Settings.VarType.Boolean, name, Settings.Default.True);
-Settings.CreateCheckBox(category, setting, tooltip);
+Settings.CreateCheckbox(category, setting, tooltip);
 
 -- slider
 local variable, name, tooltip = "MySlider", "My Slider", "My Slider Tooltip";
@@ -48,7 +48,7 @@ local setting = Settings.RegisterProxySetting(category, variable, myVariableTabl
 Settings.CreateSlider(category, setting, options, tooltip);
 
 -- dropdown
-local variable, name, tooltip = "MyDropDown", "My DropDown", "My DropDown Tooltip";
+local variable, name, tooltip = "MyDropdown", "My Dropdown", "My Dropdown Tooltip";
 local function GetOptions()
     local container = Settings.CreateControlTextContainer();
     container:Add(0, "Option A");
@@ -59,5 +59,5 @@ end
 
 local defaultValue = 0;
 local setting = Settings.RegisterProxySetting(category, variable, myVariableTable, Settings.VarType.Number, name, defaultValue);
-Settings.CreateDropDown(category, setting, GetOptions, tooltip);
+Settings.CreateDropdown(category, setting, GetOptions, tooltip);
 ]]--

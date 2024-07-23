@@ -122,18 +122,18 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="AuctionHouseAlignedDurationDropDownTemplate" mixin="AuctionHouseAlignedDurationDropDownMixin" inherits="AuctionHouseSellFrameAlignedControlTemplate" virtual="true">
+	<Frame name="AuctionHouseAlignedDurationTemplate" mixin="AuctionHouseAlignedDurationMixin" inherits="AuctionHouseSellFrameAlignedControlTemplate" virtual="true">
 		<Frames>
-			<Frame parentKey="DropDown" mixin="AuctionHouseDurationDropDownMixin" inherits="LargeUIDropDownMenuTemplate">
+			<DropdownButton parentKey="Dropdown" inherits="WowStyle1DropdownTemplate">
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Label" relativePoint="RIGHT" x="17" y="-2"/>
+					<Anchor point="LEFT" relativeKey="$parent.Label" relativePoint="RIGHT" x="19" y="-2"/>
 				</Anchors>
-				<Scripts>
-					<OnLoad method="OnLoad"/>
-					<OnShow method="OnShow"/>
-				</Scripts>
-			</Frame>
+			</DropdownButton>
 		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
 	</Frame>
 
 	<Frame name="AuctionHouseAlignedPriceDisplayTemplate" mixin="AuctionHouseAlignedPriceDisplayMixin" inherits="AuctionHouseSellFrameAlignedControlTemplate" virtual="true">
@@ -235,7 +235,7 @@
 					<KeyValue key="labelText" value="AUCTION_HOUSE_UNIT_PRICE_LABEL" type="global"/>
 				</KeyValues>
 			</Frame>
-			<Frame parentKey="DurationDropDown" inherits="AuctionHouseAlignedDurationDropDownTemplate">
+			<Frame parentKey="Duration" inherits="AuctionHouseAlignedDurationTemplate">
 				<KeyValues>
 					<KeyValue key="layoutIndex" value="40" type="number"/>
 					<KeyValue key="labelText" value="AUCTION_HOUSE_DURATION_LABEL" type="global"/>
@@ -260,7 +260,7 @@
 				</KeyValues>
 				<Size x="194" y="22"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Label" relativePoint="RIGHT" x="12" y="0"/>
+					<Anchor point="LEFT" relativeKey="$parent" relativePoint="RIGHT" x="12" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnClick method="OnClick"/>

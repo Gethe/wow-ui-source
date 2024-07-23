@@ -62,17 +62,6 @@
 		</Scripts>
 	</Frame>
   <Button name="PVPCellNameTemplate" mixin="PVPCellNameMixin" inherits="PVPStringTemplate" parentKey="cell" registerForClicks="LeftButtonUp,RightButtonUp" enableMouse="true" virtual="true">
-    <Frames>
-      <Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate" hidden="true">
-        <Size x="100" y="100"/>
-        <Anchors>
-          <Anchor point="TOPLEFT"/>
-        </Anchors>
-        <Scripts>
-          <OnLoad function="PvpCellNameDropDown_OnLoad"/>
-        </Scripts>
-      </Frame>
-    </Frames>
     <Scripts>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>

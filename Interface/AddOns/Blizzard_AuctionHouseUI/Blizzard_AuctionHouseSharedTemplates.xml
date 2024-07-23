@@ -45,7 +45,6 @@
 		<Size x="340" y="70"/>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
-			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
@@ -128,12 +127,6 @@
 			<OnEnterPressed function="EditBox_ClearFocus"/>
 		</Scripts>
 	</EditBox>
-
-	<Frame name="FavoriteDropDownTemplate" inherits="UIDropDownMenuTemplate" mixin="AuctionHouseFavoriteDropDownMixin" virtual="true">
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-		</Scripts>
-	</Frame>
 
 	<Frame name="AuctionHouseRefreshFrameTemplate" mixin="AuctionHouseRefreshFrameMixin" virtual="true">
 		<Size x="200" y="20"/>

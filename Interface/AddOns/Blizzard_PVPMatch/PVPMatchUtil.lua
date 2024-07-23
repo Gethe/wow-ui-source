@@ -28,7 +28,7 @@ function PVPMatchUtil.ModeUsesPvpRatingTiers()
 		return false;
 	end
 
-	return C_PvP.IsRatedMap();
+	return C_PvP.IsRatedMap() or C_PvP.IsRatedSoloRBG();
 end
 
 function PVPMatchUtil.IsActiveMatchComplete()
@@ -127,7 +127,7 @@ end
 
 function PVPMatchUtil.UpdateDataProvider(scrollBox, forceNewDataProvider)
 	local scores = GetNumBattlefieldScores();
-	if not scrollBox:GetDataProviderSize() ~= scores or forceNewDataProvider then
+	if scrollBox:GetDataProviderSize() ~= scores or forceNewDataProvider then
 		local useAlternateColor = not C_PvP.IsMatchFactional();
 		local dataProvider = CreateDataProvider();
 

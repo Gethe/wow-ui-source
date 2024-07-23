@@ -52,11 +52,12 @@ function ProfessionsCraftingOutputLogElementMixin:Init()
 
 	continuableContainer:ContinueOnLoad(OnItemLoaded);
 	
-	if resultData.isCrit then
+	-- Inspiration has been replaced with Ingenuity
+	if resultData.hasIngenuityProc and resultData.ingenuityRefund > 0 then
 		self.ItemContainer.CritText:SetScript("OnEnter", function(text)
 			GameTooltip:SetOwner(text, "ANCHOR_RIGHT");
-			GameTooltip_AddHighlightLine(GameTooltip, PROFESSIONS_OUTPUT_INSPIRATION_TITLE);
-			GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_OUTPUT_INSPIRATION_DESC);
+			GameTooltip_AddHighlightLine(GameTooltip, PROFESSIONS_OUTPUT_INGENUITY_TITLE);
+			GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_OUTPUT_INGENUITY_DESC:format(resultData.ingenuityRefund));
 			GameTooltip:Show();
 		end);
 
@@ -84,8 +85,8 @@ function ProfessionsCraftingOutputLogElementMixin:Init()
 	if resultData.resourcesReturned then
 		local container = ContinuableContainer:Create();
 		for index, resource in ipairs(resultData.resourcesReturned) do
-			local item = Item:CreateFromItemID(resource.itemID);
-			container:AddContinuable(item);
+			local resourceItem = Item:CreateFromItemID(resource.itemID);
+			container:AddContinuable(resourceItem);
 		end
 
 		local function FactoryFunction(index)
@@ -137,18 +138,18 @@ function ProfessionsCraftingOutputLogElementMixin:Init()
 		table.insert(rows, self.Resources);
 	end
 
-	if resultData.bonusCraft and #resultData.bonusData > 0 then
+	if #resultData.childData > 0 then
 		local container = ContinuableContainer:Create();
-		for index, bonusData in ipairs(resultData.bonusData) do
-			if bonusData.itemID then
-				local item = Item:CreateFromItemID(bonusData.itemID);
-				container:AddContinuable(item);
+		for index, childData in ipairs(resultData.childData) do
+			if childData.itemID then
+				local childItem = Item:CreateFromItemID(childData.itemID);
+				container:AddContinuable(childItem);
 			end
 		end
 
 		local function FactoryFunction(index)
-			local bonusData = resultData.bonusData[index];
-			if bonusData then
+			local childData = resultData.childData[index];
+			if childData then
 				local button = self.itemButtonPool:Acquire();
 				button:SetScale(.6);
 				return button;
@@ -156,7 +157,7 @@ function ProfessionsCraftingOutputLogElementMixin:Init()
 			return nil;
 		end
 
-		local count = #resultData.bonusData;
+		local count = #resultData.childData;
 		local anchor = AnchorUtil.CreateAnchor("LEFT", self.BonusCraft.Bracket, "RIGHT", 5, -10);
 		local direction, stride, paddingX, paddingY = GridLayoutMixin.Direction.TopLeftToBottomRight, count, 4, 0;
 		local layout = AnchorUtil.CreateGridLayout(direction, stride, paddingX, paddingY);
@@ -164,31 +165,31 @@ function ProfessionsCraftingOutputLogElementMixin:Init()
 
 		local function OnBonusesLoaded()
 			for index, itemButton in ipairs(itemButtons) do
-				local bonusData = resultData.bonusData[index];
-				if bonusData.itemID then
-					local item = Item:CreateFromItemID(bonusData.itemID);
-					itemButton:SetItem(bonusData.itemID);
-					itemButton:SetItemButtonCount(bonusData.quantity);
+				local childData = resultData.childData[index];
+				if childData.itemID then
+					local item = Item:CreateFromItemID(childData.itemID);
+					itemButton:SetItem(childData.itemID);
+					itemButton:SetItemButtonCount(childData.quantity);
 					ReconfigureCountPointAndScale(itemButton);
 
 					itemButton:SetScript("OnEnter", function(button)
 						GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
-						GameTooltip:SetItemByID(bonusData.itemID);
+						GameTooltip:SetItemByID(childData.itemID);
 					end);
-				elseif bonusData.currencyID then
-					local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(bonusData.currencyID);
+				elseif childData.currencyID then
+					local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(childData.currencyID);
 					itemButton:SetItemButtonTexture(currencyInfo.iconFileID);
-					itemButton:SetItemButtonCount(bonusData.showCurrencyText and bonusData.quantity or 1);
+					itemButton:SetItemButtonCount(childData.showCurrencyText and childData.quantity or 1);
 					ReconfigureCountPointAndScale(itemButton);
 
 					itemButton:SetScript("OnEnter", function(button)
 						GameTooltip:SetOwner(button, "ANCHOR_RIGHT", 0, 0);
 						
-						local tooltipInfo = CreateBaseTooltipInfo("GetCurrencyByID", bonusData.currencyID);
+						local tooltipInfo = CreateBaseTooltipInfo("GetCurrencyByID", childData.currencyID);
 						tooltipInfo.linePreCall = function(tooltip, lineData)
 							if lineData.type == Enum.TooltipDataLineType.CurrencyTotal then
 								local amountText = NORMAL_FONT_COLOR:WrapTextInColorCode(AMOUNT_RECEIVED_COLON);
-								GameTooltip_AddHighlightLine(tooltip, string.format("%s %d", amountText, bonusData.quantity));
+								GameTooltip_AddHighlightLine(tooltip, string.format("%s %d", amountText, childData.quantity));
 								return true;
 							end
 						end;
@@ -250,14 +251,10 @@ function ProfessionsCraftingOutputLogMixin:OnLoad()
 	self.updateFrame.remaining = 0;
 	self.updateFrame:Show();
 	
-	self.pendingResultData = {};
-
 	local view = CreateScrollBoxListLinearView(ScrollBoxPad, ScrollBoxPad, ScrollBoxPad, ScrollBoxPad, ScrollBoxSpacing);
-	
-	local function Initializer(frame, resultData)
+	view:SetElementInitializer("ProfessionsCraftingOutputLogElementTemplate", function(frame, resultData)
 		frame:Init(resultData);
-	end
-	view:SetElementInitializer("ProfessionsCraftingOutputLogElementTemplate", Initializer);
+	end);
 
 	view:SetElementExtentCalculator(function(dataIndex, resultData)
 		local height = 46;
@@ -268,7 +265,7 @@ function ProfessionsCraftingOutputLogMixin:OnLoad()
 		if resultData.resourcesReturned then
 			rows = rows + 1;
 		end
-		if resultData.bonusCraft then
+		if #resultData.childData > 0 then
 			rows = rows + 1;
 		end
 		return height + (rows * ElementBonusRowHeight);
@@ -283,82 +280,80 @@ function ProfessionsCraftingOutputLogMixin:OnLoad()
 	self.ScrollBox:GetUpperShadowTexture():SetPoint("TOPRIGHT", -30, 0);
 	self.ScrollBox:GetLowerShadowTexture():SetPoint("BOTTOMLEFT", 30, 0);
 	self.ScrollBox:GetLowerShadowTexture():SetPoint("BOTTOMRIGHT", -30, 0);
+	
+	self.parentResults = {};
+	self.childResults = {};
 end
 
-function ProfessionsCraftingOutputLogMixin:ProcessPendingResultData(resultData)
-	resultData.bonusData = {};
-	
-	-- This item or currency may have arrived before or after the original item, so we
-	-- always need to consider saving off this data in case an item with bonusCraft arrives.
-	local inserted = false;
-	if resultData.operationID then
-		if resultData.bonusCraft or resultData.firstCraftReward then
-			local parentResultData = FindValueInTableIf(self.pendingResultData, function(data)
-				return data.operationID == resultData.operationID;
-			end);
-			if parentResultData then
-				table.insert(parentResultData.bonusData, resultData);
-				inserted = true;
-			end
-		end
-	end
-	
-	if not inserted then
-		table.insert(self.pendingResultData, resultData);
+function ProfessionsCraftingOutputLogMixin:ProcessResultData(resultData)
+	-- We expect operationID on every result to pair child rewards with their a parent, 
+	-- but in case this ever arrives without one, treat it like we would a parent so it
+	-- appears in the list. XP (currency) and Artisan's Mettle are first craft rewards
+	-- and should appear as children to some parent reward.
+	if (not resultData.firstCraftReward) or (resultData.operationID == 0) then
+		-- Child data with matching operation ID will be moved to .childData after our
+		-- timer expires. 
+		resultData.childData = {};
+
+		table.insert(self.parentResults, resultData);
+	else
+		table.insert(self.childResults, resultData);
 	end
 
-	-- If we're expecting additional items, we're going to wait a small amount of time
-	-- for additional items or currencies (Artisan's Mettle, Knowledge XP, etc.) to be sent to us.
+	-- Always expect additional results. We don't know how many more many be inbound so
+	-- we need to set an arbitrary timer that should be enough for the server to finish
+	-- sending it.
+	local waitSeconds = .35;
+	self:RestartTimer(waitSeconds);
+end
+
+function ProfessionsCraftingOutputLogMixin:RestartTimer(waitSeconds)
 	if self.updateFrame.remaining <= 0 then
 		self.updateFrame:SetScript("OnUpdate", function(updateFrame, dt)
 			updateFrame.remaining = math.max(0, updateFrame.remaining - dt);
 			if updateFrame.remaining <= 0 then
 				updateFrame:SetScript("OnUpdate", nil);
-				self:FinalizePendingResultData();
+				self:FinalizeResultData();
 			end
 		end);
 		
-		local waitSeconds = .350;
 		self.updateFrame.remaining = waitSeconds;
 	end
 end
 
 function ProfessionsCraftingOutputLogMixin:OnEvent(event, ...)
-	if event == "TRADE_SKILL_ITEM_CRAFTED_RESULT" then
+	if event == "TRADE_SKILL_ITEM_CRAFTED_RESULT" or event == "TRADE_SKILL_CURRENCY_REWARD_RESULT" then
 		local resultData = ...;
-		self:ProcessPendingResultData(resultData);
-	elseif event == "TRADE_SKILL_CURRENCY_REWARD_RESULT" then
-		local resultData = ...;
-		self:ProcessPendingResultData(resultData);
+		self:ProcessResultData(resultData);
 	end
 end
 
-function ProfessionsCraftingOutputLogMixin:FinalizePendingResultData()
+function ProfessionsCraftingOutputLogMixin:FinalizeResultData()
 	local dataProvider = self.ScrollBox:GetDataProvider();
 	if not dataProvider then
 		dataProvider = CreateDataProvider();
 		self.ScrollBox:SetDataProvider(dataProvider);
 	end
 
-	for index, resultData in ipairs_reverse(self.pendingResultData) do
-		local childResultData = FindValueInTableIf(self.pendingResultData, function(data)
-			return data.operationID and data.firstCraftReward and (resultData.operationID == data.operationID);
+	-- Move child reward data into a parent with a matching operation ID.
+	for index, childResultData in ipairs_reverse(self.childResults) do
+		local parentResultData = FindValueInTableIf(self.parentResults, function(resultData)
+			return childResultData.operationID == resultData.operationID;
 		end);
-		if childResultData then
-			table.remove(self.pendingResultData, index);
-			table.insert(resultData.bonusData, childResultData);
+
+		if parentResultData then
+			-- We found a parent for this data, remove it from the pending list.
+			table.remove(self.childResults, index);
+			table.insert(parentResultData.childData, childResultData);
 		end
 	end
 
-	for index, resultData in ipairs_reverse(self.pendingResultData) do
-		-- We're only expecting to display the original item with bonus items
-		-- and currencies contained within it.
-		if resultData.operationID and not resultData.firstCraftReward then
-			dataProvider:Insert(resultData);
-		end
+	for index, parentResultData in ipairs(self.parentResults) do
+		dataProvider:Insert(parentResultData);
 	end
 
-	self.pendingResultData = {};
+	self.childResults = {};
+	self.parentResults = {};
 
 	if self:IsShown() then
 		self:Resize();

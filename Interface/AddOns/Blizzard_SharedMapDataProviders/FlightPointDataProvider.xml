@@ -2,5 +2,5 @@
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="FlightPointDataProvider.lua"/>
 
-	<Frame name="FlightPointPinTemplate" inherits="BaseHighlightableMapPoiPinTemplate" mixin="FlightPointPinMixin" virtual="true" />
+	<Frame name="FlightPointPinTemplate" inherits="LegendHighlightableMapPoiPinTemplate, BaseSuperTrackableMapPoiPinTemplate" mixin="FlightPointPinMixin" virtual="true" />
 </Ui>

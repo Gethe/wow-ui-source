@@ -118,9 +118,9 @@
 		<Size x="82" y="82" />
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="Background" atlas="dragonflight-majorfactions-emissary-empty" useAtlasSize="true">
+				<Texture parentKey="Background" atlas="generic-majorfactions-emissary-empty" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent" relativePoint="CENTER"/>
+						<Anchor point="CENTER" relativeKey="$parent" relativePoint="CENTER" x="-1" y="1"/>
 					</Anchors>
 				</Texture>
 					<MaskTexture parentKey="BackgroundMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMP" vWrapMode="CLAMP">
@@ -159,7 +159,11 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<DropDownToggleButton parentKey="BountyDropdownButton" mixin="WorldMapActivityTrackerBountyDropdownButtonMixin" hidden="true">
+			<DropdownButton parentKey="BountyDropdown" hidden="true">
+				<KeyValues>
+					<KeyValue key="menuPoint" type="string" value="BOTTOMLEFT"/>
+					<KeyValue key="menuRelativePoint" type="string" value="TOPRIGHT"/>
+				</KeyValues>
 				<Size x="32" y="32"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="-26" y="8"/>
@@ -175,20 +179,9 @@
 						</Texture>
 					</Layer>
 				</Layers>
-				<Scripts>
-					<OnMouseDown method="OnMouseDown"/>
-				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-			</DropDownToggleButton>
-			<Frame parentKey="BountyDropDown" inherits="UIDropDownMenuTemplate" mixin="WorldMapActivityTrackerDropDownMixin">
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent" relativePoint="TOPRIGHT" x="-100" y="200"/>
-				</Anchors>
-				<Scripts>
-					<OnShow method="OnShow"/>
-				</Scripts>
-			</Frame>
+			</DropdownButton>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

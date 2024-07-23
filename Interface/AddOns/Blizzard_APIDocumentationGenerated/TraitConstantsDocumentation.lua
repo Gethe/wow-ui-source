@@ -5,9 +5,9 @@ local TraitConstants =
 		{
 			Name = "NodeOpFailureReason",
 			Type = "Enumeration",
-			NumValues = 25,
+			NumValues = 26,
 			MinValue = 0,
-			MaxValue = 24,
+			MaxValue = 25,
 			Fields =
 			{
 				{ Name = "None", Type = "NodeOpFailureReason", EnumValue = 0 },
@@ -35,6 +35,7 @@ local TraitConstants =
 				{ Name = "LevelTooLow", Type = "NodeOpFailureReason", EnumValue = 22 },
 				{ Name = "TreeFlaggedNoRefund", Type = "NodeOpFailureReason", EnumValue = 23 },
 				{ Name = "NodeNeverPurchasable", Type = "NodeOpFailureReason", EnumValue = 24 },
+				{ Name = "AccountDataNoMatch", Type = "NodeOpFailureReason", EnumValue = 25 },
 			},
 		},
 		{
@@ -234,14 +235,15 @@ local TraitConstants =
 		{
 			Name = "TraitNodeType",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 3,
 			Fields =
 			{
 				{ Name = "Single", Type = "TraitNodeType", EnumValue = 0 },
 				{ Name = "Tiered", Type = "TraitNodeType", EnumValue = 1 },
 				{ Name = "Selection", Type = "TraitNodeType", EnumValue = 2 },
+				{ Name = "SubTreeSelection", Type = "TraitNodeType", EnumValue = 3 },
 			},
 		},
 		{
@@ -286,7 +288,7 @@ local TraitConstants =
 			Type = "Constants",
 			Values =
 			{
-				{ Name = "MAX_COMBAT_TRAIT_CONFIGS", Type = "number", Value = 10 },
+				{ Name = "MAX_COMBAT_TRAIT_CONFIGS", Type = "number", Value = 40 },
 				{ Name = "COMMIT_COMBAT_TRAIT_CONFIG_CHANGES_SPELL_ID", Type = "number", Value = 384255 },
 				{ Name = "INSPECT_TRAIT_CONFIG_ID", Type = "number", Value = -1 },
 				{ Name = "STARTER_BUILD_TRAIT_CONFIG_ID", Type = "number", Value = -2 },

@@ -82,7 +82,7 @@ end
 AlertFrameQueueMixin = CreateFromMixins(ContainedAlertSubSystemMixin);
 
 function OnPooledAlertFrameQueueReset(framePool, frame)
-	FramePool_HideAndClearAnchors(framePool, frame);
+	Pool_HideAndClearAnchors(framePool, frame);
 	if frame.queue and not frame.queue:CheckQueuedAlerts() then
 		frame.queue:GetAlertContainer():UpdateAnchors();
 	end
@@ -233,7 +233,7 @@ function AlertFrameQueueMixin:CanQueueMore()
 end
 
 function AlertFrameQueueMixin:CheckQueuedAlerts()
-	while self:CanShowMore() and self:GetNumQueuedAlerts() > 0 do
+	if self:CanShowMore() and self:GetNumQueuedAlerts() > 0 then
 		local queuedAlertData = table.remove(self.queuedAlerts, 1);
 		return self:ShowAlert(unpack(queuedAlertData, 1, queuedAlertData.numElements));
 	end
@@ -512,6 +512,19 @@ function CreateContinuableContainerForLFGRewards()
 	return continuableContainer;
 end
 
+local function ShouldToastAchievement(achievementID, alreadyEarnedOnAccount)
+	local id, name, points, completed, month, day, year, description, flags, icon, rewardText, isGuildAchievement, wasEarnedByMe, earnedBy = GetAchievementInfo(achievementID);
+	local isAccountAchievement = FlagsUtil.IsSet(flags, ACHIEVEMENT_FLAGS_ACCOUNT);
+
+	-- By default we don't toast a character achievement if you already earned it on another character
+	local isCharacterAchievement = not isAccountAchievement and not isGuildAchievement;
+	if isCharacterAchievement and alreadyEarnedOnAccount then
+		return FlagsUtil.IsSet(flags, ACHIEVEMENT_FLAGS_TOAST_ON_REPEAT_COMPLETION);
+	end
+
+	return true;
+end
+
 function AlertFrameMixin:OnEvent(event, ...)
 	if ( event == "ACHIEVEMENT_EARNED" ) then
 		if (Kiosk.IsEnabled()) then
@@ -522,7 +535,10 @@ function AlertFrameMixin:OnEvent(event, ...)
 			AchievementFrame_LoadUI();
 		end
 
-		AchievementAlertSystem:AddAlert(...);
+		local achievementID, alreadyEarnedOnAccount = ...;
+		if ShouldToastAchievement(achievementID, alreadyEarnedOnAccount) then
+			AchievementAlertSystem:AddAlert(...);
+		end
 	elseif ( event == "CRITERIA_EARNED" ) then
 		if (Kiosk.IsEnabled()) then
 			return;
@@ -768,14 +784,11 @@ function AlertFrameMixin:BuildQuestData(questID)
 		displayAsObjective = displayAsObjective,
 	};
 
-	local currencyRewardCount = GetNumQuestLogRewardCurrencies(questID);
-	if currencyRewardCount > 0 then
+	local currencyRewards = C_QuestLog.GetQuestRewardCurrencies(questID);
+	if #currencyRewards > 0 then
 		questData.currencyRewards = {};
-		local currencyRewards = questData.currencyRewards;
-
-		for currencyIndex = 1, currencyRewardCount do
-			local name, texture, count = GetQuestLogRewardCurrencyInfo(currencyIndex, questID);
-			currencyRewards[currencyIndex] = texture;
+		for index, currencyReward in ipairs(currencyRewards) do
+			questData.currencyRewards[index] = currencyReward.texture;
 		end
 	end
 

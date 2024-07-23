@@ -10,9 +10,8 @@ function ControlsOverrides.SetupAutoDismountSetting(category)
 	end
 
 	-- Auto Dismount
-	Settings.SetupCVarCheckBox(category, "autoDismountFlying", AUTO_DISMOUNT_FLYING_TEXT, OPTION_TOOLTIP_AUTO_DISMOUNT_FLYING);
+	Settings.SetupCVarCheckbox(category, "autoDismountFlying", AUTO_DISMOUNT_FLYING_TEXT, OPTION_TOOLTIP_AUTO_DISMOUNT_FLYING);
 end
-
 function ControlsOverrides.RunSettingsCallback(callback)
 	if not Settings.IsPlunderstorm() then
 		callback();

@@ -52,6 +52,7 @@ CursorUtilDocumentation.lua
 DeathAlertDocumentation.lua
 DeathInfoDocumentation.lua
 DebugToggleDocumentation.lua
+Deprecated_11_0_0Documentation.lua
 DuelInfoDocumentation.lua
 EditModeManagerDocumentation.lua
 EncounterInfoDocumentation.lua
@@ -87,6 +88,7 @@ GossipInfoDocumentation.lua
 GuildBankDocumentation.lua
 GuildInfoDocumentation.lua
 HeirloomInfoDocumentation.lua
+ImmersiveInteractionManagerDocumentation.lua
 InputDocumentation.lua
 InstanceDocumentation.lua
 InstanceEncounterDocumentation.lua
@@ -242,6 +244,7 @@ WowEntitlementInfoDocumentation.lua
 WowTokenUIDocumentation.lua
 XMLUtilDocumentation.lua
 ZoneScriptDocumentation.lua
+AccessibilityOptionsDocumentation.lua
 AlliedRacesFrameDocumentation.lua
 AnimaDiversionUIDocumentation.lua
 ArdenwealdGardeningDocumentation.lua
@@ -260,6 +263,7 @@ CovenantSanctumDocumentation.lua
 CovenantsDocumentation.lua
 CraftingOrderUIDocumentation.lua
 DateAndTimeDocumentation.lua
+DelvesUIDocumentation.lua
 ExpansionTrialDocumentation.lua
 FrameAPIArchaeologyDigsiteDocumentation.lua
 FrameAPICharacterModelBaseDocumentation.lua
@@ -291,12 +295,14 @@ PetBattlesDocumentation.lua
 PlayerChoiceDocumentation.lua
 PlayerMentorshipDocumentation.lua
 ProfessionSpecUIDocumentation.lua
+QuestHubInfoDocumentation.lua
 QuestItemUseDocumentation.lua
 ReturningPlayerUIDocumentation.lua
 ScenarioInfoDocumentation.lua
 ScrappingMachineUIDocumentation.lua
 ScriptedAnimationsDocumentation.lua
 SeasonInfoDocumentation.lua
+SimpleMapSceneAPIDocumentation.lua
 SocialRestrictionsDocumentation.lua
 SoulbindsDocumentation.lua
 SplashScreenDocumentation.lua
@@ -315,6 +321,7 @@ PerksProgramDocumentation.lua
 AccountConstantsDocumentation.lua
 ActionDocumentation.lua
 AppearanceSourceDocumentation.lua
+ArrowCalloutConstantsDocumentation.lua
 AuctionHouseEnumsDocumentation.lua
 AzeriteConstantsDocumentation.lua
 BagConstantsDocumentation.lua
@@ -325,7 +332,10 @@ ButtonConstantsDocumentation.lua
 CalendarConstantsDocumentation.lua
 CameraConstantsDocumentation.lua
 CharacterCustomizationSharedDocumentation.lua
+CharacterSelectionConstantsDocumentation.lua
 ChatConstantsDocumentation.lua
+CinematicConstantsDocumentation.lua
+ClientSettingsDocumentation.lua
 ClubSharedDocumentation.lua
 ColorDocumentation.lua
 CommentatorSharedDocumentation.lua
@@ -333,6 +343,7 @@ ContentTrackingTypesDocumentation.lua
 CurrencyConstantsDocumentation.lua
 CursorConstDocumentation.lua
 DamageConstantsDocumentation.lua
+DelvesConstantsDocumentation.lua
 EditModeManagerSharedDocumentation.lua
 EncounterJournalConstantsDocumentation.lua
 ExpansionLandingPageConstantsDocumentation.lua
@@ -354,9 +365,12 @@ MapConstantsDocumentation.lua
 MatrixSharedDocumentation.lua
 MinimapConstantsDocumentation.lua
 ModelAnimationSharedDocumentation.lua
+MoneyConstantsDocumentation.lua
+MountConstantsDocumentation.lua
 NamePlateDocumentation.lua
 PVPMgrConstantsDocumentation.lua
 PartyConstantsDocumentation.lua
+PartyPoseUIConstantsDocumentation.lua
 PerksVendorConstantsDocumentation.lua
 PetBattleConstantsDocumentation.lua
 PetConstantsDocumentation.lua
@@ -366,6 +380,7 @@ PlayerDocumentation.lua
 PlayerInfoSharedDocumentation.lua
 PlayerInteractionManagerConstantsDocumentation.lua
 PlayerMentorshipConstantsDocumentation.lua
+PowerTypeConstantsDocumentation.lua
 ProfessionConstantsDocumentation.lua
 PvPFactionConstantsDocumentation.lua
 PvpInfoConstantsDocumentation.lua
@@ -382,6 +397,8 @@ SharedTraitsEnumsDocumentation.lua
 SimpleHTMLSharedDocumentation.lua
 SocialConstantsDocumentation.lua
 SoftTargetConstantsDocumentation.lua
+SpellBookConstantsDocumentation.lua
+SpellSharedDocumentation.lua
 TextureSharedDocumentation.lua
 TimeDocumentation.lua
 TimerunningConstantsDocumentation.lua
@@ -410,6 +427,7 @@ CovenantCallingsConstantsDocumentation.lua
 CovenantSanctumConstantsDocumentation.lua
 CovenantsConstantsDocumentation.lua
 CraftingOrderUIConstantsDocumentation.lua
+CraftingOrderUISharedDocumentation.lua
 CurrencyConstants_MainlineDocumentation.lua
 GarrisonSharedDocumentation.lua
 ItemConstants_MainlineDocumentation.lua

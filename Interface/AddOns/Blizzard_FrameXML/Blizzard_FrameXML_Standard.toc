@@ -1,19 +1,14 @@
 ## Title: Blizzard_FrameXML
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_UIParent, Blizzard_UIParentPanelManager, Blizzard_SettingsDefinitions_Frame, Blizzard_ItemButton, Blizzard_FrameXMLUtil, Blizzard_UIPanelTemplates, Blizzard_GameTooltip
+## Dependencies: Blizzard_UIParent, Blizzard_UIParentPanelManager, Blizzard_SettingsDefinitions_Frame, Blizzard_ItemButton, Blizzard_FrameXMLUtil, Blizzard_UIPanelTemplates, Blizzard_GameTooltip, Blizzard_MoneyFrame
 ## LoadFirst: 1
-## SuppressLocalTableRef: 1
 ## AllowLoad: Game
 ## AllowLoadGameType: standard
 Shared\Localization.lua
 AchievementDisplayFrame.xml
 RewardTrackTemplates.xml
 ItemDisplay.xml
-MoneyFrame.lua
-MoneyFrame.xml
-MoneyInputFrame.lua
-MoneyInputFrame.xml
 CustomBindingManager.lua
 CustomBindingHandler.lua
 Mainline\TutorialFrame.lua
@@ -31,9 +26,9 @@ TabardModelFrameMixin.lua
 WardrobeOutfits.xml
 Mainline\NavigationBar.lua
 Mainline\NavigationBar.xml
-FilterDropDown.lua
 UIErrorsFrame.xml
 Mainline\Sound.lua
+DeprecatedTemplates.lua
 DeprecatedTemplates.xml
 Mainline\AlertFrames.lua
 Mainline\AlertFrames.xml
@@ -43,11 +38,8 @@ Mainline\CoinPickupFrame.lua
 Mainline\CoinPickupFrame.xml
 Mainline\StackSplitFrame.lua
 Mainline\StackSplitFrame.xml
-FadingFrame.lua
 Mainline\ZoneText.lua
 Mainline\ZoneText.xml
-Shared\Cooldown.lua
-Mainline\Cooldown.xml
 PVPUITemplates.xml
 PVPHonorSystem.xml
 GuildUtil.lua
@@ -59,7 +51,6 @@ Mainline\CombatFeedback.lua
 Mainline\ReadyCheck.lua
 Mainline\ReadyCheck.xml
 CustomizationDebugFrame.xml
-Mainline\RaidWarning.lua
 Mainline\RaidWarning.xml
 Shared\CinematicFrame.lua
 Shared\CinematicFrame.xml
@@ -68,7 +59,6 @@ Mainline\ColorPickerFrame.xml
 Mainline\RatingMenuFrame.xml
 TalentFrameBase.lua
 TalentFrameTemplates.xml
-EasyMenu.lua
 Mainline\MovieFrame.lua
 Mainline\MovieFrame.xml
 BossBannerToast.xml

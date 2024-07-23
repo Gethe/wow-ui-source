@@ -44,7 +44,7 @@ end
 
 function RogueComboPointMixin.OnRelease(framePool, self)
 	self:ResetVisuals();
-	FramePool_HideAndClearAnchors(framePool, self);
+	Pool_HideAndClearAnchors(framePool, self);
 end
 
 function RogueComboPointMixin:Update(isFull, isCharged)

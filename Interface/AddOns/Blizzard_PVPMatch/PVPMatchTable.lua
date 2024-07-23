@@ -232,18 +232,13 @@ end
 
 function PVPCellNameMixin:OnClick(button)
 	if button == "RightButton" then
-		self.DropDown.guid = self.rowData.guid;
-		self.DropDown.name = self.rowData.name;
-		ToggleDropDownMenu(1, nil, self.DropDown, self, 0, 0);
+		local contextData =
+		{
+			unit = self.rowData.guid,
+			name = self.rowData.name,
+		};
+		UnitPopup_OpenMenu("PVP_SCOREBOARD", contextData);
 	end
-end
-
-function PvpCellNameDropDown_OnLoad(self)
-	local function Initialize(self, level)
-		UnitPopup_ShowMenu(self, "PVP_SCOREBOARD", self.guid, self.name);
-	end
-
-	UIDropDownMenu_Initialize(self, Initialize, "MENU");
 end
 
 PVPSoloShuffleCellNameMixin = CreateFromMixins(PVPCellNameMixin);

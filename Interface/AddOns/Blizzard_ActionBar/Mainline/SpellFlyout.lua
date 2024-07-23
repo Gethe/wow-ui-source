@@ -3,6 +3,7 @@ local SPELLFLYOUT_DEFAULT_SPACING = 4;
 local SPELLFLYOUT_INITIAL_SPACING = 7;
 local SPELLFLYOUT_FINAL_SPACING = 9;
 
+SpellFlyoutOpenReason = EnumUtil.MakeEnum("GlyphPending", "GlyphActivated");
 
 function SpellFlyoutButton_OnClick(self)
 
@@ -12,11 +13,11 @@ function SpellFlyoutButton_OnClick(self)
 				ChatEdit_InsertLink(self.spellName);
 			end
 		else
-			local tradeSkillLink, tradeSkillSpellID = GetSpellTradeSkillLink(self.spellID);
-			if ( tradeSkillSpellID ) then
+			local tradeSkillLink = C_Spell.GetSpellTradeSkillLink(self.spellID);
+			if ( tradeSkillLink ) then
 				ChatEdit_InsertLink(tradeSkillLink);
 			else
-				local spellLink = GetSpellLink(self.spellID);
+				local spellLink = C_Spell.GetSpellLink(self.spellID);
 				ChatEdit_InsertLink(spellLink);
 			end
 		end
@@ -34,7 +35,7 @@ function SpellFlyoutButton_OnClick(self)
 			end
 			return;
 		end
-		local spellID = select(7, GetSpellInfo(self.spellID));
+		local spellID = C_Spell.GetSpellIDForSpellIdentifier(self.spellID);
 		if ( self.offSpec ) then
 			return;
 		elseif ( spellID ) then
@@ -50,7 +51,7 @@ end
 function SpellFlyoutButton_OnDrag(self)
 	if (not self:GetParent().isActionBar or not Settings.GetValue("lockActionBars") or IsModifiedClick("PICKUPACTION")) then
 		if (self.spellID) then
-			PickupSpell(self.spellID);
+			C_Spell.PickupSpell(self.spellID);
 		end
 	end
 end
@@ -74,7 +75,7 @@ function SpellFlyoutButton_SetTooltip(self)
 		else
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		end
-		local spellName = GetSpellInfo(self.spellID);
+		local spellName = C_Spell.GetSpellName(self.spellID);
 		GameTooltip:SetText(spellName, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 		self.UpdateTooltip = nil;
 	end
@@ -85,7 +86,7 @@ function SpellFlyoutButton_UpdateCooldown(self)
 end
 
 function SpellFlyoutButton_UpdateState(self)
-	if ( IsCurrentSpell(self.spellID) ) then
+	if ( C_Spell.IsCurrentSpell(self.spellID) ) then
 		self:SetChecked(true);
 	else
 		self:SetChecked(false);
@@ -93,7 +94,7 @@ function SpellFlyoutButton_UpdateState(self)
 end
 
 function SpellFlyoutButton_UpdateUsable(self)
-	local isUsable, notEnoughMana = IsUsableSpell(self.spellID);
+	local isUsable, notEnoughMana = C_Spell.IsSpellUsable(self.spellID);
 	local name = self:GetName();
 	local icon = _G[name.."Icon"];
 	if ( isUsable or not self:GetParent().isActionBar) then
@@ -110,7 +111,7 @@ function SpellFlyoutButton_UpdateGlyphState(self, reason)
 	if (HasPendingGlyphCast() and IsSpellValidForPendingGlyph(self.spellID)) then
 		self.AbilityHighlight:Show();
 		self.AbilityHighlightAnim:Play();
-		if (reason == OPEN_REASON_ACTIVATED_GLYPH) then
+		if (reason == SpellFlyoutOpenReason.GlyphActivated) then
 			if (IsPendingGlyphRemoval()) then
 				self.GlyphIcon:Hide();
 			else
@@ -132,7 +133,7 @@ end
 function SpellFlyoutButton_UpdateCount (self)
 	local text = _G[self:GetName().."Count"];
 	if ( IsConsumableSpell(self.spellID)) then
-		local count = GetSpellCount(self.spellID);
+		local count = C_Spell.GetSpellCastCount(self.spellID);
 		if ( count > (self.maxDisplayCount or 9999 ) ) then
 			text:SetText("*");
 		else
@@ -147,6 +148,7 @@ function SpellFlyout_OnLoad(self)
 	self.Toggle = SpellFlyout_Toggle;
 	self.SetBorderColor = SpellFlyout_SetBorderColor;
 	self.SetBorderSize = SpellFlyout_SetBorderSize;
+	self.GetFlyoutButtonForSpell = SpellFlyout_GetFlyoutButtonForSpell;
 	self.eventsRegistered = false;
 end
 
@@ -243,7 +245,7 @@ function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActio
 	local prevButton = nil;
 	local numButtons = 0;
 	for i=1, numSlots do
-		local spellID, overrideSpellID, isKnown, spellName, slotSpecID = GetFlyoutSlotInfo(flyoutID, i);
+		local spellID, overrideSpellID, isKnownSlot, spellName, slotSpecID = GetFlyoutSlotInfo(flyoutID, i);
 		local visible = true;
 
 		-- Ignore Call Pet spells if there isn't a pet in that slot
@@ -252,7 +254,7 @@ function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActio
 			visible = false;
 		end
 
-		if ( ((not offSpec or slotSpecID == 0) and visible and isKnown) or (offSpec and slotSpecID == specID) ) then
+		if ( ((not offSpec or slotSpecID == 0) and visible and isKnownSlot) or (offSpec and slotSpecID == specID) ) then
 			local button = _G["SpellFlyoutButton"..numButtons+1];
 			if (not button) then
 				button = CreateFrame("CHECKBUTTON", "SpellFlyoutButton"..numButtons+1, SpellFlyout, "SpellFlyoutButtonTemplate");
@@ -288,7 +290,7 @@ function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActio
 			button:Show();
 			button.showFullTooltip = showFullTooltip;
 
-			_G[button:GetName().."Icon"]:SetTexture(GetSpellTexture(overrideSpellID));
+			_G[button:GetName().."Icon"]:SetTexture(C_Spell.GetSpellTexture(overrideSpellID));
 			_G[button:GetName().."Icon"]:SetDesaturated(offSpec);
 			button.offSpec = offSpec;
 			button.spellID = spellID;
@@ -460,4 +462,21 @@ function SpellFlyout_SetBorderSize(self, size)
 		self.Background.VerticalMiddle:SetHeight(size);
 		self.Background.End:SetHeight(size);
 	end
+end
+
+function SpellFlyout_GetFlyoutButtonForSpell(self, spellID)
+	if (not self:IsShown()) then
+		return nil;
+	end
+
+	local i = 1;
+	local button = _G["SpellFlyoutButton"..i];
+	while (button and button:IsShown()) do
+		if (button.spellID == spellID) then
+			return button;
+		end
+		i = i+1;
+		button = _G["SpellFlyoutButton"..i];
+	end
+	return nil;
 end

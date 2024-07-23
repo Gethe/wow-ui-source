@@ -16,7 +16,10 @@ end
 
 function BonusObjectiveDataProviderMixin:OnAdded(mapCanvas)
 	MapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
-	self:RegisterEvent("SUPER_TRACKING_CHANGED");
+
+	mapCanvas:SetPinTemplateType("BonusObjectivePinTemplate", "Button");
+	mapCanvas:SetPinTemplateType("ThreatObjectivePinTemplate", "Button");
+
 	self:RegisterEvent("QUEST_LOG_UPDATE");
 
 	self:GetMap():RegisterCallback("SetFocusedQuestID", self.OnSetFocusedQuestID, self);
@@ -62,6 +65,15 @@ function BonusObjectiveDataProviderMixin:OnEvent(event, ...)
 	self:RefreshAllData();
 end
 
+local sortTypeToPinTemplate = {
+	[QuestSortType.Threat] = "ThreatObjectivePinTemplate",
+	[QuestSortType.BonusObjective] = "BonusObjectivePinTemplate",
+};
+
+function BonusObjectiveDataProviderMixin:GetPinTemplateFromTask(taskInfo)
+	return sortTypeToPinTemplate[QuestUtils_GetTaskSortType(taskInfo)];
+end
+
 function BonusObjectiveDataProviderMixin:RefreshAllData(fromOnShow)
 	self:RemoveAllData();
 
@@ -78,22 +90,15 @@ function BonusObjectiveDataProviderMixin:RefreshAllData(fromOnShow)
 
 		for i, info in ipairs(taskInfo) do
 			local callback = QuestEventListener:AddCancelableCallback(info.questId, function()
-				if MapUtil.ShouldShowTask(mapID, info) and not QuestUtils_IsQuestWorldQuest(info.questId) then
-					info.dataProvider = self;
-					if C_QuestLog.IsThreatQuest(info.questId) then
-						local completed, x, y = QuestPOIGetIconInfo(info.questId);
-						if x and y then
-							info.x = x;
-							info.y = y;
-						end
-						local pin = self:GetMap():AcquirePin("ThreatObjectivePinTemplate", info);
-						local iconAtlas = QuestUtil.GetThreatPOIIcon(info.questId);
-						pin.Icon:SetAtlas(iconAtlas);
-					else
-						self:GetMap():AcquirePin("BonusObjectivePinTemplate", info);
+				if MapUtil.ShouldShowTask(mapID, info) then
+					local pinTemplate = self:GetPinTemplateFromTask(info);
+					if pinTemplate then
+						info.dataProvider = self;
+						self:GetMap():AcquirePin(pinTemplate, info);
 					end
 				end
 			end);
+
 			tinsert(self.cancelCallbacks, callback);
 		end
 	end
@@ -108,43 +113,35 @@ end
 BonusObjectivePinMixin = CreateFromMixins(MapCanvasPinMixin);
 
 function BonusObjectivePinMixin:OnLoad()
+	self:SetDefaultMapPinScale();
 	self.UpdateTooltip = self.OnMouseEnter;
-	self:SetScalingLimits(1, 0.825, 0.85);
 	self:UseFrameLevelType("PIN_FRAME_LEVEL_BONUS_OBJECTIVE");
 end
 
 function BonusObjectivePinMixin:OnAcquired(taskInfo)
 	self:SetPosition(taskInfo.x, taskInfo.y);
-	self.questID = taskInfo.questId;
+	self:SetQuestID(taskInfo.questId);
 	self.numObjectives = taskInfo.numObjectives;
 	self.isQuestStart = taskInfo.isQuestStart;
 	self.isCombatAllyQuest = taskInfo.isCombatAllyQuest;
 	self.dataProvider = taskInfo.dataProvider;
-	if C_QuestLog.IsQuestCalling(self.questID) then
-		self.Texture:SetAtlas("Quest-DailyCampaign-Available", false);
-	elseif C_QuestLog.IsImportantQuest(self.questID) then
-		self.Texture:SetAtlas("importantavailablequesticon", false);
-	elseif taskInfo.isDaily then
-		self.Texture:SetAtlas("QuestDaily", false);
-	elseif taskInfo.isQuestStart then
-		self.Texture:SetAtlas("QuestNormal", false);
-	else
-		self.Texture:SetAtlas("QuestBonusObjective", false);
-	end
+	self.isSuperTracked = self.questID == C_SuperTrack.GetSuperTrackedQuestID();
+	self:UseFrameLevelType(self.isSuperTracked and "PIN_FRAME_LEVEL_SUPER_TRACKED_QUEST" or "PIN_FRAME_LEVEL_BONUS_OBJECTIVE");
+	self.Display:ClearAllPoints();
+	self.Display:SetPoint("CENTER");
+	self:SetSelected(self.isSuperTracked);
+	self:SetStyle(self:GetPOIButtonStyle());
+	self:UpdateButtonStyle();
 
 	MapPinHighlight_CheckHighlightPin(self:GetHighlightType(), self, self.Texture);
-
-	if taskInfo.isDaily or taskInfo.isQuestStart then
-		self:SetScalingLimits(1, 1.0, 1.2);
-		self.Texture:SetSize(22, 22);
-	else
-		self:SetScalingLimits(1, 0.825, 0.85);
-		self.Texture:SetSize(30, 30);
-	end
 
 	if not HaveQuestRewardData(self.questID) then
 		C_TaskQuest.RequestPreloadRewardData(self.questID);
 	end
+end
+
+function BonusObjectivePinMixin:GetPOIButtonStyle()
+	return POIButtonUtil.Style.BonusObjective;
 end
 
 function BonusObjectivePinMixin:GetHighlightType() -- override
@@ -160,67 +157,42 @@ function BonusObjectivePinMixin:GetHighlightType() -- override
 	return MapPinHighlightType.None;
 end
 
+function BonusObjectivePinMixin:DisableInheritedMotionScriptsWarning()
+	return true;
+end
+
 function BonusObjectivePinMixin:OnMouseEnter()
 	TaskPOI_OnEnter(self);
+	POIButtonMixin.OnEnter(self);
+	self:OnLegendPinMouseEnter();
 end
 
 function BonusObjectivePinMixin:OnMouseLeave()
 	TaskPOI_OnLeave(self);
+	POIButtonMixin.OnLeave(self);
+	self:OnLegendPinMouseLeave();
 end
 
-ThreatObjectivePinMixin = CreateFromMixins(MapCanvasPinMixin);
+function BonusObjectivePinMixin:OnMouseDownAction()
+	POIButtonMixin.OnMouseDown(self);
+end
+
+function BonusObjectivePinMixin:OnMouseUpAction()
+	POIButtonMixin.OnMouseUp(self);
+end
+
+function BonusObjectivePinMixin:OnMouseClickAction(button)
+	POIButtonMixin.OnClick(self, button);
+end
+
+--[[ Threat Objective Pin ]]--
+ThreatObjectivePinMixin = CreateFromMixins(BonusObjectivePinMixin);
 
 function ThreatObjectivePinMixin:OnLoad()
-	self:SetScalingLimits(1, 0.425, 0.425);
+	self:SetDefaultMapPinScale();
 	self:UseFrameLevelType("PIN_FRAME_LEVEL_BONUS_OBJECTIVE");
 end
 
-function ThreatObjectivePinMixin:OnAcquired(taskInfo)
-	self:SetPosition(taskInfo.x, taskInfo.y);
-	self.questID = taskInfo.questId;
-	self.numObjectives = taskInfo.numObjectives;
-	self.isThreat = true;
-
-	local isSuperTracked = (taskInfo.questId == C_SuperTrack.GetSuperTrackedQuestID());
-	if isSuperTracked then
-		self.Texture:SetTexCoord(0.500, 0.625, 0.375, 0.5);
-		self.PushedTexture:SetTexCoord(0.375, 0.500, 0.375, 0.5);
-	else
-		self.Texture:SetTexCoord(0.875, 1, 0.375, 0.5);
-		self.PushedTexture:SetTexCoord(0.750, 0.875, 0.375, 0.5);
-	end
-
-	if not HaveQuestRewardData(self.questID) then
-		C_TaskQuest.RequestPreloadRewardData(self.questID);
-	end
-end
-
-function ThreatObjectivePinMixin:OnMouseEnter()
-	TaskPOI_OnEnter(self);
-end
-
-function ThreatObjectivePinMixin:OnMouseLeave()
-	TaskPOI_OnLeave(self);
-end
-
-function ThreatObjectivePinMixin:OnMouseDownAction()
-	self.Texture:Hide();
-	self.PushedTexture:Show();
-	self.Icon:SetPoint("CENTER", 1, -1);
-	if self.moveHighlightOnMouseDown then
-		self.Highlight:SetPoint("CENTER", 2, -2);
-	end
-end
-
-function ThreatObjectivePinMixin:OnMouseUpAction()
-	self.Texture:Show();
-	self.PushedTexture:Hide();
-	self.Icon:SetPoint("CENTER", 0, 0);
-	if self.moveHighlightOnMouseDown then
-		self.Highlight:SetPoint("CENTER", 0, 0);
-	end
-end
-
-function ThreatObjectivePinMixin:OnMouseClickAction()
-	C_SuperTrack.SetSuperTrackedQuestID(self.questID);
+function ThreatObjectivePinMixin:GetPOIButtonStyle()
+	return POIButtonUtil.Style.QuestThreat;
 end

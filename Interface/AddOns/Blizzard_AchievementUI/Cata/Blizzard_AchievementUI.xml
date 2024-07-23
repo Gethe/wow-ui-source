@@ -2531,7 +2531,7 @@
 					<OnLoad function="AchievementFrameAchievements_OnLoad"/>
 					<OnEvent function="AchievementFrameAchievements_OnEvent"/>
 					<OnHide>
-						AchievementFrameFilterDropDown:Hide();
+						AchievementFrameFilterDropdown:Hide();
 						AchievementFrameHeaderRightDDLInset:Hide();
 					</OnHide>
 					<OnShow function="AchievementFrameAchievements_OnShow"/>
@@ -3297,81 +3297,11 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Frame name="$parentFilterDropDown" hidden="true">
-				<Size x="110" y="32"/>
+			<DropdownButton name="AchievementFrameFilterDropdown" inherits="WowStyle1FilterDropdownTemplate" hidden="true">
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset x="-98" y="10"/>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="144" y="8"/>
 				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY">
-						<FontString name="$parentText" inherits="GameFontHighlightSmall" justifyH="LEFT" text="Text">
-							<Size x="0" y="32"/>
-							<Anchors>
-								<Anchor point="LEFT">
-									<Offset x="0" y="4"/>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-
-				<Frames>
-					<Button name="$parentButton">
-						<Size>
-							<AbsDimension x="24" y="24"/>
-						</Size>
-						<Anchors>
-							<Anchor point="TOPRIGHT"/>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								ToggleDropDownMenu(nil, nil, self:GetParent());
-								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-							</OnClick>
-						</Scripts>
-						<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up">
-							<Size>
-								<AbsDimension x="24" y="24"/>
-							</Size>
-							<Anchors>
-								<Anchor point="RIGHT"/>
-							</Anchors>
-						</NormalTexture>
-						<PushedTexture name="$parentPushedTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down">
-							<Size>
-								<AbsDimension x="24" y="24"/>
-							</Size>
-							<Anchors>
-								<Anchor point="RIGHT"/>
-							</Anchors>
-						</PushedTexture>
-						<DisabledTexture name="$parentDisabledTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled">
-							<Size>
-								<AbsDimension x="24" y="24"/>
-							</Size>
-							<Anchors>
-								<Anchor point="RIGHT"/>
-							</Anchors>
-						</DisabledTexture>
-						<HighlightTexture name="$parentHighlightTexture" file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD">
-							<Size>
-								<AbsDimension x="24" y="24"/>
-							</Size>
-							<Anchors>
-								<Anchor point="RIGHT"/>
-							</Anchors>
-						</HighlightTexture>
-					</Button>
-				</Frames>
-				<Scripts>
-					<OnLoad function="AchievementFrameFilterDropDown_OnLoad"/>
-					<OnHide>
-						CloseDropDownMenus()
-					</OnHide>
-				</Scripts>
-			</Frame>
+			</DropdownButton>
 		</Frames>
 		<Scripts>
 			<OnLoad inherit="prepend" function="AchievementFrame_OnLoad"/>

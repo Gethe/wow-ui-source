@@ -222,9 +222,16 @@ function ScriptAnimatedModelSceneMixin:RemoveEffectController(effectControllerTo
 end
 
 function ScriptAnimatedModelSceneMixin:SetActorPositionFromPixels(actor, x, y, z)
+	-- Translate positions into the scene's scale so that they're accurately calculated against its local center
+	local sceneScale = self:GetEffectiveScale();
+	x = x/sceneScale;
+	y = y/sceneScale;
+	z = z and z/sceneScale or 0;
+
 	local pixelsPerSceneUnit = self.pixelsPerSceneUnit;
 	local dx = (x - self.centerX) / pixelsPerSceneUnit;
 	local dy = (y - self.centerY) / pixelsPerSceneUnit;
+
 	local actorScaleDivisor = actor:GetScale();
 	actor:SetEffectActorOffset(dx / actorScaleDivisor, dy / actorScaleDivisor, (z or 0) / actorScaleDivisor);
 end

@@ -382,7 +382,7 @@ function RenownLevelMixin:OnEnter()
 end
 
 function RenownLevelMixin:RefreshTooltip()
-	if not GameTooltip:GetOwner() == self then
+	if GameTooltip:GetOwner() ~= self then
 		return;
 	end
 

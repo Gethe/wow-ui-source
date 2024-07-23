@@ -14,7 +14,23 @@
 			</OnClick>
 		</Scripts>
 	</CheckButton>
-
+	
+	<CheckButton name="OptionsSmallCheckButtonTemplate" virtual="true" inherits="OptionsBaseCheckButtonTemplate">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" name="$parentText" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="0" y="1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</CheckButton>
+	
 	<CheckButton name="InterfaceOptionsCheckButtonTemplate" inherits="OptionsBaseCheckButtonTemplate" virtual="true"/>
 	<CheckButton name="InterfaceOptionsBaseCheckButtonTemplate" inherits="OptionsBaseCheckButtonTemplate" virtual="true"/>
 

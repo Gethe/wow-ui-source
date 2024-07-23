@@ -468,7 +468,21 @@ local Map =
 			},
 		},
 		{
-			Name = "IsMapValidForNavBarDropDown",
+			Name = "IsCityMap",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isCityMap", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsMapValidForNavBarDropdown",
 			Type = "Function",
 
 			Arguments =
@@ -521,6 +535,16 @@ local Map =
 			Name = "NewWmoChunk",
 			Type = "Event",
 			LiteralName = "NEW_WMO_CHUNK",
+		},
+		{
+			Name = "PlayerMapChanged",
+			Type = "Event",
+			LiteralName = "PLAYER_MAP_CHANGED",
+			Payload =
+			{
+				{ Name = "oldMapID", Type = "number", Nilable = false },
+				{ Name = "newMapID", Type = "number", Nilable = false },
+			},
 		},
 		{
 			Name = "UserWaypointUpdated",

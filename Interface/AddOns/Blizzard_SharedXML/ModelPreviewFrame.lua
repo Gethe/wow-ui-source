@@ -42,6 +42,14 @@ function ModelPreviewFrame_OnHide(self)
 	end
 end
 
+function ModelPreviewFrame_TryHide()
+	if ( ModelPreviewFrame:IsShown() ) then
+		ModelPreviewFrame:Hide();
+		return true;
+	end
+	return false;
+end
+
 function ModelPreviewFrame_SetStyle(self, style)
 	self.style = style;
 	if style == "carousel" then
@@ -114,14 +122,20 @@ function ModelPreviewFrame_ShowModelInternal(displayID, modelSceneID, allowZoom,
 		local actor = display.ModelScene:GetActorByTag("item");
 		SetupItemPreviewActor(actor, displayID);
 	else
-		local sheatheWeapons = true;
-		local autoDress = true;
-		local hideWeapons = true;
+		local _, _cameraIDs, _actorIDs, flags = C_ModelInfo.GetModelSceneInfoByID(modelSceneID);
+		
 		local useNativeForm = true;
+		local sheatheWeapons = bit.band(flags, Enum.UIModelSceneFlags.SheatheWeapon) == Enum.UIModelSceneFlags.SheatheWeapon;
+		local hideWeapons = bit.band(flags, Enum.UIModelSceneFlags.HideWeapon) == Enum.UIModelSceneFlags.HideWeapon;
+		local autoDress = bit.band(flags, Enum.UIModelSceneFlags.Autodress) == Enum.UIModelSceneFlags.Autodress;
+
 		local playerRaceName;
 		if IsOnGlueScreen() then
-			local _, _, raceFilename = GetCharacterInfo(GetCharacterSelection());
-			playerRaceName = raceFilename and raceFilename:lower();
+			local characterGuid = GetCharacterGUID(GetCharacterSelection());
+			if characterGuid then
+				local basicCharacterInfo = GetBasicCharacterInfo(characterGuid);
+				playerRaceName = basicCharacterInfo.raceFilename and basicCharacterInfo.raceFilename:lower();
+			end
 		else
 			local _, raceFilename = UnitRace("player");
 			playerRaceName = raceFilename:lower();
@@ -133,7 +147,7 @@ function ModelPreviewFrame_ShowModelInternal(displayID, modelSceneID, allowZoom,
 			useNativeForm = false;
 		end
 
-		SetupPlayerForModelScene(display.ModelScene, overrideActorName, itemModifiedAppearanceIDs, sheathWeapons, autoDress, hideWeapons, useNativeForm);
+		SetupPlayerForModelScene(display.ModelScene, overrideActorName, itemModifiedAppearanceIDs, sheatheWeapons, autoDress, hideWeapons, useNativeForm);
 	end
 	ModelPreviewFrame:Show();
 end

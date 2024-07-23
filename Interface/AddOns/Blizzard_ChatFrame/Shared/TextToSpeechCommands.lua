@@ -11,7 +11,7 @@ function TextToSpeechCommandsMixin:Init()
 end
 
 function TextToSpeechCommandsMixin:AddCommand(cmdName, callback, option, helpText, rangeMin, rangeMax, rangeFn)
-	local cmdName = string.lower(cmdName);
+	cmdName = string.lower(cmdName);
 	self.commands[cmdName] = {
 		cmdName = cmdName,
 		callback = callback,
@@ -354,8 +354,8 @@ do
 
 			local entries = {};
 			local individualCommands = commands:GetCommands();
-			for cmdName, cmd in pairs(individualCommands) do
-				local value = type(cmd.cmdType) == "string" and TextToSpeechFrame_GetChatTypeEnabled(cmd.option) or C_TTSSettings.GetSetting(cmd.option);
+			for cmdName, cmdInfo in pairs(individualCommands) do
+				local value = type(cmdInfo.cmdType) == "string" and TextToSpeechFrame_GetChatTypeEnabled(cmdInfo.option) or C_TTSSettings.GetSetting(cmdInfo.option);
 				if value then
 					table.insert(entries, { GetOptionConfirmation(cmdName, value) });
 				end

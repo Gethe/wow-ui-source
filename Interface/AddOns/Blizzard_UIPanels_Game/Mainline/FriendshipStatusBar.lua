@@ -80,5 +80,6 @@ function NPCFriendshipStatusBarMixin:Update(factionID --[[ = nil ]])
 end
 
 function NPCFriendshipStatusBarMixin:OnEnter()
-	ReputationBarMixin.ShowFriendshipReputationTooltip(self, self.friendshipFactionID, self, "ANCHOR_BOTTOMRIGHT");
+	local canClickForOptions = false;
+	ReputationEntryMixin.ShowFriendshipReputationTooltip(self, self.friendshipFactionID, "ANCHOR_BOTTOMRIGHT", canClickForOptions);
 end

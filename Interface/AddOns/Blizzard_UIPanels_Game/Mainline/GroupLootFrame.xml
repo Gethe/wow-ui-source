@@ -20,14 +20,6 @@
 		</Scripts>
 	</Button>
 
-	<Frame name="GroupLootDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
-		<Anchors>
-			<Anchor point="TOPLEFT"/>
-		</Anchors>
-		<Scripts>
-			<OnLoad function="GroupLootDropDown_OnLoad"/>
-		</Scripts>
-	</Frame>
 	<Frame name="BonusRollFrameTemplate" parent="UIParent" frameLevel="5" toplevel="true" frameStrata="DIALOG" hidden="true" virtual="true">
 		<Size x="286" y="76"/>
 		<Animations>
@@ -535,6 +527,7 @@
 			</Frame>
 		</Frames>
 		<Scripts>
+			<OnLoad function="GroupLootFrame_OnLoad"/>
 			<OnShow function="GroupLootFrame_OnShow"/>
 			<OnHide function="GroupLootFrame_OnHide"/>
 			<OnEvent function="GroupLootFrame_OnEvent"/>

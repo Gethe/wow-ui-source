@@ -51,7 +51,7 @@ function ProfessionsCustomerOrdersRecipeListElementMixin:OnLineEnter()
 end
 
 function ProfessionsCustomerOrdersRecipeListElementMixin:OnLineLeave()
-	if GetMouseFocus() == self.FavoriteButton then
+	if self.FavoriteButton:IsMouseMotionFocus() then
 		return;
 	end
 
@@ -77,23 +77,25 @@ end
 
 function ProfessionsCustomerOrdersRecipeListElementMixin:OnClick(button)
 	if button == "LeftButton" then
-	local function UseItemLink(callback)
-		local item = Item:CreateFromItemID(self.option.itemID);
-		item:ContinueOnItemLoad(function()
-			callback(item:GetItemLink());
-		end);
-	end
+		local function UseItemLink(callback)
+			local item = Item:CreateFromItemID(self.option.itemID);
+			item:ContinueOnItemLoad(function()
+				callback(item:GetItemLink());
+			end);
+		end
 
-	if IsModifiedClick("DRESSUP") then
-		UseItemLink(DressUpLink);
-	elseif IsModifiedClick("CHATLINK") then
-		UseItemLink(ChatEdit_InsertLink);
-	else
-		local unusableBOP = self.option.bindOnPickup and not self.option.canUse;
-		EventRegistry:TriggerEvent("ProfessionsCustomerOrders.RecipeSelected", self.option.itemID, self.option.spellID, self.option.skillLineAbilityID, unusableBOP);
-	end
+		if IsModifiedClick("DRESSUP") then
+			UseItemLink(DressUpLink);
+		elseif IsModifiedClick("CHATLINK") then
+			UseItemLink(ChatEdit_InsertLink);
+		else
+			local unusableBOP = self.option.bindOnPickup and not self.option.canUse;
+			EventRegistry:TriggerEvent("ProfessionsCustomerOrders.RecipeSelected", self.option.itemID, self.option.spellID, self.option.skillLineAbilityID, unusableBOP);
+		end
 	elseif button == "RightButton" then
-		ToggleDropDownMenu(1, self.option.spellID, self.contextMenu, "cursor");
+		if self.contextMenuGenerator then
+			MenuUtil.CreateContextMenu(self, self.contextMenuGenerator, self.option.spellID);
+		end
 	end
 end
 
@@ -110,9 +112,9 @@ function ProfessionsCustomerOrdersRecipeListElementMixin:UpdateFavoriteButton()
 	self.FavoriteButton:SetShown(isFavorite or self.isMouseFocus);
 end
 
-function ProfessionsCustomerOrdersRecipeListElementMixin:Init(elementData)
+function ProfessionsCustomerOrdersRecipeListElementMixin:Init(elementData, contextMenuGenerator)
 	self.option = elementData.option;
-	self.contextMenu = elementData.contextMenu;
+	self.contextMenuGenerator = contextMenuGenerator;
 	self:UpdateFavoriteButton();
 	self.HighlightTexture:Hide();
 end
@@ -124,8 +126,12 @@ function ProfessionsCustomerOrdersRecipeListMixin:OnLoad()
 	local spacing = 1;
 	local view = CreateScrollBoxListLinearView(pad, pad, pad, pad, spacing);
 	view:SetElementInitializer("ProfessionsCustomerOrdersRecipeListElementTemplate", function(button, elementData)
-		button:Init(elementData);
+		button:Init(elementData, self.contextMenuGenerator);
 	end);
 
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
+end
+
+function ProfessionsCustomerOrdersRecipeListMixin:SetContextMenuGenerator(contextMenuGenerator)
+	self.contextMenuGenerator = contextMenuGenerator;
 end

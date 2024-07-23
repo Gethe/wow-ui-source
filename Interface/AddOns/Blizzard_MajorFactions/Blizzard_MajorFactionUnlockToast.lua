@@ -1,3 +1,44 @@
+local ExpansionLayoutInfo = {
+	[LE_EXPANSION_DRAGONFLIGHT] = {
+		textureDataTable = {
+			["GlowLineBottom"] =  {
+				atlas = "majorfaction-celebration-bottomglowline",
+				useAtlasSize = true,
+			},
+			["RewardIconRing"] =  {
+				atlas = "majorfaction-celebration-content-ring",
+				useAtlasSize = false,
+			},
+			["ToastBG"] = {
+				atlas = "majorfaction-celebration-toastBG",
+				useAtlasSize = false,
+				anchors = {
+					["TOP"] = { x = 0, y = -77, relativePoint = "TOP" },
+				},
+			},
+		},
+	},
+	[LE_EXPANSION_WAR_WITHIN] = {
+		textureDataTable = {
+			["GlowLineBottom"] =  {
+				atlas = "majorfaction-celebration-thewarwithin-bottomglowline",
+				useAtlasSize = true,
+			},
+			["RewardIconRing"] =  {
+				atlas = "majorfaction-celebration-thewarwithin-content-ring",
+				useAtlasSize = false,
+			},
+			["ToastBG"] = {
+				atlas = "majorfaction-celebration-toastBG",
+				useAtlasSize = false,
+				anchors = {
+					["TOP"] = { x = 0, y = -57, relativePoint = "TOP" },
+				},
+			},
+		},
+	},
+};
+
 MajorFactionUnlockToastMixin = {};
 
 function MajorFactionUnlockToastMixin:OnLoad()
@@ -24,11 +65,12 @@ end
 function MajorFactionUnlockToastMixin:PlayMajorFactionUnlockToast(majorFactionID)
 	local majorFactionData = C_MajorFactions.GetMajorFactionData(majorFactionID);
 	if majorFactionData then
-		TopBannerManager_Show(self, { 
-			name = majorFactionData.name, 
+		TopBannerManager_Show(self, {
+			name = majorFactionData.name,
 			factionColor = self:GetFactionColorByTextureKit(majorFactionData.textureKit),
 			textureKit = majorFactionData.textureKit,
 			celebrationSoundKit = majorFactionData.celebrationSoundKit,
+			expansionID = majorFactionData.expansionID,
 		});
 	end
 end
@@ -38,11 +80,9 @@ function MajorFactionUnlockToastMixin:PlayBanner(data)
 	self.FactionName:SetTextColor(data.factionColor:GetRGB());
 	self:SetMajorFactionTextureKit(data.textureKit);
 
-	local textureKitRegions = {
-		[self.GlowLineBottom] = "majorfaction-celebration-bottomglowline",
-	};
+	local expansionLayoutInfo = ExpansionLayoutInfo[data.expansionID] or ExpansionLayoutInfo[LE_EXPANSION_DRAGONFLIGHT];
+	self:SetMajorFactionExpansionLayoutInfo(expansionLayoutInfo);
 
-	SetupTextureKitOnFrames(data.textureKit, textureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 	PlaySound(data.celebrationSoundKit);
 
 	self.ToastBG:SetAlpha(0);

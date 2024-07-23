@@ -1,6 +1,9 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
-	<DropDownToggleButton name="AddonCompartmentFrame" parent="MinimapCluster" mixin="AddonCompartmentMixin">
+	<DropdownButton name="AddonCompartmentFrame" parent="MinimapCluster" mixin="AddonCompartmentMixin">
+		<KeyValues>
+			<KeyValue key="menuPoint" type="string" value="TOPRIGHT"/>
+		</KeyValues>
 		<Size x="16" y="16"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="GameTimeFrame" relativePoint="BOTTOMLEFT" x="0" y="0"/>
@@ -8,7 +11,6 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
-			<OnClick method="OnClick"/>
 		</Scripts>
 		<NormalFont style="GameFontHighlightSmall"/>
 		<ButtonText parentKey="Text" text="0" setAllPoints="true">
@@ -19,12 +21,5 @@
 		<NormalTexture atlas="ui-hud-minimap-button"/>
 		<PushedTexture atlas="ui-hud-minimap-button-down"/>
 		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alpha="0.5" alphaMode="ADD"/>
-		<Frames>
-			<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate" clampedToScreen="true" id="1" hidden="true">
-				<Scripts>
-					<OnLoad function="AddonCompartmentDropDown_OnLoad"/>
-				</Scripts>
-			</Frame>
-		</Frames>
-	</DropDownToggleButton>
+	</DropdownButton>
 </Ui>

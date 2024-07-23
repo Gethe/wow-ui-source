@@ -108,41 +108,6 @@ local EJ_TIER_DATA =
 	[11] = { backgroundAtlas = "UI-EJ-Dragonflight", r = 0.2, g = 0.8, b = 1.0 },
 }
 
-EJButtonMixin = {}
-
-function EJButtonMixin:OnLoad()
-	local l, t, _, b, r = self.UpLeft:GetTexCoord();
-	self.UpLeft:SetTexCoord(l, l + (r-l)/2, t, b);
-	l, t, _, b, r = self.UpRight:GetTexCoord();
-	self.UpRight:SetTexCoord(l + (r-l)/2, r, t, b);
-
-	l, t, _, b, r = self.DownLeft:GetTexCoord();
-	self.DownLeft:SetTexCoord(l, l + (r-l)/2, t, b);
-	l, t, _, b, r = self.DownRight:GetTexCoord();
-	self.DownRight:SetTexCoord(l + (r-l)/2, r, t, b);
-
-	l, t, _, b, r = self.HighLeft:GetTexCoord();
-	self.HighLeft:SetTexCoord(l, l + (r-l)/2, t, b);
-	l, t, _, b, r = self.HighRight:GetTexCoord();
-	self.HighRight:SetTexCoord(l + (r-l)/2, r, t, b);
-end
-
-function EJButtonMixin:OnMouseDown(button)
-	self.UpLeft:Hide();
-	self.UpRight:Hide();
-
-	self.DownLeft:Show();
-	self.DownRight:Show();
-end
-
-function EJButtonMixin:OnMouseUp(button)
-	self.UpLeft:Show();
-	self.UpRight:Show();
-
-	self.DownLeft:Hide();
-	self.DownRight:Hide();
-end
-
 function GetEJTierData(tier)
 	return EJ_TIER_DATA[tier] or EJ_TIER_DATA[1];
 end
@@ -371,9 +336,6 @@ function EncounterJournal_OnLoad(self)
 		local scrollBox = lootContainer.ScrollBox;
 		local scrollBar = lootContainer.ScrollBar;
 		ScrollUtil.InitScrollBoxListWithScrollBar(scrollBox, scrollBar, view);
-
-		UIDropDownMenu_Initialize(lootContainer.lootFilter, EncounterJournal_InitLootFilter, "MENU");
-		UIDropDownMenu_Initialize(lootContainer.lootSlotFilter, EncounterJournal_InitLootSlotFilter, "MENU");
 	end
 
 	-- Search
@@ -463,8 +425,15 @@ function EncounterJournal_OnLoad(self)
 	EJ_ContentTab_OnClick(self.MonthlyActivitiesTab);
 	self.maxTabWidth = self:GetWidth() / #self.Tabs;
 
-	local tierName = EJ_GetTierInfo(EJ_GetCurrentTier());
-	UIDropDownMenu_SetText(instanceSelect.tierDropDown, tierName);
+	self.LootJournalViewDropdown:SetWidth(180);
+	self.instanceSelect.ExpansionDropdown:SetWidth(160);
+	self.encounter.info.difficulty:SetWidth(100);
+
+	local lootContainer = self.encounter.info.LootContainer;
+	lootContainer.filter:SetPoint("TOPLEFT", self, "TOPRIGHT", -356, -77);
+
+	lootContainer.slotFilter:SetWidth(90);
+	lootContainer.slotFilter:SetPoint("LEFT", lootContainer.filter, "RIGHT", 10, 0);
 
 	-- check if tabs are active
 	local dungeonInstanceID = EJ_GetInstanceByIndex(1, false);
@@ -488,6 +457,159 @@ function EncounterJournal_OnLoad(self)
 	end
 end
 
+do
+	local function GetClassFilter()
+		local filterClassID, filterSpecID = EJ_GetLootFilter();
+		return filterClassID;
+	end
+	
+	local function GetSpecFilter()
+		local filterClassID, filterSpecID = EJ_GetLootFilter();
+		return filterSpecID;
+	end
+	
+	local function SetClassAndSpecFilter(classID, specID)
+		EJ_SetLootFilter(classID, specID);
+		EncounterJournal_OnFilterChanged(EncounterJournal);
+	end
+
+	function EncounterJournal_SetupLootFilterDropdown(self)
+		local dropdown = self.encounter.info.LootContainer.filter;
+		ClassMenu.InitClassSpecDropdown(dropdown, GetClassFilter, GetSpecFilter, SetClassAndSpecFilter);
+	end
+end
+
+local function GetLootSlotsPresent()
+	local slotFilter = C_EncounterJournal.GetSlotFilter();
+	C_EncounterJournal.ResetSlotFilter();
+
+	local isLootSlotPresent = {};
+	for index = 1, EJ_GetNumLoot() do
+		local itemInfo = C_EncounterJournal.GetLootInfoByIndex(index);
+		local filterType = itemInfo and itemInfo.filterType;
+		if filterType then
+			isLootSlotPresent[filterType] = true;
+		end
+	end
+	C_EncounterJournal.SetSlotFilter(slotFilter);
+	return isLootSlotPresent;
+end
+
+function EncounterJournal_SetupLootSlotFilterDropdown(self)
+	local function IsSelected(filter)
+		return C_EncounterJournal.GetSlotFilter() == filter;
+	end
+
+	local function SetSelected(filter)
+		EncounterJournal_SetSlotFilterInternal(self, filter);
+	end
+
+	local dropdown = self.encounter.info.LootContainer.slotFilter;
+	dropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_EJ_LOOT_SLOT_FILTER");
+
+		rootDescription:CreateRadio(ALL_INVENTORY_SLOTS, IsSelected, SetSelected, Enum.ItemSlotFilterType.NoFilter);
+
+		local isLootSlotPresent = GetLootSlotsPresent();
+		for filter, name in pairs(SlotFilterToSlotName) do
+			if isLootSlotPresent[filter] or filter == slotFilter then
+				rootDescription:CreateRadio(name, IsSelected, SetSelected, filter);
+			end
+		end
+	end);
+end
+
+function EncounterJournal_SetupDifficultyDropdown(self)
+	local dropdown = EncounterJournal.encounter.info.difficulty;
+
+	local function IsSelected(difficultyID)
+		return EJ_GetDifficulty() == difficultyID;
+	end
+
+	local function SetSelected(difficultyID)
+		EncounterJournal_SelectDifficulty(self, difficultyID);
+	end
+
+	dropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_EJ_DIFFICULTY");
+
+		for index, difficultyID in ipairs(EJ_DIFFICULTIES) do
+			if EJ_IsValidInstanceDifficulty(difficultyID) then
+				local text = GetEJDifficultyString(difficultyID);
+				rootDescription:CreateRadio(text, IsSelected, SetSelected, difficultyID);
+			end
+		end
+	end);
+end
+
+local function SetLootJournalViewInternal(view)
+	local activeViewPanel, inactiveViewPanel = EncounterJournal_GetLootJournalPanels(view);
+	EncounterJournal.LootJournalViewDropdown:SetParent(activeViewPanel);
+	EncounterJournal.LootJournalViewDropdown:SetPoint("TOPLEFT", 15, -9);
+
+	-- if no previous view then it's the init, no need to change which frame is shown
+	if EncounterJournal.lootJournalView then
+		activeViewPanel:Show();
+		inactiveViewPanel:Hide();
+	end
+
+	EncounterJournal.lootJournalView = view;
+end
+
+function EncounterJournal_SetupLootJournalViewDropdown(self)
+	local function IsSelected(view)
+		return EncounterJournal_GetLootJournalView() == view;
+	end
+
+	local function SetSelected(view)
+		SetLootJournalViewInternal(view);
+	end
+
+	self.LootJournalViewDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_EJ_LOOT_JOURNAL");
+
+		rootDescription:CreateRadio(LOOT_JOURNAL_ITEM_SETS, IsSelected, SetSelected, LOOT_JOURNAL_ITEM_SETS);
+		rootDescription:CreateRadio(LOOT_JOURNAL_POWERS, IsSelected, SetSelected, LOOT_JOURNAL_POWERS);
+	end);
+end
+
+local function ExpansionDropdown_SelectInternal(self, tier)
+	EJ_SelectTier(tier);
+	local instanceSelect = EncounterJournal.instanceSelect;
+	EJ_ContentTab_SetEnabled(EncounterJournal.dungeonsTab, true);
+	EJ_ContentTab_SetEnabled(EncounterJournal.raidsTab, true);
+
+	local tierData = GetEJTierData(tier);
+	instanceSelect.bg:SetAtlas(tierData.backgroundAtlas, true);
+
+	-- Item Set tab uses the tier dropdown, but we do not want to show instances when changing tiers on that tab.
+	if EncounterJournal_IsDungeonTabSelected(EncounterJournal) or EncounterJournal_IsRaidTabSelected(EncounterJournal) then
+		EncounterJournal_ListInstances();
+	else
+		-- Only Shadowlands uses the 'Powers' tab, if switching off of that make sure to go back to Item Sets.
+		EncounterJournal_CheckAndDisplayLootJournalViewDropdown(self);
+	end
+end
+
+function EncounterJournal_SetupExpansionDropdown(self)
+	local function IsSelected(tier)
+		return tier == EJ_GetCurrentTier();
+	end
+
+	local function SetSelected(tier)
+		ExpansionDropdown_SelectInternal(self, tier);
+	end
+
+	self.instanceSelect.ExpansionDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_EJ_EXPANSION");
+
+		for tier = 1, EJ_GetNumTiers() do
+			local text = EJ_GetTierInfo(tier);
+			rootDescription:CreateRadio(text, IsSelected, SetSelected, tier);
+		end
+	end);
+end
+
 function EncounterItemTemplate_DividerFrameTipOnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetText(self.elementData.text, 1, 1, 1);
@@ -500,20 +622,8 @@ function EncounterJournal_GetLootJournalView()
 end
 
 function EncounterJournal_SetLootJournalView(view)
-	local self = EncounterJournal;
-	local activeViewPanel, inactiveViewPanel = EncounterJournal_GetLootJournalPanels(view);
-	self.LootJournalViewDropDown:SetParent(activeViewPanel);
-	self.LootJournalViewDropDown:SetPoint("TOPLEFT", 15, -9);
-	UIDropDownMenu_SetWidth(self.LootJournalViewDropDown, 150);
-	UIDropDownMenu_SetText(self.LootJournalViewDropDown, view);
-
-	-- if no previous view then it's the init, no need to change which frame is shown
-	if self.lootJournalView then
-		activeViewPanel:Show();
-		inactiveViewPanel:Hide();
-	end
-
-	self.lootJournalView = view;
+	SetLootJournalViewInternal(view);
+	EncounterJournal_SetupLootJournalViewDropdown(EncounterJournal);
 end
 
 function EncounterJournal_GetLootJournalPanels(view)
@@ -528,20 +638,12 @@ function EncounterJournal_GetLootJournalPanels(view)
 	end
 end
 
-function EncounterJournal_EnableTierDropDown()
-	local tierName = EJ_GetTierInfo(EJ_GetCurrentTier());
-	UIDropDownMenu_SetText(EncounterJournal.instanceSelect.tierDropDown, tierName);
-	UIDropDownMenu_EnableDropDown(EncounterJournal.instanceSelect.tierDropDown);
+function EncounterJournal_EnableExpansionDropdown()
+	EncounterJournal.instanceSelect.ExpansionDropdown:Enable();
 end
 
-function EncounterJournal_DisableTierDropDown(removeText)
-	UIDropDownMenu_DisableDropDown(EncounterJournal.instanceSelect.tierDropDown);
-	if ( removeText ) then
-		UIDropDownMenu_SetText(EncounterJournal.instanceSelect.tierDropDown, nil);
-	else
-		local tierName = EJ_GetTierInfo(EJ_GetCurrentTier());
-		UIDropDownMenu_SetText(EncounterJournal.instanceSelect.tierDropDown, tierName);
-	end
+function EncounterJournal_DisableExpansionDropdown()
+	EncounterJournal.instanceSelect.ExpansionDropdown:Disable();
 end
 
 function EncounterJournal_HasChangedContext(instanceID, instanceType, difficultyID)
@@ -647,6 +749,12 @@ function EncounterJournal_OnShow(self)
 
 	-- Request raid locks to show the defeated overlay for bosses the player has killed this week.
 	RequestRaidInfo();
+
+	EncounterJournal_SetupLootJournalViewDropdown(self);
+	EncounterJournal_SetupExpansionDropdown(self);
+	EncounterJournal_SetupLootFilterDropdown(self);
+	EncounterJournal_SetupLootSlotFilterDropdown(self);
+	EncounterJournal_SetupDifficultyDropdown(self);
 end
 
 function EncounterJournal_CheckAndDisplaySuggestedContentTab()
@@ -810,8 +918,7 @@ end
 
 function EncounterJournal_UpdateDifficulty(newDifficultyID)
 	if IsEJDifficulty(newDifficultyID) then
-		local difficultyStr = GetEJDifficultyString(newDifficultyID);
-		EncounterJournal.encounter.info.difficulty:SetText(difficultyStr);
+		EncounterJournal_SetupDifficultyDropdown(EncounterJournal);
 		EncounterJournal_Refresh();
 	end
 end
@@ -867,8 +974,7 @@ local infiniteLoopPolice = false; --design might make a tier that has no instanc
 function EncounterJournal_ListInstances()
 	local instanceSelect = EncounterJournal.instanceSelect;
 
-	local tierName = EJ_GetTierInfo(EJ_GetCurrentTier());
-	UIDropDownMenu_SetText(instanceSelect.tierDropDown, tierName);
+	EncounterJournal_SetupExpansionDropdown(EncounterJournal);
 	EncounterJournal.encounter:Hide();
 	instanceSelect:Show();
 
@@ -959,9 +1065,9 @@ local function UpdateDifficultyAnchoring(difficultyFrame)
 	infoFrame.reset:ClearAllPoints();
 
 	if difficultyFrame:IsShown() then
-		infoFrame.reset:SetPoint("RIGHT", difficultyFrame, "LEFT", -10, 0);
+		infoFrame.reset:SetPoint("RIGHT", difficultyFrame, "LEFT", -12, -3);
 	else
-		infoFrame.reset:SetPoint("TOPRIGHT", infoFrame, "TOPRIGHT", -19, -13);
+		infoFrame.reset:SetPoint("TOPRIGHT", infoFrame, "TOPRIGHT", -21, -10);
 	end
 end
 
@@ -1167,7 +1273,7 @@ function EncounterJournal_DisplayEncounter(encounterID, noButton)
 	end
 
 	-- Setup Creatures
-	local id, name, displayInfo, iconImage;
+	local id, name, displayInfo, iconImage, uiModelSceneID;
 	for i=1,MAX_CREATURES_PER_ENCOUNTER do
 		id, name, description, displayInfo, iconImage, uiModelSceneID = EJ_GetCreatureInfo(i);
 
@@ -2024,10 +2130,6 @@ function EncounterJournal_ValidateSelectedTab()
 	end
 end
 
-function EncounterJournal_SetLootButton(item)
-
-end
-
 function EncounterJournal_LootCallback(itemID)
 	local scrollBox = EncounterJournal.encounter.info.LootContainer.ScrollBox;
 	local button = scrollBox:FindFrameByPredicate(function(button, elementData)
@@ -2123,7 +2225,7 @@ function EncounterJournal_SetTooltipWithCompare(tooltip, link, useSpec)
 	
 	local classID, specID;
 	if useSpec then
-		local classID, specID = EJ_GetLootFilter();
+		classID, specID = EJ_GetLootFilter();
 		if specID == 0 then
 			local spec = GetSpecialization();
 			if spec and classID == select(3, UnitClass("player")) then
@@ -2458,7 +2560,7 @@ function EncounterJournal_OpenJournal(difficultyID, instanceID, encounterID, sec
 			EncounterJournal.encounter.info.lootTab:Click();
 		end
 	elseif tierIndex then
-		EncounterJournal_TierDropDown_Select(EncounterJournal, tierIndex+1);
+		EncounterJournal_ExpansionDropdown_Select(EncounterJournal, tierIndex+1);
 	else
 		EncounterJournal_ListInstances();
 	end
@@ -2466,20 +2568,6 @@ end
 
 function EncounterJournal_SelectDifficulty(self, value)
 	EJ_SetDifficulty(value);
-end
-
-function EncounterJournal_DifficultyInit(self, level)
-	local currDifficulty = EJ_GetDifficulty();
-	local info = UIDropDownMenu_CreateInfo();
-	for i, difficultyID in ipairs(EJ_DIFFICULTIES) do
-		if EJ_IsValidInstanceDifficulty(difficultyID) then
-			info.func = EncounterJournal_SelectDifficulty;
-			info.text = GetEJDifficultyString(difficultyID);
-			info.arg1 = difficultyID;
-			info.checked = currDifficulty == difficultyID;
-			UIDropDownMenu_AddButton(info);
-		end
-	end
 end
 
 -- TODO: Fix for Level Squish
@@ -2509,25 +2597,28 @@ function EJ_ContentTab_Select(id)
 	EncounterJournal.encounter:Hide();
 	instanceSelect:Show();
 
-	if ( id == EncounterJournal.MonthlyActivitiesTab:GetID() ) then
+	local showMonthlyActivities = id == EncounterJournal.MonthlyActivitiesTab:GetID();
+	local showSuggestedContent = id == EncounterJournal.suggestTab:GetID();
+	local showRaid = id == EncounterJournal.raidsTab:GetID();
+	local showDungeons = id == EncounterJournal.dungeonsTab:GetID();
+	local showLoot = id == EncounterJournal.LootJournalTab:GetID();
+
+	if showMonthlyActivities then
 		EJ_HideSuggestPanel();
 		EJ_HideLootJournalPanel();
-	elseif ( id == EncounterJournal.suggestTab:GetID() ) then
+	elseif showSuggestedContent then
 		EJ_HideLootJournalPanel();
 		EncounterJournal.suggestFrame:Show();
-		if ( not EncounterJournal.dungeonsTab.isDisabled or not EncounterJournal.raidsTab.isDisabled ) then
-			EncounterJournal_DisableTierDropDown(true);
-		else
-			EncounterJournal_EnableTierDropDown();
-		end
-	elseif ( id == EncounterJournal.LootJournalTab:GetID() ) then
+		EncounterJournal_DisableExpansionDropdown();
+	elseif showLoot then
 		EJ_HideSuggestPanel();
-		EncounterJournal_CheckAndDisplayLootJournalViewDropDown();
+		EncounterJournal_CheckAndDisplayLootJournalViewDropdown(EncounterJournal);
 		EJ_ShowLootJournalPanel();
-	elseif ( id == EncounterJournal.dungeonsTab:GetID() or id == EncounterJournal.raidsTab:GetID() ) then
+		EncounterJournal_EnableExpansionDropdown();
+	elseif showDungeons or showRaid then
 		EJ_HideNonInstancePanels();
 		EncounterJournal_ListInstances();
-		EncounterJournal_EnableTierDropDown();
+		EncounterJournal_EnableExpansionDropdown();
 	end
 
 	-- Update title bar with the current tab name
@@ -2541,9 +2632,8 @@ function EJ_ContentTab_Select(id)
 	local showSearchBox = (id == EncounterJournal.dungeonsTab:GetID() or id == EncounterJournal.raidsTab:GetID() or id == EncounterJournal.LootJournalTab:GetID());
 	EncounterJournal.searchBox:SetShown(showSearchBox);
 
-	local showMonthlyActivities = (id == EncounterJournal.MonthlyActivitiesTab:GetID());
-	instanceSelect.tierDropDown:SetShown(not showMonthlyActivities);
-	instanceSelect.bg:SetShown(not showMonthlyActivities);
+	instanceSelect.ExpansionDropdown:SetShown(showDungeons or showRaid or showLoot);
+	instanceSelect.bg:SetShown(showSuggestedContent or showDungeons or showRaid);
 	EncounterJournal.MonthlyActivitiesFrame:SetShown(showMonthlyActivities);
 
 	local showInstanceSelect = (id == EncounterJournal.dungeonsTab:GetID() or id == EncounterJournal.raidsTab:GetID());
@@ -2572,7 +2662,7 @@ function EJ_HideSuggestPanel()
 		suggestTab:Enable();
 		EncounterJournal.suggestFrame:Hide();
 
-		EncounterJournal_EnableTierDropDown();
+		EncounterJournal_EnableExpansionDropdown();
 
 		local tierData = GetEJTierData(EJ_GetCurrentTier());
 		instanceSelect.bg:SetAtlas(tierData.backgroundAtlas, true);
@@ -2593,7 +2683,7 @@ function EJ_HideLootJournalPanel()
 end
 
 function EJ_ShowLootJournalPanel()
-	EncounterJournal_DisableTierDropDown(true);
+	EncounterJournal_DisableExpansionDropdown();
 
 	local tierData = GetEJTierData(EJSuggestTab_GetPlayerTierIndex());
 	EncounterJournal.instanceSelect.bg:SetAtlas(tierData.backgroundAtlas, true);
@@ -2608,70 +2698,23 @@ function EJ_HideNonInstancePanels()
 	EncounterJournal.MonthlyActivitiesFrame:Hide();
 end
 
-function EJTierDropDown_OnLoad(self)
-	UIDropDownMenu_Initialize(self, EJTierDropDown_Initialize, "MENU");
-end
-
-function EJTierDropDown_Initialize(self, level)
-	local info = UIDropDownMenu_CreateInfo();
-	local numTiers = EJ_GetNumTiers();
-
-	local currTier = EJ_GetCurrentTier();
-	for i=1,numTiers do
-		info.text = EJ_GetTierInfo(i);
-		info.func = EncounterJournal_TierDropDown_Select
-		info.checked = i == currTier;
-		info.arg1 = i;
-		UIDropDownMenu_AddButton(info, level)
-	end
-end
-
-function EncounterJournal_TierDropDown_Select(_, tier)
-	EJ_SelectTier(tier);
-	local instanceSelect = EncounterJournal.instanceSelect;
-	EJ_ContentTab_SetEnabled(EncounterJournal.dungeonsTab, true);
-	EJ_ContentTab_SetEnabled(EncounterJournal.raidsTab, true);
-
-	local tierData = GetEJTierData(tier);
-	instanceSelect.bg:SetAtlas(tierData.backgroundAtlas, true);
-
-	UIDropDownMenu_SetText(instanceSelect.tierDropDown, EJ_GetTierInfo(EJ_GetCurrentTier()));
-
-	-- Item Set tab uses the tier dropdown, but we do not want to show instances when changing tiers on that tab.
-	if EncounterJournal_IsDungeonTabSelected(EncounterJournal) or EncounterJournal_IsRaidTabSelected(EncounterJournal) then
-		EncounterJournal_ListInstances();
-	end
+function EncounterJournal_ExpansionDropdown_Select(self, tier)
+	ExpansionDropdown_SelectInternal(self, tier);
+	EncounterJournal_SetupExpansionDropdown(EncounterJournal);
 end
 
 function EncounterJournal_OnFilterChanged(self)
-	CloseDropDownMenus(1);
 	EncounterJournal_LootUpdate();
 end
 
-function EncounterJournal_SetClassAndSpecFilter(self, classID, specID)
-	EJ_SetLootFilter(classID, specID);
+function EncounterJournal_SetSlotFilterInternal(self, slot)
+	C_EncounterJournal.SetSlotFilter(slot);
 	EncounterJournal_OnFilterChanged(self);
-end
-
-function EncounterJournal_RefreshSlotFilterText(self)
-	local text = ALL_INVENTORY_SLOTS;
-	local slotFilter = C_EncounterJournal.GetSlotFilter();
-	if slotFilter ~= Enum.ItemSlotFilterType.NoFilter then
-		for _, filter in pairs(Enum.ItemSlotFilterType) do
-			if ( filter == slotFilter ) then
-				text = SlotFilterToSlotName[filter];
-				break;
-			end
-		end
-	end
-
-	EncounterJournal.encounter.info.LootContainer.slotFilter:SetText(text);
 end
 
 function EncounterJournal_SetSlotFilter(self, slot)
-	C_EncounterJournal.SetSlotFilter(slot);
-	EncounterJournal_RefreshSlotFilterText(self);
-	EncounterJournal_OnFilterChanged(self);
+	EncounterJournal_SetSlotFilterInternal(self, slot);
+	EncounterJournal_SetupLootSlotFilterDropdown(self);
 end
 
 function EncounterJournal_UpdateFilterString()
@@ -2700,148 +2743,13 @@ function EncounterJournal_UpdateFilterString()
 	end
 end
 
-local CLASS_DROPDOWN = 1;
-function EncounterJournal_InitLootFilter(self, level)
-	local filterClassID, filterSpecID = EJ_GetLootFilter();
-	local sex = UnitSex("player");
-	local classDisplayName, classTag, classID;
-	local info = UIDropDownMenu_CreateInfo();
-	info.keepShownOnClick = nil;
-
-	if (UIDROPDOWNMENU_MENU_VALUE == CLASS_DROPDOWN) then
-		info.text = ALL_CLASSES;
-		info.checked = (filterClassID == 0);
-		info.arg1 = 0;
-		info.arg2 = 0;
-		info.func = EncounterJournal_SetClassAndSpecFilter;
-		UIDropDownMenu_AddButton(info, level);
-
-		local numClasses = GetNumClasses();
-		for i = 1, numClasses do
-			classDisplayName, classTag, classID = GetClassInfo(i);
-			info.text = classDisplayName;
-			info.checked = (filterClassID == classID);
-			info.arg1 = classID;
-			info.arg2 = 0;
-			info.func = EncounterJournal_SetClassAndSpecFilter;
-			UIDropDownMenu_AddButton(info, level);
-		end
-	end
-
-	if (level == 1) then
-		info.text = CLASS;
-		info.func =  nil;
-		info.notCheckable = true;
-		info.hasArrow = true;
-		info.value = CLASS_DROPDOWN;
-		UIDropDownMenu_AddButton(info, level)
-
-		if ( filterClassID > 0 ) then
-			classID = filterClassID;
-
-			local classInfo = C_CreatureInfo.GetClassInfo(filterClassID);
-			if classInfo then
-				classDisplayName = classInfo.className;
-				classTag = classInfo.classFile;
-			end
-		else
-			classDisplayName, classTag, classID = UnitClass("player");
-		end
-		info.text = classDisplayName;
-		info.notCheckable = true;
-		info.arg1 = nil;
-		info.arg2 = nil;
-		info.func =  nil;
-		info.hasArrow = false;
-		UIDropDownMenu_AddButton(info, level);
-
-		info.notCheckable = nil;
-		local numSpecs = GetNumSpecializationsForClassID(classID);
-		for i = 1, numSpecs do
-			local specID, specName = GetSpecializationInfoForClassID(classID, i, sex);
-			info.leftPadding = 10;
-			info.text = specName;
-			info.checked = (filterSpecID == specID);
-			info.arg1 = classID;
-			info.arg2 = specID;
-			info.func = EncounterJournal_SetClassAndSpecFilter;
-			UIDropDownMenu_AddButton(info, level);
-		end
-
-		info.text = ALL_SPECS;
-		info.leftPadding = 10;
-		info.checked = (classID == filterClassID) and (filterSpecID == 0);
-		info.arg1 = classID;
-		info.arg2 = 0;
-		info.func = EncounterJournal_SetClassAndSpecFilter;
-		UIDropDownMenu_AddButton(info, level);
-	end
-end
-
-function EncounterJournal_InitLootSlotFilter(self, level)
-	local slotFilter = C_EncounterJournal.GetSlotFilter();
-
-	local info = UIDropDownMenu_CreateInfo();
-	info.text = ALL_INVENTORY_SLOTS;
-	info.checked = slotFilter == Enum.ItemSlotFilterType.NoFilter;
-	info.arg1 = Enum.ItemSlotFilterType.NoFilter;
-	info.func = EncounterJournal_SetSlotFilter;
-	UIDropDownMenu_AddButton(info);
-
-	C_EncounterJournal.ResetSlotFilter();
-	local isLootSlotPresent = {};
-	local numLoot = EJ_GetNumLoot();
-	for i = 1, numLoot do
-		local itemInfo = C_EncounterJournal.GetLootInfoByIndex(i);
-		local filterType = itemInfo and itemInfo.filterType;
-		if ( filterType ) then
-			isLootSlotPresent[filterType] = true;
-		end
-	end
-	C_EncounterJournal.SetSlotFilter(slotFilter);
-
-	for filter, name in pairs(SlotFilterToSlotName) do
-		if ( isLootSlotPresent[filter] or filter == slotFilter ) then
-			info.text = name;
-			info.checked = slotFilter == filter;
-			info.arg1 = filter;
-			UIDropDownMenu_AddButton(info);
-		end
-	end
-end
-
-function EncounterJournal_LootTabViewDropDown_OnLoad(self)
-	UIDropDownMenu_JustifyText(self, "LEFT");
-	UIDropDownMenu_Initialize(self, EncounterJournal_LootTabViewDropDown_Init);
-end
-
-function EncounterJournal_LootTabViewDropDown_Init(self)
-	local SetView = function(_, view) EncounterJournal_SetLootJournalView(view); end
-
-	local info = UIDropDownMenu_CreateInfo();
-
-	info.text = LOOT_JOURNAL_ITEM_SETS;
-	info.func = SetView;
-	info.checked = EncounterJournal_GetLootJournalView() == LOOT_JOURNAL_ITEM_SETS;
-	info.arg1 = LOOT_JOURNAL_ITEM_SETS;
-	UIDropDownMenu_AddButton(info, level);
-	
-	info.text = LOOT_JOURNAL_POWERS;
-	info.func = SetView;
-	info.checked = EncounterJournal_GetLootJournalView() == LOOT_JOURNAL_POWERS;
-	info.arg1 = LOOT_JOURNAL_POWERS;
-	UIDropDownMenu_AddButton(info, level);
-end
-
-function EncounterJournal_CheckAndDisplayLootJournalViewDropDown()
-	local currentTier = EJ_GetCurrentTier();
-
-	-- Only Shadowlands uses the 'Powers' tab, if switching off of that make sure to go back to Item Sets.
-	if EncounterJournal.lootJournalView == LOOT_JOURNAL_POWERS then
+function EncounterJournal_CheckAndDisplayLootJournalViewDropdown(self)
+	local isIndexShadowlands = EJ_GetCurrentTier() == EJ_TIER_INDEX_SHADOWLANDS;
+	if not isIndexShadowlands and EncounterJournal.lootJournalView == LOOT_JOURNAL_POWERS then
 		EncounterJournal_SetLootJournalView(LOOT_JOURNAL_ITEM_SETS);
 	end
 
-	EncounterJournal.LootJournalViewDropDown:SetShown(true);
+	self.LootJournalViewDropdown:SetShown(isIndexShadowlands);
 end
 
 ----------------------------------------
@@ -2927,7 +2835,7 @@ function EJSuggestFrame_OnShow(self)
 
 	C_AdventureJournal.UpdateSuggestions();
 	EJSuggestFrame_RefreshDisplay();
-	EncounterJournal_RefreshSlotFilterText();
+	EncounterJournal_SetupLootSlotFilterDropdown(EncounterJournal);
 end
 
 function EJSuggestFrame_NextSuggestion()
@@ -3260,7 +3168,7 @@ function AdventureJournal_Reward_OnEnter(self)
 			end
 
 			local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(rewardData.currencyType);
-			local quality = currencyInfo.quality;
+			quality = currencyInfo.quality;
 			frame.Item2.icon:SetTexture(currencyInfo.iconFileID);
 			frame.Item2.text:SetText(currencyInfo.name);
 			frame.Item2:Show();
@@ -3400,7 +3308,7 @@ function AdventureJournal_Reward_OnMouseDown(self)
 		EncounterJournal.encounter.info[EJ_Tabs[2].button]:Click();
 	elseif ( data.isRandomDungeon ) then
 		EJ_ContentTab_Select(EncounterJournal.dungeonsTab:GetID());
-		EncounterJournal_TierDropDown_Select(nil, data.expansionLevel);
+		EncounterJournal_ExpansionDropdown_Select(EncounterJournal, data.expansionLevel);
 	end
 end
 
@@ -3412,8 +3320,8 @@ function EncounterJournalBossButton_UpdateDifficultyOverlay(self)
 		local hasDefeatedBoss = defeatedOnCurrentDifficulty and IsEJDifficulty(difficultyID);
 		self.DefeatedOverlay:SetShown(hasDefeatedBoss);
 		if hasDefeatedBoss then
-			local name = DifficultyUtil.GetDifficultyName(difficultyID);
-			self.DefeatedOverlay.tooltipText = ENCOUNTER_JOURNAL_ENCOUNTER_STATUS_DEFEATED_TOOLTIP:format(name);
+			local difficultyName = DifficultyUtil.GetDifficultyName(difficultyID);
+			self.DefeatedOverlay.tooltipText = ENCOUNTER_JOURNAL_ENCOUNTER_STATUS_DEFEATED_TOOLTIP:format(difficultyName);
 		end
 	end
 end

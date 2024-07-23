@@ -19,8 +19,48 @@ function MerchantFrame_OnLoad(self)
 
 	MoneyFrame_SetMaxDisplayWidth(MerchantMoneyFrame, 160);
 
-	UIDropDownMenu_SetWidth(self.lootFilter, 132);
-	UIDropDownMenu_Initialize(self.lootFilter, MerchantFrame_InitFilter);
+	self.FilterDropdown:SetWidth(152);
+	self.FilterDropdown:SetSelectionTranslator(function(selection)
+		-- "All Specializations" is replaced with the player's class.
+		if selection.data == LE_LOOT_FILTER_CLASS then
+			return UnitClass("player");
+		end
+
+		return selection.text;
+	end);
+
+	local function SetSelected(filter)
+		SetMerchantFilter(filter);
+
+		MerchantFrame.page = 1;
+		MerchantFrame_Update();
+	end
+	
+	local function IsSelected(filter)
+		return GetMerchantFilter() == filter;
+	end
+	
+	self.FilterDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_MERCHANT_FRAME");
+
+		local className = UnitClass("player");
+		local sex = UnitSex("player");
+		
+		for index = 1, GetNumSpecializations() do
+			local isInspect = nil;
+			local isPet = nil;
+			local inspectTarget = nil;
+			local name = select(2, GetSpecializationInfo(index, isInspect, isPet, inspectTarget, sex));
+
+			local filter = (LE_LOOT_FILTER_SPEC1 + index) - 1;
+			rootDescription:CreateRadio(name, IsSelected, SetSelected, filter);
+		end
+
+		rootDescription:CreateRadio(ALL_SPECS, IsSelected, SetSelected, LE_LOOT_FILTER_CLASS);
+		rootDescription:CreateDivider();
+		rootDescription:CreateRadio(ITEM_BIND_ON_EQUIP, IsSelected, SetSelected, LE_LOOT_FILTER_BOE);
+		rootDescription:CreateRadio(ALL, IsSelected, SetSelected, LE_LOOT_FILTER_ALL);
+	end);
 end
 
 function MerchantFrame_MerchantShow()
@@ -39,6 +79,7 @@ function MerchantFrame_MerchantClosed()
 	StaticPopup_Hide("CONFIRM_MERCHANT_TRADE_TIMER_REMOVAL");
 	HideUIPanel(MerchantFrame);
 end
+
 function MerchantFrame_OnEvent(self, event, ...)
 	if ( event == "MERCHANT_UPDATE" and "MERCHANT_FILTER_ITEM_UPDATE" ) then
 		self.update = true;
@@ -98,7 +139,9 @@ function MerchantFrame_OnShow(self)
 	MerchantFrame_UpdateCanRepairAll();
 	MerchantFrame_UpdateGuildBankRepair();
 	PanelTemplates_SetTab(MerchantFrame, 1);
+
 	ResetSetMerchantFilter();
+	self.FilterDropdown:Update();
 
 	MerchantFrame_Update();
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
@@ -137,7 +180,9 @@ function MerchantFrame_Update()
 		MerchantFrame_CloseStackSplitFrame();
 		MerchantFrame.lastTab = MerchantFrame.selectedTab;
 	end
-	MerchantFrame_UpdateFilterString()
+
+	MerchantFrame.FilterDropdown:Update();
+
 	if ( MerchantFrame.selectedTab == 1 ) then
 		MerchantFrame_UpdateMerchantInfo();
 	else
@@ -672,7 +717,7 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, numToPurchase)
 	local maxQuality = 0;
 	local usingCurrency = false;
 	for i=1, MAX_ITEM_COST do
-		local itemTexture, costItemCount, itemLink, currencyName = GetMerchantItemCostItem(index, i);
+		local itemTexture, costItemCount, costItemLink, currencyName = GetMerchantItemCostItem(index, i);
 		costItemCount = costItemCount * (numToPurchase / stackCount); -- cost per stack times number of stacks
 		if ( currencyName ) then
 			usingCurrency = true;
@@ -681,8 +726,8 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, numToPurchase)
 			else
 				itemsString = " |T"..itemTexture..":0:0:0:-1|t "..format(CURRENCY_QUANTITY_TEMPLATE, costItemCount, currencyName);
 			end
-		elseif ( itemLink ) then
-			local itemName, itemLink, itemQuality = C_Item.GetItemInfo(itemLink);
+		elseif ( costItemLink ) then
+			local itemName, itemLink, itemQuality = C_Item.GetItemInfo(costItemLink);
 
 			if ( i == 1 and GetMerchantItemCostInfo(index) == 1 ) then
 				local limitedCurrencyItemInfo = MerchantFrame_GetLimitedCurrencyItemInfo(itemLink);
@@ -974,74 +1019,6 @@ function MerchantFrame_UpdateCurrencyButton(tokenButton)
 		tokenButton.Count:SetText(displayCount);
 		tokenButton:SetWidth(displayWidth);
 	end
-end
-
-function MerchantFrame_SetFilter(self, classIndex)
-	SetMerchantFilter(classIndex);
-	MerchantFrame.page = 1;
-	if MerchantFrame:IsVisible() then
-		MerchantFrame_Update();
-	end
-end
-
-function MerchantFrame_UpdateFilterString()
-	local name = ALL;
-	local currFilter = GetMerchantFilter();
-
-	if currFilter == LE_LOOT_FILTER_CLASS then
-		name = UnitClass("player");
-	elseif currFilter == LE_LOOT_FILTER_BOE then
-		name = ITEM_BIND_ON_EQUIP;
-	elseif currFilter == LE_LOOT_FILTER_ALL then
-		name = ALL;
-	else -- Spec
-		local _, specName, _, icon = GetSpecializationInfo(currFilter - LE_LOOT_FILTER_SPEC1 + 1, nil, nil, nil, UnitSex("player"));
-		name = specName;
-	end
-
-	UIDropDownMenu_SetText(MerchantFrame.lootFilter, name);
-end
-
-function MerchantFrame_InitFilter()
-	local info = UIDropDownMenu_CreateInfo();
-	local currFilter = GetMerchantFilter();
-	local className = UnitClass("player");
-	local sex = UnitSex("player");
-
-	info.func = MerchantFrame_SetFilter;
-
-	info.text = className;
-	info.checked = (currFilter ~= LE_LOOT_FILTER_BOE and currFilter ~= LE_LOOT_FILTER_ALL);
-	info.arg1 = LE_LOOT_FILTER_CLASS;
-	UIDropDownMenu_AddButton(info);
-
-	local numSpecs = GetNumSpecializations();
-	for i = 1, numSpecs do
-		local _, name, _, icon = GetSpecializationInfo(i, nil, nil, nil, sex);
-		info.text = name;
-		info.arg1 = LE_LOOT_FILTER_SPEC1 + i - 1;
-		info.checked = currFilter == (LE_LOOT_FILTER_SPEC1 + i - 1);
-		info.leftPadding = 10;
-		UIDropDownMenu_AddButton(info);
-	end
-
-	info.text = ALL_SPECS;
-	info.checked = currFilter == LE_LOOT_FILTER_CLASS;
-	info.arg1 = LE_LOOT_FILTER_CLASS;
-	info.func = MerchantFrame_SetFilter;
-	UIDropDownMenu_AddButton(info);
-
-	info.leftPadding = nil;
-	info.text = ITEM_BIND_ON_EQUIP;
-	info.checked = currFilter == LE_LOOT_FILTER_BOE;
-	info.arg1 = LE_LOOT_FILTER_BOE;
-	UIDropDownMenu_AddButton(info);
-
-	info.leftPadding = nil;
-	info.text = ALL;
-	info.checked = currFilter == LE_LOOT_FILTER_ALL;
-	info.arg1 = LE_LOOT_FILTER_ALL;
-	UIDropDownMenu_AddButton(info);
 end
 
 function MerchantFrame_OnSellAllJunkButtonConfirmed()

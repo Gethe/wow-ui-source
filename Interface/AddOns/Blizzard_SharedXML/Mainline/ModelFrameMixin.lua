@@ -1,5 +1,7 @@
 --------------------------------------------------
 -- LOCAL CONSTANTS AND DATA
+local envTable = GetCurrentEnvironment();
+
 local ModelSettings = {
 	["HumanMale"] = { panMaxLeft = -0.4, panMaxRight = 0.4, panMaxTop = 1.2, panMaxBottom = -0.3, panValue = 38 },
 	["HumanFemale"] = { panMaxLeft = -0.3, panMaxRight = 0.3, panMaxTop = 1.2, panMaxBottom = -0.2, panValue = 45 },
@@ -184,8 +186,8 @@ function ModelFrameMixin:OnUpdate(elapsedTime)
 		leftButton = self.controlFrame.rotateLeftButton;
 		rightButton = self.controlFrame.rotateRightButton;
 	else
-		leftButton = self.RotateLeftButton or (self:GetName() and _G[self:GetName().."RotateLeftButton"]);
-		rightButton = self.RotateRightButton or (self:GetName() and _G[self:GetName().."RotateRightButton"]);
+		leftButton = self.RotateLeftButton or (self:GetName() and envTable[self:GetName().."RotateLeftButton"]);
+		rightButton = self.RotateRightButton or (self:GetName() and envTable[self:GetName().."RotateRightButton"]);
 	end
 
 	self:UpdateRotation(leftButton, rightButton, elapsedTime, rotationsPerSecond);

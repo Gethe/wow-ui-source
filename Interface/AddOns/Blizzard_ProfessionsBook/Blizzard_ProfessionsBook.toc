@@ -1,0 +1,5 @@
+## Title: Blizzard Professions Book
+## LoadOnDemand: 1
+
+Blizzard_ProfessionsBook.lua
+Blizzard_ProfessionsBook.xml

@@ -188,7 +188,7 @@ function HelpTip:CanShow(info)
 
 	if info.checkCVars then
 		if info.cvar then
-			if GetCVar(info.cvar) ~= info.cvarValue then
+			if GetCVar(info.cvar) == info.cvarValue then
 				return false;
 			end
 		end

@@ -80,7 +80,7 @@ end
 
 function AchievementDisplayOverviewBulletMixin:SetUpAchievement(achievementID)
 	local _, name, _, completed, _, _, _, _, _, _, _, _, wasEarnedByMe = GetAchievementInfo(achievementID);
-	local completed = completed and wasEarnedByMe; 
+	completed = completed and wasEarnedByMe; 
 	self:Setup(achievementID, nil, name, completed);
 end
 
@@ -102,7 +102,7 @@ function AchievementDisplayOverviewBulletMixin:OnEnter()
 			achievementID = assetID;
 		end
 
-		local _, _, _, completed, month, day, year, _, _, _, _, _, wasEarnedByMe = GetAchievementInfo(achievementID);
+		local _, _, _, completed, month, day, year = GetAchievementInfo(achievementID);
 		if completed then
 			local completionDate = FormatShortDate(day, month, year);
 			GameTooltip_AddColoredLine(GameTooltip, CRITERIA_COMPLETED_DATE:format(completionDate), HIGHLIGHT_FONT_COLOR);

@@ -2,7 +2,6 @@
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
 ## Dependencies: Blizzard_UIParent, Blizzard_UIPanelTemplates
-## SuppressLocalTableRef: 1
 ## AllowLoadGameType: wowlabs
 Mainline\EditModePresetLayoutSystemUtils.lua
 WoWLabs\EditModePresetLayouts.lua

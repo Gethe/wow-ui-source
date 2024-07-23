@@ -41,6 +41,11 @@ end
 function TalentDisplayMixin:OnLeave()
 	GameTooltip_Hide();
 
+	if self.updateMouseInfoTimer then
+		self.updateMouseInfoTimer:Cancel();
+		self.updateMouseInfoTimer = nil;
+	end
+
 	if self.spellLoadCancel then
 		self.spellLoadCancel();
 		self.spellLoadCancel = nil;
@@ -67,18 +72,25 @@ function TalentDisplayMixin:OnRelease()
 	self.shouldGlow = nil;
 	self.isGhosted = nil;
 
+	if self.updateMouseInfoTimer then
+		self.updateMouseInfoTimer:Cancel();
+		self.updateMouseInfoTimer = nil;
+	end
+
 	self:ResetActiveVisuals();
 end
 
-function TalentDisplayMixin:SetTooltipInternal()
+function TalentDisplayMixin:SetTooltipInternal(ignoreTooltipInfo)
 	local tooltip = self:AcquireTooltip();
 	self:AddTooltipTitle(tooltip);
 
 	-- Used for debug purposes.
 	EventRegistry:TriggerEvent("TalentDisplay.TooltipHook", self);
 
-	self:AddTooltipInfo(tooltip);
-	self:AddTooltipDescription(tooltip);
+	if not ignoreTooltipInfo then
+		self:AddTooltipInfo(tooltip);
+	end
+	self:AddTooltipDescription(tooltip, ignoreTooltipInfo);
 	self:AddTooltipCost(tooltip);
 
 	if not self:IsInspecting() then
@@ -101,14 +113,15 @@ function TalentDisplayMixin:AcquireTooltip()
 	return tooltip;
 end
 
-function TalentDisplayMixin:SetDefinitionID(definitionID, skipUpdate)
-	self.definitionID = definitionID;
-	self:UpdateDefinitionInfo(skipUpdate);
+function TalentDisplayMixin:UpdateEntryContentIDs(skipUpdate)
+	self.entrySubTreeID = self.entryInfo and self.entryInfo.subTreeID or nil;
+	self.definitionID = self.entryInfo and self.entryInfo.definitionID or nil;
+	self:UpdateEntryContentInfo(skipUpdate);
 end
 
-function TalentDisplayMixin:UpdateDefinitionInfo(skipUpdate)
-	local definitionID = self.definitionID;
-	self.definitionInfo = (definitionID ~= nil) and self:GetTalentFrame():GetAndCacheDefinitionInfo(definitionID) or nil;
+function TalentDisplayMixin:UpdateEntryContentInfo(skipUpdate)
+	self.definitionInfo = self.definitionID and self:GetTalentFrame():GetAndCacheDefinitionInfo(self.definitionID) or nil;
+	self.entrySubTreeInfo = self.entrySubTreeID and self:GetTalentFrame():GetAndCacheSubTreeInfo(self.entrySubTreeID) or nil;
 
 	if not skipUpdate then
 		self:FullUpdate();
@@ -126,7 +139,7 @@ function TalentDisplayMixin:UpdateEntryInfo(skipUpdate)
 	local hasEntryID = (self.entryID ~= nil);
 	self.entryInfo = hasEntryID and self:GetTalentFrame():GetAndCacheEntryInfo(self.entryID) or nil;
 
-	self:SetDefinitionID(hasEntryID and self.entryInfo.definitionID or nil, skipUpdate);
+	self:UpdateEntryContentIDs(skipUpdate);
 end
 
 function TalentDisplayMixin:GetDefinitionID()
@@ -137,6 +150,11 @@ function TalentDisplayMixin:GetEntryID()
 	return self.entryID;
 end
 
+-- The active Entry's SubTree ID, usually only used by SubTree Choice Node entries
+function TalentDisplayMixin:GetEntrySubTreeID()
+	return self.entrySubTreeID;
+end
+
 function TalentDisplayMixin:GetDefinitionInfo()
 	return self.definitionInfo;
 end
@@ -145,24 +163,34 @@ function TalentDisplayMixin:GetEntryInfo()
 	return self.entryInfo;
 end
 
+-- The active Entry's subTreeInfo, usually only used by SubTree Choice Node entries
+function TalentDisplayMixin:GetEntrySubTreeInfo()
+	return self.entrySubTreeInfo;
+end
+
 function TalentDisplayMixin:GetSpellID()
 	return (self.definitionInfo ~= nil) and self.definitionInfo.spellID or nil;
 end
 
 function TalentDisplayMixin:GetOverrideIcon()
-	return self.definitionInfo.overrideIcon;
+	return (self.definitionInfo ~= nil) and self.definitionInfo.overrideIcon or nil;
 end
 
 function TalentDisplayMixin:CalculateIconTexture()
-	return TalentButtonUtil.CalculateIconTexture(self.definitionInfo, self:GetSpellID());
+	return TalentButtonUtil.CalculateIconTextureFromInfo(self.definitionInfo, self.entrySubTreeInfo);
 end
 
 function TalentDisplayMixin:UpdateIconTexture()
-	self.Icon:SetTexture(self:CalculateIconTexture());
+	local texture, isAtlas = self:CalculateIconTexture();
+	if isAtlas then
+		self.Icon:SetAtlas(texture);
+	else
+		self.Icon:SetTexture(texture);
+	end
 end
 
 function TalentDisplayMixin:GetActiveIcon()
-	return self.Icon:GetTexture();
+	return self.Icon:GetTexture() or self.Icon:GetAtlas();
 end
 
 function TalentDisplayMixin:UpdateVisualState()
@@ -185,6 +213,8 @@ function TalentDisplayMixin:SetVisualState(visualState)
 
 	self:ApplyVisualState(visualState);
 
+	-- Using Alpha for visible/invisible state rather than Hide/Show due to multiple things relying on nodes still technically being "shown"
+	-- Ex: Receiving update events, animations staying in sync, etc
 	local previousAlpha = self:GetAlpha();
 	local newAlpha = (visualState ~= TalentButtonUtil.BaseVisualState.Invisible) and 1.0 or 0.0;
 	if not ApproximatelyEqual(previousAlpha, newAlpha) then
@@ -197,15 +227,32 @@ function TalentDisplayMixin:GetVisualState()
 end
 
 function TalentDisplayMixin:GetName()
-	return self.definitionInfo and TalentUtil.GetTalentName(self.definitionInfo.overrideName, self:GetSpellID()) or "";
+	local subTreeInfo = self:GetEntrySubTreeInfo();
+	if subTreeInfo and subTreeInfo.name then
+		return subTreeInfo.name;
+	end
+
+	local definitionInfo = self:GetDefinitionInfo();
+	if definitionInfo then
+		return definitionInfo and TalentUtil.GetTalentName(definitionInfo.overrideName, self:GetSpellID()) or "";
+	end
+
+	return "";
 end
 
 function TalentDisplayMixin:GetSubtext()
-	return self.definitionInfo and TalentUtil.GetTalentSubtext(self.definitionInfo.overrideSubtext, self:GetSpellID()) or nil;
+	local subTreeInfo = self:GetEntrySubTreeInfo();
+	if subTreeInfo and subTreeInfo.description then
+		return subTreeInfo.description;
+	end
+
+	local definitionInfo = self:GetDefinitionInfo();
+	return definitionInfo and TalentUtil.GetTalentSubtext(definitionInfo.overrideSubtext, self:GetSpellID()) or nil;
 end
 
 function TalentDisplayMixin:GetDescription()
-	return self.definitionInfo and TalentUtil.GetTalentDescription(self.definitionInfo.overrideDescription, self:GetSpellID()) or "";
+	local definitionInfo = self:GetDefinitionInfo();
+	return definitionInfo and TalentUtil.GetTalentDescription(definitionInfo.overrideDescription, self:GetSpellID()) or "";
 end
 
 function TalentDisplayMixin:AddTooltipTitle(tooltip)
@@ -215,7 +262,7 @@ end
 function TalentDisplayMixin:AddTooltipInfo(tooltip)
 	local spellID = self:GetSpellID();
 	if spellID then
-		local overrideSpellID = C_SpellBook.GetOverrideSpell(spellID);
+		local overrideSpellID = C_Spell.GetOverrideSpell(spellID);
 		if overrideSpellID ~= spellID then
 			local overrideSpell = Spell:CreateFromSpellID(overrideSpellID);
 			if overrideSpell and not overrideSpell:IsSpellDataCached() then
@@ -227,8 +274,8 @@ function TalentDisplayMixin:AddTooltipInfo(tooltip)
 	end
 end
 
-function TalentDisplayMixin:AddTooltipDescription(tooltip)
-	local blankLineAdded = false;
+function TalentDisplayMixin:AddTooltipDescription(tooltip, tooltipInfoIgnored)
+	local blankLineAdded = tooltipInfoIgnored or false;
 	if self:ShouldShowSubText() then
 		local talentSubtext = self:GetSubtext();
 		if talentSubtext and (talentSubtext ~= "") then
@@ -281,6 +328,10 @@ function TalentDisplayMixin:SetSearchMatchType(matchType)
 	self:UpdateSearchIcon();
 end
 
+function TalentDisplayMixin:GetSearchMatchType()
+	return self.matchType;
+end
+
 function TalentDisplayMixin:SetGlowing(shouldGlow)
 	self.shouldGlow = shouldGlow;
 	self:UpdateGlow();
@@ -295,8 +346,16 @@ function TalentDisplayMixin:IsInspecting()
 end
 
 function TalentDisplayMixin:UpdateMouseOverInfo()
-	if GetMouseFocus() == self then
-		self:OnEnter();
+	if self:IsMouseMotionFocus() then
+		-- Multiple update steps can end up calling UpdateMouseOverInfo in the same frame, so ensure we only actually do it once at the end of all those updates
+		if not self.updateMouseInfoTimer then
+			self.updateMouseInfoTimer = C_Timer.NewTimer(0, function()
+				self.updateMouseInfoTimer = nil;
+				if self:IsMouseMotionFocus() then
+					self:OnEnter();
+				end
+			end)
+		end
 	end
 end
 
@@ -311,7 +370,7 @@ function TalentDisplayMixin:CalculateVisualState()
 end
 
 function TalentDisplayMixin:ShouldShowSubText()
-	return self.definitionInfo and self.definitionInfo.subType and SubTypeToColor[self.definitionInfo.subType];
+	return (self.definitionInfo and self.definitionInfo.subType and SubTypeToColor[self.definitionInfo.subType]) or (self.entrySubTreeInfo and self.entrySubTreeInfo.description and self.entrySubTreeInfo ~= "");
 end
 
 function TalentDisplayMixin:AddTooltipCost(tooltip)
@@ -371,9 +430,8 @@ end
 
 function TalentButtonBaseMixin:OnDragStart()
 	local spellID = self:GetSpellID();
-	if spellID then
-		local checkForPassive = true;
-		PickupSpell(spellID, checkForPassive);
+	if spellID and not C_Spell.IsSpellPassive(spellID) then
+		C_Spell.PickupSpell(spellID);
 	end
 end
 
@@ -392,7 +450,7 @@ function TalentButtonBaseMixin:UpdateEntryInfo(skipUpdate)
 		end
 	end
 
-	self:SetDefinitionID(hasEntryID and self.entryInfo.definitionID or nil, skipUpdate);
+	self:UpdateEntryContentIDs(skipUpdate);
 end
 
 function TalentButtonBaseMixin:SetNodeID(nodeID, skipUpdate)
@@ -425,6 +483,16 @@ end
 
 function TalentButtonBaseMixin:GetNodeInfo()
 	return self.nodeInfo;
+end
+
+-- Returns the SubTree this node belongs to (note this is NOT the same as GetEntrySubTreeID, which is only used by SubTreeSelection nodes)
+function TalentButtonBaseMixin:GetNodeSubTreeID()
+	return self.nodeInfo and self.nodeInfo.subTreeID;
+end
+
+-- True if this Node is part of a SubTree (note this is NOT the same as being a SubTreeSelection node)
+function TalentButtonBaseMixin:IsSubTreeNode()
+	return self:GetNodeSubTreeID() ~= nil;
 end
 
 function TalentButtonBaseMixin:OnTalentReset()
@@ -488,13 +556,14 @@ end
 function TalentButtonBaseMixin:UpdateVisualState()
 	TalentDisplayMixin.UpdateVisualState(self);
 
-	-- TODO:: Revisit the implementation of invisible buttons.
 	local visualState = self:GetVisualState();
-	if visualState == TalentButtonUtil.BaseVisualState.Invisible then
-		self:SetFrameLevel(self:GetParent():GetFrameLevel() + 1);
-	else
-		self:SetFrameLevel(self:GetParent():GetFrameLevel() + 2);
-	end
+
+	-- Offset invisible nodes behind visible ones so that they don't intercept mouse input.
+	-- Using a jump of 2 rather than 1 JUST IN CASE to avoid any floating point off-by-one shenanigans.
+	-- Since Talent Frames have their own logic for determining base button frame levels,
+	-- update it through our frame rather than overriding it ourselves directly and potentially conflicting.
+	self.frameLevelOffset = visualState == TalentButtonUtil.BaseVisualState.Invisible and 0 or 2;
+	self:GetTalentFrame():UpdateButtonFrameLevel(self);
 end
 
 function TalentButtonBaseMixin:CalculateVisualState()
@@ -559,8 +628,13 @@ function TalentButtonBaseMixin:AddTooltipErrors(tooltip)
 	end
 end
 
+function TalentButtonBaseMixin:IsInDeactivatedSubTree()
+	-- If a node is in a SubTree and subTreeActive isn't true, it's in a deactivated tree
+	return self.nodeInfo and self.nodeInfo.subTreeID and not self.nodeInfo.subTreeActive;
+end
+
 function TalentButtonBaseMixin:ShouldBeVisible()
-	return (self.nodeInfo ~= nil) and self.nodeInfo.isVisible;
+	return (self.nodeInfo ~= nil) and self.nodeInfo.isVisible and not self:IsInDeactivatedSubTree();
 end
 
 function TalentButtonBaseMixin:IsVisibleAndSelectable()
@@ -854,29 +928,25 @@ function TalentButtonArtMixin:OnLoad()
 			shadow:SetFontObject(self.artSet.spendFont);
 		end
 	end
-
-	if self.SearchIcon then
-		self.SearchIcon.Mouseover:SetScript("OnEnter", GenerateClosure(self.OnSearchIconEnter, self));
-	end
 end
 
 function TalentButtonArtMixin:ApplyVisualState(visualState)
 	local color = TalentButtonUtil.GetColorForBaseVisualState(visualState);
 	local r, g, b = color:GetRGB();
-	self.SpendText:SetTextColor(r, g, b);
+	MixinUtil.CallMethodSafe(self.SpendText, "SetTextColor", r, g, b);
 
 	local isRefundInvalid = (visualState == TalentButtonUtil.BaseVisualState.RefundInvalid);
 	local disabledColor = isRefundInvalid and DIM_RED_FONT_COLOR or WHITE_FONT_COLOR;
 	self.Icon:SetVertexColor(disabledColor:GetRGBA());
 
 	local isGated = (visualState == TalentButtonUtil.BaseVisualState.Gated);
-	self.DisabledOverlay:SetAlpha((isGated and 0.7) or (isRefundInvalid and RefundInvalidOverlayAlpha) or 0.25);
+	MixinUtil.CallMethodSafe(self.DisabledOverlay, "SetAlpha", (isGated and 0.7) or (isRefundInvalid and RefundInvalidOverlayAlpha) or 0.25)
 
 	local isLocked = (visualState == TalentButtonUtil.BaseVisualState.Locked);
 	local isDisabled = (visualState == TalentButtonUtil.BaseVisualState.Disabled);
 	local isDimmed = isGated or isLocked or isDisabled;
 	self.Icon:SetDesaturated(not isRefundInvalid and isDimmed);
-	self.DisabledOverlay:SetShown(isRefundInvalid or isDimmed);
+	MixinUtil.CallMethodSafe(self.DisabledOverlay, "SetShown", isRefundInvalid or isDimmed);
 
 	if self.SelectableIcon then
 		local isSelectable = (visualState == TalentButtonUtil.BaseVisualState.Selectable);
@@ -968,44 +1038,14 @@ function TalentButtonArtMixin:GetChoiceEdgeDiameterOffset(angle)
 	return Lerp(TalentButtonUtil.ChoiceEdgeMinDiameterOffset, TalentButtonUtil.ChoiceEdgeMaxDiameterOffset, progress);
 end
 
-function TalentButtonArtMixin:DisableSearchIconMouseover()
-	if self.SearchIcon then
-		self.SearchIcon.Mouseover:Hide();
-	end
-end
-
-function TalentButtonArtMixin:EnableSearchIconMouseover()
-	if self.SearchIcon then
-		self.SearchIcon.Mouseover:Show();
-	end
-end
-
-function TalentButtonArtMixin:OnSearchIconEnter()
-	if self.searchIconTooltipText then
-		GameTooltip:SetOwner(self.SearchIcon.Mouseover, "ANCHOR_RIGHT", 0, 0);
-		if self.tooltipBackdropStyle then
-			SharedTooltip_SetBackdropStyle(GameTooltip, self.tooltipBackdropStyle);
-		end
-		GameTooltip_AddNormalLine(GameTooltip, self.searchIconTooltipText);
-		GameTooltip:Show();
-	end
-end
-
 function TalentButtonArtMixin:UpdateSearchIcon()
 	if not self.SearchIcon then
 		return;
 	end
 
-	if not self.matchType then
-		self.searchIconTooltipText = nil;
-		self.SearchIcon:SetShown(false);
-	else
+	self.SearchIcon:SetMatchType(self.matchType);
+	if self.matchType then
 		self.SearchIcon:SetFrameLevel(self:GetFrameLevel() + 50);
-		self.SearchIcon:SetShown(true);
-		local matchStyle = TalentButtonUtil.GetStyleForSearchMatchType(self.matchType);
-		self.SearchIcon.Icon:SetAtlas(matchStyle.icon);
-		self.SearchIcon.OverlayIcon:SetAtlas(matchStyle.icon);
-		self.searchIconTooltipText = matchStyle.tooltipText;
 	end
 end
 
@@ -1058,10 +1098,14 @@ function TalentButtonArtMixin:InternalPlayAnimEffects(animEffectControllers, fxM
 		animEffectControllers = nil;
 	end
 
-	if (fxIDs) then
+	if fxIDs and self:ShouldBeVisible() then
+		-- If no custom multiplier specified, fall back on the difference between the node and scene's scale,
+		-- so if node is in a differently scaled parent the effects will visually scale accordingly
+		local scaleMultiplier = self.animEffectScaleMultiplier or (self:GetEffectiveScale() / fxModelScene:GetEffectiveScale());
+
 		animEffectControllers = {};
 		for _, fxID in ipairs(fxIDs) do
-			table.insert(animEffectControllers, fxModelScene:AddEffect(fxID, self, self, nil, nil, self.animEffectScaleMultiplier));
+			table.insert(animEffectControllers, fxModelScene:AddEffect(fxID, self, self, nil, nil, scaleMultiplier));
 		end
 	end
 
@@ -1091,12 +1135,12 @@ function TalentButtonSplitIconMixin:ApplyVisualState(visualState)
 	TalentButtonArtMixin.ApplyVisualState(self, visualState);
 
 	local desaturation = self.Icon:GetDesaturation();
-	self.Icon2:SetDesaturation(desaturation);
+	MixinUtil.CallMethodSafe(self.Icon2, "SetDesaturation", desaturation);
 end
 
 function TalentButtonSplitIconMixin:SetSplitIconShown(isSplitShown)
-	self.IconSplitMask:SetShown(isSplitShown);
-	self.Icon2:SetShown(isSplitShown);
+	MixinUtil.CallMethodSafe(self.IconSplitMask, "SetShown", isSplitShown);
+	MixinUtil.CallMethodSafe(self.Icon2, "SetShown", isSplitShown);
 end
 
 
@@ -1109,7 +1153,7 @@ function TalentButtonSpendMixin:OnClick(button)
 		if IsShiftKeyDown() and self:CanCascadeRepurchaseRanks() then
 			self:CascadeRepurchaseRanks();
 		elseif IsModifiedClick("CHATLINK") then
-			local spellLink = GetSpellLink(self:GetSpellID());
+			local spellLink = C_Spell.GetSpellLink(self:GetSpellID());
 			ChatEdit_InsertLink(spellLink);
 		elseif self:CanPurchaseRank() then
 			self:PurchaseRank();
@@ -1130,12 +1174,12 @@ function TalentButtonSpendMixin:Init(...)
 end
 
 function TalentButtonSpendMixin:CanPurchaseRank()
-	return self.nodeInfo and not self:IsLocked() and self.nodeInfo.canPurchaseRank and self:CanAfford();
+	return self.nodeInfo and not self:IsInspecting() and not self:IsLocked() and self.nodeInfo.canPurchaseRank and self:CanAfford();
 end
 
 function TalentButtonSpendMixin:CanRefundRank()
 	-- We shouldn't be checking ranksPurchased directly.
-	return self.nodeInfo and not self:GetTalentFrame():IsLocked() and self.nodeInfo.canRefundRank and self.nodeInfo.ranksPurchased and (self.nodeInfo.ranksPurchased > 0);
+	return self.nodeInfo and not self:IsInspecting() and not self:GetTalentFrame():IsLocked() and self.nodeInfo.canRefundRank and self.nodeInfo.ranksPurchased and (self.nodeInfo.ranksPurchased > 0);
 end
 
 function TalentButtonSpendMixin:PurchaseRank()
@@ -1235,7 +1279,7 @@ local TimeToHideSeconds = 0;
 local TimeToShowSelections = 0;
 function TalentButtonSelectMixin:OnUpdate(dt)
 	local talentFrame = self:GetTalentFrame();
-	if not talentFrame:IsMouseOverSelections() and (GetMouseFocus() ~= self) then
+	if not talentFrame:IsMouseOverSelections() and (not self:IsMouseMotionFocus()) then
 		self.timeSinceMouseOver = self.timeSinceMouseOver + dt;
 		if self.timeSinceMouseOver > TimeToHideSeconds then
 			self:ClearSelections();
@@ -1276,7 +1320,7 @@ function TalentButtonSelectMixin:OnClick(button)
 		elseif IsModifiedClick("CHATLINK") then
 			local spellID = self:GetSpellID();
 			if spellID then
-				local spellLink = GetSpellLink(spellID);
+				local spellLink = C_Spell.GetSpellLink(spellID);
 				ChatEdit_InsertLink(spellLink);
 			end
 		end
@@ -1298,14 +1342,14 @@ end
 function TalentButtonSelectMixin:ShowSelections()
 	self:GetTalentFrame():ShowSelections(self, self.talentSelections, self:CanSelectChoice(), self:GetSelectedEntryID(), self:GetTraitCurrenciesCost());
 	-- Prevent SearchIcon from potentially interrupting selection mouseover
-	self:DisableSearchIconMouseover();
+	self.SearchIcon:SetMouseoverEnabled(false);
 end
 
 function TalentButtonSelectMixin:ClearSelections()
 	self:GetTalentFrame():HideSelections(self);
 	self.timeSinceMouseOver = nil;
 	self:SetScript("OnUpdate", nil);
-	self:EnableSearchIconMouseover();
+	self.SearchIcon:SetMouseoverEnabled(true);
 end
 
 function TalentButtonSelectMixin:AddTooltipTitle(tooltip)
@@ -1345,6 +1389,10 @@ function TalentButtonSelectMixin:UpdateNodeInfo(skipUpdate)
 end
 
 function TalentButtonSelectMixin:CanSelectChoice()
+	if self:IsInspecting() then
+		return false;
+	end
+
 	if self:IsRefundInvalid() then
 		return false;
 	end
@@ -1392,40 +1440,42 @@ end
 function TalentButtonSelectMixin:GetName()
 	-- Overrides TalentButtonBaseMixin.
 
-	local definitionInfo = self:GetSelectedDefinitionInfo();
-	if definitionInfo == nil then
-		return "";
+	local subTreeInfo = self:GetSelectedSubTreeInfo();
+	if subTreeInfo and subTreeInfo.name then
+		return subTreeInfo.name;
 	end
 
-	return TalentUtil.GetTalentName(definitionInfo.overrideName, self:GetSpellID());
+	local definitionInfo = self:GetSelectedDefinitionInfo();
+	if definitionInfo then
+		return TalentUtil.GetTalentName(definitionInfo.overrideName, self:GetSpellID());
+	end
+
+	return "";
 end
 
 function TalentButtonSelectMixin:GetSubtext()
 	-- Overrides TalentButtonBaseMixin.
 
-	local definitionInfo = self:GetSelectedDefinitionInfo();
-	if definitionInfo == nil then
-		return nil;
+	local subTreeInfo = self:GetSelectedSubTreeInfo();
+	if subTreeInfo and subTreeInfo.description then
+		return subTreeInfo.description;
 	end
 
-	return TalentUtil.GetTalentSubtext(definitionInfo.overrideSubtext, self:GetSpellID());
+	local definitionInfo = self:GetSelectedDefinitionInfo();
+
+	return definitionInfo and TalentUtil.GetTalentSubtext(definitionInfo.overrideSubtext, self:GetSpellID()) or nil;
 end
 
 function TalentButtonSelectMixin:GetDescription()
 	-- Overrides TalentButtonBaseMixin.
 
 	local definitionInfo = self:GetSelectedDefinitionInfo();
-	if definitionInfo == nil then
-		return "";
-	end
-
-	return TalentUtil.GetTalentDescription(definitionInfo.overrideDescription, self:GetSpellID());
+	return definitionInfo and TalentUtil.GetTalentDescription(definitionInfo.overrideDescription, self:GetSpellID()) or "";
 end
 
 function TalentButtonSelectMixin:CalculateIconTexture()
 	-- Overrides TalentButtonBaseMixin.
-
-	return TalentButtonUtil.CalculateIconTexture(self:GetSelectedDefinitionInfo(), self:GetSpellID());
+	return TalentButtonUtil.CalculateIconTextureFromInfo(self:GetSelectedDefinitionInfo(), self:GetSelectedSubTreeInfo());
 end
 
 function TalentButtonSelectMixin:UpdateIconTexture()
@@ -1443,12 +1493,16 @@ function TalentButtonSelectMixin:GetSelectedDefinitionInfo()
 	return self.selectedDefinitionInfo;
 end
 
-function TalentButtonSelectMixin:SetSelectedEntryID(selectedEntryID, selectedDefinitionInfo)
+function TalentButtonSelectMixin:GetSelectedSubTreeInfo()
+	return self.selectedSubTreeInfo;
+end
+
+function TalentButtonSelectMixin:SetSelectedEntryID(selectedEntryID)
 	local oldSelection = self.selectedEntryID;
 
 	if not self:GetTalentFrame():ShouldShowConfirmation() then
 		local isUserInput = true;
-		if not self:UpdateSelectedEntryID(selectedEntryID, isUserInput, selectedDefinitionInfo) then
+		if not self:UpdateSelectedEntryID(selectedEntryID, isUserInput) then
 			return;
 		end
 	end
@@ -1459,7 +1513,7 @@ function TalentButtonSelectMixin:SetSelectedEntryID(selectedEntryID, selectedDef
 	end
 end
 
-function TalentButtonSelectMixin:UpdateSelectedEntryID(selectedEntryID, isUserInput, selectedDefinitionInfo)
+function TalentButtonSelectMixin:UpdateSelectedEntryID(selectedEntryID, isUserInput)
 	if self.selectedEntryID == selectedEntryID then
 		return false;
 	end
@@ -1474,12 +1528,14 @@ function TalentButtonSelectMixin:UpdateSelectedEntryID(selectedEntryID, isUserIn
 
 	self.selectedEntryID = selectedEntryID;
 
-	if (selectedDefinitionInfo == nil) and (self.selectedEntryID ~= nil) then
+	if self.selectedEntryID ~= nil then
 		local talentFrame = self:GetTalentFrame();
-		local definitionID = talentFrame:GetAndCacheEntryInfo(selectedEntryID).definitionID;
-		self.selectedDefinitionInfo = talentFrame:GetAndCacheDefinitionInfo(definitionID);
+		local selectedEntryInfo = talentFrame:GetAndCacheEntryInfo(selectedEntryID);
+		self.selectedDefinitionInfo = selectedEntryInfo.definitionID and talentFrame:GetAndCacheDefinitionInfo(selectedEntryInfo.definitionID) or nil;
+		self.selectedSubTreeInfo = selectedEntryInfo.subTreeID and talentFrame:GetAndCacheSubTreeInfo(selectedEntryInfo.subTreeID) or nil;
 	else
-		self.selectedDefinitionInfo = (self.selectedEntryID ~= nil) and selectedDefinitionInfo or nil;
+		self.selectedDefinitionInfo = nil;
+		self.selectedSubTreeInfo = nil;
 	end
 
 	self:FullUpdate();
@@ -1515,17 +1571,77 @@ function TalentButtonSplitSelectMixin:UpdateIconTexture()
 	if self:HasSelectedEntryID() then
 		TalentButtonSelectMixin.UpdateIconTexture(self);
 	elseif self.talentSelections and (#self.talentSelections > 1) then
+		local talentFrame = self:GetTalentFrame();
+
 		local firstEntryID = self.talentSelections[1];
-		local firstEntryInfo = self:GetTalentFrame():GetAndCacheEntryInfo(firstEntryID);
-		local firstDefinitionInfo = self:GetTalentFrame():GetAndCacheDefinitionInfo(firstEntryInfo.definitionID);
-		self.Icon:SetTexture(TalentButtonUtil.CalculateIconTexture(firstDefinitionInfo));
+		local firstEntryInfo = talentFrame:GetAndCacheEntryInfo(firstEntryID);
+		local firstDefinitionInfo = firstEntryInfo.definitionID and talentFrame:GetAndCacheDefinitionInfo(firstEntryInfo.definitionID) or nil;
+		local firstSubTreeInfo = firstEntryInfo.subTreeID and talentFrame:GetAndCacheSubTreeInfo(firstEntryInfo.subTreeID) or nil;
+
+		-- By default, any use of SubTreeSelection nodes without a bespoke override will treat them like regular Selection nodes
+		-- So we need to handle getting an icon from either an entry's subTree icon OR its definition texture
+		local firstIcon, firstIconIsAtlas = TalentButtonUtil.CalculateIconTextureFromInfo(firstDefinitionInfo, firstSubTreeInfo);
+		if firstIconIsAtlas then
+			self.Icon:SetAtlas(firstIcon);
+		else
+			self.Icon:SetTexture(firstIcon);
+		end
 
 		local secondEntryID = self.talentSelections[2];
 		self:SetSplitIconShown(secondEntryID ~= nil);
 		if secondEntryID then
-			local secondEntryInfo = self:GetTalentFrame():GetAndCacheEntryInfo(secondEntryID);
-			local secondDefinitionInfo = self:GetTalentFrame():GetAndCacheDefinitionInfo(secondEntryInfo.definitionID);
-			self.Icon2:SetTexture(TalentButtonUtil.CalculateIconTexture(secondDefinitionInfo));
+			local secondEntryInfo = talentFrame:GetAndCacheEntryInfo(secondEntryID);
+			local secondDefinitionInfo = secondEntryInfo.definitionID and talentFrame:GetAndCacheDefinitionInfo(secondEntryInfo.definitionID) or nil;
+			local secondSubTreeInfo = secondEntryInfo.subTreeID and talentFrame:GetAndCacheSubTreeInfo(secondEntryInfo.subTreeID) or nil;
+
+			local secondIcon, secondIconIsAtlas = TalentButtonUtil.CalculateIconTextureFromInfo(secondDefinitionInfo, secondSubTreeInfo);
+			if secondIconIsAtlas then
+				self.Icon2:SetAtlas(secondIcon);
+			else
+				self.Icon2:SetTexture(secondIcon);
+			end
 		end
 	end
+end
+
+
+TalentButtonSearchIconMixin = {};
+
+function TalentButtonSearchIconMixin:OnLoad()
+	self.Mouseover:SetScript("OnEnter", GenerateClosure(self.OnEnter, self));
+	self.Mouseover:SetScript("OnLeave", GenerateClosure(self.OnLeave, self));
+	self.Mouseover:SetSize(self.mouseoverSize, self.mouseoverSize);
+end
+
+function TalentButtonSearchIconMixin:SetMatchType(matchType)
+	self.matchType = matchType;
+	if not self.matchType then
+		self.tooltipText = nil;
+		self:Hide();
+	else
+		self:Show();
+		local matchStyle = TalentButtonUtil.GetStyleForSearchMatchType(self.matchType);
+		self.Icon:SetAtlas(matchStyle.icon);
+		self.OverlayIcon:SetAtlas(matchStyle.icon);
+		self.tooltipText = matchStyle.tooltipText;
+	end
+end
+
+function TalentButtonSearchIconMixin:SetMouseoverEnabled(mouseoverEnabled)
+	self.Mouseover:SetShown(mouseoverEnabled);
+end
+
+function TalentButtonSearchIconMixin:OnEnter()
+	if self.tooltipText then
+		GameTooltip:SetOwner(self.Mouseover, "ANCHOR_RIGHT", 0, 0);
+		if self.tooltipBackdropStyle then
+			SharedTooltip_SetBackdropStyle(GameTooltip, self.tooltipBackdropStyle);
+		end
+		GameTooltip_AddNormalLine(GameTooltip, self.tooltipText);
+		GameTooltip:Show();
+	end
+end
+
+function TalentButtonSearchIconMixin:OnLeave()
+	GameTooltip_Hide();
 end

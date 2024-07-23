@@ -15,8 +15,8 @@ function RenownRewardUtil.GetRenownRewardDisplayData(rewardInfo, onItemUpdateCal
 		local name, spellID, icon = C_MountJournal.GetMountInfoByID(rewardInfo.mountID);
 		return icon, name, RENOWN_REWARD_MOUNT_NAME_FORMAT, RENOWN_REWARD_MOUNT_DESCRIPTION;
 	elseif rewardInfo.spellID then
-		local name, _, icon = GetSpellInfo(rewardInfo.spellID);
-		return icon, name, RENOWN_REWARD_SPELL_NAME_FORMAT, RENOWN_REWARD_SPELL_DESCRIPTION;
+		local spellInfo = C_Spell.GetSpellInfo(rewardInfo.spellID);
+		return spellInfo.iconID, spellInfo.name, RENOWN_REWARD_SPELL_NAME_FORMAT, RENOWN_REWARD_SPELL_DESCRIPTION;
 	elseif rewardInfo.titleMaskID then
 		local name = TitleUtil.GetNameFromTitleMaskID(rewardInfo.titleMaskID);
 		return nil, name, RENOWN_REWARD_TITLE_NAME_FORMAT, RENOWN_REWARD_TITLE_DESCRIPTION;

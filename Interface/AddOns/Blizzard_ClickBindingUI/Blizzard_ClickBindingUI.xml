@@ -218,15 +218,15 @@
 					</Layer>
 				</Layers>
 			</CheckButton>
-			<Frame parentKey="MouseoverCastKeyDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true" mixin="ClickableBindingsMouseoverCastKeyDropDownMixin">
+			<DropdownButton parentKey="MouseoverCastKeyDropdown" inherits="WowStyle1DropdownTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.EnableMouseoverCastCheckbox" relativePoint="BOTTOMLEFT" x="-12" y="-15"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.EnableMouseoverCastCheckbox" relativePoint="BOTTOMLEFT" x="4" y="-15"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<FontString parentKey="Label" inherits="GameFontNormal" text="MOUSEOVER_CAST_KEY">
 							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="19" y="3"/>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="3" y="3"/>
 							</Anchors>
 						</FontString>
 				  	</Layer>
@@ -236,23 +236,24 @@
 					<OnEnter method="OnEnter"/>
 					<OnLeave method="OnLeave"/>
 				</Scripts>
-			</Frame>
+			</DropdownButton>
+			<Button parentKey="PlayerSpellsPortrait" inherits="ClickBindingFramePortraitTemplate">
+				<KeyValues>
+					<KeyValue key="FrameName" value="PlayerSpellsFrame" type="string"/>
+					<KeyValue key="PortraitAtlas" value="UI-HUD-MicroMenu-SpecTalents-Up" type="string"/>
+					<KeyValue key="FrameLoadFunc" value="PlayerSpellsFrame_LoadUI" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-40" y="-40"/>
+				</Anchors>
+			</Button>
 			<Button parentKey="MacrosPortrait" inherits="ClickBindingFramePortraitTemplate">
 				<KeyValues>
 					<KeyValue key="FrameName" value="MacroFrame" type="string"/>
 					<KeyValue key="PortraitTexture" value="Interface\MacroFrame\MacroFrame-Icon" type="string"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-40" y="-40"/>
-				</Anchors>
-			</Button>
-			<Button parentKey="SpellbookPortrait" inherits="ClickBindingFramePortraitTemplate">
-				<KeyValues>
-					<KeyValue key="FrameName" value="SpellBookFrame" type="string"/>
-					<KeyValue key="PortraitTexture" value="Interface\Spellbook\Spellbook-Icon" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.MacrosPortrait" relativePoint="LEFT" x="-5" y="0"/>
+					<Anchor point="RIGHT" relativeKey="$parent.PlayerSpellsPortrait" relativePoint="LEFT" x="-5" y="0"/>
 				</Anchors>
 			</Button>
 			<Frame parentKey="TutorialFrame" inherits="PortraitFrameTemplate" enableMouse="true" frameStrata="DIALOG" mixin="ClickBindingTutorialMixin" hidden="true">

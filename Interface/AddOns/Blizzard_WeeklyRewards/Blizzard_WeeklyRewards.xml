@@ -88,7 +88,7 @@
 		<Layers>
 			<Layer level="BORDER">
 				<Texture parentKey="Border"/>
-				<Texture parentKey="Orb">
+				<Texture parentKey="Orb" atlas="weeklyrewards-orb-locked" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT"/>
 					</Anchors>
@@ -410,7 +410,12 @@
 					<Anchor point="TOPLEFT" x="56" y="-307"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="PVPFrame" inherits="WeeklyRewardActivityTypeTemplate">
+			<Frame parentKey="PVPFrame" inherits="WeeklyRewardActivityTypeTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="56" y="-462"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="WorldFrame" inherits="WeeklyRewardActivityTypeTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="56" y="-462"/>
 				</Anchors>
@@ -556,9 +561,9 @@
 					</Anchors>
 				</Texture>
 				<FontString parentKey="Description" inherits="GameFontHighlightSmall" justifyH="LEFT" justifyV="MIDDLE">
-					<Size x="400" y="55"/>
+					<Size y="55"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.WarningIcon" relativePoint="RIGHT" x="5" y="0"/>
+						<Anchor point="LEFT" relativeKey="$parent.WarningIcon" relativePoint="RIGHT" x="5" y="3"/>
 					</Anchors>
 				</FontString>
 			</Layer>

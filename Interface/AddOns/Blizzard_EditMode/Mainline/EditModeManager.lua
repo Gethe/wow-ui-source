@@ -4,6 +4,12 @@ EditModeManagerOptionsCategory = {
 	Misc = 3
 };
 
+local disableOnMaxLayouts = true;
+local disableOnActiveChanges = false;
+local maxLayoutsErrorText = HUD_EDIT_MODE_ERROR_MAX_LAYOUTS:format(Constants.EditModeConsts.EditModeMaxLayoutsPerType, Constants.EditModeConsts.EditModeMaxLayoutsPerType);
+local maxLayoutsCopyErrorText = HUD_EDIT_MODE_ERROR_COPY_MAX_LAYOUTS:format(Constants.EditModeConsts.EditModeMaxLayoutsPerType, Constants.EditModeConsts.EditModeMaxLayoutsPerType);
+local characterLayoutHeaderText = GetClassColoredTextForUnit("player", HUD_EDIT_MODE_CHARACTER_LAYOUTS_HEADER:format(UnitNameUnmodified("player")));
+
 EditModeManagerFrameMixin = {};
 
 function EditModeManagerFrameMixin:OnLoad()
@@ -11,122 +17,11 @@ function EditModeManagerFrameMixin:OnLoad()
 	self.modernSystemMap = EditModePresetLayoutManager:GetModernSystemMap();
 	self.modernSystems = EditModePresetLayoutManager:GetModernSystems();
 
-	self.LayoutDropdown:AddTopLabel(HUD_EDIT_MODE_LAYOUT);
-	self.LayoutDropdown:SetTextJustifyH("LEFT");
+	self.LayoutDropdown:SetWidth(220);
 
-	self.buttonEntryPool = CreateFramePool("FRAME", self, "EditModeDropdownEntryTemplate");
-	self.layoutEntryPool = CreateFramePool("FRAME", self, "EditModeDropdownLayoutEntryTemplate");
-
-	local function clearLockedLayoutButton()
-		self:ClearLockedLayoutButton();
-	end
-
-	self.LayoutDropdown.DropDownMenu.onHide = clearLockedLayoutButton;
-
-	local function createNewLayout()
-		self:ShowNewLayoutDialog();
-	end
-
-	local function importLayout()
-		self:ShowImportLayoutDialog();
-	end
-
-	local function shareLayout(layoutButton)
-		self:ToggleShareDropdown(layoutButton);
-	end
-
-	local function copyToClipboard()
-		self:CopyActiveLayoutToClipboard();
-	end
-
-	--[[
-	local function postInChat()
-		self:LinkActiveLayoutToChat();
-	end
-	]]--
-
-	local function copyLayout()
-		self:ShowNewLayoutDialog(self.lockedLayoutButton.layoutData);
-	end
-
-	local function renameLayout()
-		self:ShowRenameLayoutDialog(self.lockedLayoutButton);
-	end
-
-	local function selectLayout(layoutButton)
-		UIDropDownMenuButton_OnClick(layoutButton.owningButton);
-	end
-
-	local newLayoutButtonText = HUD_EDIT_MODE_NEW_LAYOUT:format(CreateAtlasMarkup("editmode-new-layout-plus"));
-	local newLayoutButtonTextDisabled = HUD_EDIT_MODE_NEW_LAYOUT_DISABLED:format(CreateAtlasMarkup("editmode-new-layout-plus-disabled"));
-	local dropdownButtonWidth = 210;
-	local shareDropdownButtonMaxTextWidth = 190;
-	local copyRenameSubDropdownButtonWidth = 150;
-	local subMenuButton = true;
-	local disableOnMaxLayouts = true;
-	local disableOnMaxLayoutsNo = false;
-	local disableOnActiveChanges = true;
-	local disableOnActiveChangesNo = false;
-
-	local function layoutEntryCustomSetup(dropDownButtonInfo, standardFunc)
-		if dropDownButtonInfo.value == "newLayout" then
-			local newButton = self.buttonEntryPool:Acquire();
-			newButton:Init(newLayoutButtonText, createNewLayout, disableOnMaxLayouts, disableOnActiveChangesNo, dropdownButtonWidth, nil, nil, nil, newLayoutButtonTextDisabled);
-			dropDownButtonInfo.customFrame = newButton;
-		elseif dropDownButtonInfo.value == "import" then
-			local newButton = self.buttonEntryPool:Acquire();
-			newButton:Init(HUD_EDIT_MODE_IMPORT_LAYOUT, importLayout, disableOnMaxLayouts, disableOnActiveChanges, dropdownButtonWidth);
-			dropDownButtonInfo.customFrame = newButton;
-		elseif dropDownButtonInfo.value == "share" then
-			local newButton = self.buttonEntryPool:Acquire();
-			local showArrow = true;
-			newButton:Init(HUD_EDIT_MODE_SHARE_LAYOUT, shareLayout, disableOnMaxLayoutsNo, disableOnActiveChangesNo, dropdownButtonWidth, shareDropdownButtonMaxTextWidth, showArrow);
-			dropDownButtonInfo.customFrame = newButton;
-		elseif dropDownButtonInfo.value == "copyToClipboard" then
-			local newButton = self.buttonEntryPool:Acquire();
-			newButton:Init(HUD_EDIT_MODE_COPY_TO_CLIPBOARD, copyToClipboard, disableOnMaxLayoutsNo, disableOnActiveChangesNo, nil, nil, nil, subMenuButton);
-			dropDownButtonInfo.customFrame = newButton;
-		--[[elseif dropDownButtonInfo.value == "postInChat" then
-			local newButton = self.buttonEntryPool:Acquire();
-			newButton:Init(HUD_EDIT_MODE_POST_IN_CHAT, postInChat, disableOnMaxLayoutsNo, disableOnActiveChangesNo, nil, nil, nil, subMenuButton);
-			dropDownButtonInfo.customFrame = newButton;]]--
-		elseif dropDownButtonInfo.value == "copyLayout" then
-			local newButton = self.buttonEntryPool:Acquire();
-			newButton:Init(HUD_EDIT_MODE_COPY_LAYOUT, copyLayout, disableOnMaxLayouts, disableOnActiveChangesNo, copyRenameSubDropdownButtonWidth, nil, nil, subMenuButton);
-			dropDownButtonInfo.customFrame = newButton;
-		elseif dropDownButtonInfo.value == "renameLayout" then
-			local newButton = self.buttonEntryPool:Acquire();
-			newButton:Init(HUD_EDIT_MODE_RENAME_LAYOUT, renameLayout, disableOnMaxLayoutsNo, disableOnActiveChangesNo, copyRenameSubDropdownButtonWidth, nil, nil, subMenuButton);
-			dropDownButtonInfo.customFrame = newButton;
-		elseif dropDownButtonInfo.value == "header" then
-			dropDownButtonInfo.isTitle = true;
-			dropDownButtonInfo.notCheckable = true;
-		else
-			local newButton = self.layoutEntryPool:Acquire();
-			newButton:Init(dropDownButtonInfo.value, dropDownButtonInfo.data, self.layoutInfo.activeLayout == dropDownButtonInfo.value, selectLayout);
-			dropDownButtonInfo.customFrame = newButton;
-		end
-	end
-
-	self.LayoutDropdown:SetCustomSetup(layoutEntryCustomSetup);
-
-	local function layoutSelectedCallback(value, isUserInput)
-		if isUserInput and not self:IsLayoutSelected(value) then
-			if self:HasActiveChanges() then
-				self:ShowRevertWarningDialog(value);
-			else
-				self:SelectLayout(value);
-			end
-		end
-	end
-
-	local function onCloseCallback()
-		if self:HasActiveChanges() then
-			self:ShowRevertWarningDialog();
-		else
-			HideUIPanel(self);
-		end
-	end
+	self.LayoutLabel:ClearAllPoints();
+	self.LayoutLabel:SetPoint("BOTTOMLEFT", self.LayoutDropdown, "TOPLEFT", 0, 0);
+	self.LayoutLabel:SetText(HUD_EDIT_MODE_LAYOUT);
 
 	local function onShowGridCheckboxChecked(isChecked, isUserInput)
 		self:SetGridShown(isChecked, isUserInput);
@@ -142,10 +37,17 @@ function EditModeManagerFrameMixin:OnLoad()
 		self:SetEnableAdvancedOptions(isChecked, isUserInput);
 	end
 	self.EnableAdvancedOptionsCheckButton:SetCallback(onEnableAdvancedOptionsCheckboxChecked);
+	
+	local function OnCloseCallback()
+		if self:HasActiveChanges() then
+			self:ShowRevertWarningDialog();
+		else
+			HideUIPanel(self);
+		end
+	end
 
-	self.onCloseCallback = onCloseCallback;
+	self.onCloseCallback = OnCloseCallback;
 
-	self.LayoutDropdown:SetOptionSelectedCallback(layoutSelectedCallback);
 	self.SaveChangesButton:SetOnClickHandler(GenerateClosure(self.SaveLayoutChanges, self));
 	self.RevertAllChangesButton:SetOnClickHandler(GenerateClosure(self.RevertAllChanges, self));
 
@@ -491,10 +393,8 @@ function EditModeManagerFrameMixin:GetNumArenaFramesForcedShown()
 		local viewArenaSize = self:GetSettingValue(Enum.EditModeSystem.UnitFrame, Enum.EditModeUnitFrameSystemIndices.Arena, Enum.EditModeUnitFrameSetting.ViewArenaSize);
 		if viewArenaSize == Enum.ViewArenaSize.Two then
 			return 2;
-		elseif viewArenaSize == Enum.ViewArenaSize.Three then
-			return 3;
 		else
-			return 5;
+			return 3;
 		end
 	end
 
@@ -1091,72 +991,191 @@ function EditModeManagerFrameMixin:AreAdvancedOptionsEnabled()
 	return self.advancedOptionsEnabled;
 end
 
-local characterLayoutHeaderText = GetClassColoredTextForUnit("player", HUD_EDIT_MODE_CHARACTER_LAYOUTS_HEADER:format(UnitNameUnmodified("player")));
-
 local function SortLayouts(a, b)
-	if a.data.layoutType ~= b.data.layoutType then
-		return a.data.layoutType > b.data.layoutType;
+	-- Sorts the layouts: character-specific -> account -> preset
+	local layoutTypeA = a.layoutInfo.layoutType;
+	local layoutTypeB = b.layoutInfo.layoutType;
+	if layoutTypeA ~= layoutTypeB then
+		return layoutTypeA > layoutTypeB;
 	end
 
-	return a.value < b.value;
+	return a.index < b.index;
 end
 
-function EditModeManagerFrameMixin:UpdateDropdownOptions()
-	self:ClearLockedLayoutButton();
-	self.buttonEntryPool:ReleaseAll();
-	self.layoutEntryPool:ReleaseAll();
+function EditModeManagerFrameMixin:CreateLayoutTbls()
 	self.highestLayoutIndexByType = {};
 
-	local options = {};
-
+	local layoutTbls = {};
 	local hasCharacterLayouts = false;
 	for index, layoutInfo in ipairs(self.layoutInfo.layouts) do
-		local dropdownText = (layoutInfo.layoutType == Enum.EditModeLayoutType.Preset) and HUD_EDIT_MODE_PRESET_LAYOUT:format(layoutInfo.layoutName) or layoutInfo.layoutName;
+		table.insert(layoutTbls, { index = index, layoutInfo = layoutInfo });
 
-		table.insert(options, { value = index, selectedText = layoutInfo.layoutName, data = layoutInfo });
-
-		if layoutInfo.layoutType == Enum.EditModeLayoutType.Character then
+		local layoutType = layoutInfo.layoutType;
+		if layoutType == Enum.EditModeLayoutType.Character then
 			hasCharacterLayouts = true;
 		end
 
-		if not self.highestLayoutIndexByType[layoutInfo.layoutType] or self.highestLayoutIndexByType[layoutInfo.layoutType] < index then
-			self.highestLayoutIndexByType[layoutInfo.layoutType] = index;
+		if not self.highestLayoutIndexByType[layoutType] or self.highestLayoutIndexByType[layoutType] < index then
+			self.highestLayoutIndexByType[layoutType] = index;
 		end
 	end
 
-	-- Sort the layouts: character-specific -> account -> preset
-	table.sort(options, SortLayouts);
+	table.sort(layoutTbls, SortLayouts);
 
-	-- Insert a divider between each section
-	local lastLayoutType = nil;
-	for index, optionInfo in ipairs(options) do
-		if lastLayoutType and lastLayoutType ~= optionInfo.data.layoutType then
-			table.insert(options, index, { isSeparator = true });
+	return layoutTbls, hasCharacterLayouts;
+end
+
+local function GetNewLayoutText(disabled)
+	if disabled then
+		return HUD_EDIT_MODE_NEW_LAYOUT_DISABLED:format(CreateAtlasMarkup("editmode-new-layout-plus-disabled"));
+	end
+	return HUD_EDIT_MODE_NEW_LAYOUT:format(CreateAtlasMarkup("editmode-new-layout-plus"));
+end
+
+local function GetDisableReason(disableOnMaxLayouts, disableOnActiveChanges)
+	if disableOnMaxLayouts and EditModeManagerFrame:AreLayoutsFullyMaxed() then
+		return maxLayoutsErrorText;
+	elseif disableOnActiveChanges and EditModeManagerFrame:HasActiveChanges() then
+		return HUD_EDIT_MODE_UNSAVED_CHANGES;
+	end
+	return nil;
+end
+
+local function SetPresetEnabledState(elementDescription, disableOnMaxLayouts, disableOnActiveChanges)
+	local reason = GetDisableReason(disableOnMaxLayouts, disableOnActiveChanges);
+	local enabled = reason == nil;
+	elementDescription:SetEnabled(enabled);
+	
+	if not enabled then
+		elementDescription:SetTooltip(function(tooltip, elementDescription)
+			GameTooltip_SetTitle(tooltip, MenuUtil.GetElementText(elementDescription));
+			GameTooltip_AddErrorLine(tooltip, reason);
+		end);
+	end
+end
+
+function EditModeManagerFrameMixin:UpdateDropdownOptions()
+	local function IsSelected(index)
+		return self.layoutInfo.activeLayout == index;
+	end
+
+	local function SetSelected(index)
+		if not self:IsLayoutSelected(index) then
+			if self:HasActiveChanges() then
+				self:ShowRevertWarningDialog(index);
+			else
+				self:SelectLayout(index);
+			end
+		end
+	end
+
+	local layoutTbls, hasCharacterLayouts = self:CreateLayoutTbls();
+
+	self.LayoutDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_EDIT_MODE_MANAGER");
+
+		local lastLayoutType = nil;
+		for _, layoutTbl in ipairs(layoutTbls) do
+			local layoutInfo = layoutTbl.layoutInfo;
+			local index = layoutTbl.index;
+			local layoutType = layoutInfo.layoutType;
+
+			if lastLayoutType and lastLayoutType ~= layoutType then
+				rootDescription:CreateDivider();
+			end
+			lastLayoutType = layoutType;
+
+			local isUserLayout = layoutType == Enum.EditModeLayoutType.Account or layoutType == Enum.EditModeLayoutType.Server;
+			local isPreset = layoutType == Enum.EditModeLayoutType.Preset;
+			local text = isPreset and HUD_EDIT_MODE_PRESET_LAYOUT:format(layoutInfo.layoutName) or layoutInfo.layoutName;
+
+			local radio = rootDescription:CreateRadio(text, IsSelected, SetSelected, index);
+			if isUserLayout then
+				local copyButton = radio:CreateButton(HUD_EDIT_MODE_COPY_LAYOUT, function()
+					self:ShowNewLayoutDialog(layoutInfo);
+				end);
+
+				local layoutsMaxed = EditModeManagerFrame:AreLayoutsFullyMaxed();
+				if layoutsMaxed or hasActiveChanges then
+					copyButton:SetEnabled(false);
+
+					local tooltipText = layoutsMaxed and maxLayoutsCopyErrorText or HUD_EDIT_MODE_ERROR_COPY;
+					elementDescription:SetTooltip(function(tooltip, elementDescription)
+						GameTooltip_SetTitle(tooltip, HUD_EDIT_MODE_COPY_LAYOUT);
+						GameTooltip_AddErrorLine(tooltip, tooltipText);
+					end);
+				end
+
+				radio:CreateButton(HUD_EDIT_MODE_RENAME_LAYOUT, function()
+					self:ShowRenameLayoutDialog(index, layoutInfo);
+				end);
+				
+				radio:DeactivateSubmenu();
+
+				radio:AddInitializer(function(button, description, menu)
+					local gearButton = MenuTemplates.AttachAutoHideGearButton(button);
+					gearButton:SetPoint("RIGHT");
+					gearButton:SetScript("OnClick", function()
+						description:ForceOpenSubmenu();
+					end);
+				
+					MenuUtil.HookTooltipScripts(gearButton, function(tooltip)
+						GameTooltip_SetTitle(tooltip, HUD_EDIT_MODE_RENAME_OR_COPY_LAYOUT);
+					end);
+
+					local cancelButton = MenuTemplates.AttachAutoHideCancelButton(button);
+					cancelButton:SetPoint("RIGHT", gearButton, "LEFT", -3, 0);
+					cancelButton:SetScript("OnClick", function()
+						self:ShowDeleteLayoutDialog(index, layoutInfo);
+						menu:Close();
+					end);
+
+					MenuUtil.HookTooltipScripts(cancelButton, function(tooltip)
+						GameTooltip_SetTitle(tooltip, HUD_EDIT_MODE_DELETE_LAYOUT);
+					end);
+				end);
+			else
+				radio:AddInitializer(function(button, description, menu)
+					local gearButton = MenuTemplates.AttachAutoHideGearButton(button);
+					gearButton:SetPoint("RIGHT");
+					gearButton:SetScript("OnClick", function()
+						self:ShowNewLayoutDialog(layoutInfo);
+						menu:Close();
+					end);
+
+					MenuUtil.HookTooltipScripts(gearButton, function(tooltip)
+						GameTooltip_SetTitle(tooltip, HUD_EDIT_MODE_COPY_LAYOUT);
+					end);
+				end);
+			end
 		end
 
-		lastLayoutType = optionInfo.data.layoutType;
-	end
+		if hasCharacterLayouts then
+			rootDescription:CreateTitle(characterLayoutHeaderText);
+		end
 
-	-- Insert a header before the character-specific layouts if there are any
-	if hasCharacterLayouts then
-		table.insert(options, 1, { value = "header", text = characterLayoutHeaderText });
-	end
+		rootDescription:CreateDivider();
 
-	-- Insert a divider and the New Layout, Import and Share buttons
-	table.insert(options, { isSeparator = true });
-	table.insert(options, { value = "newLayout" });
-	table.insert(options, { value = "import" });
-	table.insert(options, { value = "share" });
+		-- new layout
+		local disabled = GetDisableReason(disableOnMaxLayouts, not disableOnActiveChanges) ~= nil;
+		local text = GetNewLayoutText(disabled);
+		local newLayoutButton = rootDescription:CreateButton(text, function()
+			self:ShowNewLayoutDialog();
+		end);
+		SetPresetEnabledState(newLayoutButton, disableOnMaxLayouts, not disableOnActiveChanges);
+		
+		-- import layout
+		local importLayoutButton = rootDescription:CreateButton(HUD_EDIT_MODE_IMPORT_LAYOUT, function()
+			self:ShowImportLayoutDialog();
+		end);
+		SetPresetEnabledState(importLayoutButton, disableOnMaxLayouts, disableOnActiveChanges);
 
-	-- Add the 2nd-level options (rename and copy)
-	table.insert(options, { value = "copyLayout", text = HUD_EDIT_MODE_COPY_LAYOUT, level = 2 });
-	table.insert(options, { value = "renameLayout", text = HUD_EDIT_MODE_RENAME_LAYOUT, level = 2 });
-
-	-- And the 3rd-level options (copy to clipboard and post in chat)
-	table.insert(options, { value = "copyToClipboard", text = HUD_EDIT_MODE_COPY_TO_CLIPBOARD, level = 3 });
-	--table.insert(options, { value = "postInChat", text = HUD_EDIT_MODE_POST_IN_CHAT, level = 3 });
-
-	self.LayoutDropdown:SetOptions(options, self.layoutInfo.activeLayout);
+		-- share
+		local shareSubmenu = rootDescription:CreateButton(HUD_EDIT_MODE_SHARE_LAYOUT);
+		shareSubmenu:CreateButton(HUD_EDIT_MODE_COPY_TO_CLIPBOARD, function()
+			self:CopyActiveLayoutToClipboard();
+		end);
+	end);
 end
 
 local function initSystemAnchor(index, systemFrame)
@@ -1242,7 +1261,7 @@ function EditModeManagerFrameMixin:IsLayoutSelected(layoutIndex)
 end
 
 function EditModeManagerFrameMixin:ResetDropdownToActiveLayout()
-	self.LayoutDropdown:SetSelectedValue(self.layoutInfo.activeLayout);
+	self:UpdateDropdownOptions();
 end
 
 function EditModeManagerFrameMixin:MakeNewLayout(newLayoutInfo, layoutType, layoutName, isLayoutImported)
@@ -1288,7 +1307,6 @@ function EditModeManagerFrameMixin:RenameLayout(layoutIndex, layoutName)
 end
 
 function EditModeManagerFrameMixin:CopyActiveLayoutToClipboard()
-	CloseDropDownMenus();
 	local activeLayoutInfo = self:GetActiveLayoutInfo();
 	CopyToClipboard(C_EditMode.ConvertLayoutInfoToString(activeLayoutInfo));
 	DEFAULT_CHAT_FRAME:AddMessage(HUD_EDIT_MODE_COPY_TO_CLIPBOARD_NOTICE:format(activeLayoutInfo.layoutName), YELLOW_FONT_COLOR:GetRGB());
@@ -1296,7 +1314,6 @@ end
 
 --[[
 function EditModeManagerFrameMixin:LinkActiveLayoutToChat()
-	CloseDropDownMenus();
 	local hyperlink = C_EditMode.ConvertLayoutInfoToHyperlink(self:GetActiveLayoutInfo());
 	if not ChatEdit_InsertLink(hyperlink) then
 		ChatFrame_OpenChat(hyperlink);
@@ -1349,14 +1366,12 @@ function EditModeManagerFrameMixin:RevertAllChanges()
 	UIParent_ManageFramePositions();
 end
 
-function EditModeManagerFrameMixin:ShowNewLayoutDialog(layoutData)
-	CloseDropDownMenus();
+function EditModeManagerFrameMixin:ShowNewLayoutDialog(layoutInfo)
 	self:ClearSelectedSystem();
-	EditModeNewLayoutDialog:ShowDialog(layoutData or self:GetActiveLayoutInfo());
+	EditModeNewLayoutDialog:ShowDialog(layoutInfo or self:GetActiveLayoutInfo());
 end
 
 function EditModeManagerFrameMixin:ShowImportLayoutDialog()
-	CloseDropDownMenus();
 	self:ClearSelectedSystem();
 	EditModeImportLayoutDialog:ShowDialog();
 end
@@ -1369,63 +1384,31 @@ function EditModeManagerFrameMixin:OpenAndShowImportLayoutLinkDialog(link)
 	EditModeImportLayoutLinkDialog:ShowDialog(link);
 end
 
-function EditModeManagerFrameMixin:ShowRenameLayoutDialog(layoutButton)
-	CloseDropDownMenus();
+function EditModeManagerFrameMixin:ShowRenameLayoutDialog(layoutIndex, layoutInfo)
 	self:ClearSelectedSystem();
 
 	local function onAcceptCallback(layoutName)
-		self:RenameLayout(layoutButton.layoutIndex, layoutName);
+		self:RenameLayout(layoutIndex, layoutName);
 	end
 
-	local data = {text = HUD_EDIT_MODE_RENAME_LAYOUT_DIALOG_TITLE, text_arg1 = layoutButton.layoutData.layoutName, callback = onAcceptCallback, acceptText = SAVE }
+	local data = {text = HUD_EDIT_MODE_RENAME_LAYOUT_DIALOG_TITLE, text_arg1 = layoutInfo.layoutName, callback = onAcceptCallback, acceptText = SAVE }
 	StaticPopup_ShowCustomGenericInputBox(data);
 end
 
-function EditModeManagerFrameMixin:ShowDeleteLayoutDialog(layoutButton)
-	CloseDropDownMenus();
+function EditModeManagerFrameMixin:ShowDeleteLayoutDialog(layoutIndex, layoutInfo)
 	self:ClearSelectedSystem();
 
 	local function onAcceptCallback()
-		self:DeleteLayout(layoutButton.layoutIndex);
+		self:DeleteLayout(layoutIndex);
 	end
 
-	local data = {text = HUD_EDIT_MODE_DELETE_LAYOUT_DIALOG_TITLE, text_arg1 = layoutButton.layoutData.layoutName, callback = onAcceptCallback }
+	local data = {text = HUD_EDIT_MODE_DELETE_LAYOUT_DIALOG_TITLE, text_arg1 = layoutInfo.layoutName, callback = onAcceptCallback }
 	StaticPopup_ShowCustomGenericConfirmation(data);
 end
 
 function EditModeManagerFrameMixin:ShowRevertWarningDialog(selectedLayoutIndex)
 	self:ClearSelectedSystem();
 	EditModeUnsavedChangesDialog:ShowDialog(selectedLayoutIndex);
-end
-
-function EditModeManagerFrameMixin:ToggleSubDropdown(level, layoutButton)
-	ToggleDropDownMenu(level, layoutButton.layoutIndex, self.LayoutDropdown.DropDownMenu, nil, nil, nil, nil, layoutButton.owningButton);
-
-	if self.lockedLayoutButton then
-		self.lockedLayoutButton = nil;
-	else
-		self.lockedLayoutButton = layoutButton;
-	end
-end
-
-function EditModeManagerFrameMixin:ToggleRenameOrCopyLayoutDropdown(layoutButton)
-	self:ToggleSubDropdown(2, layoutButton)
-end
-
-function EditModeManagerFrameMixin:ToggleShareDropdown(layoutButton)
-	self:ToggleSubDropdown(3, layoutButton)
-end
-
-function EditModeManagerFrameMixin:ClearLockedLayoutButton(exemptLayoutButton)
-	if self.lockedLayoutButton ~= exemptLayoutButton then
-		self.lockedLayoutButton = nil;
-		CloseDropDownMenus(2);
-		CloseDropDownMenus(3);
-	end
-end
-
-function EditModeManagerFrameMixin:IsLayoutButtonLocked(layoutButton)
-	return self.lockedLayoutButton == layoutButton;
 end
 
 function EditModeManagerFrameMixin:TryShowUnsavedChangesGlow()
@@ -1543,7 +1526,7 @@ function EditModeGridSpacingSliderMixin:SetupSlider(gridSpacing)
 end
 
 function EditModeGridSpacingSliderMixin:SetEnabled(enabled)
-	self.Slider:SetEnabled_(enabled);
+	self.Slider:SetEnabled(enabled);
 end
 
 function EditModeGridSpacingSliderMixin:OnSliderValueChanged(value)

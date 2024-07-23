@@ -96,10 +96,12 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="$parentSpellBorder" inherits="Spellbook-SlotFrame">
+				<Texture name="$parentSpellBorder" file="Interface\Spellbook\Spellbook-Parts">
+					<Size x="70" y="65"/>
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.Icon" x="2" y="0"/>
 					</Anchors>
+					<TexCoords left="0.00390625" right="0.27734375" top="0.44140625" bottom="0.69531250"/>
 				</Texture>
 				<FontString parentKey="Name" name="$parentName" inherits="GameFontHighlight" justifyH="LEFT" >
 					<Size  x="90" y="36"/>
@@ -121,7 +123,7 @@
 			</OnLeave>
 			<OnClick>
 				if ( IsModifiedClick("CHATLINK") and self.spellID) then
-					local spellLink = GetSpellLink(self.spellID);
+					local spellLink = C_Spell.GetSpellLink(self.spellID);
 					ChatEdit_InsertLink(spellLink);
 				end
 			</OnClick>
@@ -157,7 +159,6 @@
 		<KeyValues>
 			<KeyValue key="scrollBarX" value="9" type="number"/>
 			<KeyValue key="scrollBarTopY" value="-2" type="number"/>
-			<KeyValue key="scrollBarBottomY" value="3" type="number"/>
 		</KeyValues>
 		<Size x="300" y="403"/>
 		<Anchors>

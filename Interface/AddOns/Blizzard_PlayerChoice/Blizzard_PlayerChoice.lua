@@ -9,26 +9,35 @@ function PlayerChoiceFrameMixin:OnEvent(event, ...)
 	HideUIPanel(self);
 end
 
+-- IMPORTANT: useOldNineSlice preserves old functionality and should not be used in the future
 local customTextureKitInfo = {
+	neutral = {
+		useOldNineSlice = true,
+	},
+
 	alliance = {
 		closeBorderX = 0,
 		closeBorderY = 0,
 		headerYoffset = -48,
+		useOldNineSlice = true,
 	},
 
 	horde = {
 		headerYoffset = -55,
+		useOldNineSlice = true,
 	},
 
 	marine = {
 		closeButtonX = 3,
 		closeButtonY = 3,
 		uniqueCorners = true,
+		useOldNineSlice = true,
 	},
 
 	mechagon = {
 		closeButtonX = 3,
 		closeButtonY = 3,
+		useOldNineSlice = true,
 	},
 
 	jailerstower = {
@@ -37,6 +46,7 @@ local customTextureKitInfo = {
 		optionsBottomPadding = 55,
 		showOptionsOnly = true,
 		frameYOffset = 95,
+		useOldNineSlice = true,
 	},
 
 	cypherchoice = {
@@ -49,6 +59,7 @@ local customTextureKitInfo = {
 		toggleYOffset = -20,
 		timerXOffset = 0,
 		timerYOffset = -5,
+		useOldNineSlice = true,
 	},
 
 	Oribos = {
@@ -59,6 +70,16 @@ local customTextureKitInfo = {
 		optionsSidePadding = 59,
 		optionsSpacing = 6,
 		uniqueCorners = true,
+		useOldNineSlice = true,
+	},
+
+	NightFae = {
+		uniqueCorners = true,
+		useOldNineSlice = true,
+		borderTopLeftAnchorX = -12, 
+		borderTopLeftAnchorY = 12, 
+		borderBottomRightAnchorX = 12, 
+		borderBottomRightAnchorY = -12, 
 	},
 
 	Venthyr = {
@@ -66,16 +87,19 @@ local customTextureKitInfo = {
 		closeBorderX = -2,
 		closeBorderY = 2,
 		uniqueCorners = true,
+		useOldNineSlice = true,
 	},
 
 	Kyrian = {
 		uniqueCorners = true,
+		useOldNineSlice = true,
 	},
 
 	Dragonflight = {
 		closeButtonX = -2,
 		closeButtonY = -8,
 		uniqueCorners = true,
+		useOldNineSlice = true,
 	},
 
 	genericplayerchoice = {
@@ -86,6 +110,12 @@ local customTextureKitInfo = {
 		frameYOffset = 95,
 		timerXOffset = 0,
 		timerYOffset = -5,
+		useOldNineSlice = true,
+	},
+
+	thewarwithin = {
+		closeButtonX = -9,
+		closeButtonY = -9,
 	},
 };
 
@@ -100,6 +130,10 @@ local defaultTextureKitInfo = {
 	optionsSidePadding = 65,
 	optionsSpacing = 20,
 	frameYOffset = 0,
+	borderTopLeftAnchorX = -6, 
+	borderTopLeftAnchorY = 6, 
+	borderBottomRightAnchorX = 6, 
+	borderBottomRightAnchorY = -6, 
 };
 
 function PlayerChoiceGetTextureKitInfo(textureKit)
@@ -246,20 +280,38 @@ local borderFrameTextureKitRegions = {
 	Texture = "UI-Frame-%s-Header",
 };
 
+local borderFrameTextureKitRegion = "UI-Frame-%s-Border";
+
 function PlayerChoiceFrameMixin:SetupFrame()
 	local showExtraFrames = not self.textureKitInfo.showOptionsOnly;
-	self.NineSlice:SetShown(showExtraFrames);
 	self.CloseButton:SetShown(showExtraFrames);
 	self.Header:SetShown(showExtraFrames);
 	self.Title:SetShown(showExtraFrames);
 	self.Background:SetShown(showExtraFrames);
 	self:EnableMouse(showExtraFrames);
 
+	-- Using the negation here guarantees useOldNineSlice is a bool instead of nil
+	local usesNewNineSlice = not self.textureKitInfo.useOldNineSlice;
+	self.NineSlice:SetShown(showExtraFrames and not usesNewNineSlice);
+	self.BorderOverlay:SetShown(showExtraFrames and usesNewNineSlice);
+
 	if showExtraFrames then
-		if self.textureKitInfo.uniqueCorners then
-			NineSliceUtil.ApplyUniqueCornersLayout(self.NineSlice, self.uiTextureKit);
-		else
-			NineSliceUtil.ApplyIdenticalCornersLayout(self.NineSlice, self.uiTextureKit);
+		local function SetBorderPoints(border)
+			border:SetPoint("TOPLEFT", self, "TOPLEFT", self.textureKitInfo.borderTopLeftAnchorX, self.textureKitInfo.borderTopLeftAnchorY);
+			border:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", self.textureKitInfo.borderBottomRightAnchorX, self.textureKitInfo.borderBottomRightAnchorY);
+		end
+
+		SetBorderPoints(self.NineSlice);
+		SetBorderPoints(self.BorderOverlay);
+
+		if self.textureKitInfo.useOldNineSlice then
+			if self.textureKitInfo.uniqueCorners then
+				NineSliceUtil.ApplyUniqueCornersLayout(self.NineSlice, self.uiTextureKit);
+			else
+				NineSliceUtil.ApplyIdenticalCornersLayout(self.NineSlice, self.uiTextureKit);
+			end
+		else 
+			self.BorderOverlay:SetAtlas(borderFrameTextureKitRegion:format(self.uiTextureKit));
 		end
 
 		UIPanelCloseButton_SetBorderAtlas(self.CloseButton, "UI-Frame-%s-ExitButtonBorder", self.textureKitInfo.closeBorderX, self.textureKitInfo.closeBorderY, self.uiTextureKit);
@@ -310,7 +362,7 @@ function PlayerChoiceFrameMixin:SetupOptions()
 	self:ResetPlayerChoiceOptionHeightData();
 
 	self.optionFrameTemplate = self.textureKitInfo.optionFrameTemplate;
-	self.optionPools:CreatePoolIfNeeded("FRAME", self, self.optionFrameTemplate, HideAndAnchorTopLeft);
+	self.optionPools:GetOrCreatePool("FRAME", self, self.optionFrameTemplate, HideAndAnchorTopLeft);
 
 	local soloOption = (#self.choiceInfo.options == 1);
 

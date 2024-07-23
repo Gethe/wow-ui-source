@@ -1,120 +1,164 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_CompactRaidFrameManager.lua"/>
-	<Button name="CRFManagerFilterButtonTemplate" inherits="UIMenuButtonStretchTemplate" virtual="true">
+	<Button name="CRFManagerFilterRoleButtonTemplate" virtual="true" mixin="CRFManagerFilterRoleButtonMixin">
+		<Size x="64" y="26"/>
+		<NormalFont style="GameFontNormalSmall"/>
+		<HighlightFont style="GameFontHighlightSmall"/>
+		<DisabledFont style="GameFontDisableSmall"/>
+		<NormalTexture atlas="common-button-tertiary-normal-small"/>
+		<PushedTexture atlas="common-button-tertiary-pressed-small"/>
+		<DisabledTexture atlas="common-button-tertiary-disabled-small"/>
+		<Scripts>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method ="OnLeave"/>
+		</Scripts>
+	</Button>
+	<Button name="CRFManagerFilterGroupButtonTemplate" virtual="true" mixin="CRFManagerFilterGroupButtonMixin">
+		<Size x="45" y="34"/>
+		<NormalFont style="GameFontNormal"/>
+		<HighlightFont style="GameFontHighlight"/>
+		<DisabledFont style="GameFontDisable"/>
+		<NormalTexture atlas="common-button-tertiary-normal"/>
+		<PushedTexture atlas="common-button-tertiary-pressed"/>
+		<DisabledTexture atlas="common-button-tertiary-disabled"/>
+		<Scripts>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method ="OnLeave"/>
+		</Scripts>
+	</Button>
+	<Frame name="CRFManagerRoleMarkerCheckTemplate" virtual="true" mixin="CRFManagerRoleMarkerCheckMixin">
+		<Size x="34" y="34"/>
+		<Frames>
+			<CheckButton inherits="UICheckButtonTemplate" parentKey="checkButton">
+				<Size x="17" y="17"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent" relativePoint="LEFT"/>
+				</Anchors>
+			</CheckButton>
+			<Frame parentKey="icon">
+				<Size x="17" y="17"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.checkButton" relativePoint="TOPRIGHT" x="-2" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="icon"/>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+	<Button name="CRFManagerRaidIconButtonTemplate" virtual="true" mixin="CRFManagerRaidIconButtonMixin">
+		<Size x="35" y="35"/>
 		<Layers>
-			<Layer level="OVERLAY">
-				<Texture name="$parentSelectedHighlight" file="Interface\Buttons\UI-Panel-Button-YellowHighlight" alphaMode="ADD" parentKey="selectedHighlight" alpha="0.7">
-					<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="backgroundTexture" atlas="GM-button-marker-available" useAtlasSize="false">
+					<Size x="44" y="44"/>
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="markerTexture">
+					<Size x="26" y="26"/>
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="CENTER" x="0" y="1"/>
+					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
-	</Button>
-	<Button name="CRFManagerFilterRoleButtonTemplate" inherits="CRFManagerFilterButtonTemplate" virtual="true">
-		<Size x="58" y="24"/>
 		<Scripts>
-			<OnClick>
-				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-				CompactRaidFrameManager_ToggleRoleFilter(self.role);
-			</OnClick>
+			<OnShow method="OnShow"/>
+			<OnClick method="OnClick"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Button>
-	<Button name="CRFManagerFilterGroupButtonTemplate" inherits="CRFManagerFilterButtonTemplate" virtual="true">
-		<Size x="41" y="24"/>
+	<Button name="CRFManagerTooltipButtonTemplate" virtual="true" mixin="CRFManagerTooltipButtonMixin">
 		<Scripts>
-			<OnClick>
-				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-				CompactRaidFrameManager_ToggleGroupFilter(self:GetID());
-			</OnClick>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Button>
-	<Button name="CRFManagerRaidIconButtonTemplate" virtual="true">
-		<Size x="24" y="24"/>
+	<Button name="CRFManagerMarkerTabTemplate" virtual="true" mixin="CRFManagerMarkerTabMixin">
+		<Size x="50" y="15"/>
+		<NormalFont style="GameFontNormalSmall"/>
+		<HighlightFont style="GameFontHighlightSmall"/>
+		<NormalTexture atlas="GM-tab-inActive"/>
 		<Scripts>
-			<OnLoad>
-				local index = self:GetID();
-				local tex = self:GetNormalTexture();
-				local left = mod((index-1)/4, 1);
-				local right = left + 0.25;
-				local top = floor((index-1)/4) * 0.25;
-				local bottom = top + 0.25;
-				tex:SetTexCoord(left, right, top, bottom);
-
-				tex:ClearAllPoints();
-				tex:SetSize(self:GetSize());
-				tex:SetPoint("CENTER", self, "CENTER", 0, 0);
-			</OnLoad>
-			<OnClick>
-				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-				SetRaidTarget("target", self:GetID());
-			</OnClick>
-			<OnMouseDown>
-				if ( self:IsEnabled() ) then
-					self:GetNormalTexture():SetPoint("CENTER", self, "CENTER", -1, -1);
-				end
-			</OnMouseDown>
-			<OnMouseUp>
-				self:GetNormalTexture():SetPoint("CENTER", self, "CENTER", 0, 0);
-			</OnMouseUp>
+			<OnClick method="OnClick"/>
 		</Scripts>
-		<NormalTexture file="Interface\TargetingFrame\UI-RaidTargetingIcons"/>
 	</Button>
+	<Frame name="CRFManagerDividerVertical" virtual ="true">
+		<Size x="2" y="40"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture atlas="GM-bgOpen-divider-vertical">
+					<Size x="2" y="31"/>
+					<Anchors>
+						<Anchor point ="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Frame name="CRFManagerDividerHorizontal" virtual ="true">
+		<Size x="222" y="2"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture atlas="GM-bgOpen-divider-horizontal">
+					<Size x="215" y="2"/>
+					<Anchors>
+						<Anchor point ="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
 	<Frame name="CompactRaidFrameManager" enableMouse="true" frameStrata="LOW" hidden="true" toplevel="true" parent="UIParent">
-		<Size x="200" y="140"/>
+		<Size x="222" y="140"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="UIParent" relativePoint="TOPLEFT" x="7" y="-140"/>
 		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="$parentBorderTopLeft" file="Interface\RaidFrame\RaidPanel-UpperLeft">
-					<Size x="32" y="32"/>
+				<Texture name="$parentBG-leads" parentKey="BGLeads" atlas="GM-bgOpen-leads" hidden="true" parentArray="backgrounds">
+					<Size x="222" y="474"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-5" y="0"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentBorderTopRight" file="Interface\RaidFrame\RaidPanel-UpperRight">
-					<Size x="32" y="32"/>
+				<Texture name="$parentBG-assists" parentKey="BGAssists" atlas="GM-bgOpen-assists" hidden="true" parentArray="backgrounds">
+					<Size x="222" y="432"/>
 					<Anchors>
-						<Anchor point="TOPRIGHT"/>
+						<Anchor point="TOPLEFT" x="-5" y="0"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentBorderBottomLeft" file="Interface\RaidFrame\RaidPanel-BottomLeft">
-					<Size x="32" y="32"/>
+				<Texture name="$parentBG-regulars" parentKey="BGRegulars"  atlas="GM-bgOpen-regulars" hidden="true" parentArray="backgrounds">
+					<Size x="222" y="267"/>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="-5" y="0"/>
+						<Anchor point="TOPLEFT" x="-5" y="0"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentBorderBottomRight" file="Interface\RaidFrame\RaidPanel-BottomRight">
-					<Size x="32" y="32"/>
+				<Texture name="$parentBG-party-leads" parentKey="BGPartyLeads"  atlas="GM-bgOpen-party-leads" hidden="true" parentArray="backgrounds">
+					<Size x="222" y="344"/>
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT"/>
+						<Anchor point="TOPLEFT" x="-5" y="0"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentBorderTop" file="Interface\RaidFrame\RaidPanel-UpperMiddle" horizTile="true">
-					<Size x="0" y="16"/>
+				<Texture name="$parentBG-party-regulars" parentKey="BGPartyRegulars"  atlas="GM-bgOpen-party-regulars" hidden="true" parentArray="backgrounds">
+					<Size x="222" y="238"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentBorderTopLeft" relativePoint="TOPRIGHT" x="0" y="1"/>
-						<Anchor point="TOPRIGHT" relativeTo="$parentBorderTopRight" relativePoint="TOPLEFT" x="0" y="1"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentBorderBottom" file="Interface\RaidFrame\RaidPanel-BottomMiddle" horizTile="true">
-					<Size x="0" y="16"/>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentBorderBottomLeft" relativePoint="BOTTOMRIGHT" x="0" y="-4"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBorderBottomRight" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentBorderRight" file="Interface\RaidFrame\RaidPanel-Right" vertTile="true">
-					<Size x="16" y="0"/>
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativeTo="$parentBorderTopRight" relativePoint="BOTTOMRIGHT" x="2" y="0"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBorderBottomRight" relativePoint="TOPRIGHT" x="2" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentBg" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentBorderTopLeft" x="7" y="-6"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBorderBottomRight" x="-7" y="7"/>
+						<Anchor point="TOPLEFT" x="-5" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -149,40 +193,28 @@
 			</Button>
 			<Frame name="$parentDisplayFrame" parentKey="displayFrame" flattenRenderLayers="true" setAllPoints="true">
 				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="$parentHeaderBackground">
-							<Size x="0" y="17"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="7" y="-6"/>
-								<Anchor point="TOPRIGHT" x="-9" y="-6"/>
-							</Anchors>
-							<Color r="0" b="0" g="0" a="0.93"/>
-						</Texture>
-					</Layer>
 					<Layer level="ARTWORK">
-						<FontString name="$parentRaidMembersLabel" inherits="GameFontNormalMed3" text="RAID_MEMBERS" parentKey="label">
+						<FontString name="$parentRaidMembersLabel" inherits="GameFontNormalMed3" text="RAID" parentKey="label">
 							<Anchors>
-								<Anchor point="TOPLEFT" x="10" y="-8"/>
+								<Anchor point="TOPLEFT" x="10" y="-15"/>
 							</Anchors>
 						</FontString>
 						<FontString name="$parentRaidMemberCountLabel" parentKey="memberCountLabel" justifyH="RIGHT" inherits="GameFontNormalMed3" text="10/10">
 							<Anchors>
-								<Anchor point="TOPRIGHT" x="-28" y="-8"/>
+								<Anchor point="TOPRIGHT" x="-30" y="-15"/>
 							</Anchors>
 						</FontString>
-						<Texture name="$parentHeaderDelineator" file="Interface\RaidFrame\RaidPanel-UpperMiddle" horizTile="true">
-							<Size x="0" y="12"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="0" y="-21"/>
-								<Anchor point="TOPRIGHT" x="-9" y="-21"/>
-							</Anchors>
-						</Texture>
 					</Layer>
 				</Layers>
 				<Frames>
+					<DropdownButton parentKey="ModeControlDropdown" name="$parentModeControlDropdown" inherits="WowStyle1DropdownTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="10" y="-10"/>
+						</Anchors>
+					</DropdownButton>
 					<Button name="$parentOptionsButton" inherits="UIPanelInfoButton">
 						<Anchors>
-							<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="-9" y="-7"/>
+							<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="-12" y="-13"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>
@@ -192,306 +224,205 @@
 						</Scripts>
 					</Button>
 					<Frame name="$parentOptionFlowContainer" parentKey="optionsFlowContainer">
-						<Size x="200" y="300"/>
+						<Size x="222" y="474"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentHeaderDelineator" relativePoint="BOTTOMLEFT" x="-10" y="4"/>
+							<Anchor point="TOPLEFT" x="-10" y="-48"/>
 						</Anchors>
 					</Frame>
 					<Frame name="$parentFilterOptions" parentKey="filterOptions">
-						<Size x="200" y="85"/>
+						<Size x="222" y="95"/>
+						<Frames>
+							<Button name="$parentFilterRoleTank" inherits="CRFManagerFilterRoleButtonTemplate" parentKey="filterRoleTank" mixin="RaidFrameFilterRoleTankMixin">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="19" y="4"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad method="OnLoad"/>
+								</Scripts>
+							</Button>
+							<Button name="$parentFilterRoleHealer" inherits="CRFManagerFilterRoleButtonTemplate" parentKey="filterRoleHealer" mixin="RaidFrameFilterRoleHealerMixin">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parentFilterRoleTank" relativePoint="RIGHT"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad method="OnLoad"/>
+								</Scripts>
+							</Button>
+							<Button name="$parentFilterRoleDamager" inherits="CRFManagerFilterRoleButtonTemplate" parentKey="filterRoleDamager" mixin="RaidFrameFilterRoleDamagerMixin">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parentFilterRoleHealer" relativePoint="RIGHT"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad method="OnLoad"/>
+								</Scripts>
+							</Button>
+						</Frames>
+					</Frame>
+					<Frame name="$TankMarkerCheckButton" parentKey="tankMarker" inherits="CRFManagerRoleMarkerCheckTemplate" hidden="true">
+						<Size x="34" y="34"/>
+						<KeyValues>
+							<KeyValue key="id" value="0" type="number"/>
+						</KeyValues>
+					</Frame>
+					<Frame name="$HealerMarkerCheckButton" parentKey="healerMarker" inherits="CRFManagerRoleMarkerCheckTemplate" hidden="true">
+						<Size x="34" y="34"/>
+						<KeyValues>
+							<KeyValue key="id" value="1" type="number"/>
+						</KeyValues>
+					</Frame>
+					<Button name="$parentEditMode" parentKey="editMode" inherits="CRFManagerTooltipButtonTemplate" mixin="RaidFrameEditModeMixin">
+						<Size x="40" y="40"/>
+						<NormalTexture atlas="GM-icon-menu"/>
+						<KeyValues>
+							<KeyValue key="tooltip" value="CRF_EDIT_MODE"/>
+						</KeyValues>
+						<Scripts>
+							<OnShow method="OnShow"/>
+							<OnClick method="OnClick"/>
+						</Scripts>
+					</Button>
+					<Button name="$parentSettings" parentKey="settings" inherits="CRFManagerTooltipButtonTemplate" mixin="RaidFrameSettingsMixin">
+						<Size x="40" y="40"/>
+						<NormalTexture atlas="GM-icon-settings"/>
+						<KeyValues>
+							<KeyValue key="tooltip" value="CRF_SETTINGS"/>
+						</KeyValues>
+						<Scripts>
+							<OnClick method="OnClick"/>
+						</Scripts>
+					</Button>
+					<Button name="$parentHiddenModeToggle" parentKey="hiddenModeToggle" inherits="CRFManagerTooltipButtonTemplate" mixin="RaidFrameHiddenModeToggleMixin">
+						<Size x="40" y="40"/>
+						<NormalTexture atlas="GM-icon-visible"/>
+						<KeyValues>
+							<KeyValue key="tooltip" value="CRF_HIDE_GROUPS"/>
+						</KeyValues>
+						<Scripts>
+							<OnClick method="OnClick"/>
+						</Scripts>
+					</Button>
+					<CheckButton name="$parentEveryoneIsAssistButton" parentKey="everyoneIsAssistButton" hidden="true" mixin="RaidFrameEveryoneIsAssistMixin">
+						<Size x="40" y="40"/>
+						<NormalTexture atlas="GM-icon-assist"/>
+						<CheckedTexture atlas="GM-icon-assistActive" />
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnEvent method="OnEvent"/>
+							<OnClick method="OnClick"/>
+							<OnEnter method="OnEnter"/>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
+					</CheckButton>
+					<DropdownButton name="$parentDifficulty" parentKey="difficulty" inherits="CRFManagerTooltipButtonTemplate" hidden="true">
+						<Size x="40" y="40"/>
+						<NormalTexture atlas="GM-icon-difficulty-normal"/>
+						<KeyValues>
+							<KeyValue key="tooltip" value="CRF_DIFFICULTY"/>
+						</KeyValues>
+						<Scripts>
+							<OnShow function="CompactRaidFrameManager_UpdateDifficulty"/>
+							<OnMouseDown>
+								CompactRaidFrameManager_MouseDownDifficulty(self);
+							</OnMouseDown>
+						</Scripts>
+					</DropdownButton>
+					<Button name="$parentInitiateReadyCheck" parentKey="readyCheckButton" inherits="CRFManagerTooltipButtonTemplate" mixin="RaidFrameReadyCheckMixin">
+						<Size x="40" y="40"/>
+						<NormalTexture atlas="GM-icon-readyCheck"/>
+						<KeyValues>
+							<KeyValue key="tooltip" value="CRF_READY_CHECK"/>
+						</KeyValues>
+						<Scripts>
+							<OnClick method="OnClick"/>
+						</Scripts>
+					</Button>
+					<Button name="$parentInitiateRolePoll" parentKey="rolePollButton" inherits="CRFManagerTooltipButtonTemplate" mixin="RaidFrameRolePollMixin">
+						<Size x="40" y="40"/>
+						<NormalTexture atlas="GM-icon-roles"/>
+						<KeyValues>
+							<KeyValue key="tooltip" value="CRF_ROLE_POLL"/>
+						</KeyValues>
+						<Scripts>
+							<OnClick method="OnClick"/>
+						</Scripts>
+					</Button>
+					<Button name="$parentCountdown" parentKey="countdownButton" inherits="CRFManagerTooltipButtonTemplate" mixin="RaidFrameCountdownMixin">
+						<Size x="40" y="40"/>
+						<NormalTexture atlas="GM-icon-countdown"/>
+						<KeyValues>
+							<KeyValue key="tooltip" value="CRF_COUNTDOWN"/>
+						</KeyValues>
+						<Scripts>
+							<OnClick method="OnClick"/>
+						</Scripts>
+					</Button>
+					<Frame name="$parentRaidMarkers" mixin="CRFRaidMarkersMixin" parentKey="raidMarkers" hidden="true">
+						<Size x="222" y="122"/>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture name="$parentFooterDelineator" file="Interface\RaidFrame\RaidPanel-UpperMiddle" horizTile="true">
-									<Size x="0" y="12"/>
+								<Texture name="$parentBG-regular" atlas="GM-tab-body">
+									<Size x="194" y="85"/>
 									<Anchors>
-										<Anchor point="BOTTOMLEFT" x="0" y="0"/>
-										<Anchor point="BOTTOMRIGHT" x="2" y="0"/>
+										<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="19" y="-30"/>
 									</Anchors>
 								</Texture>
 							</Layer>
 						</Layers>
 						<Frames>
-							<Button name="$parentFilterRoleTank" inherits="CRFManagerFilterRoleButtonTemplate" parentKey="filterRoleTank">
+							<Button name="$parentRaidMarkerUnitTab" parentKey="raidMarkerUnitTab" inherits="CRFManagerMarkerTabTemplate" parentArray="Tabs" text="GROUPMANAGER_UNIT_MARKER">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="19" y="4"/>
-								</Anchors>
-								<Scripts>
-									<OnLoad>
-										self.role = "TANK";
-										self.roleTexture = "|TInterface\\LFGFrame\\LFGRole:14:14:0:0:64:16:32:48:0:16|t";
-									</OnLoad>
-								</Scripts>
-							</Button>
-							<Button name="$parentFilterRoleHealer" inherits="CRFManagerFilterRoleButtonTemplate" parentKey="filterRoleHealer">
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="$parentFilterRoleTank" relativePoint="RIGHT"/>
-								</Anchors>
-								<Scripts>
-									<OnLoad>
-										self.role = "HEALER";
-										self.roleTexture = "|TInterface\\LFGFrame\\LFGRole:14:14:0:0:64:16:48:64:0:16|t";
-									</OnLoad>
-								</Scripts>
-							</Button>
-							<Button name="$parentFilterRoleDamager" inherits="CRFManagerFilterRoleButtonTemplate" parentKey="filterRoleDamager">
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="$parentFilterRoleHealer" relativePoint="RIGHT"/>
-								</Anchors>
-								<Scripts>
-									<OnLoad>
-										self.role = "DAMAGER";
-										self.roleTexture = "|TInterface\\LFGFrame\\LFGRole:14:14:0:0:64:16:16:32:0:16|t";
-									</OnLoad>
-								</Scripts>
-							</Button>
-							<Button name="$parentFilterGroup1" inherits="CRFManagerFilterGroupButtonTemplate" parentKey="filterGroup1" text="1" id="1">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentFilterRoleTank" relativePoint="BOTTOMLEFT"/>
+									<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="20" y="-15"/>
 								</Anchors>
 							</Button>
-							<Button name="$parentFilterGroup2" inherits="CRFManagerFilterGroupButtonTemplate" parentKey="filterGroup2" text="2" id="2">
+							<Button name="$parentRaidMarkerGroundTab" parentKey="raidMarkerGroundTab" inherits="CRFManagerMarkerTabTemplate" parentArray="Tabs" text="GROUPMANAGER_GROUND_MARKER">
 								<Anchors>
-									<Anchor point="LEFT" relativeTo="$parentFilterGroup1" relativePoint="RIGHT" x="2" y="0"/>
-								</Anchors>
-							</Button>
-							<Button name="$parentFilterGroup3" inherits="CRFManagerFilterGroupButtonTemplate" parentKey="filterGroup3" text="3" id="3">
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="$parentFilterGroup2" relativePoint="RIGHT" x="2" y="0"/>
-								</Anchors>
-							</Button>
-							<Button name="$parentFilterGroup4" inherits="CRFManagerFilterGroupButtonTemplate" parentKey="filterGroup4" text="4" id="4">
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="$parentFilterGroup3" relativePoint="RIGHT" x="2" y="0"/>
-								</Anchors>
-							</Button>
-							<Button name="$parentFilterGroup5" inherits="CRFManagerFilterGroupButtonTemplate" parentKey="filterGroup5" text="5" id="5">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentFilterGroup1" relativePoint="BOTTOMLEFT"/>
-								</Anchors>
-							</Button>
-							<Button name="$parentFilterGroup6" inherits="CRFManagerFilterGroupButtonTemplate" parentKey="filterGroup6" text="6" id="6">
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="$parentFilterGroup5" relativePoint="RIGHT" x="2" y="0"/>
-								</Anchors>
-							</Button>
-							<Button name="$parentFilterGroup7" inherits="CRFManagerFilterGroupButtonTemplate" parentKey="filterGroup7" text="7" id="7">
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="$parentFilterGroup6" relativePoint="RIGHT" x="2" y="0"/>
-								</Anchors>
-							</Button>
-							<Button name="$parentFilterGroup8" inherits="CRFManagerFilterGroupButtonTemplate" parentKey="filterGroup8" text="8" id="8">
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="$parentFilterGroup7" relativePoint="RIGHT" x="2" y="0"/>
+									<Anchor point="TOPLEFT" relativeTo="$parentRaidMarkerUnitTab" relativePoint="TOPRIGHT" x="5" y="0"/>
 								</Anchors>
 							</Button>
 						</Frames>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+						</Scripts>
 					</Frame>
-					<Button name="$parentEditMode" parentKey="editMode" inherits="UIMenuButtonStretchTemplate" text="HUD_EDIT_MODE_GROUP_MANAGER">
-						<Size x="85" y="20"/>
-						<Scripts>
-							<OnShow>
-								self:SetEnabled(EditModeManagerFrame:CanEnterEditMode());
-							</OnShow>
-							<OnClick>
-								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-								ShowUIPanel(EditModeManagerFrame);
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Button name="$parentHiddenModeToggle" parentKey="hiddenModeToggle" inherits="UIMenuButtonStretchTemplate">
-						<Size x="85" y="20"/>
-						<Scripts>
-							<OnClick>
-								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-								SetCVar("raidOptionIsShown", not GetCVarBool("raidOptionIsShown"));
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Button name="$parentConvertToRaid" parentKey="convertToRaid" inherits="UIMenuButtonStretchTemplate" text="CONVERT_TO_RAID" hidden="true">
-						<Size x="169" y="20"/>
-						<Scripts>
-							<OnClick>
-								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-								C_PartyInfo.ConvertToRaid();
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Frame name="$parentRaidMarkers" parentKey="raidMarkers" hidden="true">
-						<Size x="200" y="50"/>
-						<Frames>
-							<Button name="$parentRaidMarker1" inherits="CRFManagerRaidIconButtonTemplate" id="8">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="25" y="0"/>
-								</Anchors>
-							</Button>
-							<Button name="$parentRaidMarker2" inherits="CRFManagerRaidIconButtonTemplate" id="7">
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="$parentRaidMarker1" relativePoint="RIGHT" x="8" y="0"/>
-								</Anchors>
-							</Button>
-							<Button name="$parentRaidMarker3" inherits="CRFManagerRaidIconButtonTemplate" id="6">
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="$parentRaidMarker2" relativePoint="RIGHT" x="8" y="0"/>
-								</Anchors>
-							</Button>
-							<Button name="$parentRaidMarker4" inherits="CRFManagerRaidIconButtonTemplate" id="5">
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="$parentRaidMarker3" relativePoint="RIGHT" x="8" y="0"/>
-								</Anchors>
-							</Button>
-							<Button name="$parentRaidMarker5" inherits="CRFManagerRaidIconButtonTemplate" id="4">
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="$parentRaidMarker4" relativePoint="RIGHT" x="8" y="0"/>
-								</Anchors>
-							</Button>
-							<Button name="$parentRaidMarker6" inherits="CRFManagerRaidIconButtonTemplate" id="3">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentRaidMarker1" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
-								</Anchors>
-							</Button>
-							<Button name="$parentRaidMarker7" inherits="CRFManagerRaidIconButtonTemplate" id="2">
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="$parentRaidMarker6" relativePoint="RIGHT" x="8" y="0"/>
-								</Anchors>
-							</Button>
-							<Button name="$parentRaidMarker8" inherits="CRFManagerRaidIconButtonTemplate" id="1">
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="$parentRaidMarker7" relativePoint="RIGHT" x="8" y="0"/>
-								</Anchors>
-							</Button>
-							<Button name="$parentRaidMarkerRemove" inherits="CRFManagerRaidIconButtonTemplate" id="0">
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="$parentRaidMarker8" relativePoint="RIGHT" x="40" y="0"/>
-								</Anchors>
-								<Scripts>
-									<OnLoad>
-										local tex = self:GetNormalTexture();
-										tex:ClearAllPoints();
-										tex:SetSize(self:GetSize());
-										tex:SetPoint("CENTER", self, "CENTER", 0, 0);
-									</OnLoad>
-								</Scripts>
-								<NormalTexture file="Interface\Buttons\UI-GroupLoot-Pass-Up"/>
-							</Button>
-						</Frames>
-					</Frame>
-					<Frame name="$parentLeaderOptions" parentKey="leaderOptions" hidden="true">
-						<Size x="200" y="45"/>
-						<Frames>
-							<Button name="$parentInitiateRolePoll" inherits="UIMenuButtonStretchTemplate" text="ROLE_POLL" parentKey="rolePollButton">
-								<Size x="85" y="20"/>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="20" y="-5"/>
-								</Anchors>
-								<Scripts>
-									<OnClick>
-										PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-										InitiateRolePoll();
-									</OnClick>
-								</Scripts>
-							</Button>
-							<Button name="$parentCountdown" inherits="UIMenuButtonStretchTemplate" text="PLAYER_COUNTDOWN_BUTTON" parentKey="countdownButton">
-								<Size x="85" y="20"/>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentInitiateRolePoll" relativePoint="TOPRIGHT" x="0" y="0"/>
-								</Anchors>
-								<Scripts>
-									<OnClick>
-										PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-										C_PartyInfo.DoCountdown(10);
-									</OnClick>
-								</Scripts>
-							</Button>
-							<Button name="$parentInitiateReadyCheck" inherits="UIMenuButtonStretchTemplate" text="READY_CHECK" parentKey="readyCheckButton">
-								<Size x="129" y="20"/>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentInitiateRolePoll" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-								</Anchors>
-								<Scripts>
-									<OnClick>
-										PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-										DoReadyCheck();
-									</OnClick>
-								</Scripts>
-							</Button>
-							<DropDownToggleButton name="$parentRaidWorldMarkerButton" inherits="UIMenuButtonStretchTemplate">
-								<Size x="40" y="20"/>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentInitiateReadyCheck" relativePoint="TOPRIGHT" x="0" y="0"/>
-								</Anchors>
-								<Frames>
-									<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" parentKey="dropDown">
-										<Scripts>
-											<OnLoad>
-												UIDropDownMenu_Initialize(self, CRFManager_RaidWorldMarkerDropDown_Update, "MENU");
-											</OnLoad>
-										</Scripts>
-									</Frame>
-								</Frames>
-								<Scripts>
-									<OnMouseDown>
-										UIMenuButtonStretchMixin.OnMouseDown(self, button);
-										PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-										ToggleDropDownMenu(1, nil, self.dropDown, self:GetName(), 0, 0);
-									</OnMouseDown>
-								</Scripts>
-								<NormalTexture parentKey="Icon" file="Interface\RaidFrame\Raid-WorldPing">
-									<Size x="14" y ="14"/>
+					<Frame parentKey="RestrictPingsLabel">
+						<Size x="1" y="18"/>
+						<Layers>
+							<Layer>
+								<FontString parentKey="Label" inherits="GameFontNormal" text="RAID_MANAGER_RESTRICT_PINGS_TO">
 									<Anchors>
-										<Anchor point="CENTER" x="0" y="-1"/>
+										<Anchor point="LEFT" relativePoint="LEFT" x="0" y="2"/>
 									</Anchors>
-								</NormalTexture>
-							</DropDownToggleButton>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					<DropdownButton parentKey="RestrictPingsDropdown" name="$parentRestrictPingsDropdown" inherits="WowStyle1DropdownTemplate"/>
+					<Frame name="parentBottomButtons" parentKey="BottomButtons" hidden="true">
+						<Size x="222" y="40"/>
+						<Frames>
+							<Button name="$parentLeavePartyButton" inherits="UIPanelButtonTemplate" text="PARTY_LEAVE">
+								<Size x="160" y="24"/>
+								<Anchors>
+									<Anchor point="TOP" relativePoint="TOP" x="0" y="-5"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										C_PartyInfo.LeaveParty();
+									</OnClick>
+								</Scripts>
+							</Button>
+							<Button name="$parentLeaveInstanceGroupButton" inherits="UIPanelButtonTemplate" text="INSTANCE_PARTY_LEAVE">
+								<Size x="160" y="24"/>
+								<Anchors>
+									<Anchor point="TOP" relativeTo="$parentLeavePartyButton" relativePoint="BOTTOM" x="0" y="-5"/>
+								</Anchors>
+								<Scripts>
+									<OnClick function="ConfirmOrLeaveLFGParty"/>
+								</Scripts>
+							</Button>
 						</Frames>
 					</Frame>
-					<CheckButton name="$parentEveryoneIsAssistButton" parentKey="everyoneIsAssistButton" hidden="true" inherits="UICheckButtonTemplate">
-						<Size x="24" y="24"/>
-						<HitRectInsets>
-							<AbsInset left="0" right="-140" top="0" bottom="0"/>
-						</HitRectInsets>
-						<Scripts>
-							<OnLoad>
-								_G[self:GetName().."Text"]:SetText(ALL_ASSIST_LABEL_LONG);
-								self:RegisterEvent("GROUP_ROSTER_UPDATE");
-								self:RegisterEvent("PARTY_LEADER_CHANGED");
-							</OnLoad>
-							<OnEvent>
-								self:SetChecked(IsEveryoneAssistant());
-								if ( UnitIsGroupLeader("player") ) then
-									self:Enable();
-									self.Text:SetFontObject(GameFontNormalSmall);
-								else
-									self:Disable();
-									self.Text:SetFontObject(GameFontDisableSmall);
-								end
-							</OnEvent>
-							<OnClick>
-								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-								SetEveryoneIsAssistant(self:GetChecked());
-							</OnClick>
-							<OnEnter>
-								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-								GameTooltip:SetText(ALL_ASSIST_DESCRIPTION, nil, nil, nil, nil, true);
-								if ( not self:IsEnabled() ) then
-									GameTooltip:AddLine(ALL_ASSIST_NOT_LEADER_ERROR, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
-								end
-								GameTooltip:Show();
-							</OnEnter>
-							<OnLeave function="GameTooltip_Hide"/>
-						</Scripts>
-					</CheckButton>
-					<CheckButton parentKey="RestrictPingsButton" inherits="UICheckButtonTemplate" mixin="RaidFrameManagerRestrictPingsButtonMixin">
-						<Size x="24" y="24"/>
-						<HitRectInsets>
-							<AbsInset left="0" right="-140" top="0" bottom="0"/>
-						</HitRectInsets>
-						<Scripts>
-							<OnShow method="OnShow"/>
-							<OnHide method="OnHide"/>
-							<OnEvent method="OnEvent"/>
-							<OnClick method="OnClick"/>
-						</Scripts>
-					</CheckButton>
+
 				</Frames>
 			</Frame>
 		</Frames>

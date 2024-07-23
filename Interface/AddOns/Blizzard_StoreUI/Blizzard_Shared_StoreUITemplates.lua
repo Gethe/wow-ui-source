@@ -1,27 +1,3 @@
---------------------------------------------------
---NOTE - Please do not change this section without understanding the full implications of the secure environment
---We usually don't want to call out of this environment from this file. Calls should usually go through Outbound
-local _, tbl = ...;
-tbl.SecureCapsuleGet = SecureCapsuleGet;
-
-local function Import(name)
-	tbl[name] = tbl.SecureCapsuleGet(name);
-end
-
-Import("IsOnGlueScreen");
-
-if ( tbl.IsOnGlueScreen() ) then
-	tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
-	Import("C_StoreGlue");
-end
-
-setfenv(1, tbl);
---------------------------------------------------
-
-Import("TOOLTIP_DEFAULT_BACKGROUND_COLOR");
-Import("IsTrialAccount");
-Import("IsVeteranTrialAccount");
-Import("bit");
 
 StoreTooltipBackdropMixin = {};
 
@@ -227,8 +203,8 @@ function CategoryTreeScrollContainerMixin:OnLoad()
 				end
 			end
 			for _, frame in self.ScrollBox:EnumerateFrames() do
-				local node = frame:GetElementData();
-				SetParentCollapsedState(node, frame);
+				local nodeData = frame:GetElementData();
+				SetParentCollapsedState(nodeData, frame);
 			end
 		end
 	end;
@@ -312,7 +288,7 @@ function CategoryTreeScrollContainerMixin:UpdateCategories()
 			local hasParent = parentGroupID > 0;
 			if hasParent then
 				local parentProductGroup = 	FindParentProductGroup(parentGroupID, productGroups);
-				parentGroupEntry = productGroupMap[parentGroupID];
+				local parentGroupEntry = productGroupMap[parentGroupID];
 				if not parentGroupEntry and parentProductGroup then
 					productGroupMap[parentGroupID] = parentProductGroup;
 					dataProvider:Insert(parentProductGroup);

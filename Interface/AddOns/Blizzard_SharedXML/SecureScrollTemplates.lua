@@ -1,35 +1,10 @@
 
----------------
---NOTE - Please do not change this section without understanding the full implications of the secure environment
---We usually don't want to call out of this environment from this file. Calls should usually go through Outbound
-local _, tbl = ...;
-
-if tbl then
-	tbl.SecureCapsuleGet = SecureCapsuleGet;
-
-	local function Import(name)
-		tbl[name] = tbl.SecureCapsuleGet(name);
-	end
-
-	Import("IsOnGlueScreen");
-
-	if ( tbl.IsOnGlueScreen() ) then
-		tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
-		Import("C_StoreGlue");
-	end
-
-	setfenv(1, tbl);
-
-	Import("math");
-	Import("PlaySound");
-	Import("SOUNDKIT");
-end
-----------------
-
 --[[All code in this file are deprecated. All variations of HybridScrollFrame and FauxScrollFrame are deprecated. 
 	It is VERY HIGHLY encouraged to instead convert to or choose the ScrollBox API for creating scrollable content in your UI.
 	Any ScrollFrame intrinsic in this file should be replaced with ScrollFrameTemplate if ScrollBox is not suitable.
 	See the ScrollBox and ScrollBar files in the /Scroll directory for API details.]]--
+
+local envTable = GetCurrentEnvironment();
 
 function UIPanelScrollBarScrollUpButton_OnClick(self)
 	local parent = self:GetParent();
@@ -50,13 +25,13 @@ function UIPanelScrollBar_OnValueChanged(self, value)
 end
 
 function UIPanelScrollFrame_OnLoad(self)
-	local scrollbar = self.ScrollBar or _G[self:GetName().."ScrollBar"];
+	local scrollbar = self.ScrollBar or envTable[self:GetName().."ScrollBar"];
 	scrollbar:SetMinMaxValues(0, 0);
 	scrollbar:SetValue(0);
 	self.offset = 0;
 
-	local scrollDownButton = scrollbar.ScrollDownButton or _G[scrollbar:GetName().."ScrollDownButton"];
-	local scrollUpButton = scrollbar.ScrollUpButton or _G[scrollbar:GetName().."ScrollUpButton"];
+	local scrollDownButton = scrollbar.ScrollDownButton or envTable[scrollbar:GetName().."ScrollDownButton"];
+	local scrollUpButton = scrollbar.ScrollUpButton or envTable[scrollbar:GetName().."ScrollUpButton"];
 
 	scrollDownButton:Disable();
 	scrollUpButton:Disable();
@@ -72,12 +47,12 @@ function UIPanelScrollFrame_OnLoad(self)
 		scrollUpButton:Show();
 	end
 	if ( self.noScrollThumb ) then
-		(scrollbar.ThumbTexture or _G[scrollbar:GetName().."ThumbTexture"]):Hide();
+		(scrollbar.ThumbTexture or envTable[scrollbar:GetName().."ThumbTexture"]):Hide();
 	end
 end
 
 function ScrollFrameTemplate_OnMouseWheel(self, value, scrollBar)
-	scrollBar = scrollBar or self.ScrollBar or _G[self:GetName() .. "ScrollBar"];
+	scrollBar = scrollBar or self.ScrollBar or envTable[self:GetName() .. "ScrollBar"];
 	local scrollStep = scrollBar.scrollStep or scrollBar:GetHeight() / 2
 	if ( value > 0 ) then
 		scrollBar:SetValue(scrollBar:GetValue() - scrollStep);
@@ -88,7 +63,7 @@ end
 
 function ScrollFrame_OnScrollRangeChanged(self, xrange, yrange)
 	local name = self:GetName();
-	local scrollbar = self.ScrollBar or _G[name.."ScrollBar"];
+	local scrollbar = self.ScrollBar or envTable[name.."ScrollBar"];
 	if ( not yrange ) then
 		yrange = self:GetVerticalScrollRange();
 	end
@@ -100,9 +75,9 @@ function ScrollFrame_OnScrollRangeChanged(self, xrange, yrange)
 	scrollbar:SetMinMaxValues(0, yrange);
 	scrollbar:SetValue(value);
 
-	local scrollDownButton = scrollbar.ScrollDownButton or _G[scrollbar:GetName().."ScrollDownButton"];
-	local scrollUpButton = scrollbar.ScrollUpButton or _G[scrollbar:GetName().."ScrollUpButton"];
-	local thumbTexture = scrollbar.ThumbTexture or _G[scrollbar:GetName().."ThumbTexture"];
+	local scrollDownButton = scrollbar.ScrollDownButton or envTable[scrollbar:GetName().."ScrollDownButton"];
+	local scrollUpButton = scrollbar.ScrollUpButton or envTable[scrollbar:GetName().."ScrollUpButton"];
+	local thumbTexture = scrollbar.ThumbTexture or envTable[scrollbar:GetName().."ThumbTexture"];
 
 	if ( yrange == 0 ) then
 		if ( self.scrollBarHideable ) then
@@ -135,9 +110,9 @@ function ScrollFrame_OnScrollRangeChanged(self, xrange, yrange)
 	end
 
 	-- Hide/show scrollframe borders
-	local top = self.Top or name and _G[name.."Top"];
-	local bottom = self.Bottom or name and _G[name.."Bottom"];
-	local middle = self.Middle or name and _G[name.."Middle"];
+	local top = self.Top or name and envTable[name.."Top"];
+	local bottom = self.Bottom or name and envTable[name.."Bottom"];
+	local middle = self.Middle or name and envTable[name.."Middle"];
 	if ( top and bottom and self.scrollBarHideable ) then
 		if ( self:GetVerticalScrollRange() == 0 ) then
 			top:Hide();
@@ -157,16 +132,16 @@ function ScrollFrame_OnScrollRangeChanged(self, xrange, yrange)
 end
 
 function ScrollFrame_OnVerticalScroll(self, offset)
-	local scrollbar = self.ScrollBar or _G[self:GetName().."ScrollBar"];
+	local scrollbar = self.ScrollBar or envTable[self:GetName().."ScrollBar"];
 	scrollbar:SetValue(offset);
 
 	local min, max = scrollbar:GetMinMaxValues();
-	(scrollbar.ScrollUpButton or _G[scrollbar:GetName().."ScrollUpButton"]):SetEnabled(offset ~= 0);
-	(scrollbar.ScrollDownButton or _G[scrollbar:GetName().."ScrollDownButton"]):SetEnabled((scrollbar:GetValue() - max) ~= 0);
+	(scrollbar.ScrollUpButton or envTable[scrollbar:GetName().."ScrollUpButton"]):SetEnabled(offset ~= 0);
+	(scrollbar.ScrollDownButton or envTable[scrollbar:GetName().."ScrollDownButton"]):SetEnabled((scrollbar:GetValue() - max) ~= 0);
 end
 
 function ScrollFrame_SetScrollOffset(self, scrollOffset)
-	local scrollbar = self.ScrollBar or _G[self:GetName().."ScrollBar"];
+	local scrollbar = self.ScrollBar or envTable[self:GetName().."ScrollBar"];
 	scrollbar:SetValue(scrollOffset);
 end
 
@@ -174,7 +149,7 @@ end
 function FauxScrollFrame_GetChildFrames(frame)
 	local frameName = frame:GetName();
 	if frameName then
-		return _G[ frameName.."ScrollBar" ], _G[ frameName.."ScrollChildFrame" ], _G[ frameName.."ScrollBarScrollUpButton" ], _G[ frameName.."ScrollBarScrollDownButton" ];
+		return envTable[ frameName.."ScrollBar" ], envTable[ frameName.."ScrollChildFrame" ], envTable[ frameName.."ScrollBarScrollUpButton" ], envTable[ frameName.."ScrollBarScrollDownButton" ];
 	else
 		return frame.ScrollBar, frame.ScrollChildFrame, frame.ScrollBar.ScrollUpButton, frame.ScrollBar.ScrollDownButton;
 	end
@@ -232,7 +207,7 @@ function FauxScrollFrame_Update(frame, numItems, numToDisplay, buttonHeight, but
 		end
 		if ( button ) then
 			for i=1, numToDisplay do
-				_G[button..i]:SetWidth(smallWidth);
+				envTable[button..i]:SetWidth(smallWidth);
 			end
 		end
 	else
@@ -242,7 +217,7 @@ function FauxScrollFrame_Update(frame, numItems, numToDisplay, buttonHeight, but
 		end
 		if ( button ) then
 			for i=1, numToDisplay do
-				_G[button..i]:SetWidth(bigWidth);
+				envTable[button..i]:SetWidth(bigWidth);
 			end
 		end
 	end

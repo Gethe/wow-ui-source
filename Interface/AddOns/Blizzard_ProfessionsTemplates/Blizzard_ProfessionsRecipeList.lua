@@ -58,10 +58,22 @@ function ProfessionsRecipeListMixin:OnLoad()
 							self.selectionBehavior:Select(button);
 						end
 					elseif buttonName == "RightButton" then
-						-- If additional context menu options are added, move this
-						-- public view check to the dropdown initializer.
 						if elementData.recipeInfo.learned and Professions.InLocalCraftingMode() then
-							ToggleDropDownMenu(1, elementData.recipeInfo, self.ContextMenu, "cursor");
+							MenuUtil.CreateContextMenu(button, function(owner, rootDescription)
+								rootDescription:SetTag("MENU_PROFESSIONS_RECIPE_LIST_FAVORITE");
+
+								local recipeID = elementData.recipeInfo.recipeID;
+								local currentlyFavorite = C_TradeSkillUI.IsRecipeFavorite(recipeID);
+								if currentlyFavorite then
+									rootDescription:CreateButton(BATTLE_PET_UNFAVORITE, function()
+										C_TradeSkillUI.SetRecipeFavorite(recipeID, false);
+									end);
+								else
+									rootDescription:CreateButton(BATTLE_PET_FAVORITE, function()
+										C_TradeSkillUI.SetRecipeFavorite(recipeID, true);
+									end);
+								end
+							end);
 						end
 					end
 
@@ -133,9 +145,6 @@ function ProfessionsRecipeListMixin:OnLoad()
 
 	self.selectionBehavior = ScrollUtil.AddSelectionBehavior(self.ScrollBox);
 	self.selectionBehavior:RegisterCallback(SelectionBehaviorMixin.Event.OnSelectionChanged, OnSelectionChanged, self);
-
-	UIDropDownMenu_SetInitializeFunction(self.ContextMenu, GenerateClosure(self.InitContextMenu, self));
-	UIDropDownMenu_SetDisplayMode(self.ContextMenu, "MENU");
 end
 
 function ProfessionsRecipeListMixin:ProfessionChanged()
@@ -144,18 +153,6 @@ end
 
 function ProfessionsRecipeListMixin:GetPreviousRecipeID()
 	return self.previousRecipeID;
-end
-
-function ProfessionsRecipeListMixin:InitContextMenu(dropDown, level)
-	local recipeInfo = UIDROPDOWNMENU_MENU_VALUE;
-	local info = UIDropDownMenu_CreateInfo();
-	local currentlyFavorite = C_TradeSkillUI.IsRecipeFavorite(recipeInfo.recipeID);
-
-	info.notCheckable = true;
-	info.text = currentlyFavorite and BATTLE_PET_UNFAVORITE or BATTLE_PET_FAVORITE;
-	info.func = GenerateClosure(C_TradeSkillUI.SetRecipeFavorite, recipeInfo.recipeID, not currentlyFavorite);
-
-	UIDropDownMenu_AddButton(info, level);
 end
 
 function ProfessionsRecipeListMixin:SelectRecipe(recipeInfo, scrollToRecipe)

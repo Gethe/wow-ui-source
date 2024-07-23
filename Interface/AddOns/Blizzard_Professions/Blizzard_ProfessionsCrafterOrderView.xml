@@ -2,6 +2,13 @@
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_ProfessionsCrafterOrderView.lua"/>
 
+	<ItemButton name="ProfessionsCrafterOrderRewardTemplate" inherits="ProfessionsReagentButtonTemplate" mixin="ProfessionsCrafterOrderRewardMixin" virtual="true">
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</ItemButton>
+
 	<Frame name="ProfessionsCrafterOrderViewTemplate" mixin="ProfessionsCrafterOrderViewMixin" setAllPoints="true" virtual="true">
 		<Scripts>
 			<OnEvent method="OnEvent"/>
@@ -11,6 +18,11 @@
 			<!-- OnUpdate set dynamically -->
 		</Scripts>
 		<Frames>
+			<Frame parentKey="ConcentrationDisplay" inherits="ProfessionsCurrencyTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="120" y="-35"/>
+				</Anchors>
+			</Frame>
 			<Frame parentKey="OrderInfo">
 				<Size x="300" y="553"/>
 				<Anchors>
@@ -89,7 +101,7 @@
 						</Anchors>
 					</Button>
 
-					<DropDownToggleButton parentKey="SocialDropdownButton" inherits="UIMenuButtonStretchTemplate">
+					<DropdownButton parentKey="SocialDropdown" inherits="UIMenuButtonStretchTemplate">
 						<Size x="22" y="22"/>
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.PostedByValue" relativePoint="RIGHT" x="5" y="0"/>
@@ -105,13 +117,8 @@
 								</Texture>
 							</Layer>
 						</Layers>
-						<Frames>
-							<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate">
-								<Size x="10" y="10"/>
-							</Frame>
-						</Frames>
 						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-					</DropDownToggleButton>
+					</DropdownButton>
 
 					<Frame parentKey="NoteBox">
 						<Size x="280" y="140"/>
@@ -233,6 +240,43 @@
 							<KeyValue key="useAuctionHouseIcons" value="true" type="boolean"/>
 							<KeyValue key="alwaysShowGold" value="true" type="boolean"/>
 						</KeyValues>
+					</Frame>
+
+					<Frame parentKey="NPCRewardsFrame">
+						<Size x="250" y="60"/>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.FinalTipMoneyDisplayFrame" relativePoint="BOTTOM" x="0" y="0"/>
+							<Anchor point="LEFT" relativeKey="$parent" relativePoint="LEFT" x="20" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="Background" atlas="ui_bg_npcreward" setAllPoints="true"/>
+							</Layer>
+							<Layer level="ARTWORK">
+								<Texture parentKey="RewardIcon" atlas="ui_icon_chest_npcreward" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="LEFT" x="30"/>
+									</Anchors>
+								</Texture>
+								<FontString parentKey="RewardText" inherits="GameFontNormal" text="Rewards:">
+									<Anchors>
+										<Anchor point="LEFT" relativeKey="$parent.RewardIcon" relativePoint="RIGHT" x="5"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<ItemButton parentKey="RewardItem1" parentArray="RewardItems" name="ProfessionsCrafterOrderRewardItem1" inherits="ProfessionsCrafterOrderRewardTemplate">
+								<Anchors>
+									<Anchor point="LEFT" relativeKey="$parent.RewardText" relativePoint="RIGHT" x="10"/>
+								</Anchors>
+							</ItemButton>
+							<ItemButton parentKey="RewardItem2" parentArray="RewardItems" name="ProfessionsCrafterOrderRewardItem2" inherits="ProfessionsCrafterOrderRewardTemplate">
+								<Anchors>
+									<Anchor point="LEFT" relativeKey="$parent.RewardItem1" relativePoint="RIGHT" x="10"/>
+								</Anchors>
+							</ItemButton>
+						</Frames>
 					</Frame>
 				</Frames>
 			</Frame>

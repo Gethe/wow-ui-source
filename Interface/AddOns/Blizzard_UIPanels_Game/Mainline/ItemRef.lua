@@ -121,7 +121,7 @@ function SetItemRef(link, text, button, chatFrame)
 			local chanLink = strsub(link, 9);
 			local chatType, chatTarget = strsplit(":", chanLink);
 			if not ( (strupper(chatType) == "CHANNEL" and GetChannelName(tonumber(chatTarget)) == 0) ) then	--Don't show the dropdown if this is a channel we are no longer in.
-				ChatChannelDropDown_Show(chatFrame, strupper(chatType), chatTarget, Chat_GetColoredChatName(strupper(chatType), chatTarget));
+				ChatChannelDropdown_Show(chatFrame, strupper(chatType), chatTarget, Chat_GetColoredChatName(strupper(chatType), chatTarget));
 			end
 		end
 		return;
@@ -147,16 +147,20 @@ function SetItemRef(link, text, button, chatFrame)
 		ToggleLFDParentFrame();
 		return;
 	elseif ( strsub(link, 1, 8) == "specpane" ) then
-		ToggleTalentFrame(SPECIALIZATION_TAB);
+		PlayerSpellsUtil.OpenToClassSpecializationsTab();
 		return;
 	elseif ( strsub(link, 1, 10) == "talentpane" ) then
-		ToggleTalentFrame(TALENTS_TAB);
+		PlayerSpellsUtil.OpenToClassTalentsTab();
+		return;
+	elseif ( strsub(link, 1, 20) == "delvecompanionconfig" ) then
+		ShowUIPanel(DelvesCompanionConfigurationFrame);
+		ShowUIPanel(DelvesCompanionAbilityListFrame);
 		return;
 	elseif ( strsub(link, 1, 14) == "mountequipment" ) then
 		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS);
 		return;
 	elseif ( strsub(link, 1, 11) == "honortalent" ) then
-		ToggleTalentFrame(PVP_TALENTS_TAB);
+		PlayerSpellsUtil.OpenToClassTalentsTab();
 		return;
 	elseif ( strsub(link, 1, 10) == "worldquest" ) then
 		OpenWorldMap();
@@ -211,7 +215,6 @@ function SetItemRef(link, text, button, chatFrame)
 		end
 		return;
 	elseif ( strsub(link, 1, 11) == "garrmission" ) then
-		local _, garrMissionID = strsplit(":", link);
 		local garrMissionID, garrMissionDBID = link:match("garrmission:(%d+):([0-9a-fA-F]+)")
 		if (garrMissionID and garrMissionDBID and strlen(garrMissionDBID) == 16) then
 			if ( IsModifiedClick() ) then
@@ -253,6 +256,9 @@ function SetItemRef(link, text, button, chatFrame)
 		if ( IsModifiedClick("CHATLINK") ) then
 			local itemLink = select(6, C_TransmogCollection.GetAppearanceSourceInfo(sourceID));
 			HandleModifiedItemClick(itemLink);
+		elseif ( IsModifiedClick("DRESSUP") ) then
+			local itemLink = select(6, C_TransmogCollection.GetAppearanceSourceInfo(sourceID));
+			DressUpItemLink(itemLink);
 		else
 			TransmogUtil.OpenCollectionToItem(sourceID);
 		end
@@ -298,8 +304,8 @@ function SetItemRef(link, text, button, chatFrame)
 		end
 	elseif ( strsub(link, 1, 4) == "item" ) then
 		if ( IsModifiedClick("CHATLINK") and button == "LeftButton" ) then
-			local name, link = C_Item.GetItemInfo(text);
-			if ChatEdit_InsertLink(link) then
+			local name, itemLink = C_Item.GetItemInfo(text);
+			if ChatEdit_InsertLink(itemLink) then
 				return;
 			end
 		end
@@ -311,7 +317,6 @@ function SetItemRef(link, text, button, chatFrame)
 		end
 		local _, ticketId = strsplit(":", link);
 		if ( CommunitiesFrame_IsEnabled() ) then
-			Communities_LoadUI();
 			CommunitiesHyperlink.OnClickLink(ticketId);
 		end
 		return;
@@ -332,7 +337,6 @@ function SetItemRef(link, text, button, chatFrame)
 		if ( CommunitiesFrame_IsEnabled() ) then
 			local _, clubId = strsplit(":", link);
 			clubId = tonumber(clubId);
-			Communities_LoadUI();
 			CommunitiesHyperlink.OnClickReference(clubId);
 		end
 		return;
@@ -346,7 +350,6 @@ function SetItemRef(link, text, button, chatFrame)
 				return;
 			end
 		end
-		Communities_LoadUI();
 		local _, clubFinderId = strsplit(":", link);
 		CommunitiesFrame:ClubFinderHyperLinkClicked(clubFinderId);
 		return;
@@ -434,11 +437,11 @@ function SetItemRef(link, text, button, chatFrame)
 			local specID, level, inspectString = string.split(":", linkData);
 			level = tonumber(level);
 
-			ClassTalentFrame_LoadUI();
+			PlayerSpellsFrame_LoadUI();
 
-			ClassTalentFrame:SetInspectString(inspectString, level);
-			if not ClassTalentFrame:IsShown() then
-				ShowUIPanel(ClassTalentFrame);
+			PlayerSpellsFrame:SetInspectString(inspectString, level);
+			if not PlayerSpellsFrame:IsShown() then
+				ShowUIPanel(PlayerSpellsFrame);
 			end
 		end
 		return;

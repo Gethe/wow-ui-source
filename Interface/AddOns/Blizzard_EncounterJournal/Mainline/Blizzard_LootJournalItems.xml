@@ -81,30 +81,18 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="LootJournalItemsClassDropDown" parentKey="ClassDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
-				<Scripts>
-					<OnLoad function="LootJournalItemsClassDropDown_OnLoad"/>
-				</Scripts>
-			</Frame>
 			<Frame parentKey="ItemSetsFrame" hidden="true" mixin="LootJournalItemSetsMixin">
 				<Size x="762" y="332"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="0" y="3"/>
 				</Anchors>
 				<Frames>
-					<DropDownToggleButton parentKey="ClassButton" inherits="EJButtonTemplate">
+					<DropdownButton parentKey="ClassDropdown" inherits="WowStyle1DropdownTemplate">
 						<Size x="114" y="26"/>
 						<Anchors>
-							<Anchor point="TOPRIGHT" x="-28" y="35"/>
+							<Anchor point="TOPRIGHT" x="0" y="35"/>
 						</Anchors>
-						<Scripts>
-							<OnMouseDown>
-								EJButtonMixin.OnMouseDown(self, button);
-								ToggleDropDownMenu(1, nil, self:GetParent():GetParent().ClassDropDown, self, 5, 0);
-								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-							</OnMouseDown>
-						</Scripts>
-					</DropDownToggleButton>
+					</DropdownButton>
 					<Frame parentKey="ScrollBox" inherits="WowScrollBoxList" frameStrata="MEDIUM">
 						<Anchors>
 							<Anchor point="TOPLEFT"/>

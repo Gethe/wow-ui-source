@@ -1,122 +1,93 @@
-local function restoreButtonScripts(button)
-	button:SetScript("OnClick", CharacterSelectButton_OnClick);
-	button:SetScript("OnDoubleClick", CharacterSelectButton_OnDoubleClick);
-	button:SetScript("OnDragStart", CharacterSelectButton_OnDragStart);
-	button:SetScript("OnDragStop", CharacterSelectButton_OnDragStop);
-	button:SetScript("OnMouseDown", CharacterSelectButton_OnMouseDown);
-	button:SetScript("OnMouseUp", CharacterSelectButton_OnDragStop);
-	button:SetScript("OnEnter", CharacterSelectButton_OnEnter);
-	button:SetScript("OnLeave", CharacterSelectButton_OnLeave);
-end
-
-local function restoreAllButtonScripts()
-	CharacterSelectCharacterFrame.ScrollBox:ForEachFrame(function(button)
-		restoreButtonScripts(button);
-	end);
-end
-
 CharacterServicesCharacterSelectorMixin = {};
 
 function CharacterServicesCharacterSelectorMixin:OnLoad()
 	self.ButtonPools = CreateFramePoolCollection();
-	self.ButtonPools:CreatePool("Frame", self, "CharacterServicesArrowTemplate", function(pool, obj)
-		FramePool_HideAndClearAnchors(pool, obj);
-		obj:GetParent().SelectionEnabledArrow = nil;
-	end);
 
 	self.ButtonPools:CreatePool("Frame", self, "CharacterServicesBonusIconTemplate", function(pool, obj)
-		FramePool_HideAndClearAnchors(pool, obj);
+		Pool_HideAndClearAnchors(pool, obj);
 		obj:GetParent().SelectionBonusIcon = nil;
 	end);
 
 	local doNotIterateExisting = false;
-	ScrollUtil.AddInitializedFrameCallback(CharacterSelectCharacterFrame.ScrollBox, self.UpdateSingleCharacter, self, doNotIterateExisting);
+	ScrollUtil.AddInitializedFrameCallback(CharacterSelectCharacterFrame.ScrollBox, self.InitializedFrameCallback, self, doNotIterateExisting);
+end
+
+function CharacterServicesCharacterSelectorMixin:InitializedFrameCallback(frame)
+	local function updateSingleCharacterFrame(character)
+		self:UpdateSingleCharacter(character);
+	end
+	CharacterSelectListUtil.RunCallbackOnSlot(frame, updateSingleCharacterFrame);
 end
 
 function CharacterServicesCharacterSelectorMixin:UpdateDisplay(block)
-	CharacterSelect_SetScrollEnabled(true);
-	CharacterSelect_SaveCharacterOrder();
+	CharacterSelectListUtil.SetScrollListInteractiveState(true);
+	CharacterSelectListUtil.SaveCharacterOrder();
 
 	self:SetBlock(block);
 
-	local numCharacters = GetNumCharacters();
-	local numDisplayedCharacters = math.min(numCharacters, MAX_CHARACTERS_DISPLAYED);
-
 	-- Set up the GlowBox around the show characters
-	self.GlowBox:SetHeight(53 * numDisplayedCharacters);
-	self.GlowBox:SetPoint("TOP", CharacterSelectCharacterFrame, -11, -64);
-	self.GlowBox:SetWidth(CharacterSelectCharacterFrame.ScrollBar:IsShown() and 238 or 244);
+	self.GlowBox:SetPoint("TOPRIGHT", CharacterSelectCharacterFrame.ScrollBar, -21, 0);
+	self.GlowBox:SetPoint("BOTTOM", CharacterSelectCharacterFrame.ScrollBar, 0, -2);
+	self.GlowBox:SetWidth(328);
 
 	self.ButtonPools:ReleaseAll();
 
 	self.initialSelectedCharacterIndex = GetCharacterSelection();
 	CharacterSelect.selectedIndex = -1;
-	UpdateCharacterSelection(CharacterSelect);
+	CharacterSelectCharacterFrame:UpdateCharacterSelection();
 
-	local hasAnyValidCharacter = false;
-	CharacterSelectCharacterFrame.ScrollBox:ForEachFrame(function(button)
-		hasAnyValidCharacter = self:UpdateSingleCharacter(button) or hasAnyValidCharacter;
+	CharacterSelectListUtil.ForEachCharacterDo(function(frame)
+		self:UpdateSingleCharacter(frame);
 	end);
 
+	local hasAnyValidCharacter = CharacterSelectListUtil.AreAnyCharactersEligible(self:GetBlock());
 	self.GlowBox:SetShown(hasAnyValidCharacter);
 end
 
-function CharacterServicesCharacterSelectorMixin:UpdateSingleCharacter(button)
+function CharacterServicesCharacterSelectorMixin:UpdateSingleCharacter(frame)
 	if not self:IsActive() then
 		return false;
 	end
 
-	button.paidService:Hide();
+	frame.PaidService:Hide();
 
-	local isEnabled, showBonus = self:ProcessCharacterFromBlock(button);
-	CharacterSelect_SetCharacterButtonEnabled(button, isEnabled);
-	self:SetupAttachedCharacterButtonFrames(button, isEnabled, showBonus);
+	local isEnabled, showBonus = self:ProcessCharacterFromBlock(frame);
+	frame.InnerContent:SetEnabledState(isEnabled);
+	self:SetupAttachedCharacterButtonFrames(frame, isEnabled, showBonus);
 
 	return isEnabled;
 end
 
-function CharacterServicesCharacterSelectorMixin:SetupAttachedCharacterButtonFrames(button, isEnabled, showBonus)
-	if isEnabled then
-		if not button.SelectionEnabledArrow then
-			local arrow = self.ButtonPools:Acquire("CharacterServicesArrowTemplate");
-			button.SelectionEnabledArrow = arrow;
-
-			arrow:SetParent(button);
-			arrow:SetPoint("RIGHT", button, "LEFT", -8, 8);
-			arrow:Show();
-		end
-	elseif button.SelectionEnabledArrow then
-		self.ButtonPools:Release(button.SelectionEnabledArrow);
-		button.SelectionEnabledArrow = nil;
-	end
+function CharacterServicesCharacterSelectorMixin:SetupAttachedCharacterButtonFrames(frame, isEnabled, showBonus)
+	frame:SetArrowButtonShown(isEnabled);
 
 	if isEnabled and showBonus then
-		if not button.SelectionBonusIcon then
+		if not frame.SelectionBonusIcon then
 			local bonusIcon = self.ButtonPools:Acquire("CharacterServicesBonusIconTemplate");
-			button.SelectionBonusIcon = bonusIcon;
-			bonusIcon.SelectionBonusIcon:SetPoint("LEFT", button.buttonText.name, "RIGHT", -1, 0);
-			bonusIcon.SelectionBonusIcon:Show();
+			frame.SelectionBonusIcon = bonusIcon;
+			bonusIcon:SetPoint("LEFT", frame.InnerContent.Text.Name, "RIGHT", -1, 0);
+			bonusIcon:Show();
 		end
-	elseif button.SelectionBonusIcon then
-		self.ButtonPools:Release(button.SelectionBonusIcon);
-		button.SelectionBonusIcon = nil;
+	elseif frame.SelectionBonusIcon then
+		self.ButtonPools:Release(frame.SelectionBonusIcon);
+		frame.SelectionBonusIcon = nil;
 	end
 end
 
-function CharacterServicesCharacterSelectorMixin:ProcessCharacterFromBlock(characterButton)
+function CharacterServicesCharacterSelectorMixin:ProcessCharacterFromBlock(frame)
 	local block = self:GetBlock();
-	local serviceInfo = block:GetServiceInfoByCharacterID(characterButton.characterID);
+	local serviceInfo = block:GetServiceInfoByCharacterID(frame.characterID);
 
 	-- Determine if this should auto-advance and cache off relevant information
 	-- NOTE: CharacterUpgradeCharacterSelectBlock always uses auto-advance, there's no "next"
 	-- button, so once a character is selected it has to advance automatically.
 	if serviceInfo.isEligible and serviceInfo.checkAutoSelect and CharacterUpgradeFlow:GetAutoSelectGuid() == serviceInfo.playerguid then
-		block:SaveResultInfo(characterButton, serviceInfo.playerguid);
-		characterButton.selection:Show();
+		block:SaveResultInfo(frame, serviceInfo.playerguid);
+		frame:SetSelectedState(true);
 	end
 
-	characterButton:SetScript("OnClick", function(characterButton, button)
-		local serviceInfo = block:GetServiceInfoByCharacterID(characterButton.characterID);
+	local function CharacterServicesOnClick()
+		local serviceInfo = block:GetServiceInfoByCharacterID(frame.characterID);
 		if not serviceInfo.isEligible then
 			return;
 		end
@@ -127,7 +98,7 @@ function CharacterServicesCharacterSelectorMixin:ProcessCharacterFromBlock(chara
 			return;
 		end
 
-		block:SaveResultInfo(characterButton, serviceInfo.playerguid);
+		block:SaveResultInfo(frame, serviceInfo.playerguid);
 
 		-- The user entered a normal boost flow and selected a trial boost character, at this point
 		-- put the flow into the auto-select state.
@@ -136,33 +107,68 @@ function CharacterServicesCharacterSelectorMixin:ProcessCharacterFromBlock(chara
 			CharacterUpgradeFlow:SetTrialBoostGuid(trialBoostFlowGuid);
 		end
 
-		CharacterSelectButton_OnClick(characterButton);
-		characterButton.selection:Show();
-		CharacterServicesMaster_Update();
-	end);
+		if not frame:CanSelect() then
+			return;
+		end
 
-	characterButton:SetScript("OnEnter", function(characterButton)
-		local serviceInfo = block:GetServiceInfoByCharacterID(characterButton.characterID);
+		-- Fixes cases of selecting a character, backing out, then selecting them again causing visual issues.
+		CharacterSelect.selectedIndex = GetCharacterSelection();
+
+		frame:OnClick();
+		frame:SetSelectedState(true);
+
+		CharacterServicesMaster_Update();
+	end
+
+	local function CharacterServicesOnEnter()
+		if frame:CanSelect() then
+			local isSelected = frame:IsSelected();
+			local innerContent = frame.InnerContent;
+			if isSelected then
+				innerContent.SelectedHighlight:Show();
+			else
+				innerContent.Highlight:Show();
+				innerContent.FactionEmblemHighlight:Show();
+			end
+		end
+
+		local serviceInfo = block:GetServiceInfoByCharacterID(frame.characterID);
 		if not serviceInfo.checkErrors then
 			return;
 		end
 
 		if #serviceInfo.errors > 0 then
 			local tooltip = GetAppropriateTooltip();
-			tooltip:SetOwner(characterButton, "ANCHOR_BOTTOMLEFT", -25, 70);
-			GameTooltip_SetTitle(tooltip, BLIZZARD_STORE_VAS_ERROR_LABEL);
-			for index, errorMsg in pairs(serviceInfo.errors) do
+			tooltip:SetOwner(frame, "ANCHOR_BOTTOMLEFT", -25, 70);
+			local tooltipTitle = #serviceInfo.errors == 1 and BLIZZARD_STORE_VAS_ERROR_SINGULAR_LABEL or BLIZZARD_STORE_VAS_ERROR_LABEL;
+			GameTooltip_SetTitle(tooltip, tooltipTitle);
+			for _, errorMsg in pairs(serviceInfo.errors) do
 				GameTooltip_AddErrorLine(tooltip, errorMsg);
 			end
 
 			tooltip:Show();
 		end
-	end);
+	end
 
-	characterButton:SetScript("OnLeave", function(characterButton)
+	local function CharacterServicesOnLeave()
+		if frame:CanSelect() then
+			local isSelected = frame:IsSelected();
+			local innerContent = frame.InnerContent;
+			if isSelected then
+				innerContent.SelectedHighlight:Hide();
+			else
+				innerContent.Highlight:Hide();
+				innerContent.FactionEmblemHighlight:Hide();
+			end
+		end
+
 		local tooltip = GetAppropriateTooltip();
 		tooltip:Hide();
-	end);
+	end
+
+	frame:SetScript("OnClick", CharacterServicesOnClick);
+	frame:SetScript("OnEnter", CharacterServicesOnEnter);
+	frame:SetScript("OnLeave", CharacterServicesOnLeave);
 
 	return serviceInfo.isEligible, serviceInfo.hasBonus;
 end
@@ -174,12 +180,11 @@ end
 function CharacterServicesCharacterSelectorMixin:ResetState(selectedButtonIndex)
 	self:Hide();
 	self.ButtonPools:ReleaseAll();
-	CharacterSelect_SetScrollEnabled(true);
+	CharacterSelectListUtil.SetScrollListInteractiveState(true);
+
 	CharacterUpgradeCharacterSelectBlock_SetFilteringByBoostable(false);
 
 	CharacterSelectCharacterFrame.ScrollBox:Rebuild(ScrollBoxConstants.RetainScrollPosition);
-
-	restoreAllButtonScripts();
 
 	UpdateCharacterList(true);
 	local selectedCharacterIndex;
@@ -189,13 +194,14 @@ function CharacterServicesCharacterSelectorMixin:ResetState(selectedButtonIndex)
 		selectedCharacterIndex = self.initialSelectedCharacterIndex;
 	end
 
-	local button = CharacterSelectCharacterFrame.ScrollBox:FindFrameByPredicate(function(frame, elementData)
-		return frame.index == selectedCharacterIndex;
+	local frame = CharacterSelectCharacterFrame.ScrollBox:FindFrameByPredicate(function(frame, elementData)
+		local characterID = CharacterSelectListUtil.GetCharIDFromIndex(selectedCharacterIndex);
+		return CharacterSelectListUtil.ContainsCharacterID(characterID, elementData);
 	end);
 
-	if button then
+	if frame then
 		CharacterSelect.selectedIndex = selectedCharacterIndex;
-		UpdateCharacterSelection(CharacterSelect);
+		CharacterSelectCharacterFrame:UpdateCharacterSelection();
 	end
 end
 

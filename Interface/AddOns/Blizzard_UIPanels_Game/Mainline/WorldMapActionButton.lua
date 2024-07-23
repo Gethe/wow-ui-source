@@ -94,7 +94,7 @@ function WorldMapActionButtonMixin:Refresh()
 
 	self.spellID = spellID;
 
-	local _, _, spellIcon = GetSpellInfo(self.spellID);
+	local spellIcon = C_Spell.GetSpellTexture(self.spellID);
 	self.SpellButton:SetNormalTexture(spellIcon);
 	self.SpellButton:SetPushedTexture(spellIcon);
 
@@ -106,10 +106,14 @@ function WorldMapActionButtonMixin:Refresh()
 end
 
 function WorldMapActionButtonMixin:UpdateCooldown()
-	local start, duration, enable = GetSpellCooldown(self.spellID);
-	CooldownFrame_Set(self.SpellButton.Cooldown, start, duration, enable);
-
-	self.SpellButton:SetEnabled(duration == 0);
+	local cooldownInfo = C_Spell.GetSpellCooldown(self.spellID);
+	if cooldownInfo then
+		CooldownFrame_Set(self.SpellButton.Cooldown, cooldownInfo.startTime, cooldownInfo.duration, cooldownInfo.isEnabled);
+		self.SpellButton:SetEnabled(duration == 0);
+	else
+		CooldownFrame_Clear(self.SpellButton.Cooldown);
+		self.SpellButton:SetEnabled(true);
+	end
 end
 
 function WorldMapActionButtonMixin:OnClick()

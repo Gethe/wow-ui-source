@@ -188,14 +188,11 @@ function ArenaEnemyMatchFrameMixin:OnLoad()
 	self:RegisterEvent("ARENA_COOLDOWNS_UPDATE");
 	self:RegisterEvent("ARENA_CROWD_CONTROL_SPELL_UPDATE");
 
-	UIDropDownMenu_Initialize(self.DropDown, ArenaEnemyDropDown_Initialize, "MENU");
-
 	local setfocus = function()
 		FocusUnit("arena"..self:GetID());
 	end
 	SecureUnitButton_OnLoad(self, "arena"..self:GetID(), setfocus);
 
-	local id = self:GetID();
 	if ( UnitClass("arena"..id) and (not UnitExists("arena"..id))) then	--It is possible for the unit itself to no longer exist on the client, but some of the information to remain (after reloading the UI)
 		self:Show();
 		LockUnitFrame(self);
@@ -304,7 +301,7 @@ function ArenaEnemyMatchFrameMixin:OnEvent(event, unit, ...)
 		elseif ( event == "ARENA_CROWD_CONTROL_SPELL_UPDATE" ) then
 			local spellID = ...;
 			if (spellID ~= self.CC.spellID) then
-				local spellTexture, spellTextureNoOverride = GetSpellTexture(spellID);
+				local spellTexture, spellTextureNoOverride = C_Spell.GetSpellTexture(spellID);
 				self.CC.spellID = spellID;
 				self.CC.Icon:SetTexture(spellTextureNoOverride);
 			end
@@ -316,7 +313,7 @@ function ArenaEnemyMatchFrameMixin:UpdateCrowdControl()
 	local spellID, startTime, duration = C_PvP.GetArenaCrowdControlInfo(self.unit);
 	if (spellID) then
 		if (spellID ~= self.CC.spellID) then
-			local spellTexture, spellTextureNoOverride = GetSpellTexture(spellID);
+			local spellTexture, spellTextureNoOverride = C_Spell.GetSpellTexture(spellID);
 			self.CC.spellID = spellID;
 			self.CC.Icon:SetTexture(spellTextureNoOverride);
 		end
@@ -390,8 +387,6 @@ function ArenaEnemyPetFrameMixin:OnLoad()
 	self:RegisterEvent("ARENA_OPPONENT_UPDATE");
 	self:RegisterEvent("UNIT_CLASSIFICATION_CHANGED");
 
-	UIDropDownMenu_Initialize(self.DropDown, ArenaEnemyPetDropDown_Initialize, "MENU");
-
 	local setfocus = function()
 		FocusUnit("arenapet"..self:GetID());
 	end
@@ -440,14 +435,6 @@ end
 
 function ArenaEnemyPetFrameMixin:OnHide()
 	ArenaEnemyFramesContainer:Update();
-end
-
-function ArenaEnemyDropDown_Initialize(self)
-	UnitPopup_ShowMenu(self, "ARENAENEMY", "arena"..self:GetParent():GetID());
-end
-
-function ArenaEnemyPetDropDown_Initialize(self)
-	UnitPopup_ShowMenu(self, "ARENAENEMY", "arenapet"..self:GetParent():GetID());
 end
 
 -----------------------------------------------------------------------------

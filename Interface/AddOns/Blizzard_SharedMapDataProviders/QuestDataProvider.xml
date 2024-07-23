@@ -2,10 +2,19 @@
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="QuestDataProvider.lua"/>
 
-	<Button name="QuestPinTemplate" inherits="POIButtonTemplate" hidden="true" flattenRenderLayers="true" enableMouse="true" mixin="QuestPinMixin" virtual="true">
+	<Button name="QuestPinTemplate" inherits="POIButtonTemplate, LegendHighlightableMapPoiPinTemplate" flattenRenderLayers="true" enableMouse="true" mixin="QuestPinMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="shouldShowGlow" value="false" type="boolean"/>
 		</KeyValues>
-		<Size x="50" y="50"/>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture parentKey="LinkGlow" atlas="ui-questpoi-outerglow" alphaMode="ADD" hidden="true">
+					<Size x="75" y="75"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 	</Button>
 </Ui>

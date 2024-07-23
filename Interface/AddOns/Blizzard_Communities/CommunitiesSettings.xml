@@ -296,44 +296,21 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame parentKey="ClubFocusDropdown" name="ClubFinderFocusDropdown" inherits="ClubFinderFocusDropdownTemplate">
-				<Size x="0" y="20"/>
+			<DropdownButton parentKey="ClubFocusDropdown" inherits="ClubFinderFocusDropdownTemplate">
 				<Anchors>
 					<Anchor point="BOTTOM" relativeKey="$parent.MinIlvlOnly" x="5" y="-70"/>
 				</Anchors>
-			</Frame>
-			<Frame parentKey="LookingForDropdown" name="ClubFinderLookingForDropdown" inherits="UIDropDownMenuTemplate" mixin="LookingForDropdownMixin">
-				<Size x="0" y="20"/>
+			</DropdownButton>
+			<DropdownButton parentKey="LookingForDropdown" inherits="ClubFinderLookingForDropdownTemplate" >
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.ClubFocusDropdown" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString parentKey="Label" text="CLUB_FINDER_LOOKING_FOR" justifyH="LEFT" inherits="GameFontNormal">
-							<Size x="280" y="0"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="20" y="15"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-			</Frame>
-			<Frame parentKey="LanguageDropdown" name="ClubFinderLanguageDropdown" inherits="UIDropDownMenuTemplate" mixin="ClubFinderLanguageDropdownMixin">
-				<Size x="0" y="20"/>
+			</DropdownButton>
+			<DropdownButton parentKey="LanguageDropdown" inherits="CommunitiesLanguageDropdown">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.LookingForDropdown" relativePoint="TOPRIGHT" x="0" y="0"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.LookingForDropdown" relativePoint="TOPRIGHT" x="10" y="0"/>
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString parentKey="Label" text="LANGUAGE" justifyH="LEFT" inherits="GameFontNormal">
-							<Size x="280" y="0"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="20" y="15"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-			</Frame>
+			</DropdownButton>
 			<ScrollFrame parentKey="Description" inherits="InputScrollFrameTemplate">
 				<Size x="0" y="50"/>
 				<Anchors>

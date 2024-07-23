@@ -1,23 +1,3 @@
----------------
---NOTE - Please do not change this section without talking to the UI team
-local _, tbl = ...;
-if tbl then
-	tbl.SecureCapsuleGet = SecureCapsuleGet;
-
-	local function Import(name)
-		tbl[name] = tbl.SecureCapsuleGet(name);
-	end
-
-	Import("IsOnGlueScreen");
-
-	if ( tbl.IsOnGlueScreen() ) then
-		tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
-	end
-
-	setfenv(1, tbl);
-
-end
----------------
 
 ScrollBoxListTreeListViewMixin = CreateFromMixins(ScrollBoxListLinearViewMixin);
 
@@ -82,6 +62,15 @@ function ScrollBoxListTreeListViewMixin:EnumerateDataProvider(indexBegin, indexE
 	return self:GetDataProvider():Enumerate(indexBegin, indexEnd, TreeDataProviderConstants.ExcludeCollapsed);
 end
 
+function ScrollBoxListTreeListViewMixin:ReverseEnumerateDataProviderEntireRange()
+	local indexBegin, indexEnd = nil, nil;
+	self:GetDataProvider():ReverseEnumerate(indexBegin, indexEnd, TreeDataProviderConstants.IncludeCollapsed);
+end
+
+function ScrollBoxListTreeListViewMixin:ReverseEnumerateDataProvider(indexBegin, indexEnd)
+	return self:GetDataProvider():ReverseEnumerate(indexBegin, indexEnd, TreeDataProviderConstants.ExcludeCollapsed);
+end
+
 function ScrollBoxListTreeListViewMixin:GetDataProviderSize()
 	local dataProvider = self:GetDataProvider();
 	if dataProvider then
@@ -124,8 +113,8 @@ function ScrollBoxListTreeListViewMixin:PrepareScrollToElementData(elementData)
 			end
 		end
 
-		for index, parent in ipairs_reverse(parents) do
-			parent:SetCollapsed(false, TreeDataProviderConstants.RetainChildCollapse, TreeDataProviderConstants.SkipInvalidation);
+		for index, parentEntry in ipairs_reverse(parents) do
+			parentEntry:SetCollapsed(false, TreeDataProviderConstants.RetainChildCollapse, TreeDataProviderConstants.SkipInvalidation);
 		end
 
 		-- Skip invalidation so that each individual collapse change doesn't unnecessarily signal updates. We're invalidating

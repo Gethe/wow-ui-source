@@ -3,18 +3,23 @@ MAX_ADDONS_DISPLAYED = 19;
 
 local ADDON_ACTIONS_BLOCKED = { };
 
+local ALL_CHARACTERS = "All";
+local addonCharacter = ALL_CHARACTERS;
+
+local function GetAddonCharacter()
+	if addonCharacter == ALL_CHARACTERS then
+		return nil;
+	end
+	return addonCharacter;
+end
+
 if ( not InGlue() ) then
 	UIPanelWindows["AddonList"] = { area = "center", pushable = 0, whileDead = 1 };
 end
 
 -- We use this in the shared XML file
 AddonTooltip = nil;
-
-local UIDropDownMenu_Initialize = UIDropDownMenu_Initialize
-local UIDropDownMenu_AddButton = UIDropDownMenu_AddButton
-local UIDropDownMenu_CreateInfo = UIDropDownMenu_CreateInfo
-local UIDropDownMenu_GetSelectedValue = UIDropDownMenu_GetSelectedValue
-local UIDropDownMenu_SetSelectedValue = UIDropDownMenu_SetSelectedValue
+AddonDialog = nil;
 
 if ( InGlue() ) then
 	AddonDialogTypes = { };
@@ -133,14 +138,20 @@ if ( InGlue() ) then
 	end
 
 	function UpdateAddonButton()
-		if ( C_AddOns.GetNumAddOns() > 0 ) then
-			CharacterSelectAddonsButton:Show();
-		else
-			CharacterSelectAddonsButton:Hide();
+		if CharacterSelectAddonsButton then
+			if ( C_AddOns.GetNumAddOns() > 0 ) then
+				CharacterSelectAddonsButton:Show();
+			else
+				CharacterSelectAddonsButton:Hide();
+			end
 		end
 	end
 else
 	AddonTooltip = GameTooltip
+end
+
+function AddonList_ClearCharacterDropdown()
+	addonCharacter = ALL_CHARACTERS;
 end
 
 function AddonList_HasAnyChanged()
@@ -173,15 +184,7 @@ function AddonList_HasNewVersion()
 	return hasNewVersion;
 end
 
-function AddonList_Show()
-	if ( InGlue() ) then
-		AddonList:Show();
-	else
-		ShowUIPanel(AddonList);
-	end
-end
-
-function AddonList_Hide(save)
+local function AddonList_Hide(save)
 	AddonList.save = save
 
 	if ( InGlue() ) then
@@ -221,10 +224,6 @@ function AddonList_OnLoad(self)
 			end
 		end
 	end
-	local drop = CreateFrame("Frame", "AddonCharacterDropDown", self, "UIDropDownMenuTemplate")
-	drop:SetPoint("TOPLEFT", 0, -30)
-	UIDropDownMenu_Initialize(drop, AddonListCharacterDropDown_Initialize);
-	UIDropDownMenu_SetSelectedValue(drop, true);
 
 	local view = CreateScrollBoxListLinearView();
 	view:SetElementInitializer("AddonListEntryTemplate", function(button, elementData)
@@ -234,6 +233,8 @@ function AddonList_OnLoad(self)
 	view:SetPadding(2,2,2,2,5);
 
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
+
+	self.Dropdown:SetWidth(140);
 end
 
 function AddonList_SetStatus(self,lod,status,reload)
@@ -285,15 +286,13 @@ function AddonList_InitButton(entry, addonIndex)
 	local name, title, notes, _, _, security = C_AddOns.GetAddOnInfo(addonIndex);
 
 	-- Get the character from the current list (nil is all characters)
-	local character = UIDropDownMenu_GetSelectedValue(AddonCharacterDropDown);
-	if ( character == true ) then
-		character = nil;
-	end
+	local character = GetAddonCharacter();
 
 	-- Get loadable state for the selected character, rather than all characters which GetAddOnInfo checks
 	local loadable, reason = C_AddOns.IsAddOnLoadable(addonIndex, character);
 
 	local checkboxState = C_AddOns.GetAddOnEnableState(addonIndex, character);
+	local enabled;
 	if ( not InGlue() ) then
 		enabled = (C_AddOns.GetAddOnEnableState(addonIndex, UnitName("player")) > Enum.AddOnEnableState.None);
 	else
@@ -418,11 +417,8 @@ function AddonList_IsAddOnLoadOnDemand(index)
 end
 
 function AddonList_Enable(index, enabled)
+	local character = GetAddonCharacter();
 
-	local character = UIDropDownMenu_GetSelectedValue(AddonCharacterDropDown);
-	if (character == true) then
-		character = nil; -- pass nil instead of true for "All"
-	end
 	if ( enabled ) then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		C_AddOns.EnableAddOn(index,character);
@@ -434,19 +430,15 @@ function AddonList_Enable(index, enabled)
 end
 
 function AddonList_EnableAll(self, button, down)
-	local character = UIDropDownMenu_GetSelectedValue(AddonCharacterDropDown);
-	if (character == true) then
-		character = nil; -- pass nil instead of true for "All"
-	end
+	local character = GetAddonCharacter();
+
 	C_AddOns.EnableAllAddOns(character);
 	AddonList_Update();
 end
 
 function AddonList_DisableAll(self, button, down)
-	local character = UIDropDownMenu_GetSelectedValue(AddonCharacterDropDown);
-	if (character == true) then
-		character = nil; -- pass nil instead of true for "All"
-	end
+	local character = GetAddonCharacter();
+
 	C_AddOns.DisableAllAddOns(character);
 	AddonList_Update();
 end
@@ -475,12 +467,43 @@ function AddonList_OnCancel()
 	AddonList_Hide(false);
 end
 
+local function IsSelected(character)
+	return addonCharacter == character;
+end
+
+local function SetSelected(character)
+	addonCharacter = character;
+	AddonList_Update();
+end
+
 function AddonList_OnShow(self)
 	if ( InGlue() ) then
 		GlueParent_AddModalFrame(self);
 	end
-	UIDropDownMenu_Initialize(AddonCharacterDropDown, AddonListCharacterDropDown_Initialize);
-	UIDropDownMenu_SetSelectedValue( AddonCharacterDropDown, UIDropDownMenu_GetSelectedValue(AddonCharacterDropDown) );
+
+	self.Dropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_ADDON_LIST");
+
+		rootDescription:CreateRadio(ALL, IsSelected, SetSelected, ALL_CHARACTERS);
+
+		if InGlue() then
+			local includeEmptySlots = true;
+			local numCharacters = GetNumCharacters(includeEmptySlots);
+
+			for i=1, numCharacters do
+				local characterInfo = CharacterSelectUtil.GetCharacterInfoTable(i);
+
+				-- Check each entry if it's an empty character.
+				if characterInfo then
+					rootDescription:CreateRadio(characterInfo.name, IsSelected, SetSelected, characterInfo.name);
+				end
+			end
+		else
+			local text = UnitName("player");
+			rootDescription:CreateRadio(text, IsSelected, SetSelected, text);
+		end
+	end);
+
 	AddonList_Update();
 end
 
@@ -494,6 +517,8 @@ function AddonList_OnHide(self)
 		C_AddOns.ResetAddOns();
 	end
 	self.save = false;
+
+	EventRegistry:TriggerEvent("AddonList.FrameHidden");
 end
 
 function AddonList_HasOutOfDate()
@@ -536,46 +561,6 @@ function AddonList_DisableOutOfDate()
 		end
 	end
 	C_AddOns.SaveAddOns();
-end
-
-function AddonListCharacterDropDown_OnClick(self)
-	UIDropDownMenu_SetSelectedValue(AddonCharacterDropDown, self.value);
-	AddonList_Update();
-end
-
-function AddonListCharacterDropDown_Initialize()
-	local selectedValue = UIDropDownMenu_GetSelectedValue(AddonCharacterDropDown);
-	local info = UIDropDownMenu_CreateInfo();
-	info.text = ALL;
-	info.value = true;
-	info.func = AddonListCharacterDropDown_OnClick;
-	if ( not selectedValue ) then
-		info.checked = 1;
-	end
-	UIDropDownMenu_AddButton(info);
-
-	if ( InGlue() ) then
-		for i=1, GetNumCharacters() do
-			info.text = GetCharacterInfo(i);
-			info.value = GetCharacterInfo(i);
-			info.func = AddonListCharacterDropDown_OnClick;
-			if ( selectedValue == info.value ) then
-				info.checked = 1;
-			else
-				info.checked = nil;
-			end
-			UIDropDownMenu_AddButton(info);
-		end
-	else
-		info.text = UnitName("player")
-		info.value = UnitName("player");
-		if ( selectedValue == info.value ) then
-			info.checked = 1;
-		else
-			info.checked = nil;
-		end
-		UIDropDownMenu_AddButton(info);
-	end
 end
 
 function AddonTooltip_BuildDeps(...)

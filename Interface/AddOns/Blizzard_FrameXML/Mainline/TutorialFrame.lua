@@ -151,7 +151,7 @@ setmetatable( DISPLAY_DATA, {__index = function () return DisplayDataFallback en
 function TutorialFrame_OnLoad(self)
 	self:RegisterEvent("TUTORIAL_TRIGGER");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-	self:RegisterEvent("LEARNED_SPELL_IN_TAB");
+	self:RegisterEvent("LEARNED_SPELL_IN_SKILL_LINE");
 
 	for i = 1, MAX_TUTORIAL_VERTICAL_TILE do
 		local texture = self:CreateTexture("TutorialFrameLeft"..i, "BORDER");
@@ -200,11 +200,10 @@ function TutorialFrame_OnEvent(self, event, ...)
 			CURRENT_TUTORIAL_QUEST_INFO = TUTORIAL_QUEST_ARRAY[raceName];
 			TUTORIAL_QUEST_TO_WATCH = CURRENT_TUTORIAL_QUEST_INFO.questID;
 		end
-	elseif ( event == "LEARNED_SPELL_IN_TAB" ) then
+	elseif ( event == "LEARNED_SPELL_IN_SKILL_LINE" ) then
 		local spellID = ...;
 		for index, value in pairs(DISPLAY_DATA) do
 			if (value.spellTutorial) then
-				local spellID = ...;
 				local _, className = UnitClass("player");
 				className = strupper(className);
 				local tutorialSpellID = tonumber(_G["TUTORIAL"..index.."_SPELLID_"..className]);
@@ -743,7 +742,6 @@ HELP_BUTTON_LARGE_SIZE = 55;
 HELP_PLATE_BUTTONS = {};
 function HelpPlate_GetButton()
 	local frame;
-	local i = 1;
 	for i=1, #HELP_PLATE_BUTTONS do
 		local button = HELP_PLATE_BUTTONS[i];
 		if ( not button:IsShown() ) then
@@ -981,4 +979,8 @@ function HelpPlate_TooltipHide()
 	HelpPlateTooltip.ArrowGlowRIGHT:Hide();
 	HelpPlateTooltip:ClearAllPoints();
 	HelpPlateTooltip:Hide();
+end
+
+function HelpPlate_GetEffectiveScale()
+	return HelpPlate:GetEffectiveScale();
 end

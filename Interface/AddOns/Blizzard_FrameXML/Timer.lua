@@ -81,7 +81,7 @@ function FreeTimerTrackerTimer(timer)
 	timer.bar:SetAlpha(0);
 end
 
-function TimerTracker_StartTimerOfType(self, timerType, timeSeconds, totalTime)
+function TimerTracker_StartTimerOfType(self, timerType, timeSeconds, totalTime, informChat, initiatedByGuid, initiatedByName)
 	local timer;
 	local numTimers = 0;
 	local isTimerRunning = false;
@@ -145,6 +145,24 @@ function TimerTracker_StartTimerOfType(self, timerType, timeSeconds, totalTime)
 		timer:Show();
 	end
 	StartTimer_SetGoTexture(timer);
+
+	if informChat then
+		local systemMessage;
+
+		if not initiatedByGuid then
+			systemMessage = COUNTDOWN_CANCEL_ENCOUNTER_START;
+		elseif initiatedByName then
+			if totalTime > 0 then
+				systemMessage = COUNTDOWN_SET:format(initiatedByName, initiatedByName);
+			else
+				systemMessage = COUNTDOWN_CLEAR:format(initiatedByName, initiatedByName);
+			end
+		end
+			
+		if systemMessage then
+			ChatFrame_DisplaySystemMessageInPrimary(systemMessage);
+		end
+	end
 end
 
 function TimerTracker_OnEvent(self, event, ...)
@@ -158,11 +176,11 @@ function TimerTracker_OnEvent(self, event, ...)
 		local timerType, timeSeconds, totalTime  = ...;
 		TimerTracker_StartTimerOfType(self, timerType, timeSeconds, totalTime);
 	elseif event == "START_PLAYER_COUNTDOWN" then
-		local initiatedBy, timeSeconds, totalTime  = ...;
-		TimerTracker_StartTimerOfType(self, TIMER_TYPE_PLAYER_COUNTDOWN, timeSeconds, totalTime);
+		local initiatedByGuid, timeSeconds, totalTime, informChat, initiatedByName  = ...;
+		TimerTracker_StartTimerOfType(self, TIMER_TYPE_PLAYER_COUNTDOWN, timeSeconds, totalTime, informChat, initiatedByGuid, initiatedByName);
 	elseif event == "CANCEL_PLAYER_COUNTDOWN" then
-		local initiatedBy  = ...;
-		TimerTracker_StartTimerOfType(self, TIMER_TYPE_PLAYER_COUNTDOWN, 0, 0);
+		local initiatedByGuid, informChat, initiatedByName  = ...;
+		TimerTracker_StartTimerOfType(self, TIMER_TYPE_PLAYER_COUNTDOWN, 0, 0, informChat, initiatedByGuid, initiatedByName);
 	elseif event == "STOP_TIMER_OF_TYPE" then
 		local timerType = ...;
 		for a,timer in pairs(self.timerList) do
@@ -303,10 +321,10 @@ function StartTimer_SetTexNumbers(self, ...)
 			digits[1]:SetPoint("CENTER", self, "CENTER", numberOffset - digits[1].hw, 0);
 		end
 		
-		for i=2,numShown do
-			digits[i]:ClearAllPoints();
-			digits[i]:SetPoint("CENTER", digits[i-1], "CENTER", -(digits[i].hw + digits[i-1].hw), 0)
-			i = i + 1;
+		for j=2,numShown do
+			digits[j]:ClearAllPoints();
+			digits[j]:SetPoint("CENTER", digits[j-1], "CENTER", -(digits[j].hw + digits[j-1].hw), 0)
+			j = j + 1;
 		end
 	end
 end

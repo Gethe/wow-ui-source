@@ -5,9 +5,9 @@ local CurrencyConstants_Mainline =
 		{
 			Name = "CurrencyDestroyReason",
 			Type = "Enumeration",
-			NumValues = 14,
+			NumValues = 15,
 			MinValue = 0,
-			MaxValue = 13,
+			MaxValue = 14,
 			Fields =
 			{
 				{ Name = "Cheat", Type = "CurrencyDestroyReason", EnumValue = 0 },
@@ -23,7 +23,8 @@ local CurrencyConstants_Mainline =
 				{ Name = "FactionConversion", Type = "CurrencyDestroyReason", EnumValue = 10 },
 				{ Name = "FulfillCraftingOrder", Type = "CurrencyDestroyReason", EnumValue = 11 },
 				{ Name = "Script", Type = "CurrencyDestroyReason", EnumValue = 12 },
-				{ Name = "Last", Type = "CurrencyDestroyReason", EnumValue = 13 },
+				{ Name = "ConcentrationCast", Type = "CurrencyDestroyReason", EnumValue = 13 },
+				{ Name = "AccountTransfer", Type = "CurrencyDestroyReason", EnumValue = 14 },
 			},
 		},
 		{
@@ -99,7 +100,7 @@ local CurrencyConstants_Mainline =
 				{ Name = "ConvertItemsToCurrencyAndReputation", Type = "CurrencySource", EnumValue = 62 },
 				{ Name = "PhBuffer_63", Type = "CurrencySource", EnumValue = 63 },
 				{ Name = "SpellSkipLinkedCurrency", Type = "CurrencySource", EnumValue = 64 },
-				{ Name = "Last", Type = "CurrencySource", EnumValue = 65 },
+				{ Name = "AccountTransfer", Type = "CurrencySource", EnumValue = 65 },
 			},
 		},
 	},

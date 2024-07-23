@@ -119,33 +119,6 @@ function GroupLootContainer_OpenNewFrame(rollID, rollTime)
 	return false;
 end
 
-function GroupLootDropDown_OnLoad(self)
-	UIDropDownMenu_Initialize(self, nil, "MENU");
-	self.initialize = GroupLootDropDown_Initialize;
-	
-	EventRegistry:RegisterFrameEventAndCallback("OPEN_MASTER_LOOT_LIST", function()
-		ToggleDropDownMenu(1, nil, GroupLootDropDown, LootFrame.selectedLootFrame, 0, 0);
-	end, self);
-end
-
-function GroupLootDropDown_Initialize()
-	local info = UIDropDownMenu_CreateInfo();
-	info.isTitle = 1;
-	info.text = MASTER_LOOTER;
-	info.fontObject = GameFontNormalLeft;
-	info.notCheckable = 1;
-	UIDropDownMenu_AddButton(info);
-
-	info = UIDropDownMenu_CreateInfo();
-	info.notCheckable = 1;
-	info.text = ASSIGN_LOOT;
-	info.func = MasterLooterFrame_Show;
-	UIDropDownMenu_AddButton(info);
-	info.text = REQUEST_ROLL;
-	info.func = function() DoMasterLootRoll(LootFrame.selectedSlot); end;
-	UIDropDownMenu_AddButton(info);
-end
-
 function GroupLootFrame_EnableLootButton(button)
 	button:Enable();
 	button:SetAlpha(1.0);
@@ -164,6 +137,27 @@ local groupLootFrameEvents =
 	"CANCEL_ALL_LOOT_ROLLS",
 	"MAIN_SPEC_NEED_ROLL",
 }
+
+function GroupLootFrame_OnLoad(self)
+	local function OpenMenu()
+		MenuUtil.CreateContextMenu(LootFrame.selectedLootFrame, function(owner, rootDescription)
+			rootDescription:SetTag("MENU_GROUP_LOOT");
+
+			rootDescription:CreateTitle(MASTER_LOOTER);
+
+			rootDescription:CreateButton(ASSIGN_LOOT, function()
+				MasterLooterFrame_Show();
+			end);
+
+			rootDescription:CreateButton(REQUEST_ROLL, function()
+				DoMasterLootRoll(LootFrame.selectedSlot);
+			end);
+		end);
+	end
+
+	-- Requires retest if/when this feature is renabled
+	EventRegistry:RegisterFrameEventAndCallback("OPEN_MASTER_LOOT_LIST", OpenMenu, self);
+end
 
 function GroupLootFrame_OnShow(self)
 	local texture, name, count, quality, bindOnPickUp, canNeed, canGreed, canDisenchant, reasonNeed, reasonGreed, reasonDisenchant, deSkillRequired, canTransmog = GetLootRollItemInfo(self.rollID);
@@ -577,7 +571,8 @@ function BonusRollFrame_OnHide(self)
 end
 
 function BonusRollFrame_FinishedFading(self)
-	local rollType, roll, isCurrency, showFactionBG, lootSource, lessAwesome, isUpgraded, wonRoll, showRatedBG;
+	local rollType, roll, isCurrency, showFactionBG, lootSource, lessAwesome, isUpgraded, wonRoll, showRatedBG; -- luacheck: ignore 221 (variable is never set)
+	isCurrency = false;
 	if ( self.rewardType == "item" or self.rewardType == "artifact_power" ) then
 		wonRoll = self.rewardType == "item";
 		GroupLootContainer_ReplaceFrame(GroupLootContainer, self, BonusRollLootWonFrame);
@@ -656,9 +651,9 @@ function MasterLooterFrame_Show()
 
 	MasterLooterFrame:Show();
 	MasterLooterFrame_UpdatePlayers();
-	MasterLooterFrame:SetPoint("TOPLEFT", DropDownList1, 0, 0);
 
-	CloseDropDownMenus();
+	-- Requires retest if/when this feature is renabled
+	MasterLooterFrame:SetPoint("TOPLEFT", LootFrame.selectedLootFrame, 0, 0);
 end
 
 function MasterLooterFrame_UpdatePlayers()

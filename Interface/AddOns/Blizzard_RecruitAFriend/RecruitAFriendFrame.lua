@@ -58,7 +58,6 @@ function RecruitAFriendFrameMixin:OnLoad()
 end
 
 function RecruitAFriendFrameMixin:OnHide()
-	CloseDropDownMenus();
 	RecruitAFriendRewardsFrame:Hide();
 	StaticPopupSpecial_Hide(RecruitAFriendRecruitmentFrame);
 end
@@ -445,21 +444,6 @@ function RecruitAFriendFrameMixin:ShouldShowRewardTutorial()
 	return not self:IsShown() and not self.shownRewardTutorial and (hasRafRewardToClaim or self:HasActivityRewardToClaim());
 end
 
-function RecruitAFriendFrameMixin:ShowRecruitDropDown(recruitButton)
-	if recruitButton then
-		self.selectedRecruit = recruitButton;
-		ToggleDropDownMenu(1, nil, self.DropDown, recruitButton, 0, 0);
-	end
-end
-
-function RecruitAFriendFrameMixin:GetSelectedRecruit()
-	return self.selectedRecruit;
-end
-
-function RecruitAFriendFrameMixin:OnDropDownClosed()
-	self.selectedRecruit = nil;
-end
-
 RecruitActivityButtonMixin = {};
 
 function RecruitActivityButtonMixin:OnLoad()
@@ -671,8 +655,25 @@ function RecruitListButtonMixin:OnLeave()
 end
 
 function RecruitListButtonMixin:OnClick(button)
-	if self.recruitInfo and button == "RightButton" then
-		RecruitAFriendFrame:ShowRecruitDropDown(self);
+	if button == "RightButton" then
+		local recruitInfo = self.recruitInfo;
+		if not recruitInfo then
+			return;
+		end
+
+		local contextData = {
+			name = recruitInfo.plainName,
+			bnetIDAccount = recruitInfo.bnetAccountID,
+			wowAccountGUID = recruitInfo.wowAccountGUID,
+			isRafRecruit = true,
+		}
+		
+		local accountInfo = recruitInfo.accountInfo;
+		if accountInfo then
+			contextData.guid = accountInfo.gameAccountInfo.playerGuid;
+		end
+
+		UnitPopup_OpenMenu("RAF_RECRUIT", contextData);
 	end
 end
 
@@ -753,40 +754,6 @@ function RecruitListButtonMixin:SetupRecruit(recruitInfo)
 	self:UpdateActivities(recruitInfo);
 
 	self:Show();
-end
-
-RecruitAFriendDropDownMixin = {};
-
-function RecruitAFriendDropDownMixin:OnLoad()
-	self.isSelf = false;
-	self.isRafRecruit = true;
-
-	UIDropDownMenu_Initialize(self, self.Init, "MENU");
-end
-
-function RecruitAFriendDropDownMixin:OnHide()
-	self.bnetIDAccount = nil;
-	self.guid = nil;
-	RecruitAFriendFrame:OnDropDownClosed();
-end
-
-function RecruitAFriendDropDownMixin:Init()
-	local selectedRecruit = RecruitAFriendFrame:GetSelectedRecruit();
-	if not selectedRecruit or not selectedRecruit.recruitInfo then
-		return;
-	end
-
-	local recruitInfo = selectedRecruit.recruitInfo;
-	local accountInfo = selectedRecruit.recruitInfo.accountInfo;
-
-	self.bnetIDAccount = recruitInfo.bnetAccountID;
-	self.wowAccountGUID = recruitInfo.wowAccountGUID;
-
-	if accountInfo then
-		self.guid = accountInfo.gameAccountInfo.playerGuid;
-	end
-
-	UnitPopup_ShowMenu(self, "RAF_RECRUIT", nil, recruitInfo.plainName);
 end
 
 RecruitAFriendNextRewardInfoButtonMixin = CreateFromMixins(RecruitAFriendSystemMixin);
@@ -1398,7 +1365,7 @@ function RecruitAFriendRewardTabMixin:TrySetChecked()
 	self:SetChecked(self.rafVersion == self:GetRecruitAFriendFrame():GetSelectedRAFVersion());
 end
 
-function RecruitAFriendRewardTabMixin:TryPlayUnclaimedRewardsAnim(versionInfo)
+function RecruitAFriendRewardTabMixin:TryPlayUnclaimedRewardsAnim()
 	if self:GetChecked() then
 		self.UnclaimedRewardsAnim:Stop();
 		return;

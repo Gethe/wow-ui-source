@@ -143,7 +143,7 @@ local MountJournal =
 				{ Name = "shouldHideOnChar", Type = "bool", Nilable = false },
 				{ Name = "isCollected", Type = "bool", Nilable = false },
 				{ Name = "mountID", Type = "number", Nilable = false },
-				{ Name = "isForDragonriding", Type = "bool", Nilable = false },
+				{ Name = "isSteadyFlight", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -166,6 +166,15 @@ local MountJournal =
 				{ Name = "animID", Type = "number", Nilable = false },
 				{ Name = "spellVisualKitID", Type = "number", Nilable = false },
 				{ Name = "disablePlayerMountPreview", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetDynamicFlightModeSpellID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -266,7 +275,7 @@ local MountJournal =
 				{ Name = "shouldHideOnChar", Type = "bool", Nilable = false },
 				{ Name = "isCollected", Type = "bool", Nilable = false },
 				{ Name = "mountID", Type = "number", Nilable = false },
-				{ Name = "isForDragonriding", Type = "bool", Nilable = false },
+				{ Name = "isSteadyFlight", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -346,6 +355,16 @@ local MountJournal =
 			Returns =
 			{
 				{ Name = "numMountsNeedingFanfare", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "IsDragonridingUnlocked",
+			Type = "Function",
+			Documentation = { "Returns whether the player has unlocked the ability to switch between Skyriding and steady flight styles for flying mounts ." },
+
+			Returns =
+			{
+				{ Name = "isUnlocked", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -461,6 +480,10 @@ local MountJournal =
 			},
 		},
 		{
+			Name = "PickupDynamicFlightMode",
+			Type = "Function",
+		},
+		{
 			Name = "SetAllSourceFilters",
 			Type = "Function",
 
@@ -539,6 +562,10 @@ local MountJournal =
 			{
 				{ Name = "mountID", Type = "number", Nilable = false },
 			},
+		},
+		{
+			Name = "SwapDynamicFlightMode",
+			Type = "Function",
 		},
 	},
 
@@ -629,7 +656,7 @@ local MountJournal =
 				{ Name = "shouldHideOnChar", Type = "bool", Nilable = false },
 				{ Name = "isCollected", Type = "bool", Nilable = false },
 				{ Name = "mountID", Type = "number", Nilable = false },
-				{ Name = "isForDragonriding", Type = "bool", Nilable = false },
+				{ Name = "isSteadyFlight", Type = "bool", Nilable = false },
 			},
 		},
 		{

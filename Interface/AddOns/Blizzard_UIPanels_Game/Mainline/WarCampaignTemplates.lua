@@ -1,3 +1,5 @@
+local CAMPAIGN_TITLE_MAX_WIDTH = 214;
+
 CampaignTooltipMixin = {};
 
 function CampaignTooltipMixin:OnShow()
@@ -133,17 +135,23 @@ function CampaignHeaderDisplayMixin:UpdateNextObjective(state)
 		if failureReason and failureReason.text and not self:IsCollapsed() then
 			self.NextObjective:Set(failureReason);
 			self:SetHitRectInsets(0, 0, 0, self.NextObjective.Text:GetStringHeight() + 6);
+			self.bottomPadding = 10;
 			return;
 		end
 	end
 
 	self.NextObjective:Clear();
 	self:SetHitRectInsets(0, 0, 0, 0);
+	self.bottomPadding = 0;
 end
 
 function CampaignHeaderDisplayMixin:UpdateTitle(isComplete)
 	local useHighlight = not isComplete;
+	self.Text:SetWidth(CAMPAIGN_TITLE_MAX_WIDTH);
 	SetFieldText(self.Text, self:GetCampaign().name, QuestLogHeaderCodeMixin.GetTitleColor(self, useHighlight));
+	local stringWidth = self.Text:GetStringWidth();
+	-- add 1 so any rounding in the wrong direction doesn't cause "..." to appear
+	self.Text:SetWidth(stringWidth + 1);
 end
 
 do
@@ -205,6 +213,11 @@ function CampaignHeaderCollapsibleMixin:OnClick(button)
 	end
 
 	if button == "LeftButton" then
+		if self:IsCollapsed() then
+			self.minimumHeight = self.minimumExpandedHeight;
+		else
+			self.minimumHeight = self.minimumCollapsedHeight;
+		end
 		local isCollapsed = self:ToggleCollapsed();
 
 		if isCollapsed then
@@ -232,7 +245,10 @@ end
 
 function CampaignHeaderCollapsibleMixin:UpdateCollapsedState()
 	local isCollapsed = self:IsCollapsed();
-	self.CollapseButton:UpdateState(isCollapsed);
+	self.CollapseButton:UpdateCollapsedState(isCollapsed);
+	if self.SelectedHighlight then
+		self.SelectedHighlight:SetShown(not isCollapsed);
+	end
 	return isCollapsed;
 end
 
@@ -275,30 +291,18 @@ function CampaignHeaderMixin:RequestLore()
 	C_LoreText.RequestLoreTextForCampaignID(self:GetCampaign():GetID());
 end
 
-function CampaignHeaderMixin:UpdateCollapsedState()
-	local isCollapsed = CampaignHeaderCollapsibleMixin.UpdateCollapsedState(self);
-	self.SelectedHighlight:SetShown(not isCollapsed);
-end
-
-function CampaignHeaderMixin:OnUpdate()
-	self:UpdateLoreButtonVisibility();
-end
-
 function CampaignHeaderMixin:OnEnter()
 	self:ShowTooltip();
-
+	self.HighlightTexture:Show();
 	-- Keep requesting lore for every mouse enter, the alternative is to make the dangerous assumption that lore would only update on quest complete
 	if not self:HasLoreEntries() then
 		C_LoreText.RequestLoreTextForCampaignID(self:GetCampaign():GetID());
 	end
-
-	-- NOTE: The OnUpdate handles the logic for OnLeave because of how many elements need to remain visible/highlighted.
-	self:SetScript("OnUpdate", self.OnUpdate);
 end
 
 function CampaignHeaderMixin:OnLeave()
-	self:SetScript("OnUpdate", nil);
 	QuestMapLog_GetCampaignTooltip():Hide();
+	self.HighlightTexture:Hide();
 end
 
 function CampaignHeaderMixin:CheckOnLeave()
@@ -309,6 +313,13 @@ function CampaignHeaderMixin:OnMouseUp(button, upInside)
 	if upInside then
 		self:OnClick(button);
 	end
+	local pressed = false;
+	self.CollapseButton:UpdatePressedState(pressed);
+end
+
+function CampaignHeaderMixin:OnMouseDown()
+	local pressed = true;
+	self.CollapseButton:UpdatePressedState(pressed);
 end
 
 function CampaignHeaderMixin:OnEvent(event, ...)
@@ -319,6 +330,7 @@ function CampaignHeaderMixin:OnEvent(event, ...)
 			if self.hasLoreEntries then
 				self:UnregisterEvent("LORE_TEXT_UPDATED_CAMPAIGN");
 			end
+			self:UpdateLoreButtonVisibility();
 		end
 	end
 end
@@ -328,18 +340,12 @@ function CampaignHeaderMixin:HasLoreEntries()
 end
 
 function CampaignHeaderMixin:UpdateLoreButtonVisibility()
-	local mouseOver = RegionUtil.IsDescendantOfOrSame(GetMouseFocus(), self);
-	local showLore = (mouseOver or self:IsLoreButtonLocked()) and self:HasLoreEntries();
+	local showLore = self:HasLoreEntries();
 	self.LoreButton:SetShown(showLore);
 	self:SetDrawLayerEnabled("HIGHLIGHT", mouseOver);
 
 	if showLore then
 		self:CheckShowLoreTutorial();
-	end
-
-	-- OnLeave logic
-	if not mouseOver then
-		self:OnLeave();
 	end
 end
 
@@ -389,12 +395,6 @@ function CampaignHeaderMinimalMixin:CheckOnLeave()
 	self:OnLeave();
 end
 
-function CampaignHeaderMinimalMixin:OnMouseUp(button, upInside)
-	if upInside then
-		self:OnClick(button);
-	end
-end
-
 function CampaignHeaderMinimalMixin:SetCampaign(campaignID)
 	CampaignHeaderDisplayMixin.SetCampaign(self, campaignID);
 
@@ -422,25 +422,6 @@ function CampaignHeaderMinimalMixin:UpdateTextureKit()
 	-- nop
 end
 
-CampaignCollapseButtonMixin = {};
-
-function CampaignCollapseButtonMixin:OnClick(button, down)
-	self:GetParent():OnClick(button);
-end
-
-function CampaignCollapseButtonMixin:OnEnter()
-	self:GetParent():OnEnter();
-end
-
-function CampaignCollapseButtonMixin:OnLeave()
-	self:GetParent():CheckOnLeave();
-end
-
-function CampaignCollapseButtonMixin:UpdateState(isCollapsed)
-	self:SetNormalAtlas(isCollapsed and "Campaign_HeaderIcon_Closed" or "Campaign_HeaderIcon_Open" );
-	self:SetPushedAtlas(isCollapsed and "Campaign_HeaderIcon_ClosedPressed" or "Campaign_HeaderIcon_OpenPressed");
-end
-
 CampaignLoreButtonMixin = {};
 
 function CampaignLoreButtonMixin:SetMode(mode)
@@ -465,6 +446,18 @@ function CampaignLoreButtonMixin:OnClick()
 	elseif self.mode == "questlog" then
 		PlaySound(SOUNDKIT.UI_JOURNEYS_CLOSE_LORE_BOOK);
 		EventRegistry:TriggerEvent("QuestLog.HideCampaignOverview");
+	end
+end
+
+function CampaignLoreButtonMixin:OnEnter()
+	if self.Glow then
+		self.Glow:SetShown(self.mode == "overview");
+	end
+end
+
+function CampaignLoreButtonMixin:OnLeave()
+	if self.Glow then
+		self.Glow:Hide();
 	end
 end
 

@@ -36,16 +36,16 @@ function SettingsKeybindingSectionMixin:Init(initializer)
 	local bindingsCategories = data.bindingsCategories;
 	
 	self.Controls = {};
-	for _, data in ipairs(bindingsCategories) do
-		if data == KeybindingSpacer then
+	for _, categoryData in ipairs(bindingsCategories) do
+		if categoryData == KeybindingSpacer then
 			local frame = self.spacerPool:Acquire();
 			table.insert(self.Controls, frame);
 		else
 			local frame = self.bindingsPool:Acquire();
-			local bindingIndex, action = unpack(data);
-			local initializer = {data={}};
-			initializer.data.bindingIndex = bindingIndex;
-			frame:Init(initializer);
+			local bindingIndex, action = unpack(categoryData);
+			local newInitializer = {data={}};
+			newInitializer.data.bindingIndex = bindingIndex;
+			frame:Init(newInitializer);
 			table.insert(self.Controls, frame);
 		end
 	end
@@ -248,7 +248,7 @@ local function Register()
 		local defaultValue = Settings.CannotDefault;
 		local setting = Settings.RegisterProxySetting(category, "PROXY_CHARACTER_SPECIFIC_BINDINGS", Settings.DefaultVarLocation,
 			Settings.VarType.Boolean, CHARACTER_SPECIFIC_KEYBINDINGS, defaultValue, GetValue, SetValue);
-		local initializer = Settings.CreateCheckBox(category, setting, CHARACTER_SPECIFIC_KEYBINDING_TOOLTIP);
+		local initializer = Settings.CreateCheckbox(category, setting, CHARACTER_SPECIFIC_KEYBINDING_TOOLTIP);
 		
 		-- Changing from character to account bindings requires confirmation since it overwrites
 		-- character with account bindings.

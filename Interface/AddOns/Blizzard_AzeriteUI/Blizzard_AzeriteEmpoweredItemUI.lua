@@ -44,7 +44,7 @@ function AzeriteEmpoweredItemUIMixin:OnLoad()
 	end
 
 	local function TierReset(framePool, frame)
-		FramePool_HideAndClearAnchors(framePool, frame);
+		Pool_HideAndClearAnchors(framePool, frame);
 		frame:Reset();
 	end
 	self.tierPool = CreateFramePool("FRAME", self, "AzeriteEmpoweredItemTierTemplate", TierReset);

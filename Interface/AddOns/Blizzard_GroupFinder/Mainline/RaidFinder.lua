@@ -11,8 +11,6 @@ function RaidFinderFrame_OnEvent(self, event, ...)
 	if ( event == "LFG_LOCK_INFO_RECEIVED" ) then
 		if ( not RaidFinderQueueFrame.raid or not IsLFGDungeonJoinable(RaidFinderQueueFrame.raid) ) then
 			RaidFinderQueueFrame_SetRaid(GetBestRFChoice());
-			--RaidFinderQueueFrame.raid = GetBestRFChoice();
-			--UIDropDownMenu_SetSelectedValue(RaidFinderQueueFrameSelectionDropDown, RaidFinderQueueFrame.raid);
 		end
 		RaidFinderFrame_UpdateAvailability();
 	elseif ( event == "AJ_RAID_ACTION" ) then
@@ -84,7 +82,7 @@ function RaidFinderFrame_UpdateAvailability()
 		elseif ( isAvailableToPlayer ) then
 			enableTab = true;
 			isPlayerEligible = true;
-		elseif ( isRaidFinderDungeonDisplayable(id) ) then
+		elseif ( IsRaidFinderDungeonDisplayable(id) ) then
 			enableTab = true;
 		end
 	end
@@ -171,149 +169,142 @@ function RaidFinderQueueFrameIneligibleFrame_UpdateFrame(self)
 	end
 end
 
-function RaidFinderQueueFrameSelectionDropDown_SetUp(self)
-	UIDropDownMenu_SetWidth(self, 180);
-	UIDropDownMenu_Initialize(self, RaidFinderQueueFrameSelectionDropDown_Initialize);
-	if ( RaidFinderQueueFrame.raid ) then
-		UIDropDownMenu_SetSelectedValue(RaidFinderQueueFrameSelectionDropDown, RaidFinderQueueFrame.raid);
-	else
-		UIDropDownMenu_SetText(self, "")
-	end
-end
-
-local function isRaidFinderDungeonDisplayable(id)
+local function IsRaidFinderDungeonDisplayable(id)
 	local name, typeID, subtypeID, minLevel, maxLevel, _, _, _, expansionLevel = GetLFGDungeonInfo(id);
 	local myLevel = UnitLevel("player");
 	return myLevel >= minLevel and myLevel <= maxLevel and EXPANSION_LEVEL >= expansionLevel;
 end
 
-function RaidFinderQueueFrameSelectionDropDown_Initialize(self)
+local function IsSelected(dungeonID)
+	return RaidFinderQueueFrame.raid == dungeonID;
+end
 
-	local sortedDungeons = { };
-	local function InsertDungeonData(id, name, mapName, isAvailable, mapID)
-		local t = { id = id, name = name, mapName = mapName, isAvailable = isAvailable, mapID = mapID };
-		local foundMap = false;
-		for i = 1, #sortedDungeons do
-			if ( sortedDungeons[i].mapName == mapName ) then
-				foundMap = true;
-			else
-				if ( foundMap ) then
-					tinsert(sortedDungeons, i, t);
-					return;
-				end
-			end
-		end
-		tinsert(sortedDungeons, t);
-	end
+local function SetSelected(dungeonID)
+	RaidFinderQueueFrame_SetRaidInternal(dungeonID);
+end
 
-	-- If we ever change this logic, we also need to change the logic in RaidFinderFrame_UpdateAvailability
-	for i=1, GetNumRFDungeons() do
-		local dungeonInfo = { GetRFDungeonInfo(i) };
-		local id = dungeonInfo[1];
-		local name = dungeonInfo[2];
-		local mapName = dungeonInfo[20];
-		local mapID = dungeonInfo[23];
-		local isAvailable, isAvailableToPlayer, hideIfNotJoinable = IsLFGDungeonJoinable(id);
-		if( not hideIfNotJoinable or isAvailable ) then
-			if ( isAvailable or isAvailableToPlayer or isRaidFinderDungeonDisplayable(id) ) then
-				InsertDungeonData(id, name, mapName, isAvailable, mapID);
-			end
-		end
-	end
+function RaidFinderQueueFrame_OnLoad(self)
+	self.SelectionDropdown:SetWidth(200);
 
-	local info = UIDropDownMenu_CreateInfo();
-	local currentMapName = nil;
-	for i = 1, #sortedDungeons do
-		if ( currentMapName ~= sortedDungeons[i].mapName ) then
-			currentMapName = sortedDungeons[i].mapName;
-			info.text = sortedDungeons[i].mapName;
-			info.isTitle = 1;
-			info.notCheckable = 1;
-			info.icon = nil;
-			info.iconXOffset = nil;
-			info.tooltipOnButton = nil;
-			UIDropDownMenu_AddButton(info);
-			info.notCheckable = nil;
-		end
-		if ( sortedDungeons[i].isAvailable ) then
-			info.text = sortedDungeons[i].name; --Note that the dropdown text may be manually changed in RaidFinderQueueFrame_SetRaid
-			info.value = sortedDungeons[i].id;
-			info.isTitle = nil;
-			info.func = RaidFinderQueueFrameSelectionDropDownButton_OnClick;
-			info.disabled = nil;
-			info.checked = (RaidFinderQueueFrame.raid == info.value);
-			info.tooltipWhileDisabled = nil;
-			info.tooltipOnButton = 1;
-			info.tooltipTitle = RAID_BOSSES;
-			local encounters;
-			local numEncounters = GetLFGDungeonNumEncounters(sortedDungeons[i].id);
-			for j = 1, numEncounters do
-				local bossName, _, isKilled = GetLFGDungeonEncounterInfo(sortedDungeons[i].id, j);
-				local colorCode = "";
-				if ( isKilled ) then
-					colorCode = RED_FONT_COLOR_CODE;
-				end
-				if encounters then
-					encounters = encounters.."|n"..colorCode..bossName..FONT_COLOR_CODE_CLOSE;
+	self.SelectionDropdown:SetSelectionTranslator(function(selection)
+		return GetLFGDungeonInfo(selection.data);
+	end);
+end
+
+function RaidFinderQueueFrame_OnShow(self)
+	self.SelectionDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_RAID_FINDER_QUEUE_FRAME");
+
+		local sortedDungeons = { };
+		local function InsertDungeonData(id, name, mapName, isAvailable, mapID)
+			local t = { id = id, name = name, mapName = mapName, isAvailable = isAvailable, mapID = mapID };
+			local foundMap = false;
+			for index, dungeon in ipairs(sortedDungeons) do
+				if ( dungeon.mapName == mapName ) then
+					foundMap = true;
 				else
-					encounters = colorCode..bossName..FONT_COLOR_CODE_CLOSE;
+					if ( foundMap ) then
+						tinsert(sortedDungeons, i, t);
+						return;
+					end
 				end
 			end
-			local modifiedInstanceTooltipText = "";
-			if(sortedDungeons[i].mapID) then 
-				local modifiedInstanceInfo = C_ModifiedInstance.GetModifiedInstanceInfoFromMapID(sortedDungeons[i].mapID)
-				if (modifiedInstanceInfo) then 
-					info.icon = GetFinalNameFromTextureKit("%s-small", modifiedInstanceInfo.uiTextureKit);
-					modifiedInstanceTooltipText = "|n|n" .. modifiedInstanceInfo.description;
-				end
-				info.iconXOffset = -6;
-			end 
-			info.tooltipText = encounters .. modifiedInstanceTooltipText;
-			UIDropDownMenu_AddButton(info);
-		else
-			info.text = sortedDungeons[i].name; --Note that the dropdown text may be manually changed in RaidFinderQueueFrame_SetRaid
-			info.value = sortedDungeons[i].id;
-			info.isTitle = nil;
-			info.func = nil;
-			info.icon = nil; 
-			info.iconXOffset = nil;
-			local modifiedInstanceTooltipText = "";
-			if(sortedDungeons[i].mapID) then 
-				local modifiedInstanceInfo = C_ModifiedInstance.GetModifiedInstanceInfoFromMapID(sortedDungeons[i].mapID)
-				if (modifiedInstanceInfo) then 
-					info.icon = GetFinalNameFromTextureKit("%s-small", modifiedInstanceInfo.uiTextureKit);
-					modifiedInstanceTooltipText = "|n|n" .. modifiedInstanceInfo.description;
-				end
-				info.iconXOffset = -6;
-			end 
-			info.disabled = 1;
-			info.checked = nil;
-			info.tooltipWhileDisabled = 1;
-			info.tooltipOnButton = 1;
-			info.tooltipTitle = YOU_MAY_NOT_QUEUE_FOR_THIS;
-			info.tooltipText = LFGConstructDeclinedMessage(sortedDungeons[i].id) .. modifiedInstanceTooltipText; 
-			UIDropDownMenu_AddButton(info);
+			tinsert(sortedDungeons, t);
 		end
-	end
+
+		-- If we ever change this logic, we also need to change the logic in RaidFinderFrame_UpdateAvailability
+		for i=1, GetNumRFDungeons() do
+			local dungeonInfo = { GetRFDungeonInfo(i) };
+			local id = dungeonInfo[1];
+			local name = dungeonInfo[2];
+			local mapName = dungeonInfo[20];
+			local mapID = dungeonInfo[23];
+			local isAvailable, isAvailableToPlayer, hideIfNotJoinable = IsLFGDungeonJoinable(id);
+			if( not hideIfNotJoinable or isAvailable ) then
+				if ( isAvailable or isAvailableToPlayer or IsRaidFinderDungeonDisplayable(id) ) then
+					InsertDungeonData(id, name, mapName, isAvailable, mapID);
+				end
+			end
+		end
+
+		local function GetInstanceData(mapID)
+			local icon;
+			local modifiedInstanceTooltipText = "";
+			if mapID then 
+				local modifiedInstanceInfo = C_ModifiedInstance.GetModifiedInstanceInfoFromMapID(mapID)
+				if (modifiedInstanceInfo) then 
+					icon = GetFinalNameFromTextureKit("%s-small", modifiedInstanceInfo.uiTextureKit);
+					modifiedInstanceTooltipText = "|n|n" .. modifiedInstanceInfo.description;
+				end
+			end
+			return icon, modifiedInstanceTooltipText;
+		end
+
+		local currentMapName = nil;
+		for index, dungeon in ipairs(sortedDungeons) do
+			if ( currentMapName ~= dungeon.mapName ) then
+				currentMapName = dungeon.mapName;
+				rootDescription:CreateTitle(currentMapName);
+			end
+
+			local text = dungeon.name;
+			local iconTexture, modifiedInstanceTooltipText = GetInstanceData(dungeon.mapID);
+			local radio = rootDescription:CreateRadio(dungeon.name, IsSelected, SetSelected, dungeon.id);
+
+			if iconTexture then
+				radio:AddInitializer(function(button, description, menu)
+					local icon = button:AttachTexture();
+					icon.noRecurseHierarchy = true;
+					icon:SetPoint("RIGHT");
+					icon:SetSize(16, 16);
+					icon:SetTexture(iconTexture);
+				end);
+			end
+
+			if ( dungeon.isAvailable ) then
+				local encounters;
+				for j = 1, GetLFGDungeonNumEncounters(dungeon.id) do
+					local bossName, _, isKilled = GetLFGDungeonEncounterInfo(dungeon.id, j);
+					local colorCode = "";
+					if ( isKilled ) then
+						colorCode = RED_FONT_COLOR_CODE;
+					end
+					if encounters then
+						encounters = encounters.."|n"..colorCode..bossName..FONT_COLOR_CODE_CLOSE;
+					else
+						encounters = colorCode..bossName..FONT_COLOR_CODE_CLOSE;
+					end
+				end
+
+				if encounters then
+					local tooltipText = encounters .. modifiedInstanceTooltipText;
+					radio:SetTooltip(function(tooltip, elementDescription)
+						GameTooltip_SetTitle(tooltip, RAID_BOSSES);
+						GameTooltip_AddNormalLine(tooltip, tooltipText);
+					end);
+				end
+			else
+				radio:SetEnabled(false);
+				radio:SetTooltip(function(tooltip, elementDescription)
+					GameTooltip_SetTitle(tooltip, YOU_MAY_NOT_QUEUE_FOR_THIS);
+					GameTooltip_AddNormalLine(tooltip, LFGConstructDeclinedMessage(dungeon.id)..modifiedInstanceTooltipText);
+				end);
+			end
+		end
+	end);
 end
 
-function RaidFinderQueueFrameSelectionDropDownButton_OnClick(self)
-	RaidFinderQueueFrame_SetRaid(self.value);
-end
-
-function RaidFinderQueueFrame_SetRaid(value)
-	RaidFinderQueueFrame.raid = value;
-	UIDropDownMenu_SetSelectedValue(RaidFinderQueueFrameSelectionDropDown, value);
-	if ( value ) then
-		local name = GetLFGDungeonInfo(value);
-		UIDropDownMenu_SetText(RaidFinderQueueFrameSelectionDropDown, name);
-	else
-		UIDropDownMenu_SetText(RaidFinderQueueFrameSelectionDropDown, "");
-	end
+function RaidFinderQueueFrame_SetRaidInternal(raid)
+	RaidFinderQueueFrame.raid = raid;
 	RaidFinderQueueFrameRewards_UpdateFrame();
 	LFG_UpdateAllRoleCheckboxes();
 	LFG_UpdateFindGroupButtons();
 	LFG_UpdateRolesChangeable();
+end
+
+function RaidFinderQueueFrame_SetRaid(raid)
+	RaidFinderQueueFrame_SetRaidInternal(raid);
+	RaidFinderQueueFrame.SelectionDropdown:GenerateMenu();
 end
 
 function RaidFinderQueueFrame_Join()

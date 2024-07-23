@@ -76,7 +76,7 @@ end
 function CovenantPreviewFrameMixin:OnShow()
 	self:RegisterEvent("COVENANT_PREVIEW_CLOSE");
 	self:RegisterEvent("PLAYER_CHOICE_CLOSE");
-	UpdateScaleForFit(self); 
+	UIPanelUpdateScaleForFit(self);
 end
 
 function CovenantPreviewFrameMixin:OnHide()
@@ -270,7 +270,7 @@ end
 
 function CovenantAbilityButtonMixin:SetupButton(abilityInfo) 
 	self.spellID = abilityInfo.spellID; 
-	local spellName, _, spellIcon = GetSpellInfo(self.spellID);
+	local spellIcon = C_Spell.GetSpellTexture(self.spellID);
 
 	self.Icon:SetTexture(spellIcon);
 	self:Show();

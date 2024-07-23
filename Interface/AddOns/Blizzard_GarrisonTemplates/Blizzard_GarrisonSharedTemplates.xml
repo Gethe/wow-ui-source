@@ -271,7 +271,7 @@
 					<Size x="140" y="0"/>
 					<Anchors>
 						<!-- This is re-anchored to PortraitFrame in the Lua code -->
-						<Anchor point="LEFT" relativeKey="$parent.PortraitFrame" relativePoint="LEFT" x="66" y="0"/>
+						<Anchor point="LEFT" relativeKey="$parent" relativePoint="LEFT" x="66" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="ILevel" inherits="GameFontHighlightSmall" justifyH="LEFT">
@@ -771,7 +771,7 @@
 		<Frames>
 			<Frame parentKey="Counter" inherits="GarrisonMissionLargeMechanicTemplate" hidden="true">
 				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.Border" relativePoint="BOTTOM" x="0" y="-5"/>
+					<Anchor point="TOP" relativeKey="$parent" relativePoint="BOTTOM" x="0" y="-5"/>
 				</Anchors>
 			</Frame>
 		</Frames>

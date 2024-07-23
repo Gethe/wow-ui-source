@@ -10,8 +10,6 @@ function FlightMap_WorldQuestPinMixin:OnLoad()
 	WorldQuestPinMixin.OnLoad(self);
 
 	self:SetAlphaLimits(2.0, 0.0, 1.0);
-	self:SetScalingLimits(1, 0.4125, 0.425);
-
 	self:SetNudgeTargetFactor(0.015);
 	self:SetNudgeZoomedOutFactor(1.0);
 	self:SetNudgeZoomedInFactor(0.25);

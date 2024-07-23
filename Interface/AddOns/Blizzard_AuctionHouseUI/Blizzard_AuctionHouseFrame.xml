@@ -68,11 +68,6 @@
 			</Button>
 			<!-- Tabs -->
 
-			<!-- DropDowns -->
-			<!-- DropDowns need to be loaded first to be referenced by other subframes. -->
-			<Frame parentKey="FavoriteDropDown" inherits="FavoriteDropDownTemplate" hidden="true"/>
-			<!-- DropDowns -->
-
 			<!-- Browsing frames -->
 			<Frame parentKey="SearchBar" inherits="AuctionHouseSearchBarTemplate" hidden="true">
 				<Anchors>

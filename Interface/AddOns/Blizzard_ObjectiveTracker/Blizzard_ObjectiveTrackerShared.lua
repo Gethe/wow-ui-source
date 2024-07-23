@@ -1,63 +1,62 @@
+OBJECTIVE_TRACKER_COLOR = {
+	["Normal"] = { r = 0.8, g = 0.8, b = 0.8 },
+	["NormalHighlight"] = { r = HIGHLIGHT_FONT_COLOR.r, g = HIGHLIGHT_FONT_COLOR.g, b = HIGHLIGHT_FONT_COLOR.b },
+	["Failed"] = { r = DIM_RED_FONT_COLOR.r, g = DIM_RED_FONT_COLOR.g, b = DIM_RED_FONT_COLOR.b },
+	["FailedHighlight"] = { r = RED_FONT_COLOR.r, g = RED_FONT_COLOR.g, b = RED_FONT_COLOR.b },
+	["Header"] = { r = OBJECTIVE_TRACKER_BLOCK_HEADER_COLOR.r, g = OBJECTIVE_TRACKER_BLOCK_HEADER_COLOR.g, b = OBJECTIVE_TRACKER_BLOCK_HEADER_COLOR.b },
+	["HeaderHighlight"] = { r = NORMAL_FONT_COLOR.r, g = NORMAL_FONT_COLOR.g, b = NORMAL_FONT_COLOR.b },
+	["Complete"] = { r = 0.6, g = 0.6, b = 0.6 },
+	["TimeLeft"] = { r = DIM_RED_FONT_COLOR.r, g = DIM_RED_FONT_COLOR.g, b = DIM_RED_FONT_COLOR.b },
+	["TimeLeftHighlight"] = { r = RED_FONT_COLOR.r, g = RED_FONT_COLOR.g, b = RED_FONT_COLOR.b },
+};
+	OBJECTIVE_TRACKER_COLOR["Normal"].reverse = OBJECTIVE_TRACKER_COLOR["NormalHighlight"];
+	OBJECTIVE_TRACKER_COLOR["NormalHighlight"].reverse = OBJECTIVE_TRACKER_COLOR["Normal"];
+	OBJECTIVE_TRACKER_COLOR["Failed"].reverse = OBJECTIVE_TRACKER_COLOR["FailedHighlight"];
+	OBJECTIVE_TRACKER_COLOR["FailedHighlight"].reverse = OBJECTIVE_TRACKER_COLOR["Failed"];
+	OBJECTIVE_TRACKER_COLOR["Header"].reverse = OBJECTIVE_TRACKER_COLOR["HeaderHighlight"];
+	OBJECTIVE_TRACKER_COLOR["HeaderHighlight"].reverse = OBJECTIVE_TRACKER_COLOR["Header"];
+	OBJECTIVE_TRACKER_COLOR["TimeLeft"].reverse = OBJECTIVE_TRACKER_COLOR["TimeLeftHighlight"];
+	OBJECTIVE_TRACKER_COLOR["TimeLeftHighlight"].reverse = OBJECTIVE_TRACKER_COLOR["TimeLeft"];
+
+OBJECTIVE_DASH_STYLE_SHOW = 1;
+OBJECTIVE_DASH_STYLE_HIDE = 2;
+OBJECTIVE_DASH_STYLE_HIDE_AND_COLLAPSE = 3;
+
 -- *****************************************************************************************************
--- ***** ITEM FUNCTIONS
+-- ***** QUEST ITEM BUTTON
 -- *****************************************************************************************************
-local function OnRelease(framePool, frame)
-	frame:Hide();
-	frame:ClearAllPoints();
-	frame:SetParent(nil);
-end
 
-local g_questObjectiveItemPool = CreateFramePool("BUTTON", nil, "QuestObjectiveItemButtonTemplate", OnRelease);
-function QuestObjectiveItem_AcquireButton(parent)
-	local itemButton = g_questObjectiveItemPool:Acquire();
-	itemButton:SetParent(parent);
+QuestObjectiveItemButtonMixin = { };
 
-	return itemButton;
-end
-
-function QuestObjectiveItem_ReleaseButton(button)
-	g_questObjectiveItemPool:Release(button);
-end
-
-function QuestObjectiveItem_Initialize(itemButton, questLogIndex)
-	local link, item, charges, showItemWhenComplete = GetQuestLogSpecialItemInfo(questLogIndex);
-	itemButton:SetID(questLogIndex);
-	itemButton.charges = charges;
-	itemButton.rangeTimer = -1;
-	SetItemButtonTexture(itemButton, item);
-	SetItemButtonCount(itemButton, charges);
-	QuestObjectiveItem_UpdateCooldown(itemButton);
-end
-
-function QuestObjectiveItem_OnLoad(self)
+function QuestObjectiveItemButtonMixin:OnLoad()
 	self:RegisterForClicks("AnyUp");
 end
 
-function QuestObjectiveItem_OnEvent(self, event, ...)
-	if ( event == "PLAYER_TARGET_CHANGED" ) then
+function QuestObjectiveItemButtonMixin:OnEvent(event, ...)
+	if event == "PLAYER_TARGET_CHANGED" then
 		self.rangeTimer = -1;
-	elseif ( event == "BAG_UPDATE_COOLDOWN" ) then
-		QuestObjectiveItem_UpdateCooldown(self);
+	elseif event == "BAG_UPDATE_COOLDOWN" then
+		self:UpdateCooldown(self);
 	end
 end
 
-function QuestObjectiveItem_OnUpdate(self, elapsed)
+function QuestObjectiveItemButtonMixin:OnUpdate(elapsed)
 	-- Handle range indicator
 	local rangeTimer = self.rangeTimer;
-	if ( rangeTimer ) then
+	if rangeTimer then
 		rangeTimer = rangeTimer - elapsed;
-		if ( rangeTimer <= 0 ) then
-			local link, item, charges, showItemWhenComplete = GetQuestLogSpecialItemInfo(self:GetID());
-			if ( not charges or charges ~= self.charges ) then
-				ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_QUEST);
+		if rangeTimer <= 0 then
+			local link, item, charges, showItemWhenComplete = GetQuestLogSpecialItemInfo(self.questLogIndex);
+			if not charges or charges ~= self.charges then
+				QuestObjectiveTracker:MarkDirty();
 				return;
 			end
 			local count = self.HotKey;
-			local valid = IsQuestLogSpecialItemInRange(self:GetID());
-			if ( valid == 0 ) then
+			local valid = IsQuestLogSpecialItemInRange(self.questLogIndex);
+			if valid == 0 then
 				count:Show();
 				count:SetVertexColor(1.0, 0.1, 0.1);
-			elseif ( valid == 1 ) then
+			elseif valid == 1 then
 				count:Show();
 				count:SetVertexColor(0.6, 0.6, 0.6);
 			else
@@ -70,362 +69,361 @@ function QuestObjectiveItem_OnUpdate(self, elapsed)
 	end
 end
 
-function QuestObjectiveItem_OnShow(self)
+function QuestObjectiveItemButtonMixin:OnShow()
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
 	self:RegisterEvent("BAG_UPDATE_COOLDOWN");
 end
 
-function QuestObjectiveItem_OnHide(self)
+function QuestObjectiveItemButtonMixin:OnHide()
 	self:UnregisterEvent("PLAYER_TARGET_CHANGED");
 	self:UnregisterEvent("BAG_UPDATE_COOLDOWN");
 end
 
-function QuestObjectiveItem_OnEnter(self)
+function QuestObjectiveItemButtonMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetQuestLogSpecialItem(self:GetID());
+	GameTooltip:SetQuestLogSpecialItem(self.questLogIndex);
 end
 
-function QuestObjectiveItem_OnClick(self, button)
-	if ( IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() ) then
-		local link, item, charges, showItemWhenComplete = GetQuestLogSpecialItemInfo(self:GetID());
-		if ( link ) then
+function QuestObjectiveItemButtonMixin:OnClick(button)
+	if IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() then
+		local link, item, charges, showItemWhenComplete = GetQuestLogSpecialItemInfo(self.questLogIndex);
+		if link then
 			ChatEdit_InsertLink(link);
 		end
 	else
-		UseQuestLogSpecialItem(self:GetID());
+		UseQuestLogSpecialItem(self.questLogIndex);
 	end
 end
 
-function QuestObjectiveItem_UpdateCooldown(itemButton)
-	local start, duration, enable = GetQuestLogSpecialItemCooldown(itemButton:GetID());
-	if ( start ) then
-		CooldownFrame_Set(itemButton.Cooldown, start, duration, enable);
-		if ( duration > 0 and enable == 0 ) then
-			SetItemButtonTextureVertexColor(itemButton, 0.4, 0.4, 0.4);
+function QuestObjectiveItemButtonMixin:SetUp(questLogIndex)
+	local link, item, charges, showItemWhenComplete = GetQuestLogSpecialItemInfo(questLogIndex);
+	self.questLogIndex = questLogIndex;
+	self.charges = charges;
+	self.rangeTimer = -1;
+	SetItemButtonTexture(self, item);
+	SetItemButtonCount(self, charges);
+	self:UpdateCooldown(self);
+end
+
+function QuestObjectiveItemButtonMixin:UpdateCooldown()
+	local start, duration, enable = GetQuestLogSpecialItemCooldown(self.questLogIndex);
+	if start then
+		CooldownFrame_Set(self.Cooldown, start, duration, enable);
+		if duration > 0 and enable == 0 then
+			SetItemButtonTextureVertexColor(self, 0.4, 0.4, 0.4);
 		else
-			SetItemButtonTextureVertexColor(itemButton, 1, 1, 1);
+			SetItemButtonTextureVertexColor(self, 1, 1, 1);
 		end
 	end
 end
 
-local g_questFindGroupButtonPool = CreateFramePool("BUTTON", nil, "QuestObjectiveFindGroupButtonTemplate", OnRelease);
-function QuestObjectiveFindGroup_AcquireButton(parent, questID)
-	local button = g_questFindGroupButtonPool:Acquire();
-	button:SetParent(parent);
-	button.questID = questID;
+-- *****************************************************************************************************
+-- ***** FIND GROUP BUTTON
+-- *****************************************************************************************************
 
-	return button;
+QuestObjectiveFindGroupButtonMixin = { };
+
+function QuestObjectiveFindGroupButtonMixin:SetUp(questID)
+	self.questID = questID;
 end
 
-function QuestObjectiveFindGroup_ReleaseButton(self)
-	self.questID = nil;
-	g_questFindGroupButtonPool:Release(self);
-end
-
-function QuestObjectiveFindGroup_OnMouseDown(self)
+function QuestObjectiveFindGroupButtonMixin:OnMouseDown()
 	if self:IsEnabled() then
 		self.Icon:SetPoint("CENTER", self, "CENTER", -2, -1);
 	end
 end
 
-function QuestObjectiveFindGroup_OnMouseUp(self)
+function QuestObjectiveFindGroupButtonMixin:OnMouseUp()
 	if self:IsEnabled() then
 		self.Icon:SetPoint("CENTER", self, "CENTER", -1, 0);
 	end
 end
 
-function QuestObjectiveFindGroup_OnEnter(self)
+function QuestObjectiveFindGroupButtonMixin:OnEnter()
 	GameTooltip:SetOwner(self);
 	GameTooltip:AddLine(TOOLTIP_TRACKER_FIND_GROUP_BUTTON, HIGHLIGHT_FONT_COLOR:GetRGB());
 
 	GameTooltip:Show();
 end
 
-function QuestObjectiveFindGroup_OnLeave(self)
-	GameTooltip:Hide();
-end
-
-function QuestObjectiveFindGroup_OnClick(self)
+function QuestObjectiveFindGroupButtonMixin:OnClick()
 	local isFromGreenEyeButton = true;
-	--We only want green eye button groups to display the create a group button if there are already groups there.
+	-- We only want green eye button groups to display the create a group button if there are already groups there.
 	LFGListUtil_FindQuestGroup(self.questID, isFromGreenEyeButton);
 end
 
-function QuestObjectiveSetupBlockButton_AddRightButton(block, button, buttonOffsetsTag)
-	if block.rightButton == button then
-		-- TODO: Fix for real, some event causes the findGroup button to get added twice (could happen for any button)
-		-- so it doesn't need to be reanchored another time
-		return;
-	end
+-- *****************************************************************************************************
+-- ***** REWARDS TOAST
+-- *****************************************************************************************************
 
-	button:ClearAllPoints();
+ObjectiveTrackerRewardsToastMixin = {};
 
-	if block.rightButton then
-		button:SetPoint("RIGHT", block.rightButton, "LEFT", -ObjectiveTracker_GetPaddingBetweenButtons(block), 0);
-	else
-		button:SetPoint("TOPRIGHT", block, ObjectiveTracker_GetButtonOffsets(block, buttonOffsetsTag));
-	end
-
-	button:Show();
-
-	block.rightButton = button;
-	block.lineWidth = block.lineWidth - button:GetWidth() - ObjectiveTracker_GetPaddingBetweenButtons(block);
+function ObjectiveTrackerRewardsToastMixin:OnLoad()
+	self.framePool = CreateFramePool("FRAME", self, "ObjectiveTrackerRewardFrameTemplate");
+	self.Anim:SetScript("OnFinished", GenerateClosure(self.OnAnimateRewardsDone, self));
 end
 
-function QuestObjectiveSetupBlockButton_FindGroup(block, questID)
-	-- Cache this off to avoid spurious calls to C_LFGList.CanCreateQuestGroup, for a given quest the result will not change until
-	-- completed, and when completed this world quest should no longer be on the tracker.
-	if block.hasGroupFinderButton == nil then
-		block.hasGroupFinderButton = C_LFGList.CanCreateQuestGroup(questID);
-	end
-
-	if block.hasGroupFinderButton then
-		local groupFinderButton = block.groupFinderButton;
-		if not groupFinderButton then
-			groupFinderButton = QuestObjectiveFindGroup_AcquireButton(block, questID);
-			block.groupFinderButton = groupFinderButton;
-		end
-
-		QuestObjectiveSetupBlockButton_AddRightButton(block, groupFinderButton, "groupFinder");
-	else
-		QuestObjectiveReleaseBlockButton_FindGroup(block);
-	end
-
-	return block.hasGroupFinderButton;
-end
-
-local g_scenarioFindGroupButtonPool = CreateFramePool("BUTTON", nil, "ScenarioObjectiveFindGroupButtonTemplate", OnRelease);
-function ScenarioObjectiveFindGroup_ReleaseButton(self)
-	self.scenarioID = nil;
-	g_scenarioFindGroupButtonPool:Release(self);
-end
-
-function ScenarioObjectiveFindGroup_OnMouseDown(self)
-	if self:IsEnabled() then
-		self.Icon:SetPoint("CENTER", self, "CENTER", -2, -1);
-		self.Highlight:SetPoint("CENTER", self, "CENTER", -2, -1);
-	end
-end
-
-function ScenarioObjectiveFindGroup_OnMouseUp(self)
-	if self:IsEnabled() then
-		self.Icon:SetPoint("CENTER", self, "CENTER", -1, 0);
-		self.Highlight:SetPoint("CENTER", self, "CENTER", -1, 0);
-	end
-end
-
-function ScenarioObjectiveFindGroup_OnEnter(self)
-	GameTooltip:SetOwner(self);
-	GameTooltip:AddLine(TOOLTIP_TRACKER_FIND_GROUP_BUTTON, HIGHLIGHT_FONT_COLOR:GetRGB());
-
-	GameTooltip:Show();
-end
-
-function ScenarioObjectiveFindGroup_OnLeave(self)
-	GameTooltip:Hide();
-end
-
-function ScenarioObjectiveFindGroup_OnClick(self)
-	local shouldShowCreateGroupButton = true;
-	LFGListUtil_FindScenarioGroup(self.scenarioID, shouldShowCreateGroupButton);
-end
-
-function ScenarioObjectiveReleaseBlockButton_FindGroup(block)
-	block.hasGroupFinderButton = nil;
-
-	if block.groupFinderButton then
-		ScenarioObjectiveFindGroup_ReleaseButton(block.groupFinderButton);
-		block.groupFinderButton = nil;
-	end
-end
-
-function ScenarioObjectiveSetupBlockButton_FindGroup(block, scenarioID)
-	if block.hasGroupFinderButton == nil then
-		block.hasGroupFinderButton = C_LFGList.CanCreateScenarioGroup(scenarioID);
-	end
-
-	if block.hasGroupFinderButton then
-		local groupFinderButton = block.groupFinderButton;
-		if not groupFinderButton then
-			groupFinderButton = g_scenarioFindGroupButtonPool:Acquire();
-			groupFinderButton:SetParent(block);
-			groupFinderButton.scenarioID = scenarioID;
-			block.groupFinderButton = groupFinderButton;
-		end
-
-		groupFinderButton:SetPoint("TOPRIGHT", block, 30, 5);
-		groupFinderButton:Show();
-	else
-		ScenarioObjectiveReleaseBlockButton_FindGroup(block);
-	end
-
-	return block.hasGroupFinderButton;
-end
-
-function QuestObjectiveReleaseBlockButton_FindGroup(block)
-	block.hasGroupFinderButton = nil;
-
-	if block.groupFinderButton then
-		QuestObjectiveFindGroup_ReleaseButton(block.groupFinderButton);
-		block.groupFinderButton = nil;
-	end
-end
-
-function QuestObjectiveSetupBlockButton_Item(block, questLogIndex, isQuestComplete)
-	local item, showItemWhenComplete, _;
-	if questLogIndex then
-		_, item, _, showItemWhenComplete = GetQuestLogSpecialItemInfo(questLogIndex);
-	end
-
-	local shouldShowItem = item and (not isQuestComplete or showItemWhenComplete);
-
-	if shouldShowItem then
-		local itemButton = block.itemButton;
-		if not itemButton then
-			itemButton = QuestObjectiveItem_AcquireButton(block);
-			block.itemButton = itemButton;
-		end
-
-		QuestObjectiveItem_Initialize(itemButton, questLogIndex);
-		QuestObjectiveSetupBlockButton_AddRightButton(block, itemButton, "useItem");
-	else
-		QuestObjectiveReleaseBlockButton_Item(block);
-	end
-
-	return shouldShowItem;
-end
-
-function QuestObjectiveReleaseBlockButton_Item(block)
-	if block.itemButton then
-		QuestObjectiveItem_ReleaseButton(block.itemButton);
-		block.itemButton = nil;
-	end
-end
-
-function QuestObjective_SetupHeader(block, initialLineWidth)
-	block.rightButton = nil;
-	block.lineWidth = initialLineWidth or OBJECTIVE_TRACKER_TEXT_WIDTH;
-end
-
-BonusObjectiveRewardsFrameMixin = {};
-
-function BonusObjectiveRewardsFrameMixin:SetRewardData(data)
-	self.storedData = data;
-end
-
-function BonusObjectiveRewardsFrameMixin:OnAnimateRewardDone()
-	local rewardsFrame = self;
-	-- kill the data
-	local oldPosIndex = self.storedData[rewardsFrame.id].posIndex;
-	self.storedData[rewardsFrame.id] = nil;
-	rewardsFrame.id = nil;
-
-	self:OnAnimateNextReward(rewardsFrame.module, oldPosIndex);
-end
-
---[[
-	data = {
-		posIndex,							-- position index of the block that awards frame is relevent to 
-		rewards[] = {
-			count,							-- how much of the reward is being granted
-			font,							-- font for the reward name
-			label,							-- item name of the reward
-			texture,						-- item icon
-			overlay							-- overlay icon (can be nil) 
-		},
-
+--[[ rewards is a table containing 1 table per reward with this data
+	{
+		count,							-- how much of the reward is being granted
+		font,							-- font for the reward name
+		label,							-- item name of the reward
+		texture,						-- item icon
+		overlay							-- overlay icon (can be nil) 
 	}
 ]]--
 
-function BonusObjectiveRewardsFrameMixin:AnimateReward(block, data)
-	self:AnimateRewardOnAnchor(block, data, block.id, block.module);
-end
-
-function BonusObjectiveRewardsFrameMixin:AnimateRewardOnAnchor(anchor, data, id, trackerModule)
-	local rewardsFrame = self;
-	if ( not rewardsFrame.id ) then
-		if ( not data ) then
-			return;
+function ObjectiveTrackerRewardsToastMixin:ShowRewards(rewards, module, block, headerText, callback)
+	self.Header:SetText(headerText or REWARDS);
+	self.callback = callback;
+	
+	self.framePool:ReleaseAll();
+	
+	local lastFrame;
+	for i, rewardData in ipairs(rewards) do
+		local frame = self.framePool:Acquire();
+		if lastFrame then
+			frame:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -4);
+		else
+			frame:SetPoint("TOPLEFT", self.RewardsTop, "BOTTOMLEFT", 25, 0);
 		end
-		if ( not self.storedData) then
-			self.storedData = { };
+		
+		if rewardData.count > 1 then
+			frame.Count:Show();
+			frame.Count:SetText(rewardData.count);
+		else
+			frame.Count:Hide();
 		end
-		self.storedData[id] = data;
-		rewardsFrame.module = trackerModule;
-
-		if ( self.HeaderText ) then
-			self.Header:SetText(self.HeaderText);
+		frame.Label:SetFontObject(rewardData.font);
+		frame.Label:SetText(rewardData.label);
+		frame.ItemIcon:SetTexture(rewardData.texture);
+		if rewardData.overlay then
+			frame.ItemOverlay:SetTexture(rewardData.overlay);
+			frame.ItemOverlay:Show();
+		else
+			frame.ItemOverlay:Hide();
 		end
-
-		rewardsFrame.id = id;
-		rewardsFrame:SetParent(anchor);
-		rewardsFrame:ClearAllPoints();
-		rewardsFrame:SetPoint("TOPRIGHT", anchor, "TOPLEFT", 10, -4);
-		rewardsFrame:Show();
-		local numRewards = #data.rewards;
-		local contentsHeight = 12 + numRewards * 36;
-		rewardsFrame.Anim.RewardsBottomAnim:SetOffset(0, -contentsHeight);
-		rewardsFrame.Anim.RewardsShadowAnim:SetScaleTo(0.8, contentsHeight / 16);
-		rewardsFrame.Anim:Play();
-		PlaySound(SOUNDKIT.UI_BONUS_EVENT_SYSTEM_VIGNETTES);
-		-- configure reward frames
-		for i = 1, numRewards do
-			local rewardItem = rewardsFrame.Rewards[i];
-			if ( not rewardItem ) then
-				rewardItem = CreateFrame("FRAME", nil, rewardsFrame, "BonusObjectiveTrackerRewardTemplate");
-				rewardItem:SetPoint("TOPLEFT", rewardsFrame.Rewards[i-1], "BOTTOMLEFT", 0, -4);
-			end
-			local rewardData = data.rewards[i];
-			if ( rewardData.count > 1 ) then
-				rewardItem.Count:Show();
-				rewardItem.Count:SetText(rewardData.count);
-			else
-				rewardItem.Count:Hide();
-			end
-			rewardItem.Label:SetFontObject(rewardData.font);
-			rewardItem.Label:SetText(rewardData.label);
-			rewardItem.ItemIcon:SetTexture(rewardData.texture);
-			if ( rewardData.overlay ) then
-				rewardItem.ItemOverlay:SetTexture(rewardData.overlay);
-				rewardItem.ItemOverlay:Show();
-			else
-				rewardItem.ItemOverlay:Hide();
-			end
-			rewardItem:Show();
-			if( rewardItem.Anim:IsPlaying() ) then
-				rewardItem.Anim:Stop();
-			end
-			rewardItem.Anim:Play();
-		end
-		-- hide unused reward items
-		for i = numRewards + 1, #rewardsFrame.Rewards do
-			rewardsFrame.Rewards[i]:Hide();
-		end
+		frame:Show();
+		frame.Anim:Restart();
+			
+		lastFrame = frame;
 	end
-end
 
-function BonusObjectiveRewardsFrameMixin:OnAnimateNextReward(trackerModule, oldPosIndex)
-	local rewardsFrame = self;
-	-- look for another reward to animate and fix positions
-	local nextAnimBlock;
-	for id, data in pairs(self.storedData) do
-		local block = trackerModule:GetExistingBlock(id);
-		-- make sure we're still showing this
-		if ( block ) then
-			nextAnimBlock = block;
-			-- If we have position data and if the block that completed was ahead of this, bring it up
-			if ( data.posIndex and oldPosIndex and data.posIndex > oldPosIndex ) then
-				data.posIndex = data.posIndex - 1;
-			end
+	self:ClearAllPoints();
+	local container = ObjectiveTrackerManager:GetContainerForModule(module);
+	if container:IsCollapsed() then
+		self:SetPoint("TOPRIGHT", container, "TOPLEFT", 20, 0);
+	elseif block then
+		self:SetPoint("TOPRIGHT", block, "TOPLEFT", 10, -4);
+	elseif module:HasContents() then
+		if module:IsCollapsed() then
+			self:SetPoint("TOPRIGHT", module.Header, "TOPLEFT");
+		else
+			self:SetPoint("TOPRIGHT", module:GetLastBlock(), "BOTTOMLEFT");
 		end
-	end
-	-- update tracker to remove dead bonus objective
-	ObjectiveTracker_Update(trackerModule.updateReasonModule);
-	-- animate if we have something, otherwise clear it all
-	if ( nextAnimBlock ) then
-		self:AnimateReward(nextAnimBlock, self.storedData[nextAnimBlock.id]);
 	else
-		rewardsFrame:Hide();
-		wipe(self.storedData);
+		self:SetPoint("TOPRIGHT", container, "BOTTOMLEFT", 20, 16);
 	end
+	
+	self:Show();
+	local contentsHeight = 12 + #rewards * 36;
+	self.Anim.RewardsBottomAnim:SetOffset(0, -contentsHeight);
+	self.Anim.RewardsShadowAnim:SetScaleTo(0.8, contentsHeight / 16);
+	self.Anim:Play();
+	PlaySound(SOUNDKIT.UI_BONUS_EVENT_SYSTEM_VIGNETTES);
+end	
+
+function ObjectiveTrackerRewardsToastMixin:OnAnimateRewardsDone()
+	if self.callback then
+		self.callback();
+		self.callback = nil;
+	end
+	ObjectiveTrackerManager:HideRewardsToast(self);
+end
+
+-- *****************************************************************************************************
+-- ***** LINE
+-- *****************************************************************************************************
+
+ObjectiveTrackerLineMixin = {};
+
+function ObjectiveTrackerLineMixin:OnLoad()
+	-- override in your mixin
+end
+
+function ObjectiveTrackerLineMixin:OnHyperlinkClick(link, text, button)
+	SetItemRef(link, text, button);
+end
+
+function ObjectiveTrackerLineMixin:UpdateModule()
+	self.parentBlock.parentModule:MarkDirty();
+end
+
+-- *****************************************************************************************************
+-- ***** PROGRESS BARS
+-- *****************************************************************************************************
+
+ObjectiveTrackerProgressBarMixin = { };
+
+function ObjectiveTrackerProgressBarMixin:SetPercent(percent)
+	self.Bar:SetValue(percent);
+	self.Bar.Label:SetFormattedText(PERCENTAGE_STRING, percent);
+end
+
+-- *****************************************************************************************************
+-- ***** TIMER BARS
+-- *****************************************************************************************************
+
+ObjectiveTrackerTimerBarMixin = { };
+
+function ObjectiveTrackerTimerBarMixin:OnUpdate(elapsed)
+	local timeNow = GetTime();
+	local timeRemaining = self.duration - (timeNow - self.startTime);
+	self.Bar:SetValue(timeRemaining);
+	if timeRemaining < 0 then
+		-- hold at 0 for a moment
+		if timeRemaining > -1 then
+			timeRemaining = 0;
+		else
+			local module = self.parentLine.parentBlock.parentModule;
+			module:MarkDirty();
+		end
+	end
+	self.Label:SetText(SecondsToClock(timeRemaining));
+	self.Label:SetTextColor(self:GetTextColor(timeRemaining));
+end
+
+local START_PERCENTAGE_YELLOW = .66;
+local START_PERCENTAGE_RED = .33;
+
+function ObjectiveTrackerTimerBarMixin:GetTextColor(timeRemaining)
+	local elapsed = self.duration - timeRemaining;
+	local percentageLeft = 1 - ( elapsed / self.duration )
+	if percentageLeft > START_PERCENTAGE_YELLOW then
+		return 1, 1, 1;
+	elseif percentageLeft > START_PERCENTAGE_RED then -- Start fading to yellow by eliminating blue
+		local blueOffset = (percentageLeft - START_PERCENTAGE_RED) / (START_PERCENTAGE_YELLOW - START_PERCENTAGE_RED);
+		return 1, 1, blueOffset;
+	else
+		local greenOffset = percentageLeft / START_PERCENTAGE_RED; -- Fade to red by eliminating green
+		return 1, greenOffset, 0;
+	end
+end
+
+-- *****************************************************************************************************
+-- ***** SLIDING
+-- *****************************************************************************************************
+
+ObjectiveTrackerSlidingState = EnumUtil.MakeEnum(
+	"None",
+	"SlideIn",
+	"SlideOut"
+);
+
+ObjectiveTrackerSlidingMixin = { };
+
+function ObjectiveTrackerSlidingMixin:IsSliding()
+	return not not self.slideInfo;
+end
+
+--[[ slideInfo table layout
+	duration		: seconds
+	travel			: distance, positive means scroll down from the top, negative means move up
+	adjustModule	: boolean, whether the module should resize along (otherwise it will be the final height)
+	startDelay		: seconds
+	endDelay		: seconds
+--]]
+function ObjectiveTrackerSlidingMixin:Slide(slideInfo)
+	if self.slideInfo then
+		return;
+	end
+
+	self.slideInfo = slideInfo;
+
+	if slideInfo.startDelay then
+		slideInfo.elapsed = -slideInfo.startDelay;
+	else
+		slideInfo.elapsed = 0;
+	end
+
+	-- if sliding down, update with progress 0 now
+	if slideInfo.travel > 0 then
+		self:UpdateSlideProgress(0);
+	end
+
+	if self.isModule then
+		self.ContentsFrame:SetClipsChildren(true);
+	else
+		self:SetClipsChildren(true);
+	end
+	self:SetScript("OnUpdate", self.OnSlideUpdate);
+end
+
+function ObjectiveTrackerSlidingMixin:OnSlideUpdate(elapsed)
+	local slideInfo = self.slideInfo;
+	slideInfo.elapsed = slideInfo.elapsed + elapsed;
+
+	-- this means there's a start delay
+	if slideInfo.elapsed <= 0 then
+		return;
+	end
+
+	if slideInfo.elapsed >= slideInfo.duration then
+		if not slideInfo.endDelay or slideInfo.elapsed >= slideInfo.duration + slideInfo.endDelay then
+			local finished = true;
+			self:EndSlide(finished);
+		end
+	else
+		local progress = min(slideInfo.elapsed, slideInfo.duration) / slideInfo.duration;
+		self:UpdateSlideProgress(progress);
+	end
+end
+
+function ObjectiveTrackerSlidingMixin:UpdateSlideProgress(progress)
+	local slideInfo = self.slideInfo;
+	local delta;
+	if slideInfo.travel > 0 then
+		delta = slideInfo.travel * (1 - progress);
+	else
+		delta = -slideInfo.travel * progress;
+	end
+
+	if not self.isModule then
+		self:SetHeight(self.height - delta);
+	end
+
+	self:AdjustSlideAnchor(delta);
+	if slideInfo.adjustModule then
+		local module = self.isModule and self or self.parentModule;
+		module:SetHeightModifier(self, -delta);
+	end
+end
+
+function ObjectiveTrackerSlidingMixin:EndSlide(finished)
+	if not self.slideInfo then
+		return;
+	end
+	self:AdjustSlideAnchor(0);
+	if self.isModule then
+		self.ContentsFrame:SetClipsChildren(false);
+	else
+		self:SetHeight(self.height);
+		self:SetClipsChildren(false);
+	end
+	self:SetScript("OnUpdate", nil);
+	if self.slideInfo.adjustModule then
+		local module = self.isModule and self or self.parentModule;
+		module:ClearHeightModifier(self);
+	end
+	local slideOut = self.slideInfo.travel < 0;
+	self.slideInfo = nil;
+	self:OnEndSlide(slideOut, finished);
+end
+
+function ObjectiveTrackerSlidingMixin:AdjustSlideAnchor(offsetY)
+	-- override in your mixin
+end
+
+function ObjectiveTrackerSlidingMixin:OnEndSlide(slideOut, finished)
+	-- override in your mixin
 end

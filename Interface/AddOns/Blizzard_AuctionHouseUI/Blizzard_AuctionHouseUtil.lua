@@ -28,6 +28,34 @@ AUCTION_HOUSE_FILTER_STRINGS = {
 	[Enum.AuctionHouseFilter.LegendaryCraftedItemOnly] = AUCTION_HOUSE_FILTER_RUNECARVING,
 };
 
+AUCTION_HOUSE_DEFAULT_FILTERS = {
+	[Enum.AuctionHouseFilter.UncollectedOnly] = false,
+	[Enum.AuctionHouseFilter.UsableOnly] = false,
+	[Enum.AuctionHouseFilter.CurrentExpansionOnly] = false,
+	[Enum.AuctionHouseFilter.UpgradesOnly] = false,
+	[Enum.AuctionHouseFilter.PoorQuality] = true,
+	[Enum.AuctionHouseFilter.CommonQuality] = true,
+	[Enum.AuctionHouseFilter.UncommonQuality] = true,
+	[Enum.AuctionHouseFilter.RareQuality] = true,
+	[Enum.AuctionHouseFilter.EpicQuality] = true,
+	[Enum.AuctionHouseFilter.LegendaryQuality] = true,
+	[Enum.AuctionHouseFilter.ArtifactQuality] = true,
+};
+
+local AUCTION_HOUSE_FILTER_CATEGORY_STRINGS = {
+	[Enum.AuctionHouseFilterCategory.Uncategorized] = "",
+	[Enum.AuctionHouseFilterCategory.Equipment] = AUCTION_HOUSE_FILTER_CATEGORY_EQUIPMENT,
+	[Enum.AuctionHouseFilterCategory.Rarity] = AUCTION_HOUSE_FILTER_CATEGORY_RARITY,
+};
+
+function GetAHFilterCategoryName(category)
+	return AUCTION_HOUSE_FILTER_CATEGORY_STRINGS[category] or "";
+end
+
+function GetAHFilterName(filter)
+	return AUCTION_HOUSE_FILTER_STRINGS[filter] or "";
+end
+
 AuctionHouseSearchContext = tInvert({
 	"BrowseAll",
 	"BrowseTradeGoods",
@@ -725,6 +753,7 @@ local AuctionHouseErrorToErrorText = {
 	[Enum.AuctionHouseError.WrappedItem] = ERR_AUCTION_WRAPPED_ITEM,
 	[Enum.AuctionHouseError.LootItem] = ERR_AUCTION_LOOT_ITEM,
 	[Enum.AuctionHouseError.DoubleBid] = ERR_AUCTION_DOUBLE_BID,
+	[Enum.AuctionHouseError.ItemBoundToAccountUntilEquip] = ERR_NOT_SAME_ACCOUNT,
 };
 
 function AuctionHouseUtil.GetErrorText(auctionHouseError)

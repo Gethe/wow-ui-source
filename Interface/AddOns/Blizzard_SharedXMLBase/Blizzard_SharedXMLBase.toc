@@ -1,0 +1,29 @@
+## Title: Blizzard_SharedXMLBase
+## AllowLoad: Both
+ErrorUtil.lua
+Mixin.lua
+TableUtil.lua
+EnumUtil.lua
+LocaleUtil.lua
+FunctionUtil.lua
+ObjectUpdater.lua
+MathUtil.lua
+ExportUtil.lua
+Rectangle.lua
+TextureUtil.lua
+AddOnUtil.lua
+Flags.lua
+CallbackRegistry.lua
+CallbackRegistrant.lua
+CallbackRegistrant.xml
+GlobalCallbackRegistry.lua
+CvarUtil.lua
+TemplateInfoCache.lua
+FrameUtil.lua
+FrameFactory.lua
+SecureTypes.lua
+ProxyUtil.lua
+Pools.lua
+ButtonStateBehavior.lua
+ColorSwatch.xml
+ColorSwatch.lua

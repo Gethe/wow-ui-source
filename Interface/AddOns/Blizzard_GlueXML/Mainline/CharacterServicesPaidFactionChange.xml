@@ -1,0 +1,54 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="PFCCharacterSelect" parent="CharSelectServicesFlowFrame" inherits="CharacterServicesBlockTemplate" hidden="true" frameStrata="DIALOG">
+		<Size x="350" y="380"/>
+		<Frames>
+			<Frame parentKey="ControlsFrame" setAllPoints="true"/>
+			<Frame parentKey="ResultsFrame">
+				<Size x="230" y="250"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ResultsLabel" relativePoint="BOTTOMLEFT" y="-2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="CurrentFactionLabel" inherits="GameFontNormalLarge" justifyH="LEFT">
+							<Size x="230" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="-6"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="WillBeChangedLabel" inherits="GameFontNormalMed3" justifyH="LEFT" text="PFC_FLOW_WILL_BE_CHANGED_TO">
+							<Size x="230" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.CurrentFactionLabel" relativePoint="BOTTOMLEFT" y="-44"/>
+							</Anchors>
+							<Color color="GRAY_FONT_COLOR"/>
+						</FontString>
+						<FontString parentKey="NewFactionLabel" inherits="GameFontNormalLarge" justifyH="LEFT">
+							<Size x="230" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.WillBeChangedLabel" relativePoint="BOTTOMLEFT" y="-2"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="CustomizeLabel" inherits="GameFontHighlightLarge" justifyH="LEFT" text="PFC_FLOW_CUSTOMIZE_CHARACTER_STEP">
+							<Size x="230" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.NewFactionLabel" relativePoint="BOTTOMLEFT" y="-108"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="CurrentFactionEmblem" useAtlasSize="true" scale="0.85">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.CurrentFactionLabel" relativePoint="TOPRIGHT" x="-42" y="40"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="NewFactionEmblem" useAtlasSize="true" scale="0.85">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.NewFactionLabel" relativePoint="TOPRIGHT" x="-41" y="25"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+	</Frame>
+</Ui>

@@ -65,8 +65,11 @@ function CharacterCreateMixin:OnLoad()
 	self:RegisterEvent("STORE_VAS_PURCHASE_ERROR");
 	self:RegisterEvent("ASSIGN_VAS_RESPONSE");
 
+	self.RotationConstant = 0.6;
+
 	self.LeftBlackBar:SetPoint("TOPLEFT", nil);
 	self.RightBlackBar:SetPoint("TOPRIGHT", nil);
+	self.TopBlackBar:SetPoint("TOPLEFT", nil);
 
 	C_CharacterCreation.SetCharCustomizeFrame("CharacterCreateFrame");
 
@@ -77,6 +80,7 @@ function CharacterCreateMixin:OnLoad()
 	NewPlayerTutorial = self.NewPlayerTutorial;
 
 	CharCustomizeFrame:AttachToParentFrame(self);
+	CharCustomizeFrame:SetOptionsSpacingConfiguration(CharCustomizeFrame.Categories, self.ForwardButton);
 
 	self:ResetNavBlockers();
 
@@ -116,6 +120,9 @@ function CharacterCreateMixin:OnEvent(event, ...)
 			elseif C_CharacterCreation.IsUsingCharacterTemplate() then
 				CharacterSelect.selectLast = true;
 			end
+
+			-- Make sure realm confirmation dialog is marked to not show from now on.
+			SetCVar("showCreateCharacterRealmConfirmDialog", 0);
 
 			self.RaceAndClassFrame.ClassTrialCheckButton:ResetDesiredState();
 			GlueParent_SetScreen("charselect");
@@ -160,7 +167,9 @@ function CharacterCreateMixin:OnEvent(event, ...)
 		local cvarName, cvarValue = ...;
 		if cvarName == "debugTargetInfo" then
 			showDebugTooltipInfo = (cvarValue == "1");
-			RaceAndClassFrame:UpdateButtons();
+			if RaceAndClassFrame:IsShown() then
+				RaceAndClassFrame:UpdateButtons();
+			end
 		end
 	elseif event == "DISPLAY_SIZE_CHANGED" then
 		self:OnDisplaySizeChanged();
@@ -357,7 +366,7 @@ function CharacterCreateMixin:OnUpdateMouseRotate()
 	if x ~= self.lastCursorPosX then
 		RaceAndClassFrame:ClearClassAnimationCountdown();
 
-		local diff = (x - self.lastCursorPosX) * CHARACTER_ROTATION_CONSTANT;
+		local diff = (x - self.lastCursorPosX) * self.RotationConstant;
 		C_CharacterCreation.SetCharacterCreateFacing(C_CharacterCreation.GetCharacterCreateFacing() + diff);
 
 		self.lastCursorPosX = x;
@@ -1074,6 +1083,8 @@ function CharacterCreateRaceButtonMixin:SetRace(raceData, selectedRaceID, select
 		self:SetEnabledState(true);
 	end
 
+	self.New:SetShown(self.raceData.isAlliedRace and CharacterLoginUtil.IsNewAlliedRace(self.raceData.raceID));
+
 	self.RaceName.Text:SetText(raceData.name);
 	self.RaceName:SetShown(C_CharacterCreation.UseBeginnerMode());
 
@@ -1127,6 +1138,11 @@ function CharacterCreateRaceButtonMixin:SetRace(raceData, selectedRaceID, select
 end
 
 function CharacterCreateRaceButtonMixin:OnEnter()
+	if self.raceData.isAlliedRace and CharacterLoginUtil.IsNewAlliedRace(self.raceData.raceID) then
+		CharacterLoginUtil.MarkNewAlliedRaceSeen(self.raceData.raceID);
+		self.New:Hide();
+	end
+
 	RaceAndClassFrame.RacialAbilityList:SetupRacialAbilties(self.raceData.racialAbilities);
 	CharCustomizeFrameWithTooltipMixin.OnEnter(self);
 end
@@ -1282,6 +1298,13 @@ function CharacterCreateRaceAndClassMixin:OnLoad()
 	self.ClassTrialCheckButton.Button:SetScript("OnEnter", function() self.ClassTrialCheckButton.OnEnter(self.ClassTrialCheckButton); end);
 	self.ClassTrialCheckButton.Button:SetScript("OnLeave", function() self.ClassTrialCheckButton.OnLeave(self.ClassTrialCheckButton); end);
 
+	self.CurrentRealmText:SetScript("OnEnter", function()
+		GlueTooltip:SetOwner(self.CurrentRealmText, "ANCHOR_LEFT");
+		GameTooltip_SetTitle(GlueTooltip, CHARACTER_CREATE_REALM_TOOLTIP);
+		GlueTooltip:Show();
+	end);
+	self.CurrentRealmText:SetScript("OnLeave", function() GlueTooltip:Hide(); end);
+
 	self.buttonPool = CreateFramePoolCollection();
 	self.buttonPool:CreatePool("CHECKBUTTON", self.BodyTypes, "CharCustomizeBodyTypeButtonTemplate");
 	self.buttonPool:CreatePool("CHECKBUTTON", self.AllianceRaces, "CharacterCreateAllianceButtonTemplate");
@@ -1289,6 +1312,14 @@ function CharacterCreateRaceAndClassMixin:OnLoad()
 	self.buttonPool:CreatePool("CHECKBUTTON", self.HordeRaces, "CharacterCreateHordeButtonTemplate");
 	self.buttonPool:CreatePool("CHECKBUTTON", self.HordeAlliedRaces, "CharacterCreateHordeAlliedRaceButtonTemplate");
 	self.buttonPool:CreatePool("CHECKBUTTON", self.Classes, "CharacterCreateClassButtonTemplate");
+
+	local backButton = self:GetParent().BackButton;
+	self.AllianceRaces:SetBottomFrame(backButton);
+	self.AllianceAlliedRaces:SetBottomFrame(backButton);
+
+	local forwardButton = self:GetParent().ForwardButton;
+	self.HordeRaces:SetBottomFrame(forwardButton);
+	self.HordeAlliedRaces:SetBottomFrame(forwardButton);
 
 	self.createdModelIndices = {};
 
@@ -1363,6 +1394,8 @@ function CharacterCreateRaceAndClassMixin:OnShow()
 
 	self.ClassTrialCheckButton:ClearTooltipLines();
 	self.ClassTrialCheckButton:AddTooltipLine(CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER_TOOLTIP:format(C_CharacterCreation.GetTrialBoostStartingLevel()));
+
+	self.CurrentRealmText:SetText(CHARACTER_CREATE_REALM:format(CharacterSelectUtil.GetFormattedCurrentRealmName()));
 end
 
 function CharacterCreateRaceAndClassMixin:OnHide()
@@ -1657,14 +1690,14 @@ function CharacterCreateRaceAndClassMixin:IsRaceValid(raceData, faction)
 	elseif CharacterCreateFrame.paidServiceType == PAID_FACTION_CHANGE or CharacterCreateFrame.vasType == Enum.ValueAddedServiceType.PaidFactionChange then
 		local _, currentFaction = C_PaidServices.GetCurrentFaction();
 		if CharacterCreateFrame.vasType == Enum.ValueAddedServiceType.PaidFactionChange then
-			currentFaction = select(29, GetCharacterInfoByGUID(CharacterCreateFrame.vasInfo.selectedCharacterGUID));
+			currentFaction = GetBasicCharacterInfo(CharacterCreateFrame.vasInfo.selectedCharacterGUID).faction;
 		end
 		local currentClass = C_PaidServices.GetCurrentClassID();
 		return (currentFaction ~= faction and C_CharacterCreation.IsRaceClassValid(raceData.raceID, currentClass));
 	elseif CharacterCreateFrame.paidServiceType == PAID_RACE_CHANGE or CharacterCreateFrame.vasType == Enum.ValueAddedServiceType.PaidRaceChange then
 		local _, currentFaction = C_PaidServices.GetCurrentFaction();
 		if CharacterCreateFrame.vasType == Enum.ValueAddedServiceType.PaidRaceChange then
-			currentFaction = select(29, GetCharacterInfoByGUID(CharacterCreateFrame.vasInfo.selectedCharacterGUID));
+			currentFaction = GetBasicCharacterInfo(CharacterCreateFrame.vasInfo.selectedCharacterGUID).faction;
 		end
 		local notForPaidService = false;
 		local currentRace = C_PaidServices.GetCurrentRaceID(notForPaidService);
@@ -1748,6 +1781,13 @@ local function SortClasses(classData1, classData2)
 end
 
 function CharacterCreateRaceAndClassMixin:UpdateClassButtons(releaseButtons)
+	-- We need extra info about the spacing to make things line up properly when UI scale is adjusted higher.
+	local ClassButtonSpacing = 15;
+	local ClassIconSize = 67;
+	local ClassButtonWidth = ClassIconSize;
+	local ClassButtonNameSpacing = 47;
+	local ClassButtonHeight = ClassIconSize + ClassButtonNameSpacing;
+
 	if releaseButtons then
 		self.buttonPool:ReleaseAllByTemplate("CharacterCreateClassButtonTemplate");
 	end
@@ -1755,21 +1795,43 @@ function CharacterCreateRaceAndClassMixin:UpdateClassButtons(releaseButtons)
 	local classes = C_CharacterCreation.GetAvailableClasses();
 	table.sort(classes, SortClasses);
 
-	local lastButton;
-	for i, classData in ipairs(classes) do
-		local button = self.buttonPool:Acquire("CharacterCreateClassButtonTemplate");
-		button:SetClass(classData, self.selectedClassID);
+	local spaceAvailable = self.Classes:GetWidth();
+	local numClasses = #classes;
+	local buttonSpacing = (numClasses * ClassButtonWidth) + ((numClasses - 1) * ClassButtonSpacing);
+	local numRows = math.ceil(buttonSpacing / spaceAvailable);
+	local scale = 1;
 
-		if i == 1 then
-			button:SetPoint("TOPLEFT", self.Classes, "TOPLEFT", 0, 0);
-		else
-			button:SetPoint("TOPLEFT", lastButton, "TOPRIGHT", 15, 0);
-		end
+	-- We never want to allow more than 2 rows even if UI scale is bumped up (generally has to be over 100% to hit this case).
+	-- We'll scale down the class icons instead if necessary.
+	if numRows > 2 then
+		numRows = 2;
 
-		lastButton = button;
-
-		button:Show();
+		local buttonsPerRow = math.ceil(numClasses / numRows);
+		local rowSize = (buttonsPerRow * ClassButtonWidth) + ((buttonsPerRow - 1) * ClassButtonSpacing);
+		local extraSpace = rowSize - spaceAvailable;
+		local extraSpacePerButton = extraSpace / buttonsPerRow;
+		scale = 1 / (1 + (extraSpacePerButton / ClassIconSize));
 	end
+
+	local stride = math.ceil(numClasses / numRows);
+	local paddingX = ClassButtonSpacing;
+	local paddingY = ClassButtonNameSpacing;
+	local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRight, stride, paddingX, paddingY);
+
+	local rowWidth = (((stride * ClassButtonWidth) + ((stride - 1) * ClassButtonSpacing))) * scale;
+	local baseOffsetX = (spaceAvailable - rowWidth) / 2;
+	local baseOffsetY = ClassButtonHeight * (numRows - 1);
+	local initialAnchor = CreateAnchor("BOTTOMLEFT", self.Classes, "BOTTOMLEFT", baseOffsetX, baseOffsetY);
+
+	local function FactoryFunction(index)
+		local button = self.buttonPool:Acquire("CharacterCreateClassButtonTemplate");
+		button:SetClass(classes[index], self.selectedClassID);
+		button:Show();
+		button:SetScale(scale);
+		return button;
+	end
+
+	AnchorUtil.GridLayoutFactoryByCount(FactoryFunction, numClasses, initialAnchor, layout);
 end
 
 function CharacterCreateRaceAndClassMixin:UpdateButtons()
@@ -2180,7 +2242,7 @@ function CharacterCreateStartingZoneButtonMixin:OnCheckButtonClick()
 end
 
 function SelectOtherRaceAvailable()
-	currentFaction = C_CharacterCreation.GetFactionForRace(C_CharacterCreation.GetSelectedRace());
+	local currentFaction = C_CharacterCreation.GetFactionForRace(C_CharacterCreation.GetSelectedRace());
 	if (currentFaction == "Alliance") then
 		RaceAndClassFrame:SetCharacterRace(HUMAN_RADE_ID);
 	elseif (currentFaction == "Horde") then

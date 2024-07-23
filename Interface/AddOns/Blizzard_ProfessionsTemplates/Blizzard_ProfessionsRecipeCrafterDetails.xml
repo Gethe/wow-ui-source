@@ -46,7 +46,7 @@
 					</Anchors>
 					<Animations>
 						<AnimationGroup parentKey="Anim" looping="NONE">
-							<FlipBook smoothing="NONE" childKey="AppearIcon" duration=".5" order="1" flipBookRows="3" flipBookColumns="4" flipBookFrames="12" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+							<FlipBook smoothing="NONE" duration=".5" order="1" flipBookRows="3" flipBookColumns="4" flipBookFrames="12" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
 						</AnimationGroup>
 						
 						<AnimationGroup parentKey="ScaleUp" looping="NONE">
@@ -67,7 +67,7 @@
 					</Anchors>
 					<Animations>
 						<AnimationGroup parentKey="Anim" looping="NONE">
-							<FlipBook parentKey="Flipbook" smoothing="NONE" childKey="DissolveIcon" duration=".5" order="1" flipBookRows="3" flipBookColumns="4" flipBookFrames="12" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+							<FlipBook parentKey="Flipbook" smoothing="NONE" duration=".5" order="1" flipBookRows="3" flipBookColumns="4" flipBookFrames="12" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
 						</AnimationGroup>
 					</Animations>
 				</Texture>
@@ -162,6 +162,13 @@
 							<KeyValue key="displayAsPct" value="false" type="boolean"/>
 						</KeyValues>
 					</Frame>
+					<Frame parentKey="ConcentrationStatLine" parentArray="StatLines" inherits="ProfessionsCrafterDetailsStatLineTemplate">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="3" type="number"/>
+							<KeyValue key="statLineType" value="CraftingQualityStatLine.Concentration" type="global"/>
+							<KeyValue key="displayAsPct" value="false" type="boolean"/>
+						</KeyValues>
+					</Frame>
 				</Frames>
 			</Frame>
 			
@@ -201,7 +208,7 @@
 											</Anchors>
 											<Animations>
 												<AnimationGroup parentKey="Flipbook" looping="REPEAT" setToFinalAlpha="true">
-													<FlipBook parentKey="Flipbook" smoothing="NONE" childKey="BarFill" duration="1" order="1" flipBookRows="15" flipBookColumns="4" flipBookFrames="60" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+													<FlipBook parentKey="Flipbook" smoothing="NONE" duration="1" order="1" flipBookRows="15" flipBookColumns="4" flipBookFrames="60" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
 												</AnimationGroup>
 											</Animations>
 										</Texture>
@@ -382,24 +389,41 @@
 				</KeyValues>
 			</Frame>
 			
-			<Frame parentKey="FinishingReagentSlotContainer">
+			<Frame parentKey="CraftingChoicesContainer" inherits="HorizontalLayoutFrame">
 				<Size x="260" y="108"/>
 				<KeyValues>
 					<KeyValue key="layoutIndex" value="5" type="number"/>
 					<KeyValue key="topPadding" value="-32" type="number"/>
 					<KeyValue key="align" value="center" type="string"/>
 				</KeyValues>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<FontString parentKey="Label" inherits="GameFontNormalSmall" justifyH="CENTER">
-							<Size x="300" y="20"/>
-							<Anchors>
-								<Anchor point="TOP" y="-20"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
+				<Frames>
+					<Frame parentKey="FinishingReagentSlotContainer">
+						<Size x="130" y="108"/>
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="1" type="number"/>
+							<KeyValue key="align" value="center" type="string"/>
+						</KeyValues>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString parentKey="Label" inherits="GameFontNormalSmall" justifyH="CENTER">
+									<Size x="300" y="20"/>
+									<Anchors>
+										<Anchor point="TOP" y="-20"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+			
+					<Frame parentKey="ConcentrateContainer" inherits="ProfessionsConcentrateContainerTemplate">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="2" type="number"/>
+							<KeyValue key="align" value="center" type="string"/>
+						</KeyValues>
+					</Frame>
+				</Frames>
 			</Frame>
+				
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

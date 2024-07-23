@@ -11,9 +11,9 @@ ProfessionsTableConstants.Name =
 };
 ProfessionsTableConstants.Tip = 
 {
-	Width = 130,
+	Width = 160,
 	Padding = ProfessionsTableConstants.StandardPadding,
-	LeftCellPadding = ProfessionsTableConstants.NoPadding,
+	LeftCellPadding = 25,
 	RightCellPadding = 25,
 };
 ProfessionsTableConstants.NumAvailable = 
@@ -339,6 +339,12 @@ ProfessionsCrafterTableCellCommissionMixin = CreateFromMixins(TableBuilderCellMi
 function ProfessionsCrafterTableCellCommissionMixin:Populate(rowData, dataIndex)
 	local order = rowData.option;
 	self.TipMoneyDisplayFrame:SetAmount(order[self.tipKey]);
+
+	if order.npcOrderRewards then
+		self.RewardIcon:SetShown(#order.npcOrderRewards > 0);
+	else 
+		self.RewardIcon:SetShown(false);
+	end
 end
 
 ProfessionsCrafterTableCellItemNameMixin = CreateFromMixins(TableBuilderCellMixin);
@@ -608,4 +614,230 @@ end
 
 function ProfessionsRecipeListPanelMixin:GetCollapses()
 	return self.collapses;
+end
+
+ProfessionsCurrencyMixin = {};
+
+function ProfessionsCurrencyMixin:SetCurrencyType(currencyType)
+	if self.currencyType == currencyType then
+		return;
+	end
+
+	self.currencyType = currencyType;
+
+	local currencyInfo = self:GetCurrencyInfo();
+	if not currencyInfo then
+		assertsafe(false, "Missing currency info for %d", currencyType);
+		return;
+	end
+
+	self.Icon:SetTexture(currencyInfo.iconFileID);
+
+	self:UpdateQuantity();
+	CurrencyCallbackRegistry:RegisterCallback(tostring(currencyType), self.UpdateQuantity, self);
+
+	if self.RechargeTicker then
+		self.RechargeTicker:Cancel();
+	end
+
+	self.RechargeTicker = C_Timer.NewTicker(currencyInfo.rechargingCycleDurationMS / 1000, function() self:UpdateQuantity() end);
+end
+
+function ProfessionsCurrencyMixin:ShowProfessionConcentration(professionInfo)
+	local concentrationCurrency = C_TradeSkillUI.GetConcentrationCurrencyID(professionInfo.professionID);
+	local hasConcentration = concentrationCurrency ~= 0;
+	if hasConcentration then
+		self:SetCurrencyType(concentrationCurrency);
+	end
+	self:SetShown(hasConcentration);
+end
+
+function ProfessionsCurrencyMixin:GetCurrencyInfo()
+	return self.currencyType and C_CurrencyInfo.GetCurrencyInfo(self.currencyType) or nil;
+end
+
+function ProfessionsCurrencyMixin:UpdateQuantity()
+	local currencyInfo = self:GetCurrencyInfo();
+	if not currencyInfo then
+		assertsafe(false, "Missing currency info for %d", self.currencyType);
+		return;
+	end
+
+	self:OnQuantityChanged(currencyInfo);
+
+	if self:IsMouseOver() then
+		self:OnEnter();
+	end
+end
+
+function ProfessionsCurrencyMixin:OnQuantityChanged(currencyInfo)
+	-- Implemented in derived mixins
+end
+
+local ConcentrationHelpTipInfo =
+{
+	text = PROFESSIONS_CRAFTING_CONCENTRATION_HELPTIP,
+	buttonStyle = HelpTip.ButtonStyle.Close,
+	targetPoint = HelpTip.Point.TopEdgeCenter,
+	alignment = HelpTip.Alignment.Center,
+	offsetX = 0,
+	cvarBitfield = "closedInfoFramesAccountWide",
+	bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_CONCENTRATION_CURRENCY,
+	checkCVars = true,
+};
+
+function ProfessionsCurrencyMixin:OnShow()
+	self:UpdateQuantity();
+
+	HelpTip:Show(self, ConcentrationHelpTipInfo);
+end
+
+function ProfessionsCurrencyMixin:OnEnter()
+	GameTooltip:SetOwner(self.Icon, "ANCHOR_RIGHT");
+	GameTooltip:SetCurrencyByID(self.currencyType);
+end
+
+function ProfessionsCurrencyMixin:OnLeave()
+	GameTooltip:Hide();
+end
+
+ProfessionsCurrencyWithLabelMixin = CreateFromMixins(ProfessionsCurrencyMixin);
+
+function ProfessionsCurrencyWithLabelMixin:OnQuantityChanged(currencyInfo)
+	self.Amount:SetFormattedText(PROFESSIONS_CRAFTING_CURRENCY_LABEL_FORMAT, currencyInfo.quantity, currencyInfo.maxQuantity);
+end
+
+function ProfessionsCurrencyWithLabelMixin:OnEnter()
+	local currencyInfo = self:GetCurrencyInfo();
+	if not currencyInfo then
+		return;
+	end
+
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+
+	GameTooltip_AddColoredDoubleLine(GameTooltip, currencyInfo.name, PROFESSIONS_CRAFTING_CURRENCY_TOOLTIP_FORMAT:format(currencyInfo.quantity, currencyInfo.maxQuantity), HIGHLIGHT_FONT_COLOR, HIGHLIGHT_FONT_COLOR);
+
+	if currencyInfo.quantity == currencyInfo.maxQuantity then
+		GameTooltip_AddColoredLine(GameTooltip, PROFESSIONS_CRAFTING_CONCENTRATION_CURRENCY_TOOLTIP_WARNING, RED_FONT_COLOR);
+	end
+
+	GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_CRAFTING_CONCENTRATION_CURRENCY_TOOLTIP, true);
+	GameTooltip:Show();
+end
+
+ProfessionsConcentrateToggleButtonMixin = CreateFromMixins(ProfessionsCurrencyMixin);
+
+function ProfessionsConcentrateToggleButtonMixin:OnQuantityChanged(currencyInfo)
+	self:UpdateState();
+end
+
+function ProfessionsConcentrateToggleButtonMixin:UpdateState()
+	local toggleEnabled = self:HasEnoughConcentration() and not self:AtMaxQuality();
+	self:SetEnabled(toggleEnabled);
+
+	if not toggleEnabled then
+		self:SetChecked(false);
+
+		if self.transaction then
+			self.transaction:SetApplyConcentration(false);
+		end
+	end
+end
+
+function ProfessionsConcentrateToggleButtonMixin:GetConcentrationRequired()
+	return self.concentrationRequired or 0;
+end
+
+function ProfessionsConcentrateToggleButtonMixin:AtMaxQuality()
+	return self.quality == self.maxQuality;
+end
+
+function ProfessionsConcentrateToggleButtonMixin:HasEnoughConcentration()
+	local currencyInfo = self:GetCurrencyInfo();
+	if not currencyInfo then
+		return false;
+	end
+
+	return currencyInfo.quantity >= self:GetConcentrationRequired();
+end
+
+function ProfessionsConcentrateToggleButtonMixin:SetOperationInfo(operationInfo)
+	if self.concentrationRequired ~= operationInfo.concentrationCost or self.quality ~= operationInfo.quality then
+		self.concentrationRequired = operationInfo.concentrationCost;
+		self.quality = operationInfo.quality;
+		self:UpdateState();
+	end
+
+	if operationInfo.concentrationCurrencyID and operationInfo.concentrationCurrencyID ~= 0 then
+		self:SetCurrencyType(operationInfo.concentrationCurrencyID);
+	end
+end
+
+function ProfessionsConcentrateToggleButtonMixin:SetRecipeInfo(recipeInfo)
+	if self.maxQuality ~= recipeInfo.maxQuality then
+		self.maxQuality = recipeInfo.maxQuality;
+		self:UpdateState();
+	end
+end
+
+function ProfessionsConcentrateToggleButtonMixin:SetTransaction(transaction)
+	self.transaction = transaction;
+	EventRegistry:RegisterCallback("Professions.TransactionUpdated", self.UpdateChecked, self);
+	self:UpdateChecked(transaction);
+end
+
+function ProfessionsConcentrateToggleButtonMixin:UpdateChecked(transaction)
+	if self.transaction ~= transaction then
+		return;
+	end
+
+	local shouldBeChecked = transaction:IsApplyingConcentration();
+	if self:GetChecked() ~= shouldBeChecked then
+		self:SetChecked(shouldBeChecked);
+	end
+end
+
+function ProfessionsConcentrateToggleButtonMixin:OnEnter()
+	local currencyInfo = self:GetCurrencyInfo();
+	if not currencyInfo then
+		return;
+	end
+
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+
+	local nameFormat;
+	local descText = PROFESSIONS_CRAFTING_CONCENTRATION_TOGGLE_ON_DESC;
+	local descColor = NORMAL_FONT_COLOR;
+
+	if not self:IsEnabled() then
+		if self:AtMaxQuality() then
+			nameFormat = PROFESSIONS_CRAFTING_CONCENTRATION_TOGGLE_UNAVAILABLE;
+			descText = PROFESSIONS_CRAFTING_CONCENTRATION_TOGGLE_UNAVAILABLE_DESC;
+		else
+			nameFormat = PROFESSIONS_CRAFTING_CONCENTRATION_TOGGLE_DISABLED;
+		end
+		descColor = DISABLED_FONT_COLOR;
+	elseif self:GetChecked() then
+		nameFormat = PROFESSIONS_CRAFTING_CONCENTRATION_TOGGLE_OFF;
+		descText = PROFESSIONS_CRAFTING_CONCENTRATION_TOGGLE_OFF_DESC;
+	else
+		nameFormat = PROFESSIONS_CRAFTING_CONCENTRATION_TOGGLE_ON;
+	end
+
+	GameTooltip_AddColoredLine(GameTooltip, nameFormat:format(currencyInfo.name), HIGHLIGHT_FONT_COLOR, false);
+	GameTooltip_AddColoredLine(GameTooltip, descText:format(self:GetConcentrationRequired()), descColor, true);
+	GameTooltip:Show();
+end
+
+function ProfessionsConcentrateToggleButtonMixin:OnClick()
+	if not self.transaction then
+		assertsafe(false, "Missing transaction");
+		return;
+	end
+
+	self.transaction:SetApplyConcentration(self:GetChecked());
+
+	if self:IsMouseOver() then
+		self:OnEnter();
+	end
 end

@@ -657,7 +657,7 @@ end
 
 function MultiCastFlyoutFrame_LoadPageSpells(self)
 	local numKnownSpells = 0;
-	for i, spellId in next, TOTEM_MULTI_CAST_SUMMON_SPELLS do
+	for i, spellId in ipairs(TOTEM_MULTI_CAST_SUMMON_SPELLS) do
 		if ( knownMultiCastSummonSpells[i] ) then
 			numKnownSpells = numKnownSpells + 1;
 		end
@@ -672,10 +672,9 @@ function MultiCastFlyoutFrame_LoadPageSpells(self)
 
 	local totalHeight = 0;
 	local button;
-	local spellId;
 	local name, _, icon;
 	local buttonIndex = 1;
-	for i, spellId in next, TOTEM_MULTI_CAST_SUMMON_SPELLS do
+	for i, spellId in ipairs(TOTEM_MULTI_CAST_SUMMON_SPELLS) do
 		if ( knownMultiCastSummonSpells[i] ) then
 			-- create the button
 			if ( buttonIndex <= numButtons ) then
@@ -701,9 +700,8 @@ function MultiCastFlyoutFrame_LoadPageSpells(self)
 
 			-- setup the button
 			button.page = i;
-			spellId = TOTEM_MULTI_CAST_SUMMON_SPELLS[i];
 			button.spellId = spellId;
-			name, _, icon = GetSpellInfo(spellId);
+			icon = C_Spell.GetSpellTexture(spellId);
 			button.icon:SetTexture(icon);
 			button.icon:SetTexCoord(0.0, 1.0, 0.0, 1.0);
 
@@ -773,7 +771,7 @@ function MultiCastFlyoutFrame_LoadSlotSpells(self, slot, ...)
 			tcoordLeft, tcoordRight, tcoordTop, tcoordBottom = tcoords.left, tcoords.right, tcoords.top, tcoords.bottom;
 		else
 			spellId = select(i - 1, ...);
-			name, _, icon = GetSpellInfo(spellId);
+			icon = C_Spell.GetSpellTexture(spellId);
 			tcoordLeft, tcoordRight, tcoordTop, tcoordBottom = 0.0, 1.0, 0.0, 1.0;
 		end
 		button.spellId = spellId;
@@ -886,12 +884,16 @@ end
 
 function MultiCastSpellButton_UpdateCooldown(self)
 	local cooldown = _G[self:GetName().."Cooldown"];
-	local start, duration, enable = GetSpellCooldown(self.spellId);
-	CooldownFrame_Set(cooldown, start, duration, enable);
+	local cooldownInfo = C_Spell.GetSpellCooldown(self.spellId);
+	if ( cooldownInfo ) then
+		CooldownFrame_Set(cooldown, cooldownInfo.startTime, cooldownInfo.duration, cooldownInfo.isEnabled);
+	else
+		CooldownFrame_Clear(cooldown);
+	end
 end
 
 function MultiCastSpellButton_UpdateState(self)
-	if ( IsCurrentSpell(self.spellId) ) then
+	if ( C_Spell.IsCurrentSpell(self.spellId) ) then
 		self:SetChecked(true);
 	else
 		self:SetChecked(false);
@@ -944,7 +946,7 @@ end
 
 function MultiCastSummonSpellButton_Update(self)
 	-- first update which multi-cast spells we actually know
-	for index, spellId in next, TOTEM_MULTI_CAST_SUMMON_SPELLS do
+	for index, spellId in ipairs(TOTEM_MULTI_CAST_SUMMON_SPELLS) do
 		knownMultiCastSummonSpells[index] = (IsSpellKnown(spellId) and spellId) or nil;
 	end
 
@@ -952,7 +954,7 @@ function MultiCastSummonSpellButton_Update(self)
 	local spellId = knownMultiCastSummonSpells[self:GetID()];
 	self.spellId = spellId;
 	if ( HasMultiCastActionBar() and spellId ) then
-		local name, _, icon, cost, isFunnel, powerType, castTime, minRage, maxRange = GetSpellInfo(spellId);
+		local icon = C_Spell.GetSpellTexture(spellId);
 		local buttonName = self:GetName();
 		_G[buttonName.."Icon"]:SetTexture(icon);
 
@@ -1023,7 +1025,7 @@ end
 
 function MultiCastRecallSpellButton_Update(self)
 	-- first update which multi-cast spells we actually know
-	for index, spellId in next, TOTEM_MULTI_CAST_RECALL_SPELLS do
+	for index, spellId in ipairs(TOTEM_MULTI_CAST_RECALL_SPELLS) do
 		knownMultiCastRecallSpells[index] = (IsSpellKnown(spellId) and spellId) or nil;
 	end
 
@@ -1031,7 +1033,7 @@ function MultiCastRecallSpellButton_Update(self)
 	local spellId = knownMultiCastRecallSpells[self:GetID()];
 	self.spellId = spellId;
 	if ( HasMultiCastActionBar() and spellId ) then
-		local name, _, icon, cost, isFunnel, powerType, castTime, minRage, maxRange = GetSpellInfo(spellId);
+		local icon = C_Spell.GetSpellTexture(spellId);
 		local buttonName = self:GetName();
 		_G[buttonName.."Icon"]:SetTexture(icon);
 

@@ -228,17 +228,16 @@
 				</Anchors>
 			</EventFrame>
 			
-			<Frame parentKey="EncounterDropDown" inherits="UIDropDownMenuTemplate" parentArray="uncommittedRegions">
-				<Size x="239" y="28"/>
+			<DropdownButton parentKey="EncounterDropdown" inherits="WowStyle1DropdownTemplate" parentArray="uncommittedRegions">
 				<Anchors>
 					<Anchor point="TOP" x="1" y="-32"/>
 				</Anchors>
-			</Frame>
+			</DropdownButton>
 
 			<Frame parentKey="Timer">
 				<Size x="238" y="13"/>
 				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.EncounterDropDown" relativePoint="BOTTOM" x="0" y="0"/>
+					<Anchor point="TOP" relativeKey="$parent.EncounterDropdown" relativePoint="BOTTOM" x="0" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">

@@ -65,7 +65,7 @@ local tostringall = tostringall;
 
 local LOCAL_PrintHandler =
     function(...)
-		local printMsg = strjoin(" ", tostringall(...));
+		local printMsg = string.join(" ", tostringall(...));
 		if DEFAULT_CHAT_FRAME then
 			DEFAULT_CHAT_FRAME:AddMessage(printMsg);
 		end
@@ -90,6 +90,6 @@ local function print_inner(...)
     end
 end
 
-function print(...)
+function print(...) -- luacheck: ignore 121 (setting read-only global variable 'print')
     securecall(pcall, print_inner, ...);
 end

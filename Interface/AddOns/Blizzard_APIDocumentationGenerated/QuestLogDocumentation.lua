@@ -17,7 +17,6 @@ local QuestLog =
 			Arguments =
 			{
 				{ Name = "questID", Type = "number", Nilable = false },
-				{ Name = "watchType", Type = "QuestWatchType", Nilable = true },
 			},
 
 			Returns =
@@ -149,6 +148,20 @@ local QuestLog =
 			{
 				{ Name = "distanceSq", Type = "number", Nilable = false },
 				{ Name = "onContinent", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetHeaderIndexForQuest",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "index", Type = "luaIndex", Nilable = true },
 			},
 		},
 		{
@@ -397,7 +410,7 @@ local QuestLog =
 
 			Returns =
 			{
-				{ Name = "reputationRewards", Type = "table", InnerType = "QuestReputationRewardInfo", Nilable = false },
+				{ Name = "reputationRewards", Type = "table", InnerType = "QuestRewardReputationInfo", Nilable = false },
 			},
 		},
 		{
@@ -430,6 +443,36 @@ local QuestLog =
 			Returns =
 			{
 				{ Name = "objectives", Type = "table", InnerType = "QuestObjectiveInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetQuestRewardCurrencies",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "questRewardCurrencies", Type = "table", InnerType = "QuestRewardCurrencyInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetQuestRewardCurrencyInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+				{ Name = "currencyIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "isChoice", Type = "bool", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "questRewardCurrencyInfo", Type = "QuestRewardCurrencyInfo", Nilable = true },
 			},
 		},
 		{
@@ -666,6 +709,20 @@ local QuestLog =
 			},
 		},
 		{
+			Name = "IsMetaQuest",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isMeta", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsOnMap",
 			Type = "Function",
 
@@ -780,6 +837,20 @@ local QuestLog =
 			},
 		},
 		{
+			Name = "IsQuestFlaggedCompletedOnAccount",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isCompletedOnAccount", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsQuestFromContentPush",
 			Type = "Function",
 
@@ -805,6 +876,20 @@ local QuestLog =
 			Returns =
 			{
 				{ Name = "isInvasion", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsQuestRepeatableType",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isRepeatableType", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -962,6 +1047,20 @@ local QuestLog =
 			Returns =
 			{
 				{ Name = "hasBonus", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "QuestIgnoresAccountCompletedFiltering",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "questIgnoresAccountCompletedFiltering", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1252,22 +1351,23 @@ local QuestLog =
 		{
 			Name = "QuestFrequency",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 3,
 			Fields =
 			{
 				{ Name = "Default", Type = "QuestFrequency", EnumValue = 0 },
 				{ Name = "Daily", Type = "QuestFrequency", EnumValue = 1 },
 				{ Name = "Weekly", Type = "QuestFrequency", EnumValue = 2 },
+				{ Name = "ResetByScheduler", Type = "QuestFrequency", EnumValue = 3 },
 			},
 		},
 		{
 			Name = "QuestTag",
 			Type = "Enumeration",
-			NumValues = 11,
+			NumValues = 12,
 			MinValue = 1,
-			MaxValue = 266,
+			MaxValue = 288,
 			Fields =
 			{
 				{ Name = "Group", Type = "QuestTag", EnumValue = 1 },
@@ -1281,6 +1381,7 @@ local QuestLog =
 				{ Name = "Scenario", Type = "QuestTag", EnumValue = 98 },
 				{ Name = "Account", Type = "QuestTag", EnumValue = 102 },
 				{ Name = "CombatAlly", Type = "QuestTag", EnumValue = 266 },
+				{ Name = "Delve", Type = "QuestTag", EnumValue = 288 },
 			},
 		},
 		{
@@ -1338,6 +1439,7 @@ local QuestLog =
 				{ Name = "isLegendarySort", Type = "bool", Nilable = false },
 				{ Name = "isInternalOnly", Type = "bool", Nilable = false },
 				{ Name = "isAbandonOnDisable", Type = "bool", Nilable = false },
+				{ Name = "headerSortKey", Type = "number", Nilable = true },
 			},
 		},
 		{

@@ -189,6 +189,9 @@
 	<Font name="GameFontHighlightHuge2" inherits="SystemFont_Huge2" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
+	<Font name="GameFontNormalHuge2Outline" inherits="SystemFont_Shadow_Huge2_Outline" virtual="true">
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
 	<Font name="GameFontNormalShadowHuge2" inherits="SystemFont_Shadow_Huge2" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>
@@ -232,21 +235,49 @@
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
 	<Font name="GameTooltipHeaderText" inherits="GameTooltipHeader" justifyH="LEFT" virtual="true">
-    <Color r="1.0" g="1.0" b="1.0"/>
-  </Font>
-  <Font name="GameTooltipText" inherits="Tooltip_Med" justifyH="LEFT" virtual="true">
-    <Color r="1.0" g="1.0" b="1.0"/>
-  </Font>
-  <Font name="GameTooltipTextSmall" inherits="Tooltip_Small" justifyH="LEFT" virtual="true">
-    <Color r="1.0" g="1.0" b="1.0"/>
-  </Font>
-  <Font name="IMENormal" inherits="System_IME" justifyH="LEFT" virtual="true">
-    <Color r="1.0" g="1.0" b="1.0"/>
-  </Font>
-  <Font name="IMEHighlight" inherits="System_IME" justifyH="LEFT" virtual="true">
-    <Color r="1.0" g="0.82" b="0"/>
-  </Font>
+	<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>
+	<Font name="GameTooltipText" inherits="Tooltip_Med" justifyH="LEFT" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>
+	<Font name="GameTooltipTextSmall" inherits="Tooltip_Small" justifyH="LEFT" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>
+	<Font name="IMENormal" inherits="System_IME" justifyH="LEFT" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>
+	<Font name="IMEHighlight" inherits="System_IME" justifyH="LEFT" virtual="true">
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
 	<Font name="MovieSubtitleFont" inherits="SystemFont22_Shadow_Outline" virtual="true">
 		<Color color="NORMAL_FONT_COLOR"/>
+	</Font>
+
+	<Font name="NumberFontNormal" inherits="NumberFont_Outline_Med" virtual="true" >
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>
+	<Font name="NumberFontNormalRight" inherits="NumberFontNormal" justifyH="RIGHT" virtual="true"/>
+	<Font name="NumberFontNormalRightRed" inherits="NumberFontNormalRight" virtual="true" >
+		<Color r="1.0" g="0.1" b="0.1"/>
+	</Font>
+	<Font name="NumberFontNormalRightYellow" inherits="NumberFontNormalRight" virtual="true" >
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
+	<Font name="NumberFontNormalRightGray" inherits="NumberFontNormalRight" virtual="true" >
+		<Color r="0.6" g="0.6" b="0.6"/>
+	</Font>
+
+	<Font name="NumberFontNormalLarge" inherits="NumberFont_Outline_Large" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>
+	<Font name="NumberFontNormalLargeRight" inherits="NumberFontNormalLarge" justifyH="RIGHT" virtual="true"/>
+	<Font name="NumberFontNormalLargeRightRed" inherits="NumberFontNormalLargeRight" virtual="true" >
+		<Color r="1.0" g="0.1" b="0.1"/>
+	</Font>
+	<Font name="NumberFontNormalLargeRightYellow" inherits="NumberFontNormalLargeRight" virtual="true" >
+		<Color r="1.0" g="0.82" b="0.0"/>
+	</Font>
+	<Font name="NumberFontNormalLargeRightGray" inherits="NumberFontNormalLargeRight" virtual="true" >
+		<Color r="0.6" g="0.6" b="0.6"/>
 	</Font>
 </Ui>

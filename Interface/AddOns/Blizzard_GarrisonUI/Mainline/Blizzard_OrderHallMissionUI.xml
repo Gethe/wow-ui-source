@@ -88,13 +88,13 @@
 			</Frame>
 			<Button inherits="StartMissionButtonTemplate">
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.ButtonFrame" x="-50" y="1"/>
+					<Anchor point="RIGHT" relativeKey="$parent" x="-50" y="1"/>
 				</Anchors>
 			</Button>
 			<Frame parentKey="CostFrame" inherits="GarrisonMissionPageCostWithTooltipTemplate">
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.ButtonFrame" x="50"/>
-					<Anchor point="RIGHT" relativeKey="$parent.ButtonFrame" relativePoint="CENTER" />
+					<Anchor point="LEFT" relativeKey="$parent" x="50"/>
+					<Anchor point="RIGHT" relativeKey="$parent" relativePoint="CENTER" />
 				</Anchors>
 			</Frame>
 		</Frames>
@@ -286,6 +286,7 @@
 				<KeyValues>
 					<KeyValue key="showUncollected" value="true" type="boolean"/>
 					<KeyValue key="canCastSpellsOnFollowers" value="true" type="boolean"/>
+					<KeyValue key="hasContextMenu" value="true" type="boolean"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="33" y="-64"/>
@@ -306,13 +307,6 @@
 							<OnTextChanged function="GarrisonFollowListEditBox_OnTextChanged"/>
 						</Scripts>
 					</EditBox>
-					<Frame name="OrderHallFollowerOptionDropDown" parentKey="OptionDropDown" inherits="UIDropDownMenuTemplate">
-						<Scripts>
-							<OnLoad>
-								UIDropDownMenu_Initialize(self, GarrisonFollowerOptionDropDown_Initialize, "MENU");
-							</OnLoad>
-						</Scripts>
-					</Frame>
 				</Frames>
 				<Scripts>
 					<OnShow method="OnShow"/>
@@ -397,19 +391,19 @@
 													<Layer level="BORDER" textureSubLevel="0">
 														<Texture parentKey="EmptyPortrait" atlas="GarrMission_PortraitRing_Empty" useAtlasSize="true">
 															<Anchors>
-																<Anchor point="TOP" relativeKey="$parent.PortraitRing"/>
+																<Anchor point="TOP" relativeKey="$parent"/>
 															</Anchors>
 														</Texture>
 													</Layer>
 													<Layer level="OVERLAY">
 														<Texture parentKey="Plus" atlas="Garr_Building-AddFollowerPlus" useAtlasSize="true">
 															<Anchors>
-																<Anchor point="CENTER" relativeKey="$parent.PortraitRing" y="5"/>
+																<Anchor point="CENTER" relativeKey="$parent" y="5"/>
 															</Anchors>
 														</Texture>
 														<Texture parentKey="PortraitHighlight" atlas="GarrMission_PortraitRing_Highlight" useAtlasSize="true" alphaMode="ADD" hidden="true">
 															<Anchors>
-																<Anchor point="CENTER" relativeKey="$parent.PortraitRing" />
+																<Anchor point="CENTER" relativeKey="$parent" />
 															</Anchors>
 														</Texture>
 														<FontString parentKey="AddFollowerText" inherits="GameFontHighlight" justifyH="LEFT">
@@ -511,10 +505,10 @@
 							<Layer level="BACKGROUND">
 								<Texture parentKey="Background" atlas="legionmission-background-combatally" useAtlasSize="false">
 									<Anchors>
-										<Anchor point="LEFT" relativeKey="$parent.$parent.Left" x="6" y="0"/>
-										<Anchor point="RIGHT" relativeKey="$parent.$parent.Right" x="-6" y="0"/>
-										<Anchor point="TOP" relativeKey="$parent.$parent.Top" x="0" y="-6"/>
-										<Anchor point="BOTTOM" relativeKey="$parent.$parent.Bottom" x="0" y="7"/>
+										<Anchor point="LEFT" relativeKey="$parent.$parent" x="6" y="0"/>
+										<Anchor point="RIGHT" relativeKey="$parent.$parent" x="-6" y="0"/>
+										<Anchor point="TOP" relativeKey="$parent.$parent" x="0" y="-6"/>
+										<Anchor point="BOTTOM" relativeKey="$parent.$parent" x="0" y="7"/>
 									</Anchors>
 								</Texture>
 							</Layer>

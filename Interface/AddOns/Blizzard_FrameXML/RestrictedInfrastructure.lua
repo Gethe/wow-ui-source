@@ -481,13 +481,12 @@ local function RestrictedTable_insert(T, ...)
             error("Cannot insert into a read-only table");
             return;
         end
-        local pos, val;
         if (select('#', ...) == 1) then
             local val = ...;
             T[#PT + 1] = val;
             return;
         end
-        pos, val = ...;
+        local pos, val = ...;
         pos = tonumber(pos);
         t_insert(PT, pos, nil);
         -- Leverage protections present on regular indexing

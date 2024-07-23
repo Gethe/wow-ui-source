@@ -1,0 +1,76 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\Blizzard_SharedXML\UI.xsd">
+	<Button name="CharacterSelectNavBarButtonTemplate" mixin="CharacterSelectNavBarButtonMixin" virtual="true">
+		<Size y="51"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<!-- Normal and Disabled textures defined here in order to have layering work out with Highlight frame. -->
+				<Texture parentKey="NormalTexture" atlas="glues-characterselect-tophud-middle-bg" setAllPoints="true"/>
+				<Texture parentKey="DisabledTexture" atlas="glues-characterselect-tophud-middle-dis-bg" setAllPoints="true" hidden="true"/>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Bar" atlas="glues-characterselect-tophud-bg-divider" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Highlight" hidden="true" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Backdrop" atlas="glues-characterselect-tophud-selected-middle" setAllPoints="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="-2"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" y="4"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Line" atlas="glues-characterselect-tophud-selected-line-middle" setAllPoints="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Backdrop" relativePoint="BOTTOMLEFT" y="1"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Backdrop" relativePoint="BOTTOMRIGHT" y="-3"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnEnable method="OnEnable"/>
+			<OnDisable method="OnDisable"/>
+		</Scripts>
+		<NormalFont style="GlueFontNormal"/>
+		<HighlightFont style="GlueFontYellow"/>
+		<DisabledFont style="GlueFontDisable"/>
+	</Button>
+
+	<Frame name="CharacterSelectNavBarTemplate" mixin="CharacterSelectNavBarMixin" inherits="CallbackRegistrantTemplate" virtual="true">
+		<Size y="55"/>
+		<Frames>
+			<Frame parentKey="ButtonTray" inherits="HorizontalButtonTrayTemplate">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="TOP"/>
+					<Anchor point="BOTTOM"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="expand" value="true" type="boolean"/>
+					<KeyValue key="widthPadding" value="4" type="number"/>
+					<KeyValue key="spacing" value="0" type="number"/>
+					<KeyValue key="templateType" value="BUTTON" type="string"/>
+					<KeyValue key="buttonTemplate" value="CharacterSelectNavBarButtonTemplate" type="string"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>	
+</Ui>

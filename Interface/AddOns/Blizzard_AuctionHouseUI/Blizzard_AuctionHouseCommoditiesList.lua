@@ -181,7 +181,7 @@ function AuctionHouseCommoditiesBuyListMixin:SetQuantitySelected(quantity)
 		self.resultsMaxHighlightIndex, self.resultsPartiallyPurchased = select(3, AuctionHouseUtil.AggregateSearchResultsByQuantity(self.itemID, self.quantitySelected));
 		if self.ScrollBox:HasView() and self.ScrollBox:HasDataProvider() then
 			local scrollIndex = math.min(self.ScrollBox:GetDataProviderSize(), self.resultsMaxHighlightIndex + MINIMUM_UNSELECTED_ENTRIES);
-			self.ScrollBox:ScrollToElementDataIndex(scrollIndex, ScrollBoxConstants.AlignEnd, ScrollBoxConstants.NoScrollInterpolation);
+			self.ScrollBox:ScrollToElementDataIndex(scrollIndex, ScrollBoxConstants.AlignEnd);
 		end
 
 		self:UpdateDynamicCallbacks();

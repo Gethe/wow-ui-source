@@ -1,7 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
-	<Script file="Blizzard_MajorFactionRenown.lua"/>
-
 	<Frame name="MajorFactionRenownFrame" mixin="MajorFactionRenownMixin" parent="UIParent" hidden="true" toplevel="true" enableMouse="true">
 		<Size x="820" y="578"/>
 		<Layers>
@@ -11,6 +9,14 @@
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="0">
+				<Texture parentKey="Border" hidden="true" />
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="BottomBorderDecoration" hidden="true" />
+				<Texture parentKey="TopRightBorderDecoration" hidden="true" />
+				<Texture parentKey="TopLeftBorderDecoration" hidden="true" />
 			</Layer>
 			<Layer level="BORDER">
 				<Texture parentKey="CelebrationModelSceneTarget">
@@ -28,13 +34,13 @@
 				</Texture>
 				<Texture parentKey="BottomGlow">
 					<Anchors>
-						<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="BOTTOM" x="0" y="65"/>
+						<Anchor point="CENTER" relativeKey="$parent" relativePoint="CENTER" x="0" y="-112"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate" frameLevel="600" setAllPoints="true">
+			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate" frameLevel="600" setAllPoints="true" hidden="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="-8" y="8"/>
 					<Anchor point="BOTTOMRIGHT" x="8" y="-8"/>
@@ -74,11 +80,7 @@
 					<Anchor point="BOTTOM" x="0" y="28"/>
 				</Anchors>
 			</Button>
-			<Button parentKey="CloseButton" inherits="UIPanelCloseButton" frameLevel="610">
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="-1" y="-6"/>
-				</Anchors>
-			</Button>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton" frameLevel="610"/>
 			<Frame parentKey="HeaderFrame" mixin="MajorFactionRenownHeaderFrameMixin" frameLevel="510">
 				<Size x="150" y="150"/>
 				<Anchors>
@@ -142,13 +144,23 @@
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
-						<FontString parentKey="Title" inherits="Fancy40Font">
+						<FontString parentKey="Title" inherits="Fancy40Font" mixin="AutoScalingFontStringMixin" maxLines="1">
+							<Size x="700"/>
 							<Shadow x="1" y="-1">
 								<Color r="0" g="0" b="0"/>
 							</Shadow>
 							<Anchors>
 								<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="TOP" x="0" y="15"/>
 							</Anchors>
+						</FontString>
+						<FontString parentKey="AccountWideLabel" inherits="GameFontNormal" text="REPUTATION_TOOLTIP_ACCOUNT_WIDE_LABEL">
+							<Shadow x="1" y="-1">
+								<Color r="0" g="0" b="0"/>
+							</Shadow>
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-7"/>
+							</Anchors>
+							<Color color="ACCOUNT_WIDE_FONT_COLOR"/>
 						</FontString>
 					</Layer>
 				</Layers>

@@ -1,9 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 
-	<Script file="Blizzard_ObjectiveTrackerShared.lua"/>
-
-	<Button name="QuestObjectiveItemButtonTemplate" virtual="true">
+	<Button name="QuestObjectiveItemButtonTemplate" mixin="QuestObjectiveItemButtonMixin" virtual="true">
 		<Size x="26" y="26"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -27,16 +25,14 @@
 			<Cooldown parentKey="Cooldown" inherits="CooldownFrameTemplate"/>
 		</Frames>
 		<Scripts>
-			<OnLoad function="QuestObjectiveItem_OnLoad"/>
-			<OnEvent function="QuestObjectiveItem_OnEvent"/>
-			<OnUpdate function="QuestObjectiveItem_OnUpdate"/>
-			<OnShow function="QuestObjectiveItem_OnShow"/>
-			<OnHide function="QuestObjectiveItem_OnHide"/>
-			<OnEnter function="QuestObjectiveItem_OnEnter"/>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
-			<OnClick function="QuestObjectiveItem_OnClick"/>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnUpdate method="OnUpdate"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+			<OnClick method="OnClick"/>
 		</Scripts>
 		<NormalTexture parentKey="NormalTexture" file="Interface\Buttons\UI-Quickslot2">
 			<Size x="42" y="42"/>
@@ -48,34 +44,7 @@
 		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 	</Button>
 
-	<Button name="ScenarioObjectiveFindGroupButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
-		<Size x="36" y="46"/>
-		<Layers>
-			<Layer level="ARTWORK" textureSubLevel="5">
-				<Texture parentKey="Icon" atlas="ui-questtracker-lfg-eye">
-					<Size x="36" y="46"/>
-					<Anchors>
-						<Anchor point="CENTER" x="-1" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<HighlightTexture parentKey="Highlight" atlas="ui-questtracker-lfg-eye-selected">
-			<Size x="36" y="46"/>
-				<Anchors>
-					<Anchor point="CENTER" x="-1" y="0"/>
-				</Anchors>
-		</HighlightTexture>
-		<Scripts>
-			<OnMouseDown function="ScenarioObjectiveFindGroup_OnMouseDown"/>
-			<OnMouseUp function="ScenarioObjectiveFindGroup_OnMouseUp"/>
-			<OnEnter function="ScenarioObjectiveFindGroup_OnEnter"/>
-			<OnLeave function="ScenarioObjectiveFindGroup_OnLeave"/>
-			<OnClick function="ScenarioObjectiveFindGroup_OnClick"/>
-		</Scripts>
-	</Button>
-
-	<Button name="QuestObjectiveFindGroupButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
+	<Button name="QuestObjectiveFindGroupButtonTemplate" mixin="QuestObjectiveFindGroupButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
 		<Size x="30" y="30"/>
 		<Layers>
 			<Layer level="ARTWORK" textureSubLevel="5">
@@ -92,15 +61,15 @@
 		<DisabledTexture file="Interface\Buttons\UI-SquareButton-Disabled"/>
 		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD" alpha=".5"/>
 		<Scripts>
-			<OnMouseDown function="QuestObjectiveFindGroup_OnMouseDown"/>
-			<OnMouseUp function="QuestObjectiveFindGroup_OnMouseUp"/>
-			<OnEnter function="QuestObjectiveFindGroup_OnEnter"/>
-			<OnLeave function="QuestObjectiveFindGroup_OnLeave"/>
-			<OnClick function="QuestObjectiveFindGroup_OnClick"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+			<OnClick method="OnClick"/>
 		</Scripts>
 	</Button>
 
-	<Frame name="BonusObjectiveTrackerRewardTemplate" parentArray="Rewards" virtual="true">
+	<Frame name="ObjectiveTrackerRewardFrameTemplate" virtual="true">
 		<Size x="32" y="32"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeKey="$parent.RewardsTop" relativePoint="BOTTOMLEFT" x="25" y="0"/>
@@ -155,7 +124,7 @@
 		</Animations>
 	</Frame>
 
-	<Frame name="BonusObjectiveRewardsFrameTemplate" parent="UIParent" hidden="true" mixin="BonusObjectiveRewardsFrameMixin" virtual="true">
+	<Frame name="ObjectiveTrackerRewardsToastTemplate" parent="UIParent" frameStrata="HIGH" hidden="true" mixin="ObjectiveTrackerRewardsToastMixin" virtual="true">
 		<Size x="168" y="128"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -195,13 +164,6 @@
 				</Texture>
 			</Layer>
 		</Layers>
-		<Frames>
-			<Frame inherits="BonusObjectiveTrackerRewardTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.RewardsTop" relativePoint="BOTTOMLEFT" x="25" y="0"/>
-				</Anchors>
-			</Frame>
-		</Frames>
 		<Animations>
 			<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
 				<Scale childKey="RewardsTop" duration="0.25" order="1" fromScaleX="0.25" fromScaleY="1" toScaleX="1" toScaleY="1">
@@ -227,12 +189,144 @@
 				</Scale>
 				<Alpha childKey="RewardsShadow" startDelay="0.5" duration="0.35" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="RewardsShadow" startDelay="2" duration="1" order="2" fromAlpha="1" toAlpha="0"/>
-				<Scripts>
-					<OnFinished> 
-						self:GetParent():OnAnimateRewardDone();
-					</OnFinished>
-				</Scripts>
 			</AnimationGroup>
 		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>	
+	</Frame>
+	
+	<Frame name="ObjectiveTrackerLineTemplate" mixin="ObjectiveTrackerLineMixin" hyperlinksEnabled="true" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Dash" inherits="ObjectiveTrackerLineFont" text="QUEST_DASH">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="1"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Text" inherits="ObjectiveTrackerLineFont">
+					<Anchors>
+						<Anchor point="TOP"/>
+						<Anchor point="LEFT" relativeKey="$parent.Dash" relativePoint="RIGHT"/>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</FontString>
+			</Layer>				
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnHyperlinkClick method="OnHyperlinkClick"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="ObjectiveTrackerProgressBarTemplate" mixin="ObjectiveTrackerProgressBarMixin" virtual="true" hidden="true">
+		<Size x="192" y="25"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Frames>
+			<StatusBar parentKey="Bar" drawLayer="BACKGROUND" minValue="0" maxValue="100" defaultValue="0" enableMouse="true">
+				<Size x="180" y="15"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="15" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="BorderLeft" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
+							<Size x="9" y="22"/>
+							<TexCoords left="0.007843" right="0.043137" top="0.193548" bottom="0.774193"/>
+							<Anchors>
+								<Anchor point="LEFT" x="-3" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BorderRight" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
+							<Size x="9" y="22"/>
+							<TexCoords left="0.043137" right="0.007843" top="0.193548" bottom="0.774193"/>
+							<Anchors>
+								<Anchor point="RIGHT" x="3" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BorderMid" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
+							<TexCoords left="0.113726" right="0.1490196" top="0.193548" bottom="0.774193"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.BorderLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BorderRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="Label" inherits="GameFontHighlightMedium" justifyH="LEFT">
+						  <Anchors>
+							<Anchor point="CENTER" x="0" y="-1"/>
+						  </Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="-1">
+						<Texture>
+							<Color r="0.04" g="0.07" b="0.18"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="0.26" g="0.42" b="1"/>
+			</StatusBar>
+		</Frames>
+	</Frame>
+	
+	<Frame name="ObjectiveTrackerTimerBarTemplate" mixin="ObjectiveTrackerTimerBarMixin" virtual="true" hidden="true">
+		<Size x="192" y="20"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" inherits="GameFontHighlightMedium" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<StatusBar parentKey="Bar" drawLayer="BACKGROUND" minValue="0" maxValue="1" defaultValue="0" enableMouse="false">
+				<Size x="128" y="10"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="-4" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="BorderLeft" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
+							<Size x="9" y="14"/>
+							<TexCoords left="0.007843" right="0.043137" top="0.193548" bottom="0.774193"/>
+							<Anchors>
+								<Anchor point="LEFT" x="-3" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BorderRight" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
+							<Size x="9" y="14"/>
+							<TexCoords left="0.043137" right="0.007843" top="0.193548" bottom="0.774193"/>
+							<Anchors>
+								<Anchor point="RIGHT" x="3" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BorderMid" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
+							<TexCoords left="0.113726" right="0.1490196" top="0.193548" bottom="0.774193"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.BorderLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BorderRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="-1">
+						<Texture>
+							<Color r="0.04" g="0.07" b="0.18"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="0.26" g="0.42" b="1"/>
+			</StatusBar>
+		</Frames>
+		<Scripts>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
 	</Frame>
 </Ui>

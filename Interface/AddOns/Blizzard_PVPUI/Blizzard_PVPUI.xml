@@ -375,7 +375,7 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						SetPortraitToTexture(self.Icon, GetSpellTexture(241260));
+						SetPortraitToTexture(self.Icon, C_Spell.GetSpellTexture(241260));
 					</OnLoad>
 					<OnEnter function="PVPRewardEnlistmentBonus_OnEnter"/>
 					<OnLeave function="GameTooltip_Hide"/>
@@ -697,14 +697,14 @@
 	</Button>
 
 	<Button name="PVPRatedActivityButtonTemplate" virtual="true">
-		<Size x="365" y="62"/>
+		<Size x="365" y="56"/>
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="SelectedTexture" atlas="pvpqueue-button-selected" setAllPoints="true" alphaMode="ADD" hidden="true"/>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture parentKey="Anchor">
-					<Size x="365" y="62"/>
+					<Size x="365" y="56"/>
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
@@ -721,7 +721,7 @@
 					</Anchors>
 				</FontString>
 				<Texture parentKey="TierIcon">
-					<Size x="50" y="50"/>
+					<Size x="40" y="40"/>
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.Anchor" x="-4" y="-1"/>
 					</Anchors>
@@ -1111,11 +1111,11 @@
 									<Anchor point="LEFT" relativeKey="$parent.HealerIcon" relativePoint="RIGHT" x="8" y="0"/>
 								</Anchors>
 							</Button>
-							<Frame name="$parentTypeDropDown" inherits="UIDropDownMenuTemplate" id="1">
+							<DropdownButton parentKey="TypeDropdown" name="$parentTypeDropdown" inherits="WowStyle1DropdownTemplate" id="1">
 								<Anchors>
-									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" relativePoint="TOPRIGHT" x="6" y="-1"/>
+									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" relativePoint="TOPRIGHT" x="-6" y="4"/>
 								</Anchors>
-							</Frame>
+							</DropdownButton>
 							<Frame parentKey="SpecificScrollBox" inherits="WowScrollBoxList" hidden="true" frameStrata="HIGH">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT" x="2" y="-2"/>
@@ -1297,31 +1297,40 @@
 									 <KeyValue key="modeDescription" value="RATED_SOLO_SHUFFLE_MODE_DESCRIPTION" type="global"/>
 								</KeyValues>
 								<Anchors>
-									<Anchor point="TOP" relativeKey="$parent.Inset" y="-13"/>
+									<Anchor point="TOP" relativeKey="$parent.Inset" y="-8"/>
 								</Anchors>
 							</Button>
-							<Button parentKey="Arena2v2" inherits="PVPRatedActivityButtonTemplate" id="2">
+							<Button parentKey="RatedBGBlitz" inherits="PVPRatedActivityButtonTemplate" id="2">
+								<KeyValues>
+									 <KeyValue key="toolTipTitle" value="PVP_RATED_BG_BLITZ" type="global"/>
+									 <KeyValue key="modeDescription" value="RATED_BG_BLITZ_MODE_DESCRIPTION" type="global"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="TOP" relativeKey="$parent.RatedSoloShuffle" relativePoint="BOTTOM"/>
+								</Anchors>
+							</Button>
+							<Button parentKey="Arena2v2" inherits="PVPRatedActivityButtonTemplate" id="3">
 								<KeyValues>
 									 <KeyValue key="toolTipTitle" value="ARENA_BATTLES_2V2" type="global"/>
 								</KeyValues>
 								<Anchors>
-									<Anchor point="TOP" relativeKey="$parent.RatedSoloShuffle" relativePoint="BOTTOM" y="-8"/>
+									<Anchor point="TOP" relativeKey="$parent.RatedBGBlitz" relativePoint="BOTTOM"/>
 								</Anchors>
 							</Button>
-							<Button parentKey="Arena3v3" inherits="PVPRatedActivityButtonTemplate" id="3">
+							<Button parentKey="Arena3v3" inherits="PVPRatedActivityButtonTemplate" id="4">
 								<KeyValues>
 									 <KeyValue key="toolTipTitle" value="ARENA_BATTLES_3V3" type="global"/>
 								</KeyValues>
 								<Anchors>
-									<Anchor point="TOP" relativeKey="$parent.Arena2v2" relativePoint="BOTTOM" y="-8"/>
+									<Anchor point="TOP" relativeKey="$parent.Arena2v2" relativePoint="BOTTOM"/>
 								</Anchors>
 							</Button>
-							<Button parentKey="RatedBG" inherits="PVPRatedActivityButtonTemplate" id="4">
+							<Button parentKey="RatedBG" inherits="PVPRatedActivityButtonTemplate" id="5">
 								<KeyValues>
 									 <KeyValue key="toolTipTitle" value="PVP_RATED_BATTLEGROUNDS" type="global"/>
 								</KeyValues>
 								<Anchors>
-									<Anchor point="TOP" relativeKey="$parent.Arena3v3" relativePoint="BOTTOM" y="-8"/>
+									<Anchor point="TOP" relativeKey="$parent.Arena3v3" relativePoint="BOTTOM"/>
 								</Anchors>
 							</Button>
 							<Frame parentKey="ShadowOverlay" inherits="ShadowOverlaySmallTemplate" useParentLevel="true">
@@ -1395,7 +1404,6 @@
 									</Layer>
 								</Layers>
 							</Frame>
-							<Frame parentKey="ArenaInviteMenu" name="$parentArenaInviteMenu" inherits="UIDropDownMenuTemplate" enableMouse="true" />
 						</Frames>
 						<Scripts>
 							<OnLoad function="ConquestFrame_OnLoad" />
@@ -1497,7 +1505,6 @@
 											</Layer>
 										</Layers>
 										<Frames>
-											<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate" hidden="true"/>
 											<Button parentKey="NextRewardLevel" inherits="PVPHonorRewardTemplate">
 												<Anchors>
 													<Anchor point="BOTTOM" x="0" y="-1"/>

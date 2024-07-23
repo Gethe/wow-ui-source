@@ -2,24 +2,33 @@
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="StorylineQuestDataProvider.lua"/>
 
-	<Frame name="StorylineQuestPinTemplate" mixin="StorylineQuestPinMixin" enableMouse="true" hidden="true" virtual="true">
+	<Frame name="HeightIndicatorMapPinTemplate" mixin="IconWithHeightIndicatorMapPinMixin" enableMouse="true" hidden="true" virtual="true">
 		<Size x="22" y="22" />
-		<HitRectInsets>
-			<AbsInset left="4" right="4" top="0" bottom="0"/>
-		</HitRectInsets>
+		<HitRectInsets left="4" right="4" top="0" bottom="0"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="HeightIndicator" hidden="true">
+					<Size x="32" y="32"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="QuestOfferPinTemplate" inherits="LegendHighlightableMapPoiPinTemplate, HeightIndicatorMapPinTemplate, SuperTrackableMapPinTemplate" mixin="QuestOfferPinMixin" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Texture" atlas="QuestNormal"/>
-				<Texture parentKey="Above" atlas="MiniMap-PositionArrowUp" hidden="true">
-					<Size x="32" y="32"/>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="QuestHubPinTemplate" inherits="AreaPOIPinTemplate, HeightIndicatorMapPinTemplate" mixin="QuestHubPinMixin, QuestHubPinGlowMixin" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="PriorityQuest" atlas="QuestNormal">
+					<Size x="18" y="18" />
 					<Anchors>
-						<Anchor point="CENTER" x="0" y="4"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="Below" atlas="MiniMap-PositionArrowDown" hidden="true">
-					<Size x="32" y="32"/>
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="-4"/>
+						<Anchor point="CENTER" relativePoint="BOTTOM" x="0" y="6"/>
 					</Anchors>
 				</Texture>
 			</Layer>

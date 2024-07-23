@@ -4,7 +4,7 @@ local function Register()
 	
 	-- Disable Chat
 	do
-		function InterceptDisableChatChanged(disabled)
+		local function InterceptDisableChatChanged(disabled)
 			if disabled then
 				StaticPopup_Show("CHAT_CONFIG_DISABLE_CHAT");
 				return true;
@@ -13,7 +13,7 @@ local function Register()
 			end
 		end
 
-		function SetChatDisabled(disabled)
+		local function SetChatDisabled(disabled)
 			C_SocialRestrictions.SetChatDisabled(disabled);
 			ChatConfigFrame_OnChatDisabledChanged(disabled);
 		end
@@ -21,7 +21,7 @@ local function Register()
 		local defaultValue = false;
 		local setting = Settings.RegisterProxySetting(category, "PROXY_DISABLE_CHAT", Settings.DefaultVarLocation,
 			Settings.VarType.Boolean, RESTRICT_CHAT_CONFIG_DISABLE, defaultValue, C_SocialRestrictions.IsChatDisabled, SetChatDisabled);
-		local initializer = Settings.CreateCheckBox(category, setting, OPTION_TOOLTIP_DISABLE_CHAT);
+		local initializer = Settings.CreateCheckbox(category, setting, OPTION_TOOLTIP_DISABLE_CHAT);
 		initializer:SetSettingIntercept(InterceptDisableChatChanged);
 
 		EventRegistry:RegisterFrameEventAndCallback("CHAT_DISABLED_CHANGED", function()
@@ -37,58 +37,58 @@ local function Register()
 
 	-- Mature Language
 	do
-		local setting, initializer = Settings.SetupCVarCheckBox(category, "profanityFilter", PROFANITY_FILTER, OPTION_TOOLTIP_PROFANITY_FILTER);
+		local setting, initializer = Settings.SetupCVarCheckbox(category, "profanityFilter", PROFANITY_FILTER, OPTION_TOOLTIP_PROFANITY_FILTER);
 		initializer:AddModifyPredicate(function()
 			return GetCVar("textLocale") ~= "zhCN";
 		end);
 	end
 
 	-- Guild Member Alert
-	Settings.SetupCVarCheckBox(category, "guildMemberNotify", GUILDMEMBER_ALERT, OPTION_TOOLTIP_GUILDMEMBER_ALERT);
+	Settings.SetupCVarCheckbox(category, "guildMemberNotify", GUILDMEMBER_ALERT, OPTION_TOOLTIP_GUILDMEMBER_ALERT);
 
 	-- Block Trades
-	Settings.SetupCVarCheckBox(category, "blockTrades", BLOCK_TRADES, OPTION_TOOLTIP_BLOCK_TRADES);
+	Settings.SetupCVarCheckbox(category, "blockTrades", BLOCK_TRADES, OPTION_TOOLTIP_BLOCK_TRADES);
 
 	-- Block Guild Invites
 	do
 		local defaultValue = false;
 		local setting = Settings.RegisterProxySetting(category, "PROXY_BLOCK_GUILD_INVITES", Settings.DefaultVarLocation,
 			Settings.VarType.Boolean, BLOCK_GUILD_INVITES, defaultValue, GetAutoDeclineGuildInvites, SetAutoDeclineGuildInvites);
-		Settings.CreateCheckBox(category, setting, OPTION_TOOLTIP_BLOCK_GUILD_INVITES);
+		Settings.CreateCheckbox(category, setting, OPTION_TOOLTIP_BLOCK_GUILD_INVITES);
 	end
 	
 	-- Block Calendar Invites
-	Settings.SetupCVarCheckBox(category, "restrictCalendarInvites", RESTRICT_CALENDAR_INVITES, OPTION_TOOLTIP_RESTRICT_CALENDAR_INVITES);
+	Settings.SetupCVarCheckbox(category, "restrictCalendarInvites", RESTRICT_CALENDAR_INVITES, OPTION_TOOLTIP_RESTRICT_CALENDAR_INVITES);
 	
 	-- Display Only Character Achievements
 	if AreAccountAchievementsHidden and ShowAccountAchievements then
 		local defaultValue = false;
 		local setting = Settings.RegisterProxySetting(category, "PROXY_SHOW_ACCOUNT_ACHIEVEMENTS", Settings.DefaultVarLocation,
 			Settings.VarType.Boolean, SHOW_ACCOUNT_ACHIEVEMENTS, defaultValue, AreAccountAchievementsHidden, ShowAccountAchievements);
-		Settings.CreateCheckBox(category, setting, OPTION_TOOLTIP_SHOW_ACCOUNT_ACHIEVEMENTS);
+		Settings.CreateCheckbox(category, setting, OPTION_TOOLTIP_SHOW_ACCOUNT_ACHIEVEMENTS);
 	end
 
 	-- Block Channel Invites
-	Settings.SetupCVarCheckBox(category, "blockChannelInvites", BLOCK_CHAT_CHANNEL_INVITE, OPTION_TOOLTIP_BLOCK_CHAT_CHANNEL_INVITE);
+	Settings.SetupCVarCheckbox(category, "blockChannelInvites", BLOCK_CHAT_CHANNEL_INVITE, OPTION_TOOLTIP_BLOCK_CHAT_CHANNEL_INVITE);
 
 	-- Online Friends
-	Settings.SetupCVarCheckBox(category, "showToastOnline", SHOW_TOAST_ONLINE_TEXT, OPTION_TOOLTIP_SHOW_TOAST_ONLINE);
+	Settings.SetupCVarCheckbox(category, "showToastOnline", SHOW_TOAST_ONLINE_TEXT, OPTION_TOOLTIP_SHOW_TOAST_ONLINE);
 
 	--Offline Friends
-	Settings.SetupCVarCheckBox(category, "showToastOffline", SHOW_TOAST_OFFLINE_TEXT, OPTION_TOOLTIP_SHOW_TOAST_OFFLINE);
+	Settings.SetupCVarCheckbox(category, "showToastOffline", SHOW_TOAST_OFFLINE_TEXT, OPTION_TOOLTIP_SHOW_TOAST_OFFLINE);
 
 	-- Broadcast Updates
-	Settings.SetupCVarCheckBox(category, "showToastBroadcast", SHOW_TOAST_BROADCAST_TEXT, OPTION_TOOLTIP_SHOW_TOAST_BROADCAST);
+	Settings.SetupCVarCheckbox(category, "showToastBroadcast", SHOW_TOAST_BROADCAST_TEXT, OPTION_TOOLTIP_SHOW_TOAST_BROADCAST);
 
 	-- Real ID and BattleTag Friend Requests
-	Settings.SetupCVarCheckBox(category, "showToastFriendRequest", SHOW_TOAST_FRIEND_REQUEST_TEXT, OPTION_TOOLTIP_SHOW_TOAST_FRIEND_REQUEST);
+	Settings.SetupCVarCheckbox(category, "showToastFriendRequest", SHOW_TOAST_FRIEND_REQUEST_TEXT, OPTION_TOOLTIP_SHOW_TOAST_FRIEND_REQUEST);
 
 	-- Show Toast Window
-	Settings.SetupCVarCheckBox(category, "showToastWindow", SHOW_TOAST_WINDOW_TEXT, OPTION_TOOLTIP_SHOW_TOAST_WINDOW);
+	Settings.SetupCVarCheckbox(category, "showToastWindow", SHOW_TOAST_WINDOW_TEXT, OPTION_TOOLTIP_SHOW_TOAST_WINDOW);
 
 	if C_CVar.GetCVar("autoAcceptQuickJoinRequests") then
 		-- Auto Accept Quick Join Requests
-		Settings.SetupCVarCheckBox(category, "autoAcceptQuickJoinRequests", AUTO_ACCEPT_QUICK_JOIN_TEXT, OPTION_TOOLTIP_AUTO_ACCEPT_QUICK_JOIN);
+		Settings.SetupCVarCheckbox(category, "autoAcceptQuickJoinRequests", AUTO_ACCEPT_QUICK_JOIN_TEXT, OPTION_TOOLTIP_AUTO_ACCEPT_QUICK_JOIN);
 	end
 
 	--Chat Style
@@ -100,7 +100,7 @@ local function Register()
 			return container:GetData();
 		end
 
-		Settings.SetupCVarDropDown(category, "chatStyle", Settings.VarType.String, GetOptions, CHAT_STYLE, OPTION_TOOLTIP_CHAT_STYLE);
+		Settings.SetupCVarDropdown(category, "chatStyle", Settings.VarType.String, GetOptions, CHAT_STYLE, OPTION_TOOLTIP_CHAT_STYLE);
 	end
 
 	-- New Whispers
@@ -113,7 +113,7 @@ local function Register()
 			return container:GetData();
 		end
 
-		Settings.SetupCVarDropDown(category, "whisperMode", Settings.VarType.String, GetOptions, WHISPER_MODE, OPTION_TOOLTIP_WHISPER_MODE);
+		Settings.SetupCVarDropdown(category, "whisperMode", Settings.VarType.String, GetOptions, WHISPER_MODE, OPTION_TOOLTIP_WHISPER_MODE);
 	end
 
 	-- Chat Timestamps
@@ -145,7 +145,7 @@ local function Register()
 			return container:GetData();
 		end
 
-		Settings.SetupCVarDropDown(category, "showTimestamps", Settings.VarType.String, GetOptions, TIMESTAMPS_LABEL, OPTION_TOOLTIP_TIMESTAMPS);
+		Settings.SetupCVarDropdown(category, "showTimestamps", Settings.VarType.String, GetOptions, TIMESTAMPS_LABEL, OPTION_TOOLTIP_TIMESTAMPS);
 	end
 
 	-- Reset Chat Positions

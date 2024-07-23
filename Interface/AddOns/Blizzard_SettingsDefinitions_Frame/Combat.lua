@@ -13,46 +13,51 @@ local function Register()
 
 	-- Personal Resource Display
 	if C_CVar.GetCVar("nameplateShowSelf") then
-		local nameplateSetting, nameplateInitializer = Settings.SetupCVarCheckBox(category, "nameplateShowSelf", DISPLAY_PERSONAL_RESOURCE, OPTION_TOOLTIP_DISPLAY_PERSONAL_RESOURCE);
+		local nameplateSetting, nameplateInitializer = Settings.SetupCVarCheckbox(category, "nameplateShowSelf", DISPLAY_PERSONAL_RESOURCE, OPTION_TOOLTIP_DISPLAY_PERSONAL_RESOURCE);
 
 		local function IsModifiable()
 			return nameplateSetting:GetValue();
 		end
 
 		-- Hide Health and Power Bars
-		local hideSetting, hideInitializer = Settings.SetupCVarCheckBox(category, "nameplateHideHealthAndPower", NAMEPLATE_HIDE_HEALTH_AND_POWER, OPTION_TOOLTIP_NAMEPLATE_HIDE_HEALTH_AND_POWER);
+		local hideSetting, hideInitializer = Settings.SetupCVarCheckbox(category, "nameplateHideHealthAndPower", NAMEPLATE_HIDE_HEALTH_AND_POWER, OPTION_TOOLTIP_NAMEPLATE_HIDE_HEALTH_AND_POWER);
 		hideInitializer:SetParentInitializer(nameplateInitializer, IsModifiable);
 
 		-- Show Special Resources
-		local resourceSetting, resourceInitializer = Settings.SetupCVarCheckBox(category, "nameplateResourceOnTarget", DISPLAY_PERSONAL_RESOURCE_ON_ENEMY, OPTION_TOOLTIP_DISPLAY_PERSONAL_RESOURCE_ON_ENEMY);
+		local resourceSetting, resourceInitializer = Settings.SetupCVarCheckbox(category, "nameplateResourceOnTarget", DISPLAY_PERSONAL_RESOURCE_ON_ENEMY, OPTION_TOOLTIP_DISPLAY_PERSONAL_RESOURCE_ON_ENEMY);
 		resourceInitializer:SetParentInitializer(nameplateInitializer, IsModifiable);
 
 		-- Show Personal Cooldowns
 		CombatOverrides.RunSettingsCallback(function()
-			local cooldownSetting, cooldownInitializer = Settings.SetupCVarCheckBox(category, "nameplateShowPersonalCooldowns", DISPLAY_PERSONAL_COOLDOWNS, OPTION_TOOLTIP_DISPLAY_PERSONAL_COOLDOWNS);
-			cooldownInitializer:SetParentInitializer(nameplateInitializer, IsModifiable);
+		local cooldownSetting, cooldownInitializer = Settings.SetupCVarCheckbox(category, "nameplateShowPersonalCooldowns", DISPLAY_PERSONAL_COOLDOWNS, OPTION_TOOLTIP_DISPLAY_PERSONAL_COOLDOWNS);
+		cooldownInitializer:SetParentInitializer(nameplateInitializer, IsModifiable);
 		end);
 
 		-- Show Friendly Buffs
-		local buffsSetting, buffsInitializer = Settings.SetupCVarCheckBox(category, "nameplateShowFriendlyBuffs", DISPLAY_PERSONAL_FRIENDLY_BUFFS, OPTION_TOOLTIP_DISPLAY_PERSONAL_FRIENDLY_BUFFS);
+		local buffsSetting, buffsInitializer = Settings.SetupCVarCheckbox(category, "nameplateShowFriendlyBuffs", DISPLAY_PERSONAL_FRIENDLY_BUFFS, OPTION_TOOLTIP_DISPLAY_PERSONAL_FRIENDLY_BUFFS);
 		buffsInitializer:SetParentInitializer(nameplateInitializer, IsModifiable);
 	end
 
-	-- Raid Self Highlight
+	-- Self Highlight
 	do
 		local setting, initializer = CombatOverrides.CreateRaidSelfHighlightSetting(category)
 		Settings.RaidSelfHighlightInitializer = initializer;
 	end
 
+	-- Show Silhouette when Obscured
+	do
+		CombatOverrides.CreateOccludedSilhouettePlayerSetting(category);
+	end
+
 	-- Target of Target
-	Settings.SetupCVarCheckBox(category, "showTargetOfTarget", SHOW_TARGET_OF_TARGET_TEXT, OPTION_TOOLTIP_SHOW_TARGET_OF_TARGET);
+	Settings.SetupCVarCheckbox(category, "showTargetOfTarget", SHOW_TARGET_OF_TARGET_TEXT, OPTION_TOOLTIP_SHOW_TARGET_OF_TARGET);
 
 	-- Low Agro Flash
-	Settings.SetupCVarCheckBox(category, "doNotFlashLowHealthWarning", FLASH_LOW_HEALTH_WARNING, OPTION_TOOLTIP_FLASH_LOW_HEALTH_WARNING);
+	Settings.SetupCVarCheckbox(category, "doNotFlashLowHealthWarning", FLASH_LOW_HEALTH_WARNING, OPTION_TOOLTIP_FLASH_LOW_HEALTH_WARNING);
 
 	if C_CVar.GetCVar("lossOfControl") then
 		-- Loss of Control Alerts
-		Settings.SetupCVarCheckBox(category, "lossOfControl", LOSS_OF_CONTROL, OPTION_TOOLTIP_LOSS_OF_CONTROL);
+		Settings.SetupCVarCheckbox(category, "lossOfControl", LOSS_OF_CONTROL, OPTION_TOOLTIP_LOSS_OF_CONTROL);
 	end
 
 	-- Scrolling Combat Text
@@ -71,11 +76,11 @@ local function Register()
 			OPTION_TOOLTIP_MOUSEOVER_CAST_NONE_KEY,
 		};
 		local options = Settings.CreateModifiedClickOptions(tooltips);
-		local dropDownSetting = Settings.RegisterModifiedClickSetting(category, "MOUSEOVERCAST", MOUSEOVER_CAST_KEY, "NONE");
+		local dropdownSetting = Settings.RegisterModifiedClickSetting(category, "MOUSEOVERCAST", MOUSEOVER_CAST_KEY, "NONE");
 
-		local initializer = CreateSettingsCheckBoxDropDownInitializer(
+		local initializer = CreateSettingsCheckboxDropdownInitializer(
 			cbSetting, ENABLE_MOUSEOVER_CAST, OPTION_TOOLTIP_ENABLE_MOUSEOVER_CAST,
-			dropDownSetting, options, MOUSEOVER_CAST_KEY, OPTION_TOOLTIP_MOUSEOVER_CAST_KEY_TEXT);
+			dropdownSetting, options, MOUSEOVER_CAST_KEY, OPTION_TOOLTIP_MOUSEOVER_CAST_KEY_TEXT);
 		initializer:AddSearchTags(ENABLE_MOUSEOVER_CAST);
 		layout:AddInitializer(initializer);
 	end
@@ -132,7 +137,7 @@ local function Register()
 		local defaultValue = 4;
 		local selfCastSetting = Settings.RegisterProxySetting(category, "PROXY_SELF_CAST", Settings.DefaultVarLocation,
 			Settings.VarType.Number, SELF_CAST, defaultValue, GetValue, SetValue);
-		local selfCastInitializer = Settings.CreateDropDown(category, selfCastSetting, GetOptions, OPTION_TOOLTIP_AUTO_SELF_CAST);
+		local selfCastInitializer = Settings.CreateDropdown(category, selfCastSetting, GetOptions, OPTION_TOOLTIP_AUTO_SELF_CAST);
 		
 		-- Self Cast Key
 		local tooltips = {
@@ -141,7 +146,7 @@ local function Register()
 			OPTION_TOOLTIP_AUTO_SELF_CAST_SHIFT_KEY,
 		};
 		local mustChooseKey = true;
-		local selfCastKeySetting, selfCastKeyInitializer = Settings.SetupModifiedClickDropDown(category, "SELFCAST", "ALT", AUTO_SELF_CAST_KEY_TEXT, tooltips, OPTION_TOOLTIP_AUTO_SELF_CAST_KEY_TEXT, mustChooseKey);
+		local selfCastKeySetting, selfCastKeyInitializer = Settings.SetupModifiedClickDropdown(category, "SELFCAST", "ALT", AUTO_SELF_CAST_KEY_TEXT, tooltips, OPTION_TOOLTIP_AUTO_SELF_CAST_KEY_TEXT, mustChooseKey);
 
 		local function IsUsingKeyPress()
 			local value = selfCastSetting:GetValue();
@@ -159,7 +164,7 @@ local function Register()
 			OPTION_TOOLTIP_FOCUS_CAST_SHIFT_KEY,
 			OPTION_TOOLTIP_FOCUS_CAST_NONE_KEY,
 		};
-		Settings.SetupModifiedClickDropDown(category, "FOCUSCAST", "ALT", FOCUS_CAST_KEY_TEXT, tooltips, OPTION_TOOLTIP_FOCUS_CAST_KEY_TEXT);
+		Settings.SetupModifiedClickDropdown(category, "FOCUSCAST", "ALT", FOCUS_CAST_KEY_TEXT, tooltips, OPTION_TOOLTIP_FOCUS_CAST_KEY_TEXT);
 	end
 
 	-- Enable Dracthyr Tap Controls
@@ -170,7 +175,7 @@ local function Register()
 			container:Add(1, SETTING_EMPOWERED_SPELL_INPUT_TAP_OPTION, SETTING_EMPOWERED_SPELL_INPUT_TAP_OPTION_TOOLTIP);
 			return container:GetData();
 		end
-		local setting, initializer = Settings.SetupCVarDropDown(category, "empowerTapControls", Settings.VarType.Number, GetTapControlOptions, SETTING_EMPOWERED_SPELL_INPUT, SETTING_EMPOWERED_SPELL_INPUT_TOOLTIP);
+		local setting, initializer = Settings.SetupCVarDropdown(category, "empowerTapControls", Settings.VarType.Number, GetTapControlOptions, SETTING_EMPOWERED_SPELL_INPUT, SETTING_EMPOWERED_SPELL_INPUT_TOOLTIP);
 		-- Mirrored in Accessibility
 		Settings.EmpoweredTapControlsInitializer = initializer;
 	end
@@ -192,7 +197,7 @@ local function Register()
 
 	-- Hold Button
 	if C_CVar.GetCVar("ActionButtonUseKeyHeldSpell") then
-		local setting, initializer = Settings.SetupCVarCheckBox(category, "ActionButtonUseKeyHeldSpell", PRESS_AND_HOLD_CASTING_OPTION, PRESS_AND_HOLD_CASTING_OPTION_TOOLTIP);
+		local setting, initializer = Settings.SetupCVarCheckbox(category, "ActionButtonUseKeyHeldSpell", PRESS_AND_HOLD_CASTING_OPTION, PRESS_AND_HOLD_CASTING_OPTION_TOOLTIP);
 		Settings.PressAndHoldCastingInitializer = initializer;
 	end
 
@@ -209,7 +214,7 @@ local function Register()
 		local defaultValue = false;
 		local setting = Settings.RegisterProxySetting(category, "PROXY_ACTION_TARGETING", Settings.DefaultVarLocation, 
 			Settings.VarType.Boolean, ACTION_TARGETING_OPTION, defaultValue, GetValue, SetValue);
-		Settings.CreateCheckBox(category, setting, OPTION_TOOLTIP_ACTION_TARGETING);
+		Settings.CreateCheckbox(category, setting, OPTION_TOOLTIP_ACTION_TARGETING);
 	end);
 
 	CombatOverrides.AdjustCombatSettings(category);

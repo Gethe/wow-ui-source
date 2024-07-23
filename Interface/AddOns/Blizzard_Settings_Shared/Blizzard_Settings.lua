@@ -243,7 +243,7 @@ function SettingsControlTextContainerMixin:GetData()
 end
 
 function SettingsControlTextContainerMixin:Add(value, label, tooltip)
-	local data = {label = label, tooltip = tooltip, value = value};
+	local data = {text = label, label = label, tooltip = tooltip, value = value};
 	table.insert(self.data, data);
 	return data;
 end
@@ -348,9 +348,9 @@ function Settings.CreateControlInitializer(frameTemplate, setting, options, tool
 	return Settings.CreateSettingInitializer(frameTemplate, data);
 end
 
-function Settings.CreateCheckBoxInitializer(setting, options, tooltip)
+function Settings.CreateCheckboxInitializer(setting, options, tooltip)
 	assert(setting:GetVariableType() == "boolean");
-	return Settings.CreateControlInitializer("SettingsCheckBoxControlTemplate", setting, options, tooltip);
+	return Settings.CreateControlInitializer("SettingsCheckboxControlTemplate", setting, options, tooltip);
 end
 
 function Settings.CreateSliderInitializer(setting, options, tooltip)
@@ -358,9 +358,9 @@ function Settings.CreateSliderInitializer(setting, options, tooltip)
 	return Settings.CreateControlInitializer("SettingsSliderControlTemplate", setting, options, tooltip);
 end
 
-function Settings.CreateDropDownInitializer(setting, options, tooltip)
+function Settings.CreateDropdownInitializer(setting, options, tooltip)
 	assert(options ~= nil);
-	return Settings.CreateControlInitializer("SettingsTextDropDownControlTemplate", setting, options, tooltip);
+	return Settings.CreateControlInitializer("SettingsDropdownControlTemplate", setting, options, tooltip);
 end
 
 local function AddInitializerToLayout(category, initializer)
@@ -368,12 +368,12 @@ local function AddInitializerToLayout(category, initializer)
 	layout:AddInitializer(initializer);
 end
 
-function Settings.CreateCheckBox(category, setting, tooltip)
-	return Settings.CreateCheckBoxWithOptions(category, setting, nil, tooltip);
+function Settings.CreateCheckbox(category, setting, tooltip)
+	return Settings.CreateCheckboxWithOptions(category, setting, nil, tooltip);
 end
 
-function Settings.CreateCheckBoxWithOptions(category, setting, options, tooltip)
-	local initializer = Settings.CreateCheckBoxInitializer(setting, options, tooltip);
+function Settings.CreateCheckboxWithOptions(category, setting, options, tooltip)
+	local initializer = Settings.CreateCheckboxInitializer(setting, options, tooltip);
 	AddInitializerToLayout(category, initializer);
 	return initializer;
 end
@@ -384,8 +384,8 @@ function Settings.CreateSlider(category, setting, options, tooltip)
 	return initializer;
 end
 
-function Settings.CreateDropDown(category, setting, options, tooltip)
-	local initializer = Settings.CreateDropDownInitializer(setting, options, tooltip);
+function Settings.CreateDropdown(category, setting, options, tooltip)
+	local initializer = Settings.CreateDropdownInitializer(setting, options, tooltip);
 	AddInitializerToLayout(category, initializer);
 	return initializer;
 end
@@ -398,9 +398,9 @@ function Settings.CreateOptionsInitTooltip(setting, name, tooltip, options)
 		local default = setting:GetDefaultValue();
 		local warningOption = nil;
 		local defaultOption = nil;
-		for index, option in ipairs(optionData) do
-			local default = option.value == default;
-			if default then
+		for _, option in ipairs(optionData) do
+			local isDefault = option.value == default;
+			if isDefault then
 				defaultOption = option;
 			end
 			
@@ -423,7 +423,7 @@ function Settings.CreateOptionsInitTooltip(setting, name, tooltip, options)
 				if option.tooltip then
 					if option.disabled then
 						optionTooltip = DISABLED_FONT_COLOR:WrapTextInColorCode(option.tooltip);
-					elseif default and option.recommend then
+					elseif isDefault and option.recommend then
 						optionTooltip = GREEN_FONT_COLOR:WrapTextInColorCode(option.tooltip);
 					else
 						optionTooltip = NORMAL_FONT_COLOR:WrapTextInColorCode(option.tooltip);
@@ -458,43 +458,128 @@ function Settings.CreateOptionsInitTooltip(setting, name, tooltip, options)
 	return InitTooltip;
 end
 
-function Settings.InitSelectionDropDown(selectionDropDown, setting, getOptions, width, initTooltip)
-	local options = getOptions();
+function Settings.CreateDropdownButton(optionDescription, optionData, isSelected, setSelected)
+	local truncated = false;
+
+	local function OnEnter(button)
+		button.HighlightBGTex:SetAlpha(0.15);
+
+		local description = button:GetElementDescription();
+		if description:IsEnabled() and not description:IsSelected() then
+			button.Text:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+		end
+
+		if truncated then
+			MenuUtil.ShowTooltip(button, function(tooltip)
+				GameTooltip_SetTitle(tooltip, optionData.label);
+			end);
+		end
+
+		if optionData.onEnter then
+			optionData.onEnter(optionData);
+		end
+	end
+
+	local function OnLeave(button)
+		button.HighlightBGTex:SetAlpha(0);
+
+		local description = button:GetElementDescription();
+		if description:IsEnabled() and not description:IsSelected() then
+			button.Text:SetTextColor(VERY_LIGHT_GRAY_COLOR:GetRGB());
+		end
+
+		MenuUtil.HideTooltip(button);
+	end
+
+	optionDescription:AddInitializer(function(button, description, menu)
+		button:SetScript("OnClick", function(button, buttonName)
+			description:Pick(MenuInputContext.MouseButton, buttonName);
+		end);
+
+		-- This button template is modified in Languages.lua to hide the text and display
+		-- a texture for each locale, so we need to redisplay the text. We don't have to worry
+		-- about that texture here because it is managed by the compositor.
+		button.Text:Show();
+		button.Text:SetTextToFit(optionData.label);
+		button.Text:SetWidth(button.Text:GetWidth() + 10);
+
+		button.HighlightBGTex:SetAlpha(0);
+
+		local fontColor = nil;
+		if description:IsSelected() then
+			button.Text:SetTextColor(NORMAL_FONT_COLOR:GetRGBA());
+		elseif description:IsEnabled() then
+			button.Text:SetTextColor(VERY_LIGHT_GRAY_COLOR:GetRGB());
+		else
+			button.Text:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
+		end
+
+		truncated = button.Text:IsTruncated();
+
+		button:Layout();
+	end);
+
+	MenuUtil.SetElementText(optionDescription, optionData.text);
+	optionDescription:SetIsSelected(isSelected);
+	optionDescription:SetResponder(setSelected);
+	optionDescription:SetOnEnter(OnEnter); 
+	optionDescription:SetOnLeave(OnLeave);
+	optionDescription:SetRadio(true);
+	optionDescription:SetData(optionData);
+end
+
+function Settings.CreateDropdownOptionInserter(options)
+	local function Inserter(rootDescription, isSelected, setSelected)
+		for index, optionData in ipairs(options()) do
+			local optionDescription = rootDescription:CreateTemplate("SettingsDropdownButtonTemplate");
+			Settings.CreateDropdownButton(optionDescription, optionData, isSelected, setSelected);
+		end
+	end
+	return Inserter;
+end
+
+function Settings.InitDropdown(dropdown, setting, elementInserter, initTooltip)
+	-- The setting may have been backed by a lazy initializer that doesn't return correctly
+	-- the first time it is called, so it's called again.
 	local settingValue = setting:GetValue();
-	if not settingValue then
-		-- In case the setting get value was a lazy initializer, attempt once again.
+	if settingValue == nil then
 		settingValue = setting:GetValue();
 	end
 	assertsafe(settingValue ~= nil, ("Missing value for setting '%s'"):format(setting:GetName()));
+	
+	local function IsSelected(optionData)
+		return setting:GetValue() == optionData.value;
+	end
+	
+	local function OnSelect(optionData)
+		return setting:SetValue(optionData.value);
+	end
 
-	local selectionIndex = FindInTableIf(options, function(data)
-		return data.value == settingValue;
+	dropdown:SetDefaultText(CUSTOM);
+	dropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetGridMode(MenuConstants.VerticalGridDirection);
+
+		-- Settings.CreateDropdownOptionInserter
+		elementInserter(rootDescription, IsSelected, OnSelect);
 	end);
 	
-	local result = selectionDropDown:SetupSelections(options, selectionIndex);
-	selectionDropDown.Button:SetTooltipFunc(initTooltip);
-
-	-- Retained for debugging
-	--if not result then
-		--local errorMsg = ("Failed to setup setting '%s' with value '%s'"):format(setting:GetName(), tostring(settingValue));
-		--if UIErrorsFrame then
-		--	UIErrorsFrame:AddExternalWarningMessage(errorMsg);
-		--end
-		--if print then
-		--	print(errorMsg);
-		--end
-		--assertsafe(false, errorMsg);
-		--C_AddOns.LoadAddOn("Blizzard_DebugTools");
-		--if Dump then
-		--	Dump(options);
-		--end
-	--end
-	return selectionIndex;
+	dropdown:SetTooltipFunc(initTooltip);
+	dropdown:SetDefaultTooltipAnchors();
+	
+	dropdown:SetScript("OnEnter", function()
+		ButtonStateBehaviorMixin.OnEnter(dropdown);
+		DefaultTooltipMixin.OnEnter(dropdown);
+	end);
+	
+	dropdown:SetScript("OnLeave", function()
+		ButtonStateBehaviorMixin.OnLeave(dropdown);
+		DefaultTooltipMixin.OnLeave(dropdown);
+	end);
 end
 
-function Settings.SetupCVarCheckBox(category, variable, label, tooltip)
+function Settings.SetupCVarCheckbox(category, variable, label, tooltip)
 	local setting = Settings.RegisterCVarSetting(category, variable, "boolean", label);
-	local initializer = Settings.CreateCheckBox(category, setting, tooltip);
+	local initializer = Settings.CreateCheckbox(category, setting, tooltip);
 	return setting, initializer;
 end
 
@@ -504,16 +589,16 @@ function Settings.SetupCVarSlider(category, variable, options, label, tooltip)
 	return setting, initializer;
 end
 
-function Settings.SetupCVarDropDown(category, variable, variableType, options, label, tooltip)
+function Settings.SetupCVarDropdown(category, variable, variableType, options, label, tooltip)
 	local setting = Settings.RegisterCVarSetting(category, variable, variableType, label);
-	local initializer = Settings.CreateDropDown(category, setting, options, tooltip);
+	local initializer = Settings.CreateDropdown(category, setting, options, tooltip);
 	return setting, initializer;
 end
 
-function Settings.SetupModifiedClickDropDown(category, variable, defaultKey, label, tooltips, tooltip, mustChooseKey)
+function Settings.SetupModifiedClickDropdown(category, variable, defaultKey, label, tooltips, tooltip, mustChooseKey)
 	local options = Settings.CreateModifiedClickOptions(tooltips, mustChooseKey);
 	local setting = Settings.RegisterModifiedClickSetting(category, variable, label, defaultKey);
-	local initializer = Settings.CreateDropDown(category, setting, options, tooltip);
+	local initializer = Settings.CreateDropdown(category, setting, options, tooltip);
 	return setting, initializer;
 end
 
@@ -539,9 +624,9 @@ function Settings.SelectCharacterBindings()
 	SaveBindings(Enum.BindingSet.Character);
 end
 
-function Settings.TryChangeBindingSet(checkBox)
-	if not checkBox:GetChecked() then
-		checkBox:SetChecked(true);
+function Settings.TryChangeBindingSet(checkbox)
+	if not checkbox:GetChecked() then
+		checkbox:SetChecked(true);
 
 		StaticPopup_Show("CONFIRM_DELETING_CHARACTER_SPECIFIC_BINDINGS");
 		return true;

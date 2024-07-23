@@ -1,8 +1,7 @@
 ## Title: Blizzard_ContentTracking
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_FrameXMLBase
-## SuppressLocalTableRef: 1
+## Dependencies: Blizzard_FrameXMLBase, Blizzard_ObjectiveTracker
 ## AllowLoad: Game
 
 ContentTrackingManager.lua

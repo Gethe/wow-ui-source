@@ -180,11 +180,11 @@ function PlunderstormLobbyMixin:OnKeyDown(key)
         if GlueParent_IsSecondaryScreenOpen("options") then
             GlueParent_CloseSecondaryScreen();
         elseif C_Login.IsLauncherLogin() then
-            GlueMenuFrame:SetShown(not GlueMenuFrame:IsShown());
+            GlueMenuFrameUtil.ToggleMenu();
 		elseif GlobalGlueContextMenu_IsShown() then
 			GlobalGlueContextMenu_Release();
         elseif GlueMenuFrame:IsShown() then
-            GlueMenuFrame:Hide();
+            GlueMenuFrameUtil.HideMenu()
         else
             self:OnExit();
         end
@@ -225,7 +225,7 @@ end
 
 PlunderstormLobbyMenuButtonMixin = { };
 function PlunderstormLobbyMenuButtonMixin:OnClick()
-	GlueMenuFrame_Show();
+	GlueMenuFrameUtil.ToggleMenu();
 end
 
 

@@ -31,8 +31,8 @@ end
 function TutorialHelper:FormatString(str)
 	-- Spell Names and Icons e.g. {$1234}
 	str = string.gsub(str, "{%$(%d+)}", function(spellID)
-			local name, _, icon = GetSpellInfo(spellID);
-			return string.format("|cFF00FFFF%s|r |T%s:16|t", name, icon);
+			local spellInfo = C_Spell.GetSpellInfo(spellID);
+			return string.format("|cFF00FFFF%s|r |T%s:16|t", spellInfo.name, spellInfo.iconID);
 		end);
 
 	-- Spell Keybindings e.g. {KB|1234}
@@ -927,7 +927,7 @@ end
 
 function Class_ActionBarCallout:Warrior_AttemptPointer2()
 	local requiredRage = 25; -- fallback value, something decentish
-	local costTable = GetSpellPowerCost(TutorialData.StartingAbility.WARRIOR);
+	local costTable = C_Spell.GetSpellPowerCost(TutorialData.StartingAbility.WARRIOR) or {};
 	for _, costInfo in pairs(costTable) do
 		if (costInfo.type == Enum.PowerType.Rage) then
 			requiredRage = costInfo.cost;
@@ -962,10 +962,10 @@ function Class_ActionBarCallout:HighlightPointer(spellID, textID)
 		self.SpellID = spellID;
 
 		-- Prompt the user to use the spell
-		local name, _, icon = GetSpellInfo(spellID);
+		local spellInfo = C_Spell.GetSpellInfo(spellID);
 		local prompt = formatStr(TutorialHelper:GetClassString(textID or "NPE_ABILITYINITIAL"));
 		local binding = GetBindingKey("ACTIONBUTTON" .. btn.action) or NPE_UNBOUND_KEYBIND;
-		local finalString = string.format(prompt, binding, name, icon);
+		local finalString = string.format(prompt, binding, spellInfo.name, spellInfo.iconID);
 
 		self:ShowPointerTutorial(finalString, "DOWN", btn);
 		ActionButton_ShowOverlayGlow(btn);
@@ -1506,7 +1506,7 @@ end
 
 -- Watch for units dying while in combat.  if that happened, check the unit to see if the
 -- player can loot it and if so, prompt the player to loot
-function Class_LootCorpseWatcher:COMBAT_LOG_EVENT_UNFILTERED(timestamp, logEvent)
+function Class_LootCorpseWatcher:COMBAT_LOG_EVENT_UNFILTERED(timestamp, _logEvent)
 	local eventData = {CombatLogGetCurrentEventInfo()};
 	local logEvent = eventData[2];
 	local unitGUID = eventData[8];
@@ -1839,29 +1839,21 @@ function Class_ShowMapQuestTurnIn:Display()
 	local currentMap = self.MapProvider:GetMap():GetMapID();
 	local desiredMap = self.QuestData:GetTurnInMapID();
 
-	local poiButton;
-
 	-- Get the PoI Pin from the map map
 	if (currentMap == desiredMap) then
 		for pin in self.MapProvider:GetMap():EnumeratePinsByTemplate("QuestPinTemplate") do
 			if (pin.questID == self.QuestData.QuestID) then
-				poiButton = pin;
+				local posX, posY = pin:GetPosition();
+				local direction = (posX and (posX > 0.5)) and "LEFT" or "RIGHT";
+				self:ShowPointerTutorial(formatStr(NPE_QUESTCOMPELTELOCATION), direction, pin);
+				Tutorials.SelectQuestDifferentZone:Complete();
+				return;
 			end
 		end
 	end
 
-	if (poiButton) then
-		local direction = "LEFT";
-		local _, posX, posY = QuestPOIGetIconInfo(self.QuestData.QuestID);
-		if (posX and (posX > 0.5)) then -- sometimes QuestPOIGetIconInfo returns nil;
-			direction = "RIGHT";
-		end
-
-		self:ShowPointerTutorial(formatStr(NPE_QUESTCOMPELTELOCATION), direction, poiButton);
-		Tutorials.SelectQuestDifferentZone:Complete();
-	else
-		Tutorials.SelectQuestDifferentZone:ForceBegin(self.QuestData);
-	end
+	-- This isn't hit unless the pin didn't exist.
+	Tutorials.SelectQuestDifferentZone:ForceBegin(self.QuestData);
 end
 
 -- ------------------------------------------------------------------------------------------------------------
@@ -2055,9 +2047,9 @@ end
 function Class_UseQuestItem:OnBegin(data)
 	self.Data = data;
 
-	local module = QUEST_TRACKER_MODULE:GetBlock(data.QuestID)
-	if (module and module.itemButton) then
-		self:ShowPointerTutorial(formatStr(NPE_USEQUESTITEM), "UP", module.itemButton);
+	local block = QuestObjectiveTracker:GetExistingBlock(data.QuestID) or CampaignQuestObjectiveTracker:GetExistingBlock(data.QuestID)
+	if (block and block.ItemButton) then
+		self:ShowPointerTutorial(formatStr(NPE_USEQUESTITEM), "UP", block.ItemButton);
 
 		Dispatcher:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
 	end
@@ -2208,9 +2200,9 @@ function Class_AbilityUse_AbilityReminder:OnBegin()
 	self.SpellID = TutorialHelper:FilterByClass(TutorialData.StartingAbility);
 	local btn = TutorialHelper:GetActionButtonBySpellID(self.SpellID);
 	if (btn) then
-		local name, _, icon = GetSpellInfo(self.SpellID);
+		local spellInfo = C_Spell.GetSpellInfo(self.SpellID);
 		local prompt = formatStr(TutorialHelper:GetClassString("NPE_ABILITYREMINDER"));
-		self:ShowPointerTutorial(string.format(prompt, name, icon), "DOWN", btn);
+		self:ShowPointerTutorial(string.format(prompt, spellInfo.name, spellInfo.iconID), "DOWN", btn);
 
 		Dispatcher:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
 
@@ -3001,9 +2993,9 @@ function Tutorials:Quest_ObjectivesComplete(questData)
 	local allQuestsReadyForTurnIn = true;
 
 	for i = 1, C_QuestLog.GetNumQuestLogEntries() do
-		local questID = C_QuestLog.GetQuestIDForLogIndex(i);
+		local questLogQuestID = C_QuestLog.GetQuestIDForLogIndex(i);
 		-- Only check valid non-account quests.
-		if questID and not C_QuestLog.IsAccountQuest(questID) and not C_QuestLog.ReadyForTurnIn(questID) then
+		if questLogQuestID and not C_QuestLog.IsAccountQuest(questLogQuestID) and not C_QuestLog.ReadyForTurnIn(questLogQuestID) then
 			allQuestsReadyForTurnIn = false;
 			break;
 		end

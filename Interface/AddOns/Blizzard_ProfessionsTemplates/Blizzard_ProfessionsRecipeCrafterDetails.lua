@@ -20,7 +20,7 @@ local DetailsFrameEvents =
 	"TRADE_SKILL_CRAFT_BEGIN",
 };
 
-CraftingQualityStatLine = EnumUtil.MakeEnum("Difficulty", "Skill");
+CraftingQualityStatLine = EnumUtil.MakeEnum("Difficulty", "Skill", "Concentration");
 
 local detailsPanelTitles =
 {
@@ -34,11 +34,13 @@ local statLineLabels =
 	{
 		[CraftingQualityStatLine.Difficulty] = PROFESSIONS_CRAFTING_STAT_DIFFICULTY,
 		[CraftingQualityStatLine.Skill] = PROFESSIONS_CRAFTING_STAT_SKILL,
+		[CraftingQualityStatLine.Concentration] = PROFESSIONS_CRAFTING_STAT_CONCENTRATION,
 	},
 	[Professions.ProfessionType.Gathering] =
 	{
 		[CraftingQualityStatLine.Difficulty] = PROFESSIONS_GATHERING_STAT_DIFFICULTY,
 		[CraftingQualityStatLine.Skill] = PROFESSIONS_GATHERING_STAT_SKILL,
+		[CraftingQualityStatLine.Concentration] = PROFESSIONS_CRAFTING_STAT_CONCENTRATION,
 	},
 };
 
@@ -48,11 +50,13 @@ local statLineDescriptions =
 	{
 		[CraftingQualityStatLine.Difficulty] = PROFESSIONS_CRAFTING_STAT_DIFFICULTY_DESCRIPTION,
 		[CraftingQualityStatLine.Skill] = PROFESSIONS_CRAFTING_STAT_SKILL_DESCRIPTION,
+		[CraftingQualityStatLine.Concentration] = PROFESSIONS_CRAFTING_STAT_CONCENTRATION_DESCRIPTION,
 	},
 	[Professions.ProfessionType.Gathering] =
 	{
 		[CraftingQualityStatLine.Difficulty] = PROFESSIONS_GATHERING_STAT_DIFFICULTY_DESCRIPTION,
 		[CraftingQualityStatLine.Skill] = PROFESSIONS_GATHERING_STAT_SKILL_DESCRIPTION,
+		[CraftingQualityStatLine.Concentration] = PROFESSIONS_CRAFTING_STAT_CONCENTRATION_DESCRIPTION,
 	},
 };
 
@@ -124,12 +128,17 @@ function ProfessionsCrafterDetailsStatLineMixin:SetValue(baseValue, bonusValue)
 	self.RightLabel:SetText(self:GetStatFormat():format(math.ceil(baseValue + (bonusValue or 0))));
 end
 
+function ProfessionsCrafterDetailsStatLineMixin:SetLabelColor(color)
+	self.LeftLabel:SetTextColor(color:GetRGB());
+	self.RightLabel:SetTextColor(color:GetRGB());
+end
+
 ProfessionsRecipeCrafterDetailsMixin = {};
 
 function ProfessionsRecipeCrafterDetailsMixin:OnLoad()
 	self.statLinePool = CreateFramePool("FRAME", self.StatLines, "ProfessionsCrafterDetailsStatLineTemplate");
 
-	self.FinishingReagentSlotContainer.Label:SetText(PROFESSIONS_CRAFTING_FINISHING_HEADER);
+	self.CraftingChoicesContainer.FinishingReagentSlotContainer.Label:SetText(PROFESSIONS_CRAFTING_FINISHING_HEADER);
 
 	self.QualityMeter.Center:SetScript("OnEnter", function(fill)
 		if not self.operationInfo then
@@ -140,11 +149,16 @@ function ProfessionsRecipeCrafterDetailsMixin:OnLoad()
 
 		local atlasSize = 25;
 		local atlasMarkup = CreateAtlasMarkup(Professions.GetIconForQuality(self.QualityMeter.craftingQuality), atlasSize, atlasSize);
+		local applyConcentration = self.transaction:IsApplyingConcentration();
 		local hasNextQuality = self.operationInfo.upperSkillTreshold > self.operationInfo.lowerSkillThreshold;
 		if hasNextQuality then
 			atlasSize = 20;
 			local nextAtlasMarkup = CreateAtlasMarkup(Professions.GetIconForQuality(self.QualityMeter.craftingQuality + 1), atlasSize, atlasSize);
-			GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_CRAFTING_EXPECTED_QUALITY_WITH_NEXT_SKILL:format(atlasMarkup, self.operationInfo.upperSkillTreshold, nextAtlasMarkup));
+			if applyConcentration then
+				GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_CRAFTING_EXPECTED_QUALITY_WITH_CONCENTRATION:format(nextAtlasMarkup, nextAtlasMarkup));
+			else
+				GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_CRAFTING_EXPECTED_QUALITY_WITH_NEXT_SKILL:format(atlasMarkup, self.operationInfo.upperSkillTreshold, nextAtlasMarkup));
+			end
 		else
 			GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_CRAFTING_EXPECTED_QUALITY:format(atlasMarkup));
 		end
@@ -263,15 +277,18 @@ function ProfessionsRecipeCrafterDetailsMixin:ClearData()
 	self.craftingQuality = nil;
 end
 
-function ProfessionsRecipeCrafterDetailsMixin:SetData(transaction, recipeInfo, hasFinishingSlots)
+function ProfessionsRecipeCrafterDetailsMixin:SetData(transaction, recipeInfo, hasFinishingSlots, hasConcentration)
 	self.transaction = transaction;
 	self.recipeInfo = recipeInfo;
 	self.operationInfo = nil;
 	self.craftingQuality = nil;
 
 	self:SetOutputItemName(recipeInfo.name);
-	self.FinishingReagentSlotContainer:SetShown(hasFinishingSlots);
-	self.FinishingReagentSlotContainer.shouldShow = hasFinishingSlots;
+	self.CraftingChoicesContainer:SetShown(hasFinishingSlots or hasConcentration);
+	self.CraftingChoicesContainer.FinishingReagentSlotContainer:SetShown(hasFinishingSlots);
+	self.CraftingChoicesContainer.ConcentrateContainer:SetShown(hasConcentration and recipeInfo.supportsQualities);
+	self.CraftingChoicesContainer.ConcentrateContainer.ConcentrateToggleButton:SetTransaction(transaction);
+	self.CraftingChoicesContainer.shouldShow = hasFinishingSlots or hasConcentration;
 end
 
 function ProfessionsRecipeCrafterDetailsMixin:HasData()
@@ -302,6 +319,14 @@ function ProfessionsRecipeCrafterDetailsMixin:SetStats(operationInfo, supportsQu
 			return;
 		end
 
+		-- Update Concentrate button first since it may change state and various elements below depend on it.
+		-- This can't be done while the StatLines are being created, otherwise a bad recursive ApplyLayout can occur.
+		self.CraftingChoicesContainer.ConcentrateContainer.ConcentrateToggleButton:SetOperationInfo(operationInfo);
+		self.CraftingChoicesContainer.ConcentrateContainer.ConcentrateToggleButton:SetRecipeInfo(self.recipeInfo);
+
+		local hasConcentration = self.operationInfo.concentrationCurrencyID and self.operationInfo.concentrationCurrencyID ~= 0;
+		local applyConcentration = hasConcentration and self.transaction:IsApplyingConcentration();
+
 		self.statLinePool:ReleaseAll();
 		
 		if ProfessionsUtil.IsCraftingMinimized() then
@@ -314,7 +339,8 @@ function ProfessionsRecipeCrafterDetailsMixin:SetStats(operationInfo, supportsQu
 			self.Line:Hide();
 			self.StatLines.DifficultyStatLine:Hide();
 			self.StatLines.SkillStatLine:Hide();
-			self.FinishingReagentSlotContainer:Hide();
+			self.StatLines.ConcentrationStatLine:Hide();
+			self.CraftingChoicesContainer:Hide();
 
 			self.QualityMeter.layoutIndex = 1;
 			self.QualityMeter.topPadding = 17;
@@ -331,8 +357,8 @@ function ProfessionsRecipeCrafterDetailsMixin:SetStats(operationInfo, supportsQu
 			self.Label:Show();
 			self.Line:Show();
 
-			if self.FinishingReagentSlotContainer.shouldShow then
-				self.FinishingReagentSlotContainer:Show();
+			if self.CraftingChoicesContainer.shouldShow then
+				self.CraftingChoicesContainer:Show();
 			end
 
 			self.StatLines.DifficultyStatLine:SetShown(supportsQualities or isGatheringRecipe);
@@ -343,13 +369,24 @@ function ProfessionsRecipeCrafterDetailsMixin:SetStats(operationInfo, supportsQu
 				self.StatLines.DifficultyStatLine:SetValue(isGatheringRecipe and operationInfo.maxDifficulty or operationInfo.baseDifficulty, operationInfo.bonusDifficulty);
 				self.StatLines.SkillStatLine:SetValue(operationInfo.baseSkill, operationInfo.bonusSkill);
 			end
+			self.StatLines.ConcentrationStatLine:SetShown(hasConcentration and supportsQualities);
+			self.StatLines.ConcentrationStatLine:SetProfessionType(professionType);
+
+			if hasConcentration then
+				self.StatLines.ConcentrationStatLine:SetValue(operationInfo.concentrationCost);
+				self.StatLines.ConcentrationStatLine:SetLabelColor(applyConcentration and NORMAL_FONT_COLOR or DISABLED_FONT_COLOR);
+			end
 			
-			local nextStatLineIndex = 3;
+			local nextStatLineIndex = 4;
 			for _, bonusStat in ipairs(operationInfo.bonusStats) do
 				local statLine = self.statLinePool:Acquire();
 				statLine:InitBonusStat(bonusStat.bonusStatName, bonusStat.ratingDescription, bonusStat.bonusStatValue, bonusStat.ratingPct, bonusStat.bonusRatingPct);
 				statLine.layoutIndex = nextStatLineIndex;
 				statLine:Show();
+
+				if bonusStat.bonusStatValue == Enum.BonusStatIndex.ProfessionIngenuity then
+					statLine:SetLabelColor(applyConcentration and NORMAL_FONT_COLOR or DISABLED_FONT_COLOR);
+				end
 
 				nextStatLineIndex = nextStatLineIndex + 1;
 			end
@@ -365,7 +402,12 @@ function ProfessionsRecipeCrafterDetailsMixin:SetStats(operationInfo, supportsQu
 		self.QualityMeter:SetShown(supportsQualities);
 		self.Spacer:SetShown(not supportsQualities);
 		if supportsQualities then
-			self.QualityMeter:SetQuality(operationInfo.quality, self.recipeInfo.maxQuality);
+			local meterQuality = operationInfo.quality;
+			if applyConcentration then
+				-- When concentration is applied, max out the bar without actually setting to the next quality
+				meterQuality = math.floor(meterQuality + 1.0) - 0.01;
+			end
+			self.QualityMeter:SetQuality(meterQuality, self.recipeInfo.maxQuality);
 		end
 
 		self:Layout();
@@ -383,7 +425,17 @@ function ProfessionsRecipeCrafterDetailsMixin:Reset()
 end
 
 function ProfessionsRecipeCrafterDetailsMixin:GetProjectedQuality()
-	return self.craftingQuality;
+	local quality = self.craftingQuality;
+
+	-- When applying concentration project that the craft is guaranteed to reach the next quality.
+	if self.transaction and self.operationInfo then
+		local applyConcentration = self.transaction:IsApplyingConcentration();
+		if applyConcentration then
+			quality = math.ceil(self.operationInfo.quality);
+		end
+	end
+
+	return quality;
 end
 
 ProfessionsQualityMeterMixin = {};

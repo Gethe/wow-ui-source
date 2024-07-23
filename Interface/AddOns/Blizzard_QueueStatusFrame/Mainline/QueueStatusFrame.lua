@@ -212,9 +212,72 @@ function QueueStatusButtonMixin:OnLeave()
 	end
 end
 
+function QueueStatusButtonMixin:ShowContextMenu()
+	MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
+		rootDescription:SetTag("MENU_QUEUE_STATUS_FRAME");
+
+		--All LFG types
+		for i=1, NUM_LE_LFG_CATEGORYS do
+			local mode, submode = GetLFGMode(i);
+			if ( mode and submode ~= "noteleport" ) then
+				QueueStatusDropdown_AddLFGButtons(rootDescription, i);
+			end
+		end
+
+		--LFGList
+		local isActive = C_LFGList.HasActiveEntryInfo();
+		if ( isActive ) then
+			QueueStatusDropdown_AddLFGListButtons(rootDescription);
+		end
+
+		local apps = C_LFGList.GetApplications();
+		for i=1, #apps do
+			local _, appStatus = C_LFGList.GetApplicationInfo(apps[i]);
+			if ( appStatus == "applied" ) then
+				QueueStatusDropdown_AddLFGListApplicationButtons(rootDescription, apps[i]);
+			end
+		end
+
+		--PvP
+		local inProgress, _, _, _, _, isBattleground = GetLFGRoleUpdate();
+		if ( inProgress and isBattleground ) then
+			QueueStatusDropdown_AddPVPRoleCheckButtons(rootDescription);
+		end
+
+		for i=1, GetMaxBattlefieldID() do
+			local status, mapName, teamSize, registeredMatch = GetBattlefieldStatus(i);
+			if ( status and status ~= "none" ) then
+				QueueStatusDropdown_AddBattlefieldButtons(rootDescription, i);
+			end
+		end
+
+		--World PvP
+		for i=1, MAX_WORLD_PVP_QUEUES do
+			local status, mapName, queueID = GetWorldPVPQueueStatus(i);
+			if ( status and status ~= "none" ) then
+				QueueStatusDropdown_AddWorldPvPButtons(rootDescription, i);
+			end
+		end
+
+		if ( CanHearthAndResurrectFromArea() ) then
+			local name = GetRealZoneText();
+			rootDescription:CreateTitle("|cff19ff19"..name.."|r");
+
+			rootDescription:CreateButton(format(LEAVE_ZONE, name), function()
+				HearthAndResurrectFromArea();
+			end);
+		end
+
+		--Pet Battles
+		if ( C_PetBattles.GetPVPMatchmakingInfo() ) then
+			QueueStatusDropdown_AddPetBattleButtons(rootDescription);
+		end
+	end);
+end
+
 function QueueStatusButtonMixin:OnClick(button)
 	if ( button == "RightButton" ) then
-		QueueStatusDropDown_Show(self.DropDown, self:GetName());
+		self:ShowContextMenu();
 	else
 		--Angry Eye
 		self.angerVal = self.angerVal + LFG_ANGER_INC_VAL;
@@ -1090,148 +1153,42 @@ function QueueStatusEntry_OnUpdate(self, elapsed)
 	--Also can't do slightly less than 1 second (0.9) because we'll end up with some lingering numbers
 	self.updateThrottle = (self.updateThrottle or 0.1) - elapsed;
 	if ( self.updateThrottle <= 0 ) then
-		local elapsed = GetTime() - self.queuedTime;
-		self.TimeInQueue:SetFormattedText(TIME_IN_QUEUE, (elapsed >= 60) and SecondsToTime(elapsed) or LESS_THAN_ONE_MINUTE);
+		local queuedElapsed = GetTime() - self.queuedTime;
+		self.TimeInQueue:SetFormattedText(TIME_IN_QUEUE, (queuedElapsed >= 60) and SecondsToTime(queuedElapsed) or LESS_THAN_ONE_MINUTE);
 		self.updateThrottle = 0.1;
 	end
 end
 
-----------------------------------------------
-------------QueueStatusDropDown---------------
-----------------------------------------------
-function QueueStatusDropDown_Show(self, relativeTo)
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
-	self.point = "BOTTOMRIGHT";
-	self.relativePoint = "LEFT";
-
-	ToggleDropDownMenu(1, nil, self, relativeTo, 0, 28);
-end
-
-local wrappedFuncs = {};
-local function wrapFunc(func) --Lets us directly set .func = on dropdown entries.
-	if ( not wrappedFuncs[func] ) then
-		wrappedFuncs[func] = function(button, ...) func(...) end;
-	end
-	return wrappedFuncs[func];
-end
-
-function QueueStatusDropDown_Update()
-	--All LFG types
-	for i=1, NUM_LE_LFG_CATEGORYS do
-		local mode, submode = GetLFGMode(i);
-		if ( mode and submode ~= "noteleport" ) then
-			QueueStatusDropDown_AddLFGButtons(i);
-		end
-	end
-
-	--LFGList
-	local isActive = C_LFGList.HasActiveEntryInfo();
-	if ( isActive ) then
-		QueueStatusDropDown_AddLFGListButtons();
-	end
-
-	local apps = C_LFGList.GetApplications();
-	for i=1, #apps do
-		local _, appStatus = C_LFGList.GetApplicationInfo(apps[i]);
-		if ( appStatus == "applied" ) then
-			QueueStatusDropDown_AddLFGListApplicationButtons(apps[i]);
-		end
-	end
-
-	--PvP
-	local inProgress, _, _, _, _, isBattleground = GetLFGRoleUpdate();
-	if ( inProgress and isBattleground ) then
-		QueueStatusDropDown_AddPVPRoleCheckButtons();
-	end
-
-	for i=1, GetMaxBattlefieldID() do
-		local status, mapName, teamSize, registeredMatch = GetBattlefieldStatus(i);
-		if ( status and status ~= "none" ) then
-			QueueStatusDropDown_AddBattlefieldButtons(i);
-		end
-	end
-
-	--World PvP
-	for i=1, MAX_WORLD_PVP_QUEUES do
-		local status, mapName, queueID = GetWorldPVPQueueStatus(i);
-		if ( status and status ~= "none" ) then
-			QueueStatusDropDown_AddWorldPvPButtons(i);
-		end
-	end
-
-	if ( CanHearthAndResurrectFromArea() ) then
-		local info = UIDropDownMenu_CreateInfo();
-		local name = GetRealZoneText();
-		info.text = "|cff19ff19"..name.."|r";
-		info.isTitle = 1;
-		info.notCheckable = 1;
-		UIDropDownMenu_AddButton(info);
-
-		info.text = format(LEAVE_ZONE, name);
-		info.isTitle = false;
-		info.disabled = false;
-		info.func = wrapFunc(HearthAndResurrectFromArea);
-		UIDropDownMenu_AddButton(info);
-	end
-
-	--Pet Battles
-	if ( C_PetBattles.GetPVPMatchmakingInfo() ) then
-		QueueStatusDropDown_AddPetBattleButtons();
-	end
-end
-
-function QueueStatusDropDown_AddWorldPvPButtons(idx)
-	local info = UIDropDownMenu_CreateInfo();
+function QueueStatusDropdown_AddWorldPvPButtons(description, idx)
 	local status, mapName, queueID = GetWorldPVPQueueStatus(idx);
 
 	local name = mapName;
-
-	info.text = name;
-	info.isTitle = 1;
-	info.notCheckable = 1;
-	UIDropDownMenu_AddButton(info);
-
-	info.disabled = false;
-	info.isTitle = nil;
-	info.leftPadding = 10;
+	description:CreateTitle(name);
 
 	if ( status == "queued" ) then
-		info.text = LEAVE_QUEUE;
-		info.func = wrapFunc(BattlefieldMgrExitRequest);
-		info.arg1 = queueID;
-		UIDropDownMenu_AddButton(info);
+		description:CreateButton(LEAVE_QUEUE, function()
+			BattlefieldMgrExitRequest(queueID);
+		end);
 	elseif ( status == "confirm" ) then
-		info.text = ENTER_LFG;
-		info.func = wrapFunc(BattlefieldMgrEntryInviteResponse);
-		info.arg1 = queueID;
-		info.arg2 = 1;
-		UIDropDownMenu_AddButton(info);
+		description:CreateButton(ENTER_LFG, function()
+			BattlefieldMgrEntryInviteResponse(queueID, 1);
+		end);
 
-		info.text = LEAVE_QUEUE;
-		info.func = wrapFunc(BattlefieldMgrExitRequest);
-		info.arg1 = queueID;
-		info.arg2 = nil;
-		UIDropDownMenu_AddButton(info);
+		description:CreateButton(LEAVE_QUEUE, function()
+			BattlefieldMgrExitRequest(queueID);
+		end);
 	end
 end
 
-function QueueStatusDropDown_AddPVPRoleCheckButtons()
-	local info = UIDropDownMenu_CreateInfo();
+function QueueStatusDropdown_AddPVPRoleCheckButtons(description)
 	local inProgress, _, _, _, _, isBattleground = GetLFGRoleUpdate();
 
 	if ( inProgress and isBattleground ) then
 		local name = GetLFGRoleUpdateBattlegroundInfo();
-		info.text = name;
-		info.isTitle = 1;
-		info.notCheckable = 1;
-		UIDropDownMenu_AddButton(info);
+		description:CreateTitle(name);
 
-		info.text = QUEUED_STATUS_ROLE_CHECK_IN_PROGRESS;
-		info.isTitle = nil;
-		info.leftPadding = 10;
-		info.func = nil;
-		info.disabled = true;
-		UIDropDownMenu_AddButton(info);
+		local button = description:CreateButton(QUEUED_STATUS_ROLE_CHECK_IN_PROGRESS);
+		button:SetEnabled(false);
 	end
 end
 
@@ -1245,99 +1202,84 @@ local function LeaveQueueWithMatchReadyCheck(idx)
 	end
 end
 
-function QueueStatusDropDown_AddBattlefieldButtons(idx)
-	local info = UIDropDownMenu_CreateInfo();
+function QueueStatusDropdown_AddBattlefieldButtons(description, idx)
 	local status, mapName, teamSize, registeredMatch, _, _, _, _, asGroup, _, _, isSoloQueue  = GetBattlefieldStatus(idx);
 
 	local name = mapName;
 	if ( name and status == "active" ) then
 		name = "|cff19ff19"..name.."|r";
 	end
-	info.text = name;
-	info.isTitle = 1;
-	info.notCheckable = 1;
-	UIDropDownMenu_AddButton(info);
-
-	info.disabled = false;
-	info.isTitle = nil;
-	info.leftPadding = 10;
+	description:CreateTitle(name);
 
 	if ( status == "queued" ) then
-		info.text = LEAVE_QUEUE;
-		info.func = wrapFunc(LeaveQueueWithMatchReadyCheck);
-		info.arg1 = idx;
-		info.arg2 = nil;
-		info.disabled = IsInGroup() and not UnitIsGroupLeader("player") and not isSoloQueue;
-		UIDropDownMenu_AddButton(info);
-	elseif ( status == "locked" ) then
-		info.text = LEAVE_BATTLEGROUND;
-		info.disabled = true;
-		UIDropDownMenu_AddButton(info);
-	elseif ( status == "confirm" ) then
-		info.text = ENTER_LFG;
-		info.func = wrapFunc(AcceptBattlefieldPort);
-		info.arg1 = idx;
-		info.arg2 = 1;
-		UIDropDownMenu_AddButton(info);
+		local button = description:CreateButton(LEAVE_QUEUE, function()
+			LeaveQueueWithMatchReadyCheck(idx);
+		end);
 
-		if ( teamSize == 0 and not queueType == "RATEDSHUFFLE") then
-			info.text = LEAVE_QUEUE;
-			info.func = wrapFunc(LeaveQueueWithMatchReadyCheck);
-			info.arg1 = idx;
-			info.arg2 = nil;
-			UIDropDownMenu_AddButton(info);
+		if IsInGroup() and not UnitIsGroupLeader("player") and not isSoloQueue then
+			button:SetEnabled(false);
+		end
+	elseif ( status == "locked" ) then
+		local button = description:CreateButton(LEAVE_BATTLEGROUND);
+		button:SetEnabled(false);
+	elseif ( status == "confirm" ) then
+		description:CreateButton(ENTER_LFG, function()
+			AcceptBattlefieldPort(idx, 1);
+		end);
+
+		if ( teamSize == 0 and queueType ~= "RATEDSHUFFLE") then
+			description:CreateButton(LEAVE_QUEUE, function()
+				LeaveQueueWithMatchReadyCheck(idx);
+			end);
 		end
 	elseif ( status == "active" ) then
 		local inArena = IsActiveBattlefieldArena();
 
 		if ( not inArena or GetBattlefieldWinner() or C_Commentator.GetMode() > 0 or C_PvP.IsInBrawl() ) then
-			info.text = TOGGLE_SCOREBOARD;
-			info.func = wrapFunc(TogglePVPScoreboardOrResults);
-			info.arg1 = nil;
-			info.arg2 = nil;
-			UIDropDownMenu_AddButton(info);
+			description:CreateButton(TOGGLE_SCOREBOARD, function()
+				TogglePVPScoreboardOrResults();
+			end);
 		end
 
 		if ( not inArena ) then
-			info.text = TOGGLE_BATTLEFIELD_MAP;
-			info.func = wrapFunc(ToggleBattlefieldMap);
-			info.arg1 = nil;
-			info.arg2 = nil;
-			UIDropDownMenu_AddButton(info);
+			description:CreateButton(TOGGLE_BATTLEFIELD_MAP, function()
+				ToggleBattlefieldMap();
+			end);
 		end
 
+		local text;
+		local disabled = false;
 		if ( inArena and not C_PvP.IsInBrawl() ) then
-			info.text = SURRENDER_ARENA;
-			info.func = wrapFunc(ConfirmSurrenderArena);
-			info.arg1 = nil;
-			info.arg2 = nil;
-			if (not CanSurrenderArena() or C_PvP.IsSoloShuffle() ) then
-				info.disabled = true;
+			local button = description:CreateButton(SURRENDER_ARENA, function()
+				ConfirmSurrenderArena();
+			end);
+			if not CanSurrenderArena() or C_PvP.IsSoloShuffle() then
+				button:SetEnabled(false);
 			end
-			UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
-			info.disabled = false;
-			info.text = LEAVE_ARENA;
+			disabled = false;
+			text = LEAVE_ARENA;
 		else
 			if ( C_PvP.IsSoloShuffle() ) then
-				info.disabled = true;
+				disabled = true;
 			end
 			if ( C_PvP.IsInBrawl() ) then
-				info.text = LEAVE_LFD_BATTLEFIELD;
+				text = LEAVE_LFD_BATTLEFIELD;
 			else
-				info.text = LEAVE_BATTLEGROUND;
+				text = LEAVE_BATTLEGROUND;
 			end
 		end
 
-		info.func = wrapFunc(ConfirmOrLeaveBattlefield);
-		info.arg1 = nil;
-		info.arg2 = nil;
-		UIDropDownMenu_AddButton(info);
+		local leaveButton = description:CreateButton(text, function()
+			ConfirmOrLeaveBattlefield();
+		end);
+		
+		if disabled then
+			leaveButton:SetEnabled(false);
+		end
 	end
 end
 
-function QueueStatusDropDown_AddLFGButtons(category)
-	local info = UIDropDownMenu_CreateInfo();
-
+function QueueStatusDropdown_AddLFGButtons(description, category)
 	QueueStatus_GetAllRelevantLFG(category, queuedList);
 	local statuses = {};
 	for queueID in pairs(queuedList) do
@@ -1353,14 +1295,8 @@ function QueueStatusDropDown_AddLFGButtons(category)
 	if ( IsLFGModeActive(category) ) then
 		name = "|cff19ff19"..name.."|r";
 	end
-	info.text = name;
-	info.isTitle = 1;
-	info.notCheckable = 1;
-	UIDropDownMenu_AddButton(info);
 
-	info.disabled = false;
-	info.isTitle = nil;
-	info.leftPadding = 10;
+	description:CreateTitle(name);
 
 	if ( IsLFGModeActive(category) and IsPartyLFG() ) then
 		local addExitOption = true;
@@ -1368,131 +1304,116 @@ function QueueStatusDropDown_AddLFGButtons(category)
 			if ( IsInLFDBattlefield() ) then
 				local _, instanceType = IsInInstance();
 				if ( instanceType ~= "arena" and instanceType ~= "pvp" ) then
-					info.text = ENTER_LFG;
-					info.func = wrapFunc(LFGTeleport);
-					info.arg1 = false;
-					info.disabled = false;
-					UIDropDownMenu_AddButton(info);
+					description:CreateButton(ENTER_LFG, function()
+						LFGTeleport(false);
+					end);
 					addExitOption = false;
 				else
-					info.text = TOGGLE_SCOREBOARD;
-					info.func = wrapFunc(TogglePVPScoreboardOrResults);
-					info.arg1 = nil;
-					info.arg2 = nil;
-					UIDropDownMenu_AddButton(info);
+					description:CreateButton(TOGGLE_SCOREBOARD, function()
+						TogglePVPScoreboardOrResults();
+					end);
 				end
 			elseif ( IsInLFGDungeon() ) then
-				info.text = TELEPORT_OUT_OF_DUNGEON;
-				info.func = wrapFunc(LFGTeleport);
-				info.arg1 = true;
-				info.disabled = false;
-				UIDropDownMenu_AddButton(info);
+				description:CreateButton(TELEPORT_OUT_OF_DUNGEON, function()
+					LFGTeleport(true);
+				end);
 			else
-				info.text = TELEPORT_TO_DUNGEON;
-				info.func = wrapFunc(LFGTeleport);
-				info.arg1 = false;
-				info.disabled = false;
-				UIDropDownMenu_AddButton(info);
+				description:CreateButton(TELEPORT_TO_DUNGEON, function()
+					LFGTeleport(false);
+				end);
 			end
 		end
 		if ( addExitOption ) then
-			info.text = (category == LE_LFG_CATEGORY_WORLDPVP) and LEAVE_BATTLEGROUND or INSTANCE_PARTY_LEAVE;
-			info.func = wrapFunc(ConfirmOrLeaveLFGParty);
-			info.arg1 = nil;
-			info.disabled = false;
-			UIDropDownMenu_AddButton(info);
+			local text = (category == LE_LFG_CATEGORY_WORLDPVP) and LEAVE_BATTLEGROUND or INSTANCE_PARTY_LEAVE;
+
+			if C_PartyInfo.IsPartyWalkIn() then
+				if C_PartyInfo.IsDelveComplete() then
+					text = INSTANCE_WALK_IN_LEAVE;
+				else
+					-- If in a delve and the delve is incomplete, don't show an option to leave.
+					return;
+				end
+			end
+
+			description:CreateButton(text, function()
+				ConfirmOrLeaveParty();
+			end);
 		end
 	end
 
 	if ( statuses.rolecheck ) then
-		info.text = QUEUED_STATUS_ROLE_CHECK_IN_PROGRESS;
-		info.func = nil;
-		info.disabled = true;
-		UIDropDownMenu_AddButton(info);
+		local button = description:CreateButton(QUEUED_STATUS_ROLE_CHECK_IN_PROGRESS);
+		button:SetEnabled(false);
 	end
 	local preventLeaveQueue = IsLFGModeActive(category) and IsServerControlledBackfill();
 	if ( ( statuses.queued or statuses.suspended ) and not preventLeaveQueue ) then
 		local manyQueues = (category == LE_LFG_CATEGORY_RF) and (statuses.queued or 0) + (statuses.suspended or 0) > 1;
-		info.text = manyQueues and LEAVE_ALL_QUEUES or LEAVE_QUEUE;
-		info.func = wrapFunc(LeaveLFG);
-		info.arg1 = category;
-		info.disabled = not (statuses["queued.empowered"] or statuses["suspended.empowered"]);
-		UIDropDownMenu_AddButton(info);
+		local text = manyQueues and LEAVE_ALL_QUEUES or LEAVE_QUEUE;
+		local button = description:CreateButton(text, function()
+			LeaveLFG(category);
+		end);
+
+		if not (statuses["queued.empowered"] or statuses["suspended.empowered"]) then
+			button:SetEnabled(false);
+		end
 	end
 	if ( statuses.listed ) then
-		if ( IsInGroup() ) then
-			info.text = UNLIST_MY_GROUP;
-		else
-			info.text = UNLIST_ME;
+		local text = IsInGroup() and UNLIST_MY_GROUP or UNLIST_ME;
+		local button = description:CreateButton(text, function()
+			LeaveLFG(category);
+		end);
+
+		if not statuses["listed.empowered"] then
+			button:SetEnabled(false);
 		end
-		info.func = wrapFunc(LeaveLFG);
-		info.arg1 = category;
-		info.disabled = not statuses["listed.empowered"];
-		UIDropDownMenu_AddButton(info);
 	end
 	if ( statuses.proposal ) then
 		if ( statuses["proposal.accepted"] ) then
-			info.text = QUEUED_STATUS_PROPOSAL;
-			info.func = nil;
-			info.disabled = true;
-			UIDropDownMenu_AddButton(info);
+			local button = description:CreateButton(QUEUED_STATUS_PROPOSAL);
+			button:SetEnabled(false);
 		elseif ( statuses["proposal.unaccepted"] ) then
-			info.text = ENTER_LFG;
-			info.func = wrapFunc(AcceptProposal);
-			info.arg1 = nil;
-			info.disabled = false;
-			UIDropDownMenu_AddButton(info);
+			description:CreateButton(ENTER_LFG, function()
+				AcceptProposal();
+			end);
 
-			info.text = LEAVE_QUEUE;
-			info.func = wrapFunc(RejectProposal);
-			info.arg1 = category;
-			info.disabled = false;
-			UIDropDownMenu_AddButton(info);
+			description:CreateButton(LEAVE_QUEUE, function()
+				RejectProposal(category);
+			end);
 		end
 	end
 end
 
-function QueueStatusDropDown_AddLFGListButtons()
-	local info = UIDropDownMenu_CreateInfo();
+function QueueStatusDropdown_AddLFGListButtons(description)
 	local activeEntryInfo = C_LFGList.GetActiveEntryInfo();
-	info.text = activeEntryInfo.name;
-	info.isTitle = 1;
-	info.notCheckable = 1;
-	UIDropDownMenu_AddButton(info);
+	description:CreateTitle(activeEntryInfo.name);
 
-	info.text = LFG_LIST_VIEW_GROUP;
-	info.isTitle = nil;
-	info.leftPadding = 10;
-	info.func = LFGListUtil_OpenBestWindow;
-	info.disabled = false;
-	UIDropDownMenu_AddButton(info);
+	description:CreateButton(LFG_LIST_VIEW_GROUP, function()
+		LFGListUtil_OpenBestWindow();
+	end);
 
-	info.text = UNLIST_MY_GROUP;
-	info.isTitle = nil;
-	info.leftPadding = 10;
-	info.func = wrapFunc(C_LFGList.RemoveListing);
-	info.disabled = not UnitIsGroupLeader("player");
-	UIDropDownMenu_AddButton(info);
+	local button = description:CreateButton(UNLIST_MY_GROUP, function()
+		C_LFGList.RemoveListing();
+	end);
+
+	if not UnitIsGroupLeader("player") then
+		button:SetEnabled(false);
+	end
 end
 
-function QueueStatusDropDown_AddLFGListApplicationButtons(resultID)
-	local info = UIDropDownMenu_CreateInfo();
+function QueueStatusDropdown_AddLFGListApplicationButtons(description, resultID)
 	local searchResultInfo = C_LFGList.GetSearchResultInfo(resultID);
-	info.text = searchResultInfo.name;
-	info.isTitle = 1;
-	info.notCheckable = 1;
-	UIDropDownMenu_AddButton(info);
+	description:CreateTitle(searchResultInfo.name);
 
-	info.text = CANCEL_SIGN_UP;
-	info.isTitle = nil;
-	info.leftPadding = 10;
-	info.func = wrapFunc(C_LFGList.CancelApplication);
-	info.arg1 = resultID;
-	info.disabled = IsInGroup() and not UnitIsGroupLeader("player");
-	UIDropDownMenu_AddButton(info);
+	local button = description:CreateButton(CANCEL_SIGN_UP, function()
+		C_LFGList.CancelApplication(resultID);
+	end);
+
+	if IsInGroup() and not UnitIsGroupLeader("player") then
+		button:SetEnabled(false);
+	end
 end
 
-function QueueStatusDropDown_AcceptQueuedPVPMatch()
+function QueueStatusDropdown_AcceptQueuedPVPMatch()
 	if ( IsFalling() ) then
 		UIErrorsFrame:AddMessage(ERR_NOT_WHILE_FALLING, 1.0, 0.1, 0.1, 1.0);
 	elseif ( UnitAffectingCombat("player") ) then
@@ -1502,37 +1423,26 @@ function QueueStatusDropDown_AcceptQueuedPVPMatch()
 	end
 end
 
-function QueueStatusDropDown_AddPetBattleButtons()
-	local info = UIDropDownMenu_CreateInfo();
-
+function QueueStatusDropdown_AddPetBattleButtons(description)
 	local status = C_PetBattles.GetPVPMatchmakingInfo();
+	description:CreateTitle(PET_BATTLE_PVP_QUEUE);
 
-	info.text = PET_BATTLE_PVP_QUEUE;
-	info.isTitle = 1;
-	info.notCheckable = 1;
-	UIDropDownMenu_AddButton(info);
-
-	info.disabled = false;
-	info.isTitle = nil;
-	info.leftPadding = 10;
 
 	if ( status == "queued" or status == "suspended" ) then
-		info.text = LEAVE_QUEUE;
-		info.func = wrapFunc(C_PetBattles.StopPVPMatchmaking);
-		UIDropDownMenu_AddButton(info);
+		description:CreateButton(LEAVE_QUEUE, function()
+			C_PetBattles.StopPVPMatchmaking();
+		end);
 	elseif ( status == "proposal" ) then
-		info.text = ENTER_PET_BATTLE;
-		info.func = wrapFunc(QueueStatusDropDown_AcceptQueuedPVPMatch);
-		UIDropDownMenu_AddButton(info);
+		description:CreateButton(ENTER_PET_BATTLE, function()
+			QueueStatusDropdown_AcceptQueuedPVPMatch();
+		end);
 
-		info.text = LEAVE_QUEUE;
-		info.func = wrapFunc(C_PetBattles.DeclineQueuedPVPMatch);
-		UIDropDownMenu_AddButton(info);
+		description:CreateButton(LEAVE_QUEUE, function()
+			C_PetBattles.DeclineQueuedPVPMatch();
+		end);
 	elseif ( status == "entry" ) then
-		info.text = ENTER_PET_BATTLE;
-		info.func = nil;
-		info.disabled = true;
-		UIDropDownMenu_AddButton(info);
+		local button = description:CreateButton(ENTER_PET_BATTLE);
+		button:SetEnabled(false);
 	end
 end
 

@@ -133,7 +133,6 @@
 									<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="2"/>
 								</Anchors>
 							</EventFrame>
-							<Frame parentKey="ContextMenu" inherits="UIDropDownMenuTemplate" enableMouse="true"/>
 							<Frame parentKey="LoadingSpinner" inherits="SpinnerTemplate" hidden="true" frameLevel="2000">
 								<Size x="80" y="80"/>
 								<Anchors>
@@ -176,12 +175,20 @@
 							<Anchor point="LEFT" relativeKey="$parent.PublicOrdersButton" relativePoint="RIGHT" x="0" y="0"/>
 						</Anchors>
 					</Button>
+					<Button parentKey="NpcOrdersButton" inherits="ProfessionsCraftingOrderTypeTabTemplate">
+						<KeyValues>
+							<KeyValue key="orderType" value="Enum.CraftingOrderType.Npc" type="global"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.GuildOrdersButton" relativePoint="RIGHT" x="0" y="0"/>
+						</Anchors>
+					</Button>
 					<Button parentKey="PersonalOrdersButton" inherits="ProfessionsCraftingOrderTypeTabTemplate">
 						<KeyValues>
 							<KeyValue key="orderType" value="Enum.CraftingOrderType.Personal" type="global"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.GuildOrdersButton" relativePoint="RIGHT" x="0" y="0"/>
+							<Anchor point="LEFT" relativeKey="$parent.NpcOrdersButton" relativePoint="RIGHT" x="0" y="0"/>
 						</Anchors>
 					</Button>
 

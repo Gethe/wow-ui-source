@@ -106,6 +106,16 @@ local PerksActivities =
 	Events =
 	{
 		{
+			Name = "PerksActivitiesTrackedListChanged",
+			Type = "Event",
+			LiteralName = "PERKS_ACTIVITIES_TRACKED_LIST_CHANGED",
+			Payload =
+			{
+				{ Name = "perksActivityID", Type = "number", Nilable = false },
+				{ Name = "added", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "PerksActivitiesTrackedUpdated",
 			Type = "Event",
 			LiteralName = "PERKS_ACTIVITIES_TRACKED_UPDATED",

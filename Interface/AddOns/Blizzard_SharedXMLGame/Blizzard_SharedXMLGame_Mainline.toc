@@ -4,7 +4,6 @@
 ## Dependencies: Blizzard_SharedXML
 ## AllowLoad: Game
 ## AllowLoadGameType: mainline
-## SuppressLocalTableRef: 1
 Tooltip\TooltipUtil.lua
 Tooltip\TooltipDataHandler.lua
 Tooltip\TooltipDataRules.lua
@@ -16,8 +15,6 @@ ScriptedAnimations\ScriptAnimatedModelScene.lua
 ScriptedAnimations\ScriptAnimatedModelScene.xml
 StaticModelInfo.lua
 DressUpModelFrameMixin.lua
-TemplatedList.xml
-PagedList.xml
 LoopingSoundEffect.lua
 Shared\Localization.lua
 Mainline\Localization.lua

@@ -213,7 +213,7 @@ end
 
 
 function OverrideActionBar_StatusBars_ShowTooltip(self)
-	if ( GetMouseFocus() == self ) then
+	if ( self:IsMouseMotionFocus() ) then
 		local value = self:GetValue();
 		local _, valueMax = self:GetMinMaxValues();
 		if ( valueMax > 0 ) then

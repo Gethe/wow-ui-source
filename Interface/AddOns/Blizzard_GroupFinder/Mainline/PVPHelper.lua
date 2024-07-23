@@ -314,7 +314,7 @@ function PVPReadyDialog_Display(self, index, displayName, isRated, queueType, ga
 		showTitle = false;
 		self.label:SetText(ARENA_IS_READY);
 		self.leaveButton:Hide();
-	elseif (queueType == "BRAWLSHUFFLE") or (queueType == "RATEDSHUFFLE") or (queueType == "BRAWLSOLORBG") then
+	elseif (queueType == "BRAWLSHUFFLE") or (queueType == "RATEDSHUFFLE") or (queueType == "BRAWLSOLORBG") or (queueType == "RATEDSOLORBG") then
 		self.background:SetTexCoord(0, 1, 0, 1);
 		self.background:SetTexture("Interface\\LFGFrame\\UI-LFG-BACKGROUND-RANDOMDUNGEON");
 		self.label:SetText(BATTLEGROUND_IS_READY);
@@ -397,7 +397,7 @@ end
 function PVPHelper_QueueAllowsLeaveQueueWithMatchReady(queueType)
 	if queueType == "ARENA" or queueType == "ARENASKIRMISH"
 	or queueType == "BRAWLSHUFFLE" or queueType == "RATEDSHUFFLE"
-	or queueType == "BRAWLSOLORBG"
+	or queueType == "BRAWLSOLORBG" or queueType == "RATEDSOLORBG"
 	or (queueType == "BATTLEGROUND" and registeredMatch) then
 		return false;
 	end

@@ -101,6 +101,8 @@ function BrowseWowTokenResults_OnEvent(self, event, ...)
 			UIErrorsFrame:AddMessage(SPELL_FAILED_TOO_MANY_OF_ITEM, 1.0, 0.1, 0.1, 1.0);
 		elseif (result == LE_TOKEN_RESULT_ERROR_TRIAL_RESTRICTED) then
 			UIErrorsFrame:AddMessage(ERR_RESTRICTED_ACCOUNT_TRIAL, 1.0, 0.1, 0.1, 1.0);
+		elseif (result == LE_TOKEN_RESULT_ERROR_NOT_ENOUGH_PURCHASED_GAME_TIME) then
+			UIErrorsFrame:AddMessage(ERR_NOT_ENOUGH_PURCHASED_GAME_TIME, 1.0, 0.1, 0.1, 1.0);
 		elseif (result ~= LE_TOKEN_RESULT_SUCCESS) then
 			UIErrorsFrame:AddMessage(ERR_AUCTION_DATABASE_ERROR, 1.0, 0.1, 0.1, 1.0);
 		else
@@ -252,7 +254,7 @@ function WoWTokenSellFrameMixin:GetItem()
 	return self.ItemDisplay:GetItemLocation();
 end
 
-function WoWTokenSellFrameMixin:GetSellToken(itemLocation)
+function WoWTokenSellFrameMixin:GetSellToken()
 	local itemLocation = self.ItemDisplay:GetItemLocation();
 	local itemIsValid = itemLocation and C_Item.DoesItemExist(itemLocation);
 	return itemIsValid and C_Item.GetItemGUID(itemLocation) or nil;

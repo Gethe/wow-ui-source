@@ -1,8 +1,7 @@
 ## Title: Blizzard_UIParent
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_FrameXMLBase, Blizzard_ContentTracking, Blizzard_POIButton, Blizzard_ObjectAPI
-## SuppressLocalTableRef: 1
+## Dependencies: Blizzard_FrameXMLBase, Blizzard_ObjectAPI
 ## AllowLoad: game
 ## AllowLoadGameType: mainline
 ChatBubbleTemplates.xml
@@ -11,3 +10,4 @@ Mainline\WorldFrame.xml
 Mainline\UIParent.lua
 Mainline\UIParent.xml
 Shared\Localization.lua
+Shared\UIParent.lua

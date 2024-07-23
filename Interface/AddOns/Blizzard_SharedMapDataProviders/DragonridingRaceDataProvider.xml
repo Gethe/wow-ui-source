@@ -2,5 +2,5 @@
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="DragonridingRaceDataProvider.lua"/>
 
-	<Frame name="DragonridingRacePinTemplate" inherits="BaseHighlightableMapPoiPinTemplate" mixin="DragonridingRacePinMixin" virtual="true" />
+	<Frame name="DragonridingRacePinTemplate" inherits="BaseSuperTrackableMapPoiPinTemplate" mixin="DragonridingRacePinMixin" virtual="true" />
 </Ui>

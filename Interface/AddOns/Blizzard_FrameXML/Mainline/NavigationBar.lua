@@ -10,12 +10,6 @@ function NavBar_Initialize(self, template, homeData, homeButton, overflowButton)
 	
 	local name = self:GetName();
 
-	if not self.dropDown then
-		local dropDownName = name and name.."DropDown" or nil;
-		self.dropDown = CreateFrame("Frame", dropDownName, self, "UIDropDownMenuTemplate");
-		UIDropDownMenu_Initialize(self.dropDown, NavBar_DropDown_Initialize, "MENU");
-	end
-	
 	if not homeButton then
 		local homeButtonName = name and name.."HomeButton" or nil;
 		homeButton = CreateFrame("BUTTON", homeButtonName, self, self.template);
@@ -25,12 +19,9 @@ function NavBar_Initialize(self, template, homeData, homeButton, overflowButton)
 
 	if not overflowButton then
 		local overflowButtonName = name and name.."OverflowButton" or nil;
-		overflowButton = CreateFrame("DROPDOWNTOGGLEBUTTON", overflowButtonName, self, self.template);
+		overflowButton = CreateFrame("DropdownButton", overflowButtonName, self, self.template);
 		overflowButton:SetWidth(30);
-		
-		-- LOOK AT CLICK
 	end
-	
 	
 	if not homeButton:GetScript("OnEnter") then
 		homeButton:SetScript("OnEnter",	NavBar_ButtonOnEnter);
@@ -42,7 +33,6 @@ function NavBar_Initialize(self, template, homeData, homeButton, overflowButton)
 
 	if ( self.oldStyle ) then
 		homeButton:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-		overflowButton:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	else
 		homeButton:RegisterForClicks("LeftButtonUp");
 	end
@@ -55,7 +45,8 @@ function NavBar_Initialize(self, template, homeData, homeButton, overflowButton)
 		
 	homeButton.oldClick = homeButton:GetScript("OnClick");
 	homeButton:SetScript("OnClick", NavBar_ButtonOnClick);
-	overflowButton:SetScript("OnMouseDown", NavBar_ToggleMenu);
+	NavButtonTemplate_SetupDropdown(overflowButton, overflowButton);
+
 	self.homeButton = homeButton;
 	self.overflowButton = overflowButton;
 	
@@ -274,9 +265,6 @@ function NavBar_CheckLength(self)
 	end
 end
 
-
-
-
 function NavBar_ListOverFlowButtons(self)
 	local navBar = self:GetParent();
 	local list = { };
@@ -291,46 +279,31 @@ function NavBar_ListOverFlowButtons(self)
 	return list;
 end
 
+function NavButtonTemplate_SetupDropdown(self, dropdown)
+	dropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_MINIMAP_BATTLEFIELD");
 
-function NavBar_ToggleMenu(self, button)
-	self:GetParent().dropDown.buttonOwner = self;
-	ToggleDropDownMenu(nil, nil, self:GetParent().dropDown, self, 20, 3);
-end
-
-
-function NavBar_DropDown_Initialize(self, level)
-	local navButton = self.buttonOwner;
-	if not navButton or not navButton.listFunc then
-		return;
-	end
-
-	local info = UIDropDownMenu_CreateInfo();
-	info.func = NavBar_DropDown_Click;
-	info.owner = navButton;
-	info.notCheckable = true;
-	local list = navButton:listFunc();
-	if ( list ) then
-		for i, entry in ipairs(list) do
-			info.text = entry.text;
-			info.arg1 = entry.id;
-			info.arg2 = entry.func;
-			UIDropDownMenu_AddButton(info, level);
+		local list = self:listFunc();
+		if not list then
+			return;
 		end
-	end
+
+		local navBar = self:GetParent();
+
+		for i, entry in ipairs(list) do
+			rootDescription:CreateButton(entry.text, function()
+				if entry.func ~= NavBar_OverflowItemOnClick then
+					NavBar_ClearTrailingButtons(navBar.navList, navBar.freeButtons, self);
+				end
+				entry.func(dropdown, entry.id, navBar);
+			end);
+		end
+	end);
 end
 
-
-function NavBar_DropDown_Click(self, index, func)
-	local navButton = self.owner;
-	local navBar = navButton:GetParent();
-	
-	if func ~= NavBar_OverflowItemOnClick then
-		NavBar_ClearTrailingButtons(navBar.navList, navBar.freeButtons, navButton);
-	end
-	func(self, index, navBar);
+function NavButtonTemplate_OnShow(self)
+	NavButtonTemplate_SetupDropdown(self, self.MenuArrowButton);
 end
-
-
 
 function NavBar_OverflowItemOnClick(junk, index, navBar)
 	local button = navBar.navList[index];

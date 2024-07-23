@@ -214,22 +214,45 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<StatusBar parentKey="HealthBar" inherits="TextStatusBar, SecureFrameParentPropagationTemplate" mixin="TargetFrameHealthBarMixin" frameStrata="LOW" drawLayer="BACKGROUND">
+							<Frame parentKey="HealthBarsContainer" useParentLevel="true" inherits="SecureFrameParentPropagationTemplate">
 								<Size x="126" y="20"/>
 								<Anchors>
 									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent.$parent.TargetFrameContainer" relativePoint="LEFT" x="148" y="2"/>
 								</Anchors>
 								<Frames>
-									<Frame parentKey="MyHealPredictionBar" inherits="TargetFrameBarSegmentTemplate, MyHealPredictionBarTemplate"/>
-									<Frame parentKey="OtherHealPredictionBar" inherits="TargetFrameBarSegmentTemplate, OtherHealPredictionBarTemplate"/>
-									<Frame parentKey="HealAbsorbBar" inherits="TargetFrameBarSegmentTemplate, HealAbsorbBarTemplate"/>
-									<Frame parentKey="TotalAbsorbBar" inherits="TargetFrameBarSegmentTemplate, TotalAbsorbBarTemplate"/>
+									<StatusBar parentKey="TempMaxHealthLoss" hidden="true" drawLayer="BACKGROUND" useParentLevel="true" mixin="TempMaxHealthLossMixin">
+										<BarTexture parentKey="TempMaxHealthLossTexture" atlas="UI-HUD-UnitFrame-Target-PortraitOn-Bar-TempHPLoss"/>
+										<Anchors>
+											<Anchor point="TOPLEFT" relativePoint="TOPLEFT"/>
+											<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"/>
+										</Anchors>
+									</StatusBar>
+									<StatusBar parentKey="HealthBar" inherits="TextStatusBar, SecureFrameParentPropagationTemplate" useParentLevel="true" mixin="TargetFrameHealthBarMixin" frameStrata="LOW" drawLayer="BACKGROUND">
+										<Size x="126" y="20"/>
+										<Anchors>
+											<Anchor point="TOPLEFT" relativePoint="TOPLEFT"/>
+										</Anchors>
+										<Frames>
+											<Frame parentKey="MyHealPredictionBar" inherits="TargetFrameBarSegmentTemplate, MyHealPredictionBarTemplate"/>
+											<Frame parentKey="OtherHealPredictionBar" inherits="TargetFrameBarSegmentTemplate, OtherHealPredictionBarTemplate"/>
+											<Frame parentKey="HealAbsorbBar" inherits="TargetFrameBarSegmentTemplate, HealAbsorbBarTemplate"/>
+											<Frame parentKey="TotalAbsorbBar" inherits="TargetFrameBarSegmentTemplate, TotalAbsorbBarTemplate"/>
+										</Frames>
+										<Layers>
+											<Layer level="ARTWORK">
+												<Texture parentKey="OverAbsorbGlow" inherits="OverAbsorbGlowTemplate"/>
+												<Texture parentKey="OverHealAbsorbGlow" inherits="OverHealAbsorbGlowTemplate"/>
+											</Layer>
+										</Layers>
+										<Scripts>
+											<OnLoad method="OnLoad"/>
+											<OnValueChanged method="OnValueChanged"/>
+											<OnSizeChanged method="OnSizeChanged"/>
+										</Scripts>
+										<BarTexture parentKey="HealthBarTexture" atlas="UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health"/>
+									</StatusBar>
 								</Frames>
 								<Layers>
-									<Layer level="ARTWORK">
-										<Texture parentKey="OverAbsorbGlow" inherits="OverAbsorbGlowTemplate"/>
-										<Texture parentKey="OverHealAbsorbGlow" inherits="OverHealAbsorbGlowTemplate"/>
-									</Layer>
 									<Layer level="OVERLAY" textureSubLevel="1">
 										<FontString parentKey="HealthBarText" inherits="TextStatusBarText">
 											<Anchors>
@@ -263,30 +286,24 @@
 												<Anchor point="TOPLEFT" x="-1" y="6"/>
 											</Anchors>
 											<MaskedTextures>
-												<MaskedTexture childKey="MyHealPredictionBar.Fill"/>
-												<MaskedTexture childKey="OtherHealPredictionBar.Fill"/>
-												<MaskedTexture childKey="TotalAbsorbBar.Fill"/>
-												<MaskedTexture childKey="TotalAbsorbBar.TiledFillOverlay"/>
-												<MaskedTexture childKey="OverAbsorbGlow"/>
-												<MaskedTexture childKey="OverHealAbsorbGlow"/>
-												<MaskedTexture childKey="HealAbsorbBar.Fill"/>
-												<MaskedTexture childKey="HealAbsorbBar.LeftShadow"/>
-												<MaskedTexture childKey="HealAbsorbBar.RightShadow"/>
+												<MaskedTexture childKey="HealthBar.MyHealPredictionBar.Fill"/>
+												<MaskedTexture childKey="HealthBar.OtherHealPredictionBar.Fill"/>
+												<MaskedTexture childKey="HealthBar.TotalAbsorbBar.Fill"/>
+												<MaskedTexture childKey="HealthBar.TotalAbsorbBar.TiledFillOverlay"/>
+												<MaskedTexture childKey="HealthBar.OverAbsorbGlow"/>
+												<MaskedTexture childKey="HealthBar.OverHealAbsorbGlow"/>
+												<MaskedTexture childKey="HealthBar.HealAbsorbBar.Fill"/>
+												<MaskedTexture childKey="HealthBar.HealAbsorbBar.LeftShadow"/>
+												<MaskedTexture childKey="HealthBar.HealAbsorbBar.RightShadow"/>
 											</MaskedTextures>
 										</MaskTexture>
 									</Layer>
 								</Layers>
-								<Scripts>
-									<OnLoad method="OnLoad"/>
-									<OnValueChanged method="OnValueChanged"/>
-									<OnSizeChanged method="OnSizeChanged"/>
-								</Scripts>
-								<BarTexture parentKey="HealthBarTexture" atlas="UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health"/>
-							</StatusBar>
+							</Frame>
 							<StatusBar parentKey="ManaBar" inherits="TextStatusBar, SecureFrameParentPropagationTemplate" mixin="TargetFrameStatusBarMixin" frameStrata="LOW">
 								<Size x="134" y="10"/>
 								<Anchors>
-									<Anchor point="TOPRIGHT" relativeKey="$parent.HealthBar" relativePoint="BOTTOMRIGHT" x="8" y="-1"/>
+									<Anchor point="TOPRIGHT" relativeKey="$parent.HealthBarsContainer" relativePoint="BOTTOMRIGHT" x="8" y="-1"/>
 								</Anchors>
 								<Layers>
 									<Layer level="OVERLAY" textureSubLevel="1">
@@ -424,12 +441,6 @@
 						</Frames>
 					</Frame>
 				</Frames>
-			</Frame>
-			<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
-				<Size x="10" y="10"/>
-				<Anchors>
-					<Anchor point="TOP" x="10" y="-60"/>
-				</Anchors>
 			</Frame>
 		</Frames>
 		<Scripts>
@@ -645,7 +656,7 @@
 				self.showPortrait = true;
 				self.showClassification = true;
 				self.showAuraCount = true;
-				self:OnLoad("target", TargetFrameDropDown_Initialize);
+				self:OnLoad("target", TargetFrame_OpenMenu);
 				self:CreateSpellbar("PLAYER_TARGET_CHANGED");
 				self:CreateTargetofTarget("targettarget");
 				self:RegisterEvent("PLAYER_TARGET_CHANGED");
@@ -686,7 +697,7 @@
 				self.showPortrait = true;
 				self.showClassification = true;
 				self.showAuraCount = true;
-				self:OnLoad("focus", FocusFrameDropDown_Initialize);
+				self:OnLoad("focus", FocusFrame_OpenMenu);
 				self:CreateSpellbar("PLAYER_FOCUS_CHANGED");
 				self:CreateTargetofTarget("focustarget");
 				self:RegisterEvent("PLAYER_FOCUS_CHANGED");

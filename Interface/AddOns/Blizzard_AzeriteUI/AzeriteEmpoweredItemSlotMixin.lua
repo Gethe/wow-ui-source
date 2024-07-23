@@ -27,7 +27,7 @@ function AzeriteEmpoweredItemSlotMixin:Enable()
 end
 
 function AzeriteEmpoweredItemSlotMixin:RefreshTooltip()
-	if GetMouseFocus() == self then
+	if self:IsMouseMotionFocus() then
 		self:OnEnter();
 	end
 end

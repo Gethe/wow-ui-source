@@ -1,8 +1,3 @@
-local NO_SPEC_FILTER = 0;
-local NO_CLASS_FILTER = 0;
-local NO_INV_TYPE_FILTER = 0;
-
---=================================================================================================================================== 
 LootJournalItemsMixin = { };
 
 function LootJournalItemsMixin:OnLoad()
@@ -19,7 +14,7 @@ function LootJournalItemsMixin:SetClassAndSpecFilters(classID, specID)
 end
 
 function LootJournalItemsMixin:GetClassAndSpecFilters()
-	return self.classFilter or NO_CLASS_FILTER, self.specFilter or NO_SPEC_FILTER;
+	return self.classFilter or UNSPECIFIED_CLASS_FILTER, self.specFilter or UNSPECIFIED_SPEC_FILTER;
 end
 
 function LootJournalItemsMixin:OnEvent(event)
@@ -77,12 +72,20 @@ function LootJournalItemSetsMixin:Refresh()
 
 	self:UpdateList();
 
-	if ( self.ClassButton ) then
-		self:UpdateClassButtonText();
+	if ( self.ClassDropdown ) then
+		self:SetupClassDropdown();
 	end
 	if ( self.SlotButton ) then
 		self:UpdateSlotButtonText();
 	end
+end
+
+function LootJournalItemSetsMixin:SetupClassDropdown()
+	local getClassFilter = GenerateClosure(self.GetClassFilter, self);
+	local getSpecFilter = GenerateClosure(self.GetSpecFilter, self);
+	local setClassAndSpecFilter = GenerateClosure(self.SetClassAndSpecFilters, self);
+	local excludeSpec, excludeAllSpecOption = false, true;
+	ClassMenu.InitClassSpecDropdown(self.ClassDropdown, getClassFilter, getSpecFilter, setClassAndSpecFilter, excludeSpec, excludeAllSpecOption);
 end
 
 function LootJournalItemSetsMixin:GetClassAndSpecFilters()
@@ -100,26 +103,6 @@ function LootJournalItemSetsMixin:GetPreviewClassAndSpec()
 		end
 	end
 	return classID, specID;
-end
-
-function LootJournalItemSetsMixin:UpdateClassButtonText()
-	local text;
-	local classFilter, specFilter = self:GetClassAndSpecFilters();
-	if classFilter == NO_CLASS_FILTER then
-		text = ALL_CLASSES;
-	else
-		if specFilter == NO_SPEC_FILTER then
-			local classInfo = C_CreatureInfo.GetClassInfo(classFilter);
-			if not classInfo then
-				return;
-			end
-
-			text = classInfo.className;
-		else
-			text = GetSpecializationNameForSpecID(specFilter);
-		end
-	end
-	self.ClassButton:SetText(text);
 end
 
 function LootJournalItemSetsMixin:ShowItemTooltip(button)
@@ -155,7 +138,7 @@ function LootJournalItemSetsMixin:SetClassAndSpecFilters(newClassFilter, newSpec
 	local classFilter, specFilter = self:GetClassAndSpecFilters();
 	if not self.classAndSpecFiltersSet or classFilter ~= newClassFilter or specFilter ~= newSpecFilter then
 		-- if choosing just a class without a spec, pick a spec
-		if newClassFilter ~= NO_CLASS_FILTER and newSpecFilter == NO_SPEC_FILTER then
+		if newClassFilter ~= UNSPECIFIED_CLASS_FILTER and newSpecFilter == UNSPECIFIED_SPEC_FILTER then
 			local _, _, classID = UnitClass("player");
 			-- if player's class, choose active spec
 			-- otherwise use 1st spec
@@ -173,11 +156,9 @@ function LootJournalItemSetsMixin:SetClassAndSpecFilters(newClassFilter, newSpec
 		self:Refresh();
 	end
 
-	CloseDropDownMenus(1);
 	self.classAndSpecFiltersSet = true;
 end
 
-do
 	function LootJournalItemButton_OnUpdate(self)
 		if GameTooltip:IsOwned(self) then
 			if IsModifiedClick("DRESSUP") then
@@ -187,92 +168,6 @@ do
 			end
 		end	
 	end
-
-	local function OpenClassFilterDropDown(self, level)
-		if level then
-			self:GetParent():GetActiveList():OpenClassFilterDropDown(level);
-		end
-	end
-
-	function LootJournalItemsClassDropDown_OnLoad(self)
-		UIDropDownMenu_Initialize(self, OpenClassFilterDropDown, "MENU");
-	end
-
-	local CLASS_DROPDOWN = 1;
-
-	function LootJournalItemSetsMixin:OpenClassFilterDropDown(level)
-		local filterClassID = self:GetClassFilter();
-		local filterSpecID = self:GetSpecFilter();
-
-		local function SetClassAndSpecFilters(_, classFilter, specFilter)
-			self:SetClassAndSpecFilters(classFilter, specFilter);
-		end
-
-		local info = UIDropDownMenu_CreateInfo();
-
-		if UIDROPDOWNMENU_MENU_VALUE == CLASS_DROPDOWN then 
-			info.text = ALL_CLASSES;
-			info.checked = filterClassID == NO_CLASS_FILTER;
-			info.arg1 = NO_CLASS_FILTER;
-			info.arg2 = NO_SPEC_FILTER;
-			info.func = SetClassAndSpecFilters;
-			UIDropDownMenu_AddButton(info, level);
-
-			local numClasses = GetNumClasses();
-			for i = 1, numClasses do
-				local classDisplayName, classTag, classID = GetClassInfo(i);
-				info.text = classDisplayName;
-				info.checked = filterClassID == classID;
-				info.arg1 = classID;
-				info.arg2 = NO_SPEC_FILTER;
-				info.func = SetClassAndSpecFilters;
-				UIDropDownMenu_AddButton(info, level);
-			end
-		end
-
-		if level == 1 then 
-			info.text = CLASS;
-			info.func =  nil;
-			info.notCheckable = true;
-			info.hasArrow = true;
-			info.value = CLASS_DROPDOWN;
-			UIDropDownMenu_AddButton(info, level);
-
-			local classDisplayName, classTag, classID;
-			if filterClassID ~= NO_CLASS_FILTER then
-				classID = filterClassID;
-				
-				local classInfo = C_CreatureInfo.GetClassInfo(filterClassID);
-				if classInfo then
-					classDisplayName = classInfo.className;
-					classTag = classInfo.classFile;
-				end
-			else
-				classDisplayName, classTag, classID = UnitClass("player");
-			end
-			info.text = classDisplayName;
-			info.notCheckable = true;
-			info.arg1 = nil;
-			info.arg2 = nil;
-			info.func =  nil;
-			info.hasArrow = false;
-			UIDropDownMenu_AddButton(info, level);
-
-			info.notCheckable = nil;
-			local sex = UnitSex("player");
-			for i = 1, GetNumSpecializationsForClassID(classID) do
-				local specID, specName = GetSpecializationInfoForClassID(classID, i, sex);
-				info.leftPadding = 10;
-				info.text = specName;
-				info.checked = filterSpecID == specID;
-				info.arg1 = classID;
-				info.arg2 = specID;
-				info.func = SetClassAndSpecFilters;
-				UIDropDownMenu_AddButton(info, level);
-			end
-		end
-	end
-end
 
 function LootJournalItemSetsMixin:OnLoad()
 	local view = CreateScrollBoxListLinearView(LJ_ITEMSET_Y_OFFSET, 0, LJ_ITEMSET_X_OFFSET, 0, LJ_ITEMSET_BUTTON_SPACING);
@@ -284,6 +179,8 @@ function LootJournalItemSetsMixin:OnLoad()
 	view:SetElementInitializer("LootJournalItemSetButtonTemplate", Initializer);
 
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
+
+	self.ClassDropdown:SetWidth(175);
 end
 
 function LootJournalItemSetsMixin:OnShow()
@@ -292,6 +189,8 @@ function LootJournalItemSetsMixin:OnShow()
 		self.init = true;
 		self:Refresh();
 	end
+
+	self:SetupClassDropdown();
 end
 
 function LootJournalItemSetsMixin:OnHide()

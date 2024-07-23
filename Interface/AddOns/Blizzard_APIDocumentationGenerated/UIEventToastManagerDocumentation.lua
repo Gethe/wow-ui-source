@@ -58,9 +58,9 @@ local UIEventToastManager =
 		{
 			Name = "EventToastDisplayType",
 			Type = "Enumeration",
-			NumValues = 11,
+			NumValues = 13,
 			MinValue = 0,
-			MaxValue = 10,
+			MaxValue = 12,
 			Fields =
 			{
 				{ Name = "NormalSingleLine", Type = "EventToastDisplayType", EnumValue = 0 },
@@ -74,14 +74,16 @@ local UIEventToastManager =
 				{ Name = "ScenarioClickExpand", Type = "EventToastDisplayType", EnumValue = 8 },
 				{ Name = "WeeklyRewardUnlock", Type = "EventToastDisplayType", EnumValue = 9 },
 				{ Name = "WeeklyRewardUpgrade", Type = "EventToastDisplayType", EnumValue = 10 },
+				{ Name = "FlightpointDiscovered", Type = "EventToastDisplayType", EnumValue = 11 },
+				{ Name = "CapstoneUnlocked", Type = "EventToastDisplayType", EnumValue = 12 },
 			},
 		},
 		{
 			Name = "EventToastEventType",
 			Type = "Enumeration",
-			NumValues = 25,
+			NumValues = 26,
 			MinValue = 0,
-			MaxValue = 24,
+			MaxValue = 25,
 			Fields =
 			{
 				{ Name = "LevelUp", Type = "EventToastEventType", EnumValue = 0 },
@@ -109,6 +111,7 @@ local UIEventToastManager =
 				{ Name = "TreasureItem", Type = "EventToastEventType", EnumValue = 22 },
 				{ Name = "WeeklyRewardUnlock", Type = "EventToastEventType", EnumValue = 23 },
 				{ Name = "WeeklyRewardUpgrade", Type = "EventToastEventType", EnumValue = 24 },
+				{ Name = "FlightpointDiscovered", Type = "EventToastEventType", EnumValue = 25 },
 			},
 		},
 		{

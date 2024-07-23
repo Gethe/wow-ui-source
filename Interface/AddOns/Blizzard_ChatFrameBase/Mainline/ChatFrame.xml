@@ -164,6 +164,4 @@
 		</Scripts>
 		<FontString inherits="ChatFontNormal"/>
 	</EditBox>
-	<Frame name="ChatChannelDropDown" inherits="UIDropDownMenuTemplate"/>
-	<Frame name="ChatBNPlayerDropDown" inherits="UIDropDownMenuTemplate"/>
 </Ui>

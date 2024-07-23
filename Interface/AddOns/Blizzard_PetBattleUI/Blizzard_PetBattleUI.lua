@@ -969,20 +969,39 @@ end
 
 function PetBattleUnitFrame_OnClick(self, button)
 	if ( button == "RightButton" ) then
-		PetBattleUnitFrame_ShowDropdown(self, self.petIndex);
-	end
-end
+		MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
+			rootDescription:SetTag("MENU_PET_BATTLE_PET");
 
-function PetBattleUnitFrame_ShowDropdown(self, petIndex)
-	--Right now, this only has the report option, so we won't display the dropdown if that won't be available
-	local name, speciesName = C_PetBattles.GetName(self.petOwner, petIndex);
-	
-	HideDropDownMenu(1);
-	PetBattleUnitFrameDropDown.petOwner = self.petOwner;	
-	PetBattleUnitFrameDropDown.name = name;	
-	PetBattleUnitFrameDropDown.petIndex = petIndex;
-	PetBattleUnitFrameDropDown.speciesID = C_PetBattles.GetPetSpeciesID(self.petOwner, self.petIndex);	
-	ToggleDropDownMenu(1, nil, PetBattleUnitFrameDropDown, "cursor");
+			local name, speciesName = C_PetBattles.GetName(self.petOwner, self.petIndex);
+			rootDescription:CreateTitle(name);
+
+			if name and (name ~= speciesName) then
+				local ownerIsEnemy = self.petOwner == Enum.BattlePetOwner.Enemy;
+				local ownerIsNPC = not C_PetBattles.IsPlayerNPC(Enum.BattlePetOwner.Enemy);
+				if ownerIsEnemy and (not ownerIsNPC) then
+					rootDescription:CreateButton(REPORT_PET_NAME, function()
+						C_PetBattles.SetPendingReportBattlePetTarget(self.petIndex);
+						StaticPopup_Show("CONFIRM_REPORT_BATTLEPET_NAME", self.name);
+					end);
+				end
+			end
+
+			rootDescription:CreateButton(PET_SHOW_IN_JOURNAL, function()
+				if not CollectionsJournal then
+					CollectionsJournal_LoadUI();
+				end
+
+				if not CollectionsJournal:IsShown() then
+					ShowUIPanel(CollectionsJournal);
+				end
+
+				CollectionsJournal_SetTab(CollectionsJournal, 2);
+
+				local speciesID = C_PetBattles.GetPetSpeciesID(self.petOwner, self.petIndex);
+				PetJournal_SelectSpecies(PetJournal, speciesID);
+			end);
+		end);
+	end
 end
 
 function PetBattleUnitFrame_OnEvent(self, event, ...)
@@ -1062,16 +1081,16 @@ function PetBattleUnitFrame_UpdateDisplay(self)
 	if (self.Border) then
 		local rarity = C_PetBattles.GetBreedQuality(petOwner, petIndex);
 		if (CVarCallbackRegistry:GetCVarValueBool("colorblindMode")) then 
-			self.Name:SetText(self.Name:GetText().." (".._G["BATTLE_PET_BREED_QUALITY"..rarity]..")");
+			self.Name:SetText(self.Name:GetText().." (".._G["BATTLE_PET_BREED_QUALITY"..rarity+1]..")");
 		else
-			self.Border:SetVertexColor(ITEM_QUALITY_COLORS[rarity-1].r, ITEM_QUALITY_COLORS[rarity-1].g, ITEM_QUALITY_COLORS[rarity-1].b);		
-			self.Name:SetVertexColor(ITEM_QUALITY_COLORS[rarity-1].r, ITEM_QUALITY_COLORS[rarity-1].g, ITEM_QUALITY_COLORS[rarity-1].b);
+			self.Border:SetVertexColor(ITEM_QUALITY_COLORS[rarity].r, ITEM_QUALITY_COLORS[rarity].g, ITEM_QUALITY_COLORS[rarity].b);		
+			self.Name:SetVertexColor(ITEM_QUALITY_COLORS[rarity].r, ITEM_QUALITY_COLORS[rarity].g, ITEM_QUALITY_COLORS[rarity].b);
 		end
 	end
 	
 	if (self.BorderAlive and self.BorderAlive:IsShown()) then
 		local rarity = C_PetBattles.GetBreedQuality(petOwner, petIndex);
-		self.BorderAlive:SetVertexColor(ITEM_QUALITY_COLORS[rarity-1].r, ITEM_QUALITY_COLORS[rarity-1].g, ITEM_QUALITY_COLORS[rarity-1].b);		
+		self.BorderAlive:SetVertexColor(ITEM_QUALITY_COLORS[rarity].r, ITEM_QUALITY_COLORS[rarity].g, ITEM_QUALITY_COLORS[rarity].b);		
 	end
 	
 	--Update the display of the level
@@ -1212,45 +1231,6 @@ function PetBattleUnitTooltip_OnLoad(self)
 
 	self.weakToTextures = { self.WeakTo1 };
 	self.resistantToTextures = { self.ResistantTo1 };
-end
-
-function PetBattleUnitFrameDropDown_ReportUnit(btn, name, petIndex)
-	C_PetBattles.SetPendingReportBattlePetTarget(petIndex);
-	StaticPopup_Show("CONFIRM_REPORT_BATTLEPET_NAME", name);
-end
-
-function PetBattleUnitFrameDropDown_Initialize(self)
-	local info = UIDropDownMenu_CreateInfo();
-	info.text = self.name;
-	info.isTitle = 1;
-	info.notCheckable = 1;
-	UIDropDownMenu_AddButton(info);
-
-	info.isTitle = nil;
-	info.disabled = nil;
-	
-	local name, speciesName = C_PetBattles.GetName(self.petOwner, self.petIndex);
-	if (not C_PetBattles.IsPlayerNPC(Enum.BattlePetOwner.Enemy) and self.petOwner == Enum.BattlePetOwner.Enemy 
-		and name and name ~= speciesName) then
-		info.text = REPORT_PET_NAME;
-		info.func = PetBattleUnitFrameDropDown_ReportUnit;
-		info.arg1 = self.name;
-		info.arg2 = self.petIndex;
-		UIDropDownMenu_AddButton(info);
-	end
-	
-	info.text = PET_SHOW_IN_JOURNAL;
-	info.func = function ()
-					if (not CollectionsJournal) then
-						CollectionsJournal_LoadUI();
-					end
-					if (not CollectionsJournal:IsShown()) then
-						ShowUIPanel(CollectionsJournal);
-					end
-					CollectionsJournal_SetTab(CollectionsJournal, 2);
-					PetJournal_SelectSpecies(PetJournal, self.speciesID);
-				end
-	UIDropDownMenu_AddButton(info);
 end
 
 function PetBattleUnitTooltip_UpdateForUnit(self, petOwner, petIndex)

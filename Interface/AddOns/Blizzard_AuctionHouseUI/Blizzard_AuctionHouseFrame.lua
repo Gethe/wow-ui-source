@@ -1,4 +1,8 @@
 
+g_auctionHouseSortsBySearchContext = g_auctionHouseSortsBySearchContext or nil;
+g_outbidAuctionIDs = g_outbidAuctionIDs or nil;
+g_activeBidAuctionIDs = g_activeBidAuctionIDs or nil;
+
 local MaxNumActiveBidsTracked = 100;
 
 UIPanelWindows["AuctionHouseFrame"] = { area = "doublewide", pushable = 0, xoffset = 20, yoffset = -0, showFailedFunc = C_AuctionHouse.CloseAuctionHouse, };
@@ -660,10 +664,6 @@ end
 
 function AuctionHouseFrameMixin:GetCommoditiesSellListFrames()
 	return self.CommoditiesSellList, self.CommoditiesSellListHeaders;
-end
-
-function AuctionHouseFrameMixin:GetFavoriteDropDown()
-	return self.FavoriteDropDown;
 end
 
 function AuctionHouseFrameMixin:GetBrowseSearchContext()

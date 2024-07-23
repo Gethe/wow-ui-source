@@ -1,3 +1,5 @@
+local InvalidGUID = 0;
+
 AccountSelectorMixin = {};
 
 -- Copied, aand refactored slightly to only have one return, from Store UI, should share, but there's a chance this will all live here someday.
@@ -10,103 +12,168 @@ local function StripWoWAccountLicenseInfo(gameAccount)
 	return gameAccount;
 end
 
-local function BuildDropdownOptions(self, gameAccounts, isLocalAccount)
-	local currentAccountGUID = GetCurrentWoWAccountGUID();
-	local options = {};
+local function MakeAccountData(guid, name)
+	return {guid = guid, name = name};
+end
 
-	if isLocalAccount then
-		table.insert(options, self:CreateOption(currentAccountGUID, PCT_FLOW_DESTINATION_ACCOUNT_DROPDOWN_NONE));
+local function DoesAccountDataMatch(acc1, acc2)
+	if (acc1 == nil) or (acc2 == nil) then
+		return false;
 	end
 
-	self.gameAccountGUIDToNameMapping = {};
+	return (acc1 == acc2) or (acc1.guid == acc2.guid);
+end
 
-	for index, gameAccount in ipairs(gameAccounts) do
-		local accountGUID = C_StoreSecure.GetWoWAccountGUIDFromName(gameAccount, isLocalAccount);
-		self.gameAccountGUIDToNameMapping[accountGUID] = gameAccount;
-		if (accountGUID ~= currentAccountGUID) then
-			table.insert(options, self:CreateOption(accountGUID, StripWoWAccountLicenseInfo(gameAccount)));
-		end
-	end
-
-	if isLocalAccount then
-		table.insert(options, self:CreateOption("DifferentBlizzardAccount", PCT_FLOW_DESTINATION_ACCOUNT_DROPDOWN_DIFFERENT));
-	end
-
-	return options;
+local function HasValidGUID(accountData)
+	return accountData and accountData.guid ~= 0;
 end
 
 function AccountSelectorMixin:OnLoad()
-	local wowAccountSelectedCallback = function(value, isUserInput)
+	self.anyAccountSelectedCallback = function()
 		CharSelectServicesFlowFrame:ClearErrorMessage();
 		self:CallOnSelectedCallback();
-	end
+	end;
 
-	self.Dropdown:UpdateDropDownWidth(165);
-	self.Dropdown:SetOptionSelectedCallback(wowAccountSelectedCallback);
-
-	self.BNetWoWAccountDropdown:UpdateDropDownWidth(195);
-	self.BNetWoWAccountDropdown:SetOptionSelectedCallback(wowAccountSelectedCallback);
+	self.DestinationDropdown:SetWidth(228);
+	self.BNetWoWAccountDropdown:SetWidth(228);
 
 	EventRegistry:RegisterFrameEvent("VAS_TRANSFER_VALIDATION_UPDATE");
 	EventRegistry:RegisterCallback("VAS_TRANSFER_VALIDATION_UPDATE", self.OnVASTranferValidationUpdate, self);
 end
 
+function AccountSelectorMixin:GetSelectedDestinationAccountData()
+	return self.selectedDestinationAccountData;
+end
+
+function AccountSelectorMixin:SetSelectedDestinationAccountData(accountData)
+	self.selectedDestinationAccountData = accountData;
+end
+
+function AccountSelectorMixin:GetSelectedWoWAccountData()
+	return self.selectedWoWAccountData;
+end
+
+function AccountSelectorMixin:SetSelectedWoWAccountData(accountData)
+	self.selectedWoWAccountData = accountData;
+end
+
+local function GenerateAccountOptions(rootDescription, accounts, isLocalAccount, isSelected, setSelected)
+	local currentAccountGUID = GetCurrentWoWAccountGUID();
+	for index, accountName in ipairs(accounts) do
+		local accountGUID = C_StoreSecure.GetWoWAccountGUIDFromName(accountName, isLocalAccount);
+		if accountGUID ~= currentAccountGUID then
+			local accountData = MakeAccountData(accountGUID, accountName);
+			rootDescription:CreateRadio(StripWoWAccountLicenseInfo(accountName), isSelected, setSelected, accountData);
+		end
+	end
+end
+
 function AccountSelectorMixin:Initialize(results, wasFromRewind)
-	if not wasFromRewind then
-		self.DestinationBlizzardAccountEdit:SetText("");
-		self.Dropdown:ClearOptions();
-		self.BNetWoWAccountDropdown:ClearOptions();
-		self:PopulateDropDown();
+	if wasFromRewind then
+		return;
 	end
+
+	self.DestinationBlizzardAccountEdit:SetText("");
+	self:SetSelectedWoWAccountData(nil);
+
+	-- The dropdown description element count is being used to determine visibility. Discard it
+	-- and expect the next PopulateBNetWoWAccountDropdown() call to reinitialize it before displaying it.
+	self.BNetWoWAccountDropdown:ClearMenuState();
+
+	-- Set the account destination before generating the menu.
+	local accountData = MakeAccountData(GetCurrentWoWAccountGUID(), PCT_FLOW_DESTINATION_ACCOUNT_DROPDOWN_NONE);
+	self:SetSelectedDestinationAccountData(accountData);
+
+	local function IsSelected(accountData)
+		return DoesAccountDataMatch(accountData, self:GetSelectedDestinationAccountData());
+	end
+
+	local function SetSelected(accountData)
+		self:SetSelectedDestinationAccountData(accountData);
+
+		self.anyAccountSelectedCallback();
+	end
+	
+	self.DestinationDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_CHARACTER_SELECT_SERVICE");
+
+		rootDescription:CreateRadio(accountData.name, IsSelected, SetSelected, accountData);
+
+		local isLocalAccount = true;
+		GenerateAccountOptions(rootDescription, C_Login.GetGameAccounts(), isLocalAccount, IsSelected, SetSelected);
+
+		if C_CharacterServices.ArePaidCharacterTransfersBetweenBnetAccountsEnabled() then
+			local differentAccountData = MakeAccountData(InvalidGUID, PCT_FLOW_DESTINATION_ACCOUNT_DROPDOWN_DIFFERENT);
+			rootDescription:CreateRadio(differentAccountData.name, IsSelected, SetSelected, differentAccountData);
+		end
+	end);
+
+	self.anyAccountSelectedCallback();
 end
 
-function AccountSelectorMixin:PopulateDropDown()
-	local isLocalAccount = true;
-	local options = BuildDropdownOptions(self.Dropdown, C_Login.GetGameAccounts(), isLocalAccount);
-	local selectedValue = self.Dropdown:GetSelectedValue() or GetCurrentWoWAccountGUID();
-	self.Dropdown:SetOptions(options, selectedValue);
-	self:UpdateVisibilityState();
-end
-
-function AccountSelectorMixin:PopulateBNetWoWAccountDropDown()
+function AccountSelectorMixin:GetFirstTransferBNetWoWGameAccount()
 	local isLocalAccount = false;
-	local accounts = self:GetBNetWoWGameAccounts()
-	local options = BuildDropdownOptions(self.BNetWoWAccountDropdown, accounts, isLocalAccount);
-	local selectedValue = self.BNetWoWAccountDropdown:GetSelectedValue();
+	local currentAccountGUID = GetCurrentWoWAccountGUID();
+	for index, accountName in ipairs(self:GetBNetWoWGameAccounts()) do
+		local accountGUID = C_StoreSecure.GetWoWAccountGUIDFromName(accountName, isLocalAccount);
+		if accountGUID ~= currentAccountGUID then
+			return MakeAccountData(accountGUID, accountName);
+		end
+	end
+end
 
-	if not selectedValue and #options > 0 then
-		selectedValue = options[1].value;
+function AccountSelectorMixin:PopulateBNetWoWAccountDropdown()
+	local accountData = self:GetFirstTransferBNetWoWGameAccount();
+	if not accountData then
+		-- The account data is requested and this will be called again by UpdateDestinationBNetAccount() when it's ready.
+		return;
 	end
 
-	self.BNetWoWAccountDropdown:SetOptions(options, selectedValue);
-	self:UpdateVisibilityState();
+	-- Set the WoW account before generating the menu.
+	self:SetSelectedWoWAccountData(accountData);
+
+	local function IsSelected(accountData)
+		return DoesAccountDataMatch(accountData, self:GetSelectedWoWAccountData());
+	end
+
+	local function SetSelected(accountData)
+		self:SetSelectedWoWAccountData(accountData);
+
+		self.anyAccountSelectedCallback();
+	end
+
+	self.BNetWoWAccountDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_CHARACTER_SELECT_SERVICE_ACCOUNT");
+
+		local isLocalAccount = false;
+		GenerateAccountOptions(rootDescription, self:GetBNetWoWGameAccounts(), isLocalAccount, IsSelected, SetSelected);
+	end);
+	
+	self.anyAccountSelectedCallback();
 end
 
 function AccountSelectorMixin:UpdateVisibilityState()
-	local showAccountEdit = self.Dropdown:GetSelectedValue() == "DifferentBlizzardAccount";
+	local accountData = self:GetSelectedDestinationAccountData();
+	local showAccountEdit = accountData and accountData.guid == InvalidGUID;
 	self.DestinationBlizzardAccountEdit:SetShown(showAccountEdit);
 	self.BlizzardAccountLabel:SetShown(showAccountEdit);
 
-	local showBNetWoWAccountDropdown = showAccountEdit and self.BNetWoWAccountDropdown:HasOptions();
-	self.BNetWoWAccountDropdown:SetShown(showBNetWoWAccountDropdown);
+	local showWoWAccountDropdown = showAccountEdit and self.BNetWoWAccountDropdown:HasElements();
+	self.BNetWoWAccountDropdown:SetShown(showWoWAccountDropdown);
 
 	self:Layout();
 end
 
-function AccountSelectorMixin:GetSelectedAccountNameFromDropdown(dropdown)
-	if dropdown.gameAccountGUIDToNameMapping then
-		return dropdown.gameAccountGUIDToNameMapping[dropdown:GetSelectedValue()] or "";
-	end
-
-	return "";
+local function GetSelectedAccountNameFromAccountData(accountData)
+	return HasValidGUID(accountData) and accountData.name or "";
 end
 
 function AccountSelectorMixin:GetSelectedAccountName()
-	return self:GetSelectedAccountNameFromDropdown(self.Dropdown);
+	return GetSelectedAccountNameFromAccountData(self:GetSelectedDestinationAccountData());
 end
 
 function AccountSelectorMixin:GetSelectedBNetWoWAccountName()
-	return self:GetSelectedAccountNameFromDropdown(self.BNetWoWAccountDropdown);
+	return GetSelectedAccountNameFromAccountData(self:GetSelectedWoWAccountData());
 end
 
 function AccountSelectorMixin:ClearBNetAccountGuid()
@@ -136,7 +203,7 @@ end
 function AccountSelectorMixin:ClearDestinationBNetAccount(clearErrorMessage)
 	self:ClearBNetAccountGuid();
 	self:ClearBNetWoWGameAccounts();
-	self:PopulateBNetWoWAccountDropDown();
+	self:PopulateBNetWoWAccountDropdown();
 
 	if clearErrorMessage then
 		CharSelectServicesFlowFrame:ClearErrorMessage();
@@ -154,7 +221,7 @@ function AccountSelectorMixin:UpdateDestinationBNetAccount()
 	local guid, gameAccounts = C_StoreSecure.GetBnetTransferInfo();
 	self:SetBNetAccountGuid(guid);
 	self:SetBnetWoWGameAccounts(gameAccounts);
-	self:PopulateBNetWoWAccountDropDown();
+	self:PopulateBNetWoWAccountDropdown();
 end
 
 function AccountSelectorMixin:OnVASTranferValidationUpdate(error)
@@ -181,21 +248,26 @@ function AccountSelectorMixin:CallOnSelectedCallback()
 end
 
 function AccountSelectorMixin:GetResult()
-	local selectedGUID = self.Dropdown:GetSelectedValue()
-	if selectedGUID then
-		if selectedGUID == "DifferentBlizzardAccount" then
+	local accountData = self:GetSelectedDestinationAccountData();
+	if accountData then
+		if HasValidGUID(accountData) then
 			return {
-				accountEmail = self.DestinationBlizzardAccountEdit:GetText(),
-				accountName = self:GetSelectedBNetWoWAccountName(),
-				bnetAccountGUID = self:GetBNetAccountGUID(),
-				accountGUID = self.BNetWoWAccountDropdown:GetSelectedValue(),
-			};
-		else
-			return {
-				accountGUID = selectedGUID,
+				accountGUID = accountData.guid,
 				accountName = self:GetSelectedAccountName(),
 				bnetAccountGUID = GetCurrentBNetAccountGUID(),
 			};
+		else
+			local result = {
+				accountEmail = self.DestinationBlizzardAccountEdit:GetText(),
+				accountName = self:GetSelectedBNetWoWAccountName(),
+				bnetAccountGUID = self:GetBNetAccountGUID(),
+			};
+
+			local wowAccountData = self:GetSelectedWoWAccountData();
+			if wowAccountData then
+				result.accountGUID = wowAccountData.guid;
+			end
+			return result;
 		end
 	end
 

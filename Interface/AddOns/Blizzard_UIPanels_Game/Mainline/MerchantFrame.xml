@@ -595,11 +595,11 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Frame name="$parentLootFilter" inherits="UIDropDownMenuTemplate" enableMouse="true" parentKey="lootFilter">
+			<DropdownButton parentKey="FilterDropdown" inherits="WowStyle1DropdownTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="0" y="-28"/>
+					<Anchor point="TOPRIGHT" x="-11" y="-30"/>
 				</Anchors>
-			</Frame>
+			</DropdownButton>
 		</Frames>
 		<Scripts>
 			<OnHide function="MerchantFrame_OnHide"/>

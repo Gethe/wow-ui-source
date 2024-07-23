@@ -137,7 +137,7 @@
 		</Layers>
 		<HitRectInsets left="0" right="-55" top="0" bottom="0"/>
 	</CheckButton>
-	<Frame name="ChatConfigCheckBoxTemplate" inherits="ChatConfigBorderBoxTemplate" virtual="true">
+	<Frame name="ChatConfigCheckboxTemplate" inherits="ChatConfigBorderBoxTemplate" virtual="true">
 		<Size x="200" y="26"/>
 		<Frames>
 			<CheckButton name="$parentCheck" parentKey="CheckButton" inherits="ChatConfigCheckButtonTemplate">
@@ -157,10 +157,10 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	<Frame name="ChatConfigCheckBoxSmallTemplate" inherits="ChatConfigCheckBoxTemplate" virtual="true">
+	<Frame name="ChatConfigCheckboxSmallTemplate" inherits="ChatConfigCheckboxTemplate" virtual="true">
 		<Size x="200" y="23"/>
 	</Frame>
-	<Frame name="ChatConfigCheckBoxWithSwatchTemplate" inherits="ChatConfigCheckBoxTemplate" virtual="true">
+	<Frame name="ChatConfigCheckboxWithSwatchTemplate" inherits="ChatConfigCheckboxTemplate" virtual="true">
 		<Frames>
 			<Button name="$parentColorSwatch" parentKey="ColorSwatch" inherits="ColorSwatchTemplate">
 				<Anchors>
@@ -174,7 +174,7 @@
 			</Button>
 		</Frames>
 	</Frame>
-	<Frame name="ChatConfigWideCheckBoxWithSwatchTemplate" inherits="ChatConfigCheckBoxWithSwatchTemplate" virtual="true">
+	<Frame name="ChatConfigWideCheckboxWithSwatchTemplate" inherits="ChatConfigCheckboxWithSwatchTemplate" virtual="true">
 		<Size x="550" y="26"/>
 		<Scripts>
 			<OnLoad inherit="prepend">
@@ -183,7 +183,7 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
-	<Frame name="MovableChatConfigWideCheckBoxWithSwatchTemplate" parentArray="WideCheckBoxes" mixin="ChatConfigWideCheckBoxMixin" inherits="ChatConfigWideCheckBoxWithSwatchTemplate" virtual="true">
+	<Frame name="MovableChatConfigWideCheckboxWithSwatchTemplate" parentArray="WideCheckboxes" mixin="ChatConfigWideCheckboxMixin" inherits="ChatConfigWideCheckboxWithSwatchTemplate" virtual="true">
 		<Size x="550" y="23"/>
 		<Frames>
 			<Button parentKey="CloseChannel">
@@ -437,7 +437,7 @@
 					<Anchor point="TOPLEFT" relativeTo="ChatConfigBackgroundFrame"/>
 				</Anchors>
 				<Frames>
-					<Frame name="$parentLeft" mixin="ChatConfigWideCheckBoxManagerMixin" inherits="WideChatConfigBoxWithHeaderAndClassColorsTemplate">
+					<Frame name="$parentLeft" mixin="ChatConfigWideCheckboxManagerMixin" inherits="WideChatConfigBoxWithHeaderAndClassColorsTemplate">
 						<Size x="10" y="10"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="13" y="-30"/>

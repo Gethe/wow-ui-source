@@ -5,7 +5,7 @@
 	<Script file="Blizzard_Shared_StoreUIOutbound.lua" />
 	<Script file="Blizzard_Shared_StoreUISecure.lua" />
 
-	<ScopedModifier forbidden="true" scriptsUseGivenEnv="true">
+	<ScopedModifier forbidden="true">
 		
 		<Frame name="StoreStateDriverFrame">
 			<Animations>
@@ -829,7 +829,7 @@
 								<OnLeave function="VASCharacterSelectionChangeIconFrame_OnLeave"/>
 							</Scripts>
 						</Frame>
-						<Frame parentKey="RealmSelector" inherits="StoreDropDownMenuTemplate" enableMouse="true">
+						<Frame parentKey="RealmSelector" inherits="StoreDropdownMenuTemplate" enableMouse="true">
 							<Size x="150" y="22"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.$parent.ProductDescription" relativePoint="BOTTOMLEFT" x="-16" y="-38"/>
@@ -840,7 +840,7 @@
 								</OnLoad>
 							</Scripts>
 						</Frame>
-						<Frame parentKey="CharacterSelector" inherits="StoreDropDownMenuTemplate" enableMouse="true">
+						<Frame parentKey="CharacterSelector" inherits="StoreDropdownMenuTemplate" enableMouse="true">
 							<Size x="150" y="22"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.RealmSelector" relativePoint="RIGHT" x="0" y="0"/>
@@ -957,14 +957,14 @@
 								<OnClick function="TransferAccountCheckbox_OnClick"/>
 							</Scripts>
 						</CheckButton>
-						<Frame parentKey="TransferAccountDropDown" inherits="StoreDropDownMenuTemplate" enableMouse="true">
+						<Frame parentKey="TransferAccountDropdown" inherits="StoreDropdownMenuTemplate" enableMouse="true">
 							<Size x="150" y="22"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.TransferRealmEditbox" relativePoint="BOTTOMLEFT" x="-20" y="-12"/>
 							</Anchors>
 							<Scripts>
 								<OnLoad>
-									self.Button:SetScript("OnClick", VASCharacterSelectionTransferAccountDropDown_OnClick);
+									self.Button:SetScript("OnClick", VASCharacterSelectionTransferAccountDropdown_OnClick);
 								</OnLoad>
 							</Scripts>
 						</Frame>
@@ -1008,14 +1008,14 @@
 								<OnTextChanged function="VASCharacterSelectionTransferBattlenetAccountEditbox_OnTextChanged"/>
 							</Scripts>
 						</EditBox>
-						<Frame parentKey="TransferBnetWoWAccountDropDown" inherits="StoreDropDownMenuTemplate" enableMouse="true">
+						<Frame parentKey="TransferBnetWoWAccountDropdown" inherits="StoreDropdownMenuTemplate" enableMouse="true">
 							<Size x="150" y="22"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.TransferBattlenetAccountEditbox" relativePoint="BOTTOMLEFT" x="-20" y="-12"/>
 							</Anchors>
 							<Scripts>
 								<OnLoad>
-									self.Button:SetScript("OnClick", VASCharacterSelectionTransferBnetWoWAccountDropDown_OnClick);
+									self.Button:SetScript("OnClick", VASCharacterSelectionTransferBnetWoWAccountDropdown_OnClick);
 								</OnLoad>
 							</Scripts>
 						</Frame>

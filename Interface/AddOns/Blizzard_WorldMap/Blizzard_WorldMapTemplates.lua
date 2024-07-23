@@ -1,49 +1,48 @@
 WorldMapFloorNavigationFrameMixin = { }
 
-function WorldMapFloorNavigationFrameMixin:OnLoad()
-	UIDropDownMenu_SetWidth(self, 130);
-end
-
-function WorldMapFloorNavigationFrameMixin:Refresh()
-	local mapID = self:GetParent():GetMapID();
-	local mapGroupID = C_Map.GetMapGroupID(mapID);
-	if mapGroupID then
-		UIDropDownMenu_Initialize(self, self.InitializeDropDown);
-		UIDropDownMenu_SetSelectedValue(self, mapID);
-		self:Show();
-	else
-		self:Hide();
+function WorldMapFloorNavigationFrameMixin:RefreshMenu(mapID)
+	if not mapID then
+		return false;
 	end
-end
-
-function WorldMapFloorNavigationFrameMixin:InitializeDropDown()
-	local mapID = self:GetParent():GetMapID();
 
 	local mapGroupID = C_Map.GetMapGroupID(mapID);
 	if not mapGroupID then
-		return;
+		return false;
 	end
 
 	local mapGroupMembersInfo = C_Map.GetMapGroupMembersInfo(mapGroupID);
 	if not mapGroupMembersInfo then
-		return;
+		return false;
 	end
 
-	local function GoToMap(button)
-		self:GetParent():SetMapID(button.value);
+	local function IsSelected(mapGroupMemberInfo)
+		return mapID == mapGroupMemberInfo.mapID;
 	end
 
-	local info = UIDropDownMenu_CreateInfo();
-	for i, mapGroupMemberInfo in ipairs(mapGroupMembersInfo) do
-		info.text = mapGroupMemberInfo.name;
-		if self:ShouldShowTrackingIconOnFloor(C_EncounterJournal.GetEncountersOnMap(mapGroupMemberInfo.mapID)) then
-			info.text = info.text..CreateAtlasMarkup("waypoint-mappin-minimap-tracked", 20, 20, 0, 0);
+	local function SetSelected(mapGroupMemberInfo)
+		self:GetParent():SetMapID(mapGroupMemberInfo.mapID);
+	end
+
+	self:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_WORLD_MAP_FLOOR_NAV");
+
+		for index, mapGroupMemberInfo in ipairs(mapGroupMembersInfo) do
+			local text = mapGroupMemberInfo.name;
+			if self:ShouldShowTrackingIconOnFloor(C_EncounterJournal.GetEncountersOnMap(mapGroupMemberInfo.mapID)) then
+				text = text..CreateAtlasMarkup("waypoint-mappin-minimap-tracked", 20, 20, 0, 0);
+			end
+
+			rootDescription:CreateRadio(text, IsSelected, SetSelected, mapGroupMemberInfo);
 		end
-		info.value = mapGroupMemberInfo.mapID;
-		info.func = GoToMap;
-		info.checked = (mapID == mapGroupMemberInfo.mapID);
-		UIDropDownMenu_AddButton(info);
-	end
+	end);
+
+	return true;
+end
+
+function WorldMapFloorNavigationFrameMixin:Refresh()
+	local mapID = self:GetParent():GetMapID();
+	local shown = self:RefreshMenu(mapID);
+	self:SetShown(shown);
 end
 
 function WorldMapFloorNavigationFrameMixin:ShouldShowTrackingIconOnFloor(encountersOnFloor)
@@ -58,14 +57,237 @@ function WorldMapFloorNavigationFrameMixin:ShouldShowTrackingIconOnFloor(encount
 	return false;
 end
 
-WorldMapTrackingOptionsButtonMixin = { };
+local WorldMapFilterMixin = {};
+
+function WorldMapFilterMixin:Init(text, cvarName, minimapTrackingFilter)
+	self.text = text;
+	self.cvarName = cvarName; -- It's ok for this to be nil, but it means the setting must be backed by a minimap tracking filter.
+	self.minimapTrackingFilter = minimapTrackingFilter;
+end
+
+function WorldMapFilterMixin:GetText()
+	return self.text;
+end
+
+function WorldMapFilterMixin:Set(set)
+	if self.cvarName then
+		SetCVar(self.cvarName, set and "1" or "0");
+	end
+
+	if self.minimapTrackingFilter then
+		self:SetTrackingFilter(set);
+	end
+end
+
+function WorldMapFilterMixin:SetTrackingFilter(set)
+	assertsafe(self.minimapTrackingFilter);
+	local filter = self.minimapTrackingFilter;
+
+	for id = 1, C_Minimap.GetNumTrackingTypes() do
+		local filterInfo = C_Minimap.GetTrackingFilter(id);
+		if filterInfo and filterInfo.filterID == filter then
+			C_Minimap.SetTracking(id, set);
+			return;
+		end
+	end
+end
+
+function WorldMapFilterMixin:Get()
+	if self.cvarName and not GetCVarBool(self.cvarName) then
+		return false;
+	end
+
+	if self.minimapTrackingFilter and C_Minimap.IsFilteredOut(self.minimapTrackingFilter) then
+		return false;
+	end
+
+	return true;
+end
+
+function WorldMapFilterMixin:GetDefault()
+	-- In this case, the default value should use a single source of truth which prefers cvar, but will fall back to the tracking filter.
+	if self.cvarName then
+		-- NOTE: This is not completely correct, but the :Set function will set the values to "1" or "0", legacy!
+		return GetCVarDefault(self.cvarName) == "1";
+	end
+
+	if self.minimapTrackingFilter then
+		return C_Minimap.GetDefaultTrackingValue(self.minimapTrackingFilter);
+	end
+end
+
+function WorldMapFilterMixin:IsDefault()
+	return self:Get() == self:GetDefault();
+end
+
+function WorldMapFilterMixin:ResetToDefault()
+	if not self:IsDefault() then
+		self:Set(self:GetDefault());
+	end
+end
+
+WorldMapTrackingOptionsButtonMixin = CreateFromMixins(WowDropdownFilterMixin);
 
 function WorldMapTrackingOptionsButtonMixin:OnLoad()
-	local function InitializeDropDown(self)
-		self:GetParent():InitializeDropDown();
+	WowDropdownFilterMixin.OnLoad(self);
+
+	self:BuildFilterTable();
+end
+
+function WorldMapTrackingOptionsButtonMixin:OnShow()
+	WowDropdownFilterMixin.OnShow(self);
+
+	self:SetupMenu();
+
+	self:RefreshAccountCompletedQuestFilterTutorial();
+end
+
+local function IsFilterChecked(filter)
+	return filter:Get();
+end
+
+local function SetFilterChecked(filter)
+	local set = IsFilterChecked(filter);
+	filter:Set(not set);
+end
+
+function WorldMapTrackingOptionsButtonMixin:SetupMenu()
+	self:SetIsDefaultCallback(function()
+		for cvarName, filter in pairs(self:GetWorldMapFilters()) do
+			if not filter:IsDefault() then
+				return false;
+			end
+		end
+
+		return true;
+	end);
+
+	self:SetDefaultCallback(function()
+		for cvarName, filter in pairs(self:GetWorldMapFilters()) do
+			filter:ResetToDefault();
+		end
+	end);
+
+	DropdownButtonMixin.SetupMenu(self, function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_WORLD_MAP_TRACKING");
+
+		local mapID = self:GetParent():GetMapID();
+		local prof1, prof2, arch, fish, cook, firstAid = GetProfessions();
+
+		rootDescription:CreateTitle(WORLD_MAP_FILTER_LABEL_SHOW);
+
+		local function AddFilter(parent, cvarName)
+			local filter = self:GetWorldMapFilter(cvarName);
+			return parent:CreateCheckbox(filter:GetText(), IsFilterChecked, SetFilterChecked, filter);
+		end
+
+		if self:ShouldShowWorldQuestFilters(mapID) then
+			local submenu = AddFilter(rootDescription, "questPOIWQ");
+
+			submenu:CreateTitle(WORLD_MAP_FILTER_LABEL_WORLD_QUESTS_SUBMENU_TYPE);
+			if C_Minimap.CanTrackBattlePets() then
+				AddFilter(submenu, "showTamersWQ");
+			end
+
+			-- NOTE: For now, this filter is unconditionally added, but MapUtil (or map data) could be extended to support conditionally adding.
+			AddFilter(submenu, "dragonRidingRacesFilterWQ");
+
+			if prof1 or prof2 then
+				AddFilter(submenu, "primaryProfessionsFilter");
+			end
+
+			if fish or cook or firstAid then
+				AddFilter(submenu, "secondaryProfessionsFilter");
+			end
+
+			submenu:CreateTitle(WORLD_QUEST_REWARD_FILTERS_TITLE);
+
+			-- TODO:: Further adjustments to more cleanly determine filters per map and make this future-proof.
+			if MapUtil.IsShadowlandsZoneMap(mapID) then
+				AddFilter(submenu, "worldQuestFilterAnima");
+			else
+				AddFilter(submenu, "worldQuestFilterResources");
+				AddFilter(submenu, "worldQuestFilterArtifactPower");
+			end
+
+			AddFilter(submenu, "worldQuestFilterProfessionMaterials");
+			AddFilter(submenu, "worldQuestFilterGold");
+			AddFilter(submenu, "worldQuestFilterEquipment");
+			AddFilter(submenu, "worldQuestFilterReputation");
+		end
+
+		AddFilter(rootDescription, "questPOI");
+		AddFilter(rootDescription, "dragonRidingRacesFilter");
+		AddFilter(rootDescription, "showDungeonEntrancesOnMap");
+		AddFilter(rootDescription, "showDelveEntrancesOnMap");
+		AddFilter(rootDescription, "showTamers");
+		AddFilter(rootDescription, "questPOILocalStory");
+		AddFilter(rootDescription, "trivialQuests");
+
+		local accountCompletedQuestsFilter = AddFilter(rootDescription, "showAccountCompletedQuests");
+		accountCompletedQuestsFilter:AddInitializer(function(button, description, menu)
+			if not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_COMPLETED_QUESTS_FILTER_SEEN) then
+				button.newFeatureFrame = MenuTemplates.AttachNewFeatureFrame(button);
+				button.newFeatureFrame:SetPoint("RIGHT", button.leftTexture1, "LEFT", 0, 0);
+			end
+
+			button:SetScript("OnHide", function() SetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_COMPLETED_QUESTS_FILTER_SEEN, true); end)
+		end);
+		accountCompletedQuestsFilter:SetOnEnter(function(button)
+			GameTooltip:SetOwner(button.fontString, "ANCHOR_BOTTOMLEFT", -22, 75);
+			GameTooltip_AddHighlightLine(GameTooltip, ACCOUNT_COMPLETED_QUESTS_FILTER_DESCRIPTION);
+			GameTooltip:Show();
+		end);
+		accountCompletedQuestsFilter:SetOnLeave(function(button)
+			GameTooltip_Hide();
+		end);
+
+		AddFilter(rootDescription, "contentTrackingFilter");
+
+		if arch then
+			AddFilter(rootDescription, "digSites");
+		end
+	end);
+end
+
+function WorldMapTrackingOptionsButtonMixin:BuildFilterTable()
+	self.worldMapFilters = {};
+
+	local function AddFilter(text, cvarName, trackingFilter, cvarIsOnlyIndex)
+		local actualCVarName = not cvarIsOnlyIndex and cvarName or nil;
+		self.worldMapFilters[cvarName] = CreateAndInitFromMixin(WorldMapFilterMixin, text, actualCVarName, trackingFilter);
 	end
-	UIDropDownMenu_SetInitializeFunction(self.DropDown, InitializeDropDown);
-	UIDropDownMenu_SetDisplayMode(self.DropDown, "MENU");
+
+	AddFilter(SHOW_QUEST_OBJECTIVES_ON_MAP_TEXT, "questPOI");
+	AddFilter(SHOW_WORLD_QUESTS_ON_MAP_TEXT, "questPOIWQ");
+	AddFilter(SHOW_PET_BATTLES_ON_MAP_TEXT, "showTamers");
+	AddFilter(SHOW_PET_BATTLES_ON_MAP_TEXT, "showTamersWQ");
+	AddFilter(SHOW_PRIMARY_PROFESSION_ON_MAP_TEXT, "primaryProfessionsFilter");
+	AddFilter(SHOW_SECONDARY_PROFESSION_ON_MAP_TEXT, "secondaryProfessionsFilter");
+	AddFilter(WORLD_QUEST_REWARD_FILTERS_ANIMA, "worldQuestFilterAnima");
+	AddFilter(WORLD_QUEST_REWARD_FILTERS_RESOURCES, "worldQuestFilterResources");
+	AddFilter(WORLD_QUEST_REWARD_FILTERS_ARTIFACT_POWER, "worldQuestFilterArtifactPower");
+	AddFilter(WORLD_QUEST_REWARD_FILTERS_PROFESSION_MATERIALS, "worldQuestFilterProfessionMaterials");
+	AddFilter(WORLD_QUEST_REWARD_FILTERS_GOLD, "worldQuestFilterGold");
+	AddFilter(WORLD_QUEST_REWARD_FILTERS_EQUIPMENT, "worldQuestFilterEquipment");
+	AddFilter(WORLD_QUEST_REWARD_FILTERS_REPUTATION, "worldQuestFilterReputation");
+	AddFilter(DRAGONRIDING_RACES_MAP_TOGGLE, "dragonRidingRacesFilter");
+	AddFilter(DRAGONRIDING_RACES_MAP_TOGGLE, "dragonRidingRacesFilterWQ");
+	AddFilter(SHOW_DUNGEON_ENTRACES_ON_MAP_TEXT, "showDungeonEntrancesOnMap");
+	AddFilter(DELVES_SHOW_ENTRACES_ON_MAP_TEXT, "showDelveEntrancesOnMap");
+	AddFilter(CONTENT_TRACKING_MAP_TOGGLE, "contentTrackingFilter");
+	AddFilter(ARCHAEOLOGY_SHOW_DIG_SITES, "digSites", Enum.MinimapTrackingFilter.Digsites);
+	AddFilter(SHOW_LOCAL_STORY_OFFERS_ON_MAP_TEXT, "questPOILocalStory");
+	AddFilter(MINIMAP_TRACKING_TRIVIAL_QUESTS, "trivialQuests", Enum.MinimapTrackingFilter.TrivialQuests, true);
+	AddFilter(MINIMAP_TRACKING_ACCOUNT_COMPLETED_QUESTS, "showAccountCompletedQuests", Enum.MinimapTrackingFilter.AccountCompletedQuests, true);
+end
+
+function WorldMapTrackingOptionsButtonMixin:GetWorldMapFilters()
+	return self.worldMapFilters;
+end
+
+function WorldMapTrackingOptionsButtonMixin:GetWorldMapFilter(cvarName)
+	return self.worldMapFilters[cvarName];
 end
 
 function WorldMapTrackingOptionsButtonMixin:OnEnter()
@@ -75,208 +297,43 @@ function WorldMapTrackingOptionsButtonMixin:OnEnter()
 end
 
 function WorldMapTrackingOptionsButtonMixin:OnMouseDown(button)
-	self.Icon:SetPoint("TOPLEFT", 8, -8);
-	self.IconOverlay:Show();
+	self.Icon:SetAtlas("Map-Filter-Button-down");
 
-	local mapID = self:GetParent():GetMapID();
-	if not mapID then
-		return;
-	end
-	self.DropDown.mapID = mapID;
-	ToggleDropDownMenu(1, nil, self.DropDown, self, 0, -5);
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	HelpTip:Acknowledge(self, ACCOUNT_COMPLETED_QUESTS_FILTER_TUTORIAL);
 end
 
 function WorldMapTrackingOptionsButtonMixin:OnMouseUp()
-	self.Icon:SetPoint("TOPLEFT", self, "TOPLEFT", 6, -6);
-	self.IconOverlay:Hide();
+	self.Icon:SetAtlas("Map-Filter-Button");
 end
 
 function WorldMapTrackingOptionsButtonMixin:Refresh()
-	-- nothing to do here
-end
-
-function WorldMapTrackingOptionsButtonMixin:IsTrackingFilter(filter)
-	return not C_Minimap.IsFilteredOut(filter);
-end
-
-function WorldMapTrackingOptionsButtonMixin:SetTrackingFilter(filter, on)
-	local count = C_Minimap.GetNumTrackingTypes();
-	for id=1, count do
-		local filterInfo = C_Minimap.GetTrackingFilter(id);
-		if filterInfo and filterInfo.filterID == filter then
-			C_Minimap.SetTracking(id, on);
-			return;
-		end
-	end
-end
-
-function WorldMapTrackingOptionsButtonMixin:OnSelection(value, checked)
-	if (checked) then
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	else
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
-	end
-
-	if (value == "quests") then
-		SetCVar("questPOI", checked and "1" or "0");
-	elseif (value == "dungeon entrances") then
-		SetCVar("showDungeonEntrancesOnMap", checked and "1" or "0");
-	elseif (value == "digsites") then
-		SetCVar("digSites", checked and "1" or "0");
-		self:SetTrackingFilter(Enum.MinimapTrackingFilter.Digsites, checked);
-	elseif (value == "tamers") then
-		SetCVar("showTamers", checked and "1" or "0");
-	elseif (value == "primaryProfessionsFilter" or value == "secondaryProfessionsFilter") then
-		SetCVar(value, checked and "1" or "0");
-	elseif (value == "contentTrackingFilter") then
-		SetCVar(value, checked and "1" or "0");
-	elseif (value == "dragonRidingRacesFilter") then
-		SetCVar(value, checked and "1" or "0");
-	elseif (value == "worldQuestFilterResources" or value == "worldQuestFilterArtifactPower" or
-			value == "worldQuestFilterProfessionMaterials" or value == "worldQuestFilterGold" or
-			value == "worldQuestFilterEquipment" or value == "worldQuestFilterReputation" or
-			value == "worldQuestFilterAnima") then
-		-- World quest reward filter cvars
-		SetCVar(value, checked and "1" or "0");
-	elseif (value == "trivialQuests") then
-		self:SetTrackingFilter(Enum.MinimapTrackingFilter.TrivialQuests, checked);
-	end
 	self:GetParent():RefreshAllDataProviders();
 end
 
-function WorldMapTrackingOptionsButtonMixin:InitializeDropDown()
-	local function OnSelection(button)
-		self:OnSelection(button.value, button.checked);
-	end
+function WorldMapTrackingOptionsButtonMixin:RefreshAccountCompletedQuestFilterTutorial()
+	HelpTip:Hide(self, ACCOUNT_COMPLETED_QUESTS_FILTER_TUTORIAL);
 
-	local info = UIDropDownMenu_CreateInfo();
-
-	info.isTitle = true;
-	info.notCheckable = true;
-	info.text = WORLD_MAP_FILTER_TITLE;
-	UIDropDownMenu_AddButton(info);
-
-	info.isTitle = nil;
-	info.disabled = nil;
-	info.notCheckable = nil;
-	info.isNotRadio = true;
-	info.keepShownOnClick = true;
-	info.func = OnSelection;
-
-	info.text = SHOW_QUEST_OBJECTIVES_ON_MAP_TEXT;
-	info.value = "quests";
-	info.checked = GetCVarBool("questPOI");
-	UIDropDownMenu_AddButton(info);
-
-	info.text = SHOW_DUNGEON_ENTRACES_ON_MAP_TEXT;
-	info.value = "dungeon entrances";
-	info.checked = GetCVarBool("showDungeonEntrancesOnMap");
-	UIDropDownMenu_AddButton(info);
-
-	local prof1, prof2, arch, fish, cook, firstAid = GetProfessions();
-	if arch then
-		info.text = ARCHAEOLOGY_SHOW_DIG_SITES;
-		info.value = "digsites";
-		info.checked = GetCVarBool("digSites") and self:IsTrackingFilter(Enum.MinimapTrackingFilter.Digsites);
-		UIDropDownMenu_AddButton(info);
-	end
-
-	if C_Minimap.CanTrackBattlePets() then
-		info.text = SHOW_PET_BATTLES_ON_MAP_TEXT;
-		info.value = "tamers";
-		info.checked = GetCVarBool("showTamers");
-		UIDropDownMenu_AddButton(info);
-	end
-
-	info.text = MINIMAP_TRACKING_TRIVIAL_QUESTS;
-	info.value = "trivialQuests";
-	info.checked = self:IsTrackingFilter(Enum.MinimapTrackingFilter.TrivialQuests);
-	UIDropDownMenu_AddButton(info);
-
-	info.text = CONTENT_TRACKING_MAP_TOGGLE;
-	info.value = "contentTrackingFilter";
-	info.checked = GetCVarBool("contentTrackingFilter");
-	UIDropDownMenu_AddButton(info);
-
-	info.text = DRAGONRIDING_RACES_MAP_TOGGLE;
-	info.value = "dragonRidingRacesFilter";
-	info.checked = GetCVarBool("dragonRidingRacesFilter");
-	UIDropDownMenu_AddButton(info);
-
-	-- If we aren't on a map which has emissaries don't show the world quest reward filter options.
-	local mapID = self:GetParent():GetMapID();
-	if not mapID or not MapUtil.MapShouldShowWorldQuestFilters(mapID) then
+	local tutorialAcknowledged = GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_COMPLETED_QUESTS_FILTER);
+	if tutorialAcknowledged then
 		return;
 	end
 
-	if prof1 or prof2 then
-		info.text = SHOW_PRIMARY_PROFESSION_ON_MAP_TEXT;
-		info.value = "primaryProfessionsFilter";
-		info.checked = GetCVarBool("primaryProfessionsFilter");
-		UIDropDownMenu_AddButton(info);
-	end
+	local helpTipInfo = {
+		text = ACCOUNT_COMPLETED_QUESTS_FILTER_TUTORIAL,
+		buttonStyle = HelpTip.ButtonStyle.Close,
+		cvarBitfield = "closedInfoFramesAccountWide",
+		bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_COMPLETED_QUESTS_FILTER,
+		targetPoint = HelpTip.Point.RightEdgeCenter,
+		offsetX = -2,
+		alignment = HelpTip.Alignment.Center,
+		acknowledgeOnHide = false,
+		checkCVars = true,
+	};
+	HelpTip:Show(self, helpTipInfo);
+end
 
-	if fish or cook or firstAid then
-		info.text = SHOW_SECONDARY_PROFESSION_ON_MAP_TEXT;
-		info.value = "secondaryProfessionsFilter";
-		info.checked = GetCVarBool("secondaryProfessionsFilter");
-		UIDropDownMenu_AddButton(info);
-	end
-
-	UIDropDownMenu_AddSeparator();
-
-	info = UIDropDownMenu_CreateInfo();
-	info.isTitle = true;
-	info.notCheckable = true;
-	info.text = WORLD_QUEST_REWARD_FILTERS_TITLE;
-	UIDropDownMenu_AddButton(info);
-	info.text = nil;
-
-	info.isTitle = nil;
-	info.disabled = nil;
-	info.notCheckable = nil;
-	info.isNotRadio = true;
-	info.keepShownOnClick = true;
-	info.func = OnSelection;
-
-	-- TODO:: Further adjustments to more cleanly determine filters per map and make this future-proof.
-	if MapUtil.IsShadowlandsZoneMap(mapID) then
-		info.text = WORLD_QUEST_REWARD_FILTERS_ANIMA;
-		info.value = "worldQuestFilterAnima";
-		info.checked = GetCVarBool("worldQuestFilterAnima");
-		UIDropDownMenu_AddButton(info);
-	else
-		info.text = WORLD_QUEST_REWARD_FILTERS_RESOURCES;
-		info.value = "worldQuestFilterResources";
-		info.checked = GetCVarBool("worldQuestFilterResources");
-		UIDropDownMenu_AddButton(info);
-
-		info.text = WORLD_QUEST_REWARD_FILTERS_ARTIFACT_POWER;
-		info.value = "worldQuestFilterArtifactPower";
-		info.checked = GetCVarBool("worldQuestFilterArtifactPower");
-		UIDropDownMenu_AddButton(info);
-	end
-
-	info.text = WORLD_QUEST_REWARD_FILTERS_PROFESSION_MATERIALS;
-	info.value = "worldQuestFilterProfessionMaterials";
-	info.checked = GetCVarBool("worldQuestFilterProfessionMaterials");
-	UIDropDownMenu_AddButton(info);
-
-	info.text = WORLD_QUEST_REWARD_FILTERS_GOLD;
-	info.value = "worldQuestFilterGold";
-	info.checked = GetCVarBool("worldQuestFilterGold");
-	UIDropDownMenu_AddButton(info);
-
-	info.text = WORLD_QUEST_REWARD_FILTERS_EQUIPMENT;
-	info.value = "worldQuestFilterEquipment";
-	info.checked = GetCVarBool("worldQuestFilterEquipment");
-	UIDropDownMenu_AddButton(info);
-
-	info.text = WORLD_QUEST_REWARD_FILTERS_REPUTATION;
-	info.value = "worldQuestFilterReputation";
-	info.checked = GetCVarBool("worldQuestFilterReputation");
-	UIDropDownMenu_AddButton(info);
+function WorldMapTrackingOptionsButtonMixin:ShouldShowWorldQuestFilters(mapID)
+	return mapID and MapUtil.MapShouldShowWorldQuestFilters(mapID);
 end
 
 WorldMapTrackingPinButtonMixin = { };
@@ -297,7 +354,7 @@ function WorldMapTrackingPinButtonMixin:OnMouseDown(button)
 end
 
 function WorldMapTrackingPinButtonMixin:OnMouseUp()
-	self.Icon:SetPoint("TOPLEFT", self, "TOPLEFT", 6, -6);
+	self.Icon:SetPoint("TOPLEFT", self, "TOPLEFT", 7, -6);
 	self.IconOverlay:Hide();
 end
 
@@ -346,6 +403,74 @@ function WorldMapTrackingPinButtonMixin:SetActive(isActive)
 	self:GetParent():TriggerEvent("WaypointLocationToggleUpdate", isActive);
 end
 
+WorldMapShowLegendButtonMixin = { };
+
+function WorldMapShowLegendButtonMixin:OnLoad()
+	EventRegistry:RegisterCallback("MapLegendHidden", self.Refresh, self);
+    self.showNewGlow = not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_MAP_LEGEND_OPENED);
+end
+
+function WorldMapShowLegendButtonMixin:OnShow()
+	if self.showNewGlow then
+		self.Fade:Play();
+    else
+        self.Glow:SetShown(false);
+    end
+end
+
+function WorldMapShowLegendButtonMixin:OnHide()
+	if self.showNewGlow then
+		self.Fade:Stop();
+	end
+end
+
+function WorldMapShowLegendButtonMixin:OnMouseDown(button)
+	if self:IsEnabled() then
+		self.Icon:SetPoint("TOPLEFT", 8, -8);
+		self.IconOverlay:Show();
+	end
+end
+
+function WorldMapShowLegendButtonMixin:OnMouseUp()
+	self.Icon:SetPoint("TOPLEFT", self, "TOPLEFT", 7, -6);
+	self.IconOverlay:Hide();
+end
+
+function WorldMapShowLegendButtonMixin:OnClick()
+	local shouldSetActive = not self.isActive;
+	self:SetActive(shouldSetActive);
+	if shouldSetActive then
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		EventRegistry:TriggerEvent("ShowMapLegend");
+        SetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_MAP_LEGEND_OPENED, true);
+        self.Fade:Stop();
+        self.Glow:SetShown(false);
+		if (not self:GetParent().QuestLog:IsShown()) then
+			self:GetParent():HandleUserActionToggleSidePanel();
+		end
+	else
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+		EventRegistry:TriggerEvent("HideMapLegend");
+	end
+end
+
+function WorldMapShowLegendButtonMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip_SetTitle(GameTooltip, MAP_LEGEND_FRAME_LABEL);
+	GameTooltip:Show();
+end
+
+function WorldMapShowLegendButtonMixin:Refresh()
+	if (not self:GetParent().QuestLog.MapLegend:IsShown()) then
+		self:SetActive(false);
+	end
+end
+
+function WorldMapShowLegendButtonMixin:SetActive(isActive)
+	self.isActive = isActive;
+	self.ActiveTexture:SetShown(isActive);
+end
+
 WorldMapNavBarMixin = { };
 
 function WorldMapNavBarMixin:OnLoad()
@@ -381,14 +506,14 @@ function WorldMapNavBarMixin:Refresh()
 			local mapGroupMembersInfo = C_Map.GetMapGroupMembersInfo(mapGroupID);
 			if ( mapGroupMembersInfo ) then
 				for i, mapGroupMemberInfo in ipairs(mapGroupMembersInfo) do
-					if ( C_Map.IsMapValidForNavBarDropDown(mapGroupMemberInfo.mapID) ) then
-						buttonData.listFunc = WorldMapNavBarButtonMixin.GetDropDownList;
+					if ( C_Map.IsMapValidForNavBarDropdown(mapGroupMemberInfo.mapID) ) then
+						buttonData.listFunc = WorldMapNavBarButtonMixin.GetDropdownList;
 						break;
 					end
 				end
-			end	
-		elseif ( C_Map.IsMapValidForNavBarDropDown(mapInfo.mapID) ) then
-			buttonData.listFunc = WorldMapNavBarButtonMixin.GetDropDownList;
+			end
+		elseif ( C_Map.IsMapValidForNavBarDropdown(mapInfo.mapID) ) then
+			buttonData.listFunc = WorldMapNavBarButtonMixin.GetDropdownList;
 		end
 		tinsert(hierarchy, 1, buttonData);
 		mapInfo = C_Map.GetMapInfo(mapInfo.parentMapID);
@@ -402,14 +527,14 @@ end
 
 WorldMapNavBarButtonMixin = { };
 
-function WorldMapNavBarButtonMixin:GetDropDownList()
+function WorldMapNavBarButtonMixin:GetDropdownList()
 	local list = { };
 	local mapInfo = C_Map.GetMapInfo(self.data.id);
 	if ( mapInfo ) then
 		local children = C_Map.GetMapChildrenInfo(mapInfo.parentMapID);
 		if ( children ) then
 			for i, childInfo in ipairs(children) do
-				if ( C_Map.IsMapValidForNavBarDropDown(childInfo.mapID) ) then
+				if ( C_Map.IsMapValidForNavBarDropdown(childInfo.mapID) ) then
 					local entry = { text = childInfo.name, id = childInfo.mapID, func = function(button, mapID) self:GetParent():GoToMap(mapID); end };
 					tinsert(list, entry);
 				end

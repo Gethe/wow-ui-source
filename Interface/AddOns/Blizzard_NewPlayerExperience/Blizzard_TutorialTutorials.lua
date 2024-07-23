@@ -972,10 +972,10 @@ function Class_UseQuestItem:InRange()
 	self:HideScreenTutorial();
 	Dispatcher:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
 
-	local module = QUEST_TRACKER_MODULE:GetBlock(self.questData.ItemQuest)
-	if (module and module.itemButton) then
+	local block = QuestObjectiveTracker:GetExistingBlock(self.questData.ItemQuest) or CampaignQuestObjectiveTracker:GetExistingBlock(self.questData.ItemQuest)
+	if (block and block.ItemButton) then
 		local pointerString = self.questData.PointerTutorialStringID;
-		QuestItemTutorial =	self:ShowPointerTutorial(TutorialHelper:FormatString(pointerString), "UP", module.itemButton);
+		self:ShowPointerTutorial(TutorialHelper:FormatString(pointerString), "UP", block.ItemButton);
 	end
 end
 
@@ -1255,7 +1255,7 @@ function Class_ChangeEquipment:UpdateDragOrigin()
 	else
 		self:UpdateItemContainerAndSlotInfo()
 		if self.data then
-			itemFrame = TutorialHelper:GetItemContainerFrame(self.data.Container, self.data.ContainerSlot);
+			local itemFrame = TutorialHelper:GetItemContainerFrame(self.data.Container, self.data.ContainerSlot);
 			self:HidePointerTutorials();
 			if itemFrame then
 				self:StartAnimation();
@@ -1466,7 +1466,7 @@ function Class_EnhancedCombatTactics:HideSpenderPrompt()
 	end
 end
 
-function Class_EnhancedCombatTactics:UNIT_POWER_FREQUENT(unit, resource)
+function Class_EnhancedCombatTactics:UNIT_POWER_FREQUENT(unit, _resource)
 	local resourceGateAmount = self.combatData.resourceGateAmount;
 	local resource = UnitPower("player", self.combatData.resource);
 	if resource < resourceGateAmount then
@@ -1582,7 +1582,7 @@ function Class_EnhancedCombatTactics_Warrior:UNIT_TARGETABLE_CHANGED()
 	Dispatcher:RegisterEvent("UNIT_TARGET", self);
 end
 
-function Class_EnhancedCombatTactics_Warrior:UNIT_POWER_FREQUENT(unit, resource)
+function Class_EnhancedCombatTactics_Warrior:UNIT_POWER_FREQUENT(unit, _resource)
 	local resourceGateAmount = self.combatData.resourceGateAmount;
 	local resource = UnitPower("player", self.combatData.resource);
 
@@ -1995,7 +1995,7 @@ function Class_AddHunterTameSpells:OnBegin()
 		end
 	else
 		-- wait for the spells to show up in the spell book
-		Dispatcher:RegisterEvent("LEARNED_SPELL_IN_TAB", self);
+		Dispatcher:RegisterEvent("LEARNED_SPELL_IN_SKILL_LINE", self);
 	end
 end
 
@@ -2034,9 +2034,9 @@ function Class_AddHunterTameSpells:ACTIONBAR_SHOW_BOTTOMLEFT()
 	end
 end
 
-function Class_AddHunterTameSpells:LEARNED_SPELL_IN_TAB(spellID)
+function Class_AddHunterTameSpells:LEARNED_SPELL_IN_SKILL_LINE(spellID)
 	if self:KnowsRequiredSpells() then
-		Dispatcher:UnregisterEvent("LEARNED_SPELL_IN_TAB", self);
+		Dispatcher:UnregisterEvent("LEARNED_SPELL_IN_SKILL_LINE", self);
 		if self:CheckForSpellsOnActionBar() then
 			TutorialManager:Finished(self:Name());
 		else
@@ -2080,7 +2080,7 @@ end
 function Class_AddHunterTameSpells:OnComplete()	
 	Dispatcher:UnregisterEvent("SPELLS_CHANGED", self);
 	Dispatcher:UnregisterEvent("UPDATE_EXTRA_ACTIONBAR", self);
-	Dispatcher:UnregisterEvent("LEARNED_SPELL_IN_TAB", self);
+	Dispatcher:UnregisterEvent("LEARNED_SPELL_IN_SKILL_LINE", self);
 	Dispatcher:UnregisterEvent("ACTIONBAR_SHOW_BOTTOMLEFT", self);
 	if self.actionBarEventID then
 		Dispatcher:UnregisterEvent("ACTIONBAR_SLOT_CHANGED", self.actionBarEventID);
@@ -2708,7 +2708,7 @@ function Class_LookingForGroup:OnComplete()
 	self:HideScreenTutorial();
 	ActionButton_HideOverlayGlow(LFDMicroButton);
 
-	if not self.success == true then
+	if self.success ~= true then
 		if not self.questRemoved then
 			TutorialManager:Queue(Class_PromptLFG.name);
 		end
@@ -2752,7 +2752,7 @@ end
 Class_MountReceived = class("MountReceived", Class_TutorialBase);
 function Class_MountReceived:OnInitialize()
 	self.questID = TutorialData:GetFactionData().GetMountQuest;
-	self.mountData = TutorialHelper:FilterByRace(TutorialData:GetFactionData().Mounts);
+	self.mountData = TutorialData:GetFactionData().MountData;
 	self.mountID = self.mountData.mountID;
 end
 
@@ -2786,8 +2786,7 @@ function Class_MountReceived:OnBegin()
 end
 
 function Class_MountReceived:CheckHasMountItem()
-	local mountData = TutorialHelper:FilterByRace(TutorialData:GetFactionData().Mounts);
-	local mountItem = mountData.mountItem;
+	local mountItem = self.mountData.mountItem;
 	return TutorialHelper:FindItemInContainer(mountItem);
 end
 
@@ -2806,12 +2805,12 @@ function Class_MountReceived:BagOpened(containerFrame)
 		return;
 	end
 
-	EventRegistry:UnregisterCallback("ContainerFrame.OpenBag", self);
 	local itemFrame = TutorialHelper:GetItemContainerFrame(container, slot)
 	self:ShowPointerTutorial(NPEV2_MOUNT_TUTORIAL_P2_BEGIN, "DOWN", itemFrame, 0, 10, nil, "RIGHT");
 end
 
 function Class_MountReceived:NEW_MOUNT_ADDED(data)
+	EventRegistry:UnregisterCallback("ContainerFrame.OpenBag", self);
 	Dispatcher:UnregisterEvent("NEW_MOUNT_ADDED", self);
 
 	if TutorialHelper:GetActionButtonBySpellID(self.mountData.mountID) then
@@ -2900,7 +2899,7 @@ function Class_AddMountToActionBar:MountJournalShow()
 	if(self.originButton and self.destButton) then
 		TutorialDragButton:Show(self.originButton, self.destButton);
 	end
-	self:ShowPointerTutorial(NPEV2_MOUNT_TUTORIAL_P3, "LEFT", button or MountJournal, 0, 10, nil, "LEFT");
+	self:ShowPointerTutorial(NPEV2_MOUNT_TUTORIAL_P3, "LEFT", self.originButton or MountJournal, 0, 10, nil, "LEFT");
 end
 
 function Class_AddMountToActionBar:MountJournalHide()
@@ -2967,7 +2966,7 @@ function Class_UseMount:OnBegin()
 	Dispatcher:RegisterEvent("ACTIONBAR_UPDATE_USABLE", self);
 	Dispatcher:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
 	Dispatcher:RegisterEvent("QUEST_REMOVED", self);
-	local mountData = TutorialHelper:FilterByRace(TutorialData:GetFactionData().Mounts);
+	local mountData = TutorialData:GetFactionData().MountData;
 	self.mountID = mountData.mountID;
 	self.mountSpellID = mountData.mountSpellID;
 	self:TryUseMount();

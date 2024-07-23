@@ -352,8 +352,8 @@ function ArenaUnitFrameCcRemoverMixin:SetSpellId(spellId)
 		return;
 	end
 
-	local texture = select(3, GetSpellInfo(newSpellId)) or QUESTION_MARK_ICON;
-	self.Icon:SetTexture(texture);
+	local texture = newSpellId and C_Spell.GetSpellTexture(newSpellId) or nil;
+	self.Icon:SetTexture(texture or QUESTION_MARK_ICON);
 	self.spellId = newSpellId;
 	self:UpdateShownState();
 end
@@ -514,7 +514,7 @@ function ArenaUnitFrameDebuffMixin:Update()
 end
 
 function ArenaUnitFrameDebuffMixin:UpdateIcon()
-	local texture = self.shownData and select(3, GetSpellInfo(self.shownData.spellID)) or QUESTION_MARK_ICON;
+	local texture = self.shownData and C_Spell.GetSpellTexture(self.shownData.spellID) or QUESTION_MARK_ICON;
 	self.Icon:SetTexture(texture);
 end
 
@@ -576,6 +576,7 @@ function StealthedArenaUnitFrameMixin:GetUnitClassInfo()
 	if self.unitFrame and self.unitFrame.unitIndex then
 		local specID, gender = GetArenaOpponentSpec(self.unitFrame.unitIndex);
 		if specID and specID > 0 then
+			local _;
 			_, unitClassInfo.specName, _, _, unitClassInfo.role, unitClassInfo.class, unitClassInfo.className = GetSpecializationInfoByID(specID, gender);
 		end
 	end

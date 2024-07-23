@@ -11,6 +11,11 @@
 -- Globals: DEVTOOLS_USE_USERDATA_CACHE
 ---------------------------------------------------------------------------
 
+if not IsInGlobalEnvironment() then
+	-- Don't want to load this file into the secure environment
+	return;
+end
+
 local forceinsecure = forceinsecure;
 
 local DT = {};
@@ -96,7 +101,6 @@ local function prepSimple(val, context)
 		else
 			return string_format(FORMATS.opaqueTypeKey, valType);
 		end
-		return string_format(FORMATS.opaqueTypeKey, valType);
 	elseif (valType == "userdata") then
 		local uName = context:GetUserdataName(val);
 		if (uName) then

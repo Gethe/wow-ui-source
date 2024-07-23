@@ -298,15 +298,17 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Frame parentKey="Dropdown" inherits="UIDropDownMenuTemplate">
-						<Size x="150" y="32"/>
-						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.UpgradeTo" relativePoint="RIGHT" x="-7" y="-3"/>
-						</Anchors>
+					<DropdownButton parentKey="Dropdown" inherits="WowStyle1DropdownTemplate">
 						<KeyValues>
+							<KeyValue key="resizeToText" type="boolean" value="true"/>
+							<KeyValue key="resizeToTextPadding" type="number" value="60"/>
+							<KeyValue key="resizeToTextMinWidth" type="number" value="95"/>
 							<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 						</KeyValues>
-					</Frame>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.UpgradeTo" relativePoint="RIGHT" x="6" y="-1"/>
+						</Anchors>
+					</DropdownButton>
 				</Frames>
 			</Frame>
 			

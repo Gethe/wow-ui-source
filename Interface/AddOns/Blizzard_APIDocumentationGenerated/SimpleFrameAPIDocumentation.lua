@@ -531,6 +531,11 @@ local SimpleFrameAPI =
 			{
 				{ Name = "delegate", Type = "SimpleFrame", Nilable = false },
 			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
 		},
 		{
 			Name = "IsClampedToScreen",
@@ -701,6 +706,19 @@ local SimpleFrameAPI =
 			Returns =
 			{
 				{ Name = "isUserPlaced", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsUsingParentLevel",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "usingParentLevel", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1059,6 +1077,15 @@ local SimpleFrameAPI =
 			Arguments =
 			{
 				{ Name = "userPlaced", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetUsingParentLevel",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "usingParentLevel", Type = "bool", Nilable = false },
 			},
 		},
 		{

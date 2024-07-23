@@ -1,9 +1,11 @@
-CAMPAIGN_QUEST_TRACKER_MODULE = ObjectiveTracker_GetModuleInfoTable("CAMPAIGN_QUEST_TRACKER_MODULE", QUEST_TRACKER_MODULE);
-CAMPAIGN_QUEST_TRACKER_MODULE.updateReasonModule = OBJECTIVE_TRACKER_UPDATE_MODULE_QUEST;
-CAMPAIGN_QUEST_TRACKER_MODULE.updateReasonEvents = OBJECTIVE_TRACKER_UPDATE_QUEST + OBJECTIVE_TRACKER_UPDATE_QUEST_ADDED + OBJECTIVE_TRACKER_UPDATE_SUPER_TRACK_CHANGED;
+local settings = {
+	headerText = TRACKER_HEADER_CAMPAIGN_QUESTS,
+	events = { "QUEST_LOG_UPDATE", "QUEST_WATCH_LIST_CHANGED" },
+	lineTemplate = "ObjectiveTrackerAnimLineTemplate",
+};
 
-CAMPAIGN_QUEST_TRACKER_MODULE:SetHeader(ObjectiveTrackerFrame.BlocksFrame.CampaignQuestHeader, TRACKER_HEADER_CAMPAIGN_QUESTS, OBJECTIVE_TRACKER_UPDATE_QUEST_ADDED);
+CampaignQuestObjectiveTrackerMixin = CreateFromMixins(QuestObjectiveTrackerMixin, settings);
 
-function CAMPAIGN_QUEST_TRACKER_MODULE:ShouldDisplayQuest(quest)
+function CampaignQuestObjectiveTrackerMixin:ShouldDisplayQuest(quest)
 	return (quest:GetSortType() == QuestSortType.Campaign) and not quest:IsDisabledForSession();
 end

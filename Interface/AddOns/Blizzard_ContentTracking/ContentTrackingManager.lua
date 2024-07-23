@@ -30,14 +30,8 @@ function ContentTrackingManagerMixin:OnContentTrackingUpdate(trackableType, id, 
 		if AchievementFrameAchievements_UpdateTrackedAchievements then
 			AchievementFrameAchievements_UpdateTrackedAchievements();
 		end
-
-		if isTracked then
-			ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_ACHIEVEMENT_ADDED, id);
-		else
-			ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_ACHIEVEMENT);
-		end
 	elseif (trackableType == Enum.ContentTrackingType.Appearance) or (trackableType == Enum.ContentTrackingType.Mount) then
-		ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_ADVENTURE);
+		AdventureObjectiveTracker:MarkDirty();
 	end
 
 	local trackableElementMap = self.typeToTrackableElementMap[trackableType];
@@ -51,19 +45,13 @@ function ContentTrackingManagerMixin:OnContentTrackingUpdate(trackableType, id, 
 	end
 end
 
-function ContentTrackingManagerMixin:OnTrackingTargetInfoUpdate(targetType, targetID)
-	local moduleWhoseCollapseChanged = nil;
-	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_TARGET_INFO, targetID, moduleWhoseCollapseChanged, targetType);
-end
-
 function ContentTrackingManagerMixin:OnContentTrackingToggled(isEnabled)
 	self.isEnabled = isEnabled;
-	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_ADVENTURE);
+	AdventureObjectiveTracker:MarkDirty();
 end
 
 local ContentTrackingManager = CreateAndInitFromMixin(ContentTrackingManagerMixin);
 EventRegistry:RegisterFrameEventAndCallback("CONTENT_TRACKING_UPDATE", ContentTrackingManager.OnContentTrackingUpdate, ContentTrackingManager);
-EventRegistry:RegisterFrameEventAndCallback("TRACKING_TARGET_INFO_UPDATE", ContentTrackingManager.OnTrackingTargetInfoUpdate, ContentTrackingManager);
 EventRegistry:RegisterFrameEventAndCallback("CONTENT_TRACKING_IS_ENABLED_UPDATE", ContentTrackingManager.OnContentTrackingToggled, ContentTrackingManager);
 
 ContentTrackingUtil = {};

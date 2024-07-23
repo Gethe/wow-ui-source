@@ -1,7 +1,6 @@
 ## Title: Blizzard_ObjectAPI
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## SuppressLocalTableRef: 1
 ## AllowLoad: Game
 ## AllowLoadGameType: mainline
 Mainline\ContinuableContainer.lua

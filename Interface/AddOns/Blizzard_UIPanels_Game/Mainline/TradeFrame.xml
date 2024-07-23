@@ -71,11 +71,15 @@
 						end
 					</OnClick>
 					<OnEnter>
+						SetCursorHoveredItemTradeItem(true);
+						
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetTradeTargetItem(self:GetParent():GetID());
 						CursorUpdate(self);
 					</OnEnter>
 					<OnLeave>
+						SetCursorHoveredItemTradeItem(false);
+						
 						GameTooltip_Hide();
 						ResetCursor();
 					</OnLeave>

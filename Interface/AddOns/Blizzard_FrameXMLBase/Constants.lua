@@ -116,12 +116,12 @@ TALENT_ACTIVATION_SPELLS = {
 CRITERIA_TYPE_ACHIEVEMENT = 8;
 
 -- Achievement Flags
-ACHIEVEMENT_FLAGS_HAS_PROGRESS_BAR 		= 0x00000080;
-ACHIEVEMENT_FLAGS_GUILD					= 0x00004000;
-ACHIEVEMENT_FLAGS_SHOW_GUILD_MEMBERS	= 0x00008000;
-ACHIEVEMENT_FLAGS_SHOW_CRITERIA_MEMBERS = 0x00010000;
-ACHIEVEMENT_FLAGS_ACCOUNT 				= 0x00020000;
-NUM_ACHIEVEMENT_FLAGS			= 3;
+ACHIEVEMENT_FLAGS_HAS_PROGRESS_BAR 				= 0x00000080;
+ACHIEVEMENT_FLAGS_GUILD							= 0x00004000;
+ACHIEVEMENT_FLAGS_SHOW_GUILD_MEMBERS			= 0x00008000;
+ACHIEVEMENT_FLAGS_SHOW_CRITERIA_MEMBERS 		= 0x00010000;
+ACHIEVEMENT_FLAGS_ACCOUNT 						= 0x00020000;
+ACHIEVEMENT_FLAGS_TOAST_ON_REPEAT_COMPLETION	= 0x02000000;
 
 -- Eval Tree Flags
 EVALUATION_TREE_FLAG_PROGRESS_BAR		= 0x00000001;
@@ -202,6 +202,7 @@ INVSLOT_OFFHAND		= 17;
 INVSLOT_RANGED		= 18;
 INVSLOT_TABARD		= 19;
 INVSLOT_LAST_EQUIPPED = INVSLOT_TABARD;
+NUM_INVSLOTS = (INVSLOT_LAST_EQUIPPED - INVSLOT_FIRST_EQUIPPED) + 1;
 
 INVSLOTS_EQUIPABLE_IN_COMBAT = {
 [INVSLOT_MAINHAND] = true,
@@ -668,10 +669,10 @@ LFG_CATEGORY_NAMES = {
 -- PVP
 MAX_ARENA_TEAMS = 2;
 MAX_WORLD_PVP_QUEUES = 2;
-CONQUEST_SIZE_STRINGS = { RATED_SOLO_SHUFFLE_SIZE, ARENA_2V2, ARENA_3V3, BATTLEGROUND_10V10 };
-CONQUEST_TYPE_STRINGS = { ARENA, ARENA, ARENA, BATTLEGROUNDS };
-CONQUEST_SIZES = { 1, 2, 3, 10 };
-CONQUEST_BRACKET_INDEXES = { 7, 1, 2, 4 }; -- 5v5 was removed
+CONQUEST_SIZE_STRINGS = { RATED_SOLO_SHUFFLE_SIZE, RATED_BG_BLITZ_SIZE, ARENA_2V2, ARENA_3V3, BATTLEGROUND_10V10 };
+CONQUEST_TYPE_STRINGS = { ARENA, BATTLEGROUNDS, ARENA, ARENA, BATTLEGROUNDS };
+CONQUEST_SIZES = { 1, 1, 2, 3, 10 };
+CONQUEST_BRACKET_INDEXES = { 7, 9, 1, 2, 4 }; -- 5v5 was removed
 
 -- Chat
 CHANNEL_INVITE_TIMEOUT = 60;
@@ -699,8 +700,6 @@ QUEST_TAG_ATLAS = {
 	["EXPIRING"] = "questlog-questtypeicon-expiring",
 	[Enum.QuestTag.Dungeon] = "questlog-questtypeicon-dungeon",
 	[Enum.QuestTag.Scenario] = "questlog-questtypeicon-scenario",
-	[Enum.QuestTag.Account] = "questlog-questtypeicon-account",
-	[Enum.QuestTag.Legendary] = "questlog-questtypeicon-legendary",
 	[Enum.QuestTag.Group] = "questlog-questtypeicon-group",
 	[Enum.QuestTag.PvP] = "questlog-questtypeicon-pvp",
 	[Enum.QuestTag.Heroic] = "questlog-questtypeicon-heroic",
@@ -708,6 +707,7 @@ QUEST_TAG_ATLAS = {
 	[Enum.QuestTag.Raid] = "questlog-questtypeicon-raid",
 	[Enum.QuestTag.Raid10] = "questlog-questtypeicon-raid",
 	[Enum.QuestTag.Raid25] = "questlog-questtypeicon-raid",
+	[Enum.QuestTag.Delve] = "questlog-questtypeicon-delves",
 };
 
 WORLD_QUEST_TYPE_ATLAS = {
@@ -814,49 +814,6 @@ Enum.ChatChannelType = {
 	Private_Party = 2,
 	Public_Party = 3,
 	Communities = 4,
-};
-
-CALENDAR_INVITESTATUS_INFO = {
-	["UNKNOWN"] = {
-		name		= UNKNOWN,
-		color		= NORMAL_FONT_COLOR,
-	},
-	[Enum.CalendarStatus.Confirmed] = {
-		name		= CALENDAR_STATUS_CONFIRMED,
-		color		= GREEN_FONT_COLOR,
-	},
-	[Enum.CalendarStatus.Available] = {
-		name		= CALENDAR_STATUS_ACCEPTED,
-		color		= GREEN_FONT_COLOR,
-	},
-	[Enum.CalendarStatus.Declined] = {
-		name		= CALENDAR_STATUS_DECLINED,
-		color		= RED_FONT_COLOR,
-	},
-	[Enum.CalendarStatus.Out] = {
-		name		= CALENDAR_STATUS_OUT,
-		color		= RED_FONT_COLOR,
-	},
-	[Enum.CalendarStatus.Standby] = {
-		name		= CALENDAR_STATUS_STANDBY,
-		color		= ORANGE_FONT_COLOR,
-	},
-	[Enum.CalendarStatus.Invited] = {
-		name		= CALENDAR_STATUS_INVITED,
-		color		= NORMAL_FONT_COLOR,
-	},
-	[Enum.CalendarStatus.Signedup] = {
-		name		= CALENDAR_STATUS_SIGNEDUP,
-		color		= GREEN_FONT_COLOR,
-	},
-	[Enum.CalendarStatus.NotSignedup] = {
-		name		= CALENDAR_STATUS_NOT_SIGNEDUP,
-		color		= GRAY_FONT_COLOR,
-	},
-	[Enum.CalendarStatus.Tentative] = {
-		name		= CALENDAR_STATUS_TENTATIVE,
-		color		= ORANGE_FONT_COLOR,
-	},
 };
 
 TOOLTIP_INDENT_OFFSET = 10;

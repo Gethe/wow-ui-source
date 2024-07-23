@@ -4,6 +4,7 @@
 ## LoadOnDemand: 1
 ## AllowLoad: game
 ## AllowLoadGameType: mainline
+## SavedVariables: GLOW_HUB_QUESTS_ACKNOWLEDGED
 
 SharedMapPoiTemplates.xml
 QuestDataProvider.xml
@@ -13,6 +14,8 @@ WorldQuestDataProvider.xml
 ZoneLabelDataProvider.xml
 ClickToZoomDataProvider.xml
 AreaPOIDataProvider.xml
+AreaPOIEventDataProvider.lua
+AreaPOIEventDataProvider.xml
 MapExplorationDataProvider.xml
 MapHighlightDataProvider.xml
 AreaLabelDataProvider.xml
@@ -42,3 +45,4 @@ MapIndicatorQuestDataProvider.xml
 QuestSessionDataProvider.lua
 WaypointLocationDataProvider.xml
 DragonridingRaceDataProvider.xml
+DelveEntranceDataProvider.xml

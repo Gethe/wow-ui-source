@@ -1,0 +1,90 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Frame name="WarWithinLandingOverlayTemplate" parentKey="WarWithinLandingOverlay" mixin="WarWithinLandingOverlayMixin" inherits="LandingPageExpansionOverlayTemplate" virtual="true">
+		<Size x="785" y="550"/>
+		<Anchors>
+			<Anchor point="CENTER" relativeKey="$parent" relativePoint="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="thewarwithin-landingpage-background" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Border" setAllPoints="true" frameLevel="100">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Border" atlas="ui-frame-thewarwithin-border">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-6" y="6"/>
+								<Anchor point="BOTTOMRIGHT" x="6" y="-6"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BottomEmbellishment" atlas="ui-frame-thewarwithin-embellishmentbottom" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="TopEmbellishment" atlas="ui-frame-thewarwithin-embellishmentbottom" useAtlasSize="true" rotation="180">
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame parentKey="Header" frameLevel="100">
+				<Size x="785" y="52"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent" relativePoint="TOP" x="0" y="-45"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Title" inherits="Fancy48Font" text="WAR_WITHIN_LANDING_PAGE_TITLE">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent" relativePoint="CENTER" x="0" y="0"/>
+							</Anchors>
+							<Color r="1" g="1" b="1"/>
+						</FontString>
+						<Texture parentKey="TitleDivider" atlas="thewarwithin-landingpage-header-horizontal-rule" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-5"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<!-- Laying pieces of the Landing Page background over the top/bottom of Landing Page Scrollbox so that the scroll elements cleanly fade as we scroll up/down -->
+			<Frame parentKey="ScrollFadeOverlay">
+				<Size x="403" y="547"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="-47"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Top" atlas="thewarwithin-landingpage-background-fadeoverlay-top" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOP" y="1"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Bottom" atlas="thewarwithin-landingpage-background-fadeoverlay-bottom" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOM" y="-1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+</Ui>

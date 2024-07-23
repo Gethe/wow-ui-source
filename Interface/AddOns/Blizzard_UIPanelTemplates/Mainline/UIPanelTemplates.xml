@@ -49,133 +49,6 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	<Frame name="AutoCastShineTemplate" virtual="true">
-		<Anchors>
-			<Anchor point="CENTER" x="0" y="0"/>
-		</Anchors>
-		<Size x="28" y="28"/>
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture name="$parent1" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
-					<Size x="13" y="13"/>
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
-				</Texture>
-				<Texture name="$parent2" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
-					<Size x="10" y="10"/>
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
-				</Texture>
-				<Texture name="$parent3" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
-					<Size x="7" y="7"/>
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
-				</Texture>
-				<Texture name="$parent4" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
-					<Size x="4" y="4"/>
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
-				</Texture>
-				<Texture name="$parent5" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
-					<Size x="13" y="13"/>
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
-				</Texture>
-				<Texture name="$parent6" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
-					<Size x="10" y="10"/>
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
-				</Texture>
-				<Texture name="$parent7" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
-					<Size x="7" y="7"/>
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
-				</Texture>
-				<Texture name="$parent8" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
-					<Size x="4" y="4"/>
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
-				</Texture>
-				<Texture name="$parent9" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
-					<Size x="13" y="13"/>
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
-				</Texture>
-				<Texture name="$parent10" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
-					<Size x="10" y="10"/>
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
-				</Texture>
-				<Texture name="$parent11" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
-					<Size x="7" y="7"/>
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
-				</Texture>
-				<Texture name="$parent12" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
-					<Size x="4" y="4"/>
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
-				</Texture>
-				<Texture name="$parent13" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
-					<Size x="13" y="13"/>
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
-				</Texture>
-				<Texture name="$parent14" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
-					<Size x="10" y="10"/>
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
-				</Texture>
-				<Texture name="$parent15" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
-					<Size x="7" y="7"/>
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
-				</Texture>
-				<Texture name="$parent16" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
-					<Size x="4" y="4"/>
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad>
-				AutoCastShine_OnLoad(self);
-			</OnLoad>
-		</Scripts>
-	</Frame>
 
 	<!-- size=64,64
 	<Texture name="UI-SilverButton-Delete.png" >
@@ -1720,7 +1593,7 @@
 		</Layers>
 		<Animations>
 			<AnimationGroup parentKey="LingerAndFade">
-				<Alpha childKey="FadeOut" startDelay="5" fromAlpha="1" toAlpha="0" duration="1" smoothing="IN_OUT" order="2"/>
+				<Alpha parentKey="FadeOut" startDelay="5" fromAlpha="1" toAlpha="0" duration="1" smoothing="IN_OUT" order="2"/>
 				<Scripts>
 					<OnFinished>
 						self:GetParent():Hide();

@@ -74,7 +74,6 @@
 					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="3"/>
 				</Anchors>
 			</EventFrame>
-			<Frame parentKey="ContextMenu" inherits="UIDropDownMenuTemplate" enableMouse="true"/>
 		</Frames>
 		<Layers>
 			<Layer level="OVERLAY">

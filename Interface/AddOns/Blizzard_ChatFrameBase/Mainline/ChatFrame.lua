@@ -15,6 +15,8 @@ CHAT_FOCUS_OVERRIDE = nil;
 NUM_REMEMBERED_TELLS = 10;
 MAX_WOW_CHAT_CHANNELS = 20;
 MAX_COUNTDOWN_SECONDS = 3600; -- One Hour
+ACTIVE_CHAT_EDIT_BOX = nil;
+LAST_ACTIVE_CHAT_EDIT_BOX = nil;
 
 function GetBNPlayerLink(name, linkDisplayText, bnetIDAccount, lineID, chatType, chatTarget)
 	return LinkUtil.FormatLink("BNplayer", linkDisplayText, name, bnetIDAccount, lineID or 0, chatType, chatTarget);
@@ -815,8 +817,8 @@ function ChatFrame_TruncateToMaxLength(text, maxLength)
 	return text;
 end
 
-function ChatFrame_ResolvePrefixedChannelName(communityChannel)
-	local prefix, communityChannel = communityChannel:match("(%d+. )(.*)");
+function ChatFrame_ResolvePrefixedChannelName(communityChannelArg)
+	local prefix, communityChannel = communityChannelArg:match("(%d+. )(.*)");
 	return prefix..ChatFrame_ResolveChannelName(communityChannel);
 end
 
@@ -880,7 +882,7 @@ local function CreateCanonicalActions(entry, ...)
 			else
 				entry.spells[count] = action;
 				entry.spellNames[count] = gsub(action, "!*(.*)", "%1");
-				entry.spellID[count] = select(7, GetSpellInfo(action));
+				entry.spellID[count] = C_Spell.GetSpellIDForSpellIdentifier(action);
 			end
 		end
 	end
@@ -1109,8 +1111,8 @@ local function CastRandomManager_OnEvent(self, event, ...)
 	local unit, castID, spellID = ...;
 
 	if ( unit == "player" ) then
-		local name = strlower(GetSpellInfo(spellID));
-		local rank = strlower(GetSpellSubtext(spellID) or "");
+		local name = strlower(C_Spell.GetSpellName(spellID));
+		local rank = strlower(C_Spell.GetSpellSubtext(spellID) or "");
 		local nameplus = name.."()";
 		local fullname = name.."("..rank..")";
 		for sequence, entry in pairs(CastRandomTable) do
@@ -1224,7 +1226,7 @@ SecureCmdList["CAST"] = function(msg)
 
 	local action, target = SecureCmdOptionParse(msg);
 	if ( action ) then
-		local spellExists = DoesSpellExist(action)
+		local spellExists = C_Spell.DoesSpellExist(action)
 		local name, bag, slot = SecureCmdItemParse(action);
 		if ( spellExists ) then
 			CastSpellByName(action, target);
@@ -1607,21 +1609,21 @@ end
 SecureCmdList["PET_AUTOCASTON"] = function(msg)
 	local spell = SecureCmdOptionParse(msg);
 	if ( spell ) then
-		EnableSpellAutocast(spell);
+		C_Spell.SetSpellAutoCastEnabled(spell, true);
 	end
 end
 
 SecureCmdList["PET_AUTOCASTOFF"] = function(msg)
 	local spell = SecureCmdOptionParse(msg);
 	if ( spell ) then
-		DisableSpellAutocast(spell);
+		C_Spell.SetSpellAutoCastEnabled(spell, false);
 	end
 end
 
 SecureCmdList["PET_AUTOCASTTOGGLE"] = function(msg)
 	local spell = SecureCmdOptionParse(msg);
 	if ( spell ) then
-		ToggleSpellAutocast(spell);
+		C_Spell.ToggleSpellAutoCast(spell);
 	end
 end
 
@@ -2540,6 +2542,10 @@ SlashCmdList["SOLOSHUFFLE_WARGAME"] = function(msg)
 	StartSoloShuffleWarGameByName(msg);
 end
 
+SlashCmdList["SOLORBG_WARGAME"] = function(msg)
+	C_PvP.StartSoloRBGWarGameByName(msg);
+end
+
 SlashCmdList["SPECTATOR_WARGAME"] = function(msg)
 	local target1, target2, size, area, isTournamentMode = strmatch(msg, "^([^%s]+)%s+([^%s]+)%s+([^%s]+)%s*([^%s]*)%s*([^%s]*)")
 	if (not target1 or not target2 or not size) then
@@ -2562,6 +2568,18 @@ SlashCmdList["SPECTATOR_SOLOSHUFFLE_WARGAME"] = function(msg)
 	if (area == "" or area == "nil" or area == "0") then area = nil end
 
 	StartSpectatorSoloShuffleWarGame(bnetIDGameAccount1 or target1, bnetIDGameAccount2 or target2, area, ValueToBoolean(isTournamentMode));
+end
+
+SlashCmdList["SPECTATOR_SOLORBG_WARGAME"] = function(msg)
+	local target1, target2, area, isTournamentMode = strmatch(msg, "^([^%s]+)%s+([^%s]+)%s*([^%s]*)%s*([^%s]*)");
+	if (not target1 or not target2) then
+		return;
+	end
+
+	local bnetIDGameAccount1, bnetIDGameAccount2 = ChatFrame_WargameTargetsVerifyBNetAccounts(target1, target2);
+	if (area == "" or area == "nil" or area == "0") then area = nil end
+
+	C_PvP.StartSpectatorSoloRBGWarGame(bnetIDGameAccount1 or target1, bnetIDGameAccount2 or target2, area, ValueToBoolean(isTournamentMode));
 end
 
 function ChatFrame_WargameTargetsVerifyBNetAccounts(target1, target2)
@@ -2758,7 +2776,6 @@ SlashCmdList["COMMUNITY"] = function(msg)
 	local command, clubType = string.split(" ", string.lower(msg));
 	local loadCommunity = function()
 		if not CommunitiesFrame or not CommunitiesFrame:IsShown() then
-			Communities_LoadUI();
 			ToggleCommunitiesFrame();
 		end
 	end
@@ -2962,7 +2979,7 @@ function ChatFrame_RegisterForMessages(self, ...)
 		messageGroup = ChatTypeGroup[select(i, ...)];
 		if ( messageGroup ) then
 			self.messageTypeList[index] = select(i, ...);
-			for index, value in pairs(messageGroup) do
+			for _, value in pairs(messageGroup) do
 				self:RegisterEvent(value);
 				if ( value == "CHAT_MSG_VOICE_TEXT" ) then
 					self:RegisterEvent("VOICE_CHAT_CHANNEL_TRANSCRIBING_CHANGED");
@@ -4215,6 +4232,7 @@ function ChatFrame_OpenChat(text, chatFrame, desiredCursorPosition)
 
 			-- Don't default chat type if we already have a specific type (i.e. BN_WHISPER)
 			if editBox:GetAttribute("chatType") == "SAY" then
+				local isInGroup;
 				if IsInGroup(LE_PARTY_CATEGORY_HOME) then
 					local groupCount = GetNumGroupMembers();
 					if groupCount > 1 then
@@ -4468,7 +4486,7 @@ function ChatFrame_DisplayTimePlayed(self, totalTime, levelTime)
 	self:AddMessage(string, info.r, info.g, info.b, info.id);
 
 	d, h, m, s = ChatFrame_TimeBreakDown(levelTime);
-	local string = format(TIME_PLAYED_LEVEL, format(TIME_DAYHOURMINUTESECOND, d, h, m, s));
+	string = format(TIME_PLAYED_LEVEL, format(TIME_DAYHOURMINUTESECOND, d, h, m, s));
 	self:AddMessage(string, info.r, info.g, info.b, info.id);
 end
 
@@ -5649,62 +5667,35 @@ function ChatFrame_ActivateCombatMessages(chatFrame)
 	ChatFrame_AddMessageGroup(chatFrame, "COMBAT_FACTION_CHANGE");
 end
 
-function ChatChannelDropDown_Show(chatFrame, chatType, chatTarget, chatName)
-	HideDropDownMenu(1);
-	ChatChannelDropDown.initialize = ChatChannelDropDown_Initialize;
-	ChatChannelDropDown.displayMode = "MENU";
-	ChatChannelDropDown.chatType = chatType;
-	ChatChannelDropDown.chatTarget = chatTarget;
-	ChatChannelDropDown.chatName = chatName;
-	ChatChannelDropDown.chatFrame = chatFrame;
-	ToggleDropDownMenu(1, nil, ChatChannelDropDown, "cursor");
+function ChatChannelDropdown_Show(chatFrame, chatType, chatTarget, chatName)
+	MenuUtil.CreateContextMenu(chatFrame, function(owner, rootDescription)
+		rootDescription:SetTag("MENU_CHAT_FRAME_CHANNEL");
+
+		rootDescription:CreateTitle(ChatFrame_ResolveChannelName(chatName));
+
+		local clubId, streamId = ChatFrame_GetCommunityAndStreamFromChannel(chatName);
+		if clubId and streamId and C_Club.IsEnabled() then
+			rootDescription:CreateButton(CHAT_CHANNEL_DROP_DOWN_OPEN_COMMUNITIES_FRAME, function()
+				if not CommunitiesFrame or not CommunitiesFrame:IsShown() then
+					ToggleCommunitiesFrame();
+				end
+
+				CommunitiesFrame:SelectStream(clubId, streamId);
+				CommunitiesFrame:SelectClub(clubId);
+			end);
+		end
+
+		local button = rootDescription:CreateButton(MOVE_TO_NEW_WINDOW, function()
+			ChatChannelDropdown_PopOutChat(chatFrame, chatType, chatTarget);
+		end);
+
+		if not FCF_CanOpenNewWindow() then
+			button:SetEnabled(false);
+		end
+	end);
 end
 
-function ChatChannelDropDown_Initialize()
-	local frame = ChatChannelDropDown;
-
-	local info = UIDropDownMenu_CreateInfo();
-
-	info.text = ChatFrame_ResolveChannelName(frame.chatName);
-	info.notCheckable = true;
-	info.isTitle = true;
-	UIDropDownMenu_AddButton(info, 1);
-
-	local clubId, streamId = ChatFrame_GetCommunityAndStreamFromChannel(frame.chatName);
-	if clubId and streamId and C_Club.IsEnabled() then
-		info = UIDropDownMenu_CreateInfo();
-		info.text = CHAT_CHANNEL_DROP_DOWN_OPEN_COMMUNITIES_FRAME;
-		info.notCheckable = true;
-		info.func = function ()
-			if not CommunitiesFrame or not CommunitiesFrame:IsShown() then
-				ToggleCommunitiesFrame();
-			end
-
-			CommunitiesFrame:SelectStream(clubId, streamId);
-			CommunitiesFrame:SelectClub(clubId);
-		end;
-
-		UIDropDownMenu_AddButton(info);
-	end
-
-	info = UIDropDownMenu_CreateInfo();
-
-	info.text = MOVE_TO_NEW_WINDOW;
-	info.notCheckable = 1;
-	info.func = ChatChannelDropDown_PopOutChat;
-	info.arg1 = frame.chatType;
-	info.arg2 = frame.chatTarget;
-
-	if ( not FCF_CanOpenNewWindow() ) then
-		info.disabled = 1;
-	end
-
-	UIDropDownMenu_AddButton(info);
-end
-
-function ChatChannelDropDown_PopOutChat(self, chatType, chatTarget)
-	local sourceChatFrame = ChatChannelDropDown.chatFrame;
-
+function ChatChannelDropdown_PopOutChat(sourceChatFrame, chatType, chatTarget)
 	local windowName;
 	if ( chatType == "CHANNEL" ) then
 		windowName = Chat_GetChannelShortcutName(chatTarget);
@@ -5769,10 +5760,6 @@ function Chat_GetChannelShortcutName(index)
 	end
 
 	return C_ChatInfo.GetChannelShortcut(index);
-end
-
-function ChatChannelDropDown_PopInChat(self, chatType, chatTarget)
-	--PopOutChat_PopInChat(chatType, chatTarget);
 end
 
 function ChatClassColorOverrideShown()

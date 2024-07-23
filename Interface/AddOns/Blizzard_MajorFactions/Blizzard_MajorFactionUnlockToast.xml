@@ -1,7 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
-	<Script file="Blizzard_MajorFactionUnlockToast.lua"/>
-	
 	<Frame name="MajorFactionUnlockToast" parent="UIParent" hidden="true" mixin="MajorFactionUnlockToastMixin" inherits="MajorFactionCelebrationBannerTemplate">
 		<Size x="128" y="128"/>
 		<Anchors>
@@ -28,18 +26,18 @@
 					</Shadow>
 				</FontString>
 			</Layer>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="ToastBG" atlas="majorfaction-celebration-toastbg" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOP" y="-77"/>
-						<Anchor point="BOTTOM" relativeKey="$parent.FactionName" y="-14"/>
-					</Anchors>
-				</Texture>
-			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="GlowLineBottom">
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.ToastBG" relativePoint="BOTTOM"/>
+						<Anchor point="TOP" relativeKey="$parent.FactionName" relativePoint="BOTTOM" y="-15"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="ToastBG" atlas="majorfaction-celebration-toastBG">
+					<Size x="440"/>
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.GlowLineBottom" y="8"/>
 					</Anchors>
 				</Texture>
 			</Layer>

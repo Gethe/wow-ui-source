@@ -1,6 +1,25 @@
 CHARACTERFRAME_SUBFRAMES = { "PaperDollFrame", "ReputationFrame", "TokenFrame" };
 CHARACTERFRAME_EXPANDED_WIDTH = 540;
 
+
+local characterFrameDisplayInfo = {
+	["Default"] = {
+		title = UnitPVPName("player"),
+		titleColor = HIGHLIGHT_FONT_COLOR,
+		width = PANEL_DEFAULT_WIDTH, -- Dynamically updated by CharacterFrameMixin:Expand()/CharacterFrameMixin:Collapse();
+	},
+	["ReputationFrame"] = {
+		title = REPUTATION,
+		titleColor = NORMAL_FONT_COLOR,
+		width = 400,
+	},
+	["TokenFrame"] = {
+		title = CURRENCY,
+		titleColor = NORMAL_FONT_COLOR,
+		width = 400,
+	},
+};
+
 local NUM_CHARACTERFRAME_TABS = 3;
 function ToggleCharacter (tab, onlyShow)
 	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CharacterPanel) then
@@ -18,18 +37,34 @@ function ToggleCharacter (tab, onlyShow)
 					end
 				else
 					PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
-					CharacterFrame_ShowSubFrame(tab);
+					CharacterFrame:ShowSubFrame(tab);
 				end
 			else
-				CharacterFrame_ShowSubFrame(tab);
+				CharacterFrame:ShowSubFrame(tab);
 				ShowUIPanel(CharacterFrame);
 			end
-			CharacterFrame_UpdateTabBounds(CharacterFrame);
+			CharacterFrame:RefreshDisplay();
 		end
 	end
 end
 
-function CharacterFrame_ToggleTokenFrame()
+function ShowCharacterFrameIfMatchesContext()
+	if CharacterFrame:IsShown() then
+		return;
+	end
+
+	local count = 0;
+	for i = 1, NUM_INVSLOTS do
+		if ItemButtonUtil.GetItemContextMatchResultForPaperDollFrame(i) == ItemButtonUtil.ItemContextMatchResult.Match then
+			ToggleCharacter("PaperDollFrame");
+			return;
+		end
+	end
+end
+
+CharacterFrameMixin = {};
+
+function CharacterFrameMixin:ToggleTokenFrame()
 	if C_CurrencyInfo.GetCurrencyListSize() <= 0 then
 		return;
 	end
@@ -37,7 +72,7 @@ function CharacterFrame_ToggleTokenFrame()
 	ToggleCharacter("TokenFrame");
 end
 
-function CharacterFrame_ShowSubFrame (frameName)
+function CharacterFrameMixin:ShowSubFrame(frameName)
 	for index, value in pairs(CHARACTERFRAME_SUBFRAMES) do
 		if ( value ~= frameName ) then
 			_G[value]:Hide();
@@ -46,31 +81,22 @@ function CharacterFrame_ShowSubFrame (frameName)
 	for index, value in pairs(CHARACTERFRAME_SUBFRAMES) do
 		if ( value == frameName ) then
 			_G[value]:Show()
+			self.activeSubframe = frameName;
 		end
 	end
 end
 
-function CharacterFrameTab_OnClick (self, button)
-	local name = self:GetName();
+local CharacterFrameEvents = {
+	"UNIT_NAME_UPDATE",
+	"PLAYER_PVP_RANK_CHANGED",
+	"PLAYER_TALENT_UPDATE",
+	"ACTIVE_TALENT_GROUP_CHANGED",
+	"UNIT_PORTRAIT_UPDATE",
+	"PORTRAITS_UPDATED"
+}
 
-	if ( name == "CharacterFrameTab1" ) then
-		ToggleCharacter("PaperDollFrame");
-	elseif ( name == "CharacterFrameTab2" ) then
-		ToggleCharacter("ReputationFrame");
-	elseif ( name == "CharacterFrameTab3" ) then
-		CharacterFrame_ToggleTokenFrame();
-	end
-	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
-end
-
-function CharacterFrame_OnLoad (self)
-	self:RegisterEvent("UNIT_NAME_UPDATE");
-	self:RegisterEvent("PLAYER_PVP_RANK_CHANGED");
-	self:RegisterEvent("PLAYER_TALENT_UPDATE");
-	self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED");
+function CharacterFrameMixin:OnLoad()
 	ButtonFrameTemplate_HideButtonBar(self);
-	self.Inset:SetPoint("BOTTOMRIGHT", self, "BOTTOMLEFT", PANEL_DEFAULT_WIDTH + PANEL_INSET_RIGHT_OFFSET, PANEL_INSET_BOTTOM_OFFSET);
-	self:SetTitleColor(HIGHLIGHT_FONT_COLOR);
 	self:SetTitleMaxLinesAndHeight(1, 13);
 
 	-- Tab Handling code
@@ -78,20 +104,63 @@ function CharacterFrame_OnLoad (self)
 	PanelTemplates_SetTab(self, 1);
 end
 
-function CharacterFrame_UpdatePortrait()
-	local masteryIndex = GetSpecialization();
-	local icon = masteryIndex ~= nil and select(4, GetSpecializationInfo(masteryIndex));
-	if (icon == nil) then
-		local _, class = UnitClass("player");
-		CharacterFrame:SetPortraitTextureRaw("Interface\\TargetingFrame\\UI-Classes-Circles");
-		CharacterFrame:SetPortraitTexCoord(unpack(CLASS_ICON_TCOORDS[class]));
+function CharacterFrameMixin:SetPortraitToSpecIcon()
+	local specialization = GetSpecialization();
+	local icon = specialization ~= nil and select(4, GetSpecializationInfo(specialization));
+	if not icon then
+		local name, fileName, classID = UnitClass("player");
+		self:SetPortraitToClassIcon(fileName);
+		return;
+	end
+
+	self:SetPortraitTexCoord(0, 1, 0, 1);
+	self:SetPortraitToAsset(icon);
+end
+
+function CharacterFrameMixin:UpdatePortrait()
+	local useSpecIcon = self.activeSubframe == "PaperDollFrame";
+	if useSpecIcon then
+		self:SetPortraitToSpecIcon();
+		return;
+	end
+
+	SetPortraitTexture(self:GetPortrait(), "player");
+end
+
+function CharacterFrameMixin:UpdateTitle()
+	local displayInfo = characterFrameDisplayInfo[self.activeSubframe] or characterFrameDisplayInfo["Default"];
+	self:SetTitleColor(displayInfo.titleColor);
+	self:SetTitle(displayInfo.title);
+end
+
+function CharacterFrameMixin:UpdateSize()
+	local oldWidth = self:GetWidth();
+
+	local displayInfo = characterFrameDisplayInfo[self.activeSubframe] or characterFrameDisplayInfo["Default"];
+	self:SetWidth(displayInfo.width);
+
+	local useStaticInsetSize = self.activeSubframe == "PaperDollFrame";
+	if useStaticInsetSize then
+		-- PaperDollFrame always wants the same sized inset regardless of the CharacterFrame width...
+		self.Inset:SetPoint("BOTTOMRIGHT", self, "BOTTOMLEFT", PANEL_DEFAULT_WIDTH + PANEL_INSET_RIGHT_OFFSET, PANEL_INSET_BOTTOM_OFFSET);
 	else
-		CharacterFrame:SetPortraitTexCoord(0, 1, 0, 1);
-		CharacterFrame:SetPortraitToAsset(icon);
+		-- ...while other subframes want their inset to update based on the CharacterFrame width
+		self.Inset:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -6, PANEL_INSET_BOTTOM_OFFSET);
+	end
+
+	if oldWidth ~= displayInfo.width then
+		UpdateUIPanelPositions(self);
 	end
 end
 
-function CharacterFrame_OnEvent (self, event, ...)
+function CharacterFrameMixin:RefreshDisplay()
+	CharacterFrame:UpdateSize();
+	CharacterFrame:UpdateTabBounds();
+	CharacterFrame:UpdatePortrait();
+	CharacterFrame:UpdateTitle();
+end
+
+function CharacterFrameMixin:OnEvent (event, ...)
 	if ( not self:IsShown() ) then
 		return;
 	end
@@ -99,13 +168,20 @@ function CharacterFrame_OnEvent (self, event, ...)
 	local arg1 = ...;
 	if ( event == "UNIT_NAME_UPDATE" ) then
 		if ( arg1 == "player" ) then
-			self:SetTitle(UnitPVPName("player"));
+			characterFrameDisplayInfo["Default"].title = UnitPVPName("player");
+			self:UpdateTitle();
 		end
 		return;
 	elseif ( event == "PLAYER_PVP_RANK_CHANGED" ) then
-		self:SetTitle(UnitPVPName("player"));
-	elseif ( event == "PLAYER_TALENT_UPDATE" or event == "ACTIVE_TALENT_GROUP_CHANGED" ) then
-		CharacterFrame_UpdatePortrait();
+		characterFrameDisplayInfo["Default"].title = UnitPVPName("player");
+		self:UpdateTitle();
+	elseif ( event == "UNIT_PORTRAIT_UPDATE" ) then
+		local unit = ...;
+		if ( unit == "player" ) then
+			self:UpdatePortrait();
+		end
+	elseif ( event == "PORTRAITS_UPDATED" or event == "PLAYER_TALENT_UPDATE" or event == "ACTIVE_TALENT_GROUP_CHANGED" ) then
+		self:UpdatePortrait();
 	end
 end
 
@@ -114,10 +190,10 @@ local function ShouldShowExaltedPlusHelpTip()
 		return false;
 	end
 
-	local numFactions = GetNumFactions();
+	local numFactions = C_Reputation.GetNumFactions();
 	for i=1, numFactions do
-		local name, description, standingID, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed, hasRep, isWatched, isChild, factionID, hasBonusRepGain = GetFactionInfo(i);
-		if (factionID and C_Reputation.IsFactionParagon(factionID) ) then
+		local factionData = C_Reputation.GetFactionDataByIndex(i);
+		if (factionData and C_Reputation.IsFactionParagon(factionData.factionID) ) then
 			return true;
 		end
 	end
@@ -128,7 +204,7 @@ local function CompareFrameSize(frame1, frame2)
 	return frame1:GetWidth() > frame2:GetWidth();
 end
 
-function CharacterFrame_UpdateTabBounds(self)
+function CharacterFrameMixin:UpdateTabBounds()
 	if CharacterFrameTab3:IsShown() then
 		local diff = (CharacterFrameTab3:GetRight() or 0) - (self:GetRight() or 0);
 
@@ -148,9 +224,11 @@ function CharacterFrame_UpdateTabBounds(self)
 	end
 end
 
-function CharacterFrame_OnShow (self)
+function CharacterFrameMixin:OnShow()
+	FrameUtil.RegisterFrameForEvents(self, CharacterFrameEvents);
+	characterFrameDisplayInfo["Default"].title = UnitPVPName("player");
+
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
-	CharacterFrame_UpdatePortrait();
 	UpdateMicroButtons();
 
 	local playerFrameHealthBar = PlayerFrame_GetHealthBar();
@@ -188,7 +266,9 @@ function CharacterFrame_OnShow (self)
 	EventRegistry:TriggerEvent("CharacterFrame.Show");
 end
 
-function CharacterFrame_OnHide (self)
+function CharacterFrameMixin:OnHide()
+	FrameUtil.UnregisterFrameForEvents(self, CharacterFrameEvents);
+
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 	UpdateMicroButtons();
 
@@ -214,28 +294,26 @@ function CharacterFrame_OnHide (self)
 	EventRegistry:TriggerEvent("CharacterFrame.Hide");
 end
 
-function CharacterFrame_Collapse()
-	CharacterFrame:SetWidth(PANEL_DEFAULT_WIDTH);
-	CharacterFrame.Expanded = false;
+function CharacterFrameMixin:Collapse()
+	self.Expanded = false;
+	characterFrameDisplayInfo["Default"].width = PANEL_DEFAULT_WIDTH;
 	for i = 1, #PAPERDOLL_SIDEBARS do
 		GetPaperDollSideBarFrame(i):Hide();
 	end
-	CharacterFrame.InsetRight:Hide();
-	UpdateUIPanelPositions(CharacterFrame);
+	self.InsetRight:Hide();
 	PaperDollFrame_SetLevel();
 end
 
-function CharacterFrame_Expand()
-	CharacterFrame:SetWidth(CHARACTERFRAME_EXPANDED_WIDTH);
-	CharacterFrame.Expanded = true;
+function CharacterFrameMixin:Expand()
+	self.Expanded = true;
+	characterFrameDisplayInfo["Default"].width = CHARACTERFRAME_EXPANDED_WIDTH;
 	if (PaperDollFrame:IsShown() and PaperDollFrame.currentSideBar) then
 		PaperDollFrame.currentSideBar:Show();
 	else
 		CharacterStatsPane:Show();
 	end
 	PaperDollFrame_UpdateSidebarTabs();
-	CharacterFrame.InsetRight:Show();
-	UpdateUIPanelPositions(CharacterFrame);
+	self.InsetRight:Show();
 	PaperDollFrame_SetLevel();
 end
 
@@ -326,5 +404,61 @@ CharacterFrameTabButtonMixin = {};
 
 function CharacterFrameTabButtonMixin:OnClick(button)
 	PanelTemplates_Tab_OnClick(self, CharacterFrame);
-	CharacterFrameTab_OnClick(self, button);
+	
+	local name = self:GetName();
+	if ( name == "CharacterFrameTab1" ) then
+		ToggleCharacter("PaperDollFrame");
+	elseif ( name == "CharacterFrameTab2" ) then
+		ToggleCharacter("ReputationFrame");
+	elseif ( name == "CharacterFrameTab3" ) then
+		CharacterFrame:ToggleTokenFrame();
+	end
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
+end
+
+GearEnchantAnimationMixin = {}
+
+local GearEnchantAnimationEvents = {
+	"ENCHANT_SPELL_COMPLETED",
+};
+
+function GearEnchantAnimationMixin:OnLoad()
+	FrameUtil.RegisterFrameForEvents(self, GearEnchantAnimationEvents);
+
+	local function GearEnchantFXAnimOnFinished()
+		self.FrameFX:Hide();
+	end
+	self.FrameFX.FrameFXAnimGroup:SetScript("OnFinished", GearEnchantFXAnimOnFinished);
+
+	local function GearEnchantTopFrameAnimOnFinished()
+		self.TopFrame:Hide();
+	end
+	self.TopFrame.TopFrameAnimGroup:SetScript("OnFinished", GearEnchantTopFrameAnimOnFinished)
+end
+
+function GearEnchantAnimationMixin:OnEvent(event, ...)
+	if event == "ENCHANT_SPELL_COMPLETED" then
+		local successful, enchantedItem = ...;
+
+		if successful and enchantedItem and enchantedItem:IsValid() and enchantedItem:IsEquipmentSlot() then
+			self:PlayAndShow();
+		end
+	end
+end
+
+function GearEnchantAnimationMixin:PlayAndShow()
+	self:Show();
+
+	self.FrameFX:Show();
+	self.FrameFX.FrameFXAnimGroup:Play();
+
+	self.TopFrame:Show();
+	self.TopFrame.TopFrameAnimGroup:Play();
+end
+
+function GearEnchantAnimationMixin:StopAndHide()
+	self.FrameFX.FrameFXAnimGroup:Stop();
+	self.TopFrame.TopFrameAnimGroup:Stop();
+
+	self:Hide();
 end

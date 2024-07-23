@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_ProfessionsRankBar.lua"/>
-
+	
 	<Frame name="ProfessionsRankBarTemplate" frameStrata="BACKGROUND" mixin="ProfessionsRankBarMixin" virtual="true">
 		<Size x="453" y="18"/>
 			<Layers>
@@ -61,6 +61,34 @@
 					</Layer>
 				</Layers>
 			</Frame>
+			<DropdownButton parentKey="ExpansionDropdownButton" mixin="ProfessionsRankBarDropdownMixin">
+				<KeyValues>
+					<KeyValue key="menuPoint" type="string" value="TOPRIGHT"/>
+					<KeyValue key="menuRelativePoint" type="string" value="BOTTOMRIGHT"/>
+				</KeyValues>
+				<Size x="19" y="19"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="-6" y="-3"/>
+				</Anchors>
+				<Layers>
+					<Layer>
+						<Texture parentKey="Texture">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="RIGHT" x="2" y="-3"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+					<OnMouseDown method="OnMouseDown"/>
+					<OnMouseUp method="OnMouseUp"/>
+					<OnEnable method="OnEnable"/>
+					<OnDisable method="OnDisable"/>
+				</Scripts>
+			</DropdownButton>
 		</Frames>
 		<Animations>
 			<AnimationGroup parentKey="BarAnimation" looping="NONE" setToFinalAlpha="true">

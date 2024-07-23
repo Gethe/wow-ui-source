@@ -101,37 +101,17 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="LootJournalClassDropDown" parentKey="ClassDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
-				<Scripts>
-					<OnLoad function="LootJournalClassDropDown_OnLoad"/>
-				</Scripts>
-			</Frame>
-
-			<DropDownToggleButton parentKey="ClassDropDownButton" inherits="EJButtonTemplate" mixin="LootJournalClassDropDownButtonMixin">
-				<Size x="114" y="26"/>
+			<DropdownButton parentKey="ClassDropdown" inherits="WowStyle1DropdownTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-50" y="-10"/>
+					<Anchor point="TOPRIGHT" x="-22" y="-10"/>
 				</Anchors>
-				<Scripts>
-					<OnMouseDown method="OnMouseDown"/>
-				</Scripts>
-			</DropDownToggleButton>
+			</DropdownButton>
 
-			<Frame name="LootJournalRuneforgePowerFilterDropDown" parentKey="RuneforgePowerFilterDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
-				<Scripts>
-					<OnLoad function="LootJournalRuneforgePowerFilterDropDown_OnLoad"/>
-				</Scripts>
-			</Frame>
-
-			<DropDownToggleButton parentKey="RuneforgePowerFilterDropDownButton" inherits="EJButtonTemplate" mixin="LootJournalRuneforgePowerFilterDropDownButtonMixin">
-				<Size x="114" y="26"/>
+			<DropdownButton parentKey="RuneforgePowerDropdown" inherits="WowStyle1DropdownTemplate">
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.ClassDropDownButton" relativePoint="LEFT" x="-40" y="0"/>
+					<Anchor point="RIGHT" relativeKey="$parent.ClassDropdown" relativePoint="LEFT" x="-10" y="0"/>
 				</Anchors>
-				<Scripts>
-					<OnMouseDown method="OnMouseDown"/>
-				</Scripts>
-			</DropDownToggleButton>
+			</DropdownButton>
 
 			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 				<Size x="747" y="333"/>

@@ -2,10 +2,5 @@
 ..\Blizzard_SharedXML\UI.xsd">
 	<Script file="Controls.lua"/>
 
-	<Frame name="AutoLootDropDownControlTemplate" inherits="SettingsDropDownControlTemplate" mixin="AutoLootDropDownControlMixin" virtual="true">
-		<KeyValues>
-			<KeyValue key="dropDownType" value="Frame" type="string"/>
-			<KeyValue key="dropDownTemplate" value="SettingsSelectionPopoutWithButtonsTemplate" type="string"/>
-		</KeyValues>
-	</Frame>
+	<Frame name="AutoLootDropdownControlTemplate" inherits="SettingsDropdownControlTemplate" mixin="AutoLootDropdownControlMixin" virtual="true"/>
 </Ui>

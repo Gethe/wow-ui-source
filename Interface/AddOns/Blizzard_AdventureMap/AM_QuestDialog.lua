@@ -6,7 +6,7 @@ QUEST_CHOICE_DIALOG_RESULT_DECLINED = 2;
 QUEST_CHOICE_DIALOG_RESULT_ABSTAIN = 3;
 
 function AdventureMapQuestChoiceDialogMixin:OnLoad()
-	self.rewardPool = CreateFramePool("FRAME", self, "AdventureMapQuestRewardTemplate", FramePool_HideAndClearAnchors);
+	self.rewardPool = CreateFramePool("FRAME", self, "AdventureMapQuestRewardTemplate");
 end
 
 function AdventureMapQuestChoiceDialogMixin:OnParentHide(parent)
@@ -106,10 +106,9 @@ function AdventureMapQuestChoiceDialogMixin:RefreshRewards()
 		self:AddReward(BreakUpLargeNumbers(xp), "Interface\\Icons\\XP_Icon", nil, 0, "NumberFontNormal");
 	end
 
-	for currencyIndex = 1, GetNumQuestLogRewardCurrencies(self.questID) do
-		local name, texture, count, currencyID = GetQuestLogRewardCurrencyInfo(currencyIndex, self.questID);
-		local rewardFrame = self:AddReward(name, texture, nil, count, "GameFontHighlightSmall");
-		local currencyColor = GetColorForCurrencyReward(currencyID, count);
+	for index, currencyReward in ipairs(C_QuestLog.GetQuestRewardCurrencies(self.questID)) do
+		local rewardFrame = self:AddReward(currencyReward.name, currencyReward.texture, nil, currencyReward.totalRewardAmount, "GameFontHighlightSmall");
+		local currencyColor = GetColorForCurrencyReward(currencyReward.currencyID, currencyReward.totalRewardAmount);
 		rewardFrame.Count:SetTextColor(currencyColor:GetRGB());
 	end
 

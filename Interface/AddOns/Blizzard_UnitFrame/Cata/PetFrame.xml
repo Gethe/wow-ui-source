@@ -1,5 +1,12 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="PetFrameBarSegmentTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="fillTexture" value="Interface\TargetingFrame\UI-StatusBar" type="string"/>
+		</KeyValues>
+	</Frame>
+	
 	<Button name="PetFrame" frameStrata="LOW" toplevel="true" inherits="SecureUnitButtonTemplate" parent="PlayerFrame">
 		<Size x="128" y="53"/>
 		<Anchors>
@@ -26,15 +33,6 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="PetFrameDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
-				<Size x="10" y="10"/>
-				<Anchors>
-					<Anchor point="TOP" x="-20" y="-20"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad function="PetFrameDropDown_OnLoad"/>
-				</Scripts>
-			</Frame>
 			<Frame setAllPoints="true">
 				<Frames>
 					<Frame setAllPoints="true">
@@ -56,9 +54,29 @@
 										<Anchor point="CENTER" relativePoint="TOPLEFT" x="82" y="-26"/>
 									</Anchors>
 								</FontString>
+								<FontString name="PetFrameHealthBarTextLeft" inherits="TextStatusBarText">
+									<Anchors>
+										<Anchor point="LEFT" x="45" y="3"/>
+									</Anchors>
+								</FontString>
+								<FontString name="PetFrameHealthBarTextRight" inherits="TextStatusBarText">
+									<Anchors>
+										<Anchor point="RIGHT" x="-8" y="3"/>
+									</Anchors>
+								</FontString>
 								<FontString name="PetFrameManaBarText" inherits="TextStatusBarText">
 									<Anchors>
 										<Anchor point="CENTER" relativePoint="TOPLEFT" x="82" y="-38"/>
+									</Anchors>
+								</FontString>
+								<FontString name="PetFrameManaBarTextLeft" inherits="TextStatusBarText">
+									<Anchors>
+										<Anchor point="LEFT" x="45" y="-8"/>
+									</Anchors>
+								</FontString>
+								<FontString name="PetFrameManaBarTextRight" inherits="TextStatusBarText">
+									<Anchors>
+										<Anchor point="RIGHT" x="-8" y="-8"/>
 									</Anchors>
 								</FontString>
 							</Layer>
@@ -85,6 +103,10 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" x="47" y="-22"/>
 				</Anchors>
+				<Frames>
+					<Frame name="PetFrameMyHealPredictionBar" inherits="PetFrameBarSegmentTemplate, MyHealPredictionBarTemplate"/>
+					<Frame name="PetFrameOtherHealPredictionBar" inherits="PetFrameBarSegmentTemplate, OtherHealPredictionBarTemplate"/>
+				</Frames>
 				<Scripts>
 					<OnLoad>
 						TextStatusBar_Initialize(self);
@@ -168,13 +190,13 @@
 			<OnShow>
 				UnitFrame_Update(self);
 				PetFrame_Update(self);
-				TotemFrame_Update(self);
-				-- this will happen in TotemFrame_Update
+				TotemFrame:Update();
+				-- this will happen in TotemFrame:Update
 				--PlayerFrame_AdjustAttachments();
 			</OnShow>
 			<OnHide>
-				TotemFrame_Update(self);
-				-- this will happen in TotemFrame_Update
+				TotemFrame:Update();
+				-- this will happen in TotemFrame:Update
 				--PlayerFrame_AdjustAttachments();
 			</OnHide>
 			<OnUpdate function="PetFrame_OnUpdate"/>

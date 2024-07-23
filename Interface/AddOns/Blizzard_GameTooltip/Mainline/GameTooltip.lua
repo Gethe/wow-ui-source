@@ -1,103 +1,3 @@
----------------
---NOTE - Please do not change this section
-local _, tbl, secureCapsuleGet = ...;
-if tbl then
-	tbl.SecureCapsuleGet = secureCapsuleGet or SecureCapsuleGet;
-	tbl.setfenv = tbl.SecureCapsuleGet("setfenv");
-	tbl.getfenv = tbl.SecureCapsuleGet("getfenv");
-	tbl.type = tbl.SecureCapsuleGet("type");
-	tbl.unpack = tbl.SecureCapsuleGet("unpack");
-	tbl.error = tbl.SecureCapsuleGet("error");
-	tbl.pcall = tbl.SecureCapsuleGet("pcall");
-	tbl.pairs = tbl.SecureCapsuleGet("pairs");
-	tbl.setmetatable = tbl.SecureCapsuleGet("setmetatable");
-	tbl.getmetatable = tbl.SecureCapsuleGet("getmetatable");
-	tbl.pcallwithenv = tbl.SecureCapsuleGet("pcallwithenv");
-
-	local function CleanFunction(f)
-		local f = function(...)
-			local function HandleCleanFunctionCallArgs(success, ...)
-				if success then
-					return ...;
-				else
-					tbl.error("Error in secure capsule function execution: "..(...));
-				end
-			end
-			return HandleCleanFunctionCallArgs(tbl.pcallwithenv(f, tbl, ...));
-		end
-		setfenv(f, tbl);
-		return f;
-	end
-
-	local function CleanTable(t, tableCopies)
-		if not tableCopies then
-			tableCopies = {};
-		end
-
-		local cleaned = {};
-		tableCopies[t] = cleaned;
-
-		for k, v in tbl.pairs(t) do
-			if tbl.type(v) == "table" then
-				if ( tableCopies[v] ) then
-					cleaned[k] = tableCopies[v];
-				else
-					cleaned[k] = CleanTable(v, tableCopies);
-				end
-			elseif tbl.type(v) == "function" then
-				cleaned[k] = CleanFunction(v);
-			else
-				cleaned[k] = v;
-			end
-		end
-		return cleaned;
-	end
-
-	local function Import(name)
-		local skipTableCopy = true;
-		local val = tbl.SecureCapsuleGet(name, skipTableCopy);
-		if tbl.type(val) == "function" then
-			tbl[name] = CleanFunction(val);
-		elseif tbl.type(val) == "table" then
-			tbl[name] = CleanTable(val);
-		else
-			tbl[name] = val;
-		end
-	end
-
-	Import("math");
-	Import("string");
-	Import("QUEST_REWARDS");
-	Import("NORMAL_FONT_COLOR");
-	Import("CONTRIBUTION_REWARD_TOOLTIP_TEXT");
-	Import("TOOLTIP_DEFAULT_BACKGROUND_COLOR");
-	Import("PVP_BOUNTY_REWARD_TITLE");
-	Import("ISLAND_QUEUE_REWARD_FOR_WINNING");
-	Import("UnitPlayerControlled");
-	Import("UnitCanAttack");
-	Import("UnitIsPVP");
-	Import("UnitReaction");
-	Import("HIGHLIGHT_FONT_COLOR");
-	Import("TOOLTIP_QUEST_REWARDS_STYLE_DEFAULT");
-	Import("TOOLTIP_UPDATE_TIME");
-	Import("PVP_BOUNTY_REWARD_TITLE");
-	Import("PVP_BOUNTY_REWARD_TITLE");
-	Import("PVP_BOUNTY_REWARD_TITLE");
-	Import("PVP_BOUNTY_REWARD_TITLE");
-
-	if tbl.getmetatable(tbl) == nil then
-		local secureEnvMetatable =
-		{
-			__metatable = false,
-			__environment = false,
-		}
-		tbl.setmetatable(tbl, secureEnvMetatable);
-	end
-	setfenv(1, tbl);
-end
-----------------
-
-local envTbl = tbl or _G;
 
 TooltipConstants = {
 	WrapText = true,
@@ -281,7 +181,7 @@ end
 function GameTooltip_AddQuestRewardsToTooltip(tooltip, questID, style)
 	style = style or TOOLTIP_QUEST_REWARDS_STYLE_DEFAULT;
 
-	if ( GetQuestLogRewardXP(questID) > 0 or GetNumQuestLogRewardCurrencies(questID) > 0 or GetNumQuestLogRewards(questID) > 0 or
+	if ( GetQuestLogRewardXP(questID) > 0 or C_QuestInfoSystem.HasQuestRewardCurrencies(questID) or GetNumQuestLogRewards(questID) > 0 or
 		GetQuestLogRewardMoney(questID) > 0 or GetQuestLogRewardArtifactXP(questID) > 0 or GetQuestLogRewardHonor(questID) > 0 or
 		C_QuestInfoSystem.HasQuestRewardSpells(questID)) then
 		if tooltip.ItemTooltip then
@@ -404,66 +304,6 @@ function GameTooltip_OnTooltipAddMoney(self, cost, maxcost)
 		SetTooltipMoney(self, cost, nil, string.format("%s%s:", indent, MINIMUM));
 		SetTooltipMoney(self, maxcost, nil, string.format("%s%s:", indent, MAXIMUM));
 	end
-end
-
-function SetTooltipMoney(frame, money, type, prefixText, suffixText)
-	GameTooltip_AddBlankLinesToTooltip(frame, 1);
-	local numLines = frame:NumLines();
-	if ( not frame.numMoneyFrames ) then
-		frame.numMoneyFrames = 0;
-	end
-	if ( not frame.shownMoneyFrames ) then
-		frame.shownMoneyFrames = 0;
-	end
-	local name = frame:GetName().."MoneyFrame"..frame.shownMoneyFrames+1;
-	local moneyFrame = envTbl[name];
-	if ( not moneyFrame ) then
-		frame.numMoneyFrames = frame.numMoneyFrames+1;
-		moneyFrame = CreateFrame("Frame", name, frame, "TooltipMoneyFrameTemplate");
-		name = moneyFrame:GetName();
-		MoneyFrame_SetType(moneyFrame, "STATIC");
-	end
-	moneyFrame.PrefixText:SetText(prefixText);
-	moneyFrame.SuffixText:SetText(suffixText);
-	if ( type ) then
-		MoneyFrame_SetType(moneyFrame, type);
-	end
-	--We still have this variable offset because many AddOns use this function. The money by itself will be unaligned if we do not use this.
-	local xOffset;
-	if ( prefixText ) then
-		xOffset = 4;
-	else
-		xOffset = 0;
-	end
-	moneyFrame:SetPoint("LEFT", frame:GetName().."TextLeft"..numLines, "LEFT", xOffset, 0);
-	moneyFrame:Show();
-	if ( not frame.shownMoneyFrames ) then
-		frame.shownMoneyFrames = 1;
-	else
-		frame.shownMoneyFrames = frame.shownMoneyFrames+1;
-	end
-	MoneyFrame_Update(moneyFrame:GetName(), money);
-	local moneyFrameWidth = moneyFrame:GetWidth();
-	if ( frame:GetMinimumWidth() < moneyFrameWidth ) then
-		frame:SetMinimumWidth(moneyFrameWidth);
-	end
-	frame.hasMoney = 1;
-end
-
-function GameTooltip_ClearMoney(self)
-	if ( not self.shownMoneyFrames ) then
-		return;
-	end
-
-	local moneyFrame;
-	for i=1, self.shownMoneyFrames do
-		moneyFrame = envTbl[self:GetName().."MoneyFrame"..i];
-		if(moneyFrame) then
-			moneyFrame:Hide();
-			MoneyFrame_SetType(moneyFrame, "STATIC");
-		end
-	end
-	self.shownMoneyFrames = nil;
 end
 
 GAME_TOOLTIP_BACKDROP_STYLE_DEFAULT_DARK = {
@@ -735,8 +575,16 @@ function GameTooltip_HideResetCursor()
 	ResetCursor();
 end
 
-function GameTooltip_AddQuest(self, questID)
-	local questID = self.questID or questID;
+local function AddFloorLocationLine(tooltip, floorLocation, aboveString, belowString)
+	if floorLocation == Enum.QuestLineFloorLocation.Below then
+		tooltip:AddLine(belowString, 0.5, 0.5, 0.5, true);
+	elseif floorLocation == Enum.QuestLineFloorLocation.Above then
+		tooltip:AddLine(aboveString, 0.5, 0.5, 0.5, true);
+	end
+end
+
+function GameTooltip_AddQuest(self, questIDArg)
+	local questID = self.questID or questIDArg;
 	if ( not HaveQuestData(questID) ) then
 		GameTooltip_SetTitle(GameTooltip, RETRIEVING_DATA, RED_FONT_COLOR);
 		GameTooltip_SetTooltipWaitingForData(GameTooltip, true);
@@ -746,49 +594,57 @@ function GameTooltip_AddQuest(self, questID)
 
 	local widgetSetAdded = false;
 	local widgetSetID = C_TaskQuest.GetQuestTooltipUIWidgetSet(questID);
+	local isThreat = C_QuestLog.IsThreatQuest(questID);
 
 	local title, factionID, capped = C_TaskQuest.GetQuestInfoByQuestID(questID);
-	if ( self.worldQuest or C_QuestLog.IsWorldQuest(questID)) then
+	title = title or self.questName;
+	if self.worldQuest or C_QuestLog.IsWorldQuest(questID) then
 		self.worldQuest = true;
 		local tagInfo = C_QuestLog.GetQuestTagInfo(self.questID);
 		local quality = tagInfo and tagInfo.quality or Enum.WorldQuestQuality.Common;
 		local color = WORLD_QUEST_QUALITY_COLORS[quality].color;
 		GameTooltip_SetTitle(GameTooltip, title, color);
+
+		if C_QuestLog.IsAccountQuest(questID) then
+			GameTooltip_AddColoredLine(GameTooltip, ACCOUNT_QUEST_LABEL, ACCOUNT_WIDE_FONT_COLOR);
+		end
+
 		QuestUtils_AddQuestTypeToTooltip(GameTooltip, questID, NORMAL_FONT_COLOR);
 
-		local factionName = factionID and GetFactionInfoByID(factionID);
-		if (factionName) then
+		local factionData = factionID and C_Reputation.GetFactionDataByID(factionID);
+		if factionData then
 			local reputationYieldsRewards = (not capped) or C_Reputation.IsFactionParagon(factionID);
-			if (reputationYieldsRewards) then
-				GameTooltip:AddLine(factionName);
+			if reputationYieldsRewards then
+				GameTooltip:AddLine(factionData.name);
 			else
-				GameTooltip:AddLine(factionName, GRAY_FONT_COLOR:GetRGB());
+				GameTooltip:AddLine(factionData.name, GRAY_FONT_COLOR:GetRGB());
 			end
 		end
 
 		GameTooltip_AddQuestTimeToTooltip(GameTooltip, questID);
-	elseif ( self.isThreat or C_QuestLog.IsThreatQuest(questID)) then
+	elseif isThreat then
 		GameTooltip_SetTitle(GameTooltip, title);
 		GameTooltip_AddQuestTimeToTooltip(GameTooltip, questID);
 	else
 		GameTooltip_SetTitle(GameTooltip, title, NORMAL_FONT_COLOR);
 	end
 
-	if (self.isCombatAllyQuest or C_QuestLog.GetQuestType(questID) == Enum.QuestTag.CombatAlly) then
+	if self.isCombatAllyQuest or (C_QuestLog.GetQuestType(questID) == Enum.QuestTag.CombatAlly) then
 		GameTooltip_AddColoredLine(GameTooltip, AVAILABLE_FOLLOWER_QUEST, HIGHLIGHT_FONT_COLOR, true);
 		GameTooltip_AddColoredLine(GameTooltip, GRANTS_FOLLOWER_XP, GREEN_FONT_COLOR, true);
-	elseif (self.isQuestStart) then
+	elseif self.isQuestStart then
 		GameTooltip_AddColoredLine(GameTooltip, AVAILABLE_QUEST, HIGHLIGHT_FONT_COLOR, true);
+		AddFloorLocationLine(GameTooltip, self.floorLocation, QUESTLINE_LOCATED_ABOVE, QUESTLINE_LOCATED_BELOW);
 	else
 		local questDescription = "";
 		local questCompleted = C_QuestLog.IsComplete(questID);
 
-		if (questCompleted and self.shouldShowObjectivesAsStatusBar) then
+		if questCompleted and self.shouldShowObjectivesAsStatusBar then
 			questDescription = QUEST_WATCH_QUEST_READY;
 			GameTooltip_AddColoredLine(GameTooltip, QUEST_DASH .. questDescription, HIGHLIGHT_FONT_COLOR);
-		elseif (not questCompleted and self.shouldShowObjectivesAsStatusBar) then
+		elseif not questCompleted and self.shouldShowObjectivesAsStatusBar then
 			local questLogIndex = C_QuestLog.GetLogIndexForQuestID(questID);
-			if (questLogIndex) then
+			if questLogIndex then
 				questDescription = select(2, GetQuestLogQuestText(questLogIndex));
 				GameTooltip_AddColoredLine(GameTooltip, QUEST_DASH .. questDescription, HIGHLIGHT_FONT_COLOR);
 			end
@@ -796,34 +652,34 @@ function GameTooltip_AddQuest(self, questID)
 		local numObjectives = self.numbObjectives or C_QuestLog.GetNumQuestObjectives(questID);
 		for objectiveIndex = 1, numObjectives do
 			local objectiveText, objectiveType, finished, numFulfilled, numRequired = GetQuestObjectiveInfo(questID, objectiveIndex, false);
-			local showObjective = not (finished and self.isThreat);
+			local showObjective = not (finished and isThreat);
 			if showObjective then
-				if(self.shouldShowObjectivesAsStatusBar) then
+				if self.shouldShowObjectivesAsStatusBar then
 					local percent = math.floor((numFulfilled/numRequired) * 100);
 					GameTooltip_ShowProgressBar(GameTooltip, 0, numRequired, numFulfilled, PERCENTAGE_STRING:format(percent));
-				elseif ( objectiveText and #objectiveText > 0 ) then
+				elseif objectiveText and (#objectiveText > 0) then
 					local color = finished and GRAY_FONT_COLOR or HIGHLIGHT_FONT_COLOR;
 					GameTooltip:AddLine(QUEST_DASH .. objectiveText, color.r, color.g, color.b, true);
 				end
 			end
 		end
 		local objectiveText, objectiveType, finished, numFulfilled, numRequired = GetQuestObjectiveInfo(questID, 1, false);
-		if (objectiveType == "progressbar") then
+		if objectiveType == "progressbar" then
 			local percent = C_TaskQuest.GetQuestProgressBarInfo(questID);
-			local showObjective = not (finished and self.isThreat);
-			if ( percent  and showObjective ) then
+			local showObjective = not (finished and isThreat);
+			if percent  and showObjective then
 				GameTooltip_ShowProgressBar(GameTooltip, 0, 100, percent, PERCENTAGE_STRING:format(percent));
 			end
 		end
 
-		if (widgetSetID) then
+		if widgetSetID then
 			widgetSetAdded = true;
 			GameTooltip_AddWidgetSet(GameTooltip, widgetSetID);
 		end
 
 		GameTooltip_AddQuestRewardsToTooltip(GameTooltip, questID, self.questRewardTooltipStyle or TOOLTIP_QUEST_REWARDS_STYLE_DEFAULT);
 
-		if ( self.worldQuest and C_TooltipInfo.GM ) then
+		if self.worldQuest and C_TooltipInfo.GM then
 			local tooltipData = C_TooltipInfo.GM.GetDebugWorldQuestInfo(questID);
 			if tooltipData then
 				local tooltipInfo = { tooltipData = tooltipData, append = true };
@@ -834,7 +690,7 @@ function GameTooltip_AddQuest(self, questID)
 	end
 
 
-	if (not widgetSetAdded and widgetSetID) then
+	if not widgetSetAdded and widgetSetID then
 		GameTooltip_AddWidgetSet(GameTooltip, widgetSetID);
 	end
 

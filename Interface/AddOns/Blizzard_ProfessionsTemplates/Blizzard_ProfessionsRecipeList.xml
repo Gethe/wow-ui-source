@@ -31,24 +31,19 @@
 				</Anchors>
 			</Frame>
 
-			<DropDownToggleButton parentKey="FilterButton" inherits="UIResettableDropdownButtonTemplate" text="FILTER">
-				<Size x="90" y="20"/>
+			<DropdownButton parentKey="FilterDropdown" inherits="WowStyle1FilterDropdownTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-8" y="-8"/>
+					<Anchor point="TOPRIGHT" x="-8" y="-9"/>
 				</Anchors>
-			</DropDownToggleButton>
-
+			</DropdownButton>
+			
 			<EditBox parentKey="SearchBox" autoFocus="false" inherits="SearchBoxTemplate">
 				<Size y="20"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.FilterButton" relativePoint="LEFT" x="-4" y="0"/>
+					<Anchor point="RIGHT" relativeKey="$parent.FilterDropdown" relativePoint="LEFT" x="-4" y="0"/>
 					<Anchor point="TOPLEFT" x="13" y="-8"/>
 				</Anchors>
 			</EditBox>
-			
-			<Frame parentKey="FilterDropDown" inherits="UIDropDownMenuTemplate"/>
-
-			<Frame parentKey="ContextMenu" inherits="UIDropDownMenuTemplate" enableMouse="true"/>
 
 			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 				<Anchors>

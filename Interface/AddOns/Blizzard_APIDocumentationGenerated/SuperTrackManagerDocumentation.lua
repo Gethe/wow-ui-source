@@ -7,7 +7,15 @@ local SuperTrackManager =
 	Functions =
 	{
 		{
+			Name = "ClearAllSuperTracked",
+			Type = "Function",
+		},
+		{
 			Name = "ClearSuperTrackedContent",
+			Type = "Function",
+		},
+		{
+			Name = "ClearSuperTrackedMapPin",
 			Type = "Function",
 		},
 		{
@@ -30,12 +38,31 @@ local SuperTrackManager =
 			},
 		},
 		{
+			Name = "GetSuperTrackedMapPin",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "type", Type = "SuperTrackingMapPinType", Nilable = false },
+				{ Name = "typeID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSuperTrackedQuestID",
 			Type = "Function",
 
 			Returns =
 			{
 				{ Name = "questID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetSuperTrackedVignette",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "vignetteGUID", Type = "WOWGUID", Nilable = true },
 			},
 		},
 		{
@@ -58,6 +85,15 @@ local SuperTrackManager =
 		},
 		{
 			Name = "IsSuperTrackingCorpse",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isSuperTracking", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSuperTrackingMapPin",
 			Type = "Function",
 
 			Returns =
@@ -94,6 +130,16 @@ local SuperTrackManager =
 			},
 		},
 		{
+			Name = "SetSuperTrackedMapPin",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "type", Type = "SuperTrackingMapPinType", Nilable = false },
+				{ Name = "typeID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "SetSuperTrackedQuestID",
 			Type = "Function",
 
@@ -109,6 +155,15 @@ local SuperTrackManager =
 			Arguments =
 			{
 				{ Name = "superTracked", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetSuperTrackedVignette",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "vignetteGUID", Type = "WOWGUID", Nilable = false },
 			},
 		},
 	},

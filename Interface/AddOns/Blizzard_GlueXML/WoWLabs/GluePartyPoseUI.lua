@@ -149,7 +149,11 @@ function PartyMemberFrameTemplateMixin:OnClick(button)
 	end 
 
 	if button == "RightButton" then
-		self:ToggleDropDown(self.memberName, self.memberGUID);
+		local contextData = {
+			guid = self.memberGUID,
+			name = self.memberName,
+		};
+		UnitPopup_OpenMenu("GLUE_PARTY_MEMBER", contextData);
 	end
 end 
 
@@ -202,17 +206,3 @@ end
 function PartyMemberFrameTemplateMixin:OnLoad()
 	self:RegisterForClicks("LeftButtonDown", "RightButtonUp");
 end 
-
-function PartyMemberFrameTemplateMixin:ToggleDropDown(name, guid)
-	GluePartyFrameMemberDropdown.name = name;
-	GluePartyFrameMemberDropdown.guid = guid;
-	UIDropDownMenu_SetInitializeFunction(GluePartyFrameMemberDropdown, self.InitializeDropDown);
-	UIDropDownMenu_SetDisplayMode(GluePartyFrameMemberDropdown, "MENU");
-	ToggleDropDownMenu(1, nil, GluePartyFrameMemberDropdown, "cursor");
-end
-
-function PartyMemberFrameTemplateMixin:InitializeDropDown() 
-	UnitPopup_ShowMenu(UIDROPDOWNMENU_OPEN_MENU, "GLUE_PARTY_MEMBER", nil, GluePartyFrameMemberDropdown.name, { guid = GluePartyFrameMemberDropdown.guid });
-end
-
-

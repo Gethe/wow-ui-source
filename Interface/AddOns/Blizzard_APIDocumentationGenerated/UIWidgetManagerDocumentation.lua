@@ -659,6 +659,18 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "SpellDisplayTint",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "None", Type = "SpellDisplayTint", EnumValue = 0 },
+				{ Name = "Red", Type = "SpellDisplayTint", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "StatusBarColorTintValue",
 			Type = "Enumeration",
 			NumValues = 9,
@@ -1711,6 +1723,7 @@ local UIWidgetManager =
 				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
 				{ Name = "entries", Type = "table", InnerType = "TextureAndTextEntryInfo", Nilable = false },
 				{ Name = "textSizeType", Type = "UIWidgetTextureAndTextSizeType", Nilable = false },
+				{ Name = "groupAlignment", Type = "UIWidgetHorizontalDirection", Nilable = false },
 				{ Name = "fixedWidth", Type = "number", Nilable = true },
 				{ Name = "tooltipLoc", Type = "UIWidgetTooltipLocation", Nilable = false },
 				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
@@ -1888,7 +1901,7 @@ local UIWidgetManager =
 				{ Name = "textFontType", Type = "UIWidgetFontType", Nilable = false },
 				{ Name = "textSizeType", Type = "UIWidgetTextSizeType", Nilable = false },
 				{ Name = "hAlignType", Type = "WidgetTextHorizontalAlignmentType", Nilable = false },
-				{ Name = "isLootObject", Type = "bool", Nilable = false },
+				{ Name = "tint", Type = "SpellDisplayTint", Nilable = false },
 			},
 		},
 		{

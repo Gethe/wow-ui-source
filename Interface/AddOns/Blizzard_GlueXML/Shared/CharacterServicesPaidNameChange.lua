@@ -3,23 +3,7 @@ function toCharacterNameCasing(name)
 	return C_CharacterServices.CapitalizeCharName(name);
 end
 
-function DoesClientThinkTheCharacterIsEligibleForPNC(characterID)
-	local level, _, _, _, _, _, _, _, playerguid, _, _, _, _, _, _, _, _, _, _, _, _, _, faction, _, mailSenders, _, _, _ = select(7, GetCharacterInfo(characterID));
-	local sameFaction = CharacterHasAlternativeRaceOptions(characterID);
-	local errors = {};
-
-	CheckAddVASErrorCode(errors, Enum.VasError.UnderMinLevelReq, level >= 10);
-	if IsCharacterNPERestricted then
-		CheckAddVASErrorCode(errors, Enum.VasError.IsNpeRestricted, not IsCharacterNPERestricted(playerguid));
-	end
-	CheckAddVASErrorCode(errors, Enum.VasError.IneligibleMapID, not IsCharacterInTutorialMap(playerguid));
-	CheckAddVASErrorString(errors, BLIZZARD_STORE_VAS_ERROR_CHARACTER_INELIGIBLE_FOR_THIS_SERVICE, not IsCharacterVASRestricted(playerguid, Enum.ValueAddedServiceType.PaidNameChange));
-
-	local canTransfer = #errors == 0;
-	return canTransfer, errors, playerguid, false;
-end
-
-local function RequestAssignPNCForResults(results, isValidationOnly)
+function RequestAssignPNCForResults(results, isValidationOnly)
 	return C_CharacterServices.AssignNameChangeDistribution(
 		results.selectedCharacterGUID,
 		results.name,
@@ -30,7 +14,7 @@ end
 
 -- Flow functions
 -- PNCCharacterSelectBlock
-local PNCCharacterSelectBlock = CreateFromMixins(VASCharacterSelectBlockBase);
+PNCCharacterSelectBlock = CreateFromMixins(VASCharacterSelectBlockBase);
 do
 	PNCCharacterSelectBlock.FrameName = "PNCCharacterSelect";
 	PNCCharacterSelectBlock.ActiveLabel = SELECT_CHARACTER_ACTIVE_LABEL;
@@ -52,12 +36,9 @@ function PNCCharacterSelectBlock:GetServiceInfoByCharacterID(characterID)
 end
 
 -- PNCNameSelect
-
-local PNCNameSelectBlock = {
+PNCNameSelectBlock = {
 	FrameName = "PNCNameSelect",
 	Back = true,
-	Next = false,
-	Finish = true,
 	ActiveLabel = PNC_FLOW_SLECT_NAME_ACTIVE,
 	ResultsLabel = PNC_FLOW_SLECT_NAME_RESULTS,
 };
@@ -72,7 +53,7 @@ function PNCNameSelectBlock:Initialize(results, wasFromRewind)
 	end
 
 	self.frame.ControlsFrame.NewNameEditbox:Initialize(results, wasFromRewind);
-	
+
 	self:CheckUpdate();
 end
 
@@ -85,11 +66,6 @@ function PNCNameSelectBlock:GetResult()
 	return {
 		name = formatedName
 	}
-end
-
-function PNCNameSelectBlock:FormatResult()
-	local result = self:GetResult();
-	return result.name
 end
 
 function PNCNameSelectBlock:IsFinished(wasFromRewind)
@@ -133,32 +109,8 @@ function NewNameEditboxMixin:SetOnTextChangedCallback(callback)
 	self.callback = callback;
 end
 
--- PNCChoiceVerificationBlock
-local PNCChoiceVerificationBlock = CreateFromMixins(VASChoiceVerificationBlockBase);
-
-function PNCChoiceVerificationBlock:RequestAssignVASForResults(results, isValidationOnly)
-	
-	local valid, reason = C_CharacterCreation.IsCharacterNameValid(results.name)
-	if not valid then 
-		self.errorSet = true; --This flag is so when we rewind due to invalid name, the error messages wont be cleared. 
-		CharSelectServicesFlowFrame:SetErrorMessage(_G[reason]);
-		CharacterServicesMaster.flow:RequestRewind();
-		return false, 0;
-	else
-		self.errorSet = false;
-	end
-	return RequestAssignPNCForResults(results, isValidationOnly);
-end
-
-function PNCChoiceVerificationBlock:OnRewind()
-	self.isAssignmentValid = false;
-	if not self.errorSet then
-		CharSelectServicesFlowFrame:ClearErrorMessage();
-	end
-	self:UnregisterHandlers();
-end
 -- PNCAssignConfirmationBlock
-local PNCAssignConfirmationBlock = CreateFromMixins(VASAssignConfirmationBlockBase)
+PNCAssignConfirmationBlock = CreateFromMixins(VASAssignConfirmationBlockBase)
 do
 	PNCAssignConfirmationBlock.dialogText = PNC_CUSTOMIZE_DIALOG_TEXT;
 	PNCAssignConfirmationBlock.dialogAcceptLabel = PNC_FLOW_FINISH_LABEL;
@@ -273,15 +225,6 @@ PaidNameChangeFlow = Mixin(
 	{
 		FinishLabel = PNC_FLOW_FINISH_LABEL,
 		AutoCloseAfterFinish = true,
-
-		Steps = {
-			PNCCharacterSelectBlock,
-			PNCNameSelectBlock,
-			PNCChoiceVerificationBlock,
-			CreateFromMixins(VASReviewChoicesBlockBase),
-			PNCAssignConfirmationBlock,
-			PNCEndStep
-		},
 	},
 	CharacterServicesFlowMixin
 );

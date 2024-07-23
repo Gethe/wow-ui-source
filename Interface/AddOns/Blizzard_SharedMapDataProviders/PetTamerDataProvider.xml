@@ -2,5 +2,5 @@
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="PetTamerDataProvider.lua"/>
 
-	<Frame name="PetTamerPinTemplate" inherits="BaseHighlightableMapPoiPinTemplate" mixin="PetTamerPinMixin" virtual="true" />
+	<Frame name="PetTamerPinTemplate" inherits="LegendHighlightableMapPoiPinTemplate, BaseSuperTrackableMapPoiPinTemplate" mixin="PetTamerPinMixin" virtual="true" />
 </Ui>

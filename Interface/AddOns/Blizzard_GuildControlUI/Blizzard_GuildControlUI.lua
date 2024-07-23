@@ -7,10 +7,50 @@ MAX_GUILDRANKS = 10;
 function GuildControlUI_OnLoad(self)
 	self:RegisterEvent("GUILD_RANKS_UPDATE");
 
-	UIDropDownMenu_SetWidth(self.dropdown, 120);
-	UIDropDownMenu_SetButtonWidth(self.dropdown, 54);
-	UIDropDownMenu_JustifyText(self.dropdown, "LEFT");
-	UIDropDownMenu_Initialize(self.dropdown, GuildControlUINavigationDropDown_Initialize);
+	GuildControlUI.selectedTab = 1;
+	GuildControlUI.numSkipUpdates = 0;
+
+	GuildControlUI.currFrame = GuildControlUI.orderFrame;
+	GuildControlUI.rankUpdate = GuildControlUI_RankOrder_Update;
+	GuildControlUIRankOrderFrame:Show();
+
+	local function IsSelected(tab)
+		return GuildControlUI.selectedTab == tab;
+	end
+
+	local function SetSelected(tab)
+		GuildControlUI.selectedTab = tab;
+		GuildControlUI.numSkipUpdates = 0;
+
+		StaticPopup_Hide("CONFIRM_RANK_AUTHENTICATOR_REMOVE");
+
+		GuildControlUIRankSettingsFrame:Hide();
+		GuildControlUIRankOrderFrame:Hide();
+		GuildControlUIRankBankFrame:Hide();
+		if tab == 1 then	
+			GuildControlUIRankOrderFrame:Show();		
+			GuildControlUI.currFrame = GuildControlUI.orderFrame;
+			GuildControlUI.rankUpdate = GuildControlUI_RankOrder_Update;
+		elseif tab == 2 then		
+			GuildControlUI.currFrame = GuildControlUI.rankPermFrame;
+			GuildControlUI.rankUpdate = GuildControlUI_RankPermissions_Update;
+			GuildControlUIRankSettingsFrame:Show();
+			GuildControlUI.rankUpdate(GuildControlUI.currFrame);
+		elseif tab == 3 then		
+			GuildControlUI.currFrame = GuildControlUI.bankTabFrame;
+			GuildControlUI.rankUpdate = GuildControlUI_BankTabPermissions_Update;
+			GuildControlUIRankBankFrame:Show();
+			GuildControlUI.rankUpdate(GuildControlUI.currFrame);
+		end
+	end
+
+	self.dropdown:SetWidth(159);
+	self.dropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_GUILD_PERMISSIONS");
+		rootDescription:CreateRadio(GUILDCONTROL_GUILDRANKS, IsSelected, SetSelected, 1);
+		rootDescription:CreateRadio(GUILDCONTROL_RANK_PERMISSIONS, IsSelected, SetSelected, 2);
+		rootDescription:CreateRadio(GUILDCONTROL_BANK_PERMISSIONS, IsSelected, SetSelected, 3);
+	end);
 	
 	local buttonText;
 	for i=1, NUM_RANK_FLAGS do
@@ -22,7 +62,7 @@ function GuildControlUI_OnLoad(self)
 	
 	self.currentRank = 2;
 	GuildControlSetRank(2);
-	GuildControlUINavigationDropDown_OnSelect(nil, 1, GUILDCONTROL_GUILDRANKS);
+
 	self:RegisterEvent("GUILDBANK_UPDATE_TABS");
 end
 
@@ -46,19 +86,6 @@ end
 function GuildControlUI_SetBankTabChange(self)
 
 	SetGuildBankTabPermissions(self:GetParent():GetParent().tabIndex, self:GetID(), self:GetChecked());
-
-	-- for index, value in pairs(PENDING_GUILDBANK_PERMISSIONS) do
-		-- for i=1, 3 do
-			-- if ( value[i] ) then
-				-- SetGuildBankTabPermissions(index, i, value[i]);
-			-- end
-		-- end
-		-- if ( value["withdraw"] ) then
-			-- SetGuildBankTabWithdraw(index, value["withdraw"]);
-		-- end
-	-- end
-	
-	--SetPendingGuildBankTabPermissions(GuildControlPopupFrameTabPermissions.selectedTab, self:GetID(), self:GetChecked());
 end
 
 function GuildControlUI_SetBankTabWithdrawChange(self)
@@ -77,7 +104,6 @@ function GuildControlUI_BankTabPermissions_Update(self)
 		self:GetParent().currentRank = 2;
 	end
 	GuildControlSetRank(currentRank);
-	UIDropDownMenu_SetText(self.dropdown, GuildControlGetRankName(currentRank));
 
 	local numTabs = GetNumGuildBankTabs();
 	local canBuyTab = false;
@@ -174,7 +200,7 @@ function GuildControlUI_RankPermissions_Update(self)
 		self:GetParent().currentRank = 2;
 	end
 	GuildControlSetRank(currentRank);
-	UIDropDownMenu_SetText(self.dropdown, GuildControlGetRankName(currentRank));
+
 	local flags = C_GuildInfo.GuildControlGetRankFlags(currentRank);
 	local checkbox;
 	local prefix = self:GetName().."Checkbox";
@@ -238,13 +264,46 @@ GUILD_OFFICER_PERMISSION_STRINGS = {
 	GUILD_OFFICER_PERMISSION_INVITE_APPLICANTS,
 };
 
+local function CreateRankMenu(dropdown, rootDescription)
+	rootDescription:SetTag("MENU_GUILD_RANK");
+
+	local function IsSelected(i)
+		return GuildControlUI.currentRank == i;
+	end
+
+	local function SetSelected(i)
+		local activeEditBox = GuildControlUI.activeEditBox;
+		if ( activeEditBox ) then
+			activeEditBox:ClearFocus();
+		end
+		StaticPopup_Hide("CONFIRM_RANK_AUTHENTICATOR_REMOVE");
+		GuildControlUI.numSkipUpdates = 0;
+		GuildControlUI.currentRank = i;
+		GuildControlSetRank(GuildControlUI.currentRank);
+		GuildControlUI.rankUpdate(GuildControlUI.currFrame);
+	end
+
+	local numRanks = GuildControlGetNumRanks();
+	--ignore officer
+	for i=2, numRanks do
+		rootDescription:CreateRadio(GuildControlGetRankName(i), IsSelected, SetSelected, i);
+	end
+end
+
 function GuildControlRankSettings_OnLoad(self)
 	self.OfficerPermissions:SetText(table.concat(GUILD_OFFICER_PERMISSION_STRINGS, "|n"));
 	self.OfficerCheckbox.text:SetFontObject("GameFontHighlightSmall");
 	self.OfficerCheckbox.text:SetText(GUILD_CONTROL_RANK_PERMISSION_HAS_OFFICER_PRIVLEGES);
 	self.OfficerCheckbox:Enable();
+
+	self.dropdown:SetWidth(180);
+	self.dropdown:SetupMenu(CreateRankMenu);
 end
 
+function GuildControlRankBank_OnLoad(self)
+	self.dropdown:SetWidth(180);
+	self.dropdown:SetupMenu(CreateRankMenu);
+end
 
 function GuildControlUI_RankOrder_Update(self)	
 	local numRanks = GuildControlGetNumRanks();
@@ -335,27 +394,6 @@ function GuildControlUI_BankFrame_OnLoad(self)
 	self.scrollFrame.stepSize = 8;
 end
 
-
--- function GuildControlUI_SubmitClicked()
-	-- if GuildControlUI.selectedTab == 1 then	
-	-- elseif GuildControlUI.selectedTab == 2 then
-		-- local amount = GuildControlUI.currFrame.goldBox:GetText();
-		-- if(amount) then
-			-- SetGuildBankWithdrawLimit(amount);
-		-- end
-		-- GuildControlSaveRank(GuildControlGetRankName(GuildControlUI.currentRank));
-	-- elseif GuildControlUI.selectedTab == 3 then
-	-- end
--- end
-
-
--- function GuildControlUI_RevertClicked()	
-	-- GuildControlUIRevertButton:Disable();
-	-- GuildControlUISubmitButton:Disable();
-	-- GuildControlUI.rankUpdate(GuildControlUI.currFrame);
--- end
-
-
 function GuildControlUI_CheckClicked(self)
 	if ( self:GetChecked() ) then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
@@ -386,7 +424,6 @@ function GuildControlUI_AddRankButton_OnClick()
 	end
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 	GuildControlAddRank(GUILD_NEW_RANK);
-	CloseDropDownMenus();
 end
 
 
@@ -422,69 +459,7 @@ function GuildControlUI_DisableRankButtons()
 	end
 end
 
-function GuildControlUINavigationDropDown_OnSelect(self, arg1, arg2)
-	UIDropDownMenu_SetText(GuildControlUINavigationDropDown, arg2);
-	StaticPopup_Hide("CONFIRM_RANK_AUTHENTICATOR_REMOVE");
-	GuildControlUIRankSettingsFrame:Hide();
-	GuildControlUIRankOrderFrame:Hide();
-	GuildControlUIRankBankFrame:Hide();
-	GuildControlUI.selectedTab = arg1;
-	GuildControlUI.numSkipUpdates = 0;
-	if arg1 == 1 then	
-		GuildControlUIRankOrderFrame:Show();		
-		GuildControlUI.currFrame = GuildControlUI.orderFrame;
-		GuildControlUI.rankUpdate = GuildControlUI_RankOrder_Update;
-	elseif arg1 == 2 then		
-		GuildControlUI.currFrame = GuildControlUI.rankPermFrame;
-		GuildControlUI.rankUpdate = GuildControlUI_RankPermissions_Update;
-		GuildControlUIRankSettingsFrame:Show();
-		GuildControlUI.rankUpdate(GuildControlUI.currFrame);
-	elseif arg1 == 3 then		
-		GuildControlUI.currFrame = GuildControlUI.bankTabFrame;
-		GuildControlUI.rankUpdate = GuildControlUI_BankTabPermissions_Update;
-		GuildControlUIRankBankFrame:Show();
-		GuildControlUI.rankUpdate(GuildControlUI.currFrame);
-	end
-end
-
-function GuildControlUINavigationDropDown_Initialize()
-	local info = UIDropDownMenu_CreateInfo();
-	
-	info.text = GUILDCONTROL_GUILDRANKS;
-	info.arg1 = 1;
-	info.arg2 = GUILDCONTROL_GUILDRANKS;
-	info.func = GuildControlUINavigationDropDown_OnSelect;
-	info.checked = GuildControlUI.selectedTab == 1;
-	UIDropDownMenu_AddButton(info);	
-	
-	info.text = GUILDCONTROL_RANK_PERMISSIONS;
-	info.arg1 = 2;
-	info.arg2 = GUILDCONTROL_RANK_PERMISSIONS;
-	info.func = GuildControlUINavigationDropDown_OnSelect;
-	info.checked = GuildControlUI.selectedTab == 2;
-	UIDropDownMenu_AddButton(info);
-	
-	info.text = GUILDCONTROL_BANK_PERMISSIONS;
-	info.arg1 = 3;
-	info.arg2 = GUILDCONTROL_BANK_PERMISSIONS;
-	info.func = GuildControlUINavigationDropDown_OnSelect;
-	info.checked = GuildControlUI.selectedTab == 3;
-	UIDropDownMenu_AddButton(info);
-end
-
-function GuildControlUIRankDropDown_Initialize(self)
-	local info = UIDropDownMenu_CreateInfo();
-	local numRanks = GuildControlGetNumRanks();
-	for i=2, numRanks do
-		info.text = GuildControlGetRankName(i);
-		info.func = GuildControlUIRankDropDown_OnClick;
-		info.checked = i == GuildControlUI.currentRank ;
-		UIDropDownMenu_AddButton(info);
-	end
-end
-
-
-function GuildControlUIRankDropDown_OnClick(self)
+function GuildControlUIRankDropdown_OnClick(self)
 	local activeEditBox = GuildControlUI.activeEditBox;
 	if ( activeEditBox ) then
 		activeEditBox:ClearFocus();

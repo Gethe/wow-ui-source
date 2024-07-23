@@ -685,7 +685,7 @@
 						</KeyValues>
 						<Size x="688" y="304" />
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.Log" relativePoint="TOPLEFT" x="24" y="-64" />
+							<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="24" y="-64" />
 						</Anchors>
 						<Scripts>
 							<OnLoad>

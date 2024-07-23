@@ -1,3 +1,24 @@
+function AuctionHouseFavoriteContextMenu(frame, itemKey)
+	MenuUtil.CreateContextMenu(frame, function(owner, rootDescription)
+		rootDescription:SetTag("MENU_AUCTION_HOUSE_FAVORITE");
+
+		local isFavorite = C_AuctionHouse.IsFavoriteItem(itemKey);
+	
+		local function CanChangeFavoriteState()
+			return C_AuctionHouse.FavoritesAreAvailable() and (isFavorite or not C_AuctionHouse.HasMaxFavorites());
+		end
+	
+		local text = isFavorite and AUCTION_HOUSE_DROPDOWN_REMOVE_FAVORITE or AUCTION_HOUSE_DROPDOWN_SET_FAVORITE;
+		local buttonDesc = rootDescription:CreateButton(text, function()
+			if CanChangeFavoriteState() then
+				C_AuctionHouse.SetFavoriteItem(itemKey, not isFavorite);
+			end
+		end);
+	
+		buttonDesc:SetEnabled(CanChangeFavoriteState);
+	end);
+end
+
 
 AuctionHouseBackgroundMixin = {};
 
@@ -27,10 +48,6 @@ end
 
 function AuctionHouseItemDisplayMixin:SetItemValidationFunction(validationFunc)
 	self.itemValidationFunc = validationFunc;
-end
-
-function AuctionHouseItemDisplayMixin:OnHide()
-	HideDropDownMenu(1);
 end
 
 function AuctionHouseItemDisplayMixin:OnEvent(event, ...)
@@ -125,10 +142,9 @@ end
 
 function AuctionHouseItemDisplayMixin:OnClick(button)
 	local itemKey = self:GetItemKey();
-	if itemKey and self.auctionHouseFrame then
+	if itemKey then
 		if button == "RightButton" then
-			local favoriteDropDown = self.auctionHouseFrame:GetFavoriteDropDown();
-			AuctionHouseFavoriteDropDownCallback(favoriteDropDown, itemKey, C_AuctionHouse.IsFavoriteItem(itemKey));
+			AuctionHouseFavoriteContextMenu(self, itemKey);
 		elseif button == "LeftButton" then
 			if IsModifiedClick("DRESSUP") then
 				local itemKeyInfo = C_AuctionHouse.GetItemKeyInfo(itemKey);
@@ -159,7 +175,6 @@ function AuctionHouseItemDisplayMixin:Reset()
 	SetItemButtonTexture(self.ItemButton, nil);
 	SetItemButtonQuality(self.ItemButton, nil, nil);
 	self.Name:SetText("");
-	HideDropDownMenu(1);
 
 	self.itemKey = nil;
 	self.itemLocation = nil;
@@ -595,63 +610,6 @@ end
 
 function AuctionHousePriceDisplayFrameMixin:GetAmount()
 	return self.MoneyDisplayFrame:GetAmount();
-end
-
-
-AuctionHouseFavoriteDropDownMixin = {};
-
-function AuctionHouseFavoriteDropDownToggle(dropDown)
-	local level = 1;
-	local value = nil;
-	local xOffset = 20;
-	local yOffset = 0;
-	ToggleDropDownMenu(level, value, dropDown, "cursor", xOffset, yOffset);
-end
-
-function AuctionHouseFavoriteDropDownCallback(dropDown, itemKey, isFavorite)
-	-- If the dropDown is open for a different frame, then close it so Toggle reopens the dropDown on the new frame.
-	if dropDown.data and dropDown.data.itemKey ~= itemKey then
-		HideDropDownMenu(1);
-	end
-
-	dropDown.data = { itemKey = itemKey, isFavorite = isFavorite };
-	AuctionHouseFavoriteDropDownToggle(dropDown);
-end
-
-function AuctionHouseFavoriteDropDownLineCallback(line, dropDown)
-	local itemKey = line:GetRowData().itemKey
-	local isFavorite = C_AuctionHouse.IsFavoriteItem(itemKey);
-	AuctionHouseFavoriteDropDownCallback(dropDown, itemKey, isFavorite);
-end
-
-local function AuctionHouseFavoriteDropDown_Initialize(self)
-	if not self.data then
-		HideDropDownMenu(1);
-		return;
-	end
-
-	local itemKey = self.data.itemKey;
-	local isFavorite = self.data.isFavorite;
-
-	local info = UIDropDownMenu_CreateInfo();
-	info.notCheckable = 1;
-	info.text = isFavorite and AUCTION_HOUSE_DROPDOWN_REMOVE_FAVORITE or AUCTION_HOUSE_DROPDOWN_SET_FAVORITE;
-
-	local function CanChangeFavoriteState()
-		return C_AuctionHouse.FavoritesAreAvailable() and (isFavorite or not C_AuctionHouse.HasMaxFavorites());
-	end
-
-	info.disabled = not CanChangeFavoriteState();
-	info.func = function()
-		if CanChangeFavoriteState() then
-			C_AuctionHouse.SetFavoriteItem(itemKey, not isFavorite);
-		end
-	end;
-	UIDropDownMenu_AddButton(info);
-end
-
-function AuctionHouseFavoriteDropDownMixin:OnLoad()
-	UIDropDownMenu_Initialize(self, AuctionHouseFavoriteDropDown_Initialize, "MENU");
 end
 
 

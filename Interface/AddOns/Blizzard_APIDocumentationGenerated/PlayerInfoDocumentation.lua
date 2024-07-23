@@ -169,6 +169,15 @@ local PlayerInfo =
 			},
 		},
 		{
+			Name = "HasAccountInventoryLock",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasAccountInventoryLock", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "HasVisibleInvSlot",
 			Type = "Function",
 

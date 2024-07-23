@@ -12,6 +12,8 @@ LFD_PROPOSAL_FAILED_CLOSE_TIME = 5;
 
 LFD_NUM_ROLES = 3;
 
+LFDDungeonList = nil;
+
 -------------------------------------
 -----------LFD Frame--------------
 -------------------------------------
@@ -96,7 +98,6 @@ function LFDFrame_OnEvent(self, event, ...)
 			if ( not LFDQueueFrame.type or (type(LFDQueueFrame.type) == "number" and not IsLFGDungeonJoinable(LFDQueueFrame.type)) ) then
 				local bestChoice = GetRandomDungeonBestChoice();
 				if ( bestChoice ) then
-					UIDropDownMenu_Initialize(LFDQueueFrameTypeDropDown, LFDQueueFrameTypeDropDown_Initialize);
 					LFDQueueFrame_SetType(bestChoice);
 				end
 			end
@@ -385,57 +386,8 @@ function LFDQueueFrameExpandOrCollapseButton_OnClick(self, button)
 	LFDQueueFrame_Update();
 end
 
-function LFDQueueFrameTypeDropDown_SetUp(self)
-	UIDropDownMenu_SetWidth(self, 180);
-	UIDropDownMenu_Initialize(self, LFDQueueFrameTypeDropDown_Initialize);
-	UIDropDownMenu_SetSelectedValue(LFDQueueFrameTypeDropDown, LFDQueueFrame.type);
-end
-
-function LFDQueueFrameTypeDropDown_Initialize()
-	LFDQueueFrameTypeDropDown_SetupFollowerDungeons();
-	LFDQueueFrameTypeDropDown_SetupSpecificDungeons();
-end
-
-function LFDQueueFrameTypeDropDown_SetupSpecificDungeons()
-	local info = UIDropDownMenu_CreateInfo();
-
-	info.text = SPECIFIC_DUNGEONS;
-	info.value = "specific";
-	info.func = LFDQueueFrameTypeDropDownButton_OnClick;
-	info.checked = LFDQueueFrame.type == info.value;
-	UIDropDownMenu_AddButton(info);
-
-	for i=1, GetNumRandomDungeons() do
-		local id, name = GetLFGRandomDungeonInfo(i);
-		local isAvailableForAll, isAvailableForPlayer, hideIfNotJoinable = IsLFGDungeonJoinable(id);
-		if isAvailableForPlayer or not hideIfNotJoinable then
-			if isAvailableForAll then
-				info.text = name;
-				info.value = id;
-				info.isTitle = nil;
-				info.func = LFDQueueFrameTypeDropDownButton_OnClick;
-				info.disabled = nil;
-				info.checked = (LFDQueueFrame.type == info.value);
-				info.tooltipWhileDisabled = nil;
-				info.tooltipOnButton = nil;
-				info.tooltipTitle = nil;
-				info.tooltipText = nil;
-				UIDropDownMenu_AddButton(info);
-			else
-				info.text = name;
-				info.value = id;
-				info.isTitle = nil;
-				info.func = nil;
-				info.disabled = 1;
-				info.checked = nil;
-				info.tooltipWhileDisabled = 1;
-				info.tooltipOnButton = 1;
-				info.tooltipTitle = YOU_MAY_NOT_QUEUE_FOR_THIS;
-				info.tooltipText = LFGConstructDeclinedMessage(id);
-				UIDropDownMenu_AddButton(info);
-			end
-		end
-	end
+function LFDQueueFrame_OnLoad(self)
+	self.TypeDropdown:SetWidth(200);
 end
 
 local function GetFollowerDungeonFailureMessage()
@@ -464,40 +416,72 @@ local function GetFollowerDungeonFailureMessage()
 	end
 end
 
-function LFDQueueFrameTypeDropDown_SetupFollowerDungeons()
-	local info = UIDropDownMenu_CreateInfo();
+function LFDQueueFrame_OnShow(self)
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
+	QueueUpdater:RequestInfo();
+	QueueUpdater:AddRef();
 
-	info.text = LFG_TYPE_FOLLOWER_DUNGEON;
-	info.value = "follower";
-	info.func = LFDQueueFrameTypeDropDownButton_OnClick;
-	info.checked = LFDQueueFrame.type == info.value;
-	info.showNewLabel = not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_FOLLOWER_DUNGEON_SEEN);
-	info.funcOnEnter = LFDQueueFrameTypeDropDownButton_OnMouseEnterFollowerDungeons;
+	self.TypeDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_LFD_FRAME");
 
-	local disableFollowerDungeonOptionMessage = GetFollowerDungeonFailureMessage();
-	if disableFollowerDungeonOptionMessage then
-		info.disabled = 1;
-		info.checked = nil;
-		info.tooltipWhileDisabled = 1;
-		info.tooltipOnButton = 1;
-		info.tooltipTitle = YOU_MAY_NOT_QUEUE_FOR_THIS;
-		info.tooltipText = disableFollowerDungeonOptionMessage;
-	end
+		local function IsSelected(dungeonType)
+			return LFDQueueFrame.type == dungeonType;
+		end
 
-	UIDropDownMenu_AddButton(info);
+		local function SetSelected(dungeonType)
+			LFDQueueFrame_SetTypeInternal(dungeonType);
+		end
+
+		local followerRadio = rootDescription:CreateRadio(LFG_TYPE_FOLLOWER_DUNGEON, IsSelected, SetSelected, "follower");
+		if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_FOLLOWER_DUNGEON_SEEN) then
+			followerRadio:AddInitializer(function(button, description, menu)
+				local newFeatureFrame = MenuTemplates.AttachNewFeatureFrame(button);
+				local x = (newFeatureFrame:GetTextWidth() / 2) + 5;
+				newFeatureFrame:SetPoint("LEFT", button.fontString, "RIGHT", x, 0);
+			end);
+		end
+
+		followerRadio:SetOnEnter(function(button)
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_FOLLOWER_DUNGEON_SEEN, true);
+		end);
+
+		local disableFollowerDungeonOptionMessage = GetFollowerDungeonFailureMessage();
+		if disableFollowerDungeonOptionMessage then
+			followerRadio:SetEnabled(false);
+			followerRadio:SetTooltip(function(tooltip, description)
+				GameTooltip_SetTitle(tooltip, YOU_MAY_NOT_QUEUE_FOR_THIS);
+				GameTooltip_AddErrorLine(tooltip, disableFollowerDungeonOptionMessage);
+			end);
+		end
+
+		rootDescription:CreateRadio(SPECIFIC_DUNGEONS, IsSelected, SetSelected, "specific");
+
+		for i=1, GetNumRandomDungeons() do
+			local id, name = GetLFGRandomDungeonInfo(i);
+			local isAvailableForAll, isAvailableForPlayer, hideIfNotJoinable = IsLFGDungeonJoinable(id);
+			if isAvailableForPlayer or not hideIfNotJoinable then
+				if isAvailableForAll then
+					rootDescription:CreateRadio(name, IsSelected, SetSelected, id);
+				else
+					local radio = rootDescription:CreateRadio(name, IsSelected, SetSelected, id);
+					radio:SetEnabled(false);
+					radio:SetTooltip(function(tooltip, description)
+						GameTooltip_SetTitle(tooltip, YOU_MAY_NOT_QUEUE_FOR_THIS);
+						GameTooltip_AddErrorLine(tooltip, LFGConstructDeclinedMessage(id));
+					end);
+				end
+			end
+		end
+	end);
 end
 
-function LFDQueueFrameTypeDropDownButton_OnClick(self)
-	LFDQueueFrame_SetType(self.value);
+function LFDQueueFrame_OnHide(self)
+	QueueUpdater:RemoveRef();
 end
 
-function LFDQueueFrameTypeDropDownButton_OnMouseEnterFollowerDungeons(self)
-	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_FOLLOWER_DUNGEON_SEEN, true);
-end
-
-function LFDQueueFrame_SetType(value)	--"specific" for the list or the record id for a single dungeon
+-- "specific" for the list or the record id for a single dungeon
+function LFDQueueFrame_SetTypeInternal(value)	
 	LFDQueueFrame.type = value;
-	UIDropDownMenu_SetSelectedValue(LFDQueueFrameTypeDropDown, value);
 
 	if ( value == "specific" ) then
 		LFDQueueFrame_SetTypeSpecificDungeon();
@@ -509,6 +493,11 @@ function LFDQueueFrame_SetType(value)	--"specific" for the list or the record id
 		LFDQueueFrameRandom_UpdateFrame();
 	end
 	LFDQueueFrame_UpdateRoleButtons();
+end
+
+function LFDQueueFrame_SetType(value)
+	LFDQueueFrame_SetTypeInternal(value);
+	LFDQueueFrame.TypeDropdown:GenerateMenu();
 end
 
 function LFDQueueFrame_SetTypeRandomDungeon(hideCooldown)

@@ -318,7 +318,7 @@ function ProfessionsSpecPathMixin:OnEvent(event, ...)
 end
 
 function ProfessionsSpecPathMixin:OnEnter() -- Override
-	if GetMouseFocus() ~= self then
+	if not self:IsMouseMotionFocus() then
 		return;
 	end
 
@@ -749,4 +749,8 @@ function ProfessionSpecEdgeArrowMixin:UpdateState() -- Override
 	end
 	self.Line:SetVertexColor(r, g, b);
 	self.ArrowHead:SetVertexColor(r, g, b);
+
+	if self:IsPositionDirty() then
+		self:UpdatePosition();
+	end
 end

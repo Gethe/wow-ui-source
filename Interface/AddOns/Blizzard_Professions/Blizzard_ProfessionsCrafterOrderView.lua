@@ -1,4 +1,37 @@
 
+ProfessionsCrafterOrderRewardMixin = CreateFromMixins(ProfessionsReagentSlotButtonMixin);
+
+function ProfessionsCrafterOrderRewardMixin:SetReward(reward)
+	self.reward = reward;
+
+	if reward.itemLink then
+		self:SetItem(reward.itemLink);
+		local _, itemQuality, _ = self:GetItemInfo();
+		self:SetSlotQuality(self, itemQuality);
+		self.Count:SetText("");
+	elseif reward.currencyType then
+		self:SetCurrency(reward.currencyType);
+		self.Count:SetText(self.reward.currencyAmount);
+	end
+
+	self:Show();
+end
+
+function ProfessionsCrafterOrderRewardMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+
+	local itemLink = self:GetItemLink();
+	if itemLink then
+		GameTooltip:SetHyperlink(itemLink);
+	elseif self.reward.currencyType then
+		GameTooltip:SetCurrencyByID(self.reward.currencyType, self.reward.currencyAmount);
+	end
+end
+
+function ProfessionsCrafterOrderRewardMixin:OnLeave()
+	GameTooltip:Hide();
+end
+
 ProfessionsCrafterOrderViewMixin = {};
 local ownReagentsConfirmationReferenceKey = {};
 local ignoreConfirmationReferenceKey = {};
@@ -74,139 +107,108 @@ function ProfessionsCrafterOrderViewMixin:InitButtons()
     self.DeclineOrderDialog.ConfirmButton:SetScript("OnClick", function() C_CraftingOrders.RejectOrder(self.order.orderID, self.DeclineOrderDialog.NoteEditBox.ScrollingEditBox:GetInputText(), C_TradeSkillUI.GetChildProfessionInfo().profession) end);
     self.DeclineOrderDialog.CancelButton:SetScript("OnClick", function() self.DeclineOrderDialog:Hide(); end);
 
-	SquareButton_SetIcon(self.OrderInfo.SocialDropdownButton, "DOWN");
-	self.OrderInfo.SocialDropdownButton:SetScript("OnMouseDown", function(button)
-		UIMenuButtonStretchMixin.OnMouseDown(self.OrderInfo.SocialDropdownButton, button);
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-		ToggleDropDownMenu(nil, nil, self.OrderInfo.SocialDropdownButton.DropDown, self.OrderInfo.SocialDropdownButton, 0, 0);
-	end);
-	UIDropDownMenu_Initialize(self.OrderInfo.SocialDropdownButton.DropDown, function(menu, level)
-		if not self.order then
+	SquareButton_SetIcon(self.OrderInfo.SocialDropdown, "DOWN");
+
+	self.OrderInfo.SocialDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_PROFESSIONS_CRAFTER_ORDER_VIEW");
+
+		if not self.order or self.order.customerGuid == nil then
 			return;
 		end
 
+		local whisperStatus = self:GetWhisperCustomerStatus();
+
 		-- Add whisper option
-		do
-			local info = UIDropDownMenu_CreateInfo();
-			info.text = WHISPER_MESSAGE;
-
-			local whisperStatus = self:GetWhisperCustomerStatus();
-
-			if whisperStatus == Enum.ChatWhisperTargetStatus.CanWhisper or whisperStatus == Enum.ChatWhisperTargetStatus.CanWhisperGuild then
-				info.func = function()
-					ChatFrame_SendTell(self.order.customerName);
-				end
-			else
-				info.disabled = true;
-				info.tooltipWhileDisabled = true;
-				info.tooltipOnButton = true;
-				info.tooltipTitle = "";
+		local canWhisper = whisperStatus == Enum.ChatWhisperTargetStatus.CanWhisper or whisperStatus == Enum.ChatWhisperTargetStatus.CanWhisperGuild;
+		if canWhisper then
+			rootDescription:CreateButton(WHISPER_MESSAGE, function()
+				ChatFrame_SendTell(self.order.customerName);
+			end);
+		else
+			local button = rootDescription:CreateButton(WHISPER_MESSAGE, nop);
+			button:SetEnabled(false);
+			button:SetTooltip(function(tooltip, elementDescription)
 				if whisperStatus == Enum.ChatWhisperTargetStatus.Offline then
-					info.tooltipText = PROF_ORDER_CANT_WHISPER_OFFLINE;
+					GameTooltip_AddNormalLine(tooltip, PROF_ORDER_CANT_WHISPER_OFFLINE);
 				elseif whisperStatus == Enum.ChatWhisperTargetStatus.WrongFaction then
-					info.tooltipText = PROF_ORDER_CANT_WHISPER_WRONG_FACTION;
+					GameTooltip_AddNormalLine(tooltip, PROF_ORDER_CANT_WHISPER_WRONG_FACTION);
 				end
-			end
-			info.isNotRadio = true;
-			info.notCheckable = true;
-			UIDropDownMenu_AddButton(info, level);
+			end);
 		end
 
 		-- Add "Add Friend" option
-		do
-			local info = UIDropDownMenu_CreateInfo();
-			info.text = ADD_CHARACTER_FRIEND;
-
-			-- Use the same status as whisper for now; if the player is offline, we can't easily check their faction
-			local whisperStatus = self:GetWhisperCustomerStatus();
-			local alreadyIsFriend = C_FriendList.IsFriend(self.order.customerGuid);
-
-			if whisperStatus == Enum.ChatWhisperTargetStatus.CanWhisper and not alreadyIsFriend then
-				info.func = function()
-					C_FriendList.AddFriend(self.order.customerName);
-				end
-			else
-				info.disabled = true;
-				info.tooltipWhileDisabled = true;
-				info.tooltipOnButton = true;
-				info.tooltipTitle = "";
+		local alreadyIsFriend = C_FriendList.IsFriend(self.order.customerGuid);
+		local canAddFriend = whisperStatus == Enum.ChatWhisperTargetStatus.CanWhisper and not alreadyIsFriend;
+		if canAddFriend then
+			rootDescription:CreateButton(ADD_CHARACTER_FRIEND, function()
+				C_FriendList.AddFriend(self.order.customerName);
+			end);
+		else
+			local button = rootDescription:CreateButton(ADD_CHARACTER_FRIEND, nop);
+			button:SetEnabled(false);
+			button:SetTooltip(function(tooltip, elementDescription)
 				if alreadyIsFriend then
-					info.tooltipText = ALREADY_FRIEND_FMT:format(self.order.customerName);
+					GameTooltip_AddNormalLine(tooltip, ALREADY_FRIEND_FMT:format(self.order.customerName));
 				elseif whisperStatus == Enum.ChatWhisperTargetStatus.Offline then
-					info.tooltipText = PROF_ORDER_CANT_ADD_FRIEND_OFFLINE;
+					GameTooltip_AddNormalLine(tooltip, PROF_ORDER_CANT_ADD_FRIEND_OFFLINE);
 				elseif whisperStatus == Enum.ChatWhisperTargetStatus.WrongFaction or whisperStatus == Enum.ChatWhisperTargetStatus.CanWhisperGuild then
 					-- CanWhisperGuild means we can whisper the player despite them being cross-faction because they are in our guild
-					info.tooltipText = PROF_ORDER_CANT_ADD_FRIEND_WRONG_FACTION;
+					GameTooltip_AddNormalLine(tooltip, PROF_ORDER_CANT_ADD_FRIEND_WRONG_FACTION);
 				end
-			end
-			info.isNotRadio = true;
-			info.notCheckable = true;
-			UIDropDownMenu_AddButton(info, level);
-		end
-
-		-- Add ignore option
-		do
-			local canIgnore = self.order.orderState == Enum.CraftingOrderState.Created and not C_FriendList.IsIgnoredByGuid(self.order.customerGuid);
-			local info = UIDropDownMenu_CreateInfo();
-			info.text = IGNORE;
-			if canIgnore then
-				info.func = function()
-					local referenceKey = ignoreConfirmationReferenceKey;
-					if not StaticPopup_IsCustomGenericConfirmationShown(referenceKey) then
-						local customData = 
-						{
-							text = CRAFTING_ORDERS_IGNORE_CONFIRMATION,
-							text_arg1 = self.order.customerName,
-							callback = function()
-								C_FriendList.AddIgnore(self.order.customerName);
-							end,
-							acceptText = YES,
-							cancelText = NO,
-							referenceKey = referenceKey,
-						};
-
-						StaticPopup_ShowCustomGenericConfirmation(customData);
-					end
-				end
-			else
-				info.disabled = true;
-				info.tooltipWhileDisabled = true;
-				info.tooltipOnButton = true;
-				info.tooltipTitle = "";
-				info.tooltipText = self.order.orderState ~= Enum.CraftingOrderState.Created and PROF_ORDER_CANT_IGNORE_IN_PROGRESS or PROF_ORDER_CANT_IGNORE_ALREADY_IGNORED;
-			end
-			info.isNotRadio = true;
-			info.notCheckable = true;
-			UIDropDownMenu_AddButton(info, level);
+			end);
 		end
 		
+		-- Add ignore option
+		local canIgnore = self.order.orderState == Enum.CraftingOrderState.Created and not C_FriendList.IsIgnoredByGuid(self.order.customerGuid);
+		if canIgnore then
+			rootDescription:CreateButton(IGNORE, function()
+				local referenceKey = ignoreConfirmationReferenceKey;
+				if not StaticPopup_IsCustomGenericConfirmationShown(referenceKey) then
+					local customData = 
+					{
+						text = CRAFTING_ORDERS_IGNORE_CONFIRMATION,
+						text_arg1 = self.order.customerName,
+						callback = function()
+							C_FriendList.AddIgnore(self.order.customerName);
+						end,
+						acceptText = YES,
+						cancelText = NO,
+						referenceKey = referenceKey,
+					};
+
+					StaticPopup_ShowCustomGenericConfirmation(customData);
+				end
+			end);
+		else
+			local button = rootDescription:CreateButton(ADD_CHARACTER_FRIEND, nop);
+			button:SetEnabled(false);
+			button:SetTooltip(function(tooltip, elementDescription)
+				local text = self.order.orderState ~= Enum.CraftingOrderState.Created and PROF_ORDER_CANT_IGNORE_IN_PROGRESS or PROF_ORDER_CANT_IGNORE_ALREADY_IGNORED;
+				GameTooltip_AddNormalLine(tooltip, text);
+			end);
+		end
+
+		
 		-- Add report button
-		do
-			local canReport = self.order.orderState == Enum.CraftingOrderState.Created;
-			local info = UIDropDownMenu_CreateInfo();
-			info.text = PROF_ORDER_REPORT;
-			if canReport then
-				info.func = function()
-					if not ReportFrame:IsShown() then
-						local reportInfo = ReportInfo:CreateCraftingOrderReportInfo(Enum.ReportType.CraftingOrder, self.order.orderID);
-						if reportInfo then
-							local playerLocation = PlayerLocation:CreateFromGUID(self.order.customerGuid);
-							ReportFrame:InitiateReport(reportInfo, nil, playerLocation);
-						end
+		local canReport = self.order.orderState == Enum.CraftingOrderState.Created;
+		if canReport then
+			rootDescription:CreateButton(PROF_ORDER_REPORT, function()
+				if not ReportFrame:IsShown() then
+					local reportInfo = ReportInfo:CreateCraftingOrderReportInfo(Enum.ReportType.CraftingOrder, self.order.orderID);
+					if reportInfo then
+						local playerLocation = PlayerLocation:CreateFromGUID(self.order.customerGuid);
+						ReportFrame:InitiateReport(reportInfo, nil, playerLocation);
 					end
 				end
-			else
-				info.disabled = true;
-				info.tooltipWhileDisabled = true;
-				info.tooltipOnButton = true;
-				info.tooltipTitle = "";
-				info.tooltipText = PROF_ORDER_CANT_REPORT_IN_PROGRESS;
-			end
-			info.isNotRadio = true;
-			info.notCheckable = true;
-			UIDropDownMenu_AddButton(info, level);
+			end);
+		else
+			local button = rootDescription:CreateButton(PROF_ORDER_REPORT, nop);
+			button:SetEnabled(false);
+			button:SetTooltip(function(tooltip, elementDescription)
+				GameTooltip_AddNormalLine(tooltip, PROF_ORDER_CANT_REPORT_IN_PROGRESS);
+			end);
 		end
-	end, "MENU");
+	end);
 end
 
 function ProfessionsCrafterOrderViewMixin:InitRegions()
@@ -274,6 +276,7 @@ local ProfessionsCrafterOrderViewEvents =
     "CRAFTINGORDERS_CLAIM_ORDER_RESPONSE",
     "CRAFTINGORDERS_RELEASE_ORDER_RESPONSE",
     "CRAFTINGORDERS_REJECT_ORDER_RESPONSE",
+	"CRAFTINGORDERS_CRAFT_ORDER_RESPONSE",
 	"CRAFTINGORDERS_FULFILL_ORDER_RESPONSE",
     "CRAFTINGORDERS_UPDATE_CUSTOMER_NAME",
     "CRAFTINGORDERS_CLAIMED_ORDER_ADDED",
@@ -324,6 +327,17 @@ function ProfessionsCrafterOrderViewMixin:OnEvent(event, ...)
 		else
 			UIErrorsFrame:AddExternalErrorMessage(PROFESSIONS_ORDER_OP_FAILED);
         end
+	elseif event == "CRAFTINGORDERS_CRAFT_ORDER_RESPONSE" then
+		local result, orderID = ...;
+        if orderID ~= self.order.orderID then
+            return;
+        end
+
+		if result == Enum.CraftingOrderResult.NoAccountItems then
+			UIErrorsFrame:AddExternalErrorMessage(CRAFTING_ORDER_FAILED_ACCOUNT_ITEMS);
+		else
+			UIErrorsFrame:AddExternalErrorMessage(PROFESSIONS_ORDER_OP_FAILED);
+		end
 	elseif event == "CRAFTINGORDERS_FULFILL_ORDER_RESPONSE" then
 		local result, orderID = ...;
 		if orderID ~= self.order.orderID then
@@ -404,10 +418,15 @@ function ProfessionsCrafterOrderViewMixin:OnShow()
     FrameUtil.RegisterFrameForEvents(self, ProfessionsCrafterOrderViewEvents);
     self:SetScript("OnUpdate", self.OnUpdate);
 
-    local function AllocationUpdatedUpdatedCallback()
+    local function AllocationUpdatedCallback()
         self:UpdateCreateButton();
     end
-    EventRegistry:RegisterCallback("Professions.AllocationUpdated", AllocationUpdatedUpdatedCallback, self);
+    EventRegistry:RegisterCallback("Professions.AllocationUpdated", AllocationUpdatedCallback, self);
+
+    local function TransactionUpdatedCallback()
+        self:UpdateCreateButton();
+    end
+    EventRegistry:RegisterCallback("Professions.TransactionUpdated", TransactionUpdatedCallback, self);
 end
 
 function ProfessionsCrafterOrderViewMixin:ShowingGenericConfirmation()
@@ -425,6 +444,7 @@ function ProfessionsCrafterOrderViewMixin:OnHide()
     FrameUtil.UnregisterFrameForEvents(self, ProfessionsCrafterOrderViewEvents);
     self:SetScript("OnUpdate", nil);
     EventRegistry:UnregisterCallback("Professions.AllocationUpdated", self);
+    EventRegistry:UnregisterCallback("Professions.TransactionUpdated", self);
     self:SetOverrideCastBarActive(false);
 	self:CloseGenericConfirmation();
 end
@@ -750,6 +770,25 @@ function ProfessionsCrafterOrderViewMixin:SetOrder(order)
     self.OrderInfo.ConsortiumCutMoneyDisplayFrame:SetAmount(order.consortiumCut);
     self.OrderInfo.FinalTipMoneyDisplayFrame:SetAmount(order.tipAmount - order.consortiumCut);
 
+	for i, reward in ipairs(order.npcOrderRewards) do
+		if i <= #self.OrderInfo.NPCRewardsFrame.RewardItems then
+			self.OrderInfo.NPCRewardsFrame.RewardItems[i]:SetReward(reward);
+		end
+	end
+	for i = #order.npcOrderRewards + 1, #self.OrderInfo.NPCRewardsFrame.RewardItems do
+		self.OrderInfo.NPCRewardsFrame.RewardItems[i]:Hide();
+	end
+	self.OrderInfo.NPCRewardsFrame:SetShown(#order.npcOrderRewards > 0);
+
+	assertsafe(
+		#order.npcOrderRewards <= #self.OrderInfo.NPCRewardsFrame.RewardItems,
+		"Too many rewards (%d rewards > %d supported in UI) in NPC Crafting Order Set ID %d Treasure ID %d",
+		#order.npcOrderRewards,
+		#self.OrderInfo.NPCRewardsFrame.RewardItems,
+		order.npcCraftingOrderSetID, 
+		order.npcTreasureID
+	);
+
 	local warningText, atlas;
 	if self.order.reagentState == Enum.CraftingOrderReagentsType.All then
 		warningText = PROFESSIONS_CUSTOMER_ORDER_REAGENTS_ALL;
@@ -773,6 +812,7 @@ function ProfessionsCrafterOrderViewMixin:SetOrder(order)
     local isRecraft = self:IsRecrafting();
 	local recipeSchematic = C_TradeSkillUI.GetRecipeSchematic(self.order.spellID, isRecraft);
     self.OrderDetails.SchematicForm.transaction = CreateProfessionsRecipeTransaction(recipeSchematic);
+    self.OrderDetails.SchematicForm.transaction:SetUseCharacterInventoryOnly(true);
     if isRecraft then
         self.OrderDetails.SchematicForm.transaction:SetRecraftAllocationOrderID(order.orderID);
     end
@@ -821,6 +861,8 @@ function ProfessionsCrafterOrderViewMixin:SetOrder(order)
 	if order.customerGuid then
 		C_ChatInfo.RequestCanLocalWhisperTarget(order.customerGuid);
 	end
+
+	self.ConcentrationDisplay:ShowProfessionConcentration(Professions.GetProfessionInfo());
 end
 
 function ProfessionsCrafterOrderViewMixin:SetOrderState(orderState)
@@ -836,17 +878,17 @@ function ProfessionsCrafterOrderViewMixin:SetOrderState(orderState)
     local enableStartRecraftButton = false;
     local showStopRecraftButton = false;
     local showDeclineOrderButton = false;
-    local showSocialDropdownButton = false;
+    local showSocialDropdown = false;
 
     if orderState == Enum.CraftingOrderState.Created then
         showBackButton = true;
         showStartOrderButton = true;
         showSchematic = true;
         showDeclineOrderButton = self.order.orderType == Enum.CraftingOrderType.Personal;
-        showSocialDropdownButton = self.order.customerGuid ~= UnitGUID("player");
+        showSocialDropdown = self.order.customerGuid and self.order.customerGuid ~= UnitGUID("player ");
     elseif orderState == Enum.CraftingOrderState.Claimed then
         showTimeRemaining = true;
-		showSocialDropdownButton = true;
+		showSocialDropdown = true;
 
         if self.order.isFulfillable and self.recraftingOrderID ~= self.order.orderID then
             showCompleteOrderButton = true;
@@ -862,7 +904,7 @@ function ProfessionsCrafterOrderViewMixin:SetOrderState(orderState)
     end
 
     self.OrderInfo.BackButton:SetShown(showBackButton);
-    self.OrderInfo.SocialDropdownButton:SetShown(showSocialDropdownButton);
+    self.OrderInfo.SocialDropdown:SetShown(showSocialDropdown);
     self.OrderInfo.StartOrderButton:SetShown(showStartOrderButton);
     self.OrderInfo.ReleaseOrderButton:SetShown(showReleaseOrderButton);
     self.OrderInfo.TimeRemainingTitle:SetShown(showTimeRemaining);
@@ -896,9 +938,11 @@ function ProfessionsCrafterOrderViewMixin:CraftOrder()
     local predicate = function(reagentTbl, slotIndex)
 		return reagentTbl.reagentSlotSchematic.dataSlotType == Enum.TradeskillSlotDataType.ModifiedReagent and not self.reagentSlotProvidedByCustomer[slotIndex];
 	end
-    local craftingReagentTbl = self.OrderDetails.SchematicForm.transaction:CreateCraftingReagentInfoTblIf(predicate);
+	local transaction = self.OrderDetails.SchematicForm.transaction;
+    local craftingReagentTbl = transaction:CreateCraftingReagentInfoTblIf(predicate);
     local recipeLevel = self.OrderDetails.SchematicForm:GetCurrentRecipeLevel();
-    C_TradeSkillUI.CraftRecipe(recipeID, count, craftingReagentTbl, recipeLevel, self.order.orderID);
+	local applyConcentration = transaction:IsApplyingConcentration();
+    C_TradeSkillUI.CraftRecipe(recipeID, count, craftingReagentTbl, recipeLevel, self.order.orderID, applyConcentration);
 end
 
 function ProfessionsCrafterOrderViewMixin:RecraftOrder()
@@ -916,7 +960,9 @@ function ProfessionsCrafterOrderViewMixin:RecraftOrder()
 	-- for unmodified reagent slots.
 	Professions.PrepareRecipeRecraft(transaction, craftingReagentTbl);
 
-    C_TradeSkillUI.RecraftRecipeForOrder(self.order.orderID, self.order.outputItemGUID, craftingReagentTbl);
+	local removedModificationsNone = nil;
+	local applyConcentration = transaction:IsApplyingConcentration();
+    C_TradeSkillUI.RecraftRecipeForOrder(self.order.orderID, self.order.outputItemGUID, craftingReagentTbl, removedModificationsNone, applyConcentration);
 end
 
 function ProfessionsCrafterOrderViewMixin:IsRecrafting()

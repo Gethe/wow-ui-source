@@ -356,12 +356,12 @@ function HANDLE:GetPoint(i)
 		return nil;
 	end
 
-    local point, frame, relative, dx, dy = LOCAL_CHECK_Frame.GetPoint(frame, i);
+    local point, relativeFrame, relative, dx, dy = LOCAL_CHECK_Frame.GetPoint(frame, i);
     local handle;
-    if (frame) then
-        handle = FrameHandleMapper(not InCombatLockdown(), frame);
+    if (relativeFrame) then
+        handle = FrameHandleMapper(not InCombatLockdown(), relativeFrame);
     end
-    if (handle or not frame) then
+    if (handle or not relativeFrame) then
         return point, handle, relative, dx, dy;
     end
 end

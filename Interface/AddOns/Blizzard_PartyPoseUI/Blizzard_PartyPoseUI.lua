@@ -209,6 +209,8 @@ function PartyPoseMixin:PlayModelSceneAnimations(forceUpdate)
 	self.RewardAnimations.HoldModelScene.RewardModelAnim:Play();
 end
 
+-- Please note this function is only included here still to support legacy behavior. Future
+-- model scenes that need drop shadows should use the generic tech in ModelSceneMixin.
 function PartyPoseMixin:UpdateShadow(actor)
 	local shadowTexture = actor.shadowTexture;
 	assert(shadowTexture);

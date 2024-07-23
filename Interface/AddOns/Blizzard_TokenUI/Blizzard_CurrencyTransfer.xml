@@ -1,0 +1,391 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<EditBox name="CurrencyTransferAmountInputEditBoxTemplate" letters="6" numeric="true" multiLine="false" autoFocus="false" mixin="CurrencyTransferAmountInputBoxMixin" inherits="LargeInputBoxTemplate" virtual="true">
+		<Size x="70" y="33"/>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnEditFocusLost method="OnEditFocusLost"/>
+			<OnEnterPressed function="EditBox_ClearFocus"/>
+		</Scripts>
+	</EditBox>
+
+	<Frame name="CurrencyTransferSourceSelectorTemplate" mixin="CurrencyTransferSourceSelectorMixin" virtual="true">
+		<Size y="35"/>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString parentKey="SourceLabel" inherits="GameFontNormalMed2" text="CURRENCY_TRANSFER_SOURCE" maxLines="1" justifyH="LEFT" mixin="AutoScalingFontStringMixin">
+					<Size x="50"/>
+					<Anchors>
+						<Anchor point="LEFT" x="2"/>
+					</Anchors>
+				</FontString>
+
+				<FontString parentKey="PlayerName" inherits="GameFontNormalMed2" maxLines="1" justifyH="RIGHT" mixin="AutoScalingFontStringMixin">
+					<Size x="150"/>
+					<Anchors>
+						<Anchor point="RIGHT" x="-2"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<DropdownButton parentKey="Dropdown" inherits="WowStyle1DropdownTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.SourceLabel" relativePoint="RIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="LongArrow" atlas="arrow-long" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT" x="20"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</DropdownButton>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="CurrencyTransferAmountSelectorTemplate" mixin="CurrencyTransferAmountSelectorMixin" virtual="true">
+		<Size y="40"/>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString parentKey="TransferAmountLabel" text="CURRENCY_TRANSFER_AMOUNT_LABEL" inherits="GameFontNormal" maxLines="1" justifyH="LEFT">
+					<Size x="250"/>
+					<Anchors>
+						<Anchor point="LEFT" x="2"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<EditBox parentKey="InputBox" inherits="CurrencyTransferAmountInputEditBoxTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" x="-2"/>
+				</Anchors>
+			</EditBox>
+		</Frames>
+		<Scripts>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
+	<Button name="CurrencyTransferConfirmButtonTemplate" inherits="UIPanelButtonTemplate" text="CURRENCY_TRANSFER_CONFIRM_BUTTON_LABEL" virtual="true" mixin="CurrencyTransferConfirmButtonMixin">
+		<Size x="100" y="22"/>
+		<Scripts>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+
+	<Button name="CurrencyTransferCancelButtonTemplate" inherits="UIPanelButtonTemplate" text="CURRENCY_TRANSFER_CANCEL_BUTTON_LABEL" virtual="true" mixin="CurrencyTransferCancelButtonMixin">
+		<Size x="100" y="22"/>
+		<Scripts>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="CurrencyTransferBalancePreviewTemplate" mixin="CurrencyTransferBalancePreviewMixin" virtual="true">
+		<Size y="24"/>
+		<!--<KeyValues>
+			<KeyValue key="showTransferCost" value="" type="boolean"/>
+		</KeyValues>-->
+		<Frames>
+			<Frame parentKey="BalanceInfo">
+				<Size x="110" y="24"/>
+				<Anchors>
+					<Anchor point="RIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="CurrencyIcon">
+							<Size x="20" y="20"/>
+							<Anchors>
+								<Anchor point="RIGHT" x="-2"/>
+							</Anchors>
+						</Texture>
+
+						<FontString parentKey="Amount" inherits="GameFontHighlight" justifyH="RIGHT" maxLines="1" mixin="AutoScalingFontStringMixin">
+							<KeyValues>
+								<KeyValue key="minLineHeight" value="10" type="number"/>
+							</KeyValues>
+							<Anchors>
+								<Anchor point="LEFT" x="20"/>
+								<Anchor point="RIGHT" relativeKey="$parent.CurrencyIcon" relativePoint="LEFT" x="-2"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="TransferCostDisplay" mixin="CurrencyTransferCostDisplayMixin" hidden="true">
+						<Size x="20" y="20"/>
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.Amount" relativePoint="LEFT" x="2"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="Icon" file="Interface\common\help-i">
+									<Size x="30" y="30"/>
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<HighlightTexture file="Interface\common\help-i" alphaMode="ADD" hidden="true">
+							<Size x="30" y="30"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color r="1" g="1" b="1" a="0.2"/>
+						</HighlightTexture>
+						
+						<Scripts>
+							<OnEnter method="OnEnter"/>
+							<OnLeave method="OnLeave"/>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" inherits="GameFontNormal" maxLines="1" justifyH="LEFT" mixin="AutoScalingFontStringMixin">
+					<KeyValues>
+						<KeyValue key="minLineHeight" value="10" type="number"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="LEFT" x="2"/>
+						<Anchor point="RIGHT" relativeKey="$parent.BalanceInfo" relativePoint="LEFT" x="-2"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="CurrencyTransferMenuTemplate" inherits="ButtonFrameTemplate, CallbackRegistrantTemplate" virtual="true" mixin="CurrencyTransferMenuMixin">
+		<Size x="460" y="294"/>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-2">
+				<Texture parentKey="Background" atlas="transfer-panel-background" useAtlasSize="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Inset"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture parentKey="TransactionDivider" atlas="activities-divider" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Inset" y="-18"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Inset" y="-18"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="ConfirmButton" inherits="CurrencyTransferConfirmButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" x="-54" y="8"/>
+				</Anchors>
+			</Button>
+
+			<Button parentKey="CancelButton" inherits="CurrencyTransferCancelButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" x="54" y="8"/>
+				</Anchors>
+			</Button>
+
+			<Frame parentKey="SourceSelector" inherits="CurrencyTransferSourceSelectorTemplate"/>
+
+			<Frame parentKey="AmountSelector" inherits="CurrencyTransferAmountSelectorTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.SourceSelector" relativePoint="BOTTOMLEFT" y="-14"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.SourceSelector" relativePoint="BOTTOMRIGHT" y="-14"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="SourceBalancePreview" inherits="CurrencyTransferBalancePreviewTemplate">
+				<KeyValues>
+					<KeyValue key="showTransferCost" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.AmountSelector" relativePoint="BOTTOMLEFT" y="-36"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.AmountSelector" relativePoint="BOTTOMRIGHT" y="-36"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="PlayerBalancePreview" inherits="CurrencyTransferBalancePreviewTemplate">
+				<KeyValues>
+					<KeyValue key="showTransferCost" value="false" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.SourceBalancePreview" relativePoint="BOTTOMLEFT" y="-6"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.SourceBalancePreview" relativePoint="BOTTOMRIGHT" y="-6"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Button name="CurrencyTransferToggleButtonTemplate" inherits="UIPanelButtonTemplate, DisabledTooltipButtonTemplate" text="CURRENCY_TRANSFER_TOGGLE_BUTTON_LABEL" virtual="true" mixin="CurrencyTransferToggleButtonMixin">
+		<Size x="120" y="22"/>
+		<Frames>
+			<Frame parentKey="LoadingSpinner" hidden="true" inherits="SpinnerTemplate">
+				<Size x="20" y="20"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="CurrencyTransferMenu" inherits="CurrencyTransferMenuTemplate" toplevel="true" parent="UIParent" hidden="true"/>
+
+	<Frame name="CurrencyTransferLogEntryTemplate" mixin="CurrencyTransferLogEntryMixin" virtual="true">
+		<Size y="22"/>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="CurrencyIcon">
+					<Size x="20" y="20"/>
+					<Anchors>
+						<Anchor point="RIGHT" x="-4" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="CurrencyQuantity" inherits="GameFontHighlightRight" mixin="AutoScalingFontStringMixin">
+					<KeyValues>
+						<KeyValue key="minLineHeight" value="10" type="number"/>
+					</KeyValues>
+					<Size x="50"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.CurrencyIcon" relativePoint="LEFT" x="-5"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="SourceName" inherits="GameFontNormalLeft">
+					<Anchors>
+						<Anchor point="LEFT" x="2"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="Arrow" atlas="arrow-short" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.SourceName" relativePoint="RIGHT" x="3"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="DestinationName" inherits="GameFontNormalLeft">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Arrow" relativePoint="RIGHT" x="3"/>
+						<Anchor point="RIGHT" relativeKey="$parent.CurrencyQuantity" relativePoint="LEFT" x="-1"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="BackgroundHighlight" alpha="0" setAllPoints="true">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Left" atlas="charactercreate-customize-dropdown-linemouseover-side" parentArray="TextureRegions">
+							<Size x="6"/>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Right" atlas="charactercreate-customize-dropdown-linemouseover-side" parentArray="TextureRegions">
+							<Size x="6"/>
+							<TexCoords left="1" right="0" top="0" bottom="1"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Middle" atlas="charactercreate-customize-dropdown-linemouseover-middle" parentArray="TextureRegions">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+
+	<Button name="CurrencyTransferLogToggleButtonTemplate" mixin="CurrencyTransferLogToggleButtonMixin" virtual="true">
+		<Size x="22" y="22"/>
+		<Scripts>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+		<NormalTexture parentKey="NormalTexture" atlas="transfer-log-button-up" setAllPoints="true"/>
+		<PushedTexture parentKey="PushedTexture" atlas="transfer-log-button-down" setAllPoints="true"/>
+		<HighlightTexture parentKey="HighlightTexture" atlas="transfer-log-button-up" alphaMode="ADD" alpha="0.2"/>
+	</Button>
+
+	<Frame name="CurrencyTransferLogTemplate" inherits="ButtonFrameTemplate" mixin="CurrencyTransferLogMixin" virtual="true">
+		<Size x="340" y="370"/>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="0">
+				<Texture parentKey="Background" atlas="transfer-log-background" useAtlasSize="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Inset"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="EmptyLogMessage" inherits="GameFontNormalMed2" text="CURRENCY_TRANSFER_LOG_EMPTY" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="1"  y="1"/>
+					<Anchor point="BOTTOMRIGHT" x="-20"/>
+				</Anchors>
+			</Frame>
+
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="5" y="-3"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="3"/>
+				</Anchors>
+			</EventFrame>
+
+			<Frame parentKey="LoadingSpinner" hidden="true" inherits="SpinnerTemplate">
+				<Size x="60" y="60"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

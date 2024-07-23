@@ -737,9 +737,9 @@ function GarrisonBuildingInfoBox_ShowBuilding(ID, owned, showLock)
 				infoBox.SpecFrame.Specs[i]:SetPoint("LEFT", prevSpec, "RIGHT", 0, 0);
 			end
 			spec = infoBox.SpecFrame.Specs[i]
-			local name, tooltip, iconID = C_Garrison.GetBuildingSpecInfo(possSpecs[i]);
+			local specName, tooltip, iconID = C_Garrison.GetBuildingSpecInfo(possSpecs[i]);
 			spec.id = possSpecs[i];
-			spec.name = name;
+			spec.name = specName;
 			spec.tooltip = tooltip
 			spec.Icon:SetTexture(iconID);
 			spec:Show();

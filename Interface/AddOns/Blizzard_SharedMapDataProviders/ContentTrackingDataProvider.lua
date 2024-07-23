@@ -17,13 +17,11 @@ function ContentTrackingDataProviderMixin:OnAdded(mapCanvas)
 
 	self:RegisterEvent("CONTENT_TRACKING_UPDATE");
 	self:RegisterEvent("TRACKING_TARGET_INFO_UPDATE");
-	self:RegisterEvent("SUPER_TRACKING_CHANGED");
+	EventRegistry:RegisterCallback("Supertracking.OnChanged", self.RefreshAllData, self);
 end
 
 function ContentTrackingDataProviderMixin:OnEvent(event, ...)
 	if (event == "CONTENT_TRACKING_UPDATE") or (event == "TRACKING_TARGET_INFO_UPDATE") then
-		self:RefreshAllData();
-	elseif event == "SUPER_TRACKING_CHANGED" then
 		self:RefreshAllData();
 	end
 end
@@ -84,7 +82,6 @@ end
 
 function ContentTrackingDataProviderMixin:AddTrackable(trackableMapInfo, isWaypoint)
 	local pin = self:GetMap():AcquirePin(self:GetPinTemplate());
-	pin:SetPinScale(2.5);
 	pin:Init(self, trackableMapInfo, isWaypoint);
 
 	local trackableType, trackableID = C_SuperTrack.GetSuperTrackedContent();
@@ -97,7 +94,7 @@ function ContentTrackingDataProviderMixin:AddTrackable(trackableMapInfo, isWaypo
 		pin:UseFrameLevelType("PIN_FRAME_LEVEL_TRACKED_CONTENT");
 	end
 
-	pin.selected = isSuperTracked;
+	pin:SetSelected(isSuperTracked);
 	pin:SetStyle(isWaypoint and POIButtonUtil.Style.Waypoint or POIButtonUtil.Style.ContentTracking);
 	pin:SetTrackable(trackableMapInfo.trackableType, trackableMapInfo.trackableID);
 
@@ -111,7 +108,7 @@ end
 ContentTrackingPinMixin = CreateFromMixins(MapCanvasPinMixin);
 
 function ContentTrackingPinMixin:OnLoad()
-	self:SetScalingLimits(1, 0.4125, 0.4125);
+	self:SetDefaultMapPinScale();
 
 	self:SetNudgeTargetFactor(0.01);
 	self:SetNudgeZoomedOutFactor(1.0);

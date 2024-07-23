@@ -210,7 +210,7 @@ function FrameStackTooltip_OnTooltipSetFrameStack(self, highlightFrame)
 	end
 
 	if self.shouldSetFSObj then
-		fsobj = self.highlightFrame;
+		fsobj = self.highlightFrame; -- luacheck: ignore 111 (setting non-standard global variable)
 		self.shouldSetFSObj = nil;
 
 		self:TriggerEvent(self.Event.FrameStackOnHighlightFrameChanged, fsobj);

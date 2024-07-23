@@ -75,7 +75,7 @@ end
 
 function DressUpVisualLink(forcedFrame, link, ...)
 	local frame = forcedFrame or GetFrameAndSetBackground();
-	local itemModifiedAppearanceIDs, forcePlayerRefresh = nil;
+	local itemModifiedAppearanceIDs, forcePlayerRefresh = nil, nil;
 	DressUpFrame_Show(frame, itemModifiedAppearanceIDs, forcePlayerRefresh, link);
 
 	local playerActor = frame.ModelScene:GetPlayerActor();
@@ -167,7 +167,8 @@ function DressUpBattlePetLink(link, forcedFrame)
 				return DressUpBattlePet(creatureID, displayID, speciesID, link, forcedFrame);
 			else
 				speciesID = tonumber(linkID);
-				local _, _, _, creatureID, _, _, _, _, _, _, _, displayID = C_PetJournal.GetPetInfoBySpeciesID(speciesID);
+				local _;
+				_, _, _, creatureID, _, _, _, _, _, _, _, displayID = C_PetJournal.GetPetInfoBySpeciesID(speciesID);
 				displayID = (battlePetDisplayID and battlePetDisplayID ~= "0") and battlePetDisplayID or displayID;
 				return DressUpBattlePet(creatureID, displayID, speciesID, link, forcedFrame);
 			end
@@ -710,7 +711,7 @@ function DressUpOutfitDetailsSlotMixin:OnEnter()
 end
 
 function DressUpOutfitDetailsSlotMixin:CheckForWarningString()
-	local warningString = CollectionWardrobeUtil.GetVisibilityWarning(DressUpFrame.ModelScene:GetPlayerActor(), self.transmogLocation);
+	local warningString = CollectionWardrobeUtil.GetSlotVisibilityWarning(DressUpFrame.ModelScene:GetPlayerActor(), self.transmogLocation);
 	if warningString then
 		GameTooltip_AddNormalLine(GameTooltip, warningString);
 	end
@@ -759,7 +760,7 @@ function DressUpOutfitDetailsSlotMixin:RefreshAppearanceTooltip()
 	local inLegionArtifactCategory = false;
 	local slotName = TransmogUtil.GetSlotName(self.slotID);
 	local subheaderString = HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(_G[slotName]);
-	local warningString = CollectionWardrobeUtil.GetVisibilityWarning(DressUpFrame.ModelScene:GetPlayerActor(), self.transmogLocation);
+	local warningString = CollectionWardrobeUtil.GetSlotVisibilityWarning(DressUpFrame.ModelScene:GetPlayerActor(), self.transmogLocation);
 	local showTrackingInfo = false;
 	self.tooltipSourceIndex, self.tooltipCycle = CollectionWardrobeUtil.SetAppearanceTooltip(GameTooltip, sources, self.transmogID, self.tooltipSourceIndex, showUseError, inLegionArtifactCategory, subheaderString, warningString, showTrackingInfo);
 	GameTooltip_AddColoredLine(GameTooltip, TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNKNOWN, LIGHTBLUE_FONT_COLOR);
@@ -831,6 +832,8 @@ function DressUpOutfitDetailsSlotMixin:SetItemInfo(transmogID, appearanceInfo, i
 		else
 			slotState = OUTFIT_SLOT_STATE_ERROR;
 		end
+	elseif not appearanceInfo.isAnySourceValidForPlayer then
+		slotState = OUTFIT_SLOT_STATE_ERROR;
 	elseif appearanceInfo.appearanceIsCollected then
 		-- collected
 		slotState = OUTFIT_SLOT_COLLECTED;

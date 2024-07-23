@@ -65,7 +65,7 @@
 					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="8" y="-2"/>
 				</Anchors>
 			</EventFrame>
-			<CheckButton parentKey="HideUnownedCheckBox" inherits="UICheckButtonTemplate">
+			<CheckButton parentKey="HideUnownedCheckbox" inherits="UICheckButtonTemplate">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="11" y="6"/>
 				</Anchors>

@@ -11,6 +11,10 @@ local COMMUNITIES_LIST_EVENTS = {
 	
 local NEW_COMMUNITY_FLASH_DURATION = 6.0;
 
+function CreateCommunitiesIconNotificationMarkup(text, xoffset, yoffset)
+	return string.format("%s %s", text, CreateAtlasMarkup("communities-icon-notification", 11, 11, xoffset, yoffset));
+end
+
 CommunitiesListMixin = {};
 
 function CommunitiesListMixin:GetCommunitiesFrame()
@@ -269,16 +273,8 @@ function CommunitiesListMixin:OnLoad()
 
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 
-	self.ScrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnScroll, self.OnScrollBoxScroll, self);
-	
 	self.declinedInvitationIds = {};
 	self.pendingFavorites = {};
-end
-
-function CommunitiesListMixin:OnScrollBoxScroll(scrollPercentage, visibleExtentPercentage, panExtentPercentag)
-	if self:GetSelectedEntryForDropDown() ~= nil then
-		HideDropDownMenu(1);
-	end
 end
 
 function CommunitiesListMixin:RegisterEventCallbacks()
@@ -315,22 +311,14 @@ function CommunitiesListMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, COMMUNITIES_LIST_EVENTS);
 end
 
-function CommunitiesListMixin:ScrollToClub(clubId, noScrollInterpolation)
+function CommunitiesListMixin:ScrollToClub(clubId)
 	self.ScrollBox:ScrollToElementDataByPredicate(function(elementData)
 		return elementData.clubInfo and elementData.clubInfo.clubId == clubId;
-	end, ScrollBoxConstants.AlignCenter, noScrollInterpolation);
+	end, ScrollBoxConstants.AlignCenter);
 end
 
 function CommunitiesListMixin:OnClubSelected(clubId)
 	self:Update();
-end
-
-function CommunitiesListMixin:SetSelectedEntryForDropDown(entry)
-	self.selectedEntryForDropDown = entry;
-end
-
-function CommunitiesListMixin:GetSelectedEntryForDropDown()
-	return self.selectedEntryForDropDown;
 end
 
 function CommunitiesListMixin:SetFavorite(clubId, isFavorite)
@@ -789,94 +777,105 @@ function CommunitiesListEntryMixin:OnClick(button)
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		self:GetCommunitiesFrame():SelectClub(self.clubId);
 	elseif button == "RightButton" then
-		local clubInfo = C_Club.GetClubInfo(self:GetClubId());
+		local clubId = self:GetClubId();
+		if not clubId then
+			return;
+		end
+
+		local clubInfo = C_Club.GetClubInfo(clubId);
 		if not clubInfo then
 			return;
 		end
 
-		local communitiesList = self:GetParent():GetParent():GetParent();
-		communitiesList:SetSelectedEntryForDropDown(self);
-		ToggleDropDownMenu(1, nil, communitiesList.EntryDropDown, self, 0, 0);
-	end
-end
-
-function CommunitiesListEntryDropDown_Initialize(self, level)
-	local communitiesList = self:GetParent();
-	local selectedCommunitiesListEntry = communitiesList:GetSelectedEntryForDropDown();
-	if not selectedCommunitiesListEntry then
-		return;
-	end
-	
-	local clubId = selectedCommunitiesListEntry:GetClubId();
-	if clubId then
-		local clubInfo = C_Club.GetClubInfo(clubId);
 		local memberInfo = C_Club.GetMemberInfoForSelf(clubId);
-		if clubInfo and memberInfo then
-			self.clubMemberInfo = memberInfo;
-			self.clubInfo = clubInfo;
+		if memberInfo then
+			local contextData =
+			{
+				name = clubInfo.name,
+				clubMemberInfo = memberInfo,
+				clubInfo = clubInfo,
+			};
+
 			if clubInfo.clubType == Enum.ClubType.Guild then 
-				UnitPopup_ShowMenu(self, "GUILDS_GUILD", nil, clubInfo.name);
+				UnitPopup_OpenMenu("GUILDS_GUILD", contextData);
 			else 
-				UnitPopup_ShowMenu(self, "COMMUNITIES_COMMUNITY", nil, clubInfo.name);
+				UnitPopup_OpenMenu("COMMUNITIES_COMMUNITY", contextData);
 			end
 		end
 	end
 end
 
-function CommunitiesListEntryDropDown_OnLoad(self)
-	UIDropDownMenu_Initialize(self, CommunitiesListEntryDropDown_Initialize, "MENU");
+CommunitiesListDropdownMixin = {};
+
+function CommunitiesListDropdownMixin:OnLoad()
+	WowStyle1DropdownMixin.OnLoad(self);
+
+	self:SetSelectionTranslator(function(selection)
+		return selection.data.dropdownText;
+	end);
 end
 
-function CommunitiesListEntryDropDown_OnHide(self)
-	local communitiesList = self:GetParent();
-	communitiesList:SetSelectedEntryForDropDown(nil);
-	self.clubMemberInfo = nil;
-	self.clubInfo = nil;
-end
-
-CommunitiesListDropDownMenuMixin = {};
-
-function CommunitiesListDropDownMenuMixin:OnLoad()
-	UIDropDownMenu_SetWidth(self, self.width or 115);
-	self.Text:SetJustifyH("LEFT");
-end
-
-function CommunitiesListDropDownMenuMixin:OnShow()
-	UIDropDownMenu_Initialize(self, CommunitiesListDropDownMenu_Initialize);
-	local parent = self:GetParent();
-	UIDropDownMenu_SetSelectedValue(self, parent:GetSelectedClubId());
+function CommunitiesListDropdownMixin:OnShow()
+	self:SetupMenu();
 	self:UpdateUnreadNotification();
 
+	local parent = self:GetParent();
 	if parent.RegisterCallback then
 		parent:RegisterCallback(CommunitiesFrameMixin.Event.ClubSelected, self.OnCommunitiesClubSelected, self);
 	end
 end
 
-function CommunitiesListDropDownMenuMixin:OnHide()
+function CommunitiesListDropdownMixin:OnHide()
 	local parent = self:GetParent();
 	if parent.RegisterCallback then
 		parent:UnregisterCallback(CommunitiesFrameMixin.Event.ClubSelected, self);
 	end
 end
 
-function CommunitiesListDropDownMenuMixin:OnCommunitiesClubSelected(clubId)
+function CommunitiesListDropdownMixin:SetupMenu()
+	WowStyle1DropdownMixin.SetupMenu(self, function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_COMMUNITIES_LIST");
+
+		local clubs = C_Club.GetSubscribedClubs();
+		if not clubs then
+			return;
+		end
+
+		CommunitiesUtil.SortClubs(clubs);
+		
+		local function IsChecked(clubInfo)
+			return clubInfo.clubId == self:GetParent():GetSelectedClubId();
+		end
+
+		local function SetChecked(clubInfo)
+			self:GetParent():SelectClub(clubInfo.clubId);
+		end
+
+		for i, clubInfo in ipairs(clubs) do
+			local text = clubInfo.name;
+			clubInfo.dropdownText = text;
+
+			if CommunitiesUtil.DoesCommunityHaveUnreadMessages(clubInfo.clubId) then
+				text = CreateCommunitiesIconNotificationMarkup(text);
+			end
+
+			rootDescription:CreateRadio(text, IsChecked, SetChecked, clubInfo);
+		end
+	end);
+end
+
+function CommunitiesListDropdownMixin:OnCommunitiesClubSelected(clubId)
 	if clubId and self:IsVisible() then
 		self:OnClubSelected();
 	end
 end
 
-function CommunitiesListDropDownMenuMixin:OnClubSelected()
-	local parent = self:GetParent();
-	local clubId = parent:GetSelectedClubId();
-	UIDropDownMenu_SetSelectedValue(self, clubId);
-	
-	local clubInfo = C_Club.GetClubInfo(clubId);
-	UIDropDownMenu_SetText(self, clubInfo and clubInfo.name or "");
-	
+function CommunitiesListDropdownMixin:OnClubSelected()
+	self:SetupMenu();
 	self:UpdateUnreadNotification();
 end
 
-function CommunitiesListDropDownMenuMixin:UpdateUnreadNotification()
+function CommunitiesListDropdownMixin:UpdateUnreadNotification()
 	local parent = self:GetParent();
 	if parent.RegisterCallback then
 		local clubId = parent:GetSelectedClubId();
@@ -884,35 +883,5 @@ function CommunitiesListDropDownMenuMixin:UpdateUnreadNotification()
 	else
 		-- If our parent is not the communities frame we don't show unread notifications.
 		self.NotificationOverlay:SetShown(false);
-	end
-
-end
-
-function CommunitiesListDropDownMenu_Initialize(self)
-	local clubs = C_Club.GetSubscribedClubs();
-	if clubs ~= nil then
-		CommunitiesUtil.SortClubs(clubs);
-		local info = UIDropDownMenu_CreateInfo();
-		local parent = self:GetParent();
-		for i, clubInfo in ipairs(clubs) do
-			info.text = clubInfo.name;
-			if CommunitiesUtil.DoesCommunityHaveUnreadMessages(clubInfo.clubId) then
-				info.text = info.text.." "..CreateAtlasMarkup("communities-icon-notification", 11, 11);
-			end
-			
-			info.value = clubInfo.clubId;
-			info.func = function(button)
-				parent:SelectClub(button.value);
-			end
-			UIDropDownMenu_AddButton(info);
-		end
-		
-		local clubId = parent:GetSelectedClubId();
-		if clubId then
-			UIDropDownMenu_SetSelectedValue(self, clubId);
-			
-			local clubInfo = C_Club.GetClubInfo(clubId);
-			UIDropDownMenu_SetText(self, clubInfo and clubInfo.name or "");
-		end
 	end
 end

@@ -151,6 +151,14 @@
 		</xs:restriction>
 	</xs:simpleType>
 
+	<xs:simpleType name="PROPAGATE_MOUSE">
+		<xs:restriction base="xs:NMTOKEN">
+			<xs:enumeration value="Motion"/>
+			<xs:enumeration value="Clicks"/>
+			<xs:enumeration value="Both"/>
+		</xs:restriction>
+	</xs:simpleType>
+
 
 	<xs:element name="AbsValue">
 		<xs:complexType>
@@ -458,6 +466,7 @@
 		<xs:attribute name="protected" type="xs:boolean" default="false"/>
 		<xs:attribute name="secureReferenceKey" type="xs:string"/>
     <xs:attribute name="retainClickThroughOverride" type="xs:boolean" default="false"/>
+    <xs:attribute name="propagateMouseInput" type="PROPAGATE_MOUSE"/>
 	</xs:attributeGroup>
 
 	<xs:complexType name="LayoutFrameType">
@@ -980,6 +989,7 @@
 	</xs:complexType>
 	<xs:element name="Model" type="ModelType" substitutionGroup="ui:FrameRef"/>
 	<xs:element name="ModelFFX" type="ModelType" substitutionGroup="ui:FrameRef"/>
+  <xs:element name="MapScene" type="ModelType" substitutionGroup="ui:FrameRef"/>
 
 	<xs:complexType name="SimpleHTMLType">
 		<xs:complexContent>
@@ -1115,7 +1125,8 @@
 
 		<xs:attribute name="forbidden" type="xs:boolean" default="false"/>
 		<xs:attribute name="scriptsUseGivenEnv" type="xs:boolean" default="false"/>
-    <xs:attribute name="hideFromGlobalEnv" type="xs:boolean" default="false"/>
+		<xs:attribute name="addToSecureEnv" type="xs:boolean" default="false"/>
+		<xs:attribute name="hideFromGlobalEnv" type="xs:boolean" default="false"/>
 		<xs:attribute name="fullLockdown" type="xs:boolean" default="false"/>
 	</xs:complexType>
 
@@ -1561,6 +1572,7 @@
 			<xs:choice maxOccurs="unbounded">
 				<xs:element ref="AnimationRef"/>
 				<xs:element name="Scripts" type="AnimGroupScriptsType"/>
+				<xs:element name="KeyValues" type="KeyValuesType"/>
 			</xs:choice>
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string"/>
@@ -1578,6 +1590,7 @@
 	<!-- instrinsic types -->
 	<xs:element name="ContainedAlertFrame" type="ButtonType" substitutionGroup="ui:FrameRef"/>
 	<xs:element name="DropDownToggleButton" type="ButtonType" substitutionGroup="ui:FrameRef"/>
+	<xs:element name="DropdownButton" type="ButtonType" substitutionGroup="ui:FrameRef"/>
 	<xs:element name="EventEditBox" type="EditBoxType" substitutionGroup="ui:FrameRef"/>
 	<xs:element name="EventScrollFrame" type="ScrollFrameType" substitutionGroup="ui:FrameRef"/>
 	<xs:element name="EventFrame" type="FrameType" substitutionGroup="ui:FrameRef"/>

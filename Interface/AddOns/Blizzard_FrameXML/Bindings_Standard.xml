@@ -1232,20 +1232,20 @@
 		ToggleCharacter("ReputationFrame");
 	</Binding>
 	<Binding name="TOGGLECURRENCY" category="BINDING_HEADER_INTERFACE">
-		CharacterFrame_ToggleTokenFrame();
+		CharacterFrame:ToggleTokenFrame();
 	</Binding>
 
 	<Binding name="TOGGLESPELLBOOK" header="BLANK7" category="BINDING_HEADER_INTERFACE">
-		ToggleSpellBook(BOOKTYPE_SPELL);
+		PlayerSpellsUtil.ToggleSpellBookFrame();
 	</Binding>
 	<Binding name="TOGGLEPROFESSIONBOOK" category="BINDING_HEADER_INTERFACE">
-		ToggleSpellBook(BOOKTYPE_PROFESSION);
+		ToggleProfessionsBook();
 	</Binding>
 	<Binding name="TOGGLEPETBOOK" category="BINDING_HEADER_INTERFACE">
-		ToggleSpellBook(BOOKTYPE_PET);
+		PlayerSpellsUtil.ToggleSpellBookFrame(PlayerSpellsUtil.SpellBookCategories.Pet);
 	</Binding>
 	<Binding name="TOGGLETALENTS" category="BINDING_HEADER_INTERFACE">
-		ToggleTalentFrame();
+		PlayerSpellsUtil.ToggleClassTalentOrSpecFrame();
 	</Binding>
 
 	<Binding name="TOGGLEACHIEVEMENT" header="BLANK10" category="BINDING_HEADER_INTERFACE">
@@ -1445,6 +1445,9 @@
   </Binding>
 	<Binding name="TOGGLEANIMKITDISPLAY" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
 		ToggleAnimKitDisplay();
+	</Binding>
+	<Binding name="TOGGLEWINDDEBUGMENU" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		C_Debug.ToggleWindDebugMenu();
 	</Binding>
 	<Binding name="TOGGLEDEBUGAIDISPLAY" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
 		ToggleDebugAIDisplay();

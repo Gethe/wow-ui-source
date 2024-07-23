@@ -113,9 +113,6 @@
 		</Scripts>
 	</Frame>
 
-	<GameTooltip name="SettingsTooltip" inherits="SharedTooltipTemplate, DefaultScaleFrame" ignoreParentScale="true">
-		<KeyValues>
-			<KeyValue key="maxScale" value=".75" type="global"/>
-		</KeyValues>
+	<GameTooltip name="SettingsTooltip" inherits="SharedTooltipTemplate, TopLevelParentScaleFrameTemplate">
 	</GameTooltip>
 </Ui>

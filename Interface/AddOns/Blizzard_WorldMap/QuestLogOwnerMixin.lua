@@ -98,12 +98,12 @@ function QuestLogOwnerMixin:HandleUserActionOpenSelf(mapID)
 end
 
 function QuestLogOwnerMixin:SetDisplayState(displayState)
+	local hasSynchronizedDisplayState = false;
+
 	if displayState == DISPLAY_STATE_CLOSED then
 		HideUIPanel(self);
 	else
 		ShowUIPanel(self);
-
-		local hasSynchronizedDisplayState = false;
 
 		if displayState == DISPLAY_STATE_OPEN_MAXIMIZED then
 			if not self:IsMaximized() then

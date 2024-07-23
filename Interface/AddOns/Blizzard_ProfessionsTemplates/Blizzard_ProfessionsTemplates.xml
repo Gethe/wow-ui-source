@@ -138,13 +138,26 @@
 	</Frame>
 	<Frame name="ProfessionsCrafterTableCellCommissionTemplate" mixin="ProfessionsCrafterTableCellCommissionMixin" virtual="true">
 		<Frames>
-			<Frame parentKey="TipMoneyDisplayFrame" inherits="MoneyDisplayFrameTemplate" setAllPoints="true">
+			<Frame parentKey="TipMoneyDisplayFrame" inherits="MoneyDisplayFrameTemplate">
 				<KeyValues>
 					<KeyValue key="hideCopper" value="true" type="boolean"/>
 					<KeyValue key="useAuctionHouseIcons" value="true" type="boolean"/>
+					<KeyValue key="resizeToFit" value="true" type="boolean"/>
 				</KeyValues>
+				<Anchors>
+					<Anchor point="RIGHT"/>
+				</Anchors>
 			</Frame>
 		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="RewardIcon" atlas="ui_icon_chest_npcreward" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.TipMoneyDisplayFrame" relativePoint="LEFT" x="-5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 	</Frame>
 	<Frame name="ProfessionsCrafterTableCellMaxCommissionTemplate" inherits="ProfessionsCrafterTableCellCommissionTemplate" virtual="true">
 		<KeyValues>
@@ -295,5 +308,71 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 		</Scripts>
+	</Frame>
+
+	<Frame name="ProfessionsCurrencyTemplate" mixin="ProfessionsCurrencyWithLabelMixin" virtual="true">
+		<Size x="110" y="32"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+					<Size x="24" y="24"/>
+				</Texture>
+				<FontString parentKey="Amount" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="6" y="2"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="ProfessionsConcentrateContainerTemplate" virtual="true">
+		<Size x="90" y="108"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString parentKey="Label" inherits="GameFontNormalSmall" justifyH="CENTER" text="PROFESSIONS_CRAFTING_CONCENTRATION_HEADER">
+					<Size x="300" y="20"/>
+					<Anchors>
+						<Anchor point="TOP" y="-20"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton parentKey="ConcentrateToggleButton" mixin="ProfessionsConcentrateToggleButtonMixin" motionScriptsWhileDisabled="true">
+				<Size x="39" y="39"/>
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="-11"/>
+				</Anchors>
+				<NormalTexture parentKey="NormalTexture" atlas="UI-HUD-ActionBar-IconFrame" setAllPoints="true"/>
+				<PushedTexture parentKey="PushedTexture" atlas="UI-HUD-ActionBar-IconFrame-Down" setAllPoints="true"/>
+				<HighlightTexture parentKey="HighlightTexture" atlas="UI-HUD-ActionBar-IconFrame-Mouseover" setAllPoints="true"/>
+				<CheckedTexture parentKey="CheckedTexture" atlas="UI-HUD-ActionBar-IconFrame-Mouseover" setAllPoints="true"/>
+				<DisabledTexture parentKey="DisabledTexture" file="Interface\ICONS\UI_Concentration" desaturated="true" setAllPoints="true"/>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Icon" file="Interface\ICONS\UI_Concentration">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT" x="-2" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick method="OnClick"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</CheckButton>
+		</Frames>
 	</Frame>
 </Ui>

@@ -1,9 +1,9 @@
+-- luacheck: ignore 111 (setting non-standard global variable)
+
 local l10nTable = {
 	deDE = {
         localizeFrames = function()
-			RPEUpgradeMinimizedFrame:SetWidth(310);
-			RPEUpgradeMinimizedFrame.Title:SetWidth(160);
-			RPEUpgradeMinimizedFrame.Title:SetFontObject(GameFontNormalLarge);
+			RPEUpgradeMinimizedFrame.Title:SetFontObject(GameFontNormalLargeOutline);
         end,
 	},
 	enGB = {},
@@ -26,8 +26,6 @@ local l10nTable = {
 	itIT = {},
 	koKR = {
         localizeFrames = function()
-			AccountLogin.UI.CommunityButton:SetPoint("BOTTOMLEFT", AccountLogin.UI, "BOTTOMLEFT", 10, 80);
-
 			-- Defined variable to show gameroom billing messages
 			SHOW_GAMEROOM_BILLING_FRAME = 1;
 

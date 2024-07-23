@@ -194,14 +194,40 @@ function VignetteDataProviderMixin:GetPin(vignetteGUID, vignetteInfo)
 	end
 end
 
---[[ Pin ]]--
-VignettePinMixin = CreateFromMixins(MapCanvasPinMixin);
+SuperTrackableVignettePinMixin = CreateFromMixins(SuperTrackablePinMixin);
+
+function SuperTrackableVignettePinMixin:GetSuperTrackAccessorAPIName()
+	return "GetSuperTrackedVignette"; -- override
+end
+
+function SuperTrackableVignettePinMixin:GetSuperTrackMutatorAPIName()
+	return "SetSuperTrackedVignette"; -- override
+end
+
+function SuperTrackableVignettePinMixin:DoesSuperTrackDataMatch(...)
+	-- override
+	local vignetteGUID = select(1, ...);
+	local myVignetteGUID = self:GetSuperTrackData();
+	if myVignetteGUID then
+		return myVignetteGUID == vignetteGUID;
+	end
+
+	return false;
+end
+
+function SuperTrackableVignettePinMixin:GetSuperTrackData()
+	return self.vignetteGUID;
+end
+
+VignettePinMixin = CreateFromMixins(MapCanvasPinMixin, SuperTrackableVignettePinMixin);
 
 function VignettePinMixin:OnLoad()
 	self:SetScalingLimits(1, 1.0, 1.2);
 end
 
 function VignettePinMixin:OnAcquired(vignetteGUID, vignetteInfo, frameIndex)
+	SuperTrackablePinMixin.OnAcquired(self, vignetteInfo, frameIndex);
+
 	self.dataProvider = vignetteInfo.dataProvider;
 	self.vignetteGUID = vignetteGUID;
 	self.name = vignetteInfo.name;
@@ -380,10 +406,12 @@ function VignettePinMixin:OnMouseEnter()
 			GameTooltip:SetPadding(0, verticalPadding);
 		end
 	end
+    self:OnLegendPinMouseEnter();
 end
 
 function VignettePinMixin:OnMouseLeave()
 	GameTooltip:Hide();
+    self:OnLegendPinMouseLeave();
 end
 
 function VignettePinMixin:DisplayNormalTooltip()
@@ -429,7 +457,7 @@ end
 
 --[[ Fyakk Flight Pin ]]--
 
-FyrakkFlightVignettePinMixin = CreateFromMixins(VignettePinMixin)
+FyrakkFlightVignettePinMixin = CreateFromMixins(VignettePinMixin);
 
 function FyrakkFlightVignettePinMixin:OnLoad()
 	-- set up rotation vectors
@@ -476,4 +504,17 @@ end
 
 function FyrakkFlightVignettePinMixin:Remove()
 	self:Hide();
+end
+
+function FyrakkFlightVignettePinMixin:UpdateSuperTrackTextureAnchors()
+	if self:IsSuperTracked() and not self.isAnchored then
+		self.isAnchored = true;
+
+		self.SuperTrackGlow:ClearAllPoints();
+		self.SuperTrackGlow:SetPoint("TOPLEFT", self, "TOPLEFT", -50, 50);
+		self.SuperTrackGlow:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 50, -50);
+
+		self.SuperTrackMarker:ClearAllPoints();		
+		self.SuperTrackMarker:SetPoint("CENTER", self, "BOTTOMRIGHT", 0, -15);
+	end
 end

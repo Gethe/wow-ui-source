@@ -76,6 +76,16 @@ local ClassTalents =
 			},
 		},
 		{
+			Name = "GetActiveHeroTalentSpec",
+			Type = "Function",
+			Documentation = { "Returns the SubTreeID of the player's active Hero Talent Specialization SubTree." },
+
+			Returns =
+			{
+				{ Name = "heroSpecID", Type = "number", Nilable = true, Documentation = { "SubTreeID of the player's active Hero Talent Specialization or nil if no Specialization is active." } },
+			},
+		},
+		{
 			Name = "GetConfigIDsBySpecID",
 			Type = "Function",
 
@@ -96,6 +106,23 @@ local ClassTalents =
 			Returns =
 			{
 				{ Name = "hasStarterBuild", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetHeroTalentSpecsForClassSpec",
+			Type = "Function",
+			Documentation = { "Returns the SubTreeIDs of the Hero Talent Specializations available to a Class Specialization and config; Returns nothing if none available" },
+
+			Arguments =
+			{
+				{ Name = "configID", Type = "number", Nilable = true, Documentation = { "If not supplied, defaults to the player's active config" } },
+				{ Name = "classSpecID", Type = "number", Nilable = true, Documentation = { "If not supplied, defaults to the player's active spec" } },
+			},
+
+			Returns =
+			{
+				{ Name = "subTreeIDs", Type = "table", InnerType = "number", Nilable = true, Documentation = { "SubTreeIDs of each Hero Talent Specialization" } },
+				{ Name = "requiredPlayerLevel", Type = "number", Nilable = true, Documentation = { "The player level at which one of the Hero Talent Specializations can be activated" } },
 			},
 		},
 		{
@@ -146,8 +173,20 @@ local ClassTalents =
 			},
 		},
 		{
+			Name = "HasUnspentHeroTalentPoints",
+			Type = "Function",
+			Documentation = { "Returns whether the player has any unspent talent points in their active hero talent tree. If hasUnspentPoints is true, numHeroPoints will be greater than zero." },
+
+			Returns =
+			{
+				{ Name = "hasUnspentPoints", Type = "bool", Nilable = false },
+				{ Name = "numHeroPoints", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "HasUnspentTalentPoints",
 			Type = "Function",
+			Documentation = { "Returns whether the player has any unspent talent points in their class or spec talent trees. If hasUnspentPoints is true, the number of unspent points for at least one of the trees will be greater than zero. Hero talent points are not included by this function." },
 
 			Returns =
 			{
@@ -358,6 +397,7 @@ local ClassTalents =
 			Fields =
 			{
 				{ Name = "nodeID", Type = "number", Nilable = false },
+				{ Name = "ranksGranted", Type = "number", Nilable = false },
 				{ Name = "ranksPurchased", Type = "number", Nilable = false },
 				{ Name = "selectionEntryID", Type = "number", Nilable = false },
 			},

@@ -2,6 +2,5 @@
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
 ## Dependencies: Blizzard_Fonts_Glue, Blizzard_FontStyles_Shared
-## SuppressLocalTableRef: 1
 ## AllowLoad: Glue
 GlueFontStyles.xml

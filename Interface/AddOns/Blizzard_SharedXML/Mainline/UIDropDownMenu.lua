@@ -1,3 +1,5 @@
+local envTable = GetCurrentEnvironment();
+
 UIDROPDOWNMENU_MAXBUTTONS = 1;
 UIDROPDOWNMENU_MAXLEVELS = 3;
 UIDROPDOWNMENU_BUTTON_HEIGHT = 16;
@@ -18,6 +20,9 @@ UIDROPDOWNMENU_DEFAULT_TEXT_HEIGHT = nil;
 UIDROPDOWNMENU_DEFAULT_WIDTH_PADDING = 25;
 -- List of open menus
 OPEN_DROPDOWNMENUS = {};
+
+local securecallfunction = securecallfunction;
+local securecall = securecall;
 
 local UIDropDownMenuDelegate = CreateFrame("FRAME");
 
@@ -45,12 +50,12 @@ function UIDropDownMenu_InitializeHelper(frame)
 	-- Hide all the buttons
 	local button, dropDownList;
 	for i = 1, UIDROPDOWNMENU_MAXLEVELS, 1 do
-		dropDownList = _G["DropDownList"..i];
+		dropDownList = envTable["DropDownList"..i];
 		if ( i >= UIDROPDOWNMENU_MENU_LEVEL or frame ~= UIDROPDOWNMENU_OPEN_MENU ) then
 			dropDownList.numButtons = 0;
 			dropDownList.maxWidth = 0;
 			for j=1, UIDROPDOWNMENU_MAXBUTTONS, 1 do
-				button = _G["DropDownList"..i.."Button"..j];
+				button = envTable["DropDownList"..i.."Button"..j];
 				button:Hide();
 			end
 			dropDownList:Hide();
@@ -63,7 +68,7 @@ local function GetChild(frame, name, key)
 	if (frame[key]) then
 		return frame[key];
 	elseif name then
-		return _G[name..key];
+		return envTable[name..key];
 	end
 
 	return nil;
@@ -85,7 +90,7 @@ function UIDropDownMenu_Initialize(frame, initFunction, displayMode, level, menu
 		level = 1;
 	end
 
-	local dropDownList = _G["DropDownList"..level];
+	local dropDownList = envTable["DropDownList"..level];
 	dropDownList.dropdown = frame;
 	dropDownList.shouldRefresh = true;
 	dropDownList:SetWindow(frame:GetWindow());
@@ -129,7 +134,7 @@ function UIDropDownMenu_RefreshDropDownSize(self)
 	self:SetWidth(self.maxWidth + 25);
 
 	for i=1, UIDROPDOWNMENU_MAXBUTTONS, 1 do
-		local icon = _G[self:GetName().."Button"..i.."Icon"];
+		local icon = envTable[self:GetName().."Button"..i.."Icon"];
 
 		if ( icon.tFitDropDownSizeX ) then
 			icon:SetWidth(self.maxWidth - 5);
@@ -177,7 +182,7 @@ end
 function UIDropDownMenuButton_OnEnter(self)
 	if ( self.hasArrow ) then
 		local level =  self:GetParent():GetID() + 1;
-		local listFrame = _G["DropDownList"..level];
+		local listFrame = envTable["DropDownList"..level];
 		if ( not listFrame or not listFrame:IsShown() or select(2, listFrame:GetPoint(1)) ~= self ) then
 			ToggleDropDownMenu(self:GetParent():GetID() + 1, self.value, nil, nil, nil, nil, self.menuList, self, nil, self.menuListDisplayMode);
 		end
@@ -188,7 +193,7 @@ function UIDropDownMenuButton_OnEnter(self)
 	if ( self.tooltipTitle and not self.noTooltipWhileEnabled and not UIDropDownMenuButton_ShouldShowIconTooltip(self) ) then
 		if ( self.tooltipOnButton ) then
 			local tooltip = GetAppropriateTooltip();
-			tooltip:SetOwner(self, "ANCHOR_RIGHT");
+			tooltip:SetOwner(self, self.tooltipAnchor or "ANCHOR_RIGHT");
 			GameTooltip_SetTitle(tooltip, self.tooltipTitle);
 			if self.tooltipInstruction then
 				GameTooltip_AddInstructionLine(tooltip, self.tooltipInstruction);
@@ -232,7 +237,7 @@ end
 
 function UIDropDownMenuButton_ShouldShowIconTooltip(self)
 	if self.Icon and (self.iconTooltipTitle or self.iconTooltipText) and (self.icon or self.mouseOverIcon) then
-		return GetMouseFocus() == self.Icon;
+		return self.Icon:IsMouseMotionFocus();
 	end
 	return false;
 end
@@ -306,6 +311,7 @@ info.tooltipWarning = [nil, STRING] -- Warning-style text of the tooltip shown o
 info.tooltipInstruction = [nil, STRING] -- Instruction-style text of the tooltip shown on mouseover
 info.tooltipOnButton = [nil, 1] -- Show the tooltip attached to the button instead of as a Newbie tooltip.
 info.tooltipBackdropStyle = [nil, TABLE] -- Optional Backdrop style of the tooltip shown on mouseover
+info.tooltipAnchor = [nil, STRING] -- Pass a custom tooltip anchor (Default is "ANCHOR_RIGHT")
 info.justifyH = [nil, "CENTER"] -- Justify button text
 info.arg1 = [ANYTHING] -- This is the first argument used by info.func
 info.arg2 = [ANYTHING] -- This is the second argument used by info.func
@@ -352,7 +358,7 @@ function UIDropDownMenu_CreateFrames(level, index)
 	while ( index > UIDROPDOWNMENU_MAXBUTTONS ) do
 		UIDROPDOWNMENU_MAXBUTTONS = UIDROPDOWNMENU_MAXBUTTONS + 1;
 		for i=1, UIDROPDOWNMENU_MAXLEVELS do
-			local newButton = CreateFrame("Button", "DropDownList"..i.."Button"..UIDROPDOWNMENU_MAXBUTTONS, _G["DropDownList"..i], "UIDropDownMenuButtonTemplate");
+			local newButton = CreateFrame("Button", "DropDownList"..i.."Button"..UIDROPDOWNMENU_MAXBUTTONS, envTable["DropDownList"..i], "UIDropDownMenuButtonTemplate");
 			newButton:SetID(UIDROPDOWNMENU_MAXBUTTONS);
 		end
 	end
@@ -400,6 +406,11 @@ function UIDropDownMenu_AddSpace(level)
 	UIDropDownMenu_AddButton(spaceInfo, level);
 end
 
+local function UIDropDownMenu_IsDisplayModeMenu()
+	local frame = UIDROPDOWNMENU_OPEN_MENU;
+	return frame and frame.displayMode == "MENU";
+end
+
 function UIDropDownMenu_AddButton(info, level)
 	--[[
 	Might to uncomment this if there are performance issues
@@ -411,7 +422,7 @@ function UIDropDownMenu_AddButton(info, level)
 		level = 1;
 	end
 
-	local listFrame = _G["DropDownList"..level];
+	local listFrame = envTable["DropDownList"..level];
 	local index = listFrame and (listFrame.numButtons + 1) or 1;
 	local width;
 
@@ -419,18 +430,18 @@ function UIDropDownMenu_AddButton(info, level)
 	UIDropDownMenuDelegate:SetAttribute("createframes-index", index);
 	UIDropDownMenuDelegate:SetAttribute("createframes", true);
 
-	listFrame = listFrame or _G["DropDownList"..level];
+	listFrame = listFrame or envTable["DropDownList"..level];
 	local listFrameName = listFrame:GetName();
 
 	-- Set the number of buttons in the listframe
 	listFrame.numButtons = index;
 
-	local button = _G[listFrameName.."Button"..index];
-	local normalText = _G[button:GetName().."NormalText"];
-	local icon = _G[button:GetName().."Icon"];
+	local button = envTable[listFrameName.."Button"..index];
+	local normalText = envTable[button:GetName().."NormalText"];
+	local icon = envTable[button:GetName().."Icon"];
 	-- This button is used to capture the mouse OnEnter/OnLeave events if the dropdown button is disabled, since a disabled button doesn't receive any events
 	-- This is used specifically for drop down menu time outs
-	local invisibleButton = _G[button:GetName().."InvisibleButton"];
+	local invisibleButton = envTable[button:GetName().."InvisibleButton"];
 
 	-- Default settings
 	button:SetDisabledFontObject(GameFontDisableSmallLeft);
@@ -547,6 +558,7 @@ function UIDropDownMenu_AddButton(info, level)
 	button.tooltipInstruction = info.tooltipInstruction;
 	button.tooltipWarning = info.tooltipWarning;
 	button.tooltipBackdropStyle = info.tooltipBackdropStyle;
+	button.tooltipAnchor = info.tooltipAnchor;
 	button.arg1 = info.arg1;
 	button.arg2 = info.arg2;
 	button.hasArrow = info.hasArrow;
@@ -577,7 +589,7 @@ function UIDropDownMenu_AddButton(info, level)
 		button.value = nil;
 	end
 
-	local expandArrow = _G[listFrameName.."Button"..index.."ExpandArrow"];
+	local expandArrow = envTable[listFrameName.."Button"..index.."ExpandArrow"];
 	expandArrow:SetPoint("RIGHT", info.arrowXOffset or 0, 0);
 	expandArrow:SetShown(info.hasArrow);
 	expandArrow:SetEnabled(not info.disabled);
@@ -606,15 +618,12 @@ function UIDropDownMenu_AddButton(info, level)
 	end
 
 	-- Adjust offset if displayMode is menu
-	local frame = UIDROPDOWNMENU_OPEN_MENU;
-	if ( frame and frame.displayMode == "MENU" ) then
-		if ( not info.notCheckable ) then
-			xPos = xPos - 6;
-		end
+	if (not info.notCheckable) and securecallfunction(UIDropDownMenu_IsDisplayModeMenu) then
+		xPos = xPos - 6;
 	end
 
 	-- If no open frame then set the frame to the currently initialized frame
-	frame = frame or UIDROPDOWNMENU_INIT_MENU;
+	local frame = frame or UIDROPDOWNMENU_INIT_MENU;
 
 	if ( info.leftPadding ) then
 		xPos = xPos + info.leftPadding;
@@ -639,8 +648,8 @@ function UIDropDownMenu_AddButton(info, level)
 	end
 
 	if not info.notCheckable then
-		local check = _G[listFrameName.."Button"..index.."Check"];
-		local uncheck = _G[listFrameName.."Button"..index.."UnCheck"];
+		local check = envTable[listFrameName.."Button"..index.."Check"];
+		local uncheck = envTable[listFrameName.."Button"..index.."UnCheck"];
 		if ( info.disabled ) then
 			check:SetDesaturated(true);
 			check:SetAlpha(0.5);
@@ -693,16 +702,16 @@ function UIDropDownMenu_AddButton(info, level)
 			uncheck:Show();
 		end
 	else
-		_G[listFrameName.."Button"..index.."Check"]:Hide();
-		_G[listFrameName.."Button"..index.."UnCheck"]:Hide();
+		envTable[listFrameName.."Button"..index.."Check"]:Hide();
+		envTable[listFrameName.."Button"..index.."UnCheck"]:Hide();
 	end
 	button.checked = info.checked;
 	button.NewFeature:SetShown(button.showNewLabel);
 
 	-- If has a colorswatch, show it and vertex color it
-	local colorSwatch = _G[listFrameName.."Button"..index.."ColorSwatch"];
+	local colorSwatch = envTable[listFrameName.."Button"..index.."ColorSwatch"];
 	if ( info.hasColorSwatch ) then
-		_G["DropDownList"..level.."Button"..index.."ColorSwatch"].Color:SetVertexColor(info.r, info.g, info.b);
+		envTable["DropDownList"..level.."Button"..index.."ColorSwatch"].Color:SetVertexColor(info.r, info.g, info.b);
 		button.r = info.r;
 		button.g = info.g;
 		button.b = info.b;
@@ -726,7 +735,7 @@ function UIDropDownMenu_AddButton(info, level)
 	local customFrameCount = listFrame.customFrames and #listFrame.customFrames or 0;
 	local height = ((index - customFrameCount) * buttonHeight) + (UIDROPDOWNMENU_BORDER_HEIGHT * 2);
 	for frameIndex = 1, customFrameCount do
-		local frame = listFrame.customFrames[frameIndex];
+		frame = listFrame.customFrames[frameIndex];
 		height = height + frame:GetPreferredEntryHeight();
 	end
 
@@ -757,7 +766,7 @@ end
 function UIDropDownMenu_GetMaxButtonWidth(self)
 	local maxWidth = 0;
 	for i=1, self.numButtons do
-		local button = _G[self:GetName().."Button"..i];
+		local button = envTable[self:GetName().."Button"..i];
 		local width = UIDropDownMenu_GetButtonWidth(button);
 		if ( width > maxWidth ) then
 			maxWidth = width;
@@ -778,8 +787,8 @@ function UIDropDownMenu_GetButtonWidth(button)
 
 	local width;
 	local buttonName = button:GetName();
-	local icon = _G[buttonName.."Icon"];
-	local normalText = _G[buttonName.."NormalText"];
+	local icon = envTable[buttonName.."Icon"];
+	local normalText = envTable[buttonName.."NormalText"];
 
 	if ( button.iconOnly and icon ) then
 		width = icon:GetWidth();
@@ -818,11 +827,11 @@ function UIDropDownMenu_Refresh(frame, useValue, dropdownLevel)
 		dropdownLevel = UIDROPDOWNMENU_MENU_LEVEL;
 	end
 
-	local listFrame = _G["DropDownList"..dropdownLevel];
+	local listFrame = envTable["DropDownList"..dropdownLevel];
 	listFrame.numButtons = listFrame.numButtons or 0;
 	-- Just redraws the existing menu
 	for i=1, UIDROPDOWNMENU_MAXBUTTONS do
-		local button = _G["DropDownList"..dropdownLevel.."Button"..i];
+		local button = envTable["DropDownList"..dropdownLevel.."Button"..i];
 		local checked = nil;
 
 		if(i <= listFrame.numButtons) then
@@ -847,8 +856,8 @@ function UIDropDownMenu_Refresh(frame, useValue, dropdownLevel)
 
 		if not button.notCheckable and button:IsShown() then
 			-- If checked show check image
-			local checkImage = _G["DropDownList"..dropdownLevel.."Button"..i.."Check"];
-			local uncheckImage = _G["DropDownList"..dropdownLevel.."Button"..i.."UnCheck"];
+			local checkImage = envTable["DropDownList"..dropdownLevel.."Button"..i.."Check"];
+			local uncheckImage = envTable["DropDownList"..dropdownLevel.."Button"..i.."UnCheck"];
 			if ( checked ) then
 				if not button.ignoreAsMenuSelection then
 					somethingChecked = true;
@@ -873,7 +882,7 @@ function UIDropDownMenu_Refresh(frame, useValue, dropdownLevel)
 			end
 		end
 
-		local normalText = _G[button:GetName().."NormalText"];
+		local normalText = envTable[button:GetName().."NormalText"];
 		button.NewFeature:SetShown(button.showNewLabel);
 		button.NewFeature:SetPoint("LEFT", normalText, "RIGHT", 20, 0);
 
@@ -891,16 +900,16 @@ function UIDropDownMenu_Refresh(frame, useValue, dropdownLevel)
 	end
 	if (not frame.noResize) then
 		for i=1, UIDROPDOWNMENU_MAXBUTTONS do
-			local button = _G["DropDownList"..dropdownLevel.."Button"..i];
+			local button = envTable["DropDownList"..dropdownLevel.."Button"..i];
 			button:SetWidth(maxWidth);
 		end
-		UIDropDownMenu_RefreshDropDownSize(_G["DropDownList"..dropdownLevel]);
+		UIDropDownMenu_RefreshDropDownSize(envTable["DropDownList"..dropdownLevel]);
 	end
 end
 
 function UIDropDownMenu_RefreshAll(frame, useValue)
 	for dropdownLevel = UIDROPDOWNMENU_MENU_LEVEL, 2, -1 do
-		local listFrame = _G["DropDownList"..dropdownLevel];
+		local listFrame = envTable["DropDownList"..dropdownLevel];
 		if ( listFrame:IsShown() ) then
 			UIDropDownMenu_Refresh(frame, nil, dropdownLevel);
 		end
@@ -959,17 +968,23 @@ function UIDropDownMenu_GetSelectedID(frame)
 	if ( frame.selectedID ) then
 		return frame.selectedID;
 	else
+		local selectedName = UIDropDownMenu_GetSelectedName(frame);
+		local selectedValue = UIDropDownMenu_GetSelectedValue(frame);
+		if ( not selectedName and not selectedValue ) then
+			return nil;
+		end
+
 		-- If no explicit selectedID then try to send the id of a selected value or name
-		local listFrame = _G["DropDownList"..UIDROPDOWNMENU_MENU_LEVEL];
+		local listFrame = envTable["DropDownList"..UIDROPDOWNMENU_MENU_LEVEL];
 		for i=1, listFrame.numButtons do
-			local button = _G["DropDownList"..UIDROPDOWNMENU_MENU_LEVEL.."Button"..i];
+			local button = envTable["DropDownList"..UIDROPDOWNMENU_MENU_LEVEL.."Button"..i];
 			-- See if checked or not
-			if ( UIDropDownMenu_GetSelectedName(frame) ) then
-				if ( button:GetText() == UIDropDownMenu_GetSelectedName(frame) ) then
+			if ( selectedName ) then
+				if ( button:GetText() == selectedName ) then
 					return i;
 				end
-			elseif ( UIDropDownMenu_GetSelectedValue(frame) ) then
-				if ( button.value == UIDropDownMenu_GetSelectedValue(frame) ) then
+			elseif ( selectedValue ) then
+				if ( button.value == selectedValue ) then
 					return i;
 				end
 			end
@@ -991,12 +1006,12 @@ function UIDropDownMenuButton_OnClick(self, mouseButton)
 	if ( self.keepShownOnClick ) then
 		if not self.notCheckable then
 			if ( checked ) then
-				_G[self:GetName().."Check"]:Hide();
-				_G[self:GetName().."UnCheck"]:Show();
+				envTable[self:GetName().."Check"]:Hide();
+				envTable[self:GetName().."UnCheck"]:Show();
 				checked = false;
 			else
-				_G[self:GetName().."Check"]:Show();
-				_G[self:GetName().."UnCheck"]:Hide();
+				envTable[self:GetName().."Check"]:Show();
+				envTable[self:GetName().."UnCheck"]:Hide();
 				checked = true;
 			end
 		end
@@ -1027,7 +1042,7 @@ function UIDropDownMenuButton_OnClick(self, mouseButton)
 end
 
 function HideDropDownMenu(level)
-	local listFrame = _G["DropDownList"..level];
+	local listFrame = envTable["DropDownList"..level];
 	listFrame:Hide();
 end
 
@@ -1041,7 +1056,7 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 	UIDROPDOWNMENU_MENU_LEVEL = level;
 	UIDROPDOWNMENU_MENU_VALUE = value;
 	local listFrameName = "DropDownList"..level;
-	local listFrame = _G[listFrameName];
+	local listFrame = envTable[listFrameName];
 	UIDropDownMenu_ClearCustomFrames(listFrame);
 
 	local tempFrame;
@@ -1053,6 +1068,7 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 	end
 	if ( listFrame:IsShown() and (UIDROPDOWNMENU_OPEN_MENU == tempFrame) ) then
 		listFrame:Hide();
+		return false;
 	else
 		-- Set the dropdownframe scale
 		local uiScale;
@@ -1160,24 +1176,24 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 		end
 
 		if dropDownFrame.hideBackdrops then
-			_G[listFrameName.."Backdrop"]:Hide();
-			_G[listFrameName.."MenuBackdrop"]:Hide();
+			envTable[listFrameName.."Backdrop"]:Hide();
+			envTable[listFrameName.."MenuBackdrop"]:Hide();
 		else
 			-- Change list box appearance depending on display mode
 			local displayMode = overrideDisplayMode or (dropDownFrame and dropDownFrame.displayMode) or nil;
 			if ( displayMode == "MENU" ) then
-				_G[listFrameName.."Backdrop"]:Hide();
-				_G[listFrameName.."MenuBackdrop"]:Show();
+				envTable[listFrameName.."Backdrop"]:Hide();
+				envTable[listFrameName.."MenuBackdrop"]:Show();
 			else
-				_G[listFrameName.."Backdrop"]:Show();
-				_G[listFrameName.."MenuBackdrop"]:Hide();
+				envTable[listFrameName.."Backdrop"]:Show();
+				envTable[listFrameName.."MenuBackdrop"]:Hide();
 			end
 		end
 
 		UIDropDownMenu_Initialize(dropDownFrame, dropDownFrame.initialize, nil, level, menuList);
 		-- If no items in the drop down don't show it
 		if ( listFrame.numButtons == 0 ) then
-			return;
+			return false;
 		end
 
 		listFrame.onShow = dropDownFrame.listFrameOnShow;
@@ -1189,7 +1205,7 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 		-- Hack will fix this in next revision of dropdowns
 		if ( not x or not y ) then
 			listFrame:Hide();
-			return;
+			return false;
 		end
 
 		listFrame.onHide = dropDownFrame.onHide;
@@ -1262,6 +1278,7 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 			listFrame.parentID = anchorFrame:GetID();
 			listFrame:SetPoint(point, anchorFrame, relativePoint, xOffset, yOffset);
 		end
+		return true;
 	end
 end
 
@@ -1270,13 +1287,13 @@ function CloseDropDownMenus(level)
 		level = 1;
 	end
 	for i=level, UIDROPDOWNMENU_MAXLEVELS do
-		_G["DropDownList"..i]:Hide();
+		envTable["DropDownList"..i]:Hide();
 	end
 end
 
 local function UIDropDownMenu_ContainsMouse()
 	for i = 1, UIDROPDOWNMENU_MAXLEVELS do
-		local dropdown = _G["DropDownList"..i];
+		local dropdown = envTable["DropDownList"..i];
 		if dropdown:IsShown() and dropdown:IsMouseOver() then
 			return true;
 		end
@@ -1301,7 +1318,7 @@ function UIDropDownMenu_OnShow(self)
 
 	for i=1, UIDROPDOWNMENU_MAXBUTTONS do
 		if (not self.noResize) then
-			_G[self:GetName().."Button"..i]:SetWidth(self.maxWidth);
+			envTable[self:GetName().."Button"..i]:SetWidth(self.maxWidth);
 		end
 	end
 
@@ -1310,7 +1327,7 @@ function UIDropDownMenu_OnShow(self)
 	end
 
 	if ( self:GetID() > 1 ) then
-		self.parent = _G["DropDownList"..(self:GetID() - 1)];
+		self.parent = envTable["DropDownList"..(self:GetID() - 1)];
 	end
 	EventRegistry:TriggerEvent("UIDropDownMenu.Show", self);
 end
@@ -1400,12 +1417,12 @@ function UIDropDownMenu_ClearAll(frame)
 
 	local button, checkImage, uncheckImage;
 	for i=1, UIDROPDOWNMENU_MAXBUTTONS do
-		button = _G["DropDownList"..UIDROPDOWNMENU_MENU_LEVEL.."Button"..i];
+		button = envTable["DropDownList"..UIDROPDOWNMENU_MENU_LEVEL.."Button"..i];
 		button:UnlockHighlight();
 
-		checkImage = _G["DropDownList"..UIDROPDOWNMENU_MENU_LEVEL.."Button"..i.."Check"];
+		checkImage = envTable["DropDownList"..UIDROPDOWNMENU_MENU_LEVEL.."Button"..i.."Check"];
 		checkImage:Hide();
-		uncheckImage = _G["DropDownList"..UIDROPDOWNMENU_MENU_LEVEL.."Button"..i.."UnCheck"];
+		uncheckImage = envTable["DropDownList"..UIDROPDOWNMENU_MENU_LEVEL.."Button"..i.."UnCheck"];
 		uncheckImage:Hide();
 	end
 end
@@ -1443,11 +1460,11 @@ function UIDropDownMenu_GetCurrentDropDown()
 end
 
 function UIDropDownMenuButton_GetChecked(self)
-	return _G[self:GetName().."Check"]:IsShown();
+	return envTable[self:GetName().."Check"]:IsShown();
 end
 
 function UIDropDownMenuButton_GetName(self)
-	return _G[self:GetName().."NormalText"]:GetText();
+	return envTable[self:GetName().."NormalText"]:GetText();
 end
 
 function UIDropDownMenuButton_OpenColorPicker(self, button)
@@ -1460,11 +1477,11 @@ function UIDropDownMenuButton_OpenColorPicker(self, button)
 end
 
 function UIDropDownMenu_DisableButton(level, id)
-	UIDropDownMenu_SetDropdownButtonEnabled(_G["DropDownList"..level.."Button"..id], false);
+	UIDropDownMenu_SetDropdownButtonEnabled(envTable["DropDownList"..level.."Button"..id], false);
 end
 
 function UIDropDownMenu_EnableButton(level, id)
-	UIDropDownMenu_SetDropdownButtonEnabled(_G["DropDownList"..level.."Button"..id], true);
+	UIDropDownMenu_SetDropdownButtonEnabled(envTable["DropDownList"..level.."Button"..id], true);
 end
 
 function UIDropDownMenu_SetDropdownButtonEnabled(button, enabled)
@@ -1476,7 +1493,7 @@ function UIDropDownMenu_SetDropdownButtonEnabled(button, enabled)
 end
 
 function UIDropDownMenu_SetButtonText(level, id, text, colorCode)
-	local button = _G["DropDownList"..level.."Button"..id];
+	local button = envTable["DropDownList"..level.."Button"..id];
 	if ( colorCode) then
 		button:SetText(colorCode..text.."|r");
 	else
@@ -1485,11 +1502,11 @@ function UIDropDownMenu_SetButtonText(level, id, text, colorCode)
 end
 
 function UIDropDownMenu_SetButtonNotClickable(level, id)
-	_G["DropDownList"..level.."Button"..id]:SetDisabledFontObject(GameFontHighlightSmallLeft);
+	envTable["DropDownList"..level.."Button"..id]:SetDisabledFontObject(GameFontHighlightSmallLeft);
 end
 
 function UIDropDownMenu_SetButtonClickable(level, id)
-	_G["DropDownList"..level.."Button"..id]:SetDisabledFontObject(GameFontDisableSmallLeft);
+	envTable["DropDownList"..level.."Button"..id]:SetDisabledFontObject(GameFontDisableSmallLeft);
 end
 
 function UIDropDownMenu_SetDropDownEnabled(dropDown, enabled, disabledtooltip)
@@ -1563,9 +1580,9 @@ end
 
 function UIDropDownMenu_GetValue(id)
 	--Only works if the dropdown has just been initialized, lame, I know =(
-	local button = _G["DropDownList1Button"..id];
+	local button = envTable["DropDownList1Button"..id];
 	if ( button ) then
-		return _G["DropDownList1Button"..id].value;
+		return envTable["DropDownList1Button"..id].value;
 	else
 		return nil;
 	end

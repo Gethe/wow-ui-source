@@ -9,10 +9,18 @@ SHINES_TO_ANIMATE = {};
 
 -- Macros
 MAX_ACCOUNT_MACROS = 120;
-MAX_CHARACTER_MACROS = 18;
+MAX_CHARACTER_MACROS = 30;
 
 CVarCallbackRegistry:SetCVarCachable("showCastableBuffs");
 CVarCallbackRegistry:SetCVarCachable("showDispelDebuffs");
+
+-- These are windows that rely on a parent frame to be open.  If the parent closes or a pushable frame overlaps them they must be hidden.
+UIChildWindows = {
+	"OpenMailFrame",
+	"GuildMemberDetailFrame",
+	"GuildBankPopupFrame",
+	"GearManagerDialog",
+};
 
 function GetNotchHeight()
     local notchHeight = 0;
@@ -110,6 +118,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("EQUIP_BIND_REFUNDABLE_CONFIRM");
 	self:RegisterEvent("EQUIP_BIND_TRADEABLE_CONFIRM");
 	self:RegisterEvent("USE_BIND_CONFIRM");
+	self:RegisterEvent("CONVERT_TO_BIND_TO_ACCOUNT_CONFIRM");
 	self:RegisterEvent("USE_NO_REFUND_CONFIRM");
 	self:RegisterEvent("CONFIRM_BEFORE_USE");
 	self:RegisterEvent("DELETE_ITEM_CONFIRM");
@@ -170,6 +179,8 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("RAID_INSTANCE_WELCOME");
+	self:RegisterEvent("DAILY_RESET_INSTANCE_WELCOME");
+	self:RegisterEvent("INSTANCE_RESET_WARNING");
 	self:RegisterEvent("RAISED_AS_GHOUL");
 	self:RegisterEvent("SPELL_CONFIRMATION_PROMPT");
 	self:RegisterEvent("SPELL_CONFIRMATION_TIMEOUT");
@@ -354,6 +365,15 @@ function UIParent_OnLoad(self)
 
 	-- Event(s) for ping system
 	self:RegisterEvent("PING_SYSTEM_ERROR");
+
+	-- Event(s) for PlayerSpells
+	self:RegisterEvent("USE_GLYPH");
+
+	-- Event(s) for Enchanting
+	self:RegisterEvent("ENCHANT_SPELL_SELECTED");
+
+	-- Events(s) for updating spell based item contexts
+	self:RegisterEvent("UPDATE_SPELL_TARGET_ITEM_CONTEXT");
 end
 
 function UIParent_OnShow(self)
@@ -497,8 +517,12 @@ function TalentFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_TalentUI");
 end
 
-function ClassTalentFrame_LoadUI()
-	UIParentLoadAddOn("Blizzard_ClassTalentUI");
+function PlayerSpellsFrame_LoadUI()
+	UIParentLoadAddOn("Blizzard_PlayerSpells");
+end
+
+function ProfessionsBook_LoadUI()
+	UIParentLoadAddOn("Blizzard_ProfessionsBook");
 end
 
 function ProfessionsFrame_LoadUI()
@@ -591,10 +615,6 @@ function PlayerChoice_LoadUI()
 	UIParentLoadAddOn("Blizzard_PlayerChoice");
 end
 
-function Store_LoadUI()
-	UIParentLoadAddOn("Blizzard_StoreUI");
-end
-
 function Garrison_LoadUI()
 	UIParentLoadAddOn("Blizzard_GarrisonUI");
 end
@@ -671,12 +691,6 @@ function BoostTutorial_AttemptLoad()
 	end
 end
 
-function ClassTrial_AttemptLoad()
-	if C_ClassTrial.IsClassTrialCharacter() and not C_AddOns.IsAddOnLoaded("Blizzard_ClassTrial") then
-		UIParentLoadAddOn("Blizzard_ClassTrial");
-	end
-end
-
 function ClassTrial_IsExpansionTrialUpgradeDialogShowing()
 	if ExpansionTrialThanksForPlayingDialog then
 		return ExpansionTrialThanksForPlayingDialog:IsShowingExpansionTrialUpgrade();
@@ -698,10 +712,6 @@ end
 
 function DeathRecap_LoadUI()
 	UIParentLoadAddOn("Blizzard_DeathRecap");
-end
-
-function Communities_LoadUI()
-	UIParentLoadAddOn("Blizzard_Communities");
 end
 
 function AzeriteRespecFrame_LoadUI()
@@ -786,24 +796,6 @@ function ToggleAchievementFrame(stats)
 	if ( ( HasCompletedAnyAchievement() or IsInGuild() ) and CanShowAchievementUI() ) then
 		AchievementFrame_LoadUI();
 		AchievementFrame_ToggleAchievementFrame(stats);
-	end
-end
-
-function ToggleTalentFrame(suggestedTab, inspectUnit)
-        if ( DISALLOW_FRAME_TOGGLING ) then
-		return;
-	end
-	if not inspectUnit and not C_SpecializationInfo.CanPlayerUseTalentSpecUI() then
-		return;
-	end
-
-	ClassTalentFrame_LoadUI();
-
-	ClassTalentFrame:SetInspectUnit(inspectUnit);
-	if not ClassTalentFrame:IsShown() then
-		ShowUIPanel(ClassTalentFrame);
-	else
-		ClassTalentFrame:CheckConfirmClose();
 	end
 end
 
@@ -941,7 +933,7 @@ function ToggleLFDParentFrame()
 	end
 end
 
-function ToggleHelpFrame()
+function ToggleHelpFrame(contextKey)
 	if (Kiosk.IsEnabled()) then
 		return;
 	end
@@ -949,7 +941,8 @@ function ToggleHelpFrame()
 	if ( HelpFrame:IsShown() ) then
 		HideUIPanel(HelpFrame);
 	else
-		HelpFrame:ShowFrame();
+		local key = nil;
+		HelpFrame:ShowFrame(key, contextKey);
 	end
 end
 
@@ -1015,7 +1008,6 @@ function ToggleCommunitiesFrame()
 		return;
 	end
 
-	Communities_LoadUI();
 	ToggleFrame(CommunitiesFrame);
 end
 
@@ -1029,20 +1021,8 @@ COLLECTIONS_JOURNAL_TAB_INDEX_TOYS = COLLECTIONS_JOURNAL_TAB_INDEX_PETS + 1;
 COLLECTIONS_JOURNAL_TAB_INDEX_HEIRLOOMS = COLLECTIONS_JOURNAL_TAB_INDEX_TOYS + 1;
 COLLECTIONS_JOURNAL_TAB_INDEX_APPEARANCES = COLLECTIONS_JOURNAL_TAB_INDEX_HEIRLOOMS + 1;
 
-local function CollectionsFrame_IsTabAllowed(tabIndex)
-	if PlayerGetTimerunningSeasonID() and tabIndex == COLLECTIONS_JOURNAL_TAB_INDEX_HEIRLOOMS then
-		-- Heirlooms are disabled during timerunning, so don't bother showing the tab
-		return false;
-	end
-	return true;
-end
-
 function ToggleCollectionsJournal(tabIndex)
 	if DISALLOW_FRAME_TOGGLING then
-		return;
-	end
-
-	if not CollectionsFrame_IsTabAllowed(tabIndex) then 
 		return;
 	end
 
@@ -1108,27 +1088,23 @@ function TogglePVPUI()
 	end
 end
 
-function ToggleStoreUI()
+function ToggleStoreUI(contextKey)
 	if ( Kiosk.IsEnabled() or DISALLOW_FRAME_TOGGLING ) then
 		return;
 	end
-
-	Store_LoadUI();
 
 	local wasShown = StoreFrame_IsShown();
 	if ( not wasShown ) then
 		--We weren't showing, now we are. We should hide all other panels.
 		securecall("CloseAllWindows");
 	end
-	StoreFrame_SetShown(not wasShown);
+	StoreFrame_SetShown(not wasShown, contextKey);
 end
 
 function SetStoreUIShown(shown)
 	if ( Kiosk.IsEnabled() or DISALLOW_FRAME_TOGGLING ) then
 		return;
 	end
-
-	Store_LoadUI();
 
 	local wasShown = StoreFrame_IsShown();
 	if ( not wasShown and shown ) then
@@ -1202,6 +1178,14 @@ function ToggleExpansionLandingPage()
 	ToggleFrame(ExpansionLandingPage);
 end
 
+function ToggleProfessionsBook()
+	if not ProfessionsBookFrame then
+		ProfessionsBook_LoadUI();
+	end
+
+	ToggleFrame(ProfessionsBookFrame);
+end
+
 
 function OpenDeathRecapUI(id)
 	if (not DeathRecapFrame) then
@@ -1213,8 +1197,9 @@ end
 function InspectUnit(unit)
 	InspectFrame_LoadUI();
 	if ( InspectFrame_Show ) then
-		if ( ClassTalentFrame and ClassTalentFrame:IsInspecting() ) then
-			ClassTalentFrame:LockInspect();
+		if ( PlayerSpellsFrame and PlayerSpellsFrame:IsInspecting() ) then
+			-- If already inspecting a unit's talents, close that frame to clear out that prior inspect before starting the new inspect
+			HideUIPanel(PlayerSpellsFrame);
 		end
 
 		InspectFrame_Show(unit);
@@ -1287,8 +1272,8 @@ local function PlayBattlefieldBanner(self)
 	end
 end
 
-local function HandlesGlobalMouseEvent(focus, buttonID, event)
-	return focus and focus.HandlesGlobalMouseEvent and focus:HandlesGlobalMouseEvent(buttonID, event);
+local function HandlesGlobalMouseEvent(focus, buttonName, event)
+	return focus and focus.HandlesGlobalMouseEvent and focus:HandlesGlobalMouseEvent(buttonName, event);
 end
 
 local function HasVisibleAutoCompleteBox(autoCompleteBoxList, mouseFocus)
@@ -1548,26 +1533,22 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "EQUIP_BIND_CONFIRM" ) then
 		StaticPopup_Hide("EQUIP_BIND_REFUNDABLE");
 		StaticPopup_Hide("EQUIP_BIND_TRADEABLE");
-		local dialog = StaticPopup_Show("EQUIP_BIND");
-		if ( dialog ) then
-			dialog.data = arg1;
-		end
+		local textArg1, textArg2 = nil, nil;
+		StaticPopup_Show("EQUIP_BIND", textArg1, textArg2, { slot = arg1, itemLocation = arg2 });
 	elseif ( event == "EQUIP_BIND_REFUNDABLE_CONFIRM" ) then
 		StaticPopup_Hide("EQUIP_BIND");
 		StaticPopup_Hide("EQUIP_BIND_TRADEABLE");
-		local dialog = StaticPopup_Show("EQUIP_BIND_REFUNDABLE");
-		if ( dialog ) then
-			dialog.data = arg1;
-		end
+		local textArg1, textArg2 = nil, nil;
+		StaticPopup_Show("EQUIP_BIND_REFUNDABLE", textArg1, textArg2, { slot = arg1, itemLocation = arg2 });
 	elseif ( event == "EQUIP_BIND_TRADEABLE_CONFIRM" ) then
 		StaticPopup_Hide("EQUIP_BIND");
 		StaticPopup_Hide("EQUIP_BIND_REFUNDABLE");
-		local dialog = StaticPopup_Show("EQUIP_BIND_TRADEABLE");
-		if ( dialog ) then
-			dialog.data = arg1;
-		end
+		local textArg1, textArg2 = nil, nil;
+		StaticPopup_Show("EQUIP_BIND_TRADEABLE", textArg1, textArg2, { slot = arg1, itemLocation = arg2 });
 	elseif ( event == "USE_BIND_CONFIRM" ) then
 		StaticPopup_Show("USE_BIND");
+	elseif ( event == "CONVERT_TO_BIND_TO_ACCOUNT_CONFIRM" ) then
+		StaticPopup_Show("CONVERT_TO_BIND_TO_ACCOUNT_CONFIRM");
 	elseif( event == "USE_NO_REFUND_CONFIRM" )then
 		StaticPopup_Show("USE_NO_REFUND_CONFIRM");
 	elseif ( event == "CONFIRM_BEFORE_USE" ) then
@@ -1674,8 +1655,12 @@ function UIParent_OnEvent(self, event, ...)
 			if spellConfirmation.spellID then
 				if spellConfirmation.confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_STATIC_TEXT then
 					StaticPopup_Show("SPELL_CONFIRMATION_PROMPT", spellConfirmation.text, spellConfirmation.duration, spellConfirmation.spellID);
+				elseif spellConfirmation.confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_STATIC_TEXT_ALERT then
+					StaticPopup_Show("SPELL_CONFIRMATION_PROMPT_ALERT", spellConfirmation.text, spellConfirmation.duration, spellConfirmation.spellID);
 				elseif spellConfirmation.confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_SIMPLE_WARNING then
 					StaticPopup_Show("SPELL_CONFIRMATION_WARNING", spellConfirmation.text, nil, spellConfirmation.spellID);
+				elseif spellConfirmation.confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_SIMPLE_WARNING_ALERT then
+					StaticPopup_Show("SPELL_CONFIRMATION_WARNING_ALERT", spellConfirmation.text, nil, spellConfirmation.spellID);
 				elseif spellConfirmation.confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_BONUS_ROLL then
 					BonusRollFrame_StartBonusRoll(spellConfirmation.spellID, spellConfirmation.text, spellConfirmation.duration, spellConfirmation.currencyID, spellConfirmation.currencyCost, spellConfirmation.difficultyID);
 				end
@@ -1698,7 +1683,6 @@ function UIParent_OnEvent(self, event, ...)
 		self.battlefieldBannerShown = nil;
 
 		NPETutorial_AttemptToBegin(event);
-		ClassTrial_AttemptLoad();
 		BoostTutorial_AttemptLoad();
 
 		if Kiosk.IsEnabled() then
@@ -1804,8 +1788,8 @@ function UIParent_OnEvent(self, event, ...)
 
 		Designers previously wanted these disabled when feared, they seem to have changed their minds
 		CharacterMicroButton:Disable();
-		SpellbookMicroButton:Disable();
-		TalentMicroButton:Disable();
+		ProfessionMicroButton:Disable();
+		PlayerSpellsMicroButton:Disable();
 		QuestLogMicroButton:Disable();
 		GuildMicroButton:Disable();
 		WorldMapMicroButton:Disable();
@@ -1818,8 +1802,8 @@ function UIParent_OnEvent(self, event, ...)
 		SetDesaturation(MicroButtonPortrait, false);
 
 		CharacterMicroButton:Enable();
-		SpellbookMicroButton:Enable();
-		TalentMicroButton:Enable();
+		ProfessionMicroButton:Enable();
+		PlayerSpellsMicroButton:Enable();
 		QuestLogMicroButton:Enable();
 		GuildMicroButton:Enable();
 		WorldMapMicroButton:Enable();
@@ -1841,8 +1825,12 @@ function UIParent_OnEvent(self, event, ...)
 		local spellID, confirmType, text, duration, currencyID, currencyCost, difficultyID = ...;
 		if ( confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_STATIC_TEXT ) then
 			StaticPopup_Show("SPELL_CONFIRMATION_PROMPT", text, duration, spellID);
+		elseif ( confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_STATIC_TEXT_ALERT ) then
+			StaticPopup_Show("SPELL_CONFIRMATION_PROMPT_ALERT", text, duration, spellID);
 		elseif ( confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_SIMPLE_WARNING ) then
 			StaticPopup_Show("SPELL_CONFIRMATION_WARNING", text, nil, spellID);
+		elseif ( confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_SIMPLE_WARNING_ALERT ) then
+			StaticPopup_Show("SPELL_CONFIRMATION_WARNING_ALERT", text, nil, spellID);
 		elseif ( confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_BONUS_ROLL ) then
 			BonusRollFrame_StartBonusRoll(spellID, text, duration, currencyID, currencyCost, difficultyID);
 		end
@@ -2072,6 +2060,20 @@ function UIParent_OnEvent(self, event, ...)
 			end
 		end
 
+		local info = ChatTypeInfo["SYSTEM"];
+		DEFAULT_CHAT_FRAME:AddMessage(message, info.r, info.g, info.b, info.id);
+
+	elseif ( event == "DAILY_RESET_INSTANCE_WELCOME" ) then
+		local instanceName = arg1;
+		local resetTime = arg2;
+		message = format(DAILY_RESET_INSTANCE_WELCOME, instanceName, SecondsToTime(resetTime, nil, 1));
+		local info = ChatTypeInfo["SYSTEM"];
+		DEFAULT_CHAT_FRAME:AddMessage(message, info.r, info.g, info.b, info.id);
+
+	elseif ( event == "INSTANCE_RESET_WARNING" ) then
+		local warningString = arg1;
+		local resetTime = arg2;
+		message = format(warningString, SecondsToTime(resetTime, nil, 1));
 		local info = ChatTypeInfo["SYSTEM"];
 		DEFAULT_CHAT_FRAME:AddMessage(message, info.r, info.g, info.b, info.id);
 
@@ -2307,16 +2309,23 @@ function UIParent_OnEvent(self, event, ...)
 
 		ShowUIPanel(RuneforgeFrame);
 	elseif (event == "TRAIT_SYSTEM_INTERACTION_STARTED") then
-		GenericTraitUI_LoadUI();
-
+		-- TODO / NOTE : This is temporary, until we have a GameObject specifically for opening delves configuration.
+		--				 Until then, we're piggybacking off of the generic trait frame
 		local traitTreeID = ...;
-		GenericTraitFrame:SetTreeID(traitTreeID);
-		ShowUIPanel(GenericTraitFrame);
+		local DELVES_TEST_TREE = 874;
+		if traitTreeID == DELVES_TEST_TREE then
+			ShowUIPanel(DelvesCompanionConfigurationFrame);
+		else
+			GenericTraitUI_LoadUI();
+	
+			GenericTraitFrame:SetTreeID(traitTreeID);
+			ShowUIPanel(GenericTraitFrame);
+		end
 	-- Events for Reporting system
 	elseif (event == "REPORT_PLAYER_RESULT") then
 		local success = ...;
 		if (success) then
-			UIErrorsFrame:AddExternalErrorMessage(ERR_REPORT_SUBMITTED_SUCCESSFULLY);
+			UIErrorsFrame:AddExternalWarningMessage(ERR_REPORT_SUBMITTED_SUCCESSFULLY);
 			DEFAULT_CHAT_FRAME:AddMessage(COMPLAINT_ADDED);
 		else
 			UIErrorsFrame:AddExternalErrorMessage(ERR_REPORT_SUBMISSION_FAILED);
@@ -2334,10 +2343,11 @@ function UIParent_OnEvent(self, event, ...)
 		end
 
 		-- Close dropdown(s).
-		local mouseFocus = GetMouseFocus();
-		if not HandlesGlobalMouseEvent(mouseFocus, buttonID, event) then
-			UIDropDownMenu_HandleGlobalMouseEvent(buttonID, event);
-			SelectionPopouts:HandleGlobalMouseEvent(buttonID, event);
+		local mouseFoci = GetMouseFoci();
+		for _, mouseFocus in ipairs(mouseFoci) do
+			if not HandlesGlobalMouseEvent(mouseFocus, buttonID, event) then
+				UIDropDownMenu_HandleGlobalMouseEvent(buttonID, event);
+			end
 		end
 
 		-- Clear keyboard focus.
@@ -2346,15 +2356,18 @@ function UIParent_OnEvent(self, event, ...)
 			tinsert(autoCompleteBoxList, LFGListFrame.SearchPanel.AutoCompleteFrame);
 		end
 
-		if not HasVisibleAutoCompleteBox(autoCompleteBoxList, mouseFocus) then
-			if event == "GLOBAL_MOUSE_DOWN" and buttonID == "LeftButton" and not IsModifierKeyDown() then
-				local keyBoardFocus = GetCurrentKeyBoardFocus();
-				if keyBoardFocus then
-					local hasStickyFocus = keyBoardFocus.HasStickyFocus and keyBoardFocus:HasStickyFocus();
-					if keyBoardFocus.ClearFocus and not hasStickyFocus and keyBoardFocus ~= mouseFocus then
-						keyBoardFocus:ClearFocus();
-					end
- 				end
+
+		for _, mouseFocus in ipairs(mouseFoci) do
+			if not HasVisibleAutoCompleteBox(autoCompleteBoxList, mouseFocus) then
+				if event == "GLOBAL_MOUSE_DOWN" and buttonID == "LeftButton" and not IsModifierKeyDown() then
+					local keyBoardFocus = GetCurrentKeyBoardFocus();
+					if keyBoardFocus then
+						local hasStickyFocus = keyBoardFocus.HasStickyFocus and keyBoardFocus:HasStickyFocus();
+						if keyBoardFocus.ClearFocus and not hasStickyFocus and keyBoardFocus ~= mouseFocus then
+							keyBoardFocus:ClearFocus();
+						end
+ 					end
+				end
 			end
 		end
 	elseif (event == "SCRIPTED_ANIMATIONS_UPDATE") then
@@ -2383,6 +2396,18 @@ function UIParent_OnEvent(self, event, ...)
 	elseif event == "PING_SYSTEM_ERROR" then
 		local errorMsg = ...;
 		UIErrorsFrame:AddMessage(errorMsg, RED_FONT_COLOR:GetRGBA());
+	elseif event == "USE_GLYPH" then
+		self:UnregisterEvent("USE_GLYPH");
+		if(not PlayerSpellsFrame) then
+			PlayerSpellsUtil.OpenToSpellBookTab();
+			PlayerSpellsFrame.SpellBookFrame:OnEvent(event, ...);
+		end
+	elseif event == "ENCHANT_SPELL_SELECTED" then
+		PlaySound(SOUNDKIT.ENCHANTMENT_SELECTED);
+		ItemButtonUtil.OpenAndFilterBags(self);
+		ItemButtonUtil.OpenAndFilterCharacterFrame();
+	elseif event == "UPDATE_SPELL_TARGET_ITEM_CONTEXT" then
+		ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
 	end
 end
 
@@ -2457,7 +2482,7 @@ function UIParentManagedFrameContainerMixin:UpdateFrame(frame)
 	self.BottomManagedLayoutContainer:Layout();
 
 	if frame.isRightManagedFrame and ObjectiveTrackerFrame then
-		ObjectiveTracker_UpdateHeight();
+		ObjectiveTrackerFrame:UpdateHeight();
 	end
 end
 
@@ -2499,7 +2524,7 @@ function UIParentManagedFrameContainerMixin:RemoveManagedFrame(frame)
 	end
 
 	if ObjectiveTrackerFrame then
-		ObjectiveTracker_UpdateHeight();
+		ObjectiveTrackerFrame:UpdateHeight();
 	end
 
 	self:Layout();
@@ -2754,6 +2779,10 @@ end
 
 -- Function that handles the escape key functions
 function ToggleGameMenu()
+	if Menu.GetManager():HandleESC() then
+		return;
+	end
+
 	if ( CanAutoSetGamePadCursorControl(true) and (not IsModifierKeyDown()) ) then
 		-- There are a few gameplay related cancel cases we want to handle before toggling cursor control on.
 		if ( SpellStopCasting() ) then
@@ -2808,8 +2837,6 @@ function ToggleGameMenu()
 	elseif ( SpellStopTargeting() ) then
 	elseif(MatchCelebrationPartyPoseFrame and MatchCelebrationPartyPoseFrame:IsShown()) then
 	elseif ( SoulbindViewer and SoulbindViewer:HandleEscape()) then
-	elseif ( ClassTalentFrame and ClassTalentFrame:IsShown() ) then
-		ClassTalentFrame:CheckConfirmClose();
 	elseif ( ProfessionsFrame and ProfessionsFrame:IsShown() ) then
 		ProfessionsFrame:CheckConfirmClose();
 	elseif ( securecall("CloseAllWindows") ) then
@@ -3264,9 +3291,9 @@ function RefreshBuffs(frame, unit, numBuffs, suffix, checkCVar)
 
 	for i=numFrames + 1,numBuffs do
 		local buffName = frameName..suffix..i;
-		local frame = _G[buffName];
-		if frame then
-			frame:Hide();
+		local buffFrame = _G[buffName];
+		if buffFrame then
+			buffFrame:Hide();
 		else
 			break;
 		end
@@ -3505,100 +3532,7 @@ function AnimatedShine_OnUpdate(elapsed)
 end
 
 
--- Autocast shine stuff --
 
-AUTOCAST_SHINE_R = .95;
-AUTOCAST_SHINE_G = .95;
-AUTOCAST_SHINE_B = .32;
-
-AUTOCAST_SHINE_SPEEDS = { 2, 4, 6, 8 };
-AUTOCAST_SHINE_TIMERS = { 0, 0, 0, 0 };
-
-local AUTOCAST_SHINES = {};
-
-
-function AutoCastShine_OnLoad(self)
-	self.sparkles = {};
-
-	local name = self:GetName();
-
-	for i = 1, 16 do
-		tinsert(self.sparkles, _G[name .. i]);
-	end
-end
-
-function AutoCastShine_AutoCastStart(button, r, g, b)
-	if ( AUTOCAST_SHINES[button] ) then
-		return;
-	end
-
-	AUTOCAST_SHINES[button] = true;
-
-	if ( not r ) then
-		r, g, b = AUTOCAST_SHINE_R, AUTOCAST_SHINE_G, AUTOCAST_SHINE_B;
-	end
-
-	for _, sparkle in next, button.sparkles do
-		sparkle:Show();
-		sparkle:SetVertexColor(r, g, b);
-	end
-end
-
-function AutoCastShine_AutoCastStop(button)
-	AUTOCAST_SHINES[button] = nil;
-
-	for _, sparkle in next, button.sparkles do
-		sparkle:Hide();
-	end
-end
-
-function AutoCastShine_OnUpdate(self, elapsed)
-	for i in next, AUTOCAST_SHINE_TIMERS do
-		AUTOCAST_SHINE_TIMERS[i] = AUTOCAST_SHINE_TIMERS[i] + elapsed;
-		if ( AUTOCAST_SHINE_TIMERS[i] > AUTOCAST_SHINE_SPEEDS[i]*4 ) then
-			AUTOCAST_SHINE_TIMERS[i] = 0;
-		end
-	end
-
-	for button in next, AUTOCAST_SHINES do
-		self = button;
-		local parent, distance = self, self:GetWidth();
-
-		-- This is local to this function to save a lookup. If you need to use it elsewhere, might wanna make it global and use a local reference.
-		local AUTOCAST_SHINE_SPACING = 6;
-
-		for i = 1, 4 do
-			local timer = AUTOCAST_SHINE_TIMERS[i];
-			local speed = AUTOCAST_SHINE_SPEEDS[i];
-
-			if ( timer <= speed ) then
-				local basePosition = timer/speed*distance;
-				self.sparkles[0+i]:SetPoint("CENTER", parent, "TOPLEFT", basePosition, 0);
-				self.sparkles[4+i]:SetPoint("CENTER", parent, "BOTTOMRIGHT", -basePosition, 0);
-				self.sparkles[8+i]:SetPoint("CENTER", parent, "TOPRIGHT", 0, -basePosition);
-				self.sparkles[12+i]:SetPoint("CENTER", parent, "BOTTOMLEFT", 0, basePosition);
-			elseif ( timer <= speed*2 ) then
-				local basePosition = (timer-speed)/speed*distance;
-				self.sparkles[0+i]:SetPoint("CENTER", parent, "TOPRIGHT", 0, -basePosition);
-				self.sparkles[4+i]:SetPoint("CENTER", parent, "BOTTOMLEFT", 0, basePosition);
-				self.sparkles[8+i]:SetPoint("CENTER", parent, "BOTTOMRIGHT", -basePosition, 0);
-				self.sparkles[12+i]:SetPoint("CENTER", parent, "TOPLEFT", basePosition, 0);
-			elseif ( timer <= speed*3 ) then
-				local basePosition = (timer-speed*2)/speed*distance;
-				self.sparkles[0+i]:SetPoint("CENTER", parent, "BOTTOMRIGHT", -basePosition, 0);
-				self.sparkles[4+i]:SetPoint("CENTER", parent, "TOPLEFT", basePosition, 0);
-				self.sparkles[8+i]:SetPoint("CENTER", parent, "BOTTOMLEFT", 0, basePosition);
-				self.sparkles[12+i]:SetPoint("CENTER", parent, "TOPRIGHT", 0, -basePosition);
-			else
-				local basePosition = (timer-speed*3)/speed*distance;
-				self.sparkles[0+i]:SetPoint("CENTER", parent, "BOTTOMLEFT", 0, basePosition);
-				self.sparkles[4+i]:SetPoint("CENTER", parent, "TOPRIGHT", 0, -basePosition);
-				self.sparkles[8+i]:SetPoint("CENTER", parent, "TOPLEFT", basePosition, 0);
-				self.sparkles[12+i]:SetPoint("CENTER", parent, "BOTTOMRIGHT", -basePosition, 0);
-			end
-		end
-	end
-end
 
 function ConsolePrint(...)
 	ConsoleAddMessage(strjoin(" ", tostringall(...)));
@@ -3804,6 +3738,25 @@ function ConfirmOrLeaveLFGParty()
 	end
 end
 
+-- WALK_IN party members automatically leave the party upon zoning out
+-- Porting out of a delve is only allowed when the delve is complete (unless a hearthstone or other tool is used)
+function LeaveWalkInParty()
+	C_PartyInfo.DelveTeleportOut();
+end
+
+function ConfirmOrLeaveParty()
+	if ( not IsInGroup(LE_PARTY_CATEGORY_INSTANCE) ) then
+		return;
+	end
+
+	if ( IsPartyLFG() ) then
+		ConfirmOrLeaveLFGParty();
+	-- If the party is walk-in (aka Delve) *and* it is complete, let the player choose to just leave
+	elseif ( C_PartyInfo.IsPartyWalkIn() and C_PartyInfo.IsDelveComplete() ) then
+		LeaveWalkInParty();
+	end
+end
+
 function ConfirmOrLeaveBattlefield()
 	if ( GetBattlefieldWinner() ) then
 		LeaveBattlefield();
@@ -3986,17 +3939,6 @@ function GetSortedSelfResurrectOptions()
 	return options;
 end
 
-function OpenAchievementFrameToAchievement(achievementID)
-	if ( not AchievementFrame ) then
-		AchievementFrame_LoadUI();
-	end
-	if ( not AchievementFrame:IsShown() ) then
-		AchievementFrame_ToggleAchievementFrame(false, C_AchievementInfo.IsGuildAchievement(achievementID));
-	end
-
-	AchievementFrame_SelectAchievement(achievementID);
-end
-
 function IsLevelAtEffectiveMaxLevel(level)
 	return level >= GetMaxLevelForPlayerExpansion();
 end
@@ -4018,7 +3960,6 @@ function DisplayInterfaceActionBlockedMessage()
 		DEFAULT_CHAT_FRAME:AddMessage(INTERFACE_ACTION_BLOCKED, info.r, info.g, info.b, info.id);
 	end
 end
-
 function AllowChatFramesToShow(chatFrame)
 	-- this is InGame - and we always show while InGame.  chatFrame is not referenced, only Glues
 	return true;

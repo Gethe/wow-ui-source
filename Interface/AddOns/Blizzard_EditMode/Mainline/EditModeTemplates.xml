@@ -74,87 +74,9 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="EditModeDropdownEntryTemplate" inherits="UIDropDownCustomMenuEntryTemplate" mixin="EditModeDropdownEntryMixin" virtual="true">
-		<Size x="210" y="16"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="Highlight" file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD" setAllPoints="true" hidden="true"/>
-			</Layer>
-			<Layer level="ARTWORK">
-				<FontString parentKey="Text" inherits="GameFontHighlightSmallLeft" maxLines="1">
-					<Anchors>
-						<Anchor point="LEFT"/>
-					</Anchors>
-				</FontString>
-				<Texture parentKey="Arrow" file="Interface\ChatFrame\ChatFrameExpandArrow" hidden="true">
-					<Anchors>
-						<Anchor point="RIGHT" x="-8"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-			<OnMouseDown method="OnMouseDown"/>
-			<OnMouseUp method="OnMouseUp"/>
-		</Scripts>
-	</Frame>
-
 	<Button name="EditModeChangeLayoutButtonTemplate" inherits="UIButtonTemplate" hidden="true" virtual="true">
 		<Size x="14" y="14"/>
 	</Button>
-
-	<Frame name="EditModeDropdownLayoutEntryTemplate" inherits="EditModeDropdownEntryTemplate" mixin="EditModeDropdownLayoutEntryMixin" virtual="true">
-		<HitRectInsets left="0" right="0" top="-4" bottom="4"/>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="SelectedCheck" file="Interface\Buttons\UI-CheckBox-Check" hidden="false">
-					<Size x="16" y="16"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Text" relativePoint="RIGHT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Button parentKey="CopyLayoutButton" inherits="EditModeChangeLayoutButtonTemplate">
-				<KeyValues>
-					<KeyValue key="tooltipText" value="HUD_EDIT_MODE_COPY_LAYOUT" type="global"/>
-					<KeyValue key="disabledTooltip" value="HUD_EDIT_MODE_ERROR_COPY" type="global"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="RIGHT" x="-8"/>
-				</Anchors>
-				<NormalTexture file="Interface\WorldMap\GEAR_64GREY" alpha="0.5"/>
-				<HighlightTexture file="Interface\WorldMap\GEAR_64GREY" alpha="0.5" alphaMode="ADD"/>
-			</Button>
-			<Button parentKey="RenameOrCopyLayoutButton" inherits="EditModeChangeLayoutButtonTemplate">
-				<KeyValues>
-					<KeyValue key="tooltipText" value="HUD_EDIT_MODE_RENAME_OR_COPY_LAYOUT" type="global"/>
-					<KeyValue key="disabledTooltip" value="HUD_EDIT_MODE_ERROR_RENAME_OR_COPY" type="global"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="RIGHT" x="-8"/>
-				</Anchors>
-				<NormalTexture file="Interface\WorldMap\GEAR_64GREY" alpha="0.5"/>
-				<HighlightTexture file="Interface\WorldMap\GEAR_64GREY" alpha="0.5" alphaMode="ADD"/>
-			</Button>
-			<Button parentKey="DeleteLayoutButton" inherits="EditModeChangeLayoutButtonTemplate">
-				<KeyValues>
-					<KeyValue key="tooltipText" value="HUD_EDIT_MODE_DELETE_LAYOUT" type="global"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.CopyLayoutButton" relativePoint="LEFT" x="-2"/>
-				</Anchors>
-				<NormalTexture file="Interface\Buttons\UI-GroupLoot-Pass-Up" alpha="0.5"/>
-				<HighlightTexture file="Interface\Buttons\UI-GroupLoot-Pass-Up" alpha="0.5" alphaMode="ADD"/>
-			</Button>
-		</Frames>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-		</Scripts>
-	</Frame>
 
 	<Button name="EditModeManagerFrameButtonTemplate" inherits="UIPanelButtonTemplate, UIButtonTemplate" virtual="true">
 		<Size x="220" y="28"/>
@@ -175,12 +97,11 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="Dropdown" inherits="DropDownControlTemplate" >
-				<Size x="225" y="30"/>
+			<DropdownButton parentKey="Dropdown" inherits="WowStyle1DropdownTemplate" >
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.Label" relativePoint="RIGHT" x="5" />
 				</Anchors>
-			</Frame>
+			</DropdownButton>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

@@ -2,7 +2,6 @@
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
 ## Dependencies: Blizzard_QuickKeybind, Blizzard_UIParent, Blizzard_EditMode, Blizzard_UIPanels_Game, Blizzard_TextStatusBar
-## SuppressLocalTableRef: 1
 ## AllowLoadGameType: standard
 ## AllowLoad: Game
 ActionButtonUtil.lua

@@ -445,7 +445,7 @@
 						</Texture>
 						<Texture parentKey="RelicRingBurstGlow" alpha="0" alphaMode="ADD">
 							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.Icon" />
+								<Anchor point="CENTER" relativeKey="$parent" />
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -462,17 +462,17 @@
 						</Texture>
 						<Texture parentKey="PointBurstLeft" alpha="0" alphaMode="ADD" atlas="ArtifactsFX-PointSideBurstLeft" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="RIGHT" relativeKey="$parent.RankBorder" relativePoint="LEFT" x="14" y="0"/>
+								<Anchor point="RIGHT" relativeKey="$parent" relativePoint="LEFT" x="14" y="0"/>
 							</Anchors>
 						</Texture>
 						<Texture parentKey="PointBurstRight" alpha="0" alphaMode="ADD" atlas="ArtifactsFX-PointSideBurstRight" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.RankBorder" relativePoint="RIGHT" x="-14" y="0"/>
+								<Anchor point="LEFT" relativeKey="$parent" relativePoint="RIGHT" x="-14" y="0"/>
 							</Anchors>
 						</Texture>
 						<Texture parentKey="RelicTraitBurst" alpha="0" alphaMode="ADD">
 							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.Icon" />
+								<Anchor point="CENTER" relativeKey="$parent" />
 							</Anchors>
 						</Texture>
 						<Texture parentKey="TraitGlow" alpha="0" alphaMode="ADD" atlas="Artifacts-PerkRing-WhiteGlow" useAtlasSize="true">
@@ -653,7 +653,7 @@
 					<Layer level="BACKGROUND" textureSubLevel="-1">
 						<Texture parentKey="Background">
 							<Anchors>
-								<Anchor point="TOP" relativeKey="$parent.TitleContainer.Background"/>
+								<Anchor point="TOP" relativeKey="$parent.$parent.TitleContainer.Background"/>
 							</Anchors>
 						</Texture>
 					</Layer>

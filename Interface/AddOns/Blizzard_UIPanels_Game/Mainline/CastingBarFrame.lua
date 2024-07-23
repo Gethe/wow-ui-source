@@ -1066,6 +1066,7 @@ end
 --		overrideBarType = [CASTING_BAR_TYPES] -- Use a specific bar type rather than have it determined by the type of spell being cast, defines textures used (Default: nil)
 --		overrideLook 	= ["CLASSIC", "UNIT", "OVERLAY"] -- Use a specific bar look, defines component sizing and anchoring (Default: "OVERLAY")
 --		overrideAnchor 	= [AnchorUtilAnchorInstance] -- Specify a point to anchor the cast bar to, should be created via CreateAnchor (Default: Center of parentFrame)
+--		overrideStrata	= [FRAMESTRATA] -- Specify a frame strata to set to (Default: "HIGH")
 --		hideBarText		= [BOOLEAN] -- Disable showing text on the cast bar (Default: false)
 --]]
 function OverlayPlayerCastingBarMixin:StartReplacingPlayerBarAt(parentFrame, overrideInfo)
@@ -1076,6 +1077,7 @@ function OverlayPlayerCastingBarMixin:StartReplacingPlayerBarAt(parentFrame, ove
 	self.overrideBarType = overrideInfo.overrideBarType;
 
 	self:SetParent(parentFrame);
+	self:SetFrameStrata(overrideInfo.overrideStrata or "HIGH");
 	self:SetFrameLevel(parentFrame:GetFrameLevel() + 10);
 	self:ClearAllPoints();
 

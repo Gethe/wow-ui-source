@@ -24,8 +24,11 @@ function MovieFrame_PlayMovie(self, movieID)
 	if ( not playSuccess ) then
 		StaticPopup_Show("ERROR_CINEMATIC");
 		self:Hide();
-		GameMovieFinished();
+		local userCanceled = false;
+		local didError = true;
+		CinematicFinished(Enum.CinematicType.GameMovie, userCanceled, didError);
 	else
+		CinematicStarted(Enum.CinematicType.GameMovie, movieID);
 		EventRegistry:TriggerEvent("Subtitles.OnMovieCinematicPlay", self);
 	end
 end
@@ -33,7 +36,7 @@ end
 function MovieFrame_StopMovie(self)
 	self:StopMovie(movieID);
 	self:Hide();
-	GameMovieFinished();
+	CinematicFinished(Enum.CinematicType.GameMovie);
 	EventRegistry:TriggerEvent("Subtitles.OnMovieCinematicStop");
 end
 
@@ -83,8 +86,8 @@ function MovieFrame_OnKeyUp(self, key)
 	end
 end
 
-function MovieFrame_OnMovieFinished(self)
-	GameMovieFinished();
+function MovieFrame_OnMovieFinished(self, userCanceled)
+	CinematicFinished(Enum.CinematicType.GameMovie, userCanceled);
 	if ( self:IsShown() ) then
 		self:Hide();
 	end

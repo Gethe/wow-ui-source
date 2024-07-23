@@ -292,6 +292,10 @@ local LootHistoryFrameWhenShownEvents =
 };
 
 function LootHistoryFrameMixin:OnLoad()
+	local totalWidth = 239;
+	local dropDownEdgeWidth = 16;
+	self.EncounterDropdown:SetWidth(totalWidth - dropDownEdgeWidth);
+
 	FrameUtil.RegisterFrameForEvents(self, LootHistoryFrameAlwaysListenEvents);
 	self:InitRegions();
 	self:InitScrollBox();
@@ -305,9 +309,9 @@ function LootHistoryFrameMixin:OnShow()
 
 	self.perfectRollItemQueue = {};
 
-	self:SetupEncounterDropDown();
+	self:SetupEncounterDropdown();
 
-	if not self.selectedEncounterID then
+	if not self:GetSelectedEncounterID() then
 		local encounters = C_LootHistory.GetAllEncounterInfos();
 		local firstEncounter = encounters[1];
 		if firstEncounter then
@@ -332,7 +336,7 @@ function LootHistoryFrameMixin:OnEvent(event, ...)
 		self:OpenToEncounter(encounterID);
 	elseif event == "LOOT_HISTORY_UPDATE_ENCOUNTER" then
 		local encounterID = ...;
-		if encounterID == self.selectedEncounterID then
+		if encounterID == self:GetSelectedEncounterID() then
 			self:DoFullRefresh();
 		end
 	elseif event == "LOOT_HISTORY_CLEAR_HISTORY" then
@@ -343,7 +347,7 @@ function LootHistoryFrameMixin:OnEvent(event, ...)
 	elseif event == "LOOT_HISTORY_ONE_HUNDRED_ROLL" then
 		local encounterID, lootListID = ...;
 
-		if encounterID == self.selectedEncounterID then
+		if encounterID == self:GetSelectedEncounterID() then
 			self:AddPerfectAnimToQueue(encounterID, lootListID);
 			self:DoFullRefresh();
 		end
@@ -364,7 +368,7 @@ function LootHistoryFrameMixin:InitScrollBox()
 	local view = CreateScrollBoxListLinearView(ScrollBoxPad, ScrollBoxPad, ScrollBoxPad, ScrollBoxPad, ScrollBoxSpacing);
 
 	local function Initializer(frame, elementData)
-		frame:SetDrop(self.selectedEncounterID, elementData.lootListID);
+		frame:SetDrop(self:GetSelectedEncounterID(), elementData.lootListID);
 	end
 
 	view:SetElementFactory(function(factory, elementData)
@@ -402,54 +406,54 @@ function LootHistoryFrameMixin:InitRegions()
 	self.TitleContainer.TitleText:SetText(LOOT_ROLLS);
 end
 
-function LootHistoryFrameMixin:SetupEncounterDropDown()
-	local function Initializer(dropDown, level)
-		local function DropDownButtonClick(button)
-			self:OpenToEncounter(button.value);
-		end
-	
-		local encounters = C_LootHistory.GetAllEncounterInfos();
+function LootHistoryFrameMixin:SetupEncounterDropdown()
+	self.EncounterDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_LOOT_ENCOUNTER");
 
-		for _, encounter in ipairs(encounters) do
-			local info = UIDropDownMenu_CreateInfo();
-			info.fontObject = GameFontHighlightSmall;
-			info.text = encounter.encounterName;
-			info.minWidth = 236;
-			info.value = encounter.encounterID;
-			info.func = DropDownButtonClick;
-			UIDropDownMenu_AddButton(info);
+		local function IsSelected(encounterID)
+			return self:GetSelectedEncounterID() == encounterID;
 		end
-	end
 
-	local totalWidth = 239;
-	local dropDownEdgeWidth = 16;
-	UIDropDownMenu_SetWidth(self.EncounterDropDown, totalWidth - dropDownEdgeWidth);
-	UIDropDownMenu_JustifyText(self.EncounterDropDown, "RIGHT");
-	UIDropDownMenu_Initialize(self.EncounterDropDown, Initializer);
+		local function SetSelected(encounterID)
+			self:OpenToEncounterInternal(encounterID);
+		end
+
+		for _, encounter in ipairs(C_LootHistory.GetAllEncounterInfos()) do
+			rootDescription:CreateRadio(encounter.encounterName, IsSelected, SetSelected, encounter.encounterID);
+		end
+	end);
 end
 
 function LootHistoryFrameMixin:SetInfoShown(shown)
 	self.ScrollBox:SetShown(shown);
 	self.ScrollBar:SetShown(shown);
-	self.EncounterDropDown:SetShown(shown);
+	self.EncounterDropdown:SetShown(shown);
 	self.Timer:SetShown(shown);
 
 	self.NoInfoString:SetShown(not shown);
 end
 
-function LootHistoryFrameMixin:OpenToEncounter(encounterID)
+function LootHistoryFrameMixin:GetSelectedEncounterID()
+	return self.selectedEncounterID;
+end
+
+function LootHistoryFrameMixin:OpenToEncounterInternal(encounterID)
 	self:SetInfoShown(true);
 	
-	if encounterID ~= self.selectedEncounterID then
+	if encounterID ~= self:GetSelectedEncounterID() then
 		self.ScrollBox:ScrollToBegin();
 		self.PerfectAnimFrame:StopPerfectRollAnim();
 		self.perfectRollItemQueue = {};
 	end
 
 	self.selectedEncounterID = encounterID;
-	self:SetupEncounterDropDown();
-	UIDropDownMenu_SetSelectedValue(self.EncounterDropDown, encounterID);
+
 	self:DoFullRefresh();
+end
+
+function LootHistoryFrameMixin:OpenToEncounter(encounterID)
+	self:OpenToEncounterInternal(encounterID);
+	self.EncounterDropdown:GenerateMenu();
 end
 
 -- Set dynamically
@@ -459,7 +463,7 @@ end
 
 function LootHistoryFrameMixin:UpdateTimer()
 	local allRollsFinished = true;
-	local drops = C_LootHistory.GetSortedDropsForEncounter(self.selectedEncounterID);
+	local drops = C_LootHistory.GetSortedDropsForEncounter(self:GetSelectedEncounterID());
 	for _, drop in ipairs(drops) do
 		if not (drop.winner or drop.allPassed) then
 			allRollsFinished = false;
@@ -481,11 +485,12 @@ function LootHistoryFrameMixin:UpdateTimer()
 end
 
 function LootHistoryFrameMixin:DoFullRefresh()
-	self.encounterInfo = C_LootHistory.GetInfoForEncounter(self.selectedEncounterID);
+	local selectedEncounterID = self:GetSelectedEncounterID();
+	self.encounterInfo = C_LootHistory.GetInfoForEncounter(selectedEncounterID);
 	self:SetScript("OnUpdate", self.OnUpdate);
 
 	local dataProvider = CreateDataProvider();
-	local drops = C_LootHistory.GetSortedDropsForEncounter(self.selectedEncounterID);
+	local drops = C_LootHistory.GetSortedDropsForEncounter(selectedEncounterID);
 	local anyNotPassed = false;
 	local anyRolledOn = false;
 	local passedHeaderAdded = false;
@@ -504,7 +509,7 @@ function LootHistoryFrameMixin:DoFullRefresh()
 			anyRolledOn = true;
 		end
 
-		dataProvider:Insert({encounterID = self.selectedEncounterID, lootListID = dropInfo.lootListID});
+		dataProvider:Insert({encounterID = selectedEncounterID, lootListID = dropInfo.lootListID});
 	end
 	local scrollPercentage = self.ScrollBox:GetScrollPercentage();
 	self.ScrollBox:SetDataProvider(dataProvider);
@@ -533,7 +538,7 @@ function LootHistoryFrameMixin:DoFullRefresh()
 
 		if itemData then
 			self.ScrollBox:FullUpdate(ScrollBoxConstants.UpdateImmediately);
-			self.ScrollBox:ScrollToElementData(itemData, ScrollBoxConstants.AlignCenter, ScrollBoxConstants.NoScrollInterpolation);
+			self.ScrollBox:ScrollToElementData(itemData, ScrollBoxConstants.AlignCenter);
 
 			local itemFrame = self.ScrollBox:FindFrame(itemData);
 			local currDropInfo = drops[self.ScrollBox:FindElementDataIndex(itemData)];

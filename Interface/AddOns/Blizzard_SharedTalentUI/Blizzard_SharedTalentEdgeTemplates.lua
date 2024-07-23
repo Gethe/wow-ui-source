@@ -19,6 +19,10 @@ function TalentEdgeBaseMixin:GetEdgeInfo()
 	return self.edgeInfo;
 end
 
+function TalentEdgeBaseMixin:UpdateState()
+	-- Implement in derived mixins
+end
+
 
 -- TODO:: Replace the art for this to be a generic edge template.
 TalentEdgeStraightMixin = {};
@@ -39,9 +43,6 @@ function TalentEdgeStraightMixin:Init(startButton, endButton, edgeInfo)
 
 	self.ScrollAnim:Play();
 
-	local isActive = edgeInfo.isActive;
-	self:SetFrameLevel(isActive and ActiveEdgeFrameLevel or 1);
-
 	self:UpdateState();
 end
 
@@ -51,6 +52,9 @@ function TalentEdgeStraightMixin:UpdateState()
 	local startVisualState = self:GetStartButton():GetVisualState();
 	local isStartRefundInvalid = (startVisualState == TalentButtonUtil.BaseVisualState.RefundInvalid);
 	local isEndRefundInvalid = (endVisualState == TalentButtonUtil.BaseVisualState.RefundInvalid);
+
+	local isActive = edgeInfo.isActive;
+	self:SetFrameLevel(isActive and ActiveEdgeFrameLevel or 1);
 
 	-- The edge only shows in red if the start is satisfied (or "Maxed") and the end button is RefundInvalid.
 	local isRefundInvalidFromEndButton = isEndRefundInvalid and (startVisualState == TalentButtonUtil.BaseVisualState.Maxed);
@@ -86,25 +90,21 @@ TalentEdgeArrowMixin = {};
 
 function TalentEdgeArrowMixin:Init(startButton, endButton, edgeInfo)
 	TalentEdgeBaseMixin.Init(self, startButton, endButton, edgeInfo);
-
-	local angle = RegionUtil.CalculateAngleBetween(endButton, startButton);
-	local diameterOffset = endButton.GetEdgeDiameterOffset and endButton:GetEdgeDiameterOffset(angle) or TalentButtonUtil.CircleEdgeDiameterOffset;
-	local xOffset = (endButton:GetWidth() / 2) * math.cos(angle) * diameterOffset;
-	local yOffset = (endButton:GetHeight() / 2) * math.sin(angle) * diameterOffset;
-
-	self.Line:SetStartPoint("CENTER", startButton);
-	self.Line:SetEndPoint("CENTER", endButton, xOffset, yOffset);
-
-	self.GhostLine:SetStartPoint("CENTER", startButton);
-	self.GhostLine:SetEndPoint("CENTER", endButton, xOffset, yOffset);
-
-	self.ArrowHead:SetPoint("CENTER", endButton, xOffset, yOffset);
-	self.ArrowHead:SetRotation(angle - (math.pi / 2));
-
-	self.GhostArrowHead:SetPoint("CENTER", endButton, xOffset, yOffset);
-	self.GhostArrowHead:SetRotation(angle - (math.pi / 2));
+	self:MarkPositionDirty();
 
 	self:UpdateState();
+end
+
+function TalentEdgeArrowMixin:MarkPositionDirty()
+	self.isPositionDirty = true;
+end
+
+function TalentEdgeArrowMixin:MarkPositionClean()
+	self.isPositionDirty = false;
+end
+
+function TalentEdgeArrowMixin:IsPositionDirty()
+	return self.isPositionDirty;
 end
 
 function TalentEdgeArrowMixin:UpdateState()
@@ -146,4 +146,47 @@ function TalentEdgeArrowMixin:UpdateState()
 			self.ArrowHead:SetAtlas("talents-arrow-head-gray");
 		end
 	end
+
+	if self:IsPositionDirty() then
+		self:UpdatePosition();
+	end
+end
+
+function TalentEdgeArrowMixin:UpdatePosition()
+	local startButton = self:GetStartButton();
+	local endButton = self:GetEndButton();
+
+	-- If buttons were just now instantiated, it's possible their position/layout/size hasn't settled yet
+	if not startButton:IsRectValid() or not endButton:IsRectValid() then
+		self:MarkPositionDirty();
+		startButton:GetTalentFrame():MarkEdgesDirty(startButton);
+		return;
+	end
+
+	local angle = RegionUtil.CalculateAngleBetween(endButton, startButton);
+	local diameterOffset = self:GetDiameterOffsetForAngle(angle);
+	local xOffset = (endButton:GetWidth() / 2) * math.cos(angle) * diameterOffset;
+	local yOffset = (endButton:GetHeight() / 2) * math.sin(angle) * diameterOffset;
+
+	self.Line:SetStartPoint("CENTER", startButton);
+	self.Line:SetEndPoint("CENTER", endButton, xOffset, yOffset);
+
+	self.GhostLine:SetStartPoint("CENTER", startButton);
+	self.GhostLine:SetEndPoint("CENTER", endButton, xOffset, yOffset);
+
+	self.ArrowHead:SetPoint("CENTER", endButton, xOffset, yOffset);
+	self.ArrowHead:SetRotation(angle - (math.pi / 2));
+
+	self.GhostArrowHead:SetPoint("CENTER", endButton, xOffset, yOffset);
+	self.GhostArrowHead:SetRotation(angle - (math.pi / 2));
+
+	startButton:GetTalentFrame():UpdateEdgeFrameLevel(self);
+
+	self:MarkPositionClean();
+end
+
+function TalentEdgeArrowMixin:GetDiameterOffsetForAngle(angle)
+	local endButton = self:GetEndButton();
+
+	return endButton and endButton.GetEdgeDiameterOffset and endButton:GetEdgeDiameterOffset(angle) or TalentButtonUtil.CircleEdgeDiameterOffset;
 end

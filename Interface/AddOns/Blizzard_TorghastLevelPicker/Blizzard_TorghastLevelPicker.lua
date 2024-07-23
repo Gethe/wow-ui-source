@@ -280,7 +280,7 @@ function TorghastLevelPickerOptionButtonMixin:OnClick()
 end 
 
 function TorghastLevelPickerOptionButtonMixin:RefreshTooltip()
-	if (not RegionUtil.IsDescendantOfOrSame(GetMouseFocus(), self) or not self.spell) then 
+	if (not RegionUtil.IsAnyDescendantOfOrSame(GetMouseFoci(), self) or not self.spell) then 
 		return;
 	end 
 

@@ -20,9 +20,9 @@ local MapConstants =
 		{
 			Name = "UIMapFlag",
 			Type = "Enumeration",
-			NumValues = 20,
+			NumValues = 21,
 			MinValue = 1,
-			MaxValue = 524288,
+			MaxValue = 1048576,
 			Fields =
 			{
 				{ Name = "NoHighlight", Type = "UIMapFlag", EnumValue = 1 },
@@ -45,6 +45,7 @@ local MapConstants =
 				{ Name = "AlwaysAllowTaxiPathing", Type = "UIMapFlag", EnumValue = 131072 },
 				{ Name = "ForceAllowMapLinks", Type = "UIMapFlag", EnumValue = 262144 },
 				{ Name = "DoNotShowOnNavbar", Type = "UIMapFlag", EnumValue = 524288 },
+				{ Name = "IsCityMap", Type = "UIMapFlag", EnumValue = 1048576 },
 			},
 		},
 		{

@@ -1,110 +1,169 @@
+WardrobeOutfitDropdownMixin = { };
 
---===================================================================================================================================
-WardrobeOutfitDropDownMixin = { };
+function WardrobeOutfitDropdownMixin:OnLoad()
+	WowStyle1DropdownMixin.OnLoad(self);
+	self:SetWidth(self.width or 200);
+	self:SetDefaultText(GRAY_FONT_COLOR:WrapTextInColorCode(TRANSMOG_OUTFIT_NONE));
 
-function WardrobeOutfitDropDownMixin:OnLoad()
-	local button = _G[self:GetName().."Button"];
-	button:SetScript("OnMouseDown", function(self)
-						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-						WardrobeOutfitFrame:Toggle(self:GetParent());
-						end
-					);
-	UIDropDownMenu_JustifyText(self, "LEFT");
-	if ( self.width ) then
-		UIDropDownMenu_SetWidth(self, self.width);
-	end
+	self.SaveButton:SetScript("OnClick", function()
+		WardrobeOutfitManager:StartOutfitSave(self, self:GetSelectedOutfitID());
+	end);
 end
 
-function WardrobeOutfitDropDownMixin:OnShow()
+function WardrobeOutfitDropdownMixin:SetSelectedOutfitID(outfitID)
+	self.selectedOutfitID = outfitID;
+end
+
+function WardrobeOutfitDropdownMixin:GetSelectedOutfitID()
+	return self.selectedOutfitID;
+end
+
+function WardrobeOutfitDropdownMixin:OnShow()
 	self:RegisterEvent("TRANSMOG_OUTFITS_CHANGED");
 	self:RegisterEvent("TRANSMOGRIFY_UPDATE");
-	self:SelectOutfit(self:GetLastOutfitID(), true);
+		
+	self:SelectOutfit(self:GetLastOutfitID());
+	self:InitOutfitDropdown();
 end
 
-function WardrobeOutfitDropDownMixin:WardrobeOutfitDropDown_OnHide()
-	self:UnregisterEvent("TRANSMOG_OUTFITS_CHANGED");
-	self:UnregisterEvent("TRANSMOGRIFY_UPDATE");
-	WardrobeOutfitFrame:ClosePopups(self);
-	if ( WardrobeOutfitFrame.dropDown == self ) then
-		WardrobeOutfitFrame:Hide();
-	end
-end
-
-function WardrobeOutfitDropDownMixin:OnEvent(event)
-	if ( event == "TRANSMOG_OUTFITS_CHANGED" ) then
-		-- try to reselect the same outfit to update the name
-		-- if it changed or clear the name if it got deleted
-		self:SelectOutfit(self.selectedOutfitID);
-		if ( WardrobeOutfitFrame:IsShown() ) then
-			WardrobeOutfitFrame:Update();
-		end
-	end
-	-- don't need to do anything for "TRANSMOGRIFY_UPDATE" beyond updating the save button
+function WardrobeOutfitDropdownMixin:SelectOutfit(outfitID)
+	self:SetSelectedOutfitID(outfitID);
+	self:LoadOutfit(outfitID);
 	self:UpdateSaveButton();
 end
 
-function WardrobeOutfitDropDownMixin:UpdateSaveButton()
-	if ( self.selectedOutfitID ) then
+function WardrobeOutfitDropdownMixin:OnHide()
+	self:UnregisterEvent("TRANSMOG_OUTFITS_CHANGED");
+	self:UnregisterEvent("TRANSMOGRIFY_UPDATE");
+	WardrobeOutfitManager:ClosePopups(self);
+end
+
+function WardrobeOutfitDropdownMixin:OnEvent(event)
+	if event == "TRANSMOG_OUTFITS_CHANGED" then
+		-- Outfits may have been deleted, or their names changed, so we need to
+		-- rebuild the menu state.
+		self:GenerateMenu();
+		self:UpdateSaveButton();
+	elseif event == "TRANSMOGRIFY_UPDATE" then
+		self:UpdateSaveButton();
+	end
+end
+
+function WardrobeOutfitDropdownMixin:UpdateSaveButton()
+	if self:GetSelectedOutfitID() then
 		self.SaveButton:SetEnabled(not self:IsOutfitDressed());
 	else
 		self.SaveButton:SetEnabled(false);
 	end
 end
 
-function WardrobeOutfitDropDownMixin:OnOutfitSaved(outfitID)
+function WardrobeOutfitDropdownMixin:OnOutfitSaved(outfitID)
 	if self:ShouldReplaceInvalidSources() then
 		self:LoadOutfit(outfitID);
 	end
 end
 
-function WardrobeOutfitDropDownMixin:OnOutfitModified(outfitID)
+function WardrobeOutfitDropdownMixin:OnOutfitModified(outfitID)
 	if self:ShouldReplaceInvalidSources() then
 		self:LoadOutfit(outfitID);
 	end
 end
 
-function WardrobeOutfitDropDownMixin:SelectOutfit(outfitID, loadOutfit)
-	local name;
-	if ( outfitID ) then
-		name = C_TransmogCollection.GetOutfitInfo(outfitID);
+function WardrobeOutfitDropdownMixin:InitOutfitDropdown()
+	local function IsOutfitSelected(outfitID)
+		return self:GetSelectedOutfitID() == outfitID;
 	end
-	if ( name ) then
-		UIDropDownMenu_SetText(self, name);
-	else
-		outfitID = nil;
-		UIDropDownMenu_SetText(self, GRAY_FONT_COLOR_CODE..TRANSMOG_OUTFIT_NONE..FONT_COLOR_CODE_CLOSE);
+	
+	local function SetOutfitSelected(outfitID)
+		self:SelectOutfit(outfitID);
 	end
-	self.selectedOutfitID = outfitID;
-	if ( loadOutfit ) then
-		self:LoadOutfit(outfitID);
-	end
+
+	self:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_WARDROBE_OUTFITS");
+
+		local outfits = C_TransmogCollection.GetOutfits();
+		for index, outfitID in ipairs(outfits) do
+			local name, icon = C_TransmogCollection.GetOutfitInfo(outfitID);
+			local text = NORMAL_FONT_COLOR:WrapTextInColorCode(name);
+
+			local radio = rootDescription:CreateButton(text, SetOutfitSelected, outfitID);
+			radio:SetIsSelected(IsOutfitSelected);
+			radio:AddInitializer(function(button, description, menu)
+				local texture = button:AttachTexture();
+				texture:SetSize(19,19);
+				texture:SetPoint("LEFT");
+				texture:SetTexture(icon);
+
+				local fontString = button.fontString;
+				fontString:SetPoint("LEFT", texture, "RIGHT", 3, 0);
+
+				if outfitID == self:GetSelectedOutfitID() then
+					local fontString2 = button:AttachFontString();
+					fontString2:SetPoint("LEFT", button.fontString, "RIGHT");
+					fontString2:SetHeight(16);
+
+					local size = 20;
+					fontString2:SetTextToFit(CreateSimpleTextureMarkup([[Interface\Buttons\UI-CheckBox-Check]], size, size));
+				end
+
+				local gearButton = MenuTemplates.AttachAutoHideGearButton(button);
+				gearButton:SetPoint("RIGHT");
+
+				MenuUtil.HookTooltipScripts(gearButton, function(tooltip)
+					GameTooltip_SetTitle(tooltip, TRANSMOG_OUTFIT_EDIT);
+				end);
+
+				gearButton:SetScript("OnClick", function()
+					WardrobeOutfitEditFrame:ShowForOutfit(outfitID)
+					menu:Close();
+				end);
+			end);
+		end
+
+		if #outfits < C_TransmogCollection.GetNumMaxOutfits() then
+			local text = GREEN_FONT_COLOR:WrapTextInColorCode(TRANSMOG_OUTFIT_NEW);
+			local button = rootDescription:CreateButton(text, function()
+				if WardrobeTransmogFrame and HelpTip:IsShowing(WardrobeTransmogFrame, TRANSMOG_OUTFIT_DROPDOWN_TUTORIAL) then
+					HelpTip:Hide(WardrobeTransmogFrame, TRANSMOG_OUTFIT_DROPDOWN_TUTORIAL);
+					SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_OUTFIT_DROPDOWN, true);
+				end
+				WardrobeOutfitManager:StartOutfitSave(self);
+			end);
+
+			button:AddInitializer(function(button, description, menu)
+				local texture = button:AttachTexture();
+				texture:SetSize(19,19);
+				texture:SetPoint("LEFT");
+				texture:SetTexture([[Interface\PaperDollInfoFrame\Character-Plus]]);
+
+				local fontString = button.fontString;
+				fontString:SetPoint("LEFT", texture, "RIGHT", 3, 0);
+			end);
+		end
+	end);
+end
+
+function WardrobeOutfitDropdownMixin:NewOutfit(outfitID)
+	self:SetSelectedOutfitID(outfitID);
+	self:InitOutfitDropdown();
 	self:UpdateSaveButton();
-	self:OnSelectOutfit(outfitID);
+
+	self:OnOutfitSaved(outfitID);
 end
 
-function WardrobeOutfitDropDownMixin:OnSelectOutfit(outfitID)
-	-- nothing to see here
-end
-
-function WardrobeOutfitDropDownMixin:GetLastOutfitID()
+function WardrobeOutfitDropdownMixin:GetLastOutfitID()
+	-- Expected to return nil for the dropdown in DressUpModelFrame. See WardrobeOutfitMixin:GetLastOutfitID()
+	-- for the regular implementation.
 	return nil;
 end
 
-local function IsSourceArtifact(sourceID)
-	local link = select(6, C_TransmogCollection.GetAppearanceSourceInfo(sourceID));
-	if not link then
-		return false;
-	end
-	local _, _, quality = C_Item.GetItemInfo(link);
-	return quality == Enum.ItemQuality.Artifact;
-end
-
-function WardrobeOutfitDropDownMixin:IsOutfitDressed()
-	if not self.selectedOutfitID then
+function WardrobeOutfitDropdownMixin:IsOutfitDressed()
+	local outfitID = self:GetSelectedOutfitID();
+	if not outfitID then
 		return true;
 	end
 
-	local outfitItemTransmogInfoList = C_TransmogCollection.GetOutfitItemTransmogInfoList(self.selectedOutfitID);
+	local outfitItemTransmogInfoList = C_TransmogCollection.GetOutfitItemTransmogInfoList(outfitID);
 	if not outfitItemTransmogInfoList then
 		return true;
 	end
@@ -124,14 +183,14 @@ function WardrobeOutfitDropDownMixin:IsOutfitDressed()
 	return true;
 end
 
-function WardrobeOutfitDropDownMixin:ShouldReplaceInvalidSources()
+function WardrobeOutfitDropdownMixin:ShouldReplaceInvalidSources()
 	return self.replaceInvalidSources;
 end
 
 --===================================================================================================================================
-WardrobeOutfitFrameMixin = { };
+WardrobeOutfitManager = { };
 
-WardrobeOutfitFrameMixin.popups = {
+WardrobeOutfitManager.popups = {
 	"NAME_TRANSMOG_OUTFIT",
 	"CONFIRM_DELETE_TRANSMOG_OUTFIT",
 	"CONFIRM_SAVE_TRANSMOG_OUTFIT",
@@ -141,118 +200,7 @@ WardrobeOutfitFrameMixin.popups = {
 	"TRANSMOG_OUTFIT_ALL_INVALID_APPEARANCES",
 };
 
-local OUTFIT_FRAME_MIN_STRING_WIDTH = 152;
-local OUTFIT_FRAME_MAX_STRING_WIDTH = 216;
-local OUTFIT_FRAME_ADDED_PIXELS = 90;	-- pixels added to string width
-
-function WardrobeOutfitFrameMixin:OnHide()
-	self.timer = nil;
-end
-
-function WardrobeOutfitFrameMixin:Toggle(dropDown)
-	if ( self.dropDown == dropDown and self:IsShown() ) then
-		WardrobeOutfitFrame:Hide();
-	else
-		CloseDropDownMenus();
-		self.dropDown = dropDown;
-		self:Show();
-		self:SetPoint("TOPLEFT", self.dropDown, "BOTTOMLEFT", 8, -3);
-		self:Update();
-	end
-end
-
-function WardrobeOutfitFrameMixin:OnUpdate(elapsed)
-	local mouseFocus = GetMouseFocus();
-	for i = 1, #self.Buttons do
-		local button = self.Buttons[i];
-		if ( button == mouseFocus or button:IsMouseOver() ) then
-			if ( button.outfitID ) then
-				button.EditButton:Show();
-			else
-				button.EditButton:Hide();
-			end
-			button.Highlight:Show();
-		else
-			button.EditButton:Hide();
-			button.Highlight:Hide();
-		end
-	end
-	if ( UIDROPDOWNMENU_OPEN_MENU ) then
-		self:Hide();
-	end
-	if ( self.timer ) then
-		self.timer = self.timer - elapsed;
-		if ( self.timer < 0 ) then
-			self:Hide();
-		end
-	end
-end
-
-function WardrobeOutfitFrameMixin:StartHideCountDown()
-	self.timer = UIDROPDOWNMENU_SHOW_TIME;
-end
-
-function WardrobeOutfitFrameMixin:StopHideCountDown()
-	self.timer = nil;
-end
-
-function WardrobeOutfitFrameMixin:Update()
-	local outfits = C_TransmogCollection.GetOutfits();
-	local buttons = self.Buttons;
-	local numButtons = 0;
-	local stringWidth = 0;
-	local minStringWidth = self.dropDown.minMenuStringWidth or OUTFIT_FRAME_MIN_STRING_WIDTH;
-	local maxStringWidth = self.dropDown.maxMenuStringWidth or OUTFIT_FRAME_MAX_STRING_WIDTH;
-	self:SetWidth(maxStringWidth + OUTFIT_FRAME_ADDED_PIXELS);
-	for i = 1, C_TransmogCollection.GetNumMaxOutfits() do
-		local newOutfitButton = (i == (#outfits + 1));
-		local outfitID = outfits[i];
-		if ( outfitID or newOutfitButton ) then
-			local button = buttons[i];
-			if ( not button ) then
-				button = CreateFrame("BUTTON", nil, self, "WardrobeOutfitButtonTemplate");
-				button:SetPoint("TOPLEFT", buttons[i-1], "BOTTOMLEFT", 0, 0);
-				button:SetPoint("TOPRIGHT", buttons[i-1], "BOTTOMRIGHT", 0, 0);
-			end
-			button:Show();
-			if ( newOutfitButton ) then
-				button:SetText(GREEN_FONT_COLOR_CODE..TRANSMOG_OUTFIT_NEW..FONT_COLOR_CODE_CLOSE);
-				button.Icon:SetTexture("Interface\\PaperDollInfoFrame\\Character-Plus");
-				button.outfitID = nil;
-				button.Check:Hide();
-				button.Selection:Hide();
-			else
-				if ( outfitID == self.dropDown.selectedOutfitID ) then
-					button.Check:Show();
-					button.Selection:Show();
-				else
-					button.Selection:Hide();
-					button.Check:Hide();
-				end
-				local name, icon = C_TransmogCollection.GetOutfitInfo(outfitID);
-				button.Text:SetWidth(0);
-				button:SetText(NORMAL_FONT_COLOR_CODE..name..FONT_COLOR_CODE_CLOSE);
-				button.Icon:SetTexture(icon);
-				button.outfitID = outfitID;
-			end
-			stringWidth = max(stringWidth, button.Text:GetStringWidth());
-			if ( button.Text:GetStringWidth() > maxStringWidth) then
-				button.Text:SetWidth(maxStringWidth);
-			end
-			numButtons = numButtons + 1;
-		else
-			if ( buttons[i] ) then
-				buttons[i]:Hide();
-			end
-		end
-	end
-	stringWidth = max(stringWidth, minStringWidth);
-	stringWidth = min(stringWidth, maxStringWidth);
-	self:SetWidth(stringWidth + OUTFIT_FRAME_ADDED_PIXELS);
-	self:SetHeight(30 + numButtons * 20);
-end
-
-function WardrobeOutfitFrameMixin:NewOutfit(name)
+function WardrobeOutfitManager:NewOutfit(name)
 	local icon;
 
 	for slotID, itemTransmogInfo in ipairs(self.itemTransmogInfoList) do
@@ -269,17 +217,12 @@ function WardrobeOutfitFrameMixin:NewOutfit(name)
 	if outfitID then
 		self:SaveLastOutfit(outfitID);
 	end
-	if ( self.popupDropDown ) then
-		self.popupDropDown:SelectOutfit(outfitID);
-		self.popupDropDown:OnOutfitSaved(outfitID);
+	if ( self.dropdown ) then
+		self.dropdown:NewOutfit(outfitID);
 	end
 end
 
-function WardrobeOutfitFrameMixin:DeleteOutfit(outfitID)
-	C_TransmogCollection.DeleteOutfit(outfitID);
-end
-
-function WardrobeOutfitFrameMixin:NameOutfit(newName, outfitID)
+function WardrobeOutfitManager:NameOutfit(newName, outfitID)
 	local outfits = C_TransmogCollection.GetOutfits();
 	for i = 1, #outfits do
 		local name, icon = C_TransmogCollection.GetOutfitInfo(outfits[i]);
@@ -287,7 +230,7 @@ function WardrobeOutfitFrameMixin:NameOutfit(newName, outfitID)
 			if ( outfitID ) then
 				UIErrorsFrame:AddMessage(TRANSMOG_OUTFIT_ALREADY_EXISTS, 1.0, 0.1, 0.1, 1.0);
 			else
-				WardrobeOutfitFrame:ShowPopup("CONFIRM_OVERWRITE_TRANSMOG_OUTFIT", newName, nil, { name = name, outfitID = outfits[i] });
+				WardrobeOutfitManager:ShowPopup("CONFIRM_OVERWRITE_TRANSMOG_OUTFIT", newName, nil, { name = name, outfitID = outfits[i] });
 			end
 			return;
 		end
@@ -299,7 +242,7 @@ function WardrobeOutfitFrameMixin:NameOutfit(newName, outfitID)
 	end
 end
 
-function WardrobeOutfitFrameMixin:ShowPopup(popup, ...)
+function WardrobeOutfitManager:ShowPopup(popup, ...)
 	-- close all other popups
 	for _, listPopup in pairs(self.popups) do
 		if ( listPopup ~= popup ) then
@@ -310,8 +253,6 @@ function WardrobeOutfitFrameMixin:ShowPopup(popup, ...)
 		StaticPopupSpecial_Hide(WardrobeOutfitEditFrame);
 	end
 
-	-- use either the dropdown that opened us, or a previously cached popupDropDown (ie from StartOutfitSave)
-	self.popupDropDown = self.dropDown or self.popupDropDown;
 	if ( popup == WardrobeOutfitEditFrame ) then
 		StaticPopupSpecial_Show(WardrobeOutfitEditFrame);
 	else
@@ -319,8 +260,8 @@ function WardrobeOutfitFrameMixin:ShowPopup(popup, ...)
 	end
 end
 
-function WardrobeOutfitFrameMixin:ClosePopups(requestingDropDown)
-	if ( requestingDropDown and requestingDropDown ~= self.popupDropDown ) then
+function WardrobeOutfitManager:ClosePopups(requestingDropdown)
+	if ( requestingDropdown and requestingDropdown ~= self.popupDropdown ) then
 		return;
 	end
 	for _, popup in pairs(self.popups) do
@@ -334,22 +275,22 @@ function WardrobeOutfitFrameMixin:ClosePopups(requestingDropDown)
 	self.hasAnyValidAppearances = nil;
 	self.hasAnyInvalidAppearances = nil;
 	self.outfitID = nil;
-	self.popupDropDown = nil;
+	self.dropdown = nil;
 end
 
-function WardrobeOutfitFrameMixin:StartOutfitSave(popupDropDown, outfitID)
-	self.popupDropDown = popupDropDown;
+function WardrobeOutfitManager:StartOutfitSave(dropdown, outfitID)
+	self.dropdown = dropdown;
 	self.outfitID = outfitID;
 	self:EvaluateAppearances();
 end
 
-function WardrobeOutfitFrameMixin:EvaluateAppearance(appearanceID, category, transmogLocation)
+function WardrobeOutfitManager:EvaluateAppearance(appearanceID, category, transmogLocation)
 	local preferredAppearanceID, hasAllData, canCollect;
-	if self.popupDropDown:ShouldReplaceInvalidSources() then
+	if self.dropdown:ShouldReplaceInvalidSources() then
 		preferredAppearanceID, hasAllData, canCollect = CollectionWardrobeUtil.GetPreferredSourceID(appearanceID, nil, category, transmogLocation);
 	else
 		preferredAppearanceID = appearanceID;
-		hasAllData, canCollect = CollectionWardrobeUtil.PlayerCanCollectSource(appearanceID);
+		hasAllData, canCollect = C_TransmogCollection.PlayerCanCollectSource(appearanceID);
 	end
 
 	if canCollect then
@@ -365,11 +306,11 @@ function WardrobeOutfitFrameMixin:EvaluateAppearance(appearanceID, category, tra
 	return preferredAppearanceID, isInvalidAppearance;
 end
 
-function WardrobeOutfitFrameMixin:EvaluateAppearances()
+function WardrobeOutfitManager:EvaluateAppearances()
 	self.hasAnyInvalidAppearances = false;
 	self.hasAnyValidAppearances = false;
 	self.hasAnyPendingAppearances = false;
-	self.itemTransmogInfoList = self.popupDropDown:GetItemTransmogInfoList();
+	self.itemTransmogInfoList = self.dropdown:GetItemTransmogInfoList();
 	-- all illusions are collectible
 	for slotID, itemTransmogInfo in ipairs(self.itemTransmogInfoList) do
 		local isValidAppearance = false;
@@ -422,40 +363,40 @@ function WardrobeOutfitFrameMixin:EvaluateAppearances()
 	self:EvaluateSaveState();
 end
 
-function WardrobeOutfitFrameMixin:EvaluateSaveState()
+function WardrobeOutfitManager:EvaluateSaveState()
 	if self.hasAnyPendingAppearances then
 		-- wait
 		if ( not StaticPopup_Visible("TRANSMOG_OUTFIT_CHECKING_APPEARANCES") ) then
-			WardrobeOutfitFrame:ShowPopup("TRANSMOG_OUTFIT_CHECKING_APPEARANCES", nil, nil, nil, WardrobeOutfitCheckAppearancesFrame);
+			WardrobeOutfitManager:ShowPopup("TRANSMOG_OUTFIT_CHECKING_APPEARANCES", nil, nil, nil, WardrobeOutfitCheckAppearancesFrame);
 		end
 	else
 		StaticPopup_Hide("TRANSMOG_OUTFIT_CHECKING_APPEARANCES");
 		if not self.hasAnyValidAppearances then
 			-- stop
-			WardrobeOutfitFrame:ShowPopup("TRANSMOG_OUTFIT_ALL_INVALID_APPEARANCES");
+			WardrobeOutfitManager:ShowPopup("TRANSMOG_OUTFIT_ALL_INVALID_APPEARANCES");
 		elseif self.hasAnyInvalidAppearances then
 			-- warn
-			WardrobeOutfitFrame:ShowPopup("TRANSMOG_OUTFIT_SOME_INVALID_APPEARANCES");
+			WardrobeOutfitManager:ShowPopup("TRANSMOG_OUTFIT_SOME_INVALID_APPEARANCES");
 		else
-			WardrobeOutfitFrame:ContinueWithSave();
+			WardrobeOutfitManager:ContinueWithSave();
 		end
 	end
 end
 
-function WardrobeOutfitFrameMixin:ContinueWithSave()
+function WardrobeOutfitManager:ContinueWithSave()
 	if self.outfitID then
 		C_TransmogCollection.ModifyOutfit(self.outfitID, self.itemTransmogInfoList);
 		self:SaveLastOutfit(self.outfitID);
-		if ( self.popupDropDown ) then
-			self.popupDropDown:OnOutfitModified(self.outfitID);
+		if ( self.dropdown ) then
+			self.dropdown:OnOutfitModified(self.outfitID);
 		end
-		WardrobeOutfitFrame:ClosePopups();
+		WardrobeOutfitManager:ClosePopups();
 	else
-		WardrobeOutfitFrame:ShowPopup("NAME_TRANSMOG_OUTFIT");
+		WardrobeOutfitManager:ShowPopup("NAME_TRANSMOG_OUTFIT");
 	end
 end
 
-function WardrobeOutfitFrameMixin:SaveLastOutfit(outfitID)
+function WardrobeOutfitManager:SaveLastOutfit(outfitID)
 	local value = outfitID or "";
 	local currentSpecIndex = GetCVarBool("transmogCurrentSpecOnly") and GetSpecialization() or nil;
 	for specIndex = 1, GetNumSpecializations() do
@@ -465,43 +406,24 @@ function WardrobeOutfitFrameMixin:SaveLastOutfit(outfitID)
 	end
 end
 
-function WardrobeOutfitFrameMixin:OverwriteOutfit(outfitID)
+function WardrobeOutfitManager:OverwriteOutfit(outfitID)
 	self.outfitID = outfitID;
 	self:ContinueWithSave();
-end
-
---===================================================================================================================================
-WardrobeOutfitButtonMixin = { };
-
-function WardrobeOutfitButtonMixin:OnClick()
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	WardrobeOutfitFrame:Hide();
-	if ( self.outfitID ) then
-		WardrobeOutfitFrame.dropDown:SelectOutfit(self.outfitID, true);
-	else
-		if ( WardrobeTransmogFrame and HelpTip:IsShowing(WardrobeTransmogFrame, TRANSMOG_OUTFIT_DROPDOWN_TUTORIAL) ) then
-			HelpTip:Hide(WardrobeTransmogFrame, TRANSMOG_OUTFIT_DROPDOWN_TUTORIAL);
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_OUTFIT_DROPDOWN, true);
-		end
-		WardrobeOutfitFrame:StartOutfitSave(WardrobeOutfitFrame.dropDown);
-	end
 end
 
 --===================================================================================================================================
 WardrobeOutfitEditFrameMixin = { };
 
 function WardrobeOutfitEditFrameMixin:ShowForOutfit(outfitID)
-	WardrobeOutfitFrame:Hide();
-	WardrobeOutfitFrame:ShowPopup(self);
+	WardrobeOutfitManager:ShowPopup(self);
 	self.outfitID = outfitID;
 	local name, icon = C_TransmogCollection.GetOutfitInfo(outfitID);
 	self.EditBox:SetText(name);
 end
 
 function WardrobeOutfitEditFrameMixin:OnDelete()
-	WardrobeOutfitFrame:Hide();
 	local name = C_TransmogCollection.GetOutfitInfo(self.outfitID);
-	WardrobeOutfitFrame:ShowPopup("CONFIRM_DELETE_TRANSMOG_OUTFIT", name, nil,  self.outfitID);
+	WardrobeOutfitManager:ShowPopup("CONFIRM_DELETE_TRANSMOG_OUTFIT", name, nil,  self.outfitID);
 end
 
 function WardrobeOutfitEditFrameMixin:OnAccept()
@@ -509,7 +431,7 @@ function WardrobeOutfitEditFrameMixin:OnAccept()
 		return;
 	end
 	StaticPopupSpecial_Hide(self);
-	WardrobeOutfitFrame:NameOutfit(self.EditBox:GetText(), self.outfitID);
+	WardrobeOutfitManager:NameOutfit(self.EditBox:GetText(), self.outfitID);
 end
 
 --===================================================================================================================================
@@ -533,6 +455,6 @@ end
 function WardrobeOutfitCheckAppearancesMixin:OnUpdate()
 	if self.reevaluate then
 		self.reevaluate = nil;
-		WardrobeOutfitFrame:EvaluateAppearances();
+		WardrobeOutfitManager:EvaluateAppearances();
 	end
 end

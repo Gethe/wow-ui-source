@@ -1,0 +1,7 @@
+## Title: Blizzard_CommunitiesSecure
+## LoadFirst: 1
+## UseSecureEnvironment: 1
+## RequiredDep: Blizzard_SharedXML, Blizzard_UIParent
+
+CommunitiesAddDialog.xml
+CommunitiesAddDialogOutbound.lua

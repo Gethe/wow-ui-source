@@ -385,6 +385,12 @@
 		</Frames>
 	</Frame>
 
+	<GameTooltip name="UIWidgetBaseItemEmbeddedTooltipTemplate" parentKey="Tooltip" inherits="GameTooltipTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="IsEmbedded" value="true" type="boolean"/>
+		</KeyValues>
+	</GameTooltip>
+
 	<Frame name="UIWidgetBaseItemTemplate" inherits="UIWidgetTemplateTooltipFrame" mixin="UIWidgetBaseItemTemplateMixin" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
@@ -455,16 +461,6 @@
 				</Texture>
 			</Layer>
 		</Layers>
-		<Frames>
-			<GameTooltip name="$parentTooltip" parentKey="Tooltip" inherits="GameTooltipTemplate">
-				<KeyValues>
-					<KeyValue key="IsEmbedded" value="true" type="boolean"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" y="10"/>
-				</Anchors>
-			</GameTooltip>
-		</Frames>
 	</Frame>
 
 	<Frame name="UIWidgetBaseIconTemplate" inherits="UIWidgetTemplateTooltipFrame" mixin="UIWidgetBaseIconTemplateMixin" virtual="true">

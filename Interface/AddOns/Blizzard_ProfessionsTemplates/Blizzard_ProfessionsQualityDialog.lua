@@ -17,7 +17,7 @@ function ProfessionsQualityDialogMixin:OnLoad()
 	end
 	
 	local function Allocate(qualityIndex, value)
-		value = math.min(value, ProfessionsUtil.GetReagentQuantityInPossession(self:GetReagent(qualityIndex)));
+		value = math.min(value, ProfessionsUtil.GetReagentQuantityInPossession(self:GetReagent(qualityIndex), self.characterInventoryOnly));
 
 		self.allocations:Allocate(self:GetReagent(qualityIndex), value);
 		
@@ -42,47 +42,47 @@ function ProfessionsQualityDialogMixin:OnLoad()
 			end
 		end
 
-		for qualityIndex = 1, self:GetReagentSlotCount() do
-			local container = self.containers[qualityIndex];
+		for reagentIndex = 1, self:GetReagentSlotCount() do
+			local container = self.containers[reagentIndex];
 			local editBox = container.EditBox;
-			editBox:SetValue(self.allocations:GetQuantityAllocated(self:GetReagent(qualityIndex)));
+			editBox:SetValue(self.allocations:GetQuantityAllocated(self:GetReagent(reagentIndex)));
 		end
 
 		self:EvaluateAllocations();
 		return value;
 	end
 
-	for qualityIndex, container in ipairs(self.containers) do
+	for containerIndex, container in ipairs(self.containers) do
 		local editBox = container.EditBox;
 
 		local function ApplyEditBoxText(editBox)
-			Allocate(qualityIndex, math.min(self:GetQuantityRequired(), tonumber(editBox:GetText()) or 0));
+			Allocate(containerIndex, math.min(self:GetQuantityRequired(), tonumber(editBox:GetText()) or 0));
 		end
 
 		editBox:SetScript("OnEnterPressed", ApplyEditBoxText);
 		editBox:SetScript("OnEditFocusLost", ApplyEditBoxText);
 		editBox:SetScript("OnTextChanged", function(editBox, userChanged)
 			if not userChanged then
-				Allocate(qualityIndex, tonumber(editBox:GetText()) or 0);
+				Allocate(containerIndex, tonumber(editBox:GetText()) or 0);
 			end
 		end);
 
 		local button = container.Button;
 		button:SetScript("OnClick", function(button, buttonName, down)
 			if IsShiftKeyDown() then
-				Professions.HandleQualityReagentItemLink(self.recipeID, self.reagentSlotSchematic, qualityIndex);
+				Professions.HandleQualityReagentItemLink(self.recipeID, self.reagentSlotSchematic, containerIndex);
 			else
 				if buttonName == "LeftButton" then
-					Allocate(qualityIndex, self:GetQuantityRequired());
+					Allocate(containerIndex, self:GetQuantityRequired());
 				elseif buttonName == "RightButton" then
-					Allocate(qualityIndex, 0)
+					Allocate(containerIndex, 0)
 				end
 			end
 		end);
 
 		button:SetScript("OnEnter", function()
 			GameTooltip:SetOwner(button, "ANCHOR_TOPLEFT");
-			local reagent = self:GetReagent(qualityIndex);
+			local reagent = self:GetReagent(containerIndex);
 			GameTooltip:SetItemByID(reagent.itemID);
 			GameTooltip:Show();
 		end);
@@ -128,12 +128,13 @@ function ProfessionsQualityDialogMixin:GetReagentSlotCount()
 	return #self.reagentSlotSchematic.reagents;
 end
 
-function ProfessionsQualityDialogMixin:Init(recipeID, reagentSlotSchematic, allocations, slotIndex, disallowZeroAllocations)
+function ProfessionsQualityDialogMixin:Init(recipeID, reagentSlotSchematic, allocations, slotIndex, disallowZeroAllocations, characterInventoryOnly)
 	self.reagentSlotSchematic = reagentSlotSchematic;
 	self.recipeID = recipeID;
 	self.slotIndex = slotIndex;
 	self.allocations = allocations;
 	self.disallowZeroAllocations = disallowZeroAllocations;
+	self.characterInventoryOnly = characterInventoryOnly;
 
 	self:Setup();
 end
@@ -157,7 +158,7 @@ function ProfessionsQualityDialogMixin:Setup()
 		local quantity = self:GetQuantityAllocated(qualityIndex);
 		editBox:SetText(quantity);
 
-		local count = ProfessionsUtil.GetReagentQuantityInPossession(reagent);
+		local count = ProfessionsUtil.GetReagentQuantityInPossession(reagent, self.characterInventoryOnly);
 		button:SetItemButtonCount(count);
 
 		local enabled = count > 0;
@@ -172,8 +173,8 @@ function ProfessionsQualityDialogMixin:GetSlotIndex()
 	return self.slotIndex;
 end
 
-function ProfessionsQualityDialogMixin:Open(recipeID, reagentSlotSchematic, allocations, slotIndex, disallowZeroAllocations)
-	self:Init(recipeID, reagentSlotSchematic, allocations, slotIndex, disallowZeroAllocations);
+function ProfessionsQualityDialogMixin:Open(recipeID, reagentSlotSchematic, allocations, slotIndex, disallowZeroAllocations, characterInventoryOnly)
+	self:Init(recipeID, reagentSlotSchematic, allocations, slotIndex, disallowZeroAllocations, characterInventoryOnly);
 	self:Show();
 end
 
@@ -200,7 +201,7 @@ function ProfessionsQualityDialogMixin:EvaluateAllocations()
 	for qualityIndex, reagent in ipairs(self.reagentSlotSchematic.reagents) do
 		local container = self.containers[qualityIndex];
 		local editBox = container.EditBox;
-		editBox:SetMinMaxValues(0, math.min(self:GetQuantityRequired(), ProfessionsUtil.GetReagentQuantityInPossession(reagent)));
+		editBox:SetMinMaxValues(0, math.min(self:GetQuantityRequired(), ProfessionsUtil.GetReagentQuantityInPossession(reagent, self.characterInventoryOnly)));
 	end
 
 	local canEnable = not self.disallowZeroAllocations and quantityAllocated == 0;

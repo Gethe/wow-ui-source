@@ -53,17 +53,19 @@ function ProfessionsReagentSlotButtonMixin:IsModifyingRequired()
 end
 
 function ProfessionsReagentSlotButtonMixin:UpdateOverlay()
-	if self.locked then
-		self.InputOverlay.LockedIcon:Show();
-		self.InputOverlay.AddIcon:Hide();
-	else
-		self.InputOverlay.LockedIcon:Hide();
-		self.InputOverlay.AddIcon:SetShown((self:GetItem() == nil) and not (self.currencyID or self.isModifyingRequired));
+	if self.InputOverlay then
+		if self.locked then
+			self.InputOverlay.LockedIcon:Show();
+			self.InputOverlay.AddIcon:Hide();
+		else
+			self.InputOverlay.LockedIcon:Hide();
+			self.InputOverlay.AddIcon:SetShown((self:GetItem() == nil) and not (self.currencyID or self.isModifyingRequired));
+		end
 	end
 end
 
 function ProfessionsReagentSlotButtonMixin:UpdateCursor()
-	if GetMouseFocus() == self then
+	if self:IsMouseMotionFocus() then
 		local onEnterScript = self:GetScript("OnEnter");
 		if onEnterScript ~= nil then
 			onEnterScript(self);

@@ -95,7 +95,7 @@ function ProfessionsCustomerOrderFormMixin:SetRecraftItemGUID(itemGUID)
 	self.order.skillLineAbilityID = skillLineAbilityID;
 	self.recraftGUID = itemGUID;
 	self:InitSchematic();
-	self:SetupQualityDropDown();
+	self:SetupQualityDropdown();
 	self:UpdateMinimumQuality();
 end
 
@@ -195,10 +195,8 @@ function ProfessionsCustomerOrderFormMixin:InitButtons()
 		GameTooltip:Show();
 	 end);
 
-	 self.PaymentContainer.DurationDropDown.Text:SetFontObject(Number12Font);
-
-	 self.TrackRecipeCheckBox.Text:SetText(LIGHTGRAY_FONT_COLOR:WrapTextInColorCode(PROFESSIONS_TRACK_RECIPE));
-	 self.TrackRecipeCheckBox.Checkbox:SetScript("OnClick", function(button, buttonName, down)
+	 self.TrackRecipeCheckbox.Text:SetText(LIGHTGRAY_FONT_COLOR:WrapTextInColorCode(PROFESSIONS_TRACK_RECIPE));
+	 self.TrackRecipeCheckbox.Checkbox:SetScript("OnClick", function(button, buttonName, down)
 		local checked = button:GetChecked();
 		C_TradeSkillUI.SetRecipeTracked(self.order.spellID, checked, self.order.isRecraft);
 		PlaySound(SOUNDKIT.UI_PROFESSION_TRACK_RECIPE_CHECKBOX);
@@ -233,8 +231,8 @@ function ProfessionsCustomerOrderFormMixin:InitButtons()
 	end);
 	self.FavoriteButton:SetScript("OnLeave", GameTooltip_Hide);
 
-	self.AllocateBestQualityCheckBox.text:SetText(LIGHTGRAY_FONT_COLOR:WrapTextInColorCode(PROFESSIONS_USE_BEST_QUALITY_REAGENTS));
-	self.AllocateBestQualityCheckBox:SetScript("OnClick", function(button, buttonName, down)
+	self.AllocateBestQualityCheckbox.text:SetText(LIGHTGRAY_FONT_COLOR:WrapTextInColorCode(PROFESSIONS_USE_BEST_QUALITY_REAGENTS));
+	self.AllocateBestQualityCheckbox:SetScript("OnClick", function(button, buttonName, down)
 		local checked = button:GetChecked();
 		local forCustomer = true;
 		Professions.SetShouldAllocateBestQualityReagents(checked, forCustomer);
@@ -243,11 +241,11 @@ function ProfessionsCustomerOrderFormMixin:InitButtons()
 		self:UpdateReagentSlots();
 
 		-- Trick to re-fire the OnEnter script to update the tooltip.
-		self.AllocateBestQualityCheckBox:Hide();
-		self.AllocateBestQualityCheckBox:Show();
+		self.AllocateBestQualityCheckbox:Hide();
+		self.AllocateBestQualityCheckbox:Show();
 		PlaySound(SOUNDKIT.UI_PROFESSION_USE_BEST_REAGENTS_CHECKBOX);
 	end);
-	self.AllocateBestQualityCheckBox:SetScript("OnEnter", function(button)
+	self.AllocateBestQualityCheckbox:SetScript("OnEnter", function(button)
 		GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
 		local checked = button:GetChecked();
 		if checked then
@@ -257,117 +255,92 @@ function ProfessionsCustomerOrderFormMixin:InitButtons()
 		end
 		GameTooltip:Show();
 	end);
-	self.AllocateBestQualityCheckBox:SetScript("OnLeave", GameTooltip_Hide);
+	self.AllocateBestQualityCheckbox:SetScript("OnLeave", GameTooltip_Hide);
 
-	SquareButton_SetIcon(self.OrderRecipientDisplay.SocialDropdownButton, "DOWN");
-	self.OrderRecipientDisplay.SocialDropdownButton:SetScript("OnMouseDown", function(button)
-		UIMenuButtonStretchMixin.OnMouseDown(self.OrderRecipientDisplay.SocialDropdownButton, button);
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-		ToggleDropDownMenu(nil, nil, self.OrderRecipientDisplay.SocialDropdownButton.DropDown, self.OrderRecipientDisplay.SocialDropdownButton, 0, 0);
-	end);
-	UIDropDownMenu_Initialize(self.OrderRecipientDisplay.SocialDropdownButton.DropDown, function(menu, level)
+	SquareButton_SetIcon(self.OrderRecipientDisplay.SocialDropdown, "DOWN");
+
+	self.OrderRecipientDisplay.SocialDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_PROFESSIONS_CUSTOMER_ORDER_FORM");
+
 		if not self.order then
 			return;
 		end
 
+		local whisperStatus = self:GetWhisperCrafterStatus();
+
 		-- Add whisper option
-		do
-			local info = UIDropDownMenu_CreateInfo();
-			info.text = WHISPER_MESSAGE;
-
-			local whisperStatus = self:GetWhisperCrafterStatus();
-
-			if whisperStatus == Enum.ChatWhisperTargetStatus.CanWhisper or whisperStatus == Enum.ChatWhisperTargetStatus.CanWhisperGuild then
-				info.func = function()
-					ChatFrame_SendTell(self.order.crafterName);
-				end
-			else
-				info.disabled = true;
-				info.tooltipWhileDisabled = true;
-				info.tooltipOnButton = true;
-				info.tooltipTitle = "";
+		local canWhisper = whisperStatus == Enum.ChatWhisperTargetStatus.CanWhisper or whisperStatus == Enum.ChatWhisperTargetStatus.CanWhisperGuild;
+		if canWhisper then
+			rootDescription:CreateButton(WHISPER_MESSAGE, function()
+				ChatFrame_SendTell(self.order.crafterName);
+			end);
+		else
+			local button = rootDescription:CreateButton(WHISPER_MESSAGE, nop);
+			button:SetEnabled(false);
+			button:SetTooltip(function(tooltip, elementDescription)
 				if whisperStatus == Enum.ChatWhisperTargetStatus.Offline then
-					info.tooltipText = PROF_ORDER_CANT_WHISPER_OFFLINE;
+					GameTooltip_AddNormalLine(tooltip, PROF_ORDER_CANT_WHISPER_OFFLINE);
 				elseif whisperStatus == Enum.ChatWhisperTargetStatus.WrongFaction then
-					info.tooltipText = PROF_ORDER_CANT_WHISPER_WRONG_FACTION;
+					GameTooltip_AddNormalLine(tooltip, PROF_ORDER_CANT_WHISPER_WRONG_FACTION);
 				end
-			end
-			info.isNotRadio = true;
-			info.notCheckable = true;
-			UIDropDownMenu_AddButton(info, level);
+			end);
 		end
-
+		
 		-- Add "Add Friend" option
-		do
-			local info = UIDropDownMenu_CreateInfo();
-			info.text = ADD_CHARACTER_FRIEND;
-
-			-- Use the same status as whisper for now; if the player is offline, we can't easily check their faction
-			local whisperStatus = self:GetWhisperCrafterStatus();
-			local alreadyIsFriend = C_FriendList.IsFriend(self.order.crafterGuid);
-
-			if whisperStatus == Enum.ChatWhisperTargetStatus.CanWhisper and not alreadyIsFriend then
-				info.func = function()
-					local friendNote = CRAFTER_ORDER_FRIEND_NOTE_FMT:format(C_TradeSkillUI.GetProfessionNameForSkillLineAbility(self.order.skillLineAbilityID), self.transaction:GetRecipeSchematic().name);
-					C_FriendList.AddFriend(self.order.crafterName, friendNote);
-				end
-			else
-				info.disabled = true;
-				info.tooltipWhileDisabled = true;
-				info.tooltipOnButton = true;
-				info.tooltipTitle = "";
+		local alreadyIsFriend = C_FriendList.IsFriend(self.order.crafterGuid);
+		local canAddFriend = whisperStatus == Enum.ChatWhisperTargetStatus.CanWhisper and not alreadyIsFriend;
+		if canAddFriend then
+			rootDescription:CreateButton(ADD_CHARACTER_FRIEND, function()
+				local professionName = C_TradeSkillUI.GetProfessionNameForSkillLineAbility(self.order.skillLineAbilityID);
+				local friendNote = CRAFTER_ORDER_FRIEND_NOTE_FMT:format(professionName, self.transaction:GetRecipeSchematic().name);
+				C_FriendList.AddFriend(self.order.crafterName, friendNote);
+			end);
+		else
+			local button = rootDescription:CreateButton(ADD_CHARACTER_FRIEND, nop);
+			button:SetEnabled(false);
+			button:SetTooltip(function(tooltip, elementDescription)
 				if alreadyIsFriend then
-					info.tooltipText = ALREADY_FRIEND_FMT:format(self.order.crafterName);
+					GameTooltip_AddNormalLine(tooltip, ALREADY_FRIEND_FMT:format(self.order.crafterName));
 				elseif whisperStatus == Enum.ChatWhisperTargetStatus.Offline then
-					info.tooltipText = PROF_ORDER_CANT_ADD_FRIEND_OFFLINE;
+					GameTooltip_AddNormalLine(tooltip, PROF_ORDER_CANT_ADD_FRIEND_OFFLINE);
 				elseif whisperStatus == Enum.ChatWhisperTargetStatus.WrongFaction or whisperStatus == Enum.ChatWhisperTargetStatus.CanWhisperGuild then
 					-- CanWhisperGuild means we can whisper the player despite them being cross-faction because they are in our guild
-					info.tooltipText = PROF_ORDER_CANT_ADD_FRIEND_WRONG_FACTION;
+					GameTooltip_AddNormalLine(tooltip, PROF_ORDER_CANT_ADD_FRIEND_WRONG_FACTION);
 				end
-			end
-			info.isNotRadio = true;
-			info.notCheckable = true;
-			UIDropDownMenu_AddButton(info, level);
+			end);
 		end
-
+		
 		-- Add ignore option
-		do
-			local canIgnore = self.order.crafterGuid and not C_FriendList.IsIgnoredByGuid(self.order.crafterGuid);
-			local info = UIDropDownMenu_CreateInfo();
-			info.text = IGNORE;
-			if canIgnore then
-				info.func = function()
-					local referenceKey = self;
-					if not StaticPopup_IsCustomGenericConfirmationShown(referenceKey) then
-						local customData = 
-						{
-							text = CRAFTING_ORDERS_IGNORE_CONFIRMATION,
-							text_arg1 = self.order.crafterName,
-							callback = function()
-								C_FriendList.AddIgnore(self.order.crafterName);
-							end,
-							acceptText = YES,
-							cancelText = NO,
-							referenceKey = referenceKey,
-						};
+		local canIgnore = self.order.crafterGuid and not C_FriendList.IsIgnoredByGuid(self.order.crafterGuid);
+		if canIgnore then
+			rootDescription:CreateButton(IGNORE, function()
+				local referenceKey = self;
+				if not StaticPopup_IsCustomGenericConfirmationShown(referenceKey) then
+					local customData = 
+					{
+						text = CRAFTING_ORDERS_IGNORE_CONFIRMATION,
+						text_arg1 = self.order.crafterName,
+						callback = function()
+							C_FriendList.AddIgnore(self.order.crafterName);
+						end,
+						acceptText = YES,
+						cancelText = NO,
+						referenceKey = referenceKey,
+					};
 
-						StaticPopup_ShowCustomGenericConfirmation(customData);
-					end
+					StaticPopup_ShowCustomGenericConfirmation(customData);
 				end
-			else
-				info.disabled = true;
-				if self.order.crafterGuid then
-					info.tooltipWhileDisabled = true;
-					info.tooltipOnButton = true;
-					info.tooltipTitle = "";
-					info.tooltipText = PROF_ORDER_CANT_IGNORE_ALREADY_IGNORED;
-				end
+			end);
+		else
+			local button = rootDescription:CreateButton(ADD_CHARACTER_FRIEND, nop);
+			button:SetEnabled(false);
+			if self.order.crafterGuid then
+				button:SetTooltip(function(tooltip, elementDescription)
+					GameTooltip_AddNormalLine(tooltip, PROF_ORDER_CANT_IGNORE_ALREADY_IGNORED);
+				end);
 			end
-			info.isNotRadio = true;
-			info.notCheckable = true;
-			UIDropDownMenu_AddButton(info, level);
 		end
-	end, "MENU");
+	end);
 end
 
 function ProfessionsCustomerOrderFormMixin:InitCurrentListings()
@@ -465,7 +438,7 @@ function ProfessionsCustomerOrderFormMixin:OnLoad()
 		slot.Button:SetScript("OnEnter", nil);
 		slot.Button:SetScript("OnClick", nil);
 		slot.Button:SetScript("OnMouseDown", nil);
-		FramePool_HideAndClearAnchors(pool, slot);
+		Pool_HideAndClearAnchors(pool, slot);
 	end
 	self.reagentSlotPool = CreateFramePool("FRAME", self, "ProfessionsReagentSlotTemplate", PoolReset);
 
@@ -513,6 +486,8 @@ function ProfessionsCustomerOrderFormMixin:OnEvent(event, ...)
 					errorText = CRAFTING_ORDER_FAILED_TARGET_CANT_CRAFT;
 				elseif result == Enum.CraftingOrderResult.MaxOrdersReached then
 					errorText = PROFESSIONS_MAX_ORDERS_REACHED;
+				elseif result == Enum.CraftingOrderResult.NoAccountItems then
+					errorText = CRAFTING_ORDER_FAILED_ACCOUNT_ITEMS;
 				else
 					errorText = PROFESSIONS_ORDER_PLACEMENT_FAILED;
 				end
@@ -526,7 +501,7 @@ function ProfessionsCustomerOrderFormMixin:OnEvent(event, ...)
 	elseif event == "TRACKED_RECIPE_UPDATE" then
 		local recipeID, tracked = ...;
 		if recipeID == self.order.spellID then
-			self.TrackRecipeCheckBox.Checkbox:SetChecked(tracked);
+			self.TrackRecipeCheckbox.Checkbox:SetChecked(tracked);
 		end
 	elseif event == "CAN_LOCAL_WHISPER_TARGET_RESPONSE" then
 		local whisperTarget, status = ...;
@@ -537,114 +512,116 @@ function ProfessionsCustomerOrderFormMixin:OnEvent(event, ...)
 	end
 end
 
-function ProfessionsCustomerOrderFormMixin:SetupQualityDropDown()
+function ProfessionsCustomerOrderFormMixin:SetupQualityDropdown()
 	if not self.minQualityIDs then
 		return;
 	end
 
-	local function Initializer(dropDown, level)
-		local function DropDownButtonClick(button)
-			self:SetMinimumQualityIndex(button.value);
-		end
-		
-		for index = 1, #(self.minQualityIDs) do
-			local info = UIDropDownMenu_CreateInfo();
-			info.fontObject = Number12Font;
-
-			local smallIcon = true;
-			local overrideOffsetY = -1;
-			info.text = index == 1 and NONE or Professions.GetChatIconMarkupForQuality(index, smallIcon, overrideOffsetY);
-			info.value = index;
-			info.checked = nil;
-			info.func = DropDownButtonClick;
-			UIDropDownMenu_AddButton(info);
-		end
+	local function IsSelected(qualityIndex)
+		return self.order.minQuality == qualityIndex;
 	end
 
-	local customXOffset = nil;
-	local customYOffset = 1;
-	UIDropDownMenu_JustifyText(self.MinimumQuality.DropDown, "CENTER", customXOffset, customYOffset);
-	UIDropDownMenu_SetWidth(self.MinimumQuality.DropDown, 70);
-	UIDropDownMenu_Initialize(self.MinimumQuality.DropDown, Initializer);
-	UIDropDownMenu_SetSelectedValue(self.MinimumQuality.DropDown, self.order.minQuality);
+	local function SetSelected(qualityIndex)
+		self:SetMinimumQualityIndex(qualityIndex);
+	end
+
+	local function CreateRadio(rootDescription, text, index)
+		local radio = rootDescription:CreateRadio(text, IsSelected, SetSelected, index);
+		radio:AddInitializer(function(button, description, menu)
+			button.fontString:SetFontObject("Number12Font");
+			
+			if index > 1 then
+				button.fontString:SetPoint("LEFT", button.leftTexture1, "RIGHT", 1, 7);
+			end
+		end);
+	end
+
+	self.MinimumQuality.Dropdown:SetWidth(80);
+	self.MinimumQuality.Dropdown.Text:SetJustifyH("CENTER");
+	self.MinimumQuality.Dropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_PROFESSIONS_CUSTOMER_ORDER_QUALITY");
+
+		local smallIcon = true;
+		local overrideOffsetY = 0;
+		for index in ipairs(self.minQualityIDs) do
+			local text = index == 1 and NONE or Professions.GetChatIconMarkupForQuality(index, smallIcon, overrideOffsetY);
+			CreateRadio(rootDescription, text, index);
+		end
+	end);
 end
 
-function ProfessionsCustomerOrderFormMixin:SetupOrderRecipientDropDown()
-	local function Initializer(dropDown, level)
-		local function DropDownButtonClick(button)
-			self:SetOrderRecipient(button.value);
-		end
-	
-		local recipientTypes = {};
+function ProfessionsCustomerOrderFormMixin:SetupOrderRecipientDropdown()
+	self.OrderRecipientDropdown:SetWidth(136);
+
+	local function IsSelected(orderType)
+		return self.order.orderType == orderType;
+	end
+
+	local function SetSelected(orderType)
+		self:SetOrderRecipient(orderType);
+	end
+
+	local function GetOrderTypes()
+		local orderTbls = {};
 		if not self.order.isRecraft then
-			table.insert(recipientTypes, { text = PROFESSIONS_CRAFTING_FORM_ORDER_RECIPIENT_PUBLIC, value = Enum.CraftingOrderType.Public, });
+			table.insert(orderTbls, { text = PROFESSIONS_CRAFTING_FORM_ORDER_RECIPIENT_PUBLIC, orderType = Enum.CraftingOrderType.Public, });
 		else
 			if self.order.orderType == Enum.CraftingOrderType.Public then
 				self.order.orderType = Enum.CraftingOrderType.Personal;
 			end
 		end
 		if IsInGuild() then
-			table.insert(recipientTypes, { text = PROFESSIONS_CRAFTING_FORM_ORDER_RECIPIENT_GUILD, value = Enum.CraftingOrderType.Guild, });
+			table.insert(orderTbls, { text = PROFESSIONS_CRAFTING_FORM_ORDER_RECIPIENT_GUILD, orderType = Enum.CraftingOrderType.Guild, });
 		end
-		table.insert(recipientTypes, { text = PROFESSIONS_CRAFTING_FORM_ORDER_RECIPIENT_PRIVATE, value = Enum.CraftingOrderType.Personal, });
-
-		for _, type in ipairs(recipientTypes) do
-			local info = UIDropDownMenu_CreateInfo();
-			info.fontObject = GameFontHighlightSmall;
-			info.text = type.text;
-			info.minWidth = 108;
-			info.value = type.value;
-			info.checked = nil;
-			info.func = DropDownButtonClick;
-			UIDropDownMenu_AddButton(info);
-		end
+		table.insert(orderTbls, { text = PROFESSIONS_CRAFTING_FORM_ORDER_RECIPIENT_PRIVATE, orderType = Enum.CraftingOrderType.Personal, });
+		return orderTbls;
 	end
 
-	UIDropDownMenu_SetWidth(self.OrderRecipientDropDown, 136);
-	UIDropDownMenu_JustifyText(self.OrderRecipientDropDown, "LEFT");
-	UIDropDownMenu_Initialize(self.OrderRecipientDropDown, Initializer);
-	UIDropDownMenu_SetSelectedValue(self.OrderRecipientDropDown, self.order.orderType);
+	self.OrderRecipientDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_PROFESSIONS_CUSTOMER_ORDER_RECIPIENT");
+
+		for index, tbl in ipairs(GetOrderTypes()) do
+			rootDescription:CreateRadio(tbl.text, IsSelected, SetSelected, tbl.orderType);
+		end
+	end);
 
 	self:UpdateMinimumQuality();
 end
 
-function ProfessionsCustomerOrderFormMixin:SetupDurationDropDown()
-	self.PaymentContainer.Duration:SetText(PROFESSIONS_CRAFTING_FORM_CUSTOMER_DURATION);
-
-	local function Initializer(dropDown, level)
-		local function DropDownButtonClick(button)
-			self:SetDuration(button.value);
-		end
-
-		local durationTypes = 
-		{
-			{ text = PROFESSIONS_LISTING_DURATION_ONE, value = Enum.CraftingOrderDuration.Short, },
-			{ text = PROFESSIONS_LISTING_DURATION_TWO, value = Enum.CraftingOrderDuration.Medium, },
-			{ text = PROFESSIONS_LISTING_DURATION_THREE, value = Enum.CraftingOrderDuration.Long, },
-		};
-		
-		for _, duration in ipairs(durationTypes) do
-			local info = UIDropDownMenu_CreateInfo();
-			info.fontObject = Number12Font;
-			info.text = duration.text;
-			info.minWidth = 108;
-			info.value = duration.value;
-			info.checked = nil;
-			info.func = DropDownButtonClick;
-			UIDropDownMenu_AddButton(info);
-		end
-	end
-
+function ProfessionsCustomerOrderFormMixin:SetupDurationDropdown()
 	if not self.duration or self.duration < Enum.CraftingOrderDuration.Short or self.duration > Enum.CraftingOrderDuration.Long then
 		self.duration = Enum.CraftingOrderDuration.Long;
 	end
 
-	UIDropDownMenu_Initialize(self.PaymentContainer.DurationDropDown, Initializer);
-	UIDropDownMenu_SetSelectedValue(self.PaymentContainer.DurationDropDown, self.duration);
+	local function IsSelected(duration)
+		return self.duration == duration;
+	end
+
+	local function SetSelected(duration)
+		self:SetDuration(duration);
+	end
+
+	local function CreateRadio(rootDescription, text, duration)
+		local radio = rootDescription:CreateRadio(text, IsSelected, SetSelected, duration);
+		radio:AddInitializer(function(button, description, menu)
+			button.fontString:SetFontObject("Number12Font");
+		end);
+	end
+
+	self.PaymentContainer.Duration:SetText(PROFESSIONS_CRAFTING_FORM_CUSTOMER_DURATION);
+	self.PaymentContainer.DurationDropdown:SetWidth(143);
+	self.PaymentContainer.DurationDropdown.Text:SetFontObject("Number12Font");
+	self.PaymentContainer.DurationDropdown.Text:SetJustifyH("RIGHT");
+	self.PaymentContainer.DurationDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_PROFESSIONS_CUSTOMER_ORDER_DURATION");
+
+		CreateRadio(rootDescription, PROFESSIONS_LISTING_DURATION_ONE, Enum.CraftingOrderDuration.Short);
+		CreateRadio(rootDescription, PROFESSIONS_LISTING_DURATION_TWO, Enum.CraftingOrderDuration.Medium);
+		CreateRadio(rootDescription, PROFESSIONS_LISTING_DURATION_THREE, Enum.CraftingOrderDuration.Long);
+	end);
 end
 
 function ProfessionsCustomerOrderFormMixin:UpdateMinimumQuality()
-
 	local showMinQuality = (not self.committed) and self.minQualityIDs and self.order.orderType ~= Enum.CraftingOrderType.Public;
 	self.MinimumQuality:SetShown(showMinQuality);
 end
@@ -666,8 +643,6 @@ function ProfessionsCustomerOrderFormMixin:SetDuration(index)
 	self.duration = index;
 
 	Professions.SetDefaultOrderDuration(index);
-
-	UIDropDownMenu_SetSelectedValue(self.PaymentContainer.DurationDropDown, index);
 	
 	self:UpdateDepositCost();
 end
@@ -676,8 +651,6 @@ function ProfessionsCustomerOrderFormMixin:SetOrderRecipient(index)
 	self.order.orderType = index;
 
 	Professions.SetDefaultOrderRecipient(index);
-
-	UIDropDownMenu_SetSelectedValue(self.OrderRecipientDropDown, index);
 
 	self:UpdateReagentSlots();
 	self:UpdateMinimumQuality();
@@ -693,8 +666,6 @@ function ProfessionsCustomerOrderFormMixin:SetMinimumQualityIndex(index)
 	self.order.minQuality = index;
 
 	SetItemCraftingQualityOverlayOverride(self.RecraftSlot.OutputSlot, index);
-
-	UIDropDownMenu_SetSelectedValue(self.MinimumQuality.DropDown, index);
 end
 
 local helptipSystemName = "Professions Customer Orders";
@@ -759,6 +730,10 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 	local optionalReagentHelptipShown = GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PROFESSIONS_CO_OPTIONAL_REAGENTS);
 	for slotIndex, reagentSlotSchematic in ipairs(recipeSchematic.reagentSlotSchematics) do
 		local orderSource = reagentSlotSchematic.orderSource;
+		if orderSource == Enum.CraftingOrderReagentSource.Any and self.order.orderType == Enum.CraftingOrderType.Public then
+			-- For public orders, only the customer can provide "Any" sourced reagents
+			orderSource = Enum.CraftingOrderReagentSource.Customer;
+		end
 
 		local reagentType = reagentSlotSchematic.reagentType;
 		if reagentType ~= Enum.CraftingReagentType.Finishing then
@@ -855,12 +830,16 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 									transaction:OverwriteAllocations(reagentSlotSchematic.slotIndex, allocations);
 
 									slot:Update();
+
+									self:UpdateListOrderButton();
 								end
 
 								self.QualityDialog:RegisterCallback(ProfessionsQualityDialogMixin.Event.Accepted, OnAllocationsAccepted, slot);
 								
 								local allocationsCopy = transaction:GetAllocationsCopy(slotIndex);
-								self.QualityDialog:Open(recipeID, reagentSlotSchematic, allocationsCopy, slotIndex);
+								local disallowZeroAllocations = false;
+								local characterInventoryOnly = true;
+								self.QualityDialog:Open(recipeID, reagentSlotSchematic, allocationsCopy, slotIndex, disallowZeroAllocations, characterInventoryOnly);
 							end
 						end
 					end);
@@ -927,7 +906,7 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 				end
 
 				local function OverwriteAllocationWithQuantityInPossession(slotIndex, reagent, reagentSlotSchematic)
-					local quantityOwned = ProfessionsUtil.GetReagentQuantityInPossession(reagent);
+					local quantityOwned = ProfessionsUtil.GetReagentQuantityInPossession(reagent, self.transaction:ShouldUseCharacterInventoryOnly());
 					local quantity = math.min(quantityOwned, reagentSlotSchematic.quantityRequired);
 					self.transaction:OverwriteAllocation(slotIndex, reagent, quantity);
 				end
@@ -984,12 +963,12 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 										itemIDs = ItemUtil.FilterOwnedItems(itemIDs);
 									end
 									local items = ItemUtil.TransformItemIDsToItems(itemIDs);
-									local elementData = {items = items};
+									local elementData = {items = items, useCharacterInventoryOnly = self.transaction:ShouldUseCharacterInventoryOnly()};
 									return elementData;
 								end
 								
 								flyout.OnElementEnterImplementation = function(elementData, tooltip)
-									Professions.FlyoutOnElementEnterImplementation(elementData, tooltip, recipeID, nil, self.transaction, reagentSlotSchematic);
+									Professions.FlyoutOnElementEnterImplementation(elementData, tooltip, recipeID, nil, self.transaction, reagentSlotSchematic, self.transaction:ShouldUseCharacterInventoryOnly());
 								end
 	
 								flyout.OnElementEnabledImplementation = function(button, elementData, displayCount)
@@ -1007,7 +986,7 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 										return false;
 									end
 
-									local quantityOwned = ProfessionsUtil.GetReagentQuantityInPossession(reagent);
+									local quantityOwned = ProfessionsUtil.GetReagentQuantityInPossession(reagent, self.transaction:ShouldUseCharacterInventoryOnly());
 									if quantityOwned < reagentSlotSchematic.quantityRequired then
 										return false;
 									end
@@ -1104,17 +1083,18 @@ function ProfessionsCustomerOrderFormMixin:InitSchematic()
 	self.ReagentContainer.Reagents:Show();
 	self.ReagentContainer.OptionalReagents:Show();
 	self.ReagentContainer.RecraftInfoText:Hide();
-	self.TrackRecipeCheckBox:Hide();
+	self.TrackRecipeCheckbox:Hide();
 
 	local recipeID = self.order.spellID;
 
 	if recipeID and not self.committed then
-		self.TrackRecipeCheckBox:Show();
-		self.TrackRecipeCheckBox.Checkbox:SetChecked(C_TradeSkillUI.IsRecipeTracked(recipeID, self.order.isRecraft));
+		self.TrackRecipeCheckbox:Show();
+		self.TrackRecipeCheckbox.Checkbox:SetChecked(C_TradeSkillUI.IsRecipeTracked(recipeID, self.order.isRecraft));
 	end
 
 	local recipeSchematic = self.order.spellID and C_TradeSkillUI.GetRecipeSchematic(self.order.spellID, self.order.isRecraft);
 	self.transaction = recipeSchematic and CreateProfessionsRecipeTransaction(recipeSchematic);
+	self.transaction:SetUseCharacterInventoryOnly(true);
 
 	if self.order.isRecraft then
 		if self.recraftGUID then
@@ -1249,21 +1229,20 @@ function ProfessionsCustomerOrderFormMixin:InitSchematic()
 	self:UpdateListOrderButton();
 
 	if not self.committed and Professions.DoesSchematicIncludeReagentQualities(self.transaction:GetRecipeSchematic()) then
-		self.AllocateBestQualityCheckBox:Show();
+		self.AllocateBestQualityCheckbox:Show();
 		local forCustomer = true;
-		self.AllocateBestQualityCheckBox:SetChecked(Professions.ShouldAllocateBestQualityReagents(forCustomer));
+		self.AllocateBestQualityCheckbox:SetChecked(Professions.ShouldAllocateBestQualityReagents(forCustomer));
 	else
-		self.AllocateBestQualityCheckBox:Hide();
+		self.AllocateBestQualityCheckbox:Hide();
 	end
 end
 
 function ProfessionsCustomerOrderFormMixin:UpdateMinimumQualityAnchor()
 	self.MinimumQuality:ClearAllPoints();
 	local targetVisible = self.OrderRecipientTarget:IsShown();
-	local minimumQualityAnchorTo = targetVisible and self.OrderRecipientTarget or self.OrderRecipientDropDown;
-	local xOfs = targetVisible and 17 or 0;
-	local yOfs = targetVisible and -7 or -2;
-	self.MinimumQuality:SetPoint("TOPRIGHT", minimumQualityAnchorTo, "BOTTOMRIGHT", xOfs, yOfs);
+	local minimumQualityAnchorTo = targetVisible and self.OrderRecipientTarget or self.OrderRecipientDropdown;
+	local yOfs = targetVisible and -3 or -6;
+	self.MinimumQuality:SetPoint("TOPRIGHT", minimumQualityAnchorTo, "BOTTOMRIGHT", 0, yOfs);
 end
 
 function ProfessionsCustomerOrderFormMixin:Init(order)
@@ -1291,7 +1270,7 @@ function ProfessionsCustomerOrderFormMixin:Init(order)
 	self.RecraftRecipeName:Hide();
 	self.RecraftSlot:SetShown(order.isRecraft);
 	self.ReagentContainer.RecraftInfoText:SetShown(order.isRecraft);
-	self.AllocateBestQualityCheckBox:Hide();
+	self.AllocateBestQualityCheckbox:Hide();
 
 	local editBox = self.PaymentContainer.NoteEditBox.ScrollingEditBox;
 	editBox:SetDefaultTextEnabled(not self.committed);
@@ -1327,7 +1306,7 @@ function ProfessionsCustomerOrderFormMixin:Init(order)
 		region:SetShown(self.committed and ShouldShowRegionCompleted(region));
 	end
 
-	self.TrackRecipeCheckBox:Hide();
+	self.TrackRecipeCheckbox:Hide();
 
 	local showFavoriteButton = not order.isRecraft;
 	self.FavoriteButton:SetShown(showFavoriteButton);
@@ -1369,9 +1348,9 @@ function ProfessionsCustomerOrderFormMixin:Init(order)
 	end
 
 	if not self.committed then
-		self:SetupQualityDropDown();
-		self:SetupOrderRecipientDropDown();
-		self:SetupDurationDropDown();
+		self:SetupQualityDropdown();
+		self:SetupOrderRecipientDropdown();
+		self:SetupDurationDropdown();
 		self:UpdateTotalPrice();
 
 		self.OrderRecipientTarget:SetShown(self.order.orderType == Enum.CraftingOrderType.Personal);
@@ -1397,7 +1376,7 @@ function ProfessionsCustomerOrderFormMixin:Init(order)
 		end
 		self.PaymentContainer.TimeRemainingDisplay.Text:SetText(timeRemainingText);
 
-		self.OrderRecipientDisplay.SocialDropdownButton:SetShown(order.crafterName ~= nil);
+		self.OrderRecipientDisplay.SocialDropdown:SetShown(order.crafterName ~= nil);
 		local crafterText;
 		if order.crafterName then
 			crafterText = order.crafterName;
@@ -1459,7 +1438,7 @@ function ProfessionsCustomerOrderFormMixin:AreRequiredReagentsProvided()
 	local transaction = self.transaction;
 	local recipeSchematic = transaction:GetRecipeSchematic();
 	for slotIndex, reagentSlotSchematic in ipairs(recipeSchematic.reagentSlotSchematics) do
-		local mustProvide = reagentSlotSchematic.required and (reagentSlotSchematic.orderSource == Enum.CraftingOrderReagentSource.Customer);
+		local mustProvide = (reagentSlotSchematic.required and ((reagentSlotSchematic.orderSource == Enum.CraftingOrderReagentSource.Customer) or ((reagentSlotSchematic.orderSource == Enum.CraftingOrderReagentSource.Any) and (self.order.orderType == Enum.CraftingOrderType.Public))));
 		if mustProvide and not transaction:HasAllAllocations(slotIndex) then
 			return false;
 		end

@@ -27,7 +27,7 @@ function CommunitiesChatMixin:OnLoad()
 	self.eventsSent = {};
 
 	self.MessageFrame:SetOnScrollChangedCallback(function(messageFrame, offset)
-		if not (messageFrame:GetNumMessages() < MAX_NUM_CHAT_LINES) then
+		if messageFrame:GetNumMessages() >= MAX_NUM_CHAT_LINES then
 			return;
 		end
 
@@ -88,7 +88,7 @@ function CommunitiesChatMixin:OnEvent(event, ...)
 				self.pendingMemberInfo[clubId] = nil;
 				
 				local allEmpty = true;
-				for clubId, memberIds in pairs(self.pendingMemberInfo) do
+				for _clubId, _memberIds in pairs(self.pendingMemberInfo) do -- luacheck: ignore 512 (loop is executed at most once)
 					allEmpty = false;
 					break;
 				end

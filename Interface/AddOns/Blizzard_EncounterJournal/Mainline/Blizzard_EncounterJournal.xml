@@ -316,72 +316,6 @@
 		<TexCoords left="0.359375" right="0.99609375" top="0.8525390625" bottom="0.880859375"/>
 	</Texture>
 
-	<Button name="EJButtonTemplate" mixin="EJButtonMixin" virtual="true">
-		<Size x="75" y="26"/>
-		<HitRectInsets>
-			<AbsInset left="-13" right="-13" top="0" bottom="0"/>
-		</HitRectInsets>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture inherits="UI-EJ-FilterButtonUp" parentKey="UpLeft">
-					<Size x="13" y="26"/>
-					<Anchors>
-						<Anchor point="RIGHT" relativePoint="LEFT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture inherits="UI-EJ-FilterButtonUp" parentKey="UpRight">
-					<Size x="13" y="26"/>
-					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture inherits="UI-EJ-FilterButtonDown" parentKey="DownLeft" hidden="true">
-					<Size x="13" y="26"/>
-					<Anchors>
-						<Anchor point="RIGHT" relativePoint="LEFT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture inherits="UI-EJ-FilterButtonDown" parentKey="DownRight" hidden="true">
-					<Size x="13" y="26"/>
-					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="HIGHLIGHT">
-				<Texture inherits="UI-EJ-FilterButtonHighlight" parentKey="HighLeft">
-					<Size x="13" y="26"/>
-					<Anchors>
-						<Anchor point="RIGHT" relativePoint="LEFT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture inherits="UI-EJ-FilterButtonHighlight" parentKey="HighRight">
-					<Size x="13" y="26"/>
-					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<NormalTexture inherits="_FilterButtonUp-Mid"/>
-		<PushedTexture inherits="_FilterButtonDown-Mid"/>
-		<HighlightTexture inherits="_FilterButtonHighlight-Mid"/>
-		<NormalFont style="GameFontNormalSmall"/>
-		<ButtonText parentKey="Text">
-			<Size x="0" y="12"/>
-			<Anchors>
-				<Anchor point="LEFT" x="-8" y="0"/>
-				<Anchor point="RIGHT" x="8" y="0"/>
-			</Anchors>
-			<Color r="0.973" g="0.902" b="0.581"/>
-		</ButtonText>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnMouseDown method="OnMouseDown"/>
-			<OnMouseUp method="OnMouseUp"/>
-		</Scripts>
-	</Button>
-
 	<Button name="EncounterInstanceButtonTemplate" hidden="true" virtual="true">
 		<Size x="174" y="96"/>
 		<Layers>
@@ -1393,15 +1327,11 @@
 		</Anchors>
 		<Frames>
 			<!-- this dropdown will get reparented between LootJournal and LootJournalItems -->
-			<Frame name="$parentLootJournalViewDropDown" parentKey="LootJournalViewDropDown" inherits="UIDropDownMenuTemplate">
-				<Size x="156" y="32"/>
+			<DropdownButton parentKey="LootJournalViewDropdown" inherits="WowStyle1DropdownTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="15" y="-9"/>
 				</Anchors>
-				<Scripts>
-					<OnLoad function="EncounterJournal_LootTabViewDropDown_OnLoad"/>
-				</Scripts>
-			</Frame>
+			</DropdownButton>
 
 			<EditBox name="$parentSearchBox" inherits="SearchBoxListTemplate" parentKey="searchBox">
 				<KeyValues>
@@ -1486,19 +1416,11 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Frame name="$parentTierDropDown" parentKey="tierDropDown" inherits="UIDropDownMenuTemplate">
-						<Size x="156" y="32"/>
+					<DropdownButton parentKey="ExpansionDropdown" inherits="WowStyle1DropdownTemplate">
 						<Anchors>
-							<Anchor point="TOPRIGHT" x="0" y="-10"/>
+							<Anchor point="TOPRIGHT" x="-24" y="-10"/>
 						</Anchors>
-						<Scripts>
-							<OnShow>
-								UIDropDownMenu_SetWidth(self, 156);
-								UIDropDownMenu_JustifyText(self, "LEFT");
-								UIDropDownMenu_Initialize(self, EJTierDropDown_Initialize);
-							</OnShow>
-						</Scripts>
-					</Frame>
+					</DropdownButton>
 
 					<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 						<Size x="748" y="367"/>
@@ -1823,26 +1745,11 @@
 									<Anchor point="BOTTOMLEFT" relativeKey="$parent.BossesScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="5"/>
 								</Anchors>
 							</EventFrame>
-							<DropDownToggleButton name="$parentDifficulty" parentKey="difficulty" inherits="EJButtonTemplate" frameLevel="10">
-								<Size x="75" y="26"/>
+							<DropdownButton name="$parentDifficulty" parentKey="difficulty" inherits="WowStyle1DropdownTemplate" frameLevel="10">
 								<Anchors>
 									<Anchor point="TOPRIGHT" x="-19" y="-13"/>
 								</Anchors>
-								<Scripts>
-									<OnMouseDown>
-										EJButtonMixin.OnMouseDown(self, button);
-										ToggleDropDownMenu(1, nil, self:GetParent().difficultyDD, self, 5, 0);
-										PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-									</OnMouseDown>
-								</Scripts>
-							</DropDownToggleButton>
-							<Frame name="$parentDifficultyDD" parentKey="difficultyDD" inherits="UIDropDownMenuTemplate" clampedToScreen="true" hidden="true">
-								<Scripts>
-									<OnLoad>
-										UIDropDownMenu_Initialize(self, EncounterJournal_DifficultyInit, "MENU");
-									</OnLoad>
-								</Scripts>
-							</Frame>
+							</DropdownButton>
 							<Button name="$parentResetButton" parentKey="reset" hidden="true">
 								<Size x="26" y="26"/>
 								<Anchors>
@@ -2067,35 +1974,8 @@
 											<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="5"/>
 										</Anchors>
 									</EventFrame>
-									<DropDownToggleButton name="$parentFilterToggle" parentKey="filter" text="GEAR_FILTER" inherits="EJButtonTemplate">
-										<Scripts>
-											<OnMouseDown>
-												EJButtonMixin.OnMouseDown(self, button);
-												ToggleDropDownMenu(1, nil, self:GetParent().lootFilter, self, 5, 0);
-												PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
-											</OnMouseDown>
-											<OnLoad inherit="prepend">
-												self:SetPoint("TOPLEFT", self:GetParent():GetParent(), "TOPRIGHT", -340, -13);
-											</OnLoad>
-										</Scripts>
-									</DropDownToggleButton>
-									<DropDownToggleButton name="$parentSlotFilterToggle" parentKey="slotFilter" text="ALL_INVENTORY_SLOTS" inherits="EJButtonTemplate">
-										<Anchors>
-											<Anchor point="LEFT" relativeKey="$parent.filter" relativePoint="RIGHT" x="10" y="0"/>
-										</Anchors>
-										<Scripts>
-											<OnMouseDown>
-												EJButtonMixin.OnMouseDown(self, button);
-												ToggleDropDownMenu(1, nil, self:GetParent().lootSlotFilter, self, 5, 0);
-												PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
-											</OnMouseDown>
-											<OnLoad inherit="prepend">
-												self:SetPoint("TOPLEFT", self:GetParent():GetParent(), "TOPRIGHT", -230, -13);
-											</OnLoad>
-										</Scripts>
-									</DropDownToggleButton>
-									<Frame name="$parentLootFilter" inherits="UIDropDownMenuTemplate" parentKey="lootFilter" hidden="true"/>
-									<Frame name="$parentLootSlotFilter" inherits="UIDropDownMenuTemplate" parentKey="lootSlotFilter" hidden="true"/>
+									<DropdownButton parentKey="filter" inherits="WowStyle1DropdownTemplate"/>
+									<DropdownButton parentKey="slotFilter" inherits="WowStyle1DropdownTemplate"/>
 								</Frames>
 								<Scripts>
 									<OnShow>

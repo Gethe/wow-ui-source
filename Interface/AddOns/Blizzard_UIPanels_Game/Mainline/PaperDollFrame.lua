@@ -914,9 +914,7 @@ function PaperDollFrame_SetAttackSpeed(statFrame, unit)
 		offhandSpeed = format("%.2F", offhandSpeed);
 	end
 	if ( offhandSpeed ) then
-		displaySpeed =  BreakUpLargeNumbers(displaySpeed).." / ".. offhandSpeed;
-	else
-		displaySpeed =  BreakUpLargeNumbers(displaySpeed);
+		displaySpeed =  displaySpeed.." / ".. offhandSpeed
 	end
 	PaperDollFrame_SetLabelAndText(statFrame, WEAPON_SPEED, displaySpeed, false, speed);
 
@@ -1020,7 +1018,6 @@ function PaperDollFrame_SetCritChance(statFrame, unit)
 	local minCrit = GetSpellCritChance(holySchool);
 	statFrame.spellCrit = {};
 	statFrame.spellCrit[holySchool] = minCrit;
-	local spellCrit;
 	for i=(holySchool+1), MAX_SPELL_SCHOOLS do
 		spellCrit = GetSpellCritChance(i);
 		minCrit = min(minCrit, spellCrit);
@@ -1449,10 +1446,9 @@ end
 
 function PaperDollFrame_OnShow(self)
 	CharacterStatsPane.initialOffsetY = 0;
-	CharacterFrame:SetTitle(UnitPVPName("player"));
 	PaperDollFrame_SetLevel();
 	PaperDollFrame_UpdateStats();
-	CharacterFrame_Expand();
+	CharacterFrame:Expand();
 
 	SetPaperDollBackground(CharacterModelScene, "player");
 	PaperDollBgDesaturate(true);
@@ -1467,7 +1463,7 @@ end
 
 function PaperDollFrame_OnHide(self)
 	CharacterStatsPane.initialOffsetY = 0;
-	CharacterFrame_Collapse();
+	CharacterFrame:Collapse();
 	PaperDollSidebarTabs:Hide();
 	PaperDollFrame_HideInventoryFixupComplete(self);
 	self:UnregisterEvent("UNIT_MODEL_CHANGED");
@@ -1512,6 +1508,8 @@ function PaperDollFrame_UpdateCorruptedItemGlows(glow)
 end
 
 function PaperDollItemSlotButton_OnLoad(self)
+	EnchantingItemButtonAnimMixin.OnLoad(self);
+	
 	self:RegisterForDrag("LeftButton");
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	
@@ -1547,6 +1545,11 @@ function PaperDollItemSlotButton_OnLoad(self)
 			popoutButton:SetPoint("LEFT", self, "RIGHT", -8, 0);
 		end
 	end
+
+	local function GetItemLocationCallback()
+		return ItemLocation:CreateFromEquipmentSlot(self:GetID());
+	end
+	EnchantingItemButtonAnimMixin.SetItemLocationCallback(self, GetItemLocationCallback);
 end
 
 function PaperDollItemSlotButton_GetSlotName(self)
@@ -1566,8 +1569,10 @@ local PAPERDOLL_FRAME_EVENTS = {
 };
 
 function PaperDollItemSlotButton_OnShow(self, isBag)
-	FrameUtil.RegisterFrameForEvents(self, PAPERDOLL_FRAME_EVENTS);
+	EnchantingItemButtonAnimMixin.OnShow(self);
 
+	FrameUtil.RegisterFrameForEvents(self, PAPERDOLL_FRAME_EVENTS);
+	
 	if ( not isBag ) then
 		self:RegisterEvent("BAG_UPDATE_COOLDOWN");
 	end
@@ -1575,12 +1580,16 @@ function PaperDollItemSlotButton_OnShow(self, isBag)
 end
 
 function PaperDollItemSlotButton_OnHide(self)
+	EnchantingItemButtonAnimMixin.OnHide(self);
+
 	FrameUtil.UnregisterFrameForEvents(self, PAPERDOLL_FRAME_EVENTS);
 
 	self:UnregisterEvent("BAG_UPDATE_COOLDOWN");
 end
 
 function PaperDollItemSlotButton_OnEvent(self, event, ...)
+	EnchantingItemButtonAnimMixin.OnEvent(self, event, ...);
+
 	if ( event == "PLAYER_EQUIPMENT_CHANGED" ) then
 		local equipmentSlot, hasCurrent = ...;
 		if ( self:GetID() == equipmentSlot ) then
@@ -1715,7 +1724,7 @@ function PaperDollItemSlotButton_Update(self)
 			CooldownFrame_Set(cooldown, start, duration, enable);
 		end
 	else
-		local textureName = self.backgroundTextureName;
+		textureName = self.backgroundTextureName;
 		if ( self.checkRelic and UnitHasRelicSlot("player") ) then
 			textureName = "Interface\\Paperdoll\\UI-PaperDoll-Slot-Relic.blp";
 		end
@@ -1782,12 +1791,21 @@ function PaperDollItemSlotButton_OnEnter(self)
 			GameTooltip:Show();
 		end
 	end
+
+	local itemLocation = ItemLocation:CreateFromEquipmentSlot(self:GetID());
+	if itemLocation and itemLocation:IsValid() then
+		local itemLocationValid = itemLocation:IsValid();
+		SetCursorHoveredItem(itemLocation);
+	end
+
 	CursorUpdate(self);
 end
 
 function PaperDollItemSlotButton_OnLeave(self)
 	self:UnregisterEvent("MODIFIER_STATE_CHANGED");
 	GameTooltip:Hide();
+	
+	ClearCursorHoveredItem();
 	ResetCursor();
 end
 
@@ -2075,62 +2093,46 @@ function PaperDollFrameItemFlyout_PostGetItems(itemSlotButton, itemDisplayTable,
 	return numItems;
 end
 
-function GearSetEditButton_OnLoad(self)
-	self.Dropdown = GearSetEditButtonDropDown;
-	UIDropDownMenu_Initialize(self.Dropdown, nil, "MENU");
-	UIDropDownMenu_SetInitializeFunction(self.Dropdown, GearSetEditButtonDropDown_Initialize);
-end
-
 function GearSetEditButton_OnMouseDown(self, button)
 	self.texture:SetPoint("TOPLEFT", 1, -1);
 
-	GearSetButton_OnClick(self:GetParent(), button);
+	local parentButton = self:GetParent();
 
-	if ( self.Dropdown.gearSetButton ~= self:GetParent() ) then
-		HideDropDownMenu(1);
-		self.Dropdown.gearSetButton = self:GetParent();
+	local function GetSetID()
+		return parentButton.setID;
 	end
 
-	ToggleDropDownMenu(1, nil, self.Dropdown, self, 0, 0);
-end
-
-function GearSetEditButtonDropDown_Initialize(dropdownFrame, level, menuList)
-	local gearSetButton = dropdownFrame.gearSetButton;
-	local info = UIDropDownMenu_CreateInfo();
-	info.text = EQUIPMENT_SET_EDIT;
-	info.notCheckable = true;
-	info.func = function() GearSetButton_OpenPopup(gearSetButton); end;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-
-	info = UIDropDownMenu_CreateInfo();
-	info.text = EQUIPMENT_SET_ASSIGN_TO_SPEC;
-	info.isTitle = true;
-	info.notCheckable = true;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-
-	local equipmentSetID = gearSetButton.setID;
-	for i = 1, GetNumSpecializations() do
-		info = UIDropDownMenu_CreateInfo();
-		info.checked = function()
-			return C_EquipmentSet.GetEquipmentSetAssignedSpec(equipmentSetID) == i;
-		end;
-
-		info.func = function()
-			local currentSpecIndex = C_EquipmentSet.GetEquipmentSetAssignedSpec(equipmentSetID);
-			if ( currentSpecIndex ~= i ) then
-				C_EquipmentSet.AssignSpecToEquipmentSet(equipmentSetID, i);
-			else
-				C_EquipmentSet.UnassignEquipmentSetSpec(equipmentSetID);
-			end
-
-			GearSetButton_UpdateSpecInfo(gearSetButton);
-			PaperDollEquipmentManagerPane_Update(true);
-		end;
-
-		local specID = GetSpecializationInfo(i);
-		info.text = select(2, GetSpecializationInfoByID(specID));
-		UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
+	local function IsSelected(i)
+		return C_EquipmentSet.GetEquipmentSetAssignedSpec(GetSetID()) == i;
 	end
+
+	local function SetSelected(i)
+		local currentSpecIndex = C_EquipmentSet.GetEquipmentSetAssignedSpec(GetSetID());
+		if ( currentSpecIndex ~= i ) then
+			C_EquipmentSet.AssignSpecToEquipmentSet(GetSetID(), i);
+		else
+			C_EquipmentSet.UnassignEquipmentSetSpec(GetSetID());
+		end
+
+		GearSetButton_UpdateSpecInfo(parentButton);
+		PaperDollEquipmentManagerPane_Update(true);
+	end
+
+	MenuUtil.CreateContextMenu(PaperDollFrame.EquipmentManagerPane, function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_PAPERDOLL_FRAME");
+
+		rootDescription:CreateButton(EQUIPMENT_SET_EDIT, function()
+			GearSetButton_OpenPopup(parentButton);
+		end);
+
+		rootDescription:CreateTitle(EQUIPMENT_SET_ASSIGN_TO_SPEC);
+
+		for i = 1, GetNumSpecializations() do
+			local specID = GetSpecializationInfo(i);
+			local text = select(2, GetSpecializationInfoByID(specID));
+			rootDescription:CreateRadio(text, IsSelected, SetSelected, i);
+		end
+	end);
 end
 
 function GearSetButton_SetSpecInfo(self, specID)
@@ -2210,7 +2212,7 @@ function GearManagerPopupFrameMixin:OnShow()
 
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	self.iconDataProvider = CreateAndInitFromMixin(IconDataProviderMixin, IconDataProviderExtraType.Equipment);
-	self.BorderBox.IconTypeDropDown:SetSelectedValue(IconSelectorPopupFrameIconFilterTypes.All);
+	self:SetIconFilter(IconSelectorPopupFrameIconFilterTypes.All);
 	self:Update();
 	self.BorderBox.IconSelectorEditBox:OnTextChanged();
 
@@ -2244,7 +2246,7 @@ function GearManagerPopupFrameMixin:Update()
 		self.IconSelector:SetSelectedIndex(initialIndex);
 		self.BorderBox.SelectedIconArea.SelectedIconButton:SetIconTexture(self:GetIconByIndex(initialIndex));
 	elseif ( self.mode == IconSelectorPopupFrameModes.Edit ) then
-		local name, texture = C_EquipmentSet.GetEquipmentSetInfo(PaperDollFrame.EquipmentManagerPane.selectedSetID);
+		local name, texture = C_EquipmentSet.GetEquipmentSetInfo(self.setID);
 		self.BorderBox.IconSelectorEditBox:SetText(name);
 		self.BorderBox.IconSelectorEditBox:HighlightText();
 
@@ -2721,8 +2723,8 @@ function PaperDollFrame_SetSidebar(self, index)
 	local frame = GetPaperDollSideBarFrame(index);
 	if (not frame:IsShown()) then
 		for i = 1, #PAPERDOLL_SIDEBARS do
-			local frame = GetPaperDollSideBarFrame(i);
-			frame:Hide();
+			local barFrame = GetPaperDollSideBarFrame(i);
+			barFrame:Hide();
 		end
 		frame:Show();
 		PaperDollFrame.currentSideBar = frame;
@@ -2750,12 +2752,12 @@ local inventoryFixupVersionToTutorialIndex =
 };
 
 local function CheckFixupStates(fixupVersion)
-	local tutorialIndices = fixupVersion and inventoryFixupVersionToTutorialIndex[fixupVersion];
+	local fixupTutorialIndices = fixupVersion and inventoryFixupVersionToTutorialIndex[fixupVersion];
 
 	-- Set the appropriate index to check, this is how the client knows the user's
 	-- inventory was fixed up at some point in the past, but hasn't seen the tutorial yet.
-	if tutorialIndices and tutorialIndices.checkIndex then
-		SetCVarBitfield("closedInfoFrames", tutorialIndices.checkIndex, true);
+	if fixupTutorialIndices and fixupTutorialIndices.checkIndex then
+		SetCVarBitfield("closedInfoFrames", fixupTutorialIndices.checkIndex, true);
 	end
 
 	-- Return the any matching tutorial that the user hasn't seen

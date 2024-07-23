@@ -141,7 +141,7 @@ end
 
 do
 	local function OnPinReleased(pinPool, pin)
-		FramePool_HideAndClearAnchors(pinPool, pin);
+		Pool_HideAndClearAnchors(pinPool, pin);
 		pin:OnReleased();
 
 		pin.pinTemplate = nil;
@@ -149,7 +149,7 @@ do
 	end
 
 	local function OnPinMouseUp(pin, button, upInside)
-		pin:OnMouseUp(button);
+		pin:OnMouseUp(button, upInside);
 		if upInside then
 			pin:OnClick(button);
 		end
@@ -163,6 +163,9 @@ do
 
 		local pin, newPin = self.pinPools[pinTemplate]:Acquire();
 
+		pin.pinTemplate = pinTemplate;
+		pin.owningMap = self;
+
 		if newPin then
 			local isMouseClickEnabled = pin:IsMouseClickEnabled();
 			local isMouseMotionEnabled = pin:IsMouseMotionEnabled();
@@ -170,6 +173,12 @@ do
 			if isMouseClickEnabled then
 				pin:SetScript("OnMouseUp", OnPinMouseUp);
 				pin:SetScript("OnMouseDown", pin.OnMouseDown);
+
+				-- Prevent OnClick handlers from being run twice, once a frame is in the mapCanvas ecosystem it needs
+				-- to process mouse events only via the map system.
+				if pin:IsObjectType("Button") then
+					pin:SetScript("OnClick", nil);
+				end
 			end
 
 			if isMouseMotionEnabled then
@@ -185,12 +194,9 @@ do
 			pin:SetMouseClickEnabled(isMouseClickEnabled);
 			pin:SetMouseMotionEnabled(isMouseMotionEnabled);
 
-			-- All pins should pass through right clicks to allow the map to zoom out
-			pin:SetPassThroughButtons("RightButton");
+			-- Most pins should pass through right clicks to allow the map to zoom out
+			pin:CheckMouseButtonPassthrough("RightButton");
 		end
-
-		pin.pinTemplate = pinTemplate;
-		pin.owningMap = self;
 
 		if newPin then
 			pin:OnLoad();
@@ -749,7 +755,7 @@ function MapCanvasMixin:GetNormalizedCursorPosition()
 end
 
 function MapCanvasMixin:IsCanvasMouseFocus()
-	return self.ScrollContainer == GetMouseFocus();
+	return self.ScrollContainer:IsMouseMotionFocus();
 end
 
 function MapCanvasMixin:AddLockReason(reason)
@@ -882,17 +888,22 @@ function MapCanvasMixin:RemoveCursorHandler(handler, priority)
 end
 
 function MapCanvasMixin:ProcessCursorHandlers()
-	local focus = GetMouseFocus();
-	if focus then
-		-- pins have a .owningMap, our pins should be pointing to us
-		if focus == self.ScrollContainer or focus.owningMap == self then
-			for i, handlerInfo in ipairs(self.cursorHandlers) do
-				local success, cursor = xpcall(handlerInfo.handler, CallErrorHandler, self);
-				if success and cursor then
-					self.lastCursor = cursor;
-					SetCursor(cursor);
-					return;
-				end
+	local mouseFoci = GetMouseFoci();
+	local isFocusOwningMap = false;
+	for _, focus in ipairs(mouseFoci) do
+		if focus.owningMap == self then
+			isFocusOwningMap = true;
+			break;
+		end
+	end
+	-- pins have a .owningMap, our pins should be pointing to us
+	if self.ScrollContainer:IsMouseMotionFocus() or isFocusOwningMap then
+		for i, handlerInfo in ipairs(self.cursorHandlers) do
+			local success, cursor = xpcall(handlerInfo.handler, CallErrorHandler, self);
+			if success and cursor then
+				self.lastCursor = cursor;
+				SetCursor(cursor);
+				return;
 			end
 		end
 	end

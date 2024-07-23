@@ -720,12 +720,6 @@
 					 <OnClick method="OnClick" />
 				 </Scripts>
 			 </Button>
-			<Frame parentKey="DropDown" hidden="true" inherits="UIDropDownMenuTemplate" mixin="RecruitAFriendDropDownMixin">
-				<Scripts>
-					<OnLoad method="OnLoad"/>
-					<OnHide method="OnHide"/>
-				</Scripts>
-			</Frame>
 			<Frame parentKey="SplashFrame" hidden="true" frameLevel="10">
 				<Anchors>
 					<Anchor point="CENTER" y="-41"/>

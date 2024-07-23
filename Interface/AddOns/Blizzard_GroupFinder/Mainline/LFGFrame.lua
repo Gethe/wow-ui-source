@@ -5,6 +5,9 @@
 ------
 
 LFG_INVITE_POPUP_DEFAULT_HEIGHT = 180;
+LFGLockList = nil;
+LFGCollapseList = nil;
+LFGEnabledList = nil;
 
 --DEBUG FIXME:
 function LFGDebug(text, ...)
@@ -461,7 +464,7 @@ end
 
 function LFG_UpdateRoleCheckboxes(category, lfgID, tankButton, healButton, dpsButton, leaderButton)
 	local mode, submode = GetLFGMode(category, lfgID);
-	local inParty, joined, queued, noPartialClear, achievements, lfgComment, slotCount, category, leader, tank, healer, dps = GetLFGInfoServer(category, lfgID);
+	local inParty, joined, queued, noPartialClear, achievements, lfgComment, slotCount, _category, leader, tank, healer, dps = GetLFGInfoServer(category, lfgID);
 	if ( mode ~= "queued" and mode ~= "listed" and mode ~= "suspended" ) then
 		leader, tank, healer, dps = GetLFGRoles();
 	end
@@ -536,12 +539,12 @@ function LFDRoleButton_OnEnter(self)
 	elseif ( self.disabledTooltip and not self:IsEnabled() ) then
 		GameTooltip:AddLine(self.disabledTooltip, 1, 0, 0, true);
 	elseif ( self.lockedIndicator:IsShown() ) then
-		local dungeonID = LFDQueueFrame.type;
+		local queueDungeonID = LFDQueueFrame.type;
 		local roleID = self:GetID();
 		local reasons;
 		GameTooltip:SetText(ERR_ROLE_UNAVAILABLE, 1.0, 1.0, 1.0, true);
-		if ( type(dungeonID) == "number" ) then
-			local textTable = LFGRoleButton_LockReasonsTextTable(dungeonID, roleID);
+		if ( type(queueDungeonID) == "number" ) then
+			local textTable = LFGRoleButton_LockReasonsTextTable(queueDungeonID, roleID);
 			for text,_ in pairs( textTable ) do
 				GameTooltip:AddLine(text, nil, nil, nil, true);
 			end
@@ -1759,8 +1762,6 @@ function LFGList_DefaultFilterFunction(dungeonID, maxLevelDiff)
 	else
 		return false;
 	end
-
-	return true;
 end
 
 function LFG_QueueForInstanceIfEnabled(category, queueID)
@@ -2104,10 +2105,10 @@ end
 
 function LFGRandomList_OnEnter(self)
 	local randomID = self.randomID;
-	local _, _, subtypeID, _, _, _, _, _, _, _, _, _, _, _, _, _, _, isTimewalker = GetLFGDungeonInfo(randomID);
+	local _, _, subtypeID, _, _, _, _, _, _, _, _, _, _, _, _, _, _, isTimewalkerRandom = GetLFGDungeonInfo(randomID);
 
 	local titleText, emptyText, subText;
-	if ( isTimewalker ) then
+	if ( isTimewalkerRandom ) then
 		titleText, emptyText, subText = INCLUDED_DUNGEONS, INCLUDED_DUNGEONS_TIMEWALKER_EMPTY, nil;
 	elseif ( subtypeID == LFG_SUBTYPEID_SCENARIO ) then
 		titleText, emptyText, subText = INCLUDED_SCENARIOS, INCLUDED_SCENARIOS_EMPTY, INCLUDED_SCENARIOS_SUBTEXT;
@@ -2128,7 +2129,7 @@ function LFGRandomList_OnEnter(self)
 		GameTooltip:AddLine(" ");
 		for i=1, numDungeons do
 			local dungeonID = GetDungeonForRandomSlot(randomID, i);
-			local name, typeID, subtypeID, minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, expansionLevel, groupID, textureFilename, difficulty, maxPlayers, description, isHoliday, _, _, isTimewalker = GetLFGDungeonInfo(dungeonID);
+			local name, typeID, _subtypeID, minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, expansionLevel, groupID, textureFilename, difficulty, maxPlayers, description, isHoliday, _, _, isTimewalker = GetLFGDungeonInfo(dungeonID);
 			local rangeText;
 			if ( minLevel == maxLevel ) then
 				rangeText = format(LFD_LEVEL_FORMAT_SINGLE, minLevel);

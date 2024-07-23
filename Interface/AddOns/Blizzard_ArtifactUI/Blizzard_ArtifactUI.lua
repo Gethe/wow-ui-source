@@ -215,7 +215,7 @@ local function MetaPowerTooltipHelper(...)
 	local hasAddedAny = false;
 	for i = 1, select("#", ...), 3 do
 		local spellID, cost, currentRank = select(i, ...);
-		local metaPowerDescription = GetSpellDescription(spellID);
+		local metaPowerDescription = C_Spell.GetSpellDescription(spellID);
 		if metaPowerDescription then
 			if hasAddedAny then
 				GameTooltip:AddLine(" ");

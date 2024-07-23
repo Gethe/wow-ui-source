@@ -381,39 +381,15 @@ function PVPMatchResultsMixin:OnUpdate()
 	end
 
 	if C_PvP.IsActiveBattlefield() then
-		local forceNewDataProvider = false;
+		local forceNewDataProvider = true;
 		PVPMatchUtil.UpdateDataProvider(self.scrollBox, forceNewDataProvider);
 	end
 end
 
 local scoreWidgetSetID = 249;
-local function ScoreWidgetLayout(widgetContainer, sortedWidgets)
-	local widgetsHeight = 0;
-	local maxWidgetWidth = 1;
-
-	for index, widgetFrame in ipairs(sortedWidgets) do
-		if ( index == 1 ) then
-			widgetFrame:SetPoint("TOPRIGHT", widgetContainer, "TOPRIGHT", 0, 0);
-		else
-			local relative = sortedWidgets[index - 1];
-			widgetFrame:SetPoint("TOPRIGHT", relative, "BOTTOMRIGHT", 0, 0);
-		end
-
-		widgetsHeight = widgetsHeight + widgetFrame:GetWidgetHeight();
-
-		local widgetWidth = widgetFrame:GetWidgetWidth();
-		if widgetWidth > maxWidgetWidth then
-			maxWidgetWidth = widgetWidth;
-		end
-	end
-
-	widgetContainer:SetHeight(math.max(widgetsHeight, 1));
-	widgetContainer:SetWidth(maxWidgetWidth);
-end
-
 function PVPMatchResultsMixin:OnShow()
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
-	self.Score:RegisterForWidgetSet(scoreWidgetSetID, ScoreWidgetLayout);
+	self.Score:RegisterForWidgetSet(scoreWidgetSetID);
 end
 
 function PVPMatchResultsMixin:OnHide()
@@ -424,7 +400,7 @@ end
 function PVPMatchResultsMixin:AddItemReward(item)
 	local frame = self.itemPool:Acquire();
 
-	local unusedSpecID;
+	local unusedSpecID = nil;
 	local isCurrency = item.type == "currency";
 	local isIconBorderShown = true;
 	local isIconBorderDropShadowShown = true;

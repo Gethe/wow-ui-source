@@ -24,7 +24,7 @@ local ACHIEVEMENTUI_FONTHEIGHT;						-- set in AchievementButton_OnLoad
 local ACHIEVEMENTUI_MAX_LINES_COLLAPSED = 3;		-- can show 3 lines of text when achievement is collapsed
 
 ACHIEVEMENTUI_DEFAULTSUMMARYACHIEVEMENTS = {6, 503, 116, 545, 1017};
-ACHIEVEMENTUI_SUMMARYCATEGORIES = {92, 96, 97, 95, 168, 169, 201, 155, 15117, 15246};
+ACHIEVEMENTUI_SUMMARYCATEGORIES = {92, 96, 97, 15522, 95, 168, 169, 201, 155, 15117, 15246}; -- Additions/Subtractions may require minor anchoring changes to the category frames in $parentCategories.
 ACHIEVEMENTUI_DEFAULTGUILDSUMMARYACHIEVEMENTS = {5362, 4860, 4989, 4947};
 ACHIEVEMENTUI_GUILDSUMMARYCATEGORIES = {15088, 15077, 15078, 15079, 15080, 15089};
 
@@ -80,13 +80,13 @@ local GuildCategoryIndex = 2;
 local StatisticsCategoryIndex = 3;
 local g_achievementSelectionBehavior = nil;
 local g_achievementSelections = {{},{},{}};
-local function GetSelectedAchievement(categoryIndex)
+local function GetSelectedAchievement()
 	local categoryIndex = achievementFunctions.categoryIndex;
 	return g_achievementSelections[categoryIndex].id or 0;
 end
 
 local g_categorySelections = {{},{},{}};
-local function GetSelectedCategory(categoryIndex)
+local function GetSelectedCategory()
 	local categoryIndex = achievementFunctions.categoryIndex;
 	return g_categorySelections[categoryIndex].id or 0;
 end
@@ -226,6 +226,31 @@ function AchievementFrame_OnLoad (self)
 	self.selectedTab = 1;
 	PanelTemplates_UpdateTabs(self);
 
+	local function IsFilterSelected(filter)
+		return ACHIEVEMENTUI_SELECTEDFILTER == filter.func;
+	end
+
+	local function SetFilterSelected(filter)
+		if filter.func ~= ACHIEVEMENTUI_SELECTEDFILTER then
+			ACHIEVEMENTUI_SELECTEDFILTER = filter.func;
+			AchievementFrameAchievements_ForceUpdate();
+		end
+	end
+
+	AchievementFrameFilterDropdown:SetWidth(112);
+	AchievementFrameFilterDropdown:SetFrameLevel(AchievementFrameFilterDropdown:GetFrameLevel() + 1);
+	AchievementFrameFilterDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_ACHIEVEMENT_FILTER", block);
+
+		for i, filter in ipairs(AchievementFrameFilters) do
+			local radio = rootDescription:CreateRadio(filter.text, IsFilterSelected, SetFilterSelected, filter);
+			radio:SetTooltip(function(tooltip, elementDescription)
+				GameTooltip_SetTitle(tooltip, ACHIEVEMENT_FILTER_TITLE);
+				GameTooltip_AddNormalLine(tooltip, AchievementFrameFilterStrings[i]);
+			end);
+		end
+	end);
+
 	self.PlaceholderHiddenDescription:SetWidth(ACHIEVEMENTUI_MAXCONTENTWIDTH);
 end
 
@@ -313,7 +338,7 @@ local function OpenToSelectedCategory()
 	return AchievementFrame_GetOrSelectCurrentCategory();
 end
 
-local function InitAchievementPage(category)
+local function InitAchievementPage()
 	local category = OpenToSelectedCategory();
 	if category == "summary" then
 		AchievementFrame_ShowSubFrame(AchievementFrameSummary);
@@ -337,14 +362,14 @@ function AchievementFrameBaseTab_OnClick (tabIndex)
 
 	if tabIndex == AchievementCategoryIndex then
 		achievementFunctions = ACHIEVEMENT_FUNCTIONS;
-		InitAchievementPage(category);
+		InitAchievementPage();
 		AchievementFrameWaterMark:SetTexture("Interface\\AchievementFrame\\UI-Achievement-AchievementWatermark");
 		AchievementFrameCategoriesBG:SetTexCoord(0, 0.5, 0, 1);
 		AchievementFrameGuildEmblemLeft:Hide();
 		AchievementFrameGuildEmblemRight:Hide();
 	elseif tabIndex == GuildCategoryIndex then
 		achievementFunctions = GUILD_ACHIEVEMENT_FUNCTIONS;
-		InitAchievementPage(category);
+		InitAchievementPage();
 		AchievementFrameWaterMark:SetTexture();
 		AchievementFrameCategoriesBG:SetTexCoord(0.5, 1, 0, 1);
 		AchievementFrameGuildEmblemLeft:Show();
@@ -409,7 +434,7 @@ end
 
 function AchievementFrame_ShowSubFrame(...)
 	for _, subFrame in ipairs(GetOrCreateAchievementSubFramesList()) do
-		show = false;
+		local show = false;
 		for i = 1, select("#", ...) do
 			if subFrame == select(i, ...) then
 				show = true;
@@ -529,7 +554,7 @@ function AchievementFrameCategories_ExpandToCategory(category)
 
 	if elementData and elementData.isChild then
 		local openID = elementData.parent;
-		for index, iterElementData in ipairs(categories) do
+		for _, iterElementData in ipairs(categories) do
 			iterElementData.hidden = iterElementData.isChild and iterElementData.parent ~= openID;
 		end
 	end
@@ -613,7 +638,7 @@ function AchievementFrameCategories_SelectDefaultElementData()
 		AchievementFrameCategories_UpdateDataProvider();
 	end
 
-	local elementData = AchievementFrameCategories.ScrollBox:ScrollToElementDataIndex(1, ScrollBoxConstants.AlignCenter, ScrollBoxConstants.NoScrollInterpolation);
+	local elementData = AchievementFrameCategories.ScrollBox:ScrollToElementDataIndex(1, ScrollBoxConstants.AlignCenter);
 	if elementData then
 		AchievementFrameCategories_SelectElementData(elementData);
 	end
@@ -631,7 +656,7 @@ function AchievementFrameCategories_UpdateDataProvider ()
 end
 
 function AchievementFrameCategory_StatusBarTooltip(self)
-	GameTooltip_SetDefaultAnchor(GameTooltip, self);
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetMinimumWidth(128, true);
 	GameTooltip:SetText(self.name, 1, 1, 1, nil, true);
 	GameTooltip_ShowStatusBar(GameTooltip, 0, self.numAchievements, self.numCompleted, self.numCompletedText);
@@ -639,7 +664,7 @@ function AchievementFrameCategory_StatusBarTooltip(self)
 end
 
 function AchievementFrameCategory_FeatOfStrengthTooltip(self)
-	GameTooltip_SetDefaultAnchor(GameTooltip, self);
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetText(self.name, 1, 1, 1);
 	GameTooltip:AddLine(self.text, nil, nil, nil, true);
 	GameTooltip:Show();
@@ -664,10 +689,10 @@ function AchievementFrameCategories_OnCategoryChanged(category)
 			AchievementFrame_ShowSubFrame(AchievementFrameAchievements);
 			AchievementFrameAchievements_UpdateDataProvider();
 			if IsCategoryFeatOfStrength(category) then
-				AchievementFrameFilterDropDown:Hide();
+				AchievementFrameFilterDropdown:Hide();
 				AchievementFrame.Header.LeftDDLInset:Hide();
 			else
-				AchievementFrameFilterDropDown:Show();
+				AchievementFrameFilterDropdown:Show();
 				AchievementFrame.Header.LeftDDLInset:Show();
 			end
 		elseif ( achievementFunctions == COMPARISON_ACHIEVEMENT_FUNCTIONS ) then
@@ -704,10 +729,10 @@ function AchievementFrameAchievements_OnShow(self)
 	FrameUtil.RegisterFrameForEvents(self, AchievementFrameShownEvents);
 
 	if IsCategoryFeatOfStrength(GetSelectedCategory()) then
-		AchievementFrameFilterDropDown:Hide();
+		AchievementFrameFilterDropdown:Hide();
 		AchievementFrame.Header.LeftDDLInset:Hide();
 	else
-		AchievementFrameFilterDropDown:Show();
+		AchievementFrameFilterDropdown:Show();
 		AchievementFrame.Header.LeftDDLInset:Show();
 	end
 end
@@ -715,7 +740,7 @@ end
 function AchievementFrameAchievements_OnHide(self)
 	FrameUtil.UnregisterFrameForEvents(self, AchievementFrameShownEvents);
 
-	AchievementFrameFilterDropDown:Hide();
+	AchievementFrameFilterDropdown:Hide();
 	AchievementFrame.Header.LeftDDLInset:Hide();
 end
 
@@ -1062,28 +1087,28 @@ function AchievementTemplateMixin:Init(elementData)
 		self.Icon.frame:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Guild");
 		self.Icon.frame:SetTexCoord(0.25976563, 0.40820313, 0.50000000, 0.64453125);
 		self.Icon.frame:SetPoint("CENTER", 2, 2);
-		local tsunami = self.BottomTsunami1;
-		tsunami:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
-		tsunami:SetTexCoord(0, 0.72265, 0.58984375, 0.65234375);
-		tsunami:SetAlpha(0.2);
-		local tsunami = self.TopTsunami1;
-		tsunami:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
-		tsunami:SetTexCoord(0.72265, 0, 0.65234375, 0.58984375);
-		tsunami:SetAlpha(0.15);
+		local bottomTsunami = self.BottomTsunami1;
+		bottomTsunami:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
+		bottomTsunami:SetTexCoord(0, 0.72265, 0.58984375, 0.65234375);
+		bottomTsunami:SetAlpha(0.2);
+		local topTsunami = self.TopTsunami1;
+		topTsunami:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
+		topTsunami:SetTexCoord(0.72265, 0, 0.65234375, 0.58984375);
+		topTsunami:SetAlpha(0.15);
 		self.Glow:SetTexCoord(0, 1, 0.26171875, 0.51171875);
 	else
 		self.TitleBar:SetAlpha(0.8);
 		self.Icon.frame:SetTexture("Interface\\AchievementFrame\\UI-Achievement-IconFrame");
 		self.Icon.frame:SetTexCoord(0, 0.5625, 0, 0.5625);
 		self.Icon.frame:SetPoint("CENTER", -1, 2);
-		local tsunami = self.BottomTsunami1;
-		tsunami:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
-		tsunami:SetTexCoord(0, 0.72265, 0.51953125, 0.58203125);
-		tsunami:SetAlpha(0.35);
-		local tsunami = self.TopTsunami1;
-		tsunami:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
-		tsunami:SetTexCoord(0.72265, 0, 0.58203125, 0.51953125);
-		tsunami:SetAlpha(0.3);
+		local bottomTsunami = self.BottomTsunami1;
+		bottomTsunami:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
+		bottomTsunami:SetTexCoord(0, 0.72265, 0.51953125, 0.58203125);
+		bottomTsunami:SetAlpha(0.35);
+		local topTsunami = self.TopTsunami1;
+		topTsunami:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
+		topTsunami:SetTexCoord(0.72265, 0, 0.58203125, 0.51953125);
+		topTsunami:SetAlpha(0.3);
 		self.Glow:SetTexCoord(0, 1, 0.00390625, 0.25390625);
 	end
 
@@ -1353,7 +1378,7 @@ function AchievementTemplateMixin.CalculateSelectedHeight(elementData)
 
 		local numCriteria = GetAchievementNumCriteria(id);
 		for i = 1, numCriteria do
-			local criteriaString, criteriaType, completed, quantity, reqQuantity, charName, flags, assetID, quantityString = GetAchievementCriteriaInfo(id, i);
+			local criteriaString, criteriaType, criteriaCompleted, quantity, reqQuantity, charName, criteriaFlags, assetID, quantityString = GetAchievementCriteriaInfo(id, i);
 	
 			if criteriaType == CRITERIA_TYPE_ACHIEVEMENT and assetID then
 				metas = metas + 1;
@@ -1361,14 +1386,15 @@ function AchievementTemplateMixin.CalculateSelectedHeight(elementData)
 					numMetaRows = numMetaRows + 1;
 				end
 	
-			elseif bit.band(flags, EVALUATION_TREE_FLAG_PROGRESS_BAR) == EVALUATION_TREE_FLAG_PROGRESS_BAR then
+			elseif bit.band(criteriaFlags, EVALUATION_TREE_FLAG_PROGRESS_BAR) == EVALUATION_TREE_FLAG_PROGRESS_BAR then
 				progressBars = progressBars + 1;
 				numCriteriaRows = numCriteriaRows + 1;
 			else
 				textStrings = textStrings + 1;
 					
 				local stringWidth = 0;
-				if completed then
+				local maxCriteriaContentWidth;
+				if criteriaCompleted then
 					maxCriteriaContentWidth = ACHIEVEMENTUI_MAXCONTENTWIDTH - ACHIEVEMENTUI_CRITERIACHECKWIDTH;
 					AchievementFrame.PlaceholderName:SetText(criteriaString);
 					stringWidth = min(AchievementFrame.PlaceholderName:GetStringWidth(),maxCriteriaContentWidth);
@@ -1652,17 +1678,17 @@ local achievementList = {};
 
 function AchievementObjectives_DisplayProgressiveAchievement (objectivesFrame, id)
 	local ACHIEVEMENTMODE_PROGRESSIVE = 2;
-	local achievementID = id;
+	local baseAchievementID = id;
 
 	local achievementList = achievementList;
 	for i in next, achievementList do
 		achievementList[i] = nil;
 	end
 
-	tinsert(achievementList, 1, achievementID);
-	while GetPreviousAchievement(achievementID) do
-		tinsert(achievementList, 1, GetPreviousAchievement(achievementID));
-		achievementID = GetPreviousAchievement(achievementID);
+	tinsert(achievementList, 1, baseAchievementID);
+	while GetPreviousAchievement(baseAchievementID) do
+		tinsert(achievementList, 1, GetPreviousAchievement(baseAchievementID));
+		baseAchievementID = GetPreviousAchievement(baseAchievementID);
 	end
 
 	local i = 0;
@@ -1693,16 +1719,16 @@ function AchievementObjectives_DisplayProgressiveAchievement (objectivesFrame, i
 		end
 
 		miniAchievement.numCriteria = 0;
-		if ( not ( bit.band(flags, ACHIEVEMENT_FLAGS_HAS_PROGRESS_BAR) == ACHIEVEMENT_FLAGS_HAS_PROGRESS_BAR ) ) then
-			for i = 1, GetAchievementNumCriteria(achievementID) do
-				local criteriaString, criteriaType, completed = GetAchievementCriteriaInfo(achievementID, i);
-				if ( completed == false ) then
+		if ( bit.band(flags, ACHIEVEMENT_FLAGS_HAS_PROGRESS_BAR) ~= ACHIEVEMENT_FLAGS_HAS_PROGRESS_BAR ) then
+			for criteriaIndex = 1, GetAchievementNumCriteria(achievementID) do
+				local criteriaString, criteriaType, criteriaCompleted = GetAchievementCriteriaInfo(achievementID, criteriaIndex);
+				if ( criteriaCompleted == false ) then
 					criteriaString = "|CFF808080 - " .. criteriaString .. "|r";
 				else
 					criteriaString = "|CFF00FF00 - " .. criteriaString .. "|r";
 				end
-				miniAchievement["criteria" .. i] = criteriaString;
-				miniAchievement.numCriteria = i;
+				miniAchievement["criteria" .. criteriaIndex] = criteriaString;
+				miniAchievement.numCriteria = criteriaIndex;
 			end
 		end
 		miniAchievement.name = achievementName;
@@ -1735,48 +1761,18 @@ end
 
 ACHIEVEMENTUI_SELECTEDFILTER = AchievementFrame_GetCategoryNumAchievements_All;
 
-AchievementFrameFilters = { {text=ACHIEVEMENTFRAME_FILTER_ALL, func= AchievementFrame_GetCategoryNumAchievements_All},
- {text=ACHIEVEMENTFRAME_FILTER_COMPLETED, func=AchievementFrame_GetCategoryNumAchievements_Complete},
-{text=ACHIEVEMENTFRAME_FILTER_INCOMPLETE, func=AchievementFrame_GetCategoryNumAchievements_Incomplete} };
-
-function AchievementFrameFilterDropDown_OnLoad (self)
-	self.relativeTo = "AchievementFrameFilterDropDown"
-	self.xOffset = -14;
-	self.yOffset = 10;
-	UIDropDownMenu_Initialize(self, AchievementFrameFilterDropDown_Initialize);
-end
-
-function AchievementFrameFilterDropDown_Initialize (self)
-	local info = UIDropDownMenu_CreateInfo();
-	for i, filter in ipairs(AchievementFrameFilters) do
-		info.text = filter.text;
-		info.value = i;
-		info.func = AchievementFrameFilterDropDownButton_OnClick;
-		info.tooltipOnButton = 1;
-		info.tooltipTitle = ACHIEVEMENT_FILTER_TITLE;
-		info.tooltipText = AchievementFrameFilterStrings[i];
-		if ( filter.func == ACHIEVEMENTUI_SELECTEDFILTER ) then
-			info.checked = 1;
-			UIDropDownMenu_SetText(self, filter.text);
-			self.value =  i;
-		else
-			info.checked = nil;
-		end
-		UIDropDownMenu_AddButton(info);
-	end
-end
-
-function AchievementFrameFilterDropDownButton_OnClick (self)
-	AchievementFrame_SetFilter(self.value);
-end
+AchievementFrameFilters = { 
+	{text = ACHIEVEMENTFRAME_FILTER_ALL, func = AchievementFrame_GetCategoryNumAchievements_All},
+	{text = ACHIEVEMENTFRAME_FILTER_COMPLETED, func = AchievementFrame_GetCategoryNumAchievements_Complete},
+	{text = ACHIEVEMENTFRAME_FILTER_INCOMPLETE, func = AchievementFrame_GetCategoryNumAchievements_Incomplete} 
+};
 
 function AchievementFrame_SetFilter(value)
-	local func = AchievementFrameFilters[value].func;
-	if ( func ~= ACHIEVEMENTUI_SELECTEDFILTER ) then
-		ACHIEVEMENTUI_SELECTEDFILTER = func;
-		UIDropDownMenu_SetText(AchievementFrameFilterDropDown, AchievementFrameFilters[value].text)
+	local filter = AchievementFrameFilters[value];
+	if filter.func ~= ACHIEVEMENTUI_SELECTEDFILTER then
+		ACHIEVEMENTUI_SELECTEDFILTER = filter.func;
 		AchievementFrameAchievements_ForceUpdate();
-		AchievementFrameFilterDropDown.value = value;
+		AchievementFrameFilterDropdown:GenerateMenu();
 	end
 end
 
@@ -1855,7 +1851,7 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 				numMetaRows = numMetaRows + 1;
 			end
 
-			local id, achievementName, points, achievementCompleted, month, day, year, description, flags, iconpath = GetAchievementInfo(assetID);
+			local achievementId, achievementName, points, achievementCompleted, month, day, year, description, achFlags, iconpath = GetAchievementInfo(assetID);
 
 			if ( month ) then
 				metaCriteria.date = FormatShortDate(day, month, year)
@@ -1863,7 +1859,7 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 				metaCriteria.date = nil;
 			end
 
-			metaCriteria.id = id;
+			metaCriteria.id = achievementId;
 			metaCriteria.Label:SetText(achievementName);
 			metaCriteria.Icon:SetTexture(iconpath);
 
@@ -2091,7 +2087,7 @@ function AchievementStatTemplateMixin:Init(elementData)
 		self.isHeader = true;
 		self.id = category;
 	else
-		local id, name, points, completed, month, day, year, description, flags, icon = GetAchievementInfo(category);
+		local id, name = GetAchievementInfo(category);
 		
 		self.id = id;
 
@@ -2344,7 +2340,7 @@ function AchievementFrameSummary_UpdateAchievements(...)
 			else
 				tAchievements = ACHIEVEMENTUI_DEFAULTSUMMARYACHIEVEMENTS;
 			end
-			for i=defaultAchievementCount, ACHIEVEMENTUI_MAX_SUMMARY_ACHIEVEMENTS do
+			for j=defaultAchievementCount, ACHIEVEMENTUI_MAX_SUMMARY_ACHIEVEMENTS do
 				achievementID = tAchievements[defaultAchievementCount];
 				if ( not achievementID ) then
 					break;
@@ -2534,7 +2530,7 @@ function AchievementFrame_UpdateAndSelectCategory(category)
 		end);
 		if elementData then
 			AchievementFrameCategories_SelectElementData(elementData);
-			scrollBox:ScrollToElementData(elementData, ScrollBoxConstants.AlignCenter, ScrollBoxConstants.NoScrollInterpolation);
+			scrollBox:ScrollToElementData(elementData, ScrollBoxConstants.AlignCenter);
 		end
 	end
 end
@@ -2576,7 +2572,7 @@ function AchievementFrame_SelectAndScrollToAchievementId(scrollBox, achievementI
 			g_achievementSelectionBehavior:SelectElementData(elementData);
 			-- Selection expands and modifies the size. We need to update the scroll box for the alignment to be correct.
 			scrollBox:FullUpdate(ScrollBoxConstants.UpdateImmediately);
-			scrollBox:ScrollToElementData(elementData, ScrollBoxConstants.AlignCenter, ScrollBoxConstants.NoScrollInterpolation);
+			scrollBox:ScrollToElementData(elementData, ScrollBoxConstants.AlignCenter);
 		end
 	end
 end
@@ -2594,7 +2590,7 @@ function AchievementFrame_ViewStatisticByAchievementID(achievementID)
 
 	local achievementElementData = scrollBox:ScrollToElementDataByPredicate(function(elementData)
 		return elementData.id == achievementID;
-	end, ScrollBoxConstants.AlignCenter, ScrollBoxConstants.NoScrollInterpolation);
+	end, ScrollBoxConstants.AlignCenter);
 end
 
 AchievementComparisonTemplateMixin = {};
@@ -2845,7 +2841,7 @@ function AchivementComparisonStatMixin:Init(elementData)
 		self.isHeader = true;
 		self.id = id;
 	else
-		local id, name, points, completed, month, day, year, description, flags, icon = GetAchievementInfo(category);
+		local id, name = GetAchievementInfo(category);
 
 		self.id = id;
 
@@ -3064,15 +3060,14 @@ function AchievementShield_OnEnter(self)
 		return;
 	end
 	if ( self.earnedBy ) then
-		GameTooltip:AddLine(format(ACHIEVEMENT_EARNED_BY,self.earnedBy));
+		GameTooltip:AddLine(ACCOUNT_WIDE_ACHIEVEMENT_COMPLETED);
 		local me = UnitName("player")
-		if ( not self.wasEarnedByMe ) then
-			GameTooltip:AddLine(format(ACHIEVEMENT_NOT_COMPLETED_BY, me));
-		elseif ( me ~= self.earnedBy ) then
-			GameTooltip:AddLine(format(ACHIEVEMENT_COMPLETED_BY, me));
-		end
+		local tooltipLine = self.wasEarnedByMe and ACHIEVEMENT_COMPLETED_BY or ACHIEVEMENT_NOT_COMPLETED_BY;
+		GameTooltip_AddNormalLine(GameTooltip, tooltipLine:format(me));
 		GameTooltip:Show();
 		return;
+	else
+		GameTooltip_AddNormalLine(GameTooltip, CHARACTER_ACHIEVEMENT_DESCRIPTION);
 	end
 	-- pass-through to the achievement button
 	local func = parent:GetScript("OnEnter");
@@ -3093,14 +3088,6 @@ function AchievementShield_OnLeave(self)
 	end
 	GameTooltip:Hide();
 	guildMemberRequestFrame = nil;
-end
-
-
-function AchievementFrameFilterDropDown_OnEnter(self)
-	local currentFilter = AchievementFrameFilterDropDown.value;
-	GameTooltip:SetOwner(AchievementFrameFilterDropDown, "ANCHOR_RIGHT", -18, 0);
-	GameTooltip:AddLine(AchievementFrameFilterStrings[currentFilter]);
-	GameTooltip:Show();
 end
 
 function AchievementFrameAchievements_CheckGuildMembersTooltip(requestFrame)
@@ -3171,7 +3158,8 @@ function AchievementFrame_FindDisplayedAchievement(baseAchievementID)
 			end
 		end
 	elseif ( completed ) then
-		local nextID, completed = GetNextAchievement(id);
+		local nextID;
+		nextID, completed = GetNextAchievement(id);
 		if ( nextID and completed ) then
 			local newID
 			while ( nextID and completed ) do
@@ -3347,8 +3335,8 @@ function AchievementFullSearchResultsButtonMixin:Init(elementData)
 	
 	local categoryID = GetAchievementCategory(achievementID);
 	local categoryName, parentCategoryID = GetCategoryInfo(categoryID);
-	path = categoryName;
-	while ( not (parentCategoryID == -1) ) do
+	local path = categoryName;
+	while ( parentCategoryID ~= -1 ) do
 		categoryName, parentCategoryID = GetCategoryInfo(parentCategoryID);
 		path = categoryName.." > "..path;
 	end
@@ -3369,7 +3357,7 @@ function AchievementFrameSearchBox_OnLoad(self)
 	SearchBoxTemplate_OnLoad(self);
 	self.HasStickyFocus = function()
 		local ancestry = self:GetParent().SearchPreviewContainer;
-		return DoesAncestryInclude(ancestry, GetMouseFocus());
+		return DoesAncestryIncludeAny(ancestry, GetMouseFoci());
 	end
 end
 
@@ -3489,8 +3477,8 @@ function AchievementFrameSearch_InitButton(button, result)
 
 	local categoryID = GetAchievementCategory(achievementID);
 	local categoryName, parentCategoryID = GetCategoryInfo(categoryID);
-	path = categoryName;
-	while ( not (parentCategoryID == -1) ) do
+	local path = categoryName;
+	while (  parentCategoryID ~= -1 ) do
 		categoryName, parentCategoryID = GetCategoryInfo(parentCategoryID);
 		path = categoryName.." > "..path;
 	end

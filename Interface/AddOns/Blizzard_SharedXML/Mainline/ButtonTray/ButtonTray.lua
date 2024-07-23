@@ -49,6 +49,8 @@ function HorizontalButtonTrayMixin:AddControl(label, controlCallback, ...)
 		self.nextLayoutIndex = self.nextLayoutIndex + 1;
 		self:MarkDirty();
 	end
+
+	return newButton;
 end
 
 

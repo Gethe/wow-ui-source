@@ -24,7 +24,7 @@ local replacePortraitCvarNames = {
 ]]--
 
 function UnitFrame_Initialize (self, unit, name, frameType, portrait, healthbar, healthtext, manabar, manatext, threatIndicator, threatFeedbackUnit, threatNumericIndicator,
-	myHealPredictionBar, otherHealPredictionBar, totalAbsorbBar, overAbsorbGlow, overHealAbsorbGlow, healAbsorbBar, myManaCostPredictionBar)
+	myHealPredictionBar, otherHealPredictionBar, totalAbsorbBar, overAbsorbGlow, overHealAbsorbGlow, healAbsorbBar, myManaCostPredictionBar, tempMaxHealthLossBar)
 	self.unit = unit;
 	self.name = name;
 	self.frameType = frameType;
@@ -40,6 +40,7 @@ function UnitFrame_Initialize (self, unit, name, frameType, portrait, healthbar,
 	self.overHealAbsorbGlow = overHealAbsorbGlow;
 	self.healAbsorbBar = healAbsorbBar;
 	self.myManaCostPredictionBar = myManaCostPredictionBar;
+	self.tempMaxHealthLossBar = tempMaxHealthLossBar;
 
 	if (self.overAbsorbGlow) then
 		self.overAbsorbGlow:ClearAllPoints();
@@ -96,6 +97,9 @@ function UnitFrame_Initialize (self, unit, name, frameType, portrait, healthbar,
 		self:RegisterUnitEvent("UNIT_SPELLCAST_FAILED", unit);
 		self:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", unit);
 	end
+	if ( self.tempMaxHealthLossBar ) then
+		self:RegisterUnitEvent("UNIT_MAX_HEALTH_MODIFIERS_CHANGED", unit);
+	end
 
 	UnitFrame_UpdateReplacePortraitSettingRegistration(self);
 end
@@ -146,7 +150,7 @@ function UnitFrame_Update (self, isParty)
 
 		local nameText = GetUnitName(name, isParty);
 		if ( nameText ) then
-			if ( UnitInPartyIsAI(self.unit) and C_LFGInfo.IsInLFGFollowerDungeon() ) then
+			if ( UnitInPartyIsAI(self.unit) and (C_LFGInfo.IsInLFGFollowerDungeon() or C_PartyInfo.IsPartyWalkIn()) ) then
 				nameText = LFG_FOLLOWER_NAME_PREFIX:format(nameText);
 			end
 
@@ -155,12 +159,16 @@ function UnitFrame_Update (self, isParty)
 	end
 
 	UnitFramePortrait_Update(self);
+	if ( self.tempMaxHealthLossBar and self.tempMaxHealthLossBar.initialized) then
+		self.tempMaxHealthLossBar:OnMaxHealthModifiersChanged(GetUnitTotalModifiedMaxHealthPercent(self.unit));
+	end
 	UnitFrameHealthBar_Update(self.healthbar, self.unit);
 	UnitFrameManaBar_Update(self.manabar, self.unit);
 	UnitFrame_UpdateThreatIndicator(self.threatIndicator, self.threatNumericIndicator);
 	UnitFrameHealPredictionBars_UpdateMax(self);
 	UnitFrameHealPredictionBars_Update(self);
 	UnitFrameManaCostPredictionBars_Update(self);
+	
 end
 
 function UnitFramePortrait_Update (self)
@@ -181,7 +189,7 @@ function UnitFramePortrait_Update (self)
 end
 
 function UnitFrame_OnEvent(self, event, ...)
-	local eventUnit = ...
+	local eventUnit, arg2 = ...
 
 	local unit = self.unit;
 	if ( eventUnit == unit ) then
@@ -204,6 +212,9 @@ function UnitFrame_OnEvent(self, event, ...)
 		elseif ( event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_FAILED" or event == "UNIT_SPELLCAST_SUCCEEDED" ) then
 			local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible, spellID = UnitCastingInfo(unit);
 			UnitFrameManaCostPredictionBars_Update(self, event == "UNIT_SPELLCAST_START", startTime, endTime, spellID);
+		elseif ( event == "UNIT_MAX_HEALTH_MODIFIERS_CHANGED" ) then
+			self.tempMaxHealthLossBar:OnMaxHealthModifiersChanged(arg2);
+			UnitFrameHealthBar_OnUpdate(self.healthbar);
 		end
 	elseif ( event == "PORTRAITS_UPDATED" ) then
 		UnitFramePortrait_Update(self);
@@ -351,7 +362,7 @@ function UnitFrameManaCostPredictionBars_Update(frame, isStarting, startTime, en
             frame.predictedPowerCost = nil;
         end
 	else
-		local costTable = GetSpellPowerCost(spellID);
+		local costTable = C_Spell.GetSpellPowerCost(spellID) or {};
 		for _, costInfo in pairs(costTable) do
 			if (costInfo.type == frame.manabar.powerType) then
 				cost = costInfo.cost;
@@ -747,6 +758,59 @@ function AnimatedHealthLossMixin:UpdateLossAnimation(currentHealth)
 	end
 end
 
+TempMaxHealthLossMixin = {};
+
+function TempMaxHealthLossMixin:InitalizeMaxHealthLossBar(healthBarsContainer, healthBar, optionalTempMaxHealthLossDivider)
+	self.myHealthBarContainer = healthBarsContainer;
+	self.healthBar = healthBar;
+	self:SetFillStyle("REVERSE");
+	self:SetMinMaxValues(0, 1);
+	
+	if(optionalTempMaxHealthLossDivider) then
+		self.tempMaxHealthLossDivider = optionalTempMaxHealthLossDivider;
+		--Added 1px height stretch on the mask to remove a gap at the bottom of the divider, Remove this if this atlas changes: "UI-HUD-UnitFrame-Player-PortraitOn-Bar-TempHPLoss-Divider"
+		self.tempMaxHealthLossDivider.TempHPLossDividerMask:SetHeight(self.tempMaxHealthLossDivider.TempHPLossDividerMask:GetHeight() + 1);
+	end
+
+	self.initialized = true;
+end
+
+function TempMaxHealthLossMixin:SetShouldAdjustHealthBarAnchor(xOffset, yOffset)
+	self.ShouldAdjustHealthBarAnchor = true;
+	self.xAnchorOffset = xOffset;
+	self.yAnchorOffset = yOffset;
+end
+
+function TempMaxHealthLossMixin:OnMaxHealthModifiersChanged(value)
+	--current UI implementation only cares about showing max health loss, not gain
+	local clampedValue = Clamp(value, 0, 1);
+	--disable / enable all tempMaxHealth loss bars with CVar
+	if (GetCVarBool("showTempMaxHealthLoss")) then
+
+		self:Update_MaxHealthLoss(clampedValue);
+	end
+end
+
+function TempMaxHealthLossMixin:Update_MaxHealthLoss(fillPercent)
+	local fullWidth = self.myHealthBarContainer:GetWidth();
+	if ( self.ShouldAdjustHealthBarAnchor ) then
+		self.healthBar:SetPoint("BOTTOMRIGHT", self.myHealthBarContainer, "BOTTOMRIGHT", ((fullWidth*(fillPercent))*-1) + self.xAnchorOffset, self.yAnchorOffset);
+	else
+		self.healthBar:SetWidth(fullWidth*(1-fillPercent));
+	end
+	self:Show();
+	self:SetValue(fillPercent);
+
+	if (self.tempMaxHealthLossDivider) then
+		local MIN_PERCENT_SHOW_DIVIDER = 0.015;
+		if(fillPercent > MIN_PERCENT_SHOW_DIVIDER) then
+			self.tempMaxHealthLossDivider:SetXPosition(fullWidth*(1-fillPercent));
+		else
+			self.tempMaxHealthLossDivider:SetXPosition(0);
+		end
+	end
+end
+
 function UnitFrameHealthBar_OnUpdate(self)
 	if ( not self.disconnected and not self.lockValues) then
 		local currValue = UnitHealth(self.unit);
@@ -990,15 +1054,15 @@ function UnitFrame_UpdateThreatIndicator(indicator, numericIndicator, unit)
 			end
 
 			if ( numericIndicator ) then
-				if ( ShowNumericThreat() and not (UnitClassification(indicator.unit) == "minus") ) then
-					local isTanking, status, percentage, rawPercentage = UnitDetailedThreatSituation(indicator.feedbackUnit, indicator.unit);
+				if ( ShowNumericThreat() and UnitClassification(indicator.unit) ~= "minus" ) then
+					local isTanking, detailedStatus, percentage, rawPercentage = UnitDetailedThreatSituation(indicator.feedbackUnit, indicator.unit);
 					local display = rawPercentage;
 					if ( isTanking ) then
 						display = UnitThreatPercentageOfLead(indicator.feedbackUnit, indicator.unit);
 					end
 					if ( display and display ~= 0 ) then
 						numericIndicator.text:SetText(format("%1.0f", display).."%");
-						numericIndicator.bg:SetVertexColor(GetThreatStatusColor(status));
+						numericIndicator.bg:SetVertexColor(GetThreatStatusColor(detailedStatus));
 						numericIndicator:Show();
 					else
 						numericIndicator:Hide();

@@ -2,54 +2,6 @@
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="BonusObjectiveDataProvider.lua"/>
 
-	<Frame name="BonusObjectivePinTemplate" hidden="true" enableMouse="true" mixin="BonusObjectivePinMixin" virtual="true">
-		<Size x="30" y="30"/>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="Texture" atlas="QuestBonusObjective">
-					<Size x="30" y="30"/>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-	</Frame>
-
-	<Frame name="ThreatObjectivePinTemplate" hidden="true" flattenRenderLayers="true" enableMouse="true" mixin="ThreatObjectivePinMixin" virtual="true">
-		<Size x="50" y="50"/>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="Texture" file="Interface/WorldMap/UI-QuestPoi-NumberIcons">
-					<Size x="90" y="90"/>
-					<Anchors>
-						<Anchor point="CENTER" />
-					</Anchors>
-				</Texture>
-				<Texture parentKey="PushedTexture" file="Interface/WorldMap/UI-QuestPoi-NumberIcons" hidden="true">
-					<Size x="90" y="90"/>
-					<Anchors>
-						<Anchor point="CENTER" />
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="1">
-				<Texture parentKey="Icon" atlas="worldquest-icon-nzoth">
-					<Size x="52" y="52"/>
-					<Anchors>
-						<Anchor point="CENTER" />
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="HIGHLIGHT">
-				<Texture parentKey="Highlight" file="Interface/WorldMap/UI-QuestPoi-NumberIcons" alphaMode="ADD">
-					<Size x="90" y="90"/>
-					<Anchors>
-						<Anchor point="CENTER" />
-					</Anchors>
-					<TexCoords left="0.625" right="0.750" top="0.375" bottom="0.5"/>
-				</Texture>
-			</Layer>
-		</Layers>
-	</Frame>
+	<Button name="BonusObjectivePinTemplate" inherits="POIButtonTemplate, LegendHighlightableMapPoiPinTemplate" hidden="true" enableMouse="true" mixin="BonusObjectivePinMixin" virtual="true"/>
+	<Button name="ThreatObjectivePinTemplate" inherits="BonusObjectivePinTemplate" flattenRenderLayers="true" mixin="ThreatObjectivePinMixin" virtual="true"/>
 </Ui>

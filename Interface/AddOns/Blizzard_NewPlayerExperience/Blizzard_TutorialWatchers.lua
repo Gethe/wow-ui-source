@@ -171,7 +171,7 @@ function Class_UI_Watcher:StartWatching()
 	self:SetShown(TutorialData.UI_Elements.BACKPACK, showBackpack);
 	self:SetShown(TutorialData.UI_Elements.BAGS_BAR, showBagsBar);
 	self:SetShown(TutorialData.UI_Elements.MAIN_BAGS_BUTTON, showBagsBar);	
-	self:SetShown(TutorialData.UI_Elements.SPELLBOOK_MICROBUTTON, showSpellbookButton);
+	self:SetShown(TutorialData.UI_Elements.PLAYERSPELLS_MICROBUTTON, showSpellbookButton);
 	self:SetShown(TutorialData.UI_Elements.OTHER_MICROBUTTONS, showOtherButtons);
 	self:SetShown(TutorialData.UI_Elements.STORE_MICROBUTTON, showStoreButton);
 	self:SetShown(TutorialData.UI_Elements.TARGET_FRAME, showTargetFrame);
@@ -200,7 +200,7 @@ function Class_UI_Watcher:QUEST_ACCEPTED(questID)
 		self:SetShown(TutorialData.UI_Elements.BAGS_BAR, true);
 		self:SetShown(TutorialData.UI_Elements.MAIN_BAGS_BUTTON, true);
 		self:SetShown(TutorialData.UI_Elements.OTHER_MICROBUTTONS, true);
-		self:SetShown(TutorialData.UI_Elements.SPELLBOOK_MICROBUTTON, true);
+		self:SetShown(TutorialData.UI_Elements.PLAYERSPELLS_MICROBUTTON, true);
 		self:SetShown(TutorialData.UI_Elements.STORE_MICROBUTTON, true);
 		self:SetShown(TutorialData.UI_Elements.TARGET_FRAME, true);
 		self:SetShown(TutorialData.UI_Elements.STATUS_TRACKING_BAR, true);
@@ -222,7 +222,7 @@ function Class_UI_Watcher:PLAYER_LEVEL_CHANGED(originalLevel, newLevel)
 
 	self:SetShown(TutorialData.UI_Elements.BAGS_BAR, true);
 	self:SetShown(TutorialData.UI_Elements.MAIN_BAGS_BUTTON, true);
-	self:SetShown(TutorialData.UI_Elements.SPELLBOOK_MICROBUTTON, true);
+	self:SetShown(TutorialData.UI_Elements.PLAYERSPELLS_MICROBUTTON, true);
 end
 
 function Class_UI_Watcher:OnInterrupt(interruptedBy)
@@ -230,7 +230,7 @@ function Class_UI_Watcher:OnInterrupt(interruptedBy)
 	self:SetShown(TutorialData.UI_Elements.BAGS_BAR, true);
 	self:SetShown(TutorialData.UI_Elements.MAIN_BAGS_BUTTON, true);
 	self:SetShown(TutorialData.UI_Elements.OTHER_MICROBUTTONS, true);
-	self:SetShown(TutorialData.UI_Elements.SPELLBOOK_MICROBUTTON, true);
+	self:SetShown(TutorialData.UI_Elements.PLAYERSPELLS_MICROBUTTON, true);
 	self:SetShown(TutorialData.UI_Elements.STORE_MICROBUTTON, true);
 	self:SetShown(TutorialData.UI_Elements.TARGET_FRAME, true);
 	self:SetShown(TutorialData.UI_Elements.STATUS_TRACKING_BAR, true);
@@ -842,7 +842,7 @@ end
 
 -- Watch for units dying while in combat.  if that happened, check the unit to see if the
 -- player can loot it and if so, prompt the player to loot
-function Class_LootCorpseWatcher:COMBAT_LOG_EVENT_UNFILTERED(timestamp, logEvent)
+function Class_LootCorpseWatcher:COMBAT_LOG_EVENT_UNFILTERED(timestamp, _logEvent)
 	local eventData = {CombatLogGetCurrentEventInfo()};
 	local logEvent = eventData[2];
 	local unitGUID = eventData[8];

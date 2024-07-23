@@ -39,39 +39,11 @@
 							<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="0" y="0"/>
 						</Anchors>
 					</Button>
-					<DropDownToggleButton parentKey="FilterButton" inherits="UIMenuButtonStretchTemplate" registerForClicks="LeftButtonDown" text="FILTER">
-						<Size x="93" y="22"/>
+					<DropdownButton parentKey="FilterDropdown" inherits="WowStyle1FilterDropdownTemplate">
 						<Anchors>
-							<Anchor point="RIGHT" relativeKey="$parent.SearchButton" relativePoint="LEFT" x="-10" y="0"/>
+							<Anchor point="RIGHT" relativeKey="$parent.SearchButton" relativePoint="LEFT" x="-10" y="1"/>
 						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK">
-								<Texture parentKey="Icon" file="Interface\ChatFrame\ChatFrameExpandArrow">
-									<Size x="10" y="12"/>
-									<Anchors>
-										<Anchor point="RIGHT" x="-5"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Frames>
-							<Frame parentKey="LevelRangeFrame" inherits="AuctionHouseLevelRangeFrameTemplate"/>
-							<Button parentKey="ClearFiltersButton">
-								<Size x="23" y="23"/>
-								<Anchors>
-									<Anchor point="CENTER" relativePoint="TOPRIGHT" x="-3" y="0"/>
-								</Anchors>
-								<NormalTexture atlas="auctionhouse-ui-filter-redx">
-									<Size x="23" y="23"/>
-								</NormalTexture>
-								<HighlightTexture atlas="auctionhouse-ui-filter-redx" alphaMode="ADD" alpha="0.4">
-									<Size x="23" y="23"/>
-								</HighlightTexture>
-							</Button>
-							<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate"/>
-							<Frame parentKey="LevelRangeFrame" inherits="AuctionHouseLevelRangeFrameTemplate"/>
-						</Frames>
-					</DropDownToggleButton>
+					</DropdownButton>
 				</Frames>
 			</Frame>
 			<Frame parentKey="CategoryList" inherits="ProfessionsCustomerOrdersRecipeCategoryListTemplate">

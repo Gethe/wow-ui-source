@@ -1,6 +1,3 @@
-local UpgradeDropdownMinWidth = 95;
-local UpgradeDropdownMaxWidth = 120;
-
 UIPanelWindows["ItemUpgradeFrame"] = { area = "left", pushable = 0};
 
 function ItemUpgradeFrame_Show()
@@ -33,13 +30,12 @@ function ItemUpgradeMixin:OnLoad()
 	self.Ring:SetPoint("CENTER", self.UpgradeButton, "CENTER", 0, 0);
 
 	self.Dropdown = self.ItemInfo.Dropdown;
-	UIDropDownMenu_Initialize(self.Dropdown, GenerateClosure(self.InitDropdown, self));
-	UIDropDownMenu_SetWidth(self.Dropdown, UpgradeDropdownMinWidth);
+	self.Dropdown:EnableMouseWheel(true);
 end
 
 function ItemUpgradeMixin:OnShow()
 	PlaySound(SOUNDKIT.UI_ETHEREAL_WINDOW_OPEN);
-	self:Update();
+	self:UpdateUpgradeItemInfo();
 
 	ItemButtonUtil.OpenAndFilterBags(self);
 
@@ -79,26 +75,25 @@ end
 
 function ItemUpgradeMixin:UpdateIfTargetReached()
 	if self:HasReachedTargetUpgradeLevel() and not self.tooltipReappearTimerInProgress then
-		self:Update();
+		self:UpdateUpgradeItemInfo();
 	end
 end
 
 function ItemUpgradeMixin:OnEvent(event, ...)
 	if event == "ITEM_UPGRADE_MASTER_SET_ITEM" then
 		if not self.upgradeAnimationsInProgress then
-			self:Update();
+			self:UpdateUpgradeItemInfo();
 		end
 		StaticPopup_Hide("CONFIRM_UPGRADE_ITEM");
 	elseif event == "BAG_UPDATE" or event == "CURRENCY_DISPLAY_UPDATE" then
 		self:UpdateIfTargetReached();
 	elseif event == "ITEM_UPGRADE_FAILED" or event == "DISPLAY_SIZE_CHANGED" then
-		self:Update();
+		self:UpdateUpgradeItemInfo();
 	elseif event == "GLOBAL_MOUSE_DOWN" then
 		local buttonName = ...;
 		local isRightButton = buttonName == "RightButton";
 
-		local mouseFocus = GetMouseFocus();
-		local flyoutSelected = not isRightButton and DoesAncestryInclude(EquipmentFlyout_GetFrame(), mouseFocus);
+		local flyoutSelected = not isRightButton and DoesAncestryIncludeAny(EquipmentFlyout_GetFrame(), GetMouseFoci());
 		if not flyoutSelected then
 			EquipmentFlyout_Hide();
 		end
@@ -110,7 +105,7 @@ function ItemUpgradeMixin:OnConfirm()
 	C_ItemUpgrade.UpgradeItem(self.numUpgradeLevels);
 end
 
-function ItemUpgradeMixin:Update(fromDropDown)
+function ItemUpgradeMixin:UpdateUpgradeItemInfo()
 	self.upgradeInfo = C_ItemUpgrade.GetItemUpgradeItemInfo();
 
 	if not self.upgradeInfo then
@@ -141,27 +136,20 @@ function ItemUpgradeMixin:Update(fromDropDown)
 	self.UpgradeItemButton:SetPushedTexture("Interface\\Buttons\\UI-Quickslot-Depress");
 	self.UpgradeItemButton.EmptySlotGlow:Hide();
 	self.UpgradeItemButton.PulseEmptySlotGlow:Stop();
+	self.MissingDescription:Hide();
 
-	if fromDropDown and (fromDropDown >  self.upgradeInfo.currUpgrade) and (fromDropDown <= self.upgradeInfo.maxUpgrade) then
-		self.targetUpgradeLevel = fromDropDown;
-	else
-		self.targetUpgradeLevel = self.upgradeInfo.currUpgrade + 1;
+	local targetUpgradeLevel = self.upgradeInfo.currUpgrade + 1;
+	self:ApplyTargetUpgradeLevel(targetUpgradeLevel);
+
+	self:InitDropdown();
 	end
-	self.numUpgradeLevels = self.targetUpgradeLevel - self.upgradeInfo.currUpgrade;
 
+function ItemUpgradeMixin:ApplyTargetUpgradeLevel(level)
+	self.targetUpgradeLevel = level;
+	
+	self.numUpgradeLevels = self.targetUpgradeLevel - self.upgradeInfo.currUpgrade;
 	self.currentUpgradeLevelInfo = self.upgradeInfo.upgradeLevelInfos[1]
 	self.targetUpgradeLevelInfo = self.upgradeInfo.upgradeLevelInfos[self.numUpgradeLevels + 1]
-
-	HideDropDownMenu(1);
-	UIDropDownMenu_SetSelectedValue(self.Dropdown, self.targetUpgradeLevel);
-	
-	if self.upgradeInfo.customUpgradeString then
-		UIDropDownMenu_SetText(self.Dropdown, ITEM_UPGRADE_DROPDOWN_LEVEL_FORMAT_STRING:format(self.upgradeInfo.customUpgradeString, self.targetUpgradeLevel, self.upgradeInfo.maxUpgrade));
-	else
-		UIDropDownMenu_SetText(self.Dropdown, ITEM_UPGRADE_DROPDOWN_LEVEL_FORMAT:format(self.targetUpgradeLevel, self.upgradeInfo.maxUpgrade));
-	end
-
-	UIDropDownMenu_MatchTextWidth(self.Dropdown, UpgradeDropdownMinWidth, UpgradeDropdownMaxWidth);
 
 	self.upgradeInfo.itemQualityColor = ITEM_QUALITY_COLORS[self.upgradeInfo.displayQuality].color;
 	self.upgradeInfo.targetQualityColor = self.targetUpgradeLevelInfo and ITEM_QUALITY_COLORS[self.targetUpgradeLevelInfo.displayQuality].color;
@@ -171,8 +159,52 @@ function ItemUpgradeMixin:Update(fromDropDown)
 
 	self:CalculateTotalCostTable();
 
-	self.MissingDescription:Hide();
 	self:PopulatePreviewFrames();
+end
+
+function ItemUpgradeMixin:InitDropdown()
+	local function IsSelected(level)
+		return level == self.targetUpgradeLevel;
+	end
+	
+	local function SetSelected(level)
+		ItemUpgradeFrame:ApplyTargetUpgradeLevel(level);
+	end
+	
+	self.Dropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_ITEM_UPGRADE");
+
+		local upgradeInfo = self.upgradeInfo;
+		local upgradeLevelInfos = upgradeInfo.upgradeLevelInfos;
+		local currUpgradeLevel = upgradeInfo.currUpgrade;
+		local maxUpgradeLevel = upgradeInfo.maxUpgrade;
+
+		for level = currUpgradeLevel + 1, maxUpgradeLevel do
+			local text;
+			local customUpgradeString = upgradeInfo.customUpgradeString;
+			if customUpgradeString then
+				text = ITEM_UPGRADE_DROPDOWN_LEVEL_FORMAT_STRING:format(customUpgradeString, level, maxUpgradeLevel);
+			else
+				text = ITEM_UPGRADE_DROPDOWN_LEVEL_FORMAT:format(level, maxUpgradeLevel);
+			end
+
+			if not self:CanUpgradeToLevel(level) then
+				text = RED_FONT_COLOR:WrapTextInColorCode(text);
+			end
+
+			local radio = rootDescription:CreateRadio(text, IsSelected, SetSelected, level);
+			radio:SetTooltip(function(tooltip, description)
+				GameTooltip_SetTitle(tooltip, ItemUpgradeFrame:GetUpgradeCostString(level));
+
+				local upgradeLevelIndex = 1 + (level - currUpgradeLevel);
+				local upgradeLevelInfo = upgradeLevelInfos[upgradeLevelIndex];
+				local failureMessage = upgradeLevelInfo and upgradeLevelInfo.failureMessage;
+				if failureMessage then
+					GameTooltip_AddErrorLine(tooltip, RED_FONT_COLOR:WrapTextInColorCode(failureMessage));
+				end
+			end);
+		end;
+	end);
 end
 
 function ItemUpgradeMixin:UpdateButtonAndArrowStates(buttonDisabled, canUpgrade)
@@ -541,48 +573,6 @@ end
 
 function ItemUpgradeMixin:GetInsufficientCostInfo()
 	return self.insufficientCostInfo;
-end
-
-function ItemUpgradeMixin:InitDropdown()
-	if not self.upgradeInfo then
-		return;
-	end
-
-	local currUpgradeLevel = self.upgradeInfo.currUpgrade;
-	local maxUpgradeLevel = self.upgradeInfo.maxUpgrade;
-
-	local info = UIDropDownMenu_CreateInfo();
-	for i = currUpgradeLevel + 1, maxUpgradeLevel do
-		if self.upgradeInfo.customUpgradeString then
-			info.text = ITEM_UPGRADE_DROPDOWN_LEVEL_FORMAT_STRING:format(self.upgradeInfo.customUpgradeString, i, maxUpgradeLevel);
-		else
-			info.text = ITEM_UPGRADE_DROPDOWN_LEVEL_FORMAT:format(i, maxUpgradeLevel);
-		end
-
-		if not self:CanUpgradeToLevel(i) then
-			info.text = RED_FONT_COLOR:WrapTextInColorCode(info.text);
-		end
-
-		info.value = i;
-		info.notCheckable = true;
-		info.minWidth = 120;
-		info.func = function() UIDropDownMenu_SetSelectedValue(ItemUpgradeFrame.Dropdown, i); ItemUpgradeFrame:Update(i); end;
-
-		info.tooltipOnButton = 1;
-		info.tooltipWhileDisabled = 1;
-		info.tooltipTitle = ItemUpgradeFrame:GetUpgradeCostString(i);
-		
-		local upgradeLevelIndex = 1 + (i - self.upgradeInfo.currUpgrade);
-		local upgradeLevelInfo = self.upgradeInfo.upgradeLevelInfos[upgradeLevelIndex];
-		local failureMessage = upgradeLevelInfo and upgradeLevelInfo.failureMessage or nil;
-		if failureMessage then
-			info.tooltipText = RED_FONT_COLOR:WrapTextInColorCode(failureMessage);
-		else
-			info.tooltipText = nil;
-		end
-
-		UIDropDownMenu_AddButton(info);
-	end
 end
 
 local upgradedSoundKits = {

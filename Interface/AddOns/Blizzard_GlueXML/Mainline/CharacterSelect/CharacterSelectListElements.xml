@@ -1,0 +1,450 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\Blizzard_SharedXML\UI.xsd">
+	<EventFrame name="CharacterSelectListGroupTemplate" mixin="CharacterSelectListGroupMixin" virtual="true">
+		<Size y="454"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Backdrop" atlas="glues-characterselect-card-camp-bg">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="14" y="-15"/>
+						<Anchor point="BOTTOMRIGHT" x="-6" y="7"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="PulseGlow" atlas="glues-characterselect-card-camp-bg-glow" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-15"/>
+						<Anchor point="BOTTOMRIGHT" x="1" y="1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="Header" mixin="CharacterSelectListGroupHeaderMixin">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Backdrop" relativePoint="TOPLEFT" x="-2" y="13"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Backdrop" relativePoint="TOPRIGHT" x="3" y="-21"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<!-- Not using HighlightTexture so we can layer behind button contents. -->
+						<Texture parentKey="Highlight" atlas="glues-characterselect-button-collapseexpand-hover" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="2" y="0"/>
+								<Anchor point="BOTTOMRIGHT" x="-2" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="2">
+						<FontString parentKey="Text" inherits="GlueFontHighlight">
+							<Anchors>
+								<Anchor point="LEFT" x="14" y="3"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="Icon" atlas="glues-characterselect-icon-minus" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="RIGHT" x="-3" y="1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+					<OnMouseDown method="OnMouseDown"/> 
+					<OnMouseUp method="OnMouseUp"/>
+					<OnClick method="OnClick"/>
+				</Scripts>
+				<NormalTexture parentKey="NormalTexture" atlas="glues-characterSelect-button-collapseExpand"/>
+				<PushedTexture parentKey="PushedTexture" atlas="glues-characterSelect-button-collapseExpand-pressed"/>
+				<DisabledTexture parentKey="DisabledTexture" atlas="glues-characterSelect-button-collapseExpand-disabled"/>
+			</Button>
+			<Frame parentKey="Contents" setAllPoints="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="-30"/>
+					<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="PulseAnim" setToFinalAlpha="true" mixin="CharacterSelectListGroupPulseAnimMixin">
+				<Alpha childKey="PulseGlow" duration="0.53" order="1" fromAlpha="0.8" toAlpha="0"/>
+				<Scripts>
+					<OnPlay method="OnPlay"/>
+					<OnFinished method="OnFinished"/>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</EventFrame>
+
+	<Frame name="CharacterSelectListDividerTemplate" virtual="true">
+		<Size y="54"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Divider" atlas="glues-characterSelect-cardDivider" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" x="5" y="-23"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Button name="CharacterSelectListCharacterTemplate" mixin="CharacterSelectListCharacterMixin" virtual="true" hidden="true">
+		<Size x="347" y="95"/>
+		<HitRectInsets>
+			<AbsInset left="20" right="12" top="0" bottom="0"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Drop" atlas="glues-characterselect-card-glow-swap" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="15" y="7"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Arrow" inherits="CharacterServicesArrowTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="LEFT"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="UpgradeIcon" mixin="CharacterSelectListServicesProcessingIconMixin" hidden="true">
+				<Size x="42" y="37"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="LEFT" x="-20" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" inherits="services-icon-processing" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Frame>
+			<Button parentKey="PaidService" parentArray="PaidServiceButtons" mixin="CharacterSelectListPaidServiceMixin" hidden="true" motionScriptsWhileDisabled="true">
+				<Size x="64" y="64"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="LEFT" x="-10" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="VASIcon" hidden="true">
+							<Size x="46" y="46"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="GoldBorder" atlas="services-icon-goldborder" useAtlasSize="true" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick method="OnClick"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+				<NormalTexture parentKey="Texture" file="Interface\Buttons\UI-PaidCharacterCustomization-Button">
+					<TexCoords left="0" right=".5" top="0" bottom=".5"/>
+				</NormalTexture>
+				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD">
+					<Size x="46" y="46"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</HighlightTexture>
+			</Button>
+			<!-- Contents are together in a child frame to support animations on them and not fight with the associated scroll box. -->
+			<Frame parentKey="InnerContent" mixin="CharacterSelectListCharacterInnerContentMixin" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="20" y="0"/>
+					<Anchor point="BOTTOMRIGHT" x="-10" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="1">
+						<Texture parentKey="Backdrop" atlas="glues-characterselect-card-singles" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BackdropEmpty" atlas="glues-characterSelect-card-empty" useAtlasSize="true" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="2">
+						<Texture parentKey="Highlight" atlas="glues-characterselect-card-singles-hover" useAtlasSize="true" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Drag" atlas="glues-characterSelect-card-drag" useAtlasSize="true" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="1">
+						<Texture parentKey="Selected" atlas="glues-characterselect-card-selected" useAtlasSize="true" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-13" y="14"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="SelectedHighlight" atlas="glues-characterSelect-card-selected-hover" useAtlasSize="true" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-13" y="14"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="2">
+						<Texture parentKey="FactionEmblem" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="-20" y="-27"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FactionEmblemHighlight" useAtlasSize="true" hidden="true">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="-20" y="-27"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FactionEmblemSelected" useAtlasSize="true" hidden="true">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="-17" y="-25"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Glow" atlas="glues-characterSelect-card-glow" useAtlasSize="true" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-6" y="6"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="PulseGlowIcon" atlas="glues-characterSelect-icon-FX-plus" useAtlasSize="true" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="PulseGlow" atlas="glues-characterSelect-card-glow-FX" useAtlasSize="true" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="PulseSpread1" atlas="glues-characterSelect-card-FX-spreadA" useAtlasSize="true" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="PulseSpread2" atlas="glues-characterSelect-card-FX-spreadB" useAtlasSize="true" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="Text" setAllPoints="true">
+						<Layers>
+							<Layer level="BORDER">
+								<FontString parentKey="LastVersion" inherits="GlueFontHighlightLarge" justifyH="LEFT" text="11.0.0">
+									<Size x="0" y="0"/>
+									<Anchors>
+										<Anchor point="BOTTOMRIGHT" x="-35" y="17"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="Name" inherits="GlueFontNormalHuge" justifyH="LEFT">
+									<Size x="270" y="22"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="14" y="-14"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="Info" inherits="GlueFontNormalLarge" justifyH="LEFT">
+									<Size x="270" y="18"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="Status" inherits="GlueFontDisableLarge" justifyH="LEFT" passThroughButtons="LeftButton">
+									<Size x="215" y="18"/>
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" x="14" y="17"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Button parentKey="MailIndicationButton" mixin="CharacterSelectListMailIndicationButtonMixin">
+						<Size x="33" y="33"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="-11" y="4"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="MiniMapMailIcon" file="Interface\Icons\INV_Letter_15">
+									<Size x="15" y="15"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="6" y="-5"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<Texture parentKey="MiniMapMailBorder" file="Interface\Minimap\MiniMap-TrackingBorder">
+									<Size x="43" y="43"/>
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnEnter method="OnEnter"/>
+							<OnLeave method="OnLeave"/>
+						</Scripts>
+					</Button>
+					<Button parentKey="UpButton" inherits="CharacterSelectListMoveButtonTemplate">
+						<KeyValues>
+							<KeyValue key="moveOffset" value="-1" type="number"/>
+							<KeyValue key="arrowNormal" value="glues-characterselect-icon-arrowup" type="string"/>
+							<KeyValue key="arrowPressed" value="glues-characterSelect-icon-arrowUp-pressed" type="string"/>
+							<KeyValue key="arrowHighlight" value="glues-characterselect-icon-arrowup-hover" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="-8" y="-16"/>
+						</Anchors>
+						<NormalTexture parentKey="NormalTexture" atlas="glues-characterselect-button-card" useAtlasSize="true"/>
+						<PushedTexture parentKey="PushedTexture" atlas="glues-characterselect-button-card-pressed" useAtlasSize="true"/>
+						<DisabledTexture parentKey="DisabledTexture" atlas="glues-characterSelect-button-card-up-disabled" useAtlasSize="true"/>
+					</Button>
+					<Button parentKey="DownButton" inherits="CharacterSelectListMoveButtonTemplate">
+						<KeyValues>
+							<KeyValue key="moveOffset" value="1" type="number"/>
+							<KeyValue key="arrowNormal" value="glues-characterselect-icon-arrowdown" type="string"/>
+							<KeyValue key="arrowPressed" value="glues-characterSelect-icon-arrowDown-pressed" type="string"/>
+							<KeyValue key="arrowHighlight" value="glues-characterSelect-icon-arrowDown-hover" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="-8" y="16"/>
+						</Anchors>
+						<NormalTexture parentKey="NormalTexture" atlas="glues-characterselect-button-card" useAtlasSize="true"/>
+						<PushedTexture parentKey="PushedTexture" atlas="glues-characterselect-button-card-pressed" useAtlasSize="true"/>
+						<DisabledTexture parentKey="DisabledTexture" atlas="glues-characterselect-button-card-down-disabled" useAtlasSize="true"/>
+					</Button>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="GlowAnim" setToFinalAlpha="true" mixin="CharacterSelectListCharacterGlowAnimMixin">
+				<Alpha childKey="InnerContent.Glow" duration="0.37" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scripts>
+					<OnPlay method="OnPlay"/>
+					<OnFinished method="OnFinished"/>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="GlowMoveAnim" setToFinalAlpha="true" mixin="CharacterSelectListCharacterGlowMoveAnimMixin">
+				<Alpha childKey="InnerContent.Glow" duration="0.13" order="1" fromAlpha="0.1" toAlpha="0.7"/>
+				<Alpha childKey="InnerContent.Glow" duration="0.27" order="1" startDelay="0.13" fromAlpha="0.7" toAlpha="0"/>
+				<Alpha childKey="InnerContent.Backdrop" duration="0.13" order="1" fromAlpha="0.1" toAlpha="1"/>
+				<Translation childKey="InnerContent" duration="0" order="1" offsetX="-8" offsetY="0"/>
+				<Translation childKey="InnerContent" duration="0.13" order="1" offsetX="8" offsetY="0"/>
+				<Scripts>
+					<OnPlay method="OnPlay"/>
+					<OnFinished method="OnFinished"/>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="PulseAnim" setToFinalAlpha="true" mixin="CharacterSelectListCharacterPulseAnimMixin">
+				<Alpha childKey="InnerContent.PulseGlow" duration="0.23" order="1" fromAlpha="1" toAlpha="1"/>
+				<Alpha childKey="InnerContent.PulseGlow" duration="0.4" order="1" startDelay="0.23" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="InnerContent.PulseGlowIcon" duration="0.2" order="1" fromAlpha="0.5" toAlpha="0"/>
+				<Alpha childKey="InnerContent.PulseSpread1" duration="0.27" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="InnerContent.PulseSpread2" duration="0.63" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="InnerContent.BackdropEmpty" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scripts>
+					<OnPlay method="OnPlay"/>
+					<OnFinished method="OnFinished"/>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<!-- Button scripts may occassionally be disabled for Character Services purposes. -->
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+			<OnDoubleClick method="OnDoubleClick"/>
+		</Scripts>
+	</Button>
+
+	<Button name="CharacterSelectListEmptyCharacterTemplate" mixin="CharacterSelectListEmptyCharacterMixin" virtual="true" hidden="true">
+		<Size x="347" y="95"/>
+		<HitRectInsets>
+			<AbsInset left="20" right="30" top="0" bottom="0"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Drop" atlas="glues-characterselect-card-glow-swap" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="15" y="7"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<!-- Contents are together in a child frame to support animations on them and not fight with the associated scroll box. -->
+			<Frame parentKey="InnerContent" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="20" y="0"/>
+					<Anchor point="BOTTOMRIGHT" x="-10" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Backdrop" atlas="glues-characterselect-card-empty" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="DragGlow" atlas="glues-characterselect-icon-addcard-glow" useAtlasSize="true" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Highlight" atlas="glues-characterselect-card-empty-hover" useAtlasSize="true" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="GlowFadeAnim" mixin="CharacterSelectListEmptyCharacterGlowFadeAnimMixin">
+				<Alpha childKey="InnerContent.DragGlow" duration="0.3" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scripts>
+					<OnPlay method="OnPlay"/>
+					<OnFinished method="OnFinished"/>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+</Ui>

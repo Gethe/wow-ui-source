@@ -1,6 +1,8 @@
 ﻿CHAR_CUSTOMIZE_MAX_SCALE = 0.75;
 CHAR_CUSTOMIZE_LOCK_WIDTH = 24;
 
+local POPOUT_CLEARANCE = 60;
+
 local showDebugTooltipInfo = GetCVarBool("debugTargetInfo");
 
 CharCustomizeOptionFrameBaseMixin = {};
@@ -46,7 +48,7 @@ end
 function CharCustomizeOptionFrameBaseMixin:GetSoundKit(entryOverride)
 	if self:HasSound() then
 		if entryOverride then
-			return entryOverride.selectionData.soundKit;
+			return entryOverride.choiceData.soundKit;
 		end
 
 		local choice = self:GetCurrentChoice();
@@ -382,7 +384,7 @@ function CharCustomizeCategoryButtonMixin:OnClick()
 		-- force it to pick a new best valid one in SetCategory().
 		hadCategoryChange = not CharCustomizeFrame:IsSelectedCategory(self.categoryData);
 		if hadCategoryChange then 
-			CharCustomizeFrame:SetSelectedCategory(self.categoryData);
+	CharCustomizeFrame:SetSelectedCategory(self.categoryData);
 			CharCustomizeFrame:SetSelectedSubcategory(nil);
 		end
 	end
@@ -505,9 +507,12 @@ function CharCustomizeOptionSliderMixin:OnSliderValueChanged(value, userInput)
 		self:AddTooltipLine("Choice ID: "..newChoiceData.id, HIGHLIGHT_FONT_COLOR);
 	end
 
-	local mouseFocus = GetMouseFocus();
+	local mouseFoci = GetMouseFoci();
+	for _, mouseFocus in ipairs(mouseFoci) do
 	if DoesAncestryInclude(self, mouseFocus) and (mouseFocus:GetObjectType() ~= "Button") then
 		self:OnEnter();
+			break;
+		end
 	end
 
 	if needToUpdateModel then
@@ -563,7 +568,8 @@ function CharCustomizeAudioInterfacePlayButtonMixin:OnClick()
 end
 
 function CharCustomizeAudioInterfacePlayButtonMixin:OnEnter()
-	GameTooltip_ShowSimpleTooltip(GetAppropriateTooltip(), CHAR_CUSTOMIZATION_TOOLTIP_PLAY_VOICE_SAMPLE, nil, false, self, "ANCHOR_LEFT");
+	local tooltipOwner = self;
+	GameTooltip_ShowSimpleTooltip(GetAppropriateTooltip(), CHAR_CUSTOMIZATION_TOOLTIP_PLAY_VOICE_SAMPLE, SimpleTooltipConstants.NoOverrideColor, SimpleTooltipConstants.DoNotWrapText, tooltipOwner, "ANCHOR_LEFT");
 end
 
 function CharCustomizeAudioInterfacePlayButtonMixin:OnLeave()
@@ -628,7 +634,8 @@ function CharCustomizeAudioInterfaceMuteButtonMixin:GetTooltipText()
 end
 
 function CharCustomizeAudioInterfaceMuteButtonMixin:OnEnter()
-	GameTooltip_ShowSimpleTooltip(GetAppropriateTooltip(), self:GetTooltipText(), nil, false, self, "ANCHOR_LEFT");
+	local tooltipOwner = self;
+	GameTooltip_ShowSimpleTooltip(GetAppropriateTooltip(), self:GetTooltipText(), SimpleTooltipConstants.NoOverrideColor, SimpleTooltipConstants.DoNotWrapText, tooltipOwner, "ANCHOR_LEFT");
 end
 
 function CharCustomizeAudioInterfaceMuteButtonMixin:OnLeave()
@@ -734,111 +741,251 @@ function CharCustomizeAudioInterfaceMixin:OnAudioPlayingTick()
 	self.PlayWaveform.Waveform:SetValue(math.random(65, 80)/100);
 end
 
-CharCustomizeOptionSelectionPopoutMixin = CreateFromMixins(CharCustomizeOptionFrameBaseMixin, CharCustomizeFrameWithTooltipMixin);
+CharCustomizeDropdownWithSteppersAndLabelMixin = CreateFromMixins(CharCustomizeOptionFrameBaseMixin, CharCustomizeFrameWithTooltipMixin);
 
-function CharCustomizeOptionSelectionPopoutMixin:OnLoad()
+function CharCustomizeDropdownWithSteppersAndLabelMixin:OnLoad()
 	CharCustomizeFrameWithTooltipMixin.OnLoad(self);
-	SelectionPopoutWithButtonsAndLabelMixin.OnLoad(self);
+	DropdownWithSteppersAndLabelMixin.OnLoad(self);
+
+	self.Dropdown:SetMenuAnchor(AnchorUtil.CreateAnchor("TOPRIGHT", self.Dropdown, "BOTTOMRIGHT"));
+	self.Dropdown:EnableMouseWheel(true);
 
 	EventRegistry:RegisterCallback("CharCustomize.SetMissingOptionWarningEnabled", self.SetMissingOptionWarningEnabled, self);
 end
 
-function CharCustomizeOptionSelectionPopoutMixin:SetupAnchors(tooltip)
+function CharCustomizeDropdownWithSteppersAndLabelMixin:SetupAnchors(tooltip)
 	tooltip:SetOwner(self, "ANCHOR_NONE");
-	tooltip:SetPoint("BOTTOMRIGHT", self.Button, "TOPLEFT", self.tooltipXOffset, self.tooltipYOffset);
+	tooltip:SetPoint("BOTTOMRIGHT", self.Dropdown, "TOPLEFT", self.tooltipXOffset, self.tooltipYOffset);
 end
 
-function CharCustomizeOptionSelectionPopoutMixin:OnEntrySelected(entryData)
-	CharCustomizeFrame:OnOptionPopoutEntrySelected(self, entryData);
-end
-
-function CharCustomizeOptionSelectionPopoutMixin:OnEntryMouseEnter(entry)
-	CharCustomizeFrame:OnOptionPopoutEntryMouseEnter(self, entry);
-
-	local tooltipText, tooltipLockedText = entry:GetTooltipText();
-	if tooltipText or showDebugTooltipInfo then
-		local tooltip = self:GetAppropriateTooltip();
-
-		tooltip:SetOwner(self, "ANCHOR_NONE");
-		tooltip:SetPoint("BOTTOMRIGHT", entry, "TOPLEFT", 0, 0);
-
-		if tooltipText then
-			GameTooltip_AddHighlightLine(tooltip, tooltipText);
+do
+	local function GetChoiceConstraints(optionData)
+		local hasAFailedReq = false;
+		local hasALockedChoice = false;
+		for choiceIndex, choiceData in ipairs(optionData.choices) do
+			if choiceData.ineligibleChoice then
+				hasAFailedReq = true;
+			end
+			if choiceData.isLocked then
+				hasALockedChoice = true;
+			end
+		end
+		return hasAFailedReq, hasALockedChoice;
+	end
+		
+	local function CanSelect(choiceData)
+		return (not choiceData.disabled) and (not choiceData.isLocked);
+	end
+	
+	function CharCustomizeDropdownWithSteppersAndLabelMixin:SetupOption(optionData)
+		self:SetOptionData(optionData);
+	
+		self:SetText(optionData.name);
+	
+		self.New:SetShown(optionData.hasNewChoices);
+	
+		self:ClearTooltipLines();
+	
+		local currentTooltip = self.Dropdown.SelectionDetails:GetTooltipText();
+		if currentTooltip then
+			self:AddTooltipLine(currentTooltip, HIGHLIGHT_FONT_COLOR);
 		end
 
-		if tooltipLockedText then
-			GameTooltip_AddNormalLine(tooltip, tooltipLockedText);
-		end
-
+		local currentChoice = optionData.choices[optionData.currentChoiceIndex];
 		if showDebugTooltipInfo then
-			if tooltipText then
-				GameTooltip_AddBlankLineToTooltip(tooltip, tooltipText);
+			if currentTooltip then
+				self:AddBlankTooltipLine();
+			end
+			self:AddTooltipLine("Option ID: "..optionData.id, HIGHLIGHT_FONT_COLOR);
+			self:AddTooltipLine("Choice ID: "..currentChoice.id, HIGHLIGHT_FONT_COLOR);
+		end
+
+		local rootDescription = MenuUtil.CreateRootMenuDescription(MenuStyle2Mixin);
+	
+		--[[
+		The compositor is disabled here for multiple reasons:
+		1) We're not concerned with these frames becoming tainted as there shouldn't be any
+		functionality we need to protect in customization.
+		2) The compositor isn't being leveraged anyways: the contents of these frames are
+		in the CharCustomizeDropdownElementTemplate template.
+		3) Performance concerns. Customization regenerates all options without consideration of
+		the options actually changing, and since compositor isn't used here, it adds to the cumulatively
+		large overhead of rebuilding all of the menu descriptions.
+		]]--
+		rootDescription:DisableCompositor();
+	
+		-- Again for performance reasons.
+		rootDescription:DisableReacquireFrames();
+	
+		local columns = MenuConstants.AutoCalculateColumns;
+		local padding = 0;
+		local compactionMargin = 100;
+		rootDescription:SetGridMode(MenuConstants.VerticalGridDirection, columns, padding, compactionMargin);
+
+		rootDescription:AddMenuAcquiredCallback(function(menu)
+			menu:SetScale(self.Dropdown:GetEffectiveScale());
+		end);
+	
+		local hasAFailedReq, hasALockedChoice = GetChoiceConstraints(optionData);
+	
+		--[[
+		These functions cannot be defined as file locals because optionData, hasAFailedReq and hasALockedChoice
+		and 'self' all require capture.
+		]]
+
+		local function IsSelected(choiceData)
+			return optionData.currentChoiceIndex == choiceData.choiceIndex;
+		end
+	
+		local function OnSelect(choiceData, menuInputData, menu)
+			RunNextFrame(function() 
+				CharCustomizeFrame.previewIsDirty = false;
+				CharCustomizeFrame:SetCustomizationChoice(optionData.id, choiceData.id);
+			end);
+	
+			-- If the selection was done via mouse-wheel, reinitialize and keep the menu open.
+			if menuInputData.context == MenuInputContext.MouseWheel then
+				return MenuResponse.Refresh;
+			end
+		end
+		
+		local function OnEnter(button)
+			local description = button:GetElementDescription();
+			local choiceData = description:GetData();
+			CharCustomizeFrame:PreviewChoice(optionData, choiceData);
+	
+			local tooltipText, tooltipLockedText = button.SelectionDetails:GetTooltipText();
+			if tooltipText or showDebugTooltipInfo then
+				local tooltip = self:GetAppropriateTooltip();
+
+				tooltip:SetOwner(self, "ANCHOR_NONE");
+					tooltip:SetPoint("BOTTOMRIGHT", button, "TOPLEFT", 0, 0);
+
+				if tooltipText then
+					GameTooltip_AddHighlightLine(tooltip, tooltipText);
+				end
+
+				if tooltipLockedText then
+					GameTooltip_AddNormalLine(tooltip, tooltipLockedText);
+				end
+
+				if showDebugTooltipInfo then
+					if tooltipText then
+						GameTooltip_AddBlankLineToTooltip(tooltip, tooltipText);
+					end
+
+					GameTooltip_AddHighlightLine(tooltip, "Choice ID: "..choiceData.id);
+				end
+
+				tooltip:Show();
 			end
 
-			GameTooltip_AddHighlightLine(tooltip, "Choice ID: "..entry.selectionData.id);
+			if self:HasSound() and not IsSelected(choiceData) then
+				self:GetAudioInterface():PlayAudio(self:GetSoundKit(choiceData));
+			end
+	
+			local selected = IsSelected(choiceData);
+			if not selected then
+				button.HighlightBGTex:SetAlpha(0.15);
+				button.SelectionDetails.SelectionNumber:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+				button.SelectionDetails.SelectionName:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+			end
 		end
 
-		tooltip:Show();
-	end
+		local function OnLeave(button)
+			CharCustomizeFrame.previewIsDirty = true;
 
-	if self:HasSound() and not entry.isSelected then
-		self:GetAudioInterface():PlayAudio(self:GetSoundKit(entry));
-	end
-end
-
-function CharCustomizeOptionSelectionPopoutMixin:OnEntryMouseLeave(entry)
-	CharCustomizeFrame:OnOptionPopoutEntryMouseLeave(self, entry);
-
-	local tooltip = self:GetAppropriateTooltip();
-	tooltip:Hide();
-	if self:GetAudioInterface() then
-		self:GetAudioInterface():StopAudio();
-	end
-end
-
-local POPOUT_CLEARANCE = 100;
-
-function CharCustomizeOptionSelectionPopoutMixin:GetMaxPopoutHeight()
-	return self:GetBottom() - POPOUT_CLEARANCE;
-end
-
-function CharCustomizeOptionSelectionPopoutMixin:SetupOption(optionData)
-	self:SetOptionData(optionData);
-
-	self:SetupSelections(optionData.choices, optionData.currentChoiceIndex, optionData.name);
-	self.New:SetShown(optionData.hasNewChoices);
-
-	self:ClearTooltipLines();
-
-	local currentTooltip = self:GetTooltipText();
-	if currentTooltip then
-		self:AddTooltipLine(currentTooltip, HIGHLIGHT_FONT_COLOR);
-	end
-
-	if showDebugTooltipInfo then
-		if currentTooltip then
-			self:AddBlankTooltipLine();
+			local tooltip = self:GetAppropriateTooltip();
+			tooltip:Hide();
+				
+			if self:GetAudioInterface() then
+				self:GetAudioInterface():StopAudio();
+			end
+			
+			local description = button:GetElementDescription();
+			local choiceData = description:GetData();
+			local selected = IsSelected(choiceData);
+			if not selected then
+				button.HighlightBGTex:SetAlpha(0);
+				button.SelectionDetails:UpdateFontColors(choiceData, selected, hasAFailedReq);
+			end
 		end
-		self:AddTooltipLine("Option ID: "..self.optionData.id, HIGHLIGHT_FONT_COLOR);
-		self:AddTooltipLine("Choice ID: "..optionData.choices[optionData.currentChoiceIndex].id, HIGHLIGHT_FONT_COLOR);
+	
+		local function FinalizeLayout(button, description, menu, columns, rows)
+			-- Frames have size overrides if their containing menu has multiple columns.
+			local hasMultipleColumns = columns > 1;
+			button.SelectionDetails:AdjustWidth(hasMultipleColumns, hasALockedChoice);
+			button:Layout();
+		end
+
+		for choiceIndex, choiceData in ipairs(optionData.choices) do
+			choiceData.choiceIndex = choiceIndex;
+
+			local optionDescription = rootDescription:CreateTemplate("CharCustomizeDropdownElementTemplate");
+			optionDescription:AddInitializer(function(button, description, menu)
+				button.HighlightBGTex:SetAlpha(0);
+	
+				button:SetScript("OnClick", function(button, buttonName)
+					if CanSelect(choiceData) then
+						description:Pick(MenuInputContext.MouseButton, buttonName);
+					end 
+				end);
+				
+				local selected = IsSelected(choiceData);
+				
+				button.SelectionDetails:Init(choiceData, choiceIndex, selected, hasAFailedReq, hasALockedChoice);
+
+				--[[
+				We will have 2 Layout() calls. One for the reference width, and another to account
+				for the column count changing in FinalizeLayout below.
+				]]--
+				button:Layout();
+			end);
+
+			optionDescription:SetOnEnter(OnEnter);
+			optionDescription:SetOnLeave(OnLeave);
+			optionDescription:SetIsSelected(IsSelected);
+			optionDescription:SetCanSelect(CanSelect);
+			optionDescription:SetResponder(OnSelect);
+			optionDescription:SetRadio(true);
+			optionDescription:SetData(choiceData);
+			optionDescription:SetFinalizeGridLayout(FinalizeLayout);
+		end
+		
+		-- Setup the dropdown button.
+		do
+			--[[
+			Dropdown shares the same details frame as the elements, but expects 'selected' and
+			'hasAFailedReq' to be always be false.
+			]]--
+
+			local selected = false;
+			local failedReq = false;
+			local clampNameSize = true;
+			self.Dropdown.SelectionDetails:Init(currentChoice, optionData.currentChoiceIndex, selected, failedReq, clampNameSize);
+			self.Dropdown.SelectionDetails:Layout();
+		end
+		
+		-- TODO Should be converted to a generator function.
+		self.Dropdown:RegisterMenu(rootDescription);
 	end
 end
 
-function CharCustomizeOptionSelectionPopoutMixin:GetOrCreateWarningTexture(enabled)
-	if not self.Button.WarningTexture then
-		self.Button.WarningTexture = self.Button:CreateTexture(nil, nil, "MissionOptionWarningTemplate");
-		self.Button.WarningTexture:ClearAllPoints();
-		self.Button.WarningTexture:SetPoint("BOTTOM", self.Button, "TOP", 0, -23);
+function CharCustomizeDropdownWithSteppersAndLabelMixin:GetOrCreateWarningTexture(enabled)
+	if not self.Dropdown.WarningTexture then
+		self.Dropdown.WarningTexture = self.Dropdown:CreateTexture(nil, nil, "MissionOptionWarningTemplate");
+		self.Dropdown.WarningTexture:ClearAllPoints();
+		self.Dropdown.WarningTexture:SetPoint("BOTTOM", self.Dropdown, "TOP", 0, -23);
 	end
 
 	return self:GetWarningTexture();
 end
 
-function CharCustomizeOptionSelectionPopoutMixin:GetWarningTexture()
-	return self.Button.WarningTexture;
+function CharCustomizeDropdownWithSteppersAndLabelMixin:GetWarningTexture()
+	return self.Dropdown.WarningTexture;
 end
 
-function CharCustomizeOptionSelectionPopoutMixin:SetMissingOptionWarningEnabled(externallyEnabled)
+function CharCustomizeDropdownWithSteppersAndLabelMixin:SetMissingOptionWarningEnabled(externallyEnabled)
 	local showWarning = externallyEnabled and not self:HasChoice();
 	if showWarning then
 		self:GetOrCreateWarningTexture():Show();
@@ -848,43 +995,41 @@ function CharCustomizeOptionSelectionPopoutMixin:SetMissingOptionWarningEnabled(
 	end
 end
 
-CharCustomizeSelectionPopoutDetailsMixin = {};
+CharCustomizeDropdownElementDetailsMixin = {};
 
-function CharCustomizeSelectionPopoutDetailsMixin:GetTooltipText()
-	local name, lockedText;
-	if (self.SelectionName:IsShown() and self.SelectionName:IsTruncated()) or self.lockedText or self.name=="Charger" then
+function CharCustomizeDropdownElementDetailsMixin:GetTooltipText()
+	local name;
+	if self.lockedText or (self.SelectionName:IsShown() and self.SelectionName:IsTruncated()) then
 		name = self.name;
 	end
-	if self.lockedText then
-		lockedText = BARBERSHOP_CUSTOMIZATION_SOURCE_FORMAT:format(self.lockedText);
+
+	if not self.lockedText then
+		return name;
 	end
-	return name, lockedText;
+
+	return name, BARBERSHOP_CUSTOMIZATION_SOURCE_FORMAT:format(self.lockedText);
 end
 
-function CharCustomizeSelectionPopoutDetailsMixin:AdjustWidth(multipleColumns, defaultWidth)
-	local width = defaultWidth;
-
+function CharCustomizeDropdownElementDetailsMixin:AdjustWidth(multipleColumns, hasALockedChoice)
+	local width = 116;
+	if multipleColumns then
 	if self.ColorSwatch1:IsShown() or self.ColorSwatch2:IsShown() then
-		if multipleColumns then
 			width = self.SelectionNumber:GetWidth() + self.ColorSwatch2:GetWidth() + 18;
-		end
 	elseif self.SelectionName:IsShown() then
-		if multipleColumns then
 			width = 108;
-		end
 	else
-		if multipleColumns then
 			width = 42;
 		end
 	end
 
-	if self:GetParent().popoutHasALockedChoice then
+	if hasALockedChoice then
 		width = width + CHAR_CUSTOMIZE_LOCK_WIDTH;
 	end
+
 	self:SetWidth(Round(width));
 end
 
-local function GetNormalSelectionTextFontColor(selectionData, isSelected)
+local function GetNormalSelectionTextFontColor(choiceData, isSelected)
 	if isSelected then
 		return NORMAL_FONT_COLOR;
 	else
@@ -895,21 +1040,21 @@ end
 local eligibleChoiceColor = CreateColor(.808, 0.808, 0.808);
 local ineligibleChoiceColor = CreateColor(.337, 0.337, 0.337);
 
-local function GetFailedReqSelectionTextFontColor(selectionData, isSelected)
+local function GetFailedReqSelectionTextFontColor(choiceData, isSelected)
 	if isSelected then
 		return NORMAL_FONT_COLOR;
-	elseif selectionData.ineligibleChoice then
+	elseif choiceData.ineligibleChoice then
 		return ineligibleChoiceColor;
 	else
 		return eligibleChoiceColor;
 	end
 end
 
-function CharCustomizeSelectionPopoutDetailsMixin:GetFontColors(selectionData, isSelected, hasAFailedReq)
+function CharCustomizeDropdownElementDetailsMixin:GetFontColors(choiceData, isSelected, hasAFailedReq)
 	if self.selectable then
 		local fontColorFunction = hasAFailedReq and GetFailedReqSelectionTextFontColor or GetNormalSelectionTextFontColor;
-		local fontColor = fontColorFunction(selectionData, isSelected);
-		local showAsNew = (selectionData.isNew and self.selectable);
+		local fontColor = fontColorFunction(choiceData, isSelected);
+		local showAsNew = (choiceData.isNew and self.selectable);
 		if showAsNew then
 			return fontColor, HIGHLIGHT_FONT_COLOR;
 		else
@@ -920,8 +1065,8 @@ function CharCustomizeSelectionPopoutDetailsMixin:GetFontColors(selectionData, i
 	end
 end
 
-function CharCustomizeSelectionPopoutDetailsMixin:UpdateFontColors(selectionData, isSelected, hasAFailedReq)
-	local nameColor, numberColor = self:GetFontColors(selectionData, isSelected, hasAFailedReq);
+function CharCustomizeDropdownElementDetailsMixin:UpdateFontColors(choiceData, isSelected, hasAFailedReq)
+	local nameColor, numberColor = self:GetFontColors(choiceData, isSelected, hasAFailedReq);
 	self.SelectionName:SetTextColor(nameColor:GetRGB());
 	self.SelectionNumber:SetTextColor(numberColor:GetRGB());
 end
@@ -931,7 +1076,7 @@ local function startsWithOne(index)
 	return indexString:sub(1, 1) == "1";
 end
 
-function CharCustomizeSelectionPopoutDetailsMixin:SetShowAsNew(showAsNew)
+function CharCustomizeDropdownElementDetailsMixin:SetShowAsNew(showAsNew)
 	if showAsNew then
 		self.SelectionNumber:SetShadowColor(NEW_FEATURE_SHADOW_COLOR:GetRGBA());
 
@@ -947,8 +1092,8 @@ function CharCustomizeSelectionPopoutDetailsMixin:SetShowAsNew(showAsNew)
 	end
 end
 
-function CharCustomizeSelectionPopoutDetailsMixin:UpdateText(selectionData, isSelected, hasAFailedReq, hideNumber, hasColors)
-	self:UpdateFontColors(selectionData, isSelected, hasAFailedReq);
+function CharCustomizeDropdownElementDetailsMixin:UpdateText(choiceData, isSelected, hasAFailedReq, hideNumber, hasColors)
+	self:UpdateFontColors(choiceData, isSelected, hasAFailedReq);
 
 	self.SelectionNumber:SetText(self.index);
 	self.SelectionNumberBG:SetText(self.index);
@@ -957,10 +1102,10 @@ function CharCustomizeSelectionPopoutDetailsMixin:UpdateText(selectionData, isSe
 		self.SelectionName:Hide();
 		self.SelectionNumber:SetWidth(25);
 		self.SelectionNumberBG:SetWidth(25);
-	elseif selectionData.name ~= "" then
+	elseif choiceData.name ~= "" then
 		self.SelectionName:Show();
 		self.SelectionName:SetWidth(0);
-		self.SelectionName:SetText(selectionData.name);
+		self.SelectionName:SetText(choiceData.name);
 		self.SelectionNumber:SetWidth(25);
 		self.SelectionNumberBG:SetWidth(25);
 	else
@@ -971,11 +1116,11 @@ function CharCustomizeSelectionPopoutDetailsMixin:UpdateText(selectionData, isSe
 
 	self.SelectionNumber:SetShown(not hideNumber);
 
-	local showAsNew = (self.selectable and not hideNumber and selectionData.isNew);
+	local showAsNew = (self.selectable and not hideNumber and choiceData.isNew);
 	self:SetShowAsNew(showAsNew);
 end
 
-function CharCustomizeSelectionPopoutDetailsMixin:SetupDetails(selectionData, index, isSelected, hasAFailedReq, hasALockedChoice)
+function CharCustomizeDropdownElementDetailsMixin:Init(choiceData, index, isSelected, hasAFailedReq, hasALockedChoice, clampNameSize)
 	if not index then
 		self.SelectionName:SetText(CHARACTER_CUSTOMIZE_POPOUT_UNSELECTED_OPTION);
 		self.SelectionName:Show();
@@ -990,12 +1135,13 @@ function CharCustomizeSelectionPopoutDetailsMixin:SetupDetails(selectionData, in
 		self:SetShowAsNew(false);
 		return;
 	end
-	self.name = selectionData.name;
-	self.index = index;
-	self.lockedText = selectionData.isLocked and selectionData.lockedText;
 
-	local color1 = selectionData.swatchColor1 or selectionData.swatchColor2;
-	local color2 = selectionData.swatchColor1 and selectionData.swatchColor2;
+	self.name = choiceData.name;
+	self.index = index;
+	self.lockedText = choiceData.isLocked and choiceData.lockedText;
+
+	local color1 = choiceData.swatchColor1 or choiceData.swatchColor2;
+	local color2 = choiceData.swatchColor1 and choiceData.swatchColor2;
 	if color1 then
 		if color2 then
 			self.ColorSwatch2:Show();
@@ -1011,7 +1157,7 @@ function CharCustomizeSelectionPopoutDetailsMixin:SetupDetails(selectionData, in
 		self.ColorSwatch1:Show();
 		self.ColorSwatch1Glow:Show();
 		self.ColorSwatch1:SetVertexColor(color1:GetRGB());
-	elseif selectionData.name ~= "" then
+	elseif choiceData.name ~= "" then
 		self.ColorSwatch1:Hide();
 		self.ColorSwatch1Glow:Hide();
 		self.ColorSwatch2:Hide();
@@ -1025,7 +1171,7 @@ function CharCustomizeSelectionPopoutDetailsMixin:SetupDetails(selectionData, in
 
 	self.ColorSelected:SetShown(self.selectable and color1 and isSelected);
 
-	local hideNumber = (not self.selectable and (color1 or (selectionData.name ~= "")));
+	local hideNumber = (not self.selectable and (color1 or (choiceData.name ~= "")));
 	if hideNumber then
 		self.SelectionName:SetPoint("LEFT", self, "LEFT", 0, 0);
 		self.ColorSwatch1:SetPoint("LEFT", self, "LEFT", 0, 0);
@@ -1036,69 +1182,53 @@ function CharCustomizeSelectionPopoutDetailsMixin:SetupDetails(selectionData, in
 		self.ColorSwatch2:SetPoint("LEFT", self.SelectionNumber, "RIGHT", 18, -2);
 	end
 
-	self.LockIcon:SetShown(selectionData.isLocked);
+	self.LockIcon:SetShown(choiceData.isLocked);
 	if self.selectable then
-		if selectionData.isLocked then
+		if choiceData.isLocked then
 			self.SelectionName:SetPoint("RIGHT", -CHAR_CUSTOMIZE_LOCK_WIDTH, 0);		
 		else
 			self.SelectionName:SetPoint("RIGHT", 0, 0);
 		end
 	end
 
-	self:UpdateText(selectionData, isSelected, hasAFailedReq, hideNumber, color1);
-end
+	self:UpdateText(choiceData, isSelected, hasAFailedReq, hideNumber, color1);
 
-CharCustomizeSelectionPopoutButtonMixin = CreateFromMixins(SelectionPopoutButtonMixin);
-
-function CharCustomizeSelectionPopoutButtonMixin:UpdateButtonDetails()
-	local currentSelectedData = self:GetCurrentSelectedData();
-	self.SelectionDetails:SetupDetails(currentSelectedData, self.selectedIndex);
-
+	if clampNameSize then
 	local maxNameWidth = 126;
-	if self.SelectionDetails.SelectionName:GetWidth() > maxNameWidth then
-		self.SelectionDetails.SelectionName:SetWidth(maxNameWidth);
+		if self.SelectionName:GetWidth() > maxNameWidth then
+			self.SelectionName:SetWidth(maxNameWidth);
+		end
 	end
-	self.SelectionDetails.LockIcon:Hide();
-
-	self.SelectionDetails:Layout();
 end
 
-CharCustomizeSelectionPopoutEntryMixin = CreateFromMixins(SelectionPopoutEntryMixin);
+CharCustomizeDropdownMixin = {};
 
-function CharCustomizeSelectionPopoutEntryMixin:OnLoad()
-	SelectionPopoutEntryMixin.OnLoad(self);
+do
+	local xy = 1;
+	function CharCustomizeDropdownMixin:OnMouseDown()
+		if WowStyle1FilterDropdownMixin.OnMouseDown(self) then
+			self.SelectionDetails:AdjustPointsOffset(xy, -xy);
+		end
+	end
 
+	function CharCustomizeDropdownMixin:OnMouseUp()
+		if WowStyle1FilterDropdownMixin.OnMouseUp(self) then
+			self.SelectionDetails:AdjustPointsOffset(-xy, xy);
+		end
+	end
+end
+
+function CharCustomizeDropdownMixin:OnDisable()
+	WowStyle1FilterDropdownMixin.OnDisable(self);
+
+	self.SelectionDetails:ClearPointsOffset();
+end
+
+
+CharCustomizeDropdownElementMixin = {};
+
+function CharCustomizeDropdownElementMixin:OnLoad()
 	self.SelectionDetails.SelectionName:SetPoint("RIGHT");
-end
-
-function CharCustomizeSelectionPopoutEntryMixin:ClearNewFlag()
-	self.selectionData.isNew = false;
-	self.parentButton:UpdatePopout();
-end
-
-function CharCustomizeSelectionPopoutEntryMixin:SetupEntry(selectionData, index, isSelected, multipleColumns, hasAFailedReq, hasALockedChoice)
-	self.isNew = selectionData.isNew;
-	SelectionPopoutEntryMixin.SetupEntry(self, selectionData, index, isSelected, multipleColumns, hasAFailedReq, hasALockedChoice);
-end
-
-function CharCustomizeSelectionPopoutEntryMixin:OnEnter()
-	SelectionPopoutEntryMixin.OnEnter(self);
-
-	if not self.isSelected then
-		self.HighlightBGTex:SetAlpha(0.15);
-
-		self.SelectionDetails.SelectionNumber:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
-		self.SelectionDetails.SelectionName:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
-	end
-end
-
-function CharCustomizeSelectionPopoutEntryMixin:OnLeave()
-	SelectionPopoutEntryMixin.OnLeave(self);
-
-	if not self.isSelected then
-		self.HighlightBGTex:SetAlpha(0);
-		self.SelectionDetails:UpdateFontColors(self.selectionData, self.isSelected, self.popoutHasAFailedReq);
-	end
 end
 
 CharCustomizeMixin = {};
@@ -1111,18 +1241,20 @@ function CharCustomizeMixin:OnLoad()
 	self.pools:CreatePool("FRAME", self.Options, "CharCustomizeOptionCheckButtonTemplate");
 	self.pools:CreatePool("CHECKBUTTON", self.AlteredForms, "CharCustomizeConditionalModelButtonTemplate");
 	self.pools:CreatePool("FRAME", self, "CharCustomizeAudioInterface", function(pool, audioInterface)
-		FramePool_HideAndClearAnchors(pool, audioInterface);
+		Pool_HideAndClearAnchors(pool, audioInterface);
 		audioInterface:StopAudio();
 	end);
 
-	-- Keep the selectionPopout and sliders in different pools because we need to be careful not to release the option the player is interacting with
-	self.selectionPopoutPool = CreateFramePool("BUTTON", self.Options, "CharCustomizeOptionSelectionPopoutTemplate");
+	-- Keep the dropdowns and sliders in different pools because we need to be careful not to release the option the player is interacting with
+	self.dropdownPool = CreateFramePool("BUTTON", self.Options, "CharCustomizeDropdownWithSteppersAndLabelTemplate");
 	self.sliderPool = CreateFramePool("FRAME", self.Options, "CharCustomizeOptionSliderTemplate");
 
 	-- Keep the altered forms buttons in a different pool because we only want to release those when we enter this screen
 	self.alteredFormsPools = CreateFramePoolCollection();
 	self.alteredFormsPools:CreatePool("CHECKBUTTON", self.AlteredForms, "CharCustomizeAlteredFormButtonTemplate");
 	self.alteredFormsPools:CreatePool("CHECKBUTTON", self.AlteredForms, "CharCustomizeAlteredFormSmallButtonTemplate");
+
+	self.Categories:SetFixedMaxSpace(400);
 end
 
 function CharCustomizeMixin:OnEvent(event, ...)
@@ -1151,6 +1283,12 @@ end
 function CharCustomizeMixin:AttachToParentFrame(parentFrame)
 	self.parentFrame = parentFrame;
 	self:SetParent(parentFrame);
+end
+
+-- Used to set up spacing adjustments when resolution and UI scale don't leave enough room.
+function CharCustomizeMixin:SetOptionsSpacingConfiguration(topFrame, bottomFrame)
+	self.Options:SetTopFrame(topFrame);
+	self.Options:SetBottomFrame(bottomFrame, POPOUT_CLEARANCE);
 end
 
 function CharCustomizeMixin:OnButtonClick()
@@ -1372,8 +1510,8 @@ function CharCustomizeMixin:SetCustomizations(categories)
 end
 
 function CharCustomizeMixin:GetOptionPool(optionType)
-	if optionType == Enum.ChrCustomizationOptionType.SelectionPopout then
-		return self.selectionPopoutPool;
+	if optionType == Enum.ChrCustomizationOptionType.Dropdown then
+		return self.dropdownPool;
 	elseif optionType == Enum.ChrCustomizationOptionType.Checkbox then
 		return self.pools:GetPool("CharCustomizeOptionCheckButtonTemplate");
 	elseif optionType == Enum.ChrCustomizationOptionType.Slider then
@@ -1395,7 +1533,7 @@ function CharCustomizeMixin:ReleaseNonDraggingSliders()
 	local draggingSlider;
 	local releaseSliders = {};
 
-	for optionSlider in pairs(self.sliderPool.activeObjects) do
+	for optionSlider in self.sliderPool:EnumerateActive() do
 		if optionSlider.Slider:IsDraggingThumb() then
 			draggingSlider = optionSlider;
 		else
@@ -1412,23 +1550,23 @@ end
 
 -- Releases all popouts EXCEPT the one the player currently has open (if they have one open)
 -- Returns the currently open popout if there was one
-function CharCustomizeMixin:ReleaseClosedPopoutOptions()
-	local openPopout;
-	local releasePopouts = {};
+function CharCustomizeMixin:ReleaseClosedDropdowns()
+	local openOptionFrame;
+	local optionFrames = {};
 
-	for selectionPopout in pairs(self.selectionPopoutPool.activeObjects) do
-		if selectionPopout.Button.Popout:IsShown() then
-			openPopout = selectionPopout;
+	for optionFrame in self.dropdownPool:EnumerateActive() do
+		if optionFrame.Dropdown:IsMenuOpen() then
+			openOptionFrame = optionFrame;
 		else
-			table.insert(releasePopouts, selectionPopout);
+			table.insert(optionFrames, optionFrame);
 		end
 	end
 
-	for _, releasePopout in ipairs(releasePopouts) do
-		self.selectionPopoutPool:Release(releasePopout);
+	for _, optionFrame in ipairs(optionFrames) do
+		self.dropdownPool:Release(optionFrame);
 	end
 
-	return openPopout;
+	return openOptionFrame;
 end
 
 function CharCustomizeMixin:UpdateOptionButtons(forceReset)
@@ -1438,11 +1576,11 @@ function CharCustomizeMixin:UpdateOptionButtons(forceReset)
 
 	if forceReset then
 		self.sliderPool:ReleaseAll();
-		self.selectionPopoutPool:ReleaseAll();
+		self.dropdownPool:ReleaseAll();
 	else
 		local draggingSlider = self:ReleaseNonDraggingSliders();
-		local openPopout = self:ReleaseClosedPopoutOptions();
-		interactingOption = draggingSlider or openPopout;
+		local openOptionFrame = self:ReleaseClosedDropdowns();
+		interactingOption = draggingSlider or openOptionFrame;
 	end
 
 	self.hasShapeshiftForms = false;
@@ -1452,7 +1590,6 @@ function CharCustomizeMixin:UpdateOptionButtons(forceReset)
 	self.numSubcategories = 0;
 
 	local optionsToSetup = {};
-
 	for _, categoryData in ipairs(self:GetCategories()) do
 		local categoryPool = self:GetCategoryPool(categoryData);
 		local button = categoryPool:Acquire();
@@ -1463,7 +1600,7 @@ function CharCustomizeMixin:UpdateOptionButtons(forceReset)
 				self.firstChrModelID = categoryData.chrModelID;
 			end
 		end
-			
+
 		if categoryData.spellShapeshiftFormID then
 			self.hasShapeshiftForms = true;
 		end
@@ -1510,7 +1647,6 @@ function CharCustomizeMixin:UpdateOptionButtons(forceReset)
 					-- Setup will be called on each one, but it needs to happen after self.Options:Layout() is called
 					optionFrame.layoutIndex = optionData.orderIndex;
 					optionsToSetup[optionFrame] = optionData;
-
 					optionFrame:Show();
 				end
 			end
@@ -1518,6 +1654,17 @@ function CharCustomizeMixin:UpdateOptionButtons(forceReset)
 	end
 
 	self.Categories:Layout();
+
+	-- Push options up into categories a little bit if we don't have enough
+	-- vertical space for spacing at all.
+	self.Options:UpdateSpacing();
+	if self.Options:GetSpacing() < 0 then
+		self.Options:SetPoint("TOPRIGHT", -33, -267);
+	else
+		self.Options:SetPoint("TOPRIGHT", -33, -297);
+	end
+
+	-- This will update the spacing again based on the adjusted point above.
 	self.Options:Layout();
 
 	for optionFrame, optionData in pairs(optionsToSetup) do
@@ -1534,7 +1681,10 @@ function CharCustomizeMixin:UpdateOptionButtons(forceReset)
 
 	if self.numSubcategories > 1 then
 		self.Categories:Show();
-		self.RandomizeAppearanceButton:SetPoint("RIGHT", self.Categories, "LEFT", -20, 0);
+
+		-- Push the randomize button together with categories too if we're collapsing category buttons.
+		local xOffset = self.Categories:IsSpacingAdjusted() and 15 or -20;
+		self.RandomizeAppearanceButton:SetPoint("RIGHT", self.Categories, "LEFT", xOffset, 0);
 	else
 		self.Categories:Hide();
 		self.Categories:SetSize(1, 105);
@@ -1597,10 +1747,10 @@ function CharCustomizeMixin:SetSelectedCategory(categoryData, keepState)
 
 	self.selectedCategoryData = categoryData;
 	if not self.selectedSubcategoryData then
-		self:UpdateOptionButtons(not keepState);
-		self:UpdateModelDressState();
-		self:UpdateCameraDistanceOffset();
-		self:UpdateCameraMode(keepState);
+	self:UpdateOptionButtons(not keepState);
+	self:UpdateModelDressState();
+	self:UpdateCameraDistanceOffset();
+	self:UpdateCameraMode(keepState);
 	end
 
 	EventRegistry:TriggerEvent("CharCustomize.OnCategorySelected", self, hadCategoryChange);
@@ -1685,17 +1835,6 @@ function CharCustomizeMixin:RandomizeAppearance()
 	self.parentFrame:RandomizeAppearance();
 end
 
-function CharCustomizeMixin:HidePopouts(exemptPopout)
-	local selectionPopoutPool = self:GetOptionPool(Enum.ChrCustomizationOptionType.SelectionPopout);
-	if selectionPopoutPool then
-		for selectionPopout in selectionPopoutPool:EnumerateActive() do
-			if selectionPopout ~= exemptPopout then
-				selectionPopout:HidePopout();
-			end
-		end
-	end
-end
-
 function CharCustomizeMixin:ResetPreviewIfDirty()
 	if self.previewIsDirty then
 		self.previewIsDirty = false;
@@ -1703,24 +1842,16 @@ function CharCustomizeMixin:ResetPreviewIfDirty()
 	end
 end
 
-function CharCustomizeMixin:OnOptionPopoutEntrySelected(option, entryData)
-	self.previewIsDirty = false;
-	self:SetCustomizationChoice(option.optionData.id, entryData.id);
-end
-
-function CharCustomizeMixin:OnOptionPopoutEntryMouseEnter(option, entry)
-	if not entry.isSelected then
+function CharCustomizeMixin:PreviewChoice(optionData, choiceData)
+	local selected = optionData.currentChoiceIndex == choiceData.choiceIndex;
+	if not selected then
 		self.previewIsDirty = false;
-		self:PreviewCustomizationChoice(option.optionData.id, entry.selectionData.id);
+		self:PreviewCustomizationChoice(optionData.id, choiceData.id);
 	end
 
-	if entry.isNew then
-		self:MarkCustomizationChoiceAsSeen(entry.selectionData.id);
-	end
+	if choiceData.isNew then
+		self:MarkCustomizationChoiceAsSeen(choiceData.id);
 end
-
-function CharCustomizeMixin:OnOptionPopoutEntryMouseLeave(option, entry)
-	self.previewIsDirty = true;
 end
 
 function CharCustomizeMixin:OnUpdate()
@@ -1757,10 +1888,9 @@ end
 
 function CharCustomizeMixin:GetNextMissingOption()
 	local missingOptions = self:GetMissingOptions();
-	if missingOptions then
-		for index, missingOption in ipairs(missingOptions) do
-			return missingOption.categoryIndex, missingOption.optionIndex;
-		end
+	if missingOptions and #missingOptions > 0 then
+		local missingOption = missingOptions[1];
+		return missingOption.categoryIndex, missingOption.optionIndex;
 	end
 end
 

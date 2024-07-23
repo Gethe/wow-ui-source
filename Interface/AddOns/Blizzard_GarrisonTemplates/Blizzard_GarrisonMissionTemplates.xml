@@ -749,13 +749,13 @@
 			</Frame>
 			<Button inherits="StartMissionButtonTemplate">
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.ButtonFrame" x="-50" y="1"/>
+					<Anchor point="RIGHT" relativeKey="$parent" x="-50" y="1"/>
 				</Anchors>
 			</Button>
 			<Frame parentKey="CostFrame" inherits="GarrisonMissionPageCostWithTooltipTemplate">
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.ButtonFrame" x="50"/>
-					<Anchor point="RIGHT" relativeKey="$parent.ButtonFrame" relativePoint="CENTER" />
+					<Anchor point="LEFT" relativeKey="$parent" x="50"/>
+					<Anchor point="RIGHT" relativeKey="$parent" relativePoint="CENTER" />
 				</Anchors>
 			</Frame>
 		</Frames>
@@ -1577,7 +1577,7 @@
 				<Texture parentKey="Icon">
 					<Size x="20" y="20"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="15" y="-43" relativeKey="$parent.Subtitle"/>
+						<Anchor point="TOPLEFT" x="15" y="-43" relativeKey="$parent"/>
 					</Anchors>
 				</Texture>
 			</Layer>

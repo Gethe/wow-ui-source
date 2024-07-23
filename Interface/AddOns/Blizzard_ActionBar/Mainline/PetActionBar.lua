@@ -117,12 +117,11 @@ function PetActionBarMixin:OnUpdate(elapsed)
 end
 
 function PetActionBarMixin:Update()
-	local petActionButton, petActionIcon, petAutoCastableTexture, petAutoCastShine;
+	local petActionButton, petActionIcon, petAutoCastOverlay;
 	for i=1, NUM_PET_ACTION_SLOTS, 1 do
 		petActionButton = self.actionButtons[i];
 		petActionIcon = petActionButton.icon;
-		petAutoCastableTexture = petActionButton.AutoCastable;
-		petAutoCastShine = petActionButton.AutoCastShine;
+		petAutoCastOverlay = petActionButton.AutoCastOverlay;
 		local name, texture, isToken, isActive, autoCastAllowed, autoCastEnabled, spellID = GetPetActionInfo(i);
 		if ( not isToken ) then
 			petActionIcon:SetTexture(texture);
@@ -152,16 +151,8 @@ function PetActionBarMixin:Update()
 			petActionButton:StopFlash();
 			petActionButton:SetChecked(false);
 		end
-		if ( autoCastAllowed ) then
-			petAutoCastableTexture:Show();
-		else
-			petAutoCastableTexture:Hide();
-		end
-		if ( autoCastEnabled ) then
-			AutoCastShine_AutoCastStart(petAutoCastShine);
-		else
-			AutoCastShine_AutoCastStop(petAutoCastShine);
-		end
+		petAutoCastOverlay:SetShown(autoCastAllowed);
+		petAutoCastOverlay:ShowAutoCastEnabled(autoCastEnabled);
 		if ( texture ) then
 			if ( GetPetActionSlotUsable(i) ) then
 				petActionIcon:SetVertexColor(1, 1, 1);

@@ -87,6 +87,11 @@
 								<Anchor point="CENTER"/>
 							</Anchors>
 						</Texture>
+						<Texture parentKey="Hover" alphaMode="ADD" alpha="0.4" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
 					</Layer>
 
 					<Layer level="ARTWORK">
@@ -138,10 +143,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="BORDER">
-								<Texture parentKey="Border" atlas="dragonflight-landingpage-radial-frame" useAtlasSize="true">
-									<Anchors>
-										<Anchor point="CENTER"/>
-									</Anchors>
+								<Texture parentKey="Border" atlas="dragonflight-landingpage-radial-frame" setAllPoints="true">
 								</Texture>
 							</Layer>
 						</Layers>

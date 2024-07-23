@@ -59,44 +59,54 @@ end
 
 QuestUtil = {};
 
-function QuestUtil.GetWorldQuestAtlasInfo(worldQuestType, inProgress, tradeskillLineID, questID)
-	local iconAtlas, width, height;
+local function GetWorldQuestAtlasInfo(questID, tagInfo, inProgress)
+	-- NOTE: In-progress no longer matters, the center icon remains the same for world quests, even when active
+	local worldQuestType = tagInfo.worldQuestType;
 
-	if inProgress then
-		iconAtlas, width, height = "worldquest-questmarker-questionmark", 10, 15;
+	if worldQuestType == Enum.QuestTagType.Capstone then
+		return "worldquest-Capstone";
 	elseif worldQuestType == Enum.QuestTagType.PvP then
-		iconAtlas =  "worldquest-icon-pvp-ffa";
+		return "worldquest-icon-pvp-ffa";
 	elseif worldQuestType == Enum.QuestTagType.PetBattle then
-		iconAtlas =  "worldquest-icon-petbattle";
-	elseif worldQuestType == Enum.QuestTagType.Profession and WORLD_QUEST_ICONS_BY_PROFESSION[tradeskillLineID] then
-		iconAtlas =  WORLD_QUEST_ICONS_BY_PROFESSION[tradeskillLineID];
+		return "worldquest-icon-petbattle";
+	elseif worldQuestType == Enum.QuestTagType.Profession and WORLD_QUEST_ICONS_BY_PROFESSION[tagInfo.tradeskillLineID] then
+		return WORLD_QUEST_ICONS_BY_PROFESSION[tagInfo.tradeskillLineID];
 	elseif worldQuestType == Enum.QuestTagType.Dungeon then
-		iconAtlas =  "worldquest-icon-dungeon";
+		return "worldquest-icon-dungeon";
 	elseif worldQuestType == Enum.QuestTagType.Raid then
-		iconAtlas =  "worldquest-icon-raid";
+		return "worldquest-icon-raid";
 	elseif worldQuestType == Enum.QuestTagType.Invasion then
-		iconAtlas =  "worldquest-icon-burninglegion";
+		return "worldquest-icon-burninglegion";
 	elseif worldQuestType == Enum.QuestTagType.Islands then
-		iconAtlas ="poi-islands-table";
+		return "poi-islands-table";
 	elseif worldQuestType == Enum.QuestTagType.FactionAssault then
 		local factionTag = UnitFactionGroup("player");
 		if factionTag == "Alliance" then
-			iconAtlas = "worldquest-icon-alliance";
+			return "worldquest-icon-alliance";
 		else -- "Horde" or "Neutral"
-			iconAtlas = "worldquest-icon-horde";
+			return "worldquest-icon-horde";
 		end
 	elseif worldQuestType == Enum.QuestTagType.Threat then
-		iconAtlas = QuestUtil.GetThreatPOIIcon(questID);
+		return QuestUtil.GetThreatPOIIcon(questID);
 	elseif worldQuestType == Enum.QuestTagType.DragonRiderRacing then
-		iconAtlas = "worldquest-icon-race";
+		return "worldquest-icon-race";
+	elseif (worldQuestType == Enum.QuestTagType.WorldBoss) or (worldQuestType == Enum.QuestTagType.Normal and tagInfo.isElite and tagInfo.quality == Enum.WorldQuestQuality.Epic) then
+		-- NOTE: Updated to include the new world boss type, but this continues to support the old way of identifying world bosses for now
+		return "worldquest-icon-boss";
 	else
 		if questID then
 			local theme = C_QuestLog.GetQuestDetailsTheme(questID);
 			if theme then
-				iconAtlas = theme.poiIcon;
+				return theme.poiIcon;
 			end
 		end
 	end
+
+	return "Worldquest-icon";
+end
+
+function QuestUtil.GetWorldQuestAtlasInfo(questID, tagInfo, inProgress)
+	local iconAtlas, width, height = GetWorldQuestAtlasInfo(questID, tagInfo, inProgress);
 
 	if iconAtlas then
 		local info = C_Texture.GetAtlasInfo(iconAtlas);
@@ -105,20 +115,22 @@ function QuestUtil.GetWorldQuestAtlasInfo(worldQuestType, inProgress, tradeskill
 		end
 	end
 
-	return "worldquest-questmarker-questbang", 6, 15;
+	return "Worldquest-icon", 32, 32;
 end
 
-function QuestUtil.GetQuestIconOffer(isLegendary, frequency, isRepeatable, isCampaign, isCovenantCalling, isImportant)
+function QuestUtil.GetQuestIconOffer(isLegendary, frequency, isRepeatable, isCampaign, isCovenantCalling, isImportant, isMeta)
 	if isCampaign then
 		return "CampaignAvailableQuestIcon", true;
 	elseif isLegendary then
-		return "legendaryavailablequesticon", true;		
+		return "legendaryavailablequesticon", true;
 	elseif isCovenantCalling then
 		return "CampaignAvailableDailyQuestIcon", true;
 	elseif isImportant then
-		return "importantavailablequesticon", true;		
-	elseif frequency == Enum.QuestFrequency.Daily then
-		return "Interface/GossipFrame/DailyQuestIcon", false;
+		return "importantavailablequesticon", true;
+	elseif isMeta then
+		return "Wrapperavailablequesticon", true;
+	elseif QuestUtil.IsFrequencyRecurring(frequency) then
+		return "Recurringavailablequesticon", true;
 	elseif isRepeatable then
 		return "Interface/GossipFrame/DailyActiveQuestIcon", false;
 	end
@@ -139,31 +151,39 @@ function QuestUtil.ApplyQuestIconOfferToTexture(texture, ...)
 	ApplyAssetToTexture(texture, QuestUtil.GetQuestIconOffer(...));
 end
 
-function QuestUtil.GetQuestIconActive(isComplete, isLegendary, frequency, isRepeatable, isCampaign, isCovenantCalling, isImportant)
+function QuestUtil.GetQuestIconActive(isComplete, isLegendary, frequency, isRepeatable, isCampaign, isCovenantCalling, isImportant, isMeta)
 	-- Frequency and isRepeatable aren't used yet, reserved for differentiating daily/weekly quests from other ones...
 	if isComplete then
 		if isCampaign then
 			return "CampaignActiveQuestIcon", true;
 		elseif isLegendary then
-			return "legendaryactivequesticon", true;			
+			return "legendaryactivequesticon", true;
 		elseif isCovenantCalling then
 			return "CampaignActiveDailyQuestIcon", true;
 		elseif isImportant then
 			return "importantactivequesticon", true;
+		elseif isMeta then
+			return "Wrapperactivequesticon", true;
+		elseif QuestUtil.IsFrequencyRecurring(frequency) then
+			return "Recurringactivequesticon", true;
 		else
 			return "Interface/GossipFrame/ActiveQuestIcon", false;
 		end
 	end
 
 	if isCampaign or isCovenantCalling then
-		return "CampaignIncompleteQuestIcon", true;
+		return "CampaignInProgressQuestIcon", true;
 	elseif isLegendary then
-		return "legendaryincompletequesticon", true;
+		return "legendaryInProgressquesticon", true;
 	elseif isImportant then
-		return "importantincompletequesticon", true;
+		return "importantInProgressquesticon", true;
+	elseif isMeta then
+		return "WrapperInProgressquesticon", true;
+	elseif QuestUtil.IsFrequencyRecurring(frequency) then
+		return "RepeatableInProgressquesticon", true;
 	end
 
-	return "Interface/GossipFrame/IncompleteQuestIcon", false;
+	return "SideInProgressquesticon", true;
 end
 
 function QuestUtil.ApplyQuestIconActiveToTexture(texture, ...)
@@ -179,7 +199,7 @@ function QuestUtil.ShouldQuestIconsUseCampaignAppearance(questID)
 	return false;
 end
 
-local function GetQuestIconLookInfo(questID, isComplete, isLegendary, frequency, isRepeatable, isImportant)
+local function GetQuestIconLookInfo(questID, isComplete, isLegendary, frequency, isRepeatable, isImportant, isMeta)
 	local quest = QuestCache:Get(questID);
 	-- allow for possible overrides
 	if isComplete == nil then
@@ -197,26 +217,29 @@ local function GetQuestIconLookInfo(questID, isComplete, isLegendary, frequency,
 	if isImportant == nil then
 		isImportant = quest:IsImportant();
 	end
+	if isMeta == nil then
+		isMeta = quest:IsMeta();
+	end
 	local isCampaign = QuestUtil.ShouldQuestIconsUseCampaignAppearance(questID);
 	local isCalling = C_QuestLog.IsQuestCalling(questID);
-	return isComplete, isLegendary, frequency, isRepeatable, isCampaign, isCalling, isImportant;
+	return isComplete, isLegendary, frequency, isRepeatable, isCampaign, isCalling, isImportant, isMeta;
 end
 
-function QuestUtil.GetQuestIconOfferForQuestID(questID, isLegendary, frequency, isRepeatable, isImportant)
+function QuestUtil.GetQuestIconOfferForQuestID(questID, isLegendary, frequency, isRepeatable, isImportant, isMeta)
 	local unusedIsComplete = false;
 	local isCampaign, isCalling;
-	unusedIsComplete, isLegendary, frequency, isRepeatable, isCampaign, isCalling, isImportant = GetQuestIconLookInfo(questID, unusedIsComplete, isLegendary, frequency, isRepeatable, isImportant);
-	return QuestUtil.GetQuestIconOffer(isLegendary, frequency, isRepeatable, isCampaign, isCalling, isImportant);
+	unusedIsComplete, isLegendary, frequency, isRepeatable, isCampaign, isCalling, isImportant, isMeta = GetQuestIconLookInfo(questID, unusedIsComplete, isLegendary, frequency, isRepeatable, isImportant, isMeta);
+	return QuestUtil.GetQuestIconOffer(isLegendary, frequency, isRepeatable, isCampaign, isCalling, isImportant, isMeta);
 end
 
 function QuestUtil.ApplyQuestIconOfferToTextureForQuestID(texture, ...)
 	ApplyAssetToTexture(texture, QuestUtil.GetQuestIconOfferForQuestID(...));
 end
 
-function QuestUtil.GetQuestIconActiveForQuestID(questID, isComplete, isLegendary, frequency, isRepeatable, isImportant)
+function QuestUtil.GetQuestIconActiveForQuestID(questID, isComplete, isLegendary, frequency, isRepeatable, isImportant, isMeta)
 	local isCampaign, isCalling;
-	isComplete, isLegendary, frequency, isRepeatable, isCampaign, isCalling, isImportant = GetQuestIconLookInfo(questID, isComplete, isLegendary, frequency, isRepeatable, isImportant);
-	return QuestUtil.GetQuestIconActive(isComplete, isLegendary, frequency, isRepeatable, isCampaign, isCalling, isImportant);
+	isComplete, isLegendary, frequency, isRepeatable, isCampaign, isCalling, isImportant, isMeta = GetQuestIconLookInfo(questID, isComplete, isLegendary, frequency, isRepeatable, isImportant, isMeta);
+	return QuestUtil.GetQuestIconActive(isComplete, isLegendary, frequency, isRepeatable, isCampaign, isCalling, isImportant, isMeta);
 end
 
 function QuestUtil.ApplyQuestIconActiveToTextureForQuestID(texture, ...)
@@ -349,7 +372,7 @@ function QuestUtil.GetQuestBackgroundAtlas(questTextContrastSetting)
 		return "QuestBG-Parchment-Accessibility3";
 	elseif questTextContrastSetting == 4 then
 		return "QuestBG-Parchment-Accessibility4";
-	end 
+	end
 end
 
 function QuestUtil.GetDefaultQuestMapBackgroundTexture()
@@ -364,12 +387,292 @@ function QuestUtil.GetDefaultQuestMapBackgroundTexture()
 		return "QuestDetailsBackgrounds-Accessibility_Medium";
 	elseif questAccesibilityBackground == 4 then
 		return "QuestDetailsBackgrounds-Accessibility_Dark";
-	end 
+	end
+end
+
+function QuestUtil.IsShowingQuestDetails(questID)
+	return QuestLogPopupDetailFrame_IsShowingQuest(questID);
+end
+
+function QuestUtil.OpenQuestDetails(questID)
+	QuestLogPopupDetailFrame_Show(questID);
+end
+
+function QuestUtil.ShareQuest(questID)
+	local questLogIndex = C_QuestLog.GetLogIndexForQuestID(questID);
+	QuestLogPushQuest(questLogIndex);
 end
 
 function QuestUtil.GetThreatPOIIcon(questID)
 	local theme = C_QuestLog.GetQuestDetailsTheme(questID);
 	return theme and theme.poiIcon or "worldquest-icon-nzoth";
+end
+
+function QuestUtil.QuestShowsItemByIndex(questLogIndex, isQuestComplete)
+	if not questLogIndex then
+		return false;
+	end
+	local _, item, _, showItemWhenComplete = GetQuestLogSpecialItemInfo(questLogIndex);
+	return item and (not isQuestComplete or showItemWhenComplete);
+end
+
+local g_createQuestGroupCache;
+function QuestUtil.CanCreateQuestGroup(questID)
+	-- Cache this off to avoid spurious calls to C_LFGList.CanCreateQuestGroup, for a given quest the result will not change until
+	-- completed.
+	if not g_createQuestGroupCache then
+		g_createQuestGroupCache = { };
+	end
+	local canCreate = g_createQuestGroupCache[questID];
+	if canCreate == nil then
+		canCreate = C_LFGList.CanCreateQuestGroup(questID);
+		g_createQuestGroupCache[questID] = canCreate;
+	end
+	return canCreate;
+end
+
+local lastTrackedQuestID = nil;
+function QuestUtil.TrackWorldQuest(questID, watchType)
+	if C_QuestLog.AddWorldQuestWatch(questID, watchType) then
+		if lastTrackedQuestID and lastTrackedQuestID ~= questID then
+			if C_QuestLog.GetQuestWatchType(lastTrackedQuestID) ~= Enum.QuestWatchType.Manual and watchType == Enum.QuestWatchType.Manual then
+				C_QuestLog.AddWorldQuestWatch(lastTrackedQuestID, Enum.QuestWatchType.Manual); -- Promote to manual watch
+			end
+		end
+		lastTrackedQuestID = questID;
+	end
+
+	if watchType == Enum.QuestWatchType.Automatic then
+		local forceAllowTasks = true;
+		QuestUtil.CheckAutoSuperTrackQuest(questID, forceAllowTasks);
+	end
+end
+
+function QuestUtil.UntrackWorldQuest(questID)
+	if C_QuestLog.RemoveWorldQuestWatch(questID) then
+		if lastTrackedQuestID == questID then
+			lastTrackedQuestID = nil;
+		end
+	end
+	ObjectiveTrackerManager:UpdateAll();
+end
+
+function QuestUtil.IsQuestTrackableTask(questID)
+	return C_QuestLog.IsQuestTask(questID) and not C_QuestLog.IsQuestBounty(questID);
+end
+
+function QuestUtil.AllowAutoSuperTrackQuest(questID, forceAllowTasks)
+	if not C_SuperTrack.IsSuperTrackingAnything() then
+		if not forceAllowTasks then
+		 	return not QuestUtils_IsQuestWorldQuest(questID) and not QuestUtils_IsQuestBonusObjective(questID);
+		end
+
+		return true;
+	end
+
+	return false;
+end
+
+function QuestUtil.CheckAutoSuperTrackQuest(questID, forceAllowTasks)
+	if QuestUtil.AllowAutoSuperTrackQuest(questID, forceAllowTasks) then
+		C_SuperTrack.SetSuperTrackedQuestID(questID);
+	end
+end
+
+QuestTimeRemainingFormatter = CreateFromMixins(SecondsFormatterMixin);
+QuestTimeRemainingFormatter:Init(SECONDS_PER_MIN, SecondsFormatter.Abbreviation.OneLetter, false);
+
+function QuestTimeRemainingFormatter:GetDesiredUnitCount(seconds)
+	return seconds > SECONDS_PER_DAY and 2 or 1;
+end
+
+function QuestTimeRemainingFormatter:GetMinInterval(seconds)
+	return SecondsFormatter.Interval.Minutes;
+end
+
+QuestTimeRemainingFormatter:SetStripIntervalWhitespace(true);
+
+local g_classificationInfoTable = {
+	[Enum.QuestClassification.Campaign] =	{ text = QUEST_CLASSIFICATION_CAMPAIGN, atlas = "CampaignAvailableQuestIcon", size = 16 },
+	[Enum.QuestClassification.Calling] =	{ text = QUEST_CLASSIFICATION_CALLING, atlas = "CampaignAvailableDailyQuestIcon", size = 16 },
+	[Enum.QuestClassification.Important] =	{ text = QUEST_CLASSIFICATION_IMPORTANT, atlas = "importantavailablequesticon", size = 16 },
+	[Enum.QuestClassification.Legendary] =	{ text = QUEST_CLASSIFICATION_LEGENDARY, atlas = "legendaryavailablequesticon", size = 16 },
+	[Enum.QuestClassification.Meta] =		{ text = QUEST_CLASSIFICATION_META, atlas = "Wrapperavailablequesticon", size = 16 },
+	[Enum.QuestClassification.Recurring] =	{ text = QUEST_CLASSIFICATION_RECURRING, atlas = "Recurringavailablequesticon", size = 16 },
+	[Enum.QuestClassification.Questline] =	{ text = QUEST_CLASSIFICATION_QUESTLINE, atlas = "questlog-storylineicon", size = 20 },
+};
+
+function QuestUtil.GetQuestClassificationInfo(classification)
+	return g_classificationInfoTable[classification];
+end
+
+-- return classification, text, atlas, size
+function QuestUtil.GetQuestClassificationDetails(questID, skipFormatting)
+	local classification = C_QuestInfoSystem.GetQuestClassification(questID);
+	local info = QuestUtil.GetQuestClassificationInfo(classification);
+	if not info then
+		return nil, nil, nil, nil;
+	end
+
+	local text = info.text;
+	if not skipFormatting then
+		if classification == Enum.QuestClassification.Questline then
+			local mapID = nil;
+			local displayableOnly = true;
+			local questLineInfo = C_QuestLine.GetQuestLineInfo(questID, mapID, displayableOnly);
+			if questLineInfo then
+				text = QUEST_CLASSIFICATION_QUESTLINE_WITH_NAME:format(questLineInfo.questLineName);
+			end
+		elseif classification == Enum.QuestClassification.Recurring then
+			local timeLeft = C_TaskQuest.GetQuestTimeLeftSeconds(questID);
+			if timeLeft then
+				local timeString = QuestTimeRemainingFormatter:Format(timeLeft);
+				text = QUEST_CLASSIFICATION_RECURRING_WITH_TIME:format(timeString);
+			end
+		end
+	end
+
+	return classification, text, info.atlas, info.size;
+end
+
+function QuestUtil.GetQuestClassificationString(questID)
+	local classification, text, atlas, size = QuestUtil.GetQuestClassificationDetails(questID);
+	if classification then
+		return CreateAtlasMarkup(atlas, size, size).." "..text;
+	end
+
+	return nil;	
+end
+
+-- return tagID, text, atlas
+function QuestUtil.GetQuestTypeDetails(questID)
+	local info = C_QuestLog.GetQuestTagInfo(questID);
+	if info then
+		return info.tagID, info.tagName, QUEST_TAG_ATLAS[info.tagID];
+	end
+
+	return nil, nil, nil;
+end
+
+local QUEST_LEGEND_SEPARATOR = "    ";
+
+local function GetCombinedQuestLegendText(legendStrings, isMultiLine)
+	if not legendStrings or #legendStrings <= 0 then
+		return;
+	end
+
+	if #legendStrings == 1 then
+		return legendStrings[1];
+	end
+
+	local combinedText;
+	for index, string in ipairs(legendStrings) do
+		if isMultiLine then
+			combinedText = combinedText and (combinedText.."|n"..string) or string;
+		else
+			combinedText = combinedText and (combinedText..QUEST_LEGEND_SEPARATOR..string) or string;
+		end
+	end
+
+	return combinedText;
+end
+
+function QuestUtil.GetAccountQuestText(questID)
+	if not C_QuestLog.IsAccountQuest(questID) then
+		return nil;
+	end
+
+	local accountWideIcon = CreateAtlasMarkup("questlog-questtypeicon-account", 18, 18);
+	local accountQuestString = accountWideIcon .. " " .. ACCOUNT_QUEST_LABEL;
+
+	local factionGroup = GetQuestFactionGroup(questID);
+	-- Faction-specific account quests also include the faction icon
+	if factionGroup then
+		local isHorde = factionGroup == LE_QUEST_FACTION_HORDE;
+		local factionString = isHorde and FACTION_HORDE or FACTION_ALLIANCE;
+		local factionIcon = CreateAtlasMarkup(isHorde and "questlog-questtypeicon-horde" or "questlog-questtypeicon-alliance", 18, 18);
+		accountQuestString = accountQuestString .. QUEST_LEGEND_SEPARATOR .. factionIcon .. " " .. factionString;
+	end
+
+	return accountQuestString;
+end
+
+function QuestUtil.GetQuestLegendStrings(questID)
+	local legendStrings = {};
+	-- Is it a campaign quest, or part of a questline, etc.
+	local classificationText = QuestUtil.GetQuestClassificationString(questID);
+	if classificationText then
+		table.insert(legendStrings, classificationText);
+	end
+
+	-- Is it a dungeon quest, or a raid quest, etc.
+	local questTypeText = QuestUtils_GetQuestTypeIconMarkupString(questID);
+	if questTypeText then
+		table.insert(legendStrings, questTypeText);
+	end
+
+	-- Is it an account wide quest, and does it require a specific faction?
+	local accountQuestText = QuestUtil.GetAccountQuestText(questID);
+	if accountQuestText then
+		table.insert(legendStrings, accountQuestText);
+	end
+
+	if #legendStrings > 0 then
+		return legendStrings;
+	end
+end
+
+function QuestUtil.SetQuestLegendToFontString(questID, fontString)
+	local legendStrings = QuestUtil.GetQuestLegendStrings(questID);
+	local legendText = GetCombinedQuestLegendText(legendStrings);
+	if not legendText then
+		return false;
+	end
+
+	fontString:SetText(legendText);
+	if legendText and fontString:GetNumLines() > 1 then
+		local isMultiLine = true;
+		fontString:SetText(GetCombinedQuestLegendText(legendStrings, isMultiLine));
+	end
+	return true;
+end
+
+function QuestUtil.SetQuestLegendToTooltip(questID, tooltip)
+	local classificationText = QuestUtil.GetQuestClassificationString(questID);
+	local questTypeText = QuestUtils_GetQuestTypeIconMarkupString(questID);
+	local accountQuestText = QuestUtil.GetAccountQuestText(questID);
+	if not classificationText and not questTypeText and not accountQuestText then
+		return false;
+	end
+
+	-- storyline gets a line by itself
+	if classificationText then
+		local classification = C_QuestInfoSystem.GetQuestClassification(questID);
+		if classification == Enum.QuestClassification.Questline then
+			GameTooltip_AddNormalLine(tooltip, classificationText);
+			-- clear this out, already used
+			classificationText = nil;
+		end
+	end
+
+	local stringsToCombine = {};
+	if classificationText then
+		table.insert(stringsToCombine, classificationText);
+	end
+
+	if questTypeText then
+		table.insert(stringsToCombine, questTypeText);
+	end
+
+	local legendText = GetCombinedQuestLegendText(stringsToCombine);
+	GameTooltip_AddNormalLine(tooltip, legendText);
+
+	-- The account quest text also gets a line by itself becaues it can contain both an "Account" tag and a "Faction" tag
+	if accountQuestText then
+		GameTooltip_AddNormalLine(tooltip, accountQuestText);
+	end
+
+	return true;
 end
 
 function QuestUtils_GetQuestTagAtlas(tagID, worldQuestType)
@@ -395,9 +698,7 @@ end
 
 function QuestUtils_GetQuestTypeIconMarkupString(questID, iconWidth, iconHeight)
 	local info = C_QuestLog.GetQuestTagInfo(questID);
-
-	-- NOTE: For now, only allow dungeon quests to get markup
-	if info and IsQuestDungeonQuest_Internal(info.tagID, info.worldQuestType) then
+	if info then
 		return GetQuestTypeIconMarkupStringFromTagData(info.tagID, info.worldQuestType, info.tagName, iconWidth, iconHeight);
 	end
 end
@@ -460,14 +761,39 @@ function QuestUtils_GetDisabledQuestDecoration(questID, useLargeIcon)
 end
 
 -- TODO: Replace booleans with flags?
-function QuestUtils_DecorateQuestText(questID, text, useLargeIcon, ignoreReplayable, ignoreDisabled)
-	if not ignoreReplayable and C_QuestLog.IsQuestReplayable(questID) then
-		return QuestUtils_GetReplayQuestDecoration(questID, useLargeIcon) .. text;
-	elseif not ignoreDisabled and C_QuestLog.IsQuestDisabledForSession(questID) then
-		return QuestUtils_GetDisabledQuestDecoration(questID, useLargeIcon) .. text;
+function QuestUtils_DecorateQuestText(questID, text, useLargeIcon, ignoreReplayable, ignoreDisabled, ignoreTypes)
+	if not text then
+		return "";
 	end
 
-	return text;
+	local output = "";
+	if not ignoreReplayable and C_QuestLog.IsQuestReplayable(questID) then
+		output = QuestUtils_GetReplayQuestDecoration(questID, useLargeIcon);
+	elseif not ignoreDisabled and C_QuestLog.IsQuestDisabledForSession(questID) then
+		output = QuestUtils_GetDisabledQuestDecoration(questID, useLargeIcon);
+	end
+
+	if not ignoreTypes then
+		local textureSize = 14;
+		local tagID, tagText, tagAtlas = QuestUtil.GetQuestTypeDetails(questID);
+		if tagID == Enum.QuestTag.Dungeon or tagID == Enum.QuestTag.Raid or tagID == Enum.QuestTag.Raid10 or tagID == Enum.QuestTag.Raid25 then
+			local link = QuestUtils_GetQuestDecorationLink(tagText, questID, tagAtlas, textureSize, textureSize);
+			output = output .. link.. " ";
+		else
+			local skipFormatting = true;
+			local classification, classificationText, classificationAtlas, _size = QuestUtil.GetQuestClassificationDetails(questID, skipFormatting);
+			if classification and classification ~= Enum.QuestClassification.Normal then
+				if classification == Enum.QuestClassification.Campaign then
+					-- deembiggen campaign atlas
+					textureSize = 11;
+				end
+				local link = QuestUtils_GetQuestDecorationLink(classificationText, questID, classificationAtlas, textureSize, textureSize);
+				output = output .. link.. " ";
+			end
+		end
+	end
+
+	return output .. text;
 end
 
 function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style)
@@ -518,8 +844,7 @@ function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style)
 	-- items
 	local showRetrievingData = false;
 	local numQuestRewards = GetNumQuestLogRewards(questID);
-	local numCurrencyRewards = GetNumQuestLogRewardCurrencies(questID);
-	if numQuestRewards > 0 and (not style.prioritizeCurrencyOverItem or numCurrencyRewards == 0) then
+	if numQuestRewards > 0 and (not style.prioritizeCurrencyOverItem or C_QuestInfoSystem.HasQuestRewardCurrencies(questID)) then
 		if style.fullItemDescription then
 			-- we want to do a full item description
 			local itemIndex, rewardType = QuestUtils_GetBestQualityItemRewardIndex(questID);  -- Only support one item reward currently
@@ -531,8 +856,8 @@ function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style)
 				if TooltipUtil.ShouldDoItemComparison() then
 					GameTooltip_ShowCompareItem(tooltip.ItemTooltip.Tooltip, tooltip.BackdropFrame);
 				else
-					for i, tooltip in ipairs(tooltip.ItemTooltip.Tooltip.shoppingTooltips) do
-						tooltip:Hide();
+					for i, shoppingTooltip in ipairs(tooltip.ItemTooltip.Tooltip.shoppingTooltips) do
+						shoppingTooltip:Hide();
 					end
 				end
 			end
@@ -575,18 +900,17 @@ end
 
 --currencyContainerTooltip should be an InternalEmbeddedItemTooltipTemplate
 function QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, currencyContainerTooltip)
-	local numQuestCurrencies = GetNumQuestLogRewardCurrencies(questID);
 	local currencies = { };
 	local uniqueCurrencyIDs = { };
-	for i = 1, numQuestCurrencies do
-		local name, texture, numItems, currencyID = GetQuestLogRewardCurrencyInfo(i, questID);
-		local rarity = C_CurrencyInfo.GetCurrencyInfo(currencyID).quality;
-		local firstInstance = not uniqueCurrencyIDs[currencyID];
+	local currencyRewards = C_QuestLog.GetQuestRewardCurrencies(questID);
+	for index, currencyReward in ipairs(currencyRewards) do
+		local rarity = C_CurrencyInfo.GetCurrencyInfo(currencyReward.currencyID).quality;
+		local firstInstance = not uniqueCurrencyIDs[currencyReward.currencyID];
 		if firstInstance then
-			uniqueCurrencyIDs[currencyID] = true;
+			uniqueCurrencyIDs[currencyReward.currencyID] = true;
 		end
-		local currencyInfo = { name = name, texture = texture, numItems = numItems, currencyID = currencyID, rarity = rarity, firstInstance = firstInstance };
-		if(currencyID ~= ECHOS_OF_NYLOTHA_CURRENCY_ID or numQuestCurrencies == 1) then
+		local currencyInfo = { name = currencyReward.name, texture = currencyReward.texture, numItems = currencyReward.totalRewardAmount, currencyID = currencyReward.currencyID, rarity = rarity, firstInstance = firstInstance };
+		if(currencyInfo.currencyID ~= ECHOS_OF_NYLOTHA_CURRENCY_ID or #currencyRewards == 1) then
 			tinsert(currencies, currencyInfo);
 		end
 	end
@@ -726,7 +1050,7 @@ function QuestUtils_IsQuestWatched(questID)
 	return questID and C_QuestLog.GetQuestWatchType(questID) ~= nil;
 end
 
-QuestSortType = EnumUtil.MakeEnum( "Normal", "Campaign", "Calling", "Legendary" );
+QuestSortType = EnumUtil.MakeEnum( "Normal", "Campaign", "Calling", "Legendary", "Threat", "BonusObjective", "WorldQuest", "Important", "Daily", "Meta" );
 
 function QuestUtils_GetQuestSortType(questInfo)
 	if questInfo.isCalling then
@@ -740,4 +1064,33 @@ function QuestUtils_GetQuestSortType(questInfo)
 	end
 
 	return QuestSortType.Normal;
+end
+
+-- This should be unified with QuestUtils_GetQuestSortType, or completely implemented in the C++ API
+function QuestUtils_GetTaskSortType(taskInfo)
+	local questID = taskInfo.questID or taskInfo.questId;
+
+	if C_QuestLog.IsWorldQuest(questID) then
+		return QuestSortType.WorldQuest;
+	elseif C_QuestLog.IsThreatQuest(questID) then
+		return QuestSortType.Threat;
+	elseif C_QuestLog.IsQuestCalling(questID) then
+		return QuestSortType.Calling;
+	elseif C_QuestLog.IsImportantQuest(questID) then
+		return QuestSortType.Important;
+	elseif QuestUtil.ShouldQuestIconsUseCampaignAppearance(questID) then
+		return QuestSortType.Campaign; -- NOTE: This is different than the logic above which is only used to display quests in the log, should be unified somehow.
+	elseif taskInfo.isDaily then
+		return QuestSortType.Daily;
+	elseif taskInfo.isMeta then
+		return QuestSortType.Meta;
+	elseif taskInfo.isQuestStart then
+		return QuestSortType.Normal;
+	end
+
+	return QuestSortType.BonusObjective;
+end
+
+function QuestUtil.IsFrequencyRecurring(frequency)
+	return frequency == Enum.QuestFrequency.Daily or frequency == Enum.QuestFrequency.Weekly or frequency == Enum.QuestFrequency.ResetByScheduler;
 end

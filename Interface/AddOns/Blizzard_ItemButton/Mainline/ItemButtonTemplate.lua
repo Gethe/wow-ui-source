@@ -269,6 +269,13 @@ function SetItemButtonQuality(button, quality, itemIDOrLink, suppressOverlays, i
 	end
 end
 
+function GetItemQualityColor(quality)
+	if not quality or not BAG_ITEM_QUALITY_COLORS[quality] then
+		quality = Enum.ItemQuality.Common;
+	end
+	return BAG_ITEM_QUALITY_COLORS[quality];
+end
+
 -- Remember to update the OverlayKeys table if adding an overlay texture here.
 function SetItemButtonOverlay(button, itemIDOrLink, quality, isBound)
 	ClearItemButtonOverlay(button);
@@ -283,10 +290,7 @@ function SetItemButtonOverlay(button, itemIDOrLink, quality, isBound)
 		button.IconOverlay:SetAtlas("CosmeticIconFrame");
 		button.IconOverlay:Show();
 	elseif C_Soulbinds.IsItemConduitByItemInfo(itemIDOrLink) then
-		if not quality or not BAG_ITEM_QUALITY_COLORS[quality] then
-			quality = Enum.ItemQuality.Common;
-		end
-		local color = BAG_ITEM_QUALITY_COLORS[quality];
+		local color = GetItemQualityColor(quality);
 		button.IconOverlay:SetVertexColor(color.r, color.g, color.b);
 		button.IconOverlay:SetAtlas("ConduitIconFrame");
 		button.IconOverlay:Show();
@@ -296,6 +300,11 @@ function SetItemButtonOverlay(button, itemIDOrLink, quality, isBound)
 			button.IconOverlay2:SetAtlas("ConduitIconFrame-Corners");
 			button.IconOverlay2:Show();
 		end
+	elseif C_Item.IsCurioItem(itemIDOrLink) then
+		local color = GetItemQualityColor(quality);
+		button.IconOverlay:SetVertexColor(color.r, color.g, color.b);
+		button.IconOverlay:SetAtlas("delves-curios-icon-border");
+		button.IconOverlay:Show();
 	else
 		-- The reagent slots contain this button/mixin, however there's a nuance in the button behavior that the overlay needs to be
 		-- hidden if more than 1 quality of reagent is assigned to the slot. Those slots have a separate overlay that is
@@ -694,5 +703,66 @@ function CircularGiantItemButtonMixin:SetItemButtonQuality(quality, itemIDOrLink
 	else
 		SetItemButtonBorder(self);
 	end
+end
+
+local EnchantingItemButtonEvents = {
+	"ENCHANT_SPELL_COMPLETED",
+};
+
+EnchantingItemButtonAnimMixin = {};
+
+function EnchantingItemButtonAnimMixin:OnLoad()
+	local function AugmentBorderAnimOnFinished()
+		self.AugmentBorderAnimTexture:Hide();
+	end
+
+	if self.AugmentBorderAnim then
+		self.AugmentBorderAnim:SetScript("OnFinished", AugmentBorderAnimOnFinished);
+	end
+end
+
+function EnchantingItemButtonAnimMixin:OnShow()
+	FrameUtil.RegisterFrameForEvents(self, EnchantingItemButtonEvents);
+end
+
+function EnchantingItemButtonAnimMixin:OnHide()
+	FrameUtil.UnregisterFrameForEvents(self, EnchantingItemButtonEvents);
+end
+
+local ENCHANT_BURST_EFFECT = 175;
+
+function EnchantingItemButtonAnimMixin:OnEvent(event, ...)
+	if event == "ENCHANT_SPELL_COMPLETED" then
+		local successful, enchantedItem = ...;
+		if not successful or not enchantedItem or not enchantedItem:IsValid() then
+			return;
+		end
+
+		local itemLocation = self:GetItemLocation();
+		if itemLocation and itemLocation:IsValid() and itemLocation:IsEqualTo(enchantedItem) then
+			local function OnEnchantItemEffectResolved()
+				self.gainEnchantEffect = nil;
+			end
+
+			local source, target, onfinishedcallback, onresolutioncallback = self, self, nil, OnEnchantItemEffectResolved;
+			self.gainEnchantEffect = GlobalFXDialogModelScene:AddEffect(ENCHANT_BURST_EFFECT, source, target, onfinishedcallback, onresolutioncallback);
+
+			PlaySound(SOUNDKIT.ENCHANTMENT_ENCHANT_ANIMATION_START);
+			self.AugmentBorderAnimTexture:Show();
+			self.AugmentBorderAnim:Play();
+		end
+	end
+end
+
+function EnchantingItemButtonAnimMixin:SetItemLocationCallback(callback)
+	self.GetItemLocationCallback = callback;
+end
+
+function EnchantingItemButtonAnimMixin:GetItemLocation()
+	if self.GetItemLocationCallback then
+		return self.GetItemLocationCallback();
+	end
+
+	return nil;
 end
 

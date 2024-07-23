@@ -157,6 +157,8 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 				CompactUnitFrame_UpdateInRange(self);
 			elseif ( event == "UNIT_DISTANCE_CHECK_UPDATE" ) then
 				CompactUnitFrame_UpdateDistance(self);
+			elseif ( event == "UNIT_MAX_HEALTH_MODIFIERS_CHANGED") then
+				CompactUnitFrame_UpdateTempMaxHPLoss(self, arg2);
 			end
 		end
 
@@ -330,6 +332,7 @@ function CompactUnitFrame_UpdateUnitEvents(frame)
 	frame:RegisterUnitEvent("UNIT_FLAGS", unit, displayedUnit);
 	frame:RegisterUnitEvent("PLAYER_GAINS_VEHICLE_DATA", unit, displayedUnit);
 	frame:RegisterUnitEvent("PLAYER_LOSES_VEHICLE_DATA", unit, displayedUnit);
+	frame:RegisterUnitEvent("UNIT_MAX_HEALTH_MODIFIERS_CHANGED", unit, displayedUnit);
 
 	-- Only register these while visible since C++ does extra work to send these events while any frame is registered for them.
 	if frame:IsVisible() then
@@ -367,14 +370,7 @@ function CompactUnitFrame_SetUpClicks(frame)
     frame:SetAttribute("*type2", "menu");
 	--NOTE: Make sure you also change the CompactAuraTemplate. (It has to be registered for clicks to be able to pass them through.)
 	frame:RegisterForClicks("AnyDown");
-	CompactUnitFrame_SetMenuFunc(frame, CompactUnitFrameDropDown_Initialize);
-end
-
-function CompactUnitFrame_SetMenuFunc(frame, menuFunc)
-	UIDropDownMenu_Initialize(frame.dropDown, menuFunc, "MENU");
-	frame.menu = function()
-		ToggleDropDownMenu(1, nil, frame.dropDown, frame:GetName(), 0, 0);
-	end
+	frame.menu = CompactUnitFrame_OpenMenu;
 end
 
 function CompactUnitFrame_SetMaxBuffs(frame, numBuffs)
@@ -417,6 +413,7 @@ function CompactUnitFrame_UpdateAll(frame)
 		CompactUnitFrame_UpdateLootFrame(frame);
 	elseif ( CompactUnitFrame_UnitExists(frame.displayedUnit) ) then
 		CompactUnitFrame_UpdateMaxHealth(frame);
+		CompactUnitFrame_UpdateTempMaxHPLoss(frame, GetUnitTotalModifiedMaxHealthPercent(frame.displayedUnit))
 		CompactUnitFrame_UpdateHealth(frame);
 		CompactUnitFrame_UpdateMaxPower(frame);
 		CompactUnitFrame_UpdatePower(frame);
@@ -628,6 +625,9 @@ function CompactUnitFrame_SetHideHealth(frame, hideHealth, reason)
 	end
 
 	frame.healthBar:SetShown(not CompactUnitFrame_GetHideHealth(frame));
+	if (frame.HealthBarsContainer) then
+		frame.HealthBarsContainer:SetShown(not CompactUnitFrame_GetHideHealth(frame));
+	end
 end
 
 function CompactUnitFrame_GetHideHealth(frame)
@@ -717,7 +717,7 @@ function CompactUnitFrame_UpdatePowerColor(frame)
 end
 
 function ShouldShowName(frame)
-	if UnitNameplateShowsWidgetsOnly(frame.unit) then
+	if frame.WidgetContainer and UnitNameplateShowsWidgetsOnly(frame.unit) then
 		return false;
 	end
 	if ( frame.optionTable.displayName ) then
@@ -798,7 +798,7 @@ function CompactUnitFrame_UpdateName(frame)
 			end
 		end
 
-		if ( UnitInPartyIsAI(frame.unit) and C_LFGInfo.IsInLFGFollowerDungeon() ) then
+		if ( UnitInPartyIsAI(frame.unit) and (C_LFGInfo.IsInLFGFollowerDungeon() or C_PartyInfo.IsPartyWalkIn()) ) then
 			name = LFG_FOLLOWER_NAME_PREFIX:format(name);
 		end
 
@@ -863,14 +863,14 @@ local function IsPlayerEffectivelyTank()
 end
 
 local function SetBorderColor(frame, r, g, b, a)
-	frame.healthBar.border:SetVertexColor(r, g, b, a);
+	frame.HealthBarsContainer.border:SetVertexColor(r, g, b, a);
 	if frame.castBar and frame.castBar.border then
 		frame.castBar.border:SetVertexColor(r, g, b, a);
 	end
 end
 
 local function SetBorderUnderline(frame, r, g, b, a)
-	frame.healthBar.border:SetUnderlineColor(r, g, b, a);
+	frame.HealthBarsContainer.border:SetUnderlineColor(r, g, b, a);
 	if frame.castBar and frame.castBar.border then
 		frame.castBar.border:SetVertexColor(r, g, b, a);
 	end
@@ -1871,37 +1871,52 @@ function CompactUnitFrame_UnitExists(unitToken)
 end
 
 --Dropdown
-function CompactUnitFrameDropDown_Initialize(self)
-	local unit = self:GetParent().unit;
+function CompactUnitFrame_OpenMenu(self)
+	local unit = self.unit;
 	if ( not unit ) then
 		return;
 	end
-	local menu;
+	local which;
 	local name;
-	local id = nil;
 	if ( UnitIsUnit(unit, "player") ) then
-		menu = "SELF";
+		which = "SELF";
 	elseif ( UnitIsUnit(unit, "vehicle") ) then
 		-- NOTE: vehicle check must come before pet check for accuracy's sake because
 		-- a vehicle may also be considered your pet
-		menu = "VEHICLE";
+		which = "VEHICLE";
 	elseif ( UnitIsUnit(unit, "pet") ) then
-		menu = "PET";
+		which = "PET";
 	elseif ( UnitIsPlayer(unit) ) then
-		id = UnitInRaid(unit);
-		if ( id ) then
-			menu = "RAID_PLAYER";
+		if ( UnitInRaid(unit) ) then
+			which = "RAID_PLAYER";
 		elseif ( UnitInParty(unit) ) then
-			menu = "PARTY";
+			which = "PARTY";
 		else
-			menu = "PLAYER";
+			which = "PLAYER";
 		end
 	else
-		menu = "TARGET";
+		which = "TARGET";
 		name = RAID_TARGET_ICON;
 	end
-	if ( menu ) then
-		UnitPopup_ShowMenu(self, menu, unit, name, id);
+	if ( which ) then
+		local contextData = 
+		{
+			unit = unit,
+			name = name,
+		};
+		UnitPopup_OpenMenu(which, contextData);
+	end
+end
+
+function CompactUnitFrame_UpdateTempMaxHPLoss(frame, value)
+	local maxHealthLossBar;
+	if ( frame.TempMaxHealthLoss ) then
+		maxHealthLossBar = frame.TempMaxHealthLoss;
+	elseif ( frame.HealthBarsContainer.TempMaxHealthLoss ) then
+		maxHealthLossBar = frame.HealthBarsContainer.TempMaxHealthLoss;
+	end
+	if ( maxHealthLossBar and maxHealthLossBar.initialized ) then
+		maxHealthLossBar:OnMaxHealthModifiersChanged(value);
 	end
 end
 
@@ -1964,7 +1979,6 @@ function DefaultCompactUnitFrameSetup(frame)
 		local showPowerBar = displayPowerBar and (not displayOnlyHealerPowerBars or role == "HEALER");
 
 		if showPowerBar then
-			local displayBorder = EditModeManagerFrame:ShouldRaidFrameDisplayBorder(frame.groupType);
 			frame.powerBar:SetStatusBarTexture("Interface\\RaidFrame\\Raid-Bar-Resource-Fill");
 			frame.powerBar:GetStatusBarTexture():SetDrawLayer("BORDER");
 			frame.powerBar.background:SetTexture("Interface\\RaidFrame\\Raid-Bar-Resource-Background");
@@ -1986,10 +2000,12 @@ function DefaultCompactUnitFrameSetup(frame)
 	frame.healthBar:SetPoint("TOPLEFT", frame, "TOPLEFT", 1, -1);
 
 	frame.healthBar:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -1, 1 + powerBarUsedHeight);
+	frame.TempMaxHealthLoss:SetShouldAdjustHealthBarAnchor(-1, 1 + powerBarUsedHeight);
 
 	frame.healthBar:SetStatusBarTexture("Interface\\RaidFrame\\Raid-Bar-Hp-Fill");
 	frame.healthBar:GetStatusBarTexture():SetDrawLayer("BORDER");
 
+	frame.TempMaxHealthLoss:InitalizeMaxHealthLossBar(frame, frame.healthBar);
 	frame.myHealPrediction:ClearAllPoints();
 	frame.myHealPrediction:SetColorTexture(1,1,1);
 	frame.myHealPrediction:SetGradient("VERTICAL", CreateColor(8/255, 93/255, 72/255, 1), CreateColor(11/255, 136/255, 105/255, 1));
@@ -2192,6 +2208,7 @@ function DefaultCompactMiniFrameSetup(frame)
 	frame.background:SetTexCoord(0, 1, 0, 0.53125);
 	frame.healthBar:SetPoint("TOPLEFT", frame, "TOPLEFT", 1, -1);
 	frame.healthBar:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -1, 1);
+	frame.TempMaxHealthLoss:SetShouldAdjustHealthBarAnchor(-1, 1);
 	frame.healthBar:SetStatusBarTexture("Interface\\RaidFrame\\Raid-Bar-Hp-Fill");
 	frame.healthBar:GetStatusBarTexture():SetDrawLayer("BORDER");
 
@@ -2389,9 +2406,9 @@ function DefaultCompactNamePlateFrameAnchors(frame)
 	PixelUtil.SetPoint(frame.castBar, "BOTTOMLEFT", frame, "BOTTOMLEFT", 12, 6);
 	PixelUtil.SetPoint(frame.castBar, "BOTTOMRIGHT", frame, "BOTTOMRIGHT", -12, 6);
 
-	frame.healthBar:ClearAllPoints();
-	PixelUtil.SetPoint(frame.healthBar, "BOTTOMLEFT", frame.castBar, "TOPLEFT", 0, 2);
-	PixelUtil.SetPoint(frame.healthBar, "BOTTOMRIGHT", frame.castBar, "TOPRIGHT", 0, 2);
+	frame.HealthBarsContainer:ClearAllPoints();
+	PixelUtil.SetPoint(frame.HealthBarsContainer, "BOTTOMLEFT", frame.castBar, "TOPLEFT", 0, 2);
+	PixelUtil.SetPoint(frame.HealthBarsContainer, "BOTTOMRIGHT", frame.castBar, "TOPRIGHT", 0, 2);
 	end
 
 	DefaultCompactNamePlateFrameAnchorInternal(frame, DefaultCompactNamePlateFrameSetUpOptions);
@@ -2406,9 +2423,9 @@ function DefaultCompactNamePlateEnemyFrameSetup(frame)
 end
 
 function DefaultCompactNamePlatePlayerFrameAnchor(frame)
-	frame.healthBar:ClearAllPoints();
-	PixelUtil.SetPoint(frame.healthBar, "LEFT", frame, "LEFT", 12, 5);
-	PixelUtil.SetPoint(frame.healthBar, "RIGHT", frame, "RIGHT", -12, 5);
+	frame.HealthBarsContainer:ClearAllPoints();
+	PixelUtil.SetPoint(frame.HealthBarsContainer, "LEFT", frame, "LEFT", 12, 5);
+	PixelUtil.SetPoint(frame.HealthBarsContainer, "RIGHT", frame, "RIGHT", -12, 5);
 
 	DefaultCompactNamePlateFrameAnchorInternal(frame, DefaultCompactNamePlatePlayerFrameSetUpOptions);
 end
@@ -2447,21 +2464,31 @@ function DefaultCompactNamePlateFrameSetupInternal(frame, setupOptions, frameOpt
 	end
 	end
 
+	if ( not frame.healthBar and frame.HealthBarsContainer.healthBar) then
+		frame.healthBar = frame.HealthBarsContainer.healthBar;
+	end
+
+	if ( frame.HealthBarsContainer.TempMaxHealthLoss ) then
+		frame.HealthBarsContainer.TempMaxHealthLoss:InitalizeMaxHealthLossBar(frame.HealthBarsContainer, frame.HealthBarsContainer.healthBar);
+		frame.HealthBarsContainer.TempMaxHealthLoss:SetShouldAdjustHealthBarAnchor(0, 0);
+	end
+
 	frame.hideHealthBarMask = 0; -- Clear out mask of any old values
 	CompactUnitFrame_SetHideHealth(frame, setupOptions.hideHealthbar, HEALTH_BAR_HIDE_REASON_SETUP); -- Populate with setup option
 
-	frame.selectionHighlight:SetParent(frame.healthBar);
-	frame.aggroHighlight:SetParent(frame.healthBar);
+	frame.selectionHighlight:SetParent(frame.HealthBarsContainer);
+	frame.aggroHighlight:SetParent(frame.HealthBarsContainer);
 
-	frame.myHealPrediction = frame.healthBar.myHealPrediction;
-	frame.otherHealPrediction = frame.healthBar.otherHealPrediction;
-	frame.totalAbsorb = frame.healthBar.totalAbsorb;
-	frame.totalAbsorbOverlay = frame.healthBar.totalAbsorbOverlay;
-	frame.overAbsorbGlow = frame.healthBar.overAbsorbGlow;
-	frame.myHealAbsorb = frame.healthBar.myHealAbsorb;
-	frame.myHealAbsorbLeftShadow = frame.healthBar.myHealAbsorbLeftShadow;
-	frame.myHealAbsorbRightShadow = frame.healthBar.myHealAbsorbRightShadow;
-	frame.overHealAbsorbGlow = frame.healthBar.overHealAbsorbGlow;
+	local myHealthBar = frame.HealthBarsContainer.healthBar;
+	frame.myHealPrediction = myHealthBar.myHealPrediction;
+	frame.otherHealPrediction = myHealthBar.otherHealPrediction;
+	frame.totalAbsorb = myHealthBar.totalAbsorb;
+	frame.totalAbsorbOverlay = myHealthBar.totalAbsorbOverlay;
+	frame.overAbsorbGlow = myHealthBar.overAbsorbGlow;
+	frame.myHealAbsorb = myHealthBar.myHealAbsorb;
+	frame.myHealAbsorbLeftShadow = myHealthBar.myHealAbsorbLeftShadow;
+	frame.myHealAbsorbRightShadow = myHealthBar.myHealAbsorbRightShadow;
+	frame.overHealAbsorbGlow = myHealthBar.overHealAbsorbGlow;
 
 	frame.myHealPrediction:SetVertexColor(0.0, 0.659, 0.608);
 
@@ -2522,27 +2549,27 @@ function DefaultCompactNamePlateFrameAnchorInternal(frame, setupOptions)
 	end
 
 	if not customOptions or not customOptions.ignoreBarSize then
-	PixelUtil.SetHeight(frame.healthBar, setupOptions.healthBarHeight);
+	PixelUtil.SetHeight(frame.HealthBarsContainer, setupOptions.healthBarHeight);
 	end
 
-	PixelUtil.SetPoint(frame.name, "BOTTOM", frame.healthBar, "TOP", 0, 4);
+	PixelUtil.SetPoint(frame.name, "BOTTOM", frame.HealthBarsContainer, "TOP", 0, 4);
 	PixelUtil.SetHeight(frame.name, frame.name:GetLineHeight());
 
 	if not customOptions or not customOptions.ignoreOverAbsorbGlow then
 	frame.overAbsorbGlow:ClearAllPoints();
-	PixelUtil.SetPoint(frame.overAbsorbGlow, "BOTTOMLEFT", frame.healthBar, "BOTTOMRIGHT", -4, -1);
-	PixelUtil.SetPoint(frame.overAbsorbGlow, "TOPLEFT", frame.healthBar, "TOPRIGHT", -4, 1);
+	PixelUtil.SetPoint(frame.overAbsorbGlow, "BOTTOMLEFT", frame.HealthBarsContainer.healthBar, "BOTTOMRIGHT", -4, -1);
+	PixelUtil.SetPoint(frame.overAbsorbGlow, "TOPLEFT", frame.HealthBarsContainer.healthBar, "TOPRIGHT", -4, 1);
 	PixelUtil.SetHeight(frame.overAbsorbGlow, 8);
 	end
 
 	if not customOptions or not customOptions.ignoreOverHealAbsorbGlow then
 	frame.overHealAbsorbGlow:ClearAllPoints();
-	PixelUtil.SetPoint(frame.overHealAbsorbGlow, "BOTTOMRIGHT", frame.healthBar, "BOTTOMLEFT", 2, -1);
-	PixelUtil.SetPoint(frame.overHealAbsorbGlow, "TOPRIGHT", frame.healthBar, "TOPLEFT", 2, 1);
+	PixelUtil.SetPoint(frame.overHealAbsorbGlow, "BOTTOMRIGHT", frame.HealthBarsContainer.healthBar, "BOTTOMLEFT", 2, -1);
+	PixelUtil.SetPoint(frame.overHealAbsorbGlow, "TOPRIGHT", frame.HealthBarsContainer.healthBar, "TOPLEFT", 2, 1);
 	PixelUtil.SetWidth(frame.overHealAbsorbGlow, 8);
 	end
 
-	frame.healthBar.border:UpdateSizes();
+	frame.HealthBarsContainer.border:UpdateSizes();
 end
 
 CompactUnitPrivateAuraAnchorMixin = {};

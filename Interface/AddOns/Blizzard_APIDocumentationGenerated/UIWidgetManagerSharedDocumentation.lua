@@ -15,6 +15,18 @@ local UIWidgetManagerShared =
 			},
 		},
 		{
+			Name = "UIWidgetHorizontalDirection",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "LeftToRight", Type = "UIWidgetHorizontalDirection", EnumValue = 0 },
+				{ Name = "RightToLeft", Type = "UIWidgetHorizontalDirection", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "UIWidgetLayoutDirection",
 			Type = "Enumeration",
 			NumValues = 5,

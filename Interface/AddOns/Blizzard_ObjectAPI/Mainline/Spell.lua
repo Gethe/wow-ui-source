@@ -39,19 +39,19 @@ function SpellMixin:IsDataEvictable()
 end
 
 function SpellMixin:GetSpellName()
-	return (GetSpellInfo(self:GetSpellID()));
+	return (C_Spell.GetSpellName(self:GetSpellID()));
 end
 
 function SpellMixin:GetSpellTexture()
-	return (GetSpellTexture(self:GetSpellID()));
+	return (C_Spell.GetSpellTexture(self:GetSpellID()));
 end
 
 function SpellMixin:GetSpellSubtext()
-	return GetSpellSubtext(self:GetSpellID());
+	return C_Spell.GetSpellSubtext(self:GetSpellID());
 end
 
 function SpellMixin:GetSpellDescription()
-	return GetSpellDescription(self:GetSpellID());
+	return C_Spell.GetSpellDescription(self:GetSpellID());
 end
 
 -- Add a callback to be executed when spell data is loaded, if the spell data is already loaded then execute it immediately

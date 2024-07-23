@@ -23,7 +23,7 @@ function AuctionHouseBrowseResultsFrameMixin:OnLoad()
 	
 	AuctionHouseSortOrderSystemMixin.OnLoad(self);
 
-	self.ItemList:SetLineTemplate("AuctionHouseFavoritableLineTemplate", self:GetAuctionHouseFrame():GetFavoriteDropDown(), AuctionHouseFavoriteDropDownLineCallback);
+	self.ItemList:SetLineTemplate("AuctionHouseFavoritableLineTemplate");
 
 	self.ItemList:SetSelectionCallback(function(browseResult)
 		self:OnBrowseResultSelected(browseResult);

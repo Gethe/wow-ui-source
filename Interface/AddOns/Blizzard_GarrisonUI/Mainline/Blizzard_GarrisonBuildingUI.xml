@@ -1018,19 +1018,19 @@
 							<Layer level="BORDER" textureSubLevel="0">
 								<Texture parentKey="EmptyPortrait" atlas="GarrMission_PortraitRing_Empty" useAtlasSize="true">
 									<Anchors>
-										<Anchor point="TOP" relativeKey="$parent.PortraitRing"/>
+										<Anchor point="TOP" relativeKey="$parent"/>
 									</Anchors>
 								</Texture>
 							</Layer>
 							<Layer level="OVERLAY">
 								<Texture parentKey="Plus" atlas="Garr_Building-AddFollowerPlus" useAtlasSize="true">
 									<Anchors>
-										<Anchor point="CENTER" relativeKey="$parent.PortraitRing" y="5"/>
+										<Anchor point="CENTER" relativeKey="$parent" y="5"/>
 									</Anchors>
 								</Texture>
 								<Texture parentKey="PortraitHighlight" atlas="GarrMission_PortraitRing_Highlight" useAtlasSize="true" alphaMode="ADD" hidden="true">
 									<Anchors>
-										<Anchor point="CENTER" relativeKey="$parent.PortraitRing" />
+										<Anchor point="CENTER" relativeKey="$parent" />
 									</Anchors>
 								</Texture>
 								<FontString parentKey="AddFollowerText" inherits="GameFontHighlight" justifyH="LEFT">

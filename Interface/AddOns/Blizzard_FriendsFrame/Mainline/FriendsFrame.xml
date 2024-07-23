@@ -52,7 +52,7 @@
 		</Layers>
 	</Frame>
 
-	<Frame name="FriendsFrameFriendInviteTemplate" virtual="true">
+	<Frame name="FriendsFrameFriendInviteTemplate" mixin="FriendsFrameInviteTemplateMixin" virtual="true">
 		<Size x="298" y="34"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -75,7 +75,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<DropDownToggleButton parentKey="DeclineButton" inherits="UIMenuButtonStretchTemplate" motionScriptsWhileDisabled="true">
+			<DropdownButton parentKey="DeclineButton" inherits="UIMenuButtonStretchTemplate" motionScriptsWhileDisabled="true">
 				<Size x="24" y="22"/>
 				<Anchors>
 					<Anchor point="RIGHT" x="-7" y="1"/>
@@ -89,17 +89,8 @@
 						</Texture>
 					</Layer>
 				</Layers>
-				<Scripts>
-					<OnMouseDown>
-						UIMenuButtonStretchMixin.OnMouseDown(self, button);
-						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-						FriendsListPendingInviteDropDown.inviteID = self:GetParent().inviteID;
-						FriendsListPendingInviteDropDown.inviteIndex = self:GetParent().inviteIndex;
-						ToggleDropDownMenu(1, nil, FriendsListPendingInviteDropDown, self, -6, -3);
-					</OnMouseDown>
-				</Scripts>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-			</DropDownToggleButton>
+			</DropdownButton>
 			<Button parentKey="AcceptButton" inherits="UIMenuButtonStretchTemplate" text="ACCEPT">
 				<Size x="0" y="22"/>
 				<Anchors>
@@ -120,6 +111,9 @@
 				</Scripts>
 			</Button>
 		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
 	</Frame>
 
 	<Button name="FriendsFrameButtonTemplate" inherits="UIPanelButtonTemplate" virtual="true">
@@ -518,12 +512,6 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="FriendsDropDown" inherits="UIDropDownMenuTemplate"/>
-			<Frame name="TravelPassDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
-				<Scripts>
-					<OnLoad function="TravelPassDropDown_OnLoad"/>
-				</Scripts>
-			</Frame>
 			<Frame name="FriendsTabHeader" parentKey="FriendsTabHeader" mixin="FriendsTabHeaderMixin" setAllPoints="true">
 				<KeyValues>
 					<KeyValue key="maxTabWidth" value="110" type="number"/>
@@ -752,40 +740,11 @@
 							</Frame>
 						</Frames>
 					</Frame>
-					<Frame name="FriendsFrameStatusDropDown" inherits="UIDropDownMenuTemplate" hidden="false">
+					<DropdownButton parentKey="StatusDropdown" name="FriendsFrameStatusDropdown" inherits="WowStyle1DropdownTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="43" y="-27"/>
+							<Anchor point="TOPLEFT" x="52" y="-27"/>
 						</Anchors>
-						<Layers>
-							<Layer level="OVERLAY">
-								<Texture name="$parentStatus" file="Interface\FriendsFrame\StatusIcon-Online">
-									<Anchors>
-										<Anchor point="LEFT" x="24" y="1"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Frames>
-							<Frame name="$parentMouseOver" enableMouse="true">
-								<Size x="22" y="23"/>
-								<Anchors>
-									<Anchor point="TOPLEFT" x="16" y="-2"/>
-								</Anchors>
-								<Scripts>
-									<OnEnter function="FriendsFrameStatusDropDown_ShowTooltip"/>
-									<OnLeave>
-										if not IsOnGlueScreen() then
-											GameTooltip:Hide();
-										end
-									</OnLeave>
-								</Scripts>
-							</Frame>
-						</Frames>
-						<Scripts>
-							<OnLoad function="FriendsFrameStatusDropDown_OnLoad"/>
-							<OnShow function="FriendsFrameStatusDropDown_OnShow"/>
-						</Scripts>
-					</Frame>
+					</DropdownButton>
 					<Button name="FriendsTabHeaderTab1" parentKey="Tab1" inherits="FriendsTabTemplate" text="FRIENDS" id="1">
 						<Anchors>
 							<Anchor point="TOPLEFT" x="18" y="-51"/>
@@ -811,13 +770,6 @@
 							<OnClick function="FriendsFrameSendMessageButton_OnClick"/>
 						</Scripts>
 					</Button>
-					<Frame name="FriendsListPendingInviteDropDown" parentKey="FilterDropDown" inherits="UIDropDownMenuTemplate">
-						<Scripts>
-							<OnLoad>
-								UIDropDownMenu_Initialize(self, FriendsList_InitializePendingInviteDropDown, "MENU");
-							</OnLoad>
-						</Scripts>
-					</Frame>
 					<Frame parentKey="RIDWarning" enableMouse="true" hidden="true" frameStrata="DIALOG">
 						<Size x="300" y="309"/>
 						<Anchors>
@@ -959,40 +911,27 @@
 							<Anchor point="LEFT" relativeTo="WhoFrameColumnHeader1" relativePoint="RIGHT" x="-2" y="0"/>
 						</Anchors>
 						<Frames>
-							<Frame name="WhoFrameDropDown" inherits="UIDropDownMenuTemplate" id="1">
+							<DropdownButton name="WhoFrameDropdown" inherits="WowStyle1DropdownTemplate" id="1">
 								<Anchors>
-									<Anchor point="TOPLEFT" x="-15" y="0"/>
+									<Anchor point="TOPLEFT" x="2" y="0"/>
 								</Anchors>
 								<Layers>
 									<Layer level="OVERLAY">
-										<Texture name="WhoFrameDropDownHighlightTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD" hidden="true">
+										<Texture parentKey="TabHighlight" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD" hidden="true">
 											<Anchors>
-												<Anchor point="TOPLEFT" x="15" y="3"/>
-												<Anchor point="BOTTOMRIGHT" x="-30" y="-2"/>
+												<Anchor point="TOPLEFT" x="0" y="3"/>
+												<Anchor point="BOTTOMRIGHT" x="-20" y="-2"/>
 											</Anchors>
 										</Texture>
 									</Layer>
 								</Layers>
 								<Scripts>
-									<OnLoad function="WhoFrameDropDown_OnLoad"/>
-									<OnShow>
-										UIDropDownMenu_Initialize(self, WhoFrameDropDown_Initialize);
-										UIDropDownMenu_SetSelectedID(self, 1);
-									</OnShow>
-									<OnEnter>
-										WhoFrameDropDownHighlightTexture:Show();
-									</OnEnter>
-									<OnLeave>
-										WhoFrameDropDownHighlightTexture:Hide();
-									</OnLeave>
-									<OnMouseUp>
-										if ( WHOFRAME_DROPDOWN_LIST[UIDropDownMenu_GetSelectedID(self)].sortType ) then
-											C_FriendList.SortWho(WHOFRAME_DROPDOWN_LIST[UIDropDownMenu_GetSelectedID(self)].sortType);
-											PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-										end
-									</OnMouseUp>
+									<OnLoad function="WhoFrameDropdown_OnLoad"/>
+									<OnShow function="WhoFrameDropdown_OnShow"/>
+									<OnEnter function="WhoFrameDropdown_OnEnter"/>
+									<OnLeave function="WhoFrameDropdown_OnLeave"/>
 								</Scripts>
-							</Frame>
+							</DropdownButton>
 						</Frames>
 						<Scripts>
 							<OnLoad>
@@ -1544,11 +1483,11 @@
 		</Layers>
 		<Frames>
 			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
-			<Frame name="FriendsFriendsFrameDropDown" inherits="UIDropDownMenuTemplate">
+			<DropdownButton parentKey="FriendsDropdown" name="FriendsFriendsFrameDropdown" inherits="WowStyle1DropdownTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="8" y="-40"/>
+					<Anchor point="TOPLEFT" x="24" y="-40"/>
 				</Anchors>
-			</Frame>
+			</DropdownButton>
 			<Frame parentKey="ScrollFrameBorder" inherits="TooltipBackdropTemplate">
 				<Size x="266" y="215"/>
 				<Anchors>
@@ -1618,12 +1557,8 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
-			<OnShow>
-				PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
-			</OnShow>
-			<OnHide>
-				PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
-			</OnHide>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
 

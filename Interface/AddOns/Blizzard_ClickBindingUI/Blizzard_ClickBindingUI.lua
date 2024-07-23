@@ -168,7 +168,9 @@ local function NameAndIconFromElementData(elementData)
 		local actionName, actionIcon, _;
 		if type == Enum.ClickBindingType.Spell or type == Enum.ClickBindingType.PetAction then
 			local overrideID = FindSpellOverrideByID(actionID);
-			actionName, _, actionIcon = GetSpellInfo(overrideID);
+			local spellInfo = C_Spell.GetSpellInfo(overrideID);
+			actionName = spellInfo.name;
+			actionIcon = spellInfo.iconID;
 		elseif type == Enum.ClickBindingType.Macro then
 			local macroName;
 			macroName, actionIcon = GetMacroInfo(actionID);
@@ -264,7 +266,7 @@ function ClickBindingLineMixin:OnEnter()
 end
 
 function ClickBindingLineMixin:OnLeave()
-	if GetMouseFocus() == self.DeleteButton then
+	if self.DeleteButton:IsMouseMotionFocus() then
 		return;
 	end
 
@@ -289,18 +291,28 @@ end
 
 function ClickBindingFramePortraitMixin:OnLoad()
 	self:SetSelectedState(false);
-	self.Portrait:SetTexture(self.PortraitTexture);
+	if self.PortraitTexture then
+		self.Portrait:SetTexture(self.PortraitTexture);
+	elseif self.PortraitAtlas then
+		self.Portrait:SetAtlas(self.PortraitAtlas);
+	end
 end
 
 function ClickBindingFramePortraitMixin:GetFrame()
-	return _G[self.FrameName];
+	local frame = _G[self.FrameName];
+	if not frame and self.FrameLoadFunc then
+		self.FrameLoadFunc();
+		frame = _G[self.FrameName];
+	end
+
+	return frame;
 end
 
 function ClickBindingFramePortraitMixin:GetTooltipText()
-	if self.FrameName == "SpellBookFrame" then
-		return MicroButtonTooltipText(SPELLBOOK_ABILITIES_BUTTON, "TOGGLESPELLBOOK");
-	elseif self.FrameName == "MacroFrame" then
+	if self.FrameName == "MacroFrame" then
 		return MACROS;
+	elseif self.FrameName == "PlayerSpellsFrame" then
+		return PLAYERSPELLS_BUTTON;
 	end
 end
 
@@ -369,6 +381,44 @@ function ClickBindingFrameMixin:InitializeButtons()
 			end
 		end);
 	end
+
+	local function GetModifierKeyTooltipText(modifierKey)
+		return _G["OPTION_TOOLTIP_MOUSEOVER_CAST_"..modifierKey.."_KEY"];
+	end
+
+	self.MouseoverCastKeyDropdown:SetWidth(130);
+	self.MouseoverCastKeyDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_MOUSEOVER_CAST_KEY");
+
+		-- This should keep parity with the Interface Option Panel's MouseoverCast settings
+		local function IsSelected(modifierKey)
+			return modifierKey == GetModifiedClick("MOUSEOVERCAST");
+		end
+
+		local function SetSelected(modifierKey)
+			SetModifiedClick("MOUSEOVERCAST", modifierKey);
+			SaveBindings(GetCurrentBindingSet());
+		end
+
+		for index, modifierKey in ipairs({"NONE", "ALT", "CTRL", "SHIFT"}) do
+			local text = _G[modifierKey.."_KEY"];
+			local radio = rootDescription:CreateRadio(text, IsSelected, SetSelected, modifierKey);
+			radio:SetTooltip(function(tooltip, elementDescription)
+				GameTooltip_SetTitle(tooltip, text);
+				GameTooltip_AddNormalLine(tooltip, GetModifierKeyTooltipText(modifierKey), true);
+			end);
+		end
+	end);
+
+	self.MouseoverCastKeyDropdown:SetScript("OnEnter", function()
+		GameTooltip:SetOwner(self.MouseoverCastKeyDropdown, "ANCHOR_RIGHT");
+		local modifierKey = GetModifiedClick("MOUSEOVERCAST") or "NONE";
+		GameTooltip:SetText(GetModifierKeyTooltipText(modifierKey), nil, nil, nil, nil, true);
+	end);
+
+	self.MouseoverCastKeyDropdown:SetScript("OnLeave", function()
+		GameTooltip:Hide();
+	end);
 end
 
 local function AddFromCursorInfo(addFunc)
@@ -555,7 +605,11 @@ function ClickBindingFrameMixin:OnShow()
 	self.TutorialFrame:SetShown(showTutorial);
 	-- Refresh() triggers ClickBindingFrame.UpdateFrames event through SetHasNewSlot()
 	self:Refresh();
-	self:SetFocusedFrame(SpellBookFrame);
+	self:SetFocusedFrame(self.FramePortraits[1]:GetFrame());
+	-- If showing tutorial, make sure to raise it to the front after opening the focused frame
+	if showTutorial then
+		self.TutorialFrame:Raise();
+	end
 	self:UpdateMouseoverCastUI();
 end
 
@@ -604,7 +658,7 @@ function ClickBindingFrameMixin:Refresh()
 end
 
 function ClickBindingFrameMixin:SetFocusedFrame(frame)
-	if (frame == self:GetFocusedFrame()) or not (frame == SpellBookFrame or frame == MacroFrame) then
+	if (frame == self:GetFocusedFrame()) or not (frame == MacroFrame or frame == PlayerSpellsFrame) then
 		return;
 	end
 
@@ -722,7 +776,8 @@ function ClickBindingFrameMixin:UpdateMouseoverCastUI()
 	self.EnableMouseoverCastCheckbox:UpdateCheckbox();
 
 	local enableMouseoverCast = GetCVarBool("enableMouseoverCast");
-	self.MouseoverCastKeyDropDown:SetShown(enableMouseoverCast);
+	self.MouseoverCastKeyDropdown:SetShown(enableMouseoverCast);
+	self.MouseoverCastKeyDropdown:GenerateMenu();
 
 	local dropDownSizeYOffset = 25;
 	if enableMouseoverCast and not self.isApplyingEnabledMouseOverCastFrameSizeOffset then
@@ -782,59 +837,4 @@ end
 
 function ClickableBindingsEnableMouseoverCastCheckboxMixin:UpdateCheckbox()
 	self:SetChecked(GetCVarBool("enableMouseoverCast"));
-end
-
--- [[ Mouseover Cast Key ]]
--- This should keep parity with the Interface Option Panel's MouseoverCast settings
-ClickableBindingsMouseoverCastKeyDropDownMixin = {};
-
-function ClickableBindingsMouseoverCastKeyDropDownMixin:OnShow()
-	self:RefreshValue();
-end
-
-function ClickableBindingsMouseoverCastKeyDropDownMixin:OnEnter()
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, true);
-end
-
-function ClickableBindingsMouseoverCastKeyDropDownMixin:OnLeave()
-	GameTooltip:Hide();
-end
-
-function ClickableBindingsMouseoverCastKeyDropDownMixin:RefreshValue()
-	local function Initialize()
-		local function GetTooltipText(value)
-			return _G["OPTION_TOOLTIP_MOUSEOVER_CAST_"..value.."_KEY"];
-		end
-
-		local defaultValue = "NONE";
-		local oldValue = GetModifiedClick("MOUSEOVERCAST");
-		self.selectedValue = oldValue or defaultValue;
-
-		local info = UIDropDownMenu_CreateInfo();
-
-		info.func = function(info)
-			SetModifiedClick("MOUSEOVERCAST", info.value);
-			SaveBindings(GetCurrentBindingSet());
-			self:RefreshValue();
-		end;
-
-		local function AddDropdownButton(value)
-			info.text = _G[value.."_KEY"];
-			info.value = value;
-			info.tooltipTitle = info.text;
-			info.tooltipText = GetTooltipText(value);
-			UIDropDownMenu_AddButton(info);
-		end
-
-		AddDropdownButton("NONE");
-		AddDropdownButton("ALT");
-		AddDropdownButton("CTRL");
-		AddDropdownButton("SHIFT");
-
-		UIDropDownMenu_SetSelectedValue(self, self.selectedValue);
-		self.tooltipText = GetTooltipText(self.selectedValue);
-	end
-
-	UIDropDownMenu_Initialize(self, GenerateClosure(Initialize, self));
 end

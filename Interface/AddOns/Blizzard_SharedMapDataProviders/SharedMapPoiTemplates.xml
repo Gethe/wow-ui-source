@@ -19,16 +19,36 @@
 	<Frame name="BaseHighlightableMapPoiPinTemplate" inherits="BaseMapPoiPinTemplate" virtual="true">
 		<Layers>
 			<Layer level="HIGHLIGHT">
-				<Texture parentKey="HighlightTexture" alphaMode="ADD" file="Interface/Minimap/POIIcons">
+				<Texture parentKey="HighlightTexture" alphaMode="ADD" alpha="0.4" file="Interface/Minimap/POIIcons">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Texture"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Texture"/>
 					</Anchors>
-					<Color r="1.0" g="1.0" b="1.0" a="0.4"/>
 				</Texture>
 			</Layer>
 		</Layers>
 	</Frame>
+
+	<Frame name="SuperTrackableMapPinTemplate" mixin="SuperTrackablePinMixin" enableMouseClicks="true" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="SuperTrackGlow" atlas="UI-QuestPoi-OuterGlow" hidden="true"/>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="7">
+				<Texture parentKey="SuperTrackMarker" atlas="Waypoint-MapPin-Tracked" hidden="true">
+					<Size x="20" y="20"/>
+				</Texture>
+			</Layer>			
+		</Layers>
+		<Scripts>
+			<OnShow method="SuperTrack_OnShow" inherit="prepend"/>
+			<OnHide method="SuperTrack_OnHide" inherit="prepend"/>
+		</Scripts>		
+	</Frame>
+	
+	<Frame name="BaseSuperTrackableMapPoiPinTemplate" inherits="BaseHighlightableMapPoiPinTemplate, SuperTrackableMapPinTemplate" mixin="SuperTrackablePoiPinMixin" virtual="true"/>
+
+	<Frame name="LegendHighlightableMapPoiPinTemplate" mixin="LegendHighlightablePoiPinMixin" virtual="true"/>
 
 	<Frame name="MapPinAnimatedHighlightTemplate" mixin="MapPinAnimatedHighlightMixin" hidden="true" virtual="true">
 		<Size x="1" y="1"/>
@@ -59,6 +79,13 @@
 				<Scale childKey="Expand" smoothing="NONE" duration="1" order="1" fromScaleX="1" fromScaleY="1" toScaleX="2" toScaleY="2"/>
 
 				<Alpha childKey="Expand" duration="0.4" order="2" fromAlpha="0.3" toAlpha="0"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="PulseBackground" setToFinalAlpha="false" looping="REPEAT">
+				<Alpha childKey="BackHighlight" smoothing="IN_OUT" duration="1.0" order="1" fromAlpha="0" toAlpha="1.0"/>
+				<Alpha childKey="TopHighlight" smoothing="IN_OUT" duration="1.0" order="1" fromAlpha="0" toAlpha="0.3"/>
+				
+				<Alpha childKey="BackHighlight" smoothing="IN" duration="1.0" order="2" fromAlpha="1.0" toAlpha="0"/>
+				<Alpha childKey="TopHighlight" smoothing="IN" duration="1.0" order="2" fromAlpha="0.3" toAlpha="0"/>
 			</AnimationGroup>
 		</Animations>
 	</Frame>

@@ -24,53 +24,53 @@ local defaultAtlases = {
 local eventToastTextureKitRegions = {
 	["GLine"] = "levelup-bar-%s",
 	["GLine2"] = "levelup-bar-%s",
-}; 
+};
 
-local hideButtonNormalTexture = "%s-hide-button"; 
+local hideButtonNormalTexture = "%s-hide-button";
 local hideButtonHighlightTexture ="%s-hide-buttonhighlight";
 local hideButtonHitRectInsets = {
 	["jailerstower-score"] = {
-		left = 50, 
+		left = 50,
 		right = 50,
-		top = 40, 
-		bottom = 30, 
+		top = 40,
+		bottom = 30,
 	},
 };
 
 local scenarioTextureKitOffsets = {
 	["jailerstower-score"] = {
-		topperXOffset = 0, 
+		topperXOffset = 0,
 		topperYOffset = 34,
-		footerXOffset = 0, 
-		footerYOffset = -40, 
-		backgroundXPadding = 20, 
+		footerXOffset = 0,
+		footerYOffset = -40,
+		backgroundXPadding = 20,
 		topperBackgroundYPadding = 5,
 		footerBackgroundYPadding = -5,
 	},
 	["dragonflight-score"] = {
-		topperXOffset = 0, 
+		topperXOffset = 0,
 		topperYOffset = 34,
-		footerXOffset = 0, 
-		footerYOffset = -40, 
-		backgroundXPadding = 20, 
+		footerXOffset = 0,
+		footerYOffset = -40,
+		backgroundXPadding = 20,
 		topperBackgroundYPadding = 5,
 		footerBackgroundYPadding = -5,
 	},
 	["darkmoon-score"] = {
-		topperXOffset = 0, 
+		topperXOffset = 0,
 		topperYOffset = 34,
-		footerXOffset = 0, 
-		footerYOffset = -40, 
-		backgroundXPadding = -50, 
+		footerXOffset = 0,
+		footerYOffset = -40,
+		backgroundXPadding = -50,
 		topperBackgroundYPadding = 5,
 		footerBackgroundYPadding = -5,
 	},
 	["default"] = {
-		topperXOffset = 0, 
+		topperXOffset = 0,
 		topperYOffset = 0,
-		footerXOffset = 0, 
-		footerYOffset = 0, 
-		backgroundXPadding = 0, 
+		footerXOffset = 0,
+		footerYOffset = 0,
+		backgroundXPadding = 0,
 		backgroundYPadding = 0,
 		topperBackgroundYPadding = 0,
 		footerBackgroundYPadding = 0,
@@ -80,6 +80,7 @@ local scenarioTextureKitOffsets = {
 local eventToastTemplatesByToastType = {
 	[Enum.EventToastDisplayType.NormalSingleLine] = {template = "EventToastManagerNormalSingleLineTemplate", frameType = "FRAME", hideAutomatically = true,},
 	[Enum.EventToastDisplayType.NormalBlockText] = {template ="EventToastManagerNormalBlockTextTemplate", frameType = "FRAME", hideAutomatically = true,},
+	[Enum.EventToastDisplayType.CapstoneUnlocked] = {template ="EventToastManagerCapstoneUnlockedTemplate", frameType = "FRAME", hideAutomatically = true,},
 	[Enum.EventToastDisplayType.NormalTitleAndSubTitle] = {template = "EventToastManagerNormalTitleAndSubtitleTemplate", frameType = "FRAME", hideAutomatically = true,},
 	[Enum.EventToastDisplayType.NormalTextWithIcon] = {template = "EventToastWithIconNormalTemplate", frameType = "FRAME", hideAutomatically = true,},
 	[Enum.EventToastDisplayType.LargeTextWithIcon] = {template = "EventToastWithIconLargeTextTemplate", frameType = "FRAME", hideAutomatically = true,},
@@ -89,6 +90,7 @@ local eventToastTemplatesByToastType = {
 	[Enum.EventToastDisplayType.ScenarioClickExpand] = {template = "EventToastScenarioExpandToastTemplate", frameType = "BUTTON", hideAutomatically = false,},
 	[Enum.EventToastDisplayType.WeeklyRewardUnlock] = {template = "EventToastManagerWeeklyRewardToastUnlockTemplate", frameType = "FRAME", hideAutomatically = true,},
 	[Enum.EventToastDisplayType.WeeklyRewardUpgrade] = {template = "EventToastManagerWeeklyRewardToastUpgradeTemplate", frameType = "FRAME", hideAutomatically = true,},
+	[Enum.EventToastDisplayType.FlightpointDiscovered] = {template = "EventToastFlightpointDiscoveredTemplate", frameType = "FRAME", hideAutomatically = true,},
 };
 
 EventToastManagerMixin = { };
@@ -100,17 +102,17 @@ function EventToastManagerMixin:OnLoad()
 	end
 end
 
-function EventToastManagerMixin:ReleaseToasts() 
+function EventToastManagerMixin:ReleaseToasts()
 	self.eventToastPools:ReleaseAll();
 end
 
-function EventToastManagerMixin:GetToastFrame(toastTable) 
+function EventToastManagerMixin:GetToastFrame(toastTable)
 	local pool = self.eventToastPools:GetOrCreatePool(toastTable.frameType, self, toastTable.template);
 	return pool:Acquire();
 end
 
---Override these functions in inherited mixins. 
-function EventToastManagerMixin:ToastingEnded() 
+--Override these functions in inherited mixins.
+function EventToastManagerMixin:ToastingEnded()
 end
 
 function EventToastManagerMixin:SetAnimationState(hidden)
@@ -128,7 +130,10 @@ end
 function EventToastManagerMixin:SetupGLineAtlas(useWhiteGLineAtlas)
 end
 
-EventToastManagerFrameMixin = CreateFromMixins(EventToastManagerMixin); 
+function EventToastManagerMixin:SetupBlackBGAtlas()
+end
+
+EventToastManagerFrameMixin = CreateFromMixins(EventToastManagerMixin);
 function EventToastManagerFrameMixin:OnLoad()
 	EventToastManagerMixin.OnLoad(self);
 
@@ -137,8 +142,8 @@ function EventToastManagerFrameMixin:OnLoad()
 end
 
 function EventToastManagerFrameMixin:OnEvent(event, ...)
-	if(event == "DISPLAY_EVENT_TOASTS") then 
-		if (not self:IsCurrentlyToasting()) then 
+	if(event == "DISPLAY_EVENT_TOASTS") then
+		if (not self:IsCurrentlyToasting()) then
 			self:DisplayToast(true);
 		end
 	end
@@ -166,36 +171,48 @@ function EventToastManagerFrameMixin:Reset()
 	self.GLine2.grow:Stop();
 	self.BlackBG.grow:Stop();
 
-	self.BlackBG:Hide(); 
+	self.BlackBG:Hide();
 	self.GLine:Hide();
 	self.GLine2:Hide();
 
-	self.animationsPaused = false; 
-	self.hideAutomatically = true; 
+	self.animationsPaused = false;
+	self.hideAutomatically = true;
 
 	self:SetScript("OnUpdate", self.OnUpdate);
+end
+
+function EventToastManagerFrameMixin:EnableBlackBGAnimation(enable)
+	self.blackBGAnimationEnabled = enable;
 end
 
 function EventToastManagerFrameMixin:SetupGLineAtlas(useWhiteGLineAtlas)
 	local atlas = useWhiteGLineAtlas and "levelup-bar-white" or "levelup-bar-gold"
 	self.GLine:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
+	self.GLine:SetPoint("BOTTOM");
 	self.GLine2:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
-end		
+	self.GLine2:SetPoint("TOP");
+end
+
+function EventToastManagerFrameMixin:SetupBlackBGAtlas()
+	self.BlackBG:SetAtlas("levelup-shadow-upper", TextureKitConstants.UseAtlasSize);
+	self.BlackBG:SetAlpha(0.6);
+	self.BlackBG:SetPoint("BOTTOM");
+end
 
 function EventToastManagerFrameMixin:AreAnimationsPaused()
-	return self.animationsPaused; 
+	return self.animationsPaused;
 end
 
 function EventToastManagerFrameMixin:PauseAnimations()
-	if(self.animationsPaused or not (self.currentDisplayingToast and (self.currentDisplayingToast:GetAlpha() > 0))) then 
+	if(self.animationsPaused or not (self.currentDisplayingToast and (self.currentDisplayingToast:GetAlpha() > 0))) then
 		return;
 	end
-	self.animationsPaused = true; 
+	self.animationsPaused = true;
 	self.currentDisplayingToast:PauseAnimations();
 end
 
 function EventToastManagerFrameMixin:ResumeAnimations()
-	if(not self.animationsPaused) then 
+	if(not self.animationsPaused) then
 		return;
 	end
 	self.currentDisplayingToast:ResumeAnimations();
@@ -217,18 +234,26 @@ function EventToastManagerFrameMixin:IsCurrentlyToasting()
 end
 
 function EventToastManagerFrameMixin:OnUpdate()
-	local mouseOver = RegionUtil.IsDescendantOfOrSame(GetMouseFocus(), self);
-	if (mouseOver) then 
+	local mouseOver = RegionUtil.IsAnyDescendantOfOrSame(GetMouseFoci(), self);
+	if (mouseOver or self:ShouldPause()) then
 		self:PauseAnimations();
 	else
 		self:ResumeAnimations();
 	end
 end
 
+function EventToastManagerFrameMixin:ShouldPause()
+	return self.paused;
+end
+
+function EventToastManagerFrameMixin:SetPaused(paused)
+	self.paused = paused;
+end
+
 function EventToastManagerFrameMixin:DisplayToastLink(chatFrame, link)
-	if(not link or link == "") then 
+	if(not link or link == "") then
 		return;
-	end 
+	end
 	local info = ChatTypeInfo["SYSTEM"];
 	chatFrame:AddMessage(link, info.r, info.g, info.b, info.id);
 end
@@ -240,24 +265,24 @@ function EventToastManagerFrameMixin:SetAnimStartDelay(delay)
 end
 
 function EventToastManagerFrameMixin:SetAnimationState(hidden)
-	self.shouldAnim = not hidden; 
+	self.shouldAnim = not hidden;
 end
 
 function EventToastManagerFrameMixin:SetColorTint(colorTint)
 
-	if(colorTint) then 
+	if(colorTint) then
 		self.GLine:SetVertexColor(colorTint.r, colorTint.g, colorTint.b);
 		self.GLine2:SetVertexColor(colorTint.r, colorTint.g, colorTint.b);
-	else 
+	else
 		self.GLine:SetVertexColor(1, 1, 1);
 		self.GLine2:SetVertexColor(1, 1, 1)
-	end 
-end 
+	end
+end
 
 function EventToastManagerFrameMixin:SetupButton(uiTextureKit)
 	self.HideButton:SetShown(not self.hideAutomatically);
 
-	if(self.hideAutomatically) then 
+	if(self.hideAutomatically) then
 		return;
 	end
 
@@ -265,11 +290,11 @@ function EventToastManagerFrameMixin:SetupButton(uiTextureKit)
 
 	local normalTextureAtlas = GetFinalAtlasFromTextureKitIfExists(hideButtonNormalTexture, uiTextureKit);
 	local higlightTextureAtlas = GetFinalAtlasFromTextureKitIfExists(hideButtonHighlightTexture, uiTextureKit);
-	if(normalTextureAtlas) then 
+	if(normalTextureAtlas) then
 		self.HideButton:SetNormalAtlas(normalTextureAtlas, true);
 	end
 
-	if (higlightTextureAtlas) then 
+	if (higlightTextureAtlas) then
 		self.HideButton:SetHighlightAtlas(higlightTextureAtlas);
 	end
 
@@ -285,21 +310,22 @@ function EventToastManagerFrameMixin:DisplayToast(firstToast)
 	self:ReleaseToasts();
 	self:Reset();
 
-	if(not firstToast) then 
-		C_EventToastManager.RemoveCurrentToast(); 
+	if(not firstToast) then
+		C_EventToastManager.RemoveCurrentToast();
 	end
 
-	local toastInfo = C_EventToastManager.GetNextToastToDisplay(); 
+	local toastInfo = C_EventToastManager.GetNextToastToDisplay();
 	self.currentDisplayingToast = nil;
 	if(toastInfo) then
 		local toastTable = eventToastTemplatesByToastType[toastInfo.displayType];
-		if(not toastTable) then 
+		if(not toastTable) then
 			return;
 		end
 
 		local toast = self:GetToastFrame(toastTable);
 		self.currentDisplayingToast = toast;
 		self.shouldAnim = true;
+		self:EnableBlackBGAnimation(true);
 		self:UpdateAnchor();
 		self.hideAutomatically = toastTable.hideAutomatically;
 		toast.hideAutomatically = toastTable.hideAutomatically;
@@ -314,7 +340,7 @@ function EventToastManagerFrameMixin:DisplayToast(firstToast)
 		self:SetColorTint(toastInfo.colorTint);
 		self:SetupButton(toastInfo.uiTextureKit);
 		self:Show();
-	elseif(self:IsShown()) then 
+	elseif(self:IsShown()) then
 		self:Hide();
 	end
 
@@ -322,7 +348,7 @@ function EventToastManagerFrameMixin:DisplayToast(firstToast)
 end
 
 function EventToastManagerFrameMixin:ToastingEnded()
-	self:DisplayToast(); 
+	self:DisplayToast();
 end
 
 function EventToastManagerFrameMixin:DisplayNextToast()
@@ -334,13 +360,15 @@ function EventToastManagerFrameMixin:AnimationsPaused()
 end
 
 function EventToastManagerFrameMixin:PlayAnim()
-	self.BlackBG:SetShown(self.shouldAnim); 
+	self.BlackBG:SetShown(self.shouldAnim);
 	self.GLine:SetShown(self.shouldAnim);
 	self.GLine2:SetShown(self.shouldAnim);
-	if(self.shouldAnim) then 
+	if(self.shouldAnim) then
 		self.GLine.grow:Play();
 		self.GLine2.grow:Play();
-		self.BlackBG.grow:Play();
+		if self.blackBGAnimationEnabled then
+			self.BlackBG.grow:Play();
+		end
 	end
 end
 
@@ -370,20 +398,20 @@ function EventToastManagerSideDisplayMixin:DisplayToastAtIndex(index)
 	if(not toastInfo) then
 		return;
 	end
-	self.currentlyDisplayingToastIndex = index; 
+	self.currentlyDisplayingToastIndex = index;
 
 	local toastTable = eventToastTemplatesByToastType[toastInfo.displayType];
-	if(not toastTable) then 
-		return; 
+	if(not toastTable) then
+		return;
 	end
 
 	local isFirstToast = (index == 1);
 	local toast = self:GetToastFrame(toastTable, isFirstToast);
-	if isFirstToast then 
+	if isFirstToast then
 		toast:SetPoint("TOP", self, "TOP", 0, -4);
 	else
 		toast:SetPoint("TOP", self.lastToastFrame, "BOTTOM");
-	end 
+	end
 	self.lastToastFrame = toast;
 	toast:Setup(toastInfo);
 end
@@ -400,14 +428,14 @@ function EventToastManagerSideDisplayMixin:DisplayToastsByLevel(level)
 		self.lastToastFrame = nil;
 		self.toasts = C_EventToastManager.GetLevelUpDisplayToastsFromLevel(level);
 		self.level = level;
-		self:Show(); 
+		self:Show();
 		self.fadeIn:Play();
 		self:DisplayToastAtIndex(1);
 	end
 end
 
 function EventToastManagerSideDisplayMixin:OnClick()
-	if(self:IsShown()) then 
+	if(self:IsShown()) then
 		self.fadeOut:Play();
 	end
 end
@@ -416,22 +444,22 @@ function EventToastManagerSideDisplayMixin:OnHide()
 	self:ReleaseToasts();
 	self.currentDisplayingToast = nil;
 	self.lastToastFrame = nil;
-	self.level = nil; 
+	self.level = nil;
 end
 
 EventToastScenarioBaseToastMixin = { };
 
 function EventToastScenarioBaseToastMixin:SetupTextureKitOffsets(uiTextureKit)
 	local textureKitOffsets = scenarioTextureKitOffsets[uiTextureKit] or scenarioTextureKitOffsets["default"];
-	self.Topper:ClearAllPoints(); 
+	self.Topper:ClearAllPoints();
 	self.Topper:SetPoint("TOP", textureKitOffsets.topperXOffset, textureKitOffsets.topperYOffset);
-	self.Footer:ClearAllPoints(); 
+	self.Footer:ClearAllPoints();
 	self.Footer:SetPoint("BOTTOM", textureKitOffsets.footerXOffset, textureKitOffsets.footerYOffset);
-	self.Background:ClearAllPoints(); 
+	self.Background:ClearAllPoints();
 	self.Background:SetPoint("TOPLEFT", self, "TOPLEFT", textureKitOffsets.backgroundXPadding, -textureKitOffsets.topperBackgroundYPadding);
 	self.Background:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -textureKitOffsets.backgroundXPadding, textureKitOffsets.footerBackgroundYPadding);
 
-	self.Overlay:ClearAllPoints(); 
+	self.Overlay:ClearAllPoints();
 	self.Overlay:SetPoint("TOPLEFT", self, "TOPLEFT", 0, -textureKitOffsets.topperBackgroundYPadding);
 	self.Overlay:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, textureKitOffsets.footerBackgroundYPadding);
 end
@@ -450,21 +478,21 @@ function EventToastScenarioBaseToastMixin:Setup(toastInfo)
 	local usesBGTextures = toastInfo.uiTextureKit or not toastInfo.hideDefaultAtlas;
 	self.BG1:SetShown(usesBGTextures);
 	self.BG2:SetShown(usesBGTextures);
-	self.hideParentAnim = usesBGTextures; 
+	self.hideParentAnim = usesBGTextures;
 
-	if(toastInfo.uiTextureKit) then 
+	if(toastInfo.uiTextureKit) then
 		SetupTextureKitOnRegions(toastInfo.uiTextureKit, self, textureKitRegionFormatStrings, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 		SetupTextureKitOnRegions(toastInfo.uiTextureKit, self, textureKitRegionExpandFormatStrings, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 		SetupTextureKitOnRegions(toastInfo.uiTextureKit, self, textureKitRegionExpandBackgroundFormatStrings, TextureKitConstants.SetVisibility, false);
 		SetupTextureKitOnRegions(toastInfo.uiTextureKit, self, textureKitRegionExpandSpaceOverlayFormatStrings, TextureKitConstants.SetVisibility, false);
 		self:SetupTextureKitOffsets(toastInfo.uiTextureKit);
-	elseif(usesBGTextures) then 
+	elseif(usesBGTextures) then
 		SetupAtlasesOnRegions(self, defaultAtlases, true);
-	end 
+	end
 
 	self:GetParent():SetAnimationState(self.hideParentAnim);
 
-	self.uiTextureKit = toastInfo.uiTextureKit; 
+	self.uiTextureKit = toastInfo.uiTextureKit;
 	self.BannerFrame:SetShown(not usesBGTextures);
 end
 
@@ -473,10 +501,26 @@ function EventToastScenarioBaseToastMixin:OnAnimFinished()
 end
 
 function EventToastScenarioBaseToastMixin:PlayAnim()
-	if self.hideParentAnim then 
-		self.NewStageTextureKit:Play(); 
-	end 
+	if self.hideParentAnim then
+		self.NewStageTextureKit:Play();
+	end
 	self:AnimIn();
+end
+
+function EventToastScenarioBaseToastMixin:SetupGLineAtlas(useWhiteGLineAtlas)
+	local atlas = useWhiteGLineAtlas and "levelup-bar-white" or "levelup-bar-gold"
+	local parent = self:GetParent();
+	parent.GLine:SetAtlas("evergreen-scenario-line-bottom", TextureKitConstants.UseAtlasSize);
+	parent.GLine:SetPoint("BOTTOM", 0, -4);
+	parent.GLine2:SetAtlas("evergreen-scenario-line-top", TextureKitConstants.UseAtlasSize);
+	parent.GLine2:SetPoint("TOP", 0, -5);
+end
+
+function EventToastScenarioBaseToastMixin:SetupBlackBGAtlas()
+	local parent = self:GetParent();
+	parent.BlackBG:SetAtlas("evergreen-scenario-black-background");
+	parent.BlackBG:SetHeight(64);
+	parent:EnableBlackBGAnimation(false);
 end
 
 EventToastScenarioToastMixin = { };
@@ -485,17 +529,16 @@ function EventToastScenarioToastMixin:Setup(toastInfo)
 	EventToastScenarioBaseToastMixin.Setup(self, toastInfo);
 	self.SubTitle:ClearAllPoints();
 
-	if(toastInfo.uiWidgetSetID) then 
+	if(toastInfo.uiWidgetSetID) then
 		self.WidgetContainer:RegisterForWidgetSet(toastInfo.uiWidgetSetID, DefaultWidgetLayout);
 		self.SubTitle:SetPoint("TOP", self.WidgetContainer, "BOTTOM", 0, -5);
-	else 
+	else
 		self.SubTitle:SetPoint("TOP", self.Title, "BOTTOM", 0, 0);
-	end 
+	end
 
-	self:Show(); 
-	self:PlayAnim(); 
+	self:Show();
+	self:PlayAnim();
 end
-
 
 function EventToastScenarioToastMixin:OnAnimFinished()
 	EventToastScenarioBaseToastMixin.OnAnimFinished(self);
@@ -515,22 +558,22 @@ end
 function EventToastScenarioExpandToastMixin:Setup(toastInfo)
 	EventToastScenarioBaseToastMixin.Setup(self, toastInfo);
 	self.Title:SetFontObject("Fancy24Font");
-	self.Title:ClearAllPoints(); 
+	self.Title:ClearAllPoints();
 	self.Title:SetPoint("TOP", self.PaddingFrame, "BOTTOM");
 	self.SubTitle:ClearAllPoints();
-	self.expanded = false; 
-	self.Description:SetText(EVENT_TOAST_NOT_EXPANDED_DESCRIPTION);	
+	self.expanded = false;
+	self.Description:SetText(EVENT_TOAST_NOT_EXPANDED_DESCRIPTION);
 	self.ExpandWidgetContainer:UnregisterForWidgetSet();
 
-	if(toastInfo.uiWidgetSetID) then 
+	if(toastInfo.uiWidgetSetID) then
 		self.WidgetContainer:RegisterForWidgetSet(toastInfo.uiWidgetSetID, DefaultWidgetLayout);
 		self.SubTitle:SetPoint("TOP", self.WidgetContainer, "BOTTOM", 0, -10);
-	else 
+	else
 		self.SubTitle:SetPoint("TOP", self.Title, "BOTTOM", 0, 0);
-	end 
+	end
 
-	self:Show(); 
-	self:PlayAnim(); 
+	self:Show();
+	self:PlayAnim();
 end
 
 function EventToastScenarioExpandToastMixin:OnAnimFinished()
@@ -543,39 +586,39 @@ end
 
 function EventToastScenarioExpandToastMixin:OnClick(button, ...)
 	if (button ~= "LeftButton") then
-		return; 
+		return;
 	end
 	self.SubTitle:ClearAllPoints();
 	local toastInfo = self.toastInfo;
-	if(self.expanded) then 
-		if(toastInfo.uiWidgetSetID) then 
+	if(self.expanded) then
+		if(toastInfo.uiWidgetSetID) then
 			self.SubTitle:SetPoint("TOP", self.WidgetContainer, "BOTTOM", 0, -10);
-		else 
+		else
 			self.SubTitle:SetPoint("TOP", self.Title, "BOTTOM", 0, -10);
 		end
 		self.expanded = false;
 		self.ExpandWidgetContainer:UnregisterForWidgetSet();
-	elseif(toastInfo.extraUiWidgetSetID) then 
+	elseif(toastInfo.extraUiWidgetSetID) then
 		self.ExpandWidgetContainer:RegisterForWidgetSet(toastInfo.extraUiWidgetSetID, DefaultWidgetLayout);
 		self.SubTitle:SetPoint("TOP", self.ExpandWidgetContainer, "BOTTOM", 0, -10);
-		self.ExpandWidgetContainer:Show(); 
-		self.expanded = true; 
-	else 
+		self.ExpandWidgetContainer:Show();
+		self.expanded = true;
+	else
 		self.SubTitle:SetPoint("TOP", self.Title, "BOTTOM", 0, -10);
 		self.expanded = false;
 		self.ExpandWidgetContainer:UnregisterForWidgetSet();
-	end 
+	end
 
-	if(not self.expanded) then 
+	if(not self.expanded) then
 		self.Description:SetText(EVENT_TOAST_NOT_EXPANDED_DESCRIPTION);
-	else 
+	else
 		self.Description:SetText(EVENT_TOAST_EXPANDED_DESCRIPTION)
-	end		
+	end
 	self.ExpandWidgetContainer:SetShown(self.expanded);
 	self:GetParent():Layout();
 	self:SetupTextureKitOffsets(toastInfo.uiTextureKit);
-	local expandClickSoundkit = scenarioExpandSoundKitIDs[toastInfo.uiTextureKit]; 
-	if (expandClickSoundkit) then 
+	local expandClickSoundkit = scenarioExpandSoundKitIDs[toastInfo.uiTextureKit];
+	if (expandClickSoundkit) then
 		PlaySound(expandClickSoundkit);
 	end
 end
@@ -611,19 +654,19 @@ function EventToastWeeklyRewardUpgradeToastMixin:Setup(toastInfo)
 	end);
 end
 
-EventToastWithIconBaseMixin = { }; 
+EventToastWithIconBaseMixin = { };
 
 function EventToastWithIconBaseMixin:OnAnimFinished()
 	self.WidgetContainer:UnregisterForWidgetSet();
 end
 
 function EventToastWithIconBaseMixin:Setup(toastInfo)
-	self.Icon:SetTexture(toastInfo.iconFileID); 
+	self.Icon:SetTexture(toastInfo.iconFileID);
 	self.Title:SetText(toastInfo.title);
 	self.SubTitle:SetText(toastInfo.subtitle);
-	if(toastInfo.subIcon) then 
+	if(toastInfo.subIcon) then
 		self.SubIcon:SetAtlas(toastInfo.subIcon);
-	end 
+	end
 	self.SubIcon:SetShown(toastInfo.subIcon);
 
 	if self.isSideDisplayToast then
@@ -634,10 +677,10 @@ function EventToastWithIconBaseMixin:Setup(toastInfo)
 	end
 
 	self:GetParent():SetAnimationState(self.hideParentAnim);
-	
+
 	self.WidgetContainer:UnregisterForWidgetSet();
 	self.WidgetContainer:SetShown(toastInfo.uiWidgetSetID);
-	if(toastInfo.uiWidgetSetID) then 
+	if(toastInfo.uiWidgetSetID) then
 		self.WidgetContainer:RegisterForWidgetSet(toastInfo.uiWidgetSetID, DefaultWidgetLayout);
 		self.WidgetContainer:ClearAllPoints();
 		if(toastInfo.instructionText ~= "") then
@@ -645,70 +688,91 @@ function EventToastWithIconBaseMixin:Setup(toastInfo)
 		else
 			self.WidgetContainer:SetPoint("TOP", self.Icon, "BOTTOM", 50, -20);
 		end
-	end 
+	end
 
-	self:Layout(); 
-end 
+	self:Layout();
+end
 
 EventToastWithIconNormalMixin = { };
 function EventToastWithIconNormalMixin:Setup(toastInfo)
-	EventToastWithIconBaseMixin.Setup(self, toastInfo); 
-	self:Show(); 
-	self:AnimIn(); 
+	EventToastWithIconBaseMixin.Setup(self, toastInfo);
+	self:Show();
+	self:AnimIn();
 end
 
 EventToastWithIconLargeTextMixin = { };
 function EventToastWithIconLargeTextMixin:Setup(toastInfo)
-	EventToastWithIconBaseMixin.Setup(self, toastInfo); 
+	EventToastWithIconBaseMixin.Setup(self, toastInfo);
 	self.Icon:ClearAllPoints();
 	self.Icon:SetPoint("TOPLEFT", 0, -20);
-	self:Show(); 
-	self:AnimIn(); 
+	self:Show();
+	self:AnimIn();
+end
+
+EventToastFlightpointDiscoveredMixin = { };
+function EventToastFlightpointDiscoveredMixin:Setup(toastInfo)
+	EventToastWithIconBaseMixin.Setup(self, toastInfo);
+
+	self:Show();
+	self:AnimIn();
+end
+
+function EventToastFlightpointDiscoveredMixin:SetupGLineAtlas(useWhiteGLineAtlas)
+	local parent = self:GetParent();
+	local atlas = "UI-World-Quest-golden-line-2x";
+	local glineWidth = self:GetWidth() + 35;
+
+	parent.GLine:SetAtlas(atlas, false);
+	parent.GLine:SetSize(glineWidth, 7);
+	parent.GLine:SetPoint("BOTTOM", 0, -3);
+
+	parent.GLine2:SetAtlas(atlas, false);
+	parent.GLine2:SetSize(glineWidth, 7);
 end
 
 EventToastWithIconWithRarityMixin = { };
 function EventToastWithIconWithRarityMixin:Setup(toastInfo)
-	EventToastWithIconBaseMixin.Setup(self, toastInfo); 
+	EventToastWithIconBaseMixin.Setup(self, toastInfo);
 	local quality = toastInfo.quality;
 
-	if(toastInfo.qualityString) then 
+	if(toastInfo.qualityString) then
 		self.RarityValue:SetText(toastInfo.qualityString);
 	end
 
-	if(quality) then 
+	if(quality) then
 		self.IconBorder:SetVertexColor(ITEM_QUALITY_COLORS[quality].color:GetRGB());
 		self.RarityValue:SetTextColor(ITEM_QUALITY_COLORS[quality].color:GetRGB());
 	end
 	self.IconBorder:SetShown(quality);
-	self.RarityValue:SetShown(toastInfo.qualityString); 
-	self:Show(); 
-	self:AnimIn(); 
+	self.RarityValue:SetShown(toastInfo.qualityString);
+	self:Show();
+	self:AnimIn();
 end
 
 EventToastChallengeModeToastMixin = { };
-function EventToastChallengeModeToastMixin:Setup(toastInfo) 
+function EventToastChallengeModeToastMixin:Setup(toastInfo)
 	self.Title:SetText(toastInfo.title);
 	self.SubTitle:SetText(toastInfo.subtitle);
-	if(toastInfo.time) then 
+	if(toastInfo.time) then
 		self.SubTitle:SetText(toastInfo.subtitle:format(SecondsToClock(toastInfo.time/1000, true)));
-	else 
+	else
 		self.SubTitle:SetText(toastInfo.subtitle);
-	end 
+	end
 	self:GetParent():SetAnimationState(self.hideParentAnim);
-	self:Show(); 
-	self:AnimIn(); 
+	self:Show();
+	self:AnimIn();
 end
 
 EventToastManagerNormalMixin = { };
-function EventToastManagerNormalMixin:Setup(toastInfo) 
+function EventToastManagerNormalMixin:Setup(toastInfo)
 	self:GetParent():SetAnimationState(self.hideParentAnim);
 
 	self.WidgetContainer:UnregisterForWidgetSet();
 	self.WidgetContainer:SetShown(toastInfo.uiWidgetSetID);
-	if(toastInfo.uiWidgetSetID) then 
+	if(toastInfo.uiWidgetSetID) then
 		self.WidgetContainer:RegisterForWidgetSet(toastInfo.uiWidgetSetID, DefaultWidgetLayout);
-	end 
-	self:Layout();
+	end
+	self:MarkDirty();
 end
 
 function EventToastManagerNormalMixin:OnAnimFinished()
@@ -717,7 +781,7 @@ function EventToastManagerNormalMixin:OnAnimFinished()
 end
 
 function EventToastManagerNormalMixin:AnchorWidgetFrame(frame, customOffsetY)
-	if (self.WidgetContainer:IsShown()) then 
+	if (self.WidgetContainer:IsShown()) then
 		self.WidgetContainer:ClearAllPoints();
 		self.WidgetContainer:SetPoint("TOP", frame, "BOTTOM", 0, customOffsetY or -10);
 	end
@@ -775,7 +839,7 @@ local NormalTitleAndSubtitleTextureKitInfo = {
 	},
 };
 
-function EventToastManagerNormalTitleAndSubtitleMixin:Setup(toastInfo) 
+function EventToastManagerNormalTitleAndSubtitleMixin:Setup(toastInfo)
 	EventToastManagerNormalMixin.Setup(self, toastInfo);
 
 	local DefaultYSpacing = -3;
@@ -865,32 +929,55 @@ function EventToastManagerNormalTitleAndSubtitleMixin:Setup(toastInfo)
 	self.SubTitle:SetText(toastInfo.subtitle);
 
 	self:AnchorWidgetFrame(textureKitInfo and textureKitInfo.anchorWidgetToTitle and self.Title or self.SubTitle, textureKitInfo and textureKitInfo.widgetOffsetY);
-	self:Show(); 
-	self:AnimIn(); 
-	self:Layout(); 
+	self:Show();
+	self:AnimIn();
+	self:Layout();
 end
 
 EventToastManagerNormalSingleLineMixin = CreateFromMixins(EventToastManagerNormalMixin);
-function EventToastManagerNormalSingleLineMixin:Setup(toastInfo) 
+function EventToastManagerNormalSingleLineMixin:Setup(toastInfo)
 	EventToastManagerNormalMixin.Setup(self, toastInfo);
 	self.Title:SetText(toastInfo.title);
 	self:AnchorWidgetFrame(self.Title);
-	self:Show(); 
-	self:AnimIn(); 
-	self:Layout(); 
+	self:Show();
+	self:AnimIn();
+	self:Layout();
 end
 
 EventToastManagerNormalBlockTextMixin = CreateFromMixins(EventToastManagerNormalMixin);
-function EventToastManagerNormalBlockTextMixin:Setup(toastInfo) 
+function EventToastManagerNormalBlockTextMixin:Setup(toastInfo)
 	EventToastManagerNormalMixin.Setup(self, toastInfo);
 	self.Title:SetText(toastInfo.title);
 	self:AnchorWidgetFrame(self.Title);
-	self:Show(); 
-	self:AnimIn(); 
-	self:Layout(); 
+	self:Show();
+	self:AnimIn();
+	self:Layout();
 end
 
-EventToastAnimationsMixin = { }; 
+EventToastManagerCapstoneUnlockedMixin = CreateFromMixins(EventToastManagerNormalMixin);
+function EventToastManagerCapstoneUnlockedMixin:Setup(toastInfo)
+	EventToastManagerNormalMixin.Setup(self, toastInfo);
+	if(toastInfo.subIcon) then
+		self.Icon:SetAtlas(toastInfo.subIcon, TextureKitConstants.UseAtlasSize);
+	end
+	self.Title:SetText(toastInfo.title);
+	self.SubTitle:SetText(toastInfo.subtitle);
+	self:AnchorWidgetFrame(self.Title);
+	self:Show();
+	self:Layout();
+	self:AnimIn();
+end
+
+function EventToastManagerCapstoneUnlockedMixin:SetupGLineAtlas(useWhiteGLineAtlas)
+	local parent = self:GetParent();
+	parent:SetupGLineAtlas(useWhiteGLineAtlas);
+
+	local glineWidth = self:GetWidth() + 100;
+	parent.GLine:SetWidth(glineWidth);
+	parent.GLine2:SetWidth(glineWidth);
+end
+
+EventToastAnimationsMixin = { };
 
 function EventToastAnimationsMixin:SetupSideDisplayToast(isFirstToast)
 	self.isSideDisplayToast = true;
@@ -908,10 +995,10 @@ function EventToastAnimationsMixin:OnLoad()
 	self.PlayBanner = function(self)
 		self:BannerPlay();
 	end
-	self.ResumeBanner = function(self) 
+	self.ResumeBanner = function(self)
 		self:ResetAnimations();
-	end	
-	self.StopBanner = function(self) 
+	end
+	self.StopBanner = function(self)
 		self:ResetAnimations();
 	end
 
@@ -930,30 +1017,30 @@ end
 
 function EventToastAnimationsMixin:SetAnimInStartDelay(delay)
 	self.showAnim.anim1:SetStartDelay(delay);
-	if(self.showAnim.anim2) then 
+	if(self.showAnim.anim2) then
 		self.showAnim.anim2:SetStartDelay(delay);
-	end 
+	end
 end
 
 function EventToastAnimationsMixin:SetAnimInEndDelay(delay)
-	if(self.showAnim.anim2) then 
+	if(self.showAnim.anim2) then
 		self.showAnim.anim1:SetEndDelay(0);
 		self.showAnim.anim2:SetEndDelay(delay);
 	else
 		self.showAnim.anim1:SetEndDelay(delay);
-	end 
+	end
 end
 
 function EventToastAnimationsMixin:SetAnimOutStartDelay(delay)
 	self.hideAnim.anim1:SetStartDelay(delay);
-	if(self.hideAnim.anim2) then 
+	if(self.hideAnim.anim2) then
 		self.hideAnim.anim2:SetStartDelay(delay);
-	end 
+	end
 end
 
 function EventToastAnimationsMixin:SetAnimOutDuration(delay)
 	self.hideAnim.anim1:SetDuration(delay);
-	if(self.hideAnim.anim2) then 
+	if(self.hideAnim.anim2) then
 		self.hideAnim.anim2:SetDuration(delay);
 	end
 end
@@ -966,13 +1053,13 @@ function EventToastAnimationsMixin:PauseAnimations()
 	self.hideAnim:Stop();
 	self.showAnim:Finish();
 
-	if(self.BannerFrame and self.BannerFrame:IsShown()) then 
+	if(self.BannerFrame and self.BannerFrame:IsShown()) then
 		self.BannerFrame:SetAlpha(1);
-	end 
+	end
 
-	if(self.NewStageTextureKit) then 
+	if(self.NewStageTextureKit) then
 		self.NewStageTextureKit:Finish();
-	end 
+	end
 
 	self:SetAlpha(1);
 end
@@ -988,7 +1075,17 @@ local defaultAnimOutStartDelay = 1.8;
 local defaultAnimOutDuration = 0.5;
 
 function EventToastAnimationsMixin:BannerPlay()
-	self:GetParent():SetupGLineAtlas(self.useWhiteGlineAtlas);
+	if(self.SetupGLineAtlas) then
+		self:SetupGLineAtlas(self.useWhiteGLineAtlas);
+	else
+		self:GetParent():SetupGLineAtlas(self.useWhiteGlineAtlas);
+	end
+
+	if self.SetupBlackBGAtlas then
+		self:SetupBlackBGAtlas();
+	else
+		self:GetParent():SetupBlackBGAtlas();
+	end
 
 	self:SetAnimInStartDelay(self.animInStartDelay or defaultAnimInStartDelay);
 	self:GetParent():SetAnimStartDelay(self.animInStartDelay or defaultAnimInStartDelay);
@@ -999,8 +1096,8 @@ function EventToastAnimationsMixin:BannerPlay()
 
 	self:SetAnimOutDuration(self.animOutDuration or defaultAnimOutDuration)
 
-	C_Timer.After(self.animInStartDelay or 0, 
-	function() 
+	C_Timer.After(self.animInStartDelay or 0,
+	function()
 		if (self.toastInfo and self.toastInfo.showSoundKitID) then
 			PlaySound(self.toastInfo.showSoundKitID);
 		end
@@ -1039,10 +1136,10 @@ function EventToastAnimationsMixin:OnAnimatedIn()
 end
 
 function EventToastAnimationsMixin:AnimOut()
-	if (not self:ShouldSuppressAnimOut() and not self:GetParent():AreAnimationsPaused() and self.hideAutomatically) then 	
+	if (not self:ShouldSuppressAnimOut() and not self:GetParent():AreAnimationsPaused() and self.hideAutomatically) then
 		self.hideAnim:Play();
-		C_Timer.After(self.hideAnim.anim1:GetStartDelay(), 
-		function() 
+		C_Timer.After(self.hideAnim.anim1:GetStartDelay(),
+		function()
 			if (self.toastInfo and self.toastInfo.hideSoundKitID) then
 				PlaySound(self.toastInfo.hideSoundKitID);
 			end
@@ -1053,8 +1150,8 @@ end
 function EventToastAnimationsMixin:OnAnimatedOut()
 	TopBannerManager_BannerFinished();
 	self:GetParent():DisplayNextToast();
-	self:OnAnimFinished(); 
-	self:Hide(); 
+	self:OnAnimFinished();
+	self:Hide();
 end
 
 function EventToastAnimationsMixin:SetSuppressAnimOut(suppressAnimOut)
@@ -1067,43 +1164,43 @@ function EventToastAnimationsMixin:ShouldSuppressAnimOut()
 end
 
 function EventToastAnimationsMixin:MouseOverTitle()
-	if(not self.toastInfo or not self.Title or (not self.toastInfo.titleTooltip and not self.toastInfo.titleTooltipUiWidgetSetID)) then 
+	if(not self.toastInfo or not self.Title or (not self.toastInfo.titleTooltip and not self.toastInfo.titleTooltipUiWidgetSetID)) then
 		return;
-	end 
+	end
 
 	GameTooltip:SetOwner(self.Title, "ANCHOR_LEFT", 0, 0);
-	if (self.toastInfo.titleTooltip) then 
-		GameTooltip_AddNormalLine(GameTooltip, self.toastInfo.titleTooltip); 
+	if (self.toastInfo.titleTooltip) then
+		GameTooltip_AddNormalLine(GameTooltip, self.toastInfo.titleTooltip);
 	end
 	if (self.toastInfo.titleTooltipUiWidgetSetID) then
 		GameTooltip_AddWidgetSet(GameTooltip, self.toastInfo.titleTooltipUiWidgetSetID);
 	end
-	GameTooltip:Show(); 
+	GameTooltip:Show();
 end
 
 function EventToastAnimationsMixin:MouseOverSubTitle()
-	if(not self.toastInfo or not self.SubTitle or (not self.toastInfo.subtitleTooltip and not self.toastInfo.subtitleTooltipUiWidgetSetID)) then 
+	if(not self.toastInfo or not self.SubTitle or (not self.toastInfo.subtitleTooltip and not self.toastInfo.subtitleTooltipUiWidgetSetID)) then
 		return;
-	end 
+	end
 
 	GameTooltip:SetOwner(self.SubTitle, "ANCHOR_LEFT", 0, -70);
 
-	if (self.toastInfo.subtitleTooltip) then 
-		GameTooltip_AddNormalLine(GameTooltip, self.toastInfo.subtitleTooltip); 
+	if (self.toastInfo.subtitleTooltip) then
+		GameTooltip_AddNormalLine(GameTooltip, self.toastInfo.subtitleTooltip);
 	end
 	if (self.toastInfo.subtitleTooltipUiWidgetSetID) then
 		GameTooltip_AddWidgetSet(GameTooltip, self.toastInfo.subtitleTooltipUiWidgetSetID);
-	end 
-	GameTooltip:Show(); 
+	end
+	GameTooltip:Show();
 end
 
-function EventToastAnimationsMixin:MouseLeave() 
-	GameTooltip:Hide(); 
+function EventToastAnimationsMixin:MouseLeave()
+	GameTooltip:Hide();
 end
 
 EventToastHideButtonMixin = { };
 function EventToastHideButtonMixin:OnClick()
-	self:GetParent():CloseActiveToasts(); 
+	self:GetParent():CloseActiveToasts();
 	self:Hide();
 end
 

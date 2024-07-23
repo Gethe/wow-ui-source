@@ -44,7 +44,7 @@ local CharacterCustomizationShared =
 			MaxValue = 2,
 			Fields =
 			{
-				{ Name = "SelectionPopout", Type = "ChrCustomizationOptionType", EnumValue = 0 },
+				{ Name = "Dropdown", Type = "ChrCustomizationOptionType", EnumValue = 0 },
 				{ Name = "Checkbox", Type = "ChrCustomizationOptionType", EnumValue = 1 },
 				{ Name = "Slider", Type = "ChrCustomizationOptionType", EnumValue = 2 },
 			},
@@ -84,7 +84,7 @@ local CharacterCustomizationShared =
 			{
 				{ Name = "id", Type = "number", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "icon", Type = "textureAtlas", Nilable = false },
 				{ Name = "selectedIcon", Type = "textureAtlas", Nilable = false },
 				{ Name = "undressModel", Type = "bool", Nilable = false },
@@ -104,7 +104,7 @@ local CharacterCustomizationShared =
 			Fields =
 			{
 				{ Name = "id", Type = "number", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "ineligibleChoice", Type = "bool", Nilable = false },
 				{ Name = "isNew", Type = "bool", Nilable = false },
 				{ Name = "swatchColor1", Type = "colorRGB", Mixin = "ColorMixin", Nilable = true },
@@ -130,7 +130,7 @@ local CharacterCustomizationShared =
 			Fields =
 			{
 				{ Name = "id", Type = "number", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "optionType", Type = "ChrCustomizationOptionType", Nilable = false },
 				{ Name = "choices", Type = "table", InnerType = "CharCustomizationChoice", Nilable = false },

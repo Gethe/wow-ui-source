@@ -4,5 +4,4 @@
 ## Dependencies: Blizzard_GlueXML
 ## AllowLoad: glue
 ## AllowLoadGameType: mainline
-## SuppressLocalTableRef: 1
 GlueStubs.xml

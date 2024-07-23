@@ -14,8 +14,14 @@ do
 
 	local function HandleTorghastLevelPickerGossipShow(textureKit)
 		C_AddOns.LoadAddOn("Blizzard_TorghastLevelPicker");
-		TorghastLevelPickerFrame:TryShow(textureKit)
+		TorghastLevelPickerFrame:TryShow(textureKit);
 		return TorghastLevelPickerFrame;
+	end
+
+	local function HandleDelvesDifficultyPickerGossipShow(textureKit)
+		C_AddOns.LoadAddOn("Blizzard_DelvesDifficultyPicker");
+		DelvesDifficultyPickerFrame:TryShow(textureKit);
+		return DelvesDifficultyPickerFrame;
 	end
 
 	function CustomGossipManagerMixin:OnLoad()
@@ -30,6 +36,7 @@ do
 		self:RegisterHandler("soulforges", HandleTorghastLevelPickerGossipShow);
 		self:RegisterHandler("theupperreaches", HandleTorghastLevelPickerGossipShow);
 		self:RegisterHandler("twistingcorridors", HandleTorghastLevelPickerGossipShow);
+		self:RegisterHandler("delves-difficulty-picker", HandleDelvesDifficultyPickerGossipShow);
 	end
 
 end

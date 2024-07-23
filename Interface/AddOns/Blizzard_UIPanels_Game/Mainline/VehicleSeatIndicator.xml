@@ -61,9 +61,6 @@
 				<Texture parentKey="BackgroundTexture"/>
 			</Layer>
 		</Layers>
-		<Frames>
-			<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate" clampedToScreen="true" id="1" hidden="true" />
-		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad" inherit="prepend"/>
 			<OnEvent method="OnEvent"/>

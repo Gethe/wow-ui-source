@@ -226,39 +226,77 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
-				<Size x="10" y="10"/>
-				<Anchors>
-					<Anchor point="TOP" x="-20" y="-10"/>
-				</Anchors>
-			</Frame>
 			<Frame parentKey="PowerBarAlt" inherits="UnitPowerBarAltTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent" relativePoint="RIGHT" x="13" y="5"/>
 				</Anchors>
 			</Frame>
-			<StatusBar parentKey="HealthBar" inherits="TextStatusBar, SecureFrameParentPropagationTemplate" drawLayer="BACKGROUND">
+			<Frame parentKey="HealthBarContainer" inherits="SecureFrameParentPropagationTemplate">
 				<Size x="70" y="10"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="45" y="-19"/>
 				</Anchors>
 				<Frames>
-					<Frame parentKey="MyHealPredictionBar" inherits="PartyFrameBarSegmentTemplate, MyHealPredictionBarTemplate"/>
-					<Frame parentKey="OtherHealPredictionBar" inherits="PartyFrameBarSegmentTemplate, OtherHealPredictionBarTemplate"/>
-					<Frame parentKey="HealAbsorbBar" inherits="PartyFrameBarSegmentTemplate, HealAbsorbBarTemplate"/>
-					<Frame parentKey="TotalAbsorbBar" inherits="PartyFrameBarSegmentTemplate, TotalAbsorbBarTemplate"/>
+					<StatusBar parentKey="TempMaxHealthLoss" hidden="true" drawLayer="BACKGROUND" useParentLevel="true" mixin="TempMaxHealthLossMixin">
+						<BarTexture atlas="UI-HUD-UnitFrame-Player-PortraitOn-Bar-TempHPLoss"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"/>
+						</Anchors>
+					</StatusBar>
+					<StatusBar parentKey="HealthBar" inherits="TextStatusBar, SecureFrameParentPropagationTemplate" drawLayer="BACKGROUND" useParentLevel="true">
+						<Size x="70" y="10"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT"/>
+						</Anchors>
+						<Frames>
+							<Frame parentKey="MyHealPredictionBar" inherits="PartyFrameBarSegmentTemplate, MyHealPredictionBarTemplate"/>
+							<Frame parentKey="OtherHealPredictionBar" inherits="PartyFrameBarSegmentTemplate, OtherHealPredictionBarTemplate"/>
+							<Frame parentKey="HealAbsorbBar" inherits="PartyFrameBarSegmentTemplate, HealAbsorbBarTemplate"/>
+							<Frame parentKey="TotalAbsorbBar" inherits="PartyFrameBarSegmentTemplate, TotalAbsorbBarTemplate"/>
+						</Frames>
+						<Layers>
+							<!-- Setting textureSubLevel to 2 to ensure things are layered above the StatusBar's BarTexture. -->
+							<Layer level="BACKGROUND" textureSubLevel="2">
+								<Texture parentKey="Background" setAllPoints="true" hidden="true">
+									<Color color="BLACK_FONT_COLOR"/>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<Texture parentKey="OverAbsorbGlow" inherits="OverAbsorbGlowTemplate"/>
+								<Texture parentKey="OverHealAbsorbGlow" inherits="OverHealAbsorbGlowTemplate"/>
+							</Layer>
+							
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								self:InitializeTextStatusBar();
+								self.textLockable = 1;
+								self.lockColor = true;
+								self.cvar = "statusText";
+								self.cvarLabel = "STATUS_TEXT_PARTY";
+								self.partyFrame = self:GetParent():GetParent();
+							</OnLoad>
+							<OnEnter inherit="prepend">
+								self.partyFrame:OnEnter();
+							</OnEnter>
+							<OnLeave inherit="prepend">
+								self.partyFrame:OnLeave();
+							</OnLeave>
+							<OnMouseUp>
+								self.partyFrame:Click(button);
+							</OnMouseUp>
+							<OnValueChanged>
+								self.partyFrame:PartyMemberHealthCheck(value);
+							</OnValueChanged>
+							<OnSizeChanged>
+								UnitFrameHealPredictionBars_UpdateSize(self:GetParent());
+							</OnSizeChanged>
+						</Scripts>
+						<BarTexture parentKey="HealthBarTexture" atlas="UI-HUD-UnitFrame-Party-PortraitOn-Bar-Health"/>
+					</StatusBar>
 				</Frames>
 				<Layers>
-					<!-- Setting textureSubLevel to 2 to ensure things are layered above the StatusBar's BarTexture. -->
-					<Layer level="BACKGROUND" textureSubLevel="2">
-						<Texture parentKey="Background" setAllPoints="true" hidden="true">
-							<Color color="BLACK_FONT_COLOR"/>
-						</Texture>
-					</Layer>
-					<Layer level="ARTWORK">
-						<Texture parentKey="OverAbsorbGlow" inherits="OverAbsorbGlowTemplate"/>
-						<Texture parentKey="OverHealAbsorbGlow" inherits="OverHealAbsorbGlowTemplate"/>
-					</Layer>
 					<Layer level="OVERLAY" textureSubLevel="1">
 						<FontString parentKey="CenterText" inherits="TextStatusBarText">
 							<Anchors>
@@ -282,46 +320,21 @@
 								<Anchor point="TOPLEFT" x="-29" y="3"/>
 							</Anchors>
 							<MaskedTextures>
-								<MaskedTexture childKey="MyHealPredictionBar.Fill"/>
-								<MaskedTexture childKey="OtherHealPredictionBar.Fill"/>
-								<MaskedTexture childKey="TotalAbsorbBar.Fill"/>
-								<MaskedTexture childKey="TotalAbsorbBar.TiledFillOverlay"/>
-								<MaskedTexture childKey="OverAbsorbGlow"/>
-								<MaskedTexture childKey="OverHealAbsorbGlow"/>
-								<MaskedTexture childKey="HealAbsorbBar.Fill"/>
-								<MaskedTexture childKey="HealAbsorbBar.LeftShadow"/>
-								<MaskedTexture childKey="HealAbsorbBar.RightShadow"/>
-								<MaskedTexture childKey="Background"/>
+								<MaskedTexture childKey="HealthBar.MyHealPredictionBar.Fill"/>
+								<MaskedTexture childKey="HealthBar.OtherHealPredictionBar.Fill"/>
+								<MaskedTexture childKey="HealthBar.TotalAbsorbBar.Fill"/>
+								<MaskedTexture childKey="HealthBar.TotalAbsorbBar.TiledFillOverlay"/>
+								<MaskedTexture childKey="HealthBar.OverAbsorbGlow"/>
+								<MaskedTexture childKey="HealthBar.OverHealAbsorbGlow"/>
+								<MaskedTexture childKey="HealthBar.HealAbsorbBar.Fill"/>
+								<MaskedTexture childKey="HealthBar.HealAbsorbBar.LeftShadow"/>
+								<MaskedTexture childKey="HealthBar.HealAbsorbBar.RightShadow"/>
+								<MaskedTexture childKey="HealthBar.Background"/>
 							</MaskedTextures>
 						</MaskTexture>
 					</Layer>
 				</Layers>
-				<Scripts>
-					<OnLoad>
-						self:InitializeTextStatusBar();
-						self.textLockable = 1;
-						self.lockColor = true;
-						self.cvar = "statusText";
-						self.cvarLabel = "STATUS_TEXT_PARTY";
-					</OnLoad>
-					<OnEnter inherit="prepend">
-						self:GetParent():OnEnter();
-					</OnEnter>
-					<OnLeave inherit="prepend">
-						self:GetParent():OnLeave();
-					</OnLeave>
-					<OnMouseUp>
-						self:GetParent():Click(button);
-					</OnMouseUp>
-					<OnValueChanged>
-						self:GetParent():PartyMemberHealthCheck(value);
-					</OnValueChanged>
-					<OnSizeChanged>
-						UnitFrameHealPredictionBars_UpdateSize(self:GetParent());
-					</OnSizeChanged>
-				</Scripts>
-				<BarTexture parentKey="HealthBarTexture" atlas="UI-HUD-UnitFrame-Party-PortraitOn-Bar-Health"/>
-			</StatusBar>
+			</Frame>
 			<StatusBar parentKey="ManaBar" inherits="TextStatusBar, SecureFrameParentPropagationTemplate">
 				<Size x="74" y="7"/>
 				<Anchors>

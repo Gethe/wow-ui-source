@@ -50,9 +50,9 @@
 				</KeyValues>
 				<Scripts>
 					<OnShow>
-							if(self:GetParent().SubTitle) then 
+							if(self:GetParent().SubTitle) then
 								self:SetAllPoints(self:GetParent().SubTitle);
-							end 
+							end
 					</OnShow>
 					<OnEnter>
 						self:GetParent():MouseOverSubTitle();
@@ -212,11 +212,11 @@
 			<AnimationGroup parentKey="showAnim" inherits="ShowToastAnimGroupTemplate">
 				<Alpha childKey="BannerFrame" fromAlpha="0" toAlpha="1" duration="0.7" startDelay="0.7" order="2" parentKey="anim2"/>
 			</AnimationGroup>
-			
+
 			<AnimationGroup parentKey="hideAnim" inherits="HideToastAnimGroupTemplate">
 				<Alpha childKey="BannerFrame" fromAlpha="1" toAlpha="0" duration="0.5" startDelay="1.8" order="1" parentKey="anim2"/>
 			</AnimationGroup>
-			
+
 			<AnimationGroup parentKey="NewStageTextureKit" setToFinalAlpha="true">
 				<Scale childKey="BG1" duration="0.33" order="1" fromScaleX="0.001" fromScaleY="1" toScaleX="1" toScaleY="1"/>
 				<Scale childKey="BG2" duration="0.33" order="1" fromScaleX="0.001" fromScaleY="1" toScaleX="1" toScaleY="1"/>
@@ -311,44 +311,28 @@
 				</KeyValues>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture atlas="Banner-BgFiligree" useAtlasSize="true" alphaMode="ADD" alpha="0.3">
+						<Texture atlas="evergreen-scenario-pattern-background" useAtlasSize="true" alphaMode="ADD">
 							<Anchors>
 								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-6"/>
 							</Anchors>
 						</Texture>
-						<Texture atlas="Banner-BgFiligree" useAtlasSize="true" alphaMode="ADD" alpha="0.3">
+						<Texture atlas="evergreen-scenario-pattern-background" useAtlasSize="true" alphaMode="ADD">
 							<Anchors>
-								<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="0"/>
-							</Anchors>
-							<TexCoords left="0" right="1" bottom="0" top="1"/>
-						</Texture>
-					</Layer>
-					<Layer level="BORDER">
-						<Texture atlas="Banner-FiligreeShadow">
-							<Size x="480" y="35"/>
-							<Anchors>
-								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-6"/>
-							</Anchors>
-						</Texture>
-						<Texture atlas="Banner-FiligreeShadow">
-							<Size x="480" y="35"/>
-							<Anchors>
-								<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="0"/>
+								<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="-2"/>
 							</Anchors>
 							<TexCoords left="0" right="1" bottom="0" top="1"/>
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
-						<Texture atlas="Banner-SmallFiligree" useAtlasSize="true">
+						<Texture atlas="evergreen-scenario-filigree-top" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="TOP" x="0" y="4"/>
+								<Anchor point="TOP" x="0" y="2"/>
 							</Anchors>
 						</Texture>
-						<Texture atlas="Banner-SmallFiligree" useAtlasSize="true">
+						<Texture atlas="evergreen-scenario-filigree-bottom" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="BOTTOM" x="0" y="-10"/>
+								<Anchor point="BOTTOM" x="0" y="-7"/>
 							</Anchors>
-							<TexCoords left="0" right="1" bottom="0" top="1"/>
 						</Texture>
 					</Layer>
 				</Layers>
@@ -556,6 +540,41 @@
 		</Layers>
 	</Frame>
 
+	<Frame name="EventToastManagerCapstoneUnlockedTemplate" mixin="EventToastManagerCapstoneUnlockedMixin" inherits="EventToastManagerFrameTemplateNormal" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Spacer" alpha="0">
+					<Size x="32" y="26"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Icon">
+					<Size x="1" y="1"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Spacer" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Title" inherits="GameFont_Gigantic" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="4" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="SubTitle" inherits="SystemFont_Shadow_Huge1" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="BottomSpacer" alpha="0">
+					<Size x="32" y="20"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.SubTitle" relativePoint="BOTTOM" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
 	<Frame name="EventToastManagerFrame" inherits="ResizeLayoutFrame" mixin="EventToastManagerFrameMixin" enableMouse="true" toplevel="true" parent="UIParent" hidden="true" frameStrata="HIGH">
 		<KeyValues>
 			<KeyValue key="fixedWidth" value="418" type="number"/>
@@ -606,7 +625,7 @@
 								</Scripts>
 								<Origin point="BOTTOM"/>
 							</Scale>
-							<Scale scaleX="1.0" scaleY="1000.0" startDelay="0.25" duration="0.15" order="2">
+							<Scale scaleX="1.0" scaleY="1000.0" startDelay="0.25" duration="3.15" order="2">
 								 <Origin point="BOTTOM"/>
 							</Scale>
 						</AnimationGroup>
@@ -657,11 +676,13 @@
 							<Scripts>
 								<OnPlay>
 									local parent = self:GetParent():GetParent();
-									parent.BlackBG:Hide();
 									parent.GLine:Hide();
 									parent.GLine2:Hide();
 									parent.GLine2.grow:Play();
-									parent.BlackBG.grow:Play();
+									if parent.blackBGAnimationEnabled then
+										parent.BlackBG:Hide();
+										parent.BlackBG.grow:Play();
+									end
 								</OnPlay>
 							</Scripts>
 						</AnimationGroup>
@@ -715,7 +736,7 @@
 				<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="1" />
 				<Scripts>
 					<OnFinished>
-						self:GetParent():Hide(); 
+						self:GetParent():Hide();
 					</OnFinished>
 				</Scripts>
 			</AnimationGroup>
@@ -1352,5 +1373,45 @@
 				</Scripts>
 			</Frame>
 		</Frames>
+	</Frame>
+
+	<Frame name="EventToastFlightpointDiscoveredTemplate" mixin="EventToastFlightpointDiscoveredMixin" inherits="EventToastWithIconLargeTextTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="animInStartDelay" value="0" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="FiligreeGlow" atlas="UI-World-Quest-filigree-glow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.$parent.GLine" relativePoint="CENTER" y="-6"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="TopIcon" atlas="UI-Flightpoint-Discovery-Toast-Frame" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.$parent.GLine2" relativePoint="CENTER" y="2"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Title" inherits="GameFontNormalHuge3" justifyH="LEFT" justifyV="BOTTOM">
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" relativeKey="$parent.TopIcon" y="-1"/>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="SubTitle" inherits="SystemFont_Shadow_Med2" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-5"/>
+						<Anchor point="CENTER"/>
+						<Anchor point="BOTTOM" relativePoint="TOP" relativeKey="$parent.$parent.GLine" y="7"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="Filigree" atlas="UI-World-Quest-filigree" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.$parent.GLine" relativePoint="CENTER" y="-6"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 	</Frame>
 </Ui>

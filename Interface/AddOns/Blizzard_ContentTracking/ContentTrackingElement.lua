@@ -87,7 +87,7 @@ end
 
 function ContentTrackingElementMixin:HasTrackableSource()
 	if not self.trackables then
-		return;
+		return false;
 	end
 
 	for i, trackableInfo in ipairs(self.trackables) do
@@ -95,6 +95,8 @@ function ContentTrackingElementMixin:HasTrackableSource()
 			return true;
 		end
 	end
+
+	return false;
 end
 
 function ContentTrackingElementMixin:SetTrackingCheckmarkShown(shouldShow)

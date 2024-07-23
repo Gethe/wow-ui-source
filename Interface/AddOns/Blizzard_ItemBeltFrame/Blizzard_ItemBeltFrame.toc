@@ -2,7 +2,6 @@
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
 ## Dependencies: Blizzard_UIPanels_Game, Blizzard_ActionBar
-## SuppressLocalTableRef: 1
 ## AllowLoadGameType: wowlabs
 ## AllowLoad: Game
 ItemBeltFrame.lua

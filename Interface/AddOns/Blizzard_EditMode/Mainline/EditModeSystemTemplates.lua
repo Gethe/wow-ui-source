@@ -129,7 +129,7 @@ function EditModeSystemMixin:SetScaleOverride(newScale)
 		UIParent_ManageFramePositions();
 
 		if self.isRightManagedFrame and ObjectiveTrackerFrame and ObjectiveTrackerFrame:IsInDefaultPosition() then
-			ObjectiveTracker_Update();
+			ObjectiveTrackerFrame:Update();
 		end
 	end
 end
@@ -2009,7 +2009,7 @@ function EditModeObjectiveTrackerSystemMixin:OnEditModeEnter()
 
 	self.wascollapsedOnEditModeEnter = self.collapsed;
 	if self.collapsed then
-		ObjectiveTracker_Expand();
+		ObjectiveTrackerFrame:Expand();
 	end
 end
 
@@ -2017,14 +2017,14 @@ function EditModeObjectiveTrackerSystemMixin:OnEditModeExit()
 	EditModeSystemMixin.OnEditModeExit(self);
 
 	if self.wascollapsedOnEditModeEnter and not self.collapsed then
-		ObjectiveTracker_Collapse();
+		ObjectiveTrackerFrame:Collapse();
 	end
 end
 
 function EditModeObjectiveTrackerSystemMixin:OnDragStop()
 	EditModeSystemMixin.OnDragStop(self);
 
-	ObjectiveTracker_UpdateHeight();
+	ObjectiveTrackerFrame:UpdateHeight();
 end
 
 function EditModeObjectiveTrackerSystemMixin:AnchorSelectionFrame()
@@ -2035,7 +2035,7 @@ end
 
 function EditModeObjectiveTrackerSystemMixin:ResetToDefaultPosition()
 	EditModeSystemMixin.ResetToDefaultPosition(self);
-	ObjectiveTracker_UpdateHeight();
+	ObjectiveTrackerFrame:UpdateHeight();
 end
 
 function EditModeObjectiveTrackerSystemMixin:ShouldShowSetting(setting)
@@ -2052,12 +2052,15 @@ end
 
 function EditModeObjectiveTrackerSystemMixin:UpdateSystemSettingHeight()
 	self.editModeHeight = self:GetSettingValue(Enum.EditModeObjectiveTrackerSetting.Height);
-	ObjectiveTracker_UpdateHeight();
+	ObjectiveTrackerFrame:UpdateHeight();
 end
 
 function EditModeObjectiveTrackerSystemMixin:UpdateSystemSettingOpacity()
-	self.editModeOpacity = self:GetSettingValue(Enum.EditModeObjectiveTrackerSetting.Opacity);
-	ObjectiveTracker_UpdateOpacity();
+	ObjectiveTrackerManager:SetOpacity(self:GetSettingValue(Enum.EditModeObjectiveTrackerSetting.Opacity));
+end
+
+function EditModeObjectiveTrackerSystemMixin:UpdateSystemSettingTextSize()
+	ObjectiveTrackerManager:SetTextSize(self:GetSettingValue(Enum.EditModeObjectiveTrackerSetting.TextSize));
 end
 
 function EditModeObjectiveTrackerSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
@@ -2072,6 +2075,8 @@ function EditModeObjectiveTrackerSystemMixin:UpdateSystemSetting(setting, entire
 		self:UpdateSystemSettingHeight();
 	elseif setting == Enum.EditModeObjectiveTrackerSetting.Opacity and self:HasSetting(Enum.EditModeObjectiveTrackerSetting.Opacity) then
 		self:UpdateSystemSettingOpacity();
+	elseif setting == Enum.EditModeObjectiveTrackerSetting.TextSize and self:HasSetting(Enum.EditModeObjectiveTrackerSetting.TextSize) then
+		self:UpdateSystemSettingTextSize();
 	end
 
 	self:ClearDirtySetting(setting);
@@ -2080,7 +2085,7 @@ end
 function EditModeObjectiveTrackerSystemMixin:OnAnyEditModeSystemAnchorChanged()
 	EditModeSystemMixin.OnAnyEditModeSystemAnchorChanged(self);
 
-	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MOVED);
+	ObjectiveTrackerFrame:Update(OBJECTIVE_TRACKER_UPDATE_MOVED);
 end
 
 EditModeMicroMenuSystemMixin = {};

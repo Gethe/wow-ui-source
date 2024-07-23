@@ -32,7 +32,7 @@ end
 
 function MonkLightEnergyMixin.OnRelease(framePool, self)
 	self:ResetVisuals();
-	FramePool_HideAndClearAnchors(framePool, self);
+	Pool_HideAndClearAnchors(framePool, self);
 end
 
 function MonkLightEnergyMixin:SetActive(active)

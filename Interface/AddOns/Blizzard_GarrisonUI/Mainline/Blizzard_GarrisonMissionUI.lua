@@ -191,9 +191,6 @@ function GarrisonFollowerMission:SelectTab(id)
 	else
 		self.TitleText:SetText(GARRISON_FOLLOWERS_TITLE);
 	end
-	if ( UIDropDownMenu_GetCurrentDropDown() == self.OptionDropDown ) then
-		CloseDropDownMenus();
-	end
 end
 
 function GarrisonFollowerMission:OnClickMission(missionInfo)
@@ -434,7 +431,6 @@ end
 
 function GarrisonFollowerMission:OnDragStartFollowerButton(placer, frame, yOffset)
 	GarrisonMission.OnDragStartFollowerButton(self, placer, frame, yOffset);
-	CloseDropDownMenus();
 end
 
 function GarrisonFollowerMission:OnMouseUpMissionFollower(frame, button)
@@ -745,82 +741,6 @@ function GarrisonFollowerMission:CheckRewardButtons(rewardButtons, itemID)
 			GarrisonMissionFrame_SetItemRewardDetails(frame);
 		end
 	end
-end
-
----------------------------------------------------------------------------------
---- Follower Dropdown                                                         ---
----------------------------------------------------------------------------------
-function GarrisonFollowerOptionDropDown_Initialize(self)
-	local info = UIDropDownMenu_CreateInfo();
-	info.notCheckable = true;
-	local missionFrame = self:GetParent():GetParent();
-	local missionPage;
-	if (missionFrame.MissionTab) then
-		missionPage = missionFrame:GetMissionPage();
-	end
-
-	local follower = self.followerID and C_Garrison.GetFollowerInfo(self.followerID);
-	if ( follower ) then
-		if ( missionPage and missionPage:IsVisible() and missionPage.missionInfo ) then
-			info.text = GARRISON_MISSION_ADD_FOLLOWER;
-			info.func = function()
-				missionPage:AddFollower(self.followerID);
-			end
-			if ( C_Garrison.GetNumFollowersOnMission(missionPage.missionInfo.missionID) >= missionPage.missionInfo.numFollowers or C_Garrison.GetFollowerStatus(self.followerID)) then
-				info.disabled = 1;
-			end
-			UIDropDownMenu_AddButton(info);
-		end
-
-		local followerStatus = C_Garrison.GetFollowerStatus(self.followerID);
-		if ( followerStatus == GARRISON_FOLLOWER_INACTIVE ) then
-			info.text = GARRISON_ACTIVATE_FOLLOWER;
-			local followerInfo = C_Garrison.GetFollowerInfo(self.followerID);
-			if ( C_Garrison.GetNumFollowerActivationsRemaining(GarrisonFollowerOptions[followerInfo.followerTypeID].garrisonType) == 0 ) then
-				info.disabled = 1;
-				info.tooltipWhileDisabled = 1;
-				info.tooltipTitle = GARRISON_ACTIVATE_FOLLOWER;
-				info.tooltipText = GARRISON_NO_MORE_FOLLOWER_ACTIVATIONS;
-				info.tooltipOnButton = 1;
-			elseif ( C_Garrison.GetFollowerActivationCost() > GetMoney() ) then
-				info.tooltipWhileDisabled = 1;
-				info.tooltipTitle = GARRISON_ACTIVATE_FOLLOWER;
-				info.tooltipText = format(GARRISON_CANNOT_AFFORD_FOLLOWER_ACTIVATION, GetMoneyString(C_Garrison.GetFollowerActivationCost()));
-				info.tooltipOnButton = 1;
-				info.disabled = 1;
-			else
-				info.disabled = nil;
-				info.func = function()
-					StaticPopup_Show("ACTIVATE_FOLLOWER", follower.name, nil, self.followerID);
-				end
-			end
-		else
-			info.text = GARRISON_DEACTIVATE_FOLLOWER;
-			info.func = function()
-				StaticPopup_Show("DEACTIVATE_FOLLOWER", follower.name, nil, self.followerID);
-			end
-			if ( follower.isTroop ) then
-				info.disabled = 1;
-			elseif ( followerStatus == GARRISON_FOLLOWER_ON_MISSION ) then
-				info.disabled = 1;
-				info.tooltipWhileDisabled = 1;
-				info.tooltipTitle = GARRISON_DEACTIVATE_FOLLOWER;
-				info.tooltipText = GARRISON_FOLLOWER_CANNOT_DEACTIVATE_ON_MISSION;
-				info.tooltipOnButton = 1;
-			elseif ( not C_Garrison.IsAboveFollowerSoftCap(missionFrame.followerTypeID) ) then
-				info.disabled = 1;
-			else
-				info.disabled = nil;
-			end
-		end
-		UIDropDownMenu_AddButton(info);
-	end
-
-	info.text = CANCEL;
-	info.tooltipTitle = nil;
-	info.func = nil;
-	info.disabled = nil;
-	UIDropDownMenu_AddButton(info);
 end
 
 ---------------------------------------------------------------------------------

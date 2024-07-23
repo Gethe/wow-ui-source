@@ -1,11 +1,13 @@
 REQUIRED_REST_HOURS = 5;
 
 function PlayerFrame_OnLoad(self)
+	local healthBarContainer = PlayerFrame_GetHealthBarContainer();
 	local healthBar = PlayerFrame_GetHealthBar();
 	local manaBar = PlayerFrame_GetManaBar();
+	local tempMaxHealthLossBar = PlayerFrame_GetTempMaxHealthLossBar();
 	UnitFrame_Initialize(self, "player", PlayerName, self.frameType, self.PlayerFrameContainer.PlayerPortrait,
 						 healthBar,
-						 healthBar.HealthBarText,
+						 healthBarContainer.HealthBarText,
 						 manaBar,
 						 manaBar.ManaBarText,
 						 PlayerFrame.PlayerFrameContainer.FrameFlash, nil, nil,
@@ -15,20 +17,30 @@ function PlayerFrame_OnLoad(self)
 						 healthBar.OverAbsorbGlow,
 						 healthBar.OverHealAbsorbGlow,
 						 healthBar.HealAbsorbBar,
-						 manaBar.ManaCostPredictionBar);
+						 manaBar.ManaCostPredictionBar,
+						 tempMaxHealthLossBar);
 
 	self.statusCounter = 0;
 	self.statusSign = -1;
 
+	healthBar:SetBarText(healthBarContainer.HealthBarText, healthBarContainer.LeftText, healthBarContainer.RightText);
+
 	local healthBarTexture = healthBar:GetStatusBarTexture();
-	healthBarTexture:AddMaskTexture(healthBar.HealthBarMask);
+	healthBarTexture:AddMaskTexture(healthBarContainer.HealthBarMask);
 	healthBarTexture:SetTexelSnappingBias(0);
 	healthBarTexture:SetSnapToPixelGrid(false);
 	
-	local healthLossTexture = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarArea.PlayerFrameHealthBarAnimatedLoss:GetStatusBarTexture();
-	healthLossTexture:AddMaskTexture(healthBar.HealthBarMask);
+	local healthLossTexture = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.PlayerFrameHealthBarAnimatedLoss:GetStatusBarTexture();
+	healthLossTexture:AddMaskTexture(healthBarContainer.HealthBarMask);
 	healthLossTexture:SetTexelSnappingBias(0);
 	healthLossTexture:SetSnapToPixelGrid(false);
+	
+	tempMaxHealthLossBar:InitalizeMaxHealthLossBar(healthBarContainer, healthBar, healthBarContainer.TempMaxHealthLossDivider);
+	
+	local tempMaxHPLossTexture = tempMaxHealthLossBar:GetStatusBarTexture();
+	tempMaxHPLossTexture:AddMaskTexture(healthBarContainer.HealthBarMask);
+	tempMaxHPLossTexture:SetTexelSnappingBias(0);
+	tempMaxHPLossTexture:SetSnapToPixelGrid(false);
 
 	manaBar.FeedbackFrame:AddMaskTexture(manaBar.ManaBarMask);
 	local manaBarTexture = manaBar:GetStatusBarTexture();
@@ -64,12 +76,25 @@ function PlayerFrame_OnLoad(self)
 	-- Chinese playtime stuff
 	self:RegisterEvent("PLAYTIME_CHANGED");
 
-	local showmenu = function()
-		ToggleDropDownMenu(1, nil, PlayerFrameDropDown, "PlayerFrame", 106, 27);
+	UIParent_UpdateTopFramePositions();
+
+	local function OpenContextMenu(frame, unit, button, isKeyPress)
+		local which = nil;
+		local contextData = {
+			fromPlayerFrame = true;
+		};
+
+		if self.unit == "vehicle" then
+			which = "VEHICLE";
+			contextData.unit = "vehicle";
+		else
+			which = "SELF";
+			contextData.unit = "player";
+		end
+		UnitPopup_OpenMenu(which, contextData);
 	end
 
-	UIParent_UpdateTopFramePositions();
-	SecureUnitButton_OnLoad(self, "player", showmenu);
+	SecureUnitButton_OnLoad(self, "player", OpenContextMenu);
 end
 
 function PlayerFrame_OnEvent(self, event, ...)
@@ -210,7 +235,15 @@ function PlayerFrame_GetPlayerFrameContentContextual()
 end
 
 function PlayerFrame_GetHealthBar()
-	return PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarArea.HealthBar;
+	return PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.HealthBar;
+end
+
+function PlayerFrame_GetHealthBarContainer()
+	return PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer;
+end
+
+function PlayerFrame_GetTempMaxHealthLossBar()
+	return PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.PlayerFrameTempMaxHealthLoss;
 end
 
 function PlayerFrame_GetManaBar()
@@ -530,6 +563,7 @@ end
 function PlayerFrame_ToVehicleArt(self, vehicleType)
 	PlayerFrame.state = "vehicle";
 
+	local healthBarContainer = PlayerFrame_GetHealthBarContainer();
 	local healthBar = PlayerFrame_GetHealthBar();
 	local manaBar = PlayerFrame_GetManaBar();
 
@@ -552,15 +586,15 @@ function PlayerFrame_ToVehicleArt(self, vehicleType)
 	statusTexture:SetPoint("TOPLEFT", frameFlash:GetParent(), "TOPLEFT", 11, -8);
 
 	-- Update health bar
-	healthBar:SetWidth(118);
+	healthBarContainer:SetWidth(118);
 	if UNIT_FRAME_SHOW_HEALTH_ONLY then 
-		healthBar:SetHeight(32);
+		healthBarContainer:SetHeight(32);
 	else 
-		healthBar:SetHeight(20);
+		healthBarContainer:SetHeight(20);
 	end
-	healthBar:SetPoint("TOPLEFT", 91, -40);
+	healthBarContainer:SetPoint("TOPLEFT", 91, -40);
 
-	healthBar.HealthBarMask:SetPoint("TOPLEFT", healthBar.HealthBarMask:GetParent(), "TOPLEFT", -8, 6);
+	healthBarContainer.HealthBarMask:SetPoint("TOPLEFT", healthBarContainer, "TOPLEFT", -8, 6);
 
 	-- Update mana bar
 	manaBar:SetWidth(118);
@@ -611,6 +645,7 @@ end
 function PlayerFrame_ToPlayerArt(self)
 	PlayerFrame.state = "player";
 
+	local healthBarContainer = PlayerFrame_GetHealthBarContainer();
 	local healthBar = PlayerFrame_GetHealthBar();
 	local manaBar = PlayerFrame_GetManaBar();
 	local alternatePowerBar = PlayerFrame_GetAlternatePowerBar();
@@ -648,19 +683,19 @@ function PlayerFrame_ToPlayerArt(self)
 	statusTexture:SetAtlas("UI-HUD-UnitFrame-Player-PortraitOn-Status", TextureKitConstants.UseAtlasSize);
 	statusTexture:SetPoint("TOPLEFT", frameFlash:GetParent(), "TOPLEFT", 18, -14);
 
-	healthBar:SetWidth(124);
-	healthBar:SetPoint("TOPLEFT", 85, -41);
+	healthBarContainer:SetWidth(124);
+	healthBarContainer:SetPoint("TOPLEFT", 85, -41);
 
-	healthBar.HealthBarMask:SetPoint("TOPLEFT", healthBar.HealthBarMask:GetParent(), "TOPLEFT", -2, 6);
+	healthBarContainer.HealthBarMask:SetPoint("TOPLEFT", healthBar, "TOPLEFT", -2, 6);
 
 	if UNIT_FRAME_SHOW_HEALTH_ONLY then
-		healthBar:SetHeight(32);
-		healthBar.HealthBarMask:SetAtlas("plunderstorm-ui-hud-unitframe-player-portraiton-bar-health-mask");
-		healthBar.HealthBarMask:SetHeight(37);
+		healthBarContainer:SetHeight(32);
+		healthBarContainer.HealthBarMask:SetAtlas("plunderstorm-ui-hud-unitframe-player-portraiton-bar-health-mask");
+		healthBarContainer.HealthBarMask:SetHeight(37);
 	else
-		healthBar:SetHeight(19);
-		healthBar.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Player-PortraitOn-Bar-Health-Mask");
-		healthBar.HealthBarMask:SetHeight(31);
+		healthBarContainer:SetHeight(19);
+		healthBarContainer.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Player-PortraitOn-Bar-Health-Mask");
+		healthBarContainer.HealthBarMask:SetHeight(31);
 	end
 
 	-- Update mana bar
@@ -733,23 +768,6 @@ function PlayerFrame_OnAlternatePowerBarDisabled(alternatePowerBar)
 end
 
 --
--- Functions related to the frame dropdown.
---
-
-function PlayerFrameDropDown_OnLoad(self)
-	UIDropDownMenu_SetInitializeFunction(self, PlayerFrameDropDown_Initialize);
-	UIDropDownMenu_SetDisplayMode(self, "MENU");
-end
-
-function PlayerFrameDropDown_Initialize()
-	if (PlayerFrame.unit == "vehicle") then
-		UnitPopup_ShowMenu(PlayerFrameDropDown, "VEHICLE", "vehicle");
-	else
-		UnitPopup_ShowMenu(PlayerFrameDropDown, "SELF", "player");
-	end
-end
-
---
 -- Functions for having the cast bar underneath the player frame.
 --
 
@@ -810,4 +828,13 @@ PlayerFrameBottomManagedFramesContainerMixin = {};
 function PlayerFrameBottomManagedFramesContainerMixin:Layout()
 	LayoutMixin.Layout(self);
 	PlayerFrame_AdjustAttachments();
+end
+
+TempMaxHealthLossDividerMixin = {};
+
+function TempMaxHealthLossDividerMixin:SetXPosition(xPosition)
+	self.TempHPLossDividerShadow:SetPoint("CENTER", self, "LEFT", xPosition, 0);
+	self.TempHPLossDividerMask:SetPoint("CENTER", self, "LEFT", xPosition, 0);
+	--Hide when position = 0
+	self:SetShown(xPosition ~= 0);
 end

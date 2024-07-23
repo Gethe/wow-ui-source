@@ -95,7 +95,7 @@ function ProfessionsRecipeSchematicFormMixin:OnLoad()
 		slot.Button:SetScript("OnEnter", nil);
 		slot.Button:SetScript("OnClick", nil);
 		slot.Button:SetScript("OnMouseDown", nil);
-		FramePool_HideAndClearAnchors(pool, slot);
+		Pool_HideAndClearAnchors(pool, slot);
 	end
 
 	self.reagentSlotPool = CreateFramePool("FRAME", self, "ProfessionsReagentSlotTemplate", PoolReset);
@@ -103,8 +103,8 @@ function ProfessionsRecipeSchematicFormMixin:OnLoad()
 
 	self.RecraftingRequiredTools:SetPoint("TOPLEFT", self.RecraftingOutputText, "BOTTOMLEFT", 0, -4);
 
-	self.AllocateBestQualityCheckBox.text:SetText(LIGHTGRAY_FONT_COLOR:WrapTextInColorCode(PROFESSIONS_USE_BEST_QUALITY_REAGENTS));
-	self.AllocateBestQualityCheckBox:SetScript("OnClick", function(button, buttonName, down)
+	self.AllocateBestQualityCheckbox.text:SetText(LIGHTGRAY_FONT_COLOR:WrapTextInColorCode(PROFESSIONS_USE_BEST_QUALITY_REAGENTS));
+	self.AllocateBestQualityCheckbox:SetScript("OnClick", function(button, buttonName, down)
 		local checked = button:GetChecked();
 		Professions.SetShouldAllocateBestQualityReagents(checked);
 
@@ -113,12 +113,12 @@ function ProfessionsRecipeSchematicFormMixin:OnLoad()
 		self:UpdateAllSlots();
 
 		-- Trick to re-fire the OnEnter script to update the tooltip.
-		self.AllocateBestQualityCheckBox:Hide();
-		self.AllocateBestQualityCheckBox:Show();
+		self.AllocateBestQualityCheckbox:Hide();
+		self.AllocateBestQualityCheckbox:Show();
 		PlaySound(SOUNDKIT.UI_PROFESSION_USE_BEST_REAGENTS_CHECKBOX);
 	end);
 
-	self.AllocateBestQualityCheckBox:SetScript("OnEnter", function(button)
+	self.AllocateBestQualityCheckbox:SetScript("OnEnter", function(button)
 		GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
 		local checked = button:GetChecked();
 		if checked then
@@ -128,11 +128,11 @@ function ProfessionsRecipeSchematicFormMixin:OnLoad()
 		end
 		GameTooltip:Show();
 	end);
-	self.AllocateBestQualityCheckBox:SetScript("OnLeave", GameTooltip_Hide);
+	self.AllocateBestQualityCheckbox:SetScript("OnLeave", GameTooltip_Hide);
 
-	self.TrackRecipeCheckBox.text:SetText(LIGHTGRAY_FONT_COLOR:WrapTextInColorCode(PROFESSIONS_TRACK_RECIPE));
-	self.TrackRecipeCheckBox:SetPoint("TOPRIGHT", -(self.TrackRecipeCheckBox.text:GetStringWidth() + 20), -16);
-	self.TrackRecipeCheckBox:SetScript("OnClick", function(button, buttonName, down)
+	self.TrackRecipeCheckbox.text:SetText(LIGHTGRAY_FONT_COLOR:WrapTextInColorCode(PROFESSIONS_TRACK_RECIPE));
+	self.TrackRecipeCheckbox:SetPoint("TOPRIGHT", -(self.TrackRecipeCheckbox.text:GetStringWidth() + 20), -16);
+	self.TrackRecipeCheckbox:SetScript("OnClick", function(button, buttonName, down)
 		local currentRecipeInfo = self:GetRecipeInfo();
 		local checked = button:GetChecked();
 
@@ -146,7 +146,7 @@ function ProfessionsRecipeSchematicFormMixin:OnLoad()
 	self.Stars:SetPoint("TOPLEFT", self.OutputText, "TOPLEFT", 0, -15);
 	self.Stars:SetScript("OnLeave", GameTooltip_Hide);
 
-	self.RecipeLevelSelector:SetSelectorCallback(function(recipeInfo, level)
+	self.RecipeLevelDropdown:SetSelectionCallback(function(recipeInfo, level)
 		self:SetSelectedRecipeLevel(recipeInfo.recipeID, level);
 		self:Init(recipeInfo);
 	end);
@@ -224,7 +224,7 @@ function ProfessionsRecipeSchematicFormMixin:OnEvent(event, ...)
 		local recipeID, tracked = ...
 		local isCurrent = self:IsCurrentRecipe(recipeID);
 		if isCurrent then
-			self.TrackRecipeCheckBox:SetChecked(tracked);
+			self.TrackRecipeCheckbox:SetChecked(tracked);
 		end
 	elseif event == "TRADE_SKILL_ITEM_UPDATE" then
 		if self.transaction and self.transaction:IsRecraft() then
@@ -285,10 +285,11 @@ function ProfessionsRecipeSchematicFormMixin:GetRecipeOperationInfo()
 			return C_TradeSkillUI.GetGatheringOperationInfo(recipeInfo.recipeID);
 		elseif self.recipeSchematic.hasCraftingOperationInfo then
 			local recraftItemGUID, recraftOrderID = self.transaction:GetRecraftAllocation();
+			local applyConcentration = self.transaction:IsApplyingConcentration();
 			if recraftOrderID then
-				return C_TradeSkillUI.GetCraftingOperationInfoForOrder(recipeInfo.recipeID, self.transaction:CreateCraftingReagentInfoTbl(), recraftOrderID);
+				return C_TradeSkillUI.GetCraftingOperationInfoForOrder(recipeInfo.recipeID, self.transaction:CreateCraftingReagentInfoTbl(), recraftOrderID, applyConcentration);
 			else
-				return C_TradeSkillUI.GetCraftingOperationInfo(recipeInfo.recipeID, self.transaction:CreateCraftingReagentInfoTbl(), self.transaction:GetAllocationItemGUID());
+				return C_TradeSkillUI.GetCraftingOperationInfo(recipeInfo.recipeID, self.transaction:CreateCraftingReagentInfoTbl(), self.transaction:GetAllocationItemGUID(), applyConcentration);
 			end
 		end
 	end
@@ -349,7 +350,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 	self.Stars:SetScript("OnEnter", nil);
 	self.Stars:Hide();
 	self.RecipeLevelBar:Hide();
-	self.RecipeLevelSelector:Hide();
+	self.RecipeLevelDropdown:Hide();
 	self.MinimizedCooldown:Hide();
 	self.MinimizedCooldown:SetText("");
 	self.Cooldown:Hide();
@@ -357,19 +358,20 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 	self.RecipeSourceButton:Hide();
 	self.FirstCraftBonus:Hide();
 	self.FavoriteButton:Hide();
-	self.TrackRecipeCheckBox:Hide();
-	self.AllocateBestQualityCheckBox:Hide();
+	self.TrackRecipeCheckbox:Hide();
+	self.AllocateBestQualityCheckbox:Hide();
 
 	self.Reagents:Hide();
 	self.OptionalReagents:Hide();
 	self.FinishingReagents:Hide();
+	self.Concentrate:Hide();
 	self.Details:Hide();
 
 	self.currentRecipeInfo = recipeInfo;
 
-	local mimimized = ProfessionsUtil.IsCraftingMinimized();
+	local minimized = ProfessionsUtil.IsCraftingMinimized();
 	if self.NineSlice then
-		self.NineSlice:SetShown(not self.isInspection and not mimimized);
+		self.NineSlice:SetShown(not self.isInspection and not minimized);
 	end
 
 	local hasRecipe = recipeInfo ~= nil;
@@ -425,7 +427,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		end
 	end
 
-	if mimimized or self.isInspection then
+	if minimized or self.isInspection then
 		self.OutputIcon:SetPoint("TOPLEFT", 28, -33);
 		self.RecraftingOutputText:SetPoint("TOPLEFT", 28, -12);
 	else
@@ -442,7 +444,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 
 		self.FavoriteButton:ClearAllPoints();
 
-		if mimimized then
+		if minimized then
 			self.FavoriteButton:SetPoint("TOPRIGHT", -10, -10);
 		else
 			self.FavoriteButton:SetPoint("LEFT", self.OutputText, "RIGHT", 4, 1);
@@ -489,9 +491,9 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		end
 	end
 
-	local shouldShowTrackRecipe = not (mimimized or self.isInspection) and self.showTrackRecipe and self.transaction:HasReagentSlots() and Professions.CanTrackRecipe(recipeInfo);
-	self.TrackRecipeCheckBox:SetShown(shouldShowTrackRecipe);
-	self.TrackRecipeCheckBox:SetChecked(C_TradeSkillUI.IsRecipeTracked(recipeInfo.recipeID, isRecraft));
+	local shouldShowTrackRecipe = not (minimized or self.isInspection) and self.showTrackRecipe and self.transaction:HasReagentSlots() and Professions.CanTrackRecipe(recipeInfo);
+	self.TrackRecipeCheckbox:SetShown(shouldShowTrackRecipe);
+	self.TrackRecipeCheckbox:SetChecked(C_TradeSkillUI.IsRecipeTracked(recipeInfo.recipeID, isRecraft));
 
 	-- If the item we're creating has no quality then default to using the lowest quality
 	-- reagents. If so, also hide the check box so that the player doesn't reactivate the option for no benefit.
@@ -568,7 +570,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		end
 			
 		local cooldownFontString;
-		if mimimized then
+		if minimized then
 			cooldownFontString = self.MinimizedCooldown;
 		else
 			cooldownFontString = self.Cooldown;
@@ -577,7 +579,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		local shown = UpdateText(cooldownFontString);
 		cooldownFontString:SetShown(shown);
 		if shown then
-			if mimimized then
+			if minimized then
 				local anchorTo;
 				if #C_TradeSkillUI.GetRecipeRequirements(recipeID) > 0 then
 					anchorTo = isRecraft and self.RecraftingRequiredTools or self.RequiredTools;
@@ -611,7 +613,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		sourceTextIsForNextRank = true;
 	end
 
-	if (not (mimimized or self.isInspection or isRecraft)) and sourceText then
+	if (not (minimized or self.isInspection or isRecraft)) and sourceText then
 		if sourceTextIsForNextRank then
 			self.RecipeSourceButton.Text:SetText(TRADESKILL_NEXT_RANK_HEADER);
 		else
@@ -629,7 +631,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		organizer:Add(self.RecipeSourceButton, LayoutEntry.Source, 0, 10);
 	end
 
-	if not (mimimized or self.isInspection or isRecraft) and recipeInfo.learned and (not self.RecipeSourceButton:IsVisible()) and C_TradeSkillUI.IsRecipeFirstCraft(recipeID) then
+	if not (minimized or self.isInspection or isRecraft) and recipeInfo.learned and (not self.RecipeSourceButton:IsVisible()) and C_TradeSkillUI.IsRecipeFirstCraft(recipeID) then
 		self.FirstCraftBonus:Show();
 		organizer:Add(self.FirstCraftBonus, LayoutEntry.FirstCraftBonus, 0, 10);
 	end
@@ -640,7 +642,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 	self.loader = CreateProfessionsRecipeLoader(self.recipeSchematic, function()
 		local reagents = self.transaction:CreateCraftingReagentInfoTbl();
 
-		if not (mimimized or self.isInspection or isRecraft) then
+		if not (minimized or self.isInspection or isRecraft) then
 			self:UpdateRecipeDescription();
 		end
 		
@@ -657,8 +659,8 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 			text = WrapTextInColor(self.recipeSchematic.name, NORMAL_FONT_COLOR);
 		end
 		
-		local maxWidth = mimimized and 250 or 800;
-		local multiline = mimimized;
+		local maxWidth = minimized and 250 or 800;
+		local multiline = minimized;
 		if isRecipeInfoRecraft then
 			SetTextToFit(self.RecraftingOutputText, PROFESSIONS_CRAFTING_RECRAFTING, maxWidth, multiline);
 		elseif isRecraft then
@@ -690,7 +692,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 	end);
 
 	if Professions.HasRecipeRanks(recipeInfo) then
-		if not mimimized then
+		if not minimized then
 			local rank = Professions.GetRecipeRankLearned(recipeInfo);
 
 			self.Stars:SetScript("OnEnter", function()
@@ -706,17 +708,21 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 			self.Stars:Show();
 		end
 	elseif recipeInfo.unlockedRecipeLevel then
-		if not mimimized then
-			self.RecipeLevelBar:SetExperience(recipeInfo.currentRecipeExperience, recipeInfo.nextLevelRecipeExperience, recipeInfo.unlockedRecipeLevel);
+		-- The current recipe info won't have updated experience and recipe level information,
+		-- so we need to fetch an updated state.
+		local updatedRecipeInfo = C_TradeSkillUI.GetRecipeInfo(recipeID);
+
+		if not minimized then
+			self.RecipeLevelBar:SetExperience(updatedRecipeInfo);
 		end
 
 		if not self:GetCurrentRecipeLevel() then
-			self:SetSelectedRecipeLevel(recipeID, recipeInfo.unlockedRecipeLevel);
+			self:SetSelectedRecipeLevel(recipeID, updatedRecipeInfo.unlockedRecipeLevel);
 		end
 
-		if not mimimized then
-			self.RecipeLevelSelector:SetRecipeInfo(recipeInfo, self:GetCurrentRecipeLevel());
-			self.RecipeLevelSelector:Show();
+		if not minimized then
+			self.RecipeLevelDropdown:SetRecipeInfo(updatedRecipeInfo, self:GetCurrentRecipeLevel());
+			self.RecipeLevelDropdown:Show();
 			self.RecipeLevelBar:Show();
 		end
 	end
@@ -734,8 +740,8 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 				local requirements = C_TradeSkillUI.GetRecipeRequirements(recipeID);
 				if (#requirements > 0) then
 					local requirementsText = BuildColoredListString(unpack(FormatRequirements(requirements)));
-					local maxWidth = mimimized and 250 or 800;
-					local multiline = mimimized;
+					local maxWidth = minimized and 250 or 800;
+					local multiline = minimized;
 					SetTextToFit(fontString, PROFESSIONS_REQUIRED_TOOLS:format(requirementsText), maxWidth, multiline);
 				else
 					fontString:SetText("");
@@ -762,10 +768,10 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		[Enum.CraftingReagentType.Modifying] = self.OptionalReagents,
 	};
 
-	if mimimized then
+	if minimized then
 		slotParents[Enum.CraftingReagentType.Finishing] = self.FinishingReagents;
 	else
-		slotParents[Enum.CraftingReagentType.Finishing] = self.Details.FinishingReagentSlotContainer;
+		slotParents[Enum.CraftingReagentType.Finishing] = self.Details.CraftingChoicesContainer.FinishingReagentSlotContainer;
 	end
 
 	if isRecraft then
@@ -909,7 +915,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 							
 							local allocationsCopy = self.transaction:GetAllocationsCopy(slotIndex);
 							local disallowZeroAllocations = true;
-							self.QualityDialog:Open(recipeID, reagentSlotSchematic, allocationsCopy, slotIndex, disallowZeroAllocations);
+							self.QualityDialog:Open(recipeID, reagentSlotSchematic, allocationsCopy, slotIndex, disallowZeroAllocations, self.transaction:ShouldUseCharacterInventoryOnly());
 						end
 					end
 				end);
@@ -1006,7 +1012,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 								local item = elementData.item;
 								
 								local function AllocateFlyoutItem()
-									if ItemUtil.GetCraftingReagentCount(item:GetItemID()) == 0 then
+									if ItemUtil.GetCraftingReagentCount(item:GetItemID(), self.transaction:ShouldUseCharacterInventoryOnly()) == 0 then
 										return;
 									end
 
@@ -1069,7 +1075,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 								if item:GetItemGUID() then
 									quantity = item:GetStackCount();
 								else
-									quantity = ItemUtil.GetCraftingReagentCount(item:GetItemID());
+									quantity = ItemUtil.GetCraftingReagentCount(item:GetItemID(), self.transaction:ShouldUseCharacterInventoryOnly());
 								end
 
 								if quantity and quantity < reagentSlotSchematic.quantityRequired then
@@ -1131,7 +1137,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 				if flyout then
 					local function OnFlyoutItemSelected(o, flyout, elementData)
 						local item = elementData.item;
-						if ItemUtil.GetCraftingReagentCount(item:GetItemID()) == 0 then
+						if ItemUtil.GetCraftingReagentCount(item:GetItemID(), self.transaction:ShouldUseCharacterInventoryOnly()) == 0 then
 							return;
 						end
 
@@ -1239,7 +1245,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 				if flyout then
 					local function OnFlyoutItemSelected(o, flyout, elementData)
 						local item = elementData.item;
-						if ItemUtil.GetCraftingReagentCount(item:GetItemID()) == 0 then
+						if ItemUtil.GetCraftingReagentCount(item:GetItemID(), self.transaction:ShouldUseCharacterInventoryOnly()) == 0 then
 							return;
 						end
 	
@@ -1352,7 +1358,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 
 		self.Reagents:ClearAllPoints();
 		if isRecraft then
-			local offsetY = mimimized and -148 or -168;
+			local offsetY = minimized and -148 or -168;
 			self.Reagents:SetPoint("TOPLEFT", 28, offsetY + PROFESSIONS_SCHEMATIC_REAGENTS_Y_OFFSET);
 		else
 			local offset = (self.RecipeSourceButton:IsShown() or self.FirstCraftBonus:IsShown()) and -50 or -20; 
@@ -1362,8 +1368,9 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		self.Reagents:Hide();
 	end
 
+	local professionInfo = Professions.GetProfessionInfo();
 	local operationInfo;
-	local professionLearned = not self.isInspection and Professions.GetProfessionInfo().skillLevel > 0;
+	local professionLearned = not self.isInspection and professionInfo.skillLevel > 0;
 	if professionLearned then
 		operationInfo = self:GetRecipeOperationInfo();
 	end
@@ -1379,36 +1386,47 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 	end
 
 	Professions.LayoutAndShowReagentSlotContainer(optionalSlots, self.OptionalReagents);
-	
-	if mimimized then
+
+	local hasConcentration = operationInfo ~= nil and operationInfo.concentrationCurrencyID ~= 0;
+
+	if minimized then
 		if self.OptionalReagents:IsShown() then
 			self.FinishingReagents:SetPoint("TOPLEFT", self.OptionalReagents, "TOPLEFT", 186, 0);
 		else
 			self.FinishingReagents:SetPoint("TOPLEFT", self.Reagents, "BOTTOMLEFT", 0, -20);
 		end
 		Professions.LayoutAndShowReagentSlotContainer(finishingSlots, self.FinishingReagents);
+
+		self.Concentrate:SetShown(hasConcentration and recipeInfo.supportsQualities);
+
+		if self.Concentrate:IsShown() then
+			self.Concentrate.ConcentrateToggleButton:SetOperationInfo(operationInfo);
+			self.Concentrate.ConcentrateToggleButton:SetRecipeInfo(recipeInfo);
+			self.Concentrate.ConcentrateToggleButton:SetTransaction(self.transaction);
+		end
 	else
 		-- Finishing reagents are displayed in the details panel instead.
 		self.FinishingReagents:Hide();
+		self.Concentrate:Hide();
 	end
 
 	local hasFinishingSlots = finishingSlots ~= nil;
 	if professionLearned and Professions.InLocalCraftingMode() and recipeInfo.supportsCraftingStats and ((operationInfo ~= nil and #operationInfo.bonusStats > 0) or recipeInfo.supportsQualities or recipeInfo.isGatheringRecipe or hasFinishingSlots) then
-		if not mimimized then
-			Professions.LayoutFinishingSlots(finishingSlots, self.Details.FinishingReagentSlotContainer);
+		if not minimized then
+			Professions.LayoutFinishingSlots(finishingSlots, self.Details.CraftingChoicesContainer.FinishingReagentSlotContainer);
 		end
 		
-		if not (mimimized and not recipeInfo.supportsQualities) then
+		if not (minimized and not recipeInfo.supportsQualities) then
 			self.Details:ClearAllPoints();
-			if mimimized then
+			if minimized then
 				self.Details:SetPoint("BOTTOM", self, "BOTTOM", 0, 4);
 			elseif recipeInfo.isGatheringRecipe then
 				self.Details:SetPoint("TOPLEFT", self.Description, "BOTTOMLEFT", 0, -30);
 			else
 				self.Details:SetPoint("TOPRIGHT", self, "TOPRIGHT", -20, -125);
 			end
-		
-			self.Details:SetData(self.transaction, recipeInfo, hasFinishingSlots);
+
+			self.Details:SetData(self.transaction, recipeInfo, hasFinishingSlots, hasConcentration);
 			self.Details:Show();
 			self:UpdateDetailsStats(operationInfo);
 		end
@@ -1416,10 +1434,10 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 
 	self:UpdateRecraftSlot(operationInfo);
 
-	local shouldShowAllocateBestQuality = (not mimimized) and (not alwaysUsesLowestQuality) and professionLearned and Professions.DoesSchematicIncludeReagentQualities(self.recipeSchematic);
-	self.AllocateBestQualityCheckBox:SetShown(shouldShowAllocateBestQuality);
+	local shouldShowAllocateBestQuality = (not minimized) and (not alwaysUsesLowestQuality) and professionLearned and Professions.DoesSchematicIncludeReagentQualities(self.recipeSchematic);
+	self.AllocateBestQualityCheckbox:SetShown(shouldShowAllocateBestQuality);
 	if shouldShowAllocateBestQuality then
-		self.AllocateBestQualityCheckBox:SetChecked(shouldAllocateBest);
+		self.AllocateBestQualityCheckbox:SetChecked(shouldAllocateBest);
 	end
 
 	self.transaction:SetAllocationsChangedHandler(self.statsChangedHandler);
@@ -1483,6 +1501,14 @@ function ProfessionsRecipeSchematicFormMixin:UpdateRecipeDescription()
 
 		if description and description ~= "" then
 			self.Description:SetText(description);
+
+			-- Prevent Description overlap with Details panel if shown.
+			if self.Details:IsShown() then
+				self.Description:SetWidth(340);
+			else
+				self.Description:SetWidth(460);
+			end
+
 			self.Description:SetHeight(600);
 			self.Description:SetHeight(self.Description:GetStringHeight() + 1);
 			self.Description:Show();

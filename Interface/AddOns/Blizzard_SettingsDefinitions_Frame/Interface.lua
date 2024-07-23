@@ -17,9 +17,9 @@ local function Register()
 		layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(NAMES_LABEL));
 	end);
 
-	-- My name
+	-- My name	
 	InterfaceOverrides.RunSettingsCallback(function()
-		Settings.SetupCVarCheckBox(category, "UnitNameOwn", UNIT_NAME_OWN, OPTION_TOOLTIP_UNIT_NAME_OWN);
+		Settings.SetupCVarCheckbox(category, "UnitNameOwn", UNIT_NAME_OWN, OPTION_TOOLTIP_UNIT_NAME_OWN);
 	end);
 
 	-- NPC Names
@@ -90,30 +90,30 @@ local function Register()
 		local defaultValue = 2;
 		local setting = Settings.RegisterProxySetting(category, "PROXY_NPC_NAMES", Settings.DefaultVarLocation,
 			Settings.VarType.Number, SHOW_NPC_NAMES, defaultValue, GetValue, SetValue);
-		Settings.CreateDropDown(category, setting, GetOptions, OPTION_TOOLTIP_NPC_NAMES_DROPDOWN);
+		Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_NPC_NAMES_DROPDOWN);
 	end);
 
 	-- Critters and Companions
 	InterfaceOverrides.RunSettingsCallback(function()
-		Settings.SetupCVarCheckBox(category, "UnitNameNonCombatCreatureName", UNIT_NAME_NONCOMBAT_CREATURE, OPTION_TOOLTIP_UNIT_NAME_NONCOMBAT_CREATURE);
+		Settings.SetupCVarCheckbox(category, "UnitNameNonCombatCreatureName", UNIT_NAME_NONCOMBAT_CREATURE, OPTION_TOOLTIP_UNIT_NAME_NONCOMBAT_CREATURE);
 	end);
 
 	-- Friendly Players
 	InterfaceOverrides.RunSettingsCallback(function()
-		local friendlyPlayerNameSetting, friendlyPlayerNameInitializer = Settings.SetupCVarCheckBox(category, "UnitNameFriendlyPlayerName", UNIT_NAME_FRIENDLY, OPTION_TOOLTIP_UNIT_NAME_FRIENDLY);
+		local friendlyPlayerNameSetting, friendlyPlayerNameInitializer = Settings.SetupCVarCheckbox(category, "UnitNameFriendlyPlayerName", UNIT_NAME_FRIENDLY, OPTION_TOOLTIP_UNIT_NAME_FRIENDLY);
 
 		-- Minions
-		local setting, initializer = Settings.SetupCVarCheckBox(category, "UnitNameFriendlyMinionName", UNIT_NAME_FRIENDLY_MINIONS, OPTION_TOOLTIP_UNIT_NAME_FRIENDLY_MINIONS);
+		local setting, initializer = Settings.SetupCVarCheckbox(category, "UnitNameFriendlyMinionName", UNIT_NAME_FRIENDLY_MINIONS, OPTION_TOOLTIP_UNIT_NAME_FRIENDLY_MINIONS);
 		initializer:Indent();
 		initializer:SetParentInitializer(friendlyPlayerNameInitializer);
 	end);
-		
+	
 	-- Enemy Players
 	InterfaceOverrides.RunSettingsCallback(function()
-		local enemyPlayerNameSetting, enemyPlayerNameInitializer = Settings.SetupCVarCheckBox(category, "UnitNameEnemyPlayerName", UNIT_NAME_ENEMY, OPTION_TOOLTIP_UNIT_NAME_ENEMY);
+		local enemyPlayerNameSetting, enemyPlayerNameInitializer = Settings.SetupCVarCheckbox(category, "UnitNameEnemyPlayerName", UNIT_NAME_ENEMY, OPTION_TOOLTIP_UNIT_NAME_ENEMY);
 
 		-- Minions
-		local setting, initializer = Settings.SetupCVarCheckBox(category, "UnitNameEnemyMinionName", UNIT_NAME_ENEMY_MINIONS, OPTION_TOOLTIP_UNIT_NAME_ENEMY_MINIONS);
+		local setting, initializer = Settings.SetupCVarCheckbox(category, "UnitNameEnemyMinionName", UNIT_NAME_ENEMY_MINIONS, OPTION_TOOLTIP_UNIT_NAME_ENEMY_MINIONS);
 		initializer:Indent();
 		initializer:SetParentInitializer(enemyPlayerNameInitializer);
 	end);
@@ -123,7 +123,7 @@ local function Register()
 
 	-- Always Show Nameplates
 	InterfaceOverrides.RunSettingsCallback(function()
-		Settings.SetupCVarCheckBox(category, "nameplateShowAll", UNIT_NAMEPLATES_AUTOMODE, OPTION_TOOLTIP_UNIT_NAMEPLATES_AUTOMODE);
+		Settings.SetupCVarCheckbox(category, "nameplateShowAll", UNIT_NAMEPLATES_AUTOMODE, OPTION_TOOLTIP_UNIT_NAMEPLATES_AUTOMODE);
 	end);
 
 	-- Larger Nameplates
@@ -134,18 +134,18 @@ local function Register()
 	-- Enemy Units
 	InterfaceOverrides.RunSettingsCallback(function()
 		local enemyTooltip = Settings.WrapTooltipWithBinding(OPTION_TOOLTIP_UNIT_NAMEPLATES_SHOW_ENEMIES, "NAMEPLATES");
-		local enemyUnitSetting, enemyUnitInitializer = Settings.SetupCVarCheckBox(category, "nameplateShowEnemies", UNIT_NAMEPLATES_SHOW_ENEMIES, enemyTooltip);
+		local enemyUnitSetting, enemyUnitInitializer = Settings.SetupCVarCheckbox(category, "nameplateShowEnemies", UNIT_NAMEPLATES_SHOW_ENEMIES, enemyTooltip);
 
 		-- Minions
 		do
-			local setting, initializer = Settings.SetupCVarCheckBox(category, "nameplateShowEnemyMinions", UNIT_NAMEPLATES_SHOW_ENEMY_MINIONS, OPTION_TOOLTIP_UNIT_NAMEPLATES_SHOW_ENEMY_MINIONS);
+			local setting, initializer = Settings.SetupCVarCheckbox(category, "nameplateShowEnemyMinions", UNIT_NAMEPLATES_SHOW_ENEMY_MINIONS, OPTION_TOOLTIP_UNIT_NAMEPLATES_SHOW_ENEMY_MINIONS);
 			initializer:Indent();
 			initializer:SetParentInitializer(enemyUnitInitializer);
 		end
 
 		-- Minor
 		do
-			local setting, initializer = Settings.SetupCVarCheckBox(category, "nameplateShowEnemyMinus", UNIT_NAMEPLATES_SHOW_ENEMY_MINUS, OPTION_TOOLTIP_UNIT_NAMEPLATES_SHOW_ENEMY_MINUS);
+			local setting, initializer = Settings.SetupCVarCheckbox(category, "nameplateShowEnemyMinus", UNIT_NAMEPLATES_SHOW_ENEMY_MINUS, OPTION_TOOLTIP_UNIT_NAMEPLATES_SHOW_ENEMY_MINUS);
 			initializer:Indent();
 			initializer:SetParentInitializer(enemyUnitInitializer);
 		end
@@ -154,17 +154,17 @@ local function Register()
 	-- Friendly nameplates
 	InterfaceOverrides.RunSettingsCallback(function()
 		local friendlyTooltip = Settings.WrapTooltipWithBinding(OPTION_TOOLTIP_UNIT_NAMEPLATES_SHOW_FRIENDS, "FRIENDNAMEPLATES");
-		local friendUnitSetting, friendUnitInitializer = Settings.SetupCVarCheckBox(category, "nameplateShowFriends", UNIT_NAMEPLATES_SHOW_FRIENDS, friendlyTooltip);
+		local friendUnitSetting, friendUnitInitializer = Settings.SetupCVarCheckbox(category, "nameplateShowFriends", UNIT_NAMEPLATES_SHOW_FRIENDS, friendlyTooltip);
 
 		-- Minions
-		local setting, initializer = Settings.SetupCVarCheckBox(category, "nameplateShowFriendlyMinions", UNIT_NAMEPLATES_SHOW_FRIENDLY_MINIONS, OPTION_TOOLTIP_UNIT_NAMEPLATES_SHOW_FRIENDLY_MINIONS);
+		local setting, initializer = Settings.SetupCVarCheckbox(category, "nameplateShowFriendlyMinions", UNIT_NAMEPLATES_SHOW_FRIENDLY_MINIONS, OPTION_TOOLTIP_UNIT_NAMEPLATES_SHOW_FRIENDLY_MINIONS);
 		initializer:Indent();
 		initializer:SetParentInitializer(friendUnitInitializer);
 	end);
 
 	if C_CVar.GetCVar("ShowNamePlateLoseAggroFlash") then
 		-- Flash on Agro Loss
-		Settings.SetupCVarCheckBox(category, "ShowNamePlateLoseAggroFlash", SHOW_NAMEPLATE_LOSE_AGGRO_FLASH, OPTION_TOOLTIP_SHOW_NAMEPLATE_LOSE_AGGRO_FLASH);
+		Settings.SetupCVarCheckbox(category, "ShowNamePlateLoseAggroFlash", SHOW_NAMEPLATE_LOSE_AGGRO_FLASH, OPTION_TOOLTIP_SHOW_NAMEPLATE_LOSE_AGGRO_FLASH);
 	end
 
 	-- Nameplate Motion Type
@@ -179,7 +179,7 @@ local function Register()
 			return container:GetData();
 		end
 
-		Settings.SetupCVarDropDown(category, "nameplateMotion", Settings.VarType.Number, GetOptions, UNIT_NAMEPLATES_TYPES, OPTION_TOOLTIP_UNIT_NAMEPLATES_TYPES);
+		Settings.SetupCVarDropdown(category, "nameplateMotion", Settings.VarType.Number, GetOptions, UNIT_NAMEPLATES_TYPES, OPTION_TOOLTIP_UNIT_NAMEPLATES_TYPES);
 	end
 
 	InterfaceOverrides.AdjustNameplateSettings(category);
@@ -190,19 +190,19 @@ local function Register()
 	InterfaceOverrides.RunSettingsCallback(function()
 		if C_CVar.GetCVar("hideAdventureJournalAlerts") then
 			-- Hide Adventure Guide Alerts
-			Settings.SetupCVarCheckBox(category, "hideAdventureJournalAlerts", HIDE_ADVENTURE_JOURNAL_ALERTS, OPTION_TOOLTIP_HIDE_ADVENTURE_JOURNAL_ALERTS);
+			Settings.SetupCVarCheckbox(category, "hideAdventureJournalAlerts", HIDE_ADVENTURE_JOURNAL_ALERTS, OPTION_TOOLTIP_HIDE_ADVENTURE_JOURNAL_ALERTS);
 		end
 	end);
 
 	InterfaceOverrides.RunSettingsCallback(function()
 		if C_CVar.GetCVar("showInGameNavigation") then
 			-- In Game Navigation
-			Settings.SetupCVarCheckBox(category, "showInGameNavigation", SHOW_IN_GAME_NAVIGATION, OPTION_TOOLTIP_SHOW_IN_GAME_NAVIGATION);
+			Settings.SetupCVarCheckbox(category, "showInGameNavigation", SHOW_IN_GAME_NAVIGATION, OPTION_TOOLTIP_SHOW_IN_GAME_NAVIGATION);
 		end
 	end);
 
-	-- Tutorials
-	-- FIXME DISABLE BUTTON BEHAVIOR
+		-- Tutorials
+		-- FIXME DISABLE BUTTON BEHAVIOR
 	InterfaceOverrides.RunSettingsCallback(function()
 		local setting = Settings.RegisterCVarSetting(category, "showTutorials", Settings.VarType.Boolean, SHOW_TUTORIALS);
 		local function OnButtonClick(button, buttonName, down)
@@ -213,7 +213,7 @@ local function Register()
 			setting:SetValue(true);
 		end;
 
-		local initializer = CreateSettingsCheckBoxWithButtonInitializer(setting, RESET_TUTORIALS, OnButtonClick, false, OPTION_TOOLTIP_SHOW_TUTORIALS);
+		local initializer = CreateSettingsCheckboxWithButtonInitializer(setting, RESET_TUTORIALS, OnButtonClick, false, OPTION_TOOLTIP_SHOW_TUTORIALS);
 		layout:AddInitializer(initializer);
 	end);
 
@@ -228,7 +228,7 @@ local function Register()
 			return container:GetData();
 		end
 
-		Settings.SetupCVarDropDown(category, "Outline", Settings.VarType.Number, GetOptions, OBJECT_NPC_OUTLINE, OPTION_TOOLTIP_OBJECT_NPC_OUTLINE);
+		Settings.SetupCVarDropdown(category, "Outline", Settings.VarType.Number, GetOptions, OBJECT_NPC_OUTLINE, OPTION_TOOLTIP_OBJECT_NPC_OUTLINE);
 	end
 
 	-- Status text 
@@ -279,7 +279,7 @@ local function Register()
 		local defaultValue = 4;
 		local setting = Settings.RegisterProxySetting(category, "PROXY_STATUS_TEXT", Settings.DefaultVarLocation, 
 			Settings.VarType.Number, STATUSTEXT_LABEL, defaultValue, GetValue, SetValue);
-		Settings.CreateDropDown(category, setting, GetOptions, OPTION_TOOLTIP_STATUS_TEXT_DISPLAY);
+		Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_STATUS_TEXT_DISPLAY);
 	end
 
 
@@ -321,18 +321,18 @@ local function Register()
 		local defaultValue = 1;
 		local setting = Settings.RegisterProxySetting(category, "PROXY_CHAT_BUBBLES", Settings.DefaultVarLocation, 
 			Settings.VarType.Number, CHAT_BUBBLES_TEXT, defaultValue, GetValue, SetValue);
-		Settings.CreateDropDown(category, setting, GetOptions, OPTION_TOOLTIP_CHAT_BUBBLES);
+		Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_CHAT_BUBBLES);
 	end
 
 	InterfaceOverrides.RunSettingsCallback(function()
 		-- ReplaceOtherPlayerPortraits
 		if C_CVar.GetCVar("ReplaceOtherPlayerPortraits") then
-			Settings.SetupCVarCheckBox(category, "ReplaceOtherPlayerPortraits", REPLACE_OTHER_PLAYER_PORTRAITS, OPTION_TOOLTIP_REPLACE_OTHER_PLAYER_PORTRAITS);
+			Settings.SetupCVarCheckbox(category, "ReplaceOtherPlayerPortraits", REPLACE_OTHER_PLAYER_PORTRAITS, OPTION_TOOLTIP_REPLACE_OTHER_PLAYER_PORTRAITS);
 		end
 
 		-- ReplaceMyPlayerPortrait
 		if C_CVar.GetCVar("ReplaceMyPlayerPortrait") then
-			Settings.SetupCVarCheckBox(category, "ReplaceMyPlayerPortrait", REPLACE_MY_PLAYER_PORTRAIT, OPTION_TOOLTIP_REPLACE_MY_PLAYER_PORTRAIT);
+			Settings.SetupCVarCheckbox(category, "ReplaceMyPlayerPortrait", REPLACE_MY_PLAYER_PORTRAIT, OPTION_TOOLTIP_REPLACE_MY_PLAYER_PORTRAIT);
 		end
 	end);
 

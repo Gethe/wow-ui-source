@@ -6,7 +6,7 @@ MINIMAP_RECORDING_INDICATOR_ON = false;
 
 MINIMAP_EXPANDER_MAXSIZE = 28;
 HUNTER_TRACKING = 1;
-TOWNSFOLK = 2;
+TOWNSFOLK_TRACKING = 2;
 
 GARRISON_ALERT_CONTEXT_BUILDING = 1;
 GARRISON_ALERT_CONTEXT_MISSION = {
@@ -19,6 +19,84 @@ GARRISON_ALERT_CONTEXT_MISSION = {
 	[Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower] = 6,
 };
 GARRISON_ALERT_CONTEXT_INVASION = 3;
+
+local REMOVED_FILTERS = {
+	[Enum.MinimapTrackingFilter.VenderFood] = true,
+	[Enum.MinimapTrackingFilter.VendorReagent] = true,
+	[Enum.MinimapTrackingFilter.POI] = true,
+	[Enum.MinimapTrackingFilter.Focus] = true,
+};
+
+local ALWAYS_ON_FILTERS = {
+	[Enum.MinimapTrackingFilter.QuestPoIs] = true,
+	[Enum.MinimapTrackingFilter.TaxiNode] = true,
+	[Enum.MinimapTrackingFilter.Innkeeper] = true,
+	[Enum.MinimapTrackingFilter.ItemUpgrade] = true,
+	[Enum.MinimapTrackingFilter.Battlemaster] = true,
+	[Enum.MinimapTrackingFilter.Stablemaster] = true,
+};
+
+local CONDITIONAL_FILTERS = {
+	[Enum.MinimapTrackingFilter.Target] = true,
+	[Enum.MinimapTrackingFilter.Digsites] = true,
+	[Enum.MinimapTrackingFilter.Repair] = true,
+};
+
+local OPTIONAL_FILTERS = {
+	[Enum.MinimapTrackingFilter.Banker] = true,
+	[Enum.MinimapTrackingFilter.Auctioneer] = true,
+	[Enum.MinimapTrackingFilter.Barber] = true,
+	[Enum.MinimapTrackingFilter.TrainerProfession] = true,
+	[Enum.MinimapTrackingFilter.AccountCompletedQuests] = true,
+	[Enum.MinimapTrackingFilter.TrivialQuests] = true,
+	[Enum.MinimapTrackingFilter.Transmogrifier] = true,
+	[Enum.MinimapTrackingFilter.Mailbox] = true,
+};
+
+local LOW_PRIORITY_TRACKING_SPELLS = {
+	[261764] = true; -- Track Warboards
+};
+
+local TRACKING_SPELL_OVERRIDE_TEXTURES = {
+	[43308] = "professions_tracking_fish";-- Find Fish
+	[2580] = "professions_tracking_ore"; -- Find Minerals 1
+	[8388] = "professions_tracking_ore"; -- Find Minerals 2
+	[2383] = "professions_tracking_herb"; -- Find Herbs 1
+	[8387] = "professions_tracking_herb"; -- Find Herbs 2
+};
+
+-- Some tracking states require spell casts to complete before the
+-- state is recognized as active, causing the menu to appear unresponsive
+-- and/or delayed when toggling menu selections. This retains the last
+-- desired state so that the dropdown menu can reflect the user's intention.
+local function CreatePredictedTrackingState()
+	local tbl = {};
+	local state = {};
+
+	tbl.SetSelected = function(self, index, selected)
+		state[index] = selected;
+
+		C_Minimap.SetTracking(index, selected);
+	end
+
+	tbl.IsSelected = function(self, index)
+		return state[index] == true;
+	end
+
+	tbl.ClearSelections = function(self)
+		state = {};
+
+		C_Minimap.ClearAllTracking();
+	end
+
+	tbl.Enumerate = function(self)
+		return ipairs(state);
+	end
+
+	return tbl;
+end
+
+local trackingState = CreatePredictedTrackingState();
 
 MinimapZoneTextButtonMixin = { };
 
@@ -322,7 +400,7 @@ function MinimapClusterMixin:SetHeaderUnderneath(headerUnderneath)
 		self.InstanceDifficulty:SetPoint("BOTTOMRIGHT", self.BorderTop, "TOPRIGHT", -2, -2);
 
 		self.IndicatorFrame:ClearAllPoints();
-		self.IndicatorFrame:SetPoint("BOTTOMRIGHT", self.TrackingFrame, "TOPRIGHT");
+		self.IndicatorFrame:SetPoint("BOTTOMRIGHT", self.Tracking, "TOPRIGHT");
 	else
 		local accountForFrameScaleYes = true;
 		ResetFramePoints(self.MinimapContainer, accountForFrameScaleYes);
@@ -340,8 +418,8 @@ end
 
 
 function MiniMapIndicatorFrame_UpdatePosition()
-	if MinimapCluster.TrackingFrame:IsShown() then
-		MinimapCluster.IndicatorFrame:SetPoint("TOPRIGHT", MinimapCluster.TrackingFrame, "BOTTOMRIGHT", 2, -1);
+	if MinimapCluster.Tracking:IsShown() then
+		MinimapCluster.IndicatorFrame:SetPoint("TOPRIGHT", MinimapCluster.Tracking, "BOTTOMRIGHT", 2, -1);
 	else
 		MinimapCluster.IndicatorFrame:SetPoint("TOPRIGHT", MinimapCluster.BorderTop, "TOPLEFT", -1, -1);
 	end
@@ -352,9 +430,9 @@ MiniMapMailFrameMixin = { };
 
 function MiniMapMailFrameMixin:OnLoad()
 	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.InGameMailNotification) then
-		self:RegisterEvent("UPDATE_PENDING_MAIL");
-		self:SetFrameLevel(self:GetFrameLevel()+1);	
-	end
+	self:RegisterEvent("UPDATE_PENDING_MAIL");
+	self:SetFrameLevel(self:GetFrameLevel()+1);
+end
 end
 
 function MiniMapMailFrameMixin:OnEvent(event)
@@ -459,45 +537,183 @@ function MiniMapCraftingOrderFrameMixin:OnLeave()
 	GameTooltip_Hide();
 end
 
+local function CanDisplayTrackingInfo(index)
+	local filter = C_Minimap.GetTrackingFilter(index);
+	if not filter then
+		return false;
+	end
+
+	return OPTIONAL_FILTERS[filter.filterID] or filter.spellID;
+end
+
+local function ToggleTrackingSelected(info)
+	local selected = trackingState:IsSelected(info.index);
+	local newSelected = not selected;
+	trackingState:SetSelected(info.index, newSelected);
+end
+
+local function IsTrackingActive(info)
+	return trackingState:IsSelected(info.index);
+end
+
+local function IsAllTrackingDeselected()
+	for index, state in trackingState:Enumerate() do
+		if state == true then
+			return false;
+		end
+	end
+	return true;
+end
+
 
 MiniMapTrackingButtonMixin = { };
 
 function MiniMapTrackingButtonMixin:OnLoad()
-	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.InGameTracking) then
-		self:RegisterEvent("MINIMAP_UPDATE_TRACKING");
+	local featureEnabled = C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.InGameTracking);
+	if featureEnabled then
 		self:RegisterEvent("VARIABLES_LOADED");
 		self:RegisterEvent("CVAR_UPDATE");
-		MinimapCluster.TrackingFrame:Show();
-		self:Update();
-	else
-		MinimapCluster.TrackingFrame:Hide();
+
+		self:SetupMenu(function(dropdown, rootDescription)
+			rootDescription:SetTag("MENU_MINIMAP_TRACKING");
+
+			-- Will cause all entries to appear unconditionally and place townfolk in their own submenu.
+			local showAll = GetCVarBool("minimapTrackingShowAll");
+			local class = select(2, UnitClass("player"));
+			local isHunterClass = class == "HUNTER";
+		
+			if not showAll then
+				rootDescription:CreateButton(UNCHECK_ALL, function()
+					trackingState:ClearSelections();
+					
+					for index = 1, C_Minimap.GetNumTrackingTypes() do
+						local filter = C_Minimap.GetTrackingFilter(index);
+						if ALWAYS_ON_FILTERS[filter.filterID] or CONDITIONAL_FILTERS[filter.filterID] then
+							trackingState:SetSelected(index, true);
+						end
+					end
+				
+					return MenuResponse.Refresh;
+				end);
+			end
+			
+			local hunterInfo = {};
+			local townfolkInfo = {};
+			local regularInfo = {};
+		
+			for index = 1, C_Minimap.GetNumTrackingTypes() do
+				if showAll or CanDisplayTrackingInfo(index) then
+					local trackingInfo = C_Minimap.GetTrackingInfo(index);
+					trackingInfo.index = index;
+		
+					if isHunterClass and (trackingInfo.subType == HUNTER_TRACKING) then
+						table.insert(hunterInfo, trackingInfo);
+					elseif trackingInfo.subType == TOWNSFOLK_TRACKING then
+						table.insert(townfolkInfo, trackingInfo);
+					else
+						table.insert(regularInfo, trackingInfo);
+					end
+				end
+			end
+		
+			TableUtil.Execute({hunterInfo, townfolkInfo, regularInfo}, function(trackingInfo)
+				table.sort(trackingInfo, function(a, b)
+					-- Sort low priority tracking spells to the end
+					local filterA = C_Minimap.GetTrackingFilter(a.index);
+					local filterB = C_Minimap.GetTrackingFilter(b.index);
+					local lowPriorityA = LOW_PRIORITY_TRACKING_SPELLS[filterA.spellID] or false;
+					local lowPriorityB = LOW_PRIORITY_TRACKING_SPELLS[filterB.spellID] or false;
+					if lowPriorityA ~= lowPriorityB then
+						return not lowPriorityA;
+					end
+					return a.index < b.index;
+				end);
+			end);
+			
+			local function CreateCheckboxWithIcon(parentDescription, trackingInfo)
+				local name = trackingInfo.name;
+				trackingInfo.text = name;
+		
+				local texture = TRACKING_SPELL_OVERRIDE_TEXTURES[trackingInfo.spellID] or trackingInfo.texture;
+				local desc = parentDescription:CreateCheckbox(
+					name,
+					IsTrackingActive,
+					ToggleTrackingSelected,
+					trackingInfo);
+		
+				desc:AddInitializer(function(button, description, menu)
+					local rightTexture = button:AttachTexture();
+					rightTexture:SetSize(20, 20);
+					rightTexture:SetPoint("RIGHT");
+					rightTexture:SetTexture(texture);
+		
+					local fontString = button.fontString;
+					fontString:SetPoint("RIGHT", rightTexture, "LEFT");
+
+					if trackingInfo.type == "spell" then
+						local uv0, uv1 = .0625, .9;
+						rightTexture:SetTexCoord(uv0, uv1, uv0, uv1);
+					end
+						
+					-- The size is explicitly provided because this requires a right-justified icon.
+					local width, height = fontString:GetUnboundedStringWidth() + 60, 20;
+					return width, height;
+				end);
+		
+				return desc;
+			end
+		
+			local hunterCount = #hunterInfo;
+			if hunterCount > 0 then
+				if hunterCount > 1 then
+					local hunterMenuDesc = rootDescription:CreateButton(HUNTER_TRACKING_TEXT);
+					for index, info in ipairs(hunterInfo) do
+						CreateCheckboxWithIcon(hunterMenuDesc, info);
+					end
+				else
+					CreateCheckboxWithIcon(rootDescription, info);
+				end
+			end
+		
+			if #townfolkInfo > 0 then
+				local townfolkMenuDesc = rootDescription;
+				if showAll then
+					townfolkMenuDesc = rootDescription:CreateButton(TOWNSFOLK_TRACKING_TEXT);
+				end
+		
+				for index, info in ipairs(townfolkInfo) do
+					CreateCheckboxWithIcon(townfolkMenuDesc, info);
+				end
+			end
+		
+			for index, info in ipairs(regularInfo) do
+				CreateCheckboxWithIcon(rootDescription, info);
+			end
+		end);
 	end
+
+	MinimapCluster.Tracking:SetShown(featureEnabled);
 end
 
 function MiniMapTrackingButtonMixin:OnEvent(event, arg1)
-	if event == "MINIMAP_UPDATE_TRACKING" then
-		self:Update();
-	end
-end
-
-function MiniMapTrackingButtonMixin:Update()
-	if UIDROPDOWNMENU_OPEN_MENU == MinimapCluster.TrackingFrame.DropDown then
-		UIDropDownMenu_RefreshAll(MinimapCluster.TrackingFrame.DropDown);
+	if event == "CVAR_UPDATE" or event == "VARIABLES_LOADED" then
+		if not self:IsMenuOpen() then
+			-- The initial tracking values are unavailable until these events have fired.
+			for index = 1, C_Minimap.GetNumTrackingTypes() do
+				local trackingInfo = C_Minimap.GetTrackingInfo(index);
+				if trackingInfo then
+					trackingState:SetSelected(index, trackingInfo.active);
+				end
+			end
+		end
 	end
 end
 
 function MiniMapTrackingButtonMixin:Show(shown)
-	MinimapCluster.TrackingFrame:SetShown(shown);
+	MinimapCluster.Tracking:SetShown(shown);
 	if MinimapCluster.IndicatorFrame then
 		MiniMapIndicatorFrame_UpdatePosition();
 	end
-end
-
-function MiniMapTrackingButtonMixin:OnMouseDown()
-	MinimapCluster.TrackingFrame.DropDown.point = "TOPRIGHT";
-	MinimapCluster.TrackingFrame.DropDown.relativePoint = "BOTTOMLEFT";
-	ToggleDropDownMenu(1, nil, MinimapCluster.TrackingFrame.DropDown, MinimapCluster.TrackingFrame, 8, 5);
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 function MiniMapTrackingButtonMixin:OnEnter()
@@ -509,212 +725,6 @@ end
 
 function MiniMapTrackingButtonMixin:OnLeave()
 	GameTooltip:Hide();
-end
-
-function MiniMapTrackingDropDown_OnLoad(self)
-	UIDropDownMenu_Initialize(self, MiniMapTrackingDropDown_Initialize, "MENU");
-	self.noResize = true;
-end
-
-function MiniMapTrackingDropDown_SetTracking(self, id, unused, on)
-	C_Minimap.SetTracking(id, on);
-
-	UIDropDownMenu_Refresh(MinimapCluster.TrackingFrame.DropDown);
-end
-
-function MiniMapTrackingDropDown_IsActive(button)
-	local name, texture, active, category = C_Minimap.GetTrackingInfo(button.arg1);
-	return active;
-end
-
-function MiniMapTrackingDropDown_IsNoTrackingActive()
-	local name, texture, active, category;
-	local count = C_Minimap.GetNumTrackingTypes();
-	for id=1, count do
-		name, texture, active, category  = C_Minimap.GetTrackingInfo(id);
-		if (active) then
-			return false;
-		end
-	end
-	return true;
-end
-
-local REMOVED_FILTERS = {
-	[Enum.MinimapTrackingFilter.VenderFood] = true,
-	[Enum.MinimapTrackingFilter.VendorReagent] = true,
-	[Enum.MinimapTrackingFilter.POI] = true,
-	[Enum.MinimapTrackingFilter.Focus] = true,
-};
-
-local ALWAYS_ON_FILTERS = {
-	[Enum.MinimapTrackingFilter.QuestPoIs] = true,
-	[Enum.MinimapTrackingFilter.TaxiNode] = true,
-	[Enum.MinimapTrackingFilter.Innkeeper] = true,
-	[Enum.MinimapTrackingFilter.ItemUpgrade] = true,
-	[Enum.MinimapTrackingFilter.Battlemaster] = true,
-	[Enum.MinimapTrackingFilter.Stablemaster] = true,
-};
-
-local CONDITIONAL_FILTERS = {
-	[Enum.MinimapTrackingFilter.Target] = true,
-	[Enum.MinimapTrackingFilter.Digsites] = true,
-	[Enum.MinimapTrackingFilter.Repair] = true,
-};
-
-local OPTIONAL_FILTERS = {
-	[Enum.MinimapTrackingFilter.Banker] = true,
-	[Enum.MinimapTrackingFilter.Auctioneer] = true,
-	[Enum.MinimapTrackingFilter.Barber] = true,
-	[Enum.MinimapTrackingFilter.TrainerProfession] = true,
-	[Enum.MinimapTrackingFilter.TrivialQuests] = true,
-	[Enum.MinimapTrackingFilter.Transmogrifier] = true,
-	[Enum.MinimapTrackingFilter.Mailbox] = true,
-};
-
-local LOW_PRIORITY_TRACKING_SPELLS = {
-	[261764] = true; -- Track Warboards
-};
-
-local TRACKING_SPELL_OVERRIDE_TEXTURES = {
-	[43308] = "professions_tracking_fish";-- Find Fish
-	[2580] = "professions_tracking_ore"; -- Find Minerals 1
-	[8388] = "professions_tracking_ore"; -- Find Minerals 2
-	[2383] = "professions_tracking_herb"; -- Find Herbs 1
-	[8387] = "professions_tracking_herb"; -- Find Herbs 2
-};
-
-function MiniMapTrackingDropDown_SetTrackingNone()
-	C_Minimap.ClearAllTracking();
-	
-	local count = C_Minimap.GetNumTrackingTypes();
-	for id=1, count do
-		local filter = C_Minimap.GetTrackingFilter(id);
-		if ALWAYS_ON_FILTERS[filter.filterID] or CONDITIONAL_FILTERS[filter.filterID] then
-			C_Minimap.SetTracking(id, true);
-		end
-	end
-	
-	UIDropDownMenu_Refresh(MinimapCluster.TrackingFrame.DropDown);
-end
-
-function MiniMapTracking_FilterIsVisible(id)
-	local filter = C_Minimap.GetTrackingFilter(id);
-	local optionalFilter = filter and OPTIONAL_FILTERS[filter.filterID];
-	local filterIsSpell = filter and filter.spellID;
-	local filterTypeIsVisible = optionalFilter or filterIsSpell;
-	return filterTypeIsVisible;
-end
-
-function MiniMapTrackingDropDown_Initialize(self, level)
-	local name, texture, active, category, nested, numTracking;
-	local count = C_Minimap.GetNumTrackingTypes();
-	local info;
-	local _, class = UnitClass("player");
-
-	local showAll = GetCVarBool("minimapTrackingShowAll");
-
-	if (level == 1) then
-		info = UIDropDownMenu_CreateInfo();
-		info.text = MINIMAP_TRACKING_NONE;
-		info.checked = MiniMapTrackingDropDown_IsNoTrackingActive;
-		info.func = MiniMapTrackingDropDown_SetTrackingNone;
-		info.icon = nil;
-		info.arg1 = nil;
-		info.isNotRadio = true;
-		info.keepShownOnClick = true;
-		UIDropDownMenu_AddButton(info, level);
-		UIDropDownMenu_AddSeparator(level);
-
-		if (class == "HUNTER") then --only show hunter dropdown for hunters
-			numTracking = 0;
-			-- make sure there are at least two options in dropdown
-			for id=1, count do
-				name, texture, active, category, nested = C_Minimap.GetTrackingInfo(id);
-				if (nested == HUNTER_TRACKING and category == "spell") then
-					numTracking = numTracking + 1;
-				end
-			end
-			if (numTracking > 1) then
-				info.text = HUNTER_TRACKING_TEXT;
-				info.func =  nil;
-				info.notCheckable = true;
-				info.keepShownOnClick = false;
-				info.hasArrow = true;
-				info.value = HUNTER_TRACKING;
-				UIDropDownMenu_AddButton(info, level)
-			end
-		end
-	end
-
-	if (level == 1 and showAll) then
-		info.text = TOWNSFOLK_TRACKING_TEXT;
-		info.func =  nil;
-		info.notCheckable = true;
-		info.keepShownOnClick = false;
-		info.hasArrow = true;
-		info.value = TOWNSFOLK;
-		UIDropDownMenu_AddButton(info, level)
-	end
-
-	local trackingInfos = { };
-	for id=1, count do
-		name, texture, active, category, nested, spellID = C_Minimap.GetTrackingInfo(id);
-
-		if showAll or MiniMapTracking_FilterIsVisible(id) then
-			-- Remove nested townsfold unless showing all
-			if nested == TOWNSFOLK and not showAll then
-				nested = -1;
-			end
-
-			info = UIDropDownMenu_CreateInfo();
-			info.text = name;
-			info.checked = MiniMapTrackingDropDown_IsActive;
-			info.func = MiniMapTrackingDropDown_SetTracking;
-			info.icon = TRACKING_SPELL_OVERRIDE_TEXTURES[spellID] or texture;
-			info.arg1 = id;
-			info.isNotRadio = true;
-			info.keepShownOnClick = true;
-
-			if ( category == "spell" ) then
-				info.tCoordLeft = 0.0625;
-				info.tCoordRight = 0.9;
-				info.tCoordTop = 0.0625;
-				info.tCoordBottom = 0.9;
-			else
-				info.tCoordLeft = 0;
-				info.tCoordRight = 1;
-				info.tCoordTop = 0;
-				info.tCoordBottom = 1;
-			end
-			if (level == 1 and
-				(nested < 0 or -- this tracking shouldn't be nested
-				(nested == HUNTER_TRACKING and class ~= "HUNTER") or
-				(numTracking == 1 and category == "spell"))) then -- this is a hunter tracking ability, but you only have one
-				table.insert(trackingInfos, info);
-			elseif (level == 2 and (nested == TOWNSFOLK or (nested == HUNTER_TRACKING and class == "HUNTER")) and nested == UIDROPDOWNMENU_MENU_VALUE) then
-				table.insert(trackingInfos, info);
-			end
-		end
-	end
-
-	table.sort(trackingInfos, function(a, b)
-		-- Sort low priority tracking spells to the end
-		local filterA = C_Minimap.GetTrackingFilter(a.arg1);
-		local filterB = C_Minimap.GetTrackingFilter(b.arg1);
-		local lowPriorityA = LOW_PRIORITY_TRACKING_SPELLS[filterA.spellID] or false;
-		local lowPriorityB = LOW_PRIORITY_TRACKING_SPELLS[filterB.spellID] or false;
-		if lowPriorityA ~= lowPriorityB then
-			return not lowPriorityA;
-		end
-
-		-- Sort by id
-		return a.arg1 < b.arg1;
-	end);
-
-	for _, info in ipairs(trackingInfos) do
-		UIDropDownMenu_AddButton(info, level);
-	end
-
 end
 
 ExpansionLandingPageMinimapButtonMixin = { };
@@ -741,7 +751,7 @@ local GarrisonLandingPageEvents = {
 };
 
 function ExpansionLandingPageMinimapButtonMixin:OnLoad()
-	EventRegistry:RegisterCallback("ExpansionLandingPage.OverlayChanged", self.RefreshButton, self);
+	EventRegistry:RegisterCallback("ExpansionLandingPage.OverlayChanged", self.OnOverlayChanged, self);
 
 	self.pulseLocks = {};
 
@@ -761,7 +771,11 @@ function ExpansionLandingPageMinimapButtonMixin:IsInMajorFactionRenownMode()
 	return self.mode == ExpansionLandingPageMode.MajorFactionRenown;
 end
 
-function ExpansionLandingPageMinimapButtonMixin:RefreshButton()
+function ExpansionLandingPageMinimapButtonMixin:IsExpansionOverlayMode()
+	return self.mode == ExpansionLandingPageMode.ExpansionOverlay;
+end
+
+function ExpansionLandingPageMinimapButtonMixin:RefreshButton(forceUpdateIcon)
 	local previousMode = self.mode;
 	local wasInGarrisonMode = self:IsInGarrisonMode();
 	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.LandingPageFactionID) then
@@ -769,20 +783,25 @@ function ExpansionLandingPageMinimapButtonMixin:RefreshButton()
 		self.majorFactionID = C_GameModeManager.GetFeatureSetting(Enum.GameModeFeatureSetting.LandingPageFactionID);
 	elseif ExpansionLandingPage:IsOverlayApplied() then
 		self.mode = ExpansionLandingPageMode.ExpansionOverlay;
+	else
+		self.mode = nil;
 	end
 
 	if wasInGarrisonMode and not self:IsInGarrisonMode() then
-		if (GarrisonLandingPage and GarrisonLandingPage:IsShown()) then
-			HideUIPanel(GarrisonLandingPage);
+			if (GarrisonLandingPage and GarrisonLandingPage:IsShown()) then
+				HideUIPanel(GarrisonLandingPage);
+			end
+			self:ClearPulses();
+			FrameUtil.UnregisterFrameForEvents(self, GarrisonLandingPageEvents);
 		end
-		self:ClearPulses();
-		FrameUtil.UnregisterFrameForEvents(self, GarrisonLandingPageEvents);
-	end
-
-	if self.mode ~= previousMode then
+		
+	if self.mode ~= previousMode or forceUpdateIcon == true then
 		self:Hide();
-		self:UpdateIcon();
-		self:Show();
+
+		if self.mode then
+			self:UpdateIcon();
+			self:Show();
+		end
 	end
 end
 
@@ -800,14 +819,25 @@ function ExpansionLandingPageMinimapButtonMixin:OnHide()
 	EventRegistry:UnregisterCallback("ExpansionLandingPage.TriggerAlert", self);
 end
 
-
 function ExpansionLandingPageMinimapButtonMixin:OnEvent(event, ...)
 	if self:IsInGarrisonMode() and tContains(GarrisonLandingPageEvents, event) then
 		self:HandleGarrisonEvent(event, ...);
 	end
 end
 
-local function SetLandingPageIconFromAtlases(self, up, down, highlight, glow, useDefaultButtonSize)
+function ExpansionLandingPageMinimapButtonMixin:OnOverlayChanged()
+	local forceUpdateIcon = false;
+
+	local expansionLandingPageType = ExpansionLandingPage:GetLandingPageType();
+	if self.expansionLandingPageType ~= expansionLandingPageType then
+		self.expansionLandingPageType = expansionLandingPageType;
+		forceUpdateIcon = true;
+	end
+
+	self:RefreshButton(forceUpdateIcon);
+end
+
+function ExpansionLandingPageMinimapButtonMixin:SetLandingPageIconFromAtlases(up, down, highlight, glow, useDefaultButtonSize)
 	local width, height;
 	if useDefaultButtonSize then
 		width = self.defaultWidth;
@@ -827,10 +857,21 @@ local function SetLandingPageIconFromAtlases(self, up, down, highlight, glow, us
 	self.LoopingGlow:SetAtlas(glow, useAtlasSize);
 end
 
+function ExpansionLandingPageMinimapButtonMixin:SetLandingPageIconOffset(customOffset)
+	local offsetX = customOffset and customOffset.x or self.defaultOffsetX;
+	local offsetY = customOffset and customOffset.y or self.defaultOffsetY;
+	self:SetPoint("TOPLEFT", offsetX, offsetY);
+end
+
+function ExpansionLandingPageMinimapButtonMixin:ResetLandingPageIconOffset()
+	self:SetLandingPageIconOffset(nil);
+end
+
 function ExpansionLandingPageMinimapButtonMixin:UpdateIcon()
 	if self:IsInMajorFactionRenownMode() then
 		local useDefaultButtonSize = true;
-		SetLandingPageIconFromAtlases(self, "plunderstorm-landingpagebutton-up", "plunderstorm-landingpagebutton-down", "plunderstorm-landingpagebutton-up", "plunderstorm-landingpagebutton-up", useDefaultButtonSize);
+		self:SetLandingPageIconFromAtlases("plunderstorm-landingpagebutton-up", "plunderstorm-landingpagebutton-down", "plunderstorm-landingpagebutton-up", "plunderstorm-landingpagebutton-up", useDefaultButtonSize);
+		self:ResetLandingPageIconOffset();
 		self.title = "";
 		self.description = "";
 	elseif self:IsInGarrisonMode() then
@@ -838,7 +879,8 @@ function ExpansionLandingPageMinimapButtonMixin:UpdateIcon()
 	else
 		local minimapDisplayInfo = ExpansionLandingPage:GetOverlayMinimapDisplayInfo();
 		if minimapDisplayInfo then
-			SetLandingPageIconFromAtlases(self, minimapDisplayInfo.normalAtlas, minimapDisplayInfo.pushedAtlas, minimapDisplayInfo.highlightAtlas, minimapDisplayInfo.glowAtlas, minimapDisplayInfo.useDefaultButtonSize);
+			self:SetLandingPageIconFromAtlases(minimapDisplayInfo.normalAtlas, minimapDisplayInfo.pushedAtlas, minimapDisplayInfo.highlightAtlas, minimapDisplayInfo.glowAtlas, minimapDisplayInfo.useDefaultButtonSize);
+			self:SetLandingPageIconOffset(minimapDisplayInfo.anchorOffset);
 			self.title = minimapDisplayInfo.title;
 			self.description = minimapDisplayInfo.description;
 		end
@@ -855,7 +897,7 @@ function ExpansionLandingPageMinimapButtonMixin:ToggleLandingPage()
 	elseif self:IsInGarrisonMode() then
 		GarrisonLandingPage_Toggle();
 		GarrisonMinimap_HideHelpTip(self);
-	else
+	elseif self:IsExpansionOverlayMode() then
 		ToggleExpansionLandingPage();
 	end
 end
@@ -871,7 +913,6 @@ function ExpansionLandingPageMinimapButtonMixin:SetTooltip()
 	end
 
 	GameTooltip:Show();
-
 end
 
 function ExpansionLandingPageMinimapButtonMixin:OnEnter()
@@ -1044,13 +1085,13 @@ function ExpansionLandingPageMinimapButtonMixin:UpdateIconForGarrison()
 		self.description = MINIMAP_ORDER_HALL_LANDING_PAGE_TOOLTIP;
 	elseif (garrisonType == Enum.GarrisonType.Type_8_0_Garrison) then
 		self.faction = UnitFactionGroup("player");
-		SetLandingPageIconFromAtlases(self, GetMinimapAtlases_GarrisonType8_0(self.faction));
+		self:SetLandingPageIconFromAtlases(GetMinimapAtlases_GarrisonType8_0(self.faction));
 		self.title = GARRISON_TYPE_8_0_LANDING_PAGE_TITLE;
 		self.description = GARRISON_TYPE_8_0_LANDING_PAGE_TOOLTIP;
 	elseif (garrisonType == Enum.GarrisonType.Type_9_0_Garrison) then
 		local covenantData = C_Covenants.GetCovenantData(C_Covenants.GetActiveCovenantID());
 		if covenantData then
-			SetLandingPageIconFromAtlases(self, GetMinimapAtlases_GarrisonType9_0(covenantData));
+			self:SetLandingPageIconFromAtlases(GetMinimapAtlases_GarrisonType9_0(covenantData));
 		end
 
 		self.title = GARRISON_TYPE_9_0_LANDING_PAGE_TITLE;

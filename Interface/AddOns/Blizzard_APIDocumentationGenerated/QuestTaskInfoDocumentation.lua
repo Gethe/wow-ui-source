@@ -205,6 +205,7 @@ local QuestTaskInfo =
 				{ Name = "isQuestStart", Type = "bool", Nilable = false },
 				{ Name = "isDaily", Type = "bool", Nilable = false },
 				{ Name = "isCombatAllyQuest", Type = "bool", Nilable = false },
+				{ Name = "isMeta", Type = "bool", Nilable = false },
 				{ Name = "childDepth", Type = "number", Nilable = true },
 			},
 		},

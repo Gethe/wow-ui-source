@@ -67,7 +67,7 @@
 				</Scripts>
 			</Frame>
 
-			<Frame parentKey="SelectionChoiceFrame" inherits="TalentSelectionChoiceFrameTemplate" enableMouse="true" frameLevel="2000"/>
+			<Frame parentKey="SelectionChoiceFrame" inherits="TalentSelectionChoiceFrameTemplate" enableMouse="true" frameLevel="2000"  fixedFrameLevel="true"/>
 			
 			<Frame parentKey="DisabledOverlay" enableMouse="true" frameLevel="4000" hidden="true">
 				<Anchors>

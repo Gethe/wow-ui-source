@@ -591,7 +591,7 @@
 		<Frames>
 			<Frame parentArray="Rewards" inherits="GarrisonMissionListButtonRewardTemplate">
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.RewardsBG"/>
+					<Anchor point="RIGHT" relativeKey="$parent"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="Overlay" setAllPoints="true" hidden="true">
@@ -1879,6 +1879,7 @@
 				<KeyValues>
 					 <KeyValue key="showUncollected" value="true" type="boolean"/>
 					 <KeyValue key="canCastSpellsOnFollowers" value="true" type="boolean"/>
+					 <KeyValue key="hasContextMenu" value="true" type="boolean"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="33" y="-64"/>
@@ -1899,13 +1900,6 @@
 							<OnTextChanged function="GarrisonFollowListEditBox_OnTextChanged"/>
 						</Scripts>
 					</EditBox>
-					<Frame name="GarrisonFollowerOptionDropDown" parentKey="OptionDropDown" inherits="UIDropDownMenuTemplate">
-						<Scripts>
-							<OnLoad>
-								UIDropDownMenu_Initialize(self, GarrisonFollowerOptionDropDown_Initialize, "MENU");
-							</OnLoad>
-						</Scripts>
-					</Frame>
 				</Frames>
 				<Scripts>
 					<OnShow method="OnShow"/>

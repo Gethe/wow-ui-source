@@ -751,6 +751,7 @@ local MonthlyActivitiesFrameEvents =
 	"PERKS_ACTIVITIES_UPDATED",
 	"CHEST_REWARDS_UPDATED_FROM_SERVER",
 	"PERKS_ACTIVITY_COMPLETED",
+	"PERKS_ACTIVITIES_TRACKED_LIST_CHANGED",
 };
 
 function MonthlyActivitiesFrameMixin:OnLoad()
@@ -766,8 +767,6 @@ function MonthlyActivitiesFrameMixin:OnLoad()
 	local indent = 32;
 	local view = CreateScrollBoxListTreeListView(indent, DefaultPad, DefaultPad, DefaultPad, DefaultPad, DefaultSpacing);
 	view:SetPanExtent(20);
-
-	myView = view;
 
 	local function Initializer(button, node)
 		button:Init();
@@ -824,7 +823,7 @@ function MonthlyActivitiesFrameMixin:OnHide()
 end
 
 function MonthlyActivitiesFrameMixin:OnEvent(event, ...)
-	if ( event == "PERKS_ACTIVITIES_UPDATED" ) then
+	if ( event == "PERKS_ACTIVITIES_UPDATED" or event == "PERKS_ACTIVITIES_TRACKED_LIST_CHANGED" ) then
 		local activitiesInfo = C_PerksActivities.GetPerksActivitiesInfo();
 		self:UpdateActivities(ScrollBoxConstants.RetainScrollPosition, activitiesInfo);
 	elseif ( event == "PERKS_ACTIVITIES_TRACKED_UPDATED" ) then
@@ -1242,7 +1241,6 @@ local function ActivitySortComparator(a, b)
 	end
 
 	-- Put expired timed activities next
-	local aHasExpired, bHasExpired = HasTimedActivityExpired(aData), HasTimedActivityExpired(bData);
 	if aHasExpired ~= bHasExpired then
 		return aHasExpired;
 	elseif aHasExpired and bHasExpired then
@@ -1536,7 +1534,7 @@ function MonthlyActivitiesFrameMixin:ScrollToPerksActivityID(activityID)
 		selectedNode = FindNode(activityID);
 	end
 	if selectedNode then
-		scrollBox:ScrollToElementData(selectedNode, ScrollBoxConstants.AlignCenter, ScrollBoxConstants.NoScrollInterpolation);
+		scrollBox:ScrollToElementData(selectedNode, ScrollBoxConstants.AlignCenter);
 	end
 end
 
@@ -1595,7 +1593,11 @@ end
 function MonthlyActivitiesRewardButtonMixin:OnEnter()
 	if self.rewardItemId then
 		GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-		GameTooltip:SetItemByID(self.rewardItemId);
+		local tooltipInfo = CreateBaseTooltipInfo("GetItemByID", self.rewardItemId);
+		tooltipInfo.excludeLines = {
+				Enum.TooltipDataLineType.SellPrice,
+		};
+		GameTooltip:ProcessInfo(tooltipInfo);
 	end
 end
 

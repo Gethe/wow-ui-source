@@ -1,7 +1,7 @@
-AutoLootDropDownControlMixin = CreateFromMixins(SettingsDropDownControlMixin);
+AutoLootDropdownControlMixin = CreateFromMixins(SettingsDropdownControlMixin);
 
-function AutoLootDropDownControlMixin:Init(initializer)
-	SettingsDropDownControlMixin.Init(self, initializer);
+function AutoLootDropdownControlMixin:Init(initializer)
+	SettingsDropdownControlMixin.Init(self, initializer);
 
 	self.autoLootSetting = Settings.GetSetting("autoLootDefault");
 	self:UpdateLabel();
@@ -9,15 +9,11 @@ function AutoLootDropDownControlMixin:Init(initializer)
 	self.cbrHandles:SetOnValueChangedCallback("autoLootDefault", self.OnAutoLootChanged, self);
 end
 
-function AutoLootDropDownControlMixin:Release()
-	SettingsDropDownControlMixin.Release(self);
-end
-
-function AutoLootDropDownControlMixin:OnAutoLootChanged(setting, value)
+function AutoLootDropdownControlMixin:OnAutoLootChanged(setting, value)
 	self:UpdateLabel();
 end
 
-function AutoLootDropDownControlMixin:UpdateLabel()
+function AutoLootDropdownControlMixin:UpdateLabel()
 	local text = self.autoLootSetting:GetValue() and LOOT_KEY_TEXT or AUTO_LOOT_KEY_TEXT;
 	self.Text:SetText(text);
 end
@@ -31,7 +27,7 @@ function CreateAutoLootInitializer(setting)
 	});
 
 	local data = Settings.CreateSettingInitializerData(setting, options, OPTION_TOOLTIP_AUTO_LOOT_KEY);
-	local initializer = Settings.CreateSettingInitializer("AutoLootDropDownControlTemplate", data);
+	local initializer = Settings.CreateSettingInitializer("AutoLootDropdownControlTemplate", data);
 	initializer:AddSearchTags(LOOT_KEY_TEXT);
 	return initializer;
 end
@@ -57,23 +53,23 @@ local function Register()
 		local defaultValue = false;
 		local setting = Settings.RegisterProxySetting(category, "PROXY_DESELECT_ON_CLICK", Settings.DefaultVarLocation,
 			Settings.VarType.Boolean, GAMEFIELD_DESELECT_TEXT, defaultValue, GetValue, SetValue);
-		Settings.CreateCheckBox(category, setting, OPTION_TOOLTIP_GAMEFIELD_DESELECT);
+		Settings.CreateCheckbox(category, setting, OPTION_TOOLTIP_GAMEFIELD_DESELECT);
 	end
 
 	ControlsOverrides.SetupAutoDismountSetting(category);
 
 	-- Auto Cancel AFK
-	Settings.SetupCVarCheckBox(category, "autoClearAFK", CLEAR_AFK, OPTION_TOOLTIP_CLEAR_AFK);
+	Settings.SetupCVarCheckbox(category, "autoClearAFK", CLEAR_AFK, OPTION_TOOLTIP_CLEAR_AFK);
 
 	-- Interact on Left Click
-	Settings.SetupCVarCheckBox(category, "interactOnLeftClick", INTERACT_ON_LEFT_CLICK_TEXT, OPTION_TOOLTIP_INTERACT_ON_LEFT_CLICK);
+	Settings.SetupCVarCheckbox(category, "interactOnLeftClick", INTERACT_ON_LEFT_CLICK_TEXT, OPTION_TOOLTIP_INTERACT_ON_LEFT_CLICK);
 
 	ControlsOverrides.RunSettingsCallback(function()
 		-- Open Loot Window at Mouse
-		Settings.SetupCVarCheckBox(category, "lootUnderMouse", LOOT_UNDER_MOUSE_TEXT, OPTION_TOOLTIP_LOOT_UNDER_MOUSE);
+		Settings.SetupCVarCheckbox(category, "lootUnderMouse", LOOT_UNDER_MOUSE_TEXT, OPTION_TOOLTIP_LOOT_UNDER_MOUSE);
 
 		-- Auto Loot
-		Settings.SetupCVarCheckBox(category, "autoLootDefault", AUTO_LOOT_DEFAULT_TEXT, OPTION_TOOLTIP_AUTO_LOOT_DEFAULT);
+		Settings.SetupCVarCheckbox(category, "autoLootDefault", AUTO_LOOT_DEFAULT_TEXT, OPTION_TOOLTIP_AUTO_LOOT_DEFAULT);
 
 		-- Auto Loot Key
 		local setting = Settings.RegisterModifiedClickSetting(category, "AUTOLOOTTOGGLE", AUTO_LOOT_KEY_TEXT, "SHIFT");
@@ -82,7 +78,7 @@ local function Register()
 
 		if C_CVar.GetCVar("combinedBags") then
 			-- Use Combined Inventory Bags
-			Settings.SetupCVarCheckBox(category, "combinedBags", USE_COMBINED_BAGS_TEXT, OPTION_TOOLTIP_USE_COMBINED_BAGS);
+			Settings.SetupCVarCheckbox(category, "combinedBags", USE_COMBINED_BAGS_TEXT, OPTION_TOOLTIP_USE_COMBINED_BAGS);
 		end
 	end);
 
@@ -99,7 +95,7 @@ local function Register()
 		local defaultValue = false;
 		local setting = Settings.RegisterProxySetting(category, "PROXY_ENABLE_INTERACT", Settings.DefaultVarLocation,
 			Settings.VarType.Boolean, ENABLE_INTERACT_TEXT, defaultValue, GetValue, SetValue);
-		Settings.CreateCheckBox(category, setting, OPTION_TOOLTIP_ENABLE_INTERACT);
+		Settings.CreateCheckbox(category, setting, OPTION_TOOLTIP_ENABLE_INTERACT);
 	end);
 
 	-- Interact Key
@@ -112,18 +108,18 @@ local function Register()
 	end
 
 	-- Enable Interact Key Sound
-	Settings.SetupCVarCheckBox(category, "softTargettingInteractKeySound", ENABLE_INTERACT_SOUND_OPTION, ENABLE_INTERACT_SOUND_OPTION_TOOLTIP);
+	Settings.SetupCVarCheckbox(category, "softTargettingInteractKeySound", ENABLE_INTERACT_SOUND_OPTION, ENABLE_INTERACT_SOUND_OPTION_TOOLTIP);
 
 	---- Mouse
 	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(MOUSE_LABEL));
 
 	-- Lock Cursor
 	if SupportsClipCursor() then
-		Settings.SetupCVarCheckBox(category, "ClipCursor", LOCK_CURSOR, OPTION_TOOLTIP_LOCK_CURSOR);
+		Settings.SetupCVarCheckbox(category, "ClipCursor", LOCK_CURSOR, OPTION_TOOLTIP_LOCK_CURSOR);
 	end
 
 	-- Invert Mouse
-	Settings.SetupCVarCheckBox(category, "mouseInvertPitch", INVERT_MOUSE, OPTION_TOOLTIP_INVERT_MOUSE);
+	Settings.SetupCVarCheckbox(category, "mouseInvertPitch", INVERT_MOUSE, OPTION_TOOLTIP_INVERT_MOUSE);
 
 	local function GetFormatter1to10(minValue, maxValue)
 		return function(value)
@@ -161,7 +157,7 @@ local function Register()
 		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
 		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, GetFormatter1to10(minValue, maxValue));
 
-		local initializer = CreateSettingsCheckBoxSliderInitializer(
+		local initializer = CreateSettingsCheckboxSliderInitializer(
 				cbSetting, ENABLE_MOUSE_SPEED, OPTION_TOOLTIP_MOUSE_SENSITIVITY,
 				sliderSetting, options, MOUSE_SENSITIVITY, OPTION_TOOLTIP_MOUSE_SENSITIVITY);
 		layout:AddInitializer(initializer);
@@ -170,7 +166,7 @@ local function Register()
 	-- Click to Move
 	do
 		local cbSetting = Settings.RegisterCVarSetting(category, "autointeract", Settings.VarType.Boolean, CLICK_TO_MOVE);
-		local dropDownSetting = Settings.RegisterCVarSetting(category, "cameraSmoothTrackingStyle", Settings.VarType.Number, CAMERA_CTM_FOLLOWING_STYLE);
+		local dropdownSetting = Settings.RegisterCVarSetting(category, "cameraSmoothTrackingStyle", Settings.VarType.Number, CAMERA_CTM_FOLLOWING_STYLE);
 
 		local function GetOptionData(options)
 			local container = Settings.CreateControlTextContainer();
@@ -181,9 +177,9 @@ local function Register()
 			return container:GetData();
 		end
 
-		local initializer = CreateSettingsCheckBoxDropDownInitializer(
+		local initializer = CreateSettingsCheckboxDropdownInitializer(
 			cbSetting, CLICK_TO_MOVE, OPTION_TOOLTIP_CLICK_TO_MOVE,
-			dropDownSetting, GetOptionData, CAMERA_CTM_FOLLOWING_STYLE, OPTION_TOOLTIP_CTM_CAMERA_FOLLOWING_STYLE);
+			dropdownSetting, GetOptionData, CAMERA_CTM_FOLLOWING_STYLE, OPTION_TOOLTIP_CTM_CAMERA_FOLLOWING_STYLE);
 		initializer:AddSearchTags(CLICK_TO_MOVE, CAMERA_CTM_FOLLOWING_STYLE);
 		layout:AddInitializer(initializer);
 	end
@@ -192,7 +188,7 @@ local function Register()
 	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(CAMERA_LABEL));
 
 	-- Water Collision
-	Settings.SetupCVarCheckBox(category, "cameraWaterCollision", WATER_COLLISION, OPTION_TOOLTIP_WATER_COLLISION);
+	Settings.SetupCVarCheckbox(category, "cameraWaterCollision", WATER_COLLISION, OPTION_TOOLTIP_WATER_COLLISION);
 
 	-- Auto Follow Speed
 	do
@@ -225,7 +221,7 @@ local function Register()
 			container:Add(0, CAMERA_NEVER, OPTION_TOOLTIP_CAMERA3);
 			return container:GetData();
 		end
-		Settings.SetupCVarDropDown(category, "cameraSmoothStyle", Settings.VarType.Number, GetOptions, CAMERA_FOLLOWING_STYLE, OPTION_TOOLTIP_CAMERA_FOLLOWING_STYLE);
+		Settings.SetupCVarDropdown(category, "cameraSmoothStyle", Settings.VarType.Number, GetOptions, CAMERA_FOLLOWING_STYLE, OPTION_TOOLTIP_CAMERA_FOLLOWING_STYLE);
 	end
 
 	ControlsOverrides.AdjustCameraSettings(category);

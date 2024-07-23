@@ -298,6 +298,7 @@ local FrameAPIModelSceneFrameActor =
 
 			Arguments =
 			{
+				{ Name = "characterIndex", Type = "number", Nilable = true },
 				{ Name = "sheatheWeapons", Type = "bool", Nilable = false, Default = false },
 				{ Name = "autoDress", Type = "bool", Nilable = false, Default = true },
 				{ Name = "hideWeapons", Type = "bool", Nilable = false, Default = false },

@@ -33,4 +33,21 @@
 			<OnShow  method="OnShow"/>
 		</Scripts>
 	</Frame>
+
+	<Frame name="ArachnophobiaTemplate" inherits="SettingsCheckboxControlTemplate" mixin="ArachnophobiaMixin" virtual="true">
+		<Frames>
+			<Frame parentKey="SubTextContainer" setAllPoints="true" hyperlinksEnabled="true" enableMouse="true">
+				<Layers>
+					<Layer>
+						<FontString parentKey="SubText" inherits="GameFontNormal" justifyH="LEFT" text="ARACHNOPHOBIA_MODE_SUBTEXT">
+							<Size x="350" y="0"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnHyperlinkClick function="GetURLIndexAndLoadURL" />
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Frame>
 </Ui>

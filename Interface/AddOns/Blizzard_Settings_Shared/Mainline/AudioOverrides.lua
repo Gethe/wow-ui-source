@@ -16,7 +16,7 @@ function AudioOverrides.CreatePingSoundSettings(category, layout)
 		local sliderOptions = Settings.CreateSliderOptions(minValue, maxValue, step);
 		sliderOptions:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, Formatter);
 
-		local initializer = CreateSettingsCheckBoxSliderInitializer(
+		local initializer = CreateSettingsCheckboxSliderInitializer(
 				enableSetting, ENABLE_PING_SOUNDS, OPTION_TOOLTIP_ENABLE_PING_SOUNDS,
 				volumeSetting, sliderOptions, PING_VOLUME, OPTION_TOOLTIP_PING_VOLUME);
 
@@ -32,7 +32,7 @@ function AudioOverrides.CreatePingSoundSettings(category, layout)
 			Settings.OpenToCategory(Settings.PINGSYSTEM_CATEGORY_ID, ENABLE_PINGS);
 		end
 		local addSearchTags = false;
-		local initializer = CreateSettingsButtonInitializer("", PING_SYSTEM_SETTINGS, onButtonClick, nil, addSearchTags);
+		initializer = CreateSettingsButtonInitializer("", PING_SYSTEM_SETTINGS, onButtonClick, nil, addSearchTags);
 		layout:AddInitializer(initializer);
 	end
 end

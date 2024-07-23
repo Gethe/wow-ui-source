@@ -1,6 +1,6 @@
 local MAX_GUILDBANK_SLOTS_PER_TAB = 98;
 local NUM_SLOTS_PER_GUILDBANK_GROUP = 14;
-local NUM_GUILDBANK_ICONS_SHOWN = 0;
+local NUM_GUILDBANK_ICONS_SHOWN = 0; -- luacheck: ignore 231 (variable is never accessed)
 local NUM_GUILDBANK_ICONS_PER_ROW = 10;
 local NUM_GUILDBANK_ICON_ROWS = 9;
 local NUM_GUILDBANK_COLUMNS = 7;
@@ -831,7 +831,7 @@ function GuildBankPopupFrameMixin:OnShow()
 
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	self.iconDataProvider = GuildBankFrame:RefreshIconList();
-	self.BorderBox.IconTypeDropDown:SetSelectedValue(IconSelectorPopupFrameIconFilterTypes.All);
+	self:SetIconFilter(IconSelectorPopupFrameIconFilterTypes.All);
 	self:Update();
 	self.BorderBox.IconSelectorEditBox:OnTextChanged();
 

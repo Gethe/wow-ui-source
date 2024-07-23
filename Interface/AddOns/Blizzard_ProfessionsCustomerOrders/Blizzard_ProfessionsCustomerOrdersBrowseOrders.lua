@@ -6,138 +6,31 @@ local ProfessionsCustomerOrdersBrowsePageEvents =
 	"CRAFTINGORDERS_CUSTOMER_FAVORITES_CHANGED",
 };
 
-local defaultFilters = 
-{
-	[Enum.AuctionHouseFilter.UncollectedOnly] = false,
-	[Enum.AuctionHouseFilter.UsableOnly] = false,
-	[Enum.AuctionHouseFilter.UpgradesOnly] = false,
-	[Enum.AuctionHouseFilter.PoorQuality] = true,
-	[Enum.AuctionHouseFilter.CommonQuality] = true,
-	[Enum.AuctionHouseFilter.UncommonQuality] = true,
-	[Enum.AuctionHouseFilter.RareQuality] = true,
-	[Enum.AuctionHouseFilter.EpicQuality] = true,
-	[Enum.AuctionHouseFilter.LegendaryQuality] = true,
-	[Enum.AuctionHouseFilter.ArtifactQuality] = true,
-};
-
-local categoryStrings =
-{
-	[Enum.AuctionHouseFilterCategory.Uncategorized] = "",
-	[Enum.AuctionHouseFilterCategory.Equipment] = AUCTION_HOUSE_FILTER_CATEGORY_EQUIPMENT,
-	[Enum.AuctionHouseFilterCategory.Rarity] = AUCTION_HOUSE_FILTER_CATEGORY_RARITY,
-};
-
 local function GetQualityFilterString(itemQuality)
 	local hex = select(4, C_Item.GetItemQualityColor(itemQuality));
 	local text = _G["ITEM_QUALITY"..itemQuality.."_DESC"];
 	return "|c"..hex..text.."|r";
 end
 
-local filterStrings = 
-{
-	[Enum.AuctionHouseFilter.UncollectedOnly] = AUCTION_HOUSE_FILTER_UNCOLLECTED_ONLY,
-	[Enum.AuctionHouseFilter.UsableOnly] = AUCTION_HOUSE_FILTER_USABLE_ONLY,
-	[Enum.AuctionHouseFilter.UpgradesOnly] = AUCTION_HOUSE_FILTER_UPGRADES_ONLY,
-	[Enum.AuctionHouseFilter.PoorQuality] = GetQualityFilterString(Enum.ItemQuality.Poor),
-	[Enum.AuctionHouseFilter.CommonQuality] = GetQualityFilterString(Enum.ItemQuality.Common),
-	[Enum.AuctionHouseFilter.UncommonQuality] = GetQualityFilterString(Enum.ItemQuality.Uncommon),
-	[Enum.AuctionHouseFilter.RareQuality] = GetQualityFilterString(Enum.ItemQuality.Rare),
-	[Enum.AuctionHouseFilter.EpicQuality] = GetQualityFilterString(Enum.ItemQuality.Epic),
-	[Enum.AuctionHouseFilter.LegendaryQuality] = GetQualityFilterString(Enum.ItemQuality.Legendary),
-	[Enum.AuctionHouseFilter.ArtifactQuality] = GetQualityFilterString(Enum.ItemQuality.Artifact),
-};
+local function GetFilterName(filter)
+	if filter == Enum.AuctionHouseFilter.LegendaryCraftedItemOnly then
+		return "";
+	end
 
-function ProfessionsCustomerOrdersBrowsePageMixin:GetFilterLevelRange()
-	return self.SearchBar.FilterButton.LevelRangeFrame:GetLevelRange();
+	return GetAHFilterName(filter);
 end
 
 function ProfessionsCustomerOrdersBrowsePageMixin:SetDefaultFilters()
-	self.filters = CopyTable(defaultFilters);
-	self.SearchBar.FilterButton.LevelRangeFrame:Reset();
-	self:UpdateFilterResetVisibility();
-end
-
-function ProfessionsCustomerOrdersBrowsePageMixin:IsUsingDefaultFilters()
-	local minLevel, maxLevel = self:GetFilterLevelRange();
-	if minLevel ~= 0 or maxLevel ~= 0 then
-		return false;
-	end
-
-	if not tCompare(self.filters, defaultFilters) then
-		return false;
-	end
-
-	return true;
-end
-
-function ProfessionsCustomerOrdersBrowsePageMixin:UpdateFilterResetVisibility()
-	self.SearchBar.FilterButton.ClearFiltersButton:SetShown(not self:IsUsingDefaultFilters());
-end
-
-function ProfessionsCustomerOrdersBrowsePageMixin:InitFilterMenu()
-	local info = UIDropDownMenu_CreateInfo();
-	info.text = AUCTION_HOUSE_FILTER_DROP_DOWN_LEVEL_RANGE;
-	info.isTitle = true;
-	info.notCheckable = true;
-	UIDropDownMenu_AddButton(info);
-
-	local info = UIDropDownMenu_CreateInfo();
-	info.customFrame = self.SearchBar.FilterButton.LevelRangeFrame;
-	UIDropDownMenu_AddButton(info);
-
-	local filterGroups = C_AuctionHouse.GetFilterGroups();
-	for i, filterGroup in ipairs(filterGroups) do
-		local info = UIDropDownMenu_CreateInfo();
-		info.text = categoryStrings[filterGroup.category];
-		info.isTitle = true;
-		info.notCheckable = true;
-		UIDropDownMenu_AddButton(info);
-
-		for j, filter in ipairs(filterGroup.filters) do
-			local info = UIDropDownMenu_CreateInfo();
-			info.text = filterStrings[filter];
-			info.value = nil;
-			info.isNotRadio = true;
-			info.checked = self.filters[filter];
-			info.keepShownOnClick = 1;
-			info.func = function(button)
-				self.filters[filter] = not self.filters[filter];
-				self:UpdateFilterResetVisibility();
-			end
-			UIDropDownMenu_AddButton(info);
-		end
-
-		if i ~= #filterGroups then
-			UIDropDownMenu_AddSpace();
-		end
-	end
+	local filterDropdown = self.SearchBar.FilterDropdown;
+	filterDropdown.filters = CopyTable(AUCTION_HOUSE_DEFAULT_FILTERS);
+	filterDropdown.minLevel = 0;
+	filterDropdown.maxLevel = 0;
 end
 
 function ProfessionsCustomerOrdersBrowsePageMixin:UpdateFavoritesButton()
 	local hasFavorites = C_CraftingOrders.HasFavoriteCustomerOptions();
 	self.SearchBar.FavoritesSearchButton:SetEnabled(hasFavorites);
 	self.SearchBar.FavoritesSearchButton.Icon:SetDesaturated(not hasFavorites);
-end
-
-function ProfessionsCustomerOrdersBrowsePageMixin:InitContextMenu(dropDown, level)
-	local recipeID = UIDROPDOWNMENU_MENU_VALUE;
-	local info = UIDropDownMenu_CreateInfo();
-	info.notCheckable = true;
-	
-	local currentlyFavorite = C_CraftingOrders.IsCustomerOptionFavorited(recipeID);
-	info.text = currentlyFavorite and BATTLE_PET_UNFAVORITE or BATTLE_PET_FAVORITE;
-	if not currentlyFavorite and C_CraftingOrders.GetNumFavoriteCustomerOptions() >= Constants.CraftingOrderConsts.MAX_CRAFTING_ORDER_FAVORITE_RECIPES then
-		info.text = DISABLED_FONT_COLOR:WrapTextInColorCode(info.text);
-		info.disabled = true;
-		info.tooltipWhileDisabled = true;
-		info.tooltipOnButton = true;
-		info.tooltipTitle = "";
-		info.tooltipWarning = PROFESSIONS_CRAFTING_ORDERS_FAVORITES_FULL;
-	else
-		info.func = GenerateClosure(C_CraftingOrders.SetCustomerOptionFavorited, recipeID, not currentlyFavorite);
-	end
-
-	UIDropDownMenu_AddButton(info, level);
 end
 
 function ProfessionsCustomerOrdersBrowsePageMixin:OnLoad()
@@ -181,19 +74,90 @@ function ProfessionsCustomerOrdersBrowsePageMixin:OnLoad()
 	end;
 	ScrollUtil.RegisterTableBuilder(self.RecipeList.ScrollBox, self.tableBuilder, ElementDataTranslator);
 
-	-- Init filters
-	self.SearchBar.FilterButton:SetScript("OnClick", function()
-		ToggleDropDownMenu(1, nil, self.SearchBar.FilterButton.DropDown, self.SearchBar.FilterButton, 9, 3);
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	end);
-	self.SearchBar.FilterButton.ClearFiltersButton:SetScript("OnClick", function() self:SetDefaultFilters(); end);
-	self.SearchBar.FilterButton.LevelRangeFrame:SetLevelRangeChangedCallback(function() self:UpdateFilterResetVisibility(); end);
-	UIDropDownMenu_SetInitializeFunction(self.SearchBar.FilterButton.DropDown, function() self:InitFilterMenu(); end);
-	UIDropDownMenu_SetDisplayMode(self.SearchBar.FilterButton.DropDown, "MENU");
+	self:InitContextMenu();
+end
 
-	-- Init context menu
-	UIDropDownMenu_SetInitializeFunction(self.RecipeList.ContextMenu, GenerateClosure(self.InitContextMenu, self));
-	UIDropDownMenu_SetDisplayMode(self.RecipeList.ContextMenu, "MENU");
+function ProfessionsCustomerOrdersBrowsePageMixin:InitFilterDropdown()
+	local filterDropdown = self.SearchBar.FilterDropdown;
+	filterDropdown:SetDefaultCallback(function()
+		filterDropdown.filters = CopyTable(AUCTION_HOUSE_DEFAULT_FILTERS);
+		filterDropdown.minLevel = 0;
+		filterDropdown.maxLevel = 0;
+	end);
+
+	filterDropdown:SetIsDefaultCallback(function()
+		if filterDropdown.minLevel ~= 0 or filterDropdown.minLevel ~= 0 then
+			return false;
+		end
+
+		return tCompare(filterDropdown.filters, AUCTION_HOUSE_DEFAULT_FILTERS);
+	end);
+
+	local function IsSelected(filter)
+		return filterDropdown.filters[filter];
+	end
+
+	local function SetSelected(filter)
+		filterDropdown.filters[filter] = not filterDropdown.filters[filter];
+	end
+
+	filterDropdown:SetWidth(93);
+	filterDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_PROFESSIONS_CUSTOMER_ORDER_BROWSE");
+
+		rootDescription:CreateTitle(AUCTION_HOUSE_FILTER_DROP_DOWN_LEVEL_RANGE);
+
+		local levelRangeFrame = rootDescription:CreateTemplate("LevelRangeFrameTemplate");
+		levelRangeFrame:AddInitializer(function(frame, elementDescription, menu)
+			frame:Reset();
+
+			local minLevel = filterDropdown.minLevel;
+			if minLevel > 0 then
+				frame:SetMinLevel(minLevel);
+			end
+
+			local maxLevel = filterDropdown.maxLevel;
+			if maxLevel > 0 then
+				frame:SetMaxLevel(maxLevel);
+			end
+
+			frame:SetLevelRangeChangedCallback(function(minLevel, maxLevel)
+				filterDropdown.minLevel, filterDropdown.maxLevel = minLevel, maxLevel;
+				filterDropdown:ValidateResetState();
+			end);
+		end);
+
+		for index, filterGroup in ipairs(C_AuctionHouse.GetFilterGroups()) do
+			rootDescription:CreateTitle(GetAHFilterCategoryName(filterGroup.category));
+
+			for _, filter in ipairs(filterGroup.filters) do
+				rootDescription:CreateCheckbox(GetFilterName(filter), IsSelected, SetSelected, filter);
+			end
+
+			rootDescription:QueueSpacer();
+		end
+	end);
+end
+
+function ProfessionsCustomerOrdersBrowsePageMixin:InitContextMenu()
+	-- SetContextMenuGenerator assigns the context menu handler in Blizzard_ProfessionsCustomerOrdersRecipeList.lua,
+	-- suitable to any context menu only requiring the recipe ID.
+	self.RecipeList:SetContextMenuGenerator(function(owner, rootDescription, recipeID)
+		local currentlyFavorite = C_CraftingOrders.IsCustomerOptionFavorited(recipeID);
+		local cannotFavorite = not currentlyFavorite and C_CraftingOrders.GetNumFavoriteCustomerOptions() >= Constants.CraftingOrderConsts.MAX_CRAFTING_ORDER_FAVORITE_RECIPES;
+		if cannotFavorite then
+			local button = rootDescription:CreateButton(DISABLED_FONT_COLOR:WrapTextInColorCode(text), nop);
+			button:SetEnabled(false);
+			button:SetTooltip(function(tooltip, elementDescription)
+				GameTooltip_AddErrorLine(tooltip, PROFESSIONS_CRAFTING_ORDERS_FAVORITES_FULL);
+			end);
+		else
+			local text = currentlyFavorite and BATTLE_PET_UNFAVORITE or BATTLE_PET_FAVORITE;
+			rootDescription:CreateButton(text, function()
+				C_CraftingOrders.SetCustomerOptionFavorited(recipeID, not currentlyFavorite);
+			end);
+		end
+	end);
 end
 
 function ProfessionsCustomerOrdersBrowsePageMixin:OnEvent(event, ...)
@@ -211,6 +175,7 @@ function ProfessionsCustomerOrdersBrowsePageMixin:OnEvent(event, ...)
 	end
 end
 
+
 function ProfessionsCustomerOrdersBrowsePageMixin:Init()
 	self.SearchBar.SearchBox:SetText("");
     self.SearchBar.SearchButton:Disable();
@@ -218,6 +183,7 @@ function ProfessionsCustomerOrdersBrowsePageMixin:Init()
 	self:SetupSortManager();
 	self:SetupTable();
 	self:SetDefaultFilters();
+	self:InitFilterDropdown();
 
 	local dataProvider = CreateDataProvider();
 	self.RecipeList.ScrollBox:SetDataProvider(dataProvider);
@@ -342,7 +308,8 @@ function ProfessionsCustomerOrdersBrowsePageMixin:StartSearch(isFavoritesSearch)
     local categoryFilters = self.CategoryList:GetCategoryFilters();
 	local searchBoxText = self.SearchBar.SearchBox:GetText();
     local searchText = searchBoxText ~= "" and searchBoxText or nil;
-	local minLevel, maxLevel = self:GetFilterLevelRange();
+	local filterDropdown = self.SearchBar.FilterDropdown;
+	local minLevel, maxLevel = filterDropdown.minLevel, filterDropdown.maxLevel;
 
     local searchParams =
 	{
@@ -352,16 +319,17 @@ function ProfessionsCustomerOrdersBrowsePageMixin:StartSearch(isFavoritesSearch)
 		searchText = searchText,
 		minLevel = minLevel,
 		maxLevel = maxLevel,
-		uncollectedOnly = self.filters[Enum.AuctionHouseFilter.UncollectedOnly],
-		usableOnly = self.filters[Enum.AuctionHouseFilter.UsableOnly],
-		upgradesOnly = self.filters[Enum.AuctionHouseFilter.UpgradesOnly],
-		includePoor = self.filters[Enum.AuctionHouseFilter.PoorQuality],
-		includeCommon = self.filters[Enum.AuctionHouseFilter.CommonQuality],
-		includeUncommon = self.filters[Enum.AuctionHouseFilter.UncommonQuality],
-		includeRare = self.filters[Enum.AuctionHouseFilter.RareQuality],
-		includeEpic = self.filters[Enum.AuctionHouseFilter.EpicQuality],
-		includeLegendary = self.filters[Enum.AuctionHouseFilter.LegendaryQuality],
-		includeArtifact = self.filters[Enum.AuctionHouseFilter.ArtifactQuality],
+		uncollectedOnly = filterDropdown.filters[Enum.AuctionHouseFilter.UncollectedOnly],
+		usableOnly = filterDropdown.filters[Enum.AuctionHouseFilter.UsableOnly],
+		upgradesOnly = filterDropdown.filters[Enum.AuctionHouseFilter.UpgradesOnly],
+		currentExpansionOnly = filterDropdown.filters[Enum.AuctionHouseFilter.CurrentExpansionOnly],
+		includePoor = filterDropdown.filters[Enum.AuctionHouseFilter.PoorQuality],
+		includeCommon = filterDropdown.filters[Enum.AuctionHouseFilter.CommonQuality],
+		includeUncommon = filterDropdown.filters[Enum.AuctionHouseFilter.UncommonQuality],
+		includeRare = filterDropdown.filters[Enum.AuctionHouseFilter.RareQuality],
+		includeEpic = filterDropdown.filters[Enum.AuctionHouseFilter.EpicQuality],
+		includeLegendary = filterDropdown.filters[Enum.AuctionHouseFilter.LegendaryQuality],
+		includeArtifact = filterDropdown.filters[Enum.AuctionHouseFilter.ArtifactQuality],
 	};
 
 	local searchResults = C_CraftingOrders.GetCustomerOptions(searchParams);
@@ -377,7 +345,7 @@ function ProfessionsCustomerOrdersBrowsePageMixin:StartSearch(isFavoritesSearch)
 
 	local dataProvider = CreateDataProvider();
 	for _, option in ipairs(searchResults.options) do
-		dataProvider:Insert({option = option, contextMenu = self.RecipeList.ContextMenu});
+		dataProvider:Insert({option = option});
 	end
 	dataProvider:SetSortComparator(self.sortManager:CreateComparator());
 	self.RecipeList.ScrollBox:SetDataProvider(dataProvider);

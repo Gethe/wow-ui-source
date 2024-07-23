@@ -1,59 +1,15 @@
 ## Title: Blizzard Store UI
 ## AllowLoad: Both
 ## AllowLoadGameType: mainline
-..\Blizzard_SharedXML\Mixin.lua
-..\Blizzard_SharedXML\MathUtil.lua
-..\Blizzard_SharedXML\EnumUtil.lua
-..\Blizzard_SharedXML\TableUtil.lua
-..\Blizzard_SharedXML\LinkUtil.lua
-..\Blizzard_SharedXML\Flags.lua
-..\Blizzard_SharedXML\Spline.lua
-..\Blizzard_SharedXML\PixelUtilSecure.lua
-..\Blizzard_SharedXML\SecureUtil.lua
-..\Blizzard_SharedXML\Pools.lua
-..\Blizzard_SharedXML\CallbackRegistry.lua
-..\Blizzard_SharedXML\Interpolator.lua
-..\Blizzard_SharedXML\ButtonStateBehavior.lua
-..\Blizzard_SharedXML\InputUtil.lua
-..\Blizzard_SharedXML\Shared\Frame\EventButton.lua
-..\Blizzard_SharedXML\Shared\Frame\EventFrame.lua
-..\Blizzard_SharedXML\Shared\Frame\EventScrollFrame.lua
-..\Blizzard_SharedXML\DataProvider.lua
-..\Blizzard_SharedXML\TreeListDataProvider.lua
-..\Blizzard_SharedXML\Shared\Scroll\ScrollUtil.lua
-..\Blizzard_SharedXML\Shared\Scroll\ScrollController.lua
-..\Blizzard_SharedXML\Shared\Scroll\ScrollBox.lua
-..\Blizzard_SharedXML\Shared\Scroll\ScrollBoxPadding.lua
-..\Blizzard_SharedXML\Shared\Scroll\ScrollBoxViewUtil.lua
-..\Blizzard_SharedXML\Shared\Scroll\ScrollBoxView.lua
-..\Blizzard_SharedXML\Shared\Scroll\ScrollBoxListView.lua
-..\Blizzard_SharedXML\Shared\Scroll\ScrollBoxLinearView.lua
-..\Blizzard_SharedXML\Shared\Scroll\ScrollBoxTreeView.lua
-..\Blizzard_SharedXML\Shared\Scroll\ScrollBar.lua
-..\Blizzard_SharedXML\Shared\Scroll\MinimalScrollBar.lua
-
-..\Blizzard_SharedXML\ModelSceneTemplates.lua
-..\Blizzard_SharedXML\ModelSceneControlFrame.lua
-..\Blizzard_SharedXML\Shared\ModelSceneCameras\CameraRegistry.lua
-..\Blizzard_SharedXML\Shared\ModelSceneCameras\CameraBaseMixin.lua
-..\Blizzard_SharedXML\Shared\ModelSceneCameras\OrbitCameraMixin.lua
-..\Blizzard_SharedXML\ModelSceneMixin.lua
-
-..\Blizzard_SharedXML\ModelSceneActorMixin.lua
-..\Blizzard_SharedXML\LayoutFrame.lua
-..\Blizzard_SharedXML\ManagedLayoutFrame.lua
-..\Blizzard_SharedXML\BulletPoint.lua
-..\Blizzard_SharedXML\Mainline\NineSliceLayouts.lua
-..\Blizzard_SharedXML\NineSlice.lua
-..\Blizzard_SharedXML\PortraitFrame.lua
-..\Blizzard_SharedXML\SecureUIPanelTemplates.lua
-..\Blizzard_SharedXML\Spinner.lua
-..\Blizzard_SharedXML\Mainline\VASErrorLookup.lua
+## LoadFirst: 1
+## RequiredDep: Blizzard_SharedXML
+## OptionalDep: Blizzard_GlueParent, Blizzard_GlueDialogs
+## UseSecureEnvironment: 1
 
 Blizzard_Shared_StoreButtonMixin.lua
 Blizzard_Shared_StoreUITemplates.xml
 Blizzard_Shared_SimpleCheckout.xml
 Blizzard_Shared_ProductCardTemplates.xml
 Blizzard_Shared_StoreUI.xml
-Blizzard_Shared_StoreUIInsecure.xml
+Blizzard_Shared_StoreUIInsecure.lua
 Shared_Localization.lua

@@ -139,7 +139,7 @@ function AzeriteRespecItemSlotMixin:RefreshIcon()
 end
 
 function AzeriteRespecItemSlotMixin:RefreshTooltip()
-	if GetMouseFocus() == self then
+	if self:IsMouseMotionFocus() then
 		self:OnMouseEnter();
 	else
 		self:OnMouseLeave();

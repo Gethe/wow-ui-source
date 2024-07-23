@@ -1,8 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
-	<Script file="Blizzard_DragonflightLandingPage.lua"/>
-	
-	<Frame name="DragonflightLandingOverlayTemplate" mixin="DragonflightLandingOverlayMixin" inherits="LandingPageExpansionOverlayTemplate" virtual="true">
+	<Frame name="DragonflightLandingOverlayTemplate" parentKey="DragonflightLandingOverlay" mixin="DragonflightLandingOverlayMixin" inherits="LandingPageExpansionOverlayTemplate" virtual="true">
 		<Anchors>
 			<Anchor point="CENTER" relativeKey="$parent" relativePoint="CENTER"/>
 		</Anchors>

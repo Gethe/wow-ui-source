@@ -7,11 +7,22 @@ local buttonAtlasFormatsByExpansion = {
 		progressBarBorderAtlas = "dragonflight-landingpage-radial-frame",
 		progressBarFillAtlas = "dragonflight-landingpage-radial-%s",
 	},
+	[LE_EXPANSION_WAR_WITHIN] = {
+		normalAtlas = "thewarwithin-landingpage-renownbutton-%s",
+		hoverAtlas = nil, --Reuses normalAtlas in additive mode.
+		lockedAtlas = "thewarwithin-landingpage-renownbutton-locked",
+		progressBarBorderAtlas = "thewarwithin-landingpage-radial-frame",
+		progressBarFillAtlas = "thewarwithin-landingpage-radial-%s",
+	},
 };
 
 local factionIconSize = {
 	["Default"] = 44,
 	["Dream"] = 48,
+	["flame"] = 64,
+	["storm"] = 54,
+	["candle"] = 58,
+	["web"] = 58,
 }
 
 LandingPageMajorFactionList = {};
@@ -75,6 +86,7 @@ function MajorFactionListMixin:Refresh()
 	end
 
 	local function MajorFactionSort(faction1, faction2)
+		-- Higher priority factions will be sorted to the top of the list.
 		if faction1.uiPriority ~= faction2.uiPriority then
 			return faction1.uiPriority > faction2.uiPriority;
 		end
@@ -132,7 +144,6 @@ function MajorFactionListMixin:ScrollToSelectedFaction()
 end
 
 ----------------------------------- Major Faction Button Base -----------------------------------
-
 MajorFactionButtonMixin = {};
 
 function MajorFactionButtonMixin:Init(majorFactionData)
@@ -145,25 +156,36 @@ function MajorFactionButtonMixin:Init(majorFactionData)
 	self.LockedState.Background:SetAtlas(atlasFormats.lockedAtlas, TextureKitConstants.UseAtlasSize);
 	self.LockedState.unlockDescription = majorFactionData.unlockDescription;
 	self.UnlockedState.normalAtlas = atlasFormats.normalAtlas:format(majorFactionData.textureKit);
-	self.UnlockedState.hoverAtlas = atlasFormats.hoverAtlas:format(majorFactionData.textureKit);
+	
+	-- Some expansions use a unique texture for hover, others reuse the normal texture.
+	if atlasFormats.hoverAtlas then
+		self.UnlockedState.hoverAtlas = atlasFormats.hoverAtlas:format(majorFactionData.textureKit);
+	else
+		self.UnlockedState.Hover:SetAtlas(self.UnlockedState.normalAtlas, TextureKitConstants.UseAtlasSize);
+	end
+
 	self.UnlockedState.Background:SetAtlas(self.UnlockedState.normalAtlas, TextureKitConstants.UseAtlasSize);
 
 	local progressBarBorderAtlas = atlasFormats.progressBarBorderAtlas;
 	self.UnlockedState.RenownProgressBar.Border:SetAtlas(progressBarBorderAtlas, TextureKitConstants.UseAtlasSize);
 	local fillAtlas = atlasFormats.progressBarFillAtlas:format(majorFactionData.textureKit);
+
 	local fillInfo = C_Texture.GetAtlasInfo(fillAtlas);
-	self.UnlockedState.RenownProgressBar:SetSwipeTexture(fillInfo.file or fillInfo.filename);
-	local lowTexCoords =
-	{
-		x = fillInfo.leftTexCoord,
-		y = fillInfo.topTexCoord,
-	};
-	local highTexCoords =
-	{
-		x = fillInfo.rightTexCoord,
-		y = fillInfo.bottomTexCoord,
-	};
-	self.UnlockedState.RenownProgressBar:SetTexCoordRange(lowTexCoords, highTexCoords);
+	if fillInfo then
+		self.UnlockedState.RenownProgressBar:SetSwipeTexture(fillInfo.file or fillInfo.filename);
+
+		local lowTexCoords =
+		{
+			x = fillInfo.leftTexCoord,
+			y = fillInfo.topTexCoord,
+		};
+		local highTexCoords =
+		{
+			x = fillInfo.rightTexCoord,
+			y = fillInfo.bottomTexCoord,
+		};
+		self.UnlockedState.RenownProgressBar:SetTexCoordRange(lowTexCoords, highTexCoords);
+	end
 	
 	local iconSize = factionIconSize[majorFactionData.textureKit] or factionIconSize["Default"];
 	self.UnlockedState.Icon:ClearAllPoints();
@@ -266,15 +288,32 @@ end
 function MajorFactionButtonUnlockedStateMixin:OnEnter()
 	self.WatchFactionButton:Show();
 
-	self.Background:SetAtlas(self.hoverAtlas, TextureKitConstants.UseAtlasSize);
+	-- Support two different methods of handling the hover image:
+	-- 1. It has its own unique file to be applied to Background Texture.
+	-- 2. It reuses the normal file in additive mode on the Hover Texture.
+	if self.hoverAtlas then
+		self.Background:SetAtlas(self.hoverAtlas, TextureKitConstants.UseAtlasSize);
+	else
+		self.Hover:SetShown(true);
+	end
 
 	self:RefreshTooltip();
 end
 
 function MajorFactionButtonUnlockedStateMixin:OnLeave()
-	self.Background:SetAtlas(self.normalAtlas, TextureKitConstants.UseAtlasSize);
+	-- Undo the logic from OnEnter depending on which method it used.
+	if self.hoverAtlas then
+		self.Background:SetAtlas(self.normalAtlas, TextureKitConstants.UseAtlasSize);
+	else
+		self.Hover:SetShown(false);
+	end
 
-	GameTooltip_Hide();
+	-- Hide the renown progress tooltip or the paragon progress tooltip (whichever is up)
+	if GameTooltip:GetOwner() == self then
+		GameTooltip_Hide();
+	elseif EmbeddedItemTooltip:GetOwner() == self then
+		EmbeddedItemTooltip_Hide(EmbeddedItemTooltip);
+	end
 end
 
 function MajorFactionButtonUnlockedStateMixin:OnClick()
@@ -297,7 +336,7 @@ end
 
 -- We only want to hide the WatchFactionButton when our mouse is completely off the main button
 function MajorFactionButtonUnlockedStateMixin:OnUpdate()
-	local mouseOver = RegionUtil.IsDescendantOfOrSame(GetMouseFocus(), self);
+	local mouseOver = RegionUtil.IsAnyDescendantOfOrSame(GetMouseFoci(), self);
 	if not mouseOver then
 		self.WatchFactionButton:Hide();
 	end
@@ -309,28 +348,71 @@ function MajorFactionButtonUnlockedStateMixin:SetSelected(selected)
 end
 
 function MajorFactionButtonUnlockedStateMixin:RefreshTooltip()
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	if C_Reputation.IsFactionParagon(self:GetParent().factionID) then
-		self:SetUpParagonRewardsTooltip();
+		self:ShowParagonRewardsTooltip();
 	else
-		self:SetUpRenownRewardsTooltip();
+		self:ShowRenownRewardsTooltip();
 	end
+end
+
+local function TryAppendAccountReputationLineToTooltip(tooltip, factionID)
+	if not tooltip or not factionID or not C_Reputation.IsAccountWideReputation(factionID) then
+		return;
+	end
+
+	local wrapText = false;
+	GameTooltip_AddColoredLine(tooltip, REPUTATION_TOOLTIP_ACCOUNT_WIDE_LABEL, ACCOUNT_WIDE_FONT_COLOR, wrapText);
+end
+
+function MajorFactionButtonUnlockedStateMixin:ShowRenownRewardsTooltip()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	local factionID = self:GetParent().factionID;
+	local majorFactionData = C_MajorFactions.GetMajorFactionData(factionID);
+	local tooltipTitle = majorFactionData.name;
+	GameTooltip_SetTitle(GameTooltip, tooltipTitle, HIGHLIGHT_FONT_COLOR);
+	TryAppendAccountReputationLineToTooltip(GameTooltip, factionID);
+
+	if not C_MajorFactions.HasMaximumRenown(factionID) then
+		GameTooltip_AddNormalLine(GameTooltip, MAJOR_FACTION_RENOWN_CURRENT_PROGRESS:format(majorFactionData.renownReputationEarned, majorFactionData.renownLevelThreshold));
+		GameTooltip_AddBlankLineToTooltip(GameTooltip);
+		local nextRenownRewards = C_MajorFactions.GetRenownRewardsForLevel(factionID, C_MajorFactions.GetCurrentRenownLevel(factionID) + 1);
+		if #nextRenownRewards > 0 then
+			self:AddRenownRewardsToTooltip(nextRenownRewards);
+		end
+	end
+
+	GameTooltip_AddColoredLine(GameTooltip, MAJOR_FACTION_BUTTON_TOOLTIP_VIEW_RENOWN, GREEN_FONT_COLOR);
 	GameTooltip:Show();
 end
 
-function MajorFactionButtonUnlockedStateMixin:SetUpRenownRewardsTooltip()
-	RenownRewardUtil.AddMajorFactionToTooltip(GameTooltip, self:GetParent().factionID, GenerateClosure(self.RefreshTooltip, self));
+function MajorFactionButtonUnlockedStateMixin:AddRenownRewardsToTooltip(renownRewards)
+	GameTooltip_AddHighlightLine(GameTooltip, MAJOR_FACTION_BUTTON_TOOLTIP_NEXT_REWARDS);
+
+	for i, rewardInfo in ipairs(renownRewards) do
+		local renownRewardString;
+		local icon, name, description = RenownRewardUtil.GetRenownRewardInfo(rewardInfo, GenerateClosure(self.RefreshTooltip, self));
+		if icon then
+			local file, width, height = icon, 16, 16;
+			local rewardTexture = CreateSimpleTextureMarkup(file, width, height);
+			renownRewardString = rewardTexture .. " " .. name;
+		end
+		local wrapText = false;
+		GameTooltip_AddNormalLine(GameTooltip, renownRewardString, wrapText);
+	end
+
+	GameTooltip_AddBlankLineToTooltip(GameTooltip);
 end
 
-function MajorFactionButtonUnlockedStateMixin:SetUpParagonRewardsTooltip()
+function MajorFactionButtonUnlockedStateMixin:ShowParagonRewardsTooltip()
+	EmbeddedItemTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	local factionID = self:GetParent().factionID;
 	local majorFactionData = C_MajorFactions.GetMajorFactionData(factionID);
 	local currentValue, threshold, rewardQuestID, hasRewardPending, tooLowLevelForParagon = C_Reputation.GetFactionParagonInfo(factionID);
 
 	if tooLowLevelForParagon then
-		GameTooltip_SetTitle(GameTooltip, PARAGON_REPUTATION_TOOLTIP_TEXT_LOW_LEVEL, NORMAL_FONT_COLOR);
+		GameTooltip_SetTitle(EmbeddedItemTooltip, PARAGON_REPUTATION_TOOLTIP_TEXT_LOW_LEVEL, NORMAL_FONT_COLOR);
 	else
-		GameTooltip_SetTitle(GameTooltip, MAJOR_FACTION_MAX_RENOWN_REACHED, NORMAL_FONT_COLOR);
+		GameTooltip_SetTitle(EmbeddedItemTooltip, MAJOR_FACTION_MAX_RENOWN_REACHED, HIGHLIGHT_FONT_COLOR);
 		local description = PARAGON_REPUTATION_TOOLTIP_TEXT:format(majorFactionData.name);
 		if hasRewardPending then
 			local questIndex = C_QuestLog.GetLogIndexForQuestID(rewardQuestID);
@@ -339,8 +421,9 @@ function MajorFactionButtonUnlockedStateMixin:SetUpParagonRewardsTooltip()
 				description = text;
 			end
 		end
+		TryAppendAccountReputationLineToTooltip(EmbeddedItemTooltip, factionID);
 
-		GameTooltip_AddHighlightLine(GameTooltip, description);
+		GameTooltip_AddNormalLine(EmbeddedItemTooltip, description);
 
 		if not hasRewardPending then
 			local value = mod(currentValue, threshold);
@@ -348,10 +431,12 @@ function MajorFactionButtonUnlockedStateMixin:SetUpParagonRewardsTooltip()
 			if hasRewardPending then
 				value = value + threshold;
 			end
-			GameTooltip_ShowProgressBar(GameTooltip, 0, threshold, value, REPUTATION_PROGRESS_FORMAT:format(value, threshold));
+			GameTooltip_ShowProgressBar(EmbeddedItemTooltip, 0, threshold, value, REPUTATION_PROGRESS_FORMAT:format(value, threshold));
 		end
-		GameTooltip_AddQuestRewardsToTooltip(GameTooltip, rewardQuestID);
+		GameTooltip_AddQuestRewardsToTooltip(EmbeddedItemTooltip, rewardQuestID);
 	end
+	GameTooltip_SetBottomText(EmbeddedItemTooltip, MAJOR_FACTION_BUTTON_TOOLTIP_VIEW_RENOWN, GREEN_FONT_COLOR);
+	EmbeddedItemTooltip:Show();
 end
 
 function MajorFactionButtonUnlockedStateMixin:PlayUnlockCelebration()
@@ -411,10 +496,10 @@ function MajorFactionWatchFactionButtonMixin:OnEvent(event)
 end
 
 function MajorFactionWatchFactionButtonMixin:UpdateState()
-	local watchedfactionID = select(6, GetWatchedFactionInfo());
+	local watchedfactionData = C_Reputation.GetWatchedFactionData();
 
 	local baseButton = self:GetParent():GetParent();
-	self:SetChecked(watchedfactionID == baseButton.factionID);
+	self:SetChecked(watchedfactionData and watchedfactionData.factionID == baseButton.factionID);
 end
 
 function MajorFactionWatchFactionButtonMixin:OnClick()
@@ -423,6 +508,6 @@ function MajorFactionWatchFactionButtonMixin:OnClick()
 	
 	local baseButton = self:GetParent():GetParent();
 	local factionID = self:GetChecked() and baseButton.factionID or 0;
-	C_Reputation.SetWatchedFaction(factionID);
+	C_Reputation.SetWatchedFactionByID(factionID);
 	StatusTrackingBarManager:UpdateBarsShown();
 end

@@ -51,9 +51,54 @@ local AreaPoiInfo =
 			},
 		},
 		{
+			Name = "GetDelvesForMap",
+			Type = "Function",
+			Documentation = { "Returns all area POIInfos flagged as delves for the given map." },
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "areaPoiIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetDragonridingRacesForMap",
 			Type = "Function",
 			Documentation = { "Returns all area POIInfos flagged as dragonriding races for the given map." },
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "areaPoiIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetEventsForMap",
+			Type = "Function",
+			Documentation = { "Returns all area POIInfos flagged as events for the given map." },
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "areaPoiIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetQuestHubsForMap",
+			Type = "Function",
+			Documentation = { "Returns all area POIInfos flagged as quest hubs for the given map." },
 
 			Arguments =
 			{
@@ -103,6 +148,7 @@ local AreaPoiInfo =
 				{ Name = "position", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
 				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "description", Type = "cstring", Nilable = true },
+				{ Name = "linkedUiMapID", Type = "number", Nilable = true },
 				{ Name = "textureIndex", Type = "number", Nilable = true },
 				{ Name = "tooltipWidgetSet", Type = "number", Nilable = true },
 				{ Name = "iconWidgetSet", Type = "number", Nilable = true },
@@ -115,6 +161,7 @@ local AreaPoiInfo =
 				{ Name = "addPaddingAboveTooltipWidgets", Type = "bool", Nilable = true },
 				{ Name = "highlightWorldQuestsOnHover", Type = "bool", Nilable = false },
 				{ Name = "highlightVignettesOnHover", Type = "bool", Nilable = false },
+				{ Name = "isCurrentEvent", Type = "bool", Nilable = false },
 			},
 		},
 	},

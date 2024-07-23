@@ -65,12 +65,7 @@ local FriendListEntries = { };
 local playerRealmID;
 local playerRealmName;
 local playerFactionGroup;
-
-WHOFRAME_DROPDOWN_LIST = {
-	{name = ZONE, sortType = "zone"},
-	{name = GUILD, sortType = "guild"},
-	{name = RACE, sortType = "race"}
-};
+local whoSortValue = 1;
 
 FRIENDSFRAME_SUBFRAMES = { "FriendsListFrame", "QuickJoinFrame", "IgnoreListFrame", "WhoFrame", "RecruitAFriendFrame", "RaidFrame" };
 FRIENDSFRAME_PLUNDERSTORM_SUBFRAMES = { "FriendsListFrame", "IgnoreListFrame" };
@@ -176,71 +171,53 @@ function FriendsFrame_ClickSummonButton (self)
 end
 
 function FriendsFrame_ShowDropdown(name, connected, lineID, chatType, chatFrame, friendsList, isMobile, communityClubID, communityStreamID, communityEpoch, communityPosition, guid)
-	HideDropDownMenu(1);
-	if ( connected or friendsList ) then
-		if ( connected ) then
-			FriendsDropDown.initialize = FriendsFrameDropDown_Initialize;
-		else
-			FriendsDropDown.initialize = FriendsFrameOfflineDropDown_Initialize;
-		end
+	if connected or friendsList then
+		local contextData = 
+		{	
+			name = name,
+			friendsList = friendsList,
+			lineID = lineID,
+			communityClubID = communityClubID,
+			communityStreamID = communityStreamID,
+			communityEpoch = communityEpoch,
+			communityPosition = communityPosition,
+			chatType = chatType,
+			chatTarget = name,
+			chatFrame = chatFrame,
+			bnetIDAccount = nil,
+			isMobile = isMobile,
+			guid = guid,
+		};
 
-		FriendsDropDown.displayMode = "MENU";
-		FriendsDropDown.friendsDropDownName = name;
-		FriendsDropDown.friendsList = friendsList;
-		FriendsDropDown.lineID = lineID;
-		FriendsDropDown.communityClubID = communityClubID;
-		FriendsDropDown.communityStreamID = communityStreamID;
-		FriendsDropDown.communityEpoch = communityEpoch;
-		FriendsDropDown.communityPosition = communityPosition;
-		FriendsDropDown.chatType = chatType;
-		FriendsDropDown.chatTarget = name;
-		FriendsDropDown.chatFrame = chatFrame;
-		FriendsDropDown.bnetIDAccount = nil;
-		FriendsDropDown.isMobile = isMobile;
-		FriendsDropDown.guid = guid;
-		ToggleDropDownMenu(1, nil, FriendsDropDown, "cursor");
+		-- MENU RETEST IsOnGlueScreen
+		local which = connected and (IsOnGlueScreen() and "GLUE_FRIEND" or "FRIEND") or "FRIEND_OFFLINE";
+		UnitPopup_OpenMenu(which, contextData);
 	end
 end
 
 function FriendsFrame_ShowBNDropdown(name, connected, lineID, chatType, chatFrame, friendsList, bnetIDAccount, communityClubID, communityStreamID, communityEpoch, communityPosition, mobile, battleTag)
-	if ( connected or friendsList ) then
-		if ( connected ) then
-			FriendsDropDown.initialize = FriendsFrameBNDropDown_Initialize;
-		else
-			FriendsDropDown.initialize = FriendsFrameBNOfflineDropDown_Initialize;
-		end
-		FriendsDropDown.displayMode = "MENU";
-		FriendsDropDown.friendsDropDownName = name;
-		FriendsDropDown.battleTag = battleTag;
-		FriendsDropDown.friendsList = friendsList;
-		FriendsDropDown.lineID = lineID;
-		FriendsDropDown.communityClubID = communityClubID;
-		FriendsDropDown.communityStreamID = communityStreamID;
-		FriendsDropDown.communityEpoch = communityEpoch;
-		FriendsDropDown.communityPosition = communityPosition;
-		FriendsDropDown.chatType = chatType;
-		FriendsDropDown.chatTarget = name;
-		FriendsDropDown.chatFrame = chatFrame;
-		FriendsDropDown.bnetIDAccount = bnetIDAccount;
-		FriendsDropDown.isMobile = mobile;
-		ToggleDropDownMenu(1, nil, FriendsDropDown, "cursor");
+	if connected or friendsList then
+		local contextData = 
+		{	
+			name = name,
+			friendsList = friendsList,
+			lineID = lineID,
+			communityClubID = communityClubID,
+			communityStreamID = communityStreamID,
+			communityEpoch = communityEpoch,
+			communityPosition = communityPosition,
+			chatType = chatType,
+			chatTarget = name,
+			chatFrame = chatFrame,
+			bnetIDAccount = bnetIDAccount,
+			battleTag = battleTag,
+			isMobile = mobile,
+		};
+
+		-- MENU RETEST IsOnGlueScreen
+		local which = connected and (IsOnGlueScreen() and "GLUE_FRIEND" or "BN_FRIEND") or "BN_FRIEND_OFFLINE";
+		UnitPopup_OpenMenu(which, contextData);
 	end
-end
-
-function FriendsFrameDropDown_Initialize()
-	UnitPopup_ShowMenu(UIDROPDOWNMENU_OPEN_MENU, "FRIEND", nil, FriendsDropDown.friendsDropDownName);
-end
-
-function FriendsFrameOfflineDropDown_Initialize()
-	UnitPopup_ShowMenu(UIDROPDOWNMENU_OPEN_MENU, "FRIEND_OFFLINE", nil, FriendsDropDown.friendsDropDownName);
-end
-
-function FriendsFrameBNDropDown_Initialize()
-	UnitPopup_ShowMenu(UIDROPDOWNMENU_OPEN_MENU, IsOnGlueScreen() and "GLUE_FRIEND" or "BN_FRIEND", nil, FriendsDropDown.friendsDropDownName);
-end
-
-function FriendsFrameBNOfflineDropDown_Initialize()
-	UnitPopup_ShowMenu(UIDROPDOWNMENU_OPEN_MENU, IsOnGlueScreen() and "GLUE_FRIEND_OFFLINE" or "BN_FRIEND_OFFLINE", nil, FriendsDropDown.friendsDropDownName);
 end
 
 function FriendsFrame_OnLoad(self)
@@ -479,6 +456,78 @@ function FriendsTabHeaderMixin:OnLoad()
 	self:SetRAFSystemEnabled(C_RecruitAFriend.IsEnabled());
 	PanelTemplates_SetTab(self, 1);
 	self:RegisterEvent("RAF_SYSTEM_ENABLED_STATUS");
+
+	local bnetAFK, bnetDND = select(5, BNGetInfo());
+	if bnetAFK then
+		self.bnStatus = FRIENDS_TEXTURE_AFK;
+	elseif bnetDND then
+		self.bnStatus = FRIENDS_TEXTURE_DND;
+	else
+		self.bnStatus = FRIENDS_TEXTURE_ONLINE;
+	end
+
+	local function IsSelected(status)
+		return self.bnStatus == status;
+	end
+
+	local function SetSelected(status)
+		if status ~= self.bnStatus then
+			self.bnStatus = status;
+
+			if status == FRIENDS_TEXTURE_ONLINE then
+				BNSetAFK(false);
+				BNSetDND(false);
+			elseif status == FRIENDS_TEXTURE_AFK then
+				BNSetAFK(true);
+			elseif status == FRIENDS_TEXTURE_DND then
+				BNSetDND(true);
+			end
+		end
+	end
+
+	local function CreateRadio(rootDescription, text, status)
+		local radio = rootDescription:CreateButton(text, nop, status);
+		radio:SetIsSelected(IsSelected);
+		radio:SetResponder(SetSelected);
+	end
+
+	self.StatusDropdown:SetWidth(51);
+	self.StatusDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_FRIENDS_STATUS");
+
+		local optionText = "\124T%s.tga:16:16:0:0\124t %s";
+		
+		local onlineText = string.format(optionText, FRIENDS_TEXTURE_ONLINE, FRIENDS_LIST_AVAILABLE);
+		CreateRadio(rootDescription, onlineText, FRIENDS_TEXTURE_ONLINE);
+
+		local afkText = string.format(optionText, FRIENDS_TEXTURE_AFK, FRIENDS_LIST_AWAY);
+		CreateRadio(rootDescription, afkText, FRIENDS_TEXTURE_AFK);
+
+		local dndText = string.format(optionText, FRIENDS_TEXTURE_DND, FRIENDS_LIST_BUSY);
+		CreateRadio(rootDescription, dndText, FRIENDS_TEXTURE_DND);
+	end);
+
+	self.StatusDropdown:SetSelectionTranslator(function(selection)
+		return string.format("\124T%s.tga:16:16:0:0\124t", selection.data);
+	end);
+
+	if not IsOnGlueScreen() then
+		self.StatusDropdown:SetScript("OnEnter", function()
+			local statusText;
+			if ( self.bnStatus == FRIENDS_TEXTURE_ONLINE ) then
+				statusText = FRIENDS_LIST_AVAILABLE;
+			elseif ( self.bnStatus == FRIENDS_TEXTURE_AFK ) then
+				statusText = FRIENDS_LIST_AWAY;
+			elseif ( self.bnStatus == FRIENDS_TEXTURE_DND ) then
+				statusText = FRIENDS_LIST_BUSY;
+			end
+
+			GameTooltip:SetOwner(self.StatusDropdown, "ANCHOR_RIGHT", -18, 0);
+			GameTooltip:SetText(format(FRIENDS_LIST_STATUS_TOOLTIP, statusText));
+			GameTooltip:Show();	
+		end);
+		self.StatusDropdown:SetScript("OnLeave", GameTooltip_Hide);
+	end
 end
 
 function FriendsTabHeaderMixin:OnEvent(event, ...)
@@ -546,48 +595,37 @@ function FriendsListFrame_ToggleInvites()
 	FriendsList_Update();
 end
 
-function FriendsList_InitializePendingInviteDropDown(self, level)
-	local info = UIDropDownMenu_CreateInfo();
-	info.notCheckable = true;
+FriendsFrameInviteTemplateMixin = {};
 
-	if level == 1 then
-		info.text = DECLINE;
-		info.func = function()
-						FriendsList_ClosePendingInviteDialogs();
-						BNDeclineFriendInvite(self.inviteID);
-					end
-		UIDropDownMenu_AddButton(info, level)
+function FriendsFrameInviteTemplateMixin:OnLoad()
+	self.DeclineButton:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_FRIENDS_INVITE_DECLINE");
 
-		info.text = REPORT_PLAYER;
-		info.func = function()
+		rootDescription:CreateButton(DECLINE, function()
+			FriendsList_ClosePendingInviteDialogs();
+			BNDeclineFriendInvite(self.inviteID);
+		end);
+
+		rootDescription:CreateButton(REPORT_PLAYER, function()
 			local bnetIDAccount, name = BNGetFriendInviteInfo(self.inviteIndex);
 			local playerLocation = PlayerLocation:CreateFromBattleNetID(bnetIDAccount);
 			local reportInfo = ReportInfo:CreateReportInfoFromType(Enum.ReportType.Friend);
-			local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
 			ReportFrame:InitiateReport(reportInfo, name, playerLocation, bnetIDAccount ~= nil);
-		end;
-		UIDropDownMenu_AddButton(info, level)
+		end);
 
-		-- We don't have static popups at Glues and in that case we don't want to show the option at all.
 		if StaticPopup_Show then
-			info.text = BLOCK_INVITES;
-			info.hasArrow = false;
-			info.func = function()
-							local inviteID, accountName = BNGetFriendInviteInfo(self.inviteIndex);
-							local dialog = StaticPopup_Show("CONFIRM_BLOCK_INVITES", accountName);
-							if ( dialog ) then
-								dialog.data = inviteID;
-							end
-						end
-
-			UIDropDownMenu_AddButton(info, level);
+			rootDescription:CreateButton(BLOCK_INVITES, function()
+				local inviteID, accountName = BNGetFriendInviteInfo(self.inviteIndex);
+				local dialog = StaticPopup_Show("CONFIRM_BLOCK_INVITES", accountName);
+				if dialog then
+					dialog.data = inviteID;
+				end
+			end);
 		end
-	end
+	end);
 end
 
 function FriendsList_ClosePendingInviteDialogs()
-	CloseDropDownMenus();
-
 	if StaticPopup_Hide then
 		StaticPopup_Hide("CONFIRM_BLOCK_INVITES");
 	end
@@ -838,7 +876,7 @@ function WhoList_InitButton(button, elementData)
 	button.Class:SetTextColor(classTextColor.r, classTextColor.g, classTextColor.b);
 
 	local variableColumnTable = { info.area, info.fullGuildName, info.raceStr };
-	local variableText = variableColumnTable[UIDropDownMenu_GetSelectedID(WhoFrameDropDown)];
+	local variableText = variableColumnTable[whoSortValue];
 	button.Variable:SetText(variableText);
 
 	if button.Variable:IsTruncated() or button.Name:IsTruncated() then
@@ -911,26 +949,42 @@ function WhoFrameColumn_SetWidth(frame, width)
 	_G[frame:GetName().."Middle"]:SetWidth(width - 9);
 end
 
-function WhoFrameDropDown_Initialize()
-	local info = UIDropDownMenu_CreateInfo();
-	for i=1, getn(WHOFRAME_DROPDOWN_LIST), 1 do
-		info.text = WHOFRAME_DROPDOWN_LIST[i].name;
-		info.func = WhoFrameDropDownButton_OnClick;
-		info.checked = nil;
-		UIDropDownMenu_AddButton(info);
+function WhoFrameDropdown_OnLoad(self)
+	WowStyle1DropdownMixin.OnLoad(self);
+
+	if not IsOnGlueScreen() then
+		local function IsSelected(sortData)
+			return sortData.value == whoSortValue;
+		end
+
+		local function SetSelected(sortData)
+			whoSortValue = sortData.value;
+			C_FriendList.SortWho(sortData.sortType);
+				
+			WhoList_Update();
+		end
+
+		self:SetWidth(101);
+		self:SetupMenu(function(dropdown, rootDescription)
+			rootDescription:SetTag("MENU_FRIENDS_WHO");
+
+			rootDescription:CreateRadio(ZONE, IsSelected, SetSelected, {value = 1, sortType = "zone"});
+			rootDescription:CreateRadio(GUILD, IsSelected, SetSelected, {value = 2, sortType = "guild"});
+			rootDescription:CreateRadio(RACE, IsSelected, SetSelected, {value = 3, sortType = "race"});
+		end);
 	end
 end
 
-function WhoFrameDropDown_OnLoad(self)
-	UIDropDownMenu_Initialize(self, WhoFrameDropDown_Initialize);
-	UIDropDownMenu_SetWidth(self, 80);
-	UIDropDownMenu_SetButtonWidth(self, 24);
-	UIDropDownMenu_JustifyText(WhoFrameDropDown, "LEFT")
+function WhoFrameDropdown_OnShow(self)
+	whoSortValue = 1;
 end
 
-function WhoFrameDropDownButton_OnClick(self)
-	UIDropDownMenu_SetSelectedID(WhoFrameDropDown, self:GetID());
-	WhoList_Update();
+function WhoFrameDropdown_OnEnter(self)
+	self.TabHighlight:Show();
+end
+
+function WhoFrameDropdown_OnLeave(self)
+	self.TabHighlight:Hide();
 end
 
 SummonButtonMixin = {};
@@ -1031,7 +1085,7 @@ function FriendsFrame_OnEvent(self, event, ...)
 		WhoList_Update();
 		FriendsFrame_Update();
 	elseif ( event == "PLAYER_FLAGS_CHANGED" or event == "BN_INFO_CHANGED") then
-		FriendsFrameStatusDropDown_Update();
+		FriendsFrameStatusDropdown:GenerateMenu();
 		FriendsFrame_CheckBattlenetStatus();
 	elseif ( event == "PLAYER_ENTERING_WORLD" or event == "BN_CONNECTED" or event == "BN_DISCONNECTED") then
 		FriendsFrame_CheckBattlenetStatus();
@@ -1523,7 +1577,7 @@ function FriendsFrame_UpdatePartyInviteButton(button, elementData)
 	button.Name:SetText(playerName);
 	button.inviteID = inviterGUID;
 	button.inviteIndex = button.id;
-end
+	end
 
 function FriendsFrame_UpdatePartyInviteHeaderButton(button, elementData)
 	button.buttonType = FRIENDS_BUTTON_TYPE_PARTY_INVITE_HEADER;
@@ -1605,7 +1659,7 @@ function FriendsFrame_UpdateFriendButton(button, elementData)
 					infoText = GetOnlineInfoText(accountInfo.gameAccountInfo.clientProgram, accountInfo.gameAccountInfo.isWowMobile, accountInfo.rafLinkType, accountInfo.gameAccountInfo.areaName);
 				end
 
-				C_Texture.SetTitleIconTexture(button.gameIcon, accountInfo.gameAccountInfo.clientProgram, Enum.TitleIconVersion.Medium);
+					C_Texture.SetTitleIconTexture(button.gameIcon, accountInfo.gameAccountInfo.clientProgram, Enum.TitleIconVersion.Medium);
 
 				local fadeIcon = (accountInfo.gameAccountInfo.clientProgram == BNET_CLIENT_WOW) and (accountInfo.gameAccountInfo.wowProjectID ~= WOW_PROJECT_ID);
 				if fadeIcon then
@@ -1665,7 +1719,7 @@ function FriendsFrame_UpdateFriendButton(button, elementData)
 		button:Hide();
 	end
 	-- update the tooltip if hovering over a button
-	if (FriendsTooltip.button == button) or (GetMouseFocus() == button) then
+	if (FriendsTooltip.button == button) or (button:IsMouseMotionFocus()) then
 		button:OnEnter();
 	end
 
@@ -1680,8 +1734,6 @@ function FriendsFrame_UpdateFriendButton(button, elementData)
 				targetPoint = HelpTip.Point.RightEdgeCenter,
 				alignment = HelpTip.Alignment.Left,
 			};
-			crossFactionHelpTipInfo = helpTipInfo;
-			crossFactionHelpTipButton = button;
 			HelpTip:Show(FriendsFrame, helpTipInfo, button.travelPassButton);
 		end
 	end
@@ -1702,91 +1754,6 @@ function FriendsFrame_UpdateFriendButton(button, elementData)
 		end
 	end
 	return height;
-end
-
-function FriendsFrameStatusDropDown_OnLoad(self)
-	UIDropDownMenu_Initialize(self, FriendsFrameStatusDropDown_Initialize);
-	UIDropDownMenu_SetWidth(FriendsFrameStatusDropDown, 28);
-	FriendsFrameStatusDropDownText:Hide();
-	
-	if not IsOnGlueScreen() then
-		FriendsFrameStatusDropDownButton:SetScript("OnEnter", FriendsFrameStatusDropDown_ShowTooltip);
-		FriendsFrameStatusDropDownButton:SetScript("OnLeave", function() GameTooltip:Hide(); end);
-	end
-end
-
-function FriendsFrameStatusDropDown_ShowTooltip()
-	if IsOnGlueScreen() then
-		return;
-	end
-	local statusText;
-	local status = FriendsFrameStatusDropDown.status;
-	if ( status == FRIENDS_TEXTURE_ONLINE ) then
-		statusText = FRIENDS_LIST_AVAILABLE;
-	elseif ( status == FRIENDS_TEXTURE_AFK ) then
-		statusText = FRIENDS_LIST_AWAY;
-	elseif ( status == FRIENDS_TEXTURE_DND ) then
-		statusText = FRIENDS_LIST_BUSY;
-	end
-	GameTooltip:SetOwner(FriendsFrameStatusDropDown, "ANCHOR_RIGHT", -18, 0);
-	GameTooltip:SetText(format(FRIENDS_LIST_STATUS_TOOLTIP, statusText));
-	GameTooltip:Show();
-end
-
-function FriendsFrameStatusDropDown_OnShow(self)
-	UIDropDownMenu_Initialize(self, FriendsFrameStatusDropDown_Initialize);
-	FriendsFrameStatusDropDown_Update();
-end
-
-function FriendsFrameStatusDropDown_Initialize()
-	local info = UIDropDownMenu_CreateInfo();
-	local optionText = "\124T%s.tga:16:16:0:0\124t %s";
-	info.padding = 8;
-	info.checked = nil;
-	info.notCheckable = 1;
-	info.func = FriendsFrame_SetOnlineStatus;
-
-	info.text = string.format(optionText, FRIENDS_TEXTURE_ONLINE, FRIENDS_LIST_AVAILABLE);
-	info.value = FRIENDS_TEXTURE_ONLINE;
-	UIDropDownMenu_AddButton(info);
-
-	info.text = string.format(optionText, FRIENDS_TEXTURE_AFK, FRIENDS_LIST_AWAY);
-	info.value = FRIENDS_TEXTURE_AFK;
-	UIDropDownMenu_AddButton(info);
-
-	info.text = string.format(optionText, FRIENDS_TEXTURE_DND, FRIENDS_LIST_BUSY);
-	info.value = FRIENDS_TEXTURE_DND;
-	UIDropDownMenu_AddButton(info);
-end
-
-function FriendsFrameStatusDropDown_Update()
-	local status;
-	local _, _, _, _, bnetAFK, bnetDND = BNGetInfo();
-	if ( bnetAFK) then
-		status = FRIENDS_TEXTURE_AFK;
-	elseif (bnetDND ) then
-		status = FRIENDS_TEXTURE_DND;
-	else
-		status = FRIENDS_TEXTURE_ONLINE;
-	end
-	FriendsFrameStatusDropDownStatus:SetTexture(status);
-	FriendsFrameStatusDropDown.status = status;
-end
-
-function FriendsFrame_SetOnlineStatus(button)
-	local status = button.value;
-	if ( status == FriendsFrameStatusDropDown.status ) then
-		return;
-	end
-	local _, _, _, _, bnetAFK, bnetDND = BNGetInfo();
-	if ( status == FRIENDS_TEXTURE_ONLINE ) then
-			BNSetAFK(false);
-			BNSetDND(false);
-	elseif ( status == FRIENDS_TEXTURE_AFK ) then
-			BNSetAFK(true);
-	elseif ( status == FRIENDS_TEXTURE_DND ) then
-			BNSetDND(true);
-	end
 end
 
 FriendsBroadcastFrameMixin = {};
@@ -1981,54 +1948,6 @@ function AddFriendFrame_IsValidBattlenetName(text)
 	return false;
 end
 
-function FriendsFriendsFrameDropDown_Initialize()
-	local info = UIDropDownMenu_CreateInfo();
-	local value = FriendsFriendsFrame.view;
-
-	info.value = FRIENDS_FRIENDS_ALL;
-	info.text = FRIENDS_FRIENDS_CHOICE_EVERYONE;
-	info.func = FriendsFriendsFrameDropDown_OnClick;
-	info.arg1 = FRIENDS_FRIENDS_ALL;
-	if ( value == info.value ) then
-		info.checked = 1;
-		UIDropDownMenu_SetText(FriendsFriendsFrameDropDown, info.text);
-	else
-		info.checked = nil;
-	end
-	UIDropDownMenu_AddButton(info);
-
-	info.value = FRIENDS_FRIENDS_POTENTIAL;
-	info.text = FRIENDS_FRIENDS_CHOICE_POTENTIAL;
-	info.func = FriendsFriendsFrameDropDown_OnClick;
-	info.arg1 = FRIENDS_FRIENDS_POTENTIAL;
-	if ( value == info.value ) then
-		info.checked = 1;
-		UIDropDownMenu_SetText(FriendsFriendsFrameDropDown, info.text);
-	else
-		info.checked = nil;
-	end
-	UIDropDownMenu_AddButton(info);
-
-	info.value = FRIENDS_FRIENDS_MUTUAL;
-	info.text = FRIENDS_FRIENDS_CHOICE_MUTUAL;
-	info.func = FriendsFriendsFrameDropDown_OnClick;
-	info.arg1 = FRIENDS_FRIENDS_MUTUAL;
-	if ( value == info.value ) then
-		info.checked = 1;
-		UIDropDownMenu_SetText(FriendsFriendsFrameDropDown, info.text);
-	else
-		info.checked = nil;
-	end
-	UIDropDownMenu_AddButton(info);
-end
-
-function FriendsFriendsFrameDropDown_OnClick(self, value)
-	FriendsFriendsFrame.view = value;
-	UIDropDownMenu_SetSelectedValue(FriendsFriendsFrameDropDown, value);
-	FriendsFriends_SetSelection(nil);
-	FriendsFriendsFrame:Update();
-end
-
 FriendsFriendsButtonMixin = {};
 
 function FriendsFriendsButtonMixin:OnClick()
@@ -2082,7 +2001,6 @@ function FriendsListButtonMixin:OnEnter()
 	local anchor, text;
 	local numGameAccounts = 0;
 	local tooltip = FriendsTooltip;
-	local isOnline = false;
 	local battleTag = "";
 	tooltip.height = 0;
 	tooltip.maxWidth = 0;
@@ -2093,7 +2011,6 @@ function FriendsListButtonMixin:OnEnter()
 			local noCharacterName = true;
 			local nameText, nameColor = FriendsFrame_GetBNetAccountNameAndStatus(accountInfo, noCharacterName);
 
-			isOnline = accountInfo.gameAccountInfo.isOnline;
 			battleTag = accountInfo.battleTag;
 
 			anchor = FriendsFrameTooltip_SetLine(FriendsTooltipHeader, nil, nameText);
@@ -2301,7 +2218,8 @@ function FriendsFriendsFrameMixin:OnLoad()
 	self.requested = {};
 	self.hideOnEscape = true;
 	self.exclusive = true;
-	UIDropDownMenu_SetWidth(FriendsFriendsFrameDropDown, 120);
+
+	self.FriendsDropdown:SetWidth(140);
 
 	do
 		local view = CreateScrollBoxListLinearView();
@@ -2319,9 +2237,9 @@ function FriendsFriendsFrameMixin:OnEvent(event)
 	if event == "BN_REQUEST_FOF_SUCCEEDED" then
 		if self:IsShown() then
 			FriendsFriendsFrame.view = FRIENDS_FRIENDS_ALL;
-			UIDropDownMenu_EnableDropDown(FriendsFriendsFrameDropDown);
-			UIDropDownMenu_Initialize(FriendsFriendsFrameDropDown, FriendsFriendsFrameDropDown_Initialize);
-			UIDropDownMenu_SetSelectedValue(FriendsFriendsFrameDropDown, FRIENDS_FRIENDS_ALL);
+			FriendsFriendsFrameDropdown:Enable();
+			FriendsFriendsFrameDropdown:GenerateMenu();
+
 			local waitFrame = FriendsFriendsWaitFrame;
 			-- need to stop the flashing because it's flashing with showWhenDone set to true
 			if UIFrameIsFlashing(waitFrame) then
@@ -2333,6 +2251,33 @@ function FriendsFriendsFrameMixin:OnEvent(event)
 	elseif event == "BN_DISCONNECTED" then
 		FriendsFriendsFrame_Close();
 	end
+end
+
+function FriendsFriendsFrameMixin:OnShow()
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
+
+	local function IsSelected(value)
+		return value == FriendsFriendsFrame.view;
+	end
+	
+	local function SetSelected(value)
+		FriendsFriendsFrame.view = value;
+		FriendsFriends_SetSelection(nil);
+		FriendsFriendsFrame:Update();
+	end;
+
+	self.FriendsDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_FRIENDS_FRIENDS");
+
+		rootDescription:CreateRadio(FRIENDS_FRIENDS_CHOICE_EVERYONE, IsSelected, SetSelected, FRIENDS_FRIENDS_ALL);
+		rootDescription:CreateRadio(FRIENDS_FRIENDS_CHOICE_POTENTIAL, IsSelected, SetSelected, FRIENDS_FRIENDS_POTENTIAL);
+		rootDescription:CreateRadio(FRIENDS_FRIENDS_CHOICE_MUTUAL, IsSelected, SetSelected, FRIENDS_FRIENDS_MUTUAL);
+	end);
+end
+
+
+function FriendsFriendsFrameMixin:OnHide()
+	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 end
 
 function FriendsFriendsFrameMixin:SendRequest()
@@ -2460,7 +2405,7 @@ function FriendsFriendsFrame_Show(bnetIDAccount)
 	end
 	FriendsFriendsFrameTitle:SetFormattedText(FRIENDS_FRIENDS_HEADER, FRIENDS_BNET_NAME_COLOR_CODE..accountInfo.accountName..FONT_COLOR_CODE_CLOSE);
 	FriendsFriendsFrame.bnetIDAccount = accountInfo.bnetAccountID;
-	UIDropDownMenu_DisableDropDown(FriendsFriendsFrameDropDown);
+	FriendsFriendsFrameDropdown:Disable();
 	FriendsFriendsFrame:Reset();
 	FriendsFriendsWaitFrame:Show();
 	StaticPopupSpecial_Show(FriendsFriendsFrame);
@@ -2508,25 +2453,59 @@ function FriendsFrame_BattlenetInviteByIndex(friendIndex)
 			return elementData.id == friendIndex and elementData.buttonType == FRIENDS_BUTTON_TYPE_BNET;
 		end);
 
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-		local dropDown = TravelPassDropDown;
-		if ( dropDown.index ~= friendIndex ) then
-			CloseDropDownMenus();
-		end
-
-		dropDown.index = friendIndex;
 		-- show dropdown at the button if one was passed in or we found it
-		if ( button ) then
-			ToggleDropDownMenu(1, nil, dropDown, button.travelPassButton, 20, 34);
-		else
-			ToggleDropDownMenu(1, nil, dropDown, "cursor", 1, -1);
-		end
+		FriendsFrame_SetupTravelPassDropdown(friendIndex, button and button.travelPassButton or nil);
 	else
 		local accountInfo = C_BattleNet.GetFriendAccountInfo(friendIndex);
 		if accountInfo and accountInfo.gameAccountInfo.playerGuid then
 			FriendsFrame_InviteOrRequestToJoin(accountInfo.gameAccountInfo.playerGuid, accountInfo.gameAccountInfo.gameAccountID);
 		end
 	end
+end
+
+function FriendsFrame_SetupTravelPassDropdown(friendIndex, attachedTo)
+	MenuUtil.CreateContextMenu(attachedTo, function(owner, rootDescription)
+		rootDescription:SetTag("MENU_FRIENDS_TRAVEL_PASS");
+
+		rootDescription:CreateTitle(TRAVEL_PASS_INVITE);
+
+		local numGameAccounts = BNGetNumFriendGameAccounts(friendIndex);
+		for i = 1, numGameAccounts do
+			local text;
+			local restriction = INVITE_RESTRICTION_NONE;
+			local hasFocus, characterName, client, realmName, realmID, faction, race, class, _, _, level, _, _, _, _, bnetIDGameAccount, _, _, _, wowProjectID = BNGetFriendGameAccountInfo(friendIndex, i);
+			if ( client == BNET_CLIENT_WOW ) then
+				if ( faction ~= playerFactionGroup ) then
+					restriction = INVITE_RESTRICTION_FACTION;
+				elseif(wowProjectID ~= WOW_PROJECT_ID) then
+					restriction = INVITE_RESTRICTION_WOW_PROJECT_ID;
+				elseif ( realmID == 0 ) then
+					restriction = INVITE_RESTRICTION_INFO;
+				elseif ( realmID ~= playerRealmID ) then
+					-- The Classics don't allow grouping across realms
+					restriction = INVITE_RESTRICTION_REALM;
+				end
+				if ( restriction == INVITE_RESTRICTION_NONE ) then
+					text = string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, characterName, level, race, class);
+				else
+					text = string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, characterName..CANNOT_COOPERATE_LABEL, level, race, class);
+				end
+			else
+				restriction = INVITE_RESTRICTION_CLIENT;
+				text = BNet_GetClientEmbeddedAtlas(client, 18)..characterName;
+			end
+
+			if ( restriction == INVITE_RESTRICTION_NONE ) then
+				rootDescription:CreateButton(text, function()
+					local guid = select(20, BNGetGameAccountInfo(bnetIDGameAccount));
+					FriendsFrame_InviteOrRequestToJoin(guid, bnetIDGameAccount);
+				end);
+			else
+				local button = rootDescription:CreateButton(text);
+				button:SetEnabled(false);
+			end
+		end
+	end);
 end
 
 function CanCooperateWithGameAccount(accountInfo)
@@ -2582,7 +2561,7 @@ function FriendsFrame_GetDisplayedInviteTypeAndGuid(index)
 		end
 	end
 
-	local inviteType = GetDisplayedInviteType(guid);
+	inviteType = GetDisplayedInviteType(guid);
 
 	if (factionName and factionName ~= playerFactionGroup) then
 		inviteType = inviteType .. "_CROSS_FACTION";
@@ -2717,78 +2696,6 @@ function TravelPassButton_OnEnter(self)
 		GameTooltip:AddLine(FriendsFrame_GetInviteRestrictionText(restriction), RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
 	end
 	GameTooltip:Show();
-end
-
-function TravelPassDropDown_OnLoad(self)
-	UIDropDownMenu_Initialize(self, TravelPassDropDown_Initialize, "MENU");
-end
-
-function TravelPassDropDown_Initialize(self)
-	local info = UIDropDownMenu_CreateInfo();
-	info.text = TRAVEL_PASS_INVITE;
-	info.isTitle = 1;
-	info.notCheckable = 1;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-
-	info = UIDropDownMenu_CreateInfo();
-	info.notCheckable = 1;
-	info.func = TravelPassDropDown_OnClick;
-
-	local numGameAccounts, restriction;
-	if self.index then
-		numGameAccounts = C_BattleNet.GetFriendNumGameAccounts(self.index);
-	else
-		numGameAccounts = 0;
-	end
-	for i = 1, numGameAccounts do
-		restriction = INVITE_RESTRICTION_NONE;
-		local gameAccountInfo = C_BattleNet.GetFriendGameAccountInfo(self.index, i);
-		if gameAccountInfo.clientProgram == BNET_CLIENT_WOW then
-			if (not C_PartyInfo.CanFormCrossFactionParties() or C_QuestSession.Exists()) and gameAccountInfo.factionName ~= playerFactionGroup then
-				if C_QuestSession.Exists() then
-					restriction = INVITE_RESTRICTION_QUEST_SESSION;
-				elseif not C_PartyInfo.CanFormCrossFactionParties() then
-					restriction = INVITE_RESTRICTION_FACTION;
-				end
-			elseif gameAccountInfo.wowProjectID ~= WOW_PROJECT_ID then
-				restriction = INVITE_RESTRICTION_WOW_PROJECT_ID;
-			elseif gameAccountInfo.realmID == 0 then
-				restriction = INVITE_RESTRICTION_INFO;
-			elseif (gameAccountInfo.wowProjectID == WOW_PROJECT_CLASSIC) and (gameAccountInfo.realmID ~= playerRealmID) then
-				restriction = INVITE_RESTRICTION_REALM;
-			end
-			if restriction == INVITE_RESTRICTION_NONE then
-				info.text = string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, gameAccountInfo.characterName, gameAccountInfo.characterLevel, gameAccountInfo.raceName or UNKNOWN, gameAccountInfo.className or UNKNOWN);
-			else
-				info.text = string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, gameAccountInfo.characterName..CANNOT_COOPERATE_LABEL, gameAccountInfo.characterLevel, gameAccountInfo.raceName or UNKNOWN, gameAccountInfo.className or UNKNOWN);
-			end
-		else
-			restriction = INVITE_RESTRICTION_CLIENT;
-			info.text = "";
-			if C_Texture.IsTitleIconTextureReady(gameAccountInfo.clientProgram, Enum.TitleIconVersion.Small) then
-				C_Texture.GetTitleIconTexture(gameAccountInfo.clientProgram, Enum.TitleIconVersion.Small, function(success, texture)
-					if success then
-						info.text = BNet_GetClientEmbeddedTexture(texture, 32, 32, 18);
-					end
-				end);
-			end
-		end
-		if ( restriction == INVITE_RESTRICTION_NONE ) then
-			info.arg1 = gameAccountInfo.gameAccountID;
-			info.disabled = nil;
-		else
-			info.arg1 = nil;
-			info.disabled = 1;
-		end
-		UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-	end
-end
-
-function TravelPassDropDown_OnClick(button, gameAccountID)
-	local gameAccountInfo = C_BattleNet.GetGameAccountInfoByID(gameAccountID);
-	if gameAccountInfo.playerGuid then
-		FriendsFrame_InviteOrRequestToJoin(gameAccountInfo.playerGuid, gameAccountID);
-	end
 end
 
 function BattleTagInviteFrame_Show(name)

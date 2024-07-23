@@ -35,6 +35,20 @@ local PetInfo =
 			},
 		},
 		{
+			Name = "IsPetActionPassive",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isPassive", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "PetAbandon",
 			Type = "Function",
 

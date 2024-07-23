@@ -3,7 +3,6 @@
 ## DefaultState: enabled
 ## Dependencies: Blizzard_FontStyles_Glue, Blizzard_SharedXML
 ## LoadFirst: 1
-## SuppressLocalTableRef: 1
 ## AllowLoad: Glue
 ## AllowLoadGameType: mainline
 Mainline\Constants.lua

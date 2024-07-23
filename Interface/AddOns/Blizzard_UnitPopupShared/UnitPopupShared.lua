@@ -1,268 +1,122 @@
 UnitPopupManager = { };
 UnitPopupMenus = { };
-function UnitPopupManager:CheckAddSubsection(dropdownMenu, info, menuLevel, currentButton, index, previousButton, menuButtons)
-	local hasButtonsThatStillNeedToShow = false;
-	--Checking if there are any buttons that are supposed to show after this that are not a subsection title or separator
-	for startIndex = index, #menuButtons do
-		local button = menuButtons[startIndex];
-		if(not button.isSubsectionSeparator and not button.isSubsectionTitle and button:CanShow()) then
-			hasButtonsThatStillNeedToShow = true;
+
+local function GetNameAndClass(unit, name)
+	local outName = name;
+	if not outName and unit then
+		outName = UnitNameUnmodified(unit) or UnitName(unit);
 		end
+
+	if not outName then
+		outName = UNKNOWN;
 	end
 
-	--Add the separator  as long as the previous button wasn't a separator
-	if hasButtonsThatStillNeedToShow and currentButton.isSubsectionSeparator and (not previousButton or (previousButton and not previousButton.isSubsectionSeparator)) then
-		UIDropDownMenu_AddSeparator(menuLevel);
+	local class;
+	if unit and UnitIsPlayer(unit) then
+		class = select(2, UnitClass(unit));
 	end
 
-	--Add the title as long as the previous button wasn't a title
-	if (hasButtonsThatStillNeedToShow) and (currentButton.isSubsectionTitle and info) and (not previousButton or (previousButton and not previousButton.isSubsectionTitle)) then
-		self:AddDropDownButton(info, dropdownMenu, currentButton, index, UIDROPDOWNMENU_MENU_LEVEL);
-	end
+	return outName, class;
 end
 
-function UnitPopupManager:ShowMenu(dropdownMenu, which, unit, name, userData)
-	local server = nil;
-	dropdownMenu.which = which;
-	dropdownMenu.unit = unit;
-	self.mostRecentDropdownMenu = nil;
+function UnitPopupManager:OpenMenu(which, contextData)
+	assertsafe(type(contextData) == "nil" or type(contextData) == "table", "extraContextData can only be a table if provided.");
+	
+	if contextData == nil then
+		contextData = 
+		{
+			which = which,
+		};
+	else
+		contextData.which = which;
 
-	if ( unit ) then
-		name, server = UnitNameUnmodified(unit);
-	elseif ( name ) then
-		local n, s = strmatch(name, "^([^-]+)-(.*)");
-		if ( n ) then
-			name = n;
-			server = s;
-		end
-	end
-	dropdownMenu.name = name;
-	dropdownMenu.userData = userData;
-	dropdownMenu.server = server;
-	dropdownMenu.accountInfo = nil;
-	dropdownMenu.accountInfo = UnitPopupSharedUtil.GetBNetAccountInfo();
-	dropdownMenu.isMobile = UnitPopupSharedUtil.GetIsMobile();
-	self.mostRecentDropdownMenu = dropdownMenu;
-	local menu = self:GetMenu(which);
-	local menuButtons = menu:GetButtons();
-	self.currentlyShowingMenu = menu;
-	if(not menuButtons) then
-		return;
-	end
-
-	local count = 0;
-	for index, buttonMixin in ipairs(menuButtons) do
-		if( buttonMixin:CanShow() and not buttonMixin:IsCloseCommand() ) then
-			count = count + 1;
-		end
-	end
-	if ( count < 1 ) then
-		return;
-	end
-
-	local info;
-	if ( UIDROPDOWNMENU_MENU_LEVEL == 2 ) then
-		local nestedDropdownMenu = menuButtons[UIDROPDOWNMENU_MENU_VALUE];
-		if(not nestedDropdownMenu) then
-			return;
-		end
-
-		self.currentlyShowingMenu = nestedDropdownMenu;
-		local nestedDropdownMenus = nestedDropdownMenu:GetButtons();
-		if(not nestedDropdownMenus) then
-			return;
-		end
-
-		OPEN_DROPDOWNMENUS[UIDROPDOWNMENU_MENU_LEVEL] = {which = dropdownMenu.which, unit = dropdownMenu.unit};
-		local previousButton;
-		for nestedIndex, button in ipairs(nestedDropdownMenus) do
-			if( button:CanShow() ) then
-				self:CheckAddSubsection(dropdownMenu, info, UIDROPDOWNMENU_MENU_LEVEL, button, nestedIndex, previousButton, nestedDropdownMenus);
-				info = UIDropDownMenu_CreateInfo();
-				info.owner = UIDROPDOWNMENU_MENU_VALUE;
-				if (not button.isSubsection) then
-					self:AddDropDownButton(info, dropdownMenu, button, nestedIndex, UIDROPDOWNMENU_MENU_LEVEL);
+		local name, server = nil, nil;
+		local unit = contextData.unit;
+		if unit then
+			name, server = UnitNameUnmodified(unit);
+			contextData.name = name;
+			contextData.server = server;
+		else
+			name = contextData.name;
+			if name then
+				local name2, server2 = strmatch(name, "^([^-]+)-(.*)");
+				if name2 then
+					contextData.name = name2;
+					contextData.server = server2;
 				end
-				previousButton = button;
 			end
 		end
-		return;
 	end
 
-	self:AddDropDownTitle(unit, name, userData);
+	-- Remove this assert only if you've verified the intent for the inbound
+	-- contextData to have it's player location overwritten.
+	assert(contextData.playerLocation == nil);
+	contextData.playerLocation = UnitPopupSharedUtil.TryCreatePlayerLocation(contextData);
+	
+	-- Remove this assert only if you've verified the intent for the inbound
+	-- contextData to have it's account info overwritten.
+	assert(contextData.accountInfo == nil);
+	contextData.accountInfo = UnitPopupSharedUtil.GetBNetAccountInfo(contextData);
 
-	OPEN_DROPDOWNMENUS[UIDROPDOWNMENU_MENU_LEVEL] = {which = dropdownMenu.which, unit = dropdownMenu.unit};
-	info = UIDropDownMenu_CreateInfo();
-	local tooltipText;
-	local previousButton = nil;
-	for index, button in ipairs(menuButtons) do
-		if( button:CanShow() ) then
-			self:CheckAddSubsection(dropdownMenu, info, UIDROPDOWNMENU_MENU_LEVEL, button, index, previousButton, menuButtons);
-			if (not button.isSubsection) then
-				self:AddDropDownButton(info, dropdownMenu, button, index, UIDROPDOWNMENU_MENU_LEVEL);
+	if contextData.isMobile == nil then
+		contextData.isMobile = UnitPopupSharedUtil.GetIsMobile(contextData);
+	end
+
+	local function CreateEntries(entry, description, sectionData, contextData)
+		if not entry:CanShow(contextData) then
+			return;
+		end
+
+		if entry:IsTitle() then
+			description:QueueDivider(true);
+			description:QueueTitle(entry:GetText());
+		elseif entry:IsDivider() then
+			description:QueueDivider(true);
+		else
+			local childDescription = entry:CreateMenuDescription(description, contextData);
+			if not childDescription then
+				assertsafe(false, string.format("Failed to create a menu description for entry %s"), entry:GetText());
+				return;
 			end
 
-			previousButton = button;
+			childDescription:SetEnabled(function(description)
+				return UnitPopupSharedUtil.IsEnabled(contextData, entry);
+			end);
+
+			local entries = entry:GetEntries();
+			if entries then
+				local childSectionData = {};
+				for index, childEntry in ipairs(entries) do
+					CreateEntries(childEntry, childDescription, childSectionData, contextData);
+				end
+			end
 		end
 	end
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
-end
 
-function UnitPopupManager:AddDropDownTitle(unit, name, userData)
-	if ( unit or name ) then
-		local info = UIDropDownMenu_CreateInfo();
+	local menuParent = nil;
+	MenuUtil.CreateContextMenu(menuParent, function(owner, rootDescription)
+		rootDescription:SetTag("MENU_UNIT_"..which, contextData);
 
-		local titleText = name;
-		if not titleText and unit then
-			titleText = UnitNameUnmodified(unit) or UnitName(unit);
-		end
+		-- Create a class colored title atop every menu.
+		local elementDescription = rootDescription:CreateTitle();
+		elementDescription:AddInitializer(function(frame, description, menu)
+			local title, class = GetNameAndClass(contextData.unit, contextData.name);
+			frame.fontString:SetText(title);
 
-		info.text = titleText or UNKNOWN;
-		info.isTitle = true;
-		info.notCheckable = true;
-
-		if not IsOnGlueScreen() then
-			local class;
-			if unit and UnitIsPlayer(unit) then
-				class = select(2, UnitClass(unit));
-			end
-
-			if not class and userData and userData.guid then
-				class = select(2, GetPlayerInfoByGUID(userData.guid));
-			end
-			if class then
+			if class and not IsOnGlueScreen() then
 				local colorCode = select(4, GetClassColor(class));
-				info.disablecolor = "|c" .. colorCode;
+				local color = CreateColorFromHexString(colorCode);
+				frame.fontString:SetTextColor(color:GetRGBA());
 			end
+		end);
+
+		-- Section data for state relevant to each menu.
+		local sectionData = {};
+		local menu = self:GetMenu(which);
+		for index, entry in ipairs(menu:AssembleMenuEntries(contextData)) do
+			CreateEntries(entry, rootDescription, sectionData, contextData);
 		end
-		
-		UIDropDownMenu_AddButton(info);
-	end
-end
-
-function UnitPopupManager:AddDropDownButton(info, dropdownMenu, button, buttonIndex, level)
-	if (not level) then
-		level = 1;
-	end
-	local dropdownMenuButton = button;
-	info.text = dropdownMenuButton:GetText();
-	info.value = buttonIndex;
-	info.owner = nil;
-	info.func = function() dropdownMenuButton:OnClick() end;
-	info.notCheckable = not dropdownMenuButton:IsCheckable();
-
-	local color = dropdownMenuButton:GetColor();
-	if ( color and color.r) then
-		info.colorCode = string.format("|cFF%02x%02x%02x",  color.r*255,  color.g*255,  color.b*255);
-	else
-		info.colorCode = nil;
-	end
-	-- Icons
-	local textureCoords = dropdownMenuButton:GetTextureCoords();
-	if ( dropdownMenuButton:IsIconOnly() and textureCoords ) then
-		info.iconOnly = 1;
-		info.icon = dropdownMenuButton:GetIcon();
-		info.iconInfo =  {
-			tCoordLeft = textureCoords.tCoordLeft,
-			tCoordRight = textureCoords.tCoordRight,
-			tCoordTop = textureCoords.tCoordTop,
-			tCoordBottom = textureCoords.tCoordBottom,
-			tSizeX = textureCoords.tSizeX,
-			tSizeY = textureCoords.tSizeY,
-			tFitDropDownSizeX = textureCoords.tFitDropDownSizeX
-		};
-	else
-		info.iconOnly = nil;
-		info.icon = dropdownMenuButton:GetIcon();
-		info.tCoordLeft = textureCoords.tCoordLeft;
-		info.tCoordRight = textureCoords.tCoordRight;
-		info.tCoordTop = textureCoords.tCoordTop;
-		info.tCoordBottom = textureCoords.tCoordBottom;
-		info.iconInfo = nil;
-	end
-
-	-- Checked conditions
-	if (level == 1) then
-		info.checked = nil;
-	end
-
-	info.checked = info.checked or dropdownMenuButton:IsChecked();
-	info.hasArrow = dropdownMenuButton:IsNested();
-	info.isNotRadio = dropdownMenuButton:IsNotRadio();
-	info.isTitle = dropdownMenuButton:IsTitle();
-	if(not info.isTitle) then
-		if (level == 1) then
-			info.disabled = nil;
-		end
-	end
-
-	info.tooltipTitle = dropdownMenuButton:GetText();
-	info.tooltipText = dropdownMenuButton:GetTooltipText();
-	info.customFrame = dropdownMenuButton:GetCustomFrame();
-	if info.customFrame then
-		local guid = UnitPopupSharedUtil.GetGUID();
-		local playerLocation = UnitPopupSharedUtil:TryCreatePlayerLocation(guid);
-		local contextData = {
-			guid = guid,
-			playerLocation = playerLocation,
-			voiceChannelID = dropdownMenu.voiceChannelID,
-			voiceMemberID = dropdownMenu.voiceMemberID,
-			voiceChannel = dropdownMenu.voiceChannel,
-		};
-
-		info.customFrame:SetContextData(contextData);
-	end
-
-	info.tooltipWhileDisabled = dropdownMenuButton:TooltipWhileDisabled();
-	info.noTooltipWhileEnabled = dropdownMenuButton:NoTooltipWhileEnabled();
-	info.tooltipOnButton = dropdownMenuButton:TooltipOnButton();
-	info.tooltipInstruction = dropdownMenuButton:TooltipInstruction();
-	info.tooltipWarning = dropdownMenuButton:TooltipWarning();
-	info.hasArrow = dropdownMenuButton:HasArrow() or dropdownMenuButton:IsNested();
-	info.disabled = not UnitPopupSharedUtil:IsEnabled(dropdownMenuButton);
-	local addedButton = UIDropDownMenu_AddButton(info, level);
-	button:SetCurrentButton(addedButton);
-end
-
-function UnitPopupManager:OnUpdate(elapsed)
-	if ( not DropDownList1:IsShown() ) then
-		return;
-	end
-
-	if ( not UnitPopup_HasVisibleMenu() ) then
-		return;
-	end
-	for level, dropdownFrame in pairs(OPEN_DROPDOWNMENUS) do
-		if(dropdownFrame) then
-			local menu = self:GetMenu(dropdownFrame.which);
-			local topLevelButtons = menu:GetButtons();
-			local menuButtons;
-			if(level == 2) then
-				local nestedMenu = topLevelButtons[UIDROPDOWNMENU_MENU_VALUE];
-				local nestedMenusButtons = nestedMenu and nestedMenu:GetButtons();
-				menuButtons = nestedMenusButtons;
-			else
-				menuButtons =  topLevelButtons;
-			end
-			if (menuButtons) then
-				for index, button in ipairs(menuButtons) do
-					local shown = button:CanShow();
-					if(shown) then
-						if (not button.isSubsection) then
-							local currentButton = button:GetCurrentButton();
-							if currentButton then
-								UIDropDownMenu_SetDropdownButtonEnabled(currentButton, UnitPopupSharedUtil:IsEnabled(button));
-							end
-						end
-					end
-				end
-			end
-		end
-	end
-end
-
-function UnitPopupManager:GetMostRecentDropdownMenu()
-	return self.mostRecentDropdownMenu;
+	end);
 end
 
 function UnitPopupManager:GetMenu(which)
@@ -273,15 +127,7 @@ function UnitPopupManager:RegisterMenu(which, menu)
 	UnitPopupMenus[which] = menu;
 end
 
-local g_mostRecentPopupMenu;
-function UnitPopup_OnUpdate (elapsed)
-	UnitPopupManager:OnUpdate(elapsed);
-end
-
-function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
-	UnitPopupManager:ShowMenu(dropdownMenu, which, unit, name, userData);
-end
-
-function UnitPopup_HasVisibleMenu()
-	return UnitPopupManager:GetMostRecentDropdownMenu() == UIDROPDOWNMENU_OPEN_MENU;
+function UnitPopup_OpenMenu(which, contextData)
+	local anchor = nil;
+	UnitPopupManager:OpenMenu(which, contextData, anchor);
 end

@@ -100,11 +100,15 @@ function CovenantCallingQuestMixin:UpdateTooltipQuestActive()
 		else
 			local questLogIndex = C_QuestLog.GetLogIndexForQuestID(questID);
 			if questLogIndex then
-				questDescription = select(2, GetQuestLogQuestText(questLogIndex));
+				local questDescription = select(2, GetQuestLogQuestText(questLogIndex));
 				GameTooltip_AddColoredLine(GameTooltip, QUEST_DASH .. questDescription, HIGHLIGHT_FONT_COLOR);
 			end
 		end
 	end
+
+	-- Likely false, which means that the checks against this for showObjective are likely true
+	-- This is just maintaining parity with TaskPOI_OnEnter, but even that should possibly get refactored.
+	local isThreat = C_QuestLog.IsThreatQuest(questID);
 
 	local isFirstObjectiveFinished;
 	for objectiveIndex = 1, self.calling.numObjectives do
@@ -113,7 +117,7 @@ function CovenantCallingQuestMixin:UpdateTooltipQuestActive()
 			isFirstObjectiveFinished = finished;
 		end
 
-		local showObjective = not (finished and self.isThreat);
+		local showObjective = not (finished and isThreat);
 		if showObjective then
 			if self.shouldShowObjectivesAsStatusBar and numRequired > 0 then
 				local percent = math.floor((numFulfilled/numRequired) * 100);
@@ -125,7 +129,7 @@ function CovenantCallingQuestMixin:UpdateTooltipQuestActive()
 		end
 	end
 
-	local showObjective = not (isFirstObjectiveFinished and self.isThreat);
+	local showObjective = not (isFirstObjectiveFinished and isThreat);
 	if showObjective then
 		local percent = C_TaskQuest.GetQuestProgressBarInfo(questID);
 		if percent then

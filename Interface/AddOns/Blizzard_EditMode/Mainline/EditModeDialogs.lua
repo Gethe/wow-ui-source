@@ -294,7 +294,7 @@ function EditModeSystemSettingsDialogMixin:OnLoad()
 	self.pools:CreatePool("FRAME", self.Settings, "EditModeSettingCheckboxTemplate");
 
 	local function resetExtraButton(pool, button)
-		FramePool_HideAndClearAnchors(pool, button);
+		Pool_HideAndClearAnchors(pool, button);
 		button:Enable();
 	end
 	self.pools:CreatePool("BUTTON", self.Buttons, "EditModeSystemSettingsDialogExtraButtonTemplate", resetExtraButton);
@@ -422,7 +422,7 @@ function EditModeSystemSettingsDialogMixin:UpdateSettings(systemFrame)
 					settingFrame.layoutIndex = index;
 					local settingName = (self.attachedToSystem:UseSettingAltName(displayInfo.setting) and displayInfo.altName) and displayInfo.altName or displayInfo.name;
 					local updatedDisplayInfo = self.attachedToSystem:UpdateDisplayInfoOptions(displayInfo);
-					settingsToSetup[settingFrame] = { displayInfo = updatedDisplayInfo, currentValue = self.attachedToSystem:GetSettingValue(updatedDisplayInfo.setting), settingName = settingName },
+					settingsToSetup[settingFrame] = { displayInfo = updatedDisplayInfo, currentValue = self.attachedToSystem:GetSettingValue(updatedDisplayInfo.setting), settingName = settingName };
 					settingFrame:Show();
 				end
 			end

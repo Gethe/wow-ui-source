@@ -1,4 +1,6 @@
 
+BlizzardStopwatchOptions = BlizzardStopwatchOptions or nil;
+
 -- speed optimizations (mostly so update functions are faster)
 local _G = getfenv(0);
 local date = _G.date;
@@ -110,31 +112,6 @@ function TimeManagerFrame_OnLoad(self)
 
 	self:SetFrameLevel(self:GetFrameLevel() + 2);
 
-	UIDropDownMenu_Initialize(TimeManagerAlarmHourDropDown, TimeManagerAlarmHourDropDown_Initialize);
-	UIDropDownMenu_SetWidth(TimeManagerAlarmHourDropDown, 30, 40);
-
-	UIDropDownMenu_Initialize(TimeManagerAlarmMinuteDropDown, TimeManagerAlarmMinuteDropDown_Initialize);
-	UIDropDownMenu_SetWidth(TimeManagerAlarmMinuteDropDown, 30, 40);
-
-	UIDropDownMenu_Initialize(TimeManagerAlarmAMPMDropDown, TimeManagerAlarmAMPMDropDown_Initialize);
-	-- some languages have long am/pm strings so we may have to readjust the ampm dropdown width plus do some reanchoring if the text is too wide
-	local maxAMPMWidth;
-	TimeManagerAMPMDummyText:SetText(TIMEMANAGER_AM);
-	maxAMPMWidth = TimeManagerAMPMDummyText:GetWidth();
-	TimeManagerAMPMDummyText:SetText(TIMEMANAGER_PM);
-	if ( maxAMPMWidth < TimeManagerAMPMDummyText:GetWidth() ) then
-		maxAMPMWidth = TimeManagerAMPMDummyText:GetWidth();
-	end
-	maxAMPMWidth = ceil(maxAMPMWidth);
-	if ( maxAMPMWidth > 40 ) then
-		UIDropDownMenu_SetWidth(TimeManagerAlarmAMPMDropDown, maxAMPMWidth + 20, 40);
-		TimeManagerAlarmAMPMDropDown:SetScript("OnShow", TimeManagerAlarmAMPMDropDown_OnShow);
-		TimeManagerAlarmAMPMDropDown:SetScript("OnHide", TimeManagerAlarmAMPMDropDown_OnHide);
-	else
-		UIDropDownMenu_SetWidth(TimeManagerAlarmAMPMDropDown, 40, 40);
-	end
-
-	--get rid of button bar at bottom
 	ButtonFrameTemplate_HideButtonBar(self);
 
 	TimeManager_Update();
@@ -144,10 +121,93 @@ function TimeManagerFrame_OnUpdate(self, elapsed)
 	TimeManager_UpdateTimeTicker();
 end
 
+function TimeManagerFrame_SetupHourDropdown(self)
+	local function IsSelected(hour)
+		return Settings.alarmHour == hour;
+	end
+
+	local function SetSelected(hour)
+		local oldValue = Settings.alarmHour;
+		Settings.alarmHour = hour;
+		if ( Settings.alarmHour ~= oldValue ) then
+			TimeManager_StartCheckingAlarm();
+		end
+		_TimeManager_Setting_SetTime();
+	end
+
+	local hourMin, hourMax;
+	if Settings.militaryTime then
+		hourMin, hourMax = 0, 23;
+	else
+		hourMin, hourMax = 1, 12;
+	end
+
+	local width = 60;
+	self.AlarmTimeFrame.HourDropdown:SetWidth(width);
+	self.AlarmTimeFrame.HourDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_TIME_MANAGER_HOUR");
+
+		for hour = hourMin, hourMax, 1 do
+			local text = militaryTime and format(TIMEMANAGER_24HOUR, hour) or hour;
+			rootDescription:CreateRadio(text, IsSelected, SetSelected, hour);
+		end
+		rootDescription:SetMaximumWidth(width);
+	end);
+end
+
+function TimeManagerFrame_SetupMinuteDropdown(self)
+	local function IsSelected(minute)
+		return Settings.alarmMinute == minute;
+	end
+
+	local function SetSelected(minute)
+		local oldValue = Settings.alarmMinute;
+		Settings.alarmMinute = minute;
+		if ( Settings.alarmMinute ~= oldValue ) then
+			TimeManager_StartCheckingAlarm();
+		end
+		_TimeManager_Setting_SetTime();
+	end
+
+	local width = 60;
+	self.AlarmTimeFrame.MinuteDropdown:SetWidth(width);
+	self.AlarmTimeFrame.MinuteDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_TIME_MANAGER_MINUTE");
+
+		for minute = 0, 55, 5 do
+			rootDescription:CreateRadio(format(TIMEMANAGER_MINUTE, minute), IsSelected, SetSelected, minute);
+		end
+		rootDescription:SetMaximumWidth(width);
+	end);
+end
+
+function TimeManagerFrame_SetupAMPMDropdown(self)
+	local function IsSelected(isAM)
+		return Settings.alarmAM == isAM;
+	end
+
+	local function SetSelected(isAM)
+		Settings.alarmAM = isAM;
+		TimeManager_StartCheckingAlarm();
+	end
+
+	local width = 65;
+	self.AlarmTimeFrame.AMPMDropdown:SetWidth(width);
+	self.AlarmTimeFrame.AMPMDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_TIME_MANAGER_AMPM");
+
+		rootDescription:CreateRadio(TIMEMANAGER_AM, IsSelected, SetSelected, true);
+		rootDescription:CreateRadio(TIMEMANAGER_PM, IsSelected, SetSelected, false);
+		rootDescription:SetMaximumWidth(width);
+	end);
+end
+
 function TimeManagerFrame_OnShow(self)
 	TimeManager_Update();
 	TimeManagerStopwatchCheck:SetChecked(StopwatchFrame:IsShown());
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
+
+	TimeManager_UpdateAlarmTime();
 end
 
 function TimeManagerFrame_OnHide(self)
@@ -167,170 +227,21 @@ function TimeManagerStopwatchCheck_OnClick(self)
 	end
 end
 
-function TimeManagerAlarmHourDropDown_Initialize()
-	local info = UIDropDownMenu_CreateInfo();
-
-	local alarmHour = Settings.alarmHour;
-	local militaryTime = Settings.militaryTime;
-
-	local hourMin, hourMax;
-	if ( militaryTime ) then
-		hourMin = 0;
-		hourMax = 23;
-	else
-		hourMin = 1;
-		hourMax = 12;
-	end
-	for hour = hourMin, hourMax, 1 do
-		info.value = hour;
-		if ( militaryTime ) then
-			info.text = format(TIMEMANAGER_24HOUR, hour);
-		else
-			info.text = hour;
-			info.justifyH = "RIGHT";
-		end
-		info.func = TimeManagerAlarmHourDropDown_OnClick;
-		if ( hour == alarmHour ) then
-			info.checked = 1;
-			UIDropDownMenu_SetText(TimeManagerAlarmHourDropDown, info.text);
-			UIDropDownMenu_JustifyText(TimeManagerAlarmHourDropDown, "CENTER");
-		else
-			info.checked = nil;
-		end
-		UIDropDownMenu_AddButton(info);
-	end
-end
-
-function TimeManagerAlarmMinuteDropDown_Initialize()
-	local info = UIDropDownMenu_CreateInfo();
-
-	local alarmMinute = Settings.alarmMinute;
-	for minute = 0, 55, 5 do
-		info.value = minute;
-		info.text = format(TIMEMANAGER_MINUTE, minute);
-		info.func = TimeManagerAlarmMinuteDropDown_OnClick;
-		if ( minute == alarmMinute ) then
-			info.checked = 1;
-			UIDropDownMenu_SetText(TimeManagerAlarmMinuteDropDown, info.text);
-			UIDropDownMenu_JustifyText(TimeManagerAlarmMinuteDropDown, "CENTER");
-		else
-			info.checked = nil;
-		end
-		UIDropDownMenu_AddButton(info);
-	end
-end
-
-function TimeManagerAlarmAMPMDropDown_Initialize()
-	local info = UIDropDownMenu_CreateInfo();
-
-	local pm = (Settings.militaryTime and Settings.alarmHour >= 12) or not Settings.alarmAM;
-
-	info.value = 1;
-	info.text = TIMEMANAGER_AM;
-	info.func = TimeManagerAlarmAMPMDropDown_OnClick;
-	if ( not pm ) then
-		info.checked = 1;
-		UIDropDownMenu_SetText(TimeManagerAlarmAMPMDropDown, info.text);
-	else
-		info.checked = nil;
-	end
-	UIDropDownMenu_AddButton(info);
-
-	info.value = 0;
-	info.text = TIMEMANAGER_PM;
-	info.func = TimeManagerAlarmAMPMDropDown_OnClick;
-	if ( pm ) then
-		info.checked = 1;
-		UIDropDownMenu_SetText(TimeManagerAlarmAMPMDropDown, info.text);
-	else
-		info.checked = nil;
-	end
-	UIDropDownMenu_AddButton(info);
-end
-
-function TimeManagerAlarmHourDropDown_OnClick(self)
-	UIDropDownMenu_SetSelectedValue(TimeManagerAlarmHourDropDown, self.value);
-	local oldValue = Settings.alarmHour;
-	Settings.alarmHour = self.value;
-	if ( Settings.alarmHour ~= oldValue ) then
-		TimeManager_StartCheckingAlarm();
-	end
-	_TimeManager_Setting_SetTime();
-end
-
-function TimeManagerAlarmMinuteDropDown_OnClick(self)
-	UIDropDownMenu_SetSelectedValue(TimeManagerAlarmMinuteDropDown, self.value);
-	local oldValue = Settings.alarmMinute;
-	Settings.alarmMinute = self.value;
-	if ( Settings.alarmMinute ~= oldValue ) then
-		TimeManager_StartCheckingAlarm();
-	end
-	_TimeManager_Setting_SetTime();
-end
-
-function TimeManagerAlarmAMPMDropDown_OnClick(self)
-	UIDropDownMenu_SetSelectedValue(TimeManagerAlarmAMPMDropDown, self.value);
-	if ( self.value == 1 ) then
-		if ( not Settings.alarmAM ) then
-			Settings.alarmAM = true;
-			TimeManager_StartCheckingAlarm();
-		end
-	else
-		if ( Settings.alarmAM ) then
-			Settings.alarmAM = false;
-			TimeManager_StartCheckingAlarm();
-		end
-	end
-	_TimeManager_Setting_SetTime();
-end
-
-function TimeManagerAlarmAMPMDropDown_OnShow()
-	-- readjust the size of and reanchor TimeManagerAlarmAMPMDropDown and all frames below it
-	TimeManagerAlarmAMPMDropDown:SetPoint("TOPLEFT", TimeManagerAlarmHourDropDown, "BOTTOMLEFT", 0, 5);
-	TimeManagerAlarmMessageFrame:SetPoint("TOPLEFT", TimeManagerAlarmHourDropDown, "BOTTOMLEFT", 20, -23);
-	TimeManagerAlarmEnabledButton:SetPoint("CENTER", TimeManagerFrame, "CENTER", -20, -69);
-	TimeManagerMilitaryTimeCheck:SetPoint("TOPLEFT", TimeManagerFrame, "TOPLEFT", 174, -207);
-end
-
-function TimeManagerAlarmAMPMDropDown_OnHide()
-	-- readjust the size of and reanchor TimeManagerAlarmAMPMDropDown and all frames below it
-	TimeManagerAlarmAMPMDropDown:SetPoint("LEFT", TimeManagerAlarmHourDropDown, "RIGHT", -22, 0);
-	TimeManagerAlarmMessageFrame:SetPoint("TOPLEFT", TimeManagerAlarmHourDropDown, "BOTTOMLEFT", 20, 0);
-	TimeManagerAlarmEnabledButton:SetPoint("CENTER", TimeManagerFrame, "CENTER", -20, -50);
-	TimeManagerMilitaryTimeCheck:SetPoint("TOPLEFT", TimeManagerFrame, "TOPLEFT", 174, -207);
-end
-
 function TimeManager_Update()
 	TimeManager_UpdateTimeTicker();
 	TimeManager_UpdateAlarmTime();
 	TimeManagerAlarmMessageEditBox:SetText(Settings.alarmMessage);
-	if ( Settings.alarmEnabled ) then
-		TimeManagerAlarmEnabledButton:SetChecked(true);
-	else
-		TimeManagerAlarmEnabledButton:SetChecked(false);
-	end
+	TimeManagerAlarmEnabledButton:SetChecked(Settings.alarmEnabled);
 	TimeManagerMilitaryTimeCheck:SetChecked(Settings.militaryTime);
 	TimeManagerLocalTimeCheck:SetChecked(Settings.localTime);
 end
 
 function TimeManager_UpdateAlarmTime()
-	UIDropDownMenu_SetSelectedValue(TimeManagerAlarmHourDropDown, Settings.alarmHour);
-	UIDropDownMenu_SetSelectedValue(TimeManagerAlarmMinuteDropDown, Settings.alarmMinute);
-	UIDropDownMenu_SetText(TimeManagerAlarmMinuteDropDown, format(TIMEMANAGER_MINUTE, Settings.alarmMinute));
-	if ( Settings.militaryTime ) then
-		TimeManagerAlarmAMPMDropDown:Hide();
-		UIDropDownMenu_SetText(TimeManagerAlarmHourDropDown, format(TIMEMANAGER_24HOUR, Settings.alarmHour));
-	else
-		TimeManagerAlarmAMPMDropDown:Show();
-		UIDropDownMenu_SetText(TimeManagerAlarmHourDropDown, Settings.alarmHour);
-		if ( Settings.alarmAM ) then
-			UIDropDownMenu_SetSelectedValue(TimeManagerAlarmAMPMDropDown, 1);
-			UIDropDownMenu_SetText(TimeManagerAlarmAMPMDropDown, TIMEMANAGER_AM);
-		else
-			UIDropDownMenu_SetSelectedValue(TimeManagerAlarmAMPMDropDown, 0);
-			UIDropDownMenu_SetText(TimeManagerAlarmAMPMDropDown, TIMEMANAGER_PM);
-		end
-	end
+	TimeManagerFrame_SetupHourDropdown(TimeManagerFrame);
+	TimeManagerFrame_SetupMinuteDropdown(TimeManagerFrame);
+	TimeManagerFrame_SetupAMPMDropdown(TimeManagerFrame);
+
+	TimeManagerFrame.AlarmTimeFrame.AMPMDropdown:SetShown(not Settings.militaryTime);
 end
 
 function TimeManager_UpdateTimeTicker()

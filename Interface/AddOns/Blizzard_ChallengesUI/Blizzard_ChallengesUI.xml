@@ -966,7 +966,7 @@
 						<Anchor point="CENTER" x="0" y ="-12"/>
 					</Anchors>
 				</Frame>
-			</Frames>
+		</Frames>
         <Layers>
             <Layer level="BACKGROUND" textureSubLevel="1">
                 <Texture parentKey="Background">

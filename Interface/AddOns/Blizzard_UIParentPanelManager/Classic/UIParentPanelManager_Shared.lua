@@ -190,7 +190,6 @@ UIPARENT_MANAGED_FRAME_POSITIONS = {
 	-- variable so that other modules can use the most up-to-date value of FOO without having knowledge of the UIPARENT_MANAGED_FRAME_POSITIONS table.
 	["CONTAINER_OFFSET_X"] = {baseX = 0, rightActionBarsX = "variable", isVar = "xAxis"};
 	["CONTAINER_OFFSET_Y"] = {baseY = 70, bottomEither = 27, bottomRight = 0, watchBar = 1, isVar = "yAxis", pet = 1}; -- Adjusted so that Backpack + 4 Mooncloth Bags takes up only 2 columns (like 1.12).
-	["PETACTIONBAR_YPOS"] = {baseY = 97, bottomLeft = actionBarOffset, justBottomRightAndStance = actionBarOffset, watchBar = 1, maxLevel = 1, isVar = "yAxis"};
 	["MULTICASTACTIONBAR_YPOS"] = {baseY = 0, bottomLeft = actionBarOffset, watchBar = 1, maxLevel = 1, isVar = "yAxis"};
 	["OBJTRACKER_OFFSET_X"] = {baseX = 12, rightActionBarsX = "variable", isVar = "xAxis"};
 	["BATTLEFIELD_TAB_OFFSET_Y"] = {baseY = 260, bottomRight = actionBarOffset, watchBar = 1, isVar = "yAxis"};
@@ -952,12 +951,11 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		end
 	end
 
-	FramePositionDelegate_Override_HandleExtraBars(self);
+	FramePositionDelegate_Override_HandleExtraBars();
 
 	-- If petactionbar is already shown, set its point in addition to changing its y target
 	if (PetActionBarFrame and PetActionBarFrame:IsShown() ) then
-		PetActionBar_UpdatePositionValues();
-		PetActionBarFrame:SetPoint("TOPLEFT", MainMenuBar, "BOTTOMLEFT", PETACTIONBAR_XPOS, PETACTIONBAR_YPOS);
+		PetActionBarFrame:UpdatePositionValues();
 	end
 
 	-- Set battlefield minimap position
@@ -994,9 +992,9 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		anchorY = anchorY - UIWidgetBelowMinimapContainerFrame:GetHeight() - 4;
 	end
 
-	anchorY = FramePositionDelegate_Override_QuestTimerOffsets(self, anchorY);
+	anchorY = FramePositionDelegate_Override_QuestTimerOffsets(anchorY);
 
-	anchorY = FramePositionDelegate_Override_VehicleSeatIndicatorOffsets(self, anchorY);
+	anchorY = FramePositionDelegate_Override_VehicleSeatIndicatorOffsets(anchorY);
 
 	-- Boss frames - need to move below buffs/debuffs if both right action bars are showing
 	local numBossFrames = 0;
@@ -1033,7 +1031,7 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		ArenaPrepFrames:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
 	end
 
-	anchorY = FramePositionDelegate_Override_QuestWatchFrameOffsets(self, anchorY, rightActionBars, buffsAnchorY);
+	anchorY = FramePositionDelegate_Override_QuestWatchFrameOffsets(anchorY, rightActionBars, buffsAnchorY);
 
 	-- Update chat dock since the dock could have moved
 	FCF_DockUpdate();
@@ -1349,7 +1347,7 @@ function RestoreUIPanelArea(currentFrame)
 end
 
 function IsOptionFrameOpen()
-	if ( GameMenuFrame:IsShown() or InterfaceOptionsFrame:IsShown() or (KeyBindingFrame and KeyBindingFrame:IsShown()) ) then
+	if ( GameMenuFrame:IsShown() or (KeyBindingFrame and KeyBindingFrame:IsShown()) ) then
 		return 1;
 	else
 		return nil;
