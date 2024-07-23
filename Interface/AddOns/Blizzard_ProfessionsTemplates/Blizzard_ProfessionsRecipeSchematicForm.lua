@@ -915,7 +915,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 							
 							local allocationsCopy = self.transaction:GetAllocationsCopy(slotIndex);
 							local disallowZeroAllocations = true;
-							self.QualityDialog:Open(recipeID, reagentSlotSchematic, allocationsCopy, slotIndex, disallowZeroAllocations);
+							self.QualityDialog:Open(recipeID, reagentSlotSchematic, allocationsCopy, slotIndex, disallowZeroAllocations, self.transaction:ShouldUseCharacterInventoryOnly());
 						end
 					end
 				end);

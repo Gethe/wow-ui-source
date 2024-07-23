@@ -4,11 +4,11 @@ function TransformTreeFrameNode_Reset(transformTreeFramePool, frame)
 	frame:Hide();
 end
 
-function CreateTransformFrameNodePool(frameType, parent, frameTemplate, releaseFunc)
-	local function Create()
-		local frame = CreateFrame(frameType, nil, parent, frameTemplate);
-		return CreateTransformTreeNodeFromWidget(frame, TransformTreeFrameNodeMixin);
+function CreateTransformFrameNodePool(frameType, parent, frameTemplate, resetFunc)
+	local function FrameInitializer(frame)
+		CreateTransformTreeNodeFromWidget(frame, TransformTreeFrameNodeMixin);
 	end
 
-	return CreateRegionPool(frameTemplate, Create, releaseFunc or TransformTreeFrameNode_Reset);
+	local forbidden = false;
+	return CreateSecureFramePool(frameType, parent, frameTemplate, resetFunc or TransformTreeFrameNode_Reset, forbidden, FrameInitializer);
 end

@@ -360,7 +360,7 @@ function GlueParent_UpdateDialogs()
 		else
 			GlueDialog_Show("QUEUED_NORMAL", queueString);
 		end
-	else
+	elseif GlueDialog_GetVisible() ~= "RETRIEVING_CHARACTER_LIST" then
 		-- JS_TODO: make it so this only cancels state dialogs, like "Connecting"
 		GlueDialog_Hide();
 	end

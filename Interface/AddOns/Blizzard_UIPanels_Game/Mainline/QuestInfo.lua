@@ -126,7 +126,7 @@ local function QuestInfo_GetQuestID()
 end
 
 local function DecorateQuestTitle(title, useLargeIcon)
-	return QuestUtils_DecorateQuestText(QuestInfo_GetQuestID(), title, useLargeIcon) or "";
+	return QuestUtils_DecorateQuestText(QuestInfo_GetQuestID(), title, useLargeIcon);
 end
 
 -- NOTE: Also returns whether or not to do failure checking
@@ -1057,9 +1057,34 @@ function QuestInfo_OnHyperlinkEnter(self, link, text, region, left, bottom, widt
 	elseif linkType == "questDisabled" then
 		title = QUEST_SESSION_ON_HOLD_TOOLTIP_TITLE;
 		body = QUEST_SESSION_ON_HOLD_TOOLTIP_TEXT;
+	else
+		local questID = linkData;
+		local tagID, tagText, tagAtlas = QuestUtil.GetQuestTypeDetails(questID);
+		if tagID == Enum.QuestTag.Dungeon or tagID == Enum.QuestTag.Raid or tagID == Enum.QuestTag.Raid10 or tagID == Enum.QuestTag.Raid25 then
+			title = tagText;
+		else
+			local classification = C_QuestInfoSystem.GetQuestClassification(questID);
+			local info = QuestUtil.GetQuestClassificationInfo(classification);
+			if info then
+				title = info.text;
+				if classification == Enum.QuestClassification.Questline then
+					local mapID = nil;
+					local displayableOnly = true;
+					local questLineInfo = C_QuestLine.GetQuestLineInfo(questID, mapID, displayableOnly);
+					if questLineInfo then
+						body = questLineInfo.questLineName;
+					end					
+				elseif classification == Enum.QuestClassification.Recurring then
+					local timeLeft = C_TaskQuest.GetQuestTimeLeftSeconds(questID);
+					if timeLeft then
+						body = BONUS_OBJECTIVE_TIME_LEFT:format(QuestTimeRemainingFormatter:Format(timeLeft));
+					end
+				end
+			end
+		end
 	end
 
-	if title and body then
+	if title then
 		GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
 		GameTooltip_SetTitle(GameTooltip, title);
 		GameTooltip_AddNormalLine(GameTooltip, body);
@@ -1075,7 +1100,6 @@ QUEST_TEMPLATE_DETAIL = { questLog = nil, chooseItems = nil, contentWidth = 275,
 	canHaveSealMaterial = true, sealXOffset = 160, sealYOffset = -6,
 	elements = {
 		QuestInfo_ShowTitle, 10, -10,
-		QuestInfo_ShowType, 0, -5,
 		QuestInfo_ShowDescriptionText, 0, -5,
 		QuestInfo_ShowSeal, 0, 0,
 		QuestInfo_ShowObjectivesHeader, 0, -15,
@@ -1092,7 +1116,6 @@ QUEST_TEMPLATE_LOG = { questLog = true, chooseItems = nil, contentWidth = 285,
 	canHaveSealMaterial = true, sealXOffset = 160, sealYOffset = -6,
 	elements = {
 		QuestInfo_ShowTitle, 5, -5,
-		QuestInfo_ShowType, 0, -5,
 		QuestInfo_ShowObjectivesText, 0, -5,
 		QuestInfo_ShowTimer, 0, -10,
 		QuestInfo_ShowObjectives, 0, -10,
@@ -1121,7 +1144,6 @@ QUEST_TEMPLATE_MAP_DETAILS = { questLog = true, chooseItems = nil, contentWidth 
 	canHaveSealMaterial = true, sealXOffset = 156, sealYOffset = -6,
 	elements = {
 		QuestInfo_ShowTitle, 5, -10,
-		QuestInfo_ShowType, 0, -5,
 		QuestInfo_ShowObjectivesText, 0, -5,
 		QuestInfo_ShowTimer, 0, -10,
 		QuestInfo_ShowObjectives, 0, -10,

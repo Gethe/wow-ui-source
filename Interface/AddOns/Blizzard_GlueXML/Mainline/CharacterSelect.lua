@@ -1462,7 +1462,7 @@ function CharacterSelect_UpdateButtonState()
 	CharacterSelectCharacterFrame:SetDeleteEnabled(hasCharacters and servicesEnabled and not undeleting and not redemptionInProgress and not CharacterSelect_IsRetrievingCharacterList() and not isAccountLocked, disabledTooltip);
 	CharacterSelectUI.CharacterList:SetCharacterCreateEnabled(servicesEnabled and not undeleting and not redemptionInProgress and not isAccountLocked, disabledTooltip);
 	CharSelectUndeleteCharacterButton:SetEnabled(servicesEnabled and undeleteEnabled and not undeleteOnCooldown and not redemptionInProgress and not isAccountLocked);
-	CopyCharacterButton:SetShownState(servicesEnabled and not undeleting and not redemptionInProgress and not isAccountLocked);
+	CopyCharacterButton:SetEnabled(servicesEnabled and not undeleting and not redemptionInProgress and not isAccountLocked);
 	ActivateFactionChange:SetEnabled(servicesEnabled and not undeleting and not redemptionInProgress and not isAccountLocked);
 	ActivateFactionChange.texture:SetDesaturated(not (servicesEnabled and not undeleting and not redemptionInProgress and not isAccountLocked));
 	CharacterTemplatesFrame.CreateTemplateButton:SetEnabled(servicesEnabled and not undeleting and not redemptionInProgress and not isAccountLocked);
@@ -2551,10 +2551,7 @@ function CopyCharacterButtonMixin:OnClick()
 end
 
 function CopyCharacterButtonMixin:UpdateButtonState()
-	self:SetShownState(C_CharacterServices.IsLiveRegionCharacterListEnabled() or C_CharacterServices.IsLiveRegionCharacterCopyEnabled() or C_CharacterServices.IsLiveRegionAccountCopyEnabled() or C_CharacterServices.IsLiveRegionKeyBindingsCopyEnabled());
-end
-
-function CopyCharacterButtonMixin:SetShownState(isShown)
+	local isShown = C_CharacterServices.IsLiveRegionCharacterListEnabled() or C_CharacterServices.IsLiveRegionCharacterCopyEnabled() or C_CharacterServices.IsLiveRegionAccountCopyEnabled() or C_CharacterServices.IsLiveRegionKeyBindingsCopyEnabled();
 	CharacterSelectUI.ToolTray:SetToolFrameShown(self, isShown);
 end
 

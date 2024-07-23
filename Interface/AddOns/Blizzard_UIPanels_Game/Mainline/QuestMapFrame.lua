@@ -1722,7 +1722,8 @@ local function QuestLogQuests_AddQuestButton(displayState, info)
 	local ignoreReplayable = false;
 	local ignoreDisabled = true;
 	local useLargeIcon = false;
-	button.Text:SetText(QuestUtils_DecorateQuestText(questID, title, useLargeIcon, ignoreReplayable, ignoreDisabled));
+	local ignoreTypes = true;
+	button.Text:SetText(QuestUtils_DecorateQuestText(questID, title, useLargeIcon, ignoreReplayable, ignoreDisabled, ignoreTypes));
 
 	local difficultyColor = GetDifficultyColor(C_PlayerInfo.GetContentDifficultyQuestForPlayer(questID));
 	button.Text:SetTextColor(difficultyColor.r, difficultyColor.g, difficultyColor.b);

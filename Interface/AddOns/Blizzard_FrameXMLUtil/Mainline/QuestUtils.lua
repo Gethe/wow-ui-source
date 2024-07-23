@@ -479,7 +479,7 @@ function QuestUtil.CheckAutoSuperTrackQuest(questID, forceAllowTasks)
 	end
 end
 
-local QuestTimeRemainingFormatter = CreateFromMixins(SecondsFormatterMixin);
+QuestTimeRemainingFormatter = CreateFromMixins(SecondsFormatterMixin);
 QuestTimeRemainingFormatter:Init(SECONDS_PER_MIN, SecondsFormatter.Abbreviation.OneLetter, false);
 
 function QuestTimeRemainingFormatter:GetDesiredUnitCount(seconds)
@@ -506,30 +506,52 @@ function QuestUtil.GetQuestClassificationInfo(classification)
 	return g_classificationInfoTable[classification];
 end
 
-function QuestUtil.GetQuestClassificationString(questID)
+-- return classification, text, atlas, size
+function QuestUtil.GetQuestClassificationDetails(questID, skipFormatting)
 	local classification = C_QuestInfoSystem.GetQuestClassification(questID);
 	local info = QuestUtil.GetQuestClassificationInfo(classification);
 	if not info then
-		return nil;
+		return nil, nil, nil, nil;
 	end
 
 	local text = info.text;
-	if classification == Enum.QuestClassification.Questline then
-		local mapID = nil;
-		local displayableOnly = true;
-		local questLineInfo = C_QuestLine.GetQuestLineInfo(questID, mapID, displayableOnly);
-		if questLineInfo then
-			text = QUEST_CLASSIFICATION_QUESTLINE_WITH_NAME:format(questLineInfo.questLineName);
-		end
-	elseif classification == Enum.QuestClassification.Recurring then
-		local timeLeft = C_TaskQuest.GetQuestTimeLeftSeconds(questID);
-		if timeLeft then
-			local timeString = QuestTimeRemainingFormatter:Format(timeLeft);
-			text = QUEST_CLASSIFICATION_RECURRING_WITH_TIME:format(timeString);
+	if not skipFormatting then
+		if classification == Enum.QuestClassification.Questline then
+			local mapID = nil;
+			local displayableOnly = true;
+			local questLineInfo = C_QuestLine.GetQuestLineInfo(questID, mapID, displayableOnly);
+			if questLineInfo then
+				text = QUEST_CLASSIFICATION_QUESTLINE_WITH_NAME:format(questLineInfo.questLineName);
+			end
+		elseif classification == Enum.QuestClassification.Recurring then
+			local timeLeft = C_TaskQuest.GetQuestTimeLeftSeconds(questID);
+			if timeLeft then
+				local timeString = QuestTimeRemainingFormatter:Format(timeLeft);
+				text = QUEST_CLASSIFICATION_RECURRING_WITH_TIME:format(timeString);
+			end
 		end
 	end
 
-	return CreateAtlasMarkup(info.atlas, info.size, info.size).." "..text;
+	return classification, text, info.atlas, info.size;
+end
+
+function QuestUtil.GetQuestClassificationString(questID)
+	local classification, text, atlas, size = QuestUtil.GetQuestClassificationDetails(questID);
+	if classification then
+		return CreateAtlasMarkup(atlas, size, size).." "..text;
+	end
+
+	return nil;	
+end
+
+-- return tagID, text, atlas
+function QuestUtil.GetQuestTypeDetails(questID)
+	local info = C_QuestLog.GetQuestTagInfo(questID);
+	if info then
+		return info.tagID, info.tagName, QUEST_TAG_ATLAS[info.tagID];
+	end
+
+	return nil, nil, nil;
 end
 
 local QUEST_LEGEND_SEPARATOR = "    ";
@@ -739,14 +761,39 @@ function QuestUtils_GetDisabledQuestDecoration(questID, useLargeIcon)
 end
 
 -- TODO: Replace booleans with flags?
-function QuestUtils_DecorateQuestText(questID, text, useLargeIcon, ignoreReplayable, ignoreDisabled)
-	if not ignoreReplayable and C_QuestLog.IsQuestReplayable(questID) then
-		return QuestUtils_GetReplayQuestDecoration(questID, useLargeIcon) .. text;
-	elseif not ignoreDisabled and C_QuestLog.IsQuestDisabledForSession(questID) then
-		return QuestUtils_GetDisabledQuestDecoration(questID, useLargeIcon) .. text;
+function QuestUtils_DecorateQuestText(questID, text, useLargeIcon, ignoreReplayable, ignoreDisabled, ignoreTypes)
+	if not text then
+		return "";
 	end
 
-	return text;
+	local output = "";
+	if not ignoreReplayable and C_QuestLog.IsQuestReplayable(questID) then
+		output = QuestUtils_GetReplayQuestDecoration(questID, useLargeIcon);
+	elseif not ignoreDisabled and C_QuestLog.IsQuestDisabledForSession(questID) then
+		output = QuestUtils_GetDisabledQuestDecoration(questID, useLargeIcon);
+	end
+
+	if not ignoreTypes then
+		local textureSize = 14;
+		local tagID, tagText, tagAtlas = QuestUtil.GetQuestTypeDetails(questID);
+		if tagID == Enum.QuestTag.Dungeon or tagID == Enum.QuestTag.Raid or tagID == Enum.QuestTag.Raid10 or tagID == Enum.QuestTag.Raid25 then
+			local link = QuestUtils_GetQuestDecorationLink(tagText, questID, tagAtlas, textureSize, textureSize);
+			output = output .. link.. " ";
+		else
+			local skipFormatting = true;
+			local classification, classificationText, classificationAtlas, _size = QuestUtil.GetQuestClassificationDetails(questID, skipFormatting);
+			if classification and classification ~= Enum.QuestClassification.Normal then
+				if classification == Enum.QuestClassification.Campaign then
+					-- deembiggen campaign atlas
+					textureSize = 11;
+				end
+				local link = QuestUtils_GetQuestDecorationLink(classificationText, questID, classificationAtlas, textureSize, textureSize);
+				output = output .. link.. " ";
+			end
+		end
+	end
+
+	return output .. text;
 end
 
 function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style)

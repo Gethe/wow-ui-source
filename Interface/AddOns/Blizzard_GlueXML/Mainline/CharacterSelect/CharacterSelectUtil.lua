@@ -102,7 +102,7 @@ function CharacterSelectUtil.UpdateShowDebugTooltipInfo(state)
 	showDebugTooltipInfo = state;
 end
 
-function CharacterSelectUtil.SetTooltipForCharacterInfo(characterInfo)
+function CharacterSelectUtil.SetTooltipForCharacterInfo(characterInfo, characterID)
 	if not characterInfo then
 		return;
 	end
@@ -125,7 +125,10 @@ function CharacterSelectUtil.SetTooltipForCharacterInfo(characterInfo)
 	local professionName1 = profession1 ~= 0 and GetSkillLineDisplayNameForRace(profession1, raceID) or nil;
 
 	-- Block 4
-	local money = characterInfo.money;
+	local money = realmName == CharacterSelectUtil.GetFormattedCurrentRealmName() and characterInfo.money or 0;
+
+	-- Block 5
+	local hasGearUpdate = characterID and IsRPEBoostEligible(characterID);
 
 	GameTooltip_AddColoredLine(GlueTooltip, name, WHITE_FONT_COLOR);
 	GameTooltip_AddColoredLine(GlueTooltip, CHARACTER_SELECT_REALM_TOOLTIP:format(realmName), GRAY_FONT_COLOR);
@@ -166,6 +169,18 @@ function CharacterSelectUtil.SetTooltipForCharacterInfo(characterInfo)
 		GameTooltip_AddBlankLineToTooltip(GlueTooltip);
 
 		SetTooltipMoney(GlueTooltip, money);
+	end
+
+	-- Add a blank line only if we have populated fields for the next section.
+	if hasGearUpdate then
+		GameTooltip_AddBlankLineToTooltip(GlueTooltip);
+
+		GameTooltip_AddNormalLine(GlueTooltip, RPE_TOOLTIP_LINE1);
+		GameTooltip_AddNormalLine(GlueTooltip, RPE_TOOLTIP_LINE2);
+
+		if realmName ~= CharacterSelectUtil.GetFormattedCurrentRealmName() then
+			GameTooltip_AddErrorLine(GlueTooltip, RPE_TOOLTIP_CHARACTER_ON_DIFFERENT_REALM);
+		end
 	end
 end
 

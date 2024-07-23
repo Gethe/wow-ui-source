@@ -17,7 +17,7 @@ function PhotosensitivityWarningFrameMixin:TryShow()
 	StopGlueMusic();
 	StopGlueAmbience();
 
-	local localizedWarningFrameShowing = SHOW_KOREAN_RATINGS or SHOW_CHINA_AGE_APPROPRIATENESS_WARNING;
+	local localizedWarningFrameShowing = ShouldShowRegulationOverlay();
 	self.lockedByOtherWarning = localizedWarningFrameShowing;
 	self.WarningIcon:SetShown(not localizedWarningFrameShowing);
 	self.WarningTitle:SetShown(not localizedWarningFrameShowing);

@@ -11,8 +11,6 @@ end
 function CommunitiesGuildMemberDetailMixin:OnShow()
 	self:RegisterEvent("GUILD_ROSTER_UPDATE");
 	CommunitiesFrame:RegisterDialogShown(self);
-
-	self:SetupRankDropdown();
 end
 
 function CommunitiesGuildMemberDetailMixin:SetupRankDropdown()
@@ -178,6 +176,8 @@ function CommunitiesGuildMemberDetailMixin:DisplayMember(clubId, memberInfo)
 	
 	self.RemoveButton:SetEnabled(CanGuildRemove() and rankOrder > myRankOrder);
 	self.GroupInviteButton:SetEnabled(memberInfo.lastOnlineHour == nil and not memberInfo.isRemoteChat and memberInfo.presence ~= Enum.ClubMemberPresence.OnlineMobile);
-	
+
+	self:SetupRankDropdown();
+
 	self:Show();
 end

@@ -96,6 +96,11 @@ function CharacterSelectUIMixin:OnEvent(event, ...)
 			GlueDialog_Show("ACCOUNT_CONVERSION_DISPLAY");
 		else
 			GlueDialog_Hide("ACCOUNT_CONVERSION_DISPLAY");
+
+			if CharacterSelect.retrievingCharacters then
+				-- Show the retrieving character list dialog again once conversion is complete if needed.
+				GlueDialog_Show("RETRIEVING_CHARACTER_LIST");
+			end
 		end
 	end
 end
@@ -467,6 +472,6 @@ function CharacterSelectHeaderMixin:SetTooltipAndShow()
 	end
 
 	GlueTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 5, 0);
-	CharacterSelectUtil.SetTooltipForCharacterInfo(self.basicCharacterInfo);
+	CharacterSelectUtil.SetTooltipForCharacterInfo(self.basicCharacterInfo, nil);
 	GlueTooltip:Show();
 end
