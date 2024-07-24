@@ -422,13 +422,10 @@ StaticPopupDialogs["SWAPPING_ENVIRONMENT"] = {
 
 StaticPopupDialogs["ACCOUNT_CONVERSION_DISPLAY"] = {
 	text = ACCOUNT_CONVERSION_IN_PROGRESS,
-	button1 = BACK,
+	button1 = nil,
 	button2 = nil,
 	cover = true,
 	spinner = true,
-	OnAccept = function()
-		C_Login.DisconnectFromServer();
-	end
 }
 
 StaticPopupDialogs["CREATE_CHARACTER_REALM_CONFIRMATION"] = {

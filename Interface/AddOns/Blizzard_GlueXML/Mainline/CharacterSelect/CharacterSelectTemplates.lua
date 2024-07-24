@@ -70,9 +70,11 @@ function CharacterSelectToolTrayMixin:SetToolFrameShown(toolFrame, isEnabled)
 end
 
 function CharacterSelectToolTrayMixin:UpdateLayoutIndices()
+	local anyActiveToolFrames = false;
 	local nextLayoutIndex = 1;
 	for i, toolFrame in ipairs(self.toolFrames) do
 		if toolFrame:IsShown() then
+			anyActiveToolFrames = true;
 			toolFrame.layoutIndex = nextLayoutIndex;
 			nextLayoutIndex = nextLayoutIndex + 1;
 		else
@@ -82,6 +84,7 @@ function CharacterSelectToolTrayMixin:UpdateLayoutIndices()
 
 	self.nextLayoutIndex = nextLayoutIndex;
 	self.Container:MarkDirty();
+	self:SetShown(anyActiveToolFrames);
 end
 
 function CharacterSelectToolTrayMixin:SetExpanded(isExpanded, isUserInput)

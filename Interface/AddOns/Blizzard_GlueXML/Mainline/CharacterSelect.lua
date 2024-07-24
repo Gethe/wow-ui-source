@@ -828,7 +828,8 @@ function CharacterSelect_SelectCharacter(index, noCreate)
         CharSelectEnterWorldButton:SetText(text);
 
 		if characterInfo.boostInProgress == false and (not CharacterServicesFlow_IsShowing() or not CharacterServicesMaster.flow:UsesSelector()) then
-			if IsRPEBoostEligible(selectedCharacterID) and characterInfo.realmName == CharacterSelectUtil.GetFormattedCurrentRealmName() then
+			local currentRealm = GetServerName();
+			if IsRPEBoostEligible(selectedCharacterID) and characterInfo.realmName == currentRealm then
 				BeginCharacterServicesFlow(RPEUpgradeFlow, {});
 				if IsVeteranTrialAccount() then
 					CharSelectServicesFlow_Minimize() --if they need to resubscribe, get the RPE flow out of the way.
