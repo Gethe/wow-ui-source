@@ -873,7 +873,7 @@ function DoesClientThinkTheCharacterIsEligibleForCharacterUpgrade(characterID)
 	local errors = {};
 
 	if characterInfo then
-		local currentRealm = CharacterSelectUtil.GetFormattedCurrentRealmName();
+		local currentRealm = GetServerName();
 		local characterRealm = characterInfo.realmName;
 		CheckAddVASErrorString(errors, BLIZZARD_STORE_VAS_ERROR_CHARACTER_ON_DIFFERENT_REALM_1, currentRealm == characterRealm);
 		CheckAddVASErrorString(errors, BLIZZARD_STORE_VAS_ERROR_CHARACTER_ON_DIFFERENT_REALM_2, currentRealm == characterRealm);
