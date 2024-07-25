@@ -479,7 +479,7 @@ local function Register()
 				local value = index - 1;
 				local label, isPrimary = GetMonitorName(index);
 				if (not label) then 
-					label = string.format(VIDEO_OPTIONS_MONITOR, index);
+					label = string.format(VIDEO_OPTIONS_MONITOR, value);
 				end
 				if (isPrimary) then
 					label = string.format("%s [%s]", label, VIDEO_OPTIONS_MONITOR_PRIMARY);

@@ -269,7 +269,7 @@ function SetItemButtonQuality(button, quality, itemIDOrLink, suppressOverlays, i
 	end
 end
 
-function GetItemQualityColor(quality)
+local function GetButtonOverlayQualityColor(quality)
 	if not quality or not BAG_ITEM_QUALITY_COLORS[quality] then
 		quality = Enum.ItemQuality.Common;
 	end
@@ -290,7 +290,7 @@ function SetItemButtonOverlay(button, itemIDOrLink, quality, isBound)
 		button.IconOverlay:SetAtlas("CosmeticIconFrame");
 		button.IconOverlay:Show();
 	elseif C_Soulbinds.IsItemConduitByItemInfo(itemIDOrLink) then
-		local color = GetItemQualityColor(quality);
+		local color = GetButtonOverlayQualityColor(quality);
 		button.IconOverlay:SetVertexColor(color.r, color.g, color.b);
 		button.IconOverlay:SetAtlas("ConduitIconFrame");
 		button.IconOverlay:Show();
@@ -301,7 +301,7 @@ function SetItemButtonOverlay(button, itemIDOrLink, quality, isBound)
 			button.IconOverlay2:Show();
 		end
 	elseif C_Item.IsCurioItem(itemIDOrLink) then
-		local color = GetItemQualityColor(quality);
+		local color = GetButtonOverlayQualityColor(quality);
 		button.IconOverlay:SetVertexColor(color.r, color.g, color.b);
 		button.IconOverlay:SetAtlas("delves-curios-icon-border");
 		button.IconOverlay:Show();
