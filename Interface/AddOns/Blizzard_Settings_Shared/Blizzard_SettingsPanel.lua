@@ -165,8 +165,8 @@ function SettingsPanelMixin:OnAttributeChanged(name, value)
 	elseif name == SettingsInbound.SetKeybindingsCategoryAttribute then
 		self:SetKeybindingsCategory(value);
 	elseif name == SettingsInbound.CreateAddOnSettingAttribute then
-		local categoryTbl, settingName, variable, variableType, defaultValue = SecureUnpackArgs(value);
-		local setting = CreateAndInitFromMixin(SecureAddOnSettingMixin, settingName, variable, variableType, defaultValue);
+		local categoryTbl, settingName, variable, variableKey, variableTbl, variableType, defaultValue = SecureUnpackArgs(value);
+		local setting = CreateAndInitFromMixin(SecureAddOnSettingMixin, settingName, variable, variableKey, variableTbl, variableType, defaultValue);
 		self:RegisterSetting(categoryTbl, setting);
 		self:SetSecureAttributeResults(setting);
 	elseif name == SettingsInbound.RegisterSettingAttribute then
@@ -187,8 +187,8 @@ function SettingsPanelMixin:OnAttributeChanged(name, value)
 
 		self:SetSecureAttributeResults(initializer);
 	elseif name == SettingsInbound.OnSettingValueChangedAttribute then
-		local setting, newValue, oldValue, originalValue = SecureUnpackArgs(value);
-		self:OnSettingValueChanged(setting, newValue, oldValue, originalValue);
+		local setting, newValue = SecureUnpackArgs(value);
+		self:OnSettingValueChanged(setting, newValue);
 	elseif name == SettingsInbound.RepairDisplayAttribute then
 		self:RepairDisplay();
 	elseif name == SettingsInbound.SetCurrentLayoutAttribute then
@@ -330,18 +330,18 @@ function SettingsPanelMixin:Close(skipTransitionBackToOpeningPanel)
 end
 
 function SettingsPanelMixin:ExitWithoutCommit()
-	local settingsToRevert = {};
+	local settings = {};
 
 	for setting, record in pairs(self.modified) do
 		-- The settings under affect of IgnoreApply flag shouldn't be in the self.modified table after having been applied
 		-- Needs bug investigation
 		if (securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.Revertable) or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.Apply)) and not securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.IgnoreApply) then
 			--store the setting we want to revert and do it outside of this loop so we can avoid any invalid key errors
-			table.insert(settingsToRevert, setting);
+			table.insert(settings, setting);
 		end
 	end
 
-	for i, setting in ipairs(settingsToRevert) do
+	for i, setting in ipairs(settings) do
 		securecallfunction(setting.Revert, setting);
 	end
 
@@ -417,6 +417,7 @@ function SettingsPanelMixin:CommitSettings(unrevertable)
 	local settings = {};
 	for setting, record in pairs(self.modified) do
 		table.insert(settings, setting);
+		setting:LockPendingValue();
 	end
 	SortTableByCommitOrder(settings);
 
@@ -427,7 +428,7 @@ function SettingsPanelMixin:CommitSettings(unrevertable)
 		
 		if not unrevertable then
 			if securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.Revertable) then
-				local originalValue = securecallfunction(setting.GetOriginalValue, setting);
+				local originalValue = securecallfunction(setting.GetValueDerived, setting);
 				table.insert(self.revertableSettings, {setting = setting, originalValue = originalValue});
 			end
 		end
@@ -479,9 +480,9 @@ function SettingsPanelMixin:RevertSettings()
 		gxRestart = gxRestart or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.GxRestart);
 		windowUpdate = windowUpdate or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.UpdateWindow);
 
+		local immediate = true;
 		local originalValue = data.originalValue;
-		securecallfunction(setting.SetValue, setting, originalValue);
-		securecallfunction(setting.Commit, setting);
+		securecallfunction(setting.SetValue, setting, originalValue, immediate);
 	end
 
 	self:WipeModifiedTable();
@@ -792,7 +793,7 @@ function SettingsPanelMixin:GetSetting(variable)
 	return nil;
 end
 
-function SettingsPanelMixin:OnSettingValueChanged(setting, value, oldValue, originalValue)
+function SettingsPanelMixin:OnSettingValueChanged(setting, value)
 	assert(value ~= nil);
 	if not self:IsShown() then
 		return;

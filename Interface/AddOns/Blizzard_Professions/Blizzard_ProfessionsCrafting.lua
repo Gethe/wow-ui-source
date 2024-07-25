@@ -310,6 +310,7 @@ end
 	end);
 
 	FrameUtil.RegisterUpdateFunction(self, .75, GenerateClosure(self.Update, self));
+	self:CheckShowHelptips();
 end
 
 function ProfessionsCraftingPageMixin:OnHide()
@@ -428,7 +429,7 @@ function ProfessionsCraftingPageMixin:GetCraftableCount()
 
 	local function ClampAllocations(allocations)
 		for slotIndex, allocation in allocations:Enumerate() do
-			local quantity = ProfessionsUtil.GetReagentQuantityInPossession(allocation:GetReagent());
+			local quantity = ProfessionsUtil.GetReagentQuantityInPossession(allocation:GetReagent(), transaction:ShouldUseCharacterInventoryOnly());
 			local quantityMax = allocation:GetQuantity();
 			ClampInvervals(quantity, quantityMax);
 		end
@@ -452,7 +453,7 @@ function ProfessionsCraftingPageMixin:GetCraftableCount()
 		for slotIndex, reagents in transaction:EnumerateAllSlotReagents() do
 			if transaction:IsSlotBasicReagentType(slotIndex) then
 				local quantity = AccumulateOp(reagents, function(reagent)
-					return ProfessionsUtil.GetReagentQuantityInPossession(reagent);
+					return ProfessionsUtil.GetReagentQuantityInPossession(reagent, transaction:ShouldUseCharacterInventoryOnly());
 				end);
 
 				local quantityMax = transaction:GetQuantityRequiredInSlot(slotIndex);
@@ -465,7 +466,7 @@ function ProfessionsCraftingPageMixin:GetCraftableCount()
 					local quantity = AccumulateOp(reagents, function(reagent)
 						-- Only include the allocated reagents for modifying-required slots.
 						if transaction:IsReagentAllocated(slotIndex, reagent) then
-							return ProfessionsUtil.GetReagentQuantityInPossession(reagent);
+							return ProfessionsUtil.GetReagentQuantityInPossession(reagent, transaction:ShouldUseCharacterInventoryOnly());
 						end
 						return 0;
 					end);
@@ -528,7 +529,7 @@ function ProfessionsCraftingPageMixin:GetCraftableCount()
 		local enchantItem = transaction:GetEnchantAllocation();
 		if enchantItem then
 			if enchantItem:IsStackable() then
-				local quantity = ItemUtil.GetCraftingReagentCount(enchantItem:GetItemID());
+				local quantity = ItemUtil.GetCraftingReagentCount(enchantItem:GetItemID(), transaction:ShouldUseCharacterInventoryOnly())
 				local quantityMax = 1;
 				ClampInvervals(quantity, quantityMax); 
 			else
@@ -1459,6 +1460,27 @@ function ProfessionsCraftingPageMixin:CheckShowHelptips()
 				bitfieldFlag = LE_FRAME_TUTORIAL_PROFESSIONS_RECRAFT,
 			};
 			RunNextFrame(function() HelpTip:Show(UIParent, helpTipInfo, self.SchematicForm.recraftSlot.InputSlot); end);
+			return;
+		end
+	end
+
+	-- Concentration helptip
+	if not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_CONCENTRATION_CURRENCY) then
+		if self.ConcentrationDisplay:IsVisible() then
+			local helpTipInfo =
+			{
+				text = PROFESSIONS_CRAFTING_CONCENTRATION_HELPTIP,
+				buttonStyle = HelpTip.ButtonStyle.Close,
+				targetPoint = HelpTip.Point.TopEdgeCenter,
+				alignment = HelpTip.Alignment.Center,
+				system = helpTipSystem,
+				acknowledgeOnHide = true,
+				offsetX = 0,
+				onAcknowledgeCallback = function() self:CheckShowHelptips(); end,
+				cvarBitfield = "closedInfoFramesAccountWide",
+				bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_CONCENTRATION_CURRENCY,
+			};
+			RunNextFrame(function() HelpTip:Show(UIParent, helpTipInfo, self.ConcentrationDisplay); end);
 			return;
 		end
 	end

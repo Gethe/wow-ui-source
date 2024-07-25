@@ -240,7 +240,7 @@ local function InitVoiceSettings(category, layout)
 			end
 
 			local defaultValue = GetDefaultOutputDeviceID();
-			local setting = Settings.RegisterProxySetting(category, "PROXY_VOICE_OUTPUT_DEVICE", Settings.DefaultVarLocation,
+			local setting = Settings.RegisterProxySetting(category, "PROXY_VOICE_OUTPUT_DEVICE",
 				Settings.VarType.String, VOICE_CHAT_OUTPUT_DEVICE, defaultValue, GetActiveOutputDeviceID, C_VoiceChat.SetOutputDevice);
 
 			outputInitializer = Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_VOICE_OUTPUT);
@@ -253,7 +253,7 @@ local function InitVoiceSettings(category, layout)
 				return C_VoiceChat.GetOutputVolume() or defaultValue;
 			end
 
-			local setting = Settings.RegisterProxySetting(category, "PROXY_VOICE_OUTPUT_VOLUME", Settings.DefaultVarLocation,
+			local setting = Settings.RegisterProxySetting(category, "PROXY_VOICE_OUTPUT_VOLUME",
 				Settings.VarType.Number, VOICE_CHAT_VOLUME, defaultValue, GetValue, C_VoiceChat.SetOutputVolume);
 
 			local minValue, maxValue, step = 0, VoiceMaxValue, 1;
@@ -276,7 +276,7 @@ local function InitVoiceSettings(category, layout)
 			end
 		
 			local defaultValue = tonumber(GetCVarDefault("VoiceChatMasterVolumeScale"));
-			local setting = Settings.RegisterProxySetting(category, "PROXY_VOICE_DUCKING", Settings.DefaultVarLocation,
+			local setting = Settings.RegisterProxySetting(category, "PROXY_VOICE_DUCKING",
 				Settings.VarType.Number, VOICE_CHAT_DUCKING_SCALE, defaultValue, GetValue, SetValue);
 
 			local minValue, maxValue, step = 0, max, .01;
@@ -300,7 +300,7 @@ local function InitVoiceSettings(category, layout)
 			end
 
 			local defaultValue = GetDefaultInputDeviceID();
-			local setting = Settings.RegisterProxySetting(category, "PROXY_VOICE_INPUT_DEVICE", Settings.DefaultVarLocation, 
+			local setting = Settings.RegisterProxySetting(category, "PROXY_VOICE_INPUT_DEVICE", 
 				Settings.VarType.String, VOICE_CHAT_MIC_DEVICE, defaultValue, GetActiveInputDeviceID, C_VoiceChat.SetInputDevice);
 
 			inputInitializer = Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_VOICE_INPUT);
@@ -309,7 +309,7 @@ local function InitVoiceSettings(category, layout)
 		-- Volume
 		do
 			local defaultValue = tonumber(GetCVarDefault("VoiceInputVolume"));
-			local setting = Settings.RegisterProxySetting(category, "PROXY_VOICE_INPUT_VOLUME", Settings.DefaultVarLocation,
+			local setting = Settings.RegisterProxySetting(category, "PROXY_VOICE_INPUT_VOLUME",
 				Settings.VarType.Number, VOICE_CHAT_MIC_VOLUME, defaultValue, C_VoiceChat.GetInputVolume, C_VoiceChat.SetInputVolume);
 
 			local minValue, maxValue, step = 0, VoiceMaxValue, 1;
@@ -333,7 +333,7 @@ local function InitVoiceSettings(category, layout)
 			end
 
 			local defaultValue = tonumber(GetCVarDefault("VoiceVADSensitivity"));
-			local setting = Settings.RegisterProxySetting(category, "PROXY_VOICE_SENSITIVITY", Settings.DefaultVarLocation,
+			local setting = Settings.RegisterProxySetting(category, "PROXY_VOICE_SENSITIVITY",
 				Settings.VarType.Number, VOICE_CHAT_MIC_SENSITIVITY, defaultValue, GetValue, SetValue);
 
 			local options = Settings.CreateSliderOptions(minValue, maxValue, step);
@@ -365,7 +365,7 @@ local function InitVoiceSettings(category, layout)
 			end
 
 			local defaultValue = Enum.CommunicationMode.PushToTalk;
-			local setting = Settings.RegisterProxySetting(category, "PROXY_VOICE_CHAT_MODE", Settings.DefaultVarLocation,
+			local setting = Settings.RegisterProxySetting(category, "PROXY_VOICE_CHAT_MODE",
 				Settings.VarType.Number, VOICE_CHAT_MODE, defaultValue, C_VoiceChat.GetCommunicationMode, C_VoiceChat.SetCommunicationMode);
 
 			chatModeInitializer = Settings.CreateDropdown(category, setting, GetOptionData, OPTION_TOOLTIP_VOICE_CHAT_MODE);
@@ -526,21 +526,43 @@ local function Register()
 
 		Settings.SetupCVarDropdown(category, "Sound_MaxCacheSizeInBytes", Settings.VarType.Number, GetOptions, AUDIO_CACHE_SIZE, OPTION_TOOLTIP_AUDIO_CACHE_SIZE);
 	end
+	
+	-- Ping System
+	AudioOverrides.CreatePingSoundSettings(category, layout);
 
 	--Voice
 	if not IsOnGlueScreen() then
-		if C_VoiceChat.IsVoiceChatConnected() then
-			InitVoiceSettings(category, layout);
-		else
-			local function ContinueInitVoiceSettings()
-				InitVoiceSettings(category, layout);
-			end
-			EventUtil.ContinueAfterAllEvents(ContinueInitVoiceSettings, "VOICE_CHAT_CONNECTION_SUCCESS", "VOICE_CHAT_VAD_SETTINGS_UPDATED");
-		end
-	end
+		--[[
+		Initializing the voice settings requires the voice proxy process to be initialized first. This process may take 
+		some time to finish, so make multiple attempts over 1 minute.
+		]]--
 
-	-- Ping System
-	AudioOverrides.CreatePingSoundSettings(category, layout);
+		local timerHandle = nil;
+
+		local function TryInitVoiceSettings()
+			if not C_VoiceChat.IsInitialized() then
+				return;
+			end
+
+			-- Voice chat appears initialized, but we still need to be connected.
+			if C_VoiceChat.IsVoiceChatConnected() then
+				InitVoiceSettings(category, layout);
+			else
+				local function ContinueInitVoiceSettings()
+					InitVoiceSettings(category, layout);
+				end
+				EventUtil.ContinueAfterAllEvents(ContinueInitVoiceSettings, "VOICE_CHAT_CONNECTION_SUCCESS", "VOICE_CHAT_VAD_SETTINGS_UPDATED");
+			end
+
+			if timerHandle then
+				timerHandle:Cancel();
+			end
+		end
+
+		local timeSeconds = 5;
+		local iterations = 60 / timeSeconds;
+		timerHandle = C_Timer.NewTicker(timeSeconds, TryInitVoiceSettings, iterations);
+	end
 
 	Settings.RegisterCategory(category, SETTING_GROUP_SYSTEM);
 end

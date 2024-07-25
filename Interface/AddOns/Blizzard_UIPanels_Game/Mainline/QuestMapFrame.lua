@@ -1160,12 +1160,10 @@ function QuestLogScrollFrameMixin:OnLoad()
 
 	self:RegisterCallback("OnVerticalScroll", function(offset)
 		self:UpdateBottomShadow(offset);
-		self:CheckHelpTips(offset);
 	end);
 
 	self:RegisterCallback("OnScrollRangeChanged", function(offset)
 		self:UpdateBottomShadow(offset);
-		self:CheckHelpTips(offset);
 	end);
 
 	self.titleFramePool = CreateFramePool("BUTTON", QuestMapFrame.QuestsFrame.Contents, "QuestLogTitleTemplate", function(framePool, frame)
@@ -1336,44 +1334,6 @@ function QuestLogScrollFrameMixin:UpdateBottomShadow(offset)
 	local delta = self:GetVerticalScrollRange() - self:GetVerticalScroll();
 	local alpha = Clamp(delta/height, 0, 1);
 	shadow:SetAlpha(alpha);
-end
-
-function QuestLogScrollFrameMixin:CheckHelpTips()
-	if GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_CAMPAIGN_LORE_TEXT) then
-		return;
-	end
-
-	-- hide it now, might have to be repositioned if it's showing
-	HelpTip:Hide(QuestScrollFrame, CAMPAIGN_LORE_BUTTON_HELPTIP);
-		
-	if QuestSearcher:IsActive() then
-		return;
-	end
-
-	local campaignHeaders = { };
-	for header in QuestScrollFrame.campaignHeaderFramePool:EnumerateActive() do
-		if header:HasLoreEntries() then
-			table.insert(campaignHeaders, header);
-		end
-	end
-
-	if #campaignHeaders == 0 then
-		return;
-	end
-
-	-- sort the headers, want the helptip on the one closest to the top
-	table.sort(campaignHeaders, function(lhs, rhs)
-		return lhs.questLogIndex < rhs.questLogIndex;
-	end);
-
-	local top = self:GetTop();
-	local bottom = self:GetBottom();
-	for i, header in ipairs(campaignHeaders) do
-		if header:TryShowLoreHelpTip(top, bottom) then
-			-- helptip is showing, we're done
-			return;
-		end
-	end
 end
 
 function QuestLogScrollFrameMixin:ResizeBackground()
@@ -2079,8 +2039,6 @@ function QuestLogQuests_Update()
 	QuestScrollFrame:UpdateBackground(displayState);
 	QuestScrollFrame.Contents:SelectButtonByQuestID(C_SuperTrack.GetSuperTrackedQuestID());
 	QuestScrollFrame.Contents:Layout();
-
-	QuestScrollFrame:CheckHelpTips();
 end
 
 function ToggleQuestLog()

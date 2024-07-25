@@ -402,6 +402,15 @@ local VoiceChat =
 			},
 		},
 		{
+			Name = "IsInitialized",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isInitialized", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsLoggedIn",
 			Type = "Function",
 

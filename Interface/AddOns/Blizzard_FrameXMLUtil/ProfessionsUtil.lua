@@ -76,9 +76,9 @@ function ProfessionsUtil.IsReagentSlotModifyingRequired(reagentSlotSchematic)
 	return reagentSlotSchematic.reagentType == Enum.CraftingReagentType.Modifying and ProfessionsUtil.IsReagentSlotRequired(reagentSlotSchematic);
 end
 
-function ProfessionsUtil.GetReagentQuantityInPossession(reagent)
+function ProfessionsUtil.GetReagentQuantityInPossession(reagent, characterInventoryOnly)
 	if reagent.itemID then
-		return ItemUtil.GetCraftingReagentCount(reagent.itemID);
+		return ItemUtil.GetCraftingReagentCount(reagent.itemID, characterInventoryOnly);
 	elseif reagent.currencyID then
 		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(reagent.currencyID);
 		return currencyInfo.quantity;
@@ -86,8 +86,8 @@ function ProfessionsUtil.GetReagentQuantityInPossession(reagent)
 	assert(false);
 end
 
-function ProfessionsUtil.AccumulateReagentsInPossession(reagents)
+function ProfessionsUtil.AccumulateReagentsInPossession(reagents, characterInventoryOnly)
 	return AccumulateOp(reagents, function(reagent)
-		return ProfessionsUtil.GetReagentQuantityInPossession(reagent);
+		return ProfessionsUtil.GetReagentQuantityInPossession(reagent, characterInventoryOnly);
 	end);
 end

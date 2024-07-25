@@ -473,7 +473,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="NineSlice" inherits="WeeklyRewardsNineSliceTemplate"/>
+			<Frame parentKey="NineSlice" inherits="WeeklyRewardsNineSliceTemplate" frameLevel="2000"/>
 			<ModelScene parentKey="ModelScene" inherits="ScriptAnimatedModelSceneTemplate" setAllPoints="true" drawLayer="BACKGROUND" frameLevel="1500"/>
 			<Frame setAllPoints="true">
 				<Layers>

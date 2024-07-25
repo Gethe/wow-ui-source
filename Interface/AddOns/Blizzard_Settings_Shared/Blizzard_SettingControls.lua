@@ -186,9 +186,7 @@ end
 
 function SettingsListElementInitializer:IsNewTagShown()
 	local setting = self:GetSetting();
-	if setting then
-		return setting:IsNewTagShown();
-	end
+	return setting and IsNewSettingInCurrentVersion(setting:GetVariable());
 end
 
 function SettingsListElementInitializer:SetSettingIntercept(interceptFunction)
@@ -533,7 +531,7 @@ function SettingsDropdownControlMixin:InitDropdown()
 	local options = initializer:GetOptions();
 	local initTooltip = Settings.CreateOptionsInitTooltip(setting, initializer:GetName(), initializer:GetTooltip(), options);
 	self:SetupDropdownMenu(self.Control.Dropdown, setting, options, initTooltip);
-	end
+end
 
 function SettingsDropdownControlMixin:SetupDropdownMenu(button, setting, options, initTooltip)
 	local inserter = Settings.CreateDropdownOptionInserter(options);

@@ -24,3 +24,7 @@ end
 
 --[[ Pin ]]--
 DelveEntrancePinMixin = BaseMapPoiPinMixin:CreateSubPin("PIN_FRAME_LEVEL_DELVE_ENTRANCE");
+
+function DelveEntrancePinMixin:OnAcquired(...) -- override
+	SuperTrackablePoiPinMixin.OnAcquired(self, ...);
+end

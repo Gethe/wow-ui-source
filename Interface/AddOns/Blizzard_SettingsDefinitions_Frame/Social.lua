@@ -19,7 +19,7 @@ local function Register()
 		end
 
 		local defaultValue = false;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_DISABLE_CHAT", Settings.DefaultVarLocation,
+		local setting = Settings.RegisterProxySetting(category, "PROXY_DISABLE_CHAT",
 			Settings.VarType.Boolean, RESTRICT_CHAT_CONFIG_DISABLE, defaultValue, C_SocialRestrictions.IsChatDisabled, SetChatDisabled);
 		local initializer = Settings.CreateCheckbox(category, setting, OPTION_TOOLTIP_DISABLE_CHAT);
 		initializer:SetSettingIntercept(InterceptDisableChatChanged);
@@ -52,7 +52,7 @@ local function Register()
 	-- Block Guild Invites
 	do
 		local defaultValue = false;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_BLOCK_GUILD_INVITES", Settings.DefaultVarLocation,
+		local setting = Settings.RegisterProxySetting(category, "PROXY_BLOCK_GUILD_INVITES",
 			Settings.VarType.Boolean, BLOCK_GUILD_INVITES, defaultValue, GetAutoDeclineGuildInvites, SetAutoDeclineGuildInvites);
 		Settings.CreateCheckbox(category, setting, OPTION_TOOLTIP_BLOCK_GUILD_INVITES);
 	end
@@ -63,7 +63,7 @@ local function Register()
 	-- Display Only Character Achievements
 	if AreAccountAchievementsHidden and ShowAccountAchievements then
 		local defaultValue = false;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_SHOW_ACCOUNT_ACHIEVEMENTS", Settings.DefaultVarLocation,
+		local setting = Settings.RegisterProxySetting(category, "PROXY_SHOW_ACCOUNT_ACHIEVEMENTS",
 			Settings.VarType.Boolean, SHOW_ACCOUNT_ACHIEVEMENTS, defaultValue, AreAccountAchievementsHidden, ShowAccountAchievements);
 		Settings.CreateCheckbox(category, setting, OPTION_TOOLTIP_SHOW_ACCOUNT_ACHIEVEMENTS);
 	end

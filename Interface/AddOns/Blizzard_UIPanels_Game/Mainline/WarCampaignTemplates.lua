@@ -208,7 +208,7 @@ CampaignHeaderCollapsibleMixin = {};
 
 function CampaignHeaderCollapsibleMixin:OnClick(button)
 	local campaign = self:GetCampaign();
-	if campaign:IsContainerCampaign() then		
+	if campaign:IsContainerCampaign() then
 		return;
 	end
 
@@ -259,7 +259,7 @@ function CampaignHeaderTooltipableMixin:ShowTooltip()
 	if campaign:IsContainerCampaign() then
 		return;
 	end
-	
+
 	local tooltip = QuestMapLog_GetCampaignTooltip();
 	tooltip:SetCampaign(campaign);
 	tooltip:ClearAllPoints();
@@ -339,37 +339,10 @@ function CampaignHeaderMixin:HasLoreEntries()
 	return self.hasLoreEntries;
 end
 
-function CampaignHeaderMixin:TryShowLoreHelpTip(boundsTop, boundsBottom)
-	if self.LoreButton:GetTop() > boundsTop then
-		return false;
-	end
-
-	if self.LoreButton:GetBottom() < boundsBottom then
-		return false;
-	end
-
-	local helpTipInfo =
-	{
-		text = CAMPAIGN_LORE_BUTTON_HELPTIP,
-		buttonStyle = HelpTip.ButtonStyle.Close,
-		targetPoint = HelpTip.Point.TopEdgeCenter,
-		cvarBitfield = "closedInfoFrames",
-		bitfieldFlag = LE_FRAME_TUTORIAL_CAMPAIGN_LORE_TEXT,
-		checkCVars = true,
-		callbackArg = self,
-	};
-
-	return HelpTip:Show(QuestScrollFrame, helpTipInfo, self.LoreButton);
-end
-
 function CampaignHeaderMixin:UpdateLoreButtonVisibility()
 	local showLore = self:HasLoreEntries();
 	self.LoreButton:SetShown(showLore);
 	self:SetDrawLayerEnabled("HIGHLIGHT", mouseOver);
-
-	if showLore and self:IsShown() then
-		QuestScrollFrame:CheckHelpTips();
-	end
 end
 
 CampaignHeaderMinimalMixin = CreateFromMixins(CampaignHeaderDisplayMixin);
@@ -428,7 +401,6 @@ end
 function CampaignLoreButtonMixin:OnClick()
 	if self.mode == "overview" then
 		PlaySound(SOUNDKIT.UI_JOURNEYS_OPEN_LORE_BOOK);
-		HelpTip:Acknowledge(QuestScrollFrame, CAMPAIGN_LORE_BUTTON_HELPTIP);
 		EventRegistry:TriggerEvent("QuestLog.ShowCampaignOverview", self:GetParent():GetCampaign():GetID());
 	elseif self.mode == "questlog" then
 		PlaySound(SOUNDKIT.UI_JOURNEYS_CLOSE_LORE_BOOK);

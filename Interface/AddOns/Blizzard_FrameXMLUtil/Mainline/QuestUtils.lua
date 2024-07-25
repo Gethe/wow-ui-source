@@ -817,10 +817,19 @@ function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style)
 	end
 
 	-- currency
+	local mainRewardIsFirstTimeReputationBonus = false;
+	local secondaryRewardsContainFirstTimeRepBonus = false;
 	if not style.atLeastShowAzerite then
-		local numAddedQuestCurrencies, usingCurrencyContainer = QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, tooltip.ItemTooltip);
+		local numAddedQuestCurrencies, usingCurrencyContainer, primaryCurrencyRewardInfo = QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, tooltip.ItemTooltip);
 		if ( numAddedQuestCurrencies > 0 ) then
 			hasAnySingleLineRewards = not usingCurrencyContainer or numAddedQuestCurrencies > 1;
+		end
+
+		if primaryCurrencyRewardInfo then
+			local isFirstTimeReward = primaryCurrencyRewardInfo.questRewardContextFlags and FlagsUtil.IsSet(primaryCurrencyRewardInfo.questRewardContextFlags, Enum.QuestRewardContextFlags.FirstCompletionBonus);
+			mainRewardIsFirstTimeReputationBonus = isFirstTimeReward and (C_CurrencyInfo.GetFactionGrantedByCurrency(primaryCurrencyRewardInfo.currencyID) ~= nil) or false;
+		elseif C_QuestLog.QuestContainsFirstTimeRepBonusForPlayer(questID) then
+			secondaryRewardsContainFirstTimeRepBonus = true;
 		end
 	end
 
@@ -895,6 +904,20 @@ function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style)
 			end
 		end
 	end
+
+	if style.showFirstTimeRepRewardNotice and (mainRewardIsFirstTimeReputationBonus or secondaryRewardsContainFirstTimeRepBonus) then
+		local bestTooltipForLine = tooltip.ItemTooltip:IsShown() and tooltip.ItemTooltip.Tooltip or tooltip;
+		GameTooltip_AddBlankLineToTooltip(bestTooltipForLine);
+
+		local wrapText = false;
+		local noticeText = mainRewardIsFirstTimeReputationBonus and QUEST_REWARDS_IS_ONE_TIME_REP_BONUS or QUEST_REWARDS_CONTAINS_ONE_TIME_REP_BONUS;
+		GameTooltip_AddColoredLine(bestTooltipForLine, noticeText, QUEST_REWARD_CONTEXT_FONT_COLOR, wrapText);
+
+		if bestTooltipForLine == tooltip.ItemTooltip.Tooltip then
+			tooltip.ItemTooltip.Tooltip:Show();
+		end
+	end
+
 	return hasAnySingleLineRewards, showRetrievingData;
 end
 
@@ -909,7 +932,14 @@ function QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, currencyC
 		if firstInstance then
 			uniqueCurrencyIDs[currencyReward.currencyID] = true;
 		end
-		local currencyInfo = { name = currencyReward.name, texture = currencyReward.texture, numItems = currencyReward.totalRewardAmount, currencyID = currencyReward.currencyID, rarity = rarity, firstInstance = firstInstance };
+		local currencyInfo = { name = currencyReward.name,
+							   texture = currencyReward.texture,
+							   numItems = currencyReward.totalRewardAmount,
+							   currencyID = currencyReward.currencyID,
+							   questRewardContextFlags = currencyReward.questRewardContextFlags,
+							   rarity = rarity,
+							   firstInstance = firstInstance,
+							};
 		if(currencyInfo.currencyID ~= ECHOS_OF_NYLOTHA_CURRENCY_ID or #currencyRewards == 1) then
 			tinsert(currencies, currencyInfo);
 		end
@@ -926,6 +956,7 @@ function QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, currencyC
 
 	local addedQuestCurrencies = 0;
 	local alreadyUsedCurrencyContainerId = 0; --In the case of multiple currency containers needing to displayed, we only display the first.
+	local alreadyUsedCurrencyContainerInfo = nil;  --In the case of multiple currency containers needing to displayed, we only display the first.
 	local warModeBonus = C_PvP.GetWarModeRewardBonus();
 
 	for i, currencyInfo in ipairs(currencies) do
@@ -943,6 +974,7 @@ function QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, currencyC
 
 				addedQuestCurrencies = addedQuestCurrencies + 1;
 				alreadyUsedCurrencyContainerId = currencyInfo.currencyID;
+				alreadyUsedCurrencyContainerInfo = currencyInfo;
 			end
 		elseif ( tooltip ) then
 			if( alreadyUsedCurrencyContainerId ~= currencyInfo.currencyID ) then --if there's already a currency container of this same type skip it entirely
@@ -965,7 +997,7 @@ function QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, currencyC
 			end
 		end
 	end
-	return addedQuestCurrencies, alreadyUsedCurrencyContainerId > 0;
+	return addedQuestCurrencies, alreadyUsedCurrencyContainerId > 0, alreadyUsedCurrencyContainerInfo;
 end
 
 function QuestUtils_GetCurrentQuestLineQuest(questLineID)

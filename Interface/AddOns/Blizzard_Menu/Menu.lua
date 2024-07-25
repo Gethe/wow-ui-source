@@ -830,8 +830,22 @@ do
 		return descriptionProxy:GetDefaultResponse(menuInputContext, menuInputButtonName);
 	end
 
+	local function SecureCanSelect(descriptionProxy)
+		return descriptionProxy:CanSelect();
+	end
+
 	function MenuElementDescriptionProxyMixin:Pick(menuInputContext, menuInputButtonName)
-		assert(menuInputContext, "MenuElementDescriptionProxyMixin:Pick() called without an input context.")
+		assert(menuInputContext, "MenuElementDescriptionProxyMixin:Pick() called without an input context.");
+
+		--[[
+		Pick() is not normally callable through a disabled button using the standard menu templates, however we need
+		to account for the case where Pick is called through custom implementations.
+		]]--
+		local canSelect = securecallfunction(SecureCanSelect, self);
+		if not canSelect then
+			return false;
+		end
+
 		--[[
 		If a responder callback is not set, then the menu will not change. Selecting a submenu root should 
 		never cause the menu to close.
@@ -1192,6 +1206,16 @@ function MenuMixin:MeasureFrameExtents()
 	return width, height, totalHeight;
 end
 
+local function SecureGetInset(menuFrame)
+	local inset = menuFrame:GetInset();
+	return inset.left, inset.top, inset.right, inset.bottom;
+end
+
+local function SecureGetChildExtentPadding(menuFrame)
+	local padding = menuFrame:GetChildExtentPadding();
+	return padding.width, padding.height;
+end
+
 function MenuMixin:PerformLayout()
 	--[[ 
 	GetTop() is returning inconsistently between openings despite it's anchor being fixed in space. 
@@ -1231,7 +1255,7 @@ function MenuMixin:PerformLayout()
 	local childMaxWidth, childMaxHeight, childTotalHeight = self:MeasureFrameExtents();
 	
 	-- To avoid cramping, an additional amount of padding can be added.
-	local childPadWidth, childPadHeight = menuFrame:GetChildExtentPadding();
+	local childPadWidth, childPadHeight = securecallfunction(SecureGetChildExtentPadding, menuFrame);
 	childMaxWidth = childMaxWidth + childPadWidth;
 
 	if self.menuDescription:HasGridLayout() then
@@ -1282,7 +1306,7 @@ function MenuMixin:PerformLayout()
 	end
 
 	-- Get the insets so that we can calculate fitting in the interior of the menu.
-	local left, top, right, bottom = menuFrame:GetInset();
+	local left, top, right, bottom = securecallfunction(SecureGetInset, menuFrame);
 
 	--[[
 	Children are assigned a uniform width for cursor hit tests. If either a minimum or maximum menu
@@ -1621,7 +1645,7 @@ function MenuProxyMixin:ClearScrollLayout()
 end
 
 function MenuProxyMixin:InitScrollLayout(childWidth, maxScrollExtent)
-	local left, top, right, bottom = self:GetInset();
+	local left, top, right, bottom = securecallfunction(SecureGetInset, self);
 	local scrollBarWidth = self.ScrollBar:GetWidth();
 	self.ScrollBox:SetPoint("TOPLEFT", left, -top);
 	self.ScrollBox:SetPoint("BOTTOMRIGHT", -(right + scrollBarWidth), bottom);
@@ -1842,6 +1866,11 @@ local function AcquireMenuFrame(menuManager)
 	return menuManager.frameFactory:Create(nil, "MenuTemplateBase", ResetMenu);
 end
 
+local function SecureGenerate(proxy, menuDescription)
+	Mixin(proxy, menuDescription:GetMenuMixin());
+	proxy:Generate();
+end
+
 function MenuManagerMixin:AcquireMenu(params)
 	local menuDescription = params.menuDescription;
 
@@ -1880,8 +1909,7 @@ function MenuManagerMixin:AcquireMenu(params)
 	Important! After this Init() call, all value changes to this frame will be 
 	discarded once this frame is reclaimed.
 	--]]
-	Mixin(proxy, menuDescription:GetMenuMixin());
-	proxy:Generate();
+	securecallfunction(SecureGenerate, proxy, menuDescription);
 
 	local parent = GetAppropriateTopLevelParent();
 
@@ -2123,7 +2151,7 @@ function MenuManagerMixin:GenerateMenuInternal(params)
 		self:LeaveFrame(frame, menu);
 	end
 	
-	menu:Open(menuDescription, OnMouseDown, OnEnter, OnLeave);
+	securecallfunction(menu.Open, menu, menuDescription, OnMouseDown, OnEnter, OnLeave);
 	
 	local proxy = menu:ToProxy();
 
@@ -2168,37 +2196,41 @@ function MenuManagerMixin:GenerateMenuInternal(params)
 	self.menus:Insert(menu);
 	
 	--[[
-	Any scroll controller or SMF under the mouse is disabled once a menu is opened above it.
+	Any scroll controller or SMF under the mouse has scrolling disabled once a menu is opened above it.
 	The region will be renabled once the menu is closed.
 	]]
 	if level == 1 then
-		for index, focus in ipairs(GetMouseFoci()) do
-			if self.disabledScrollRegionData ~= nil then
-				break;
-			end
-
-			local region = focus;
-			while region do
-				if IsScrollController(region) or IsScrollingMessageFrame(region) then
-					region:SetScrollAllowed(false);
-					
-					self.disabledScrollRegionData = 
-					{
-						menu = menu, 
-						region = region,
-					};
-
-					break;
-				end
-
-				region = region:GetParent();
-			end
-		end
+		securecallfunction(self.DisableScrollableRegions, self, menu);
 	end
 
 	securecallfunction(SecureTaggedMenuOpened, menuDescription);
 
 	return menu;
+end
+
+function MenuManagerMixin:DisableScrollableRegions(menu)
+	for index, focus in ipairs(GetMouseFoci()) do
+		if self.disabledScrollRegionData ~= nil then
+			break;
+		end
+
+		local region = focus;
+		while region do
+			if IsScrollController(region) or IsScrollingMessageFrame(region) then
+				region:SetScrollAllowed(false);
+				
+				self.disabledScrollRegionData = 
+				{
+					menu = menu, 
+					region = region,
+				};
+
+				break;
+			end
+
+			region = region:GetParent();
+		end
+	end
 end
 
 function MenuManagerMixin:OpenMenuInternal(params)

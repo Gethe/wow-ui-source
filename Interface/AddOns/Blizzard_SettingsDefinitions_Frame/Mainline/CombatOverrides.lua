@@ -43,15 +43,8 @@ function CombatOverrides.CreateRaidSelfHighlightSetting(category)
 	end
 
 	local defaultValue = 0;
-	local setting = Settings.RegisterProxySetting(category, "PROXY_SELF_HIGHLIGHT", Settings.DefaultVarLocation, 
+	local setting = Settings.RegisterProxySetting(category, "PROXY_SELF_HIGHLIGHT",
 		Settings.VarType.Number, SELF_HIGHLIGHT_OPTION, defaultValue, GetValue, SetValue);
-
-	local function OnSelfHighlightValueChanged()
-		local newValue = GetValue();
-		setting:ReinitializeValue(newValue);
-	end;
-	EventRegistry:RegisterCallback("SelfHighlight.ValueChanged", OnSelfHighlightValueChanged);
-
 	return setting, Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_SELF_HIGHLIGHT);
 end
 
@@ -61,7 +54,7 @@ function CombatOverrides.CreateFloatingCombatTextSetting(category)
 end
 
 function CombatOverrides.CreateOccludedSilhouettePlayerSetting(category)
-	Settings.SetupCVarCheckbox(category, "occludedSilhouettePlayer", SHOW_SILHOUETTE_OPTION, OPTION_TOOLTIP_SHOW_SILHOUETTE);
+	return Settings.SetupCVarCheckbox(category, "occludedSilhouettePlayer", SHOW_SILHOUETTE_OPTION, OPTION_TOOLTIP_SHOW_SILHOUETTE);
 end
 
 function CombatOverrides.AdjustCombatSettings(category)

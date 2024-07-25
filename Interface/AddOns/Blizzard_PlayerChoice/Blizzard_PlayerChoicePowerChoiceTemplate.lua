@@ -1,6 +1,7 @@
 PlayerChoicePowerChoiceTemplateMixin = CreateFromMixins(PlayerChoiceBaseOptionTemplateMixin);
 
 function PlayerChoicePowerChoiceTemplateMixin:OnLoad()
+	PlayerChoiceBaseOptionTemplateMixin.OnLoad(self);
 	self.OptionText:SetUseHTML(false);
 	self.OptionText:SetJustifyH("CENTER");
 	self.OptionButtonsContainer.buttonTemplate = "PlayerChoiceSmallerOptionButtonTemplate";

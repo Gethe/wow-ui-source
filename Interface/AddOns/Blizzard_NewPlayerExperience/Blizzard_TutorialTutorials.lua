@@ -2752,7 +2752,7 @@ end
 Class_MountReceived = class("MountReceived", Class_TutorialBase);
 function Class_MountReceived:OnInitialize()
 	self.questID = TutorialData:GetFactionData().GetMountQuest;
-	self.mountData = TutorialHelper:FilterByRace(TutorialData:GetFactionData().Mounts);
+	self.mountData = TutorialData:GetFactionData().MountData;
 	self.mountID = self.mountData.mountID;
 end
 
@@ -2786,8 +2786,7 @@ function Class_MountReceived:OnBegin()
 end
 
 function Class_MountReceived:CheckHasMountItem()
-	local mountData = TutorialHelper:FilterByRace(TutorialData:GetFactionData().Mounts);
-	local mountItem = mountData.mountItem;
+	local mountItem = self.mountData.mountItem;
 	return TutorialHelper:FindItemInContainer(mountItem);
 end
 
@@ -2806,12 +2805,12 @@ function Class_MountReceived:BagOpened(containerFrame)
 		return;
 	end
 
-	EventRegistry:UnregisterCallback("ContainerFrame.OpenBag", self);
 	local itemFrame = TutorialHelper:GetItemContainerFrame(container, slot)
 	self:ShowPointerTutorial(NPEV2_MOUNT_TUTORIAL_P2_BEGIN, "DOWN", itemFrame, 0, 10, nil, "RIGHT");
 end
 
 function Class_MountReceived:NEW_MOUNT_ADDED(data)
+	EventRegistry:UnregisterCallback("ContainerFrame.OpenBag", self);
 	Dispatcher:UnregisterEvent("NEW_MOUNT_ADDED", self);
 
 	if TutorialHelper:GetActionButtonBySpellID(self.mountData.mountID) then
@@ -2900,7 +2899,7 @@ function Class_AddMountToActionBar:MountJournalShow()
 	if(self.originButton and self.destButton) then
 		TutorialDragButton:Show(self.originButton, self.destButton);
 	end
-	self:ShowPointerTutorial(NPEV2_MOUNT_TUTORIAL_P3, "LEFT", button or MountJournal, 0, 10, nil, "LEFT");
+	self:ShowPointerTutorial(NPEV2_MOUNT_TUTORIAL_P3, "LEFT", self.originButton or MountJournal, 0, 10, nil, "LEFT");
 end
 
 function Class_AddMountToActionBar:MountJournalHide()
@@ -2967,7 +2966,7 @@ function Class_UseMount:OnBegin()
 	Dispatcher:RegisterEvent("ACTIONBAR_UPDATE_USABLE", self);
 	Dispatcher:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
 	Dispatcher:RegisterEvent("QUEST_REMOVED", self);
-	local mountData = TutorialHelper:FilterByRace(TutorialData:GetFactionData().Mounts);
+	local mountData = TutorialData:GetFactionData().MountData;
 	self.mountID = mountData.mountID;
 	self.mountSpellID = mountData.mountSpellID;
 	self:TryUseMount();

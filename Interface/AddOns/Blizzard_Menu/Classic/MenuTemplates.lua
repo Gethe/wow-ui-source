@@ -52,8 +52,18 @@ function MenuStyle1Mixin:Generate()
 	background2:SetDrawLayer(layer, subLevel - 1);
 end
 
-function MenuStyle1Mixin:GetInset()
-	return 12, 7, 12, 7; -- L, T, R, B
+do
+	local inset = 
+	{
+		left = 12, 
+		top = 7, 
+		right = 12,
+		bottom = 7,
+	};
+
+	function MenuStyle1Mixin:GetInset()
+		return inset;
+	end
 end
 
 MenuStyle2Mixin = CreateFromMixins(MenuStyleMixin);
@@ -72,6 +82,16 @@ function MenuStyle2Mixin:Generate()
 	background2:SetDrawLayer(layer, subLevel - 1);
 end
 
-function MenuStyle2Mixin:GetInset()
-	return 14, 14, 14, 14; -- L, T, R, B
+do
+	local inset = 
+	{
+		left = 14, 
+		top = 14, 
+		right = 14,
+		bottom = 14,
+	};
+
+	function MenuStyle2Mixin:GetInset()
+		return inset;
+	end
 end

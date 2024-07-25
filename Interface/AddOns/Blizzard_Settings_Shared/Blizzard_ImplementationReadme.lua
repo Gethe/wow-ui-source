@@ -29,35 +29,37 @@ local subcategory, layout = Settings.RegisterVerticalLayoutSubcategory(category,
 ... setting initializers assigned to layout.
 Settings.RegisterAddOnCategory(subcategory);
 
--- Sample setting creation and registration:
-local myVariableTable = {}; -- Saved in your .toc
+-- basic example:
+... in .toc:
+## SavedVariables: MyAddonSettings
 
--- check box
-local variable, name, tooltip = "MyCheckbox", "My Checkbox", "My Checkbox Tooltip";
-local setting = Settings.RegisterProxySetting(category, variable, myVariableTable, Settings.VarType.Boolean, name, Settings.Default.True);
-Settings.CreateCheckbox(category, setting, tooltip);
+... in Lua:
+MyAddonSettings = {};
 
--- slider
-local variable, name, tooltip = "MySlider", "My Slider", "My Slider Tooltip";
-local minValue, maxValue, step = 1, 100, 1;
-local options = Settings.CreateSliderOptions(minValue, maxValue, step);
-options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right);
+-- This can alternatively be in a frame event handler:
+EventRegistry:RegisterFrameEventAndCallback("VARIABLES_LOADED", function()
+	local category = Settings.RegisterVerticalLayoutCategory("My Addon");
 
-local defaultValue = 50;
-local setting = Settings.RegisterProxySetting(category, variable, myVariableTable, Settings.VarType.Number, name, defaultValue);
-Settings.CreateSlider(category, setting, options, tooltip);
+	local name = "Logging Enabled";
+	local variable = "MyAddonLoggingEnabled";
+	local variableKey = "isLogging";
+	local variableTbl = MyAddonSettings;
+	local variableType = Settings.VarType.Boolean;
+	local defaultValue = Settings.Default.True;
+	local isLoggingSetting = Settings.RegisterAddOnSetting(category, name, variable, variableKey, variableTbl, variableType, defaultValue);
 
--- dropdown
-local variable, name, tooltip = "MyDropdown", "My Dropdown", "My Dropdown Tooltip";
-local function GetOptions()
-    local container = Settings.CreateControlTextContainer();
-    container:Add(0, "Option A");
-    container:Add(1, "Option B");
-    container:Add(2, "Option C");
-    return container:GetData();
-end
+	-- At this point, the setting will have the value from your variable table.
 
-local defaultValue = 0;
-local setting = Settings.RegisterProxySetting(category, variable, myVariableTable, Settings.VarType.Number, name, defaultValue);
-Settings.CreateDropdown(category, setting, GetOptions, tooltip);
+	-- Setup the addon with the current value
+	local isLoggingEnabled = setting:GetValue();
+	SetLoggingEnabled(isLoggingEnabled);
+
+	-- Setup a callback for when this value changes
+	isLoggingSetting:SetOnValueChangedCallback(function(setting, value)
+		SetLoggingEnabled(value);
+	end);
+
+	Settings.CreateCheckbox(category, isLoggingSetting);
+	Settings.RegisterAddOnCategory(category);
+end);
 ]]--

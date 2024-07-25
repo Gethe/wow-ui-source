@@ -220,70 +220,6 @@ function CharacterSelectListCharacterMixin:SetData(elementData, inGroup)
 	self:SetScript("OnDoubleClick", CharacterSelectListCharacterMixin.OnDoubleClick);
 	self:SetScript("OnEnter", CharacterSelectListCharacterMixin.OnEnter);
 	self:SetScript("OnLeave", CharacterSelectListCharacterMixin.OnLeave);
-
-	-- Status text setup.
-	local function StatusTextOnMouseUp(button, upInside)
-		if CharacterSelectCharacterFrame.ScrollBox.dragBehavior:GetDragging() then
-			return;
-		end
-
-		if button == "LeftButton" and upInside then
-			if not self.InnerContent.isEnabled then
-				return;
-			end
-
-			self:OnClick();
-		end
-	end
-
-	local function StatusTextOnEnter()
-		if CharacterSelectCharacterFrame.ScrollBox.dragBehavior:GetDragging() then
-			return;
-		end
-
-		if not self.InnerContent.isEnabled then
-			return;
-		end
-
-		self.InnerContent:OnEnter(self:IsSelected());
-
-		if IsRPEBoostEligible(self:GetCharacterID()) then
-			local tooltip = GlueTooltip;
-			tooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", -12, 95);
-			GameTooltip_AddNormalLine(tooltip, RPE_TOOLTIP_LINE1);
-			GameTooltip_AddNormalLine(tooltip, RPE_TOOLTIP_LINE2);
-
-			if self.characterInfo.realmName ~= CharacterSelectUtil.GetFormattedCurrentRealmName() then
-				GameTooltip_AddErrorLine(tooltip, RPE_TOOLTIP_CHARACTER_ON_DIFFERENT_REALM);
-			end
-
-			tooltip:Show();
-		else
-			self:SetTooltipAndShow();
-		end
-	end
-
-	local function StatusTextOnLeave()
-		if CharacterSelectCharacterFrame.ScrollBox.dragBehavior:GetDragging() then
-			return;
-		end
-
-		GlueTooltip:Hide();
-
-		if not self.InnerContent.isEnabled then
-			return;
-		end
-
-		self.InnerContent:UnlockHighlight();
-		if not self.InnerContent:IsMouseMotionFocus() then
-			self.InnerContent:OnLeave(self:IsSelected());
-		end
-	end
-
-	-- Makes sure any overrides from VAS updates via CharacterServicesCharacterSelectorMixin are properly reset.
-	self.InnerContent.Text.Status:SetScript("OnMouseUp", StatusTextOnMouseUp);
-	self.InnerContent.Text.Status:SetScript("OnEnter", StatusTextOnEnter);
-	self.InnerContent.Text.Status:SetScript("OnLeave", StatusTextOnLeave);
 end
 
 function CharacterSelectListCharacterMixin:GetCharacterID()
@@ -435,7 +371,7 @@ function CharacterSelectListCharacterMixin:SetTooltipAndShow()
 	if self:GetCharacterIsVeteranLocked() and CharSelectAccountUpgradeButton:IsEnabled() then
 		GlueTooltip:SetText(CHARSELECT_CHAR_LIMITED_TOOLTIP, nil, nil, nil, nil, true);
 	else
-		CharacterSelectUtil.SetTooltipForCharacterInfo(self.characterInfo);
+		CharacterSelectUtil.SetTooltipForCharacterInfo(self.characterInfo, self:GetCharacterID());
 	end
 	GlueTooltip:Show();
 end
@@ -579,11 +515,6 @@ function CharacterSelectListCharacterInnerContentMixin:OnLeave(isSelected)
 	else
 		self.Highlight:Hide();
 		self.FactionEmblemHighlight:Hide();
-	end
-
-	if self.Text.Status:IsMouseMotionFocus() then
-		self:LockHighlight();
-		return;
 	end
 
 	if not isMouseOverMoveButton then

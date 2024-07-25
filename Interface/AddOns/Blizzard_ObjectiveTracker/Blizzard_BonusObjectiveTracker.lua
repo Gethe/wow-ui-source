@@ -426,9 +426,8 @@ function BonusObjectiveTrackerMixin:AddQuest(questID, isTrackedWorldQuest)
 	local isWorldQuest = self.showWorldQuests;
 	local isInArea, isOnMap, numObjectives, taskName, displayAsObjective = GetTaskInfo(questID);
 	local treatAsInArea = isTrackedWorldQuest or isInArea;
-	-- show task if we're in the area or on the same map and we were displaying it before
-	local existingTask = self:GetExistingBlock(questID);
-	if numObjectives and (treatAsInArea or (isOnMap and existingTask)) and questID ~= ObjectiveTrackerTopBannerFrame:GetQuestID() then
+	-- show task if we're in the area and it's not being toasted
+	if numObjectives and treatAsInArea and questID ~= ObjectiveTrackerTopBannerFrame:GetQuestID() then
 		if displayAsObjective and not self.showWorldQuests then
 			self.headerText = TRACKER_HEADER_OBJECTIVE;
 		end

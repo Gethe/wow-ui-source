@@ -518,6 +518,16 @@ local CraftingOrderUI =
 			Type = "Event",
 			LiteralName = "CRAFTINGORDERS_UPDATE_PERSONAL_ORDER_COUNTS",
 		},
+		{
+			Name = "CraftingordersUpdateRewards",
+			Type = "Event",
+			LiteralName = "CRAFTINGORDERS_UPDATE_REWARDS",
+			Payload =
+			{
+				{ Name = "npcOrderRewards", Type = "table", InnerType = "CraftingOrderRewardInfo", Nilable = false },
+				{ Name = "orderID", Type = "BigUInteger", Nilable = false },
+			},
+		},
 	},
 
 	Tables =

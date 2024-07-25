@@ -59,7 +59,18 @@ local headerTextureKitRegions = {
 	Ribbon = "UI-Frame-%s-Ribbon",
 };
 
-local HEADER_TEXT_AREA_WIDTH = 195;
+local customHeaderInfo = {
+	thewarwithin = {
+		textAreaWidth = 160,
+	},
+};
+
+local DEFAULT_HEADER_TEXT_AREA_WIDTH = 195;
+
+function PlayerChoiceNormalOptionTemplateMixin:GetOptionHeaderTextAreaWidth()
+	local customInfo = customHeaderInfo[self:GetTextureKit()];
+	return customInfo and customInfo.textAreaWidth or DEFAULT_HEADER_TEXT_AREA_WIDTH;
+end
 
 function PlayerChoiceNormalOptionTemplateMixin:SetupHeader()
 	if self.optionInfo.header and self.optionInfo.header ~= "" then
@@ -69,10 +80,10 @@ function PlayerChoiceNormalOptionTemplateMixin:SetupHeader()
 		if self.optionInfo.headerIconAtlasElement then
 			self.Header.Contents.Icon:SetAtlas(self.optionInfo.headerIconAtlasElement, true);
 			self.Header.Contents.Icon:Show();
-			self.Header.Contents.Text:SetWidth(HEADER_TEXT_AREA_WIDTH - (self.Header.Contents.Icon:GetWidth() + self.Header.Contents.spacing));
+			self.Header.Contents.Text:SetWidth(self:GetOptionHeaderTextAreaWidth() - (self.Header.Contents.Icon:GetWidth() + self.Header.Contents.spacing));
 		else
 			self.Header.Contents.Icon:Hide();
-			self.Header.Contents.Text:SetWidth(HEADER_TEXT_AREA_WIDTH);
+			self.Header.Contents.Text:SetWidth(self:GetOptionHeaderTextAreaWidth());
 		end
 
 		self.Header.Contents.Text:SetText(self.optionInfo.header);

@@ -1,6 +1,10 @@
 PlayerChoiceBaseOptionTemplateMixin = {};
 
 function PlayerChoiceBaseOptionTemplateMixin:OnLoad()
+	if self.Layout then
+		-- If this is a LayoutFrame call Layout to ensure initial anchors are set up
+		self:Layout()
+	end
 end
 
 function PlayerChoiceBaseOptionTemplateMixin:OnShow()

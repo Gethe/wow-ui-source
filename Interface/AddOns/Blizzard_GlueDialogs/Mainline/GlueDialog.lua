@@ -776,6 +776,10 @@ function GlueDialog_Hide(which, text)
 	return true;
 end
 
+function GlueDialog_GetVisible()
+	return GlueDialog.which;
+end
+
 function GlueDialog_OnLoad(self)
 	GlueDialogText.origWidth = GlueDialogText:GetWidth();
 	GlueDialogBackground.origWidth = GlueDialogBackground:GetWidth();

@@ -17,7 +17,7 @@ function ProfessionsQualityDialogMixin:OnLoad()
 	end
 	
 	local function Allocate(qualityIndex, value)
-		value = math.min(value, ProfessionsUtil.GetReagentQuantityInPossession(self:GetReagent(qualityIndex)));
+		value = math.min(value, ProfessionsUtil.GetReagentQuantityInPossession(self:GetReagent(qualityIndex), self.characterInventoryOnly));
 
 		self.allocations:Allocate(self:GetReagent(qualityIndex), value);
 		
@@ -128,12 +128,13 @@ function ProfessionsQualityDialogMixin:GetReagentSlotCount()
 	return #self.reagentSlotSchematic.reagents;
 end
 
-function ProfessionsQualityDialogMixin:Init(recipeID, reagentSlotSchematic, allocations, slotIndex, disallowZeroAllocations)
+function ProfessionsQualityDialogMixin:Init(recipeID, reagentSlotSchematic, allocations, slotIndex, disallowZeroAllocations, characterInventoryOnly)
 	self.reagentSlotSchematic = reagentSlotSchematic;
 	self.recipeID = recipeID;
 	self.slotIndex = slotIndex;
 	self.allocations = allocations;
 	self.disallowZeroAllocations = disallowZeroAllocations;
+	self.characterInventoryOnly = characterInventoryOnly;
 
 	self:Setup();
 end
@@ -157,7 +158,7 @@ function ProfessionsQualityDialogMixin:Setup()
 		local quantity = self:GetQuantityAllocated(qualityIndex);
 		editBox:SetText(quantity);
 
-		local count = ProfessionsUtil.GetReagentQuantityInPossession(reagent);
+		local count = ProfessionsUtil.GetReagentQuantityInPossession(reagent, self.characterInventoryOnly);
 		button:SetItemButtonCount(count);
 
 		local enabled = count > 0;
@@ -172,8 +173,8 @@ function ProfessionsQualityDialogMixin:GetSlotIndex()
 	return self.slotIndex;
 end
 
-function ProfessionsQualityDialogMixin:Open(recipeID, reagentSlotSchematic, allocations, slotIndex, disallowZeroAllocations)
-	self:Init(recipeID, reagentSlotSchematic, allocations, slotIndex, disallowZeroAllocations);
+function ProfessionsQualityDialogMixin:Open(recipeID, reagentSlotSchematic, allocations, slotIndex, disallowZeroAllocations, characterInventoryOnly)
+	self:Init(recipeID, reagentSlotSchematic, allocations, slotIndex, disallowZeroAllocations, characterInventoryOnly);
 	self:Show();
 end
 
@@ -200,7 +201,7 @@ function ProfessionsQualityDialogMixin:EvaluateAllocations()
 	for qualityIndex, reagent in ipairs(self.reagentSlotSchematic.reagents) do
 		local container = self.containers[qualityIndex];
 		local editBox = container.EditBox;
-		editBox:SetMinMaxValues(0, math.min(self:GetQuantityRequired(), ProfessionsUtil.GetReagentQuantityInPossession(reagent)));
+		editBox:SetMinMaxValues(0, math.min(self:GetQuantityRequired(), ProfessionsUtil.GetReagentQuantityInPossession(reagent, self.characterInventoryOnly)));
 	end
 
 	local canEnable = not self.disallowZeroAllocations and quantityAllocated == 0;

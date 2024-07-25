@@ -48,6 +48,7 @@ local ActivitiesCategoryData = {
   {Atlas = "poi-hub",                  Name = MAP_LEGEND_HUB,       Tooltip = MAP_LEGEND_HUB_TOOLTIP,       TemplateNames = {"QuestHubPinTemplate"}},
   {Atlas = "ArchBlob",                 Name = MAP_LEGEND_DIGSITE,   Tooltip = MAP_LEGEND_DIGSITE_TOOLTIP,   TemplateNames = {"DigSitePinTemplate"}},
   {Atlas = "WildBattlePetCapturable", fixedWidth = 28, fixedHeight = 28, Name = MAP_LEGEND_PETBATTLE, Tooltip = MAP_LEGEND_PETBATTLE_TOOLTIP, TemplateNames = {"PetTamerPinTemplate"}},
+  {Atlas = "delves-regular",		   Name = MAP_LEGEND_DELVE,		Tooltip = MAP_LEGEND_DELVE_TOOLTIP,		TemplateNames = {"DelveEntrancePinTemplate", "AreaPOIPinTemplate"}, MetaData = {AtlasPrefix="delves-"}},	
 };
 
 local MovementCategoryData = {
@@ -98,7 +99,8 @@ MapLegendButtonMixin = { };
 function MapLegendButtonMixin:OnEnter()
 	local tooltip = GetAppropriateTooltip();
 	tooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
-	GameTooltip_SetTitle(tooltip, self.tooltipText);
+	GameTooltip_SetTitle(tooltip, self.nameText);
+	GameTooltip_AddNormalLine(tooltip, self.tooltipText);
 	tooltip:Show();
 	self:HighlightMapPins();
 end
@@ -120,6 +122,7 @@ function MapLegendButtonMixin:InitilizeButton(buttonInfo, index)
 	end
 	self:SetText(buttonInfo.Name);
 	self:Show();
+	self.nameText = buttonInfo.Name;
 	self.layoutIndex = index;
 	self.tooltipText = buttonInfo.Tooltip;
 	self.templates = buttonInfo.TemplateNames;

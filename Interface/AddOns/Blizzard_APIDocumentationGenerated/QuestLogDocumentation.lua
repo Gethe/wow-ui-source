@@ -1021,6 +1021,20 @@ local QuestLog =
 			},
 		},
 		{
+			Name = "QuestContainsFirstTimeRepBonusForPlayer",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "questContainsFirstTimeRepBonusForPlayer", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "QuestHasQuestSessionBonus",
 			Type = "Function",
 

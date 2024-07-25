@@ -1,9 +1,19 @@
 MenuTemplates = {};
 
-local function CheckSecure()
-	if MenuConstants.PrintSecure and (not IsPublicBuild()) then
-		UIErrorsFrame:AddMessage("Secure: "..tostring(issecure()));
+--[[
+Secure print for debugging purposes only. Remember to comment out the call to DebugPrintSecure
+before committing.
+]]
+local function DebugShouldPrint()
+	return MenuConstants.PrintSecure;
+end
+
+local function DebugPrintSecure()
+	if IsPublicBuild() or (not securecallfunction(DebugShouldPrint)) then
+		return;
 	end
+
+	UIErrorsFrame:AddMessage("Secure: "..tostring(issecure()));
 end
 
 local function CreateMenuElementDescription(template, initializer, data)
@@ -62,7 +72,8 @@ local function OnButtonClick(button, buttonName)
 	end
 
 	description:Pick(MenuInputContext.MouseButton, buttonName);
-	securecallfunction(CheckSecure);
+	
+	--securecallfunction(DebugPrintSecure);
 end
 
 local function ShowHighlight(button, description)
@@ -735,13 +746,30 @@ function MenuStyleMixin:Generate()
 	texture:SetColorTexture(r, g, b, .5);
 end
 
-function MenuStyleMixin:GetInset()
-	return 0,0,0,0; -- L, T, R, B
+do
+	local inset = 
+	{
+		left = 0, 
+		top = 0, 
+		right = 0,
+		bottom = 0,
+	};
+
+	function MenuStyleMixin:GetInset()
+		return inset;
+	end
 end
 
--- Increases the effective width of every child.
-function MenuStyleMixin:GetChildExtentPadding()
-	return 0, 0;
+do
+	local padding = 
+	{
+		width = 0, 
+		height = 0, 
+	};
+
+	function MenuStyleMixin:GetChildExtentPadding()
+		return padding;
+	end
 end
 
 -- Test purposes only.
@@ -774,8 +802,18 @@ function MenuStyle2Mixin:Generate()
 	background:SetPoint("BOTTOMRIGHT", 17, -22);
 end
 
-function MenuStyle2Mixin:GetInset()
-	return 3, 6, 3, 7; -- L, T, R, B
+do
+	local inset = 
+	{
+		left = 3, 
+		top = 6, 
+		right = 3,
+		bottom = 7,
+	};
+
+	function MenuStyle2Mixin:GetInset()
+		return inset;
+	end
 end
 
 -- Accompanies the style of WowStyle2Dropdown

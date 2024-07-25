@@ -88,7 +88,7 @@ local function Register()
 		end
 
 		local defaultValue = 2;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_NPC_NAMES", Settings.DefaultVarLocation,
+		local setting = Settings.RegisterProxySetting(category, "PROXY_NPC_NAMES",
 			Settings.VarType.Number, SHOW_NPC_NAMES, defaultValue, GetValue, SetValue);
 		Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_NPC_NAMES_DROPDOWN);
 	end);
@@ -277,7 +277,7 @@ local function Register()
 		end
 
 		local defaultValue = 4;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_STATUS_TEXT", Settings.DefaultVarLocation, 
+		local setting = Settings.RegisterProxySetting(category, "PROXY_STATUS_TEXT",
 			Settings.VarType.Number, STATUSTEXT_LABEL, defaultValue, GetValue, SetValue);
 		Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_STATUS_TEXT_DISPLAY);
 	end
@@ -319,7 +319,7 @@ local function Register()
 		end
 
 		local defaultValue = 1;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_CHAT_BUBBLES", Settings.DefaultVarLocation, 
+		local setting = Settings.RegisterProxySetting(category, "PROXY_CHAT_BUBBLES",
 			Settings.VarType.Number, CHAT_BUBBLES_TEXT, defaultValue, GetValue, SetValue);
 		Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_CHAT_BUBBLES);
 	end
@@ -356,7 +356,7 @@ local function Register()
 			return not C_Minimap.IsFilteredOut(Enum.MinimapTrackingFilter.AccountCompletedQuests);
 		end
 
-		local accountCompletedQuestFilterSetting = Settings.RegisterProxySetting(category, "PROXY_ACCOUNT_COMPLETED_QUEST_FILTERING", Settings.DefaultVarLocation, 
+		local accountCompletedQuestFilterSetting = Settings.RegisterProxySetting(category, "PROXY_ACCOUNT_COMPLETED_QUEST_FILTERING",
 			Settings.VarType.Boolean, SETTINGS_ACCOUNT_COMPLETED_QUEST_FILTER, Settings.Default.False, IsTrackingAccountCompletedQuests, SetAccountCompletedQuestTracking);
 		Settings.CreateCheckbox(category, accountCompletedQuestFilterSetting, ACCOUNT_COMPLETED_QUESTS_FILTER_DESCRIPTION);
 
@@ -369,7 +369,7 @@ local function Register()
 			return not C_Minimap.IsFilteredOut(Enum.MinimapTrackingFilter.TrivialQuests);
 		end
 
-		local trivialQuestFilterSetting = Settings.RegisterProxySetting(category, "PROXY_TRIVIAL_QUEST_FILTERING", Settings.DefaultVarLocation, 
+		local trivialQuestFilterSetting = Settings.RegisterProxySetting(category, "PROXY_TRIVIAL_QUEST_FILTERING",
 			Settings.VarType.Boolean, SETTINGS_TRIVIAL_QUEST_FILTER, Settings.Default.False, IsTrackingTrivialQuests, SetTrivialQuestTracking);
 		Settings.CreateCheckbox(category, trivialQuestFilterSetting);
 	end

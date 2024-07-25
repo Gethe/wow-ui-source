@@ -139,14 +139,21 @@ Creates a context menu at the cursor. The region provided will inform the menu t
 becomes hidden. If no region is provided, then an explicit mouse press or ESC press will
 be required to close it.
 ]]
+
+local function SecureGetMenuMixin(ownerRegion)
+	-- An addon may choose to override GetDefaultContextMenuMixin, though the implications that has on
+	-- forbidden frames aren't clear yet.
+	return ownerRegion.menuMixin or MenuVariants.GetDefaultContextMenuMixin();
+end
+
 function MenuUtil.CreateContextMenu(ownerRegion, generator, ...)
 	if not ownerRegion then
 		ownerRegion = GetAppropriateTopLevelParent();
 	end
 
-	local menuMixin = ownerRegion.menuMixin or MenuVariants.GetDefaultContextMenuMixin();
+	local menuMixin = securecallfunction(SecureGetMenuMixin, ownerRegion);
 	local elementDescription = MenuUtil.CreateRootMenuDescription(menuMixin);
-	
+
 	Menu.PopulateDescription(generator, ownerRegion, elementDescription, ...);
 
 	local menu = Menu.GetManager():OpenContextMenu(ownerRegion, elementDescription);

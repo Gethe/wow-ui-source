@@ -298,7 +298,7 @@ function ProfessionsRecipeTransactionMixin:SanitizeAllocationsInternal(index, al
 			-- because it currently represents a "no change" operation.
 
 			if not self:IsModificationAllocated(reagent, index) and self:IsReagentSanizationExempt(reagent) then
-				local owned = ProfessionsUtil.GetReagentQuantityInPossession(reagent);
+				local owned = ProfessionsUtil.GetReagentQuantityInPossession(reagent, self.useCharacterInventoryOnly);
 				local quantity = allocs:GetQuantity();
 				if owned < quantity then
 					valid = false;
@@ -716,6 +716,14 @@ function ProfessionsRecipeTransactionMixin:SetApplyConcentration(applyConcentrat
 		-- Update toggle button state
 		self:OnChanged();
 	end
+end
+
+function ProfessionsRecipeTransactionMixin:SetUseCharacterInventoryOnly(useCharacterInventoryOnly)
+	self.useCharacterInventoryOnly = useCharacterInventoryOnly;
+end
+
+function ProfessionsRecipeTransactionMixin:ShouldUseCharacterInventoryOnly()
+	return self.useCharacterInventoryOnly;
 end
 
 function CreateProfessionsRecipeTransaction(recipeSchematic)

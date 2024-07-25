@@ -1,6 +1,7 @@
 -- Season/reward data
-local MIN_REP_RANK_FOR_REWARDS = 2;
-local MAX_REP_RANK_FOR_REWARDS = 11;
+local MIN_REP_RANK_FOR_REWARDS = 1;
+local MIN_REP_THRESHOLD_BAR_VALUE = MIN_REP_RANK_FOR_REWARDS - 1;
+local MAX_REP_RANK_FOR_REWARDS = 10;
 local MAX_NUM_REWARDS = 10;
 local DELVES_SEASON_RENOWN_CVAR = "lastRenownForDelvesSeason";
 local REPUTATION_UPDATE_TIMEOUT_SECONDS = 0.2; -- 200ms
@@ -63,15 +64,15 @@ function DelvesDashboardFrameMixin:SetThresholds()
 	self.shouldPlayAnims = thresholdValue > oldThresholdValue;
 	SetCVar(DELVES_SEASON_RENOWN_CVAR, thresholdValue);
 
-	self.ThresholdBar:SetMinMaxValues(1, MAX_REP_RANK_FOR_REWARDS);
+	self.ThresholdBar:SetMinMaxValues(MIN_REP_THRESHOLD_BAR_VALUE, MAX_REP_RANK_FOR_REWARDS);
 	self.ThresholdBar:SetValue(thresholdValueForBar);
-	self.ThresholdBar.BarEnd:SetShown(self.ThresholdBar:GetValue() > 1);
+	self.ThresholdBar.BarEnd:SetShown(self.ThresholdBar:GetValue() >= MIN_REP_RANK_FOR_REWARDS);
 
 	if not self.thresholdFrames then
 		self.thresholdFrames = {};
 	end
 
-	local currentThreshold = 2;
+	local currentThreshold = MIN_REP_RANK_FOR_REWARDS;
 	for i, thresholdInfo in pairs(self.rewardsInfo) do
 		local thresholdName = "Threshold" .. currentThreshold;
 		local thresholdFrame = self.ThresholdBar[thresholdName];
@@ -410,4 +411,20 @@ function GreatVaultButtonMixin:OnMouseUp(...)
 	end
 
 	WeeklyRewardMixin.OnMouseUp(self, ...);
+end
+
+DelvesDashboardButtonPanelFrameMixin = {};
+
+function DelvesDashboardButtonPanelFrameMixin:OnEnter()
+	if self.PanelDescription:IsTruncated() then
+		GameTooltip:SetOwner(self.PanelDescription, "ANCHOR_RIGHT");
+		GameTooltip_AddNormalLine(GameTooltip, self.PanelDescription:GetText());
+		GameTooltip:Show();
+	end
+end
+
+function DelvesDashboardButtonPanelFrameMixin:OnLeave()
+	if GameTooltip:GetOwner() == self.PanelDescription then
+		GameTooltip:Hide();
+	end
 end

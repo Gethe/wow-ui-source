@@ -194,7 +194,7 @@ function ProfessionsCraftingOrderPageMixin:InitRecipeList()
 		self:RequestOrders(selectedRecipe, searchFavorites, initialNonPublicSearch);
 	end
 
-	Professions.InitFilterMenu(self.BrowseFrame.RecipeList.FilterDropdown, OnFilterDefault, OnFilterUpdate, ignoreSkillLine);
+	Professions.InitFilterMenu(self.BrowseFrame.RecipeList.FilterDropdown, OnFilterUpdate, OnFilterDefault, ignoreSkillLine);
 
 	local function OnDataRangeChanged(sortPending, indexBegin, indexEnd)
 		if (not self.expectMoreRows) or (self.requestCallback ~= nil) or (not self.numOrders) then
@@ -408,7 +408,8 @@ function ProfessionsCraftingOrderPageMixin:StartDefaultSearch()
 	elseif self.orderType ~= Enum.CraftingOrderType.Public then
 		local selectedSkillLineAbility = nil;
 		local searchFavorites = false;
-		local initialNonPublicSearch = true;
+		-- Filters are only applied if initialNonPublicSearch is set to false, so only set it to true if using default filters.
+		local initialNonPublicSearch = Professions.IsUsingDefaultFilters(ignoreSkillLine); 
 		self:RequestOrders(selectedSkillLineAbility, searchFavorites, initialNonPublicSearch);
 	elseif C_TradeSkillUI.HasFavoriteOrderRecipes() then
 		local selectedRecipe = nil;

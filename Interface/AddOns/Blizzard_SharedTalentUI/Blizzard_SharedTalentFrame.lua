@@ -1625,8 +1625,14 @@ function TalentFrameBaseMixin:AddConditionsToTooltip(tooltip, conditionIDs, shou
 
 	local bestGateConditionID = nil;
 	local bestGateSpentRequired = nil;
+	local typesWithAnySufficientConditionMet = {};
+
 	for i, conditionID in ipairs(conditionIDs) do
 		local condInfo = self:GetAndCacheCondInfo(conditionID);
+		if condInfo.isSufficient and condInfo.isMet then
+			table.insert(typesWithAnySufficientConditionMet, condInfo.type);
+		end
+
 		if condInfo.isGate then
 			if not bestGateConditionID or (condInfo.spentAmountRequired > bestGateSpentRequired) then
 				bestGateConditionID = conditionID;
@@ -1635,10 +1641,28 @@ function TalentFrameBaseMixin:AddConditionsToTooltip(tooltip, conditionIDs, shou
 		end
 	end
 
+	local function ShouldDisplayTooltip(conditionID, condInfo)
+		if not condInfo.tooltipText then
+			return false;
+		end
+
+		-- Don't display tooltips for unmet conditions if at least one sufficent condition of that type has been met.
+		if not condInfo.isMet and tContains(typesWithAnySufficientConditionMet, condInfo.type) then
+			return false;
+		end
+
+		-- Only show the tooltip for the best gated condition.
+		if condInfo.isGate and conditionID ~= bestGateConditionID then
+			return false;
+		end
+
+		return true;
+	end
+
 	local addedAny = false;
 	for i, conditionID in ipairs(conditionIDs) do
 		local condInfo = self:GetAndCacheCondInfo(conditionID);
-		if condInfo.tooltipText and (not condInfo.isGate or (conditionID == bestGateConditionID)) then
+		if ShouldDisplayTooltip(conditionID, condInfo) then
 			if shouldAddSpacer then
 				shouldAddSpacer = false;
 				GameTooltip_AddBlankLineToTooltip(tooltip);

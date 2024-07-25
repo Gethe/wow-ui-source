@@ -3,6 +3,14 @@ G_CinematicsMenuContextKey = "CinematicsMenu";
 
 -- These are movieID from the MOVIE database file.
 MOVIE_LIST = {
+	-- Movie sequence 12 = WarWithin
+	{
+		expansion = LE_EXPANSION_WAR_WITHIN,
+		movieIDs = { 1014 },
+		upAtlas = "StreamCinematic-WarWithin-Large-Up",
+		downAtlas = "StreamCinematic-WarWithin-Large-Down",
+	},
+
 	-- Movie sequence 11 = Dragonflight2
 	{
 		expansion = LE_EXPANSION_DRAGONFLIGHT,

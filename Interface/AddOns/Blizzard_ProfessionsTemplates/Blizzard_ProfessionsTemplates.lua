@@ -707,22 +707,8 @@ function ProfessionsCurrencyMixin:OnQuantityChanged(currencyInfo)
 	-- Implemented in derived mixins
 end
 
-local ConcentrationHelpTipInfo =
-{
-	text = PROFESSIONS_CRAFTING_CONCENTRATION_HELPTIP,
-	buttonStyle = HelpTip.ButtonStyle.Close,
-	targetPoint = HelpTip.Point.TopEdgeCenter,
-	alignment = HelpTip.Alignment.Center,
-	offsetX = 0,
-	cvarBitfield = "closedInfoFramesAccountWide",
-	bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_CONCENTRATION_CURRENCY,
-	checkCVars = true,
-};
-
 function ProfessionsCurrencyMixin:OnShow()
 	self:UpdateQuantity();
-
-	HelpTip:Show(self, ConcentrationHelpTipInfo);
 end
 
 function ProfessionsCurrencyMixin:OnEnter()

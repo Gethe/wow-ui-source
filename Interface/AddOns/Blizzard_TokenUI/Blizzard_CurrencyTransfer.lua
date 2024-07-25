@@ -87,7 +87,7 @@ function CurrencyTransferToggleButtonMixin:UpdateEnabledState()
 	self:SetEnabled(dataReady and canTransfer);
 	self:SetDisabledTooltip(self:GetDisabledErrorMessage(dataReady, failureReason), "ANCHOR_RIGHT");
 	
-	local isValidCurrency = failureReason ~= Enum.AccountCurrencyTransferResult.InvalidCurrency;
+	local isValidCurrency = C_CurrencyInfo.IsAccountTransferableCurrency(self.currencyID);
 	local hasDisabledTooltip = self:GetDisabledTooltip() ~= nil;
 	self:SetShown(self:IsEnabled() or (isValidCurrency and hasDisabledTooltip));
 end

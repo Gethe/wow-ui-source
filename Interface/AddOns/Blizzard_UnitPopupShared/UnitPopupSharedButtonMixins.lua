@@ -1359,6 +1359,18 @@ end
 function UnitPopupDungeonDifficultyButtonMixin:GetEntries()
 end
 
+function UnitPopupDungeonDifficultyButtonMixin:IsEnabled(contextData)
+	return not DifficultyUtil.InStoryRaid();
+end
+
+function UnitPopupDungeonDifficultyButtonMixin:TooltipWhileDisabled()
+	return true;
+end
+
+function UnitPopupDungeonDifficultyButtonMixin:GetTooltipText()
+	return RED_FONT_COLOR:WrapTextInColorCode(DIFFICULTY_LOCKED_REASON_STORY_RAID);
+end
+
 UnitPopupDungeonDifficulty1ButtonMixin = CreateFromMixins(UnitPopupRadioButtonMixin);
 
 function UnitPopupDungeonDifficulty1ButtonMixin:GetText(contextData)
@@ -1418,6 +1430,18 @@ UnitPopupRaidDifficultyButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
 
 function UnitPopupRaidDifficultyButtonMixin:GetText(contextData)
 	return RAID_DIFFICULTY;
+end
+
+function UnitPopupRaidDifficultyButtonMixin:IsEnabled(contextData)
+	return not DifficultyUtil.InStoryRaid();
+end
+
+function UnitPopupRaidDifficultyButtonMixin:TooltipWhileDisabled()
+	return true;
+end
+
+function UnitPopupRaidDifficultyButtonMixin:GetTooltipText()
+	return RED_FONT_COLOR:WrapTextInColorCode(DIFFICULTY_LOCKED_REASON_STORY_RAID);
 end
 
 function UnitPopupRaidDifficultyButtonMixin:GetEntries()
@@ -2744,7 +2768,8 @@ function UnitPopupSelfHighlightCommonMixin:OnClick(contextData)
 	SetCVar(cvarName, not GetCVarBool(cvarName));
 
 	self:SetFindSelfAnywhere();
-	EventRegistry:TriggerEvent("SelfHighlight.ValueChanged");
+
+	Settings.NotifyUpdate("PROXY_SELF_HIGHLIGHT");
 end
 
 function UnitPopupSelfHighlightCommonMixin:IsChecked(contextData)

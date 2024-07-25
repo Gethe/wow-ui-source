@@ -218,12 +218,29 @@ function SettingsCategoryListMixin:GetOrCreateGroup(groupText, order)
 	return tbl;
 end
 
+local function FindCategoryMatchingCategoryID(categoryID, category)
+	if category:GetID() == categoryID then
+		return category;
+	end
+
+	if category.subcategories then
+		for index, subcategory in ipairs(category.subcategories) do
+			local foundCategory = FindCategoryMatchingCategoryID(categoryID, subcategory);
+			if foundCategory then
+				return foundCategory;
+			end
+		end
+	end
+
+	return nil;
+end
+
 function SettingsCategoryListMixin:GetCategory(categoryID)
 	for _, tbl in ipairs(self.groups) do
 		for _, category in ipairs(tbl.categories) do
-			local id = securecallfunction(SettingsCategoryMixin.GetID, category);
-			if id == categoryID then
-				return category;
+			local foundCategory = securecallfunction(FindCategoryMatchingCategoryID, categoryID, category);
+			if foundCategory then
+				return foundCategory;
 			end
 		end
 	end

@@ -22,7 +22,7 @@ function InterfaceOverrides.CreateLargerNameplateSetting(category)
 	end
 
 	local defaultValue = false;
-	local setting = Settings.RegisterProxySetting(category, "PROXY_LARGER_SETTINGS", Settings.DefaultVarLocation, 
+	local setting = Settings.RegisterProxySetting(category, "PROXY_LARGER_SETTINGS",
 		Settings.VarType.Boolean, UNIT_NAMEPLATES_MAKE_LARGER, defaultValue, GetValue, SetValue);
 	local initializer = Settings.CreateCheckbox(category, setting, OPTION_TOOLTIP_UNIT_NAMEPLATES_MAKE_LARGER);
 	initializer:AddModifyPredicate(function()

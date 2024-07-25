@@ -112,13 +112,23 @@ function ZoneLabelDataProviderMixin:CalculateAnchorsForAreaTrigger(areaTrigger)
 	local TOP_Y_OFFSET = -30;
 	local BOTTOM_Y_OFFSET = 30;
 
+	local mapID = self:GetMap():GetMapID();
+
 	if areaTrigger.isTopLevel then
-		return "TOPRIGHT", 0, TOP_Y_OFFSET;
+		local zoneTextPosition = C_Map.GetMapArtZoneTextPosition(mapID);
+		if zoneTextPosition == Enum.MapCanvasPosition.TopLeft then
+			return "TOPLEFT", 0, TOP_Y_OFFSET;
+		elseif zoneTextPosition == Enum.MapCanvasPosition.BottomLeft then
+			return "BOTTOMLEFT", 0, BOTTOM_Y_OFFSET;
+		elseif zoneTextPosition == Enum.MapCanvasPosition.BottomRight then
+			return "BOTTOMRIGHT", 0, BOTTOM_Y_OFFSET;
+		else
+			return "TOPRIGHT", 0, TOP_Y_OFFSET;
+		end
 	end
 
 	local x, y = areaTrigger:GetCenter();
 
-	local mapID = self:GetMap():GetMapID();
 	local helpTextPosition = C_Map.GetMapArtHelpTextPosition(mapID);
 
 	local helpTextOnBottom = (helpTextPosition == Enum.MapCanvasPosition.BottomLeft) or (helpTextPosition == Enum.MapCanvasPosition.BottomRight);

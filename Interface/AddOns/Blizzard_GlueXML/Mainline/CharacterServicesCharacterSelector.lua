@@ -170,11 +170,6 @@ function CharacterServicesCharacterSelectorMixin:ProcessCharacterFromBlock(frame
 	frame:SetScript("OnEnter", CharacterServicesOnEnter);
 	frame:SetScript("OnLeave", CharacterServicesOnLeave);
 
-	local frameStatusText = frame.InnerContent.Text.Status;
-	frameStatusText:SetScript("OnMouseUp", CharacterServicesOnClick);
-	frameStatusText:SetScript("OnEnter", CharacterServicesOnEnter);
-	frameStatusText:SetScript("OnLeave", CharacterServicesOnLeave);
-
 	return serviceInfo.isEligible, serviceInfo.hasBonus;
 end
 

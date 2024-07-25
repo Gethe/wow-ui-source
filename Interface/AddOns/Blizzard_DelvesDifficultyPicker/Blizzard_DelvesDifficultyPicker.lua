@@ -407,7 +407,7 @@ function DelveRewardsContainerFrameMixin:SetRewards()
 		for  _, reward in ipairs(optionRewards) do
 			if	reward.rewardType == Enum.GossipOptionRewardType.Item then 
 				local name, _, quality, _, _, _, _, _, _, itemIcon = C_Item.GetItemInfo(reward.id);
-				table.insert(rewardInfo, {id = reward.id, quality = quality, quantity = reward.quantity, texture = itemIcon, name = name});
+				table.insert(rewardInfo, {id = reward.id, quality = quality, quantity = reward.quantity, texture = itemIcon, name = name, context = reward.context});
 			end
 		end
 
@@ -430,6 +430,7 @@ function DelveRewardsContainerFrameMixin:SetRewards()
 	
 					tinsert(buttons, button);
 					button.id = reward.id;
+					button.context = reward.context;
 					button:Show();
 				end
 			end
@@ -458,8 +459,12 @@ function DelveRewardsButtonMixin:OnEnter()
 	local item = Item:CreateFromItemID(self.id);
 	self.itemCancelFunc = item:ContinueWithCancelOnItemLoad(function()
 		if GameTooltip:GetOwner() == self then
-			self.itemLink = item:GetItemLink();
-			GameTooltip:SetItemByID(self.id);
+			if self.context then
+				self.itemLink = C_Item.GetDelvePreviewItemLink(self.id, self.context);
+			else
+				self.itemLink = item:GetItemLink();
+			end
+			GameTooltip:SetHyperlink(self.itemLink);
 			GameTooltip:Show();
 		end
 	end);

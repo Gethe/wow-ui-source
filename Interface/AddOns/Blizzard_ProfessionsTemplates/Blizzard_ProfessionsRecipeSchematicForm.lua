@@ -940,7 +940,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 							
 							local allocationsCopy = self.transaction:GetAllocationsCopy(slotIndex);
 							local disallowZeroAllocations = true;
-							self.QualityDialog:Open(recipeID, reagentSlotSchematic, allocationsCopy, slotIndex, disallowZeroAllocations);
+							self.QualityDialog:Open(recipeID, reagentSlotSchematic, allocationsCopy, slotIndex, disallowZeroAllocations, self.transaction:ShouldUseCharacterInventoryOnly());
 						end
 					end
 				end);
@@ -1037,7 +1037,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 								local item = elementData.item;
 								
 								local function AllocateFlyoutItem()
-									if ItemUtil.GetCraftingReagentCount(item:GetItemID()) == 0 then
+									if ItemUtil.GetCraftingReagentCount(item:GetItemID(), self.transaction:ShouldUseCharacterInventoryOnly()) == 0 then
 										return;
 									end
 
@@ -1100,7 +1100,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 								if item:GetItemGUID() then
 									quantity = item:GetStackCount();
 								else
-									quantity = ItemUtil.GetCraftingReagentCount(item:GetItemID());
+									quantity = ItemUtil.GetCraftingReagentCount(item:GetItemID(), self.transaction:ShouldUseCharacterInventoryOnly());
 								end
 
 								if quantity and quantity < reagentSlotSchematic.quantityRequired then
@@ -1162,7 +1162,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 				if flyout then
 					local function OnFlyoutItemSelected(o, flyout, elementData)
 						local item = elementData.item;
-						if ItemUtil.GetCraftingReagentCount(item:GetItemID()) == 0 then
+						if ItemUtil.GetCraftingReagentCount(item:GetItemID(), self.transaction:ShouldUseCharacterInventoryOnly()) == 0 then
 							return;
 						end
 
@@ -1270,7 +1270,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 				if flyout then
 					local function OnFlyoutItemSelected(o, flyout, elementData)
 						local item = elementData.item;
-						if ItemUtil.GetCraftingReagentCount(item:GetItemID()) == 0 then
+						if ItemUtil.GetCraftingReagentCount(item:GetItemID(), self.transaction:ShouldUseCharacterInventoryOnly()) == 0 then
 							return;
 						end
 	

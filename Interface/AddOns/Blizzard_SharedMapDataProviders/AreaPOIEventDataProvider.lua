@@ -77,11 +77,3 @@ end
 function AreaPOIEventPinMixin:IsSuperTrackingExternallyHandled()
 	return true;
 end
-
-function AreaPOIEventPinMixin:OnLegendPinMouseEnter()
-	-- TODO: Implement
-end
-
-function AreaPOIEventPinMixin:OnLegendPinMouseLeave()
-	-- TODO: Implement
-end

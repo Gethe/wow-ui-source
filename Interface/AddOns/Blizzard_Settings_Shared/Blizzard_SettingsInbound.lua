@@ -64,8 +64,8 @@ function SettingsInbound.SetKeybindingsCategory(category)
 	SettingsPanel:SetAttribute(SettingsInbound.SetKeybindingsCategoryAttribute, category);
 end
 
-function SettingsInbound.CreateAddOnSetting(categoryTbl, name, variable, variableType, defaultValue)
-	SettingsPanel:SetAttribute(SettingsInbound.CreateAddOnSettingAttribute, { categoryTbl, name, variable, variableType, defaultValue, });
+function SettingsInbound.CreateAddOnSetting(categoryTbl, name, variable, variableKey, variableTbl, variableType, defaultValue)
+	SettingsPanel:SetAttribute(SettingsInbound.CreateAddOnSettingAttribute, { categoryTbl, name, variable, variableKey, variableTbl, variableType, defaultValue, });
 	return SettingsPanel:GetSecureAttributeResults();
 end
 
@@ -73,8 +73,8 @@ function SettingsInbound.RegisterSetting(categoryTbl, setting)
 	SettingsPanel:SetAttribute(SettingsInbound.RegisterSettingAttribute, { categoryTbl, setting, });
 end
 
-local function SettingsInboundValueChangedCallback(unused_registrant, setting, value, oldValue, originalValue)
-	SettingsPanel:SetAttribute(SettingsInbound.OnSettingValueChangedAttribute, { setting, value, oldValue, originalValue, });
+local function SettingsInboundValueChangedCallback(unused_registrant, setting, value)
+	SettingsPanel:SetAttribute(SettingsInbound.OnSettingValueChangedAttribute, { setting, value });
 end
 
 function SettingsInbound.RegisterOnSettingValueChanged(variable)

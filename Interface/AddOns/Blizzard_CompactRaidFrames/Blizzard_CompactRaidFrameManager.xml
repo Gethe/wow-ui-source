@@ -313,7 +313,7 @@
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</CheckButton>
-					<DropdownButton name="$parentDifficulty" parentKey="difficulty" inherits="CRFManagerTooltipButtonTemplate" hidden="true">
+					<DropdownButton name="$parentDifficulty" parentKey="difficulty" inherits="CRFManagerTooltipButtonTemplate" motionScriptsWhileDisabled="true" hidden="true">
 						<Size x="40" y="40"/>
 						<NormalTexture atlas="GM-icon-difficulty-normal"/>
 						<KeyValues>

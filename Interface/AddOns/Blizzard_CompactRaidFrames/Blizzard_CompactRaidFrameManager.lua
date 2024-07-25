@@ -172,6 +172,8 @@ function CompactRaidFrameManager_OnLoad(self)
 			rootDescription:CreateRadio(PLAYER_DIFFICULTY2, IsSelected, SetSelected, 2);
 			rootDescription:CreateRadio(PLAYER_DIFFICULTY6, IsSelected, SetSelected, 23);
 		end);
+
+		CompactRaidFrameManager_UpdateDifficultyDropdown();
 	end
 
 	CompactRaidFrameManager_UpdateLabel();
@@ -249,6 +251,18 @@ function CompactRaidFrameManager_Collapse()
 	CompactRaidFrameManager.toggleButton:GetNormalTexture():SetTexCoord(0, 0.5, 0, 1);
 end
 
+function CompactRaidFrameManager_UpdateDifficultyDropdown()
+	local dropdown = CompactRaidFrameManager.displayFrame.difficulty;
+	local enabled = not DifficultyUtil.InStoryRaid();
+	dropdown:SetEnabled(enabled);
+	dropdown:SetAlpha(enabled and 1.0 or .3);
+	if enabled then
+		dropdown.disabledTooltipText = nil;
+	else
+		dropdown.disabledTooltipText = DIFFICULTY_LOCKED_REASON_STORY_RAID;
+	end
+end
+
 function CompactRaidFrameManager_UpdateOptionsFlowContainer()
 	local displayFrame = CompactRaidFrameManager.displayFrame;
 	local container = displayFrame.optionsFlowContainer;
@@ -285,6 +299,8 @@ function CompactRaidFrameManager_UpdateOptionsFlowContainer()
 	else
 		displayFrame.ModeControlDropdown:Hide();
 	end
+
+	CompactRaidFrameManager_UpdateDifficultyDropdown();
 
 	if ( IsInRaid() ) then
 		FlowContainer_AddObject(container, displayFrame.filterOptions);
@@ -555,9 +571,10 @@ function CompactRaidFrameManager_UpdateDifficulty()
 	local dropdown = CompactRaidFrameManager.displayFrame.difficulty;
 	local isAssist = UnitIsGroupAssistant("player");
 	local atlas = nil; 
-	if difficulty == 1 then
+	local inStoryRaid = DifficultyUtil.InStoryRaid();
+	if (difficulty == DifficultyUtil.ID.DungeonNormal) or inStoryRaid then
 		atlas = isAssist and "GM-icon-difficulty-normalAssist" or "GM-icon-difficulty-normal";
-	elseif difficulty == 2 then
+	elseif difficulty == DifficultyUtil.ID.DungeonHeroic then
 		atlas = isAssist and "GM-icon-difficulty-heroicAssist" or "GM-icon-difficulty-heroic";
 	else
 		atlas = isAssist and "GM-icon-difficulty-mythicAssist" or "GM-icon-difficulty-mythic";
@@ -572,9 +589,10 @@ function CompactRaidFrameManager_MouseDownDifficulty(self)
 		local shown = dropdown:IsMenuOpen();
 		local difficulty = GetDungeonDifficultyID();
 		local atlas = nil;
-		if difficulty == 1 then
+		local inStoryRaid = DifficultyUtil.InStoryRaid();
+		if (difficulty == DifficultyUtil.ID.DungeonNormal) or inStoryRaid then
 			atlas = shown and "GM-icon-difficulty-normalSelected" or "GM-icon-difficulty-normal";
-		elseif difficulty == 2 then
+		elseif difficulty == DifficultyUtil.ID.DungeonHeroic then
 			atlas = shown and "GM-icon-difficulty-heroicSelected" or "GM-icon-difficulty-heroic";
 		else
 			atlas = shown and "GM-icon-difficulty-mythicSelected" or "GM-icon-difficulty-mythic";
@@ -1000,7 +1018,14 @@ CRFManagerTooltipButtonMixin = {}
 
 function CRFManagerTooltipButtonMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -10, -10);
-	GameTooltip_SetTitle(GameTooltip, _G[self.tooltip]);
+	
+	if self.disabledTooltipText then
+		local tooltipText = RED_FONT_COLOR:WrapTextInColorCode(self.disabledTooltipText);
+		GameTooltip_SetTitle(GameTooltip, tooltipText);
+	else
+		GameTooltip_SetTitle(GameTooltip, _G[self.tooltip]);
+	end
+
 	GameTooltip:Show();
 end
 

@@ -395,42 +395,11 @@ TutorialData.Alliance = {
 	EnhancedCombatTacticsCreatureID = 164577;
 	EnhancedCombatTacticsOverrideCreatureID = 164605;
 
-	Mounts = {
-		Human = {		-- black stallion
-			mountItem = 2411,
-			mountSpellID = 470;
-			mountID = 9;
-		},
-		Draenei = {		-- brown elek
-			mountItem = 28481,
-			mountSpellID = 34406;
-			mountID = 147;
-		},
-		Gnome = {		-- unpainted mechanostrider
-			mountItem = 13322,
-			mountSpellID = 17454;
-			mountID = 58;
-		},
-		Dwarf = {		-- gray ram
-			mountItem = 5864,
-			mountSpellID = 6777;
-			mountID = 21;
-		},
-		Worgen = {		-- mountain horse
-			mountItem = 73838,
-			mountSpellID = 103195;
-			mountID = 435;
-		},
-		NightElf = {	-- striped nightsaber
-			mountItem = 8629,
-			mountSpellID = 10793;
-			mountID = 34;
-		},
-		Pandaren = {	-- red dragon turtle
-			mountItem = 87800,
-			mountSpellID = 127290;
-			mountID = 496;
-		}
+	-- Golden Gryphon
+	MountData = {
+		mountItem = 25470,
+		mountSpellID = 32235;
+		mountID = 129;
 	};
 
 	ClassQuests = {
@@ -524,42 +493,11 @@ TutorialData.Horde = {
 	EnhancedCombatTacticsCreatureID = 166916;
 	EnhancedCombatTacticsOverrideCreatureID = 166918;
 
-	Mounts = {
-		Orc = {					-- dire wolf (dark grey)
-			mountItem = 5665,
-			mountSpellID = 6653;
-			mountID = 19;
-		},
-		Scourge = {				-- red skeletal horse
-			mountItem = 13331,
-			mountSpellID = 17462;
-			mountID = 65;
-		},
-		Tauren = {				-- grey kodo
-			mountItem = 15277,
-			mountSpellID = 18989;
-			mountID = 71;
-		},
-		Troll = {				-- emerald raptor
-			mountItem = 8588,
-			mountSpellID = 8395;
-			mountID = 27;
-		},
-		BloodElf = {			-- red hawkstrider        
-			mountItem = 28927,
-			mountSpellID = 34795;
-			mountID = 152;
-		},
-		Goblin = {				-- goblin trike
-			mountItem = 62461,
-			mountSpellID = 87090;
-			mountID = 388;
-		},
-		Pandaren = {			-- red dragon turtle
-			mountItem = 87800,
-			mountSpellID = 127290;
-			mountID = 496;
-		}
+	-- Tawny Wind Rider
+	MountData = {
+		mountItem = 25474,
+		mountSpellID = 32243;
+		mountID = 133;
 	};
 
 	ClassQuests = {

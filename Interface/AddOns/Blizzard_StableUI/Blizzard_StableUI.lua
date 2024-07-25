@@ -7,7 +7,7 @@ local CALL_PET_SPELL_IDS = { -- Each "active" pet slot corresponds to a "call pe
 	83244,
 	83245,
 };
-local ANIMAL_COMPANION_NODE_ID = 79947; -- BM talent required for secondary pet slot
+local ANIMAL_COMPANION_NODE_ID = 102361; -- BM talent required for secondary pet slot
 local STABLE_FRAME_SWAP_TIMEOUT_SECONDS = 0.3; -- 300ms
 
 local STABLED_PETS_FIRST_SLOT_LUA_INDEX = Constants.PetConsts_PostCata.STABLED_PETS_FIRST_SLOT_INDEX + 1;

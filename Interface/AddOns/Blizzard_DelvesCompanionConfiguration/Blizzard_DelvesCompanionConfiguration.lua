@@ -140,6 +140,9 @@ function DelvesCompanionConfigurationFrameMixin:Refresh()
     self.CompanionExperienceRingFrame:Refresh();
     self.CompanionLevelFrame:Refresh();
     self.CompanionInfoFrame:Refresh();
+    self.CompanionCombatRoleSlot:Refresh();
+    self.CompanionCombatTrinketSlot:Refresh();
+    self.CompanionUtilityTrinketSlot:Refresh();
 end
 
 function DelvesCompanionConfigurationFrameMixin:OnHide()
@@ -394,7 +397,7 @@ function CompanionConfigSlotTemplateMixin:Refresh(keepOptionsListOpen)
             local lockedText = DELVES_CURIO_LOCKED;
             for _, conditionID in ipairs(self.selectionNodeInfo.conditionIDs) do
                 local conditionInfo = C_Traits.GetConditionInfo(self.configID, conditionID, true);
-                if conditionInfo.tooltipText then
+                if conditionInfo and conditionInfo.tooltipText then
                     lockedText = conditionInfo.tooltipText;
                     break;
                 end

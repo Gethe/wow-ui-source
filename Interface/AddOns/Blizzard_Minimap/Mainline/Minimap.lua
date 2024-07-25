@@ -264,11 +264,12 @@ function MinimapMixin:OnEvent(event, ...)
 end
 
 function MinimapMixin:OnEnter()
+	GameTooltip_ClearAllStatusBars(GameTooltip);
 	self:SetScript("OnUpdate", Minimap_OnUpdate);
 
-	if(not DISABLE_MAP_ZOOM) then 
-	self.ZoomIn:Show();
-	self.ZoomOut:Show();
+	if(not DISABLE_MAP_ZOOM) then
+		self.ZoomIn:Show();
+		self.ZoomOut:Show();
 	end
 end
 
@@ -588,31 +589,31 @@ function MiniMapTrackingButtonMixin:OnLoad()
 			local showAll = GetCVarBool("minimapTrackingShowAll");
 			local class = select(2, UnitClass("player"));
 			local isHunterClass = class == "HUNTER";
-		
+
 			if not showAll then
 				rootDescription:CreateButton(UNCHECK_ALL, function()
 					trackingState:ClearSelections();
-					
+
 					for index = 1, C_Minimap.GetNumTrackingTypes() do
 						local filter = C_Minimap.GetTrackingFilter(index);
 						if ALWAYS_ON_FILTERS[filter.filterID] or CONDITIONAL_FILTERS[filter.filterID] then
 							trackingState:SetSelected(index, true);
 						end
 					end
-				
+
 					return MenuResponse.Refresh;
 				end);
 			end
-			
+
 			local hunterInfo = {};
 			local townfolkInfo = {};
 			local regularInfo = {};
-		
+
 			for index = 1, C_Minimap.GetNumTrackingTypes() do
 				if showAll or CanDisplayTrackingInfo(index) then
 					local trackingInfo = C_Minimap.GetTrackingInfo(index);
 					trackingInfo.index = index;
-		
+
 					if isHunterClass and (trackingInfo.subType == HUNTER_TRACKING) then
 						table.insert(hunterInfo, trackingInfo);
 					elseif trackingInfo.subType == TOWNSFOLK_TRACKING then
@@ -622,7 +623,7 @@ function MiniMapTrackingButtonMixin:OnLoad()
 					end
 				end
 			end
-		
+
 			TableUtil.Execute({hunterInfo, townfolkInfo, regularInfo}, function(trackingInfo)
 				table.sort(trackingInfo, function(a, b)
 					-- Sort low priority tracking spells to the end
@@ -636,24 +637,24 @@ function MiniMapTrackingButtonMixin:OnLoad()
 					return a.index < b.index;
 				end);
 			end);
-			
+
 			local function CreateCheckboxWithIcon(parentDescription, trackingInfo)
 				local name = trackingInfo.name;
 				trackingInfo.text = name;
-		
+
 				local texture = TRACKING_SPELL_OVERRIDE_TEXTURES[trackingInfo.spellID] or trackingInfo.texture;
 				local desc = parentDescription:CreateCheckbox(
 					name,
 					IsTrackingActive,
 					ToggleTrackingSelected,
 					trackingInfo);
-		
+
 				desc:AddInitializer(function(button, description, menu)
 					local rightTexture = button:AttachTexture();
 					rightTexture:SetSize(20, 20);
 					rightTexture:SetPoint("RIGHT");
 					rightTexture:SetTexture(texture);
-		
+
 					local fontString = button.fontString;
 					fontString:SetPoint("RIGHT", rightTexture, "LEFT");
 
@@ -661,38 +662,38 @@ function MiniMapTrackingButtonMixin:OnLoad()
 						local uv0, uv1 = .0625, .9;
 						rightTexture:SetTexCoord(uv0, uv1, uv0, uv1);
 					end
-						
+
 					-- The size is explicitly provided because this requires a right-justified icon.
 					local width, height = fontString:GetUnboundedStringWidth() + 60, 20;
 					return width, height;
 				end);
-		
+
 				return desc;
 			end
-		
+
 			local hunterCount = #hunterInfo;
 			if hunterCount > 0 then
+				local hunterMenuDesc = rootDescription;
 				if hunterCount > 1 then
-					local hunterMenuDesc = rootDescription:CreateButton(HUNTER_TRACKING_TEXT);
-					for index, info in ipairs(hunterInfo) do
-						CreateCheckboxWithIcon(hunterMenuDesc, info);
-					end
-				else
-					CreateCheckboxWithIcon(rootDescription, info);
+					hunterMenuDesc = rootDescription:CreateButton(HUNTER_TRACKING_TEXT);
+				end
+
+				for index, info in ipairs(hunterInfo) do
+					CreateCheckboxWithIcon(hunterMenuDesc, info);
 				end
 			end
-		
+
 			if #townfolkInfo > 0 then
 				local townfolkMenuDesc = rootDescription;
 				if showAll then
 					townfolkMenuDesc = rootDescription:CreateButton(TOWNSFOLK_TRACKING_TEXT);
 				end
-		
+
 				for index, info in ipairs(townfolkInfo) do
 					CreateCheckboxWithIcon(townfolkMenuDesc, info);
 				end
 			end
-		
+
 			for index, info in ipairs(regularInfo) do
 				CreateCheckboxWithIcon(rootDescription, info);
 			end
@@ -722,7 +723,7 @@ function MiniMapTrackingButtonMixin:RegisterSettingEntryCallbacks()
 		TryUpdateFilterStateForExternalChange(Enum.MinimapTrackingFilter.AccountCompletedQuests, value);
 	end);
 
-	Settings.SetOnValueChangedCallback("PROXY_TRIVIAL_QUEST_FILTERING", function(_o, _setting, value) 
+	Settings.SetOnValueChangedCallback("PROXY_TRIVIAL_QUEST_FILTERING", function(_o, _setting, value)
 		TryUpdateFilterStateForExternalChange(Enum.MinimapTrackingFilter.TrivialQuests, value);
 	end);
 end
@@ -826,7 +827,7 @@ function ExpansionLandingPageMinimapButtonMixin:RefreshButton(forceUpdateIcon)
 			self:ClearPulses();
 			FrameUtil.UnregisterFrameForEvents(self, GarrisonLandingPageEvents);
 		end
-		
+
 	if self.mode ~= previousMode or forceUpdateIcon == true then
 		self:Hide();
 

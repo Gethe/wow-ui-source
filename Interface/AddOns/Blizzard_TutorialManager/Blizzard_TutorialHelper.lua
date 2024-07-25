@@ -160,7 +160,7 @@ function TutorialHelper:FindEmptyButton(optionalPreferredActionBar)
 	if optionalPreferredActionBar then
 		for i = 1, 12 do
 			local btn = _G[optionalPreferredActionBar .. i];
-			if btn then
+			if btn and btn:IsVisible() then
 				local _, sID = GetActionInfo(btn.action);
 				if not sID then
 					return btn;
@@ -169,17 +169,23 @@ function TutorialHelper:FindEmptyButton(optionalPreferredActionBar)
 		end
 	end
 
+	local lastNonEmptyBtn;
 	for _, actionBar in pairs(actionBars) do
 		for i = 1, 12 do
 			local btn = _G[actionBar .. i];
-			if btn then
+			if btn and btn:IsVisible() then
 				local _, sID = GetActionInfo(btn.action);
 				if not sID then
 					return btn;
+				else
+					lastNonEmptyBtn = btn;
 				end
 			end
 		end
 	end
+
+	-- If no empty buttons were found, fall back to the last non-empty button
+	return lastNonEmptyBtn;
 end
 
 function TutorialHelper:GetActionButtonBySpellID(spellID)

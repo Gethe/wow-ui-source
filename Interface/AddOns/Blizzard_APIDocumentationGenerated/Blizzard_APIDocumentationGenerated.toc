@@ -344,7 +344,6 @@ ContentTrackingTypesDocumentation.lua
 CurrencyConstantsDocumentation.lua
 CursorConstDocumentation.lua
 DamageConstantsDocumentation.lua
-DelvesConstantsDocumentation.lua
 EditModeManagerSharedDocumentation.lua
 EncounterJournalConstantsDocumentation.lua
 ExpansionLandingPageConstantsDocumentation.lua
@@ -433,6 +432,7 @@ CovenantsConstantsDocumentation.lua
 CraftingOrderUIConstantsDocumentation.lua
 CraftingOrderUISharedDocumentation.lua
 CurrencyConstants_MainlineDocumentation.lua
+DelvesConstantsDocumentation.lua
 GarrisonSharedDocumentation.lua
 ItemConstants_MainlineDocumentation.lua
 LegendaryCraftingTypesDocumentation.lua

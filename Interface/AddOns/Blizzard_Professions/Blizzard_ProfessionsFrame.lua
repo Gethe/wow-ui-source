@@ -403,7 +403,13 @@ function ProfessionsMixin:SetTab(tabID, forcedOpen)
 		SetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_NPC_CRAFTING_ORDERS, true);
 	elseif not specHelpTipShown then
 		local craftingOrderTab = self:GetTabButton(self.craftingOrdersTabID);
-		HelpTip:Show(craftingOrderTab, npcCraftingOrdersHelpTipInfo, craftingOrderTab);
+		local latestProfession = Professions.GetNewestKnownProfessionInfo();
+
+		-- Show NPC orders helptip when player reaches skill level 15 in the newest expansion profession
+		-- Only show helptip when orders tab is enabled (player is in range of crafting table)
+		if latestProfession and latestProfession.skillLevel >= 15 and craftingOrderTab:IsShown() and craftingOrderTab:IsEnabled() then
+			HelpTip:Show(craftingOrderTab, npcCraftingOrdersHelpTipInfo, craftingOrderTab);
+		end
 	end
 
 	local selectedPage = self:GetElementsForTab(tabID)[1];

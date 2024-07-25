@@ -34,6 +34,7 @@ local CraftingOrderUIConstants =
 			Values =
 			{
 				{ Name = "MAX_CRAFTING_ORDER_FAVORITE_RECIPES", Type = "number", Value = 100 },
+				{ Name = "NPC_CRAFTING_ORDER_NUM_SUPPORTED_REWARDS", Type = "number", Value = 2 },
 			},
 		},
 	},

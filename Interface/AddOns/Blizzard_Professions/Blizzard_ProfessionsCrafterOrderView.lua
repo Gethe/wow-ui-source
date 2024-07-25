@@ -8,10 +8,12 @@ function ProfessionsCrafterOrderRewardMixin:SetReward(reward)
 		self:SetItem(reward.itemLink);
 		local _, itemQuality, _ = self:GetItemInfo();
 		self:SetSlotQuality(self, itemQuality);
-		self.Count:SetText(self.reward.count > 1 and self.reward.count or "");
+		self.minDisplayCount = 1;
+		SetItemButtonCount(self, self.reward.count);
 	elseif reward.currencyType then
 		self:SetCurrency(reward.currencyType);
-		self.Count:SetText(self.reward.count);
+		self.minDisplayCount = 0;
+		SetItemButtonCount(self, self.reward.count);
 	end
 
 	self:Show();
@@ -310,6 +312,7 @@ local ProfessionsCrafterOrderViewEvents =
 	"CRAFTINGORDERS_CRAFT_ORDER_RESPONSE",
 	"CRAFTINGORDERS_FULFILL_ORDER_RESPONSE",
     "CRAFTINGORDERS_UPDATE_CUSTOMER_NAME",
+	"CRAFTINGORDERS_UPDATE_REWARDS",
     "CRAFTINGORDERS_CLAIMED_ORDER_ADDED",
     "CRAFTINGORDERS_CLAIMED_ORDER_REMOVED",
     "CRAFTINGORDERS_CLAIMED_ORDER_UPDATED",
@@ -390,6 +393,14 @@ function ProfessionsCrafterOrderViewMixin:OnEvent(event, ...)
 
         self.OrderInfo.PostedByValue:SetText(customerName);
         self.order.customerName = customerName;
+	elseif event == "CRAFTINGORDERS_UPDATE_REWARDS" then
+        local rewards, orderID = ...;
+        if orderID ~= self.order.orderID then
+            return;
+        end
+
+        self.order.npcOrderRewards = rewards;
+		self:UpdateRewards(self.order);
     elseif event == "CRAFTINGORDERS_CLAIMED_ORDER_ADDED" then
         self:SetOrder(C_CraftingOrders.GetClaimedOrder());
     elseif event == "CRAFTINGORDERS_CLAIMED_ORDER_REMOVED" then
@@ -807,19 +818,7 @@ function ProfessionsCrafterOrderViewMixin:UpdateCreateButton()
 	end
 end
 
-function ProfessionsCrafterOrderViewMixin:SetOrder(order)
-    self.order = order;
-
-    self.OrderInfo.PostedByValue:SetText(order.customerName);
-    self.OrderInfo.NoteBox.NoteText:SetText(order.customerNotes);
-	self.OrderInfo.NoteBox:SetShown(not C_CraftingOrders.AreOrderNotesDisabled());
-	local showDisabledNoteBox = order.orderType == Enum.CraftingOrderType.Npc;
-	self.OrderInfo.NoteBox.NoteTitle:SetFontObject(showDisabledNoteBox and GameFontDisable or GameFontNormal);
-	self.OrderInfo.NoteBox:SetAlpha(showDisabledNoteBox and 0.5 or 1.0);
-    self.OrderInfo.CommissionTitleMoneyDisplayFrame:SetAmount(order.tipAmount);
-    self.OrderInfo.ConsortiumCutMoneyDisplayFrame:SetAmount(order.consortiumCut);
-    self.OrderInfo.FinalTipMoneyDisplayFrame:SetAmount(order.tipAmount - order.consortiumCut);
-
+function ProfessionsCrafterOrderViewMixin:UpdateRewards(order)
 	for i, reward in ipairs(order.npcOrderRewards) do
 		if i <= #self.OrderInfo.NPCRewardsFrame.RewardItems then
 			self.OrderInfo.NPCRewardsFrame.RewardItems[i]:SetReward(reward);
@@ -838,6 +837,22 @@ function ProfessionsCrafterOrderViewMixin:SetOrder(order)
 		order.npcCraftingOrderSetID, 
 		order.npcTreasureID
 	);
+end
+
+function ProfessionsCrafterOrderViewMixin:SetOrder(order)
+    self.order = order;
+
+    self.OrderInfo.PostedByValue:SetText(order.customerName);
+    self.OrderInfo.NoteBox.NoteText:SetText(order.customerNotes);
+	self.OrderInfo.NoteBox:SetShown(not C_CraftingOrders.AreOrderNotesDisabled());
+	local showDisabledNoteBox = order.orderType == Enum.CraftingOrderType.Npc;
+	self.OrderInfo.NoteBox.NoteTitle:SetFontObject(showDisabledNoteBox and GameFontDisable or GameFontNormal);
+	self.OrderInfo.NoteBox:SetAlpha(showDisabledNoteBox and 0.5 or 1.0);
+    self.OrderInfo.CommissionTitleMoneyDisplayFrame:SetAmount(order.tipAmount);
+    self.OrderInfo.ConsortiumCutMoneyDisplayFrame:SetAmount(order.consortiumCut);
+    self.OrderInfo.FinalTipMoneyDisplayFrame:SetAmount(order.tipAmount - order.consortiumCut);
+
+	self:UpdateRewards(order);
 
 	local warningText, atlas;
 	if self.order.reagentState == Enum.CraftingOrderReagentsType.All then
@@ -862,6 +877,7 @@ function ProfessionsCrafterOrderViewMixin:SetOrder(order)
     local isRecraft = self:IsRecrafting();
 	local recipeSchematic = C_TradeSkillUI.GetRecipeSchematic(self.order.spellID, isRecraft);
     self.OrderDetails.SchematicForm.transaction = CreateProfessionsRecipeTransaction(recipeSchematic);
+    self.OrderDetails.SchematicForm.transaction:SetUseCharacterInventoryOnly(true);
     if isRecraft then
         self.OrderDetails.SchematicForm.transaction:SetRecraftAllocationOrderID(order.orderID);
     end

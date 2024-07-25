@@ -15,7 +15,7 @@
 	</AnimationGroup>
 
     <!-- Button Panel Template -->
-    <Frame name="DelvesDashboardButtonPanelFrame" virtual="true">
+    <Frame name="DelvesDashboardButtonPanelFrame" mixin="DelvesDashboardButtonPanelFrameMixin" virtual="true">
 		<KeyValues>
 			<!-- If true, this button panel frame will use a highlighted background -->
 			<KeyValue type="boolean" key="isCompanionButtonPanelFrame" value="false"/> 
@@ -38,13 +38,17 @@
                     </Anchors>
                 </FontString>
                 <FontString parentKey="PanelDescription" inherits="GameFontNormalMed2" wordwrap="true" justifyV="TOP">
-                    <Size x="170" y="60"/>
+                    <Size x="160" y="55"/>
                     <Anchors>
-                        <Anchor point="TOP" relativeKey="$parent.PanelTitle" relativePoint="BOTTOM" y="3"/>
+                        <Anchor point="TOP" relativeKey="$parent.PanelTitle" relativePoint="BOTTOM" y="6"/>
                     </Anchors>
                 </FontString>
             </Layer>
         </Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
     </Frame>
 
     <!-- Reputation Threshold Templates -->
@@ -212,11 +216,11 @@
             </Layer>
 
             <Layer level="ARTWORK">
-                <FontString parentKey="ReputationBarTitle" inherits="GameFontHighlight">
-                    <Size x="300" y="25"/>
+                <FontString parentKey="ReputationBarTitle" inherits="GameFontHighlight" justifyH="LEFT">
+                    <Size x="475" y="25"/>
                     <Anchors>
 						<Anchor point="TOP" y="-55"/>
-						<Anchor point="LEFT" x="30"/>
+						<Anchor point="LEFT" x="35"/>
                     </Anchors>
                 </FontString>
             </Layer>
@@ -365,7 +369,7 @@
                             <Frame parentKey="GreatVaultButton" mixin="GreatVaultButtonMixin">
                                 <Size x="84" y="70"/>
                                 <Anchors>
-                                    <Anchor point="CENTER" y="-30"/>
+                                    <Anchor point="CENTER" x="-1" y="-20"/>
                                 </Anchors>
                                 <Layers>
                                     <Layer level="ARTWORK">

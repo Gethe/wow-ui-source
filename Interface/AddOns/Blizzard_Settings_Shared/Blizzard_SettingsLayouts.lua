@@ -36,6 +36,11 @@ function SettingsVerticalLayoutMixin:AddInitializer(initializer)
 end
 
 function SettingsVerticalLayoutMixin:AddMirroredInitializer(initializer)
+	if not initializer then
+		-- If initializer is nil it probably means the base setting doesn't exist in this game mode
+		return;
+	end
+
 	initializer:SetSearchIgnoredInLayout(self);
 	return self:AddInitializer(initializer);
 end

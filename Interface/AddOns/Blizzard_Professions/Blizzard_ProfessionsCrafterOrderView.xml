@@ -94,7 +94,7 @@
 						<FontString parentKey="TimeRemainingTitle" inherits="GameFontNormal" justifyH="RIGHT" text="TIME_REMAINING">
 							<Size x="130" y="15"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.FinalTipTitle" relativePoint="BOTTOMLEFT" x="0" y="-40"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent" relativePoint="BOTTOMRIGHT" x="-80" y="50"/>
 							</Anchors>
 						</FontString>
 						<FontString parentKey="TimeRemainingValue" inherits="GameFontHighlight" justifyH="LEFT">

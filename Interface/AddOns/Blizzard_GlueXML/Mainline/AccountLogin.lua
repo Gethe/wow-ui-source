@@ -2,7 +2,7 @@
 SHOW_KOREAN_RATINGS = SHOW_KOREAN_RATINGS or nil;
 SHOW_CHINA_AGE_APPROPRIATENESS_WARNING = SHOW_CHINA_AGE_APPROPRIATENESS_WARNING or nil;
 
-local function ShouldShowRegulationOverlay()
+function ShouldShowRegulationOverlay()
 	return SHOW_KOREAN_RATINGS or (SHOW_CHINA_AGE_APPROPRIATENESS_WARNING and not C_Login.WasEverLauncherLogin());
 end
 
