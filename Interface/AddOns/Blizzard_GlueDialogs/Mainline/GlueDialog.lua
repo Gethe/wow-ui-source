@@ -425,6 +425,7 @@ StaticPopupDialogs["ACCOUNT_CONVERSION_DISPLAY"] = {
 	button1 = nil,
 	button2 = nil,
 	cover = true,
+	ignoreKeys = true,
 	spinner = true,
 }
 

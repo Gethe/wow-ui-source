@@ -68,7 +68,7 @@ end
 
 local function _TimeManager_Setting_Set(cvar, field, value)
 	SetCVar(cvar, value);
-	Settings[field] = value;
+	Settings[field] = GetCVar(cvar);
 end
 
 local function _TimeManager_Setting_SetTime()

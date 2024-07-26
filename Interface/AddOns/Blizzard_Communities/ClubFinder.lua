@@ -831,7 +831,11 @@ function ClubFinderOptionsMixin:OnSearchButtonClick()
 		self:GetParent().GuildCards.newRequest = true;
 	end
 
-	C_ClubFinder.RequestClubsList(searchingForGuild, searchTerms, filteredSpecIDs);
+	if C_ClubFinder.IsValidSearchString(searchTerms) then
+		C_ClubFinder.RequestClubsList(searchingForGuild, searchTerms, filteredSpecIDs);
+	else
+		self.SearchBox:SetText("");
+	end
 end
 
 function ClubFinderOptionsMixin:InitializeRoleButton(button)

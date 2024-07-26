@@ -203,10 +203,6 @@ function MacMicrophoneAccessWarningMixin:OnLoad()
 end
 
 local function InitVoiceSettings(category, layout)
-	if not C_VoiceChat.IsEnabled() then
-		return;
-	end
-
 	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(CHAT_VOICE));
 
 	local function PopulateOptions(container, devices, defaultDeviceName)
@@ -526,21 +522,34 @@ local function Register()
 
 		Settings.SetupCVarDropdown(category, "Sound_MaxCacheSizeInBytes", Settings.VarType.Number, GetOptions, AUDIO_CACHE_SIZE, OPTION_TOOLTIP_AUDIO_CACHE_SIZE);
 	end
+	
+	-- Ping System
+	AudioOverrides.CreatePingSoundSettings(category, layout);
 
 	--Voice
 	if not IsOnGlueScreen() then
-		if C_VoiceChat.IsVoiceChatConnected() then
-			InitVoiceSettings(category, layout);
-		else
-			local function ContinueInitVoiceSettings()
-				InitVoiceSettings(category, layout);
-			end
-			EventUtil.ContinueAfterAllEvents(ContinueInitVoiceSettings, "VOICE_CHAT_CONNECTION_SUCCESS", "VOICE_CHAT_VAD_SETTINGS_UPDATED");
-		end
-	end
+		--[[
+		Initializing the voice settings requires the voice proxy process to be initialized. Continue to
+		make attempts until this occurs. No timeout.
+		]]--
 
-	-- Ping System
-	AudioOverrides.CreatePingSoundSettings(category, layout);
+		local timerHandle = nil;
+
+		local function TryInitVoiceSettings()
+			if C_VoiceChat.IsEnabled() and C_VoiceChat.IsInitialized() and C_VoiceChat.IsVoiceChatConnected() then
+				InitVoiceSettings(category, layout);
+
+				-- Check should not be necessary unless the callback is invoked before NewTicker returns,
+				-- but in case this ever changes, prevent the error here.
+				if timerHandle then
+					timerHandle:Cancel();
+				end
+			end
+		end
+
+		local timeSeconds = 5;
+		timerHandle = C_Timer.NewTicker(timeSeconds, TryInitVoiceSettings);
+	end
 
 	Settings.RegisterCategory(category, SETTING_GROUP_SYSTEM);
 end
