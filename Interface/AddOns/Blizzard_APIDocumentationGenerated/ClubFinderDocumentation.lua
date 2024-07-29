@@ -299,6 +299,20 @@ local ClubFinder =
 			},
 		},
 		{
+			Name = "IsValidSearchString",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isApproved", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "LookupClubPostingFromClubFinderGUID",
 			Type = "Function",
 

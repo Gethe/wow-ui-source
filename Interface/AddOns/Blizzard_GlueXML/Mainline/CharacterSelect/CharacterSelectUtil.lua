@@ -125,8 +125,8 @@ function CharacterSelectUtil.SetTooltipForCharacterInfo(characterInfo, character
 	local professionName1 = profession1 ~= 0 and GetSkillLineDisplayNameForRace(profession1, raceID) or nil;
 
 	-- Block 4
-	local currentRealmName = GetServerName();
-	local money = realmName == currentRealmName and characterInfo.money or 0;
+	local realmAddress = characterInfo.realmAddress;
+	local money = CharacterSelectUtil.IsSameRealmAsCurrent(realmAddress) and characterInfo.money or 0;
 
 	-- Block 5
 	local hasGearUpdate = characterID and IsRPEBoostEligible(characterID);
@@ -179,7 +179,7 @@ function CharacterSelectUtil.SetTooltipForCharacterInfo(characterInfo, character
 		GameTooltip_AddNormalLine(GlueTooltip, RPE_TOOLTIP_LINE1);
 		GameTooltip_AddNormalLine(GlueTooltip, RPE_TOOLTIP_LINE2);
 
-		if realmName ~= currentRealmName then
+		if not CharacterSelectUtil.IsSameRealmAsCurrent(realmAddress) then
 			GameTooltip_AddErrorLine(GlueTooltip, RPE_TOOLTIP_CHARACTER_ON_DIFFERENT_REALM);
 		end
 	end
@@ -199,4 +199,9 @@ function CharacterSelectUtil.GetFormattedCurrentRealmName()
 	end
 
 	return formattedRealmName;
+end
+
+function CharacterSelectUtil.IsSameRealmAsCurrent(realmAddress)
+	local currentRealmAddress = select(5, GetServerName());
+	return (currentRealmAddress and realmAddress) and realmAddress == currentRealmAddress;
 end

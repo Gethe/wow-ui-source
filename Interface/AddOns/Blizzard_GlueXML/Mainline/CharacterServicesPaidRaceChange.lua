@@ -33,10 +33,9 @@ function DoesClientThinkTheCharacterIsEligibleForPRC(characterID)
 	local errors = {};
 
 	if characterInfo then
-		local currentRealm = GetServerName();
-		local characterRealm = characterInfo.realmName;
-		CheckAddVASErrorString(errors, BLIZZARD_STORE_VAS_ERROR_CHARACTER_ON_DIFFERENT_REALM_1, currentRealm == characterRealm);
-		CheckAddVASErrorString(errors, BLIZZARD_STORE_VAS_ERROR_CHARACTER_ON_DIFFERENT_REALM_2, currentRealm == characterRealm);
+		local isSameRealm = CharacterSelectUtil.IsSameRealmAsCurrent(characterInfo.realmAddress);
+		CheckAddVASErrorString(errors, BLIZZARD_STORE_VAS_ERROR_CHARACTER_ON_DIFFERENT_REALM_1, isSameRealm);
+		CheckAddVASErrorString(errors, BLIZZARD_STORE_VAS_ERROR_CHARACTER_ON_DIFFERENT_REALM_2, isSameRealm);
 
 		CheckAddVASErrorCode(errors, Enum.VasError.UnderMinLevelReq, characterInfo.experienceLevel >= 10);
 		CheckAddVASErrorCode(errors, Enum.VasError.IsNpeRestricted, not IsCharacterNPERestricted(characterInfo.guid));

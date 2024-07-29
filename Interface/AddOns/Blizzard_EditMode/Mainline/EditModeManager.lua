@@ -1265,7 +1265,7 @@ function EditModeManagerFrameMixin:ResetDropdownToActiveLayout()
 end
 
 function EditModeManagerFrameMixin:MakeNewLayout(newLayoutInfo, layoutType, layoutName, isLayoutImported)
-	if newLayoutInfo and layoutName and layoutName ~= "" then
+	if newLayoutInfo and layoutName and layoutName ~= "" and C_EditMode.IsValidLayoutName(layoutName) then
 		newLayoutInfo.layoutType = layoutType;
 		newLayoutInfo.layoutName = layoutName;
 
@@ -1296,7 +1296,7 @@ function EditModeManagerFrameMixin:DeleteLayout(layoutIndex)
 end
 
 function EditModeManagerFrameMixin:RenameLayout(layoutIndex, layoutName)
-	if layoutName ~= "" then
+	if layoutName ~= "" and C_EditMode.IsValidLayoutName(layoutName) then
 		local renameLayoutInfo = self.layoutInfo.layouts[layoutIndex];
 		if renameLayoutInfo and renameLayoutInfo.layoutType ~= Enum.EditModeLayoutType.Preset then
 			renameLayoutInfo.layoutName = layoutName;

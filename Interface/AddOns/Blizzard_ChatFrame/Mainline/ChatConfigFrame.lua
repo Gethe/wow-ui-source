@@ -1245,6 +1245,9 @@ function CombatConfig_Settings_Update()
 end
 
 function CombatConfig_SetFilterName(name)
+	if ( not name or name == "" or not C_ChatInfo.IsValidCombatFilterName(name) ) then
+		name = format(DEFAULT_COMBATLOG_FILTER_NAME, #Blizzard_CombatLog_Filters.filters);
+	end
 	CHATCONFIG_SELECTED_FILTER.name = name;
 	ChatConfig_UpdateFilterList();
 end
