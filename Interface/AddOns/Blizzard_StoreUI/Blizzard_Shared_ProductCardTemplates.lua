@@ -588,7 +588,7 @@ function StoreProductCardItem_OnEnter(self)
 	local entryInfo = card:GetEntryInfo()
 	local x, y, point, rpoint = card:GetTooltipOffsets();
 
-	if entryInfo.sharedData.itemID  and not tbl.IsOnGlueScreen() then
+	if entryInfo.sharedData.itemID and not IsOnGlueScreen() then
 		self.hasItemTooltip = true;
 		StoreTooltip:Hide();
 		StoreOutbound.SetItemTooltip(entryInfo.sharedData.itemID, x, y, rpoint);

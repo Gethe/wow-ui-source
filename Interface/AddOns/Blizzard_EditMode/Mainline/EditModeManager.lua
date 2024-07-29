@@ -1096,11 +1096,11 @@ function EditModeManagerFrameMixin:UpdateDropdownOptions()
 				end);
 
 				local layoutsMaxed = EditModeManagerFrame:AreLayoutsFullyMaxed();
-				if layoutsMaxed or hasActiveChanges then
+				if layoutsMaxed or self:HasActiveChanges() then
 					copyButton:SetEnabled(false);
 
 					local tooltipText = layoutsMaxed and maxLayoutsCopyErrorText or HUD_EDIT_MODE_ERROR_COPY;
-					elementDescription:SetTooltip(function(tooltip, elementDescription)
+					copyButton:SetTooltip(function(tooltip, elementDescription)
 						GameTooltip_SetTitle(tooltip, HUD_EDIT_MODE_COPY_LAYOUT);
 						GameTooltip_AddErrorLine(tooltip, tooltipText);
 					end);

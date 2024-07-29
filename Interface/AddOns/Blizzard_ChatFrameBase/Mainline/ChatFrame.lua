@@ -3049,15 +3049,23 @@ function ChatFrame_RemoveMessageGroup(chatFrame, group)
 	end
 end
 
-function ChatFrame_RemoveAllMessageGroups(chatFrame)
+function ChatFrame_UnregisterAllMessageGroups(chatFrame)
 	for index, value in pairs(chatFrame.messageTypeList) do
 		for eventIndex, eventValue in pairs(ChatTypeGroup[value]) do
 			chatFrame:UnregisterEvent(eventValue);
 		end
-		RemoveChatWindowMessages(chatFrame:GetID(), value);
 	end
 
 	chatFrame.messageTypeList = {};
+end
+
+function ChatFrame_RemoveAllMessageGroups(chatFrame)
+	for index, value in pairs(chatFrame.messageTypeList) do
+		RemoveChatWindowMessages(chatFrame:GetID(), value);
+	end
+
+	-- Must be after "for" loop because this call clears messageTypeList.
+	ChatFrame_UnregisterAllMessageGroups(chatFrame);
 end
 
 function ChatFrame_ContainsChannel(chatFrame, channel)
@@ -3399,7 +3407,8 @@ function ChatFrame_ConfigEventHandler(self, event, ...)
 		if ( shown and not self.minimized ) then
 			self:Show();
 		end
-		-- Do more stuff!!!
+		-- UPDATE_CHAT_WINDOWS can be received before settings have been downloaded, so reset current state.
+		ChatFrame_UnregisterAllMessageGroups(self);
 		ChatFrame_RegisterForMessages(self, GetChatWindowMessages(self:GetID()));
 		ChatFrame_RegisterForChannels(self, GetChatWindowChannels(self:GetID()));
 

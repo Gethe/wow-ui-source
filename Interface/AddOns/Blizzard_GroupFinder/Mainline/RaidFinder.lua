@@ -204,7 +204,7 @@ function RaidFinderQueueFrame_OnShow(self)
 					foundMap = true;
 				else
 					if ( foundMap ) then
-						tinsert(sortedDungeons, i, t);
+						tinsert(sortedDungeons, index, t);
 						return;
 					end
 				end

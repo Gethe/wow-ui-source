@@ -133,7 +133,7 @@ function BonusObjectivePinMixin:OnAcquired(taskInfo)
 	self:SetStyle(self:GetPOIButtonStyle());
 	self:UpdateButtonStyle();
 
-	MapPinHighlight_CheckHighlightPin(self:GetHighlightType(), self, self.Texture);
+	MapPinHighlight_CheckHighlightPin(self:GetHighlightType(), self, self.NormalTexture);
 
 	if not HaveQuestRewardData(self.questID) then
 		C_TaskQuest.RequestPreloadRewardData(self.questID);
