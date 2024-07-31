@@ -2469,36 +2469,50 @@ function FriendsFrame_SetupTravelPassDropdown(friendIndex, attachedTo)
 
 		rootDescription:CreateTitle(TRAVEL_PASS_INVITE);
 
-		local numGameAccounts = BNGetNumFriendGameAccounts(friendIndex);
+		local numGameAccounts = C_BattleNet.GetFriendNumGameAccounts(friendIndex);
 		for i = 1, numGameAccounts do
-			local text;
+			local text = "";
 			local restriction = INVITE_RESTRICTION_NONE;
-			local hasFocus, characterName, client, realmName, realmID, faction, race, class, _, _, level, _, _, _, _, bnetIDGameAccount, _, _, _, wowProjectID = BNGetFriendGameAccountInfo(friendIndex, i);
-			if ( client == BNET_CLIENT_WOW ) then
-				if ( faction ~= playerFactionGroup ) then
-					restriction = INVITE_RESTRICTION_FACTION;
-				elseif(wowProjectID ~= WOW_PROJECT_ID) then
+			local gameAccountInfo = C_BattleNet.GetFriendGameAccountInfo(friendIndex, i);
+
+			if gameAccountInfo.clientProgram == BNET_CLIENT_WOW then
+				if (not C_PartyInfo.CanFormCrossFactionParties() or C_QuestSession.Exists()) and gameAccountInfo.factionName ~= playerFactionGroup then
+					if C_QuestSession.Exists() then
+						restriction = INVITE_RESTRICTION_QUEST_SESSION;
+					elseif not C_PartyInfo.CanFormCrossFactionParties() then
+						restriction = INVITE_RESTRICTION_FACTION;
+					end
+				elseif gameAccountInfo.wowProjectID ~= WOW_PROJECT_ID then
 					restriction = INVITE_RESTRICTION_WOW_PROJECT_ID;
-				elseif ( realmID == 0 ) then
+				elseif gameAccountInfo.realmID == 0 then
 					restriction = INVITE_RESTRICTION_INFO;
-				elseif ( realmID ~= playerRealmID ) then
-					-- The Classics don't allow grouping across realms
+				elseif (gameAccountInfo.wowProjectID == WOW_PROJECT_CLASSIC) and (gameAccountInfo.realmID ~= playerRealmID) then
 					restriction = INVITE_RESTRICTION_REALM;
 				end
-				if ( restriction == INVITE_RESTRICTION_NONE ) then
-					text = string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, characterName, level, race, class);
+				if restriction == INVITE_RESTRICTION_NONE then
+					text = string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, gameAccountInfo.characterName, gameAccountInfo.characterLevel, gameAccountInfo.raceName or UNKNOWN, gameAccountInfo.className or UNKNOWN);
 				else
-					text = string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, characterName..CANNOT_COOPERATE_LABEL, level, race, class);
+					text = string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, gameAccountInfo.characterName..CANNOT_COOPERATE_LABEL, gameAccountInfo.characterLevel, gameAccountInfo.raceName or UNKNOWN, gameAccountInfo.className or UNKNOWN);
 				end
 			else
 				restriction = INVITE_RESTRICTION_CLIENT;
-				text = BNet_GetClientEmbeddedAtlas(client, 18)..characterName;
+				if C_Texture.IsTitleIconTextureReady(gameAccountInfo.clientProgram, Enum.TitleIconVersion.Small) then
+					C_Texture.GetTitleIconTexture(gameAccountInfo.clientProgram, Enum.TitleIconVersion.Small, function(success, texture)
+						if success then
+							text = BNet_GetClientEmbeddedTexture(texture, 32, 32, 18);
+						end
+					end);
+				end
 			end
 
 			if ( restriction == INVITE_RESTRICTION_NONE ) then
 				rootDescription:CreateButton(text, function()
-					local guid = select(20, BNGetGameAccountInfo(bnetIDGameAccount));
-					FriendsFrame_InviteOrRequestToJoin(guid, bnetIDGameAccount);
+					local gameAccountID = gameAccountInfo.gameAccountID;
+					local gameAccountInfo = C_BattleNet.GetGameAccountInfoByID(gameAccountID);
+					local playerGuid = gameAccountInfo.playerGuid;
+					if playerGuid then
+						FriendsFrame_InviteOrRequestToJoin(playerGuid, gameAccountID);
+					end
 				end);
 			else
 				local button = rootDescription:CreateButton(text);

@@ -52,6 +52,7 @@ function MapIndicatorQuestDataProviderMixin:AddMapIndicatorQuest(info)
 	local worldQuestType = info.type;
 	local inProgress = false; --We don't want this to display like a normal quest that's in progress.
 	local tagInfo = C_QuestLog.GetQuestTagInfo(pin.questID);
+	info.worldQuestType = info.type; -- massage data to look like a taskInfo
 
 	local atlas, width, height = QuestUtil.GetWorldQuestAtlasInfo(pin.questID, info, inProgress);
 	pin.Icon:SetAtlas(atlas);
@@ -64,7 +65,18 @@ MapIndicatorQuestPinMixin = CreateFromMixins(MapCanvasPinMixin);
 
 function MapIndicatorQuestPinMixin:OnLoad()
 	WorldQuestPinMixin.OnLoad(self);
+end
+
+function MapIndicatorQuestPinMixin:SetDefaultMapPinScale()
 	self:SetScalingLimits(1, 0.8, 0.8);
+end
+
+function MapIndicatorQuestPinMixin:OnLegendPinMouseEnter()
+
+end
+
+function MapIndicatorQuestPinMixin:OnLegendPinMouseLeave()
+
 end
 
 function MapIndicatorQuestPinMixin:OnAcquired()

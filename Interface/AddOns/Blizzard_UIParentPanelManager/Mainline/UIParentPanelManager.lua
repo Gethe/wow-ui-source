@@ -1,3 +1,7 @@
+if not IsInGlobalEnvironment() then
+	return;
+end
+
 -- UIPanel Management constants
 UIPANEL_SKIP_SET_POINT = true;
 UIPANEL_DO_SET_POINT = nil;
@@ -14,7 +18,7 @@ local FRAME_POSITION_KEYS = {
 	fullscreen = 5,
 };
 
---[[ 
+--[[
 UIPanelWindow attributes
 ======================================================
 area: [string]  --  Desired area of UIParent the frame should show in. Depending on chosen area and other settings, where a frame actually shows can vary when multiple frames are open.
@@ -33,7 +37,7 @@ pushable: [0,1,..n]  --  (attribute used by frames using areas left/doublewide)
 					 --  If > 0, frame can be pushed to other areas than area attribute when other frames are also open.
 					 --  Pushable frames are sorted by their pushable values, lower to higher, left to right.
 					 --  Equal pushable value frames are sorted by how recently they were shown, oldest to newest, left to right.
-whileDead: [0,1]  --  If 0, frame cannot be opened while the player is dead. 
+whileDead: [0,1]  --  If 0, frame cannot be opened while the player is dead.
 ignoreControlLost: [bool]  --  If true, do not close the frame when player loses control of character (ie when feared).
 showFailedFunc: [func]  --  Function to call when attempting to show the frame via ShowUIPanel fails.
 width: [number]  --  Override width to use instead of the frame's actual width for layout/position calculations.
@@ -587,7 +591,7 @@ function FramePositionDelegate:IsAnyOtherUIPanelOpen(frame)
 	local rightPanel = self:GetUIPanel("right");
 	local doubleWidePanel = self:GetUIPanel("doublewide");
 
-	return (leftPanel and leftPanel ~= frame) 
+	return (leftPanel and leftPanel ~= frame)
 		or (centerPanel and centerPanel ~= frame)
 		or (rightPanel and rightPanel ~= frame)
 		or (doubleWidePanel and doubleWidePanel ~= frame);
@@ -650,7 +654,7 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 	frame = self:GetUIPanel("center");
 	if ( frame ) then
 		self:EvaluteAutoMinimize(frame);
-		
+
 		if ( CanShowCenterUIPanel(frame) ) then
 			local area = GetUIPanelAttribute(frame, "area");
 			if ( area == "centerOrLeft" ) then

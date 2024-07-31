@@ -2707,6 +2707,11 @@ function EncounterJournal_OnFilterChanged(self)
 	EncounterJournal_LootUpdate();
 end
 
+function EncounterJournal_SetClassAndSpecFilter(self, classID, specID)
+	EJ_SetLootFilter(classID, specID);
+	EncounterJournal_OnFilterChanged(self);
+end
+
 function EncounterJournal_SetSlotFilterInternal(self, slot)
 	C_EncounterJournal.SetSlotFilter(slot);
 	EncounterJournal_OnFilterChanged(self);
