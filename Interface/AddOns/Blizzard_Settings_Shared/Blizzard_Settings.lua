@@ -5,7 +5,6 @@
 --]]
 Settings = 
 {
-	UnsavedVariableTbl = nil,
 	CannotDefault = nil,
 };
 
@@ -116,11 +115,6 @@ function SettingsSearchableElementMixin:ShouldShow()
 	return true;
 end
 
-function Settings.CreateCanvasMixin()
-	local canvas = CreateFromMixins(SettingsCanvasMixin);
-	return canvas;
-end
-
 function Settings.CreateCategory(name)
 	local category = CreateFromMixins(SettingsCategoryMixin);
 	category:Init(name);
@@ -176,14 +170,12 @@ function Settings.RegisterInitializer(category, initializer)
 	SettingsInbound.RegisterInitializer(category, initializer);
 end
 
-function Settings.RegisterAddOnSetting(categoryTbl, name, variable, variableKey, variableTbl, variableType, defaultValue)
+function Settings.RegisterAddOnSetting(categoryTbl, variable, variableKey, variableTbl, variableType, name, defaultValue)
 	return SettingsInbound.CreateAddOnSetting(categoryTbl, name, variable, variableKey, variableTbl, variableType, defaultValue);
 end
 
 function Settings.RegisterProxySetting(categoryTbl, variable, variableType, name, defaultValue, getValue, setValue)
-	local setting = CreateAndInitFromMixin(ProxySettingMixin, name, variable, variableType, defaultValue, getValue, setValue);
-	SettingsInbound.RegisterSetting(categoryTbl, setting);
-	return setting;
+	return SettingsInbound.CreateProxySetting(categoryTbl, name, variable, variableType, defaultValue, getValue, setValue);
 end
 
 function Settings.RegisterCVarSetting(categoryTbl, variable, variableType, name)

@@ -502,6 +502,7 @@ local StandardBaseMenuAPI =
 	"GetMinimumWidth",
 	"SetMaximumWidth",
 	"SetGridMode",
+	"SetScrollMode",
 };
 
 local RootMenuDescriptionProxyMixin;
@@ -514,7 +515,6 @@ do
 		"AddMenuReleasedCallback",
 		"DisableCompositor",
 		"DisableReacquireFrames",
-		"SetScrollMode",
 	};
 	tAppendAll(Funcs, StandardBaseMenuAPI);
 
@@ -995,8 +995,13 @@ local function ResetMenuElement(pool, frame, new)
 	if not new then
 		TryHideTooltip(frame);
 
-		-- Clear scripts prior to clearing anchors, otherwise the
-		-- OnLeave() script can be called.
+		--[[
+		Clear scripts to ensure they cannot be called when the pool removes this frame's anchors.
+		Any callback assigned to the menu description will be unavailable now that the
+		compositor has flushed the state associated with the frame. However, by the time
+		we reach this function, this frame should have already been explicitly hidden by the menu
+		system during close, causing the OnLeave to be called if it were necessary.
+		]]--
 		frame:SetScript("OnEnter", nil);
 		frame:SetScript("OnLeave", nil);
 		frame:SetParent(frameDummy);
@@ -1579,10 +1584,17 @@ function MenuMixin:Close()
 	
 	menuFrame.ScrollBox:RemoveDataProvider();
 	
+	-- All scripts must be finished before the compositor flushes our keys.
+
 	if self.onCloseCallback then
 		self.onCloseCallback(menuFrame);
 	end
 
+	-- Hide is necessary here to ensure any OnLeave scripts are fired on child frames before
+	-- the compositor flushes our keys.
+	menuFrame:Hide();
+
+	-- Warning! All state on menu and its children will be flushed.
 	self:DiscardChildFrames();
 
 	self.compositor:Detach();
@@ -1677,6 +1689,10 @@ function MenuProxyMixin:Close()
 	Menu.GetManager():CloseMenu(self);
 end
 
+function MenuProxyMixin:GetOwnerRegion()
+	return self.ownerRegion;
+end
+
 local MenuManagerMixin = CreateFromMixinsPrivate(ProxyConvertablePrivateMixin);
 
 function MenuManagerMixin:Init(proxy)
@@ -1765,19 +1781,27 @@ function MenuManagerMixin:RemoveMenu(menu)
 		return;
 	end
 
+	self:CollapseMenusUntilLevel(menu:GetLevel());
+
+	-- All scripts must be finished before the compositor flushes our keys.
+	-- Notify listeners that the menu is closing.
+	menu.menuDescription:GetMenuReleasedCallbacks():ExecuteRange(function(index, onReleased)
+		onReleased(proxy);
+	end);
+
+	--[[
+	Close the menu. On return this needs to have finished executing all supported scripts and
+	callbacks registered on the menu description object, as the compositor will have flushed our
+	keys.
+	]]--
+	menu:Close();
+	
 	--[[
 	The proxy for a menu must be manually removed because a pool frame is never
 	dereferenced and will always persist.
 	]]
 	local proxy = menu:ToProxy();
 	Proxies:RemoveProxy(proxy);
-
-	-- Notify listeners that the menu is closing.
-	menu.menuDescription:GetMenuReleasedCallbacks():ExecuteRange(function(index, onReleased)
-		onReleased(proxy);
-	end);
-
-	menu:Close();
 
 	-- Renable any scrolling we disabled when the menu was opened.
 	local data = self.disabledScrollRegionData;
@@ -1923,6 +1947,7 @@ function MenuManagerMixin:AcquireMenu(params)
 			strata = "TOOLTIP";
 		end
 	end
+	proxy.ownerRegion = ownerRegion;
 	proxy:SetFrameStrata(strata);
 
 	local window = parent:GetWindow();

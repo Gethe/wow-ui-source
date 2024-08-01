@@ -12,7 +12,7 @@ local STABLE_FRAME_SWAP_TIMEOUT_SECONDS = 0.3; -- 300ms
 
 local STABLED_PETS_FIRST_SLOT_LUA_INDEX = Constants.PetConsts_PostCata.STABLED_PETS_FIRST_SLOT_INDEX + 1;
 local EXTRA_PET_STABLE_SLOT_LUA_INDEX = Constants.PetConsts_PostCata.EXTRA_PET_STABLE_SLOT + 1;
-local MAX_PET_SLOT_LUA_INDEX = Constants.PetConsts_PostCata.NUM_PET_SLOTS + 1;
+local MAX_PET_SLOT_INDEX = Constants.PetConsts_PostCata.NUM_PET_SLOTS_HUNTER;
 
 local STABLE_FRAME_ON_LOAD_EVENTS = {
 	"PET_STABLE_SHOW",
@@ -99,7 +99,7 @@ local function GetSummonedPet()
 end
 
 local function FindFirstPet()
-	for i=1, MAX_PET_SLOT_LUA_INDEX do
+	for i=1, MAX_PET_SLOT_INDEX do
 		local petInfo = C_StableInfo.GetStablePetInfo(i);
 		if petInfo then
 			return petInfo;
@@ -114,7 +114,8 @@ local function FindFirstUnusedStableSlot()
 
 	local targetSlot = nil;
 
-	for i=STABLED_PETS_FIRST_SLOT_LUA_INDEX, MAX_PET_SLOT_LUA_INDEX do
+	-- Check all stable slots besides extra pet slot. That is used as a last resort if no other slot is free.
+	for i = (STABLED_PETS_FIRST_SLOT_LUA_INDEX + 1), MAX_PET_SLOT_INDEX do
 		local petInfo = C_StableInfo.GetStablePetInfo(i);
 		if not petInfo then
 			targetSlot = i;
@@ -124,11 +125,11 @@ local function FindFirstUnusedStableSlot()
 
 	if not targetSlot then
 		if not C_StableInfo.GetStablePetInfo(EXTRA_PET_STABLE_SLOT_LUA_INDEX) then
-			-- If we found no empty slots but the extra pet slot is open use that
+			-- If we found no empty slots, but the extra pet slot is open, use that.
 			targetSlot = EXTRA_PET_STABLE_SLOT_LUA_INDEX;
 		else
-			-- Otherwise just swap with the first stable slot
-			targetSlot = STABLED_PETS_FIRST_SLOT_LUA_INDEX;
+			-- Otherwise, just swap with the first stable slot after the extra pet slot.
+			targetSlot = EXTRA_PET_STABLE_SLOT_LUA_INDEX + 1;
 		end
 	end
 
@@ -344,7 +345,7 @@ function StableFrameMixin:SetupPetCounter()
 	end
 
 	local totalNumPets = totalStabled + totalActive;
-	local counterText = STABLE_PET_COUNTER:format(totalNumPets, Constants.PetConsts_PostCata.NUM_PET_SLOTS);
+	local counterText = STABLE_PET_COUNTER:format(totalNumPets, Constants.PetConsts_PostCata.NUM_PET_SLOTS_HUNTER);
 	self.StabledPetList.ListCounter.Count:SetText(counterText);
 end
 
@@ -644,7 +645,7 @@ function StableActivePetButtonTemplateMixin:RefreshTooltip()
 		local nextCallPetSpellID = CALL_PET_SPELL_IDS[self:GetID()];
 		local spellInfo = C_Spell.GetSpellInfo(nextCallPetSpellID);
 		if (spellInfo.name and spellInfo.name ~= "") then
-			GameTooltip_AddHighlightLine(GameTooltip, PET_STABLE_SLOT_LOCKED_TOOLTIP:format(spellName));
+			GameTooltip_AddHighlightLine(GameTooltip, PET_STABLE_SLOT_LOCKED_TOOLTIP:format(spellInfo.name));
 		end
 	elseif not self:IsEnabled() and self.disabledTooltip then
 		GameTooltip_AddErrorLine(GameTooltip, self.disabledTooltip);

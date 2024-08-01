@@ -312,18 +312,7 @@ function MenuTemplates.CreateColorSwatch(text, callback, colorInfo)
 		frame.colorSwatch = colorSwatch;
 		colorSwatch:SetPoint("RIGHT");
 		colorSwatch:SetSize(16, 16);
-		colorSwatch:SetPropagateKeyboardInput(true);
 		colorSwatch:SetColorRGB(colorInfo.r, colorInfo.g, colorInfo.b);
-
-		-- Input is not propagating through the color swatch to the parent
-		-- button. Resolve later.
-		--colorSwatch:SetScript("OnEnter", function()
-		--	colorSwatch:SetBorderColor(NORMAL_FONT_COLOR);
-		--end);
-		--
-		--colorSwatch:SetScript("OnLeave", function()
-		--	colorSwatch:SetBorderColor(HIGHLIGHT_FONT_COLOR);
-		--end);
 	end
 	
 	local elementDescription = CreateButtonDescription(colorInfo);
@@ -339,15 +328,13 @@ do
 	end
 
 	function MenuTemplates.AttachAutoHideButton(parent, textureName)
-		local button = parent:AttachFrame("Button");
-		button:SetPropagateMouseMotion(true);
+		local button = parent:AttachTemplate("WowMenuAutoHideButtonTemplate");
 		button:Hide();
 	
 		button:SetScript("OnLeave", OnAutoHideButtonLeave);
 	
-		local texture = button:AttachTexture();
+		local texture = button.Texture;
 		texture:SetTexture(textureName);
-		texture:SetAllPoints();
 	
 		local onEnter = parent.OnEnter or nop;
 		parent.OnEnter = function(...)

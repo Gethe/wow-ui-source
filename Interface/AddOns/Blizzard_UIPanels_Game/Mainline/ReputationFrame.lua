@@ -478,13 +478,20 @@ function ReputationEntryMixin:RefreshBackgroundHighlightColor()
 end
 
 function ReputationEntryMixin:RefreshBackgroundHighlightOpacity()
-	local entryNeedsHighlight = self:IsSelected() or self:IsMouseOver();
+	-- "At War" entries always have a highlight, even if not selected or moused over.
+	local isSelected, isMouseOver, isAtWar = self:IsSelected(), self:IsMouseOver(), self:IsAtWar();
+	local entryNeedsHighlight = isSelected or isMouseOver or isAtWar;
 	if not entryNeedsHighlight then
 		self.Content.BackgroundHighlight:SetAlpha(0);
 		return;
 	end
 
-	local alpha = self:IsAtWar() and 0.55 or 0.10;
+	local alpha = 0;
+	if isAtWar then
+		alpha = (isSelected and 0.85) or (isMouseOver and 0.65) or 0.50;
+	else
+		alpha = (isSelected and 0.20) or (isMouseOver and 0.10) or 0;
+	end
 	self.Content.BackgroundHighlight:SetAlpha(alpha);
 end
 

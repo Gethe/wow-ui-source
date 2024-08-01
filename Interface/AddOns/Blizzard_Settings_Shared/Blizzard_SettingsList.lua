@@ -1,4 +1,3 @@
-
 local securecallfunction = securecallfunction;
 local pairs = pairs;
 
@@ -95,11 +94,12 @@ end
 -- Used when a setting value change results in other settings needing to have their
 -- visibility changed. For example, checking a bool setting may hide one child, but show
 -- another.
-function SettingsListMixin:RepairDisplay(initializers)
+
+function SettingsListMixin:RepairDisplay(layout)
 	-- The order isn't stored on the initializer itself because initializers can be mirrored in
 	-- another settings lists, namely Acessibility.
 	local order = {};
-	for index, initializer in ipairs(initializers) do
+	for index, initializer in layout:EnumerateInitializers() do
 		order[initializer] = index;
 	end
 
@@ -115,7 +115,7 @@ function SettingsListMixin:RepairDisplay(initializers)
 	end
 
 	-- Add any newly shown, out of position at the end. Will be corrected when sorted.
-	for index, initializer in EnumerateTaintedKeysTable(initializers) do
+	for index, initializer in EnumerateTaintedKeysTable(layout:GetInitializers()) do
 		if not shown[initializer] and initializer:ShouldShow() then
 			dataProvider:Insert(initializer);
 		end

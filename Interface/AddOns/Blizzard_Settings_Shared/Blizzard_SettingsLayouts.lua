@@ -46,7 +46,12 @@ function SettingsVerticalLayoutMixin:AddMirroredInitializer(initializer)
 end
 
 function SettingsVerticalLayoutMixin:EnumerateInitializers()
-	return CreateTableEnumerator(self.initializers);
+	local iterator, tbl, index = next, self.initializers, nil;
+	local function Iterator(_, index)
+		return securecallfunction(iterator, tbl, index);
+	end
+
+	return Iterator, nil, index;
 end
 
 function CreateVerticalLayout()

@@ -736,8 +736,6 @@ function ObjectiveTrackerTopBannerMixin:PlayBanner()
 	self:SetAlpha(1);
 	self.SlideAnim:Stop();
 	self.PopAnim:Restart();
-	-- timer to put the quest in the tracker
-	C_Timer.After(2.15, GenerateClosure(self.OnFinish, self));
 end
 
 -- called by TopBannerManager
@@ -745,6 +743,7 @@ function ObjectiveTrackerTopBannerMixin:StopBanner()
 	self.PopAnim:Stop();
 	self.SlideAnim:Stop();
 	self:Hide();
+	self:Finish();
 end
 
 function ObjectiveTrackerTopBannerMixin:OnPopAnimFinished()
@@ -763,9 +762,10 @@ end
 
 function ObjectiveTrackerTopBannerMixin:OnSlideAnimFinished()
 	self:Hide();
+	self:Finish();
 end
 
-function ObjectiveTrackerTopBannerMixin:OnFinish()
+function ObjectiveTrackerTopBannerMixin:Finish()
 	-- TODO: figure out why sometimes there is no .module
 	if self.module then
 		self.module:SetNeedsFanfare(self.questID);

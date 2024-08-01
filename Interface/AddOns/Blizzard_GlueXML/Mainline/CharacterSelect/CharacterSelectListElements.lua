@@ -736,7 +736,7 @@ end
 function CharacterSelectListCharacterInnerContentMixin:SetupPadlock()
 	local padlock = CharacterSelect.characterPadlockPool:Acquire();
 	self.padlock = padlock;
-	padlock.characterSelectButton = self;
+	padlock.characterSelectButton = self:GetParent();
 
 	local characterInfo = self.characterInfo;
 	local guid = characterInfo.guid;

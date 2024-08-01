@@ -8,6 +8,7 @@ local DELVES_DIFFICULTY_PICKER_EVENTS = {
 	"GROUP_FORMED",
 	"WALK_IN_DATA_UPDATE",
 	"ACTIVE_DELVE_DATA_UPDATE",
+	"PARTY_ELIGIBILITY_FOR_DELVE_TIERS_CHANGED",
 };
 
 -- Max number of rewards shown on the right side of the UI
@@ -63,6 +64,9 @@ function DelvesDifficultyPickerFrameMixin:OnEvent(event, ...)
 		self:SetupOptions();
 	elseif event == "ACTIVE_DELVE_DATA_UPDATE" or event == "WALK_IN_DATA_UPDATE" then
 		self:CheckForActiveDelveAndUpdate();
+	elseif event == "PARTY_ELIGIBILITY_FOR_DELVE_TIERS_CHANGED" then
+		local playerName, maxEligibleLevel = ...;
+		self:OnPartyEligibilityChanged(playerName, maxEligibleLevel);
 	end 
 end 
 
@@ -78,6 +82,10 @@ function DelvesDifficultyPickerFrameMixin:OnShow()
 	self:SetInitialLevel();
 	self:CheckForActiveDelveAndUpdate();
 	self:TryShowHelpTip();
+	self.partyTierEligibility = {};
+	if self.gossipOptions then
+		C_DelvesUI.RequestPartyEligibilityForDelveTiers(self.gossipOptions[1].gossipOptionID);
+	end
 end
 
 function DelvesDifficultyPickerFrameMixin:TryShowHelpTip()
@@ -151,6 +159,14 @@ function DelvesDifficultyPickerFrameMixin:SetupDropdown()
 			spell:ContinueWithCancelOnSpellLoad(function()
 				radio:SetTooltip(function(tooltip, elementDescription)
 					GameTooltip_AddNormalLine(tooltip, spell:GetSpellDescription());
+					local partyTierEligibility = DelvesDifficultyPickerFrame:GetPartyTierEligibility();
+					if not isLocked and partyTierEligibility ~= nil then
+						for playerName,maxEligibleLevel in pairs(partyTierEligibility) do
+							if maxEligibleLevel < option.orderIndex then
+								GameTooltip_AddErrorLine(tooltip, DELVES_PARTY_MEMBER_INELIGIBLE_FOR_TIER_TOOLTIP:format(playerName), false);
+							end
+						end
+					end
 				end);
 			end);
 		end
@@ -339,6 +355,22 @@ function DelvesDifficultyPickerEnterDelveButtonMixin:OnEnter()
 		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", 175);
 		GameTooltip_AddErrorLine(GameTooltip, DELVES_ERR_TIER_INELIGIBLE);
 		GameTooltip:Show();
+	else
+		local partyTierEligibility = self:GetParent():GetPartyTierEligibility();
+		if partyTierEligibility ~= nil then
+			GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", 50);
+			local ineligibleParty = false;
+			for playerName,maxEligibleLevel in pairs(partyTierEligibility) do
+				if maxEligibleLevel < selectedOption.orderIndex then
+					GameTooltip_AddErrorLine(GameTooltip, DELVES_PARTY_MEMBER_INELIGIBLE_FOR_TIER_TOOLTIP:format(playerName), false);
+					ineligibleParty = true;
+				end
+			end
+
+			if ineligibleParty then
+				GameTooltip:Show();
+			end
+		end
 	end
 end 
 
@@ -354,6 +386,14 @@ function DelvesDifficultyPickerEnterDelveButtonMixin:OnClick()
 	PlaySound(SOUNDKIT.PVP_ENTER_QUEUE);
 	C_GossipInfo.SelectOptionByIndex(selectedLevel);
 end 
+
+function DelvesDifficultyPickerFrameMixin:OnPartyEligibilityChanged(playerName, maxEligibleLevel)
+	self.partyTierEligibility[playerName] = maxEligibleLevel;
+end
+
+function DelvesDifficultyPickerFrameMixin:GetPartyTierEligibility()
+	return self.partyTierEligibility;
+end
 
 --[[ Rewards Container + Buttons ]]
 DelveRewardsContainerFrameMixin = {};

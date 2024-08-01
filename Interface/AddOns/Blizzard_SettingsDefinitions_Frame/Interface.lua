@@ -371,7 +371,7 @@ local function Register()
 
 		local trivialQuestFilterSetting = Settings.RegisterProxySetting(category, "PROXY_TRIVIAL_QUEST_FILTERING",
 			Settings.VarType.Boolean, SETTINGS_TRIVIAL_QUEST_FILTER, Settings.Default.False, IsTrackingTrivialQuests, SetTrivialQuestTracking);
-		Settings.CreateCheckbox(category, trivialQuestFilterSetting);
+		Settings.CreateCheckbox(category, trivialQuestFilterSetting, TRIVIAL_QUESTS_FILTER_DESCRIPTION);
 	end
 
 	InterfaceOverrides.AdjustDisplaySettings(category);

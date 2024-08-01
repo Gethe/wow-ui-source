@@ -1204,29 +1204,28 @@
 		</Scripts>
 	</Frame>
 	
-	
-	<Frame name="CharacterDeleteDialog" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true">
+	<Frame name="CharacterDeleteDialog" mixin="CharacterDeletionDialogMixin" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true">
 		<Frames>
-			<Frame name="CharacterDeleteBackground">
+			<Frame parentKey="Background">
 				<Size x="512" y="256"/>
 				<Anchors>
 					<Anchor point="CENTER" x="0" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString name="CharacterDeleteText1" inherits="GlueFontNormalLarge">
+						<FontString parentKey="Text1" inherits="GlueFontNormalLarge">
 							<Size x="400" y="0"/>
 							<Anchors>
 								<Anchor point="TOP" x="0" y="-16"/>
 							</Anchors>
 						</FontString>
-						<FontString name="CharacterDeleteText2" inherits="GlueFontNormalSmall" text="CONFIRM_CHAR_DELETE_INSTRUCTIONS">
+						<FontString parentKey="Text2" inherits="GlueFontNormalSmall" text="CONFIRM_CHAR_DELETE_INSTRUCTIONS">
 							<Size x="400" y="0"/>
 							<Anchors>
-								<Anchor point="TOP" relativeTo="CharacterDeleteText1" relativePoint="BOTTOM" x="0" y="-20"/>
+								<Anchor point="TOP" relativeKey="$parent.Text1" relativePoint="BOTTOM" x="0" y="-20"/>
 							</Anchors>
 						</FontString>
-						<Texture name="CharacterDeleteAlertIcon" file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew">
+						<Texture parentKey="Icon" file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew">
 							<Size x="48" y="48"/>
 							<Anchors>
 								<Anchor point="LEFT" x="24" y="10"/>
@@ -1236,35 +1235,24 @@
 				</Layers>
 				<Frames>
 					<Frame parentKey="BG" inherits="DialogBorderTemplate"/>
-					<Button name="CharacterDeleteButton1" inherits="GlueDialogButtonTemplate" id="1" text="OKAY">
+					<Button parentKey="Button1" inherits="GlueDialogButtonTemplate" id="1" text="OKAY">
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT" relativeTo="CharacterDeleteBackground" relativePoint="BOTTOM">
+							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM">
 								<Offset x="-6" y="16"/>
 							</Anchor>
 						</Anchors>
-						<Scripts>
-							<OnClick>
-								CharacterSelect_DeleteCharacter(CharacterSelectListUtil.GetCharIDFromIndex(CharacterSelect.selectedIndex));
-							</OnClick>
-						</Scripts>
 					</Button>
-					<Button name="CharacterDeleteButton2" inherits="GlueDialogButtonTemplate" id="2" text="CANCEL">
+					<Button parentKey="Button2" inherits="GlueDialogButtonTemplate" id="2" text="CANCEL">
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="CharacterDeleteButton1" relativePoint="RIGHT" x="13" y="0"/>
+							<Anchor point="LEFT" relativeKey="$parent.Button1" relativePoint="RIGHT" x="13" y="0"/>
 						</Anchors>
-						<Scripts>
-							<OnClick>
-								CharacterDeleteDialog:Hide();
-								PlaySound(SOUNDKIT.GS_TITLE_OPTION_EXIT);
-							</OnClick>
-						</Scripts>
 					</Button>
 				</Frames>
 			</Frame>
-			<EditBox name="CharacterDeleteEditBox" letters="32" historyLines="1">
+			<EditBox parentKey="EditBox" letters="32" historyLines="1">
 				<Size x="130" y="32"/>
 				<Anchors>
-					<Anchor point="TOP" relativeTo="CharacterDeleteText2" relativePoint="BOTTOM" x="0" y="-5"/>
+					<Anchor point="TOP"  relativeKey="$parent.Background.Text2" relativePoint="BOTTOM" x="0" y="-5"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -1284,32 +1272,16 @@
 						</Texture>
 					</Layer>
 				</Layers>
-				<Scripts>
-					<OnTextChanged>
-						CharacterDeleteButton1:SetEnabled(ConfirmationEditBoxMatches(self, DELETE_CONFIRM_STRING));
-					</OnTextChanged>
-					<OnEnterPressed>
-						if ( CharacterDeleteButton1:IsEnabled() ) then
-							CharacterSelect_DeleteCharacter(CharacterSelectListUtil.GetCharIDFromIndex(CharacterSelect.selectedIndex));
-						end
-					</OnEnterPressed>
-					<OnEscapePressed>
-						CharacterDeleteDialog:Hide();
-					</OnEscapePressed>
-				</Scripts>
 				<FontString inherits="GlueFontHighlight"/>
 			</EditBox>
 		</Frames>
 		<Scripts>
-			<OnShow>
-				self:Raise();
-				CharacterDeleteDialog_OnShow();
-			</OnShow>
-			<OnHide>
-				CharacterDeleteEditBox:SetText("");
-			</OnHide>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
+
 	<Frame name="CharacterRenameDialog" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true">
 		<Frames>
 			<Frame name="CharacterRenameBackground">

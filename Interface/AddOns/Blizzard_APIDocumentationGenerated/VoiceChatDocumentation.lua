@@ -34,6 +34,15 @@ local VoiceChat =
 			},
 		},
 		{
+			Name = "CanAccessSettings",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canAccess", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CanPlayerUseVoiceChat",
 			Type = "Function",
 
@@ -399,15 +408,6 @@ local VoiceChat =
 			Returns =
 			{
 				{ Name = "isEnabled", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "IsInitialized",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "isInitialized", Type = "bool", Nilable = false },
 			},
 		},
 		{

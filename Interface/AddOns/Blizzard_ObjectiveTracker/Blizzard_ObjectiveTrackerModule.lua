@@ -617,7 +617,9 @@ function ObjectiveTrackerModuleMixin:ForceExpand()
 	if self:IsCollapsed() then
 		self:ToggleCollapsed();
 	end
-	self.parentContainer:ForceExpand();
+	if self.parentContainer then
+		self.parentContainer:ForceExpand();
+	end
 	self:MarkDirty();
 end
 

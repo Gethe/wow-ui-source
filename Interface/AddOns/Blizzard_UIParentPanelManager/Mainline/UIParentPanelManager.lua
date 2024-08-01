@@ -1,3 +1,7 @@
+if not IsInGlobalEnvironment() then
+	return;
+end
+
 -- UIPanel Management constants
 UIPANEL_SKIP_SET_POINT = true;
 UIPANEL_DO_SET_POINT = nil;
@@ -14,7 +18,7 @@ local FRAME_POSITION_KEYS = {
 	fullscreen = 5,
 };
 
---[[ 
+--[[
 UIPanelWindow attributes
 ======================================================
 area: [string]  --  Desired area of UIParent the frame should show in. Depending on chosen area and other settings, where a frame actually shows can vary when multiple frames are open.
@@ -33,7 +37,7 @@ pushable: [0,1,..n]  --  (attribute used by frames using areas left/doublewide)
 					 --  If > 0, frame can be pushed to other areas than area attribute when other frames are also open.
 					 --  Pushable frames are sorted by their pushable values, lower to higher, left to right.
 					 --  Equal pushable value frames are sorted by how recently they were shown, oldest to newest, left to right.
-whileDead: [0,1]  --  If 0, frame cannot be opened while the player is dead. 
+whileDead: [0,1]  --  If 0, frame cannot be opened while the player is dead.
 ignoreControlLost: [bool]  --  If true, do not close the frame when player loses control of character (ie when feared).
 showFailedFunc: [func]  --  Function to call when attempting to show the frame via ShowUIPanel fails.
 width: [number]  --  Override width to use instead of the frame's actual width for layout/position calculations.
@@ -313,11 +317,16 @@ function FramePositionDelegate:ShowUIPanel(frame, force, contextKey)
 			-- Set as left (closes doublewide) and slide over the right frame
 			self:SetUIPanel("left", frame, 1);
 			self:MoveUIPanel("right", "center");
-		elseif ( CanShowRightUIPanel(frame) ) then
-			-- Set as right
-			self:SetUIPanel("right", frame);
 		else
-			self:SetUIPanel("left", frame);
+			-- If the new frame can be minimized it may fit in the right slot with the existing
+			-- doublewide frame. Otherwise it will have to replace it in the left slot.
+			self:EvaluateAutoMinimize(frame);
+
+			if ( CanShowRightUIPanel(frame) ) then
+				self:SetUIPanel("right", frame);
+			else
+				self:SetUIPanel("left", frame);
+			end
 		end
 		return;
 	end
@@ -501,9 +510,10 @@ function FramePositionDelegate:MoveUIPanel(current, new, skipSetPoint, skipOpera
 		self[current]:Raise();
 		self[new] = self[current];
 		self[current] = nil;
-		if ( not skipSetPoint ) then
-			securecall("UpdateUIPanelPositions", self[new]);
-		end
+	end
+
+	if ( not skipSetPoint ) then
+		securecall("UpdateUIPanelPositions", self[new]);
 	end
 end
 
@@ -588,7 +598,7 @@ function FramePositionDelegate:IsAnyOtherUIPanelOpen(frame)
 	local rightPanel = self:GetUIPanel("right");
 	local doubleWidePanel = self:GetUIPanel("doublewide");
 
-	return (leftPanel and leftPanel ~= frame) 
+	return (leftPanel and leftPanel ~= frame)
 		or (centerPanel and centerPanel ~= frame)
 		or (rightPanel and rightPanel ~= frame)
 		or (doubleWidePanel and doubleWidePanel ~= frame);
@@ -613,7 +623,7 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 
 	local frame = self:GetUIPanel("left");
 	if ( frame ) then
-		self:EvaluteAutoMinimize(frame);
+		self:EvaluateAutoMinimize(frame);
 
 		local scale = frame:GetScale();
 		local xOff = GetUIPanelAttribute(frame,"xoffset") or 0;
@@ -632,7 +642,7 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 
 		frame = self:GetUIPanel("doublewide");
 		if ( frame ) then
-			self:EvaluteAutoMinimize(frame);
+			self:EvaluateAutoMinimize(frame);
 
 			local scale = frame:GetScale();
 			local xOff = GetUIPanelAttribute(frame,"xoffset") or 0;
@@ -650,8 +660,8 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 
 	frame = self:GetUIPanel("center");
 	if ( frame ) then
-		self:EvaluteAutoMinimize(frame);
-		
+		self:EvaluateAutoMinimize(frame);
+
 		if ( CanShowCenterUIPanel(frame) ) then
 			local area = GetUIPanelAttribute(frame, "area");
 			if ( area == "centerOrLeft" ) then
@@ -705,7 +715,7 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 
 	frame = self:GetUIPanel("right");
 	if ( frame ) then
-		self:EvaluteAutoMinimize(frame);
+		self:EvaluateAutoMinimize(frame);
 		if ( CanShowRightUIPanel(frame) ) then
 			local scale = frame:GetScale();
 			local xOff = GetUIPanelAttribute(frame,"xoffset") or 0;
@@ -751,7 +761,7 @@ function FramePositionDelegate:UpdateScaleForFit(frame)
 	UIPanelUpdateScaleForFit(frame, GetUIPanelAttribute(frame, "checkFitExtraWidth") or CHECK_FIT_DEFAULT_EXTRA_WIDTH, GetUIPanelAttribute(frame, "checkFitExtraHeight") or CHECK_FIT_DEFAULT_EXTRA_HEIGHT);
 end
 
-function FramePositionDelegate:EvaluteAutoMinimize(frame)
+function FramePositionDelegate:EvaluateAutoMinimize(frame)
 	local autoMinimizeWithPanels = GetUIPanelAttribute(frame, "autoMinimizeWithOtherPanels");
 	local autoMinimizeCondition = GetUIPanelAttribute(frame, "autoMinimizeOnCondition");
 	if (not autoMinimizeWithPanels and autoMinimizeCondition == nil) then

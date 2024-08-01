@@ -534,6 +534,7 @@ local CurrencyInfo =
 			{
 				{ Name = "characterGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "characterName", Type = "string", Nilable = false },
+				{ Name = "fullCharacterName", Type = "string", Nilable = false },
 				{ Name = "currencyID", Type = "number", Nilable = false },
 				{ Name = "quantity", Type = "number", Nilable = false },
 			},
@@ -590,8 +591,10 @@ local CurrencyInfo =
 			{
 				{ Name = "sourceCharacterGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "sourceCharacterName", Type = "string", Nilable = false, Default = "" },
+				{ Name = "fullSourceCharacterName", Type = "string", Nilable = false, Default = "" },
 				{ Name = "destinationCharacterGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "destinationCharacterName", Type = "string", Nilable = false, Default = "" },
+				{ Name = "fullDestinationCharacterName", Type = "string", Nilable = false, Default = "" },
 				{ Name = "currencyType", Type = "number", Nilable = false },
 				{ Name = "quantityTransferred", Type = "number", Nilable = false },
 				{ Name = "totalQuantityConsumed", Type = "number", Nilable = false },

@@ -779,6 +779,7 @@ local SharedTraits =
 				{ Name = "type", Type = "TraitNodeEntryType", Nilable = false },
 				{ Name = "maxRanks", Type = "number", Nilable = false },
 				{ Name = "isAvailable", Type = "bool", Nilable = false },
+				{ Name = "isDisplayError", Type = "bool", Nilable = false, Documentation = { "True if this entry fails the TRAIT_CONDITION_TYPE_DISPLAY_ERROR condition check. Used to communicate a problem with the node to the player (e.g. A prerequisite node has not been purchased.) but will not prevent the player from spending points on the node." } },
 				{ Name = "conditionIDs", Type = "table", InnerType = "number", Nilable = false },
 			},
 		},

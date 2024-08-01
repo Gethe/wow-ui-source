@@ -117,7 +117,7 @@ function CharSelectSearchMixin:GenerateFilteredCharacters(dataProvider)
 	end
 
 	if not hasValidTerms then
-		return;
+		return dataProvider;
 	end
 
 	local filteredDataProvider = CreateDataProvider();

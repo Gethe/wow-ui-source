@@ -104,7 +104,7 @@ function GarrisonRecruiterFrame_OnShow(self)
 				if #categoryEntry.entries > 0 then
 					categoryEntry.id = category;
 
-					local submenu = rootDescription:CreateButton(tbl.name);
+					local submenu = rootDescription:CreateButton(categoryEntry.name);
 
 					for _, entry in pairs(categoryEntry.entries) do
 						local button = submenu:CreateButton(entry.name, function()

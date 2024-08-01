@@ -5,6 +5,7 @@
 			<KeyValue key="text" value="<Insert globalstring here>" type="global"/>
 			<KeyValue key="fontObject" value="<Insert fontObject here>" type="global"/>
 			<KeyValue key="textWidth" value="<Insert width here>" type="number"/>
+			<KeyValue key="maxTextLines" value="<Insert max text lines here>" type="number"/>
 		</KeyValues> -->
 		<Size x="30" y="29"/>
 		<Layers>
@@ -22,6 +23,7 @@
 		<DisabledCheckedTexture atlas="checkmark-minimal-disabled" useAtlasSize="true"/>
 		<Scripts>
 			<OnShow method="OnShow"/>
+			<OnClick method="OnClick"/>
 		</Scripts>
 	</CheckButton>
 
@@ -238,8 +240,13 @@
 				</Scripts>
 			</Button>
 
-			<CheckButton parentKey="IncludeReagentsCheckbox" inherits="BankPanelCheckboxTemplate" mixin="BankPanelIncludeReagentsCheckboxMixin" text="BANK_DEPOSIT_INCLUDE_REAGENTS_CHECKBOX_LABEL">
+			<CheckButton parentKey="IncludeReagentsCheckbox" inherits="BankPanelCheckboxTemplate" mixin="BankPanelIncludeReagentsCheckboxMixin">
 				<Size x="24" y="23"/>
+				<KeyValues>
+					<KeyValue key="text" value="BANK_DEPOSIT_INCLUDE_REAGENTS_CHECKBOX_LABEL" type="global"/>
+					<KeyValue key="textWidth" value="180" type="number"/>
+					<KeyValue key="maxTextLines" value="2" type="number"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.DepositButton" relativePoint="RIGHT" x="10"/>
 				</Anchors>
@@ -1123,7 +1130,6 @@
 					<OnShow method="OnShow"/>
 					<OnHide method="OnHide"/>
 					<OnEvent method="OnEvent"/>
-					<OnUpdate method="OnUpdate"/>
 				</Scripts>
 			</Frame>
 		</Frames>

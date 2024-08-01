@@ -1451,6 +1451,22 @@ function TalentButtonSelectMixin:IsMaxed()
 	return self:HasSelectedEntryID();
 end
 
+function TalentButtonSelectMixin:IsDisplayError()
+	-- Overrides TalentButtonBaseMixin.
+
+	-- If one of the entries has been selected and that entry is in the DisplayError state this node
+	-- should also be in the DisplayError state.
+	if self:HasSelectedEntryID() then
+		local talentFrame = self:GetTalentFrame();
+		local selectedEntryInfo = talentFrame:GetAndCacheEntryInfo(self:GetSelectedEntryID());
+		if selectedEntryInfo and selectedEntryInfo.isDisplayError then
+			return true;
+		end
+	end
+
+	return TalentButtonBaseMixin.IsDisplayError(self);
+end
+
 function TalentButtonSelectMixin:GetSpellID()
 	-- Overrides TalentButtonBaseMixin.
 

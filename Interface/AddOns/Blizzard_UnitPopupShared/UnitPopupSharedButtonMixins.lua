@@ -907,14 +907,11 @@ function UnitPopupPartyInstanceLeaveButtonMixin:IsEnabled(contextData)
 		return false;
 	end
 
-	if C_PartyInfo.IsPartyWalkIn() then
-		return C_PartyInfo.IsDelveComplete();
-	end
 	return true;
 end
 
 function UnitPopupPartyInstanceLeaveButtonMixin:OnClick(contextData)
-	ConfirmOrLeaveLFGParty();
+	ConfirmOrLeaveParty();
 end
 
 UnitPopupFollowButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
@@ -1367,6 +1364,10 @@ function UnitPopupDungeonDifficultyButtonMixin:TooltipWhileDisabled()
 	return true;
 end
 
+function UnitPopupDungeonDifficultyButtonMixin:NoTooltipWhileEnabled()
+	return true;
+end
+
 function UnitPopupDungeonDifficultyButtonMixin:GetTooltipText()
 	return RED_FONT_COLOR:WrapTextInColorCode(DIFFICULTY_LOCKED_REASON_STORY_RAID);
 end
@@ -1437,6 +1438,10 @@ function UnitPopupRaidDifficultyButtonMixin:IsEnabled(contextData)
 end
 
 function UnitPopupRaidDifficultyButtonMixin:TooltipWhileDisabled()
+	return true;
+end
+
+function UnitPopupRaidDifficultyButtonMixin:NoTooltipWhileEnabled()
 	return true;
 end
 

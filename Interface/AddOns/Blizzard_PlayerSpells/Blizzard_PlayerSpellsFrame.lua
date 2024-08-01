@@ -145,7 +145,7 @@ function PlayerSpellsFrameMixin:SetTab(tabID)
 
 	local canNewTabBeMinimized = self:DoesTabSupportMinimizedMode(tabID);
 	if self.isMinimized and not canNewTabBeMinimized then
-		self:SetMinimized(false);
+		self:ForceMaximize();
 	elseif not self.isMinimized and self:ShouldManuallyMinimize(tabID) then
 		self:SetMinimized(true);
 	else
@@ -226,7 +226,7 @@ function PlayerSpellsFrameMixin:SetInspecting(inspectUnit, inspectString, inspec
 		-- Force us out of minimize mode ahead of processing data so that we're in a clean state to inspect
 		-- Otherwise the Hide involved will clear out the inspect unit.
 		-- If Talent tab ever supports minimized mode in the future, we may be able to remove this.
-		self:SetMinimized(false);
+		self:ForceMaximize();
 	end
 
 	self.inspectUnit = inspectUnit;
@@ -416,7 +416,7 @@ end
 function PlayerSpellsFrameMixin:OnManualMaximizeClicked()
 	self.manualMinimizeEnabled = false;
 	if self.isMinimized then
-		self:SetMinimized(false);
+		self:ForceMaximize();
 	end
 end
 
@@ -463,9 +463,8 @@ function PlayerSpellsFrameMixin:SetMinimized(shouldBeMinimized)
 		local isAutomaticAction, skipCallback = true, true;
 		self.MaximizeMinimizeButton:Minimize(isAutomaticAction, skipCallback);
 
-		-- The minimized version of the frame can be displayed at the same time as other panels and should be left aligned if other panels are visible.
-		SetUIPanelAttribute(self, "autoMinimizeWithOtherPanels", true);
-		SetUIPanelAttribute(self, "area", "centerOrLeft");
+		-- When using center alignment (e.g. when no other panels are visible on the screen) the minimized version
+		-- of the frame should be offset such that it would be left aligned with the maximized version of the frame.
 		SetUIPanelAttribute(self, "centerXOffset", -405);
 	elseif self.isMinimized and not shouldBeMinimized then
 		self.isMinimized = false;
@@ -475,11 +474,11 @@ function PlayerSpellsFrameMixin:SetMinimized(shouldBeMinimized)
 		local isAutomaticAction, skipCallback = true, true;
 		self.MaximizeMinimizeButton:Maximize(isAutomaticAction, skipCallback);
 
-		-- The maximized version of the frame should be center aligned on the screen and cannot be displayed at the same time as other panels.
-		SetUIPanelAttribute(self, "autoMinimizeWithOtherPanels", false);
-		SetUIPanelAttribute(self, "area", "center");
+		-- The maximized version of the frame should always be center aligned on the screen.
 		SetUIPanelAttribute(self, "centerXOffset", 0);
 	end
+
+	self:UpdateMinimizeHelpTip();
 
 	-- If the panel was previously shown and then hidden to change the "area" attribute, show it again now.
 	if wasShown then
@@ -494,6 +493,18 @@ function PlayerSpellsFrameMixin:SetTabMinimized(tabID, shouldBeMinimized)
 
 	local tabPage = self:GetElementsForTab(tabID)[1];
 	tabPage:SetMinimized(shouldBeMinimized);
+end
+
+function PlayerSpellsFrameMixin:ForceMaximize()
+	-- Close and re-show with minimize attributes temporarily disabled to ensure this frame stays maximized and other frames get closed
+	self:SetMinimizingEnabled(false);
+	SetUIPanelAttribute(self, "autoMinimizeWithOtherPanels", false);
+	SetUIPanelAttribute(self, "area", "center");
+	self:SetMinimized(false);
+	-- Now re-enable minimizing so that, if another frame gets opened later, we can be re-minimized and pop back to a supporting tab as usual
+	self:SetMinimizingEnabled(true);
+	SetUIPanelAttribute(self, "autoMinimizeWithOtherPanels", true);
+	SetUIPanelAttribute(self, "area", "centerOrLeft");
 end
 
 function PlayerSpellsFrameMixin:SetMinimizingEnabled(enabled)

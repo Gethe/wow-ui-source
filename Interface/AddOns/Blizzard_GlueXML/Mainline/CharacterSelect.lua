@@ -829,7 +829,7 @@ function CharacterSelect_SelectCharacter(index, noCreate)
         CharSelectEnterWorldButton:SetText(text);
 
 		if characterInfo.boostInProgress == false and (not CharacterServicesFlow_IsShowing() or not CharacterServicesMaster.flow:UsesSelector()) then
-			if IsRPEBoostEligible(selectedCharacterID) and characterInfo.realmName == CharacterSelectUtil.GetFormattedCurrentRealmName() then
+			if IsRPEBoostEligible(selectedCharacterID) and CharacterSelectUtil.IsSameRealmAsCurrent(characterInfo.realmAddress) then
 				BeginCharacterServicesFlow(RPEUpgradeFlow, {});
 				if IsVeteranTrialAccount() then
 					CharSelectServicesFlow_Minimize() --if they need to resubscribe, get the RPE flow out of the way.
@@ -843,18 +843,6 @@ function CharacterSelect_SelectCharacter(index, noCreate)
 			end);
 		end
     end
-end
-
-function CharacterDeleteDialog_OnShow()
-	local characterGuid = GetCharacterGUID(CharacterSelectListUtil.GetCharIDFromIndex(CharacterSelect.selectedIndex));
-	if not characterGuid then
-		return;
-	end
-
-	local basicInfo = GetBasicCharacterInfo(characterGuid);
-    CharacterDeleteText1:SetFormattedText(CONFIRM_CHAR_DELETE, basicInfo.name, basicInfo.experienceLevel, basicInfo.className);
-    CharacterDeleteBackground:SetHeight(16 + CharacterDeleteText1:GetHeight() + CharacterDeleteText2:GetHeight() + 23 + CharacterDeleteEditBox:GetHeight() + 8 + CharacterDeleteButton1:GetHeight() + 16);
-    CharacterDeleteButton1:Disable();
 end
 
 local function EnterWorldHelper()
@@ -1487,17 +1475,6 @@ function CharacterSelect_UpdateButtonState()
 
     CharSelectAccountUpgradeButton:SetEnabled(not redemptionInProgress and not undeleting and not inCompetitiveMode and not inKioskMode and not isAccountLocked);
 	CharSelectEnterWorldButton:SetDisabledTooltip(disabledTooltip);
-end
-
-function CharacterSelect_DeleteCharacter(charID)
-	if CharacterSelect_IsRetrievingCharacterList() or CharacterSelectUtil.IsAccountLocked() then
-        return;
-    end
-
-	DeleteCharacter(CharacterSelectListUtil.GetCharIDFromIndex(CharacterSelect.selectedIndex));
-    CharacterDeleteDialog:Hide();
-    PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
-    GlueDialog_Show("CHAR_DELETE_IN_PROGRESS");
 end
 
 local KIOSK_AUTO_REALM_ADDRESS = nil

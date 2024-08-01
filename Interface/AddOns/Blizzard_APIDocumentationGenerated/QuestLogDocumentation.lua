@@ -60,7 +60,7 @@ local QuestLog =
 			Arguments =
 			{
 				{ Name = "questID", Type = "number", Nilable = false },
-				{ Name = "factionID", Type = "number", Nilable = false },
+				{ Name = "targetFactionID", Type = "number", Nilable = false },
 			},
 
 			Returns =

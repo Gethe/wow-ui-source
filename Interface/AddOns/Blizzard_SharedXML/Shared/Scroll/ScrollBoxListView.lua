@@ -386,9 +386,11 @@ end
 -- factory object is called once layout has completed, ensuring that the frame can access it's effective
 -- dimensions inside it's own initializer.
 function ScrollBoxListViewMixin:InvokeInitializers()
-	for frame, initializer in pairs(self.initializers) do
+	local function SecureInvokeInitializer(frame, initializer)
 		self:InvokeInitializer(frame, initializer);
 	end
+
+	secureexecuterange(self.initializers, SecureInvokeInitializer);
 	wipe(self.initializers);
 end
 

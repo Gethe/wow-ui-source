@@ -481,15 +481,20 @@ C_Traits.GetConditionInfo = function (...)
 			return nil;
 		end
 
+		-- Tooltips of met conditions shouldn't do any formatting.
 		if condInfo.isMet then
-			return tooltipText;
+			-- Unless they're DisplayError type, in which case they should always be formatted
+			-- whether they're met or not.
+			if condInfo.type ~= Enum.TraitConditionType.DisplayError then
+				return tooltipText;
+			end
 		end
 
 		if ignoreFontColor then
 			return tooltipText;
 		end;
 
-		-- Designers can use tokens (e.g. $@spellname1234) for unmet condition tooltips and the parsing code
+		-- Designers can use tokens (e.g. $@spellname1234) for condition tooltips and the parsing code
 		-- automatically applies colorization that isn't desired so remove it prior to coloring the entire string red.
 		local strippedTooltipText = StripHyperlinks(tooltipText);
 

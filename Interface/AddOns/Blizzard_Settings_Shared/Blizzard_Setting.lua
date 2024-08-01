@@ -1,3 +1,11 @@
+local function EnsureVariableTypeIsValid(variableType, defaultValue)
+	if variableType == nil then
+		assert(defaultValue ~= nil);
+		variableType = type(defaultValue);
+	end
+	return variableType;
+end
+
 local function MatchesVariableType(arg1, arg2VariableType)
 	return type(arg1) == arg2VariableType;
 end
@@ -254,7 +262,6 @@ function CVarSettingMixin:Init(name, cvar, variableType)
 	self.SetValueDerived = function(self, value)
 		value = self:TransformValue(value);
 		cvarAccessor:SetValue(value);
-		return value;
 	end
 	
 	self.GetDefaultValueDerived = function(self)
@@ -292,23 +299,36 @@ end
 
 ProxySettingMixin = CreateFromMixins(SettingMixin);
 
-function ProxySettingMixin:Init(name, variable, variableType, defaultValue, getValue, setValue)
-	ErrorIfInvalidSettingArguments(name, variable, variableType, defaultValue);
-	SettingMixin.Init(self, name, variable, variableType);
+do
+	local function SecureGetValueDerived(setting)
+		return setting.getValue();
+	end
+	
+	local function SecureSetValueDerived(setting, value)
+		setting.setValue(value);
+	end
 
-	self.GetValueDerived = function(self)
-		local value = getValue();
-		return value;
-	end;
+	function ProxySettingMixin:Init(name, variable, variableType, defaultValue, getValue, setValue)
+		variableType = EnsureVariableTypeIsValid(variableType, defaultValue);
 
-	self.SetValueDerived = function(self, value)
-		setValue(value);
-		return value;
-	end;
-
-	self.GetDefaultValueDerived = function(self)
-		return defaultValue;
-	end;
+		ErrorIfInvalidSettingArguments(name, variable, variableType, defaultValue);
+		SettingMixin.Init(self, name, variable, variableType);
+	
+		self.getValue = getValue;
+		self.setValue = setValue;
+	
+		self.GetValueDerived = function(self)
+			return securecallfunction(SecureGetValueDerived, self);
+		end;
+		
+		self.SetValueDerived = function(self, value)
+			securecallfunction(SecureSetValueDerived, self, value);
+		end;
+	
+		self.GetDefaultValueDerived = function(self)
+			return defaultValue;
+		end;
+	end
 end
 
 ModifiedClickSettingMixin = CreateFromMixins(SettingMixin);
@@ -322,7 +342,6 @@ function ModifiedClickSettingMixin:Init(name, modifier, defaultValue)
 
 	self.SetValueDerived = function(self, value)
 		SetModifiedClick(modifier, value);
-		return value;
 	end;
 
 	self.GetDefaultValueDerived = function(self)
@@ -332,8 +351,6 @@ function ModifiedClickSettingMixin:Init(name, modifier, defaultValue)
 	self:SetCommitFlags(Settings.CommitFlag.SaveBindings);
 end
 
-local unsavedVariableTbl = {};
-
 AddOnSettingMixin = CreateFromMixins(SettingMixin);
 
 --[[
@@ -342,24 +359,49 @@ with your addon name is highly recommended.
 'variableKey' is your value's key in your saved variable table.
 'variableTbl' is your saved variable table hopefully defined in your addon's .toc.
 ]]--
-function AddOnSettingMixin:Init(name, variable, variableKey, variableTbl, variableType, defaultValue)
-	SettingMixin.Init(self, name, variable, variableType);
-	assert(type(variableTbl) == "table", "'variableTbl' argument must be a table.");
 
-	if variableTbl[variableKey] == nil then
-		variableTbl[variableKey] = defaultValue;
+do
+	local function SecureSetVariableTblDefaultValue(variableKey, variableTbl, defaultValue)
+		if variableTbl[variableKey] == nil then
+			variableTbl[variableKey] = defaultValue;
+		end
 	end
-
-	self.GetValueDerived = function(self)
-		return variableTbl[variableKey];
-	end;
-
-	self.SetValueDerived = function(self, value)
-		variableTbl[variableKey] = value;
+	
+	local function SecureGetValueDerived(setting)
+		return setting.variableTbl[setting.variableKey];
+	end
+	
+	local function SecureSetValueDerived(setting, value)
+		setting.variableTbl[setting.variableKey] = value;
 		return value;
-	end;
+	end
+	
+	function AddOnSettingMixin:Init(name, variable, variableKey, variableTbl, variableType, defaultValue)
+		variableType = EnsureVariableTypeIsValid(variableType, defaultValue);
 
-	self.GetDefaultValueDerived = function(self)
-		return defaultValue;
-	end;
+		SettingMixin.Init(self, name, variable, variableType);
+		assert(type(variableTbl) == "table", "'variableTbl' argument must be a table.");
+	
+		self.variableKey = variableKey;
+		self.variableTbl = variableTbl;
+		self.defaultValue = defaultValue;
+	
+		--[[ 
+		The argument 'variableTbl' is passed in by the inbound attribute handler and is therefore secure. 
+		However, any table access will taint execution and must be done through secure call wrappers.
+		]]--
+		securecallfunction(SecureSetVariableTblDefaultValue, variableKey, variableTbl, defaultValue);
+	
+		self.GetValueDerived = function(self)
+			return securecallfunction(SecureGetValueDerived, self);
+		end;
+	
+		self.SetValueDerived = function(self, value)
+			securecallfunction(SecureSetValueDerived, self, value);
+		end;
+	
+		self.GetDefaultValueDerived = function(self)
+			return defaultValue;
+		end;
+	end
 end

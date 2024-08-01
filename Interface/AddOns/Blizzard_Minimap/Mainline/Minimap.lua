@@ -57,7 +57,7 @@ local LOW_PRIORITY_TRACKING_SPELLS = {
 	[261764] = true; -- Track Warboards
 };
 
-local TRACKING_SPELL_OVERRIDE_TEXTURES = {
+local TRACKING_SPELL_OVERRIDE_ATLAS = {
 	[43308] = "professions_tracking_fish";-- Find Fish
 	[2580] = "professions_tracking_ore"; -- Find Minerals 1
 	[8388] = "professions_tracking_ore"; -- Find Minerals 2
@@ -581,6 +581,7 @@ function MiniMapTrackingButtonMixin:OnLoad()
 	if not inGameTrackingDisabled then
 		self:RegisterEvent("VARIABLES_LOADED");
 		self:RegisterEvent("CVAR_UPDATE");
+		self:RegisterEvent("SPELLS_CHANGED");
 
 		self:SetupMenu(function(dropdown, rootDescription)
 			rootDescription:SetTag("MENU_MINIMAP_TRACKING");
@@ -642,7 +643,8 @@ function MiniMapTrackingButtonMixin:OnLoad()
 				local name = trackingInfo.name;
 				trackingInfo.text = name;
 
-				local texture = TRACKING_SPELL_OVERRIDE_TEXTURES[trackingInfo.spellID] or trackingInfo.texture;
+				local asAtlas = TRACKING_SPELL_OVERRIDE_ATLAS[trackingInfo.spellID] ~= nil;
+				local texture = TRACKING_SPELL_OVERRIDE_ATLAS[trackingInfo.spellID] or trackingInfo.texture;
 				local desc = parentDescription:CreateCheckbox(
 					name,
 					IsTrackingActive,
@@ -653,15 +655,19 @@ function MiniMapTrackingButtonMixin:OnLoad()
 					local rightTexture = button:AttachTexture();
 					rightTexture:SetSize(20, 20);
 					rightTexture:SetPoint("RIGHT");
-					rightTexture:SetTexture(texture);
+					if asAtlas then
+						rightTexture:SetAtlas(texture);
+					else
+						rightTexture:SetTexture(texture);
+
+						if trackingInfo.type == "spell" then
+							local uv0, uv1 = .0625, .9;
+							rightTexture:SetTexCoord(uv0, uv1, uv0, uv1);
+						end
+					end
 
 					local fontString = button.fontString;
 					fontString:SetPoint("RIGHT", rightTexture, "LEFT");
-
-					if trackingInfo.type == "spell" then
-						local uv0, uv1 = .0625, .9;
-						rightTexture:SetTexCoord(uv0, uv1, uv0, uv1);
-					end
 
 					-- The size is explicitly provided because this requires a right-justified icon.
 					local width, height = fontString:GetUnboundedStringWidth() + 60, 20;
@@ -728,8 +734,16 @@ function MiniMapTrackingButtonMixin:RegisterSettingEntryCallbacks()
 	end);
 end
 
-function MiniMapTrackingButtonMixin:OnEvent(event, arg1)
-	if event == "CVAR_UPDATE" or event == "VARIABLES_LOADED" then
+function MiniMapTrackingButtonMixin:OnEvent(event, ...)
+	if event == "CVAR_UPDATE" or event == "VARIABLES_LOADED" or event == "SPELLS_CHANGED" then		
+		if event == "CVAR_UPDATE" then
+			local cvarName, value = ...;
+			local isMinimapTrackingCVar = (cvarName == "minimapTrackedInfov3");
+			if not isMinimapTrackingCVar then
+				return;
+			end
+		end
+
 		if not self:IsMenuOpen() then
 			-- The initial tracking values are unavailable until these events have fired.
 			for index = 1, C_Minimap.GetNumTrackingTypes() do

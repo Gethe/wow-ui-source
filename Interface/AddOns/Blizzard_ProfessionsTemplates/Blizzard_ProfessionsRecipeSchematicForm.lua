@@ -665,8 +665,6 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		self.loader:Cancel();
 	end
 	self.loader = CreateProfessionsRecipeLoader(self.recipeSchematic, function()
-		local reagents = self.transaction:CreateCraftingReagentInfoTbl();
-
 		if not (minimized or self.isInspection or isRecraft) then
 			self:UpdateRecipeDescription();
 		end
@@ -675,26 +673,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		organizer:Add(self.Description, LayoutEntry.Description, 0, 5);
 		organizer:Layout();
 
-		local outputItemInfo = C_TradeSkillUI.GetRecipeOutputItemData(recipeID, reagents, self.transaction:GetAllocationItemGUID());
-		local text;
-		if outputItemInfo.hyperlink then
-			local item = Item:CreateFromItemLink(outputItemInfo.hyperlink);
-			text = WrapTextInColor(item:GetItemName(), item:GetItemQualityColor().color);
-		else
-			text = WrapTextInColor(self.recipeSchematic.name, NORMAL_FONT_COLOR);
-		end
-		
-		local maxWidth = minimized and 250 or 800;
-		local multiline = minimized;
-		if isRecipeInfoRecraft then
-			SetTextToFit(self.RecraftingOutputText, PROFESSIONS_CRAFTING_RECRAFTING, maxWidth, multiline);
-		elseif isRecraft then
-			SetTextToFit(self.RecraftingOutputText, PROFESSIONS_CRAFTING_FORM_RECRAFTING_HEADER:format(text), maxWidth, multiline);
-		else
-			SetTextToFit(self.OutputText, text, maxWidth, multiline);
-		end
-
-		Professions.SetupOutputIcon(self.OutputIcon, self.transaction, outputItemInfo);
+		self:UpdateOutputItem();
 	end);
 
 	self.OutputIcon:SetScript("OnEnter", function()
@@ -1453,6 +1432,30 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 	end
 end
 
+function ProfessionsRecipeSchematicFormMixin:UpdateOutputItem()
+	local reagents = self.transaction:CreateCraftingReagentInfoTbl();
+	local outputItemInfo = C_TradeSkillUI.GetRecipeOutputItemData(self.transaction:GetRecipeID(), reagents, self.transaction:GetAllocationItemGUID());
+	local text;
+	if outputItemInfo.hyperlink then
+		local item = Item:CreateFromItemLink(outputItemInfo.hyperlink);
+		text = WrapTextInColor(item:GetItemName(), item:GetItemQualityColor().color);
+	else
+		text = WrapTextInColor(self.recipeSchematic.name, NORMAL_FONT_COLOR);
+	end
+		
+	local maxWidth = minimized and 250 or 800;
+	local multiline = minimized;
+	if isRecipeInfoRecraft then
+		SetTextToFit(self.RecraftingOutputText, PROFESSIONS_CRAFTING_RECRAFTING, maxWidth, multiline);
+	elseif isRecraft then
+		SetTextToFit(self.RecraftingOutputText, PROFESSIONS_CRAFTING_FORM_RECRAFTING_HEADER:format(text), maxWidth, multiline);
+	else
+		SetTextToFit(self.OutputText, text, maxWidth, multiline);
+	end
+
+	Professions.SetupOutputIcon(self.OutputIcon, self.transaction, outputItemInfo);
+end
+
 function ProfessionsRecipeSchematicFormMixin:InitDetails(recipeInfo)
 	local minimized = ProfessionsUtil.IsCraftingMinimized();
 	local finishingSlots = self:GetSlotsByReagentType(Enum.CraftingReagentType.Finishing);
@@ -1495,6 +1498,10 @@ function ProfessionsRecipeSchematicFormMixin:OnAllocationsChanged()
 
 	-- Change in Allocations can affect whether Details appears or not at all due to bonus stats changing based on allocations
 	self:InitDetails(self.currentRecipeInfo);
+
+	-- Adding optional reagents can change output item quality.
+	self:UpdateOutputItem();
+
 	self:UpdateRecraftSlot(operationInfo);
 end
 

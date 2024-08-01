@@ -707,7 +707,9 @@ function CreateSettingsCheckboxWithButtonInitializer(setting, buttonText, button
 	data.buttonText = buttonText;
 	data.OnButtonClick = buttonClick;
 	data.clickRequiresSet = clickRequiresSet;
-	return Settings.CreateSettingInitializer("SettingsCheckboxWithButtonControlTemplate", data);
+	local initializer = Settings.CreateSettingInitializer("SettingsCheckboxWithButtonControlTemplate", data);
+	initializer:AddSearchTags(buttonText);
+	return initializer;
 end
 
 SettingsCheckboxSliderControlMixin = CreateFromMixins(SettingsListElementMixin);
@@ -816,7 +818,9 @@ function CreateSettingsCheckboxSliderInitializer(cbSetting, cbLabel, cbTooltip, 
 		sliderLabel = sliderLabel,
 		sliderTooltip = sliderTooltip,
 	};
-	return Settings.CreateSettingInitializer("SettingsCheckboxSliderControlTemplate", data);
+	local initializer = Settings.CreateSettingInitializer("SettingsCheckboxSliderControlTemplate", data);
+	initializer:AddSearchTags(cbLabel, sliderLabel);
+	return initializer;
 end
 
 SettingsCheckboxDropdownControlMixin = CreateFromMixins(SettingsListElementMixin);

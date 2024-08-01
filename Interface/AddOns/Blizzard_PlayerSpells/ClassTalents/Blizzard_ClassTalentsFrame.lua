@@ -841,6 +841,16 @@ function ClassTalentsFrameMixin:SetConfigID(configID, forceUpdate)
 		return;
 	end
 
+	if not configID then
+		-- We're probably returning from an Inspect state back to current play with no chosen spec
+        -- So clear everything back out as it was when we first loaded
+		TalentFrameBaseMixin.SetConfigID(self, configID);
+		self.configurationInfo = nil;
+		local forceTreeUpdate = true;
+		self:SetTalentTreeID(nil, forceTreeUpdate);
+		return;
+	end
+
 	local configInfo = C_Traits.GetConfigInfo(configID);
 	if not configInfo then
 		return;

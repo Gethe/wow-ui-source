@@ -378,13 +378,17 @@ function GreatVaultButtonMixin:OnEnter()
 
 	local maxUnlocks = self:GetMaxNumRewards(Enum.WeeklyRewardChestThresholdType.World);
 	local unlocksCompleted = self:GetNumUnlockedRewards(Enum.WeeklyRewardChestThresholdType.World);
-	local description = DELVES_GREAT_VAULT_TOOLTIP:format(unlocksCompleted, maxUnlocks);
 
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip_SetTitle(GameTooltip, GREAT_VAULT_REWARDS);
 
 	if maxUnlocks > 0 then
-		GameTooltip_AddNormalLine(GameTooltip, description);
+		if C_WeeklyRewards.HasAvailableRewards() then
+			GameTooltip_AddNormalLine(GameTooltip, DELVES_WEEKLY_REWARDS_UNCLAIMED_TEXT);
+		else
+			local description = DELVES_GREAT_VAULT_TOOLTIP:format(unlocksCompleted, maxUnlocks);
+			GameTooltip_AddNormalLine(GameTooltip, description);
+		end
 	end
 
 	GameTooltip_AddInstructionLine(GameTooltip, WEEKLY_REWARDS_CLICK_TO_PREVIEW_INSTRUCTIONS);

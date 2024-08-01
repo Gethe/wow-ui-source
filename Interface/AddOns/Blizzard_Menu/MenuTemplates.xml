@@ -81,4 +81,12 @@
 			<OnDisable method="OnDisable"/>
 		</Scripts>
 	</Button>
+
+	<Button name="WowMenuAutoHideButtonTemplate" propagateMouseInput="Motion" virtual="true">
+		<Layers>
+			<Layer>
+				<Texture parentKey="Texture"/>
+			</Layer>
+		</Layers>
+	</Button>
 </Ui>

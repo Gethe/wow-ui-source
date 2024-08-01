@@ -109,6 +109,10 @@ local EJ_TIER_DATA =
 }
 
 function GetEJTierData(tier)
+	if tier > #EJ_TIER_DATA then
+		local serverExpansionLevel = GetServerExpansionLevel();
+		return EJ_TIER_DATA[serverExpansionLevel]
+	end
 	return EJ_TIER_DATA[tier] or EJ_TIER_DATA[1];
 end
 
@@ -2693,6 +2697,11 @@ end
 
 function EncounterJournal_OnFilterChanged(self)
 	EncounterJournal_LootUpdate();
+end
+
+function EncounterJournal_SetClassAndSpecFilter(self, classID, specID)
+	EJ_SetLootFilter(classID, specID);
+	EncounterJournal_OnFilterChanged(self);
 end
 
 function EncounterJournal_SetSlotFilterInternal(self, slot)

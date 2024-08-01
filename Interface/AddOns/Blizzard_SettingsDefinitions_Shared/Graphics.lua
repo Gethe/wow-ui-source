@@ -477,7 +477,7 @@ local function Register()
 				local value = index - 1;
 				local label, isPrimary = GetMonitorName(index);
 				if (not label) then 
-					label = string.format(VIDEO_OPTIONS_MONITOR, index);
+					label = string.format(VIDEO_OPTIONS_MONITOR, value);
 				end
 				if (isPrimary) then
 					label = string.format("%s [%s]", label, VIDEO_OPTIONS_MONITOR_PRIMARY);
@@ -654,7 +654,6 @@ local function Register()
 		local initializer = CreateSettingsCheckboxSliderInitializer(
 			useUIScaleSetting, USE_UISCALE, OPTION_TOOLTIP_USE_UISCALE,
 			uiScaleSliderSetting, options, UI_SCALE, OPTION_TOOLTIP_UI_SCALE);
-		initializer:AddSearchTags(USE_UISCALE, UI_SCALE);
 		layout:AddInitializer(initializer);
 	end);
 
@@ -1177,7 +1176,6 @@ local function Register()
 		local initializer = CreateSettingsCheckboxSliderInitializer(
 			fpsSetting, MAXFPS, OPTION_MAXFPS_CHECK,
 			fpsSliderSetting, options, MAXFPS, OPTION_MAXFPS_CHECK);
-		initializer:AddSearchTags(MAXFPS);
 		layout:AddInitializer(initializer);
 	end
 
@@ -1198,7 +1196,6 @@ local function Register()
 		local initializer = CreateSettingsCheckboxSliderInitializer(
 			fpsSetting, MAXFPSBK, OPTION_MAXFPSBK_CHECK,
 			fpsSliderSetting, options, MAXFPSBK, OPTION_MAXFPSBK_CHECK);
-		initializer:AddSearchTags(MAXFPSBK);
 		layout:AddInitializer(initializer);
 	end
 
