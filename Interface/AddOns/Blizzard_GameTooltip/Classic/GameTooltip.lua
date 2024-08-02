@@ -137,6 +137,9 @@ end
 
 function GameTooltip_AddColoredLine(tooltip, text, color, wrap)
 	local r, g, b = color:GetRGB();
+	if wrap == nil then
+		wrap = true;
+	end
 	tooltip:AddLine(text, r, g, b, wrap);
 end
 

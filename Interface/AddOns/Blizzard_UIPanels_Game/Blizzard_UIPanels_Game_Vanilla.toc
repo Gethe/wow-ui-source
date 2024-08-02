@@ -21,8 +21,6 @@ Vanilla\QuestFrame.lua
 Vanilla\QuestFrame.xml
 Vanilla\QuestLogFrame.lua
 Vanilla\QuestLogFrame.xml
-Classic\QuestTimerFrame.lua
-Classic\QuestTimerFrame.xml
 Vanilla\QuestInfo.lua
 Vanilla\QuestInfo.xml
 Vanilla\MerchantFrame.lua

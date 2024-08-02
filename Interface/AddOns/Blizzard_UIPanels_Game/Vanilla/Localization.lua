@@ -2,6 +2,11 @@ local function AdjustFriendsFrameDropdown_132()
 	UIDropDownMenu_SetWidth(FriendsFriendsFrameDropDown, 132);
 end
 
+local function LocalizeButtonText_ptBR()
+	-- truncate "share quest" string for ptBR. when enabled, the button will display a tooltip with the full text and description
+	QuestFramePushQuestButton.Text:SetSize(QuestFramePushQuestButton:GetWidth()-3, QuestFramePushQuestButton:GetHeight())
+end
+
 local l10nTable = {
 	deDE = {},
 	enGB = {},
@@ -17,6 +22,7 @@ local l10nTable = {
 	koKR = {},
 	ptBR = {
 		localizeFrames = AdjustFriendsFrameDropdown_132,
+		localize = LocalizeButtonText_ptBR,
 	},
 	ptPT = {
 		localizeFrames = AdjustFriendsFrameDropdown_132,
