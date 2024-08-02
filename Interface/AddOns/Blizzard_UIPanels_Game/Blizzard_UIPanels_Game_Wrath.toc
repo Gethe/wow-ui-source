@@ -24,8 +24,6 @@ Wrath\QuestPOI.lua
 Wrath\QuestPOI.xml
 Wrath\QuestLogFrame.lua
 Wrath\QuestLogFrame.xml
-Classic\QuestTimerFrame.lua
-Classic\QuestTimerFrame.xml
 Wrath\QuestInfo.lua
 Wrath\QuestInfo.xml
 Wrath\WatchFrame.lua

@@ -83,8 +83,7 @@ end
 function FramePositionDelegate_Override_QuestTimerOffsets(anchorYStartValue)
 	local anchorY = anchorYStartValue;
 
-	QuestTimerFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
-	if ( QuestTimerFrame:IsShown() ) then
+	if (QuestTimerFrame and QuestTimerFrame:IsShown()) then
 		anchorY = anchorY - QuestTimerFrame:GetHeight();
 	end
 

@@ -106,7 +106,7 @@ function MultiActionBar_Update ()
 			VerticalMultiBarsContainer:SetPoint("RIGHT", 0, yOffset);
 		end
 	else
-		VerticalMultiBarsContainer:SetSize(0, 0);
+		VerticalMultiBarsContainer:SetSize(1, 1);
 	end
 	-- TODO: Evaluate how often we're doing multiple calls of UIParent_ManageFramePositions per frame
 	UIParent_ManageFramePositions();
