@@ -288,7 +288,17 @@ function CharacterSelectBlockBase:Initialize(results)
 			end);
 
 			if frame then
-				clearButtonScripts(frame);
+				local frameElementData = frame:GetElementData();
+				if frameElementData.isGroup then
+					for _, character in ipairs(frame.groupButtons) do
+						if character:GetCharacterID() == self.charid then
+							clearButtonScripts(character);
+							break;
+						end
+					end
+				else
+					clearButtonScripts(frame);
+				end
 			end
 
 			CharacterServicesMaster_Update();

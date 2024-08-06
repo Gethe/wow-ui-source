@@ -536,7 +536,7 @@ local function Register()
 		local timerHandle = nil;
 
 		local function TryInitVoiceSettings()
-			if C_VoiceChat.IsEnabled() and C_VoiceChat.IsInitialized() and C_VoiceChat.IsVoiceChatConnected() then
+			if C_VoiceChat.CanAccessSettings() then
 				InitVoiceSettings(category, layout);
 
 				-- Check should not be necessary unless the callback is invoked before NewTicker returns,

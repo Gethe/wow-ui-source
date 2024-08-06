@@ -644,7 +644,7 @@ function StableActivePetButtonTemplateMixin:RefreshTooltip()
 		local nextCallPetSpellID = CALL_PET_SPELL_IDS[self:GetID()];
 		local spellInfo = C_Spell.GetSpellInfo(nextCallPetSpellID);
 		if (spellInfo.name and spellInfo.name ~= "") then
-			GameTooltip_AddHighlightLine(GameTooltip, PET_STABLE_SLOT_LOCKED_TOOLTIP:format(spellName));
+			GameTooltip_AddHighlightLine(GameTooltip, PET_STABLE_SLOT_LOCKED_TOOLTIP:format(spellInfo.name));
 		end
 	elseif not self:IsEnabled() and self.disabledTooltip then
 		GameTooltip_AddErrorLine(GameTooltip, self.disabledTooltip);
