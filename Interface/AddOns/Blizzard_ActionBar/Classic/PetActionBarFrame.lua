@@ -1,4 +1,5 @@
 PETACTIONBAR_SLIDETIME = 0.09;
+PETACTIONBAR_YOFFSET = 0;
 NUM_PET_ACTION_SLOTS = 10;
 
 PET_DEFENSIVE_TEXTURE = "Interface\\Icons\\Ability_Defend";
@@ -253,7 +254,7 @@ function PetActionBarMixin:UpdatePositionValues()
 	self:SetPoint("LEFT", horizontalAnchorFrame, horizontalAnchorRelativePoint, xPos, 0);
 
 	local yPos = 0;
-	local yPosWhenShowing = -4;
+	local yPosWhenShowing = PETACTIONBAR_YOFFSET;
 	local slideDistance = self:GetParent():GetHeight() + self:GetHeight() + yPosWhenShowing;
 	local yPosWhenHidden = -slideDistance;
 	local verticalAnchorFrame = self:GetParent();
