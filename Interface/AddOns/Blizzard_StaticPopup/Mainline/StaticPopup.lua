@@ -141,8 +141,8 @@ function StaticPopup_Resize(dialog, which)
 	elseif ( info.hasMoneyInputFrame ) then
 		height = height + 22;
 	end
-	if ( info.hasDropDown ) then
-		height = height + 8 + dialog.DropDownControl:GetHeight();
+	if ( info.hasDropdown ) then
+		height = height + 8 + dialog.Dropdown:GetHeight();
 	end
 	if ( dialog.insertedFrame ) then
 		height = height + dialog.insertedFrame:GetHeight();
@@ -238,9 +238,9 @@ function StaticPopup_ShowCustomGenericInputBox(customData, insertedFrame)
 	StaticPopup_Show("GENERIC_INPUT_BOX", nil, nil, customData, insertedFrame);
 end
 
-function StaticPopup_ShowGenericDropDown(text, callback, options, hasButtons, defaultOption, insertedFrame)
-	local data = { text = text, callback = callback, options = options, hasButtons = hasButtons, defaultOption = defaultOption };
-	StaticPopup_Show("GENERIC_DROP_DOWN", nil, nil, data, insertedFrame);
+function StaticPopup_ShowGenericDropdown(text, callback, options, requiresConfirmation, defaultOption)
+	local data = { text = text, callback = callback, options = options, requiresConfirmation = requiresConfirmation, defaultOption = defaultOption };
+	StaticPopup_Show("GENERIC_DROP_DOWN", nil, nil, data);
 end
 
 local tempButtonLocs = {};	--So we don't make a new table each time.
@@ -395,7 +395,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		dialog.SubText.text_arg2 = text_arg2;
 	elseif ( which == "BILLING_NAG" ) then
 		text:SetFormattedText(info.text, text_arg1, MINUTES);
-	elseif ( which == "SPELL_CONFIRMATION_PROMPT" or which == "SPELL_CONFIRMATION_WARNING" ) then
+	elseif ( which == "SPELL_CONFIRMATION_PROMPT" or which == "SPELL_CONFIRMATION_WARNING" or which == "SPELL_CONFIRMATION_PROMPT_ALERT" or which == "SPELL_CONFIRMATION_WARNING_ALERT" ) then
 		text:SetText(text_arg1);
 		info.text = text_arg1;
 		info.timeout = text_arg2;
@@ -455,23 +455,8 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		editBox:Hide();
 	end
 
-	if ( info.hasDropDown ) then
-		dialog.DropDownControl:Show();
-		dialog.DropDownControl:SetOptions(info.dropDownOptions, info.dropDownDefaultOption);
-
-		local function StaticPopup_OnDropDownOptionSelected(value, isUserInput)
-			info.OnDropDownOptionSelected(dialog, data, value, isUserInput);
-		end
-
-		dialog.DropDownControl:SetOptionSelectedCallback(nil);
-		dialog.DropDownControl:SetSelectedValue(nil);
-
-		if info.OnDropDownOptionSelected then
-			dialog.DropDownControl:SetOptionSelectedCallback(StaticPopup_OnDropDownOptionSelected);
-		end
-	else
-		dialog.DropDownControl:Hide();
-	end
+	--See StaticPopup_ShowGenericDropdown
+	dialog.Dropdown:SetShown(info.hasDropdown);
 
 	-- Show or hide money frame
 	if ( info.hasMoneyFrame ) then
@@ -609,7 +594,6 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 	StaticPopup_Resize(dialog, which);
 
 	local buttonPadding = 10;
-	local minButtonWidth = 120;
 	local totalButtonPadding = (#buttons - 1) * buttonPadding;
 	local totalButtonWidth = #buttons * maxButtonWidth;
 	local totalWidth;
@@ -1320,7 +1304,8 @@ function StaticPopupItemFrameMixin:RetrieveInfo(data)
 		data.texture = texture;
 		self.itemID = nil;
 	else
-		local itemID, _, _, _, texture = C_Item.GetItemInfoInstant(data.link);
+		local itemID, _;
+		itemID, _, _, _, texture = C_Item.GetItemInfoInstant(data.link);
 		data.name = RETRIEVING_ITEM_INFO;
 		data.color = {RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1};
 		data.texture = texture;

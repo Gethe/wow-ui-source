@@ -1,0 +1,14 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Script file="CharacterSelectScene.lua"/>
+
+	<ModelScene name="CharacterSelectScene" mixin="CharacterSelectSceneMixin" parent="CharacterSelect" inherits="NonInteractableModelSceneMixinTemplate" setAllPoints="true">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</ModelScene>
+
+</Ui>

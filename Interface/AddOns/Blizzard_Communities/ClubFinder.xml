@@ -1,7 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
-	<Script file="ClubFinder.lua"/>
-
 	<ScrollFrame name="ClubFinderEditBoxScrollFrameTemplate" inherits="InputScrollFrameTemplate" virtual="true">
 		<Size x="328" y="70"/>
 		<Anchors>
@@ -14,6 +12,19 @@
 			<KeyValue key="cursorOffset" value="0" type="number"/>
 		</KeyValues>
 	</ScrollFrame>
+
+	<DropdownButton name="ClubFinderDropdownTemplate" inherits="WowStyle1DropdownTemplate" mixin="ClubFinderDropdownMixin" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" justifyH="LEFT" inherits="GameFontNormal">
+					<Size x="100" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3" y="15"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</DropdownButton>
 
 	<Frame name="ClubsFinderJoinClubWarningTemplate" enableMouse="true" frameStrata="DIALOG" mixin="ClubsFinderJoinClubWarningMixin" virtual="true">
 		<Size x="400" y="100"/>
@@ -277,44 +288,21 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame parentKey="ClubFocusDropdown" name="ClubFinderClubFocusDropdown" inherits="ClubFinderFocusDropdownTemplate">
-				<Size x="0" y="20"/>
+			<DropdownButton parentKey="ClubFocusDropdown" inherits="ClubFinderFocusDropdownTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.ShouldListClub" x="-14" y="-60"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ShouldListClub" x="5" y="-60"/>
 				</Anchors>
-			</Frame>
-			<Frame parentKey="LookingForDropdown" name="ClubFinderLookingForDropdown" inherits="UIDropDownMenuTemplate" mixin="LookingForDropdownMixin">
-				<Size x="0" y="20"/>
+			</DropdownButton>
+			<DropdownButton parentKey="LookingForDropdown" inherits="ClubFinderLookingForDropdownTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.ClubFocusDropdown" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString parentKey="Label" text="CLUB_FINDER_LOOKING_FOR" justifyH="LEFT" inherits="GameFontHighlight">
-							<Size x="280" y="0"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="20" y="11"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-			</Frame>
-			<Frame parentKey="LanguageDropdown" name="ClubFinderLanguageDropdown" inherits="UIDropDownMenuTemplate" mixin="ClubFinderLanguageDropdownMixin">
-				<Size x="0" y="20"/>
+			</DropdownButton>
+			<DropdownButton parentKey="LanguageDropdown" inherits="CommunitiesLanguageDropdown">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.LookingForDropdown" relativePoint="TOPRIGHT" x="-25" y="0"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.LookingForDropdown" relativePoint="TOPRIGHT" x="10" y="0"/>
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString parentKey="Label" text="LANGUAGE" justifyH="LEFT" inherits="GameFontNormal">
-							<Size x="280" y="0"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="20" y="15"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-			</Frame>
+			</DropdownButton>
 			<Frame parentKey="RecruitmentMessageFrame">
 				<Size x="335" y="80"/>
 				<Anchors>
@@ -483,9 +471,6 @@
 						PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 						self:GetParent():PostClub();
 					</OnClick>
-					<OnEnter>
-						self:GetParent():AcceptButtonOnEnter();
-					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
 					</OnLeave>
@@ -512,10 +497,10 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="ClubFinderBigSpecializationCheckBoxTemplate" virtual="true">
+	<Frame name="ClubFinderBigSpecializationCheckboxTemplate" virtual="true">
 		<Size x="200" y="40"/>
 		<Frames>
-			<CheckButton parentKey="CheckBox" inherits="ClubFinderCheckboxTemplate">
+			<CheckButton parentKey="Checkbox" inherits="ClubFinderCheckboxTemplate">
 				<Size x="35" y="35"/>
 				<Anchors>
 					<Anchor point="LEFT"/>
@@ -533,17 +518,17 @@
 				<FontString parentKey="SpecName" justifyH="LEFT" inherits="GameFontHighlight">
 					<Size x="200" y="0"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.CheckBox" relativePoint="LEFT" x="35"/>
+						<Anchor point="LEFT" relativeKey="$parent.Checkbox" relativePoint="LEFT" x="35"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 	</Frame>
 
-	<Frame name="ClubFinderLittleSpecializationCheckBoxTemplate" virtual="true">
+	<Frame name="ClubFinderLittleSpecializationCheckboxTemplate" virtual="true">
 		<Size x="200" y="32"/>
 		<Frames>
-			<CheckButton parentKey="CheckBox" inherits="ClubFinderCheckboxTemplate">
+			<CheckButton parentKey="Checkbox" inherits="ClubFinderCheckboxTemplate">
 				<Size x="28" y="28"/>
 				<Anchors>
 					<Anchor point="LEFT"/>
@@ -561,7 +546,7 @@
 				<FontString parentKey="SpecName" justifyH="LEFT" inherits="GameFontHighlightSmall">
 					<Size x="200" y="0"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.CheckBox" relativePoint="LEFT" x="35"/>
+						<Anchor point="LEFT" relativeKey="$parent.Checkbox" relativePoint="LEFT" x="35"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -710,7 +695,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="ClubFinderGuildCardTemplate" mixin="ClubFinderGuildCardMixin" virtual="true">
+	<Button name="ClubFinderGuildCardTemplate" registerForClicks="LeftButtonUp,RightButtonUp" mixin="ClubFinderGuildCardMixin" virtual="true">
 		<Size x="178" y="264"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -804,43 +789,31 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Frame parentKey="RightClickDropdown" inherits="UIDropDownMenuTemplate" hidden="true"/>
 		</Frames>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
-			<OnMouseDown method="OnMouseDown"/>
+			<OnClick method="OnClick"/>
 		</Scripts>
-	</Frame>
+	</Button>
 
-	<Frame name="ClubFinderFocusDropdownTemplate" inherits="UIDropDownMenuTemplate" mixin="ClubFocusDropdownMixin" virtual="true">
-		<Size x="100" y="15"/>
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString parentKey="Label" text="CLUB_FINDER_FOCUS" justifyH="LEFT" inherits="GameFontHighlight">
-					<Size x="100" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="20" y="13"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-	</Frame>
+	<DropdownButton name="ClubFinderLookingForDropdownTemplate" inherits="ClubFinderDropdownTemplate" mixin="ClubLookingForDropdownMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="labelText" value="CLUB_FINDER_LOOKING_FOR" type="global"/>
+		</KeyValues>
+	</DropdownButton>
+	
+	<DropdownButton name="ClubFinderFocusDropdownTemplate" inherits="ClubFinderDropdownTemplate" mixin="ClubFocusDropdownMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="labelText" value="CLUB_FINDER_FOCUS" type="global"/>
+		</KeyValues>
+	</DropdownButton>
 
-	<Frame name="ClubFinderFilterDropdownTemplate" inherits="UIDropDownMenuTemplate" mixin="ClubFinderFilterDropdownMixin" virtual="true">
-		<Size x="100" y="15"/>
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString parentKey="Label" text="FILTER" justifyH="LEFT" inherits="GameFontHighlight">
-					<Size x="100" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="20" y="13"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-	</Frame>
+	<DropdownButton name="ClubFinderFilterDropdownTemplate" inherits="ClubFinderDropdownTemplate" mixin="ClubFinderFilterDropdownMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="labelText" value="FILTER" type="global"/>
+		</KeyValues>
+	</DropdownButton>
 
 	<CheckButton name="ClubFinderCheckboxTemplate" mixin="ClubFinderCheckboxMixin" virtual="true">
 		<Scripts>
@@ -855,21 +828,21 @@
 
 	<Frame name="ClubFinderGuildCardsFrameTemplate" hidden="true" virtual ="true">
 		<Frames>
-			<Frame parentKey="FirstCard" parentArray="Cards" inherits="ClubFinderGuildCardTemplate">
+			<Button parentKey="FirstCard" parentArray="Cards" inherits="ClubFinderGuildCardTemplate">
 				<Anchors>
 					<Anchor point="LEFT" x="15" y="10"/>
 				</Anchors>
-			</Frame>
-			<Frame parentKey="SecondCard" parentArray="Cards" inherits="ClubFinderGuildCardTemplate">
+			</Button>
+			<Button parentKey="SecondCard" parentArray="Cards" inherits="ClubFinderGuildCardTemplate">
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.FirstCard" relativePoint="RIGHT" x="200"/>
 				</Anchors>
-			</Frame>
-			<Frame parentKey="ThirdCard" parentArray="Cards" inherits="ClubFinderGuildCardTemplate">
+			</Button>
+			<Button parentKey="ThirdCard" parentArray="Cards" inherits="ClubFinderGuildCardTemplate">
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.SecondCard" relativePoint="RIGHT" x="200"/>
 				</Anchors>
-			</Frame>
+			</Button>
 			<Button parentKey="PreviousPage">
 				<Size x="32" y="32"/>
 				<Anchors>
@@ -931,7 +904,7 @@
 		</Scripts>
 	</Frame>
 
-	<Button name="ClubFinderCommunitiesCardTemplate" motionScriptsWhileDisabled="true" mixin="ClubFinderCommunitiesCardMixin" virtual="true">
+	<Button name="ClubFinderCommunitiesCardTemplate" motionScriptsWhileDisabled="true" registerForClicks="LeftButtonUp,RightButtonUp" mixin="ClubFinderCommunitiesCardMixin" virtual="true">
 		<Size x="570" y="71"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -1035,13 +1008,10 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame parentKey="RightClickDropdown" inherits="UIDropDownMenuTemplate" hidden="true"/>
 		</Frames>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
-			<OnMouseDown method="OnMouseDown"/>
 			<OnClick method="OnClick"/>
 		</Scripts>
 		<HighlightTexture parentKey="HighlightBackground" atlas="communitiesfinder_card_highlight" useAtlasSize="true" alphaMode="ADD">
@@ -1082,43 +1052,17 @@
 				</Layer>
 			</Layers>
 		</Frame>
-		<Frame parentKey="ClubFilterDropdown" hidden="true" name="ClubFinderFilterDropdown" inherits="ClubFinderFilterDropdownTemplate">
-			<Anchors>
-				<Anchor point="TOPLEFT" x="-1" y="18"/>
-			</Anchors>
-		</Frame>
-		<Frame parentKey="ClubSizeDropdown" name="ClubFinderSizeDropdown" hidden="true" mixin="ClubSizeDropdownMixin" inherits="UIDropDownMenuTemplate">
-			<Size x="100" y="10"/>
-			<Anchors>
-				<Anchor point="RIGHT"/>
-			</Anchors>
-			<Layers>
-				<Layer level="ARTWORK">
-					<FontString parentKey="Label" text="CLUB_FINDER_GUILD_SIZE" justifyH="LEFT" inherits="GameFontHighlight">
-						<Size x="100" y="0"/>
-						<Anchors>
-							<Anchor point="TOP" x="5" y="13"/>
-						</Anchors>
-					</FontString>
-				</Layer>
-			</Layers>
-		</Frame>
-		<Frame parentKey="SortByDropdown" name="ClubFinderSortByDropdown" hidden="true" mixin="ClubSortByDropdownMixin" inherits="UIDropDownMenuTemplate">
-			<Size x="100" y="15"/>
-			<Anchors>
-				<Anchor point="RIGHT" x="50" y="0"/>
-			</Anchors>
-			<Layers>
-				<Layer level="ARTWORK">
-					<FontString parentKey="Label" text="CLUB_FINDER_SORT_BY" justifyH="LEFT" inherits="GameFontHighlight">
-						<Size x="100" y="0"/>
-						<Anchors>
-							<Anchor point="TOP" x="3" y="13"/>
-						</Anchors>
-					</FontString>
-				</Layer>
-			</Layers>
-		</Frame>
+		<DropdownButton parentKey="ClubFilterDropdown" inherits="ClubFinderFilterDropdownTemplate" hidden="true"/>
+		<DropdownButton parentKey="ClubSizeDropdown" inherits="ClubFinderDropdownTemplate" hidden="true">
+			<KeyValues>
+				<KeyValue key="labelText" value="CLUB_FINDER_GUILD_SIZE" type="global"/>
+			</KeyValues>
+		</DropdownButton>
+		<DropdownButton parentKey="SortByDropdown" inherits="ClubFinderDropdownTemplate" hidden="true">
+			<KeyValues>
+				<KeyValue key="labelText" value="CLUB_FINDER_SORT_BY" type="global"/>
+			</KeyValues>
+		</DropdownButton>
 		<Frame parentKey="TankRoleFrame" inherits="ClubFinderRoleTemplate">
 			<Anchors>
 				<Anchor point="RIGHT" relativeKey="$parent.ClubSizeDropdown" relativePoint="RIGHT" x="40" y="10"/>
@@ -1129,7 +1073,7 @@
 				</Layer>
 			</Layers>
 			<Frames>
-				<CheckButton parentKey="CheckBox" mixin="ClubFinderRoleCheckBoxMixin" motionScriptsWhileDisabled="true" inherits="ClubFinderCheckboxTemplate">
+				<CheckButton parentKey="Checkbox" mixin="ClubFinderRoleCheckboxMixin" motionScriptsWhileDisabled="true" inherits="ClubFinderCheckboxTemplate">
 					<Size x="23" y="23"/>
 					<Anchors>
 						<Anchor point="BOTTOM" relativeKey="$parent.Icon" relativePoint="BOTTOM" x="-12" y="-8"/>
@@ -1155,7 +1099,7 @@
 				</Layer>
 			</Layers>
 			<Frames>
-				<CheckButton parentKey="CheckBox" mixin="ClubFinderRoleCheckBoxMixin" motionScriptsWhileDisabled="true" inherits="ClubFinderCheckboxTemplate">
+				<CheckButton parentKey="Checkbox" mixin="ClubFinderRoleCheckboxMixin" motionScriptsWhileDisabled="true" inherits="ClubFinderCheckboxTemplate">
 					<Size x="23" y="23"/>
 					<Anchors>
 						<Anchor point="BOTTOM" relativeKey="$parent.Icon" relativePoint="BOTTOM" x="-12" y="-8"/>
@@ -1181,7 +1125,7 @@
 				</Layer>
 			</Layers>
 			<Frames>
-				<CheckButton parentKey="CheckBox" mixin="ClubFinderRoleCheckBoxMixin" motionScriptsWhileDisabled="true" inherits="ClubFinderCheckboxTemplate">
+				<CheckButton parentKey="Checkbox" mixin="ClubFinderRoleCheckboxMixin" motionScriptsWhileDisabled="true" inherits="ClubFinderCheckboxTemplate">
 					<Size x="23" y="23"/>
 					<Anchors>
 						<Anchor point="BOTTOM" relativeKey="$parent.Icon" relativePoint="BOTTOM" x="-12" y="-8"/>
@@ -1367,4 +1311,5 @@
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
+
 </Ui>

@@ -1,22 +1,3 @@
----------------
---NOTE - Please do not change this section without talking to Dan
-local _, tbl = ...;
-if tbl then
-	tbl.SecureCapsuleGet = SecureCapsuleGet;
-
-	local function Import(name)
-		tbl[name] = tbl.SecureCapsuleGet(name);
-	end
-
-	Import("IsOnGlueScreen");
-
-	if ( tbl.IsOnGlueScreen() ) then
-		tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
-	end
-
-	setfenv(1, tbl);
-end
----------------
 
 NineSliceLayouts =
 {
@@ -439,6 +420,18 @@ NineSliceLayouts =
 		LeftEdge = { atlas = "!Perks-Hold-NineSlice-EdgeLeft", },
 		RightEdge = { atlas = "!Perks-Hold-NineSlice-EdgeLeft", mirrorLayout = true,},
 		Center = { atlas = "Perks-Hold-NineSlice-Center", },
+	},
+
+	BankTabSettingsMenuLayout =
+	{
+		TopLeftCorner =	{ atlas = "macropopup-topleft2", },
+		TopRightCorner =	{ atlas = "macropopup-topright2", },
+		BottomLeftCorner =	{ atlas = "macropopup-bottomleft", },
+		BottomRightCorner =	{ atlas = "macropopup-bottomright", },
+		TopEdge = { atlas = "_macropopup-top2", },
+		BottomEdge = { atlas = "_macropopup-bottom", },
+		LeftEdge = { atlas = "!macropopup-left2", },
+		RightEdge = { atlas = "!macropopup-right2", },
 	},
 
 	ThreeSliceVerticalLayout =

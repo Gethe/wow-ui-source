@@ -52,7 +52,7 @@ end
 
 VASAssignConfirmationBlockBase = { 
 	AutoAdvance = true,
-	Back = true,
+	Back = false,
 	Next = false,
 	Finish = false,
 	HiddenStep = true,
@@ -73,7 +73,7 @@ function VASAssignConfirmationBlockBase:IsFinished()
 	if not self.isInitialized then
 		return false;
 	end
-	
+
 	local warningState = self:CheckFinishConfirmation();
 	if warningState == "accepted" then
 		local isValidationOnly = false;
@@ -83,8 +83,11 @@ function VASAssignConfirmationBlockBase:IsFinished()
 
 		return true;
 	elseif warningState == "declined" then
+		CharSelectServicesFlowFrame.CloseButton:Show();
 		CharacterServicesMaster.flow:RequestRewind();
 		self.warningState = "rewind";
+	elseif warningState == "unseen" then
+		CharSelectServicesFlowFrame.CloseButton:Hide();
 	end
 
 	return false;
@@ -137,6 +140,8 @@ function VASCharacterSelectBlockBase:Initialize(results, wasFromRewind)
 	self:SetResultsShown(false);
 
 	self:CheckEnable();
+
+	CharSelectServicesFlowFrame:ClearErrorMessage();
 end
 
 function VASCharacterSelectBlockBase:CheckEnable()
@@ -182,22 +187,21 @@ function VASCharacterSelectBlockBase:SetResultsShown(shown)
 end
 
 function VASCharacterSelectBlockBase:OnAdvance()
-	CharacterSelect_SetScrollEnabled(false);
+	CharacterSelectListUtil.SetScrollListInteractiveState(false);
 	CharacterServicesCharacterSelector:Hide();
 	self:SetResultsShown(true);
 
 	local selectedCharacterGUID = self:GetSelectedCharacterGUID();
-	local selectedButton = CharacterSelectCharacterFrame.ScrollBox:FindFrameByPredicate(function(frame, elementData)
-		local guid = select(15, GetCharacterInfo(frame.index));
-		return guid == selectedCharacterGUID;
+	local characterID;
+	local selectedFrame = CharacterSelectCharacterFrame.ScrollBox:FindFrameByPredicate(function(frame, elementData)
+		characterID = CharacterSelectListUtil.GetCharacterPositionData(selectedCharacterGUID, elementData);
+		return characterID ~= nil;
 	end);
 
-	if selectedButton then
-		for _, button in ipairs(CharacterSelectCharacterFrame.ScrollBox:GetFrames()) do
-			if button ~= selectedButton then
-				CharacterSelect_SetCharacterButtonEnabled(button, false);
-			end
-		end
+	if selectedFrame then
+		CharacterSelectListUtil.ForEachCharacterDo(function(frame)
+			frame.InnerContent:SetEnabledState(frame.characterID == characterID);
+		end);
 	end
 end
 
@@ -206,7 +210,8 @@ function VASCharacterSelectBlockBase:IsFinished(wasFromRewind)
 end
 
 function VASCharacterSelectBlockBase:SaveResultInfo(characterButton, guid)
-	self.results = { selectedCharacterGUID = guid, characterButtonID = characterButton:GetID(), characterIndex = characterButton.index };
+	local index = CharacterSelectListUtil.GetIndexFromCharID(characterButton.characterID);
+	self.results = { selectedCharacterGUID = guid, characterButtonID = characterButton.characterID, characterIndex = index };
 end
 
 function VASCharacterSelectBlockBase:GetResult()
@@ -223,21 +228,26 @@ end
 
 function VASCharacterSelectBlockBase:FormatResult()
 	local result = self:GetResult();
-	if result.selectedCharacterGUID then
-		local name, raceName, raceFilename, className, classFilename, classID, experienceLevel, areaName, genderEnum, isGhost, hasCustomize, hasRaceChange,
-		hasFactionChange, raceChangeDisabled, guid, profession0, profession1, genderID, boostInProgress, hasNameChange, isLocked, isTrialBoost, isTrialBoostCompleted,
-		isRevokedCharacterUpgrade, vasServiceInProgress, lastLoginBuild, specID, isExpansionTrialCharacter, faction, isLockedByExpansion, mailSenders, customizeDisabled,
-		factionChangeDisabled, characterServiceRequiresLogin, eraChoiceState, lastActiveDay, lastActiveMonth, lastActiveYear = GetCharacterInfoByGUID(result.selectedCharacterGUID);
-
-		return SELECT_CHARACTER_RESULTS_FORMAT:format(RAID_CLASS_COLORS[classFilename].colorStr, name, experienceLevel, className);
+	if not result.selectedCharacterGUID then
+		return "";
 	end
 
-	return "";
+	local basicInfo = GetBasicCharacterInfo(result.selectedCharacterGUID);
+	if basicInfo.classFilename then
+		local coloredName = NORMAL_FONT_COLOR:WrapTextInColorCode(basicInfo.name);
+
+		local color = CreateColor(GetClassColor(basicInfo.classFilename));
+		local coloredClassName = color:WrapTextInColorCode(basicInfo.className);
+
+		return SELECT_CHARACTER_RESULTS_FORMAT:format(coloredName, basicInfo.experienceLevel, coloredClassName);
+	else
+		return "";
+	end
 end
 
 VASChoiceVerificationBlockBase =
 {
-	Back = true,
+	Back = false,
 	Next = false,
 	Finish = false,
 	HiddenStep = true,
@@ -305,5 +315,4 @@ end
 
 -- Override
 function VASChoiceVerificationBlockBase:RequestAssignVASForResults(results, isValidationOnly)
-
 end

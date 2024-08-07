@@ -130,6 +130,8 @@ function ProfessionsRecipeTransactionMixin:Init(recipeSchematic)
 		table.insert(self.reagentSlotSchematicTbls, reagentSlotSchematic);
 		self.reagentTbls[slotIndex] = {reagentSlotSchematic = reagentSlotSchematic, allocations = allocations};
 	end
+
+	self.applyConcentration = false;
 end
 
 function ProfessionsRecipeTransactionMixin:HasReagentSlots()
@@ -296,7 +298,7 @@ function ProfessionsRecipeTransactionMixin:SanitizeAllocationsInternal(index, al
 			-- because it currently represents a "no change" operation.
 
 			if not self:IsModificationAllocated(reagent, index) and self:IsReagentSanizationExempt(reagent) then
-				local owned = ProfessionsUtil.GetReagentQuantityInPossession(reagent);
+				local owned = ProfessionsUtil.GetReagentQuantityInPossession(reagent, self.useCharacterInventoryOnly);
 				local quantity = allocs:GetQuantity();
 				if owned < quantity then
 					valid = false;
@@ -432,6 +434,11 @@ end
 
 function ProfessionsRecipeTransactionMixin:HasAllocatedItemID(itemID)
 	local reagent = Professions.CreateCraftingReagentByItemID(itemID);
+	return self:HasAllocatedReagent(reagent);
+end
+
+function ProfessionsRecipeTransactionMixin:HasAllocatedCurrencyID(currencyID)
+	local reagent = Professions.CreateCraftingReagentByCurrencyID(currencyID);
 	return self:HasAllocatedReagent(reagent);
 end
 
@@ -642,8 +649,13 @@ function ProfessionsRecipeTransactionMixin:HasMetPrerequisiteRequirements()
 		local reagentSlotSchematic = reagentTbl.reagentSlotSchematic;
 		for reagentIndex, reagent in ipairs(reagentSlotSchematic.reagents) do
 			local allocation = allocations:FindAllocationByReagent(reagent);
-			if allocation and not self:AreAllRequirementsAllocatedByItemID(reagent.itemID) then
-				return false;
+			if allocation then
+				if reagent.itemID and not self:AreAllRequirementsAllocatedByItemID(reagent.itemID) then
+					return false;
+				end
+				if reagent.currencyID and not self:HasAllocatedCurrencyID(reagent.currencyID) then
+					return false;
+				end
 			end
 		end
 	end
@@ -698,6 +710,30 @@ function ProfessionsRecipeTransactionMixin:CreateRegularReagentInfoTbl()
 		return reagentTbl.reagentSlotSchematic.dataSlotType == Enum.TradeskillSlotDataType.Reagent;
 	end
 	return self:CreateCraftingReagentInfoTblIf(IsRegularCraftingReagent);
+end
+
+function ProfessionsRecipeTransactionMixin:IsApplyingConcentration()
+	return self.applyConcentration;
+end
+
+function ProfessionsRecipeTransactionMixin:SetApplyConcentration(applyConcentration)
+	if self.applyConcentration ~= applyConcentration then
+		self.applyConcentration = applyConcentration;
+
+		-- Update stat lines
+		self:CallOnChangedHandler();
+
+		-- Update toggle button state
+		self:OnChanged();
+	end
+end
+
+function ProfessionsRecipeTransactionMixin:SetUseCharacterInventoryOnly(useCharacterInventoryOnly)
+	self.useCharacterInventoryOnly = useCharacterInventoryOnly;
+end
+
+function ProfessionsRecipeTransactionMixin:ShouldUseCharacterInventoryOnly()
+	return self.useCharacterInventoryOnly;
 end
 
 function CreateProfessionsRecipeTransaction(recipeSchematic)

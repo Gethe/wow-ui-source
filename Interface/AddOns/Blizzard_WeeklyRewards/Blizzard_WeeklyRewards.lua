@@ -26,47 +26,36 @@ local WEEKLY_REWARDS_EVENTS = {
 	"CHALLENGE_MODE_MAPS_UPDATE",
 };
 
-local weeklyRewardsFrameTextureKitRegions = {
-	BackgroundTile = "UI-Frame-%s-BackgroundTile",
-	Divider1 = "%s-weeklyrewards-divider",
-	Divider2 = "%s-weeklyrewards-divider",
-}
-
-local weeklyRewardsSelectRewardButtonTextureKitRegions = {
-	Background = "%s-weeklyrewards-frame-button",
-}
-
-local weeklyRewardsConcessionFrameTextureKitRegions = {
-	Divider1 = "%s-weeklyrewards-divider-currency",
-	Divider2 = "%s-weeklyrewards-divider-currency",
-}
-
-local headerFrameTextureKitRegions = 
-{
-	Left = "UI-Frame-%s-TitleLeft",
-	Right = "UI-Frame-%s-TitleRight",
-	Middle = "_UI-Frame-%s-TitleMiddle",
-}
-
-local weeklyRewardActivityTypeTextureKitRegions = {
-	Border = "%s-weeklyrewards-frame-mode",
-}
-
-local weeklyRewardActivityTextureKitRegions = { 
-	Orb = "%s-weeklyrewards-orb-unlocked",
-}
-
-local rewardUiModelSceneEffectByTextureKit = {
-	["Oribos"] = { effectID = 102, offsetX = -30, offsetY = -20},
-	["Dragonflight"] =  { effectID = 148, offsetX = -40, offsetY = -20},
-}
-
 WeeklyRewardsMixin = { };
 
+function WeeklyRewardsMixin:SetUpConditionalActivities()
+	self.showWorldRow = false;
+	local activities = C_WeeklyRewards.GetActivities();
+	for i, activityInfo in ipairs(activities) do
+		if activityInfo.type == Enum.WeeklyRewardChestThresholdType.World then
+			self.showWorldRow = true;
+			break;
+		end
+	end
+
+	self.showPVPRow = not self.showWorldRow;
+
+	self:SetActivityShown(self.showPVPRow, self.PVPFrame, Enum.WeeklyRewardChestThresholdType.RankedPvP);
+	if self.showPVPRow then
+		self:SetUpActivity(self.PVPFrame, PVP, "evergreen-weeklyrewards-category-pvp", Enum.WeeklyRewardChestThresholdType.RankedPvP);
+	end
+
+	self:SetActivityShown(self.showWorldRow, self.WorldFrame, Enum.WeeklyRewardChestThresholdType.World);
+	if self.showWorldRow then
+		self:SetUpActivity(self.WorldFrame, WORLD, "evergreen-weeklyrewards-category-world", Enum.WeeklyRewardChestThresholdType.World);
+	end
+end
+
 function WeeklyRewardsMixin:OnLoad()
-	self:SetUpActivity(self.RaidFrame, RAIDS, "weeklyrewards-background-raid", Enum.WeeklyRewardChestThresholdType.Raid);
-	self:SetUpActivity(self.MythicFrame, DUNGEONS, "weeklyrewards-background-mythic", Enum.WeeklyRewardChestThresholdType.Activities);
-	self:SetUpActivity(self.PVPFrame, PVP, "weeklyrewards-background-pvp", Enum.WeeklyRewardChestThresholdType.RankedPvP);
+	self:SetUpActivity(self.RaidFrame, RAIDS, "evergreen-weeklyrewards-category-raids", Enum.WeeklyRewardChestThresholdType.Raid);
+	self:SetUpActivity(self.MythicFrame, DUNGEONS, "evergreen-weeklyrewards-category-dungeons", Enum.WeeklyRewardChestThresholdType.Activities);
+
+	self:SetUpConditionalActivities();
 
 	local attributes =
 	{
@@ -82,24 +71,9 @@ function WeeklyRewardsMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, WEEKLY_REWARDS_EVENTS);
 	PlaySound(SOUNDKIT.UI_WEEKLY_REWARD_OPEN_WINDOW);
 	C_WeeklyRewards.OnUIInteract();
+
 	WeeklyRewardExpirationWarningDialog:SetShown(C_WeeklyRewards.ShouldShowRetirementMessage() or C_WeeklyRewards.ShouldShowFinalRetirementMessage());
 	self:FullRefresh();
-	self:SetupTextures();
-end
-
-function WeeklyRewardsMixin:SetupTextures()
-	local textureKit = C_WeeklyRewards.GetWeeklyRewardTextureKit(); 
-	if(textureKit) then 
-		SetupTextureKitOnRegions(textureKit, self, weeklyRewardsFrameTextureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
-		SetupTextureKitOnRegions(textureKit, self.HeaderFrame, headerFrameTextureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
-		SetupTextureKitOnRegions(textureKit, self.RaidFrame, weeklyRewardActivityTypeTextureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
-		SetupTextureKitOnRegions(textureKit, self.PVPFrame, weeklyRewardActivityTypeTextureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize)
-		SetupTextureKitOnRegions(textureKit, self.MythicFrame, weeklyRewardActivityTypeTextureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize)
-		SetupTextureKitOnRegions(textureKit, self.ConcessionFrame, weeklyRewardsConcessionFrameTextureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
-		SetupTextureKitOnRegions(textureKit, self.SelectRewardButton, weeklyRewardsSelectRewardButtonTextureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
-		self.NineSlice:Show(); 
-		NineSliceUtil.ApplyUniqueCornersLayout(self.NineSlice,textureKit);
-	end
 end
 
 function WeeklyRewardsMixin:OnHide()
@@ -145,24 +119,37 @@ end
 
 function WeeklyRewardsMixin:SetUpActivity(activityTypeFrame, name, atlas, activityType)
 	activityTypeFrame.Name:SetText(name);
-	activityTypeFrame.Background:SetAtlas(atlas);
+	local useAtlasSize = true;
+	activityTypeFrame.Background:SetAtlas(atlas, useAtlasSize);
 
 	local prevFrame;
 	for i = 1, NUM_COLUMNS do
-		local frame = CreateFrame("FRAME", nil, self, "WeeklyRewardActivityTemplate");
-		if prevFrame then
-			frame:SetPoint("LEFT", prevFrame, "RIGHT", 9, 0);
+		local alreadyCreatedFrame = self:GetActivityFrame(activityType, i);
+		if alreadyCreatedFrame then
+			alreadyCreatedFrame:Show();
+			prevFrame = alreadyCreatedFrame;
 		else
-			frame:SetPoint("LEFT", activityTypeFrame, "RIGHT", 56, 3);
-		end
-		-- create a background for the frame but parented to main frame so the modelscene can be over it
-		local background = self:CreateTexture(nil, "OVERLAY");
-		background:SetPoint("BOTTOMRIGHT", frame);
-		frame.Background = background;
+			local frame = CreateFrame("FRAME", nil, self, "WeeklyRewardActivityTemplate");
+			if prevFrame then
+				frame:SetPoint("LEFT", prevFrame, "RIGHT", 9, 0);
+			else
+				frame:SetPoint("LEFT", activityTypeFrame, "RIGHT", 44, 3);
+			end
 
-		frame.type = activityType;
-		frame.index = i;
-		prevFrame = frame;
+			frame.type = activityType;
+			frame.index = i;
+			prevFrame = frame;
+		end
+	end
+end
+
+function WeeklyRewardsMixin:SetActivityShown(isShown, activityTypeFrame, activityType)
+	activityTypeFrame:SetShown(isShown);
+	for i = 1, NUM_COLUMNS do
+		local alreadyCreatedFrame = self:GetActivityFrame(activityType, i);
+		if alreadyCreatedFrame then
+			alreadyCreatedFrame:SetShown(isShown);
+		end
 	end
 end
 
@@ -204,14 +191,16 @@ function WeeklyRewardsMixin:Refresh(playSheenAnims)
 	local activities = C_WeeklyRewards.GetActivities();
 	for i, activityInfo in ipairs(activities) do
 		local frame = self:GetActivityFrame(activityInfo.type, activityInfo.index);
-		-- hide current progress for current week if rewards are present
-		if canClaimRewards and #activityInfo.rewards == 0 then
-			activityInfo.progress = 0;
+		if frame then
+			-- hide current progress for current week if rewards are present
+			if canClaimRewards and #activityInfo.rewards == 0 then
+				activityInfo.progress = 0;
+			end
+			if playSheenAnims then
+				frame:MarkForPendingSheenAnim();
+			end
+			frame:Refresh(activityInfo);
 		end
-		if playSheenAnims then
-			frame:MarkForPendingSheenAnim();
-		end
-		frame:Refresh(activityInfo);
 	end
 
 	if C_WeeklyRewards.HasAvailableRewards() then
@@ -376,22 +365,11 @@ end
 
 WeeklyRewardOverlayMixin = {};
 
-local weeklyRewardOverlayEffects = {
-	["Oribos"] = { effectID = 102, offsetX = 3, offsetY = 0 },
-	["Dragonflight"] =  { effectID = 148, offsetX = 3, offsetY = 0 },
-}
-
-local weeklyRewardOverlayTextureKitRegions = { 
-	BackgroundTile = "UI-Frame-%s-BackgroundTile"
-}
+local EVERGREEN_WEEKLY_REWARD_OVERLAY_EFFECT = { effectID = 179, offsetX = 3, offsetY = 0 };
 
 function WeeklyRewardOverlayMixin:OnShow()
-	local textureKit = C_WeeklyRewards.GetWeeklyRewardTextureKit();
-	if textureKit then 
-		self.activeEffect = self.ModelScene:AddDynamicEffect(weeklyRewardOverlayEffects[textureKit], self);
-		SetupTextureKitOnRegions(textureKit, self, weeklyRewardOverlayTextureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
-		NineSliceUtil.ApplyLayoutByName(self.NineSlice, "Dialog");
-	end
+	self.activeEffect = self.ModelScene:AddDynamicEffect(EVERGREEN_WEEKLY_REWARD_OVERLAY_EFFECT, self);
+	NineSliceUtil.ApplyLayoutByName(self.NineSlice, "Dialog");
 end
 
 function WeeklyRewardOverlayMixin:OnHide()
@@ -404,23 +382,17 @@ end
 WeeklyRewardsActivityMixin = { };
 
 function WeeklyRewardsActivityMixin:SetSelectionState(state)
-	if state == SELECTION_STATE_SELECTED then
-		self.SelectedTexture:Show();
-		self.UnselectedFrame:Hide();
-	elseif state == SELECTION_STATE_UNSELECTED then
-		self.SelectedTexture:Hide();
-		self.UnselectedFrame:Show();
-	else
-		self.SelectedTexture:Hide();
-		self.UnselectedFrame:Hide();
-	end
-	self.ItemFrame:OnSelectionChanged(state == SELECTION_STATE_SELECTED);
+	self.SelectedTexture:SetShown(state == SELECTION_STATE_SELECTED);
+	self.SelectionGlow:SetShown(state == SELECTION_STATE_SELECTED);
+	self.UnselectedFrame:SetShown(state == SELECTION_STATE_UNSELECTED);
 end
 
 function WeeklyRewardsActivityMixin:MarkForPendingSheenAnim()
 	self.hasPendingSheenAnim = true;
 end
 
+local GENERATED_REWARD_MODEL_SCENE_EFFECT = { effectID = 179, offsetX = -35, offsetY = -15};
+local GENERATED_REWARD_MODEL_SCENE_EFFECT_DECAY = { effectID = 180, offsetX = -36, offsetY = -5};
 function WeeklyRewardsActivityMixin:Refresh(activityInfo)
 	local thresholdString;
 	if activityInfo.type == Enum.WeeklyRewardChestThresholdType.Raid then
@@ -433,6 +405,8 @@ function WeeklyRewardsActivityMixin:Refresh(activityInfo)
 		thresholdString = WEEKLY_REWARDS_THRESHOLD_DUNGEONS;
 	elseif activityInfo.type == Enum.WeeklyRewardChestThresholdType.RankedPvP then
 		thresholdString = WEEKLY_REWARDS_THRESHOLD_PVP;
+	elseif activityInfo.type == Enum.WeeklyRewardChestThresholdType.World then
+		thresholdString = WEEKLY_REWARDS_THRESHOLD_WORLD;
 	end
 	self.Threshold:SetFormattedText(thresholdString, activityInfo.threshold);
 
@@ -445,61 +419,51 @@ function WeeklyRewardsActivityMixin:Refresh(activityInfo)
 	local useAtlasSize = true;
 
 	if self.unlocked or self.hasRewards then
-		self.Background:SetAtlas("weeklyrewards-background-reward-unlocked", useAtlasSize);
-		self.Border:SetAtlas("weeklyrewards-frame-reward-unlocked", useAtlasSize);
+		self.Background:SetAtlas("evergreen-weeklyrewards-reward-unlocked", useAtlasSize);
 		self.Threshold:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
 		self.Progress:SetTextColor(GREEN_FONT_COLOR:GetRGB());
-		self.LockIcon:Show();
-		self.LockIcon:SetAtlas("weeklyrewards-icon-unlocked", useAtlasSize);
+		self.CompletedIcon:Show();
+		self.CompletedActivityFlipbook:Show();
+		self.CompletedActivityAnim:Play();
 		self.ItemFrame:Hide();
 		if self.hasRewards then
-			self.Orb:SetTexture(nil);
 			self.ItemFrame:SetRewards(activityInfo.rewards);
 			self.ItemGlow:Show();
+			self.UncollectedGlow:Hide();
 			self:ClearActiveEffect();
+			self:SetActiveEffect(GENERATED_REWARD_MODEL_SCENE_EFFECT_DECAY);
 		else
-			local textureKit = C_WeeklyRewards.GetWeeklyRewardTextureKit(); 
-			if(textureKit) then 
-				SetupTextureKitOnRegions(textureKit, self, weeklyRewardActivityTextureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
-				self:SetActiveEffect(rewardUiModelSceneEffectByTextureKit[textureKit]);
+			if not self.activeEffectInfo or self.activeEffectInfo.effectID ~= GENERATED_REWARD_MODEL_SCENE_EFFECT.effectID then 
+				self.UncollectedGlow:Show();
+				self.UncollectedGlow.FadeAnim:Play();
+				self:ClearActiveEffect();
+				self:SetActiveEffect(GENERATED_REWARD_MODEL_SCENE_EFFECT);
 			end 
 			self.ItemGlow:Hide();
 		end
 
 		if self.hasPendingSheenAnim then
 			self.hasPendingSheenAnim = nil;
-			self.GlowBurst:Show();
-			self.Sheen:Show();
-			local startDelay = (self.index - 1) * 0.7
-			self.SheenAnim.GlowBurstDelay:SetDuration(startDelay);
-			self.SheenAnim.SheenDelay:SetDuration(startDelay);
-			self.SheenAnim:Play();
+			self.RewardGenerated:Show();
 		end
 	else
-		self.Orb:SetAtlas("weeklyrewards-orb-locked", useAtlasSize);
-		self.Background:SetAtlas("weeklyrewards-background-reward-locked", useAtlasSize);
-		self.Border:SetAtlas("weeklyrewards-frame-reward-locked", useAtlasSize);
+		self.Background:SetAtlas("evergreen-weeklyrewards-reward-locked", useAtlasSize);
 		self.Threshold:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
 		self.Progress:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
-		if C_WeeklyRewards.HasAvailableRewards() then
-			self.LockIcon:Show();
-			self.LockIcon:SetAtlas("weeklyrewards-icon-incomplete", useAtlasSize);
-		else
-			self.LockIcon:Hide();
-		end
+		self.CompletedIcon:Hide();
+		self.CompletedActivityFlipbook:Hide();
+		self.CompletedActivityAnim:Stop();
 		self.ItemFrame:Hide();
 		self.ItemGlow:Hide();
-		self.GlowBurst:Hide();
-		self.Sheen:Hide();
+		self.RewardGenerated:Hide();
+		self.UncollectedGlow:Hide();
+		self.UncollectedGlow.FadeAnim:Stop();
 		self:ClearActiveEffect();
 	end
 end
 
 function WeeklyRewardsActivityMixin:OnSheenAnimFinished()
-	self.GlowBurst:Hide();
-	self.Sheen:Hide();
-
-	self.ItemFrame:RestartGlowSpinAnim();
+	self.RewardGenerated:Hide();
 end
 
 function WeeklyRewardsActivityMixin:SetActiveEffect(effectInfo)
@@ -546,6 +510,8 @@ function WeeklyRewardsActivityMixin:SetProgressText(text)
 			end
 		elseif activityInfo.type == Enum.WeeklyRewardChestThresholdType.RankedPvP then
 			self.Progress:SetText(PVPUtil.GetTierName(activityInfo.level));
+		elseif activityInfo.type == Enum.WeeklyRewardChestThresholdType.World then
+			self.Progress:SetText(GREAT_VAULT_WORLD_TIER:format(activityInfo.level));
 		end
 	else
 		if C_WeeklyRewards.CanClaimRewards() then
@@ -570,35 +536,60 @@ end
 function WeeklyRewardsActivityMixin:OnEnter()
 	if self:CanShowPreviewItemTooltip() then
 		self:ShowPreviewItemTooltip();
-	elseif self.info and self.info.type == Enum.WeeklyRewardChestThresholdType.Activities then
-		self:ShowIncompleteMythicTooltip();
+	elseif self.info then
+		if self.info.type == Enum.WeeklyRewardChestThresholdType.Activities then
+			local function AddMythicProgressLines()
+				if self.info.progress > 0 then
+					GameTooltip_AddBlankLineToTooltip(GameTooltip);
+					local lowestLevel = WeeklyRewardsUtil.GetLowestLevelInTopDungeonRuns(self.info.threshold);
+					if lowestLevel == WeeklyRewardsUtil.HeroicLevel then
+						GameTooltip_AddNormalLine(GameTooltip, GREAT_VAULT_REWARDS_CURRENT_LEVEL_HEROIC:format(self.info.threshold));
+					else
+						GameTooltip_AddNormalLine(GameTooltip, GREAT_VAULT_REWARDS_CURRENT_LEVEL_MYTHIC:format(self.info.threshold, lowestLevel));
+					end
+					self:AddTopRunsToTooltip();
+				end
+			end
+
+			local description = GREAT_VAULT_REWARDS_MYTHIC_INCOMPLETE;
+			local formatRemainingProgress = false;
+			if self.info.index == 2 then
+				description = GREAT_VAULT_REWARDS_MYTHIC_COMPLETED_FIRST;
+				formatRemainingProgress = true;
+			elseif self.info.index == 3 then
+				description = GREAT_VAULT_REWARDS_MYTHIC_COMPLETED_SECOND;
+				formatRemainingProgress = true;
+			end
+
+			self:ShowIncompleteTooltip(WEEKLY_REWARDS_UNLOCK_REWARD, description, formatRemainingProgress, AddMythicProgressLines);
+		elseif self.info.type == Enum.WeeklyRewardChestThresholdType.World then
+			
+			local description = GREAT_VAULT_REWARDS_WORLD_INCOMPLETE;
+			if self.info.index == 2 then
+				description = GREAT_VAULT_REWARDS_WORLD_COMPLETED_FIRST;
+			elseif self.info.index == 3 then
+				description = GREAT_VAULT_REWARDS_WORLD_COMPLETED_SECOND;
+			end
+
+			local formatRemainingProgress = true;
+			self:ShowIncompleteTooltip(WEEKLY_REWARDS_UNLOCK_REWARD, description, formatRemainingProgress)
+		end
 	end
 end
 
-function WeeklyRewardsActivityMixin:ShowIncompleteMythicTooltip()
+function WeeklyRewardsActivityMixin:ShowIncompleteTooltip(title, description, formatRemainingProgress, addProgressLineCallback)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -7, -11);
-	GameTooltip_SetTitle(GameTooltip, WEEKLY_REWARDS_UNLOCK_REWARD);
-	if self.info.index == 1 then	-- 1st box in this row
-		GameTooltip_AddNormalLine(GameTooltip, GREAT_VAULT_REWARDS_MYTHIC_INCOMPLETE);
+	GameTooltip_SetTitle(GameTooltip, title);
+	if formatRemainingProgress then
+		GameTooltip_AddNormalLine(GameTooltip, description:format(self.info.threshold - self.info.progress));
 	else
-		local globalString;
-		if self.info.index == 2 then	-- 2nd box in this row
-			globalString = GREAT_VAULT_REWARDS_MYTHIC_COMPLETED_FIRST;
-		else	-- 3rd box
-			globalString = GREAT_VAULT_REWARDS_MYTHIC_COMPLETED_SECOND;
-		end
-		GameTooltip_AddNormalLine(GameTooltip, globalString:format(self.info.threshold - self.info.progress));
-		if self.info.progress > 0 then
-			GameTooltip_AddBlankLineToTooltip(GameTooltip);
-			local lowestLevel = WeeklyRewardsUtil.GetLowestLevelInTopDungeonRuns(self.info.threshold);
-			if lowestLevel == WeeklyRewardsUtil.HeroicLevel then
-				GameTooltip_AddNormalLine(GameTooltip, GREAT_VAULT_REWARDS_CURRENT_LEVEL_HEROIC:format(self.info.threshold));
-			else
-				GameTooltip_AddNormalLine(GameTooltip, GREAT_VAULT_REWARDS_CURRENT_LEVEL_MYTHIC:format(self.info.threshold, lowestLevel));
-			end
-			self:AddTopRunsToTooltip();
-		end
+		GameTooltip_AddNormalLine(GameTooltip, description);
 	end
+
+	if addProgressLineCallback then
+		addProgressLineCallback();
+	end
+
 	GameTooltip:Show();
 end
 
@@ -630,7 +621,16 @@ function WeeklyRewardsActivityMixin:ShowPreviewItemTooltip()
 			self:HandlePreviewMythicRewardTooltip(itemLevel, upgradeItemLevel, nextLevel);
 		elseif self.info.type == Enum.WeeklyRewardChestThresholdType.RankedPvP then
 			self:HandlePreviewPvPRewardTooltip(itemLevel, upgradeItemLevel);
+		elseif self.info.type == Enum.WeeklyRewardChestThresholdType.World then
+			local hasData, nextActivityTierID, nextLevel, nextItemLevel = C_WeeklyRewards.GetNextActivitiesIncrease(self.info.activityTierID, self.info.level);
+			if hasData then
+				upgradeItemLevel = nextItemLevel;
+			else
+				nextLevel = self.info.level + 1;
+			end
+			self:HandlePreviewWorldRewardTooltip(itemLevel, upgradeItemLevel, nextLevel);
 		end
+
 		if not upgradeItemLevel then
 			GameTooltip_AddColoredLine(GameTooltip, WEEKLY_REWARDS_MAXED_REWARD, GREEN_FONT_COLOR);
 		end
@@ -706,6 +706,16 @@ function WeeklyRewardsActivityMixin:HandlePreviewMythicRewardTooltip(itemLevel, 
 			GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_COMPLETE_MYTHIC, nextLevel, self.info.threshold));
 			self:AddTopRunsToTooltip();
 		end
+	end
+end
+
+function WeeklyRewardsActivityMixin:HandlePreviewWorldRewardTooltip(itemLevel, upgradeItemLevel, nextLevel)
+	GameTooltip_AddNormalLine(GameTooltip, string.format(WEEKLY_REWARDS_ITEM_LEVEL_WORLD, itemLevel, self.info.level));
+	
+	GameTooltip_AddBlankLineToTooltip(GameTooltip);
+	if upgradeItemLevel then
+		GameTooltip_AddColoredLine(GameTooltip, string.format(WEEKLY_REWARDS_IMPROVE_ITEM_LEVEL, upgradeItemLevel), GREEN_FONT_COLOR);
+		GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_COMPLETE_WORLD, nextLevel));
 	end
 end
 
@@ -811,26 +821,6 @@ function WeeklyRewardActivityItemMixin:OnClick()
 		HandleModifiedItemClick(hyperlink);
 	else
 		activityFrame:GetParent():SelectActivity(activityFrame);
-	end
-end
-
-function WeeklyRewardActivityItemMixin:OnSelectionChanged(selected)
-	self.Glow:SetShown(selected);
-	self.GlowSpin:SetShown(selected);
-	if selected then
-		self.GlowSpinAnim:Play();
-	else
-		self.GlowSpinAnim:Stop();
-	end
-end
-
-function WeeklyRewardActivityItemMixin:RestartGlowSpinAnim()
-	-- working around an anim bug where it captures the wrong state due to a parent's anim playing/finishing
-	-- restarting it will re-capture the now correct state
-	if self.GlowSpinAnim:IsPlaying() then
-		local offset = self.GlowSpinAnim:GetProgress() * self.GlowSpinAnim:GetDuration();
-		self.GlowSpinAnim:Stop();
-		self.GlowSpinAnim:Play(false, offset);
 	end
 end
 
@@ -1068,6 +1058,8 @@ function GreatVaultRetirementWarningFrameMixin:OnShow()
 	if(title) then 
 		local text = C_WeeklyRewards.ShouldShowFinalRetirementMessage() and GREAT_VAULT_RETIRE_WARNING_FINAL_WEEK:format(title) or GREAT_VAULT_RETIRE_WARNING:format(title);
 		self.Description:SetText(text); 
+		local leftPaddingAndIcon = 66;
+		self:SetWidth(self.Description:GetWidth() + leftPaddingAndIcon);
 	end 
 end 
 

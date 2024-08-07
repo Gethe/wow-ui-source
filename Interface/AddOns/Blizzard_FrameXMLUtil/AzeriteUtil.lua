@@ -24,7 +24,7 @@ do
 end
 
 function AzeriteUtil.AreAnyAzeriteEmpoweredItemsEquipped()
-	for equipSlotIndex, itemLocation in AzeriteUtil.EnumerateEquipedAzeriteEmpoweredItems() do
+	for equipSlotIndex, itemLocation in AzeriteUtil.EnumerateEquipedAzeriteEmpoweredItems() do -- luacheck: ignore 512 (loop is executed at most once)
 		return true;
 	end
 	return false;

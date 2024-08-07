@@ -9,11 +9,7 @@ local l10nTable = {
 	koKR = {},
 	ptBR = {},
 	ptPT = {},
-	ruRU = {
-		localize = function()
-			SpecializationSpecName:SetFontObject(GameFontNormalHuge);
-		end,
-	},
+	ruRU = {},
 	zhCN = {},
 	zhTW = {},
 };

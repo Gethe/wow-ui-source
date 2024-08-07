@@ -282,8 +282,7 @@ function OrderHallMission:UpdateZoneSupportMissionData(missionPage)
 	local timeText
 	if (missionPage.Followers[1] and missionPage.Followers[1].info) then
 		spellID = missionPage.Followers[1].info.zoneSupportSpellID;
-		local _, _, spellTexture = GetSpellInfo(spellID);
-		texture = spellTexture;
+		texture = C_Spell.GetSpellTexture(spellID);
 	end
 
 	missionPage.CombatAllySpell.iconTexture:SetTexture(texture);
@@ -652,11 +651,11 @@ function OrderHallCombatAllyMixin:SetMission(missionInfo)
 			self.InProgress.PortraitFrame:SetupPortrait(followerInfo);
 			self.InProgress.Name:SetText(followerInfo.name);
 
-			local name, _, texture = GetSpellInfo(followerInfo.zoneSupportSpellID);
+			local spellInfo = C_Spell.GetSpellInfo(followerInfo.zoneSupportSpellID);
 
-			self.InProgress.CombatAllySpell.iconTexture:SetTexture(texture);
+			self.InProgress.CombatAllySpell.iconTexture:SetTexture(spellInfo.iconID);
 			self.InProgress.CombatAllySpell.spellID = followerInfo.zoneSupportSpellID;
-			self.InProgress.ZoneSupportName:SetText(name or "");
+			self.InProgress.ZoneSupportName:SetText(spellInfo.name or "");
 
 			self.InProgress.Unassign:SetEnabled(completed);
 		end
@@ -829,11 +828,9 @@ local function CheckClosedMissionPageOrMechanicEffectCountered(missionFrame, mec
 		return true;
 	end
 
-	local foundMechanic;
 	local foundIndex;
 	for index, enemy in ipairs(missionFrame.MissionTab.MissionPage.Enemies) do
 		if (enemy.mechanicEffectID == mechanicEffectID) then
-			foundMechanic = enemy.mechanic;
 			foundIndex = index;
 			break;
 		end
@@ -843,11 +840,9 @@ local function CheckClosedMissionPageOrMechanicEffectCountered(missionFrame, mec
 end
 
 local function PositionAtMechanicEffect(missionFrame, mechanicEffectID)
-	local foundMechanic;
 	local foundIndex;
 	for index, enemy in ipairs(missionFrame.MissionTab.MissionPage.Enemies) do
 		if (enemy.mechanicEffectID == mechanicEffectID) then
-			foundMechanic = enemy.mechanic;
 			foundIndex = index;
 			break;
 		end

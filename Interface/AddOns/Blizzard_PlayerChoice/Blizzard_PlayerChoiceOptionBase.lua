@@ -1,6 +1,10 @@
 PlayerChoiceBaseOptionTemplateMixin = {};
 
 function PlayerChoiceBaseOptionTemplateMixin:OnLoad()
+	if self.Layout then
+		-- If this is a LayoutFrame call Layout to ensure initial anchors are set up
+		self:Layout()
+	end
 end
 
 function PlayerChoiceBaseOptionTemplateMixin:OnShow()
@@ -150,8 +154,12 @@ end
 function PlayerChoiceBaseOptionTemplateMixin:SetupRewards()
 end
 
-local function IsTopWidget(widgetFrame)
-	return widgetFrame.widgetType == Enum.UIWidgetVisualizationType.SpellDisplay;
+local function IsTopWidget(widgetFrame, consolidateWidgets)
+	if consolidateWidgets then
+		return true;
+	else
+		return widgetFrame.widgetType == Enum.UIWidgetVisualizationType.SpellDisplay;
+	end
 end
 
 local function ReserveSortWidgets(a, b)
@@ -171,7 +179,7 @@ function PlayerChoiceBaseOptionTemplateMixin:WidgetsLayout(widgetContainer, sort
 
 	-- First put the top and bottom widgets into separate tables
 	for index, widgetFrame in ipairs(sortedWidgets) do
-		if IsTopWidget(widgetFrame) then
+		if IsTopWidget(widgetFrame, self.optionInfo.consolidateWidgets) then
 			table.insert(topWidgets, widgetFrame);
 		else
 			table.insert(bottomWidgets, widgetFrame);
@@ -188,10 +196,10 @@ function PlayerChoiceBaseOptionTemplateMixin:WidgetsLayout(widgetContainer, sort
 		widgetContainer.verticalRelativePoint = "BOTTOM";
 		widgetContainer.horizontalAnchorPoint = "LEFT";
 		widgetContainer.horizontalRelativePoint = "RIGHT";
-		widgetContainer.horizontalAnchorXOffset = 2;
 		DefaultWidgetLayout(widgetContainer, topWidgets, skipContainerLayout);
 	end
 
+	local skipHorizontalRowPoolClear = true;
 	if hasBottomWidgets then
 		-- We want the bottom widgets to be anchored to the bottom of the container but we still want them to be layed out top to bottom among themselves (by orderIndex)
 		-- In order to achieve that, we reserve-sort the bottom widgets and then lay them out bottom to top and right to left
@@ -204,8 +212,7 @@ function PlayerChoiceBaseOptionTemplateMixin:WidgetsLayout(widgetContainer, sort
 		widgetContainer.verticalRelativePoint = "TOP";
 		widgetContainer.horizontalAnchorPoint = "RIGHT";
 		widgetContainer.horizontalRelativePoint = "LEFT";
-		widgetContainer.horizontalAnchorXOffset = -2;
-		DefaultWidgetLayout(widgetContainer, bottomWidgets, skipContainerLayout);
+		DefaultWidgetLayout(widgetContainer, bottomWidgets, skipContainerLayout, skipHorizontalRowPoolClear);
 	end
 
 	-- Add some padding between the top and bottom widgets (more will be added if needed in SetMinHeight)
@@ -477,7 +484,7 @@ function PlayerChoiceBaseOptionButtonsContainerMixin:Setup(optionInfo, numColumn
 	end
 
 	self.buttonPool:ReleaseAll();
-	self.buttonPool:CreatePoolIfNeeded("Button", self, self.buttonTemplate);
+	self.buttonPool:GetOrCreatePool("Button", self, self.buttonTemplate);
 
 	local buttons = {};
 	for buttonIndex, buttonInfo in ipairs(optionInfo.buttons) do
@@ -603,9 +610,11 @@ end
 PlayerChoiceBaseOptionReputationRewardMixin = {};
 
 function PlayerChoiceBaseOptionReputationRewardMixin:Setup(repRewardInfo, fontColor)
-	local factionName = GetFactionInfoByID(repRewardInfo.factionId);
-	self.Text:SetText(REWARD_REPUTATION_WITH_AMOUNT:format(repRewardInfo.quantity, factionName));
-	self.Text:SetTextColor(fontColor:GetRGBA());
+	local factionData = C_Reputation.GetFactionDataByID(repRewardInfo.factionId);
+	if factionData then
+		self.Text:SetText(REWARD_REPUTATION_WITH_AMOUNT:format(repRewardInfo.quantity, factionData.name));
+		self.Text:SetTextColor(fontColor:GetRGBA());
+	end
 end
 
 PlayerChoiceBaseOptionRewardsMixin = {}

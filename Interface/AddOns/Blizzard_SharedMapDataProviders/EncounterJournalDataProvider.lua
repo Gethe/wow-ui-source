@@ -15,7 +15,6 @@ function EncounterJournalDataProviderMixin:OnShow()
 
 	self:RegisterEvent("CONTENT_TRACKING_UPDATE");
 	self:RegisterEvent("TRACKING_TARGET_INFO_UPDATE");
-	self:RegisterEvent("SUPER_TRACKING_CHANGED");
 end
 
 function EncounterJournalDataProviderMixin:OnHide()
@@ -23,7 +22,6 @@ function EncounterJournalDataProviderMixin:OnHide()
 
 	self:UnregisterEvent("CONTENT_TRACKING_UPDATE");
 	self:UnregisterEvent("TRACKING_TARGET_INFO_UPDATE");
-	self:UnregisterEvent("SUPER_TRACKING_CHANGED");
 end
 
 function EncounterJournalDataProviderMixin:OnEvent(event, ...)
@@ -37,7 +35,7 @@ end
 
 function EncounterJournalDataProviderMixin:RefreshAllData(fromOnShow)
 	self:RemoveAllData();
-	
+
 	if CanShowEncounterJournal() then
 		local mapEncounters = C_EncounterJournal.GetEncountersOnMap(self:GetMap():GetMapID());
 		for index, mapEncounterInfo in ipairs(mapEncounters) do
@@ -68,8 +66,9 @@ function EncounterJournalDataProviderMixin:CheckForContentTracking(encounterID)
 	local pin = self:GetMap():AcquirePin("EncounterMapTrackingPinTemplate");
 	pin:SetPinScale(1.5);
 	pin:Init(self, trackedItemMapInfos);
-	
-	pin.isSuperTracked = pin:IsSuperTracked();
+
+	local isSuperTracked = pin:IsSuperTracked();
+	pin.isSuperTracked = isSuperTracked;
 
 	if isSuperTracked then
 		pin:UseFrameLevelType("PIN_FRAME_LEVEL_SUPER_TRACKED_CONTENT");
@@ -77,8 +76,7 @@ function EncounterJournalDataProviderMixin:CheckForContentTracking(encounterID)
 		pin:UseFrameLevelType("PIN_FRAME_LEVEL_TRACKED_CONTENT");
 	end
 
-	pin.selected = isSuperTracked;
-	
+	pin:SetSelected(isSuperTracked);
 	pin:SetStyle(POIButtonUtil.Style.ContentTracking);
 
 	local trackableMapInfo = trackedItemMapInfos[1];
@@ -113,7 +111,7 @@ function EncounterJournalPinMixin:Refresh()
 	else
 		self.Background:Hide();
 	end
-	
+
 	local complete = C_EncounterJournal.IsEncounterComplete(encounterID);
 	self.DefeatedOpacity:SetShown(complete);
 	self.DefeatedOverlay:SetShown(complete);
@@ -124,11 +122,11 @@ function EncounterJournalPinMixin:OnMouseEnter()
 	if self.tooltipTitle then
 		GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 		GameTooltip_SetTitle(GameTooltip, self.tooltipTitle);
-		
+
 		if C_EncounterJournal.IsEncounterComplete(self.encounterID) then
 			GameTooltip_AddColoredLine(GameTooltip, DUNGEON_ENCOUNTER_DEFEATED, RED_FONT_COLOR);
 		end
-		
+
 		GameTooltip_AddNormalLine(GameTooltip, self.tooltipText, true);
 		GameTooltip:Show();
 	end
@@ -182,7 +180,7 @@ function EncounterMapTrackingPinMixin:OnMouseEnter()
 			quality = sourceInfo.quality;
 		end
 		local objectiveText = C_ContentTracking.GetTitle(trackableMapInfo.trackableType, trackableMapInfo.trackableID);
-		local difficultyName =""; 
+		local difficultyName ="";
 		if trackableMapInfo.difficultyID then
 			difficultyName = PARENS_TEMPLATE:format(DifficultyUtil.GetDifficultyName(trackableMapInfo.difficultyID));
 		end
@@ -197,16 +195,16 @@ function EncounterMapTrackingPinMixin:OnMouseEnter()
 		end
 		GameTooltip_AddColoredDoubleLine(GameTooltip, objectiveText, difficultyName, qualityColor, difficultyColor);
 	end
-	
+
 
 	GameTooltip:Show();
 end
 
 function EncounterMapTrackingPinMixin:IsSuperTracked()
-	
+
 	local numTrackedItems = #self.trackableEncounterInfo;
 	local isSuperTracked = nil;
-	
+
 	for i = 1, numTrackedItems do
 		local trackableMapInfo = self.trackableEncounterInfo[i];
 		local trackableType, trackableID = C_SuperTrack.GetSuperTrackedContent();

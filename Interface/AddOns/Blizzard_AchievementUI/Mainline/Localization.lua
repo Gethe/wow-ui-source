@@ -72,7 +72,6 @@ local l10nTable = {
 
 			AchievementButton_Localize = function(button)
 				button.DateCompleted:SetWidth(80);
-				button.DateCompleted:SetPoint("TOP", "$parent", "BOTTOM", -2, 6);
 				button.DateCompleted:SetJustifyH("CENTER");
 				button.Description:SetFontObject("AchievementFont_Small");
 				button.HiddenDescription:SetFontObject("AchievementFont_Small");

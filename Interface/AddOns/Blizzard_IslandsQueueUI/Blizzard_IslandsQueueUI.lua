@@ -45,11 +45,8 @@ function IslandsQueueWeeklyQuestMixin:OnHide()
 end
 
 function IslandsQueueWeeklyQuestMixin:UpdateRewardInformation()
-	local numQuestCurrencies = GetNumQuestLogRewardCurrencies(self.questID);
-	for i = 1, numQuestCurrencies do
-		local name, texture, quantity, currencyID = GetQuestLogRewardCurrencyInfo(i, self.questID);
-		local quality = C_CurrencyInfo.GetCurrencyInfo(currencyID).quality;
-		name, texture, quantity, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyID, quantity, name, texture, quality);
+	for index, currencyReward in ipairs(C_QuestLog.GetQuestRewardCurrencies(self.questID)) do
+		local name, texture, quantity, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyReward.currencyID, currencyReward.totalRewardAmount, currencyReward.name, currencyReward.texture, currencyReward.quality);
 		self.QuestReward.Icon:SetTexture(texture);
 	end
 end

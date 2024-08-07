@@ -46,42 +46,22 @@ local function Register()
 		end
 
 		local defaultValue = 4;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_DRAGONRIDING_SICKNESS", Settings.DefaultVarLocation,
+		local setting = Settings.RegisterProxySetting(category, "PROXY_DRAGONRIDING_SICKNESS",
 			Settings.VarType.Number, MOTION_SICKNESS_DRAGONRIDING, defaultValue, GetValue, SetValue);
-		Settings.CreateDropDown(category, setting, GetOptions, OPTION_TOOLTIP_MOTION_SICKNESS_DRAGONRIDING);
+		Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_MOTION_SICKNESS_DRAGONRIDING);
 	end
 
 	-- Dynamic Flight High Speed Motion Sickness Option
 	if C_CVar.GetCVar("DisableAdvancedFlyingFullScreenEffects") then
-		local function GetValue()
-			return not GetCVarBool("DisableAdvancedFlyingFullScreenEffects");
-		end
-		
-		local function SetValue(value)
-			SetCVar("DisableAdvancedFlyingFullScreenEffects", not value);
-		end
-		
-		local defaultValue = true;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_DISABLE_ADV_FLY_SCREEN_EFFECTS", Settings.DefaultVarLocation, 
-			Settings.VarType.Boolean, MOTION_SICKNESS_DRAGONRIDING_SCREEN_EFFECTS, defaultValue, GetValue, SetValue);
-		local initializer = Settings.CreateCheckBox(category, setting, MOTION_SICKNESS_DRAGONRIDING_SCREEN_EFFECTS_TOOLTIP);
+		local setting, initializer = Settings.SetupCVarCheckbox(category, "DisableAdvancedFlyingFullScreenEffects", MOTION_SICKNESS_DRAGONRIDING_SCREEN_EFFECTS, MOTION_SICKNESS_DRAGONRIDING_SCREEN_EFFECTS_TOOLTIP);
+		setting:NegateBoolean();
 		initializer:AddSearchTags(MOTION_SICKNESS_CHECKBOX);
 	end
 
 	-- Dynamic Flight High Speed Motion Sickness Option
 	if C_CVar.GetCVar("DisableAdvancedFlyingVelocityVFX") then
-		local function GetValue()
-			return not GetCVarBool("DisableAdvancedFlyingVelocityVFX");
-		end
-		
-		local function SetValue(value)
-			SetCVar("DisableAdvancedFlyingVelocityVFX", not value);
-		end
-		
-		local defaultValue = true;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_DISABLE_ADV_FLY_VEL_VFX", Settings.DefaultVarLocation, 
-			Settings.VarType.Boolean, MOTION_SICKNESS_DRAGONRIDING_SPEED_EFFECTS, defaultValue, GetValue, SetValue);
-		local initializer = Settings.CreateCheckBox(category, setting, MOTION_SICKNESS_DRAGONRIDING_SPEED_EFFECTS_TOOLTIP);
+		local setting, initializer = Settings.SetupCVarCheckbox(category, "DisableAdvancedFlyingVelocityVFX", MOTION_SICKNESS_DRAGONRIDING_SPEED_EFFECTS, MOTION_SICKNESS_DRAGONRIDING_SPEED_EFFECTS_TOOLTIP);
+		setting:NegateBoolean();
 		initializer:AddSearchTags(MOTION_SICKNESS_CHECKBOX);
 	end
 
@@ -116,13 +96,13 @@ local function Register()
 		end
 
 		local defaultValue = 3;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_ADV_FLY_PITCH_CONTROL", Settings.DefaultVarLocation,
+		local setting = Settings.RegisterProxySetting(category, "PROXY_ADV_FLY_PITCH_CONTROL",
 			Settings.VarType.Number, ADV_FLY_PITCH_CONTROL, defaultValue, GetValue, SetValue);
-		Settings.CreateDropDown(category, setting, GetOptions, OPTION_TOOLTIP_ADV_FLY_PITCH_CONTROL);
+		Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_ADV_FLY_PITCH_CONTROL);
 	end
 
 	-- Dynamic Flight Pitch Control Ground Debouncing
-	Settings.SetupCVarCheckBox(category, "advFlyPitchControlGroundDebounce", ADV_FLY_PITCH_CONTROL_GROUND_DEBOUNCE, OPTION_TOOLTIP_ADV_FLY_PITCH_CONTROL_GROUND_DEBOUNCE);
+	Settings.SetupCVarCheckbox(category, "advFlyPitchControlGroundDebounce", ADV_FLY_PITCH_CONTROL_GROUND_DEBOUNCE, OPTION_TOOLTIP_ADV_FLY_PITCH_CONTROL_GROUND_DEBOUNCE);
 
 	-- Dynamic Flight Camera Pitch Chase
 	local minValueCamera, maxValueCamera, stepCamera = 10, 30, 1;

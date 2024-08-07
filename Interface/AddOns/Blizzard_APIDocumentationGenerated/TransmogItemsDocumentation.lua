@@ -40,6 +40,20 @@ local TransmogItems =
 			},
 		},
 		{
+			Name = "CanAppearanceBeDisplayedOnPlayer",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemAppearanceID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canAppearanceBeDisplayedOnPlayer", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CanAppearanceHaveIllusion",
 			Type = "Function",
 
@@ -101,6 +115,24 @@ local TransmogItems =
 			Returns =
 			{
 				{ Name = "itemModifiedAppearanceIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetAllFactionsShown",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "shown", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetAllRacesShown",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "shown", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -290,6 +322,15 @@ local TransmogItems =
 			},
 		},
 		{
+			Name = "GetClassFilter",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "classID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetCollectedShown",
 			Type = "Function",
 
@@ -305,6 +346,34 @@ local TransmogItems =
 			Returns =
 			{
 				{ Name = "appearanceID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetFilteredCategoryCollectedCount",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "category", Type = "TransmogCollectionType", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "count", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetFilteredCategoryTotal",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "category", Type = "TransmogCollectionType", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "total", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -558,6 +627,23 @@ local TransmogItems =
 			},
 		},
 		{
+			Name = "GetValidAppearanceSourcesForClass",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "appearanceID", Type = "number", Nilable = false },
+				{ Name = "classID", Type = "number", Nilable = false },
+				{ Name = "categoryType", Type = "TransmogCollectionType", Nilable = true },
+				{ Name = "transmogLocation", Type = "TransmogLocation", Mixin = "TransmogLocationMixin", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "sources", Type = "table", InnerType = "AppearanceSourceInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "HasFavorites",
 			Type = "Function",
 
@@ -801,12 +887,39 @@ local TransmogItems =
 			},
 		},
 		{
+			Name = "SetAllFactionsShown",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "shown", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetAllRacesShown",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "shown", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetAllSourceTypeFilters",
 			Type = "Function",
 
 			Arguments =
 			{
 				{ Name = "checked", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetClassFilter",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "classID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -916,6 +1029,8 @@ local TransmogItems =
 				{ Name = "appearanceIsUsable", Type = "bool", Nilable = false },
 				{ Name = "appearanceNumSources", Type = "number", Nilable = false },
 				{ Name = "sourceIsKnown", Type = "bool", Nilable = false },
+				{ Name = "canDisplayOnPlayer", Type = "bool", Nilable = false },
+				{ Name = "isAnySourceValidForPlayer", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -955,6 +1070,7 @@ local TransmogItems =
 				{ Name = "isCollected", Type = "bool", Nilable = false },
 				{ Name = "isFavorite", Type = "bool", Nilable = false },
 				{ Name = "isHideVisual", Type = "bool", Nilable = false },
+				{ Name = "canDisplayOnPlayer", Type = "bool", Nilable = false },
 				{ Name = "uiOrder", Type = "number", Nilable = false },
 				{ Name = "exclusions", Type = "number", Nilable = false },
 				{ Name = "restrictedSlotID", Type = "luaIndex", Nilable = true },

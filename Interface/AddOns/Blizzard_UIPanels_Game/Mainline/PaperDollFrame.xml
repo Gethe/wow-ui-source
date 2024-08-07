@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
-  <ItemButton name="PaperDollItemSlotButtonTemplate" inherits="PaperDollAzeriteItemOverlayTemplate" mixin="PaperDollItemSlotButtonMixin" virtual="true">
+  <ItemButton name="PaperDollItemSlotButtonTemplate" inherits="PaperDollAzeriteItemOverlayTemplate, EnchantingItemButtonAnimTemplate" mixin="PaperDollItemSlotButtonMixin" virtual="true">
     <Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="ignoreTexture" file="Interface\PaperDollInfoFrame\UI-GearManager-LeaveItem-Transparent">
@@ -315,7 +315,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<DropDownToggleButton name="$parentEditButton" parentKey="EditButton" hidden="true">
+			<Button name="$parentEditButton" parentKey="EditButton" hidden="true">
 				<Size x="16" y="16"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.DeleteButton" relativePoint="LEFT" x="-1"/>
@@ -326,7 +326,6 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad function="GearSetEditButton_OnLoad"/>
 					<OnEnter>
 						self.texture:SetAlpha(1.0);
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -341,7 +340,7 @@
 						self.texture:SetPoint("TOPLEFT", 0, 0);
 					</OnMouseUp>
 				</Scripts>
-			</DropDownToggleButton>
+			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad>
@@ -475,7 +474,6 @@
 				</Layer>
 			</Layers>
         <Frames>
-			<Frame parentKey="EditButtonDropdown" name="GearSetEditButtonDropDown" inherits="UIDropDownMenuTemplate"/>
 			<Frame name="PaperDollSidebarTabs" parent="CharacterFrameInsetRight" hidden="true">
 				<Size x="168" y="35"/>
 				<Anchors>
@@ -622,7 +620,7 @@
 							<OnUpdate function="PaperDollEquipmentManagerPane_OnUpdate"/>
 						</Scripts>
 					</Frame>
-			<ModelScene name="CharacterModelScene" mixin ="CharacterModelSceneMixin" inherits="PanningModelSceneMixinTemplate">
+			<ModelScene name="CharacterModelScene" mixin ="CharacterModelSceneMixin" inherits="PanningModelSceneMixinTemplate" frameLevel="50">
 				<Size x="231" y="320"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="52" y="-66"/>
@@ -727,6 +725,90 @@
 							<Anchor point="TOP" x="0" y="-10"/>
 						</Anchors>
 					</Frame>
+
+					<Frame parentKey="GearEnchantAnimation" hidden="true" mixin="GearEnchantAnimationMixin">
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+						<Size x="128" y="128"/>
+						<Frames>
+							<Frame parentKey="FrameFX">
+								<Size x="128" y="128"/>
+								<Anchors>
+									<Anchor point="CENTER"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<Texture parentKey="PurpleGlow" atlas="GearEnchantFX_CharUI_DarkGold" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+										</Texture>
+										<Texture parentKey="BlueGlow" atlas="GearEnchantFX_CharUI_Gold" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+										</Texture>
+										<Texture parentKey="Sparkles" hidden="true" alphaMode="ADD" atlas="GearEnchantFX_CharUI_Sparkles" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+										</Texture>
+										<MaskTexture parentKey="Mask" atlas="GearEnchantFX_CharUI_Mask" useAtlasSize="true" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+											<MaskedTextures>
+												<MaskedTexture childKey="PurpleGlow"/>
+												<MaskedTexture childKey="BlueGlow"/>
+												<MaskedTexture childKey="Sparkles"/>
+											</MaskedTextures>
+										</MaskTexture>
+									</Layer>
+								</Layers>
+								<Animations>
+									<AnimationGroup parentKey="FrameFXAnimGroup" setToFinalAlpha="false">
+										<Rotation childKey="PurpleGlow" duration="1" order="1" smoothing="OUT" degrees="-180">
+											<Origin point="CENTER"/>
+										</Rotation>
+										<Alpha childKey="PurpleGlow" duration="0.33" order="1" startDelay="0.66" fromAlpha="1" toAlpha="0"/>
+										<Rotation childKey="BlueGlow" duration="1" order="1" smoothing="IN_OUT" degrees="120">
+											<Origin point="CENTER"/>
+										</Rotation>
+										<Alpha childKey="BlueGlow" duration="0.33" order="1" startDelay="0.66" fromAlpha="1" toAlpha="0"/>
+										<Rotation childKey="Sparkles" duration="1.3" order="1" smoothing="IN_OUT" degrees="-120">
+											<Origin point="CENTER"/>
+										</Rotation>
+										<Alpha childKey="Sparkles" duration="0.5" order="1" startDelay="0.8" smoothing="OUT" fromAlpha="1" toAlpha="0"/>
+									</AnimationGroup>
+								</Animations>
+							</Frame>
+							<Frame parentKey="TopFrame">
+								<Size x="128" y="128"/>
+								<Anchors>
+									<Anchor point="CENTER"/>
+								</Anchors>
+								<Layers>
+									<Layer level="OVERLAY">
+										<Texture parentKey="Frame" alphaMode="BLEND" atlas="GearEnchantFX_CharUI_Frame" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Animations>
+									<AnimationGroup parentKey="TopFrameAnimGroup" setToFinalAlpha="false">
+										<Alpha childKey="Frame" duration="0.5" order="1" startDelay="0.8" fromAlpha="1" toAlpha="0"/>
+									</AnimationGroup>
+								</Animations>
+							</Frame>
+						</Frames>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnEvent method="OnEvent"/>
+						</Scripts>
+					</Frame>
 				</Frames>
 
 				<Scripts>
@@ -735,7 +817,7 @@
 				</Scripts>
 			</ModelScene>
 
-			<Frame name="PaperDollItemsFrame" setAllPoints="true">
+			<Frame name="PaperDollItemsFrame" setAllPoints="true" frameLevel="100">
 				<Frames>
 					<ItemButton name="CharacterHeadSlot" inherits="PaperDollItemSlotButtonLeftTemplate">
 						<Anchors>

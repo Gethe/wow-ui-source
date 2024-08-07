@@ -174,24 +174,24 @@ function PartyMemberFrameMixin:ToPlayerArt()
 	self.PartyMemberOverlay.Status:SetAtlas("ui-hud-unitframe-party-portraiton-status", TextureKitConstants.UseAtlasSize);
 	self.PartyMemberOverlay.Status:SetPoint("TOPLEFT", self, "TOPLEFT", 1, -2);
 
-	self.HealthBar.HealthBarTexture:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOn-Bar-Health", TextureKitConstants.UseAtlasSize);
+	self.HealthBarContainer.HealthBar.HealthBarTexture:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOn-Bar-Health", TextureKitConstants.UseAtlasSize);
 
 	if (UNIT_FRAME_SHOW_HEALTH_ONLY) then
-		self.HealthBar:SetSize(74, 30);
-		self.HealthBar:SetPoint("TOPLEFT", self, "TOPLEFT", 43, -16);
+		self.HealthBarContainer:SetSize(74, 30);
+		self.HealthBarContainer:SetPoint("TOPLEFT", self, "TOPLEFT", 43, -16);
 		self:UpdateHealthBarTextAnchors();
 		self.Texture:SetAtlas("plunderstorm-UI-HUD-UnitFrame-Party-PortraitOn");
 
-		self.HealthBar.HealthBarMask:SetAtlas("plunderstorm-ui-hud-unitframe-party-portraiton-bar-health-mask", TextureKitConstants.UseAtlasSize);
-		self.HealthBar.HealthBarMask:SetPoint("TOPLEFT", -27, 4);
+		self.HealthBarContainer.HealthBarMask:SetAtlas("plunderstorm-ui-hud-unitframe-party-portraiton-bar-health-mask", TextureKitConstants.UseAtlasSize);
+		self.HealthBarContainer.HealthBarMask:SetPoint("TOPLEFT", -27, 4);
 	else
-		self.HealthBar:SetWidth(70);
-		self.HealthBar:SetPoint("TOPLEFT", self, "TOPLEFT", 45, -19);
+		self.HealthBarContainer:SetWidth(70);
+		self.HealthBarContainer:SetPoint("TOPLEFT", self, "TOPLEFT", 45, -19);
 		self:UpdateHealthBarTextAnchors();
 		self.Texture:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOn");
 
-		self.HealthBar.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOn-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);
-		self.HealthBar.HealthBarMask:SetPoint("TOPLEFT", -29, 3);
+		self.HealthBarContainer.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOn-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);
+		self.HealthBarContainer.HealthBarMask:SetPoint("TOPLEFT", -29, 3);
 	end
 
 	self.ManaBar:SetWidth(74);
@@ -204,7 +204,7 @@ function PartyMemberFrameMixin:ToPlayerArt()
 	self.Name:SetWidth(57);
 	self:UpdateNameTextAnchors();
 
-	UnitFrame_SetUnit(self, self.unit, self.HealthBar, self.ManaBar);
+	UnitFrame_SetUnit(self, self.unit, self.HealthBarContainer.HealthBar, self.ManaBar);
 	UnitFrame_SetUnit(self.PetFrame, self.PetFrame.unit, self.PetFrame.HealthBar, nil);
 	UnitFrame_Update(self, true);
 end
@@ -222,14 +222,14 @@ function PartyMemberFrameMixin:ToVehicleArt()
 	self.PartyMemberOverlay.Status:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOn-Vehicle-Status", TextureKitConstants.UseAtlasSize);
 	self.PartyMemberOverlay.Status:SetPoint("TOPLEFT", self, "TOPLEFT", -3, 3);
 
-	self.HealthBar.HealthBarTexture:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOn-Vehicle-Bar-Health", TextureKitConstants.UseAtlasSize);
-	self.HealthBar:SetWidth(67);
-	self.HealthBar:SetPoint("TOPLEFT", self, "TOPLEFT", 48, -18);
+	self.HealthBarContainer.HealthBar.HealthBarTexture:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOn-Vehicle-Bar-Health", TextureKitConstants.UseAtlasSize);
+	self.HealthBarContainer:SetWidth(67);
+	self.HealthBarContainer:SetPoint("TOPLEFT", self, "TOPLEFT", 48, -18);
 	self:UpdateHealthBarTextAnchors();
 
 	-- Party frames when in a vehicle do not have a mask for the health bar, so remove any applied target mask that would not fit.
-	self.HealthBar.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOn-Vehicle-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);
-	self.HealthBar.HealthBarMask:SetPoint("TOPLEFT", -30, 3);
+	self.HealthBarContainer.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOn-Vehicle-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);
+	self.HealthBarContainer.HealthBarMask:SetPoint("TOPLEFT", -30, 3);
 
 	self.ManaBar:SetWidth(70);
 	self.ManaBar:SetPoint("TOPLEFT", self, "TOPLEFT", 45, -29);
@@ -241,7 +241,7 @@ function PartyMemberFrameMixin:ToVehicleArt()
 	self.Name:SetWidth(56);
 	self:UpdateNameTextAnchors();
 
-	UnitFrame_SetUnit(self, self.petUnitToken, self.HealthBar, self.ManaBar);
+	UnitFrame_SetUnit(self, self.petUnitToken, self.HealthBarContainer.HealthBar, self.ManaBar);
 	UnitFrame_SetUnit(self.PetFrame, self.overrideUnit, self.PetFrame.HealthBar, nil);
 	UnitFrame_Update(self, true);
 end
@@ -260,9 +260,9 @@ function PartyMemberFrameMixin:UpdateHealthBarTextAnchors()
 		healthBarTextOffsetY = healthBarTextOffsetY + 3;
 	end
 	
-	self.HealthBar.CenterText:SetPoint("CENTER", self.HealthBar, "CENTER", 0, healthBarTextOffsetY);
-	self.HealthBar.LeftText:SetPoint("LEFT", self.HealthBar, "LEFT", healthBarTextOffsetX, healthBarTextOffsetY);
-	self.HealthBar.RightText:SetPoint("RIGHT", self.HealthBar, "RIGHT", -healthBarTextOffsetX, healthBarTextOffsetY);
+	self.HealthBarContainer.CenterText:SetPoint("CENTER", self.HealthBarContainer, "CENTER", 0, healthBarTextOffsetY);
+	self.HealthBarContainer.LeftText:SetPoint("LEFT", self.HealthBarContainer, "LEFT", healthBarTextOffsetX, healthBarTextOffsetY);
+	self.HealthBarContainer.RightText:SetPoint("RIGHT", self.HealthBarContainer, "RIGHT", -healthBarTextOffsetX, healthBarTextOffsetY);
 end
 
 function PartyMemberFrameMixin:UpdateManaBarTextAnchors()
@@ -305,20 +305,28 @@ function PartyMemberFrameMixin:Setup()
 
 	self.PetFrame:Setup();
 
+	local myHealthbar = self.HealthBarContainer.HealthBar;
+
 	UnitFrame_Initialize(self, self.unitToken, self.Name, self.frameType, self.Portrait,
-		   self.HealthBar,
-		   self.HealthBar.CenterText,
+		   myHealthbar,
+		   self.HealthBarContainer.CenterText,
 		   self.ManaBar,
 		   self.ManaBar.CenterText,
 		   self.Flash, nil, nil,
-		   self.HealthBar.MyHealPredictionBar,
-		   self.HealthBar.OtherHealPredictionBar,
-		   self.HealthBar.TotalAbsorbBar,
-		   self.HealthBar.OverAbsorbGlow,
-		   self.HealthBar.OverHealAbsorbGlow,
-		   self.HealthBar.HealAbsorbBar);
+		   myHealthbar.MyHealPredictionBar,
+		   myHealthbar.OtherHealPredictionBar,
+		   myHealthbar.TotalAbsorbBar,
+		   myHealthbar.OverAbsorbGlow,
+		   myHealthbar.OverHealAbsorbGlow,
+		   myHealthbar.HealAbsorbBar,
+		   nil,
+		   self.HealthBarContainer.TempMaxHealthLoss);
 
-	self.HealthBar:SetBarTextZeroText(DEAD);
+	myHealthbar:SetBarTextZeroText(DEAD);
+	myHealthbar:SetBarText(self.HealthBarContainer.CenterText, self.HealthBarContainer.LeftText, self.HealthBarContainer.RightText);
+
+	local tempMaxHealthLossBar = self.HealthBarContainer.TempMaxHealthLoss;
+	tempMaxHealthLossBar:InitalizeMaxHealthLossBar( self.HealthBarContainer, myHealthbar);
 
 	if PARTY_FRAME_SHOW_BUFFS then
 		self.showBuffs = true;
@@ -332,8 +340,8 @@ function PartyMemberFrameMixin:Setup()
 	self.unitHPPercent = 1;
 
 	-- Mask the various bar assets, to avoid any overflow with the frame shape.
-	self.HealthBar:GetStatusBarTexture():AddMaskTexture(self.HealthBar.HealthBarMask);
-
+	myHealthbar:GetStatusBarTexture():AddMaskTexture(self.HealthBarContainer.HealthBarMask);
+	tempMaxHealthLossBar:GetStatusBarTexture():AddMaskTexture(self.HealthBarContainer.HealthBarMask);
 	self.ManaBar:GetStatusBarTexture():AddMaskTexture(self.ManaBar.ManaBarMask);
 
 	self:UpdateMember();
@@ -343,8 +351,6 @@ function PartyMemberFrameMixin:Setup()
 	self:RegisterEvent("UPDATE_ACTIVE_BATTLEFIELD");
 	self:RegisterEvent("PARTY_LEADER_CHANGED");
 	self:RegisterEvent("PARTY_LOOT_METHOD_CHANGED");
-	self:RegisterEvent("MUTELIST_UPDATE");
-	self:RegisterEvent("IGNORELIST_UPDATE");
 	self:RegisterEvent("UNIT_FACTION");
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("READY_CHECK");
@@ -362,17 +368,20 @@ function PartyMemberFrameMixin:Setup()
 	self:RegisterEvent("INCOMING_SUMMON_CHANGED");
 	self:RegisterUnitEvent("UNIT_AURA", self.unitToken, self.petUnitToken);
 	self:RegisterUnitEvent("UNIT_PET",  self.unitToken, self.petUnitToken);
-	local showmenu = function()
-		ToggleDropDownMenu(1, nil, self.DropDown, self, 47, 15);
+
+	local function OpenContextMenu(frame, unit, button, isKeyPress)
+		local contextData =
+		{
+			unit = unit,
+		};
+		UnitPopup_OpenMenu("PARTY", contextData);
 	end
-	SecureUnitButton_OnLoad(self, self.unitToken, showmenu);
+
+	SecureUnitButton_OnLoad(self, self.unitToken, OpenContextMenu);
 
 	self:UpdateArt();
 	self:SetFrameLevel(2);
 	self:UpdateNotPresentIcon();
-
-	UIDropDownMenu_SetInitializeFunction(self.DropDown, PartyMemberFrameMixin.InitializePartyFrameDropDown);
-	UIDropDownMenu_SetDisplayMode(self.DropDown, "MENU");
 
 	UnitPowerBarAlt_Initialize(self.PowerBarAlt, self.unitToken, 0.5, "GROUP_ROSTER_UPDATE");
 
@@ -406,11 +415,11 @@ function PartyMemberFrameMixin:UpdateMember()
 
 	local showFrame;
 	if EditModeManagerFrame:ArePartyFramesForcedShown() and not UnitExists(self.unitToken) then
-		UnitFrame_SetUnit(self, "player", self.HealthBar, self.ManaBar);
+		UnitFrame_SetUnit(self, "player", self.HealthBarContainer.HealthBar, self.ManaBar);
 		UnitFrame_SetUnit(self.PetFrame, "pet", self.PetFrame.HealthBar);
 		showFrame = true;
 	else
-		UnitFrame_SetUnit(self, self.unitToken, self.HealthBar, self.ManaBar);
+		UnitFrame_SetUnit(self, self.unitToken, self.HealthBarContainer.HealthBar, self.ManaBar);
 		UnitFrame_SetUnit(self.PetFrame, self.petUnitToken, self.PetFrame.HealthBar);
 		showFrame = UnitExists(self.unitToken);
 	end
@@ -433,7 +442,6 @@ function PartyMemberFrameMixin:UpdateMember()
 	self:UpdatePet();
 	self:UpdatePvPStatus();
 	self:UpdateAuras();
-	self:UpdateVoiceStatus();
 	self:UpdateReadyCheck();
 	self:UpdateOnlineStatus();
 	self:UpdateNotPresentIcon();
@@ -527,24 +535,6 @@ function PartyMemberFrameMixin:UpdateAssignedRoles()
 	end
 end
 
-function PartyMemberFrameMixin:UpdateVoiceStatus()
-	if not UnitName(self:GetUnit()) then
-		--No need to update if the frame doesn't have a unit.
-		return;
-	end
-
-	local mode;
-	local inInstance, instanceType = IsInInstance();
-
-	if ( (instanceType == "pvp") or (instanceType == "arena") ) then
-		mode = "Battleground";
-	elseif ( IsInRaid() ) then
-		mode = "raid";
-	else
-		mode = "party";
-	end
-end
-
 function PartyMemberFrameMixin:UpdateReadyCheck()
 	local readyCheckFrame = self.ReadyCheck;
 	local readyCheckStatus = GetReadyCheckStatus(self:GetUnit());
@@ -629,8 +619,6 @@ function PartyMemberFrameMixin:OnEvent(event, ...)
 		self:UpdateLeader();
 	elseif event == "PARTY_LEADER_CHANGED" then
 		self:UpdateLeader();
-	elseif event == "MUTELIST_UPDATE" or event == "IGNORELIST_UPDATE" then
-		self:UpdateVoiceStatus();
 	elseif event == "UNIT_FACTION" then
 		if arg1 == self:GetUnit() then
 			self:UpdatePvPStatus();
@@ -719,7 +707,7 @@ function PartyMemberFrameMixin:OnLeave()
 end
 
 function PartyMemberFrameMixin:UpdateOnlineStatus()
-	local healthBar = self.HealthBar;
+	local healthBar = self.HealthBarContainer.HealthBar;
 
 	if not UnitIsConnected(self:GetUnit()) then
 		-- Handle disconnected state
@@ -743,9 +731,9 @@ end
 
 function PartyMemberFrameMixin:PartyMemberHealthCheck(value)
 	local unitHPMin, unitHPMax, unitCurrHP;
-	unitHPMin, unitHPMax = self.HealthBar:GetMinMaxValues();
+	unitHPMin, unitHPMax = self.HealthBarContainer.HealthBar:GetMinMaxValues();
 
-	unitCurrHP = self.HealthBar:GetValue();
+	unitCurrHP = self.HealthBarContainer.HealthBar:GetValue();
 	if unitHPMax > 0 then
 		self.unitHPPercent = unitCurrHP / unitHPMax;
 	else
@@ -770,11 +758,6 @@ function PartyMemberFrameMixin:PartyMemberHealthCheck(value)
 	else
 		self.Portrait:SetVertexColor(1.0, 1.0, 1.0, 1.0);
 	end
-end
-
-function PartyMemberFrameMixin:InitializePartyFrameDropDown()
-	local dropdown = UIDROPDOWNMENU_OPEN_MENU or self.DropDown;
-	UnitPopup_ShowMenu(dropdown, "PARTY", "party"..dropdown:GetParent().layoutIndex);
 end
 
 PartyMemberPetFrameMixin=CreateFromMixins(PartyMemberAuraMixin);

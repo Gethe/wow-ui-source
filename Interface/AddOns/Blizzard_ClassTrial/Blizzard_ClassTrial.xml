@@ -1,18 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_ClassTrial.lua"/>
-	<Script file="Blizzard_ClassTrialOutbound.lua"/>
-	<Script file="Blizzard_ClassTrialSecure.lua"/>
-
-	<ScopedModifier forbidden="true" scriptsUseGivenEnv="true">
-		<Frame name="ClassTrialSecureFrame" hidden="true" mixin="ClassTrialSecureFrameMixin">
-			<Scripts>
-				<OnLoad method="OnLoad"/>
-				<OnEvent method="OnEvent"/>
-				<OnAttributeChanged method="OnAttributeChanged"/>
-			</Scripts>
-		</Frame>
-	</ScopedModifier>
 
 	<Frame name="ClassTrialThanksForPlayingDialog" toplevel="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" parent="UIParent" setAllPoints="true" mixin="ClassTrialDialogMixin" hidden="true">
 		<Layers>

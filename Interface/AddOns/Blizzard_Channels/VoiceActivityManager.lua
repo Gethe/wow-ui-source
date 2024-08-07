@@ -246,6 +246,7 @@ function VoiceActivityManagerMixin:ReleaseNotifications(memberID, channelID)
 		return;
 	end
 
+	local removedAlert;
 	for notification in self.notificationPools:EnumerateActive() do
 		if notification:MatchesUser(memberID, channelID) then
 			self:ClearReleaseTimer(notification:GetMemberID(), notification:GetChannelID());

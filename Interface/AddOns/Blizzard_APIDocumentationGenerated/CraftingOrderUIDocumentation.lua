@@ -388,6 +388,16 @@ local CraftingOrderUI =
 			},
 		},
 		{
+			Name = "CraftingordersCraftOrderResponse",
+			Type = "Event",
+			LiteralName = "CRAFTINGORDERS_CRAFT_ORDER_RESPONSE",
+			Payload =
+			{
+				{ Name = "result", Type = "CraftingOrderResult", Nilable = false },
+				{ Name = "orderID", Type = "BigUInteger", Nilable = false },
+			},
+		},
+		{
 			Name = "CraftingordersCustomerFavoritesChanged",
 			Type = "Event",
 			LiteralName = "CRAFTINGORDERS_CUSTOMER_FAVORITES_CHANGED",
@@ -507,6 +517,16 @@ local CraftingOrderUI =
 			Name = "CraftingordersUpdatePersonalOrderCounts",
 			Type = "Event",
 			LiteralName = "CRAFTINGORDERS_UPDATE_PERSONAL_ORDER_COUNTS",
+		},
+		{
+			Name = "CraftingordersUpdateRewards",
+			Type = "Event",
+			LiteralName = "CRAFTINGORDERS_UPDATE_REWARDS",
+			Payload =
+			{
+				{ Name = "npcOrderRewards", Type = "table", InnerType = "CraftingOrderRewardInfo", Nilable = false },
+				{ Name = "orderID", Type = "BigUInteger", Nilable = false },
+			},
 		},
 	},
 

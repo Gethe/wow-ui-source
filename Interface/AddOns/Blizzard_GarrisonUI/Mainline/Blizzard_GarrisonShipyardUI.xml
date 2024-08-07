@@ -47,12 +47,12 @@
 			<Layer level="BORDER">
 				<Texture parentKey="YellowSpikeGlow" hidden="false" alpha="0.01" alphaMode="ADD" atlas="GarrMission_CurrentEncounter-SpikeyGlow" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.Icon" x="0" y="-18"/>
+						<Anchor point="CENTER" relativeKey="$parent" x="0" y="-18"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="SoftGlow" hidden="false" alpha="0.01" alphaMode="BLEND" atlas="BonusChest-CircleGlow" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.Icon" x="0" y="-18"/>
+						<Anchor point="CENTER" relativeKey="$parent" x="0" y="-18"/>
 					</Anchors>
 					<Color r="1" g="0.93333333333333" b="0.38823529411765"/>
 				</Texture>
@@ -104,12 +104,12 @@
 			<Layer level="OVERLAY">
 				<Texture parentKey="StarBurst" hidden="false" alpha="0.01" alphaMode="ADD" atlas="GarrisonFX-StarBurst" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.None"/>
+						<Anchor point="CENTER" relativeKey="$parent"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="Circle" hidden="false" alpha="0.01" alphaMode="ADD" atlas="NavalMap-SmallBonusCircle" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.None"/>
+						<Anchor point="CENTER" relativeKey="$parent"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -119,7 +119,7 @@
 				<Texture parentKey="Glow" hidden="false" alpha="0.01" alphaMode="ADD" atlas="BonusChest-CircleGlow">
 					<Size x="80" y="80"/>
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.None"/>
+						<Anchor point="CENTER" relativeKey="$parent"/>
 					</Anchors>
 					<Color r="1" g="0.95294117647059" b="0.56470588235294"/>
 				</Texture>
@@ -1321,19 +1321,19 @@
 			<Layer level="ARTWORK">
 				<Texture parentKey="HighlightAnimTexture" hidden="false" alpha="0.01" alphaMode="BLEND" atlas="NavalMap-OpenWaters-Highlight" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.None"/>
+						<Anchor point="CENTER" relativeKey="$parent"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="FogAnimTexture" hidden="false" alpha="0.01" alphaMode="BLEND" atlas="NavalMap-OpenWaters-Fog" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.None"/>
+						<Anchor point="CENTER" relativeKey="$parent"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="HighlightGlowAnimTexture" hidden="false" alpha="0.01" alphaMode="ADD" atlas="NavalMap-OpenWaters-Highlight" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.None"/>
+						<Anchor point="CENTER" relativeKey="$parent"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -1718,13 +1718,6 @@
 							<OnTextChanged function="GarrisonFollowListEditBox_OnTextChanged"/>
 						</Scripts>
 					</EditBox>
-					<Frame name="GarrisonShipyardFollowerOptionDropDown" inherits="UIDropDownMenuTemplate">
-						<Scripts>
-							<OnLoad>
-								UIDropDownMenu_Initialize(self, GarrisonShipOptionsMenu_Initialize, "MENU");
-							</OnLoad>
-						</Scripts>
-					</Frame>
 				</Frames>
 				<Scripts>
 					<OnShow method="OnShow"/>

@@ -282,7 +282,7 @@
 			<AbsInset left="0" right="30" top="0" bottom="45"/>
 		</HitRectInsets>
 		<Frames>
-			<Frame parentKey="OutfitDropDown" name="$parentOutfitDropDown" inherits="WardrobeOutfitDropDownTemplate" mixin="DressUpOutfitMixin">
+			<DropdownButton parentKey="OutfitDropdown" name="$parentOutfitDropdown" inherits="WardrobeOutfitDropdownTemplate" mixin="DressUpOutfitMixin">
 				<KeyValues>
 					<KeyValue key="width" value="163" type="number"/>
 					<KeyValue key="minMenuStringWidth" value="127" type="number"/>
@@ -292,7 +292,7 @@
 				<Anchors>
 					<Anchor point="TOP" x="-23" y="-28"/>
 				</Anchors>
-			</Frame>
+			</DropdownButton>
 			<Frame parentKey="MaximizeMinimizeFrame" mixin="DressUpModelFrameMaximizeMinimizeMixin" inherits="MaximizeMinimizeButtonFrameTemplate">
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.CloseButton" relativePoint="LEFT"/>
@@ -411,21 +411,21 @@
 					<OnClick method="OnClick" />
 				</Scripts>
 			</Button>
-			<DropDownToggleButton parentKey="LinkButton" mixin="DressUpModelFrameLinkButtonMixin" inherits="UIPanelButtonTemplate" text="LINK_TRANSMOG_OUTFIT">
+			<DropdownButton parentKey="LinkButton" mixin="DressUpModelFrameLinkButtonMixin" inherits="UIPanelButtonTemplate" text="LINK_TRANSMOG_OUTFIT">
+				<KeyValues>
+					<KeyValue key="menuPointX" type="number" value="15"/>
+					<KeyValue key="menuPointY" type="number" value="2"/>
+				</KeyValues>
 				<Size x="159" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="2" y="4"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad method="OnLoad"/>
 					<OnShow method="OnShow"/>
 					<OnHide method="OnHide"/>
 					<OnClick method="OnClick"/>
 				</Scripts>
-				<Frames>
-					<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate"/>
-				</Frames>
-			</DropDownToggleButton>
+			</DropdownButton>
 		</Frames>
 		<Layers>
 			<Layer level="BACKGROUND">

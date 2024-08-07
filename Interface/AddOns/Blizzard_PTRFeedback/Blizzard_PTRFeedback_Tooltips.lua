@@ -12,6 +12,7 @@ PTR_IssueReporter.TooltipTypes = {
     talent = "Talent",
     recipe = "Recipe",
     aibot = "Follower",
+    scenario = "Scenario",
 }
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.SetupSpellTooltips()
@@ -28,8 +29,8 @@ function PTR_IssueReporter.SetupSpellTooltips()
 
     hooksecurefunc("SetItemRef", function(link, ...)
         local id = tonumber(link:match("spell:(%d+)"))
-        local name = GetSpellInfo(id)
         if (id) then
+            local name = C_Spell.GetSpellName(id)
             PTR_IssueReporter.HookIntoTooltip(ItemRefTooltip, PTR_IssueReporter.TooltipTypes.spell, id, name)
         end
     end)
@@ -47,9 +48,10 @@ function PTR_IssueReporter.SetupSpellTooltips()
     local bindingFunc = function(self, talentFrame, tooltip)
         if (talentFrame) and (tooltip) then
             local spellID = talentFrame:GetSpellID()
-            local name = GetSpellInfo(spellID)
-
-            PTR_IssueReporter.HookIntoTooltip(tooltip, PTR_IssueReporter.TooltipTypes.spell, spellID, name)
+            if (spellID) then
+                local name = C_Spell.GetSpellName(spellID)
+                PTR_IssueReporter.HookIntoTooltip(tooltip, PTR_IssueReporter.TooltipTypes.spell, spellID, name)
+            end
         end
     end
 
@@ -131,7 +133,7 @@ end
 function PTR_IssueReporter.SetupQuestTooltips()
     local function HookIntoQuestTooltip(sender, self, questID, isGroup)
         local title = C_QuestLog.GetTitleForQuestID(questID)
-        if (isGroup ~= null and not isGroup) then
+        if (isGroup ~= nil and not isGroup) then
             --If isGroup is null, that means the event always shows tooltip
             --If isGroup is a bool, it only shows a tooltip if true, so when false we must provide our own
             GameTooltip:ClearAllPoints()
@@ -231,6 +233,17 @@ function PTR_IssueReporter.SetupReagentListTooltips()
     EventRegistry:RegisterCallback("Professions.RecipeListOnEnter", bindingFunc, "PTR_IssueReporter")
 end
 ----------------------------------------------------------------------------------------------------
+function PTR_IssueReporter.SetupScenarioTooltips()
+    local bindingFunc = function(sender, tooltip)
+        if (tooltip) then
+            local scenarioObj = C_ScenarioInfo.GetScenarioInfo()
+            PTR_IssueReporter.HookIntoTooltip(tooltip, PTR_IssueReporter.TooltipTypes.scenario, scenarioObj.scenarioID, scenarioObj.name)
+        end
+    end
+    
+    EventRegistry:RegisterCallback("Scenario.ObjectTracker_OnEnter", bindingFunc, "JiraIntegration")
+end
+----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.InitializePTRTooltips()
     PTR_IssueReporter.SetupSpellTooltips()
     PTR_IssueReporter.SetupItemTooltips()
@@ -242,5 +255,6 @@ function PTR_IssueReporter.InitializePTRTooltips()
     PTR_IssueReporter.SetupMapPinTooltips()
     PTR_IssueReporter.SetupGarrisonTalentTooltips()
     PTR_IssueReporter.SetupReagentListTooltips()
+    PTR_IssueReporter.SetupScenarioTooltips()
 end
 ----------------------------------------------------------------------------------------------------

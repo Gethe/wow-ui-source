@@ -24,8 +24,7 @@ function UIWidgetTemplateItemDisplayMixin:Setup(widgetInfo, widgetContainer)
 	self.continuableContainer:ContinueOnLoad(function()
 		UIWidgetBaseTemplateMixin.Setup(self, widgetInfo, widgetContainer);
 
-		self.Item:Setup(widgetContainer, widgetInfo.itemInfo, widgetInfo.widgetSizeSetting);
-		self.Item:SetTooltipLocation(widgetInfo.tooltipLoc);
+		self.Item:Setup(widgetContainer, widgetInfo.itemInfo, widgetInfo.widgetSizeSetting, widgetInfo.tooltipLoc);
 
 		self:SetWidth(self.Item:GetWidth());
 		self:SetHeight(self.Item:GetHeight());
@@ -34,6 +33,7 @@ function UIWidgetTemplateItemDisplayMixin:Setup(widgetInfo, widgetContainer)
 end
 
 function UIWidgetTemplateItemDisplayMixin:OnReset()
+	self.Item:OnReset();
 	UIWidgetBaseTemplateMixin.OnReset(self);
 	if self.continuableContainer then
 		self.continuableContainer:Cancel();

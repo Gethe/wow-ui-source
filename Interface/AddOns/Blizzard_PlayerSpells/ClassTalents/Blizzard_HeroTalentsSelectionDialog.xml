@@ -1,0 +1,271 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="HeroTalentsSelectionDialog" mixin="HeroTalentsSelectionMixin" frameStrata="DIALOG" parent="UIParent" enableMouse="true" inherits="DefaultPanelTemplate" hidden="true">
+		<KeyValues>
+			<KeyValue key="checkFitExtraWidth" value="0" type="number" />
+			<KeyValue key="checkFitExtraHeight" value="200" type="number" />
+		</KeyValues>
+		<Size x="970" y="832"/>
+		<Anchors>
+			<Anchor point="TOP" y="-70"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="Background" atlas="talents-heroclass-choicepopup-background">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Bg"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Bg"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<!-- Prevents interacting with the Talent Frame behind this dialog while open -->
+			<Button parentKey="CoverFrame" frameLevel="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="UIParent"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="UIParent"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="-1">
+						<Texture setAllPoints="true">
+							<Color r="0" g="0" b="0" a="0.5"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Button>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButtonDefaultAnchors"/>
+			<Frame parentKey="SpecOptionsContainer" inherits="HorizontalLayoutFrame">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Bg"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Bg"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="DisabledOverlay" enableMouse="true" frameLevel="4000" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.SpecOptionsContainer" relativePoint="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.SpecOptionsContainer" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="GrayOverlay">
+							<Color r="0" g="0" b="0" a="0.3"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+			<OnKeyDown method="OnKeyDown"/>
+		</Scripts>
+	</Frame>
+
+	<!-- Base template to separate art & FX extras from functional content for easier readability/editing -->
+	<Frame name="HeroTalentSpecFXTemplate" virtual="true">
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="ColumnDivider" atlas="spec-columndivider" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="RIGHT" x="3.5" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ActivatedBackgroundBack1" parentArray="ActivatedBackFrames" atlas="spec-selected-background1" alpha="0.1" alphaMode="ADD" hidden="true" setAllPoints="true"/>
+				<Texture parentKey="ActivatedBackgroundBack2" parentArray="ActivatedBackFrames" atlas="spec-selected-background1" alpha="0.1" alphaMode="MOD" hidden="true" setAllPoints="true"/>
+				<Texture parentKey="ActivatedBackgroundLeft1" parentArray="ActivatedLeftFrames" atlas="spec-selected-background2" alphaMode="ADD" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3.5" y="0"/>
+						<Anchor point="BOTTOMLEFT" x="3.5" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ActivatedBackgroundLeft2" parentArray="ActivatedLeftFrames" atlas="spec-selected-background3" alpha="0.1" alphaMode="ADD" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3.5" y="0"/>
+						<Anchor point="BOTTOMLEFT" x="3.5" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ActivatedBackgroundLeft3" parentArray="ActivatedLeftFrames" atlas="spec-selected-background4" alphaMode="ADD" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3.5" y="0"/>
+						<Anchor point="BOTTOMLEFT" x="3.5" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ActivatedBackgroundLeft4" parentArray="ActivatedLeftFrames" atlas="spec-selected-background5" alphaMode="ADD" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3.5" y="0"/>
+						<Anchor point="BOTTOMLEFT" x="3.5" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ActivatedBackgroundRight1" parentArray="ActivatedRightFrames" atlas="spec-selected-background2" alphaMode="ADD" useAtlasSize="true" hidden="true">
+					<TexCoords left="1" right="0" top="0" bottom="1"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-3.5" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="-3.5" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ActivatedBackgroundRight2" parentArray="ActivatedRightFrames" atlas="spec-selected-background3" alpha="0.1" alphaMode="ADD" useAtlasSize="true" hidden="true">
+					<TexCoords left="1" right="0" top="0" bottom="1"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-3.5" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="-3.5" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ActivatedBackgroundRight3" parentArray="ActivatedRightFrames" atlas="spec-selected-background4" alphaMode="ADD" useAtlasSize="true" hidden="true">
+					<TexCoords left="1" right="0" top="0" bottom="1"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-3.5" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="-3.5" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ActivatedBackgroundRight4" parentArray="ActivatedRightFrames" atlas="spec-selected-background5" alphaMode="ADD" useAtlasSize="true" hidden="true">
+					<TexCoords left="1" right="0" top="0" bottom="1"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-3.5" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="-3.5" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="ActivationExpandFx" atlas="talents-animations-gridburst" useAtlasSize="false" alpha="0" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="120" y="120"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="ActivationExpandFxMask" atlas="spec-animations-mask-filigree-activate" useAtlasSize="true" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="CENTER" x="218" y="-84"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="ActivationExpandFx"/>
+					</MaskedTextures>
+				</MaskTexture>
+				<MaskTexture parentKey="ActivationExpandFxMask2" atlas="talents-animations-mask-full" useAtlasSize="false" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="ActivationExpandFx"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="ActivationFlash" setToFinalAlpha="true" inherits="TargetsVisibleWhilePlayingAnimGroupTemplate">
+				<Scale childKey="ActivationExpandFx" smoothing="IN" duration="1.4" fromScaleX="1" fromScaleY="1" toScaleX="30" toScaleY="30"/>
+				<Alpha childKey="ActivationExpandFx" smoothing="IN" duration="1.4" fromAlpha="0.65" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+
+	<!-- Derived Template containing the main content/functional components -->
+	<Frame name="HeroTalentSpecContentTemplate" inherits="HeroTalentSpecFXTemplate" mixin="HeroTalentSpecContentMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="expand" value="true"/>
+			<KeyValue key="helpTipOffsetX" value="0" type="number" />
+			<KeyValue key="helpTipOffsetY" value="-80" type="number" />
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="SpecName" inherits="Game24Font" justifyH="CENTER" mixin="AutoScalingFontStringMixin" maxLines="1">
+					<Size x="425"/>
+					<Anchors>
+						<Anchor point="TOP" y="-39"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="SpecImage" useAtlasSize="false" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="162" y="162"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.SpecName" relativePoint="BOTTOM" y="-28"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="SpecImageMask" atlas="common-mask-circle" hWrapMode="CLAMPTOBLACKADDITIVE" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.SpecImage"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.SpecImage"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="SpecImage"/>
+					</MaskedTextures>
+				</MaskTexture>
+				<FontString parentKey="Description" inherits="GameFontNormalMed1" wordwrap="true" maxLines="6" justifyV="TOP" justifyH="CENTER">
+					<Size y="80"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.SpecImage" relativePoint="BOTTOM" y="-31"/>
+						<Anchor point="LEFT" x="40"/>
+						<Anchor point="RIGHT" x="-40"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="ActivatedText" inherits="SystemFont_Shadow_Large2" text="SPEC_ACTIVE">
+					<Color color="GREEN_FONT_COLOR"/>
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="48"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="SpecImageBorder" atlas="talents-heroclass-ring-selectionpane-gray" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="248" y="248"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.SpecImage" y="-2"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SpecImageBorderSelected" atlas="talents-heroclass-ring-selectionpane-yellow" hidden="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="248" y="248"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.SpecImage" y="-2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="NodesContainer">
+				<Size x="200" y="300"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Description" relativePoint="BOTTOM" y="-53"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="CurrencyFrame">
+				<Size x="100" y="40"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.NodesContainer" y="9"/>
+					<Anchor point="RIGHT" x="-53"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK" textureSubLevel="1">
+						<FontString parentKey="LabelText" text="HERO_TALENTS_POINTS_LABEL" inherits="SystemFont_Shadow_Small2" justifyV="TOP" justifyH="LEFT" setAllPoints="true">
+							<Color color="WHITE_FONT_COLOR" />
+						</FontString>
+						<FontString parentKey="AmountText" text="1" inherits="Game32Font_Shadow2" justifyV="TOP" justifyH="RIGHT">
+							<Color color="GREEN_FONT_COLOR" />
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.LabelText" relativePoint="TOPLEFT" x="-5" y="3"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Button parentKey="ActivateButton" inherits="MagicButtonTemplate" text="TALENT_SPEC_ACTIVATE" propagateMouseInput="Motion">
+				<Size x="160" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="48"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="ApplyChangesButton" inherits="UIPanelButtonNoTooltipTemplate, UIButtonTemplate" text="TALENT_FRAME_APPLY_BUTTON_TEXT" hidden="true">
+				<Size x="160" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="48"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

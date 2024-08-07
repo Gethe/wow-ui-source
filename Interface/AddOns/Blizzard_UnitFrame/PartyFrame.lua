@@ -1,15 +1,18 @@
 MAX_PARTY_MEMBERS = 4;
+PARTYBACKGROUND_OPACITY = PARTYBACKGROUND_OPACITY or nil;
 
 PartyFrameMixin={};
 
 function PartyFrameMixin:OnLoad()
-	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.ForcedPartyFrameScale) then
-		self:SetScale(C_GameModeManager.GetFeatureSetting(Enum.GameModeFeatureSetting.ForcedPartyFrameScale));
+	local numDecimalPlaces = 2;
+	local forcedPartyFrameScale = C_GameRules.GetGameRuleAsFloat(Enum.GameRule.ForcedPartyFrameScale, numDecimalPlaces);
+	if forcedPartyFrameScale > 0 then
+		self:SetScale(forcedPartyFrameScale);
 	end
 
 	local function PartyMemberFrameReset(framePool, frame)
 		frame.layoutIndex = nil;
-		FramePool_HideAndClearAnchors(framePool, frame);
+		Pool_HideAndClearAnchors(framePool, frame);
 	end
 
 	self.PartyMemberFramePool = CreateFramePool("BUTTON", self, "PartyMemberFrameTemplate", PartyMemberFrameReset);
@@ -17,7 +20,7 @@ function PartyFrameMixin:OnLoad()
 end
 
 function PartyFrameMixin:UpdateSystemSettingFrameSize()
-	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.ForcedPartyFrameScale) then
+	if not C_GameRules.IsGameRuleActive(Enum.GameRule.ForcedPartyFrameScale) then
 		EditModeUnitFrameSystemMixin.UpdateSystemSettingFrameSize(self);
 	end
 end
@@ -161,8 +164,8 @@ function PartyMemberBuffTooltipMixin:UpdateTooltip(frame)
 	local frameNum = 1;
 	self.PartyMemberBuffPool:ReleaseAll();
 
-	for frame in self.PartyMemberBuffPool:EnumerateActive() do 
-		frame:Hide()
+	for buffFrame in self.PartyMemberBuffPool:EnumerateActive() do 
+		buffFrame:Hide()
 	end
 	local buffFrames = {};
 

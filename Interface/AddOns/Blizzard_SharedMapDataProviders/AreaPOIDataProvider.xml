@@ -2,5 +2,5 @@
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="AreaPOIDataProvider.lua"/>
 
-	<Frame name="AreaPOIPinTemplate" inherits="BaseHighlightableMapPoiPinTemplate" mixin="AreaPOIPinMixin" virtual="true" />
+	<Frame name="AreaPOIPinTemplate" inherits="LegendHighlightableMapPoiPinTemplate, BaseSuperTrackableMapPoiPinTemplate" mixin="AreaPOIPinMixin" virtual="true"/>
 </Ui>

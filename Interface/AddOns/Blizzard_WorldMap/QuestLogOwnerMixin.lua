@@ -98,12 +98,12 @@ function QuestLogOwnerMixin:HandleUserActionOpenSelf(mapID)
 end
 
 function QuestLogOwnerMixin:SetDisplayState(displayState)
+	local hasSynchronizedDisplayState = false;
+
 	if displayState == DISPLAY_STATE_CLOSED then
 		HideUIPanel(self);
 	else
 		ShowUIPanel(self);
-
-		local hasSynchronizedDisplayState = false;
 
 		if displayState == DISPLAY_STATE_OPEN_MAXIMIZED then
 			if not self:IsMaximized() then
@@ -172,11 +172,13 @@ function QuestLogOwnerMixin:OnUIClose()
 end
 
 function QuestLogOwnerMixin:ShouldShowQuestLogPanel()
-	return C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.QuestLogPanel) and GetCVarBool("questLogOpen");
+	local questLogPanelDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.QuestLogPanelDisabled);
+	return not questLogPanelDisabled and GetCVarBool("questLogOpen");
 end
 
 function QuestLogOwnerMixin:ShouldBeMinimized()
-	return not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.MaximizeWorldMap) or GetCVarBool("miniWorldMap");
+	local maximizeWorldMapDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.MaximizeWorldMapDisabled);
+	return maximizeWorldMapDisabled or GetCVarBool("miniWorldMap");
 end
 
 function QuestLogOwnerMixin:ShouldBeMaximized()

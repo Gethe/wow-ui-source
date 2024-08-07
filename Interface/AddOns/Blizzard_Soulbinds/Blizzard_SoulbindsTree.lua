@@ -26,7 +26,7 @@ function SoulbindTreeMixin:OnLoad()
 
 	local resetterCb = function(pool, frame)
 		frame:Reset();
-		FramePool_HideAndClearAnchors(pool, frame);
+		Pool_HideAndClearAnchors(pool, frame);
 	end;
 	
 	self.pools = CreateFramePoolCollection();
@@ -128,7 +128,7 @@ function SoulbindTreeMixin:PlayNodeSelectionAnim(button)
 	local frame = self.pools:Acquire(SELECT_ANIM_TEMPLATE);
 	frame:SetAllPoints(button.FxModelScene);
 	frame:Show();
-	frame.Anim:SetScript("OnFinished", GenerateClosure(self.OnSelectAnimFinished, self, swirlFrame));
+	frame.Anim:SetScript("OnFinished", GenerateClosure(self.OnSelectAnimFinished, self, frame));
 	frame.Anim:Play();
 end
 
@@ -141,7 +141,7 @@ function SoulbindTreeMixin:OnNodeClicked(button, buttonName)
 	if buttonName == "LeftButton" then
 		local linked = false;
 		if IsModifiedClick("CHATLINK") then
-			local link = GetSpellLink(button:GetSpellID());
+			local link = C_Spell.GetSpellLink(button:GetSpellID());
 			linked = HandleModifiedItemClick(link);
 		end
 

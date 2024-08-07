@@ -32,8 +32,8 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-                				MovieFrame_OnMovieFinished(self:GetParent():GetParent());
-              				</OnClick>
+								MovieFrame_OnMovieFinished(self:GetParent():GetParent(), true);
+							</OnClick>
 						</Scripts>
 					</Button>
 					<Button parentKey="ResumeButton" inherits="CinematicDialogButtonTemplate" text="NO">

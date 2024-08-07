@@ -245,7 +245,7 @@ function ActionBarActionEventsFrameMixin:OnLoad()
 	self:RegisterUnitEvent("UNIT_SPELLCAST_EMPOWER_START", "player");
 	self:RegisterUnitEvent("UNIT_SPELLCAST_EMPOWER_STOP", "player");
 
-	self:RegisterEvent("LEARNED_SPELL_IN_TAB");
+	self:RegisterEvent("LEARNED_SPELL_IN_SKILL_LINE");
 	self:RegisterEvent("PET_STABLE_UPDATE");
 	self:RegisterEvent("PET_STABLE_SHOW");
 	self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW");
@@ -481,7 +481,7 @@ function ActionBarActionButtonMixin:UpdatePressAndHoldAction()
 	if self.action then
 		local actionType, id = GetActionInfo(self.action);
 		if actionType == "spell" then
-			pressAndHoldAction = IsPressHoldReleaseSpell(id);
+			pressAndHoldAction = C_Spell.IsPressHoldReleaseSpell(id);
 		end
 	end
 
@@ -758,9 +758,13 @@ function ActionButton_UpdateCooldown(self)
 		chargeModRate = modRate; 
 		enable = 1; 
 	elseif (self.spellID) then
-		locStart, locDuration = GetSpellLossOfControlCooldown(self.spellID);
-		start, duration, enable, modRate = GetSpellCooldown(self.spellID);
-		charges, maxCharges, chargeStart, chargeDuration, chargeModRate = GetSpellCharges(self.spellID);
+		locStart, locDuration = C_Spell.GetSpellLossOfControlCooldown(self.spellID);
+		
+		local spellCooldownInfo = C_Spell.GetSpellCooldown(self.spellID) or {startTime = 0, duration = 0, isEnabled = false, modRate = 0};
+		start, duration, enable, modRate = spellCooldownInfo.startTime, spellCooldownInfo.duration, spellCooldownInfo.isEnabled, spellCooldownInfo.modRate;
+
+		local chargeInfo = C_Spell.GetSpellCharges(self.spellID) or {currentCharges = 0, maxCharges = 0, cooldownStartTime = 0, cooldownDuration = 0, chargeModRate = 0};
+		charges, maxCharges, chargeStart, chargeDuration, chargeModRate = chargeInfo.currentCharges, chargeInfo.maxCharges, chargeInfo.cooldownStartTime, chargeInfo.cooldownDuration, chargeInfo.chargeModRate;
 	else
 		locStart, locDuration = GetActionLossOfControlCooldown(self.action);
 		start, duration, enable, modRate = GetActionCooldown(self.action);
@@ -977,7 +981,7 @@ end
 
 function ActionBarActionButtonMixin:OnEvent(event, ...)
 	local arg1 = ...;
-	if ((event == "UNIT_INVENTORY_CHANGED" and arg1 == "player") or event == "LEARNED_SPELL_IN_TAB") then
+	if ((event == "UNIT_INVENTORY_CHANGED" and arg1 == "player") or event == "LEARNED_SPELL_IN_SKILL_LINE") then
 		if ( GameTooltip:GetOwner() == self ) then
 			self:SetTooltip();
 		end
@@ -1286,23 +1290,16 @@ function ActionBarActionButtonMixin:UpdateFlash()
 		self:StopFlash();
 	end
 	
-	if ( self.AutoCastable ) then
-		self.AutoCastable:SetShown(C_ActionBar.IsAutoCastPetAction(action));
-		if ( C_ActionBar.IsEnabledAutoCastPetAction(action) ) then
-			self.AutoCastShine:Show();
-			AutoCastShine_AutoCastStart(self.AutoCastShine);
-		else
-			self.AutoCastShine:Hide();
-			AutoCastShine_AutoCastStop(self.AutoCastShine);
-		end
+	if ( self.AutoCastOverlay ) then
+		self.AutoCastOverlay:SetShown(C_ActionBar.IsAutoCastPetAction(action));
+		self.AutoCastOverlay:ShowAutoCastEnabled(C_ActionBar.IsEnabledAutoCastPetAction(action));
 	end
 end
 
 function ActionBarActionButtonMixin:ClearFlash()
-	if ( self.AutoCastable ) then
-		self.AutoCastable:Hide();
-		self.AutoCastShine:Hide();
-		AutoCastShine_AutoCastStop(self.AutoCastShine);
+	if ( self.AutoCastOverlay ) then
+		self.AutoCastOverlay:ShowAutoCastEnabled(false);
+		self.AutoCastOverlay:Hide();
 	end
 end
 
@@ -1343,7 +1340,7 @@ function ActionBarActionButtonMixin:UpdateFlyout(isButtonDownOverride)
 	end
 
 	-- Update border
-	local isMouseOverButton =  GetMouseFocus() == self;
+	local isMouseOverButton = self:IsMouseMotionFocus();
 	local isFlyoutShown = SpellFlyout and SpellFlyout:IsShown() and SpellFlyout:GetParent() == self;
 	if (isFlyoutShown or isMouseOverButton) then
 		self.FlyoutBorderShadow:Show();
@@ -1557,13 +1554,9 @@ function SmallActionButtonMixin:SmallActionButtonMixin_OnLoad()
 	self.IconMask:ClearAllPoints();
 	self.IconMask:SetPoint("CENTER", 0.5, -0.5);
 
-	self.AutoCastable:SetSize(56, 56);
-	self.AutoCastable:ClearAllPoints();
-	self.AutoCastable:SetPoint("CENTER", 0.5, -0.5);
-
-	self.AutoCastShine:SetSize(27, 27);
-	self.AutoCastShine:ClearAllPoints();
-	self.AutoCastShine:SetPoint("CENTER", 0.5, -0.5);
+	self.AutoCastOverlay:SetSize(31, 31);
+	self.AutoCastOverlay:ClearAllPoints();
+	self.AutoCastOverlay:SetPoint("CENTER", 0.5, -0.5);
 
 	self.HighlightTexture:SetSize(31.6, 30.9);
 	self.CheckedTexture:SetSize(31.6, 30.9);
@@ -1610,7 +1603,8 @@ function ActionButtonCastingAnimFrameMixin:Setup(actionButtonCastType)
 	local startTime, endTime; 
 
 	local isChannelCast = actionButtonCastType == ActionButtonCastType.Channel; 
-	local isEmpoweredCast = actionButtonCastType == ActionButtonCastType.Empowered; 
+	local isEmpoweredCast = actionButtonCastType == ActionButtonCastType.Empowered;
+	local _; 
 	if(isChannelCast or isEmpoweredCast) then 
 		_, _, _, startTime, endTime = UnitChannelInfo("player");
 	else 
@@ -1685,4 +1679,12 @@ end
 ActionButtonCooldownFlashAnimMixin = { }; 
 function ActionButtonCooldownFlashAnimMixin:OnFinished()
 	self:GetParent():Hide(); 
+end
+
+-- This is done to preserve old hierarchy, while allowing for proper layering of the HotKey text
+ActionButtonTextOverlayContainerMixin = {};
+function ActionButtonTextOverlayContainerMixin:OnLoad()
+	local parentActionButton = self:GetParent();
+	parentActionButton.HotKey = self.HotKey;
+	parentActionButton.Count = self.Count;
 end

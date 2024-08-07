@@ -27,7 +27,7 @@ function AuctionFrameFilters_UpdateCategories(categoriesList, forceSelectionInto
 	categoriesList.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
 
 	if forceSelectionIntoView and selectedCategoryIndex and (not selectedSubCategoryIndex and not selectedSubSubCategoryIndex) then
-		categoriesList.ScrollBox:ScrollToElementDataIndex(selectedCategoryIndex, ScrollBoxConstants.AlignBegin, ScrollBoxConstants.NoScrollInterpolation);
+		categoriesList.ScrollBox:ScrollToElementDataIndex(selectedCategoryIndex, ScrollBoxConstants.AlignBegin);
 	end
 end
 

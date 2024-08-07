@@ -170,7 +170,7 @@ function InspectPaperDollItemSlotButton_Update(button)
 		SetItemButtonQuality(button, quality, GetInventoryItemID(unit, button:GetID()));
 
 	else
-		local textureName = button.backgroundTextureName;
+		textureName = button.backgroundTextureName;
 		if ( button.checkRelic and UnitHasRelicSlot(unit) ) then
 			textureName = "Interface\\Paperdoll\\UI-PaperDoll-Slot-Relic.blp";
 		end
@@ -201,11 +201,10 @@ InspectPaperDollFrameTalentsButtonMixin = {};
 
 function InspectPaperDollFrameTalentsButtonMixin:OnClick()
 	if C_Traits.HasValidInspectData() then
-		ClassTalentFrame_LoadUI();
+		PlayerSpellsFrame_LoadUI();
 
-		local suggestedTab = nil;
 		local inspectUnit = InspectFrame.unit;
-		ToggleTalentFrame(suggestedTab, inspectUnit);
+		PlayerSpellsUtil.OpenToClassTalentsTab(inspectUnit);
 	end
 end
 

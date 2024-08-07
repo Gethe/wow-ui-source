@@ -387,13 +387,6 @@
 					<Anchor point="CENTER"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="DropDown" name="$parentDropDown" inherits="UIDropDownMenuTemplate">
-				<Scripts>
-					<OnLoad>
-						UIDropDownMenu_Initialize(self, QueueStatusDropDown_Update, "MENU");
-					</OnLoad>
-				</Scripts>
-			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

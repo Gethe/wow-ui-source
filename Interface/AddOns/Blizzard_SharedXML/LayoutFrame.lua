@@ -1,36 +1,18 @@
 
----------------
---NOTE - Please do not change this section without talking to Dan
-local _, tbl = ...;
-if tbl then
-	tbl.SecureCapsuleGet = SecureCapsuleGet;
-
-	local function Import(name)
-		tbl[name] = tbl.SecureCapsuleGet(name);
-	end
-
-	Import("IsOnGlueScreen");
-
-	if ( tbl.IsOnGlueScreen() ) then
-		tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
-	end
-
-	Import("GMError");
-	Import("math");
-	Import("Clamp");
-
-	setfenv(1, tbl);
-end
-----------------
-
 --------------------------------------------------------------------------------
 -- BaseLayout Mixin
 --------------------------------------------------------------------------------
 
+local function IsLayoutFrame(frame)
+	return frame.IsLayoutFrame and frame:IsLayoutFrame();
+end
+
 BaseLayoutMixin = {};
 
 function BaseLayoutMixin:OnShow()
-	self:Layout();
+	if not self.skipLayoutOnShow then
+		self:Layout();
+	end
 end
 
 function BaseLayoutMixin:IsLayoutFrame()
@@ -48,14 +30,12 @@ function BaseLayoutMixin:MarkIgnoreInLayout(region, ...)
 	end
 end
 
-local function IsLayoutFrame(f)
-	return f.IsLayoutFrame and f:IsLayoutFrame();
-end
-
 function BaseLayoutMixin:AddLayoutChildren(layoutChildren, ...)
 	for i = 1, select("#", ...) do
 		local region = select(i, ...);
-		if region:IsShown() and not region.ignoreInLayout and (self:IgnoreLayoutIndex() or region.layoutIndex) then
+		-- Individual regions can be ignored or every region can be ignored and require individual opt-in.
+		local canInclude = (not region.ignoreInLayout) and (not self.ignoreAllChildren or region.includeInLayout);
+		if region:IsShown() and canInclude and (self:IgnoreLayoutIndex() or region.layoutIndex) then
 			layoutChildren[#layoutChildren + 1] = region;
 		end
 	end
@@ -143,6 +123,11 @@ end
 function BaseLayoutMixin:SetFixedSize(width, height)
 	self:SetFixedWidth(width);
 	self:SetFixedHeight(height);
+end
+
+function BaseLayoutMixin:ClearFixedSize()
+	self:SetFixedWidth(nil);
+	self:SetFixedHeight(nil);
 end
 
 function BaseLayoutMixin:GetFixedWidth()
@@ -243,7 +228,7 @@ end
 VerticalLayoutMixin = {};
 
 function VerticalLayoutMixin:LayoutChildren(children, expandToWidth)
-	local frameLeftPadding, frameRightPadding, topOffset = self:GetPadding();
+	local frameLeftPadding, frameRightPadding, topOffset, bottomOffset = self:GetPadding();
 	local spacing = self.spacing or 0;
 	local childrenWidth, childrenHeight = 0, 0;
 	local hasExpandableChild = false;
@@ -282,26 +267,49 @@ function VerticalLayoutMixin:LayoutChildren(children, expandToWidth)
 
 		-- Set child position
 		child:ClearAllPoints();
-		topOffset = topOffset + topPadding;
-		topOffset = self.respectChildScale and topOffset / childScale or topOffset;
-		if (child.align == "right") then
-			local rightOffset = frameRightPadding + rightPadding;
-			rightOffset = self.respectChildScale and rightOffset / childScale or rightOffset;
-			child:SetPoint("TOPRIGHT", -rightOffset, -topOffset);
-		elseif (child.align == "center") then
-			local leftOffset = (frameLeftPadding - frameRightPadding + leftPadding - rightPadding) / 2;
-			leftOffset = self.respectChildScale and leftOffset / childScale or leftOffset;
-			child:SetPoint("TOP", leftOffset, -topOffset);
-		else
-			local leftOffset = frameLeftPadding + leftPadding;
-			leftOffset = self.respectChildScale and leftOffset / childScale or leftOffset;
-			child:SetPoint("TOPLEFT", leftOffset, -topOffset);
-		end
-		-- If you adjusted the offset due to respecting child scale then undo that adjustment since the next frame may have a different scale
-		topOffset = self.respectChildScale and topOffset * childScale or topOffset;
+		if self.childLayoutDirection == "bottomToTop" then
+			bottomOffset = bottomOffset + bottomPadding;
+			bottomOffset = self.respectChildScale and bottomOffset / childScale or bottomOffset;
+			if (child.align == "right") then
+				local rightOffset = frameRightPadding + rightPadding;
+				rightOffset = self.respectChildScale and rightOffset / childScale or rightOffset;
+				child:SetPoint("BOTTOMRIGHT", -rightOffset, bottomOffset);
+			elseif (child.align == "center") then
+				local leftOffset = (frameLeftPadding - frameRightPadding + leftPadding - rightPadding) / 2;
+				leftOffset = self.respectChildScale and leftOffset / childScale or leftOffset;
+				child:SetPoint("BOTTOM", leftOffset, bottomOffset);
+			else
+				local leftOffset = frameLeftPadding + leftPadding;
+				leftOffset = self.respectChildScale and leftOffset / childScale or leftOffset;
+				child:SetPoint("BOTTOMLEFT", leftOffset, bottomOffset);
+			end
+			-- If you adjusted the offset due to respecting child scale then undo that adjustment since the next frame may have a different scale
+			bottomOffset = self.respectChildScale and bottomOffset * childScale or bottomOffset;
 
-		-- Determine topOffset for next frame
-		topOffset = topOffset + childHeight + bottomPadding + spacing;
+			-- Determine bottomOffset for next frame
+			bottomOffset = bottomOffset + childHeight + topPadding + spacing;
+		else
+			topOffset = topOffset + topPadding;
+			topOffset = self.respectChildScale and topOffset / childScale or topOffset;
+			if (child.align == "right") then
+				local rightOffset = frameRightPadding + rightPadding;
+				rightOffset = self.respectChildScale and rightOffset / childScale or rightOffset;
+				child:SetPoint("TOPRIGHT", -rightOffset, -topOffset);
+			elseif (child.align == "center") then
+				local leftOffset = (frameLeftPadding - frameRightPadding + leftPadding - rightPadding) / 2;
+				leftOffset = self.respectChildScale and leftOffset / childScale or leftOffset;
+				child:SetPoint("TOP", leftOffset, -topOffset);
+			else
+				local leftOffset = frameLeftPadding + leftPadding;
+				leftOffset = self.respectChildScale and leftOffset / childScale or leftOffset;
+				child:SetPoint("TOPLEFT", leftOffset, -topOffset);
+			end
+			-- If you adjusted the offset due to respecting child scale then undo that adjustment since the next frame may have a different scale
+			topOffset = self.respectChildScale and topOffset * childScale or topOffset;
+
+			-- Determine topOffset for next frame
+			topOffset = topOffset + childHeight + bottomPadding + spacing;
+		end
 	end
 
 	return childrenWidth, childrenHeight, hasExpandableChild;
@@ -314,7 +322,7 @@ end
 HorizontalLayoutMixin = {};
 
 function HorizontalLayoutMixin:LayoutChildren(children, ignored, expandToHeight)
-	local leftOffset, _, frameTopPadding, frameBottomPadding = self:GetPadding();
+	local leftOffset, rightOffset, frameTopPadding, frameBottomPadding = self:GetPadding();
 	local spacing = self.spacing or 0;
 	local childrenWidth, childrenHeight = 0, 0;
 	local hasExpandableChild = false;
@@ -352,18 +360,34 @@ function HorizontalLayoutMixin:LayoutChildren(children, ignored, expandToHeight)
 
 		-- Set child position
 		child:ClearAllPoints();
-		leftOffset = leftOffset + leftPadding;
-		if (child.align == "bottom") then
-			local bottomOffset = frameBottomPadding + bottomPadding;
-			child:SetPoint("BOTTOMLEFT", leftOffset, bottomOffset);
-		elseif (child.align == "center") then
-			local topOffset = (frameTopPadding - frameBottomPadding + topPadding - bottomPadding) / 2;
-			child:SetPoint("LEFT", leftOffset, -topOffset);
+
+		if self.childLayoutDirection == "rightToLeft" then
+			rightOffset = rightOffset + rightPadding;
+			if (child.align == "bottom") then
+				local bottomOffset = frameBottomPadding + bottomPadding;
+				child:SetPoint("BOTTOMRIGH", -rightOffset, bottomOffset);
+			elseif (child.align == "center") then
+				local topOffset = (frameTopPadding - frameBottomPadding + topPadding - bottomPadding) / 2;
+				child:SetPoint("RIGHT", -rightOffset, -topOffset);
+			else
+				local topOffset = frameTopPadding + topPadding;
+				child:SetPoint("TOPRIGHT", -rightOffset, -topOffset);
+			end
+			rightOffset = rightOffset + childWidth + leftPadding + spacing;
 		else
-			local topOffset = frameTopPadding + topPadding;
-			child:SetPoint("TOPLEFT", leftOffset, -topOffset);
+			leftOffset = leftOffset + leftPadding;
+			if (child.align == "bottom") then
+				local bottomOffset = frameBottomPadding + bottomPadding;
+				child:SetPoint("BOTTOMLEFT", leftOffset, bottomOffset);
+			elseif (child.align == "center") then
+				local topOffset = (frameTopPadding - frameBottomPadding + topPadding - bottomPadding) / 2;
+				child:SetPoint("LEFT", leftOffset, -topOffset);
+			else
+				local topOffset = frameTopPadding + topPadding;
+				child:SetPoint("TOPLEFT", leftOffset, -topOffset);
+			end
+			leftOffset = leftOffset + childWidth + rightPadding + spacing;
 		end
-		leftOffset = leftOffset + childWidth + rightPadding + spacing;
 	end
 
 	return childrenWidth, childrenHeight, hasExpandableChild;
@@ -392,6 +416,22 @@ function ResizeLayoutMixin:IgnoreLayoutIndex()
 	return true;
 end
 
+function ResizeLayoutMixin:SetWidthPadding(widthPadding)
+	self.widthPadding = widthPadding;
+end
+
+function ResizeLayoutMixin:SetHeightPadding(heightPadding)
+	self.heightPadding = heightPadding;
+end
+
+function ResizeLayoutMixin:SetMinimumWidth(minimumWidth)
+	self.minimumWidth = minimumWidth;
+end
+
+function ResizeLayoutMixin:SetMaximumWidth(maximumWidth)
+	self.maximumWidth = maximumWidth;
+end
+
 function ResizeLayoutMixin:Layout()
 	-- GetExtents will fail if the LayoutFrame has 0 width or height, so set them to 1 to start
 	self:SetSize(1, 1);
@@ -405,7 +445,10 @@ function ResizeLayoutMixin:Layout()
 	local left, right, top, bottom, defaulted;
 	local layoutFrameScale = self:GetEffectiveScale();
 	for childIndex, child in ipairs(self:GetLayoutChildren()) do
-		if IsLayoutFrame(child) then
+		-- skipChildLayout is to prevent menus from calling Layout on children
+		-- that have potentially had their extents overwritten by the menu. Their
+		-- extents have already been accounted for.
+		if not self.skipChildLayout and IsLayoutFrame(child) then
 			child:Layout();
 		end
 
@@ -414,9 +457,14 @@ function ResizeLayoutMixin:Layout()
 		defaulted = defaulted or d;
 	end
 
-	if left and right and top and bottom then
-		local width = GetSize((right - left) + self:GetWidthPadding(), self:GetFixedWidth(), self.minimumWidth, self.maximumWidth);
-		local height = GetSize((top - bottom) + self:GetHeightPadding(), self:GetFixedHeight(), self.minimumHeight, self.maximumHeight);
+	local fw, fh = self:GetFixedSize();
+	if fw and fh then
+		self:SetSize(fw, fh);
+	elseif left and right and top and bottom then
+		local minw = self.minimumWidth;
+		local maxw = self.maximumWidth;
+		local width = GetSize((right - left) + self:GetWidthPadding(), fw, self.minimumWidth, self.maximumWidth);
+		local height = GetSize((top - bottom) + self:GetHeightPadding(), fh, self.minimumHeight, self.maximumHeight);
 
 		self:SetSize(width, height);
 	end
@@ -514,4 +562,112 @@ end
 
 function GridLayoutFrameMixin:IgnoreLayoutIndex()
 	return false;
+end
+
+--------------------------------------------------------------------------------
+-- StaticGridLayoutFrameMixin
+--------------------------------------------------------------------------------
+
+-- Unlike GridLayoutFrame, which dynamically places child frames into grid columns and rows based on flow direction sand other settings,
+-- StaticGridLayoutFrame expects all child frames to have their assigned grid column and row pre-calculated and simply positions them there,
+-- calculating column and row sizes based on the sizes of the child frames.
+StaticGridLayoutFrameMixin = CreateFromMixins(BaseLayoutMixin);
+
+function StaticGridLayoutFrameMixin:Layout()
+	local layoutChildren = self:GetLayoutChildren();
+
+	local maxWidthByColumn, maxHeightByRow = {}, {};
+	local maxColumn, maxRow = 0, 0;
+
+	local childXPadding = self.childXPadding or 0;
+	local childYPadding = self.childYPadding or 0;
+
+	-- Iterate through frames and determine overall widths and heights to use for each column and row 
+	-- based on the widest/tallest frame in each respective column and row
+	for childIndex, childFrame in ipairs(layoutChildren) do
+		if IsLayoutFrame(childFrame) then
+			childFrame:Layout();
+		end
+
+		local column, row = childFrame.gridColumn, childFrame.gridRow;
+		if column and row then
+			local columnSize = childFrame.gridColumnSize or 1;
+			local rowSize = childFrame.gridRowSize or 1;
+
+			local endColumn = column + (columnSize - 1);
+			local endRow = row + (rowSize - 1);
+
+			maxColumn = math.max(maxColumn, endColumn);
+			maxRow = math.max(maxRow, endRow);
+
+			local widthPerColumn, heightPerRow = childFrame:GetSize();
+
+			-- If a frame spans more than one column/row, consider its size as spread evenly across those cells
+			if columnSize > 1 then
+				-- Since columns/rows will already be separated by padding, ensure those are removed from the calculation so they aren't factored in twice
+				-- Ex: If a frame spans 2 columns, then it also spans over the 1 set of x padding between them, which shouldn't also get factored into column A's or B's widths
+				local encompassedXPadding = childXPadding * (columnSize - 1);
+				widthPerColumn = (widthPerColumn / columnSize) - encompassedXPadding;
+			end
+			if rowSize > 1 then
+				local encompassedYPadding = (childYPadding * (rowSize - 1));
+				heightPerRow = (heightPerRow / rowSize) - encompassedYPadding;
+			end
+
+			-- For each column this frame spans, conditionally set that column's width to use the frame's calculated per-column width
+			for i = column, endColumn do
+				if not maxWidthByColumn[i] or widthPerColumn > maxWidthByColumn[i] then
+					maxWidthByColumn[i] = widthPerColumn;
+				end
+			end
+
+			-- For each row this frame spans, conditionally set that column's height to use the frame's calculated per-row height
+			for i = row, endRow do
+				if not maxHeightByRow[i] or heightPerRow > maxHeightByRow[i] then
+					maxHeightByRow[i] = heightPerRow;
+				end
+			end
+		end
+	end
+
+	-- Calculate what each column's anchor offset will need to be based on widths of columns before them
+	local xOffsetByColumn = {};
+	local totalXOffset = 0;
+	for i = 1, maxColumn do
+		local previousColumnWidth = maxWidthByColumn[i-1] or 0;
+		totalXOffset = totalXOffset + previousColumnWidth;
+		xOffsetByColumn[i] = totalXOffset;
+	end
+
+	-- Calculate what each row's anchor offset will need to be based on heights of columns above them
+	local yOffsetByRow = {};
+	local totalYOffset = 0;
+	for i = 1, maxRow do
+		local previousRowHeight = maxHeightByRow[i-1] or 0;
+		totalYOffset = totalYOffset + previousRowHeight;
+		yOffsetByRow[i] = totalYOffset;
+	end
+
+	-- Finally position all frames based on their assigned positions and calculated column/row offsets
+	for childIndex, childFrame in ipairs(layoutChildren) do
+		if childFrame.gridColumn and childFrame.gridRow then
+			childFrame:ClearAllPoints();
+
+			local x = xOffsetByColumn[childFrame.gridColumn];
+			local y = -yOffsetByRow[childFrame.gridRow];
+			if childFrame.gridColumn > 1 then
+				x = x + (childXPadding * (childFrame.gridColumn - 1));
+			end
+			if childFrame.gridRow > 1 then
+				y = y - (childYPadding * (childFrame.gridRow - 1));
+			end
+			childFrame:SetPoint("TOPLEFT", self, "TOPLEFT", x, y);
+		end
+	end
+
+	self:MarkClean();
+end
+
+function StaticGridLayoutFrameMixin:IgnoreLayoutIndex()
+	return true;
 end

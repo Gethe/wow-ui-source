@@ -60,7 +60,8 @@ function WorldMapMixin:Maximize()
 end
 
 function WorldMapMixin:SetTutorialButtonShown(shown)
-	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.WorldMapHelpPlate) then
+	local worldMapHelpPlateDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.WorldMapHelpPlateDisabled);
+	if worldMapHelpPlateDisabled then
 		return;
 	end
 
@@ -68,7 +69,8 @@ function WorldMapMixin:SetTutorialButtonShown(shown)
 end
 
 function WorldMapMixin:CheckAndShowTutorialTooltip()
-	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.WorldMapHelpPlate) then
+	local worldMapHelpPlateDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.WorldMapHelpPlateDisabled);
+	if worldMapHelpPlateDisabled then
 		return;
 	end
 
@@ -76,7 +78,8 @@ function WorldMapMixin:CheckAndShowTutorialTooltip()
 end
 
 function WorldMapMixin:CheckAndHideTutorialHelpInfo()
-	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.WorldMapHelpPlate) then
+	local worldMapHelpPlateDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.WorldMapHelpPlateDisabled);
+	if worldMapHelpPlateDisabled then
 		return;
 	end
 
@@ -86,7 +89,7 @@ end
 function WorldMapMixin:SetupMinimizeMaximizeButton()
 	self.minimizedWidth = 702;
 	self.minimizedHeight = 534;
-	self.questLogWidth = 290;
+	self.questLogWidth = 333;
 
 	local function OnMaximize()
 		self:HandleUserActionMaximizeSelf();
@@ -100,7 +103,8 @@ function WorldMapMixin:SetupMinimizeMaximizeButton()
 
 	self.BorderFrame.MaximizeMinimizeFrame:SetOnMinimizedCallback(OnMinimize);
 
-	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.MaximizeWorldMap) then
+	local maximizeWorldMapDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.MaximizeWorldMapDisabled);
+	if maximizeWorldMapDisabled then
 		self.BorderFrame.MaximizeMinimizeFrame:Hide();
 	end
 end
@@ -134,7 +138,8 @@ function WorldMapMixin:OnLoad()
 
 	self:UpdateSpacerFrameAnchoring();
 
-	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.WorldMapHelpPlate) then
+	local worldMapHelpPlateDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.WorldMapHelpPlateDisabled);
+	if worldMapHelpPlateDisabled then
 		self.BorderFrame.Tutorial:Hide();
 	end
 end
@@ -162,7 +167,7 @@ function WorldMapMixin:AddStandardDataProviders()
 	self:AddDataProvider(CreateFromMixins(MapExplorationDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(MapHighlightDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(WorldMap_EventOverlayDataProviderMixin));
-	self:AddDataProvider(CreateFromMixins(StorylineQuestDataProviderMixin));
+	self:AddDataProvider(CreateFromMixins(QuestOfferDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(BattlefieldFlagDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(BonusObjectiveDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(VehicleDataProviderMixin));
@@ -181,17 +186,19 @@ function WorldMapMixin:AddStandardDataProviders()
 	self:AddDataProvider(CreateFromMixins(DigSiteDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(GarrisonPlotDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(DungeonEntranceDataProviderMixin));
+	self:AddDataProvider(CreateFromMixins(DelveEntranceDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(BannerDataProvider));
 	self:AddDataProvider(CreateFromMixins(ContributionCollectorDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(MapLinkDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(SelectableGraveyardDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(AreaPOIDataProviderMixin));
+	self:AddDataProvider(CreateFromMixins(AreaPOIEventDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(MapIndicatorQuestDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(QuestSessionDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(WaypointLocationDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(DragonridingRaceDataProviderMixin));
 
-	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.MapPlunderstormCircle) then
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.MapPlunderstormCircle) then
 		self:AddDataProvider(CreateFromMixins(PlunderstormCircleDataProviderMixin));
 	end
 
@@ -224,19 +231,20 @@ function WorldMapMixin:AddStandardDataProviders()
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_DEBUG", 4);
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_DIG_SITE");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_DUNGEON_ENTRANCE");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_DELVE_ENTRANCE");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_FLIGHT_POINT");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_INVASION");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_PET_TAMER");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_SELECTABLE_GRAVEYARD");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_DRAGONRIDING_RACE");
-	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_GOSSIP");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_AREA_POI");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_GOSSIP");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_DEBUG");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_MAP_LINK");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_ENCOUNTER");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_CONTRIBUTION_COLLECTOR");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_VIGNETTE", 200);
-	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_STORY_LINE", 6);
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_QUEST_OFFER", QuestOfferDataProviderMixin.PIN_LEVEL_RANGE);
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_SCENARIO");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_WORLD_QUEST", 500);
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_QUEST_PING");
@@ -255,15 +263,24 @@ function WorldMapMixin:AddStandardDataProviders()
 end
 
 function WorldMapMixin:AddOverlayFrames()
-	self:AddOverlayFrame("WorldMapFloorNavigationFrameTemplate", "FRAME", "TOPLEFT", self:GetCanvasContainer(), "TOPLEFT", -15, 2);
+	local floorDropdown = self:AddOverlayFrame("WorldMapFloorNavigationFrameTemplate", "DROPDOWNBUTTON", "TOPLEFT", self:GetCanvasContainer(), "TOPLEFT", 2, 0);
+	floorDropdown:SetWidth(160);
 
-	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.WorldMapTrackingOptions) then
-		self:AddOverlayFrame("WorldMapTrackingOptionsButtonTemplate", "DROPDOWNTOGGLEBUTTON", "TOPRIGHT", self:GetCanvasContainer(), "TOPRIGHT", -4, -2);
+	local topRightButtonPoolXOffset = -4;
+	local topRightButtonPoolXOffsetAmount = -32;
+	local worldTrackingOptionsDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.WorldMapTrackingOptionsDisabled);
+	if not worldTrackingOptionsDisabled then
+		self:AddOverlayFrame("WorldMapTrackingOptionsButtonTemplate", "DROPDOWNBUTTON", "TOPRIGHT", self:GetCanvasContainer(), "TOPRIGHT", topRightButtonPoolXOffset, -2);
+		topRightButtonPoolXOffset = topRightButtonPoolXOffset + topRightButtonPoolXOffsetAmount;
 	end
 
-	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.WorldMapTrackingPin) then
-		self:AddOverlayFrame("WorldMapTrackingPinButtonTemplate", "BUTTON", "TOPRIGHT", self:GetCanvasContainer(), "TOPRIGHT", -36, -2);
+	local worldMapTrackingPinDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.WorldMapTrackingPinDisabled);
+	if not worldMapTrackingPinDisabled then
+		self:AddOverlayFrame("WorldMapTrackingPinButtonTemplate", "BUTTON", "TOPRIGHT", self:GetCanvasContainer(), "TOPRIGHT", topRightButtonPoolXOffset, -2);
+		topRightButtonPoolXOffset = topRightButtonPoolXOffset + topRightButtonPoolXOffsetAmount;
 	end
+
+	self:AddOverlayFrame("WorldMapShowLegendButtonTemplate", "BUTTON", "TOPRIGHT", self:GetCanvasContainer(), "TOPRIGHT", topRightButtonPoolXOffset, -2);
 
 	self:AddOverlayFrame("WorldMapBountyBoardTemplate", "FRAME", nil, self:GetCanvasContainer());
 	self:AddOverlayFrame("WorldMapActionButtonTemplate", "FRAME", nil, self:GetCanvasContainer());
@@ -275,9 +292,11 @@ function WorldMapMixin:AddOverlayFrames()
 	self.NavBar:SetPoint("TOPLEFT", self.TitleCanvasSpacerFrame, "TOPLEFT", 64, -25);
 	self.NavBar:SetPoint("BOTTOMRIGHT", self.TitleCanvasSpacerFrame, "BOTTOMRIGHT", -4, 9);
 
-	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.QuestLogPanel) then
+	local questLogPanelDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.QuestLogPanelDisabled);
+	if not questLogPanelDisabled then
 		self.SidePanelToggle = self:AddOverlayFrame("WorldMapSidePanelToggleTemplate", "BUTTON", "BOTTOMRIGHT", self:GetCanvasContainer(), "BOTTOMRIGHT", -2, 1);
 	end
+
 end
 
 function WorldMapMixin:OnMapChanged()

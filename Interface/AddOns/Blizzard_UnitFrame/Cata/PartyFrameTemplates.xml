@@ -1,5 +1,11 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="PartyFrameBarSegmentTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="fillTexture" value="Interface\TargetingFrame\UI-StatusBar" type="string"/>
+		</KeyValues>
+	</Frame>
+	
 	<Frame name="PartyBuffFrameTemplate" virtual="true" enableMouse="true" hidden="true">
 		<Size x="15" y="15"/>
 		<Layers>
@@ -202,17 +208,6 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
-				<Size x="10" y="10"/>
-				<Anchors>
-					<Anchor point="TOP" x="-20" y="-10"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						PartyFrameDropDown_OnLoad(self);
-					</OnLoad>
-				</Scripts>
-			</Frame>
 			<Frame name="$parentPowerBarAlt" inherits="UnitPowerBarAltTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" x="13" y="5"/>
@@ -287,11 +282,15 @@
 					</Frame>
 				</Frames>
 			</Frame>
-			<StatusBar name="$parentHealthBar" inherits="TextStatusBar">
+			<StatusBar name="$parentHealthBar" parentKey="HealthBar" inherits="TextStatusBar">
 				<Size x="70" y="8"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="47" y="-12"/>
 				</Anchors>
+				<Frames>
+					<Frame parentKey="MyHealPredictionBar" inherits="PartyFrameBarSegmentTemplate, MyHealPredictionBarTemplate"/>
+					<Frame parentKey="OtherHealPredictionBar" inherits="PartyFrameBarSegmentTemplate, OtherHealPredictionBarTemplate"/>
+				</Frames>
 				<Scripts>
 					<OnLoad>
 						TextStatusBar_Initialize(self);
@@ -312,9 +311,7 @@
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
-			<StatusBar name="$parentMyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
-			<StatusBar name="$parentOtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
-			<StatusBar name="$parentManaBar" inherits="TextStatusBar">
+			<StatusBar name="$parentManaBar" parentKey="ManaBar" inherits="TextStatusBar">
 				<Size x="70" y="8"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="47" y="-21"/>

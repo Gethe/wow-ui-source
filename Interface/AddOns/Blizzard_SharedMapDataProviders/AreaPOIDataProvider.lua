@@ -69,10 +69,47 @@ AreaPOIPinMixin = BaseMapPoiPinMixin:CreateSubPin("PIN_FRAME_LEVEL_AREA_POI");
 
 local AREAPOI_HIGHLIGHT_PARAMS = { backgroundPadding = 20 };
 
-function AreaPOIPinMixin:OnAcquired(poiInfo) -- override
-	BaseMapPoiPinMixin.OnAcquired(self, poiInfo);
+local GreatVaultMouseHandler = {};
 
-	self.dataProvider = poiInfo.dataProvider;
+function GreatVaultMouseHandler:OnMouseClickAction(button)
+	if self:IsClickAction(button) then
+		WeeklyRewards_ShowUI();
+		return true;
+	end
+end
+
+function GreatVaultMouseHandler:IsClickAction(button, action)
+	return button == "RightButton";
+end
+
+local customOnClickHandlers =
+{
+	OribosGreatVault = GreatVaultMouseHandler,
+}
+
+function AreaPOIPinMixin:GetCustomMouseHandler()
+	return self.textureKit and customOnClickHandlers[self.textureKit];
+end
+
+function AreaPOIPinMixin:UpdateCustomMouseHandlers()
+	self.customOnClickHandler = self:GetCustomMouseHandler();
+end
+
+function AreaPOIPinMixin:ShouldMouseButtonBePassthrough(button)
+	-- GreatVault allows right click to open it, everything else defers to the base mixin.
+	local onClickHandler = self:GetCustomMouseHandler();
+	if onClickHandler then
+		if onClickHandler:IsClickAction(button) then
+			return false;
+		end
+	end
+
+	return MapCanvasPinMixin.ShouldMouseButtonBePassthrough(self, button);
+end
+
+function AreaPOIPinMixin:OnAcquired(poiInfo) -- override
+	SuperTrackablePoiPinMixin.OnAcquired(self, poiInfo);
+
 	self.areaPoiID = poiInfo.areaPoiID;
 	self.factionID = poiInfo.factionID;
 	self.shouldGlow = poiInfo.shouldGlow;
@@ -81,21 +118,18 @@ function AreaPOIPinMixin:OnAcquired(poiInfo) -- override
 	MapPinHighlight_CheckHighlightPin(self:GetHighlightType(), self, self.Texture, AREAPOI_HIGHLIGHT_PARAMS);
 
 	self:AddIconWidgets();
-
-	if self.textureKit == "OribosGreatVault" then
-		local function OribosGreatVaultPOIOnMouseUp(self, button, upInside)
-			if upInside and (button == "LeftButton") then
-				WeeklyRewards_ShowUI();
-			end
-		end
-
-		self:SetScript("OnMouseUp", OribosGreatVaultPOIOnMouseUp);
-	else
-		self:SetScript("OnMouseUp", nil);
-	end
+	self:UpdateCustomMouseHandlers();
 
 	if poiInfo.isAlwaysOnFlightmap then
 		self:SetAlphaLimits(1.0, 1.0, 1.0);
+	end
+end
+
+function AreaPOIPinMixin:OnMouseClickAction(button)
+	if not SuperTrackablePinMixin.OnMouseClickAction(self, button) then
+		if self.customOnClickHandler then
+			return self.customOnClickHandler:OnMouseClickAction(button);
+		end
 	end
 end
 
@@ -115,7 +149,7 @@ function AreaPOIPinMixin:GetHighlightType() -- override
 		return MapPinHighlightType.SupertrackedHighlight;
 	end
 
-	local bountyQuestID, bountyFactionID, bountyFrameType = self.dataProvider:GetBountyInfo();
+	local bountyQuestID, bountyFactionID, bountyFrameType = self:GetDataProvider():GetBountyInfo();
 	if bountyFrameType == BountyFrameType.ActivityTracker then
 		if bountyFactionID and self.factionID == bountyFactionID then
 			return MapPinHighlightType.SupertrackedHighlight;
@@ -138,6 +172,7 @@ function AreaPOIPinMixin:OnMouseEnter()
 	end
 
 	EventRegistry:TriggerEvent("AreaPOIPin.MouseOver", self, tooltipShown, self.areaPoiID, self.name);
+    self:OnLegendPinMouseEnter();
 
 	if self.highlightWorldQuestsOnHover then
 		self:GetMap():TriggerEvent("HighlightMapPins.WorldQuests", self.pinHoverHighlightType);
@@ -146,6 +181,10 @@ function AreaPOIPinMixin:OnMouseEnter()
 	if self.highlightVignettesOnHover then
 		self:GetMap():TriggerEvent("HighlightMapPins.Vignettes", self.pinHoverHighlightType);
 	end
+end
+
+function AreaPOIPinMixin:AddCustomTooltipData(tooltip)
+	-- override if needed
 end
 
 function AreaPOIPinMixin:TryShowTooltip()
@@ -159,16 +198,17 @@ function AreaPOIPinMixin:TryShowTooltip()
 	local addedTooltipLine = false;
 
 	if hasTooltip then
+		local tooltip = GetAppropriateTooltip();
 		local verticalPadding = nil;
 
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		tooltip:SetOwner(self, "ANCHOR_RIGHT");
 		if hasName then
-			GameTooltip_SetTitle(GameTooltip, self.name, HIGHLIGHT_FONT_COLOR);
+			GameTooltip_SetTitle(tooltip, self.name, HIGHLIGHT_FONT_COLOR);
 			addedTooltipLine = true;
 		end
 
 		if hasDescription then
-			GameTooltip_AddNormalLine(GameTooltip, self.description);
+			GameTooltip_AddNormalLine(tooltip, self.description);
 			addedTooltipLine = true;
 		end
 
@@ -176,19 +216,19 @@ function AreaPOIPinMixin:TryShowTooltip()
 			local secondsLeft = C_AreaPoiInfo.GetAreaPOISecondsLeft(self.areaPoiID);
 			if secondsLeft and secondsLeft > 0 then
 				local timeString = SecondsToTime(secondsLeft);
-				GameTooltip_AddNormalLine(GameTooltip, BONUS_OBJECTIVE_TIME_LEFT:format(timeString));
+				GameTooltip_AddNormalLine(tooltip, BONUS_OBJECTIVE_TIME_LEFT:format(timeString));
 				addedTooltipLine = true;
 			end
 		end
 
 		if self.textureKit == "OribosGreatVault" then
-			GameTooltip_AddBlankLineToTooltip(GameTooltip);
-			GameTooltip_AddInstructionLine(GameTooltip, ORIBOS_GREAT_VAULT_POI_TOOLTIP_INSTRUCTIONS);
+			GameTooltip_AddBlankLineToTooltip(tooltip);
+			GameTooltip_AddInstructionLine(tooltip, ORIBOS_GREAT_VAULT_POI_TOOLTIP_INSTRUCTIONS, false);
 			addedTooltipLine = true;
 		end
 
 		if hasWidgetSet then
-			local overflow = GameTooltip_AddWidgetSet(GameTooltip, self.tooltipWidgetSet, addedTooltipLine and self.addPaddingAboveTooltipWidgets and 10);
+			local overflow = GameTooltip_AddWidgetSet(tooltip, self.tooltipWidgetSet, addedTooltipLine and self.addPaddingAboveTooltipWidgets and 10);
 			if overflow then
 				verticalPadding = -overflow;
 			end
@@ -197,14 +237,19 @@ function AreaPOIPinMixin:TryShowTooltip()
 		if self.textureKit then
 			local backdropStyle = GAME_TOOLTIP_TEXTUREKIT_BACKDROP_STYLES[self.textureKit];
 			if (backdropStyle) then
-				SharedTooltip_SetBackdropStyle(GameTooltip, backdropStyle);
+				SharedTooltip_SetBackdropStyle(tooltip, backdropStyle);
 			end
 		end
-		GameTooltip:Show();
+
+		self:AddCustomTooltipData(tooltip);
+
+		tooltip:Show();
+
 		-- need to set padding after Show or else there will be a flicker
 		if verticalPadding then
-			GameTooltip:SetPadding(0, verticalPadding);
+			tooltip:SetPadding(0, verticalPadding);
 		end
+
 		return true;
 	end
 
@@ -213,7 +258,7 @@ end
 
 function AreaPOIPinMixin:OnMouseLeave()
 	self:GetMap():TriggerEvent("ClearAreaLabel", MAP_AREA_LABEL_TYPE.POI);
-	
+
 	if self.highlightWorldQuestsOnHover then
 		self:GetMap():TriggerEvent("HighlightMapPins.WorldQuests", nil);
 	end
@@ -221,6 +266,8 @@ function AreaPOIPinMixin:OnMouseLeave()
 	if self.highlightVignettesOnHover then
 		self:GetMap():TriggerEvent("HighlightMapPins.Vignettes", nil);
 	end
+
+    self:OnLegendPinMouseLeave();
 
 	GameTooltip:Hide();
 end

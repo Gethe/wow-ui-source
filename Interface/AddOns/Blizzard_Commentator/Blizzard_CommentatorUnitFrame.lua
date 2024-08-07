@@ -429,7 +429,7 @@ function CommentatorUnitFrameMixin:SetCircleTrackerIcon(circleTracker, spellID)
 	circleTracker:SetShown(spellID > 0);
 
 	if spellID ~= circleTracker.Icon.spellID then
-		local textureID = select(3, GetSpellInfo(spellID));
+		local textureID = C_Spell.GetSpellTexture(spellID);
 		local icon = circleTracker.Icon;
 		icon.spellID = spellID;
 		icon:SetTexture(textureID);
@@ -473,7 +473,7 @@ function CommentatorUnitFrameMixin:UpdateCrowdControlAuras()
 	local isCCed = spellID ~= nil;
 	self.Circle.CCIcon:SetShown(isCCed);
 	if isCCed then
-		local textureID = select(3, GetSpellInfo(spellID));
+		local textureID = C_Spell.GetSpellTexture(spellID);
 		if textureID then
 			self.Circle.CCIcon:SetTexture(textureID);
 		end

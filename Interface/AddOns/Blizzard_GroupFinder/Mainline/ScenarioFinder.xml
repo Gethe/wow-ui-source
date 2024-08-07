@@ -55,7 +55,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Frame name="$parentTypeDropDown" inherits="UIDropDownMenuTemplate" parentKey="Dropdown" id="1">
+					<DropdownButton name="$parentTypeDropdown" inherits="WowStyle1DropdownTemplate" parentKey="Dropdown" id="1">
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -79,10 +79,7 @@
 								</FontString>
 							</Layer>
 						</Layers>
-						<Scripts>
-							<OnShow function="ScenarioQueueFrameTypeDropDown_SetUp"/>
-						</Scripts>
-					</Frame>
+					</DropdownButton>
 					<Frame name="$parentRandom" setAllPoints="true" parentKey="Random">
 						<Frames>
 							<ScrollFrame name="$parentScrollFrame" inherits="UIPanelScrollFrameCodeTemplate" parentKey="ScrollFrame">
@@ -167,156 +164,6 @@
 							</OnShow>
 						</Scripts>
 					</Frame>
-					<!--
-					<Frame name="$parentCooldownFrame" hidden="true" enableMouse="true">
-						<Size>
-							<AbsDimension x="330" y="257"/>
-						</Size>
-						<Anchors>
-							<Anchor point="BOTTOMRIGHT">
-								<Offset>
-									<AbsDimension x="-6" y="27"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture name="$parentBlackFilter" setAllPoints="true">
-									<Color r="0" b="0" g="0" a="0.93"/>
-								</Texture>
-							</Layer>
-							<Layer level="ARTWORK">
-								<FontString name="$parentDescription" parentKey="description" inherits="GameFontNormal" text="LFG_RANDOM_COOLDOWN_OTHER" justifyH="CENTER">
-									<Size>
-										<AbsDimension x="300" y="0"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOP">
-											<Offset>
-												<AbsDimension x="0" y="-30"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-								<FontString name="$parentTime" parentKey="time" inherits="GameFontHighlightLarge" justifyH="CENTER">
-									<Anchors>
-										<Anchor point="TOP" relativeTo="$parentDescription" relativePoint="BOTTOM">
-											<Offset>
-												<AbsDimension x="0" y="-10"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-								<FontString name="$parentName1" inherits="GameFontNormal" justifyH="LEFT">
-									<Size>
-										<AbsDimension x="120" y="0"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="$parentDescription" relativePoint="BOTTOMLEFT">
-											<Offset>
-												<AbsDimension x="25" y="-60"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-								<FontString name="$parentStatus1" inherits="GameFontNormal" justifyH="RIGHT">
-									<Size>
-										<AbsDimension x="110" y="0"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="$parentName1" relativePoint="TOPRIGHT">
-											<Offset>
-												<AbsDimension x="0" y="0"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-								<FontString name="$parentName2" inherits="GameFontNormal" justifyH="LEFT">
-									<Size>
-										<AbsDimension x="120" y="0"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOP" relativeTo="$parentName1" relativePoint="BOTTOM">
-											<Offset>
-												<AbsDimension x="0" y="-5"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-								<FontString name="$parentStatus2" inherits="GameFontNormal" justifyH="RIGHT">
-									<Size>
-										<AbsDimension x="110" y="0"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="$parentName2" relativePoint="TOPRIGHT">
-											<Offset>
-												<AbsDimension x="0" y="0"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-								<FontString name="$parentName3" inherits="GameFontNormal" justifyH="LEFT">
-									<Size>
-										<AbsDimension x="120" y="0"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOP" relativeTo="$parentName2" relativePoint="BOTTOM">
-											<Offset>
-												<AbsDimension x="0" y="-5"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-								<FontString name="$parentStatus3" inherits="GameFontNormal" justifyH="RIGHT">
-									<Size>
-										<AbsDimension x="110" y="0"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="$parentName3" relativePoint="TOPRIGHT">
-											<Offset>
-												<AbsDimension x="0" y="0"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-								<FontString name="$parentName4" inherits="GameFontNormal" justifyH="LEFT">
-									<Size>
-										<AbsDimension x="120" y="0"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOP" relativeTo="$parentName3" relativePoint="BOTTOM">
-											<Offset>
-												<AbsDimension x="0" y="-5"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-								<FontString name="$parentStatus4" inherits="GameFontNormal" justifyH="RIGHT">
-									<Size>
-										<AbsDimension x="110" y="0"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="$parentName4" relativePoint="TOPRIGHT">
-											<Offset>
-												<AbsDimension x="0" y="0"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnLoad function="LFDQueueFrameRandomCooldownFrame_OnLoad"/>
-							<OnEvent function="LFDQueueFrameRandomCooldownFrame_OnEvent"/>
-							<OnShow>
-								LFDQueueFrameFindGroupButton_Update();
-							</OnShow>
-							<OnHide>
-								LFDQueueFrameFindGroupButton_Update();
-							</OnHide>
-						</Scripts>
-					</Frame>
-					-->
 					<Frame name="$parentPartyBackfill" inherits="LFGBackfillCoverTemplate">
 						<Size>
 							<AbsDimension x="330" y="329"/>
@@ -376,11 +223,8 @@
 					</Button>
 				</Frames>
 				<Scripts>
-					<OnShow>
-						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
-						QueueUpdater:RequestInfo();
-						QueueUpdater:AddRef();
-					</OnShow>
+					<OnLoad function="ScenarioQueueFrame_OnLoad"/>
+					<OnShow function="ScenarioQueueFrame_OnShow"/>
 					<OnHide>
 						QueueUpdater:RemoveRef();
 					</OnHide>

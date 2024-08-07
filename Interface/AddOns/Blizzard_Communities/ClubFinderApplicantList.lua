@@ -42,10 +42,6 @@ local DPS_SORT_VALUE = 1;
 
 ClubFinderApplicantEntryMixin = { };
 
-function ClubFinderApplicantEntryMixin:OnLoad()
-	UIDropDownMenu_Initialize(self.RightClickDropdown, ApplicantRightClickOptionsMenuInitialize, "MENU");
-end 
-
 function ClubFinderApplicantEntryMixin:GetApplicantName()
 	return self.Info.name;
 end 
@@ -62,10 +58,28 @@ function ClubFinderApplicantEntryMixin:GetClubGUID()
 	return self.Info.clubFinderGUID;
 end
 
-function ClubFinderApplicantEntryMixin:OnMouseDown(button)
+function ClubFinderApplicantEntryMixin:OnMouseUp(button)
 	if ( button == "RightButton" ) then
-		ToggleDropDownMenu(1, nil, self.RightClickDropdown, self, 100, 0);
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
+			rootDescription:SetTag("MENU_CLUB_FINDER_APPLICANT");
+
+			rootDescription:CreateTitle(self:GetApplicantName());
+			
+			if self:GetApplicantStatus() == Enum.PlayerClubRequestStatus.Declined then 
+				local text = GREEN_FONT_COLOR:WrapTextInColorCode(CLUB_FINDER_INVITE_APPLICANT_REDO);
+				rootDescription:CreateButton(text, function()
+					ClubFinderCancelOrAcceptApplicant(self, true, true);
+				end);
+			end	
+
+			rootDescription:CreateButton(WHISPER, function()
+				ClubFinderMessageApplicant(self);
+			end);
+
+			rootDescription:CreateButton(CLUB_FINDER_REPORT_APPLICANT, function()
+				ClubFinderApplicantReport(self:GetClubGUID(), self.Info.name, self.Info.playerGUID);
+			end);
+		end);
 	end
 end 
 
@@ -235,44 +249,6 @@ function ClubFinderApplicantReport(clubFinderGUID, playerName, playerGUID)
 	ReportFrame:InitiateReport(reportInfo, playerName); 
 end
 
-function ApplicantRightClickOptionsMenuInitialize(self, level)
-	local info = UIDropDownMenu_CreateInfo();
-	
-	if (level == 1) then 
-		info.text = self:GetParent():GetApplicantName();
-		info.isTitle = true; 
-		info.notCheckable = true; 
-		UIDropDownMenu_AddButton(info, level);
-	
-		if(self:GetParent():GetApplicantStatus() == Enum.PlayerClubRequestStatus.Declined) then 
-			info.text = CLUB_FINDER_INVITE_APPLICANT_REDO; 
-			info.colorCode = GREEN_FONT_COLOR_CODE; 
-			info.isTitle = false; 
-			info.notCheckable = true; 
-			info.disabled = nil; 
-			info.func = function() ClubFinderCancelOrAcceptApplicant(self, true, true); end
-			UIDropDownMenu_AddButton(info, level);
-		end	
-
-		info.text = WHISPER;
-		info.colorCode = HIGHLIGHT_FONT_COLOR_CODE; 
-		info.isTitle = false; 
-		info.notCheckable = true; 
-		info.disabled = nil;
-		info.func = function () ClubFinderMessageApplicant(self); end
-		UIDropDownMenu_AddButton(info, level);
-
-		info.text = CLUB_FINDER_REPORT_APPLICANT; 
-		info.isTitle = false; 
-		info.disabled = nil;
-		info.colorCode = HIGHLIGHT_FONT_COLOR_CODE; 
-		info.notCheckable = true; 
-		info.func = function() ClubFinderApplicantReport(self:GetParent():GetClubGUID(), self:GetParent().Info.name, self:GetParent().Info.playerGUID); end
-		info.value = 1; 
-		UIDropDownMenu_AddButton(info, level);
-	end
-end
-
 ClubFinderApplicantListMixin = { };
 
 function ClubFinderApplicantListMixin:OnLoad()
@@ -428,7 +404,7 @@ function ClubFinderApplicantListMixin:CommunitiesMemberUpdate()
 				self:SetApplicantRefreshTicker(Enum.ClubFinderRequestType.Community);
 			end
 		elseif communitiesFrame:IsShowingApplicantList() and not hasFinderPermissions then --When we were demoted and we are viewing the applicant list. 
-			communitiesFrame.CommunityMemberListDropDownMenu:ResetDisplayMode();
+			communitiesFrame.CommunityMemberListDropdown:ResetDisplayMode();
 			self:CancelRefreshTicker();
 		end	
 	end 
@@ -478,7 +454,7 @@ function ClubFinderApplicantListMixin:BuildList()
 
 
 	if(clubInfo.clubType == Enum.ClubType.Guild) then 
-		local guildMemberDropdown = communityFrame.GuildMemberListDropDownMenu; 
+		local guildMemberDropdown = communityFrame.GuildMemberListDropdown; 
 		guildMemberDropdown.hasPendingApplicants = false;
 		guildMemberDropdown.hasApplicants = false; 
 		guildMemberDropdown.shouldResetDropdown = false;
@@ -495,7 +471,7 @@ function ClubFinderApplicantListMixin:BuildList()
 			end 
 		end 
 	elseif(clubInfo.clubType == Enum.ClubType.Character) then 
-		local communityMemberDropdown = communityFrame.CommunityMemberListDropDownMenu; 
+		local communityMemberDropdown = communityFrame.CommunityMemberListDropdown; 
 		communityMemberDropdown.hasPendingApplicants = false;
 		communityMemberDropdown.hasApplicants = false; 
 		communityMemberDropdown.shouldResetDropdown = false;

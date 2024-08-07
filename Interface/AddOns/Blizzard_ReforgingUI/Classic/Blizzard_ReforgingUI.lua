@@ -81,7 +81,6 @@ end
 
 
 function ReforgingFrame_Update(self)
-	CloseDropDownMenus();
 	ReforgingFrameRestoreButton:Disable();
 	ReforgingFrameReforgeButton:Disable();
 	ReforgingFrameReceiptBG:Hide();
@@ -112,7 +111,7 @@ function ReforgingFrame_Update(self)
 		local rightStat, leftStat;
 		local restoreMode = false;
 		
-		if currentReforge > 0 then --has a current reforge 
+		if currentReforge > -1 then --has a current reforge 
 			restoreMode = true;
 			ReforgingFrame.srcName, ReforgingFrame.srcStat, ReforgingFrame.srcValue, ReforgingFrame.destName, 
 			ReforgingFrame.destStat, ReforgingFrame.destValue = C_Reforge.GetReforgeOptionInfo(currentReforge);
@@ -138,20 +137,21 @@ function ReforgingFrame_Update(self)
 				leftStat:Show();
 				rightStat.button:Hide();
 				leftStat.button:Hide();
-				local name = statsRow.name;
-				local statID = statsRow.stat;
-				local statValue = statsRow.statValue;
-				if statID == ReforgingFrame.srcStat then --this stat will be restored
-					rightStat.text:SetText(GREEN_FONT_COLOR_CODE.."+"..statValue.." ".. name);
-					leftStat.text:SetText(RED_FONT_COLOR_CODE.."+"..(statValue-ReforgingFrame.srcValue).." "..name.." ("..statValue..")");
+				local rowName = statsRow.name;
+				local rowStatID = statsRow.stat;
+				local rowStatValue = statsRow.statValue;
+				if rowStatID == ReforgingFrame.srcStat then --this stat will be restored
+					rightStat.text:SetText(GREEN_FONT_COLOR_CODE.."+"..rowStatValue.." ".. rowName);
+					leftStat.text:SetText(RED_FONT_COLOR_CODE.."+"..(rowStatValue-ReforgingFrame.srcValue).." "..rowName.." ("..rowStatValue..")");
 				else
-					rightStat.text:SetText("+"..statValue.." ".. name);
-					leftStat.text:SetText("+"..statValue.." "..name);
+					rightStat.text:SetText("+"..rowStatValue.." ".. rowName);
+					leftStat.text:SetText("+"..rowStatValue.." "..rowName);
 				end
 				index = index+1;
 			end
 			
-			leftStat , _ = ReforgingFrame_GetStatRow(bonusStatIndex, true);
+			local _;
+			leftStat, _ = ReforgingFrame_GetStatRow(bonusStatIndex, true);
 			if leftStat then
 				leftStat:Show();
 				leftStat.button:Hide();
@@ -371,6 +371,7 @@ function ReforgeFrame_OldStat_Initialize()
 	local newStatsSet = false;
 	local numReforgable = 0;
 	local lastStat = nil;
+	local _;
 
 	if stats then
 		for i, statsRow in ipairs(stats) do
@@ -443,23 +444,24 @@ function ReforgeFrame_NewStat_Initialize(noneSelected, stat, value)
 	ReforgingFrame.reforgeID = nil;
 	local index = 1;
 	local rightStat;
+	local _;
 	
 	for i, statsRow in ipairs(stats) do
 		_, rightStat = ReforgingFrame_GetStatRow(index, true);
-		local name = statsRow.name;
-		local stat = statsRow.stat;
-		local value = statsRow.statAddition;
-		local reforgeID = statsRow.reforgeID;
+		local rowName = statsRow.name;
+		local rowStat = statsRow.stat;
+		local rowValue = statsRow.statAddition;
+		local rowReforgeID = statsRow.reforgeID;
 		if (noneSelected) then
-			rightStat.text:SetText(GRAY_FONT_COLOR_CODE.."+0"..FONT_COLOR_CODE_CLOSE.." "..name);
+			rightStat.text:SetText(GRAY_FONT_COLOR_CODE.."+0"..FONT_COLOR_CODE_CLOSE.." "..rowName);
 			rightStat:Disable();
 			rightStat.button:SetAlpha(.5)
 		else
-			rightStat.text:SetText("+"..ReforgingFrame.srcValue.." "..name);
+			rightStat.text:SetText("+"..ReforgingFrame.srcValue.." "..rowName);
 			rightStat:Enable();
 			rightStat.button:SetAlpha(1)
 		end
-		rightStat.info = {name, stat, value, reforgeID};
+		rightStat.info = {rowName, rowStat, rowValue, rowReforgeID};
 		rightStat.button:Show();
 		Stat_SetButtonChecked(rightStat, false);
 		rightStat:Show();

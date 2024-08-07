@@ -9,16 +9,28 @@ function QuestDataProviderMixin:OnAdded(mapCanvas)
 
 	mapCanvas:SetPinTemplateType(self:GetPinTemplate(), "BUTTON");
 
-	self:RegisterEvent("QUEST_LOG_UPDATE");
-	self:RegisterEvent("QUEST_WATCH_LIST_CHANGED");
-	self:RegisterEvent("QUEST_POI_UPDATE");
-	self:RegisterEvent("SUPER_TRACKING_CHANGED");
-
 	if not self.poiQuantizer then
 		self.poiQuantizer = CreateFromMixins(WorldMapPOIQuantizerMixin);
 		self.poiQuantizer.size = 75;
 		self.poiQuantizer:OnLoad(self.poiQuantizer.size, self.poiQuantizer.size);
 	end
+end
+
+function QuestDataProviderMixin:OnShow()
+	MapCanvasDataProviderMixin.OnShow(self);
+	self:RegisterEvents();
+end
+
+function QuestDataProviderMixin:OnHide()
+	MapCanvasDataProviderMixin.OnHide(self);
+	self:UnregisterEvents();
+end
+
+function QuestDataProviderMixin:RegisterEvents()
+	self:RegisterEvent("QUEST_LOG_UPDATE");
+	self:RegisterEvent("QUEST_WATCH_LIST_CHANGED");
+	self:RegisterEvent("QUEST_POI_UPDATE");
+	self:RegisterEvent("CVAR_UPDATE");
 
 	self:GetMap():RegisterCallback("SetFocusedQuestID", self.RefreshAllData, self);
 	self:GetMap():RegisterCallback("ClearFocusedQuestID", self.RefreshAllData, self);
@@ -26,23 +38,28 @@ function QuestDataProviderMixin:OnAdded(mapCanvas)
 	self:GetMap():RegisterCallback("PingQuestID", self.OnPingQuestID, self);
 	EventRegistry:RegisterCallback("SetHighlightedQuestPOI", self.OnHighlightedQuestPOIChange, self);
 	EventRegistry:RegisterCallback("ClearHighlightedQuestPOI", self.OnHighlightedQuestPOIChange, self);
+	EventRegistry:RegisterCallback("Supertracking.OnChanged", function() self:RefreshAllData() end, self);
 end
 
-function QuestDataProviderMixin:OnRemoved(mapCanvas)
+function QuestDataProviderMixin:UnregisterEvents()
+	self:UnregisterEvent("QUEST_LOG_UPDATE");
+	self:UnregisterEvent("QUEST_WATCH_LIST_CHANGED");
+	self:UnregisterEvent("QUEST_POI_UPDATE");
+	self:UnregisterEvent("CVAR_UPDATE");
+
 	self:GetMap():UnregisterCallback("SetFocusedQuestID", self);
 	self:GetMap():UnregisterCallback("ClearFocusedQuestID", self);
 	self:GetMap():UnregisterCallback("SetBounty", self);
 	self:GetMap():UnregisterCallback("PingQuestID", self);
 	EventRegistry:UnregisterCallback("SetHighlightedQuestPOI", self);
 	EventRegistry:UnregisterCallback("ClearHighlightedQuestPOI", self);
-
-	MapCanvasDataProviderMixin.OnRemoved(self, mapCanvas);
 end
 
 function QuestDataProviderMixin:OnHighlightedQuestPOIChange(questID)
 	for pin in self:GetMap():EnumeratePinsByTemplate(self:GetPinTemplate()) do
 		if pin:GetQuestID() == questID then
 			pin:EvaluateManagedHighlight();
+			pin.LinkGlow:SetShown(POIButtonHighlightManager:GetQuestID() == questID);
 			break;
 		end
 	end
@@ -104,13 +121,20 @@ function QuestDataProviderMixin:OnEvent(event, ...)
 		self:RefreshAllData();
 	elseif event == "QUEST_POI_UPDATE" then
 		self:RefreshAllData();
-	elseif event == "SUPER_TRACKING_CHANGED" then
-		self:RefreshAllData();
+	elseif event == "CVAR_UPDATE" then
+		local cvar, value = ...;
+		self:OnCVarUpdate(cvar, value);
 	end
 end
 
 function QuestDataProviderMixin:RemoveAllData()
 	self:GetMap():RemoveAllPinsByTemplate(self:GetPinTemplate());
+end
+
+function QuestDataProviderMixin:OnCVarUpdate(cvar, _value)
+	if cvar == "questPOI" then
+		self:RefreshAllData();
+	end
 end
 
 function QuestDataProviderMixin:RefreshAllData(fromOnShow)
@@ -124,9 +148,6 @@ function QuestDataProviderMixin:RefreshAllData(fromOnShow)
 	if not GetCVarBool("questPOI") then
 		return;
 	end
-
-	self.usedQuestNumbers = self.usedQuestNumbers or {};
-	self.pinsMissingNumbers = self.pinsMissingNumbers or {};
 
 	local pingQuestID = self.pingPin and self.pingPin:GetID();
 	local foundQuestToPing = false;
@@ -169,8 +190,6 @@ function QuestDataProviderMixin:RefreshAllData(fromOnShow)
 		end
 	end
 
-	self:AssignMissingNumbersToPins();
-
 	self.poiQuantizer:ClearAndQuantize(pinsToQuantize);
 
 	for i, pin in pairs(pinsToQuantize) do
@@ -201,24 +220,6 @@ function QuestDataProviderMixin:ShouldShowQuest(questID, mapType, doesMapShowTas
 	return MapUtil.ShouldMapTypeShowQuests(mapType);
 end
 
-function QuestDataProviderMixin:AssignMissingNumbersToPins()
-	if #self.pinsMissingNumbers > 0 then
-		for questNumber = 1, C_QuestLog.GetMaxNumQuests() do
-			if not self.usedQuestNumbers[questNumber] then
-				local pin = table.remove(self.pinsMissingNumbers);
-				pin:SetNumber(questNumber);
-
-				if #self.pinsMissingNumbers == 0 then
-					break;
-				end
-			end
-		end
-
-		wipe(self.pinsMissingNumbers);
-	end
-	wipe(self.usedQuestNumbers);
-end
-
 function QuestDataProviderMixin:OnCanvasSizeChanged()
 	local ratio = self:GetMap():DenormalizeHorizontalSize(1.0) / self:GetMap():DenormalizeVerticalSize(1.0);
 	self.poiQuantizer:Resize(math.ceil(self.poiQuantizer.size * ratio), self.poiQuantizer.size);
@@ -228,7 +229,6 @@ function QuestDataProviderMixin:AddQuest(questID, x, y, frameLevelOffset, isWayp
 	local pin = self:GetMap():AcquirePin(self:GetPinTemplate());
 	pin.questID = questID;
 	pin.dataProvider = self;
-	pin:SetPinScale(2.5);
 
 	local isSuperTracked = questID == C_SuperTrack.GetSuperTrackedQuestID();
 	local isComplete = QuestCache:Get(questID):IsComplete();
@@ -243,22 +243,8 @@ function QuestDataProviderMixin:AddQuest(questID, x, y, frameLevelOffset, isWayp
 
 	pin.Display:ClearAllPoints();
 	pin.Display:SetPoint("CENTER");
-	pin.moveHighlightOnMouseDown = false;
-	pin.selected = isSuperTracked;
-	pin.style = POIButtonUtil.GetStyleFromQuestData(isComplete, isWaypoint);
-
-	if pin.style == POIButtonUtil.Style.Numeric then
-		-- try to match the number with tracker or quest log POI if possible
-		local poiButton = ObjectiveTrackerFrame.BlocksFrame:FindButtonByQuestID(questID) or QuestScrollFrame.Contents:FindButtonByQuestID(questID);
-		if poiButton and poiButton.style == POIButtonUtil.Style.Numeric then
-			local questNumber = poiButton.index;
-			self.usedQuestNumbers[questNumber] = true;
-			pin:SetNumber(questNumber);
-		else
-			table.insert(self.pinsMissingNumbers, pin);
-		end
-	end
-
+	pin:SetSelected(isSuperTracked);
+	pin:SetStyle(isWaypoint and POIButtonUtil.Style.Waypoint or POIButtonUtil.GetStyle(questID));
 	pin:UpdateButtonStyle();
 	pin:EvaluateManagedHighlight();
 
@@ -272,8 +258,7 @@ end
 QuestPinMixin = CreateFromMixins(MapCanvasPinMixin);
 
 function QuestPinMixin:OnLoad()
-	self:SetScalingLimits(1, 0.4125, 0.4125);
-
+	self:SetDefaultMapPinScale();
 	self.UpdateTooltip = self.OnMouseEnter;
 end
 
@@ -296,7 +281,7 @@ function QuestPinMixin:OnMouseEnter()
 	local waypointText = wouldShowWaypointText and C_QuestLog.GetNextWaypointText(questID);
 	if waypointText then
 		GameTooltip_AddColoredLine(GameTooltip, QUEST_DASH..waypointText, HIGHLIGHT_FONT_COLOR);
-	elseif self.style == POIButtonUtil.Style.Numeric then
+	elseif self:GetStyle() == POIButtonUtil.Style.QuestInProgress then
 		local numItemDropTooltips = GetNumQuestItemDrops(questLogIndex);
 		if numItemDropTooltips > 0 then
 			for i = 1, numItemDropTooltips do
@@ -318,6 +303,7 @@ function QuestPinMixin:OnMouseEnter()
 	GameTooltip:Show();
 	POIButtonHighlightManager:SetHighlight(questID);
     EventRegistry:TriggerEvent("MapCanvas.QuestPin.OnEnter", self, questID);
+    self:OnLegendPinMouseEnter();
 end
 
 function QuestPinMixin:OnMouseLeave()
@@ -325,19 +311,20 @@ function QuestPinMixin:OnMouseLeave()
 
 	GameTooltip:Hide();
 	POIButtonHighlightManager:ClearHighlight();
-end
-
-function QuestPinMixin:OnClick(...)
-	-- Overrides POIButtonMixin.
-	if not IsModifierKeyDown() then
-		EventRegistry:TriggerEvent("MapCanvas.QuestPin.OnClick", self, self.questID);
-	end
-
-	return MapCanvasPinMixin.OnClick(self, ...);
+    self:OnLegendPinMouseLeave();
+	EventRegistry:TriggerEvent("MapCanvas.QuestPin.OnLeave", questID);
 end
 
 function QuestPinMixin:OnMouseClickAction(...)
 	POIButtonMixin.OnClick(self, ...);
+end
+
+function QuestPinMixin:OnMouseDownAction(...)
+	POIButtonMixin.OnMouseDown(self, ...);
+end
+
+function QuestPinMixin:OnMouseUpAction(...)
+	POIButtonMixin.OnMouseUp(self, ...);
 end
 
 function QuestPinMixin:GetHighlightType() -- override
@@ -349,36 +336,6 @@ function QuestPinMixin:GetHighlightType() -- override
 	end
 
 	return MapPinHighlightType.None;
-end
-
-function QuestPinMixin:OnMouseDown(...)
-	-- Overrides POIButtonMixin.
-	return MapCanvasPinMixin.OnMouseDown(self, ...);
-end
-
-function QuestPinMixin:OnMouseDownAction(...)
-	POIButtonMixin.OnMouseDown(self, ...);
-
-	self.NormalTexture:Hide();
-	self.PushedTexture:Show();
-	if self.moveHighlightOnMouseDown then
-		self.HighlightTexture:SetPoint("CENTER", 2, -2);
-	end
-end
-
-function QuestPinMixin:OnMouseUp(...)
-	-- Overrides POIButtonMixin.
-	return MapCanvasPinMixin.OnMouseUp(self, ...);
-end
-
-function QuestPinMixin:OnMouseUpAction(...)
-	POIButtonMixin.OnMouseDown(self, ...);
-
-	self.NormalTexture:Show();
-	self.PushedTexture:Hide();
-	if self.moveHighlightOnMouseDown then
-		self.HighlightTexture:SetPoint("CENTER", 0, 0);
-	end
 end
 
 -- This is the misery that results when one POI button is an actual Button and the other is a Frame.  (See: QuestPOI.xml)

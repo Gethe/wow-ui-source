@@ -257,13 +257,13 @@
 						<Anchor point="TOP" relativeKey="$parent.Separator" relativePoint="BOTTOM" x="0" y="-30"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="ExpiresDropDownLabel" inherits="GameFontNormalSmall" justifyH="LEFT" text="COMMUNITIES_INVITE_MANAGER_EXPIRES_AFTER_LABEL">
+				<FontString parentKey="ExpiresDropdownLabel" inherits="GameFontNormalSmall" justifyH="LEFT" text="COMMUNITIES_INVITE_MANAGER_EXPIRES_AFTER_LABEL">
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.NewLinkLabel" relativePoint="BOTTOM" x="0" y="-12"/>
 						<Anchor point="LEFT" relativeKey="$parent.LinkIDLabel" relativePoint="LEFT" x="5" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="UsesDropDownLabel" inherits="GameFontNormalSmall" justifyH="LEFT" text="COMMUNITIES_INVITE_MANAGER_NUMBERUSES_LABEL">
+				<FontString parentKey="UsesDropdownLabel" inherits="GameFontNormalSmall" justifyH="LEFT" text="COMMUNITIES_INVITE_MANAGER_NUMBERUSES_LABEL">
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.NewLinkLabel" relativePoint="BOTTOM" x="0" y="-12"/>
 						<Anchor point="LEFT" relativeKey="$parent.LinkIDLabel" relativePoint="LEFT" x="155" y="0"/>
@@ -380,22 +380,20 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Frame parentKey="ExpiresDropDownMenu" inherits="UIDropDownMenuTemplate">
-				<Size x="40" y="30"/>
+			<DropdownButton parentKey="ExpiresDropdown" inherits="WowStyle1DropdownTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.ExpiresDropDownLabel" relativePoint="BOTTOMLEFT" x="-21" y="-5"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ExpiresDropdownLabel" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 				</Anchors>
-			</Frame>
-			<Frame parentKey="UsesDropDownMenu" inherits="UIDropDownMenuTemplate">
-				<Size x="40" y="30"/>
+			</DropdownButton>
+			<DropdownButton parentKey="UsesDropdown" inherits="WowStyle1DropdownTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.UsesDropDownLabel" relativePoint="BOTTOMLEFT" x="-21" y="-5"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.UsesDropdownLabel" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 				</Anchors>
-			</Frame>
+			</DropdownButton>
 			<Button parentKey="GenerateLinkButton" inherits="UIPanelButtonTemplate" text="COMMUNITIES_INVITE_MANAGER_GENERATE">
 				<Size x="190" y="22"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.UsesDropDownMenu" relativePoint="RIGHT" x="0" y="3"/>
+					<Anchor point="LEFT" relativeKey="$parent.UsesDropdown" relativePoint="RIGHT" x="20" y="3"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>

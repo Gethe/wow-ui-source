@@ -1,16 +1,8 @@
-## Title: Blizzard_PrivateAurasUI
+## Title: Blizzard Private Auras UI
 ## LoadFirst: 1
+## UseSecureEnvironment: 1
+## RequiredDep: Blizzard_SharedXML, Blizzard_FrameXMLUtil, Blizzard_GameTooltip
 ## AllowLoad: game
 ## AllowLoadGameType: mainline
-## RequiredDep: Blizzard_SecureCapsule
-..\Blizzard_SharedXML\Pools.lua
-..\Blizzard_SharedXMLGame\Tooltip\TooltipUtil.lua
-..\Blizzard_SharedXMLGame\Tooltip\TooltipDataHandler.lua
-..\Blizzard_SharedXMLGame\Tooltip\TooltipDataRules.lua
-..\Blizzard_SharedXML\SharedTooltipTemplates.lua
-..\Blizzard_GameTooltip\Mainline\GameTooltip.lua
-..\Blizzard_FrameXML\FadingFrame.lua
-..\Blizzard_FrameXML\Mainline\RaidWarning.lua
-..\Blizzard_FrameXML\Shared\Cooldown.lua
 Blizzard_PrivateAurasUI.lua
 Blizzard_PrivateAurasUI.xml

@@ -21,7 +21,36 @@ local QuestOffer =
 
 			Returns =
 			{
-				{ Name = "reputationRewards", Type = "table", InnerType = "QuestReputationRewardInfo", Nilable = false },
+				{ Name = "reputationRewards", Type = "table", InnerType = "QuestRewardReputationInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetQuestRequiredCurrencyInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questRewardIndex", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "questRequiredCurrencyInfo", Type = "QuestRequiredCurrencyInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "GetQuestRewardCurrencyInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questInfoType", Type = "cstring", Nilable = false },
+				{ Name = "questRewardIndex", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "questRewardCurrencyInfo", Type = "QuestRewardCurrencyInfo", Nilable = true },
 			},
 		},
 	},
@@ -62,6 +91,18 @@ local QuestOffer =
 
 	Tables =
 	{
+		{
+			Name = "QuestRequiredCurrencyInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "texture", Type = "fileID", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "currencyID", Type = "number", Nilable = false },
+				{ Name = "quality", Type = "number", Nilable = false },
+				{ Name = "requiredAmount", Type = "number", Nilable = false },
+			},
+		},
 	},
 };
 

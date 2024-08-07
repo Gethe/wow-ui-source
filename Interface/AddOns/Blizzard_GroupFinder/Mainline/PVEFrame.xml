@@ -183,6 +183,14 @@
 					</OnEnter>
 				</Scripts>
 			</Button>
+			<Button name="$parentTab4" inherits="PanelTabButtonTemplate" text="DELVES_LABEL" id="4" parentKey="tab4">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentTab3" relativePoint="RIGHT" x="3" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="PVEFrame_TabOnClick"/>
+				</Scripts>
+			</Button>
 			<Frame name="GroupFinderFrame" useParentLevel="true" setAllPoints="true">
 				<Frames>
 					<Button name="$parentGroupButton1" inherits="GroupFinderGroupButtonTemplate" parentKey="groupButton1" id="1">

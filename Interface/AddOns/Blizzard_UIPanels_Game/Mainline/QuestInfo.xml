@@ -13,6 +13,10 @@
 		</Scripts>
 	</Button>
 
+	<Texture name="QuestRewardContextIconTemplate" hidden="true" virtual="true">
+		<Size x="16" y="21"/>
+	</Texture>
+
 	<Button name="WarModeBonusFrameTemplate" virtual="true">
 		<Scripts>
 			<OnLoad>
@@ -31,21 +35,47 @@
 		</Scripts>
 	</Button>
 
-	<Button name="QuestInfoRewardItemCodeTemplate" virtual="true">
+	<Button name="SmallQuestRewardItemButtonTemplate" inherits="SmallItemButtonTemplate" mixin="SmallQuestInfoRewardItemMixin" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="IconOverlay" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="QuestRewardContextIcon" inherits="QuestRewardContextIconTemplate" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="TOPRIGHT" y="-3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="3">
+				<Texture parentKey="IconOverlay2" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 		<Scripts>
-			<OnEnter function="QuestInfoRewardItemCodeTemplate_OnEnter" />
-			<OnClick function="QuestInfoRewardItemCodeTemplate_OnClick" />
-			<OnLeave>
-				GameTooltip:Hide();
-				ResetCursor();
-			</OnLeave>
-			<OnUpdate>
-				CursorOnUpdate(self, elapsed);
-			</OnUpdate>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+			<OnUpdate method="OnUpdate"/>
 		</Scripts>
 	</Button>
 
-	<Button name="SmallQuestRewardItemButtonTemplate" inherits="SmallItemButtonTemplate, QuestInfoRewardItemCodeTemplate" virtual="true">
+	<Button name="LargeQuestRewardItemButtonTemplate" inherits="LargeItemButtonTemplate" mixin="LargeQuestInfoRewardItemMixin" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="1">
 				<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
@@ -62,33 +92,9 @@
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
 					</Anchors>
 				</Texture>
-			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="3">
-				<Texture parentKey="IconOverlay2" hidden="true">
+				<Texture parentKey="QuestRewardContextIcon" inherits="QuestRewardContextIconTemplate" hidden="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-	</Button>
-
-	<Button name="LargeQuestRewardItemButtonTemplate" inherits="LargeItemButtonTemplate, QuestInfoRewardItemCodeTemplate" virtual="true">
-		<Layers>
-			<Layer level="OVERLAY" textureSubLevel="1">
-				<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="2">
-				<Texture parentKey="IconOverlay" hidden="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="TOPRIGHT" y="3"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -101,6 +107,12 @@
 				</Texture>
 			</Layer>
 		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
 	</Button>
 
 	<Button name="QuestInfoRewardFollowerCodeTemplate" virtual="true">
@@ -436,7 +448,7 @@
 				<Scripts>
 					<OnLoad>
 						MoneyFrame_OnLoad(self);
-						MoneyFrame_SetType(self, "STATIC");
+						MoneyFrame_SetType(self, "QUEST_REWARDS");
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -731,6 +743,10 @@
 				</FontString>
 				<FontString name="QuestInfoDescriptionText" inherits="QuestFont" justifyH="LEFT">
 					<Size x="285" y="0"/>
+				</FontString>
+				<FontString name="QuestInfoAccountCompletedNotice" inherits="SystemFont_Small2" text="ACCOUNT_COMPLETED_QUEST_NOTICE"  justifyH="LEFT">
+					<Size x="290"/>
+					<Color color="QUEST_ACCOUNT_COMPLETED_NOTICE_FONT_COLOR"/>
 				</FontString>
 			</Layer>
 		</Layers>

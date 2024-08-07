@@ -1,7 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
-	<Script file="POIButton.lua"/>
-
 	<Frame name="POIButtonDisplayLayerTemplate" mixin="POIButtonDisplayLayerMixin" virtual="true">
 		<Size x="1" y="1"/>
 		<Layers>
@@ -63,6 +61,8 @@
 			<TexCoords left="0.750" right=".875" top="0.875" bottom="1"/>
 		</PushedTexture>
 		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
 			<OnMouseDown method="OnMouseDown"/>
 			<OnMouseUp method="OnMouseUp"/>
 			<OnClick method="OnClick"/>

@@ -26,123 +26,24 @@
 			</OnShow>
 		</Scripts>
 	</Button>
-	<Button name="WardrobeOutfitButtonTemplate" parentArray="Buttons" virtual="true" mixin="WardrobeOutfitButtonMixin">
-		<Size x="0" y="20"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="Selection" file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD" setAllPoints="true" desaturated="true" hidden="true">
-					<Color r="0.5" g="0.5" b="0.5"/>
-				</Texture>
-			</Layer>
-			<Layer level="BORDER">
-				<Texture parentKey="Highlight" file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD" setAllPoints="true" hidden="true"/>
-			</Layer>
-			<Layer level="ARTWORK">
-				<Texture parentKey="Check" file="Interface\Buttons\UI-CheckBox-Check" hidden="false">
-					<Size x="16" y="16"/>
-					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT" x="4" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="Icon" hidden="false">
-					<Size x="19" y="19"/>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="5" y="0"/>
-					</Anchors>
-					<Color r="0" g="1" b="0"/>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Button parentKey="EditButton" inherits="WardrobeOutfitButtonButtonTemplate">
-				<KeyValues>
-					<KeyValue key="tooltipText" value="TRANSMOG_OUTFIT_EDIT" type="global"/>
-				</KeyValues>
-				<Size x="16" y="16"/>
-				<Anchors>
-					<Anchor point="RIGHT" x="-2"/>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture file="Interface\WorldMap\GEAR_64GREY" alpha="0.5" parentKey="texture"/>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnClick>
-						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-						WardrobeOutfitEditFrame:ShowForOutfit(self:GetParent().outfitID);
-					</OnClick>
-				</Scripts>
-			</Button>
-		</Frames>
-		<Scripts>
-			<OnLoad>
-				self.Check:SetPoint("LEFT", self.Text, "RIGHT", 4, 0);
-			</OnLoad>
-			<OnClick method="OnClick"/>
-			<OnEnter>
-				self.Highlight:Show();
-				self:GetParent():StopHideCountDown();
-			</OnEnter>
-			<OnLeave>
-				self.Highlight:Hide();
-				self:GetParent():StartHideCountDown();
-			</OnLeave>
-		</Scripts>
-		<ButtonText parentKey="Text" maxLines="1">
-			<Size x="0" y="0"/>
-			<Anchors>
-				<Anchor point="LEFT" x="29" y="0"/>
-			</Anchors>
-		</ButtonText>
-		<NormalFont style="GameFontHighlightSmallLeft"/>
-		<HighlightFont style="GameFontHighlightSmallLeft"/>
-		<DisabledFont style="GameFontDisableSmallLeft"/>
-	</Button>
-	<Frame name="WardrobeOutfitDropDownTemplate" inherits="UIDropDownMenuTemplate" virtual="true" mixin="WardrobeOutfitDropDownMixin">
-		<Size x="100" y="22"/>
+	
+	<DropdownButton name="WardrobeOutfitDropdownTemplate" inherits="WowStyle1DropdownTemplate" virtual="true" mixin="WardrobeOutfitDropdownMixin">
 		<Frames>
 			<Button parentKey="SaveButton" inherits="UIPanelButtonTemplate" text="SAVE">
 				<Size x="88" y="22"/>
 				<Anchors>
-					<Anchor point="LEFT" relativePoint="RIGHT" x="-13" y="-3"/>
+					<Anchor point="LEFT" relativePoint="RIGHT" x="5" y="0"/>
 				</Anchors>
-				<Scripts>
-					<OnClick>
-						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-						local dropDown = self:GetParent();
-						WardrobeOutfitFrame:StartOutfitSave(dropDown, dropDown.selectedOutfitID);
-					</OnClick>
-				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
 			<OnShow method="OnShow"/>
-			<OnHide method="WardrobeOutfitDropDown_OnHide"/>
-		</Scripts>
-	</Frame>
-
-	<Frame name="WardrobeOutfitFrame" frameStrata="DIALOG" parent="UIParent" hidden="true" enableMouse="true" mixin="WardrobeOutfitFrameMixin">
-		<Size x="224" y="200"/>
-		<Anchors>
-			<Anchor point="TOPLEFT"/>
-		</Anchors>
-		<Frames>
-			<Frame parentKey="Border" inherits="DialogBorderDarkTemplate"/>
-			<Button inherits="WardrobeOutfitButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" x="11" y="-15"/>
-					<Anchor point="TOPRIGHT" x="-11" y="-15"/>
-				</Anchors>
-			</Button>
-		</Frames>
-		<Scripts>
 			<OnHide method="OnHide"/>
-			<OnUpdate method="OnUpdate"/>
 		</Scripts>
-	</Frame>
+	</DropdownButton>
+
 	<Frame name="WardrobeOutfitEditFrame" parent="UIParent" hidden="true" frameStrata="DIALOG" mixin="WardrobeOutfitEditFrameMixin">
 		<Size x="320" y="174"/>
 		<Anchors>

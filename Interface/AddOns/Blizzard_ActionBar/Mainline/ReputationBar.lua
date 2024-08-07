@@ -49,11 +49,12 @@ function ReputationStatusBarMixin:UpdateCurrentText()
 end
 
 function ReputationStatusBarMixin:GetMaxLevel()
-	local name, reaction, minBar, maxBar, value, factionID = GetWatchedFactionInfo();
-	if not factionID or factionID == 0 then
+	local watchedFactionData = C_Reputation.GetWatchedFactionData();
+	if not watchedFactionData or watchedFactionData.factionID == 0 then
 		return nil;
 	end
 
+	local factionID = watchedFactionData.factionID;
 	if C_Reputation.IsFactionParagon(factionID) then
 		return nil;
 	end
@@ -74,14 +75,15 @@ function ReputationStatusBarMixin:GetMaxLevel()
 end
 
 function ReputationStatusBarMixin:Update()
-	local name, reaction, minBar, maxBar, value, factionID = GetWatchedFactionInfo();
-	if not factionID or factionID == 0 then
+	local watchedFactionData = C_Reputation.GetWatchedFactionData();
+	if not watchedFactionData or watchedFactionData.factionID == 0 then
 		return;
 	end
 
-	local barAtlasIndex = reaction;
+	local barAtlasIndex = watchedFactionData.reaction;
 	local overrideUseBlueBarAtlases = false;
 
+	local factionID = watchedFactionData.factionID;
 	local isShowingNewFaction = self.factionID ~= factionID;
 	if isShowingNewFaction then
 		self.factionID = factionID;
@@ -93,6 +95,7 @@ function ReputationStatusBarMixin:Update()
 	local level;
 	local maxLevel = self:GetMaxLevel();
 
+	local minBar, maxBar, value = watchedFactionData.currentReactionThreshold, watchedFactionData.nextReactionThreshold, watchedFactionData.currentStanding;
 	if C_Reputation.IsFactionParagon(factionID) then
 		local currentValue, threshold, _, hasRewardPending = C_Reputation.GetFactionParagonInfo(factionID);
 		minBar, maxBar  = 0, threshold;
@@ -121,7 +124,7 @@ function ReputationStatusBarMixin:Update()
 		end
 		barAtlasIndex = 5; -- Friendships always use same
 	else
-		level = reaction;
+		level = watchedFactionData.reaction;
 	end
 
 	local isCapped = (level and maxLevel) and level >= maxLevel;
@@ -136,6 +139,12 @@ function ReputationStatusBarMixin:Update()
 	minBar = 0;
 
 	self:SetBarValues(value, minBar, maxBar, level, maxLevel);
+
+	local name = watchedFactionData.name;
+	local needsAccountWideLabel = C_Reputation.IsAccountWideReputation(factionID);
+	if needsAccountWideLabel then
+		name = name .. " " .. REPUTATION_STATUS_BAR_LABEL_ACCOUNT_WIDE;
+	end
 
 	if isCapped then
 		self:SetBarText(name);

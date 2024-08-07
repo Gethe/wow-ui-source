@@ -1,6 +1,37 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_SharedTalentButtonTemplates.lua"/>
+
+	<Frame name="TalentButtonSearchIconTemplate" mixin="TalentButtonSearchIconMixin" inherits="AnimateWhileShownTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="mouseoverSize" value="10" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="3">
+				<Texture parentKey="Icon" atlas="talents-search-match" useAtlasSize="true"/>
+				<Texture parentKey="OverlayIcon" atlas="talents-search-match" alphaMode="ADD"/>
+				<Texture parentKey="Mouseover">
+					<Size x="18" y="18"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="GlowAnim" looping="REPEAT" setToFinalAlpha="true" inherits="SyncedAnimGroupTemplate">
+				<KeyValues>
+					<KeyValue key="syncKey" value="TraitSearchIcon" type="string"/>
+				</KeyValues>
+				<Alpha childKey="OverlayIcon" fromAlpha="0" toAlpha=".5" duration="1" order="1" smoothing="NONE"/>
+				<Alpha childKey="OverlayIcon" fromAlpha=".5" toAlpha="0" duration="1" order="2" smoothing="NONE"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
 	
 	<Frame name="TalentDisplayTemplate" mixin="TalentDisplayMixin" virtual="true">
 		<Scripts>
@@ -150,41 +181,14 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="SearchIcon" hidden="true">
+			<Frame parentKey="SearchIcon" hidden="true" inherits="TalentButtonSearchIconTemplate">
+				<KeyValues>
+					<KeyValue key="mouseoverSize" value="18" type="number"/>
+				</KeyValues>
 				<Size x="63" y="63"/>
 				<Anchors>
 					<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="TOPRIGHT"/>
 				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY" textureSubLevel="3">
-						<Texture parentKey="Icon" atlas="talents-search-match" useAtlasSize="true"/>
-						<Texture parentKey="OverlayIcon" atlas="talents-search-match" alphaMode="ADD"/>
-						<Texture parentKey="Mouseover">
-							<Size x="18" y="18"/>
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-							<Color r="0" g="0" b="0" a="0"/>
-							<Scripts>
-								<OnLeave function="GameTooltip_Hide"/>
-							</Scripts>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Animations>
-					<AnimationGroup parentKey="GlowAnim" looping="REPEAT" setToFinalAlpha="true">
-						<Alpha childKey="OverlayIcon" fromAlpha="0" toAlpha=".5" duration="1" order="1" smoothing="NONE"/>
-						<Alpha childKey="OverlayIcon" fromAlpha=".5" toAlpha="0" duration="1" order="2" smoothing="NONE"/>
-					</AnimationGroup>
-				</Animations>
-				<Scripts>
-					<OnShow>
-						self.GlowAnim:Play();
-					</OnShow>
-					<OnHide>
-						self.GlowAnim:Stop();
-					</OnHide>
-				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>

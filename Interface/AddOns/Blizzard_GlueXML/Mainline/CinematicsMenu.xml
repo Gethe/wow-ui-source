@@ -1,0 +1,129 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Button name="CinematicsMenuButtonTemplate" mixin="CinematicsMenuButtonMixin" inherits="TemplatedListElementTemplate" virtual="true">
+		<Size x="246" y="135"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="PlayButton" atlas="StreamCinematic-PlayButton">
+					<Size x="43" y="43"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-5" y="-5"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="DownloadIcon" atlas="StreamCinematic-DownloadIcon">
+					<Size x="43" y="43"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-5" y="-5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="StreamingIcon" inherits="SpinnerTemplate" hidden="true">
+				<Size x="30" y="30"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-11" y="-11"/>
+				</Anchors>
+			</Frame>
+			<StatusBar parentKey="StatusBar" hidden="true">
+				<Size x="238" y="2"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="4" y="31"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Bg" atlas="StreamCinematic-ProgressBarBG">
+							<Size x="8" y="4"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" y="1"/>
+								<Anchor point="TOPRIGHT" y="1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<BarTexture parentKey="Bar">
+					<Color r="1" g="1" b="1"/>
+				</BarTexture>
+			</StatusBar>
+		</Frames>
+		<Scripts>
+			<OnClick method="OnClick"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+		<NormalFont style="GlueFontNormal"/>
+		<HighlightFont style="GlueFontHighlight"/>
+		<DisabledFont style="GlueFontDisable"/>
+		<HighlightTexture atlas="StreamCinematic-Highlight" alphaMode="ADD">
+			<TexCoords>
+				<Rect ULx="1" ULy="0" URx="1" URy="1" LLx="0" LLy="0" LRx="0" LRy="1"/>
+			</TexCoords>
+		</HighlightTexture>
+		<ButtonText>
+			<Size x="230" y="0"/>
+			<Anchors>
+				<Anchor point="BOTTOM" y="11"/>
+			</Anchors>
+		</ButtonText>
+		<PushedTextOffset x="2" y="-2"/>
+	</Button>
+
+	<Frame name="CinematicsMenu" mixin="CinematicsMenuMixin" inherits="DefaultPanelTemplate" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true" propagateKeyboardInput="false">
+		<Size x="819" y="559"/>
+		<Anchors>
+			<Anchor point="CENTER" x="0" y="50"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="SubtitlesLabel" inherits="GlueFontNormal" text="CINEMATICS_SHOW_SUBTITLES">
+					<Anchors>
+						<Anchor point="BOTTOM" x="12" y="27"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="CloseButton" frameLevel="1000" inherits="UIPanelCloseButtonNoScripts">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="1" y="0"/>
+				</Anchors>
+			</Button>
+			<CheckButton parentKey="SubtitlesCheckbox" mixin="CinematicsMenuSubtitlesCheckboxMixin" inherits="GlueCheckButtonTemplate">
+				<Size x="26" y="26"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.SubtitlesLabel" relativePoint="LEFT" x="-4" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnShow method="OnShow"/>
+					<OnClick method="OnClick" inherit="prepend"/>
+				</Scripts>
+			</CheckButton>
+			<Frame parentKey="Inset" inherits="InsetFrameTemplate" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="6" y="-40"/>
+					<Anchor point="BOTTOMRIGHT" x="-3" y="4"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="ButtonList" inherits="PagedListTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT" x="19" y="-19"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" relativePoint="BOTTOMRIGHT" x="-18" y="58"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="PageControl" inherits="PagedListHorizontalControlTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-19" y="19"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnKeyDown method="OnKeyDown"/>
+			<OnChar function="nop"/>
+		</Scripts>
+	</Frame>
+</Ui>

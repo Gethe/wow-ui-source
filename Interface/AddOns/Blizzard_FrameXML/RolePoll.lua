@@ -83,7 +83,7 @@ end
 
 function RolePollPopupAccept_OnClick(self, button)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	UnitSetRole("player", self:GetParent().role);
+	UnitSetRoleEnum("player", self:GetParent().role);
 	StaticPopupSpecial_Hide(self:GetParent());
 end
 

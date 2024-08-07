@@ -3,6 +3,25 @@ local CurrencyConstants =
 	Tables =
 	{
 		{
+			Name = "AccountCurrencyTransferResult",
+			Type = "Enumeration",
+			NumValues = 9,
+			MinValue = 0,
+			MaxValue = 8,
+			Fields =
+			{
+				{ Name = "Success", Type = "AccountCurrencyTransferResult", EnumValue = 0 },
+				{ Name = "InvalidCharacter", Type = "AccountCurrencyTransferResult", EnumValue = 1 },
+				{ Name = "CharacterLoggedIn", Type = "AccountCurrencyTransferResult", EnumValue = 2 },
+				{ Name = "InsufficientCurrency", Type = "AccountCurrencyTransferResult", EnumValue = 3 },
+				{ Name = "MaxQuantity", Type = "AccountCurrencyTransferResult", EnumValue = 4 },
+				{ Name = "InvalidCurrency", Type = "AccountCurrencyTransferResult", EnumValue = 5 },
+				{ Name = "NoValidSourceCharacter", Type = "AccountCurrencyTransferResult", EnumValue = 6 },
+				{ Name = "ServerError", Type = "AccountCurrencyTransferResult", EnumValue = 7 },
+				{ Name = "CannotUseCurrency", Type = "AccountCurrencyTransferResult", EnumValue = 8 },
+			},
+		},
+		{
 			Name = "CurrencyFlags",
 			Type = "Enumeration",
 			NumValues = 32,
@@ -47,9 +66,9 @@ local CurrencyConstants =
 		{
 			Name = "CurrencyFlagsB",
 			Type = "Enumeration",
-			NumValues = 7,
+			NumValues = 8,
 			MinValue = 1,
-			MaxValue = 64,
+			MaxValue = 128,
 			Fields =
 			{
 				{ Name = "CurrencyBUseTotalEarnedForEarned", Type = "CurrencyFlagsB", EnumValue = 1 },
@@ -59,6 +78,7 @@ local CurrencyConstants =
 				{ Name = "FutureCurrencyFlag", Type = "CurrencyFlagsB", EnumValue = 16 },
 				{ Name = "CurrencyBDontDisplayIfZero", Type = "CurrencyFlagsB", EnumValue = 32 },
 				{ Name = "CurrencyBScaleMaxQuantityBySeasonWeeks", Type = "CurrencyFlagsB", EnumValue = 64 },
+				{ Name = "CurrencyBScaleMaxQuantityByWeeksSinceStart", Type = "CurrencyFlagsB", EnumValue = 128 },
 			},
 		},
 		{
@@ -154,6 +174,10 @@ local CurrencyConstants =
 				{ Name = "ECHOES_OF_NYALOTHA_CURRENCY_ID", Type = "number", Value = 1803 },
 				{ Name = "DRAGON_ISLES_SUPPLIES_CURRENCY_ID", Type = "number", Value = 2003 },
 				{ Name = "QUESTIONMARK_INV_ICON", Type = "number", Value = 134400 },
+				{ Name = "PVP_CURRENCY_CONQUEST_ALLIANCE_INV_ICON", Type = "number", Value = 463448 },
+				{ Name = "PVP_CURRENCY_CONQUEST_HORDE_INV_ICON", Type = "number", Value = 463449 },
+				{ Name = "PVP_CURRENCY_HONOR_ALLIANCE_INV_ICON", Type = "number", Value = 463450 },
+				{ Name = "PVP_CURRENCY_HONOR_HORDE_INV_ICON", Type = "number", Value = 463451 },
 				{ Name = "CURRENCY_ID_RENOWN", Type = "number", Value = 1822 },
 				{ Name = "CURRENCY_ID_RENOWN_KYRIAN", Type = "number", Value = 1829 },
 				{ Name = "CURRENCY_ID_RENOWN_VENTHYR", Type = "number", Value = 1830 },

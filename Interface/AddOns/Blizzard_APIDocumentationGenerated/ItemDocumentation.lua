@@ -128,6 +128,20 @@ local Item =
 			},
 		},
 		{
+			Name = "DoesItemMatchTargetEnchantingSpell",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLoc", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "matchesTargetEnchantingSpell", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "DoesItemMatchTrackJump",
 			Type = "Function",
 
@@ -235,6 +249,21 @@ local Item =
 			},
 		},
 		{
+			Name = "GetDelvePreviewItemLink",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false },
+				{ Name = "context", Type = "ItemCreationContext", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemLink", Type = "string", Nilable = true },
+			},
+		},
+		{
 			Name = "GetDetailedItemLevelInfo",
 			Type = "Function",
 
@@ -334,6 +363,7 @@ local Item =
 				{ Name = "includeBank", Type = "bool", Nilable = false, Default = false },
 				{ Name = "includeUses", Type = "bool", Nilable = false, Default = false },
 				{ Name = "includeReagentBank", Type = "bool", Nilable = false, Default = false },
+				{ Name = "includeAccountBank", Type = "bool", Nilable = false, Default = false },
 			},
 
 			Returns =
@@ -986,6 +1016,20 @@ local Item =
 			},
 		},
 		{
+			Name = "IsBoundToAccountUntilEquip",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isBoundToAccountUntilEquip", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsConsumableItem",
 			Type = "Function",
 
@@ -1016,6 +1060,21 @@ local Item =
 		{
 			Name = "IsCosmeticItem",
 			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = true },
+			},
+		},
+		{
+			Name = "IsCurioItem",
+			Type = "Function",
+			Documentation = { "Returns whether the item is a consumable curio that can be applied to a delves companion." },
 
 			Arguments =
 			{
@@ -1435,6 +1494,11 @@ local Item =
 			Name = "ConfirmBeforeUse",
 			Type = "Event",
 			LiteralName = "CONFIRM_BEFORE_USE",
+		},
+		{
+			Name = "ConvertToBindToAccountConfirm",
+			Type = "Event",
+			LiteralName = "CONVERT_TO_BIND_TO_ACCOUNT_CONFIRM",
 		},
 		{
 			Name = "DeleteItemConfirm",

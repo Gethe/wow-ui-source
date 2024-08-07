@@ -20,3 +20,7 @@ NewSettings["10.2.0"] = {
 	"advFlyKeyboardMinTurnFactor",
 	"advFlyKeyboardMaxTurnFactor",
 };
+
+NewSettings["11.0.0"] = {
+	"arachnophobiaMode",
+};

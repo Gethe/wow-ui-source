@@ -52,7 +52,7 @@ function ItemTextFrame_OnEvent(self, event, ...)
 		-- Set up text colors
 		local textColor, titleColor = GetMaterialTextColors(material);
 		if QuestUtil.QuestTextContrastUseLightText() then
-			textColor, titleTextColor = GetMaterialTextColors("Stone");
+			textColor, titleColor = GetMaterialTextColors("Stone");
 		end
 		if(material == "ParchmentLarge") then
 			ItemTextPageText:SetTextColor("P", textColor[1], textColor[2], textColor[3]);

@@ -119,8 +119,8 @@ function AreaLabelFrameMixin:OnUpdate()
 					end
 					color = ConvertRGBtoColorString(color);
 
-
-					if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.PetBattles) then
+					local petBattlesDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.PetBattlesDisabled);
+					if not petBattlesDisabled then
 						if petMinLevel ~= petMaxLevel then
 							description = WORLD_MAP_WILDBATTLEPET_LEVEL..color.."("..petMinLevel.."-"..petMaxLevel..")"..FONT_COLOR_CODE_CLOSE;
 						else

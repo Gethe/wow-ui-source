@@ -323,7 +323,7 @@ end
 GarrisonFollowerListButton = { };
 
 function GarrisonFollowerListButton:GetFollowerList()
-	return self:GetParent():GetParent():GetParent();
+	return self:GetParent():GetParent():GetParent():GetParent();
 end
 
 function GarrisonFollowerListButton_OnDragStart(self, button)
@@ -747,7 +747,7 @@ function GarrisonFollowerButton_SetCounterButton(button, followerID, index, info
 	elseif (info.spellID) then
 		counter.tooltip = nil;
 		counter.info.showCounters = false;
-		counter.Icon:SetTexture(select(3, GetSpellInfo(info.spellID)));
+		counter.Icon:SetTexture(C_Spell.GetSpellTexture(info.spellID));
 		counter.AbilityFeedbackGlowAnim:Stop();
 		counter.Border:Hide();
 	else
@@ -996,7 +996,6 @@ function GarrisonFollowerListButton_OnClick(self, button)
 		if ( followerList.followerTab ) then
 			followerList:ShowFollower(self.id);
 		end
-		CloseDropDownMenus();
 	-- Don't show right click follower menu in landing page
 	elseif ( button == "RightButton" and not followerList.isLandingPage) then
 		local missionFrame = self:GetFollowerList():GetParent();
@@ -1023,17 +1022,64 @@ function GarrisonFollowerListButton_OnClick(self, button)
 			elseif ( status == GARRISON_FOLLOWER_IN_PARTY ) then
 				UIErrorsFrame:AddMessage(GARRISON_FOLLOWER_IN_PARTY_ADD_ERR, RED_FONT_COLOR:GetRGBA());
 			end
-		elseif followerList.OptionDropDown then
-			if ( self.isCollected ) then
-				if ( followerList.OptionDropDown.followerID ~= self.id ) then
-					CloseDropDownMenus();
+		elseif followerList.hasContextMenu then
+			if self.isCollected then
+				local followerID = self.id;
+				local followerInfo = C_Garrison.GetFollowerInfo(followerID);
+				if not followerInfo then
+					return;
 				end
-				followerList.OptionDropDown.followerID = self.id;
-				ToggleDropDownMenu(1, nil, followerList.OptionDropDown, "cursor", 0, 0);
-				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-			else
-				followerList.OptionDropDown.followerID = nil;
-				CloseDropDownMenus();
+
+				MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
+					rootDescription:SetTag("MENU_GARRISON_FOLLOWER");
+
+					if missionPage and missionPage:IsVisible() and missionPage.missionInfo then
+						local button = rootDescription:CreateButton(GARRISON_MISSION_ADD_FOLLOWER, function()
+							missionPage:AddFollower(followerID);
+						end);
+
+						if C_Garrison.GetNumFollowersOnMission(missionPage.missionInfo.missionID) >= missionPage.missionInfo.numFollowers or C_Garrison.GetFollowerStatus(followerID) then
+							button:SetEnabled(false);
+						end
+					end
+
+					local followerStatus = C_Garrison.GetFollowerStatus(followerID);
+					if followerStatus == GARRISON_FOLLOWER_INACTIVE then
+						local button = rootDescription:CreateButton(GARRISON_ACTIVATE_FOLLOWER, function()
+							StaticPopup_Show("ACTIVATE_FOLLOWER", followerInfo.name, nil, followerID);
+						end);
+
+						if C_Garrison.GetNumFollowerActivationsRemaining(GarrisonFollowerOptions[followerInfo.followerTypeID].garrisonType) == 0 then
+							button:SetEnabled(false);
+							button:SetTooltip(function(tooltip, elementDescription)
+								GameTooltip_SetTitle(tooltip, GARRISON_ACTIVATE_FOLLOWER);
+								GameTooltip_AddNormalLine(tooltip, GARRISON_NO_MORE_FOLLOWER_ACTIVATIONS);
+							end);
+						elseif C_Garrison.GetFollowerActivationCost() > GetMoney() then
+							button:SetEnabled(false);
+							button:SetTooltip(function(tooltip, elementDescription)
+								GameTooltip_SetTitle(tooltip, GARRISON_ACTIVATE_FOLLOWER);
+								GameTooltip_AddNormalLine(tooltip, format(GARRISON_CANNOT_AFFORD_FOLLOWER_ACTIVATION, GetMoneyString(C_Garrison.GetFollowerActivationCost())));
+							end);
+						end
+					else
+						local button = rootDescription:CreateButton(GARRISON_DEACTIVATE_FOLLOWER, function()
+							StaticPopup_Show("DEACTIVATE_FOLLOWER", followerInfo.name, nil, followerID);
+						end);
+
+						if followerInfo.isTroop then
+							button:SetEnabled(false);
+						elseif followerStatus == GARRISON_FOLLOWER_ON_MISSION then
+							button:SetEnabled(false);
+							button:SetTooltip(function(tooltip, elementDescription)
+								GameTooltip_SetTitle(tooltip, GARRISON_DEACTIVATE_FOLLOWER);
+								GameTooltip_AddNormalLine(tooltip, GARRISON_FOLLOWER_CANNOT_DEACTIVATE_ON_MISSION);
+							end);
+						elseif not C_Garrison.IsAboveFollowerSoftCap(missionFrame.followerTypeID) then
+							button:SetEnabled(false);
+						end
+					end
+				end);
 			end
 		end
 	end
@@ -1199,8 +1245,8 @@ function GarrisonFollowerList_InitializePrioritizeSpecializationAbilityMissionSo
 			follower.sortNumTraits = relevantForMission and mainFrame.followerTraits[follower.followerID] and #mainFrame.followerTraits[follower.followerID] or 0;
 			follower.sortHasSpecCounter = false;
 			if (relevantForMission) then
-				for i=1, follower.sortNumCounters do
-					if (mainFrame.followerCounters[follower.followerID][i].isSpecialization) then
+				for counter=1, follower.sortNumCounters do
+					if (mainFrame.followerCounters[follower.followerID][counter].isSpecialization) then
 						follower.sortHasSpecCounter = true;
 						break;
 					end
@@ -1425,7 +1471,7 @@ function GarrisonFollowerPageModelUpgrade_Update(self)
 	-- valid usage of the given item on the follower (and remain silent), or if none show an appropriate error message
 	-- Typically the error message would be something like follower is on a mission, working, low level, etc...
 	local successCount = 0;
-	local resultMessage;
+	local resultMessage = nil;
 	local followerID = self:GetParent().followerID;
 
 	local showUpgradeClick = false;
@@ -1805,14 +1851,14 @@ end
 
 
 local function AbilityFrame_OnReleased(pool, abilityFrame)
-	FramePool_HideAndClearAnchors(pool, abilityFrame);
+	Pool_HideAndClearAnchors(pool, abilityFrame);
 	abilityFrame.IconButton.ValidSpellHighlight:Hide();
 	abilityFrame.IconButton.Lock:Hide();
 	abilityFrame.IconButton.LockBackground:Hide();
 end
 
 local function EquipmentFrame_OnReleased(pool, equipmentFrame)
-	FramePool_HideAndClearAnchors(pool, equipmentFrame);
+	Pool_HideAndClearAnchors(pool, equipmentFrame);
 	equipmentFrame:SetScale(1);
 	equipmentFrame.failureReason = nil;
 end
@@ -2020,7 +2066,7 @@ function GarrisonFollowerTabMixin:ShowAbilities(followerInfo)
 	local hasCombatAllySpell = #followerInfo.combatAllySpellIDs ~= 0;
 
 	for i, combatAllySpell in ipairs(followerInfo.combatAllySpellIDs) do
-		local _, _, texture = GetSpellInfo(combatAllySpell);
+		local texture = C_Spell.GetSpellTexture(combatAllySpell);
 		if (i == 1) then
 			self.AbilitiesFrame.CombatAllySpell[i].layoutIndex = BASE_COMBAT_ALLY_LAYOUT_INDEX + 2;
 		else

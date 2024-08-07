@@ -182,7 +182,7 @@ function GameEnvironmentFrameMixin:ChangeGameEnvironment(newEnvironment)
 	--GlueDialog_Show("SWAPPING_ENVIRONMENT");
 	if newEnvironment == Enum.GameEnvironment.WoWLabs then
 		-- If we changed character order persist it
-		CharacterSelect_SaveCharacterOrder();
+		CharacterSelectListUtil.SaveCharacterOrder();
 		-- Swap to the Plunderstorm Realm
 		C_RealmList.ConnectToPlunderstorm(GetCVar("plunderStormRealm")); --WOWLABSTODO: Should this CVar thing be hidden from lua?
 		CharacterSelect.connectingToPlunderstorm = true;

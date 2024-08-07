@@ -1,10 +1,47 @@
+local settings = {
+	headerText = TRACKER_HEADER_SCENARIO,
+	events = { "ZONE_CHANGED_NEW_AREA" },
+	fromHeaderOffsetY = -9,
+};
+
+UIWidgetObjectiveTrackerMixin = CreateFromMixins(ObjectiveTrackerModuleMixin, settings);
+
+function UIWidgetObjectiveTrackerMixin:OnEvent()
+	self:SetHeader(GetRealZoneText());
+end
+
+function UIWidgetObjectiveTrackerMixin:LayoutContents()
+	-- We only ever use a single block for the widget container
+	local block = self.Block;
+
+	-- We add or remove the block based on whether there are any widgets showing
+	local hasWidgets = ObjectiveTrackerUIWidgetContainer:GetNumWidgetsShowing() > 0;
+	local blockAdded = false;
+	if hasWidgets then
+		-- If there are widgets showing, add the block
+		block.height = ObjectiveTrackerUIWidgetContainer:GetHeight();
+		blockAdded = self:LayoutBlock(block);
+	end
+
+	if blockAdded then
+		-- This means there ARE widgets showing...attach the widget container to the new block and "show" it (alpha to 1)
+		self:SetHeader(GetRealZoneText());
+		ObjectiveTrackerUIWidgetContainer:AttachToBlockAndShow(block);
+		block:Show();
+		block:MarkDirty();
+	else
+		-- This means there are no widgets showing or we could not add the block...unattach the widget container and "hide" it (alpha to 0 so we still get updates on it)
+		ObjectiveTrackerUIWidgetContainer:UnattachFromBlockAndHide();
+	end
+end
+
 ObjectiveTrackerUIWidgetContainerMixin = {};
 
 local function WidgetsLayout(widgetContainer, sortedWidgets)
 	DefaultWidgetLayout(widgetContainer, sortedWidgets);
 
 	-- When the widgets in this container update we also need to update the UI_WIDGET_TRACKER_MODULE (it needs to show or hide based on whether there are any widget showing)
-	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_UI_WIDGETS);
+	UIWidgetObjectiveTracker:MarkDirty();
 end
 
 function ObjectiveTrackerUIWidgetContainerMixin:OnLoad()
@@ -24,49 +61,4 @@ end
 function ObjectiveTrackerUIWidgetContainerMixin:UnattachFromBlockAndHide()
 	self:SetAlpha(0);
 	self:SetParent(UIParent);
-end
-
-UI_WIDGET_TRACKER_MODULE = ObjectiveTracker_GetModuleInfoTable("UI_WIDGET_TRACKER_MODULE", nil, "ObjectiveTrackerUIWidgetBlock");
-UI_WIDGET_TRACKER_MODULE.updateReasonModule = OBJECTIVE_TRACKER_UPDATE_MODULE_UI_WIDGETS;
-UI_WIDGET_TRACKER_MODULE:SetHeader(ObjectiveTrackerFrame.BlocksFrame.UIWidgetsHeader, GetRealZoneText(), OBJECTIVE_TRACKER_UPDATE_MODULE_UI_WIDGETS);
-
-function UI_WIDGET_TRACKER_MODULE:Update()
-	self:BeginLayout();
-
-	-- We only ever use a single block for the widget container
-	local block = self:GetBlock(1);
-
-	-- We add or remove the block based on whether there are any widgets showing
-	if ObjectiveTrackerUIWidgetContainer:GetNumWidgetsShowing() > 0 then
-		-- If there are widgets showing, add the block
-		if not ObjectiveTracker_AddBlock(block) then
-			block.used = false;
-		end
-	else
-		block.used = false;
-	end
-
-	if block.used then
-		-- This means there ARE widgets showing...attach the widget container to the new block and "show" it (alpha to 1)
-		ObjectiveTrackerUIWidgetContainer:AttachToBlockAndShow(block);
-		block:Show();
-		block:MarkDirty();
-		block.height = block:GetHeight();
-	else
-		-- This means there are no widgets showing or we could not add the block...unattach the widget container and "hide" it (alpha to 0 so we still get updates on it)
-		ObjectiveTrackerUIWidgetContainer:UnattachFromBlockAndHide();
-	end
-
-	self:EndLayout();
-end
-
--- This is only needed to update the Header text when the zone changes
-ObjectiveTrackerUIWidgetBlockMixin = {};
-
-function ObjectiveTrackerUIWidgetBlockMixin:OnLoad()
-	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
-end
-
-function ObjectiveTrackerUIWidgetBlockMixin:OnEvent(event, ...)
-	UI_WIDGET_TRACKER_MODULE:SetHeader(ObjectiveTrackerFrame.BlocksFrame.UIWidgetsHeader, GetRealZoneText(), OBJECTIVE_TRACKER_UPDATE_MODULE_UI_WIDGETS);
 end

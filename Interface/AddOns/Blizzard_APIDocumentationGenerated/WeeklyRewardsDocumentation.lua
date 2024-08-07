@@ -164,15 +164,6 @@ local WeeklyRewards =
 			},
 		},
 		{
-			Name = "GetWeeklyRewardTextureKit",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "uiTextureKit", Type = "textureKit", Nilable = false },
-			},
-		},
-		{
 			Name = "HasAvailableRewards",
 			Type = "Function",
 

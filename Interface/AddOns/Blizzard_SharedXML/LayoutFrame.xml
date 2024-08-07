@@ -1,6 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-UI.xsd">
-	<ScopedModifier scriptsUseGivenEnv="true">
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 			<Frame name="BaseLayoutFrameTemplate" virtual="true">
 				<Scripts>
 					<OnShow method="OnShow"/>
@@ -36,6 +35,11 @@ UI.xsd">
 
 				Determines if child scale is taken into account when laying out children
 				<KeyValue key="respectChildScale" value="true" type="boolean"/>
+				
+				The childLayoutDirection keyValue controls which direction we layout the child frames in
+				By default the child frames are anchored top to bottom (actual point used depends on the align keyvalue on each child frame)
+				Possible choices here are "topToBottom" and "bottomToTop"
+				<KeyValue key="childLayoutDirection" value="topToBottom" type="string"/>
 			</KeyValues>
 			-->
 
@@ -74,6 +78,11 @@ UI.xsd">
 				Possible choices here are "center" (anchored LEFT to LEFT) and "bottom" (anchored BOTTOMLEFT to BOTTOMLEFT)
 				<KeyValue key="align" value="center" type="string"/>
 
+				The childLayoutDirection keyValue does the same thing as VerticalLayoutFrame, but the valid values are different.
+				By default the child frames are anchored left to right (actual point used depends on the align keyvalue on each child frame)
+				Possible choices here are "leftToRight" and "rightToLeft"
+				<KeyValue key="childLayoutDirection" value="leftToRight" type="string"/>
+			
 				Determines if child scale is taken into account when laying out children
 				<KeyValue key="respectChildScale" value="true" type="boolean"/>
 			-->
@@ -99,12 +108,16 @@ UI.xsd">
 				<KeyValue key="minimumHeight" value="300" type="number"/>
 				<KeyValue key="maximumWidth" value="300" type="number"/>
 				<KeyValue key="maximumHeight" value="300" type="number"/>
+				<KeyValue key="skipChildLayout" value="false" type="boolean"/>
+				<KeyValue key="ignoreAllChildren" value="false" type="boolean"/>
 			</KeyValues>
 			-->
 		</Frame>
 
 		<Frame name="GridLayoutFrame" inherits="ResizeLayoutFrame" virtual="true" mixin="GridLayoutFrameMixin">
 			<!-- 
+		Dynamically places child frames into a grid layout based on grid flow defined by KeyValue settings
+
 			<KeyValues>
 				- Space in between laid out frames
 				<KeyValue key="childXPadding" value="0" type="number"/>
@@ -124,5 +137,41 @@ UI.xsd">
 			</KeyValues>
 			-->
 		</Frame>
-	</ScopedModifier>
+
+	<Frame name="StaticGridLayoutFrame" inherits="BaseLayoutFrameTemplate" virtual="true" mixin="StaticGridLayoutFrameMixin">
+		<!-- 
+		Unlike GridLayoutFrame, StaticGridLayoutFrame expects child frames to have a pre-calculated grid column and row.
+		This is useful for complicated/bespoke grid mechanics that can't easily use a standard, generalized grid placement flow.
+
+		It calculates overall width/height for each column/row based on the widest/tallest frame that will be placed within them, 
+		then places each child into their assigned column & row, using those overall sizes for anchor offsets.
+
+		Layout Frame options
+		<KeyValues>
+			- Horizontal space between columns
+			<KeyValue key="childXPadding" value="0" type="number"/>
+			
+			- Vertical space between rows
+			<KeyValue key="childYPadding" value="0" type="number"/>
+		</KeyValues>
+
+		Child Frame Options
+		<KeyValues>
+			- Required: What Column index the frame should be placed in (leftmost column being 1)
+			<KeyValue key="gridColumn" value="0" type="number"/>
+
+			- Required: What Row index the frame should be placed in (topmost row being 1)
+			<KeyValue key="gridRow" value="0" type="number"/>
+
+			- Frames can optionally span more than one column or row.
+			- If they do, their size will be considered as spread evenly across them for overall column/row size calculations.
+			- Ex: Frame A {width: 90, gridColumn: 2, gridColumnSize: 3} will be considered as width of 30 when calculating the individual widths of column 2, 3, and 4.
+			- (Any childXPadding is also factored into this calculation to ensure multi-span frames don't cause padding to be added in twice)
+
+			- Optional: Both default to 1 if not set
+			<KeyValue key="gridColumnSize" value="1" type="number"/>
+			<KeyValue key="gridRowSize" value="1" type="number"/>
+		</KeyValues>
+		-->
+	</Frame>
 </Ui>

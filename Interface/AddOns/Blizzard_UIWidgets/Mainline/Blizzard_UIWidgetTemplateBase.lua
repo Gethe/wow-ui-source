@@ -13,11 +13,11 @@ function UIWidgetTemplateTooltipFrameMixin:UpdateMouseEnabled()
 	self:SetMouse(self.disableTooltip);
 end
 
-function UIWidgetTemplateTooltipFrameMixin:Setup(widgetContainer)
+function UIWidgetTemplateTooltipFrameMixin:Setup(widgetContainer, tooltipLoc)
 	self.disableTooltip = widgetContainer.disableWidgetTooltips;
 	self:UpdateMouseEnabled();
 	self:SetMouseClickEnabled(false);
-	self:SetTooltipLocation(nil);
+	self:SetTooltipLocation(tooltipLoc);
 
 	if self.mouseOver then
 		self:OnEnter();
@@ -295,8 +295,7 @@ end
 -- Override with any custom behaviour that you need to perform when this widget is updated. Make sure you still call the base though because it handles animations
 function UIWidgetBaseTemplateMixin:Setup(widgetInfo, widgetContainer)
 	self:SetScale(GetWidgetScale(widgetInfo.widgetScale));
-	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
-	self:SetTooltipLocation(widgetInfo.tooltipLoc);
+	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer, widgetInfo.tooltipLoc);
 	self.widgetContainer = widgetContainer;
 	self.orderIndex = widgetInfo.orderIndex;
 	self.layoutDirection = widgetInfo.layoutDirection;
@@ -312,8 +311,8 @@ end
 
 UIWidgetBaseResourceTemplateMixin = CreateFromMixins(UIWidgetTemplateTooltipFrameMixin, UIWidgetBaseEnabledFrameMixin);
 
-function UIWidgetBaseResourceTemplateMixin:Setup(widgetContainer, resourceInfo)
-	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
+function UIWidgetBaseResourceTemplateMixin:Setup(widgetContainer, resourceInfo, tooltipLoc)
+	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer, tooltipLoc);
 	self.Text:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
 	self.Text:SetText(resourceInfo.text);
 
@@ -324,10 +323,30 @@ function UIWidgetBaseResourceTemplateMixin:Setup(widgetContainer, resourceInfo)
 	self:SetHeight(self.Icon:GetHeight());
 end
 
+local currencyIconSizes =
+{
+	[Enum.WidgetIconSizeType.Small]	= 16,
+	[Enum.WidgetIconSizeType.Medium] = 20,
+	[Enum.WidgetIconSizeType.Large]	= 22,
+	[Enum.WidgetIconSizeType.Standard] = 18,
+}
+
+local function GetCurrencyIconSize(iconSizeType)
+	return currencyIconSizes[iconSizeType] or currencyIconSizes[Enum.WidgetIconSizeType.Small];
+end
+
+-- Call this in the OnReset of any widget that contains a pool of UIWidgetBaseCurrencyTemplate frames
+function UIWidgetBaseCurrencyPoolOnReset(currencyPool)
+	for currencyFrame in currencyPool:EnumerateActive() do
+		currencyFrame:OnReset();
+		currencyPool:Release(currencyFrame);
+	end
+end
+
 UIWidgetBaseCurrencyTemplateMixin = CreateFromMixins(UIWidgetTemplateTooltipFrameMixin, UIWidgetBaseEnabledFrameMixin);
 
-function UIWidgetBaseCurrencyTemplateMixin:Setup(widgetContainer, currencyInfo, enabledState, tooltipEnabledState, hideIcon, customFont, overrideFontColor)
-	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
+function UIWidgetBaseCurrencyTemplateMixin:Setup(widgetContainer, currencyInfo, enabledState, tooltipEnabledState, hideIcon, customFont, overrideFontColor, tooltipLoc)
+	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer, tooltipLoc);
 	self:SetOverrideNormalFontColor(overrideFontColor);
 
 	local function SetUpFontString(fontString, text)
@@ -342,23 +361,36 @@ function UIWidgetBaseCurrencyTemplateMixin:Setup(widgetContainer, currencyInfo, 
 
 	SetUpFontString(self.Text, currencyInfo.text);
 
+	local showFlash = currencyInfo.updateAnimType == Enum.UIWidgetUpdateAnimType.Flash;
+	if showFlash and self.previousText and self.previousText ~= currencyInfo.text then
+		self.Flash:Play();
+	end
+
+	self.previousText = currencyInfo.text;
+
 	self:SetTooltip(currencyInfo.tooltip, GetTextColorForEnabledState(tooltipEnabledState or enabledState));
+
 	self.Icon:SetTexture(currencyInfo.iconFileID);
 	self.Icon:SetDesaturated(enabledState == Enum.WidgetEnabledState.Disabled);
 
+	local iconSize = GetCurrencyIconSize(currencyInfo.iconSizeType);
+	self.Icon:SetSize(iconSize, iconSize);
+
 	self:SetEnabledState(enabledState);
 
-	local totalWidth = self.Icon:GetWidth() + self.Text:GetWidth() + 5;
+	local totalWidth = self.Text:GetWidth();
+	local widgetHeight = self.Text:GetHeight();
 
 	if currencyInfo.leadingText ~= "" then
 		SetUpFontString(self.LeadingText, currencyInfo.leadingText);
 
 		self.LeadingText:Show();
-		self.Icon:SetPoint("TOPLEFT", self, "TOPLEFT", self.LeadingText:GetWidth() + 5, 0);
+		self.Icon:SetPoint("LEFT", self, "RIGHT", 5, 0);
 		totalWidth = totalWidth + self.LeadingText:GetWidth() + 5;
+		widgetHeight = math.max(widgetHeight, self.LeadingText:GetHeight());
 	else
 		self.LeadingText:Hide();
-		self.Icon:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
+		self.Icon:SetPoint("LEFT", self, "LEFT", 0, 0);
 	end
 
 	if hideIcon then
@@ -367,10 +399,15 @@ function UIWidgetBaseCurrencyTemplateMixin:Setup(widgetContainer, currencyInfo, 
 	else
 		self.Icon:Show();
 		self.Text:SetPoint("LEFT", self.Icon, "RIGHT", 5, 0);
+		totalWidth = totalWidth + self.Icon:GetWidth() + 5;
 	end
 
 	self:SetWidth(totalWidth);
-	self:SetHeight(self.Icon:GetHeight());
+	self:SetHeight(widgetHeight);
+end
+
+function UIWidgetBaseCurrencyTemplateMixin:OnReset()
+	self.previousText = nil;
 end
 
 local iconSizes =
@@ -427,6 +464,14 @@ local function GetWorldLootObjectTypeAtlas(worldLootobjectInfo)
 	end
 end
 
+-- Call this in the OnReset of any widget that contains a pool of UIWidgetBaseSpellTemplate frames
+function UIWidgetBaseSpellPoolOnReset(spellPool)
+	for spellFrame in spellPool:EnumerateActive() do
+		spellFrame:OnReset();
+		spellPool:Release(spellFrame);
+	end
+end
+
 function UIWidgetBaseSpellTemplateMixin:OnEvent(event, ...)
 	if event == "WORLD_LOOT_OBJECT_INFO_UPDATED" then
 		self:UpdateTypeIcon();
@@ -454,8 +499,8 @@ function UIWidgetBaseSpellTemplateMixin:ShouldContinueOnUpdate()
 	return self.updateTimeRemaining and (self.updateTimeRemaining > 0);
 end
 
-function UIWidgetBaseSpellTemplateMixin:Setup(widgetContainer, spellInfo, enabledState, width, textureKit, isLootObject)
-	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
+function UIWidgetBaseSpellTemplateMixin:Setup(widgetContainer, spellInfo, width, textureKit, tooltipLoc)
+	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer, tooltipLoc);
 	SetupTextureKitsFromRegionInfo(textureKit, self, spellTextureKitRegionInfo);
 	local hasAmountBorderTexture = self.AmountBorder:IsShown();
 	local hasBorderTexture = self.Border:IsShown();
@@ -467,9 +512,9 @@ function UIWidgetBaseSpellTemplateMixin:Setup(widgetContainer, spellInfo, enable
 		self.StackCount:SetPoint("BOTTOMRIGHT", self.Icon, -2, 2);
 	end
 
-	local name, _, icon = GetSpellInfo(spellInfo.spellID);
-	self.Icon:SetTexture(icon);
-	self.Icon:SetDesaturated(enabledState == Enum.WidgetEnabledState.Disabled);
+	local spellData = C_Spell.GetSpellInfo(spellInfo.spellID);
+	self.Icon:SetTexture(spellData.iconID);
+	self.Icon:SetDesaturated(spellInfo.enabledState == Enum.WidgetEnabledState.Disabled);
 
 	local iconSize = GetWidgetIconSize(spellInfo.iconSizeType);
 	self.Icon:SetSize(iconSize, iconSize);
@@ -511,10 +556,6 @@ function UIWidgetBaseSpellTemplateMixin:Setup(widgetContainer, spellInfo, enable
 					hasBorderTexture = true;
 				end
 			end
-			local color = spellBorderColorFromTintValue[spellInfo.borderColor];
-			if color then 
-				self.Border:SetVertexColor(color:GetRGB());
-			end
 		end
 	end
 
@@ -531,12 +572,12 @@ function UIWidgetBaseSpellTemplateMixin:Setup(widgetContainer, spellInfo, enable
 	self.Text:SetWidth(textWidth);
 	self.Text:SetHeight(0);
 
-	local textShown = ( spellInfo.textShownState == Enum.SpellDisplayTextShownStateType.Shown ) and not isLootObject;
+	local textShown = ( spellInfo.textShownState == Enum.SpellDisplayTextShownStateType.Shown );
 	self.Text:SetShown(textShown);
 
 	if textShown then
-		local text = (spellInfo.text == "") and name or spellInfo.text;
-		self.Text:Setup(text, spellInfo.textFontType, spellInfo.textSizeType, enabledState, spellInfo.hAlignType);
+		local text = (spellInfo.text == "") and spellData.name or spellInfo.text;
+		self.Text:Setup(text, spellInfo.textFontType, spellInfo.textSizeType, spellInfo.enabledState, spellInfo.hAlignType);
 
 		if textWidth == 0 then
 			textWidth = self.Text:GetWidth();
@@ -558,13 +599,30 @@ function UIWidgetBaseSpellTemplateMixin:Setup(widgetContainer, spellInfo, enable
 
 	local showBorder = (spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Buff) or ((spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Circular) and hasBorderTexture);
 
+	if spellInfo.tint ~= Enum.SpellDisplayTint.None then
+		if spellInfo.tint == Enum.SpellDisplayTint.Red then
+			self.Icon:SetVertexColor(1, 0, 0);
+			if showBorder then
+				self.Border:SetVertexColor(1, 0, 0);
+			end
+		end
+	else
+		local color = spellBorderColorFromTintValue[spellInfo.borderColor];
+		self.Icon:SetVertexColor(1, 1, 1);
+		if showBorder and color then
+			self.Border:SetVertexColor(color:GetRGB());
+		elseif showBorder and not color then
+			self.Border:SetVertexColor(1, 1, 1);
+		end
+	end
+
 	self.Border:SetShown(showBorder);
 	self.DebuffBorder:SetShown(spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Debuff);
 	self.IconMask:SetShown(spellInfo.iconDisplayType ~= Enum.SpellDisplayIconDisplayType.Circular);
 	self.CircleMask:SetShown(spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Circular);
 
 	local widgetHeight = math.max(self.Icon:GetHeight(), self.Text:GetHeight());
-	self:SetEnabledState(enabledState);
+	self:SetEnabledState(spellInfo.enabledState);
 	self.spellID = spellInfo.spellID;
 	self:SetTooltip(spellInfo.tooltip);
 
@@ -611,12 +669,21 @@ function UIWidgetBaseSpellTemplateMixin:OnEnter()
 	local parent = self:GetParent(); 
 	local shouldUseSpellOrLootObjectTooltip = not self.tooltip or self.tooltip == "";
 	if shouldUseSpellOrLootObjectTooltip then 
-		self:SetTooltipOwner();
 		local attachedUnit = parent and parent.attachedUnit;
-		-- If the tooltip does not successfully set the loot object, set it by spell id.
-		if not attachedUnit or not EmbeddedItemTooltip:SetWorldLootObject(attachedUnit) then
+		local displayingWorldLootObjectTooltip = false;
+
+		if attachedUnit then
+			self:SetTooltipOwner();
+			displayingWorldLootObjectTooltip = EmbeddedItemTooltip:SetWorldLootObject(attachedUnit);
+		end
+
+		-- If the tooltip does not successfully set the loot object, set it by spell id
+		if not displayingWorldLootObjectTooltip then
+			-- MUST have SetTooltipOwner above both calls because if SetWorldLootObject is called & fails, the previously set owner will be cleared
+			self:SetTooltipOwner();
 			EmbeddedItemTooltip:SetSpellByID(self.spellID, false, true);
 		end
+
 		EmbeddedItemTooltip:Show();
 	else
 		UIWidgetTemplateTooltipFrameMixin.OnEnter(self);
@@ -627,6 +694,14 @@ function UIWidgetBaseSpellTemplateMixin:SetMouse(disableMouse)
 	local useMouse = ((self.tooltip and self.tooltip ~= "") or self.spellID) and not disableMouse;
 	self:EnableMouse(useMouse)
 	self:SetMouseClickEnabled(false);
+end
+
+function UIWidgetBaseSpellTemplateMixin:OnReset()
+	self:ClearOverrideNormalFontColor();
+	if self.effectController then
+		self.effectController:CancelEffect();
+		self.effectController = nil;
+	end
 end
 
 UIWidgetBaseStatusBarPartitionTemplateMixin = {};
@@ -708,8 +783,8 @@ local function GetWidgetOpacityPercentage(widgetOpacityType)
 	return widgetOpacityType and widgetOpacityPercentage[widgetOpacityType] or 1;
 end
 
-function UIWidgetBaseStatusBarTemplateMixin:Setup(widgetContainer, barInfo)
-	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
+function UIWidgetBaseStatusBarTemplateMixin:Setup(widgetContainer, barInfo, tooltipLoc)
+	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer, tooltipLoc);
 
 	self:SanitizeAndSetStatusBarValues(barInfo);
 	self:SetMinMaxValues(self.barMin, self.barMax);
@@ -765,7 +840,7 @@ function UIWidgetBaseStatusBarTemplateMixin:DisplayBarValue()
 
 	local statusBarTexture = self:GetStatusBarTexture();
 	if statusBarTexture then
-		local currentAlpha = Lerp(self.barMinFillAlpha, self.barMaxFillAlpha, ClampedPercentageBetween(self.displayedValue, self.barMin, self.barMax));
+	local currentAlpha = Lerp(self.barMinFillAlpha, self.barMaxFillAlpha, ClampedPercentageBetween(self.displayedValue, self.barMin, self.barMax));
 		statusBarTexture:SetAlpha(currentAlpha);
 	end
 end
@@ -886,8 +961,8 @@ end
 
 UIWidgetBaseStateIconTemplateMixin = CreateFromMixins(UIWidgetTemplateTooltipFrameMixin);
 
-function UIWidgetBaseStateIconTemplateMixin:Setup(widgetContainer, textureKit, textureKitFormatter, captureIconInfo)
-	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
+function UIWidgetBaseStateIconTemplateMixin:Setup(widgetContainer, textureKit, textureKitFormatter, captureIconInfo, tooltipLoc)
+	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer, tooltipLoc);
 	if captureIconInfo.iconState == Enum.IconState.ShowState1 then
 		SetupTextureKitOnFrame(textureKit, self.Icon, "%s-"..textureKitFormatter.."-state1", TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 		self:SetTooltip(captureIconInfo.state1Tooltip);
@@ -927,8 +1002,8 @@ function UIWidgetBaseTextureAndTextTemplateMixin:OnLoad()
 	UIWidgetTemplateTooltipFrameMixin.OnLoad(self);
 end
 
-function UIWidgetBaseTextureAndTextTemplateMixin:Setup(widgetContainer, text, tooltip, frameTextureKit, textureKit, textSizeType, layoutIndex)
-	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
+function UIWidgetBaseTextureAndTextTemplateMixin:Setup(widgetContainer, text, tooltip, frameTextureKit, textureKit, textSizeType, layoutIndex, tooltipLoc)
+	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer, tooltipLoc);
 	self.layoutIndex = layoutIndex;
 
 	local bgTextureKitFmt = "%s";
@@ -1045,8 +1120,8 @@ function UIWidgetBaseControlZoneTemplateMixin:UpdateAnimations(zoneInfo, zoneIsG
 	end
 end
 
-function UIWidgetBaseControlZoneTemplateMixin:Setup(widgetContainer, zoneIndex, zoneMode, leadingEdgeType, dangerFlashType, zoneInfo, lastVals, textureKit)
-	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
+function UIWidgetBaseControlZoneTemplateMixin:Setup(widgetContainer, zoneIndex, zoneMode, leadingEdgeType, dangerFlashType, zoneInfo, lastVals, textureKit, tooltipLoc)
+	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer, tooltipLoc);
 	if not textureKit then
 		self:Hide();
 		return;
@@ -1167,6 +1242,7 @@ local scenarioHeaderTextureKitInfo =
 	["dragonflight-scenario"] = {fontObject = GameFontNormalMed3, fontMinLineHeight = 10, headerTextHeight = 20},
 	["plunderstorm-scenariotracker-active"] = {fontObject = SystemFont_Shadow_Large, fontMinLineHeight = 16, headerTextHeight = 20, headerTextWidth = 300, textAnchorOffsets = {xOffset = 40, yOffset = -25}},
 	["plunderstorm-scenariotracker-waiting"] = {fontObject = SystemFont_Shadow_Large, fontMinLineHeight = 16, headerTextHeight = 20, headerTextWidth = 300, textAnchorOffsets = {xOffset = 40, yOffset = -25}},
+	["delves-scenario"] = {fontObject = SystemFont_Shadow_Large, fontColor = DELVES_SCENARIO_NAME_COLOR, fontMinLineHeight = 16, headerTextHeight = 20, textAnchorOffsets = {xOffset = 24, yOffset = -16}},
 }
 
 local scenarioHeaderDefaultFontObject = Game18Font;
@@ -1261,8 +1337,8 @@ UIWidgetBaseCircularStatusBarTemplateMixin = CreateFromMixins(UIWidgetTemplateTo
 
 local circularBarSwipeTextureFormatString = "Interface\\UnitPowerBarAlt\\%s-fill";
 
-function UIWidgetBaseCircularStatusBarTemplateMixin:Setup(widgetContainer, barMin, barMax, barValue, deadZonePercentage, textureKit)
-	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
+function UIWidgetBaseCircularStatusBarTemplateMixin:Setup(widgetContainer, barMin, barMax, barValue, deadZonePercentage, textureKit, tooltipLoc)
+	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer, tooltipLoc);
 
 	barValue = Clamp(barValue, barMin, barMax);
 
@@ -1385,8 +1461,49 @@ local function GetEarnedCheckSize(iconSizeType)
 	return earnedCheckSizes[iconSizeType];
 end
 
-function UIWidgetBaseItemTemplateMixin:Setup(widgetContainer, itemInfo, widgetSizeSetting)
-	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
+local baseItemEmbeddedTooltipCount = 0;
+
+function UIWidgetBaseItemTemplateMixin:ShowEmbeddedTooltip(itemID)
+	if not self.Tooltip then
+		baseItemEmbeddedTooltipCount = baseItemEmbeddedTooltipCount + 1;
+		self.Tooltip = CreateFrame("GameTooltip", "UIWidgetBaseItemEmbeddedTooltip"..baseItemEmbeddedTooltipCount, self, "UIWidgetBaseItemEmbeddedTooltipTemplate");
+	else
+		self.Tooltip:SetScript("OnTooltipCleared", nil);
+	end
+
+	local function setEmbeddedTooltip()
+		self.Tooltip:SetOwner(self, "ANCHOR_NONE");
+		self.Tooltip:SetPadding(-10, -10, -10, -10);
+		self.Tooltip:SetItemByID(itemID);
+		self.Tooltip:SetPoint("TOPLEFT", self.Icon, "TOPRIGHT", 10, 0);
+	end
+
+	setEmbeddedTooltip();
+	self.Tooltip:SetScript("OnTooltipCleared", setEmbeddedTooltip);
+	self.Tooltip:Show();
+end
+
+function UIWidgetBaseItemTemplateMixin:HideEmbeddedTooltip()
+	if self.Tooltip then
+		self.Tooltip:SetScript("OnTooltipCleared", nil);
+		self.Tooltip:Hide();
+	end
+end
+
+local function IsOverrideStateActive(overrideState)
+	return overrideState == Enum.UIWidgetOverrideState.Active;
+end
+
+local function GetOverrideValueIfActive(overrideState, overrideValue)
+	if IsOverrideStateActive(overrideState) then
+		return overrideValue;
+	else
+		return nil;
+	end
+end
+
+function UIWidgetBaseItemTemplateMixin:Setup(widgetContainer, itemInfo, widgetSizeSetting, tooltipLoc)
+	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer, tooltipLoc);
 
 	local iconSize = GetWidgetIconSize(itemInfo.iconSizeType);
 	self.Icon:SetSize(iconSize, iconSize);
@@ -1406,6 +1523,7 @@ function UIWidgetBaseItemTemplateMixin:Setup(widgetContainer, itemInfo, widgetSi
 
 	local qualityColor = ITEM_QUALITY_COLORS[quality];
 	self.ItemName:SetTextColor(qualityColor.r, qualityColor.g, qualityColor.b);
+	local itemNameEnabledState = GetOverrideValueIfActive(itemInfo.itemNameCustomColorOverrideState, itemInfo.itemNameCustomColor);
 
 	self.EarnedCheck:SetShown(itemInfo.showAsEarned);
 
@@ -1417,16 +1535,12 @@ function UIWidgetBaseItemTemplateMixin:Setup(widgetContainer, itemInfo, widgetSi
 		self.InfoText:Hide();
 		self.NameFrame:Hide();
 
-		self.Tooltip:SetOwner(self, "ANCHOR_NONE");
-		self.Tooltip:SetPadding(-10, -10, -10, -10);
-		self.Tooltip:SetItemByID(itemInfo.itemID);
-		self.Tooltip:SetPoint("TOPLEFT", self.Icon, "TOPRIGHT", 10, 0);
-		self.Tooltip:Show();
+		self:ShowEmbeddedTooltip(itemInfo.itemID);
 
 		widgetWidth = iconSize + self.Tooltip:GetWidth() + 10;
 		widgetHeight = math.max(iconSize, self.Tooltip:GetHeight());
 	elseif itemInfo.textDisplayStyle == Enum.ItemDisplayTextDisplayStyle.PlayerChoiceReward then
-		self.Tooltip:Hide();
+		self:HideEmbeddedTooltip();
 		self.InfoText:Hide();
 
 		local minNameFrameWidth = 100;
@@ -1440,13 +1554,13 @@ function UIWidgetBaseItemTemplateMixin:Setup(widgetContainer, itemInfo, widgetSi
 		self.ItemName:ClearAllPoints();
 		self.ItemName:SetPoint("TOPLEFT", self.NameFrame, "TOPLEFT", 4, -2);
 		self.ItemName:SetPoint("BOTTOMRIGHT", self.NameFrame, "BOTTOMRIGHT", -4, 2);
-		self.ItemName:Setup(itemInfo.overrideItemName or itemName, itemInfo.itemNameTextFontType, itemInfo.itemNameTextSizeType, nil, LEFT_ALIGN);
+		self.ItemName:Setup(itemInfo.overrideItemName or itemName, itemInfo.itemNameTextFontType, itemInfo.itemNameTextSizeType, itemNameEnabledState, LEFT_ALIGN);
 		self.ItemName:Show();
 
 		widgetWidth = iconSize + nameFrameWidth + 2;
 		widgetHeight = iconSize;
 	elseif itemInfo.textDisplayStyle == Enum.ItemDisplayTextDisplayStyle.ItemNameOnlyCentered then
-		self.Tooltip:Hide();
+		self:HideEmbeddedTooltip();
 		self.NameFrame:Hide();
 		self.InfoText:Hide();
 
@@ -1456,13 +1570,13 @@ function UIWidgetBaseItemTemplateMixin:Setup(widgetContainer, itemInfo, widgetSi
 		self.ItemName:ClearAllPoints();
 		self.ItemName:SetPoint("TOPLEFT", self.Icon, "TOPRIGHT", 10, 0);
 		self.ItemName:SetSize(itemNameWidth, iconSize);
-		self.ItemName:Setup(itemInfo.overrideItemName or itemName, itemInfo.itemNameTextFontType, itemInfo.itemNameTextSizeType, nil, LEFT_ALIGN);
+		self.ItemName:Setup(itemInfo.overrideItemName or itemName, itemInfo.itemNameTextFontType, itemInfo.itemNameTextSizeType, itemNameEnabledState, LEFT_ALIGN);
 		self.ItemName:Show();
 
 		widgetWidth = iconSize + self.ItemName:GetWidth() + 10;
 		widgetHeight = iconSize;
 	else
-		self.Tooltip:Hide();
+		self:HideEmbeddedTooltip();
 		self.NameFrame:Hide();
 
 		local desiredTextWidth = (widgetSizeSetting > 0) and (widgetSizeSetting - (iconSize + 10)) or 0;
@@ -1471,7 +1585,7 @@ function UIWidgetBaseItemTemplateMixin:Setup(widgetContainer, itemInfo, widgetSi
 		self.ItemName:ClearAllPoints();
 		self.ItemName:SetPoint("TOPLEFT", self.Icon, "TOPRIGHT", 10, 0);
 		self.ItemName:SetSize(textWidth, 0);
-		self.ItemName:Setup(itemInfo.overrideItemName or itemName, itemInfo.itemNameTextFontType, itemInfo.itemNameTextSizeType, nil, LEFT_ALIGN);
+		self.ItemName:Setup(itemInfo.overrideItemName or itemName, itemInfo.itemNameTextFontType, itemInfo.itemNameTextSizeType, itemNameEnabledState, LEFT_ALIGN);
 		self.ItemName:Show();
 
 		if itemInfo.infoText then
@@ -1512,6 +1626,10 @@ function UIWidgetBaseItemTemplateMixin:SetMouse(disableMouse)
 	self:SetMouseClickEnabled(false);
 end
 
+function UIWidgetBaseItemTemplateMixin:OnReset()
+	self:HideEmbeddedTooltip();
+end
+
 UIWidgetBaseIconTemplateMixin = CreateFromMixins(UIWidgetTemplateTooltipFrameMixin);
 
 local iconTextureKitRegions = {
@@ -1532,7 +1650,7 @@ local function GetWidgetIconFrameSize(iconSizeType)
 end
 
 function UIWidgetBaseIconTemplateMixin:Setup(widgetContainer, textureKit, iconInfo, shouldGlow, glowAnimType)
-	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
+	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer, iconInfo.tooltipLoc);
 
 	if self.continuableContainer then
 		self.continuableContainer:Cancel();
@@ -1562,7 +1680,7 @@ function UIWidgetBaseIconTemplateMixin:Setup(widgetContainer, textureKit, iconIn
 	self.Glow:SetSize(iconFrameSize, iconFrameSize);
 
 	if iconInfo.sourceType == Enum.WidgetIconSourceType.Spell then
-		local iconTexture = select(3, GetSpellInfo(iconInfo.sourceID));
+		local iconTexture =	C_Spell.GetSpellTexture(iconInfo.sourceID);
 		if iconTexture then
 			self.Icon:SetTexture(iconTexture);
 			self:Show();
@@ -1587,7 +1705,6 @@ function UIWidgetBaseIconTemplateMixin:Setup(widgetContainer, textureKit, iconIn
 	self.iconInfo = iconInfo;
 
 	self:SetTooltip(iconInfo.tooltip);
-	self:SetTooltipLocation(iconInfo.tooltipLoc);
 
 	self:SetSize(self.Icon:GetSize());
 end

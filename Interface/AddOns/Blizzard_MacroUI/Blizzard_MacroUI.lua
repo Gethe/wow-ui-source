@@ -90,6 +90,7 @@ end
 
 function MacroFrameMixin:OnShow()
 	self:SetAccountMacros();
+	self:RegisterEvent("UPDATE_MACROS");
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	UpdateMicroButtons();
 
@@ -98,6 +99,7 @@ end
 
 function MacroFrameMixin:OnHide()
 	MacroPopupFrame:Hide();
+	self:UnregisterEvent("UPDATE_MACROS");
 	self:SaveMacro();
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 	UpdateMicroButtons();
@@ -105,6 +107,13 @@ function MacroFrameMixin:OnHide()
 	if self.iconDataProvider ~= nil then
 		self.iconDataProvider:Release();
 		self.iconDataProvider = nil;
+	end
+end
+
+function MacroFrameMixin:OnEvent(event, ...)
+	if event == "UPDATE_MACROS" then
+		self:Update(true);
+		self:SelectMacro(self.MacroSelector:GetSelectedIndex());
 	end
 end
 

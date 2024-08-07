@@ -52,7 +52,7 @@ end
 
 function CampaignOverviewMixin:SetupEntry(index, entry)
 	local line = self.linePool:Acquire();
-	line:SetWidth(220);
+	line:SetWidth(265);
 	line.layoutIndex = index;
 
 	if entry.isHeader then

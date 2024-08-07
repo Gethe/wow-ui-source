@@ -36,7 +36,6 @@ StaticPopupDialogs["CALENDAR_ERROR"] = {
 
 
 -- UIParent integration
-tinsert(UIMenus, "CalendarContextMenu");
 CALENDAR_FRAME_EXTRA_WIDTH = 20;
 UIPanelWindows["CalendarFrame"] = { area = "doublewide", pushable = 0, whileDead = 1, yOffset = 20, extraWidth = CALENDAR_FRAME_EXTRA_WIDTH };
 
@@ -814,7 +813,7 @@ local function _CalendarFrame_CacheEventDungeons_Internal(eventType, textures)
 		end
 	end
 
-	local cacheIndex = 1;
+	cacheIndex = 1;
 	while cacheIndex < #CalendarEventDungeonCache do
 		-- insert headers between expansion levels
 		local entry = CalendarEventDungeonCache[cacheIndex];
@@ -1032,9 +1031,29 @@ function CalendarFrame_UpdateTimeFormat()
 	end
 end
 
+local function CalendarFrame_InitFilterDropdown(self)
+	local function IsSelected(data)
+		return GetCVarBool(data.cvar);
+	end
+
+	local function SetSelected(data)
+		SetCVar(data.cvar, not GetCVarBool(data.cvar));
+		CalendarFrame_Update();
+	end
+
+	self.FilterButton:SetWidth(106);
+	self.FilterButton:SetText(CALENDAR_FILTERS);
+	self.FilterButton:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_CALENDAR_FILTER");
+
+		for index, data in ipairs(CALENDAR_FILTER_CVARS) do
+			rootDescription:CreateCheckbox(data.text, IsSelected, SetSelected, data);
+		end
+	end);
+end
+
 function CalendarFrame_OnLoad(self)
 	self:RegisterEvent("CALENDAR_UPDATE_EVENT_LIST");
---	self:RegisterEvent("CALENDAR_UPDATE_PENDING_INVITES");		-- event list updates are fired for invite status changes now
 	self:RegisterEvent("CALENDAR_OPEN_EVENT");
 	self:RegisterEvent("CALENDAR_UPDATE_ERROR");
 	self:RegisterEvent("CALENDAR_UPDATE_ERROR_WITH_COUNT");
@@ -1062,14 +1081,14 @@ function CalendarFrame_OnLoad(self)
 
 	-- initialize modal dialog handling
 	self.modalFrame = nil;
+
+	CalendarFrame_InitFilterDropdown(self);
 end
 
 function CalendarFrame_OnEvent(self, event, ...)
 	if ( event == "CALENDAR_UPDATE_EVENT_LIST" ) then
 		CalendarFrame_Update();
 	elseif ( event == "CALENDAR_OPEN_EVENT" ) then
-		-- hide the invite context menu right off the bat, since it's probably going to be invalid
-		CalendarContextMenu_Hide(CalendarCreateEventInviteContextMenu_Initialize);
 		-- now open the event based on its calendar type
 		local calendarType = ...;
 		if ( calendarType == "HOLIDAY" ) then
@@ -1119,8 +1138,6 @@ function CalendarFrame_OnHide(self)
 	CalendarFrame_CloseEvent();
 	CalendarEventPickerFrame_Hide();
 	CalendarTexturePickerFrame_Hide();
-	CalendarContextMenu_Reset();
-	HideDropDownMenu(1);
 	StaticPopup_Hide("CALENDAR_DELETE_EVENT");
 	StaticPopup_Hide("CALENDAR_ERROR");
 	-- pop all modal frames as a fail safe, just in case we somehow end up in a state where modal frames
@@ -1385,32 +1402,6 @@ function CalendarFrame_Update()
 		if ( eventFrame and (eventFrame ~= CalendarCreateEventFrame or eventFrame.mode ~= "create") ) then
 			--...and the event frame was open and not in create mode, hide the event frame
 			CalendarFrame_CloseEvent();
-		end
-	end
-
-	-- if the context menu was set to an event...
-	if ( CalendarContextMenu.eventButton and
-		 CalendarContextMenu.func == CalendarDayContextMenu_Initialize ) then
-		if ( contextEventDay == 0 ) then
-			--...and the context event no longer exists
-			-- hide the context menu
-			CalendarContextMenu_Hide();
-			-- hide the event deletion popup
-			-- this might seem kludgy, but it takes just as long, if not longer, to check visibility of the popup
-			-- as it does to just hide it, that's why we don't check visibility first
-			StaticPopup_Hide("CALENDAR_DELETE_EVENT");
-		elseif ( CalendarContextMenu:IsShown() ) then
-			local dayButton = CalendarContextMenu.dayButton;
-			local eventButton = CalendarContextMenu.eventButton;
-			if ( dayButton.monthOffset ~= contextEventMonthOffset or
-				 dayButton.day ~= contextEventDay or
-				 eventButton.eventIndex ~= contextEventIndex ) then
-				--...and the event index changed, hide the context menu
-				-- you might be thinking "why don't we just reanchor the context menu to the proper day?"
-				-- great question! we don't do this because we don't want the UI to jump around on the user
-				-- like that, especially since calendar updates are not always caused by the user
-				CalendarContextMenu_Hide();
-			end
 		end
 	end
 end
@@ -1767,7 +1758,6 @@ end
 
 function CalendarFrame_OffsetMonth(offset)
 	C_Calendar.SetMonth(offset);
-	CalendarContextMenu_Hide();
 	StaticPopup_Hide("CALENDAR_DELETE_EVENT");
 	CalendarEventPickerFrame_Hide();
 	CalendarTexturePickerFrame_Hide();
@@ -1782,9 +1772,7 @@ function CalendarFrame_UpdateMonthOffsetButtons()
 	end
 
 	local date = C_Calendar.GetMinDate();
-	local testWeekday = date.weekday;
 	local testMonth = date.month;
-	local testDate = date.monthDay;
 	local testYear = date.year;
 	CalendarPrevMonthButton:Enable();
 	if ( CalendarFrame.viewedYear <= testYear ) then
@@ -1794,9 +1782,7 @@ function CalendarFrame_UpdateMonthOffsetButtons()
 	end
 	-- the max create date is the max date we're going to allow people to view
 	date = C_Calendar.GetMaxCreateDate();
-	testWeekday = date.weekday;
 	testMonth = date.month;
-	testDay = date.monthDay;
 	testYear = date.year;
 	CalendarNextMonthButton:Enable();
 	if ( CalendarFrame.viewedYear >= testYear ) then
@@ -1849,46 +1835,9 @@ function CalendarNextMonthButton_OnClick()
 	CalendarFrame_OffsetMonth(1);
 end
 
-function CalendarFilterButton_OnMouseDown(self)
-	ToggleDropDownMenu(1, nil, CalendarFilterDropDown, self, 0, 0);
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-end
-
-function CalendarFilterDropDown_OnLoad(self)
-	UIDropDownMenu_Initialize(self, CalendarFilterDropDown_Initialize);
-	UIDropDownMenu_SetText(self, CALENDAR_FILTERS);
-	UIDropDownMenu_SetAnchor(self, 0, 0, "TOPRIGHT", CalendarFilterButton, "BOTTOMRIGHT");
-end
-
-function CalendarFilterDropDown_Initialize(self)
-	local info = UIDropDownMenu_CreateInfo();
-
-	info.keepShownOnClick = 1;
-	for index, value in next, CALENDAR_FILTER_CVARS do
-		info.text = value.text;
-		info.isNotRadio = true;
-		info.func = CalendarFilterDropDown_OnClick;
-		if ( GetCVarBool(value.cvar) ) then
-			info.checked = 1;
-		else
-			info.checked = nil;
-		end
-		UIDropDownMenu_AddButton(info);
-	end
-end
-
-function CalendarFilterDropDown_OnClick(self)
-	SetCVar(CALENDAR_FILTER_CVARS[self:GetID()].cvar, UIDropDownMenuButton_GetChecked(self) and "1" or "0");
-	CalendarFrame_Update();
-end
-
 function CalendarFrame_UpdateFilter()
-	if ( CalendarFrame_GetModal() ) then
-		HideDropDownMenu(1);
-		CalendarFilterButton:Disable();
-	else
-		CalendarFilterButton:Enable();
-	end
+	local enabled = not CalendarFrame_GetModal();
+	CalendarFrame.FilterButton:SetEnabled(enabled);
 end
 
 
@@ -2007,341 +1956,45 @@ function CalendarEventFrameBlocker_Update()
 	end
 end
 
-
--- CalendarContextMenu
-
-function CalendarContextMenu_Show(attachFrame, func, anchorName, xOffset, yOffset, ...)
-	local uiScale;
-	local uiParentScale = UIParent:GetScale();
-	if ( GetCVarBool("useUIScale") ) then
-		uiScale = tonumber(GetCVar("uiscale"));
-		if ( uiParentScale < uiScale ) then
-			uiScale = uiParentScale;
-		end
-	else
-		uiScale = uiParentScale;
-	end
-	--CalendarContextMenu:SetScale(uiScale);
-
-	local point = "TOPLEFT";
-	local relativePoint = "BOTTOMLEFT";
-	local relativeTo;
-	if ( anchorName == "cursor" ) then
-		relativeTo = nil;
-		local cursorX, cursorY = GetCursorPosition();
-		cursorX = cursorX / uiScale;
-		cursorY =  cursorY / uiScale;
-
-		if ( not xOffset ) then
-			xOffset = 0;
-		end
-		if ( not yOffset ) then
-			yOffset = 0;
-		end
-		xOffset = cursorX + xOffset;
-		yOffset = cursorY + yOffset;
-	else
-		relativeTo = anchorName;
-	end
-	local subMenu = _G[CalendarContextMenu.subMenu];
-	if ( subMenu ) then
-		subMenu:Hide();
-	end
-	CalendarContextMenu:ClearAllPoints();
-	CalendarContextMenu:SetPoint(point, relativeTo, relativePoint, xOffset, yOffset);
-	CalendarContextMenu.attachFrame = attachFrame;
-	CalendarContextMenu.func = func;
-	if ( func(CalendarContextMenu, ...) ) then
-		CalendarContextMenu:Show();
-	else
-		CalendarContextMenu:Hide();
-	end
-end
-
-function CalendarContextMenu_Toggle(attachFrame, func, anchorName, xOffset, yOffset, ...)
-	if ( CalendarContextMenu:IsShown() ) then
-		if ( not func or func == CalendarContextMenu.func ) then
-			CalendarContextMenu_Hide();
-		else
-			CalendarContextMenu_Show(attachFrame, func, anchorName, xOffset, yOffset, ...);
-		end
-	else
-		CalendarContextMenu_Show(attachFrame, func, anchorName, xOffset, yOffset, ...);
-	end
-end
-
-function CalendarContextMenu_Hide(func)
-	if ( not func or func == CalendarContextMenu.func ) then
-		CalendarContextMenu:Hide();
-	end
-end
-
-function CalendarContextMenu_Reset()
-	CalendarContextMenu.func = nil;
-	CalendarContextMenu.dayButton = nil;
-	CalendarContextMenu.eventButton = nil;
-end
-
-function CalendarContextMenu_OnLoad(self)
-	self:RegisterEvent("GUILD_ROSTER_UPDATE");
-	self:RegisterEvent("PLAYER_GUILD_UPDATE");
-end
-
-function CalendarContextMenu_OnEvent(self, event, ...)
-	if ( event == "GUILD_ROSTER_UPDATE" or event == "PLAYER_GUILD_UPDATE" ) then
-		CalendarDayContextMenu_RefreshEvent();
-	end
-end
-
-function CalendarContextMenu_OnHide(self)
-	-- fail safe: unlock old highlights
-	CalendarDayContextMenu_UnlockHighlights();
-	CalendarInviteContextMenu_UnlockHighlights();
-	-- fail safe: always hide nested menus
-	CalendarInviteStatusContextMenu:Hide();
-end
-
-
--- CalendarDayContextMenu
-
-function CalendarDayContextMenu_Initialize(self, flags, dayButton, eventButton)
-	UIMenu_Initialize(self);
-
-	-- unlock old highlights
-	CalendarDayContextMenu_UnlockHighlights();
-
-	-- record the new day and event buttons
-	self.dayButton = dayButton;
-	self.eventButton = eventButton;
-	self.flags = flags;
-
-	local day = dayButton.day;
-	local monthOffset = dayButton.monthOffset;
-	local monthInfo = C_Calendar.GetMonthInfo(monthOffset);
-	local month = monthInfo.month;
-	local year = monthInfo.year;
-
-	-- record whether or not
-	local isTodayOrLater = _CalendarFrame_IsTodayOrLater(month, day, year);
-	local isAfterMaxDate = _CalendarFrame_IsAfterMaxCreateDate(month, day, year);
-	local validCreationDate = isTodayOrLater and not isAfterMaxDate;
-
-	local canPaste = validCreationDate and C_Calendar.ContextMenuEventClipboard();
-
-	local showDay = validCreationDate and band(flags, CALENDAR_CONTEXTMENU_FLAG_SHOWDAY) ~= 0;
-	local showEvent = eventButton and band(flags, CALENDAR_CONTEXTMENU_FLAG_SHOWEVENT) ~= 0;
-
-	local needSpacer = false;
-	if ( showDay ) then
-		UIMenu_AddButton(self, CALENDAR_CREATE_EVENT, nil, CalendarDayContextMenu_CreateEvent);
-
-		-- add guild selections if the player has a guild
-		if ( IsInGuild() ) then
-			UIMenu_AddButton(self, CALENDAR_CREATE_GUILD_EVENT, nil, CalendarDayContextMenu_CreateGuildEvent);
-
-			if ( CanEditGuildEvent() ) then
-				UIMenu_AddButton(self, CALENDAR_CREATE_GUILD_ANNOUNCEMENT, nil, CalendarDayContextMenu_CreateGuildAnnouncement);
-			end
-		end
-
-		-- add community selections if the player is in a character community
-		local clubs = C_Club.GetSubscribedClubs();
-		for i, clubInfo in ipairs(clubs) do
-			if clubInfo.clubType == Enum.ClubType.Character then
-				UIMenu_AddButton(self, CALENDAR_CREATE_COMMUNITY_EVENT, nil, CalendarDayContextMenu_CreateCommunityEvent);
-				break;
-			end
-		end
-
-		needSpacer = true;
-	end
-
-	if ( showEvent ) then
-		local eventIndex = eventButton.eventIndex;
-		local event = C_Calendar.GetDayEvent(monthOffset, day, eventIndex);
-		-- add context items for the selected event
-		if ( _CalendarFrame_IsPlayerCreatedEvent(event.calendarType) ) then
-			local canEdit = C_Calendar.ContextMenuEventCanEdit(monthOffset, day, eventIndex);
-			local canRemove = C_Calendar.ContextMenuEventCanRemove(monthOffset, day, eventIndex);
-			if ( canEdit ) then
-				-- spacer
-				if ( needSpacer ) then
-					UIMenu_AddButton(self, "");
-				end
-				-- copy
-				UIMenu_AddButton(self, CALENDAR_COPY_EVENT, nil, CalendarDayContextMenu_CopyEvent);
-				-- paste
-				if ( canPaste ) then
-					UIMenu_AddButton(self, CALENDAR_PASTE_EVENT, nil, CalendarDayContextMenu_PasteEvent);
-				end
-			elseif ( canPaste ) then
-				if ( needSpacer ) then
-					UIMenu_AddButton(self, "");
-				end
-				-- paste
-				UIMenu_AddButton(self, CALENDAR_PASTE_EVENT, nil, CalendarDayContextMenu_PasteEvent);
-				needSpacer = true;
-			end
-			if ( canRemove ) then
-				-- delete
-				UIMenu_AddButton(self, CALENDAR_DELETE_EVENT, nil, CalendarDayContextMenu_DeleteEvent);
-				needSpacer = true;
-			end
-			if ( event.calendarType ~= "GUILD_ANNOUNCEMENT" ) then
-				if ( validCreationDate and _CalendarFrame_CanInviteeRSVP(event.inviteStatus) ) then
-					-- spacer
-					if ( _CalendarFrame_IsSignUpEvent(event.calendarType, event.inviteType) ) then
-						-- We no longer show remove event in the dropdown, only Sign Up.
-						if ( event.inviteStatus == Enum.CalendarStatus.NotSignedup ) then
-							-- sign up
-							if ( needSpacer ) then
-								UIMenu_AddButton(self, "");
-							end
-							UIMenu_AddButton(self, CALENDAR_SIGNUP, nil, CalendarDayContextMenu_SignUp);
-						end
-					elseif ( event.modStatus ~= "CREATOR" ) then
-						if ( needSpacer ) then
-							UIMenu_AddButton(self, "");
-						end
-						-- accept invitation
-						if ( event.inviteStatus ~= Enum.CalendarStatus.Available ) then
-							UIMenu_AddButton(self, CALENDAR_ACCEPT_INVITATION, nil, CalendarDayContextMenu_AcceptInvite);
-						end
-						-- tentative invitation
-						if ( event.inviteStatus ~= Enum.CalendarStatus.Tentative ) then
-							UIMenu_AddButton(self, CALENDAR_TENTATIVE_INVITATION, nil, CalendarDayContextMenu_TentativeInvite);
-						end
-						-- decline invitation
-						if ( event.inviteStatus ~= Enum.CalendarStatus.Declined ) then
-							UIMenu_AddButton(self, CALENDAR_DECLINE_INVITATION, nil, CalendarDayContextMenu_DeclineInvite);
-						end
-					end
-					needSpacer = false;
-				end
-				if ( _CalendarFrame_CanRemoveEvent(event.modStatus, event.calendarType, event.inviteType, event.inviteStatus) ) then
-					-- spacer
-					if ( needSpacer ) then
-						UIMenu_AddButton(self, "");
-					end
-					-- remove event
-					UIMenu_AddButton(self, CALENDAR_REMOVE_INVITATION, nil, CalendarDayContextMenu_RemoveInvite);
-					needSpacer = true;
-				end
-			end
-			if ( C_Calendar.ContextMenuEventCanComplain(monthOffset, day, eventIndex) ) then
-				if ( needSpacer ) then
-					UIMenu_AddButton(self, "");
-				end
-				-- report spam
-				UIMenu_AddButton(self, REPORT_CALENDAR, nil, CalendarDayContextMenu_ReportSpam);
-				needSpacer = true;
-			end
-		elseif ( canPaste ) then
-			-- add paste if we have a clipboard
-			if ( needSpacer ) then
-				UIMenu_AddButton(self, "");
-			end
-			UIMenu_AddButton(self, CALENDAR_PASTE_EVENT, nil, CalendarDayContextMenu_PasteEvent);
-		end
-	elseif ( canPaste ) then
-		-- add paste if we have a clipboard
-		if ( needSpacer ) then
-			UIMenu_AddButton(self, "");
-		end
-		UIMenu_AddButton(self, CALENDAR_PASTE_EVENT, nil, CalendarDayContextMenu_PasteEvent);
-	end
-
-	if ( UIMenu_FinishInitializing(self) ) then
-		-- lock new highlights
-		if ( dayButton ) then
-			dayButton:LockHighlight();
-		end
-		if ( eventButton ) then
-			-- if we're highlighting an event, then register it with the context selection system
-			C_Calendar.ContextMenuSelectEvent(monthOffset, day, eventButton.eventIndex);
-			eventButton:LockHighlight();
-		end
-		return true;
-	else
-		-- show an error if they summoned a context menu that they could not create an event for, and
-		-- there are no buttons on the context menu
-		if ( not isTodayOrLater ) then
-			StaticPopup_Show("CALENDAR_ERROR", CALENDAR_ERROR_CREATEDATE_BEFORE_TODAY);
-		elseif ( isAfterMaxDate ) then
-			StaticPopup_Show("CALENDAR_ERROR", format(CALENDAR_ERROR_CREATEDATE_AFTER_MAX, _CalendarFrame_GetFullDateFromDateInfo(C_Calendar.GetMaxCreateDate())));
-		end
-		return false;
-	end
-end
-
-function CalendarDayContextMenu_RefreshEvent()
-	-- this function assumes that the CalendarContextMenu is already attached to an event
-	local menu = CalendarContextMenu;
-	if ( menu:IsShown() and menu.func == CalendarDayContextMenu_Initialize ) then
-		CalendarContextMenu_Show(menu.attachFrame, menu.func, "cursor", 3, -3, menu.flags, menu.dayButton, menu.eventButton);
-	end
-end
-
-function CalendarDayContextMenu_UnlockHighlights()
-	local dayButton = CalendarContextMenu.dayButton;
-	local eventButton = CalendarContextMenu.eventButton;
-	if ( dayButton and
-		 dayButton ~= CalendarFrame.selectedDayButton and
-		 dayButton ~= GameTooltip:GetOwner() ) then
-		dayButton:UnlockHighlight();
-	end
-	if ( eventButton and
-		 eventButton ~= CalendarFrame.selectedEventButton and
-		 eventButton ~= CalendarEventPickerFrame.selectedEventButton ) then
-		eventButton:UnlockHighlight();
-	end
-end
-
-function CalendarDayContextMenu_ClearEvent()
-	CalendarContextMenu_Hide(CalendarCreateEventInviteContextMenu_Initialize);
+function CalendarDayContextMenu_ClearEvent(dayButton)
 	C_Calendar.CloseEvent();
 	CalendarFrame_HideEventFrame();
-	CalendarDayButton_Click(CalendarContextMenu.dayButton);
+	CalendarDayButton_Click(dayButton);
 end
 
-function CalendarDayContextMenu_CreateEvent()
-	CalendarDayContextMenu_ClearEvent();
+function CalendarDayContextMenu_CreateEvent(dayButton)
+	CalendarDayContextMenu_ClearEvent(dayButton);
 	C_Calendar.CreatePlayerEvent();
 	CalendarCreateEventFrame.mode = "create";
-	CalendarCreateEventFrame.dayButton = CalendarContextMenu.dayButton;
+	CalendarCreateEventFrame.dayButton = dayButton;
 	CalendarFrame_ShowEventFrame(CalendarCreateEventFrame);
 end
 
-function CalendarDayContextMenu_CreateGuildAnnouncement()
-	CalendarDayContextMenu_ClearEvent();
+function CalendarDayContextMenu_CreateGuildAnnouncement(dayButton)
+	CalendarDayContextMenu_ClearEvent(dayButton);
 	C_Calendar.CreateGuildAnnouncementEvent();
 	CalendarCreateEventFrame.mode = "create";
-	CalendarCreateEventFrame.dayButton = CalendarContextMenu.dayButton;
+	CalendarCreateEventFrame.dayButton = dayButton;
 	CalendarFrame_ShowEventFrame(CalendarCreateEventFrame);
 end
 
-function CalendarDayContextMenu_CreateGuildEvent()
-	CalendarDayContextMenu_ClearEvent();
+function CalendarDayContextMenu_CreateGuildEvent(dayButton)
+	CalendarDayContextMenu_ClearEvent(dayButton);
 	C_Calendar.CreateGuildSignUpEvent();
 	CalendarCreateEventFrame.mode = "create";
-	CalendarCreateEventFrame.dayButton = CalendarContextMenu.dayButton;
+	CalendarCreateEventFrame.dayButton = dayButton;
 	CalendarFrame_ShowEventFrame(CalendarCreateEventFrame);
 end
 
-function CalendarDayContextMenu_CreateCommunityEvent()
-	CalendarDayContextMenu_ClearEvent();
+function CalendarDayContextMenu_CreateCommunityEvent(dayButton)
+	CalendarDayContextMenu_ClearEvent(dayButton);
 	C_Calendar.CreateCommunitySignUpEvent();
 	CalendarCreateEventFrame.mode = "create";
-	CalendarCreateEventFrame.dayButton = CalendarContextMenu.dayButton;
+	CalendarCreateEventFrame.dayButton = dayButton;
 	CalendarFrame_ShowEventFrame(CalendarCreateEventFrame);
 end
 
-function CalendarDayContextMenu_CopyEvent()
-	C_Calendar.ContextMenuEventCopy();
-end
-
-function CalendarDayContextMenu_PasteEvent()
-	local dayButton = CalendarContextMenu.dayButton;
+function CalendarDayContextMenu_PasteEvent(dayButton)
 	C_Calendar.ContextMenuEventPaste(dayButton.monthOffset, dayButton.day);
 end
 
@@ -2361,7 +2014,7 @@ function CalendarDayContextMenu_DeleteEvent()
 end
 
 function CalendarDayContextMenu_ReportSpam()
-	reportInfo = ReportInfo:CreateReportInfoFromType(Enum.ReportType.Calendar);
+	local reportInfo = ReportInfo:CreateReportInfoFromType(Enum.ReportType.Calendar);
 	ReportFrame:InitiateReport(reportInfo);
 end
 
@@ -2512,29 +2165,129 @@ end
 
 function CalendarDayButton_OnLeave(self)
 	GameTooltip:Hide();
-	if ( self ~= CalendarFrame.selectedDayButton and
-		 (not CalendarContextMenu:IsShown() or self ~= CalendarContextMenu.dayButton) ) then
-		self:UnlockHighlight();
+end
+
+function GenerateDayContextMenu(owner, rootDescription, flags, dayButton, eventButton)
+	rootDescription:SetTag("MENU_CALENDAR_DAY");
+
+	local day = dayButton.day;
+	local monthOffset = dayButton.monthOffset;
+	local monthInfo = C_Calendar.GetMonthInfo(monthOffset);
+	local month = monthInfo.month;
+	local year = monthInfo.year;
+
+	local isTodayOrLater = _CalendarFrame_IsTodayOrLater(month, day, year);
+	local isAfterMaxDate = _CalendarFrame_IsAfterMaxCreateDate(month, day, year);
+	local validCreationDate = isTodayOrLater and not isAfterMaxDate;
+	local canPaste = validCreationDate and C_Calendar.ContextMenuEventClipboard();
+	local showDay = validCreationDate and band(flags, CALENDAR_CONTEXTMENU_FLAG_SHOWDAY) ~= 0;
+	local showEvent = eventButton and band(flags, CALENDAR_CONTEXTMENU_FLAG_SHOWEVENT) ~= 0;
+
+	if showDay then
+		rootDescription:CreateButton(CALENDAR_CREATE_EVENT, CalendarDayContextMenu_CreateEvent, dayButton);
+
+		if IsInGuild() then
+			rootDescription:CreateButton(CALENDAR_CREATE_GUILD_EVENT, CalendarDayContextMenu_CreateGuildEvent, dayButton);
+
+			if CanEditGuildEvent() then
+				rootDescription:CreateButton(CALENDAR_CREATE_GUILD_ANNOUNCEMENT, CalendarDayContextMenu_CreateGuildAnnouncement, dayButton);
+			end
+		end
+
+		for i, clubInfo in ipairs(C_Club.GetSubscribedClubs()) do
+			if clubInfo.clubType == Enum.ClubType.Character then
+				rootDescription:CreateButton(CALENDAR_CREATE_COMMUNITY_EVENT, CalendarDayContextMenu_CreateCommunityEvent, dayButton);
+				break;
+			end
+		end
+
+		rootDescription:QueueDivider();
+	end
+
+	if showEvent then
+		local eventIndex = eventButton.eventIndex;
+		local event = C_Calendar.GetDayEvent(monthOffset, day, eventIndex);
+		if _CalendarFrame_IsPlayerCreatedEvent(event.calendarType) then
+			local canEdit = C_Calendar.ContextMenuEventCanEdit(monthOffset, day, eventIndex);
+			local canRemove = C_Calendar.ContextMenuEventCanRemove(monthOffset, day, eventIndex);
+			if canEdit then
+				rootDescription:CreateButton(CALENDAR_COPY_EVENT, C_Calendar.ContextMenuEventCopy);
+				if canPaste then
+					rootDescription:CreateButton(CALENDAR_PASTE_EVENT, CalendarDayContextMenu_PasteEvent, dayButton);
+				end
+			elseif canPaste then
+				rootDescription:CreateButton(CALENDAR_PASTE_EVENT, CalendarDayContextMenu_PasteEvent, dayButton);
+				rootDescription:QueueDivider();
+			end
+			if canRemove then
+				rootDescription:CreateButton(CALENDAR_DELETE_EVENT, CalendarDayContextMenu_DeleteEvent);
+				rootDescription:QueueDivider();
+			end
+
+			if event.calendarType ~= "GUILD_ANNOUNCEMENT" then
+				if validCreationDate and _CalendarFrame_CanInviteeRSVP(event.inviteStatus) then
+					if _CalendarFrame_IsSignUpEvent(event.calendarType, event.inviteType) then
+						-- We no longer show remove event in the dropdown, only Sign Up.
+						if event.inviteStatus == Enum.CalendarStatus.NotSignedup then
+							rootDescription:CreateButton(CALENDAR_SIGNUP, CalendarDayContextMenu_SignUp);
+						end
+					elseif event.modStatus ~= "CREATOR" then
+						if event.inviteStatus ~= Enum.CalendarStatus.Available then
+							rootDescription:CreateButton(CALENDAR_ACCEPT_INVITATION, CalendarDayContextMenu_AcceptInvite);
+						end
+						if event.inviteStatus ~= Enum.CalendarStatus.Tentative then
+							rootDescription:CreateButton(CALENDAR_TENTATIVE_INVITATION, CalendarDayContextMenu_TentativeInvite);
+						end
+						if event.inviteStatus ~= Enum.CalendarStatus.Declined then
+							rootDescription:CreateButton(CALENDAR_DECLINE_INVITATION, CalendarDayContextMenu_DeclineInvite);
+						end
+					end
+					rootDescription:ClearQueuedDescriptions();
+				end
+				if _CalendarFrame_CanRemoveEvent(event.modStatus, event.calendarType, event.inviteType, event.inviteStatus) then
+					rootDescription:CreateButton(CALENDAR_REMOVE_INVITATION, CalendarDayContextMenu_RemoveInvite);
+					rootDescription:QueueDivider();
+				end
+			end
+			if C_Calendar.ContextMenuEventCanComplain(monthOffset, day, eventIndex) then
+				rootDescription:CreateButton(REPORT_CALENDAR, CalendarDayContextMenu_ReportSpam);
+				rootDescription:QueueDivider();
+			end
+		elseif canPaste then
+			rootDescription:CreateButton(CALENDAR_PASTE_EVENT, CalendarDayContextMenu_PasteEvent, dayButton);
+		end
+	elseif canPaste then
+		rootDescription:CreateButton(CALENDAR_PASTE_EVENT, CalendarDayContextMenu_PasteEvent, dayButton);
+	end
+
+	if rootDescription:HasElements() then
+		if eventButton then
+			-- if we're highlighting an event, then register it with the context selection system
+			C_Calendar.ContextMenuSelectEvent(monthOffset, day, eventButton.eventIndex);
+		end
+
+		rootDescription:AddMenuAcquiredCallback(function(menuFrame)
+			dayButton:LockHighlight();
+		end);
+
+		rootDescription:AddMenuReleasedCallback(function(menuFrame)
+			if CalendarFrame.selectedDayButton ~= dayButton then
+				dayButton:UnlockHighlight();
+			end
+		end);
+		return;
+	end
+
+	-- show an error if they tried to open a context menu on a day they could not create an event for, and
+	-- there are no buttons on the context menu
+	if not isTodayOrLater then
+		StaticPopup_Show("CALENDAR_ERROR", CALENDAR_ERROR_CREATEDATE_BEFORE_TODAY);
+	elseif isAfterMaxDate then
+		StaticPopup_Show("CALENDAR_ERROR", format(CALENDAR_ERROR_CREATEDATE_AFTER_MAX, _CalendarFrame_GetFullDateFromDateInfo(C_Calendar.GetMaxCreateDate())));
 	end
 end
 
 function CalendarDayButton_OnClick(self, button)
---[[
-	local month, year = CalendarGetMonth(self.monthOffset);
-	local dayChanged = month ~= CalendarFrame.selectedMonth or self.day ~= CalendarFrame.selectedDay or year ~= CalendarFrame.selectedYear;
-	CalendarDayButton_Click(self);
-
-	if ( button == "LeftButton" ) then
-		CalendarContextMenu_Hide();
-	elseif ( button == "RightButton" ) then
-		local flags = CALENDAR_CONTEXTMENU_FLAG_SHOWDAY;
-		if ( dayChanged ) then
-			CalendarContextMenu_Show(self, CalendarDayContextMenu_Initialize, "cursor", 3, -3, flags, self);
-		else
-			CalendarContextMenu_Toggle(self, CalendarDayContextMenu_Initialize, "cursor", 3, -3, flags, self);
-		end
-	end
---]]
 	if ( self.firstEventButton ) then
 		CalendarDayEventButton_OnClick(self.firstEventButton, button);
 	else
@@ -2545,16 +2298,12 @@ function CalendarDayButton_OnClick(self, button)
 			if ( dayChanged ) then
 				CalendarFrame_CloseEvent();
 			end
-			CalendarContextMenu_Hide();
 		elseif ( button == "RightButton" ) then
-			local dayChanged = self ~= CalendarContextMenu.dayButton;
-
-			local flags = CALENDAR_CONTEXTMENU_FLAG_SHOWDAY;
-			if ( dayChanged ) then
-				CalendarContextMenu_Show(self, CalendarDayContextMenu_Initialize, "cursor", 3, -3, flags, self);
-			else
-				CalendarContextMenu_Toggle(self, CalendarDayContextMenu_Initialize, "cursor", 3, -3, flags, self);
-			end
+			MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
+				local flags = CALENDAR_CONTEXTMENU_FLAG_SHOWDAY;
+				local eventButton = nil;
+				GenerateDayContextMenu(owner, rootDescription, flags, self, eventButton);
+			end);
 		end
 	end
 
@@ -2562,13 +2311,13 @@ function CalendarDayButton_OnClick(self, button)
 end
 
 -- CalendarDayButton_Click allows the OnClick for a day and its event buttons to do some of the same processing
-function CalendarDayButton_Click(button)
+function CalendarDayButton_Click(dayButton)
 	-- close the event picker if it doesn't belong to this day
-	if ( CalendarEventPickerFrame.dayButton and CalendarEventPickerFrame.dayButton ~= button ) then
+	if ( CalendarEventPickerFrame.dayButton and CalendarEventPickerFrame.dayButton ~= dayButton ) then
 		CalendarEventPickerFrame_Hide();
 	end
 
-	local day, monthOffset = button.day, button.monthOffset;
+	local day, monthOffset = dayButton.day, dayButton.monthOffset;
 	local monthInfo = C_Calendar.GetMonthInfo(monthOffset);
 	local month = monthInfo.month;
 	local year = monthInfo.year;
@@ -2577,7 +2326,7 @@ function CalendarDayButton_Click(button)
 		CalendarFrame.selectedDay = day;
 		CalendarFrame.selectedMonth = month;
 		CalendarFrame.selectedYear = year;
-		CalendarFrame_SetSelectedDay(button);
+		CalendarFrame_SetSelectedDay(dayButton);
 	end
 end
 
@@ -2603,14 +2352,11 @@ function CalendarDayButtonMoreEventsButton_OnClick(self, button)
 		CalendarDayButton_Click(dayButton);
 		CalendarEventPickerFrame_Toggle(dayButton);
 	elseif ( button == "RightButton" ) then
-		local dayChanged = CalendarFrame.selectedDayButton ~= dayButton;
-
-		local flags = CALENDAR_CONTEXTMENU_FLAG_SHOWDAY;
-		if ( dayChanged ) then
-			CalendarContextMenu_Show(self, CalendarDayContextMenu_Initialize, "cursor", 3, -3, flags, dayButton);
-		else
-			CalendarContextMenu_Toggle(self, CalendarDayContextMenu_Initialize, "cursor", 3, -3, flags, dayButton);
-		end
+		MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
+			local flags = CALENDAR_CONTEXTMENU_FLAG_SHOWDAY;
+			local eventButton = nil;
+			GenerateDayContextMenu(owner, rootDescription, flags, dayButton, eventButton);
+		end);
 	end
 
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
@@ -2642,18 +2388,12 @@ function CalendarDayEventButton_OnClick(self, button)
 	if ( button == "LeftButton" ) then
 		CalendarDayButton_Click(dayButton);
 		CalendarDayEventButton_Click(self, true);
-		CalendarContextMenu_Hide();
 	elseif ( button == "RightButton" ) then
-		local eventChanged =
-			CalendarContextMenu.eventButton ~= self or
-			CalendarContextMenu.dayButton ~= dayButton;
-
-		local flags = CALENDAR_CONTEXTMENU_FLAG_SHOWDAY + CALENDAR_CONTEXTMENU_FLAG_SHOWEVENT;
-		if ( eventChanged ) then
-			CalendarContextMenu_Show(self, CalendarDayContextMenu_Initialize, "cursor", 3, -3, flags, dayButton, self);
-		else
-			CalendarContextMenu_Toggle(self, CalendarDayContextMenu_Initialize, "cursor", 3, -3, flags, dayButton, self);
-		end
+		MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
+			local flags = CALENDAR_CONTEXTMENU_FLAG_SHOWDAY + CALENDAR_CONTEXTMENU_FLAG_SHOWEVENT;
+			local eventButton = nil;
+			GenerateDayContextMenu(owner, rootDescription, flags, dayButton, self);
+		end);
 	end
 
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
@@ -2760,7 +2500,6 @@ end
 -- Calendar Event Templates
 
 function CalendarEventCloseButton_OnClick(self)
-	CalendarContextMenu_Hide();
 	CalendarFrame_CloseEvent();
 	PlaySound(SOUNDKIT.IG_MAINMENU_QUIT);
 end
@@ -2921,8 +2660,6 @@ end
 function CalendarEventInviteSortButton_OnClick(self)
 	C_Calendar.EventSortInvites(self.criterion, self.criterion == C_Calendar.EventGetInviteSortCriterion());
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	CalendarContextMenu_Hide(CalendarViewEventInviteContextMenu_Initialize);
-	CalendarContextMenu_Hide(CalendarCreateEventInviteContextMenu_Initialize);
 end
 
 function CalendarEventInviteListButton_OnEnter(self)
@@ -2967,7 +2704,6 @@ end
 function CalendarViewEventFrame_OnEvent(self, event, ...)
 	if ( CalendarViewEventFrame:IsShown() ) then
 		if ( event == "CALENDAR_UPDATE_EVENT" ) then
-			CalendarContextMenu_Hide(CalendarCreateEventInviteContextMenu_Initialize);
 			if ( C_Calendar.EventCanEdit() ) then
 				CalendarCreateEventFrame.mode = "edit";
 				CalendarFrame_ShowEventFrame(CalendarCreateEventFrame);
@@ -2975,7 +2711,6 @@ function CalendarViewEventFrame_OnEvent(self, event, ...)
 				CalendarViewEventFrame_Update();
 			end
 		elseif ( event == "CALENDAR_UPDATE_INVITE_LIST" ) then
-			CalendarContextMenu_Hide(CalendarCreateEventInviteContextMenu_Initialize);
 			if ( C_Calendar.EventCanEdit() ) then
 				CalendarCreateEventFrame.mode = "edit";
 				CalendarFrame_ShowEventFrame(CalendarCreateEventFrame);
@@ -3009,10 +2744,6 @@ end
 
 function CalendarViewEventFrame_OnShow(self)
 	CalendarViewEventFrame_Update();
-end
-
-function CalendarViewEventFrame_OnHide(self)
-	CalendarContextMenu_Hide(CalendarViewEventInviteContextMenu_Initialize);
 end
 
 function CalendarViewEventDescriptionContainer_OnLoad(self)
@@ -3370,10 +3101,6 @@ function CalendarViewEventInviteList_OnLoad(self)
 	view:SetElementInitializer("CalendarViewEventInviteListButtonTemplate", function(button, elementData)
 		CalendarViewEventInviteList_InitButton(button, elementData);
 	end);
-	local calculator = function(dataIndex, elementData)
-		return buttonHeight;
-	end;
-
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 	CalendarEvent_InitManagedScrollBarVisibility(self, self.ScrollBox, self.ScrollBar);
 end
@@ -3389,18 +3116,29 @@ function CalendarViewEventFrame_SetSelectedInvite(inviteButton)
 end
 
 function CalendarViewEventInviteListButton_OnClick(self, button)
-	if ( button == "LeftButton" ) then
-		--CalendarViewEventInviteListButton_Click(self);
-		CalendarContextMenu_Hide();
-	elseif ( button == "RightButton" ) then
-		local inviteChanged = CalendarContextMenu.inviteButton ~= self;
+	if button == "RightButton" then
+		local inviteIndex = self.inviteIndex;
+		if (inviteIndex == CalendarViewEventFrame.myInviteIndex) and C_Calendar.EventHasPendingInvite() then
+			MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
+				rootDescription:SetTag("MENU_CALENDAR_VIEW_INVITE");
 
-		if ( C_Calendar.EventHasPendingInvite() and self.inviteIndex == CalendarViewEventFrame.myInviteIndex ) then
-			if ( inviteChanged ) then
-				CalendarContextMenu_Show(self, CalendarViewEventInviteContextMenu_Initialize, "cursor", 3, -3, self);
-			else
-				CalendarContextMenu_Toggle(self, CalendarViewEventInviteContextMenu_Initialize, "cursor", 3, -3, self);
-			end
+				local submenu = rootDescription:CreateButton(CALENDAR_SET_INVITE_STATUS);
+				for index, statusOption in ipairs(C_Calendar.EventGetStatusOptions(inviteIndex)) do
+					submenu:CreateButton(_G[statusOption.statusString], function()
+						C_Calendar.EventSetInviteStatus(inviteIndex, statusOption.status);
+					end);
+				end
+
+				rootDescription:AddMenuAcquiredCallback(function(menuFrame)
+					self:LockHighlight();
+				end);
+
+				rootDescription:AddMenuReleasedCallback(function(menuFrame)
+					if CalendarFrame.selectedEventButton ~= self then
+						self:UnlockHighlight();
+					end
+				end);
+			end);
 		end
 	end
 
@@ -3412,36 +3150,176 @@ function CalendarViewEventInviteListButton_Click(button)
 	CalendarViewEventFrame_SetSelectedInvite(button);
 end
 
-function CalendarViewEventInviteContextMenu_Initialize(self, inviteButton)
-	UIMenu_Initialize(self);
+-- CalendarCreateEventFrame
 
-	-- unlock old highlights
-	CalendarInviteContextMenu_UnlockHighlights();
+local function InitEventTypeDropdown(self)
+	local function IsSelected(eventType)
+		return CalendarCreateEventFrame.selectedEventType == eventType;
+	end
 
-	-- record the invite button
-	self.inviteButton = inviteButton;
+	local function SetSelected(eventType)
+		if eventType == Enum.CalendarEventType.Dungeon or eventType == Enum.CalendarEventType.Raid then
+			CalendarTexturePickerFrame_Show(eventType);
+		else
+			C_Calendar.EventSetType(eventType);
+			CalendarCreateEventFrame.selectedTextureIndex = nil;
+			CalendarCreateEventFrame.selectedEventType = eventType;
+			CalendarCreateEvent_UpdateEventType(CalendarCreateEventFrame);
+			CalendarCreateEventTexture_Update();
+			CalendarCreateEventCreateButton_Update();
+		end
+	end
 
-	-- set invite status submenu
-	UIMenu_AddButton(self, CALENDAR_SET_INVITE_STATUS, nil, nil, "CalendarInviteStatusContextMenu");
+	self.EventTypeDropdown:SetWidth(100);
+	self.EventTypeDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_CALENDAR_EVENT_TYPE");
 
-	-- lock new highlights
-	inviteButton:LockHighlight();
-
-	return UIMenu_FinishInitializing(self);
+		for index, _type in ipairs(C_Calendar.EventGetTypesDisplayOrdered()) do
+			local text = _G[_type.displayString];
+			rootDescription:CreateRadio(text, IsSelected, SetSelected, _type.eventType);
+		end
+	end);
 end
 
+local function InitHourDropdown(self)
+	local function IsSelected(hour)
+		return CalendarCreateEventFrame.selectedHour == hour;
+	end
 
--- CalendarCreateEventFrame
+	local function SetSelected(hour)
+		CalendarCreateEventFrame.selectedHour = hour;
+		CalendarCreateEvent_SetEventTime();
+		CalendarCreateEventCreateButton_Update();
+	end
+
+	local militaryTime = GetCVarBool("timeMgrUseMilitaryTime");
+	local hourMin, hourMax;
+	if militaryTime then
+		hourMin, hourMax = 0, 23;
+	else
+		hourMin, hourMax = 1, 12;
+	end
+
+	local width = 52;
+	self.HourDropdown:SetWidth(width);
+	self.HourDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_CALENDAR_HOUR");
+
+		for hour = hourMin, hourMax, 1 do
+			local text = militaryTime and format(TIMEMANAGER_24HOUR, hour) or hour;
+			rootDescription:CreateRadio(text, IsSelected, SetSelected, hour);
+		end
+		rootDescription:SetMaximumWidth(width);
+	end);
+end
+
+local function InitMinuteDropdown(self)
+	local function IsSelected(minute)
+		return self.selectedMinute == minute;
+	end
+
+	local function SetSelected(minute)
+		self.selectedMinute = minute;
+		CalendarCreateEvent_SetEventTime();
+		CalendarCreateEventCreateButton_Update();
+	end
+
+	local width = 52;
+	self.MinuteDropdown:SetWidth(width);
+	self.MinuteDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_CALENDAR_MINUTE");
+
+		for minute = 0, 55, 5 do
+			rootDescription:CreateRadio(format(TIMEMANAGER_MINUTE, minute), IsSelected, SetSelected, minute);
+		end
+		rootDescription:SetMaximumWidth(width);
+	end);
+end
+
+local function InitAMPMDropdown(self)
+	local function IsSelected(isAM)
+		return self.selectedAM == isAM;
+	end
+
+	local function SetSelected(isAM)
+		self.selectedAM = isAM;
+		CalendarCreateEvent_SetEventTime();
+		CalendarCreateEventCreateButton_Update();
+	end
+
+	local width = 57;
+	self.AMPMDropdown:SetWidth(width);
+	self.AMPMDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_CALENDAR_AMPM");
+
+		rootDescription:CreateRadio(TIMEMANAGER_AM, IsSelected, SetSelected, true);
+		rootDescription:CreateRadio(TIMEMANAGER_PM, IsSelected, SetSelected, false);
+		rootDescription:SetMaximumWidth(width);
+	end);
+end
+
+local function InitDifficultyDropdown(self)
+	local function IsSelected(difficultyInfo)
+		return difficultyInfo.textureIndex == CalendarCreateEventFrame.selectedTextureIndex;
+	end
+
+	local function SetSelected(difficultyInfo)
+		CalendarCreateEvent_SetSelectedIndex(difficultyInfo.textureIndex, CalendarCreateEventFrame.selectedEventType);
+	end
+
+	self.DifficultyOptionDropdown:SetWidth(110);
+	self.DifficultyOptionDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_CALENDAR_DIFFICULTY");
+
+		local eventType = CalendarCreateEventFrame.selectedEventType;
+		local textureIndex = CalendarCreateEventFrame.selectedTextureIndex;
+		local dungeonCacheEntry = _CalendarFrame_GetEventDungeonCacheEntry(textureIndex, eventType);
+		if dungeonCacheEntry then
+			local alreadyAddedDifficulties = {};
+			for i, difficultyInfo in ipairs(dungeonCacheEntry.difficulties) do
+				if not alreadyAddedDifficulties[difficultyInfo.difficultyName] then
+					rootDescription:CreateRadio(difficultyInfo.difficultyName, IsSelected, SetSelected, difficultyInfo);
+					alreadyAddedDifficulties[difficultyInfo.difficultyName] = true;
+				end
+			end
+		end
+	end);
+end
+
+local function InitCommunityDropdown(self)
+	local function IsSelected(clubId)
+		return clubId == C_Calendar.EventGetClubId();
+	end
+
+	local function SetSelected(clubId)
+		local clubInfo = C_Club.GetClubInfo(clubId)
+		if clubInfo then
+			C_Calendar.EventSetClubId(clubId);
+			CalendarCreateEventCreateButton_Update();
+		end
+	end
+
+	self.CommunityDropdown:SetWidth(208);
+	self.CommunityDropdown:SetDefaultText(CALENDER_INVITE_SELECT_COMMUNITY);
+	self.CommunityDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_CALENDAR_COMMUNITY");
+
+		for i, clubInfo in ipairs(C_Club.GetSubscribedClubs()) do
+			local eventType = CalendarCreateEventFrame.selectedEventType;
+			if (eventType ~= nil) and (clubInfo.clubType == Enum.ClubType.Character) then
+				rootDescription:CreateRadio(clubInfo.name, IsSelected, SetSelected, clubInfo.clubId);
+			end
+		end
+	end);
+end
 
 function CalendarCreateEventFrame_OnLoad(self)
 	self:RegisterEvent("CALENDAR_UPDATE_EVENT");
 	self:RegisterEvent("CALENDAR_UPDATE_INVITE_LIST");
 	self:RegisterEvent("CALENDAR_NEW_EVENT");
 	self:RegisterEvent("CALENDAR_CLOSE_EVENT");
---	self:RegisterEvent("CALENDAR_ACTION_PENDING");
 	self:RegisterEvent("GUILD_ROSTER_UPDATE");
 	self:RegisterEvent("PLAYER_GUILD_UPDATE");
---	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 
 	-- used to update the frame when it is shown via CalendarFrame_ShowEventFrame
 	self.update = CalendarCreateEventFrame_Update;
@@ -3450,18 +3328,12 @@ function CalendarCreateEventFrame_OnLoad(self)
 	self.defaultHeight = self:GetHeight();
 
 	-- initialize UI elements
-	UIDropDownMenu_Initialize(CalendarCreateEventTypeDropDown, CalendarCreateEventTypeDropDown_Initialize);
-	UIDropDownMenu_SetWidth(CalendarCreateEventTypeDropDown, 100);
-	UIDropDownMenu_Initialize(CalendarCreateEventHourDropDown, CalendarCreateEventHourDropDown_Initialize);
-	UIDropDownMenu_SetWidth(CalendarCreateEventHourDropDown, 30, 40);
-	UIDropDownMenu_Initialize(CalendarCreateEventMinuteDropDown, CalendarCreateEventMinuteDropDown_Initialize);
-	UIDropDownMenu_SetWidth(CalendarCreateEventMinuteDropDown, 30, 40);
-	UIDropDownMenu_Initialize(CalendarCreateEventAMPMDropDown, CalendarCreateEventAMPMDropDown_Initialize);
-	UIDropDownMenu_SetWidth(CalendarCreateEventAMPMDropDown, 40, 40);
-	UIDropDownMenu_Initialize(CalendarCreateEventDifficultyOptionDropDown, CalendarCreateEventDifficultyOptionDropDown_Initialize);
-	UIDropDownMenu_SetWidth(CalendarCreateEventDifficultyOptionDropDown, 100);
-	UIDropDownMenu_Initialize(CalendarCreateEventCommunityDropDown, CalendarCreateEventCommunityDropDown_Initialize);
-	UIDropDownMenu_SetWidth(CalendarCreateEventCommunityDropDown, 208);
+	InitEventTypeDropdown(self);
+	InitMinuteDropdown(self);
+	InitHourDropdown(self);
+	InitAMPMDropdown(self);
+	InitDifficultyDropdown(self);
+	InitCommunityDropdown(self);
 end
 
 function CalendarCreateEventFrame_OnEvent(self, event, ...)
@@ -3473,7 +3345,6 @@ function CalendarCreateEventFrame_OnEvent(self, event, ...)
 				CalendarFrame_ShowEventFrame(CalendarViewEventFrame);
 			end
 		elseif ( event == "CALENDAR_UPDATE_INVITE_LIST" ) then
-			CalendarContextMenu_Hide(CalendarCreateEventInviteContextMenu_Initialize);
 			if ( not C_Calendar.EventCanEdit() ) then
 				-- if we can't edit the event any more, show the view event frame immediately
 				CalendarFrame_ShowEventFrame(CalendarViewEventFrame);
@@ -3492,11 +3363,6 @@ function CalendarCreateEventFrame_OnEvent(self, event, ...)
 			end
 		elseif ( event == "CALENDAR_CLOSE_EVENT" ) then
 			CalendarFrame_HideEventFrame(CalendarCreateEventFrame);
---[[
-		elseif ( event == "CALENDAR_ACTION_PENDING" ) then
-			CalendarCreateEventInviteButton_Update();
-			CalendarCreateEventCreateButton_Update();
---]]
 		elseif ( event == "GUILD_ROSTER_UPDATE" or event == "PLAYER_GUILD_UPDATE" ) then
 			if ( event == "GUILD_ROSTER_UPDATE" ) then
 				local canRequestRosterUpdate = ...;
@@ -3511,8 +3377,6 @@ function CalendarCreateEventFrame_OnEvent(self, event, ...)
 			else
 				CalendarFrame_ShowEventFrame(CalendarViewEventFrame);
 			end
---		elseif ( event == "GROUP_ROSTER_UPDATE" ) then
---			CalendarCreateEventInviteList_Update();
 		end
 	end
 end
@@ -3524,7 +3388,6 @@ function CalendarCreateEventFrame_OnShow(self)
 end
 
 function CalendarCreateEventFrame_OnHide(self)
-	CalendarContextMenu_Hide(CalendarCreateEventInviteContextMenu_Initialize);
 	-- clear the raid invite button data so we don't get strange party-invite behavior next time we show this frame
 	CalendarCreateEventRaidInviteButton.inviteLostMembers = false;
 	CalendarCreateEventRaidInviteButton.inviteCount = 0;
@@ -3566,7 +3429,7 @@ function CalendarCreateEventFrame_Update()
 		CalendarCreateEvent_SetEventTime();
 		-- reset event type
 		CalendarCreateEventFrame.selectedEventType = CALENDAR_CREATEEVENTFRAME_DEFAULT_TYPE;
-		CalendarCreateEvent_UpdateEventType();
+		CalendarCreateEvent_UpdateEventType(CalendarCreateEventFrame);
 		C_Calendar.EventSetType(CalendarCreateEventFrame.selectedEventType);
 		-- reset event texture (must come after event type)
 		CalendarCreateEventFrame.selectedTextureIndex = nil;
@@ -3578,7 +3441,7 @@ function CalendarCreateEventFrame_Update()
 
 		local calendarType = C_Calendar.EventGetCalendarType();
 
-		CalendarCreateEventCommunityDropDown:SetShown(calendarType == "COMMUNITY_EVENT");
+		CalendarCreateEventFrame.CommunityDropdown:SetShown(calendarType == "COMMUNITY_EVENT");
 
 		if ( calendarType == "GUILD_ANNOUNCEMENT" ) then
 			CalendarCreateEventFrame.Header:Setup(CALENDAR_CREATE_ANNOUNCEMENT);
@@ -3597,12 +3460,10 @@ function CalendarCreateEventFrame_Update()
 				local clubInfo = nextClubId and C_Club.GetClubInfo(nextClubId) or nil;
 				if clubInfo ~= nil then
 					C_Calendar.EventSetClubId(nextClubId);
-					UIDropDownMenu_SetSelectedValue(CalendarCreateEventCommunityDropDown, clubInfo.name);
-					UIDropDownMenu_SetText(CalendarCreateEventCommunityDropDown, clubInfo.name);
+					CalendarCreateEventFrame.CommunityDropdown:GenerateMenu();
 				else
 					C_Calendar.EventSetClubId(nil);
-					UIDropDownMenu_SetSelectedValue(CalendarCreateEventCommunityDropDown, nil);
-					UIDropDownMenu_SetText(CalendarCreateEventCommunityDropDown, CALENDER_INVITE_SELECT_COMMUNITY);
+					CalendarCreateEventFrame.CommunityDropdown:GenerateMenu();
 				end
 
 				CalendarCreateEventFrame.Header:Setup(CALENDAR_CREATE_COMMUNITY_EVENT);
@@ -3663,7 +3524,7 @@ function CalendarCreateEventFrame_Update()
 		CalendarCreateEvent_UpdateEventTime();
 		-- update type
 		CalendarCreateEventFrame.selectedEventType = eventInfo.eventType;
-		CalendarCreateEvent_UpdateEventType();
+		CalendarCreateEvent_UpdateEventType(CalendarCreateEventFrame);
 		-- reset event texture (must come after event type)
 		CalendarCreateEventFrame.selectedTextureIndex = eventInfo.textureIndex;
 		CalendarCreateEventFrame.calendarType = eventInfo.calendarType;
@@ -3686,7 +3547,7 @@ function CalendarCreateEventFrame_Update()
 		CalendarCreateEventCreatorName:Show();
 
 		--Hide the communitySelector
-		CalendarCreateEventCommunityDropDown:SetShown(false);
+		CalendarCreateEventFrame.CommunityDropdown:SetShown(false);
 
 		if ( eventInfo.calendarType == "GUILD_ANNOUNCEMENT" ) then
 			CalendarCreateEventFrame.Header:Setup(CALENDAR_EDIT_ANNOUNCEMENT);
@@ -3831,60 +3692,21 @@ function CalendarCreateEventTexture_Update()
 		CalendarCreateEventIcon:SetTexture(CALENDAR_EVENTTYPE_TEXTURES[eventType]);
 	end
 	-- need to update the creator name at this point since it is affected by the texture name
-	CalendarCreateEvent_UpdateEventType();
+	CalendarCreateEvent_UpdateEventType(CalendarCreateEventFrame);
 	CalendarCreateEventCreatorName_Update();
 end
 
-function CalendarCreateEventTypeDropDown_Initialize(self)
-	local types = C_Calendar.EventGetTypesDisplayOrdered();
-	CalendarCreateEventTypeDropDown_InitEventTypes(self, types);
-end
-
-function CalendarCreateEventTypeDropDown_InitEventTypes(self, types)
-	local info = UIDropDownMenu_CreateInfo();
-	for i = 1, #types, 1 do
-		info.text = _G[types[i].displayString];
-		info.value = types[i].eventType;
-		info.func = CalendarCreateEventTypeDropDown_OnClick;
-		if ( CalendarCreateEventFrame.selectedEventType == info.value ) then
-			info.checked = 1;
-			UIDropDownMenu_SetText(self, info.text);
-		else
-			info.checked = nil;
-		end
-		UIDropDownMenu_AddButton(info);
-	end
-end
-
-function CalendarCreateEventTypeDropDown_OnClick(self)
-	local eventType = self.value;
-	if ( eventType == Enum.CalendarEventType.Dungeon or eventType == Enum.CalendarEventType.Raid ) then
-		CalendarTexturePickerFrame_Show(eventType);
-	else
-		CalendarCreateEventFrame.selectedTextureIndex = nil;
-		CalendarCreateEventFrame.selectedEventType = eventType;
-		CalendarCreateEvent_UpdateEventType();
-		C_Calendar.EventSetType(eventType);
-
-		CalendarCreateEventTexture_Update();
-
-		CalendarCreateEventCreateButton_Update();
-	end
-end
-
 function CalendarCreateEvent_UpdateEventType()
-	UIDropDownMenu_Initialize(CalendarCreateEventTypeDropDown, CalendarCreateEventTypeDropDown_Initialize);
-	UIDropDownMenu_SetSelectedValue(CalendarCreateEventTypeDropDown, CalendarCreateEventFrame.selectedEventType);
+	CalendarCreateEventFrame.EventTypeDropdown:GenerateMenu();
 
 	local eventType = CalendarCreateEventFrame.selectedEventType;
 	local textureIndex = CalendarCreateEventFrame.selectedTextureIndex;
 	local dungeonCacheEntry, difficultyInfo = _CalendarFrame_GetEventDungeonCacheEntry(textureIndex, eventType);
 	if ( dungeonCacheEntry and difficultyInfo and difficultyInfo.difficultyName ~= "") then
-		UIDropDownMenu_Initialize(CalendarCreateEventDifficultyOptionDropDown, CalendarCreateEventDifficultyOptionDropDown_Initialize);
-		UIDropDownMenu_SetSelectedValue(CalendarCreateEventDifficultyOptionDropDown, difficultyInfo.difficultyName);
-		CalendarCreateEventDifficultyOptionDropDown:Show();
+		CalendarCreateEventFrame.DifficultyOptionDropdown:GenerateMenu();
+		CalendarCreateEventFrame.DifficultyOptionDropdown:Show();
 	else
-		CalendarCreateEventDifficultyOptionDropDown:Hide();
+		CalendarCreateEventFrame.DifficultyOptionDropdown:Hide();
 	end
 end
 
@@ -3897,165 +3719,12 @@ function CalendarCreateEvent_SetSelectedIndex(selectedTextureIndex, eventType)
 		C_Calendar.EventSetTextureID(CalendarCreateEventFrame.selectedTextureIndex);
 		-- update the create event frame using our selection
 		CalendarCreateEventFrame.selectedEventType = eventType;
-		CalendarCreateEvent_UpdateEventType();
+		CalendarCreateEvent_UpdateEventType(CalendarCreateEventFrame);
 		CalendarCreateEventTexture_Update();
 		CalendarTexturePickerFrame_Hide();
 
 		CalendarCreateEventCreateButton_Update();
 	end
-end
-
-function CalendarCreateEventHourDropDown_Initialize(self)
-	local info = UIDropDownMenu_CreateInfo();
-
-	local militaryTime = GetCVarBool("timeMgrUseMilitaryTime");
-
-	local hourMin, hourMax;
-	if ( militaryTime ) then
-		hourMin = 0;
-		hourMax = 23;
-	else
-		hourMin = 1;
-		hourMax = 12;
-	end
-	for hour = hourMin, hourMax, 1 do
-		info.value = hour;
-		if ( militaryTime ) then
-			info.text = format(TIMEMANAGER_24HOUR, hour);
-		else
-			info.text = hour;
-			info.justifyH = "RIGHT";
-		end
-		info.func = CalendarCreateEventHourDropDown_OnClick;
-		if ( hour == CalendarCreateEventFrame.selectedHour ) then
-			info.checked = 1;
-			UIDropDownMenu_SetText(self, info.text);
-			UIDropDownMenu_JustifyText(CalendarCreateEventHourDropDown, "CENTER");
-		else
-			info.checked = nil;
-		end
-		UIDropDownMenu_AddButton(info);
-	end
-end
-
-function CalendarCreateEventHourDropDown_OnClick(self)
-	UIDropDownMenu_SetSelectedValue(CalendarCreateEventHourDropDown, self.value);
-	CalendarCreateEventFrame.selectedHour = self.value;
-	CalendarCreateEvent_SetEventTime();
-
-	CalendarCreateEventCreateButton_Update();
-end
-
-function CalendarCreateEventMinuteDropDown_Initialize(self)
-	local info = UIDropDownMenu_CreateInfo();
-
-	for minute = 0, 55, 5 do
-		info.value = minute;
-		info.text = format(TIMEMANAGER_MINUTE, minute);
-		info.func = CalendarCreateEventMinuteDropDown_OnClick;
-		if ( minute == CalendarCreateEventFrame.selectedMinute ) then
-			info.checked = 1;
-			UIDropDownMenu_SetText(self, info.text);
-			UIDropDownMenu_JustifyText(CalendarCreateEventMinuteDropDown, "CENTER");
-		else
-			info.checked = nil;
-		end
-		UIDropDownMenu_AddButton(info);
-	end
-end
-
-function CalendarCreateEventMinuteDropDown_OnClick(self)
-	UIDropDownMenu_SetSelectedValue(CalendarCreateEventMinuteDropDown, self.value);
-	CalendarCreateEventFrame.selectedMinute = self.value;
-	CalendarCreateEvent_SetEventTime();
-
-	CalendarCreateEventCreateButton_Update();
-end
-
-function CalendarCreateEventAMPMDropDown_Initialize(self)
-	local info = UIDropDownMenu_CreateInfo();
-
-	info.text = TIMEMANAGER_AM;
-	info.func = CalendarCreateEventAMPMDropDown_OnClick;
-	if ( CalendarCreateEventFrame.selectedAM ) then
-		info.checked = 1;
-		UIDropDownMenu_SetText(self, info.text);
-	else
-		info.checked = nil;
-	end
-	UIDropDownMenu_AddButton(info);
-
-	info.text = TIMEMANAGER_PM;
-	info.func = CalendarCreateEventAMPMDropDown_OnClick;
-	if ( CalendarCreateEventFrame.selectedAM ) then
-		info.checked = nil;
-	else
-		info.checked = 1;
-		UIDropDownMenu_SetText(self, info.text);
-	end
-	UIDropDownMenu_AddButton(info);
-end
-
-function CalendarCreateEventAMPMDropDown_OnClick(self)
-	local id = self:GetID();
-	UIDropDownMenu_SetSelectedID(CalendarCreateEventAMPMDropDown, id);
-	CalendarCreateEventFrame.selectedAM = id == 1;
-	CalendarCreateEvent_SetEventTime();
-
-	CalendarCreateEventCreateButton_Update();
-end
-
-function CalendarCreateEventDifficultyOptionDropDown_Initialize(self)
-	local eventType = CalendarCreateEventFrame.selectedEventType;
-	local textureIndex = CalendarCreateEventFrame.selectedTextureIndex;
-	local dungeonCacheEntry = _CalendarFrame_GetEventDungeonCacheEntry(textureIndex, eventType);
-	if ( dungeonCacheEntry ) then
-		local info = UIDropDownMenu_CreateInfo();
-		local alreadyAddedDifficulties = {};
-		for i, difficultyInfo in ipairs(dungeonCacheEntry.difficulties) do
-			if not alreadyAddedDifficulties[difficultyInfo.difficultyName] then
-				info.text = difficultyInfo.difficultyName;
-				info.arg1 = difficultyInfo.textureIndex;
-				info.func = CalendarCreateEventDifficultyOptionDropDown_OnClick;
-				info.checked = textureIndex == difficultyInfo.textureIndex or nil;
-				UIDropDownMenu_AddButton(info);
-
-				alreadyAddedDifficulties[difficultyInfo.difficultyName] = true;
-			end
-		end
-	end
-end
-
-function CalendarCreateEventDifficultyOptionDropDown_OnClick(self, textureIndex)
-	CalendarCreateEvent_SetSelectedIndex(textureIndex, CalendarCreateEventFrame.selectedEventType);
-end
-
-function CalendarCreateEventCommunityDropDown_Initialize(self)
-	local clubs = C_Club.GetSubscribedClubs()
-	local eventType = CalendarCreateEventFrame.selectedEventType;
-	local selectedClubId = C_Calendar.EventGetClubId();
-	if (eventType) then
-		local info = UIDropDownMenu_CreateInfo();
-		for i, clubInfo in ipairs(clubs) do
-			if (clubInfo.clubType == Enum.ClubType.Character) then
-				info.text = clubInfo.name;
-				info.arg1 = clubInfo.clubId;
-				info.func = CalendarCreateEventCommunityDropDown_OnClick;
-				info.checked = clubInfo.clubId == selectedClubId;
-				UIDropDownMenu_AddButton(info);
-			end
-		end
-	end
-end
-
-function CalendarCreateEventCommunityDropDown_OnClick(self, clubId)
-	local clubInfo = C_Club.GetClubInfo(clubId)
-	if(clubInfo == nil) then
-		return;
-	end
-	UIDropDownMenu_SetSelectedValue(CalendarCreateEventCommunityDropDown, clubInfo.name);
-	C_Calendar.EventSetClubId(clubId);
-	CalendarCreateEventCreateButton_Update();
 end
 
 function CalendarCreateEvent_SetEventTime()
@@ -4068,20 +3737,13 @@ end
 
 function CalendarCreateEvent_UpdateEventTime()
 	if ( CalendarFrame.militaryTime ) then
-		CalendarCreateEventAMPMDropDown:Hide();
+		CalendarCreateEventFrame.AMPMDropdown:Hide();
 	else
-		CalendarCreateEventAMPMDropDown:Show();
-		UIDropDownMenu_Initialize(CalendarCreateEventAMPMDropDown, CalendarCreateEventAMPMDropDown_Initialize);
-		if ( CalendarCreateEventFrame.selectedAM ) then
-			UIDropDownMenu_SetSelectedID(CalendarCreateEventAMPMDropDown, 1);
-		else
-			UIDropDownMenu_SetSelectedID(CalendarCreateEventAMPMDropDown, 2);
-		end
+		CalendarCreateEventFrame.AMPMDropdown:Show();
+		CalendarCreateEventFrame.AMPMDropdown:GenerateMenu();
 	end
-	UIDropDownMenu_Initialize(CalendarCreateEventHourDropDown, CalendarCreateEventHourDropDown_Initialize);
-	UIDropDownMenu_SetSelectedValue(CalendarCreateEventHourDropDown, CalendarCreateEventFrame.selectedHour);
-	UIDropDownMenu_Initialize(CalendarCreateEventMinuteDropDown, CalendarCreateEventMinuteDropDown_Initialize);
-	UIDropDownMenu_SetSelectedValue(CalendarCreateEventMinuteDropDown, CalendarCreateEventFrame.selectedMinute);
+	CalendarCreateEventFrame.HourDropdown:GenerateMenu();
+	CalendarCreateEventFrame.MinuteDropdown:GenerateMenu();
 end
 
 function CalendarCreateEvent_UpdateTimeFormat()
@@ -4091,26 +3753,19 @@ function CalendarCreateEvent_UpdateTimeFormat()
 		if ( not CalendarFrame.militaryTime ) then
 			-- need to convert from 12hr to 24hr
 			CalendarCreateEventFrame.selectedHour = GameTime_ComputeMilitaryTime(hour, am);
-			CalendarCreateEventAMPMDropDown:Hide();
+			CalendarCreateEventFrame.AMPMDropdown:Hide();
 		end
 	else
 		if ( CalendarFrame.militaryTime ) then
 			-- need to convert from 24hr to 12hr
 			CalendarCreateEventFrame.selectedHour, CalendarCreateEventFrame.selectedAM = GameTime_ComputeStandardTime(hour);
-			CalendarCreateEventAMPMDropDown:Show();
-		end
-		UIDropDownMenu_Initialize(CalendarCreateEventAMPMDropDown, CalendarCreateEventAMPMDropDown_Initialize);
-		if ( CalendarCreateEventFrame.selectedAM ) then
-			UIDropDownMenu_SetSelectedID(CalendarCreateEventAMPMDropDown, 1);
-		else
-			UIDropDownMenu_SetSelectedID(CalendarCreateEventAMPMDropDown, 2);
+			CalendarCreateEventFrame.AMPMDropdown:Show();
+			CalendarCreateEventFrame.AMPMDropdown:GenerateMenu();
 		end
 	end
 	CalendarFrame.militaryTime = militaryTime;
-	UIDropDownMenu_Initialize(CalendarCreateEventHourDropDown, CalendarCreateEventHourDropDown_Initialize);
-	UIDropDownMenu_SetSelectedValue(CalendarCreateEventHourDropDown, CalendarCreateEventFrame.selectedHour);
-	UIDropDownMenu_Initialize(CalendarCreateEventMinuteDropDown, CalendarCreateEventMinuteDropDown_Initialize);
-	UIDropDownMenu_SetSelectedValue(CalendarCreateEventMinuteDropDown, CalendarCreateEventFrame.selectedMinute);
+	CalendarCreateEventFrame.HourDropdown:GenerateMenu();
+	CalendarCreateEventFrame.MinuteDropdown:GenerateMenu();
 end
 
 function CalendarCreateEventAutoApproveCheck_OnLoad(self)
@@ -4197,154 +3852,49 @@ function CalendarCreateEventFrame_SetSelectedInvite(inviteButton)
 end
 
 function CalendarCreateEventInviteListButton_OnClick(self, button)
-	if ( button == "LeftButton" ) then
-		--CalendarCreateEventInviteListButton_Click(self);
-		CalendarContextMenu_Hide();
-	elseif ( button == "RightButton" ) then
-		local inviteChanged = CalendarContextMenu.inviteButton ~= self;
+	if ( button == "RightButton" ) then
+		MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
+			rootDescription:SetTag("MENU_CALENDAR_CREATE_INVITE");
 
-		if ( inviteChanged ) then
-			CalendarContextMenu_Show(self, CalendarCreateEventInviteContextMenu_Initialize, "cursor", 3, -3, self);
-		else
-			CalendarContextMenu_Toggle(self, CalendarCreateEventInviteContextMenu_Initialize, "cursor", 3, -3, self);
-		end
+			local inviteIndex = self.inviteIndex;
+			local inviteInfo = C_Calendar.EventGetInvite(inviteIndex);
+
+			if inviteInfo.modStatus ~= "CREATOR" then
+				rootDescription:CreateButton(REMOVE, C_Calendar.EventRemoveInvite, inviteIndex);
+				if inviteInfo.modStatus == "MODERATOR" then
+					rootDescription:CreateButton(CALENDAR_INVITELIST_CLEARMODERATOR, C_Calendar.EventClearModerator, inviteIndex);
+				else
+					rootDescription:CreateButton(CALENDAR_INVITELIST_SETMODERATOR, C_Calendar.EventSetModerator, inviteIndex);
+				end
+			end
+
+			if CalendarCreateEventFrame.mode == "edit" then
+				local submenu = rootDescription:CreateButton(CALENDAR_INVITELIST_SETINVITESTATUS);
+				for index, statusOption in ipairs(C_Calendar.EventGetStatusOptions(inviteIndex)) do
+					submenu:CreateButton(_G[statusOption.statusString], function()
+						C_Calendar.EventSetInviteStatus(inviteIndex, statusOption.status);
+					end);
+				end
+				rootDescription:QueueDivider();
+			end
+
+			if not UnitIsUnit("player", inviteInfo.name) and (not UnitInParty(inviteInfo.name) or not UnitInRaid(inviteInfo.name)) then
+				rootDescription:CreateButton(CALENDAR_INVITELIST_INVITETORAID, C_PartyInfo.InviteUnit, inviteInfo.name);
+			end
+
+			rootDescription:AddMenuAcquiredCallback(function(menuFrame)
+				self:LockHighlight();
+			end);
+
+			rootDescription:AddMenuReleasedCallback(function(menuFrame)
+				if CalendarFrame.selectedEventButton ~= self then
+					self:UnlockHighlight();
+				end
+			end);
+		end);
 	end
 
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-end
-
-function CalendarCreateEventInviteListButton_Click(button)
-	C_Calendar.EventSelectInvite(button.inviteIndex);
-	CalendarCreateEventFrame_SetSelectedInvite(button);
-end
-
-function CalendarCreateEventInviteContextMenu_Initialize(self, inviteButton)
-	UIMenu_Initialize(self);
-
-	-- unlock old highlights
-	CalendarInviteContextMenu_UnlockHighlights();
-
-	-- record the invite button
-	self.inviteButton = inviteButton;
-
-	local inviteIndex = inviteButton.inviteIndex;
-	local inviteInfo = C_Calendar.EventGetInvite(inviteIndex);
-
-	local needSpacer = false;
-	if ( inviteInfo.modStatus ~= "CREATOR" ) then
-		-- remove invite
-		UIMenu_AddButton(self, REMOVE, nil, CalendarInviteContextMenu_RemoveInvite);
-		-- spacer
-		--UIMenu_AddButton(self, "");
-		if ( inviteInfo.modStatus == "MODERATOR" ) then
-			-- clear moderator status
-			UIMenu_AddButton(self, CALENDAR_INVITELIST_CLEARMODERATOR, nil, CalendarInviteContextMenu_ClearModerator);
-		else
-			-- set moderator status
-			UIMenu_AddButton(self, CALENDAR_INVITELIST_SETMODERATOR, nil, CalendarInviteContextMenu_SetModerator);
-		end
-	end
-	if ( CalendarCreateEventFrame.mode == "edit" ) then
-		if ( needSpacer ) then
-			UIMenu_AddButton(self);
-		end
-		-- set invite status submenu
-		UIMenu_AddButton(self, CALENDAR_INVITELIST_SETINVITESTATUS, nil, nil, "CalendarInviteStatusContextMenu");
-		needSpacer = true;
-	end
-
-	if ( not UnitIsUnit("player", inviteInfo.name) and (not UnitInParty(inviteInfo.name) or not UnitInRaid(inviteInfo.name)) ) then
-		-- spacer
-		if ( needSpacer ) then
-			UIMenu_AddButton(self, "");
-		end
-		UIMenu_AddButton(
-			self,											-- self
-			CALENDAR_INVITELIST_INVITETORAID,				-- text
-			nil,											-- shortcut
-			CalendarInviteContextMenu_InviteToGroup,		-- func
-			nil,											-- nested self name
-			inviteInfo.name);								-- value
-	end
-
-	if ( UIMenu_FinishInitializing(self) ) then
-		-- lock new highlights
-		inviteButton:LockHighlight();
-		return true;
-	else
-		return false;
-	end
-end
-
-function CalendarInviteContextMenu_UnlockHighlights()
-	local inviteButton = CalendarContextMenu.inviteButton;
-	if ( inviteButton and
-		 inviteButton ~= CalendarViewEventFrame.selectedInvite and
-		 inviteButton ~= CalendarCreateEventFrame.selectedInvite ) then
-		inviteButton:UnlockHighlight();
-	end
-end
-
-function CalendarInviteContextMenu_RemoveInvite()
-	local inviteButton = CalendarContextMenu.inviteButton;
-	C_Calendar.EventRemoveInvite(inviteButton.inviteIndex);
-end
-
-function CalendarInviteContextMenu_SetModerator()
-	local inviteButton = CalendarContextMenu.inviteButton;
-	C_Calendar.EventSetModerator(inviteButton.inviteIndex);
-end
-
-function CalendarInviteContextMenu_ClearModerator()
-	local inviteButton = CalendarContextMenu.inviteButton;
-	C_Calendar.EventClearModerator(inviteButton.inviteIndex);
-end
-
-function CalendarInviteContextMenu_InviteToGroup(self)
-	C_PartyInfo.InviteUnit(self.value);
-end
-
-function CalendarInviteStatusContextMenu_OnLoad(self)
-	self:RegisterEvent("CALENDAR_UPDATE_EVENT");
-	self.parentMenu = "CalendarContextMenu";
-	self.onlyAutoHideSelf = true;
-end
-
-function CalendarInviteStatusContextMenu_OnShow(self)
-	local statusOptions = C_Calendar.EventGetStatusOptions(CalendarContextMenu.inviteButton.inviteIndex);
-	CalendarInviteStatusContextMenu_Initialize(self, statusOptions);
-end
-
-function CalendarInviteStatusContextMenu_OnEvent(self, event, ...)
-	if ( event == "CALENDAR_UPDATE_EVENT" ) then
-		if ( self:IsShown() ) then
-			local statusOptions = C_Calendar.EventGetStatusOptions(CalendarContextMenu.inviteButton.inviteIndex);
-			CalendarInviteStatusContextMenu_Initialize(self, statusOptions);
-		end
-	end
-end
-
-function CalendarInviteStatusContextMenu_Initialize(self, statusOptions)
-	UIMenu_Initialize(self);
-
-	for i = 1, #statusOptions, 1 do
-		UIMenu_AddButton(
-			self,													-- self
-			_G[statusOptions[i].statusString],						-- text
-			nil,													-- shortcut
-			CalendarInviteStatusContextMenu_SetStatusOption,		-- func
-			nil,													-- nested
-			statusOptions[i].status									-- value
-		);
-	end
-
-	return UIMenu_FinishInitializing(self);
-end
-
-function CalendarInviteStatusContextMenu_SetStatusOption(self)
-	C_Calendar.EventSetInviteStatus(CalendarContextMenu.inviteButton.inviteIndex, self.value);
-	-- hide parent
-	CalendarContextMenu_Hide(CalendarCreateEventInviteContextMenu_Initialize);
 end
 
 function CalendarCreateEventInviteEdit_OnEnterPressed(self)
@@ -4517,6 +4067,55 @@ end
 
 -- CalendarMassInviteFrame
 
+local function InitMassInviteCommunityDropdown(self)
+	local function IsSelected(clubId)
+		return CalendarMassInviteFrame.selectedClubId == clubId;
+	end
+
+	local function SetSelected(clubId)
+		local clubInfo = C_Club.GetClubInfo(clubId)
+		if clubInfo then
+			CalendarMassInviteFrame.selectedClubId = clubId;
+			CalendarMassInvite_Update();
+		end
+	end
+
+	self.CommunityDropdown:SetWidth(228);
+	self.CommunityDropdown:SetDefaultText(CALENDER_INVITE_SELECT_COMMUNITY);
+	self.CommunityDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_CALENDAR_MASS_INVITE");
+
+		for i, clubInfo in ipairs(C_Club.GetSubscribedClubs()) do
+			if clubInfo.clubType ~= Enum.ClubType.BattleNet then
+				local isGuild = clubInfo.clubType == Enum.ClubType.Guild;
+				local text = isGuild and GREEN_FONT_COLOR:WrapTextInColorCode(clubInfo.name) or clubInfo.name;
+				rootDescription:CreateRadio(text, IsSelected, SetSelected, clubInfo.clubId);
+			end
+		end
+	end);
+end
+
+local function InitMassInviteRankDropdown(self)
+	local function IsSelected(index)
+		return CalendarMassInviteFrame.selectedRank == index;
+	end
+
+	local function SetSelected(index)
+		CalendarMassInviteFrame.selectedRank = index;
+	end
+
+	self.RankDropdown:SetWidth(122);
+	self.RankDropdown:SetDefaultText("");
+	self.RankDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_CALENDAR_MASS_INVITE_RANK");
+
+		for index = 1, GuildControlGetNumRanks() do
+			local text = GuildControlGetRankName(index);
+			rootDescription:CreateRadio(text, IsSelected, SetSelected, index);
+		end
+	end);
+end
+
 function CalendarMassInviteFrame_OnLoad(self)
 	self:RegisterEvent("CALENDAR_ACTION_PENDING");
 	self:RegisterEvent("GUILD_ROSTER_UPDATE");
@@ -4525,24 +4124,26 @@ function CalendarMassInviteFrame_OnLoad(self)
 	local filter = C_Calendar.GetDefaultGuildFilter();
 	CalendarMassInviteMinLevelEdit:SetNumber(filter.minLevel);
 	CalendarMassInviteMaxLevelEdit:SetNumber(filter.maxLevel);
-	UIDropDownMenu_SetWidth(CalendarMassInviteRankMenu, 100);
-	UIDropDownMenu_SetWidth(CalendarMassInviteCommunityDropDown, 200);
-	UIDropDownMenu_Initialize(CalendarMassInviteCommunityDropDown, CalendarMassInviteCommunityDropDown_Initialize);
 
 	-- try to fire off a guild roster event so we can properly update our guild options
 	if ( IsInGuild() and GetNumGuildMembers() == 0 ) then
 		C_GuildInfo.GuildRoster();
 	end
+
+	InitMassInviteCommunityDropdown(self);
+	InitMassInviteRankDropdown(self);
+end
+
+function CalendarMassInvite_GenerateDropdowns(self)
+	self.CommunityDropdown:GenerateMenu();
+	self.RankDropdown:GenerateMenu();
 end
 
 function CalendarMassInviteFrame_OnShow(self)
 	CalendarFrame_PushModal(self);
 	CalendarMassInviteFrame.selectedClubId = nil;
 	CalendarMassInvite_Update();
-
-	UIDropDownMenu_Initialize(CalendarMassInviteRankMenu, CalendarMassInviteRankMenu_Initialize);
-	UIDropDownMenu_SetSelectedValue(CalendarMassInviteCommunityDropDown, nil);
-	UIDropDownMenu_SetText(CalendarMassInviteCommunityDropDown, CALENDER_INVITE_SELECT_COMMUNITY);
+	CalendarMassInvite_GenerateDropdowns(self);
 end
 
 function CalendarMassInviteFrame_OnEvent(self, event, ...)
@@ -4561,14 +4162,11 @@ function CalendarMassInviteFrame_OnEvent(self, event, ...)
 			if ( event == "CALENDAR_ACTION_PENDING" ) then
 				CalendarMassInvite_Update();
 			elseif ( event == "GUILD_ROSTER_UPDATE" or event == "PLAYER_GUILD_UPDATE" ) then
+				CalendarMassInvite_GenerateDropdowns(self);
 				CalendarMassInvite_Update();
 			end
 		end
 	end
-end
-
-function CalendarMassInviteFrame_OnUpdate(self)
-	CalendarMassInvite_Update();
 end
 
 function CalendarMassInvite_Update()
@@ -4584,11 +4182,10 @@ function CalendarMassInvite_Update()
 		local clubInfo = C_Club.GetClubInfo(CalendarMassInviteFrame.selectedClubId)
 		--Handle guilds
 		if (clubInfo and clubInfo.clubType == Enum.ClubType.Guild) then
-			CalendarMassInviteRankMenu:Show();
+			CalendarMassInviteFrame.RankDropdown:Show();
 			CalendarMassInviteRankText:Show();
-			UIDropDownMenu_EnableDropDown(CalendarMassInviteRankMenu);
 		else
-			CalendarMassInviteRankMenu:Hide();
+			CalendarMassInviteFrame.RankDropdown:Hide();
 			CalendarMassInviteRankText:Hide();
 		end
 		-- set text color back to normal
@@ -4599,66 +4196,14 @@ function CalendarMassInvite_Update()
 	else
 		-- disable the accept button
 		CalendarMassInviteAcceptButton:Disable();
-		CalendarMassInviteRankMenu:Hide();
+		CalendarMassInviteFrame.RankDropdown:Hide();
 		CalendarMassInviteRankText:Hide();
-		-- disable the rank drop down
-		UIDropDownMenu_DisableDropDown(CalendarMassInviteRankMenu);
 		-- set text color to a disabled color
 		CalendarMassInviteLevelText:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 		CalendarMassInviteMinLevelEdit:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 		CalendarMassInviteMaxLevelEdit:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 		CalendarMassInviteRankText:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 	end
-end
-
-function CalendarMassInviteRankMenu_Initialize()
-	local info = UIDropDownMenu_CreateInfo();
-
-	for i = 1, GuildControlGetNumRanks() do
-		info.text = GuildControlGetRankName(i);
-		info.func = CalendarMassInviteGuildRankMenu_OnClick;
-		if ( i == CalendarMassInviteFrame.selectedRank ) then
-			info.checked = 1;
-			UIDropDownMenu_SetText(CalendarMassInviteRankMenu, info.text);
-		else
-			info.checked = nil;
-		end
-		UIDropDownMenu_AddButton(info);
-	end
-end
-
-function CalendarMassInviteGuildRankMenu_OnClick(self)
-	CalendarMassInviteFrame.selectedRank = self:GetID();
-	UIDropDownMenu_SetSelectedID(CalendarMassInviteRankMenu, CalendarMassInviteFrame.selectedRank);
-end
-
-function CalendarMassInviteCommunityDropDown_Initialize()
-	local info = UIDropDownMenu_CreateInfo();
-	local clubs = C_Club.GetSubscribedClubs()
-	for i, clubInfo in ipairs(clubs) do
-		if (clubInfo.clubType ~= Enum.ClubType.BattleNet) then
-			if (clubInfo.clubType == Enum.ClubType.Guild) then
-				info.text = GREEN_FONT_COLOR:WrapTextInColorCode(clubInfo.name);
-			else
-				info.text = clubInfo.name;
-			end
-			info.arg1 = clubInfo.clubId;
-			info.func = CalendarMassInviteCommunityDropDown_OnClick;
-			info.checked = clubInfo.clubId == CalendarMassInviteFrame.selectedClubId;
-			UIDropDownMenu_AddButton(info);
-		end
-	end
-end
-
-function CalendarMassInviteCommunityDropDown_OnClick(self, clubId)
-	local clubInfo = C_Club.GetClubInfo(clubId)
-	if(clubInfo == nil) then
-		return;
-	end
-
-	UIDropDownMenu_SetSelectedValue(CalendarMassInviteCommunityDropDown, self:GetText());
-	CalendarMassInviteFrame.selectedClubId = clubId;
-	CalendarMassInvite_Update();
 end
 
 function CalendarMassInviteAcceptButton_OnClick(self)
@@ -4702,13 +4247,11 @@ function CalendarEventPickerFrame_Show(dayButton)
 	else
 		CalendarEventPickerFrame:SetPoint("TOPLEFT", dayButton, "TOPRIGHT");
 	end
-	CalendarContextMenu_Hide();
 	CalendarEventPickerFrame:Show();
 	CalendarEventPickerFrame_Update();
 end
 
 function CalendarEventPickerFrame_Hide()
-	CalendarContextMenu_Hide(CalendarDayContextMenu_Initialize);
 	CalendarEventPickerFrame.dayButton = nil;
 	CalendarEventPickerFrame:Hide();
 end
@@ -4816,20 +4359,14 @@ end
 function CalendarEventPickerButton_OnClick(self, button)
 	if ( button == "LeftButton" ) then
 		CalendarEventPickerButton_Click(self);
-		CalendarContextMenu_Hide();
 	elseif ( button == "RightButton" ) then
-		local dayButton = CalendarEventPickerFrame.dayButton;
+		MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
+			rootDescription:SetTag("MENU_CALENDAR_EVENT_PICKER");
 
-		local eventChanged =
-			CalendarContextMenu.eventButton ~= self or
-			CalendarContextMenu.dayButton ~= dayButton;
-
-		local flags = CALENDAR_CONTEXTMENU_FLAG_SHOWEVENT;
-		if ( eventChanged ) then
-			CalendarContextMenu_Show(self, CalendarDayContextMenu_Initialize, "cursor", 3, -3, flags, dayButton, self);
-		else
-			CalendarContextMenu_Toggle(self, CalendarDayContextMenu_Initialize, "cursor", 3, -3, flags, dayButton, self);
-		end
+			local flags = CALENDAR_CONTEXTMENU_FLAG_SHOWEVENT;
+			local dayButton = CalendarEventPickerFrame.dayButton;
+			GenerateDayContextMenu(owner, rootDescription, flags, dayButton, self);
+		end);
 	end
 
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);

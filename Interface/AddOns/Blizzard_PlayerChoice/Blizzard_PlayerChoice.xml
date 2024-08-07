@@ -10,8 +10,20 @@
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="BorderOverlay">
+					<!-- Anchoring reset dynamically in PlayerChoiceFrameMixin:SetupFrame -->
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-6" y="6"/>
+						<Anchor point="BOTTOMRIGHT" x="6" y="-6"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 		<Frames>
 			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate" setAllPoints="true">
+				<!-- Anchoring reset dynamically in PlayerChoiceFrameMixin:SetupFrame  -->
 				<Anchors>
 					<Anchor point="TOPLEFT" x="-6" y="6"/>
 					<Anchor point="BOTTOMRIGHT" x="6" y="-6"/>

@@ -1,3 +1,44 @@
+local ExpansionLayoutInfo = {
+	[LE_EXPANSION_DRAGONFLIGHT] = {
+		textureDataTable = {
+			["GlowLineBottom"] =  {
+				atlas = "majorfaction-celebration-bottomglowline",
+				useAtlasSize = true,
+			},
+			["RewardIconRing"] =  {
+				atlas = "majorfaction-celebration-content-ring",
+				useAtlasSize = false,
+			},
+			["ToastBG"] = {
+				atlas = "majorfaction-celebration-toastBG",
+				useAtlasSize = true,
+				anchors = {
+					["TOP"] = { x = 0, y = -77, relativePoint = "TOP" },
+				},
+			},
+		},
+	},
+	[LE_EXPANSION_WAR_WITHIN] = {
+		textureDataTable = {
+			["GlowLineBottom"] =  {
+				atlas = "majorfaction-celebration-thewarwithin-bottomglowline",
+				useAtlasSize = true,
+			},
+			["RewardIconRing"] =  {
+				atlas = "majorfaction-celebration-thewarwithin-content-ring",
+				useAtlasSize = false,
+			},
+			["ToastBG"] = {
+				atlas = "majorfaction-celebration-toastBG",
+				useAtlasSize = true,
+				anchors = {
+					["TOP"] = { x = 0, y = -57, relativePoint = "TOP" },
+				},
+			},
+		},
+	},
+};
+
 MajorFactionsRenownToastMixin = {};
 
 function MajorFactionsRenownToastMixin:OnLoad()
@@ -7,9 +48,14 @@ end
 function MajorFactionsRenownToastMixin:OnEvent(event, ...)
 	if event == "MAJOR_FACTION_RENOWN_LEVEL_CHANGED" then
 		local majorFactionID, newRenownLevel, oldRenownLevel = ...;
+		local majorFactionData = C_MajorFactions.GetMajorFactionData(majorFactionID);
+		if not majorFactionData or not majorFactionData.isUnlocked then
+			return;
+		end
+
 		if newRenownLevel > oldRenownLevel and newRenownLevel > 1 then
 			-- Wait a second for achievements to be granted, quests to be turned in, etc. (for reward player conditions)
-			C_Timer.After(1, function() self:ShowRenownLevelUpToast(majorFactionID, newRenownLevel); end);
+			C_Timer.After(1, function() self:ShowRenownLevelUpToast(majorFactionData, newRenownLevel); end);
 		end
 	end
 end
@@ -32,18 +78,18 @@ function MajorFactionsRenownToastMixin:AddSwirlEffects(textureKit) -- override
 	end
 end
 
-function MajorFactionsRenownToastMixin:ShowRenownLevelUpToast(majorFactionID, renownLevel)
-	local majorFactionData = C_MajorFactions.GetMajorFactionData(majorFactionID);
+function MajorFactionsRenownToastMixin:ShowRenownLevelUpToast(majorFactionData, renownLevel)
 	if majorFactionData then
 		if MajorFactionRenownFrame then
 			HideUIPanel(MajorFactionRenownFrame);
 		end
-		TopBannerManager_Show(self, { 
-			majorFactionID = majorFactionID,
+		TopBannerManager_Show(self, {
+			majorFactionID = majorFactionData.factionID,
 			renownLevel = renownLevel,
 			factionColor = self:GetFactionColorByTextureKit(majorFactionData.textureKit),
 			textureKit = majorFactionData.textureKit,
 			celebrationSoundKit = majorFactionData.celebrationSoundKit,
+			expansionID = majorFactionData.expansionID,
 		});
 	end
 end
@@ -94,11 +140,8 @@ function MajorFactionsRenownToastMixin:PlayBanner(data)
 	self.RenownLabel:SetTextColor(data.factionColor:GetRGB());
 	self:SetMajorFactionTextureKit(data.textureKit);
 
-	local textureKitRegions = {
-		[self.GlowLineBottom] = "majorfaction-celebration-bottomglowline",
-	};
-
-	SetupTextureKitOnFrames(data.textureKit, textureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+	local expansionLayoutInfo = ExpansionLayoutInfo[data.expansionID] or ExpansionLayoutInfo[LE_EXPANSION_DRAGONFLIGHT];
+	self:SetMajorFactionExpansionLayoutInfo(expansionLayoutInfo);
 
 	self.ToastBG:SetAlpha(0);
 	self.IconSwirlModelScene:SetAlpha(0);

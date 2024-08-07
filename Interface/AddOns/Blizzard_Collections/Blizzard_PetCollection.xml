@@ -144,11 +144,12 @@
 		<Size x="29" y="29"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentBackground" inherits="Spellbook-EmptySlot">
+				<Texture name="$parentBackground" file="Interface\Spellbook\Spellbook-Parts">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 					<Size x="33" y="33"/>
+					<TexCoords left="0.79296875" right="0.96093750" top="0.00390625" bottom="0.17187500"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
@@ -686,21 +687,13 @@
 					</OnEnter>
 				</Scripts>
 			</Frame>
-			<Button parentKey="MenuRegion">
+			<Button parentKey="MenuRegion" registerForClicks="RightButtonUp">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentIcon" />
 					<Anchor point="BOTTOMRIGHT" relativeTo="$parentIcon" x="250" />
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						self:RegisterForClicks("RightButtonUp");
-					</OnLoad>
-					<OnClick>
-						loadout = self:GetParent();
-						if (button == "RightButton" and loadout.petID) then
-							PetJournal_ShowPetDropdown(nil, self, 0, 0, loadout.petID);
-						end
-					</OnClick>
+					<OnMouseUp function="PetJournalLoadOut_MenuRegion_OnMouseUp"/>
 				</Scripts>
 			</Button>
 		</Frames>
@@ -963,24 +956,11 @@
 					<OnTextChanged function="PetJournal_OnSearchTextChanged"/>
 				</Scripts>
 			</EditBox>
-			<DropDownToggleButton name="$parentFilterButton" inherits="UIResettableDropdownButtonTemplate" text="FILTER">
-				<KeyValues>
-					<KeyValue key="resetFunction" value="PetJournalFilterDropDown_ResetFilters" type="global"/>
-				</KeyValues>
+			<DropdownButton parentKey="FilterDropdown" inherits="WowStyle1FilterDropdownTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parentLeftInset" x="-5" y="-9"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.LeftInset" x="-5" y="-10"/>
 				</Anchors>
-				<Scripts>
-					<OnMouseDown inherit="prepend">
-						ToggleDropDownMenu(1, nil, PetJournalFilterDropDown, "PetJournalFilterButton", 74, 15);
-					</OnMouseDown>
-				</Scripts>
-			</DropDownToggleButton>
-			<Frame name="$parentFilterDropDown" inherits="UIDropDownMenuTemplate">
-				<Scripts>
-					<OnLoad function="PetJournalFilterDropDown_OnLoad"/>
-				</Scripts>
-			</Frame>
+			</DropdownButton>
 
 			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList" frameStrata="HIGH">
 				<Anchors>
@@ -1797,7 +1777,6 @@
 					</OnHide>
 				</Scripts>
 			</Frame>
-			<Frame name="$parentPetOptionsMenu" inherits="UIDropDownMenuTemplate" enableMouse="true" parentKey="petOptionsMenu"/>
 		</Frames>
 		<Scripts>
 			<OnShow function="PetJournal_OnShow"/>

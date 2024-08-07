@@ -1,0 +1,30 @@
+## Title: Blizzard Player Spells
+## LoadOnDemand: 1
+## Dependencies: Blizzard_SharedTalentUI, Blizzard_PagedContent
+
+ClassSpecializations/Blizzard_ClassSpecializationsFrame.xml
+ClassTalents/Blizzard_ClassTalentUtil.lua
+ClassTalents/Blizzard_ClassTalentLoadoutDialogTemplates.xml
+ClassTalents/Blizzard_ClassTalentImportExport.lua
+ClassTalents/Blizzard_ClassTalentLoadoutImportDialog.xml
+ClassTalents/Blizzard_ClassTalentLoadoutEditDialog.xml
+ClassTalents/Blizzard_ClassTalentLoadoutCreateDialog.xml
+ClassTalents/Blizzard_ClassTalentButtonTemplates.xml
+ClassTalents/Blizzard_ClassTalentEdgeTemplates.lua
+ClassTalents/Blizzard_ClassTalentEdgeTemplates.xml
+ClassTalents/Blizzard_HeroTalentsSelectionDialog.lua
+ClassTalents/Blizzard_HeroTalentsSelectionDialog.xml
+ClassTalents/Blizzard_HeroTalentsContainer.lua
+ClassTalents/Blizzard_HeroTalentsContainer.xml
+ClassTalents/Blizzard_ClassTalentSearch.lua
+ClassTalents/Blizzard_ClassTalentsFrame.xml
+PvPTalents/Blizzard_PvPTalentListTemplates.xml
+PvPTalents/Blizzard_PvPTalentSlotTemplates.xml
+PvPTalents/Blizzard_WarmodeButtonTemplate.xml
+SpellBook/Blizzard_SpellBookTemplates.xml
+SpellBook/Blizzard_SpellBookItem.xml
+SpellBook/Blizzard_SpellBookSearch.lua
+SpellBook/Blizzard_SpellBookFrame.xml
+Blizzard_PlayerSpellsFrame.xml
+
+Blizzard_PlayerSpellsRegistration.lua

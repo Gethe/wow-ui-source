@@ -40,6 +40,8 @@
 --  :UsesSelector() - If this returns false, the flow will not use the CharacterSelector. Defaulted to true.
 --  :GetTheme() - How should CharacterSelect set up the parent frame? Defaults to "default"
 --  :ShouldDisableButtons() - Should other buttons on CharacterSelect be disabled while this flow is open? Defaults to true.
+--  :AllowCharacterReordering() - Should character reordering in the scroll list be allowed while in this flow? Defaults to false.
+--  :CanInitialize() - Can the flow initialize? Useful for flows that can automatically be started like RPE. Defaults to true.
 --
 -- The following members must be present on a block:
 --  .Back - Show the back button on the flow frame.
@@ -189,29 +191,18 @@ function CharacterServicesFlowMixin:MoveBlock(block, offset)
 	end
 end
 
-local stepTextures = {
-	[1] = { 0.16601563, 0.23535156, 0.00097656, 0.07812500 },
-	[2] = { 0.23730469, 0.30664063, 0.00097656, 0.07812500 },
-	[3] = { 0.30859375, 0.37792969, 0.00097656, 0.07812500 },
-	[4] = { 0.37988281, 0.44921875, 0.00097656, 0.07812500 },
-	[5] = { 0.45117188, 0.52050781, 0.00097656, 0.07812500 },
-	[6] = { 0.52246094, 0.59179688, 0.00097656, 0.07812500 },
-	[7] = { 0.59375000, 0.66308594, 0.00097656, 0.07812500 },
-	[8] = { 0.66503906, 0.73437500, 0.00097656, 0.07812500 },
-	[9] = { 0.73632813, 0.80566406, 0.00097656, 0.07812500 },
-};
-
 function CharacterServicesFlowMixin:SetUpBlock(controller, results, wasFromRewind)
 	local block = self:GetCurrentStep();
 	CharacterServicesMaster_SetCurrentBlock(controller, block, wasFromRewind);
 	if (not block.HiddenStep) then
 		if (self.step == 1) then
-			block.frame:SetPoint("TOP", CharacterServicesMaster, "TOP", -30, 0);
+			block.frame:SetPoint("TOP", CharacterServicesMaster, "TOP", 0, 0);
 		else
-			self:MoveBlock(block, -105);
+			self:MoveBlock(block, -125);
 		end
 		if block.frame.StepNumber then
-			block.frame.StepNumber:SetTexCoord(unpack(stepTextures[self.step]));
+			local formattedStep = "vas-number-" .. self.step;
+			block.frame.StepNumber:SetAtlas(formattedStep, TextureKitConstants.UseAtlasSize);
 		end
 		block.frame:Show();
 	end
@@ -277,6 +268,16 @@ function CharacterServicesFlowMixin:GetTheme()
 end
 
 function CharacterServicesFlowMixin:ShouldDisableButtons()
+	return true;
+end
+
+function CharacterServicesFlowMixin:AllowCharacterReordering()
+	-- Override as needed
+	return false;
+end
+
+function CharacterServicesFlowMixin:CanInitialize()
+	-- Override as needed
 	return true;
 end
 

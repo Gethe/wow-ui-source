@@ -17,9 +17,30 @@ function FlightPointDataProviderMixin:RefreshAllData(fromOnShow)
 	local factionGroup = UnitFactionGroup("player");
 	for i, taxiNodeInfo in ipairs(taxiNodes) do
 		if self:ShouldShowTaxiNode(factionGroup, taxiNodeInfo) then
+			if taxiNodeInfo.isUndiscovered then
+				if taxiNodeInfo.faction == Enum.FlightPathFaction.Horde then
+					taxiNodeInfo.description = UNDISCOVERED_FACTION_FLIGHTPOINT:format(FACTION_HORDE);
+				elseif taxiNodeInfo.faction == Enum.FlightPathFaction.Alliance then
+					taxiNodeInfo.description = UNDISCOVERED_FACTION_FLIGHTPOINT:format(FACTION_ALLIANCE);
+				else
+					taxiNodeInfo.description = UNDISCOVERED_NEUTRAL_FLIGHTPOINT;
+				end
+			end
 			self:GetMap():AcquirePin("FlightPointPinTemplate", taxiNodeInfo);
 		end
 	end
+end
+
+function FlightPointDataProviderMixin:OnShow()
+	self:RegisterEvent("TAXI_NODE_STATUS_CHANGED");
+end
+
+function FlightPointDataProviderMixin:OnHide()
+	self:UnregisterEvent("TAXI_NODE_STATUS_CHANGED");
+end
+
+function FlightPointDataProviderMixin:OnEvent(event)
+	self:RefreshAllData();
 end
 
 function FlightPointDataProviderMixin:ShouldShowTaxiNode(factionGroup, taxiNodeInfo)
@@ -38,7 +59,7 @@ end
 FlightPointPinMixin = BaseMapPoiPinMixin:CreateSubPin("PIN_FRAME_LEVEL_FLIGHT_POINT");
 
 function FlightPointPinMixin:OnAcquired(poiInfo)
-	BaseMapPoiPinMixin.OnAcquired(self, poiInfo);
+	SuperTrackablePoiPinMixin.OnAcquired(self, poiInfo);
 
 	self:ClearNudgeSettings();
 
@@ -58,4 +79,8 @@ function FlightPointPinMixin:SetTexture(poiInfo)
 		self:SetSize(21, 18);
 		self.Texture:SetSize(21, 18);
 	end
+end
+
+function FlightPointPinMixin:GetSuperTrackData()
+	return Enum.SuperTrackingMapPinType.TaxiNode, self.poiInfo.nodeID;
 end

@@ -2,7 +2,7 @@
 ..\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_AuthChallengeUI.lua"/>
 
-	<ScopedModifier fullLockdown="true" scriptsUseGivenEnv="true">
+	<ScopedModifier fullLockdown="true">
 		<EditBox name="AuthChallengeEditBoxTemplate" enableMouse="true" hidden="true" virtual="true">
 			<Size x="163" y="20"/>
 			<Anchors>

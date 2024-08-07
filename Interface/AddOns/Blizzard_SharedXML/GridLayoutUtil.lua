@@ -26,6 +26,7 @@
 -- The primary elements of GridLayoutManagerMixin are:
 --  primarySizeCalculator: how to measure regions. Typically GetWidth or GetHeight.
 --  secondarySizeCalculator: how to measure regions. Typically GetWidth or GetHeight.
+--	cellSizeCalculator: how to measure cell size of regions. Optional. Typically only used for cell-size-based layout.
 --  primaryMultiplier: to be used when applying offsets. Typically 1 or -1.
 --  secondaryMultiplier: to be used when applying offsets. Typically 1 or -1.
 --  primarySizePadding: padding between elements in sections.
@@ -85,6 +86,7 @@ end
 -- Layout a grid with each frame taking up one cell regardless of actual width/height.
 function GridLayoutUtil.CreateStandardGridLayout(stride, xPadding, yPadding, xMultiplier, yMultiplier, isColumnBased)
 	local layout = GridLayoutUtil.CreateGridLayout();
+	layout.stride = stride;
 	layout.primarySizePadding = (xPadding or layout.primarySizePadding);
 	layout.secondarySizePadding = (yPadding or layout.secondarySizePadding);
 	layout.primaryMultiplier = (xMultiplier or layout.primaryMultiplier);
@@ -107,6 +109,7 @@ end
 -- Layout a grid based on the frame's actual UI width/height.
 function GridLayoutUtil.CreateNaturalGridLayout(stride, xPadding, yPadding, xMultiplier, yMultiplier)
 	local gridLayout = GridLayoutUtil.CreateGridLayout();
+	gridLayout.stride = stride;
 	gridLayout.primarySizePadding = (xPadding or gridLayout.primarySizePadding);
 	gridLayout.secondarySizePadding = (yPadding or gridLayout.secondarySizePadding);
 	gridLayout.primaryMultiplier = (xMultiplier or gridLayout.primaryMultiplier);
@@ -121,14 +124,34 @@ function GridLayoutUtil.CreateNaturalGridLayout(stride, xPadding, yPadding, xMul
 	return gridLayout;
 end
 
+-- Layout a grid based on the frame's designated cell size - how many cells it takes up regardless of actual width/height.
+-- Actual width/height is still used for aspects like anchoring offsets and leftover padding distribution.
+function GridLayoutUtil.CreateCellSizeGridLayout(stride, xPadding, yPadding, xMultiplier, yMultiplier, cellSizeCalculator)
+	local gridLayout = GridLayoutUtil.CreateGridLayout();
+	gridLayout.stride = stride;
+	gridLayout.primarySizePadding = (xPadding or gridLayout.primarySizePadding);
+	gridLayout.secondarySizePadding = (yPadding or gridLayout.secondarySizePadding);
+	gridLayout.primaryMultiplier = (xMultiplier or gridLayout.primaryMultiplier);
+	gridLayout.secondaryMultiplier = (yMultiplier or gridLayout.secondaryMultiplier);
+	gridLayout.cellSizeCalculator = cellSizeCalculator;
+
+	gridLayout.primaryPaddingStrategy = GridLayoutUtilPrimaryPaddingStrategy.AllSpacingToLast;
+	gridLayout.secondaryPaddingStrategy = GridLayoutUtilSecondaryPaddingStrategy.Equal;
+
+	gridLayout.sectionStrategy = GenerateClosure(GridLayoutUtilSectionStrategy.SplitRegionsIntoSectionsByCellSize, stride);
+	gridLayout.crossSectionStrategy = GridLayoutUtilCrossSectionStrategy.CalculateFlatCrossSections;
+
+	return gridLayout;
+end
+
 function GridLayoutUtil.ApplyGridLayout(regions, initialAnchor, gridLayout)
 	if #regions == 0 then
 		return;
 	end
 
 	local isColumnBased = gridLayout.isColumnBased;
-	local primarySizeCalculator = isColumnBased and regions[1].GetHeight or regions[1].GetWidth;
-	local secondarySizeCalculator = isColumnBased and regions[1].GetWidth or regions[1].GetHeight;
+	local primarySizeCalculator = gridLayout.primarySizeCalculator or (isColumnBased and regions[1].GetHeight or regions[1].GetWidth);
+	local secondarySizeCalculator = gridLayout.secondarySizeCalculator or (isColumnBased and regions[1].GetWidth or regions[1].GetHeight);
 	local layoutManager = CreateAndInitFromMixin(GridLayoutManagerMixin, primarySizeCalculator, secondarySizeCalculator, gridLayout.primaryMultiplier, gridLayout.secondaryMultiplier,
 													gridLayout.primarySizePadding, gridLayout.secondarySizePadding);
 
@@ -138,13 +161,14 @@ function GridLayoutUtil.ApplyGridLayout(regions, initialAnchor, gridLayout)
 	layoutManager:SetSecondaryPaddingStrategy(gridLayout.secondaryPaddingStrategy, gridLayout.minimumSecondarySize);
 	layoutManager:SetSectionStrategy(gridLayout.sectionStrategy);
 	layoutManager:SetCrossSectionStrategy(gridLayout.crossSectionStrategy);
+	layoutManager:SetCellSizeCalculator(gridLayout.cellSizeCalculator);
 	layoutManager:ApplyToRegions(initialAnchor, regions);
 end
 
 function GridLayoutUtil.CreateGridLayout()
 	return {
-		primarySizeCalculator = UIParent.GetWidth,
-		secondarySizeCalculator = UIParent.GetHeight,
+		primarySizeCalculator = nil,
+		secondarySizeCalculator = nil,
 		primarySizePadding = 0,
 		secondarySizePadding = 0,
 		primaryMultiplier = 1,
@@ -187,6 +211,10 @@ end
 
 function GridLayoutManagerMixin:SetHeightAsPrimary(isHeightPrimary)
 	self.isHeightPrimary = isHeightPrimary;
+end
+
+function GridLayoutManagerMixin:SetCellSizeCalculator(cellSizeCalculator)
+	self.cellSizeCalculator = cellSizeCalculator;
 end
 
 function GridLayoutManagerMixin:ApplyToRegions(initialAnchor, regions)
@@ -281,6 +309,10 @@ function GridLayoutManagerMixin:GetSecondarySizePadding()
 	return self.secondarySizePadding;
 end
 
+function GridLayoutManagerMixin:CalculateCellSize(region)
+	return self.cellSizeCalculator and self.cellSizeCalculator(region) or 1;
+end
+
 
 GridLayoutRegionEntryMixin = {};
 
@@ -288,6 +320,7 @@ function GridLayoutRegionEntryMixin:Init(layoutManager, region)
 	self.region = region;
 	self.primarySize = layoutManager:CalculatePrimarySize(region);
 	self.secondarySize = layoutManager:CalculateSecondarySize(region);
+	self.cellSize = layoutManager:CalculateCellSize(region);
 end
 
 function GridLayoutRegionEntryMixin:GetRegion()
@@ -300,6 +333,10 @@ end
 
 function GridLayoutRegionEntryMixin:GetSecondarySize()
 	return self.secondarySize;
+end
+
+function GridLayoutRegionEntryMixin:GetCellSize()
+	return self.cellSize;
 end
 
 function GridLayoutRegionEntryMixin:SetExtraPrimaryPadding(extraPrimaryPadding)
@@ -507,6 +544,18 @@ function GridLayoutUtilSectionStrategy.SplitRegionsIntoSectionsByNaturalSize(sec
 	end
 
 	return GridLayoutUtilSectionStrategy.SplitRegionsIntoSectionsBySize(sectionSize, layoutManager, NaturalRegionDataProvider, NaturalSectionSizeCalculator);
+end
+
+function GridLayoutUtilSectionStrategy.SplitRegionsIntoSectionsByCellSize(sectionSize, layoutManager, regions)
+	local function GridRegionDataProviderByRow(i)
+		return regions[i];
+	end
+
+	local function CellSectionSizeCalculator(region, currentSectionSize)
+		return layoutManager:CalculateCellSize(region);
+	end
+
+	return GridLayoutUtilSectionStrategy.SplitRegionsIntoSectionsBySize(sectionSize, layoutManager, GridRegionDataProviderByRow, CellSectionSizeCalculator);
 end
 
 function GridLayoutUtilSectionStrategy.SplitRegionsIntoGridSectionsInternal(sectionSize, layoutManager, regionDataProvider)

@@ -1,0 +1,87 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<Script file="Blizzard_ClassTalentButtonTemplates.lua"/>
+
+	<!-- Template for both the standard Class Talent buttons and the flyout choice mixin -->
+	<Frame name="ClassTalentButtonArtTemplate" mixin="ClassTalentButtonArtMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="sheenMaskAtlas" value="" type="string"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="BorderSheen" atlas="talents-sheen-node" useAtlasSize="true" alpha="1" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim" looping="REPEAT" inherits="SyncedAnimGroupTemplate">
+							<KeyValues>
+								<KeyValue key="syncKey" value="ClassTalentBorderSheenSyncKey" type="global"/>
+							</KeyValues>
+							<Translation offsetX="150" order="1" startDelay="5" endDelay="10.5" duration="6.5" />
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+				<MaskTexture parentKey="BorderSheenMask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="BorderSheen"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<!-- Template for only the Class Talent buttons -->
+	<Frame name="ClassTalentBaseButtonTemplate" inherits="ClassTalentButtonArtTemplate" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="SelectableGlow" hidden="true" alphaMode="ADD" atlas="talents-node-square-greenglow">
+					<Size x="61" y="61"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim" looping="REPEAT" setToFinalAlpha="true" inherits="VisibleWhilePlayingAnimGroupTemplate">
+							<Alpha fromAlpha="0" toAlpha="0.15" duration="1" order="1" smoothing="OUT"/>
+							<Alpha fromAlpha="0.15" toAlpha="0" duration="1" order="2" smoothing="IN"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Button name="ClassTalentButtonChoiceTemplate" inherits="TalentButtonChoiceTemplate, ClassTalentBaseButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="sheenMaskAtlas" value="talents-node-choice-sheenmask" type="string"/>
+		</KeyValues>
+	</Button>
+
+	<Button name="ClassTalentButtonCircleTemplate" inherits="TalentButtonCircleTemplate, ClassTalentBaseButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="sheenMaskAtlas" value="talents-node-circle-sheenmask" type="string"/>
+		</KeyValues>
+	</Button>
+
+	<Button name="ClassTalentButtonSquareTemplate" inherits="TalentButtonSquareTemplate, ClassTalentBaseButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="sheenMaskAtlas" value="talents-node-square-sheenmask" type="string"/>
+		</KeyValues>
+	</Button>
+
+	<Button name="ClassTalentButtonLargeSquareTemplate" inherits="TalentButtonLargeSquareTemplate, ClassTalentButtonArtTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="sheenMaskAtlas" value="talents-node-choiceflyout-square-sheenmask" type="string"/>
+		</KeyValues>
+	</Button>
+
+	<Button name="ClassTalentButtonLargeCircleTemplate" inherits="TalentButtonLargeCircleTemplate, ClassTalentButtonArtTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="sheenMaskAtlas" value="talents-node-choiceflyout-circle-sheenmask" type="string"/>
+		</KeyValues>
+	</Button>
+</Ui>

@@ -35,15 +35,6 @@ local MajorFactions =
 			},
 		},
 		{
-			Name = "GetFeatureAbilities",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "featureAbilities", Type = "table", InnerType = "MajorFactionFeatureAbilityInfo", Nilable = false },
-			},
-		},
-		{
 			Name = "GetMajorFactionData",
 			Type = "Function",
 
@@ -69,6 +60,20 @@ local MajorFactions =
 			Returns =
 			{
 				{ Name = "majorFactionIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMajorFactionRenownInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "majorFactionID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "data", Type = "MajorFactionRenownInfo", Nilable = true },
 			},
 		},
 		{
@@ -124,15 +129,6 @@ local MajorFactions =
 			},
 		},
 		{
-			Name = "IsPlayerInRenownCatchUpMode",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "isInCatchUpMode", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "IsWeeklyRenownCapped",
 			Type = "Function",
 
@@ -145,10 +141,6 @@ local MajorFactions =
 			{
 				{ Name = "isWeeklyCapped", Type = "bool", Nilable = false },
 			},
-		},
-		{
-			Name = "RequestCatchUpState",
-			Type = "Function",
 		},
 	},
 
@@ -163,11 +155,6 @@ local MajorFactions =
 			Name = "MajorFactionInteractionStarted",
 			Type = "Event",
 			LiteralName = "MAJOR_FACTION_INTERACTION_STARTED",
-		},
-		{
-			Name = "MajorFactionRenownCatchUpStateUpdate",
-			Type = "Event",
-			LiteralName = "MAJOR_FACTION_RENOWN_CATCH_UP_STATE_UPDATE",
 		},
 		{
 			Name = "MajorFactionRenownLevelChanged",
@@ -214,12 +201,13 @@ local MajorFactions =
 			},
 		},
 		{
-			Name = "MajorFactionFeatureAbilityInfo",
+			Name = "MajorFactionRenownInfo",
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "featureAbilityType", Type = "number", Nilable = false },
-				{ Name = "uiOrder", Type = "number", Nilable = false },
+				{ Name = "renownLevel", Type = "number", Nilable = false },
+				{ Name = "renownReputationEarned", Type = "number", Nilable = false },
+				{ Name = "renownLevelThreshold", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -241,6 +229,7 @@ local MajorFactions =
 			{
 				{ Name = "renownRewardID", Type = "number", Nilable = false },
 				{ Name = "uiOrder", Type = "number", Nilable = false },
+				{ Name = "isAccountUnlock", Type = "bool", Nilable = false },
 				{ Name = "itemID", Type = "number", Nilable = true },
 				{ Name = "spellID", Type = "number", Nilable = true },
 				{ Name = "mountID", Type = "number", Nilable = true },

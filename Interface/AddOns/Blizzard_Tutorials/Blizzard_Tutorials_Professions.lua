@@ -378,6 +378,10 @@ function Class_EquipProfessionGear:StartAnimation()
 		[26] = ProfessionsFrame.CraftingPage.CookingToolSlot,
 		[27] = ProfessionsFrame.CraftingPage.CookingGear0Slot,
 		[28] = ProfessionsFrame.CraftingPage.FishingToolSlot,
+		--[[
+		[29] = ProfessionsFrame.CraftingPage.FishingGear0Slot,
+		[30] = ProfessionsFrame.CraftingPage.FishingGear0Slot,
+		]]
 	}
 
 	self.destFrame = Slot[self.data.CharacterSlot];
@@ -499,9 +503,9 @@ function NewSpecChecker:ShowReminder(profName)
 		return;
 	end
 
-	MainMenuMicroButton_ShowAlert(SpellbookMicroButton, PROFESSIONS_NEW_CHOICE_AVAILABLE_SPECIALIZATION:format(C_ProfSpecs.GetNewSpecReminderProfName()));
-	MicroButtonPulse(SpellbookMicroButton);
-	SpellbookMicroButton.suggestedTabButton = SpellBookFrameTabButton2;
+	MainMenuMicroButton_ShowAlert(ProfessionMicroButton, PROFESSIONS_NEW_CHOICE_AVAILABLE_SPECIALIZATION:format(C_ProfSpecs.GetNewSpecReminderProfName()));
+	MicroButtonPulse(ProfessionMicroButton);
+	ProfessionMicroButton.showProfessionSpellHighlights = true;
 end
 
 function NewSpecChecker:ShouldShowReminder()
@@ -543,9 +547,9 @@ function SpecPointsChecker:ShowReminder()
 		return;
 	end
 
-	MainMenuMicroButton_ShowAlert(SpellbookMicroButton, PROFESSIONS_UNSPENT_SPEC_POINTS_REMINDER);
-	MicroButtonPulse(SpellbookMicroButton);
-	SpellbookMicroButton.suggestedTabButton = SpellBookFrameTabButton2;
+	MainMenuMicroButton_ShowAlert(ProfessionMicroButton, PROFESSIONS_UNSPENT_SPEC_POINTS_REMINDER);
+	MicroButtonPulse(ProfessionMicroButton);
+	ProfessionMicroButton.showProfessionSpellHighlights = true;
 end
 
 function SpecPointsChecker:CheckShowReminder()
@@ -627,9 +631,8 @@ function Class_FirstProfessionTutorial:OnBegin(args)
 		self.success = true;
 		TutorialManager:Finished(self:Name());
 	end);
-	EventRegistry:RegisterCallback("SpellBookFrame.Show", function() self:Update(); end, self);
-	EventRegistry:RegisterCallback("SpellBookFrame.Hide", function() self:Update(); end, self);
-	EventRegistry:RegisterCallback("SpellBookFrame.ChangeBookType", function() self:Update(); end, self);
+	EventRegistry:RegisterCallback("ProfessionsBookFrame.Show", function() self:Update(); end, self);
+	EventRegistry:RegisterCallback("ProfessionsBookFrame.Hide", function() self:Update(); end, self);
 	Dispatcher:RegisterEvent("SKILL_LINES_CHANGED", self);
 
 	self:Update();
@@ -660,7 +663,7 @@ function Class_FirstProfessionTutorial:Update()
 
 	if self.success then
 		TutorialManager:Finished(self:Name());
-	elseif not SpellBookFrame or not SpellBookFrame:IsVisible() then
+	elseif not ProfessionsBookFrame or not ProfessionsBookFrame:IsVisible() then
 		local helpTipInfo = 
 		{
 			text = PROFESSIONS_NEW_TUTORIAL,
@@ -670,19 +673,8 @@ function Class_FirstProfessionTutorial:Update()
 			onAcknowledgeCallback = function() self:AcknowledgeTutorial(); end,
 			autoHorizontalSlide = true,
 		};
-		HelpTip:Show(UIParent, helpTipInfo, SpellbookMicroButton);
-		MicroButtonPulse(SpellbookMicroButton);
-	elseif not SpellBookProfessionFrame or not SpellBookProfessionFrame:IsShown() then
-		local helpTipInfo = 
-		{
-			text = PROFESSIONS_NEW_TUTORIAL_TAB,
-			buttonStyle = HelpTip.ButtonStyle.Close,
-			targetPoint = HelpTip.Point.BottomEdgeCenter,
-			system = self:GetHelptipSystem(),
-			onAcknowledgeCallback = function() self:AcknowledgeTutorial(); end,
-			autoHorizontalSlide = true,
-		};
-		HelpTip:Show(UIParent, helpTipInfo, SpellBookFrameTabButton2);
+		HelpTip:Show(UIParent, helpTipInfo, ProfessionMicroButton);
+		MicroButtonPulse(ProfessionMicroButton);
 	else
 		local helpTipInfo = 
 		{
@@ -708,8 +700,7 @@ function Class_FirstProfessionTutorial:OnComplete()
 	end
 
 	EventRegistry:UnregisterCallback("ProfessionsFrame.Show", self);
-	EventRegistry:UnregisterCallback("SpellBookFrame.Show", self);
-	EventRegistry:UnregisterCallback("SpellBookFrame.Hide", self);
-	EventRegistry:UnregisterCallback("SpellBookFrame.ChangeBookType", self);
+	EventRegistry:UnregisterCallback("ProfessionsBookFrame.Show", self);
+	EventRegistry:UnregisterCallback("ProfessionsBookFrame.Hide", self);
 	Dispatcher:UnregisterEvent("SKILL_LINES_CHANGED", self);
 end

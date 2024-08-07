@@ -145,6 +145,7 @@ function SetDoubleGuildTabardTextures(unit, leftEmblemTexture, rightEmblemTextur
 	end
 end
 
+
 function SetGuildTabardTextures(emblemSize, columns, offset, unit, emblemTexture, backgroundTexture, borderTexture, tabardData)
 	local backgroundColor, borderColor, emblemColor, emblemFileID, emblemIndex;
 	tabardData = tabardData or C_GuildInfo.GetGuildTabardInfo(unit);

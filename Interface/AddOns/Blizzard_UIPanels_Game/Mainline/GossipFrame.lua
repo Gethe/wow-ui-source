@@ -35,13 +35,14 @@ end
 GossipAvailableQuestButtonMixin = CreateFromMixins(GossipSharedAvailableQuestButtonMixin);
 
 function GossipAvailableQuestButtonMixin:Setup(questInfo)
-	QuestUtil.ApplyQuestIconOfferToTextureForQuestID(self.Icon, questInfo.questID, questInfo.isLegendary, questInfo.frequency, questInfo.isRepeatable, questInfo.isImportant);
+	QuestUtil.ApplyQuestIconOfferToTextureForQuestID(self.Icon, questInfo.questID, questInfo.isLegendary, questInfo.frequency, questInfo.isRepeatable, questInfo.isImportant, questInfo.isMeta);
+	self.Icon:SetAlpha(QuestUtil.GetAvailableQuestIconAlpha(questInfo.questID));
 	GossipSharedAvailableQuestButtonMixin.Setup(self, questInfo);
 end
 
 GossipActiveQuestButtonMixin = CreateFromMixins(GossipSharedActiveQuestButtonMixin);
 function GossipActiveQuestButtonMixin:Setup(questInfo)
-	QuestUtil.ApplyQuestIconActiveToTextureForQuestID(self.Icon, questInfo.questID, questInfo.isComplete, questInfo.isLegendary, questInfo.isImportant);
+	QuestUtil.ApplyQuestIconActiveToTextureForQuestID(self.Icon, questInfo.questID, questInfo.isComplete, questInfo.isLegendary, questInfo.frequency, questInfo.isRepeatable, questInfo.isImportant, questInfo.isMeta);
 	GossipSharedActiveQuestButtonMixin.Setup(self, questInfo);
 end
 

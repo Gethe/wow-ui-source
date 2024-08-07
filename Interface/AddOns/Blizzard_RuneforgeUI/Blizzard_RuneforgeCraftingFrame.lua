@@ -66,21 +66,21 @@ function RuneforgeCraftingFrameMixin:OnEvent(event, ...)
 		local buttonName = ...;
 		local isRightButton = buttonName == "RightButton";
 
-		local mouseFocus = GetMouseFocus();
-		if isRightButton or (not DoesAncestryInclude(self.PowerFrame, mouseFocus) and mouseFocus ~= self.PowerSlot) then
+		local mouseFoci = GetMouseFoci();
+		if isRightButton or (not DoesAncestryIncludeAny(self.PowerFrame, mouseFoci) and not self.PowerSlot:IsMouseMotionFocus()) then
 			self.PowerFrame:Hide();
 		end
 
-		if isRightButton or (not DoesAncestryInclude(self.ModifierFrame, mouseFocus)) then
+		if isRightButton or (not DoesAncestryIncludeAny(self.ModifierFrame, mouseFoci)) then
 			self.ModifierFrame:CloseSelector();
 		end
 
-		local flyoutSelected = not isRightButton and DoesAncestryInclude(EquipmentFlyout_GetFrame(), mouseFocus);
+		local flyoutSelected = not isRightButton and DoesAncestryIncludeAny(EquipmentFlyout_GetFrame(), mouseFoci);
 		if not flyoutSelected then
 			EquipmentFlyout_Hide();
 		end
 
-		if not flyoutSelected and (not DoesAncestryInclude(self.BaseItemSlot, mouseFocus)) then
+		if not flyoutSelected and (not DoesAncestryIncludeAny(self.BaseItemSlot, mouseFoci)) then
 			self.BaseItemSlot:SetSelectingItem(nil);
 		end
 	end

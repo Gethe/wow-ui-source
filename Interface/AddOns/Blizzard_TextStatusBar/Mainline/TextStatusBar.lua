@@ -43,11 +43,19 @@ function TextStatusBarMixin:InitializeTextStatusBar()
 	end
 end
 
-function TextStatusBarMixin:SetBarText(text)
+function TextStatusBarMixin:SetBarText(text, leftText, rightText)
 	if ( not text ) then
 		return
 	end
 	self.TextString = text;
+
+	if( leftText ) then
+		self.LeftText = leftText;
+	end
+	
+	if ( rightText) then
+		self.RightText = rightText;
+	end
 end
 
 function TextStatusBarMixin:TextStatusBarOnEvent(event, ...)

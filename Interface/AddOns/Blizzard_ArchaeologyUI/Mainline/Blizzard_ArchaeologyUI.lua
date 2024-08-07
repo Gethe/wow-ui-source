@@ -51,7 +51,27 @@ function ArchaeologyFrame_ShowFailed(self)
 	CloseResearch();
 end
 
+local RaceFilterAllIndex = 0;
 
+local function IsRaceFilterSet(filterIndex)
+		return filterIndex == ArchaeologyFrame.currentFrame.raceFilter;
+	end
+
+local function SetRaceFilter(filterIndex)
+	local currentFrame = ArchaeologyFrame.currentFrame;
+	currentFrame.raceFilter = filterIndex;
+
+	if currentFrame == ArchaeologyFrame.completedPage then
+		local currData = currentFrame.currData;
+		currData.raceIndex = max(1, filterIndex);
+		currData.projectIndex = 1;
+		currData.onRare = true;
+		currentFrame.currentPage = 1;
+	else
+		 ArchaeologyFrame_ShowArtifact(filterIndex);
+	end
+	currentFrame:UpdateFrame();
+end
 
 function ArchaeologyFrame_OnLoad(self)
 	UIPanelWindows["ArchaeologyFrame"] = {area = "left", pushable = 3, showFailedFunc = ArchaeologyFrame_ShowFailed };
@@ -95,9 +115,39 @@ function ArchaeologyFrame_OnLoad(self)
 	self.currentFrame = self.summaryPage;
 	self.currentFrame.currentPage = 1;
 
-	UIDropDownMenu_SetWidth(self.raceFilterDropDown, 95);
-	UIDropDownMenu_JustifyText(self.raceFilterDropDown, "LEFT");
-	UIDropDownMenu_Initialize(self.raceFilterDropDown, ArchaeologyFrame_InitRaceFilter);
+	self.RaceFilterDropdown:SetWidth(95);
+	self.RaceFilterDropdown:SetSelectionTranslator(function(selection)
+		if selection.data > RaceFilterAllIndex then
+			local name = GetArchaeologyRaceInfo(selection.data);
+			return name;
+		end
+
+		return selection.text;
+	end);
+
+	self.RaceFilterDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_ARCHAEOLOGY_RACE_FILTER");
+
+		local currentFrame = ArchaeologyFrame.currentFrame;
+		local onCompletedPage = currentFrame == ArchaeologyFrame.completedPage;
+		if onCompletedPage then
+			rootDescription:CreateRadio(ALL, IsRaceFilterSet, SetRaceFilter, RaceFilterAllIndex);
+		end
+	
+		for raceIndex = 1, GetNumArchaeologyRaces() do
+			local numProjects = GetNumArtifactsByRace(raceIndex);
+			if numProjects > 0 then
+				local name, _, _,  currencyAmount, projectAmount =  GetArchaeologyRaceInfo(raceIndex);
+				if currentFrame == ArchaeologyFrame.artifactPage then
+					name = string.format("%s (%d/%d)", name, currencyAmount, projectAmount);
+				end
+	
+				local radio = rootDescription:CreateRadio(name, IsRaceFilterSet, SetRaceFilter, raceIndex);
+				radio:SetEnabled(not (onCompletedPage and numProjects <= 1));
+			end
+		end
+	end);
+
 	self.currentFrame:UpdateFrame();
 	self.artifactPage.glow:SetAlpha(0.0);
 end
@@ -148,7 +198,6 @@ function ArchaeologyFrame_OnHide(self)
 		ArchaeologyFrame_CancelSpellLoadCallback(projectButton);
 	end
 	CloseResearch();
-	CloseDropDownMenus();
 	PlaySound(SOUNDKIT.IG_SPELLBOOK_CLOSE);
 end
 
@@ -294,7 +343,7 @@ function ArchaeologyFrame_CurrentArtifactUpdate(self)
 	self.historyScroll.child.text:SetText(description);
 
 	self.historyTitle:ClearAllPoints();
-	local runeName, runeStoneIconPath;
+	local runeName, runeStoneIconPath, _;
 	if RaceitemID > 0 then
 		runeName, _, _, _, _, _, _, _, _, runeStoneIconPath = C_Item.GetItemInfo(RaceitemID);
 	end
@@ -509,10 +558,10 @@ function ArchaeologyFrame_UpdateComplete(self)
 		self.titleMid:Hide();
 		self.titleMidLeft:Hide();
 		self.titleMidRight:Hide();
-		ArchaeologyFrame.raceFilterDropDown:Hide();
+		ArchaeologyFrame.RaceFilterDropdown:Hide();
 	else
 
-		ArchaeologyFrame.raceFilterDropDown:Show();
+		ArchaeologyFrame.RaceFilterDropdown:Show();
 		self.titleBig:Hide();
 		self.titleBigLeft:Hide();
 		self.titleBigRight:Hide();
@@ -548,15 +597,14 @@ function ArchaeologyFrame_ShowArtifact(RaceID, ArtifactID)
 	ArchaeologyFrame.completedPage:Hide();
 	if ArtifactID then
 		SetSelectedArtifact(RaceID, ArtifactID);
-		ArchaeologyFrame.raceFilterDropDown:Hide();
+		ArchaeologyFrame.RaceFilterDropdown:Hide();
 		ArchaeologyFrame.artifactPage.solveFrame:Hide();
 		ArchaeologyFrame.artifactPage.backButton:Show();
 	else
-		ArchaeologyFrame.raceFilterDropDown:Show();
+		ArchaeologyFrame.RaceFilterDropdown:Show();
 		SetSelectedArtifact(RaceID);
 		ArchaeologyFrame.artifactPage.solveFrame:Show();
 		ArchaeologyFrame.artifactPage.backButton:Hide();
-		UIDropDownMenu_SetText(ArchaeologyFrame.raceFilterDropDown, GetArchaeologyRaceInfo(RaceID));
 	end
 
 	ArchaeologyFrame.artifactPage.raceFilter = RaceID;
@@ -565,6 +613,10 @@ function ArchaeologyFrame_ShowArtifact(RaceID, ArtifactID)
 	ArchaeologyFrame.currentFrame = ArchaeologyFrame.artifactPage;
 	ArchaeologyFrame_CurrentArtifactUpdate(ArchaeologyFrame.artifactPage);
 	ArchaeologyFrame.artifactPage:Show();
+
+	if ArchaeologyFrame.RaceFilterDropdown:IsShown() then
+		ArchaeologyFrame.RaceFilterDropdown:GenerateMenu();
+	end
 end
 
 
@@ -572,14 +624,10 @@ function ArchaeologyFrame_OnTabClick(self)
 	local archFrame = self:GetParent();
 	archFrame.selectedTab = self:GetID()
 
-	CloseDropDownMenus();
 	archFrame.summaryPage:Hide();
 	archFrame.completedPage:Hide();
 	archFrame.artifactPage:Hide();
 	archFrame.rankBar:Show();
-
-	UIDropDownMenu_SetText(archFrame.raceFilterDropDown, ALL);
-
 
 	if archFrame.selectedTab ==  ARCHAEOLOGY_HELP_TAB then
 		if archFrame.helpPage:IsShown() then
@@ -600,7 +648,7 @@ function ArchaeologyFrame_OnTabClick(self)
 			archFrame.bgLeft:SetTexture(ArcheologyLayoutInfo[ARCHAEOLOGY_SUMMARY_PAGE].bgFileL);
 			archFrame.bgRight:SetTexture(ArcheologyLayoutInfo[ARCHAEOLOGY_SUMMARY_PAGE].bgFileR);
 			archFrame.helpPage:Show();
-			archFrame.raceFilterDropDown:Hide();
+			archFrame.RaceFilterDropdown:Hide();
 			archFrame.rankBar:Hide();
 			archFrame.factionIcon:Show();
 		end
@@ -627,7 +675,7 @@ function ArchaeologyFrame_OnTabClick(self)
 		archFrame.currentFrame = archFrame.summaryPage;
 		archFrame.currentFrame.raceFilter = 0;
 		archFrame.currentFrame.currentPage = 1;
-		ArchaeologyFrame.raceFilterDropDown:Hide();
+		ArchaeologyFrame.RaceFilterDropdown:Hide();
 		ArchaeologyFrame.factionIcon:Show();
 		archFrame.currentFrame:UpdateFrame();
 	elseif archFrame.selectedTab ==  ARCHAEOLOGY_COMPLETED_TAB then
@@ -654,6 +702,8 @@ function ArchaeologyFrame_OnTabClick(self)
 		ArchaeologyFrame.factionIcon:Hide();
 		ArchaeologyFrame.currentFrame:UpdateFrame();
 	end
+
+	archFrame.RaceFilterDropdown:GenerateMenu();
 end
 
 
@@ -689,61 +739,3 @@ function ArchaeologyFrameSummary_PageClick(self, nextPage)
 	end
 	ArchaeologyFrame.currentFrame:UpdateFrame();
 end
-
-
-function ArchaeologyFrame_RaceFilterSet(self, arg1)
-	ArchaeologyFrame.currentFrame.raceFilter = arg1;
-
-	if ArchaeologyFrame.currentFrame == ArchaeologyFrame.completedPage  then
-		if arg1 == 0 then
-			UIDropDownMenu_SetText(ArchaeologyFrame.raceFilterDropDown, ALL);
-		else
-			UIDropDownMenu_SetText(ArchaeologyFrame.raceFilterDropDown, GetArchaeologyRaceInfo(arg1));
-		end
-		ArchaeologyFrame.currentFrame.currData.raceIndex = max(1, arg1);
-		ArchaeologyFrame.currentFrame.currData.projectIndex = 1;
-		ArchaeologyFrame.currentFrame.currData.onRare = true;
-		ArchaeologyFrame.currentFrame.currentPage = 1
-	else
-		 ArchaeologyFrame_ShowArtifact(arg1);
-	end
-	ArchaeologyFrame.currentFrame:UpdateFrame();
-end
-
-
-function ArchaeologyFrame_InitRaceFilter()
-	local numRaces = GetNumArchaeologyRaces();
-
-	local info = UIDropDownMenu_CreateInfo();
-	if ArchaeologyFrame.currentFrame == ArchaeologyFrame.completedPage  then
-		info.text = ALL;
-		info.arg1 = 0;
-		info.func = ArchaeologyFrame_RaceFilterSet;
-		info.checked = ArchaeologyFrame.currentFrame.raceFilter == 0;
-		UIDropDownMenu_AddButton(info);
-	end
-
-	for i=1,numRaces do
-		local numProjects = GetNumArtifactsByRace(i);
-		if numProjects > 0 then
-			local name, _, _,  currencyAmount, projectAmount =  GetArchaeologyRaceInfo(i);
-			if ArchaeologyFrame.currentFrame == ArchaeologyFrame.artifactPage  then
-				name = name.." ("..currencyAmount.."/"..projectAmount..")";
-			end
-
-			info = UIDropDownMenu_CreateInfo();
-			info.text = name;
-			info.arg1 = i;
-			info.func = ArchaeologyFrame_RaceFilterSet;
-			info.checked = ArchaeologyFrame.currentFrame.raceFilter == i;
-			if ArchaeologyFrame.currentFrame == ArchaeologyFrame.completedPage  then
-				info.disabled = numProjects <= 1;
-			end
-			UIDropDownMenu_AddButton(info);
-		end
-	end
-end
-
-
-
-

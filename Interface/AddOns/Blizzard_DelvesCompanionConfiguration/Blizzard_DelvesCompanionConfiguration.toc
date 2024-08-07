@@ -1,0 +1,9 @@
+## Title: Blizzard_DelvesCompanionConfiguration
+## Author: Blizzard Entertainment
+## Version: 1.0
+## Dependencies: Blizzard_SharedTalentUI, Blizzard_PagedContent
+
+Blizzard_DelvesCompanionConfiguration.lua
+Blizzard_DelvesCompanionConfiguration.xml
+Blizzard_DelvesCompanionAbilityList.lua
+Blizzard_DelvesCompanionAbilityList.xml

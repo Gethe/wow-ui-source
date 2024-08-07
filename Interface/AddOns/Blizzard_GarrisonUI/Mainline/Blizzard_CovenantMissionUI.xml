@@ -313,7 +313,7 @@
 					<Layer level="BORDER">
 						<Texture parentKey="CloseButtonBorder" atlas="UI-Frame-Oribos-ExitButtonBorder" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.CloseButton" x="0" y="1"/>
+								<Anchor point="CENTER" relativeKey="$parent" x="0" y="1"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -428,13 +428,23 @@
 			<OnHide method="OnHideMainFrame"/>
 			<OnEvent method="OnEventMainFrame"/>
 		</Scripts>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Border">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 		<Frames>
 			<Frame parentKey="OverlayElements" frameLevel="3010" setAllPoints="true">
 				<Layers>
 					<Layer level="BORDER">
 						<Texture parentKey="CloseButtonBorder">
 							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.CloseButton" x="0" y="0"/>
+								<Anchor point="CENTER" relativeKey="$parent" x="0" y="0"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -554,10 +564,10 @@
 							<Layer level="BACKGROUND">
 								<Texture parentKey="Background" atlas="legionmission-background-combatally" useAtlasSize="false">
 									<Anchors>
-										<Anchor point="LEFT" relativeKey="$parent.$parent.Left" x="6" y="0"/>
-										<Anchor point="RIGHT" relativeKey="$parent.$parent.Right" x="-6" y="0"/>
-										<Anchor point="TOP" relativeKey="$parent.$parent.Top" x="0" y="-6"/>
-										<Anchor point="BOTTOM" relativeKey="$parent.$parent.Bottom" x="0" y="7"/>
+										<Anchor point="LEFT" relativeKey="$parent.$parent" x="6" y="0"/>
+										<Anchor point="RIGHT" relativeKey="$parent.$parent" x="-6" y="0"/>
+										<Anchor point="TOP" relativeKey="$parent.$parent" x="0" y="-6"/>
+										<Anchor point="BOTTOM" relativeKey="$parent.$parent" x="0" y="7"/>
 									</Anchors>
 								</Texture>
 							</Layer>

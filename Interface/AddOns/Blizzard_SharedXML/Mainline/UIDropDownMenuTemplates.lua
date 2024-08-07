@@ -4,6 +4,8 @@
 -- to that button and assumes responsibility for all relevant dropdown menu operations.
 -- The hidden button will request a size that it should become from the custom frame.
 
+local envTable = GetCurrentEnvironment();
+
 DropDownMenuButtonMixin = {}
 
 function DropDownMenuButtonMixin:OnEnter(...)
@@ -39,7 +41,7 @@ function DropDownExpandArrowMixin:OnEnter()
 	CloseDropDownMenus(level);
 
 	if self:IsEnabled() then
-		local listFrame = _G["DropDownList"..level];
+		local listFrame = envTable["DropDownList"..level];
 		if ( not listFrame or not listFrame:IsShown() or select(2, listFrame:GetPoint(1)) ~= self ) then
 			ToggleDropDownMenu(level, self:GetParent().value, nil, nil, nil, nil, self:GetParent().menuList, self, nil, self:GetParent().menuListDisplayMode);
 		end
@@ -82,10 +84,4 @@ end
 
 function UIDropDownCustomMenuEntryMixin:GetContextData()
 	return self.contextData;
-end
-
-ColorSwatchMixin = {}
-
-function ColorSwatchMixin:SetColor(color)
-	self.Color:SetVertexColor(color:GetRGB());
 end

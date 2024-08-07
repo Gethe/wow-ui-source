@@ -21,12 +21,10 @@ function UIWidgetTemplateDoubleIconAndTextMixin:Setup(widgetInfo, widgetContaine
 	self.Label:SetText(widgetInfo.label);
 
 	self.Left.Text:SetText(widgetInfo.leftText);
-	self.Left:SetTooltipLocation(widgetInfo.tooltipLoc);
 	self.Left:SetTooltip(widgetInfo.leftTooltip);
 	self.Left:SetWidth(self.Left.Icon:GetWidth() + self.Left.Text:GetWidth() + 5)
 
 	self.Right.Text:SetText(widgetInfo.rightText);
-	self.Right:SetTooltipLocation(widgetInfo.tooltipLoc);
 	self.Right:SetTooltip(widgetInfo.rightTooltip);
 	self.Right:SetWidth(self.Right.Icon:GetWidth() + self.Right.Text:GetWidth() + 5)
 

@@ -10,8 +10,8 @@ function GuildInviteFrame_OnEvent(self, event, ...)
 		GuildInviteFrame.Points.Text:SetText(guildPoints);
 		SetLargeGuildTabardTextures(nil, GuildInviteFrameTabardEmblem, GuildInviteFrameTabardBackground, GuildInviteFrameTabardBorder, tabardData);
 		-- check if player has any guild rep beyond Neutral 0 if it's being invited to a new guild
-		local name, description, standingID, barMin, barMax, barValue = GetGuildFactionInfo();
-		if ( isNewGuild and ( standingID > 4 or barValue > 0 ) ) then
+		local guildFactionData = C_Reputation.GetGuildFactionData();
+		if ( isNewGuild and guildFactionData and ( guildFactionData.reaction > 4 or guildFactionData.currentStanding > 0 ) ) then
 			-- display the old guild name if we have one, otherwise use generic message
 			if ( oldGuildName and oldGuildName ~= "" ) then
 				GuildInviteFrameWarningText:SetFormattedText(GUILD_REPUTATION_WARNING, oldGuildName);

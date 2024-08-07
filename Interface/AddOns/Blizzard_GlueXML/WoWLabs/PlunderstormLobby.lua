@@ -84,7 +84,7 @@ function PlunderstormLobbyMixin:OnShow()
 
 	self:Update();
 
-	local isFrontEndChatEnabled = C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.FrontEndChat);
+	local isFrontEndChatEnabled = C_GameRules.IsGameRuleActive(Enum.GameRule.FrontEndChat);
 	GeneralDockManager:SetShown(isFrontEndChatEnabled);
 	ChatFrame1:SetShown(isFrontEndChatEnabled);
 end
@@ -180,11 +180,11 @@ function PlunderstormLobbyMixin:OnKeyDown(key)
         if GlueParent_IsSecondaryScreenOpen("options") then
             GlueParent_CloseSecondaryScreen();
         elseif C_Login.IsLauncherLogin() then
-            GlueMenuFrame:SetShown(not GlueMenuFrame:IsShown());
+            GlueMenuFrameUtil.ToggleMenu();
 		elseif GlobalGlueContextMenu_IsShown() then
 			GlobalGlueContextMenu_Release();
         elseif GlueMenuFrame:IsShown() then
-            GlueMenuFrame:Hide();
+            GlueMenuFrameUtil.HideMenu()
         else
             self:OnExit();
         end
@@ -213,7 +213,7 @@ function PlunderstormCustomizeCharacterButtonMixin:CustomizeCharacter(characterT
 end
 
 function PlunderstormCustomizeCharacterButtonMixin:OnClick()
-	CharacterSelect_CreateNewCharacter(Enum.CharacterCreateType.Normal);
+	CharacterSelectUtil.CreateNewCharacter(Enum.CharacterCreateType.Normal);
 end
 
 
@@ -225,7 +225,7 @@ end
 
 PlunderstormLobbyMenuButtonMixin = { };
 function PlunderstormLobbyMenuButtonMixin:OnClick()
-	GlueMenuFrame_Show();
+	GlueMenuFrameUtil.ToggleMenu();
 end
 
 

@@ -22,7 +22,7 @@
 			<ModelScene parentKey="FxModelScene" frameStrata="HIGH" inherits="ScriptAnimatedModelSceneTemplate">
 				<Size x="300" y="300"/>
 				<Anchors>
-					<Anchor point="CENTER" relativeKey="$parent.ModelScene.Active" relativePoint="CENTER"/>
+					<Anchor point="CENTER" relativeKey="$parent" relativePoint="CENTER"/>
 				</Anchors>
 			</ModelScene>
 		</Frames>
@@ -220,7 +220,7 @@
 						</AnimationGroup>
 					</Animations>
 				</Texture>
-				<Texture parentKey="EnhancedNodeSheen" atlas="soulbinds_backgroundfx_chargesheen" useAtlasSize="true" alpha="1" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
+				<Texture parentKey="EnhancedNodeSheen" atlas="talents-sheen-node" useAtlasSize="true" alpha="1" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
 					<Anchors>
 						<Anchor point="RIGHT" relativePoint="LEFT"/>
 					</Anchors>

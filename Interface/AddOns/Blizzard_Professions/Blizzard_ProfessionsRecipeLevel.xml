@@ -11,26 +11,12 @@
 		</Scripts>
 	</StatusBar>
 
-	<DropDownToggleButton name="ProfessionsRecipeLevelSelectorTemplate" mixin="ProfessionsRecipeLevelSelectorMixin" inherits="UIMenuButtonStretchTemplate" virtual="true">
+	<DropdownButton name="ProfessionsRecipeLevelDropdownTemplate" mixin="ProfessionsRecipeLevelDropdownMixin" inherits="WowStyle1DropdownTemplate" virtual="true">
 		<Size x="110" y="22"/>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="Icon" file="Interface\ChatFrame\ChatFrameExpandArrow">
-					<Size x="10" y="12"/>
-					<Anchors>
-						<Anchor point="RIGHT" x="-5"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Frame name="ProfessionsRecipeLevelDropDown" parentKey="RecipeLevelDropDown" inherits="UIDropDownMenuTemplate"/>
-		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
-			<OnMouseDown method="OnMouseDown"/>
 		</Scripts>
-	</DropDownToggleButton>
+	</DropdownButton>
 </Ui>

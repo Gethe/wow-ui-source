@@ -54,8 +54,8 @@ end
 
 function StatusTrackingManagerMixin:CanShowBar(barIndex)
 	if barIndex == BarsEnum.Reputation then
-		local name, reaction, minFaction, maxFaction, value, factionID = GetWatchedFactionInfo();
-		return name ~= nil;
+		local watchedFactionData = C_Reputation.GetWatchedFactionData();
+		return watchedFactionData and watchedFactionData.name ~= "";
 	elseif barIndex == BarsEnum.Honor then
 		return IsWatchingHonorAsXP() or C_PvP.IsActiveBattlefield() or IsInActiveWorldPVP();
 	elseif barIndex == BarsEnum.Artifact then

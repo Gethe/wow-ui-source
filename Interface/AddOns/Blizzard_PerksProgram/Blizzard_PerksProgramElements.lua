@@ -194,7 +194,11 @@ end
 function PerksProgramProductButtonMixin:OnEnter()
 	if self.itemInfo then
 		self.tooltip:SetOwner(self, "ANCHOR_RIGHT", -16, 0);
-		self.tooltip:SetItemByID(self.itemInfo.itemID);
+		local tooltipInfo = CreateBaseTooltipInfo("GetItemByID", self.itemInfo.itemID);
+		tooltipInfo.excludeLines = {
+				Enum.TooltipDataLineType.SellPrice,
+		};
+		self.tooltip:ProcessInfo(tooltipInfo);
 		self.tooltip:Show();
 	end
 
@@ -390,7 +394,6 @@ function PerksProgramFrozenProductButtonMixin:SetupFreezeDraggedItem()
 	self:SetItemInfo(draggedVendorItemInfo);
 
 	-- If we don't have a frozen vendor item already then just instantly freeze the dragged item
-	local frozenVendorItem = PerksProgramFrame:GetFrozenPerksVendorItemInfo();
 	if not frozenVendorItem then
 		self:FreezeDraggedItem();
 		return;
@@ -487,92 +490,6 @@ function PerksProgramPurchasePendingSpinnerMixin:OnLeave()
 
 	if PerksProgramTooltip:GetOwner() == self then
 		PerksProgramTooltip:Hide();
-	end
-end
-
-
-----------------------------------------------------------------------------------
--- FilterDropDownContainerMixin
-----------------------------------------------------------------------------------
-FilterDropDownContainerMixin = {};
-function FilterDropDownContainerMixin:OnLoad()
-	UIDropDownMenu_Initialize(FilterDropDown, GenerateClosure(self.InitializeDropDown, self), "MENU");
-end
-
-local function IsSortAscending()
-	return PerksProgramFrame:GetSortAscending();
-end
-
-local function SetSortAscending()
-	PerksProgramFrame:SetSortAscending(not PerksProgramFrame:GetSortAscending());
-	EventRegistry:TriggerEvent("PerksProgram.SortFieldSet");
-end
-
-local function IsSortFieldSet(filterInfo)
-	return PerksProgramFrame:GetSortField() == filterInfo;
-end
-
-local function SetSortField(value, filterInfo)
-	PerksProgramFrame:SetSortField(filterInfo);
-end
-
-local function SetFilterState(value, filterInfo)
-	PerksProgramFrame:SetFilterState(filterInfo, not PerksProgramFrame:GetFilterState(filterInfo));
-end
-
-local function IsFilterStateChecked(filterInfo)
-	return PerksProgramFrame:GetFilterState(filterInfo);
-end
-
-function FilterDropDownContainerMixin:InitializeDropDown(self, level)
-	local categories = PerksProgramFrame:GetCategories();
-	
-
-	local categoryFilters = {};
-	if categories then
-		for i, category in ipairs(categories) do
-			table.insert(categoryFilters, { type=FilterComponent.Checkbox, filter=category.ID, text=category.displayName, isSet=IsFilterStateChecked, set=function(value) SetFilterState(value, category.ID); end } );
-		end
-	end
-	
-	local filterSystem = {
-		onUpdate = MountJournalResetFiltersButton_UpdateVisibility,
-		filters = {
-			{ type=FilterComponent.Checkbox, text=PERKS_PROGRAM_COLLECTED, filter="collected", isSet=IsFilterStateChecked, set=function(value) SetFilterState(value, "collected"); end },
-			{ type=FilterComponent.Checkbox, text=PERKS_PROGRAM_NOT_COLLECTED, filter="uncollected", isSet=IsFilterStateChecked, set=function(value) SetFilterState(value, "uncollected"); end },
-			{ type=FilterComponent.Checkbox, text=PERKS_PROGRAM_USEABLE_ONLY, filter="useable", isSet=IsFilterStateChecked, set=function(value) SetFilterState(value, "useable"); end },
-			{ type=FilterComponent.Space },
-			{ type=FilterComponent.Submenu, text=PERKS_PROGRAM_TYPE, value=1, childrenInfo={
-					filters = categoryFilters
-				}
-			},
-			{ type=FilterComponent.Submenu, text=PERKS_PROGRAM_SORT_BY, value=2, childrenInfo={ 
-					filters = {
-						{ type=FilterComponent.Checkbox, text=PERKS_PROGRAM_ASCENDING, isSet=IsSortAscending, set=SetSortAscending},
-						{ type=FilterComponent.Space },
-						{ type=FilterComponent.Radio, text=PERKS_PROGRAM_NAME, set=function(value) SetSortField(value, "name"); end, isSet=IsSortFieldSet, filter="name" },
-						{ type=FilterComponent.Radio, text=PERKS_PROGRAM_PRICE, set=function(value) SetSortField(value, "price"); end, isSet=IsSortFieldSet, filter="price" },
-						{ type=FilterComponent.Radio, text=PERKS_PROGRAM_TIME_REMAINING, set=function(value) SetSortField(value, "timeRemaining"); end, isSet=IsSortFieldSet, filter="timeRemaining" },
-					}
-				}
-			},
-		},
-	};
-	FilterDropDownSystem.Initialize(self, filterSystem, level);
-end
-
-function FilterDropDownContainerMixin:SetFilterData(options)
-	self.options = options;
-end
-
-----------------------------------------------------------------------------------
--- FilterDropDownButtonMixin
-----------------------------------------------------------------------------------
-FilterDropDownButtonMixin = {};
-function FilterDropDownButtonMixin:OnMouseDown(button)
-	if self:IsEnabled() then
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-		ToggleDropDownMenu(1, nil, FilterDropDown, self, 74, 15);
 	end
 end
 
@@ -822,7 +739,7 @@ function PerksProgramSetDetailsListMixin:ClearData()
 end
 
 function PerksProgramSetDetailsListMixin:Init(data)
-	if not data or not #data.subItems == 0 or not data.subItemsLoaded then
+	if not data or #data.subItems == 0 or not data.subItemsLoaded then
 		self:ClearData();
 		self:Hide();
 		return;
@@ -1003,7 +920,11 @@ function PerksProgramSetDetailsItemMixin:OnEnter()
 	self.HighlightTexture:Show();
 
 	PerksProgramTooltip:SetOwner(self, "ANCHOR_LEFT", -8, -20);
-	PerksProgramTooltip:SetItemByID(self.elementData.itemID);
+	local tooltipInfo = CreateBaseTooltipInfo("GetItemByID", self.elementData.itemID);
+	tooltipInfo.excludeLines = {
+			Enum.TooltipDataLineType.SellPrice,
+	};
+	PerksProgramTooltip:ProcessInfo(tooltipInfo);
 	PerksProgramTooltip:Show();
 end
 
@@ -1013,24 +934,24 @@ function PerksProgramSetDetailsItemMixin:OnLeave()
 end
 
 ----------------------------------------------------------------------------------
--- PerksProgramCheckBoxMixin
+-- PerksProgramCheckboxMixin
 ----------------------------------------------------------------------------------
-PerksProgramCheckBoxMixin = {};
+PerksProgramCheckboxMixin = {};
 
-function PerksProgramCheckBoxMixin:OnLoad()
+function PerksProgramCheckboxMixin:OnLoad()
 	if self.textString then
 		self.Text:SetText(self.textString);
 	end
 end
 
-function PerksProgramCheckBoxMixin:OnShow()
+function PerksProgramCheckboxMixin:OnShow()
 	if self.perksProgramOnShowMethod then
 		local isChecked = PerksProgramFrame[self.perksProgramOnShowMethod](PerksProgramFrame);
 		self:SetChecked(isChecked);
 	end
 end
 
-function PerksProgramCheckBoxMixin:OnClick()
+function PerksProgramCheckboxMixin:OnClick()
 	if self.perksProgramOnClickMethod then
 		local isChecked = self:GetChecked();
 		PerksProgramFrame[self.perksProgramOnClickMethod](PerksProgramFrame, isChecked);

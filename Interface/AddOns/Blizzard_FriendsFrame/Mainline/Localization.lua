@@ -1,3 +1,5 @@
+-- luacheck: ignore 111 (setting non-standard global variable)
+
 local function LocalizeFriendsFrame_zh()
 	ADDFRIENDFRAME_WOWHEIGHT = 232;
 	ADDFRIENDFRAME_BNETHEIGHT = 310;
@@ -8,21 +10,21 @@ local function LocalizeFriendsFrame_zh()
 		_G[tabName].Text:SetPoint("CENTER", tabName, "CENTER", 0, 5);
 	end
 
-	WhoFrameDropDown:SetPoint("TOPLEFT", WhoFrameColumnHeader2, "TOPLEFT", -15, 1);
+	WhoFrameDropdown:SetPoint("TOPLEFT", WhoFrameColumnHeader2, "TOPLEFT", -15, 1);
 end
 
 local function AdjustFriendsFrameDropdown_132()
-	UIDropDownMenu_SetWidth(FriendsFriendsFrameDropDown, 132);
+	FriendsFriendsFrameDropdown:SetWidth(132);
 end
 
 local function AdjustFriendsFrameDropdown_136()
-	UIDropDownMenu_SetWidth(FriendsFriendsFrameDropDown, 136);
+	FriendsFriendsFrameDropdown:SetWidth(136);
 end
 
 local l10nTable = {
 	deDE = {
 		localizeFrames = function()
-			UIDropDownMenu_SetWidth(FriendsFriendsFrameDropDown, 146);
+			FriendsFriendsFrameDropdown:SetWidth(146);
 		end
 	},
 	enGB = {},

@@ -202,27 +202,11 @@
 							<Anchor point="TOPLEFT" relativeKey="$parent.ViewLog" relativePoint="TOPRIGHT" x="3"/>
 						</Anchors>
 					</Button>
-
-					<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate">
-						<Size x="100" y="100"/>
-					</Frame>
-
-					<DropDownToggleButton parentKey="OptionsDropDown" inherits="UIMenuButtonStretchTemplate">
-						<Size x="120" y="20"/>
+					<DropdownButton parentKey="OptionsDropdown" inherits="WowStyle1FilterDropdownTemplate">
 						<Anchors>
 							<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" x="-20"/>
 						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK">
-								<Texture parentKey="Icon" file="Interface\ChatFrame\ChatFrameExpandArrow">
-									<Size x="10" y="12"/>
-									<Anchors>
-										<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="RIGHT" x="-5"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
-					</DropDownToggleButton>
+					</DropdownButton>
 				</Frames>
 			</Frame>
 			<Frame parentKey="Log">

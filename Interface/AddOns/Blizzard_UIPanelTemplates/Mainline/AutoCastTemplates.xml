@@ -1,0 +1,42 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="AutoCastOverlayTemplate" mixin="AutoCastOverlayMixin" virtual="true">
+		<Size x="28" y="28"/>
+		<Anchors>
+			<Anchor point="CENTER" x="0" y="0"/>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="0">
+				<Texture parentKey="Shine" alphaMode="BLEND" atlas="UI-HUD-ActionBar-PetAutoCast-Ants" useAtlasSize="false" texelSnappingBias="0.0" snapToPixelGrid="false" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-5" y="5"/>
+						<Anchor point="BOTTOMRIGHT" x="5" y="-5"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim" looping="REPEAT" setToFinalAlpha="true">
+							<Rotation duration="4" order="1" degrees="-360">
+								<Origin point="CENTER"/>
+							</Rotation>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+				<MaskTexture parentKey="Mask" atlas="UI-HUD-ActionBar-PetAutoCast-Mask" useAtlasSize="false" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="4" y="-4"/>
+						<Anchor point="BOTTOMRIGHT" x="-4" y="4"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Shine"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="Corners" atlas="UI-HUD-ActionBar-PetAutoCast-Corners" useAtlasSize="false" setAllPoints="true" texelSnappingBias="0.0" snapToPixelGrid="false"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

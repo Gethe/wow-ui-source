@@ -20,17 +20,27 @@ do
 end
 
 function DoesClientThinkTheCharacterIsEligibleForPCT(characterID)
-	local level, _, _, _, _, _, _, _, playerguid, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, mailSenders, _, _, characterServiceRequiresLogin, _, _, _, _, hasVasRevoked = select(7, GetCharacterInfo(characterID));
+	local characterInfo = CharacterSelectUtil.GetCharacterInfoTable(characterID);
 	local errors = {};
-	
-	CheckAddVASErrorCode(errors, Enum.VasError.CharLocked, not hasVasRevoked)
-	CheckAddVASErrorCode(errors, Enum.VasError.UnderMinLevelReq, level >= 10);
-	CheckAddVASErrorCode(errors, Enum.VasError.HasMail, #mailSenders == 0);
-	CheckAddVASErrorCode(errors, Enum.VasError.IsNpeRestricted, not IsCharacterNPERestricted(playerguid));
-	CheckAddVASErrorString(errors, BLIZZARD_STORE_VAS_ERROR_CHARACTER_INELIGIBLE_FOR_THIS_SERVICE, not IsCharacterVASRestricted(playerguid, Enum.ValueAddedServiceType.PaidCharacterTransfer));
 
-	local canTransfer = #errors == 0;
-	return canTransfer, errors, playerguid, characterServiceRequiresLogin;
+	if characterInfo then
+		local isSameRealm = CharacterSelectUtil.IsSameRealmAsCurrent(characterInfo.realmAddress);
+		CheckAddVASErrorString(errors, BLIZZARD_STORE_VAS_ERROR_CHARACTER_ON_DIFFERENT_REALM_1, isSameRealm);
+		CheckAddVASErrorString(errors, BLIZZARD_STORE_VAS_ERROR_CHARACTER_ON_DIFFERENT_REALM_2, isSameRealm);
+
+		if characterInfo.mailSenders then
+			CheckAddVASErrorCode(errors, Enum.VasError.HasMail, #characterInfo.mailSenders == 0);
+		end
+
+		CheckAddVASErrorCode(errors, Enum.VasError.CharLocked, not characterInfo.hasVasRevoked)
+		CheckAddVASErrorCode(errors, Enum.VasError.UnderMinLevelReq, characterInfo.experienceLevel >= 10);
+		CheckAddVASErrorCode(errors, Enum.VasError.IsNpeRestricted, not IsCharacterNPERestricted(characterInfo.guid));
+		CheckAddVASErrorString(errors, BLIZZARD_STORE_VAS_ERROR_CHARACTER_INELIGIBLE_FOR_THIS_SERVICE, not IsCharacterVASRestricted(characterInfo.guid, Enum.ValueAddedServiceType.PaidCharacterTransfer));
+
+		local canTransfer = #errors == 0;
+		return canTransfer, errors, characterInfo.guid, characterInfo.characterServiceRequiresLogin;
+	end
+	return false, errors, nil, false;
 end
 
 function PCTCharacterSelectBlock:GetServiceInfoByCharacterID(characterID)
@@ -128,7 +138,7 @@ function PCTDestinationSelectBlock:Initialize(results, wasFromRewind)
 
 		self.frame.ControlsFrame.LoadingSpinner:ClearAllPoints();
 		self.frame.ControlsFrame.LoadingSpinner:SetPoint("TOPLEFT", self.frame.ControlsFrame:GetParent().StepActiveLabel, "BOTTOMLEFT", 0, -10);
-		self.frame.ControlsFrame.FollowGuildCheckbox.Label:SetSize(250, 32);
+		self.frame.ControlsFrame.FollowGuildCheckbox.Label:SetSize(230, 30);
 	end
 
 	self.frame.ControlsFrame.TransferRealmEditbox:Initialize(results, wasFromRewind);
@@ -183,18 +193,19 @@ function PCTDestinationSelectBlock:UpdateVisibleState()
 	local willFollowGuild = hasGuildFollowOption and self:WillFollowGuild();
 	local showDestinationSelectFrames = not (isWaiting or willFollowGuild);
 
-	self.frame.ControlsFrame.TransferRealmLabel:SetShown(showDestinationSelectFrames);
-	self.frame.ControlsFrame.TransferRealmEditbox:SetShown(showDestinationSelectFrames);
-	self.frame.ControlsFrame.TransferAccountContainer:SetShown(showDestinationSelectFrames);
-	self.frame.ControlsFrame.FollowGuildCheckbox:SetShown(hasGuildFollowOption);
+	local controlsFrame = self.frame.ControlsFrame;
 
-	self.frame.ControlsFrame.LoadingSpinner:SetShown(isWaiting);
+	controlsFrame.TransferRealmLabel:SetShown(showDestinationSelectFrames);
+	controlsFrame.TransferRealmEditbox:SetShown(showDestinationSelectFrames);
+	controlsFrame.TransferAccountContainer:SetShown(showDestinationSelectFrames);
+	controlsFrame.FollowGuildCheckbox:SetShown(hasGuildFollowOption);
+	controlsFrame.LoadingSpinner:SetShown(isWaiting);
 
-	self.frame.ControlsFrame.TransferRealmLabel:ClearAllPoints();
+	controlsFrame.TransferRealmLabel:ClearAllPoints();
 	if hasGuildFollowOption then
-		self.frame.ControlsFrame.TransferRealmLabel:SetPoint("TOPLEFT", self.frame.ControlsFrame.FollowGuildCheckbox, "BOTTOMLEFT", 6, -9);
+		controlsFrame.TransferRealmLabel:SetPoint("TOPLEFT", controlsFrame.FollowGuildCheckbox, "BOTTOMLEFT", 1, -23);
 	else
-		self.frame.ControlsFrame.TransferRealmLabel:SetPoint("TOPLEFT", self.frame.ControlsFrame, "TOPLEFT", 112, -55);
+		controlsFrame.TransferRealmLabel:SetPoint("TOPLEFT", controlsFrame, "TOPLEFT", 90, -102);
 	end
 end
 
@@ -377,6 +388,7 @@ function PCTEndStep:OnStoreVASPurchaseError()
 	local displayMsg = VASErrorData_GetCombinedMessage(self.results.selectedCharacterGUID);
 
 	CharSelectServicesFlowFrame:SetErrorMessage(displayMsg);
+	CharSelectServicesFlowFrame.CloseButton:Show();
 	CharacterServicesMaster_Update();
 end
 
@@ -467,7 +479,7 @@ function PaidCharacterTransferFlow:Finish(controller)
 		-- NOTE: This cannot be called while a flow is active, the handler for the retrieving character
 		-- list event conflicts with the character button state updates.
 		-- Just wait a small amount of time, and call it later.
-		C_Timer.NewTimer(1, CharacterSelect_GetCharacterListUpdate);
+		C_Timer.NewTimer(1, CharacterSelectListUtil.GetCharacterListUpdate);
 	end
 
 	return isFinished;

@@ -216,7 +216,7 @@ local ArtifactUI =
 				{ Name = "itemAppearanceID", Type = "number", Nilable = true },
 				{ Name = "altItemAppearanceID", Type = "number", Nilable = true },
 				{ Name = "altOnTop", Type = "bool", Nilable = false },
-				{ Name = "tier", Type = "luaIndex", Nilable = false },
+				{ Name = "tier", Type = "ArtifactTiers", Nilable = false },
 			},
 		},
 		{
@@ -234,7 +234,7 @@ local ArtifactUI =
 
 			Returns =
 			{
-				{ Name = "tier", Type = "luaIndex", Nilable = true },
+				{ Name = "tier", Type = "ArtifactTiers", Nilable = true },
 			},
 		},
 		{
@@ -259,7 +259,7 @@ local ArtifactUI =
 			Arguments =
 			{
 				{ Name = "rank", Type = "number", Nilable = false },
-				{ Name = "tier", Type = "luaIndex", Nilable = false },
+				{ Name = "tier", Type = "ArtifactTiers", Nilable = false },
 			},
 
 			Returns =
@@ -294,7 +294,7 @@ local ArtifactUI =
 				{ Name = "itemAppearanceID", Type = "number", Nilable = true },
 				{ Name = "altItemAppearanceID", Type = "number", Nilable = true },
 				{ Name = "altOnTop", Type = "bool", Nilable = false },
-				{ Name = "tier", Type = "luaIndex", Nilable = false },
+				{ Name = "tier", Type = "ArtifactTiers", Nilable = false },
 			},
 		},
 		{
@@ -605,7 +605,7 @@ local ArtifactUI =
 				{ Name = "itemAppearanceID", Type = "number", Nilable = true },
 				{ Name = "altItemAppearanceID", Type = "number", Nilable = true },
 				{ Name = "altOnTop", Type = "bool", Nilable = false },
-				{ Name = "tier", Type = "luaIndex", Nilable = false },
+				{ Name = "tier", Type = "ArtifactTiers", Nilable = false },
 			},
 		},
 		{
@@ -625,7 +625,7 @@ local ArtifactUI =
 			{
 				{ Name = "startingTrait", Type = "luaIndex", Nilable = false },
 				{ Name = "numTraits", Type = "number", Nilable = false },
-				{ Name = "artifactTier", Type = "luaIndex", Nilable = false },
+				{ Name = "artifactTier", Type = "ArtifactTiers", Nilable = false },
 			},
 
 			Returns =
@@ -783,7 +783,7 @@ local ArtifactUI =
 			Payload =
 			{
 				{ Name = "numRefundedPowers", Type = "number", Nilable = false },
-				{ Name = "refundedTier", Type = "number", Nilable = false },
+				{ Name = "refundedTier", Type = "ArtifactTiers", Nilable = false },
 				{ Name = "bagOrSlotIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "slotIndex", Type = "luaIndex", Nilable = true },
 			},
@@ -902,7 +902,7 @@ local ArtifactUI =
 				{ Name = "itemAppearanceID", Type = "number", Nilable = true },
 				{ Name = "altItemAppearanceID", Type = "number", Nilable = true },
 				{ Name = "altOnTop", Type = "bool", Nilable = false },
-				{ Name = "tier", Type = "luaIndex", Nilable = false },
+				{ Name = "tier", Type = "ArtifactTiers", Nilable = false },
 			},
 		},
 		{

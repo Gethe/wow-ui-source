@@ -1107,7 +1107,7 @@ end
 function AzeriteMilestoneSlotMixin:OnDragStart()
 	local spellID = C_AzeriteEssence.GetMilestoneSpell(self.milestoneID);
 	if spellID then
-		PickupSpell(spellID);
+		C_Spell.PickupSpell(spellID);
 	end
 end
 
@@ -1179,10 +1179,10 @@ function AzeriteMilestoneSlotMixin:Refresh()
 		end
 
 		stateFrame:DesaturateHierarchy(desaturation);
-	else
-		if not self:IsMajorSlot() then
-			self:CheckAndSetUpUnlockEffect();
-		end
+	elseif not self:IsMajorSlot() then
+			
+		self:CheckAndSetUpUnlockEffect();
+		
 		if self:ShouldShowUnlockState() then
 			self:ShowStateFrame(self.AvailableState);
 			self.AvailableState:DesaturateHierarchy(desaturation);
@@ -1409,12 +1409,11 @@ function AzeriteEssenceLearnAnimFrameMixin:PlayAnim()
 
 	local runeIndex = random(1, 16);
 	local runeAtlas = "heartofazeroth-animation-rune"..runeIndex;
-	local useAtlasSize = true;
 
 	for i, texture in ipairs(self.Textures) do
 		texture:SetAlpha(0);
 		if texture.isRune then
-			texture:SetAtlas(runeAtlas, useAtlasSize);
+			texture:SetAtlas(runeAtlas, TextureKitConstants.UseAtlasSize);
 		end
 	end
 

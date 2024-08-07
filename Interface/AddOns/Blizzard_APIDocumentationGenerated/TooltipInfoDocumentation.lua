@@ -894,8 +894,8 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "slot", Type = "luaIndex", Nilable = false },
-				{ Name = "spellBookType", Type = "cstring", Nilable = false },
+				{ Name = "spellBookItemSlotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "spellBookItemSpellBank", Type = "SpellBookSpellBank", Nilable = false },
 			},
 
 			Returns =

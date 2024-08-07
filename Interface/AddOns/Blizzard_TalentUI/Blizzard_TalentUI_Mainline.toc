@@ -1,8 +1,0 @@
-## Title: Blizzard Talent UI
-## Author: Blizzard Entertainment
-## LoadOnDemand: 1
-## AllowLoad: game
-## AllowLoadGameType: mainline
-Mainline\Blizzard_TalentUI.lua
-Mainline\Blizzard_TalentUI.xml
-Mainline\Localization.lua

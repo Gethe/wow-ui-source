@@ -138,9 +138,9 @@
 						self:RegisterEvent("MAIL_INBOX_UPDATE");
 					</OnLoad>
 					<OnEvent>
-						if (GetMouseFocus() == self) then
-							InboxFrame_Update();
-							InboxFrameItem_OnEnter(self);
+						if (self:IsMouseMotionFocus()) then
+						InboxFrame_Update();
+						InboxFrameItem_OnEnter(self);
 						end
 					</OnEvent>
 					<OnClick>

@@ -174,15 +174,11 @@
 				<BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
 				<BarColor r="0" g="0" b="1" a="0.5"/>
 			</StatusBar>
-			<Frame name="ClassTrainerFrameFilterDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
-					<Anchors>
-					<Anchor point="TOPRIGHT" x="6" y="-30"/>
+			<DropdownButton parentKey="FilterDropdown" inherits="WowStyle1FilterDropdownTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-13" y="-35"/>
 				</Anchors>
-				<Scripts>
-					<OnLoad function="ClassTrainerFrameFilterDropDown_OnLoad"/>
-					<OnShow function="ClassTrainerFrameFilterDropDown_OnLoad"/>
-				</Scripts>
-			</Frame>
+			</DropdownButton>
 			<Button name="ClassTrainerTrainButton" inherits="MagicButtonTemplate" motionScriptsWhileDisabled="true" text="TRAIN">
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" />
@@ -224,14 +220,7 @@
 		<Scripts>
 			<OnLoad function="ClassTrainerFrame_OnLoad"/>
 			<OnShow function="ClassTrainerFrame_OnShow"/>
-			<OnHide>
-				CloseTrainer();
-				UpdateMicroButtons();
-				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
-				if ( StaticPopup_Visible("CONFIRM_PROFESSION") ) then
-					StaticPopup_Hide("CONFIRM_PROFESSION");
-				end
-			</OnHide>
+			<OnHide function="ClassTrainerFrame_OnHide"/>
 			<OnEvent function="ClassTrainerFrame_OnEvent"/>
 		</Scripts>
 	</Frame>

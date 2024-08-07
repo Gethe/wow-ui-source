@@ -291,8 +291,8 @@
 					<Frame parentKey="PetInfo" mixin="StablePetInfoMixin">
 						<Size y="70"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.PetModelScene" y="-10"/>
-							<Anchor point="TOPRIGHT" relativeKey="$parent.PetModelScene" y="-10"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.$parent.PetModelScene" y="-10"/>
+							<Anchor point="TOPRIGHT" relativeKey="$parent.$parent.PetModelScene" y="-10"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
@@ -515,37 +515,11 @@
 									<OnEnterPressed method="OnEnterPressed"/>
 								</Scripts>
 							</EditBox>
-
-							<DropDownToggleButton parentKey="FilterButton" mixin="StableFilterButtonMixin" inherits="UIResettableDropdownButtonTemplate" registerForClicks="LeftButtonDown" text="FILTER">
-								<KeyValues>
-									<KeyValue key="resetFunction" value="StableFilterButton_ResetFilters" type="global"/>
-								</KeyValues>
-								<Size x="90" y="25"/>
+							<DropdownButton parentKey="FilterDropdown" inherits="WowStyle1FilterDropdownTemplate">
 								<Anchors>
-									<Anchor point="LEFT" relativeKey="$parent.SearchBox" relativePoint="RIGHT" x="20"/>
+								<Anchor point="LEFT" relativeKey="$parent.SearchBox" relativePoint="RIGHT" x="20"/>
 								</Anchors>
-								<Layers>
-									<Layer level="ARTWORK">
-										<Texture parentKey="Icon" file="Interface\ChatFrame\ChatFrameExpandArrow">
-											<Size x="10" y="12"/>
-											<Anchors>
-												<Anchor point="RIGHT" relativeKey="$parent.MiddleRight" relativePoint="RIGHT" x="-5"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-								</Layers>
-								<Frames>
-									<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate" mixin="StableFilterDropDownMixin">
-										<Scripts>
-											<OnLoad method="OnLoad"/>
-											<OnShow method="OnShow"/>
-										</Scripts>
-									</Frame>
-								</Frames>
-								<Scripts>
-									<OnClick method="OnClick"/>
-								</Scripts>
-							</DropDownToggleButton>
+							</DropdownButton>
 						</Frames>
 					</Frame>
 				</Frames>

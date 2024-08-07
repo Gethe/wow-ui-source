@@ -3,6 +3,5 @@
 ## DefaultState: enabled
 ## OptionalDep: Blizzard_FrameXML, Blizzard_GlueXML
 ## AllowLoad: Both
-## SuppressLocalTableRef: 1
 ActionStatus.lua
 ActionStatus.xml

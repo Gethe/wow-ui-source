@@ -149,7 +149,7 @@ StaticPopupDialogs["REALM_IS_FULL"] = {
 	end,
 	OnCancel = function()
 		C_RealmList.ClearRealmList();
-		CharacterSelect_ChangeRealm();
+		CharacterSelectUtil.ChangeRealm();
 	end,
 }
 
@@ -233,7 +233,7 @@ StaticPopupDialogs["CHARACTER_BOOST_NO_CHARACTERS_WARNING"] = {
 
 	OnAccept = function ()
 		CharSelectServicesFlowFrame:Hide();
-		CharacterSelect_CreateNewCharacter(Enum.CharacterCreateType.Normal);
+		CharacterSelectUtil.CreateNewCharacter(Enum.CharacterCreateType.Normal);
 	end,
 
 	OnCancel = function ()
@@ -418,6 +418,26 @@ StaticPopupDialogs["SWAPPING_ENVIRONMENT"] = {
     button2 = nil,
     ignoreKeys = true,
     spinner = true,
+}
+
+StaticPopupDialogs["ACCOUNT_CONVERSION_DISPLAY"] = {
+	text = ACCOUNT_CONVERSION_IN_PROGRESS,
+	button1 = nil,
+	button2 = nil,
+	cover = true,
+	ignoreKeys = true,
+	spinner = true,
+}
+
+StaticPopupDialogs["CREATE_CHARACTER_REALM_CONFIRMATION"] = {
+	text = CREATE_CHARACTER_REALM_CONFIRM_DIALOG_TEXT,
+	button1 = CONTINUE,
+	button2 = CANCEL,
+	OnAccept = function()
+		if GlueDialog.data then
+			GlueDialog.data();
+		end
+	end
 }
 
 local function GlueDialog_SetCustomOnHideScript(self, script)
@@ -644,6 +664,13 @@ function GlueDialog_Show(which, text, data, customOnHideScript)
 	-- Spinner setup
 	if ( dialogInfo.spinner ) then
 		GlueDialogSpinner:Show();
+
+		GlueDialogSpinner:ClearAllPoints();
+		if dialogInfo.button1 or dialogInfo.button2 or dialogInfo.button3 then
+			GlueDialogSpinner:SetPoint("BOTTOM", 0, 61);
+		else
+			GlueDialogSpinner:SetPoint("BOTTOM", 0, 23);
+		end
 	else
 		GlueDialogSpinner:Hide();
 	end
@@ -745,6 +772,10 @@ function GlueDialog_Hide(which, text)
 
 	GlueDialog:Hide();
 	return true;
+end
+
+function GlueDialog_GetVisible()
+	return GlueDialog.which;
 end
 
 function GlueDialog_OnLoad(self)

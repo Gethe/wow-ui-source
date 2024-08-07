@@ -129,7 +129,15 @@ local PlayerScript =
 			},
 		},
 		{
+			Name = "ClearPendingBindConversionItem",
+			Type = "Function",
+		},
+		{
 			Name = "ConfirmTalentWipe",
+			Type = "Function",
+		},
+		{
+			Name = "ConvertItemToBindToAccount",
 			Type = "Function",
 		},
 		{
@@ -1051,6 +1059,20 @@ local PlayerScript =
 			Returns =
 			{
 				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsItemPreferredArmorType",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isItemPreferredArmorType", Type = "bool", Nilable = false },
 			},
 		},
 		{

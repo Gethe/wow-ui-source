@@ -105,8 +105,49 @@
 									</Layer>
 								</Layers>
 							</Frame>
-							<Frame parentKey="HealthBarArea" setAllPoints="true" useParentLevel="true" inherits="SecureFrameParentPropagationTemplate">
+							<Frame parentKey="HealthBarsContainer" useParentLevel="true" inherits="SecureFrameParentPropagationTemplate">
+								<Size x="124" y="20"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" x="85" y="-40"/>
+								</Anchors>
+								
 								<Frames>
+									<Frame parentKey="TempMaxHealthLossDivider" useParentLevel="true" hidden="true" inherits="SecureFrameParentPropagationTemplate" mixin="TempMaxHealthLossDividerMixin">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="0" y="2"/>
+											<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="0" y="-2"/>
+										</Anchors>
+										<Layers>
+											<Layer level="OVERLAY">
+												<Texture parentKey="TempHPLossDivider" setAllPoints="true" atlas="UI-HUD-UnitFrame-Player-PortraitOn-Bar-TempHPLoss-Divider"/>	
+												<Texture parentKey="TempHPLossDividerShadow" useAtlasSize="true" atlas="UI-HUD-UnitFrame-Player-PortraitOn-Bar-TempHPLoss-Divider-Shadow">
+													<Anchors>
+														<Anchor point="CENTER" relativePoint="LEFT"/>
+													</Anchors>
+												</Texture>	
+											</Layer>
+											<Layer level="BACKGROUND">
+												
+											</Layer>
+											<Layer level="OVERLAY" textureSubLevel="2">
+												<MaskTexture parentKey="TempHPLossDividerMask" atlas="UI-HUD-UnitFrame-Player-PortraitOn-Bar-TempHPLoss-Divider-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+													<Anchors>
+														<Anchor point="CENTER" relativePoint="LEFT"/>
+													</Anchors>
+													<MaskedTextures>
+														<MaskedTexture childKey="TempHPLossDivider"/>
+													</MaskedTextures>
+												</MaskTexture>
+											</Layer>
+										</Layers>
+									</Frame>
+									<StatusBar parentKey="PlayerFrameTempMaxHealthLoss" hidden="true" drawLayer="BACKGROUND" useParentLevel="true" mixin="TempMaxHealthLossMixin">
+										<BarTexture atlas="UI-HUD-UnitFrame-Player-PortraitOn-Bar-TempHPLoss"/>
+										<Anchors>
+											<Anchor point="TOPLEFT" relativePoint="TOPLEFT"/>
+											<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"/>
+										</Anchors>
+									</StatusBar>
 									<StatusBar parentKey="PlayerFrameHealthBarAnimatedLoss" mixin="AnimatedHealthLossMixin" hidden="true" drawLayer="BACKGROUND" useParentLevel="true">
 										<BarTexture atlas="UI-HUD-UnitFrame-Player-PortraitOn-Bar-Health"/>
 										<Scripts>
@@ -116,7 +157,7 @@
 									<StatusBar parentKey="HealthBar" inherits="TextStatusBar, SecureFrameParentPropagationTemplate" enableMouseMotion="true" drawLayer="BACKGROUND" useParentLevel="true">
 										<Size x="124" y="20"/>
 										<Anchors>
-											<Anchor point="TOPLEFT" x="85" y="-40"/>
+											<Anchor point="TOPLEFT" relativePoint="TOPLEFT"/>
 										</Anchors>
 										<Frames>
 											<Frame parentKey="MyHealPredictionBar" inherits="PlayerFrameBarSegmentTemplate, MyHealPredictionBarTemplate"/>
@@ -134,43 +175,7 @@
 											<Layer level="ARTWORK">
 												<Texture parentKey="OverAbsorbGlow" inherits="OverAbsorbGlowTemplate"/>
 												<Texture parentKey="OverHealAbsorbGlow" inherits="OverHealAbsorbGlowTemplate"/>
-											</Layer>
-											<Layer level="OVERLAY" textureSubLevel="1">
-												<FontString parentKey="HealthBarText" inherits="TextStatusBarText">
-													<Anchors>
-														<Anchor point="CENTER" x="0" y="0"/>
-													</Anchors>
-												</FontString>
-												<FontString parentKey="LeftText" inherits="TextStatusBarText">
-													<Anchors>
-														<Anchor point="LEFT" x="2" y="0"/>
-													</Anchors>
-												</FontString>
-												<FontString parentKey="RightText" inherits="TextStatusBarText">
-													<Anchors>
-														<Anchor point="RIGHT" x="-2" y="0"/>
-													</Anchors>
-												</FontString>
-											</Layer>
-											<Layer level="OVERLAY" textureSubLevel="2">
-												<MaskTexture parentKey="HealthBarMask" atlas="UI-HUD-UnitFrame-Player-PortraitOn-Bar-Health-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
-													<Anchors>
-														<Anchor point="TOPLEFT" x="-2" y="6"/>
-													</Anchors>
-													<MaskedTextures>
-														<MaskedTexture childKey="MyHealPredictionBar.Fill"/>
-														<MaskedTexture childKey="OtherHealPredictionBar.Fill"/>
-														<MaskedTexture childKey="TotalAbsorbBar.Fill"/>
-														<MaskedTexture childKey="TotalAbsorbBar.TiledFillOverlay"/>
-														<MaskedTexture childKey="OverAbsorbGlow"/>
-														<MaskedTexture childKey="OverHealAbsorbGlow"/>
-														<MaskedTexture childKey="HealAbsorbBar.Fill"/>
-														<MaskedTexture childKey="HealAbsorbBar.LeftShadow"/>
-														<MaskedTexture childKey="HealAbsorbBar.RightShadow"/>
-														<MaskedTexture childKey="Background"/>
-													</MaskedTextures>
-												</MaskTexture>
-											</Layer>
+											</Layer>											
 										</Layers>
 										<Scripts>
 											<OnLoad>
@@ -190,6 +195,44 @@
 										<BarTexture atlas="UI-HUD-UnitFrame-Player-PortraitOn-Bar-Health"/>
 									</StatusBar>
 								</Frames>
+								<Layers>
+									<Layer level="OVERLAY" textureSubLevel="1">
+										<FontString parentKey="HealthBarText" inherits="TextStatusBarText">
+											<Anchors>
+												<Anchor point="CENTER" x="0" y="0"/>
+											</Anchors>
+										</FontString>
+										<FontString parentKey="LeftText" inherits="TextStatusBarText">
+											<Anchors>
+												<Anchor point="LEFT" x="2" y="0"/>
+											</Anchors>
+										</FontString>
+										<FontString parentKey="RightText" inherits="TextStatusBarText">
+											<Anchors>
+												<Anchor point="RIGHT" x="-2" y="0"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+									<Layer level="OVERLAY" textureSubLevel="2">
+										<MaskTexture parentKey="HealthBarMask" atlas="UI-HUD-UnitFrame-Player-PortraitOn-Bar-Health-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+											<Anchors>
+												<Anchor point="TOPLEFT" x="-2" y="6"/>
+											</Anchors>
+											<MaskedTextures>
+												<MaskedTexture childKey="HealthBar.MyHealPredictionBar.Fill"/>
+												<MaskedTexture childKey="HealthBar.OtherHealPredictionBar.Fill"/>
+												<MaskedTexture childKey="HealthBar.TotalAbsorbBar.Fill"/>
+												<MaskedTexture childKey="HealthBar.TotalAbsorbBar.TiledFillOverlay"/>
+												<MaskedTexture childKey="HealthBar.OverAbsorbGlow"/>
+												<MaskedTexture childKey="HealthBar.OverHealAbsorbGlow"/>
+												<MaskedTexture childKey="HealthBar.HealAbsorbBar.Fill"/>
+												<MaskedTexture childKey="HealthBar.HealAbsorbBar.LeftShadow"/>
+												<MaskedTexture childKey="HealthBar.HealAbsorbBar.RightShadow"/>
+												<MaskedTexture childKey="HealthBar.Background"/>
+											</MaskedTextures>
+										</MaskTexture>
+									</Layer>
+								</Layers>
 							</Frame>
 							<Frame parentKey="ManaBarArea" inherits="SecureFrameParentPropagationTemplate" setAllPoints="true" useParentLevel="true">
 								<Frames>
@@ -423,15 +466,6 @@
 						</Frames>
 					</Frame>
 				</Frames>
-			</Frame>
-			<Frame name="PlayerFrameDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
-				<Size x="10" y="10"/>
-				<Anchors>
-					<Anchor point="TOP" x="-10" y="-50"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad function="PlayerFrameDropDown_OnLoad"/>
-				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>

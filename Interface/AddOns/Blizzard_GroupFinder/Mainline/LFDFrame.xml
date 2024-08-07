@@ -264,24 +264,21 @@
 							</OnEnter>
 						</Scripts>
 					</Button>
-					<Frame name="$parentTypeDropDown" inherits="UIDropDownMenuTemplate" id="1">
+					<DropdownButton name="$parentTypeDropdown" parentKey="TypeDropdown" inherits="WowStyle1DropdownTemplate" id="1">
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" x="117" y="285"/>
+							<Anchor point="BOTTOMLEFT" x="131" y="287"/>
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY">
 								<FontString name="$parentName" inherits="GameFontNormal" justifyH="RIGHT" text="CHOOSE_YOUR_DUNGEON">
 									<Size x="115" y="24"/>
 									<Anchors>
-										<Anchor point="RIGHT" relativePoint="LEFT" x="0" y="2"/>
+										<Anchor point="RIGHT" relativePoint="LEFT" x="-10" y="0"/>
 									</Anchors>
 								</FontString>
 							</Layer>
 						</Layers>
-						<Scripts>
-							<OnShow function="LFDQueueFrameTypeDropDown_SetUp"/>
-						</Scripts>
-					</Frame>
+					</DropdownButton>
 					<Frame name="$parentRandom" setAllPoints="true">
 						<Frames>
 							<ScrollFrame name="$parentScrollFrame" inherits="ScrollFrameTemplate">
@@ -467,14 +464,9 @@
 					</Frame>
 				</Frames>
 				<Scripts>
-					<OnShow>
-						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
-						QueueUpdater:RequestInfo();
-						QueueUpdater:AddRef();
-					</OnShow>
-					<OnHide>
-						QueueUpdater:RemoveRef();
-					</OnHide>
+					<OnLoad function="LFDQueueFrame_OnLoad"/>
+					<OnShow function="LFDQueueFrame_OnShow"/>
+					<OnHide function="LFDQueueFrame_OnHide"/>
 				</Scripts>
 			</Frame>
 		</Frames>

@@ -426,7 +426,7 @@
 	<Button name="UIPanelButtonTemplate" inherits="UIPanelButtonNoTooltipTemplate" virtual="true">
 		<Scripts>
 			<OnEnter>
-				if(self.tooltipText ~= nil) then
+				if(self.tooltipText ~= nil and not self.tooltipDisabled) then
 					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 					GameTooltip_SetTitle(GameTooltip, self.tooltipText);
 					GameTooltip:Show();
@@ -468,6 +468,22 @@
 		<CheckedTexture file="Interface\Buttons\UI-RadioButton">
 			<TexCoords left="0.25" right="0.5" top="0" bottom="1"/>
 		</CheckedTexture>
+	</CheckButton>
+
+	<CheckButton name="UIRadialButtonTemplate" virtual="true">
+		<Size x="18" y="18"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentText" inherits="GameFontNormalSmall" parentKey="text">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="5" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<NormalTexture parentKey="NormalTexture" atlas="common-dropdown-tickradial" useAtlasSize="true"/>
+		<HighlightTexture parentKey="HighlightTexture" atlas="common-dropdown-tickradial" useAtlasSize="true" alphaMode="ADD"/>
+		<CheckedTexture parentKey="CheckedTexture" atlas="common-dropdown-icon-radialtick-yellow" useAtlasSize="true"/>
 	</CheckButton>
 
 	<CheckButton name="UICheckButtonArtTemplate" virtual="true">
@@ -1282,6 +1298,13 @@
 			<TexCoords left="0" right="1.0" top="0.03" bottom="0.7175"/>
 		</HighlightTexture>
 	</Button>
+
+	<Button name="UIResetButtonTemplate" hidden="true" virtual="true">
+		<Size x="23" y="23"/>
+		<NormalTexture atlas="auctionhouse-ui-filter-redx" setAllPoints="true"/>
+		<HighlightTexture atlas="auctionhouse-ui-filter-redx" alphaMode="ADD" alpha="0.4" setAllPoints="true"/>
+	</Button>
+
 	<!-- Based on UIMenuButtonStretchTemplate.
 		Includes a Reset button (red cicle with yellow x) that appears on the top right of the dropdown button (hidden by default).
 		You can specify a "resetFunction" on the dropdown button as a keyValue and the Reset button will call it on click.
@@ -1300,20 +1323,6 @@
 				</Texture>
 			</Layer>
 		</Layers>
-		<Frames>
-			<Button parentKey="ResetButton" hidden="true">
-				<Size x="23" y="23"/>
-				<Anchors>
-					<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOPRIGHT" x="-3" y="0"/>
-				</Anchors>
-				<NormalTexture atlas="auctionhouse-ui-filter-redx">
-					<Size x="23" y="23"/>
-				</NormalTexture>
-				<HighlightTexture atlas="auctionhouse-ui-filter-redx" alphaMode="ADD" alpha="0.4">
-					<Size x="23" y="23"/>
-				</HighlightTexture>
-			</Button>
-		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 		</Scripts>
@@ -1478,6 +1487,9 @@
 	</EditBox>
 
 	<EditBox name="SearchBoxTemplate" inherits="InputBoxInstructionsTemplate" autoFocus="false" virtual="true">
+		<KeyValues>
+			<KeyValue key="instructionText" value="SEARCH" type="global"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture name="$parentSearchIcon" atlas="common-search-magnifyingglass" useAtlasSize="false" parentKey="searchIcon">
@@ -2094,6 +2106,28 @@
 		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 	</Button>
 
+	<Button name="CommonSquareIconButtonTemplate" mixin="SquareIconButtonMixin" inherits="SquareIconButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="iconSize" value="24" type="number"/>
+		</KeyValues>
+		<Size x="48" y="48"/>
+		<HitRectInsets left="6" right="6" top="6" bottom="6"/>
+		<NormalTexture parentKey="NormalTexture" atlas="common-button-square-gray-up"/>
+		<HighlightTexture parentKey="HighlightTexture" alphaMode="ADD" alpha="0.4">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT"/>
+				<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT"/>
+			</Anchors>
+		</HighlightTexture>
+		<PushedTexture parentKey="PushedTexture" atlas="common-button-square-gray-down">
+			<Anchors>
+				<Anchor point="TOPLEFT" x="1" y="-1"/>
+				<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
+			</Anchors>
+		</PushedTexture>
+		<DisabledTexture parentKey="NormalTexture" atlas="common-button-square-gray-up"/>
+	</Button>
+
 	<Button name="RefreshButtonTemplate" inherits="SquareIconButtonTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="iconAtlas" value="UI-RefreshButton" type="string"/>
@@ -2105,9 +2139,11 @@
 		onBoxToggled: a function that takes two arguments: a boolean for whether the box is checked or not, and a boolean for whether it
 						was toggled by the user or programmatically. Called when the checked state changes.
 		labelText: The text to use on the label
+		labelFont: The font to use for the label
 		<KeyValues>
 			<KeyValue key="onBoxToggled" value="nop" type="global"/>
 			<KeyValue key="labelText" value="CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER" type="global"/>
+			<KeyValue key="labelFont" value="GameFontHighlightLarge" type="string"/>
 		</KeyValues>
 		-->
 		<Scripts>
@@ -2117,6 +2153,7 @@
 	</Frame>
 
 	<Frame name="ResizeCheckButtonTemplate" inherits="ResizeCheckButtonBehaviorTemplate" virtual="true">
+		<Size x="1" y="1"/>
 		<Frames>
 			<CheckButton parentKey="Button" inherits="UICheckButtonTemplate">
 				<Size x="28" y="28"/>
@@ -2139,21 +2176,11 @@
 				</FontString>
 			</Layer>
 		</Layers>
-	</Frame>
-
-	<Frame name="SubFrameMouseoverButtonTemplate" mixin="SubFrameMouseoverButtonMixin" virtual="true">
-		<KeyValues>
-			<!-- hideDelay: how long (in seconds) before the sub frame is hidden after mousing off the button and the sub frame -->
-			<KeyValue key="hideDelay" value="0.5" type="number"/>
-		</KeyValues>
 		<Scripts>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
-			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
-
-	<DropDownToggleButton name="DropDownMouseoverButtonTemplate" mixin="DropDownMouseoverButtonMixin" inherits="SubFrameMouseoverButtonTemplate" virtual="true"/>
 
 	<EditBox name="SharedEditBoxTemplate" mixin="SharedEditBoxMixin" virtual="true">
 		<Size x="343" y="48"/>
@@ -2258,8 +2285,8 @@
 		</Frames>
 	</Frame>
 
-	<Button name="SelectionPopoutEntryTemplate" inherits="ResizeLayoutFrame" mixin="SelectionPopoutEntryMixin" virtual="true">
-		<Size x="1" y="1"/>
+	<Button name="DarkMenuElementTemplate" inherits="ResizeLayoutFrame" virtual="true">
+		<Size x="1" y="20"/>
 		<KeyValues>
 			<KeyValue key="widthPadding" value="14" type="number"/>
 		</KeyValues>
@@ -2270,101 +2297,38 @@
 				</KeyValues>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture parentKey="Left" atlas="charactercreate-customize-dropdown-linemouseover-side" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="TOPLEFT"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="Right" atlas="charactercreate-customize-dropdown-linemouseover-side" useAtlasSize="true">
-							<TexCoords left="1" right="0" top="0" bottom="1"/>
-							<Anchors>
-								<Anchor point="BOTTOMRIGHT"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="Middle" atlas="charactercreate-customize-dropdown-linemouseover-middle" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
-							</Anchors>
-						</Texture>
+						<Texture atlas="common-dropdown-customize-mouseover" useAtlasSize="true"/>
 					</Layer>
 				</Layers>
 			</Frame>
 		</Frames>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnClick method="OnClick"/>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-		</Scripts>
 	</Button>
 
-	<Frame name="SelectionPopoutTemplate" inherits="ResizeLayoutFrame" mixin="SelectionPopoutMixin" virtual="true">
-		<Size x="1" y="1"/>
-		<KeyValues>
-			<KeyValue key="widthPadding" value="6" type="number"/>
-			<KeyValue key="heightPadding" value="32" type="number"/>
-		</KeyValues>
-		<Frames>
-			<Frame parentKey="Border" useParentLevel="true" inherits="NineSlicePanelTemplate">
-				<KeyValues>
-					<KeyValue key="layoutType" value="CharacterCreateDropdown" type="string"/>
-				</KeyValues>
-			</Frame>
-		</Frames>
-		<Scripts>
-			<OnShow method="OnShow"/>
-			<OnHide method="OnHide"/>
-			<OnMouseWheel function="nop"/>
-		</Scripts>
-	</Frame>
-
-	<EventButton name="SelectionPopoutButtonTemplate" mixin="SelectionPopoutButtonMixin" virtual="true">
-		<Size x="150" y="38"/>
-		<NormalTexture parentKey="NormalTexture" atlas="charactercreate-customize-dropdownbox"/>
-		<HighlightTexture parentKey="HighlightTexture" atlas="charactercreate-customize-dropdownbox-open" alphaMode="ADD" alpha="0"/>
-		<PushedTextOffset x="2" y="-2"/>
-		<Frames>
-			<Frame parentKey="Popout" inherits="SelectionPopoutTemplate" hidden="true">
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" x="3" y="11"/>
-				</Anchors>
-			</Frame>
-		</Frames>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnHide method="OnHide"/>
-			<OnMouseDown method="OnMouseDown"/>
-			<OnMouseWheel method="OnMouseWheel"/>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-		</Scripts>
-	</EventButton>
-
-	<!-- the selection popout button is provided by the frame inheriting this template -->
-	<Frame name="SelectionPopoutWithButtonsTemplate" mixin="SelectionPopoutWithButtonsMixin" virtual="true">
+	<!-- 'Dropdown' needs to be defined in the frame inheriting this template.-->
+	<Frame name="DropdownWithSteppersTemplate" mixin="DropdownWithSteppersMixin" virtual="true">
 		<Size x="223" y="38"/>
 		<Frames>
-			<Button parentKey="IncrementButton" inherits="AlphaHighlightButtonTemplate" motionScriptsWhileDisabled="true">
-				<Size x="32" y="32"/>
-				<NormalTexture parentKey="NormalTexture" atlas="charactercreate-customize-nextbutton"/>
-				<PushedTexture parentKey="PushedTexture" atlas="charactercreate-customize-nextbutton-down"/>
-				<DisabledTexture atlas="charactercreate-customize-nextbutton-disabled"/>
+			<!--<DropDownToggleButton parentKey="Dropdown">-->
+			<Button parentKey="IncrementButton" inherits="WowStyle2IconButtonTemplate">
+				<KeyValues>
+					<KeyValue key="normalAtlas" type="string" value="common-dropdown-icon-next"/>
+					<KeyValue key="disabledAtlas" type="string" value="common-dropdown-icon-next-disabled"/>
+				</KeyValues>
 			</Button>
-			<Button parentKey="DecrementButton" inherits="AlphaHighlightButtonTemplate" motionScriptsWhileDisabled="true">
-				<Size x="32" y="32"/>
-				<NormalTexture parentKey="NormalTexture" atlas="charactercreate-customize-backbutton"/>
-				<PushedTexture parentKey="PushedTexture" atlas="charactercreate-customize-backbutton-down"/>
-				<DisabledTexture atlas="charactercreate-customize-backbutton-disabled"/>
+			<Button parentKey="DecrementButton" inherits="WowStyle2IconButtonTemplate">
+				<KeyValues>
+					<KeyValue key="normalAtlas" type="string" value="common-dropdown-icon-back"/>
+					<KeyValue key="disabledAtlas" type="string" value="common-dropdown-icon-back-disabled"/>
+				</KeyValues>
 			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</Frame>
-
-	<!-- the selection popout button is provided by the frame inheriting this template -->
-	<Frame name="SelectionPopoutWithButtonsAndLabelTemplate" inherits="SelectionPopoutWithButtonsTemplate" mixin="SelectionPopoutWithButtonsAndLabelMixin" virtual="true">
+	
+	<!-- See DropdownWithSteppersTemplate for dropdown requirements. -->
+	<Frame name="DropdownWithSteppersAndLabelTemplate" inherits="DropdownWithSteppersTemplate" mixin="DropdownWithSteppersAndLabelMixin" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Label" font="GameFontHighlightMed2">
@@ -2374,9 +2338,6 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-		</Scripts>
 	</Frame>
 
 	<Button name="AlphaHighlightButtonTemplate" mixin="AlphaHighlightButtonMixin" virtual="true">
@@ -2389,7 +2350,7 @@
 
 	<!--The DefaultScaleFrame template is used to allow a frame to appear to be "unscaled"
 		That means that all the textures/fonts used should appear as the same size they do in Photoshop when authored.
-		It is most useful in Glues, where we ALWAYS apply a UIScale, with no way to turn it off.
+		This was primarily added for Glues, where we used to apply a UIScale at 1.0, with no way to turn it off.
 		But it can also be used in game in order to attain a consistent look on a panel.
 		If you choose to use it in-game, remember that when you use it, the player will no longer be able to scale that panel up for accessibility reasons.-->
 
@@ -2400,6 +2361,16 @@
 		<Scripts>
 			<OnLoad method="OnDefaultScaleFrameLoad" inherit="prepend"/>
 			<OnEvent method="OnDefaultScaleFrameEvent" inherit="prepend"/>
+		</Scripts>
+	</Frame>
+
+	<!-- Useful if you want scaling behavior to match UIParent/GlueParent but you don't want a
+		 frame to be parented to the appropriate top level parent. -->
+	<Frame name="TopLevelParentScaleFrameTemplate" mixin="TopLevelParentScaleFrameMixin" virtual="true">
+		<Scripts>
+			<OnLoad method="OnScaleFrameLoad" inherit="prepend"/>
+			<OnEvent method="OnScaleFrameEvent" inherit="prepend"/>
+			<OnShow method="OnScaleFrameShow" inherit="prepend"/>
 		</Scripts>
 	</Frame>
 
@@ -2423,56 +2394,6 @@
 		<HighlightTexture file="Interface\ChatFrame\UI-ChatIM-SizeGrabber-Highlight"/>
 		<PushedTexture file="Interface\ChatFrame\UI-ChatIM-SizeGrabber-Down"/>
 	</Button>
-
-	<Frame name="DropDownControlTemplate" mixin="DropDownControlMixin" virtual="true">
-		<Size x="150" y="30"/>
-		<Frames>
-			<Frame parentKey="DropDownMenu" inherits="UIDropDownMenuTemplate">
-				<Anchors>
-					<Anchor point="CENTER" x="0" y="-2"/>
-				</Anchors>
-			</Frame>
-		</Frames>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-		</Scripts>
-	</Frame>
-
-	<Frame name="LargeDropDownControlTemplate" mixin="DropDownControlMixin" virtual="true">
-		<Size x="150" y="30"/>
-		<Frames>
-			<Frame parentKey="DropDownMenu" inherits="LargeUIDropDownMenuTemplate">
-				<Anchors>
-					<Anchor point="CENTER" x="0" y="-2"/>
-				</Anchors>
-			</Frame>
-		</Frames>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-		</Scripts>
-	</Frame>
-
-	<Frame name="EnumDropDownControlTemplate" mixin="EnumDropDownControlMixin" inherits="DropDownControlTemplate" virtual="true">
-		<KeyValues>
-			<!-- Overwrite to change the dropdown text when the selected value is nil -->
-			<KeyValue key="noneSelectedText" value="NONE" type="global"/>
-		</KeyValues>
-	</Frame>
-
-	<Frame name="LabeledEnumDropDownControlTemplate" mixin="LabeledEnumDropDownControlMixin" inherits="DropDownControlTemplate" virtual="true">
-		<Layers>
-			<Layer level="OVERLAY">
-				<FontString parentKey="Label" inherits="GameFontNormal">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.DropDownMenu" relativePoint="TOPLEFT" x="20" y="2"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-		</Scripts>
-	</Frame>
 
 	<Frame name="ClickToDragTemplate" mixin="ClickToDragMixin" movable="true" virtual="true">
 		<Scripts>
@@ -2718,11 +2639,11 @@
 						</Scripts>
 						<FontString inherits="ChatFontNormal"/>
 					</EditBox>
-					<Frame parentKey="IconTypeDropDown" inherits="EnumDropDownControlTemplate">
+					<DropdownButton parentKey="IconTypeDropdown" inherits="WowStyle1DropdownTemplate">
 						<Anchors>
 							<Anchor point="TOPRIGHT" x="-44" y="-68"/>
 						</Anchors>
-					</Frame>
+					</DropdownButton>
 				</Frames>
 			</Frame>
 			<Frame parentKey="IconSelector" inherits="ScrollBoxSelectorTemplate" frameStrata="HIGH">
@@ -3162,6 +3083,114 @@
 		</Scripts>
 	</CheckButton>
 
+	<Button name="MainMenuFrameButtonTemplate" inherits="BigRedThreeSliceButtonTemplate" virtual="true">
+		<Size x="200" y="36"/>
+		<NormalFont style="GameFontHighlightLarge"/>
+		<HighlightFont style="GameFontHighlightLarge"/>
+		<DisabledFont style="GameFontDisableLarge"/>
+	</Button>
+
+	<Frame name="MainMenuFrameTemplate" mixin="MainMenuFrameMixin" inherits="VerticalLayoutFrame" toplevel="true" frameStrata="DIALOG" enableMouse="true" virtual="true">
+		<KeyValues>
+			<KeyValue key="buttonTemplate" value="MainMenuFrameButtonTemplate" type="string"/>
+
+			<KeyValue key="topPadding" value="48" type="number"/>
+			<KeyValue key="bottomPadding" value="34" type="number"/>
+			<KeyValue key="leftPadding" value="28" type="number"/>
+			<KeyValue key="rightPadding" value="28" type="number"/>
+			<KeyValue key="spacing" value="0" type="number"/>
+
+			<!-- 
+			dialogHeaderFont: font for the header text
+			<KeyValue key="dialogHeaderFont" value="GameFontNormal" type="string"/>
+			-->
+		</KeyValues>
+		<Size x="260" y="1"/>
+		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate">
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="Header" inherits="DialogHeaderTemplate">
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					<KeyValue key="textString" value="MAINMENU_BUTTON" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOP" x="0" y="11"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Button name="ExpandBarTemplate" mixin="ExpandBarMixin" virtual="true">
+		<Size x="280" y="44"/>
+		<Frames>
+			<Button parentKey="ExpandButton" mixin="SquareExpandButtonMixin" inherits="UIButtonTemplate">
+				<Size x="20" y="20"/>
+				<KeyValues>
+					<!--Default values, override as needed.-->
+					<KeyValue key="highlightExpandedAtlas" value="128-RedButton-ArrowUpGlow-Highlight" type="string"/>
+					<KeyValue key="highlightCollapsedAtlas" value="128-RedButton-ArrowUpGlow-Highlight" type="string"/>
+					<KeyValue key="normalExpandedAtlas" value="Campaign_HeaderIcon_Open" type="string"/>
+					<KeyValue key="normalCollapsedAtlas" value="Campaign_HeaderIcon_Closed" type="string"/>
+					<KeyValue key="pushedExpandedAtlas" value="Campaign_HeaderIcon_OpenPressed" type="string"/>
+					<KeyValue key="pushedCollapsedAtlas" value="Campaign_HeaderIcon_ClosedPressed" type="string"/>
+					<KeyValue key="disabledExpandedAtlas" value="Campaign_HeaderIcon_Open" type="string"/>
+					<KeyValue key="disabledCollapsedAtlas" value="Campaign_HeaderIcon_Closed" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="RIGHT" x="-13" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+
+	<EditBox name="LevelRangeEditBoxTemplate" inherits="InputBoxTemplate" letters="3" numeric="true" autoFocus="false" virtual="true">
+		<Size x="28" y="16"/>
+	</EditBox>
+
+	<Frame name="LevelRangeFrameTemplate" mixin="LevelRangeFrameMixin" virtual="true">
+		<Size x="80" y="22"/>
+		<Frames>
+			<EditBox parentKey="MinLevel" inherits="LevelRangeEditBoxTemplate">
+				<Anchors>
+					<Anchor point="LEFT" x="8" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Dash" inherits="GameFontHighlightSmall" text="-">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent" relativePoint="RIGHT" x="0" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</EditBox>
+			<EditBox parentKey="MaxLevel" inherits="LevelRangeEditBoxTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.MinLevel" relativePoint="RIGHT" x="10" y="0"/>
+				</Anchors>
+			</EditBox>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
 <!--
 *******************************************************************************
     Help Plate System

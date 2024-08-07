@@ -2,8 +2,8 @@ function RegisterMacSettings()
 	local category, layout = Settings.RegisterVerticalLayoutCategory(MAC_SETTINGS_LABEL);
 	Settings.MAC_CATEGORY_ID = category:GetID();
 
-	local setting = Settings.SetupCVarCheckBox(category, "MacDisableOsShortcuts", MAC_DISABLE_OS_SHORTCUTS, MAC_DISABLE_OS_SHORTCUTS_TOOLTIP);
-
+	local setting = Settings.SetupCVarCheckbox(category, "MacDisableOsShortcuts", MAC_DISABLE_OS_SHORTCUTS, MAC_DISABLE_OS_SHORTCUTS_TOOLTIP);
+	
 	local function OnDisableOsShortcutsChanged(o, setting, value)
 		if value and not C_MacOptions.IsUniversalAccessEnabled() then
 			ShowAppropriateDialog("MAC_OPEN_UNIVERSAL_ACCESS");
@@ -11,9 +11,9 @@ function RegisterMacSettings()
 		end
 	end
 	Settings.SetOnValueChangedCallback(setting:GetVariable(), OnDisableOsShortcutsChanged);
-
-	Settings.SetupCVarCheckBox(category, "MacUseCommandLeftClickAsRightClick", MAC_USE_COMMAND_LEFT_CLICK_AS_RIGHT_CLICK, MAC_USE_COMMAND_LEFT_CLICK_AS_RIGHT_CLICK_TOOLTIP);
-
+	
+	Settings.SetupCVarCheckbox(category, "MacUseCommandLeftClickAsRightClick", MAC_USE_COMMAND_LEFT_CLICK_AS_RIGHT_CLICK, MAC_USE_COMMAND_LEFT_CLICK_AS_RIGHT_CLICK_TOOLTIP);
+	
 	Settings.RegisterCategory(category, SETTING_GROUP_SYSTEM);
 end
 

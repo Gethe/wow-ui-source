@@ -2,6 +2,10 @@ local function IsElementDataItemInfo(elementData)
 	return elementData.isItemInfo;
 end
 
+local function IsFilterStateChecked(filterInfo)
+	return PerksProgramFrame:GetFilterState(filterInfo);
+end
+
 ----------------------------------------------------------------------------------
 -- PerksProgramProductsFrameMixin
 ----------------------------------------------------------------------------------
@@ -25,6 +29,44 @@ function PerksProgramProductsFrameMixin:OnLoad()
 	end
 
 	self.FrozenProductContainer = self.ProductsScrollBoxContainer.PerksProgramHoldFrame.FrozenProductContainer;
+	
+	self.PerksProgramFilter:SetWidth(145);
+	
+	-- This dropdown's template displays selections in its text, but in this
+	-- case we only ever want to display "Filter".
+	self.PerksProgramFilter:OverrideText(FILTER);
+
+	self.PerksProgramFilter:SetIsDefaultCallback(function()
+		if not IsFilterStateChecked("collected") then
+			return false;
+		end
+
+		if not IsFilterStateChecked("uncollected") then
+			return false;
+		end
+
+		if IsFilterStateChecked("useable") then
+			return false;
+		end
+
+		for i, category in ipairs(PerksProgramFrame:GetCategories()) do
+			if not IsFilterStateChecked(category.ID) then
+				return false;
+			end
+		end
+
+		return true;
+	end);
+	
+	self.PerksProgramFilter:SetDefaultCallback(function()
+		PerksProgramFrame:SetFilterState("collected", true);
+		PerksProgramFrame:SetFilterState("uncollected", true);
+		PerksProgramFrame:SetFilterState("useable", false);
+
+		for i, category in ipairs(PerksProgramFrame:GetCategories()) do
+			PerksProgramFrame:SetFilterState(category.ID, true);
+		end
+	end);
 end
 
 function PerksProgramProductsFrameMixin:Init()
@@ -552,9 +594,55 @@ function PerksProgramProductsFrameMixin:AllDataRefresh(resetSelection)
 	self:UpdateProducts(resetSelection);
 end
 
+local function IsSortAscending()
+	return PerksProgramFrame:GetSortAscending();
+end
+
+local function SetSortAscending()
+	PerksProgramFrame:SetSortAscending(not PerksProgramFrame:GetSortAscending());
+	EventRegistry:TriggerEvent("PerksProgram.SortFieldSet");
+end
+
+local function IsSortFieldSet(filterInfo)
+	return PerksProgramFrame:GetSortField() == filterInfo;
+end
+
+local function SetSortField(filterInfo)
+	PerksProgramFrame:SetSortField(filterInfo);
+end
+
+local function SetFilterState(filterInfo)
+	local set = PerksProgramFrame:GetFilterState(filterInfo);
+	PerksProgramFrame:SetFilterState(filterInfo, not set);
+end
+
 function PerksProgramProductsFrameMixin:OnShow()
 	local resetSelection = true;
 	self:AllDataRefresh(resetSelection);
+
+	self.PerksProgramFilter:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_PERKS_PROGRAM_DEBUG");
+
+		rootDescription:CreateCheckbox(PERKS_PROGRAM_COLLECTED, IsFilterStateChecked, SetFilterState, "collected");
+		rootDescription:CreateCheckbox(PERKS_PROGRAM_NOT_COLLECTED, IsFilterStateChecked, SetFilterState, "uncollected");
+		rootDescription:CreateCheckbox(PERKS_PROGRAM_USEABLE_ONLY, IsFilterStateChecked, SetFilterState, "useable");
+		rootDescription:CreateSpacer();
+
+		local categories = PerksProgramFrame:GetCategories();
+		if categories then
+			local typeSubmenu = rootDescription:CreateButton(PERKS_PROGRAM_TYPE);
+			for i, category in ipairs(categories) do
+				typeSubmenu:CreateCheckbox(category.displayName, IsFilterStateChecked, SetFilterState, category.ID);
+			end
+		end
+
+		local sortBySubmenu = rootDescription:CreateButton(PERKS_PROGRAM_SORT_BY);
+		sortBySubmenu:CreateCheckbox(PERKS_PROGRAM_ASCENDING, IsSortAscending, SetSortAscending);
+		sortBySubmenu:CreateSpacer();
+		sortBySubmenu:CreateRadio(PERKS_PROGRAM_NAME, IsSortFieldSet, SetSortField, "name");
+		sortBySubmenu:CreateRadio(PERKS_PROGRAM_PRICE, IsSortFieldSet, SetSortField, "price");
+		sortBySubmenu:CreateRadio(PERKS_PROGRAM_TIME_REMAINING, IsSortFieldSet, SetSortField, "timeRemaining");
+	end);
 end
 
 function PerksProgramProductsFrameMixin:TrySelectProduct(itemInfo)

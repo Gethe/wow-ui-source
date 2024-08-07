@@ -33,15 +33,16 @@ local ProfessionConstants =
 		{
 			Name = "CraftingOrderItemType",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 5,
 			MinValue = 0,
-			MaxValue = 3,
+			MaxValue = 4,
 			Fields =
 			{
 				{ Name = "Reagent", Type = "CraftingOrderItemType", EnumValue = 0 },
 				{ Name = "Recraft", Type = "CraftingOrderItemType", EnumValue = 1 },
 				{ Name = "CraftedResult", Type = "CraftingOrderItemType", EnumValue = 2 },
 				{ Name = "RemoveReagent", Type = "CraftingOrderItemType", EnumValue = 3 },
+				{ Name = "NpcProvided", Type = "CraftingOrderItemType", EnumValue = 4 },
 			},
 		},
 		{
@@ -61,9 +62,9 @@ local ProfessionConstants =
 		{
 			Name = "CraftingOrderResult",
 			Type = "Enumeration",
-			NumValues = 45,
+			NumValues = 47,
 			MinValue = 0,
-			MaxValue = 44,
+			MaxValue = 46,
 			Fields =
 			{
 				{ Name = "Ok", Type = "CraftingOrderResult", EnumValue = 0 },
@@ -90,27 +91,29 @@ local ProfessionConstants =
 				{ Name = "InvalidReagent", Type = "CraftingOrderResult", EnumValue = 21 },
 				{ Name = "InvalidRealm", Type = "CraftingOrderResult", EnumValue = 22 },
 				{ Name = "InvalidRecipe", Type = "CraftingOrderResult", EnumValue = 23 },
-				{ Name = "InvalidSort", Type = "CraftingOrderResult", EnumValue = 24 },
-				{ Name = "InvalidTarget", Type = "CraftingOrderResult", EnumValue = 25 },
-				{ Name = "InvalidType", Type = "CraftingOrderResult", EnumValue = 26 },
-				{ Name = "MaxOrdersReached", Type = "CraftingOrderResult", EnumValue = 27 },
-				{ Name = "MissingCraftingTable", Type = "CraftingOrderResult", EnumValue = 28 },
-				{ Name = "MissingItem", Type = "CraftingOrderResult", EnumValue = 29 },
-				{ Name = "MissingNpc", Type = "CraftingOrderResult", EnumValue = 30 },
-				{ Name = "MissingOrder", Type = "CraftingOrderResult", EnumValue = 31 },
-				{ Name = "MissingRecraftItem", Type = "CraftingOrderResult", EnumValue = 32 },
-				{ Name = "NotClaimed", Type = "CraftingOrderResult", EnumValue = 33 },
-				{ Name = "NotCrafted", Type = "CraftingOrderResult", EnumValue = 34 },
-				{ Name = "NotInGuild", Type = "CraftingOrderResult", EnumValue = 35 },
-				{ Name = "NotYetImplemented", Type = "CraftingOrderResult", EnumValue = 36 },
-				{ Name = "OutOfPublicOrderCapacity", Type = "CraftingOrderResult", EnumValue = 37 },
-				{ Name = "ServerIsNotAvailable", Type = "CraftingOrderResult", EnumValue = 38 },
-				{ Name = "ThrottleViolation", Type = "CraftingOrderResult", EnumValue = 39 },
-				{ Name = "TargetCannotCraft", Type = "CraftingOrderResult", EnumValue = 40 },
-				{ Name = "TargetLocked", Type = "CraftingOrderResult", EnumValue = 41 },
-				{ Name = "Timeout", Type = "CraftingOrderResult", EnumValue = 42 },
-				{ Name = "TooManyItems", Type = "CraftingOrderResult", EnumValue = 43 },
-				{ Name = "WrongVersion", Type = "CraftingOrderResult", EnumValue = 44 },
+				{ Name = "InvalidRecraftItem", Type = "CraftingOrderResult", EnumValue = 24 },
+				{ Name = "InvalidSort", Type = "CraftingOrderResult", EnumValue = 25 },
+				{ Name = "InvalidTarget", Type = "CraftingOrderResult", EnumValue = 26 },
+				{ Name = "InvalidType", Type = "CraftingOrderResult", EnumValue = 27 },
+				{ Name = "MaxOrdersReached", Type = "CraftingOrderResult", EnumValue = 28 },
+				{ Name = "MissingCraftingTable", Type = "CraftingOrderResult", EnumValue = 29 },
+				{ Name = "MissingItem", Type = "CraftingOrderResult", EnumValue = 30 },
+				{ Name = "MissingNpc", Type = "CraftingOrderResult", EnumValue = 31 },
+				{ Name = "MissingOrder", Type = "CraftingOrderResult", EnumValue = 32 },
+				{ Name = "MissingRecraftItem", Type = "CraftingOrderResult", EnumValue = 33 },
+				{ Name = "NoAccountItems", Type = "CraftingOrderResult", EnumValue = 34 },
+				{ Name = "NotClaimed", Type = "CraftingOrderResult", EnumValue = 35 },
+				{ Name = "NotCrafted", Type = "CraftingOrderResult", EnumValue = 36 },
+				{ Name = "NotInGuild", Type = "CraftingOrderResult", EnumValue = 37 },
+				{ Name = "NotYetImplemented", Type = "CraftingOrderResult", EnumValue = 38 },
+				{ Name = "OutOfPublicOrderCapacity", Type = "CraftingOrderResult", EnumValue = 39 },
+				{ Name = "ServerIsNotAvailable", Type = "CraftingOrderResult", EnumValue = 40 },
+				{ Name = "ThrottleViolation", Type = "CraftingOrderResult", EnumValue = 41 },
+				{ Name = "TargetCannotCraft", Type = "CraftingOrderResult", EnumValue = 42 },
+				{ Name = "TargetLocked", Type = "CraftingOrderResult", EnumValue = 43 },
+				{ Name = "Timeout", Type = "CraftingOrderResult", EnumValue = 44 },
+				{ Name = "TooManyItems", Type = "CraftingOrderResult", EnumValue = 45 },
+				{ Name = "WrongVersion", Type = "CraftingOrderResult", EnumValue = 46 },
 			},
 		},
 		{
@@ -160,14 +163,15 @@ local ProfessionConstants =
 		{
 			Name = "CraftingOrderType",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 3,
 			Fields =
 			{
 				{ Name = "Public", Type = "CraftingOrderType", EnumValue = 0 },
 				{ Name = "Guild", Type = "CraftingOrderType", EnumValue = 1 },
 				{ Name = "Personal", Type = "CraftingOrderType", EnumValue = 2 },
+				{ Name = "Npc", Type = "CraftingOrderType", EnumValue = 3 },
 			},
 		},
 		{
@@ -193,6 +197,18 @@ local ProfessionConstants =
 			Fields =
 			{
 				{ Name = "ItemRecraftFlagInvalid", Type = "ItemRecraftFlags", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "NpcCraftingOrderSetFlags",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 1,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "CraftingOrderFlagAllowMultiple", Type = "NpcCraftingOrderSetFlags", EnumValue = 1 },
+				{ Name = "CraftingOrderFlagAllowDuplicate", Type = "NpcCraftingOrderSetFlags", EnumValue = 2 },
 			},
 		},
 		{
@@ -235,9 +251,9 @@ local ProfessionConstants =
 		{
 			Name = "ProfessionEffect",
 			Type = "Enumeration",
-			NumValues = 26,
+			NumValues = 31,
 			MinValue = 0,
-			MaxValue = 25,
+			MaxValue = 30,
 			Fields =
 			{
 				{ Name = "Skill", Type = "ProfessionEffect", EnumValue = 0 },
@@ -266,6 +282,11 @@ local ProfessionConstants =
 				{ Name = "IncreaseDifficulty", Type = "ProfessionEffect", EnumValue = 23 },
 				{ Name = "ModSkillGain", Type = "ProfessionEffect", EnumValue = 24 },
 				{ Name = "AccumulateRanksByLabel", Type = "ProfessionEffect", EnumValue = 25 },
+				{ Name = "StatIngenuity", Type = "ProfessionEffect", EnumValue = 26 },
+				{ Name = "ModConcentration", Type = "ProfessionEffect", EnumValue = 27 },
+				{ Name = "Tokenizer", Type = "ProfessionEffect", EnumValue = 28 },
+				{ Name = "ModIngenuity", Type = "ProfessionEffect", EnumValue = 29 },
+				{ Name = "ConcentrationRefund", Type = "ProfessionEffect", EnumValue = 30 },
 			},
 		},
 		{
@@ -283,7 +304,7 @@ local ProfessionConstants =
 				{ Name = "Perception", Type = "ProfessionRating", EnumValue = 4 },
 				{ Name = "CraftingSpeed", Type = "ProfessionRating", EnumValue = 5 },
 				{ Name = "Multicraft", Type = "ProfessionRating", EnumValue = 6 },
-				{ Name = "Unused_1", Type = "ProfessionRating", EnumValue = 7 },
+				{ Name = "Ingenuity", Type = "ProfessionRating", EnumValue = 7 },
 				{ Name = "Unused_2", Type = "ProfessionRating", EnumValue = 8 },
 			},
 		},

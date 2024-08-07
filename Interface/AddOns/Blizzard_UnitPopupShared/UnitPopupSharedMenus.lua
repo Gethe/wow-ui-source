@@ -1,32 +1,41 @@
+local PROJECT_IMPL_REQUIRED = "Add implementation in UnitPopupUtils.lua";
+
 UnitPopupTopLevelMenuMixin = { };
--- Override in your inherited class! 
-function UnitPopupTopLevelMenuMixin:GetMenuButtons()
+
+--[[
+Inline menus' children are inserted into their parent. Inline menus can be used
+to encapsulate a section of options and reuse that section in different menus.
+- A
+- B (inline menu)
+  - W
+  - X
+- C
+
+Will become:
+- A
+- W
+- X
+- C
+]]--
+function UnitPopupTopLevelMenuMixin:IsInlineMenu()
+	return true; 
 end 
 
-function UnitPopupTopLevelMenuMixin:GetButtons()
-	local menuButtonMixins = { }; 
-	local buttonMixins = self:GetMenuButtons(); 
-	for _, buttonMixin in ipairs(buttonMixins) do 
-		if(buttonMixin.IsMenu()) then 
-			local subMenuButtons = buttonMixin:GetMenuButtons(); 
-			for _, subMenuButtonMixin in ipairs(subMenuButtons) do
-				table.insert(menuButtonMixins, subMenuButtonMixin);
-			end
+function UnitPopupTopLevelMenuMixin:AssembleMenuEntries(contextData)
+	local entries = {}; 
+	for index, buttonMixin in ipairs(self:GetEntries()) do 
+		if buttonMixin:IsInlineMenu() then 
+			tAppendAll(entries, buttonMixin:GetEntries());
 		else 
-			table.insert(menuButtonMixins, buttonMixin);
-		end
+			table.insert(entries, buttonMixin);
 	end
-	return menuButtonMixins; 
 end		
-
-
-function UnitPopupTopLevelMenuMixin:IsMenu()
-	return true; 
+	return entries;
 end
 
----------------------------- Sub Menus ----------------------------------------------
+-- Submenus
 UnitPopupMenuFriendlyPlayer = CreateFromMixins(UnitPopupTopLevelMenuMixin);
-function UnitPopupMenuFriendlyPlayer:GetMenuButtons()
+function UnitPopupMenuFriendlyPlayer:GetEntries()
 	return {
 		UnitPopupRaidTargetButtonMixin, 
 		UnitPopupSetFocusButtonMixin,
@@ -37,7 +46,7 @@ function UnitPopupMenuFriendlyPlayer:GetMenuButtons()
 end 
 
 UnitPopupMenuFriendlyPlayerInteract = CreateFromMixins(UnitPopupTopLevelMenuMixin);
-function UnitPopupMenuFriendlyPlayerInteract:GetMenuButtons()
+function UnitPopupMenuFriendlyPlayerInteract:GetEntries()
 	return {
 		UnitPopupWhisperButtonMixin,
 		UnitPopupInspectButtonMixin, 
@@ -50,7 +59,7 @@ function UnitPopupMenuFriendlyPlayerInteract:GetMenuButtons()
 end 
 
 UnitPopupMenuFriendlyPlayerInviteOptions = CreateFromMixins(UnitPopupTopLevelMenuMixin)
-function UnitPopupMenuFriendlyPlayerInviteOptions:GetMenuButtons()
+function UnitPopupMenuFriendlyPlayerInviteOptions:GetEntries()
 	return {
 		UnitPopupInviteButtonMixin,
 		UnitPopupSuggestInviteButtonMixin,
@@ -58,16 +67,15 @@ function UnitPopupMenuFriendlyPlayerInviteOptions:GetMenuButtons()
 	}
 end
 
-
----------------------------- Main Menus ----------------------------------------------
-UnitPopupMenuSelf = CreateFromMixins(UnitPopupTopLevelMenuMixin)
+-- Root menus
+UnitPopupMenuSelf = CreateFromMixins(UnitPopupTopLevelMenuMixin);
 UnitPopupManager:RegisterMenu("SELF", UnitPopupMenuSelf);
-function UnitPopupMenuSelf:GetMenuButtons()
+function UnitPopupMenuSelf:GetEntries()
 end
 
 UnitPopupMenuPet = CreateFromMixins(UnitPopupTopLevelMenuMixin);
 UnitPopupManager:RegisterMenu("PET", UnitPopupMenuPet);
-function UnitPopupMenuPet:GetMenuButtons()
+function UnitPopupMenuPet:GetEntries()
 	return { 
 		UnitPopupRaidTargetButtonMixin, 
 		UnitPopupSetFocusButtonMixin, 
@@ -79,13 +87,12 @@ function UnitPopupMenuPet:GetMenuButtons()
 		UnitPopupMovePlayerFrameButtonMixin,
 		UnitPopupMoveTargetFrameButtonMixin,
 		UnitPopupEnterEditModeMixin,
-		UnitPopupCancelButtonMixin,
 	}
 end
 
 UnitPopupMenuOtherPet = CreateFromMixins(UnitPopupTopLevelMenuMixin);
 UnitPopupManager:RegisterMenu("OTHERPET", UnitPopupMenuOtherPet);
-function UnitPopupMenuOtherPet:GetMenuButtons()
+function UnitPopupMenuOtherPet:GetEntries()
 	return { 
 		UnitPopupRaidTargetButtonMixin,
 		UnitPopupSetFocusButtonMixin, 
@@ -94,13 +101,12 @@ function UnitPopupMenuOtherPet:GetMenuButtons()
 		UnitPopupMoveTargetFrameButtonMixin,
 		UnitPopupEnterEditModeMixin,
 		UnitPopupReportPetButtonMixin,
-		UnitPopupCancelButtonMixin,
 	}
 end 
 
 UnitPopupMenuBattlePet = CreateFromMixins(UnitPopupTopLevelMenuMixin);
 UnitPopupManager:RegisterMenu("BATTLEPET", UnitPopupMenuBattlePet);
-function UnitPopupMenuBattlePet:GetMenuButtons()
+function UnitPopupMenuBattlePet:GetEntries()
 	return { 
 		UnitPopupPetShowInJournalButtonMixin, 
 		UnitPopupSetFocusButtonMixin, 
@@ -108,13 +114,12 @@ function UnitPopupMenuBattlePet:GetMenuButtons()
 		UnitPopupMovePlayerFrameButtonMixin,
 		UnitPopupMoveTargetFrameButtonMixin,
 		UnitPopupEnterEditModeMixin,
-		UnitPopupCancelButtonMixin,
 	}
 end 
 
 UnitPopupMenuOtherBattlePet = CreateFromMixins(UnitPopupTopLevelMenuMixin);
 UnitPopupManager:RegisterMenu("OTHERBATTLEPET", UnitPopupMenuOtherBattlePet);
-function UnitPopupMenuOtherBattlePet:GetMenuButtons()
+function UnitPopupMenuOtherBattlePet:GetEntries()
 	return { 
 		UnitPopupPetShowInJournalButtonMixin, 
 		UnitPopupSetFocusButtonMixin, 
@@ -123,27 +128,24 @@ function UnitPopupMenuOtherBattlePet:GetMenuButtons()
 		UnitPopupMoveTargetFrameButtonMixin,
 		UnitPopupEnterEditModeMixin,
 		UnitPopupReportBattlePetButtonMixin,
-		UnitPopupCancelButtonMixin,
 	}
 end 
 
-
--- Fill out in UnitPopupMenus
 UnitPopupMenuParty = CreateFromMixins(UnitPopupTopLevelMenuMixin)
 UnitPopupManager:RegisterMenu("PARTY", UnitPopupMenuParty);
-function UnitPopupMenuParty:GetMenuButtons()
+function UnitPopupMenuParty:GetEntries()
+	error(PROJECT_IMPL_REQUIRED);
 end
 
--- Fill out in UnitPopupMenus
 UnitPopupMenuPlayer = CreateFromMixins(UnitPopupTopLevelMenuMixin)
 UnitPopupManager:RegisterMenu("PLAYER", UnitPopupMenuPlayer);
-function UnitPopupMenuPlayer:GetMenuButtons()
+function UnitPopupMenuPlayer:GetEntries()
 	return {
-		UnitPopupMenuFriendlyPlayer, --This is a subMenu
+		UnitPopupMenuFriendlyPlayer, -- Submenu
 		UnitPopupRafSummonButtonMixin,
 		UnitPopupRafGrantLevelButtonMixin,
-		UnitPopupMenuFriendlyPlayerInviteOptions, -- This is a subMenu
-		UnitPopupMenuFriendlyPlayerInteract, --This is a subMenu
+		UnitPopupMenuFriendlyPlayerInviteOptions, -- Submenu
+		UnitPopupMenuFriendlyPlayerInteract, -- Submenu
 		UnitPopupOtherSubsectionTitle,
 		UnitPopupVoiceChatButtonMixin, 
 		UnitPopupMovePlayerFrameButtonMixin,
@@ -151,27 +153,24 @@ function UnitPopupMenuPlayer:GetMenuButtons()
 		UnitPopupEnterEditModeMixin,
 		UnitPopupReportInWorldButtonMixin,
 		UnitPopupCopyCharacterNameButtonMixin,
-		UnitPopupCancelButtonMixin,
 	}
 end
 
--- Fill out in UnitPopupMenus
 UnitPopupMenuEnemyPlayer = CreateFromMixins(UnitPopupTopLevelMenuMixin)
 UnitPopupManager:RegisterMenu("ENEMY_PLAYER", UnitPopupMenuEnemyPlayer);
-function UnitPopupMenuEnemyPlayer:GetMenuButtons()
+function UnitPopupMenuEnemyPlayer:GetEntries()
+	error(PROJECT_IMPL_REQUIRED);
 end
 
--- Fill out in UnitPopupMenus
 UnitPopupMenuRaidPlayer = CreateFromMixins(UnitPopupTopLevelMenuMixin)
 UnitPopupManager:RegisterMenu("RAID_PLAYER", UnitPopupMenuRaidPlayer);
-function UnitPopupMenuRaidPlayer:GetMenuButtons()
-
+function UnitPopupMenuRaidPlayer:GetEntries()
+	error(PROJECT_IMPL_REQUIRED);
 end
 
--- Fill out in UnitPopupMenus
 UnitPopupMenuRaid = CreateFromMixins(UnitPopupTopLevelMenuMixin)
 UnitPopupManager:RegisterMenu("RAID", UnitPopupMenuRaid);
-function UnitPopupMenuRaid:GetMenuButtons()
+function UnitPopupMenuRaid:GetEntries()
 	return {
 		UnitPopupSetFocusButtonMixin, 
 		UnitPopupInteractSubsectionTitle,
@@ -191,14 +190,12 @@ function UnitPopupMenuRaid:GetMenuButtons()
 		UnitPopupPvpReportAfkButtonMixin,
 		UnitPopupVoteToKickButtonMixin,
 		UnitPopupSetRaidRemoveButtonMixin,
-		UnitPopupCancelButtonMixin,
 	}
 end
 
--- Fill out in UnitPopupMenus
 UnitPopupMenuFriend = CreateFromMixins(UnitPopupTopLevelMenuMixin)
 UnitPopupManager:RegisterMenu("FRIEND", UnitPopupMenuFriend);
-function UnitPopupMenuFriend:GetMenuButtons()
+function UnitPopupMenuFriend:GetEntries()
 	return { 
 		UnitPopupPopoutChatButtonMixin,
 		UnitPopupTargetButtonMixin,
@@ -215,60 +212,57 @@ function UnitPopupMenuFriend:GetMenuButtons()
 		UnitPopupReportChatButtonMixin,
 		UnitPopupCopyCharacterNameButtonMixin,
 		UnitPopupPvpReportAfkButtonMixin,
-		UnitPopupCancelButtonMixin,
 	}
 end 
 
--- Fill out in UnitPopupMenus
 UnitPopupMenuFriendOffline = CreateFromMixins(UnitPopupTopLevelMenuMixin)
 UnitPopupManager:RegisterMenu("FRIEND_OFFLINE", UnitPopupMenuFriendOffline);
-function UnitPopupMenuFriendOffline:GetMenuButtons()
+function UnitPopupMenuFriendOffline:GetEntries()
 	return { 
 		UnitPopupSetNoteButtonMixin, 
 		UnitPopupOtherSubsectionTitle,
 		UnitPopupIgnoreButtonMixin,
 		UnitPopupRemoveFriendButtonMixin,
 		UnitPopupCopyCharacterNameButtonMixin,
-		UnitPopupCancelButtonMixin,
 	}
 end  
 
--- Fill out in UnitPopupMenus
 UnitPopupMenuBnFriend = CreateFromMixins(UnitPopupTopLevelMenuMixin)
 UnitPopupManager:RegisterMenu("BN_FRIEND", UnitPopupMenuBnFriend);
-function UnitPopupMenuBnFriend:GetMenuButtons()
+function UnitPopupMenuBnFriend:GetEntries()
+	error(PROJECT_IMPL_REQUIRED);
 end 
 
--- Fill out in UnitPopupMenus
 UnitPopupMenuBnFriendOffline = CreateFromMixins(UnitPopupTopLevelMenuMixin)
 UnitPopupManager:RegisterMenu("BN_FRIEND_OFFLINE", UnitPopupMenuBnFriendOffline);
-function UnitPopupMenuBnFriendOffline:GetMenuButtons()
+function UnitPopupMenuBnFriendOffline:GetEntries()
+	error(PROJECT_IMPL_REQUIRED);
 end
 
 UnitPopupMenuGlueFriend = CreateFromMixins(UnitPopupTopLevelMenuMixin)
 UnitPopupManager:RegisterMenu("GLUE_FRIEND", UnitPopupMenuGlueFriend);
-function UnitPopupMenuGlueFriend:GetMenuButtons()
+function UnitPopupMenuGlueFriend:GetEntries()
 	return {
 		UnitPopupGlueInviteButtonMixin,
 		UnitPopupRemoveBnetFriendButtonMixin,
 		UnitPopupBnetBlockButtonMixin,
-		UnitPopupCancelButtonMixin,
+		UnitPopupGlueReportButtonMixin,
 	}
 end 
 
 UnitPopupMenuGlueFriendOffline = CreateFromMixins(UnitPopupTopLevelMenuMixin)
 UnitPopupManager:RegisterMenu("GLUE_FRIEND_OFFLINE", UnitPopupMenuGlueFriendOffline);
-function UnitPopupMenuGlueFriendOffline:GetMenuButtons()
+function UnitPopupMenuGlueFriendOffline:GetEntries()
 	return {
 		UnitPopupRemoveBnetFriendButtonMixin,
 		UnitPopupBnetBlockButtonMixin,
-		UnitPopupCancelButtonMixin,
+		UnitPopupGlueReportButtonMixin,
 	}
 end
 
 UnitPopupMenuGuild = CreateFromMixins(UnitPopupTopLevelMenuMixin)
 UnitPopupManager:RegisterMenu("GUILD", UnitPopupMenuGuild);
-function UnitPopupMenuGuild:GetMenuButtons()
+function UnitPopupMenuGuild:GetEntries()
 	return { 
 		UnitPopupTargetButtonMixin, 
 		UnitPopupAddGuildBtagFriendButtonMixin,
@@ -281,13 +275,12 @@ function UnitPopupMenuGuild:GetMenuButtons()
 		UnitPopupIgnoreButtonMixin,
 		UnitPopupCopyCharacterNameButtonMixin,
 		UnitPopupGuildLeaveButtonMixin,
-		UnitPopupCancelButtonMixin,
 	}
 end 
 
 UnitPopupMenuGuildOffline = CreateFromMixins(UnitPopupTopLevelMenuMixin)
 UnitPopupManager:RegisterMenu("GUILD_OFFLINE", UnitPopupMenuGuildOffline);
-function UnitPopupMenuGuildOffline:GetMenuButtons()
+function UnitPopupMenuGuildOffline:GetEntries()
 	return { 
 		UnitPopupAddGuildBtagFriendButtonMixin,
 		UnitPopupInteractSubsectionTitle,
@@ -296,13 +289,12 @@ function UnitPopupMenuGuildOffline:GetMenuButtons()
 		UnitPopupIgnoreButtonMixin,
 		UnitPopupCopyCharacterNameButtonMixin,
 		UnitPopupGuildLeaveButtonMixin,
-		UnitPopupCancelButtonMixin,
 	}
 end
 
 UnitPopupMenuChatRoster = CreateFromMixins(UnitPopupTopLevelMenuMixin);
 UnitPopupManager:RegisterMenu("CHAT_ROSTER", UnitPopupMenuChatRoster);
-function UnitPopupMenuChatRoster:GetMenuButtons()
+function UnitPopupMenuChatRoster:GetEntries()
 	return {
 		UnitPopupVoiceChatMicrophoneVolumeButtonMixin, 
 		UnitPopupVoiceChatSpeakerVolumeButtonMixin,
@@ -319,13 +311,12 @@ function UnitPopupMenuChatRoster:GetMenuButtons()
 		UnitPopupReportChatButtonMixin,
 		UnitPopupCopyCharacterNameButtonMixin,
 		UnitPopupVoiceChatSettingsButtonMixin,
-		UnitPopupCloseButtonMixin,
 	}
 end
 
 UnitPopupMenuVehicle = CreateFromMixins(UnitPopupTopLevelMenuMixin);
 UnitPopupManager:RegisterMenu("VEHICLE", UnitPopupMenuVehicle);
-function UnitPopupMenuVehicle:GetMenuButtons()
+function UnitPopupMenuVehicle:GetEntries()
 	return {
 		UnitPopupRaidTargetButtonMixin, 
 		UnitPopupSetFocusButtonMixin, 
@@ -334,13 +325,12 @@ function UnitPopupMenuVehicle:GetMenuButtons()
 		UnitPopupMovePlayerFrameButtonMixin,
 		UnitPopupMoveTargetFrameButtonMixin,
 		UnitPopupEnterEditModeMixin,
-		UnitPopupCancelButtonMixin, 
 	}
 end
 
 UnitPopupMenuTarget = CreateFromMixins(UnitPopupTopLevelMenuMixin);
 UnitPopupManager:RegisterMenu("TARGET", UnitPopupMenuTarget);
-function UnitPopupMenuTarget:GetMenuButtons()
+function UnitPopupMenuTarget:GetEntries()
 	return {
 		UnitPopupRaidTargetButtonMixin, 
 		UnitPopupSetFocusButtonMixin, 
@@ -351,23 +341,21 @@ function UnitPopupMenuTarget:GetMenuButtons()
 		UnitPopupMovePlayerFrameButtonMixin,
 		UnitPopupMoveTargetFrameButtonMixin,
 		UnitPopupEnterEditModeMixin,
-		UnitPopupCancelButtonMixin, 
 	}
 end
 
 UnitPopupMenuArenaEnemy = CreateFromMixins(UnitPopupTopLevelMenuMixin);
 UnitPopupManager:RegisterMenu("ARENAENEMY", UnitPopupMenuArenaEnemy);
-function UnitPopupMenuArenaEnemy:GetMenuButtons()
+function UnitPopupMenuArenaEnemy:GetEntries()
 	return {
 		UnitPopupSetFocusButtonMixin, 
 		UnitPopupOtherSubsectionTitle, 
-		UnitPopupCancelButtonMixin, 
 	}
 end
 
 UnitPopupMenuFocus = CreateFromMixins(UnitPopupTopLevelMenuMixin);
 UnitPopupManager:RegisterMenu("FOCUS", UnitPopupMenuFocus);
-function UnitPopupMenuFocus:GetMenuButtons()
+function UnitPopupMenuFocus:GetEntries()
 	return {
 		UnitPopupRaidTargetButtonMixin,
 		UnitPopupClearFocusButtonMixin,
@@ -376,37 +364,48 @@ function UnitPopupMenuFocus:GetMenuButtons()
 		UnitPopupLargeFocusButtonMixin,
 		UnitPopupMoveFocusButtonMixin,
 		UnitPopupEnterEditModeMixin,
-		UnitPopupCancelButtonMixin, 
 	}
 end
 
 UnitPopupMenuBoss = CreateFromMixins(UnitPopupTopLevelMenuMixin);
 UnitPopupManager:RegisterMenu("BOSS", UnitPopupMenuBoss);
-function UnitPopupMenuBoss:GetMenuButtons()
+function UnitPopupMenuBoss:GetEntries()
 	return {
 		UnitPopupRaidTargetButtonMixin,
 		UnitPopupSetFocusButtonMixin,
 		UnitPopupOtherSubsectionTitle,
 		UnitPopupEnterEditModeMixin,
-		UnitPopupCancelButtonMixin,
 	}
 end
 
--- Fill out in UnitPopupMenus
 UnitPopupMenuCommunitiesWowMember = CreateFromMixins(UnitPopupTopLevelMenuMixin);
 UnitPopupManager:RegisterMenu("COMMUNITIES_WOW_MEMBER", UnitPopupMenuCommunitiesWowMember);
-function UnitPopupMenuCommunitiesWowMember:GetMenuButtons()
+function UnitPopupMenuCommunitiesWowMember:GetEntries()
+	error(PROJECT_IMPL_REQUIRED);
 end
 
--- Fill out in UnitPopupMenus
 UnitPopupMenuCommunitiesGuildMember = CreateFromMixins(UnitPopupTopLevelMenuMixin);
 UnitPopupManager:RegisterMenu("COMMUNITIES_GUILD_MEMBER", UnitPopupMenuCommunitiesGuildMember);
-function UnitPopupMenuCommunitiesGuildMember:GetMenuButtons()
+function UnitPopupMenuCommunitiesGuildMember:GetEntries()
+	error(PROJECT_IMPL_REQUIRED);
+end
+
+UnitPopupGuildGuilds = CreateFromMixins(UnitPopupTopLevelMenuMixin);
+UnitPopupManager:RegisterMenu("GUILDS_GUILD", UnitPopupGuildGuilds);
+function UnitPopupGuildGuilds:GetEntries()
+	return {
+		UnitPopupClearCommunityNotificationButtonMixin,
+		UnitPopupGuildInviteButtonMixin, 
+		UnitPopupGuildSettingButtonMixin, 
+		UnitPopupGuildRecruitmentSettingButtonMixin, 
+		UnitPopupCommunityNotificationButtonMixin,
+		UnitPopupGuildGuildsLeaveButtonMixin,
+	}
 end
 
 UnitPopupMenuCommunitiesMember = CreateFromMixins(UnitPopupTopLevelMenuMixin);
 UnitPopupManager:RegisterMenu("COMMUNITIES_MEMBER", UnitPopupMenuCommunitiesMember);
-function UnitPopupMenuCommunitiesMember:GetMenuButtons()
+function UnitPopupMenuCommunitiesMember:GetEntries()
 	return {
 		UnitPopupCommunitiesBtagFriendButtonMixin,
 		UnitPopupSubsectionSeperatorMixin, 
@@ -426,7 +425,7 @@ end
 
 UnitPopupMenuCommunitiesCommunity = CreateFromMixins(UnitPopupTopLevelMenuMixin);
 UnitPopupManager:RegisterMenu("COMMUNITIES_COMMUNITY", UnitPopupMenuCommunitiesCommunity);
-function UnitPopupMenuCommunitiesCommunity:GetMenuButtons()
+function UnitPopupMenuCommunitiesCommunity:GetEntries()
 	return {
 		UnitPopupClearCommunityNotificationButtonMixin,
 		UnitPopupCommunityInviteButtonMixin, 
@@ -439,7 +438,7 @@ end
 
 UnitPopupMenuRaidTargetIcon = CreateFromMixins(UnitPopupTopLevelMenuMixin);
 UnitPopupManager:RegisterMenu("RAID_TARGET_ICON", UnitPopupMenuRaidTargetIcon);
-function UnitPopupMenuRaidTargetIcon:GetMenuButtons()
+function UnitPopupMenuRaidTargetIcon:GetEntries()
 	return { 
 		UnitPopupRaidTargetButtonMixin,
 	}
@@ -447,28 +446,25 @@ end
 
 UnitPopupMenuWorldStateScore = CreateFromMixins(UnitPopupTopLevelMenuMixin)
 UnitPopupManager:RegisterMenu("WORLD_STATE_SCORE", UnitPopupMenuWorldStateScore);
-function UnitPopupMenuWorldStateScore:GetMenuButtons()
+function UnitPopupMenuWorldStateScore:GetEntries()
 	return {
 		UnitPopupReportPvpScoreboardButtonMixin, 
-		UnitPopupCancelButtonMixin, 
 	}
 end
 
 UnitPopupMenuPvpScoreboard = CreateFromMixins(UnitPopupTopLevelMenuMixin)
 UnitPopupManager:RegisterMenu("PVP_SCOREBOARD", UnitPopupMenuPvpScoreboard);
-function UnitPopupMenuPvpScoreboard:GetMenuButtons()
+function UnitPopupMenuPvpScoreboard:GetEntries()
 	return {
 		UnitPopupReportPvpScoreboardButtonMixin,
-		UnitPopupCancelButtonMixin,
 	}
 end
 
 UnitPopupMenuGluePartyMember = CreateFromMixins(UnitPopupTopLevelMenuMixin)
 UnitPopupManager:RegisterMenu("GLUE_PARTY_MEMBER", UnitPopupMenuGluePartyMember);
-function UnitPopupMenuGluePartyMember:GetMenuButtons()
+function UnitPopupMenuGluePartyMember:GetEntries()
 	return {
 		UnitPopupGlueLeavePartyButton,
 		UnitPopupGlueRemovePartyButton, 
-		UnitPopupCancelButtonMixin,
 	}
 end

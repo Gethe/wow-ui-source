@@ -110,11 +110,10 @@ function BaseBagSlotButtonMixin:OnEnterInternal()
 			end
 			local bagID = self:GetBagID();
 			if ContainerFrame_CanContainerUseFilterMenu(bagID) then
-				for i, flag in ContainerFrameUtil_EnumerateBagGearFilters() do
-					if C_Container.GetBagSlotFlag(bagID, flag) then
-						GameTooltip:AddLine(BAG_FILTER_ASSIGNED_TO:format(BAG_FILTER_LABELS[flag]));
-						break;
-					end
+				local filterList = ContainerFrameSettingsManager:GenerateFilterList(bagID);
+				if filterList then
+					local wrapText = true;
+					GameTooltip_AddNormalLine(GameTooltip, BAG_FILTER_ASSIGNED_TO:format(filterList), wrapText);
 				end
 			end
 		else
@@ -433,7 +432,8 @@ function BagsBarMixin:OnLoad()
 	self.bagBarExpandToggleInitialWidth = BagBarExpandToggle:GetWidth();
 	self.bagBarExpandToggleInitialHeight = BagBarExpandToggle:GetHeight();
 
-	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.Bags) then
+	local bagsUIDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.BagsUIDisabled);
+	if bagsUIDisabled then
 		self:Hide();
 		return;
 	end

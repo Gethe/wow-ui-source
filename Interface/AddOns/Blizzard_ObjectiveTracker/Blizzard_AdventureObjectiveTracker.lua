@@ -5,21 +5,48 @@ local NavigableContentTrackingTargets = {
 	[Enum.ContentTrackingTargetType.JournalEncounter] = true,
 };
 
+local settings = {
+	headerText = ADVENTURE_TRACKING_MODULE_HEADER_TEXT,
+	events = { "CONTENT_TRACKING_UPDATE", "TRANSMOG_COLLECTION_SOURCE_ADDED", "SUPER_TRACKING_CHANGED", "TRACKING_TARGET_INFO_UPDATE" },
+	lineTemplate = "ObjectiveTrackerAnimLineTemplate",
+	blockTemplate = "ObjectiveTrackerAnimBlockTemplate",
+};
 
-ADVENTURE_TRACKER_MODULE = ObjectiveTracker_GetModuleInfoTable("ADVENTURE_TRACKER_MODULE");
-ADVENTURE_TRACKER_MODULE.updateReasonModule = 	OBJECTIVE_TRACKER_UPDATE_MODULE_ADVENTURE;
-ADVENTURE_TRACKER_MODULE.updateReasonEvents = 	OBJECTIVE_TRACKER_UPDATE_TARGET_INFO +
-												OBJECTIVE_TRACKER_UPDATE_TRANSMOG_COLLECTED +
-												OBJECTIVE_TRACKER_UPDATE_SUPER_TRACK_CHANGED;
-ADVENTURE_TRACKER_MODULE:SetHeader(ObjectiveTrackerFrame.BlocksFrame.AdventureHeader, ADVENTURE_TRACKING_MODULE_HEADER_TEXT, nil);
+AdventureObjectiveTrackerMixin = CreateFromMixins(ObjectiveTrackerModuleMixin, settings);
 
-local LINE_TYPE_ANIM = { template = "QuestObjectiveAnimLineTemplate", freeLines = { } };
+function AdventureObjectiveTrackerMixin:InitModule()
+	-- POIButtonOwnerTemplate
+	self:Init();
+end
 
-function ADVENTURE_TRACKER_MODULE:OnBlockHeaderClick(block, mouseButton)
+function AdventureObjectiveTrackerMixin:OnEvent(event, ...)
+	self.lastEvent = event;
+	if event == "TRANSMOG_COLLECTION_SOURCE_ADDED" then
+		local transmogSourceId = ...;
+		if C_ContentTracking.IsTracking(Enum.ContentTrackingType.Appearance, transmogSourceId) then
+			self:OnTrackableItemCollected(Enum.ContentTrackingType.Appearance, transmogSourceId);
+		end
+	elseif event == "SUPER_TRACKING_CHANGED" then
+		-- Before, processing this would not call StopTrackingCollectedItems, which now always happens in the Refresh.
+		-- Not sure if this will cause problems.
+		self:MarkDirty();
+	elseif event == "CONTENT_TRACKING_UPDATE" then
+		local trackableType, trackableID, added = ...;
+		if trackableType == Enum.ContentTrackingType.Appearance then
+			if added then
+				local blockKey = ContentTrackingUtil.MakeCombinedID(trackableType, trackableID);
+				self:SetNeedsFanfare(blockKey);
+			end
+			self:MarkDirty();
+		end
+	elseif event == "TRACKING_TARGET_INFO_UPDATE" then
+		self:MarkDirty();
+	end
+end
+
+function AdventureObjectiveTrackerMixin:OnBlockHeaderClick(block, mouseButton)
 	if not ContentTrackingUtil.ProcessChatLink(block.trackableType, block.trackableID) then
 		if mouseButton ~= "RightButton" then
-			CloseDropDownMenus();
-
 			if ContentTrackingUtil.IsTrackingModifierDown() then
 				C_ContentTracking.StopTracking(block.trackableType, block.trackableID, Enum.ContentTrackingStopType.Manual);
 			elseif (block.trackableType == Enum.ContentTrackingType.Appearance) and IsModifiedClick("DRESSUP") then
@@ -27,21 +54,31 @@ function ADVENTURE_TRACKER_MODULE:OnBlockHeaderClick(block, mouseButton)
 			elseif block.targetType == Enum.ContentTrackingTargetType.Achievement then
 				OpenAchievementFrameToAchievement(block.targetID);
 			elseif block.targetType == Enum.ContentTrackingTargetType.Profession then
-				AdventureObjectiveTracker_ClickProfessionTarget(block.targetID);
+				self:ClickProfessionTarget(block.targetID);
 			else
 				ContentTrackingUtil.OpenMapToTrackable(block.trackableType, block.trackableID);
 			end
 
 			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		else
-			ObjectiveTracker_ToggleDropDown(block, AdventureObjectiveTracker_OnOpenDropDown);
+			MenuUtil.CreateContextMenu(self:GetContextMenuParent(), function(owner, rootDescription)
+				rootDescription:SetTag("MENU_OBJECTIVE_TRACKER", block);
+
+				rootDescription:CreateTitle(block.name);
+				if block.trackableType == Enum.ContentTrackingType.Appearance then
+					rootDescription:CreateButton(CONTENT_TRACKING_OPEN_JOURNAL_OPTION, function()
+						self:OpenToAppearance(block.trackableID);
+					end);
+				end
+				rootDescription:CreateButton(OBJECTIVES_STOP_TRACKING, function()
+					self:Untrack(block.trackableType, block.trackableID);
+				end);
+			end);
 		end
 	end
 end
 
-function ADVENTURE_TRACKER_MODULE:OnBlockHeaderEnter(block)
-	DEFAULT_OBJECTIVE_TRACKER_MODULE:OnBlockHeaderEnter(block);
-
+function AdventureObjectiveTrackerMixin:OnBlockHeaderEnter(block)
 	if block.trackableType == Enum.ContentTrackingType.Appearance then
 		local function UpdateCursor()
 			if IsModifiedClick("DRESSUP") then
@@ -63,9 +100,7 @@ function ADVENTURE_TRACKER_MODULE:OnBlockHeaderEnter(block)
 	end
 end
 
-function ADVENTURE_TRACKER_MODULE:OnBlockHeaderLeave(block)
-	DEFAULT_OBJECTIVE_TRACKER_MODULE:OnBlockHeaderLeave(block);
-
+function AdventureObjectiveTrackerMixin:OnBlockHeaderLeave(block)
 	if self.updateFrame then
 		self.updateFrame:SetScript("OnUpdate", nil);
 	end
@@ -73,94 +108,25 @@ function ADVENTURE_TRACKER_MODULE:OnBlockHeaderLeave(block)
 	ResetCursor();
 end
 
-function ADVENTURE_TRACKER_MODULE:GetDebugReportInfo(block)
+function AdventureObjectiveTrackerMixin:GetDebugReportInfo(block)
 	return { debugType = "AdventureTracked", trackableType = block.trackableType, id = block.trackableID, };
 end
 
-function AdventureObjectiveTracker_ClickProfessionTarget(recipeID)
+function AdventureObjectiveTrackerMixin:ClickProfessionTarget(recipeID)
 	if not ProfessionsUtil.OpenProfessionFrameToRecipe(recipeID) then
 		UIErrorsFrame:AddExternalErrorMessage(ADVENTURE_TRACKING_OPEN_PROFESSION_ERROR_TEXT)
 	end
 end
 
-function AdventureObjectiveTracker_OnOpenDropDown(self)
-	local block = self.activeFrame;
-
-	local info = UIDropDownMenu_CreateInfo();
-	info.text = block.name;
-	info.isTitle = 1;
-	info.notCheckable = 1;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-
-	info = UIDropDownMenu_CreateInfo();
-	info.notCheckable = 1;
-
-	if block.trackableType == Enum.ContentTrackingType.Appearance then
-		info.text = CONTENT_TRACKING_OPEN_JOURNAL_OPTION;
-		info.func = AdventureObjectiveTracker_OpenToAppearance;
-		info.arg1 = block.trackableID;
-		info.checked = false;
-		UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-	end
-
-	info.text = OBJECTIVES_STOP_TRACKING;
-	info.func = AdventureObjectiveTracker_Untrack;
-	info.arg1 = block.trackableType;
-	info.arg2 = block.trackableID;
-	info.checked = false;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-end
-
-function AdventureObjectiveTracker_OpenToAppearance(unused_dropDownButton, appearanceID)
+function AdventureObjectiveTrackerMixin:OpenToAppearance(appearanceID)
 	TransmogUtil.OpenCollectionToItem(appearanceID);
 end
 
-function AdventureObjectiveTracker_Untrack(unused_dropDownButton, trackableType, id)
+function AdventureObjectiveTrackerMixin:Untrack(trackableType, id)
 	C_ContentTracking.StopTracking(trackableType, id, Enum.ContentTrackingStopType.Manual);
 end
 
-function AdventureObjectiveTracker_AnimateReward(trackableID, anchor, posIndex, trackerModule)
-	local info = C_TransmogCollection.GetSourceInfo(trackableID);
-	local icon = C_TransmogCollection.GetSourceIcon(trackableID);
-	local item = Item:CreateFromItemID(info.itemID);
-
-	local rewardData = { };
-	rewardData.posIndex = posIndex
-	rewardData.rewards = { };
-
-	local t = { };
-	t.label = item:GetItemName();
-	t.texture = icon;
-	t.count = 1;
-	t.font = "GameFontHighlightSmall";
-	table.insert(rewardData.rewards, t);
-	
-	AdventureObjectiveTrackerBonusRewardsFrame:AnimateRewardOnAnchor(anchor, rewardData, trackableID, trackerModule);
-end
-
-function ADVENTURE_TRACKER_MODULE:UpdatePOI(trackableType, trackableID)
-	local block = self:GetExistingBlock(ContentTrackingUtil.MakeCombinedID(trackableType, trackableID));
-	if not block or not block.endLocationUIMap then
-		-- Don't show a poiButton for trackables that have no location.
-		return true;
-	end
-
-	if block then
-		local poiButton = ObjectiveTrackerFrame.BlocksFrame:GetButtonForTrackable(trackableType, trackableID);
-		if poiButton then
-			poiButton:SetPoint("TOPRIGHT", block.HeaderText, "TOPLEFT", -6, 2);
-		end
-	end
-
-	return true;
-end
-
-function ADVENTURE_TRACKER_MODULE:UpdatePOIs(unused_numPOINumeric)
-	self:EnumerateTrackables(GenerateClosure(self.UpdatePOI, self));
-	return 0;
-end
-
-function ADVENTURE_TRACKER_MODULE:ProcessTrackingEntry(trackableType, trackableID)
+function AdventureObjectiveTrackerMixin:ProcessTrackingEntry(trackableType, trackableID)
 	local targetType, targetID = C_ContentTracking.GetCurrentTrackingTarget(trackableType, trackableID);
 	if targetType then
 		local block = self:GetBlock(ContentTrackingUtil.MakeCombinedID(trackableType, trackableID));
@@ -169,7 +135,7 @@ function ADVENTURE_TRACKER_MODULE:ProcessTrackingEntry(trackableType, trackableI
 
 		local title = C_ContentTracking.GetTitle(trackableType, trackableID);
 		block.name = title;
-		self:SetBlockHeader(block, title);
+		block:SetHeader(title);
 
 		block.targetType = targetType;
 		block.targetID = targetID;
@@ -180,28 +146,28 @@ function ADVENTURE_TRACKER_MODULE:ProcessTrackingEntry(trackableType, trackableI
 
 		local objectiveText = C_ContentTracking.GetObjectiveText(targetType, targetID);
 		if objectiveText then
-			block.objective = self:AddObjective(block, 1, objectiveText, LINE_TYPE_ANIM, true, OBJECTIVE_DASH_STYLE_SHOW, OBJECTIVE_TRACKER_COLOR["Normal"]);
+			block.objective = block:AddObjective(1, objectiveText, LINE_TYPE_ANIM, true, OBJECTIVE_DASH_STYLE_SHOW, OBJECTIVE_TRACKER_COLOR["Normal"]);
 		else
-			block.objective = self:AddObjective(block, 1, CONTENT_TRACKING_RETRIEVING_INFO, LINE_TYPE_ANIM, nil, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["Normal"]);
+			block.objective = block:AddObjective(1, CONTENT_TRACKING_RETRIEVING_INFO, LINE_TYPE_ANIM, nil, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["Normal"]);
 		end
 
 		if NavigableContentTrackingTargets[targetType] then
 			-- If data is still pending, show nothing extra and wait for it to load.
 			if objectiveText and (trackingResult ~= Enum.ContentTrackingResult.DataPending) then
 				if not block.endLocationUIMap then
-					self:AddObjective(block, 2, CONTENT_TRACKING_LOCATION_UNAVAILABLE, nil, nil, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["Normal"]);
+					block:AddObjective(2, CONTENT_TRACKING_LOCATION_UNAVAILABLE, nil, nil, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["Normal"]);
 				else
 					local navigableTrackingResult, isNavigable = C_ContentTracking.IsNavigable(trackableType, trackableID);
 					if (navigableTrackingResult == Enum.ContentTrackingResult.Failure) or
 						(navigableTrackingResult == Enum.ContentTrackingResult.Success and not isNavigable) then
-						self:AddObjective(block, 2, CONTENT_TRACKING_ROUTE_UNAVAILABLE, nil, nil, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["Normal"]);
+						block:AddObjective(2, CONTENT_TRACKING_ROUTE_UNAVAILABLE, nil, nil, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["Normal"]);
 					else
 						local superTrackedType, superTrackedID = C_SuperTrack.GetSuperTrackedContent();
 						if (trackableType == superTrackedType) and (trackableID == superTrackedID) then
 							local waypointText = C_ContentTracking.GetWaypointText(trackableType, trackableID);
 							if waypointText then
 								local formattedText = OPTIONAL_QUEST_OBJECTIVE_DESCRIPTION:format(waypointText);
-								self:AddObjective(block, 2, formattedText, nil, nil, OBJECTIVE_DASH_STYLE_SHOW, OBJECTIVE_TRACKER_COLOR["Normal"]);
+								block:AddObjective(2, formattedText, nil, nil, OBJECTIVE_DASH_STYLE_SHOW, OBJECTIVE_TRACKER_COLOR["Normal"]);
 							end
 						end
 					end
@@ -209,50 +175,33 @@ function ADVENTURE_TRACKER_MODULE:ProcessTrackingEntry(trackableType, trackableI
 			end
 		end
 
-		block.objective.Glow.Anim:SetScript("OnFinished" ,
-			function() 
-				block.objective.FadeOutAnim:Play();
-			end
-		);
-
-		block.objective.FadeOutAnim:SetScript("OnFinished" ,
-			function() 
-				block.module:FreeLine(block, block.objective);
-			end
-		);
-
-		block:SetHeight(block.height);
-
-		if ObjectiveTracker_AddBlock(block) then
-			block:Show();
-			self:FreeUnusedLines(block);
-		else
-			block.used = false;
+		if not self:LayoutBlock(block) then
 			return false;
 		end
+		
+		if ObjectiveTrackerManager:CanShowPOIs(self) then
+			local poiButton = self:GetButtonForTrackable(trackableType, trackableID);
+			if poiButton then
+				poiButton:SetPoint("TOPRIGHT", block.HeaderText, "TOPLEFT", -7, 5);
+				block.poiButton = poiButton;
+			end
+		end
 	end
-
+	
 	return true;
 end
 
-function ADVENTURE_TRACKER_MODULE:OnFreeBlock(block)
+function AdventureObjectiveTrackerMixin:OnFreeBlock(block)
 	block.trackableType = nil;
 	block.name = nil;
 	block.targetType = nil;
 	block.targetID = nil;
 	block.endLocationUIMap = nil;
 	block.objective = nil;
+	block.poiButton = nil;
 end
 
-function ADVENTURE_TRACKER_MODULE:OnFreeTypedLine(line)
-	if line.Glow then
-		line.Glow.Anim:SetScript("OnFinished" , nil);
-		line.FadeOutAnim:SetScript("OnFinished" , nil);
-	end
-	QUEST_TRACKER_MODULE:OnFreeTypedLine(line);
-end
-
-function ADVENTURE_TRACKER_MODULE:EnumerateTrackables(callback)
+function AdventureObjectiveTrackerMixin:EnumerateTrackables(callback)
 	for i, trackableType in ipairs(C_ContentTracking.GetCollectableSourceTypes()) do
 		local trackedIDs = C_ContentTracking.GetTrackedIDs(trackableType);
 		for j, trackableID in ipairs(trackedIDs) do
@@ -263,7 +212,7 @@ function ADVENTURE_TRACKER_MODULE:EnumerateTrackables(callback)
 	end
 end
 
-function ADVENTURE_TRACKER_MODULE:StopTrackingCollectedItems()
+function AdventureObjectiveTrackerMixin:StopTrackingCollectedItems()
 	if not self.collectedIds then
 		return;
 	end
@@ -279,34 +228,35 @@ function ADVENTURE_TRACKER_MODULE:StopTrackingCollectedItems()
 	self.collectedIds = nil;
 end
 
-function ADVENTURE_TRACKER_MODULE:OnTrackableItemCollected(trackableType, trackableID)
-	local block = self:GetBlock(ContentTrackingUtil.MakeCombinedID(trackableType, trackableID));
+function AdventureObjectiveTrackerMixin:OnTrackableItemCollected(trackableType, trackableID)
+	local block = self:GetExistingBlock(ContentTrackingUtil.MakeCombinedID(trackableType, trackableID));
 
-	if block and block.objective then
-		block.objective.Check:Show();
-		block.objective.Sheen.Anim:Play();
-		block.objective.Glow.Anim:Play();
-		block.objective.CheckFlash.Anim:Play();
-		block.objective.block = block;
-		block.objective.state = "ANIMATING";
-		AdventureObjectiveTracker_AnimateReward(trackableID, block, block.posIndex, self);
-		PlaySound(SOUNDKIT.CONTENT_TRACKING_ITEM_ACQUIRED_TOAST);
-	elseif C_ContentTracking.IsTracking(trackableType, trackableID) and self.lastBlock then
-		--If no block is found, but we are tracking the item, and the last block is visible, show animation at the bottom of the tracker module
-		AdventureObjectiveTracker_AnimateReward(trackableID, self.lastBlock, 0, self);
-		AdventureObjectiveTrackerBonusRewardsFrame:SetPoint("TOPRIGHT", self.lastBlock, "BOTTOMLEFT");
-		PlaySound(SOUNDKIT.CONTENT_TRACKING_ITEM_ACQUIRED_TOAST);
-	elseif C_ContentTracking.IsTracking(trackableType, trackableID) and (ObjectiveTrackerBlocksFrame.AdventureHeader:IsShown() and self:IsCollapsed()) then
-		--If no block is found, but we are tracking the item, and the header is visible and collapsed, show animation next to the module header
-		AdventureObjectiveTracker_AnimateReward(trackableID, ObjectiveTrackerBlocksFrame.AdventureHeader, 0, self);
-		AdventureObjectiveTrackerBonusRewardsFrame:SetPoint("TOPRIGHT", ObjectiveTrackerBlocksFrame.AdventureHeader, "TOPLEFT");
-		PlaySound(SOUNDKIT.CONTENT_TRACKING_ITEM_ACQUIRED_TOAST);
-	elseif C_ContentTracking.IsTracking(trackableType, trackableID) then
-		--If no block or header is found, but we are tracking the item, show animation at the bottom of the objective tracker
-		AdventureObjectiveTracker_AnimateReward(trackableID, ObjectiveTrackerFrame, 0, self);
-		AdventureObjectiveTrackerBonusRewardsFrame:SetPoint("TOPRIGHT", ObjectiveTrackerFrame, "BOTTOMLEFT", 20, 16);
-		PlaySound(SOUNDKIT.CONTENT_TRACKING_ITEM_ACQUIRED_TOAST);
+	local info = C_TransmogCollection.GetSourceInfo(trackableID);
+	local icon = C_TransmogCollection.GetSourceIcon(trackableID);
+	local item = Item:CreateFromItemID(info.itemID);
+
+	local rewards = { };
+	local t = { };
+	t.label = item:GetItemName();
+	t.texture = icon;
+	t.count = 1;
+	t.font = "GameFontHighlightSmall";
+	table.insert(rewards, t);
+	
+	local callback = nil;
+	if block then
+		if block.objective then
+			block.objective.Dash:Hide();
+			block.objective:SetState(ObjectiveTrackerAnimLineState.Completing);
+		end
+		self:AddBlockToCache(block);
+		if block.poiButton then
+			block.poiButton:Hide();
+		end
+		callback = GenerateClosure(self.OnShowRewardsToastDone, self, block);
 	end
+
+	ObjectiveTrackerManager:ShowRewardsToast(rewards, self, block, COLLECTED, callback);
 
 	if not self.collectedIds then
 		self.collectedIds = { };
@@ -314,27 +264,18 @@ function ADVENTURE_TRACKER_MODULE:OnTrackableItemCollected(trackableType, tracka
 	self.collectedIds[trackableID] = trackableType;
 end
 
-function ADVENTURE_TRACKER_MODULE:RefreshAll()
-	self:BeginLayout();
-	self:EnumerateTrackables(GenerateClosure(self.ProcessTrackingEntry, self));
-	self:EndLayout();
+function AdventureObjectiveTrackerMixin:OnShowRewardsToastDone(block)
+	self:RemoveBlockFromCache(block);
 end
 
-function ADVENTURE_TRACKER_MODULE:Update()
+function AdventureObjectiveTrackerMixin:LayoutContents()
+	-- POIButtonOwnerTemplate
+	self:ResetUsage();
+
 	if not ContentTrackingUtil.IsContentTrackingEnabled() then
-		self:BeginLayout();
-		self:EndLayout();
 		return;
 	end
-
-	if OBJECTIVE_TRACKER_UPDATE_REASON == OBJECTIVE_TRACKER_UPDATE_SUPER_TRACK_CHANGED then
-		self:RefreshAll();
-		return;
-	elseif OBJECTIVE_TRACKER_UPDATE_REASON == OBJECTIVE_TRACKER_UPDATE_TRANSMOG_COLLECTED then
-		self:OnTrackableItemCollected(Enum.ContentTrackingType.Appearance, OBJECTIVE_TRACKER_UPDATE_ID);
-		return;
-	end
-
+	
 	self:StopTrackingCollectedItems();
-	self:RefreshAll();
+	self:EnumerateTrackables(GenerateClosure(self.ProcessTrackingEntry, self));
 end

@@ -1,0 +1,111 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="CharacterSelectListTemplate" mixin="CharacterSelectListMixin" inherits="CallbackRegistrantTemplate" enableMouse="true" frameLevel="4" virtual="true">
+		<Size x="386" y="1"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Backdrop" atlas="glues-characterselect-card-all-bg" setAllPoints="true"/>
+				<FontString parentKey="UndeleteLabel" inherits="GlueFontDisableLarge" hidden="true" text="UNDELETE_LABEL">
+					<Size x="350" y="25"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-12"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="UndeleteRealmLabel" inherits="GlueFontNormalLarge" hidden="true">
+					<Size x="350" y="25"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.UndeleteLabel" relativePoint="BOTTOM" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="UndeleteRealmBackdrop" atlas="glues-characterselect-listrealm-bg" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.UndeleteRealmLabel" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<EditBox parentKey="SearchBox" mixin="CharSelectSearchMixin" inherits="SearchBoxTemplate" letters="80">
+				<Size x="347" y="24"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="19" y="-25"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnTextChanged method="OnTextChanged"/>
+				</Scripts>
+			</EditBox>
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-75" y="-67"/>
+					<Anchor point="BOTTOMRIGHT" x="-32" y="83"/>
+				</Anchors>
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.ScrollBox" relativePoint="TOP" x="0" y="-2"/>
+					<Anchor point="BOTTOM" relativeKey="$parent.ScrollBox" relativePoint="BOTTOM" x="0" y="4"/>
+					<Anchor point="RIGHT" x="-16" y="0"/>
+				</Anchors>
+			</EventFrame>
+			<!-- Has a global name to support timerunning behavior -->
+			<Button name="CharSelectCreateCharacterButton" parentKey="CreateCharacterButton" inherits="GlueButtonTemplate" text="CREATE_CHARACTER">
+				<Size x="205" y="42"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="-57" y="23"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="NewFeatureFrame" inherits="NewFeatureLabelNoAnimateTemplate">
+						<Anchors>
+							<Anchor point="RIGHT" relativePoint="TOPLEFT" x="30" y="-6"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+			</Button>
+			<Button parentKey="DeleteCharacterButton" inherits="UIButtonTemplate">
+				<Size x="42" y="42"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.CreateCharacterButton" relativePoint="RIGHT" x="6" y="0"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="buttonArtKit" value="128-redbutton-delete" type="string"/>
+					<KeyValue key="tooltipText" value="DELETE_CHARACTER" type="global"/>
+					<KeyValue key="tooltipTextColor" value="HIGHLIGHT_FONT_COLOR" type="global"/>
+					<KeyValue key="tooltipAnchor" value="ANCHOR_TOP" type="string"/>
+				</KeyValues>
+			</Button>
+			<!-- Has a global name to support legacy behavior -->
+			<Button name="CharSelectUndeleteCharacterButton" parentKey="UndeleteButton" inherits="BigRedRefreshButtonTemplate" hidden="true" motionScriptsWhileDisabled="true">
+				<KeyValues>
+					<KeyValue key="tooltipText" value="UNDELETE_TOOLTIP" type="global"/>
+					<KeyValue key="tooltipTextColor" value="HIGHLIGHT_FONT_COLOR" type="global"/>
+					<KeyValue key="tooltipAnchor" value="ANCHOR_TOP" type="string"/>
+					<KeyValue key="onClickSoundKit" value="SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON" type="global"/>
+				</KeyValues>
+				<Size x="42" y="42"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.DeleteCharacterButton" relativePoint="RIGHT" x="5" y="0"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="BackToActiveButton" inherits="GlueButtonTemplate" hidden="true" text="CANCEL">
+				<Size x="232" y="42"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="23"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="CharacterSelectListDragIndicatorTemplate" virtual="true">
+		<Size x="1" y="10"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Texture" atlas="glues-characterSelect-divider"/>
+			</Layer>
+		</Layers>
+	</Frame>
+</Ui>

@@ -14,8 +14,8 @@ VERTICAL_MULTI_BAR_VERTICAL_SPACING = 20;
 VERTICAL_MULTI_BAR_HORIZONTAL_SPACING = 2;
 VERTICAL_MULTI_BAR_MIN_SCALE = 0.8333;
 
-function MultiActionButtonDown (bar, id)
-	local bar = _G[bar];
+function MultiActionButtonDown (barName, id)
+	local bar = _G[barName];
 	local button = bar.actionButtons[id];
 	if ( button:GetButtonState() == "NORMAL" ) then
 		button:SetButtonState("PUSHED");
@@ -23,8 +23,8 @@ function MultiActionButtonDown (bar, id)
 	TryUseActionButton(button, true);
 end
 
-function MultiActionButtonUp (bar, id)
-	local bar = _G[bar];
+function MultiActionButtonUp (barName, id)
+	local bar = _G[barName];
 	local button = bar.actionButtons[id];
 	if ( button:GetButtonState() == "PUSHED" ) then
 		button:SetButtonState("NORMAL");

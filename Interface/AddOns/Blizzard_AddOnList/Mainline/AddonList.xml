@@ -137,6 +137,11 @@
 			<Anchor point="CENTER" x="0" y="24"/>
 		</Anchors>
 		<Frames>
+			<DropdownButton parentKey="Dropdown" inherits="WowStyle1DropdownTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="12" y="-30"/>
+				</Anchors>
+			</DropdownButton>
 			<CheckButton name="AddonListForceLoad">
 				<Size x="32" y="32"/>
 				<Anchors>

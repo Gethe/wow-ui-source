@@ -11,8 +11,8 @@ function ToyBox_OnLoad(self)
 
 	ToyBox_UpdatePages();
 	ToyBox_UpdateProgressBar(self);
-
-	UIDropDownMenu_Initialize(self.toyOptionsMenu, ToyBoxOptionsMenu_Init, "MENU");
+	
+	ToyBox_InitFilterDropdown(self);
 
 	self:RegisterEvent("TOYS_UPDATED");
 	self:RegisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
@@ -33,6 +33,113 @@ function ToyBox_OnLoad(self)
 			HelpTip:Show(self, helpTipInfo, self.PagingFrame);
 		end
 	end
+end
+
+function ToyBox_InitFilterDropdown(self)
+	self.FilterDropdown:SetUpdateCallback(function(description)
+		ToyBox.firstCollectedToyID = 0;
+		ToyBox_UpdatePages();
+		ToyBox_UpdateButtons();
+	end);
+
+	self.FilterDropdown:SetIsDefaultCallback(function()
+		return C_ToyBoxInfo.IsUsingDefaultFilters();
+	end);
+	
+	self.FilterDropdown:SetDefaultCallback(function()
+		C_ToyBoxInfo.SetDefaultFilters();
+	end);
+
+	-- Values are inverted because Usable is implemented in terms of the Unusable API.
+	local function SetUsableOnlyShown(value)
+		C_ToyBox.SetUnusableShown(not value);
+		return MenuResponse.Refresh;
+	end
+	
+	local function SetAllSourceTypeFilters(selected)
+		C_ToyBox.SetAllSourceTypeFilters(selected);
+		return MenuResponse.Refresh;
+	end
+
+	local function SetAllExpansionTypeFilters(selected)
+		C_ToyBox.SetAllExpansionTypeFilters(selected);
+		return MenuResponse.Refresh;
+	end
+
+	local function GetUsableOnlyShown()
+		return not C_ToyBox.GetUnusableShown();
+	end
+
+	local function IsSourceChecked(filterIndex) 
+		return C_ToyBox.IsSourceTypeFilterChecked(filterIndex)
+	end
+
+	local function SetSourceChecked(filterIndex) 
+		C_ToyBox.SetSourceTypeFilter(filterIndex, not IsSourceChecked(filterIndex));
+	end
+
+	local function IsExpansionChecked(filterIndex) 
+		return C_ToyBox.IsExpansionTypeFilterChecked(filterIndex)
+	end
+
+	local function SetExpansionChecked(filterIndex) 
+		C_ToyBox.SetExpansionTypeFilter(filterIndex, not IsExpansionChecked(filterIndex));
+	end
+	
+	local toySourceOrderPriorities = {
+		[Enum.BattlePetSources.Drop] = 5,
+		[Enum.BattlePetSources.Quest] = 5,
+		[Enum.BattlePetSources.Vendor] = 5,
+		[Enum.BattlePetSources.Profession] = 5,
+		[Enum.BattlePetSources.WildPet] = 5,
+		[Enum.BattlePetSources.Achievement] = 5,
+		[Enum.BattlePetSources.WorldEvent] = 5,
+		[Enum.BattlePetSources.Discovery] = 5,
+		[Enum.BattlePetSources.TradingPost] = 4,
+		[Enum.BattlePetSources.Promotion] = 3,
+		[Enum.BattlePetSources.PetStore] = 2,
+		[Enum.BattlePetSources.Tcg] = 1,
+	};
+
+	self.FilterDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_TOYBOX_FILTER");
+
+		rootDescription:CreateCheckbox(COLLECTED, C_ToyBox.GetCollectedShown, function()
+			C_ToyBox.SetCollectedShown(not C_ToyBox.GetCollectedShown());
+		end);
+
+		rootDescription:CreateCheckbox(NOT_COLLECTED, C_ToyBox.GetUncollectedShown, function()
+			C_ToyBox.SetUncollectedShown(not C_ToyBox.GetUncollectedShown());
+		end);
+		
+		rootDescription:CreateCheckbox(PET_JOURNAL_FILTER_USABLE_ONLY, GetUsableOnlyShown, function()
+			SetUsableOnlyShown(not GetUsableOnlyShown());
+		end);
+
+		local sourceSubmenu = rootDescription:CreateButton(SOURCES);
+		sourceSubmenu:CreateButton(CHECK_ALL, SetAllSourceTypeFilters, true);
+		sourceSubmenu:CreateButton(UNCHECK_ALL, SetAllSourceTypeFilters, false);
+
+		local filterIndexList = CollectionsUtil.GetSortedFilterIndexList("TOYS", toySourceOrderPriorities);
+		for index = 1, C_PetJournal.GetNumPetSources() do
+			local filterIndex = filterIndexList[i] and filterIndexList[i].index or index;
+			if C_ToyBoxInfo.IsToySourceValid(filterIndex) then
+				sourceSubmenu:CreateCheckbox(_G["BATTLE_PET_SOURCE_"..filterIndex], IsSourceChecked, SetSourceChecked, filterIndex);
+			end
+		end
+
+		local expansionSubmenu = rootDescription:CreateButton(EXPANSION_FILTER_TEXT);
+		expansionSubmenu:CreateButton(CHECK_ALL, SetAllExpansionTypeFilters, true);
+		expansionSubmenu:CreateButton(UNCHECK_ALL, SetAllExpansionTypeFilters, false);
+
+		for filterIndex = 1, GetNumExpansions() do
+			if C_ToyBoxInfo.IsToySourceValid(filterIndex) then
+				 -- EXPANSION_NAME is indexed from 0
+				local adjustedFilterIndex = (filterIndex - 1);
+				expansionSubmenu:CreateCheckbox(_G["EXPANSION_NAME"..adjustedFilterIndex], IsExpansionChecked, SetExpansionChecked, filterIndex);
+			end
+		end
+	end);
 end
 
 function ToyBox_OnEvent(self, event, itemID, new, fanfare)
@@ -93,47 +200,6 @@ function ToyBox_OnMouseWheel(self, value)
 	ToyBox.PagingFrame:OnMouseWheel(value);
 end
 
-function ToyBoxOptionsMenu_Init(self, level)
-	local info = UIDropDownMenu_CreateInfo();
-	info.notCheckable = true;
-	info.disabled = nil;
-
-	local isFavorite = ToyBox.menuItemID and C_ToyBox.GetIsFavorite(ToyBox.menuItemID);
-
-	if (isFavorite) then
-		info.text = BATTLE_PET_UNFAVORITE;
-		info.func = function()
-			C_ToyBox.SetIsFavorite(ToyBox.menuItemID, false);
-		end
-	else
-		info.text = BATTLE_PET_FAVORITE;
-		info.func = function()
-			C_ToyBox.SetIsFavorite(ToyBox.menuItemID, true);
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_FAVORITE, true);
-			HelpTip:Hide(ToyBox, TOYBOX_FAVORITE_HELP);
-		end
-	end
-
-	UIDropDownMenu_AddButton(info, level);
-	info.disabled = nil;
-
-	info.text = CANCEL;
-	info.func = nil;
-	UIDropDownMenu_AddButton(info, level);
-end
-
-function ToyBox_ShowToyDropdown(itemID, anchorTo, offsetX, offsetY)
-	ToyBox.menuItemID = itemID;
-	ToggleDropDownMenu(1, nil, ToyBox.toyOptionsMenu, anchorTo, offsetX, offsetY);
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-end
-
-function ToyBox_HideToyDropdown()
-	if (UIDropDownMenu_GetCurrentDropDown() == ToyBox.toyOptionsMenu) then
-		HideDropDownMenu(1);
-	end
-end
-
 function ToySpellButton_OnShow(self)
 	self:RegisterEvent("TOYS_UPDATED");
 
@@ -182,9 +248,29 @@ function ToySpellButton_OnClick(self, button)
 		end
 	elseif ( button == "RightButton" ) then
 		if (PlayerHasToy(self.itemID)) then
-			ToyBox_ShowToyDropdown(self.itemID, self, 0, 0);
+			ToySpellButton_CreateContextMenu(self, self.itemID);
 		end
 	end
+end
+
+function ToySpellButton_CreateContextMenu(self, itemID)
+	MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
+		rootDescription:SetTag("MENU_TOYBOX_FAVORITE");
+
+		local isFavorite = C_ToyBox.GetIsFavorite(itemID);
+		if isFavorite then
+			rootDescription:CreateButton(BATTLE_PET_UNFAVORITE, function()
+				C_ToyBox.SetIsFavorite(itemID, false);
+			end);
+		else
+			rootDescription:CreateButton(BATTLE_PET_FAVORITE, function()
+				C_ToyBox.SetIsFavorite(itemID, true);
+
+				SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_FAVORITE, true);
+				HelpTip:Hide(ToyBox, TOYBOX_FAVORITE_HELP);
+			end);
+		end
+	end);
 end
 
 function ToySpellButton_FadeInIcon(self)
@@ -375,120 +461,4 @@ function ToyBox_OnSearchTextChanged(self)
 		ToyBox_UpdatePages();
 		ToyBox_UpdateButtons();
 	end
-end
-
-function ToyBoxFilterDropDown_OnLoad(self)
-	UIDropDownMenu_Initialize(self, ToyBoxFilterDropDown_Initialize, "MENU");
-	ToyBoxResetFiltersButton_UpdateVisibility();
-end
-
-function ToyBoxUpdateFilteredInformation()
-	ToyBox.firstCollectedToyID = 0;
-	ToyBox_UpdatePages();
-	ToyBox_UpdateButtons();
-end
-
-function ToyBoxFilterDropDown_ResetFilters()
-	C_ToyBoxInfo.SetDefaultFilters();
-	ToyBoxFilterButton.ResetButton:Hide();
-end
-
-function ToyBoxResetFiltersButton_UpdateVisibility()
-	ToyBoxFilterButton.ResetButton:SetShown(not C_ToyBoxInfo.IsUsingDefaultFilters());
-end
-
-function ToyBoxFilterDropDown_OnUpdate()
-	ToyBoxUpdateFilteredInformation();
-	ToyBoxResetFiltersButton_UpdateVisibility();
-end
-
--- The global string for this filter reads "USABLE ONLY" (which would mean SetUnusableShown should be false when checked)
-function ToyBoxFilterDropDown_SetUsableOnlyShown(value)
-	C_ToyBox.SetUnusableShown(not value);
-end
-
-function ToyBoxFilterDropDown_GetUsableOnlyShown()
-	return not C_ToyBox.GetUnusableShown();
-end
-
-function ToyBoxFilterDropDown_SetAllSourceTypeFilters(value)
-	C_ToyBox.SetAllSourceTypeFilters(value);
-	UIDropDownMenu_Refresh(ToyBoxFilterDropDown, UIDROPDOWNMENU_MENU_VALUE, UIDROPDOWNMENU_MENU_LEVEL);
-end
-
-function ToyBoxFilterDropDown_SetAllExpansionTypeFilters(value)
-	C_ToyBox.SetAllExpansionTypeFilters(value);
-	UIDropDownMenu_Refresh(ToyBoxFilterDropDown, UIDROPDOWNMENU_MENU_VALUE, UIDROPDOWNMENU_MENU_LEVEL);
-end
-
-local toySourceOrderPriorities = {
-	[Enum.BattlePetSources.Drop] = 5,
-	[Enum.BattlePetSources.Quest] = 5,
-	[Enum.BattlePetSources.Vendor] = 5,
-	[Enum.BattlePetSources.Profession] = 5,
-	[Enum.BattlePetSources.WildPet] = 5,
-	[Enum.BattlePetSources.Achievement] = 5,
-	[Enum.BattlePetSources.WorldEvent] = 5,
-	[Enum.BattlePetSources.Discovery] = 5,
-	[Enum.BattlePetSources.TradingPost] = 4,
-	[Enum.BattlePetSources.Promotion] = 3,
-	[Enum.BattlePetSources.PetStore] = 2,
-	[Enum.BattlePetSources.Tcg] = 1,
-};
-
-function ToyBoxFilterDropDown_Initialize(self, level)
-	local filterSystem = {
-		onUpdate = ToyBoxFilterDropDown_OnUpdate,		
-		filters = {
-			{ type = FilterComponent.Checkbox, text = COLLECTED, set = C_ToyBox.SetCollectedShown, isSet = C_ToyBox.GetCollectedShown },
-			{ type = FilterComponent.Checkbox, text = NOT_COLLECTED, set = C_ToyBox.SetUncollectedShown, isSet = C_ToyBox.GetUncollectedShown },
-			{ type = FilterComponent.Checkbox, text = PET_JOURNAL_FILTER_USABLE_ONLY, set = ToyBoxFilterDropDown_SetUsableOnlyShown, isSet = ToyBoxFilterDropDown_GetUsableOnlyShown },
-			{ type = FilterComponent.Submenu, text = SOURCES, value = 1, childrenInfo = {
-					filters = {
-						{ type = FilterComponent.TextButton, 
-						  text = CHECK_ALL,
-						  set = function() ToyBoxFilterDropDown_SetAllSourceTypeFilters(true); end,
-						},
-						{ type = FilterComponent.TextButton,
-						  text = UNCHECK_ALL,
-						  set = function() ToyBoxFilterDropDown_SetAllSourceTypeFilters(false); end,
-						},
-						{ type = FilterComponent.DynamicFilterSet,
-						  buttonType = FilterComponent.Checkbox, 
-						  set = C_ToyBox.SetSourceTypeFilter,
-						  isSet = C_ToyBox.IsSourceTypeFilterChecked,
-						  numFilters = C_PetJournal.GetNumPetSources,
-						  filterValidation = C_ToyBoxInfo.IsToySourceValid,
-						  globalPrepend = "BATTLE_PET_SOURCE_", 
-						  customSortOrder = CollectionsUtil.GetSortedFilterIndexList("TOYS", toySourceOrderPriorities),
-						},
-					},
-				},
-			},
-			{ type = FilterComponent.Submenu, text = EXPANSION_FILTER_TEXT, value = 2, childrenInfo = {
-					filters = {
-						{ type = FilterComponent.TextButton, 
-						  text = CHECK_ALL,
-						  set = function() ToyBoxFilterDropDown_SetAllExpansionTypeFilters(true); end,
-						},
-						{ type = FilterComponent.TextButton,
-						  text = UNCHECK_ALL,
-						  set = function() ToyBoxFilterDropDown_SetAllExpansionTypeFilters(false); end, 
-						},
-						{ type = FilterComponent.DynamicFilterSet,
-						  buttonType = FilterComponent.Checkbox, 
-						  set = C_ToyBox.SetExpansionTypeFilter,
-						  isSet = C_ToyBox.IsExpansionTypeFilterChecked,
-						  numFilters = GetNumExpansions,
-						  globalPrepend = "EXPANSION_NAME",
-						  -- We want to list all expansions up to i-1 since the global strings for expansions are 0 - Max Expansion
-						  globalPrependOffset = -1,
-						},
-					},
-				},
-			},
-		},
-	};
-
-	FilterDropDownSystem.Initialize(self, filterSystem, level);
 end

@@ -54,14 +54,13 @@ IconDataProviderExtraType = {
 };
 
 local function FillOutExtraIconsMapWithSpells(extraIconsMap)
-	for i = 1, GetNumSpellTabs() do
-		local tab, tabTex, offset, numSpells = GetSpellTabInfo(i);
-		offset = offset + 1;
-		local tabEnd = offset + numSpells;
-		for j = offset, tabEnd - 1 do
-			local spellType, ID = GetSpellBookItemInfo(j, "player");
+	for skillLineIndex = 1, C_SpellBook.GetNumSpellBookSkillLines() do
+		local skillLineInfo = C_SpellBook.GetSpellBookSkillLineInfo(skillLineIndex);
+		for i = 1, skillLineInfo.numSpellBookItems do
+			local spellIndex = skillLineInfo.itemIndexOffset + i;
+			local spellType, ID = C_SpellBook.GetSpellBookItemType(spellIndex, Enum.SpellBookSpellBank.Player);
 			if spellType ~= "FUTURESPELL" then
-				local fileID = GetSpellBookItemTexture(j, "player");
+				local fileID = C_SpellBook.GetSpellBookItemTexture(spellIndex, Enum.SpellBookSpellBank.Player);
 				if fileID ~= nil then
 					extraIconsMap[fileID] = true;
 				end
@@ -73,7 +72,7 @@ local function FillOutExtraIconsMapWithSpells(extraIconsMap)
 					for k = 1, numSlots do
 						local spellID, overrideSpellID, isSlotKnown = GetFlyoutSlotInfo(ID, k)
 						if isSlotKnown then
-							local fileID = GetSpellTexture(spellID);
+							local fileID = C_Spell.GetSpellTexture(spellID);
 							if fileID ~= nil then
 								extraIconsMap[fileID] = true;
 							end

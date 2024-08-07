@@ -31,6 +31,29 @@ function DressUpModelFrameLinkButtonMixin:OnShow()
 		HelpTip:Show(self, helpTipInfo);
 	end
 
+	self:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_DRESS_UP_MODEL");
+
+		local playerActor = DressUpFrame.ModelScene:GetPlayerActor();
+		local itemTransmogInfoList = playerActor and playerActor:GetItemTransmogInfoList();
+		if not itemTransmogInfoList then
+			return;
+		end
+
+		rootDescription:CreateButton(TRANSMOG_OUTFIT_POST_IN_CHAT, function()
+			local hyperlink = C_TransmogCollection.GetOutfitHyperlinkFromItemTransmogInfoList(itemTransmogInfoList);
+			if not ChatEdit_InsertLink(hyperlink) then
+				ChatFrame_OpenChat(hyperlink);
+			end
+		end);
+
+		rootDescription:CreateButton(TRANSMOG_OUTFIT_COPY_TO_CLIPBOARD, function()
+			local slashCommand = TransmogUtil.CreateOutfitSlashCommand(itemTransmogInfoList);
+			CopyToClipboard(slashCommand);
+			DEFAULT_CHAT_FRAME:AddMessage(TRANSMOG_OUTFIT_COPY_TO_CLIPBOARD_NOTICE, YELLOW_FONT_COLOR:GetRGB());
+		end);
+	end);
+
 	ChatEdit_RegisterForStickyFocus(self);
 end
 
@@ -38,51 +61,9 @@ function DressUpModelFrameLinkButtonMixin:OnHide()
 	ChatEdit_UnregisterForStickyFocus(self);
 end
 
-local function LinkOutfitDropDownInit()
-	local playerActor = DressUpFrame.ModelScene:GetPlayerActor();
-	local itemTransmogInfoList = playerActor and playerActor:GetItemTransmogInfoList();
-
-	local info = UIDropDownMenu_CreateInfo();
-	info.notCheckable = true;
-
-	info.text = TRANSMOG_OUTFIT_POST_IN_CHAT;
-	info.func = function()
-		local hyperlink = C_TransmogCollection.GetOutfitHyperlinkFromItemTransmogInfoList(itemTransmogInfoList);
-		if not ChatEdit_InsertLink(hyperlink) then
-			ChatFrame_OpenChat(hyperlink);
-		end
-	end;
-	UIDropDownMenu_AddButton(info);
-
-	info.text = TRANSMOG_OUTFIT_COPY_TO_CLIPBOARD;
-	info.func = function()
-		local slashCommand = TransmogUtil.CreateOutfitSlashCommand(itemTransmogInfoList);
-		CopyToClipboard(slashCommand);
-		DEFAULT_CHAT_FRAME:AddMessage(TRANSMOG_OUTFIT_COPY_TO_CLIPBOARD_NOTICE, YELLOW_FONT_COLOR:GetRGB());
-	end;
-	UIDropDownMenu_AddButton(info);
-end
-
-function DressUpModelFrameLinkButtonMixin:OnLoad()
-	UIDropDownMenu_Initialize(self.DropDown, LinkOutfitDropDownInit, "MENU");
-end
-
 function DressUpModelFrameLinkButtonMixin:OnClick()
 	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_LINK_TRANSMOG_OUTFIT, true);
 	HelpTip:Hide(self, LINK_TRANSMOG_OUTFIT_HELPTIP);
-
-	ToggleDropDownMenu(1, nil, self.DropDown, self, 136, 73);
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-end
-
-function DressUpModelFrameLinkButtonMixin:HasStickyFocus()
-	if self:IsMouseOver() then
-		return true;
-	end
-	if UIDropDownMenu_GetCurrentDropDown() == self.DropDown and DropDownList1:IsMouseOver() then
-		return true;
-	end
-	return false;
 end
 
 --------------------------------------------------
@@ -150,7 +131,7 @@ function DressUpModelFrameBaseMixin:SetMode(mode)
 		self.ResetButton:SetShown(inPlayerMode);
 		self.LinkButton:SetShown(inPlayerMode);
 		self.ToggleOutfitDetailsButton:SetShown(inPlayerMode);
-		self.OutfitDropDown:SetShown(inPlayerMode);
+		self.OutfitDropdown:SetShown(inPlayerMode);
 		if not inPlayerMode then
 			self:SetShownOutfitDetailsPanel(false);
 		else
@@ -197,12 +178,12 @@ function DressUpModelFrameMixin:OnHide()
 end
 
 function DressUpModelFrameMixin:OnDressModel(itemModifiedAppearanceID, invSlot, removed)
-	if self.OutfitDropDown then
+	if self.OutfitDropdown then
 		if not self.gotDressed then
 			self.gotDressed = true;
 			C_Timer.After(0, function()
 				self.gotDressed = nil;
-				self.OutfitDropDown:UpdateSaveButton();
+				self.OutfitDropdown:UpdateSaveButton();
 				self.OutfitDetailsPanel:OnAppearanceChange();
 			end);
 		end
@@ -230,15 +211,19 @@ function DressUpModelFrameMixin:ConfigureSize(isMinimized)
 	if isMinimized then
 		self:SetSize(334, 423);
 		self.OutfitDetailsPanel:SetPoint("TOPLEFT", self, "TOPRIGHT", -4, -1);
+
 		self.SetSelectionPanel:SetPoint("TOPLEFT", self, "TOPRIGHT", -7, -1);
-		self.OutfitDropDown:SetPoint("TOP", -42, -28);
-		UIDropDownMenu_SetWidth(self.OutfitDropDown, 120);
+
+		self.OutfitDropdown:SetPoint("TOP", -37, -31);
+		self.OutfitDropdown:SetWidth(130);
 	else
 		self:SetSize(450, 545);
 		self.OutfitDetailsPanel:SetPoint("TOPLEFT", self, "TOPRIGHT", -9, -29);
+
 		self.SetSelectionPanel:SetPoint("TOPLEFT", self, "TOPRIGHT", -7, -30);
-		self.OutfitDropDown:SetPoint("TOP", -23, -28);
-		UIDropDownMenu_SetWidth(self.OutfitDropDown, 163);
+
+		self.OutfitDropdown:SetPoint("TOP", -39, -31);
+		self.OutfitDropdown:SetWidth(203);
 	end
 	UpdateUIPanelPositions(self);
 end

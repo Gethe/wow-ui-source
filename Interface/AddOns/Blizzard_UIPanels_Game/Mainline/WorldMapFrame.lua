@@ -28,9 +28,8 @@ function WorldMap_GetWorldQuestRewardType(questID)
 	local azeriteCurrencyID = C_CurrencyInfo.GetAzeriteCurrencyID();
 	local warResourcesCurrencyID = C_CurrencyInfo.GetWarResourcesCurrencyID();
 	local dragonIslesSuppliesCurrencyID = C_CurrencyInfo.GetDragonIslesSuppliesCurrencyID();
-	local numQuestCurrencies = GetNumQuestLogRewardCurrencies(questID);
-	for i = 1, numQuestCurrencies do
-		local currencyID = select(4, GetQuestLogRewardCurrencyInfo(i, questID));
+	for index, currencyReward in ipairs(C_QuestLog.GetQuestRewardCurrencies(questID)) do
+		local currencyID = currencyReward.currencyID;
 		if ( currencyID == ORDER_RESOURCES_CURRENCY_ID or currencyID == warResourcesCurrencyID or currencyID == dragonIslesSuppliesCurrencyID ) then
 			worldQuestRewardType = bit.bor(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_RESOURCES);
 		elseif ( currencyID == azeriteCurrencyID ) then
@@ -42,7 +41,7 @@ function WorldMap_GetWorldQuestRewardType(questID)
 
 	local numQuestRewards = GetNumQuestLogRewards(questID);
 	for i = 1, numQuestRewards do
-		local itemName, itemTexture, quantity, quality, isUsable, itemID = GetQuestLogRewardInfo(i, questID);
+		local _itemName, _itemTexture, _quantity, _quality, _isUsable, itemID = GetQuestLogRewardInfo(i, questID);
 		if ( itemID ) then
 			local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture, sellPrice, classID, subclassID = C_Item.GetItemInfo(itemID);
 			if ( classID == Enum.ItemClass.Weapon or classID == Enum.ItemClass.Armor or (classID == Enum.ItemClass.Gem and subclassID == Enum.ItemGemSubclass.Artifactrelic) ) then
@@ -86,7 +85,11 @@ function WorldMap_DoesWorldQuestInfoPassFilters(info, ignoreTypeFilters)
 				end
 			end
 		elseif ( tagInfo.worldQuestType == Enum.QuestTagType.PetBattle ) then
-			if ( not GetCVarBool("showTamers") ) then
+			if ( not GetCVarBool("showTamersWQ") ) then
+				return false;
+			end
+		elseif tagInfo.worldQuestType == Enum.QuestTagType.DragonRiderRacing then
+			if ( not GetCVarBool("dragonRidingRacesFilterWQ") ) then
 				return false;
 			end
 		else
@@ -173,10 +176,12 @@ function TaskPOI_OnEnter(self, skipSetOwner)
 
 	GameTooltip_AddQuest(self);
 	EventRegistry:TriggerEvent("TaskPOI.TooltipShown", self, self.questID, self);
+	self:OnLegendPinMouseEnter();
 end
 
 function TaskPOI_OnLeave(self)
 	GameTooltip:Hide();
+    self:OnLegendPinMouseLeave();
 end
 
 function WorldMapPing_StartPingQuest(questID)

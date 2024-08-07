@@ -1,8 +1,14 @@
 
 POIButtonOwnerMixin = {};
 
+
+local function HideAndClearAnchorsWithReset(pool, frame)
+	Pool_HideAndClearAnchors(pool, frame);
+	frame:Reset();
+end
+
 function POIButtonOwnerMixin:Init(onCreateFunc, useHighlightManager)
-	self.buttonPool = CreateFramePool("Button", self, "POIButtonTemplate", FramePool_HideAndClearAnchorsWithReset);
+	self.buttonPool = CreateFramePool("Button", self, "POIButtonTemplate", HideAndClearAnchorsWithReset);
 	self.poiOnCreateFunc = onCreateFunc;
 	self.useHighlightManager = useHighlightManager;
 end
@@ -34,12 +40,9 @@ function POIButtonOwnerMixin:FindButtonByTrackable(trackableType, trackableID)
 end
 
 function POIButtonOwnerMixin:SelectButton(poiButton)
-	if self.poiSelectedButton then
-		self:ClearSelection();
-	end
-
+	self:ClearSelection();
 	self.poiSelectedButton = poiButton;
-	poiButton:SetSelected();
+	poiButton:SetSelected(true);
 	poiButton:UpdateButtonStyle();
 end
 
@@ -77,7 +80,7 @@ function POIButtonOwnerMixin:ClearSelection()
 	local poiButton = self.poiSelectedButton;
 	if poiButton then
 		self.poiSelectedButton = nil;
-		poiButton:ClearSelection();
+		poiButton:SetSelected(false);
 		poiButton:UpdateButtonStyle();
 	end
 end
@@ -92,48 +95,53 @@ function POIButtonOwnerMixin:CallOnCreateFunction(poiButton)
 	end
 end
 
-function POIButtonOwnerMixin:GetButtonForQuestInternal(questID, style, index)
+function POIButtonOwnerMixin:GetButtonForStyleInternal(style)
 	local poiButton, isNewButton = self.buttonPool:Acquire();
 	poiButton:SetStyle(style);
-
-	if style == POIButtonUtil.Style.Numeric then
-		poiButton:SetNumber(index);
-	end
 
 	if isNewButton then
 		self:CallOnCreateFunction(poiButton);
 	end
 
+	return poiButton;
+end
+
+function POIButtonOwnerMixin:PostInitButtonInternal(poiButton)
+	poiButton:UpdateSelected();
+	poiButton:Show();
+	return poiButton;
+end
+
+function POIButtonOwnerMixin:GetButtonForQuestInternal(questID, style)
+	local poiButton = self:GetButtonForStyleInternal(style);
+
 	poiButton:SetEnabled(style ~= POIButtonUtil.Style.QuestDisabled);
-	poiButton.questID = questID;
-	poiButton.poiParent = self;
-	poiButton.pingWorldMap = false;
+	poiButton:SetQuestID(questID);
 	poiButton:EvaluateManagedHighlight();
 	return poiButton;
 end
 
-function POIButtonOwnerMixin:GetButtonForQuest(questID, style, index)
+function POIButtonOwnerMixin:GetButtonForQuest(questID, style)
+	if not GetCVarBool("questPOI") then
+		return nil;
+	end
+
 	if C_QuestLog.IsQuestCalling(questID) then
 		return nil;
 	end
 
-	local poiButton = self:GetButtonForQuestInternal(questID, style, index);
-	poiButton:UpdateButtonStyle();
-	poiButton:Show();
-	return poiButton;
+	local poiButton = self:GetButtonForQuestInternal(questID, style);
+	return self:PostInitButtonInternal(poiButton);
 end
 
 function POIButtonOwnerMixin:GetButtonForTrackable(trackableType, trackableID)
-	local poiButton, isNewButton = self.buttonPool:Acquire();
-	poiButton:SetStyle(POIButtonUtil.Style.ContentTracking);
-
-	if isNewButton then
-		self:CallOnCreateFunction(poiButton);
-	end
-
+	local poiButton = self:GetButtonForStyleInternal(POIButtonUtil.Style.ContentTracking);
 	poiButton:SetTrackable(trackableType, trackableID);
-	poiButton:UpdateButtonStyle();
-	poiButton.poiParent = self;
-	poiButton:Show();
-	return poiButton;
+	return self:PostInitButtonInternal(poiButton);
+end
+
+function POIButtonOwnerMixin:GetButtonForAreaPOI(areaPOIID)
+	local poiButton = self:GetButtonForStyleInternal(POIButtonUtil.Style.AreaPOI);
+	poiButton:SetAreaPOIID(areaPOIID);
+	return self:PostInitButtonInternal(poiButton);
 end

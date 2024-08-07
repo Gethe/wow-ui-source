@@ -1,5 +1,5 @@
-PTR_IssueReporter.Data.Message_Key = "[*S&^$&L]"
-PTR_IssueReporter.Data.Feedback_Message_Key = "[*S&^$&LF]"
+PTR_IssueReporter.Data.Message_Key = "[*WSS&^$&L]"
+PTR_IssueReporter.Data.Feedback_Message_Key = "[*WSS&^$&LF]"
 PTR_IssueReporter.Data.Current_Message_Key = PTR_IssueReporter.Data.Message_Key
 PTR_IssueReporter.LockedReports = {}
 
@@ -72,6 +72,57 @@ function PTR_IssueReporter.AttachDefaultCollectionToSurvey(survey, ignoreTypeQue
 		return results
 	end
     
+    local IsQuestSyncEnabled = function()
+        if (C_QuestSession) and (C_QuestSession.Exists) and (C_QuestSession.Exists()) then
+            return 1
+        else
+            return 0
+        end
+    end
+    
+    local GetActiveChromieTimeID = function()
+        local chromieTimeData = C_ChromieTime.GetChromieTimeExpansionOptions()
+        
+        for index, expansionOption in pairs (chromieTimeData) do
+            if (expansionOption) and (expansionOption.alreadyOn) then
+            
+                return expansionOption.id
+            end
+        end
+        
+        return 0
+    end
+    
+    local IsTimerunningActive = function()
+        if (C_UnitAuras.GetPlayerAuraBySpellID(424143)) then
+            return 1
+        end
+        
+        return 0
+    end
+
+	local GetCurrentQuestStatus = function(dataPackage)
+		local results = ""
+		
+		for i=1, C_QuestLog.GetNumQuestLogEntries() do
+			local questInfo = C_QuestLog.GetInfo(i)
+			if (questInfo) and (questInfo.questID) and (questInfo.questID > 0) then
+				local questEntry = ":" .. questInfo.questID
+				local objectives = C_QuestLog.GetQuestObjectives(questInfo.questID)
+		
+				if (objectives) then
+					for _, objectiveInfo in pairs(objectives) do
+						questEntry = questEntry .. "." .. objectiveInfo.numFulfilled
+					end
+				end
+
+				results = results .. questEntry
+			end
+		end
+
+		return results
+	end
+    
     if (setAsFeedback) then
         survey:AddDataCollection(collector.RunFunction, PTR_IssueReporter.GetFeedbackMessageKey)
     else
@@ -85,11 +136,12 @@ function PTR_IssueReporter.AttachDefaultCollectionToSurvey(survey, ignoreTypeQue
     survey:AddDataCollection(collector.RunFunction, GetGender)
     survey:AddDataCollection(collector.RunFunction, GetClassID)
     survey:AddDataCollection(collector.RunFunction, GetSpecID)
-    survey:AddDataCollection(collector.RunFunction, GetCurrentiLvl)
-	survey:AddDataCollection(collector.RunFunction, C_Covenants.GetActiveCovenantID)
-	survey:AddDataCollection(collector.RunFunction, C_Soulbinds.GetActiveSoulbindID)
-	survey:AddDataCollection(collector.RunFunction, GetCurrentConduits)
-	survey:AddDataCollection(collector.RunFunction, GetCurrentSoulbindTraits)
+    survey:AddDataCollection(collector.RunFunction, GetCurrentiLvl)    
+    survey:AddDataCollection(collector.RunFunction, IsQuestSyncEnabled)
+    survey:AddDataCollection(collector.RunFunction, GetCurrentQuestStatus)
+    survey:AddDataCollection(collector.RunFunction, GetActiveChromieTimeID)
+    survey:AddDataCollection(collector.RunFunction, IsTimerunningActive)
+    
     if not (ignoreTypeQuestion) then
         survey:AddDataCollection(collector.SelectOne_MessageKeyUpdater, { { Choice = "Bug", Key = PTR_IssueReporter.Data.Message_Key }, { Choice = "Feedback", Key = PTR_IssueReporter.Data.Feedback_Message_Key }}, nil, true)
     end
@@ -180,6 +232,7 @@ function PTR_IssueReporter.CreateReports()
         return returnValue
     end    
     
+    --[[
     local aiFollowerReport = PTR_IssueReporter.CreateSurvey(18, "Issue Report: %s")
     aiFollowerReport:PopulateDynamicTitleToken(1, "Name")
     aiFollowerReport:AttachModelViewer("ID")
@@ -199,6 +252,7 @@ function PTR_IssueReporter.CreateReports()
     aiGroupReport:SetButton("I have found an issue with an AI Follower.", PTR_IssueReporter.Assets.AIBotIcon)
     aiGroupReport:RegisterButtonEvent(event.AIBotsJoinedParty)
     aiGroupReport:RegisterButtonEventEnd(event.AIBotsLeftParty)
+    ]]--
     
     --------------------------------------- Quest Reporting -------------------------------------------
     local IsQuestDisabledFromQuestSync = function(dataPackage)
@@ -209,79 +263,20 @@ function PTR_IssueReporter.CreateReports()
         end   
     end
     
-    local IsQuestSyncEnabled = function()
-        if (C_QuestSession) and (C_QuestSession.Exists) and (C_QuestSession.Exists()) then
-            return 1
-        else
-            return 0
-        end
-    end
-    
-    local GetActiveChromieTimeID = function()
-        local chromieTimeData = C_ChromieTime.GetChromieTimeExpansionOptions()
-        
-        for index, expansionOption in pairs (chromieTimeData) do
-            if (expansionOption) and (expansionOption.alreadyOn) then
-            
-                return expansionOption.id
-            end
-        end
-        
-        return 0
-    end
-    
-    local IsTimerunningActive = function()
-        if (C_UnitAuras.GetPlayerAuraBySpellID(424143)) then
-            return 1
-        end
-        
-        return 0
-    end
-
-	local GetCurrentQuestStatus = function(dataPackage)
-		local results = ""
-		
-		for i=1, C_QuestLog.GetNumQuestLogEntries() do
-			local questInfo = C_QuestLog.GetInfo(i)
-			if (questInfo) and (questInfo.questID) and (questInfo.questID > 0) then
-				local questEntry = ":" .. questInfo.questID
-				local objectives = C_QuestLog.GetQuestObjectives(questInfo.questID)
-		
-				if (objectives) then
-					for i, objectiveInfo in pairs(objectives) do
-						questEntry = questEntry .. "." .. objectiveInfo.numFulfilled
-					end
-				end
-
-				results = results .. questEntry
-			end
-		end
-
-		return results
-	end
-    
     local questReport = PTR_IssueReporter.CreateSurvey(4, "Issue Report: %s")
     questReport:PopulateDynamicTitleToken(1, "Name")
     PTR_IssueReporter.AttachDefaultCollectionToSurvey(questReport)
     
     questReport:AddDataCollection(collector.FromDataPackage, "ID")
-    questReport:AddDataCollection(collector.OpenEndedQuestion, "What was the issue with this quest?")
-    questReport:AddDataCollection(collector.RunFunction, IsQuestSyncEnabled)
+    questReport:AddDataCollection(collector.OpenEndedQuestion, "What was the issue with this quest?")    
     questReport:AddDataCollection(collector.RunFunction, IsQuestDisabledFromQuestSync)
-    questReport:AddDataCollection(collector.RunFunction, GetCurrentQuestStatus)
-    questReport:AddDataCollection(collector.RunFunction, GetActiveChromieTimeID)
-    questReport:AddDataCollection(collector.RunFunction, IsTimerunningActive)
     
     local AutoQuestReport = PTR_IssueReporter.CreateSurvey(4, "Issue Report: Quest")
     PTR_IssueReporter.AttachDefaultCollectionToSurvey(AutoQuestReport)
     
     AutoQuestReport:AddDataCollection(collector.FromDataPackage, "ID")
     AutoQuestReport:AddDataCollection(collector.OpenEndedQuestion, "Did you experience any issues?")
-    AutoQuestReport:AddDataCollection(collector.RunFunction, IsQuestSyncEnabled)
     AutoQuestReport:AddDataCollection(collector.RunFunction, IsQuestDisabledFromQuestSync)
-    AutoQuestReport:AddDataCollection(collector.RunFunction, GetCurrentQuestStatus)    
-    AutoQuestReport:AddDataCollection(collector.RunFunction, GetActiveChromieTimeID)
-    AutoQuestReport:AddDataCollection(collector.RunFunction, IsTimerunningActive)
     
     questReport:RegisterPopEvent(event.Tooltip, tooltips.quest)
     AutoQuestReport:RegisterFrameAttachedSurvey(QuestFrame, event.QuestRewardFrameShown, {event.QuestFrameClosed, event.QuestTurnedIn}, 0, 0) 
@@ -320,14 +315,10 @@ function PTR_IssueReporter.CreateReports()
     }
     warfrontsReport:RegisterPopEvent(event.MapIDExit, warfrontMapIDs)        
     
-    ------------------------------------- Spell Reporting ----------------------------------------------
-    local GetIconFromSpellID = function(value)
-        return select(3, GetSpellInfo(value))
-    end
-    
+    ------------------------------------- Spell Reporting ----------------------------------------------   
     local spellReport = PTR_IssueReporter.CreateSurvey(7, "Issue Report: %s")
     spellReport:PopulateDynamicTitleToken(1, "Name")
-    spellReport:AttachIconViewer("ID", GetIconFromSpellID)
+    spellReport:AttachIconViewer("ID", C_Spell.GetSpellTexture)
     PTR_IssueReporter.AttachDefaultCollectionToSurvey(spellReport, true)
     
     spellReport:AddDataCollection(collector.FromDataPackage, "ID")
@@ -404,10 +395,10 @@ function PTR_IssueReporter.CreateReports()
             local results = ""
             local numberOfBonusIDs = elements[14]
             if (numberOfBonusIDs) and (tonumber(numberOfBonusIDs)) and (tonumber(numberOfBonusIDs) > 0) then
-                for i=15, 15 + numberOfBonusIDs do
-                    table.insert(bonusIDs,elements[i])
+                for index=15, 15 + numberOfBonusIDs do
+                    table.insert(bonusIDs,elements[index])
                 end
-                for i,v in ipairs(bonusIDs) do
+                for _,v in ipairs(bonusIDs) do
                     results = results .. ":" .. v
                 end
             end
@@ -550,6 +541,7 @@ function PTR_IssueReporter.CreateReports()
         AdventureGuide = 7,
         ClassTalent = 8,
         ProfessionTalents = 9,
+        WarbandsCharacterSelect = 10,
     }
     
     ----------------------------------------------- Edit Mode ------------------------------------------------
@@ -620,8 +612,8 @@ function PTR_IssueReporter.CreateReports()
     ------------------------------------------- Class Talents -------------------------------------------------
     local getSpecIDFunc = function()
         local ID = 0
-        if (ClassTalentFrame) and (ClassTalentFrame.TalentsTab) and (ClassTalentFrame.TalentsTab.GetTalentTreeID) then
-            ID = ClassTalentFrame.TalentsTab:GetTalentTreeID()
+        if (PlayerSpellsFrame) and (PlayerSpellsFrame.TalentsFrame) and (PlayerSpellsFrame.TalentsFrame.GetTalentTreeID) then
+            ID = PlayerSpellsFrame.TalentsFrame:GetTalentTreeID()
         end
         
         return ID
@@ -630,8 +622,8 @@ function PTR_IssueReporter.CreateReports()
     local getTalentTreeString = function()
         local loadOutString = ""
         
-        if (ClassTalentFrame) and (ClassTalentFrame.TalentsTab) and (ClassTalentFrame.TalentsTab.GetLoadoutExportString) then
-            loadOutString = ClassTalentFrame.TalentsTab:GetLoadoutExportString()
+        if (PlayerSpellsFrame) and (PlayerSpellsFrame.TalentsFrame) and (PlayerSpellsFrame.TalentsFrame.GetLoadoutExportString) then
+            loadOutString = PlayerSpellsFrame.TalentsFrame:GetLoadoutExportString()
         end
         
         return loadOutString        
@@ -645,7 +637,7 @@ function PTR_IssueReporter.CreateReports()
     classTalentUIReport:AddDataCollection(collector.RunFunction, getSpecIDFunc)
     classTalentUIReport:AddDataCollection(collector.RunFunction, getTalentTreeString)
     
-    classTalentUIReport:RegisterUIPanelClick("ClassTalentFrame.TabSet", 2)
+    classTalentUIReport:RegisterUIPanelClick("PlayerSpellsFrame.TabSet", 2)
     
     ----------------------------------------- Profession Talents -----------------------------------------------
     local getProfSpecID = function()
@@ -665,6 +657,29 @@ function PTR_IssueReporter.CreateReports()
     professionTalentUIReport:AddDataCollection(collector.RunFunction, getProfSpecID)
 
     professionTalentUIReport:RegisterUIPanelClick("ProfessionsFrame.TabSet", 2)
+    
+    --------------------------------- Scenario Reporting ---------------------------------------------
+    
+    local scenarioReport = PTR_IssueReporter.CreateSurvey(20, "Issue Report: %s")
+    scenarioReport:PopulateDynamicTitleToken(1, "Name")
+    PTR_IssueReporter.AttachDefaultCollectionToSurvey(scenarioReport, true)
+    
+    scenarioReport:AddDataCollection(collector.FromDataPackage, "ID")
+    scenarioReport:AddDataCollection(collector.OpenEndedQuestion, "What was the issue with this scenario?")
+
+    scenarioReport:RegisterPopEvent(event.Tooltip, tooltips.scenario)
+    
+    --------------------------------- Radiant Chord Reporting ---------------------------------------------
+    
+    local radiantChordReport = PTR_IssueReporter.CreateSurvey(21, "Issue Report")
+    PTR_IssueReporter.AttachDefaultCollectionToSurvey(radiantChordReport, true)
+    
+    radiantChordReport:AddDataCollection(collector.OpenEndedQuestion, "What was the issue with this Radiant Chord?")
+
+    radiantChordReport:SetButton("I have found an issue with this Radiant Chord.", PTR_IssueReporter.Assets.RadiantChordIcon)
+    radiantChordReport:RegisterButtonEvent(event.RadiantChordStarted)
+    radiantChordReport:RegisterButtonEventEnd(event.RadiantChordEnded)
+    radiantChordReport:RegisterButtonEventEnd(event.MapIDExit)
     
     --------------------------------------- Character Customization Issue Reporting ----------------------------------------------
     local barberShopReport = PTR_IssueReporter.CreateSurvey(3001, "Issue Report")

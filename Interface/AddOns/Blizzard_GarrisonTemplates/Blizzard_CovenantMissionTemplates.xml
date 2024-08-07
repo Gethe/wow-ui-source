@@ -91,8 +91,8 @@
 				<Texture parentKey="PortraitRingCover"/>
 				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" x="2" y="-2"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-2" y="2"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent" x="2" y="-2"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent" x="-2" y="2"/>
 					</Anchors>
 					<MaskedTextures>
 						<MaskedTexture childKey="Portrait"/>
@@ -146,7 +146,7 @@
 				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT">
 					<Size x="122" y="0"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.PortraitFrame" relativePoint="LEFT" x="60" y="-8"/>
+						<Anchor point="LEFT" relativeKey="$parent" relativePoint="LEFT" x="60" y="-8"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="ILevel" inherits="GameFontHighlightSmall" justifyH="LEFT">
@@ -271,7 +271,7 @@
 				<FontString parentKey="Name" inherits="GameFontHighlightMed2" justifyH="LEFT" maxLines="1">
 					<Size x="150" />
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.IconButton" relativePoint="RIGHT" x="8"/>
+						<Anchor point="LEFT" relativeKey="$parent" relativePoint="RIGHT" x="8"/>
 					</Anchors>
 				</FontString>
 				<MaskTexture parentKey="IconMask" atlas="UI-Frame-IconMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
@@ -582,7 +582,7 @@
 				</FontString>
 				<FontString parentKey="HealTimeRemaining" inherits="GameFontHighlight" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="BOTTOM" relativeKey="$parent.HealFollowerFrame" relativePoint="BOTTOM" x ="0" y="35"/>
+						<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="BOTTOM" x ="0" y="35"/>
 					</Anchors>
 				</FontString>
 				<Texture parentKey="HealTimeRemainingIcon" atlas="auctionhouse-icon-clock">
@@ -661,7 +661,7 @@
 			</Frame>
 			<Frame parentKey="AbilitiesFrame" inherits="HorizontalLayoutFrame" mixin="GarrisonAbilitiesFrameMixin" frameLevel="20">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.AbilitiesText" relativePoint="BOTTOMLEFT" y="-14"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.StatsFrame.AbilitiesText" relativePoint="BOTTOMLEFT" y="-14"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="expand" value="true" type="boolean"/>
@@ -1011,7 +1011,7 @@
 		<Frames>
 			<Frame parentArray="Rewards" inherits="GarrisonMissionListButtonRewardTemplate">
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.RewardsBG" x="-40"/>
+					<Anchor point="RIGHT" relativeKey="$parent" x="-40"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="EncounterIcon" inherits="CovenantMissionEncounterIconTemplate">

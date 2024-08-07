@@ -66,12 +66,12 @@ StaticPopupDialogs["GARRISON_SHIP_DECOMMISSION"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function(self)
-		C_Garrison.RemoveFollower(self.data.followerID, true);
+		C_Garrison.RemoveFollower(self.data, true);
 		PlaySound(SOUNDKIT.UI_GARRISON_SHIPYARD_DECOMISSION_SHIP);
 	end,
 	OnShow = function(self)
-		local quality = C_Garrison.GetFollowerQuality(self.data.followerID);
-		local name = FOLLOWER_QUALITY_COLORS[quality].hex..C_Garrison.GetFollowerName(self.data.followerID)..FONT_COLOR_CODE_CLOSE;
+		local quality = C_Garrison.GetFollowerQuality(self.data);
+		local name = FOLLOWER_QUALITY_COLORS[quality].hex..C_Garrison.GetFollowerName(self.data)..FONT_COLOR_CODE_CLOSE;
 		self.text:SetFormattedText(GARRISON_SHIP_DECOMMISSION_CONFIRMATION, name);
 	end,
 	showAlert = 1,
@@ -174,9 +174,6 @@ function GarrisonShipyardMission:SelectTab(id)
 		self.BorderFrame.TitleText:SetText(GARRISON_SHIPYARD_TITLE);
 	else
 		self.BorderFrame.TitleText:SetText(GARRISON_SHIPYARD_FLEET_TITLE);
-	end
-	if ( UIDropDownMenu_GetCurrentDropDown() == GarrisonShipyardFollowerOptionDropDown ) then
-		CloseDropDownMenus();
 	end
 end
 
@@ -622,7 +619,6 @@ function GarrisonShipyardMissionComplete:AnimFollowersIn(entry)
 	end
 	-- preload next set
 	local nextIndex = self.currentIndex + 1;
-	local missionList = self.completeMissions;
 	if ( missionList[nextIndex] ) then
 		MissionCompletePreload_LoadMission(self:GetParent(), missionList[nextIndex].missionID,
 			GarrisonFollowerOptions[self:GetParent().followerTypeID].showSingleMissionCompleteFollower,
@@ -1064,7 +1060,7 @@ end
 function GarrisonShipyardMap_SetupBonus(self, missionFrame, mission)
 	if (mission.type == "Ship-Bonus") then
 		missionFrame.bonusRewardArea = true;
-		for id, reward in pairs(mission.rewards) do
+		for id, reward in pairs(mission.rewards) do -- luacheck: ignore 512 (loop is executed at most once)
 			local posX = reward.posX or 0;
 			local posY = reward.posY or 0;
 			posY = posY * -1;
@@ -1529,7 +1525,7 @@ function GarrisonShipyardMapMission_SetTooltip(info, inProgress)
 	GarrisonShipyardMapMission_AnchorToBottomWidget(tooltipFrame.RewardString, 0, -tooltipFrame.RewardString.yspacing);
 	GarrisonShipyardMapMission_SetBottomWidget(tooltipFrame.RewardString);
 
-	for id, reward in pairs(info.rewards) do
+	for id, reward in pairs(info.rewards) do -- luacheck: ignore 512 (loop is executed at most once)
 		if (reward.bonusAbilityID) then
 			tooltipFrame.BonusReward.Icon:SetTexture(reward.icon);
 			tooltipFrame.BonusReward.Name:SetText(reward.name);
@@ -1799,99 +1795,99 @@ end
 
 function GarrisonShipyardFollowerList:ShowFollower(followerID, hideCounters)
 	local followerList = self;
-	local self = self.followerTab;
-	local lastUpdate = self.lastUpdate;
-	local mainFrame = self:GetParent();
+	local followerTab = self.followerTab;
+	local lastUpdate = followerTab.lastUpdate;
+	local mainFrame = followerTab:GetParent();
 	local followerInfo = C_Garrison.GetFollowerInfo(followerID);
 	if (not followerInfo) then
 		return;
 	end
-	self.followerID = followerID;
-	self.Portrait:Show();
-	self.Model:SetAlpha(0);
+	followerTab.followerID = followerID;
+	followerTab.Portrait:Show();
+	followerTab.Model:SetAlpha(0);
 	local displayInfo = followerInfo.displayIDs and followerInfo.displayIDs[1];
-	GarrisonMission_SetFollowerModel(self.Model, followerInfo.followerID, displayInfo and displayInfo.id, displayInfo and displayInfo.showWeapon);
-	self.Model:SetHeightFactor(followerInfo.displayHeight or 0.5);
-	self.Model:SetTargetDistance(0);
-	self.Model:InitializeCamera((followerInfo.displayScale or 1) * (displayInfo.followerPageScale or 1));
+	GarrisonMission_SetFollowerModel(followerTab.Model, followerInfo.followerID, displayInfo and displayInfo.id, displayInfo and displayInfo.showWeapon);
+	followerTab.Model:SetHeightFactor(followerInfo.displayHeight or 0.5);
+	followerTab.Model:SetTargetDistance(0);
+	followerTab.Model:InitializeCamera((followerInfo.displayScale or 1) * (displayInfo.followerPageScale or 1));
 
 	local atlas = followerInfo.textureKit .. "-List";
-	self.Portrait:SetAtlas(atlas, false);
+	followerTab.Portrait:SetAtlas(atlas, false);
 	local color = FOLLOWER_QUALITY_COLORS[followerInfo.quality];
-	self.BoatName:SetText(format(GARRISON_SHIPYARD_SHIP_NAME, followerInfo.name));
-	self.BoatName:SetVertexColor(color.r, color.g, color.b);
-	self.BoatType:SetText(followerInfo.className);
+	followerTab.BoatName:SetText(format(GARRISON_SHIPYARD_SHIP_NAME, followerInfo.name));
+	followerTab.BoatName:SetVertexColor(color.r, color.g, color.b);
+	followerTab.BoatType:SetText(followerInfo.className);
 	if (followerInfo.quality == Enum.ItemQuality.Epic) then
-		self.Quality:SetAtlas("ShipMission_BoatRarity-Epic", true);
+		followerTab.Quality:SetAtlas("ShipMission_BoatRarity-Epic", true);
 	elseif (followerInfo.quality == Enum.ItemQuality.Rare) then
-		self.Quality:SetAtlas("ShipMission_BoatRarity-Rare", true);
+		followerTab.Quality:SetAtlas("ShipMission_BoatRarity-Rare", true);
 	else
-		self.Quality:SetAtlas("ShipMission_BoatRarity-Uncommon", true);
+		followerTab.Quality:SetAtlas("ShipMission_BoatRarity-Uncommon", true);
 	end
 
 	-- Follower cannot be upgraded anymore
 	if (followerInfo.isMaxLevel and followerInfo.quality >= GARRISON_FOLLOWER_MAX_UPGRADE_QUALITY[followerInfo.followerTypeID]) then
-		self.XPLabel:Hide();
-		self.XPBar:Hide();
-		self.XPText:Hide();
-		self.XPText:SetText("");
+		followerTab.XPLabel:Hide();
+		followerTab.XPBar:Hide();
+		followerTab.XPText:Hide();
+		followerTab.XPText:SetText("");
 	else
-		self.XPLabel:SetText(GARRISON_FOLLOWER_XP_UPGRADE_STRING);
-		self.XPLabel:SetWidth(0);
-		self.XPLabel:SetFontObject("GameFontHighlight");
-		self.XPLabel:Show();
+		followerTab.XPLabel:SetText(GARRISON_FOLLOWER_XP_UPGRADE_STRING);
+		followerTab.XPLabel:SetWidth(0);
+		followerTab.XPLabel:SetFontObject("GameFontHighlight");
+		followerTab.XPLabel:Show();
 		-- If the XPLabel text does not fit within 100 pixels, shrink the font.
-		if (self.XPLabel:GetWidth() > 100) then
-			self.XPLabel:SetWidth(100);
-			self.XPLabel:SetFontObject("GameFontWhiteSmall");
+		if (followerTab.XPLabel:GetWidth() > 100) then
+			followerTab.XPLabel:SetWidth(100);
+			followerTab.XPLabel:SetFontObject("GameFontWhiteSmall");
 		end
-		self.XPBar:Show();
-		self.XPBar:SetMinMaxValues(0, followerInfo.levelXP);
-		self.XPBar.Label:SetFormattedText(GARRISON_FOLLOWER_XP_BAR_LABEL, BreakUpLargeNumbers(followerInfo.xp), BreakUpLargeNumbers(followerInfo.levelXP));
-		self.XPBar:SetValue(followerInfo.xp);
+		followerTab.XPBar:Show();
+		followerTab.XPBar:SetMinMaxValues(0, followerInfo.levelXP);
+		followerTab.XPBar.Label:SetFormattedText(GARRISON_FOLLOWER_XP_BAR_LABEL, BreakUpLargeNumbers(followerInfo.xp), BreakUpLargeNumbers(followerInfo.levelXP));
+		followerTab.XPBar:SetValue(followerInfo.xp);
 		local xpLeft = followerInfo.levelXP - followerInfo.xp;
-		self.XPText:SetText(format(GARRISON_FOLLOWER_XP_LEFT, xpLeft));
-		self.XPText:Show();
+		followerTab.XPText:SetText(format(GARRISON_FOLLOWER_XP_LEFT, xpLeft));
+		followerTab.XPText:Show();
 	end
-	GarrisonTruncationFrame_Check(self.BoatName);
+	GarrisonTruncationFrame_Check(followerTab.BoatName);
 
 	if ( CVarCallbackRegistry:GetCVarValueBool("colorblindMode") ) then
-		self.QualityFrame:Show();
-		self.QualityFrame.Text:SetText(_G["ITEM_QUALITY"..followerInfo.quality.."_DESC"]);
+		followerTab.QualityFrame:Show();
+		followerTab.QualityFrame.Text:SetText(_G["ITEM_QUALITY"..followerInfo.quality.."_DESC"]);
 	else
-		self.QualityFrame:Hide();
+		followerTab.QualityFrame:Hide();
 	end
 
 	if (not followerInfo.abilities) then
 		followerInfo.abilities = C_Garrison.GetFollowerAbilities(followerID);
 	end
 
-	for i=1, #self.Traits do
-		self.Traits[i].abilityID = nil;
-		self.Traits[i].Counter:Hide();
+	for i=1, #followerTab.Traits do
+		followerTab.Traits[i].abilityID = nil;
+		followerTab.Traits[i].Counter:Hide();
 	end
-	for i=1, #self.EquipmentFrame.Equipment do
-		self.EquipmentFrame.Equipment[i].abilityID = nil;
-		self.EquipmentFrame.Equipment[i].Icon:Hide();
-		self.EquipmentFrame.Equipment[i].Counter:Hide();
-		self.EquipmentFrame.Equipment[i].followerList = self:GetFollowerList();
-		self.EquipmentFrame.Equipment[i].followerID = followerInfo.followerID;
+	for i=1, #followerTab.EquipmentFrame.Equipment do
+		followerTab.EquipmentFrame.Equipment[i].abilityID = nil;
+		followerTab.EquipmentFrame.Equipment[i].Icon:Hide();
+		followerTab.EquipmentFrame.Equipment[i].Counter:Hide();
+		followerTab.EquipmentFrame.Equipment[i].followerList = followerTab:GetFollowerList();
+		followerTab.EquipmentFrame.Equipment[i].followerID = followerInfo.followerID;
 	end
-	self.EquipmentFrame.Equipment1.Lock:SetShown(followerInfo.quality < Enum.ItemQuality.Rare);
-	self.EquipmentFrame.Equipment2.Lock:SetShown(followerInfo.quality < Enum.ItemQuality.Epic);
+	followerTab.EquipmentFrame.Equipment1.Lock:SetShown(followerInfo.quality < Enum.ItemQuality.Rare);
+	followerTab.EquipmentFrame.Equipment2.Lock:SetShown(followerInfo.quality < Enum.ItemQuality.Epic);
 
 	local traitIndex = 1;
 	local equipmentIndex = 1;
 	for i=1, #followerInfo.abilities do
 		local ability = followerInfo.abilities[i];
 		if (ability.isTrait) then
-			if (traitIndex <= #self.Traits) then
-				local trait = self.Traits[traitIndex];
+			if (traitIndex <= #followerTab.Traits) then
+				local trait = followerTab.Traits[traitIndex];
 				trait.abilityID = ability.id;
 				trait.Portrait:SetTexture(ability.icon);
 				trait.followerTypeID = followerInfo.followerTypeID;
 				if (not hideCounters) then
-					for id, counter in pairs(ability.counters) do
+					for id, counter in pairs(ability.counters) do -- luacheck: ignore 512 (loop is executed at most once)
 						trait.Counter.Icon:SetTexture(counter.icon);
 						trait.Counter.tooltip = counter.name;
 						trait.Counter.mainFrame = mainFrame;
@@ -1910,15 +1906,15 @@ function GarrisonShipyardFollowerList:ShowFollower(followerID, hideCounters)
 			end
 			traitIndex = traitIndex + 1;
 		else
-			if (equipmentIndex <= #self.EquipmentFrame.Equipment) then
-				local equipment = self.EquipmentFrame.Equipment[equipmentIndex];
+			if (equipmentIndex <= #followerTab.EquipmentFrame.Equipment) then
+				local equipment = followerTab.EquipmentFrame.Equipment[equipmentIndex];
 				equipment.abilityID = ability.id;
 				equipment.followerTypeID = followerInfo.followerTypeID;
 				if (ability.icon) then
 					equipment.Icon:SetTexture(ability.icon);
 					equipment.Icon:Show();
 					if (not hideCounters) then
-						for id, counter in pairs(ability.counters) do
+						for id, counter in pairs(ability.counters) do -- luacheck: ignore 512 (loop is executed at most once)
 							equipment.Counter.Icon:SetTexture(counter.icon);
 							equipment.Counter.tooltip = counter.name;
 							equipment.Counter.mainFrame = mainFrame;
@@ -1950,7 +1946,7 @@ function GarrisonShipyardFollowerList:ShowFollower(followerID, hideCounters)
 	end
 	followerList:UpdateValidSpellHighlight(followerID, followerInfo);
 
-	self.lastUpdate = self:IsShown() and GetTime() or nil;
+	followerTab.lastUpdate = followerTab:IsShown() and GetTime() or nil;
 end
 
 function GarrisonShipyardFollowerList_InitButton(button, elementData)
@@ -2065,13 +2061,35 @@ function GarrisonShipFollowerListButton_OnClick(self, button)
 		followerList:UpdateData();
 		followerList:ShowFollower(self.id);
 	elseif (button == "RightButton" and not followerList.isLandingPage) then
-			if ( GarrisonShipyardFollowerOptionDropDown.followerID ~= self.id ) then
-				CloseDropDownMenus();
+		MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
+			rootDescription:SetTag("MENU_GARRISON_SHIP_FOLLOWER");
+
+			local followerID = self.id;
+			
+			rootDescription:CreateButton(GARRISON_SHIP_RENAME, function()
+				StaticPopup_Show("GARRISON_SHIP_RENAME", nil, nil, followerID);
+			end);
+
+			local button = rootDescription:CreateButton(GARRISON_SHIP_DECOMMISSION, function()
+				StaticPopup_Show("GARRISON_SHIP_DECOMMISSION", nil, nil, followerID);
+			end);
+
+			local followerStatus = C_Garrison.GetFollowerStatus(followerID);
+			if followerStatus == GARRISON_FOLLOWER_ON_MISSION then
+				button:SetEnabled(false);
+				button:SetTooltip(function(tooltip, elementDescription)
+					GameTooltip_SetTitle(tooltip, GARRISON_SHIP_DECOMMISSION);
+					GameTooltip_AddNormalLine(tooltip, GARRISON_SHIP_CANNOT_DECOMMISSION_ON_MISSION);
+				end);
+			elseif C_Garrison.GetNumFollowers(Enum.GarrisonFollowerType.FollowerType_6_0_Boat) < C_Garrison.GetFollowerSoftCap(Enum.GarrisonFollowerType.FollowerType_6_0_Boat) then
+				button:SetEnabled(false);
+				button:SetTooltip(function(tooltip, elementDescription)
+					GameTooltip_SetTitle(tooltip, GARRISON_SHIP_DECOMMISSION);
+					GameTooltip_AddNormalLine(tooltip, GARRISON_SHIP_CANNOT_DECOMMISSION_UNTIL_FULL);
+				end);
 			end
-			GarrisonShipyardFollowerOptionDropDown.followerID = self.id;
-			ToggleDropDownMenu(1, nil, GarrisonShipyardFollowerOptionDropDown, "cursor", 0, 0);
-			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-		end
+		end);
+	end
 end
 
 function GarrisonShipTrait_OnClick(self, button)
@@ -2214,45 +2232,6 @@ end
 
 function GarrisonShipMissionPageFollowerFrame_OnLeave(self)
 	GarrisonShipyardFollowerTooltip:Hide();
-end
-
----------------------------------------------------------------------------------
---- Ship Renaming                                                             ---
----------------------------------------------------------------------------------
-
-function GarrisonShipOptionsMenu_Initialize(self, level)
-	local info = UIDropDownMenu_CreateInfo();
-	info.notCheckable = true;
-
-	info.text = GARRISON_SHIP_RENAME;
-	info.func = 	function() StaticPopup_Show("GARRISON_SHIP_RENAME", nil, nil, self.followerID); end
-	UIDropDownMenu_AddButton(info, level);
-
-	info.text = GARRISON_SHIP_DECOMMISSION;
-	local data = {};
-	data.followerID = self.followerID;
-	info.func = 	function() StaticPopup_Show("GARRISON_SHIP_DECOMMISSION", nil, nil, data); end
-	local followerStatus = self.followerID and C_Garrison.GetFollowerStatus(self.followerID);
-	if ( followerStatus == GARRISON_FOLLOWER_ON_MISSION ) then
-		info.disabled = 1;
-		info.tooltipWhileDisabled = 1;
-		info.tooltipTitle = GARRISON_SHIP_DECOMMISSION;
-		info.tooltipText = GARRISON_SHIP_CANNOT_DECOMMISSION_ON_MISSION;
-		info.tooltipOnButton = 1;
-	elseif ( C_Garrison.GetNumFollowers(Enum.GarrisonFollowerType.FollowerType_6_0_Boat) <  C_Garrison.GetFollowerSoftCap(Enum.GarrisonFollowerType.FollowerType_6_0_Boat) ) then
-		info.disabled = 1;
-		info.tooltipWhileDisabled = 1;
-		info.tooltipTitle = GARRISON_SHIP_DECOMMISSION;
-		info.tooltipText = GARRISON_SHIP_CANNOT_DECOMMISSION_UNTIL_FULL;
-		info.tooltipOnButton = 1;
-	end
-	UIDropDownMenu_AddButton(info, level);
-
-	info.text = CANCEL
-	info.func = nil
-	info.tooltipTitle = nil;
-	info.disabled = nil;
-	UIDropDownMenu_AddButton(info, level)
 end
 
 ---------------------------------------------------------------------------------

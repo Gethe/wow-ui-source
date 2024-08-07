@@ -5,7 +5,6 @@
 ## OptionalDeps: Blizzard_GlueXML, Blizzard_FrameXMLBase
 ## AllowLoad: both
 ## AllowLoadGameType: mainline
-## SuppressLocalTableRef: 1
 UnitPopupSharedUtils.lua
 UnitPopupSharedButtonMixins.lua
 Mainline\UnitPopupSharedButtonMixins.lua

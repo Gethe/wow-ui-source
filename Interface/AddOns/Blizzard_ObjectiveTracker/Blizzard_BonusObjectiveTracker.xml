@@ -1,117 +1,13 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
-
-	<Script file="Blizzard_BonusObjectiveTracker.lua"/>
-
-	<Frame name="BonusObjectiveTrackerLineTemplate" inherits="ObjectiveTrackerCheckLineTemplate" virtual="true">
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString parentKey="Dash" inherits="ObjectiveFont" text="QUEST_DASH">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="20" y="1"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
+	
+	<Frame name="BonusObjectiveTrackerBlockTemplate" mixin="BonusObjectiveBlockMixin" inherits="ObjectiveTrackerQuestPOIBlockTemplate" hidden="true" virtual="true">
 		<Scripts>
-			<OnLoad inherit="append">
-				self.Text:ClearAllPoints();
-				self.Text:SetPoint("TOP");
-				self.Text:SetPoint("LEFT", self.Dash, "RIGHT");
-
-				self.Glow:SetPoint("LEFT", self.Dash, -2, 0);
-			</OnLoad>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnMouseUp method="OnMouseUp"/>
 		</Scripts>
-		<Animations>
-			<AnimationGroup parentKey="FadeOutAnim">
-				<Alpha startDelay="1" fromAlpha="1" toAlpha="0" duration="0.1" order="1"/>
-				<Scripts>
-					<OnFinished>
-						local line = self:GetParent();
-						BonusObjectiveTracker_FinishFadeOutAnim(line);
-					</OnFinished>
-				</Scripts>
-			</AnimationGroup>
-		</Animations>
 	</Frame>
-
-	<ScrollFrame name="BonusObjectiveTrackerBlockTemplate" hidden="true" virtual="true" alpha="0">
-		<Size x="240" y="10"/>
-		<Frames>
-			<Button parentKey="TrackedQuest">
-				<Layers>
-					<Layer level="BACKGROUND" textureSubLevel="-2">
-						<Texture parentKey="Glow" alphaMode="ADD" file="Interface/WorldMap/UI-QuestPoi-IconGlow">
-							<Size x="50" y="50" />
-							<Anchors>
-								<Anchor point="CENTER" />
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="BACKGROUND" textureSubLevel="-1">
-						<Texture parentKey="Underlay">
-							<Size x="34" y="34" />
-							<Anchors>
-								<Anchor point="CENTER" y="-2" />
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY">
-						<Texture parentKey="Texture">
-							<Anchors>
-								<Anchor point="CENTER" />
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY" textureSubLevel="2">
-						<Texture parentKey="SelectedGlow" alphaMode="ADD" />
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad>
-						self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-					</OnLoad>
-					<OnClick>
-						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-						if C_SuperTrack.GetSuperTrackedQuestID() ~= self.questID then
-							C_SuperTrack.SetSuperTrackedQuestID(self.questID);
-						end
-
-						WorldMapPing_StartPingQuest(self.questID);
-					</OnClick>
-				</Scripts>
-			</Button>
-		</Frames>
-		<ScrollChild>
-			<Frame parentKey="ScrollContents">
-				<Size x="10" y="10"/>
-			</Frame>
-		</ScrollChild>
-		<Animations>
-			<AnimationGroup parentKey="AnimIn">
-				<Translation parentKey="TransOut" childKey="ScrollContents" offsetX="0" offsetY="0" duration="0.01" endDelay="0" order="1"/>
-				<Alpha fromAlpha="0" toAlpha="1" duration="0.1" order="2"/>
-				<Translation parentKey="TransIn" childKey="ScrollContents" offsetX="0" offsetY="0" duration="0" order="2"/>
-				<Scripts>
-					<OnFinished function="BonusObjectiveTracker_OnBlockAnimInFinished"/>
-				</Scripts>
-			</AnimationGroup>
-			<AnimationGroup parentKey="AnimOut">
-				<Alpha fromAlpha="1" toAlpha="0" duration="0.5" startDelay="3.5" order="1"/>
-				<Scripts>
-					<OnFinished function="BonusObjectiveTracker_OnBlockAnimOutFinished"/>
-				</Scripts>
-			</AnimationGroup>
-		</Animations>
-		<Scripts>
-			<OnLoad>
-				self:SetWidth(OBJECTIVE_TRACKER_LINE_WIDTH);
-			</OnLoad>
-			<OnEnter function="BonusObjectiveTracker_OnBlockEnter"/>
-			<OnLeave function="BonusObjectiveTracker_OnBlockLeave"/>
-			<OnMouseUp function="BonusObjectiveTracker_OnBlockClick" />
-		</Scripts>
-	</ScrollFrame>
 
 	<Frame name="BonusTrackerProgressBarFlareAnimTemplate" enableMouse="false" virtual="true">
 		<Size x="100" y="38"/>
@@ -205,7 +101,7 @@
 		</Animations>
 	</Frame>
 
-	<Frame name="BonusTrackerProgressBarTemplate" virtual="true" hidden="true">
+	<Frame name="BonusTrackerProgressBarTemplate" mixin="BonusObjectiveTrackerProgressBarMixin" virtual="true" hidden="true">
 		<Size x="192" y="38"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -324,70 +220,72 @@
 
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				self.Bar.Icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
-			</OnLoad>
-			<OnEvent function="BonusObjectiveTrackerProgressBar_OnEvent"/>
+			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</Frame>
 
-    <Frame name="ObjectiveTrackerBonusRewardsFrame" inherits="BonusObjectiveRewardsFrameTemplate" />
-	<Frame name="ObjectiveTrackerWorldQuestRewardsFrame" inherits="BonusObjectiveRewardsFrameTemplate" />
-
-	<Frame name="ObjectiveTrackerBonusBannerFrame" parent="UIParent" hidden="true">
+	<Frame name="ObjectiveTrackerTopBannerFrame" mixin="ObjectiveTrackerTopBannerMixin" parent="UIParent" hidden="true">
 		<Size x="128" y="128"/>
 		<Anchors>
 			<Anchor point="TOP" x="0" y="-170"/>
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="Icon" hidden="false" alpha="0" alphaMode="BLEND" atlas="bonusobjectives-title-icon" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="4"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="BACKGROUND" textureSubLevel="1">
-				<Texture parentKey="Icon2" hidden="false" alpha="0" alphaMode="ADD" atlas="bonusobjectives-title-icon" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="BACKGROUND" textureSubLevel="2">
-				<Texture parentKey="Icon3" hidden="false" alpha="0" alphaMode="ADD" atlas="bonusobjectives-title-icon" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="BORDER">
-				<Texture parentKey="BG1" hidden="false" alpha="0" alphaMode="BLEND" atlas="bonusobjectives-title-bg" useAtlasSize="true">
+				<Texture parentKey="BlackBar" alpha="1" atlas="UI-World-Quest-Black">
+					<Size x="330" y="75"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="BORDER" textureSubLevel="1">
-				<Texture parentKey="BG2" hidden="false" alpha="0" alphaMode="ADD" atlas="bonusobjectives-title-bg" useAtlasSize="true">
+				<Texture parentKey="DownLineGlow" atlas="UI-World-Quest-golden-line-glow" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="CENTER"/>
+						<Anchor point="CENTER" x="0" y="-37"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="UpLineGlow" atlas="UI-World-Quest-golden-line-glow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="37"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="DownLine" alpha="0" atlas="UI-World-Quest-golden-line" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-37"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="UpLine" alpha="0" atlas="UI-World-Quest-golden-line" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="37"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="FiligreeGlow" alpha="0" atlas="UI-World-Quest-Filigree-glow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" y="-40"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Spark" alpha="0" alphaMode="ADD" atlas="UI-World-Quest-spark" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="-160" y="37"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
+				<Texture parentKey="Filigree" alpha="0" atlas="UI-World-Quest-Filigree" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" y="-40"/>
+					</Anchors>
+				</Texture>				
 				<FontString parentKey="Title" inherits="QuestFont_Super_Huge" alpha="0">
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.BG1" x="0" y="16"/>
+						<Anchor point="CENTER" relativeKey="$parent.BlackBar" x="0" y="16"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="TitleFlash" inherits="QuestFont_Super_Huge" alpha="0">
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.BG1" x="0" y="16"/>
-					</Anchors>
-					<Color r="1" g="1" b="1"/>
-				</FontString>
-				<FontString parentKey="BonusLabel" inherits="GameFontHighlightLarge" alpha="0">
+				<FontString parentKey="Subtitle" inherits="GameFontHighlightLarge" alpha="0">
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-7"/>
 					</Anchors>
@@ -395,97 +293,36 @@
 			</Layer>
 		</Layers>
 		<Animations>
-			<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
-				<Scale childKey="BG1" duration="0.33" order="1" fromScaleX="0.001" fromScaleY="1" toScaleX="1" toScaleY="1"/>
-				<Alpha childKey="BG1" duration="0" order="1" fromAlpha="0" toAlpha="1"/>
-				<Scale childKey="BG2" duration="0.33" order="1" fromScaleX="0.001" fromScaleY="1" toScaleX="1" toScaleY="1"/>
-				<Alpha childKey="BG2" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="BG2" startDelay="0.33" smoothing="IN" duration="0.33" order="1" fromAlpha="1" toAlpha="0"/>
-				<Alpha childKey="Title" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="BonusLabel" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="TitleFlash" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="TitleFlash" startDelay="0.33" smoothing="IN" duration="0.33" order="1" fromAlpha="1" toAlpha="0"/>
-				<Alpha childKey="Icon" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
-				<Scale childKey="Icon" smoothing="IN" duration="0.33" order="1" fromScaleX="1.4" fromScaleY="1.4" toScaleX="1" toScaleY="1"/>
-				<Alpha childKey="Icon2" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="Icon2" startDelay="0.33" smoothing="IN" duration="0.33" order="1" fromAlpha="1" toAlpha="0"/>
-				<Scale childKey="Icon2" smoothing="IN" duration="0.33" order="1" fromScaleX="1.4" fromScaleY="1.4" toScaleX="1" toScaleY="1"/>
-				<Alpha childKey="Icon3" duration="0.33" order="1" fromAlpha="0" toAlpha="0.35"/>
-				<Alpha childKey="Icon3" startDelay="0.33" smoothing="IN" duration="0.33" order="1" fromAlpha="0.35" toAlpha="0"/>
-				<Scale childKey="Icon3" smoothing="IN" duration="0.33" order="1" fromScaleX="1.8" fromScaleY="1.8" toScaleX="1" toScaleY="1"/>
-				<Alpha childKey="BG1" startDelay="2.5" smoothing="IN" duration="0.46" order="1" fromAlpha="1" toAlpha="0"/>
-				<Alpha childKey="Title" startDelay="2.5" smoothing="IN" duration="0.46" order="1" fromAlpha="1" toAlpha="0"/>
-				<Alpha childKey="BonusLabel" startDelay="2.5" smoothing="IN" duration="0.46" order="1" fromAlpha="1" toAlpha="0"/>
-				<Alpha childKey="Icon" startDelay="2.5" smoothing="IN" duration="0.46" order="1" fromAlpha="1" toAlpha="0"/>
-				<Scale childKey="BG1" startDelay="2.5" smoothing="IN" duration="0.46" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.55" toScaleY="0.55"/>
-				<Scale childKey="Title" startDelay="2.5" smoothing="IN" duration="0.46" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.55" toScaleY="0.55"/>
-				<Scale childKey="BonusLabel" startDelay="2.5" smoothing="IN" duration="0.46" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.55" toScaleY="0.55"/>
-				<Scale childKey="Icon" startDelay="2.5" smoothing="IN" duration="0.46" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.55" toScaleY="0.55"/>
-				<Translation parentKey="BG1Translation" childKey="BG1" startDelay="2.5" smoothing="IN" duration="0.46" order="1" offsetX="269.1" offsetY="-84.7"/>
-				<Translation parentKey="TitleTranslation" childKey="Title" startDelay="2.5" smoothing="IN" duration="0.46" order="1" offsetX="269.1" offsetY="-84.7"/>
-				<Translation parentKey="BonusLabelTranslation" childKey="BonusLabel" startDelay="2.5" smoothing="IN" duration="0.46" order="1" offsetX="269.1" offsetY="-84.7"/>
-				<Translation parentKey="IconTranslation" childKey="Icon" startDelay="2.5" smoothing="IN" duration="0.46" order="1" offsetX="269.1" offsetY="-84.7"/>
-				<Scripts>
-					<OnFinished function="ObjectiveTrackerBonusBannerFrame_OnAnimFinished"/>
-				</Scripts>
+			<AnimationGroup parentKey="PopAnim" setToFinalAlpha="true">
+				<Scale childKey="FiligreeGlow" duration="0.1" order="1" smoothing="IN" fromScaleX="0.9" fromScaleY="0.9" toScaleX="1.2" toScaleY="1.2"/>
+				<Scale childKey="FiligreeGlow" duration="0.1" order="1" startDelay="0.1" smoothing="IN" fromScaleX="1.2" fromScaleY="1.2" toScaleX="0.9" toScaleY="0.9"/>
+				<Alpha childKey="FiligreeGlow" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="FiligreeGlow" duration="0.2" order="1" startDelay="0.5" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Filigree" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="BlackBar" duration="0.35" order="1" startDelay="0.15" smoothing="OUT" fromScaleX="0" fromScaleY="1" toScaleX="1" toScaleY="1"/>
+				<Scale childKey="DownLineGlow" duration="0.35" order="1" startDelay="0.15" smoothing="OUT" fromScaleX="0" fromScaleY="1" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="DownLineGlow" duration="0.2" order="1" startDelay="0.5" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="UpLineGlow" duration="0.35" order="1" startDelay="0.15" smoothing="OUT" fromScaleX="0" fromScaleY="1" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="UpLineGlow" duration="0.2" order="1" startDelay="0.5" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="DownLine" duration="0.1" order="1" startDelay="0.5" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="UpLine" duration="0.1" order="1" startDelay="0.5" fromAlpha="0" toAlpha="1"/>
+				<Translation childKey="Spark" duration="0.8" order="1" startDelay="0.3" smoothing="IN_OUT" offsetX="300" offsetY="0"/>
+				<Alpha childKey="Spark" duration="0.3" order="1" startDelay="0.4" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Spark" duration="0.45" order="1" startDelay="0.6" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Title" startDelay="0.17" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Subtitle" startDelay="0.17" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+			</AnimationGroup>		
+			<AnimationGroup parentKey="SlideAnim" setToFinalAlpha="true">
+				<Scale startDelay="0.7" smoothing="IN" duration="0.35" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.55" toScaleY="0.55"/>
+				<Alpha startDelay="0.7" smoothing="IN" duration="0.35" order="1" fromAlpha="1" toAlpha="0"/>
+				<Translation parentKey="Translation" startDelay="0.7" smoothing="IN" duration="0.35" order="1" offsetX="0" offsetY="0"/>
 			</AnimationGroup>
 		</Animations>
 		<Scripts>
-			<OnLoad function="ObjectiveTrackerBonusBannerFrame_OnLoad"/>
+			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
-
-	<Frame name="BonusObjectiveTrackerHeaderTemplate" inherits="ObjectiveTrackerHeaderTemplate" hidden="true" virtual="true">
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="TopShadow" atlas="OBJBonusBar-Top" useAtlasSize="true" alpha="0">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-27" y="-24"/>
-					</Anchors>
-					<Color r="1" g="0" b="0"/>
-				</Texture>
-				<Texture parentKey="BottomShadow" atlas="OBJBonusBar-Top" useAtlasSize="true" alpha="0">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-27" y="0"/>
-					</Anchors>
-					<TexCoords left="0" right="1" top="1" bottom="0"/>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Animations>
-			<AnimationGroup parentKey="ShadowAnim">
-				<Alpha childKey="TopShadow" fromAlpha="0" toAlpha="1" duration="0.05" startDelay="0.05" order="1"/>
-				<Alpha childKey="BottomShadow" fromAlpha="0" toAlpha="1" duration="0.05" order="2"/>
-				<Translation parentKey="TransAnim" childKey="BottomShadow" offsetX="0" offsetY="-100" duration="1" endDelay="1" order="3"/>
-				<Alpha childKey="TopShadow" fromAlpha="1" toAlpha="0" duration="0.2" order="4"/>
-				<Alpha childKey="BottomShadow" fromAlpha="1" toAlpha="0" duration="0.2" order="4"/>
-			</AnimationGroup>
-		</Animations>
-		<Scripts>
-			<OnLoad function="BonusObjectiveTracker_OnHeaderLoad" />
-			<OnEvent function="BonusObjectiveTracker_OnEvent"/>
-		</Scripts>
-	</Frame>
-
-	<Frame parent="ObjectiveTrackerBlocksFrame" inherits="BonusObjectiveTrackerHeaderTemplate" hidden="true">
-		<KeyValues>
-			<KeyValue key="ModuleName" value="BONUS_OBJECTIVE_TRACKER_MODULE" />
-			<KeyValue key="RewardsFrame" value="ObjectiveTrackerBonusRewardsFrame" type="global" />
-			<KeyValue key="DefaultHeaderText" value="TRACKER_HEADER_BONUS_OBJECTIVES" type="global"/>
-			<KeyValue key="ShowWorldQuests" value="false" type="boolean" />
-		</KeyValues>
-	</Frame>
-
-	<Frame parent="ObjectiveTrackerBlocksFrame" inherits="BonusObjectiveTrackerHeaderTemplate" hidden="true">
-		<KeyValues>
-			<KeyValue key="ModuleName" value="WORLD_QUEST_TRACKER_MODULE" />
-			<KeyValue key="RewardsFrame" value="ObjectiveTrackerWorldQuestRewardsFrame" type="global" />
-			<KeyValue key="DefaultHeaderText" value="TRACKER_HEADER_WORLD_QUESTS" type="global"/>
-			<KeyValue key="ShowWorldQuests" value="true" type="boolean" />
-		</KeyValues>
-		<Scripts>
-			<!-- Remove event handler, not needed for world quests currently -->
-			<OnEvent />
-		</Scripts>
-	</Frame>
+	
+	<Frame name="BonusObjectiveTracker" mixin="BonusObjectiveTrackerMixin" inherits="ObjectiveTrackerModuleTemplate"/>
 </Ui>

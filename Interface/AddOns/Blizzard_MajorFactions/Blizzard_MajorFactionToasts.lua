@@ -1,5 +1,6 @@
 MajorFactionUnlockToasts = {};
 
+-- Entry Ids in the UIScriptedAnimationEffect table.
 local majorFactionSwirlEffects = 
 {
 	Expedition = {152},
@@ -8,8 +9,13 @@ local majorFactionSwirlEffects =
 	Valdrakken = {152},
 	Niffen = {152},
 	Dream = {152},
+	web = {178},
+	storm = {178},
+	candle = {178},
+	flame = {178},
 };
 
+-- Entries in the GlobalColor table.
 local majorFactionColorFormat = "%s_MAJOR_FACTION_COLOR";
 
 function MajorFactionUnlockToasts.GetSwirlEffectsByTextureKit(textureKit)
@@ -36,6 +42,43 @@ function MajorFactionCelebrationBannerMixin:SetMajorFactionTextureKit(textureKit
 	self:CancelIconSwirlEffects();
 
 	self:AddSwirlEffects(textureKit);
+end
+
+function MajorFactionCelebrationBannerMixin:SetMajorFactionExpansionLayoutInfo(expansionLayoutInfo)
+	if not expansionLayoutInfo then
+		return;
+	end
+
+	if not expansionLayoutInfo.textureDataTable then
+		return;
+	end
+
+	--[[ Loop through each entry and set the values explicitly provided.
+		Example format:
+		textureDataTable = {
+			["ToastBG"] = {
+				atlas = "majorfaction-celebration-toastBG",
+				useAtlasSize = true,
+				anchors = {
+					["TOP"] = { x = 0, y = -77, relativePoint = "TOP" },
+				},
+			},
+	]]
+	for textureKey, textureData in pairs(expansionLayoutInfo.textureDataTable) do
+		local texture = self[textureKey];
+		if texture then
+			if textureData.atlas then
+				local useAtlasSize = textureData.useAtlasSize or false;
+				texture:SetAtlas(textureData.atlas, useAtlasSize);
+			end
+
+			if textureData.anchors then
+				for anchorKey, anchorPoint in pairs(textureData.anchors) do
+					texture:SetPoint(anchorKey, self, anchorPoint.relativePoint, anchorPoint.x, anchorPoint.y);
+				end
+			end
+		end
+	end
 end
 
 function MajorFactionCelebrationBannerMixin:AddSwirlEffects(textureKit)

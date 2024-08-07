@@ -27,7 +27,7 @@
 					<Layer level="BORDER">
 						<Texture parentKey="CloseButtonBorder">
 							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.CloseButton" x="0" y="0"/>
+								<Anchor point="CENTER" relativeKey="$parent" x="0" y="0"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -85,6 +85,7 @@
 				<KeyValues>
 					<KeyValue key="showUncollected" value="true" type="boolean"/>
 					<KeyValue key="canCastSpellsOnFollowers" value="true" type="boolean"/>
+					<KeyValue key="hasContextMenu" value="true" type="boolean"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="33" y="-64"/>
@@ -105,13 +106,6 @@
 							<OnTextChanged function="GarrisonFollowListEditBox_OnTextChanged"/>
 						</Scripts>
 					</EditBox>
-					<Frame name="OrderHallFollowerOptionDropDown" parentKey="OptionDropDown" inherits="UIDropDownMenuTemplate">
-						<Scripts>
-							<OnLoad>
-								UIDropDownMenu_Initialize(self, GarrisonFollowerOptionDropDown_Initialize, "MENU");
-							</OnLoad>
-						</Scripts>
-					</Frame>
 				</Frames>
 				<Scripts>
 					<OnShow method="OnShow"/>
@@ -187,10 +181,10 @@
 							<Layer level="BACKGROUND">
 								<Texture parentKey="Background" atlas="legionmission-background-combatally" useAtlasSize="false">
 									<Anchors>
-										<Anchor point="LEFT" relativeKey="$parent.$parent.Left" x="6" y="0"/>
-										<Anchor point="RIGHT" relativeKey="$parent.$parent.Right" x="-6" y="0"/>
-										<Anchor point="TOP" relativeKey="$parent.$parent.Top" x="0" y="-6"/>
-										<Anchor point="BOTTOM" relativeKey="$parent.$parent.Bottom" x="0" y="7"/>
+										<Anchor point="LEFT" relativeKey="$parent.$parent" x="6" y="0"/>
+										<Anchor point="RIGHT" relativeKey="$parent.$parent" x="-6" y="0"/>
+										<Anchor point="TOP" relativeKey="$parent.$parent" x="0" y="-6"/>
+										<Anchor point="BOTTOM" relativeKey="$parent.$parent" x="0" y="7"/>
 									</Anchors>
 								</Texture>
 							</Layer>

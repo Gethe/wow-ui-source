@@ -1,3 +1,5 @@
+-- luacheck: ignore 111 (setting non-standard global variable)
+
 local function LocalizeCharacterFrame_zh()
 	for i=1, (CharacterFrame.numTabs or 0) do
 		local tabName = "CharacterFrameTab"..i;

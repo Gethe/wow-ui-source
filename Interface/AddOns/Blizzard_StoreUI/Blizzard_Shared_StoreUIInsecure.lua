@@ -1,5 +1,6 @@
 -- DO NOT PUT ANY SENSITIVE CODE IN THIS FILE
 -- This file does not have access to the secure (forbidden) code.  It is only called via Outbound and no function in this file should ever return values.
+SwapToGlobalEnvironment();
 
 function StoreShowPreviews(displayInfoEntries)
 	ModelPreviewFrame_ShowModels(displayInfoEntries, false);
@@ -76,7 +77,7 @@ if (InGlue()) then
 		end
 
 		if (VASCharacterGUID) then
-			CharacterSelect_SelectCharacterByGUID(VASCharacterGUID);
+			CharacterSelectListUtil.SelectCharacterByGUID(VASCharacterGUID);
 			VASCharacterGUID = nil;
 		end
 	end
@@ -85,3 +86,8 @@ if (InGlue()) then
 		GlueDialog_Show("VAS_PRODUCT_DELIVERED", text, { ["guid"] = guid, ["realmName"] = realmName, ["shouldHandle"] = shouldHandle });
 	end
 end
+
+local storePreviewFrame = CreateFrame("Frame", "StorePreviewFrame", ModelPreviewFrame);
+storePreviewFrame:SetScript("OnShow", StorePreviewFrame_OnShow);
+storePreviewFrame:SetScript("OnHide", StorePreviewFrame_OnHide);
+storePreviewFrame:Show();

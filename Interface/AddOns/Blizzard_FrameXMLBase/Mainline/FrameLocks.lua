@@ -33,7 +33,7 @@ local HIDE_MOST = {
 	TemporaryEnchantFrame = "hidden",
 	ExtraAbilityContainer	= "hidden",
 	OrderHallCommandBar	= "hidden",
-	TalentMicroButtonAlert	="hidden",
+	PlayerSpellsMicroButtonAlert	="hidden",
 	PVPMatchScoreboard = "hidden",
 	PVPMatchResults = "hidden",
 	UIWidgetTopCenterContainerFrame = "hidden",
@@ -73,6 +73,8 @@ FRAMELOCK_STATES = {
 		ChatFrame1							= "hidden",
 		ChatFrameChannelButton				= "hidden",
 		MicroButtonAndBagsBar				= "hidden",
+		BagsBar 							= "hidden",
+		MicroMenuContainer					= "hidden",
 		--Additional chat frames are added to this list as they are created.
 	}, HIDE_MOST),
 	PETBATTLES = HIDE_MOST,

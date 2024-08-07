@@ -176,15 +176,6 @@
 					<Anchor point="TOPLEFT" x="48" y="-42"/>
 				</Anchors>
 			</Frame>
-			<Frame name="PetFrameDropDown" inherits="UIDropDownMenuTemplate" mixin="PetFrameDropDownMixin" id="1" hidden="true">
-				<Size x="10" y="10"/>
-				<Anchors>
-					<Anchor point="TOP" x="-20" y="-20"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad method="OnLoad"/>
-				</Scripts>
-			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad" inherit="prepend"/>

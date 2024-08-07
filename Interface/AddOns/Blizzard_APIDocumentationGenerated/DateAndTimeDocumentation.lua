@@ -116,6 +116,15 @@ local DateAndTime =
 				{ Name = "serverTimeLocal", Type = "time_t", Nilable = false },
 			},
 		},
+		{
+			Name = "GetWeeklyResetStartTime",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "seconds", Type = "time_t", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -127,12 +136,14 @@ local DateAndTime =
 		{
 			Name = "TimeEventFlag",
 			Type = "Enumeration",
-			NumValues = 1,
+			NumValues = 3,
 			MinValue = 1,
-			MaxValue = 1,
+			MaxValue = 4,
 			Fields =
 			{
 				{ Name = "GlueScreenShortcut", Type = "TimeEventFlag", EnumValue = 1 },
+				{ Name = "WeeklyReset", Type = "TimeEventFlag", EnumValue = 2 },
+				{ Name = "GlobalLaunch", Type = "TimeEventFlag", EnumValue = 4 },
 			},
 		},
 	},

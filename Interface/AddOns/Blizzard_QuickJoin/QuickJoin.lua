@@ -34,10 +34,6 @@ do
 		self.entries = CreateFromMixins(QuickJoinEntriesMixin);
 		self.entries:Init();
 
-		self.dropdown = QuickJoinFrameDropDown;
-		UIDropDownMenu_Initialize(self.dropdown, nil, "MENU");
-		UIDropDownMenu_SetInitializeFunction(self.dropdown, QuickJoinFrameDropDown_Initialize);
-
 		self:UpdateScrollFrame();
 	end
 
@@ -174,38 +170,21 @@ function QuickJoinMixin:UpdateJoinButtonState()
 	end
 end
 
-function QuickJoinMixin:ToggleDropDownMenu(quickJoinButton, overrideMemberInfo)
-	self.dropdown.quickJoinButton = quickJoinButton;
-	self.dropdown.quickJoinMember = overrideMemberInfo;
-	ToggleDropDownMenu(1, nil, self.dropdown, "cursor", 3, -3);
-end
-
-function QuickJoinFrameDropDown_Initialize(dropdownFrame, level, menuList)
-	local memberInfo = dropdownFrame.quickJoinMember or dropdownFrame.quickJoinButton.Members[1];
-
+function QuickJoinMixin:OpenContextMenu(quickJoinButton, overrideMemberInfo)
+	local memberInfo = overrideMemberInfo or quickJoinButton.Members[1];
 	if not memberInfo.playerLink then
 		return;
 	end
 
-	local info = UIDropDownMenu_CreateInfo();
-	info.text = memberInfo.name;
-	info.isTitle = true;
-	info.notCheckable = 1;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
+	MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
+		rootDescription:SetTag("MENU_QUICK_JOIN");
 
-	info = UIDropDownMenu_CreateInfo();
-	info.text = WHISPER;
-	info.notCheckable = 1;
-	info.func = function()
-		local link, text = LinkUtil.SplitLink(memberInfo.playerLink);
-		SetItemRef(link, text, "LeftButton");
-	end
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-
-	info = UIDropDownMenu_CreateInfo();
-	info.text = CANCEL;
-	info.notCheckable = 1;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
+		rootDescription:CreateTitle(memberInfo.name);
+		rootDescription:CreateButton(WHISPER, function()
+			local link, text = LinkUtil.SplitLink(memberInfo.playerLink);
+			SetItemRef(link, text, "LeftButton");
+		end);
+	end);
 end
 
 ----------------------------
@@ -262,7 +241,7 @@ function QuickJoinButtonMixin:OnClick(button)
 			self:GetMainPanel():SelectGroup(self:GetEntry():GetGUID());
 		end
 	elseif ( button == "RightButton" ) then
-		self:ToggleDropDownMenu();
+		self:OpenContextMenu();
 	end
 end
 
@@ -278,15 +257,15 @@ end
 
 function QuickJoinButtonMixin:OnHyperlinkClick(link, text, button)
 	if ( button == "RightButton" ) then
-		self:ToggleDropDownMenu(self:FindMemberInfoForLink(link));
+		self:OpenContextMenu(self:FindMemberInfoForLink(link));
 	else
 		-- Forward click to the QuickJoin row
 		self:OnClick(button);
 	end
 end
 
-function QuickJoinButtonMixin:ToggleDropDownMenu(overrideMemberInfo)
-	self:GetMainPanel():ToggleDropDownMenu(self, overrideMemberInfo);
+function QuickJoinButtonMixin:OpenContextMenu(overrideMemberInfo)
+	self:GetMainPanel():OpenContextMenu(self, overrideMemberInfo);
 end
 
 ----------------------------

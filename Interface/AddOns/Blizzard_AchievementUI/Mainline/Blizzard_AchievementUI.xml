@@ -841,7 +841,7 @@
 					</Anchors>
 				</FontString>
 				<FontString parentKey="Reward" inherits="GameFontNormalSmall" hidden="true">
-					<Size x="400" y="20"/>
+					<Size x="355" y="20"/>
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.RewardBackground" relativePoint="TOP" x="0" y="1"/>
 					</Anchors>
@@ -1684,10 +1684,13 @@
 							</Anchors>
 							<TexCoords left="0.419921875" right="0.6796875" top="0.4140625" bottom="0.56640625"/>
 						</Texture>
-						<FontString parentKey="Title" inherits="GameFontNormal" text="ACHIEVEMENT_TITLE">
-							<Size x="200" y="12"/>
+						<FontString parentKey="Title" inherits="GameFontNormalSmall" text="ACHIEVEMENT_TITLE" maxLines="2" mixin="AutoScalingFontStringMixin">
+							<KeyValues>
+								<KeyValue key="minLineHeight" value="8" type="number"/>
+							</KeyValues>
+							<Size x="150" y="20"/>
 							<Anchors>
-								<Anchor point="TOP" relativeKey="$parent.PointBorder" relativePoint="TOP" x="0" y="7"/>
+								<Anchor point="TOP" relativeKey="$parent.PointBorder" relativePoint="TOP" x="0" y="12"/>
 							</Anchors>
 						</FontString>
 						<Texture parentKey="LeftDDLInset" file="Interface\AchievementFrame\UI-Achievement-RightDDLInset" hidden="true">
@@ -2052,7 +2055,7 @@
 							</StatusBar>
 							<StatusBar name="$parentCategory11" inherits="AchievementFrameSummaryCategoryTemplate">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentCategory9" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+									<Anchor point="TOP" relativeTo="$parentCategory9" relativePoint="BOTTOMRIGHT" x="10" y="-10"/>
 								</Anchors>
 							</StatusBar>
 							<StatusBar name="$parentCategory12" inherits="AchievementFrameSummaryCategoryTemplate">
@@ -2339,78 +2342,11 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Frame name="$parentFilterDropDown" hidden="true">
-				<Size x="110" y="32"/>
+			<DropdownButton name="AchievementFrameFilterDropdown" inherits="WowStyle1FilterDropdownTemplate" hidden="true">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="148" y="10"/>
+					<Anchor point="TOPLEFT" x="144" y="8"/>
 				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY">
-						<FontString name="$parentText" parentKey="Text" inherits="GameFontHighlightSmall" justifyH="LEFT" >
-							<Size x="0" y="32"/>
-							<Anchors>
-								<Anchor point="LEFT" x="0" y="4"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Frames>
-					<DropDownToggleButton name="$parentButton">
-						<Size x="24" y="24"/>
-						<Anchors>
-							<Anchor point="TOPRIGHT"/>
-						</Anchors>
-						<Scripts>
-							<OnMouseDown>
-								ToggleDropDownMenu(nil, nil, self:GetParent());
-								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-							</OnMouseDown>
-						</Scripts>
-						<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up">
-							<Size x="24" y="24"/>
-							<Anchors>
-								<Anchor point="RIGHT"/>
-							</Anchors>
-						</NormalTexture>
-						<PushedTexture name="$parentPushedTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down">
-							<Size x="24" y="24"/>
-							<Anchors>
-								<Anchor point="RIGHT"/>
-							</Anchors>
-						</PushedTexture>
-						<DisabledTexture name="$parentDisabledTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled">
-							<Size x="24" y="24"/>
-							<Anchors>
-								<Anchor point="RIGHT"/>
-							</Anchors>
-						</DisabledTexture>
-						<HighlightTexture name="$parentHighlightTexture" file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD">
-							<Size x="24" y="24"/>
-							<Anchors>
-								<Anchor point="RIGHT"/>
-							</Anchors>
-						</HighlightTexture>
-					</DropDownToggleButton>
-					<Frame parentKey="Mouseover" enableMouse="true">
-						<Size x="125" y="32"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" x="-3"/>
-						</Anchors>
-						<Scripts>
-							<OnEnter function="AchievementFrameFilterDropDown_OnEnter"/>
-							<OnLeave>
-								GameTooltip:Hide();
-							</OnLeave>
-						</Scripts>
-					</Frame>
-				</Frames>
-				<Scripts>
-					<OnLoad function="AchievementFrameFilterDropDown_OnLoad"/>
-					<OnHide>
-						CloseDropDownMenus()
-					</OnHide>
-				</Scripts>
-			</Frame>
+			</DropdownButton>
 			<EditBox parentKey="SearchBox" inherits="SearchBoxTemplate" letters="40" hidden="false">
 				<Size x="107" y="30"/>
 				<Anchors>

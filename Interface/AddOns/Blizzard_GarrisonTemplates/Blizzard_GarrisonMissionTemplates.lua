@@ -556,9 +556,9 @@ function GarrisonMission:UpdateStartButton(missionPage)
 		local requiredChampions = missionPage.missionInfo.requiredChampions;
 		if (requiredChampions) then
 			local count = 0;
-		    for i, followerFrame in ipairs(missionPage.Followers) do
+		    for _, followerFrame in ipairs(missionPage.Followers) do
 			    if ( followerFrame.info ) then
-					for i, required in ipairs(requiredChampions) do
+					for _, required in ipairs(requiredChampions) do
 				        if (followerFrame.info.garrFollowerID == required) then
 					        count = count + 1;
 				        end
@@ -1053,8 +1053,8 @@ function GarrisonMission:MissionCompleteInitialize(missionList, index)
 	end
 	-- if there are fewer followers than encounters, cycle through followers to match up against encounters
 	for i = encounterIndex, #encounters do
-		local index = mod(i, encounterIndex) + 1;
-		local animInfo = missionCompleteFrame.animInfo[index];
+		local animIndex = mod(i, encounterIndex) + 1;
+		local animInfo = missionCompleteFrame.animInfo[animIndex];
 		missionCompleteFrame.animInfo[i] = {
 								displayID = animInfo.displayID,
 								showWeapon = animInfo.showWeapon,
@@ -2116,7 +2116,7 @@ function GarrisonMissionPage_SetReward(frame, reward, missionComplete)
 				frame.currencyQuantity = reward.quantity;
 
 				frame.Name:SetText(currencyName);
-				local currencyColor = GetColorForCurrencyReward(frame.currencyID, currencyQuantity)
+				local currencyColor = GetColorForCurrencyReward(frame.currencyID, currencyQuantity);
 				frame.Name:SetTextColor(currencyColor:GetRGB());
 				frame.Icon:SetTexture(currencyTexture);
 
@@ -2125,7 +2125,6 @@ function GarrisonMissionPage_SetReward(frame, reward, missionComplete)
 				end
 
 				if ( not missionComplete and currencyQuantity > 1 ) then
-					local currencyColor = GetColorForCurrencyReward(frame.currencyID, currencyQuantity)
 					frame.Quantity:SetTextColor(currencyColor:GetRGB());
 					frame.Quantity:SetText(currencyQuantity);
 					frame.Quantity:Show();

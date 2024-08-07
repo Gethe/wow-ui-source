@@ -33,7 +33,6 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, owne
 		local display = self.CapacitiveDisplay;
 
 		local numPending = C_Garrison.GetNumPendingShipments();
-		local display = self.CapacitiveDisplay;
 
 		if (not numPending) then
 			return;

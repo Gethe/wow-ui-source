@@ -523,7 +523,7 @@ function SoulbindConduitNodeMixin:DisplayConduit()
 		if not conduit.Matches(self:GetConduit()) then
 			local onConduitSpellLoad = function()
 				local spellID = conduit:GetSpellID();
-				self.Icon:SetTexture(GetSpellTexture(spellID));
+				self.Icon:SetTexture(C_Spell.GetSpellTexture(spellID));
 				self.Icon:Show();
 			end
 			conduit:ContinueOnSpellLoad(onConduitSpellLoad);

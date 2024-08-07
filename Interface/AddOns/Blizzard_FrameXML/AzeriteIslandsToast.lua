@@ -33,14 +33,18 @@ function AzeriteIslandsToastMixin:GetAccumulator(isPlayer)
 	return self.partyAccumulator;
 end
 
+local function OnlyHide(pool, frame)
+	frame:Hide();
+end
+
 function AzeriteIslandsToastMixin:GetToastPool(isPlayer)
 	-- If we end up with more types then swap this to a pool collection
 	if isPlayer then
-		self.playerToastPool = self.playerToastPool or CreateFramePool("FRAME", self, "AzeriteIslandsPlayerToastTextTemplate", FramePool_Hide);
+		self.playerToastPool = self.playerToastPool or CreateFramePool("FRAME", self, "AzeriteIslandsPlayerToastTextTemplate", OnlyHide);
 		return self.playerToastPool;
 	end
 
-	self.partyToastPool = self.partyToastPool or CreateFramePool("FRAME", self, "AzeriteIslandsPartyToastTextTemplate", FramePool_Hide);
+	self.partyToastPool = self.partyToastPool or CreateFramePool("FRAME", self, "AzeriteIslandsPartyToastTextTemplate", OnlyHide);
 	return self.partyToastPool;
 end
 

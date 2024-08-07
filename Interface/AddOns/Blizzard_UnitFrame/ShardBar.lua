@@ -70,7 +70,7 @@ end
 
 function WarlockShardMixin.OnRelease(framePool, self)
 	self:ResetVisuals();
-	FramePool_HideAndClearAnchors(framePool, self);
+	Pool_HideAndClearAnchors(framePool, self);
 end
 
 function WarlockShardMixin:Update(powerAmount, isBarFull)

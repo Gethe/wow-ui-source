@@ -1,3 +1,4 @@
+ScenariosList = nil;
 NUM_SCENARIO_CHOICE_BUTTONS = 19;
 SCENARIOS_CURRENT_FILTER = LFGList_DefaultFilterFunction;
 
@@ -209,18 +210,7 @@ function ScenarioQueueFrameFindGroupButton_Update()
 	if ( mode == "queued" or mode == "rolecheck" or mode == "proposal" or mode == "suspended" ) then
 		ScenarioQueueFrameFindGroupButton:SetText(LEAVE_QUEUE);
 	else
-		-- see if it's heroic 
-		local activeType = ScenarioQueueFrame.type;
-		local isHeroic;
-		if ( activeType and activeType ~= "specific" ) then
-			local difficultyID = select(LFG_RETURN_VALUES.difficulty, GetLFGDungeonInfo(activeType));
-			if ( difficultyID ) then
-				local _;
-				_, _, isHeroic = GetDifficultyInfo(difficultyID);
-			end
-		end
-		
-		if ( (IsInGroup() and GetNumGroupMembers() > 1) or isHeroic ) then
+		if (IsInGroup() and GetNumGroupMembers() > 1) then
 			ScenarioQueueFrameFindGroupButton:SetText(JOIN_AS_GROUP);
 		else
 			ScenarioQueueFrameFindGroupButton:SetText(FIND_A_GROUP);
@@ -282,62 +272,50 @@ function ScenarioQueueFrameChoiceButton_OnEnter(self)
 	LFGDungeonListButton_OnEnter(self, YOU_MAY_NOT_QUEUE_FOR_SCENARIO);
 end
 
--- Dropdown
-function ScenarioQueueFrameTypeDropDown_SetUp(self)
-	UIDropDownMenu_SetWidth(self, 180);
-	UIDropDownMenu_Initialize(self, ScenarioQueueFrameTypeDropDown_Initialize);
-	UIDropDownMenu_SetSelectedValue(ScenarioQueueFrame.Dropdown, ScenarioQueueFrame.type);
+function ScenarioQueueFrame_OnLoad(self)
+	self.Dropdown:SetWidth(180);
 end
 
-function ScenarioQueueFrameTypeDropDown_Initialize()
-	local info = UIDropDownMenu_CreateInfo();
-	
-	info.text = SPECIFIC_SCENARIOS;
-	info.value = "specific";
-	info.func = ScenarioQueueFrameTypeDropDown_OnClick;
-	info.checked = ScenarioQueueFrame.type == info.value;
-	UIDropDownMenu_AddButton(info);
+function ScenarioQueueFrame_OnShow(self)
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
+	QueueUpdater:RequestInfo();
+	QueueUpdater:AddRef();
 
-	for i=1, GetNumRandomScenarios() do
-		local id, name = GetRandomScenarioInfo(i);
-		local isAvailableForAll, isAvailableForPlayer = IsLFGDungeonJoinable(id);
-		if ( isAvailableForPlayer ) then
-			if ( isAvailableForAll ) then
-				info.text = name;
-				info.value = id;
-				info.isTitle = nil;
-				info.func = ScenarioQueueFrameTypeDropDown_OnClick;
-				info.disabled = nil;
-				info.checked = (ScenarioQueueFrame.type == info.value);
-				info.tooltipWhileDisabled = nil;
-				info.tooltipOnButton = nil;
-				info.tooltipTitle = nil;
-				info.tooltipText = nil;
-				UIDropDownMenu_AddButton(info);
-			else
-				info.text = name;
-				info.value = id;
-				info.isTitle = nil;
-				info.func = nil;
-				info.disabled = 1;
-				info.checked = nil;
-				info.tooltipWhileDisabled = 1;
-				info.tooltipOnButton = 1;
-				info.tooltipTitle = YOU_MAY_NOT_QUEUE_FOR_THIS;
-				info.tooltipText = LFGConstructDeclinedMessage(id);
-				UIDropDownMenu_AddButton(info);
+	local function IsSelected(dungeonID)
+		return ScenarioQueueFrame.type == dungeonID;
+	end
+
+	local function SetSelected(dungeonID)
+		ScenarioQueueFrame_SetTypeInternal(dungeonID);
+	end
+
+	self.Dropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_SCENARIO_FINDER");
+
+		rootDescription:CreateRadio(SPECIFIC_SCENARIOS, IsSelected, SetSelected, "specific");
+
+		for i=1, GetNumRandomScenarios() do
+			local dungeonID, name = GetRandomScenarioInfo(i);
+			local isAvailableForAll, isAvailableForPlayer = IsLFGDungeonJoinable(dungeonID);
+			if isAvailableForPlayer then
+				if isAvailableForAll then
+					rootDescription:CreateRadio(name, IsSelected, SetSelected, dungeonID);
+				else
+					local radio = rootDescription:CreateRadio(name, IsSelected, SetSelected, dungeonID);
+					radio:SetEnabled(false);
+					radio:SetTooltip(function(tooltip, description)
+						GameTooltip_SetTitle(tooltip, YOU_MAY_NOT_QUEUE_FOR_THIS);
+						GameTooltip_AddErrorLine(tooltip, LFGConstructDeclinedMessage(dungeonID));
+					end);
+				end
 			end
 		end
-	end
+	end);
 end
 
-function ScenarioQueueFrameTypeDropDown_OnClick(self)
-	ScenarioQueueFrame_SetType(self.value);
-end
-
-function ScenarioQueueFrame_SetType(value)	--"specific" for the list or the record id for a single dungeon
+function ScenarioQueueFrame_SetTypeInternal(value)
 	ScenarioQueueFrame.type = value;
-	UIDropDownMenu_SetSelectedValue(ScenarioQueueFrame.Dropdown, value);
+
 	if ( value == "specific" ) then
 		ScenarioQueueFrame_SetTypeSpecific();
 	else
@@ -345,6 +323,11 @@ function ScenarioQueueFrame_SetType(value)	--"specific" for the list or the reco
 		ScenarioQueueFrameRandom_UpdateFrame();
 	end
 	ScenarioQueueFrameFindGroupButton_Update();
+end
+
+function ScenarioQueueFrame_SetType(value)	--"specific" for the list or the record id for a single dungeon
+	ScenarioQueueFrame_SetTypeInternal(value);
+	ScenarioQueueFrame.Dropdown:GenerateMenu();
 end
 
 function ScenarioQueueFrame_SetTypeRandom()

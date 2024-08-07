@@ -299,7 +299,7 @@ do
 end
 
 local function FramePool_HideAndClearAnchorsWithResetCallback(pool, frame)
-	FramePool_HideAndClearAnchors(pool, frame);
+	Pool_HideAndClearAnchors(pool, frame);
 	frame:OnFramePoolReset();
 end
 
@@ -452,7 +452,7 @@ function OrderHallTalentFrameMixin:OnLoad()
 	self.choiceTrackTexturePool = CreateTexturePool(self, "BACKGROUND", 1, "GarrisonTalentTrackTemplate");
 	self.choiceTexturePool = CreateTexturePool(self, "OVERLAY", 1, "GarrisonTalentChoiceTemplate");
 	self.arrowTexturePool = CreateTexturePool(self, "BACKGROUND", 2, "GarrisonTalentArrowTemplate");
-	self.fontStringPools = CreateFontStringPoolCollection();
+	self.fontStringPools = CreateFontStringPoolCollection(self);
 	self.buttonAnimationPool = CreateFramePool("FRAME", self, "GarrisonTalentButtonAnimationTemplate", FramePool_HideAndClearAnchorsWithResetCallback);
 	self.researchingTalentID = 0;
 end
@@ -976,7 +976,12 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 	if layoutOptions.fontStrings then
 		self.fontStrings = {};
 		for i, stringDesc in ipairs(layoutOptions.fontStrings) do
-			local newString = self.fontStringPools:Acquire(stringDesc.template, self, stringDesc.layer, stringDesc.subLayer);
+			local pool = self.fontStringPools:GetOrCreatePool(self, stringDesc.layer, stringDesc.subLayer, stringDesc.template);
+			local newString = pool:Acquire();
+			if stringDesc.layer then
+				newString:SetDrawLayer(stringDesc.layer, stringDesc.subLayer);
+			end
+
 			newString:SetText(stringDesc.text);
 			newString:SetPoint(stringDesc.point, self, stringDesc.relativePoint, stringDesc.xOfs, stringDesc.yOfs);
 			newString:Show();

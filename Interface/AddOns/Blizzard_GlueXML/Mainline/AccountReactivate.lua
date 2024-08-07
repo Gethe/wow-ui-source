@@ -200,7 +200,7 @@ end
 
 function ReactivateAccountDialog_Open()
 	local self = ReactivateAccountDialog;
-	if (not ReactivateAccountDialog_CanOpen()) then
+	if (not ReactivateAccountDialog_CanOpen() or CAN_BUY_RESULT_FOUND == LE_TOKEN_RESULT_ERROR_NOT_ENOUGH_PURCHASED_GAME_TIME) then
 		self:Hide();
 		return;
 	end
@@ -262,7 +262,7 @@ function SubscriptionRequestDialog_Open()
 		self.Reactivate:SetEnabled(marketPrice > 0);
 		self:SetHeight(self.Text:GetHeight() + 16 + self.ButtonDivider:GetHeight() + self.Accept:GetHeight() + 50 + self.Reactivate:GetHeight());
 	elseif (CAN_BUY_RESULT_FOUND == LE_TOKEN_RESULT_SUCCESS_NO and enabled and marketPrice) then
-		self.Reactivate.tooltip = ERR_NOT_ENOUGH_GOLD;
+		self.Reactivate.tooltip = ACCOUNT_REACTIVATE_ERR_NOT_ENOUGH_GOLD_TOOLTIP;
 		self.Reactivate:SetText(ACCOUNT_REACTIVATE_ACCEPT:format(GetMoneyString(marketPrice, true)));
 		self.ButtonDivider:Show();
 		self.Reactivate:Show();

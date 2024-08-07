@@ -117,6 +117,13 @@
 					</Layer>
 				</Layers>
 			</StatusBar>
+			<StatusBar name="$parentTempMaxHealthLoss" parentKey="TempMaxHealthLoss" hidden="true" drawLayer="ARTWORK" useParentLevel="true" mixin="TempMaxHealthLossMixin">
+				<BarTexture atlas="Raid Frame"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="1" y="-1"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-1" y="1"/>
+				</Anchors>
+			</StatusBar>
 			<StatusBar name="$parentPowerBar" parentKey="powerBar" useParentLevel="true">
 				<Layers>
 					<Layer level="BACKGROUND" textureSubLevel="2">
@@ -185,12 +192,6 @@
 					</OnLeave>
 				</Scripts>
 			</Button>
-			<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" parentKey="dropDown" hidden="true">
-				<Size x="10" y="10"/>
-				<Anchors>
-					<Anchor point="TOP" x="10" y="-60"/>
-				</Anchors>
-			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad function="CompactUnitFrame_OnLoad"/>

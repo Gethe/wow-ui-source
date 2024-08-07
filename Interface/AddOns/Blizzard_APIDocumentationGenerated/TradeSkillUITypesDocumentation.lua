@@ -129,6 +129,10 @@ local TradeSkillUITypes =
 				{ Name = "operationID", Type = "number", Nilable = false, Default = 0 },
 				{ Name = "firstCraftReward", Type = "bool", Nilable = false, Default = false },
 				{ Name = "isEnchant", Type = "bool", Nilable = false, Default = false },
+				{ Name = "hasIngenuityProc", Type = "bool", Nilable = false, Default = false },
+				{ Name = "concentrationCurrencyID", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "concentrationSpent", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "ingenuityRefund", Type = "number", Nilable = false, Default = 0 },
 			},
 		},
 		{
@@ -171,6 +175,9 @@ local TradeSkillUITypes =
 				{ Name = "upperSkillTreshold", Type = "number", Nilable = false },
 				{ Name = "guaranteedCraftingQualityID", Type = "number", Nilable = false },
 				{ Name = "bonusStats", Type = "table", InnerType = "CraftingOperationBonusStatInfo", Nilable = false },
+				{ Name = "concentrationCurrencyID", Type = "number", Nilable = false },
+				{ Name = "concentrationCost", Type = "number", Nilable = false },
+				{ Name = "ingenuityRefund", Type = "number", Nilable = false },
 			},
 		},
 		{

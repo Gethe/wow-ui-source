@@ -1,8 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 
-	<Script file="Blizzard_AutoQuestPopUpTracker.lua"/>
-
 	<Texture name="AutoQuest-QuestLogIcon" file="Interface\QuestFrame\AutoQuest-Parts" virtual="true">
 		<Size x="10" y="13"/>
 		<TexCoords left="0.00195313" right="0.02148438" top="0.01562500" bottom="0.21875000"/>
@@ -44,16 +42,22 @@
 		<TexCoords left="0.21679688" right="0.29882813" top="0.01562500" bottom="0.67187500"/>
 	</Texture>
 
-	<ScrollFrame name="AutoQuestPopUpBlockTemplate" enableMouse="true" virtual="true" hidden="true">
-		<Size x="232" y="68"/>
+	<Frame name="AutoQuestPopUpBlockTemplate" mixin="AutoQuestPopupBlockMixin" enableMouse="true" virtual="true" hidden="true">
+		<Size x="236" y="68"/>
 		<Scripts>
-			<OnMouseUp function="AutoQuestPopUpTracker_OnMouseUp"/>
+			<OnMouseUp method="OnMouseUp"/>
 		</Scripts>
-		<ScrollChild>
-			<Frame parentKey="ScrollChild">
-				<Size x="227" y="68"/>
+		<Frames>
+			<Frame parentKey="Contents">
+				<Size x="236" y="68"/>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
+						<Texture setAllPoints="true">
+							<Color r="0" g="0" b="1" a="0"/>
+						</Texture>
 						<Texture parentKey="Bg">
 							<Anchors>
 								<Anchor point="TOPLEFT" x="36" y="-4"/>
@@ -70,7 +74,7 @@
 						</Texture>
 						<Texture parentKey="BorderTopRight" inherits="AutoQuestToastBorder-TopRight">
 							<Anchors>
-								<Anchor point="TOPRIGHT" x="4" y="0" />
+								<Anchor point="TOPRIGHT" x="0" y="0" />
 							</Anchors>
 						</Texture>
 						<Texture parentKey="BorderBotLeft" inherits="AutoQuestToastBorder-BotLeft">
@@ -80,7 +84,7 @@
 						</Texture>
 						<Texture parentKey="BorderBotRight" inherits="AutoQuestToastBorder-BotRight">
 							<Anchors>
-								<Anchor point="BOTTOMRIGHT" x="4" y="0"/>
+								<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
 							</Anchors>
 						</Texture>
 						<Texture parentKey="BorderLeft" file="Interface\QuestFrame\AutoQuestToastBorder-LeftRight" vertTile="true">
@@ -149,7 +153,7 @@
 							<Size x="158" y="30"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.QuestIconBg" relativePoint="RIGHT" x="-6"/>
-								<Anchor point="RIGHT" x="-8"/>
+								<Anchor point="RIGHT" x="-12"/>
 								<!-- top anchor set programatically -->
 							</Anchors>
 							<Color r="1" g="1" b="1"/>
@@ -157,7 +161,7 @@
 						<FontString parentKey="TopText" inherits="GameFontNormalSmall" >
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.QuestIconBg" relativePoint="RIGHT" x="-6"/>
-								<Anchor point="RIGHT" x="-8"/>
+								<Anchor point="RIGHT" x="-12"/>
 								<!-- top anchor set programatically -->
 							</Anchors>
 						</FontString>
@@ -165,60 +169,41 @@
 							<Anchors>
 								<Anchor point="BOTTOM" x="0" y="8"/>
 								<Anchor point="LEFT" relativeKey="$parent.QuestIconBg" relativePoint="RIGHT" x="-6"/>
-								<Anchor point="RIGHT" x="-8"/>
+								<Anchor point="RIGHT" x="-12"/>
 							</Anchors>
 						</FontString>
 					</Layer>
 					<Layer level="BORDER" textureSubLevel="1">
-						<Texture parentKey="Shine" alphaMode="ADD" alpha="0" hidden="true">
+						<Texture parentKey="Shine" alphaMode="ADD" alpha="0">
 							<Animations>
-								<AnimationGroup parentKey="Flash">
+								<AnimationGroup parentKey="Flash" setToFinalAlpha="true">
 									<Alpha startDelay="0" duration="0.25" order="1" fromAlpha="0" toAlpha="0.4"/>
 									<Alpha startDelay="0.05" duration="0.25" order="2" fromAlpha="0.4" toAlpha="0"/>
-									<Scripts>
-										<OnStop>
-											self:GetParent():Hide();
-										</OnStop>
-										<OnFinished>
-											self:GetParent():Hide();
-										</OnFinished>
-									</Scripts>
 								</AnimationGroup>
 							</Animations>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="35" y="-3"/>
-								<Anchor point="BOTTOMRIGHT" x="1" y="3"/>
+								<Anchor point="BOTTOMRIGHT" x="-5" y="3"/>
 							</Anchors>
 							<Color r="1" g="1" b="1"/>
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
-						<Texture parentKey="IconShine" alphaMode="ADD" inherits="QuestIcon-WhiteFlash" alpha="0" hidden="true">
+						<Texture parentKey="IconShine" alphaMode="ADD" inherits="QuestIcon-WhiteFlash" alpha="0">
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.QuestIconBg"/>
 							</Anchors>
 							<Animations>
-								<AnimationGroup parentKey="Flash">
+								<AnimationGroup parentKey="Flash" setToFinalAlpha="true">
 									<Alpha duration="0.25" order="1" fromAlpha="0" toAlpha="0.9"/>
 									<Alpha startDelay="0.05" duration="0.25" order="2" fromAlpha="0.9" toAlpha="0"/>
-									<Scripts>
-										<OnStop>
-											self:GetParent():Hide();
-										</OnStop>
-										<OnFinished>
-											self:GetParent():Hide();
-											if (self:GetParent():GetParent():GetParent().popUpType=="COMPLETED") then
-												self:GetParent():GetParent().FlashFrame:Show();
-											end
-										</OnFinished>
-									</Scripts>
 								</AnimationGroup>
 							</Animations>
 						</Texture>
 					</Layer>
 				</Layers>
 				<Frames>
-					<Frame parentKey="FlashFrame" useParentLevel="true" setAllPoints="true" hidden="true">
+					<Frame parentKey="FlashFrame" mixin="AutoQuestPopupFlashFrameMixin" useParentLevel="true" setAllPoints="true" hidden="true">
 						<Layers>
 							<Layer level="BORDER">
 								<Texture parentKey="Flash" inherits="UIPanelButtonHighlightTexture">
@@ -237,20 +222,14 @@
 							</Layer>
 						</Layers>
 						<Scripts>
-							<OnLoad>
-								self.IconFlash:SetVertexColor(1, 0, 0);
-							</OnLoad>
-							<OnShow>
-								UIFrameFlash(self, 0.75, 0.75, -1, nil);
-							</OnShow>
-							<OnHide>
-								UIFrameFlashStop(self);
-							</OnHide>
+							<OnLoad method="OnLoad"/>
+							<OnShow method="OnShow"/>
+							<OnHide method="OnHide"/>
 						</Scripts>
 					</Frame>
 				</Frames>
 			</Frame>
-		</ScrollChild>
-	</ScrollFrame>
+		</Frames>
+	</Frame>
 
 </Ui>

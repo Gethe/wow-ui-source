@@ -1,5 +1,6 @@
 ## Title: Blizzard Auth Challenge UI
-## LoadOnDemand: 0
+## LoadFirst: 1
+## RequiredDep: Blizzard_SharedXML
+## UseSecureEnvironment: 1
 ## AllowLoad: Both
-..\Blizzard_SharedXML\Spinner.lua
 Blizzard_AuthChallengeUI.xml

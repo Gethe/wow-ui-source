@@ -1,8 +1,8 @@
 
 -- LootJournal Shadowlands update: Resurrected from the great beyond for runeforge legendary powers.
 
-local NO_SPEC_FILTER = 0;
-local NO_CLASS_FILTER = 0;
+local UNSPECIFIED_SPEC_FILTER = 0;
+local UNSPECIFIED_CLASS_FILTER = 0;
 
 local RuneforgePowerFilterOrder = {
 	Enum.RuneforgePowerFilter.All,
@@ -71,7 +71,6 @@ local LootJournalEvents = {
 
 function LootJournalMixin:OnLoad()
 	self:SetClassAndSpecFilters(RuneforgeUtil.GetPreviewClassAndSpec());
-	self:UpdateRuneforgePowerFilterButtonText();
 
 	local stride = 2;
 	local view = CreateScrollBoxListGridView(stride);
@@ -81,6 +80,9 @@ function LootJournalMixin:OnLoad()
 	view:SetPadding(0,0,0,0,20,0);
 
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
+
+	self.ClassDropdown:SetWidth(175);
+	self.RuneforgePowerDropdown:SetWidth(130);
 end
 
 function LootJournalMixin:OnShow()
@@ -92,14 +94,45 @@ function LootJournalMixin:OnShow()
 	if pendingPowerID then
 		self:OpenToPowerID(pendingPowerID);
 	end
+
+	self:SetupClassDropdown();
+	self:SetupRuneforgePowerDropdown();
 end
 
 function LootJournalMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, LootJournalEvents);
 end
 
-function LootJournalMixin:OnEvent()
+function LootJournalMixin:OnEvent(event, ...)
+	if event == "NEW_RUNEFORGE_POWER_ADDED" then
 	self:UpdatePowers();
+end
+end
+
+function LootJournalMixin:SetupClassDropdown()
+	local getClassFilter = GenerateClosure(self.GetClassFilter, self);
+	local getSpecFilter = GenerateClosure(self.GetSpecFilter, self);
+	local setClassAndSpecFilter = GenerateClosure(self.SetClassAndSpecFilters, self);
+	ClassMenu.InitClassSpecDropdown(self.ClassDropdown, getClassFilter, getSpecFilter, setClassAndSpecFilter);
+end
+
+function LootJournalMixin:SetupRuneforgePowerDropdown()
+	local function SetSelected(filter)
+		self:SetRuneforgePowerFilter(filter);
+	end
+
+	local function IsSelected(filter)
+		return filter == self:GetRuneforgePowerFilter();
+	end
+
+	self.RuneforgePowerDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_LOOT_JOURNAL_POWER");
+
+		for index, filter in ipairs(RuneforgePowerFilterOrder) do
+			local text = RuneforgeUtil.GetRuneforgeFilterText(filter);
+			rootDescription:CreateRadio(text, IsSelected, SetSelected, filter);
+		end
+	end);
 end
 
 function LootJournalMixin:SetPendingPowerID(powerID)
@@ -119,7 +152,7 @@ function LootJournalMixin:OpenToPowerID(powerID)
 		self:SetRuneforgePowerFilter(Enum.RuneforgePowerFilter.All);
 		
 		if not self.ScrollBox:FindByPredicate(FindPower) then
-			self:SetClassAndSpecFilters(RuneforgeUtil.GetPreviewClassAndSpec(), NO_SPEC_FILTER);
+			self:SetClassAndSpecFilters(RuneforgeUtil.GetPreviewClassAndSpec(), UNSPECIFIED_SPEC_FILTER);
 		end
 	end
 
@@ -139,48 +172,19 @@ function LootJournalMixin:Refresh()
 	end
 end
 
-function LootJournalMixin:GetClassButtonText()
-	local classFilter, specFilter = self:GetClassAndSpecFilters();
-	if classFilter == NO_CLASS_FILTER then
-		return ALL_CLASSES;
-	elseif specFilter == NO_SPEC_FILTER then
-		local classInfo = C_CreatureInfo.GetClassInfo(classFilter);
-		if classInfo then
-			return classInfo.className;
-		end
-	else
-		return GetSpecializationNameForSpecID(specFilter);
-	end
-
-	return "";
-end
-
-function LootJournalMixin:UpdateClassButtonText()
-	self.ClassDropDownButton:SetText(self:GetClassButtonText());
-end
-
-function LootJournalMixin:GetRuneforgePowerFilterButtonText()
-	local runeforgePowerFilter = self:GetRuneforgePowerFilter();
-	return RuneforgeUtil.GetRuneforgeFilterText(runeforgePowerFilter);
-end
-
-function LootJournalMixin:UpdateRuneforgePowerFilterButtonText()
-	self.RuneforgePowerFilterDropDownButton:SetText(self:GetRuneforgePowerFilterButtonText());
-end
-
 function LootJournalMixin:GetClassFilter()
-	return self.classFilter or NO_CLASS_FILTER;
+	return self.classFilter or UNSPECIFIED_CLASS_FILTER;
 end
 
 function LootJournalMixin:GetSpecFilter()
-	return self.specFilter or NO_SPEC_FILTER;
+	return self.specFilter or UNSPECIFIED_SPEC_FILTER;
 end
 
 function LootJournalMixin:UpdatePowers()
 	local classFilter = self:GetClassFilter();
 	local specFilter = self:GetSpecFilter();
-	local classID = (classFilter ~= NO_CLASS_FILTER) and classFilter or nil;
-	local specID = (specFilter ~= NO_SPEC_FILTER) and specFilter or nil;
+	local classID = (classFilter ~= UNSPECIFIED_CLASS_FILTER) and classFilter or nil;
+	local specID = (specFilter ~= UNSPECIFIED_SPEC_FILTER) and specFilter or nil;
 	local covenantID = nil;
 	local runeforgePowerFilter = self:GetRuneforgePowerFilter();
 	self.powers = C_LegendaryCrafting.GetRuneforgePowersByClassSpecAndCovenant(classID, specID, covenantID, runeforgePowerFilter);
@@ -189,21 +193,17 @@ end
 
 function LootJournalMixin:SetClassAndSpecFilters(newClassFilter, newSpecFilter)
 	if self.classFilter ~= newClassFilter or self.specFilter ~= newSpecFilter then
-		local classID = (newClassFilter ~= NO_CLASS_FILTER) and newClassFilter or nil;
-		local specID = (newSpecFilter ~= NO_SPEC_FILTER) and newSpecFilter or nil;
+		local classID = (newClassFilter ~= UNSPECIFIED_CLASS_FILTER) and newClassFilter or nil;
+		local specID = (newSpecFilter ~= UNSPECIFIED_SPEC_FILTER) and newSpecFilter or nil;
 
 		self.classFilter = newClassFilter;
 		self.specFilter = newSpecFilter;
-		self:UpdateClassButtonText();
 		self:UpdatePowers();
 	end
-
-	CloseDropDownMenus(1);
 end
 
 function LootJournalMixin:SetRuneforgePowerFilter(runeforgePowerFilter)
 	self.runeforgePowerFilter = runeforgePowerFilter;
-	self:UpdateRuneforgePowerFilterButtonText();
 	self:UpdatePowers();
 end
 
@@ -213,151 +213,4 @@ end
 
 function LootJournalMixin:GetClassAndSpecFilters()
 	return self.classFilter, self.specFilter;
-end
-
-function LootJournalMixin:ToggleClassDropDown()
-	ToggleDropDownMenu(1, nil, self.ClassDropDown, self.ClassDropDownButton, 5, 0);
-end
-
-function LootJournalMixin:ToggleRuneforgePowerFilterDropDown()
-	ToggleDropDownMenu(1, nil, self.RuneforgePowerFilterDropDown, self.RuneforgePowerFilterDropDownButton, 5, 0);
-end
-
-function LootJournalMixin:OpenRuneforgePowerFilterDropDown()
-	local runeforgePowerFilter = self:GetRuneforgePowerFilter();
-
-	local function SetRuneforgePowerFilter(_, runeforgePowerFilter)
-		self:SetRuneforgePowerFilter(runeforgePowerFilter);
-	end
-
-	for i, filter in ipairs(RuneforgePowerFilterOrder) do
-		local info = UIDropDownMenu_CreateInfo();
-		info.leftPadding = 10;
-		info.text = RuneforgeUtil.GetRuneforgeFilterText(filter);
-		info.checked = filter == runeforgePowerFilter;
-		info.func = SetRuneforgePowerFilter;
-		info.arg1 = filter;
-		UIDropDownMenu_AddButton(info);
-	end
-end
-
-
-LootJournalRuneforgePowerFilterDropDownButtonMixin = {};
-
-function LootJournalRuneforgePowerFilterDropDownButtonMixin:OnMouseDown(...)
-	EJButtonMixin.OnMouseDown(self, ...);
-	self:GetParent():ToggleRuneforgePowerFilterDropDown();
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-end
-
-local function OpenRuneforgePowerFilterDropDown(self)
-	self:GetParent():OpenRuneforgePowerFilterDropDown();
-end
-
-function LootJournalRuneforgePowerFilterDropDown_OnLoad(self)
-	UIDropDownMenu_Initialize(self, OpenRuneforgePowerFilterDropDown, "MENU");
-end
-
--- Class and spec filter stuff. TODO: This should be factored out with the other class-and-spec filter buttons/dropdowns.
-do
-	LootJournalClassDropDownButtonMixin = {};
-
-	function LootJournalClassDropDownButtonMixin:OnMouseDown(...)
-		EJButtonMixin.OnMouseDown(self, ...);
-		self:GetParent():ToggleClassDropDown();
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	end
-
-	local function OpenClassFilterDropDown(self, level)
-		if level then
-			self:GetParent():OpenClassFilterDropDown(level);
-		end
-	end
-
-	function LootJournalClassDropDown_OnLoad(self)
-		UIDropDownMenu_Initialize(self, OpenClassFilterDropDown, "MENU");
-	end
-
-	local CLASS_DROPDOWN = 1;
-
-	function LootJournalMixin:OpenClassFilterDropDown(level)
-		local filterClassID = self:GetClassFilter();
-		local filterSpecID = self:GetSpecFilter();
-
-		local function SetClassAndSpecFilters(_, classFilter, specFilter)
-			self:SetClassAndSpecFilters(classFilter, specFilter);
-		end
-
-		local info = UIDropDownMenu_CreateInfo();
-
-		if UIDROPDOWNMENU_MENU_VALUE == CLASS_DROPDOWN then 
-			info.text = ALL_CLASSES;
-			info.checked = filterClassID == NO_CLASS_FILTER;
-			info.arg1 = NO_CLASS_FILTER;
-			info.arg2 = NO_SPEC_FILTER;
-			info.func = SetClassAndSpecFilters;
-			UIDropDownMenu_AddButton(info, level);
-
-			local numClasses = GetNumClasses();
-			for i = 1, numClasses do
-				local classDisplayName, classTag, classID = GetClassInfo(i);
-				info.text = classDisplayName;
-				info.checked = filterClassID == classID;
-				info.arg1 = classID;
-				info.arg2 = NO_SPEC_FILTER;
-				info.func = SetClassAndSpecFilters;
-				UIDropDownMenu_AddButton(info, level);
-			end
-		end
-
-		if level == 1 then 
-			info.text = CLASS;
-			info.func =  nil;
-			info.notCheckable = true;
-			info.hasArrow = true;
-			info.value = CLASS_DROPDOWN;
-			UIDropDownMenu_AddButton(info, level);
-
-			local classDisplayName, classTag, classID;
-			if filterClassID ~= NO_CLASS_FILTER then
-				classID = filterClassID;
-				
-				local classInfo = C_CreatureInfo.GetClassInfo(filterClassID);
-				if classInfo then
-					classDisplayName = classInfo.className;
-					classTag = classInfo.classFile;
-				end
-			else
-				classDisplayName, classTag, classID = UnitClass("player");
-			end
-			info.text = classDisplayName;
-			info.notCheckable = true;
-			info.arg1 = nil;
-			info.arg2 = nil;
-			info.func =  nil;
-			info.hasArrow = false;
-			UIDropDownMenu_AddButton(info, level);
-
-			info.notCheckable = nil;
-			local sex = UnitSex("player");
-			for i = 1, GetNumSpecializationsForClassID(classID) do
-				local specID, specName = GetSpecializationInfoForClassID(classID, i, sex);
-				info.leftPadding = 10;
-				info.text = specName;
-				info.checked = filterSpecID == specID;
-				info.arg1 = classID;
-				info.arg2 = specID;
-				info.func = SetClassAndSpecFilters;
-				UIDropDownMenu_AddButton(info, level);
-			end
-
-			info.text = ALL_SPECS;
-			info.leftPadding = 10;
-			info.checked = classID == filterClassID and filterSpecID == NO_SPEC_FILTER;
-			info.arg1 = classID;
-			info.arg2 = NO_SPEC_FILTER;
-			info.func = SetClassAndSpecFilters;
-			UIDropDownMenu_AddButton(info, level);
-		end
-	end
 end

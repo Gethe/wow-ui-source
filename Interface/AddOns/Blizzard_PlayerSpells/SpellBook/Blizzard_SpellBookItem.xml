@@ -1,0 +1,293 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Script file="Blizzard_SpellBookItem.lua"/>
+
+	<Frame name="SpellBookItemAutoCastTemplate" mixin="AutoCastOverlayMixin" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="0">
+				<Texture parentKey="Shine" alphaMode="BLEND" atlas="UI-HUD-ActionBar-PetAutoCast-Ants" useAtlasSize="false" texelSnappingBias="0.0" snapToPixelGrid="false" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-10" y="10"/>
+						<Anchor point="BOTTOMRIGHT" x="10" y="-10"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim" looping="REPEAT" setToFinalAlpha="true">
+							<Rotation duration="4" order="1" degrees="-360">
+								<Origin point="CENTER"/>
+							</Rotation>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+				<MaskTexture parentKey="Mask" atlas="spellbook-item-petautocast-mask" useAtlasSize="false" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Shine"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="Corners" atlas="spellbook-item-petautocast-corners" useAtlasSize="false" setAllPoints="true" texelSnappingBias="0.0" snapToPixelGrid="false"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="SpellBookItemTemplate" mixin="SpellBookItemMixin" virtual="true">
+		<Size x="220" y="60"/>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+		<KeyValues>
+			<KeyValue key="cellSize" value="1" type="number"/>
+			<KeyValue key="unlearnedTextAlpha" value="0.6" type="number" />
+			<KeyValue key="unlearnedIconAlpha" value="0.6" type="number" />
+			<KeyValue key="defaultBackplateAlpha" value="0.25" type="number" />
+			<KeyValue key="hoverBackplateAlpha" value="1" type="number" />
+			<KeyValue key="iconHighlightHoverAlpha" value="0.35" type="number" />
+			<KeyValue key="iconHighlightPressAlpha" value="0.65" type="number" />
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Backplate" atlas="spellbook-item-backplate" useAtlasSize="true" alpha="0.33">
+					<Anchors>
+						<Anchor point="CENTER" x="5" y="-5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="TextContainer" inherits="ResizeLayoutFrame">
+				<!--Height Adjusted Dynamically in UpdateVisuals-->
+				<Size y="1"/>
+				<Anchors>
+					<Anchor point="LEFT" x="50" y="-1"/>
+					<Anchor point="RIGHT" y="-1"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Name" inherits="SystemFont_Large" justifyH="LEFT" maxLines="3" wordwrap="true">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="TOPRIGHT"/>
+							</Anchors>
+							<Color color="SPELLBOOK_FONT_COLOR" />
+						</FontString>
+						<FontString parentKey="SubName" inherits="SystemFont_Med1" justifyH="LEFT" maxLines="2" wordwrap="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.Name" relativePoint="BOTTOMRIGHT" x="0" y="-2"/>
+							</Anchors>
+							<Color color="SPELLBOOK_FONT_COLOR" />
+						</FontString>
+						<FontString parentKey="RequiredLevel" inherits="SystemFont_Med1" justifyH="LEFT" maxLines="1">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.SubName" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.SubName" relativePoint="BOTTOMRIGHT" x="0" y="-2"/>
+							</Anchors>
+							<Color color="SPELLBOOK_FONT_COLOR" />
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Button parentKey="Button" mixin="SpellBookItemButtonMixin">
+				<Size x="40" y="40"/>
+				<Anchors>
+					<Anchor point="LEFT"/>
+				</Anchors>
+				<Layers>
+					<!-- FxModelScene is BACKGROUND sublevel 0 -->
+					<Layer level="BACKGROUND" textureSubLevel="-1">
+						<Texture parentKey="TrainableShadow" atlas="spellbook-item-needtrainer-shadow" hidden="true">
+							<Size x="56" y="56"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<!-- Cooldown frame texture is ARTWORK sublevel 0 -->
+					<Layer level="ARTWORK" textureSubLevel="-1">
+						<Texture parentKey="Icon">
+							<Size x="36" y="36"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="Border" setAllPoints="true" texelSnappingBias="0.0" snapToPixelGrid="false"/>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="1">
+						<Texture parentKey="TrainableBackplate" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Border"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Border"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="2">
+						<Texture parentKey="IconHighlight" setAllPoints="true" atlas="spellbook-item-iconframe-hover" useAtlasSize="false" hidden="true" alpha="0.25" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false"/>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="3">
+						<Texture parentKey="BorderSheen" atlas="talents-sheen-node" useAtlasSize="true" alpha="0.5" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false" hidden="true">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+							<Animations>
+								<AnimationGroup parentKey="Anim" inherits="VisibleWhilePlayingAnimGroupTemplate, SyncedAnimGroupTemplate" looping="REPEAT">
+									<KeyValues>
+										<KeyValue key="syncKey" value="SpellBookItemLoops" type="string"/>
+									</KeyValues>
+									<Translation offsetX="150" order="1" startDelay="5" endDelay="10.5" duration="6.5" />
+								</AnimationGroup>
+							</Animations>
+						</Texture>
+						<MaskTexture parentKey="BorderSheenMask" useAtlasSize="false" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" texelSnappingBias="0.0" snapToPixelGrid="false">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Border"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Border"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="BorderSheen"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="4">
+						<Texture parentKey="LevelLinkIconCover" setAllPoints="true" hidden="true">
+							<Color r="0" g="0" b="0" a="0.3"/>
+						</Texture>
+						<Texture parentKey="ClickBindingIconCover" setAllPoints="true" hidden="true">
+							<Color r="0" g="0" b="0" a="0.3"/>
+						</Texture>
+						<Texture parentKey="GlyphIcon" hidden="true" alpha="1" alphaMode="BLEND" atlas="GlyphIcon-Spellbook" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="5" y="4"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="GlyphHighlight" hidden="true" alpha="1" alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight-Blue">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="GlyphActivateHighlight" hidden="true" alpha="1" alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight-Blue">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<MaskTexture parentKey="IconMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="Icon"/>
+								<MaskedTexture childKey="LevelLinkIconCover"/>
+								<MaskedTexture childKey="ClickBindingIconCover"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="5">
+						<Texture parentKey="LevelLinkLock" atlas="QuestSharing-Padlock" useAtlasSize="true" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="GlyphActiveIcon" hidden="true" alpha="1" alphaMode="ADD" atlas="GlyphIcon-Spellbook" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="5" y="4"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="ActionBarHighlight" atlas="spellbook-item-unassigned-glow" alphaMode="ADD" useAtlasSize="false" hidden="true" setAllPoints="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-4" y="3"/>
+								<Anchor point="BOTTOMRIGHT" x="3" y="-3"/>
+							</Anchors>
+							<Animations>
+								<AnimationGroup parentKey="Anim" inherits="VisibleWhilePlayingAnimGroupTemplate, SyncedAnimGroupTemplate" looping="REPEAT" setToFinalAlpha="true">
+									<KeyValues>
+										<KeyValue key="syncKey" value="SpellBookItemLoops" type="string"/>
+									</KeyValues>
+									<Alpha fromAlpha="0.5" toAlpha="1" duration="0.5" order="1" smoothing="OUT"/>
+									<Alpha fromAlpha="1" toAlpha="0.5" duration="0.5" order="2" smoothing="IN"/>
+								</AnimationGroup>
+							</Animations>
+						</Texture>
+						<Texture parentKey="FlyoutArrow" file="Interface\Buttons\ActionBarFlyoutButton" hidden="true" rotation="-90">
+							<Size x="23" y="11"/>
+							<Anchors>
+								<Anchor point="RIGHT" x="14" y="0"/>
+							</Anchors>
+							<TexCoords left="0.62500000" right="0.98437500" top="0.74218750" bottom="0.82812500"/>
+						</Texture>
+						<Texture parentKey="ClickBindingHighlight" atlas="ClickCast-Highlight-Spellbook" useAtlasSize="true" alphaMode="ADD" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="AutoCastOverlay" inherits="SpellBookItemAutoCastTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Icon" x="0" y="-1.5"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-1.5" y="1"/>
+						</Anchors>
+					</Frame>
+					<Cooldown parentKey="Cooldown" inherits="CooldownFrameTemplate" drawEdge="false" useParentLevel="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Icon" x="2" y="-2"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-2" y="2"/>
+						</Anchors>		
+					</Cooldown>
+					<ModelScene parentKey="FxModelScene" inherits="ScriptAnimatedModelSceneTemplate" useParentLevel="true" drawLayer="BACKGROUND" >
+						<Anchors>
+							<Anchor point="TOPLEFT" x="-20" y="20"/>
+							<Anchor point="BOTTOMRIGHT" x="20" y="-20"/>
+						</Anchors>
+					</ModelScene>
+				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+					<OnClick method="OnClick"/>
+					<OnMouseDown method="OnMouseDown"/>
+					<OnMouseUp method="OnMouseUp"/>
+					<OnDragStart method="OnDragStart"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="GlyphHighlightAnim" setToFinalAlpha="true" looping="REPEAT" inherits="TargetsVisibleWhilePlayingAnimGroupTemplate">
+				<Alpha childKey="Button.GlyphHighlight" duration="0.25" order="1" fromAlpha="0.5" toAlpha="1"/>
+				<Alpha childKey="Button.GlyphHighlight" startDelay="0.5" duration="0.75" order="1" fromAlpha="1" toAlpha="0.5"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="GlyphActivateAnim" setToFinalAlpha="true">
+				<Alpha childKey="Button.GlyphActivateHighlight" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Button.GlyphActivateHighlight" startDelay="0.25" duration="0.75" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="Button.GlyphActivateHighlight" smoothing="OUT" duration="0.25" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1.35" toScaleY="1.35"/>
+				<Alpha childKey="Button.GlyphIcon" smoothing="OUT" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="Button.GlyphIcon" smoothing="IN" duration="0.25" order="1" fromScaleX="1.75" fromScaleY="1.75" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="Button.GlyphActiveIcon" smoothing="OUT" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Translation childKey="Button.GlyphActiveIcon" smoothing="OUT" duration="0.25" order="1" offsetX="-2" offsetY="-2"/>
+				<Alpha childKey="Button.GlyphActiveIcon" startDelay="0.25" smoothing="OUT" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scripts>
+					<OnFinished>
+						self:GetParent():OnGlyphActivateAnimFinished();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

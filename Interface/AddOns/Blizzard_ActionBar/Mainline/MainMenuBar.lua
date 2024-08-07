@@ -10,8 +10,6 @@ function MainMenuBarMixin:OnLoad()
 	self:RegisterEvent("TRIAL_STATUS_UPDATE");
 	self:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT");
 
-	MAX_PLAYER_LEVEL = GetMaxLevelForPlayerExpansion();
-
 	self.state = "player";
 	MainMenuBar.ActionBarPageNumber.Text:SetText(GetActionBarPage());
 	MicroButtonAndBagsBar:SetFrameLevel(self:GetFrameLevel()+2);
@@ -45,13 +43,13 @@ function MainMenuBarMixin:OnEvent(event, ...)
 					SetButtonPulse(CharacterFrameTab3, 60, 1);
 				end
 
-				TokenFrame_Update();
+				TokenFrame:Update();
 				BackpackTokenFrame:UpdateIfVisible();
 			else
 				CharacterFrameTab3:Hide();
 			end
 		else
-			TokenFrame_Update();
+			TokenFrame:Update();
 			BackpackTokenFrame:UpdateIfVisible();
 		end
 	elseif ( event == "UNIT_LEVEL" ) then
@@ -177,7 +175,6 @@ local ipTypes = { "IPv4", "IPv6" }
 
 function MainMenuBarPerformanceBarFrame_OnEnter(self)
 	local string = "";
-	local i, j, k = 0, 0, 0;
 
 	GameTooltip_SetDefaultAnchor(GameTooltip, self);
 	GameTooltip_SetTitle(GameTooltip, self.tooltipText);

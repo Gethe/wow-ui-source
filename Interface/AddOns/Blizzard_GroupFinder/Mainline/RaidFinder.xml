@@ -126,24 +126,21 @@
 							</OnEnter>
 						</Scripts>
 					</Button>
-					<Frame name="$parentSelectionDropDown" inherits="UIDropDownMenuTemplate">
+					<DropdownButton parentKey="SelectionDropdown" name="$parentSelectionDropdown" inherits="WowStyle1DropdownTemplate">
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" x="117" y="287"/>
+							<Anchor point="BOTTOMLEFT" x="131" y="289"/>
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY">
 								<FontString name="$parentName" inherits="GameFontNormal" justifyH="RIGHT" text="RAID">
 									<Size x="115" y="24"/>
 									<Anchors>
-										<Anchor point="RIGHT" relativePoint="LEFT" x="0" y="2"/>
+										<Anchor point="RIGHT" relativePoint="LEFT" x="-10" y="0"/>
 									</Anchors>
 								</FontString>
 							</Layer>
 						</Layers>
-						<Scripts>
-							<OnShow function="RaidFinderQueueFrameSelectionDropDown_SetUp"/>
-						</Scripts>
-					</Frame>
+					</DropdownButton>
 					<ScrollFrame name="$parentScrollFrame" inherits="ScrollFrameTemplate">
 						<KeyValues>
 							<KeyValue key="scrollBarHideIfUnscrollable" value="true" type="boolean"/>
@@ -234,6 +231,10 @@
 						</Scripts>
 					</Frame>
 				</Frames>
+				<Scripts>
+					<OnLoad function="RaidFinderQueueFrame_OnLoad"/>
+					<OnShow function="RaidFinderQueueFrame_OnShow"/>
+				</Scripts>
 			</Frame>
 			<Button name="$parentFindRaidButton" inherits="MagicButtonTemplate" text="FIND_RAID" motionScriptsWhileDisabled="true">
 				<Size x="135" y="22"/>

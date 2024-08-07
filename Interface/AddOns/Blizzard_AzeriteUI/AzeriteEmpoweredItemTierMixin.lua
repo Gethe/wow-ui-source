@@ -95,7 +95,11 @@ function AzeriteEmpoweredItemTierMixin:CreatePowers(powerPool)
 	local numPowers = #self.tierInfo.azeritePowerIDs;
 	for powerIndex, azeritePowerID in ipairs(self.tierInfo.azeritePowerIDs) do
 		local localNodePosition, angleRads = AzeriteLayoutInfo.CalculatePowerOffset(powerIndex, numPowers, self:GetTierIndex() + self.tierOffset);
-		local azeritePowerButton = powerPool:Acquire(self.transformNode, localNodePosition);
+		local azeritePowerButton = powerPool:Acquire();
+		azeritePowerButton:SetParentTransform(self.transformNode);
+		azeritePowerButton:SetLocalPosition(localNodePosition or CreateVector2D(0.0, 0.0));
+		azeritePowerButton:SetLocalRotation(0);
+		azeritePowerButton:SetLocalScale(1.0);
 
 		azeritePowerButton:Setup(self, self.azeriteItemDataSource, azeritePowerID, -angleRads);
 		table.insert(self.azeritePowerButtons, azeritePowerButton);

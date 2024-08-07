@@ -90,6 +90,7 @@
 			<OnLoad method="OnLoad"/>
 			<OnModelLoaded method="OnModelLoaded"/>
 			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
 			<OnShow method="OnShow"/>
@@ -147,6 +148,7 @@
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
 			<OnModelLoaded method="OnModelLoaded"/>
 		</Scripts>
 	</DressUpModel>
@@ -217,17 +219,40 @@
 
 	<Button name="WardrobeSetsScrollFrameButtonTemplate" mixin="WardrobeSetsScrollFrameButtonMixin" registerForClicks="LeftButtonUp,RightButtonUp" virtual="true">
 		<Size x="208" y="46"/>
+		<Frames>
+			<Frame parentKey="IconFrame" mixin="WardrobeSetsScrollFrameButtonIconFrameMixin">
+				<Size x="38" y="38"/>
+				<Anchors>
+					<Anchor point="LEFT" x="-42" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" setAllPoints="true"/>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="-1">
+						<Texture parentKey="Cover" setAllPoints="true">
+							<Color r="0" g="0" b="0" a="0.7"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="Favorite" atlas="PetJournal-FavoritesIcon" useAtlasSize="true" >
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-8" y="8"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Frame>
+		</Frames>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture atlas="PetList-ButtonBackground" parentKey="Background"/>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="Icon">
-					<Size x="38" y="38"/>
-					<Anchors>
-						<Anchor point="LEFT" x="-42" y="0"/>
-					</Anchors>
-				</Texture>
 				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT" maxLines="2">
 					<Size x="190" y="0"/>
 					<Anchors>
@@ -249,26 +274,12 @@
 					<Color r="0.0118" g="0.247" b="0.00392" a="1"/>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="-1">
-				<Texture parentKey="IconCover">
-					<Size x="38" y="38"/>
-					<Anchors>
-						<Anchor point="LEFT" x="-42" y="0"/>
-					</Anchors>
-					<Color r="0" g="0" b="0" a="0.7"/>
-				</Texture>
-			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="SelectedTexture" atlas="PetList-ButtonSelect" hidden="true"/>
-				<Texture parentKey="Favorite" atlas="PetJournal-FavoritesIcon" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" x="-8" y="8"/>
-					</Anchors>
-				</Texture>
 				<Texture parentKey="New" atlas="GarrMission-AbilityHighlight" alphaMode="ADD" hidden="true">
 					<Size x="56" y="56"/>
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+						<Anchor point="CENTER" relativeKey="$parent.IconFrame"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -324,16 +335,15 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame parentKey="RightClickDropDown" inherits="UIDropDownMenuTemplate" hidden="true"/>
 		</Frames>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
 			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
 		</Scripts>
 	</Frame>
 
@@ -581,33 +591,25 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.ItemsTab" relativePoint="TOPLEFT" x="195" y="-11"/>
 				</Anchors>
 			</StatusBar>
-			<DropDownToggleButton parentKey="FilterButton" inherits="UIResettableDropdownButtonTemplate" text="FILTER">
+			<DropdownButton parentKey="FilterButton" inherits="WowStyle1FilterDropdownTemplate">
 				<KeyValues>
-					<KeyValue key="resetFunction" value="WardrobeFilterDropDown_ResetFilters" type="global"/>
+					<KeyValue key="resizeToText" type="boolean" value="false"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.SearchBox" relativePoint="RIGHT" x="2" y="-1"/>
+					<Anchor point="LEFT" relativeKey="$parent.SearchBox" relativePoint="RIGHT" x="7" y="0"/>
+				</Anchors>
+			</DropdownButton>
+
+			<DropdownButton parentKey="ClassDropdown" inherits="WowStyle1DropdownTemplate" mixin="WardrobeCollectionClassDropdownMixin">
+				<Anchors>
+					<Anchor point="TOPLEFT" y="-20"/>
 				</Anchors>
 				<Scripts>
-					<OnMouseDown inherit="prepend">
-						if self:IsEnabled() then
-							ToggleDropDownMenu(1, nil, WardrobeFilterDropDown, self, 74, 15);
-						end
-					</OnMouseDown>
-					<OnEnable>
-						self.Icon:SetDesaturated(false);
-					</OnEnable>
-					<OnDisable>
-						self.Icon:SetDesaturated(true);
-						self.ResetButton:Hide();
-					</OnDisable>
+					<OnLoad method="OnLoad"/>
+					<OnShow method="OnShow"/>
+					<OnHide method="OnHide"/>
 				</Scripts>
-			</DropDownToggleButton>
-			<Frame name="WardrobeFilterDropDown" parentKey="FilterDropDown" inherits="UIDropDownMenuTemplate">
-				<Scripts>
-					<OnLoad function="WardrobeFilterDropDown_OnLoad"/>
-				</Scripts>
-			</Frame>
+			</DropdownButton>
 
 			<Frame parentKey="ItemsCollectionFrame" parentArray="ContentFrames" mixin="WardrobeItemsCollectionMixin" inherits="CollectionsBackgroundTemplate">
 				<KeyValues>
@@ -626,28 +628,23 @@
 				<Frames>
 					<Frame parentKey="PagingFrame" inherits="CollectionsPagingFrameTemplate">
 						<Anchors>
-							<Anchor point="BOTTOM" x="22" y="38"/>
+							<Anchor point="BOTTOM" x="22" y="29"/>
 						</Anchors>
 					</Frame>
-					<Frame name="WardrobeModelRightClickDropDown" parentKey="RightClickDropDown" inherits="UIDropDownMenuTemplate" hidden="true"/>
-					<Frame parentKey="WeaponDropDown" name="$parentWeaponDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true" hidden="true">
-						<Size x="87" y="22"/>
+					<DropdownButton parentKey="WeaponDropdown" inherits="WowStyle1DropdownTemplate" hidden="true">
 						<Anchors>
-							<Anchor point="TOPRIGHT" x="-6" y="-22"/>
+							<Anchor point="TOPRIGHT" x="-25" y="-58"/>
 						</Anchors>
-						<Scripts>
-							<OnLoad function="WardrobeCollectionFrameWeaponDropDown_OnLoad"/>
-						</Scripts>
-					</Frame>
+					</DropdownButton>
 					<Frame parentKey="SlotsFrame">
 						<Size x="10" y="10"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" x="18" y="-20"/>
+							<Anchor point="TOPLEFT" x="180" y="-20"/>
 						</Anchors>
 					</Frame>
 					<DressUpModel parentArray="Models" parentKey="ModelR1C1" inherits="WardrobeItemsModelTemplate">
 						<Anchors>
-							<Anchor point="TOP" x="-238" y="-85"/>
+							<Anchor point="TOP" x="-238" y="-92"/>
 						</Anchors>
 					</DressUpModel>
 					<DressUpModel parentArray="Models" parentKey="ModelR1C2" inherits="WardrobeItemsModelTemplate">
@@ -959,7 +956,6 @@
 									<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="8" y="-1"/>
 								</Anchors>
 							</EventFrame>
-							<Frame parentKey="FavoriteDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true"/>
 						</Frames>
 						<Scripts>
 							<OnLoad method="OnLoad"/>
@@ -1068,39 +1064,11 @@
 									<OnLeave function="GameTooltip_Hide"/>
 								</Scripts>
 							</Frame>
-							<DropDownToggleButton name="WardrobeSetsCollectionVariantSetsButton" parentKey="VariantSetsButton" inherits="UIMenuButtonStretchTemplate" frameLevel="6">
-								<Size x="108" y="22"/>
+							<DropdownButton parentKey="VariantSetsDropdown" inherits="WowStyle1DropdownTemplate" frameLevel="6">
 								<Anchors>
 									<Anchor point="TOPRIGHT" x="-6" y="-6"/>
 								</Anchors>
-								<Layers>
-									<Layer level="ARTWORK">
-										<Texture parentKey="Icon" atlas="friendslist-categorybutton-arrow-down" useAtlasSize="true">
-											<Anchors>
-												<Anchor point="RIGHT" x="-5" y="-2"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-								</Layers>
-								<Scripts>
-									<OnLoad inherit="prepend">
-										self.Text:ClearAllPoints();
-										self.Text:SetPoint("LEFT", 11, -1);
-										self.Text:SetSize(75, 10);
-										self.Text:SetJustifyH("LEFT");
-									</OnLoad>
-									<OnMouseDown>
-										UIMenuButtonStretchMixin.OnMouseDown(self, button);
-										PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-										ToggleDropDownMenu(1, nil, self:GetParent().VariantSetsDropDown, self:GetName(), 0, 1);
-									</OnMouseDown>
-								</Scripts>
-							</DropDownToggleButton>
-							<Frame name="WardrobeSetsCollectionVariantSetsDropDown" parentKey="VariantSetsDropDown" inherits="UIDropDownMenuTemplate">
-								<Scripts>
-									<OnLoad function="WardrobeSetsCollectionVariantSetsDropDown_OnLoad"/>
-								</Scripts>
-							</Frame>
+							</DropdownButton>
 						</Frames>
 					</Frame>
 				</Frames>
@@ -1126,11 +1094,6 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Frame name="WardrobeSetsTransmogModelRightClickDropDown" parentKey="RightClickDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
-						<Scripts>
-							<OnLoad function="WardrobeSetsTransmogModelRightClickDropDown_OnLoad"/>
-						</Scripts>
-					</Frame>
 					<Frame parentKey="PagingFrame" inherits="CollectionsPagingFrameTemplate">
 						<Anchors>
 							<Anchor point="BOTTOM" x="22" y="38"/>
@@ -1771,17 +1734,18 @@
 							</Layer>
 						</Layers>
 					</Frame>
-					<Frame parentKey="OutfitDropDown" name="WardrobeOutfitDropDown" inherits="WardrobeOutfitDropDownTemplate" mixin="WardrobeOutfitMixin">
+					<!--WardrobeOutfitDropdownOverrideMixin provides implementation overrides of functions in WardrobeOutfitDropdownMixin-->
+					<DropdownButton parentKey="OutfitDropdown" inherits="WardrobeOutfitDropdownTemplate" mixin="WardrobeOutfitDropdownOverrideMixin">
 						<KeyValues>
-							<KeyValue key="width" value="188" type="number"/>
+							<KeyValue key="width" value="207" type="number"/>
 							<KeyValue key="minMenuStringWidth" value="152" type="number"/>
 							<KeyValue key="maxMenuStringWidth" value="216" type="number"/>
 							<KeyValue key="replaceInvalidSources" value="false" type="boolean"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="TOPLEFT" x="-14" y="28"/>
+							<Anchor point="TOPLEFT" x="0" y="28"/>
 						</Anchors>
-					</Frame>
+					</DropdownButton>
 					<ModelScene parentKey="ModelScene" inherits="PanningModelSceneMixinTemplate">
 						<Size x="294" y="488"/>
 						<Anchors>
@@ -1979,12 +1943,7 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Frame name="$parentSpecDropDown" parentKey="SpecDropDown" inherits="UIDropDownMenuTemplate">
-						<Scripts>
-							<OnLoad function="WardrobeTransmogFrameSpecDropDown_OnLoad"/>
-						</Scripts>
-					</Frame>
-					<DropDownToggleButton parentKey="SpecButton" inherits="UIMenuButtonStretchTemplate">
+					<DropdownButton parentKey="SpecDropdown" inherits="UIMenuButtonStretchTemplate">
 						<Size x="22" y="22"/>
 						<Anchors>
 							<Anchor point="RIGHT" relativeKey="$parent.ApplyButton" relativePoint="LEFT" x="1" y="0"/>
@@ -2004,8 +1963,6 @@
 						<Scripts>
 							<OnMouseDown>
 								UIMenuButtonStretchMixin.OnMouseDown(self, button);
-								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-								ToggleDropDownMenu(1, nil, self:GetParent().SpecDropDown, self, 0, 0);
 								HelpTip:Hide(self:GetParent(), TRANSMOG_SPECS_BUTTON_TUTORIAL);
 								SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_SPECS_BUTTON, true);
 								self.Icon:SetPoint("CENTER", -1, -1);
@@ -2014,7 +1971,7 @@
 								self.Icon:SetPoint("CENTER", 0, 0);
 							</OnMouseUp>
 						</Scripts>
-					</DropDownToggleButton>
+					</DropdownButton>
 				</Frames>
 				<Scripts>
 					<OnLoad method="OnLoad"/>

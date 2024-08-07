@@ -32,7 +32,6 @@ local l10nTable = {
 	ruRU = {},
 	zhCN = {
 		localizeFrames = function()
-			MONEY_TEXT_VADJUST = 2;
 			LocalizeGuildInviteFrame_zh();
 		end,
 	},
@@ -41,7 +40,6 @@ local l10nTable = {
         end,
 
         localizeFrames = function()
-			MONEY_TEXT_VADJUST = 1;
 			LocalizeGuildInviteFrame_zh();
         end,
     },

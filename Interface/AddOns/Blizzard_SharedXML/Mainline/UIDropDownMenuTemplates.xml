@@ -2,46 +2,6 @@
 ..\UI.xsd">
 	<Frame name="UIDropDownCustomMenuEntryTemplate" enableMouse="true" hidden="true" mixin="UIDropDownCustomMenuEntryMixin" virtual="true"/>
 
-	<Button name="ColorSwatchTemplate" mixin="ColorSwatchMixin" virtual="true">
-		<Size x="16" y="16"/>
-		<Layers>
-			<Layer level="BACKGROUND" textureSubLevel="-3">
-				<Texture name="$parentSwatchBg" parentKey="SwatchBg" texelSnappingBias="0.0" snapToPixelGrid="false">
-					<Size x="14" y="14"/>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-					<Color color="HIGHLIGHT_FONT_COLOR"/>
-				</Texture>
-			</Layer>
-			<Layer level="BACKGROUND" textureSubLevel="-2">
-				<Texture parentKey="InnerBorder" texelSnappingBias="0.0" snapToPixelGrid="false">
-					<Size x="12" y="12"/>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-					<Color color="BLACK_FONT_COLOR"/>
-				</Texture>
-			</Layer>
-			<Layer level="BACKGROUND" textureSubLevel="-1">
-				<Texture parentKey="Color" texelSnappingBias="0.0" snapToPixelGrid="false">
-					<Size x="10" y="10"/>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-					<Color color="HIGHLIGHT_FONT_COLOR"/>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnShow inherit="prepend">
-				PixelUtil.SetSize(self.SwatchBg, 14, 14);
-				PixelUtil.SetSize(self.InnerBorder, 12, 12);
-				PixelUtil.SetSize(self.Color, 10, 10);
-			</OnShow>
-		</Scripts>
-	</Button>
-
 	<Button name="UIDropDownMenuButtonTemplate" virtual="true">
 		<Size x="100" y="16"/>
 		<Layers>

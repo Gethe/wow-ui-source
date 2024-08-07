@@ -10,6 +10,10 @@ local GameCursor =
 			Type = "Function",
 		},
 		{
+			Name = "ClearCursorHoveredItem",
+			Type = "Function",
+		},
+		{
 			Name = "CursorHasItem",
 			Type = "Function",
 
@@ -104,6 +108,24 @@ local GameCursor =
 			Returns =
 			{
 				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetCursorHoveredItem",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "item", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+		},
+		{
+			Name = "SetCursorHoveredItemTradeItem",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
 			},
 		},
 		{

@@ -1,33 +1,3 @@
-
-local DEFAULT_FILTERS = {
-	[Enum.AuctionHouseFilter.UncollectedOnly] = false,
-	[Enum.AuctionHouseFilter.UsableOnly] = false,
-	[Enum.AuctionHouseFilter.CurrentExpansionOnly] = false,
-	[Enum.AuctionHouseFilter.UpgradesOnly] = false,
-	[Enum.AuctionHouseFilter.PoorQuality] = true,
-	[Enum.AuctionHouseFilter.CommonQuality] = true,
-	[Enum.AuctionHouseFilter.UncommonQuality] = true,
-	[Enum.AuctionHouseFilter.RareQuality] = true,
-	[Enum.AuctionHouseFilter.EpicQuality] = true,
-	[Enum.AuctionHouseFilter.LegendaryQuality] = true,
-	[Enum.AuctionHouseFilter.ArtifactQuality] = true,
-};
-
-AUCTION_HOUSE_FILTER_CATEGORY_STRINGS = {
-	[Enum.AuctionHouseFilterCategory.Uncategorized] = "",
-	[Enum.AuctionHouseFilterCategory.Equipment] = AUCTION_HOUSE_FILTER_CATEGORY_EQUIPMENT,
-	[Enum.AuctionHouseFilterCategory.Rarity] = AUCTION_HOUSE_FILTER_CATEGORY_RARITY,
-};
-
-local function GetFilterCategoryName(category)
-	return AUCTION_HOUSE_FILTER_CATEGORY_STRINGS[category] or "";
-end
-
-local function GetFilterName(filter)
-	return AUCTION_HOUSE_FILTER_STRINGS[filter] or "";
-end
-
-
 AuctionHouseSearchButtonMixin = {};
 
 function AuctionHouseSearchButtonMixin:OnClick()
@@ -83,57 +53,14 @@ end
 
 AuctionHouseFilterButtonMixin = {};
 
-local function AuctionHouseFilterDropDownMenu_Initialize(self)
-	local filterButton = self:GetParent();
-
-	local info = UIDropDownMenu_CreateInfo();
-	info.text = AUCTION_HOUSE_FILTER_DROP_DOWN_LEVEL_RANGE;
-	info.isTitle = true;
-	info.notCheckable = true;
-	UIDropDownMenu_AddButton(info);
-
-	local info = UIDropDownMenu_CreateInfo();
-	info.customFrame = filterButton.LevelRangeFrame;
-	UIDropDownMenu_AddButton(info);
-
-	local filterGroups = C_AuctionHouse.GetFilterGroups();
-	for i, filterGroup in ipairs(filterGroups) do
-		local info = UIDropDownMenu_CreateInfo();
-		info.text = GetFilterCategoryName(filterGroup.category);
-		info.isTitle = true;
-		info.notCheckable = true;
-		UIDropDownMenu_AddButton(info);
-
-		for j, filter in ipairs(filterGroup.filters) do
-			local info = UIDropDownMenu_CreateInfo();
-			info.text = GetFilterName(filter);
-			info.value = nil;
-			info.isNotRadio = true;
-			info.checked = filterButton.filters[filter];
-			info.keepShownOnClick = 1;
-			info.func = function(button)
-				filterButton:ToggleFilter(filter);
-			end
-			UIDropDownMenu_AddButton(info);
-		end
-
-		if i ~= #filterGroups then
-			UIDropDownMenu_AddSpace();
-		end
-	end
-end
-
 function AuctionHouseFilterButtonMixin:OnLoad()
-	self:Reset();
-	UIDropDownMenu_SetInitializeFunction(self.DropDown, AuctionHouseFilterDropDownMenu_Initialize);
-	UIDropDownMenu_SetDisplayMode(self.DropDown, "MENU");
-end
+	WowStyle1FilterDropdownMixin.OnLoad(self);
 
-function AuctionHouseFilterButtonMixin:OnClick()
-	local level = 1;
-	local value = nil;
-	ToggleDropDownMenu(1, nil, self.DropDown, self, 9, 3);
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	self:Reset();
+
+	self.ClearFiltersButton:SetScript("OnClick", function()
+		self:Reset();
+	end);
 end
 
 function AuctionHouseFilterButtonMixin:ToggleFilter(filter)
@@ -143,8 +70,9 @@ function AuctionHouseFilterButtonMixin:ToggleFilter(filter)
 end
 
 function AuctionHouseFilterButtonMixin:Reset()
-	self.filters = CopyTable(DEFAULT_FILTERS);
-	self.LevelRangeFrame:Reset();
+	self.filters = CopyTable(AUCTION_HOUSE_DEFAULT_FILTERS);
+	self.minLevel = 0;
+	self.maxLevel = 0;
 	self.ClearFiltersButton:Hide();
 end
 
@@ -163,16 +91,8 @@ function AuctionHouseFilterButtonMixin:CalculateFiltersArray()
 end
 
 function AuctionHouseFilterButtonMixin:GetLevelRange()
-	return self.LevelRangeFrame:GetLevelRange();
+	return self.minLevel, self.maxLevel;
 end
-
-
-AuctionHouseClearFiltersButtonMixin = {};
-
-function AuctionHouseClearFiltersButtonMixin:OnClick()
-	self:GetParent():Reset();
-end
-
 
 AuctionHouseSearchBoxMixin = {};
 
@@ -193,11 +113,50 @@ end
 AuctionHouseSearchBarMixin = CreateFromMixins(AuctionHouseSystemMixin);
 
 function AuctionHouseSearchBarMixin:OnLoad()
-	local function LevelRangeChangedCallback()
-		self:OnLevelRangeChanged();
+	local function IsSelected(filter)
+		return self.FilterButton.filters[filter];
 	end
 
-	self.FilterButton.LevelRangeFrame:SetLevelRangeChangedCallback(LevelRangeChangedCallback)
+	local function SetSelected(filter)
+		self.FilterButton:ToggleFilter(filter);
+	end
+
+	self.FilterButton:SetWidth(93);
+	self.FilterButton:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_AUCTION_HOUSE_SEARCH_FILTER");
+
+		rootDescription:CreateTitle(AUCTION_HOUSE_FILTER_DROP_DOWN_LEVEL_RANGE);
+
+		local levelRangeFrame = rootDescription:CreateTemplate("LevelRangeFrameTemplate");
+		levelRangeFrame:AddInitializer(function(frame, elementDescription, menu)
+			frame:Reset();
+
+			local minLevel = self.FilterButton.minLevel;
+			if minLevel > 0 then
+				frame:SetMinLevel(minLevel);
+			end
+
+			local maxLevel = self.FilterButton.maxLevel;
+			if maxLevel > 0 then
+				frame:SetMaxLevel(maxLevel);
+			end
+
+			frame:SetLevelRangeChangedCallback(function(minLevel, maxLevel)
+				self.FilterButton.minLevel, self.FilterButton.maxLevel = minLevel, maxLevel;
+				self:UpdateClearFiltersButton();
+			end);
+		end);
+
+		for index, filterGroup in ipairs(C_AuctionHouse.GetFilterGroups()) do
+			rootDescription:CreateTitle(GetAHFilterCategoryName(filterGroup.category));
+
+			for _, filter in ipairs(filterGroup.filters) do
+				rootDescription:CreateCheckbox(GetAHFilterName(filter), IsSelected, SetSelected, filter);
+			end
+
+			rootDescription:QueueSpacer();
+		end
+	end);
 end
 
 function AuctionHouseSearchBarMixin:OnShow()
@@ -209,12 +168,8 @@ function AuctionHouseSearchBarMixin:OnFilterToggled()
 	self:UpdateClearFiltersButton();
 end
 
-function AuctionHouseSearchBarMixin:OnLevelRangeChanged()
-	self:UpdateClearFiltersButton();
-end
-
 function AuctionHouseSearchBarMixin:UpdateClearFiltersButton()
-	local areFiltersDefault = tCompare(self.FilterButton:GetFilters(), DEFAULT_FILTERS);
+	local areFiltersDefault = tCompare(self.FilterButton:GetFilters(), AUCTION_HOUSE_DEFAULT_FILTERS);
 	local minLevel, maxLevel = self.FilterButton:GetLevelRange();
 	self.FilterButton.ClearFiltersButton:SetShown(not areFiltersDefault or minLevel ~= 0 or maxLevel ~= 0);
 end

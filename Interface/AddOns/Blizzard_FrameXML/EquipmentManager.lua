@@ -274,7 +274,7 @@ function EquipmentManager_GetItemInfoByLocation (location)
 		return;
 	end
 
-	local itemID, name, textureName, count, durability, maxDurability, invType, locked, start, duration, enable, setTooltip, quality, isUpgrade, isBound, _;
+	local itemID, name, textureName, count, durability, maxDurability, invType, locked, start, duration, enable, setTooltip, quality, isUpgrade, isBound, _; -- luacheck: ignore 221 (variable 'isBound' is never set)
 	if ( voidStorage ) then
 		itemID, textureName, _, _, _, quality = GetVoidItemInfo(tab, voidSlot);
 		isBound = true;

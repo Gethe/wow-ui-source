@@ -168,7 +168,7 @@
 			</OnLoad>
 			<OnClick>
 				if ( button == "RightButton" ) then
-					RaidGroupButton_ShowMenu(self);
+					RaidGroupButton_OpenMenu(self);
 				else
 					SecureUnitButton_OnClick(self, button, down);
 				end
@@ -609,16 +609,6 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
-				<Anchors>
-					<Anchor point="TOP" x="0" y="0"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						RaidPulloutDropDown_OnLoad(self);
-					</OnLoad>
-				</Scripts>
-			</Frame>
 			<Frame name="$parentMenuBackdrop" setAllPoints="true" inherits="TooltipBackdropTemplate" alpha="0.7">
 				<KeyValues>
 					<KeyValue key="backdropBorderColor" value="GRAY_FONT_COLOR" type="global"/>
@@ -651,11 +641,6 @@
 			<OnDragStop>
 				RaidPulloutStopMoving(self);
 			</OnDragStop>
-			<OnClick>
-				if (button == "RightButton") then
-					ToggleDropDownMenu(1, nil, _G[self:GetName().."DropDown"]);
-				end
-			</OnClick>
 			<OnMouseUp>
 				self:StopMovingOrSizing();
 				self:SetFrameStrata("BACKGROUND");

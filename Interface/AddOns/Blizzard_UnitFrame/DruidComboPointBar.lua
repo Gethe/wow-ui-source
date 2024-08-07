@@ -29,7 +29,7 @@ end
 
 function DruidComboPointMixin.OnRelease(framePool, self)
 	self:ResetVisuals();
-	FramePool_HideAndClearAnchors(framePool, self);
+	Pool_HideAndClearAnchors(framePool, self);
 end
 
 function DruidComboPointMixin:SetActive(isActive)

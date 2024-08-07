@@ -16,7 +16,7 @@ function QuestFrame_OnLoad(self)
 	self:RegisterEvent("QUEST_LOG_UPDATE");
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
 	self:RegisterEvent("PORTRAITS_UPDATED");
-	self:RegisterEvent("LEARNED_SPELL_IN_TAB");
+	self:RegisterEvent("LEARNED_SPELL_IN_SKILL_LINE");
 end
 
 function QuestFrame_OnEvent(self, event, ...)
@@ -42,8 +42,8 @@ function QuestFrame_OnEvent(self, event, ...)
 			return;
 		end
 
-        if(questStartItemID ~= nil and questStartItemID ~= 0) then
-			if (AutoQuestPopupTracker_AddPopUp(GetQuestID(), "OFFER", questStartItemID)) then
+        if(questStartItemID ~= nil and questStartItemID ~= 0) then		
+			if (QuestObjectiveTracker:AddAutoQuestPopUp(GetQuestID(), "OFFER", questStartItemID)) then
                 PlayAutoAcceptQuestSound();
             end
             CloseQuest();
@@ -51,7 +51,7 @@ function QuestFrame_OnEvent(self, event, ...)
 		end
 
 		if ( QuestGetAutoAccept() and QuestIsFromAreaTrigger()) then
-			if (AutoQuestPopupTracker_AddPopUp(GetQuestID(), "OFFER")) then
+			if (QuestObjectiveTracker:AddAutoQuestPopUp(GetQuestID(), "OFFER")) then
 				PlayAutoAcceptQuestSound();
 			end
 			CloseQuest();
@@ -87,7 +87,7 @@ function QuestFrame_OnEvent(self, event, ...)
 			QuestFrameGreetingPanel_OnShow(QuestFrameGreetingPanel);
 		end
 		return;
-	elseif ( event == "LEARNED_SPELL_IN_TAB" ) then
+	elseif ( event == "LEARNED_SPELL_IN_SKILL_LINE" ) then
 		if ( QuestInfoFrame.rewardsFrame:IsVisible() ) then
 			QuestInfo_ShowRewards();
 			QuestDetailScrollFrame.ScrollBar:ScrollToBegin();
@@ -130,7 +130,8 @@ function QuestFrameRewardPanel_OnShow()
 	if (questPortrait ~= 0) then
 		local questPortraitMount = 0;
 		local questPortraitModelSceneID = nil;
-		QuestFrame_ShowQuestPortrait(QuestFrame, questPortrait, questPortraitMount, questPortraitModelSceneID, questPortraitText, questPortraitName, -3, -42);
+		local useCompactDescription = true;
+		QuestFrame_ShowQuestPortrait(QuestFrame, questPortrait, questPortraitMount, questPortraitModelSceneID, questPortraitText, questPortraitName, 1, -42, useCompactDescription);
 	else
 		QuestFrame_HideQuestPortrait();
 	end
@@ -277,11 +278,13 @@ function QuestFrameProgressItems_Update()
 			requiredItem.type = "required";
 			requiredItem.objectType = "currency";
 			requiredItem:SetID(i);
-			local name, texture, numItems = GetQuestCurrencyInfo(requiredItem.type, i);
-			SetItemButtonCount(requiredItem, numItems);
-			SetItemButtonTexture(requiredItem, texture);
-			requiredItem:Show();
-			_G[questItemName..buttonIndex.."Name"]:SetText(name);
+			local requiredCurrencyInfo = C_QuestOffer.GetQuestRequiredCurrencyInfo(i);
+			if requiredCurrencyInfo then
+				SetItemButtonCount(requiredItem, requiredCurrencyInfo.requiredAmount);
+				SetItemButtonTexture(requiredItem, requiredCurrencyInfo.texture);
+				requiredItem:Show();
+				_G[questItemName..buttonIndex.."Name"]:SetText(requiredCurrencyInfo.name);
+			end
 			buttonIndex = buttonIndex+1;
 		end
 
@@ -369,16 +372,18 @@ function QuestFrameGreetingPanel_OnShow()
 		lastTitleButton = nil;
 		for i=(numActiveQuests + 1), (numActiveQuests + numAvailableQuests) do
 			local questTitleButton = QuestFrameGreetingPanel.titleButtonPool:Acquire();
-			local isTrivial, frequency, isRepeatable, isLegendary, questID = GetAvailableQuestInfo(i - numActiveQuests);
-			QuestUtil.ApplyQuestIconOfferToTextureForQuestID(questTitleButton.Icon, questID, isLegendary, frequency, isRepeatable);
+			local isTrivial, frequency, isRepeatable, isLegendary, questID, isImportant, isMeta = GetAvailableQuestInfo(i - numActiveQuests);
+			QuestUtil.ApplyQuestIconOfferToTextureForQuestID(questTitleButton.Icon, questID, isLegendary, frequency, isRepeatable, isImportant, isMeta);
 			
 			local title = GetAvailableTitle(i - numActiveQuests);
 			if ( isTrivial ) then
 				questTitleButton:SetFormattedText(TRIVIAL_QUEST_DISPLAY, title);
 				questTitleButton.Icon:SetVertexColor(0.5,0.5,0.5);
+				questTitleButton.Icon:SetAlpha(1);
 			else
 				questTitleButton:SetFormattedText(NORMAL_QUEST_DISPLAY, title);
 				questTitleButton.Icon:SetVertexColor(1,1,1);
+				questTitleButton.Icon:SetAlpha(QuestUtil.GetAvailableQuestIconAlpha(questID));
 			end
 			if QuestUtil.QuestTextContrastUseLightText() then
 				questTitleButton:GetFontString():SetFixedColor(true);
@@ -420,7 +425,7 @@ function QuestFrame_OnHide()
 		QuestFrame.dialog = nil;
 	end
 	if ( QuestFrame.autoQuest ) then
-		AutoQuestPopupTracker_RemovePopUp(GetQuestID());
+		QuestObjectiveTracker:RemoveAutoQuestPopUp(GetQuestID());
 		QuestFrameDeclineButton:Show();
 		QuestFrameCloseButton:Enable();
 		PlayAutoAcceptQuestSound();
@@ -452,24 +457,16 @@ function QuestTitleButton_OnClick(self)
 end
 
 function QuestFrame_UpdatePortraitText(text)
-	if (text and text ~= "") then
-		QuestNPCModelNameplate:ClearAllPoints();
-		local modelSceneBottom = -216;
-		QuestNPCModelNameplate:SetPoint("TOPLEFT", 0, modelSceneBottom);
+	QuestNPCModelText:SetText(text or "");
 
-		QuestNPCModelTextFrame:Show();
-		QuestNPCModelText:SetText(text);
-
-		local descenderPadding = 5;
-		QuestNPCModelTextScrollChildFrame:SetHeight(QuestNPCModelText:GetHeight() + descenderPadding);
-	else
-		QuestNPCModelTextFrame:Hide();
-	end
+	local descenderPadding = 5;
+	QuestNPCModelTextScrollChildFrame:SetHeight(QuestNPCModelText:GetHeight() + descenderPadding);
 end
 
-function QuestFrame_ShowQuestPortrait(parentFrame, portraitDisplayID, mountPortraitDisplayID, modelSceneID, text, name, x, y)
+function QuestFrame_ShowQuestPortrait(parentFrame, portraitDisplayID, mountPortraitDisplayID, modelSceneID, text, name, x, y, useCompactDescription)
 	QuestModelScene:SetParent(parentFrame);
-	QuestModelScene:SetFrameLevel(600);
+	QuestModelScene:SetFrameStrata("HIGH");
+	QuestModelScene:SetFrameLevel(1000);
 	QuestModelScene:ClearAllPoints();
 	QuestModelScene:SetPoint("TOPLEFT", parentFrame, "TOPRIGHT", x, y);
 	QuestModelScene:ClearScene();
@@ -477,14 +474,18 @@ function QuestFrame_ShowQuestPortrait(parentFrame, portraitDisplayID, mountPortr
 	QuestModelScene:Show();
 	QuestFrame_UpdatePortraitText(text);
 
+	if (useCompactDescription) then
+		local compactDescriptionHeight = 165;
+		QuestModelScene.ModelTextFrame:SetHeight(compactDescriptionHeight);
+	else
+		local defaultDescriptionHeight = 216;
+		QuestModelScene.ModelTextFrame:SetHeight(defaultDescriptionHeight);
+	end
+
 	if (name and name ~= "") then
-		QuestNPCModelNameplate:Show();
-		QuestNPCModelBlankNameplate:Hide();
 		QuestNPCModelNameText:Show();
 		QuestNPCModelNameText:SetText(name);
 	else
-		QuestNPCModelNameplate:Hide();
-		QuestNPCModelBlankNameplate:Show();
 		QuestNPCModelNameText:Hide();
 	end
 
@@ -544,7 +545,8 @@ function QuestFrameDetailPanel_OnShow()
 
 	local questPortrait, questPortraitText, questPortraitName, questPortraitMount, questPortraitModelSceneID = GetQuestPortraitGiver();
 	if (questPortrait ~= 0) then
-		QuestFrame_ShowQuestPortrait(QuestFrame, questPortrait, questPortraitMount, questPortraitModelSceneID, questPortraitText, questPortraitName, -3, -42);
+		local useCompactDescription = true;
+		QuestFrame_ShowQuestPortrait(QuestFrame, questPortrait, questPortraitMount, questPortraitModelSceneID, questPortraitText, questPortraitName, 1, -42, useCompactDescription);
 	else
 		QuestFrame_HideQuestPortrait();
 	end

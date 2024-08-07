@@ -27,6 +27,11 @@ function AnchorMixin:Get()
 	return point, self.relativeTo, relativePoint, x, y;
 end
 
+function AnchorMixin:GetRelativeTo()
+	return self.relativeTo;
+end
+
+
 function AnchorMixin:SetPoint(region, clearAllPoints)
 	if clearAllPoints then
 		region:ClearAllPoints();
@@ -158,6 +163,23 @@ function AnchorUtil.ChainLayout(frames, initialAnchor, layout)
 	end
 end
 
+-- For initialAnchor and layout, use AnchorUtil.CreateAnchor(...)
+function AnchorUtil.VerticalLayout(frames, initialAnchor, padding)
+	if #frames <= 0 then
+		return;
+	end
+
+	local clearAllPoints = true;
+	initialAnchor:SetPoint(frames[1], clearAllPoints);
+
+	padding = padding or 0;
+
+	for index, region in CreateTableEnumerator(frames, 2) do
+		region:ClearAllPoints();
+		region:SetPoint("TOPLEFT", frames[index-1], "BOTTOMLEFT", 0, -padding);
+	end
+end
+
 local function GetFrameSpacing(totalSize, numElements, elementSize)
 	if numElements <= 1 then
 		return 0;
@@ -217,7 +239,7 @@ function AnchorUtil.GridLayoutFactory(factoryFunction, initialAnchor, totalWidth
 
 	local frames = { frame };
 	while #frames < rowSize * colSize do
-		local frame = factoryFunction(#frames + 1);
+		frame = factoryFunction(#frames + 1);
 		if not frame then
 			break;
 		end
@@ -375,7 +397,7 @@ function AnchorUtil.MirrorRegionsAlongHorizontalAxis(mirrorDescriptions)
 	MirrorRegionsAlongAxis(mirrorDescriptions, HORIZONTAL_MIRROR_POINTS, SetPointHorizontal, SetTexCoordHorizontal);
 end
 
-function AnchorUtil.DebugAnchorGraph(frame, indent, visited, output)
+local function DebugAnchorGraph(frame, indent, visited, output)
 	local indentString = "      ";
 	indent = indent or indentString;
 	output = output or {};
@@ -391,10 +413,9 @@ function AnchorUtil.DebugAnchorGraph(frame, indent, visited, output)
 		local color = frame:IsRectValid() and GREEN_FONT_COLOR or RED_FONT_COLOR;
 		local x, y = frame:GetSize();
 		local x2, y2 = frame:GetSize(true);
-		return color:WrapTextInColorCode(frame:GetDebugName() .. (" calculated size <%.2f, %.2f> explicit size <%.2f, %.2f> points <%d>"):format(
-		x, y, x2, y2, frame:GetNumPoints()));
+		return color:WrapTextInColorCode(frame:GetDebugName() .. (" calculated size <%.2f, %.2f> explicit size <%.2f, %.2f> points <%d>, scale <%.2f> effective scale <%.2f>"):format(
+			x, y, x2, y2, frame:GetNumPoints(), frame:GetScale(), frame:GetEffectiveScale()));
 	end
-
 	table.insert(output, indent .. FormatFrame(frame));
 
 	for i = 1, frame:GetNumPoints() do
@@ -402,7 +423,7 @@ function AnchorUtil.DebugAnchorGraph(frame, indent, visited, output)
 		local anchorString = ("Anchor%d %s to %s at %s offset <%.2f, %.2f>"):format(i, point, relativeTo and relativeTo:GetDebugName() or "?", relativePoint, x, y);
 		table.insert(output, indent .. LIGHTGRAY_FONT_COLOR:WrapTextInColorCode(anchorString));
 		if relativeTo then
-			AnchorUtil.DebugAnchorGraph(relativeTo, indent .. indentString, visited, output);
+			DebugAnchorGraph(relativeTo, indent .. indentString, visited, output);
 		end
 	end
 
@@ -411,7 +432,10 @@ end
 
 function AnchorUtil.PrintAnchorGraph(frame)
 	-- Printing to multiple places in case the chat frame isn't visible.
-	local str = table.concat(AnchorUtil.DebugAnchorGraph(frame), "\n");
+	local str = table.concat(DebugAnchorGraph(frame), "\n");
+	if ConsolePrint then
 	ConsolePrint(str);
+	elseif print then
 	print(str);
+	end
 end

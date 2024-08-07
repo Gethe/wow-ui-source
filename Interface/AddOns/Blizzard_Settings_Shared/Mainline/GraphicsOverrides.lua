@@ -42,7 +42,7 @@ function GraphicsOverrides.CreateAdvancedRaidSettingsTable(category, addFunc)
 	return advRaidSettings;
 end
 
-function GraphicsOverrides.AdjustAdvancedQualityControls(parentElement, settings, raid, initDropDownFunc, addOptionFunc, addRecommendedFunc)
+function GraphicsOverrides.AdjustAdvancedQualityControls(parentElement, settings, raid, initDropdownFunc, addOptionFunc, addRecommendedFunc)
 end
 
 function GraphicsOverrides.GetTextureResolutionOptions(settingTextureResolution, addValidatedSettingOptionFunc, addRecommendedFunc)
@@ -53,4 +53,8 @@ function GraphicsOverrides.GetTextureResolutionOptions(settingTextureResolution,
 		addValidatedSettingOptionFunc(container, variable, raid, 2, VIDEO_OPTIONS_HIGH, VIDEO_OPTIONS_TEXTURE_DETAIL_HIGH);
 		addRecommendedFunc(container, variable);
 		return container:GetData();
+end
+
+function GraphicsOverrides.RunSettingsCallback(callback)
+	callback();
 end

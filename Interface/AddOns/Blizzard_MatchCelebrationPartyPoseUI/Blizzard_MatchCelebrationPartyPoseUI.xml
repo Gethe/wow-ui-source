@@ -34,32 +34,34 @@
 					</OnShow>
 				</Scripts>
 			</Frame>
+			<Frame parentKey="ButtonContainer" inherits="HorizontalLayoutFrame">
+				<KeyValues>
+					<KeyValue key="spacing" value="100" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.ModelScene" y="-40"/>
+				</Anchors>
+				<Frames>
 			<Button parentKey="LeaveButton" mixin="MatchCelebrationMainButtonMixin" inherits="UIPanelButtonNoTooltipResizeToFitTemplate">
 				<KeyValues>
+							<KeyValue key="layoutIndex" value="0" type="number"/>
 					<KeyValue key="minimumWidth" value="164" type="number"/>
 				</KeyValues>
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ModelScene" x="-200" y="-40"/>
-				</Anchors>
 				<Scripts>
 					<OnClick method="OnClick"/>
 				</Scripts>
 			</Button>
-			<Button parentKey="ExtraButton" mixin="MatchCelebrationExtraButtonMixin" text="DEATH_RELEASE" inherits="UIPanelButtonNoTooltipResizeToFitTemplate" hidden="true">
+					<Button parentKey="ExtraButton" mixin="MatchCelebrationExtraButtonMixin" inherits="UIPanelButtonNoTooltipResizeToFitTemplate">
 				<KeyValues>
+							<KeyValue key="layoutIndex" value="1" type="number"/>
 					<KeyValue key="minimumWidth" value="164" type="number"/>
 				</KeyValues>
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ModelScene" x="200" y="-40"/>
-				</Anchors>
 				<Scripts>
 					<OnClick method="OnClick"/>
 				</Scripts>
-			</Button>
+					</Button>				
+				</Frames>
+			</Frame>
 		</Frames>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnEvent method="OnEvent"/>
-		</Scripts>
 	</Frame>
 </Ui>

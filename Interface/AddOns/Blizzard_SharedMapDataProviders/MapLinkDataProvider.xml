@@ -2,5 +2,5 @@
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="MapLinkDataProvider.lua"/>
 
-	<Frame name="MapLinkPinTemplate" inherits="BaseHighlightableMapPoiPinTemplate" enableMouseClicks="true" mixin="MapLinkPinMixin" virtual="true" />
+	<Frame name="MapLinkPinTemplate" inherits="LegendHighlightableMapPoiPinTemplate, BaseSuperTrackableMapPoiPinTemplate" enableMouseClicks="true" mixin="MapLinkPinMixin" virtual="true" />
 </Ui>

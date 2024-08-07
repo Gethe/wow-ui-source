@@ -1,6 +1,8 @@
 
 INSPECTFRAME_SUBFRAMES = { "InspectPaperDollFrame", "InspectPVPFrame", "InspectGuildFrame" };
 
+INSPECTED_UNIT = nil;
+
 UIPanelWindows["InspectFrame"] = { area = "left", pushable = 0, };
 
 function InspectFrame_Show(unit)
@@ -31,11 +33,14 @@ function InspectFrame_OnLoad(self)
 	self:GetTitleText():SetFontObject("GameFontHighlight");
 end
 
-function InspectFrame_OnEvent(self, event, unit, ...)
+function InspectFrame_OnEvent(self, event, ...)
 
-	if(event == "INSPECT_READY" and InspectFrame.unit and (UnitGUID(InspectFrame.unit) == unit)) then
-		ShowUIPanel(InspectFrame);
-		InspectFrame_UpdateTabs();
+	if(event == "INSPECT_READY") then
+		local unit = ...;
+		if (InspectFrame.unit and (UnitGUID(InspectFrame.unit) == unit)) then
+			ShowUIPanel(InspectFrame);
+			InspectFrame_UpdateTabs();
+		end
 	end
 
 
@@ -95,13 +100,9 @@ function InspectFrame_OnHide(self)
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 
 	-- Clear the player being inspected
-	if not ClassTalentFrame or not ClassTalentFrame:IsInspecting() then
+	if not PlayerSpellsFrame or not PlayerSpellsFrame:IsInspecting() then
 		ClearInspectPlayer();
 	end
-
-	-- in the InspectTalentFrame_Update function, a default talent tab is selected smartly if there is no tab selected
-	-- it actually ends up feeling natural to have this behavior happen every time the frame is shown
-	PanelTemplates_SetTab(InspectTalentFrame, nil);
 end
 
 function InspectFrame_OnUpdate(self)
@@ -130,7 +131,7 @@ function InspectFrame_UpdateTabs()
 	end
 
 	-- Guild tab
-	local _, _, guildName = GetInspectGuildInfo(InspectFrame.unit);
+	local _, _, guildName = C_PaperDollInfo.GetInspectGuildInfo(InspectFrame.unit);
 	if ( guildName and guildName ~= "" ) then
 		PanelTemplates_EnableTab(InspectFrame, 3);
 	else

@@ -1,12 +1,15 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
+	<ScopedModifier addToSecureEnv="true">
 	<Frame name="UIParent" setAllPoints="true" protected="true" frameStrata="MEDIUM">
 		<Attributes>
 			<Attribute name="DEFAULT_FRAME_WIDTH" type="number" value="384"/>
 			<Attribute name="TOP_OFFSET" type="number" value="-116"/>
 			<Attribute name="LEFT_OFFSET" type="number" value="16"/>
-			<Attribute name="CENTER_OFFSET" type="number" value="384"/>	<!-- Do not modify, updated by UpdateUIPanelPositions() -->
-			<Attribute name="RIGHT_OFFSET" type="number" value="768"/>	<!-- Do not modify, updated by UpdateUIPanelPositions() -->
+				<Attribute name="CENTER_OFFSET" type="number" value="384"/>
+				<!-- Do not modify, updated by UpdateUIPanelPositions() -->
+				<Attribute name="RIGHT_OFFSET" type="number" value="768"/>
+				<!-- Do not modify, updated by UpdateUIPanelPositions() -->
 			<Attribute name="RIGHT_OFFSET_BUFFER" type="number" value="80"/>
 			<Attribute name="PANEl_SPACING_X" type="number" value="32"/>
 		</Attributes>
@@ -21,9 +24,7 @@
 			<OnUpdate>
 				FCF_OnUpdate(elapsed);
 				ButtonPulse_OnUpdate(elapsed);
-				UnitPopup_OnUpdate(elapsed);
 				AnimatedShine_OnUpdate(elapsed);
-				AutoCastShine_OnUpdate(nil, elapsed);
 				HelpOpenWebTicketButton_OnUpdate(HelpOpenWebTicketButton, elapsed);
 			</OnUpdate>
 			<!-- used to properly hide and show certain frames when the UI is toggled on and off -->
@@ -31,6 +32,7 @@
 			<OnHide function="UIParent_OnHide"/>
 		</Scripts>
 	</Frame>
+	</ScopedModifier>
 
 	<Frame name="UIParentManagedFrameTemplate" mixin="UIParentManagedFrameMixin" virtual="true">
 		<KeyValues>

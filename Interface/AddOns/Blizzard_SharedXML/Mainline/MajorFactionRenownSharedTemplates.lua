@@ -37,6 +37,10 @@ function MajorFactionRenownRewardMixin:OnEnter()
 		local tooltip = GetAppropriateTooltip();
 		tooltip:SetOwner(self, "ANCHOR_RIGHT", -14, -14);
 		GameTooltip_SetTitle(tooltip, name);
+		if self.rewardInfo.isAccountUnlock then
+			GameTooltip_AddColoredLine(tooltip, RENOWN_REWARD_ACCOUNT_UNLOCK_LABEL, ACCOUNT_WIDE_FONT_COLOR);
+			GameTooltip_AddBlankLineToTooltip(tooltip);
+		end
 		GameTooltip_AddNormalLine(tooltip, self.description);
 		tooltip:Show();
 	end

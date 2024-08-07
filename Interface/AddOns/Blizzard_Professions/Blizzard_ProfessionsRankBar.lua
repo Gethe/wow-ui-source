@@ -3,6 +3,77 @@ local ProfessionsRankBarEvents =
 	"SKILL_LINES_CHANGED",
 	"TRIAL_STATUS_UPDATE",
 }
+local function GenerateRankText(professionName, skillLevel, maxSkillLevel, skillModifier)
+	local rankText;
+	if skillModifier > 0  then
+		rankText = TRADESKILL_NAME_RANK_WITH_MODIFIER:format(professionName, skillLevel, skillModifier, maxSkillLevel);
+	else
+		rankText = TRADESKILL_NAME_RANK:format(professionName, skillLevel, maxSkillLevel);
+	end
+
+	if GameLimitedMode_IsActive() then
+		local professionCap = select(3, GetRestrictedAccountData());
+		if skillLevel >= professionCap and professionCap > 0 then
+			return ("%s %s%s|r"):format(rankText, RED_FONT_COLOR_CODE, CAP_REACHED_TRIAL);
+		end
+	end
+	return rankText;
+end
+
+ProfessionsRankBarDropdownMixin = CreateFromMixins(ButtonStateBehaviorMixin);
+
+local function IsSelected(professionInfo)
+	local baseProfessionInfo = C_TradeSkillUI.GetChildProfessionInfo();
+	return baseProfessionInfo.professionID == professionInfo.professionID;
+end
+
+local function SetSelected(professionInfo)
+	EventRegistry:TriggerEvent("Professions.SelectSkillLine", professionInfo);
+end
+
+function ProfessionsRankBarDropdownMixin:OnLoad()
+	ButtonStateBehaviorMixin.OnLoad(self);
+
+	self:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_PROFESSIONS_RANK_BAR");
+
+		local baseProfessionInfo = C_TradeSkillUI.GetBaseProfessionInfo();
+		local title = rootDescription:CreateTitle(baseProfessionInfo.professionName);
+		title:AddInitializer(function(frame, description, menu)
+			local fontString = frame.fontString;
+			fontString:SetPoint("RIGHT");
+			fontString:SetPoint("LEFT")
+			fontString:SetFontObject("GameFontNormal");
+			fontString:SetJustifyH("CENTER");
+		end);
+
+		-- Add each expansion and skill display - Dragon Isles 50/100
+		for index, professionInfo in ipairs(C_TradeSkillUI.GetChildProfessionInfos()) do
+			local text = professionInfo.expansionName;
+			local radio = rootDescription:CreateRadio(text, IsSelected, SetSelected, professionInfo);
+			radio:AddInitializer(function(frame, description, menu)
+				local fontString = frame.fontString;
+				fontString:SetFontObject("GameFontHighlightOutline");
+
+				local fontString2 = frame:AttachFontString();
+				fontString2:SetHeight(20);
+				fontString2:SetPoint("RIGHT");
+				fontString2:SetFontObject("GameFontHighlightOutline");
+				fontString2:SetTextToFit(string.format("%d/%d", professionInfo.skillLevel, professionInfo.maxSkillLevel));
+			end);
+		end
+
+		rootDescription:SetMinimumWidth(250);
+	end)
+end
+
+function ProfessionsRankBarDropdownMixin:GetAtlas()
+	return GetWowStyle1ArrowButtonState(self);
+end
+
+function ProfessionsRankBarDropdownMixin:OnButtonStateChanged()
+	self.Texture:SetAtlas(self:GetAtlas(), TextureKitConstants.UseAtlasSize);
+end
 
 ProfessionsRankBarMixin = {};
 
@@ -26,23 +97,6 @@ function ProfessionsRankBarMixin:OnEvent(event, ...)
 	if event == "SKILL_LINES_CHANGED" or event == "TRIAL_STATUS_UPDATE" then
 		self:Update(Professions.GetProfessionInfo());
 	end
-end
-
-local function GenerateRankText(professionName, skillLevel, maxSkillLevel, skillModifier)
-	local rankText;
-	if skillModifier > 0  then
-		rankText = TRADESKILL_NAME_RANK_WITH_MODIFIER:format(professionName, skillLevel, skillModifier, maxSkillLevel);
-	else
-		rankText = TRADESKILL_NAME_RANK:format(professionName, skillLevel, maxSkillLevel);
-	end
-
-	if GameLimitedMode_IsActive() then
-		local professionCap = select(3, GetRestrictedAccountData());
-		if skillLevel >= professionCap and professionCap > 0 then
-			return ("%s %s%s|r"):format(rankText, RED_FONT_COLOR_CODE, CAP_REACHED_TRIAL);
-		end
-	end
-	return rankText;
 end
 
 function ProfessionsRankBarMixin:Update(professionInfo)

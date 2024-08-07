@@ -71,7 +71,7 @@ function ProfessionsReagentSlotMixin:Init(transaction, reagentSlotSchematic)
 		
 		local function InitButton()
 			local allocations = transaction:GetAllocations(self:GetSlotIndex());
-			for index, allocation in allocations:Enumerate() do
+			for index, allocation in allocations:Enumerate() do -- luacheck: ignore 512 (loop is executed at most once)
 				local reagent = allocation:GetReagent();
 				self:SetItem(Item:CreateFromItemID(reagent.itemID));
 				return;
@@ -210,9 +210,9 @@ function ProfessionsReagentSlotMixin:UpdateAllocationText()
 		else
 			if foundIndex then
 				local reagent = reagentSlotSchematic.reagents[foundIndex];
-				quantity = ProfessionsUtil.GetReagentQuantityInPossession(reagent);
+				quantity = ProfessionsUtil.GetReagentQuantityInPossession(reagent, self:GetTransaction():ShouldUseCharacterInventoryOnly());
 			else
-				quantity = ProfessionsUtil.AccumulateReagentsInPossession(reagentSlotSchematic.reagents);
+				quantity = ProfessionsUtil.AccumulateReagentsInPossession(reagentSlotSchematic.reagents, self:GetTransaction():ShouldUseCharacterInventoryOnly());
 			end
 		end
 	end
@@ -255,7 +255,7 @@ function ProfessionsReagentSlotMixin:GetInventoryDetails()
 	local foundMultiple = nil;
 	local foundIndex = nil;
 	for index, reagent in ipairs(reagentSlotSchematic.reagents) do
-		local quantity = ProfessionsUtil.GetReagentQuantityInPossession(reagent);
+		local quantity = ProfessionsUtil.GetReagentQuantityInPossession(reagent, self:GetTransaction():ShouldUseCharacterInventoryOnly());
 		if quantity > 0 then
 			if foundIndex then
 				foundMultiple = true;

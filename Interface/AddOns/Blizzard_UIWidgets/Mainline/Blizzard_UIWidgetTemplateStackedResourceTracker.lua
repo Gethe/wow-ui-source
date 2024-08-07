@@ -21,8 +21,7 @@ function UIWidgetTemplateStackedResourceTrackerMixin:Setup(widgetInfo, widgetCon
 		local resourceFrame = self.resourcePool:Acquire();
 		resourceFrame:Show();
 
-		resourceFrame:Setup(widgetContainer, resourceInfo);
-		resourceFrame:SetTooltipLocation(widgetInfo.tooltipLoc);
+		resourceFrame:Setup(widgetContainer, resourceInfo, widgetInfo.tooltipLoc);
 
 		if previousResourceFrame then
 			resourceFrame:SetPoint("TOPLEFT", previousResourceFrame, "BOTTOMLEFT", 0, -6);

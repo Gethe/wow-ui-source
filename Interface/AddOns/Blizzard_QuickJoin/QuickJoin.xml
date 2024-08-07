@@ -68,7 +68,6 @@
 	</Button>
 	<Frame name="QuickJoinFrame" parent="FriendsFrame" hidden="true" setAllPoints="true" mixin="QuickJoinMixin">
 		<Frames>
-			<Frame name="QuickJoinFrameDropDown" inherits="UIDropDownMenuTemplate"/>
 			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="7" y="-88"/>

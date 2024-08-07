@@ -29,7 +29,7 @@ function ProfessionsItemFlyoutButtonMixin:Init(elementData, onElementEnabledImpl
 	local forceAccumulateInventory = elementData.forceAccumulateInventory;
 	local accumulateInventory = forceAccumulateInventory or not itemLocation or (item:IsStackable() and not elementData.onlyCountStack);
 	if accumulateInventory then
-		count = ItemUtil.GetCraftingReagentCount(item:GetItemID());
+		count = ItemUtil.GetCraftingReagentCount(item:GetItemID(), elementData.useCharacterInventoryOnly);
 	elseif itemLocation then
 		count = C_Item.GetStackCount(itemLocation);
 	end
@@ -72,8 +72,8 @@ function ProfessionsItemFlyoutMixin:OnLoad()
 	CallbackRegistryMixin.OnLoad(self);
 
 	self.Text:SetText(PROFESSIONS_PICKER_NO_AVAILABLE_REAGENTS);
-	self.HideUnownedCheckBox.text:SetText(PROFESSIONS_HIDE_UNOWNED_REAGENTS);
-	self.HideUnownedCheckBox:SetScript("OnClick", function(button, buttonName, down)
+	self.HideUnownedCheckbox.text:SetText(PROFESSIONS_HIDE_UNOWNED_REAGENTS);
+	self.HideUnownedCheckbox:SetScript("OnClick", function(button, buttonName, down)
 		local checked = button:GetChecked();
 		SetCVar(HideUnavailableCvar, checked);
 		self:InitializeContents();
@@ -151,12 +151,12 @@ function ProfessionsItemFlyoutMixin:OnEvent(event, ...)
 		local buttonName = ...;
 		local isRightButton = buttonName == "RightButton";
 
-		local mouseFocus = GetMouseFocus();
-		if not isRightButton and DoesAncestryInclude(self.owner, mouseFocus) then
+		local mouseFoci = GetMouseFoci();
+		if not isRightButton and DoesAncestryIncludeAny(self.owner, mouseFoci) then
 			return;
 		end
 
-		if isRightButton or (not DoesAncestryInclude(self, mouseFocus) and mouseFocus ~= self) then
+		if isRightButton or (not DoesAncestryIncludeAny(self, mouseFoci) and not self:IsMouseMotionFocus()) then
 			CloseProfessionsItemFlyout();
 		end
 	end
@@ -169,12 +169,12 @@ function ProfessionsItemFlyoutMixin:InitializeContents()
 		cannotModifyHideUnavailable, alwaysShowUnavailable = C_TradeSkillUI.GetHideUnownedFlags(recipeID);
 	end
 	
-	local canShowCheckBox = self.canModifyFilter and not cannotModifyHideUnavailable;
-	self.HideUnownedCheckBox:SetShown(canShowCheckBox);
+	local canShowCheckbox = self.canModifyFilter and not cannotModifyHideUnavailable;
+	self.HideUnownedCheckbox:SetShown(canShowCheckbox);
 
 	local hideUnavailableCvar = GetCVarBool(HideUnavailableCvar);
-	if canShowCheckBox then
-		self.HideUnownedCheckBox:SetChecked(hideUnavailableCvar);
+	if canShowCheckbox then
+		self.HideUnownedCheckbox:SetChecked(hideUnavailableCvar);
 	end
 
 	local undoElement = nil;
@@ -191,7 +191,7 @@ function ProfessionsItemFlyoutMixin:InitializeContents()
 		hideUnavailable = not alwaysShowUnavailable;
 	else
 		local alwaysHide = not self.canModifyFilter;
-		local preferHide = canShowCheckBox and hideUnavailableCvar;
+		local preferHide = canShowCheckbox and hideUnavailableCvar;
 		hideUnavailable = alwaysHide or preferHide;
 	end
 
@@ -229,7 +229,7 @@ function ProfessionsItemFlyoutMixin:InitializeContents()
 			end
 
 			local totalHeight = height + adjustment;
-			if canShowCheckBox then
+			if canShowCheckbox then
 				totalHeight = totalHeight + 25;
 			end
 

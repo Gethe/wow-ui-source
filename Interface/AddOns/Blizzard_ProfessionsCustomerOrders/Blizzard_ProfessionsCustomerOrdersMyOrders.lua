@@ -30,13 +30,15 @@ function ProfessionsCustomerOrderListElementMixin:OnClick(button)
 	if button == "LeftButton" then
 		EventRegistry:TriggerEvent("ProfessionsCustomerOrders.OrderSelected", self.option);
 	elseif button == "RightButton" then
-		local dropdownInfo =
-		{
-			recipeID = self.option.spellID,
-			orderID = self.option.orderID,
-			orderState = self.option.orderState,
-		};
-		ToggleDropDownMenu(1, dropdownInfo, self.contextMenu, "cursor");
+		MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
+			rootDescription:SetTag("MENU_PROFESSIONS_CUSTOMER_ORDER");
+
+			if self.option.orderState then
+				rootDescription:CreateButton(PROFESSIONS_CRAFTING_FORM_CANCEL_ORDER, function()
+					C_CraftingOrders.CancelOrder(self.option.orderID);
+				end);
+			end
+		end);
 	end
 end
 
@@ -51,7 +53,6 @@ end
 
 function ProfessionsCustomerOrderListElementMixin:Init(elementData)
 	self.option = elementData.option;
-	self.contextMenu = elementData.contextMenu;
 end
 
 
@@ -70,18 +71,6 @@ function ProfessionsCustomerOrdersMyOrdersMixin:InitButtons()
 		GameTooltip_AddHighlightLine(GameTooltip, REFRESH);
 		GameTooltip:Show();
 	end);
-end
-
-function ProfessionsCustomerOrdersMyOrdersMixin:InitContextMenu(dropDown, level)
-	local dropdownInfo = UIDROPDOWNMENU_MENU_VALUE;
-
-	if dropdownInfo.orderState == Enum.CraftingOrderState.Created then
-		local info = UIDropDownMenu_CreateInfo();
-		info.notCheckable = true;
-		info.text = PROFESSIONS_CRAFTING_FORM_CANCEL_ORDER;
-		info.func = GenerateClosure(C_CraftingOrders.CancelOrder, dropdownInfo.orderID);
-		UIDropDownMenu_AddButton(info, level);
-	end
 end
 
 function ProfessionsCustomerOrdersMyOrdersMixin:InitOrderList()
@@ -139,9 +128,6 @@ function ProfessionsCustomerOrdersMyOrdersMixin:InitOrderList()
 		end
 	end
 	self.OrderList.ScrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnDataRangeChanged, OnDataRangeChanged, self);
-
-	UIDropDownMenu_SetInitializeFunction(self.OrderList.ContextMenu, GenerateClosure(self.InitContextMenu, self));
-	UIDropDownMenu_SetDisplayMode(self.OrderList.ContextMenu, "MENU");
 end
 
 function ProfessionsCustomerOrdersMyOrdersMixin:ResetSortOrder()
@@ -284,14 +270,14 @@ function ProfessionsCustomerOrdersMyOrdersMixin:UpdateOrderList(result, expectMo
 	if offset == 0 then
 		local dataProvider = CreateDataProvider();
 		for _, order in ipairs(orders) do
-			dataProvider:Insert({option = order, contextMenu = self.OrderList.ContextMenu});
+			dataProvider:Insert({option = order});
 		end
 		self.OrderList.ScrollBox:SetDataProvider(dataProvider);
 	else
 		local dataProvider = self.OrderList.ScrollBox:GetDataProvider();
 		for idx = offset + 1, #orders do
 			local order = orders[idx];
-			dataProvider:Insert({option = order, contextMenu = self.OrderList.ContextMenu});
+			dataProvider:Insert({option = order});
 		end
 	end
 

@@ -480,6 +480,24 @@ local SimpleScriptRegionAPI =
 			},
 		},
 		{
+			Name = "SetPropagateMouseClicks",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "propagate", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetPropagateMouseMotion",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "propagate", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetScript",
 			Type = "Function",
 

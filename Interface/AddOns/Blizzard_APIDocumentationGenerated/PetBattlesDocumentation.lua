@@ -12,13 +12,13 @@ local PetBattles =
 
 			Arguments =
 			{
-				{ Name = "petOwner", Type = "number", Nilable = false },
+				{ Name = "petOwner", Type = "BattlePetOwner", Nilable = false },
 				{ Name = "slot", Type = "number", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "quality", Type = "luaIndex", Nilable = false },
+				{ Name = "quality", Type = "BattlePetBreedQuality", Nilable = false },
 			},
 		},
 		{
@@ -27,7 +27,7 @@ local PetBattles =
 
 			Arguments =
 			{
-				{ Name = "petOwner", Type = "number", Nilable = false },
+				{ Name = "petOwner", Type = "BattlePetOwner", Nilable = false },
 				{ Name = "slot", Type = "number", Nilable = false },
 			},
 
@@ -42,7 +42,7 @@ local PetBattles =
 
 			Arguments =
 			{
-				{ Name = "petOwner", Type = "number", Nilable = false },
+				{ Name = "petOwner", Type = "BattlePetOwner", Nilable = false },
 				{ Name = "slot", Type = "number", Nilable = false },
 			},
 

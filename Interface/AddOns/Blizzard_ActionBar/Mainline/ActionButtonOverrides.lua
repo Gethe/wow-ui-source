@@ -73,11 +73,11 @@ if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
 		if self.action then
 			local actionType, id = GetActionInfo(self.action);
 			if actionType == "spell" then
-				self.pressAndHoldAction = IsPressHoldReleaseSpell(id);
+				self.pressAndHoldAction = C_Spell.IsPressHoldReleaseSpell(id);
 			elseif actionType == "macro" then
 				local spellID = GetMacroSpell(id);
 				if spellID then
-					self.pressAndHoldAction = IsPressHoldReleaseSpell(spellID);
+					self.pressAndHoldAction = C_Spell.IsPressHoldReleaseSpell(spellID);
 				end
 			end
 		end

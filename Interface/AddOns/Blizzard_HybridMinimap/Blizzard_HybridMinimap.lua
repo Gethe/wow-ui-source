@@ -13,7 +13,7 @@ function HybridMinimapMixin:OnLoad()
 
 	mapCanvas:AddDataProvider(CreateFromMixins(MapExplorationDataProviderMixin));
 
-	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.MapPlunderstormCircle) then
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.MapPlunderstormCircle) then
 		local circleDataProvider = CreateFromMixins(PlunderstormCircleDataProviderMixin);
 		circleDataProvider:SetLightningShown(false);
 		mapCanvas:AddDataProvider(circleDataProvider);

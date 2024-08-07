@@ -2,20 +2,22 @@
 
 local landingPageOverlay = {
 	[LE_EXPANSION_DRAGONFLIGHT] = CreateFromMixins(DragonflightLandingOverlayMixin),
+	[LE_EXPANSION_WAR_WITHIN] = CreateFromMixins(WarWithinLandingOverlayMixin),
 };
 
 ExpansionLandingPageMixin = {};
 
 ExpansionLandingPageEvents = {
 	"ACHIEVEMENT_EARNED",
+	"MAJOR_FACTION_UNLOCKED",
 	"NEW_MOUNT_ADDED",
-	"PLAYER_LOGIN",
 	"PLAYER_LEVEL_UP",
+	"PLAYER_LOGIN",
 	"QUEST_REMOVED",
 	"QUEST_TURNED_IN",
 	"ZONE_CHANGED",
-	"ZONE_CHANGED_NEW_AREA",
 	"ZONE_CHANGED_INDOORS",
+	"ZONE_CHANGED_NEW_AREA",
 };
 
 function ExpansionLandingPageMixin:OnLoad()
@@ -56,20 +58,36 @@ function ExpansionLandingPageMixin:GetNewestExpansionOverlayForPlayer()
 	end
 end
 
-function ExpansionLandingPageMixin:RefreshExpansionOverlay()	
+function ExpansionLandingPageMixin:RefreshExpansionOverlay()
 	local newestOverlay = self:GetNewestExpansionOverlayForPlayer();
-	if newestOverlay and newestOverlay ~= self.overlay then
-		self.overlay = newestOverlay;
-		newestOverlay.CreateOverlay(self.Overlay);
-
-		local minimapAnimationEvents = self.overlay.GetMinimapAnimationEvents();
-		if minimapAnimationEvents then
-			FrameUtil.RegisterFrameForEvents(self, minimapAnimationEvents);
+	if newestOverlay ~= self.overlay then
+		if self.overlayFrame then
+			self.overlayFrame:Hide();
 		end
 
+		if self.overlay then
+			local minimapAnimationEvents = self.overlay.GetMinimapAnimationEvents();
+			if minimapAnimationEvents then
+				FrameUtil.UnregisterFrameForEvents(self, minimapAnimationEvents);
+			end
+		end
+
+		self.overlay = newestOverlay;
+
+		if self.overlay then
+			self.overlayFrame = newestOverlay.CreateOverlay(self.Overlay);
+			self.overlayFrame:Show();
+
+			local minimapAnimationEvents = self.overlay.GetMinimapAnimationEvents();
+			if minimapAnimationEvents then
+				FrameUtil.RegisterFrameForEvents(self, minimapAnimationEvents);
+			end
+		end
+
+		EventRegistry:TriggerEvent("ExpansionLandingPage.ClearPulses");
 		EventRegistry:TriggerEvent("ExpansionLandingPage.OverlayChanged");
 
-		if self.overlay.TryCelebrateUnlock then
+		if self.overlay and self.overlay.TryCelebrateUnlock then
 			self.overlay:TryCelebrateUnlock();
 		end
 	end
@@ -77,4 +95,13 @@ end
 
 function ExpansionLandingPageMixin:GetOverlayMinimapDisplayInfo()
 	return self.overlay and self.overlay.GetMinimapDisplayInfo();
+end
+
+function ExpansionLandingPageMixin:GetLandingPageType()
+	local minimapDisplayInfo = self:GetOverlayMinimapDisplayInfo();
+	if not minimapDisplayInfo then
+		return Enum.ExpansionLandingPageType.None;
+	end
+
+	return minimapDisplayInfo.expansionLandingPageType;
 end

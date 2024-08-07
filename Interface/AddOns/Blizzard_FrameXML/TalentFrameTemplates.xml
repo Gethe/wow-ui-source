@@ -23,14 +23,6 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="BORDER">
-				<Texture parentKey="Arrow" atlas="pvptalents-selectedarrow" hidden="true">
-					<Size x="28" y="29"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Border" relativePoint="RIGHT" x="-8" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Border" atlas="pvptalents-talentborder" setAllPoints="true"/>
 				<FontString parentKey="TalentName" inherits="GameFontHighlightSmall" hidden="true">
@@ -39,6 +31,14 @@
 						<Anchor point="TOP" relativeKey="$parent.Border" relativePoint="BOTTOM" x="1" y="1"/>
 					</Anchors>
 				</FontString>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Arrow" atlas="pvptalents-selectedarrow" hidden="true">
+					<Size x="28" y="29"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Border" relativePoint="RIGHT" x="-8" y="0"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
 				<FontString parentKey="New" inherits="GameFontHighlight" maxLines="1" justifyH="CENTER" text="NEW_CAPS" hidden="true">

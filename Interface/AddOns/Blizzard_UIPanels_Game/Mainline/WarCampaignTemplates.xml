@@ -66,66 +66,70 @@
 		</Scripts>
 	</Frame>
 
-	<Button name="LoreButtonTemplate" registerForClicks="LeftButtonUp" mixin="CampaignLoreButtonMixin" hidden="true" virtual="true">
+	<Button name="LoreButtonTemplate" registerForClicks="LeftButtonUp" mixin="CampaignLoreButtonMixin" propagateMouseInput="Motion" hidden="true" virtual="true">
 		<Size x="28" y="24"/>
-		<Scripts>
-			<OnClick method="OnClick"/>
-		</Scripts>
-	</Button>
-
-	<Button name="CampaignHeaderCollapseButtonTemplate" registerForClicks="LeftButtonUp" mixin="CampaignCollapseButtonMixin" virtual="true">
-		<Size x="20" y="20"/>
 		<Scripts>
 			<OnClick method="OnClick"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
 		</Scripts>
-		<HighlightTexture file="Interface\Buttons\UI-PlusButton-Hilight" alphaMode="ADD"/>
 	</Button>
 
 	<Frame name="CampaignHeaderDisplayTemplate" inherits="ResizeLayoutFrame" mixin="CampaignHeaderDisplayMixin" virtual="true">
 		<Size x="1" y="1"/>
+		<KeyValues>
+			<KeyValue key="fixedWidth" value="304" type="number"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="Background" atlas="Campaign_Horde" useAtlasSize="true">
+				<Texture parentKey="Background">
+					<Size x="304" y="69"/>
 					<Anchors>
-						<Anchor point="TOP"/>
+						<Anchor point="TOPLEFT" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="TopFiligree" atlas="ZoneStory_Divider" useAtlasSize="true">
-					<KeyValues>
- 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
- 					</KeyValues>
-					<Anchors>
-						<Anchor point="TOP" y="25"/>
-					</Anchors>
-				</Texture>
-				<FontString parentKey="Text" inherits="GameFontHighlightMedium" justifyH="LEFT" mixin="AutoScalingFontStringMixin">
+				<FontString parentKey="Text" inherits="Game15Font_Shadow" justifyH="LEFT" maxLines="1" mixin="AutoScalingFontStringMixin">
 					<KeyValues>
 						<KeyValue key="minLineHeight" value="10" type="number"/>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 					</KeyValues>
-					<Size x="175" y="15"/>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Background" relativePoint="LEFT" x="42" y="6"/>
+						<Anchor point="LEFT" relativePoint="TOPLEFT" x="16" y="-22"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="Progress" inherits="GameFontNormalSmall">
+				<FontString parentKey="Progress" inherits="SystemFont_Shadow_Small2">
+					<KeyValues>
+ 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+ 					</KeyValues>				
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Text" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+						<Anchor point="LEFT" relativePoint="TOPLEFT" x="16" y="-39"/>
 					</Anchors>
 				</FontString>
 			</Layer>
-			<Layer level="HIGHLIGHT">
-				<Texture parentKey="HighlightTexture" atlas="Campaign_Horde" useAtlasSize="true" alphaMode="ADD" alpha="0.4">
+			<Layer level="OVERLAY" textureSubLevel="-1">
+				<Texture parentKey="HighlightTexture" atlas="Campaign_Horde" hidden="true" inherits="QuestLogHighlightTextureTemplate">
 					<KeyValues>
- 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
- 					</KeyValues>
- 					<Anchors>
- 						<Anchor point="TOP" relativeKey="$parent.Background"/>
- 					</Anchors>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background"/>
+					</Anchors>
 				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="TopFiligree" atlas="QuestLog-frame-devider">
+					<Size x="0" y="15"/>
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="5"/>
+						<Anchor point="TOPRIGHT" x="0" y="5"/>
+					</Anchors>
+				</Texture>	
 			</Layer>
 		</Layers>
 		<Frames>
@@ -137,9 +141,9 @@
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString parentKey="Text" inherits="GameFontNormal" justifyH="LEFT">
-							<Size x="220" y="0"/>
+							<Size x="265" y="0"/>
 							<Anchors>
-								<Anchor point="TOP"/>
+								<Anchor point="TOPLEFT" x="10"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -156,83 +160,90 @@
 	<Frame name="CampaignHeaderTemplate" inherits="CampaignHeaderDisplayTemplate" mixin="CampaignHeaderMixin, CampaignHeaderCollapsibleMixin, CampaignHeaderTooltipableMixin" virtual="true">
 		<KeyValues>
 			<!-- NOTE: topPadding will be assigned programatically -->
-			<KeyValue key="fixedWidth" value="260" type="number"/>
+			<KeyValue key="fixedWidth" value="304" type="number"/>
+			<KeyValue key="leftPadding" value="2" type="number"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="1">
-				<Texture parentKey="SelectedHighlight" atlas="CampaignHeader_SelectedGlow" useAtlasSize="true">
+				<Texture parentKey="SelectedHighlight" atlas="questlog-header-glow-yellow" useAtlasSize="true">
 					<KeyValues>
  						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
  					</KeyValues>
 					<Anchors>
-						<Anchor point="TOP" y="-1"/>
+						<Anchor point="BOTTOM" relativeKey="$parent.Background" y="9"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="CollapseButton" inherits="CampaignHeaderCollapseButtonTemplate">
+			<Button parentKey="CollapseButton" inherits="QuestLogHeaderCollapseButtonTemplate">
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Background" x="18" y="6"/>
+					<Anchor point="TOPRIGHT" x="-12" y="-11"/>
 				</Anchors>
 			</Button>
 			<Button parentKey="LoreButton" inherits="LoreButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.Background" x="-10" y="-10"/>
+					<Anchor point="LEFT" relativeKey="$parent.Text" relativePoint="RIGHT" x="6" y="0"/>
 				</Anchors>
 				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="Burst" atlas="Campaign-QuestLog-LoreBook-Glow" useAtlasSize="true">
-							<KeyValues>
-		 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
-		 					</KeyValues>
+					<Layer level="BORDER">
+						<Texture parentKey="Glow" atlas="Campaign-QuestLog-LoreBook-Glow" useAtlasSize="true" alphaMode="ADD" hidden="true">
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
-							<Animations>
-								<AnimationGroup parentKey="Rotate" looping="REPEAT">
-									<Rotation smoothing="NONE" duration="12" degrees="360"/>
-								</AnimationGroup>
-							</Animations>
 						</Texture>
 					</Layer>
 				</Layers>
-				<Scripts>
-					<OnLoad>
-						self.Burst.Rotate:Play();
-					</OnLoad>
-				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnEnter method="OnEnter"/> <!-- OnLeave logic handled by run-time OnUpdate handler -->
-			<OnHide method="OnLeave"/> <!-- Necessary because OnUpdate will stop when hidden -->
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 			<OnMouseUp method="OnMouseUp"/>
+			<OnMouseDown method="OnMouseDown"/>
 			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
 
-	<Frame name="CampaignHeaderMinimalTemplate" inherits="ResizeLayoutFrame" mixin="QuestLogHeaderCodeMixin, CampaignHeaderMinimalMixin, CampaignHeaderCollapsibleMixin" virtual="true">
+	<Button name="CampaignHeaderMinimalTemplate" inherits="ResizeLayoutFrame" mixin="QuestLogHeaderCodeMixin, CampaignHeaderMinimalMixin, CampaignHeaderCollapsibleMixin" virtual="true">
 		<KeyValues>
-			<KeyValue key="leftPadding" value="4" type="number"/>
+			<KeyValue key="leftPadding" value="11" type="number"/>
+			<KeyValue key="minimumCollapsedHeight" value="40" type="number"/>
+			<KeyValue key="fixedWidth" value="289" type="number"/>
 		</KeyValues>
 		<Size x="1" y="1"/>
 		<Frames>
-			<Button parentKey="CollapseButton" inherits="CampaignHeaderCollapseButtonTemplate">
+			<Button parentKey="CollapseButton" inherits="QuestLogHeaderCollapseButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="0" y="0"/>
+					<Anchor point="TOPRIGHT" x="-6" y="-1"/>
 				</Anchors>
 			</Button>
 		</Frames>
 		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="questlog-tab">
+					<Size x="289" y="22"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="Highlight" atlas="questlog-tab" inherits="QuestLogHighlightTextureTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Text" inherits="GameFontHighlightMedium" justifyH="LEFT" mixin="AutoScalingFontStringMixin">
+				<FontString parentKey="Text" inherits="Game15Font_Shadow" justifyH="LEFT" mixin="AutoScalingFontStringMixin">
 					<KeyValues>
 						<KeyValue key="minLineHeight" value="10" type="number"/>
 					</KeyValues>
-					<Size x="175" y="15"/>
+					<Size x="250" y="15"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.CollapseButton" x="26" y="0"/>
+						<Anchor point="LEFT" relativePoint="TOPLEFT" x="8" y="-10"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -241,14 +252,14 @@
 			<Frame parentKey="NextObjective" inherits="ResizeLayoutFrame" mixin="CampaignNextObjectiveMixin">
 				<Size x="1" y="1"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Text" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString parentKey="Text" inherits="GameFontNormal" justifyH="LEFT">
-							<Size x="205" y="0"/>
+							<Size x="265" y="0"/>
 							<Anchors>
-								<Anchor point="TOPLEFT"/>
+								<Anchor point="TOPLEFT" x="10"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -263,7 +274,9 @@
 		<Scripts>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+			<OnMouseDown method="OnMouseDown"/>
 			<OnMouseUp method="OnMouseUp"/>
 		</Scripts>
-	</Frame>
+	</Button>
 </Ui>

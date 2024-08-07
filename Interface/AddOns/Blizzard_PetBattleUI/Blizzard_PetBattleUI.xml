@@ -1679,12 +1679,4 @@
 			</Frame>
 		</Frames>
 	</Frame>
-	<Frame name="PetBattleUnitFrameDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
-		<Scripts>
-			<OnLoad>
-				self.initialize = PetBattleUnitFrameDropDown_Initialize;
-				self.displayMode = "MENU";
-			</OnLoad>
-		</Scripts>
-	</Frame>
 </Ui>

@@ -28,19 +28,19 @@ function ProfessionsRecipeLevelBarMixin:OnLeave()
 	GameTooltip_Hide();
 end
 
-function ProfessionsRecipeLevelBarMixin:SetExperience(currentExperience, maxExperience, currentLevel)
-	self.currentExperience = currentExperience;
-	self.maxExperience = maxExperience;
-	self.currentLevel = currentLevel;
+function ProfessionsRecipeLevelBarMixin:SetExperience(recipeInfo)
+	self.currentExperience = recipeInfo.currentRecipeExperience;
+	self.maxExperience = recipeInfo.nextLevelRecipeExperience;
+	self.currentLevel = recipeInfo.unlockedRecipeLevel;
 
 	if self:IsMaxLevel() then
 		self:SetMinMaxValues(0, 1);
 		self:SetValue(1);
 		self.Rank:SetText(TRADESKILL_RECIPE_LEVEL_MAXIMUM);
 	else
-		self:SetMinMaxValues(0, maxExperience);
-		self:SetValue(currentExperience);
-		self.Rank:SetFormattedText(GENERIC_FRACTION_STRING, currentExperience, maxExperience);
+		self:SetMinMaxValues(0, self.maxExperience);
+		self:SetValue(self.currentExperience);
+		self.Rank:SetFormattedText(GENERIC_FRACTION_STRING, self.currentExperience, self.maxExperience);
 	end
 end
 
@@ -48,50 +48,54 @@ function ProfessionsRecipeLevelBarMixin:IsMaxLevel()
 	return self.currentExperience == nil;
 end
 
-ProfessionsRecipeLevelSelectorMixin = {};
+ProfessionsRecipeLevelDropdownMixin = {};
 
-function ProfessionsRecipeLevelSelectorMixin:SetRecipeInfo(recipeInfo, currentLevel)
-	self.recipeInfo = recipeInfo;
-	self.currentLevel = currentLevel;
+function ProfessionsRecipeLevelDropdownMixin:OnLoad()
+	self:SetWidth(110);
+	self.Text:SetJustifyH("CENTER");
 
-	self:SetText(TRADESKILL_RECIPE_LEVEL_DROPDOWN_BUTTON_FORMAT:format(currentLevel));
+	self:SetSelectionTranslator(function(selection)
+		return TRADESKILL_RECIPE_LEVEL_DROPDOWN_BUTTON_FORMAT:format(selection.data);
+	end);
 end
 
-function ProfessionsRecipeLevelSelectorMixin:SetSelectorCallback(cb)
-	self.cb = cb;
-end
-
-function ProfessionsRecipeLevelSelectorMixin:OnLoad()
-	local function InitDropDown()
-		for level = 1, self.recipeInfo.unlockedRecipeLevel do
-			local info = UIDropDownMenu_CreateInfo();
-			info.text = TRADESKILL_RECIPE_LEVEL_DROPDOWN_OPTION_FORMAT:format(level);
-			info.func = GenerateClosure(self.cb, self.recipeInfo, level);
-			info.checked = self.currentLevel == level;
-			UIDropDownMenu_AddButton(info);
-		end
-	end
-
-	UIDropDownMenu_SetInitializeFunction(self.RecipeLevelDropDown, InitDropDown);
-	UIDropDownMenu_SetDisplayMode(self.RecipeLevelDropDown, "MENU");
-	self.RecipeLevelDropDown.Text:SetJustifyH("CENTER");
-end
-
-function ProfessionsRecipeLevelSelectorMixin:OnEnter()
-	UIMenuButtonStretchMixin.OnEnter(self);
+function ProfessionsRecipeLevelDropdownMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip_SetTitle(GameTooltip, TRADESKILL_RECIPE_LEVEL_DROPDOWN_TOOLTIP_TITLE);
 	GameTooltip_AddNormalLine(GameTooltip, TRADESKILL_RECIPE_LEVEL_DROPDOWN_TOOLTIP_INFO);
 	GameTooltip:Show();
 end
 
-function ProfessionsRecipeLevelSelectorMixin:OnLeave()
-	UIMenuButtonStretchMixin.OnLeave(self);
+function ProfessionsRecipeLevelDropdownMixin:OnLeave()
 	GameTooltip_Hide();
 end
 
-function ProfessionsRecipeLevelSelectorMixin:OnMouseDown(button)
-	UIMenuButtonStretchMixin.OnMouseDown(self, button);
-	ToggleDropDownMenu(1, nil, self.RecipeLevelDropDown, self, 110, 15);
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+function ProfessionsRecipeLevelDropdownMixin:SetRecipeInfo(recipeInfo, currentLevel)
+	self.recipeInfo = recipeInfo;
+	self.currentLevel = currentLevel;
+
+	local function IsSelected(level)
+		return self.currentLevel == level;
+	end
+
+	local function SetSelected(level)
+		self.currentLevel = level;
+
+		if self.callback then
+			self.callback(self.recipeInfo, level);
+		end
+	end
+	
+	self:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_PROFESSIONS_RECIPE_LEVEL");
+
+		for level = 1, self.recipeInfo.unlockedRecipeLevel do
+			local text = TRADESKILL_RECIPE_LEVEL_DROPDOWN_OPTION_FORMAT:format(level);
+			rootDescription:CreateRadio(text, IsSelected, SetSelected, level);
+		end
+	end);
+end
+
+function ProfessionsRecipeLevelDropdownMixin:SetSelectionCallback(callback)
+	self.callback = callback;
 end

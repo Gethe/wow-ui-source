@@ -3,31 +3,14 @@
 ## DefaultState: enabled
 ## AllowLoad: Both
 ## AllowLoadGameType: mainline
-## Dependencies: Blizzard_PrintHandler
+## Dependencies: Blizzard_PrintHandler, Blizzard_Menu
 ## OptionalDep: Blizzard_FontStyles_Glue, Blizzard_FontStyles_Frame
-## SuppressLocalTableRef: 1
 Shared\LocalizationMachinery.lua
+EnvironmentUtil.lua
 ProjectConstants.lua
 WoWLabs\ProjectConstants.lua
 SharedConstants.lua
-EnvironmentUtil.lua
 middleclass.lua
-ErrorUtil.lua
-Mixin.lua
-TableUtil.lua
-EnumUtil.lua
-LocaleUtil.lua
-FunctionUtil.lua
-ObjectUpdater.lua
-MathUtil.lua
-ExportUtil.lua
-Rectangle.lua
-TextureUtil.lua
-AddOnUtil.lua
-Flags.lua
-CallbackRegistry.lua
-CallbackRegistrant.xml
-CvarUtil.lua
 Color.lua
 ColorUtil.lua
 Mainline\ClassColors.lua
@@ -47,7 +30,6 @@ Mainline\NineSliceLayouts.lua
 NineSlice.lua
 EasingUtil.lua
 BindingUtil.lua
-FrameUtil.lua
 InputUtil.lua
 EventUtil.lua
 RegionUtil.lua
@@ -55,7 +37,6 @@ AnchorUtil.lua
 SortUtil.lua
 GridLayoutUtil.lua
 ScriptAnimationUtil.lua
-Pools.lua
 CircularBuffer.lua
 FontableFrameMixin.lua
 Spline.lua
@@ -63,14 +44,16 @@ LayoutFrame.lua
 LayoutFrame.xml
 ManagedLayoutFrame.lua
 ManagedLayoutFrame.xml
+SpaceToFitLayoutFrame.lua
+SpaceToFitLayoutFrame.xml
 BulletPoint.lua
 BulletPoint.xml
 KeyCommand.lua
+PixelUtilSecure.lua
 PixelUtil.lua
 TableBuilder.lua
 NewFeatureLabel.xml
 Mainline\VASErrorLookup.lua
-GlobalCallbackRegistry.lua
 SelectableButton.lua
 SelectableButton.xml
 ButtonGroup.lua
@@ -87,7 +70,6 @@ IndexRangeDataProvider.lua
 TreeListDataProvider.lua
 Interpolator.lua
 Sequencer.lua
-ButtonStateBehavior.lua
 Shared\Slider\MinimalSlider.lua
 Shared\Slider\MinimalSlider.xml
 Shared\Scroll\ScrollUtil.lua
@@ -142,7 +124,6 @@ ModelSceneActorMixin.lua
 ModelSceneActorMixin.xml
 SharedTooltipTemplates.lua
 SharedTooltipTemplates.xml
-FrameStack.lua
 
 Mainline\SoundKitConstants.lua
 
@@ -173,6 +154,8 @@ Shared\Selector\Blizzard_GridSelectorUI.lua
 Shared\Selector\Blizzard_GridSelectorUI.xml
 Shared\Selector\Blizzard_ScrollBoxSelector.lua
 Mainline\Selector\Blizzard_ScrollBoxSelector.xml
+TemplatedList.xml
+PagedList.xml
 
 HelpTip.xml
 

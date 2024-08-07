@@ -102,9 +102,9 @@ function MailFrame_OnEvent(self, event, ...)
 			HideUIPanel(OpenMailFrame);
 		end
 	elseif ( event == "MAIL_LOCK_SEND_ITEMS" ) then
-		local slotNum, itemLink = ...;
+		local slotNum, itemLinkEvent = ...;
 		SendMailFrameLockSendMail:Show();
-		local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture = C_Item.GetItemInfo(itemLink);
+		local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture = C_Item.GetItemInfo(itemLinkEvent);
 		local r, g, b = C_Item.GetItemQualityColor(itemRarity)
 		StaticPopup_Show("CONFIRM_MAIL_ITEM_UNREFUNDABLE", nil, nil, {["texture"] = itemTexture, ["name"] = itemName, ["color"] = {r, g, b, 1}, ["link"] = itemLink, ["slot"] = slotNum});
 	elseif ( event == "MAIL_UNLOCK_SEND_ITEMS") then

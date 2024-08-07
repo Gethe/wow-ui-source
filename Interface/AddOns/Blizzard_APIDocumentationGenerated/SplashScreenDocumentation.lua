@@ -77,6 +77,7 @@ local SplashScreen =
 				{ Name = "rightFeatureDesc", Type = "string", Nilable = false },
 				{ Name = "shouldShowQuest", Type = "bool", Nilable = false },
 				{ Name = "screenType", Type = "SplashScreenType", Nilable = false },
+				{ Name = "gameMenuRequest", Type = "bool", Nilable = false },
 			},
 		},
 	},

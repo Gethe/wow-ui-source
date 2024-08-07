@@ -17,6 +17,7 @@ DifficultyUtil.ID = {
 	DungeonMythic = 23,
 	DungeonTimewalker = 24,
 	RaidTimewalker = 33,
+	RaidStory = 220,
 };
 
 local DIFFICULTY_NAMES =
@@ -57,6 +58,11 @@ function DifficultyUtil.GetNextPrimaryRaidDifficultyID(difficultyID)
 		end
 	end
 	return nil;
+end
+
+function DifficultyUtil.InStoryRaid()
+	local difficultyID = select(3, GetInstanceInfo());
+	return difficultyID == DifficultyUtil.ID.RaidStory;
 end
 
 local difficultyToMaxPlayersMap = { };

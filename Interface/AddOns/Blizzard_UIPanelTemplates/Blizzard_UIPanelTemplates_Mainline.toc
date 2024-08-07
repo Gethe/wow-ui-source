@@ -4,6 +4,7 @@
 ## Dependencies: Blizzard_SharedXMLGame
 ## AllowLoad: game
 ## AllowLoadGameType: mainline
-## SuppressLocalTableRef: 1
+Mainline\AutoCastTemplates.lua
+Mainline\AutoCastTemplates.xml
 Mainline\UIPanelTemplates.lua
 Mainline\UIPanelTemplates.xml

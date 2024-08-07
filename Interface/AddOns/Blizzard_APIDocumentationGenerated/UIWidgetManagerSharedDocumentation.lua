@@ -15,6 +15,18 @@ local UIWidgetManagerShared =
 			},
 		},
 		{
+			Name = "UIWidgetHorizontalDirection",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "LeftToRight", Type = "UIWidgetHorizontalDirection", EnumValue = 0 },
+				{ Name = "RightToLeft", Type = "UIWidgetHorizontalDirection", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "UIWidgetLayoutDirection",
 			Type = "Enumeration",
 			NumValues = 5,
@@ -71,9 +83,9 @@ local UIWidgetManagerShared =
 		{
 			Name = "UIWidgetVisualizationType",
 			Type = "Enumeration",
-			NumValues = 29,
+			NumValues = 30,
 			MinValue = 0,
-			MaxValue = 28,
+			MaxValue = 29,
 			Fields =
 			{
 				{ Name = "IconAndText", Type = "UIWidgetVisualizationType", EnumValue = 0 },
@@ -105,6 +117,7 @@ local UIWidgetManagerShared =
 				{ Name = "MapPinAnimation", Type = "UIWidgetVisualizationType", EnumValue = 26 },
 				{ Name = "ItemDisplay", Type = "UIWidgetVisualizationType", EnumValue = 27 },
 				{ Name = "TugOfWar", Type = "UIWidgetVisualizationType", EnumValue = 28 },
+				{ Name = "ScenarioHeaderDelves", Type = "UIWidgetVisualizationType", EnumValue = 29 },
 			},
 		},
 	},

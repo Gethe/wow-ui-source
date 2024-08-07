@@ -39,6 +39,6 @@ end
 
 function AzeriteEssenceUtil.GetMilestoneSpellInfo(milestoneID)
 	local spellID = C_AzeriteEssence.GetMilestoneSpell(milestoneID);
-	local spellName, _, spellTexture = GetSpellInfo(spellID);
-	return spellName, spellTexture;
+	local spellInfo = C_Spell.GetSpellInfo(spellID);
+	return spellInfo.name, spellInfo.iconID;
 end

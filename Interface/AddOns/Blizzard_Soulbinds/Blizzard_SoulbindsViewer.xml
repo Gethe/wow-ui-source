@@ -77,12 +77,12 @@
 					</Anchors>
 					<Animations>
 						<AnimationGroup parentKey="Anim" looping="REPEAT" inherits="VisibleWhilePlayingAnimGroupTemplate">
-							<Alpha childKey="Sheen" order="1" fromAlpha="0" toAlpha="0" duration="4"/>
-							<Translation childKey="Sheen" order="2" offsetX="-1422" offsetY="0"/>
-							<Translation childKey="Sheen" order="2" offsetX="1941" offsetY="0" duration="5.9"/>
-							<Translation childKey="Sheen" order="2" offsetX="-1422" offsetY="0" startDelay="5.9" duration="0.1"/>
-							<Alpha childKey="Sheen" order="2" fromAlpha="0" toAlpha="1" startDelay="0" duration="0.1"/>
-							<Alpha childKey="Sheen" order="2" fromAlpha="1" toAlpha="0" startDelay="5.8" duration="0.1"/>
+							<Alpha order="1" fromAlpha="0" toAlpha="0" duration="4"/>
+							<Translation order="2" offsetX="-1422" offsetY="0"/>
+							<Translation order="2" offsetX="1941" offsetY="0" duration="5.9"/>
+							<Translation order="2" offsetX="-1422" offsetY="0" startDelay="5.9" duration="0.1"/>
+							<Alpha order="2" fromAlpha="0" toAlpha="1" startDelay="0" duration="0.1"/>
+							<Alpha order="2" fromAlpha="1" toAlpha="0" startDelay="5.8" duration="0.1"/>
 						</AnimationGroup>
 					</Animations>
 				</Texture>
@@ -93,11 +93,11 @@
 					</Anchors>
 					<Animations>
 						<AnimationGroup parentKey="Anim" looping="REPEAT" inherits="VisibleWhilePlayingAnimGroupTemplate">
-							<Translation childKey="Sheen3" order="1" offsetX="941" offsetY="0"/>
-							<Translation childKey="Sheen3" order="1" offsetX="-2140" offsetY="0" startDelay="0" duration="40.9" />
-							<Translation childKey="Sheen3" order="1" offsetX="941" offsetY="0" startDelay="40.9" duration="0.1"/>
-							<Alpha childKey="Sheen3" order="1" fromAlpha="0" toAlpha="0.06" startDelay="0" duration="0.1"/>
-							<Alpha childKey="Sheen3" order="1" fromAlpha="0.06" toAlpha="0" startDelay="40.8" duration="0.1"/>
+							<Translation order="1" offsetX="941" offsetY="0"/>
+							<Translation order="1" offsetX="-2140" offsetY="0" startDelay="0" duration="40.9" />
+							<Translation order="1" offsetX="941" offsetY="0" startDelay="40.9" duration="0.1"/>
+							<Alpha order="1" fromAlpha="0" toAlpha="0.06" startDelay="0" duration="0.1"/>
+							<Alpha order="1" fromAlpha="0.06" toAlpha="0" startDelay="40.8" duration="0.1"/>
 						</AnimationGroup>
 					</Animations>
 				</Texture>
@@ -109,11 +109,11 @@
 					</Anchors>
 					<Animations>
 						<AnimationGroup parentKey="Anim" looping="REPEAT" inherits="VisibleWhilePlayingAnimGroupTemplate">
-							<Alpha childKey="GridSheen" order="1" fromAlpha="0" toAlpha="0" duration="1.4"/>
-							<Scale childKey="GridSheen" smoothing="IN" duration="5" order="2" fromScaleX="1" fromScaleY="1" toScaleX="14" toScaleY="14"/>
-							<Scale childKey="GridSheen" smoothing="IN" duration=".1" order="3" fromScaleX="1" fromScaleY="1" toScaleX=".001" toScaleY=".001" startDelay="1"/>
-							<Alpha childKey="GridSheen" order="2" fromAlpha="0" toAlpha=".3" startDelay="0" duration=".1"/>
-							<Alpha childKey="GridSheen" order="2" fromAlpha=".3" toAlpha="0" startDelay=".1" duration="10.5"/>
+							<Alpha order="1" fromAlpha="0" toAlpha="0" duration="1.4"/>
+							<Scale smoothing="IN" duration="5" order="2" fromScaleX="1" fromScaleY="1" toScaleX="14" toScaleY="14"/>
+							<Scale smoothing="IN" duration=".1" order="3" fromScaleX="1" fromScaleY="1" toScaleX=".001" toScaleY=".001" startDelay="1"/>
+							<Alpha order="2" fromAlpha="0" toAlpha=".3" startDelay="0" duration=".1"/>
+							<Alpha order="2" fromAlpha=".3" toAlpha="0" startDelay=".1" duration="10.5"/>
 						</AnimationGroup>
 					</Animations>
 				</Texture>
@@ -124,11 +124,11 @@
 					</Anchors>
 					<Animations>
 						<AnimationGroup parentKey="Anim" looping="REPEAT" inherits="VisibleWhilePlayingAnimGroupTemplate">
-							<Translation childKey="BackgroundRuneLeft" order="1" offsetX="0" offsetY="100"/>
-							<Translation childKey="BackgroundRuneLeft" order="1" offsetX="0" offsetY="-250" startDelay="0" duration="15.9" />
-							<Translation childKey="BackgroundRuneLeft" order="1" offsetX="0" offsetY="100" startDelay="15.9" duration="0.1"/>
-							<Alpha childKey="BackgroundRuneLeft" order="1" fromAlpha="0" toAlpha="0.1" startDelay="0" duration="8"/>
-							<Alpha childKey="BackgroundRuneLeft" order="1" fromAlpha="0.1" toAlpha="0" startDelay="8" duration="8"/>
+							<Translation order="1" offsetX="0" offsetY="100"/>
+							<Translation order="1" offsetX="0" offsetY="-250" startDelay="0" duration="15.9" />
+							<Translation order="1" offsetX="0" offsetY="100" startDelay="15.9" duration="0.1"/>
+							<Alpha order="1" fromAlpha="0" toAlpha="0.1" startDelay="0" duration="8"/>
+							<Alpha order="1" fromAlpha="0.1" toAlpha="0" startDelay="8" duration="8"/>
 						</AnimationGroup>
 					</Animations>
 				</Texture>
@@ -139,11 +139,11 @@
 					</Anchors>
 					<Animations>
 						<AnimationGroup parentKey="Anim" looping="REPEAT" inherits="VisibleWhilePlayingAnimGroupTemplate">
-							<Translation childKey="BackgroundRuneRight" order="1" offsetX="0" offsetY="-50"/>
-							<Translation childKey="BackgroundRuneRight" order="1" offsetX="0" offsetY="150" startDelay="0" duration="11.9" />
-							<Translation childKey="BackgroundRuneRight" order="1" offsetX="0" offsetY="-50" startDelay="11.9" duration="0.1"/>
-							<Alpha childKey="BackgroundRuneRight" order="1" fromAlpha="0" toAlpha="0.07" startDelay="0" duration="6"/>
-							<Alpha childKey="BackgroundRuneRight" order="1" fromAlpha=".07" toAlpha="0" startDelay="6" duration="6"/>
+							<Translation order="1" offsetX="0" offsetY="-50"/>
+							<Translation order="1" offsetX="0" offsetY="150" startDelay="0" duration="11.9" />
+							<Translation order="1" offsetX="0" offsetY="-50" startDelay="11.9" duration="0.1"/>
+							<Alpha order="1" fromAlpha="0" toAlpha="0.07" startDelay="0" duration="6"/>
+							<Alpha order="1" fromAlpha=".07" toAlpha="0" startDelay="6" duration="6"/>
 						</AnimationGroup>
 					</Animations>
 				</Texture>

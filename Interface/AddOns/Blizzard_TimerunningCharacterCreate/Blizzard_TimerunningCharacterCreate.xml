@@ -47,7 +47,20 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="TimerunningFirstTimeDialog" mixin="TimerunningFirstTimeDialogMixin" parent="GlueParent" frameStrata="DIALOG" setAllPoints="true" enableMouse="true" enableKeyboard="true">
+	<Frame name="TimerunningCreateCharacterButtonGlow" parent="CharSelectCreateCharacterButton" inherits="TimerunningCreateCharacterButtonGlowTemplate" frameLevel="3">
+		<KeyValues>
+			<KeyValue key="frameMaskOverrideHeight" value="296" type="number"/>
+			<KeyValue key="frameMaskOverrideAnchorLeft" value="0" type="number"/>
+			<KeyValue key="frameMaskOverrideAnchorRight" value="0" type="number"/>
+		</KeyValues>
+		<Size y="49"/>
+		<Anchors>
+			<Anchor point="LEFT" x="-3"/>
+			<Anchor point="RIGHT" x="3"/>
+		</Anchors>
+	</Frame>
+
+	<Frame name="TimerunningFirstTimeDialog" mixin="TimerunningFirstTimeDialogMixin" ignoreParentScale="true" parent="GlueParent" frameStrata="DIALOG" setAllPoints="true" enableMouse="true" enableKeyboard="true">
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="FullscreenDarken" setAllPoints="true" alpha="0.8">
@@ -183,7 +196,7 @@
 		</Scripts>
 	</Frame>
 	
-	<Frame name="TimerunningChoiceDialogTemplate" mixin="TimerunningChoiceDialogMixin" frameStrata="DIALOG" virtual="true">
+	<Frame name="TimerunningChoiceDialogTemplate" mixin="TimerunningChoiceDialogMixin" ignoreParentScale="true" frameStrata="DIALOG" virtual="true">
 		<Size x="220" y="190"/>
 		<Layers>
 			<Layer level="BORDER">
@@ -416,13 +429,6 @@
 		</Scripts>
 	</Frame>
 	
-	<Frame name="TimerunningCreateCharacterButtonGlow" parent="CharSelectCreateCharacterButton" inherits="TimerunningCreateCharacterButtonGlowTemplate" frameLevel="2">
-		<Anchors>
-			<Anchor point="LEFT" x="-3"/>
-			<Anchor point="RIGHT" x="3"/>
-		</Anchors>
-	</Frame>
-	
 	<Button name="TimerunningEventBanner" mixin="TimerunningEventBannerMixin" parent="CharacterSelectUI" frameStrata="HIGH" enableMouse="true">
 		<Anchors>
 			<Anchor point="TOPLEFT" x="271" y="-13"/>
@@ -461,5 +467,4 @@
 			<OnClick method="OnClick"/>
 		</Scripts>
 	</Button>
-
 </Ui>

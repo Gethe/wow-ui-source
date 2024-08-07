@@ -94,7 +94,15 @@ function ActionBarController_OnEvent(self, event, ...)
 
 	-- MultiBarBottomLeft
 	if ( event == "ACTIONBAR_SHOW_BOTTOMLEFT") then
-		Settings.SetValue("PROXY_SHOW_ACTIONBAR_2", true);
+		local function ShowBottomLeftBar()
+			Settings.SetValue("PROXY_SHOW_ACTIONBAR_2", true);
+		end
+		-- If the bottom left bar is requested to be shown before settings are loaded, defer changing the setting until after settings are loaded.
+		if Settings.GetSetting("PROXY_SHOW_ACTIONBAR_2") then
+			ShowBottomLeftBar();
+		else
+			EventUtil.ContinueAfterAllEvents(ShowBottomLeftBar, "SETTINGS_LOADED");
+		end
 	end
 	
 	if ( event == "PET_BATTLE_CLOSE" ) then

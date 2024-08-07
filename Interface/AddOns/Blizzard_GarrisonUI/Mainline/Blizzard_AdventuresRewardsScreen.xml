@@ -181,12 +181,12 @@
 						</FontString>
 						<FontString parentKey="RewardsEarnedLabel" text="COVENANT_MISSIONS_REWARDS_EARNED" inherits="GameFontNormalOutline" justifyH="CENTER" justifyV="MIDDLE">
 							<Anchors>
-								<Anchor point="BOTTOM" relativeKey="$parent.RewardsEarnedFrame" relativePoint="TOP"/>
+								<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="TOP"/>
 							</Anchors>
 						</FontString>
 						<FontString parentKey="FollowerProgressLabel" text="COVENANT_MISSIONS_REWARDS_FOLLOWER_PROGRESS" inherits="GameFontNormalOutline" justifyH="CENTER" justifyV="MIDDLE">
 							<Anchors>
-								<Anchor point="BOTTOM" relativeKey="$parent.FollowerExperienceEarnedFrame" relativePoint="TOP"/>
+								<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="TOP"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -234,7 +234,7 @@
 						<Frames>
 							<Frame parentKey="RewardsEarnedFrame" inherits="HorizontalLayoutFrame">
 								<Anchors>
-									<Anchor point="BOTTOM" relativeKey="$parent.FinalRewardsLineBottom"/>
+									<Anchor point="BOTTOM" relativeKey="$parent.$parent.FinalRewardsLineBottom"/>
 								</Anchors>
 								<KeyValues>
 									<KeyValue key="expand" value="true" type="boolean"/>

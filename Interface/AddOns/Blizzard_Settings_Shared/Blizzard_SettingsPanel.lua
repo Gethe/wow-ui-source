@@ -10,12 +10,6 @@ local function CallRefreshOnFrame(frame)
 	end
 end
 
-local SecureSettingsCategoryMixin = CreateSecureMixinCopy(SettingsCategoryMixin);
-local SecureAddOnSettingMixin = CreateSecureMixinCopy(AddOnSettingMixin);
-local SecureSettingsListElementInitializer = CreateSecureMixinCopy(SettingsListElementInitializer);
-
-local CreateAndInitFromMixin = CreateAndInitFromMixin;
-local CreateFromMixins = CreateFromMixins;
 local securecallfunction = securecallfunction;
 local pairs = pairs;
 
@@ -27,32 +21,6 @@ local function EnumerateTaintedKeysTable(tableToIterate)
 	end
 
 	return IteratorFunction, enumerateTable, initialIteratorKey;
-end
-
-local select = select;
-local error = error;
-local type = type;
-
-local function ErrorIfFunctionArgs(...)
-	for i = 1, select("#", ...) do
-		if type(select(i, ...)) == "function" then
-			error("Function values are not allowed for settings APIs");
-			return nil;
-		end
-	end
-
-	return ...;
-end
-
-local unpack = unpack;
-
-local function SecureUnpackArgs(argTable, expectedNumArgs)
-	return ErrorIfFunctionArgs(securecallfunction(unpack, argTable, 1, expectedNumArgs));
-end
-
--- Allows function args, but only to be used if a function arg is explicitly expected (use SecureUnpackArgs by default in all other cases).
-local function UnpackArgs(argTable, expectedNumArgs)
-	return securecallfunction(unpack, argTable, 1, expectedNumArgs);
 end
 
 local function SortTableByCommitOrder(tbl)
@@ -124,91 +92,6 @@ function SettingsPanelMixin:OnLoad()
 	self:RegisterEvent("UPDATE_BINDINGS");
 end
 
-function SettingsPanelMixin:OnAttributeChanged(name, value)
-	if name == SettingsInbound.OpenToCategoryAttribute then
-		local categoryID, scrollToElementName = SecureUnpackArgs(value);
-		local successful = self:OpenToCategory(categoryID, scrollToElementName);
-		self:SetSecureAttributeResults(successful);
-	elseif name == SettingsInbound.RegisterCategoryAttribute then
-		local category, group, addon = SecureUnpackArgs(value, 3);
-		self:RegisterCategory(category, group, addon);
-	elseif name == SettingsInbound.RegisterVerticalLayoutCategoryAttribute then
-		local category = CreateAndInitFromMixin(SecureSettingsCategoryMixin, value);
-		local layout = CreateVerticalLayout();
-		self:AssignLayoutToCategory(category, layout);
-		self:SetSecureAttributeResults(category, layout);
-	elseif name == SettingsInbound.RegisterVerticalLayoutSubcategoryAttribute then
-		local parentCategory, categoryName = SecureUnpackArgs(value);
-
-		-- Use SecureSettingsCategoryMixin.CreateSubcategory to avoid taint.
-		local subcategory = securecallfunction(SecureSettingsCategoryMixin.CreateSubcategory, parentCategory, categoryName);
-		local layout = CreateVerticalLayout();
-		self:AssignLayoutToCategory(subcategory, layout);
-		self:SetSecureAttributeResults(subcategory, layout);
-	elseif name == SettingsInbound.RegisterCanvasLayoutCategoryAttribute then
-		local frame, categoryName = SecureUnpackArgs(value);
-		local category = CreateAndInitFromMixin(SecureSettingsCategoryMixin, categoryName);
-		local layout = CreateCanvasLayout(frame);
-		self:AssignLayoutToCategory(category, layout);
-		self:SetSecureAttributeResults(category, layout);
-	elseif name == SettingsInbound.RegisterCanvasLayoutSubcategoryAttribute then
-		local parentCategory, frame, categoryName = SecureUnpackArgs(value);
-
-		-- Use SecureSettingsCategoryMixin.CreateSubcategory to avoid taint.
-		local subcategory = securecallfunction(SecureSettingsCategoryMixin.CreateSubcategory, parentCategory, categoryName);
-		local layout = CreateCanvasLayout(frame);
-		self:AssignLayoutToCategory(subcategory, layout);
-		self:SetSecureAttributeResults(subcategory, layout);
-	elseif name == SettingsInbound.AssignLayoutToCategoryAttribute then
-		local category, layout = SecureUnpackArgs(value);
-		self:AssignLayoutToCategory(category, layout);
-	elseif name == SettingsInbound.SetKeybindingsCategoryAttribute then
-		self:SetKeybindingsCategory(value);
-	elseif name == SettingsInbound.CreateAddOnSettingAttribute then
-		local categoryTbl, settingName, variable, variableType, defaultValue = SecureUnpackArgs(value);
-		local setting = CreateAndInitFromMixin(SecureAddOnSettingMixin, settingName, variable, variableType, defaultValue);
-		self:RegisterSetting(categoryTbl, setting);
-		self:SetSecureAttributeResults(setting);
-	elseif name == SettingsInbound.RegisterSettingAttribute then
-		local categoryTbl, setting = SecureUnpackArgs(value);
-		self:RegisterSetting(categoryTbl, setting);
-	elseif name == SettingsInbound.RegisterInitializerAttribute then
-		local category, initializer = SecureUnpackArgs(value);
-		self:RegisterInitializer(category, initializer);
-	elseif name == SettingsInbound.CreateSettingInitializerAttribute then
-		local frameTemplate, data = SecureUnpackArgs(value);
-		local initializer = CreateFromMixins(SecureSettingsListElementInitializer);
-		initializer:Init(frameTemplate, data);
-		local setting = securecallfunction(SecureSettingsListElementInitializer.GetSetting, initializer);
-		if setting then
-			local settingName = securecallfunction(setting.GetName, setting);
-			initializer:AddSearchTags(settingName);
-		end
-
-		self:SetSecureAttributeResults(initializer);
-	elseif name == SettingsInbound.OnSettingValueChangedAttribute then
-		local setting, newValue, oldValue, originalValue = SecureUnpackArgs(value);
-		self:OnSettingValueChanged(setting, newValue, oldValue, originalValue);
-	elseif name == SettingsInbound.RepairDisplayAttribute then
-		self:RepairDisplay();
-	elseif name == SettingsInbound.SetCurrentLayoutAttribute then
-		self:SetCurrentLayout(value);
-	elseif name == SettingsInbound.AssignTutorialToCategoryAttribute then
-		local category, tooltip, callback = UnpackArgs(value);
-		if category then
-			category:SetCategoryTutorialInfo(tooltip, callback);
-		end
-	end
-end
-
-function SettingsPanelMixin:SetSecureAttributeResults(...)
-	self.secureAttributeResults = { ... };
-end
-
-function SettingsPanelMixin:GetSecureAttributeResults()
-	return unpack(self.secureAttributeResults);
-end
-
 function SettingsPanelMixin:OnTabSelected(tab, tabIndex)
 	self:GetCategoryList():SetCategorySet(tab.categorySet);
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
@@ -218,18 +101,27 @@ function SettingsPanelMixin:OnCVarChanged(cvar, cvarValue)
 	-- This handler is intended only for cvar updates originating from the console or through the cvar script api.
 	-- If the cvar was changed through the settings api, as recommended, this value will already be updated.
 	local setting = self:GetSetting(cvar);
-	if setting then
-		-- The value is forced because the setting will always evaluate the current state of this
-		-- cvar as unchanged due to the source of the value being the cvar that was just modified.
-		-- This won't produce a recursive overflow because when setting the value legimately through
-		-- the settings api, or through the controls, the setting will temporarily reject any changes
-		-- to it's value.
-		local force = true;
-		-- Value is converted from the cvar string representation into a format the setting expects. Note
-		-- this is done manually because we normally are strict about the value being the correct type.
-		local value = securecallfunction(setting.ConvertValueInternal, setting, cvarValue);
-		securecallfunction(setting.SetValue, setting, value, force);
+	if not setting then
+		return;
 	end
+
+	-- There are cases where a cvar value cannot always be retrieved. For example, output audio device will not be
+	-- retrievable if the sound system is in the process of reinitializing. Skip handling if this occurs.
+	if setting:GetValue() == nil then
+		return;
+	end
+	
+	-- The value is forced because the setting will always evaluate the current state of this
+	-- cvar as unchanged due to the source of the value being the cvar that was just modified.
+	-- This won't produce a recursive overflow because when setting the value legimately through
+	-- the settings api, or through the controls, the setting will temporarily reject any changes
+	-- to it's value.
+
+	local force = true;
+	-- Value is converted from the cvar string representation into a format the setting expects. Note
+	-- this is done manually because we normally are strict about the value being the correct type.
+	local value = securecallfunction(setting.ConvertValueInternal, setting, cvarValue);
+	securecallfunction(setting.SetValue, setting, value, force);
 end
 
 function SettingsPanelMixin:OnEvent(event, ...)
@@ -294,6 +186,7 @@ function SettingsPanelMixin:OnHide()
 
 	if IsOnGlueScreen() then
 		GlueParent_RemoveModalFrame(self);
+		GlueParent_CloseSecondaryScreen();
 		return;
 	else 
 		UpdateMicroButtons();
@@ -320,18 +213,18 @@ function SettingsPanelMixin:Close(skipTransitionBackToOpeningPanel)
 end
 
 function SettingsPanelMixin:ExitWithoutCommit()
-	local settingsToRevert = {};
+	local settings = {};
 
 	for setting, record in pairs(self.modified) do
 		-- The settings under affect of IgnoreApply flag shouldn't be in the self.modified table after having been applied
 		-- Needs bug investigation
 		if (securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.Revertable) or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.Apply)) and not securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.IgnoreApply) then
 			--store the setting we want to revert and do it outside of this loop so we can avoid any invalid key errors
-			table.insert(settingsToRevert, setting);
+			table.insert(settings, setting);
 		end
 	end
 
-	for i, setting in ipairs(settingsToRevert) do
+	for i, setting in ipairs(settings) do
 		securecallfunction(setting.Revert, setting);
 	end
 
@@ -375,6 +268,8 @@ function SettingsPanelMixin:OpenToCategory(categoryID, scrollToElementName)
 
 	local categoryTbl = self:GetCategoryList():GetCategory(categoryID);
 	if categoryTbl then
+		categoryTbl:SetExpanded(true);
+		 
 		self:SelectCategory(categoryTbl);
 
 		if scrollToElementName then
@@ -393,7 +288,7 @@ function SettingsPanelMixin:CommitBindings()
 		SaveBindings(GetCurrentBindingSet());
 
 		local shouldSave = true;
-		SaveAllCustomBindings(shouldSave);
+		securecallfunction(SaveAllCustomBindings, shouldSave);
 	end
 end
 
@@ -407,6 +302,7 @@ function SettingsPanelMixin:CommitSettings(unrevertable)
 	local settings = {};
 	for setting, record in pairs(self.modified) do
 		table.insert(settings, setting);
+		setting:LockPendingValue();
 	end
 	SortTableByCommitOrder(settings);
 
@@ -417,7 +313,7 @@ function SettingsPanelMixin:CommitSettings(unrevertable)
 		
 		if not unrevertable then
 			if securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.Revertable) then
-				local originalValue = securecallfunction(setting.GetOriginalValue, setting);
+				local originalValue = securecallfunction(setting.GetValueDerived, setting);
 				table.insert(self.revertableSettings, {setting = setting, originalValue = originalValue});
 			end
 		end
@@ -469,9 +365,9 @@ function SettingsPanelMixin:RevertSettings()
 		gxRestart = gxRestart or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.GxRestart);
 		windowUpdate = windowUpdate or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.UpdateWindow);
 
+		local immediate = true;
 		local originalValue = data.originalValue;
-		securecallfunction(setting.SetValue, setting, originalValue);
-		securecallfunction(setting.Commit, setting);
+		securecallfunction(setting.SetValue, setting, originalValue, immediate);
 	end
 
 	self:WipeModifiedTable();
@@ -646,10 +542,10 @@ function SettingsPanelMixin:FindInitializersMatchingSearchText(searchText)
 		end
 	end
 
-	for index, category in ipairs(self:GetAllCategories()) do
+	for _, category in ipairs(self:GetAllCategories()) do
 		ParseCategory(category);
 
-		for index, subcategory in EnumerateTaintedKeysTable(category:GetSubcategories()) do
+		for _, subcategory in EnumerateTaintedKeysTable(category:GetSubcategories()) do
 			ParseCategory(subcategory, category);
 		end
 	end
@@ -782,7 +678,7 @@ function SettingsPanelMixin:GetSetting(variable)
 	return nil;
 end
 
-function SettingsPanelMixin:OnSettingValueChanged(setting, value, oldValue, originalValue)
+function SettingsPanelMixin:OnSettingValueChanged(setting, value)
 	assert(value ~= nil);
 	if not self:IsShown() then
 		return;
@@ -801,9 +697,8 @@ function SettingsPanelMixin:RepairDisplay()
 	if layout then
 		local layoutType = layout:GetLayoutType();
 		if layoutType == SettingsLayoutMixin.LayoutType.Vertical then
-			local initializers = securecallfunction(layout.GetInitializers, layout);
 			local settingsList = self:GetSettingsList();
-			securecallfunction(settingsList.RepairDisplay, settingsList, initializers);
+			securecallfunction(settingsList.RepairDisplay, settingsList, layout);
 		end
 	end
 end
@@ -933,7 +828,7 @@ function SettingsPanelMixin:DisplayLayout(layout)
 	local settingsCanvas = self:GetSettingsCanvas();
 	local layoutType = layout:GetLayoutType();
 	if layoutType == SettingsLayoutMixin.LayoutType.Vertical then
-		local initializers = securecallfunction(layout.GetInitializers, layout);
+		local initializers = layout:GetInitializers();
 		settingsList:Display(initializers);
 		settingsList:Show();
 		settingsCanvas:Hide();

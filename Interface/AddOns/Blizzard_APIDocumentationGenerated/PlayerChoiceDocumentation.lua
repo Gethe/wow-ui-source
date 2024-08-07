@@ -145,6 +145,7 @@ local PlayerChoice =
 				{ Name = "typeArtID", Type = "number", Nilable = true },
 				{ Name = "headerIconAtlasElement", Type = "string", Nilable = true },
 				{ Name = "subHeader", Type = "string", Nilable = true },
+				{ Name = "consolidateWidgets", Type = "bool", Nilable = false },
 			},
 		},
 		{

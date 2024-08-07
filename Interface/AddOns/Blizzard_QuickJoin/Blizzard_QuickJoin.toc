@@ -2,7 +2,6 @@
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
 ## Dependencies: Blizzard_FriendsFrame
-## SuppressLocalTableRef: 1
 ## AllowLoad: Game
 ## AllowLoadGameType: mainline
 QuickJoinToast.xml

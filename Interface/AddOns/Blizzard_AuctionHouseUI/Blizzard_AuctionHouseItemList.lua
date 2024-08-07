@@ -37,16 +37,12 @@ end
 
 AuctionHouseFavoritableLineMixin = {};
 
-function AuctionHouseFavoritableLineMixin:InitLine(dropDown, dropDownToggleCallback)
-	self.dropDown = dropDown;
-	self.dropDownToggleCallback = dropDownToggleCallback;
-end
+function AuctionHouseFavoritableLineMixin:OnClick(buttonName, ...)
+	AuctionHouseItemListLineMixin.OnClick(self, buttonName, ...)
 
-function AuctionHouseFavoritableLineMixin:OnClick(button, ...)
-	AuctionHouseItemListLineMixin.OnClick(self, button, ...)
-
-	if button == "RightButton" and self.dropDown and self.dropDownToggleCallback then
-		self.dropDownToggleCallback(self, self.dropDown);
+	if buttonName == "RightButton" then
+		local rowData = self:GetRowData();
+		AuctionHouseFavoriteContextMenu(self, rowData.itemKey);
 	end
 end
 
@@ -120,6 +116,10 @@ end
 
 function AuctionHouseItemListMixin:SetLineTemplate(lineTemplate, ...)
 	self.lineTemplate = lineTemplate;
+
+	-- 'initArgs' is currently unused. It was previously used to store a reference to a dropdown
+	-- frame and a callback to generate it's single option. See AuctionHouseFavoriteContextMenu()
+	-- for the menu generation logic.
 	self.initArgs = { ... };
 end
 
@@ -145,10 +145,6 @@ function AuctionHouseItemListMixin:Init()
 				button:GetNormalTexture():SetAlpha(0);
 			end
 		
-			if self.lineTemplate then
-				button:InitLine(unpack(self.initArgs));
-			end
-		
 			button:SetEnabled(self.selectionCallback ~= nil);
 		end
 		factory(self.lineTemplate or "AuctionHouseItemListLineTemplate", Initializer);
@@ -170,7 +166,7 @@ function AuctionHouseItemListMixin:Init()
 	
 	ScrollUtil.RegisterAlternateRowBehavior(self.ScrollBox, function(button, alternate)
 		if self.highlightCallback then
-			local highlightShow = false;
+			local highlightShown = false;
 			local highlightAlpha = 1.0;
 
 			-- rowData and elementData are expected to be non-nil.
@@ -303,7 +299,7 @@ function AuctionHouseItemListMixin:ScrollToEntryIndex(entryIndex)
 	if not self.isInitialized then
 		return;
 	end
-	self.ScrollBox:ScrollToElementDataIndex(entryIndex, ScrollBoxConstants.AlignCenter, ScrollBoxConstants.NoScrollInterpolation);
+	self.ScrollBox:ScrollToElementDataIndex(entryIndex, ScrollBoxConstants.AlignCenter);
 end
 
 function AuctionHouseItemListMixin:GetScrollBoxDataIndexBegin()

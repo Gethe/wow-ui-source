@@ -481,6 +481,10 @@ local Container =
 			},
 		},
 		{
+			Name = "SortAccountBankBags",
+			Type = "Function",
+		},
+		{
 			Name = "SortBags",
 			Type = "Function",
 		},
@@ -512,6 +516,7 @@ local Container =
 				{ Name = "containerIndex", Type = "BagIndex", Nilable = false },
 				{ Name = "slotIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "unitToken", Type = "UnitToken", Nilable = true },
+				{ Name = "bankType", Type = "BankType", Nilable = true },
 				{ Name = "reagentBankOpen", Type = "bool", Nilable = false, Default = false },
 			},
 		},
@@ -596,6 +601,7 @@ local Container =
 			Payload =
 			{
 				{ Name = "slot", Type = "number", Nilable = false },
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
 			},
 		},
 		{
@@ -605,6 +611,7 @@ local Container =
 			Payload =
 			{
 				{ Name = "slot", Type = "number", Nilable = false },
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
 			},
 		},
 		{

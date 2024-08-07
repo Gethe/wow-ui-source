@@ -92,6 +92,10 @@ function CollectionWardrobeUtil.SortSources(sources, primaryVisualID, primarySou
 			return source1.isCollected;
 		end
 
+		if source1.isValidSourceForPlayer ~= source2.isValidSourceForPlayer then
+			return source1.isValidSourceForPlayer;
+		end
+
 		if primarySourceID then
 			local source1IsPrimary = (source1.sourceID == primarySourceID);
 			local source2IsPrimary = (source2.sourceID == primarySourceID);
@@ -116,6 +120,12 @@ end
 
 function CollectionWardrobeUtil.GetSortedAppearanceSources(visualID, category, transmogLocation)
 	local sources = C_TransmogCollection.GetAppearanceSources(visualID, category, transmogLocation);
+	return CollectionWardrobeUtil.SortSources(sources);
+end
+
+
+function CollectionWardrobeUtil.GetSortedAppearanceSourcesForClass(visualID, classID, category, transmogLocation)
+	local sources = C_TransmogCollection.GetValidAppearanceSourcesForClass(visualID, classID, category, transmogLocation);
 	return CollectionWardrobeUtil.SortSources(sources);
 end
 
@@ -307,6 +317,12 @@ function CollectionWardrobeUtil.SetAppearanceTooltip(tooltip, sources, primarySo
 		GameTooltip_AddNormalLine(tooltip, warningString);
 	end
 
+	local useError;
+	if showUseError and not CollectionWardrobeUtil.IsAppearanceUsable(sources[headerIndex], inLegionArtifactCategory) then
+		useError = sources[headerIndex].useError;
+		GameTooltip_AddErrorLine(tooltip, useError);
+	end
+
 	if ( not appearanceCollected ) then
 		if sourceLocation then
 			if sourceDifficulties then
@@ -318,7 +334,6 @@ function CollectionWardrobeUtil.SetAppearanceTooltip(tooltip, sources, primarySo
 		GameTooltip_AddColoredLine(tooltip, sourceText, sourceColor);
 	end
 
-	local useError;
 	if ( #sources > 1 and not appearanceCollected ) then
 		-- only add "Other items using this appearance" if we're continuing to the same visualID
 		if ( firstVisualID == sources[2].visualID ) then
@@ -333,13 +348,10 @@ function CollectionWardrobeUtil.SetAppearanceTooltip(tooltip, sources, primarySo
 				GameTooltip_AddHighlightLine(tooltip, WARDROBE_ALTERNATE_ITEMS);
 			end
 
-			local name, nameColor = CollectionWardrobeUtil.GetAppearanceNameTextAndColor(sources[i], inLegionArtifactCategory);
-			local sourceText, sourceColor = CollectionWardrobeUtil.GetAppearanceSourceTextAndColor(sources[i]);
+			name, nameColor = CollectionWardrobeUtil.GetAppearanceNameTextAndColor(sources[i], inLegionArtifactCategory);
+			sourceText, sourceColor = CollectionWardrobeUtil.GetAppearanceSourceTextAndColor(sources[i]);
 			if ( i == headerIndex ) then
 				name = WARDROBE_TOOLTIP_CYCLE_ARROW_ICON..name;
-				if showUseError and not CollectionWardrobeUtil.IsAppearanceUsable(sources[i], inLegionArtifactCategory) then
-					useError = sources[i].useError;
-				end
 			else
 				name = WARDROBE_TOOLTIP_CYCLE_SPACER_ICON..name;
 			end
@@ -359,22 +371,16 @@ function CollectionWardrobeUtil.SetAppearanceTooltip(tooltip, sources, primarySo
 			GameTooltip_AddBlankLineToTooltip(tooltip);
 			CollectionWardrobeUtil.AddTrackingTooltipLine(tooltip, sources[headerIndex].sourceID);
 		end
-		if showUseError and not CollectionWardrobeUtil.IsAppearanceUsable(sources[headerIndex], inLegionArtifactCategory) then
-			useError = sources[headerIndex].useError;
-		end
 	end
-
-	if ( appearanceCollected  ) then
-		if ( useError ) then
-			GameTooltip_AddErrorLine(tooltip, useError);
-		elseif ( not C_Transmog.IsAtTransmogNPC() ) then
+	
+	if ( appearanceCollected and not useError ) then
+		if ( not C_Transmog.IsAtTransmogNPC() ) then
 			GameTooltip_AddColoredLine(tooltip, WARDROBE_TOOLTIP_TRANSMOGRIFIER, GRAY_FONT_COLOR);
 		end
-		if ( not useError ) then
-			local holidayName = C_TransmogCollection.GetSourceRequiredHoliday(headerSourceID);
-			if ( holidayName ) then
-				GameTooltip_AddColoredLine(tooltip, TRANSMOG_APPEARANCE_USABLE_HOLIDAY:format(holidayName), LIGHTBLUE_FONT_COLOR);
-			end
+
+		local holidayName = C_TransmogCollection.GetSourceRequiredHoliday(headerSourceID);
+		if ( holidayName ) then
+			GameTooltip_AddColoredLine(tooltip, TRANSMOG_APPEARANCE_USABLE_HOLIDAY:format(holidayName), LIGHTBLUE_FONT_COLOR);
 		end
 	end
 
@@ -389,7 +395,9 @@ function CollectionWardrobeUtil.AddTrackingTooltipLine(tooltip, sourceID)
 		GameTooltip_AddColoredLine(tooltip, CONTENT_TRACKING_DISABLED_TOOLTIP_PROMPT, GRAY_FONT_COLOR);
 		return;
 	end
-	if ( C_ContentTracking.IsTrackable(Enum.ContentTrackingType.Appearance, sourceID) ) then
+
+	local hasData, canCollect = C_TransmogCollection.PlayerCanCollectSource(sourceID);
+	if ( canCollect and C_ContentTracking.IsTrackable(Enum.ContentTrackingType.Appearance, sourceID) ) then
 		if ( C_ContentTracking.IsTracking(Enum.ContentTrackingType.Appearance, sourceID) ) then
 			GameTooltip_AddColoredLine(tooltip, CreateAtlasMarkup("waypoint-mappin-minimap-untracked", 16, 16, -3, 0)..CONTENT_TRACKING_UNTRACK_TOOLTIP_PROMPT, GREEN_FONT_COLOR);
 		else
@@ -415,7 +423,7 @@ function CollectionWardrobeUtil.GetPreferredSourceID(initialSourceID, appearance
 			return initialSourceID, hasData, canCollect;
 		end
 		-- the initialSourceID is not collectable, try to find another one
-		local category, itemAppearanceID = C_TransmogCollection.GetAppearanceSourceInfo(initialSourceID);
+		local _category, itemAppearanceID = C_TransmogCollection.GetAppearanceSourceInfo(initialSourceID);
 		if itemAppearanceID then
 			local sourceIDs = C_TransmogCollection.GetAllAppearanceSources(itemAppearanceID);
 			for i, sourceID in pairs(sourceIDs) do
@@ -432,6 +440,8 @@ function CollectionWardrobeUtil.GetPreferredSourceID(initialSourceID, appearance
 			end
 		end
 		-- couldn't find a valid one for player
+		return initialSourceID, hasAllData, false;
+	elseif not appearanceInfo.isAnySourceValidForPlayer then
 		return initialSourceID, hasAllData, false;
 	else
 		-- if initialSourceID is known and the collection state matches, we're good
@@ -452,18 +462,7 @@ function CollectionWardrobeUtil.GetPreferredSourceID(initialSourceID, appearance
 	end
 end
 
--- This wraps C_TransmogCollection.PlayerCanCollectSource but calls C_TransmogCollection.GetAppearanceInfoBySource first
--- since that covers the majority of cases and doesn't need sparse
--- returns: hasData, canCollect
-function CollectionWardrobeUtil.PlayerCanCollectSource(sourceID)
-	local appearanceInfo = C_TransmogCollection.GetAppearanceInfoBySource(sourceID);
-	if appearanceInfo then
-		return true, true;
-	end
-	return C_TransmogCollection.PlayerCanCollectSource(sourceID);
-end
-
-function CollectionWardrobeUtil.GetVisibilityWarning(model, transmogLocation)
+function CollectionWardrobeUtil.GetSlotVisibilityWarning(model, transmogLocation)
 	if transmogLocation and model then
 		local slotID = transmogLocation.slotID;
 		if model:IsGeoReady() then
@@ -476,4 +475,16 @@ function CollectionWardrobeUtil.GetVisibilityWarning(model, transmogLocation)
 		end
 	end
 	return nil;
+end
+
+function CollectionWardrobeUtil.GetAppearanceVisibilityWarning(appearanceID)
+	if not C_TransmogCollection.CanAppearanceBeDisplayedOnPlayer(appearanceID) then
+		return TRANSMOG_SLOT_APPEARANCE_INVISIBLE;
+	end
+
+	return nil;
+end
+
+function CollectionWardrobeUtil.GetBestVisibilityWarning(model, transmogLocation, appearanceID)
+	return CollectionWardrobeUtil.GetAppearanceVisibilityWarning(appearanceID) or CollectionWardrobeUtil.GetSlotVisibilityWarning(model, transmogLocation);
 end

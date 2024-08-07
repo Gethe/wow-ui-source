@@ -31,6 +31,8 @@ PTR_IssueReporter.ReportEventTypes = {
     UIPanelButtonClicked = "UIPanelButtonClicked",
     AIBotsJoinedParty = "AIBotsJoinedParty",
     AIBotsLeftParty = "AIBotsLeftParty",
+    RadiantChordStarted = "RadiantChordStarted",
+    RadiantChordEnded = "RadiantChordEnded",
 }
 
 local groupHasAIBots = false
@@ -40,7 +42,6 @@ local lastPlayerPosition = false
 local currentNumberOfQuests = 0
 ----------------------------------------------------------------------------------------------------
 local function EncounterEndHandler(...)
-    local instanceName, instanceType, difficultyID, difficultyName = GetInstanceInfo()
     local encounterID, encounterName, difficultyID, groupSize, encounterSuccessful = ...
     
     local uiMapID = C_Map.GetBestMapForUnit("player")        
@@ -213,6 +214,30 @@ function GetTimeSinceLastQuestProgress()
     return GetTime() - lastProgressTime
 end
 ----------------------------------------------------------------------------------------------------
+local radiantChordSpellID = 445256
+local radiantChordInstanceID = 0
+
+local function UnitAuraChanged(unit, info)
+    if (unit == "player") then
+        if (info.addedAuras) then
+            for index, auraInfo in pairs (info.addedAuras) do
+                if (auraInfo.spellId) and (auraInfo.spellId == radiantChordSpellID) then
+                    radiantChordInstanceID = auraInfo.auraInstanceID
+                    PTR_IssueReporter.TriggerEvent(PTR_IssueReporter.ReportEventTypes.RadiantChordStarted)
+                end
+            end
+        end
+        
+        if (info.removedAuraInstanceIDs) then
+            for index, auraInstanceID in pairs (info.removedAuraInstanceIDs) do
+                if (auraInstanceID == radiantChordInstanceID) then
+                    PTR_IssueReporter.TriggerEvent(PTR_IssueReporter.ReportEventTypes.RadiantChordEnded)
+                end
+            end
+        end
+    end
+end
+----------------------------------------------------------------------------------------------------
 PTR_IssueReporter.Data.RegisteredEvents = 
 {
     ZONE_CHANGED = PTR_IssueReporter.HandleMapEvents,
@@ -229,6 +254,7 @@ PTR_IssueReporter.Data.RegisteredEvents =
     BARBER_SHOP_OPEN = BarberShopOpenedHandler,
     BARBER_SHOP_CLOSE = BarberShopClosedHandler,
     GROUP_ROSTER_UPDATE = GroupRosterChanged,
+    UNIT_AURA = UnitAuraChanged,
 }
 
 for event, func in pairs (PTR_IssueReporter.Data.RegisteredEvents) do

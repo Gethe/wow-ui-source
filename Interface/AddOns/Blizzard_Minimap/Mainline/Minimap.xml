@@ -45,7 +45,7 @@
 					<OnLeave method="OnLeave"/>
 				</Scripts>
 			</Button>
-			<Frame parentKey="TrackingFrame" hidden="true">
+			<Frame parentKey="Tracking" hidden="true">
 				<Size x="17" y="17"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.BorderTop" relativePoint="LEFT" x="-2" y="0"/>
@@ -56,12 +56,11 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate" clampedToScreen="true" id="1" hidden="true">
-						<Scripts>
-							<OnLoad function="MiniMapTrackingDropDown_OnLoad"/>
-						</Scripts>
-					</Frame>
-					<DropDownToggleButton parentKey="Button" mixin="MiniMapTrackingButtonMixin">
+					<DropdownButton parentKey="Button" mixin="MiniMapTrackingButtonMixin">
+						<KeyValues>
+							<KeyValue key="menuPoint" type="string" value="TOPRIGHT"/>
+							<KeyValue key="menuRelativePoint" type="string" value="BOTTOMLEFT"/>
+						</KeyValues>
 						<Size x="13" y="14"/>
 						<Anchors>
 							<Anchor point="CENTER" x="0" y="0"/>
@@ -69,14 +68,13 @@
 						<Scripts>
 							<OnLoad method="OnLoad"/>
 							<OnEvent method="OnEvent"/>
-							<OnMouseDown method="OnMouseDown"/>
 							<OnEnter method="OnEnter"/>
 							<OnLeave method="OnLeave"/>
 						</Scripts>
 						<NormalTexture atlas="ui-hud-minimap-tracking-up"/>
 						<PushedTexture atlas="ui-hud-minimap-tracking-down"/>
 						<HighlightTexture atlas="ui-hud-minimap-tracking-mouseover"/>
-					</DropDownToggleButton>
+					</DropdownButton>
 				</Frames>
 			</Frame>
 			<Frame parentKey="IndicatorFrame" inherits="HorizontalLayoutFrame">
@@ -85,7 +83,7 @@
 					<KeyValue key="fixedHeight" value="15" type="number"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.TrackingFrame" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.Tracking" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
 				</Anchors>
 				<Frames>
 					<Frame parentKey="MailFrame" mixin="MiniMapMailFrameMixin" enableMouse="true" hidden="true">
@@ -235,6 +233,8 @@
 									<Button name="ExpansionLandingPageMinimapButton" mixin="ExpansionLandingPageMinimapButtonMixin" hidden="true">
 										<Size x="53" y="53"/>
 										<KeyValues>
+											<KeyValue key="defaultOffsetX" value="-3" type="number"/>
+											<KeyValue key="defaultOffsetY" value="-150" type="number"/>
 											<KeyValue key="defaultWidth" value="53" type="number"/>
 											<KeyValue key="defaultHeight" value="53" type="number"/>
 											<KeyValue key="defaultGlowWidth" value="46" type="number"/>

@@ -3,6 +3,7 @@
 
 	<Frame name="CampaignOverviewTemplate" mixin="CampaignOverviewMixin" enableMouseMotion="true" virtual="true">
 		<Frames>
+			<Frame parentKey="BorderFrame" inherits="QuestLogBorderFrameTemplate"/>
 			<Frame parentKey="Header" inherits="CampaignHeaderDisplayTemplate" clipChildren="true">
 				<KeyValues>
 					<KeyValue key="suppressNextText" value="true" type="boolean"/>
@@ -13,7 +14,7 @@
 				<Frames>
 					<Button parentKey="BackButton" inherits="LoreButtonTemplate" hidden="false">
 						<Anchors>
-							<Anchor point="RIGHT" relativeKey="$parent.Background" x="-10" y="7"/>
+							<Anchor point="LEFT" relativeKey="$parent.Text" relativePoint="RIGHT" x="6" y="0"/>
 						</Anchors>
 					</Button>
 				</Frames>
@@ -21,14 +22,14 @@
 			<EventScrollFrame parentKey="ScrollFrame" inherits="ScrollFrameTemplate" mixin="CampaignOverviewScrollFrameMixin">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Header" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-					<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+					<Anchor point="BOTTOMRIGHT" x="0" y="-2"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
 						<Texture parentKey="TopShadow" atlas="Campaign-QuestLog-LoreBottomShadow" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="TOPLEFT" y="1"/>
-								<Anchor point="TOPRIGHT" y="1"/>
+								<Anchor point="TOPLEFT" y="6"/>
+								<Anchor point="TOPRIGHT" y="6"/>
 							</Anchors>
 							<TexCoords left="0" right="1" top="1" bottom="0"/>
 						</Texture>
@@ -56,9 +57,9 @@
 		</Frames>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="BG" atlas="Campaign-QuestLog-LoreBackground">
+				<Texture parentKey="BG" atlas="campaign-questlog-lorebackground">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Header"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Header" y="-20"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollFrame"/>
 					</Anchors>
 				</Texture>

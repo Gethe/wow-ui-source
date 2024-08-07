@@ -97,13 +97,13 @@
 		</Scripts>
 	</Button>
 
-	<Button name="SpellbookMicroButton" inherits="MainMenuBarMicroButton" mixin="SpellbookMicroButtonMixin">
+	<Button name="ProfessionMicroButton" inherits="MainMenuBarMicroButton" mixin="ProfessionMicroButtonMixin">
 		<KeyValues>
-			<KeyValue key="commandName" value="TOGGLESPELLBOOK" type="string"/>
+			<KeyValue key="commandName" value="TOGGLEPROFESSIONBOOK" type="string"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-SpellbookAbilities-Mouseover" useAtlasSize="true" alphaMode="BLEND" hidden="true"/>
+				<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-Professions-Mouseover" useAtlasSize="true" alphaMode="BLEND" hidden="true"/>
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -113,7 +113,7 @@
 		</Scripts>
 	</Button>
 
-	<Button name="TalentMicroButton" inherits="MainMenuBarMicroButton" mixin="TalentMicroButtonMixin">
+	<Button name="PlayerSpellsMicroButton" inherits="MainMenuBarMicroButton" mixin="PlayerSpellsMicroButtonMixin">
 		<KeyValues>
 			<KeyValue key="commandName" value="TOGGLETALENTS" type="string"/>
 		</KeyValues>
