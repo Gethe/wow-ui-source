@@ -121,7 +121,7 @@ function CharacterSelectListUtil.BuildCharIndexToIDMapping(listSize)
 end
 
 function CharacterSelectListUtil.CheckBuildCharIndexToIDMapping()
-	if not s_characterReorderTranslation or #s_characterReorderTranslation == 0 then
+	if CharacterSelect.undeleteChanged or not s_characterReorderTranslation or #s_characterReorderTranslation == 0 then
 		CharacterSelectListUtil.BuildCharIndexToIDMapping();
 	end
 end

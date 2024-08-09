@@ -30,7 +30,7 @@ function StoreOutbound.ClearItemTooltip()
 end
 
 function StoreOutbound.ConfirmClassTrialApplyToken(guid, boostType)
-	securecall("ClassTrial_ConfirmApplyToken", guid, boostType)
+	securecall("ClassTrial_ConfirmApplyToken", guid, boostType);
 end
 
 function StoreOutbound.IsExpansionTrialUpgradeDialogShowing()
@@ -59,4 +59,8 @@ end
 
 function StoreOutbound.TriggerHideEvent(contextKey)
 	securecallfunction(SecureOutboundUtil_TriggerEvent, "Store.FrameHidden", contextKey);
+end
+
+function StoreOutbound.StoreFrameShowGlueDialog(text, guid, realmName, shouldHandle)
+	securecall("StoreFrame_ShowGlueDialog", text, guid, realmName, shouldHandle);
 end
