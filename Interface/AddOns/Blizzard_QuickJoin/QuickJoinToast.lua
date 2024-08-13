@@ -34,7 +34,8 @@ function QuickJoinToastMixin:OnLoad()
 		self.groups[groups[i]] = group;
 	end
 	
-	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.InGameFriendsList) then
+	local inGameFriendsListDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.IngameFriendsListDisabled);
+	if inGameFriendsListDisabled then
 		self:Hide();
 	end
 end

@@ -1,7 +1,7 @@
 ## Title: Blizzard_UIPanels_Game
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_FrameXML, Blizzard_EditMode, Blizzard_GameTooltip, Blizzard_UIPanelTemplates, Blizzard_POIButton
+## Dependencies: Blizzard_FrameXML, Blizzard_EditMode, Blizzard_GameTooltip, Blizzard_UIPanelTemplates, Blizzard_POIButton, Blizzard_MoneyFrame
 ## AllowLoad: game
 ## AllowLoadGameType: mainline
 Mainline\CastingBarFrame.lua

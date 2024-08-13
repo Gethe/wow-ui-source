@@ -385,7 +385,7 @@ function AchievementAlertFrame_OnClick (self, button, down)
 		return;
 	end
 
-	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.AchievementsPanel) then
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.AchievementsPanelDisabled) then
 		return;
 	end
 
@@ -1192,7 +1192,7 @@ function NewPetAlertFrameMixin:OnClick(button, down)
 		return;
 	end
 
-	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CollectionsPanel) then
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.CollectionsPanelDisabled) then
 		return;
 	end
 
@@ -1221,7 +1221,7 @@ function NewMountAlertFrameMixin:OnClick(button, down)
 		return;
 	end
 
-	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CollectionsPanel) then
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.CollectionsPanelDisabled) then
 		return;
 	end
 

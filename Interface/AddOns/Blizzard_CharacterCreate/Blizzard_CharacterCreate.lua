@@ -191,17 +191,18 @@ function CharacterCreateMixin:OnShow()
 
 	local _, selectedFaction;
 	local existingCharacterID = self:GetExistingCharacterID();
+	local fullCharacterCreateDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.FullCharacterCreateDisabled);
 	if existingCharacterID then
 		C_CharacterCreation.CustomizeExistingCharacter(existingCharacterID);
 		self.currentPaidServiceName = C_PaidServices.GetName();
 		_, selectedFaction = C_PaidServices.GetCurrentFaction();
-		if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CharacterCreateFullEnabled) then
+		if not fullCharacterCreateDisabled then
 			NameChoiceFrame.EditBox:SetText(self.currentPaidServiceName);
 		end
 	else
 		self.currentPaidServiceName = nil;
 		C_CharacterCreation.ResetCharCustomize();
-		if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CharacterCreateFullEnabled) then
+		if not fullCharacterCreateDisabled then
 			NameChoiceFrame.EditBox:SetText("");
 		end
 	end
@@ -373,9 +374,9 @@ function CharacterCreateMixin:OnUpdateMouseRotate()
 	end
 end
 
-local PLUNDERSTORM_BACKGROUND_MODEL_ID = 2575493;
 function CharacterCreateMixin:UpdateBackgroundModel()
-	local bgModelID = C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CharacterCreateUseFixedBackgroundModel) and PLUNDERSTORM_BACKGROUND_MODEL_ID or C_CharacterCreation.GetCreateBackgroundModel();
+	local bgModelID = C_GameRules.GetGameRuleAsFloat(Enum.GameRule.CharacterCreateUseFixedBackgroundModel);
+	bgModelID = (bgModelID > 0) and bgModelID or C_CharacterCreation.GetCreateBackgroundModel();
 	if bgModelID ~= self.bgModelID then
 		C_CharacterCreation.SetCharCustomizeBackground(bgModelID);
 		ResetModel(self);
@@ -557,7 +558,8 @@ function CharacterCreateMixin:SetMode(mode, instantRotate)
 	RaceAndClassFrame:SetShown(mode == CHAR_CREATE_MODE_CLASS_RACE);
 	CharCustomizeFrame:SetShown(mode == CHAR_CREATE_MODE_CUSTOMIZE);
 	ClassTrialSpecs:SetShown(mode == CHAR_CREATE_MODE_CUSTOMIZE and (C_CharacterCreation.GetCharacterCreateType() == Enum.CharacterCreateType.TrialBoost));
-	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CharacterCreateFullEnabled) then
+	local fullCharacterCreateDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.FullCharacterCreateDisabled);
+	if not fullCharacterCreateDisabled then
 		NameChoiceFrame:SetShown(mode == CHAR_CREATE_MODE_CUSTOMIZE);
 	end
 	ZoneChoiceFrame:SetShown(mode == CHAR_CREATE_MODE_ZONE_CHOICE);
@@ -601,7 +603,8 @@ function CharacterCreateMixin:Exit()
 	self.RaceAndClassFrame.ClassTrialCheckButton:ResetDesiredState();
 
 	CharacterSelect.backFromCharCreate = true;
-	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CharacterCreateFullEnabled) then
+	local fullCharacterCreateDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.FullCharacterCreateDisabled);
+	if not fullCharacterCreateDisabled then
 		GlueParent_SetScreen("charselect");
 	else
 		GlueParent_SetScreen("plunderstorm");
@@ -681,7 +684,8 @@ function CharacterCreateMixin:SetMissingOptionsNavBlockersEnabled(enabled)
 end
 
 function CharacterCreateMixin:GetSelectedName()
-	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CharacterCreateFullEnabled) then
+	local fullCharacterCreateDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.FullCharacterCreateDisabled);
+	if fullCharacterCreateDisabled then
 		return "";
 	end
 	return NameChoiceFrame.EditBox:GetText();
@@ -705,7 +709,8 @@ function CharacterCreateMixin:CreateCharacter()
 		self:UpdateForwardButton();
 
 		C_CharacterCreation.CreateCharacter(self:GetSelectedName(), ZoneChoiceFrame.useNPE, RaceAndClassFrame:GetCreateCharacterFaction());
-		if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CharacterCreateFullEnabled) then
+		local fullCharacterCreateDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.FullCharacterCreateDisabled);
+		if fullCharacterCreateDisabled then
 			GlueParent_SetScreen("plunderstorm");
 		end
 	end
@@ -831,7 +836,8 @@ function CharacterCreateMixin:NavForward()
 			PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CREATE_CHAR);
 			self:CreateCharacter();
 			self.ForwardButton:SetEnabled(false);
-			if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CharacterCreateFullEnabled) then
+			local fullCharacterCreateDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.FullCharacterCreateDisabled);
+			if fullCharacterCreateDisabled then
 				CharacterCreateFrame:Exit();
 			end
 		end
@@ -1068,7 +1074,8 @@ function CharacterCreateRaceButtonMixin:SetRace(raceData, selectedRaceID, select
 
 	self:SetIconAtlas(raceData.createScreenIconAtlas);
 
-	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CharacterCreateFullEnabled) then
+	local fullCharacterCreateDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.FullCharacterCreateDisabled);
+	if not fullCharacterCreateDisabled then
 		local isValidRace = RaceAndClassFrame:IsRaceValid(raceData, self.faction);
 		self.allowSelectionOnDisable = not CharacterCreateFrame:HasService() and (raceData.disabledReason == Enum.CreationRaceDisabledReason.DoesNotHaveAchievement);
 		self:SetEnabledState(isValidRace);
@@ -1101,7 +1108,7 @@ function CharacterCreateRaceButtonMixin:SetRace(raceData, selectedRaceID, select
 	self:AddBlankTooltipLine();
 	self:AddTooltipLine(raceData.loreDescription);
 
-	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CharacterCreateFullEnabled) then
+	if not fullCharacterCreateDisabled then
 		self:AddExpandedTooltipFrame(RaceAndClassFrame.RacialAbilityList);
 
 		if not raceData.enabled then
@@ -1378,7 +1385,8 @@ function CharacterCreateRaceAndClassMixin:CanTrialBoostCharacter()
 end
 
 function CharacterCreateRaceAndClassMixin:UpdateClassTrialButtonVisibility()
-	local showTrialBoost = self:CanTrialBoostCharacter() and C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CharacterCreateFullEnabled);
+	local fullCharacterCreateDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.FullCharacterCreateDisabled);
+	local showTrialBoost = self:CanTrialBoostCharacter() and not fullCharacterCreateDisabled;
 	local isVisibilityChanging = showTrialBoost ~= self.ClassTrialCheckButton:IsVisible();
 
 	self.ClassTrialCheckButton:SetShown(showTrialBoost);
@@ -1387,7 +1395,7 @@ end
 
 function CharacterCreateRaceAndClassMixin:OnShow()
 	local useNewPlayerMode = C_CharacterCreation.UseBeginnerMode();
-	local alwaysAllowAlliedRaces = C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.AlwaysAllowAlliedRaces);
+	local alwaysAllowAlliedRaces = C_GameRules.IsGameRuleActive(Enum.GameRule.AlwaysAllowAlliedRaces);
 
 	self.AllianceAlliedRaces:SetShown(not useNewPlayerMode or alwaysAllowAlliedRaces);
 	self.HordeAlliedRaces:SetShown(not useNewPlayerMode or alwaysAllowAlliedRaces);
@@ -1577,7 +1585,8 @@ function CharacterCreateRaceAndClassMixin:UpdateState(selectedFaction)
 	self.selectedRaceID = C_CharacterCreation.GetSelectedRace();
 	self.selectedRaceData = C_CharacterCreation.GetRaceDataByID(self.selectedRaceID);
 
-	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CharacterCreateFullEnabled) then
+	local fullCharacterCreateDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.FullCharacterCreateDisabled);
+	if fullCharacterCreateDisabled then
 		self.selectedRaceData.enabled = true;
 	end
 
@@ -1839,7 +1848,8 @@ function CharacterCreateRaceAndClassMixin:UpdateButtons()
 
 	self:UpdateSexButtons();
 	self:UpdateRaceButtons();
-	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CharacterCreateFullEnabled) then
+	local fullCharacterCreateDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.FullCharacterCreateDisabled);
+	if not fullCharacterCreateDisabled then
 		self:UpdateClassButtons();
 	end
 
@@ -1983,7 +1993,8 @@ end
 
 function CharacterCreateEditBoxMixin:OnTextChanged()
 	local selectedName = self:GetText();
-	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CharacterCreateFullEnabled) and (selectedName == "" or selectedName == PENDING_RANDOM_NAME) then
+	local fullCharacterCreateDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.FullCharacterCreateDisabled);
+	if (not fullCharacterCreateDisabled) and (selectedName == "" or selectedName == PENDING_RANDOM_NAME) then
 		CharacterCreateFrame:AddNavBlocker(CHARACTER_CREATION_REQUIREMENTS_PICK_NAME, MEDIUM_PRIORITY);
 		self.NameAvailabilityState:Hide();
 	else
@@ -2066,7 +2077,8 @@ function CharacterCreateNameAvailabilityStateMixin:UpdateNavBlocker(navBlocker)
 		CharacterCreateFrame:RemoveNavBlocker(self.navBlocker);
 	end
 
-	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CharacterCreateFullEnabled) and NameChoiceFrame:IsShown() and navBlocker then
+	local fullCharacterCreateDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.FullCharacterCreateDisabled);
+	if (not fullCharacterCreateDisabled) and NameChoiceFrame:IsShown() and navBlocker then
 		CharacterCreateFrame:AddNavBlocker(navBlocker);
 		self.navBlocker = navBlocker;
 	else
@@ -2171,7 +2183,8 @@ function CharacterCreateZoneChoiceMixin:OnHide()
 end
 
 function CharacterCreateZoneChoiceMixin:Setup()
-	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CharacterCreateFullEnabled) then
+	local fullCharacterCreateDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.FullCharacterCreateDisabled);
+	if fullCharacterCreateDisabled then
 		return;
 	end
 
@@ -2196,7 +2209,8 @@ function CharacterCreateZoneChoiceMixin:Setup()
 end
 
 function CharacterCreateZoneChoiceMixin:ShouldShow()
-	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CharacterCreateFullEnabled) then
+	local fullCharacterCreateDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.FullCharacterCreateDisabled);
+	if fullCharacterCreateDisabled then
 		return false;
 	end
 	return self.shouldShow;

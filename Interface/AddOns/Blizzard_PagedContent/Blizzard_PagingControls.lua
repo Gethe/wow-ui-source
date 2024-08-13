@@ -45,7 +45,7 @@ end
 function PagingControlsMixin:SetCurrentPage(page)
 	page = Clamp(page, 1, self.maxPages);
 	if self.currentPage == page then
-		return;
+		return false;
 	end
 
 	self.currentPage = page;
@@ -55,18 +55,20 @@ function PagingControlsMixin:SetCurrentPage(page)
 	if parent and parent.OnPageChanged then
 		parent:OnPageChanged();
 	end
+
+	return true;
 end
 
 function PagingControlsMixin:NextPage()
-	self:SetCurrentPage(self.currentPage + self:GetPageDelta());
-	if self.nextPageSound then
+	local pageChanged = self:SetCurrentPage(self.currentPage + self:GetPageDelta());
+	if pageChanged and self.nextPageSound then
 		PlaySound(self.nextPageSound);
 	end
 end
 
 function PagingControlsMixin:PreviousPage()
-	self:SetCurrentPage(self.currentPage - self:GetPageDelta());
-	if self.prevPageSound then
+	local pageChanged = self:SetCurrentPage(self.currentPage - self:GetPageDelta());
+	if pageChanged and self.prevPageSound then
 		PlaySound(self.prevPageSound);
 	end
 end

@@ -152,6 +152,20 @@ local Map =
 			},
 		},
 		{
+			Name = "GetMapArtZoneTextPosition",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "position", Type = "MapCanvasPosition", Nilable = false },
+			},
+		},
+		{
 			Name = "GetMapBannersForMap",
 			Type = "Function",
 

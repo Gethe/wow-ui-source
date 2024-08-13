@@ -2123,78 +2123,6 @@ function NewPvpSeasonMixin:OnShow()
 	self.SeasonRewardFrame:SetShown(showSeasonReward);
 end
 
-PVPWeeklyChestMixin = CreateFromMixins(WeeklyRewardMixin);
-function PVPWeeklyChestMixin:GetState()
-	local weeklyProgress = C_WeeklyRewards.GetConquestWeeklyProgress();
-
-	if C_WeeklyRewards.HasAvailableRewards() then
-		return "collect";
-	elseif self:HasUnlockedRewards(Enum.WeeklyRewardChestThresholdType.RankedPvP) or weeklyProgress.unlocksCompleted > 0 then
-		return "complete";
-	end
-
-	return "incomplete";
-end
-
-function PVPWeeklyChestMixin:OnShow()
-	local state = self:GetState();
-	local atlas = "pvpqueue-chest-dragonflight-greatvault-"..state;
-	self.ChestTexture:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
-	self.Highlight:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
-
-	local hasActiveSeason = ConquestFrame_HasActiveSeason();
-	local desaturated = not hasActiveSeason;
-	self.ChestTexture:SetDesaturated(desaturated);
-	self.Highlight:SetDesaturated(desaturated);
-
-	self.SpinTextureBottom:Hide();
-	self.SpinTextureTop:Hide();
-	self.SpinAnim:Stop();
-end
-
-function PVPWeeklyChestMixin:OnEnter()
-	if not ConquestFrame_HasActiveSeason() then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip_SetTitle(GameTooltip, GREAT_VAULT_REWARDS);
-		GameTooltip_AddDisabledLine(GameTooltip, UNAVAILABLE);
-		GameTooltip_AddNormalLine(GameTooltip, CONQUEST_REQUIRES_PVP_SEASON);
-		GameTooltip:Show();
-		return;
-	end
-
-	local weeklyProgress = C_WeeklyRewards.GetConquestWeeklyProgress();
-	local unlocksCompleted = weeklyProgress.unlocksCompleted or 0;
-
-	local state = self:GetState();
-	local maxUnlocks = weeklyProgress.maxUnlocks or 3;
-	local description;
-	if unlocksCompleted > 0 then
-		description = RATED_PVP_WEEKLY_VAULT_TOOLTIP:format(unlocksCompleted, maxUnlocks);
-	else
-		description = RATED_PVP_WEEKLY_VAULT_TOOLTIP_NO_REWARDS:format(unlocksCompleted, maxUnlocks);
-	end
-
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip_SetTitle(GameTooltip, GREAT_VAULT_REWARDS);
-
-	local hasRewards = C_WeeklyRewards.HasAvailableRewards();
-	if hasRewards then
-		GameTooltip_AddColoredLine(GameTooltip, GREAT_VAULT_REWARDS_WAITING, GREEN_FONT_COLOR);
-		GameTooltip_AddBlankLineToTooltip(GameTooltip);
-	end
-	GameTooltip_AddNormalLine(GameTooltip, description);
-	GameTooltip_AddInstructionLine(GameTooltip, WEEKLY_REWARDS_CLICK_TO_PREVIEW_INSTRUCTIONS);
-	GameTooltip:Show();
-end
-
-function PVPWeeklyChestMixin:OnMouseUp(...)
-	if not ConquestFrame_HasActiveSeason() then
-		return;
-	end
-
-	WeeklyRewardMixin.OnMouseUp(self, ...);
-end
-
 function PVPNewSeasonPopupOnClick(self)
 	self:GetParent():Hide();
 	SetCVar("newPvpSeason", GetCurrentArenaSeason());
@@ -2202,22 +2130,7 @@ end
 
 PVPWeeklyCasualPanelMixin = { };
 function PVPWeeklyCasualPanelMixin:OnShow()
-	local serverExpansionLevel = GetServerExpansionLevel();
-
-	local maxLevel = GetMaxLevelForExpansionLevel(serverExpansionLevel);
-	local playerLevel = UnitLevel("player");
-	local Label = self.HKLabel;
-	if playerLevel < maxLevel then
-		Label:Hide();
-		self.WeeklyChest:Hide();
-		self.HonorLevelDisplay:SetPoint("TOP", 0, -25);
-	else
-		Label:SetText(RATED_PVP_WEEKLY_VAULT);
-		Label:SetPoint("TOP", 0, -12);
-		Label:Show();
-		self.WeeklyChest:Show();
-		self.HonorLevelDisplay:SetPoint("TOP", self.WeeklyChest, "BOTTOM", 0, -90);
-	end
+	self.HKLabel:Hide();
 end
 
 
@@ -2280,23 +2193,6 @@ function PVPWeeklyRatedPanelMixin:Update()
 			NextTier:Hide();
 		end
 	end
-
-	local serverExpansionLevel = GetServerExpansionLevel();
-
-	local maxLevel = GetMaxLevelForExpansionLevel(serverExpansionLevel);
-	local playerLevel = UnitLevel("player");
-	local Label = self.Label;
-	if playerLevel < maxLevel then
-		Label:Hide();
-		self.WeeklyChest:Hide();
-		Tier:SetPoint("TOP", 0, -32);
-	else
-		Label:SetText(RATED_PVP_WEEKLY_VAULT);
-		Label:Show();
-		self.WeeklyChest:Show();
-		Tier:SetPoint("TOP", self.WeeklyChest, "BOTTOM", 0, -90);
-	end
-	Label:SetText(RATED_PVP_WEEKLY_VAULT);
 end
 
 local function PVPQuestRewardSortFunction(firstValue, secondValue)

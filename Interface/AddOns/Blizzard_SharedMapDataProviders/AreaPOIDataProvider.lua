@@ -69,18 +69,42 @@ AreaPOIPinMixin = BaseMapPoiPinMixin:CreateSubPin("PIN_FRAME_LEVEL_AREA_POI");
 
 local AREAPOI_HIGHLIGHT_PARAMS = { backgroundPadding = 20 };
 
+local GreatVaultMouseHandler = {};
+
+function GreatVaultMouseHandler:OnMouseClickAction(button)
+	if self:IsClickAction(button) then
+		WeeklyRewards_ShowUI();
+		return true;
+	end
+end
+
+function GreatVaultMouseHandler:IsClickAction(button, action)
+	return button == "RightButton";
+end
+
 local customOnClickHandlers =
 {
-	OribosGreatVault = function(self, button, upInside)
-		if upInside and (button == "LeftButton") then
-			WeeklyRewards_ShowUI();
-		end
-	end,
+	OribosGreatVault = GreatVaultMouseHandler,
 }
 
+function AreaPOIPinMixin:GetCustomMouseHandler()
+	return self.textureKit and customOnClickHandlers[self.textureKit];
+end
+
 function AreaPOIPinMixin:UpdateCustomMouseHandlers()
-	local onClickHandler = self.textureKit and customOnClickHandlers[self.textureKit];
-	self.CustomOnClickHandler = onClickHandler or nop;
+	self.customOnClickHandler = self:GetCustomMouseHandler();
+end
+
+function AreaPOIPinMixin:ShouldMouseButtonBePassthrough(button)
+	-- GreatVault allows right click to open it, everything else defers to the base mixin.
+	local onClickHandler = self:GetCustomMouseHandler();
+	if onClickHandler then
+		if onClickHandler:IsClickAction(button) then
+			return false;
+		end
+	end
+
+	return MapCanvasPinMixin.ShouldMouseButtonBePassthrough(self, button);
 end
 
 function AreaPOIPinMixin:OnAcquired(poiInfo) -- override
@@ -102,8 +126,11 @@ function AreaPOIPinMixin:OnAcquired(poiInfo) -- override
 end
 
 function AreaPOIPinMixin:OnMouseClickAction(button)
-	SuperTrackablePinMixin.OnMouseClickAction(self, button);
-	self:CustomOnClickHandler(button);
+	if not SuperTrackablePinMixin.OnMouseClickAction(self, button) then
+		if self.customOnClickHandler then
+			return self.customOnClickHandler:OnMouseClickAction(button);
+		end
+	end
 end
 
 function AreaPOIPinMixin:SetupHoverInfo(poiInfo)
@@ -196,7 +223,7 @@ function AreaPOIPinMixin:TryShowTooltip()
 
 		if self.textureKit == "OribosGreatVault" then
 			GameTooltip_AddBlankLineToTooltip(tooltip);
-			GameTooltip_AddInstructionLine(tooltip, ORIBOS_GREAT_VAULT_POI_TOOLTIP_INSTRUCTIONS);
+			GameTooltip_AddInstructionLine(tooltip, ORIBOS_GREAT_VAULT_POI_TOOLTIP_INSTRUCTIONS, false);
 			addedTooltipLine = true;
 		end
 

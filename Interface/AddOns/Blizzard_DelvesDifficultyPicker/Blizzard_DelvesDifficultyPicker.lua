@@ -8,6 +8,7 @@ local DELVES_DIFFICULTY_PICKER_EVENTS = {
 	"GROUP_FORMED",
 	"WALK_IN_DATA_UPDATE",
 	"ACTIVE_DELVE_DATA_UPDATE",
+	"PARTY_ELIGIBILITY_FOR_DELVE_TIERS_CHANGED",
 };
 
 -- Max number of rewards shown on the right side of the UI
@@ -51,10 +52,7 @@ function DelvesDifficultyPickerFrameMixin:OnLoad()
 		allowOtherPanels = 1,
 	};
 	RegisterUIPanel(self, panelAttributes);
-
 	self.Dropdown:SetWidth(130);
-
-	CustomGossipFrameBaseMixin.OnLoad(self);
 end
 
 function DelvesDifficultyPickerFrameMixin:OnEvent(event, ...)
@@ -66,6 +64,9 @@ function DelvesDifficultyPickerFrameMixin:OnEvent(event, ...)
 		self:SetupOptions();
 	elseif event == "ACTIVE_DELVE_DATA_UPDATE" or event == "WALK_IN_DATA_UPDATE" then
 		self:CheckForActiveDelveAndUpdate();
+	elseif event == "PARTY_ELIGIBILITY_FOR_DELVE_TIERS_CHANGED" then
+		local playerName, maxEligibleLevel = ...;
+		self:OnPartyEligibilityChanged(playerName, maxEligibleLevel);
 	end 
 end 
 
@@ -74,10 +75,38 @@ function DelvesDifficultyPickerFrameMixin:OnShow()
 	self:ClearAllPoints();
 	self:SetPoint("CENTER", UIParent, "CENTER", 0, 110);
 	FrameUtil.RegisterFrameForEvents(self, DELVES_DIFFICULTY_PICKER_EVENTS);
+	self.Dropdown:RegisterCallback(DropdownButtonMixin.Event.OnMenuClose, self.TryShowHelpTip, self);
+	self.Dropdown:RegisterCallback(DropdownButtonMixin.Event.OnMenuOpen, self.HideHelpTip, self);
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 
 	self:SetInitialLevel();
 	self:CheckForActiveDelveAndUpdate();
+	self:TryShowHelpTip();
+	self.partyTierEligibility = {};
+	if self.gossipOptions then
+		C_DelvesUI.RequestPartyEligibilityForDelveTiers(self.gossipOptions[1].gossipOptionID);
+	end
+end
+
+function DelvesDifficultyPickerFrameMixin:TryShowHelpTip()
+	local selectedOption = self:GetSelectedOption();
+	local lastSelectedTier = GetCVarNumberOrDefault(LAST_TIER_SELECTED_CVAR);
+
+	-- If there's no option selected and last selected tier is 0, we're seeing the FTUE and should show the helptip
+	if not selectedOption and lastSelectedTier == 0 then
+		local helpTipInfo = {
+			text = DELVES_TIER_SELECT_HELPTIP,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			offsetX = -3,
+		};
+		HelpTip:Show(self.Dropdown, helpTipInfo);
+	else
+		self:HideHelpTip();
+	end
+end
+
+function DelvesDifficultyPickerFrameMixin:HideHelpTip()
+	HelpTip:HideAll(self.Dropdown);
 end
 
 function DelvesDifficultyPickerFrameMixin:CheckForActiveDelveAndUpdate()
@@ -130,6 +159,14 @@ function DelvesDifficultyPickerFrameMixin:SetupDropdown()
 			spell:ContinueWithCancelOnSpellLoad(function()
 				radio:SetTooltip(function(tooltip, elementDescription)
 					GameTooltip_AddNormalLine(tooltip, spell:GetSpellDescription());
+					local partyTierEligibility = DelvesDifficultyPickerFrame:GetPartyTierEligibility();
+					if not isLocked and partyTierEligibility ~= nil then
+						for playerName,maxEligibleLevel in pairs(partyTierEligibility) do
+							if maxEligibleLevel < option.orderIndex then
+								GameTooltip_AddErrorLine(tooltip, DELVES_PARTY_MEMBER_INELIGIBLE_FOR_TIER_TOOLTIP:format(playerName), false);
+							end
+						end
+					end
 				end);
 			end);
 		end
@@ -278,7 +315,7 @@ function DelvesDifficultyPickerFrameMixin:TryShow(textureKit)
 	self.Title:SetText(C_GossipInfo.GetText());
 	self.Description:SetText(C_GossipInfo.GetCustomGossipDescriptionString());
 	self:SetupOptions();
-	ShowUIPanel(self); 
+	ShowUIPanel(self);
 end 
 
 function DelvesDifficultyPickerFrameMixin:OnHide()
@@ -286,6 +323,8 @@ function DelvesDifficultyPickerFrameMixin:OnHide()
 	self.DelveModifiersWidgetContainer:UnregisterForWidgetSet();
 	self.DelveRewardsContainerFrame:Hide();
 	FrameUtil.UnregisterFrameForEvents(self, DELVES_DIFFICULTY_PICKER_EVENTS);
+	self.Dropdown:UnregisterCallback(DropdownButtonMixin.Event.OnMenuClose, self);
+	self.Dropdown:UnregisterCallback(DropdownButtonMixin.Event.OnMenuOpen, self);
 	C_GossipInfo.CloseGossip();
 	if self.bountifulAnimFrame then
 		self.bountifulAnimFrame:Hide();
@@ -316,6 +355,22 @@ function DelvesDifficultyPickerEnterDelveButtonMixin:OnEnter()
 		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", 175);
 		GameTooltip_AddErrorLine(GameTooltip, DELVES_ERR_TIER_INELIGIBLE);
 		GameTooltip:Show();
+	else
+		local partyTierEligibility = self:GetParent():GetPartyTierEligibility();
+		if partyTierEligibility ~= nil then
+			GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", 50);
+			local ineligibleParty = false;
+			for playerName,maxEligibleLevel in pairs(partyTierEligibility) do
+				if maxEligibleLevel < selectedOption.orderIndex then
+					GameTooltip_AddErrorLine(GameTooltip, DELVES_PARTY_MEMBER_INELIGIBLE_FOR_TIER_TOOLTIP:format(playerName), false);
+					ineligibleParty = true;
+				end
+			end
+
+			if ineligibleParty then
+				GameTooltip:Show();
+			end
+		end
 	end
 end 
 
@@ -331,6 +386,14 @@ function DelvesDifficultyPickerEnterDelveButtonMixin:OnClick()
 	PlaySound(SOUNDKIT.PVP_ENTER_QUEUE);
 	C_GossipInfo.SelectOptionByIndex(selectedLevel);
 end 
+
+function DelvesDifficultyPickerFrameMixin:OnPartyEligibilityChanged(playerName, maxEligibleLevel)
+	self.partyTierEligibility[playerName] = maxEligibleLevel;
+end
+
+function DelvesDifficultyPickerFrameMixin:GetPartyTierEligibility()
+	return self.partyTierEligibility;
+end
 
 --[[ Rewards Container + Buttons ]]
 DelveRewardsContainerFrameMixin = {};
@@ -384,7 +447,7 @@ function DelveRewardsContainerFrameMixin:SetRewards()
 		for  _, reward in ipairs(optionRewards) do
 			if	reward.rewardType == Enum.GossipOptionRewardType.Item then 
 				local name, _, quality, _, _, _, _, _, _, itemIcon = C_Item.GetItemInfo(reward.id);
-				table.insert(rewardInfo, {id = reward.id, quality = quality, quantity = reward.quantity, texture = itemIcon, name = name});
+				table.insert(rewardInfo, {id = reward.id, quality = quality, quantity = reward.quantity, texture = itemIcon, name = name, context = reward.context});
 			end
 		end
 
@@ -407,6 +470,7 @@ function DelveRewardsContainerFrameMixin:SetRewards()
 	
 					tinsert(buttons, button);
 					button.id = reward.id;
+					button.context = reward.context;
 					button:Show();
 				end
 			end
@@ -435,8 +499,12 @@ function DelveRewardsButtonMixin:OnEnter()
 	local item = Item:CreateFromItemID(self.id);
 	self.itemCancelFunc = item:ContinueWithCancelOnItemLoad(function()
 		if GameTooltip:GetOwner() == self then
-			self.itemLink = item:GetItemLink();
-			GameTooltip:SetItemByID(self.id);
+			if self.context then
+				self.itemLink = C_Item.GetDelvePreviewItemLink(self.id, self.context);
+			else
+				self.itemLink = item:GetItemLink();
+			end
+			GameTooltip:SetHyperlink(self.itemLink);
 			GameTooltip:Show();
 		end
 	end);

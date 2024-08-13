@@ -49,10 +49,28 @@ function MenuStyle1Mixin:Generate()
 	background:SetAlpha(.925);
 end
 
-function MenuStyle1Mixin:GetInset()
-	return 8, 8, 8, 15; -- L, T, R, B
+do
+	local inset = 
+	{
+		left = 8, 
+		top = 8, 
+		right = 8,
+		bottom = 15,
+	};
+
+	function MenuStyle1Mixin:GetInset()
+		return inset;
+	end
 end
 
-function MenuStyle1Mixin:GetChildExtentPadding()
-	return 20, 0;
+do
+	local padding = 
+	{
+		width = 20, 
+		height = 0, 
+	};
+
+	function MenuStyle1Mixin:GetChildExtentPadding()
+		return padding;
+	end
 end

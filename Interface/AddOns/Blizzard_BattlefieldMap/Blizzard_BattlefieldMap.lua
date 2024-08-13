@@ -215,7 +215,7 @@ function BattlefieldMapMixin:AddStandardDataProviders()
 	self:AddDataProvider(CreateFromMixins(AreaPOIEventDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(QuestSessionDataProviderMixin));
 
-	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.MapPlunderstormCircle) then
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.MapPlunderstormCircle) then
 		self:AddDataProvider(CreateFromMixins(PlunderstormCircleDataProviderMixin));
 	end
 

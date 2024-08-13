@@ -254,7 +254,8 @@ function FriendsFrame_OnLoad(self)
 	self.selectedFriend = 1;
 
 	self:SetParent(GetAppropriateTopLevelParent());
-	if IsOnGlueScreen() or not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.InGameFriendsList) then
+	local inGameFriendsListDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.IngameFriendsListDisabled);
+	if IsOnGlueScreen() or inGameFriendsListDisabled then
 		self:ClearAllPoints();
 		self:SetPoint("TOPLEFT", 50, -50);
 
@@ -367,6 +368,21 @@ function FriendsFrame_OnShow(self)
 	EventRegistry:RegisterCallback("GameEnvironment.Selected", function()
 		self:Hide();
 	end, self);
+
+	-- Raid tab is unavailable while in raid story content.
+	local inStoryRaid = DifficultyUtil.InStoryRaid();
+	local enableRaidTab = not inStoryRaid;
+	PanelTemplates_SetTabEnabled(self, 3, enableRaidTab);
+
+	if enableRaidTab then
+		FriendsFrameTab3:SetScript("OnEnter", nil);
+	else
+		FriendsFrameTab3:SetScript("OnEnter", function()
+			GameTooltip:SetOwner(FriendsFrameTab3, "ANCHOR_RIGHT", 0, 0);
+			GameTooltip:SetText(RED_FONT_COLOR:WrapTextInColorCode(DIFFICULTY_LOCKED_REASON_STORY_RAID));
+			GameTooltip:Show();	
+		end);
+	end
 end
 
 function FriendsFrame_Update()
@@ -539,7 +555,8 @@ end
 
 function FriendsTabHeaderMixin:SetRAFSystemEnabled(rafEnabled)
 	if rafEnabled then
-		rafEnabled = not IsOnGlueScreen() and C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.InGameFriendsList);
+		local inGameFriendsListDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.IngameFriendsListDisabled);
+		rafEnabled = not IsOnGlueScreen() and (not inGameFriendsListDisabled);
 	end
 
 	FRIEND_HEADER_TAB_COUNT = rafEnabled and 3 or 2;
@@ -569,7 +586,7 @@ FriendsFrameTabMixin = {};
 
 function FriendsFrameTabMixin:OnClick()
 	PanelTemplates_Tab_OnClick(self, FriendsFrame);
-	FriendsFrame_OnShow(self);
+	FriendsFrame_OnShow(FriendsFrame);
 end
 
 function FriendsListFrame_OnShow(self)
@@ -1279,7 +1296,8 @@ function ToggleFriendsFrame(tab)
 		return;
 	end
 
-	if not IsOnGlueScreen() and not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.InGameFriendsList) then
+	local inGameFriendsListDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.IngameFriendsListDisabled);
+	if not IsOnGlueScreen() and inGameFriendsListDisabled then
 		return;
 	end
 
@@ -1296,7 +1314,7 @@ function ToggleFriendsFrame(tab)
 		end
 		PanelTemplates_SetTab(FriendsFrame, tab);
 		if ( FriendsFrame:IsShown() ) then
-			FriendsFrame_OnShow(self);
+			FriendsFrame_OnShow(FriendsFrame);
 		else
 			ShowUIPanel(FriendsFrame);
 		end
@@ -1334,7 +1352,7 @@ function OpenFriendsFrame(tab)
 	else
 		PanelTemplates_SetTab(FriendsFrame, tab);
 		if ( FriendsFrame:IsShown() ) then
-			FriendsFrame_OnShow(self);
+			FriendsFrame_OnShow(FriendsFrame);
 		else
 			ShowUIPanel(FriendsFrame);
 		end
@@ -1349,7 +1367,7 @@ end
 function ShowWhoPanel()
 	PanelTemplates_SetTab(FriendsFrame, 2);
 	if ( FriendsFrame:IsShown() ) then
-		FriendsFrame_OnShow(self);
+		FriendsFrame_OnShow(FriendsFrame);
 	else
 		ShowUIPanel(FriendsFrame);
 	end

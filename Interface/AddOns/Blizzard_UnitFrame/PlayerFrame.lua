@@ -315,7 +315,8 @@ function PlayerFrame_UpdatePvPStatus()
 	local pvpIcon = playerFrameTargetContextual.PVPIcon;
 	local prestigePortrait = playerFrameTargetContextual.PrestigePortrait;
 	local prestigeBadge = playerFrameTargetContextual.PrestigeBadge;
-	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.UnitFramePvPContextual) then
+	local unitFramePvPContextualDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.UnitFramePvPContextualDisabled);
+	if unitFramePvPContextualDisabled then
 		prestigePortrait:Hide();
 		prestigeBadge:Hide();
 		pvpIcon:Hide();
@@ -587,9 +588,12 @@ function PlayerFrame_ToVehicleArt(self, vehicleType)
 
 	-- Update health bar
 	healthBarContainer:SetWidth(118);
+	
 	if UNIT_FRAME_SHOW_HEALTH_ONLY then 
+		healthBar:SetHeight(32);
 		healthBarContainer:SetHeight(32);
 	else 
+		healthBar:SetHeight(20);
 		healthBarContainer:SetHeight(20);
 	end
 	healthBarContainer:SetPoint("TOPLEFT", 91, -40);
@@ -689,10 +693,12 @@ function PlayerFrame_ToPlayerArt(self)
 	healthBarContainer.HealthBarMask:SetPoint("TOPLEFT", healthBar, "TOPLEFT", -2, 6);
 
 	if UNIT_FRAME_SHOW_HEALTH_ONLY then
+		healthBar:SetHeight(32);
 		healthBarContainer:SetHeight(32);
 		healthBarContainer.HealthBarMask:SetAtlas("plunderstorm-ui-hud-unitframe-player-portraiton-bar-health-mask");
 		healthBarContainer.HealthBarMask:SetHeight(37);
 	else
+		healthBar:SetHeight(19);
 		healthBarContainer:SetHeight(19);
 		healthBarContainer.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Player-PortraitOn-Bar-Health-Mask");
 		healthBarContainer.HealthBarMask:SetHeight(31);

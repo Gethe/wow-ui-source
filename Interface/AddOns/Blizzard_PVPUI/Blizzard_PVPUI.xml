@@ -770,63 +770,66 @@
 		</Scripts>
 	</Button>
 
-	<Frame name="PVPWeeklyChestTemplate" virtual="true" useParentLevel="true" mixin="PVPWeeklyChestMixin">
-		<Size x="84" y="70"/>
+	<Cooldown name="HonorLevelDisplayTemplate" reverse="true" hideCountdownNumbers="true" rotation="180" mixin="PVPUIHonorLevelDisplayMixin" virtual="true">
+		<Size x="128" y="128"/>
 		<Anchors>
-			<Anchor point="TOP" y="-48"/>
+			<Anchor point="TOP" x="0" y="0"/>
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="FlairTexture" atlas="pvpqueue-chest-background">
-					<Size x="187" y="152"/>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="SpinTextureBottom" inherits="store-itemicon-border-glowspin" alpha="0.2" alphaMode="ADD">
-					<Size x="202" y="205"/>
+				<Texture parentKey="Background">
+					<Size x="95" y="95"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture parentKey="SpinTextureTop" inherits="store-itemicon-border-glowspin" alpha="0.7" alphaMode="ADD">
-					<Size x="202" y="205"/>
+				<Texture atlas="pvpqueue-sidebar-honorbar-background" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="CENTER"/>
+						<Anchor point="CENTER" x="0" y="-1"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="ChestTexture">
-					<Size x="187" y="152"/>
+				<FontString parentKey="LevelLabel" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="1"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="LevelBadge">
+					<Size x="69" y="69"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
-			</Layer>
-			<Layer level="HIGHLIGHT">
-				<Texture parentKey="Highlight" alphaMode="ADD" alpha=".2">
-					<Size x="187" y="152"/>
+				<Texture parentKey="FactionBadge">
+					<Size x="59" y="69"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate" hidden="true"/>
+			<Button parentKey="NextRewardLevel" inherits="PVPHonorRewardTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="-1"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<SwipeTexture file="Interface\PVPFrame\pvpqueue-sidebar-honorbar-fill"/>
 		<Scripts>
+			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+			<OnMouseUp method="OnMouseUp"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave function="GameTooltip_Hide"/>
-			<OnMouseUp method="OnMouseUp"/>
 		</Scripts>
-		<Animations>
-			<AnimationGroup parentKey="SpinAnim" looping="REPEAT">
-				<Rotation childKey="SpinTextureTop" order="1" duration="60" degrees="-360"/>
-			</AnimationGroup>
-		</Animations>
-	</Frame>
+	</Cooldown>
 
 	<Frame name="PVPRoleButtonTemplate" inherits="LFGRoleButtonWithShortageRewardTemplate" virtual="true">
 		<KeyValues>
@@ -1457,70 +1460,10 @@
 									</Layer>
 								</Layers>
 								<Frames>
-									<Frame parentKey="WeeklyChest" inherits="PVPWeeklyChestTemplate" useParentLevel="true" hidden="true">
-										<Size x="84" y="70"/>
-										<Anchors>
-											<Anchor point="TOP" y="-48"/>
-										</Anchors>
-									</Frame>
-									<Cooldown parentKey="HonorLevelDisplay" reverse="true" hideCountdownNumbers="true" rotation="180" mixin="PVPUIHonorLevelDisplayMixin">
-										<Size x="128" y="128"/>
+									<Cooldown parentKey="HonorLevelDisplay" inherits="HonorLevelDisplayTemplate">
 										<Anchors>
 											<Anchor point="TOP" x="0" y="-25"/>
 										</Anchors>
-										<Layers>
-											<Layer level="BACKGROUND">
-												<Texture parentKey="Background">
-													<Size x="95" y="95"/>
-													<Anchors>
-														<Anchor point="CENTER"/>
-													</Anchors>
-												</Texture>
-											</Layer>
-											<Layer level="BORDER">
-												<Texture atlas="pvpqueue-sidebar-honorbar-background" useAtlasSize="true">
-													<Anchors>
-														<Anchor point="CENTER" x="0" y="-1"/>
-													</Anchors>
-												</Texture>
-											</Layer>
-											<Layer level="ARTWORK">
-												<FontString parentKey="LevelLabel" inherits="GameFontNormal">
-													<Anchors>
-														<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="1"/>
-													</Anchors>
-												</FontString>
-												<Texture parentKey="LevelBadge">
-													<Size x="69" y="69"/>
-													<Anchors>
-														<Anchor point="CENTER"/>
-													</Anchors>
-												</Texture>
-												<Texture parentKey="FactionBadge">
-													<Size x="59" y="69"/>
-													<Anchors>
-														<Anchor point="CENTER"/>
-													</Anchors>
-												</Texture>
-											</Layer>
-										</Layers>
-										<Frames>
-											<Button parentKey="NextRewardLevel" inherits="PVPHonorRewardTemplate">
-												<Anchors>
-													<Anchor point="BOTTOM" x="0" y="-1"/>
-												</Anchors>
-											</Button>
-										</Frames>
-										<SwipeTexture file="Interface\PVPFrame\pvpqueue-sidebar-honorbar-fill"/>
-										<Scripts>
-											<OnLoad method="OnLoad"/>
-											<OnShow method="OnShow"/>
-											<OnHide method="OnHide"/>
-											<OnEvent method="OnEvent"/>
-											<OnMouseUp method="OnMouseUp"/>
-											<OnEnter method="OnEnter"/>
-											<OnLeave function="GameTooltip_Hide"/>
-										</Scripts>
 									</Cooldown>
 								</Frames>
 								<Scripts>
@@ -1528,25 +1471,15 @@
 								</Scripts>
 							</Frame>
 							<Frame parentKey="RatedPanel" mixin="PVPWeeklyRatedPanelMixin" setAllPoints="true" hidden="true">
-								<Layers>
-									<Layer level="ARTWORK">
-										<FontString parentKey="Label" inherits="GameFontNormal" text="RATED_PVP_WEEKLY_CHEST">
-											<Anchors>
-												<Anchor point="TOP" relativePoint="TOP" x="0" y="-12"/>
-											</Anchors>
-										</FontString>
-									</Layer>
-								</Layers>
 								<Frames>
-									<Frame parentKey="WeeklyChest" inherits="PVPWeeklyChestTemplate" useParentLevel="true" >
-										<Size x="84" y="70"/>
+									<Cooldown parentKey="HonorLevelDisplay" inherits="HonorLevelDisplayTemplate">
 										<Anchors>
-											<Anchor point="TOP" y="-48"/>
+											<Anchor point="TOP" x="0" y="-25"/>
 										</Anchors>
-									</Frame>
+									</Cooldown>
 									<Frame parentKey="Tier" inherits="PVPRatedTierTemplate">
 										<Anchors>
-											<Anchor point="TOP" x="0" y="-203"/>
+											<Anchor point="TOP" x="0" y="-70" relativeKey="$parent.HonorLevelDisplay" relativePoint="BOTTOM"/>
 										</Anchors>
 										<Layers>
 											<Layer level="ARTWORK">

@@ -73,10 +73,36 @@ function UIWidgetContainerMixin:OnUpdate(elapsed)
 	end
 end
 
-function DefaultWidgetLayout(widgetContainerFrame, sortedWidgets, skipContainerLayout)
+local BottomPoints = {
+	BOTTOM = true,
+	BOTTOMLEFT = true,
+	BOTTOMRIGHT = true,
+};
+
+local function IsBottomAnchored(verticalAnchorPoint)
+	return BottomPoints[verticalAnchorPoint] or false;
+end
+
+local RightPoints = {
+	RIGHT = true,
+	TOPRIGHT = true,
+	BOTTOMRIGHT = true,
+};
+
+local function IsRightAnchored(horizontalAnchorPoint)
+	return RightPoints[horizontalAnchorPoint] or false;
+end
+
+function DefaultWidgetLayout(widgetContainerFrame, sortedWidgets, skipContainerLayout, skipHorizontalRowPoolClear)
 	local horizontalRowContainer = nil; 
 
-	widgetContainerFrame.horizontalRowContainerPool:ReleaseAll();
+	if not skipHorizontalRowPoolClear then
+		widgetContainerFrame.horizontalRowContainerPool:ReleaseAll();
+	end
+
+	local verticalAnchorYOffset = IsBottomAnchored(widgetContainerFrame.verticalAnchorPoint) and widgetContainerFrame.verticalAnchorYOffset or -widgetContainerFrame.verticalAnchorYOffset;
+	local horizontalAnchorXOffset = IsRightAnchored(widgetContainerFrame.horizontalAnchorPoint) and -widgetContainerFrame.horizontalAnchorXOffset or widgetContainerFrame.horizontalAnchorXOffset;
+
 	local widgetContainerFrameLevel = widgetContainerFrame:GetFrameLevel();
 	local horizontalRowAnchorPoint = widgetContainerFrame.horizontalRowAnchorPoint or widgetContainerFrame.verticalAnchorPoint;
 	local horizontalRowRelativePoint = widgetContainerFrame.horizontalRowRelativePoint or widgetContainerFrame.verticalRelativePoint;
@@ -126,7 +152,7 @@ function DefaultWidgetLayout(widgetContainerFrame, sortedWidgets, skipContainerL
 			else
 				-- This is not the first widget in the set, so anchor it to the previous widget (or the horizontalRowContainer if that exists)
 				local relative = horizontalRowContainer or sortedWidgets[index - 1];
-				widgetFrame:SetPoint(widgetContainerFrame.verticalAnchorPoint, relative, widgetContainerFrame.verticalRelativePoint, 0, widgetContainerFrame.verticalAnchorYOffset);
+				widgetFrame:SetPoint(widgetContainerFrame.verticalAnchorPoint, relative, widgetContainerFrame.verticalRelativePoint, 0, verticalAnchorYOffset);
 
 				if horizontalRowContainer then
 					-- This widget is vertical, so horizontalRowContainer is done. Call layout on it and clear horizontalRowContainer
@@ -157,7 +183,7 @@ function DefaultWidgetLayout(widgetContainerFrame, sortedWidgets, skipContainerL
 				else 
 					-- This is not the first widget in the set, so anchor it to the previous widget (or the horizontalRowContainer if that exists)
 					local relative = horizontalRowContainer or sortedWidgets[index - 1];
-					newHorizontalRowContainer:SetPoint(horizontalRowAnchorPoint, relative, horizontalRowRelativePoint, 0, widgetContainerFrame.verticalAnchorYOffset);
+					newHorizontalRowContainer:SetPoint(horizontalRowAnchorPoint, relative, horizontalRowRelativePoint, 0, verticalAnchorYOffset);
 				end
 				widgetFrame:SetPoint(widgetContainerFrame.horizontalAnchorPoint, newHorizontalRowContainer);
 				newHorizontalRowContainer:AddChildWidget(widgetFrame);
@@ -170,7 +196,7 @@ function DefaultWidgetLayout(widgetContainerFrame, sortedWidgets, skipContainerL
 				local relative = sortedWidgets[index - 1];
 				horizontalRowContainer:AddChildWidget(widgetFrame);
 				widgetFrame:SetFrameLevel(widgetContainerFrameLevel + index);
-				widgetFrame:SetPoint(widgetContainerFrame.horizontalAnchorPoint, relative, widgetContainerFrame.horizontalRelativePoint, widgetContainerFrame.horizontalAnchorXOffset, 0);
+				widgetFrame:SetPoint(widgetContainerFrame.horizontalAnchorPoint, relative, widgetContainerFrame.horizontalRelativePoint, horizontalAnchorXOffset, 0);
 			end
 		end
 	end
@@ -236,7 +262,7 @@ function UIWidgetContainerMixin:RegisterForWidgetSet(widgetSetID, widgetLayoutFu
 	self:SetAttachedUnitAndType(attachedUnitInfo)
 
 	self.widgetSetLayoutDirection = self.forceWidgetSetLayoutDirection or widgetSetInfo.layoutDirection;
-	self.verticalAnchorYOffset = -widgetSetInfo.verticalPadding;
+	self.verticalAnchorYOffset = widgetSetInfo.verticalPadding;
 
 	if self.attachedUnit then
 		C_UIWidgetManager.RegisterUnitForWidgetUpdates(self.attachedUnit, self.attachedUnitIsGuid);

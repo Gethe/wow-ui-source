@@ -502,6 +502,7 @@ local StandardBaseMenuAPI =
 	"GetMinimumWidth",
 	"SetMaximumWidth",
 	"SetGridMode",
+	"SetScrollMode",
 };
 
 local RootMenuDescriptionProxyMixin;
@@ -514,7 +515,6 @@ do
 		"AddMenuReleasedCallback",
 		"DisableCompositor",
 		"DisableReacquireFrames",
-		"SetScrollMode",
 	};
 	tAppendAll(Funcs, StandardBaseMenuAPI);
 
@@ -830,8 +830,22 @@ do
 		return descriptionProxy:GetDefaultResponse(menuInputContext, menuInputButtonName);
 	end
 
+	local function SecureCanSelect(descriptionProxy)
+		return descriptionProxy:CanSelect();
+	end
+
 	function MenuElementDescriptionProxyMixin:Pick(menuInputContext, menuInputButtonName)
-		assert(menuInputContext, "MenuElementDescriptionProxyMixin:Pick() called without an input context.")
+		assert(menuInputContext, "MenuElementDescriptionProxyMixin:Pick() called without an input context.");
+
+		--[[
+		Pick() is not normally callable through a disabled button using the standard menu templates, however we need
+		to account for the case where Pick is called through custom implementations.
+		]]--
+		local canSelect = securecallfunction(SecureCanSelect, self);
+		if not canSelect then
+			return false;
+		end
+
 		--[[
 		If a responder callback is not set, then the menu will not change. Selecting a submenu root should 
 		never cause the menu to close.
@@ -981,8 +995,13 @@ local function ResetMenuElement(pool, frame, new)
 	if not new then
 		TryHideTooltip(frame);
 
-		-- Clear scripts prior to clearing anchors, otherwise the
-		-- OnLeave() script can be called.
+		--[[
+		Clear scripts to ensure they cannot be called when the pool removes this frame's anchors.
+		Any callback assigned to the menu description will be unavailable now that the
+		compositor has flushed the state associated with the frame. However, by the time
+		we reach this function, this frame should have already been explicitly hidden by the menu
+		system during close, causing the OnLeave to be called if it were necessary.
+		]]--
 		frame:SetScript("OnEnter", nil);
 		frame:SetScript("OnLeave", nil);
 		frame:SetParent(frameDummy);
@@ -1192,6 +1211,16 @@ function MenuMixin:MeasureFrameExtents()
 	return width, height, totalHeight;
 end
 
+local function SecureGetInset(menuFrame)
+	local inset = menuFrame:GetInset();
+	return inset.left, inset.top, inset.right, inset.bottom;
+end
+
+local function SecureGetChildExtentPadding(menuFrame)
+	local padding = menuFrame:GetChildExtentPadding();
+	return padding.width, padding.height;
+end
+
 function MenuMixin:PerformLayout()
 	--[[ 
 	GetTop() is returning inconsistently between openings despite it's anchor being fixed in space. 
@@ -1231,7 +1260,7 @@ function MenuMixin:PerformLayout()
 	local childMaxWidth, childMaxHeight, childTotalHeight = self:MeasureFrameExtents();
 	
 	-- To avoid cramping, an additional amount of padding can be added.
-	local childPadWidth, childPadHeight = menuFrame:GetChildExtentPadding();
+	local childPadWidth, childPadHeight = securecallfunction(SecureGetChildExtentPadding, menuFrame);
 	childMaxWidth = childMaxWidth + childPadWidth;
 
 	if self.menuDescription:HasGridLayout() then
@@ -1282,7 +1311,7 @@ function MenuMixin:PerformLayout()
 	end
 
 	-- Get the insets so that we can calculate fitting in the interior of the menu.
-	local left, top, right, bottom = menuFrame:GetInset();
+	local left, top, right, bottom = securecallfunction(SecureGetInset, menuFrame);
 
 	--[[
 	Children are assigned a uniform width for cursor hit tests. If either a minimum or maximum menu
@@ -1555,10 +1584,17 @@ function MenuMixin:Close()
 	
 	menuFrame.ScrollBox:RemoveDataProvider();
 	
+	-- All scripts must be finished before the compositor flushes our keys.
+
 	if self.onCloseCallback then
 		self.onCloseCallback(menuFrame);
 	end
 
+	-- Hide is necessary here to ensure any OnLeave scripts are fired on child frames before
+	-- the compositor flushes our keys.
+	menuFrame:Hide();
+
+	-- Warning! All state on menu and its children will be flushed.
 	self:DiscardChildFrames();
 
 	self.compositor:Detach();
@@ -1621,7 +1657,7 @@ function MenuProxyMixin:ClearScrollLayout()
 end
 
 function MenuProxyMixin:InitScrollLayout(childWidth, maxScrollExtent)
-	local left, top, right, bottom = self:GetInset();
+	local left, top, right, bottom = securecallfunction(SecureGetInset, self);
 	local scrollBarWidth = self.ScrollBar:GetWidth();
 	self.ScrollBox:SetPoint("TOPLEFT", left, -top);
 	self.ScrollBox:SetPoint("BOTTOMRIGHT", -(right + scrollBarWidth), bottom);
@@ -1651,6 +1687,10 @@ end
 
 function MenuProxyMixin:Close()
 	Menu.GetManager():CloseMenu(self);
+end
+
+function MenuProxyMixin:GetOwnerRegion()
+	return self.ownerRegion;
 end
 
 local MenuManagerMixin = CreateFromMixinsPrivate(ProxyConvertablePrivateMixin);
@@ -1741,19 +1781,27 @@ function MenuManagerMixin:RemoveMenu(menu)
 		return;
 	end
 
+	self:CollapseMenusUntilLevel(menu:GetLevel());
+
+	-- All scripts must be finished before the compositor flushes our keys.
+	-- Notify listeners that the menu is closing.
+	menu.menuDescription:GetMenuReleasedCallbacks():ExecuteRange(function(index, onReleased)
+		onReleased(proxy);
+	end);
+
+	--[[
+	Close the menu. On return this needs to have finished executing all supported scripts and
+	callbacks registered on the menu description object, as the compositor will have flushed our
+	keys.
+	]]--
+	menu:Close();
+	
 	--[[
 	The proxy for a menu must be manually removed because a pool frame is never
 	dereferenced and will always persist.
 	]]
 	local proxy = menu:ToProxy();
 	Proxies:RemoveProxy(proxy);
-
-	-- Notify listeners that the menu is closing.
-	menu.menuDescription:GetMenuReleasedCallbacks():ExecuteRange(function(index, onReleased)
-		onReleased(proxy);
-	end);
-
-	menu:Close();
 
 	-- Renable any scrolling we disabled when the menu was opened.
 	local data = self.disabledScrollRegionData;
@@ -1842,6 +1890,11 @@ local function AcquireMenuFrame(menuManager)
 	return menuManager.frameFactory:Create(nil, "MenuTemplateBase", ResetMenu);
 end
 
+local function SecureGenerate(proxy, menuDescription)
+	Mixin(proxy, menuDescription:GetMenuMixin());
+	proxy:Generate();
+end
+
 function MenuManagerMixin:AcquireMenu(params)
 	local menuDescription = params.menuDescription;
 
@@ -1880,8 +1933,7 @@ function MenuManagerMixin:AcquireMenu(params)
 	Important! After this Init() call, all value changes to this frame will be 
 	discarded once this frame is reclaimed.
 	--]]
-	Mixin(proxy, menuDescription:GetMenuMixin());
-	proxy:Generate();
+	securecallfunction(SecureGenerate, proxy, menuDescription);
 
 	local parent = GetAppropriateTopLevelParent();
 
@@ -1895,6 +1947,7 @@ function MenuManagerMixin:AcquireMenu(params)
 			strata = "TOOLTIP";
 		end
 	end
+	proxy.ownerRegion = ownerRegion;
 	proxy:SetFrameStrata(strata);
 
 	local window = parent:GetWindow();
@@ -2123,7 +2176,7 @@ function MenuManagerMixin:GenerateMenuInternal(params)
 		self:LeaveFrame(frame, menu);
 	end
 	
-	menu:Open(menuDescription, OnMouseDown, OnEnter, OnLeave);
+	securecallfunction(menu.Open, menu, menuDescription, OnMouseDown, OnEnter, OnLeave);
 	
 	local proxy = menu:ToProxy();
 
@@ -2168,37 +2221,41 @@ function MenuManagerMixin:GenerateMenuInternal(params)
 	self.menus:Insert(menu);
 	
 	--[[
-	Any scroll controller or SMF under the mouse is disabled once a menu is opened above it.
+	Any scroll controller or SMF under the mouse has scrolling disabled once a menu is opened above it.
 	The region will be renabled once the menu is closed.
 	]]
 	if level == 1 then
-		for index, focus in ipairs(GetMouseFoci()) do
-			if self.disabledScrollRegionData ~= nil then
-				break;
-			end
-
-			local region = focus;
-			while region do
-				if IsScrollController(region) or IsScrollingMessageFrame(region) then
-					region:SetScrollAllowed(false);
-					
-					self.disabledScrollRegionData = 
-					{
-						menu = menu, 
-						region = region,
-					};
-
-					break;
-				end
-
-				region = region:GetParent();
-			end
-		end
+		securecallfunction(self.DisableScrollableRegions, self, menu);
 	end
 
 	securecallfunction(SecureTaggedMenuOpened, menuDescription);
 
 	return menu;
+end
+
+function MenuManagerMixin:DisableScrollableRegions(menu)
+	for index, focus in ipairs(GetMouseFoci()) do
+		if self.disabledScrollRegionData ~= nil then
+			break;
+		end
+
+		local region = focus;
+		while region do
+			if IsScrollController(region) or IsScrollingMessageFrame(region) then
+				region:SetScrollAllowed(false);
+				
+				self.disabledScrollRegionData = 
+				{
+					menu = menu, 
+					region = region,
+				};
+
+				break;
+			end
+
+			region = region:GetParent();
+		end
+	end
 end
 
 function MenuManagerMixin:OpenMenuInternal(params)

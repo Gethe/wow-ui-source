@@ -7,5 +7,5 @@ local settings = {
 CampaignQuestObjectiveTrackerMixin = CreateFromMixins(QuestObjectiveTrackerMixin, settings);
 
 function CampaignQuestObjectiveTrackerMixin:ShouldDisplayQuest(quest)
-	return (quest:GetSortType() == QuestSortType.Campaign) and not quest:IsDisabledForSession();
+	return (quest:GetQuestClassification() == Enum.QuestClassification.Campaign) and not quest:IsDisabledForSession();
 end

@@ -1327,12 +1327,7 @@ function QueueStatusDropdown_AddLFGButtons(description, category)
 			local text = (category == LE_LFG_CATEGORY_WORLDPVP) and LEAVE_BATTLEGROUND or INSTANCE_PARTY_LEAVE;
 
 			if C_PartyInfo.IsPartyWalkIn() then
-				if C_PartyInfo.IsDelveComplete() then
-					text = INSTANCE_WALK_IN_LEAVE;
-				else
-					-- If in a delve and the delve is incomplete, don't show an option to leave.
-					return;
-				end
+				text = INSTANCE_WALK_IN_LEAVE;
 			end
 
 			description:CreateButton(text, function()

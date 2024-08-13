@@ -1,12 +1,13 @@
 local questOfferPinData =
 {
-	[QuestSortType.Normal] = 	{ level = 1, atlas = "QuestNormal", },
-	[QuestSortType.Daily] =		{ level = 2, atlas = "UI-QuestPoiRecurring-QuestBang", },
-	[QuestSortType.Calling] = 	{ level = 3, atlas = "Quest-DailyCampaign-Available", },
-	[QuestSortType.Meta] = 		{ level = 4, atlas = "quest-wrapper-available", },
-	[QuestSortType.Campaign] = 	{ level = 5, atlas = "Quest-Campaign-Available", },
-	[QuestSortType.Legendary] =	{ level = 6, atlas = "UI-QuestPoiLegendary-QuestBang", },
-	[QuestSortType.Important] =	{ level = 7, atlas = "importantavailablequesticon", },
+	[Enum.QuestClassification.Normal] = 	{ level = 1, atlas = "QuestNormal", },
+	[Enum.QuestClassification.Questline] = 	{ level = 1, atlas = "QuestNormal", },
+	[Enum.QuestClassification.Recurring] =	{ level = 2, atlas = "UI-QuestPoiRecurring-QuestBang", },
+	[Enum.QuestClassification.Meta] = 		{ level = 3, atlas = "quest-wrapper-available", },
+	[Enum.QuestClassification.Calling] = 	{ level = 4, atlas = "Quest-DailyCampaign-Available", },
+	[Enum.QuestClassification.Campaign] = 	{ level = 5, atlas = "Quest-Campaign-Available", },
+	[Enum.QuestClassification.Legendary] =	{ level = 6, atlas = "UI-QuestPoiLegendary-QuestBang", },
+	[Enum.QuestClassification.Important] =	{ level = 7, atlas = "importantavailablequesticon", },
 };
 
 local function GetMaxPinLevel()
@@ -107,10 +108,12 @@ end
 
 local function InitializeCommonQuestOfferData(info)
 	if info then
-		local sortType = QuestUtils_GetTaskSortType(info)
-		local pinData = questOfferPinData[sortType];
+		local questID = info.questID or info.questId;
+		local questClassification = C_QuestInfoSystem.GetQuestClassification(questID);
+		local pinData = questOfferPinData[questClassification];
 		if pinData then
-			info.questSortType = sortType;
+			info.questID = questID;
+			info.questClassification = questClassification;
 			info.pinLevel = pinData.level;
 			info.questIcon = pinData.atlas;
 			info.pinAlpha = info.isHidden and 0.5 or 1; -- TODO: Trivial quests need special icons, but kee the same atlas as normal.
@@ -456,10 +459,6 @@ end
 
 function QuestOfferPinMixin:GetSuperTrackData()
 	return Enum.SuperTrackingMapPinType.QuestOffer, self.questID;
-end
-
-function QuestOfferPinMixin:GetQuestType()
-    return POIButtonUtil.GetQuestTypeFromQuestSortType(self.questSortType);
 end
 
 QuestHubPinMixin = {};

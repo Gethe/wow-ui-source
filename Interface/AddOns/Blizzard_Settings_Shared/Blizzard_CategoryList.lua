@@ -39,7 +39,7 @@ function SettingsCategoryListButtonMixin:OnLoad()
 	self.Toggle:SetScript("OnClick", function(button, buttonName, down)
 		local initializer = self:GetElementData();
 		local category = initializer.data.category;
-		self:SetExpanded(not category.expanded);
+		self:SetExpanded(not category:IsExpanded());
 	end);
 end
 
@@ -72,32 +72,41 @@ function SettingsCategoryListButtonMixin:OnButtonStateChanged()
 	self:UpdateStateInternal(g_selectionBehavior:IsSelected(self));
 end
 
+local function SecureDoesCategoryHaveNewSetting(category)
+	local layout = SettingsPanel:GetLayout(category);
+	if not layout then
+		return false;
+	end
+
+	if not layout:IsVerticalLayout() then
+		return false;
+	end
+
+	for _, initializer in layout:EnumerateInitializers() do
+		local setting = initializer.data.setting;
+		if setting and IsNewSettingInCurrentVersion(setting:GetVariable()) then
+			return true;
+		end
+	end
+
+	return false;
+end
+
 function SettingsCategoryListButtonMixin:Init(initializer)
 	local category = initializer.data.category;
 
 	self.Label:SetText(category:GetName());
 	self.Toggle:SetShown(category:HasSubcategories());
-	
-	local anyNew = false;
-	local layout = SettingsPanel:GetLayout(category);
-	if layout and layout:IsVerticalLayout() then
-		for _, enumInitializer in layout:EnumerateInitializers() do
-			local setting = enumInitializer.data.setting;
-			if setting and IsNewSettingInCurrentVersion(setting:GetVariable()) then
-				anyNew = true;
-				break;
-			end
-		end
-	end
 
-	local supportsNewFeatures = self.NewFeature.BGLabel and self.NewFeature.Label;
-	if supportsNewFeatures then
+	local hasNewFeatureRegions = self.NewFeature.BGLabel and self.NewFeature.Label;
+	local showNewFeature = hasNewFeatureRegions and securecallfunction(SecureDoesCategoryHaveNewSetting, category);
+	if showNewFeature then
 		self.NewFeature.BGLabel:SetPoint("RIGHT", 0.5, -0.5);
 		self.NewFeature.Label:SetPoint("RIGHT", 0, 0);
 	end
-	self.NewFeature:SetShown(supportsNewFeatures and anyNew);
+	self.NewFeature:SetShown(showNewFeature);
 
-	self:SetExpanded(category.expanded);
+	self:SetExpanded(category:IsExpanded());
 	self:SetSelected(g_selectionBehavior:IsSelected(self));
 end
 
@@ -107,7 +116,7 @@ end
 
 function SettingsCategoryListButtonMixin:SetExpanded(expanded)
 	local initializer = self:GetElementData();
-	initializer.data.category.expanded = expanded;
+	initializer.data.category:SetExpanded(expanded);
 	
 	if expanded then
 		self.Toggle:SetNormalTexture("common-button-dropdown-open");
@@ -218,12 +227,29 @@ function SettingsCategoryListMixin:GetOrCreateGroup(groupText, order)
 	return tbl;
 end
 
+local function FindCategoryMatchingCategoryID(categoryID, category)
+	if category:GetID() == categoryID then
+		return category;
+	end
+
+	if category.subcategories then
+		for index, subcategory in ipairs(category.subcategories) do
+			local foundCategory = FindCategoryMatchingCategoryID(categoryID, subcategory);
+			if foundCategory then
+				return foundCategory;
+			end
+		end
+	end
+
+	return nil;
+end
+
 function SettingsCategoryListMixin:GetCategory(categoryID)
 	for _, tbl in ipairs(self.groups) do
 		for _, category in ipairs(tbl.categories) do
-			local id = securecallfunction(SettingsCategoryMixin.GetID, category);
-			if id == categoryID then
-				return category;
+			local foundCategory = securecallfunction(FindCategoryMatchingCategoryID, categoryID, category);
+			if foundCategory then
+				return foundCategory;
 			end
 		end
 	end
@@ -282,8 +308,8 @@ function SettingsCategoryListMixin:SetCurrentCategory(category)
 	-- We won't find the category if it is a subcategory whose parent is not expanded. Expand the parent
 	-- if necessary, then regenerate the list.
 	local parentCategory = category:GetParentCategory();
-	if parentCategory and not parentCategory.expanded then
-		parentCategory.expanded = true;
+	if parentCategory and not parentCategory:IsExpanded() then
+		parentCategory:SetExpanded(true);
 		self:CreateCategories();
 	end
 
@@ -309,38 +335,47 @@ function SettingsCategoryListMixin:GetCategorySet()
 	return self.categorySet;
 end
 
+local function SortCategoriesByName(lhs, rhs)
+	return strcmputf8i(lhs:GetName(), rhs:GetName()) < 0;
+end
+
+local function CreateSection(currentCategory, elementList, categories, canSort, indent)
+	if canSort then
+		table.sort(categories, SortCategoriesByName);
+	end
+
+	for index, category in ipairs(categories) do
+		if not category.redirectCategory then
+			local initializer = CreateCategoryButtonInitializer(category, indent);
+			table.insert(elementList, initializer);
+			if category == currentCategory then
+				g_selectionBehavior:SelectElementData(initializer);
+			end
+			if category:IsExpanded() then
+				canSort = category:ShouldSortAlphabetically();
+				CreateSection(currentCategory, elementList, category:GetSubcategories(), canSort, indent + 10);
+			end
+		end
+	end
+end
+
+local function CreateGroup(currentCategory, elementList, categories, categorySet, headerCounter, groupText)
+	if categorySet == Settings.CategorySet.Game then
+		if groupText then
+			local headerIndex = ((headerCounter() - 1) % 3) + 1;
+			table.insert(elementList, CreateHeaderInitializer(groupText, headerIndex));
+		end
+	end
+
+	local canSort = categorySet == Settings.CategorySet.AddOns;
+	local indent = 0;
+	CreateSection(currentCategory, elementList, categories, canSort, indent);
+end
+
 function SettingsCategoryListMixin:GenerateElementList()
 	local currentCategory = self:GetCurrentCategory();
 	local headerCounter = CreateCounter();
-
-	local function CreateSection(elementList, categories, indent)
-		for index, category in ipairs(categories) do
-			if not category.redirectCategory then
-				local initializer = CreateCategoryButtonInitializer(category, indent);
-				table.insert(elementList, initializer);
-				
-				if category == currentCategory then
-					g_selectionBehavior:SelectElementData(initializer);
-				end
-
-				if category.expanded then
-					CreateSection(elementList, category:GetSubcategories(), indent + 10);
-				end
-			end
-		end
-	end
-
-	local function CreateGroup(elementList, categories, groupText)
-		local indent = 0;
-		if self:GetCategorySet() == Settings.CategorySet.Game then
-			if groupText then
-				local headerIndex = ((headerCounter() - 1) % 3) + 1;
-				table.insert(elementList, CreateHeaderInitializer(groupText, headerIndex));
-			end
-		end
-
-		CreateSection(elementList, categories, indent);
-	end
+	local categorySet = self:GetCategorySet();
 
 	local elementList = {};
 
@@ -348,14 +383,13 @@ function SettingsCategoryListMixin:GenerateElementList()
 
 	for index, tbl in ipairs(self.groups) do
 		local groupText = tbl.groupText;
-
-		if tbl.categorySet == self:GetCategorySet() then
+		if tbl.categorySet == categorySet then
 			local categories = tbl.categories;
 			if createSpacer then
 				table.insert(elementList, CreateSpacerInitializer());
 			end
 
-			CreateGroup(elementList, categories, groupText);
+			CreateGroup(currentCategory, elementList, categories, categorySet, headerCounter, groupText);
 			createSpacer = true;
 		end
 	end

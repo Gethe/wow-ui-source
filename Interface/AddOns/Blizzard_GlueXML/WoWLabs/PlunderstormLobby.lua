@@ -84,7 +84,7 @@ function PlunderstormLobbyMixin:OnShow()
 
 	self:Update();
 
-	local isFrontEndChatEnabled = C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.FrontEndChat);
+	local isFrontEndChatEnabled = C_GameRules.IsGameRuleActive(Enum.GameRule.FrontEndChat);
 	GeneralDockManager:SetShown(isFrontEndChatEnabled);
 	ChatFrame1:SetShown(isFrontEndChatEnabled);
 end
@@ -213,7 +213,7 @@ function PlunderstormCustomizeCharacterButtonMixin:CustomizeCharacter(characterT
 end
 
 function PlunderstormCustomizeCharacterButtonMixin:OnClick()
-	CharacterSelect_CreateNewCharacter(Enum.CharacterCreateType.Normal);
+	CharacterSelectUtil.CreateNewCharacter(Enum.CharacterCreateType.Normal);
 end
 
 

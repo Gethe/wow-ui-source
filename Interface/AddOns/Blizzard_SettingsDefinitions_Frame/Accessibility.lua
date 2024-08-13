@@ -72,7 +72,7 @@ local function Register()
 			end
 
 			local defaultValue = 0;
-			local setting = Settings.RegisterProxySetting(category, "PROXY_QUEST_TEXT_CONTRAST", Settings.DefaultVarLocation,
+			local setting = Settings.RegisterProxySetting(category, "PROXY_QUEST_TEXT_CONTRAST",
 				Settings.VarType.Number, ENABLE_QUEST_TEXT_CONTRAST, defaultValue, GetValue, SetValue);
 
 			local initializer = Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_ENABLE_QUEST_TEXT_CONTRAST);
@@ -112,7 +112,7 @@ local function Register()
 		end
 
 		local defaultValue = false;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_SICKNESS", Settings.DefaultVarLocation, 
+		local setting = Settings.RegisterProxySetting(category, "PROXY_SICKNESS",
 			Settings.VarType.Boolean, MOTION_SICKNESS_CHECKBOX, defaultValue, GetValue, SetValue);
 		local initializer = Settings.CreateCheckbox(category, setting, OPTION_TOOLTIP_MOTION_SICKNESS_CHECKBOX);
 		initializer:AddSearchTags(MOTION_SICKNESS_CHECKBOX);
@@ -157,7 +157,7 @@ local function Register()
 		end
 
 		local defaultValue = 3;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_SICKNESS_SHAKE", Settings.DefaultVarLocation,
+		local setting = Settings.RegisterProxySetting(category, "PROXY_SICKNESS_SHAKE",
 			Settings.VarType.Number, ADJUST_MOTION_SICKNESS_SHAKE, defaultValue, GetValue, SetValue);
 		local initializer = Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_ADJUST_MOTION_SICKNESS_SHAKE);
 		initializer:AddSearchTags(MOTION_SICKNESS_CHECKBOX);
@@ -186,6 +186,9 @@ local function Register()
 	-- Enable Raid Self Highlight (Source in Combat)
 	layout:AddMirroredInitializer(Settings.RaidSelfHighlightInitializer);
 
+	-- Show Silhouette when Obscured (Source in Combat)
+	layout:AddMirroredInitializer(Settings.OccludedSilhouettePlayerInitializer);
+
 	-- Enable Spell Alert Opacity (Source in Combat)
 	if C_CVar.GetCVar("spellActivationOverlayOpacity") then
 		layout:AddMirroredInitializer(Settings.SpellAlertOpacityInitializer);
@@ -213,7 +216,7 @@ local function Register()
 		end
 		
 		local defaultValue = false;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_TARGET_TOOLTIP", Settings.DefaultVarLocation, 
+		local setting = Settings.RegisterProxySetting(category, "PROXY_TARGET_TOOLTIP",
 			Settings.VarType.Boolean, TARGET_TOOLTIP_OPTION, defaultValue, GetValue, SetValue);
 		Settings.CreateCheckbox(category, setting, OPTION_TOOLTIP_TARGET_TOOLTIP);
 	end
@@ -262,7 +265,7 @@ local function Register()
 		end
 
 		local defaultValue = 1;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_INTERACT_ICONS", Settings.DefaultVarLocation,
+		local setting = Settings.RegisterProxySetting(category, "PROXY_INTERACT_ICONS",
 			Settings.VarType.Number, INTERACT_ICONS_OPTION, defaultValue, GetValue, SetValue);
 		Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_INTERACT_ICONS);
 	end

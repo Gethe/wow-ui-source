@@ -110,9 +110,9 @@ function GameModeSettingsFrameMixin:UpdateButtons()
 	self:UpdateGameModeSelection();
 
 	local gameModeSelection = C_WoWLabsMatchmaking.GetPartyPlaylistEntry();
-	self.QueueContainer.Trio:SetSelected(gameModeSelection == 2);
-	self.QueueContainer.Duo:SetSelected(gameModeSelection == 1);
-	self.QueueContainer.Solo:SetSelected(gameModeSelection == 0);
+	self.QueueContainer.Trio:SetSelected(gameModeSelection == Enum.PartyPlaylistEntry.TrioGameMode);
+	self.QueueContainer.Duo:SetSelected(gameModeSelection == Enum.PartyPlaylistEntry.DuoGameMode);
+	self.QueueContainer.Solo:SetSelected(gameModeSelection == Enum.PartyPlaylistEntry.SoloGameMode);
 	self.QueueContainer:Layout();
 
 	self.GameReadyButton:Update();
@@ -134,11 +134,11 @@ end
 function GameModeSettingsFrameMixin:UpdateGameModeSelection()
 	local needsUpdate = false;
 	local gameModeSelection = C_WoWLabsMatchmaking.GetPartyPlaylistEntry();
-	if (gameModeSelection == 2) and not self.QueueContainer.Trio:IsEnabled() then
+	if (gameModeSelection == Enum.PartyPlaylistEntry.TrioGameMode) and not self.QueueContainer.Trio:IsEnabled() then
 		needsUpdate = true;
-	elseif (gameModeSelection == 1) and not self.QueueContainer.Duo:IsEnabled() then
+	elseif (gameModeSelection == Enum.PartyPlaylistEntry.DuoGameMode) and not self.QueueContainer.Duo:IsEnabled() then
 		needsUpdate = true;
-	elseif (gameModeSelection == 0) and not self.QueueContainer.Solo:IsEnabled() then
+	elseif (gameModeSelection == Enum.PartyPlaylistEntry.SoloGameMode) and not self.QueueContainer.Solo:IsEnabled() then
 		needsUpdate = true;
 	end
 
@@ -296,13 +296,13 @@ function MatchmakingQueueFrameMixin:SetWaiting(waiting)
 end
 
 function MatchmakingQueueFrameMixin:SetSquadSize(squadSize)
-	if squadSize == 0 then
+	if squadSize == Enum.PartyPlaylistEntry.Solo then
 		self.QueueSquadSize:SetText(WOWLABS_FIND_GAME_SOLO);
 		self.QueueTimerSpinner.QueueSizeIcon:SetAtlas("plunderstorm-glues-queue-pending-spinner-front-solo");
-	elseif squadSize == 1 then
+	elseif squadSize == Enum.PartyPlaylistEntry.Duo then
 		self.QueueSquadSize:SetText(WOWLABS_FIND_GAME_DUO);
 		self.QueueTimerSpinner.QueueSizeIcon:SetAtlas("plunderstorm-glues-queue-pending-spinner-front-duo");
-	elseif squadSize == 2 then
+	elseif squadSize == Enum.PartyPlaylistEntry.Trio then
 		self.QueueSquadSize:SetText(WOWLABS_FIND_GAME_TRIO);
 		self.QueueTimerSpinner.QueueSizeIcon:SetAtlas("plunderstorm-glues-queue-pending-spinner-front-trio");
 	else -- fallback case	

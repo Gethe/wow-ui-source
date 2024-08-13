@@ -81,15 +81,7 @@ end
 
 function WorldMapFilterMixin:SetTrackingFilter(set)
 	assertsafe(self.minimapTrackingFilter);
-	local filter = self.minimapTrackingFilter;
-
-	for id = 1, C_Minimap.GetNumTrackingTypes() do
-		local filterInfo = C_Minimap.GetTrackingFilter(id);
-		if filterInfo and filterInfo.filterID == filter then
-			C_Minimap.SetTracking(id, set);
-			return;
-		end
-	end
+	MinimapUtil.SetTrackingFilterByFilterID(self.minimapTrackingFilter, set);
 end
 
 function WorldMapFilterMixin:Get()
@@ -126,16 +118,16 @@ function WorldMapFilterMixin:ResetToDefault()
 	end
 end
 
-WorldMapTrackingOptionsButtonMixin = CreateFromMixins(WowDropdownFilterMixin);
+WorldMapTrackingOptionsButtonMixin = CreateFromMixins(WowDropdownFilterBehaviorMixin);
 
 function WorldMapTrackingOptionsButtonMixin:OnLoad()
-	WowDropdownFilterMixin.OnLoad(self);
+	WowDropdownFilterBehaviorMixin.OnLoad(self);
 
 	self:BuildFilterTable();
 end
 
 function WorldMapTrackingOptionsButtonMixin:OnShow()
-	WowDropdownFilterMixin.OnShow(self);
+	WowDropdownFilterBehaviorMixin.OnShow(self);
 
 	self:SetupMenu();
 
@@ -222,7 +214,16 @@ function WorldMapTrackingOptionsButtonMixin:SetupMenu()
 		AddFilter(rootDescription, "showDelveEntrancesOnMap");
 		AddFilter(rootDescription, "showTamers");
 		AddFilter(rootDescription, "questPOILocalStory");
-		AddFilter(rootDescription, "trivialQuests");
+		
+		local trivialQuestsFilter = AddFilter(rootDescription, "trivialQuests");
+		trivialQuestsFilter:SetOnEnter(function(button)
+			GameTooltip:SetOwner(button.fontString, "ANCHOR_BOTTOMLEFT", -22, 40);
+			GameTooltip_AddHighlightLine(GameTooltip, TRIVIAL_QUESTS_FILTER_DESCRIPTION);
+			GameTooltip:Show();
+		end);
+		trivialQuestsFilter:SetOnLeave(function(button)
+			GameTooltip_Hide();
+		end);
 
 		local accountCompletedQuestsFilter = AddFilter(rootDescription, "showAccountCompletedQuests");
 		accountCompletedQuestsFilter:AddInitializer(function(button, description, menu)

@@ -9,10 +9,6 @@ Shared\Localization.lua
 AchievementDisplayFrame.xml
 RewardTrackTemplates.xml
 ItemDisplay.xml
-MoneyFrame.lua
-MoneyFrame.xml
-MoneyInputFrame.lua
-MoneyInputFrame.xml
 CustomBindingManager.lua
 CustomBindingHandler.lua
 Mainline\TutorialFrame.lua
@@ -75,7 +71,6 @@ GhostFrame.xml
 Mainline\StreamingFrame.lua
 Mainline\StreamingFrame.xml
 IconIntroAnimation.lua
-WoWLabs\IconIntroAnimation.lua
 IconIntroAnimation.xml
 Timer.lua
 Timer.xml

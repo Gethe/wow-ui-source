@@ -15,7 +15,7 @@
 	</AnimationGroup>
 
     <!-- Button Panel Template -->
-    <Frame name="DelvesDashboardButtonPanelFrame" virtual="true">
+    <Frame name="DelvesDashboardButtonPanelFrame" mixin="DelvesDashboardButtonPanelFrameMixin" virtual="true">
 		<KeyValues>
 			<!-- If true, this button panel frame will use a highlighted background -->
 			<KeyValue type="boolean" key="isCompanionButtonPanelFrame" value="false"/> 
@@ -38,13 +38,17 @@
                     </Anchors>
                 </FontString>
                 <FontString parentKey="PanelDescription" inherits="GameFontNormalMed2" wordwrap="true" justifyV="TOP">
-                    <Size x="170" y="60"/>
+                    <Size x="160" y="55"/>
                     <Anchors>
-                        <Anchor point="TOP" relativeKey="$parent.PanelTitle" relativePoint="BOTTOM" y="3"/>
+                        <Anchor point="TOP" relativeKey="$parent.PanelTitle" relativePoint="BOTTOM" y="6"/>
                     </Anchors>
                 </FontString>
             </Layer>
         </Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
     </Frame>
 
     <!-- Reputation Threshold Templates -->
@@ -145,13 +149,13 @@
 					</Layer>
 					<Layer level="ARTWORK">
 						<Texture parentKey="Icon">
-                            <Size x="48" y="48"/>
+                            <Size x="50" y="50"/>
 							<Anchors>
 								<Anchor point="CENTER" x="0" y="0"/>
 							</Anchors>
 						</Texture>
                         <MaskTexture parentKey="CircleMask" atlas="CircleMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
-							<Size x="40" y="40"/>
+							<Size x="48" y="44"/>
 							<Anchors>
 								<Anchor point="CENTER" x="-1" y="0"/>
 							</Anchors>
@@ -212,11 +216,11 @@
             </Layer>
 
             <Layer level="ARTWORK">
-                <FontString parentKey="ReputationBarTitle" inherits="GameFontHighlight">
-                    <Size x="300" y="25"/>
+                <FontString parentKey="ReputationBarTitle" inherits="GameFontHighlight" justifyH="LEFT">
+                    <Size x="475" y="25"/>
                     <Anchors>
 						<Anchor point="TOP" y="-55"/>
-						<Anchor point="LEFT" x="30"/>
+						<Anchor point="LEFT" x="35"/>
                     </Anchors>
                 </FontString>
             </Layer>
@@ -225,7 +229,7 @@
             <!-- Reputation ThresholdBar -->
 			<StatusBar parentKey="ThresholdBar" frameBuffer="true">
 				<BarTexture parentKey="BarFill" atlas="delves-dashboard-bar-fill"/>
-				<Size x="600" y="25"/>
+				<Size x="475" y="25"/>
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.ReputationBarTitle" relativePoint="BOTTOM"/>
                     <Anchor point="LEFT" x="30"/>
@@ -233,7 +237,7 @@
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture parentKey="BarBackgroundGlow" atlas="delves-dashboard-bar-background-glow" alpha="0">
-                            <Size x="600" y="25"/>
+                            <Size x="475" y="25"/>
 							<Anchors>
 								<Anchor point="CENTER" x="0" y="0"/>
 							</Anchors>
@@ -241,7 +245,7 @@
 					</Layer>
 					<Layer level="BACKGROUND" textureSubLevel="1">
 						<Texture parentKey="BarBackground" atlas="delves-dashboard-bar-background">
-                            <Size x="610" y="25"/>
+                            <Size x="485" y="25"/>
 							<Anchors>
 								<Anchor point="CENTER" x="8" y="0"/>
 							</Anchors>
@@ -249,7 +253,7 @@
 					</Layer>
 					<Layer level="OVERLAY">
 						<Texture parentKey="BarBorder" atlas="delves-dashboard-bar-border">
-                            <Size x="612" y="28"/>
+                            <Size x="487" y="28"/>
 							<Anchors>
 								<Anchor point="CENTER" x="7" y="-1"/>
 							</Anchors>
@@ -257,7 +261,7 @@
 					</Layer>
 					<Layer level="OVERLAY" textureSubLevel="1">
 						<Texture parentKey="BarBorderGlow" atlas="delves-dashboard-bar-border-glow" alphaMode="ADD" alpha="0">
-                            <Size x="612" y="28"/>
+                            <Size x="487" y="28"/>
 							<Anchors>
 								<Anchor point="CENTER" x="7" y="-1"/>
 							</Anchors>
@@ -265,7 +269,7 @@
 					</Layer>
 					<Layer level="OVERLAY">
 						<Texture parentKey="BarFillGlow" atlas="delves-dashboard-bar-fill-glow" alphaMode="ADD" alpha="0">
-                             <Size x="600" y="25"/>
+                             <Size x="475" y="25"/>
 							<Anchors>
 								<Anchor point="LEFT"/>
 								<Anchor point="RIGHT"/>
@@ -304,7 +308,7 @@
             <!-- Button Panels -->
             <Frame parentKey="ButtonPanelLayoutFrame" inherits="HorizontalLayoutFrame">
                 <KeyValues>
-                    <KeyValue key="spacing" value="25" type="number"/>
+                    <KeyValue key="spacing" value="5" type="number"/>
                 </KeyValues>
                 <Anchors>
                     <Anchor point="BOTTOM" y="15"/>
@@ -365,30 +369,41 @@
                             <Frame parentKey="GreatVaultButton" mixin="GreatVaultButtonMixin">
                                 <Size x="84" y="70"/>
                                 <Anchors>
-                                    <Anchor point="CENTER" y="-30"/>
+                                    <Anchor point="CENTER" x="-1" y="-20"/>
                                 </Anchors>
                                 <Layers>
                                     <Layer level="ARTWORK">
-                                        <Texture parentKey="ChestTexture">
-                                            <Size x="195" y="184"/>
+                                        <Texture parentKey="ChestTexture" scale="0.65">
                                             <Anchors>
                                                 <Anchor point="CENTER"/>
                                             </Anchors>
                                         </Texture>
                                     </Layer>
                                     <Layer level="HIGHLIGHT">
-                                        <Texture parentKey="Highlight" alphaMode="ADD" alpha=".2">
-                                            <Size x="187" y="152"/>
+                                        <Texture parentKey="Highlight" alphaMode="ADD" alpha=".2" scale="0.65">
                                             <Anchors>
                                                 <Anchor point="CENTER"/>
                                             </Anchors>
                                         </Texture>
                                     </Layer>
+									<Layer level="OVERLAY">
+										<Texture parentKey="AnimTexture" atlas="gficon-chest-evergreen-greatvault-collect" useAtlasSize="true" alphaMode="ADD" scale="0.65">
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+											<Animations>
+												<AnimationGroup parentKey="Anim" looping="REPEAT">
+													<Alpha startDelay="0" duration="1" order="1" fromAlpha="0" toAlpha="0.5"/>
+													<Alpha startDelay="1" duration="1" order="1" fromAlpha="0.5" toAlpha="0"/>
+												</AnimationGroup>
+											</Animations>
+										</Texture>
+									</Layer>
                                 </Layers>
                                 <Scripts>
                                     <OnShow method="OnShow"/>
                                     <OnEnter method="OnEnter"/>
-                                    <OnLeave function="GameTooltip_Hide"/>
+                                    <OnLeave method="OnLeave"/>
                                     <OnMouseUp method="OnMouseUp"/>
                                 </Scripts>
                             </Frame>

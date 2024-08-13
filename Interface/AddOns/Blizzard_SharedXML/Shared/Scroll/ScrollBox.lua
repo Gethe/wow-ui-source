@@ -843,13 +843,23 @@ function ScrollBoxMixin:Update(forceLayout)
 	if self:IsUpdateLocked() then
 		return;
 	end
-	self:SetUpdateLocked(true);
 
+	local view = self:GetView();
+	if not view then
+		return;
+	end
+
+	if not view:IsInitialized() then
+		return;
+	end
+
+	self:SetUpdateLocked(true);
+	
 	if forceLayout then
 		self:Layout();
 	end
 
-	self:SetScrollTargetOffset(self:GetDerivedScrollOffset());
+	self:SetScrollTargetOffset(self:GetDerivedScrollOffset() - view:GetDataScrollOffset(self));
 
 	self:SetUpdateLocked(false);
 end

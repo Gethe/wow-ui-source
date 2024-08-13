@@ -573,6 +573,8 @@ function TalentButtonBaseMixin:CalculateVisualState()
 		return TalentButtonUtil.BaseVisualState.Invisible;
 	elseif self:IsRefundInvalid() then
 		return TalentButtonUtil.BaseVisualState.RefundInvalid;
+	elseif self:IsDisplayError() then
+		return TalentButtonUtil.BaseVisualState.DisplayError;
 	elseif self:IsMaxed() then
 		return TalentButtonUtil.BaseVisualState.Maxed;
 	elseif self:IsSelectable() then
@@ -663,6 +665,17 @@ end
 function TalentButtonBaseMixin:IsLocked()
 	-- Override in your derived mixin as desired.
 	return not self.nodeInfo or not self.nodeInfo.meetsEdgeRequirements or self:GetTalentFrame():IsLocked();
+end
+
+function TalentButtonBaseMixin:IsDisplayError()
+	-- Override in your derived mixin as desired.
+
+	-- The player must spent at least one point into the talent before it can be visually displayed as an error.
+	if not self:HasProgress() then
+		return false;
+	end
+
+	return self.nodeInfo and self.nodeInfo.isDisplayError;
 end
 
 function TalentButtonBaseMixin:IsCascadeRepurchasable()
@@ -845,6 +858,7 @@ TalentButtonArtMixin.ArtSet = {
 		maxed = "talents-node-square-yellow",
 		locked = "talents-node-square-locked",
 		refundInvalid = "talents-node-square-red",
+		displayError = "talents-node-square-red",
 		glow = "talents-node-square-greenglow",
 		ghost = "talents-node-square-ghost",
 		spendFont = "SystemFont16_Shadow_ThickOutline",
@@ -858,6 +872,7 @@ TalentButtonArtMixin.ArtSet = {
 		selectable = "talents-node-circle-green",
 		maxed = "talents-node-circle-yellow",
 		refundInvalid = "talents-node-circle-red",
+		displayError = "talents-node-circle-red",
 		locked = "talents-node-circle-locked",
 		glow = "talents-node-circle-greenglow",
 		ghost = "talents-node-circle-ghost",
@@ -872,6 +887,7 @@ TalentButtonArtMixin.ArtSet = {
 		selectable = "talents-node-choice-green",
 		maxed = "talents-node-choice-yellow",
 		refundInvalid = "talents-node-choice-red",
+		displayError = "talents-node-choice-red",
 		locked = "talents-node-choice-locked",
 		glow = "talents-node-choice-greenglow",
 		ghost = "talents-node-choice-ghost",
@@ -886,6 +902,7 @@ TalentButtonArtMixin.ArtSet = {
 		selectable = "talents-node-choiceflyout-square-green",
 		maxed = "talents-node-choiceflyout-square-yellow",
 		refundInvalid = "talents-node-choiceflyout-square-red",
+		displayError = "talents-node-choiceflyout-square-red",
 		locked = "talents-node-choiceflyout-square-locked",
 		glow = "talents-node-choiceflyout-square-greenglow",
 		ghost = "talents-node-choiceflyout-square-ghost",
@@ -900,6 +917,7 @@ TalentButtonArtMixin.ArtSet = {
 		selectable = "talents-node-choiceflyout-circle-green",
 		maxed = "talents-node-choiceflyout-circle-yellow",
 		refundInvalid = "talents-node-choiceflyout-circle-red",
+		displayError = "talents-node-choiceflyout-circle-red",
 		locked = "talents-node-choiceflyout-circle-locked",
 		glow = "talents-node-choiceflyout-circle-greenglow",
 		ghost = "talents-node-choiceflyout-circle-ghost",
@@ -936,8 +954,9 @@ function TalentButtonArtMixin:ApplyVisualState(visualState)
 	MixinUtil.CallMethodSafe(self.SpendText, "SetTextColor", r, g, b);
 
 	local isRefundInvalid = (visualState == TalentButtonUtil.BaseVisualState.RefundInvalid);
-	local disabledColor = isRefundInvalid and DIM_RED_FONT_COLOR or WHITE_FONT_COLOR;
-	self.Icon:SetVertexColor(disabledColor:GetRGBA());
+	local isDisplayError = (visualState == TalentButtonUtil.BaseVisualState.DisplayError);
+	local iconVertexColor = (isRefundInvalid or isDisplayError) and DIM_RED_FONT_COLOR or WHITE_FONT_COLOR;
+	self.Icon:SetVertexColor(iconVertexColor:GetRGBA());
 
 	local isGated = (visualState == TalentButtonUtil.BaseVisualState.Gated);
 	MixinUtil.CallMethodSafe(self.DisabledOverlay, "SetAlpha", (isGated and 0.7) or (isRefundInvalid and RefundInvalidOverlayAlpha) or 0.25)
@@ -978,6 +997,8 @@ function TalentButtonArtMixin:UpdateStateBorder(visualState)
 
 	if (visualState == TalentButtonUtil.BaseVisualState.RefundInvalid) then
 		SetAtlas(self.artSet.refundInvalid);
+	elseif (visualState == TalentButtonUtil.BaseVisualState.DisplayError) then
+		SetAtlas(self.artSet.displayError);
 	elseif (visualState == TalentButtonUtil.BaseVisualState.Gated) then
 		SetAtlas(self.artSet.locked);
 	elseif (visualState == TalentButtonUtil.BaseVisualState.Selectable) then
@@ -1428,6 +1449,22 @@ function TalentButtonSelectMixin:IsMaxed()
 	-- Overrides TalentButtonBaseMixin.
 
 	return self:HasSelectedEntryID();
+end
+
+function TalentButtonSelectMixin:IsDisplayError()
+	-- Overrides TalentButtonBaseMixin.
+
+	-- If one of the entries has been selected and that entry is in the DisplayError state this node
+	-- should also be in the DisplayError state.
+	if self:HasSelectedEntryID() then
+		local talentFrame = self:GetTalentFrame();
+		local selectedEntryInfo = talentFrame:GetAndCacheEntryInfo(self:GetSelectedEntryID());
+		if selectedEntryInfo and selectedEntryInfo.isDisplayError then
+			return true;
+		end
+	end
+
+	return TalentButtonBaseMixin.IsDisplayError(self);
 end
 
 function TalentButtonSelectMixin:GetSpellID()

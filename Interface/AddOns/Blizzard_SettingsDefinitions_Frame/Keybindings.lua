@@ -246,7 +246,7 @@ local function Register()
 		end
 
 		local defaultValue = Settings.CannotDefault;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_CHARACTER_SPECIFIC_BINDINGS", Settings.DefaultVarLocation,
+		local setting = Settings.RegisterProxySetting(category, "PROXY_CHARACTER_SPECIFIC_BINDINGS",
 			Settings.VarType.Boolean, CHARACTER_SPECIFIC_KEYBINDINGS, defaultValue, GetValue, SetValue);
 		local initializer = Settings.CreateCheckbox(category, setting, CHARACTER_SPECIFIC_KEYBINDING_TOOLTIP);
 		

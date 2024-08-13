@@ -110,6 +110,11 @@ function PlayerSpellsUtil.TogglePlayerSpellsFrame(suggestedTab, inspectUnit)
 
 	CheckLoadPlayerSpellsFrame();
 
+	-- During Class_ChangeSpec tutorial, force to open to the Specializations tab when no other specific tab is specified.
+	if not suggestedTab and PlayerSpellsFrame:ShouldOpenToSpecTab() then
+		suggestedTab = PlayerSpellsUtil.FrameTabs.ClassSpecializations;
+	end
+
 	local alreadyShowing = PlayerSpellsFrame:IsShown()
 							and (not suggestedTab or PlayerSpellsFrame:IsFrameTabActive(suggestedTab));
 

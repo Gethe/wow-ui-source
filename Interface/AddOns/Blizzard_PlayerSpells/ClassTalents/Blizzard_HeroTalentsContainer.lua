@@ -57,8 +57,45 @@ function HeroTalentsContainerMixin:HasAnythingToDisplay()
 	return self:IsDisplayingActiveHeroSpec() or self:IsDisplayingHeroSpecChoices() or self:IsDisplayingPreviewSpecs();
 end
 
+function HeroTalentsContainerMixin:IsActiveSubTreeMaxed()
+	local function IsButtonInActiveSubTree(talentButton)
+		return self.activeSubTreeInfo and talentButton:GetNodeSubTreeID() == self.activeSubTreeInfo.ID;
+	end
+
+	local talentFrame = self:GetTalentFrame();
+	for talentButton in talentFrame:EnumerateAllTalentButtons() do
+		if IsButtonInActiveSubTree(talentButton) and not talentButton:IsMaxed() then
+			return false;
+		end
+	end
+
+	return true;
+end
+
 function HeroTalentsContainerMixin:ShouldAllowCollapsing()
-	return self:IsDisplayingActiveHeroSpec() and not self:IsInspecting() and not self.CurrencyFrame:IsShown() and not self.anyActiveSubTreeMatches;
+	if not self:IsDisplayingActiveHeroSpec() then
+		return false;
+	end
+
+	if self:IsInspecting() then
+		return false;
+	end
+
+	if self.CurrencyFrame:IsShown() then
+		return false;
+	end
+
+	-- Don't allow collapsing while using the search filter.
+	if self.anyActiveSubTreeMatches then
+		return false;
+	end
+
+	-- Don't allow collapsing until the entire subtree has been filled out.
+	if not self:IsActiveSubTreeMaxed() then
+		return false;
+	end
+
+	return true;
 end
 
 function HeroTalentsContainerMixin:MarkHeroTalentUIDirty()
@@ -308,7 +345,11 @@ function HeroTalentsContainerMixin:UpdateSearchDisplay(skipCheckingCollapseState
 				if nodeInfo.subTreeActive then
 					self.anyActiveSubTreeMatches = true;
 				elseif not bestInactiveSubTreeMatch or nodeMatchType > bestInactiveSubTreeMatch then
-					bestInactiveSubTreeMatch = nodeMatchType;
+					-- For nodes not in the active sub tree, ensure the node is contained within one
+					-- of the sub trees for the current spec.
+					if tContains(self.availableHeroSpecSubTreeIDs, nodeInfo.subTreeID) then
+						bestInactiveSubTreeMatch = nodeMatchType;
+					end
 				end
 			end
 		end

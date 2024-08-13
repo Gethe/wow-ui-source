@@ -8,6 +8,24 @@
 			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</ItemButton>
+	<Frame name="ProfessionsCrafterOrderRewardTooltipTemplate" mixin="ProfessionsCrafterOrderRewardTooltipMixin" virtual="true">
+		<Frames>
+			<ItemButton parentKey="Reward" inherits="ProfessionsCrafterOrderRewardTemplate">
+				<Anchors>
+					<Anchor point="LEFT"/>
+				</Anchors>
+			</ItemButton>
+		</Frames>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="RewardName" inherits="GameFontNormal" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Reward" relativePoint="RIGHT" x="6"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
 
 	<Frame name="ProfessionsCrafterOrderViewTemplate" mixin="ProfessionsCrafterOrderViewMixin" setAllPoints="true" virtual="true">
 		<Scripts>
@@ -76,7 +94,7 @@
 						<FontString parentKey="TimeRemainingTitle" inherits="GameFontNormal" justifyH="RIGHT" text="TIME_REMAINING">
 							<Size x="130" y="15"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.FinalTipTitle" relativePoint="BOTTOMLEFT" x="0" y="-40"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent" relativePoint="BOTTOMRIGHT" x="-80" y="50"/>
 							</Anchors>
 						</FontString>
 						<FontString parentKey="TimeRemainingValue" inherits="GameFontHighlight" justifyH="LEFT">
@@ -258,7 +276,7 @@
 										<Anchor point="LEFT" x="30"/>
 									</Anchors>
 								</Texture>
-								<FontString parentKey="RewardText" inherits="GameFontNormal" text="Rewards:">
+								<FontString parentKey="RewardText" inherits="GameFontNormal" text="PROFESSIONS_CRAFTING_ORDER_REWARDS">
 									<Anchors>
 										<Anchor point="LEFT" relativeKey="$parent.RewardIcon" relativePoint="RIGHT" x="5"/>
 									</Anchors>

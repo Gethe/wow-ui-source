@@ -7,6 +7,15 @@ local GuildInfo =
 	Functions =
 	{
 		{
+			Name = "AreGuildEventsEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CanEditOfficerNote",
 			Type = "Function",
 

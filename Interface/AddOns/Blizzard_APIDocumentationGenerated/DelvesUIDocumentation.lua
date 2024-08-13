@@ -201,6 +201,16 @@ local DelvesUI =
 			},
 		},
 		{
+			Name = "RequestPartyEligibilityForDelveTiers",
+			Type = "Function",
+			Documentation = { "Queries private party members to see what level they have unlocked for the Delve. Ineligible members are added to the tooltip of dropdown entries." },
+
+			Arguments =
+			{
+				{ Name = "gossipOption", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "SaveSeenCuriosBySlotType",
 			Type = "Function",
 
@@ -221,9 +231,33 @@ local DelvesUI =
 			Documentation = { "Signaled when SpellScript calls change the data for players/parties owning a delve or when the delve is shut down." },
 		},
 		{
+			Name = "DelvesAccountDataElementChanged",
+			Type = "Event",
+			LiteralName = "DELVES_ACCOUNT_DATA_ELEMENT_CHANGED",
+			Documentation = { "Signaled when player account data element(s) have changed. This drives curio ranks, and the UI should update when this is sent." },
+		},
+		{
+			Name = "PartyEligibilityForDelveTiersChanged",
+			Type = "Event",
+			LiteralName = "PARTY_ELIGIBILITY_FOR_DELVE_TIERS_CHANGED",
+			Documentation = { "Signaled when responses come in from RequestPartyEligibilityForDelveTiers." },
+			Payload =
+			{
+				{ Name = "playerName", Type = "string", Nilable = false },
+				{ Name = "maxEligibleLevel", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "ShowDelvesCompanionConfigurationUI",
+			Type = "Event",
+			LiteralName = "SHOW_DELVES_COMPANION_CONFIGURATION_UI",
+			Documentation = { "Signaled when SpellScript indicates that a curio has been learned or upgraded. Will show the companion config UI." },
+		},
+		{
 			Name = "ShowDelvesDisplayUI",
 			Type = "Event",
 			LiteralName = "SHOW_DELVES_DISPLAY_UI",
+			Documentation = { "Signaled when the UI needs to display the Delves dashbaord." },
 		},
 		{
 			Name = "WalkInDataUpdate",

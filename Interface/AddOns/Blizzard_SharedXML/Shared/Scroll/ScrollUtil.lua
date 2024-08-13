@@ -476,8 +476,12 @@ function SelectionBehaviorMixin:SelectOffsetElementData(offset, predicate)
 	end
 end
 
+local function SecureSelectElementData(behavior, elementData)
+	behavior:SetElementDataSelected_Internal(elementData, true);
+end
+
 function SelectionBehaviorMixin:SelectElementData(elementData)
-	self:SetElementDataSelected_Internal(elementData, true);
+	securecallfunction(SecureSelectElementData, self, elementData);
 end
 
 function SelectionBehaviorMixin:SelectElementDataByPredicate(predicate)

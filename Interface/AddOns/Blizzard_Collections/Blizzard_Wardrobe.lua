@@ -3022,6 +3022,10 @@ function WardrobeSetsTransmogModelMixin:OnEnter()
 end
 
 function WardrobeSetsTransmogModelMixin:RefreshTooltip()
+	if not self.setID then
+		return;
+	end
+
 	local totalQuality = 0;
 	local numTotalSlots = 0;
 	local waitingOnQuality = false;

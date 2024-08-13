@@ -285,14 +285,39 @@ function ProfessionsRecipeSchematicFormMixin:GetRecipeOperationInfo()
 			return C_TradeSkillUI.GetGatheringOperationInfo(recipeInfo.recipeID);
 		elseif self.recipeSchematic.hasCraftingOperationInfo then
 			local recraftItemGUID, recraftOrderID = self.transaction:GetRecraftAllocation();
-			local applyConcentration = self.transaction:IsApplyingConcentration();
-			if recraftOrderID then
-				return C_TradeSkillUI.GetCraftingOperationInfoForOrder(recipeInfo.recipeID, self.transaction:CreateCraftingReagentInfoTbl(), recraftOrderID, applyConcentration);
-			else
-				return C_TradeSkillUI.GetCraftingOperationInfo(recipeInfo.recipeID, self.transaction:CreateCraftingReagentInfoTbl(), self.transaction:GetAllocationItemGUID(), applyConcentration);
+			local attemptToApplyConcentration = self.transaction:IsApplyingConcentration();
+
+			local function GetCraftingOperationInfo(applyConcentration)
+				if recraftOrderID then
+					return C_TradeSkillUI.GetCraftingOperationInfoForOrder(recipeInfo.recipeID, self.transaction:CreateCraftingReagentInfoTbl(), recraftOrderID, applyConcentration);
+				else
+					return C_TradeSkillUI.GetCraftingOperationInfo(recipeInfo.recipeID, self.transaction:CreateCraftingReagentInfoTbl(), self.transaction:GetAllocationItemGUID(), applyConcentration);
+				end
 			end
+
+			local operationInfo = GetCraftingOperationInfo(attemptToApplyConcentration);
+			if not operationInfo and attemptToApplyConcentration then
+				-- Changing reagents can increase the concentration cost and cause the operation to fail.
+				-- Retry without concentration and disable concentration if the operation succeeds without it.
+				operationInfo = GetCraftingOperationInfo(false);
+				if operationInfo then
+					self.transaction:SetApplyConcentration(false);
+				end
+			end
+			return operationInfo;
 		end
 	end
+end
+
+-- OverrideQuality has to be passed into GameTooltip:SetRecipeResultItem in order for applyConcentration to be respected.
+-- Otherwise, the tooltip code automatically determines the current output item quality without applying concentration.
+function ProfessionsRecipeSchematicFormMixin:GetOutputOverrideQuality()
+	local operationInfo = self:GetRecipeOperationInfo();
+	if not operationInfo or not self.currentRecipeInfo.qualityIDs then
+		return nil;
+	end
+
+	return self.currentRecipeInfo.qualityIDs[operationInfo.craftingQuality];
 end
 
 function ProfessionsRecipeSchematicFormMixin:ClearTransaction()
@@ -591,13 +616,13 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 
 				self.MinimizedCooldown:SetPoint("TOPLEFT", anchorTo, "BOTTOMLEFT", 0, -5);
 			else
-			if not isCooldownOrganized then
-				isCooldownOrganized = true;
-				organizer:Add(self.Cooldown, LayoutEntry.Cooldown);
-				organizer:Layout();
+				if not isCooldownOrganized then
+					isCooldownOrganized = true;
+					organizer:Add(self.Cooldown, LayoutEntry.Cooldown);
+					organizer:Layout();
+				end
 			end
 		end
-	end
 	end
 
 	if not self.isInspection then
@@ -640,8 +665,6 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		self.loader:Cancel();
 	end
 	self.loader = CreateProfessionsRecipeLoader(self.recipeSchematic, function()
-		local reagents = self.transaction:CreateCraftingReagentInfoTbl();
-
 		if not (minimized or self.isInspection or isRecraft) then
 			self:UpdateRecipeDescription();
 		end
@@ -650,26 +673,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		organizer:Add(self.Description, LayoutEntry.Description, 0, 5);
 		organizer:Layout();
 
-		local outputItemInfo = C_TradeSkillUI.GetRecipeOutputItemData(recipeID, reagents, self.transaction:GetAllocationItemGUID());
-		local text;
-		if outputItemInfo.hyperlink then
-			local item = Item:CreateFromItemLink(outputItemInfo.hyperlink);
-			text = WrapTextInColor(item:GetItemName(), item:GetItemQualityColor().color);
-		else
-			text = WrapTextInColor(self.recipeSchematic.name, NORMAL_FONT_COLOR);
-		end
-		
-		local maxWidth = minimized and 250 or 800;
-		local multiline = minimized;
-		if isRecipeInfoRecraft then
-			SetTextToFit(self.RecraftingOutputText, PROFESSIONS_CRAFTING_RECRAFTING, maxWidth, multiline);
-		elseif isRecraft then
-			SetTextToFit(self.RecraftingOutputText, PROFESSIONS_CRAFTING_FORM_RECRAFTING_HEADER:format(text), maxWidth, multiline);
-		else
-			SetTextToFit(self.OutputText, text, maxWidth, multiline);
-		end
-
-		Professions.SetupOutputIcon(self.OutputIcon, self.transaction, outputItemInfo);
+		self:UpdateOutputItem();
 	end);
 
 	self.OutputIcon:SetScript("OnEnter", function()
@@ -677,7 +681,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		local reagents = self.transaction:CreateCraftingReagentInfoTbl();
 
 		self.OutputIcon:SetScript("OnUpdate", function() 
-			GameTooltip:SetRecipeResultItem(self.recipeSchematic.recipeID, reagents, self.transaction:GetAllocationItemGUID(), self:GetCurrentRecipeLevel());
+			GameTooltip:SetRecipeResultItem(self.recipeSchematic.recipeID, reagents, self.transaction:GetAllocationItemGUID(), self:GetCurrentRecipeLevel(), self:GetOutputOverrideQuality());
 		end);
 	end);
 
@@ -687,7 +691,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 	end);
 
 	self.OutputIcon:SetScript("OnClick", function()
-		local outputItemInfo = C_TradeSkillUI.GetRecipeOutputItemData(recipeID, self.transaction:CreateCraftingReagentInfoTbl(), self.transaction:GetAllocationItemGUID());
+		local outputItemInfo = C_TradeSkillUI.GetRecipeOutputItemData(recipeID, self.transaction:CreateCraftingReagentInfoTbl(), self.transaction:GetAllocationItemGUID(), self:GetOutputOverrideQuality());
 		HandleModifiedItemClick(outputItemInfo.hyperlink);
 	end);
 
@@ -837,7 +841,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 				GameTooltip:SetOwner(self.recraftSlot.OutputSlot, "ANCHOR_RIGHT");
 
 				local reagents = self.transaction:CreateCraftingReagentInfoTbl();
-				GameTooltip:SetRecipeResultItem(self.recipeSchematic.recipeID, reagents, self.transaction:GetRecraftAllocation(), self:GetCurrentRecipeLevel());
+				GameTooltip:SetRecipeResultItem(self.recipeSchematic.recipeID, reagents, self.transaction:GetRecraftAllocation(), self:GetCurrentRecipeLevel(), self:GetOutputOverrideQuality());
 			end
 		end);
 
@@ -1410,7 +1414,61 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		self.Concentrate:Hide();
 	end
 
+	self:InitDetails(recipeInfo);
+	self:UpdateRecraftSlot(operationInfo);
+
+	local shouldShowAllocateBestQuality = (not minimized) and (not alwaysUsesLowestQuality) and professionLearned and Professions.DoesSchematicIncludeReagentQualities(self.recipeSchematic);
+	self.AllocateBestQualityCheckbox:SetShown(shouldShowAllocateBestQuality);
+	if shouldShowAllocateBestQuality then
+		self.AllocateBestQualityCheckbox:SetChecked(shouldAllocateBest);
+	end
+
+	self.transaction:SetAllocationsChangedHandler(self.statsChangedHandler);
+
+	organizer:Layout();
+
+	if self.postInit then
+		self.postInit();
+	end
+end
+
+function ProfessionsRecipeSchematicFormMixin:UpdateOutputItem()
+	local reagents = self.transaction:CreateCraftingReagentInfoTbl();
+	local outputItemInfo = C_TradeSkillUI.GetRecipeOutputItemData(self.transaction:GetRecipeID(), reagents, self.transaction:GetAllocationItemGUID());
+	local text;
+	if outputItemInfo.hyperlink then
+		local item = Item:CreateFromItemLink(outputItemInfo.hyperlink);
+		text = WrapTextInColor(item:GetItemName(), item:GetItemQualityColor().color);
+	else
+		text = WrapTextInColor(self.recipeSchematic.name, NORMAL_FONT_COLOR);
+	end
+		
+	local maxWidth = minimized and 250 or 800;
+	local multiline = minimized;
+	if isRecipeInfoRecraft then
+		SetTextToFit(self.RecraftingOutputText, PROFESSIONS_CRAFTING_RECRAFTING, maxWidth, multiline);
+	elseif isRecraft then
+		SetTextToFit(self.RecraftingOutputText, PROFESSIONS_CRAFTING_FORM_RECRAFTING_HEADER:format(text), maxWidth, multiline);
+	else
+		SetTextToFit(self.OutputText, text, maxWidth, multiline);
+	end
+
+	Professions.SetupOutputIcon(self.OutputIcon, self.transaction, outputItemInfo);
+end
+
+function ProfessionsRecipeSchematicFormMixin:InitDetails(recipeInfo)
+	local minimized = ProfessionsUtil.IsCraftingMinimized();
+	local finishingSlots = self:GetSlotsByReagentType(Enum.CraftingReagentType.Finishing);
+	local professionInfo = Professions.GetProfessionInfo();
+	local operationInfo;
+	local professionLearned = not self.isInspection and professionInfo.skillLevel > 0;
+	if professionLearned then
+		operationInfo = self:GetRecipeOperationInfo();
+	end
+
 	local hasFinishingSlots = finishingSlots ~= nil;
+	local hasConcentration = operationInfo ~= nil and operationInfo.concentrationCurrencyID ~= 0;
+
 	if professionLearned and Professions.InLocalCraftingMode() and recipeInfo.supportsCraftingStats and ((operationInfo ~= nil and #operationInfo.bonusStats > 0) or recipeInfo.supportsQualities or recipeInfo.isGatheringRecipe or hasFinishingSlots) then
 		if not minimized then
 			Professions.LayoutFinishingSlots(finishingSlots, self.Details.CraftingChoicesContainer.FinishingReagentSlotContainer);
@@ -1430,28 +1488,20 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 			self.Details:Show();
 			self:UpdateDetailsStats(operationInfo);
 		end
-	end
-
-	self:UpdateRecraftSlot(operationInfo);
-
-	local shouldShowAllocateBestQuality = (not minimized) and (not alwaysUsesLowestQuality) and professionLearned and Professions.DoesSchematicIncludeReagentQualities(self.recipeSchematic);
-	self.AllocateBestQualityCheckbox:SetShown(shouldShowAllocateBestQuality);
-	if shouldShowAllocateBestQuality then
-		self.AllocateBestQualityCheckbox:SetChecked(shouldAllocateBest);
-	end
-
-	self.transaction:SetAllocationsChangedHandler(self.statsChangedHandler);
-
-	organizer:Layout();
-
-	if self.postInit then
-		self.postInit();
+	else
+		self.Details:Hide();
 	end
 end
 
 function ProfessionsRecipeSchematicFormMixin:OnAllocationsChanged()
 	local operationInfo = self:GetRecipeOperationInfo();
-	self:UpdateDetailsStats(operationInfo);
+
+	-- Change in Allocations can affect whether Details appears or not at all due to bonus stats changing based on allocations
+	self:InitDetails(self.currentRecipeInfo);
+
+	-- Adding optional reagents can change output item quality.
+	self:UpdateOutputItem();
+
 	self:UpdateRecraftSlot(operationInfo);
 end
 

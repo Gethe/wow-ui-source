@@ -232,11 +232,6 @@
 							</Anchors>
 						</FontString>
 					</Layer>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="AtWarBackground" setAllPoints="true" hidden="true">
-							<Color r="0.27" g="0.01" b="0"/>
-						</Texture>
-					</Layer>
 				</Layers>
 			</Frame>
 		</Frames>

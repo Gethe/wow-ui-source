@@ -183,6 +183,11 @@
 							<Anchor point="LEFT" relativeKey="$parent.GuildOrdersButton" relativePoint="RIGHT" x="0" y="0"/>
 						</Anchors>
 					</Button>
+					<Frame parentKey="NpcOrdersNewFeature" inherits="NewFeatureLabelNoAnimateTemplate" frameStrata="HIGH">
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.NpcOrdersButton" relativePoint="RIGHT" x="0" y="16"/>
+						</Anchors>
+					</Frame>
 					<Button parentKey="PersonalOrdersButton" inherits="ProfessionsCraftingOrderTypeTabTemplate">
 						<KeyValues>
 							<KeyValue key="orderType" value="Enum.CraftingOrderType.Personal" type="global"/>

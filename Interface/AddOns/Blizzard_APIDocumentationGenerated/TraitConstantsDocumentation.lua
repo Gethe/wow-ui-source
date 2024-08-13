@@ -78,15 +78,16 @@ local TraitConstants =
 		{
 			Name = "TraitConditionType",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 5,
 			MinValue = 0,
-			MaxValue = 3,
+			MaxValue = 4,
 			Fields =
 			{
 				{ Name = "Available", Type = "TraitConditionType", EnumValue = 0 },
 				{ Name = "Visible", Type = "TraitConditionType", EnumValue = 1 },
 				{ Name = "Granted", Type = "TraitConditionType", EnumValue = 2 },
 				{ Name = "Increased", Type = "TraitConditionType", EnumValue = 3 },
+				{ Name = "DisplayError", Type = "TraitConditionType", EnumValue = 4 },
 			},
 		},
 		{

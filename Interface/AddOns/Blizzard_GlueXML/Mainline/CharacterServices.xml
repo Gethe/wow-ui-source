@@ -56,7 +56,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="RoleIcon" atlas="UI-LFG-RoleIcon-Generic-Micro">
+				<Texture parentKey="RoleIcon" atlas="UI-LFG-RoleIcon-Generic-Micro-GroupFinder">
 					<Size x="17" y="17"/>
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.SpecOverlay" relativePoint="CENTER" x="11" y="-10"/>

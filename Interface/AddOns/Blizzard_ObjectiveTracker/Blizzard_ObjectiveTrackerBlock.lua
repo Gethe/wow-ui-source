@@ -17,6 +17,7 @@ function ObjectiveTrackerBlockMixin:Init()
 	-- fixedWidth: whether it has fixed width
 	-- fixedHeight: whether it has fixed height
 	-- rightEdgeFrame: the latest frame added to right edge
+	-- addedRegions: list of regions added via AddTimer, AddRightEdgeFrame, etc
 end
 
 -- Called at the beginning of a layout
@@ -34,6 +35,7 @@ function ObjectiveTrackerBlockMixin:Reset()
 		self.height = 0;
 	end
 	self.lastRegion = nil;
+	self.addedRegions = nil;
 	for objectiveKey, line in pairs(self.usedLines) do
 		line.used = nil;
 	end
@@ -54,6 +56,24 @@ function ObjectiveTrackerBlockMixin:Free()
 	if self.slideInfo then
 		self:EndSlide();
 	end
+
+	if self.addedRegions then
+		for region, isManaged in pairs(self.addedRegions) do
+			-- managed means unused ones get freed from module:EndLayout()
+			if isManaged then
+				region.used = nil;
+			else
+				region:Hide();
+			end
+		end
+	end
+end
+
+function ObjectiveTrackerBlockMixin:OnAddedRegion(region, isManaged)
+	if not self.addedRegions then
+		self.addedRegions = { };
+	end
+	self.addedRegions[region] = isManaged;
 end
 
 function ObjectiveTrackerBlockMixin:GetLine(objectiveKey, optTemplate)
@@ -117,6 +137,7 @@ function ObjectiveTrackerBlockMixin:SetStringText(fontString, text, useFullHeigh
 	else
 		fontString:SetMaxLines(2);
 	end
+	fontString:SetHeight(0);	-- force a clear of internals or GetHeight() might return an incorrect value
 	fontString:SetText(text);
 
 	local stringHeight = fontString:GetHeight();
@@ -202,6 +223,8 @@ function ObjectiveTrackerBlockMixin:AddCustomRegion(region, optOffsetX, optOffse
 	self.height = self.height + region:GetHeight() - offsetY;
 	self.lastRegion = region;
 	region:Show();
+	local isManaged = false;
+	self:OnAddedRegion(region, isManaged);
 end
 
 function ObjectiveTrackerBlockMixin:AddTimerBar(duration, startTime)
@@ -227,6 +250,8 @@ function ObjectiveTrackerBlockMixin:AddTimerBar(duration, startTime)
 
 	self.height = self.height + timerBar.height + lineSpacing;
 	self.lastRegion = timerBar;
+	local isManaged = true;
+	self:OnAddedRegion(timerBar, isManaged);
 	return timerBar;
 end
 
@@ -251,6 +276,8 @@ function ObjectiveTrackerBlockMixin:AddProgressBar(id, lineSpacing)
 
 	self.height = self.height + progressBar.height + lineSpacing;
 	self.lastRegion = progressBar;
+	local isManaged = true;
+	self:OnAddedRegion(progressBar, isManaged);
 	return progressBar;
 end
 
@@ -334,7 +361,8 @@ function ObjectiveTrackerBlockMixin:AddRightEdgeFrame(settings, identifier, ...)
 
 	self.rightEdgeFrame = frame;
 	self:AdjustRightEdgeOffset(-frame:GetWidth() - spacing);
-	
+	local isManaged = true;
+	self:OnAddedRegion(frame, isManaged);
 	return frame;
 end
 

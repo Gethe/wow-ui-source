@@ -1,11 +1,10 @@
 --[[
 	Names native types for clarity of use as function arguments.
 	RegisterSetting(..., nil, "boolean", true);
-	RegisterSetting(..., Settings.DefaultVarLocation, Settings.VarType.Bool, Settings.Defaults.True)
+	RegisterSetting(..., Settings.VarType.Bool, Settings.Defaults.True)
 --]]
 Settings = 
 {
-	DefaultVarLocation = nil,
 	CannotDefault = nil,
 };
 
@@ -116,11 +115,6 @@ function SettingsSearchableElementMixin:ShouldShow()
 	return true;
 end
 
-function Settings.CreateCanvasMixin()
-	local canvas = CreateFromMixins(SettingsCanvasMixin);
-	return canvas;
-end
-
 function Settings.CreateCategory(name)
 	local category = CreateFromMixins(SettingsCategoryMixin);
 	category:Init(name);
@@ -176,14 +170,12 @@ function Settings.RegisterInitializer(category, initializer)
 	SettingsInbound.RegisterInitializer(category, initializer);
 end
 
-function Settings.RegisterAddOnSetting(categoryTbl, name, variable, variableType, defaultValue)
-	return SettingsInbound.CreateAddOnSetting(categoryTbl, name, variable, variableType, defaultValue);
+function Settings.RegisterAddOnSetting(categoryTbl, variable, variableKey, variableTbl, variableType, name, defaultValue)
+	return SettingsInbound.CreateAddOnSetting(categoryTbl, name, variable, variableKey, variableTbl, variableType, defaultValue);
 end
 
-function Settings.RegisterProxySetting(categoryTbl, variable, variableTbl, variableType, name, defaultValue, getValue, setValue, commitValue)
-	local setting = CreateAndInitFromMixin(ProxySettingMixin, name, variable, variableTbl, variableType, defaultValue, getValue, setValue, commitValue);
-	SettingsInbound.RegisterSetting(categoryTbl, setting);
-	return setting;
+function Settings.RegisterProxySetting(categoryTbl, variable, variableType, name, defaultValue, getValue, setValue)
+	return SettingsInbound.CreateProxySetting(categoryTbl, name, variable, variableType, defaultValue, getValue, setValue);
 end
 
 function Settings.RegisterCVarSetting(categoryTbl, variable, variableType, name)
@@ -210,13 +202,20 @@ function Settings.GetSetting(variable)
 	return SettingsPanel:GetSetting(variable);
 end
 
+function Settings.NotifyUpdate(variable)
+	local setting = Settings.GetSetting(variable);
+	if setting then
+		setting:NotifyUpdate();
+	end
+end
+
 function Settings.GetValue(variable)
 	local setting = Settings.GetSetting(variable);
 	if setting then
 		return setting:GetValue();
 	-- Uncomment to find any code accessing settings before they've been registered.
-	-- Must be resolved before launch and will require mainline setting definitions to be
-	-- converted from addon to shared code.
+	-- Unretrievable values are not necessarily an error, depend on race conditions, and need
+	-- to be evaluated on a case by case basis.
 	--else
 	--	error(string.format("Setting for variable '%s' did not exist.", variable))
 	end

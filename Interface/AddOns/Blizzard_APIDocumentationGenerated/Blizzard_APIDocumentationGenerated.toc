@@ -309,6 +309,7 @@ SplashScreenDocumentation.lua
 SuperTrackManagerDocumentation.lua
 SystemDocumentation.lua
 TalkingHeadDocumentation.lua
+TimerunningUIDocumentation.lua
 TradeSkillUIDocumentation.lua
 TransmogItemsDocumentation.lua
 TransmogSetsDocumentation.lua
@@ -343,7 +344,6 @@ ContentTrackingTypesDocumentation.lua
 CurrencyConstantsDocumentation.lua
 CursorConstDocumentation.lua
 DamageConstantsDocumentation.lua
-DelvesConstantsDocumentation.lua
 EditModeManagerSharedDocumentation.lua
 EncounterJournalConstantsDocumentation.lua
 ExpansionLandingPageConstantsDocumentation.lua
@@ -352,6 +352,7 @@ GARRISON_FOLLOWER_TYPEConstantsDocumentation.lua
 GARRISON_TYPEConstantsDocumentation.lua
 GameEnvironmentConstantsDocumentation.lua
 GamePadConstDocumentation.lua
+GameRulesConstantsDocumentation.lua
 GarrisonConstantsDocumentation.lua
 GossipConstantsDocumentation.lua
 GuildInfoSharedDocumentation.lua
@@ -385,6 +386,7 @@ ProfessionConstantsDocumentation.lua
 PvPFactionConstantsDocumentation.lua
 PvpInfoConstantsDocumentation.lua
 QuestConstantsDocumentation.lua
+QuestInfoSharedDocumentation.lua
 QuestRewardsDocumentation.lua
 QuestSessionConstantsDocumentation.lua
 QueueSpecificDocumentation.lua
@@ -401,6 +403,7 @@ SpellBookConstantsDocumentation.lua
 SpellSharedDocumentation.lua
 TextureSharedDocumentation.lua
 TimeDocumentation.lua
+TimerConstantsDocumentation.lua
 TimerunningConstantsDocumentation.lua
 TooltipConstantsDocumentation.lua
 TooltipInfoSharedDocumentation.lua
@@ -429,6 +432,7 @@ CovenantsConstantsDocumentation.lua
 CraftingOrderUIConstantsDocumentation.lua
 CraftingOrderUISharedDocumentation.lua
 CurrencyConstants_MainlineDocumentation.lua
+DelvesConstantsDocumentation.lua
 GarrisonSharedDocumentation.lua
 ItemConstants_MainlineDocumentation.lua
 LegendaryCraftingTypesDocumentation.lua

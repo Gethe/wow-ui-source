@@ -1,7 +1,7 @@
 BaseMapPoiPinMixin = CreateFromMixins(MapCanvasPinMixin);
 
---[[static]] function BaseMapPoiPinMixin:CreateSubPin(pinFrameLevel)
-	local subPin = CreateFromMixins(self);
+--[[static]] function BaseMapPoiPinMixin:CreateSubPin(pinFrameLevel, ...)
+	local subPin = CreateFromMixins(self, ...);
 	subPin.pinFrameLevel = pinFrameLevel;
 	return subPin;
 end
@@ -475,6 +475,8 @@ function SuperTrackablePinMixin:OnMouseClickAction(button)
 			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 			C_SuperTrack[self:GetSuperTrackMutatorAPIName()](self:GetSuperTrackData());
 		end
+
+		return true;
 	end
 end
 

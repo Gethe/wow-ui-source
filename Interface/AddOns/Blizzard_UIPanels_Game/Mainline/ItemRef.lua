@@ -129,7 +129,8 @@ function SetItemRef(link, text, button, chatFrame)
 		GMChatStatusFrame_OnClick();
 		return;
 	elseif ( strsub(link, 1, 7) == "levelup" ) then
-		if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.ChatLinkLevelToasts) then
+		local chatLinkLevelToastsDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.ChatLinkLevelToastsDisabled);
+		if not chatLinkLevelToastsDisabled then
 			local _, level, levelUpType, arg1 = strsplit(":", link);
 			EventToastManagerSideDisplay:DisplayToastsByLevel(level);
 		end

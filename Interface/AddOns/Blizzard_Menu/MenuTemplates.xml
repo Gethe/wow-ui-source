@@ -6,6 +6,15 @@
 			<KeyValue key="menuMixin" value="MenuStyle2Mixin" type="global"/>
 		</KeyValues>
 		<Size x="122" y="25"/>
+		<Frames>
+			<!--This button template is not typically intended to be used as a filter button, but because an instance
+			exists in the trading post, this reset button was added.-->
+			<Button parentKey="ResetButton" inherits="UIResetButtonTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOPRIGHT" x="-3" y="-5"/>
+				</Anchors>
+			</Button>
+		</Frames>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Background" atlas="common-dropdown-c-button" useAtlasSize="true">
@@ -71,5 +80,13 @@
 			<OnEnable method="OnEnable"/>
 			<OnDisable method="OnDisable"/>
 		</Scripts>
+	</Button>
+
+	<Button name="WowMenuAutoHideButtonTemplate" propagateMouseInput="Motion" virtual="true">
+		<Layers>
+			<Layer>
+				<Texture parentKey="Texture"/>
+			</Layer>
+		</Layers>
 	</Button>
 </Ui>

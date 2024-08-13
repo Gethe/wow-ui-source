@@ -82,25 +82,22 @@ function CompactRaidFrameManager_OnLoad(self)
 				tinsert(buttons, button);
 				button:Show();
 			end
-
-			finalButton:SetParent(parent);
-			finalButton.backgroundTexture:SetAlpha(0);
-			tinsert(buttons, finalButton);
-			finalButton:Show();
 		end
 
 		local HalfNumMarkers = NUM_RAID_MARKERS / 2;
+
+		MakeRow(1, HalfNumMarkers);
+
 		local raidMarkerRemove = self.raidMarkerPool:Acquire();
 		raidMarkerRemove.markerTexture:SetAtlas("GM-raidMarker-remove", TextureKitConstants.IgnoreAtlasSize);
 		raidMarkerRemove:SetID(0);
-		MakeRow(1, HalfNumMarkers, raidMarkerRemove);
+		raidMarkerRemove:SetParent(parent);
+		raidMarkerRemove.backgroundTexture:SetAlpha(0);
+		tinsert(buttons, raidMarkerRemove);
+		raidMarkerRemove:Show();
 		raidMarkerRemove:SetParentKey("raidMarkerRemove");
 
-		local raidMarkerReset = self.raidMarkerPool:Acquire();
-		raidMarkerReset.markerTexture:SetAtlas("GM-raidMarker-reset", TextureKitConstants.IgnoreAtlasSize);
-		raidMarkerReset:SetID(RAID_MARKER_RESET_ID);
-		MakeRow(HalfNumMarkers + 1, NUM_RAID_MARKERS, raidMarkerReset);
-		raidMarkerReset:SetParentKey("raidMarkerReset");
+		MakeRow(HalfNumMarkers + 1, NUM_RAID_MARKERS);
 
 		local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRight, NUM_RAID_MARKERS / 2 + 1, 3, 0);
 		local anchor = CreateAnchor("TOPLEFT", parent.raidMarkerUnitTab, "BOTTOMLEFT", 3, -4);
@@ -175,6 +172,8 @@ function CompactRaidFrameManager_OnLoad(self)
 			rootDescription:CreateRadio(PLAYER_DIFFICULTY2, IsSelected, SetSelected, 2);
 			rootDescription:CreateRadio(PLAYER_DIFFICULTY6, IsSelected, SetSelected, 23);
 		end);
+
+		CompactRaidFrameManager_UpdateDifficultyDropdown();
 	end
 
 	CompactRaidFrameManager_UpdateLabel();
@@ -209,7 +208,8 @@ function CompactRaidFrameManager_OnEvent(self, event, ...)
 end
 
 function CompactRaidFrameManager_UpdateShown()
-	if ( not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CompactRaidFrameManager) ) then
+	local compactRaidFrameManagerDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.CompactRaidFrameManagerDisabled);
+	if compactRaidFrameManagerDisabled then
 		CompactRaidFrameManager:Hide();
 		return;
 	end
@@ -251,24 +251,41 @@ function CompactRaidFrameManager_Collapse()
 	CompactRaidFrameManager.toggleButton:GetNormalTexture():SetTexCoord(0, 0.5, 0, 1);
 end
 
+function CompactRaidFrameManager_UpdateDifficultyDropdown()
+	local dropdown = CompactRaidFrameManager.displayFrame.difficulty;
+	local enabled = not DifficultyUtil.InStoryRaid();
+	dropdown:SetEnabled(enabled);
+	dropdown:SetAlpha(enabled and 1.0 or .3);
+	if enabled then
+		dropdown.disabledTooltipText = nil;
+	else
+		dropdown.disabledTooltipText = DIFFICULTY_LOCKED_REASON_STORY_RAID;
+	end
+end
+
 function CompactRaidFrameManager_UpdateOptionsFlowContainer()
 	local displayFrame = CompactRaidFrameManager.displayFrame;
 	local container = displayFrame.optionsFlowContainer;
+
+	local isLeader = UnitIsGroupLeader("player");
+	local isAssist = UnitIsGroupAssistant("player");
+	local isLeaderOrAssist = isLeader or isAssist;
+	local isRaid = IsInRaid();
 
 	--set background
 	for _, bg in ipairs(CompactRaidFrameManager.backgrounds) do
 		bg:Hide();
 	end
-	if IsInRaid() then
-		if UnitIsGroupLeader("player") then
+	if isRaid then
+		if isLeader then
 			CompactRaidFrameManager.BGLeads:Show();
-		elseif UnitIsGroupAssistant("player") then
+		elseif isAssist then
 			CompactRaidFrameManager.BGAssists:Show();
 		else
 			CompactRaidFrameManager.BGRegulars:Show();
 		end
 	else
-		if UnitIsGroupLeader("player") then
+		if isLeader then
 			CompactRaidFrameManager.BGPartyLeads:Show();
 		else
 			CompactRaidFrameManager.BGPartyRegulars:Show();
@@ -282,13 +299,15 @@ function CompactRaidFrameManager_UpdateOptionsFlowContainer()
 	FlowContainer_PauseUpdates(container);
 	displayFrame.editMode:ClearAllPoints();
 
-	if UnitIsGroupLeader("player") then
+	if isLeader then
 		displayFrame.ModeControlDropdown:Show();
 	else
 		displayFrame.ModeControlDropdown:Hide();
 	end
 
-	if ( IsInRaid() ) then
+	CompactRaidFrameManager_UpdateDifficultyDropdown();
+
+	if isRaid then
 		FlowContainer_AddObject(container, displayFrame.filterOptions);
 		displayFrame.filterOptions:Show();
 	else
@@ -319,7 +338,7 @@ function CompactRaidFrameManager_UpdateOptionsFlowContainer()
 		AddAndShow(frame);
 	end
 
-	if IsInRaid() then
+	if isRaid then
 		FlowContainer_AddLineBreak(container);
 		verticalDividerPadding = 4;
 		Space(18);
@@ -331,7 +350,7 @@ function CompactRaidFrameManager_UpdateOptionsFlowContainer()
 		AddVerticalDivider();
 		AddAndShow(displayFrame.hiddenModeToggle);
 		AddHorizontalDivider();
-	elseif UnitIsGroupLeader("player") then
+	elseif isLeader then
 		FlowContainer_AddLineBreak(container);
 		verticalDividerPadding = 0;
 		Space(12);
@@ -362,13 +381,14 @@ function CompactRaidFrameManager_UpdateOptionsFlowContainer()
 	FlowContainer_AddLineBreak(container);
 	Space(18);
 
-	if IsInRaid() and (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) then
+	if isRaid and isLeaderOrAssist then
 		AddAndShow(displayFrame.everyoneIsAssistButton);
+		displayFrame.everyoneIsAssistButton:SetEnabled(isLeader);
 	else
 		displayFrame.everyoneIsAssistButton:Hide();
 	end
 
-	if IsInRaid() and (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) then
+	if isRaid and isLeaderOrAssist then
 		verticalDividerPadding = 4;
 		AddVerticalDivider();
 		AddAndShow(displayFrame.readyCheckButton);
@@ -377,18 +397,18 @@ function CompactRaidFrameManager_UpdateOptionsFlowContainer()
 		AddVerticalDivider();
 		AddAndShow(displayFrame.countdownButton);
 		AddHorizontalDivider();
-	elseif IsInRaid() then
+	elseif isRaid then
 		displayFrame.readyCheckButton:Hide();
 		displayFrame.rolePollButton:Hide();
 		displayFrame.countdownButton:Hide()
 	end
 
-	if ( not IsInRaid() or UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") ) then
+	if not isRaid or isLeaderOrAssist then
 		FlowContainer_AddLineBreak(container);
 		Space(20);
 		AddAndShow(displayFrame.raidMarkers);
 
-		if not IsInRaid() and not UnitIsGroupLeader("player") then
+		if not isRaid and not isLeader then
 			local edit = displayFrame.editMode;
 			edit:SetPoint("LEFT", displayFrame.raidMarkers.raidMarkerGroundTab, "RIGHT", 50, 10);
 			edit:Show();
@@ -397,7 +417,7 @@ function CompactRaidFrameManager_UpdateOptionsFlowContainer()
 		displayFrame.raidMarkers:Hide();
 	end
 
-	if UnitIsGroupLeader("player") then
+	if isLeader then
 		FlowContainer_AddLineBreak(container);
 		Space(30);
 		AddAndShow(displayFrame.RestrictPingsLabel);
@@ -406,6 +426,7 @@ function CompactRaidFrameManager_UpdateOptionsFlowContainer()
 		Space(32);
 		AddAndShow(displayFrame.RestrictPingsDropdown);
 	else
+		displayFrame.RestrictPingsLabel:Hide();
 		displayFrame.RestrictPingsDropdown:Hide();
 	end
 
@@ -419,7 +440,7 @@ function CompactRaidFrameManager_UpdateOptionsFlowContainer()
 	--Then, we update which specific buttons are enabled.
 
 	--Raid leaders and assistants and leaders of non-dungeon finder parties may initiate a role poll.
-	if ( IsInGroup() and not HasLFGRestrictions() and not UnitInBattleground("player") and (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) ) then
+	if ( IsInGroup() and not HasLFGRestrictions() and not UnitInBattleground("player") and isLeaderOrAssist ) then
 		displayFrame.rolePollButton:Enable();
 		displayFrame.rolePollButton:SetAlpha(1);
 	else
@@ -428,7 +449,7 @@ function CompactRaidFrameManager_UpdateOptionsFlowContainer()
 	end
 
 	--Any sort of leader may initiate a ready check.
-	if ( IsInGroup() and (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) ) then
+	if ( IsInGroup() and isLeaderOrAssist ) then
 		displayFrame.readyCheckButton:Enable();
 		displayFrame.readyCheckButton:SetAlpha(1);
 		displayFrame.countdownButton:Enable();
@@ -524,10 +545,12 @@ function CompactRaidFrameManager_UpdateRaidIcons()
 	if raidMarkers.activeTab == raidMarkers.raidMarkerUnitTab then 
 		for i=1, NUM_RAID_ICONS do
 			local button = raidMarkers["raidMarker"..i];
-			button:UpdateRaidIconUnit();
+			button:UpdateRaidIcon();
 		end
 
 		local removeButton = raidMarkers.raidMarkerRemove;
+		removeButton.markerTexture:SetAtlas("GM-raidMarker-remove", TextureKitConstants.IgnoreAtlasSize);
+		removeButton:SetID(0);
 		if not GetRaidTargetIndex("target") then
 			removeButton.markerTexture:SetDesaturated(true);
 			removeButton:Disable();
@@ -535,25 +558,17 @@ function CompactRaidFrameManager_UpdateRaidIcons()
 			removeButton.markerTexture:SetDesaturated(false);
 			removeButton:Enable();
 		end
-
-		local clearButton = raidMarkers.raidMarkerReset;
-		clearButton.markerTexture:SetDesaturated(true);
-		clearButton:Disable();
 	else --world markers
 		for i=1, NUM_RAID_ICONS do
 			local button = raidMarkers["raidMarker"..i];
-			local applied = IsRaidMarkerActive(WORLD_RAID_MARKER_ORDER[i]); 
-
-			button:UpdateRaidIconWorld(applied);
+			button:UpdateRaidIcon();
 		end
 
 		local removeButton = raidMarkers.raidMarkerRemove;
-		removeButton.markerTexture:SetDesaturated(true);
-		removeButton:Disable();
-
-		local clearButton = raidMarkers.raidMarkerReset;
-		clearButton.markerTexture:SetDesaturated(false);
-		clearButton:Enable();
+		removeButton.markerTexture:SetAtlas("GM-raidMarker-reset", TextureKitConstants.IgnoreAtlasSize);
+		removeButton:SetID(RAID_MARKER_RESET_ID);
+		removeButton.markerTexture:SetDesaturated(false);
+		removeButton:Enable();
 	end
 end
 
@@ -562,9 +577,10 @@ function CompactRaidFrameManager_UpdateDifficulty()
 	local dropdown = CompactRaidFrameManager.displayFrame.difficulty;
 	local isAssist = UnitIsGroupAssistant("player");
 	local atlas = nil; 
-	if difficulty == 1 then
+	local inStoryRaid = DifficultyUtil.InStoryRaid();
+	if (difficulty == DifficultyUtil.ID.DungeonNormal) or inStoryRaid then
 		atlas = isAssist and "GM-icon-difficulty-normalAssist" or "GM-icon-difficulty-normal";
-	elseif difficulty == 2 then
+	elseif difficulty == DifficultyUtil.ID.DungeonHeroic then
 		atlas = isAssist and "GM-icon-difficulty-heroicAssist" or "GM-icon-difficulty-heroic";
 	else
 		atlas = isAssist and "GM-icon-difficulty-mythicAssist" or "GM-icon-difficulty-mythic";
@@ -579,9 +595,10 @@ function CompactRaidFrameManager_MouseDownDifficulty(self)
 		local shown = dropdown:IsMenuOpen();
 		local difficulty = GetDungeonDifficultyID();
 		local atlas = nil;
-		if difficulty == 1 then
+		local inStoryRaid = DifficultyUtil.InStoryRaid();
+		if (difficulty == DifficultyUtil.ID.DungeonNormal) or inStoryRaid then
 			atlas = shown and "GM-icon-difficulty-normalSelected" or "GM-icon-difficulty-normal";
-		elseif difficulty == 2 then
+		elseif difficulty == DifficultyUtil.ID.DungeonHeroic then
 			atlas = shown and "GM-icon-difficulty-heroicSelected" or "GM-icon-difficulty-heroic";
 		else
 			atlas = shown and "GM-icon-difficulty-mythicSelected" or "GM-icon-difficulty-mythic";
@@ -888,44 +905,54 @@ function CRFManagerRaidIconButtonMixin:OnClick()
 	elseif raidMarkers.activeTab == raidMarkers.raidMarkerUnitTab then
 		SetRaidTarget("target", self:GetID());
 	else
-		PlaceRaidMarker(WORLD_RAID_MARKER_ORDER[self:GetMarker()]);
+		local marker = WORLD_RAID_MARKER_ORDER[self:GetMarker()];
+		ClearRaidMarker(marker);
+		PlaceRaidMarker(marker);
 	end
 	CompactRaidFrameManager_UpdateRaidIcons();
 end
 
-function CRFManagerRaidIconButtonMixin:UpdateRaidIconUnit()
-	local unit = "target";
-	local disableAll = not CanBeRaidTarget(unit);
+function CRFManagerRaidIconButtonMixin:UpdateRaidIcon()
+	local raidMarkers = CompactRaidFrameManager.displayFrame.raidMarkers;
 
-	if disableAll then
-		self.markerTexture:SetDesaturated(true);
-		self.backgroundTexture:SetAtlas("GM-button-marker-disabled", TextureKitConstants.IgnoreAtlasSize);
-		self:Disable();
+	if self == raidMarkers.raidMarkerRemove then
+		return; --handled as a special case in CompactRaidFrameManager_UpdateRaidIcons
+	end
+
+	if raidMarkers.activeTab == raidMarkers.raidMarkerUnitTab then 
+		local unit = "target";
+		local disableAll = not CanBeRaidTarget(unit);
+		if disableAll then
+			self.markerTexture:SetDesaturated(true);
+			self.backgroundTexture:SetAtlas("GM-button-marker-disabled", TextureKitConstants.IgnoreAtlasSize);
+			self:Disable();
+		else
+			local applied = false;--IsRaidMarkerActive is for WORLD MARKERS. Leaving this here in case we decide to write an API for unit markers.
+			local selected = (self:GetID() == GetRaidTargetIndex(unit));
+
+			self.markerTexture:SetDesaturated(false);
+			self:Enable();
+			if applied and selected then
+				self.backgroundTexture:SetAtlas("GM-button-marker-appliedSelected", TextureKitConstants.IgnoreAtlasSize);
+			elseif applied then
+				self.backgroundTexture:SetAtlas("GM-button-marker-applied", TextureKitConstants.IgnoreAtlasSize);
+			elseif selected then
+				self.backgroundTexture:SetAtlas("GM-button-marker-selected", TextureKitConstants.IgnoreAtlasSize);
+			else
+				self.backgroundTexture:SetAtlas("GM-button-marker-available", TextureKitConstants.IgnoreAtlasSize);
+			end
+		end
 	else
-		local applied = false;--IsRaidMarkerActive is for WORLD MARKERS. Leaving this here in case we decide to write an API for unit markers.
-		local selected = (self:GetID() == GetRaidTargetIndex(unit));
-
 		self.markerTexture:SetDesaturated(false);
 		self:Enable();
-		if applied and selected then
-			self.backgroundTexture:SetAtlas("GM-button-marker-appliedSelected", TextureKitConstants.IgnoreAtlasSize);
-		elseif applied then
-			self.backgroundTexture:SetAtlas("GM-button-marker-applied", TextureKitConstants.IgnoreAtlasSize);
-		elseif selected then
-			self.backgroundTexture:SetAtlas("GM-button-marker-selected", TextureKitConstants.IgnoreAtlasSize);
-		else
-			self.backgroundTexture:SetAtlas("GM-button-marker-available", TextureKitConstants.IgnoreAtlasSize);
+		if self:GetID() ~= RAID_MARKER_RESET_ID then
+			local applied = IsRaidMarkerActive(WORLD_RAID_MARKER_ORDER[self:GetMarker()]); 
+			if applied then
+				self.backgroundTexture:SetAtlas("GM-button-marker-applied", TextureKitConstants.IgnoreAtlasSize);
+			else
+				self.backgroundTexture:SetAtlas("GM-button-marker-available", TextureKitConstants.IgnoreAtlasSize);
+			end
 		end
-	end
-end
-
-function CRFManagerRaidIconButtonMixin:UpdateRaidIconWorld(applied)
-	self.markerTexture:SetDesaturated(false);
-	self:Enable();
-	if applied then
-		self.backgroundTexture:SetAtlas("GM-button-marker-applied", TextureKitConstants.IgnoreAtlasSize);
-	else
-		self.backgroundTexture:SetAtlas("GM-button-marker-available", TextureKitConstants.IgnoreAtlasSize);
 	end
 end
 
@@ -937,14 +964,10 @@ function CRFManagerRaidIconButtonMixin:OnMouseDown()
 end
 
 function CRFManagerRaidIconButtonMixin:OnMouseUp()
-	self.markerTexture:SetPoint("CENTER", self, "CENTER", 0, 0);
+	self.markerTexture:SetPoint("CENTER", self, "CENTER", 0, 1);
 	self.backgroundTexture:SetAtlas("GM-button-marker-available", TextureKitConstants.IgnoreAtlasSize);
 
-	local raidMarkers = CompactRaidFrameManager.displayFrame.raidMarkers;
-	if raidMarkers.activeTab == raidMarkers.raidMarkerUnitTab then 
-		self:UpdateRaidIconUnit();
-	end
-	
+	self:UpdateRaidIcon();
 end
 
 function CRFManagerRaidIconButtonMixin:OnEnter()
@@ -1007,7 +1030,14 @@ CRFManagerTooltipButtonMixin = {}
 
 function CRFManagerTooltipButtonMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -10, -10);
-	GameTooltip_SetTitle(GameTooltip, _G[self.tooltip]);
+	
+	if self.disabledTooltipText then
+		local tooltipText = RED_FONT_COLOR:WrapTextInColorCode(self.disabledTooltipText);
+		GameTooltip_SetTitle(GameTooltip, tooltipText);
+	else
+		GameTooltip_SetTitle(GameTooltip, _G[self.tooltip]);
+	end
+
 	GameTooltip:Show();
 end
 
@@ -1045,6 +1075,7 @@ RaidFrameEveryoneIsAssistMixin = {};
 function RaidFrameEveryoneIsAssistMixin:OnLoad()
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("PARTY_LEADER_CHANGED");
+	self:SetChecked(IsEveryoneAssistant());
 end
 
 function RaidFrameEveryoneIsAssistMixin:OnEvent()

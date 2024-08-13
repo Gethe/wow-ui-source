@@ -60,7 +60,7 @@ local QuestLog =
 			Arguments =
 			{
 				{ Name = "questID", Type = "number", Nilable = false },
-				{ Name = "factionID", Type = "number", Nilable = false },
+				{ Name = "targetFactionID", Type = "number", Nilable = false },
 			},
 
 			Returns =
@@ -1021,6 +1021,20 @@ local QuestLog =
 			},
 		},
 		{
+			Name = "QuestContainsFirstTimeRepBonusForPlayer",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "questContainsFirstTimeRepBonusForPlayer", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "QuestHasQuestSessionBonus",
 			Type = "Function",
 
@@ -1424,6 +1438,7 @@ local QuestLog =
 				{ Name = "frequency", Type = "QuestFrequency", Nilable = true },
 				{ Name = "isHeader", Type = "bool", Nilable = false },
 				{ Name = "useMinimalHeader", Type = "bool", Nilable = false },
+				{ Name = "sortAsNormalQuest", Type = "bool", Nilable = false },
 				{ Name = "isCollapsed", Type = "bool", Nilable = false },
 				{ Name = "startEvent", Type = "bool", Nilable = false },
 				{ Name = "isTask", Type = "bool", Nilable = false },
@@ -1436,10 +1451,10 @@ local QuestLog =
 				{ Name = "isAutoComplete", Type = "bool", Nilable = false },
 				{ Name = "overridesSortOrder", Type = "bool", Nilable = false },
 				{ Name = "readyForTranslation", Type = "bool", Nilable = false, Default = true },
-				{ Name = "isLegendarySort", Type = "bool", Nilable = false },
 				{ Name = "isInternalOnly", Type = "bool", Nilable = false },
 				{ Name = "isAbandonOnDisable", Type = "bool", Nilable = false },
 				{ Name = "headerSortKey", Type = "number", Nilable = true },
+				{ Name = "questClassification", Type = "QuestClassification", Nilable = false },
 			},
 		},
 		{

@@ -208,7 +208,7 @@ CampaignHeaderCollapsibleMixin = {};
 
 function CampaignHeaderCollapsibleMixin:OnClick(button)
 	local campaign = self:GetCampaign();
-	if campaign:IsContainerCampaign() then		
+	if campaign:IsContainerCampaign() then
 		return;
 	end
 
@@ -259,7 +259,7 @@ function CampaignHeaderTooltipableMixin:ShowTooltip()
 	if campaign:IsContainerCampaign() then
 		return;
 	end
-	
+
 	local tooltip = QuestMapLog_GetCampaignTooltip();
 	tooltip:SetCampaign(campaign);
 	tooltip:ClearAllPoints();
@@ -343,46 +343,6 @@ function CampaignHeaderMixin:UpdateLoreButtonVisibility()
 	local showLore = self:HasLoreEntries();
 	self.LoreButton:SetShown(showLore);
 	self:SetDrawLayerEnabled("HIGHLIGHT", mouseOver);
-
-	if showLore then
-		self:CheckShowLoreTutorial();
-	end
-end
-
-local function UnlockLoreButtonFromHelpTip(acknowledged, campaignHeader)
-	campaignHeader:SetLoreButtonLocked(false);
-	campaignHeader:UpdateLoreButtonVisibility();
-end
-
-function CampaignHeaderMixin:SetLoreButtonLocked(locked)
-	self.loreButtonLocked = locked;
-end
-
-function CampaignHeaderMixin:IsLoreButtonLocked()
-	return self.loreButtonLocked;
-end
-
-function CampaignHeaderMixin:CheckShowLoreTutorial()
-	if HelpTip:IsShowing(QuestScrollFrame, CAMPAIGN_LORE_BUTTON_HELPTIP) then
-		return;
-	end
-
-	local helpTipInfo =
-	{
-		text = CAMPAIGN_LORE_BUTTON_HELPTIP,
-		buttonStyle = HelpTip.ButtonStyle.Close,
-		targetPoint = HelpTip.Point.TopEdgeCenter,
-		cvarBitfield = "closedInfoFrames",
-		bitfieldFlag = LE_FRAME_TUTORIAL_CAMPAIGN_LORE_TEXT,
-		checkCVars = true,
-		onHideCallback = UnlockLoreButtonFromHelpTip,
-		callbackArg = self,
-		system = "LoreTextButton",
-	};
-
-	if HelpTip:Show(QuestScrollFrame, helpTipInfo, self.LoreButton) then
-		self:SetLoreButtonLocked(true);
-	end
 end
 
 CampaignHeaderMinimalMixin = CreateFromMixins(CampaignHeaderDisplayMixin);
@@ -441,7 +401,6 @@ end
 function CampaignLoreButtonMixin:OnClick()
 	if self.mode == "overview" then
 		PlaySound(SOUNDKIT.UI_JOURNEYS_OPEN_LORE_BOOK);
-		HelpTip:Acknowledge(QuestScrollFrame, CAMPAIGN_LORE_BUTTON_HELPTIP);
 		EventRegistry:TriggerEvent("QuestLog.ShowCampaignOverview", self:GetParent():GetCampaign():GetID());
 	elseif self.mode == "questlog" then
 		PlaySound(SOUNDKIT.UI_JOURNEYS_CLOSE_LORE_BOOK);

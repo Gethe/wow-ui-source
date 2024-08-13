@@ -36,8 +36,7 @@ function UIWidgetTemplateIconTextAndCurrenciesMixin:Setup(widgetInfo, widgetCont
 		local currencyFrame = self.currencyPool:Acquire();
 		currencyFrame:Show();
 
-		currencyFrame:Setup(widgetContainer, currencyInfo, enabledState);
-		currencyFrame:SetTooltipLocation(widgetInfo.tooltipLoc);
+		currencyFrame:Setup(widgetContainer, currencyInfo, enabledState, nil, nil, nil, nil, widgetInfo.tooltipLoc);
 
 		if previousCurrencyFrame then
 			currencyFrame:SetPoint("TOPLEFT", previousCurrencyFrame, "TOPRIGHT", 10, 0);
@@ -81,5 +80,5 @@ end
 
 function UIWidgetTemplateIconTextAndCurrenciesMixin:OnReset()
 	UIWidgetBaseTemplateMixin.OnReset(self);
-	self.currencyPool:ReleaseAll();
+	UIWidgetBaseCurrencyPoolOnReset(self.currencyPool);
 end

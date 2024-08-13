@@ -1546,7 +1546,7 @@ function GuildMemberListDropdownMixin:ResetGuildColumnIndex()
 end 
 
 function GuildMemberListDropdownMixin:SetupMenu()
-	WowStyle1DropdownMixin.SetupMenu(self, function(dropdown, rootDescription)
+	DropdownButtonMixin.SetupMenu(self, function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_COMMUNITIES_GUILD_MEMBER_LIST");
 
 		local communitiesFrame = self:GetCommunitiesFrame();
@@ -1646,7 +1646,7 @@ function CommunityMemberListDropdownMixin:ResetCurrentIndex()
 end 
 
 function CommunityMemberListDropdownMixin:SetupMenu()
-	WowStyle1DropdownMixin.SetupMenu(self, function(dropdown, rootDescription)
+	DropdownButtonMixin.SetupMenu(self, function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_COMMUNITIES_MEMBER_LIST");
 
 	local communitiesFrame = self:GetCommunitiesFrame();

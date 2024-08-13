@@ -405,13 +405,13 @@ function MiniMapTrackingButtonMixin:OnLoad()
 	
 		local hunterCount = #hunterInfo;
 		if hunterCount > 0 then
+			local hunterMenuDesc = rootDescription;
 			if hunterCount > 1 then
-				local hunterMenuDesc = rootDescription:CreateButton(HUNTER_TRACKING_TEXT);
-				for index, info in ipairs(hunterInfo) do
-					CreateCheckboxWithIcon(hunterMenuDesc, info);
-				end
-			else
-				CreateCheckboxWithIcon(rootDescription, info);
+				hunterMenuDesc = rootDescription:CreateButton(HUNTER_TRACKING_TEXT);
+			end
+
+			for index, info in ipairs(hunterInfo) do
+				CreateCheckboxWithIcon(hunterMenuDesc, info);
 			end
 		end
 	

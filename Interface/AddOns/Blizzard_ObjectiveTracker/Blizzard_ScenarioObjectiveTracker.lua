@@ -171,6 +171,8 @@ function ScenarioObjectiveTrackerMixin:LayoutContents()
 	self:SetHasNewStage(false);
 
 	local scenarioName, currentStage, numStages, flags, _, _, _, xp, money, scenarioType, _, textureKit, scenarioID = C_Scenario.GetInfo();
+	textureKit = textureKit or "evergreen-scenario"
+
 	local isInScenario = numStages > 0;
 	local shouldShowMawBuffs = ShouldShowMawBuffs();
 	if not isInScenario and (not shouldShowMawBuffs or IsOnGroundFloorInJailersTower()) then
@@ -455,7 +457,37 @@ function ScenarioObjectiveTrackerStageMixin:OnEnter()
 	EventRegistry:TriggerEvent("Scenario.ObjectTracker_OnEnter", GameTooltip);
 end
 
+local textureKitOffsets = {
+	["evergreen-scenario"] = {normalBGX = -7, normalBGY = 3, finalBGX = -7, finalBGY = 3},
+	["thewarwithin-scenario"] = {normalBGX = -7, normalBGY = 3, finalBGX = -7, finalBGY = 3},
+	["delves-scenario"] = {normalBGX = -7, normalBGY = 3, finalBGX = -7, finalBGY = 3},
+};
+
+local defaultOffsets = {normalBGX = 0, normalBGY = 0, finalBGX = -10, finalBGY = 3};
+
+function ScenarioObjectiveTrackerStageMixin:GetBGAtlases(scenarioType, textureKit)
+	local normalBGAtlas, finalBGAtlas;
+	if scenarioType == LE_SCENARIO_TYPE_LEGION_INVASION then
+		normalBGAtlas = "legioninvasion-ScenarioTrackerToast";
+		finalBGAtlas = nil;
+	else
+		normalBGAtlas = textureKit.."-trackerheader";
+		finalBGAtlas = textureKit.."-trackerheader-final-filigree";
+
+		if not C_Texture.GetAtlasInfo(normalBGAtlas) then
+			normalBGAtlas = "evergreen-scenario-trackerheader";
+			finalBGAtlas = "evergreen-scenario-trackerheader-final-filigree";
+		elseif not C_Texture.GetAtlasInfo(finalBGAtlas) then
+			finalBGAtlas = nil;
+		end
+	end
+
+	return normalBGAtlas, finalBGAtlas;
+end
+
 function ScenarioObjectiveTrackerStageMixin:UpdateStageBlock(scenarioID, scenarioType, widgetSetID, textureKit, flags, currentStage, stageName, numStages)
+	local normalBGAtlas, finalBGAtlas = self:GetBGAtlases(scenarioType, textureKit);
+
 	if bit.band(flags, SCENARIO_FLAG_SUPRESS_STAGE_TEXT) == SCENARIO_FLAG_SUPRESS_STAGE_TEXT then
 		self.Stage:SetText(stageName);
 		self.Stage:SetSize(172, 36);
@@ -465,7 +497,7 @@ function ScenarioObjectiveTrackerStageMixin:UpdateStageBlock(scenarioID, scenari
 	else
 		if currentStage == numStages then
 			self.Stage:SetText(SCENARIO_STAGE_FINAL);
-			self.FinalBG:Show();
+			self.FinalBG:SetShown(finalBGAtlas ~= nil);
 		else
 			self.Stage:SetFormattedText(SCENARIO_STAGE, currentStage);
 			self.FinalBG:Hide();
@@ -488,18 +520,20 @@ function ScenarioObjectiveTrackerStageMixin:UpdateStageBlock(scenarioID, scenari
 	self.Stage:Show();
 	self.NormalBG:Show();
 
-	if textureKit then
-		self.Stage:SetTextColor(1, 0.914, 0.682);
-		self.NormalBG:SetAtlas(textureKit.."-TrackerHeader", true);
-		self.NormalBG:SetPoint("TOPLEFT", 0, 0);
-	elseif (scenarioType == LE_SCENARIO_TYPE_LEGION_INVASION) then
+	self.NormalBG:SetAtlas(normalBGAtlas, true);
+	if finalBGAtlas then
+		self.FinalBG:SetAtlas(finalBGAtlas, true);
+	end
+
+	if scenarioType == LE_SCENARIO_TYPE_LEGION_INVASION then
 		self.Stage:SetTextColor(0.753, 1, 0);
-		self.NormalBG:SetAtlas("legioninvasion-ScenarioTrackerToast", true);
 		self.NormalBG:SetPoint("TOPLEFT", 0, 0);
+		self.FinalBG:SetPoint("TOPLEFT", -10, 3);
 	else
 		self.Stage:SetTextColor(1, 0.914, 0.682);
-		self.NormalBG:SetAtlas("evergreen-scenario-trackertoast", true);
-		self.NormalBG:SetPoint("TOPLEFT", -7, 3);
+		local offsets = textureKitOffsets[textureKit] or defaultOffsets;
+		self.NormalBG:SetPoint("TOPLEFT", offsets.normalBGX, offsets.normalBGY);
+		self.FinalBG:SetPoint("TOPLEFT", offsets.finalBGX, offsets.finalBGY);
 	end
 	
 	self:UpdateFindGroupButton(scenarioID);

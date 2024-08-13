@@ -82,7 +82,8 @@ function BonusObjectiveTrackerMixin:OnBlockHeaderClick(block, button)
 			MenuUtil.CreateContextMenu(self:GetContextMenuParent(), function(owner, rootDescription)
 				rootDescription:SetTag("MENU_BONUS_OBJECTIVE_TRACKER", block);
 
-				rootDescription:CreateTitle(C_TaskQuest.GetQuestInfoByQuestID(questID));
+				local questTitle = C_TaskQuest.GetQuestInfoByQuestID(questID);
+				rootDescription:CreateTitle(questTitle);
 				rootDescription:CreateButton(OBJECTIVES_STOP_TRACKING, function()
 					QuestUtil.UntrackWorldQuest(questID);
 				end);
@@ -425,9 +426,8 @@ function BonusObjectiveTrackerMixin:AddQuest(questID, isTrackedWorldQuest)
 	local isWorldQuest = self.showWorldQuests;
 	local isInArea, isOnMap, numObjectives, taskName, displayAsObjective = GetTaskInfo(questID);
 	local treatAsInArea = isTrackedWorldQuest or isInArea;
-	-- show task if we're in the area or on the same map and we were displaying it before
-	local existingTask = self:GetExistingBlock(questID);
-	if numObjectives and (treatAsInArea or (isOnMap and existingTask)) and questID ~= ObjectiveTrackerTopBannerFrame:GetQuestID() then
+	-- show task if we're in the area and it's not being toasted
+	if numObjectives and treatAsInArea and questID ~= ObjectiveTrackerTopBannerFrame:GetQuestID() then
 		if displayAsObjective and not self.showWorldQuests then
 			self.headerText = TRACKER_HEADER_OBJECTIVE;
 		end
@@ -736,8 +736,6 @@ function ObjectiveTrackerTopBannerMixin:PlayBanner()
 	self:SetAlpha(1);
 	self.SlideAnim:Stop();
 	self.PopAnim:Restart();
-	-- timer to put the quest in the tracker
-	C_Timer.After(2.15, GenerateClosure(self.OnFinish, self));
 end
 
 -- called by TopBannerManager
@@ -745,6 +743,7 @@ function ObjectiveTrackerTopBannerMixin:StopBanner()
 	self.PopAnim:Stop();
 	self.SlideAnim:Stop();
 	self:Hide();
+	self:Finish();
 end
 
 function ObjectiveTrackerTopBannerMixin:OnPopAnimFinished()
@@ -763,9 +762,10 @@ end
 
 function ObjectiveTrackerTopBannerMixin:OnSlideAnimFinished()
 	self:Hide();
+	self:Finish();
 end
 
-function ObjectiveTrackerTopBannerMixin:OnFinish()
+function ObjectiveTrackerTopBannerMixin:Finish()
 	-- TODO: figure out why sometimes there is no .module
 	if self.module then
 		self.module:SetNeedsFanfare(self.questID);

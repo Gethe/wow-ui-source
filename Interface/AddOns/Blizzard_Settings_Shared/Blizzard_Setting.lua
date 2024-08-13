@@ -1,4 +1,10 @@
-Settings.Variables = {};
+local function EnsureVariableTypeIsValid(variableType, defaultValue)
+	if variableType == nil then
+		assert(defaultValue ~= nil);
+		variableType = type(defaultValue);
+	end
+	return variableType;
+end
 
 local function MatchesVariableType(arg1, arg2VariableType)
 	return type(arg1) == arg2VariableType;
@@ -13,12 +19,22 @@ local function ErrorIfInvalidSettingArguments(name, variable, variableType, defa
 		error(string.format("'variable' for '%s' requires string type.", name));
 	end
 	
+	if type(variableType) ~= "string" then
+		error(string.format("'variableType' for '%s', '%s' requires string type.", name, variable));
+	end
+
 	if (defaultValue ~= nil) and not MatchesVariableType(defaultValue, variableType) then
 		error(string.format("'defaultValue' argument for '%s', '%s' required '%s' type.", name, variable, variableType));
 	end
 end
 
-local function ValuesEquivalent(v1, v2)
+local function ErrorIfInvalidVariableType(name, value, variableType)
+	if not MatchesVariableType(value, variableType) then
+		error(string.format("SetValue '%s' requires '%s' type, not '%s' type.", name, variableType, type(value)));
+	end
+end
+
+local function ValuesApproximatelyEqual(v1, v2)
 	if type(v1) == "number" and type(v2) == "number" then
 		return ApproximatelyEqual(v1, v2);
 	end
@@ -48,49 +64,114 @@ function SettingMixin:GetVariableType()
 end
 
 function SettingMixin:GetValue()
-	local value = self:GetValueInternal();
-	return value;
-end
-
-function SettingMixin:SetValue(value, force)
 	if self.pendingValue ~= nil then
+		return self.pendingValue;
+	end
+
+	local currentValue = self:GetValueDerived();
+	return currentValue;
+end
+
+-- 'immediate' is expected when committing applyable values or forcing
+-- a value such as in cases like choosing defaults or reassigning a value
+-- in the process of doing a revert.
+function SettingMixin:SetValue(value, immediate)
+	-- Stops reentrancy. For example, assigning a cvar setting triggers a CVAR_UPDATE 
+	-- event that causes the settings system to try and update this setting.
+	if self:IsLocked() then
 		return;
 	end
 
-	local currentValue = self:GetValue();
-	local equivalentValue = ValuesEquivalent(currentValue, value);
-	if not force and equivalentValue then
-		return;
+	if immediate or not (self:HasCommitFlag(Settings.CommitFlag.Apply)) then
+		self:ApplyValue(value);
+	else
+		local currentValue = self:GetValueDerived();
+		if ValuesApproximatelyEqual(currentValue, value) then
+			-- Discard the pending value to return it to it's original state.
+			self:ClearPendingValue();
+		else
+			-- The value is pending write by the commit step.
+			self:SetPendingValue(value);
+		end
+
+		-- Notify so that controls can display this value.
+		self:TriggerValueChanged(value);
 	end
-
-	local originalValue = self.originalValue;
-	local newValue = self:SetValueInternal(value);
-
-	if (originalValue == nil) and not equivalentValue then
-		originalValue = currentValue;
-		self.originalValue = currentValue;
-	elseif ValuesEquivalent(originalValue, newValue) then
-		self.originalValue = nil;
-	end
-
-	SettingsCallbackRegistry:TriggerEvent(self:GetVariable(), self, newValue, currentValue, originalValue);
 end
 
-function SettingMixin:ReinitializeValue(value)
-	self:Revert();
+function SettingMixin:ApplyValue(value)
+	self:ClearPendingValue();
 
-	local force = true;
-	self:SetValue(value, force);
+	local currentValue = self:GetValueDerived();
+	if currentValue ~= value then
+		ErrorIfInvalidVariableType(self.name, value, self.variableType);
+
+		self:SetLocked(true);
+		self:SetValueDerived(value);
+		self:SetLocked(false);
+	end
+
+	self:TriggerValueChanged(value);
 end
 
+function SettingMixin:SetValueToDefault()
+	local defaultValue = self:GetDefaultValueDerived();
+	if defaultValue == nil then
+		return false;
+	end
+	
+	self:ApplyValue(defaultValue);
+
+	return true;
+end
+
+function SettingMixin:Commit()
+	if self.pendingValue ~= nil then
+		self:ApplyValue(self.pendingValue);
+	else
+		assertsafe(false, "Tried to commit setting '%s' without a pending value.", self.name);
+	end
+
+end
+
+function SettingMixin:SetPendingValue(value)
+	self.pendingValue = value;
+end
+
+function SettingMixin:ClearPendingValue()
+	self.pendingValue = nil;
+	self.lockPendingValue = false;
+end
+
+-- Revert discards the pending value and then notifies listeners to read
+-- the current value again.
 function SettingMixin:Revert()
-	if self.originalValue ~= nil then
-		self:SetValue(self.originalValue);
+	if self.lockPendingValue then
+		return false;
 	end
+
+	self:ClearPendingValue();
+
+	self:NotifyUpdate();
 end
 
-function SettingMixin:GetOriginalValue()
-	return self.originalValue;
+-- Informs any listeners the value changed and it's current value needs to be read again. 
+-- This is only called externally in cases where the underlying value changed was a source other than the
+-- setting object. A good example here is the Self Highlight option in unit popups, where the set of options
+-- described on the setting is less granular than that displayed in the popup context menu. The context menu
+-- changes the underlying cvars that then need to be reevaluated by the setting.
+function SettingMixin:NotifyUpdate()
+	local currentValue = self:GetValueDerived();
+	self:TriggerValueChanged(currentValue);
+end
+
+-- If a dependent setting has its value changed, any value changed callbacks may
+-- try to revert other settings with the intention of obtaining a new valid display value. 
+-- It doesn't distinguish between reinitialization and a value being changed due to the commit step.
+-- This is called at the beginning of the commit process to ensure all settings have their
+-- pending values retained until the commit is done.
+function SettingMixin:LockPendingValue()
+	self.lockPendingValue = true;
 end
 
 function SettingMixin:GetCommitOrder()
@@ -134,35 +215,35 @@ function SettingMixin:UpdateIgnoreApplyFlag()
 end
 
 function SettingMixin:IsModified()
-	return (self.originalValue ~= nil) and not ValuesEquivalent(self.originalValue, self:GetValue());
-end
-
-function SettingMixin:Commit()
-	if self.originalValue ~= nil then
-		self.originalValue = nil;
+	if self.pendingValue == nil then
+		return false;
 	end
 
-	if self.commitValue then
-		self.commitValue(self:GetValue());
-	end
-end
-
-function SettingMixin:SetValueToDefault()
-	local defaultValue = self:GetDefaultValueInternal();
-	if (defaultValue ~= nil) and (defaultValue ~= self:GetValue()) then
-		self:SetValue(defaultValue);
-		self:Commit();
-		return true;
-	end
-	return false;
+	local currentValue = self:GetValueDerived();
+	local equal = ValuesApproximatelyEqual(currentValue, self.pendingValue);
+	return not equal;
 end
 
 function SettingMixin:GetDefaultValue()
-	return self:GetDefaultValueInternal();
+	return self:GetDefaultValueDerived();
 end
 
-function SettingMixin:IsNewTagShown()
-	return IsNewSettingInCurrentVersion(self:GetVariable());
+function SettingMixin:SetLocked(locked)
+	self.locked = locked;
+end
+
+function SettingMixin:IsLocked()
+	return self.locked;
+end
+
+function SettingMixin:TriggerValueChanged(value)
+	SettingsCallbackRegistry:TriggerEvent(self.variable, self, value);
+end
+
+function SettingMixin:SetValueChangedCallback(callback)
+	Settings.SetOnValueChangedCallback(self.variable, function(_, setting, value)
+		callback(setting, value);
+	end);
 end
 
 CVarSettingMixin = CreateFromMixins(SettingMixin);
@@ -173,20 +254,19 @@ function CVarSettingMixin:Init(name, cvar, variableType)
 	
 	local cvarAccessor = CreateCVarAccessor(cvar, variableType);
 	
-	self.GetValueInternal = function(self)
-		return cvarAccessor:GetValue();
+	self.GetValueDerived = function(self)
+		local value = cvarAccessor:GetValue();
+		return self:TransformValue(value);
 	end;
 
-	self.SetValueInternal = function(self, value)
-		assert(type(value) == variableType);
-		self.pendingValue = value;
+	self.SetValueDerived = function(self, value)
+		value = self:TransformValue(value);
 		cvarAccessor:SetValue(value);
-		self.pendingValue = nil;
-		return value;
 	end
 	
-	self.GetDefaultValueInternal = function(self)
-		return cvarAccessor:GetDefaultValue();
+	self.GetDefaultValueDerived = function(self)
+		local value = cvarAccessor:GetDefaultValue();
+		return self:TransformValue(value);
 	end
 
 	-- SetValue is deliberately type strict. ConvertValueInternal is exposed for the
@@ -196,106 +276,75 @@ function CVarSettingMixin:Init(name, cvar, variableType)
 	end
 end
 
--- Lua setting creates a variable when initialized. This can be used to represent state 
--- for multiple variables. For example, a setting have two values, true and false, 
--- but changing its value may result in 4 different CVars being changed.
-ProxySettingMixin = CreateFromMixins(SettingMixin);
-
-function ProxySettingMixin:Init(name, variable, variableTbl, variableType, defaultValue, getValue, setValue, commitValue)
-	ErrorIfInvalidSettingArguments(name, variable, variableType, defaultValue);
-	SettingMixin.Init(self, name, variable, variableType);
-
-	-- Default value is optional, and the setting will not be changed if the setting is "defaulted".
-	-- However if it is omitted, getValue must be provided to set the initial value. 
-	self.defaultValue = defaultValue;
-	assert((defaultValue == nil) or MatchesVariableType(defaultValue, variableType));
-	
-	if variableTbl == nil then
-		variableTbl = Settings.Variables;
+function CVarSettingMixin:TransformValue(value)
+	if self.valueTransformer then
+		return self.valueTransformer(value);
 	end
-
-	self.GetValueInternal = function(self)
-		local value = variableTbl[variable];
-		assert(MatchesVariableType(value, variableType));
-		return value;
-	end;
-
-	self.SetValueInternal = function(self, value)
-		if not MatchesVariableType(value, variableType) then
-			error(string.format("SetValue '%s' requires '%s' type, not '%s' type.", name, variableType, type(value)));
-		end
-		variableTbl[variable] = value;
-		return value;
-	end;
-
-	self.GetDefaultValueInternal = function(self)
-		return self.defaultValue;
-	end;
-
-	-- A valid value must be obtainable at the time the setting is initialized. In the case of saved variables,
-	-- the setting is expected to be initialized after SETTINGS_LOADED (includes PEW and VARIABLES_LOADED). 
-	-- If it is not, the default value will be assigned, and the value could be inaccurate if read before that event. 
-	-- If this is not a saved variable, then the value is expected to be obtained from the getValue function.
-	if variableTbl[variable] == nil then
-		if getValue ~= nil then
-			local v = getValue();
-			--assert(v ~= nil, "getValue must return a value, but is returning nil.");
-			self:SetValueInternal(v);
-		elseif self.defaultValue ~= nil then
-			self:SetValueInternal(self.defaultValue);
-		else
-			error("Setting cannot be created without an obtainable initial value.");
-		end
-	end
-	
-	-- Whenever the underlying variable is set, the setValue function is called to allow for
-	-- additional changes. For internal settings, this typically results in changing multiple
-	-- cvars. This wrapper occurs after the initial value is set so that we don't invoke the
-	-- set callback as part of initialization above.
-	if setValue then
-		local oldSetValueInternal = self.SetValueInternal;
-		self.SetValueInternal = function(self, value)
-			setValue(oldSetValueInternal(self, value));
-			return value;
-		end
-	end
-
-	-- commitValue can be leveraged to treat the setting value as a temporary value. For example, a dropdown
-	-- in the graphics list may have it's value changed from 1 to 2 without immediately making undesired cvar changes.
-	self.commitValue = commitValue;
-	
-	-- initValue is the function that we used to set the original value (getValue). We save it so
-	-- we can later reinitialize the setting from an external source if required.
-	self.initValue = getValue;
+	return value;
 end
 
-function ProxySettingMixin:GetInitValue()
-	if self.initValue then
-		return self.initValue();
+do
+	-- Add additional transforms as necessary so it's not necessary to create ProxySettings just
+	-- to remap inbound and outbound values. May be moved to SettingMixin if other setting types
+	-- can take advantage of this. See VoiceVADSensitivity as an example for another transform.
+	local function NegateBoolean(value)
+		return not value;
 	end
 	
-	return self.defaultValue;
+	function CVarSettingMixin:NegateBoolean()
+		assert(self.variableType == Settings.VarType.Boolean);
+		self.valueTransformer = NegateBoolean;
+	end
+end
+
+ProxySettingMixin = CreateFromMixins(SettingMixin);
+
+do
+	local function SecureGetValueDerived(setting)
+		return setting.getValue();
+	end
+	
+	local function SecureSetValueDerived(setting, value)
+		setting.setValue(value);
+	end
+
+	function ProxySettingMixin:Init(name, variable, variableType, defaultValue, getValue, setValue)
+		variableType = EnsureVariableTypeIsValid(variableType, defaultValue);
+
+		ErrorIfInvalidSettingArguments(name, variable, variableType, defaultValue);
+		SettingMixin.Init(self, name, variable, variableType);
+	
+		self.getValue = getValue;
+		self.setValue = setValue;
+	
+		self.GetValueDerived = function(self)
+			return securecallfunction(SecureGetValueDerived, self);
+		end;
+		
+		self.SetValueDerived = function(self, value)
+			securecallfunction(SecureSetValueDerived, self, value);
+		end;
+	
+		self.GetDefaultValueDerived = function(self)
+			return defaultValue;
+		end;
+	end
 end
 
 ModifiedClickSettingMixin = CreateFromMixins(SettingMixin);
 
 function ModifiedClickSettingMixin:Init(name, modifier, defaultValue)
-	SettingMixin.Init(self, name, modifier);
+	SettingMixin.Init(self, name, modifier, Settings.VarType.String);
 
-	self.defaultValue = defaultValue;
-	assert((defaultValue == nil) or MatchesVariableType(defaultValue, Settings.VarType.String));
-
-	self.GetValueInternal = function(self)
+	self.GetValueDerived = function(self)
 		return GetModifiedClick(modifier);
 	end;
 
-	self.SetValueInternal = function(self, value)
-		assert(MatchesVariableType(value, Settings.VarType.String));
+	self.SetValueDerived = function(self, value)
 		SetModifiedClick(modifier, value);
-		return value;
 	end;
 
-	self.GetDefaultValueInternal = function(self)
+	self.GetDefaultValueDerived = function(self)
 		return defaultValue;
 	end;
 
@@ -304,22 +353,55 @@ end
 
 AddOnSettingMixin = CreateFromMixins(SettingMixin);
 
-function AddOnSettingMixin:Init(name, variable, variableType, defaultValue)
-	SettingMixin.Init(self, name, variable, variableType)
+--[[
+'variable' uniquely identifies your setting and must not conflict with any addons. Prefixing this identifier
+with your addon name is highly recommended.
+'variableKey' is your value's key in your saved variable table.
+'variableTbl' is your saved variable table hopefully defined in your addon's .toc.
+]]--
 
-	self.defaultValue = defaultValue;
-	self.internalValue = defaultValue;
-end
+do
+	local function SecureSetVariableTblDefaultValue(variableKey, variableTbl, defaultValue)
+		if variableTbl[variableKey] == nil then
+			variableTbl[variableKey] = defaultValue;
+		end
+	end
+	
+	local function SecureGetValueDerived(setting)
+		return setting.variableTbl[setting.variableKey];
+	end
+	
+	local function SecureSetValueDerived(setting, value)
+		setting.variableTbl[setting.variableKey] = value;
+		return value;
+	end
+	
+	function AddOnSettingMixin:Init(name, variable, variableKey, variableTbl, variableType, defaultValue)
+		variableType = EnsureVariableTypeIsValid(variableType, defaultValue);
 
-function AddOnSettingMixin:SetValueInternal(value)
-	self.internalValue = value;
-	return value;
-end
-
-function AddOnSettingMixin:GetDefaultValueInternal()
-	return self.defaultValue;
-end
-
-function AddOnSettingMixin:GetValueInternal()
-	return self.internalValue;
+		SettingMixin.Init(self, name, variable, variableType);
+		assert(type(variableTbl) == "table", "'variableTbl' argument must be a table.");
+	
+		self.variableKey = variableKey;
+		self.variableTbl = variableTbl;
+		self.defaultValue = defaultValue;
+	
+		--[[ 
+		The argument 'variableTbl' is passed in by the inbound attribute handler and is therefore secure. 
+		However, any table access will taint execution and must be done through secure call wrappers.
+		]]--
+		securecallfunction(SecureSetVariableTblDefaultValue, variableKey, variableTbl, defaultValue);
+	
+		self.GetValueDerived = function(self)
+			return securecallfunction(SecureGetValueDerived, self);
+		end;
+	
+		self.SetValueDerived = function(self, value)
+			securecallfunction(SecureSetValueDerived, self, value);
+		end;
+	
+		self.GetDefaultValueDerived = function(self)
+			return defaultValue;
+		end;
+	end
 end

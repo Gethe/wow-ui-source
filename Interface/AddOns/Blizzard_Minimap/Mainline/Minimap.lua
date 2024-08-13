@@ -57,7 +57,7 @@ local LOW_PRIORITY_TRACKING_SPELLS = {
 	[261764] = true; -- Track Warboards
 };
 
-local TRACKING_SPELL_OVERRIDE_TEXTURES = {
+local TRACKING_SPELL_OVERRIDE_ATLAS = {
 	[43308] = "professions_tracking_fish";-- Find Fish
 	[2580] = "professions_tracking_ore"; -- Find Minerals 1
 	[8388] = "professions_tracking_ore"; -- Find Minerals 2
@@ -76,7 +76,13 @@ local function CreatePredictedTrackingState()
 	tbl.SetSelected = function(self, index, selected)
 		state[index] = selected;
 
-		C_Minimap.SetTracking(index, selected);
+		MinimapUtil.SetTrackingFilterByFilterIndex(index, selected);
+	end
+
+	-- Some filters (like trivial quest tracking) can be changed from other places in the UI (like the Options panel or the World Map)
+	-- If a filter is changed from an external system, then all we need to do is update the predicted state
+	tbl.OverrideSelectedState = function(self, index, selected)
+		state[index] = selected;
 	end
 
 	tbl.IsSelected = function(self, index)
@@ -258,11 +264,12 @@ function MinimapMixin:OnEvent(event, ...)
 end
 
 function MinimapMixin:OnEnter()
+	GameTooltip_ClearAllStatusBars(GameTooltip);
 	self:SetScript("OnUpdate", Minimap_OnUpdate);
 
-	if(not DISABLE_MAP_ZOOM) then 
-	self.ZoomIn:Show();
-	self.ZoomOut:Show();
+	if(not DISABLE_MAP_ZOOM) then
+		self.ZoomIn:Show();
+		self.ZoomOut:Show();
 	end
 end
 
@@ -429,10 +436,11 @@ end
 MiniMapMailFrameMixin = { };
 
 function MiniMapMailFrameMixin:OnLoad()
-	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.InGameMailNotification) then
-	self:RegisterEvent("UPDATE_PENDING_MAIL");
-	self:SetFrameLevel(self:GetFrameLevel()+1);
-end
+	local inGameMailNotificationDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.IngameMailNotificationDisabled);
+	if not inGameMailNotificationDisabled then
+		self:RegisterEvent("UPDATE_PENDING_MAIL");
+		self:SetFrameLevel(self:GetFrameLevel()+1);
+	end
 end
 
 function MiniMapMailFrameMixin:OnEvent(event)
@@ -569,10 +577,11 @@ end
 MiniMapTrackingButtonMixin = { };
 
 function MiniMapTrackingButtonMixin:OnLoad()
-	local featureEnabled = C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.InGameTracking);
-	if featureEnabled then
+	local inGameTrackingDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.IngameTrackingDisabled);
+	if not inGameTrackingDisabled then
 		self:RegisterEvent("VARIABLES_LOADED");
 		self:RegisterEvent("CVAR_UPDATE");
+		self:RegisterEvent("SPELLS_CHANGED");
 
 		self:SetupMenu(function(dropdown, rootDescription)
 			rootDescription:SetTag("MENU_MINIMAP_TRACKING");
@@ -581,31 +590,31 @@ function MiniMapTrackingButtonMixin:OnLoad()
 			local showAll = GetCVarBool("minimapTrackingShowAll");
 			local class = select(2, UnitClass("player"));
 			local isHunterClass = class == "HUNTER";
-		
+
 			if not showAll then
 				rootDescription:CreateButton(UNCHECK_ALL, function()
 					trackingState:ClearSelections();
-					
+
 					for index = 1, C_Minimap.GetNumTrackingTypes() do
 						local filter = C_Minimap.GetTrackingFilter(index);
 						if ALWAYS_ON_FILTERS[filter.filterID] or CONDITIONAL_FILTERS[filter.filterID] then
 							trackingState:SetSelected(index, true);
 						end
 					end
-				
+
 					return MenuResponse.Refresh;
 				end);
 			end
-			
+
 			local hunterInfo = {};
 			local townfolkInfo = {};
 			local regularInfo = {};
-		
+
 			for index = 1, C_Minimap.GetNumTrackingTypes() do
 				if showAll or CanDisplayTrackingInfo(index) then
 					local trackingInfo = C_Minimap.GetTrackingInfo(index);
 					trackingInfo.index = index;
-		
+
 					if isHunterClass and (trackingInfo.subType == HUNTER_TRACKING) then
 						table.insert(hunterInfo, trackingInfo);
 					elseif trackingInfo.subType == TOWNSFOLK_TRACKING then
@@ -615,7 +624,7 @@ function MiniMapTrackingButtonMixin:OnLoad()
 					end
 				end
 			end
-		
+
 			TableUtil.Execute({hunterInfo, townfolkInfo, regularInfo}, function(trackingInfo)
 				table.sort(trackingInfo, function(a, b)
 					-- Sort low priority tracking spells to the end
@@ -629,74 +638,112 @@ function MiniMapTrackingButtonMixin:OnLoad()
 					return a.index < b.index;
 				end);
 			end);
-			
+
 			local function CreateCheckboxWithIcon(parentDescription, trackingInfo)
 				local name = trackingInfo.name;
 				trackingInfo.text = name;
-		
-				local texture = TRACKING_SPELL_OVERRIDE_TEXTURES[trackingInfo.spellID] or trackingInfo.texture;
+
+				local asAtlas = TRACKING_SPELL_OVERRIDE_ATLAS[trackingInfo.spellID] ~= nil;
+				local texture = TRACKING_SPELL_OVERRIDE_ATLAS[trackingInfo.spellID] or trackingInfo.texture;
 				local desc = parentDescription:CreateCheckbox(
 					name,
 					IsTrackingActive,
 					ToggleTrackingSelected,
 					trackingInfo);
-		
+
 				desc:AddInitializer(function(button, description, menu)
 					local rightTexture = button:AttachTexture();
 					rightTexture:SetSize(20, 20);
 					rightTexture:SetPoint("RIGHT");
-					rightTexture:SetTexture(texture);
-		
+					if asAtlas then
+						rightTexture:SetAtlas(texture);
+					else
+						rightTexture:SetTexture(texture);
+
+						if trackingInfo.type == "spell" then
+							local uv0, uv1 = .0625, .9;
+							rightTexture:SetTexCoord(uv0, uv1, uv0, uv1);
+						end
+					end
+
 					local fontString = button.fontString;
 					fontString:SetPoint("RIGHT", rightTexture, "LEFT");
 
-					if trackingInfo.type == "spell" then
-						local uv0, uv1 = .0625, .9;
-						rightTexture:SetTexCoord(uv0, uv1, uv0, uv1);
-					end
-						
 					-- The size is explicitly provided because this requires a right-justified icon.
 					local width, height = fontString:GetUnboundedStringWidth() + 60, 20;
 					return width, height;
 				end);
-		
+
 				return desc;
 			end
-		
+
 			local hunterCount = #hunterInfo;
 			if hunterCount > 0 then
+				local hunterMenuDesc = rootDescription;
 				if hunterCount > 1 then
-					local hunterMenuDesc = rootDescription:CreateButton(HUNTER_TRACKING_TEXT);
-					for index, info in ipairs(hunterInfo) do
-						CreateCheckboxWithIcon(hunterMenuDesc, info);
-					end
-				else
-					CreateCheckboxWithIcon(rootDescription, info);
+					hunterMenuDesc = rootDescription:CreateButton(HUNTER_TRACKING_TEXT);
+				end
+
+				for index, info in ipairs(hunterInfo) do
+					CreateCheckboxWithIcon(hunterMenuDesc, info);
 				end
 			end
-		
+
 			if #townfolkInfo > 0 then
 				local townfolkMenuDesc = rootDescription;
 				if showAll then
 					townfolkMenuDesc = rootDescription:CreateButton(TOWNSFOLK_TRACKING_TEXT);
 				end
-		
+
 				for index, info in ipairs(townfolkInfo) do
 					CreateCheckboxWithIcon(townfolkMenuDesc, info);
 				end
 			end
-		
+
 			for index, info in ipairs(regularInfo) do
 				CreateCheckboxWithIcon(rootDescription, info);
 			end
 		end);
 	end
 
-	MinimapCluster.Tracking:SetShown(featureEnabled);
+	MinimapCluster.Tracking:SetShown(not inGameTrackingDisabled);
+
+	self:RegisterSettingEntryCallbacks();
 end
 
-function MiniMapTrackingButtonMixin:OnEvent(event, arg1)
-	if event == "CVAR_UPDATE" or event == "VARIABLES_LOADED" then
+-- Some filters (like trivial quest tracking) can be changed from the "Options" panel
+-- If a filter is changed from that system, then those changes need to be reflected here as well
+function MiniMapTrackingButtonMixin:RegisterSettingEntryCallbacks()
+	local function TryUpdateFilterStateForExternalChange(filterID, value)
+		local filterChangedFromExternalSystem = not self:IsMenuOpen();
+		if filterChangedFromExternalSystem then
+			local filterIndex = MinimapUtil.GetFilterIndexForFilterID(filterID);
+			if filterIndex then
+				-- The filter has already been changed by the Settings system so we just need to force update our tracking state
+				trackingState:OverrideSelectedState(filterIndex, value);
+			end
+		end
+	end
+
+	Settings.SetOnValueChangedCallback("PROXY_ACCOUNT_COMPLETED_QUEST_FILTERING", function(_o, _setting, value)
+		TryUpdateFilterStateForExternalChange(Enum.MinimapTrackingFilter.AccountCompletedQuests, value);
+	end);
+
+	Settings.SetOnValueChangedCallback("PROXY_TRIVIAL_QUEST_FILTERING", function(_o, _setting, value)
+		TryUpdateFilterStateForExternalChange(Enum.MinimapTrackingFilter.TrivialQuests, value);
+	end);
+end
+
+function MiniMapTrackingButtonMixin:OnEvent(event, ...)
+	if event == "CVAR_UPDATE" or event == "VARIABLES_LOADED" or event == "SPELLS_CHANGED" then		
+		if event == "CVAR_UPDATE" then
+			local cvarName, value = ...;
+			local isMinimapTrackingCVar = (cvarName == "minimapTrackedInfov3");
+			if not isMinimapTrackingCVar then
+				return;
+			end
+		end
+
 		if not self:IsMenuOpen() then
 			-- The initial tracking values are unavailable until these events have fired.
 			for index = 1, C_Minimap.GetNumTrackingTypes() do
@@ -755,7 +802,7 @@ function ExpansionLandingPageMinimapButtonMixin:OnLoad()
 
 	self.pulseLocks = {};
 
-	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.LandingPageFactionID) then
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.LandingPageFactionID) then
 		self:RefreshButton();
 	else
 		FrameUtil.RegisterFrameForEvents(self, GarrisonLandingPageEvents);
@@ -778,9 +825,9 @@ end
 function ExpansionLandingPageMinimapButtonMixin:RefreshButton(forceUpdateIcon)
 	local previousMode = self.mode;
 	local wasInGarrisonMode = self:IsInGarrisonMode();
-	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.LandingPageFactionID) then
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.LandingPageFactionID) then
 		self.mode = ExpansionLandingPageMode.MajorFactionRenown;
-		self.majorFactionID = C_GameModeManager.GetFeatureSetting(Enum.GameModeFeatureSetting.LandingPageFactionID);
+		self.majorFactionID = C_GameRules.GetGameRuleAsFloat(Enum.GameRule.LandingPageFactionID);
 	elseif ExpansionLandingPage:IsOverlayApplied() then
 		self.mode = ExpansionLandingPageMode.ExpansionOverlay;
 	else
@@ -794,7 +841,7 @@ function ExpansionLandingPageMinimapButtonMixin:RefreshButton(forceUpdateIcon)
 			self:ClearPulses();
 			FrameUtil.UnregisterFrameForEvents(self, GarrisonLandingPageEvents);
 		end
-		
+
 	if self.mode ~= previousMode or forceUpdateIcon == true then
 		self:Hide();
 

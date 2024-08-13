@@ -174,6 +174,7 @@ function PNCEndStep:OnStoreVASPurchaseError()
 	local displayMsg = VASErrorData_GetCombinedMessage(self.results.selectedCharacterGUID);
 
 	CharSelectServicesFlowFrame:SetErrorMessage(displayMsg);
+	CharSelectServicesFlowFrame.CloseButton:Show();
 	CharacterServicesMaster_Update();
 end
 

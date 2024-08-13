@@ -86,7 +86,8 @@ function InstanceDifficultyMixin:DeferredUpdate()
 end
 
 function InstanceDifficultyMixin:Update()
-	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.InstanceDifficultyBanner) then
+	local instanceDifficultyBannerDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.InstanceDifficultyBannerDisabled);
+	if instanceDifficultyBannerDisabled then
 		for _, frame in ipairs(self.ContentModes) do
 			frame:Hide();
 		end

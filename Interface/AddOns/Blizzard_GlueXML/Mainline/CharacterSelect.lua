@@ -181,6 +181,7 @@ function CharacterSelectFrameMixin:OnShow()
             GameRoomBillingFrameText:SetText(billingText);
             GameRoomBillingFrame:SetHeight(GameRoomBillingFrameText:GetHeight() + 26);
             GameRoomBillingFrame:Show();
+			CharacterSelect_UpdateGameRoomBillingFrameAnchors();
         end
     end
 
@@ -1010,7 +1011,13 @@ function CharacterSelectScrollUp_OnClick()
 end
 
 local function GetLeftSideAlertBottomOffset()
-	return RPEUpgradeMinimizedFrame:IsShown() and RPEUpgradeMinimizedFrame.Icon:GetTop() or CharacterSelectBackButton:GetTop();
+	if GameRoomBillingFrame:IsShown() then
+		return GameRoomBillingFrame:GetTop();
+	elseif RPEUpgradeMinimizedFrame:IsShown() then
+		return RPEUpgradeMinimizedFrame.Icon:GetTop();
+	else
+		return CharacterSelectBackButton:GetTop();
+	end
 end
 
 CharacterSelectServerAlertFrameMixin = {};
@@ -1272,6 +1279,7 @@ function AccountUpgradePanel_UpdateExpandState()
         CharSelectAccountUpgradeButton.expandCollapseButton:Show();
     end
 	AccountUpgradePanel_Update(shouldBeExpanded);
+	CharacterSelect_UpdateGameRoomBillingFrameAnchors();
 	CharacterSelectServerAlertFrame:UpdateHeight();
 end
 
@@ -1300,6 +1308,7 @@ function CharacterTemplatesFrame_OnLoad(self)
 
 	self.CreateTemplateButton:SetScript("OnClick", function()
 		PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
+		CharacterSelectListUtil.SaveCharacterOrder();
 		C_CharacterCreation.SetCharacterTemplate(self.characterIndex);
 		GlueParent_SetScreen("charcreate");
 	end);
@@ -1488,24 +1497,28 @@ function KioskMode_CheckAutoRealm()
 end
 
 function CharacterSelect_ConditionallyLoadAccountSaveUI()
-    if (C_AccountServices.IsAccountSaveEnabled()) then
-        if (not ACCOUNT_SAVE_IS_LOADED) then
+    if C_AccountServices.IsAccountSaveEnabled() then
+        if not ACCOUNT_SAVE_IS_LOADED then
             ACCOUNT_SAVE_IS_LOADED = C_AddOns.LoadAddOn("Blizzard_AccountSaveUI");
         end
-        if (AccountSaveFrame) then
-            AccountSaveFrame:Show();
 
-            if (GameRoomBillingFrame:IsShown()) then
-				GameRoomBillingFrame:SetPoint("TOPLEFT", CharacterSelectBackButton, "TOPRIGHT");
-            end
+        if AccountSaveFrame then
+            AccountSaveFrame:Show();
         end
     elseif AccountSaveFrame then
         AccountSaveFrame:Hide();
-
-        if (GameRoomBillingFrame:IsShown()) then
-            GameRoomBillingFrame:SetPoint("TOP", CharacterSelectServerAlertFrame, "BOTTOM");
-        end
     end
+end
+
+function CharacterSelect_UpdateGameRoomBillingFrameAnchors()
+	if GameRoomBillingFrame:IsShown() then
+		GameRoomBillingFrame:ClearAllPoints();
+		if RPEUpgradeMinimizedFrame:IsShown() then
+			GameRoomBillingFrame:SetPoint("BOTTOMLEFT", RPEUpgradeMinimizedFrame, "TOPLEFT");
+		else
+			GameRoomBillingFrame:SetPoint("BOTTOMLEFT", CharacterSelectBackButton, "TOPLEFT", -8, 0);
+		end
+	end
 end
 
 local KIOSK_MODE_WAITING_ON_TRIAL = false;

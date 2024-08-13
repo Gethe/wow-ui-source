@@ -310,6 +310,7 @@ end
 	end);
 
 	FrameUtil.RegisterUpdateFunction(self, .75, GenerateClosure(self.Update, self));
+	self:CheckShowHelptips();
 end
 
 function ProfessionsCraftingPageMixin:OnHide()
@@ -1459,6 +1460,27 @@ function ProfessionsCraftingPageMixin:CheckShowHelptips()
 				bitfieldFlag = LE_FRAME_TUTORIAL_PROFESSIONS_RECRAFT,
 			};
 			RunNextFrame(function() HelpTip:Show(UIParent, helpTipInfo, self.SchematicForm.recraftSlot.InputSlot); end);
+			return;
+		end
+	end
+
+	-- Concentration helptip
+	if not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_CONCENTRATION_CURRENCY) then
+		if self.ConcentrationDisplay:IsVisible() then
+			local helpTipInfo =
+			{
+				text = PROFESSIONS_CRAFTING_CONCENTRATION_HELPTIP,
+				buttonStyle = HelpTip.ButtonStyle.Close,
+				targetPoint = HelpTip.Point.TopEdgeCenter,
+				alignment = HelpTip.Alignment.Center,
+				system = helpTipSystem,
+				acknowledgeOnHide = true,
+				offsetX = 0,
+				onAcknowledgeCallback = function() self:CheckShowHelptips(); end,
+				cvarBitfield = "closedInfoFramesAccountWide",
+				bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_CONCENTRATION_CURRENCY,
+			};
+			RunNextFrame(function() HelpTip:Show(UIParent, helpTipInfo, self.ConcentrationDisplay); end);
 			return;
 		end
 	end

@@ -4,8 +4,10 @@ PARTYBACKGROUND_OPACITY = PARTYBACKGROUND_OPACITY or nil;
 PartyFrameMixin={};
 
 function PartyFrameMixin:OnLoad()
-	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.ForcedPartyFrameScale) then
-		self:SetScale(C_GameModeManager.GetFeatureSetting(Enum.GameModeFeatureSetting.ForcedPartyFrameScale));
+	local numDecimalPlaces = 2;
+	local forcedPartyFrameScale = C_GameRules.GetGameRuleAsFloat(Enum.GameRule.ForcedPartyFrameScale, numDecimalPlaces);
+	if forcedPartyFrameScale > 0 then
+		self:SetScale(forcedPartyFrameScale);
 	end
 
 	local function PartyMemberFrameReset(framePool, frame)
@@ -18,7 +20,7 @@ function PartyFrameMixin:OnLoad()
 end
 
 function PartyFrameMixin:UpdateSystemSettingFrameSize()
-	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.ForcedPartyFrameScale) then
+	if not C_GameRules.IsGameRuleActive(Enum.GameRule.ForcedPartyFrameScale) then
 		EditModeUnitFrameSystemMixin.UpdateSystemSettingFrameSize(self);
 	end
 end

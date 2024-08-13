@@ -30,7 +30,7 @@ function CommunitiesStreamDropdownMixin:OnLoad()
 end
 
 function CommunitiesStreamDropdownMixin:SetupMenu()
-	WowStyle1DropdownMixin.SetupMenu(self, function(dropdown, rootDescription)
+	DropdownButtonMixin.SetupMenu(self, function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_COMMUNITIES_STREAM");
 
 		local communitiesFrame = self:GetCommunitiesFrame();

@@ -398,6 +398,29 @@ function Chat_GetCommunitiesChannelColor(clubId, streamId)
 	return DEFAULT_CHAT_CHANNEL_COLOR:GetRGB();
 end
 
+local function TextEmoteSort(token1, token2)
+	local i = 1;
+	local string1, string2;
+	local token = _G["EMOTE"..i.."_TOKEN"];
+	while ( i <= MAXEMOTEINDEX ) do
+		if ( token == token1 ) then
+			string1 = _G["EMOTE"..i.."_CMD1"];
+			if ( string2 ) then
+				break;
+			end
+		end
+		if ( token == token2 ) then
+			string2 = _G["EMOTE"..i.."_CMD1"];
+			if ( string1 ) then
+				break;
+			end
+		end
+		i = i + 1;
+		token = _G["EMOTE"..i.."_TOKEN"];
+	end
+	return string1 < string2;
+end
+
 -- list of text emotes that we want to show on the Emote submenu (these have anims)
 EmoteList = {
 	"WAVE",
@@ -712,6 +735,10 @@ EMOTE627_TOKEN = "QUACK"
 -- NOTE: The indices used to iterate the tokens may not be contiguous, keep that in mind when updating this value.
 MAXEMOTEINDEX = 627;
 
+if not IsOnGlueScreen() then
+	table.sort(EmoteList, TextEmoteSort);
+	table.sort(TextEmoteSpeechList, TextEmoteSort);
+end
 
 ICON_LIST = {
 	"|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_1:",
@@ -2194,7 +2221,8 @@ SlashCmdList["CHAT_DND"] = function(msg)
 end
 
 SlashCmdList["WHO"] = function(msg)
-	if (Kiosk.IsEnabled() or not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.InGameWhoList)) then
+	local inGameWhoListDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.IngameWhoListDisabled);
+	if (Kiosk.IsEnabled() or inGameWhoListDisabled) then
 		return;
 	end
 	if ( msg == "" ) then
@@ -2211,7 +2239,8 @@ SlashCmdList["CHANNEL"] = function(msg, editBox)
 end
 
 SlashCmdList["FRIENDS"] = function(msg)
-	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.InGameFriendsList) then
+	local inGameFriendsListDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.IngameFriendsListDisabled);
+	if inGameFriendsListDisabled then
 		return;
 	end
 
@@ -2258,7 +2287,8 @@ SlashCmdList["UNIGNORE"] = function(msg)
 end
 
 SlashCmdList["SCRIPT"] = function(msg)
-	if ( not C_AddOns.GetScriptsDisallowedForBeta() and C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.UserScripts) ) then
+	local userScriptsDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.UserScriptsDisabled);
+	if ( not C_AddOns.GetScriptsDisallowedForBeta() and not userScriptsDisabled ) then
 		if ( not AreDangerousScriptsAllowed() ) then
 			StaticPopup_Show("DANGEROUS_SCRIPTS_WARNING");
 			return;
@@ -2404,7 +2434,8 @@ SlashCmdList["STOPWATCH"] = function(msg)
 end
 
 SlashCmdList["CALENDAR"] = function(msg)
-	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.InGameCalendar) then
+	local inGameCalendarDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.IngameCalendarDisabled);
+	if inGameCalendarDisabled then
 		return;
 	end
 
@@ -2488,7 +2519,8 @@ if IsGMClient() then
 end
 
 SlashCmdList["TABLEINSPECT"] = function(msg)
-	if ( Kiosk.IsEnabled() or C_AddOns.GetScriptsDisallowedForBeta() or not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.UserScripts) ) then
+	local userScriptsDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.UserScriptsDisabled);
+	if ( Kiosk.IsEnabled() or C_AddOns.GetScriptsDisallowedForBeta() or userScriptsDisabled ) then
 		return;
 	end
 	if ( not AreDangerousScriptsAllowed() ) then
@@ -2518,7 +2550,8 @@ end
 
 
 SlashCmdList["DUMP"] = function(msg)
-	if (not Kiosk.IsEnabled() and not C_AddOns.GetScriptsDisallowedForBeta() and C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.UserScripts)) then
+	local userScriptsDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.UserScriptsDisabled);
+	if (not Kiosk.IsEnabled() and not C_AddOns.GetScriptsDisallowedForBeta() and not userScriptsDisabled) then
 		if ( not AreDangerousScriptsAllowed() ) then
 			StaticPopup_Show("DANGEROUS_SCRIPTS_WARNING");
 			return;
@@ -3368,7 +3401,7 @@ function ChatFrame_UpdateDefaultChatTarget(self)
 end
 
 function ChatFrame_ConfigEventHandler(self, event, ...)
-	if IsOnGlueScreen() and not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.FrontEndChat) then
+	if IsOnGlueScreen() and not C_GameRules.IsGameRuleActive(Enum.GameRule.FrontEndChat) then
 		return;
 	end
 
@@ -3476,7 +3509,8 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 		local oldLevel, newLevel, real = ...;
 		if real and oldLevel ~= 0 and newLevel ~= 0 then
 			if newLevel > oldLevel then
-				local levelstring = C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.ChatLinkLevelToasts) and format(LEVEL_UP, newLevel, newLevel) or format(LEVEL_UP_NO_LINK, newLevel);
+				local chatLinkLevelToastsDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.ChatLinkLevelToastsDisabled);
+				local levelstring = not chatLinkLevelToastsDisabled and format(LEVEL_UP, newLevel, newLevel) or format(LEVEL_UP_NO_LINK, newLevel);
 				local info = ChatTypeInfo["SYSTEM"];
 				self:AddMessage(levelstring, info.r, info.g, info.b, info.id);
 			end
@@ -4313,21 +4347,6 @@ function MessageFrameScrollButton_OnUpdate(self, elapsed)
 			end
 			self.clickDelay = MESSAGE_SCROLLBUTTON_SCROLL_DELAY;
 		end
-	end
-end
-
-function ChatFrame_ToggleMenu()
-	ChatMenu:SetShown(not ChatMenu:IsShown());
-end
-
-function ChatFrameMenu_UpdateAnchorPoint()
-	--Update the menu anchor point
-	if ( FCF_GetButtonSide(DEFAULT_CHAT_FRAME) == "right" ) then
-		ChatMenu:ClearAllPoints();
-		ChatMenu:SetPoint("BOTTOMRIGHT", ChatFrameMenuButton, "TOPLEFT");
-	else
-		ChatMenu:ClearAllPoints();
-		ChatMenu:SetPoint("BOTTOMLEFT", ChatFrameMenuButton, "TOPRIGHT");
 	end
 end
 
@@ -5563,109 +5582,6 @@ function ChatEdit_HasStickyFocus()
 	return false;
 end
 
--- Chat menu functions
-function ChatMenu_SetChatType(chatFrame, type)
-	local editBox = ChatFrame_OpenChat("");
-	editBox:SetAttribute("chatType", type);
-	ChatEdit_UpdateHeader(editBox);
-end
-
-function ChatMenu_Say(self)
-	ChatMenu_SetChatType(self:GetParent().chatFrame, "SAY");
-end
-
-function ChatMenu_Party(self)
-	ChatMenu_SetChatType(self:GetParent().chatFrame, "PARTY");
-end
-
-function ChatMenu_Raid(self)
-	ChatMenu_SetChatType(self:GetParent().chatFrame, "RAID");
-end
-
-function ChatMenu_InstanceChat(self)
-	ChatMenu_SetChatType(self:GetParent().chatFrame, "INSTANCE_CHAT");
-end
-
-function ChatMenu_Guild(self)
-	ChatMenu_SetChatType(self:GetParent().chatFrame, "GUILD");
-end
-
-function ChatMenu_Yell(self)
-	ChatMenu_SetChatType(self:GetParent().chatFrame, "YELL");
-end
-
-function ChatMenu_Whisper(self)
-	local editBox = ChatFrame_OpenChat(SLASH_SMART_WHISPER1.." ");
-	editBox:SetText(SLASH_SMART_WHISPER1.." "..editBox:GetText());
-end
-
-function ChatMenu_Emote(self)
-	ChatMenu_SetChatType(self:GetParent().chatFrame, "EMOTE");
-end
-
-function ChatMenu_Reply(self)
-	ChatFrame_ReplyTell();
-end
-
-function ChatMenu_VoiceMacro(self)
-	ChatMenu_SetChatType(self:GetParent().chatFrame, "YELL");
-end
-
-function ChatMenu_OnLoad(self)
-	self.chatFrame = DEFAULT_CHAT_FRAME;
-
-	UIMenu_Initialize(self);
-
-	local isOnGlueScreen = IsOnGlueScreen();
-	if not isOnGlueScreen then
-		UIMenu_AddButton(self, SAY_MESSAGE, SLASH_SAY1, ChatMenu_Say);
-	end
-
-	UIMenu_AddButton(self, PARTY_MESSAGE, SLASH_PARTY1, ChatMenu_Party);
-
-	if not isOnGlueScreen then
-		UIMenu_AddButton(self, RAID_MESSAGE, SLASH_RAID1, ChatMenu_Raid);
-		UIMenu_AddButton(self, INSTANCE_CHAT_MESSAGE, SLASH_INSTANCE_CHAT1, ChatMenu_InstanceChat);
-		UIMenu_AddButton(self, GUILD_MESSAGE, SLASH_GUILD1, ChatMenu_Guild);
-		UIMenu_AddButton(self, YELL_MESSAGE, SLASH_YELL1, ChatMenu_Yell);
-	end
-
-	UIMenu_AddButton(self, WHISPER_MESSAGE, SLASH_SMART_WHISPER1, ChatMenu_Whisper);
-	UIMenu_AddButton(self, REPLY_MESSAGE, SLASH_REPLY1, ChatMenu_Reply);
-
-	if not isOnGlueScreen then
-		if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.Macros) then
-			UIMenu_AddButton(self, MACRO, SLASH_MACRO1, ShowMacroFrame);
-		end
-
-		UIMenu_AddButton(self, EMOTE_MESSAGE, SLASH_EMOTE1, ChatMenu_Emote, "EmoteMenu");
-
-		local VoiceMacroMenuButton = UIMenu_AddButton(self, VOICEMACRO_LABEL, nil, nil, "VoiceMacroMenu");
-		VoiceMacroMenuButton.dontHideParentOnClick = true;
-
-		local languageMenuButton = UIMenu_AddButton(self, LANGUAGE, nil, nil, "LanguageMenu");
-		languageMenuButton.dontHideParentOnClick = true;
-	end
-
-	UIMenu_AutoSize(self);
-end
-
-function ChatMenu_OnShow(self)
-	UIMenu_OnShow(self);
-
-	local subMenus = {
-		EmoteMenu,
-		LanguageMenu,
-		VoiceMacroMenu,
-	};
-
-	for i, menu in pairs(subMenus) do
-		if menu then
-			menu:Hide();
-		end
-	end
-end
-
 function ChatFrame_ActivateCombatMessages(chatFrame)
 	ChatFrame_AddMessageGroup(chatFrame, "OPENING");
 	ChatFrame_AddMessageGroup(chatFrame, "TRADESKILLS");
@@ -5817,26 +5733,176 @@ local NewLanguageHelpTipInfo = {
 	targetPoint = HelpTip.Point.RightEdgeCenter,
 };
 
+local function GetSelectedLanguageID()
+	return DEFAULT_CHAT_FRAME.editBox.languageID;
+end
+
 ChatFrameMenuButtonMixin = {};
 
 function ChatFrameMenuButtonMixin:OnLoad()
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("LANGUAGE_LIST_CHANGED");
+	self:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT");
 	self:RegisterEvent("CAN_PLAYER_SPEAK_LANGUAGE_CHANGED");
+
+	local function SetChatTypeAttribute(chatType)
+		local editBox = ChatFrame_OpenChat("");
+		editBox:SetAttribute("chatType", chatType);
+		ChatEdit_UpdateHeader(editBox);
+	end
+	
+	local function AddEmotes(description, list, func)
+		for index, value in ipairs(list) do
+			local i = 1;
+			local token = _G["EMOTE"..i.."_TOKEN"];
+			while ( i < MAXEMOTEINDEX ) do
+				if ( token == value ) then
+					break;
+				end
+				i = i + 1;
+				token = _G["EMOTE"..i.."_TOKEN"];
+			end
+	
+			local label = _G["EMOTE"..i.."_CMD1"] or value;
+			description:CreateButton(label, function(...)
+				func(index);
+			end);
+		end
+	end
+	
+	local function IsLanguageSelected(language)
+		return GetSelectedLanguageID() == language[2];
+	end
+	
+	local function SetLanguageSelected(languageData)
+		ChatEdit_SetGameLanguage(DEFAULT_CHAT_FRAME.editBox, languageData[1], languageData[2]);
+	end
+
+	local function AddSlashInitializer(button, chatShortcut)
+		button:AddInitializer(function(button, description, menu)
+			local fontString2 = button:AttachFontString();
+			local offset = description:HasElements() and -20 or 0;
+			fontString2:SetPoint("RIGHT", offset, 0);
+			fontString2:SetJustifyH("RIGHT");
+			fontString2:SetTextToFit(chatShortcut);
+
+			button.fontString:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
+		end);
+	end
+	
+	local function ColorInitializer(button, description, menu)
+		button.fontString:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
+	end
+
+	self:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_CHAT_SHORTCUTS", block);
+		rootDescription:SetMinimumWidth(180);
+
+		local function CreateButtonWithShortcut(chatName, chatShortcut, chatType)
+			local button = rootDescription:CreateButton(chatName, function()
+				SetChatTypeAttribute(chatType);
+			end);
+
+			AddSlashInitializer(button, chatShortcut);
+			return button;
+		end
+
+		local isOnGlueScreen = IsOnGlueScreen();
+		if not isOnGlueScreen then
+			CreateButtonWithShortcut(SAY_MESSAGE, SLASH_SAY1, "SAY");
+		end
+
+		CreateButtonWithShortcut(PARTY_MESSAGE, SLASH_PARTY1, "PARTY");
+
+		if not isOnGlueScreen then
+			CreateButtonWithShortcut(RAID_MESSAGE, SLASH_RAID1, "RAID");
+			CreateButtonWithShortcut(INSTANCE_CHAT_MESSAGE, SLASH_INSTANCE_CHAT1, "INSTANCE_CHAT");
+			CreateButtonWithShortcut(GUILD_MESSAGE, SLASH_GUILD1, "GUILD");
+			CreateButtonWithShortcut(YELL_MESSAGE, SLASH_YELL1, "YELL");
+		end
+
+		local whisperButton = rootDescription:CreateButton(WHISPER_MESSAGE, function()
+			local editBox = ChatFrame_OpenChat(SLASH_SMART_WHISPER1.." ");
+			editBox:SetText(SLASH_SMART_WHISPER1.." "..editBox:GetText());
+		end);
+		AddSlashInitializer(whisperButton, SLASH_SMART_WHISPER1);
+
+		local replyButton = rootDescription:CreateButton(REPLY_MESSAGE, function()
+			ChatFrame_ReplyTell();
+		end);
+		AddSlashInitializer(replyButton, SLASH_REPLY1);
+
+		if not isOnGlueScreen then
+			if not C_GameRules.IsGameRuleActive(Enum.GameRule.MacrosDisabled) then
+				local macroButton = rootDescription:CreateButton(MACRO, function()
+					ShowMacroFrame();
+				end);
+				AddSlashInitializer(macroButton, SLASH_MACRO1);
+			end
+
+			local emoteSubmenu = CreateButtonWithShortcut(EMOTE_MESSAGE, SLASH_EMOTE1, "EMOTE");
+			AddEmotes(emoteSubmenu, EmoteList, function(index)
+				DoEmote(EmoteList[index]);
+			end);
+
+			local voiceEmoteSubmenu = rootDescription:CreateButton(VOICEMACRO_LABEL);
+			voiceEmoteSubmenu:AddInitializer(ColorInitializer);
+
+			AddEmotes(voiceEmoteSubmenu, TextEmoteSpeechList, function(index)
+				local emote = TextEmoteSpeechList[index];
+				if (emote == EMOTE454_TOKEN) or (emote == EMOTE455_TOKEN) then
+					local faction = UnitFactionGroup("player", true);
+					if faction == "Alliance" then
+						emote = EMOTE454_TOKEN;
+					elseif faction == "Horde" then
+						emote = EMOTE455_TOKEN;
+					end
+				end
+				DoEmote(emote);
+			end);
+
+			local languageSubmenu = rootDescription:CreateButton(LANGUAGE);
+			languageSubmenu:AddInitializer(ColorInitializer);
+
+			for i = 1, GetNumLanguages() do
+				local language, languageID = GetLanguageByIndex(i);
+				local languageData = {language, languageID};
+				languageSubmenu:CreateRadio(language, IsLanguageSelected, SetLanguageSelected, languageData);
+			end
+		end
+	end);
+end
+
+function ChatFrameMenuButtonMixin:Reinitialize()
+	self:ValidateSelectedLanguage();
+	self:GenerateMenu();
 end
 
 function ChatFrameMenuButtonMixin:OnEvent(event, ...)
 	if event == "CAN_PLAYER_SPEAK_LANGUAGE_CHANGED" then
 		local languageId, canPlayerSpeakLanguage = ...;
-		if canPlayerSpeakLanguage and not ChatMenu:IsShown() then
+		if canPlayerSpeakLanguage and not self:IsMenuOpen() then
 			HelpTip:Show(self, NewLanguageHelpTipInfo, self);
 		end
+	end
+
+	self:Reinitialize();
+end
+
+function ChatFrameMenuButtonMixin:OnShow()
+	self:Reinitialize();
+end
+
+function ChatFrameMenuButtonMixin:ValidateSelectedLanguage()
+	local editBoxLanguageID = GetSelectedLanguageID();
+	if not editBoxLanguageID or not C_ChatInfo.CanPlayerSpeakLanguage(editBoxLanguageID) then
+		local defaultLanguage, defaultLanguageId = GetDefaultLanguage();
+		ChatEdit_SetGameLanguage(DEFAULT_CHAT_FRAME.editBox, defaultLanguage, defaultLanguageId);
 	end
 end
 
 function ChatFrameMenuButtonMixin:OnClick()
-	PlaySound(SOUNDKIT.IG_CHAT_EMOTE_BUTTON);
-	ChatFrame_ToggleMenu();
-
-	if ChatMenu:IsShown() and HelpTip:IsShowingAny(self) then
+	if self:IsMenuOpen() and HelpTip:IsShowingAny(self) then
 		HelpTip:HideAll(self);
 	end
 end

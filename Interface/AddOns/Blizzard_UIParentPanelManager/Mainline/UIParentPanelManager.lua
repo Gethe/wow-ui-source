@@ -47,6 +47,7 @@ extraHeight: [number]  --  Extra buffer height to add when checking frame's heig
 xoffset: [number]  --  X offset to add when positioning the frame within the UI parent.
 yoffset: [number]  --  Y offset to add when positioning the frame within the UI parent. Actual y position is also clamped based on minYOffset & bottomClampOverride.
 minYOffset: [number]  --  (default -10) Custom minimum amount of y offset the frame should have. Since Y offsets from the top are negative, this is numerically a "max" (ex: -20 is "more" offset than -10).
+centerXOffset: [number]  --  X offset to add when positioning a centered frame. Useful for centerOrLeft frames to have a different value from xoffset when centered.
 bottomClampOverride: [number]  --  (default 140) Custom bottom-most edge that a frame can be positioned to reach. Frame's y offset is calculated by taking this + minYOffset into account.
 maximizePoint: [string]  --  [WARNING: Don't use this; this maximize/restore flow is very one-off specific to the World Map] Point that's passed to SetPoint if the frame is maximized via MaximizeUIPanel.
 checkFit: [0,1]  --  If 1, frame is scaled down if needed to fit within the current size of the UIParent. This can help large frames stay visible on varying screen sizes/UI scales.
@@ -316,11 +317,16 @@ function FramePositionDelegate:ShowUIPanel(frame, force, contextKey)
 			-- Set as left (closes doublewide) and slide over the right frame
 			self:SetUIPanel("left", frame, 1);
 			self:MoveUIPanel("right", "center");
-		elseif ( CanShowRightUIPanel(frame) ) then
-			-- Set as right
-			self:SetUIPanel("right", frame);
 		else
-			self:SetUIPanel("left", frame);
+			-- If the new frame can be minimized it may fit in the right slot with the existing
+			-- doublewide frame. Otherwise it will have to replace it in the left slot.
+			self:EvaluateAutoMinimize(frame);
+
+			if ( CanShowRightUIPanel(frame) ) then
+				self:SetUIPanel("right", frame);
+			else
+				self:SetUIPanel("left", frame);
+			end
 		end
 		return;
 	end
@@ -504,9 +510,10 @@ function FramePositionDelegate:MoveUIPanel(current, new, skipSetPoint, skipOpera
 		self[current]:Raise();
 		self[new] = self[current];
 		self[current] = nil;
-		if ( not skipSetPoint ) then
-			securecall("UpdateUIPanelPositions", self[new]);
-		end
+	end
+
+	if ( not skipSetPoint ) then
+		securecall("UpdateUIPanelPositions", self[new]);
 	end
 end
 
@@ -616,7 +623,7 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 
 	local frame = self:GetUIPanel("left");
 	if ( frame ) then
-		self:EvaluteAutoMinimize(frame);
+		self:EvaluateAutoMinimize(frame);
 
 		local scale = frame:GetScale();
 		local xOff = GetUIPanelAttribute(frame,"xoffset") or 0;
@@ -635,7 +642,7 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 
 		frame = self:GetUIPanel("doublewide");
 		if ( frame ) then
-			self:EvaluteAutoMinimize(frame);
+			self:EvaluateAutoMinimize(frame);
 
 			local scale = frame:GetScale();
 			local xOff = GetUIPanelAttribute(frame,"xoffset") or 0;
@@ -653,7 +660,7 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 
 	frame = self:GetUIPanel("center");
 	if ( frame ) then
-		self:EvaluteAutoMinimize(frame);
+		self:EvaluateAutoMinimize(frame);
 
 		if ( CanShowCenterUIPanel(frame) ) then
 			local area = GetUIPanelAttribute(frame, "area");
@@ -674,7 +681,10 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 				frame:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", (centerOffset + xOff)/scale, yPos/scale);
 			elseif not skipSetPoints then
 				frame:ClearAllPoints();
-				frame:SetPoint("TOP", "UIParent", "TOP", 0, yPos/scale);
+				-- Centered frames don't use xoffset to prevent undesired positioning (especially in
+				-- centerOrLeft cases) but can use the centerXOffset attribute for special case positioning.
+				local centerXOffset = GetUIPanelAttribute(frame,"centerXOffset") or 0;
+				frame:SetPoint("TOP", "UIParent", "TOP", centerXOffset, yPos/scale);
 			end
 			rightOffset = centerOffset + GetUIPanelWidth(frame) + xOff;
 		else
@@ -705,7 +715,7 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 
 	frame = self:GetUIPanel("right");
 	if ( frame ) then
-		self:EvaluteAutoMinimize(frame);
+		self:EvaluateAutoMinimize(frame);
 		if ( CanShowRightUIPanel(frame) ) then
 			local scale = frame:GetScale();
 			local xOff = GetUIPanelAttribute(frame,"xoffset") or 0;
@@ -751,7 +761,7 @@ function FramePositionDelegate:UpdateScaleForFit(frame)
 	UIPanelUpdateScaleForFit(frame, GetUIPanelAttribute(frame, "checkFitExtraWidth") or CHECK_FIT_DEFAULT_EXTRA_WIDTH, GetUIPanelAttribute(frame, "checkFitExtraHeight") or CHECK_FIT_DEFAULT_EXTRA_HEIGHT);
 end
 
-function FramePositionDelegate:EvaluteAutoMinimize(frame)
+function FramePositionDelegate:EvaluateAutoMinimize(frame)
 	local autoMinimizeWithPanels = GetUIPanelAttribute(frame, "autoMinimizeWithOtherPanels");
 	local autoMinimizeCondition = GetUIPanelAttribute(frame, "autoMinimizeOnCondition");
 	if (not autoMinimizeWithPanels and autoMinimizeCondition == nil) then
@@ -797,7 +807,7 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		MainMenuBar:SetScale(barScale);
 	end
 
-	local customOverlayHeight = C_GameModeManager.GetFeatureSetting(Enum.GameModeFeatureSetting.CustomActionBarOverlayHeightOffset);
+	local customOverlayHeight = C_GameRules.GetGameRuleAsFloat(Enum.GameRule.CustomActionbarOverlayHeightOffset);
 	local bottomActionBarHeight = EditModeUtil:GetBottomActionBarHeight() + customOverlayHeight;
 	bottomActionBarHeight = bottomActionBarHeight > 0 and bottomActionBarHeight + 15 or MAIN_ACTION_BAR_DEFAULT_OFFSET_Y;
 	UIParentBottomManagedFrameContainer.fixedWidth = 573;

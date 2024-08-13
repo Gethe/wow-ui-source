@@ -92,6 +92,7 @@ end
 
 function Class_ChangeSpec:EnableHelp(helpEnabled)
 	if PlayerSpellsFrame then
+		PlayerSpellsFrame:SetOpenToSpecTab(helpEnabled);
 		PlayerSpellsFrame.SpecFrame:ShowTutorialHelp(helpEnabled);
 	end
 end

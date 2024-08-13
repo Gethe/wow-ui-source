@@ -20,27 +20,6 @@ POIButtonUtil.Style = {
 	AreaPOI = 10,
 };
 
-POIButtonUtil.QuestTypes = {
-	Normal = 1,
-	Campaign = 2,
-	Calling = 3,
-	Important = 4,
-	Meta = 5,
-	Recurring = 6,
-	Rare = 7,
-	Epic = 8,
-	Legendary = 9,
-};
-
-local questSortTypeXQuestType = {
-    [QuestSortType.Normal] = POIButtonUtil.QuestTypes.Normal,
-    [QuestSortType.Campaign] = POIButtonUtil.QuestTypes.Campaign,
-    [QuestSortType.Calling] = POIButtonUtil.QuestTypes.Calling,
-    [QuestSortType.Legendary] = POIButtonUtil.QuestTypes.Legendary,
-    [QuestSortType.Important] = POIButtonUtil.QuestTypes.Important,
-    [QuestSortType.Meta] = POIButtonUtil.QuestTypes.Meta,
-};
-
 local styleXType = {
 	[POIButtonUtil.Style.Waypoint] = POIButtonUtil.Type.None,
 	[POIButtonUtil.Style.QuestInProgress] = POIButtonUtil.Type.Quest,
@@ -63,10 +42,6 @@ function POIButtonUtil.GetStyle(questID)
 	else
 		return POIButtonUtil.Style.QuestInProgress;
 	end
-end
-
-function POIButtonUtil.GetQuestTypeFromQuestSortType(questSortType)
-	return questSortTypeXQuestType[questSortType];
 end
 
 function POIButtonUtil.GetTypeFromStyle(style)

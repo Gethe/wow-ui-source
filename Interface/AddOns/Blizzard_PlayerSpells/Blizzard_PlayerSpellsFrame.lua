@@ -114,6 +114,14 @@ function PlayerSpellsFrameMixin:SetToDefaultAvailableTab()
 	end
 end
 
+function PlayerSpellsFrameMixin:SetOpenToSpecTab(openToSpecTab)
+	self.openToSpecTab = openToSpecTab;
+end
+
+function PlayerSpellsFrameMixin:ShouldOpenToSpecTab()
+	return self.openToSpecTab;
+end
+
 function PlayerSpellsFrameMixin:UpdateFrameTitle()
 	local tabID = self:GetTab();
 	if self:IsInspecting() then
@@ -423,6 +431,18 @@ function PlayerSpellsFrameMixin:GetDefaultMinimizableTab()
 end
 
 function PlayerSpellsFrameMixin:SetMinimized(shouldBeMinimized)
+	if self.isMinimized == shouldBeMinimized then
+		return;
+	end
+
+	-- Changing the UI panel "area" attribute requires running through all the area evaluation
+	-- logic within ShowUIPanel and the panel needs to be hidden before changing the attribute.
+	-- But this only needs to happen if the player spells frame is currently shown.
+	local wasShown = self:IsShown();
+	if wasShown then
+		HideUIPanel(self, true);
+	end
+
 	local currentTab = self:GetTab();
 	if not self.isMinimized and shouldBeMinimized then
 		-- Prevent non-UIParent code manually calling SetMinimized when auto behavior intentionally disabled
@@ -442,6 +462,10 @@ function PlayerSpellsFrameMixin:SetMinimized(shouldBeMinimized)
 		-- This ensures that auto-minimizes are reflected by the button state, and the click callback only occurs on manual minimizes
 		local isAutomaticAction, skipCallback = true, true;
 		self.MaximizeMinimizeButton:Minimize(isAutomaticAction, skipCallback);
+
+		-- When using center alignment (e.g. when no other panels are visible on the screen) the minimized version
+		-- of the frame should be offset such that it would be left aligned with the maximized version of the frame.
+		SetUIPanelAttribute(self, "centerXOffset", -405);
 	elseif self.isMinimized and not shouldBeMinimized then
 		self.isMinimized = false;
 		self:SetWidth(self.maximizedWidth);
@@ -449,6 +473,16 @@ function PlayerSpellsFrameMixin:SetMinimized(shouldBeMinimized)
 
 		local isAutomaticAction, skipCallback = true, true;
 		self.MaximizeMinimizeButton:Maximize(isAutomaticAction, skipCallback);
+
+		-- The maximized version of the frame should always be center aligned on the screen.
+		SetUIPanelAttribute(self, "centerXOffset", 0);
+	end
+
+	self:UpdateMinimizeHelpTip();
+
+	-- If the panel was previously shown and then hidden to change the "area" attribute, show it again now.
+	if wasShown then
+		ShowUIPanel(self);
 	end
 end
 
@@ -462,26 +496,17 @@ function PlayerSpellsFrameMixin:SetTabMinimized(tabID, shouldBeMinimized)
 end
 
 function PlayerSpellsFrameMixin:ForceMaximize()
+	-- Close and re-show with minimize attributes temporarily disabled to ensure this frame stays maximized and other frames get closed
+	self:SetMinimizingEnabled(false);
+	SetUIPanelAttribute(self, "autoMinimizeWithOtherPanels", false);
+	SetUIPanelAttribute(self, "area", "center");
 	self:SetMinimized(false);
-	if self:IsShown() then
-		-- Close and re-show with minimize attributes temporarily disabled to ensure this frame stays maximized and other frames get closed
-		-- Only calling UpdateUIPanelPositions isn't enough as we need to run through all the area evaluation logic within ShowUIPanel
-		HideUIPanel(self, true);
-		self:SetMinimizingEnabled(false);
-		ShowUIPanel(self);
-		-- Now re-enable minimizing so that, if another frame gets opened later, we can be re-minimized and pop back to a supporting tab as usual
-		self:SetMinimizingEnabled(true);
-	end
+	-- Now re-enable minimizing so that, if another frame gets opened later, we can be re-minimized and pop back to a supporting tab as usual
+	self:SetMinimizingEnabled(true);
+	SetUIPanelAttribute(self, "autoMinimizeWithOtherPanels", true);
+	SetUIPanelAttribute(self, "area", "centerOrLeft");
 end
 
 function PlayerSpellsFrameMixin:SetMinimizingEnabled(enabled)
-	-- Don't need an Attribute update for autoMinimizeOnCondition as that function also checks this enabled state
 	self.isMinimizingEnabled = enabled;
-	if enabled then
-		SetUIPanelAttribute(self, "autoMinimizeWithOtherPanels", true);
-		SetUIPanelAttribute(self, "area", "centerOrLeft");
-	else
-		SetUIPanelAttribute(self, "autoMinimizeWithOtherPanels", false);
-		SetUIPanelAttribute(self, "area", "center");
-	end
 end

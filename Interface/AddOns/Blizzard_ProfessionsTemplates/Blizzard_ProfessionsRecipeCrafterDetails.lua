@@ -405,7 +405,7 @@ function ProfessionsRecipeCrafterDetailsMixin:SetStats(operationInfo, supportsQu
 			local meterQuality = operationInfo.quality;
 			if applyConcentration then
 				-- When concentration is applied, max out the bar without actually setting to the next quality
-				meterQuality = math.floor(meterQuality + 1.0) - 0.01;
+				meterQuality = math.floor(meterQuality) - 0.01;
 			end
 			self.QualityMeter:SetQuality(meterQuality, self.recipeInfo.maxQuality);
 		end

@@ -356,6 +356,10 @@ function TalentSelectionChoiceMixin:CalculateVisualState()
 
 		return TalentButtonUtil.BaseVisualState.Disabled;
 	elseif self.isCurrentSelection then
+		-- The entry must be selected before it should be visually displayed as an error.
+		if self.entryInfo.isDisplayError then
+			return TalentButtonUtil.BaseVisualState.DisplayError;
+		end
 		return TalentButtonUtil.BaseVisualState.Maxed;
 	elseif self:IsInspecting() then
 		return TalentButtonUtil.BaseVisualState.Disabled;

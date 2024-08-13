@@ -8,7 +8,7 @@
 		</KeyValues>
 		<Size x="970" y="832"/>
 		<Anchors>
-			<Anchor point="CENTER" y="107"/>
+			<Anchor point="TOP" y="-70"/>
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="1">
@@ -172,7 +172,8 @@
 		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="SpecName" inherits="Game24Font" justifyH="CENTER">
+				<FontString parentKey="SpecName" inherits="Game24Font" justifyH="CENTER" mixin="AutoScalingFontStringMixin" maxLines="1">
+					<Size x="425"/>
 					<Anchors>
 						<Anchor point="TOP" y="-39"/>
 					</Anchors>

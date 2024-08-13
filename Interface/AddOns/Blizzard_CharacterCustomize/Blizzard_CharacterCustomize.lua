@@ -926,9 +926,7 @@ do
 				button.HighlightBGTex:SetAlpha(0);
 	
 				button:SetScript("OnClick", function(button, buttonName)
-					if CanSelect(choiceData) then
-						description:Pick(MenuInputContext.MouseButton, buttonName);
-					end 
+					description:Pick(MenuInputContext.MouseButton, buttonName);
 				end);
 				
 				local selected = IsSelected(choiceData);
@@ -1675,7 +1673,8 @@ function CharCustomizeMixin:UpdateOptionButtons(forceReset)
 		end
 	end
 
-	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.RaceAlteredFormsEnabled) then
+	local raceAlteredFormsDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.RaceAlteredFormsDisabled);
+	if not raceAlteredFormsDisabled then
 		self:UpdateAlteredFormButtons();
 	end
 

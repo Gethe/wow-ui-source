@@ -1,9 +1,19 @@
 MenuTemplates = {};
 
-local function CheckSecure()
-	if MenuConstants.PrintSecure and (not IsPublicBuild()) then
-		UIErrorsFrame:AddMessage("Secure: "..tostring(issecure()));
+--[[
+Secure print for debugging purposes only. Remember to comment out the call to DebugPrintSecure
+before committing.
+]]
+local function DebugShouldPrint()
+	return MenuConstants.PrintSecure;
+end
+
+local function DebugPrintSecure()
+	if IsPublicBuild() or (not securecallfunction(DebugShouldPrint)) then
+		return;
 	end
+
+	UIErrorsFrame:AddMessage("Secure: "..tostring(issecure()));
 end
 
 local function CreateMenuElementDescription(template, initializer, data)
@@ -62,7 +72,8 @@ local function OnButtonClick(button, buttonName)
 	end
 
 	description:Pick(MenuInputContext.MouseButton, buttonName);
-	securecallfunction(CheckSecure);
+	
+	--securecallfunction(DebugPrintSecure);
 end
 
 local function ShowHighlight(button, description)
@@ -301,18 +312,7 @@ function MenuTemplates.CreateColorSwatch(text, callback, colorInfo)
 		frame.colorSwatch = colorSwatch;
 		colorSwatch:SetPoint("RIGHT");
 		colorSwatch:SetSize(16, 16);
-		colorSwatch:SetPropagateKeyboardInput(true);
 		colorSwatch:SetColorRGB(colorInfo.r, colorInfo.g, colorInfo.b);
-
-		-- Input is not propagating through the color swatch to the parent
-		-- button. Resolve later.
-		--colorSwatch:SetScript("OnEnter", function()
-		--	colorSwatch:SetBorderColor(NORMAL_FONT_COLOR);
-		--end);
-		--
-		--colorSwatch:SetScript("OnLeave", function()
-		--	colorSwatch:SetBorderColor(HIGHLIGHT_FONT_COLOR);
-		--end);
 	end
 	
 	local elementDescription = CreateButtonDescription(colorInfo);
@@ -328,15 +328,13 @@ do
 	end
 
 	function MenuTemplates.AttachAutoHideButton(parent, textureName)
-		local button = parent:AttachFrame("Button");
-		button:SetPropagateMouseMotion(true);
+		local button = parent:AttachTemplate("WowMenuAutoHideButtonTemplate");
 		button:Hide();
 	
 		button:SetScript("OnLeave", OnAutoHideButtonLeave);
 	
-		local texture = button:AttachTexture();
+		local texture = button.Texture;
 		texture:SetTexture(textureName);
-		texture:SetAllPoints();
 	
 		local onEnter = parent.OnEnter or nop;
 		parent.OnEnter = function(...)
@@ -549,11 +547,11 @@ function DropdownSelectionTextMixin:OnLeave()
 	MenuUtil.HideTooltip(self);
 end
 
-WowDropdownFilterMixin = CreateFromMixins(DropdownButtonMixin);
+-- Inherited by dropdown buttons that require the reset button behavior. The reset button
+-- needs to be defined/created prior to the OnLoad call.
+WowDropdownFilterBehaviorMixin = {};
 
-function WowDropdownFilterMixin:OnLoad()
-	assert(self.ResetButton);
-
+function WowDropdownFilterBehaviorMixin:OnLoad()
 	self.ResetButton:SetScript("OnClick", function(button, buttonName, down)
 		if self.defaultCallback then
 			 self.defaultCallback();
@@ -563,66 +561,65 @@ function WowDropdownFilterMixin:OnLoad()
 	end);
 end
 
-function WowDropdownFilterMixin:OnShow()
+function WowDropdownFilterBehaviorMixin:OnShow()
 	self:ValidateResetState();
 end
 
 -- Callback to set all filters to default state.
-function WowDropdownFilterMixin:SetDefaultCallback(callback)
+function WowDropdownFilterBehaviorMixin:SetDefaultCallback(callback)
 	self.defaultCallback = callback;
 end
 
 -- Callback to return if the filters are in their default state.
-function WowDropdownFilterMixin:SetIsDefaultCallback(callback)
+function WowDropdownFilterBehaviorMixin:SetIsDefaultCallback(callback)
 	self.isDefaultCallback = callback;
 end
 
 -- Called in response to any menu option change. 
-function WowDropdownFilterMixin:SetUpdateCallback(callback)
+function WowDropdownFilterBehaviorMixin:SetUpdateCallback(callback)
 	self.notifyUpdateCallback = callback;
 end
 
-function WowDropdownFilterMixin:NotifyUpdate(description)
+function WowDropdownFilterBehaviorMixin:NotifyUpdate(description)
 	if self.notifyUpdateCallback then
 		self.notifyUpdateCallback(description);
 	end
 end
 
-function WowDropdownFilterMixin:OnMenuResponse(menu, description)
-	DropdownButtonMixin.OnMenuResponse(self, menu, description);
-
-	self:ValidateResetState();
-	self:NotifyUpdate(description);
-end
-
-function WowDropdownFilterMixin:OnMenuAssigned()
-	DropdownButtonMixin.OnMenuAssigned(self);
-
-	self:ValidateResetState();
-end
-
-function WowDropdownFilterMixin:OnMenuResponse(menu, description)
-	DropdownButtonMixin.OnMenuResponse(self, menu, description);
-
-	self:ValidateResetState();
-	self:NotifyUpdate(description);
-end
-
-function WowDropdownFilterMixin:Reset()
+function WowDropdownFilterBehaviorMixin:Reset()
 	self.ResetButton:Hide();
 end
 
-function WowDropdownFilterMixin:ValidateResetState()
+function WowDropdownFilterBehaviorMixin:ValidateResetState()
 	if self.isDefaultCallback then
 		self.ResetButton:SetShown(not self.isDefaultCallback());
 	end
 end
 
-WowStyle1DropdownMixin = CreateFromMixins(ButtonStateBehaviorMixin, DropdownSelectionTextMixin);
-
-function WowStyle1DropdownMixin:SetupMenu(generator)
-	DropdownButtonMixin.SetupMenu(self, generator);
+-- Call in derived
+function WowDropdownFilterBehaviorMixin:OnMenuResponse(menu, description)
+	self:ValidateResetState();
+	self:NotifyUpdate(description);
 end
+
+-- Call in derived
+function WowDropdownFilterBehaviorMixin:OnMenuAssigned()
+	self:ValidateResetState();
+end
+
+WowFilterButtonMixin = CreateFromMixins(WowDropdownFilterBehaviorMixin);
+
+function WowFilterButtonMixin:OnMenuResponse(menu, description)
+	DropdownButtonMixin.OnMenuResponse(self, menu, description);
+	WowDropdownFilterBehaviorMixin.OnMenuResponse(self, menu, description);
+end
+
+function WowFilterButtonMixin:OnMenuAssigned()
+	DropdownButtonMixin.OnMenuAssigned(self);
+	WowDropdownFilterBehaviorMixin.OnMenuAssigned(self);
+end
+
+WowStyle1DropdownMixin = CreateFromMixins(ButtonStateBehaviorMixin, DropdownSelectionTextMixin);
 
 function WowStyle1DropdownMixin:OnLoad()
 	ValidateIsDropdownButtonIntrinsic(self);
@@ -642,16 +639,16 @@ function WowStyle1DropdownMixin:OnButtonStateChanged()
 end
 
 --[[
-The standard "filter" dropdown style. It's text does not reflect the selected option(s) and
+The standard "filter" dropdown style. Its text does not reflect the selected option(s) and
 instead is generally initialized to fixed text.
 ]]--
-WowStyle1FilterDropdownMixin = CreateFromMixins(ButtonStateBehaviorMixin, DropdownTextMixin, WowDropdownFilterMixin);
+WowStyle1FilterDropdownMixin = CreateFromMixins(ButtonStateBehaviorMixin, DropdownTextMixin, WowFilterButtonMixin);
 
 function WowStyle1FilterDropdownMixin:OnLoad()
 	ValidateIsDropdownButtonIntrinsic(self);
 	ButtonStateBehaviorMixin.OnLoad(self);
 	DropdownTextMixin.OnLoad(self);
-	WowDropdownFilterMixin.OnLoad(self);
+	WowFilterButtonMixin.OnLoad(self);
 
 	local x, y = 2, -1;
 	self:SetDisplacedRegions(x, y, self.Text);
@@ -666,14 +663,20 @@ A special style used in Settings and Character Creation/Customization. Note that
 contents (color swatches, icons, etc.) are not defined here but are instead added as a child
 within this template. See "WowStyle2DropdownTemplate" in Blizzard_CharacterCustomize.xml.
 ]]--
-WowStyle2DropdownMixin = CreateFromMixins(ButtonStateBehaviorMixin, DropdownSelectionTextMixin);
+WowStyle2DropdownMixin = CreateFromMixins(ButtonStateBehaviorMixin, DropdownSelectionTextMixin, WowFilterButtonMixin);
 
 function WowStyle2DropdownMixin:OnLoad()
 	ButtonStateBehaviorMixin.OnLoad(self);
 	DropdownSelectionTextMixin.OnLoad(self);
+	WowFilterButtonMixin.OnLoad(self);
 
 	local x, y = 2, -1;
 	self:SetDisplacedRegions(x, y, self.Text);
+end
+
+function WowStyle2DropdownMixin:OnShow()
+	DropdownSelectionTextMixin.OnShow(self);
+	WowFilterButtonMixin.OnShow(self);
 end
 
 function WowStyle2DropdownMixin:GetBackgroundAtlas()
@@ -730,13 +733,30 @@ function MenuStyleMixin:Generate()
 	texture:SetColorTexture(r, g, b, .5);
 end
 
-function MenuStyleMixin:GetInset()
-	return 0,0,0,0; -- L, T, R, B
+do
+	local inset = 
+	{
+		left = 0, 
+		top = 0, 
+		right = 0,
+		bottom = 0,
+	};
+
+	function MenuStyleMixin:GetInset()
+		return inset;
+	end
 end
 
--- Increases the effective width of every child.
-function MenuStyleMixin:GetChildExtentPadding()
-	return 0, 0;
+do
+	local padding = 
+	{
+		width = 0, 
+		height = 0, 
+	};
+
+	function MenuStyleMixin:GetChildExtentPadding()
+		return padding;
+	end
 end
 
 -- Test purposes only.
@@ -769,8 +789,18 @@ function MenuStyle2Mixin:Generate()
 	background:SetPoint("BOTTOMRIGHT", 17, -22);
 end
 
-function MenuStyle2Mixin:GetInset()
-	return 3, 6, 3, 7; -- L, T, R, B
+do
+	local inset = 
+	{
+		left = 3, 
+		top = 6, 
+		right = 3,
+		bottom = 7,
+	};
+
+	function MenuStyle2Mixin:GetInset()
+		return inset;
+	end
 end
 
 -- Accompanies the style of WowStyle2Dropdown

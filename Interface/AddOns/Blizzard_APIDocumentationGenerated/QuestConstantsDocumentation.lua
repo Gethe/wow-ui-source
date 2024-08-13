@@ -55,6 +55,21 @@ local QuestConstants =
 			},
 		},
 		{
+			Name = "QuestRepeatability",
+			Type = "Enumeration",
+			NumValues = 5,
+			MinValue = 0,
+			MaxValue = 4,
+			Fields =
+			{
+				{ Name = "None", Type = "QuestRepeatability", EnumValue = 0 },
+				{ Name = "Daily", Type = "QuestRepeatability", EnumValue = 1 },
+				{ Name = "Weekly", Type = "QuestRepeatability", EnumValue = 2 },
+				{ Name = "Turnin", Type = "QuestRepeatability", EnumValue = 3 },
+				{ Name = "World", Type = "QuestRepeatability", EnumValue = 4 },
+			},
+		},
+		{
 			Name = "QuestRewardContextFlags",
 			Type = "Enumeration",
 			NumValues = 3,

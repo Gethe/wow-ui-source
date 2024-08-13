@@ -8,10 +8,12 @@ function ProfessionsCrafterOrderRewardMixin:SetReward(reward)
 		self:SetItem(reward.itemLink);
 		local _, itemQuality, _ = self:GetItemInfo();
 		self:SetSlotQuality(self, itemQuality);
-		self.Count:SetText("");
+		self.minDisplayCount = 1;
+		SetItemButtonCount(self, self.reward.count);
 	elseif reward.currencyType then
 		self:SetCurrency(reward.currencyType);
-		self.Count:SetText(self.reward.currencyAmount);
+		self.minDisplayCount = 0;
+		SetItemButtonCount(self, self.reward.count);
 	end
 
 	self:Show();
@@ -24,12 +26,38 @@ function ProfessionsCrafterOrderRewardMixin:OnEnter()
 	if itemLink then
 		GameTooltip:SetHyperlink(itemLink);
 	elseif self.reward.currencyType then
-		GameTooltip:SetCurrencyByID(self.reward.currencyType, self.reward.currencyAmount);
+		GameTooltip:SetCurrencyByID(self.reward.currencyType, self.reward.count);
 	end
 end
 
 function ProfessionsCrafterOrderRewardMixin:OnLeave()
 	GameTooltip:Hide();
+end
+
+ProfessionsCrafterOrderRewardTooltipMixin = {};
+
+function ProfessionsCrafterOrderRewardTooltipMixin:SetReward(reward)
+	self.Reward:SetReward(reward);
+
+	local itemName, itemQuality;
+
+	if reward.itemLink then
+		local _itemLink;
+		itemName, _itemLink, itemQuality = C_Item.GetItemInfo(reward.itemLink);
+	elseif reward.currencyType then
+		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(reward.currencyType);
+		if currencyInfo then
+			itemName = currencyInfo.name;
+			itemQuality = currencyInfo.quality;
+		end
+	end
+
+	local itemQualityColor = ITEM_QUALITY_COLORS[itemQuality or Enum.ItemQuality.Common];
+	local itemDisplayText = itemQualityColor.color:WrapTextInColorCode(itemName or "");
+	self.RewardName:SetText(itemDisplayText);
+
+	self:SetHeight(self.Reward:GetHeight());
+	self:SetWidth(self.Reward:GetWidth() + self.RewardName:GetWidth() + 20);
 end
 
 ProfessionsCrafterOrderViewMixin = {};
@@ -78,6 +106,11 @@ function ProfessionsCrafterOrderViewMixin:InitButtons()
 			end
 		else
 			StartCraft();
+		end
+
+		if self.order.orderType == Enum.CraftingOrderType.Npc then
+			HelpTip:Hide(self.CreateButton, CRAFTING_ORDERS_FIRST_NPC_ORDER_HELPTIP);
+			SetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_NPC_CRAFTING_ORDER_CREATE_BUTTON, true);
 		end
      end);
 
@@ -279,6 +312,7 @@ local ProfessionsCrafterOrderViewEvents =
 	"CRAFTINGORDERS_CRAFT_ORDER_RESPONSE",
 	"CRAFTINGORDERS_FULFILL_ORDER_RESPONSE",
     "CRAFTINGORDERS_UPDATE_CUSTOMER_NAME",
+	"CRAFTINGORDERS_UPDATE_REWARDS",
     "CRAFTINGORDERS_CLAIMED_ORDER_ADDED",
     "CRAFTINGORDERS_CLAIMED_ORDER_REMOVED",
     "CRAFTINGORDERS_CLAIMED_ORDER_UPDATED",
@@ -359,6 +393,14 @@ function ProfessionsCrafterOrderViewMixin:OnEvent(event, ...)
 
         self.OrderInfo.PostedByValue:SetText(customerName);
         self.order.customerName = customerName;
+	elseif event == "CRAFTINGORDERS_UPDATE_REWARDS" then
+        local rewards, orderID = ...;
+        if orderID ~= self.order.orderID then
+            return;
+        end
+
+        self.order.npcOrderRewards = rewards;
+		self:UpdateRewards(self.order);
     elseif event == "CRAFTINGORDERS_CLAIMED_ORDER_ADDED" then
         self:SetOrder(C_CraftingOrders.GetClaimedOrder());
     elseif event == "CRAFTINGORDERS_CLAIMED_ORDER_REMOVED" then
@@ -713,6 +755,18 @@ function ProfessionsCrafterOrderViewMixin:UpdateFulfillButton()
     end
 end
 
+local npcOrderCreateButtonHelpTipInfo =
+{
+	text = CRAFTING_ORDERS_FIRST_NPC_ORDER_HELPTIP,
+	buttonStyle = HelpTip.ButtonStyle.Close,
+	targetPoint = HelpTip.Point.BottomEdgeCenter,
+	alignment = HelpTip.Alignment.Center,
+	offsetX = 0,
+	cvarBitfield = "closedInfoFramesAccountWide",
+	bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_NPC_CRAFTING_ORDER_CREATE_BUTTON,
+	checkCVars = true,
+};
+
 function ProfessionsCrafterOrderViewMixin:UpdateCreateButton()
     local transaction = self.OrderDetails.SchematicForm.transaction;
     local recipeInfo = C_TradeSkillUI.GetRecipeInfo(self.order.spellID);
@@ -758,18 +812,13 @@ function ProfessionsCrafterOrderViewMixin:UpdateCreateButton()
     else
         self.CreateButton:SetScript("OnEnter", nil);
     end
+
+	if self.order.orderType == Enum.CraftingOrderType.Npc then
+		HelpTip:Show(self.CreateButton, npcOrderCreateButtonHelpTipInfo);
+	end
 end
 
-function ProfessionsCrafterOrderViewMixin:SetOrder(order)
-    self.order = order;
-
-    self.OrderInfo.PostedByValue:SetText(order.customerName);
-    self.OrderInfo.NoteBox.NoteText:SetText(order.customerNotes);
-	self.OrderInfo.NoteBox:SetShown(not C_CraftingOrders.AreOrderNotesDisabled());
-    self.OrderInfo.CommissionTitleMoneyDisplayFrame:SetAmount(order.tipAmount);
-    self.OrderInfo.ConsortiumCutMoneyDisplayFrame:SetAmount(order.consortiumCut);
-    self.OrderInfo.FinalTipMoneyDisplayFrame:SetAmount(order.tipAmount - order.consortiumCut);
-
+function ProfessionsCrafterOrderViewMixin:UpdateRewards(order)
 	for i, reward in ipairs(order.npcOrderRewards) do
 		if i <= #self.OrderInfo.NPCRewardsFrame.RewardItems then
 			self.OrderInfo.NPCRewardsFrame.RewardItems[i]:SetReward(reward);
@@ -788,6 +837,22 @@ function ProfessionsCrafterOrderViewMixin:SetOrder(order)
 		order.npcCraftingOrderSetID, 
 		order.npcTreasureID
 	);
+end
+
+function ProfessionsCrafterOrderViewMixin:SetOrder(order)
+    self.order = order;
+
+    self.OrderInfo.PostedByValue:SetText(order.customerName);
+    self.OrderInfo.NoteBox.NoteText:SetText(order.customerNotes);
+	self.OrderInfo.NoteBox:SetShown(not C_CraftingOrders.AreOrderNotesDisabled());
+	local showDisabledNoteBox = order.orderType == Enum.CraftingOrderType.Npc;
+	self.OrderInfo.NoteBox.NoteTitle:SetFontObject(showDisabledNoteBox and GameFontDisable or GameFontNormal);
+	self.OrderInfo.NoteBox:SetAlpha(showDisabledNoteBox and 0.5 or 1.0);
+    self.OrderInfo.CommissionTitleMoneyDisplayFrame:SetAmount(order.tipAmount);
+    self.OrderInfo.ConsortiumCutMoneyDisplayFrame:SetAmount(order.consortiumCut);
+    self.OrderInfo.FinalTipMoneyDisplayFrame:SetAmount(order.tipAmount - order.consortiumCut);
+
+	self:UpdateRewards(order);
 
 	local warningText, atlas;
 	if self.order.reagentState == Enum.CraftingOrderReagentsType.All then
@@ -878,17 +943,15 @@ function ProfessionsCrafterOrderViewMixin:SetOrderState(orderState)
     local enableStartRecraftButton = false;
     local showStopRecraftButton = false;
     local showDeclineOrderButton = false;
-    local showSocialDropdown = false;
+    local showSocialDropdown = self.order.customerGuid and self.order.customerGuid ~= UnitGUID("player");
 
     if orderState == Enum.CraftingOrderState.Created then
         showBackButton = true;
         showStartOrderButton = true;
         showSchematic = true;
         showDeclineOrderButton = self.order.orderType == Enum.CraftingOrderType.Personal;
-        showSocialDropdown = self.order.customerGuid and self.order.customerGuid ~= UnitGUID("player ");
     elseif orderState == Enum.CraftingOrderState.Claimed then
         showTimeRemaining = true;
-		showSocialDropdown = true;
 
         if self.order.isFulfillable and self.recraftingOrderID ~= self.order.orderID then
             showCompleteOrderButton = true;

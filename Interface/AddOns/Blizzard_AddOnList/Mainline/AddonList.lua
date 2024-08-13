@@ -487,9 +487,13 @@ function AddonList_OnShow(self)
 		rootDescription:CreateRadio(ALL, IsSelected, SetSelected, ALL_CHARACTERS);
 
 		if InGlue() then
+			local extent = 20;
+			local maxCharacters = 18;
+			local maxScrollExtent = extent * maxCharacters;
+			rootDescription:SetScrollMode(maxScrollExtent);
+
 			local includeEmptySlots = true;
 			local numCharacters = GetNumCharacters(includeEmptySlots);
-
 			for i=1, numCharacters do
 				local characterInfo = CharacterSelectUtil.GetCharacterInfoTable(i);
 

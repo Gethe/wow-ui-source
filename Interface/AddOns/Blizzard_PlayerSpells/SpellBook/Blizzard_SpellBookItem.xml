@@ -60,30 +60,41 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="ARTWORK">
-				<FontString parentKey="Name" inherits="SystemFont_Large" justifyH="LEFT" maxLines="3" wordwrap="true">
-					<Size y="0"/>
-					<Anchors>
-						<Anchor point="LEFT" x="50" y="4"/>
-						<Anchor point="RIGHT" y="4"/>
-					</Anchors>
-					<Color color="SPELLBOOK_FONT_COLOR" />
-				</FontString>
-				<FontString parentKey="SubName" inherits="SystemFont_Med1" justifyH="LEFT">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
-					</Anchors>
-					<Color color="SPELLBOOK_FONT_COLOR" />
-				</FontString>
-				<FontString parentKey="RequiredLevel" inherits="SystemFont_Med1" justifyH="LEFT">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.SubName" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
-					</Anchors>
-					<Color color="SPELLBOOK_FONT_COLOR" />
-				</FontString>
-			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="TextContainer" inherits="ResizeLayoutFrame">
+				<!--Height Adjusted Dynamically in UpdateVisuals-->
+				<Size y="1"/>
+				<Anchors>
+					<Anchor point="LEFT" x="50" y="-1"/>
+					<Anchor point="RIGHT" y="-1"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Name" inherits="SystemFont_Large" justifyH="LEFT" maxLines="3" wordwrap="true">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="TOPRIGHT"/>
+							</Anchors>
+							<Color color="SPELLBOOK_FONT_COLOR" />
+						</FontString>
+						<FontString parentKey="SubName" inherits="SystemFont_Med1" justifyH="LEFT" maxLines="2" wordwrap="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.Name" relativePoint="BOTTOMRIGHT" x="0" y="-2"/>
+							</Anchors>
+							<Color color="SPELLBOOK_FONT_COLOR" />
+						</FontString>
+						<FontString parentKey="RequiredLevel" inherits="SystemFont_Med1" justifyH="LEFT" maxLines="1">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.SubName" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.SubName" relativePoint="BOTTOMRIGHT" x="0" y="-2"/>
+							</Anchors>
+							<Color color="SPELLBOOK_FONT_COLOR" />
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
 			<Button parentKey="Button" mixin="SpellBookItemButtonMixin">
 				<Size x="40" y="40"/>
 				<Anchors>
@@ -209,7 +220,7 @@
 						<Texture parentKey="FlyoutArrow" file="Interface\Buttons\ActionBarFlyoutButton" hidden="true" rotation="-90">
 							<Size x="23" y="11"/>
 							<Anchors>
-								<Anchor point="RIGHT" x="2" y="0"/>
+								<Anchor point="RIGHT" x="14" y="0"/>
 							</Anchors>
 							<TexCoords left="0.62500000" right="0.98437500" top="0.74218750" bottom="0.82812500"/>
 						</Texture>

@@ -69,9 +69,6 @@ UISpecialFrames = {
 };
 
 UIMenus = {
-	"ChatMenu",
-	"EmoteMenu",
-	"LanguageMenu",
 	"DropDownList1",
 	"DropDownList2",
 	"DropDownList3",
@@ -374,6 +371,9 @@ function UIParent_OnLoad(self)
 
 	-- Events(s) for updating spell based item contexts
 	self:RegisterEvent("UPDATE_SPELL_TARGET_ITEM_CONTEXT");
+
+	-- Events(s) for Remix Event
+	self:RegisterEvent("REMIX_END_OF_EVENT");
 end
 
 function UIParent_OnShow(self)
@@ -769,7 +769,8 @@ function ShowMacroFrame()
 		return;
 	end
 
-	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.Macros) then
+	local macrosDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.MacrosDisabled);
+	if macrosDisabled then
 		return;
 	end
 
@@ -1413,7 +1414,8 @@ function UIParent_OnEvent(self, event, ...)
 		if ( not StaticPopup_Visible("DEATH") ) then
 			CloseAllWindows(1);
 		end
-		if (C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.ReleaseSpiritGhost)) then
+		local releaseSpiritGhostDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.ReleaseSpiritGhostDisabled);
+		if (not releaseSpiritGhostDisabled) then
 			if ( (GetReleaseTimeRemaining() > 0 or GetReleaseTimeRemaining() == -1) and (not ResurrectGetOfferer()) ) then
 				StaticPopup_Show("DEATH");
 			end
@@ -1427,7 +1429,9 @@ function UIParent_OnEvent(self, event, ...)
 		StaticPopup_Hide("RESURRECT_NO_SICKNESS");
 		StaticPopup_Hide("RESURRECT_NO_TIMER");
 		StaticPopup_Hide("RESURRECT");
-		if ( C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.ReleaseSpiritGhost) and UnitIsGhost("player") ) then
+
+		local releaseSpiritGhostDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.ReleaseSpiritGhostDisabled);
+		if ( not releaseSpiritGhostDisabled and UnitIsGhost("player") ) then
 			GhostFrame:Show();
 		else
 			GhostFrame:Hide();
@@ -1619,7 +1623,8 @@ function UIParent_OnEvent(self, event, ...)
 			end
 		end
 
-	    if ( C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.ReleaseSpiritGhost) ) then
+		local releaseSpiritGhostDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.ReleaseSpiritGhostDisabled);
+	    if ( not releaseSpiritGhostDisabled ) then
 			if ( UnitIsGhost("player") ) then
 				GhostFrame:Show();
 			else
@@ -2408,6 +2413,8 @@ function UIParent_OnEvent(self, event, ...)
 		ItemButtonUtil.OpenAndFilterCharacterFrame();
 	elseif event == "UPDATE_SPELL_TARGET_ITEM_CONTEXT" then
 		ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
+	elseif event == "REMIX_END_OF_EVENT" then
+		StaticPopup_Show("REMIX_END_OF_EVENT_NOTICE");
 	end
 end
 
@@ -2487,11 +2494,15 @@ function UIParentManagedFrameContainerMixin:UpdateFrame(frame)
 end
 
 function UIParentManagedFrameContainerMixin:AddManagedFrame(frame)
+	if frame.ignoreFramePositionManager then
+		return;
+	end
+
 	if frame.IsInDefaultPosition and not frame:IsInDefaultPosition() then
 		return;
 	end
 
-	if frame.ignoreFramePositionManager then
+	if not frame:IsShown() then
 		return;
 	end
 
@@ -3752,7 +3763,7 @@ function ConfirmOrLeaveParty()
 	if ( IsPartyLFG() ) then
 		ConfirmOrLeaveLFGParty();
 	-- If the party is walk-in (aka Delve) *and* it is complete, let the player choose to just leave
-	elseif ( C_PartyInfo.IsPartyWalkIn() and C_PartyInfo.IsDelveComplete() ) then
+	elseif ( C_PartyInfo.IsPartyWalkIn() ) then
 		LeaveWalkInParty();
 	end
 end

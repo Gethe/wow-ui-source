@@ -186,9 +186,7 @@ end
 
 function SettingsListElementInitializer:IsNewTagShown()
 	local setting = self:GetSetting();
-	if setting then
-		return setting:IsNewTagShown();
-	end
+	return setting and IsNewSettingInCurrentVersion(setting:GetVariable());
 end
 
 function SettingsListElementInitializer:SetSettingIntercept(interceptFunction)
@@ -533,7 +531,7 @@ function SettingsDropdownControlMixin:InitDropdown()
 	local options = initializer:GetOptions();
 	local initTooltip = Settings.CreateOptionsInitTooltip(setting, initializer:GetName(), initializer:GetTooltip(), options);
 	self:SetupDropdownMenu(self.Control.Dropdown, setting, options, initTooltip);
-	end
+end
 
 function SettingsDropdownControlMixin:SetupDropdownMenu(button, setting, options, initTooltip)
 	local inserter = Settings.CreateDropdownOptionInserter(options);
@@ -709,7 +707,9 @@ function CreateSettingsCheckboxWithButtonInitializer(setting, buttonText, button
 	data.buttonText = buttonText;
 	data.OnButtonClick = buttonClick;
 	data.clickRequiresSet = clickRequiresSet;
-	return Settings.CreateSettingInitializer("SettingsCheckboxWithButtonControlTemplate", data);
+	local initializer = Settings.CreateSettingInitializer("SettingsCheckboxWithButtonControlTemplate", data);
+	initializer:AddSearchTags(buttonText);
+	return initializer;
 end
 
 SettingsCheckboxSliderControlMixin = CreateFromMixins(SettingsListElementMixin);
@@ -818,7 +818,9 @@ function CreateSettingsCheckboxSliderInitializer(cbSetting, cbLabel, cbTooltip, 
 		sliderLabel = sliderLabel,
 		sliderTooltip = sliderTooltip,
 	};
-	return Settings.CreateSettingInitializer("SettingsCheckboxSliderControlTemplate", data);
+	local initializer = Settings.CreateSettingInitializer("SettingsCheckboxSliderControlTemplate", data);
+	initializer:AddSearchTags(cbLabel, sliderLabel);
+	return initializer;
 end
 
 SettingsCheckboxDropdownControlMixin = CreateFromMixins(SettingsListElementMixin);

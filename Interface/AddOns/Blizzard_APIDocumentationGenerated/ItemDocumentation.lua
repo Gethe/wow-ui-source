@@ -249,6 +249,21 @@ local Item =
 			},
 		},
 		{
+			Name = "GetDelvePreviewItemLink",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false },
+				{ Name = "context", Type = "ItemCreationContext", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemLink", Type = "string", Nilable = true },
+			},
+		},
+		{
 			Name = "GetDetailedItemLevelInfo",
 			Type = "Function",
 
@@ -1003,6 +1018,7 @@ local Item =
 		{
 			Name = "IsBoundToAccountUntilEquip",
 			Type = "Function",
+			Documentation = { "You can use IsItemBindToAccountUntilEquip instead if the item is not in your inventory" },
 
 			Arguments =
 			{
@@ -1167,6 +1183,21 @@ local Item =
 			Returns =
 			{
 				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsItemBindToAccountUntilEquip",
+			Type = "Function",
+			Documentation = { "You can use IsBoundToAccountUntilEquip instead if the item exists in your inventory" },
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isItemBindToAccountUntilEquip", Type = "bool", Nilable = false },
 			},
 		},
 		{

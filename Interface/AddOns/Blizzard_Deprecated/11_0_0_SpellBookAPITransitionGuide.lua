@@ -79,7 +79,7 @@ ToggleSpellAutocast(index, bookType) = C_SpellBook.ToggleSpellBookItemAutoCast(i
 
 -- Enable/Disable auto cast functions have been merged into single Set Enabled functions
 EnableSpellAutocast/DisableSpellAutocast(spellID/name) = C_Spell.SetSpellAutoCastEnabled(spellIdentifier, bool)
-EnableSpellAutocast/DisableSpellAutocast(index, bookType) = C_SpellBook.SetSpellAutoCastEnabled(index, spellBank, bool)
+EnableSpellAutocast/DisableSpellAutocast(index, bookType) = C_SpellBook.SetSpellBookItemAutoCastEnabled(index, spellBank, bool)
 
 PickupSpell(spellID/name) = C_Spell.PickupSpell(spellIdentifier)
 PickupSpellBookItem(index, bookType) = C_SpellBook.PickupSpellBookItem(index, spellBank)
@@ -116,9 +116,9 @@ IsCurrentSpell(spellID/name) = C_Spell.IsCurrentSpell(spellIdentifier)
 IsPressHoldReleaseSpell(spellID/name) = C_Spell.IsPressHoldReleaseSpell(spellIdentifier)
 
 IsTalentSpell(spellID/name) = C_Spell.IsClassTalentSpell(spellIdentifier)
-IsTalentSpell(index, bookType) = C_Spell.IsClassTalentSpellBookItem(index, spellBank)
+IsTalentSpell(index, bookType) = C_SpellBook.IsClassTalentSpellBookItem(index, spellBank)
 IsPvpTalentSpell(spellID/name) = C_Spell.IsPvPTalentSpell(spellIdentifier)
-IsPvpTalentSpell(index, bookType) = C_Spell.IsPvPTalentSpellBookItem(index, spellBank)
+IsPvpTalentSpell(index, bookType) = C_SpellBook.IsPvPTalentSpellBookItem(index, spellBank)
 
 GameTooltip:SetSpellBookItem(index, bookType) = GameTooltip:SetSpellBookItem(index, spellBank)
 

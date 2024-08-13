@@ -410,7 +410,7 @@ function WorldQuestPinMixin:GetHighlightType() -- override
 			return MapPinHighlightType.SupertrackedHighlight;
 		end
 	elseif bountyFrameType == BountyFrameType.ActivityTracker then
-		local countsForBounty = (bountyQuestID and C_QuestLog.IsQuestCriteriaForBounty(self.questID, bountyQuestID)) or (taskFactionID == bountyFactionID);
+		local countsForBounty = (bountyQuestID and C_QuestLog.IsQuestCriteriaForBounty(self.questID, bountyQuestID)) or C_QuestLog.DoesQuestAwardReputationWithFaction(self.questID, bountyFactionID);
 		if countsForBounty then
 			return MapPinHighlightType.SupertrackedHighlight;
 		end

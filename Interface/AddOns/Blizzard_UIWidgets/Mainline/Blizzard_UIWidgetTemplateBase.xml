@@ -67,7 +67,7 @@
 				<Texture parentKey="Icon">
 					<Size x="16" y="16"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" />
+						<Anchor point="LEFT" />
 					</Anchors>
 				</Texture>
 				<FontString parentKey="Text" inherits="GameFontNormal_NoShadow" mixin="UIWidgetBaseTextMixin" parentArray="ColoredStrings">

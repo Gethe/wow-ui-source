@@ -79,28 +79,20 @@ function ObjectiveTrackerManager:SetOpacity(opacity)
 	end
 end
 
-local TEXT_SIZE_TABLE = {
-	[12] = SystemFont_Shadow_Med1,
-	[13] = SystemFont_Med2,
-	[14] = SystemFont_Shadow_Med3,
-	[15] = System15Font,
-	[16] = SystemFont_Shadow_Large,
-	[17] = Game17Font_Shadow,
-	[18] = SystemFont_Shadow_Large2,
-	[19] = Game19Font,
-	[20] = SystemFont_Shadow_Huge1,
-	[21] = Game21Font,
-	[22] = Game22Font,
-};
+local minLineFontSize = 12;
+local maxLineFontSize = 20;
+local headerExtraSize = 2;
 
 function ObjectiveTrackerManager:SetTextSize(textSize)
-	local lineFont = TEXT_SIZE_TABLE[textSize];
-	local headerFont = TEXT_SIZE_TABLE[textSize + 2];
-	if lineFont and headerFont then
-		ObjectiveTrackerLineFont:SetFontObject(lineFont);
-		ObjectiveTrackerHeaderFont:SetFontObject(headerFont);
-		self:UpdateAll();
+	if textSize < minLineFontSize or textSize > maxLineFontSize then
+		return;
 	end
+
+	local lineFont = "ObjectiveTrackerFont"..textSize;
+	local headerFont = "ObjectiveTrackerFont"..(textSize + headerExtraSize);
+	ObjectiveTrackerLineFont:SetFontObject(lineFont);
+	ObjectiveTrackerHeaderFont:SetFontObject(headerFont);
+	self:UpdateAll();
 end
 
 -- Rewards Toast

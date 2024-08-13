@@ -96,8 +96,8 @@
 			<OnLeave method="OnLeave"/>
 		</Scripts>
 		<HighlightTexture atlas="Options_List_Active" alphaMode="ADD"/>
-		<ButtonText>
-			<Size x="120" y="30"/>
+		<ButtonText wordwrap="false">
+			<Size x="115" y="30"/>
 			<Anchors>
 				<Anchor point="LEFT" x="32" y="0"/>
 			</Anchors>

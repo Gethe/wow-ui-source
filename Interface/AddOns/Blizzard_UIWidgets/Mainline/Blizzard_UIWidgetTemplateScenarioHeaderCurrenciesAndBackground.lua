@@ -89,5 +89,5 @@ end
 
 function UIWidgetTemplateScenarioHeaderCurrenciesAndBackgroundMixin:OnReset()
 	UIWidgetBaseTemplateMixin.OnReset(self);
-	self.currencyPool:ReleaseAll();
+	UIWidgetBaseCurrencyPoolOnReset(self.currencyPool);
 end

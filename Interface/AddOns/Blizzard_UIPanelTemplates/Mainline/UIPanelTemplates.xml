@@ -208,7 +208,7 @@
 		<Size x="125" y="17"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture parentKey="DamagerIcon" atlas="UI-LFG-RoleIcon-DPS-Micro">
+				<Texture parentKey="DamagerIcon" atlas="UI-LFG-RoleIcon-DPS-Micro-GroupFinder">
 					<Size x="17" y="17"/>
 					<Anchors>
 						<Anchor point="RIGHT" x="-11" y="0"/>
@@ -220,7 +220,7 @@
 						<Anchor point="RIGHT" relativeKey="$parent.DamagerIcon" relativePoint="LEFT" x="-1" y="0"/>
 					</Anchors>
 				</FontString>
-				<Texture parentKey="HealerIcon" atlas="UI-LFG-RoleIcon-Healer-Micro">
+				<Texture parentKey="HealerIcon" atlas="UI-LFG-RoleIcon-Healer-Micro-GroupFinder">
 					<Size x="17" y="17"/>
 					<Anchors>
 						<Anchor point="RIGHT" relativeKey="$parent.DamagerCount" relativePoint="LEFT" x="-4" y="0"/>
@@ -232,7 +232,7 @@
 						<Anchor point="RIGHT" relativeKey="$parent.HealerIcon" relativePoint="LEFT" x="-1" y="0"/>
 					</Anchors>
 				</FontString>
-				<Texture parentKey="TankIcon" atlas="UI-LFG-RoleIcon-Tank-Micro">
+				<Texture parentKey="TankIcon" atlas="UI-LFG-RoleIcon-Tank-Micro-GroupFinder">
 					<Size x="17" y="17"/>
 					<Anchors>
 						<Anchor point="RIGHT" relativeKey="$parent.HealerCount" relativePoint="LEFT" x="-4" y="0"/>

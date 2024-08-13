@@ -55,8 +55,7 @@ function UIWidgetTemplateDoubleStatusBarMixin:Setup(widgetInfo, widgetContainer)
 	leftBarInfo.barMax = widgetInfo.leftBarMax;
 	leftBarInfo.barValue = widgetInfo.leftBarValue;
 	leftBarInfo.tooltip = widgetInfo.leftBarTooltip;
-	self.LeftBar:Setup(widgetContainer, leftBarInfo);
-	self.LeftBar:SetTooltipLocation(widgetInfo.leftBarTooltipLoc);
+	self.LeftBar:Setup(widgetContainer, leftBarInfo, widgetInfo.leftBarTooltipLoc);
 	self.LeftBar.Spark:SetPoint("CENTER", self.LeftBar:GetStatusBarTexture(), "RIGHT", 0, 0);
 
 	local rightBarInfo = CopyTable(widgetInfo);
@@ -64,8 +63,7 @@ function UIWidgetTemplateDoubleStatusBarMixin:Setup(widgetInfo, widgetContainer)
 	rightBarInfo.barMax = widgetInfo.rightBarMax;
 	rightBarInfo.barValue = widgetInfo.rightBarValue;
 	rightBarInfo.tooltip = widgetInfo.rightBarTooltip;
-	self.RightBar:Setup(widgetContainer, rightBarInfo);
-	self.RightBar:SetTooltipLocation(widgetInfo.rightBarTooltipLoc);
+	self.RightBar:Setup(widgetContainer, rightBarInfo, widgetInfo.rightBarTooltipLoc);
 	self.RightBar.Spark:SetPoint("CENTER", self.RightBar:GetStatusBarTexture(), "LEFT", 0, 0);
 
 	self.LeftBar.Icon:ClearAllPoints();

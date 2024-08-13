@@ -88,7 +88,7 @@ local function Register()
 		end
 
 		local defaultValue = 2;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_NPC_NAMES", Settings.DefaultVarLocation,
+		local setting = Settings.RegisterProxySetting(category, "PROXY_NPC_NAMES",
 			Settings.VarType.Number, SHOW_NPC_NAMES, defaultValue, GetValue, SetValue);
 		Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_NPC_NAMES_DROPDOWN);
 	end);
@@ -277,7 +277,7 @@ local function Register()
 		end
 
 		local defaultValue = 4;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_STATUS_TEXT", Settings.DefaultVarLocation, 
+		local setting = Settings.RegisterProxySetting(category, "PROXY_STATUS_TEXT",
 			Settings.VarType.Number, STATUSTEXT_LABEL, defaultValue, GetValue, SetValue);
 		Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_STATUS_TEXT_DISPLAY);
 	end
@@ -319,7 +319,7 @@ local function Register()
 		end
 
 		local defaultValue = 1;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_CHAT_BUBBLES", Settings.DefaultVarLocation, 
+		local setting = Settings.RegisterProxySetting(category, "PROXY_CHAT_BUBBLES",
 			Settings.VarType.Number, CHAT_BUBBLES_TEXT, defaultValue, GetValue, SetValue);
 		Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_CHAT_BUBBLES);
 	end
@@ -335,6 +335,44 @@ local function Register()
 			Settings.SetupCVarCheckbox(category, "ReplaceMyPlayerPortrait", REPLACE_MY_PLAYER_PORTRAIT, OPTION_TOOLTIP_REPLACE_MY_PLAYER_PORTRAIT);
 		end
 	end);
+
+	-- Quest Settings
+	do
+		layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(QUEST_SETTINGS_LABEL));
+
+		local function SetQuestTracking(filter, value)
+			local filterIndex = MinimapUtil.GetFilterIndexForFilterID(filter);
+			if filterIndex then
+				C_Minimap.SetTracking(filterIndex, value);
+			end
+		end
+
+		-- Account completed quest filter
+		local function SetAccountCompletedQuestTracking(value)
+			SetQuestTracking(Enum.MinimapTrackingFilter.AccountCompletedQuests, value);
+		end
+
+		local function IsTrackingAccountCompletedQuests()
+			return not C_Minimap.IsFilteredOut(Enum.MinimapTrackingFilter.AccountCompletedQuests);
+		end
+
+		local accountCompletedQuestFilterSetting = Settings.RegisterProxySetting(category, "PROXY_ACCOUNT_COMPLETED_QUEST_FILTERING",
+			Settings.VarType.Boolean, SETTINGS_ACCOUNT_COMPLETED_QUEST_FILTER, Settings.Default.False, IsTrackingAccountCompletedQuests, SetAccountCompletedQuestTracking);
+		Settings.CreateCheckbox(category, accountCompletedQuestFilterSetting, ACCOUNT_COMPLETED_QUESTS_FILTER_DESCRIPTION);
+
+		-- Trivial quest filter
+		local function SetTrivialQuestTracking(value)
+			SetQuestTracking(Enum.MinimapTrackingFilter.TrivialQuests, value);
+		end
+
+		local function IsTrackingTrivialQuests()
+			return not C_Minimap.IsFilteredOut(Enum.MinimapTrackingFilter.TrivialQuests);
+		end
+
+		local trivialQuestFilterSetting = Settings.RegisterProxySetting(category, "PROXY_TRIVIAL_QUEST_FILTERING",
+			Settings.VarType.Boolean, SETTINGS_TRIVIAL_QUEST_FILTER, Settings.Default.False, IsTrackingTrivialQuests, SetTrivialQuestTracking);
+		Settings.CreateCheckbox(category, trivialQuestFilterSetting, TRIVIAL_QUESTS_FILTER_DESCRIPTION);
+	end
 
 	InterfaceOverrides.AdjustDisplaySettings(category);
 

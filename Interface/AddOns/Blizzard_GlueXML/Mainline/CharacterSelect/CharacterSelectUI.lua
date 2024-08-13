@@ -12,6 +12,7 @@ function CharacterSelectUIMixin:OnLoad()
 	self.ClampedHeightTopPercent = 0.8;
 	self.ClampedHeightBottomPercent = 0.2;
 	self.DoubleClickThreshold = 0.3;
+	self.TooltipTimerDuration = 0.5;
 	self.ListToggle:SetExpandTarget(self.CharacterList);
 
 	local function MapFadeInOnFinished()
@@ -60,7 +61,9 @@ function CharacterSelectUIMixin:OnEvent(event, ...)
 		-- Trigger any updates on the character model UI
 		for headerFrame in self.CharacterHeaderFramePool:EnumerateActive() do
 			if headerFrame.basicCharacterInfo and headerFrame.basicCharacterInfo.guid == guid then
-				headerFrame:SetTooltipAndShow();
+				self.tooltipTimer = C_Timer.NewTimer(self.TooltipTimerDuration, function()
+					headerFrame:SetTooltipAndShow();
+				end);
 				break;
 			end
 		end
@@ -73,6 +76,10 @@ function CharacterSelectUIMixin:OnEvent(event, ...)
 
 		self.currentMapSceneHoverGUID = nil;
 
+		if self.tooltipTimer then
+			self.tooltipTimer:Cancel();
+			self.tooltipTimer = nil;
+		end
 		GlueTooltip:Hide();
 
 		-- Trigger any updates on the character list entry, if visible.
@@ -400,7 +407,9 @@ function CharacterSelectHeaderMixin:OnEnter()
 		return;
 	end
 
-	self:SetTooltipAndShow();
+	self.tooltipTimer = C_Timer.NewTimer(CharacterSelectUI.TooltipTimerDuration, function()
+		self:SetTooltipAndShow();
+	end);
 
 	-- Trigger any updates on the character list entry, if visible.
 	local isHighlight = true;
@@ -415,6 +424,10 @@ function CharacterSelectHeaderMixin:OnLeave()
 		return;
 	end
 
+	if self.tooltipTimer then
+		self.tooltipTimer:Cancel();
+		self.tooltipTimer = nil;
+	end
 	GlueTooltip:Hide();
 
 	-- Trigger any updates on the character list entry, if visible.

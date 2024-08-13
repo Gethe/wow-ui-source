@@ -59,8 +59,8 @@ end
 
 local function CreateAdvancedQualitySetting(category, cvar, name, proxyName, minQualityValue)
 	local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures(cvar, Settings.VarType.Number);
-	local commitValue = setValue;
-	local setting = Settings.RegisterProxySetting(category, proxyName, Settings.DefaultVarLocation, Settings.VarType.Number, name, getDefaultValue(), getValue, nil, commitValue);
+	local setting = Settings.RegisterProxySetting(category, proxyName,
+		Settings.VarType.Number, name, getDefaultValue(), getValue, setValue);
 	setting:SetCommitFlags(Settings.CommitFlag.Apply);
 	setting.minQualityValue = minQualityValue or -1;
 	return setting;
@@ -68,10 +68,9 @@ end
 
 local function CreateQualitySliderSetting(cvar, label, proxyName, tooltip)
 	local getValue, setValue = Settings.CreateCVarAccessorClosures(cvar, Settings.VarType.Number);
-	local commitValue = setValue;
 	local defaultValue = tonumber(GetCVarDefault(cvar));
-	local setting = Settings.RegisterProxySetting(category, proxyName, Settings.DefaultVarLocation,
-		Settings.VarType.Number, label, defaultValue, getValue, nil, commitValue);
+	local setting = Settings.RegisterProxySetting(category, proxyName,
+		Settings.VarType.Number, label, defaultValue, getValue, setValue);
 
 	local minValue, maxValue, step = 0, 9, 1;
 	local options = Settings.CreateSliderOptions(minValue, maxValue, step);
@@ -466,7 +465,6 @@ local function Register()
 	local monitorSetting = nil;
 	do
 		local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("gxMonitor", Settings.VarType.Number);
-		local commitValue = setValue;
 		local DEFAULT_MONITOR_VALUE = getDefaultValue();
 		assert(DEFAULT_MONITOR_VALUE == 0);
 
@@ -489,8 +487,8 @@ local function Register()
 			return container:GetData();
 		end
 
-		monitorSetting = Settings.RegisterProxySetting(category, "PROXY_PRIMARY_MONITOR", Settings.DefaultVarLocation,
-			Settings.VarType.Number, PRIMARY_MONITOR, DEFAULT_MONITOR_VALUE, getValue, nil, commitValue);
+		monitorSetting = Settings.RegisterProxySetting(category, "PROXY_PRIMARY_MONITOR",
+			Settings.VarType.Number, PRIMARY_MONITOR, DEFAULT_MONITOR_VALUE, getValue, setValue);
 		monitorSetting:SetCommitFlags(Settings.CommitFlag.Apply, Settings.CommitFlag.UpdateWindow, Settings.CommitFlag.Revertable);
 
 		Settings.CreateDropdown(category, monitorSetting, GetOptions, OPTION_TOOLTIP_PRIMARY_MONITOR);
@@ -505,7 +503,6 @@ local function Register()
 	local displayModeSetting = nil;
 	do
 		local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("gxMaximize", Settings.VarType.Boolean);
-		local commitValue = setValue;
 
 		local function GetOptions()
 			local container = Settings.CreateControlTextContainer();
@@ -514,8 +511,8 @@ local function Register()
 			return container:GetData();
 		end
 
-		displayModeSetting = Settings.RegisterProxySetting(category, "PROXY_DISPLAY_MODE", Settings.DefaultVarLocation,
-			Settings.VarType.Boolean, DISPLAY_MODE, getDefaultValue(), getValue, nil, commitValue);
+		displayModeSetting = Settings.RegisterProxySetting(category, "PROXY_DISPLAY_MODE",
+			Settings.VarType.Boolean, DISPLAY_MODE, getDefaultValue(), getValue, setValue);
 		displayModeSetting:SetCommitFlags(Settings.CommitFlag.Apply, Settings.CommitFlag.UpdateWindow, Settings.CommitFlag.Revertable);
 		Settings.CreateDropdown(category, displayModeSetting, GetOptions, OPTION_TOOLTIP_DISPLAY_MODE);
 	end
@@ -566,14 +563,14 @@ local function Register()
 			return value;
 		end
 
-		local function CommitValue(value)
+		local function SetValue(value)
 			local x, y = ExtractSizeFromFormattedSize(value);
 			C_VideoOptions.SetGameWindowSize(x, y);
 		end
 
 		local defaultValue = FormatScreenResolution(0,0);
-		resolutionSetting = Settings.RegisterProxySetting(category, "PROXY_RESOLUTION", Settings.DefaultVarLocation,
-			Settings.VarType.String, WINDOW_SIZE, defaultValue, GetValue, nil, CommitValue);
+		resolutionSetting = Settings.RegisterProxySetting(category, "PROXY_RESOLUTION",
+			Settings.VarType.String, WINDOW_SIZE, defaultValue, GetValue, SetValue);
 		resolutionSetting:SetCommitFlags(Settings.CommitFlag.Apply, Settings.CommitFlag.UpdateWindow, Settings.CommitFlag.Revertable);
 		resolutionSetting:SetCommitOrder(1);
 
@@ -581,29 +578,19 @@ local function Register()
 		resolutionInitializer.reinitializeOnValueChanged = true;
 		resolutionInitializer.skipAssertMissingOption = true;
 
-		local function OnDisplayModeValueChanged(o, s, value)
-			if value then
-				resolutionSetting:ReinitializeValue(defaultValue);
-			else
-				local newValue = GetValue();
-				resolutionSetting:ReinitializeValue(newValue);
-			end
+		local function OnDisplayChanged(o, s, value)
+			-- Display mode and monitor changes will invalidate the available resolution options.
+			resolutionSetting:Revert();
 		end;
-		Settings.SetOnValueChangedCallback(displayModeSetting:GetVariable(), OnDisplayModeValueChanged);
-
-		local function OnMonitorValueChanged(o, s, value)
-			local newValue = GetValue();
-			resolutionSetting:ReinitializeValue(newValue);
-		end;
-		Settings.SetOnValueChangedCallback(monitorSetting:GetVariable(), OnMonitorValueChanged);
+		Settings.SetOnValueChangedCallback(displayModeSetting:GetVariable(), OnDisplayChanged);
+		Settings.SetOnValueChangedCallback(monitorSetting:GetVariable(), OnDisplayChanged);
 	end
 
 	-- Resolution/Render Scale
 	do
 		local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("RenderScale", Settings.VarType.Number);
-		local commitValue = setValue;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_RESOLUTION_RENDER_SCALE", Settings.DefaultVarLocation,
-			Settings.VarType.Number, RENDER_SCALE, getDefaultValue(), getValue, nil, commitValue);
+		local setting = Settings.RegisterProxySetting(category, "PROXY_RESOLUTION_RENDER_SCALE",
+			Settings.VarType.Number, RENDER_SCALE, getDefaultValue(), getValue, setValue);
 		setting:SetCommitFlags(Settings.CommitFlag.Apply);
 
 		local function FormatDisplayableResolution(value)
@@ -627,11 +614,11 @@ local function Register()
 		initializer:SetParentInitializer(resolutionInitializer);
 		initializer.reinitializeOnValueChanged = true;
 
-		local function OnValueChanged(o, s, value)
-			-- We're leveraging the setting value changed event to force the slider to update as the resolution is changed.
-			setting:ReinitializeValue(setting:GetValue());
+		local function OnResolutionChanged(o, s, value)
+			-- Update the slider as the resolution is changed.
+			setting:NotifyUpdate();
 		end;
-		Settings.SetOnValueChangedCallback(resolutionSetting:GetVariable(), OnValueChanged);
+		Settings.SetOnValueChangedCallback(resolutionSetting:GetVariable(), OnResolutionChanged);
 	end
 
 	-- NOTE: Classic doesn't use scale at glues
@@ -647,18 +634,16 @@ local function Register()
 		-- Use UI Scale
 		do
 			local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("useUiScale", Settings.VarType.Boolean);
-			local commitValue = setValue;
-			useUIScaleSetting = Settings.RegisterProxySetting(category, "PROXY_USE_UI_SCALE", Settings.DefaultVarLocation,
-				Settings.VarType.Boolean, RENDER_SCALE, getDefaultValue(), getValue, nil, commitValue);
+			useUIScaleSetting = Settings.RegisterProxySetting(category, "PROXY_USE_UI_SCALE",
+				Settings.VarType.Boolean, RENDER_SCALE, getDefaultValue(), getValue, setValue);
 			useUIScaleSetting:SetCommitFlags(Settings.CommitFlag.Apply, Settings.CommitFlag.Revertable);
 		end
 
 		-- Resolution Scale
 		do
 			local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("uiscale", Settings.VarType.Number);
-			local commitValue = setValue;
-			uiScaleSliderSetting = Settings.RegisterProxySetting(category, "PROXY_UI_SCALE", Settings.DefaultVarLocation,
-				Settings.VarType.Number, RENDER_SCALE, getDefaultValue(), getValue, nil, commitValue);
+			uiScaleSliderSetting = Settings.RegisterProxySetting(category, "PROXY_UI_SCALE",
+				Settings.VarType.Number, RENDER_SCALE, getDefaultValue(), getValue, setValue);
 			uiScaleSliderSetting:SetCommitFlags(Settings.CommitFlag.Apply, Settings.CommitFlag.Revertable);
 		end
 
@@ -669,7 +654,6 @@ local function Register()
 		local initializer = CreateSettingsCheckboxSliderInitializer(
 			useUIScaleSetting, USE_UISCALE, OPTION_TOOLTIP_USE_UISCALE,
 			uiScaleSliderSetting, options, UI_SCALE, OPTION_TOOLTIP_UI_SCALE);
-		initializer:AddSearchTags(USE_UISCALE, UI_SCALE);
 		layout:AddInitializer(initializer);
 	end);
 
@@ -683,9 +667,8 @@ local function Register()
 		end
 
 		local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("vsync", Settings.VarType.Boolean);
-		local commitValue = setValue;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_VERTICAL_SYNC", Settings.DefaultVarLocation,
-			Settings.VarType.Boolean, VERTICAL_SYNC, getDefaultValue(), getValue, nil, commitValue);
+		local setting = Settings.RegisterProxySetting(category, "PROXY_VERTICAL_SYNC",
+			Settings.VarType.Boolean, VERTICAL_SYNC, getDefaultValue(), getValue, setValue);
 		setting:SetCommitFlags(Settings.CommitFlag.Apply, Settings.CommitFlag.UpdateWindow);
 
 		Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_VERTICAL_SYNC);
@@ -703,9 +686,8 @@ local function Register()
 		end
 
 		local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("NotchedDisplayMode", Settings.VarType.Number);
-		local commitValue = setValue;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_NOTCHED_DISPLAY_MODE", Settings.DefaultVarLocation,
-			Settings.VarType.Number, NOTCH_MODE, getDefaultValue(), getValue, nil, commitValue);
+		local setting = Settings.RegisterProxySetting(category, "PROXY_NOTCHED_DISPLAY_MODE",
+			Settings.VarType.Number, NOTCH_MODE, getDefaultValue(), getValue, setValue);
 		setting:SetCommitFlags(Settings.CommitFlag.Apply, Settings.CommitFlag.UpdateWindow);
 
 		Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_NOTCH_MODE);
@@ -782,7 +764,7 @@ local function Register()
 			end
 
 			local defaultValue = AA_NONE;
-			aaSetting = Settings.RegisterProxySetting(category, "PROXY_ANTIALIASING", Settings.DefaultVarLocation,
+			aaSetting = Settings.RegisterProxySetting(category, "PROXY_ANTIALIASING",
 				Settings.VarType.Number, ANTIALIASING, defaultValue, GetValue, SetValue);
 			aaSetting:SetCommitFlags(Settings.CommitFlag.Apply);
 
@@ -807,9 +789,8 @@ local function Register()
 			end
 
 			local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("ffxAntiAliasingMode", Settings.VarType.Number);
-			local commitValue = setValue;
-			local setting = Settings.RegisterProxySetting(category, "PROXY_FXAA", Settings.DefaultVarLocation,
-				Settings.VarType.Number, FXAA_CMAA_LABEL, getDefaultValue(), getValue, nil, commitValue);
+			local setting = Settings.RegisterProxySetting(category, "PROXY_FXAA",
+				Settings.VarType.Number, FXAA_CMAA_LABEL, getDefaultValue(), getValue, setValue);
 			setting:SetCommitFlags(Settings.CommitFlag.Apply);
 			aaSettings.fxaa = setting;
 
@@ -829,7 +810,7 @@ local function Register()
 				return msaa;
 			end
 
-			local function CommitValue(value)
+			local function SetValue(value)
 				SetCVar("MSAAQuality", value);
 			end
 
@@ -851,8 +832,8 @@ local function Register()
 			end
 
 			local defaultValue = 0;
-			local setting = Settings.RegisterProxySetting(category, "PROXY_MSAA", Settings.DefaultVarLocation,
-				Settings.VarType.Number, MSAA_LABEL, defaultValue, GetValue, nil, CommitValue);
+			local setting = Settings.RegisterProxySetting(category, "PROXY_MSAA",
+				Settings.VarType.Number, MSAA_LABEL, defaultValue, GetValue, SetValue);
 			setting:SetCommitFlags(Settings.CommitFlag.Apply);
 			aaSettings.msaa = setting;
 
@@ -869,9 +850,8 @@ local function Register()
 			local cvar = "msaaAlphaTest";
 			local normalScale = 1.0;
 			local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures(cvar, Settings.VarType.Boolean);
-			local commitValue = setValue;
-			local setting = Settings.RegisterProxySetting(category, "PROXY_MSAA_ALPHA", Settings.DefaultVarLocation,
-				Settings.VarType.Boolean, MULTISAMPLE_ALPHA_TEST, getDefaultValue(), getValue, nil, commitValue);
+			local setting = Settings.RegisterProxySetting(category, "PROXY_MSAA_ALPHA",
+				Settings.VarType.Boolean, MULTISAMPLE_ALPHA_TEST, getDefaultValue(), getValue, setValue);
 			setting:SetCommitFlags(Settings.CommitFlag.Apply);
 			aaSettings.msaaAlpha = setting;
 
@@ -895,10 +875,9 @@ local function Register()
 	if C_CVar.GetCVar("cameraFov") then
 		do
 			local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("cameraFov", Settings.VarType.Number);
-			local commitValue = setValue;
 			local _, minValue, maxValue = GetCameraFOVDefaults();
-			local setting = Settings.RegisterProxySetting(category, "PROXY_CAMERA_FOV", Settings.DefaultVarLocation,
-				Settings.VarType.Number, CAMERA_FOV, getDefaultValue(), getValue, nil, commitValue);
+			local setting = Settings.RegisterProxySetting(category, "PROXY_CAMERA_FOV",
+				Settings.VarType.Number, CAMERA_FOV, getDefaultValue(), getValue, setValue);
 			setting:SetCommitFlags(Settings.CommitFlag.Apply);
 
 			local step = 5;
@@ -967,15 +946,13 @@ local function Register()
 			return getValue() == FRAME_LATENCY_ENABLED;
 		end
 
-		local SetValue = nil;
-
-		local function CommitValue(value)
+		local function SetValue(value)
 			setValue(value and FRAME_LATENCY_ENABLED or FRAME_LATENCY_DISABLED);
 		end
 
 		local defaultValue = true;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_TRIPLE_BUFFERING", Settings.DefaultVarLocation,
-			Settings.VarType.Boolean, TRIPLE_BUFFER, defaultValue, GetValue, SetValue, CommitValue);
+		local setting = Settings.RegisterProxySetting(category, "PROXY_TRIPLE_BUFFERING",
+			Settings.VarType.Boolean, TRIPLE_BUFFER, defaultValue, GetValue, SetValue);
 		setting:SetCommitFlags(Settings.CommitFlag.Apply, Settings.CommitFlag.GxRestart);
 		Settings.CreateCheckbox(category, setting, OPTION_TOOLTIP_TRIPLE_BUFFER);
 	end
@@ -1075,9 +1052,7 @@ local function Register()
 			return apis[found or #apis];
 		end
 
-		local SetValue = nil;
-
-		local function CommitValue(value)
+		local function SetValue(value)
 			SetCVar("gxapi", value);
 		end
 
@@ -1116,8 +1091,8 @@ local function Register()
 		end
 
 		local defaultValue = apis[#apis];
-		local setting = Settings.RegisterProxySetting(category, "PROXY_GRAPHICS_API", Settings.DefaultVarLocation,
-			Settings.VarType.String, GXAPI, defaultValue, GetValue, SetValue, CommitValue);
+		local setting = Settings.RegisterProxySetting(category, "PROXY_GRAPHICS_API",
+			Settings.VarType.String, GXAPI, defaultValue, GetValue, SetValue);
 		setting:SetCommitFlags(Settings.CommitFlag.Apply, Settings.CommitFlag.GxRestart);
 
 		-- Mike A note, CVar callbacks do not work in the start-screen menu, so need the more focused approach
@@ -1144,9 +1119,8 @@ local function Register()
 		end
 
 		local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("physicsLevel", Settings.VarType.Number);
-		local commitValue = setValue;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_PHYSICS_LEVEL", Settings.DefaultVarLocation,
-			Settings.VarType.Number, PHYSICS_INTERACTION, getDefaultValue(), getValue, nil, commitValue);
+		local setting = Settings.RegisterProxySetting(category, "PROXY_PHYSICS_LEVEL",
+			Settings.VarType.Number, PHYSICS_INTERACTION, getDefaultValue(), getValue, setValue);
 		setting:SetCommitFlags(Settings.CommitFlag.ClientRestart);
 
 		Settings.CreateDropdown(category, setting, GetOptions, OPTION_PHYSICS_OPTIONS);
@@ -1174,9 +1148,8 @@ local function Register()
 		end
 
 		local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("gxAdapter", Settings.VarType.String);
-		local commitValue = setValue;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_GX_ADAPTER", Settings.DefaultVarLocation,
-			Settings.VarType.String, GRAPHICS_CARD, getDefaultValue(), getValue, nil, commitValue);
+		local setting = Settings.RegisterProxySetting(category, "PROXY_GX_ADAPTER",
+			Settings.VarType.String, GRAPHICS_CARD, getDefaultValue(), getValue, setValue);
 		setting:SetCommitFlags(Settings.CommitFlag.Apply, Settings.CommitFlag.GxRestart);
 
 		Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_GRAPHICS_CARD);
@@ -1189,13 +1162,12 @@ local function Register()
 	-- Max foreground FPS
 	do
 		local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("useMaxFPS", Settings.VarType.Boolean);
-		local fpsSetting = Settings.RegisterProxySetting(category, "PROXY_FOREGROUND_FPS_ENABLED", Settings.DefaultVarLocation,
+		local fpsSetting = Settings.RegisterProxySetting(category, "PROXY_FOREGROUND_FPS_ENABLED",
 			Settings.VarType.Boolean, MAXFPS_CHECK, getDefaultValue(), getValue, setValue);
 
 		getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("maxFPS", Settings.VarType.Number);
-		local commitValue = setValue;
-		local fpsSliderSetting = Settings.RegisterProxySetting(category, "PROXY_FOREGROUND_FPS", Settings.DefaultVarLocation,
-			Settings.VarType.Number, MAXFPS, getDefaultValue(), getValue, nil, commitValue);
+		local fpsSliderSetting = Settings.RegisterProxySetting(category, "PROXY_FOREGROUND_FPS",
+			Settings.VarType.Number, MAXFPS, getDefaultValue(), getValue, setValue);
 
 		local minValue, maxValue, step = 8, 200, 1;
 		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
@@ -1204,20 +1176,18 @@ local function Register()
 		local initializer = CreateSettingsCheckboxSliderInitializer(
 			fpsSetting, MAXFPS, OPTION_MAXFPS_CHECK,
 			fpsSliderSetting, options, MAXFPS, OPTION_MAXFPS_CHECK);
-		initializer:AddSearchTags(MAXFPS);
 		layout:AddInitializer(initializer);
 	end
 
 	-- Max background FPS
 	do
 		local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("useMaxFPSBk", Settings.VarType.Boolean);
-		local fpsSetting = Settings.RegisterProxySetting(category, "PROXY_BACKGROUND_FPS_ENABLED", Settings.DefaultVarLocation,
+		local fpsSetting = Settings.RegisterProxySetting(category, "PROXY_BACKGROUND_FPS_ENABLED",
 			Settings.VarType.Boolean, MAXFPSBK_CHECK, getDefaultValue(), getValue, setValue);
 
 		getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("maxFPSBk", Settings.VarType.Number);
-		local commitValue = setValue;
-		local fpsSliderSetting = Settings.RegisterProxySetting(category, "PROXY_BACKGROUND_FPS", Settings.DefaultVarLocation,
-			Settings.VarType.Number, MAXFPSBK, getDefaultValue(), getValue, nil, commitValue);
+		local fpsSliderSetting = Settings.RegisterProxySetting(category, "PROXY_BACKGROUND_FPS",
+			Settings.VarType.Number, MAXFPSBK, getDefaultValue(), getValue, setValue);
 
 		local minValue, maxValue, step = 8, 200, 1;
 		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
@@ -1226,20 +1196,18 @@ local function Register()
 		local initializer = CreateSettingsCheckboxSliderInitializer(
 			fpsSetting, MAXFPSBK, OPTION_MAXFPSBK_CHECK,
 			fpsSliderSetting, options, MAXFPSBK, OPTION_MAXFPSBK_CHECK);
-		initializer:AddSearchTags(MAXFPSBK);
 		layout:AddInitializer(initializer);
 	end
 
 	-- Max Target FPS
 	do
 		local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("useTargetFPS", Settings.VarType.Boolean);
-		local fpsSetting = Settings.RegisterProxySetting(category, "PROXY_TARGET_FPS_ENABLED", Settings.DefaultVarLocation,
+		local fpsSetting = Settings.RegisterProxySetting(category, "PROXY_TARGET_FPS_ENABLED",
 			Settings.VarType.Boolean, TARGETFPS, getDefaultValue(), getValue, setValue);
 
 		getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("targetFPS", Settings.VarType.Number);
-		local commitValue = setValue;
-		local fpsSliderSetting = Settings.RegisterProxySetting(category, "PROXY_TARGET_FPS", Settings.DefaultVarLocation,
-			Settings.VarType.Number, TARGETFPS, getDefaultValue(), getValue, nil, commitValue);
+		local fpsSliderSetting = Settings.RegisterProxySetting(category, "PROXY_TARGET_FPS",
+			Settings.VarType.Number, TARGETFPS, getDefaultValue(), getValue, setValue);
 
 		local minValue, maxValue, step = 8, 200, 1;
 		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
@@ -1274,13 +1242,12 @@ local function Register()
 
 		local cvar = "ResampleSharpness";
 		local getValue, setValue = Settings.CreateCVarAccessorClosures(cvar, Settings.VarType.Number);
-
 		local getValueReversed = function() return maxValue - getValue(); end;
-		local commitValueReversed = function(value) return setValue(maxValue - value) end;
+		local setValueReversed = function(value) return setValue(maxValue - value) end;
 		local defaultValueReversed = maxValue - tonumber(GetCVarDefault(cvar));
 
-		local setting = Settings.RegisterProxySetting(category, "PROXY_RESAMPLE_SHARPNESS", Settings.DefaultVarLocation,
-			Settings.VarType.Number, RESAMPLE_SHARPNESS, defaultValueReversed, getValueReversed, nil, commitValueReversed);
+		local setting = Settings.RegisterProxySetting(category, "PROXY_RESAMPLE_SHARPNESS",
+			Settings.VarType.Number, RESAMPLE_SHARPNESS, defaultValueReversed, getValueReversed, setValueReversed);
 
 		Settings.CreateSlider(category, setting, options, OPTION_TOOLTIP_SHARPNESS);
 	end
@@ -1337,8 +1304,8 @@ local function Register()
 		local function AddCompatSettingsCheckbox(cvar, proxyName, name, tooltip)
 			if C_CVar.GetCVar(cvar) then
 				local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures(cvar, Settings.VarType.Boolean);
-				local commitValue = setValue;
-				local setting = Settings.RegisterProxySetting(category, proxyName, Settings.DefaultVarLocation, Settings.VarType.Boolean, name, getDefaultValue(), getValue, nil, commitValue);
+				local setting = Settings.RegisterProxySetting(category, proxyName, 
+					Settings.VarType.Boolean, name, getDefaultValue(), getValue, setValue);
 				setting:SetCommitFlags(Settings.CommitFlag.Apply, Settings.CommitFlag.GxRestart);
 		
 				local function GetOptions()

@@ -69,7 +69,7 @@ end
 
 function QuestMixin:IsCalling()
 	if self.isCalling == nil then
-		self.isCalling = C_QuestLog.IsQuestCalling(self:GetID());
+		self.isCalling = self:GetQuestClassification() == Enum.QuestClassification.Calling;
 	end
 
 	return self.isCalling;
@@ -103,10 +103,9 @@ function QuestMixin:IsOnMap()
 	return C_QuestLog.IsOnMap(self:GetID());
 end
 
-function QuestMixin:GetSortType()
-	-- Ensure that the campaignID is set
-	self:GetCampaignID();
-	return QuestUtils_GetQuestSortType(self);
+function QuestMixin:GetQuestClassification()
+	-- This could change at runtime
+	return C_QuestInfoSystem.GetQuestClassification(self:GetID());
 end
 
 QuestCache = ObjectCache_Create(QuestMixin);

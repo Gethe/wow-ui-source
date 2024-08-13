@@ -1642,25 +1642,26 @@ function MicroMenuMixin:OnLoad()
 end
 
 function MicroMenuMixin:InitializeButtons()
-	-- Button, plus GameModeFeatureSetting that controls whether it is shown.
+	-- Button, plus GameRule that controls whether it is shown.
 	local buttonInfos = {
-		{ CharacterMicroButton, Enum.GameModeFeatureSetting.CharacterPanel, },
+		{ CharacterMicroButton, Enum.GameRule.CharacterPanelDisabled, },
 		-- SpellBookRevampTODO: Once the old spellbook is deleted & replaced with professions only frame, this feature handling must be reworked accordingly
-		{ ProfessionMicroButton, Enum.GameModeFeatureSetting.SpellbookPanel, },
-		{ PlayerSpellsMicroButton, Enum.GameModeFeatureSetting.TalentsPanel, },
-		{ AchievementMicroButton, Enum.GameModeFeatureSetting.AchievementsPanel, },
-		{ QuestLogMicroButton, Enum.GameModeFeatureSetting.QuestLogMicroButton, },
-		{ GuildMicroButton, Enum.GameModeFeatureSetting.CommunitiesPanel, },
-		{ LFDMicroButton, Enum.GameModeFeatureSetting.FinderPanel, },
-		{ CollectionsMicroButton, Enum.GameModeFeatureSetting.CollectionsPanel, },
-		{ EJMicroButton, Enum.GameModeFeatureSetting.EncounterJournal, },
-		{ HelpMicroButton, Enum.GameModeFeatureSetting.HelpPanel, },
-		{ StoreMicroButton, Enum.GameModeFeatureSetting.Store, },
+		{ ProfessionMicroButton, Enum.GameRule.SpellbookPanelDisabled, },
+		{ PlayerSpellsMicroButton, Enum.GameRule.TalentsPanelDisabled, },
+		{ AchievementMicroButton, Enum.GameRule.AchievementsPanelDisabled, },
+		{ QuestLogMicroButton, Enum.GameRule.QuestLogMicrobuttonDisabled, },
+		{ GuildMicroButton, Enum.GameRule.CommunitiesPanelDisabled, },
+		{ LFDMicroButton, Enum.GameRule.FinderPanelDisabled, },
+		{ CollectionsMicroButton, Enum.GameRule.CollectionsPanelDisabled, },
+		{ EJMicroButton, Enum.GameRule.EncounterJournalDisabled, },
+		{ HelpMicroButton, Enum.GameRule.HelpPanelDisabled, },
+		{ StoreMicroButton, Enum.GameRule.StoreDisabled, },
 	};
 
 	for i, buttonInfo in ipairs(buttonInfos) do
-		local button, GameModeFeatureSetting = unpack(buttonInfo);
-		if C_GameModeManager.IsFeatureEnabled(GameModeFeatureSetting) then
+		local button, GameRule = unpack(buttonInfo);
+		local buttonDisabled = C_GameRules.IsGameRuleActive(GameRule);
+		if not buttonDisabled then
 			self:AddButton(button);
 		end
 	end
@@ -1793,7 +1794,7 @@ function MicroMenuMixin:Layout()
 end
 
 function MicroMenuMixin:SetScaleAdjustment(scale)
-	local featureScale = C_GameModeManager.GetFeatureSetting(Enum.GameModeFeatureSetting.MicroBarScale);
+	local featureScale = C_GameRules.GetGameRuleAsFloat(Enum.GameRule.MicrobarScale);
 	if featureScale ~= 0 then
 		self:SetScale(scale * featureScale);
 	else

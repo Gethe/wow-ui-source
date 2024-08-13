@@ -46,10 +46,10 @@ function ActionBarsOverrides.CreateActionBarVisibilitySettings(category, ActionB
 			end
 
 			local defaultValue = false;
-			local setting = Settings.RegisterProxySetting(category, data.variable, Settings.DefaultVarLocation,
+			local setting = Settings.RegisterProxySetting(category, data.variable,
 				Settings.VarType.Boolean, data.label, defaultValue, GetValue, SetValue);
 			actionBars[index].setting = setting;
-		actionBars[index].initializer = Settings.CreateCheckbox(category, setting, data.tooltip);
+			actionBars[index].initializer = Settings.CreateCheckbox(category, setting, data.tooltip);
 		end
 end
 
