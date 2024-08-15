@@ -379,13 +379,13 @@
 			<Font font="Fonts\ARIALN.TTF" height="14"/>
 		</Member>
 		<Member alphabet="korean">
-			<Font font="Fonts\ARIALN.TTF" height="14"/>
+			<Font font="Fonts\2002.TTF" height="13"/>
 		</Member>
 		<Member alphabet="simplifiedchinese">
-			<Font font="Fonts\ARIALN.TTF" height="14"/>
+			<Font font="Fonts\ARKai_C.ttf" height="12"/>
 		</Member>
 		<Member alphabet="traditionalchinese">
-			<Font font="Fonts\ARIALN.TTF" height="14"/>
+			<Font font="Fonts\arheiuhk_bd.TTF" height="12"/>
 		</Member>
 		<Member alphabet="russian">
 			<Font font="Fonts\ARIALN.TTF" height="14"/>

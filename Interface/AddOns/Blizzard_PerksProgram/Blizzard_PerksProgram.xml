@@ -110,9 +110,9 @@
 											<AnimationGroup parentKey="PendingFreezeAnim" looping="NONE" setToFinalAlpha="true">
 												<Alpha smoothing="NONE" childKey="ProductButton.FrozenArtContainer.ItemGlowFlash1" duration=".2" order="1" fromAlpha="1" toAlpha="0"/>
 												<Alpha smoothing="NONE" childKey="ProductButton.FrozenArtContainer.ItemGlowFlash2" duration=".43" order="1" fromAlpha="1" toAlpha="0"/>
-												<Alpha smoothing="NONE" childKey="Label" duration=".2" order="1" fromAlpha="0" toAlpha="1"/>
-												<Translation startDelay="0" childKey="Label" offsetX="-10" offsetY="0" duration="0" order="1"/>
-												<Translation startDelay="0" childKey="Label" offsetX="10" offsetY="0" duration="0.2" order="1"/>
+												<Alpha smoothing="NONE" childKey="ProductButton.ContentsContainer.Label" duration=".2" order="1" fromAlpha="0" toAlpha="1"/>
+												<Translation startDelay="0" childKey="ProductButton.ContentsContainer.Label" offsetX="-10" offsetY="0" duration="0" order="1"/>
+												<Translation startDelay="0" childKey="ProductButton.ContentsContainer.Label" offsetX="10" offsetY="0" duration="0.2" order="1"/>
 											</AnimationGroup>
 											<AnimationGroup parentKey="ConfirmedBackgroundFreezeAnim" looping="NONE" setToFinalAlpha="true">
 												<FlipBook smoothing="NONE" childKey="FrostFlipbook" duration="1" order="1" flipBookRows="3" flipBookColumns="5" flipBookFrames="13" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
@@ -155,10 +155,10 @@
 												<Alpha startDelay="0" smoothing="NONE" childKey="FrostBG" duration=".46" order="1" fromAlpha=".35" toAlpha=".35"/>
 												<Alpha startDelay=".46" smoothing="NONE" childKey="FrostBG" duration=".43" order="1" fromAlpha=".35" toAlpha="0"/>
 												<Alpha smoothing="NONE" childKey="FrostLabelBG" duration="1" order="1" fromAlpha=".22" toAlpha="0"/>
-												<Alpha startDelay="0" smoothing="NONE" childKey="Label" duration="0" order="1" fromAlpha="1" toAlpha="0"/>
-												<Alpha startDelay=".9" smoothing="NONE" childKey="Label" duration=".2" order="1" fromAlpha="0" toAlpha="1"/>
-												<Translation startDelay=".9" childKey="Label" offsetX="-10" offsetY="0" duration="0" order="1"/>
-												<Translation startDelay=".9" childKey="Label" offsetX="10" offsetY="0" duration="0.2" order="1"/>
+												<Alpha startDelay="0" smoothing="NONE" childKey="ProductButton.ContentsContainer.Label" duration="0" order="1" fromAlpha="1" toAlpha="0"/>
+												<Alpha startDelay=".9" smoothing="NONE" childKey="ProductButton.ContentsContainer.Label" duration=".2" order="1" fromAlpha="0" toAlpha="1"/>
+												<Translation startDelay=".9" childKey="ProductButton.ContentsContainer.Label" offsetX="-10" offsetY="0" duration="0" order="1"/>
+												<Translation startDelay=".9" childKey="ProductButton.ContentsContainer.Label" offsetX="10" offsetY="0" duration="0.2" order="1"/>
 											</AnimationGroup>
 										</Animations>
 										<Layers>
