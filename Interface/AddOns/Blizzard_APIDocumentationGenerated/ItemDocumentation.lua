@@ -15,6 +15,20 @@ local Item =
 			Type = "Function",
 		},
 		{
+			Name = "CanBeRefunded",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canBeRefunded", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CanItemTransmogAppearance",
 			Type = "Function",
 

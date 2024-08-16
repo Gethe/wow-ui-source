@@ -937,6 +937,24 @@ function BankPanelItemButtonMixin:OnLeave()
 	self:SetScript("OnUpdate", nil);
 end
 
+
+function BankUtil_IsAccountBankDepositRefundable(itemLocation)
+	if not itemLocation or not itemLocation:IsValid() then
+		return false;
+	end
+
+	return (BankFrame:GetActiveBankType() == Enum.BankType.Account) and C_Item.CanBeRefunded(itemLocation);
+end
+
+function BankPanelItemButtonMixin:HandleItemPickup()
+	local cursorItemLocation = C_Cursor.GetCursorItem();
+	if cursorItemLocation and BankUtil_IsAccountBankDepositRefundable(cursorItemLocation) then
+		StaticPopup_Show("ACCOUNT_BANK_DEPOSIT_NO_REFUND_CONFIRM", nil, nil, { itemToDeposit = Item:CreateFromItemGUID(C_Item.GetItemGUID(cursorItemLocation)), targetItemLocation = self.itemLocation });
+	else
+		C_Container.PickupContainerItem(self:GetBankTabID(), self:GetContainerSlotID());
+	end
+end
+
 function BankPanelItemButtonMixin:OnClick(button)
 	if IsModifiedClick() then
 		self:OnModifiedClick(button);
@@ -944,7 +962,7 @@ function BankPanelItemButtonMixin:OnClick(button)
 	end
 
 	if ( button == "LeftButton" ) then
-		C_Container.PickupContainerItem(self:GetBankTabID(), self:GetContainerSlotID());
+		self:HandleItemPickup();
 	else
 		C_Container.UseContainerItem(self:GetBankTabID(), self:GetContainerSlotID());
 	end
@@ -971,7 +989,7 @@ function BankPanelItemButtonMixin:OnDragStart()
 end
 
 function BankPanelItemButtonMixin:OnReceiveDrag()
-	C_Container.PickupContainerItem(self:GetBankTabID(), self:GetContainerSlotID());
+	self:HandleItemPickup();
 end
 
 function BankPanelItemButtonMixin:OnUpdate()
@@ -1171,6 +1189,7 @@ function BankPanelMixin:CloseAllBankPopups()
 	StaticPopup_Hide("BANK_MONEY_WITHDRAW");
 	StaticPopup_Hide("BANK_MONEY_DEPOSIT");
 	StaticPopup_Hide("BANK_CONFIRM_CLEANUP");
+	StaticPopup_Hide("ACCOUNT_BANK_DEPOSIT_NO_REFUND_CONFIRM");
 end
 
 function BankPanelMixin:HideAllPrompts()

@@ -183,6 +183,8 @@ function MountJournal_OnLoad(self)
 end
 
 function MountJournal_InitFilterButton(self)
+	self.FilterDropdown:SetWidth(90);
+
 	self.FilterDropdown:SetIsDefaultCallback(function()
 		return C_MountJournal.IsUsingDefaultFilters();
 	end);

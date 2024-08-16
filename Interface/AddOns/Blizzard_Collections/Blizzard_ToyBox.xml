@@ -37,6 +37,9 @@
 				</Scripts>
 			</EditBox>
 			<DropdownButton parentKey="FilterDropdown" inherits="WowStyle1FilterDropdownTemplate">
+				<KeyValues>
+					<KeyValue key="resizeToText" type="boolean" value="false"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-12" y="-35"/>
 				</Anchors>

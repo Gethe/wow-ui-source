@@ -54,7 +54,7 @@ MyAddon.toc:
 ## SavedVariables: MyAddonSettings
 
 MyAddon.lua:
-EventRegistry:RegisterFrameEventAndCallback("VARIABLES_LOADED", function()
+EventUtil.ContinueOnAddOnLoaded("MyAddon", function()
 	local category, layout = Settings.RegisterVerticalLayoutCategory("My Addon");
 
 	-- A proxy setting allows for get and set accessors, but it is your responsibility to default initialize the

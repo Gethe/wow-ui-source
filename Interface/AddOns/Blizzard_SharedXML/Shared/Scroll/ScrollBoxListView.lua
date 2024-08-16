@@ -29,7 +29,7 @@ function ScrollBoxListViewMixin:Init()
 	end);
 
 	self.factory = function(frameTemplateOrFrameType, initializer)
-		local frame, new = self.frameFactory:Create(self:GetScrollTarget(), frameTemplateOrFrameType);
+		local frame, new = self.frameFactory:Create(self:GetScrollTarget(), frameTemplateOrFrameType, self.frameFactoryResetter);
 		self.initializers[frame] = initializer;
 
 		if not frame then
@@ -502,6 +502,10 @@ end
 ]]
 function ScrollBoxListViewMixin:SetElementFactory(elementFactory)
 	self.elementFactory = elementFactory;
+end
+
+function ScrollBoxListViewMixin:SetFrameFactoryResetter(resetter)
+	self.frameFactoryResetter = resetter;
 end
 
 function ScrollBoxListViewMixin:SetElementResetter(resetter)

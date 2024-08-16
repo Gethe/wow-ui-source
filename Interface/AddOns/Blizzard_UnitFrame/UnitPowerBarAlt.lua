@@ -62,7 +62,7 @@ end
 
 function UnitPowerBarAlt_OnEvent(self, event, ...)
 	local arg1, arg2 = ...;
-	
+
 	if ( event == self.updateAllEvent ) then
 		UnitPowerBarAlt_UpdateAll(self);
 	elseif ( event == "UNIT_POWER_BAR_SHOW" ) then
@@ -569,7 +569,6 @@ function CounterBar_SetStyleForUnit(self, unit, maxValue)
 end
 
 function CounterBar_SetStyle(self, useFractional, animNumbers, maxValue)
-	
 	local texturePath, r, g, b;
 	--Set Textures
 	texturePath, r, g, b = GetUnitPowerBarTextureInfo(self.unit, TEXTURE_NUMBERS_INDEX, self.timerIndex);
@@ -581,8 +580,7 @@ function CounterBar_SetStyle(self, useFractional, animNumbers, maxValue)
 		digitFrame.numberMask:SetVertexColor(r, g, b);
 		digitFrame:Show();
 	end
-	
-	
+
 	texturePath, r, g, b = GetUnitPowerBarTextureInfo(self.unit, TEXTURE_FRAME_INDEX, self.timerIndex);
 	self.BG:SetTexture(texturePath, true, true);
 	self.BG:SetVertexColor(r, g, b);
@@ -594,9 +592,9 @@ function CounterBar_SetStyle(self, useFractional, animNumbers, maxValue)
 	self.artTop:SetVertexColor(r, g, b);
 	self.artBottom:SetTexture(texturePath);
 	self.artBottom:SetVertexColor(r, g, b);
-	
+
 	--Set Initial State
-	local maxDigits = ceil(log10(maxValue));
+	local maxDigits = maxValue == 0 and maxValue or ceil(log10(maxValue));
 	local startIndex = 1;
 	if useFractional then
 		local count = maxValue;
@@ -613,11 +611,11 @@ function CounterBar_SetStyle(self, useFractional, animNumbers, maxValue)
 		end
 		startIndex = startIndex + maxDigits + 1;
 	end
-	
+
 	for i=startIndex+maxDigits,COUNTERBAR_MAX_DIGIT do
 		self["digit"..i]:Hide();
 	end
-	
+
 	self:SetWidth((startIndex+maxDigits-1)*COUNTERBAR_NUMBER_WIDTH);
 	self.count = 0;
 	self.maxValue = maxValue;

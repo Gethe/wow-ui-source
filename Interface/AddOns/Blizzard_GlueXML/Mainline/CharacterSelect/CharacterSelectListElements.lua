@@ -267,7 +267,7 @@ function CharacterSelectListCharacterMixin:UpdateVASState()
         end
         upgradeIcon.tooltip = "|cffffd200" .. tooltip .. "|r";
         upgradeIcon.tooltip2 = "|cffff2020" .. desc .. "|r";
-    elseif characterInfo.boostInProgress then
+    elseif characterInfo and characterInfo.boostInProgress then
 		upgradeIcon:Show();
 		upgradeIcon.tooltip = CHARACTER_UPGRADE_PROCESSING;
 		upgradeIcon.tooltip2 = CHARACTER_SERVICES_PLEASE_WAIT;
@@ -306,7 +306,7 @@ function CharacterSelectListCharacterMixin:UpdateVASState()
 			paidServiceButton:Hide();
 			paidServiceButton.serviceType = nil;
 		end
-	elseif characterInfo.hasFactionChange then
+	elseif characterInfo and characterInfo.hasFactionChange then
 		serviceType = PAID_FACTION_CHANGE;
 		paidServiceButton.GoldBorder:Show();
 		paidServiceButton.VASIcon:SetTexture("Interface\\Icons\\VAS_FactionChange");
@@ -316,7 +316,7 @@ function CharacterSelectListCharacterMixin:UpdateVASState()
 		-- disableService = PFCDisabled;
 		paidServiceButton.tooltip = PAID_FACTION_CHANGE_TOOLTIP;
 		paidServiceButton.disabledTooltip = PAID_FACTION_CHANGE_DISABLED_TOOLTIP;
-	elseif characterInfo.hasRaceChange then
+	elseif characterInfo and characterInfo.hasRaceChange then
 		serviceType = PAID_RACE_CHANGE;
 		paidServiceButton.GoldBorder:Show();
 		paidServiceButton.VASIcon:SetTexture("Interface\\Icons\\VAS_RaceChange");
@@ -326,7 +326,7 @@ function CharacterSelectListCharacterMixin:UpdateVASState()
 		-- disableService = PRCDisabled;
 		paidServiceButton.tooltip = PAID_RACE_CHANGE_TOOLTIP;
 		paidServiceButton.disabledTooltip = PAID_RACE_CHANGE_DISABLED_TOOLTIP;
-	elseif characterInfo.hasCustomize then
+	elseif characterInfo and characterInfo.hasCustomize then
 		serviceType = PAID_CHARACTER_CUSTOMIZATION;
 		paidServiceButton.GoldBorder:Show();
 		paidServiceButton.VASIcon:SetTexture("Interface\\Icons\\VAS_AppearanceChange");
@@ -383,6 +383,10 @@ end
 
 function CharacterSelectListCharacterMixin:SetSelectedState(isSelected)
 	self.InnerContent.Selected:SetShown(isSelected);
+
+	if not self.characterInfo then
+		return;
+	end
 
 	local isIconAssigned = self.characterInfo.faction ~= "Neutral";
 	if isIconAssigned then
@@ -501,7 +505,9 @@ function CharacterSelectListCharacterInnerContentMixin:OnEnter(isSelected)
 	end
 
 	-- Update character model as needed.
-	MapSceneCharacterHighlightStart(self.characterInfo.guid);
+	if self.characterInfo then
+		MapSceneCharacterHighlightStart(self.characterInfo.guid);
+	end
 end
 
 function CharacterSelectListCharacterInnerContentMixin:OnLeave(isSelected)
@@ -522,7 +528,9 @@ function CharacterSelectListCharacterInnerContentMixin:OnLeave(isSelected)
 		self.DownButton:Hide();
 
 		-- Update character model as needed.
-		MapSceneCharacterHighlightEnd(self.characterInfo.guid);
+		if self.characterInfo then
+			MapSceneCharacterHighlightEnd(self.characterInfo.guid);
+		end
 	end
 end
 
@@ -600,9 +608,13 @@ function CharacterSelectListCharacterInnerContentMixin:UpdateLastLogin(lastLogin
 end
 
 function CharacterSelectListCharacterInnerContentMixin:UpdateCharacterDisplayInfo()
-	local characterInfo = self.characterInfo;
-
 	self.MailIndicationButton:Hide();
+
+	if not self.characterInfo then
+		return;
+	end
+
+	local characterInfo = self.characterInfo;
 
 	local name = characterInfo.name;
 	local class = characterInfo.className;
@@ -734,6 +746,10 @@ function CharacterSelectListCharacterInnerContentMixin:UpdateCharacterDisplayInf
 end
 
 function CharacterSelectListCharacterInnerContentMixin:SetupPadlock()
+	if not self.characterInfo then
+		return;
+	end
+
 	local padlock = CharacterSelect.characterPadlockPool:Acquire();
 	self.padlock = padlock;
 	padlock.characterSelectButton = self:GetParent();
@@ -777,10 +793,17 @@ function CharacterSelectListCharacterInnerContentMixin:SetupPadlock()
 end
 
 function CharacterSelectListCharacterInnerContentMixin:UpdateFactionEmblem()
-	local faction = self.characterInfo.faction;
 	local factionEmblem = self.FactionEmblem;
 	local factionEmblemHighlight = self.FactionEmblemHighlight;
 	local factionEmblemSelected = self.FactionEmblemSelected;
+
+	if not self.characterInfo then
+		factionEmblem:Hide();
+		factionEmblemSelected:Hide();
+		return;
+	end
+
+	local faction = self.characterInfo.faction;
 	local isIconAssigned = faction ~= "Neutral";
 	if isIconAssigned then
 		if faction == "Alliance" then

@@ -11,7 +11,7 @@ function ToyBox_OnLoad(self)
 
 	ToyBox_UpdatePages();
 	ToyBox_UpdateProgressBar(self);
-	
+
 	ToyBox_InitFilterDropdown(self);
 
 	self:RegisterEvent("TOYS_UPDATED");
@@ -36,6 +36,8 @@ function ToyBox_OnLoad(self)
 end
 
 function ToyBox_InitFilterDropdown(self)
+	self.FilterDropdown:SetWidth(90);
+
 	self.FilterDropdown:SetUpdateCallback(function(description)
 		ToyBox.firstCollectedToyID = 0;
 		ToyBox_UpdatePages();
