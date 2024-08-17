@@ -13,6 +13,8 @@ end
 local securecallfunction = securecallfunction;
 local pairs = pairs;
 
+local reservedVariables = {};
+
 -- Matches a similar function reused in multiple places
 local function EnumerateTaintedKeysTable(tableToIterate)
 	local pairsIterator, enumerateTable, initialIteratorKey = securecallfunction(pairs, tableToIterate);
@@ -645,14 +647,25 @@ function SettingsPanelMixin:ClearSearchBox()
 	self.SearchBox:SetText("");
 end
 
+local function ReserveVariable(setting)
+	local variable = setting:GetVariable();
+	if reservedVariables[variable] then
+		return false, variable;
+	end
+
+	reservedVariables[variable] = true;
+	return true, variable;
+end
+
 function SettingsPanelMixin:RegisterSetting(category, setting)
+	local success, variable = securecallfunction(ReserveVariable, setting);
+	if not success then
+		error(string.format("Setting variable '%s' was previously registered.", variable));
+	end
+
 	self.settings[setting] = category;
 
-	local variable = securecallfunction(setting.GetVariable, setting);
 	SettingsInbound.RegisterOnSettingValueChanged(variable);
-
-	local value = securecallfunction(setting.GetValue, setting);
-	SettingsInitializedRegistry:TriggerEvent(variable, value);
 end
 
 function SettingsPanelMixin:RegisterInitializer(category, initializer)

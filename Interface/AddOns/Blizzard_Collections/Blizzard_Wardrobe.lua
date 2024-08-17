@@ -1271,7 +1271,7 @@ function WardrobeCollectionFrameMixin:OnLoad()
 
 	CollectionsJournal:SetPortraitToAsset("Interface\\Icons\\inv_misc_enggizmos_19");
 
-	self.FilterButton:SetWidth(85);
+	self.FilterButton:SetWidth(90);
 
 	-- TODO: Remove this at the next deprecation reset
 	self.searchBox = self.SearchBox;

@@ -516,7 +516,7 @@ end
 
 function CharacterSelectListUtil.UpdateCharacterHighlight(guid, isHighlight)
 	CharacterSelectListUtil.ForEachCharacterDo(function(frame)
-		if frame.characterInfo.guid == guid then
+		if frame.characterInfo and frame.characterInfo.guid == guid then
 			frame:UpdateHighlightUI(isHighlight);
 		end
 	end);

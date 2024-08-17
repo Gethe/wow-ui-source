@@ -108,6 +108,8 @@ function HeirloomsMixin:OnLoad()
 end
 
 function HeirloomsMixin:InitFilterDropdown()
+	self.FilterDropdown:SetWidth(90);
+
 	self.FilterDropdown:SetUpdateCallback(function()
 		self:FullRefreshIfVisible();
 	end);

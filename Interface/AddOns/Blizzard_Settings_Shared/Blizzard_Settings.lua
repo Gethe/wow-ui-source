@@ -43,10 +43,6 @@ SettingsCallbackRegistry:GenerateCallbackEvents(
 );
 SettingsCallbackRegistry:OnLoad();
 
-SettingsInitializedRegistry = CreateFromMixins(CallbackRegistryMixin);
-SettingsInitializedRegistry:SetUndefinedEventsAllowed(true);
-SettingsInitializedRegistry:OnLoad();
-
 SettingsSearchableElementMixin = {};
 
 function SettingsSearchableElementMixin:AddSearchTags(...)

@@ -1387,6 +1387,7 @@ function MenuMixin:PerformLayout()
 			local dataProvider = CreateDataProvider();
 			for index, frame in self.frames:Enumerate() do
 				frame:ClearAllPoints();
+				frame:SetPoint("TOPLEFT");
 				frame:Hide();
 
 				dataProvider:Insert(frame);
@@ -1630,11 +1631,14 @@ function MenuProxyMixin:OnLoad()
 	self.ScrollBar:SetPoint("TOPLEFT", self.ScrollBox, "TOPRIGHT");
 	self.ScrollBar:SetPoint("BOTTOMLEFT", self.ScrollBox, "BOTTOMRIGHT");
 
-	self.ScrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnReleasedFrame, function(o, frame, elementData)
-		elementData:Hide();
-	end);
-
 	local view = CreateScrollBoxListLinearView();
+
+	view:SetFrameFactoryResetter(function(pool, frame, new)
+		if not new then
+			local elementData = frame:GetElementData();
+			elementData:Hide();
+		end
+	end);
 
 	view:SetElementExtentCalculator(function(dataIndex, elementData)
 		return elementData:GetHeight();

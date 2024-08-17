@@ -1892,6 +1892,45 @@ StaticPopupDialogs["USE_NO_REFUND_CONFIRM"] = {
 	hideOnEscape = 1
 };
 
+StaticPopupDialogs["ACCOUNT_BANK_DEPOSIT_NO_REFUND_CONFIRM"] = {
+	text = END_REFUND,
+	button1 = OKAY,
+	button2 = CANCEL,
+	OnCancel = function(self)
+		ClearCursor();
+	end,
+	OnAccept = function(self, data)
+		if (BankFrame:GetActiveBankType() ~= Enum.BankType.Account) or not C_Bank.CanUseBank(Enum.BankType.Account) or not data.itemToDeposit then
+			return;
+		end
+
+		local depositAtTargetLocation = data.targetItemLocation ~= nil;
+		if depositAtTargetLocation then
+			local cursorItemLocation = C_Cursor.GetCursorItem();
+			local cursorItemChanged = not cursorItemLocation or (C_Item.GetItemGUID(cursorItemLocation) ~= data.itemToDeposit:GetItemGUID());
+			if cursorItemChanged then
+				return;
+			end
+
+			local targetBag, targetSlot = data.targetItemLocation:GetBagAndSlot();
+			if targetBag and targetSlot then
+				C_Container.PickupContainerItem(targetBag, targetSlot);
+			end
+		else
+			-- Auto deposit the item
+			local itemLocation = data.itemToDeposit:GetItemLocation();
+			local bag, slot = itemLocation:GetBagAndSlot();
+			if bag and slot then
+				local unitToken, isReagentBankOpen = nil, false;
+				C_Container.UseContainerItem(bag, slot, unitToken, Enum.BankType.Account, isReagentBankOpen);
+			end
+		end
+	end,
+	timeout = 0,
+	exclusive = 1,
+	hideOnEscape = 1,
+};
+
 StaticPopupDialogs["CONFIRM_AZERITE_EMPOWERED_BIND"] = {
 	text = AZERITE_EMPOWERED_BIND_NO_DROP,
 	button1 = OKAY,
