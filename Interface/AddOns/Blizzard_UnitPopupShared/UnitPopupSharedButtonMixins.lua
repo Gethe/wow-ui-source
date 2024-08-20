@@ -3277,7 +3277,7 @@ function UnitPopupCommunityInviteButtonMixin:OnClick(contextData)
 	local clubInfo = contextData.clubInfo;
 
 	local streams = C_Club.GetStreams(clubInfo.clubId);
-	local defaultStreamId = streams[1];
+	local defaultStreamId = streams[1] and streams[1].streamId or nil;
 	for i, stream in ipairs(streams) do
 		local streamType = stream.streamType;
 		if streamType == Enum.ClubStreamType.General or streamType == Enum.ClubStreamType.Guild then

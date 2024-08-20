@@ -53,7 +53,7 @@ function CharacterSelectListMixin:OnEvent(event, ...)
 	if event == "UPDATE_REALM_NAME_FOR_GUID" then
 		local guid, realmName = ...;
 		CharacterSelectListUtil.ForEachCharacterDo(function(frame)
-			if frame:GetCharacterGUID() == guid then
+			if frame.characterInfo and frame:GetCharacterGUID() == guid then
 				frame.characterInfo.realmName = realmName;
 			end
 		end);

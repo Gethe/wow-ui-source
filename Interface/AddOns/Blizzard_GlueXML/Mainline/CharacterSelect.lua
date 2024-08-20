@@ -832,7 +832,9 @@ function CharacterSelect_SelectCharacter(index, noCreate)
 			if IsRPEBoostEligible(selectedCharacterID) and CharacterSelectUtil.IsSameRealmAsCurrent(characterInfo.realmAddress) then
 				BeginCharacterServicesFlow(RPEUpgradeFlow, {});
 				if IsVeteranTrialAccount() then
-					CharSelectServicesFlow_Minimize() --if they need to resubscribe, get the RPE flow out of the way.
+					assertsafe(CharSelectServicesFlowFrame:IsShown() and CharacterServicesMaster.flow == RPEUpgradeFlow, "RPEUpgradeFlow expected to begin but failed.");
+
+					CharSelectServicesFlow_Minimize(); --if they need to resubscribe, get the RPE flow out of the way.
 				end
 			else
 				EndCharacterServicesFlow(false);
@@ -1634,14 +1636,18 @@ end
 function CharSelectServicesFlow_Minimize()
 	local parent = CharSelectServicesFlowFrame;
 	parent.IsMinimized = true;
-	parent.MinimizedFrame:Show();
+	if parent.MinimizedFrame then
+		parent.MinimizedFrame:Show();
+	end
 	parent:Hide();
 end
 
 function CharSelectServicesFlow_Maximize()
 	local parent = CharSelectServicesFlowFrame;
 	parent.IsMinimized = false;
-	parent.MinimizedFrame:Hide();
+	if parent.MinimizedFrame then
+		parent.MinimizedFrame:Hide();
+	end
 	BeginCharacterServicesFlow(RPEUpgradeFlow, {});
 end
 

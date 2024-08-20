@@ -58,6 +58,7 @@ function FlightMapMixin:AddStandardDataProviders()
 	self:AddDataProvider(CreateFromMixins(FlightMap_VignetteDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(QuestSessionDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(MapHighlightDataProviderMixin));
+	self:AddDataProvider(CreateFromMixins(DelveEntranceDataProviderMixin));
 
 	local groupMembersDataProvider = CreateFromMixins(GroupMembersDataProviderMixin);
 	groupMembersDataProvider:SetUnitPinSize("player", 0);
@@ -70,6 +71,7 @@ function FlightMapMixin:AddStandardDataProviders()
 	self:AddDataProvider(worldQuestDataProvider);
 
 	local pinFrameLevelsManager = self:GetPinFrameLevelsManager();
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_DELVE_ENTRANCE");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_VIGNETTE", 200);
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_WORLD_QUEST", 500);
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_AREA_POI");

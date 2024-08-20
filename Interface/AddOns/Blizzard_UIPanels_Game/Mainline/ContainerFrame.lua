@@ -78,6 +78,10 @@ local function ContainerFrame_IsBackpack(id)
 	return id == Enum.BagIndex.Backpack;
 end
 
+local function ContainerFrame_IsAccountBankTab(id)
+	return id >= Enum.BagIndex.AccountBankTab_1 and id <= Enum.BagIndex.AccountBankTab_5;
+end
+
 function ContainerFrame_IsReagentBag(id)
 	return id == 5;
 end
@@ -1351,10 +1355,21 @@ function ContainerFrameItemButton_OnClick(self, button)
 			else
 				C_Container.PickupContainerItem(self:GetBagID(), self:GetID());
 			end
-		else
-			C_Container.PickupContainerItem(self:GetBagID(), self:GetID());
-			if ( CursorHasItem() ) then
-				MerchantFrame_SetRefundItem(self);
+		else	
+			local cursorItemLocation = C_Cursor.GetCursorItem();
+			local cursorItemIsFromAccountBank = false;
+			if cursorItemLocation then
+				local bag, _slot = cursorItemLocation:GetBagAndSlot();
+				cursorItemIsFromAccountBank = bag and ContainerFrame_IsAccountBankTab(bag) or false;
+			end
+			local targetItemLocation = ItemLocation:CreateFromBagAndSlot(self:GetBagID(), self:GetID());
+			if cursorItemIsFromAccountBank and BankUtil_IsAccountBankDepositRefundable(targetItemLocation) then
+				StaticPopup_Show("ACCOUNT_BANK_DEPOSIT_NO_REFUND_CONFIRM", nil, nil, { itemToDeposit = Item:CreateFromItemGUID(C_Item.GetItemGUID(cursorItemLocation)), targetItemLocation = targetItemLocation });
+			else
+				C_Container.PickupContainerItem(self:GetBagID(), self:GetID());
+				if ( CursorHasItem() ) then
+					MerchantFrame_SetRefundItem(self);
+				end
 			end
 		end
 		StackSplitFrame:Hide();
@@ -1420,7 +1435,12 @@ function ContainerFrameItemButton_OnClick(self, button)
 				end
 			end
 		end
-		C_Container.UseContainerItem(self:GetBagID(), self:GetID(), nil, BankFrame:GetActiveBankType(), BankFrame:IsShown() and BankFrame.selectedTab == 2);
+		local itemLocation = ItemLocation:CreateFromBagAndSlot(self:GetBagID(), self:GetID());
+		if BankUtil_IsAccountBankDepositRefundable(itemLocation) then
+			StaticPopup_Show("ACCOUNT_BANK_DEPOSIT_NO_REFUND_CONFIRM", nil, nil, { itemToDeposit = Item:CreateFromItemGUID(C_Item.GetItemGUID(itemLocation)), targetItemLocation = nil });
+		else
+			C_Container.UseContainerItem(self:GetBagID(), self:GetID(), nil, BankFrame:GetActiveBankType(), BankFrame:IsShown() and BankFrame.selectedTab == 2);
+		end
 		StackSplitFrame:Hide();
 	end
 end

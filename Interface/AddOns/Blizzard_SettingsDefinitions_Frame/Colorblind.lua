@@ -12,6 +12,9 @@ local function Register()
 	-- Enable Colorblind Mode
 	Settings.SetupCVarCheckbox(category, "colorblindMode", USE_COLORBLIND_MODE, OPTION_TOOLTIP_USE_COLORBLIND_MODE);
 
+	local colorblindSimulatorSetting = Settings.RegisterCVarSetting(category, "colorblindSimulator", Settings.VarType.Number, COLORBLIND_FILTER);
+	local colorblindFactorSetting = nil;
+
 	-- Colorblind Filter
 	do
 		local function GetOptions()
@@ -23,18 +26,18 @@ local function Register()
 			return container:GetData();
 		end
 
-		local filterSetting = Settings.RegisterCVarSetting(category, "colorblindSimulator", Settings.VarType.Number, COLORBLIND_FILTER);
-		local filterInitializer = Settings.CreateDropdown(category, filterSetting, GetOptions, OPTION_TOOLTIP_COLORBLIND_FILTER);
+		local filterInitializer = Settings.CreateDropdown(category, colorblindSimulatorSetting, GetOptions, OPTION_TOOLTIP_COLORBLIND_FILTER);
 	
 		-- Adjust Strength
 		local minValue, maxValue, step = 0, 1, .05;
 		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
 		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, FormatPercentage);
 
-		local strengthSetting, strengthInitializer = Settings.SetupCVarSlider(category, "colorblindWeaknessFactor", options, ADJUST_COLORBLIND_STRENGTH, OPTION_TOOLTIP_ADJUST_COLORBLIND_STRENGTH);
+		local strengthInitializer = nil;
+		colorblindFactorSetting, strengthInitializer = Settings.SetupCVarSlider(category, "colorblindWeaknessFactor", options, ADJUST_COLORBLIND_STRENGTH, OPTION_TOOLTIP_ADJUST_COLORBLIND_STRENGTH);
 
 		local function IsModifiable()
-			return filterSetting:GetValue() > 0;
+			return colorblindSimulatorSetting:GetValue() > 0;
 		end
 		strengthInitializer:SetParentInitializer(filterInitializer, IsModifiable);
 	end
@@ -43,8 +46,8 @@ local function Register()
 	do
 		local settings = 
 		{
-			colorblindSimulator = Settings.RegisterCVarSetting(category, "colorblindSimulator", Settings.VarType.Number, COLORBLIND_FILTER),
-			colorblindFactor = Settings.RegisterCVarSetting(category, "colorblindWeaknessFactor", Settings.VarType.Number, ADJUST_COLORBLIND_STRENGTH),
+			colorblindSimulator = colorblindSimulatorSetting,
+			colorblindFactor = colorblindFactorSetting,
 		};
 		local data = { settings = settings };
 		local initializer = Settings.CreatePanelInitializer("ColorblindSelectorTemplate", data);

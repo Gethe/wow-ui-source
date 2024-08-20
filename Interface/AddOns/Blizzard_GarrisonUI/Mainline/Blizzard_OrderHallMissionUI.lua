@@ -1028,17 +1028,19 @@ function OrderHallMission:TryShowTutorial(tutorial)
 				offsetY = offsetY,
 				onHideCallback = GenerateClosure(self.CheckTutorials, self),
 			};
-			HelpTip:Show(OrderHallMissionTutorialFrame, helpTipInfo, relativeFrame);
+			local helptipShown = HelpTip:Show(OrderHallMissionTutorialFrame, helpTipInfo, relativeFrame);
 
 			-- parent frame
-			OrderHallMissionTutorialFrame:SetParent(self.MissionTab[tutorial.parent]);
-			OrderHallMissionTutorialFrame:SetFrameStrata("DIALOG");
-			OrderHallMissionTutorialFrame:SetPoint("TOPLEFT", self, 0, -21);
-			OrderHallMissionTutorialFrame:SetPoint("BOTTOMRIGHT", self);
-			OrderHallMissionTutorialFrame.id = tutorial.id;
-			OrderHallMissionTutorialFrame:Show();
+			if helptipShown then
+				OrderHallMissionTutorialFrame:SetParent(self.MissionTab[tutorial.parent]);
+				OrderHallMissionTutorialFrame:SetFrameStrata("DIALOG");
+				OrderHallMissionTutorialFrame:SetPoint("TOPLEFT", self, 0, -21);
+				OrderHallMissionTutorialFrame:SetPoint("BOTTOMRIGHT", self);
+				OrderHallMissionTutorialFrame.id = tutorial.id;
+				OrderHallMissionTutorialFrame:Show();
+			end
 
-			return true;
+			return helptipShown;
 		end
 	end
 

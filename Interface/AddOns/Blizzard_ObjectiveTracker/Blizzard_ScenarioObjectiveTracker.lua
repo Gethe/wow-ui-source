@@ -311,7 +311,15 @@ function ScenarioObjectiveTrackerMixin:SlideInContents()
 	self:Slide(slideInfo);	
 end
 
+function ScenarioObjectiveTrackerMixin:SetStageBlockModelScenesShown(shown)
+	if self.StageBlock.WidgetContainer then
+		self.StageBlock.WidgetContainer:SetModelScenesShown(shown);
+	end
+end
+
 function ScenarioObjectiveTrackerMixin:SlideOutContents()
+	self:SetStageBlockModelScenesShown(false);
+
 	local slideInfo = {
 		travel = -(self.StageBlock.height),
 		adjustModule = true,
@@ -335,6 +343,8 @@ function ScenarioObjectiveTrackerMixin:OnEndSlide(slideOut, finished)
 		-- we need to maintain the visual state at the end of the slideout for 1 frame
 		self.StageBlock:Hide();
 		self:SetHeight(self.headerHeight);
+	else
+		self:SetStageBlockModelScenesShown(true);
 	end
 
 	self:MarkDirty();

@@ -66,6 +66,11 @@ function UIWidgetContainerMixin:MarkCleanLayout()
 	self:SetScript("OnUpdate", nil);
 end
 
+function UIWidgetContainerMixin:SetModelScenesShown(shown)
+	self.FrontModelScene:SetShown(shown);
+	self.BackModelScene:SetShown(shown);
+end
+
 function UIWidgetContainerMixin:OnUpdate(elapsed)
 	-- Handle layout updates
 	if self.dirtyLayout then
