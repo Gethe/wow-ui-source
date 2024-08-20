@@ -3129,7 +3129,7 @@ StaticPopupDialogs["END_BOUND_TRADEABLE"] = {
 	button1 = OKAY,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		EndBoundTradeable(self.data);
+		C_Item.EndBoundTradeable(self.data);
 	end,
 	timeout = 0,
 	exclusive = 1,

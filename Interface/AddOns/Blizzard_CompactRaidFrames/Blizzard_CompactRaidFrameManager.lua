@@ -1165,3 +1165,27 @@ end
 function RaidFrameManagerRestrictPingsButtonMixin:ShouldShow()
 	return UnitIsGroupLeader("player") or UnitIsGroupAssistant("player");
 end
+
+LeavePartyButtonMixin = {};
+
+function LeavePartyButtonMixin:OnClick()
+	if C_PartyInfo.IsPartyWalkIn() then
+		LeaveWalkInParty();
+	else
+		C_PartyInfo.LeaveParty();
+	end
+end
+
+LeaveInstanceGroupButtonMixin = {};
+
+function LeaveInstanceGroupButtonMixin:OnShow()
+	if C_PartyInfo.IsPartyWalkIn() then
+		self:SetText(INSTANCE_WALK_IN_LEAVE);
+	else
+		self:SetText(INSTANCE_PARTY_LEAVE);
+	end
+end
+
+function LeaveInstanceGroupButtonMixin:OnClick()
+	ConfirmOrLeaveParty();
+end

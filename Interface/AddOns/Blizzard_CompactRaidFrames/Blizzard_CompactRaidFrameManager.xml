@@ -400,24 +400,23 @@
 					<Frame name="parentBottomButtons" parentKey="BottomButtons" hidden="true">
 						<Size x="222" y="40"/>
 						<Frames>
-							<Button name="$parentLeavePartyButton" inherits="UIPanelButtonTemplate" text="PARTY_LEAVE">
+							<Button name="$parentLeavePartyButton" inherits="UIPanelButtonTemplate" mixin="LeavePartyButtonMixin" text="PARTY_LEAVE">
 								<Size x="160" y="24"/>
 								<Anchors>
 									<Anchor point="TOP" relativePoint="TOP" x="0" y="-5"/>
 								</Anchors>
 								<Scripts>
-									<OnClick>
-										C_PartyInfo.LeaveParty();
-									</OnClick>
+									<OnClick method="OnClick"/>
 								</Scripts>
 							</Button>
-							<Button name="$parentLeaveInstanceGroupButton" inherits="UIPanelButtonTemplate" text="INSTANCE_PARTY_LEAVE">
+							<Button name="$parentLeaveInstanceGroupButton" inherits="UIPanelButtonTemplate" mixin="LeaveInstanceGroupButtonMixin" text="INSTANCE_PARTY_LEAVE">
 								<Size x="160" y="24"/>
 								<Anchors>
 									<Anchor point="TOP" relativeTo="$parentLeavePartyButton" relativePoint="BOTTOM" x="0" y="-5"/>
 								</Anchors>
 								<Scripts>
-									<OnClick function="ConfirmOrLeaveLFGParty"/>
+									<OnShow method="OnShow"/>
+									<OnClick method="OnClick"/>
 								</Scripts>
 							</Button>
 						</Frames>

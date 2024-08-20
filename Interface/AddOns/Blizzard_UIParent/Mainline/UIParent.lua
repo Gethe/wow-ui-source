@@ -3762,7 +3762,7 @@ function ConfirmOrLeaveParty()
 
 	if ( IsPartyLFG() ) then
 		ConfirmOrLeaveLFGParty();
-	-- If the party is walk-in (aka Delve) *and* it is complete, let the player choose to just leave
+	-- If the party is walk-in (aka Delve) let the player leave
 	elseif ( C_PartyInfo.IsPartyWalkIn() ) then
 		LeaveWalkInParty();
 	end
