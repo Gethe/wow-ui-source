@@ -468,9 +468,9 @@ LOOTWONALERTFRAME_VALUES={
 }
 
 -- NOTE - This may also be called for an externally created frame. (E.g. bonus roll has its own frame)
-function LootWonAlertFrame_SetUp(self, itemLink, originalQuantity, rollType, roll, specID, isCurrency, showFactionBG, lootSource, lessAwesome, isUpgraded, isCorrupted, wonRoll, showRatedBG, isSecondaryResult)
-	local itemName, itemTexture, quantity, itemRarity;
-	itemName, itemTexture, quantity, itemRarity, itemLink = ItemUtil.GetItemDetails(itemLink, originalQuantity, isCurrency, lootSource);
+function LootWonAlertFrame_SetUp(self, originalLink, originalQuantity, rollType, roll, specID, isCurrency, showFactionBG, lootSource, lessAwesome, isUpgraded, isCorrupted, wonRoll, showRatedBG, isSecondaryResult)
+	local itemLink, itemName, itemTexture, quantity, itemRarity;
+	itemName, itemTexture, quantity, itemRarity, itemLink = ItemUtil.GetItemDetails(originalLink, originalQuantity, isCurrency, lootSource);
 
 	self.isCurrency = isCurrency;
 

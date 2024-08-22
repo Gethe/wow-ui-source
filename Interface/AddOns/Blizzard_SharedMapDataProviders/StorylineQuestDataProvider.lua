@@ -19,7 +19,8 @@ local function GetMaxPinLevel()
 	return maxPinLevel;
 end
 
-QuestOfferDataProviderMixin = CreateFromMixins(MapCanvasDataProviderMixin, { PIN_LEVEL_RANGE = GetMaxPinLevel(), });
+QuestOfferDataProviderMixin = CreateFromMixins(CVarMapCanvasDataProviderMixin, { PIN_LEVEL_RANGE = GetMaxPinLevel(), });
+QuestOfferDataProviderMixin:Init("questPOILocalStory");
 
 function QuestOfferDataProviderMixin:BuildPinSubTypeData(pinSubType, info)
 	return { pinSubType = pinSubType, info = info };
@@ -321,14 +322,14 @@ function QuestOfferDataProviderMixin:RefreshAllData(fromOnShow)
 end
 
 function QuestOfferDataProviderMixin:OnShow()
-	MapCanvasDataProviderMixin.OnShow(self);
+	CVarMapCanvasDataProviderMixin.OnShow(self);
 	self:RegisterEvent("QUESTLINE_UPDATE");
 	self:RegisterEvent("MINIMAP_UPDATE_TRACKING");
 	self:RequestQuestLinesForMap();
 end
 
 function QuestOfferDataProviderMixin:OnHide()
-	MapCanvasDataProviderMixin.OnHide(self);
+	CVarMapCanvasDataProviderMixin.OnHide(self);
 	self:UnregisterEvent("QUESTLINE_UPDATE");
 	self:UnregisterEvent("MINIMAP_UPDATE_TRACKING");
 end
@@ -339,6 +340,8 @@ function QuestOfferDataProviderMixin:OnMapChanged()
 end
 
 function QuestOfferDataProviderMixin:OnEvent(event, ...)
+	CVarMapCanvasDataProviderMixin.OnEvent(self, event, ...);
+
 	if (event == "QUESTLINE_UPDATE") then
 		local requestRequired = ...;
 		if(requestRequired) then
@@ -459,6 +462,10 @@ end
 
 function QuestOfferPinMixin:GetSuperTrackData()
 	return Enum.SuperTrackingMapPinType.QuestOffer, self.questID;
+end
+
+function QuestOfferPinMixin:GetQuestClassification()
+	return self.questClassification;
 end
 
 QuestHubPinMixin = {};

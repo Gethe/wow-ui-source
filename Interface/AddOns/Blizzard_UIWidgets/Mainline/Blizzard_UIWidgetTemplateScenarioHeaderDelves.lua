@@ -22,7 +22,6 @@ function UIWidgetTemplateScenarioHeaderDelvesMixin:Setup(widgetInfo, widgetConta
 
 	local waitingForStageUpdate = UIWidgetBaseScenarioHeaderTemplateMixin.Setup(self, widgetInfo, widgetContainer);
 	if waitingForStageUpdate then
-		self.wasWaitingForStageUpdate = true;
 		return;
 	end
 
@@ -76,37 +75,21 @@ function UIWidgetTemplateScenarioHeaderDelvesMixin:Setup(widgetInfo, widgetConta
 	else
 		self.RewardFrame:Hide();
 	end
-
-	self.wasWaitingForStageUpdate = false;
 end
 
 function UIWidgetTemplateScenarioHeaderDelvesMixin:ApplyEffects(widgetInfo)
 	-- Intentionally empty, ScenarioHeaderDelves widgets apply effects to child spell frames (see UpdateSpellFrameEffects)
 end
 
-local effectApplyWaitTime = 0.8;
-
 function UIWidgetTemplateScenarioHeaderDelvesMixin:UpdateSpellFrameEffects(widgetInfo, spellInfo, spellFrame)
 	if spellInfo.showGlowState == Enum.WidgetShowGlowState.ShowGlow then
 		if not spellFrame.effectController then
-			if self.wasWaitingForStageUpdate then
-				if self.EffectApplyWaitTimer then
-					self.EffectApplyWaitTimer:Cancel();
-				end
-
-				self.EffectApplyWaitTimer = C_Timer.NewTimer(effectApplyWaitTime, GenerateClosure(self.ApplyEffectToSpellFrame, self, widgetInfo, spellFrame));
-			else
-				self:ApplyEffectToSpellFrame(widgetInfo, spellFrame);
-			end
+			self:ApplyEffectToFrame(widgetInfo, self.widgetContainer, spellFrame);
 		end
 	elseif spellFrame.effectController then
 		spellFrame.effectController:CancelEffect();
 		spellFrame.effectController = nil;
 	end
-end
-
-function UIWidgetTemplateScenarioHeaderDelvesMixin:ApplyEffectToSpellFrame(widgetInfo, spellFrame)
-	self:ApplyEffectToFrame(widgetInfo, self.widgetContainer, spellFrame);
 end
 
 function UIWidgetTemplateScenarioHeaderDelvesMixin:CustomDebugSetup(color)
@@ -136,11 +119,6 @@ function UIWidgetTemplateScenarioHeaderDelvesMixin:OnReset()
 	UIWidgetBaseTemplateMixin.OnReset(self);
 	UIWidgetBaseCurrencyPoolOnReset(self.currencyPool);
 	UIWidgetBaseSpellPoolOnReset(self.spellPool);
-
-	if self.EffectApplyWaitTimer then
-		self.EffectApplyWaitTimer:Cancel();
-		self.EffectApplyWaitTimer = nil;
-	end
 end
 
 UIWidgetTemplateScenarioHeaderDelvesTierFrameMixin = {};
