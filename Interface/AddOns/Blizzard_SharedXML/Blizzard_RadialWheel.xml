@@ -1,0 +1,152 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+UI.xsd">
+	<Frame name="RadialWheelButtonTemplate" mixin="RadialWheelButtonMixin" virtual="true">
+		<Size x="100" y="100"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<KeyValues>
+			<KeyValue key="ignoreScaleChangesOnSelect" value="false" type="boolean"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="SelectedTexture" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Icon">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="IconGlow" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Text" inherits="Game18Font" justifyH="CENTER"/>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="IntroAnim" setToFinalAlpha="true">
+				<Alpha childKey="SelectedTexture" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Icon" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Text" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="OutroAnim" setToFinalAlpha="true">
+				<Alpha childKey="Icon" duration="0.13" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Text" duration="0.13" order="1" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="CooldownDoneAnim" setToFinalAlpha="true" mixin="RadialWheelButtonCooldownDoneAnimMixin">
+				<Alpha childKey="Icon" duration="0.2" order="1" fromAlpha="0" toAlpha="0"/>
+				<Alpha childKey="Icon" duration=".01" order="1" startDelay="0.2" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="IconGlow" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="IconGlow" duration="0.1" order="1" startDelay="0.1" fromAlpha="1" toAlpha="1"/>
+				<Alpha childKey="IconGlow" duration="0.17" order="1" startDelay="0.2" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Text" duration="0.2" order="1" startDelay="0" fromAlpha="0" toAlpha="1"/>
+				<Scripts>
+					<OnPlay method="OnPlay"/>
+					<OnFinished method="OnFinished"/>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="RadialWheelWedgeButtonTemplate" inherits="RadialWheelButtonTemplate" virtual="true" useParentLevel="true"/>
+
+	<Frame name="RadialWheelFrameTemplate" mixin="RadialWheelFrameMixin" virtual="true">
+		<Size x="375" y="375"/>
+		<Frames>
+			<Frame parentKey="CancelButton" inherits="RadialWheelButtonTemplate">
+				<KeyValues>
+					<KeyValue key="ignoreScaleChangesOnSelect" value="true" type="boolean"/>
+					<KeyValue key="enabledOverride" value="true" type="boolean"/>
+				</KeyValues>
+			</Frame>
+			<Cooldown parentKey="Cooldown" reverse="true" hideCountdownNumbers="true" rotation="180" mixin="RadialWheelCooldownMixin" hidden="true">
+				<Size x="290" y="290"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<SwipeTexture>
+					<Color r="1" g="1" b="1" a="1"/>
+				</SwipeTexture>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" atlas="Radial_Wheel_BarBG_CoolDown" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="EdgeFx" atlas="Radial_Wheel_Bar_CoolDownFX" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="IntroAnim" setToFinalAlpha="true">
+						<Alpha duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+					</AnimationGroup>
+					<AnimationGroup parentKey="OutroAnim" setToFinalAlpha="true" mixin="RadialWheelCooldownOutroAnimMixin">
+						<Alpha duration="0.13" order="1" fromAlpha="1" toAlpha="0"/>
+						<Scripts>
+							<OnFinished method="OnFinished"/>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnShow method="OnShow"/>
+					<OnCooldownDone method="OnCooldownDone"/>
+				</Scripts>
+			</Cooldown>
+		</Frames>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="Background" atlas="Radial_Wheel_BG" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="Frame">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="Pointer" atlas="Radial_Wheel_Select_Pointer" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="IntroAnim" setToFinalAlpha="true">
+				<Alpha childKey="Background" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Frame" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Pointer" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="OutroAnim" setToFinalAlpha="true">
+				<Alpha childKey="Background" duration="0.13" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Frame" duration="0.13" order="1" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+    </Frame>
+</Ui>
