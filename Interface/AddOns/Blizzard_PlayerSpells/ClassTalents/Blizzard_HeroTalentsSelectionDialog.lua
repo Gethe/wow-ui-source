@@ -397,7 +397,8 @@ function HeroTalentSpecContentMixin:Setup(subTreeID, index, numSpecs, specConten
 end
 
 function HeroTalentSpecContentMixin:UpdateCurrency()
-	local currencyAvailable = self.subTreeInfo and TalentFrameUtil.GetSubTreeCurrencyAvailable(self:GetTalentFrame(), self.subTreeInfo.ID) or 0;
+	-- Don't show points available until the player has picked a spec and we have this spec's info available.
+	local currencyAvailable = self.isAnySpecActive and self.subTreeInfo and TalentFrameUtil.GetSubTreeCurrencyAvailable(self:GetTalentFrame(), self.subTreeInfo.ID) or 0;
 
 	if currencyAvailable > 0 then
 		self.CurrencyFrame.AmountText:SetText(HERO_TALENTS_POINTS_AMOUNT:format(currencyAvailable));
@@ -500,8 +501,8 @@ function HeroTalentSpecContentMixin:SetIsAnySpecActive(isAnySpecActive)
 		GlowEmitterFactory:Show(self.ActivateButton, GlowEmitterMixin.Anims.NPE_RedButton_GreenGlow);
 	end
 
-	-- Don't show points available until the player has picked a spec.
-	self.CurrencyFrame:SetShown(self.isAnySpecActive);
+	-- Update currency frame as it should be hidden if no spec has been chosen yet
+	self:UpdateCurrency();
 end
 
 function HeroTalentSpecContentMixin:SetActivationFlashPlaying(playFlash)

@@ -44,6 +44,18 @@ function ClassTalentButtonArtMixin:HideActionBarHighlights()
 	ActionBarController_UpdateAllSpellHighlights();
 end
 
+-- Returns true if this node is in an inactive SubTree that is being previewed
+function ClassTalentButtonArtMixin:IsInPreviewedSubTree()
+	-- If the Base check tells us we're not in an inactive SubTree at all, then false
+	if not TalentButtonBaseMixin.IsInDeactivatedSubTree(self) then
+		return false;
+	end
+
+	local nodeInfo = self:GetNodeInfo();
+	-- Otherwise check if we are in a SubTree being previewed
+	return nodeInfo and nodeInfo.subTreeID and self:GetTalentFrame():IsPreviewingSubTree(nodeInfo.subTreeID);
+end
+
 --------------------------------------------------
 -- Base mixin for the standard talent Buttons.
 -- Should contain functionality for all BUT the Selection Choice mixin.
@@ -99,18 +111,6 @@ function ClassTalentButtonBaseMixin:FrameHasAnyPendingChanges()
 	return self:GetTalentFrame():HasAnyPendingChanges();
 end
 
--- Returns true if this node is in an inactive SubTree that is being previewed
-function ClassTalentButtonArtMixin:IsInPreviewedSubTree()
-	-- If the Base check tells us we're not in an inactive SubTree at all, then false
-	if not TalentButtonBaseMixin.IsInDeactivatedSubTree(self) then
-		return false;
-	end
-
-	local nodeInfo = self:GetNodeInfo();
-	-- Otherwise check if we are in a SubTree being previewed
-	return nodeInfo and nodeInfo.subTreeID and self:GetTalentFrame():IsPreviewingSubTree(nodeInfo.subTreeID);
-end
-
 function ClassTalentButtonBaseMixin:IsInDeactivatedSubTree()
 	-- Overrides TalentButtonBaseMixin.
 
@@ -129,6 +129,17 @@ function ClassTalentButtonBaseMixin:IsInspecting()
 	-- If we're not inspecting another player but this node is part of an inactive SubTree being previewed, then we do want to treat it as being inspected
 	-- ie: not purchase, refund, or selectable, just showing existing state
 	return baseIsInspecting or self:IsInPreviewedSubTree();
+end
+
+function ClassTalentButtonBaseMixin:ShouldShowTooltipErrors()
+	-- Overrides TalentDisplayMixin
+
+	-- Checking the base value of IsInspecting because talents should still show errors if they're in the previewed sub tree.
+	if TalentDisplayMixin.IsInspecting(self) then
+		return false;
+	end
+
+	return true;
 end
 
 function ClassTalentButtonBaseMixin:IsSearchMatchTypeAllowed(matchType)

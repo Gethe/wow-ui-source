@@ -80,6 +80,14 @@ function TalentDisplayMixin:OnRelease()
 	self:ResetActiveVisuals();
 end
 
+function TalentDisplayMixin:ShouldShowTooltipInstructions()
+	return not self:IsInspecting();
+end
+
+function TalentDisplayMixin:ShouldShowTooltipErrors()
+	return not self:IsInspecting();
+end
+
 function TalentDisplayMixin:SetTooltipInternal(ignoreTooltipInfo)
 	local tooltip = self:AcquireTooltip();
 	self:AddTooltipTitle(tooltip);
@@ -93,8 +101,11 @@ function TalentDisplayMixin:SetTooltipInternal(ignoreTooltipInfo)
 	self:AddTooltipDescription(tooltip, ignoreTooltipInfo);
 	self:AddTooltipCost(tooltip);
 
-	if not self:IsInspecting() then
+	if self:ShouldShowTooltipInstructions() then
 		self:AddTooltipInstructions(tooltip);
+	end
+
+	if self:ShouldShowTooltipErrors() then
 		self:AddTooltipErrors(tooltip);
 	end
 
