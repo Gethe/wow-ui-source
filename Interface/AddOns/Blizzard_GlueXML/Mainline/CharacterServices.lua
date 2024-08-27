@@ -335,6 +335,9 @@ function CharacterSelectBlockBase:Initialize(results)
 end
 
 function CharacterSelectBlockBase:ShouldShowPopup()
+	-- Heritage armor restriction has been removed.
+	-- Re-enable this if needed
+	--[[
 	local characterInfo = CharacterSelectUtil.GetCharacterInfoTable(self.charid);
 	if characterInfo then
 		local raceData = C_CharacterCreation.GetRaceDataByID(C_CharacterCreation.GetRaceIDFromName(characterInfo.raceFilename));
@@ -342,6 +345,7 @@ function CharacterSelectBlockBase:ShouldShowPopup()
 		self.seenPopup = true;
 		return characterInfo.isTrialBoost == false and raceData.isAlliedRace and not raceData.hasHeritageArmor and not seenPopupBefore;
 	end
+	--]]
 	return false;
 end
 
