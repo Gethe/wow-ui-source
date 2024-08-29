@@ -20,7 +20,7 @@ local l10nTable = {
 			StackSplitCancelButton:SetDisabledFontObject(SystemFont_Small);
 			StackSplitCancelButton:SetHighlightFontObject(SystemFont_Small);
 
-			UIDropDownMenu_SetWidth(FriendsFriendsFrameDropDown, 146);
+			FriendsFriendsFrameDropdown:SetWidth(146);
 
 			SideDressUpModelResetButton:SetWidth(105);
 
@@ -38,13 +38,13 @@ local l10nTable = {
 
 	frFR = {
 		localizeFrames = function()
-			UIDropDownMenu_SetWidth(FriendsFriendsFrameDropDown, 136);
+			FriendsFriendsFrameDropdown:SetWidth(136);
 		end,
 	},
 
 	itIT = {
 		localizeFrames = function()
-			UIDropDownMenu_SetWidth(FriendsFriendsFrameDropDown, 136);
+			FriendsFriendsFrameDropdown:SetWidth(136);
 		end,
 	},
 
@@ -90,9 +90,6 @@ local l10nTable = {
 
 			MIN_CHARACTER_SEARCH = 1;
 
-			-- Interface Options
-			InterfaceOptionsSocialPanelProfanityFilter:Disable();
-
 			-- Honor stuff
 			HonorFrameCurrentSessionTitle:SetPoint("TOPLEFT", "HonorFrame", "TOPLEFT", 36, -111);
 			HonorFrameCurrentHK:SetPoint("TOPLEFT", "HonorFrameCurrentSessionTitle", "BOTTOMLEFT", 10, 1);
@@ -130,8 +127,8 @@ local l10nTable = {
 			Advanced_UIScaleSliderHigh:SetText(LARGE);
 
 			-- Audio options
-			AudioOptionsSoundPanelSoundChannelsDropDownLabel:SetPoint("BOTTOM",  AudioOptionsSoundPanelSoundChannelsDropDown, "TOP", 0, 0);
-			AudioOptionsSoundPanelHardwareDropDownLabel:SetPoint("BOTTOM",  AudioOptionsSoundPanelHardwareDropDown, "TOP", 0, 1);
+			AudioOptionsSoundPanelSoundChannelsDropdownLabel:SetPoint("BOTTOM",  AudioOptionsSoundPanelSoundChannelsDropdown, "TOP", 0, 0);
+			AudioOptionsSoundPanelHardwareDropdownLabel:SetPoint("BOTTOM",  AudioOptionsSoundPanelHardwareDropdown, "TOP", 0, 1);
 
 			MIN_CHARACTER_SEARCH = 1;
 

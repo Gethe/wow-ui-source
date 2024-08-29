@@ -3,7 +3,7 @@
 	<Script file="Blizzard_WowTokenUIInbound.lua" />
 	<Script file="Blizzard_WowTokenUI.lua"/>
 	<Script file="Blizzard_WowTokenUIOutbound.lua"/>
-	<ScopedModifier forbidden="true" scriptsUseGivenEnv="true">
+	<ScopedModifier forbidden="true">
 		<Button name="WowTokenButtonTemplate" virtual="true">
 			<Size x="40" y="22" />
 			<Layers>

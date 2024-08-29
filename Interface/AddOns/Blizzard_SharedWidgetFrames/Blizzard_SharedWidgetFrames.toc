@@ -2,4 +2,5 @@
 ## LoadOnDemand: 0
 ## RequiredDep: Blizzard_UIWidgets
 
+Blizzard_UIWidgetCenterDisplayFrame.lua
 Blizzard_UIWidgetCenterDisplayFrame.xml

@@ -284,8 +284,8 @@ function TokenButton_OnClick(self)
 end
 
 function TokenFrame_UpdatePopup(button)
-	TokenFramePopupInactiveCheckBox:SetChecked(button.isUnused);
-	TokenFramePopupBackpackCheckBox:SetChecked(button.isWatched);
+	TokenFramePopupInactiveCheckbox:SetChecked(button.isUnused);
+	TokenFramePopupBackpackCheckbox:SetChecked(button.isWatched);
 end
 
 function TokenButtonLinkButton_OnClick(self, button)

@@ -184,11 +184,12 @@ local CalendarConstants =
 		{
 			Name = "CalendarInviteBits",
 			Type = "Enumeration",
-			NumValues = 4,
-			MinValue = 1,
+			NumValues = 5,
+			MinValue = 0,
 			MaxValue = 8,
 			Fields =
 			{
+				{ Name = "None", Type = "CalendarInviteBits", EnumValue = 0 },
 				{ Name = "PendingInvite", Type = "CalendarInviteBits", EnumValue = 1 },
 				{ Name = "Moderator", Type = "CalendarInviteBits", EnumValue = 2 },
 				{ Name = "Creator", Type = "CalendarInviteBits", EnumValue = 4 },

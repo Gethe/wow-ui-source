@@ -81,7 +81,6 @@ end
 
 
 function ReforgingFrame_Update(self)
-	CloseDropDownMenus();
 	ReforgingFrameRestoreButton:Disable();
 	ReforgingFrameReforgeButton:Disable();
 	ReforgingFrameReceiptBG:Hide();

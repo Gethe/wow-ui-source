@@ -456,19 +456,11 @@ size=1024,1024
 				</Scripts>
 				<FontString inherits="ChatFontSmall"/>
 			</EditBox>
-			<Frame name="$parentFilterDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+			<DropdownButton parentKey="FilterDropdown" inherits="WowStyle1DropdownTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT"  relativeTo="$parentSearchBox" relativePoint="BOTTOMLEFT" x="-22" y="-3"/>
+					<Anchor point="TOPLEFT"  relativeTo="$parentSearchBox" relativePoint="BOTTOMLEFT" x="-4" y="-3"/>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						UIDropDownMenu_SetWidth(self, 170);
-						UIDropDownMenu_JustifyText(self, "LEFT");
-						UIDropDownMenu_SetText(self, ALL_GLYPHS);
-						UIDropDownMenu_Initialize(self, GlyphFrameFilter_Initialize);
-					</OnLoad>
-				</Scripts>
-			</Frame>
+			</DropdownButton>
 			<ScrollFrame name="$parentScrollFrame" inherits="HybridScrollFrameTemplate" parentKey="scrollFrame">
 				<Size x="185" y="330"/>
 					<Anchors>

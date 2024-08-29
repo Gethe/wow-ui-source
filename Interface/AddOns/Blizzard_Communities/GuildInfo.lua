@@ -21,6 +21,7 @@ function CommunitiesGuildInfoFrame_OnLoad(self)
 	RequestGuildChallengeInfo();
 end
 
+
 function CommunitiesGuildInfoFrame_OnEvent(self, event, arg1)
 	if ( event == "GUILD_MOTD" ) then
 		self.MOTDScrollFrame.MOTD:SetText(arg1, true);	--Ignores markup.

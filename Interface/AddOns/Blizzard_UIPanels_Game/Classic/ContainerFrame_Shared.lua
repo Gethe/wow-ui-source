@@ -1336,7 +1336,7 @@ function ContainerFrameItemButton_OnClick(self, button)
 				return;
 			end
 		end
-		C_Container.UseContainerItem(self:GetParent():GetID(), self:GetID(), nil, BankFrame:IsShown() and (BankFrame.selectedTab == 2));
+		C_Container.UseContainerItem(self:GetParent():GetID(), self:GetID(), nil, nil, BankFrame:IsShown() and (BankFrame.selectedTab == 2));
 		StackSplitFrame:Hide();
 	end
 end

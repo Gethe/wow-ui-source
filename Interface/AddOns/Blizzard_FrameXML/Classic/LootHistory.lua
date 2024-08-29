@@ -398,50 +398,35 @@ function LootHistoryPlayerFrame_OnClick(self, button)
 	if ( C_LootHistory.CanMasterLoot(self.itemIdx, self.playerIdx) ) then
 		StaticPopup_Hide("CONFIRM_LOOT_DISTRIBUTION");
 		MasterLooterFrame:Hide();
-		LootHistoryDropDown.itemIdx = self.itemIdx;
-		LootHistoryDropDown.playerIdx = self.playerIdx;
-		ToggleDropDownMenu(1, nil, LootHistoryDropDown, "cursor", 0, 0);
-	end
-end
 
-function LootHistoryDropDown_OnLoad(self)
-	UIDropDownMenu_Initialize(self, nil, "MENU");
-	self.initialize = LootHistoryDropDown_Initialize;
-end
+		MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
+			rootDescription:SetTag("MENU_LOOT_HISTORY_PLAYER");
 
-function LootHistoryDropDown_Initialize(self)
-	local info = UIDropDownMenu_CreateInfo();
-	info.isTitle = 1;
-	info.text = MASTER_LOOTER;
-	info.fontObject = GameFontNormalLeft;
-	info.notCheckable = 1;
-	UIDropDownMenu_AddButton(info);
-	
-	info = UIDropDownMenu_CreateInfo();
-	info.notCheckable = 1;
-	local name, class = C_LootHistory.GetPlayerInfo(self.itemIdx, self.playerIdx);
-	local classColor = RAID_CLASS_COLORS[class];
-	local colorCode = string.format("|cFF%02x%02x%02x",  classColor.r*255,  classColor.g*255,  classColor.b*255);
-	info.text = string.format(MASTER_LOOTER_GIVE_TO, colorCode..name.."|r");
-	info.func = LootHistoryDropDown_OnClick;
-	UIDropDownMenu_AddButton(info);
-end
+			rootDescription:CreateTitle(MASTER_LOOTER);
 
-function LootHistoryDropDown_OnClick()
-	local _, itemLink = C_LootHistory.GetItem(LootHistoryDropDown.itemIdx);
-	if ( itemLink ) then
+			local name, class = C_LootHistory.GetPlayerInfo(self.itemIdx, self.playerIdx);
+			local classColor = RAID_CLASS_COLORS[class];
+			local colorCode = string.format("|cFF%02x%02x%02x",  classColor.r*255,  classColor.g*255,  classColor.b*255);
+			local text = string.format(MASTER_LOOTER_GIVE_TO, colorCode..name.."|r");
+			rootDescription:CreateButton(text, function()
+				local _, itemLink = C_LootHistory.GetItem(self.itemIdx);
+				if itemLink then
 		local itemName, _itemLink, itemRarity = C_Item.GetItemInfo(itemLink);
-		if ( itemRarity >= MASTER_LOOT_THREHOLD ) then
-			local playerName = C_LootHistory.GetPlayerInfo(LootHistoryDropDown.itemIdx, LootHistoryDropDown.playerIdx);
-			StaticPopup_Show("CONFIRM_LOOT_DISTRIBUTION", ITEM_QUALITY_COLORS[itemRarity].hex..itemName..FONT_COLOR_CODE_CLOSE, playerName, "LootHistory");
-		else
-			LootHistoryDropDown_GiveMasterLoot();
-		end
+					if itemRarity >= MASTER_LOOT_THREHOLD then
+						local playerName = C_LootHistory.GetPlayerInfo(self.itemIdx, self.playerIdx);
+						local lootText = ITEM_QUALITY_COLORS[itemRarity].hex..itemName..FONT_COLOR_CODE_CLOSE;
+						StaticPopup_Show("CONFIRM_LOOT_DISTRIBUTION", lootText, playerName, "LootHistory");
+					else
+						LootHistoryDropdown_GiveMasterLoot();
+					end
+				end
+			end);
+		end);
 	end
 end
 
-function LootHistoryDropDown_GiveMasterLoot()
-	C_LootHistory.GiveMasterLoot(LootHistoryDropDown.itemIdx, LootHistoryDropDown.playerIdx);
+function LootHistoryDropdown_GiveMasterLoot()
+	C_LootHistory.GiveMasterLoot(LootHistoryDropdown.itemIdx, LootHistoryDropdown.playerIdx);
 end
 
 function LootHistoryFrameUtil_ShouldDisplayPlayer(itemIdx, playerIdx)

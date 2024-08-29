@@ -53,6 +53,20 @@ local EditModeManager =
 			},
 		},
 		{
+			Name = "IsValidLayoutName",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isApproved", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "OnEditModeExit",
 			Type = "Function",
 		},

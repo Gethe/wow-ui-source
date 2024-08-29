@@ -52,6 +52,7 @@ CursorUtilDocumentation.lua
 DeathAlertDocumentation.lua
 DeathInfoDocumentation.lua
 DebugToggleDocumentation.lua
+Deprecated_11_0_0Documentation.lua
 DuelInfoDocumentation.lua
 EditModeManagerDocumentation.lua
 EncounterInfoDocumentation.lua
@@ -87,6 +88,7 @@ GossipInfoDocumentation.lua
 GuildBankDocumentation.lua
 GuildInfoDocumentation.lua
 HeirloomInfoDocumentation.lua
+ImmersiveInteractionManagerDocumentation.lua
 InputDocumentation.lua
 InstanceDocumentation.lua
 InstanceEncounterDocumentation.lua
@@ -265,6 +267,7 @@ TransmogItemsDocumentation.lua
 AccountConstantsDocumentation.lua
 ActionDocumentation.lua
 AppearanceSourceDocumentation.lua
+ArrowCalloutConstantsDocumentation.lua
 AuctionHouseEnumsDocumentation.lua
 AzeriteConstantsDocumentation.lua
 BagConstantsDocumentation.lua
@@ -275,7 +278,9 @@ ButtonConstantsDocumentation.lua
 CalendarConstantsDocumentation.lua
 CameraConstantsDocumentation.lua
 CharacterCustomizationSharedDocumentation.lua
+CharacterSelectionConstantsDocumentation.lua
 ChatConstantsDocumentation.lua
+CinematicConstantsDocumentation.lua
 ClientSettingsDocumentation.lua
 ClubSharedDocumentation.lua
 ColorDocumentation.lua
@@ -292,6 +297,7 @@ GARRISON_FOLLOWER_TYPEConstantsDocumentation.lua
 GARRISON_TYPEConstantsDocumentation.lua
 GameEnvironmentConstantsDocumentation.lua
 GamePadConstDocumentation.lua
+GameRulesConstantsDocumentation.lua
 GarrisonConstantsDocumentation.lua
 GossipConstantsDocumentation.lua
 GuildInfoSharedDocumentation.lua
@@ -305,9 +311,12 @@ MapConstantsDocumentation.lua
 MatrixSharedDocumentation.lua
 MinimapConstantsDocumentation.lua
 ModelAnimationSharedDocumentation.lua
+MoneyConstantsDocumentation.lua
+MountConstantsDocumentation.lua
 NamePlateDocumentation.lua
 PVPMgrConstantsDocumentation.lua
 PartyConstantsDocumentation.lua
+PartyPoseUIConstantsDocumentation.lua
 PerksVendorConstantsDocumentation.lua
 PetBattleConstantsDocumentation.lua
 PetConstantsDocumentation.lua
@@ -317,10 +326,12 @@ PlayerDocumentation.lua
 PlayerInfoSharedDocumentation.lua
 PlayerInteractionManagerConstantsDocumentation.lua
 PlayerMentorshipConstantsDocumentation.lua
+PowerTypeConstantsDocumentation.lua
 ProfessionConstantsDocumentation.lua
 PvPFactionConstantsDocumentation.lua
 PvpInfoConstantsDocumentation.lua
 QuestConstantsDocumentation.lua
+QuestInfoSharedDocumentation.lua
 QuestRewardsDocumentation.lua
 QuestSessionConstantsDocumentation.lua
 QueueSpecificDocumentation.lua
@@ -333,8 +344,11 @@ SharedTraitsEnumsDocumentation.lua
 SimpleHTMLSharedDocumentation.lua
 SocialConstantsDocumentation.lua
 SoftTargetConstantsDocumentation.lua
+SpellBookConstantsDocumentation.lua
+SpellSharedDocumentation.lua
 TextureSharedDocumentation.lua
 TimeDocumentation.lua
+TimerConstantsDocumentation.lua
 TimerunningConstantsDocumentation.lua
 TooltipConstantsDocumentation.lua
 TooltipInfoSharedDocumentation.lua

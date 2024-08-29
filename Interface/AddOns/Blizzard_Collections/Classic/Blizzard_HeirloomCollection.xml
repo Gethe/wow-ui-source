@@ -109,43 +109,17 @@
 				</Scripts>
 			</EditBox>
 
-			<DropDownToggleButton parentKey="FilterButton" inherits="UIMenuButtonStretchTemplate" text="FILTER">
-				<Size x="93" y="22"/>
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="-12" y="-34"/>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture parentKey="Icon" file="Interface\ChatFrame\ChatFrameExpandArrow">
-							<Size x="10" y="12"/>
+			<DropdownButton parentKey="FilterDropdown" inherits="WowStyle1FilterDropdownTemplate">
 							<Anchors>
-								<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="RIGHT" x="-5"/>
+					<Anchor point="TOPRIGHT" x="-12" y="-35"/>
 							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnMouseDown inherit="prepend">
-						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-						ToggleDropDownMenu(1, nil, self:GetParent().filterDropDown, self, 74, 15);
-					</OnMouseDown>
-				</Scripts>
-			</DropDownToggleButton>
-			<Frame name="$parentFilterDropDown" parentKey="filterDropDown" inherits="UIDropDownMenuTemplate">
-				<Scripts>
-					<OnLoad function="HeirloomsJournalCollectedFilterDropDown_OnLoad"/>
-				</Scripts>
-			</Frame>
+			</DropdownButton>
 
-			<Frame name="$parentClassDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true" parentKey="classDropDown">
-				<Size x="93" y="22"/>
+			<DropdownButton parentKey="ClassDropdown" inherits="WowStyle1DropdownTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="54" y="-30"/>
+					<Anchor point="TOPLEFT" x="70" y="-30"/>
 				</Anchors>
-				<Scripts>
-					<OnLoad function="HeirloomsJournalClassFilterDropDown_OnLoad"/>
-				</Scripts>
-			</Frame>
+			</DropdownButton>
 
 			<Frame parentKey="iconsFrame" inherits="CollectionsBackgroundTemplate">
 				<Layers>
@@ -166,9 +140,7 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				self:OnLoad();
-			</OnLoad>
+			<OnLoad method="OnLoad"/>
 			<OnEvent function="HeirloomsJournal_OnEvent"/>
 			<OnShow function="HeirloomsJournal_OnShow"/>
 			<OnMouseWheel function="HeirloomsJournal_OnMouseWheel"/>

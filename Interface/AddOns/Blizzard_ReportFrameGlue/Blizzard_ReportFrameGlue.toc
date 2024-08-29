@@ -3,5 +3,4 @@
 ## DefaultState: enabled
 ## Dependencies: Blizzard_ReportFrameShared
 ## AllowLoad: Glue
-## SuppressLocalTableRef: 1
 ReportFrame.xml

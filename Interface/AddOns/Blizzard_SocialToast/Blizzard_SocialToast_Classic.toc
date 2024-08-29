@@ -4,6 +4,5 @@
 ## AllowLoad: game
 ## AllowLoadGameType: classic
 ## Dependencies: Blizzard_SharedXML
-## SuppressLocalTableRef: 1
 SocialToast.lua
 SocialToast.xml

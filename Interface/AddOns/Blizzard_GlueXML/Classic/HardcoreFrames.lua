@@ -8,7 +8,7 @@ HARDCORE_POPUP_SCREEN = {
 function HardcorePopUpFrameMixin:SetBodyText(text)
 	self.ScrollBox.Text:SetText(text);
     self.ScrollBox:FullUpdate(ScrollBoxConstants.UpdateImmediately);
-	self.ScrollBox:ScrollToBegin(ScrollBoxConstants.NoScrollInterpolation);
+	self.ScrollBox:ScrollToBegin();
 end
 
 function HardcorePopUpFrameMixin:Reset()

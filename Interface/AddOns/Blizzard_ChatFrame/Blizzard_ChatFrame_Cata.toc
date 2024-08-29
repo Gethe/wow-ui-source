@@ -5,7 +5,6 @@
 ## LoadFirst: 1
 ## AllowLoad: game
 ## AllowLoadGameType: cata
-## SuppressLocalTableRef: 1
 Shared\VoiceChatTranscriptionButton.lua
 Shared\VoiceChatTranscriptionButton.xml
 Classic\VoiceChatHeadsetButton.lua

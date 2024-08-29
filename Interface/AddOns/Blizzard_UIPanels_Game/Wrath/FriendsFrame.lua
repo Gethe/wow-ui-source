@@ -128,7 +128,7 @@ function FriendsFrame_OnEvent(self, event, ...)
 		WhoList_Update();
 		FriendsFrame_Update();
 	elseif ( event == "PLAYER_FLAGS_CHANGED" or event == "BN_INFO_CHANGED") then
-		FriendsFrameStatusDropDown_Update();
+		FriendsFrameStatusDropdown:GenerateMenu();
 		FriendsFrame_CheckBattlenetStatus();
 	elseif ( event == "PLAYER_ENTERING_WORLD" or event == "BN_CONNECTED" or event == "BN_DISCONNECTED") then
 		FriendsFrame_CheckBattlenetStatus();
@@ -230,13 +230,34 @@ function GuildControlPopupFrame_Initialize()
 	if ( GuildControlPopupFrame.initialized ) then
 		return;
 	end
-	UIDropDownMenu_Initialize(GuildControlPopupFrameDropDown, GuildControlPopupFrameDropDown_Initialize);
+
 	GuildControlSetRank(1);
-	UIDropDownMenu_SetSelectedID(GuildControlPopupFrameDropDown, 1);
-	UIDropDownMenu_SetText(GuildControlPopupFrameDropDown, GuildControlGetRankName(1));
+
+	local function IsSelected(i)
+		return GuildControlGetRank() == i;
+	end
+
+	local function SetSelected(i)
+		GuildControlSetRank(i);
+		GuildControlCheckboxUpdate(C_GuildInfo.GuildControlGetRankFlags(i));
+		GuildControlPopupFrameEditBox:SetText(text);
+		GuildControlPopupFrameAddRankButton_OnUpdate();
+		GuildControlPopupFrameRemoveRankButton_OnUpdate();
+		GuildControlPopupAcceptButton:Disable();
+	end
+
+	self:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_FRIENDS_GUILD_CONTROL");
+
+		for i=1, GuildControlGetNumRanks() do
+			local text = GuildControlGetRankName(i);
+			rootDescription:CreateRadio(text, IsSelected, SetSelected, i);
+		end
+	end);
+
 	-- Select tab 1
 	GuildBankTabPermissionsTab_OnClick(1);
-	GuildControlPopupFrameDropDownButton_ClickedRank(1);
+	GuildControlPopupFrameDropdownButton_ClickedRank(1);
 
 	GuildControlPopupFrame:SetScript("OnEvent", GuildControlPopupFrame_OnEvent);
 	GuildControlPopupFrame.initialized = 1;
@@ -263,19 +284,11 @@ function GuildControlPopupFrame_OnEvent (self, event, ...)
 		return;
 	end
 	
-	local selectedID = UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown);
-	local numRanks = GuildControlGetNumRanks();
-	local rank
-	for i = 1, numRanks do
-		rank = GuildControlGetRankName(i);
-		if ( selectedID == i ) then
-			UIDropDownMenu_SetSelectedID(GuildControlPopupFrameDropDown, i);
-			UIDropDownMenu_SetText(GuildControlPopupFrameDropDown, rank);
+	for i=1, GuildControlGetNumRanks() do
+		if GuildControlGetRank() == i then
+			GuildControlPopupFrameDropdown:GenerateMenu();
+			break;
 		end
-	end
-	if ( selectedID and ( selectedID > numRanks ) ) then
-		UIDropDownMenu_SetSelectedID(GuildControlPopupFrameDropDown, numRanks);
-		UIDropDownMenu_SetText(GuildControlPopupFrameDropDown, GuildControlGetRankName(numRanks));
 	end
 	
 	GuildControlPopupframe_Update()
@@ -299,7 +312,7 @@ function GuildControlPopupframe_Update(loadPendingTabPermissions, skipCheckboxUp
 		GuildControlCheckboxUpdate(GuildControlGetRankFlags());
 	end
 	
-	local rankID = UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown);
+	local rankID = GuildControlGetRank();
 	GuildControlPopupFrameEditBox:SetText(GuildControlGetRankName(rankID));
 	if ( GuildControlPopupFrame.previousSelectedRank and GuildControlPopupFrame.previousSelectedRank ~= rankID ) then
 		ClearPendingGuildBankPermissions();
@@ -312,9 +325,9 @@ function GuildControlPopupframe_Update(loadPendingTabPermissions, skipCheckboxUp
 		GuildControlTabPermissionsDepositItems:SetChecked(1);
 		GuildControlTabPermissionsViewTab:SetChecked(1);
 		GuildControlTabPermissionsUpdateText:SetChecked(1);
-		BlizzardOptionsPanel_CheckButton_Disable(GuildControlTabPermissionsDepositItems);
-		BlizzardOptionsPanel_CheckButton_Disable(GuildControlTabPermissionsViewTab);
-		BlizzardOptionsPanel_CheckButton_Disable(GuildControlTabPermissionsUpdateText);
+		GuildControlTabPermissionsDepositItems:Disable();
+		GuildControlTabPermissionsViewTab:Disable();
+		GuildControlTabPermissionsUpdateText:Disable();
 		GuildControlTabPermissionsWithdrawItemsText:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 		GuildControlWithdrawItemsEditBox:SetNumeric(nil);
 		GuildControlWithdrawItemsEditBox:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
@@ -329,22 +342,22 @@ function GuildControlPopupframe_Update(loadPendingTabPermissions, skipCheckboxUp
 		GuildControlWithdrawGoldEditBox:SetText(UNLIMITED);
 		GuildControlWithdrawGoldEditBox:ClearFocus();
 		GuildControlWithdrawGoldEditBoxMask:Show();
-		BlizzardOptionsPanel_CheckButton_Disable(GuildControlPopupFrameCheckbox15);
-		BlizzardOptionsPanel_CheckButton_Disable(GuildControlPopupFrameCheckbox16);
+		GuildControlPopupFrameCheckbox15:Disable();
+		GuildControlPopupFrameCheckbox16:Disable();
 	else
 		if ( GetNumGuildBankTabs() == 0 ) then
 			-- No tabs, no permissions! Disable the tab related doohickies
 			GuildBankTabLabel:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-			BlizzardOptionsPanel_CheckButton_Disable(GuildControlTabPermissionsViewTab);
-			BlizzardOptionsPanel_CheckButton_Disable(GuildControlTabPermissionsDepositItems);
-			BlizzardOptionsPanel_CheckButton_Disable(GuildControlTabPermissionsUpdateText);
+			GuildControlTabPermissionsViewTab:Disable();
+			GuildControlTabPermissionsDepositItems:Disable();
+			GuildControlTabPermissionsUpdateText:Disable();
 			GuildControlTabPermissionsWithdrawItemsText:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 			GuildControlWithdrawItemsEditBox:SetText(UNLIMITED);
 			GuildControlWithdrawItemsEditBox:ClearFocus();
 			GuildControlWithdrawItemsEditBoxMask:Show();
 		else
 			GuildBankTabLabel:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-			BlizzardOptionsPanel_CheckButton_Enable(GuildControlTabPermissionsViewTab);
+			GuildControlTabPermissionsViewTab:Enable();
 			GuildControlTabPermissionsWithdrawItemsText:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 			GuildControlWithdrawItemsEditBox:SetNumeric(1);
 			GuildControlWithdrawItemsEditBox:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
@@ -357,8 +370,8 @@ function GuildControlPopupframe_Update(loadPendingTabPermissions, skipCheckboxUp
 		GuildControlWithdrawGoldEditBox:SetMaxLetters(MAX_GOLD_WITHDRAW_DIGITS);
 		GuildControlWithdrawGoldEditBox:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 		GuildControlWithdrawGoldEditBoxMask:Hide();
-		BlizzardOptionsPanel_CheckButton_Enable(GuildControlPopupFrameCheckbox15);
-		BlizzardOptionsPanel_CheckButton_Enable(GuildControlPopupFrameCheckbox16);
+		GuildControlPopupFrameCheckbox15:Enable();
+		GuildControlPopupFrameCheckbox16:Enable();
 
 		-- Update tab specific info
 		local viewTab, canDeposit, canUpdateText, numWithdrawals = GetGuildBankTabPermissions(GuildControlPopupFrameTabPermissions.selectedTab);
@@ -401,7 +414,7 @@ function GuildControlPopupframe_Update(loadPendingTabPermissions, skipCheckboxUp
 				GuildControlWithdrawGoldEditBox:SetText(MAX_GOLD_WITHDRAW);
 			end
 		end
-		GuildControlPopup_UpdateDepositCheckBox();
+		GuildControlPopup_UpdateDepositCheckbox();
 	end
 	
 	--Only show available tabs
@@ -463,33 +476,18 @@ function GuildControlPopupAcceptButton_OnClick()
 	GuildControlSaveRank(GuildControlPopupFrameEditBox:GetText());
 	GuildStatus_Update();
 	GuildControlPopupAcceptButton:Disable();
+	GuildControlPopupFrameDropdown:GenerateMenu();
 	GuildControlPopupFrame:Hide();
 	ClearPendingGuildBankPermissions();
 end
 
-function GuildControlPopupFrameDropDown_OnLoad(self)
-	UIDropDownMenu_SetWidth(GuildControlPopupFrameDropDown, 160);
-	UIDropDownMenu_SetButtonWidth(GuildControlPopupFrameDropDown, 54);
-	UIDropDownMenu_JustifyText(GuildControlPopupFrameDropDown, "LEFT");
+function GuildControlPopupFrameDropdown_OnLoad(self)
+	WowStyle1DropdownMixin.OnLoad(self);
+
+	self:SetWidth(110);
 end
 
-function GuildControlPopupFrameDropDown_Initialize()
-	local info = UIDropDownMenu_CreateInfo();
-	for i=1, GuildControlGetNumRanks() do
-		info.text = GuildControlGetRankName(i);
-		info.func = GuildControlPopupFrameDropDownButton_OnClick;
-		info.checked = nil;
-		UIDropDownMenu_AddButton(info);
-	end
-end
-
-function GuildControlPopupFrameDropDownButton_OnClick(self)
-	local rank = self:GetID();
-	GuildControlPopupFrameDropDownButton_ClickedRank(rank)
-end
-
-function GuildControlPopupFrameDropDownButton_ClickedRank(rank)
-	UIDropDownMenu_SetSelectedID(GuildControlPopupFrameDropDown, rank);	
+function GuildControlPopupFrameDropdownButton_ClickedRank(rank)
 	GuildControlSetRank(rank);
 	GuildControlPopupFrame.rank = GuildControlGetRankName(rank);
 	GuildControlPopupFrame.goldChanged = nil;
@@ -497,6 +495,7 @@ function GuildControlPopupFrameDropDownButton_ClickedRank(rank)
 	GuildControlPopupFrameAddRankButton_OnUpdate(GuildControlPopupFrameAddRankButton);
 	GuildControlPopupFrameRemoveRankButton_OnUpdate(GuildControlPopupFrameRemoveRankButton);
 	GuildControlPopupAcceptButton:Disable();
+	GuildControlPopupFrameDropdown:GenerateMenu();
 end
 
 function GuildControlCheckboxUpdate(...)
@@ -513,16 +512,14 @@ function GuildControlCheckboxUpdate(...)
 end
 
 function GuildControlPopupFrameRemoveRankButton_OnClick()
-	GuildControlDelRank(UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown));
+	GuildControlDelRank(GuildControlGetRank());
 	GuildControlPopupFrame.rank = GuildControlGetRankName(1);
 	GuildControlSetRank(1);
 	GuildStatus_Update();
-	UIDropDownMenu_SetSelectedID(GuildControlPopupFrameDropDown, 1);
 	GuildControlPopupFrameEditBox:SetText(GuildControlGetRankName(1));
 	GuildControlCheckboxUpdate(GuildControlGetRankFlags());
-	GuildControlPopupFrameDropDown:SetID(1);
-	GuildControlPopupFrameDropDownButton_ClickedRank(1);
-	CloseDropDownMenus();
+	GuildControlPopupFrameDropdownButton_ClickedRank(1);
+
 	-- Set this to call guildroster in the next frame
 	--C_GuildInfo.GuildRoster();
 	--GuildControlPopupFrame.update = 1;
@@ -530,7 +527,7 @@ end
 
 function GuildControlPopupFrameRemoveRankButton_OnUpdate(self)
 	local numRanks = GuildControlGetNumRanks()
-	if ( (UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown) == numRanks) and (numRanks > 5) ) then
+	if ( (GuildControlGetRank() == numRanks) and (numRanks > 5) ) then
 		self:Show();
 		if ( FriendsFrame.playersInBotRank > 0 ) then
 			self:Disable();
@@ -542,13 +539,13 @@ function GuildControlPopupFrameRemoveRankButton_OnUpdate(self)
 	end
 end
 
-function GuildControlPopup_UpdateDepositCheckBox()
+function GuildControlPopup_UpdateDepositCheckbox()
 	if(GuildControlTabPermissionsViewTab:GetChecked()) then
-		BlizzardOptionsPanel_CheckButton_Enable(GuildControlTabPermissionsDepositItems);
-		BlizzardOptionsPanel_CheckButton_Enable(GuildControlTabPermissionsUpdateText);
+		GuildControlTabPermissionsDepositItems:Enable();
+		GuildControlTabPermissionsUpdateText:Enable();
 	else
-		BlizzardOptionsPanel_CheckButton_Disable(GuildControlTabPermissionsDepositItems);
-		BlizzardOptionsPanel_CheckButton_Disable(GuildControlTabPermissionsUpdateText);
+		GuildControlTabPermissionsDepositItems:Disable();
+		GuildControlTabPermissionsUpdateText:Disable();
 	end
 end
 

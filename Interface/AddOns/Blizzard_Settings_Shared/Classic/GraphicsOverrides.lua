@@ -36,7 +36,7 @@ function GraphicsOverrides.CreateAdvancedRaidSettingsTable(category, addFunc)
 	return advRaidSettings;
 end
 
-function GraphicsOverrides.AdjustAdvancedQualityControls(parentElement, settings, raid, initDropDownFunc, addOptionFunc, addRecommendedFunc)
+function GraphicsOverrides.AdjustAdvancedQualityControls(parentElement, settings, raid, initDropdownFunc, addOptionFunc, addRecommendedFunc)
 	parentElement.TextureResolution:SetPoint("TOPLEFT", parentElement.DepthEffects, "BOTTOMLEFT", 0, -10);
 	parentElement.EnvironmentDetail:SetPoint("TOPLEFT", parentElement.ProjectedTextures, "BOTTOMLEFT", 0, -10);
 
@@ -52,7 +52,7 @@ function GraphicsOverrides.AdjustAdvancedQualityControls(parentElement, settings
 	end
 
 	--reclaiming the DepthEffects control for sunshafts
-	initDropDownFunc(parentElement.DepthEffects, settingSunshafts, SUNSHAFTS, OPTION_TOOLTIP_SUNSHAFTS, GetSunshaftsOptions);
+	initDropdownFunc(parentElement.DepthEffects, settingSunshafts, SUNSHAFTS, OPTION_TOOLTIP_SUNSHAFTS, GetSunshaftsOptions);
 	parentElement.DepthEffects:Show();
 end
 
@@ -63,4 +63,13 @@ function GraphicsOverrides.GetTextureResolutionOptions(settingTextureResolution,
 	addValidatedSettingOptionFunc(container, variable, raid, 1, VIDEO_OPTIONS_HIGH, VIDEO_OPTIONS_TEXTURE_DETAIL_HIGH);
 	addRecommendedFunc(container, variable);
 	return container:GetData();
+end 
+
+function GraphicsOverrides.CreateHiResOptions(category, layout)
+end
+
+function GraphicsOverrides.RunSettingsCallback(callback)
+	if not InGlue() then
+		callback();
+	end
 end

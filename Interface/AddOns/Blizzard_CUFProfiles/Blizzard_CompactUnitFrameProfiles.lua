@@ -10,14 +10,9 @@ function CompactUnitFrameProfiles_OnLoad(self)
 	self.options = {
 		useCompactPartyFrames = { text = "USE_RAID_STYLE_PARTY_FRAMES" },
 	}
-	
-	BlizzardOptionsPanel_OnLoad(self, CompactUnitFrameProfiles_SaveChanges, CompactUnitFrameProfiles_CancelCallback, CompactUnitFrameProfiles_DefaultCallback, CompactUnitFrameProfiles_UpdateCurrentPanel);
 end
 
 function CompactUnitFrameProfiles_OnEvent(self, event, ...)
-	--Do normal BlizzardOptionsPanel code too.
-	BlizzardOptionsPanel_OnEvent(self, event, ...);
-	
 	if ( event == "COMPACT_UNIT_FRAME_PROFILES_LOADED" ) then
 		--HasLoadedCUFProfiles will now return true.
 		self:UnregisterEvent(event);
@@ -46,7 +41,6 @@ function CompactUnitFrameProfiles_ValidateProfilesLoaded(self)
 end
 
 function CompactUnitFrameProfiles_DefaultCallback(self)
-	InterfaceOptionsPanel_Default(self);
 	CompactUnitFrameProfiles_ResetToDefaults();
 end
 
@@ -68,98 +62,87 @@ function CompactUnitFrameProfiles_SaveChanges(self)
 end
 
 function CompactUnitFrameProfiles_CancelCallback(self)
-	InterfaceOptionsPanel_Cancel(self);
 	CompactUnitFrameProfiles_CancelChanges(self);
 end
 
 function CompactUnitFrameProfiles_CancelChanges(self)
-	InterfaceOptionsPanel_Cancel(self);
 	RestoreRaidProfileFromCopy();
 	CompactUnitFrameProfiles_UpdateCurrentPanel();
 	CompactUnitFrameProfiles_ApplyCurrentSettings();
 end
 
-function CompactUnitFrameProfilesNewProfileDialogBaseProfileSelector_SetUp(self)
-	UIDropDownMenu_SetWidth(self, 190);
-	UIDropDownMenu_Initialize(self, CompactUnitFrameProfilesNewProfileDialogBaseProfileSelector_Initialize);
+function CompactUnitFrameProfilesNewProfileDialogBaseProfileSelector_OnLoad(self)
+	WowStyle1DropdownMixin.OnLoad(self);
+
+	self:SetWidth(190);
 end
 
-
-function CompactUnitFrameProfilesNewProfileDialogBaseProfileSelector_Initialize()
-	local info = UIDropDownMenu_CreateInfo();
-	
-	info.text = DEFAULTS;
-	info.value = nil;
-	info.func = CompactUnitFrameProfilesNewProfileDialogBaseProfileSelectorButton_OnClick;
-	info.checked = CompactUnitFrameProfiles.newProfileDialog.baseProfile == info.value;
-	UIDropDownMenu_AddButton(info);
-	
-	for i=1, GetNumRaidProfiles() do
-		local name = GetRaidProfileName(i);
-		info.text = name;
-		info.value = name;
-		info.func = CompactUnitFrameProfilesNewProfileDialogBaseProfileSelectorButton_OnClick;
-		info.checked = CompactUnitFrameProfiles.newProfileDialog.baseProfile == info.value;
-		UIDropDownMenu_AddButton(info);
-	end
-end
-
-function CompactUnitFrameProfilesNewProfileDialogBaseProfileSelectorButton_OnClick(self)
-	CompactUnitFrameProfiles.newProfileDialog.baseProfile = self.value;
-	UIDropDownMenu_SetSelectedValue(CompactUnitFrameProfilesNewProfileDialogBaseProfileSelector, self.value);
-end
-
-function CompactUnitFrameProfilesProfileSelector_SetUp(self)
-	UIDropDownMenu_SetWidth(self, 190);
-	UIDropDownMenu_Initialize(self, CompactUnitFrameProfilesProfileSelector_Initialize);
-	--UIDropDownMenu_SetSelectedValue(self, GetActiveRaidProfile());
-end
-
-function CompactUnitFrameProfilesProfileSelector_Initialize()
-	local info = UIDropDownMenu_CreateInfo();
-	
-	for i=1, GetNumRaidProfiles() do
-		local name = GetRaidProfileName(i);
-		info.text = name;
-		info.func = CompactUnitFrameProfilesProfileSelectorButton_OnClick;
-		info.value = name;
-		info.checked = CompactUnitFrameProfiles.selectedProfile == name;
-		UIDropDownMenu_AddButton(info);
+function CompactUnitFrameProfilesNewProfileDialogBaseProfileSelector_OnShow(self)
+	local function IsSelected(name)
+		return CompactUnitFrameProfiles.newProfileDialog.baseProfile == name;
 	end
 	
-	info.text = NEW_COMPACT_UNIT_FRAME_PROFILE;
-	info.func = CompactUnitFrameProfiles_NewProfileButtonClicked;
-	info.value = nil;
-	info.checked = false;
-	info.notCheckable = true;
-	info.disabled = GetNumRaidProfiles() >= GetMaxNumCUFProfiles();
-	UIDropDownMenu_AddButton(info);
+	local function SetSelected(name)
+		CompactUnitFrameProfiles.newProfileDialog.baseProfile = name;
+	end
+
+	self:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_COMPACT_RAID_FRAME_DIALOG_PROFILES");
+
+		rootDescription:CreateRadio(DEFAULTS, IsSelected, SetSelected, nil);
+		for i=1, GetNumRaidProfiles() do
+			local name = GetRaidProfileName(i);
+			rootDescription:CreateRadio(name, IsSelected, SetSelected, name);
+		end
+	end);
 end
 
-function CompactUnitFrameProfilesProfileSelectorButton_OnClick(self)
-	if ( RaidProfileHasUnsavedChanges() ) then
-		CompactUnitFrameProfiles_ConfirmUnsavedChanges("select", self.value);
-	else
-		CompactUnitFrameProfiles_ActivateRaidProfile(self.value);
-	end
+function CompactUnitFrameProfilesProfileSelector_OnLoad(self)
+	WowStyle1DropdownMixin.OnLoad(self);
+	
+	self:SetWidth(190);
 end
 
-function CompactUnitFrameProfiles_NewProfileButtonClicked()
-	if ( RaidProfileHasUnsavedChanges() ) then
-		CompactUnitFrameProfiles_ConfirmUnsavedChanges("new");
-	else
-		CompactUnitFrameProfiles_ShowNewProfileDialog();
+function CompactUnitFrameProfilesProfileSelector_OnShow(self)
+	local function IsSelected(name)
+		return CompactUnitFrameProfiles.selectedProfile == name;
 	end
+	
+	local function SetSelected(name)
+		if ( RaidProfileHasUnsavedChanges() ) then
+			CompactUnitFrameProfiles_ConfirmUnsavedChanges("select", name);
+		else
+			CompactUnitFrameProfiles_ActivateRaidProfile(name);
+		end
+	end
+
+	self:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_COMPACT_RAID_FRAME_PROFILES_SELECTOR");
+		for i=1, GetNumRaidProfiles() do
+			local name = GetRaidProfileName(i);
+			rootDescription:CreateRadio(name, IsSelected, SetSelected, name);
+		end
+
+		local profileButton = rootDescription:CreateButton(NEW_COMPACT_UNIT_FRAME_PROFILE, function()
+			if ( RaidProfileHasUnsavedChanges() ) then
+				CompactUnitFrameProfiles_ConfirmUnsavedChanges("new");
+			else
+				CompactUnitFrameProfiles_ShowNewProfileDialog();
+			end
+		end);
+
+		if GetNumRaidProfiles() >= GetMaxNumCUFProfiles() then
+			profileButton:SetEnabled(false);
+		end
+	end);
 end
 
 function CompactUnitFrameProfiles_ActivateRaidProfile(profile)	
 	CompactUnitFrameProfiles.selectedProfile = profile;
 	SaveRaidProfileCopy(profile);	--Save off the current version in case we cancel.
 	SetActiveRaidProfile(profile);
-	UIDropDownMenu_SetSelectedValue(CompactUnitFrameProfilesProfileSelector, profile);
-	UIDropDownMenu_SetText(CompactUnitFrameProfilesProfileSelector, profile);
-	UIDropDownMenu_SetSelectedValue(CompactRaidFrameManagerDisplayFrameProfileSelector, profile);
-	UIDropDownMenu_SetText(CompactRaidFrameManagerDisplayFrameProfileSelector, profile);
+	CompactUnitFrameProfilesProfileSelector:GenerateMenu();
+	CompactRaidFrameManagerDisplayFrameProfileSelector:GenerateMenu();
 	
 	CompactUnitFrameProfiles_HidePopups();
 	CompactUnitFrameProfiles_UpdateCurrentPanel();
@@ -178,11 +161,6 @@ end
 
 
 function CompactUnitFrameProfiles_UpdateCurrentPanel()
-	InterfaceOptionsPanel_Refresh(CompactUnitFrameProfiles);
-	local panel = CompactUnitFrameProfiles.optionsFrame;
-	for i=1, #panel.optionControls do
-		panel.optionControls[i]:updateFunc();
-	end
 	CompactUnitFrameProfiles_UpdateManagementButtons();
 	CompactUnitFrameProfile_UpdateAutoActivationDisabledLabel();
 end
@@ -208,12 +186,11 @@ function CompactUnitFrameProfiles_HideNewProfileDialog()
 end
 
 function CompactUnitFrameProfiles_ShowNewProfileDialog()
-	UIDropDownMenu_SetSelectedValue(CompactUnitFrameProfilesNewProfileDialogBaseProfileSelector, nil);
-	UIDropDownMenu_SetText(CompactUnitFrameProfilesNewProfileDialogBaseProfileSelector, DEFAULTS);
 	CompactUnitFrameProfiles.newProfileDialog.baseProfile = nil;
 	CompactUnitFrameProfiles.newProfileDialog:Show();
 	CompactUnitFrameProfiles.newProfileDialog.editBox:SetText("");
 	CompactUnitFrameProfiles.newProfileDialog.editBox:SetFocus();
+	CompactUnitFrameProfilesNewProfileDialogBaseProfileSelector:GenerateMenu();
 	CompactUnitFrameProfiles_UpdateNewProfileCreateButton();
 end
 
@@ -422,47 +399,42 @@ end
 -- Required strings:
 -- COMPACT_UNIT_FRAME_PROFILE_<OPTION_NAME>
 -- COMPACT_UNIT_FRAME_PROFILE_<OPTION_NAME>_<OPTION_VALUE>
-function CompactUnitFrameProfilesDropdown_InitializeWidget(self, optionName, options, updateFunc)
+function CompactUnitFrameProfilesDropdown_OnLoad(self, optionName, options)
+	CompactUnitFrameProfilesOption_OnLoad(self);
+
 	self.optionName = optionName;
 	self.options = options;
 	local tag = format("COMPACT_UNIT_FRAME_PROFILE_%s", strupper(optionName));
 	self.label:SetText(_G[tag] or "Need string: "..tag);
-	self.updateFunc = updateFunc or CompactUnitFrameProfilesDropdown_Update;
-	CompactUnitFrameProfilesOption_OnLoad(self);
+	self.updateFunc = CompactUnitFrameProfilesDropdown_Update;
+
+	self:SetWidth(self.width or 160);
 end
 
 function CompactUnitFrameProfilesDropdown_OnShow(self)
-	UIDropDownMenu_SetWidth(self, self.width or 160);
-	UIDropDownMenu_Initialize(self, CompactUnitFrameProfilesDropdown_Initialize);
-	CompactUnitFrameProfilesDropdown_Update(self);
+	local function IsSelected(id)
+		return GetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, self.optionName) == id;
+	end
+
+	local function SetSelected(id)
+		SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, self.optionName, id);
+		CompactUnitFrameProfiles_ApplyCurrentSettings();
+		CompactUnitFrameProfiles_UpdateCurrentPanel();
+	end
+
+	self:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_COMPACT_RAID_FRAME_PROFILES");
+
+		for i, id in ipairs(self.options) do
+			local tag = format("COMPACT_UNIT_FRAME_PROFILE_%s_%s", strupper(self.optionName), strupper(id));
+			local text = _G[tag] or "Need string: "..tag;
+			rootDescription:CreateRadio(text, IsSelected, SetSelected, id);
+		end
+	end);
 end
 
 function CompactUnitFrameProfilesDropdown_Update(self)
-	UIDropDownMenu_Initialize(self, CompactUnitFrameProfilesDropdown_Initialize);
-	UIDropDownMenu_SetSelectedValue(self, GetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, self.optionName));
-end
-
-function CompactUnitFrameProfilesDropdown_Initialize(dropDown)
-	local info = UIDropDownMenu_CreateInfo();
-	
-	local currentValue = GetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, dropDown.optionName);
-	for i=1, #dropDown.options do
-		local id = dropDown.options[i];
-		local tag = format("COMPACT_UNIT_FRAME_PROFILE_%s_%s", strupper(dropDown.optionName), strupper(id));
-		info.text = _G[tag] or "Need string: "..tag;
-		info.func = CompactUnitFrameProfilesDropdownButton_OnClick;
-		info.arg1 = dropDown;
-		info.value = id;
-		info.checked = currentValue == id;
-		UIDropDownMenu_AddButton(info);
-	end
-end
-
-function CompactUnitFrameProfilesDropdownButton_OnClick(button, dropDown)
-	SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, dropDown.optionName, button.value);
-	UIDropDownMenu_SetSelectedValue(dropDown, button.value);
-	CompactUnitFrameProfiles_ApplyCurrentSettings();
-	CompactUnitFrameProfiles_UpdateCurrentPanel();
+	self:GenerateMenu();
 end
 
 ------------------------------

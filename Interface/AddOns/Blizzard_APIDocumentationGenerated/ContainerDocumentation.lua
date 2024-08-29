@@ -409,6 +409,7 @@ local Container =
 				{ Name = "containerIndex", Type = "BagIndex", Nilable = false },
 				{ Name = "slotIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "unitToken", Type = "UnitToken", Nilable = true },
+				{ Name = "bankType", Type = "BankType", Nilable = true },
 				{ Name = "reagentBankOpen", Type = "bool", Nilable = false, Default = false },
 			},
 		},

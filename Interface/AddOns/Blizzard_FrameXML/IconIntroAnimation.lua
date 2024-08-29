@@ -7,11 +7,11 @@ IconIntroTrackerMixin = {};
 
 function IconIntroTrackerMixin:OnLoad()
 	self.iconList = {};
-	self:RegisterEvents();
-end
 
-function IconIntroTrackerMixin:RegisterEvents()
-	self:RegisterEvent("SPELL_PUSHED_TO_ACTIONBAR");
+	local actionBarIconIntroDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.ActionbarIconIntroDisabled);
+	if not actionBarIconIntroDisabled then
+		self:RegisterEvent("SPELL_PUSHED_TO_ACTIONBAR");
+	end
 end
 
 function IconIntroTrackerMixin:OnEvent(event, ...)
@@ -33,7 +33,7 @@ function IconIntroTrackerMixin:OnEvent(event, ...)
 
 		MarkNewActionHighlight(slotIndex);
 
-		local _, _, icon = GetSpellInfo(spellID);
+		local icon = C_Spell.GetSpellTexture(spellID);
 		local freeIcon;
 
 		for a,b in pairs(self.iconList) do

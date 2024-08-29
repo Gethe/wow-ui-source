@@ -1,5 +1,5 @@
 local function AdjustFriendsFrameDropdown_132()
-	UIDropDownMenu_SetWidth(FriendsFriendsFrameDropDown, 132);
+	FriendsFriendsFrameDropdown:SetWidth(132);
 end
 
 local function LocalizeButtonText_ptBR()

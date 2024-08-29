@@ -64,12 +64,25 @@ function PlayerFrame_OnLoad(self)
 
 	self:SetClampRectInsets(20, 0, 0, 0);
 
-	local showmenu = function()
-		ToggleDropDownMenu(1, nil, PlayerFrameDropDown, "PlayerFrame", 106, 27);
+	UIParent_UpdateTopFramePositions();
+
+	local function OpenContextMenu(frame, unit, button, isKeyPress)
+		local which = nil;
+		local contextData = {
+			fromPlayerFrame = true;
+		};
+
+		if self.unit == "vehicle" then
+			which = "VEHICLE";
+			contextData.unit = "vehicle";
+		else
+			which = "SELF";
+			contextData.unit = "player";
+		end
+		UnitPopup_OpenMenu(which, contextData);
 	end
 
-	UIParent_UpdateTopFramePositions();
-	SecureUnitButton_OnLoad(self, "player", showmenu);
+	SecureUnitButton_OnLoad(self, "player", OpenContextMenu);
 end
 
 --
@@ -522,19 +535,6 @@ function PlayerFrame_UpdateGroupIndicator()
 				PlayerFrameGroupIndicator:Show();
 			end
 		end
-	end
-end
-
-function PlayerFrameDropDown_OnLoad (self)
-	UIDropDownMenu_SetInitializeFunction(self, PlayerFrameDropDown_Initialize);
-	UIDropDownMenu_SetDisplayMode(self, "MENU");
-end
-
-function PlayerFrameDropDown_Initialize ()
-	if ( PlayerFrame.unit == "vehicle" ) then
-		UnitPopup_ShowMenu(PlayerFrameDropDown, "VEHICLE", "vehicle");
-	else
-		UnitPopup_ShowMenu(PlayerFrameDropDown, "SELF", "player");
 	end
 end
 

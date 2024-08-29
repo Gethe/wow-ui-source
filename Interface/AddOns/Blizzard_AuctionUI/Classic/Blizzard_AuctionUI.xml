@@ -1113,7 +1113,7 @@
 							<OnEnterPressed function="EditBox_ClearFocus"/>
 						</Scripts>
 					</EditBox>
-					<Frame name="BrowseDropDown" inherits="UIDropDownMenuTemplate" id="1">
+					<DropdownButton name="BrowseDropdown" inherits="WowStyle1DropdownTemplate" id="1">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="BrowseMaxLevel" relativePoint="TOPRIGHT">
 								<Offset>
@@ -1123,7 +1123,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY">
-								<FontString name="BrowseDropDownName" inherits="GameFontHighlightSmall" text="RARITY">
+								<FontString name="BrowseDropdownName" inherits="GameFontHighlightSmall" text="RARITY">
 									<Anchors>
 										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
 											<Offset>
@@ -1134,17 +1134,13 @@
 								</FontString>
 							</Layer>
 						</Layers>
-						<Scripts>
-							<OnLoad function="BrowseDropDown_OnLoad"/>
-							<OnShow function="BrowseDropDown_OnLoad"/>
-						</Scripts>
-					</Frame>
+					</DropdownButton>
 					<CheckButton name="IsUsableCheckButton" inherits="UICheckButtonTemplate">
 						<Size>
 							<AbsDimension x="24" y="24"/>
 						</Size>
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="BrowseDropDownButton" relativePoint="RIGHT">
+							<Anchor point="LEFT" relativeTo="BrowseDropdown" relativePoint="RIGHT">
 								<Offset>
 									<AbsDimension x="10" y="13"/>
 								</Offset>
@@ -2198,26 +2194,6 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Frame name="PriceDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
-						<Anchors>
-							<Anchor point="TOPRIGHT" relativeTo="AuctionFrameAuctions" relativePoint="TOPLEFT" x="217" y="-215"/>
-						</Anchors>
-						<Layers>
-							<Layer level="OVERLAY">
-								<FontString inherits="GameFontNormalSmall" text="AUCTION_PRICE">
-									<Anchors>
-										<Anchor point="LEFT" relativeTo="PriceDropDown" relativePoint="RIGHT" x="-192" y="3"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnLoad>
-								UIDropDownMenu_SetWidth(self, 80);
-							</OnLoad>
-							<OnShow function="PriceDropDown_OnShow"/>
-						</Scripts>
-					</Frame>
 					<Frame name="StartPrice" inherits="MoneyInputFrameTemplate">
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" relativeTo="AuctionFrameAuctions" relativePoint="BOTTOMLEFT" x="31" y="264"/>

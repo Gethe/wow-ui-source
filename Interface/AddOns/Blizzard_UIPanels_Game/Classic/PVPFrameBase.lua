@@ -575,32 +575,19 @@ function PVPTeamDetailsButton_OnClick(self, button)
 	else
 		local teamIndex = self.teamIndex;
 		local name, rank, level, class, online = GetArenaTeamRosterInfo(PVPTeamDetails.team, teamIndex);
-		PVPFrame_ShowDropdown(name, online);
+		PVPFrame_OpenMenu(name, online);
 	end
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
-function PVPDropDown_Initialize()
-	UnitPopup_ShowMenu(UIDROPDOWNMENU_OPEN_MENU, "TEAM", nil, PVPDropDown.name);
-end
+function PVPFrame_OpenMenu(name, online)
+	if IsArenaTeamCaptain(PVPTeamDetails.team) or online then
+		local contextData = {
+			name = name,
+			online = online,
+		};
 
-function PVPFrame_ShowDropdown(name, online)
-	HideDropDownMenu(1);
-	
-	if ( not IsArenaTeamCaptain(PVPTeamDetails.team) ) then
-		if ( online ) then
-			PVPDropDown.initialize = PVPDropDown_Initialize;
-			PVPDropDown.displayMode = "MENU";
-			PVPDropDown.name = name;
-			PVPDropDown.online = online;
-			ToggleDropDownMenu(1, nil, PVPDropDown, "cursor");
-		end
-	else
-		PVPDropDown.initialize = PVPDropDown_Initialize;
-		PVPDropDown.displayMode = "MENU";
-		PVPDropDown.name = name;
-		PVPDropDown.online = online;
-		ToggleDropDownMenu(1, nil, PVPDropDown, "cursor");
+		UnitPopup_OpenMenu("TEAM", contextData);
 	end
 end
 

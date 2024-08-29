@@ -113,7 +113,7 @@ end
 
 do
 	local function OnPinReleased(pinPool, pin)
-		FramePool_HideAndClearAnchors(pinPool, pin);
+		Pool_HideAndClearAnchors(pinPool, pin);
 		pin:OnReleased();
 
 		pin.pinTemplate = nil;
@@ -681,7 +681,7 @@ function MapCanvasMixin:GetNormalizedCursorPosition()
 end
 
 function MapCanvasMixin:IsCanvasMouseFocus()
-	return self.ScrollContainer == GetMouseFocus();
+	return self.ScrollContainer:IsMouseMotionFocus();
 end
 
 function MapCanvasMixin:AddLockReason(reason)

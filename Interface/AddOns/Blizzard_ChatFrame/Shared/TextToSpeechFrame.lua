@@ -198,8 +198,7 @@ function TextToSpeechFrame_Update(self)
 		TextToSpeechFrame_UpdateMessageCheckboxes(ChatConfigTextToSpeechMessageSettingsChatTypeContainer);
 	end
 
-	-- Update dropdown
-	TextToSpeechFrameTtsVoiceDropdown_RefreshValue(TextToSpeechFrameTtsVoiceDropdown);
+	self.PanelContainer.TtsVoiceDropdown:GenerateMenu();
 
 	TextToSpeechFrame_UpdateAlternate();
 
@@ -209,7 +208,7 @@ function TextToSpeechFrame_Update(self)
 end
 
 function TextToSpeechFrame_UpdateMessageCheckboxes(frame)
-	local checkBoxNameString = frame:GetName().."CheckBox";
+	local checkBoxNameString = frame:GetName().."Checkbox";
 	local checkBoxName, checkBox;
 
 	local checkBoxTable = frame.checkBoxTable or {}
@@ -223,7 +222,7 @@ function TextToSpeechFrame_UpdateMessageCheckboxes(frame)
 end
 
 function TextToSpeechFrame_UpdateAlternate()
-	TextToSpeechFrameTtsVoiceAlternateDropdown_RefreshValue(TextToSpeechFrameTtsVoiceAlternateDropdown);
+	TextToSpeechFrameTtsVoiceAlternateDropdown:GenerateMenu();
 
 	-- Update enabled state
 	local systemEnabled = TextToSpeechFrame_GetChatTypeEnabled("SYSTEM");
@@ -232,7 +231,7 @@ function TextToSpeechFrame_UpdateAlternate()
 	TextToSpeechFramePanelContainer.UseAlternateVoiceForSystemMessagesCheckButton.text:SetTextColor(color:GetRGB());
 
 	local enabled = systemEnabled and C_TTSSettings.GetSetting(Enum.TtsBoolSetting.AlternateSystemVoice);
-	UIDropDownMenu_SetDropDownEnabled(TextToSpeechFrameTtsVoiceAlternateDropdown, enabled);
+	TextToSpeechFrameTtsVoiceAlternateDropdown:SetEnabled(enabled);
 	TextToSpeechFramePlaySampleAlternateButton:SetEnabled(enabled);
 end
 
@@ -331,8 +330,40 @@ function TextToSpeechFrame_OnLoad(self)
 	self.loadedEvents = {};
 	FrameUtil.RegisterFrameForEvents(self, loadEvents);
 
+	self.PanelContainer.TtsVoiceDropdown:SetWidth(200);
+	self.PanelContainer.TtsVoiceAlternateDropdown:SetWidth(200);
+
 	self:RegisterEvent("VOICE_CHAT_TTS_PLAYBACK_FAILED");
 	self:RegisterEvent("VOICE_CHAT_TTS_PLAYBACK_FINISHED");
+end
+
+local function SetupVoiceMenu(dropdown, voiceType)
+	local function IsSelected(voice)
+		return TextToSpeech_IsSelectedVoice(voice, voiceType);
+	end
+
+	local function SetSelected(voice)
+		TextToSpeech_SetSelectedVoice(voice, voiceType);
+	end
+
+	dropdown:SetupMenu(function(dropdown, rootDescription)
+		for index, voice in ipairs(C_VoiceChat.GetTtsVoices()) do
+			rootDescription:CreateRadio(FormatVoiceText(voice), IsSelected, SetSelected, voice);
+		end
+
+		local extent = 20;
+		local maxVoices = 10;
+		local maxScrollExtent = extent * maxVoices;
+		rootDescription:SetScrollMode(maxScrollExtent);
+	end);
+end
+
+function TextToSpeechFrame_SetupVoiceDropdown(self)
+	SetupVoiceMenu(self.PanelContainer.TtsVoiceDropdown, Enum.TtsVoiceType.Standard);
+end
+
+function TextToSpeechFrame_SetupAlternateVoiceDropdown(self)
+	SetupVoiceMenu(self.PanelContainer.TtsVoiceAlternateDropdown, Enum.TtsVoiceType.Alternate);
 end
 
 function TextToSpeechFrame_CheckLoad(self)
@@ -340,8 +371,9 @@ function TextToSpeechFrame_CheckLoad(self)
 		self.loaded = true;
 		C_VoiceChat.GetTtsVoices();
 
-		TextToSpeechFrameTtsVoiceDropdown_OnLoad(self.PanelContainer.TtsVoiceDropdown);
-		TextToSpeechFrameTtsVoiceAlternateDropdown_OnLoad(self.PanelContainer.TtsVoiceAlternateDropdown);
+		TextToSpeechFrame_SetupVoiceDropdown(self);
+		TextToSpeechFrame_SetupAlternateVoiceDropdown(self);
+
 		TextToSpeechFrame_CreateCheckboxes(ChatConfigTextToSpeechMessageSettingsChatTypeContainer, TEXT_TO_SPEECH_CHAT_TYPES, "TextToSpeechChatTypeCheckButtonTemplate");
 
 		local maxSettingsDepth = 2;
@@ -443,7 +475,7 @@ local channelsWithTtsName =
 };
 
 function TextToSpeechFrame_CreateCheckboxes(frame, checkBoxTable, checkBoxTemplate)
-	local checkBoxNameString = frame:GetName().."CheckBox";
+	local checkBoxNameString = frame:GetName().."Checkbox";
 	local checkBoxName, checkBox;
 	local checkBoxFontString;
 	local secondColIndex = 15;
@@ -482,105 +514,6 @@ function TextToSpeechChatTypeCheckButton_OnClick(self, button)
 	if self.type == "SYSTEM" then
 		TextToSpeechFrame_Update(TextToSpeechFrame);
 	end
-end
-
-local function TextToSpeechFrameTtsVoiceDropdown_Initialize()
-	local info = UIDropDownMenu_CreateInfo();
-	info.customFrame = TextToSpeechFramePanelContainer.VoicePicker;
-	UIDropDownMenu_AddButton(info);
-end
-
-function TextToSpeechFrameTtsVoiceDropdown_OnLoad(self)
-	UIDropDownMenu_SetInitializeFunction(self, TextToSpeechFrameTtsVoiceDropdown_Initialize);
-	UIDropDownMenu_SetWidth(self, 200);
-	TextToSpeechFrameTtsVoiceDropdown_RefreshValue(self);
-end
-
-function TextToSpeechFrameTtsVoiceDropdown_RefreshValue(self)
-	local voice = TextToSpeech_GetSelectedVoice(Enum.TtsVoiceType.Standard);
-	if voice then
-		UIDropDownMenu_SetText(self, FormatVoiceText(voice));
-	end
-end
-
-function TextToSpeechFrameTtsVoiceDropdown_SetSelectedVoice(self, voice)
-	TextToSpeech_SetSelectedVoice(voice, Enum.TtsVoiceType.Standard);
-	TextToSpeechFrameTtsVoiceDropdown_RefreshValue(self);
-end
-
-local function TextToSpeechFrameTtsVoiceAlternateDropdown_Initialize()
-	local info = UIDropDownMenu_CreateInfo();
-	info.customFrame = TextToSpeechFramePanelContainer.VoiceAlternatePicker;
-	UIDropDownMenu_AddButton(info);
-end
-
-function TextToSpeechFrameTtsVoiceAlternateDropdown_OnLoad(self)
-	UIDropDownMenu_SetInitializeFunction(self, TextToSpeechFrameTtsVoiceAlternateDropdown_Initialize);
-	UIDropDownMenu_SetWidth(self, 200);
-	TextToSpeechFrameTtsVoiceAlternateDropdown_RefreshValue(self);
-end
-
-function TextToSpeechFrameTtsVoiceAlternateDropdown_RefreshValue(self)
-	local voice = TextToSpeech_GetSelectedVoice(Enum.TtsVoiceType.Alternate);
-	if voice then
-		UIDropDownMenu_SetText(self, FormatVoiceText(voice));
-	end
-end
-
-function TextToSpeechFrameTtsVoiceAlternateDropdown_SetSelectedVoice(self, voice)
-	TextToSpeech_SetSelectedVoice(voice, Enum.TtsVoiceType.Alternate);
-	TextToSpeechFrameTtsVoiceAlternateDropdown_RefreshValue(self);
-end
-
-function TextToSpeechFrameTtsVoicePicker_OnLoad(self)
-	local view = CreateScrollBoxListLinearView();
-	view:SetElementInitializer("TextToSpeechVoicePickerButtonTemplate", function(button, voice)
-		local checked = TextToSpeech_IsSelectedVoice(voice, Enum.TtsVoiceType.Standard);
-		button.Check:SetShown(checked);
-		button.UnCheck:SetShown(not checked);
-
-		button:SetText(FormatVoiceText(voice));
-
-		button:SetScript("OnClick", function(button, buttonName)
-			TextToSpeechFrameTtsVoiceDropdown_SetSelectedVoice(TextToSpeechFrameTtsVoiceDropdown, voice);
-			CloseDropDownMenus();
-		end);
-	end);
-	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
-end
-
-function TextToSpeechFrameTtsVoiceAlternatePicker_OnLoad(self)
-	local view = CreateScrollBoxListLinearView();
-	view:SetElementInitializer("TextToSpeechVoicePickerButtonTemplate", function(button, voice)
-		local checked = TextToSpeech_IsSelectedVoice(voice, Enum.TtsVoiceType.Alternate);
-		button.Check:SetShown(checked);
-		button.UnCheck:SetShown(not checked);
-
-		button:SetText(FormatVoiceText(voice));
-
-		button:SetScript("OnClick", function(button, buttonName)
-			TextToSpeechFrameTtsVoiceAlternateDropdown_SetSelectedVoice(TextToSpeechFrameTtsVoiceAlternateDropdown, voice);
-			CloseDropDownMenus();
-		end);
-	end);
-	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
-end
-
-function TextToSpeechFrameTtsVoicePicker_OnShow(self)
-	local dataProvider = CreateDataProvider(C_VoiceChat.GetTtsVoices());
-
-	local elementHeight = 18;
-	local maxVisibleLines = 6;
-	local maxHeight = maxVisibleLines * elementHeight;
-	local utilizedHeight = elementHeight * dataProvider:GetSize();
-
-	self:SetHeight(math.min(utilizedHeight, maxHeight));
-	self:SetWidth(350);
-
-	local scrollBarShown = dataProvider:GetSize() > maxVisibleLines;
-	self.ScrollBar:SetShown(scrollBarShown);
-	self.ScrollBox:SetPoint("BOTTOMRIGHT", (scrollBarShown and -20 or 0), 0);
-	self.ScrollBox:SetDataProvider(dataProvider);
 end
 
 function TextToSpeechFramePlaySampleButton_OnClick(self)

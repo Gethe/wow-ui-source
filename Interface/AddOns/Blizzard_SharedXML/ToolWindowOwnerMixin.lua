@@ -10,7 +10,7 @@ function ToolWindowOwnerMixin:MoveToNewWindow(title, width, height, minWidth, mi
 	window:SetTitle(title);
 
 	if width and height then
-		window:SetSize(width, height);
+		window:SetWindowSize(width, height);
 	end
 
 	if minWidth and minHeight then

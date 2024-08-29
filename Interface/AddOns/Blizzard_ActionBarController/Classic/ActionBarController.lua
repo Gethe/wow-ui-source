@@ -1,3 +1,4 @@
+SHOW_MULTI_ACTIONBAR_1 = SHOW_MULTI_ACTIONBAR_1 or nil;
 
 local CURRENT_ACTION_BAR_STATE
 
@@ -35,7 +36,8 @@ function ActionBarController_OnLoad(self)
 	self:RegisterEvent("ACTIONBAR_SHOW_BOTTOMLEFT");
 	
 	-- Misc
-	
+	self:RegisterEvent("SETTINGS_LOADED");
+
 	CURRENT_ACTION_BAR_STATE = LE_ACTIONBAR_STATE_MAIN;
 end
 
@@ -79,13 +81,33 @@ function ActionBarController_OnEvent(self, event, ...)
 	-- MultiBarBottomLeft
 	if ( event == "ACTIONBAR_SHOW_BOTTOMLEFT") then
 		SHOW_MULTI_ACTIONBAR_1 = true;
-		InterfaceOptionsActionBarsPanelBottomLeft.value = nil;
 		MultiActionBar_Update();
 		UIParent_ManageFramePositions();
 	end
 	
 	if ( event == "PET_BATTLE_CLOSE" ) then
 		ValidateActionBarTransition();
+	end
+
+	if event == "SETTINGS_LOADED" then
+		local variables =
+		{
+			"PROXY_SHOW_ACTIONBAR_2",
+			"PROXY_SHOW_ACTIONBAR_3",
+			"PROXY_SHOW_ACTIONBAR_4",
+			"PROXY_SHOW_ACTIONBAR_5",
+		};
+
+		local function UpdateActionBar()
+			MultiActionBar_Update();
+		end
+		
+		for index, variable in ipairs(variables) do
+			Settings.SetOnValueChangedCallback(variable, UpdateActionBar);
+		end
+
+		UpdateActionBar();
+		MultiActionBar_UpdateGridVisibility();
 	end
 end
 

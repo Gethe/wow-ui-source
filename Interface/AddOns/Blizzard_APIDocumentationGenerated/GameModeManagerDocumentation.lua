@@ -15,34 +15,6 @@ local GameModeManager =
 				{ Name = "gameMode", Type = "GameMode", Nilable = false },
 			},
 		},
-		{
-			Name = "GetFeatureSetting",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "feature", Type = "GameModeFeatureSetting", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "featureSetting", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "IsFeatureEnabled",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "feature", Type = "GameModeFeatureSetting", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "isFeatureEnabled", Type = "bool", Nilable = false },
-			},
-		},
 	},
 
 	Events =

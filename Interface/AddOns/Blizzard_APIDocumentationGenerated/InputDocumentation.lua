@@ -26,12 +26,12 @@ local Input =
 			},
 		},
 		{
-			Name = "GetMouseFocus",
+			Name = "GetMouseFoci",
 			Type = "Function",
 
 			Returns =
 			{
-				{ Name = "region", Type = "ScriptRegion", Nilable = false },
+				{ Name = "region", Type = "table", InnerType = "ScriptRegion", Nilable = false },
 			},
 		},
 	},

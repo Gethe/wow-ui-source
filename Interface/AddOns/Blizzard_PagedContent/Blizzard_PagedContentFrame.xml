@@ -1,0 +1,34 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="PagedContentSpacerTemplate" virtual="true">
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+		<Size x="1" y="1"/>
+	</Frame>
+
+	<Frame name="PagedContentFrameBaseTemplate" mixin="PagedContentFrameBaseMixin" virtual="true">
+		<!-- 
+			viewsPerPage: Number of active views per page; Must be <= number of ViewFrames; Can change at runtime
+			autoExpandHeaders: Expand headers to fit the size of the View Frame; Relative dimension based on layout (Ex: Row-based layouts expand width)
+			spacerSize: Size of spacer used between groups of data; Relative dimension based on layout (Ex: Row-based layouts will use as height)
+			spacerTemplate: Optional custom template for inserting spacers between element groups; Set nil to not use between-group spacers
+		-->
+		<KeyValues>
+			<KeyValue key="viewsPerPage" value="1" type="number"/>
+			<KeyValue key="autoExpandHeaders" value="true" type="boolean"/>
+			<KeyValue key="spacerSize" value="10" type="number"/>
+			<KeyValue key="spacerTemplate" value="PagedContentSpacerTemplate" type="string"/>
+		</KeyValues>
+		<!-- 
+		Expected Child Frames:
+			<Frame parentArray="ViewFrame"/> (one or more)
+			<Frame parentKey="PagingControls" inherits="PagingControlsTemplate" />
+		-->
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnMouseWheel method="OnMouseWheel"/>
+		</Scripts>
+	</Frame>
+</Ui>

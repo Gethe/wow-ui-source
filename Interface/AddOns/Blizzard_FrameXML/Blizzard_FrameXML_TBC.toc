@@ -1,9 +1,8 @@
 ## Title: Blizzard_FrameXML
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_UIParent, Blizzard_SettingsDefinitions_Frame, Blizzard_ItemButton, Blizzard_FrameXMLUtil, Blizzard_GameTooltip, Blizzard_UnitPopup
+## Dependencies: Blizzard_UIParent, Blizzard_SettingsDefinitions_Frame, Blizzard_ItemButton, Blizzard_FrameXMLUtil, Blizzard_GameTooltip, Blizzard_UIPanelTemplates, Blizzard_UnitPopup
 ## LoadFirst: 1
-## SuppressLocalTableRef: 1
 ## AllowLoad: Game
 ## AllowLoadGameType: tbc
 
@@ -17,19 +16,19 @@ GlueCheck.lua
 ..\..\Interface_TBC\Blizzard_FrameXML\Localization.xml
 Fonts.xml
 FontStyles.xml
-..\Blizzard_SharedXML\ErrorUtil.lua
-..\Blizzard_SharedXML\Mixin.lua
-..\Blizzard_SharedXML\TableUtil.lua
-..\Blizzard_SharedXML\EnumUtil.lua
+..\Blizzard_SharedXMLBase\ErrorUtil.lua
+..\Blizzard_SharedXMLBase\Mixin.lua
+..\Blizzard_SharedXMLBase\TableUtil.lua
+..\Blizzard_SharedXMLBase\EnumUtil.lua
 ..\Blizzard_SharedXML\Stubs.xml
-..\Blizzard_SharedXML\FunctionUtil.lua
-..\Blizzard_SharedXML\MathUtil.lua
-..\Blizzard_SharedXML\Rectangle.lua
-..\Blizzard_SharedXML\TextureUtil.lua
-..\Blizzard_SharedXML\AddOnUtil.lua
-..\Blizzard_SharedXML\Flags.lua
-..\Blizzard_SharedXML\CallbackRegistry.lua
-..\Blizzard_SharedXML\CvarUtil.lua
+..\Blizzard_SharedXMLBase\FunctionUtil.lua
+..\Blizzard_SharedXMLBase\MathUtil.lua
+..\Blizzard_SharedXMLBase\Rectangle.lua
+..\Blizzard_SharedXMLBase\TextureUtil.lua
+..\Blizzard_SharedXMLBase\AddOnUtil.lua
+..\Blizzard_SharedXMLBase\Flags.lua
+..\Blizzard_SharedXMLBase\CallbackRegistry.lua
+..\Blizzard_SharedXMLBase\CvarUtil.lua
 ..\Blizzard_SharedXML\Color.lua
 ..\..\Interface_TBC\SharedXML\ColorUtil.lua
 ..\Blizzard_SharedXML\LinkUtil.lua
@@ -45,24 +44,22 @@ FontStyles.xml
 ..\Blizzard_SharedXML\Classic\NineSliceLayouts.lua
 ..\Blizzard_SharedXML\NineSlice.lua
 ..\Blizzard_SharedXML\Backdrop.xml
-..\Blizzard_SharedXML\MathUtil.lua
 ..\Blizzard_SharedXML\Color.lua
 ..\..\Interface_TBC\SharedXML\ColorUtil.lua
 ..\Blizzard_SharedXML\Constants.lua
-..\Blizzard_SharedXML\LocaleUtil.lua
+..\Blizzard_SharedXMLBase\LocaleUtil.lua
 
-..\Blizzard_SharedXML\CallbackRegistry.lua
 ..\Blizzard_SharedXML\ClassicCvarUtil.lua
 ..\Blizzard_SharedXML\TimeUtil.lua
 ..\Blizzard_SharedXML\EasingUtil.lua
 ..\Blizzard_SharedXML\BindingUtil.lua
-..\Blizzard_SharedXML\FrameUtil.lua
+..\Blizzard_SharedXMLBase\FrameUtil.lua
 ..\Blizzard_SharedXML\InputUtil.lua
 ..\Blizzard_SharedXML\EventUtil.lua
 ..\Blizzard_SharedXML\RegionUtil.lua
 ..\Blizzard_SharedXML\AnchorUtil.lua
 ..\Blizzard_SharedXML\ScriptAnimationUtil.lua
-..\Blizzard_SharedXML\Pools.lua
+..\Blizzard_SharedXMLBase\Pools.lua
 ..\Blizzard_SharedXML\CircularBuffer.lua
 ..\Blizzard_SharedXML\FontableFrameMixin.lua
 ..\Blizzard_SharedXML\Spline.lua
@@ -76,7 +73,7 @@ FontStyles.xml
 ..\Blizzard_SharedXML\Dump.lua
 ..\Blizzard_SharedXML\FrameStack.lua
 ..\Blizzard_SharedXML\MixinUtil.lua
-..\Blizzard_SharedXML\GlobalCallbackRegistry.lua
+..\Blizzard_SharedXMLBase\GlobalCallbackRegistry.lua
 ..\Blizzard_SharedXML\DebugBarManager.lua
 ..\Blizzard_SharedXML\SelectableButton.xml
 ..\Blizzard_SharedXML\ButtonGroup.lua
@@ -86,7 +83,7 @@ FontStyles.xml
 ..\Blizzard_SharedXML\Shared\Frame\EventEditBox.xml
 ..\Blizzard_SharedXML\DataProviders.xml
 ..\Blizzard_SharedXML\Interpolator.lua
-..\Blizzard_SharedXML\ButtonStateBehavior.lua
+..\Blizzard_SharedXMLBase\ButtonStateBehavior.lua
 ..\Blizzard_SharedXML\Slider\MinimalSlider.xml
 ..\Blizzard_SharedXML\Shared\Scroll\ScrollUtil.lua
 ..\Blizzard_SharedXML\Shared\Scroll\ScrollController.lua
@@ -164,7 +161,6 @@ MoneyInputFrame.xml
 CustomBindingManager.lua
 CustomBindingHandler.lua
 GameTooltip.xml
-UIMenu.xml
 UIDropDownMenu.xml
 UIPanelTemplates.lua
 UIPanelTemplates.xml
@@ -184,20 +180,12 @@ AutoComplete.xml
 StaticPopup.xml
 ..\Blizzard_SharedXML\DialogUtil.lua
 Classic\Sound.lua
+DeprecatedTemplates.lua
+DeprecatedTemplates.xml
 ..\Blizzard_SharedXML\Settings\GameplaySettingsGroup.lua
 ..\Blizzard_SharedXML\Settings\Settings.xml
 ..\Blizzard_FrameXML\SettingDefinitions\OverrideDefinitions.xml
 SettingDefinitions\Definitions.xml
-OptionsFrameTemplates.xml
-OptionsPanelTemplates.xml
-UIOptions.xml
-VideoOptionsFrame.xml
-..\Blizzard_SharedXML\VideoOptionsPanels.xml
-MacOptionsPanel.xml
-AudioOptionsFrame.xml
-AudioOptionsPanels.xml
-InterfaceOptionsFrame.xml
-..\..\Interface_TBC\Blizzard_FrameXML\InterfaceOptionsPanels.xml
 ..\Blizzard_SharedXML\AddonList.xml
 AlertFrameIntrinsic.xml
 Classic\AlertFrames.lua
@@ -214,8 +202,6 @@ Classic\StackSplitFrame.xml
 Classic\ZoneText.lua
 Classic\ZoneText.xml
 UnitFrame.xml
-Shared\Cooldown.lua
-Classic\Cooldown.xml
 MainMenuBarMicroButtons.xml
 ActionBarController.xml
 ..\..\Interface_TBC\Blizzard_FrameXML\StanceBar.xml
@@ -283,7 +269,6 @@ RaidFrame.xml
 PetActionBarFrame.xml
 MainMenuBarBagButtons.xml
 UnitPositionFrameTemplates.xml
-Classic\RaidWarning.lua
 Classic\RaidWarning.xml
 Shared\CinematicFrame.lua
 Shared\CinematicFrame.xml
@@ -304,7 +289,6 @@ Classic\RatingMenuFrame.xml
 Classic\TalentFrameBase_Shared.lua
 ..\..\Interface_TBC\Blizzard_FrameXML\TalentFrameBase.lua
 Classic\Blizzard_TalentUITemplates.xml
-EasyMenu.lua
 TextToSpeechFrameConstants.lua
 TextToSpeechFrame.xml
 TextToSpeech.xml

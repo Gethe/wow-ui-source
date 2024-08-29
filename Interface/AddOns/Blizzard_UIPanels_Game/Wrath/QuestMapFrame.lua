@@ -496,7 +496,7 @@ function QuestsFrame_OnLoad(self)
 	ScrollFrame_OnLoad(self);
 
 	self.titleFramePool = CreateFramePool("BUTTON", QuestMapFrame.QuestsFrame.Contents, "QuestLogTitleTemplate", function(framePool, frame)
-		FramePool_HideAndClearAnchors(framePool, frame);
+		Pool_HideAndClearAnchors(framePool, frame);
 		frame.info = nil;
 	end);
 

@@ -20,12 +20,12 @@ CharacterServicesCharacterSelectorMixin = {};
 function CharacterServicesCharacterSelectorMixin:OnLoad()
 	self.ButtonPools = CreateFramePoolCollection();
 	self.ButtonPools:CreatePool("Frame", self, "CharacterServicesArrowTemplate", function(pool, obj)
-		FramePool_HideAndClearAnchors(pool, obj);
+		Pool_HideAndClearAnchors(pool, obj);
 		obj:GetParent().SelectionEnabledArrow = nil;
 	end);
 
 	self.ButtonPools:CreatePool("Frame", self, "CharacterServicesBonusIconTemplate", function(pool, obj)
-		FramePool_HideAndClearAnchors(pool, obj);
+		Pool_HideAndClearAnchors(pool, obj);
 		obj:GetParent().SelectionBonusIcon = nil;
 	end);
 end

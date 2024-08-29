@@ -98,9 +98,19 @@ function ScrollingMessageFrameMixin:TransformMessages(predicate, transformFuncti
 	end
 end
 
+function ScrollingMessageFrameMixin:SetScrollAllowed(allowed)
+	self.allowScroll = allowed;
+end
+
+function ScrollingMessageFrameMixin:IsScrollAllowed()
+	return not not self.allowScroll;
+end
+
 function ScrollingMessageFrameMixin:ScrollByAmount(amount)
-	self:SetScrollOffset(self:GetScrollOffset() + amount);
-	self:ResetAllFadeTimes();
+	if self:IsScrollAllowed() then
+		self:SetScrollOffset(self:GetScrollOffset() + amount);
+		self:ResetAllFadeTimes();
+	end
 end
 
 function ScrollingMessageFrameMixin:ScrollUp()
@@ -711,4 +721,9 @@ end
 
 function ScrollingMessageFrameMixin:OnFontObjectUpdated() -- override from FontableFrameMixin
 	self:MarkLayoutDirty();
+end
+
+function IsScrollingMessageFrame(object)
+	-- Defined in the intrinsic's XML
+	return object.isScrollingMessageFrame;
 end

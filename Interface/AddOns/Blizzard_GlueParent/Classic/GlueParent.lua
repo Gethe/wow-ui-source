@@ -98,10 +98,6 @@ function GlueParent_OnEvent(self, event, ...)
 	end
 end
 
-function SecureCapsuleGet(name)
-	return _G[name];
-end
-
 function nop()
 end
 

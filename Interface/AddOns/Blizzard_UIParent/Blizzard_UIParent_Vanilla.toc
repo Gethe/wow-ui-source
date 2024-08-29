@@ -2,7 +2,6 @@
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
 ## Dependencies: Blizzard_FrameXMLBase, Blizzard_ObjectAPI
-## SuppressLocalTableRef: 1
 ## LoadFirst: 1
 ## AllowLoad: game
 ## AllowLoadGameType: vanilla

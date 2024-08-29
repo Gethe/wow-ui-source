@@ -33,7 +33,15 @@
 				<Anchors>
 					<Anchor point="CENTER" relativePoint="TOP" x="0" y="-42"/>
 				</Anchors>
+				<Frames>
+					<Frame parentKey="New" inherits="NewFeatureLabelTemplate">
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="-14" y="-5"/>
+						</Anchors>
+					</Frame>
+				</Frames>
 				<Scripts>
+					<OnShow function="GlueMenuFrameOptionsButton_OnShow"/>
 					<OnClick>
 						GlueMenuFrame_Hide();
 						GlueParent_ShowOptionsScreen();

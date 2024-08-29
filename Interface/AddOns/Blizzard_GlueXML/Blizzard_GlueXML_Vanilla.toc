@@ -3,7 +3,6 @@
 ## DefaultState: enabled
 ## Dependencies: Blizzard_GlueDialogs
 ## LoadFirst: 1
-## SuppressLocalTableRef: 1
 ## AllowLoad: Glue
 ## AllowLoadGameType: vanilla
 Classic\Localization.lua
@@ -25,14 +24,14 @@ Classic\KioskModeSplash.lua
 Classic\KioskModeSplash.xml
 Classic\CharacterServicesShared.lua
 CharacterServicesTemplates.lua
-CharacterServicesTemplates.xml
+Classic\CharacterServicesTemplates.xml
 Classic\CharacterServicesFlowMixin.lua
 Classic\CharacterServices.lua
 Classic\CharacterServices.xml
 Classic\CharacterServicesPaidCharacterTransfer.lua
 Classic\CharacterServicesPaidCharacterTransfer.xml
 Classic\CharacterServicesPaidFactionChange.lua
-CharacterServicesPaidFactionChange.xml
+Classic\CharacterServicesPaidFactionChange.xml
 Classic\CharacterServicesPaidRaceChange.lua
 Classic\CharacterServicesPaidRaceChange.xml
 Classic\CharacterServicesCharacterSelector.lua

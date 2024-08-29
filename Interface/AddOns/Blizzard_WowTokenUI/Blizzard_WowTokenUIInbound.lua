@@ -1,3 +1,6 @@
+-- Inbound files need to load under the global environment
+SwapToGlobalEnvironment();
+
 --All of these functions should be safe to call by tainted code. They should only communicate with secure code via SetAttribute and GetAttribute.
 
 function WowToken_IsWowTokenAuctionDialogShown()

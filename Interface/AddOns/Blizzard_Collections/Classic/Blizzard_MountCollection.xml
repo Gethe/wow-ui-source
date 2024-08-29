@@ -308,37 +308,11 @@
 					<OnHide function="MountJournal_ClearSearch"/>
 				</Scripts>
 			</EditBox>
-			<DropDownToggleButton name="$parentFilterButton" inherits="UIMenuButtonStretchTemplate" text="FILTER">
-				<Size x="93" y="22"/>
+			<DropdownButton parentKey="FilterDropdown" inherits="WowStyle1FilterDropdownTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.LeftInset" x="-5" y="-9"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.LeftInset" x="-5" y="-10"/>
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture parentKey="Icon" file="Interface\ChatFrame\ChatFrameExpandArrow">
-							<Size x="10" y="12"/>
-							<Anchors>
-								<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="RIGHT" x="-5"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnMouseDown>
-						UIMenuButtonStretchMixin.OnMouseDown(self, button);
-						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-						ToggleDropDownMenu(1, nil, MountJournalFilterDropDown, "MountJournalFilterButton", 74, 15);
-					</OnMouseDown>
-				</Scripts>
-			</DropDownToggleButton>
-
-
-
-			<Frame name="$parentFilterDropDown" inherits="UIDropDownMenuTemplate">
-				<Scripts>
-					<OnLoad function="MountJournalFilterDropDown_OnLoad"/>
-				</Scripts>
-			</Frame>
+			</DropdownButton>
 			<Frame parentKey="MountCount" useParentLevel="true" inherits="InsetFrameTemplate3">
 				<Size x="130" y="20"/>
 				<Anchors>
@@ -507,7 +481,6 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
-			<Frame name="$parentMountOptionsMenu" inherits="UIDropDownMenuTemplate" enableMouse="true" parentKey="mountOptionsMenu"/>
 		</Frames>
 		<Scripts>
 			<OnLoad function="MountJournal_OnLoad"/>

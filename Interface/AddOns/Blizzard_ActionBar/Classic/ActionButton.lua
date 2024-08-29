@@ -555,7 +555,7 @@ function ActionButton_UpdateCooldown(self)
 	local chargeModRate = 1.0;
 	if ( self.spellID ) then
 		start, duration, enable, modRate = GetSpellCooldown(self.spellID);
-		charges, maxCharges, chargeStart, chargeDuration, chargeModRate = GetSpellCharges(self.spellID);
+		charges, maxCharges, chargeStart, chargeDuration, chargeModRate = C_Spell.GetSpellCharges(self.spellID);
 	else
 		start, duration, enable, modRate = GetActionCooldown(self.action);
 		charges, maxCharges, chargeStart, chargeDuration, chargeModRate = GetActionCharges(self.action);
@@ -948,7 +948,7 @@ function ActionButton_UpdateFlyout(self)
 	if (actionType == "flyout") then
 		-- Update border and determine arrow position
 		local arrowDistance;
-		if ((SpellFlyout and SpellFlyout:IsShown() and SpellFlyout:GetParent() == self) or GetMouseFocus() == self) then
+		if ((SpellFlyout and SpellFlyout:IsShown() and SpellFlyout:GetParent() == self) or self:IsMouseMotionFocus()) then
 			self.FlyoutBorder:Show();
 			self.FlyoutBorderShadow:Show();
 			arrowDistance = 5;

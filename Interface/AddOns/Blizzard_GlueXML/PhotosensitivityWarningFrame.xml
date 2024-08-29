@@ -1,0 +1,54 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Button name="PhotosensitivityWarningFrame" mixin="PhotosensitivityWarningFrameMixin" setAllPoints="true" clampedToScreen="true"  hidden="true" enableKeyboard="true" enableMouse="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BackgroundTexture" horizTile="true" vertTile="true" atlas="photosensitivitywarning-parchment-background" nonBlocking="false">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="WarningIcon" atlas="photosensitivitywarning-questbang-icon" useAtlasSize="true" nonBlocking="false" scale="0.8">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-180" relativePoint="TOP"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="WarningTitle" inherits="Game32Font_Shadow2" text="PHOTOSENSITIVITY_WARNING_TITLE">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.WarningIcon" relativePoint="BOTTOM" x="0" y="-20"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="WarningText" justifyH="LEFT" inherits="GameFontHighlightHuge" text="PHOTOSENSITIVITY_WARNING_DESCRIPTION">
+					<Size x="800" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.WarningTitle" relativePoint="BOTTOM" x="0" y="-40"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="ContinueText" inherits="GameFontDisableHuge" text="PHOTOSENSITIVITY_WARNING_CONTINUE">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.WarningText" relativePoint="BOTTOM" x="0" y="-160"/>
+					</Anchors>
+				</FontString>
+
+				<Texture parentKey="Vignette" atlas="photosensitivitywarning-vignette" setAllPoints="true" nonBlocking="false"/>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="FadeOut">
+				<Alpha fromAlpha="1" toAlpha="0" duration="1.0" startDelay="5" order="1"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnClick method="OnClick"/>
+			<OnKeyDown method="OnKeyDown"/>
+			<OnGamePadButtonDown method="OnKeyDown"/>
+		</Scripts>
+	</Button>
+</Ui>

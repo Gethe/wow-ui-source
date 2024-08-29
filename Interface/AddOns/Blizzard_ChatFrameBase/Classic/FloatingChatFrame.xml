@@ -298,18 +298,10 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
-				<Anchors>
-					<Anchor point="TOP" x="-80" y="-35"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad function="FCFOptionsDropDown_OnLoad"/>
-					<OnShow function="FCFOptionsDropDown_OnLoad"/>
-				</Scripts>
-			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad>
+				CURRENT_CHAT_FRAME_ID = self:GetID();
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp", "MiddleButtonUp");
 				self:RegisterForDrag("LeftButton");
 			</OnLoad>
@@ -779,7 +771,7 @@
 		</Scripts>
 	</ScrollingMessageFrame>
 	<!-- ChatFrame1 Specific buttons -->
-	<Button name="ChatFrameMenuButton" frameStrata="LOW" parent="ChatFrame1ButtonFrame">
+	<DropdownButton name="ChatFrameMenuButton" frameStrata="LOW" parent="ChatFrame1ButtonFrame" mixin="ChatFrameMenuButtonMixin">
 		<KeyValues>
 			<KeyValue key="layoutIndex" value="0" type="number"/>
 			<KeyValue key="bottomPadding" value="-2" type="number"/>
@@ -787,10 +779,9 @@
 		</KeyValues>
 		<Size x="32" y="32"/>
 		<Scripts>
-			<OnClick>
-				PlaySound(SOUNDKIT.IG_CHAT_EMOTE_BUTTON);
-				ChatFrame_ToggleMenu();
-			</OnClick>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
 			<OnEnter>
 				GameTooltip_AddNewbieTip(self, CHAT_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_CHATMENU, 1);
 			</OnEnter>
@@ -800,7 +791,7 @@
 		<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-Chat-Down"/>
 		<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-Chat-Disabled"/>
 		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-	</Button>
+	</DropdownButton>
 	<Button name="ChatFrameChannelButton" frameStrata="LOW" parent="ChatFrame1ButtonFrame" mixin="ChannelFrameButtonMixin" inherits="VoiceToggleButtonTemplate">
 		<KeyValues>
 			<KeyValue key="layoutIndex" value="-1" type="number"/>
@@ -850,31 +841,6 @@
 		<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-BattleBro-Down"/>
 		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 	</Button>
-	<Frame name="ChatMenu" inherits="UIMenuTemplate" hidden="true" clampedToScreen="true" parent="UIParent">
-		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="ChatFrameMenuButton" relativePoint="TOPRIGHT"/>
-		</Anchors>
-		<Scripts>
-			<OnLoad inherit="prepend" function="ChatMenu_OnLoad"/>
-			<OnShow function="ChatMenu_OnShow"/>
-		</Scripts>
-	</Frame>
-	<Frame name="EmoteMenu" inherits="UIMenuTemplate" hidden="true" clampedToScreen="true" parent="ChatMenu">
-		<Scripts>
-			<OnLoad inherit="prepend" function="EmoteMenu_OnLoad"/>
-		</Scripts>
-	</Frame>
-	<Frame name="LanguageMenu" inherits="UIMenuTemplate" hidden="true" clampedToScreen="true" parent="ChatMenu">
-		<Scripts>
-			<OnLoad inherit="prepend" function="LanguageMenu_OnLoad"/>
-			<OnEvent function="LanguageMenu_OnEvent"/>
-		</Scripts>
-	</Frame>
-	<Frame name="VoiceMacroMenu" inherits="UIMenuTemplate" hidden="true" clampedToScreen="true" parent="ChatMenu">
-		<Scripts>
-			<OnLoad inherit="prepend" function="VoiceMacroMenu_OnLoad"/>
-		</Scripts>
-	</Frame>
 	<Frame name="ChatAlertFrame" mixin="ChatAlertFrameMixin" inherits="AlertContainerTemplate">
 		<Size x="10" y="10"/>
 		<Anchors>

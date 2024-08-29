@@ -16,6 +16,7 @@ function MovieFrame_PlayMovie(self, index)
 	if ( playSuccess ) then
 		StopGlueMusic();
 		StopGlueAmbience();
+		CinematicStarted(Enum.CinematicType.GlueMovie, movieID);
 	else
 		if ( self.showError ) then
 			GlueDialog_Show("ERROR_CINEMATIC");
@@ -63,14 +64,19 @@ end
 
 function MovieFrame_OnKeyUp(self, key)
 	if ( key == "ESCAPE" ) then
+		local userCanceled = true;
+		CinematicFinished(Enum.CinematicType.GlueMovie, userCanceled);
 		GlueParent_CloseSecondaryScreen();
 	elseif ( key == "SPACE" or key == "ENTER" ) then
+		local userCanceled = true;
+		CinematicFinished(Enum.CinematicType.GlueMovie, userCanceled);
 		self:StopMovie();
 	end
 end
 
 function MovieFrame_OnMovieFinished(self)
 	if ( self:IsShown() ) then
+		CinematicFinished(Enum.CinematicType.GlueMovie);
 		MovieFrame_PlayNextMovie(self);
 	end
 end

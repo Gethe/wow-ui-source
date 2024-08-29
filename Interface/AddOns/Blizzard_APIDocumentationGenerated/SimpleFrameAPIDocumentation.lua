@@ -126,6 +126,20 @@ local SimpleFrameAPI =
 			},
 		},
 		{
+			Name = "DoesHyperlinkPropagateToParent",
+			Type = "Function",
+			Documentation = { "Returns whether hyperlink events (ex. OnHyperlinkEnter, OnHyperlinkLeave, OnHyperlinkClick) are propagated to this frame's parent." },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "canPropagate", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "EnableDrawLayer",
 			Type = "Function",
 
@@ -531,6 +545,11 @@ local SimpleFrameAPI =
 			{
 				{ Name = "delegate", Type = "SimpleFrame", Nilable = false },
 			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
 		},
 		{
 			Name = "IsClampedToScreen",
@@ -701,6 +720,19 @@ local SimpleFrameAPI =
 			Returns =
 			{
 				{ Name = "isUserPlaced", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsUsingParentLevel",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "usingParentLevel", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -942,6 +974,16 @@ local SimpleFrameAPI =
 			},
 		},
 		{
+			Name = "SetHyperlinkPropagateToParent",
+			Type = "Function",
+			Documentation = { "Enables or disables propagating hyperlink events (ex. OnHyperlinkEnter, OnHyperlinkLeave, OnHyperlinkClick) to this frame's parent." },
+
+			Arguments =
+			{
+				{ Name = "canPropagate", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetHyperlinksEnabled",
 			Type = "Function",
 
@@ -1059,6 +1101,15 @@ local SimpleFrameAPI =
 			Arguments =
 			{
 				{ Name = "userPlaced", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetUsingParentLevel",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "usingParentLevel", Type = "bool", Nilable = false },
 			},
 		},
 		{

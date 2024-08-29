@@ -1,9 +1,0 @@
-## Title: Blizzard_UIMenu
-## Author: Blizzard Entertainment
-## DefaultState: enabled
-## AllowLoad: game
-## AllowLoadGameType: classic
-## Dependencies: Blizzard_SharedXML
-## SuppressLocalTableRef: 1
-Classic\UIMenu.lua
-Classic\UIMenu.xml

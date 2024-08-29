@@ -55,10 +55,19 @@ function PTR_IssueReporter.SetupItemTooltips()
         local name, link = self:GetItem()
         if (link) and (name) then
             local id = string.match(link, "item:(%d*)")
-            if (id == "" or id == "0") and TradeSkillFrame ~= nil and TradeSkillFrame:IsVisible() and GetMouseFocus().reagentIndex then
+
+			local mouseoverReagentIndex = nil;
+			local mouseMotionFoci = GetMouseFoci();
+			for _, focus in ipairs(mouseMotionFoci) do
+				if focus.reagentIndex then
+					mouseoverReagentIndex = focus.reagentIndex;
+				end
+			end
+
+            if (id == "" or id == "0") and TradeSkillFrame ~= nil and TradeSkillFrame:IsVisible() and mouseoverReagentIndex then
                 local selectedRecipe = TradeSkillFrame.RecipeList:GetSelectedRecipeID()
                 for i = 1, 8 do
-                    if GetMouseFocus().reagentIndex == i then
+                    if mouseoverReagentIndex == i then
                         id = C_TradeSkillUI.GetRecipeReagentItemLink(selectedRecipe, i):match("item:(%d+):") or nil
                         break
                     end

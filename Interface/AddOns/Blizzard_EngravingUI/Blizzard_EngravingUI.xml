@@ -232,19 +232,11 @@
 				</Scripts>
 				<FontString inherits="ChatFontSmall"/>
 			</EditBox>
-			<Frame name="$parentFilterDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+			<DropdownButton parentKey="FilterDropdown" inherits="WowStyle1DropdownTemplate" enableMouse="true">
 				<Anchors>
-					<Anchor point="TOPLEFT"  relativeTo="$parentSearchBox" relativePoint="BOTTOMLEFT" x="-23" y="-3"/>
+					<Anchor point="TOPLEFT"  relativeTo="$parentSearchBox" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						UIDropDownMenu_SetWidth(self, 170);
-						UIDropDownMenu_JustifyText(self, "LEFT");
-						UIDropDownMenu_SetText(self, ALL_RUNES);
-						UIDropDownMenu_Initialize(self, RuneFrameFilter_Initialize);
-					</OnLoad>
-				</Scripts>
-			</Frame>
+			</DropdownButton>
 			<ScrollFrame name="$parentScrollFrame" inherits="HybridScrollFrameTemplate" parentKey="scrollFrame">
 				<Size x="185" y="348"/>
 					<Anchors>

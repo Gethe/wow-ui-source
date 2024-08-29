@@ -1073,7 +1073,13 @@
 		</HighlightTexture>
 	</Button>
 
-<Button name="UIGoldBorderButtonTemplate" virtual="true">
+	<Button name="UIResetButtonTemplate" hidden="true" virtual="true">
+		<Size x="23" y="23"/>
+		<NormalTexture atlas="auctionhouse-ui-filter-redx" setAllPoints="true"/>
+		<HighlightTexture atlas="auctionhouse-ui-filter-redx" alphaMode="ADD" alpha="0.4" setAllPoints="true"/>
+	</Button>
+
+	<Button name="UIGoldBorderButtonTemplate" virtual="true">
 		<Size x="105" y="22"/>
 		<Anchors>
 			<Anchor point="BOTTOM" relativeTo="$parentDetails" x="0" y="5"/>
@@ -1847,8 +1853,8 @@
 		</HighlightTexture>
 	</Button>
 
-	<Button name="SelectionPopoutEntryTemplate" inherits="ResizeLayoutFrame" mixin="SelectionPopoutEntryMixin" virtual="true">
-		<Size x="1" y="1"/>
+	<Button name="DarkMenuElementTemplate" inherits="ResizeLayoutFrame" virtual="true">
+		<Size x="1" y="20"/>
 		<KeyValues>
 			<KeyValue key="widthPadding" value="14" type="number"/>
 		</KeyValues>
@@ -1859,97 +1865,47 @@
 				</KeyValues>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture parentKey="Left" atlas="charactercreate-customize-dropdown-linemouseover-side" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="TOPLEFT"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="Right" atlas="charactercreate-customize-dropdown-linemouseover-side" useAtlasSize="true">
-							<TexCoords left="1" right="0" top="0" bottom="1"/>
-							<Anchors>
-								<Anchor point="BOTTOMRIGHT"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="Middle" atlas="charactercreate-customize-dropdown-linemouseover-middle" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
-							</Anchors>
-						</Texture>
+						<Texture atlas="common-dropdown-customize-mouseover" useAtlasSize="true"/>
 					</Layer>
 				</Layers>
 			</Frame>
 		</Frames>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnClick method="OnClick"/>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-		</Scripts>
 	</Button>
 
-	<Frame name="SelectionPopoutTemplate" inherits="ResizeLayoutFrame" mixin="SelectionPopoutMixin" virtual="true">
-		<Size x="1" y="1"/>
-		<KeyValues>
-			<KeyValue key="widthPadding" value="6" type="number"/>
-			<KeyValue key="heightPadding" value="32" type="number"/>
-		</KeyValues>
+	<!-- 'Dropdown' needs to be defined in the frame inheriting this template.-->
+	<Frame name="DropdownWithSteppersTemplate" mixin="DropdownWithSteppersMixin" virtual="true">
+		<Size x="223" y="38"/>
 		<Frames>
-			<Frame parentKey="Border" useParentLevel="true" inherits="NineSlicePanelTemplate">
+			<!--<DropDownToggleButton parentKey="Dropdown">-->
+			<Button parentKey="IncrementButton" inherits="WowStyle2IconButtonTemplate">
 				<KeyValues>
-					<KeyValue key="layoutType" value="CharacterCreateDropdown" type="string"/>
+					<KeyValue key="normalAtlas" type="string" value="common-dropdown-icon-next"/>
+					<KeyValue key="disabledAtlas" type="string" value="common-dropdown-icon-next-disabled"/>
 				</KeyValues>
-			</Frame>
+			</Button>
+			<Button parentKey="DecrementButton" inherits="WowStyle2IconButtonTemplate">
+				<KeyValues>
+					<KeyValue key="normalAtlas" type="string" value="common-dropdown-icon-back"/>
+					<KeyValue key="disabledAtlas" type="string" value="common-dropdown-icon-back-disabled"/>
+				</KeyValues>
+			</Button>
 		</Frames>
 		<Scripts>
-			<OnShow method="OnShow"/>
-			<OnHide method="OnHide"/>
-			<OnMouseWheel function="nop"/>
+			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</Frame>
 
-	<EventButton name="SelectionPopoutButtonTemplate" mixin="SelectionPopoutButtonMixin" virtual="true">
-		<Size x="150" y="38"/>
-		<NormalTexture parentKey="NormalTexture" atlas="charactercreate-customize-dropdownbox"/>
-		<HighlightTexture parentKey="HighlightTexture" atlas="charactercreate-customize-dropdownbox-open" alphaMode="ADD" alpha="0"/>
-		<PushedTextOffset x="2" y="-2"/>
-		<Frames>
-			<Frame parentKey="Popout" inherits="SelectionPopoutTemplate" hidden="true">
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" x="3" y="11"/>
-				</Anchors>
-			</Frame>
-		</Frames>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnHide method="OnHide"/>
-			<OnMouseDown method="OnMouseDown"/>
-			<OnMouseWheel method="OnMouseWheel"/>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-		</Scripts>
-	</EventButton>
-
-	<!-- the selection popout button is provided by the frame inheriting this template -->
-	<Frame name="SelectionPopoutWithButtonsTemplate" mixin="SelectionPopoutWithButtonsMixin" virtual="true">
-		<Size x="223" y="38"/>
-		<Frames>
-			<Button parentKey="IncrementButton" inherits="AlphaHighlightButtonTemplate" motionScriptsWhileDisabled="true">
-				<Size x="32" y="32"/>
-				<NormalTexture parentKey="NormalTexture" atlas="charactercreate-customize-nextbutton"/>
-				<PushedTexture parentKey="PushedTexture" atlas="charactercreate-customize-nextbutton-down"/>
-				<DisabledTexture atlas="charactercreate-customize-nextbutton-disabled"/>
-			</Button>
-			<Button parentKey="DecrementButton" inherits="AlphaHighlightButtonTemplate" motionScriptsWhileDisabled="true">
-				<Size x="32" y="32"/>
-				<NormalTexture parentKey="NormalTexture" atlas="charactercreate-customize-backbutton"/>
-				<PushedTexture parentKey="PushedTexture" atlas="charactercreate-customize-backbutton-down"/>
-				<DisabledTexture atlas="charactercreate-customize-backbutton-disabled"/>
-			</Button>
-		</Frames>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-		</Scripts>
+	<!-- See DropdownWithSteppersTemplate for dropdown requirements. -->
+	<Frame name="DropdownWithSteppersAndLabelTemplate" inherits="DropdownWithSteppersTemplate" mixin="DropdownWithSteppersAndLabelMixin" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" font="GameFontHighlightMed2">
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.DecrementButton" relativePoint="LEFT" x="-34"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
 	</Frame>
 
 	<Button name="AlphaHighlightButtonTemplate" mixin="AlphaHighlightButtonMixin" virtual="true">
@@ -2078,27 +2034,6 @@
 		<DisabledTexture file="Interface\Buttons\UI-SquareButton-Disabled"/>
 		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 	</Button>
-
-	<Frame name="DropDownControlTemplate" mixin="DropDownControlMixin" virtual="true">
-		<Size x="150" y="30"/>
-		<Frames>
-			<Frame parentKey="DropDownMenu" inherits="UIDropDownMenuTemplate">
-				<Anchors>
-					<Anchor point="CENTER" x="0" y="-2"/>
-				</Anchors>
-			</Frame>
-		</Frames>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-		</Scripts>
-	</Frame>
-
-	<Frame name="EnumDropDownControlTemplate" mixin="EnumDropDownControlMixin" inherits="DropDownControlTemplate" virtual="true">
-		<KeyValues>
-			<!-- Overwrite to change the dropdown text when the selected value is nil -->
-			<KeyValue key="noneSelectedText" value="NONE" type="global"/>
-		</KeyValues>
-	</Frame>
 
 	<Frame name="ClickToDragTemplate" mixin="ClickToDragMixin" movable="true" virtual="true">
 		<Scripts>
@@ -2433,11 +2368,11 @@
 						</Scripts>
 						<FontString inherits="ChatFontNormal"/>
 					</EditBox>
-					<Frame parentKey="IconTypeDropDown" inherits="EnumDropDownControlTemplate">
+					<DropdownButton parentKey="IconTypeDropdown" inherits="WowStyle1DropdownTemplate">
 						<Anchors>
-							<Anchor point="TOPRIGHT" x="-44" y="-68"/>
+							<Anchor point="TOPRIGHT" x="-44" y="-72"/>
 						</Anchors>
-					</Frame>
+					</DropdownButton>
 				</Frames>
 			</Frame>
 			<Frame parentKey="IconSelector" inherits="ScrollBoxSelectorTemplate" frameStrata="HIGH">
@@ -2874,4 +2809,7 @@
 			</AnimationGroup>
 		</Animations>
 	</Button>
+
+	<!-- Classic doesn't use this, but shared templates such as those in settings inherit from it; so stub out the definition -->
+	<Frame name="TopLevelParentScaleFrameTemplate" virtual="true"/>
 </Ui>

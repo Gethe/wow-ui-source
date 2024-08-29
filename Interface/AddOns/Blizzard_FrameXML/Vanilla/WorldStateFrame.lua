@@ -17,8 +17,6 @@ function WorldStateScoreFrame_OnLoad(self)
 	-- Tab Handling code
 	PanelTemplates_SetNumTabs(self, 3);
 
-	UIDropDownMenu_Initialize( WorldStateButtonDropDown, WorldStateButtonDropDown_Initialize, "MENU");
-	
 	local prevRowFrame = WorldStateScoreButton1;
 	for i=2,MAX_SCORE_BUTTONS do
 		local rowFrame = CreateFrame("FRAME", "WorldStateScoreButton"..i, WorldStateScoreFrame, "WorldStateScoreTemplate");
@@ -48,17 +46,6 @@ function WorldStateScoreFrame_OnShow(self)
 	WorldStateScoreFrame_Resize();
 	WorldStateScoreFrame_Update();
 	WorldStateScoreFrameTab_OnClick(WorldStateScoreFrameTab1);
-end
-
-function WorldStateButtonDropDown_Initialize()
-	UnitPopup_ShowMenu(WorldStateButtonDropDown, "WORLD_STATE_SCORE", nil, WorldStateButtonDropDown.name);
-end
-
-function WorldStateScoreFrame_ShowWorldStateButtonDropDown(self, name, battlefieldScoreIndex)
-	WorldStateButtonDropDown.name = name;
-	WorldStateButtonDropDown.battlefieldScoreIndex = battlefieldScoreIndex;
-	WorldStateButtonDropDown.initialize = WorldStateButtonDropDown_Initialize;
-	ToggleDropDownMenu(1, nil, WorldStateButtonDropDown, self:GetName(), 0, 0);
 end
 
 function WorldStateScoreFrame_Update()
@@ -379,7 +366,6 @@ function WorldStateScoreFrame_OnClose(self)
 end
 
 function WorldStateScoreFrame_OnHide(self)
-	CloseDropDownMenus();
 end
 
 function WorldStateScoreFrame_OnVerticalScroll(self, offset)
@@ -424,7 +410,13 @@ end
 function ScorePlayer_OnClick(self, mouseButton)
 	if ( mouseButton == "RightButton" ) then
 		if ( not UnitIsUnit(self.name,"player") ) then
-			WorldStateScoreFrame_ShowWorldStateButtonDropDown(self, self.name, self:GetParent().index);
+			local contextData = 
+			{
+				name = self.name,
+				battlefieldScoreIndex = self:GetParent().index,
+			};
+
+			UnitPopup_OpenMenu("WORLD_STATE_SCORE", contextData);
 		end
 	elseif ( mouseButton == "LeftButton" and IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() ) then
 		ChatEdit_InsertLink(self.text:GetText());

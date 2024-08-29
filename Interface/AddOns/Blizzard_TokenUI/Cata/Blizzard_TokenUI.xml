@@ -210,7 +210,7 @@
 		</Layers>
 		<Frames>
 			<Frame parentKey="Border" inherits="SecureDialogBorderTemplate"/>
-			<CheckButton name="$parentInactiveCheckBox" inherits="OptionsSmallCheckButtonTemplate">
+			<CheckButton name="$parentInactiveCheckbox" inherits="OptionsSmallCheckButtonTemplate">
 				<Size>
 					<AbsDimension x="26" y="26"/>
 				</Size>
@@ -244,12 +244,12 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentBackpackCheckBox" inherits="OptionsSmallCheckButtonTemplate">
+			<CheckButton name="$parentBackpackCheckbox" inherits="OptionsSmallCheckButtonTemplate">
 				<Size>
 					<AbsDimension x="26" y="26"/>
 				</Size>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="TokenFramePopupInactiveCheckBox" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT" relativeTo="TokenFramePopupInactiveCheckbox" relativePoint="BOTTOMLEFT">
 						<Offset x="0" y="4"/>
 					</Anchor>
 				</Anchors>

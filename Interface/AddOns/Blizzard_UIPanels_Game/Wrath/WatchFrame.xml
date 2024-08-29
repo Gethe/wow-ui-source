@@ -485,21 +485,4 @@
 			</Frame>
 		</ScrollChild>
 	</ScrollFrame>
-
-	<Frame name="WatchFrameHeaderDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
-		<Size>
-			<AbsDimension x="10" y="10"/>
-		</Size>
-		<Scripts>
-			<OnLoad function="WatchFrameHeaderDropDown_OnLoad"/>
-		</Scripts>
-	</Frame>
-	<Frame name="WatchFrameDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
-		<Size>
-			<AbsDimension x="10" y="10"/>
-		</Size>
-		<Scripts>
-			<OnLoad function="WatchFrameDropDown_OnLoad"/>
-		</Scripts>
-	</Frame>
 </Ui>

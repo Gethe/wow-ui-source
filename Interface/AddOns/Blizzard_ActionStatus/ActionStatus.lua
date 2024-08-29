@@ -16,6 +16,8 @@ function ActionStatusMixin:OnLoad()
 
 	self.alternateParentFrame = nil;
 	self:UpdateParent();
+
+	EventRegistry:RegisterCallback("UI.AlternateTopLevelParentChanged", self.UpdateParent, self);
 end
 
 function ActionStatusMixin:OnEvent(event, ...)

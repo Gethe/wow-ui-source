@@ -1,83 +1,116 @@
-function UnitPopupSharedUtil:GetBNetIDAccount()
-	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu(); 
-	if dropdownMenu.bnetIDAccount then
-		return dropdownMenu.bnetIDAccount;
-	elseif dropdownMenu.guid and C_AccountInfo.IsGUIDBattleNetAccountType(dropdownMenu.guid) then
-		return C_AccountInfo.GetIDFromBattleNetAccountGUID(dropdownMenu.guid);
+function UnitPopupSharedUtil.GetBNetIDAccount(contextData)
+	if contextData.bnetIDAccount then
+		return contextData.bnetIDAccount;
 	end
+
+	local guid = contextData.guid;
+	if not guid or not C_AccountInfo.IsGUIDBattleNetAccountType(guid) then
+		return false;
+	end
+	
+	return C_AccountInfo.GetIDFromBattleNetAccountGUID(guid);
 end
 
-function UnitPopupSharedUtil:GetBNetAccountInfo()
-	local bnetIDAccount = UnitPopupSharedUtil.GetBNetIDAccount()
+function UnitPopupSharedUtil.GetBNetAccountInfo(contextData)
+	local bnetIDAccount = UnitPopupSharedUtil.GetBNetIDAccount(contextData);
 	if bnetIDAccount then
 		return C_BattleNet.GetAccountInfoByID(bnetIDAccount);
-	else
-		local guid = UnitPopupSharedUtil.GetGUID()
-		if guid then
-			return C_BattleNet.GetAccountInfoByGUID(guid);
-		end
 	end
-end
 
-function UnitPopupSharedUtil:TryCreatePlayerLocation(guid)
-	local dropdown = UnitPopupSharedUtil.GetCurrentDropdownMenu(); 
-	if dropdown.battlefieldScoreIndex then
-		return PlayerLocation:CreateFromBattlefieldScoreIndex(dropdown.battlefieldScoreIndex);
-	elseif dropdown.communityClubID and dropdown.communityStreamID and dropdown.communityEpoch and dropdown.communityPosition then
-		return PlayerLocation:CreateFromCommunityChatData(dropdown.communityClubID, dropdown.communityStreamID, dropdown.communityEpoch, dropdown.communityPosition);
-	elseif dropdown.communityClubID and not dropdown.communityStreamID then
-		return PlayerLocation:CreateFromCommunityInvitation(dropdown.communityClubID, guid);
-	elseif C_ChatInfo.IsValidChatLine(dropdown.lineID) then
-		return PlayerLocation:CreateFromChatLineID(dropdown.lineID);
-	elseif guid then
-		return PlayerLocation:CreateFromGUID(guid);
-	elseif dropdown.unit then
-		return PlayerLocation:CreateFromUnit(dropdown.unit);
-	elseif dropdown.whoIndex then 
-		return PlayerLocation:CreateFromWhoIndex(dropdown.whoIndex);
+	local guid = UnitPopupSharedUtil.GetGUID(contextData)
+	if guid then
+		return C_BattleNet.GetAccountInfoByGUID(guid);
 	end
 
 	return nil;
 end
-	
 
-function UnitPopupSharedUtil:IsBNetFriend()
-	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
-	return dropdownMenu.accountInfo and dropdownMenu.accountInfo.isFriend;
-end
 
-function UnitPopupSharedUtil:CanAddBNetFriend(isLocalPlayer, haveBattleTag, isPlayer)
-	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
-	local hasClubInfo = dropdownMenu.clubInfo ~= nil and dropdownMenu.clubMemberInfo ~= nil;
-	return not isLocalPlayer and haveBattleTag and (isPlayer or hasClubInfo or dropdownMenu.accountInfo) and not UnitPopupSharedUtil.IsBNetFriend();
-end
-
-function UnitPopupSharedUtil:GetCurrentDropdownMenu()
-	return UIDROPDOWNMENU_OPEN_MENU or UIDROPDOWNMENU_INIT_MENU; 
-end 
-
-function UnitPopupSharedUtil:GetFullPlayerName()
-	local dropdownFrame = UnitPopupSharedUtil.GetCurrentDropdownMenu();
-	local fullName = dropdownFrame.name;
-	if ( dropdownFrame.server and ((not dropdownFrame.unit and GetNormalizedRealmName() ~= dropdownFrame.server) or (dropdownFrame.unit and UnitRealmRelationship(dropdownFrame.unit) ~= LE_REALM_RELATION_SAME)) ) then
-		fullName = dropdownFrame.name.."-"..dropdownFrame.server;
+function UnitPopupSharedUtil.TryCreatePlayerLocation(contextData)
+	local battlefieldScoreIndex = contextData.battlefieldScoreIndex;
+	if battlefieldScoreIndex then
+		return PlayerLocation:CreateFromBattlefieldScoreIndex(battlefieldScoreIndex);
 	end
-	return fullName; 
-end		
+	
+	local communityClubID = contextData.communityClubID;
+	local communityStreamID = contextData.communityStreamID;
+	local communityEpoch = contextData.communityEpoch;
+	local communityPosition = contextData.communityPosition;
+	if communityClubID and communityStreamID and communityEpoch and communityPosition then
+		return PlayerLocation:CreateFromCommunityChatData(communityClubID, communityStreamID, communityEpoch, communityPosition);
+	end
+	
+	local guid = UnitPopupSharedUtil.GetGUID(contextData);
+	if communityClubID and not communityStreamID then
+		return PlayerLocation:CreateFromCommunityInvitation(communityClubID, guid);
+	end
+	
+	local lineID = contextData.lineID;
+	if C_ChatInfo.IsValidChatLine(lineID) then
+		return PlayerLocation:CreateFromChatLineID(lineID);
+	end
+	
+	if guid then
+		return PlayerLocation:CreateFromGUID(guid);
+	end
+	
+	local unit = contextData.unit;
+	if unit then
+		return PlayerLocation:CreateFromUnit(unit);
+	end
 
-function UnitPopupSharedUtil:HasLFGRestrictions()
+	local whoIndex = contextData.whoIndex;
+	if whoIndex then
+		return PlayerLocation:CreateFromWhoIndex(contextDatawhoIndex);
+	end
+
+	return nil;
+end
+
+function UnitPopupSharedUtil.IsBNetFriend(contextData)
+	local accountInfo = contextData.accountInfo;
+	return accountInfo and accountInfo.isFriend;
+end
+
+function UnitPopupSharedUtil.CanAddBNetFriend(contextData, isLocalPlayer, haveBattleTag, isPlayer)
+	if isLocalPlayer or not haveBattleTag then
+		return false;
+	end
+
+	local hasClubInfo = contextData.clubInfo and contextData.clubMemberInfo;
+	if not (isPlayer or hasClubInfo or contextData.accountInfo) then
+		return false;
+	end
+
+	return not UnitPopupSharedUtil.IsBNetFriend(contextData);
+end
+
+function UnitPopupSharedUtil.GetFullPlayerName(contextData)
+	local name = contextData.name;
+	local server = contextData.server;
+	local unit = contextData.unit;
+	if server and (not unit and GetNormalizedRealmName() ~= server) then
+		return name.."-"..server;
+	elseif unit and (UnitRealmRelationship(unit) ~= LE_REALM_RELATION_SAME) then
+		return name.."-"..server;
+	end
+
+	return name; 
+end
+
+function UnitPopupSharedUtil.HasLFGRestrictions()
 	return HasLFGRestrictions();
 end	
 
-function UnitPopupSharedUtil:TryInvite(inviteType, fullname)
-	local dropdown = UnitPopupSharedUtil.GetCurrentDropdownMenu();
-	if inviteType == "SUGGEST_INVITE" and C_PartyInfo.IsPartyFull() and not UnitIsGroupLeader("player") then
+function UnitPopupSharedUtil.TryInvite(contextData, inviteType, fullName)
+	local isSuggestInvite = inviteType == "SUGGEST_INVITE";
+	if isSuggestInvite and C_PartyInfo.IsPartyFull() and not UnitIsGroupLeader("player") then
 		ChatFrame_DisplaySystemMessageInPrimary(ERR_GROUP_FULL);
 	else
-		if inviteType == "INVITE" or inviteType == "SUGGEST_INVITE" then
-			InviteToGroup(fullname);
+		if isSuggestInvite or inviteType == "INVITE" then
+			InviteToGroup(fullName);
 		elseif inviteType == "REQUEST_INVITE" then
-			RequestInviteFromUnit(fullname);
+			RequestInviteFromUnit(fullName);
 		end
 	end
 end

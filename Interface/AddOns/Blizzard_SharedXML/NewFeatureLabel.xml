@@ -4,6 +4,7 @@ UI.xsd">
 
 	<!--Used to call out a new feature. Includes a pulsing animation to call player's attention. Use NewFeatureLabelNoAnimateTemplate if you don't want the animation-->
 	<Frame name="NewFeatureLabelTemplate" inherits="ResizeLayoutFrame" mixin="NewFeatureLabelMixin" virtual="true" hidden="true">
+		<Size x="40" y="20"/>
 		<KeyValues>
 			<KeyValue key="animateGlow" value="true" type="boolean"/>
 			<KeyValue key="label" value="NEW_CAPS" type="global"/>

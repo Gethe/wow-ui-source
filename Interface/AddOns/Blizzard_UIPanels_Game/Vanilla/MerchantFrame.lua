@@ -838,9 +838,9 @@ function MerchantFrame_UpdateCurrencyAmounts()
 		local tokenButton = _G["MerchantToken"..i];
 		if ( tokenButton ) then
 			if ( tokenButton.currencyID ) then
-				local name, count = GetCurrencyInfo(tokenButton.currencyID);
-				if ( count <= 99999 ) then
-					tokenButton.count:SetText(count);
+				local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(tokenButton.currencyID);
+				if ( currencyInfo.quantity <= 99999 ) then
+					tokenButton.count:SetText(currencyInfo.quantity);
 				else
 					tokenButton.count:SetText("*");
 				end

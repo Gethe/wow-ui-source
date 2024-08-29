@@ -306,7 +306,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="PlayerTitleDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+			<Frame parentKey="TitleDropdown" name="PlayerTitleDropdown" inherits="WowStyle1DropdownTemplate">
 				<Anchors>
 					<Anchor point="TOP" relativeTo="CharacterLevelText" relativePoint="BOTTOM">
 						<Offset>
@@ -314,15 +314,6 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						PlayerTitleDropDown_OnLoad(self);
-					</OnLoad>
-					<OnShow>
-						UIDropDownMenu_Initialize(self, PlayerTitleDropDown_Initialize);
-						UIDropDownMenu_SetSelectedValue(self, GetCurrentTitle());
-					</OnShow>
-				</Scripts>
 			</Frame>
 			<PlayerModel name="CharacterModelFrame">
 				<Size x="233" y="224"/>
@@ -399,7 +390,7 @@
 					</OnHide>
 				</Scripts>
 			</PlayerModel>
-			<Frame name="CharacterAttributesFrame">
+			<Frame parentKey="Attributes" name="CharacterAttributesFrame">
 				<Size>
 					<AbsDimension x="230" y="78"/>
 				</Size>
@@ -601,7 +592,7 @@
 							</Anchor>
 						</Anchors>
 					</Frame>
-					<Frame name="PlayerStatFrameLeftDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+					<Frame parentKey="LeftPlayerStatDropdown" name="PlayerStatFrameLeftDropdown" inherits="WowStyle1DropdownTemplate">
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" relativeTo="PlayerStatLeftTop" relativePoint="TOPLEFT">
 								<Offset>
@@ -609,16 +600,8 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
-						<Scripts>
-							<OnLoad>
-								PlayerStatFrameLeftDropDown_OnLoad(self);
-							</OnLoad>
-							<OnShow>
-								PlayerStatFrameLeftDropDown_Initialize(self);
-							</OnShow>
-						</Scripts>
 					</Frame>
-					<Frame name="PlayerStatFrameRightDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+					<Frame parentKey="RightPlayerStatDropdown" name="PlayerStatFrameRightDropdown" inherits="WowStyle1DropdownTemplate">
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" relativeTo="PlayerStatRightTop" relativePoint="TOPLEFT">
 								<Offset>
@@ -626,16 +609,12 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
-						<Scripts>
-							<OnLoad>
-								PlayerStatFrameRightDropDown_OnLoad(self);
-							</OnLoad>
-							<OnShow>
-								PlayerStatFrameRightDropDown_Initialize(self);
-							</OnShow>
-						</Scripts>
 					</Frame>
 				</Frames>
+				<Scripts>
+					<OnLoad function="CharacterAttributesFrame_OnLoad"/>
+					<OnShow function="CharacterAttributesFrame_OnShow"/>
+				</Scripts>
 			</Frame>
 			<Frame name="CharacterResistanceFrame">
 				<Size>

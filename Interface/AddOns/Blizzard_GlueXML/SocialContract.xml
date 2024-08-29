@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
-	<Frame name="SocialContractFrame" inherits="DefaultScaleFrame" mixin="SocialContractFrameMixin" parent="GlueParent" frameStrata="DIALOG" hidden="true" toplevel="true" enableMouse="true">
+	<Frame name="SocialContractFrame" mixin="SocialContractFrameMixin" parent="GlueParent" frameStrata="DIALOG" hidden="true" toplevel="true" enableMouse="true">
 		<Size x="510" y="632"/>
 		<Anchors>
 			<Anchor point="TOP" x="6" y="-110"/>
@@ -68,7 +68,7 @@
 						<KeyValues>
 							<KeyValue key="scrollable" value="true" type="boolean"/>
 						</KeyValues>
-						<FontString inherits="SystemFont_Med3" justifyH="LEFT" justifyV="TOP"/>
+						<FontString inherits="System15Font" justifyH="LEFT" justifyV="TOP"/>
 					</SimpleHTML>
 				</Frames>
 			</Frame>
@@ -76,8 +76,8 @@
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeKey="$parent.TopInsetEdge" relativePoint="BOTTOMRIGHT" x="-5" y="15"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomInsetEdge" relativePoint="TOPRIGHT" x="-5" y="-2"/>
-				</Anchors>
-			</EventFrame>
+				</Anchors>		
+			</EventFrame>					
 			<Button parentKey="AcceptButton" mixin="SocialContractAcceptButtonMixin" inherits="UIPanelButtonTemplate, DisabledTooltipButtonTemplate" text="SOCIAL_CONTRACT_ACCEPT_BUTTON">
 				<Size x="136" y="22"/>
 				<KeyValues>

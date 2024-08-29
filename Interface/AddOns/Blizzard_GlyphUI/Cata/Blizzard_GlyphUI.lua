@@ -92,8 +92,43 @@ function GlyphFrame_OnLoad (self)
 	self.scrollFrame.scrollBar.doNotHide = true;
 	self.scrollFrame.dynamic = GlyphFrame_CalculateScroll;
 	HybridScrollFrame_CreateButtons(self.scrollFrame, "GlyphSpellButtonTemplate", 0, -1, "TOPLEFT", "TOPLEFT", 0, -GLYPH_BUTTON_OFFSET, "TOP", "BOTTOM");
+
+	GlyphFrame_SetupFilterDropdown(self);
 end
 
+function GlyphFrame_SetupFilterDropdown (self)
+	self.FilterDropdown:SetWidth(170);
+	self.FilterDropdown:SetDefaultText(ALL_GLYPHS);
+
+	local function IsSelected(filter)
+		return IsGlyphFlagSet(filter);
+	end
+
+	local function SetSelected(filter)
+		ToggleGlyphFilter(filter);
+		GlyphFrame_UpdateGlyphList();
+	end
+
+	self.FilterDropdown:SetSelectionText(function(selections)
+		local known = IsGlyphFlagSet(GLYPH_FILTER_KNOWN);
+		local unknown = IsGlyphFlagSet(GLYPH_FILTER_UNKNOWN);
+		if known and unknown then
+			return ALL_GLYPHS;
+		elseif known then
+			return USED;
+		elseif unknown then
+			return UNAVAILABLE;
+		end
+		return NONE;
+	end);
+
+	self.FilterDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_GLYPH_FILTER");
+
+		rootDescription:CreateCheckbox(USED, IsSelected, SetSelected, GLYPH_FILTER_KNOWN); 
+		rootDescription:CreateCheckbox(UNAVAILABLE, IsSelected, SetSelected, GLYPH_FILTER_UNKNOWN); 
+	end);
+end
 
 function GlyphFrame_OnShow (self)
 	GlyphFrame_Update(self);
@@ -298,18 +333,8 @@ function GlyphFrame_UpdateGlyphList ()
 	local totalHeight = (numGlyphs-3) * (GLYPH_BUTTON_HEIGHT + 0);
 	totalHeight = totalHeight + (3 * (GLYPH_HEADER_BUTTON_HEIGHT + 0));
 	HybridScrollFrame_Update(scrollFrame, totalHeight+5, 330);
-	
-	local known =  IsGlyphFlagSet(GLYPH_FILTER_KNOWN);
-	local unknown =  IsGlyphFlagSet(GLYPH_FILTER_UNKNOWN);
-	if known and unknown then
-		UIDropDownMenu_SetText(GlyphFrameFilterDropDown, ALL_GLYPHS);
-	elseif known then
-		UIDropDownMenu_SetText(GlyphFrameFilterDropDown, USED);
-	elseif unknown then
-		UIDropDownMenu_SetText(GlyphFrameFilterDropDown, UNAVAILABLE);
-	else
-		UIDropDownMenu_SetText(GlyphFrameFilterDropDown, NONE);
-	end
+
+	GlyphFrame.FilterDropdown:GenerateMenu();
 end
 
 
@@ -391,31 +416,6 @@ function GlyphFrame_OnTextChanged(self)
 	SetGlyphNameFilter(text);
 	GlyphFrame_UpdateGlyphList();
 end
-
-
-function GlyphFrameFilter_Modify(self, arg1)
-	ToggleGlyphFilter(arg1);
-	GlyphFrame_UpdateGlyphList ();
-end 
-
-
-function GlyphFrameFilter_Initialize()
-	local info = UIDropDownMenu_CreateInfo();
-	info.isNotRadio = true;
-	info.func = GlyphFrameFilter_Modify;
-	
-	
-	info.text = USED;
-	info.checked = IsGlyphFlagSet(GLYPH_FILTER_KNOWN);
-	info.arg1 = GLYPH_FILTER_KNOWN
-	UIDropDownMenu_AddButton(info);
-	
-	info.text = UNAVAILABLE;
-	info.checked = IsGlyphFlagSet(GLYPH_FILTER_UNKNOWN);
-	info.arg1 = GLYPH_FILTER_UNKNOWN
-	UIDropDownMenu_AddButton(info);
-end 
-
 
 --------------------------------------------------------------------------------
 ------------------  Glyph Button Functions     ---------------------------

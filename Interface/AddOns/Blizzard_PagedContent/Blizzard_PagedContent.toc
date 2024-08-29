@@ -1,0 +1,13 @@
+## Title: Blizzard Paged Content
+## LoadOnDemand: 0
+
+Blizzard_PagingControls.lua
+Blizzard_PagingControls.xml
+Blizzard_PagedContentFrame.lua
+Blizzard_PagedContentFrame.xml
+Blizzard_PagedGridContentFrame.lua
+Blizzard_PagedGridContentFrame.xml
+Blizzard_PagedListContentFrame.lua
+Blizzard_PagedListContentFrame.xml
+Blizzard_PagedCondensedGridContentFrame.lua
+Blizzard_PagedCondensedGridContentFrame.xml

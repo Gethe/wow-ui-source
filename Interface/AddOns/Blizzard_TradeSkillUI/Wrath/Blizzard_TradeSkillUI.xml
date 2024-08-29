@@ -413,30 +413,24 @@
 					</Button>
 				</Frames>
 			</Frame>
-			<Frame name="TradeSkillInvSlotDropDown" inherits="UIDropDownMenuTemplate" id="2">
+			<DropdownButton parentKey="InvSlotDropdown" name="TradeSkillInvSlotDropdown" inherits="WowStyle1DropdownTemplate" id="2">
 				<Anchors>
 					<Anchor point="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="-25" y="-66"/>
+							<AbsDimension x="-45" y="-66"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Scripts>
-					<OnLoad function="TradeSkillInvSlotDropDown_OnLoad"/>
-				</Scripts>
-			</Frame>
-			<Frame name="TradeSkillSubClassDropDown" inherits="UIDropDownMenuTemplate" id="1">
+			</DropdownButton>
+			<DropdownButton parentKey="SubClassDropdown" name="TradeSkillSubClassDropdown" inherits="WowStyle1DropdownTemplate" id="1">
 				<Anchors>
-					<Anchor point="RIGHT" relativeTo="TradeSkillInvSlotDropDown" relativePoint="LEFT">
+					<Anchor point="RIGHT" relativeTo="TradeSkillInvSlotDropdown" relativePoint="LEFT">
 						<Offset>
-							<AbsDimension x="35" y="0"/>
+							<AbsDimension x="-5" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Scripts>
-					<OnLoad function="TradeSkillSubClassDropDown_OnLoad"/>
-				</Scripts>
-			</Frame>
+			</DropdownButton>
 
 			<Frame name="TradeSkillHighlightFrame" hidden="true">
 				<Size>
@@ -871,7 +865,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						TradeSkillFrameDecrement_OnClick();
+						TradeSkillFrameDecrement_OnClick(self);
 						TradeSkillInputBox:ClearFocus();
 					</OnClick>
 				</Scripts>
@@ -957,7 +951,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						TradeSkillFrameIncrement_OnClick();
+						TradeSkillFrameIncrement_OnClick(self);
 						TradeSkillInputBox:ClearFocus();
 					</OnClick>
 				</Scripts>
@@ -979,15 +973,8 @@
 		<Scripts>
 			<OnLoad function="TradeSkillFrame_OnLoad"/>
 			<OnEvent function="TradeSkillFrame_OnEvent"/>
-			<OnShow>
-				TradeSkillFrame_OnShow(self);
-				TradeSkillInputBox:SetNumber(1);
-				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
-			</OnShow>
-			<OnHide>
-				CloseTradeSkill();
-				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
-			</OnHide>
+			<OnShow function="TradeSkillFrame_OnShow"/>
+			<OnHide function="TradeSkillFrame_OnHide"/>
 			<OnUpdate function="TradeSkillFrame_PlaytimeUpdate"/>
 		</Scripts>
 	</Frame>

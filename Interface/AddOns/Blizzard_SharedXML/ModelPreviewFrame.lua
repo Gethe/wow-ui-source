@@ -42,6 +42,14 @@ function ModelPreviewFrame_OnHide(self)
 	end
 end
 
+function ModelPreviewFrame_TryHide()
+	if ( ModelPreviewFrame:IsShown() ) then
+		ModelPreviewFrame:Hide();
+		return true;
+	end
+	return false;
+end
+
 function ModelPreviewFrame_SetStyle(self, style)
 	self.style = style;
 	if style == "carousel" then
@@ -123,8 +131,11 @@ function ModelPreviewFrame_ShowModelInternal(displayID, modelSceneID, allowZoom,
 
 		local playerRaceName;
 		if IsOnGlueScreen() then
-			local _, _, raceFilename = GetCharacterInfo(GetCharacterSelection());
-			playerRaceName = raceFilename and raceFilename:lower();
+			local characterGuid = GetCharacterGUID(GetCharacterSelection());
+			if characterGuid then
+				local basicCharacterInfo = GetBasicCharacterInfo(characterGuid);
+				playerRaceName = basicCharacterInfo.raceFilename and basicCharacterInfo.raceFilename:lower();
+			end
 		else
 			local _, raceFilename = UnitRace("player");
 			playerRaceName = raceFilename:lower();

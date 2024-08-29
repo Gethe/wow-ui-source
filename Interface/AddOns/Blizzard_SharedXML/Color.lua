@@ -72,10 +72,11 @@ function WrapTextInColor(text, color)
 end
 
 do
+	local envTbl = GetCurrentEnvironment();
 	local DBColors = C_UIColor.GetColors();
 	for _, dbColor in ipairs(DBColors) do
 		local color = CreateColor(dbColor.color.r, dbColor.color.g, dbColor.color.b, dbColor.color.a);
-		_G[dbColor.baseTag] = color;
-		_G[dbColor.baseTag.."_CODE"] = color:GenerateHexColorMarkup();
+		envTbl[dbColor.baseTag] = color;
+		envTbl[dbColor.baseTag.."_CODE"] = color:GenerateHexColorMarkup();
 	end
 end

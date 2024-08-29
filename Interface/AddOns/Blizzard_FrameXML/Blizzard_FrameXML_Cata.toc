@@ -1,9 +1,8 @@
 ## Title: Blizzard_FrameXML
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_UIParent, Blizzard_SettingsDefinitions_Frame, Blizzard_ItemButton, Blizzard_FrameXMLUtil, Blizzard_GameTooltip, Blizzard_UnitPopup
+## Dependencies: Blizzard_UIParent, Blizzard_SettingsDefinitions_Frame, Blizzard_ItemButton, Blizzard_FrameXMLUtil, Blizzard_GameTooltip, Blizzard_UIPanelTemplates, Blizzard_UnitPopup
 ## LoadFirst: 1
-## SuppressLocalTableRef: 1
 ## AllowLoad: Game
 ## AllowLoadGameType: cata
 Shared\Localization.lua
@@ -18,11 +17,13 @@ SecureHoverDriver.lua
 Classic\SecureTemplates.xml
 SecureHandlerTemplates.xml
 SecureGroupHeaders.xml
+WardrobeOutfits.xml
 Classic\NavigationBar.lua
 Classic\NavigationBar.xml
-FilterDropDown.lua
 Cata\CharacterFrameTemplates.xml
 Classic\Sound.lua
+DeprecatedTemplates.lua
+DeprecatedTemplates.xml
 Classic\AlertFrames.lua
 Classic\AlertFrames.xml
 Classic\AlertFrameSystems.lua
@@ -33,18 +34,14 @@ Classic\CoinPickupFrame.lua
 Classic\CoinPickupFrame.xml
 Classic\StackSplitFrame.lua
 Classic\StackSplitFrame.xml
-FadingFrame.lua
 Classic\ZoneText.lua
 Classic\ZoneText.xml
-Shared\Cooldown.lua
-Classic\Cooldown.xml
 GuildUtil.lua
 Classic\TutorialFrame.lua
 Classic\TutorialFrame.xml
 Shared\LowHealthFrame.lua
 Classic\LowHealthFrame.xml
 Classic\CombatFeedback.lua
-Classic\RaidWarning.lua
 Classic\RaidWarning.xml
 Shared\CinematicFrame.lua
 Shared\CinematicFrame.xml
@@ -55,7 +52,6 @@ Cata\WorldStateFrame.xml
 Classic\TalentFrameBase_Shared.lua
 Cata\TalentFrameBase.lua
 Cata\Blizzard_TalentUITemplates.xml
-EasyMenu.lua
 Classic\MovieFrame.lua
 Classic\MovieFrame.xml
 Wrath\RolePoll.lua

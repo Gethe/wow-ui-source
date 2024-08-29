@@ -1,6 +1,3 @@
-local NO_CLASS_FILTER = 0;
-local NO_SPEC_FILTER = 0;
-
 local VIEW_MODE_FULL = 1; -- Shows everything and isn't filtered by class/spec
 local VIEW_MODE_CLASS = 2; -- Only shows items valid for the selected class/spec
 
@@ -26,16 +23,16 @@ function HeirloomsJournal_OnShow(self)
 	if self.filtersSet == nil then
 		if UnitLevel("player") >= GetMaxPlayerLevel() then
 			-- Default to full view for max level players
-			C_Heirloom.SetClassAndSpecFilters(NO_CLASS_FILTER, NO_SPEC_FILTER);
+			C_Heirloom.SetClassAndSpecFilters(UNSPECIFIED_CLASS_FILTER, UNSPECIFIED_SPEC_FILTER);
 		else
 			-- Default to current class/spec view otherwise
 			local classDisplayName, classTag, classID = UnitClass("player");
-			local specID = NO_SPEC_FILTER;
+			local specID = UNSPECIFIED_SPEC_FILTER;
 
 			C_Heirloom.SetClassAndSpecFilters(classID, specID);
 		end
 
-		self:UpdateClassFilterDropDownText();
+		self.ClassDropdown:GenerateMenu();
 	end
 
 	if self.needsRefresh then
@@ -83,29 +80,6 @@ function HeirloomsJournalSpellButton_OnClick(self, button)
 	end
 end
 
-do
-	local function OpenCollectedFilterDropDown(self, level)
-		if level then
-			self:GetParent():OpenCollectedFilterDropDown(level);
-		end
-	end
-	function HeirloomsJournalCollectedFilterDropDown_OnLoad(self)
-		UIDropDownMenu_Initialize(self, OpenCollectedFilterDropDown, "MENU");
-	end
-end
-
-do
-	local function OpenClassFilterDropDown(self, level)
-		if level then
-			self:GetParent():OpenClassFilterDropDown(level);
-		end
-	end
-	function HeirloomsJournalClassFilterDropDown_OnLoad(self)
-		UIDropDownMenu_Initialize(self, OpenClassFilterDropDown);
-		UIDropDownMenu_SetWidth(self, 140);
-	end
-end
-
 function HeirloomsMixin:OnLoad()
 	self.newHeirlooms = UIParent.newHeirlooms or {};
 	self.upgradedHeirlooms = {};
@@ -119,10 +93,89 @@ function HeirloomsMixin:OnLoad()
 	self.numKnownHeirlooms = 0;
 	self.numPossibleHeirlooms = 0;
 
+	self:InitFilterDropdown();
+	self:InitClassDropdown();
 	self:FullRefreshIfVisible();
 
 	self:RegisterEvent("HEIRLOOMS_UPDATED");
 	self:RegisterEvent("HEIRLOOM_UPGRADE_TARGETING_CHANGED");
+end
+
+function HeirloomsMixin:InitFilterDropdown()
+	self.FilterDropdown:SetUpdateCallback(function()
+		self:FullRefreshIfVisible();
+	end);
+	
+	self.FilterDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_HEIRLOOMS_FILTER");
+
+		rootDescription:CreateCheckbox(COLLECTED, C_Heirloom.GetCollectedHeirloomFilter, function()
+			HeirloomsJournal:SetCollectedHeirloomFilter(not C_Heirloom.GetCollectedHeirloomFilter());
+		end);
+
+		rootDescription:CreateCheckbox(NOT_COLLECTED, C_Heirloom.GetUncollectedHeirloomFilter, function()
+			HeirloomsJournal:SetUncollectedHeirloomFilter(not C_Heirloom.GetUncollectedHeirloomFilter());
+		end);
+	end);
+end
+
+-- Note this does not used the unified menu in Blizzard_Menu
+function HeirloomsMixin:InitClassDropdown()
+	local function IsAllClassesSelected()
+		return (self:GetSpecFilter() == UNSPECIFIED_SPEC_FILTER) and (self:GetClassFilter() == UNSPECIFIED_CLASS_FILTER);
+	end
+
+	self.ClassDropdown:SetWidth(150);
+	-- Required because changing a child radio option requires the root menu to be rebuilt prior to
+	-- selection states being evaluated in the selection translator.
+	self.ClassDropdown:EnableRegenerateOnResponse();
+	self.ClassDropdown:SetSelectionTranslator(function(selection)
+		local data = selection.data;
+		if data.classID == UNSPECIFIED_CLASS_FILTER then
+			return ALL_CLASSES;
+		end
+
+		local classInfo = C_CreatureInfo.GetClassInfo(data.classID);
+		local classColorStr = RAID_CLASS_COLORS[classInfo.classFile].colorStr;
+		return HEIRLOOMS_CLASS_FILTER_FORMAT:format(classColorStr, classInfo.className);
+	end);
+
+	local function CreateData(classID)
+		return {classID = classID};
+	end
+	
+	local function SetSelected(data)
+		self:SetClassAndSpecFilters(data.classID, UNSPECIFIED_SPEC_FILTER);
+	end
+	
+	local function GetFilterOrPlayerClassData()
+		local filterClassID = self:GetClassFilter();
+		if filterClassID ~= UNSPECIFIED_CLASS_FILTER then
+			local classInfo = C_CreatureInfo.GetClassInfo(filterClassID);
+			local color = GetClassColorObj(classInfo.classFile);
+			return classInfo.className, filterClassID, color.colorStr;
+		end
+
+		local name, tag, classID = UnitClass("player");
+		local classInfo = C_CreatureInfo.GetClassInfo(classID);
+		local color = GetClassColorObj(classInfo.classFile);
+		return name, classID, color.colorStr; 
+	end
+
+	local function IsClassSelected(data)
+		return self:GetClassFilter() == data.classID;
+	end
+
+	self.ClassDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_HEIRLOOMS_CLASS");
+
+		rootDescription:CreateRadio(ALL_CLASSES, IsClassSelected, SetSelected, CreateData(UNSPECIFIED_CLASS_FILTER));
+
+		for index = 1, GetNumClasses() do
+			local classDisplayName, classTag, classID = GetClassInfo(index);
+			rootDescription:CreateRadio(classDisplayName, IsClassSelected, SetSelected, CreateData(classID));
+		end
+	end);
 end
 
 function HeirloomsMixin:OnHeirloomsUpdated(itemID, updateReason, ...)
@@ -219,7 +272,7 @@ end
 
 function HeirloomsMixin:DetermineViewMode()
 	local classFilter, specFilter = C_Heirloom.GetClassAndSpecFilters();
-	if classFilter == NO_CLASS_FILTER and specFilter == NO_SPEC_FILTER then
+	if classFilter == UNSPECIFIED_CLASS_FILTER and specFilter == UNSPECIFIED_SPEC_FILTER then
 		return VIEW_MODE_FULL;
 	end
 
@@ -481,12 +534,12 @@ function HeirloomsMixin:RefreshView()
 		else
 			--Unable to locate an upgradeable item
 			local classFilter, specFilter = C_Heirloom.GetClassAndSpecFilters();
-			if classFilter ~= NO_CLASS_FILTER or specFilter ~= NO_SPEC_FILTER then
+			if classFilter ~= UNSPECIFIED_CLASS_FILTER or specFilter ~= UNSPECIFIED_SPEC_FILTER then
 				-- A filter is set, would we be able to find one if we removed filters?
 				local oldClassFilter = classFilter;
 				local oldSpecFilter = specFilter;
 
-				C_Heirloom.SetClassAndSpecFilters(NO_CLASS_FILTER, NO_SPEC_FILTER);
+				C_Heirloom.SetClassAndSpecFilters(UNSPECIFIED_CLASS_FILTER, UNSPECIFIED_SPEC_FILTER);
 
 				self.needsDataRebuilt = true;
 				self:RebuildLayoutData();
@@ -495,7 +548,7 @@ function HeirloomsMixin:RefreshView()
 				if closestUpgradeablePage then
 					-- Found one without filtering, apply this new filter
 					self.PagingFrame:SetCurrentPage(closestUpgradeablePage);
-					self:UpdateClassFilterDropDownText();
+					self.ClassDropdown:GenerateMenu();
 				else
 					-- Still nothing, reset the filter and just stick to the current page
 					C_Heirloom.SetClassAndSpecFilters(oldClassFilter, oldSpecFilter);
@@ -616,20 +669,14 @@ end
 
 function HeirloomsMixin:SetCollectedHeirloomFilter(checked)
 	C_Heirloom.SetCollectedHeirloomFilter(checked);
-	self:FullRefreshIfVisible();
 end
 
 function HeirloomsMixin:SetUncollectedHeirloomFilter(checked)
 	C_Heirloom.SetUncollectedHeirloomFilter(checked);
-	self:FullRefreshIfVisible();
 end
 
 function HeirloomsMixin:SetSourceChecked(source, checked)
-	if self:IsSourceChecked(source) ~= checked then
 		C_Heirloom.SetHeirloomSourceFilter(source, checked);
-
-		self:FullRefreshIfVisible();
-	end
 end
 
 function HeirloomsMixin:IsSourceChecked(source)
@@ -638,40 +685,6 @@ end
 
 function HeirloomsMixin:SetAllSourcesChecked(checked)
 	C_HeirloomInfo.SetAllSourceFilters(checked);
-
-	self:FullRefreshIfVisible();
-	UIDropDownMenu_Refresh(self.filterDropDown, UIDROPDOWNMENU_MENU_VALUE, UIDROPDOWNMENU_MENU_LEVEL);
-end
-
-function HeirloomsMixin:ResetFilters()
-	C_HeirloomInfo.SetDefaultFilters();
-
-	self:FullRefreshIfVisible();
-end
-
-function HeirloomsMixin:OpenCollectedFilterDropDown(level)
-	local info = UIDropDownMenu_CreateInfo();
-	info.keepShownOnClick = true;
-
-	if level == 1 then
-		info.text = COLLECTED;
-		info.func = function(_, _, _, value)
-						C_Heirloom.SetCollectedHeirloomFilter(value);
-						self:FullRefreshIfVisible();
-					end;
-		info.checked = C_Heirloom.GetCollectedHeirloomFilter();
-		info.isNotRadio = true;
-		UIDropDownMenu_AddButton(info, level);
-
-		info.text = NOT_COLLECTED;
-		info.func = function(_, _, _, value)
-						C_Heirloom.SetUncollectedHeirloomFilter(value);
-						self:FullRefreshIfVisible();
-					end
-		info.checked = C_Heirloom.GetUncollectedHeirloomFilter();
-		info.isNotRadio = true;
-		UIDropDownMenu_AddButton(info, level);
-	end
 end
 
 function HeirloomsMixin:GetClassFilter()
@@ -690,99 +703,12 @@ function HeirloomsMixin:SetClassAndSpecFilters(newClassFilter, newSpecFilter)
 		C_Heirloom.SetClassAndSpecFilters(newClassFilter, newSpecFilter);
 
 		self.PagingFrame:SetCurrentPage(1);
-		self:UpdateClassFilterDropDownText();
+		self.ClassDropdown:GenerateMenu();
+
 		self:FullRefreshIfVisible();
 	end
 
-	CloseDropDownMenus(1);
 	self.filtersSet = true;
-end
-
-function HeirloomsMixin:UpdateClassFilterDropDownText()
-	local text;
-	local classFilter, specFilter = C_Heirloom.GetClassAndSpecFilters();
-	if classFilter == NO_CLASS_FILTER then
-		text = ALL_CLASSES;
-	else
-		local classInfo = C_CreatureInfo.GetClassInfo(classFilter);
-		if not classInfo then
-			return;
-		end
-
-		local classColorStr = RAID_CLASS_COLORS[classInfo.classFile].colorStr;
-		if specFilter == NO_SPEC_FILTER then
-			text = HEIRLOOMS_CLASS_FILTER_FORMAT:format(classColorStr, classInfo.className);
-		else
-			local specName = GetSpecializationNameForSpecID(specFilter);
-			text = HEIRLOOMS_CLASS_SPEC_FILTER_FORMAT:format(classColorStr, classInfo.className, specName);
-		end
-	end
-	UIDropDownMenu_SetText(self.classDropDown, text);
-end
-
-do
-	local CLASS_DROPDOWN = 1;
-
-	function HeirloomsMixin:OpenClassFilterDropDown(level)
-		local filterClassID = self:GetClassFilter();
-		local filterSpecID = self:GetSpecFilter();
-
-		local function SetClassAndSpecFilters(_, classFilter, specFilter)
-			self:SetClassAndSpecFilters(classFilter, specFilter);
-		end
-
-		local info = UIDropDownMenu_CreateInfo();
-
-		if UIDROPDOWNMENU_MENU_VALUE == CLASS_DROPDOWN then
-			info.text = ALL_CLASSES;
-			info.checked = filterClassID == NO_CLASS_FILTER;
-			info.arg1 = NO_CLASS_FILTER;
-			info.arg2 = NO_SPEC_FILTER;
-			info.func = SetClassAndSpecFilters;
-			UIDropDownMenu_AddButton(info, level);
-
-			local numClasses = GetNumClasses();
-			for i = 1, numClasses do
-				local classDisplayName, classTag, classID = GetClassInfo(i);
-				if(classDisplayName) then
-					info.text = classDisplayName;
-					info.checked = filterClassID == classID;
-					info.arg1 = classID;
-					info.arg2 = NO_SPEC_FILTER;
-					info.func = SetClassAndSpecFilters;
-					UIDropDownMenu_AddButton(info, level);
-				end
-			end
-		end
-
-		if level == 1 then
-			info.text = CLASS;
-			info.func =  nil;
-			info.notCheckable = true;
-			info.hasArrow = true;
-			info.value = CLASS_DROPDOWN;
-			UIDropDownMenu_AddButton(info, level)
-
-			local classDisplayName, _classTag, classID;
-			if filterClassID ~= NO_CLASS_FILTER then
-				classID = filterClassID;
-
-				local classInfo = C_CreatureInfo.GetClassInfo(filterClassID);
-				if classInfo then
-					classDisplayName = classInfo.className;
-				end
-			else
-				classDisplayName, _classTag, classID = UnitClass("player");
-			end
-			info.text = classDisplayName;
-			info.notCheckable = true;
-			info.arg1 = classID;
-			info.arg2 = NO_SPEC_FILTER;
-			info.func = SetClassAndSpecFilters;
-			info.hasArrow = false;
-			UIDropDownMenu_AddButton(info, level);
-		end
-	end
 end
 
 function HeirloomsJournalSearchBox_OnTextChanged(self)

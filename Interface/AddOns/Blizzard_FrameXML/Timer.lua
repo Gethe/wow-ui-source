@@ -1,14 +1,10 @@
 TIMER_MINUTES_DISPLAY = "%d:%02d"
-TIMER_TYPE_PVP = 1;
-TIMER_TYPE_CHALLENGE_MODE = 2;
-TIMER_TYPE_PLAYER_COUNTDOWN = 3; 
 
 local TIMER_DATA = {
-	[1] = { mediumMarker = 11, largeMarker = 6, updateInterval = 10 },
-	[2] = { mediumMarker = 100, largeMarker = 100, updateInterval = 100 },
-	[3] = { mediumMarker = 31, largeMarker = 11, updateInterval = 10, finishedSoundKitID = SOUNDKIT.UI_COUNTDOWN_FINISHED, bigNumberSoundKitID = SOUNDKIT.UI_COUNTDOWN_TIMER, mediumNumberFinishedSoundKitID = SOUNDKIT.UI_COUNTDOWN_MEDIUM_NUMBER_FINISHED, barShowSoundKitID = SOUNDKIT.UI_COUNTDOWN_BAR_STATE_STARTS, barHideSoundKitID = SOUNDKIT.UI_COUNTDOWN_BAR_STATE_FINISHED},
-
-	[4] = {
+	[Enum.StartTimerType.PvPBeginTimer] = { mediumMarker = 11, largeMarker = 6, updateInterval = 10 },
+	[Enum.StartTimerType.ChallengeModeCountdown] = { mediumMarker = 100, largeMarker = 100, updateInterval = 100 },
+	[Enum.StartTimerType.PlayerCountdown] = { mediumMarker = 31, largeMarker = 11, updateInterval = 10, finishedSoundKitID = SOUNDKIT.UI_COUNTDOWN_FINISHED, bigNumberSoundKitID = SOUNDKIT.UI_COUNTDOWN_TIMER, mediumNumberFinishedSoundKitID = SOUNDKIT.UI_COUNTDOWN_MEDIUM_NUMBER_FINISHED, barShowSoundKitID = SOUNDKIT.UI_COUNTDOWN_BAR_STATE_STARTS, barHideSoundKitID = SOUNDKIT.UI_COUNTDOWN_BAR_STATE_FINISHED},
+	[Enum.StartTimerType.PlunderstormCountdown] = {
 		mediumMarker = 11,
 		largeMarker = 11,
 		updateInterval = 10,
@@ -24,6 +20,10 @@ local TIMER_DATA = {
 		},
 	},
 };
+
+local function GetTimerData(startTimerTypeEnum)
+	return TIMER_DATA[startTimerTypeEnum];
+end
 
 TIMER_NUMBERS_SETS = {};
 TIMER_NUMBERS_SETS["BigGold"]  = {	texture = "Interface\\Timer\\BigTimerNumbers", 
@@ -94,7 +94,7 @@ function TimerTracker_StartTimerOfType(self, timerType, timeSeconds, totalTime, 
 		end
 	end
 
-	if isTimerRunning and timer.type ~= TIMER_TYPE_PLAYER_COUNTDOWN then
+	if isTimerRunning and timer.type ~= Enum.StartTimerType.PlayerCountdown then
 		-- don't interupt the final count down
 		if not timer.startNumbers:IsPlaying() then
 			timer.time = timeSeconds;
@@ -109,7 +109,7 @@ function TimerTracker_StartTimerOfType(self, timerType, timeSeconds, totalTime, 
 			end
 		end
 			
-		if(timer and timer.type == TIMER_TYPE_PLAYER_COUNTDOWN) then 
+		if(timer and timer.type == Enum.StartTimerType.PlayerCountdown) then 
 			FreeTimerTrackerTimer(timer);
 		end 
 
@@ -140,7 +140,8 @@ function TimerTracker_StartTimerOfType(self, timerType, timeSeconds, totalTime, 
 		timer.glow1:SetTexture(timer.style.texture.."Glow");
 		timer.glow2:SetTexture(timer.style.texture.."Glow");
 			
-		timer.updateTime = TIMER_DATA[timer.type].updateInterval;
+		local timerData = GetTimerData(timer.type);
+		timer.updateTime = timerData.updateInterval;
 		timer:SetScript("OnUpdate", StartTimer_BigNumberOnUpdate);
 		timer:Show();
 	end
@@ -177,10 +178,10 @@ function TimerTracker_OnEvent(self, event, ...)
 		TimerTracker_StartTimerOfType(self, timerType, timeSeconds, totalTime);
 	elseif event == "START_PLAYER_COUNTDOWN" then
 		local initiatedByGuid, timeSeconds, totalTime, informChat, initiatedByName  = ...;
-		TimerTracker_StartTimerOfType(self, TIMER_TYPE_PLAYER_COUNTDOWN, timeSeconds, totalTime, informChat, initiatedByGuid, initiatedByName);
+		TimerTracker_StartTimerOfType(self, Enum.StartTimerType.PlayerCountdown, timeSeconds, totalTime, informChat, initiatedByGuid, initiatedByName);
 	elseif event == "CANCEL_PLAYER_COUNTDOWN" then
 		local initiatedByGuid, informChat, initiatedByName  = ...;
-		TimerTracker_StartTimerOfType(self, TIMER_TYPE_PLAYER_COUNTDOWN, 0, 0, informChat, initiatedByGuid, initiatedByName);
+		TimerTracker_StartTimerOfType(self, Enum.StartTimerType.PlayerCountdown, 0, 0, informChat, initiatedByGuid, initiatedByName);
 	elseif event == "STOP_TIMER_OF_TYPE" then
 		local timerType = ...;
 		for a,timer in pairs(self.timerList) do
@@ -191,7 +192,7 @@ function TimerTracker_OnEvent(self, event, ...)
 		end
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		for a,timer in pairs(self.timerList) do
-			if(timer.type == TIMER_TYPE_PVP) then 
+			if(timer.type == Enum.StartTimerType.PvPBeginTimer) then 
 				FreeTimerTrackerTimer(timer);
 			end
 		end
@@ -201,7 +202,7 @@ end
 
 function StartTimer_BigNumberOnUpdate(self, elapsed)
 	self.time = self.endTime - GetTime();
-	local timerData = TIMER_DATA[self.type];
+	local timerData = GetTimerData(self.type);
 	if C_Commentator.IsSpectating() then
 		if self.time < timerData.mediumMarker then
 			self:SetAlpha(1);
@@ -270,7 +271,7 @@ function StartTimer_SetTexNumbers(self, ...)
 	local style = self.style;
 	local i = 1;
 
-	local timerData = TIMER_DATA[self.type];
+	local timerData = GetTimerData(self.type);
 	local customSoundKits = timerData.customSoundKits and timerData.customSoundKits[timeDigits] or nil;
 	if customSoundKits then
 		for _, soundKitID in ipairs(customSoundKits) do
@@ -309,8 +310,8 @@ function StartTimer_SetTexNumbers(self, ...)
 	end
 	
 	if numberOffset > 0 then
-		if(TIMER_DATA[self.type].bigNumberSoundKitID and numShown < TIMER_DATA[self.type].largeMarker ) then 
-			PlaySound(TIMER_DATA[self.type].bigNumberSoundKitID); 
+		if(timerData.bigNumberSoundKitID and numShown < timerData.largeMarker ) then 
+			PlaySound(timerData.bigNumberSoundKitID); 
 		else 
 			PlaySound(SOUNDKIT.UI_BATTLEGROUND_COUNTDOWN_TIMER, "SFX");
 		end 
@@ -330,7 +331,7 @@ function StartTimer_SetTexNumbers(self, ...)
 end
 
 function StartTimer_SetGoTexture(timer)
-	if ( timer.type == TIMER_TYPE_PVP ) then
+	if ( timer.type == Enum.StartTimerType.PvPBeginTimer ) then
 		if C_Commentator.IsSpectating() or IsInLFDBattlefield() then
 			timer.GoTexture:SetAtlas("countdown-swords");
 			timer.GoTextureGlow:SetAtlas("countdown-swords-glow");
@@ -343,10 +344,10 @@ function StartTimer_SetGoTexture(timer)
 				timer.GoTextureGlow:SetTexture("Interface\\Timer\\"..factionGroup.."Glow-Logo");
 			end
 		end
-	elseif ( timer.type == TIMER_TYPE_CHALLENGE_MODE ) then
+	elseif ( timer.type == Enum.StartTimerType.ChallengeModeCountdown ) then
 		timer.GoTexture:SetTexture("Interface\\Timer\\Challenges-Logo");
 		timer.GoTextureGlow:SetTexture("Interface\\Timer\\ChallengesGlow-Logo");
-	elseif (timer.type == TIMER_TYPE_PLAYER_COUNTDOWN) then 
+	elseif (timer.type == Enum.StartTimerType.PlayerCountdown) then 
 		timer.GoTexture:SetTexture("")
 		timer.GoTextureGlow:SetTexture("")
 	end 
@@ -354,14 +355,15 @@ end
 
 function StartTimer_NumberAnimOnFinished(self)
 	self.time = self.time - 1;
+	local timerData = GetTimerData(self.type);
 	if self.time > 0 then
-		if self.time < TIMER_DATA[self.type].largeMarker then
+		if self.time < timerData.largeMarker then
 			StartTimer_SwitchToLargeDisplay(self);
 		end	
 		self.startNumbers:Play();
 	else
-		if(TIMER_DATA[self.type].finishedSoundKitID) then
-			PlaySound(TIMER_DATA[self.type].finishedSoundKitID); 
+		if(timerData.finishedSoundKitID) then
+			PlaySound(timerData.finishedSoundKitID); 
 		else
 			PlaySound(SOUNDKIT.UI_BATTLEGROUND_COUNTDOWN_FINISHED);
 		end
@@ -378,8 +380,9 @@ function StartTimer_SwitchToLargeDisplay(self)
 		self.digit1:SetSize(self.style.w, self.style.h);
 		self.digit2:SetSize(self.style.w, self.style.h);
 
-		if(TIMER_DATA[self.type].mediumNumberFinishedSoundKitID) then 
-			PlaySound(TIMER_DATA[self.type].mediumNumberFinishedSoundKitID);
+		local timerData = GetTimerData(self.type);
+		if(timerData.mediumNumberFinishedSoundKitID) then 
+			PlaySound(timerData.mediumNumberFinishedSoundKitID);
 		end 
 	end
 end

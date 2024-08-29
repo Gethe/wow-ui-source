@@ -192,7 +192,10 @@ function ScriptAnimatedEffectControllerMixin:InternalCancelEffect(skipRemovingCo
 		self.modelScene:RemoveEffectController(self);
 	end
 
-	self.modelScene:ReleaseActor(self.actor);
+	if self.actor then
+		self.modelScene:ReleaseActor(self.actor);
+		self.actor = nil;
+	end
 
 	for i, activeBehavior in ipairs(self.activeBehaviors) do
 		activeBehavior.cancelFunction();

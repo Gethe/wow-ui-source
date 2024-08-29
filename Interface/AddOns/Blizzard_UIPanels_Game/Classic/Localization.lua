@@ -17,7 +17,7 @@ local function LocalizeWhoFrame_zh()
 		_G["WhoFrameButton" .. i .. "Name"]:SetPoint("TOPLEFT", 10, -2);
 	end
 
-	WhoFrameDropDown:SetPoint("TOPLEFT", WhoFrameColumnHeader2, "TOPLEFT", -15, 1);
+	WhoFrameDropdown:SetPoint("TOPLEFT", WhoFrameColumnHeader2, "TOPLEFT", -15, 1);
 end
 
 local function LocalizeGuildFrame_zh()
