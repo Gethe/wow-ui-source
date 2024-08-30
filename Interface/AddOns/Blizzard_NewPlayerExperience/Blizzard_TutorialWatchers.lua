@@ -566,7 +566,7 @@ function Class_HunterStableWatcher:PET_STABLE_SHOW()
 		self:Complete();
 		return;
 	end
-	self:ShowPointerTutorial(NPEV2_HUNTER_STABLE_PET, "LEFT", PetStableStabledPet5, 10, 0, nil, "LEFT");
+	self:ShowPointerTutorial(NPEV2_HUNTER_STABLE_PET, "LEFT", StableFrame.ActivePetList.PetButton5, 10, 0, nil, "LEFT");
 end
 
 function Class_HunterStableWatcher:PET_STABLE_CLOSED()

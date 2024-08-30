@@ -108,24 +108,24 @@ function CommentatorNamePlateMixin:ApplyLossOfControlAtIndex(index)
 end
 
 function CommentatorNamePlateMixin:SetPointsByPixelUtil()
-	self.healthBar:ClearAllPoints();
-	PixelUtil.SetSize(self.healthBar, 190, barHeight);
-	PixelUtil.SetPoint(self.healthBar, "LEFT", self, "LEFT", 0, -10);
+	self.HealthBarsContainer:ClearAllPoints();
+	PixelUtil.SetSize(self.HealthBarsContainer, 190, barHeight);
+	PixelUtil.SetPoint(self.HealthBarsContainer, "LEFT", self, "LEFT", 0, -10);
 	
-	self.healthBar:SetFrameLevel(self:GetFrameLevel() - 1);
+	self.HealthBarsContainer:SetFrameLevel(self:GetFrameLevel() - 1);
 
 	self.overAbsorbGlow:ClearAllPoints();
-	PixelUtil.SetPoint(self.overAbsorbGlow, "BOTTOMLEFT", self.healthBar, "BOTTOMRIGHT", -8, -1);
-	PixelUtil.SetPoint(self.overAbsorbGlow, "TOPLEFT", self.healthBar, "TOPRIGHT", -8, 1);
+	PixelUtil.SetPoint(self.overAbsorbGlow, "BOTTOMLEFT", self.HealthBarsContainer, "BOTTOMRIGHT", -8, -1);
+	PixelUtil.SetPoint(self.overAbsorbGlow, "TOPLEFT", self.HealthBarsContainer, "TOPRIGHT", -8, 1);
 	PixelUtil.SetHeight(self.overAbsorbGlow, 8);
 	
 	self.overHealAbsorbGlow:ClearAllPoints();
-	--PixelUtil.SetPoint(self.overHealAbsorbGlow, "BOTTOMRIGHT", self.healthBar, "BOTTOMLEFT", 2, -1);
-	--PixelUtil.SetPoint(self.overHealAbsorbGlow, "TOPRIGHT", self.healthBar, "TOPLEFT", 2, 1);
+	--PixelUtil.SetPoint(self.overHealAbsorbGlow, "BOTTOMRIGHT", self.HealthBarsContainer, "BOTTOMLEFT", 2, -1);
+	--PixelUtil.SetPoint(self.overHealAbsorbGlow, "TOPRIGHT", self.HealthBarsContainer, "TOPLEFT", 2, 1);
 	--PixelUtil.SetWidth(self.overHealAbsorbGlow, 8);
 	
 	PixelUtil.SetWidth(self.castBar, 170, barHeight);
-	PixelUtil.SetPoint(self.castBar, "TOP", self.healthBar, "BOTTOM", 0, -6);
+	PixelUtil.SetPoint(self.castBar, "TOP", self.HealthBarsContainer, "BOTTOM", 0, -6);
 	
 	self.castBar.Text:ClearAllPoints();
 	local iconSize = barHeight + 2;
@@ -139,7 +139,7 @@ function CommentatorNamePlateMixin:SetPointsByPixelUtil()
 	self.castBar.border:UpdateSizes();
 
 	self.ClassIcon:ClearAllPoints();
-	PixelUtil.SetPoint(self.ClassIcon, "RIGHT", self.healthBar, "LEFT", 0, 0);
+	PixelUtil.SetPoint(self.ClassIcon, "RIGHT", self.HealthBarsContainer, "LEFT", 0, 0);
 
 	self.CCIcon:ClearAllPoints();
 	PixelUtil.SetPoint(self.CCIcon, "CENTER", self.ClassIcon, "CENTER", 0, 0);
@@ -187,7 +187,7 @@ end
 
 function CommentatorNamePlateMixin:SetBorderColors()
 	local color = C_Commentator.GetTeamColorByUnit(self.unit);
-	self.healthBar.border:SetVertexColor(color.r, color.g, color.b, color.a);
+	self.HealthBarsContainer.border:SetVertexColor(color.r, color.g, color.b, color.a);
 	self.castBar.border:SetVertexColor(color.r, color.g, color.b, color.a);
 end
 

@@ -71,7 +71,7 @@ end
 
 function AuctionHouseCommoditiesSellFrameMixin:GetDepositAmount()
 	local item = self:GetItem();
-	if not item then
+	if not item or not item:IsValid() then
 		return 0;
 	end
 

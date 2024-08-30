@@ -506,6 +506,21 @@ function ChallengesDungeonIconMixin:SetUp(mapInfo, isFirst)
     end
 end
 
+local function AddAffixScoreToTooltip(affixInfo)
+	GameTooltip_AddBlankLineToTooltip(GameTooltip);
+	GameTooltip_AddNormalLine(GameTooltip, LFG_LIST_BEST_RUN);
+	GameTooltip_AddColoredLine(GameTooltip, MYTHIC_PLUS_POWER_LEVEL:format(affixInfo.level), HIGHLIGHT_FONT_COLOR);
+
+	local displayZeroHours = affixInfo.durationSec >= SECONDS_PER_HOUR;
+	local durationText = SecondsToClock(affixInfo.durationSec, displayZeroHours);
+
+	if affixInfo.overTime then
+		local overtimeText = DUNGEON_SCORE_OVERTIME_TIME:format(durationText);
+		GameTooltip_AddColoredLine(GameTooltip, overtimeText, LIGHTGRAY_FONT_COLOR);
+	else
+		GameTooltip_AddColoredLine(GameTooltip, durationText, HIGHLIGHT_FONT_COLOR);
+	end
+end
 
 function ChallengesDungeonIconMixin:OnEnter()
     local name = C_ChallengeMode.GetMapUIInfo(self.mapID);
@@ -513,37 +528,21 @@ function ChallengesDungeonIconMixin:OnEnter()
     GameTooltip:SetText(name, 1, 1, 1);
 
     local inTimeInfo, overtimeInfo = C_MythicPlus.GetSeasonBestForMap(self.mapID);
-	local affixScores, overAllScore = C_MythicPlus.GetSeasonBestAffixScoreInfoForMap(self.mapID);
-	local isOverTimeRun = false;
+	local affixScores, overallScore = C_MythicPlus.GetSeasonBestAffixScoreInfoForMap(self.mapID);
 
-	local seasonBestDurationSec, seasonBestLevel, members;
-
-	if(overAllScore and (inTimeInfo or overtimeInfo)) then
-		local color = C_ChallengeMode.GetSpecificDungeonOverallScoreRarityColor(overAllScore);
-		if(not color) then
-			color = HIGHLIGHT_FONT_COLOR;
-		end
-		GameTooltip_AddNormalLine(GameTooltip, DUNGEON_SCORE_TOTAL_SCORE:format(color:WrapTextInColorCode(overAllScore)), GREEN_FONT_COLOR);
+	if overallScore and (inTimeInfo or overtimeInfo) then
+		local color = C_ChallengeMode.GetSpecificDungeonOverallScoreRarityColor(overallScore) or HIGHLIGHT_FONT_COLOR;
+		local overallText = DUNGEON_SCORE_TOTAL_SCORE:format(color:WrapTextInColorCode(overallScore));
+		GameTooltip_AddNormalLine(GameTooltip, overallText, GREEN_FONT_COLOR);
 	end
 
-	if(affixScores and #affixScores > 0) then
-		for _, affixInfo in ipairs(affixScores) do
-			GameTooltip_AddBlankLineToTooltip(GameTooltip);
-			GameTooltip_AddNormalLine(GameTooltip, DUNGEON_SCORE_BEST_AFFIX:format(affixInfo.name));
-			GameTooltip_AddColoredLine(GameTooltip, MYTHIC_PLUS_POWER_LEVEL:format(affixInfo.level), HIGHLIGHT_FONT_COLOR);
-			if(affixInfo.overTime) then
-				if(affixInfo.durationSec >= SECONDS_PER_HOUR) then
-					GameTooltip_AddColoredLine(GameTooltip, DUNGEON_SCORE_OVERTIME_TIME:format(SecondsToClock(affixInfo.durationSec, true)), LIGHTGRAY_FONT_COLOR);
-				else
-					GameTooltip_AddColoredLine(GameTooltip, DUNGEON_SCORE_OVERTIME_TIME:format(SecondsToClock(affixInfo.durationSec, false)), LIGHTGRAY_FONT_COLOR);
-				end
-			else
-				if(affixInfo.durationSec >= SECONDS_PER_HOUR) then
-					GameTooltip_AddColoredLine(GameTooltip, SecondsToClock(affixInfo.durationSec, true), HIGHLIGHT_FONT_COLOR);
-				else
-					GameTooltip_AddColoredLine(GameTooltip, SecondsToClock(affixInfo.durationSec, false), HIGHLIGHT_FONT_COLOR);
-				end
-			end
+	if affixScores then
+		local fastestAffixScore = TableUtil.FindMin(affixScores, function(affixScore)
+			return affixScore.durationSec;
+		end);
+
+		if fastestAffixScore then
+			AddAffixScoreToTooltip(fastestAffixScore);
 		end
 	end
 

@@ -92,7 +92,7 @@
 					<CheckButton parentKey="AlliedRacesMaleButton" mixin="AlliedRacesMaleButtonMixin">
 						<Size x="35" y="35"/>
 						<Anchors>
-							<Anchor point="TOPRIGHT" relativeKey="$parent.ModelScene" relativePoint="TOPRIGHT" x="-10" y="-15"/>
+							<Anchor point="TOPRIGHT" x="-10" y="-15"/>
 						</Anchors>
 						<NormalTexture atlas="AlliedRace-UnlockingFrame-Male"/>
 						<CheckedTexture atlas="AlliedRace-UnlockingFrame-GenderSelectionGlow"/>
