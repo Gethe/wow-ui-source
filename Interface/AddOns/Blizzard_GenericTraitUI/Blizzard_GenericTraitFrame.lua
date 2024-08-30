@@ -342,13 +342,6 @@ function GenericTraitFrameMixin:GetFrameLevelForButton(nodeInfo)
 	return TotalFrameLevelSpread - scaledYOffset;
 end
 
-function GenericTraitFrameMixin:IsLocked()
-	-- Overrides TalentFrameBaseMixin.
-
-	local canEditTalents, errorMessage = C_Traits.CanEditConfig(self:GetConfigID());
-	return not canEditTalents, errorMessage;
-end
-
 function GenericTraitFrameMixin:PurchaseRank(nodeID)
 	if self:ShouldShowConfirmation() then
 		local referenceKey = self;

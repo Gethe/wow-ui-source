@@ -3,7 +3,6 @@ PlayerSpellsFrameMixin = {};
 local PLAYER_SPELLS_HELP_SYSTEM = "PlayerSpellsHelpSystem"
 
 local PlayerSpellsFrameEvents = {
-	"PLAYER_LEAVING_WORLD",
 };
 
 local PlayerSpellsFrameUnitEvents = {
@@ -79,9 +78,6 @@ function PlayerSpellsFrameMixin:OnEvent(event)
 	if event == "PLAYER_SPECIALIZATION_CHANGED" then
 		self:UpdateTabs();
 		self:UpdatePortrait();
-	elseif event == "PLAYER_LEAVING_WORLD" then
-		-- There's a lot of player spell info thrashing while exiting/re-entering world, avoid displaying during it
-		self:Hide();
 	end
 end
 

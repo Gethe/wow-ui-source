@@ -461,7 +461,7 @@ end
 
 function AuctionHouseSellFrameMixin:CanPostItem()
 	local item = self:GetItem();
-	if item == nil or not item:IsValid() then
+	if item == nil then
 		return false, AUCTION_HOUSE_SELL_FRAME_ERROR_ITEM;
 	end
 

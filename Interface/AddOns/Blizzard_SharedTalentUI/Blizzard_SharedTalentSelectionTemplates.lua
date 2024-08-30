@@ -217,7 +217,7 @@ function TalentSelectionChoiceMixin:OnClick(button)
 
 			selectionChoiceFrame:SetSelectedEntryID(self:GetEntryID());
 		end
-	elseif not self:GetTalentFrame():IsLocked() then
+	else
 		local baseButton = self:GetBaseButton();
 		if baseButton and self:IsGhosted() then
 			baseButton:ClearCascadeRepurchaseHistory();
