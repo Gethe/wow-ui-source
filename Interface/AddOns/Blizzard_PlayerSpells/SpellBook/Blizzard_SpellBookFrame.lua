@@ -7,23 +7,29 @@
 local Templates = {
 	["HEADER"] = { template = "SpellBookHeaderTemplate", initFunc = SpellBookHeaderMixin.Init },
 	["SPELL"] = { template = "SpellBookItemTemplate", initFunc = SpellBookItemMixin.Init, resetFunc = SpellBookItemMixin.Reset },
-}
+};
 
+-- Events that should always be listened to
 local SpellBookLifetimeEvents = {
+	"PLAYER_ENTERING_WORLD",
+	"PLAYER_LEAVING_WORLD",
+};
+-- Events that should only be listened to while in the world (avoided while entering/exiting it)
+local SpellBookInWorldEvents = {
 	"LEARNED_SPELL_IN_SKILL_LINE",
 	"USE_GLYPH",
 	"ACTIVATE_GLYPH",
 	"CANCEL_GLYPH_CAST",
 };
-
+-- Events that should only be listened to while already visible
 local SpellBookWhileVisibleEvents = {
 	"SPELLS_CHANGED",
 	"DISPLAY_SIZE_CHANGED",
 	"UI_SCALE_CHANGED",
-}
+};
 local SpellBookWhileVisibleUnitEvents = {
 	"PLAYER_SPECIALIZATION_CHANGED",
-}
+};
 
 SpellBookFrameMixin = CreateFromMixins(SpellBookFrameTutorialsMixin, SpellBookSearchMixin);
 
@@ -111,7 +117,11 @@ function SpellBookFrameMixin:OnHide()
 end
 
 function SpellBookFrameMixin:OnEvent(event, ...)
-	if event == "SPELLS_CHANGED" then
+	if event =="PLAYER_ENTERING_WORLD" then
+		FrameUtil.RegisterFrameForEvents(self, SpellBookInWorldEvents);
+	elseif event =="PLAYER_LEAVING_WORLD" then
+		FrameUtil.UnregisterFrameForEvents(self, SpellBookInWorldEvents);
+	elseif event == "SPELLS_CHANGED" then
 		self:UpdateAllSpellData();
 	elseif event == "PLAYER_SPECIALIZATION_CHANGED" then
 		local resetCurrentPage = true;
