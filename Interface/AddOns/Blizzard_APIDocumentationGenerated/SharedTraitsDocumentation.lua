@@ -7,6 +7,22 @@ local SharedTraits =
 	Functions =
 	{
 		{
+			Name = "CanEditConfig",
+			Type = "Function",
+			Documentation = { "Returns whether the player can make changes to the specified talent config." },
+
+			Arguments =
+			{
+				{ Name = "configID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canEdit", Type = "bool", Nilable = false },
+				{ Name = "errorMessage", Type = "cstring", Nilable = false, Documentation = { "If canEdit is false, this will be filled out with text explaining why the player can not make changes." } },
+			},
+		},
+		{
 			Name = "CanPurchaseRank",
 			Type = "Function",
 

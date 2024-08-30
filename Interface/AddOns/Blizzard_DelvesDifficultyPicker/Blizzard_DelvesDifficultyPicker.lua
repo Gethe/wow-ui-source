@@ -113,9 +113,18 @@ function DelvesDifficultyPickerFrameMixin:CheckForActiveDelveAndUpdate()
 	if C_DelvesUI.HasActiveDelve() then
 		local activeDelveGossip = C_GossipInfo.GetActiveDelveGossip();
 
-		self:SetSelectedLevel(activeDelveGossip.orderIndex);
-		self:SetSelectedOption(activeDelveGossip);
-		self:UpdateWidgets(activeDelveGossip.gossipOptionID);
+		-- Prefer active delve gossip (from walk in party)
+		if activeDelveGossip and activeDelveGossip.orderIndex and activeDelveGossip.gossipOptionID then
+			self:SetSelectedLevel(activeDelveGossip.orderIndex);
+			self:SetSelectedOption(activeDelveGossip);
+			self:UpdateWidgets(activeDelveGossip.gossipOptionID);
+		elseif self.selectedOption and self.selectedOption.orderIndex and self.selectedOption.gossipOptionID then
+			-- If active delve gossip is empty, player probably entered and then left. Fall back on the last selected tier/gossip,
+			-- which should match the active delve gossip
+			self:SetSelectedLevel(self.selectedOption.orderIndex);
+			self:SetSelectedOption(self.selectedOption);
+			self:UpdateWidgets(self.selectedOption.gossipOptionID);
+		end
 		self.DelveRewardsContainerFrame:SetRewards();
 		self.Dropdown:Update();
 		self.Dropdown:SetEnabled(false);

@@ -595,7 +595,7 @@ end
 
 function NamePlateBaseMixin:GetPreferredInsets()
 	local frame = self.UnitFrame;
-	local health = frame.HealthBarsContainer;
+	local health = frame.HealthBarsContainer.healthBar;
 
 	local left = health:GetLeft() - frame:GetLeft();
 	local right = frame:GetRight() - health:GetRight();
