@@ -83,44 +83,35 @@ function DressUpBattlePet(creatureID, displayID)
 	return true;
 end
 
-function DressUpMountLink(link)
-	if( link ) then 
-		local _, _, _, linkType, spellID = strsplit(":|H", link);
-		if linkType == "spell" then
-			local mountID = C_MountJournal.GetMountFromSpell(tonumber(spellID));
-			if ( mountID ) then
-				local creatureDisplayID = C_MountJournal.GetMountInfoExtraByID(mountID);
-				return DressUpMount(creatureDisplayID);
-			end
+function DressUpMountLink(link, forcedFrame)
+	if( link ) then
+		local mountID = 0;
+
+		local _, _, _, linkType, linkID = strsplit(":|H", link);
+		if linkType == "item" then
+			mountID = C_MountJournal.GetMountFromItem(tonumber(linkID));
+		elseif linkType == "spell" then
+			mountID = C_MountJournal.GetMountFromSpell(tonumber(linkID));
+		elseif linkType == "mount" then
+			mountID = C_MountJournal.GetMountFromSpell(tonumber(linkID));
+		end
+
+		if ( mountID ) then
+			return DressUpMount(mountID);
 		end
 	end
 	return false
 end
 
-function DressUpMount(creatureDisplayID)
-	if ( not creatureDisplayID or creatureDisplayID == 0 ) then
+function DressUpMount(mountID)
+	if ( not mountID or mountID == 0 ) then
 		return false;
 	end
-
-	--Figure out which frame we're going to use
-	local frame, model, fileName, atlasPostfix;
-	if ( SideDressUpFrame.parentFrame and SideDressUpFrame.parentFrame:IsShown() ) then
-		frame, model, fileName = SideDressUpFrame, SideDressUpModel, "Pet";
-	else
-		frame, model, atlasPostfix = DressUpFrame, DressUpModel, "warrior"; --default to warrior BG when viewing full Pet/Mounts for now
+	if ( not CollectionsJournal or not CollectionsJournal:IsVisible() ) then
+		ToggleCollectionsJournal(1);
 	end
-
-	--Show the frame
-	if ( not frame:IsShown() or frame.mode ~= "mount" ) then
-		SetDressUpBackground(frame, fileName, atlasPostfix);
-		ShowUIPanel(frame);
-	end
-
-	--Set up the model on the frame
-	frame.mode = "mount";
-	frame.ResetButton:Hide();
-	model:SetPosition(0,0,0);
-	model:SetDisplayInfo(creatureDisplayID);
+	
+	MountJournal_SetSelected(mountID, 0)
 
 	return true;
 end

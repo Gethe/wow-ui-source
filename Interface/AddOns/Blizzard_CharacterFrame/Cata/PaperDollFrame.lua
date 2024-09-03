@@ -1974,15 +1974,15 @@ function PaperDollFrame_SetExpertise(statFrame, unit)
 		return;
 	end
 	
-	local expertisePct, offhandExpertisePct = GetExpertise();
+	local expertise, offhandExpertise = GetExpertise();
 	local speed, offhandSpeed = UnitAttackSpeed(unit);
 	local text;
 	if( offhandSpeed ) then
-		text = expertisePct.." / "..offhandExpertisePct;
+		text = expertise.." / "..offhandExpertise;
 	else
-		text = expertisePct;
+		text = expertise;
 	end
-	PaperDollFrame_SetLabelAndText(statFrame, STAT_EXPERTISE, text, true, expertisePct);
+	PaperDollFrame_SetLabelAndText(statFrame, STAT_EXPERTISE, text, false, expertise);
 	statFrame:SetScript("OnEnter", Expertise_OnEnter);
 	statFrame:Show();
 end
