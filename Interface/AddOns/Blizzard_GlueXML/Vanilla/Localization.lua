@@ -1,3 +1,5 @@
+-- luacheck: ignore 111 (setting non-standard global variable)
+
 local function LocalizeRealmListColumns()
 	RealmListUtility_ResizeRealmTypeColumn(30, 0);
 	RealmCallout.Text:SetFontObject("GameFontNormalMed2");

@@ -17,8 +17,6 @@ function WorldStateScoreFrame_OnLoad(self)
 	-- Tab Handling code
 	PanelTemplates_SetNumTabs(self, 3);
 
-	UIDropDownMenu_Initialize( WorldStateButtonDropDown, WorldStateButtonDropDown_Initialize, "MENU");
-	
 	local prevRowFrame = WorldStateScoreButton1;
 	for i=2,MAX_SCORE_BUTTONS do
 		local rowFrame = CreateFrame("FRAME", "WorldStateScoreButton"..i, WorldStateScoreFrame, "WorldStateScoreTemplate");
@@ -48,17 +46,6 @@ function WorldStateScoreFrame_OnShow(self)
 	WorldStateScoreFrame_Resize();
 	WorldStateScoreFrame_Update();
 	WorldStateScoreFrameTab_OnClick(WorldStateScoreFrameTab1);
-end
-
-function WorldStateButtonDropDown_Initialize()
-	UnitPopup_ShowMenu(WorldStateButtonDropDown, "WORLD_STATE_SCORE", nil, WorldStateButtonDropDown.name);
-end
-
-function WorldStateScoreFrame_ShowWorldStateButtonDropDown(self, name, battlefieldScoreIndex)
-	WorldStateButtonDropDown.name = name;
-	WorldStateButtonDropDown.battlefieldScoreIndex = battlefieldScoreIndex;
-	WorldStateButtonDropDown.initialize = WorldStateButtonDropDown_Initialize;
-	ToggleDropDownMenu(1, nil, WorldStateButtonDropDown, self:GetName(), 0, 0);
 end
 
 function WorldStateScoreFrame_Update()
@@ -118,7 +105,7 @@ function WorldStateScoreFrame_Update()
 	local numScores = GetNumBattlefieldScores();
 
 	local scoreButton, columnButtonIcon;
-	local name, kills, killingBlows, honorableKills, deaths, honorGained, faction, race, class, classToken, damageDone, healingDone, bgRating, ratingChange, preMatchMMR, mmrChange, talentSpec, honorLevel;
+	local name, kills, killingBlows, honorableKills, deaths, honorGained, faction, rank, race, class, classToken, damageDone, healingDone, bgRating, ratingChange, preMatchMMR, mmrChange, talentSpec, honorLevel;
 	local teamRating, newTeamRating, teamMMR;
 	local index;
 	local columnData;
@@ -134,7 +121,7 @@ function WorldStateScoreFrame_Update()
 	FauxScrollFrame_Update(WorldStateScoreScrollFrame, numScores, MAX_SCORE_BUTTONS, SCORE_BUTTON_HEIGHT );
 
 	-- Setup Columns
-	local text, icon, tooltip, columnButton;
+	local text, icon, tooltip;
 	local numStatColumns = GetNumBattlefieldStats();
 	local columnButton, columnButtonText, columnTextButton, columnIcon;
 	local lastStatsFrame = "WorldStateScoreColumn1";
@@ -171,7 +158,7 @@ function WorldStateScoreFrame_Update()
 	
 	-- Last button shown is what the player count anchors to
 	local lastButtonShown = "WorldStateScoreButton1";
-	local teamDataFailed, coords;
+	local coords;
 	local scrollOffset = FauxScrollFrame_GetOffset(WorldStateScoreScrollFrame);
 
 	for i=1, MAX_SCORE_BUTTONS do
@@ -186,7 +173,7 @@ function WorldStateScoreFrame_Update()
 		if ( index <= numScores ) then
 			scoreButton.index = index;
 			name, killingBlows, honorableKills, deaths, honorGained, faction, rank, race, class, classToken, damageDone, healingDone = GetBattlefieldScore(index);
-			rankName, rankNumber = GetPVPRankInfo(rank, faction);
+			local rankName, rankNumber = GetPVPRankInfo(rank, faction);
 			if ( rankNumber > 0 ) then
 				scoreButton.rankButton.icon:SetTexture(format("%s%02d","Interface\\PvPRankBadges\\PvPRank", rankNumber));
 				scoreButton.rankButton:Show();
@@ -205,16 +192,6 @@ function WorldStateScoreFrame_Update()
 			scoreButton.name.tooltip = race.." "..class;
 			scoreButton.rankButton.tooltip = rankName;
 			scoreButton.killingBlows:SetText(killingBlows);
-			teamDataFailed = 0;
-			_, teamRating, newTeamRating, teamMMR = GetBattlefieldTeamInfo(faction);
-
-			if ( not teamRating ) then
-				teamDataFailed = 1;
-			end
-			
-			if ( not newTeamRating ) then
-				teamDataFailed = 1;
-			end
 
 			scoreButton.name.text:SetWidth(175);
 			scoreButton.deaths:SetText(deaths);
@@ -389,7 +366,6 @@ function WorldStateScoreFrame_OnClose(self)
 end
 
 function WorldStateScoreFrame_OnHide(self)
-	CloseDropDownMenus();
 end
 
 function WorldStateScoreFrame_OnVerticalScroll(self, offset)
@@ -434,7 +410,13 @@ end
 function ScorePlayer_OnClick(self, mouseButton)
 	if ( mouseButton == "RightButton" ) then
 		if ( not UnitIsUnit(self.name,"player") ) then
-			WorldStateScoreFrame_ShowWorldStateButtonDropDown(self, self.name, self:GetParent().index);
+			local contextData = 
+			{
+				name = self.name,
+				battlefieldScoreIndex = self:GetParent().index,
+			};
+
+			UnitPopup_OpenMenu("WORLD_STATE_SCORE", contextData);
 		end
 	elseif ( mouseButton == "LeftButton" and IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() ) then
 		ChatEdit_InsertLink(self.text:GetText());

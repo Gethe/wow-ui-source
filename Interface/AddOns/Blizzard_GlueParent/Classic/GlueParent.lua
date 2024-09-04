@@ -50,7 +50,7 @@ end
 
 function GlueParent_OnLoad(self)
 	-- alias GlueParent to UIParent
-	UIParent = self;
+	UIParent = self; -- luacheck: ignore 111 (setting non-standard global variable)
 
 	self:RegisterEvent("FRAMES_LOADED");
 	self:RegisterEvent("LOGIN_STATE_CHANGED");
@@ -96,10 +96,6 @@ function GlueParent_OnEvent(self, event, ...)
 	elseif (event == "KIOSK_SESSION_EXPIRATION_CHANGED") then
 		GlueDialog_Show("OKAY", KIOSK_SESSION_TIMER_CHANGED);
 	end
-end
-
-function SecureCapsuleGet(name)
-	return _G[name];
 end
 
 function nop()

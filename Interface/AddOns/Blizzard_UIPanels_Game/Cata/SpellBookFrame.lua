@@ -636,7 +636,7 @@ function SpellButtonMixin:UpdateButton()
 	spellString:Show();
 	subSpellString:Show();
 
-	if (not (slotType == "FUTURESPELL")) then
+	if slotType ~= "FUTURESPELL" then
 		slotFrame:Show();
 		self.UnlearnedFrame:Hide();
 		self.TrainFrame:Hide();
@@ -812,8 +812,8 @@ function SpellBookFrame_OpenToPageForSlot(slot, reason)
 	if (alreadyOpen and reason == OPEN_REASON_PENDING_GLYPH) then
 		local page = SPELLBOOK_PAGENUMBERS[SpellBookFrame.selectedSkillLine];
 		for i = 1, 12 do
-			local slot = (i + ( SPELLS_PER_PAGE * (page - 1))) + SpellBookFrame.selectedSkillLineOffset;
-			local slotType, spellID = GetSpellBookItemInfo(slot, SpellBookFrame.bookType);
+			local glyphSlot = (i + ( SPELLS_PER_PAGE * (page - 1))) + SpellBookFrame.selectedSkillLineOffset;
+			local slotType, spellID = GetSpellBookItemInfo(glyphSlot, SpellBookFrame.bookType);
 			if (slotType == "SPELL") then
 				if (IsSpellValidForPendingGlyph(spellID)) then
 					SpellBookFrame_Update();

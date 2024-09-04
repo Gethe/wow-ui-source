@@ -34,10 +34,26 @@ function PetFrame_OnLoad (self)
 	self:RegisterEvent("UNIT_MAXPOWER");
 	self:RegisterUnitEvent("UNIT_COMBAT", "pet", "player");
 	self:RegisterUnitEvent("UNIT_AURA", "pet", "player");
-	local showmenu = function()
-		ToggleDropDownMenu(1, nil, PetFrameDropDown, "PetFrame", 44, 8);
+
+	local function OpenContextMenu(frame, unit, button, isKeyPress)
+		if UnitExists(self.unit) then
+			local which = nil;
+			local contextData = {};
+			if self.unit == "player" then
+				which = "SELF";
+				contextData.unit = "player";
+			elseif UnitIsUnit("pet", "vehicle") then
+				which = "VEHICLE";
+				contextData.unit = "vehicle";
+			else
+				which = "PET";
+				contextData.unit = "pet";
+			end
+			UnitPopup_OpenMenu(which, contextData);
+		end
 	end
-	SecureUnitButton_OnLoad(self, "pet", showmenu);
+
+	SecureUnitButton_OnLoad(self, "pet", OpenContextMenu);
 
 	if( PetFrame_AdjustPoint ) then
 		PetFrame_AdjustPoint(self);
@@ -140,24 +156,6 @@ function PetFrame_OnUpdate (self, elapsed)
 	--	end
 	--end
 	
-end
-
-function PetFrameDropDown_OnLoad (self)
-	UIDropDownMenu_Initialize(self, PetFrameDropDown_Initialize, "MENU");
-end
-
-function PetFrameDropDown_Initialize ()
-	if ( UnitExists(PetFrame.unit) ) then
-		if ( PetFrame.unit == "player" ) then
-			UnitPopup_ShowMenu(PetFrameDropDown, "SELF", "player");
-		else
-			if ( UnitIsUnit("pet", "vehicle") ) then
-				UnitPopup_ShowMenu(PetFrameDropDown, "VEHICLE", "vehicle");
-			else
-				UnitPopup_ShowMenu(PetFrameDropDown, "PET", "pet");
-			end
-		end
-	end
 end
 
 function PetCastingBarFrame_OnLoad (self)

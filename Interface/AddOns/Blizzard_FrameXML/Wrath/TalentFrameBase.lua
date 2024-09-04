@@ -88,9 +88,9 @@ function TalentFrame_Update(TalentFrame)
 		local button = _G[buttonName];
 		if ( i <= numTalents ) then
 			-- Set the button info
-			local name, iconTexture, tier, column, rank, maxRank, meetsPrereq, previewRank, meetsPreviewPrereq, isExceptional =
+			local talentName, iconTexture, tier, column, rank, maxRank, meetsPrereq, previewRank, meetsPreviewPrereq, isExceptional =
 				GetTalentInfo(selectedTab, i, TalentFrame.inspect, TalentFrame.pet, TalentFrame.talentGroup);
-			if ( name ) then
+			if ( talentName ) then
 				local displayRank;
 				if ( preview ) then
 					displayRank = previewRank;

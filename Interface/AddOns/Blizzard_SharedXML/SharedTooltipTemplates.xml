@@ -77,6 +77,13 @@ UI.xsd">
 			</Layer>
 		</Layers>
 	</GameTooltip>
+
+	<GameTooltip name="SharedTooltipDefaultContainer" frameStrata="LOW" hidden="true">
+		<Size x="250" y="150"/>
+		<Anchors>
+			<Anchor point="BOTTOMRIGHT" x="-9" y="85"/>
+		</Anchors>
+	</GameTooltip>
 	
 	<GameTooltip name="SharedTooltipTemplate" inherits="SharedTooltipArtTemplate" clampedToScreen="true" frameStrata="TOOLTIP" hidden="true" virtual="true">
 		<Scripts>

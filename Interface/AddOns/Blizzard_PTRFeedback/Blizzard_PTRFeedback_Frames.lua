@@ -161,7 +161,7 @@ function PTR_IssueReporter.AttachMultipleChoiceQuestion(frame, question, answers
     questionFrame:Show()
     
     for key, choice in pairs (answers) do
-        PTR_IssueReporter.AttachCheckBoxToQuestion(questionFrame, choice, canSelectMultiple, displayVertically)
+        PTR_IssueReporter.AttachCheckboxToQuestion(questionFrame, choice, canSelectMultiple, displayVertically)
     end
     
     local numberOfCurrentCheckboxes = #questionFrame.Checkboxes
@@ -199,9 +199,9 @@ function PTR_IssueReporter.AttachMultipleChoiceQuestion(frame, question, answers
     table.insert(frame.FrameComponents, questionFrame) 
 end
 ----------------------------------------------------------------------------------------------------
-function PTR_IssueReporter.AttachCheckBoxToQuestion(questionFrame, answer, canSelectMultiple, isVertical)
+function PTR_IssueReporter.AttachCheckboxToQuestion(questionFrame, answer, canSelectMultiple, isVertical)
     
-    local newCheckBox
+    local newCheckbox
     
     if not (PTR_IssueReporter.Data.UnusedFrameComponents.Checkbox) then
         PTR_IssueReporter.Data.UnusedFrameComponents.Checkbox = {}
@@ -210,30 +210,30 @@ function PTR_IssueReporter.AttachCheckBoxToQuestion(questionFrame, answer, canSe
     local numberOfUnusedFrames = #PTR_IssueReporter.Data.UnusedFrameComponents.Checkbox
     
     if  numberOfUnusedFrames > 0 then -- Check if there is a frame we should reuse
-        newCheckBox = PTR_IssueReporter.Data.UnusedFrameComponents.Checkbox[numberOfUnusedFrames]
+        newCheckbox = PTR_IssueReporter.Data.UnusedFrameComponents.Checkbox[numberOfUnusedFrames]
         PTR_IssueReporter.Data.UnusedFrameComponents.Checkbox[numberOfUnusedFrames] = nil
         numberOfUnusedFrames = #PTR_IssueReporter.Data.UnusedFrameComponents.Checkbox
     else
-        newCheckBox = CreateFrame("CheckButton", nil, questionFrame.QuestionBackground, "UICheckButtonTemplate")
-        newCheckBox.Text = newCheckBox:CreateFontString(nil, "OVERLAY", "GameTooltipText")        
-        newCheckBox.Text:SetJustifyH("CENTER")
-        newCheckBox.Text:SetJustifyV("MIDDLE")
-        newCheckBox.Text:SetTextColor(1, 1, 1)
+        newCheckbox = CreateFrame("CheckButton", nil, questionFrame.QuestionBackground, "UICheckButtonTemplate")
+        newCheckbox.Text = newCheckbox:CreateFontString(nil, "OVERLAY", "GameTooltipText")        
+        newCheckbox.Text:SetJustifyH("CENTER")
+        newCheckbox.Text:SetJustifyV("MIDDLE")
+        newCheckbox.Text:SetTextColor(1, 1, 1)
     end
     
-    newCheckBox.Text:ClearAllPoints()
+    newCheckbox.Text:ClearAllPoints()
     if (isVertical) then        
-        newCheckBox.Text:SetPoint("LEFT", newCheckBox, "RIGHT", 0, 0)
+        newCheckbox.Text:SetPoint("LEFT", newCheckbox, "RIGHT", 0, 0)
     else
-        newCheckBox.Text:SetPoint("TOP", newCheckBox, "BOTTOM", 0, 0)
+        newCheckbox.Text:SetPoint("TOP", newCheckbox, "BOTTOM", 0, 0)
     end
     
-    newCheckBox:SetChecked(false)
-    newCheckBox:SetParent(questionFrame.QuestionBackground)
-    newCheckBox.Text:SetText(answer)
-    newCheckBox:Show()
+    newCheckbox:SetChecked(false)
+    newCheckbox:SetParent(questionFrame.QuestionBackground)
+    newCheckbox.Text:SetText(answer)
+    newCheckbox:Show()
     
-    table.insert(questionFrame.Checkboxes, newCheckBox)
+    table.insert(questionFrame.Checkboxes, newCheckbox)
 end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.AttachModelViewer(surveyFrame, survey, dataPackage)
@@ -261,7 +261,6 @@ function PTR_IssueReporter.AttachModelViewer(surveyFrame, survey, dataPackage)
             modelViewer.FrameType = "ModelViewer"
             PTR_IssueReporter.AddBackground(modelViewer, PTR_IssueReporter.Assets.BackgroundTexture)            
         end
-        test = modelViewer
         modelViewer:SetParent(surveyFrame)
         modelViewer:ClearAllPoints()
         modelViewer:SetPoint("TOP", surveyFrame, "TOP", 0, 0)
@@ -293,7 +292,7 @@ function PTR_IssueReporter.AttachIconViewer(surveyFrame, survey, dataPackage)
         
         local numberOfUnusedFrames = #PTR_IssueReporter.Data.UnusedFrameComponents.IconViewer
         local iconViewerHeight = 100
-        local IconViewer
+        local iconViewer
         
         if  numberOfUnusedFrames > 0 then -- Check if there is a frame we should reuse
             iconViewer = PTR_IssueReporter.Data.UnusedFrameComponents.IconViewer[numberOfUnusedFrames]
@@ -332,10 +331,10 @@ end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.CleanReportFrame(frame)
     if (frame) and (frame.FrameComponents) then
-        for key, component in pairs (frame.FrameComponents) do
+        for _, component in pairs (frame.FrameComponents) do
             if (component.FrameType) then
                 if (component.FrameType == "MultipleChoice") then
-                    for key, checkbox in pairs (component.Checkboxes) do
+                    for _, checkbox in pairs (component.Checkboxes) do
                         checkbox:SetParent(UIParent)
                         checkbox:Hide()            
                         table.insert(PTR_IssueReporter.Data.UnusedFrameComponents.Checkbox, checkbox)
@@ -738,7 +737,6 @@ function PTR_IssueReporter.HookIntoTooltip(tooltip, tooltipType, tooltipID, tool
         end
         -- Check if we already added to this tooltip. Happens on the talent frame
         local found = false
-        local foundFrame
         for i = 1,15 do
             local frame = _G[tooltip:GetName() .. "TextLeft" .. i]
             local text
@@ -748,7 +746,6 @@ function PTR_IssueReporter.HookIntoTooltip(tooltip, tooltipType, tooltipID, tool
                 local contains = string.gmatch(text, PTR_IssueReporter.BugTooltipPartialString)() 
                 if (contains) then
                     found = true
-                    foundFrame = frame
                     break
                 end
             end            

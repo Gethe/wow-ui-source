@@ -54,6 +54,7 @@ function InspectPVPTeam_SoloUpdate()
 	local emblem, emblemColor, border, borderColor, banner, bannerColor, rankColor;
 	-- Data Elements
 	local teamSize, rating, played, wins, loss, rank;
+	local _;
 
 	local buttonIndex = 0;
 
@@ -127,7 +128,7 @@ function InspectPVPTeam_TeamsUpdate()
 	-- Display Elements
 	local button, buttonName, highlight, data, standard, emblem, border;
 	-- Data Elements
-	local teamName, teamSize, teamRating, teamPlayed, teamWins, teamLoss, playerPlayed,  playerRating, playerPlayedPct, teamRank;
+	local teamName, teamSize, teamRating, teamPlayed, teamWins, teamLoss, playerPlayed,  playerRating, teamRank;
 	local background = {};
 	local borderColor = {};
 	local emblemColor = {};
@@ -155,11 +156,6 @@ function InspectPVPTeam_TeamsUpdate()
 			-- Pull Values
 			teamName, teamSize, teamRating, teamPlayed, teamWins,  playerPlayed, playerRating, background.r, background.g, background.b, emblem, emblemColor.r, emblemColor.g, emblemColor.b, border, borderColor.r, borderColor.g, borderColor.b = GetInspectArenaTeamData(value.index);
 			teamLoss = teamPlayed - teamWins;
-			if ( teamPlayed ~= 0 ) then
-				playerPlayedPct =  floor( ( playerPlayed / teamPlayed ) * 100 );		
-			else
-				playerPlayedPct =  floor( ( playerPlayed / 1 ) * 100 );
-			end
 
 			-- Set button elements to variables 
 			button = getglobal("InspectPVPTeam"..buttonIndex);

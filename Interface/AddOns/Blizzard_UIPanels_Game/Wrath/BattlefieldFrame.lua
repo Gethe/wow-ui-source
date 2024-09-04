@@ -394,7 +394,7 @@ function PVPBattleground_UpdateQueueStatus()
 		queueStatus, queueMapName, queueInstanceID = GetBattlefieldStatus(i);
 		if ( queueStatus ~= "none" ) then
 			for j=1, NUM_DISPLAYED_BATTLEGROUNDS do
-				local frame = _G["BattlegroundType"..j];
+				frame = _G["BattlegroundType"..j];
 				if ( frame.localizedName == queueMapName ) then
 					if ( queueStatus == "queued" ) then
 						frame.status.texture:SetTexture(factionTexture);

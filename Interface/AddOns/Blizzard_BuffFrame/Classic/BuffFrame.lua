@@ -2,7 +2,6 @@ BUFF_FLASH_TIME_ON = 0.75;
 BUFF_FLASH_TIME_OFF = 0.75;
 BUFF_MIN_ALPHA = 0.3;
 BUFF_WARNING_TIME = 31;
-BUFF_DURATION_WARNING_TIME = 60;
 BUFFS_PER_ROW = 10;
 BUFF_MAX_DISPLAY = 32;
 BUFF_ACTUAL_DISPLAY = 0;
@@ -15,22 +14,8 @@ NUM_TEMP_ENCHANT_FRAMES = 3;
 BUFF_BUTTON_HEIGHT = 30;
 BUFF_FRAME_BASE_EXTENT = 13;	-- pixels from the top of the screen to the top edge of the buff frame, needed to calculate extent for UIParentManageFramePositions
 BUFF_HORIZ_SPACING = -5;
-DEFAULT_AURA_DURATION_FONT = "GameFontNormalSmall";
 
-
-DebuffTypeColor = { };
-DebuffTypeColor["none"]	= { r = 0.80, g = 0, b = 0 };
-DebuffTypeColor["Magic"]	= { r = 0.20, g = 0.60, b = 1.00 };
-DebuffTypeColor["Curse"]	= { r = 0.60, g = 0.00, b = 1.00 };
-DebuffTypeColor["Disease"]	= { r = 0.60, g = 0.40, b = 0 };
-DebuffTypeColor["Poison"]	= { r = 0.00, g = 0.60, b = 0 };
-DebuffTypeColor[""]	= DebuffTypeColor["none"];
-
-DebuffTypeSymbol = { };
-DebuffTypeSymbol["Magic"] = DEBUFF_SYMBOL_MAGIC;
-DebuffTypeSymbol["Curse"] = DEBUFF_SYMBOL_CURSE;
-DebuffTypeSymbol["Disease"] = DEBUFF_SYMBOL_DISEASE;
-DebuffTypeSymbol["Poison"] = DEBUFF_SYMBOL_POISON;
+CVarCallbackRegistry:SetCVarCachable("buffDurations");
 
 local consolidatedBuffs = { };
 
@@ -122,7 +107,7 @@ function BuffFrame_Update()
 end
 
 function BuffFrame_UpdatePositions()
-	if ( SHOW_BUFF_DURATIONS == "1" ) then
+	if ( CVarCallbackRegistry:GetCVarValueBool("buffDurations") ) then
 		BUFF_ROW_SPACING = 15;
 		CONSOLIDATED_BUFF_ROW_HEIGHT = 31;
 	else
@@ -191,7 +176,7 @@ function AuraButton_Update(buttonName, index, filter)
 		end
 
 		if ( duration > 0 and expirationTime ) then
-			if ( SHOW_BUFF_DURATIONS == "1" ) then
+			if ( CVarCallbackRegistry:GetCVarValueBool("buffDurations") ) then
 				buff.duration:Show();
 			else
 				buff.duration:Hide();
@@ -288,7 +273,7 @@ end
 
 function AuraButton_UpdateDuration(auraButton, timeLeft)
 	local duration = auraButton.duration;
-	if ( SHOW_BUFF_DURATIONS == "1" and timeLeft ) then
+	if ( CVarCallbackRegistry:GetCVarValueBool("buffDurations") and timeLeft ) then
 		duration:SetFormattedText(SecondsToTimeAbbrev(timeLeft, 1.0));
 		if ( timeLeft < BUFF_DURATION_WARNING_TIME ) then
 			duration:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
@@ -381,7 +366,7 @@ function BuffFrame_UpdateAllBuffAnchors()
 end
 
 function ConsolidatedBuffs_UpdateAllAnchors()
-	local buff, previousBuff, aboveBuff;
+	local previousBuff, aboveBuff;
 	local numBuffs = 0;
 	
 	for _, buff in pairs(consolidatedBuffs) do

@@ -1783,28 +1783,26 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true" parentKey="dropDown">
+							<DropdownButton parentKey="Dropdown" inherits="WowStyle1DropdownTemplate">
 								<Anchors>
 									<Anchor point="TOP" x="0" y="-54"/>
 								</Anchors>
-							</Frame>
+							</DropdownButton>
 							<Button parentKey="CreateTemplateButton" inherits="GlueButtonSmallTemplate" text="CREATE_CHARACTER">
-								<Size x="200" y="45"/>
 								<Anchors>
-									<Anchor point="BOTTOM" x="0" y="10"/>
+									<Anchor point="BOTTOM" x="0" y="22"/>
 								</Anchors>
 								<Scripts>
 									<OnLoad>
 										self:SetWidth(self:GetTextWidth() + 50);
 									</OnLoad>
-									<OnClick>
-										PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
-										C_CharacterCreation.SetCharacterTemplate(UIDropDownMenu_GetSelectedID(CharacterTemplatesFrameDropDown));
-										GlueParent_SetScreen("charcreate");
-									</OnClick>
 								</Scripts>
 							</Button>
 						</Frames>
+						<Scripts>
+							<OnLoad function="CharacterTemplatesFrame_OnLoad"/>
+							<OnShow function="CharacterTemplatesFrame_OnShow"/>
+						</Scripts>
 					</Frame>
 					<Frame name="PlayersOnServer" hidden="true" inherits="TooltipBackdropTemplate">
 						<KeyValues>
@@ -2292,12 +2290,11 @@
 					<OnClick function="CopyAccountData_OnClick"/>
 				</Scripts>
 			</Button>
-			<Frame name="$parentRegionID" inherits="UIDropDownMenuTemplate" enableMouse="true" parentKey="RegionID">
-				<Size x="50" y="16"/>
+			<DropdownButton name="$parentRegionID" inherits="WowStyle1DropdownTemplate" parentKey="RegionID">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="-10" y="-30"/>
+					<Anchor point="TOPLEFT" x="11" y="-35"/>
 				</Anchors>
-			</Frame>
+			</DropdownButton>
 			<EditBox parentKey="RealmName" inherits="InputBoxTemplate" autoFocus="false" hidden="true">
 				<Size x="200" y="16"/>
 				<Anchors>

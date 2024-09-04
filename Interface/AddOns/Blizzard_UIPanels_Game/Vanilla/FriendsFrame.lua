@@ -115,7 +115,7 @@ function FriendsFrame_OnEvent(self, event, ...)
 		WhoList_Update();
 		FriendsFrame_Update();
 	elseif ( event == "PLAYER_FLAGS_CHANGED" or event == "BN_INFO_CHANGED") then
-		FriendsFrameStatusDropDown_Update();
+		FriendsFrameStatusDropdown:GenerateMenu();
 		FriendsFrame_CheckBattlenetStatus();
 	elseif ( event == "PLAYER_ENTERING_WORLD" or event == "BN_CONNECTED" or event == "BN_DISCONNECTED") then
 		FriendsFrame_CheckBattlenetStatus();
@@ -169,22 +169,32 @@ function FriendsFrame_InviteOrRequestToJoin(guid, gameAccountID)
 end
 
 -- ============================================ GUILD ===============================================================================
-function GuildControlPopupFrameDropDown_OnLoad()
-	UIDropDownMenu_Initialize(GuildControlPopupFrameDropDown, GuildControlPopupFrameDropDown_Initialize);
-	UIDropDownMenu_SetWidth(GuildControlPopupFrameDropDown, 110);
-	UIDropDownMenu_SetButtonWidth(GuildControlPopupFrameDropDown, 54);
-	UIDropDownMenu_JustifyText(GuildControlPopupFrameDropDown, "LEFT");
-end
+function GuildControlPopupFrameDropdown_OnLoad(self)
+	WowStyle1DropdownMixin.OnLoad(self);
 
-function GuildControlPopupFrameDropDown_Initialize()
-	local info;
-	for i=1, GuildControlGetNumRanks(), 1 do
-		info = {};
-		info.text = GuildControlGetRankName(i);
-		info.func = GuildControlPopupFrameDropDownButton_OnClick;
-		info.checked = checked;
-		UIDropDownMenu_AddButton(info);
+	self:SetWidth(110);
+
+	local function IsSelected(i)
+		return GuildControlGetRank() == i;
 	end
+
+	local function SetSelected(i)
+		GuildControlSetRank(i);
+		GuildControlCheckboxUpdate(C_GuildInfo.GuildControlGetRankFlags(i));
+		GuildControlPopupFrameEditBox:SetText(text);
+		GuildControlPopupFrameAddRankButton_OnUpdate();
+		GuildControlPopupFrameRemoveRankButton_OnUpdate();
+		GuildControlPopupAcceptButton:Disable();
+	end
+
+	self:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_FRIENDS_GUILD_CONTROL");
+
+		for i=1, GuildControlGetNumRanks() do
+			local text = GuildControlGetRankName(i);
+			rootDescription:CreateRadio(text, IsSelected, SetSelected, i);
+		end
+	end);
 end
 
 function GuildControlPopupFrame_OnLoad()
@@ -205,19 +215,9 @@ function GuildControlPopupFrame_OnLoad()
 	GuildControlPopupFrameCheckbox13Label:SetText(GUILDCONTROL_OPTION13);
 end
 
-function GuildControlPopupFrameDropDownButton_OnClick(self)
-	UIDropDownMenu_SetSelectedID(GuildControlPopupFrameDropDown, self:GetID());
-	GuildControlSetRank(UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown));
-	GuildControlCheckboxUpdate(C_GuildInfo.GuildControlGetRankFlags(UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown)));
-	GuildControlPopupFrameEditBox:SetText(GuildControlGetRankName(UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown)));
-	GuildControlPopupFrameAddRankButton_OnUpdate();
-	GuildControlPopupFrameRemoveRankButton_OnUpdate();
-	GuildControlPopupAcceptButton:Disable();
-end
-
 function GuildControlCheckboxUpdate(flags)
 	for i=1, GUILD_NUM_RANK_FLAGS do
-		checkbox = _G["GuildControlPopupFrameCheckbox"..i];
+		local checkbox = _G["GuildControlPopupFrameCheckbox"..i];
 		if ( checkbox ) then
 			checkbox:SetChecked(flags[i]);
 		else
@@ -229,9 +229,8 @@ end
 function GuildControlPopupFrame_OnShow()
 	FriendsFrame.guildControlShow = 1;
 	GuildControlSetRank(1);
-	UIDropDownMenu_SetSelectedID(GuildControlPopupFrameDropDown, 1);
-	UIDropDownMenu_SetText(GuildControlPopupFrameDropDown, GuildControlGetRankName(1));
-	GuildControlCheckboxUpdate(C_GuildInfo.GuildControlGetRankFlags(UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown)));
+	GuildControlPopupFrameDropdown:GenerateMenu();
+	GuildControlCheckboxUpdate(C_GuildInfo.GuildControlGetRankFlags(1));
 	GuildControlPopupAcceptButton:Disable();
 	-- Hide center frame if there is one
 	if ( GetUIPanel("center") ) then
@@ -251,25 +250,24 @@ function GuildControlPopupAcceptButton_OnClick()
 	GuildControlSaveRank(GuildControlPopupFrameEditBox:GetText());
 	GuildStatus_Update();
 	GuildControlPopupAcceptButton:Disable();
-	UIDropDownMenu_SetText(GuildControlPopupFrameDropDown, GuildControlPopupFrameEditBox:GetText());
+	GuildControlPopupFrameDropdown:GenerateMenu();
 	GuildControlPopupFrame:Hide();
 end
 
 function GuildControlPopupFrameRemoveRankButton_OnClick()
-	GuildControlDelRank(UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown));
+	GuildControlDelRank(1);
 	GuildControlSetRank(1);
 	GuildStatus_Update();
-	UIDropDownMenu_SetSelectedID(GuildControlPopupFrameDropDown, 1);
 	GuildControlPopupFrameEditBox:SetText(GuildControlGetRankName(1));
-	GuildControlCheckboxUpdate(C_GuildInfo.GuildControlGetRankFlags(UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown)));
-	CloseDropDownMenus();
+	GuildControlCheckboxUpdate(C_GuildInfo.GuildControlGetRankFlags(1));
 	GuildControlPopupFrameRemoveRankButton_OnUpdate();
 end
 
 function GuildControlPopupFrameRemoveRankButton_OnUpdate()
-	if ( (UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown) == GuildControlGetNumRanks()) and (GuildControlGetNumRanks() > 5) ) then
+	local rank = GuildControlSetRank();
+	if ( (rank == GuildControlGetNumRanks()) and (GuildControlGetNumRanks() > 5) ) then
 		GuildControlPopupFrameRemoveRankButton:Show();
-		if ( GetNumMembersInRank(UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown)) > 0 ) then
+		if ( GetNumMembersInRank(rank) > 0 ) then
 			GuildControlPopupFrameRemoveRankButton:Disable();
 		else
 			GuildControlPopupFrameRemoveRankButton:Enable();
@@ -317,7 +315,7 @@ function GuildStatus_Update()
 	else
 		numGuildMembers = onlineMembers;
 	end
-	local fullName, rank, rankIndex, level, class, zone, note, officernote, online;
+	local fullName, rank, rankIndex, level, class, zone, note, officernote, online, isAway;
 	local guildName, guildRankName, guildRankIndex = GetGuildInfo("player");
 	local maxRankIndex = GuildControlGetNumRanks() - 1;
 	local button;

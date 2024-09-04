@@ -1,3 +1,24 @@
+
+function JumpToCollectionsTab(tabIndex)
+
+	if not tabIndex then
+		return
+	end
+
+	local currentTab = nil
+
+	if CollectionsJournal then
+		currentTab = PanelTemplates_GetSelectedTab(CollectionsJournal)
+	end
+
+	local isClosed = not CollectionsJournal or not CollectionsJournal:IsVisible()
+	local isOpenAndWrongTab = CollectionsJournal and CollectionsJournal:IsVisible() and currentTab ~= tabIndex
+
+	if ( isClosed or isOpenAndWrongTab ) then
+		ToggleCollectionsJournal(tabIndex)
+	end
+end
+
 function DressUpItemLink(link)
 	if( link ) then 
 		if ( C_Item.IsDressableItem(link) ) then
@@ -39,48 +60,25 @@ function DressUpBattlePetLink(link)
 		
 		local _, _, _, linkType, speciesIDString, _, _, _, _, _, battlePetID = strsplit(":|H", link);
 		if ( linkType == "battlepet" ) then
-			local speciesID, _, _, _, _, displayID, _, _, _, _, creatureID = C_PetJournal.GetPetInfoByPetID(battlePetID);
-			if ( speciesID == tonumber(speciesIDString)) then
-				return DressUpBattlePet(creatureID, displayID);
-			else
-				local _, _, _, creatureID, _, _, _, _, _, _, _, displayID = C_PetJournal.GetPetInfoBySpeciesID(tonumber(speciesIDString));
-				return DressUpBattlePet(creatureID, displayID);
-			end
+			local speciesID = tonumber(speciesIDString)
+			local _, _, _, creatureID, _, _, _, _, _, _, _, displayID = C_PetJournal.GetPetInfoBySpeciesID(speciesID);
+
+			DressUpBattlePet(speciesID)
 		end
 	end
 	return false
 end
 
-function DressUpBattlePet(creatureID, displayID)
-	if ( not displayID and not creatureID ) then
-		return false;
+function DressUpBattlePet(speciesID)
+	if ( not speciesID ) then
+		return false
 	end
-
-	--Figure out which frame we're going to use
-	local frame, model, fileName, atlasPostfix;
-	if ( SideDressUpFrame.parentFrame and SideDressUpFrame.parentFrame:IsShown() ) then
-		frame, model, fileName = SideDressUpFrame, SideDressUpModel, "Pet";
-	else
-		frame, model, atlasPostfix = DressUpFrame, DressUpModel, "warrior"; --default to warrior BG when viewing full Pet/Mounts for now
+	
+	JumpToCollectionsTab(COLLECTIONS_JOURNAL_TAB_INDEX_PETS)
+	if PetJournal then
+		PetJournal_SelectSpecies(PetJournal, speciesID);
 	end
-
-	--Show the frame
-	if ( not frame:IsShown() or frame.mode ~= "battlepet" ) then
-		SetDressUpBackground(frame, fileName, atlasPostfix);
-		ShowUIPanel(frame);
-	end
-
-	--Set up the model on the frame
-	frame.mode = "battlepet";
-	frame.ResetButton:Hide();
-	if ( displayID and displayID ~= 0 ) then
-		model:SetPosition(0,0,0);
-		model:SetDisplayInfo(displayID);
-	else
-		model:SetPosition(0,0,0);
-		model:SetCreature(creatureID);
-	end
-	return true;
+	return true
 end
 
 function DressUpMountLink(link, forcedFrame)
@@ -107,10 +105,8 @@ function DressUpMount(mountID)
 	if ( not mountID or mountID == 0 ) then
 		return false;
 	end
-	if ( not CollectionsJournal or not CollectionsJournal:IsVisible() ) then
-		ToggleCollectionsJournal(1);
-	end
-	
+
+	JumpToCollectionsTab(COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS)
 	MountJournal_SetSelected(mountID, 0)
 
 	return true;

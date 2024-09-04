@@ -36,7 +36,7 @@ function GraphicsOverrides.CreateAdvancedRaidSettingsTable(category, addFunc)
 	return advRaidSettings;
 end
 
-function GraphicsOverrides.AdjustAdvancedQualityControls(parentElement, settings, raid, initDropDownFunc, addOptionFunc, addRecommendedFunc)
+function GraphicsOverrides.AdjustAdvancedQualityControls(parentElement, settings, raid, initDropdownFunc, addOptionFunc, addRecommendedFunc)
 	parentElement.TextureResolution:SetPoint("TOPLEFT", parentElement.DepthEffects, "BOTTOMLEFT", 0, -10);
 	parentElement.EnvironmentDetail:SetPoint("TOPLEFT", parentElement.ProjectedTextures, "BOTTOMLEFT", 0, -10);
 
@@ -52,7 +52,7 @@ function GraphicsOverrides.AdjustAdvancedQualityControls(parentElement, settings
 	end
 
 	--reclaiming the DepthEffects control for sunshafts
-	initDropDownFunc(parentElement.DepthEffects, settingSunshafts, SUNSHAFTS, OPTION_TOOLTIP_SUNSHAFTS, GetSunshaftsOptions);
+	initDropdownFunc(parentElement.DepthEffects, settingSunshafts, SUNSHAFTS, OPTION_TOOLTIP_SUNSHAFTS, GetSunshaftsOptions);
 	parentElement.DepthEffects:Show();
 end
 
@@ -63,4 +63,60 @@ function GraphicsOverrides.GetTextureResolutionOptions(settingTextureResolution,
 	addValidatedSettingOptionFunc(container, variable, raid, 1, VIDEO_OPTIONS_HIGH, VIDEO_OPTIONS_TEXTURE_DETAIL_HIGH);
 	addRecommendedFunc(container, variable);
 	return container:GetData();
+end 
+
+function GraphicsOverrides.CreateHiResOptions(category, layout)
+	if ( IsTestBuild() and IsPublicBuild() ) then
+		return;
+	end
+
+	local function GetOptions()
+		local container = Settings.CreateControlTextContainer();
+		container:Add(false, VIDEO_OPTIONS_DISABLED);
+		container:Add(true, VIDEO_OPTIONS_ENABLED);
+		return container:GetData();
+	end
+
+	local function GetValue()
+		if C_BattleNet.AreHighResTexturesInstalled() then
+			return GetCVarBool("useHighResTextures");
+		end
+		return false;
+	end
+
+	local function SetValue(value)
+		if C_BattleNet.AreHighResTexturesInstalled() then
+			SetCVar("useHighResTextures", value);
+		end
+	end
+
+	local setting = Settings.RegisterProxySetting(category, "PROXY_HIGH_RES_TEXTURES", 
+	Settings.VarType.Boolean, OPTION_HD_TEXTURES, Settings.Default.True, GetValue, nil, SetValue);
+	setting:SetCommitFlags(Settings.CommitFlag.Apply);
+
+	local initializer = Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_HD_TEXTURES);
+	initializer:AddShownPredicate(BNConnected);
+	initializer:AddModifyPredicate(C_BattleNet.AreHighResTexturesInstalled);
+
+	if not C_BattleNet.AreHighResTexturesInstalled() then
+		local function OnClick()
+			local dialog = GlueDialog_Show or StaticPopup_Show;
+		    dialog("DOWNLOAD_HIGH_RES_TEXTURES");
+		end
+
+		local addSearchTags = true;
+		local hdTexturesInitializer = CreateSettingsButtonInitializer(OPTION_HD_TEXTURES, HD_TEXTURES_BUTTON, OnClick, OPTION_TOOLTIP_HD_TEXTURES, addSearchTags);
+		hdTexturesInitializer.hideText = true;
+
+		local version = GetBuildInfo();
+		hdTexturesInitializer.showNew = version == "4.4.1";
+		hdTexturesInitializer:AddShownPredicate(BNConnected);
+		layout:AddInitializer(hdTexturesInitializer);
+	end
+end
+
+function GraphicsOverrides.RunSettingsCallback(callback)
+	if not InGlue() then
+		callback();
+	end
 end

@@ -118,8 +118,8 @@ function ActionStatus_DisplayMessage(text, ignoreNewbieTooltipSetting)
 	end
 end
 
-function ActionStatus_OnUpdate(self, elapsed)
-	elapsed = GetTime() - self.startTime;
+function ActionStatus_OnUpdate(self)
+	local elapsed = GetTime() - self.startTime;
 	if ( elapsed < ACTION_STATUS_FADETIME ) then
 		local alpha = 1.0 - (elapsed / ACTION_STATUS_FADETIME);
 		self:SetAlpha(alpha);

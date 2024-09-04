@@ -194,7 +194,7 @@
 				<NormalTexture atlas="StreamCinematic-CC-Up" />
 				<PushedTexture atlas="StreamCinematic-CC-Down" />
 			</Button>
-			<CheckButton name="CinematicSubtitlesCheckBox" inherits="GlueCheckButtonTemplate">
+			<CheckButton name="CinematicSubtitlesCheckbox" inherits="GlueCheckButtonTemplate">
 				<Size x="20" y="20"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeTo="CinematicSubtitlesLabel" relativePoint="LEFT" x="-4" y="0"/>

@@ -212,6 +212,7 @@ function QuestLog_Update(self)
 
 	local questIndex, questLogTitle, questTitleTag, questNumGroupMates, questNormalText, questHighlight, questCheck;
 	local questLogTitleText, level, questTag, isHeader, isCollapsed, isComplete, color;
+	local frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isBounty, isStory, isHidden, isScaling;
 	local numPartyMembers, partyMembersOnQuest, tempWidth, textWidth;
 
 
@@ -291,7 +292,7 @@ function QuestLog_Update(self)
 				else
 					textWidth = QuestLogDummyText:GetWidth();
 				end
-				questNormalText:SetWidth(tempWidth);
+				questNormalText:SetWidth(textWidth);
 				-- If there's quest tag position check accordingly
 				questTitleTag:Show();
 				questCheck:Hide();
@@ -338,8 +339,7 @@ function QuestLog_Update(self)
 	local notExpanded = 0;
 	-- Somewhat redundant loop, but cleaner than the alternatives
 	for i=1, numEntries, 1 do
-		local index = i;
-		local questLogTitleText, level, questTag, isHeader, isCollapsed = GetQuestLogTitle(i);
+		questLogTitleText, level, questTag, isHeader, isCollapsed = GetQuestLogTitle(i);
 		if ( questLogTitleText and isHeader ) then
 			numHeaders = numHeaders + 1;
 			if ( isCollapsed ) then

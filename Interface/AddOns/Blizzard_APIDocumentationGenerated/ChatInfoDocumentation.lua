@@ -206,6 +206,20 @@ local ChatInfo =
 			},
 		},
 		{
+			Name = "IsTimerunningPlayer",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "playerGUID", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isTimerunning", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsValidChatLine",
 			Type = "Function",
 
@@ -217,6 +231,20 @@ local ChatInfo =
 			Returns =
 			{
 				{ Name = "isValid", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsValidCombatFilterName",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isApproved", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -2079,6 +2107,26 @@ local ChatInfo =
 			Name = "ClearBossEmotes",
 			Type = "Event",
 			LiteralName = "CLEAR_BOSS_EMOTES",
+		},
+		{
+			Name = "DailyResetInstanceWelcome",
+			Type = "Event",
+			LiteralName = "DAILY_RESET_INSTANCE_WELCOME",
+			Payload =
+			{
+				{ Name = "mapname", Type = "cstring", Nilable = false },
+				{ Name = "timeLeft", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "InstanceResetWarning",
+			Type = "Event",
+			LiteralName = "INSTANCE_RESET_WARNING",
+			Payload =
+			{
+				{ Name = "warningMessage", Type = "cstring", Nilable = false },
+				{ Name = "timeLeft", Type = "number", Nilable = false },
+			},
 		},
 		{
 			Name = "LanguageListChanged",

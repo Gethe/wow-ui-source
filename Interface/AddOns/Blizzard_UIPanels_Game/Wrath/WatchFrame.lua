@@ -83,6 +83,70 @@ local function WatchFrame_ReleaseUnusedLinkButtons ()
 	end
 end
 
+function WatchFrameLinkButtonTemplate_ShowContextMenu()
+	MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
+		rootDescription:SetTag("MENU_WATCH_FRAME_LINK");
+
+		if ( self.type == "QUEST" ) then
+			local questLogIndex = GetQuestIndexForWatch(self.index);
+			rootDescription:CreateTitle(GetQuestLogTitle(questLogIndex));
+			rootDescription:CreateButton(OBJECTIVES_VIEW_IN_QUESTLOG, function()
+				WatchFrame_OpenQuestLog(self.index, true);
+			end);
+
+			rootDescription:CreateButton(OBJECTIVES_STOP_TRACKING, function()
+				WatchFrame_StopTrackingQuest(self.index);
+			end);
+
+			if ( GetQuestLogPushable(GetQuestIndexForWatch(self.index)) and ( GetNumGroupMembers() > 0 ) ) then
+				rootDescription:CreateButton(SHARE_QUEST, function()
+					WatchFrame_ShareQuest(self.index);
+				end);
+			end
+
+			if ( WatchFrame.showObjectives ) then
+				rootDescription:CreateButton(OBJECTIVES_SHOW_QUEST_MAP, function()
+					WatchFrame_OpenMapToQuest(self.index);
+				end);
+			end
+			local numVisibleWatches = #VISIBLE_WATCHES;
+			if ( numVisibleWatches > 1 ) then
+				local visibleIndex = WatchFrame_GetVisibleIndex(questLogIndex);
+				if ( visibleIndex > 1 ) then
+					rootDescription:CreateButton(TRACKER_SORT_MANUAL_UP, function()
+						WatchFrame_MoveQuest(questLogIndex, -1);
+					end);
+
+					rootDescription:CreateButton(TRACKER_SORT_MANUAL_TOP, function()
+						WatchFrame_MoveQuest(questLogIndex, -100);
+					end);
+				end
+				if ( visibleIndex < numVisibleWatches ) then
+					rootDescription:CreateButton(TRACKER_SORT_MANUAL_DOWN, function()
+						WatchFrame_MoveQuest(questLogIndex, 1);
+					end);
+
+					rootDescription:CreateButton(TRACKER_SORT_MANUAL_BOTTOM, function()
+						WatchFrame_MoveQuest(questLogIndex, 100);
+					end);
+				end
+			end
+		elseif ( self.type == "ACHIEVEMENT" ) then
+
+			local _, achievementName = GetAchievementInfo(self.index);
+			rootDescription:CreateTitle(achievementName);
+
+			rootDescription:CreateButton(OBJECTIVES_VIEW_ACHIEVEMENT, function()
+				WatchFrame_OpenAchievementFrame(self.index);
+			end);
+
+			rootDescription:CreateButton(OBJECTIVES_STOP_TRACKING, function()
+				WatchFrame_StopTrackingAchievement(self.index);
+			end);
+		end
+	end);
+end
+
 function WatchFrameLinkButtonTemplate_OnClick (self, button, pushed)
 	if ( IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() ) then
 		if ( self.type == "QUEST" ) then
@@ -100,20 +164,11 @@ function WatchFrameLinkButtonTemplate_OnClick (self, button, pushed)
 	elseif ( button ~= "RightButton" ) then
 		WatchFrameLinkButtonTemplate_OnLeftClick(self, button);
 	else
-		local dropDown = WatchFrameDropDown;
-		if ( WatchFrame.lastLinkButton ~= self ) then
-			CloseDropDownMenus();
-		end
-		dropDown.type = self.type;
-		dropDown.index = self.index;
-		WatchFrame.dropDownOpen = true;
-		WatchFrame.lastLinkButton = self;
-		ToggleDropDownMenu(1, nil, dropDown, "cursor", 3, -3)
+		WatchFrameLinkButtonTemplate_ShowContextMenu(self);
 	end
 end
 
 function WatchFrameLinkButtonTemplate_OnLeftClick (self, button)
-	CloseDropDownMenus();
 	if ( self.type == "QUEST" ) then
 		if ( IsModifiedClick("QUESTWATCHTOGGLE") ) then
 			WatchFrame_StopTrackingQuest( button, self.index);
@@ -518,7 +573,7 @@ function WatchFrame_DisplayQuestTimers (lineFrame, nextAnchor, maxHeight, frameW
 	heightUsed = heightUsed + line:GetHeight();
 	maxWidth = line.text:GetStringWidth();
 
-	local nextAnchor = line;
+	nextAnchor = line;
 
 	for i = 1, numTimers do
 		line = WatchFrame_GetTimerLine();
@@ -653,8 +708,6 @@ function WatchFrame_DisplayTrackedAchievements (lineFrame, nextAnchor, maxHeight
 
 	local lineWidth = 0;
 	local maxWidth = 0;
-	local heightUsed = 0;
-	local topEdge = 0;
 
 	WatchFrame_ResetAchievementLines();
 	if ( bit.band(WATCHFRAME_FILTER_TYPE, WATCHFRAME_FILTER_ACHIEVEMENTS) == WATCHFRAME_FILTER_ACHIEVEMENTS ) then
@@ -676,7 +729,6 @@ function WatchFrame_DisplayTrackedAchievements (lineFrame, nextAnchor, maxHeight
 					else
 						line:SetPoint("TOP", lineFrame, "TOP", 0, -WATCHFRAME_INITIAL_OFFSET);
 					end
-					topEdge = line:GetTop();
 				end
 				previousLine = line;
 				-- criteria
@@ -728,11 +780,11 @@ function WatchFrame_DisplayTrackedAchievements (lineFrame, nextAnchor, maxHeight
 					line = WatchFrame_GetAchievementLine();
 					WatchFrame_SetLine(line, previousLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, description, DASH_SHOW);
 					previousLine = line;
-					for criteriaID, timedCriteria in next, WATCHFRAME_TIMEDCRITERIA do
+					for timedCriteriaID, timedCriteria in next, WATCHFRAME_TIMEDCRITERIA do
 						if ( timedCriteria.achievementID == achievementID ) then
 							-- not sure what this is for
 							line = WatchFrame_GetAchievementLine();
-							line.criteriaID = criteriaID;
+							line.criteriaID = timedCriteriaID;
 							line.duration = timedCriteria.duration;
 							line.startTime = timedCriteria.startTime;
 							WatchFrame_SetLine(line, previousLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, "<???>", DASH_NONE)
@@ -751,9 +803,9 @@ function WatchFrame_DisplayTrackedAchievements (lineFrame, nextAnchor, maxHeight
 					break;
 				else
 					-- turn on all lines
-					for _, line in pairs(WATCHFRAME_SETLINES) do
-						line:Show();
-						lineWidth = line.text:GetWidth() + line.dash:GetWidth();
+					for _, lineFrameToShow in pairs(WATCHFRAME_SETLINES) do
+						lineFrameToShow:Show();
+						lineWidth = lineFrameToShow.text:GetWidth() + lineFrameToShow.dash:GetWidth();
 						maxWidth = max(maxWidth, lineWidth);
 					end
 					-- turn on link button
@@ -768,12 +820,6 @@ function WatchFrame_DisplayTrackedAchievements (lineFrame, nextAnchor, maxHeight
 					linkButton.lastLine = achievementLineIndex - 1;
 					linkButton.isComplete = nil;
 					linkButton:Show();
-
-					if ( previousBottom ) then
-						heightUsed = topEdge - previousBottom;
-					else
-						heightUsed = 1;
-					end
 				end
 			end
 		end
@@ -801,10 +847,10 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, nextAnchor, maxHeight, fram
 	local numQuestWatches = GetNumQuestWatches();
 	local numObjectives;
 	local title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID;
+	local frequency, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isBounty, isStory, isHidden, isScaling;
 
 	local maxWidth = 0;
 	local lineWidth = 0;
-	local topEdge = 0;
 
 	local playerMoney = GetMoney();
 	local selectedQuestId;
@@ -865,7 +911,6 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, nextAnchor, maxHeight, fram
 					else
 						questTitle:SetPoint("TOP", lineFrame, "TOP", 0, -WATCHFRAME_INITIAL_OFFSET);
 					end
-					topEdge = questTitle:GetTop();
 				end
 				lastLine = questTitle;
 
@@ -948,9 +993,9 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, nextAnchor, maxHeight, fram
 					itemButton:SetPoint("TOPRIGHT", questTitle, "TOPRIGHT", 10, -2);
 				end
 				-- turn on all lines
-				for _, line in pairs(WATCHFRAME_SETLINES) do
-					line:Show();
-					lineWidth = line.text:GetWidth() + line.dash:GetWidth();
+				for _, lineFrameToShow in pairs(WATCHFRAME_SETLINES) do
+					lineFrameToShow:Show();
+					lineWidth = lineFrameToShow.text:GetWidth() + lineFrameToShow.dash:GetWidth();
 					maxWidth = max(maxWidth, lineWidth);
 				end
 				-- turn on link button
@@ -1104,117 +1149,6 @@ function WatchFrame_StopTrackingAchievement (button, arg1, arg2, checked)
 	WatchFrame_Update();
 	if ( AchievementFrame ) then
 		AchievementFrameAchievements_ForceUpdate(); -- Quests handle this automatically because they have spiffy events.
-	end
-end
-
-function WatchFrameDropDown_OnHide ()
-	WatchFrame.dropDownOpen = nil;
-
-	if ( WatchFrame.lastLinkButton ) then
-		WatchFrame.lastLinkButton = nil;
-	end
-end
-
-function WatchFrameDropDown_OnLoad (self)
-	UIDropDownMenu_Initialize(self, WatchFrameDropDown_Initialize, "MENU");
-	self.onHide = WatchFrameDropDown_OnHide;
-end
-
-function WatchFrameDropDown_Initialize (self)
-	if ( self.type == "QUEST" ) then
-		local info = UIDropDownMenu_CreateInfo();
-		local questLogIndex = GetQuestIndexForWatch(self.index);
-		info.text = GetQuestLogTitle(questLogIndex);
-		info.isTitle = 1;
-		info.notCheckable = 1;
-		UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-
-		info = UIDropDownMenu_CreateInfo();
-		info.notCheckable = 1;
-
-		info.text = OBJECTIVES_VIEW_IN_QUESTLOG;
-		info.func = WatchFrame_OpenQuestLog;
-		info.arg1 = self.index;
-		info.arg2 = true;
-		info.noClickSound = 1;
-		info.checked = false;
-		UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-
-		info.text = OBJECTIVES_STOP_TRACKING;
-		info.func = WatchFrame_StopTrackingQuest;
-		info.arg1 = self.index;
-		info.checked = false;
-		UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-
-		if ( GetQuestLogPushable(GetQuestIndexForWatch(self.index)) and ( GetNumGroupMembers() > 0 ) ) then
-			info.text = SHARE_QUEST;
-			info.func = WatchFrame_ShareQuest;
-			info.arg1 = self.index;
-			info.checked = false;
-			UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-		end
-		if ( WatchFrame.showObjectives ) then
-			info.text = OBJECTIVES_SHOW_QUEST_MAP;
-			info.func = WatchFrame_OpenMapToQuest;
-			info.arg1 = self.index;
-			info.checked = false;
-			info.noClickSound = 1;
-			UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-		end
-		local numVisibleWatches = #VISIBLE_WATCHES;
-		if ( numVisibleWatches > 1 ) then
-			local visibleIndex = WatchFrame_GetVisibleIndex(questLogIndex);
-			if ( visibleIndex > 1 ) then
-				info.text = TRACKER_SORT_MANUAL_UP;
-				info.func = WatchFrame_MoveQuest;
-				info.arg1 = questLogIndex;
-				info.arg2 = -1;
-				info.checked = false;
-				UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-				info.text = TRACKER_SORT_MANUAL_TOP;
-				info.func = WatchFrame_MoveQuest;
-				info.arg1 = questLogIndex;
-				info.arg2 = -100;		-- ensure move up to top regardless of reordering after dropdown has been opened
-				info.checked = false;
-				UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-			end
-			if ( visibleIndex < numVisibleWatches ) then
-				info.text = TRACKER_SORT_MANUAL_DOWN;
-				info.func = WatchFrame_MoveQuest;
-				info.arg1 = questLogIndex;
-				info.arg2 = 1;
-				info.checked = false;
-				UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-				info.text = TRACKER_SORT_MANUAL_BOTTOM;
-				info.func = WatchFrame_MoveQuest;
-				info.arg1 = questLogIndex;
-				info.arg2 = 100;		-- ensure move down to bottom regardless of reordering after dropdown has been opened
-				info.checked = false;
-				UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-			end
-		end
-	elseif ( self.type == "ACHIEVEMENT" ) then
-		local _, achievementName, _, completed, _, _, _, _, _, icon = GetAchievementInfo(self.index);
-		local info = UIDropDownMenu_CreateInfo();
-		info.text = achievementName;
-		info.isTitle = 1;
-		info.notCheckable = 1;
-		UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-
-		info = UIDropDownMenu_CreateInfo();
-		info.notCheckable = 1;
-
-		info.text = OBJECTIVES_VIEW_ACHIEVEMENT;
-		info.func = WatchFrame_OpenAchievementFrame;
-		info.arg1 = self.index;
-		info.checked = false;
-		UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-
-		info.text = OBJECTIVES_STOP_TRACKING;
-		info.func = WatchFrame_StopTrackingAchievement;
-		info.arg1 = self.index;
-		info.checked = false;
-		UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
 	end
 end
 
@@ -1400,84 +1334,55 @@ function WatchFrame_SetWidth(width)
 	end
 end
 
--- header dropdown
+local function IsSortSelected(sortType)
+	return WATCHFRAME_SORT_TYPE == sortType;
+end
+
+local function SetSortSelected(sortType)
+	WatchFrame_SetSorting(sortType);
+end
+
+local function CreateSortRadio(rootDescription, text, tooltipText, sortType)
+	local radio = rootDescription:CreateRadio(text, IsSortSelected, SetSortSelected, sortType);
+	radio:SetTooltip(function(tooltip, elementDescription)
+		GameTooltip_SetTitle(tooltip, text);
+		GameTooltip_AddNormalLine(tooltip, tooltipText);
+	end);
+end
+
+local function IsFilterSelected(filterType)
+	return bit.band(WATCHFRAME_FILTER_TYPE, filterType) == filterType;
+end
+
+local function SetFilterSelected(filterType)
+	WatchFrame_SetFilter(filterType);
+end
+
+local function CreateFilterRadio(rootDescription, text, tooltipText, filterType)
+	local radio = rootDescription:CreateRadio(text, IsFilterSelected, SetFilterSelected, filterType);
+	radio:SetTooltip(function(tooltip, elementDescription)
+		GameTooltip_SetTitle(tooltip, text);
+		GameTooltip_AddNormalLine(tooltip, tooltipText);
+	end);
+end
+
 function WatchFrameHeader_OnClick(self, button)
 	if ( button == "RightButton" ) then
-		ToggleDropDownMenu(1, nil, WatchFrameHeaderDropDown, "cursor", 3, -3)
+		MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
+			rootDescription:SetTag("MENU_WATCH_FRAME_HEADER");
+
+			rootDescription:CreateTitle(TRACKER_SORT_LABEL);
+			CreateSortRadio(rootDescription, TRACKER_SORT_DIFFICULTY_HIGH, TOOLTIP_TRACKER_SORT_DIFFICULTY_HIGH, WATCHFRAME_SORT_DIFFICULTY_HIGH);
+			CreateSortRadio(rootDescription, TRACKER_SORT_DIFFICULTY_LOW, TOOLTIP_TRACKER_SORT_DIFFICULTY_LOW, WATCHFRAME_SORT_DIFFICULTY_LOW);
+			CreateSortRadio(rootDescription, TRACKER_SORT_MANUAL, TOOLTIP_TRACKER_SORT_MANUAL, WATCHFRAME_SORT_MANUAL);
+
+			rootDescription:CreateTitle(TRACKER_FILTER_LABEL);
+			CreateFilterRadio(rootDescription, TRACKER_FILTER_ACHIEVEMENTS, TOOLTIP_TRACKER_FILTER_ACHIEVEMENTS, WATCHFRAME_FILTER_ACHIEVEMENTS);
+			CreateFilterRadio(rootDescription, TRACKER_FILTER_COMPLETED_QUESTS, TOOLTIP_TRACKER_FILTER_COMPLETED_QUESTS, WATCHFRAME_FILTER_COMPLETED_QUESTS);
+			CreateFilterRadio(rootDescription, TRACKER_FILTER_REMOTE_ZONES, TOOLTIP_TRACKER_FILTER_REMOTE_ZONES, WATCHFRAME_FILTER_REMOTE_ZONES);
+
+		end);
 	end
-end
-
-function WatchFrameHeaderDropDown_OnLoad (self)
-	UIDropDownMenu_Initialize(self, WatchFrameHeaderDropDown_Initialize, "MENU");
-end
-
-function WatchFrameHeaderDropDown_Initialize (self)
-	local info = UIDropDownMenu_CreateInfo();
-	-- sort label
-	info.text = TRACKER_SORT_LABEL;
-	info.isTitle = 1;
-	info.notCheckable = 1;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-	-- sort: difficulty high
-	info = UIDropDownMenu_CreateInfo();
-	info.checked = (WATCHFRAME_SORT_TYPE == WATCHFRAME_SORT_DIFFICULTY_HIGH);
-	info.text = TRACKER_SORT_DIFFICULTY_HIGH;
-	info.tooltipTitle = TRACKER_SORT_DIFFICULTY_HIGH;
-	info.tooltipText = TOOLTIP_TRACKER_SORT_DIFFICULTY_HIGH;
-	info.arg1 = WATCHFRAME_SORT_DIFFICULTY_HIGH;
-	info.func = WatchFrame_SetSorting;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-	-- sort: difficulty low
-	info = UIDropDownMenu_CreateInfo();
-	info.checked = (WATCHFRAME_SORT_TYPE == WATCHFRAME_SORT_DIFFICULTY_LOW);
-	info.text = TRACKER_SORT_DIFFICULTY_LOW;
-	info.tooltipTitle = TRACKER_SORT_DIFFICULTY_LOW;
-	info.tooltipText = TOOLTIP_TRACKER_SORT_DIFFICULTY_LOW;
-	info.arg1 = WATCHFRAME_SORT_DIFFICULTY_LOW;
-	info.func = WatchFrame_SetSorting;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-	-- sort: manual
-	info = UIDropDownMenu_CreateInfo();
-	info.checked = (WATCHFRAME_SORT_TYPE == WATCHFRAME_SORT_MANUAL);
-	info.text = TRACKER_SORT_MANUAL;
-	info.tooltipTitle = TRACKER_SORT_MANUAL;
-	info.tooltipText = TOOLTIP_TRACKER_SORT_MANUAL;
-	info.arg1 = WATCHFRAME_SORT_MANUAL;
-	info.func = WatchFrame_SetSorting;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-	-- filter label
-	info.text = TRACKER_FILTER_LABEL;
-	info.checked = false;
-	info.isTitle = 1;
-	info.notCheckable = 1;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-	-- filter: achievements
-	info = UIDropDownMenu_CreateInfo();
-	info.checked = (bit.band(WATCHFRAME_FILTER_TYPE, WATCHFRAME_FILTER_ACHIEVEMENTS) == WATCHFRAME_FILTER_ACHIEVEMENTS);
-	info.text = TRACKER_FILTER_ACHIEVEMENTS;
-	info.tooltipTitle = TRACKER_FILTER_ACHIEVEMENTS;
-	info.tooltipText = TOOLTIP_TRACKER_FILTER_ACHIEVEMENTS;
-	info.arg1 = WATCHFRAME_FILTER_ACHIEVEMENTS;
-	info.func = WatchFrame_SetFilter;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-	-- filter: completed quests
-	info = UIDropDownMenu_CreateInfo();
-	info.checked = (bit.band(WATCHFRAME_FILTER_TYPE, WATCHFRAME_FILTER_COMPLETED_QUESTS) == WATCHFRAME_FILTER_COMPLETED_QUESTS);
-	info.text = TRACKER_FILTER_COMPLETED_QUESTS;
-	info.tooltipTitle = TRACKER_FILTER_COMPLETED_QUESTS;
-	info.tooltipText = TOOLTIP_TRACKER_FILTER_COMPLETED_QUESTS;
-	info.arg1 = WATCHFRAME_FILTER_COMPLETED_QUESTS;
-	info.func = WatchFrame_SetFilter;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-	-- filter: current zone
-	info = UIDropDownMenu_CreateInfo();
-	info.checked = (bit.band(WATCHFRAME_FILTER_TYPE, WATCHFRAME_FILTER_REMOTE_ZONES) == WATCHFRAME_FILTER_REMOTE_ZONES);
-	info.text = TRACKER_FILTER_REMOTE_ZONES;
-	info.tooltipTitle = TRACKER_FILTER_REMOTE_ZONES;
-	info.tooltipText = TOOLTIP_TRACKER_FILTER_REMOTE_ZONES;
-	info.arg1 = WATCHFRAME_FILTER_REMOTE_ZONES;
-	info.func = WatchFrame_SetFilter;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
 end
 
 function WatchFrame_SetSorting(button, arg1)
@@ -1541,7 +1446,6 @@ end
 function WatchFrameAutoQuest_DisplayAutoQuestPopUps(lineFrame, nextAnchor, maxHeight, frameWidth)
 	local numPopUps = 0;
 	local maxWidth = 0;
-	local i;
 	local numAutoQuestPopUps = GetNumAutoQuestPopUps();
 	for i=1, numAutoQuestPopUps do
 		local questID, popUpType = GetAutoQuestPopUp(i);

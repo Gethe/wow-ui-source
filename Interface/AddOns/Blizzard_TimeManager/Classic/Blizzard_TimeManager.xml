@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
 	<Frame name="TimeManagerFrame" toplevel="true" parent="UIParent" enableMouse="true" frameStrata="DIALOG" hidden="true" inherits="ButtonFrameTemplate">
-		<Size x="190" y="240"/>
+		<Size x="220" y="240"/>
 		<Anchors>
 			<Anchor point="TOPRIGHT" x="-10" y="-190"/>
 		</Anchors>
@@ -64,7 +64,7 @@
 					</CheckButton>
 				</Frames>
 			</Frame>
-			<Frame name="TimeManagerAlarmTimeFrame">
+			<Frame parentKey="AlarmTimeFrame" name="TimeManagerAlarmTimeFrame">
 				<Size x="145" y="52"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="12" y="-65"/>
@@ -76,35 +76,30 @@
 								<Anchor point="TOPLEFT" x="0" y="0"/>
 							</Anchors>
 						</FontString>
-						<FontString name="TimeManagerAMPMDummyText" inherits="GameFontHighlightSmall" hidden="true">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="0" y="0"/>
-							</Anchors>
-						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>
-					<Frame name="TimeManagerAlarmHourDropDown" inherits="UIDropDownMenuTemplate">
+					<DropdownButton parentKey="HourDropdown" inherits="WowStyle1DropdownTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="TimeManagerAlarmTimeLabel" relativePoint="BOTTOMLEFT" x="-20" y="-4"/>
+							<Anchor point="TOPLEFT" relativeTo="TimeManagerAlarmTimeLabel" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 						</Anchors>
-					</Frame>
-					<Frame name="TimeManagerAlarmMinuteDropDown" inherits="UIDropDownMenuTemplate">
+					</DropdownButton>
+					<DropdownButton parentKey="MinuteDropdown" inherits="WowStyle1DropdownTemplate">
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="TimeManagerAlarmHourDropDown" relativePoint="RIGHT" x="-22" y="0"/>
+							<Anchor point="LEFT" relativeKey="$parent.HourDropdown" relativePoint="RIGHT" x="5" y="0"/>
 						</Anchors>
-					</Frame>
-					<Frame name="TimeManagerAlarmAMPMDropDown" inherits="UIDropDownMenuTemplate">
+					</DropdownButton>
+					<DropdownButton parentKey="AMPMDropdown" inherits="WowStyle1DropdownTemplate">
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="TimeManagerAlarmMinuteDropDown" relativePoint="RIGHT" x="-22" y="0"/>
+							<Anchor point="LEFT" relativeKey="$parent.MinuteDropdown" relativePoint="RIGHT" x="5" y="0"/>
 						</Anchors>
-					</Frame>
+					</DropdownButton>
 				</Frames>
 			</Frame>
 			<Frame name="TimeManagerAlarmMessageFrame">
 				<Size x="160" y="40"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="TimeManagerAlarmHourDropDown" relativePoint="BOTTOMLEFT" x="20" y="0"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.AlarmTimeFrame.HourDropdown" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -117,7 +112,7 @@
 				</Layers>
 				<Frames>
 					<EditBox name="TimeManagerAlarmMessageEditBox" inherits="InputBoxTemplate" autoFocus="false" letters="32" historyLines="1">
-						<Size x="160" y="20"/>
+						<Size x="190" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="TimeManagerAlarmMessageLabel" relativePoint="BOTTOMLEFT" x="4" y="-4"/>
 						</Anchors>
@@ -144,7 +139,7 @@
 			<CheckButton name="TimeManagerMilitaryTimeCheck" inherits="UICheckButtonTemplate">
 				<Size x="24" y="24"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="155" y="-190"/>
+					<Anchor point="TOPLEFT" x="185" y="-190"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>

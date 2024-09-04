@@ -159,7 +159,7 @@ function SetItemRef(link, text, button, chatFrame)
 			local chanLink = strsub(link, 9);
 			local chatType, chatTarget = strsplit(":", chanLink);
 			if not ( (strupper(chatType) == "CHANNEL" and GetChannelName(tonumber(chatTarget)) == 0) ) then	--Don't show the dropdown if this is a channel we are no longer in.
-				ChatChannelDropDown_Show(chatFrame, strupper(chatType), chatTarget, Chat_GetColoredChatName(strupper(chatType), chatTarget));
+				ChatChannelDropdown_Show(chatFrame, strupper(chatType), chatTarget, Chat_GetColoredChatName(strupper(chatType), chatTarget));
 			end
 		end
 		return;
@@ -219,7 +219,11 @@ function SetItemRef(link, text, button, chatFrame)
 			local fixedLink = GetFixedLink(text, tonumber(breedQuality));
 			HandleModifiedItemClick(fixedLink);
 		else
-			FloatingBattlePet_Toggle(tonumber(speciesID), tonumber(level), tonumber(breedQuality), tonumber(maxHealth), tonumber(power), tonumber(speed), string.gsub(string.gsub(text, "^(.*)%[", ""), "%](.*)$", ""), battlePetID);
+			if(GetClassicExpansionLevel() >= LE_EXPANSION_MISTS_OF_PANDARIA) then
+				FloatingBattlePet_Toggle(tonumber(speciesID), tonumber(level), tonumber(breedQuality), tonumber(maxHealth), tonumber(power), tonumber(speed), string.gsub(string.gsub(text, "^(.*)%[", ""), "%](.*)$", ""), battlePetID);
+			else
+				-- No tooltip for pre-mop
+			end
 		end
 		return;
 	elseif ( strsub(link, 1, 19) == "garrfollowerability" ) then
@@ -241,7 +245,6 @@ function SetItemRef(link, text, button, chatFrame)
 		end
 		return;
 	elseif ( strsub(link, 1, 11) == "garrmission" ) then
-		local _, garrMissionID = strsplit(":", link);
 		local garrMissionID, garrMissionDBID = link:match("garrmission:(%d+):([0-9a-fA-F]+)")
 		if (garrMissionID and garrMissionDBID and strlen(garrMissionDBID) == 16) then
 			if ( IsModifiedClick() ) then
@@ -326,8 +329,8 @@ function SetItemRef(link, text, button, chatFrame)
 		end
 	elseif ( strsub(link, 1, 4) == "item" ) then
 		if ( IsModifiedClick("CHATLINK") and button == "LeftButton" ) then
-			local name, link = C_Item.GetItemInfo(text);
-			if ChatEdit_InsertLink(link) then
+			local name, itemLink = C_Item.GetItemInfo(text);
+			if ChatEdit_InsertLink(itemLink) then
 				return;
 			end
 		end
@@ -339,7 +342,6 @@ function SetItemRef(link, text, button, chatFrame)
 		end
 		local _, ticketId = strsplit(":", link);
 		if ( CommunitiesFrame_IsEnabled() ) then
-			Communities_LoadUI();
 			CommunitiesHyperlink.OnClickLink(ticketId);
 		end
 		return;

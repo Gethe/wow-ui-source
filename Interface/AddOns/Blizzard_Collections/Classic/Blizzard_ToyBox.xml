@@ -34,34 +34,11 @@
 					<OnTextChanged function="ToyBox_OnSearchTextChanged"/>
 				</Scripts>
 			</EditBox>
-			<DropDownToggleButton name="$parentFilterButton" inherits="UIMenuButtonStretchTemplate" text="FILTER">
-				<Size x="93" y="22"/>
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="-12" y="-34"/>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture parentKey="Icon" file="Interface\ChatFrame\ChatFrameExpandArrow">
-							<Size x="10" y="12"/>
+			<DropdownButton parentKey="FilterDropdown" inherits="WowStyle1FilterDropdownTemplate">
 							<Anchors>
-								<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="RIGHT" x="-5"/>
+					<Anchor point="TOPRIGHT" x="-12" y="-35"/>
 							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnClick>
-						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-						ToggleDropDownMenu(1, nil, ToyBoxFilterDropDown, "ToyBoxFilterButton", 74, 15);
-					</OnClick>
-				</Scripts>
-			</DropDownToggleButton>
-			<Frame name="$parentFilterDropDown" inherits="UIDropDownMenuTemplate">
-				<Scripts>
-					<OnLoad function="ToyBoxFilterDropDown_OnLoad"/>
-				</Scripts>
-			</Frame>
-
+			</DropdownButton>
 			<Frame parentKey="iconsFrame" inherits="CollectionsBackgroundTemplate">
 				<Layers>
 					<Layer level="BORDER" textureSubLevel="1">
@@ -173,7 +150,6 @@
 					<Anchor point="BOTTOM" x="21" y="43"/>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentToyOptionsMenu" inherits="UIDropDownMenuTemplate" enableMouse="true" parentKey="toyOptionsMenu"/>
 		</Frames>
 		<Scripts>
 			<OnLoad function="ToyBox_OnLoad"/>

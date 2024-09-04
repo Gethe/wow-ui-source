@@ -17,6 +17,7 @@ CONTAINER_SCALE = 0.75;
 BACKPACK_MONEY_OFFSET_DEFAULT = -215;
 BACKPACK_MONEY_HEIGHT_OFFSET_PER_EXTRA_ROW = 41;
 BACKPACK_BASE_HEIGHT = 240;
+BACKPACK_HEIGHT = nil;
 BACKPACK_HEIGHT_OFFSET_PER_EXTRA_ROW = 41;
 BACKPACK_DEFAULT_TOPHEIGHT = 255;
 BACKPACK_EXTENDED_TOPHEIGHT = 210;
@@ -272,6 +273,7 @@ function ContainerFrame_OnShow(self)
 		if ( button ) then
 			button:SetChecked(true);
 		end
+		--[[
 		if (not IsInventoryItemProfessionBag("player", C_Container.ContainerIDToInventoryID(self:GetID()))) then
 			for i = LE_BAG_FILTER_FLAG_EQUIPMENT, NUM_LE_BAG_FILTER_FLAGS do
 				local active = false;
@@ -280,15 +282,14 @@ function ContainerFrame_OnShow(self)
 				else
 					active = C_Container.GetBagSlotFlag(self:GetID(), i);
 				end
-				--[[
 				if ( active ) then
 					self.FilterIcon.Icon:SetAtlas(BAG_FILTER_ICONS[i], true);
 					self.FilterIcon:Show();
 					break;
 				end
-				--]]
 			end
 		end
+		--]]
 		if ( not ContainerFrame1.allBags ) then
 			CheckBagSettingsTutorial();
 		end
@@ -509,7 +510,7 @@ function ContainerFrame_Update(frame)
 	local id = frame:GetID();
 	local name = frame:GetName();
 	local itemButton;
-	local texture, itemCount, locked, quality, readable, _, isFiltered, noValue, itemID;
+	local texture, itemCount, locked, quality, readable, _, isFiltered, noValue, itemID;  -- luacheck: ignore 231 (variable is never accessed)
 --[[
 	local battlepayItemTexture, newItemTexture, flash, newItemAnim;
 --]]
@@ -518,6 +519,7 @@ function ContainerFrame_Update(frame)
 --[[
 	frame.FilterIcon:Hide();
 --]]
+	--[[
 	if ( id ~= Enum.BagIndex.Backpack and id ~= KEYRING_CONTAINER and not IsInventoryItemProfessionBag("player", C_Container.ContainerIDToInventoryID(id)) ) then
 		for i = LE_BAG_FILTER_FLAG_EQUIPMENT, NUM_LE_BAG_FILTER_FLAGS do
 			local active = false;
@@ -526,15 +528,14 @@ function ContainerFrame_Update(frame)
 			else
 				active = C_Container.GetBagSlotFlag(id, i);
 			end
-			--[[
 			if ( active ) then
 				frame.FilterIcon.Icon:SetAtlas(BAG_FILTER_ICONS[i], true);
 				frame.FilterIcon:Show();
 				break;
 			end
-			--]]
 		end
 	end
+	--]]
 
 	--Update Searchbox and sort button
 	--[[
@@ -612,8 +613,8 @@ function ContainerFrame_Update(frame)
 			end
 		end
 --]]
-		battlepayItemTexture = _G[name.."Item"..i].BattlepayItemTexture;
-		newItemTexture = _G[name.."Item"..i].NewItemTexture;
+		local battlepayItemTexture = _G[name.."Item"..i].BattlepayItemTexture;
+		local newItemTexture = _G[name.."Item"..i].NewItemTexture;
 		battlepayItemTexture:Hide();
 		newItemTexture:Hide();
 
@@ -781,11 +782,12 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 			local remainingRows = extraRows;
 
 			-- Calculate the number of background textures we're going to need
-			bgTextureCount = ceil(remainingRows/ROWS_IN_BG_TEXTURE);
+			local bgTextureCount = ceil(remainingRows/ROWS_IN_BG_TEXTURE);
 			
 			-- Try to cycle all the middle bg textures
 			local firstRowPixelOffset = 9;
 			local firstRowTexCoordOffset = BG_TEXTURE_MIDDLE_START / BG_TEXTURE_HEIGHT;
+			local height;
 			for i=1, bgTextureCount do
 				bgTextureMiddle = _G[name.."BackgroundMiddle"..i];
 				if ( remainingRows > ROWS_IN_BG_TEXTURE ) then
@@ -1094,7 +1096,7 @@ function ContainerFrame_RefreshRuneIcons(self, enabled)
 			for s = 1, frame.size, 1 do
 				local itemButton = _G[name.."Item"..s];
 				local texture = "Interface\\PaperDoll\\UI-Backpack-EmptySlot";
-				if ( C_Engraving.IsEngravingEnabled() and enabled and C_Engraving.IsInventorySlotEngravable(frame:GetID(), itemButton:GetID()) ) then
+				if ( C_Engraving.IsEngravingEnabled() and enabled and frame:GetID() >= 0 and C_Engraving.IsInventorySlotEngravable(frame:GetID(), itemButton:GetID()) ) then
 					local engravingInfo = C_Engraving.GetRuneForInventorySlot(frame:GetID(), itemButton:GetID());
 					if(engravingInfo) then
 						texture = engravingInfo.iconTexture;
@@ -1117,7 +1119,7 @@ function ContainerFrame_EngravingTargetingModeChanged(self, enabled)
 			for s = 1, frame.size, 1 do
 				local itemButton = _G[name.."Item"..s];
 				if(enabled) then
-					local engravable = C_Engraving.IsInventorySlotEngravableByCurrentRuneCast(frame:GetID(), itemButton:GetID());
+					local engravable = frame:GetID() >= 0 and C_Engraving.IsInventorySlotEngravableByCurrentRuneCast(frame:GetID(), itemButton:GetID());
 					SetItemButtonDesaturated(itemButton, not engravable);
 				else
 					SetItemButtonDesaturated(itemButton, false);
@@ -1230,10 +1232,10 @@ function ContainerFrame_GetExtendedPriceString(itemButton, isEquipped, quantity)
 	
 	local maxQuality = 0;
 	for i=1, itemCount, 1 do
-		local info = C_Container.GetContainerItemPurchaseItem(bag, slot, i, isEquipped);
-		local itemTexture = info and info.iconFileDataID;
-		local itemQuantity = info and info.itemCount;
-		local itemLink = info and info.hyperlink;
+		local purchaseItemInfo = C_Container.GetContainerItemPurchaseItem(bag, slot, i, isEquipped);
+		local itemTexture = purchaseItemInfo and purchaseItemInfo.iconFileDataID;
+		local itemQuantity = purchaseItemInfo and purchaseItemInfo.itemCount;
+		local itemLink = purchaseItemInfo and purchaseItemInfo.hyperlink;
 		if ( itemLink ) then
 			local _, _, itemQuality = C_Item.GetItemInfo(itemLink);
 			maxQuality = math.max(itemQuality, maxQuality);
@@ -1246,10 +1248,10 @@ function ContainerFrame_GetExtendedPriceString(itemButton, isEquipped, quantity)
 	end
 	
 	for i=1, currencyCount, 1 do
-		local info = C_Container.GetContainerItemPurchaseCurrency(bag, slot, i, isEquipped);
-		local currencyTexture = info and info.iconFileID;
-		local currencyQuantity = info and info.currencyCount;
-		local currencyName = info and info.name;
+		local currencyInfo = C_Container.GetContainerItemPurchaseCurrency(bag, slot, i, isEquipped);
+		local currencyTexture = currencyInfo and currencyInfo.iconFileID;
+		local currencyQuantity = currencyInfo and currencyInfo.currencyCount;
+		local currencyName = currencyInfo and currencyInfo.name;
 		if ( currencyName ) then
 			local extraArgs = "";
 			if ( currencyTexture == HONOR_POINT_TEXTURES[1] or currencyTexture == HONOR_POINT_TEXTURES[2] ) then
@@ -1279,9 +1281,9 @@ function ContainerFrame_GetExtendedPriceString(itemButton, isEquipped, quantity)
 		refundItemTexture = GetInventoryItemTexture("player", slot);
 		refundItemLink = GetInventoryItemLink("player", slot);
 	else
-		local info = C_Container.GetContainerItemInfo(bag, slot);
-		refundItemTexture = info and info.iconFileID;
-		refundItemLink = info and info.hyperlink;
+		local refundInfo = C_Container.GetContainerItemInfo(bag, slot);
+		refundItemTexture = refundInfo and refundInfo.iconFileID;
+		refundItemLink = refundInfo and refundInfo.hyperlink;
 	end
 	local itemName, _, itemQuality = C_Item.GetItemInfo(refundItemLink);
 	local r, g, b = C_Item.GetItemQualityColor(itemQuality);
@@ -1334,7 +1336,7 @@ function ContainerFrameItemButton_OnClick(self, button)
 				return;
 			end
 		end
-		C_Container.UseContainerItem(self:GetParent():GetID(), self:GetID(), nil, BankFrame:IsShown() and (BankFrame.selectedTab == 2));
+		C_Container.UseContainerItem(self:GetParent():GetID(), self:GetID(), nil, nil, BankFrame:IsShown() and (BankFrame.selectedTab == 2));
 		StackSplitFrame:Hide();
 	end
 end
@@ -1475,7 +1477,6 @@ end
 function ContainerFramePortraitButton_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 	local waitingOnData = false;
-		local bagID = C_Container.ContainerIDToInventoryID(self:GetID());
 	if ( self:GetID() == 0 ) then
 		GameTooltip:SetText(BACKPACK_TOOLTIP, 1.0, 1.0, 1.0);
 		if (GetBindingKey("TOGGLEBACKPACK")) then

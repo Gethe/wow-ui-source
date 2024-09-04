@@ -107,7 +107,6 @@ function GMChatFrame_OnEvent(self, event, ...)
 
 		self:AddMessage(body, info.r, info.g, info.b, info.id);
 	elseif ( event == "UPDATE_CHAT_COLOR" ) then
-		local arg1, arg2, arg3, arg4 = ...
 		local info = ChatTypeInfo[strupper(arg1)];
 		if ( info ) then
 			info.r = arg2;

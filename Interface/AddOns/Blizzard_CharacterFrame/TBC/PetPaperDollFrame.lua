@@ -89,14 +89,9 @@ function PetPaperDollFrame_SetResistances()
 	local positive;
 	local negative;
 	local base;
-	local index;
 	local text;
 	local frame;
 	for i=1, NUM_PET_RESISTANCE_TYPES, 1 do
-		index = i + 1;
-		if ( i == NUM_PET_RESISTANCE_TYPES ) then
-			index = 1;
-		end
 		text = _G["PetMagicResText"..i];
 		frame = _G["PetMagicResFrame"..i];
 		

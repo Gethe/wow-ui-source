@@ -243,6 +243,18 @@ local UIWidgetManager =
 	Tables =
 	{
 		{
+			Name = "IconAndTextShiftTextType",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "None", Type = "IconAndTextShiftTextType", EnumValue = 0 },
+				{ Name = "ShiftText", Type = "IconAndTextShiftTextType", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "IconAndTextWidgetState",
 			Type = "Enumeration",
 			NumValues = 4,
@@ -361,7 +373,9 @@ local UIWidgetManager =
 				{ Name = "text", Type = "string", Nilable = false },
 				{ Name = "tooltip", Type = "string", Nilable = false },
 				{ Name = "dynamicTooltip", Type = "string", Nilable = false },
+				{ Name = "shiftTextType", Type = "IconAndTextShiftTextType", Nilable = false },
 				{ Name = "textureKitID", Type = "number", Nilable = false },
+				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
 				{ Name = "hasTimer", Type = "bool", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "widgetTag", Type = "string", Nilable = false },

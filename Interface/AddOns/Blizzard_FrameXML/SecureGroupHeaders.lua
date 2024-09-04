@@ -738,8 +738,8 @@ local function configureAuras(self, auraTable, consolidateTable, weaponPosition)
 	local yOffset = tonumber(self:GetAttribute("yOffset")) or 0;
 	local wrapXOffset = tonumber(self:GetAttribute("wrapXOffset")) or 0;
 	local wrapYOffset = tonumber(self:GetAttribute("wrapYOffset")) or 0;
-	local wrapAfter = tonumber(self:GetAttribute("wrapAfter"));
-	if ( wrapAfter == 0 ) then wrapAfter = nil; end
+	local wrapAfterAttr = tonumber(self:GetAttribute("wrapAfter"));
+	if ( wrapAfterAttr == 0 ) then wrapAfterAttr = nil; end
 	local maxWraps = self:GetAttribute("maxWraps");
 	if ( maxWraps == 0 ) then maxWraps = nil; end
 	local minWidth = tonumber(self:GetAttribute("minWidth")) or 0;
@@ -828,14 +828,14 @@ local function configureAuras(self, auraTable, consolidateTable, weaponPosition)
 	end
 
 	local display = #buttons
-	if ( wrapAfter and maxWraps ) then
-		display = min(display, wrapAfter * maxWraps);
+	if ( wrapAfterAttr and maxWraps ) then
+		display = min(display, wrapAfterAttr * maxWraps);
 	end
 
 	local left, right, top, bottom = math.huge, -math.huge, -math.huge, math.huge;
 	for index=1,display do
 		local button = buttons[index];
-		local wrapAfter = wrapAfter or index
+		local wrapAfter = wrapAfterAttr or index
 		local tick, cycle = floor((index - 1) % wrapAfter), floor((index - 1) / wrapAfter);
 		button:SetPoint(point, self, cycle * wrapXOffset + tick * xOffset, cycle * wrapYOffset + tick * yOffset);
 		button:Show();

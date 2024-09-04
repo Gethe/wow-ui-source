@@ -3,6 +3,9 @@ MAX_TARGET_DEBUFFS = 16;
 MAX_TARGET_BUFFS = 32;
 MAX_BOSS_FRAMES = 5;
 
+TARGET_FRAME_BUFFS_ON_TOP = TARGET_FRAME_BUFFS_ON_TOP or nil;
+TARGET_FRAME_UNLOCKED = TARGET_FRAME_UNLOCKED or nil;
+
 -- aura positioning constants
 local AURA_START_X = 5;
 local AURA_START_Y = 32;
@@ -98,19 +101,7 @@ function TargetFrame_OnLoad(self, unit, menuFunc)
 	self:RegisterUnitEvent("UNIT_AURA", unit);
 	self:RegisterUnitEvent("UNIT_TARGET", unit);
 
-	local frameLevel = _G[thisName.."TextureFrame"]:GetFrameLevel();
-
-	local showmenu;
-	if ( menuFunc ) then
-		local dropdown = _G[thisName.."DropDown"];
-		UIDropDownMenu_SetInitializeFunction(dropdown, menuFunc);
-		UIDropDownMenu_SetDisplayMode(dropdown, "MENU");
-
-		showmenu = function()
-			ToggleDropDownMenu(1, nil, dropdown, thisName, 120, 10);
-		end
-	end
-	SecureUnitButton_OnLoad(self, self.unit, showmenu);
+	SecureUnitButton_OnLoad(self, self.unit, menuFunc);
 
 	CVarCallbackRegistry:RegisterCVarChangedCallback(TargetFrame_OnCVarChanged, self);
 end
@@ -174,7 +165,6 @@ function TargetFrame_OnEvent (self, event, ...)
 		-- Moved here to avoid taint from functions below
 		TargetFrame_Update(self);
 		TargetFrame_UpdateRaidTargetIcon(self);
-		CloseDropDownMenus();
 
 		if ( UnitExists(self.unit) and not C_PlayerInteractionManager.IsReplacingUnit()) then
 			if ( UnitIsEnemy(self.unit, "player") ) then
@@ -190,12 +180,10 @@ function TargetFrame_OnEvent (self, event, ...)
 			TargetFrame_Update(_G["Boss"..i.."TargetFrame"]);
 			TargetFrame_UpdateRaidTargetIcon(_G["Boss"..i.."TargetFrame"]);
 		end
-		CloseDropDownMenus();
 		UIParent_ManageFramePositions();
 	elseif ( event == "UNIT_TARGETABLE_CHANGED" and arg1 == self.unit) then
 		TargetFrame_Update(self);
 		TargetFrame_UpdateRaidTargetIcon(self);
-		CloseDropDownMenus();
 		UIParent_ManageFramePositions();
 	elseif ( event == "UNIT_HEALTH" ) then
 		if ( arg1 == self.unit ) then
@@ -258,7 +246,6 @@ function TargetFrame_OnEvent (self, event, ...)
 		else
 			self:Hide();
 		end
-		CloseDropDownMenus();
 	end
 end
 
@@ -272,7 +259,6 @@ end
 
 function TargetFrame_OnHide (self)
 	PlaySound(SOUNDKIT.INTERFACE_SOUND_LOST_TARGET_UNIT);
-	CloseDropDownMenus();
 end
 
 function TargetFrame_CheckLevel (self)
@@ -552,7 +538,7 @@ function TargetFrame_UpdateAuras (self)
 	end
 
 	for i = numBuffs + 1, MAX_TARGET_BUFFS do
-		local frame = _G[selfName.."Buff"..i];
+		frame = _G[selfName.."Buff"..i];
 		if ( frame ) then
 			frame:Hide();
 		else
@@ -624,7 +610,7 @@ function TargetFrame_UpdateAuras (self)
 	end
 
 	for i = frameNum, MAX_TARGET_DEBUFFS do
-		local frame = _G[selfName.."Debuff"..i];
+		frame = _G[selfName.."Debuff"..i];
 		if ( frame ) then
 			frame:Hide();
 		else
@@ -883,37 +869,40 @@ function TargetHealthCheck (self)
 	end
 end
 
-function TargetFrameDropDown_Initialize (self)
-	local menu;
+function TargetFrame_OpenMenu (self)
+	local which;
 	local name;
-	local id = nil;
 	if ( UnitIsUnit("target", "player") ) then
-		menu = "SELF";
+		which = "SELF";
 	elseif ( UnitIsUnit("target", "vehicle") ) then
 		-- NOTE: vehicle check must come before pet check for accuracy's sake because
 		-- a vehicle may also be considered your pet
-		menu = "VEHICLE";
+		which = "VEHICLE";
 	elseif ( UnitIsUnit("target", "pet") ) then
-		menu = "PET";
+		which = "PET";
 	elseif ( UnitIsOtherPlayersPet("target") ) then
-		menu = "OTHERPET";
+		which = "OTHERPET";
 	elseif ( UnitIsPlayer("target") ) then
-		id = UnitInRaid("target");
-		if ( id ) then
-			menu = "RAID_PLAYER";
+		if ( UnitInRaid("target") ) then
+			which = "RAID_PLAYER";
 		elseif ( UnitInParty("target") ) then
-			menu = "PARTY";
+			which = "PARTY";
 		elseif ( UnitCanCooperate("player", "target") ) then
-			menu = "PLAYER";
+			which = "PLAYER";
 		else
-			menu = "ENEMY_PLAYER"
+			which = "ENEMY_PLAYER"
 		end
 	else
-		menu = "TARGET";
+		which = "TARGET";
 		name = RAID_TARGET_ICON;
 	end
-	if ( menu ) then
-		UnitPopup_ShowMenu(self, menu, "target", name, id);
+	if ( which ) then
+		local contextData = {
+			fromTargetFrame = true;
+			unit = "target",
+			name = name,
+		};
+		UnitPopup_OpenMenu(which, contextData);
 	end
 end
 
@@ -1181,7 +1170,7 @@ function BossTargetFrame_OnLoad(self, unit, event)
 	self.showThreat = true;
 	self.maxBuffs = 0;
 	self.maxDebuffs = 0;
-	TargetFrame_OnLoad(self, unit, BossTargetFrameDropDown_Initialize);
+	TargetFrame_OnLoad(self, unit, BossTargetFrame_OpenMenu);
 	self:RegisterEvent("UNIT_TARGETABLE_CHANGED");
 	self.borderTexture:SetTexture("Interface\\TargetingFrame\\UI-UnitFrame-Boss");
 	self.levelText:SetPoint("CENTER", 12, select(5, self.levelText:GetPoint(1)));
@@ -1196,8 +1185,14 @@ function BossTargetFrame_OnLoad(self, unit, event)
 	end
 end
 
-function BossTargetFrameDropDown_Initialize(self)
-	UnitPopup_ShowMenu(self, "BOSS", self:GetParent().unit);
+function BossTargetFrame_OpenMenu(self)
+	local contextData = 
+	{
+		fromTargetFrame = true;
+		unit = self.unit,
+		name = name,
+	};
+	UnitPopup_OpenMenu("BOSS", contextData);
 end
 
 -- *********************************************************************************
@@ -1205,11 +1200,17 @@ end
 -- *********************************************************************************
 
 local FOCUS_FRAME_LOCKED = true;
+local FOCUS_FRAME_MOVING = false;
 
 FocusFrameMixin = {};
 
-function FocusFrameDropDown_Initialize(self)
-	UnitPopup_ShowMenu(self, "FOCUS", "focus", SET_FOCUS);
+function FocusFrame_OpenMenu(self)
+	local contextData = {
+		fromFocusFrame = true;
+		unit = "focus",
+		name = SET_FOCUS,
+	};
+	UnitPopup_OpenMenu("FOCUS", contextData);
 end
 
 function FocusFrameMixin:IsLocked()

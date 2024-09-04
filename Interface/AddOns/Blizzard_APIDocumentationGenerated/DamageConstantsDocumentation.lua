@@ -39,7 +39,7 @@ local DamageConstants =
 		{
 			Name = "Damageclass",
 			Type = "Enumeration",
-			NumValues = 47,
+			NumValues = 46,
 			MinValue = 0,
 			MaxValue = 127,
 			Fields =
@@ -51,7 +51,6 @@ local DamageConstants =
 				{ Name = "Frost", Type = "Damageclass", EnumValue = 4 },
 				{ Name = "Shadow", Type = "Damageclass", EnumValue = 5 },
 				{ Name = "Arcane", Type = "Damageclass", EnumValue = 6 },
-				{ Name = "NumClasses", Type = "Damageclass", EnumValue = 7 },
 				{ Name = "FirstResist", Type = "Damageclass", EnumValue = 2 },
 				{ Name = "LastResist", Type = "Damageclass", EnumValue = 6 },
 				{ Name = "MaskNone", Type = "Damageclass", EnumValue = 0 },

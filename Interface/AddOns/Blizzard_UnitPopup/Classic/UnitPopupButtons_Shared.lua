@@ -1,10 +1,9 @@
 UnitPopupLootMethodButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
 
 function UnitPopupLootMethodButtonMixin:GetSelectedLootMixin()
-	local menuButtons = self:GetButtons();
 	local lootMethod = GetLootMethod();
-	for index, buttonMixin in ipairs(menuButtons) do
-		if( buttonMixin and not buttonMixin:IsCloseCommand() and buttonMixin:GetLootMethod() == lootMethod ) then
+	for index, buttonMixin in ipairs(self:GetEntries()) do
+		if buttonMixin and buttonMixin:GetLootMethod() == lootMethod then
 			return buttonMixin;
 		end
 	end
@@ -12,35 +11,31 @@ function UnitPopupLootMethodButtonMixin:GetSelectedLootMixin()
 	return nil;
 end
 
-function UnitPopupLootMethodButtonMixin:GetText()
+function UnitPopupLootMethodButtonMixin:GetText(contextData)
 	-- Display selected loot method name
 	local selectedLootMixin = self:GetSelectedLootMixin();
-	if( selectedLootMixin ) then
-		return selectedLootMixin:GetText();
+	if selectedLootMixin then
+		return selectedLootMixin:GetText(contextData);
 	end
 	
 	return LOOT_METHOD;
 end
 
-function UnitPopupLootMethodButtonMixin:GetTooltipText()
+function UnitPopupLootMethodButtonMixin:GetTooltipText(contextData)
 	-- Display selected loot method tooltip
 	local selectedLootMixin = self:GetSelectedLootMixin();
-	if( selectedLootMixin ) then
-		return selectedLootMixin:GetTooltipText();
+	if selectedLootMixin then
+		return selectedLootMixin:GetTooltipText(contextData);
 	end
 
 	return nil;
 end 
 
-function UnitPopupLootMethodButtonMixin:IsNested()
-	return true; 
-end
-
-function UnitPopupLootMethodButtonMixin:CanShow()
+function UnitPopupLootMethodButtonMixin:CanShow(contextData)
 	return IsInGroup();
 end
 
-function UnitPopupLootMethodButtonMixin:IsEnabled()
+function UnitPopupLootMethodButtonMixin:IsEnabled(contextData)
 	return UnitIsGroupLeader("player");
 end
 
@@ -53,7 +48,7 @@ function UnitPopupLootMethodButtonMixin:NoTooltipWhileEnabled()
 	return true;
 end
 
-function UnitPopupLootMethodButtonMixin:GetButtons()
+function UnitPopupLootMethodButtonMixin:GetEntries()
 	return {
 		UnitPopupLootFreeForAllButtonMixin,
 		UnitPopupLootRoundRobinButtonMixin,
@@ -64,17 +59,13 @@ function UnitPopupLootMethodButtonMixin:GetButtons()
 	}
 end 
 
-UnitPopupLootFreeForAllButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
+UnitPopupLootFreeForAllButtonMixin = CreateFromMixins(UnitPopupRadioButtonMixin);
 
-function UnitPopupLootFreeForAllButtonMixin:GetText()
+function UnitPopupLootFreeForAllButtonMixin:GetText(contextData)
 	return LOOT_FREE_FOR_ALL;
 end
 
-function UnitPopupLootFreeForAllButtonMixin:IsCheckable()
-	return true;
-end
-
-function UnitPopupLootFreeForAllButtonMixin:GetTooltipText()
+function UnitPopupLootFreeForAllButtonMixin:GetTooltipText(contextData)
 	return NEWBIE_TOOLTIP_UNIT_FREE_FOR_ALL;
 end 
 
@@ -82,30 +73,33 @@ function UnitPopupLootFreeForAllButtonMixin:GetLootMethod()
 	return "freeforall";
 end	
 
-function UnitPopupLootFreeForAllButtonMixin:IsChecked()
+function UnitPopupLootFreeForAllButtonMixin:IsChecked(contextData)
 	return GetLootMethod() == self:GetLootMethod();
 end
 
-function UnitPopupLootFreeForAllButtonMixin:CanShow()
-	if(not IsInGroup()) then 
-		return false; 
-	elseif (not UnitIsGroupLeader("player")) then
+function UnitPopupLootFreeForAllButtonMixin:CanShow(contextData)
+	if not IsInGroup() then 
 		return false; 
 	end
+
+	if not UnitIsGroupLeader("player") then
+		return false; 
+	end
+
 	return true; 
 end
 
-function UnitPopupLootFreeForAllButtonMixin:OnClick()
+function UnitPopupLootFreeForAllButtonMixin:OnClick(contextData)
 	SetLootMethod(self:GetLootMethod());
-	UIDropDownMenu_Refresh(UnitPopupSharedUtil.GetCurrentDropdownMenu(), nil, 1);
 end
 
 UnitPopupLootRoundRobinButtonMixin = CreateFromMixins(UnitPopupLootFreeForAllButtonMixin);
-function UnitPopupLootRoundRobinButtonMixin:GetText()
+
+function UnitPopupLootRoundRobinButtonMixin:GetText(contextData)
 	return LOOT_ROUND_ROBIN;
 end
 
-function UnitPopupLootRoundRobinButtonMixin:GetTooltipText()
+function UnitPopupLootRoundRobinButtonMixin:GetTooltipText(contextData)
 	return NEWBIE_TOOLTIP_UNIT_ROUND_ROBIN;
 end 
 
@@ -114,11 +108,12 @@ function UnitPopupLootRoundRobinButtonMixin:GetLootMethod()
 end		
 
 UnitPopupMasterLooterButtonMixin = CreateFromMixins(UnitPopupLootFreeForAllButtonMixin);
-function UnitPopupMasterLooterButtonMixin:GetText()
+
+function UnitPopupMasterLooterButtonMixin:GetText(contextData)
 	return LOOT_MASTER_LOOTER;
 end
 
-function UnitPopupMasterLooterButtonMixin:GetTooltipText()
+function UnitPopupMasterLooterButtonMixin:GetTooltipText(contextData)
 	return NEWBIE_TOOLTIP_UNIT_MASTER_LOOTER;
 end 
 
@@ -126,17 +121,17 @@ function UnitPopupMasterLooterButtonMixin:GetLootMethod()
 	return "master";
 end		
 
-function UnitPopupMasterLooterButtonMixin:OnClick()
-	SetLootMethod(self:GetLootMethod(), UnitPopupSharedUtil.GetFullPlayerName(), 2);
-	UIDropDownMenu_Refresh(UnitPopupSharedUtil.GetCurrentDropdownMenu(), nil, 1);
+function UnitPopupMasterLooterButtonMixin:OnClick(contextData)
+	SetLootMethod(self:GetLootMethod(), UnitPopupSharedUtil.GetFullPlayerName(contextData), 2);
 end
 
 UnitPopupGroupLootButtonMixin = CreateFromMixins(UnitPopupLootFreeForAllButtonMixin);
-function UnitPopupGroupLootButtonMixin:GetText()
+
+function UnitPopupGroupLootButtonMixin:GetText(contextData)
 	return LOOT_GROUP_LOOT;
 end
 
-function UnitPopupGroupLootButtonMixin:GetTooltipText()
+function UnitPopupGroupLootButtonMixin:GetTooltipText(contextData)
 	return NEWBIE_TOOLTIP_UNIT_GROUP_LOOT;
 end 
 
@@ -145,7 +140,8 @@ function UnitPopupGroupLootButtonMixin:GetLootMethod()
 end		
 
 UnitPopupNeedBeforeGreedButtonMixin = CreateFromMixins(UnitPopupLootFreeForAllButtonMixin);
-function UnitPopupNeedBeforeGreedButtonMixin:GetText()
+
+function UnitPopupNeedBeforeGreedButtonMixin:GetText(contextData)
 	return LOOT_NEED_BEFORE_GREED;
 end
 
@@ -153,24 +149,22 @@ function UnitPopupNeedBeforeGreedButtonMixin:GetLootMethod()
 	return "needbeforegreed";
 end		
 
-function UnitPopupNeedBeforeGreedButtonMixin:GetTooltipText()
+function UnitPopupNeedBeforeGreedButtonMixin:GetTooltipText(contextData)
 	return NEWBIE_TOOLTIP_UNIT_NEED_BEFORE_GREED;
 end 
 
-UnitPopupLootThresholdButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin)
-function UnitPopupLootThresholdButtonMixin:GetText()
+UnitPopupLootThresholdButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
+
+function UnitPopupLootThresholdButtonMixin:GetText(contextData)
 	return  _G["ITEM_QUALITY"..GetLootThreshold().."_DESC"];
 end 
 
-function UnitPopupLootThresholdButtonMixin:IsNested()
-	return (IsInGroup() and UnitIsGroupLeader("player"));
-end
-
-function UnitPopupLootThresholdButtonMixin:CanShow() 
+function UnitPopupLootThresholdButtonMixin:CanShow(contextData)
 	return IsInGroup(); 
 end 
 
-function UnitPopupLootThresholdButtonMixin:GetButtons()
+function UnitPopupLootThresholdButtonMixin:GetEntries()
+	if UnitIsGroupLeader("player") then
 	return { 
 		UnitPopupItemQuality2DescButtonMixin,
 		UnitPopupItemQuality3DescButtonMixin,
@@ -178,341 +172,427 @@ function UnitPopupLootThresholdButtonMixin:GetButtons()
 		UnitPopupCancelButtonMixin,
 	}
 end 
+	return nil;
+end
 
-function UnitPopupLootPromoteButtonMixin:GetText()
+function UnitPopupLootPromoteButtonMixin:GetText(contextData)
 	return LOOT_PROMOTE;
 end 
 
-function UnitPopupLootPromoteButtonMixin:CanShow()
-	local isMaster = nil;
-	local lootMethod, partyIndex, raidIndex = GetLootMethod();
-	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
+function UnitPopupLootPromoteButtonMixin:CanShow(contextData)
+	if not IsInGroup() then
+		return false;
+	end
 
-	if ( (dropdownMenu.which == "RAID") or (dropdownMenu.which == "RAID_PLAYER") ) then
-		if ( raidIndex and (dropdownMenu.unit == "raid"..raidIndex) ) then
-			isMaster = true;
+	if not UnitIsGroupLeader("player") then
+		return false;
+	end
+
+	local lootMethod, partyIndex, raidIndex = GetLootMethod();
+	if lootMethod ~= "master" then
+		return false;
+	end
+
+	local which = contextData.which;
+	if (which == "RAID") or (which == "RAID_PLAYER") then
+		if raidIndex and (contextData.unit == "raid"..raidIndex) then
+			return false;
 		end
-	elseif ( dropdownMenu.which == "SELF" ) then
-			if ( partyIndex and (partyIndex == 0) ) then
-			isMaster = true;
+	elseif which == "SELF" then
+		if partyIndex and (partyIndex == 0) then
+			return false;
 			end
 	else
-		if ( partyIndex and (dropdownMenu.unit == "party"..partyIndex) ) then
-			isMaster = true;
+		if partyIndex and (contextData.unit == "party"..partyIndex) then
+			return false;
 		end
 	end
-	if ( not IsInGroup() or not UnitIsGroupLeader("player") or (lootMethod ~= "master") or isMaster ) then
-		return false; 
-	end
+
 	return true; 
 end 
 
-function UnitPopupLootPromoteButtonMixin:IsEnabled()
-	local lootMethod, partyMaster, raidMaster = GetLootMethod();
-	local dropdownFrame = UnitPopupSharedUtil.GetCurrentDropdownMenu();
-	if ( not IsInGroup() or not UnitIsGroupLeader("player") or (lootMethod ~= "master") ) then
+function UnitPopupLootPromoteButtonMixin:IsEnabled(contextData)
+	if not IsInGroup() then
 		return false; 
-	else
+	end
+
+	if not UnitIsGroupLeader("player") then
+		return false;
+end 
+
+	local lootMethod, partyIndex, raidIndex = GetLootMethod();
+	if lootMethod ~= "master" then
+		return false; 
+	end
+
 		local masterName = 0;
-		if ( partyMaster and (partyMaster == 0) ) then
+	if partyMaster and (partyMaster == 0) then
 			masterName = "player";
-		elseif ( partyMaster ) then
+	elseif partyMaster then
 			masterName = "party"..partyMaster;
-		elseif ( raidMaster ) then
+	elseif raidMaster then
 			masterName = "raid"..raidMaster;
 		end
-		if ( dropdownFrame.unit and UnitIsUnit(dropdownFrame.unit, masterName) ) then
+
+	if contextData.unit and UnitIsUnit(contextData.unit, masterName) then
 			return false; 
 		end
-	end
+
 	return true; 
 end
 
-function UnitPopupLootPromoteButtonMixin:OnClick()
-	SetLootMethod("master", UnitPopupSharedUtil.GetFullPlayerName(), 2);
+function UnitPopupLootPromoteButtonMixin:OnClick(contextData)
+	SetLootMethod("master", UnitPopupSharedUtil.GetFullPlayerName(contextData), 2);
 end
 
-function UnitPopupRafGrantLevelButtonMixin:GetText()
+function UnitPopupRafGrantLevelButtonMixin:GetText(contextData)
 	return RAF_GRANT_LEVEL;
 end 
 
-function UnitPopupRafGrantLevelButtonMixin:CanShow()
-	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
-	return C_RecruitAFriend.IsReferAFriendLinked(dropdownMenu.unit)
+function UnitPopupRafGrantLevelButtonMixin:CanShow(contextData)
+	return C_RecruitAFriend.IsReferAFriendLinked(contextData.unit)
 end
 
-function UnitPopupRafGrantLevelButtonMixin:IsEnabled()
-	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
-	return C_RecruitAFriend.CanGrantLevel(dropdownMenu.unit)
+function UnitPopupRafGrantLevelButtonMixin:IsEnabled(contextData)
+	return C_RecruitAFriend.CanGrantLevel(contextData.unit)
 end
 
-function UnitPopupRafGrantLevelButtonMixin:OnClick()
-	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
-	local isAlliedRace = UnitAlliedRaceInfo(dropdownMenu.unit);
-	if (isAlliedRace) then
-		StaticPopup_Show("RAF_GRANT_LEVEL_ALLIED_RACE", nil, nil, dropdownMenu.unit);
+function UnitPopupRafGrantLevelButtonMixin:OnClick(contextData)
+	local isAlliedRace = UnitAlliedRaceInfo(contextData.unit);
+	if isAlliedRace then
+		StaticPopup_Show("RAF_GRANT_LEVEL_ALLIED_RACE", nil, nil, contextData.unit);
 	else
-		GrantLevel(dropdownMenu.unit);
+		GrantLevel(contextData.unit);
 	end
 end 
---------------------------- UnitPopup Button Overrides ------------------------------------------
+
+-- Overrides
 function UnitPopupRaidDifficulty1ButtonMixin:IsDisabled()
-	local inInstance, instanceType = IsInInstance();
-	local _, instanceType, instanceDifficultyID, _, _, _, isDynamicInstance = GetInstanceInfo();
-
-	local toggleDifficultyID;
-	if ( isDynamicInstance and CanChangePlayerDifficulty() ) then
-		_, _, _, _, _, _, toggleDifficultyID = GetDifficultyInfo(instanceDifficultyID);
+	if IsInGroup(LE_PARTY_CATEGORY_INSTANCE) then
+		return true;
 	end
-
-	if ( ( IsInGroup() and not UnitIsGroupLeader("player") ) or IsInGroup(LE_PARTY_CATEGORY_INSTANCE) or (inInstance and not toggleDifficultyID) ) then
+	
+	if IsInGroup() and not UnitIsGroupLeader("player") then
 		return true;
 	end
 
-	if ( toggleDifficultyID and CheckToggleDifficulty(toggleDifficultyID, self:GetDifficultyID()) ) then
-		return nil;
+	local _, _, instanceDifficultyID, _, _, _, isDynamicInstance = GetInstanceInfo();
+	local toggleDifficultyID;
+	if isDynamicInstance and CanChangePlayerDifficulty() then
+		toggleDifficultyID = select(7, GetDifficultyInfo(instanceDifficultyID));
 	end
+
+	if IsInInstance() and (not toggleDifficultyID) then
+		return true;
+	end
+
+	-- Commented out because it was returning nil - dead code
+	--if toggleDifficultyID and CheckToggleDifficulty(toggleDifficultyID, self:GetDifficultyID()) then
+	--	return nil;
+	--end
+
+	return false;
+	end
+
+function UnitPopupRaidDifficulty1ButtonMixin:IsEnabled(contextData)
+	if IsInGroup(LE_PARTY_CATEGORY_INSTANCE) then
+		return false;
+	end
+
+	if IsInGroup() and not UnitIsGroupLeader("player") then
+		return false;
 end	
 
-function UnitPopupRaidDifficulty1ButtonMixin:IsEnabled()
 	local inInstance, instanceType = IsInInstance();
-	local isPublicParty = IsInGroup(LE_PARTY_CATEGORY_INSTANCE);
-	local _, instanceType, instanceDifficultyID, _, _, _, isDynamicInstance = GetInstanceInfo();
+	if inInstance and instanceType ~= "raid" then
+		return false;
+	end
 
+	local _, _, instanceDifficultyID, _, _, _, isDynamicInstance = GetInstanceInfo();
 	local toggleDifficultyID;
 	if ( isDynamicInstance and CanChangePlayerDifficulty() ) then
-		_, _, _, _, _, _, toggleDifficultyID = GetDifficultyInfo(instanceDifficultyID);
+		toggleDifficultyID = select(7, GetDifficultyInfo(instanceDifficultyID));
 	end
 
-	if ( ( IsInGroup() and not UnitIsGroupLeader("player") ) or isPublicParty or (inInstance and not toggleDifficultyID) ) then
+	
+	if IsInInstance() and (not toggleDifficultyID) then
 		return false;
 	end
 
-	if( isPublicParty or (inInstance and instanceType ~= "raid") ) then
+	if toggleDifficultyID and not CheckToggleDifficulty(toggleDifficultyID, self:GetDifficultyID()) then
 		return false;
 	end
 
-	if (toggleDifficultyID) then
-		if(not CheckToggleDifficulty(toggleDifficultyID, self:GetDifficultyID())) then 
+	local isMythicDifficulty = self:GetDifficultyID() == DIFFICULTY_PRIMARYRAID_MYTHIC;
+	if isMythicDifficulty and (UnitLevel("player") < MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_MISTS_OF_PANDARIA]) then
 			return false; 
 		end 
-	end
 
-	if (self:GetDifficultyID() == DIFFICULTY_PRIMARYRAID_MYTHIC and UnitLevel("player") < MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_MISTS_OF_PANDARIA]) then
-		return false;
-	end
 	return true; 
 end
 
-function UnitPopupAddGuildBtagFriendButtonMixin:CanShow()
-	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
-	if ( not UnitPopupSharedUtil.CanAddBNetFriend(dropdownMenu, UnitPopupSharedUtil.GetIsLocalPlayer(dropdownMenu), UnitPopupSharedUtil.HasBattleTag(), UnitPopupSharedUtil.IsPlayer(dropdownMenu))) then
-		return false; 
-	end
-	return true; 
+function UnitPopupAddGuildBtagFriendButtonMixin:CanShow(contextData)
+	local isLocalPlayer = UnitPopupSharedUtil.GetIsLocalPlayer(contextData);
+	local hasBattleTag = UnitPopupSharedUtil.HasBattleTag();
+	local isAPlayer = UnitPopupSharedUtil.IsPlayer(contextData);
+	return UnitPopupSharedUtil.CanAddBNetFriend(contextData, isLocalPlayer, hasBattleTag, isAPlayer);
 end
 
-function UnitPopupBnetInviteButtonMixin:CanShow()
-	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
-	local bnetIDAccount, accountName, battleTag, isBattleTag, characterName, bnetIDGameAccount = BNGetFriendInfoByID(dropdownMenu.bnetIDAccount);
+function UnitPopupBnetInviteButtonMixin:CanShow(contextData)
+	local bnetIDAccount, accountName, battleTag, isBattleTag, characterName, bnetIDGameAccount = BNGetFriendInfoByID(contextData.bnetIDAccount);
 	if not bnetIDGameAccount then
 		return false;
-	else
+	end
+
 		local guid = select(20, BNGetGameAccountInfo(bnetIDGameAccount));
 		local inviteType = GetDisplayedInviteType(guid);
-		if (self:GetButtonName() ~= "BN_"..inviteType) then
+	if self:GetInviteName() ~= "BN_"..inviteType then
 			return false; 
-		elseif ( not dropdownMenu.bnetIDAccount or not BNFeaturesEnabledAndConnected() ) then
+	end
+	
+	if not contextData.bnetIDAccount or not BNFeaturesEnabledAndConnected() then
 			return false; 
-		elseif UnitPopupSharedUtil.IsInGroupWithPlayer() then
+	end
+
+	if UnitPopupSharedUtil.IsInGroupWithPlayer(contextData) then
 			return false; 
 		end
-	end
+
 	return true; 
 end	
 
-function UnitPopupCommunitiesLeaveButtonMixin:GetText()
+function UnitPopupCommunitiesLeaveButtonMixin:GetText(contextData)
 	return COMMUNITIES_LIST_DROP_DOWN_LEAVE_COMMUNITY; 
 end
 
-function UnitPopupWhisperButtonMixin:CanShow()
-	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
-	local whisperIsLocalPlayer =  UnitPopupSharedUtil.GetIsLocalPlayer();
-	local isOffline = UnitPopupSharedUtil.IsPlayerOffline(dropdownMenu);
-	local canCoop = UnitPopupSharedUtil.CanCooperate(dropdownMenu);
-	local isPlayer = UnitPopupSharedUtil.IsPlayer(dropdownMenu);
-	local isBNFriend = UnitPopupSharedUtil.IsBNetFriend(dropdownMenu);
+function UnitPopupWhisperButtonMixin:CanShow(contextData)
+	local whisperIsLocalPlayer =  UnitPopupSharedUtil.GetIsLocalPlayer(contextData);
 	if not whisperIsLocalPlayer then
 		local playerName, playerServer = UnitName("player");
-		whisperIsLocalPlayer = (dropdownMenu.name == playerName and dropdownMenu.server == playerServer);
+		whisperIsLocalPlayer = (contextData.name == playerName and contextData.server == playerServer);
 	end
-	if whisperIsLocalPlayer or (isOffline and not dropdownMenu.bnetIDAccount) or ( dropdownMenu.unit and (not canCoop or not isPlayer)) or (dropdownMenu.bnetIDAccount and not isBNFriend) then
+
+	if whisperIsLocalPlayer then
 		return false;
 	end
-	return true; 
+	
+	if contextData.bnetIDAccount then
+		if not UnitPopupSharedUtil.IsBNetFriend(contextData) then
+		return false;
+	end
+	elseif UnitPopupSharedUtil.IsPlayerOffline(contextData) then
+		return false;
 end	
 
-function UnitPopupPetBattleDuelButtonMixin:CanShow()
+	if contextData.unit and (not UnitPopupSharedUtil.CanCooperate(contextData) or not UnitPopupSharedUtil.IsPlayer(contextData)) then
 	return false; 
 end
 
-function UnitPopupPvpReportAfkButtonMixin:CanShow()
-	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
-	local inBattleground = UnitInBattleground("player");
-
-
-	if ( not inBattleground or GetCVar("enablePVPNotifyAFK") == "0" ) then
-		return false; 
-	elseif ( dropdownMenu.unit ) then
-		if ( UnitIsUnit(dropdownMenu.unit,"player") ) then
-			return false; 
-		elseif ( not UnitInBattleground(dropdownMenu.unit) and not IsInActiveWorldPVP(dropdownMenu.unit) ) then
-			return false; 
-		end
-	elseif ( dropdownMenu.name ) then
-		if ( dropdownMenu.name == UnitName("player") ) then
-			return false; 
-		elseif ( not UnitInBattleground(dropdownMenu.name) ) then
-			return false; 
-		end
-	end
-
-	return true;
+	return true; 
 end	
 
-function UnitPopupRafSummonButtonMixin:CanShow()
-	local guid = UnitPopupSharedUtil.GetGUID();
-	if not guid or not C_RecruitAFriend.IsReferAFriendLinked(guid) then
-		return false;
-	end
-	return true;
-end	
-
-function UnitPopupRafSummonButtonMixin:OnClick()
-	C_RecruitAFriend.SummonFriend(UnitPopupSharedUtil.GetGUID(), UnitPopupSharedUtil.GetFullPlayerName());
+function UnitPopupPetBattleDuelButtonMixin:CanShow(contextData)
+	return false; 
 end
 
-function UnitPopupBnetTargetButtonMixin:IsEnabled()
-	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
-	if ( not dropdownMenu.bnetIDAccount) then
-		enable = false;
-	else
-		if not dropdownMenu.accountInfo or (dropdownMenu.accountInfo.gameAccountInfo.clientProgram ~= BNET_CLIENT_WOW) or (dropdownMenu.accountInfo.gameAccountInfo.wowProjectID ~= WOW_PROJECT_ID) then
-			enable = false;
+function UnitPopupPvpReportAfkButtonMixin:CanShow(contextData)
+	if not UnitInBattleground("player") or GetCVar("enablePVPNotifyAFK") == "0" then
+		return false; 
+	end
+
+	if contextData.unit then
+		if UnitIsUnit(contextData.unit, "player") then
+			return false; 
+		end
+		
+		if not UnitInBattleground(contextData.unit) and not IsInActiveWorldPVP(contextData.unit) then
+			return false; 
+		end
+	elseif contextData.name then
+		if contextData.name == UnitName("player") then
+			return false; 
+		end
+
+		if not UnitInBattleground(contextData.name) then
+			return false; 
 		end
 	end
+
+	return true;
+end	
+
+function UnitPopupRafSummonButtonMixin:CanShow(contextData)
+	local guid = UnitPopupSharedUtil.GetGUID(contextData);
+	return guid and C_RecruitAFriend.IsReferAFriendLinked(guid);
+end	
+
+function UnitPopupRafSummonButtonMixin:OnClick(contextData)
+	local guid = UnitPopupSharedUtil.GetGUID(contextData);
+	local name = UnitPopupSharedUtil.GetFullPlayerName(contextData);
+	C_RecruitAFriend.SummonFriend(guid, name); 
+end
+
+function UnitPopupBnetTargetButtonMixin:IsEnabled(contextData)
+	if not contextData.bnetIDAccount then
+		return false;
+	end
+
+	local accountInfo = contextData.accountInfo;
+	if not accountInfo then
+		return false;
+	end
+
+	local gameAccountInfo = accountInfo.gameAccountInfo;
+	if gameAccountInfo.clientProgram ~= BNET_CLIENT_WOW or gameAccountInfo.wowProjectID ~= WOW_PROJECT_ID then
+		return false; 
+	end
+
+	return true;
+end	
+
+function UnitPopupVoteToKickButtonMixin:CanShow(contextData)
+	if not IsInGroup() or not C_LFGInfo.IsGroupFinderEnabled() then
+		return false;
+end
+
+	if not UnitPopupSharedUtil.IsPlayer(contextData) then
+		return false;
+		end
+
+	if not UnitPopupSharedUtil.HasLFGRestrictions() then
+		return false;
+	end
+
+	if IsInActiveWorldPVP() then
+		return false;
 end 
 
-function UnitPopupVoteToKickButtonMixin:CanShow()
-	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
-	local _, instanceType = IsInInstance();
-	if ( not C_LFGInfo.IsGroupFinderEnabled() or not IsInGroup() or not UnitPopupSharedUtil.IsPlayer(dropdownMenu) or (instanceType == "pvp") or (instanceType == "arena") or (not UnitPopupSharedUtil.HasLFGRestrictions()) or IsInActiveWorldPVP() ) then
+	local instanceType = select(2, IsInInstance());
+	if instanceType == "pvp" or instanceType == "arena" then
 		return false;
 	end
+
 	return true;
 end
 
-function UnitPopupVoteToKickButtonMixin:IsEnabled()
-	if (not C_LFGInfo.IsGroupFinderEnabled() or not IsInGroup() or not HasLFGRestrictions()) then
+function UnitPopupVoteToKickButtonMixin:IsEnabled(contextData)
+	if not C_LFGInfo.IsGroupFinderEnabled() then
 		return false;
 	end
+
+	if not IsInGroup() then
+		return false;
+	end
+
+	if not HasLFGRestrictions() then
+		return false;
+	end
+
 	return true; 
 end
 
-function UnitPopupDungeonDifficultyButtonMixin:GetButtons()
+function UnitPopupDungeonDifficultyButtonMixin:GetEntries()
 	return { 
 		UnitPopupDungeonDifficulty1ButtonMixin, 
 		UnitPopupDungeonDifficulty2ButtonMixin,
 	}
 end 
 
-function UnitPopupPartyInstanceLeaveButtonMixin:CanShow()
+function UnitPopupPartyInstanceLeaveButtonMixin:CanShow(contextData)
 	return false; 
 end
 
-function UnitPopupConvertToRaidButtonMixin:OnClick()
+function UnitPopupConvertToRaidButtonMixin:OnClick(contextData)
 	ConvertToRaid();
 end
 
-function UnitPopupConvertToPartyButtonMixin:OnClick()
+function UnitPopupConvertToPartyButtonMixin:OnClick(contextData)
 	ConvertToParty();
 end
 
-function UnitPopupPartyLeaveButtonMixin:OnClick()
+function UnitPopupPartyLeaveButtonMixin:OnClick(contextData)
 	LeaveParty();
 end
 
-function UnitPopupRaidTargetButtonMixin:CanShow()
-	if ( not IsInRaid() or UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") ) then
-		return true;
-	end
-	return false;
+function UnitPopupRaidTargetButtonMixin:CanShow(contextData)
+	return not IsInRaid() or UnitIsGroupLeader("player") or UnitIsGroupAssistant("player");
 end
 
 UnitPopupGuildSettingButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
-function UnitPopupGuildSettingButtonMixin:GetText()
+
+function UnitPopupGuildSettingButtonMixin:GetText(contextData)
 	return GUILD_CONTROL_BUTTON_TEXT;
 end 
 
-function UnitPopupGuildSettingButtonMixin:OnClick()
-	if ( not GuildControlUI ) then
+function UnitPopupGuildSettingButtonMixin:OnClick(contextData)
+	if not GuildControlUI then
 		UIParentLoadAddOn("Blizzard_GuildControlUI");
 	end
 
-	local wasShown = GuildControlUI:IsShown();
-	if not wasShown then
+	if not GuildControlUI:IsShown() then
 		ShowUIPanel(GuildControlUI);
 	end
 end 
 
-function UnitPopupGuildSettingButtonMixin:CanShow()
+function UnitPopupGuildSettingButtonMixin:CanShow(contextData)
 	return IsGuildLeader();
 end
 
 UnitPopupGuildRecruitmentSettingButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
-function UnitPopupGuildRecruitmentSettingButtonMixin:GetText()
+
+function UnitPopupGuildRecruitmentSettingButtonMixin:GetText(contextData)
 	return GUILD_RECRUITMENT;
 end 
 
-function UnitPopupGuildRecruitmentSettingButtonMixin:OnClick()
-	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
-	local clubInfo = dropdownMenu.clubInfo; 
+function UnitPopupGuildRecruitmentSettingButtonMixin:OnClick(contextData)
+	local clubInfo = contextData.clubInfo; 
 	CommunitiesFrame.RecruitmentDialog.clubId = clubInfo.clubId;
 	CommunitiesFrame.RecruitmentDialog.clubName = clubInfo.name;
 	CommunitiesFrame.RecruitmentDialog.clubAvatarId = clubInfo.avatarId;
 	CommunitiesFrame.RecruitmentDialog:UpdatedPostingInformationInit();
 end 
 
-function UnitPopupGuildRecruitmentSettingButtonMixin:CanShow()
-	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
-	if dropdownMenu.clubInfo then
-		local isPostingBanned = C_ClubFinder.IsPostingBanned(dropdownMenu.clubInfo.clubId);
-		if not C_ClubFinder.IsEnabled() or C_ClubFinder.GetClubFinderDisableReason() ~= nil or (not IsGuildLeader() and not C_GuildInfo.IsGuildOfficer()) or isPostingBanned then
-			return false;
-		end
-	else
+function UnitPopupGuildRecruitmentSettingButtonMixin:CanShow(contextData)
+	local clubInfo = contextData.clubInfo;
+	if not clubInfo then
 		return false;
 	end
+
+	if not C_ClubFinder.IsEnabled()  then
+		return false;
+	end
+
+	if C_ClubFinder.GetClubFinderDisableReason() ~= nil then
+			return false;
+		end
+
+	if C_ClubFinder.IsPostingBanned(clubInfo.clubId) then
+		return false;
+	end
+	
+	return IsGuildLeader() or C_GuildInfo.IsGuildOfficer();
 end
 
 UnitPopupGuildInviteButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
-function UnitPopupGuildInviteButtonMixin:GetText()
+
+function UnitPopupGuildInviteButtonMixin:GetText(contextData)
 	return COMMUNITIES_LIST_DROP_DOWN_INVITE;
 end 
 
-function UnitPopupGuildInviteButtonMixin:OnClick()
-	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
-	local streams = C_Club.GetStreams(dropdownMenu.clubInfo.clubId);
-	local defaultStreamId = #streams > 0 and streams[1] or nil;
+function UnitPopupGuildInviteButtonMixin:OnClick(contextData)
+	local clubId = contextData.clubInfo.clubId;
+	local streams = C_Club.GetStreams(clubId);
+	local defaultStreamId = streams[1];
 	for i, stream in ipairs(streams) do
-		if stream.streamType == Enum.ClubStreamType.General or stream.streamType == Enum.ClubStreamType.Guild then
+		local streamType = stream.streamType;
+		if streamType == Enum.ClubStreamType.General or streamType == Enum.ClubStreamType.Guild then
 			defaultStreamId = stream.streamId;
 			break;
 		end
 	end
 
 	if defaultStreamId then
-		CommunitiesUtil.OpenInviteDialog(dropdownMenu.clubInfo.clubId, defaultStreamId);
+		CommunitiesUtil.OpenInviteDialog(clubId, defaultStreamId);
 	end
 end 
 

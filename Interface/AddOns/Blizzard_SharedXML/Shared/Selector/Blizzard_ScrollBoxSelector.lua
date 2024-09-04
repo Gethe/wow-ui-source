@@ -82,7 +82,7 @@ end
 
 function ScrollBoxSelectorMixin:ScrollToSelectedIndex()
 	local targetIndex = self:GetSelectedIndex() or 1;
-	self:ScrollToElementDataIndex(targetIndex, ScrollBoxConstants.AlignCenter, ScrollBoxConstants.NoScrollInterpolation);
+	self:ScrollToElementDataIndex(targetIndex, ScrollBoxConstants.AlignCenter);
 end
 
 function ScrollBoxSelectorMixin:ScrollToElementDataIndex(...)

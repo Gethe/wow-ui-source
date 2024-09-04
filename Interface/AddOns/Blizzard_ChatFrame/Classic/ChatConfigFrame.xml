@@ -239,7 +239,7 @@
 			<AbsInset left="0" right="-55" top="0" bottom="0"/>
 		</HitRectInsets>
 	</CheckButton>
-	<Frame name="ChatConfigCheckBoxTemplate" inherits="TooltipBackdropTemplate" virtual="true">
+	<Frame name="ChatConfigCheckboxTemplate" inherits="TooltipBackdropTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="backdropBorderColorAlpha" value=".5" type="number"/>
 		</KeyValues>
@@ -257,10 +257,10 @@
 			</CheckButton>
 		</Frames>
 	</Frame>
-	<Frame name="ChatConfigCheckBoxSmallTemplate" inherits="ChatConfigCheckBoxTemplate" virtual="true">
+	<Frame name="ChatConfigCheckboxSmallTemplate" inherits="ChatConfigCheckboxTemplate" virtual="true">
 		<Size x="200" y="23"/>
 	</Frame>
-	<Frame name="ChatConfigCheckBoxWithSwatchTemplate" inherits="ChatConfigCheckBoxTemplate" virtual="true">
+	<Frame name="ChatConfigCheckboxWithSwatchTemplate" inherits="ChatConfigCheckboxTemplate" virtual="true">
 		<Frames>
 			<Button name="$parentColorSwatch" parentKey="ColorSwatch">
 				<Size x="16" y="16"/>
@@ -293,7 +293,7 @@
 			</Button>
 		</Frames>
 	</Frame>
-	<Frame name="ChatConfigWideCheckBoxWithSwatchTemplate" inherits="ChatConfigCheckBoxWithSwatchTemplate" virtual="true">
+	<Frame name="ChatConfigWideCheckboxWithSwatchTemplate" inherits="ChatConfigCheckboxWithSwatchTemplate" virtual="true">
 		<Size x="350" y="26"/>
 		<Scripts>
 			<OnLoad inherit="prepend">
@@ -302,7 +302,7 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
-	<Frame name="MovableChatConfigWideCheckBoxWithSwatchTemplate" parentArray="WideCheckBoxes" mixin="ChatConfigWideCheckBoxMixin" inherits="ChatConfigWideCheckBoxWithSwatchTemplate" virtual="true">
+	<Frame name="MovableChatConfigWideCheckboxWithSwatchTemplate" parentArray="WideCheckboxes" mixin="ChatConfigWideCheckboxMixin" inherits="ChatConfigWideCheckboxWithSwatchTemplate" virtual="true">
 		<Size x="350" y="25"/>
 		<Frames>
 			<Button parentKey="CloseChannel">
@@ -342,7 +342,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						self.func = ColorClassesCheckBox_OnClick;
+						self.func = ColorClassesCheckbox_OnClick;
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
@@ -352,7 +352,7 @@
 			<OnDragStart method="OnDragStart"/>
 		</Scripts>
 	</Frame>
-	<Frame name="ChatConfigCheckBoxWithSwatchAndClassColorTemplate" inherits="ChatConfigCheckBoxWithSwatchTemplate" virtual="true">
+	<Frame name="ChatConfigCheckboxWithSwatchAndClassColorTemplate" inherits="ChatConfigCheckboxWithSwatchTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="328" y="25"/>
 		</Size>
@@ -368,7 +368,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						self.func = ColorClassesCheckBox_OnClick;
+						self.func = ColorClassesCheckbox_OnClick;
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
@@ -691,7 +691,7 @@
 					<Anchor point="TOPLEFT" relativeTo="ChatConfigBackgroundFrame"/>
 				</Anchors>
 				<Frames>
-					<Frame name="$parentLeft" mixin="ChatConfigWideCheckBoxManagerMixin" inherits="WideChatConfigBoxWithHeaderAndClassColorsTemplate">
+					<Frame name="$parentLeft" mixin="ChatConfigWideCheckboxManagerMixin" inherits="WideChatConfigBoxWithHeaderAndClassColorsTemplate">
 						<Size x="10" y="10"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="13" y="-30"/>

@@ -39,6 +39,8 @@ function CraftFrame_OnShow(self)
 	CraftListScrollFrameScrollBar:SetMinMaxValues(0, 0);
 	CraftListScrollFrameScrollBar:SetValue(0);
 	CraftFrame_Update();
+
+	self.Dropdown:SetWidth(150);
 end
 
 function CraftFrame_OnHide(self)
@@ -51,6 +53,32 @@ function CraftFrame_OnLoad(self)
 	self:RegisterEvent("SPELLS_CHANGED");
 	self:RegisterEvent("UNIT_PET_TRAINING_POINTS");
 	FauxScrollFrame_SetOffset(CraftListScrollFrame, 0);
+
+	CraftFrame_SetupDropdown(GetCraftSlots());
+end
+
+function CraftFrame_SetupDropdown(...)
+	SetCraftFilter(0);
+	
+	local slots = {...};
+
+	local function IsSelected(index)
+		return GetCraftFilter(index);
+	end
+
+	local function SetSelected(index)
+		SetCraftFilter(index);
+	end
+
+	self.Dropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_CRAFT_UI_FILTER");
+
+		rootDescription:CreateRadio(ALL_INVENTORY_SLOTS, IsSelected, SetSelected, 0);
+
+		for index, slot in ipairs(slots) do
+			rootDescription:CreateRadio(getglobal(slot), IsSelected, SetSelected, index);
+		end
+	end);
 end
 
 function CraftFrame_OnEvent(self, event, ...)
@@ -99,10 +127,10 @@ function CraftFrame_Update()
 	CraftCreateButton:SetText(getglobal(GetCraftButtonToken()));
 
 	if ( CraftIsEnchanting() ) then
-		CraftFrameFilterDropDown:Show();
+		CraftFrame.Dropdown:Show();
 		CraftFrameAvailableFilterCheckButton:Show();
 	else
-		CraftFrameFilterDropDown:Hide();
+		CraftFrame.Dropdown:Hide();
 		CraftFrameAvailableFilterCheckButton:Hide();
 	end
 
@@ -164,14 +192,14 @@ function CraftFrame_Update()
 
 	CraftHighlightFrame:Hide();
 
-	local craftIndex, craftName, craftButton, craftButtonSubText, craftButtonCost, craftButtonText;
+	local craftName, craftSubSpellName, craftType, numAvailable, isExpanded, trainingPointCost, requiredLevel;
 	for i=1, CRAFTS_DISPLAYED, 1 do
-		craftIndex = i + craftOffset;
+		local craftIndex = i + craftOffset;
 		craftName, craftSubSpellName, craftType, numAvailable, isExpanded, trainingPointCost, requiredLevel = GetCraftInfo(craftIndex);
-		craftButton = getglobal("Craft"..i);
-		craftButtonSubText = getglobal("Craft"..i.."SubText");
-		craftButtonCost = getglobal("Craft"..i.."Cost");
-		craftButtonText = getglobal("Craft"..i.."Text");
+		local craftButton = getglobal("Craft"..i);
+		local craftButtonSubText = getglobal("Craft"..i.."SubText");
+		local craftButtonCost = getglobal("Craft"..i.."Cost");
+		local craftButtonText = getglobal("Craft"..i.."Text");
 		if ( craftIndex <= numCrafts ) then
 			-- Set button widths if scrollbar is shown or hidden
 			if ( CraftListScrollFrame:IsVisible() ) then
@@ -255,7 +283,7 @@ function CraftFrame_Update()
 	local numHeaders = 0;
 	local notExpanded = 0;
 	for i=1, numCrafts, 1 do
-		local craftName, craftSubSpellName, craftType, numAvailable, isExpanded = GetCraftInfo(i);
+		craftName, craftSubSpellName, craftType, numAvailable, isExpanded = GetCraftInfo(i);
 		if ( craftName and craftType == "header" ) then
 			numHeaders = numHeaders + 1;
 			if ( not isExpanded ) then
@@ -463,50 +491,6 @@ function Craft_UpdateTrainingPoints()
 		CraftFramePointsLabel:Hide();
 		CraftFramePointsText:Hide();
 	end
-end
-
-function CraftFrameFilterDropDown_OnLoad()
-	UIDropDownMenu_Initialize(CraftFrameFilterDropDown, CraftFrameFilterDropDown_Initialize);
-	UIDropDownMenu_SetWidth(CraftFrameFilterDropDown, 120);
-	UIDropDownMenu_SetSelectedID(CraftFrameFilterDropDown, 1);
-end
-
-function CraftFrameFilterDropDown_Initialize()
-	CraftFrameFilterDropDown_LoadInvSlots(GetCraftSlots());
-end
-
-function CraftFrameFilterDropDown_LoadInvSlots(...)
-	local allChecked = GetCraftFilter(0);
-	local info = UIDropDownMenu_CreateInfo();
-	if ( select("#", ...) > 1 ) then
-		info.text = ALL_INVENTORY_SLOTS;
-		info.func = CraftFrameFilterDropDown_OnClick;
-		info.checked = allChecked;
-		UIDropDownMenu_AddButton(info);
-	end
-	
-	local checked;
-	for i=1, select("#", ...), 1 do
-		if ( allChecked and select("#", ...) > 1 ) then
-			checked = nil;
-			UIDropDownMenu_SetText(CraftFrameFilterDropDown, ALL_INVENTORY_SLOTS);
-		else
-			checked = GetCraftFilter(i);
-			if ( checked ) then
-				UIDropDownMenu_SetText(CraftFrameFilterDropDown, getglobal(select(i, ...)));
-			end
-		end
-		info.text = getglobal(select(i, ...));
-		info.func = CraftFrameFilterDropDown_OnClick;
-		info.checked = checked;
-		UIDropDownMenu_AddButton(info);
-	end
-end
-
-function CraftFrameFilterDropDown_OnClick(self)	
-	UIDropDownMenu_SetSelectedID(CraftFrameFilterDropDown, self:GetID());
-	SetCraftFilter(self:GetID());
-	CraftFrame.selected = self:GetID();
 end
 
 function Craft_SetSubTextColor(button, r, g, b)

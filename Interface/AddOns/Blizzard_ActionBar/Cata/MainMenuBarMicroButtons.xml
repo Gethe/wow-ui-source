@@ -466,13 +466,6 @@
 				if ( self.down ) then
 					self.down = nil; -- I'm pretty sure none of this should ever get run.
 					if ( not GameMenuFrame:IsShown() ) then
-						if ( VideoOptionsFrame:IsShown() ) then
-							VideoOptionsFrameCancel:Click();
-						elseif ( AudioOptionsFrame:IsShown() ) then
-							AudioOptionsFrameCancel:Click();
-						elseif ( InterfaceOptionsFrame:IsShown() ) then
-							InterfaceOptionsFrameCancel:Click();
-						end
 						CloseMenus();
 						CloseAllWindows()
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
@@ -492,13 +485,6 @@
 					self.down = nil;
 					if ( self:IsMouseOver() ) then
 						if ( not GameMenuFrame:IsShown() ) then
-							if ( VideoOptionsFrame:IsShown() ) then
-								VideoOptionsFrameCancel:Click();
-							elseif ( AudioOptionsFrame:IsShown() ) then
-								AudioOptionsFrameCancel:Click();
-							elseif ( InterfaceOptionsFrame:IsShown() ) then
-								InterfaceOptionsFrameCancel:Click();
-							end
 							CloseMenus();
 							CloseAllWindows()
 							PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);

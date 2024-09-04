@@ -7,18 +7,14 @@ local SpellBook =
 	Functions =
 	{
 		{
-			Name = "GetSpellLinkFromSpellID",
+			Name = "HasPetSpells",
 			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "glyphID", Type = "number", Nilable = true },
-			},
+			Documentation = { "Returns nothing if player has no pet spells" },
 
 			Returns =
 			{
-				{ Name = "spellLink", Type = "string", Nilable = false },
+				{ Name = "numPetSpells", Type = "number", Nilable = false },
+				{ Name = "petNameToken", Type = "string", Nilable = false },
 			},
 		},
 	},
@@ -83,15 +79,6 @@ local SpellBook =
 				{ Name = "spellID", Type = "number", Nilable = false },
 				{ Name = "slot", Type = "number", Nilable = false },
 				{ Name = "page", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "SpellTextUpdate",
-			Type = "Event",
-			LiteralName = "SPELL_TEXT_UPDATE",
-			Payload =
-			{
-				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 		},
 		{

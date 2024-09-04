@@ -132,7 +132,7 @@ end
 -- Populates Raid Info Data
 function RaidInfoFrame_Update()
 	local savedInstances = GetNumSavedInstances();
-	local instanceName, instanceID, instanceReset, instanceDifficulty;
+	local instanceName, instanceID, instanceReset, instanceDifficulty, _;
 	if ( savedInstances > 0 ) then
 		--RaidInfoScrollFrameScrollUpButton:SetPoint("BOTTOM", RaidInfoScrollFrame, "TOP", 0, 16);
 		for i=1, MAX_RAID_INFOS do

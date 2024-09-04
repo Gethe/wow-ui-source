@@ -201,17 +201,6 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
-				<Size x="10" y="10"/>
-				<Anchors>
-					<Anchor point="TOP" x="-20" y="-10"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						PartyFrameDropDown_OnLoad(self);
-					</OnLoad>
-				</Scripts>
-			</Frame>
 			<Frame setAllPoints="true">
 				<Frames>
 					<Frame setAllPoints="true">
@@ -281,7 +270,7 @@
 					</Frame>
 				</Frames>
 			</Frame>
-			<StatusBar name="$parentHealthBar" inherits="TextStatusBar">
+			<StatusBar name="$parentHealthBar" parentKey="HealthBar" inherits="TextStatusBar">
 				<Size x="70" y="8"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="47" y="-12"/>
@@ -303,7 +292,7 @@
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
-			<StatusBar name="$parentManaBar" inherits="TextStatusBar">
+			<StatusBar name="$parentManaBar" parentKey="ManaBar" inherits="TextStatusBar">
 				<Size x="70" y="8"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="47" y="-21"/>

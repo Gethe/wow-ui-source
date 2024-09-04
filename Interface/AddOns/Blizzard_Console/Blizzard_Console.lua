@@ -1,4 +1,6 @@
 
+Blizzard_Console_SavedVars = Blizzard_Console_SavedVars or nil;
+
 local forceinsecure = forceinsecure;
 
 local ADDON_NAME = ...;
@@ -279,7 +281,7 @@ end
 
 function DeveloperConsoleMixin:ValidateHeight(newHeight)
 	local screenHeight = 768;
-	local newHeight = Clamp(newHeight or self:GetHeight(), screenHeight * .1 + self.EditBox:GetHeight(), screenHeight * .85 - self:CalculateAnchorOffset());
+	newHeight = Clamp(newHeight or self:GetHeight(), screenHeight * .1 + self.EditBox:GetHeight(), screenHeight * .85 - self:CalculateAnchorOffset());
 	self:SetHeight(newHeight);
 	if self.savedVars.height ~= newHeight then
 		self.savedVars.height = newHeight;
@@ -545,5 +547,26 @@ function BlizzardConsoleMessageFrame_OnHyperlinkClick(self, link, text, button)
 			self:GetParent():AddToCommandHistory(command);
 			self:GetParent():ResetCommandHistoryIndex();
 		end
+	end
+end
+
+function DeveloperConsole_GetLastCommand()
+	local commandHistory = Blizzard_Console_SavedVars and Blizzard_Console_SavedVars.commandHistory;
+	if not commandHistory then
+		return nil;
+	end
+
+	local historyCount = #commandHistory;
+	if historyCount < 1 then
+		return nil;
+	end
+			
+	return commandHistory[historyCount];
+end
+
+function DeveloperConsole_RepeatLastCommand()
+	local lastCommand = DeveloperConsole_GetLastCommand();
+	if lastCommand and type(lastCommand) == "string" then
+		ConsoleExec(lastCommand);
 	end
 end

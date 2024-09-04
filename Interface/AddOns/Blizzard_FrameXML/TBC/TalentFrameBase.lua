@@ -53,7 +53,7 @@ function TalentFrame_Update(TalentFrame)
 		local button = getglobal(TalentFrame:GetName().."Talent"..i);
 		if ( i <= numTalents ) then
 			-- Set the button info
-			local name, iconTexture, tier, column, rank, maxRank, meetsPrereq, _, _, isExceptional = GetTalentInfo(TalentFrame.currentSelectedTab, i, TalentFrame.inspect);
+			local _name, iconTexture, tier, column, rank, maxRank, meetsPrereq, _, _, isExceptional = GetTalentInfo(TalentFrame.currentSelectedTab, i, TalentFrame.inspect);
 			getglobal(TalentFrame:GetName().."Talent"..i.."Rank"):SetText(rank);
 			SetTalentButtonLocation(button, tier, column);
 			TalentFrame.TALENT_BRANCH_ARRAY[tier][column].id = button:GetID();

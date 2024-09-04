@@ -192,7 +192,7 @@ function MerchantFrame_UpdateMerchantInfo()
 	
 	MerchantPageText:SetFormattedText(PAGE_NUMBER, MerchantFrame.page);
 
-	local name, texture, price, stackCount, numAvailable, isPurchasable, isUsable, extendedCost;
+	local name, texture, price, stackCount, numAvailable, isPurchasable, isUsable, extendedCost, currencyID;
 	for i=1, MERCHANT_ITEMS_PER_PAGE do
 		local index = (((MerchantFrame.page - 1) * MERCHANT_ITEMS_PER_PAGE) + i);
 		local itemButton = _G["MerchantItem"..i.."ItemButton"];
@@ -902,9 +902,9 @@ function MerchantFrame_UpdateCurrencyAmounts()
 		local tokenButton = _G["MerchantToken"..i];
 		if ( tokenButton ) then
 			if ( tokenButton.currencyID ) then
-				local name, count = GetCurrencyInfo(tokenButton.currencyID);
-				if ( count <= 99999 ) then
-					tokenButton.count:SetText(count);
+				local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(tokenButton.currencyID);
+				if ( currencyInfo.quantity <= 99999 ) then
+					tokenButton.count:SetText(currencyInfo.quantity);
 				else
 					tokenButton.count:SetText("*");
 				end

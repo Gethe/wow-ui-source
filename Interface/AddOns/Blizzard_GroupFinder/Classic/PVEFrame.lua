@@ -155,18 +155,6 @@ function PVEFrame_ShowFrame(sidePanelName, selection)
 	end
 end
 
-function PVEFrame_UpdateTabs(self)
-	self = self or PVEFrame;
-	for i = 1, self.numTabs do
-		local state = "normal";
-		local tab = self["tab"..i];
-		if ( tab.panel.GetState ) then
-			state = tab.panel:GetState();
-		end
-		-- do something with state
-	end
-end
-
 function PVEFrame_TabOnClick(self)
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 	PVEFrame_ShowFrame(panels[self:GetID()].name);

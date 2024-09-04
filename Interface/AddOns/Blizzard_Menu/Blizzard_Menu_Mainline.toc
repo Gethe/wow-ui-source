@@ -1,0 +1,21 @@
+## Title: Blizzard_Menu
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_SharedXMLBase
+## LoadFirst: 1
+## AllowLoad: Both
+## AllowLoadGameType: mainline
+MenuConstants.lua
+Mainline\MenuConstants.lua
+MenuVariants.lua
+Mainline\MenuVariants.lua
+Compositor.lua
+Menu.lua
+Menu.xml
+DropdownButton.lua
+DropdownButton.xml
+MenuTemplates.lua
+MenuTemplates.xml
+Mainline\MenuTemplates.lua
+Mainline\MenuTemplates.xml
+MenuUtil.lua

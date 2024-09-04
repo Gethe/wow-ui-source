@@ -1,8 +1,7 @@
 ## Title: Blizzard_UIPanels_Game
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_GameTooltip, Blizzard_UIPanelTemplates, Blizzard_FrameXML, Blizzard_Options_Frame, Blizzard_CharacterFrame, Blizzard_ActionBar, Blizzard_Minimap, Blizzard_CastingBar, Blizzard_UnitFrame
-## SuppressLocalTableRef: 1
+## Dependencies: Blizzard_GameTooltip, Blizzard_UIPanelTemplates, Blizzard_FrameXML, Blizzard_CharacterFrame, Blizzard_ActionBar, Blizzard_Minimap, Blizzard_CastingBar, Blizzard_UnitFrame
 ## LoadFirst: 1
 ## AllowLoad: game
 ## AllowLoadGameType: vanilla
@@ -21,8 +20,6 @@ Vanilla\QuestFrame.lua
 Vanilla\QuestFrame.xml
 Vanilla\QuestLogFrame.lua
 Vanilla\QuestLogFrame.xml
-Classic\QuestTimerFrame.lua
-Classic\QuestTimerFrame.xml
 Vanilla\QuestInfo.lua
 Vanilla\QuestInfo.xml
 Vanilla\MerchantFrame.lua

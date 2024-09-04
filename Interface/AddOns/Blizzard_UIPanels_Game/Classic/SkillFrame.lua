@@ -24,7 +24,7 @@ end
 function SkillFrame_SetStatusBar(statusBarID, skillIndex, numSkills)
 	-- Get info
 	local skillName, header, isExpanded, skillRank, numTempPoints, skillModifier, skillMaxRank, isAbandonable, stepCost, rankCost, minLevel, skillCostType = GetSkillLineInfo(skillIndex);
-	skillRankStart = skillRank;
+	local skillRankStart = skillRank;
 	skillRank = skillRank + numTempPoints;
 
 	-- Skill bar objects
@@ -41,9 +41,6 @@ function SkillFrame_SetStatusBar(statusBarID, skillIndex, numSkills)
 	-- Header objects
 	local skillRankFrameBorderTexture = _G["SkillRankFrame"..statusBarID.."Border"];
 	local skillTypeLabelText = _G["SkillTypeLabel"..statusBarID];
-	
-	-- Frame width vars
-	local skillRankFrameWidth = 0;
 
 	-- Hide or show skill bar
 	if ( skillName == "" ) then
@@ -111,9 +108,6 @@ function SkillFrame_SetStatusBar(statusBarID, skillIndex, numSkills)
 		statusBarFillBar:SetVertexColor(1.0, 1.0, 1.0, 0.5);
 	end
 
-	-- Default width
-	skillRankFrameWidth = 256;
-
 	statusBarName:SetText(skillName);
 
 	-- Show and hide skill up arrows
@@ -148,9 +142,6 @@ function SkillFrame_SetStatusBar(statusBarID, skillIndex, numSkills)
 		end
 
 		statusBarName:SetText(skillName);
-
-		-- Setwidth value
-		skillRankFrameWidth = 215;
 	else
 		-- Normal skill
 		statusBarName:SetText(skillName);
@@ -200,9 +191,6 @@ function SkillDetailFrame_SetStatusBar(skillIndex)
 	local statusBarName = _G["SkillDetailStatusBarSkillName"];
 	local statusBarUnlearnButton = _G["SkillDetailStatusBarUnlearnButton"];
 	local statusBarFillBar = _G["SkillDetailStatusBarFillBar"];
-
-	-- Frame width vars
-	local skillRankFrameWidth = 0;
 
 	-- Hide or show skill bar
 	if ( not skillName or skillName == "" ) then
@@ -254,9 +242,6 @@ function SkillDetailFrame_SetStatusBar(skillIndex)
 
 	-- Set skill description text
 	SkillDetailDescriptionText:SetText(format(SKILL_DESCRIPTION,skillType,skillDescription));
-
-	-- Default width
-	skillRankFrameWidth = 256;
 
 	-- Normal skill
 	statusBarName:SetText(skillName);

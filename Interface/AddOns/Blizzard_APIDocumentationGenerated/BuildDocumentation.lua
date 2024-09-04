@@ -6,6 +6,15 @@ local Build =
 	Functions =
 	{
 		{
+			Name = "IsBetaBuild",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isBetaBuild", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsDebugBuild",
 			Type = "Function",
 

@@ -16,6 +16,8 @@ function ActionStatusMixin:OnLoad()
 
 	self.alternateParentFrame = nil;
 	self:UpdateParent();
+
+	EventRegistry:RegisterCallback("UI.AlternateTopLevelParentChanged", self.UpdateParent, self);
 end
 
 function ActionStatusMixin:OnEvent(event, ...)
@@ -51,8 +53,8 @@ function ActionStatusMixin:DisplayMessage(text)
 	self:Show();
 end
 
-function ActionStatusMixin:OnUpdate(elapsed)
-	elapsed = GetTime() - self.startTime;
+function ActionStatusMixin:OnUpdate()
+	local elapsed = GetTime() - self.startTime;
 	if ( elapsed < ACTION_STATUS_FADETIME ) then
 		local alpha = 1.0 - (elapsed / ACTION_STATUS_FADETIME);
 		self:SetAlpha(alpha);

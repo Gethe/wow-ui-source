@@ -299,6 +299,20 @@ local ClubFinder =
 			},
 		},
 		{
+			Name = "IsValidSearchString",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isApproved", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "LookupClubPostingFromClubFinderGUID",
 			Type = "Function",
 
@@ -637,6 +651,17 @@ local ClubFinder =
 			Documentation = { "Sends an update to the UI that the club finder feature has been enabled or disabled." },
 		},
 		{
+			Name = "ClubFinderGuildRealmNameUpdated",
+			Type = "Event",
+			LiteralName = "CLUB_FINDER_GUILD_REALM_NAME_UPDATED",
+			Documentation = { "Sends an update to the UI if the realm name of a guild was found asynchronously." },
+			Payload =
+			{
+				{ Name = "clubFinderGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "realmName", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "ClubFinderLinkedClubReturned",
 			Type = "Event",
 			LiteralName = "CLUB_FINDER_LINKED_CLUB_RETURNED",
@@ -896,6 +921,7 @@ local ClubFinder =
 				{ Name = "clubId", Type = "ClubId", Nilable = false },
 				{ Name = "lastUpdatedTime", Type = "BigInteger", Nilable = false },
 				{ Name = "isCrossFaction", Type = "bool", Nilable = false },
+				{ Name = "realmName", Type = "string", Nilable = true },
 			},
 		},
 	},

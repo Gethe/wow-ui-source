@@ -1,3 +1,5 @@
+MOVING_COMPACT_RAID_FRAME = nil;
+
 function CompactRaidGroup_OnLoad(self)
 	self.title:Disable();
 	

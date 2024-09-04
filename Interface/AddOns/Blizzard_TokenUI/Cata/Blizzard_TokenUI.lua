@@ -171,7 +171,7 @@ end
 
 function BackpackTokenFrame_Update()
 	local watchButton;
-	local name, count, icon;
+	local name, count, icon, currencyID;
 	for i=1, MAX_WATCHED_TOKENS do
 		name, count, icon, currencyID = GetBackpackCurrencyInfo(i);
 		-- Update watched tokens
@@ -282,6 +282,6 @@ function TokenButton_OnClick(self)
 end
 
 function TokenFrame_UpdatePopup(button)
-	TokenFramePopupInactiveCheckBox:SetChecked(button.isUnused);
-	TokenFramePopupBackpackCheckBox:SetChecked(button.isWatched);
+	TokenFramePopupInactiveCheckbox:SetChecked(button.isUnused);
+	TokenFramePopupBackpackCheckbox:SetChecked(button.isWatched);
 end

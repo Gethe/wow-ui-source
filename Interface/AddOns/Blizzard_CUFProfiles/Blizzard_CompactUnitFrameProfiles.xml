@@ -2,7 +2,7 @@
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_CompactUnitFrameProfiles.lua"/>
 
-	<Frame name="CompactUnitFrameProfilesDropdownTemplate" inherits="UIDropDownMenuTemplate" virtual="true">
+	<DropdownButton name="CompactUnitFrameProfilesDropdownTemplate" inherits="WowStyle1DropdownTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
 				<FontString name="$parentLabel" inherits="GameFontNormalSmall" parentKey="label">
@@ -17,14 +17,9 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<!--OnLoad>
-				CompactUnitFrameProfilesDropdown_InitializeWidget(self);
-			</OnLoad-->
-			<OnShow>
-				CompactUnitFrameProfilesDropdown_OnShow(self);
-			</OnShow>
+			<OnShow function="CompactUnitFrameProfilesDropdown_OnShow"/>
 		</Scripts>
-	</Frame>
+	</DropdownButton>
 	<CheckButton name="CompactUnitFrameProfilesCheckButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
 		<Size>
 			<AbsDimension x="26" y="26"/>
@@ -147,16 +142,16 @@
 		</Frames>
 		<Scripts>
 			<OnShow>
-				UIDropDownMenu_DisableDropDown(CompactRaidFrameManagerDisplayFrameProfileSelector);
+				CompactRaidFrameManagerDisplayFrameProfileSelector:Disable();
 			</OnShow>
 			<OnHide>
-				UIDropDownMenu_EnableDropDown(CompactRaidFrameManagerDisplayFrameProfileSelector);
+				CompactRaidFrameManagerDisplayFrameProfileSelector:Enable();
 				self:Hide();	--If the parent is hidden, we'll cancel this popup.
 			</OnHide>
 		</Scripts>
 	</Frame>
 
-	<Frame name="CompactUnitFrameProfiles" hidden="true" parent="InterfaceOptionsFramePanelContainer">
+	<Frame name="CompactUnitFrameProfiles" hidden="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="$parentTitle" text="COMPACT_UNIT_FRAME_PROFILES_LABEL" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
@@ -178,14 +173,15 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="$parentProfileSelector" inherits="UIDropDownMenuTemplate">
+			<DropdownButton name="$parentProfileSelector" inherits="WowStyle1DropdownTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT" x="-15" y="-20"/>
 				</Anchors>
 				<Scripts>
-					<OnShow function="CompactUnitFrameProfilesProfileSelector_SetUp"/>
+					<OnLoad function="CompactUnitFrameProfilesProfileSelector_OnLoad"/>
+					<OnShow function="CompactUnitFrameProfilesProfileSelector_OnShow"/>
 				</Scripts>
-			</Frame>
+			</DropdownButton>
 			<Button name="$parentSaveButton" inherits="UIPanelButtonTemplate" text="SAVE">
 				<Size x="115" y="21"/>
 				<Anchors>
@@ -210,7 +206,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<CheckButton name="$parentRaidStylePartyFrames" inherits="InterfaceOptionsCheckButtonTemplate">
+			<CheckButton name="$parentRaidStylePartyFrames" inherits="OptionsBaseCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPRIGHT" x="-260" y="-8"/>
 				</Anchors>
@@ -232,7 +228,7 @@
 								self:GetParent().optionsFrame.autoActivate5Players:Disable();
 							end
 						end;
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						--BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 						self:RegisterEvent("VARIABLES_LOADED");
 					</OnLoad>
 					<OnEvent>
@@ -309,7 +305,7 @@
 						</Scripts>
 						<FontString inherits="ChatFontNormal"/>
 					</EditBox>
-					<Frame name="$parentBaseProfileSelector" inherits="UIDropDownMenuTemplate">
+					<DropdownButton name="$parentBaseProfileSelector" inherits="WowStyle1DropdownTemplate">
 						<Anchors>
 							<Anchor point="BOTTOM" x="0" y="60"/>
 						</Anchors>
@@ -323,9 +319,10 @@
 							</Layer>
 						</Layers>
 						<Scripts>
-							<OnShow function="CompactUnitFrameProfilesNewProfileDialogBaseProfileSelector_SetUp"/>
+							<OnLoad function="CompactUnitFrameProfilesNewProfileDialogBaseProfileSelector_OnLoad"/>
+							<OnShow function="CompactUnitFrameProfilesNewProfileDialogBaseProfileSelector_OnShow"/>
 						</Scripts>
-					</Frame>
+					</DropdownButton>
 					<Button name="$parentCreateButton" inherits="UIPanelButtonTemplate" text="CREATE_COMPACT_UNIT_FRAME_PROFILE" parentKey="createButton">
 						<Size x="115" y="21"/>
 						<Anchors>
@@ -514,17 +511,19 @@
 							</OnLoad>
 						</Scripts>
 					</CheckButton>
-					<Frame name="$parentSortByDropdown" inherits="CompactUnitFrameProfilesDropdownTemplate">
+					<DropdownButton name="$parentSortByDropdown" inherits="CompactUnitFrameProfilesDropdownTemplate">
+						<KeyValues>
+							<KeyValue key="width" value="110" type="number"/>
+						</KeyValues>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentKeepGroupsTogether" relativePoint="BOTTOMLEFT" x="15" y="-10"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								self.width = 110;
-								CompactUnitFrameProfilesDropdown_InitializeWidget(self, "sortBy", { "role", "group", "alphabetical" });
+								CompactUnitFrameProfilesDropdown_OnLoad(self, "sortBy", { "role", "group", "alphabetical" });
 							</OnLoad>
 						</Scripts>
-					</Frame>
+					</DropdownButton>
 					<CheckButton name="$parentDisplayPowerBar" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentKeepGroupsTogether" relativePoint="BOTTOMLEFT" x="0" y="-50"/>
@@ -604,16 +603,16 @@
 							</OnLoad>
 						</Scripts>
 					</CheckButton>
-					<Frame name="$parentHealthTextDropdown" inherits="CompactUnitFrameProfilesDropdownTemplate">
+					<DropdownButton name="$parentHealthTextDropdown" inherits="CompactUnitFrameProfilesDropdownTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentDisplayOnlyDispellableDebuffs" relativePoint="BOTTOMLEFT" x="-18" y="-18"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								CompactUnitFrameProfilesDropdown_InitializeWidget(self, "healthText", { "none", "health", "losthealth", "perc" });
+								CompactUnitFrameProfilesDropdown_OnLoad(self, "healthText", { "none", "health", "losthealth", "perc" });
 							</OnLoad>
 						</Scripts>
-					</Frame>
+					</DropdownButton>
 					<Slider name="$parentHeightSlider" inherits="CompactUnitFrameProfilesSliderTemplate" minValue="36" maxValue="72" valueStep="2">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentHealthTextDropdown" relativePoint="BOTTOMLEFT" x="10" y="-15"/>

@@ -1,5 +1,6 @@
 -- CHAT PROTOTYPE STUFF
 SELECTED_DOCK_FRAME = nil;
+SELECTED_CHAT_FRAME = nil;
 DOCKED_CHAT_FRAMES = {};
 DOCK_COPY = {};
 
@@ -148,7 +149,7 @@ end
 
 function FCF_GetChatWindowInfo(id)
 	if ( id > NUM_CHAT_WINDOWS ) then
-		local frame = _G["ChatFrame"..id];
+		local frame = FCF_GetChatFrameByID(id);
 		local tab = _G["ChatFrame"..id.."Tab"];
 		local background = _G["ChatFrame"..id.."Background"];
 
@@ -183,7 +184,7 @@ function FCF_CopyChatSettings(copyTo, copyFrom)
 end
 
 function FloatingChatFrame_Update(id, onUpdateEvent)
-	local chatFrame = _G["ChatFrame"..id];
+	local chatFrame = FCF_GetChatFrameByID(id);
 	local chatTab = _G["ChatFrame"..id.."Tab"];
 
 	local name, fontSize, r, g, b, a, shown, locked, docked, uninteractable = FCF_GetChatWindowInfo(id);
@@ -230,377 +231,135 @@ function FloatingChatFrame_Update(id, onUpdateEvent)
 	FCF_UpdateButtonSide(chatFrame);
 end
 
--- Channel Dropdown
-function FCFOptionsDropDown_OnLoad(self)
-	CURRENT_CHAT_FRAME_ID = self:GetParent():GetID();
-	UIDropDownMenu_Initialize(self, FCFOptionsDropDown_Initialize, "MENU");
-	UIDropDownMenu_SetButtonWidth(self, 50);
-	UIDropDownMenu_SetWidth(self, 50);
-end
+function FCF_Tab_SetupMenu(self)
+	MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
+		rootDescription:SetTag("MENU_FCF_TAB");
 
-function FCFOptionsDropDown_Initialize(dropDown)
 	-- Window preferences
 	local name, fontSize, r, g, b, a, shown = FCF_GetChatWindowInfo(FCF_GetCurrentChatFrameID());
-	local info;
-
-	local chatFrame = FCF_GetCurrentChatFrame();
-	local isTemporary = chatFrame and chatFrame.isTemporary;
-
-	-- If level 2
-	if ( UIDROPDOWNMENU_MENU_LEVEL == 2 ) then
-		-- If this is the font size menu then create dropdown
-		if ( UIDROPDOWNMENU_MENU_VALUE == FONT_SIZE ) then
-			-- Add the font heights from the font height table
-			local value;
-			for i=1, #CHAT_FONT_HEIGHTS do
-				value = CHAT_FONT_HEIGHTS[i];
-				info = UIDropDownMenu_CreateInfo();
-				info.text = format(FONT_SIZE_TEMPLATE, value);
-				info.value = value;
-				info.func = FCF_SetChatWindowFontSize;
-
-				local fontFile, fontHeight, fontFlags = chatFrame:GetFont();
-				if ( value == floor(fontHeight+0.5) ) then
-					info.checked = 1;
-				end
-
-				UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
-			end
-			return;
-		end
-		return;
-	end
+		local currentChatFrame = FCF_GetCurrentChatFrame();
+		local isTemporary = currentChatFrame and currentChatFrame.isTemporary;
+		local isOnGlueScreen = IsOnGlueScreen();
+		local tabChatFrame = FCF_GetChatFrameByID(self:GetID());
 
 	-- Window options
-	info = UIDropDownMenu_CreateInfo();
-	local dropDownChatFrame = FCF_GetCurrentChatFrame(dropDown);
-	if( dropDownChatFrame ) then
-		if( dropDownChatFrame == GENERAL_CHAT_DOCK.primary ) then
-			info.text = dropDownChatFrame.isLocked and UNLOCK_WINDOW or LOCK_WINDOW;
-			info.func = FCF_ToggleLockOnDockedFrame;
+		-- If you aren't the default chat frame then show lock/unlock option
+		local text;
+		local func;
+		if( tabChatFrame == GENERAL_CHAT_DOCK.primary ) then
+			text = tabChatFrame.isLocked and UNLOCK_WINDOW or LOCK_WINDOW;
+			func = FCF_ToggleLockOnDockedFrame;
 		else
-			if(dropDownChatFrame.isDocked) then
-				info.text = UNDOCK_WINDOW;
-				info.func = FCF_ToggleLock;
-			elseif ( dropDownChatFrame.isLocked ) then
-				info.text = UNLOCK_WINDOW;
-				info.func = FCF_ToggleLock;
+			func = FCF_ToggleLock;
+			if(tabChatFrame.isDocked) then
+				text = UNDOCK_WINDOW;
+			elseif ( tabChatFrame.isLocked ) then
+				text = UNLOCK_WINDOW;
 			else
-				info.text = LOCK_WINDOW;
-				info.func = FCF_ToggleLock;
+				text = LOCK_WINDOW;
 			end
 		end
-		info.notCheckable = 1;
-		UIDropDownMenu_AddButton(info);
-		--Add Unlock Button for docked windows
-		if( dropDownChatFrame ~= GENERAL_CHAT_DOCK.primary ) then
-			if(dropDownChatFrame.isDocked) then
-				info = UIDropDownMenu_CreateInfo();
-				info.text = dropDownChatFrame.isLocked and UNLOCK_WINDOW or LOCK_WINDOW;
-				info.func = FCF_ToggleLockOnDockedFrame;
-				info.notCheckable = 1;
-				UIDropDownMenu_AddButton(info);
-			end
-		end
+		rootDescription:CreateButton(text, function(...)
+			func();
+		end);
+
 		--Add Uninteractable button
-		info = UIDropDownMenu_CreateInfo();
-		info.text = dropDownChatFrame.isUninteractable and MAKE_INTERACTABLE or MAKE_UNINTERACTABLE;
-		info.func = FCF_ToggleUninteractable;
-		info.notCheckable = 1;
-		UIDropDownMenu_AddButton(info);
-	end
+		local interactText = tabChatFrame.isUninteractable and MAKE_INTERACTABLE or MAKE_UNINTERACTABLE;
+		rootDescription:CreateButton(interactText, function(...)
+			FCF_ToggleUninteractable();
+		end);
 
 	if ( not isTemporary ) then
 		-- Add name button
-		info = UIDropDownMenu_CreateInfo();
-		info.text = RENAME_CHAT_WINDOW;
-		info.func = FCF_RenameChatWindow_Popup;
-		info.notCheckable = 1;
-		UIDropDownMenu_AddButton(info);
+			rootDescription:CreateButton(RENAME_CHAT_WINDOW, function(...)
+				FCF_RenameChatWindow_Popup();
+			end);
 	end
 
-	if ( chatFrame == DEFAULT_CHAT_FRAME ) then
+		if ( currentChatFrame == DEFAULT_CHAT_FRAME ) then
 		-- Create new chat window
-		info = UIDropDownMenu_CreateInfo();
-		info.text = NEW_CHAT_WINDOW;
-		info.func = FCF_NewChatWindow;
-		info.notCheckable = 1;
+			local button = rootDescription:CreateButton(NEW_CHAT_WINDOW, function(...)
+				FCF_NewChatWindow();
+			end);
 		if (FCF_GetNumActiveChatFrames() == NUM_CHAT_WINDOWS ) then
-			info.disabled = 1;
+				button:SetEnabled(false);
 		end
-		UIDropDownMenu_AddButton(info);
 	end
 
 	-- Close current chat window
-	if ( chatFrame and (chatFrame ~= DEFAULT_CHAT_FRAME and not IsCombatLog(chatFrame) and not IsBuiltinChatWindow(chatFrame)) ) then
-		if ( not chatFrame.isTemporary ) then
-			info = UIDropDownMenu_CreateInfo();
-			info.text = CLOSE_CHAT_WINDOW;
-			info.func = FCF_PopInWindow;
-			info.arg1 = dropDownChatFrame;
-			info.notCheckable = 1;
-			UIDropDownMenu_AddButton(info);
+		if ( currentChatFrame ~= DEFAULT_CHAT_FRAME and not IsCombatLog(currentChatFrame) and not IsBuiltinChatWindow(currentChatFrame) ) then
+			if ( not currentChatFrame.isTemporary ) then
+				rootDescription:CreateButton(CLOSE_CHAT_WINDOW, function(...)
+					FCF_PopInWindow(tabChatFrame);
+				end);
 		else
-			if (chatFrame.chatType == "WHISPER" or chatFrame.chatType == "BN_WHISPER" ) then
-				info = UIDropDownMenu_CreateInfo();
-				info.text = CLOSE_CHAT_WHISPER_WINDOW;
-				info.func = FCF_PopInWindow;
-				info.arg1 = dropDownChatFrame;
-				info.notCheckable = 1;
-				UIDropDownMenu_AddButton(info);
+				if (currentChatFrame.chatType == "WHISPER" or currentChatFrame.chatType == "BN_WHISPER" ) then
+					rootDescription:CreateButton(CLOSE_CHAT_WHISPER_WINDOW, function(...)
+						FCF_PopInWindow(tabChatFrame);
+					end);
 			else
-				info = UIDropDownMenu_CreateInfo();
-				info.text = CLOSE_CHAT_WINDOW;
-				info.func = FCF_Close;
-				info.arg1 = dropDownChatFrame;
-				info.notCheckable = 1;
-				UIDropDownMenu_AddButton(info);
+					rootDescription:CreateButton(CLOSE_CHAT_WINDOW, function(...)
+						FCF_Close(tabChatFrame);
+					end);
 			end
 		end
 	end
 
 	-- Display header
-	info = UIDropDownMenu_CreateInfo();
-	info.text = DISPLAY;
-	info.notClickable = 1;
-	info.isTitle = 1;
-	info.notCheckable = 1;
-	UIDropDownMenu_AddButton(info);
+		rootDescription:CreateTitle(DISPLAY);
 
+		do
 	-- Font size
-	info = UIDropDownMenu_CreateInfo();
-	info.text = FONT_SIZE;
-	--info.notClickable = 1;
-	info.hasArrow = 1;
-	info.func = nil;
-	info.notCheckable = 1;
-	UIDropDownMenu_AddButton(info);
+			local fontSizeSubmenu = rootDescription:CreateButton(FONT_SIZE);
 
-	-- Set Background color
-	info = UIDropDownMenu_CreateInfo();
-	info.text = BACKGROUND;
-	info.hasColorSwatch = 1;
-	info.notCheckable = 1;
-	info.r = r;
-	info.g = g;
-	info.b = b;
-	-- Done because the slider is reversed
-	if ( a ) then
-		a = 1- a;
+			local fontFile, fontHeight, fontFlags = currentChatFrame:GetFont();
+			local floorHeight = floor(fontHeight + 0.5);
+			local function IsSelected(height)
+				return height == floorHeight;
 	end
-	info.opacity = a;
-	info.swatchFunc = FCF_SetChatWindowBackGroundColor;
-	info.func = UIDropDownMenuButton_OpenColorPicker;
-	--info.notCheckable = 1;
-	info.hasOpacity = 1;
-	info.opacityFunc = FCF_SetChatWindowOpacity;
-	info.cancelFunc = FCF_CancelWindowColorSettings;
-	UIDropDownMenu_AddButton(info);
 
-	if ( not isTemporary ) then
-		-- Filter header
-		info = UIDropDownMenu_CreateInfo();
-		info.text = FILTERS;
-		--info.notClickable = 1;
-		info.isTitle = 1;
-		info.notCheckable = 1;
-		UIDropDownMenu_AddButton(info);
-
-		-- Configure settings
-		info = UIDropDownMenu_CreateInfo();
-		info.text = CHAT_CONFIGURATION;
-		info.func = function() ShowUIPanel(ChatConfigFrame); end;
-		info.notCheckable = 1;
-		UIDropDownMenu_AddButton(info);
+			local function SetSelected(height)
+				FCF_SetChatWindowFontSize(nil, tabChatFrame, height);
 	end
-end
---[[
-function FCFDropDown_LoadServerChannels(...)
-	local checked;
-	local channelList = FCF_GetCurrentChatFrame().channelList;
-	local zoneChannelList = FCF_GetCurrentChatFrame().zoneChannelList;
-	local info, channel;
 
-	-- Server Channels header
-	info = UIDropDownMenu_CreateInfo();
-	info.text = SERVER_CHANNELS;
-	info.notClickable = 1;
-	info.isTitle = 1;
-	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
-
-	info = UIDropDownMenu_CreateInfo();
-	for i=1, select("#", ...) do
-		checked = nil;
-		channel = select(i, ...);
-		if ( channelList ) then
-			for index, value in pairs(channelList) do
-				if ( value == channel ) then
-					checked = 1;
-				end
-			end
-		end
-		if ( zoneChannelList ) then
-			for index, value in pairs(zoneChannelList) do
-				if ( value == channel ) then
-					checked = 1;
-				end
+			for i=1, #CHAT_FONT_HEIGHTS do
+				local height = CHAT_FONT_HEIGHTS[i];
+				fontSizeSubmenu:CreateRadio(format(FONT_SIZE_TEMPLATE, height), IsSelected, SetSelected, height);
 			end
 		end
 
-		info.text = channel;
-		info.value = channel;
-		info.func = FCFServerChannelsDropDown_OnClick;
-		info.checked = checked;
-		info.keepShownOnClick = 1;
-		UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
-	end
+		if ( not isOnGlueScreen ) then
+			-- Set Background color
+
+			-- Done because the slider is reversed
+			if a then
+				a = 1 - a;
 end
 
-function FCFServerChannelsDropDown_OnClick()
-	if ( UIDropDownMenuButton_GetChecked() ) then
-		ChatFrame_RemoveChannel(FCF_GetCurrentChatFrame(), UIDropDownMenuButton_GetName());
-	else
-		JoinPermanentChannel(UIDropDownMenuButton_GetName(), nil, FCF_GetCurrentChatFrameID(), 1);
-		ChatFrame_AddChannel(FCF_GetCurrentChatFrame(), UIDropDownMenuButton_GetName());
-	end
-end
-]]
-function FCFDropDown_LoadChannels(...)
-	local checked;
-	local channelList = FCF_GetCurrentChatFrame().channelList;
-	local zoneChannelList = FCF_GetCurrentChatFrame().zoneChannelList;
-	local info = UIDropDownMenu_CreateInfo();
-	local channel, tag;
-	for i=1, select("#", ...), 2 do
-		checked = nil;
-		tag = "CHANNEL"..select(i, ...);
-		channel = select(i+1, ...);
-		if ( channelList ) then
-			for index, value in pairs(channelList) do
-				if ( value == channel ) then
-					checked = 1;
-				end
+			local colorInfo = {
+				r = r, g = g, b = b, opacity = a,
+				swatchFunc = FCF_SetChatWindowBackGroundColor,
+				opacityFunc = FCF_SetChatWindowOpacity,
+				cancelFunc = FCF_CancelWindowColorSettings,
+				hasOpacity = 1,
+			};
+
+			local function OnClick(...)
+				ColorPickerFrame:SetupColorPickerAndShow(colorInfo);
 			end
-		end
-		if ( zoneChannelList ) then
-			for index, value in pairs(zoneChannelList) do
-				if ( value == channel ) then
-					checked = 1;
-				end
-			end
-		end
-		info.text = channel;
-		info.value = tag;
-		info.func = FCFChannelDropDown_OnClick;
-		info.checked = checked;
-		info.keepShownOnClick = 1;
-		-- Color the chat channel
-		local color = ChatTypeInfo[tag];
-		info.hasColorSwatch = 1;
-		info.r = color.r;
-		info.g = color.g;
-		info.b = color.b;
-		-- Set the function the color picker calls
-		info.swatchFunc = FCF_SetChatTypeColor;
-		info.cancelFunc = FCF_CancelFontColorSettings;
-		UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
-	end
+
+			rootDescription:CreateColorSwatch(BACKGROUND, OnClick, colorInfo);
 end
 
-function FCFChannelDropDown_OnClick()
-	if ( UIDropDownMenuButton_GetChecked() ) then
-		ChatFrame_RemoveChannel(FCF_GetCurrentChatFrame(), UIDropDownMenuButton_GetName());
-	else
-		ChatFrame_AddChannel(FCF_GetCurrentChatFrame(), UIDropDownMenuButton_GetName());
+		if ( not isTemporary ) then
+			-- Filter header
+			rootDescription:CreateTitle(FILTERS);
+			-- Configure settings
+			rootDescription:CreateButton(CHAT_CONFIGURATION, function(...)
+				ShowUIPanel(ChatConfigFrame);
+			end);
 	end
-end
-
--- Used to display chattypegroups
-function FCFDropDown_LoadChatTypes(menuChatTypeGroups)
-	local checked, chatTypeInfo;
-	local messageTypeList = FCF_GetCurrentChatFrame().messageTypeList;
-	local info, group;
-	for index, value in pairs(menuChatTypeGroups) do
-		checked = nil;
-		if ( messageTypeList ) then
-			for joinedIndex, joinedValue in pairs(messageTypeList) do
-				if ( value == joinedValue ) then
-					checked = 1;
-				end
-			end
-		end
-		info = UIDropDownMenu_CreateInfo();
-		info.value = value;
-		info.func = FCFMessageTypeDropDown_OnClick;
-		info.checked = checked;
-		-- Set to keep shown on button click
-		info.keepShownOnClick = 1;
-
-		-- If more than one message type in a Chat Type Group need to show an expand arrow
-		group = ChatTypeGroup[value];
-		if ( getn(group) > 1 ) then
-			info.text = _G[value];
-			info.hasArrow = 1;
-			UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
-		else
-			info.text = _G[group[1]];
-			chatTypeInfo = ChatTypeInfo[FCF_StripChatMsg(group[1])];
-			-- If no chatTypeInfo then don't display
-			if ( chatTypeInfo ) then
-				-- Set the function to be called when a color is set
-				info.swatchFunc = FCF_SetChatTypeColor;
-				-- Set the swatch color info
-				info.hasColorSwatch = 1;
-				info.r = chatTypeInfo.r;
-				info.g = chatTypeInfo.g;
-				info.b = chatTypeInfo.b;
-				info.cancelFunc = FCF_CancelFontColorSettings;
-				UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
-			end
-		end
-	end
-end
-
---  Used to display chatsubtypes
-function FCF_LoadChatSubTypes(chatGroup)
-	if ( chatGroup ) then
-		chatGroup = ChatTypeGroup[chatGroup];
-	else
-		chatGroup = ChatTypeGroup[UIDROPDOWNMENU_MENU_VALUE];
-	end
-	if ( chatGroup ) then
-		local info = UIDropDownMenu_CreateInfo();
-		local chatTypeInfo
-		for index, value in pairs(chatGroup) do
-			chatTypeInfo = ChatTypeInfo[FCF_StripChatMsg(value)];
-			if ( chatTypeInfo ) then
-				info.text = _G[value];
-				info.value = FCF_StripChatMsg(value);
-				-- Disable the button and color the text white
-				info.notClickable = 1;
-				-- Set to be notcheckable
-				info.notCheckable = 1;
-				-- Set the function to be called when a color is set
-				info.swatchFunc = FCF_SetChatTypeColor;
-				-- Set the swatch color info
-				info.hasColorSwatch = 1;
-				info.r = chatTypeInfo.r;
-				info.g = chatTypeInfo.g;
-				info.b = chatTypeInfo.b;
-				-- Set function called when cancel is clicked in the colorpicker
-				info.cancelFunc = FCF_CancelFontColorSettings;
-				UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
-			end
-		end
-	end
-end
-
-function FCFMessageTypeDropDown_OnClick(self)
-	if ( UIDropDownMenuButton_GetChecked() ) then
-		ChatFrame_RemoveMessageGroup(FCF_GetCurrentChatFrame(), self.value);
-	else
-		ChatFrame_AddMessageGroup(FCF_GetCurrentChatFrame(), self.value);
-	end
+	end);
 end
 
 function FCF_OpenNewWindow(name, noDefaultChannels)
@@ -609,7 +368,7 @@ function FCF_OpenNewWindow(name, noDefaultChannels)
 
 	for i=1, NUM_CHAT_WINDOWS do
 		local _, _, _, _, _, _, shown = FCF_GetChatWindowInfo(i);
-		chatFrame = _G["ChatFrame"..i];
+		chatFrame = FCF_GetChatFrameByID(i);
 		chatTab = _G["ChatFrame"..i.."Tab"];
 		if ( (not shown and not chatFrame.isDocked and not IsBuiltinChatWindow(chatFrame)) or (count == NUM_CHAT_WINDOWS) ) then
 			if ( not name or name == "" ) then
@@ -667,6 +426,10 @@ function FCF_SetTemporaryWindowType(chatFrame, chatType, chatTarget)
 		chatFrame.isRegistered = false;
 	end
 
+	--Set up the window to receive the message types we want.
+	chatFrame.chatType = chatType;
+	chatFrame.chatTarget = chatTarget;
+
 	--Set the title text
 	local name;
 	if ( chatType == "WHISPER" or chatType == "BN_WHISPER" ) then
@@ -675,11 +438,6 @@ function FCF_SetTemporaryWindowType(chatFrame, chatType, chatTarget)
 		name = PET_BATTLE_COMBAT_LOG;
 	end
 	FCF_SetWindowName(chatFrame, name);
-
-
-	--Set up the window to receive the message types we want.
-	chatFrame.chatType = chatType;
-	chatFrame.chatTarget = chatTarget;
 
 	ChatFrame_RemoveAllMessageGroups(chatFrame);
 	ChatFrame_RemoveAllChannels(chatFrame);
@@ -842,7 +600,7 @@ function FCF_GetNumActiveChatFrames()
 	local chatFrame;
 	for i=1, NUM_CHAT_WINDOWS do
 		local _, _, _, _, _, _, shown = FCF_GetChatWindowInfo(i);
-		chatFrame = _G["ChatFrame"..i];
+		chatFrame = FCF_GetChatFrameByID(i);
 		if ( chatFrame ) then
 			if ( shown or chatFrame.isDocked ) then
 				count = count + 1;
@@ -887,15 +645,17 @@ function FCF_SetWindowName(frame, name, doNotSave)
 	else
 		FCFDock_SetDirty(GENERAL_CHAT_DOCK);
 	end
+	-- "name" for whisper tabs is the player name
+	if ( not doNotSave and frame.chatType ~= "WHISPER" and frame.chatType ~= "BN_WHISPER") then
+		SetChatWindowName(frame:GetID(), name);
+		name = GetChatWindowInfo(frame:GetID());
+	end
 	frame.name = name;
 	local tab = _G[frame:GetName().."Tab"];
 	tab:SetText(name);
 	PanelTemplates_TabResize(tab, tab.sizePadding or 0);
 	-- Save this off so we know how big the tab should always be, even if it gets shrunken on the dock.
 	tab.textWidth = _G[tab:GetName().."Text"]:GetWidth();
-	if ( not doNotSave ) then
-		SetChatWindowName(frame:GetID(), name);
-	end
 	if ( frame.minFrame ) then
 		frame.minFrame:SetText(name);
 	end
@@ -938,20 +698,14 @@ function FCF_GetCurrentChatFrameID()
 	return CURRENT_CHAT_FRAME_ID;
 end
 
-function FCF_GetCurrentChatFrame(child)
-	local currentChatFrame = nil;
-	if ( CURRENT_CHAT_FRAME_ID ) then
-		currentChatFrame = _G["ChatFrame"..CURRENT_CHAT_FRAME_ID];
-	end
-	if ( not currentChatFrame and child ) then
-		currentChatFrame = _G["ChatFrame"..child:GetParent():GetID()];
-	end
-	return currentChatFrame;
+function FCF_GetChatFrameByID(chatFrameID)
+	return _G["ChatFrame"..chatFrameID];
 end
 
-function FCF_SetChatTypeColor()
-	local r,g,b = ColorPickerFrame:GetColorRGB();
-	ChangeChatColor(UIDROPDOWNMENU_MENU_VALUE, r, g, b);
+function FCF_GetCurrentChatFrame()
+	if ( CURRENT_CHAT_FRAME_ID ) then
+		return FCF_GetChatFrameByID(CURRENT_CHAT_FRAME_ID);
+	end
 end
 
 function FCF_SetChatWindowBackGroundColor()
@@ -984,12 +738,6 @@ function FCF_SetChatWindowFontSize(self, chatFrame, fontSize)
 		end
 	end
 	SetChatWindowSize(chatFrame:GetID(), fontSize);
-end
-
-function FCF_CancelFontColorSettings(previousValues)
-	if ( previousValues.r ) then
-		ChangeChatColor(UIDROPDOWNMENU_MENU_VALUE, previousValues.r, previousValues.g, previousValues.b);
-	end
 end
 
 function FCF_CancelWindowColorSettings(previousValues)
@@ -1302,7 +1050,7 @@ end
 function FCFTab_OnUpdate(self, elapsed)
 	local cursorX, cursorY = GetCursorPosition();
 	cursorX, cursorY = cursorX / UIParent:GetScale(), cursorY / UIParent:GetScale();
-	local chatFrame = _G["ChatFrame"..self:GetID()];
+	local chatFrame = FCF_GetChatFrameByID(self:GetID());
 	if ( chatFrame ~= GENERAL_CHAT_DOCK.primary and GENERAL_CHAT_DOCK:IsMouseOver(10, -10, 0, 10) ) then
 		FCFDock_PlaceInsertHighlight(GENERAL_CHAT_DOCK, chatFrame, cursorX, cursorY);
 	else
@@ -1326,7 +1074,7 @@ function FCFTab_OnUpdate(self, elapsed)
 end
 
 function FCFTab_OnDragStop(self, button)
-	FCF_StopDragging(_G["ChatFrame"..self:GetID()]);
+	FCF_StopDragging(FCF_GetChatFrameByID(self:GetID()));
 end
 
 DEFAULT_TAB_SELECTED_COLOR_TABLE = { r = 1, g = 0.5, b = 0.25 };
@@ -1444,8 +1192,6 @@ function FCF_SetButtonSide(chatFrame, buttonSide, forceUpdate)
 	chatFrame.buttonSide = buttonSide;
 
 	if ( chatFrame == DEFAULT_CHAT_FRAME ) then
-		ChatFrameMenu_UpdateAnchorPoint();
-
 		ChatAlertFrame:SetChatButtonSide(buttonSide);
 
 		--[[if ( QuickJoinToastButton ) then
@@ -1576,7 +1322,7 @@ function FCF_Tab_OnClick(self, button)
 	if ( button == "RightButton" ) then
 		chatFrame:StopMovingOrSizing();
 		CURRENT_CHAT_FRAME_ID = self:GetID();
-		ToggleDropDownMenu(1, nil, _G[self:GetName().."DropDown"], self:GetName(), 0, 0);
+		FCF_Tab_SetupMenu(self);
 		return;
 	end
 
@@ -1596,9 +1342,6 @@ function FCF_Tab_OnClick(self, button)
 		end
 		return;
 	end
-
-	-- Close all dropdowns
-	CloseDropDownMenus();
 
 	local lastChatFrame = SELECTED_CHAT_FRAME;
 	-- If frame is docked assume that a click is to select a chat window, not drag it

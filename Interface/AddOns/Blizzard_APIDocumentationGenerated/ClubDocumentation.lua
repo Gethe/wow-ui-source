@@ -1541,6 +1541,7 @@ local Club =
 				{ Name = "isRemoteChat", Type = "bool", Nilable = true },
 				{ Name = "overallDungeonScore", Type = "number", Nilable = true },
 				{ Name = "faction", Type = "PvPFaction", Nilable = true },
+				{ Name = "timerunningSeasonID", Type = "number", Nilable = true },
 			},
 		},
 		{

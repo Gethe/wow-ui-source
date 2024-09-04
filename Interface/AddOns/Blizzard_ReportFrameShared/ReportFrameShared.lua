@@ -1,13 +1,15 @@
 SharedReportFrameMixin = { };
 
 function SharedReportFrameMixin:OnLoad()
-	self:SetParent(GetAppropriateTopLevelParent());
 	NineSliceUtil.ApplyLayoutByName(self.Border, "Dialog");
 	self.minorCategoryFlags = CreateFromMixins(FlagsMixin);
 	self.minorCategoryFlags:OnLoad();
 	self.selectedMajorType = nil;
-	self.MinorCategoryButtonPool = CreateFramePool("CHECKBUTTON", self, "ReportingFrameMinorCategoryButtonTemplate", FramePool_HideAndClearAnchors);
+	self.MinorCategoryButtonPool = CreateFramePool("CHECKBUTTON", self, "ReportingFrameMinorCategoryButtonTemplate");
 	self:RegisterEvent("REPORT_PLAYER_RESULT");
+
+	self.ReportingMajorCategoryDropdown:SetWidth(200);
+	self.ReportingMajorCategoryDropdown:SetDefaultText(REPORTING_MAKE_SELECTION);
 end
 
 function SharedReportFrameMixin:OnHide()
@@ -44,13 +46,26 @@ function SharedReportFrameMixin:UpdateThankYouMessage(showThankYouMessage)
 end
 
 function SharedReportFrameMixin:SetupDropdownByReportType(reportType)
-	self.ReportingMajorCategoryDropdown.reportType = reportType;
-	UIDropDownMenu_SetWidth(self.ReportingMajorCategoryDropdown, 200);
-	UIDropDownMenu_Initialize(self.ReportingMajorCategoryDropdown, ReportingMajorCategoryDropdownInitialize);
+	local function IsChecked(majorType)
+		return self.selectedMajorType == majorType;
+	end
+
+	local function SetChecked(majorType)
+		self:MajorTypeSelected(reportType, majorType);
+	end
+
+	self.ReportingMajorCategoryDropdown:SetupMenu(function(dropdown, rootDescription)
+		local majorCategories = C_ReportSystem.GetMajorCategoriesForReportType(reportType);
+		for index_, majorType in ipairs(majorCategories) do
+			local text = _G[C_ReportSystem.GetMajorCategoryString(majorType)];
+			if text then
+				rootDescription:CreateRadio(text, IsChecked, SetChecked, majorType);
+			end
+		end
+	end);
+
 	self.ReportingMajorCategoryDropdown:Show();
 end
-
-
 
 function SharedReportFrameMixin:InitiateReport(reportInfo, playerName, playerLocation, isBnetReport, sendReportWithoutDialog)
 	self:SetAttribute("initiate_report", {
@@ -60,6 +75,14 @@ function SharedReportFrameMixin:InitiateReport(reportInfo, playerName, playerLoc
 		isBnetReport = isBnetReport,
 		sendReportWithoutDialog = sendReportWithoutDialog,
 	});
+end
+
+function SharedReportFrameMixin:UpdateHarmfulToMinorsMinorCategoryEnabled()
+	if (self.reportHarmfulToMinorsCategory and self.selectedMajorType == Enum.ReportMajorCategory.InappropriateName) then
+		local minorFlags = self.minorCategoryFlags:GetFlags();
+		local shouldEnable = bit.band(minorFlags, bit.bnot(Enum.ReportMinorCategory.HarmfulToMinors)) ~= 0;
+		self.reportHarmfulToMinorsCategory:SetMinorCategoryEnabled(shouldEnable);
+	end
 end
 
 function SharedReportFrameMixin:InitiateReportInternal(reportInfo, playerName, playerLocation, isBnetReport, sendReportWithoutDialog)
@@ -90,6 +113,7 @@ function SharedReportFrameMixin:InitiateReportInternal(reportInfo, playerName, p
 	self.Comment:Hide();
 	self.MinorReportDescription:Hide();
 	self.ReportButton:UpdateButtonState();
+	self:UpdateHarmfulToMinorsMinorCategoryEnabled();
 	self:Layout();
 end
 
@@ -114,10 +138,17 @@ function SharedReportFrameMixin:MajorTypeSelected(reportType, majorType)
 		return;
 	end
 	self.lastCategory = nil;
+	self.reportHarmfulToMinorsCategory = nil;
 	self.MinorCategoryButtonPool:ReleaseAll();
 	for index, minorCategory in ipairs(minorCategories) do
 		if (self:CanDisplayMinorCategory(minorCategory)) then
 			self.lastCategory = self:AnchorMinorCategory(index, minorCategory);
+
+			if (majorType == Enum.ReportMajorCategory.InappropriateName and minorCategory == Enum.ReportMinorCategory.HarmfulToMinors) then
+				self.reportHarmfulToMinorsCategory = self.lastCategory;
+				self.reportHarmfulToMinorsCategory.disabledTooltipText = HARMFUL_TO_MINORS_DISABLED_TOOLTIP;
+				self.reportHarmfulToMinorsCategory:SetMinorCategoryEnabled(false);
+			end
 		end
 	end
 	self.MinorReportDescription:Show();
@@ -125,6 +156,7 @@ function SharedReportFrameMixin:MajorTypeSelected(reportType, majorType)
 	self.Comment:SetPoint("TOP", self.lastCategory, "BOTTOM", 0, -10);
 	self.Comment:Show();
 	self.ReportButton:UpdateButtonState();
+	self:UpdateHarmfulToMinorsMinorCategoryEnabled();
 	self:Layout();
 end
 
@@ -166,43 +198,6 @@ function SharedReportFrameMixin:SetMinorCategoryFlag(flag, flagValue)
 	self.minorCategoryFlags:SetOrClear(flag, flagValue);
 end
 
-ReportingMajorCategoryDropdownMixin = { };
-function ReportingMajorCategoryDropdownInitialize(self)
-	if(not self.reportType) then
-		return;
-	end
-
-	local reportOptions = C_ReportSystem.GetMajorCategoriesForReportType(self.reportType);
-	if(not reportOptions) then
-		return;
-	end
-
-	local info = UIDropDownMenu_CreateInfo();
-	local selectedMajorType = self:GetParent().selectedMajorType;
-	for _, majorType in ipairs(reportOptions) do
-		local reportText = _G[C_ReportSystem.GetMajorCategoryString(majorType)];
-		if(reportText) then
-			info.text = reportText;
-			info.value = majorType;
-			info.func = function() self:ValueSelected(self.reportType, majorType); end;
-			info.checked = function() return selectedMajorType == majorType; end;
-			UIDropDownMenu_AddButton(info);
-		end
-	end
-	self.Text:SetJustifyH("LEFT");
-	if (selectedMajorType) then
-		local selectedText = _G[C_ReportSystem.GetMajorCategoryString(selectedMajorType)];
-		UIDropDownMenu_SetText(self, selectedText);
-	else
-		UIDropDownMenu_SetText(self, REPORTING_MAKE_SELECTION);
-	end
-end
-
-function ReportingMajorCategoryDropdownMixin:ValueSelected(reportType, majorType)
-	self:GetParent():MajorTypeSelected(reportType, majorType);
-	UIDropDownMenu_SetText(self, _G[C_ReportSystem.GetMajorCategoryString(majorType)]);
-end
-
 ReportingFrameMinorCategoryButtonMixin = { };
 
 function ReportingFrameMinorCategoryButtonMixin:SetupButton(minorCategory)
@@ -216,6 +211,10 @@ function ReportingFrameMinorCategoryButtonMixin:SetupButton(minorCategory)
 	end
 
 	self:SetChecked(false);
+	self:SetEnabled(true);
+	self.Text:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+	self:SetAlpha(1.0);
+
 	self.Text:SetText(categoryName);
 	self:Show();
 end
@@ -227,7 +226,41 @@ function ReportingFrameMinorCategoryButtonMixin:OnClick()
 	self:GetParent():SetMinorCategoryFlag(self.minorCategory, self:GetChecked());
 	local parent = self:GetParent();
 	parent.ReportButton:UpdateButtonState();
+	parent:UpdateHarmfulToMinorsMinorCategoryEnabled();
 	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
+end
+
+function ReportingFrameMinorCategoryButtonMixin:OnEnter()
+	if self:IsEnabled() then
+		return;
+	end
+
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip_AddErrorLine(GameTooltip, self.disabledTooltipText);
+	GameTooltip:Show();
+end
+
+function ReportingFrameMinorCategoryButtonMixin:OnLeave()
+	GameTooltip:Hide();
+end
+
+function ReportingFrameMinorCategoryButtonMixin:SetMinorCategoryEnabled(enabled)
+	self:SetEnabled(enabled);
+
+	local alpha = enabled and 1.0 or 0.75;
+	self:SetAlpha(alpha);
+
+	local color = enabled and HIGHLIGHT_FONT_COLOR or DISABLED_FONT_COLOR;
+	self.Text:SetTextColor(color:GetRGB());
+
+
+	if (not enabled) then
+		self:SetChecked(false);
+	end
+
+	local parent = self:GetParent();
+	parent:SetMinorCategoryFlag(self.minorCategory, self:GetChecked());
+	parent.ReportButton:UpdateButtonState();
 end
 
 ReportButtonMixin = { };

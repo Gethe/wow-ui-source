@@ -109,13 +109,9 @@
 			<OnEvent method="OnEvent"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
-			<OnAttributeChanged method="OnAttributeChanged"/>
 		</Scripts>
 	</Frame>
 
-	<GameTooltip name="SettingsTooltip" inherits="SharedTooltipTemplate, DefaultScaleFrame" ignoreParentScale="true">
-		<KeyValues>
-			<KeyValue key="maxScale" value=".75" type="global"/>
-		</KeyValues>
+	<GameTooltip name="SettingsTooltip" inherits="SharedTooltipTemplate, TopLevelParentScaleFrameTemplate">
 	</GameTooltip>
 </Ui>

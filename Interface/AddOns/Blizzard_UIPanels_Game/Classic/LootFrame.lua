@@ -166,7 +166,7 @@ function LootFrame_UpdateButton(index)
 	local slot = (numLootToShow * (LootFrame.page - 1)) + index;
 	if ( slot <= numLootItems ) then
 		if ( (LootSlotHasItem(slot)  or (self.AutoLootTable and self.AutoLootTable[slot]) )and index <= numLootToShow) then
-			local texture, item, quantity, currencyID, quality, locked, isQuestItem, questId, isActive;
+			local texture, item, quantity, currencyID, quality, locked;
 			if(self.AutoLootTable)then
 				local entry = self.AutoLootTable[slot];
 				if( entry.hide ) then
@@ -178,12 +178,9 @@ function LootFrame_UpdateButton(index)
 					quantity = entry.quantity;
 					quality = entry.quality;
 					locked = entry.locked;
-					isQuestItem = entry.isQuestItem;
-					questId = entry.questId;
-					isActive = entry.isActive;
 				end
 			else
-				texture, item, quantity, currencyID, quality, locked, isQuestItem, questId, isActive = GetLootSlotInfo(slot);
+				texture, item, quantity, currencyID, quality, locked = GetLootSlotInfo(slot);
 			end
 
 			if ( currencyID ) then 
@@ -571,8 +568,6 @@ function MasterLooterFrame_Show(selectedLootButton)
 	MasterLooterFrame:Show();
 	MasterLooterFrame_UpdatePlayers();
 	MasterLooterFrame:SetPoint("TOPLEFT", selectedLootButton, "BOTTOMLEFT", 0, 0);
-
-	CloseDropDownMenus();
 end
 
 function MasterLooterFrame_UpdatePlayers()

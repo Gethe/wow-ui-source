@@ -40,15 +40,34 @@ function PTR_IssueReporter.SetupSpellTooltips()
     end)
 end
 ----------------------------------------------------------------------------------------------------
+function PTR_IssueReporter.SetupCurrencyTooltips()
+    hooksecurefunc(GameTooltip, "SetCurrencyToken", function(self, index)
+        local id = tonumber(string.match(C_CurrencyInfo.GetCurrencyListLink(index),"currency:(%d+)"))
+        local name = C_CurrencyInfo.GetCurrencyInfo(id).name
+        if (id) and (name) then
+            PTR_IssueReporter.HookIntoTooltip(self, PTR_IssueReporter.TooltipTypes.currency, id, name)
+        end
+    end)
+end
+----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.SetupItemTooltips()
     local function attachItemTooltip(self)
         local name, link = self:GetItem()
         if (link) and (name) then
             local id = string.match(link, "item:(%d*)")
-            if (id == "" or id == "0") and TradeSkillFrame ~= nil and TradeSkillFrame:IsVisible() and GetMouseFocus().reagentIndex then
+
+			local mouseoverReagentIndex = nil;
+			local mouseMotionFoci = GetMouseFoci();
+			for _, focus in ipairs(mouseMotionFoci) do
+				if focus.reagentIndex then
+					mouseoverReagentIndex = focus.reagentIndex;
+				end
+			end
+
+            if (id == "" or id == "0") and TradeSkillFrame ~= nil and TradeSkillFrame:IsVisible() and mouseoverReagentIndex then
                 local selectedRecipe = TradeSkillFrame.RecipeList:GetSelectedRecipeID()
                 for i = 1, 8 do
-                    if GetMouseFocus().reagentIndex == i then
+                    if mouseoverReagentIndex == i then
                         id = C_TradeSkillUI.GetRecipeReagentItemLink(selectedRecipe, i):match("item:(%d+):") or nil
                         break
                     end
@@ -163,5 +182,6 @@ function PTR_IssueReporter.InitializePTRTooltips()
     PTR_IssueReporter.SetupTalentTooltips()
     PTR_IssueReporter.SetupSkillTooltips()
     PTR_IssueReporter.SetupGlyphTooltips()
+    PTR_IssueReporter.SetupCurrencyTooltips()
 end
 ----------------------------------------------------------------------------------------------------

@@ -1,8 +1,7 @@
 ## Title: Blizzard_UIPanels_Game
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_GameTooltip, Blizzard_UIPanelTemplates, Blizzard_FrameXML, Blizzard_Options_Frame, Blizzard_CharacterFrame, Blizzard_ActionBar, Blizzard_Minimap, Blizzard_CastingBar, Blizzard_UnitFrame
-## SuppressLocalTableRef: 1
+## Dependencies: Blizzard_GameTooltip, Blizzard_UIPanelTemplates, Blizzard_FrameXML, Blizzard_CharacterFrame, Blizzard_ActionBar, Blizzard_Minimap, Blizzard_CastingBar, Blizzard_UnitFrame
 ## LoadFirst: 1
 ## AllowLoad: game
 ## AllowLoadGameType: cata
@@ -25,8 +24,6 @@ Wrath\QuestPOI.xml
 Wrath\QuestLogFrame.lua
 Cata\QuestLogFrame.lua
 Cata\QuestLogFrame.xml
-Classic\QuestTimerFrame.lua
-Classic\QuestTimerFrame.xml
 Wrath\QuestInfo.lua
 Wrath\QuestInfo.xml
 Wrath\WatchFrame.lua

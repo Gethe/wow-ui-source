@@ -22,18 +22,18 @@ local function Register()
 			OPTION_TOOLTIP_PICKUP_ACTION_NONE_KEY,
 		};
 		local options = Settings.CreateModifiedClickOptions(tooltips);
-		local dropDownSetting = Settings.RegisterModifiedClickSetting(category, "PICKUPACTION", PICKUP_ACTION_KEY_TEXT, "SHIFT");
+		local dropdownSetting = Settings.RegisterModifiedClickSetting(category, "PICKUPACTION", PICKUP_ACTION_KEY_TEXT, "SHIFT");
 
-		local initializer = CreateSettingsCheckBoxDropDownInitializer(
+		local initializer = CreateSettingsCheckboxDropdownInitializer(
 			cbSetting, LOCK_ACTIONBAR_TEXT, OPTION_TOOLTIP_LOCK_ACTIONBAR,
-			dropDownSetting, options, PICKUP_ACTION_KEY_TEXT, OPTION_TOOLTIP_PICKUP_ACTION_KEY_TEXT);
+			dropdownSetting, options, PICKUP_ACTION_KEY_TEXT, OPTION_TOOLTIP_PICKUP_ACTION_KEY_TEXT);
 		initializer:AddSearchTags(LOCK_ACTIONBAR_TEXT);
 		layout:AddInitializer(initializer);
 	end
 
 	-- Show Numbers for Cooldowns
 	ActionBarsOverrides.RunSettingsCallback(function()
-		Settings.SetupCVarCheckBox(category, "countdownForCooldowns", COUNTDOWN_FOR_COOLDOWNS_TEXT, OPTION_TOOLTIP_COUNTDOWN_FOR_COOLDOWNS);
+	Settings.SetupCVarCheckbox(category, "countdownForCooldowns", COUNTDOWN_FOR_COOLDOWNS_TEXT, OPTION_TOOLTIP_COUNTDOWN_FOR_COOLDOWNS);
 	end);
 
 	ActionBarsOverrides.AdjustActionBarSettings(category, layout);

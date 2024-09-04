@@ -49,8 +49,8 @@ function ScriptAnimatedModelSceneActorMixin:DeltaUpdate(elapsed)
 end
 
 local function GetAngleForModel(source, target)
-	local sourceX, sourceY = source:GetCenter();
-	local targetX, targetY = target:GetCenter();
+	local sourceX, sourceY = GetScaledCenter(source);
+	local targetX, targetY = GetScaledCenter(target);
 	local direction = CreateVector2D(targetX - sourceX, targetY - sourceY);
 
 	-- Missiles face right by default, so calculate the angle between the right normal (1, 0), and the direction we'd like to face.
@@ -70,13 +70,13 @@ function ScriptAnimatedModelSceneActorMixin:SetEffect(effectDescription, source,
 	self.baseOffsetZ = effectDescription.offsetZ;
 	self:SetDynamicOffsets(0, 0, 0);
 
-	local animationSpeed = effectDescription.animationSpeed;
-	if animationSpeed == 0 then
+	local effectAnimationSpeed = effectDescription.animationSpeed;
+	if effectAnimationSpeed == 0 then
 		-- TODO:: Calculate the animation speed to complete 1 full cycle in the effect's duration.
-		animationSpeed = 1.0;
+		effectAnimationSpeed = 1.0;
 	end
 
-	local animationSpeed = self:GetModelScene():GetEffectSpeed() * animationSpeed;
+	local animationSpeed = self:GetModelScene():GetEffectSpeed() * effectAnimationSpeed;
 	self:SetAnimation(effectDescription.animation or 0, 0, animationSpeed, effectDescription.animationStartOffset);
 
 	self.elapsedTime = nil;

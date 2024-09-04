@@ -11,5 +11,5 @@ UnitPopupCustomControls.xml
 Classic\UnitPopupUtils.lua
 Classic\UnitPopupButtons_Shared.lua
 Cataclysm\UnitPopupButtons.lua
-Cataclysm\UnitPopupMenus.lua
+Wrath\UnitPopupMenus.lua
 TBC\UnitPopup.lua

@@ -40,6 +40,20 @@ local TransmogItems =
 			},
 		},
 		{
+			Name = "CanAppearanceBeDisplayedOnPlayer",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemAppearanceID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canAppearanceBeDisplayedOnPlayer", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ClearNewAppearance",
 			Type = "Function",
 
@@ -60,6 +74,15 @@ local TransmogItems =
 			Returns =
 			{
 				{ Name = "completed", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "DeleteOutfit",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "outfitID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -122,6 +145,20 @@ local TransmogItems =
 			Returns =
 			{
 				{ Name = "info", Type = "TransmogAppearanceInfoBySourceData", Nilable = false },
+			},
+		},
+		{
+			Name = "GetAppearanceSourceDrops",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemModifiedAppearanceID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "encounterInfo", Type = "table", InnerType = "TransmogAppearanceJournalEncounterInfo", Nilable = false },
 			},
 		},
 		{
@@ -287,12 +324,73 @@ local TransmogItems =
 			},
 		},
 		{
+			Name = "GetNumMaxOutfits",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "maxOutfits", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetNumTransmogSources",
 			Type = "Function",
 
 			Returns =
 			{
 				{ Name = "count", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetOutfitInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "outfitID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "icon", Type = "fileID", Nilable = false },
+			},
+		},
+		{
+			Name = "GetOutfitItemTransmogInfoList",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "outfitID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "list", Type = "table", InnerType = "ItemTransmogInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetOutfits",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "outfitID", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPairedArtifactAppearance",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemModifiedAppearanceID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "pairedItemModifiedAppearanceID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -459,6 +557,32 @@ local TransmogItems =
 			},
 		},
 		{
+			Name = "ModifyOutfit",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "outfitID", Type = "number", Nilable = false },
+				{ Name = "itemTransmogInfoList", Type = "table", InnerType = "ItemTransmogInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "NewOutfit",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "icon", Type = "fileID", Nilable = false },
+				{ Name = "itemTransmogInfoList", Type = "table", InnerType = "ItemTransmogInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "outfitID", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "PlayerCanCollectSource",
 			Type = "Function",
 
@@ -514,6 +638,16 @@ local TransmogItems =
 			Returns =
 			{
 				{ Name = "isKnown", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "RenameOutfit",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "outfitID", Type = "number", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 		},
 		{

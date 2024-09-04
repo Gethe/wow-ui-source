@@ -9,9 +9,70 @@ function EngravingFrame_OnLoad (self)
 	self.scrollFrame.scrollBar.doNotHide = true;
 	self.scrollFrame.dynamic = EngravingFrame_CalculateScroll;
 
+	EngravingFrame_SetupFilterDropdown(self);
+
 	HybridScrollFrame_CreateButtons(self.scrollFrame, "RuneSpellButtonTemplate", 0, -1, "TOPLEFT", "TOPLEFT", 0, -1, "TOP", "BOTTOM");
 end
 
+do
+	local function IsAllRunesSelected()
+		return C_Engraving.GetExclusiveCategoryFilter() == nil and not C_Engraving.IsEquippedFilterEnabled();
+	end
+	
+	local function IsEquippedRunesSelected()
+		return C_Engraving.IsEquippedFilterEnabled();
+	end
+	
+	local function IsSelected(filter)
+		return C_Engraving.GetExclusiveCategoryFilter() == filter;
+	end
+	
+	local function SetSelected(filter)
+		if (filter == ALL_RUNES_CATEGORY) then
+			C_Engraving.ClearExclusiveCategoryFilter();
+			C_Engraving.EnableEquippedFilter(false);
+		elseif (filter == EQUIPPED_RUNES_CATEGORY) then
+			C_Engraving.ClearExclusiveCategoryFilter();
+			C_Engraving.EnableEquippedFilter(true);
+		else
+			C_Engraving.AddExclusiveCategoryFilter(filter);
+			C_Engraving.EnableEquippedFilter(false);
+		end
+	
+		EngravingFrame_UpdateRuneList(_G["EngravingFrame"]);
+	end
+	
+	function EngravingFrame_SetupFilterDropdown (self)
+		self.FilterDropdown:SetDefaultText(ALL_RUNES);
+		self.FilterDropdown:SetWidth(170);
+
+		self.FilterDropdown:SetSelectionText(function(selections)
+			local exclusiveFilter = C_Engraving.GetExclusiveCategoryFilter();
+			if exclusiveFilter then
+				return C_Item.GetItemInventorySlotInfo(exclusiveFilter);
+			end
+
+			if C_Engraving.IsEquippedFilterEnabled() then
+				return EQUIPPED_RUNES;		
+			end
+			return ALL_RUNES;
+		end);
+
+		self.FilterDropdown:SetupMenu(function(dropdown, rootDescription)
+			rootDescription:SetTag("MENU_ENGRAVING_FILTER");
+
+			rootDescription:CreateRadio(ALL_RUNES, IsAllRunesSelected, SetSelected, ALL_RUNES_CATEGORY); 
+			rootDescription:CreateRadio(EQUIPPED_RUNES, IsEquippedRunesSelected, SetSelected, EQUIPPED_RUNES_CATEGORY);
+			
+			local shouldFilter = false;
+			local ownedOnly = true;
+			for _, category in ipairs(C_Engraving.GetRuneCategories(shouldFilter, ownedOnly)) do
+				local text = C_Item.GetItemInventorySlotInfo(category);
+				rootDescription:CreateRadio(text, IsSelected, SetSelected, category);
+			end
+		end);
+	end
+end
 
 function EngravingFrame_OnShow (self)
 	SetUIPanelAttribute(CharacterFrame, "width", 560);
@@ -77,7 +138,7 @@ function EngravingFrame_UpdateRuneList (self)
 			local button = buttons[currButton];
 			if button then
 				button:Hide();
-				header = _G["EngravingFrameHeader"..currentHeader];
+				local header = _G["EngravingFrameHeader"..currentHeader];
 				if header then
 					header:SetPoint("BOTTOM", button, 0 , 0);
 					header:Show();
@@ -139,16 +200,7 @@ function EngravingFrame_UpdateRuneList (self)
 		scrollFrame.emptyText:Hide();
 	end
 
-	local exclusiveFilter = C_Engraving.GetExclusiveCategoryFilter();
-	if exclusiveFilter then
-		UIDropDownMenu_SetText(EngravingFrameFilterDropDown, C_Item.GetItemInventorySlotInfo(exclusiveFilter));
-	else
-		if C_Engraving.IsEquippedFilterEnabled() then
-			UIDropDownMenu_SetText(EngravingFrameFilterDropDown, EQUIPPED_RUNES);			
-		else
-			UIDropDownMenu_SetText(EngravingFrameFilterDropDown, ALL_RUNES);
-		end
-	end
+	EngravingFrame.FilterDropdown:GenerateMenu();
 
 	EngravingFrame_UpdateCollectedLabel(self);
 end
@@ -230,51 +282,6 @@ function EngravingFrameSearchBox_OnTextChanged(self)
 	EngravingFrame_UpdateRuneList(_G["EngravingFrame"]);
 end
 
-function RuneFrameFilter_Modify(self, arg1)
-	if(arg1 == ALL_RUNES_CATEGORY) then
-		C_Engraving.ClearExclusiveCategoryFilter();
-		C_Engraving.EnableEquippedFilter(false);
-	elseif(arg1 == EQUIPPED_RUNES_CATEGORY) then
-		C_Engraving.ClearExclusiveCategoryFilter();
-		C_Engraving.EnableEquippedFilter(true);
-	else
-		C_Engraving.AddExclusiveCategoryFilter(arg1);
-		C_Engraving.EnableEquippedFilter(false);
-	end
-
-	EngravingFrame_UpdateRuneList(_G["EngravingFrame"]);
-end 
-
-
-function RuneFrameFilter_Initialize()
-	local info = UIDropDownMenu_CreateInfo();
-	info.func = RuneFrameFilter_Modify;
-	
-	info.text = ALL_RUNES;
-	info.checked = C_Engraving.GetExclusiveCategoryFilter() == nil and not C_Engraving.IsEquippedFilterEnabled();
-	info.arg1 = ALL_RUNES_CATEGORY;
-	UIDropDownMenu_AddButton(info);
-
-	info.text = EQUIPPED_RUNES;
-	info.checked = C_Engraving.IsEquippedFilterEnabled();
-	info.arg1 = EQUIPPED_RUNES_CATEGORY;
-	UIDropDownMenu_AddButton(info);
-
-	local categories = C_Engraving.GetRuneCategories(false, true);
-	for _, category in ipairs(categories) do
-		info.text = C_Item.GetItemInventorySlotInfo(category);
-
-		local exclusiveFilter = C_Engraving.GetExclusiveCategoryFilter();
-		local checked = false;
-		if(exclusiveFilter and exclusiveFilter == category) then
-			checked = true;
-		end
-		info.checked = checked;
-		info.arg1 = category;
-		UIDropDownMenu_AddButton(info);
-	end
-end
-
 function RuneHeader_OnClick (self, button)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	if C_Engraving.HasCategoryFilter(self.filter) then
@@ -285,7 +292,6 @@ function RuneHeader_OnClick (self, button)
 
 	EngravingFrame_UpdateRuneList(_G["EngravingFrame"]);
 end
-
 
 function EngravingFrameSpell_OnClick (self, button)
 	C_Engraving.CastRune(self.skillLineAbilityID);

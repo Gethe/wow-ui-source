@@ -389,6 +389,20 @@ local PlayerScript =
 			},
 		},
 		{
+			Name = "IsItemPreferredArmorType",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isItemPreferredArmorType", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsPVPTimerRunning",
 			Type = "Function",
 

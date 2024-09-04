@@ -162,7 +162,7 @@ end
 
 function BackpackTokenFrame_Update()
 	local watchButton;
-	local name, count, extraCurrencyType, icon;
+	local name, count, extraCurrencyType, icon, itemID;
 	for i=1, MAX_WATCHED_TOKENS do
 		name, count, icon, itemID = GetBackpackCurrencyInfo(i);
 		-- Update watched tokens
@@ -188,9 +188,9 @@ function BackpackTokenFrame_Update()
 			BackpackTokenFrame.numWatchedTokens = i;
 			watchButton.itemID = itemID;
 			-- Find index, so we can link this from the backpack watch frame
-			for i=1, #TokenFrameContainer.buttons do
-				if TokenFrameContainer.buttons[i].itemID == itemID then
-					watchButton.index = TokenFrameContainer.buttons[i].index;
+			for j=1, #TokenFrameContainer.buttons do
+				if TokenFrameContainer.buttons[j].itemID == itemID then
+					watchButton.index = TokenFrameContainer.buttons[j].index;
 					break;
 				end
 			end
@@ -284,8 +284,8 @@ function TokenButton_OnClick(self)
 end
 
 function TokenFrame_UpdatePopup(button)
-	TokenFramePopupInactiveCheckBox:SetChecked(button.isUnused);
-	TokenFramePopupBackpackCheckBox:SetChecked(button.isWatched);
+	TokenFramePopupInactiveCheckbox:SetChecked(button.isUnused);
+	TokenFramePopupBackpackCheckbox:SetChecked(button.isWatched);
 end
 
 function TokenButtonLinkButton_OnClick(self, button)

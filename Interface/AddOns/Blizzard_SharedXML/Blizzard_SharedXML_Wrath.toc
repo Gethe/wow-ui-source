@@ -3,25 +3,16 @@
 ## DefaultState: enabled
 ## AllowLoad: Both
 ## AllowLoadGameType: wrath
+## Dependencies: Blizzard_PrintHandler, Blizzard_Menu
 ## OptionalDep: Blizzard_FontStyles_Glue, Blizzard_FontStyles_Frame
-## SuppressLocalTableRef: 1
 Shared\LocalizationMachinery.lua
+EnvironmentUtil.lua
 ProjectConstants.lua
 SharedConstants.lua
 middleclass.lua
 Classic\GlueCheck.lua
-ErrorUtil.lua
-Mixin.lua
-TableUtil.lua
 Classic\Stubs.lua
 Classic\Stubs.xml
-EnumUtil.lua
-LocaleUtil.lua
-Rectangle.lua
-Flags.lua
-MathUtil.lua
-CallbackRegistry.lua
-CvarUtil.lua
 Classic\ClassicCvarUtil.lua
 Color.lua
 
@@ -36,29 +27,29 @@ TabGroup.lua
 SmoothStatusBar.lua
 PredictedSetting.lua
 SecureUtil.lua
+Classic\SecureCurrencyUtil.lua
 TimeUtil.lua
 EasingUtil.lua
-FunctionUtil.lua
 PixelUtilSecure.lua
 PixelUtil.lua
 AnchorUtil.lua
+GridLayoutUtil.lua
 VectorLib.xml
 Classic\NineSliceLayouts.lua
 NineSlice.lua
 BindingUtil.lua
-FrameUtil.lua
 InputUtil.lua
 EventUtil.lua
 RegionUtil.lua
 
 Wrath\SoundKitConstants.lua
 
-Pools.lua
 CircularBuffer.lua
 FontableFrameMixin.lua
 StringUtil.lua
 SelectableButton.lua
 SelectableButton.xml
+NewFeatureLabel.xml
 Shared\Frame\EventFrame.lua
 Shared\Frame\EventFrame.xml
 Shared\Frame\EventButton.lua
@@ -71,7 +62,6 @@ DataProvider.lua
 IndexRangeDataProvider.lua
 TreeListDataProvider.lua
 Interpolator.lua
-ButtonStateBehavior.lua
 Shared\Slider\MinimalSlider.lua
 Shared\Slider\MinimalSlider.xml
 Shared\Scroll\ScrollUtil.lua
@@ -114,8 +104,6 @@ Classic\ScrollDefine.xml
 SecureScrollTemplates.lua
 SecureScrollTemplates.xml
 
-TextureUtil.lua
-AddOnUtil.lua
 Backdrop.xml
 LayoutFrame.lua
 LayoutFrame.xml
@@ -140,7 +128,6 @@ Classic\UIDropDownMenu.xml
 KeyCommand.lua
 CustomBindingButtonMixin.lua
 CustomBindingButtonTemplate.xml
-GlobalCallbackRegistry.lua
 ButtonGroup.lua
 
 HybridScrollFrame.lua
@@ -162,7 +149,6 @@ ManagedLayoutFrame.xml
 BulletPoint.lua
 BulletPoint.xml
 Classic\GameTooltipTemplate.xml
-FrameStack.lua
 MixinUtil.lua
 DebugBarManager.lua
 

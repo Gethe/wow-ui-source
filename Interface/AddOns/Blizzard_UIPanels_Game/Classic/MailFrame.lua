@@ -71,9 +71,9 @@ function MailFrame_OnEvent(self, event, ...)
 			HideUIPanel(OpenMailFrame);
 		end
 	elseif ( event == "MAIL_LOCK_SEND_ITEMS" ) then
-		local slotNum, itemLink = ...;
+		local slotNum, itemLinkEvent = ...;
 		SendMailFrameLockSendMail:Show();
-		local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture = C_Item.GetItemInfo(itemLink);
+		local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture = C_Item.GetItemInfo(itemLinkEvent);
 		local r, g, b = C_Item.GetItemQualityColor(itemRarity)
 		StaticPopup_Show("CONFIRM_MAIL_ITEM_UNREFUNDABLE", nil, nil, {["texture"] = itemTexture, ["name"] = itemName, ["color"] = {r, g, b, 1}, ["link"] = itemLink, ["slot"] = slotNum});
 	elseif ( event == "MAIL_UNLOCK_SEND_ITEMS") then
@@ -155,7 +155,7 @@ end
 function InboxFrame_Update()
 	local numItems, totalItems = GetInboxNumItems();
 	local index = ((InboxFrame.pageNum - 1) * INBOXITEMS_TO_DISPLAY) + 1;
-	local packageIcon, stationeryIcon, sender, subject, money, CODAmount, daysLeft, itemCount, wasRead, x, y, z, isGM, firstItemQuantity;
+	local packageIcon, stationeryIcon, sender, subject, money, CODAmount, daysLeft, itemCount, wasRead, x, y, z, isGM, firstItemQuantity, firstItemID;
 	local icon, button, expireTime, senderText, subjectText, buttonIcon;
 
 	if ( totalItems > numItems ) then

@@ -251,7 +251,6 @@ function QuestMapFrame_OnEvent(self, event, ...)
 		-- Set to a new zone, update
 		self:Refresh();
 	elseif ( event == "CVAR_UPDATE" ) then
-		local arg1 =...;
 		if ( arg1 == "questPOI" ) then
 			WatchFrame_Update();
 			QuestLog_UpdateMapButton();
@@ -497,7 +496,7 @@ function QuestsFrame_OnLoad(self)
 	ScrollFrame_OnLoad(self);
 
 	self.titleFramePool = CreateFramePool("BUTTON", QuestMapFrame.QuestsFrame.Contents, "QuestLogTitleTemplate", function(framePool, frame)
-		FramePool_HideAndClearAnchors(framePool, frame);
+		Pool_HideAndClearAnchors(framePool, frame);
 		frame.info = nil;
 	end);
 
@@ -624,7 +623,7 @@ local function QuestLogQuests_ShouldShowQuestButton(info, index)
 
 	local mapID = QuestMapFrame:GetParent():GetMapID();	
 	local questMapID = GetQuestUiMapID(questID);
-	if(not(mapID == questMapID)) then
+	if mapID ~= questMapID then
 		return false;
 	end
 
@@ -640,7 +639,7 @@ local function QuestLogQuests_ShouldShowHeaderButton(info, index)
 end
 
 local function QuestLogQuests_BuildSingleQuestInfo(questLogIndex, questInfoContainer)-- lastHeader)
-	local questID, questWatchIndex = QuestPOIGetQuestIDByVisibleIndex(questLogIndex);	
+	local _questID, questWatchIndex = QuestPOIGetQuestIDByVisibleIndex(questLogIndex);	
 	local title, level, questTag, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isBounty, isStory, isHidden, isScaling = GetQuestLogTitle(questWatchIndex);
 	if not title then return end
 
@@ -649,6 +648,7 @@ local function QuestLogQuests_BuildSingleQuestInfo(questLogIndex, questInfoConta
 	-- Precompute whether or not the headers should display so that it's easier to add them later.
 	-- We don't care about collapsed states, we only care about the fact that there are any quests
 	-- to display under the header.
+	local lastHeader;
 	if isHeader then
 		lastHeader = questInfoContainer[questLogIndex];
 	end
@@ -1028,7 +1028,7 @@ end
 
 function QuestMapLogTitleButton_OnEnter(self)
 	-- do block highlight
-	local questID, questLogIndex = QuestPOIGetQuestIDByVisibleIndex(self.questLogIndex);
+	local _questID, questLogIndex = QuestPOIGetQuestIDByVisibleIndex(self.questLogIndex);
 	local title, level, questTag, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isBounty, isStory, isHidden, isScaling = GetQuestLogTitle(questLogIndex);
 
 	local difficultyHighlightColor;
@@ -1095,7 +1095,7 @@ end
 
 function QuestMapLogTitleButton_OnLeave(self)
 	-- remove block highlight
-	local questID, questLogIndex = QuestPOIGetQuestIDByVisibleIndex(self.questLogIndex);
+	local _questID, questLogIndex = QuestPOIGetQuestIDByVisibleIndex(self.questLogIndex);
 	local info, level, _, isHeader, _, _, _, questID = GetQuestLogTitle(questLogIndex);
 	if info then
 		local difficultyColor = isHeader and QuestDifficultyColors["header"] or GetQuestDifficultyColor(level);

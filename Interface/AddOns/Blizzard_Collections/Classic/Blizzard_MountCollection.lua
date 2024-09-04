@@ -35,7 +35,98 @@ function MountJournal_OnLoad(self)
 
 	self.ScrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnUpdate, MountJournal_EvaluateListHelpTip, self);
 
-	UIDropDownMenu_Initialize(self.mountOptionsMenu, MountOptionsMenu_Init, "MENU");
+	MountJournal_InitFilterButton(self);
+end
+
+function MountJournal_InitFilterButton(self)
+	self.FilterDropdown:SetIsDefaultCallback(function()
+		return C_MountJournal.IsUsingDefaultFilters();
+	end);
+	
+	self.FilterDropdown:SetDefaultCallback(function()
+		C_MountJournal.SetDefaultFilters();
+	end);
+
+	local mountSourceOrderPriorities = {
+		[Enum.BattlePetSources.Drop] = 5,
+		[Enum.BattlePetSources.Quest] = 5,
+		[Enum.BattlePetSources.Vendor] = 5,
+		[Enum.BattlePetSources.Profession] = 5,
+		[Enum.BattlePetSources.Achievement] = 5,
+		[Enum.BattlePetSources.WorldEvent] = 5,
+		[Enum.BattlePetSources.Discovery] = 5,
+		[Enum.BattlePetSources.TradingPost] = 4,
+		[Enum.BattlePetSources.Promotion] = 3,
+		[Enum.BattlePetSources.PetStore] = 2,
+		[Enum.BattlePetSources.Tcg] = 1,
+	};
+	
+	local function IsSourceChecked(filterIndex) 
+		return C_MountJournal.IsSourceChecked(filterIndex)
+	end
+
+	local function SetSourceChecked(filterIndex) 
+		C_MountJournal.SetSourceFilter(filterIndex, not IsSourceChecked(filterIndex));
+	end
+	
+	self.FilterDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_MOUNT_COLLECTION_FILTER");
+
+		rootDescription:CreateCheckbox(COLLECTED, MountJournal_GetCollectedFilter, function()
+			MountJournal_SetCollectedFilter(not MountJournal_GetCollectedFilter());
+		end);
+
+		rootDescription:CreateCheckbox(NOT_COLLECTED, MountJournal_GetNotCollectedFilter, function()
+			MountJournal_SetNotCollectedFilter(not MountJournal_GetNotCollectedFilter());
+		end);
+	end);
+end
+
+local function CreateContextMenu(owner, rootDescription, index)
+	rootDescription:SetTag("MENU_MOUNT_COLLECTION_MOUNT");
+
+	local isUsable, _, _, _, _, _, _, menuMountID = select(5, C_MountJournal.GetDisplayedMountInfo(index));
+
+	local text;
+	local checkEnabled = false;
+	local needsFanfare = C_MountJournal.NeedsFanfare(menuMountID);
+	if needsFanfare then
+		text = UNWRAP;
+	else
+		local active = select(4, C_MountJournal.GetMountInfoByID(menuMountID));
+		if active then
+			text = BINDING_NAME_DISMOUNT;
+		else
+			text = MOUNT;
+			checkEnabled = true;
+		end
+	end
+
+	local button = rootDescription:CreateButton(text, function()
+		if needsFanfare then
+			MountJournal_Select(index);
+		end
+		MountJournalMountButton_UseMount(menuMountID);
+	end);
+	
+	if checkEnabled then
+		button:SetEnabled(isUsable);
+	end
+
+	if not needsFanfare then
+		local favoriteButton;
+		local isFavorite, canFavorite = C_MountJournal.GetIsFavorite(index);
+		if isFavorite then
+			favoriteButton = rootDescription:CreateButton(BATTLE_PET_UNFAVORITE, function()
+				C_MountJournal.SetIsFavorite(index, false);
+			end);
+		else
+			favoriteButton = rootDescription:CreateButton(BATTLE_PET_FAVORITE, function()
+				C_MountJournal.SetIsFavorite(index, true);
+			end);
+		end
+		favoriteButton:SetEnabled(canFavorite);
+	end
 end
 
 function MountJournal_ResetMountButton(button)
@@ -190,11 +281,7 @@ function MountJournal_OnHide(self)
 end
 
 function MountJournal_UpdateMountList()
-	local dragonridingMounts = nil;
 	local dragonridingHelpTipMountIndex = nil;
-	if MountJournal.needsDragonridingHelpTip then
-		dragonridingMounts = C_MountJournal.GetCollectedDragonridingMounts();
-	end
 
 	local newDataProvider = CreateDataProvider();
 	for index = 1, C_MountJournal.GetNumDisplayedMounts() do
@@ -208,7 +295,6 @@ function MountJournal_UpdateMountList()
 	local numMounts = C_MountJournal.GetNumMounts();
 	MountJournal.numOwned = 0;
 	local showMounts = true;
-	local playerLevel = UnitLevel("player");
 	if  ( numMounts < 1 ) then
 		-- display the no mounts message on the right hand side
 		MountJournal.MountDisplay.NoMounts:Show();
@@ -400,7 +486,6 @@ function MountJournal_SetSelected(selectedMountID, selectedSpellID)
 	local oldSelectedID = MountJournal.selectedMountID;
 	MountJournal.selectedSpellID = selectedSpellID;
 	MountJournal.selectedMountID = selectedMountID;
-	MountJournal_HideMountDropdown();
 	MountJournal_UpdateMountDisplay();
 	
 	if oldSelectedID ~= selectedMountID then
@@ -432,7 +517,6 @@ function MountJournalMountButton_UseMount(mountID)
 	elseif ( C_MountJournal.NeedsFanfare(mountID) ) then
 		local function OnFinishedCallback()
 			C_MountJournal.ClearFanfare(mountID);
-			MountJournal_HideMountDropdown();
 			MountJournal_UpdateMountList();
 			MountJournal_UpdateMountDisplay();
 		end
@@ -474,9 +558,9 @@ end
 function MountListDragButton_OnClick(self, button)
 	local parent = self:GetParent();
 	if ( button ~= "LeftButton" ) then
-		local _, _, _, _, _, _, _, _, _, _, isCollected = C_MountJournal.GetDisplayedMountInfo(parent.index);
+		local isCollected = select(11, C_MountJournal.GetDisplayedMountInfo(parent.index));
 		if isCollected then
-			MountJournal_ShowMountDropdown(parent.index, self, 0, 0);
+			MenuUtil.CreateContextMenu(self, CreateContextMenu, parent.index);
 		end
 	elseif ( IsModifiedClick("CHATLINK") ) then
 		local id = parent.spellID;
@@ -496,7 +580,7 @@ function MountListItem_OnClick(self, button)
 	if ( button ~= "LeftButton" ) then
 		local _, _, _, _, _, _, _, _, _, _, isCollected = C_MountJournal.GetDisplayedMountInfo(self.index);
 		if isCollected then
-			MountJournal_ShowMountDropdown(self.index, self, 0, 0);
+			MenuUtil.CreateContextMenu(self, CreateContextMenu, self.index);
 		end
 	elseif ( IsModifiedClick("CHATLINK") ) then
 		local id = self.spellID;
@@ -519,18 +603,6 @@ end
 
 function MountJournal_ClearSearch()
 	MountJournal.searchBox:SetText("");
-end
-
-function MountJournalFilterDropDown_OnLoad(self)
-	UIDropDownMenu_Initialize(self, MountJournalFilterDropDown_Initialize, "MENU");
-end
-
-function MountJournalFilterDropdown_ResetFilters()
-	C_MountJournal.SetDefaultFilters();
-end
-
-function MountJournalResetFiltersButton_UpdateVisibility()
-	--MountJournalFilterButton.ResetButton:SetShown(not C_MountJournal.IsUsingDefaultFilters());
 end
 
 function MountJournal_SetCollectedFilter(value)
@@ -559,35 +631,7 @@ end
 
 function MountJournal_SetAllSourceFilters(value)
 	C_MountJournal.SetAllSourceFilters(value); 
-	UIDropDownMenu_Refresh(MountJournalFilterDropDown, UIDROPDOWNMENU_MENU_VALUE, UIDROPDOWNMENU_MENU_LEVEL);
 end 
-
-
-function MountJournalFilterDropDown_Initialize(self, level)
-	local info = UIDropDownMenu_CreateInfo();
-	info.keepShownOnClick = true;
-
-	if level == 1 then
-
-		info.text = COLLECTED
-		info.func = 	function(_, _, _, value)
-							C_MountJournal.SetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_COLLECTED, value);
-						end
-		info.checked = C_MountJournal.GetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_COLLECTED);
-		info.isNotRadio = true;
-		UIDropDownMenu_AddButton(info, level);
-
-		info.disabled = nil;
-
-		info.text = NOT_COLLECTED;
-		info.func = 	function(_, _, _, value)
-							C_MountJournal.SetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_NOT_COLLECTED, value);
-						end
-		info.checked = C_MountJournal.GetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_NOT_COLLECTED);
-		info.isNotRadio = true;
-		UIDropDownMenu_AddButton(info, level);
-	end
-end
 
 --[[
 function MountJournalSummonRandomFavoriteButton_OnLoad(self)
@@ -612,92 +656,6 @@ function MountJournalSummonRandomFavoriteButton_OnEnter(self)
 	GameTooltip:SetMountBySpellID(self.spellID);
 end
 ]]--
-
-function MountOptionsMenu_Init(self, level)
-	if not MountJournal.menuMountIndex then
-		return;
-	end
-
-	local info = UIDropDownMenu_CreateInfo();
-	info.notCheckable = true;
-
-	local active = select(4, C_MountJournal.GetMountInfoByID(MountJournal.menuMountID));
-	local needsFanfare = C_MountJournal.NeedsFanfare(MountJournal.menuMountID);
-
-	if (needsFanfare) then
-		info.text = UNWRAP;
-	elseif ( active ) then
-		info.text = BINDING_NAME_DISMOUNT;
-	else
-		info.text = MOUNT;
-		info.disabled = not MountJournal.menuIsUsable;
-	end
-
-	info.func = function()
-		if needsFanfare then
-			MountJournal_Select(MountJournal.menuMountIndex);
-		end
-		MountJournalMountButton_UseMount(MountJournal.menuMountID);
-	end;
-
-	UIDropDownMenu_AddButton(info, level);
-
-	if not needsFanfare then
-		info.disabled = nil;
-
-		local canFavorite = false;
-		local isFavorite = false;
-		if (MountJournal.menuMountIndex) then
-			 isFavorite, canFavorite = C_MountJournal.GetIsFavorite(MountJournal.menuMountIndex);
-		end
-
-		if (isFavorite) then
-			info.text = BATTLE_PET_UNFAVORITE;
-			info.func = function()
-				C_MountJournal.SetIsFavorite(MountJournal.menuMountIndex, false);
-			end
-		else
-			info.text = BATTLE_PET_FAVORITE;
-			info.func = function()
-				C_MountJournal.SetIsFavorite(MountJournal.menuMountIndex, true);
-			end
-		end
-
-		if (canFavorite) then
-			info.disabled = false;
-		else
-			info.disabled = true;
-		end
-
-		UIDropDownMenu_AddButton(info, level);
-	end
-
-	info.disabled = nil;
-	info.text = CANCEL
-	info.func = nil
-	UIDropDownMenu_AddButton(info, level)
-end
-
-function MountJournal_ShowMountDropdown(index, anchorTo, offsetX, offsetY)
-	if (index) then
-		MountJournal.menuMountIndex = index;
-		MountJournal.menuMountID = select(12, C_MountJournal.GetDisplayedMountInfo(MountJournal.menuMountIndex));
-		local active, isUsable = select(4, C_MountJournal.GetDisplayedMountInfo(index));
-		MountJournal.active = active;
-		MountJournal.menuIsUsable = isUsable;
-	else
-		return;
-	end
-	ToggleDropDownMenu(1, nil, MountJournal.mountOptionsMenu, anchorTo, offsetX, offsetY);
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-end
-
-function MountJournal_HideMountDropdown()
-	if (UIDropDownMenu_GetCurrentDropDown() == MountJournal.mountOptionsMenu) then
-		HideDropDownMenu(1);
-	end
-end
-
 
 PlayerPreviewToggle = {}
 function PlayerPreviewToggle:OnShow()

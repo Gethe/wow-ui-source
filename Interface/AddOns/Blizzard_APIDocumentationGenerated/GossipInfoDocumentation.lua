@@ -297,6 +297,7 @@ local GossipInfo =
 				{ Name = "overrideIconID", Type = "fileID", Nilable = true },
 				{ Name = "selectOptionWhenOnlyOption", Type = "bool", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
+				{ Name = "failureDescription", Type = "string", Nilable = true },
 			},
 		},
 		{
@@ -325,6 +326,7 @@ local GossipInfo =
 				{ Name = "isIgnored", Type = "bool", Nilable = false },
 				{ Name = "questID", Type = "number", Nilable = false },
 				{ Name = "isImportant", Type = "bool", Nilable = false },
+				{ Name = "isMeta", Type = "bool", Nilable = false },
 			},
 		},
 	},

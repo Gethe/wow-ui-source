@@ -323,11 +323,12 @@
 							<Anchor point="TOPLEFT" relativeTo="$parentHeaderDelineator" relativePoint="BOTTOMLEFT" x="-10" y="4"/>
 						</Anchors>
 					</Frame>
-					<Frame name="$parentProfileSelector" inherits="UIDropDownMenuTemplate" parentKey="profileSelector">
+					<DropdownButton name="$parentProfileSelector" inherits="WowStyle1DropdownTemplate" parentKey="profileSelector">
 						<Scripts>
-							<OnShow function="CompactRaidFrameManagerDisplayFrameProfileSelector_SetUp"/>
+							<OnLoad function="CompactRaidFrameManagerDisplayFrameProfileSelector_OnLoad"/>
+							<OnShow function="CompactRaidFrameManagerDisplayFrameProfileSelector_OnShow"/>
 						</Scripts>
-					</Frame>
+					</DropdownButton>
 					<Frame name="$parentFilterOptions" parentKey="filterOptions">
 						<Size x="200" y="61"/>
 						<Layers>

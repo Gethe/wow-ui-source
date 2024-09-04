@@ -7,6 +7,15 @@ local GuildInfo =
 	Functions =
 	{
 		{
+			Name = "AreGuildEventsEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CanEditOfficerNote",
 			Type = "Function",
 
@@ -116,6 +125,15 @@ local GuildInfo =
 			},
 		},
 		{
+			Name = "IsEncounterGuildNewsEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsGuildOfficer",
 			Type = "Function",
 
@@ -137,6 +155,15 @@ local GuildInfo =
 			Returns =
 			{
 				{ Name = "isGuildRankAssignmentAllowed", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsGuildReputationEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
 			},
 		},
 		{

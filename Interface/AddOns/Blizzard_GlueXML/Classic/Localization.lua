@@ -1,3 +1,5 @@
+-- luacheck: ignore 111 (setting non-standard global variable)
+
 -- NOTE: This is current only shared between classic projects, mainline needs its own
 local shared_l10nTable = {
 	deDE = {},

@@ -115,7 +115,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	<CheckButton name="GuildPermissionCheckBoxTemplate" virtual="true">
+	<CheckButton name="GuildPermissionCheckboxTemplate" virtual="true">
 		<Size x="20" y="20"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -173,7 +173,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<CheckButton name="$parentViewCheck" inherits="GuildPermissionCheckBoxTemplate" id="1" parentKey="viewCB">
+					<CheckButton name="$parentViewCheck" inherits="GuildPermissionCheckboxTemplate" id="1" parentKey="viewCB">
 						<Anchors>
 							<Anchor point="TOPRIGHT" x="-95" y="-3"/>
 						</Anchors>
@@ -186,7 +186,7 @@
 							</OnClick>
 						</Scripts>
 					</CheckButton>
-					<CheckButton name="$parentDepositCheck" inherits="GuildPermissionCheckBoxTemplate" id="2" parentKey="depositCB">
+					<CheckButton name="$parentDepositCheck" inherits="GuildPermissionCheckboxTemplate" id="2" parentKey="depositCB">
 						<Anchors>
 							<Anchor point="TOP" relativeTo="$parentViewCheck" relativePoint="BOTTOM" x="0" y="-3"/>
 						</Anchors>
@@ -339,11 +339,11 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Frame name="$parentNavigationDropDown" inherits="UIDropDownMenuTemplate" parentKey="dropdown">
+			<DropdownButton name="$parentNavigationDropdown" inherits="WowStyle1DropdownTemplate" parentKey="dropdown">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentTitle" relativePoint="RIGHT" x="5"/>
+					<Anchor point="LEFT" relativeTo="$parentTitle" relativePoint="RIGHT" x="10"/>
 				</Anchors>
-			</Frame>
+			</DropdownButton>
 			<Frame name="$parentRankOrderFrame" hidden="true" parentKey="orderFrame">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentHbar" relativePoint="BOTTOMLEFT" x="5" y="-3"/>
@@ -393,7 +393,7 @@
 					<Anchor point="BOTTOMRIGHT" x="-12" y="12"/>
 				</Anchors>
 				<Frames>
-					<Frame name="$parentRankDropDown" inherits="UIDropDownMenuTemplate" parentKey="dropdown">
+					<DropdownButton name="$parentRankDropdown" inherits="WowStyle1DropdownTemplate" parentKey="dropdown">
 						<Anchors>
 							<Anchor point="TOPLEFT" x="120" y="-10"/>
 						</Anchors>
@@ -402,22 +402,12 @@
 								<FontString inherits="GameFontNormal" text="GUILDCONTROL_SELECTRANK" justifyH="RIGHT">
 									<Size x="120" y="12"/>
 									<Anchors>
-										<Anchor point="RIGHT" relativePoint="LEFT" x="4" y="2"/>
+										<Anchor point="RIGHT" relativePoint="LEFT" x="-6" y="2"/>
 									</Anchors>
 								</FontString>
 							</Layer>
 						</Layers>
-						<Scripts>
-							<OnLoad>
-									UIDropDownMenu_SetWidth(self, 150);
-									UIDropDownMenu_SetButtonWidth(self, 54);
-									UIDropDownMenu_JustifyText(self, "LEFT");
-									UIDropDownMenu_Initialize(self, GuildControlUIRankDropDown_Initialize);
-							</OnLoad>
-							<OnShow>
-							</OnShow>
-						</Scripts>
-					</Frame>
+					</DropdownButton>
 					<Frame name="$parentInset" inherits="InsetFrameTemplate2" parentKey="inset">
 						<Size x="290" y="310"/>
 						<Anchors>
@@ -446,6 +436,9 @@
 						</Scripts>
 					</Frame>
 				</Frames>
+				<Scripts>
+					<OnLoad function="GuildControlRankBank_OnLoad"/>
+				</Scripts>
 			</Frame>
 			<Frame name="$parentRankSettingsFrame" hidden="true" parentKey="rankPermFrame">
 				<Anchors>
@@ -491,7 +484,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Frame name="$parentRankDropDown" inherits="UIDropDownMenuTemplate" parentKey="dropdown">
+					<DropdownButton name="$parentRankDropdown" inherits="WowStyle1DropdownTemplate" parentKey="dropdown">
 						<Anchors>
 							<Anchor point="TOPLEFT" x="120" y="-6"/>
 						</Anchors>
@@ -500,66 +493,56 @@
 								<FontString inherits="GameFontNormal" text="GUILDCONTROL_SELECTRANK" justifyH="RIGHT">
 									<Size x="120" y="12"/>
 									<Anchors>
-										<Anchor point="RIGHT" relativePoint="LEFT" x="4" y="2"/>
+										<Anchor point="RIGHT" relativePoint="LEFT" x="-6" y="2"/>
 									</Anchors>
 								</FontString>
 							</Layer>
 						</Layers>
-						<Scripts>
-							<OnLoad>
-									UIDropDownMenu_SetWidth(self, 150);
-									UIDropDownMenu_SetButtonWidth(self, 54);
-									UIDropDownMenu_JustifyText(self, "LEFT");
-									UIDropDownMenu_Initialize(self, GuildControlUIRankDropDown_Initialize);
-							</OnLoad>
-							<OnShow>
-							</OnShow>
-						</Scripts>
-					</Frame>
+					</DropdownButton>
 
-					<CheckButton parentKey="OfficerCheckbox" name="$parentOfficerCheckbox" inherits="GuildPermissionCheckBoxTemplate" id="21">
+					<CheckButton parentKey="OfficerCheckbox" name="$parentOfficerCheckbox" inherits="GuildPermissionCheckboxTemplate" id="21">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentOfficerBg" relativePoint="TOPLEFT" x="0" y="-3"/>
 						</Anchors>
 					</CheckButton>
 
-					<CheckButton parentKey="InviteCheckbox" name="$parentCheckbox5" inherits="GuildPermissionCheckBoxTemplate" id="5">
+					<CheckButton parentKey="InviteCheckbox" name="$parentCheckbox5" inherits="GuildPermissionCheckboxTemplate" id="5">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentRosterBg" x="7" y="-2"/>
 						</Anchors>
 					</CheckButton>
-					<CheckButton name="$parentCheckbox7" inherits="GuildPermissionCheckBoxTemplate" id="7">
+					<CheckButton name="$parentCheckbox7" inherits="GuildPermissionCheckboxTemplate" id="7">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentCheckbox5" relativePoint="BOTTOMLEFT" x="0" y="1"/>
 						</Anchors>
 					</CheckButton>
-					<CheckButton name="$parentCheckbox6" inherits="GuildPermissionCheckBoxTemplate" id="6">
+					<CheckButton name="$parentCheckbox6" inherits="GuildPermissionCheckboxTemplate" id="6">
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="$parentCheckbox5" relativePoint="RIGHT" x="128" y="0"/>
 						</Anchors>
 					</CheckButton>
-					<CheckButton name="$parentCheckbox8" inherits="GuildPermissionCheckBoxTemplate" id="8">
+					<CheckButton name="$parentCheckbox8" inherits="GuildPermissionCheckboxTemplate" id="8">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentCheckbox6" relativePoint="BOTTOMLEFT" x="0" y="1"/>
 						</Anchors>
 					</CheckButton>
-					<CheckButton name="$parentCheckbox2" inherits="GuildPermissionCheckBoxTemplate" id="2">
+					<CheckButton name="$parentCheckbox2" inherits="GuildPermissionCheckboxTemplate" id="2">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentCheckbox7" relativePoint="BOTTOMLEFT" x="0" y="1"/>
 						</Anchors>
 					</CheckButton>
 
-					<CheckButton name="$parentCheckbox15" inherits="GuildPermissionCheckBoxTemplate" id="15">
+					<CheckButton name="$parentCheckbox15" inherits="GuildPermissionCheckboxTemplate" id="15">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentBankLabel" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
 						</Anchors>
 					</CheckButton>
-					<CheckButton name="$parentCheckbox19" inherits="GuildPermissionCheckBoxTemplate" id="19">
+					<CheckButton name="$parentCheckbox19" inherits="GuildPermissionCheckboxTemplate" id="19">
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="$parentCheckbox15" relativePoint="RIGHT" x="128" y="0"/>
 						</Anchors>
 					</CheckButton>
-					<CheckButton name="$parentCheckbox16" inherits="GuildPermissionCheckBoxTemplate" id="16">
+					<CheckButton name="$parentCheckbox16" inherits="GuildPermissionCheckboxTemplate" id="16">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentCheckbox15" relativePoint="BOTTOMLEFT" x="0" y="1"/>
 						</Anchors>
@@ -613,7 +596,7 @@
 						</Scripts>
 					</EditBox>
 					<!-- authenticator checkbox -->
-					<CheckButton name="$parentCheckbox18" inherits="GuildPermissionCheckBoxTemplate" id="18">
+					<CheckButton name="$parentCheckbox18" inherits="GuildPermissionCheckboxTemplate" id="18">
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" relativeTo="$parentOfficerBg" relativePoint="TOPLEFT" x="0" y="3"/>
 						</Anchors>
@@ -675,708 +658,4 @@
 			<OnLoad function="GuildControlUI_OnLoad"/>
 		</Scripts>
 	</Frame>
-
-
-
-
-
-
-
-
-
-
-
-
-	<!--Button name="GuildBankTabPermissionsTabTemplate" virtual="true">
-		<Size x="26" y="32"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentBackground" file="Interface\GuildBankFrame\UI-GuildFrame-PermissionTab">
-					<Size>
-						<AbsDimension x="32" y="32"/>
-					</Size>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnClick>
-				GuildBankTabPermissionsTab_OnClick(self:GetID());
-			</OnClick>
-			<OnEnter>
-				if(self.tooltip) then
-					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-					GameTooltip:SetText(self.tooltip);
-				end
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
-		</Scripts>
-		<ButtonText name="$parentText">
-			<Size>
-				<AbsDimension x="50" y="8"/>
-			</Size>
-			<Anchors>
-				<Anchor point="CENTER" relativeTo="$parentBackground">
-					<Offset>
-						<AbsDimension x="0" y="-5"/>
-					</Offset>
-				</Anchor>
-			</Anchors>
-		</ButtonText>
-		<NormalFont style="GameFontNormalSmall"/>
-		<HighlightFont style="GameFontHighlightSmall"/>
-		<DisabledFont style="GameFontDisableSmall"/>
-		<HighlightTexture file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
-			<Anchors>
-				<Anchor point="TOPLEFT" relativeTo="$parentBackground">
-					<Offset>
-						<AbsDimension x="6" y="0"/>
-					</Offset>
-				</Anchor>
-				<Anchor point="BOTTOMRIGHT" relativeTo="$parentBackground">
-					<Offset>
-						<AbsDimension x="-7" y="-7"/>
-					</Offset>
-				</Anchor>
-			</Anchors>
-		</HighlightTexture>
-	</Button>
-	<Frame name="GuildControlPopupFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
-		<Size>
-			<AbsDimension x="320" y="457"/>
-		</Size>
-		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="GuildFrame" relativePoint="TOPRIGHT">
-				<Offset x="20" y="-6"/>
-			</Anchor>
-		</Anchors>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture file="Interface\MacroFrame\MacroPopup-TopLeft">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\MacroFrame\MacroPopup-TopRight">
-					<Size>
-						<AbsDimension x="64" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPRIGHT"/>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\MacroFrame\MacroPopup-BotLeft">
-					<Size>
-						<AbsDimension x="256" y="64"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\MacroFrame\MacroPopup-BotRight">
-					<Size>
-						<AbsDimension x="64" y="64"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT"/>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\MacroFrame\MacroPopup-TopLeft">
-					<Size>
-						<AbsDimension x="256" y="20"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="0" y="-256"/>
-						</Anchor>
-						<Anchor point="BOTTOMLEFT">
-							<Offset x="0" y="64"/>
-						</Anchor>
-					</Anchors>
-					<TexCoords left="0" right="1" top="0.3125" bottom="1"/>
-				</Texture>
-				<Texture file="Interface\MacroFrame\MacroPopup-TopRight">
-					<Size>
-						<AbsDimension x="64" y="20"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPRIGHT">
-							<Offset x="0" y="-256"/>
-						</Anchor>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset x="0" y="64"/>
-						</Anchor>
-					</Anchors>
-					<TexCoords left="0" right="1" top="0.3125" bottom="1"/>
-				</Texture>
-				<FontString inherits="GameFontNormal" text="GUILDCONTROL_SELECTRANK">
-					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="0" y="-15"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString inherits="GameFontHighlightSmall" text="GUILDCONTROL_ALLOWRANK">
-					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="-10" y="-106"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Frame name="GuildControlPopupFrameCheckboxes">
-				<Size>
-					<AbsDimension x="300" y="500"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset x="-22" y="1"/>
-					</Anchor>
-				</Anchors>
-				<Frames>
-					<Frame name="GuildControlPopupFrameDropDown" inherits="UIDropDownMenuTemplate">
-						<Anchors>
-							<Anchor point="TOP">
-								<Offset>
-									<AbsDimension x="0" y="-30"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<HitRectInsets>
-							<AbsInset left="0" right="20" top="0" bottom="0"/>
-						</HitRectInsets>
-						<Scripts>
-							<OnLoad function="GuildControlPopupFrameDropDown_OnLoad"/>
-						</Scripts>
-					</Frame>
-					<Button name="GuildControlPopupFrameAddRankButton">
-						<Size>
-							<AbsDimension x="16" y="16"/>
-						</Size>
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="GuildControlPopupFrameDropDown" relativePoint="RIGHT">
-								<Offset>
-									<AbsDimension x="-15" y="1"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnUpdate function="GuildControlPopupFrameAddRankButton_OnUpdate"/>
-							<OnClick>
-								StaticPopup_Show("ADD_GUILDRANK");
-							</OnClick>
-							<OnEnter>
-								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-								GameTooltip:SetText(GUILDADDRANK_BUTTON_TOOLTIP);
-							</OnEnter>
-							<OnLeave function="GameTooltip_Hide"/>
-						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-PlusButton-Up"/>
-						<PushedTexture file="Interface\Buttons\UI-PlusButton-Down"/>
-						<DisabledTexture file="Interface\Buttons\UI-PlusButton-Disabled"/>
-						<HighlightTexture file="Interface\Buttons\UI-PlusButton-Hilight" alphaMode="ADD"/>
-					</Button>
-					<Button name="GuildControlPopupFrameRemoveRankButton">
-						<Size>
-							<AbsDimension x="16" y="16"/>
-						</Size>
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="GuildControlPopupFrameAddRankButton" relativePoint="RIGHT">
-								<Offset>
-									<AbsDimension x="-2" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnUpdate function="GuildControlPopupFrameRemoveRankButton_OnUpdate"/>
-							<OnClick function="GuildControlPopupFrameRemoveRankButton_OnClick"/>
-							<OnEnter>
-								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-								GameTooltip:SetText(GUILDREMOVERANK_BUTTON_TOOLTIP);
-							</OnEnter>
-							<OnLeave function="GameTooltip_Hide"/>
-						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-MinusButton-Up"/>
-						<PushedTexture file="Interface\Buttons\UI-MinusButton-Down"/>
-						<DisabledTexture file="Interface\Buttons\UI-MinusButton-Disabled"/>
-						<HighlightTexture file="Interface\Buttons\UI-PlusButton-Hilight" alphaMode="ADD"/>
-					</Button>
-					<CheckButton name="GuildControlPopupFrameCheckbox1" inherits="GuildPermissionCheckBoxTemplate" id="1">
-						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="21" y="-123"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</CheckButton>
-					<CheckButton name="GuildControlPopupFrameCheckbox3" inherits="GuildPermissionCheckBoxTemplate" id="3">
-						<Anchors>
-							<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox1" relativePoint="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="1"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</CheckButton>
-					<CheckButton name="GuildControlPopupFrameCheckbox5" inherits="GuildPermissionCheckBoxTemplate" id="5">
-						<Anchors>
-							<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox3" relativePoint="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="1"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</CheckButton>
-					<CheckButton name="GuildControlPopupFrameCheckbox7" inherits="GuildPermissionCheckBoxTemplate" id="7">
-						<Anchors>
-							<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox5" relativePoint="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="1"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</CheckButton>
-					<CheckButton name="GuildControlPopupFrameCheckbox9" inherits="GuildPermissionCheckBoxTemplate" id="9">
-						<Anchors>
-							<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox7" relativePoint="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="1"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</CheckButton>
-					<CheckButton name="GuildControlPopupFrameCheckbox11" inherits="GuildPermissionCheckBoxTemplate" id="11">
-						<Anchors>
-							<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox9" relativePoint="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="1"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</CheckButton>
-					<CheckButton name="GuildControlPopupFrameCheckbox13" inherits="GuildPermissionCheckBoxTemplate" id="13">
-						<Anchors>
-							<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox11" relativePoint="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="1"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</CheckButton>
-					<Frame name="GuildControlWithdrawGold">
-						<Size>
-							<AbsDimension x="20" y="20"/>
-						</Size>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="GuildControlPopupFrameCheckbox13" relativePoint="BOTTOMLEFT">
-								<Offset x="0" y="-16"/>
-							</Anchor>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<FontString name="GuildControlWithdrawGoldText" inherits="GameFontNormalSmall" text="GUILDCONTROL_WITHDRAW_GOLD">
-									<Anchors>
-										<Anchor point="TOPLEFT"/>
-									</Anchors>
-								</FontString>
-								<FontString name="GuildControlWithdrawGoldAmountText" inherits="GameFontNormalSmall" text="GOLD_PER_DAY">
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="GuildControlWithdrawGoldText" relativePoint="BOTTOMLEFT">
-											<Offset x="0" y="-13"/>
-										</Anchor>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Frames>
-							<EditBox name="GuildControlWithdrawGoldEditBox" autoFocus="false" historyLines="1" inherits="InputBoxTemplate" numeric="true">
-								<Size>
-									<AbsDimension x="70" y="32"/>
-								</Size>
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="GuildControlWithdrawGoldAmountText" relativePoint="RIGHT">
-										<Offset>
-											<AbsDimension x="11" y="-1"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Frames>
-									<Frame name="$parentMask" enableMouse="true" hidden="true" setAllPoints="true"/>
-								</Frames>
-								<Scripts>
-									<OnTextChanged>
-										if ( self:GetText() ~= UNLIMITED ) then
-											GuildControlPopupAcceptButton:Enable();
-											GuildControlPopupFrame.goldChanged = 1;
-										end
-									</OnTextChanged>
-									<OnEditFocusGained>
-										GuildControlPopupAcceptButton:Enable();
-									</OnEditFocusGained>
-									<OnEnterPressed>
-										self:ClearFocus();
-										GuildControlPopupAcceptButton:Enable();
-									</OnEnterPressed>
-									<OnEscapePressed function="EditBox_ClearFocus"/>
-								</Scripts>
-							</EditBox>
-						</Frames>
-					</Frame>
-					<CheckButton name="GuildControlPopupFrameCheckbox2" inherits="GuildPermissionCheckBoxTemplate" id="2">
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="GuildControlPopupFrameCheckbox1" relativePoint="RIGHT">
-								<Offset>
-									<AbsDimension x="117" y="1"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</CheckButton>
-					<CheckButton name="GuildControlPopupFrameCheckbox4" inherits="GuildPermissionCheckBoxTemplate" id="4">
-						<Anchors>
-							<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox2" relativePoint="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="1"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</CheckButton>
-					<CheckButton name="GuildControlPopupFrameCheckbox6" inherits="GuildPermissionCheckBoxTemplate" id="6">
-						<Anchors>
-							<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox4" relativePoint="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="1"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</CheckButton>
-					<CheckButton name="GuildControlPopupFrameCheckbox8" inherits="GuildPermissionCheckBoxTemplate" id="8">
-						<Anchors>
-							<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox6" relativePoint="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="1"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</CheckButton>
-					<CheckButton name="GuildControlPopupFrameCheckbox10" inherits="GuildPermissionCheckBoxTemplate" id="10">
-						<Anchors>
-							<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox8" relativePoint="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="1"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</CheckButton>
-					<CheckButton name="GuildControlPopupFrameCheckbox12" inherits="GuildPermissionCheckBoxTemplate" id="12">
-						<Anchors>
-							<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox10" relativePoint="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="1"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</CheckButton>
-					<CheckButton name="GuildControlPopupFrameCheckbox17" inherits="GuildPermissionCheckBoxTemplate" id="17">
-						<Anchors>
-							<Anchor point="TOP" relativeTo="GuildControlPopupFrameCheckbox12" relativePoint="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="1"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</CheckButton>
-					<CheckButton name="GuildControlPopupFrameCheckbox16" inherits="GuildPermissionCheckBoxTemplate" id="16">
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="GuildControlWithdrawGoldText" relativePoint="RIGHT">
-								<Offset x="4" y="-1"/>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								if ( self:GetChecked() ) then
-									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
-								else
-									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-								end
-								GuildControlSetRankFlag(self:GetID(), self:GetChecked());
-								GuildControlPopupAcceptButton:Enable();
-								WithdrawGoldEditBox_Update();
-							</OnClick>
-							<OnEnter>
-								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-								GameTooltip:SetText(GUILDCONTROL_OPTION16_TOOLTIP, nil, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
-							</OnEnter>
-							<OnLeave function="GameTooltip_Hide"/>
-						</Scripts>
-					</CheckButton>
-					<CheckButton name="GuildControlPopupFrameCheckbox15" inherits="GuildPermissionCheckBoxTemplate" id="15">
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="GuildControlPopupFrameCheckbox16Text" relativePoint="RIGHT">
-								<Offset x="12" y="-1"/>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								if ( self:GetChecked() ) then
-									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
-								else
-									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-								end
-								GuildControlSetRankFlag(self:GetID(), self:GetChecked());
-								GuildControlPopupAcceptButton:Enable();
-								WithdrawGoldEditBox_Update();
-							</OnClick>
-							<OnEnter>
-								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-								GameTooltip:SetText(GUILDCONTROL_OPTION15_TOOLTIP, nil, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
-							</OnEnter>
-							<OnLeave function="GameTooltip_Hide"/>
-						</Scripts>
-					</CheckButton>
-
-				</Frames>
-			</Frame>
-			<Button name="GuildControlPopupFrameCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
-				<Size>
-					<AbsDimension x="78" y="22"/>
-				</Size>
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeTo="GuildControlPopupFrame">
-						<Offset x="-33" y="34"/>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick function="HideParentPanel"/>
-				</Scripts>
-			</Button>
-			<Button name="GuildControlPopupAcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
-				<Size>
-					<AbsDimension x="78" y="22"/>
-				</Size>
-				<Anchors>
-					<Anchor point="RIGHT" relativeTo="GuildControlPopupFrameCancelButton" relativePoint="LEFT">
-						<Offset>
-							<AbsDimension x="-2" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick function="GuildControlPopupAcceptButton_OnClick"/>
-				</Scripts>
-			</Button>
-			<EditBox name="GuildControlPopupFrameEditBox" autoFocus="false" historyLines="1" letters="15" inherits="InputBoxTemplate">
-				<Size>
-					<AbsDimension x="130" y="32"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOP">
-						<Offset>
-							<AbsDimension x="35" y="-68"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<FontString inherits="GameFontNormal" text="GUILDCONTROL_RANKLABEL">
-							<Anchors>
-								<Anchor point="RIGHT" relativeTo="GuildControlPopupFrameEditBox" relativePoint="LEFT">
-									<Offset>
-										<AbsDimension x="-12" y="1"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnEditFocusGained>
-						GuildControlPopupAcceptButton:Enable();
-					</OnEditFocusGained>
-					<OnEnterPressed>
-						self:ClearFocus();
-						GuildControlPopupAcceptButton:Enable();
-					</OnEnterPressed>
-					<OnEscapePressed function="EditBox_ClearFocus"/>
-				</Scripts>
-			</EditBox>
-			<Frame name="GuildControlPopupFrameTabPermissions">
-				<Size>
-					<AbsDimension x="268" y="62"/>
-				</Size>
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeTo="GuildControlPopupFrame" relativePoint="BOTTOMLEFT">
-						<Offset x="13" y="58"/>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<FontString name="GuildBankTabLabel" inherits="GameFontHighlightSmall" text="GUILDBANK_TAB_COLON">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="GuildControlPopupFrameTabPermissions" relativePoint="TOPLEFT">
-									<Offset x="9" y="13"/>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Frames>
-					<CheckButton name="GuildControlTabPermissionsViewTab" inherits="GuildPermissionCheckBoxTemplate" id="1">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="GuildControlPopupFrameTabPermissions" relativePoint="TOPLEFT">
-								<Offset x="10" y="-6"/>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								SetPendingGuildBankTabPermissions(GuildControlPopupFrameTabPermissions.selectedTab, self:GetID(), self:GetChecked());
-								GuildControlPopupAcceptButton:Enable();
-								GuildControlPopup_UpdateDepositCheckBox();
-							</OnClick>
-						</Scripts>
-					</CheckButton>
-					<CheckButton name="GuildControlTabPermissionsDepositItems" inherits="GuildPermissionCheckBoxTemplate" id="2">
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="GuildControlTabPermissionsViewTabText" relativePoint="RIGHT">
-								<Offset x="45" y="-1"/>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								SetPendingGuildBankTabPermissions(GuildControlPopupFrameTabPermissions.selectedTab, self:GetID(), self:GetChecked());
-								GuildControlPopupAcceptButton:Enable();
-							</OnClick>
-						</Scripts>
-					</CheckButton>
-					<CheckButton name="GuildControlTabPermissionsUpdateText" inherits="GuildPermissionCheckBoxTemplate" id="3">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="GuildControlTabPermissionsViewTab" relativePoint="BOTTOMLEFT">
-								<Offset x="0" y="4"/>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								SetPendingGuildBankTabPermissions(GuildControlPopupFrameTabPermissions.selectedTab, self:GetID(), self:GetChecked());
-								GuildControlPopupAcceptButton:Enable();
-							</OnClick>
-						</Scripts>
-					</CheckButton>
-					<Frame name="GuildControlTabPermissionsWithdrawItems">
-						<Size>
-							<AbsDimension x="20" y="20"/>
-						</Size>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="GuildControlTabPermissionsViewTab" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-16"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<FontString name="GuildControlTabPermissionsWithdrawItemsText" inherits="GameFontNormalSmall" text="GUILDCONTROL_WITHDRAW_ITEMS">
-									<Anchors>
-										<Anchor point="TOPLEFT"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Frames>
-							<EditBox name="GuildControlWithdrawItemsEditBox" autoFocus="false" historyLines="1" letters="15" inherits="InputBoxTemplate" numeric="true">
-								<Size>
-									<AbsDimension x="70" y="32"/>
-								</Size>
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="GuildControlTabPermissionsWithdrawItemsText" relativePoint="RIGHT">
-										<Offset>
-											<AbsDimension x="20" y="0"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Frames>
-									<Frame name="$parentMask" enableMouse="true" hidden="true" setAllPoints="true"/>
-								</Frames>
-								<Scripts>
-									<OnEditFocusGained>
-										GuildControlPopupAcceptButton:Enable();
-									</OnEditFocusGained>
-									<OnTextChanged>
-										local amount = self:GetText();
-										if(amount and amount ~= "" and amount ~= UNLIMITED) then
-											SetPendingGuildBankTabWithdraw(GuildControlPopupFrameTabPermissions.selectedTab, amount);
-										end
-									</OnTextChanged>
-									<OnEnterPressed>
-										self:ClearFocus();
-										GuildControlPopupAcceptButton:Enable();
-									</OnEnterPressed>
-									<OnEscapePressed function="EditBox_ClearFocus"/>
-								</Scripts>
-							</EditBox>
-						</Frames>
-					</Frame>
-					<Button name="GuildBankTabPermissionsTab6" inherits="GuildBankTabPermissionsTabTemplate" id="6" text="6">
-						<Anchors>
-							<Anchor point="TOPRIGHT" relativeTo="GuildControlPopupFrameTabPermissions" relativePoint="TOPRIGHT">
-								<Offset x="-4" y="27"/>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="GuildBankTabPermissionsTab5" inherits="GuildBankTabPermissionsTabTemplate" id="5" text="5">
-						<Anchors>
-							<Anchor point="RIGHT" relativeTo="GuildBankTabPermissionsTab6" relativePoint="LEFT">
-								<Offset x="4" y="0"/>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="GuildBankTabPermissionsTab4" inherits="GuildBankTabPermissionsTabTemplate" id="4" text="4">
-						<Anchors>
-							<Anchor point="RIGHT" relativeTo="GuildBankTabPermissionsTab5" relativePoint="LEFT">
-								<Offset x="4" y="0"/>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="GuildBankTabPermissionsTab3" inherits="GuildBankTabPermissionsTabTemplate" id="3"  text="3">
-						<Anchors>
-							<Anchor point="RIGHT" relativeTo="GuildBankTabPermissionsTab4" relativePoint="LEFT">
-								<Offset x="4" y="0"/>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="GuildBankTabPermissionsTab2" inherits="GuildBankTabPermissionsTabTemplate" id="2"  text="2">
-						<Anchors>
-							<Anchor point="RIGHT" relativeTo="GuildBankTabPermissionsTab3" relativePoint="LEFT">
-								<Offset x="4" y="0"/>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="GuildBankTabPermissionsTab1" inherits="GuildBankTabPermissionsTabTemplate" id="1"  text="1">
-						<Anchors>
-							<Anchor point="RIGHT" relativeTo="GuildBankTabPermissionsTab2" relativePoint="LEFT">
-								<Offset x="4" y="0"/>
-							</Anchor>
-						</Anchors>
-					</Button>
-				</Frames>
-			</Frame>
-		</Frames>
-		<Scripts>
-			<OnLoad function="GuildControlPopupFrame_OnLoad"/>
-			<OnShow function="GuildControlPopupFrame_OnShow"/>
-			<OnHide function="GuildControlPopupFrame_OnHide"/>
-		</Scripts>
-	</Frame-->
 </Ui>

@@ -1022,7 +1022,6 @@ end
 
 function PaperDollFrame_SetMeleeDPS(statFrame, unit)
 	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, STAT_DPS_SHORT));
-	local text = _G[statFrame:GetName().."StatText"];
 	local speed, offhandSpeed = UnitAttackSpeed(unit);
 	
 	local minDamage;
@@ -1947,7 +1946,6 @@ function Expertise_OnEnter(statFrame)
 	-- Parry chance
 	GameTooltip:AddLine(" ");
 	GameTooltip:AddDoubleLine(STAT_TARGET_LEVEL, PARRY_CHANCE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-	local playerLevel = UnitLevel("player");
 	for i=0, 3 do
 		local mainhandParry, offhandParry = GetEnemyParryChance(i);
 		mainhandParry = format("%.2F%%", mainhandParry);
@@ -2471,7 +2469,7 @@ function PaperDollItemSlotButton_Update(self)
 			CooldownFrame_Set(cooldown, start, duration, enable);
 		end
 	else
-		local textureName = self.backgroundTextureName;
+		textureName = self.backgroundTextureName;
 		if ( self.checkRelic and UnitHasRelicSlot("player") ) then
 			textureName = "Interface\\Paperdoll\\UI-PaperDoll-Slot-Relic.blp";
 		end
@@ -2484,10 +2482,9 @@ function PaperDollItemSlotButton_Update(self)
 		end
 	end
 
-	-- TODO CLASS-28842: MainMenuBarBagButtons.xml calls into PaperDollItemSlotButton_OnShow, which calls
-	-- this function. In mainline, MainMenuBarBagButtons properly inherits from ItemButton, but not Classic yet.
-	-- This line can be uncommented once Classic updates MainMenuBarBagButtons.
-	--self:UpdateItemContextMatching();
+	if (self.UpdateItemContextMatching ~= nil) then
+		self:UpdateItemContextMatching();
+	end
 
 	if (not PaperDollFrame.EquipmentManagerPane:IsShown()) then
 		self.ignored = nil;
@@ -2752,7 +2749,6 @@ function PaperDollFrame_UpdateStatCategory(categoryFrame)
 		return;
 	end
 	
-	local stat;
 	local totalHeight = categoryFrame.NameText:GetHeight() + 10;
 	local numVisible = 0;
 	if (categoryInfo) then
@@ -3093,8 +3089,6 @@ function PaperDollStatCategory_OnDragStart(self)
 	PaperDoll_UpdateCategoryPositions();
 	GameTooltip:Hide();
 	self:SetScript("OnUpdate", PaperDollStatCategory_OnDragUpdate);
-	local i;
-	local frame;
 	for i, frame in next, StatCategoryFrames do
 		if (frame ~= self) then
 			frame:SetAlpha(0.6);
@@ -3106,8 +3100,6 @@ function PaperDollStatCategory_OnDragStop(self)
 	MOVING_STAT_CATEGORY = nil;
 	PaperDoll_UpdateCategoryPositions();
 	self:SetScript("OnUpdate", nil);
-	local i;
-	local frame;
 	for i, frame in next, StatCategoryFrames do
 		if (frame ~= self) then
 			frame:SetAlpha(1);
@@ -3170,56 +3162,44 @@ function PaperDollFrameItemFlyout_PostGetItems(itemSlotButton, itemDisplayTable,
 	return numItems;
 end
 
-function GearSetEditButton_OnLoad(self)
-	self.Dropdown = GearSetEditButtonDropDown;
-	UIDropDownMenu_Initialize(self.Dropdown, nil, "MENU");
-	UIDropDownMenu_SetInitializeFunction(self.Dropdown, GearSetEditButtonDropDown_Initialize);
-end
-
 function GearSetEditButton_OnMouseDown(self, button)
 	self.texture:SetPoint("TOPLEFT", 1, -1);
 
-	GearSetButton_OnClick(self:GetParent(), button);
-	GearSetButton_OpenPopup(self:GetParent());
-end
-
-function GearSetEditButtonDropDown_Initialize(dropdownFrame, level, menuList)
-	local gearSetButton = dropdownFrame.gearSetButton;
-	local info = UIDropDownMenu_CreateInfo();
-	info.text = EQUIPMENT_SET_EDIT;
-	info.notCheckable = true;
-	info.func = function() GearSetButton_OpenPopup(gearSetButton); end;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-
-	info = UIDropDownMenu_CreateInfo();
-	info.text = EQUIPMENT_SET_ASSIGN_TO_SPEC;
-	info.isTitle = true;
-	info.notCheckable = true;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-
-	local equipmentSetID = gearSetButton.setID;
-	for i = 1, GetNumSpecializations() do
-		info = UIDropDownMenu_CreateInfo();
-		info.checked = function()
-			return C_EquipmentSet.GetEquipmentSetAssignedSpec(equipmentSetID) == i;
-		end;
-
-		info.func = function()
-			local currentSpecIndex = C_EquipmentSet.GetEquipmentSetAssignedSpec(equipmentSetID);
-			if ( currentSpecIndex ~= i ) then
-				C_EquipmentSet.AssignSpecToEquipmentSet(equipmentSetID, i);
-			else
-				C_EquipmentSet.UnassignEquipmentSetSpec(equipmentSetID);
-			end
-
-			GearSetButton_UpdateSpecInfo(gearSetButton);
-			PaperDollEquipmentManagerPane_Update(true);
-		end;
-
-		local specID = GetSpecializationInfo(i);
-		info.text = select(2, GetSpecializationInfoByID(specID));
-		UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
+	local function GetSetID()
+		return self:GetParent().setID;
 	end
+
+	local function IsSelected(i)
+		return C_EquipmentSet.GetEquipmentSetAssignedSpec(GetSetID()) == i;
+	end
+
+	local function SetSelected(i)
+		local currentSpecIndex = C_EquipmentSet.GetEquipmentSetAssignedSpec(GetSetID());
+		if ( currentSpecIndex ~= i ) then
+			C_EquipmentSet.AssignSpecToEquipmentSet(GetSetID(), i);
+		else
+			C_EquipmentSet.UnassignEquipmentSetSpec(GetSetID());
+		end
+
+		GearSetButton_UpdateSpecInfo(self:GetParent());
+		PaperDollEquipmentManagerPane_Update(true);
+	end
+
+	MenuUtil.CreateContextMenu(PaperDollFrame.EquipmentManagerPane, function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_PAPERDOLL_FRAME");
+		
+		rootDescription:CreateButton(EQUIPMENT_SET_EDIT, function()
+			GearSetButton_OpenPopup(self);
+		end);
+
+		rootDescription:CreateTitle(EQUIPMENT_SET_ASSIGN_TO_SPEC);
+
+		for i = 1, GetNumSpecializations() do
+			local specID = GetSpecializationInfo(i);
+			local text = select(2, GetSpecializationInfoByID(specID));
+			rootDescription:CreateRadio(text, IsSelected, SetSelected, i);
+		end
+	end)
 end
 
 function GearSetButton_SetSpecInfo(self, specID)
@@ -3301,7 +3281,7 @@ function GearManagerPopupFrameMixin:OnShow()
 
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	self.iconDataProvider = CreateAndInitFromMixin(IconDataProviderMixin, IconDataProviderExtraType.Equipment);
-	self.BorderBox.IconTypeDropDown:SetSelectedValue(IconSelectorPopupFrameIconFilterTypes.All);
+	self.BorderBox.IconTypeDropdown:SetSelectedValue(IconSelectorPopupFrameIconFilterTypes.All);
 	self:Update();
 	self.BorderBox.IconSelectorEditBox:OnTextChanged();
 
@@ -3812,8 +3792,8 @@ function PaperDollFrame_SetSidebar(self, index)
 	local frame = GetPaperDollSideBarFrame(index);
 	if (not frame:IsShown()) then
 		for i = 1, #PAPERDOLL_SIDEBARS do
-			local frame = GetPaperDollSideBarFrame(i);
-			frame:Hide();
+			local barFrame = GetPaperDollSideBarFrame(i);
+			barFrame:Hide();
 		end
 		frame:Show();
 		PaperDollFrame.currentSideBar = frame;

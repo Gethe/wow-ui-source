@@ -2,71 +2,49 @@
 ..\Blizzard_SharedXML\UI.xsd">
 	<Script file="Languages.lua"/>
 
-	<Frame name="SettingsLanguageDropDownTemplate" inherits="SettingsDropDownControlTemplate" virtual="true">
-		<KeyValues>
-			<KeyValue key="dropDownType" value="Frame" type="string"/>
-			<KeyValue key="dropDownTemplate" value="SettingsLanguagePopoutWithButtonsTemplate" type="string"/>
-		</KeyValues>
-	</Frame>
-
-	<Frame name="SettingsAudioLocaleDropDownTemplate" inherits="SettingsLanguageDropDownTemplate" mixin="SettingsAudioLocaleDropDownMixin" virtual="true"/>
-	
-	<Frame name="SettingsLanguagesPopoutDetailsTemplate" mixin="SettingsLanguagePopoutDetailsMixin" virtual="true">
+	<DropdownButton name="SettingsLanguageDropdownTemplate" inherits="WowStyle2DropdownTemplate" mixin="SettingsLanguageDropdownMixin" virtual="true">
 		<Layers>
-			<Layer level="ARTWORK" textureSubLevel="1">
-				<Texture parentKey="Texture">
+			<Layer level="OVERLAY">
+				<Texture parentKey="Language">
 					<Anchors>
-						<Anchor point="LEFT"/>
+						<Anchor point="LEFT" x="7" y="-3"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
-	</Frame>
+	</DropdownButton>
 
-	<Button name="SettingsLanguagePopoutEntryTemplate" inherits="SelectionPopoutEntryTemplate" mixin="SettingsLanguagePopoutEntryMixin" virtual="true">
-		<KeyValues>
-			<KeyValue key="defaultWidth" value="225" type="number"/>
-		</KeyValues>
+	<Frame name="SettingsLanguageDropdownWithSteppersAndLabelTemplate" inherits="DropdownWithSteppersTemplate" mixin="DropdownWithSteppersAndLabelMixin" virtual="true">
 		<Frames>
-			<Frame parentKey="SelectionDetails" inherits="SettingsLanguagesPopoutDetailsTemplate">
-				<Size x="250" y="20"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" x="14" y="0"/>
-				</Anchors>
-			</Frame>
-		</Frames>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-		</Scripts>
-	</Button>
-
-	<Frame name="SettingsLanguagePopoutWithButtonsTemplate" inherits="SelectionPopoutWithButtonsTemplate" virtual="true">
-		<KeyValues>
-			<KeyValue key="decrementOffsetX" value="4" type="number"/>
-			<KeyValue key="incrementOffsetX" value="-4" type="number"/>
-		</KeyValues>
-		<Frames>
-			<EventButton parentKey="Button" inherits="SelectionPopoutButtonTemplate" mixin="SettingsLanguagePopoutButtonMixin">
-				<Size x="250" y="38"/>
+			<DropdownButton parentKey="Dropdown" inherits="SettingsLanguageDropdownTemplate">
+				<KeyValues>
+					<KeyValue key="menuPoint" type="string" value="TOPRIGHT"/>
+					<KeyValue key="menuRelativePoint" type="string" value="BOTTOMRIGHT"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="CENTER"/>
 				</Anchors>
-				<KeyValues>
-					<KeyValue key="selectionEntryTemplates" value="SettingsLanguagePopoutEntryTemplate" type="string"/>
-				</KeyValues>
-				<Frames>
-					<Frame parentKey="SelectionDetails" inherits="SettingsLanguagesPopoutDetailsTemplate, ResizeLayoutFrame">
-						<Size x="256" y="20"/>
-						<Anchors>
-							<Anchor point="LEFT" x="21"/>
-						</Anchors>
-					</Frame>
-				</Frames>
-			</EventButton>
+			</DropdownButton>
 		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" font="GameFontHighlightMed2">
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.DecrementButton" relativePoint="LEFT" x="-34"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
 	</Frame>
+	
+	<Frame name="SettingsLanguageBaseTemplate" inherits="SettingsDropdownControlTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="dropdownType" type="string" value="SettingsLanguageDropdownWithSteppersAndLabelTemplate"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="SettingsLanguageTemplate" inherits="SettingsLanguageBaseTemplate" mixin="SettingsLanguageDropdownControlMixin" virtual="true"/>
+	<Frame name="SettingsAudioLocaleTemplate" inherits="SettingsLanguageBaseTemplate" mixin="SettingsAudioLocaleDropdownMixin" virtual="true"/>
 
 	<Frame name="SettingsLanguageRestartNeededTemplate" inherits="SettingsListElementTemplate" mixin="LanguageRestartNeededMixin" virtual="true">
 		<Size x="512" y="22"/>
@@ -75,7 +53,11 @@
 		</Scripts>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture parentKey="RestartNeeded" file="Interface\Common\Lang-Alerts" hidden="true"/>
+				<Texture parentKey="RestartNeeded" file="Interface\Common\Lang-Alerts" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 	</Frame>

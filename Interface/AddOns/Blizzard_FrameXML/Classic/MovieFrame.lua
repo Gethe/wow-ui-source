@@ -21,7 +21,9 @@ function MovieFrame_PlayMovie(self, movieID)
 	if ( not playSuccess ) then
 		StaticPopup_Show("ERROR_CINEMATIC");
 		self:Hide();
-		GameMovieFinished();
+		local userCanceled = false;
+		local didError = true;
+		CinematicFinished(Enum.CinematicType.GameMovie, userCanceled, didError);
 	end
 end
 
@@ -75,8 +77,8 @@ function MovieFrame_OnKeyUp(self, key)
 	end
 end
 
-function MovieFrame_OnMovieFinished(self)
-	GameMovieFinished();
+function MovieFrame_OnMovieFinished(self, userCanceled)
+	CinematicFinished(Enum.CinematicType.GameMovie, userCanceled);
 	if ( self:IsShown() ) then
 		self:Hide();
 	end

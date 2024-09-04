@@ -1,98 +1,123 @@
+local PROJECT_IMPL_REQUIRED = "Add implementation in UnitPopupUtils.lua";
+
 UnitPopupSharedUtil = { }; 
 
---Add your project specific implementation in UnitPopupUtils
-function UnitPopupSharedUtil:GetBNetIDAccount()
-	return nil; 
-end
-
-function UnitPopupSharedUtil:GetGUID()
-	local dropdown = UnitPopupSharedUtil.GetCurrentDropdownMenu(); 
-	if dropdown.guid then
-		return dropdown.guid;
-	elseif dropdown.unit then
-		return UnitGUID(dropdown.unit);
-	elseif type(dropdown.userData) == "table" and dropdown.userData.guid then
-		return dropdown.userData.guid;
-	elseif dropdown.accountInfo and dropdown.accountInfo.gameAccountInfo.playerGuid then
-		return dropdown.accountInfo.gameAccountInfo.playerGuid;
-	end
+function UnitPopupSharedUtil.GetBNetIDAccount(contextData)
+	error(PROJECT_IMPL_REQUIRED);
 	return nil;
 end
 
---Add your project specific implementation in UnitPopupUtils
-function UnitPopupSharedUtil:GetBNetAccountInfo()
-	return nil; 
-end
-
-function UnitPopupSharedUtil:GetIsMobile()
-	local dropdown = UnitPopupSharedUtil.GetCurrentDropdownMenu(); 
-	if dropdown.isMobile ~= nil then
-		return dropdown.isMobile;
-	elseif dropdown.accountInfo and dropdown.accountInfo.gameAccountInfo then
-		return dropdown.accountInfo.gameAccountInfo.isWowMobile;
+function UnitPopupSharedUtil.GetGUID(contextData)
+	if contextData.guid then
+		return contextData.guid;
 	end
+	
+	local unit = contextData.unit;
+	if unit then
+		return UnitGUID(unit);
+	end
+	
+	local accountInfo = contextData.accountInfo;
+	if not accountInfo then
+		return nil;
+	end
+
+	return accountInfo.gameAccountInfo.playerGuid;
 end
 
---Add your project specific implementation in UnitPopupUtils
-function UnitPopupSharedUtil:TryCreatePlayerLocation(guid)
+function UnitPopupSharedUtil.GetBNetAccountInfo(contextData)
+	error(PROJECT_IMPL_REQUIRED);
 	return nil; 
 end
 
-function UnitPopupSharedUtil:IsValidPlayerLocation(playerLocation)
+function UnitPopupSharedUtil.GetIsMobile(contextData)
+	local isMobile = contextData.isMobile;
+	if isMobile ~= nil then
+		return isMobile;
+	end
+	
+	local accountInfo = contextData.accountInfo;
+	if not accountInfo then
+		return false;
+	end
+
+	local gameAccountInfo = accountInfo.gameAccountInfo;
+	if not gameAccountInfo then
+		return false;
+	end
+
+	return gameAccountInfo.isWowMobile;
+end
+
+function UnitPopupSharedUtil.TryCreatePlayerLocation(contextData)
+	error(PROJECT_IMPL_REQUIRED);
+	return nil; 
+end
+
+function UnitPopupSharedUtil.IsValidPlayerLocation(playerLocation)
 	return playerLocation and playerLocation:IsValid();
 end
 
-function UnitPopupSharedUtil:IsSameServer(playerLocation)
-	local dropdown = UnitPopupSharedUtil.GetCurrentDropdownMenu(); 
+function UnitPopupSharedUtil.IsSameServer(contextData, playerLocation)
 	if playerLocation then
 		return C_PlayerInfo.UnitIsSameServer(playerLocation);
-	elseif dropdown.accountInfo and dropdown.accountInfo.gameAccountInfo.realmName then
-		return dropdown.accountInfo.gameAccountInfo.realmName == GetRealmName();
 	end
+	
+	local accountInfo = contextData.accountInfo;
+	if not accountInfo then
+		return false;
+	end
+
+	local realmName = accountInfo.gameAccountInfo.realmName;
+	if not realmName then
+		return false;
+	end
+
+	return realmName == GetRealmName();
 end
 
-function UnitPopupSharedUtil:IsSameServerFromSelf()
-	local guid = UnitPopupSharedUtil.GetGUID();
-	local playerLocation = UnitPopupSharedUtil:TryCreatePlayerLocation(guid);
-	return UnitPopupSharedUtil:IsSameServer(playerLocation);
+function UnitPopupSharedUtil.IsSameServerFromSelf(contextData)
+	local playerLocation = UnitPopupSharedUtil.TryCreatePlayerLocation(contextData);
+	return UnitPopupSharedUtil.IsSameServer(contextData, playerLocation);
 end		
 
-function UnitPopupSharedUtil:HasBattleTag()
-	if BNFeaturesEnabledAndConnected() then
-		local _, battleTag = BNGetInfo();
-		if battleTag then
-			return true;
-		end
+function UnitPopupSharedUtil.HasBattleTag()
+	if not BNFeaturesEnabledAndConnected() then
+		return false;
 	end
+
+	local battleTag = select(2, BNGetInfo());
+	return battleTag ~= nil;
 end
 
-function UnitPopupSharedUtil:CanCooperate()
-	local dropdown = UnitPopupSharedUtil.GetCurrentDropdownMenu(); 
-	return dropdown.unit and UnitCanCooperate("player", dropdown.unit);
+function UnitPopupSharedUtil.CanCooperate(contextData)
+	local unit = contextData.unit;
+	return unit and UnitCanCooperate("player", unit);
 end
 
-function UnitPopupSharedUtil:IsPlayer()
-	local dropdown = UnitPopupSharedUtil.GetCurrentDropdownMenu(); 
-	return dropdown.unit and UnitIsPlayer(dropdown.unit);
+function UnitPopupSharedUtil.IsPlayer(contextData)
+	local unit = contextData.unit;
+	return unit and UnitIsPlayer(unit);
 end
 
-function UnitPopupSharedUtil:GetLFGCategoryForLFGSlot(lfgSlot)
-	if lfgSlot then
-		return GetLFGCategoryForID(lfgSlot);
-	end
+function UnitPopupSharedUtil.GetLFGCategoryForLFGSlot(lfgSlot)
+	return lfgSlot and GetLFGCategoryForID(lfgSlot);
 end
 
-function UnitPopupSharedUtil:IsPlayerOffline()
-	local dropdown = UnitPopupSharedUtil.GetCurrentDropdownMenu(); 
-	if dropdown.isOffline then
+function UnitPopupSharedUtil.IsPlayerOffline(contextData)
+	if contextData.isOffline then
 		return true;
-	elseif dropdown.clubMemberInfo then
-		local presence = dropdown.clubMemberInfo.presence;
+	end
+	
+	local clubMemberInfo = contextData.clubMemberInfo;
+	if clubMemberInfo then
+		local presence = clubMemberInfo.presence;
 		if presence == Enum.ClubMemberPresence.Offline or presence == Enum.ClubMemberPresence.Unknown then
 			return true;
 		end
-	elseif dropdown.accountInfo then
-		if not dropdown.accountInfo.gameAccountInfo.isOnline then
+	else
+		local accountInfo = contextData.accountInfo;
+		if accountInfo and not accountInfo.gameAccountInfo.isOnline then
 			return true;
 		end
 	end
@@ -100,132 +125,145 @@ function UnitPopupSharedUtil:IsPlayerOffline()
 	return false;
 end
 
-function UnitPopupSharedUtil:IsPlayerFavorite()
-	local dropdown = UnitPopupSharedUtil.GetCurrentDropdownMenu(); 
-	return dropdown.accountInfo and dropdown.accountInfo.isFavorite;
+function UnitPopupSharedUtil.IsPlayerFavorite(contextData)
+	local accountInfo = contextData.accountInfo;
+	return accountInfo and accountInfo.isFavorite;
 end
 
-function UnitPopupSharedUtil:IsPlayerMobile()
-	local dropdown = UnitPopupSharedUtil.GetCurrentDropdownMenu(); 
-	if dropdown.clubMemberInfo then
-		local presence = dropdown.clubMemberInfo.presence;
-		if presence == Enum.ClubMemberPresence.Offline or presence == Enum.ClubMemberPresence.Unknown then
-			return true;
-		end
+function UnitPopupSharedUtil.IsPlayerMobile(contextData)
+	local clubMemberInfo = contextData.clubMemberInfo;
+	if not clubMemberInfo then
+		return false;
 	end
 
-	return false;
+	local presence = clubMemberInfo.presence;
+	return presence == Enum.ClubMemberPresence.Offline or presence == Enum.ClubMemberPresence.Unknown;
 end
 
-function UnitPopupSharedUtil:GetIsLocalPlayer()
-	local dropdown = UnitPopupSharedUtil.GetCurrentDropdownMenu(); 
-
-	if dropdown.isSelf then
+function UnitPopupSharedUtil.GetIsLocalPlayer(contextData)
+	if contextData.isSelf then
+		return true;
+	end
+	
+	local clubMemberInfo = contextData.clubMemberInfo;
+	if clubMemberInfo and clubMemberInfo.isSelf then
 		return true;
 	end
 
-	local guid = UnitPopupSharedUtil.GetGUID(dropdown);
+	local guid = UnitPopupSharedUtil.GetGUID(contextData);
 	if guid and C_AccountInfo.IsGUIDRelatedToLocalAccount(guid) then
 		return true;
 	end
 
-	if dropdown.clubMemberInfo and dropdown.clubMemberInfo.isSelf then
-		return true;
+	return false;
+end
+
+function UnitPopupSharedUtil.IsInGroupWithPlayer(contextData)
+	local accountInfo = contextData.accountInfo;
+	if accountInfo then
+		local characterName = accountInfo.gameAccountInfo.characterName;
+		if characterName then
+			return UnitInParty(characterName) or UnitInRaid(characterName);
+		end
+	end
+
+	local guid = contextData.guid;
+	if guid then
+		return IsGUIDInGroup(guid);
 	end
 
 	return false;
 end
 
-function UnitPopupSharedUtil:IsInGroupWithPlayer()
-	local dropdown = UnitPopupSharedUtil.GetCurrentDropdownMenu(); 
-	if dropdown.accountInfo and dropdown.accountInfo.gameAccountInfo.characterName then
-		return	UnitInParty(dropdown.accountInfo.gameAccountInfo.characterName) or UnitInRaid(dropdown.accountInfo.gameAccountInfo.characterName);
-	elseif dropdown.guid then
-		return IsGUIDInGroup(dropdown.guid);
-	end
-end
-
---Add your project specific implementation in UnitPopupUtils
-function UnitPopupSharedUtil:IsBNetFriend()
+function UnitPopupSharedUtil.IsBNetFriend(contextData)
+	error(PROJECT_IMPL_REQUIRED);
 	return nil; 
 end
 
---Add your project specific implementation in UnitPopupUtils
-function UnitPopupSharedUtil:CanAddBNetFriend(isLocalPlayer, haveBattleTag, isPlayer)
+function UnitPopupSharedUtil.CanAddBNetFriend(contextData, isLocalPlayer, haveBattleTag, isPlayer)
+	error(PROJECT_IMPL_REQUIRED);
 	return nil; 
 end
 
-function UnitPopupSharedUtil:IsEnabled(unitPopupButton)
-	if(not unitPopupButton) then
+function UnitPopupSharedUtil.IsEnabled(contextData, unitPopupButton)
+	assertsafe(contextData);
+	if not unitPopupButton then
 		return false; 
 	end 
-	local dropdown = UnitPopupSharedUtil.GetCurrentDropdownMenu();
 
-	if unitPopupButton.isUninteractable then
+	if unitPopupButton:IsUninteractable() then
 		return false;
 	end
 
-	if (dropdown.unit) then
+	local unit = contextData.unit;
+	if unit then
 		local dist = unitPopupButton:GetInteractDistance();
-		if dist and not CheckInteractDistance(dropdown.unit, dist) then
+		if dist and not CheckInteractDistance(unit, dist) then
 			return false;
 		end
 	end
 
-	if unitPopupButton:IsDisabledInKioskMode() and Kiosk.IsEnabled() then
+	if Kiosk.IsEnabled() and unitPopupButton:IsDisabledInKioskMode() then
 		return false;
 	end
 
-	if(unitPopupButton:IsDisabled()) then 
+	if unitPopupButton:IsDisabled(contextData) then 
 		return false; 
 	end 
 
-	if(not unitPopupButton:IsEnabled()) then 
+	if not unitPopupButton:IsEnabled(contextData) then 
 		return false; 
 	end 
 
 	return true;
 end
 
-function UnitPopupSharedUtil:TryBNInvite()
-	local dropdown = UnitPopupSharedUtil.GetCurrentDropdownMenu();
-	local gameAccountInfo = dropdown.accountInfo and dropdown.accountInfo.gameAccountInfo;
-	if gameAccountInfo and gameAccountInfo.playerGuid and gameAccountInfo.gameAccountID then
-		FriendsFrame_InviteOrRequestToJoin(gameAccountInfo.playerGuid, gameAccountInfo.gameAccountID);
-		return true;
+function UnitPopupSharedUtil.TryBNInvite(contextData)
+	local gameAccountInfo = contextData.accountInfo and contextData.accountInfo.gameAccountInfo;
+	if not gameAccountInfo then
+		return false;
 	end
-	return false; 
+
+	local playerGuid = gameAccountInfo.playerGuid;
+	local gameAccountID = gameAccountInfo.gameAccountID;
+	if not (playerGuid and gameAccountID) then
+		return false;
+	end
+
+	FriendsFrame_InviteOrRequestToJoin(playerGuid, gameAccountID);
+	return true; 
 end
 
-function UnitPopupSharedUtil:TryInvite(inviteType, fullname)
+function UnitPopupSharedUtil.TryInvite(contextData, inviteType, fullname)
+	error(PROJECT_IMPL_REQUIRED);
 	return nil;
 end
 
-function UnitPopupSharedUtil:CreateUnitPopupReport(reportType, playerName, playerGUID, playerLocation)
+function UnitPopupSharedUtil.CreateUnitPopupReport(reportType, playerName, playerGUID, playerLocation)
 	local reportInfo = ReportInfo:CreateReportInfoFromType(reportType);
-	if(reportInfo) then 
-		reportInfo:SetReportTarget(playerGUID);
-		ReportFrame:InitiateReport(reportInfo, playerName, playerLocation); 
-	end		
+	if not reportInfo then
+		return;
+	end
+	
+	reportInfo:SetReportTarget(playerGUID);
+	ReportFrame:InitiateReport(reportInfo, playerName, playerLocation); 
 end
 
-function UnitPopupSharedUtil:CreateUnitPopupReportPet(reportType, playerName, petGUID)
+function UnitPopupSharedUtil.CreateUnitPopupReportPet(reportType, playerName, petGUID)
 	local reportInfo = ReportInfo:CreatePetReportInfo(reportType, petGUID);
-	if(reportInfo) then 
-		ReportFrame:InitiateReport(reportInfo, playerName, playerLocation); 
+	if not reportInfo then 
+		return;
 	end		
+	
+	ReportFrame:InitiateReport(reportInfo, playerName, playerLocation); 
 end
 
-function UnitPopupSharedUtil:GetCurrentDropdownMenu()
-	return UIDROPDOWNMENU_OPEN_MENU or UIDROPDOWNMENU_INIT_MENU; 
-end 
-
---Add your project specific implementation in UnitPopupUtils
-function UnitPopupSharedUtil:GetFullPlayerName()
+function UnitPopupSharedUtil.GetFullPlayerName(contextData)
+	error(PROJECT_IMPL_REQUIRED);
 	return nil; 
 end		
 
---Add your project specific implementation in UnitPopupUtils
-function UnitPopupSharedUtil:HasLFGRestrictions()
+function UnitPopupSharedUtil.HasLFGRestrictions()
+	error(PROJECT_IMPL_REQUIRED);
 	return nil; 
 end	 

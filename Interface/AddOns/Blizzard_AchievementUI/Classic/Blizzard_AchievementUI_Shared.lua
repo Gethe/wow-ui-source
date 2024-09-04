@@ -461,44 +461,19 @@ end
 
 ACHIEVEMENTUI_SELECTEDFILTER = AchievementFrame_GetCategoryNumAchievements_All;
 
-AchievementFrameFilters = { {text=ACHIEVEMENTFRAME_FILTER_ALL, func= AchievementFrame_GetCategoryNumAchievements_All},
- {text=ACHIEVEMENTFRAME_FILTER_COMPLETED, func=AchievementFrame_GetCategoryNumAchievements_Complete},
-{text=ACHIEVEMENTFRAME_FILTER_INCOMPLETE, func=AchievementFrame_GetCategoryNumAchievements_Incomplete} };
-
-function AchievementFrameFilterDropDown_OnLoad (self)
-	self.relativeTo = "AchievementFrameFilterDropDown"
-	self.xOffset = -14;
-	self.yOffset = 10;
-	UIDropDownMenu_Initialize(self, AchievementFrameFilterDropDown_Initialize);
-end
-
-function AchievementFrameFilterDropDown_Initialize (self)
-	local info = UIDropDownMenu_CreateInfo();
-	for i, filter in ipairs(AchievementFrameFilters) do
-		info.text = filter.text;
-		info.value = i;
-		info.func = AchievementFrameFilterDropDownButton_OnClick;
-		if ( filter.func == ACHIEVEMENTUI_SELECTEDFILTER ) then
-			info.checked = 1;
-			UIDropDownMenu_SetText(self, filter.text);
-		else
-			info.checked = nil;
-		end
-		UIDropDownMenu_AddButton(info);
-	end
-end
-
-function AchievementFrameFilterDropDownButton_OnClick (self)
-	AchievementFrame_SetFilter(self.value);
-end
+AchievementFrameFilters = { 
+	{text = ACHIEVEMENTFRAME_FILTER_ALL, func = AchievementFrame_GetCategoryNumAchievements_All},
+	{text = ACHIEVEMENTFRAME_FILTER_COMPLETED, func = AchievementFrame_GetCategoryNumAchievements_Complete},
+	{text = ACHIEVEMENTFRAME_FILTER_INCOMPLETE, func = AchievementFrame_GetCategoryNumAchievements_Incomplete} 
+};
 
 function AchievementFrame_SetFilter(value)
-	local func = AchievementFrameFilters[value].func;
-	if ( func ~= ACHIEVEMENTUI_SELECTEDFILTER ) then
-		ACHIEVEMENTUI_SELECTEDFILTER = func;
-		UIDropDownMenu_SetText(AchievementFrameFilterDropDown, AchievementFrameFilters[value].text)
+	local filter = AchievementFrameFilters[value];
+	if filter.func ~= ACHIEVEMENTUI_SELECTEDFILTER then
+		ACHIEVEMENTUI_SELECTEDFILTER = filter.func;
 		AchievementFrameAchievementsContainerScrollBar:SetValue(0);
 		AchievementFrameAchievements_ForceUpdate();
+		AchievementFrameFilterDropdown:GenerateMenu();
 	end
 end
 
@@ -535,7 +510,7 @@ function AchievementFrameStats_OnLoad (self)
 	HybridScrollFrame_CreateButtons(AchievementFrameStatsContainer, "StatTemplate");
 end
 
-local displayStatCategories = {};
+local displayStatCategoriesStats = {};
 
 function AchievementFrameStats_Update ()
 	local category = achievementFunctions.selectedCategory;
@@ -551,22 +526,22 @@ function AchievementFrameStats_Update ()
 	-- clear out table
 	if ( achievementFunctions.lastCategory ~= category ) then
 		local statCat;
-		for i in next, displayStatCategories do
-			displayStatCategories[i] = nil;
+		for i in next, displayStatCategoriesStats do
+			displayStatCategoriesStats[i] = nil;
 		end
 		-- build a list of shown category and stat id's
 		
-		tinsert(displayStatCategories, {id = category, header = true});
+		tinsert(displayStatCategoriesStats, {id = category, header = true});
 		for i=1, numStats do
-			tinsert(displayStatCategories, {id = GetAchievementInfo(category, i)});
+			tinsert(displayStatCategoriesStats, {id = GetAchievementInfo(category, i)});
 		end
 		-- add all the subcategories and their stat id's
 		for i, cat in next, categories do
 			if ( cat.parent == category ) then
-				tinsert(displayStatCategories, {id = cat.id, header = true});
+				tinsert(displayStatCategoriesStats, {id = cat.id, header = true});
 				numStats = GetCategoryNumAchievements(cat.id);
 				for k=1, numStats do
-					tinsert(displayStatCategories, {id = GetAchievementInfo(cat.id, k)});
+					tinsert(displayStatCategoriesStats, {id = GetAchievementInfo(cat.id, k)});
 				end
 			end
 		end
@@ -575,7 +550,7 @@ function AchievementFrameStats_Update ()
 
 	-- iterate through the displayStatCategories and display them
 	local selection = AchievementFrameStats.selection;
-	local statCount = #displayStatCategories;
+	local statCount = #displayStatCategoriesStats;
 	local statIndex, id, button;
 	local stat;
 	
@@ -585,7 +560,7 @@ function AchievementFrameStats_Update ()
 		button = buttons[i];
 		statIndex = offset + i;
 		if ( statIndex <= statCount ) then
-			stat = displayStatCategories[statIndex];
+			stat = displayStatCategoriesStats[statIndex];
 			if ( stat.header ) then
 				AchievementFrameStats_SetHeader(button, stat.id);
 			else
@@ -601,17 +576,17 @@ end
 
 function AchievementFrameStats_SetStat(button, category, index, colorIndex, isSummary)
 	--Remove these variables when we know for sure we don't need them
-	local id, name, points, completed, month, day, year, description, flags, icon;
+	local id, name;
 	if ( not isSummary ) then
 		if ( not index ) then
-			id, name, points, completed, month, day, year, description, flags, icon = GetAchievementInfo(category);
+			id, name = GetAchievementInfo(category);
 		else
-			id, name, points, completed, month, day, year, description, flags, icon = GetAchievementInfo(category, index);
+			id, name = GetAchievementInfo(category, index);
 		end
 		
 	else
 		-- This is on the summary page
-		id, name, points, completed, month, day, year, description, flags, icon = GetAchievementInfoFromCriteria(category);
+		id, name = GetAchievementInfoFromCriteria(category);
 	end
 
 	button.id = id;
@@ -918,7 +893,7 @@ ACHIEVEMENTCOMPARISON_PLAYERSHIELDFONT2 = GameFontNormalSmall;
 ACHIEVEMENTCOMPARISON_FRIENDSHIELDFONT1 = GameFontNormalSmall;
 ACHIEVEMENTCOMPARISON_FRIENDSHIELDFONT2 = GameFontNormalSmall;
 
-local displayStatCategories = {};
+local displayStatCategoriesComparison = {};
 function AchievementFrameComparison_UpdateStats ()
 	local category = achievementFunctions.selectedCategory;
 	local scrollFrame = AchievementFrameComparisonStatsContainer;
@@ -934,16 +909,16 @@ function AchievementFrameComparison_UpdateStats ()
 	-- clear out table
 	if ( achievementFunctions.lastCategory ~= category ) then
 		local statCat;
-		for i in next, displayStatCategories do
-			displayStatCategories[i] = nil;
+		for i in next, displayStatCategoriesComparison do
+			displayStatCategoriesComparison[i] = nil;
 		end
 		-- build a list of shown category and stat id's
 
-		tinsert(displayStatCategories, {id = category, header = true});
+		tinsert(displayStatCategoriesComparison, {id = category, header = true});
 		totalHeight = totalHeight+headerHeight;
 
 		for i=1, numStats do
-			tinsert(displayStatCategories, {id = GetAchievementInfo(category, i)});
+			tinsert(displayStatCategoriesComparison, {id = GetAchievementInfo(category, i)});
 			totalHeight = totalHeight+statHeight;
 		end
 		achievementFunctions.lastCategory = category;
@@ -955,18 +930,18 @@ function AchievementFrameComparison_UpdateStats ()
 	-- add all the subcategories and their stat id's
 	for i, cat in next, categories do
 		if ( cat.parent == category ) then
-			tinsert(displayStatCategories, {id = cat.id, header = true});
+			tinsert(displayStatCategoriesComparison, {id = cat.id, header = true});
 			totalHeight = totalHeight+headerHeight;
 			numStats = GetCategoryNumAchievements(cat.id);
 			for k=1, numStats do
-				tinsert(displayStatCategories, {id = GetAchievementInfo(cat.id, k)});
+				tinsert(displayStatCategoriesComparison, {id = GetAchievementInfo(cat.id, k)});
 				totalHeight = totalHeight+statHeight;
 			end
 		end
 	end
 
 	-- iterate through the displayStatCategories and display them
-	local statCount = #displayStatCategories;
+	local statCount = #displayStatCategoriesComparison;
 	local statIndex, id, button;
 	local stat;
 	local displayedHeight = 0;
@@ -974,7 +949,7 @@ function AchievementFrameComparison_UpdateStats ()
 		button = buttons[i];
 		statIndex = offset + i;
 		if ( statIndex <= statCount ) then
-			stat = displayStatCategories[statIndex];
+			stat = displayStatCategoriesComparison[statIndex];
 			if ( stat.header ) then
 				AchievementFrameComparisonStats_SetHeader(button, stat.id);
 			else
@@ -991,17 +966,17 @@ end
 
 function AchievementFrameComparisonStats_SetStat (button, category, index, colorIndex, isSummary)
 --Remove these variables when we know for sure we don't need them
-	local id, name, points, completed, month, day, year, description, flags, icon;
+	local id, name;
 	if ( not isSummary ) then
 		if ( not index ) then
-			id, name, points, completed, month, day, year, description, flags, icon = GetAchievementInfo(category);
+			id, name = GetAchievementInfo(category);
 		else
-			id, name, points, completed, month, day, year, description, flags, icon = GetAchievementInfo(category, index);
+			id, name = GetAchievementInfo(category, index);
 		end
 		
 	else
 		-- This is on the summary page
-		id, name, points, completed, month, day, year, description, flags, icon = GetAchievementInfoFromCriteria(category);
+		id, name = GetAchievementInfoFromCriteria(category);
 	end
 	
 	button.id = id;

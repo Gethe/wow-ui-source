@@ -110,7 +110,7 @@ function PVPTeam_SoloUpdate()
 	local button, buttonName, data, standard;
 	local emblem, emblemColor, border, borderColor, banner, bannerColor, rankColor;
 	-- Data Elements
-	local teamSize, rating, weekPlayed, weekWins, seasonPlayed, seasonWins, rank;
+	local teamSize, rating, weekPlayed, weekWins, seasonPlayed, seasonWins, rank, _;
 	local played, wins, loss;
 
 	local count = 0;
@@ -218,7 +218,7 @@ function PVPTeam_TeamsUpdate()
 	-- Display Elements
 	local button, buttonName, highlight, data, standard, emblem, border;
 	-- Data Elements
-	local teamName, teamSize, teamRating, teamPlayed, teamWins, teamLoss,  seasonTeamPlayed, seasonTeamWins, playerPlayed, playerPlayedPct, teamRank, playerRating;
+	local teamName, teamSize, teamRating, teamPlayed, teamWins, teamLoss,  seasonTeamPlayed, seasonTeamWins, playerPlayed, seasonPlayerPlayed, playerPlayedPct, teamRank, playerRating;
 	local played, wins, loss;
 	local background = {};
 	local borderColor = {};
@@ -445,7 +445,6 @@ function PVPTeamDetails_Update(self, id)
 	end
 
 	local nameText, classText, playedText, winLossWin, winLossLoss, ratingText;
-	local nameButton, classButton, playedButton, winLossButton;
 	-- Display Team Member Specific Info
 	local playedValue, winValue, lossValue, playedPct;
 	for i=1, MAX_ARENA_TEAM_MEMBERS, 1 do
@@ -500,12 +499,6 @@ function PVPTeamDetails_Update(self, id)
 			winLossWin = getglobal("PVPTeamDetailsButton"..i.."WinLossWin");
 			winLossLoss = getglobal("PVPTeamDetailsButton"..i.."WinLossLoss");
 			ratingText = getglobal("PVPTeamDetailsButton"..i.."RatingText");
-
-			--- Not needed after Arena Season 3 change.
-			nameButton = getglobal("PVPTeamDetailsButton"..i.."Name");
-			classButton = getglobal("PVPTeamDetailsButton"..i.."Class");
-			playedButton = getglobal("PVPTeamDetailsButton"..i.."Played")
-			winLossButton = getglobal("PVPTeamDetailsButton"..i.."WinLoss");
 
 			nameText:SetText(name);
 			classText:SetText(class);
@@ -582,32 +575,19 @@ function PVPTeamDetailsButton_OnClick(self, button)
 	else
 		local teamIndex = self.teamIndex;
 		local name, rank, level, class, online = GetArenaTeamRosterInfo(PVPTeamDetails.team, teamIndex);
-		PVPFrame_ShowDropdown(name, online);
+		PVPFrame_OpenMenu(name, online);
 	end
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
-function PVPDropDown_Initialize()
-	UnitPopup_ShowMenu(UIDROPDOWNMENU_OPEN_MENU, "TEAM", nil, PVPDropDown.name);
-end
+function PVPFrame_OpenMenu(name, online)
+	if IsArenaTeamCaptain(PVPTeamDetails.team) or online then
+		local contextData = {
+			name = name,
+			online = online,
+		};
 
-function PVPFrame_ShowDropdown(name, online)
-	HideDropDownMenu(1);
-	
-	if ( not IsArenaTeamCaptain(PVPTeamDetails.team) ) then
-		if ( online ) then
-			PVPDropDown.initialize = PVPDropDown_Initialize;
-			PVPDropDown.displayMode = "MENU";
-			PVPDropDown.name = name;
-			PVPDropDown.online = online;
-			ToggleDropDownMenu(1, nil, PVPDropDown, "cursor");
-		end
-	else
-		PVPDropDown.initialize = PVPDropDown_Initialize;
-		PVPDropDown.displayMode = "MENU";
-		PVPDropDown.name = name;
-		PVPDropDown.online = online;
-		ToggleDropDownMenu(1, nil, PVPDropDown, "cursor");
+		UnitPopup_OpenMenu("TEAM", contextData);
 	end
 end
 

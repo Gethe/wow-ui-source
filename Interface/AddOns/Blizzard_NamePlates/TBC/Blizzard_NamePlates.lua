@@ -171,6 +171,7 @@ function NamePlateDriverMixin:OnTargetChanged()
 end
 
 function NamePlateDriverMixin:OnUnitAuraUpdate(unit)
+	--[[
 	local filter;
 	local showAll = false;
 	if UnitIsUnit("player", unit) then
@@ -193,6 +194,7 @@ function NamePlateDriverMixin:OnUnitAuraUpdate(unit)
 	end
 
 	local nameplate = C_NamePlate.GetNamePlateForUnit(unit, issecure());
+	]]
 end
 
 function NamePlateDriverMixin:OnRaidTargetUpdate()

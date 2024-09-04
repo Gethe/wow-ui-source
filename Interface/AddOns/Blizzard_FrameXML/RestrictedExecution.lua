@@ -185,7 +185,6 @@ local function CreateRestrictedEnvironment(base)
     local workingStack, controlStack = {}, {};
 
     local result = {};
-    local meta_index;
 
     local function meta_index(t, k)
         local v = base[k] or working[k];

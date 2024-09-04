@@ -192,12 +192,10 @@ function CharacterCreateMixin:OnShow()
 	InitializeCharacterScreenData();
 	SetInCharacterCreate(true);
 
-	local _, selectedFaction;
 	local existingCharacterID = self:GetExistingCharacterID();
 	if existingCharacterID then
 		C_CharacterCreation.CustomizeExistingCharacter(existingCharacterID);
 		self.currentPaidServiceName = C_PaidServices.GetName();
-		_, selectedFaction = C_PaidServices.GetCurrentFaction();
 		CharacterCreateNameEdit:SetText(self.currentPaidServiceName);
 	else
 		self.currentPaidServiceName = nil;
@@ -403,7 +401,7 @@ function CharacterCreateMixin:OnMouseUp(button)
 	end
 end
 
-function CharacterCreateMixin:OnUpdate(self, elapsed)
+function CharacterCreateMixin:OnUpdate(elapsed)
 	if ( CHARACTER_CREATE_ROTATION_START_X ) then
 		local x = GetCursorPosition();
 		local diff = (x - CHARACTER_CREATE_ROTATION_START_X) * CHARACTER_ROTATION_CONSTANT;

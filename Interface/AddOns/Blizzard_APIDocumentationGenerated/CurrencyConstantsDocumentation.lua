@@ -3,6 +3,25 @@ local CurrencyConstants =
 	Tables =
 	{
 		{
+			Name = "AccountCurrencyTransferResult",
+			Type = "Enumeration",
+			NumValues = 9,
+			MinValue = 0,
+			MaxValue = 8,
+			Fields =
+			{
+				{ Name = "Success", Type = "AccountCurrencyTransferResult", EnumValue = 0 },
+				{ Name = "InvalidCharacter", Type = "AccountCurrencyTransferResult", EnumValue = 1 },
+				{ Name = "CharacterLoggedIn", Type = "AccountCurrencyTransferResult", EnumValue = 2 },
+				{ Name = "InsufficientCurrency", Type = "AccountCurrencyTransferResult", EnumValue = 3 },
+				{ Name = "MaxQuantity", Type = "AccountCurrencyTransferResult", EnumValue = 4 },
+				{ Name = "InvalidCurrency", Type = "AccountCurrencyTransferResult", EnumValue = 5 },
+				{ Name = "NoValidSourceCharacter", Type = "AccountCurrencyTransferResult", EnumValue = 6 },
+				{ Name = "ServerError", Type = "AccountCurrencyTransferResult", EnumValue = 7 },
+				{ Name = "CannotUseCurrency", Type = "AccountCurrencyTransferResult", EnumValue = 8 },
+			},
+		},
+		{
 			Name = "CurrencyFlags",
 			Type = "Enumeration",
 			NumValues = 32,
@@ -41,7 +60,7 @@ local CurrencyConstants =
 				{ Name = "CurrencyIsAllianceOnly", Type = "CurrencyFlags", EnumValue = 268435456 },
 				{ Name = "CurrencyIsHordeOnly", Type = "CurrencyFlags", EnumValue = 536870912 },
 				{ Name = "CurrencyLimitWarmodeBonusOncePerTooltip", Type = "CurrencyFlags", EnumValue = 1073741824 },
-				{ Name = "DeprecatedCurrencyFlag", Type = "CurrencyFlags", EnumValue = 2147483648 },
+				{ Name = "CurrencyUsesLedgerBalance", Type = "CurrencyFlags", EnumValue = 2147483648 },
 			},
 		},
 		{
@@ -65,15 +84,16 @@ local CurrencyConstants =
 		{
 			Name = "CurrencyGainFlags",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 5,
 			MinValue = 0,
-			MaxValue = 4,
+			MaxValue = 8,
 			Fields =
 			{
 				{ Name = "None", Type = "CurrencyGainFlags", EnumValue = 0 },
 				{ Name = "BonusAward", Type = "CurrencyGainFlags", EnumValue = 1 },
 				{ Name = "DroppedFromDeath", Type = "CurrencyGainFlags", EnumValue = 2 },
 				{ Name = "FromAccountServer", Type = "CurrencyGainFlags", EnumValue = 4 },
+				{ Name = "Autotracking", Type = "CurrencyGainFlags", EnumValue = 8 },
 			},
 		},
 		{

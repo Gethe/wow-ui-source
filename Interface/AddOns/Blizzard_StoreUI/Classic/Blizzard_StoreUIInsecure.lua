@@ -1,5 +1,6 @@
 -- DO NOT PUT ANY SENSITIVE CODE IN THIS FILE
 -- This file does not have access to the secure (forbidden) code.  It is only called via Outbound and no function in this file should ever return values.
+SwapToGlobalEnvironment();
 
 function StoreShowPreview(name, modelID, modelSceneID)
 	local frame = ModelPreviewFrame;
@@ -97,3 +98,8 @@ if (InGlue()) then
 		GlueDialog_Show("VAS_PRODUCT_DELIVERED", text, { ["guid"] = guid, ["realmName"] = realmName, ["shouldHandle"] = shouldHandle });
 	end
 end
+
+local storePreviewFrame = CreateFrame("Frame", "StorePreviewFrame", ModelPreviewFrame);
+storePreviewFrame:SetScript("OnShow", StorePreviewFrame_OnShow);
+storePreviewFrame:SetScript("OnHide", StorePreviewFrame_OnHide);
+storePreviewFrame:Show();

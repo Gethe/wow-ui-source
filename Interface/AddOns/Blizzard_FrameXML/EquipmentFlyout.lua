@@ -327,6 +327,9 @@ function EquipmentFlyout_UpdateItems()
 		numItemButtons = EQUIPMENTFLYOUT_ITEMS_PER_PAGE;
 	end
 	
+	-- A Flyout without a parent won't scale correctly.
+	assertsafe(flyoutSettings.parent, "Flyout must have a parent.");
+
 	flyout:SetParent(flyoutSettings.parent);
 	flyout:SetFrameStrata("HIGH");
 	flyout:ClearAllPoints();

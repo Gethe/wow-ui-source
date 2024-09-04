@@ -87,9 +87,6 @@
 				<Texture name="$parentBackgroundTexture"/>
 			</Layer>
 		</Layers>
-		<Frames>
-			<Frame name="VehicleSeatIndicatorDropDown" inherits="UIDropDownMenuTemplate" clampedToScreen="true" id="1" hidden="true" />
-		</Frames>
 		<Scripts>
 			<OnLoad function="VehicleSeatIndicator_OnLoad"/>
 			<OnEvent function="VehicleSeatIndicator_OnEvent"/>

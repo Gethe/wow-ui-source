@@ -42,7 +42,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-                MovieFrame_OnMovieFinished(self:GetParent():GetParent());
+                MovieFrame_OnMovieFinished(self:GetParent():GetParent(), true);
               </OnClick>
 						</Scripts>
 					</Button>

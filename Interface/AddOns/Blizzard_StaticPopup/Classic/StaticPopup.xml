@@ -24,7 +24,7 @@
 				StaticPopup_OnClick(self:GetParent(), self:GetID());
 			</OnClick>
 		</Scripts>
-		<ButtonText name="$parentText">
+		<ButtonText name="$parentText" parentKey="Text">
 			<Anchors>
 				<Anchor point="CENTER">
 					<Offset x="0" y="1"/>
@@ -50,6 +50,7 @@
 	<Frame name="StaticPopupTemplate" inherits="BackdropTemplate" toplevel="true" enableKeyboard="true" enableMouse="true" frameStrata="DIALOG" hidden="true" hyperlinksEnabled="true" virtual="true">
 		<KeyValues>
 			<KeyValue key="backdropInfo" value="BACKDROP_DARK_DIALOG_32_32" type="global"/>
+			<KeyValue key="onCloseCallback" value="StaticPopup_OnCloseButtonClicked" type="global" />
 		</KeyValues>
 		<Size>
 			<AbsDimension x="320" y="72"/>
@@ -74,7 +75,7 @@
 						<Anchor point="TOP" relativeKey="$parent.text" relativePoint="BOTTOM" x="0" y="-6"/>
 					</Anchors>
 				</FontString>
-				<Texture name="$parentAlertIcon">
+				<Texture parentKey="AlertIcon" name="$parentAlertIcon">
 					<Size>
 						<AbsDimension x="36" y="36"/>
 					</Size>
@@ -112,7 +113,7 @@
 				</Scripts>
 			</Frame>
 			<Frame name="$parentExtraFrame" parentKey="extraFrame" enableMouse="true"/>
-			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+			<Button name="$parentCloseButton" parentKey="CloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
 					<Anchor point="TOPRIGHT">
 						<Offset>
@@ -196,6 +197,11 @@
 				</Scripts>
 				<FontString inherits="ChatFontNormal"/>
 			</EditBox>
+			<DropdownButton parentKey="Dropdown" hidden="true" inherits="WowStyle1DropdownTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="45"/>
+				</Anchors>
+			</DropdownButton>
 			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="TOP" relativeTo="$parentText" relativePoint="BOTTOM" x="0" y="-5"/>
@@ -213,7 +219,7 @@
 					<Anchor point="TOP" relativeTo="$parentText" relativePoint="BOTTOM" x="0" y="-5"/>
 				</Anchors>
 			</Frame>
-			<Button parentKey="ItemFrame" name="$parentItemFrame" inherits="ItemButtonTemplate" hidden="true">
+			<ItemButton parentKey="ItemFrame" name="$parentItemFrame" mixin="StaticPopupItemFrameMixin" hidden="true">
 				<Size>
 					<AbsDimension x="37" y="37"/>
 				</Size>
@@ -243,7 +249,7 @@
 								</Anchor>
 							</Anchors>
 						</Texture>
-						<FontString name="$parentText" inherits="GameFontNormal" justifyH="LEFT">
+						<FontString parentKey="Text" name="$parentText" inherits="GameFontNormal" justifyH="LEFT">
 							<Size>
 								<AbsDimension x="103" y="38"/>
 							</Size>
@@ -258,22 +264,31 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnEnter>
-						if ( self.link ) then
-							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-							GameTooltip:SetHyperlink(self.link);
-						end
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-					<OnLoad>
-						self:GetParent().itemFrame = self;
-						self:RegisterEvent("GET_ITEM_INFO_RECEIVED");
-					</OnLoad>
-					<OnEvent function="StaticPopupItemFrame_OnEvent"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+					<OnLoad method="OnLoad"/>
+					<OnEvent method="OnEvent"/>
 				</Scripts>
-			</Button>
+			</ItemButton>
+			<Frame parentKey="DarkOverlay" setAllPoints="true" hidden="true" frameLevel="500">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="11" y="-11"/>
+					<Anchor point="BOTTOMRIGHT" x="-11" y="11"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture setAllPoints="true">
+							<Color r="0" g="0" b="0" a="0.8"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="Spinner" inherits="SpinnerTemplate" hidden="true" frameLevel="1000">
+				<Size x="60" y="60"/>
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="0"/>
+				</Anchors>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnUpdate>

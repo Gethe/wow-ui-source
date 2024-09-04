@@ -1,8 +1,5 @@
 --Center Menu Frames
 UIPanelWindows["GameMenuFrame"] =				{ area = "center",		pushable = 0,	whileDead = 1 };
-UIPanelWindows["VideoOptionsFrame"] =			{ area = "center",		pushable = 0,	whileDead = 1 };
-UIPanelWindows["AudioOptionsFrame"] =			{ area = "center",		pushable = 0,	whileDead = 1 };
-UIPanelWindows["InterfaceOptionsFrame"] =		{ area = "center",		pushable = 0,	whileDead = 1 };
 UIPanelWindows["HelpFrame"] =					{ area = "center",		pushable = 0,	whileDead = 1 };
 
 -- Frames using the new Templates
@@ -89,12 +86,12 @@ function FramePositionDelegate_Override_HandleExtraBars()
 		HideMultiCastActionBar();
 	elseif ( HasMultiCastActionBar and HasMultiCastActionBar() ) then
 		ShowMultiCastActionBar();
+		end
 	end
-end
 
 function FramePositionDelegate_Override_QuestTimerOffsets(anchorYStartValue)
 	return anchorYStartValue;
-end
+				end
 
 function FramePositionDelegate_Override_VehicleSeatIndicatorOffsets(anchorYStartValue)
 	local anchorY = anchorYStartValue;
@@ -110,11 +107,11 @@ function FramePositionDelegate_Override_VehicleSeatIndicatorOffsets(anchorYStart
 			VehicleSeatIndicator:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", -62, 0);
 		else
 			VehicleSeatIndicator:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", 0, 0);
-		end
+	end
 	end
 
 	return anchorY;
-end
+	end
 
 function FramePositionDelegate_Override_QuestWatchFrameOffsets(anchorYStartValue, rightActionBars, buffsAnchorY)
 	local anchorY = anchorYStartValue;

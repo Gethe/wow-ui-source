@@ -18,7 +18,6 @@ function PlayerReportFrameMixin:InitiateReport(reportType, playerName, playerLoc
 	if ( self:IsShown() ) then
 		StaticPopupSpecial_Hide(self);
 	end
-	CloseDropDownMenus();
 
 	local reportReason;
 	if reportType == PLAYER_REPORT_TYPE_SPAM then

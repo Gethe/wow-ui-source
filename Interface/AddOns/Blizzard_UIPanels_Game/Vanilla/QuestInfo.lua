@@ -522,7 +522,7 @@ function QuestInfo_ShowRewards()
 
 	rewardsFrame.ArtifactXPFrame:ClearAllPoints();
 	if ( artifactXP > 0 ) then
-		local name, icon = C_ArtifactUI.GetArtifactXPRewardTargetInfo(artifactCategory);
+		local _name, icon = C_ArtifactUI.GetArtifactXPRewardTargetInfo(artifactCategory);
 		rewardsFrame.ArtifactXPFrame:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -REWARDS_SECTION_OFFSET);
 		rewardsFrame.ArtifactXPFrame.Name:SetText(BreakUpLargeNumbers(artifactXP));
 		rewardsFrame.ArtifactXPFrame.Icon:SetTexture(icon or "Interface\\Icons\\INV_Misc_QuestionMark");

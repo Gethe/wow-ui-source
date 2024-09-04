@@ -16,6 +16,16 @@ local InteractionManagerFrameInfo = {
 		frame = "BankFrame",
 		showFunc = "BankFrame_Open"
 	}, 
+	[Enum.PlayerInteractionType.CharacterBanker] = 
+	{ 
+		frame = "BankFrame",
+		showFunc = "BankFrame_Open"
+	}, 
+	[Enum.PlayerInteractionType.AccountBanker] = 
+	{ 
+		frame = "BankFrame",
+		showFunc = "BankFrame_Open"
+	}, 
 	[Enum.PlayerInteractionType.Trainer] = 
 	{ 
 		frame = "ClassTrainerFrame",

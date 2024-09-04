@@ -329,15 +329,6 @@
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0" g="0" b="1.0"/>
 			</StatusBar>
-			<Frame name="PlayerFrameDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
-				<Size x="10" y="10"/>
-				<Anchors>
-					<Anchor point="TOP" x="-10" y="-50"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad function="PlayerFrameDropDown_OnLoad"/>
-				</Scripts>
-			</Frame>
 			<Frame name="PlayerFrameGroupIndicator" hidden="true">
 				<Size x="10" y="16"/>
 				<Anchors>

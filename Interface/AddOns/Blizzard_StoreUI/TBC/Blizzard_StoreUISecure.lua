@@ -1,28 +1,4 @@
----------------
---NOTE - Please do not change this section without talking to Dan
---We usually don't want to call out of this environment from this file. Calls should usually go through Outbound
-local _, tbl = ...;
-tbl.SecureCapsuleGet = SecureCapsuleGet;
-
-local function Import(name)
-	tbl[name] = tbl.SecureCapsuleGet(name);
-end
-
-Import("IsOnGlueScreen");
-
-if ( tbl.IsOnGlueScreen() ) then
-	tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
-	Import("C_StoreGlue");
-	Import("C_Login");
-	Import("GlueParent_UpdateDialogs");
-	Import("GlueParent_AddModalFrame");
-	Import("GlueParent_RemoveModalFrame");
-	Import("LE_WOW_CONNECTION_STATE_NONE");
-	Import("GetCharacterListUpdate");
-end
-
-setfenv(1, tbl);
-----------------
+local envTable = GetCurrentEnvironment();
 
 --Local variables (here instead of as members on frames for now)
 local JustOrderedProduct = false;
@@ -43,266 +19,9 @@ local WasVeteran = false;
 local StoreFrameHasBeenShown = false;
 local VasTargetedCharacterGUID = nil;
 
---Imports
-Import("bit");
-Import("C_StoreSecure");
-Import("C_PetJournal");
-Import("C_CharacterServices");
-Import("C_SharedCharacterServices");
-Import("C_ClassTrial");
-Import("C_AuthChallenge");
-Import("C_Timer");
-Import("C_WowTokenPublic");
-Import("C_StorePublic");
-Import("C_WowTokenSecure");
-Import("CreateForbiddenFrame");
-Import("IsGMClient");
-Import("HideGMOnly");
-Import("math");
-Import("table");
-Import("ipairs");
-Import("pairs");
-Import("select");
-Import("tostring");
-Import("tonumber");
-Import("unpack");
-Import("wipe");
-Import("type");
-Import("string");
-Import("strtrim");
-Import("LoadURLIndex");
-Import("C_Container");
-Import("GetCursorPosition");
-Import("PlaySound");
-Import("SetPortraitToTexture");
-Import("BACKPACK_CONTAINER");
-Import("NUM_BAG_SLOTS");
-Import("RAID_CLASS_COLORS");
-Import("CLASS_ICON_TCOORDS");
-Import("IsModifiedClick");
-Import("GetTime");
-Import("UnitAffectingCombat");
-Import("GetCVar");
-Import("GMError");
-Import("GetMouseFocus");
-Import("Enum");
-Import("SecureMixin");
-Import("CreateFromSecureMixins");
-Import("ShrinkUntilTruncateFontStringMixin");
-Import("IsTrialAccount");
-Import("IsVeteranTrialAccount");
-Import("PortraitFrameTemplateMixin");
-Import("SecondsToTime");
-Import("BackdropTemplateMixin");
-Import("GetExpansionLevel");
-
---GlobalStrings
-Import("BLIZZARD_STORE");
-Import("BLIZZARD_STORE_ON_SALE");
-Import("BLIZZARD_STORE_BUY");
-Import("BLIZZARD_STORE_BUY_EUR");
-Import("BLIZZARD_STORE_PRODUCT_INDEX");
-Import("BLIZZARD_STORE_CANCEL_PURCHASE");
-Import("BLIZZARD_STORE_FINAL_BUY");
-Import("BLIZZARD_STORE_FINAL_BUY_EUR");
-Import("BLIZZARD_STORE_CONFIRMATION_TITLE");
-Import("BLIZZARD_STORE_CONFIRMATION_INSTRUCTION");
-Import("BLIZZARD_STORE_FINAL_PRICE_LABEL");
-Import("BLIZZARD_STORE_LOADING");
-Import("BLIZZARD_STORE_PLEASE_WAIT");
-Import("BLIZZARD_STORE_NO_ITEMS");
-Import("BLIZZARD_STORE_CHECK_BACK_LATER");
-Import("BLIZZARD_STORE_TRANSACTION_IN_PROGRESS");
-Import("BLIZZARD_STORE_CONNECTING");
-Import("BLIZZARD_STORE_VISIT_WEBSITE");
-Import("BLIZZARD_STORE_VISIT_WEBSITE_WARNING");
-Import("BLIZZARD_STORE_BAG_FULL");
-Import("BLIZZARD_STORE_BAG_FULL_DESC");
-Import("BLIZZARD_STORE_BROWSE_TEST_CURRENCY");
-Import("BLIZZARD_STORE_BATTLE_NET_BALANCE");
-Import("BLIZZARD_STORE_BROWSE_EUR");
-Import("BLIZZARD_STORE_ASTERISK");
-Import("BLIZZARD_STORE_INTERNAL_ERROR");
-Import("BLIZZARD_STORE_INTERNAL_ERROR_SUBTEXT");
-Import("BLIZZARD_STORE_ERROR_TITLE_OTHER");
-Import("BLIZZARD_STORE_ERROR_MESSAGE_OTHER");
-Import("BLIZZARD_STORE_NOT_AVAILABLE");
-Import("BLIZZARD_STORE_NOT_AVAILABLE_SUBTEXT");
-Import("BLIZZARD_STORE_ERROR_TITLE_PAYMENT");
-Import("BLIZZARD_STORE_ERROR_MESSAGE_PAYMENT");
-Import("BLIZZARD_STORE_ERROR_TITLE_BATTLEPAY_DISABLED");
-Import("BLIZZARD_STORE_ERROR_MESSAGE_BATTLEPAY_DISABLED");
-Import("BLIZZARD_STORE_REGION_LOCKED");
-Import("BLIZZARD_STORE_REGION_LOCKED_SUBTEXT");
-Import("BLIZZARD_STORE_ERROR_TITLE_INSUFFICIENT_BALANCE");
-Import("BLIZZARD_STORE_ERROR_MESSAGE_INSUFFICIENT_BALANCE");
-Import("BLIZZARD_STORE_ERROR_TITLE_ALREADY_OWNED");
-Import("BLIZZARD_STORE_ERROR_MESSAGE_ALREADY_OWNED");
-Import("BLIZZARD_STORE_ERROR_TITLE_PARENTAL_CONTROLS");
-Import("BLIZZARD_STORE_ERROR_MESSAGE_PARENTAL_CONTROLS");
-Import("BLIZZARD_STORE_ERROR_TITLE_PURCHASE_DENIED");
-Import("BLIZZARD_STORE_ERROR_MESSAGE_PURCHASE_DENIED");
-Import("BLIZZARD_STORE_ERROR_TITLE_CONSUMABLE_TOKEN_OWNED");
-Import("BLIZZARD_STORE_ERROR_MESSAGE_CONSUMABLE_TOKEN_OWNED");
-Import("BLIZZARD_STORE_ERROR_ITEM_UNAVAILABLE");
-Import("BLIZZARD_STORE_ERROR_YOU_OWN_TOO_MANY_OF_THIS");
-Import("BLIZZARD_STORE_VAS_ERROR_REALM_NOT_ELIGIBLE");
-Import("BLIZZARD_STORE_VAS_ERROR_CANNOT_MOVE_GUILDMASTER");
-Import("BLIZZARD_STORE_VAS_ERROR_DUPLICATE_CHARACTER_NAME");
-Import("BLIZZARD_STORE_VAS_ERROR_HAS_MAIL");
-Import("BLIZZARD_STORE_VAS_ERROR_UNDER_MIN_LEVEL_REQ");
-Import("BLIZZARD_STORE_VAS_ERROR_INELIGIBLE_TARGET_REALM");
-Import("BLIZZARD_STORE_VAS_ERROR_PENDING_ITEM_AUDIT");
-Import("BLIZZARD_STORE_VAS_ERROR_TOO_MUCH_MONEY_FOR_LEVEL");
-Import("BLIZZARD_STORE_VAS_ERROR_HAS_AUCTIONS");
-Import("BLIZZARD_STORE_VAS_ERROR_NAME_NOT_AVAILABLE");
-Import("BLIZZARD_STORE_VAS_ERROR_LAST_RENAME_TOO_RECENT");
-Import("BLIZZARD_STORE_VAS_ERROR_CUSTOMIZE_ALREADY_REQUESTED");
-Import("BLIZZARD_STORE_VAS_ERROR_LAST_CUSTOMIZE_TOO_SOON");
-Import("BLIZZARD_STORE_VAS_ERROR_FACTION_CHANGE_TOO_SOON");
-Import("BLIZZARD_STORE_VAS_ERROR_ALLIANCE_NOT_ELIGIBLE");
-Import("BLIZZARD_STORE_VAS_ERROR_RACE_CLASS_COMBO_INELIGIBLE");
-Import("BLIZZARD_STORE_VAS_ERROR_INELIGIBLE_MAP_ID");
-Import("BLIZZARD_STORE_VAS_ERROR_BATTLEPAY_DELIVERY_PENDING");
-Import("BLIZZARD_STORE_VAS_ERROR_HAS_WOW_TOKEN");
-Import("BLIZZARD_STORE_VAS_ERROR_HAS_HEIRLOOM");
-Import("BLIZZARD_STORE_VAS_ERROR_HAS_CAGED_BATTLE_PET");
-Import("BLIZZARD_STORE_VAS_ERROR_CHARACTER_LOCKED");
-Import("BLIZZARD_STORE_VAS_ERROR_LAST_SAVE_TOO_RECENT");
-Import("BLIZZARD_STORE_VAS_ERROR_INVALID_DESTINATION_ACCOUNT");
-Import("BLIZZARD_STORE_VAS_ERROR_INVALID_SOURCE_ACCOUNT");
-Import("BLIZZARD_STORE_VAS_ERROR_DISALLOWED_SOURCE_ACCOUNT");
-Import("BLIZZARD_STORE_VAS_ERROR_DISALLOWED_DESTINATION_ACCOUNT");
-Import("BLIZZARD_STORE_VAS_ERROR_LOWER_BOX_LEVEL");
-Import("BLIZZARD_STORE_VAS_ERROR_MAX_CHARACTERS_ON_SERVER");
-Import("BLIZZARD_STORE_VAS_ERROR_LAST_SAVE_TOO_DISTANT");
-Import("BLIZZARD_STORE_VAS_ERROR_BOOSTED_TOO_RECENTLY");
-Import("BLIZZARD_STORE_VAS_ERROR_PVE_TO_PVP_TRANSFER_NOT_ALLOWED");
-Import("BLIZZARD_STORE_VAS_ERROR_NEEDS_ERA_CHOICE");
-Import("BLIZZARD_STORE_VAS_ERROR_ARENA_TEAM_CAPTAIN");
-Import("BLIZZARD_STORE_VAS_ERROR_OTHER");
-Import("BLIZZARD_STORE_VAS_ERROR_LABEL");
-Import("BLIZZARD_STORE_LEGION_PURCHASE_READY");
-Import("BLIZZARD_STORE_LEGION_PURCHASE_READY_DESCRIPTION");
-Import("BLIZZARD_STORE_DISCOUNT_TEXT_FORMAT");
-Import("BLIZZARD_STORE_PAGE_NUMBER");
-Import("BLIZZARD_STORE_SPLASH_BANNER_DISCOUNT_FORMAT");
-Import("BLIZZARD_STORE_SPLASH_BANNER_FEATURED");
-Import("BLIZZARD_STORE_SPLASH_BANNER_NEW");
-Import("BLIZZARD_STORE_WALLET_INFO");
-Import("BLIZZARD_STORE_PROCESSING");
-Import("BLIZZARD_STORE_BEING_PROCESSED_CHECK_BACK_LATER");
-Import("BLIZZARD_STORE_PURCHASE_SENT");
-Import("BLIZZARD_STORE_YOU_ALREADY_OWN_THIS");
-Import("BLIZZARD_STORE_TOKEN_CURRENT_MARKET_PRICE");
-Import("BLIZZARD_STORE_TOKEN_DESC_30_DAYS");
-Import("BLIZZARD_STORE_LOG_OUT_TO_PURCHASE_THIS_PRODUCT");
-Import("BLIZZARD_STORE_PRODUCT_IS_READY");
-Import("BLIZZARD_STORE_VAS_SERVICE_READY_DESCRIPTION");
-Import("BLIZZARD_STORE_NAME_CHANGE_READY_DESCRIPTION");
-Import("BLIZZARD_STORE_BOOST_UNREVOKED_CONSUMPTION");
-Import("STORE_CATEGORY_TRIAL_DISABLED_TOOLTIP");
-Import("STORE_CATEGORY_VETERAN_DISABLED_TOOLTIP");
-Import("TOOLTIP_DEFAULT_COLOR");
-Import("TOOLTIP_DEFAULT_BACKGROUND_COLOR");
-Import("CHAR_CREATE_PVP_TEAMS_VIOLATION");
-Import("CHARACTER_UPGRADE_LOG_OUT_NOW");
-Import("CHARACTER_UPGRADE_POPUP_LATER");
-Import("CHARACTER_UPGRADE_READY");
-Import("CHARACTER_UPGRADE_READY_DESCRIPTION");
-Import("FREE_CHARACTER_UPGRADE_READY");
-Import("FREE_CHARACTER_UPGRADE_READY_DESCRIPTION");
-Import("CHARACTER_UPGRADE_CLASS_TRIAL_UNLOCK_READY_DESCRIPTION");
-Import("ACCEPT");
-Import("VAS_SELECT_CHARACTER_DISABLED");
-Import("VAS_SELECT_CHARACTER");
-Import("VAS_CHARACTER_LABEL");
-Import("VAS_SELECT_REALM");
-Import("VAS_REALM_LABEL");
-Import("VAS_CHARACTER_SELECTION_DESCRIPTION");
-Import("VAS_SELECTED_CHARACTER_DESCRIPTION");
-Import("VAS_NEW_CHARACTER_NAME_LABEL");
-Import("VAS_NAME_CHANGE_TOOLTIP");
-Import("VAS_DESTINATION_REALM_LABEL");
-Import("VAS_NAME_CHANGE_CONFIRMATION");
-Import("VAS_APPEARANCE_CHANGE_CONFIRMATION");
-Import("VAS_FACTION_CHANGE_CONFIRMATION");
-Import("VAS_RACE_CHANGE_CONFIRMATION");
-Import("VAS_CHARACTER_TRANSFER_CONFIRMATION");
-Import("VAS_RACE_CHANGE_VALIDATION_DESCRIPTION");
-Import("VAS_FACTION_CHANGE_VALIDATION_DESCRIPTION");
-Import("VAS_APPEARANCE_CHANGE_VALIDATION_DESCRIPTION");
-Import("VAS_QUEUE_SEVERAL_MINUTES");
-Import("VAS_QUEUE_ONE_THREE_HOURS");
-Import("VAS_QUEUE_THREE_SIX_HOURS");
-Import("VAS_QUEUE_SIX_TWELVE_HOURS");
-Import("VAS_QUEUE_TWELVE_HOURS");
-Import("VAS_QUEUE_ONE_DAY");
-Import("VAS_QUEUE_TWO_DAY");
-Import("VAS_QUEUE_THREE_DAY");
-Import("VAS_QUEUE_FOUR_DAY");
-Import("VAS_QUEUE_FIVE_DAY");
-Import("VAS_QUEUE_SIX_DAY");
-Import("VAS_QUEUE_SEVEN_DAY");
-Import("VAS_PROCESSING_ESTIMATED_TIME");
-Import("VAS_SERVICE_PROCESSING");
-Import("BLIZZARD_STORE_VAS_SELECT_ACCOUNT");
-Import("BLIZZARD_STORE_VAS_DIFFERENT_BNET");
-Import("BLIZZARD_STORE_VAS_TRANSFER_REALM");
-Import("BLIZZARD_STORE_VAS_TRANSFER_REALM_CATEGORY_WARNING");
-Import("BLIZZARD_STORE_VAS_TRANSFER_INELIGIBLE_FACTION_WARNING");
-Import("BLIZZARD_STORE_VAS_REALM_NAME");
-Import("BLIZZARD_STORE_VAS_TRANSFER_ACCOUNT");
-Import("BLIZZARD_STORE_VAS_TRANSFER_FACTION_BUNDLE");
-Import("BLIZZARD_STORE_VAS_EMAIL_ADDRESS");
-Import("BLIZZARD_STORE_VAS_DESTINATION_BNET_ACCOUNT");
-Import("BLIZZARD_STORE_VAS_REALMS_AND_MORE");
-Import("BLIZZARD_STORE_VAS_REALMS_PREVIOUS");
-Import("BLIZZARD_STORE_VAS_ERROR_INVALID_BNET_ACCOUNT");
-Import("BLIZZARD_STORE_VAS_PREVIOUS_ENTRIES");
-Import("BLIZZARD_STORE_VAS_NEXT_ENTRIES");
-Import("TOKEN_CURRENT_AUCTION_VALUE");
-Import("TOKEN_MARKET_PRICE_NOT_AVAILABLE");
-Import("OKAY");
-Import("CONTINUE");
-Import("OPTIONS");
-Import("LARGE_NUMBER_SEPERATOR");
-Import("DECIMAL_SEPERATOR");
-Import("GOLD_AMOUNT_SYMBOL");
-Import("GOLD_AMOUNT_TEXTURE");
-Import("GOLD_AMOUNT_TEXTURE_STRING");
-Import("SILVER_AMOUNT_SYMBOL");
-Import("SILVER_AMOUNT_TEXTURE");
-Import("SILVER_AMOUNT_TEXTURE_STRING");
-Import("COPPER_AMOUNT_SYMBOL");
-Import("COPPER_AMOUNT_TEXTURE");
-Import("COPPER_AMOUNT_TEXTURE_STRING");
-Import("FACTION_HORDE");
-Import("FACTION_ALLIANCE");
-Import("LIST_DELIMITER");
-Import("HTML_START_CENTERED");
-Import("HTML_END");
-Import("BLIZZARD_STORE_BUNDLE_DISCOUNT_BANNER");
-Import("BLIZZARD_STORE_BUNDLE_DISCOUNT_TOOLTIP_ADDENDUM");
-Import("BLIZZARD_STORE_BUNDLE_DISCOUNT_TOOLTIP_REPLACEMENT");
-Import("BLIZZARD_STORE_BUNDLE_TOOLTIP_HEADER");
-Import("BLIZZARD_STORE_BUNDLE_TOOLTIP_OWNED_DELIVERABLE");
-Import("BLIZZARD_STORE_BUNDLE_TOOLTIP_UNOWNED_DELIVERABLE");
-Import("IsShiftKeyDown");
-Import("BLIZZARD_STORE_CLICK_TO_OPEN_FAQ");
-
---Lua enums
-Import("SOUNDKIT");
-Import("LE_EXPANSION_WRATH_OF_THE_LICH_KING");
-
 --Lua constants
 local WOW_TOKEN_CATEGORY_ID = 30;
 local WOW_CLASSIC_DARK_PORTAL_PASS_CATEGORY_ID = 161;
-
-Import("WOW_GAMES_CATEGORY_ID");
-Import("WOW_GAME_TIME_CATEGORY_ID");
-Import("WOW_SUBSCRIPTION_CATEGORY_ID");
-Import("WOW_CLASSIC_CHARACTER_CLONE_CATEGORY_ID");
 
 --Data
 local NUM_STORE_PRODUCT_CARDS = 8;
@@ -747,7 +466,15 @@ function StoreFrame_UpdateCard(card, entryID, discountReset, forceModelUpdate)
 		StoreProductCard_HideModel(card);
 	end
 
-	if tryToShowTexture and card.Icon and (entryInfo.sharedData.texture or card ~= StoreFrame.SplashSingle) then
+	-- This is a hack to solve an issue with the Warpath Pack bundle. 
+	-- This should be fixed properly with a flag to hide the icon in a data driven manner
+	local shouldShowWarPathIcon = entryInfo.productID ~= 1121 or not card.isSplash;
+	if not shouldShowWarPathIcon then
+		-- Upgrade Arrow will continue to show if we don't do this separately
+		card.UpgradeArrow:Hide();
+	end
+
+	if tryToShowTexture and card.Icon and (entryInfo.sharedData.texture or card ~= StoreFrame.SplashSingle) and shouldShowWarPathIcon then
 		StoreProductCard_ShowIcon(card, entryInfo.sharedData);
 	else
 		StoreProductCard_HideIcon(card);
@@ -1282,9 +1009,7 @@ function StoreFrame_OnLoad(self)
 		self:SetScript("OnKeyDown",
 			function(self, key)
 				if ( key == "ESCAPE" ) then
-					if ( _G.ModelPreviewFrame:IsShown() ) then
-						_G.ModelPreviewFrame:Hide();
-					else
+					if not StoreOutbound.TryHideModelPreviewFrame() then
 						StoreFrame:SetAttribute("action", "EscapePressed");
 					end
 				end
@@ -1427,7 +1152,7 @@ function StoreFrame_OnEvent(self, event, ...)
 	elseif (event == "SUBSCRIPTION_CHANGED_KICK_IMMINENT") then
 		if not SimpleCheckout:IsShown() then
 			self:Hide();
-			_G.GlueDialog_Show("SUBSCRIPTION_CHANGED_KICK_WARNING");
+			GlueDialog_Show("SUBSCRIPTION_CHANGED_KICK_WARNING");
 		end
 	elseif (event == "LOGIN_STATE_CHANGED") then
 		if (IsOnGlueScreen()) then
@@ -1446,7 +1171,7 @@ function StoreFrame_OnShow(self)
 	WasVeteran = IsVeteranTrialAccount();
 	StoreFrame_UpdateActivePanel(self);
 	if ( not IsOnGlueScreen() ) then
-		Outbound.UpdateMicroButtons();
+		StoreOutbound.UpdateMicroButtons();
 	else
 		GlueParent_AddModalFrame(self);
 	end
@@ -1470,12 +1195,12 @@ end
 function StoreFrame_OnHide(self)
 	self:SetAttribute("isshown", false);
 	-- TODO: Fix so will only hide if Store showed the preview frame
-	Outbound.HidePreviewFrame();
+	StoreOutbound.HidePreviewFrame();
 	if ( not IsOnGlueScreen() ) then
-		Outbound.UpdateMicroButtons();
+		StoreOutbound.UpdateMicroButtons();
 	else
 		GlueParent_RemoveModalFrame(self);
-		GlueParent_UpdateDialogs();
+		StoreOutbound.UpdateDialogs();
 	end
 
 	if (VASReady) then
@@ -1502,11 +1227,11 @@ function StoreFrame_OnMouseWheel(self, value)
 end
 
 function StoreFrame_OnCharacterBoostDelivered(self)
-	if (IsOnGlueScreen() and BoostDeliveredUsageReason and not _G.CharacterSelect.undeleting) then
+	if (IsOnGlueScreen() and BoostDeliveredUsageReason and not StoreOutbound.IsCharacterSelectUndeleting()) then
 		self:Hide();
 
-		_G.CharacterUpgradePopup_OnCharacterBoostDelivered(BoostType, BoostDeliveredUsageGUID, BoostDeliveredUsageReason);
-	elseif (not IsOnGlueScreen() and StoreFrameHasBeenShown and not Outbound.IsExpansionTrialUpgradeDialogShowing()) then
+		CharacterUpgradePopup_OnCharacterBoostDelivered(BoostType, BoostDeliveredUsageGUID, BoostDeliveredUsageReason);
+	elseif (not IsOnGlueScreen() and StoreFrameHasBeenShown and not StoreOutbound.IsExpansionTrialUpgradeDialogShowing()) then
 		self:Hide();
 
 		local showReason = "forBoost";
@@ -1524,7 +1249,7 @@ end
 function StoreFrame_OnLegionDelivered(self)
 	self:Hide();
 	if (IsOnGlueScreen()) then
-		_G.GlueDialog_Show("LEGION_PURCHASE_READY");
+		GlueDialog_Show("LEGION_PURCHASE_READY");
 	else
 		ServicesLogoutPopup_SetShowReason(ServicesLogoutPopup, "forLegion");
 	end
@@ -1703,7 +1428,7 @@ function StoreFrame_OnAttributeChanged(self, name, value)
 				end
 			end
 
-			desc = "";
+			local desc = "";
 			if (hasOther) then
 				desc = BLIZZARD_STORE_VAS_ERROR_OTHER;
 			else
@@ -1972,12 +1697,12 @@ function StoreFrame_HasFreeBagSlots()
 end
 
 function StoreFrame_ShowPreview(name, modelID, modelSceneID)
-	Outbound.ShowPreview(name, modelID, modelSceneID);
+	StoreOutbound.ShowPreview(name, modelID, modelSceneID);
 	StoreProductCard_UpdateAllStates();
 end
 
 function StoreFrame_ShowPreviews(displayInfoEntries)
-	Outbound.ShowPreviews(displayInfoEntries);
+	StoreOutbound.ShowPreviews(displayInfoEntries);
 	StoreProductCard_UpdateAllStates();
 end
 
@@ -2345,7 +2070,7 @@ function StoreVASValidationFrame_SetVASStart(self)
 	end
 
 	VASServiceType = productInfo.sharedData.vasServiceType;
-	VASServiceCanChangeAccount = productInfo.sharedData.canChangeAccount and (productInfo.sharedData.canChangeBNetAccount or (#_G.C_Login.GetGameAccounts() > 1));
+	VASServiceCanChangeAccount = productInfo.sharedData.canChangeAccount and (productInfo.sharedData.canChangeBNetAccount or (#C_Login.GetGameAccounts() > 1));
 
 	SelectedCharacter = nil;
 	for list, _ in pairs(StoreDropdownLists) do
@@ -2356,7 +2081,7 @@ function StoreVASValidationFrame_SetVASStart(self)
 	self.CharacterSelectionFrame.ContinueButton:Show();
 	self.CharacterSelectionFrame.Spinner:Hide();
 	local realmList = C_StoreSecure.GetRealmList();
-	SelectedRealm = #realmList > 0 and realmList[1] or _G.GetServerName();
+	SelectedRealm = #realmList > 0 and realmList[1] or GetServerName();
 
 	SelectedDestinationRealm = nil;
 	SelectedDestinationWowAccount = nil;
@@ -2374,10 +2099,10 @@ function StoreVASValidationFrame_SetVASStart(self)
 	self.CharacterSelectionFrame.TransferRealmEditbox:Hide();
 	self.CharacterSelectionFrame.TransferRealmEditbox.TransferRealmAutoCompleteBox:Hide();
 	self.CharacterSelectionFrame.TransferAccountCheckbox:Hide();
-	self.CharacterSelectionFrame.TransferAccountDropDown:Hide();
+	self.CharacterSelectionFrame.TransferAccountDropdown:Hide();
 	self.CharacterSelectionFrame.TransferFactionCheckbox:Hide();
 	self.CharacterSelectionFrame.TransferBattlenetAccountEditbox:Hide();
-	self.CharacterSelectionFrame.TransferBnetWoWAccountDropDown:Hide();
+	self.CharacterSelectionFrame.TransferBnetWoWAccountDropdown:Hide();
 	self.CharacterSelectionFrame.ClassIcon:Hide();
 	self.CharacterSelectionFrame.SelectedCharacterFrame:Hide();
 	self.CharacterSelectionFrame.SelectedCharacterName:Hide();
@@ -2415,8 +2140,8 @@ function StoreVASValidationFrame_UpdateCharacterTransferValidationPosition()
 	local bottomWidget;
 	local xOffset = 8;
 	local yOffset = -24;
-	if (frame.TransferBnetWoWAccountDropDown:IsShown()) then
-		bottomWidget = frame.TransferBnetWoWAccountDropDown;
+	if (frame.TransferBnetWoWAccountDropdown:IsShown()) then
+		bottomWidget = frame.TransferBnetWoWAccountDropdown;
 		xOffset = 16;
 		yOffset = -16;
 	elseif (frame.TransferFactionCheckbox:IsShown()) then
@@ -2499,7 +2224,7 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 			JustFinishedOrdering = WaitingOnVASToComplete == WaitingOnVASToCompleteToken;
 			local fromVASPurchaseCompletion = true;
 			StoreFrame_UpdateActivePanel(StoreFrame, fromVASPurchaseCompletion);
-		elseif (IsOnGlueScreen() and _G.CharacterSelect:IsVisible()) then
+		elseif (IsOnGlueScreen() and StoreOutbound.IsCharacterSelectVisible()) then
 			StoreVASValidationFrame_OnVasProductComplete(StoreVASValidationFrame);
 		end
 	elseif ( event == "VAS_TRANSFER_VALIDATION_UPDATE" ) then
@@ -2512,8 +2237,8 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 
 		if (not error) then
 			IsVasBnetTransferValidated = true;
-			frame.TransferBnetWoWAccountDropDown:Show();
-			frame.TransferBnetWoWAccountDropDown.Text:SetText(BLIZZARD_STORE_VAS_SELECT_ACCOUNT);
+			frame.TransferBnetWoWAccountDropdown:Show();
+			frame.TransferBnetWoWAccountDropdown.Text:SetText(BLIZZARD_STORE_VAS_SELECT_ACCOUNT);
 			frame.ValidationDescription:Hide();
 		else
 			frame.ValidationDescription:ClearAllPoints();
@@ -2532,13 +2257,13 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 			queueTime = factionTransfer;
 		end
 		if (queueTime > Enum.VasQueueStatus.UnderAnHour) then
-				self.Disclaimer:SetTextColor("P",_G.RED_FONT_COLOR:GetRGB());
+				self.Disclaimer:SetTextColor("P", RED_FONT_COLOR:GetRGB());
 		else
 				self.Disclaimer:SetTextColor("P",0, 0, 0);
 		end
 		local currencyInfo = SecureCurrencyUtil.GetActiveCurrencyInfo();
 		local vasDisclaimerData = currencyInfo.vasDisclaimerData;
-		self.Disclaimer:SetText(HTML_START_CENTERED..string.format(vasDisclaimerData[VASServiceType].disclaimer, _G["VAS_QUEUE_"..VasQueueStatusToString[queueTime]])..HTML_END);
+		self.Disclaimer:SetText(HTML_START_CENTERED..string.format(vasDisclaimerData[VASServiceType].disclaimer, envTable["VAS_QUEUE_"..VasQueueStatusToString[queueTime]])..HTML_END);
 
 		-- More visible alert for Classic FCM.
 		if (VASServiceType == Enum.VasServiceType.CharacterTransfer) then
@@ -2550,7 +2275,7 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 				stringColor = "|cff000000";
 			end
 
-			local timeString = _G["VAS_QUEUE_"..VasQueueStatusToString[queueTime]];
+			local timeString = envTable["VAS_QUEUE_"..VasQueueStatusToString[queueTime]];
 			if (stringColor) then
 				timeString = stringColor .. timeString .. "|r";
 			end
@@ -2625,7 +2350,7 @@ function StoreVASValidationFrame_OnVasProductComplete(self)
 	local productInfo = C_StoreSecure.GetProductInfo(productID);
 	if (IsOnGlueScreen()) then
 		self:GetParent():Hide();
-		_G.StoreFrame_ShowGlueDialog(string.format(_G.BLIZZARD_STORE_VAS_PRODUCT_READY, productInfo.sharedData.name), guid, realmName, shouldHandle);
+		StoreOutbound.StoreFrameShowGlueDialog(string.format(BLIZZARD_STORE_VAS_PRODUCT_READY, productInfo.sharedData.name), guid, realmName, shouldHandle);
 	else
 		self:GetParent():Hide();
 
@@ -2652,10 +2377,10 @@ function StoreVASValidationState_Lock()
 	frame.TransferRealmCheckbox:Disable();
 	frame.TransferRealmEditbox:Disable();
 	frame.TransferAccountCheckbox:Disable();
-	frame.TransferAccountDropDown.Button:Disable();
+	frame.TransferAccountDropdown.Button:Disable();
 	frame.TransferFactionCheckbox:Disable();
 	frame.TransferBattlenetAccountEditbox:Disable();
-	frame.TransferBnetWoWAccountDropDown.Button:Disable();
+	frame.TransferBnetWoWAccountDropdown.Button:Disable();
 	frame.NewCharacterName:Disable();
 	frame.ContinueButton:Disable();
 end
@@ -2667,10 +2392,10 @@ function StoreVASValidationState_Unlock()
 	frame.TransferRealmCheckbox:Enable();
 	frame.TransferRealmEditbox:Enable();
 	frame.TransferAccountCheckbox:Enable();
-	frame.TransferAccountDropDown.Button:Enable();
+	frame.TransferAccountDropdown.Button:Enable();
 	frame.TransferFactionCheckbox:Enable();
 	frame.TransferBattlenetAccountEditbox:Enable();
-	frame.TransferBnetWoWAccountDropDown.Button:Enable();
+	frame.TransferBnetWoWAccountDropdown.Button:Enable();
 	frame.NewCharacterName:Enable();
 	frame.ContinueButton:Enable();
 end
@@ -2696,7 +2421,7 @@ function StoreProductCard_UpdateState(card)
 		local entryInfo = C_StoreSecure.GetEntryInfo(entryID);
 		local enableHighlight = card:GetID() ~= selectedEntryID and not isRotating and (entryInfo.sharedData.productDecorator ~= Enum.BattlepayProductDecorator.VasService or IsOnGlueScreen());
 		card.HighlightTexture:SetAlpha(enableHighlight and 1 or 0);
-		if (not card.Description and GetMouseFocus() == card) then
+		if (not card.Description and card:IsMouseMotionFocus()) then
 			if (isRotating) then
 				StoreTooltip:Hide()
 			else
@@ -2808,7 +2533,7 @@ end
 function StoreProductCard_CheckShowStorePreviewOnClick(self)
 	local showPreview;
 	if ( IsOnGlueScreen() ) then
-		showPreview = _G.IsControlKeyDown();
+		showPreview = IsControlKeyDown();
 	else
 		showPreview = IsModifiedClick("DRESSUP");
 	end
@@ -2929,7 +2654,7 @@ end
 
 function StoreSplashPairCard_OnLeave(self)
 	if self.Magnifier then
-		if GetMouseFocus() == self.Magnifier then
+		if self.Magnifier:IsMouseMotionFocus() then
 			return;
 		end
 	end
@@ -3207,7 +2932,7 @@ function StoreProductCardItem_OnEnter(self)
 	if entryInfo.sharedData.itemID and not tbl.IsOnGlueScreen() then
 		self.hasItemTooltip = true;
 		StoreTooltip:Hide();
-		Outbound.SetItemTooltip(entryInfo.sharedData.itemID, x, y, point);
+		StoreOutbound.SetItemTooltip(entryInfo.sharedData.itemID, x, y, point);
 	end
 end
 
@@ -3216,7 +2941,7 @@ function StoreProductCardItem_OnLeave(self)
 	StoreProductCard_UpdateState(self:GetParent());
 
 	if self.hasItemTooltip then
-		Outbound.ClearItemTooltip();
+		StoreOutbound.ClearItemTooltip();
 		self.hasItemTooltip = false;
 	end
 end
@@ -3367,11 +3092,11 @@ end
 local InfoTable = nil;
 local InfoCallback = nil;
 local InfoFrame = nil;
-local DropDownOffset = 0;
-local DropDownMaxButtons = 20;
+local DropdownOffset = 0;
+local DropdownMaxButtons = 20;
 
 -- Very simple dropdown.  infoTable contains infoEntries containing text and value, the callback is what is called when a button is clicked.
-function StoreDropDown_SetDropdown(frame, infoTable, callback)
+function StoreDropdown_SetDropdown(frame, infoTable, callback)
 	for list, _ in pairs(StoreDropdownLists) do
 		list:Hide();
 	end
@@ -3383,24 +3108,24 @@ function StoreDropDown_SetDropdown(frame, infoTable, callback)
 	InfoFrame = frame;
 	InfoCallback = callback;
 	InfoTable = infoTable;
-	DropDownOffset = 0;
+	DropdownOffset = 0;
 
-	StoreDropDownMenu_SetUpButtons();
+	StoreDropdownMenu_SetUpButtons();
 
 	frame.List:Show();
 end
 
-function StoreDropDownMenu_PreviousOnClick(self)
-	DropDownOffset = math.max(0, DropDownOffset - DropDownMaxButtons);
-	StoreDropDownMenu_SetUpButtons();
+function StoreDropdownMenu_PreviousOnClick(self)
+	DropdownOffset = math.max(0, DropdownOffset - DropdownMaxButtons);
+	StoreDropdownMenu_SetUpButtons();
 end
 
-function StoreDropDownMenu_NextOnClick(self)
-	DropDownOffset = math.min(DropDownOffset + DropDownMaxButtons, #InfoTable);
-	StoreDropDownMenu_SetUpButtons();
+function StoreDropdownMenu_NextOnClick(self)
+	DropdownOffset = math.min(DropdownOffset + DropdownMaxButtons, #InfoTable);
+	StoreDropdownMenu_SetUpButtons();
 end
 
-function StoreDropDownMenu_SetUpButtons()
+function StoreDropdownMenu_SetUpButtons()
 	local buttonHeight = 16;
 	local spacing = 0;
 	local verticalPadding = 32;
@@ -3408,12 +3133,12 @@ function StoreDropDownMenu_SetUpButtons()
 	local numButtons = 0;
 	local buttonOffset = 0;
 	local frame = InfoFrame;
-	local hasMore = DropDownOffset + DropDownMaxButtons < #InfoTable;
+	local hasMore = DropdownOffset + DropdownMaxButtons < #InfoTable;
 
-	if (DropDownOffset > 0) then
+	if (DropdownOffset > 0) then
 		local button = frame.List.Buttons[1];
 		button:SetText(BLIZZARD_STORE_VAS_PREVIOUS_ENTRIES);
-		button:SetScript("OnClick", StoreDropDownMenu_PreviousOnClick);
+		button:SetScript("OnClick", StoreDropdownMenu_PreviousOnClick);
 		button:SetWidth(frame.List:GetWidth() - horizontalPadding);
 		button:SetHeight(buttonHeight);
 		button:Show();
@@ -3423,9 +3148,9 @@ function StoreDropDownMenu_SetUpButtons()
 		numButtons = numButtons + 1;
 	end
 
-	for i = 1, DropDownMaxButtons do
+	for i = 1, DropdownMaxButtons do
 		local buttonIndex = i + buttonOffset;
-		local infoIndex = i + DropDownOffset;
+		local infoIndex = i + DropdownOffset;
 		local info = InfoTable[infoIndex];
 
 		if (not info) then
@@ -3434,8 +3159,8 @@ function StoreDropDownMenu_SetUpButtons()
 
 		local button;
 		if (not frame.List.Buttons[buttonIndex]) then
-			button = CreateForbiddenFrame("Button", nil, frame.List, "StoreDropDownMenuButtonTemplate");
-			StoreDropDownMenuMenuButton_OnLoad(button);
+			button = CreateForbiddenFrame("Button", nil, frame.List, "StoreDropdownMenuButtonTemplate");
+			StoreDropdownMenuMenuButton_OnLoad(button);
 			button:SetPoint("TOPLEFT", frame.List.Buttons[buttonIndex-1], "BOTTOMLEFT", 0, -spacing);
 		else
 			button = frame.List.Buttons[buttonIndex];
@@ -3444,7 +3169,7 @@ function StoreDropDownMenu_SetUpButtons()
 		button:SetText(info.text);
 		button:SetWidth(frame.List:GetWidth() - horizontalPadding);
 		button:SetHeight(buttonHeight);
-		button:SetScript("OnClick", StoreDropDownMenuMenuButton_OnClick);
+		button:SetScript("OnClick", StoreDropdownMenuMenuButton_OnClick);
 		button.index = infoIndex;
 
 		if (info.checked) then
@@ -3463,14 +3188,14 @@ function StoreDropDownMenu_SetUpButtons()
 		local buttonIndex = numButtons + 1;
 		local button;
 		if (not frame.List.Buttons[buttonIndex]) then
-			button = CreateForbiddenFrame("Button", nil, frame.List, "StoreDropDownMenuButtonTemplate", buttonIndex);
-			StoreDropDownMenuMenuButton_OnLoad(button);
+			button = CreateForbiddenFrame("Button", nil, frame.List, "StoreDropdownMenuButtonTemplate", buttonIndex);
+			StoreDropdownMenuMenuButton_OnLoad(button);
 			button:SetPoint("TOPLEFT", frame.List.Buttons[buttonIndex-1], "BOTTOMLEFT", 0, -spacing);
 		else
 			button = frame.List.Buttons[buttonIndex];
 		end
 		button:SetText(BLIZZARD_STORE_VAS_NEXT_ENTRIES);
-		button:SetScript("OnClick", StoreDropDownMenu_NextOnClick);
+		button:SetScript("OnClick", StoreDropdownMenu_NextOnClick);
 		button:SetWidth(frame.List:GetWidth() - horizontalPadding);
 		button:SetHeight(buttonHeight);
 		button:Show();
@@ -3488,24 +3213,24 @@ function StoreDropDownMenu_SetUpButtons()
 	end
 end
 
-function StoreDropDownMenu_OnHide(self)
+function StoreDropdownMenu_OnHide(self)
 	InfoTable = nil;
 	InfoFrame = nil;
 	InfoCallback = nil;
-	DropDownOffset = 0;
+	DropdownOffset = 0;
 end
 
-function StoreDropDownMenuMenuButton_OnLoad(self)
+function StoreDropdownMenuMenuButton_OnLoad(self)
 	self:SetFrameLevel(self:GetParent():GetFrameLevel()+2);
-	self:SetScript("OnClick", StoreDropDownMenuMenuButton_OnClick);
+	self:SetScript("OnClick", StoreDropdownMenuMenuButton_OnClick);
 end
 
-function StoreDropDownMenuMenuButton_OnClick(self, button)
+function StoreDropdownMenuMenuButton_OnClick(self, button)
 	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 	if (not InfoTable or not InfoCallback) then
 		-- This should not happen, it means our cache was cleared while the frame was opened.
 		-- We probably want a GMError here.
-		GMError("StoreDropDown cache was cleared while the frame was shown.");
+		GMError("StoreDropdown cache was cleared while the frame was shown.");
 		self:GetParent():Hide();
 		return;
 	end
@@ -3535,12 +3260,12 @@ function VASCharacterSelectionRealmSelector_Callback(value)
 	frame.TransferRealmEditbox:SetText("");
 	frame.TransferAccountCheckbox:Hide();
 	frame.TransferAccountCheckbox:SetChecked(false);
-	frame.TransferAccountDropDown:Hide();
+	frame.TransferAccountDropdown:Hide();
 	frame.TransferFactionCheckbox:Hide();
 	frame.TransferFactionCheckbox:SetChecked(false);
 	frame.TransferBattlenetAccountEditbox:Hide();
 	frame.TransferBattlenetAccountEditbox:SetText("");
-	frame.TransferBnetWoWAccountDropDown:Hide();
+	frame.TransferBnetWoWAccountDropdown:Hide();
 	frame.ValidationDescription:Hide();
 	frame.TransferStatus:Hide();
 	frame.TransferStatusEstimatedTime:Hide();
@@ -3560,23 +3285,23 @@ function VASCharacterSelectionChangeIconFrame_OnEnter(self)
 	for i = 1, #races do
 		local raceInfo = races[i];
 		if (raceInfo.isAlliedRace and not raceInfo.isHeritageArmorUnlocked) then
-			descStr = descStr .. string.format(_G.BLIZZARD_STORE_VAS_RACE_CHANGE_TOOLTIP_LINE_ALLIED_RACE, raceInfo.raceName);
+			descStr = descStr .. string.format(BLIZZARD_STORE_VAS_RACE_CHANGE_TOOLTIP_LINE_ALLIED_RACE, raceInfo.raceName);
 			seenAlliedRace = true;
 		else
-			descStr = descStr .. string.format(_G.BLIZZARD_STORE_VAS_RACE_CHANGE_TOOLTIP_LINE, raceInfo.raceName);
+			descStr = descStr .. string.format(BLIZZARD_STORE_VAS_RACE_CHANGE_TOOLTIP_LINE, raceInfo.raceName);
 		end
 		if (i ~= #races) then
 			descStr = descStr .. "|n";
 		end
 	end
 	if (seenAlliedRace) then
-		descStr = descStr .. "|n" .. _G.BLIZZARD_STORE_VAS_ALLIED_RACE_CHANGE_HERITAGE_WARNING;
+		descStr = descStr .. "|n" .. BLIZZARD_STORE_VAS_ALLIED_RACE_CHANGE_HERITAGE_WARNING;
 	end
 
 	StoreTooltip:ClearAllPoints();
 	StoreTooltip:SetPoint("BOTTOMLEFT", self, "TOP", 0, -4);
 	local title = "";
-	title = string.format(_G.BLIZZARD_STORE_VAS_RACE_CHANGE_TITLE, character.name);
+	title = string.format(BLIZZARD_STORE_VAS_RACE_CHANGE_TITLE, character.name);
 	StoreTooltip_Show(title, descStr);
 end
 
@@ -3595,7 +3320,7 @@ function VASCharacterSelectionChangeIconFrame_SetIcons(character, serviceType)
 	end
 
 	local fromIcon = frame.FromIcon;
-	fromIcon.Icon:SetAtlas(_G.GetRaceAtlas(string.lower(character.raceFileName), gender), false);
+	fromIcon.Icon:SetAtlas(GetRaceAtlas(string.lower(character.raceFileName), gender), false);
 	fromIcon.Icon:SetTexCoord(0.0625, 0.9375, 0.0625, 0.9375);
 	fromIcon:Show();
 
@@ -3621,7 +3346,7 @@ function VASCharacterSelectionChangeIconFrame_SetIcons(character, serviceType)
 	end
 	toIcon:Show();
 
-	frame.ViewRaces:SetText(_G.BLIZZARD_STORE_VAS_RACE_CHANGE_VIEW_AVAILABLE_RACES);
+	frame.ViewRaces:SetText(BLIZZARD_STORE_VAS_RACE_CHANGE_VIEW_AVAILABLE_RACES);
 
 	frame:Show();
 end
@@ -3685,10 +3410,10 @@ function VASCharacterSelectionCharacterSelector_Callback(value)
 		frame.TransferRealmEditbox:Hide();
 		frame.TransferBattlenetAccountEditbox:Hide();
 		frame.TransferBattlenetAccountEditbox:SetText("");
-		frame.TransferBnetWoWAccountDropDown:Hide();
+		frame.TransferBnetWoWAccountDropdown:Hide();
 		frame.TransferAccountCheckbox:SetChecked(false);
-		frame.TransferAccountDropDown.Text:SetText(BLIZZARD_STORE_VAS_SELECT_ACCOUNT);
-		frame.TransferAccountDropDown:Hide();
+		frame.TransferAccountDropdown.Text:SetText(BLIZZARD_STORE_VAS_SELECT_ACCOUNT);
+		frame.TransferAccountDropdown:Hide();
 		frame.TransferFactionCheckbox:SetChecked(false);
 		SelectedDestinationWowAccount = nil;
 		SelectedDestinationBnetWowAccount = nil;
@@ -3823,7 +3548,7 @@ function VASCharacterSelectionTransferRealmEditBoxAutoCompleteButton_OnClick(sel
 	local realmInfo = RealmInfoMap[self.info];
 
 	if (character and realmInfo and realmInfo.factionRestriction >= 0 and realmInfo.factionRestriction ~= character.faction) then
-		frame.TransferRealmCheckbox.Warning:SetTextColor(_G.RED_FONT_COLOR:GetRGB());
+		frame.TransferRealmCheckbox.Warning:SetTextColor(RED_FONT_COLOR:GetRGB());
 		frame.TransferRealmCheckbox.Warning:SetText(BLIZZARD_STORE_VAS_TRANSFER_INELIGIBLE_FACTION_WARNING);
 		frame.TransferRealmCheckbox.Warning:Show();
 	elseif (realmInfo and realmInfo.categoryID and realmInfo.category and
@@ -3877,13 +3602,13 @@ function VASCharacterSelectionTransferRealmEditBox_UpdateAutoComplete(self, text
 		button:SetScript("OnClick", VASCharacterSelectionTransferRealmEditBoxAutoCompleteButton_OnClick);
 		button.info = VAS_AUTO_COMPLETE_ENTRIES[entryIndex];
 		local rpPvpInfo = RealmInfoMap[VAS_AUTO_COMPLETE_ENTRIES[entryIndex]];
-		local tag = _G.VAS_PVE_PARENTHESES;
+		local tag = VAS_PVE_PARENTHESES;
 		if (rpPvpInfo.pvp and rpPvpInfo.rp) then
-			tag = _G.VAS_RPPVP_PARENTHESES;
+			tag = VAS_RPPVP_PARENTHESES;
 		elseif (rpPvpInfo.pvp) then
-			tag = _G.VAS_PVP_PARENTHESES;
+			tag = VAS_PVP_PARENTHESES;
 		elseif (rpPvpInfo.rp) then
-			tag = _G.VAS_RP_PARENTHESES;
+			tag = VAS_RP_PARENTHESES;
 		end
 		if (character and rpPvpInfo.factionRestriction >= 0 and rpPvpInfo.factionRestriction ~= character.faction) then
 			-- This source-destination pair doesn't allow our current faction. Gray it out.
@@ -4046,11 +3771,11 @@ function TransferAccountCheckbox_OnClick(self)
 		SelectedDestinationBnetWowAccount = nil;
 		self:GetParent().TransferBattlenetAccountEditbox:Hide();
 		self:GetParent().TransferBattlenetAccountEditbox:SetText("");
-		self:GetParent().TransferBnetWoWAccountDropDown:Hide();
-		self:GetParent().TransferAccountDropDown.Text:SetText(BLIZZARD_STORE_VAS_SELECT_ACCOUNT);
-		self:GetParent().TransferBnetWoWAccountDropDown.Text:SetText(BLIZZARD_STORE_VAS_SELECT_ACCOUNT);
+		self:GetParent().TransferBnetWoWAccountDropdown:Hide();
+		self:GetParent().TransferAccountDropdown.Text:SetText(BLIZZARD_STORE_VAS_SELECT_ACCOUNT);
+		self:GetParent().TransferBnetWoWAccountDropdown.Text:SetText(BLIZZARD_STORE_VAS_SELECT_ACCOUNT);
 	end
-	self:GetParent().TransferAccountDropDown:SetShown(self:GetChecked());
+	self:GetParent().TransferAccountDropdown:SetShown(self:GetChecked());
 	self:GetParent().TransferFactionCheckbox:SetShown(not self:GetChecked());
 	if (self:GetChecked()) then
 		self:GetParent().TransferFactionCheckbox:SetChecked(false);
@@ -4063,7 +3788,7 @@ function VASCharacterSelectionTransferBattlenetAccountEditbox_OnTextChanged(self
 	self.EmptyText:SetShown(not self:GetText() or self:GetText() == "");
 
 	IsVasBnetTransferValidated = false;
-	self:GetParent().TransferBnetWoWAccountDropDown:Hide();
+	self:GetParent().TransferBnetWoWAccountDropdown:Hide();
 
 	VASCharacterSelectionTransferGatherAndValidateData();
 end
@@ -4083,7 +3808,7 @@ function VASCharacterSelectionRealmSelector_OnClick(self)
 		infoTable[#infoTable+1] = {text=realms[i], value=realms[i], checked=(SelectedRealm == realms[i])};
 	end
 
-	StoreDropDown_SetDropdown(self:GetParent(), infoTable, VASCharacterSelectionRealmSelector_Callback);
+	StoreDropdown_SetDropdown(self:GetParent(), infoTable, VASCharacterSelectionRealmSelector_Callback);
 end
 
 function VASCharacterSelectionCharacterSelector_OnClick(self)
@@ -4111,7 +3836,7 @@ function VASCharacterSelectionCharacterSelector_OnClick(self)
 		infoTable[#infoTable+1] = {text=str, value=i, checked=(SelectedCharacter == i)};
 	end
 
-	StoreDropDown_SetDropdown(self:GetParent(), infoTable, VASCharacterSelectionCharacterSelector_Callback);
+	StoreDropdown_SetDropdown(self:GetParent(), infoTable, VASCharacterSelectionCharacterSelector_Callback);
 end
 
 local TIMEOUT_SECS = 60; -- How long to wait for a response from the account server
@@ -4163,11 +3888,11 @@ function VASCharacterSelectionContinueButton_OnClick(self)
 	if ( VASServiceType == Enum.VasServiceType.NameChange ) then
 		NewCharacterName = self:GetParent().NewCharacterName:GetText();
 
-		local valid, reason = _G.C_CharacterCreation.IsCharacterNameValid(NewCharacterName);
+		local valid, reason = C_CharacterCreation.IsCharacterNameValid(NewCharacterName);
 		if ( not valid) then
 			self:GetParent().ValidationDescription:SetFontObject("GameFontBlackSmall2");
 			self:GetParent().ValidationDescription:SetTextColor(1.0, 0.1, 0.1);
-			self:GetParent().ValidationDescription:SetText(_G[reason]);
+			self:GetParent().ValidationDescription:SetText(envTable[reason]);
 			self:GetParent().ValidationDescription:Show();
 			StoreVASValidationState_Unlock();
 			self:GetParent().ContinueButton:Disable();
@@ -4208,7 +3933,7 @@ function VASCharacterSelectionNewCharacterName_OnEnter(self)
 	StoreTooltip_Show("", VAS_NAME_CHANGE_TOOLTIP);
 end
 
-function VASCharacterSelectionTransferAccountDropDown_OnClick(self)
+function VASCharacterSelectionTransferAccountDropdown_OnClick(self)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
 	if (self:GetParent().List:IsShown()) then
@@ -4217,7 +3942,7 @@ function VASCharacterSelectionTransferAccountDropDown_OnClick(self)
 	end
 	local characters = C_StoreSecure.GetCharactersForRealm(SelectedRealm);
 	local character = characters[SelectedCharacter];
-	local gameAccounts = _G.C_Login.GetGameAccounts();
+	local gameAccounts = C_Login.GetGameAccounts();
 	local infoTable = {};
 	for i, gameAccount in ipairs(gameAccounts) do
 		if (C_StoreSecure.GetWoWAccountGUIDFromName(gameAccount, true) ~= character.wowAccount) then
@@ -4229,16 +3954,16 @@ function VASCharacterSelectionTransferAccountDropDown_OnClick(self)
 		infoTable[#infoTable+1] = {text=BLIZZARD_STORE_VAS_DIFFERENT_BNET, value=BLIZZARD_STORE_VAS_DIFFERENT_BNET, checked=(SelectedDestinationWowAccount == BLIZZARD_STORE_VAS_DIFFERENT_BNET)};
 	end
 
-	StoreDropDown_SetDropdown(self:GetParent(), infoTable, VASCharacterSelectionTransferAccountDropDown_Callback);
+	StoreDropdown_SetDropdown(self:GetParent(), infoTable, VASCharacterSelectionTransferAccountDropdown_Callback);
 end
 
-function VASCharacterSelectionTransferAccountDropDown_Callback(value)
+function VASCharacterSelectionTransferAccountDropdown_Callback(value)
 	local frame = StoreVASValidationFrame.CharacterSelectionFrame;
 	SelectedDestinationWowAccount = value;
-	frame.TransferAccountDropDown.Text:SetText(value);
+	frame.TransferAccountDropdown.Text:SetText(value);
 	frame.TransferBattlenetAccountEditbox:SetText("");
 	frame.TransferBattlenetAccountEditbox:SetShown(value == BLIZZARD_STORE_VAS_DIFFERENT_BNET);
-	frame.TransferBnetWoWAccountDropDown:Hide();
+	frame.TransferBnetWoWAccountDropdown:Hide();
 	VASCharacterSelectionTransferGatherAndValidateData();
 end
 
@@ -4255,7 +3980,7 @@ function StripWoWAccountLicenseInfo(gameAccount)
 	return gameAccount;
 end
 
-function VASCharacterSelectionTransferBnetWoWAccountDropDown_OnClick(self)
+function VASCharacterSelectionTransferBnetWoWAccountDropdown_OnClick(self)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
 	if (self:GetParent().List:IsShown()) then
@@ -4269,13 +3994,13 @@ function VASCharacterSelectionTransferBnetWoWAccountDropDown_OnClick(self)
 		infoTable[#infoTable+1] = {text=StripWoWAccountLicenseInfo(gameAccount), value=gameAccount, checked=(SelectedDestinationBnetWowAccount == gameAccount)};
 	end
 
-	StoreDropDown_SetDropdown(self:GetParent(), infoTable, VASCharacterSelectionTransferBnetWoWAccountDropDown_Callback);
+	StoreDropdown_SetDropdown(self:GetParent(), infoTable, VASCharacterSelectionTransferBnetWoWAccountDropdown_Callback);
 end
 
-function VASCharacterSelectionTransferBnetWoWAccountDropDown_Callback(value)
+function VASCharacterSelectionTransferBnetWoWAccountDropdown_Callback(value)
 	local frame = StoreVASValidationFrame.CharacterSelectionFrame;
 	SelectedDestinationBnetWowAccount = value;
-	frame.TransferBnetWoWAccountDropDown.Text:SetText(StripWoWAccountLicenseInfo(value));
+	frame.TransferBnetWoWAccountDropdown.Text:SetText(StripWoWAccountLicenseInfo(value));
 	VASCharacterSelectionTransferGatherAndValidateData();
 end
 
@@ -4409,7 +4134,7 @@ function ServicesLogoutPopupConfirmButton_OnClick(self)
 
 	if (showReason == "forClassTrialUnlock") then
 		doLogoutOnConfirm = false;
-		Outbound.ConfirmClassTrialApplyToken(BoostDeliveredUsageGUID, BoostType);
+		StoreOutbound.ConfirmClassTrialApplyToken(BoostDeliveredUsageGUID, BoostType);
 	elseif (showReason == "forBoost") then
 		C_CharacterServices.SetAutomaticBoost(BoostType);
 	elseif (showReason == "forVasService") then
@@ -4422,7 +4147,7 @@ function ServicesLogoutPopupConfirmButton_OnClick(self)
 
 	if doLogoutOnConfirm then
 		PlaySound(SOUNDKIT.IG_MAINMENU_LOGOUT);
-		Outbound.Logout();
+		StoreOutbound.Logout();
 	else
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	end

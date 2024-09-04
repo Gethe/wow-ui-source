@@ -16,7 +16,10 @@ SHINES_TO_ANIMATE = {};
 
 -- Macros
 MAX_ACCOUNT_MACROS = 120;
-MAX_CHARACTER_MACROS = 18;
+MAX_CHARACTER_MACROS = 30;
+
+CVarCallbackRegistry:SetCVarCachable("showCastableBuffs");
+CVarCallbackRegistry:SetCVarCachable("showDispelDebuffs");
 
 ITEM_QUALITY_COLORS = { };
 for i = 0, NUM_LE_ITEM_QUALITYS - 1 do
@@ -134,10 +137,6 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("AUCTION_HOUSE_CLOSED");
 	self:RegisterEvent("AUCTION_HOUSE_DISABLED");
 
-	-- Events for trainer UI handling
-	self:RegisterEvent("TRAINER_SHOW");
-	self:RegisterEvent("TRAINER_CLOSED");
-
 	-- Events for trade skill UI handling
 	self:RegisterEvent("TRADE_SKILL_SHOW");
 	self:RegisterEvent("TRADE_SKILL_CLOSE");
@@ -199,9 +198,6 @@ function UIParent_OnLoad(self)
 	-- Invite confirmations
 	self:RegisterEvent("GROUP_INVITE_CONFIRMATION");
 
-	-- Event(s) for PVP
-	self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
-
 	-- Events for Reporting SYSTEM
 	self:RegisterEvent("REPORT_PLAYER_RESULT");
 
@@ -232,9 +228,7 @@ end
 function UIParent_OnUpdate(self, elapsed)
 	FCF_OnUpdate(elapsed);
 	ButtonPulse_OnUpdate(elapsed);
-	UnitPopup_OnUpdate(elapsed);
 	AnimatedShine_OnUpdate(elapsed);
-	AutoCastShine_OnUpdate(nil, elapsed);
 	PVPTimerFrame_OnUpdate(nil, elapsed);
 	HelpOpenWebTicketButton_OnUpdate(HelpOpenWebTicketButton, elapsed);
 end
@@ -369,10 +363,6 @@ function Arena_LoadUI()
 	UIParentLoadAddOn("Blizzard_ArenaUI");
 end
 
-function Store_LoadUI()
-	UIParentLoadAddOn("Blizzard_StoreUI");
-end
-
 function APIDocumentation_LoadUI()
 	UIParentLoadAddOn("Blizzard_APIDocumentationGenerated");
 end
@@ -385,10 +375,6 @@ end
 
 function DeathRecap_LoadUI()
 	UIParentLoadAddOn("Blizzard_DeathRecap");
-end
-
-function Communities_LoadUI()
-	UIParentLoadAddOn("Blizzard_Communities");
 end
 
 function CollectionsJournal_LoadUI()
@@ -572,7 +558,6 @@ function ToggleEncounterJournal()
 end
 
 function ToggleCommunitiesFrame()
-	Communities_LoadUI();
 	ToggleFrame(CommunitiesFrame);
 end
 
@@ -627,8 +612,6 @@ function ToggleStoreUI()
 		return;
 	end
 
-	Store_LoadUI();
-
 	local wasShown = StoreFrame_IsShown();
 	if ( not wasShown ) then
 		--We weren't showing, now we are. We should hide all other panels.
@@ -641,8 +624,6 @@ function SetStoreUIShown(shown)
 	if (Kiosk.IsEnabled()) then
 		return;
 	end
-
-	Store_LoadUI();
 
 	local wasShown = StoreFrame_IsShown();
 	if ( not wasShown and shown ) then
@@ -663,22 +644,6 @@ function InspectUnit(unit)
 	InspectFrame_LoadUI();
 	if ( InspectFrame_Show ) then
 		InspectFrame_Show(unit);
-	end
-end
-
-local function PlayBattlefieldBanner(self)
-	-- battlefields
-	if ( not self.battlefieldBannerShown ) then
-		local bannerName, bannerDescription;
-
-		for i=1, GetMaxBattlefieldID() do
-			local status, _, _, _, _, _, _, _, _, _, _, _, asGroup, shortDescription = GetBattlefieldStatus(i);
-			if ( status and status == "active" ) then
-				bannerName = mapName;
-				bannerDescription = shortDescription;
-				break;
-			end
-		end
 	end
 end
 
@@ -952,8 +917,6 @@ function UIParent_OnEvent(self, event, ...)
 		else
 			GhostFrame:Hide();
 		end
-	elseif ( event == "UPDATE_BATTLEFIELD_STATUS" or event == "PVP_BRAWL_INFO_UPDATED" ) then
-		PlayBattlefieldBanner(self);
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
 		-- Hide/Show party member frames
 		RaidOptionsFrame_UpdatePartyFrames();
@@ -1179,18 +1142,6 @@ function UIParent_OnEvent(self, event, ...)
 		end
 	elseif ( event == "AUCTION_HOUSE_DISABLED" ) then
 		StaticPopup_Show("AUCTION_HOUSE_DISABLED");
-
-	-- Events for trainer UI handling
-	elseif ( event == "TRAINER_SHOW" ) then
-		ClassTrainerFrame_LoadUI();
-		if ( ClassTrainerFrame_Show ) then
-			ClassTrainerFrame_Show();
-		end
-	elseif ( event == "TRAINER_CLOSED" ) then
-		if ( ClassTrainerFrame_Hide ) then
-			ClassTrainerFrame_Hide();
-		end
-
 	-- Events for trade skill UI handling
 	elseif ( event == "TRADE_SKILL_SHOW" ) then
 		TradeSkillFrame_LoadUI();
@@ -1671,277 +1622,6 @@ function RecentTimeDate(year, month, day, hour)
 	return lastOnline;
 end
 
-
--- Frame fading and flashing --
-
-local frameFadeManager = CreateFrame("FRAME");
-
-local function UIFrameFadeContains(frame)
-	for i, fadeFrame in ipairs(FADEFRAMES) do
-		if ( fadeFrame == frame ) then
-			return true;
-		end
-	end
-
-	return false;
-end
-
--- Generic fade function
-function UIFrameFade(frame, fadeInfo)
-	if (not frame) then
-		return;
-	end
-	if ( not fadeInfo.mode ) then
-		fadeInfo.mode = "IN";
-	end
-	local alpha;
-	if ( fadeInfo.mode == "IN" ) then
-		if ( not fadeInfo.startAlpha ) then
-			fadeInfo.startAlpha = 0;
-		end
-		if ( not fadeInfo.endAlpha ) then
-			fadeInfo.endAlpha = 1.0;
-		end
-		alpha = 0;
-	elseif ( fadeInfo.mode == "OUT" ) then
-		if ( not fadeInfo.startAlpha ) then
-			fadeInfo.startAlpha = 1.0;
-		end
-		if ( not fadeInfo.endAlpha ) then
-			fadeInfo.endAlpha = 0;
-		end
-		alpha = 1.0;
-	end
-	frame:SetAlpha(fadeInfo.startAlpha);
-
-	frame.fadeInfo = fadeInfo;
-	frame:Show();
-
-	local index = 1;
-	-- secure so we don't spread taint to other frames in FADEFRAMES
-	if securecall(UIFrameFadeContains, frame) then
-		return;
-	end
-	tinsert(FADEFRAMES, frame);
-	frameFadeManager:SetScript("OnUpdate", UIFrameFade_OnUpdate);
-end
-
--- Convenience function to do a simple fade in
-function UIFrameFadeIn(frame, timeToFade, startAlpha, endAlpha)
-	local fadeInfo = {};
-	fadeInfo.mode = "IN";
-	fadeInfo.timeToFade = timeToFade;
-	fadeInfo.startAlpha = startAlpha;
-	fadeInfo.endAlpha = endAlpha;
-	UIFrameFade(frame, fadeInfo);
-end
-
--- Convenience function to do a simple fade out
-function UIFrameFadeOut(frame, timeToFade, startAlpha, endAlpha)
-	local fadeInfo = {};
-	fadeInfo.mode = "OUT";
-	fadeInfo.timeToFade = timeToFade;
-	fadeInfo.startAlpha = startAlpha;
-	fadeInfo.endAlpha = endAlpha;
-	UIFrameFade(frame, fadeInfo);
-end
-
-function UIFrameFadeRemoveFrame(frame)
-	tDeleteItem(FADEFRAMES, frame);
-end
-
--- Function that actually performs the alpha change
---[[
-Fading frame attribute listing
-============================================================
-frame.timeToFade  [Num]		Time it takes to fade the frame in or out
-frame.mode  ["IN", "OUT"]	Fade mode
-frame.finishedFunc [func()]	Function that is called when fading is finished
-frame.finishedArg1 [ANYTHING]	Argument to the finishedFunc
-frame.finishedArg2 [ANYTHING]	Argument to the finishedFunc
-frame.finishedArg3 [ANYTHING]	Argument to the finishedFunc
-frame.finishedArg4 [ANYTHING]	Argument to the finishedFunc
-frame.fadeHoldTime [Num]	Time to hold the faded state
- ]]
-
-function UIFrameFade_OnUpdate(self, elapsed)
-	local index = 1;
-	local frame, fadeInfo;
-	while FADEFRAMES[index] do
-		frame = FADEFRAMES[index];
-		fadeInfo = FADEFRAMES[index].fadeInfo;
-		-- Reset the timer if there isn't one, this is just an internal counter
-		if ( not fadeInfo.fadeTimer ) then
-			fadeInfo.fadeTimer = 0;
-		end
-		fadeInfo.fadeTimer = fadeInfo.fadeTimer + elapsed;
-
-		-- If the fadeTimer is less then the desired fade time then set the alpha otherwise hold the fade state, call the finished function, or just finish the fade
-		if ( fadeInfo.fadeTimer < fadeInfo.timeToFade ) then
-			if ( fadeInfo.mode == "IN" ) then
-				frame:SetAlpha((fadeInfo.fadeTimer / fadeInfo.timeToFade) * (fadeInfo.endAlpha - fadeInfo.startAlpha) + fadeInfo.startAlpha);
-			elseif ( fadeInfo.mode == "OUT" ) then
-				frame:SetAlpha(((fadeInfo.timeToFade - fadeInfo.fadeTimer) / fadeInfo.timeToFade) * (fadeInfo.startAlpha - fadeInfo.endAlpha)  + fadeInfo.endAlpha);
-			end
-		else
-			frame:SetAlpha(fadeInfo.endAlpha);
-			-- If there is a fadeHoldTime then wait until its passed to continue on
-			if ( fadeInfo.fadeHoldTime and fadeInfo.fadeHoldTime > 0  ) then
-				fadeInfo.fadeHoldTime = fadeInfo.fadeHoldTime - elapsed;
-			else
-				-- Complete the fade and call the finished function if there is one
-				UIFrameFadeRemoveFrame(frame);
-				if ( fadeInfo.finishedFunc ) then
-					fadeInfo.finishedFunc(fadeInfo.finishedArg1, fadeInfo.finishedArg2, fadeInfo.finishedArg3, fadeInfo.finishedArg4);
-					fadeInfo.finishedFunc = nil;
-				end
-			end
-		end
-
-		index = index + 1;
-	end
-
-	if ( #FADEFRAMES == 0 ) then
-		self:SetScript("OnUpdate", nil);
-	end
-end
-
-function UIFrameIsFading(frame)
-	for index, value in pairs(FADEFRAMES) do
-		if ( value == frame ) then
-			return 1;
-		end
-	end
-	return nil;
-end
-
-local frameFlashManager = CreateFrame("FRAME");
-
-local UIFrameFlashTimers = {};
-local UIFrameFlashTimerRefCount = {};
-
--- Function to start a frame flashing
-function UIFrameFlash(frame, fadeInTime, fadeOutTime, flashDuration, showWhenDone, flashInHoldTime, flashOutHoldTime, syncId)
-	if ( frame ) then
-		local index = 1;
-		-- If frame is already set to flash then return
-		while FLASHFRAMES[index] do
-			if ( FLASHFRAMES[index] == frame ) then
-				return;
-			end
-			index = index + 1;
-		end
-
-		if (syncId) then
-			frame.syncId = syncId;
-			if (UIFrameFlashTimers[syncId] == nil) then
-				UIFrameFlashTimers[syncId] = 0;
-				UIFrameFlashTimerRefCount[syncId] = 0;
-			end
-			UIFrameFlashTimerRefCount[syncId] = UIFrameFlashTimerRefCount[syncId]+1;
-		else
-			frame.syncId = nil;
-		end
-
-		-- Time it takes to fade in a flashing frame
-		frame.fadeInTime = fadeInTime;
-		-- Time it takes to fade out a flashing frame
-		frame.fadeOutTime = fadeOutTime;
-		-- How long to keep the frame flashing, -1 means forever
-		frame.flashDuration = flashDuration;
-		-- Show the flashing frame when the fadeOutTime has passed
-		frame.showWhenDone = showWhenDone;
-		-- Internal timer
-		frame.flashTimer = 0;
-		-- How long to hold the faded in state
-		frame.flashInHoldTime = flashInHoldTime;
-		-- How long to hold the faded out state
-		frame.flashOutHoldTime = flashOutHoldTime;
-
-		tinsert(FLASHFRAMES, frame);
-
-		frameFlashManager:SetScript("OnUpdate", UIFrameFlash_OnUpdate);
-	end
-end
-
--- Called every frame to update flashing frames
-function UIFrameFlash_OnUpdate(self, elapsed)
-	local frame;
-	local index = #FLASHFRAMES;
-
-	-- Update timers for all synced frames
-	for syncId, timer in pairs(UIFrameFlashTimers) do
-		UIFrameFlashTimers[syncId] = timer + elapsed;
-	end
-
-	while FLASHFRAMES[index] do
-		frame = FLASHFRAMES[index];
-		frame.flashTimer = frame.flashTimer + elapsed;
-
-		if ( (frame.flashTimer > frame.flashDuration) and frame.flashDuration ~= -1 ) then
-			UIFrameFlashStop(frame);
-		else
-			local flashTime = frame.flashTimer;
-			local alpha;
-
-			if (frame.syncId) then
-				flashTime = UIFrameFlashTimers[frame.syncId];
-			end
-
-			flashTime = flashTime%(frame.fadeInTime+frame.fadeOutTime+(frame.flashInHoldTime or 0)+(frame.flashOutHoldTime or 0));
-			if (flashTime < frame.fadeInTime) then
-				alpha = flashTime/frame.fadeInTime;
-			elseif (flashTime < frame.fadeInTime+(frame.flashInHoldTime or 0)) then
-				alpha = 1;
-			elseif (flashTime < frame.fadeInTime+(frame.flashInHoldTime or 0)+frame.fadeOutTime) then
-				alpha = 1 - ((flashTime - frame.fadeInTime - (frame.flashInHoldTime or 0))/frame.fadeOutTime);
-			else
-				alpha = 0;
-			end
-
-			frame:SetAlpha(alpha);
-			frame:Show();
-		end
-
-		-- Loop in reverse so that removing frames is safe
-		index = index - 1;
-	end
-
-	if ( #FLASHFRAMES == 0 ) then
-		self:SetScript("OnUpdate", nil);
-	end
-end
-
--- Function to see if a frame is already flashing
-function UIFrameIsFlashing(frame)
-	for index, value in pairs(FLASHFRAMES) do
-		if ( value == frame ) then
-			return 1;
-		end
-	end
-	return nil;
-end
-
--- Function to stop flashing
-function UIFrameFlashStop(frame)
-	tDeleteItem(FLASHFRAMES, frame);
-	frame:SetAlpha(1.0);
-	frame.flashTimer = nil;
-	if (frame.syncId) then
-		UIFrameFlashTimerRefCount[frame.syncId] = UIFrameFlashTimerRefCount[frame.syncId]-1;
-		if (UIFrameFlashTimerRefCount[frame.syncId] == 0) then
-			UIFrameFlashTimers[frame.syncId] = nil;
-			UIFrameFlashTimerRefCount[frame.syncId] = nil;
-		end
-		frame.syncId = nil;
-	end
-	if ( frame.showWhenDone ) then
-		frame:Show();
-	else
-		frame:Hide();
-	end
-end
-
 -- Functions to handle button pulsing (Highlight, Unhighlight)
 function SetButtonPulse(button, duration, pulseRate)
 	button.pulseDuration = pulseRate;
@@ -2135,6 +1815,10 @@ end
 
 -- Function that handles the escape key functions
 function ToggleGameMenu()
+	if Menu.GetManager():HandleESC() then
+		return;
+	end
+
 	if ( CanAutoSetGamePadCursorControl(true) and (not IsModifierKeyDown()) ) then
 		-- There are a few gameplay related cancel cases we want to handle before toggling cursor control on.
 		if ( SpellStopCasting() ) then
@@ -2158,14 +1842,8 @@ function ToggleGameMenu()
 		HideUIPanel(GameMenuFrame);
 	elseif ( HelpFrame:IsShown() ) then
 		ToggleHelpFrame();
-	elseif ( VideoOptionsFrame:IsShown() ) then
-		VideoOptionsFrameCancel:Click();
-	elseif ( AudioOptionsFrame:IsShown() ) then
-		AudioOptionsFrameCancel:Click();
 	elseif ( SocialBrowserFrame and SocialBrowserFrame:IsShown() ) then
 		SocialBrowserFrame:Hide();
-	elseif ( InterfaceOptionsFrame:IsShown() ) then
-		InterfaceOptionsFrameCancel:Click();
 	elseif ( SocialPostFrame and Social_IsShown() ) then
 		Social_SetShown(false);
 	elseif ( securecall("FCFDockOverflow_CloseLists") ) then
@@ -2441,7 +2119,7 @@ function RefreshBuffs(frame, unit, numBuffs, suffix, checkCVar)
 	local name, icon, count, debuffType, duration, expirationTime;
 
 	local filter;
-	if ( checkCVar and SHOW_CASTABLE_BUFFS == "1" and UnitCanAssist("player", unit) ) then
+	if ( checkCVar and CVarCallbackRegistry:GetCVarValueBool("showCastableBuffs") and UnitCanAssist("player", unit) ) then
 		filter = "RAID";
 	end
 
@@ -2485,7 +2163,7 @@ function RefreshDebuffs(frame, unit, numDebuffs, suffix, checkCVar)
 	local isEnemy = UnitCanAttack("player", unit);
 
 	local filter;
-	if ( checkCVar and SHOW_DISPELLABLE_DEBUFFS == "1" and UnitCanAssist("player", unit) ) then
+	if ( checkCVar and CVarCallbackRegistry:GetCVarValueBool("showDispelDebuffs") and UnitCanAssist("player", unit) ) then
 		filter = "RAID";
 	end
 	
@@ -2669,102 +2347,6 @@ function AnimatedShine_OnUpdate(elapsed)
 			shine2:SetPoint("CENTER", parent, "TOPRIGHT", 0, -(value.timer-speed*3)/speed*distance);
 			shine3:SetPoint("CENTER", parent, "TOPLEFT", (value.timer-speed*3)/speed*distance, 0);
 			shine4:SetPoint("CENTER", parent, "BOTTOMRIGHT", -(value.timer-speed*3)/speed*distance, 0);
-		end
-	end
-end
-
-
--- Autocast shine stuff --
-
-AUTOCAST_SHINE_R = .95;
-AUTOCAST_SHINE_G = .95;
-AUTOCAST_SHINE_B = .32;
-
-AUTOCAST_SHINE_SPEEDS = { 2, 4, 6, 8 };
-AUTOCAST_SHINE_TIMERS = { 0, 0, 0, 0 };
-
-local AUTOCAST_SHINES = {};
-
-
-function AutoCastShine_OnLoad(self)
-	self.sparkles = {};
-
-	local name = self:GetName();
-
-	for i = 1, 16 do
-		tinsert(self.sparkles, _G[name .. i]);
-	end
-end
-
-function AutoCastShine_AutoCastStart(button, r, g, b)
-	if ( AUTOCAST_SHINES[button] ) then
-		return;
-	end
-
-	AUTOCAST_SHINES[button] = true;
-
-	if ( not r ) then
-		r, g, b = AUTOCAST_SHINE_R, AUTOCAST_SHINE_G, AUTOCAST_SHINE_B;
-	end
-
-	for _, sparkle in next, button.sparkles do
-		sparkle:Show();
-		sparkle:SetVertexColor(r, g, b);
-	end
-end
-
-function AutoCastShine_AutoCastStop(button)
-	AUTOCAST_SHINES[button] = nil;
-
-	for _, sparkle in next, button.sparkles do
-		sparkle:Hide();
-	end
-end
-
-function AutoCastShine_OnUpdate(self, elapsed)
-	for i in next, AUTOCAST_SHINE_TIMERS do
-		AUTOCAST_SHINE_TIMERS[i] = AUTOCAST_SHINE_TIMERS[i] + elapsed;
-		if ( AUTOCAST_SHINE_TIMERS[i] > AUTOCAST_SHINE_SPEEDS[i]*4 ) then
-			AUTOCAST_SHINE_TIMERS[i] = 0;
-		end
-	end
-
-	for button in next, AUTOCAST_SHINES do
-		self = button;
-		local parent, distance = self, self:GetWidth();
-
-		-- This is local to this function to save a lookup. If you need to use it elsewhere, might wanna make it global and use a local reference.
-		local AUTOCAST_SHINE_SPACING = 6;
-
-		for i = 1, 4 do
-			local timer = AUTOCAST_SHINE_TIMERS[i];
-			local speed = AUTOCAST_SHINE_SPEEDS[i];
-
-			if ( timer <= speed ) then
-				local basePosition = timer/speed*distance;
-				self.sparkles[0+i]:SetPoint("CENTER", parent, "TOPLEFT", basePosition, 0);
-				self.sparkles[4+i]:SetPoint("CENTER", parent, "BOTTOMRIGHT", -basePosition, 0);
-				self.sparkles[8+i]:SetPoint("CENTER", parent, "TOPRIGHT", 0, -basePosition);
-				self.sparkles[12+i]:SetPoint("CENTER", parent, "BOTTOMLEFT", 0, basePosition);
-			elseif ( timer <= speed*2 ) then
-				local basePosition = (timer-speed)/speed*distance;
-				self.sparkles[0+i]:SetPoint("CENTER", parent, "TOPRIGHT", 0, -basePosition);
-				self.sparkles[4+i]:SetPoint("CENTER", parent, "BOTTOMLEFT", 0, basePosition);
-				self.sparkles[8+i]:SetPoint("CENTER", parent, "BOTTOMRIGHT", -basePosition, 0);
-				self.sparkles[12+i]:SetPoint("CENTER", parent, "TOPLEFT", basePosition, 0);
-			elseif ( timer <= speed*3 ) then
-				local basePosition = (timer-speed*2)/speed*distance;
-				self.sparkles[0+i]:SetPoint("CENTER", parent, "BOTTOMRIGHT", -basePosition, 0);
-				self.sparkles[4+i]:SetPoint("CENTER", parent, "TOPLEFT", basePosition, 0);
-				self.sparkles[8+i]:SetPoint("CENTER", parent, "BOTTOMLEFT", 0, basePosition);
-				self.sparkles[12+i]:SetPoint("CENTER", parent, "TOPRIGHT", 0, -basePosition);
-			else
-				local basePosition = (timer-speed*3)/speed*distance;
-				self.sparkles[0+i]:SetPoint("CENTER", parent, "BOTTOMLEFT", 0, basePosition);
-				self.sparkles[4+i]:SetPoint("CENTER", parent, "TOPRIGHT", 0, -basePosition);
-				self.sparkles[8+i]:SetPoint("CENTER", parent, "TOPLEFT", basePosition, 0);
-				self.sparkles[12+i]:SetPoint("CENTER", parent, "BOTTOMRIGHT", -basePosition, 0);
-			end
 		end
 	end
 end
@@ -3025,30 +2607,6 @@ function AbbreviateNumbers(value)
 	return tostring(value);
 end
 
-function GetTimeStringFromSeconds(timeAmount, hasMS, dropZeroHours)
-	local seconds, ms;
-	-- milliseconds
-	if ( hasMS ) then
-		seconds = floor(timeAmount / 1000);
-		ms = timeAmount - seconds * 1000;
-	else
-		seconds = timeAmount;
-	end
-
-	local hours = floor(seconds / 3600);
-	local minutes = floor((seconds / 60) - (hours * 60));
-	seconds = seconds - hours * 3600 - minutes * 60;
---	if ( hasMS ) then
---		return format(HOURS_MINUTES_SECONDS_MILLISECONDS, hours, minutes, seconds, ms);
---	else
-	if ( dropZeroHours and hours == 0 ) then
-		return format(MINUTES_SECONDS, minutes, seconds);
-	else
-		return format(HOURS_MINUTES_SECONDS, hours, minutes, seconds);
-	end
---	end
-end
-
 function IsInLFDBattlefield()
 	return false;
 end
@@ -3278,9 +2836,9 @@ end
 function SocialQueueUtil_GetRelationshipInfo(guid, missingNameFallback, clubId)
 	local hasFocus, characterName, client, realmName, realmID, faction, race, class, _, zoneName, level, gameText, broadcast, broadcastTime, online, bnetIDGameAccount, bnetIDAccount = BNGetGameAccountInfoByGUID(guid);
 	if ( characterName and bnetIDAccount ) then
-		local bnetIDAccount, accountName, battleTag, isBattleTag, characterName, bnetIDGameAccount, client, isOnline, lastOnline, isBnetAFK, isBnetDND, messageText, noteText, isRIDFriend, messageTime = BNGetFriendInfoByID(bnetIDAccount);
+		local bnetIDAccountFriend, accountName = BNGetFriendInfoByID(bnetIDAccount);
 		if ( accountName ) then
-			return accountName, FRIENDS_BNET_NAME_COLOR_CODE, "bnfriend", GetBNPlayerLink(accountName, accountName, bnetIDAccount, 0, 0, 0);
+			return accountName, FRIENDS_BNET_NAME_COLOR_CODE, "bnfriend", GetBNPlayerLink(accountName, accountName, bnetIDAccountFriend, 0, 0, 0);
 		end
 	end
 
@@ -3308,6 +2866,7 @@ function SocialQueueUtil_GetRelationshipInfo(guid, missingNameFallback, clubId)
 	return name, FRIENDS_WOW_NAME_COLOR_CODE, nil, playerLink;
 end
 
+local INTERFACE_ACTION_BLOCKED_SHOWN = false;
 function DisplayInterfaceActionBlockedMessage()
 	if ( not INTERFACE_ACTION_BLOCKED_SHOWN ) then
 		local info = ChatTypeInfo["SYSTEM"];

@@ -1,3 +1,45 @@
+CollectionsUtil = {};
+
+local COLLECTIONS_FILTER_LIST_PRIORITY_CACHE = {};
+
+function CollectionsUtil.GetSortedFilterIndexList(filterType, filterOrderPriorities)
+	if COLLECTIONS_FILTER_LIST_PRIORITY_CACHE[filterType] then
+		return COLLECTIONS_FILTER_LIST_PRIORITY_CACHE[filterType];
+	end
+
+	local sortedIndexList = {};
+	local function DynamicFilterListComparator(entryA, entryB)
+		local aPriority = entryA.sortPriority or 0;
+		local bPriority = entryB.sortPriority or 0;
+		if aPriority ~= bPriority then
+			return aPriority > bPriority;
+		end
+	
+		return entryA.index < entryB.index;
+	end
+
+	local numPriorities = 0;
+	for _,_ in pairs(filterOrderPriorities) do
+		numPriorities = numPriorities + 1;
+	end
+
+	local index = 1;
+	local i = 0;
+	while #sortedIndexList < numPriorities do
+		if filterOrderPriorities[i] then
+			tinsert(sortedIndexList, { index = index, sortPriority = filterOrderPriorities[i] });
+			index = index + 1;
+		end
+
+		i = i + 1;
+	end
+
+	table.sort(sortedIndexList, DynamicFilterListComparator);
+
+	COLLECTIONS_FILTER_LIST_PRIORITY_CACHE[filterType] = sortedIndexList;
+	return sortedIndexList;
+end
+
 CollectionWardrobeUtil = {};
 
 function CollectionWardrobeUtil.GetDefaultSourceIndex(sources, primarySourceID)
@@ -50,6 +92,10 @@ function CollectionWardrobeUtil.SortSources(sources, primaryVisualID, primarySou
 			return source1.isCollected;
 		end
 
+		if source1.isValidSourceForPlayer ~= source2.isValidSourceForPlayer then
+			return source1.isValidSourceForPlayer;
+		end
+
 		if primarySourceID then
 			local source1IsPrimary = (source1.sourceID == primarySourceID);
 			local source2IsPrimary = (source2.sourceID == primarySourceID);
@@ -74,6 +120,12 @@ end
 
 function CollectionWardrobeUtil.GetSortedAppearanceSources(visualID, category, transmogLocation)
 	local sources = C_TransmogCollection.GetAppearanceSources(visualID, category, transmogLocation);
+	return CollectionWardrobeUtil.SortSources(sources);
+end
+
+
+function CollectionWardrobeUtil.GetSortedAppearanceSourcesForClass(visualID, classID, category, transmogLocation)
+	local sources = C_TransmogCollection.GetValidAppearanceSourcesForClass(visualID, classID, category, transmogLocation);
 	return CollectionWardrobeUtil.SortSources(sources);
 end
 
@@ -185,9 +237,90 @@ function CollectionWardrobeUtil.SetAppearanceTooltip(tooltip, sources, primarySo
 	local sourceLocation, sourceDifficulties;
 
 	local appearanceCollected = sources[headerIndex].isCollected
+	if ( sources[headerIndex].sourceType == TRANSMOG_SOURCE_BOSS_DROP and not appearanceCollected ) then
+		local drops = C_TransmogCollection.GetAppearanceSourceDrops(headerSourceID);
+		if ( drops and #drops > 0 ) then
+			local showDifficulty = false;
+			if ( #drops == 1 ) then
+				sourceLocation = WARDROBE_TOOLTIP_ENCOUNTER_SOURCE:format(drops[1].encounter, drops[1].instance);
+				showDifficulty = true;
+			else
+				-- check if the drops are the same instance
+				local sameInstance = true;
+				local firstInstance = drops[1].instance;
+				for i = 2, #drops do
+					if ( drops[i].instance ~= firstInstance ) then
+						sameInstance = false;
+						break;
+					end
+				end
+				-- ok, if multiple instances check if it's the same tier if the drops have a single tier
+				local sameTier = true;
+				local firstTier = drops[1].tiers[1];
+				if ( not sameInstance and #drops[1].tiers == 1 ) then
+					for i = 2, #drops do
+						if ( #drops[i].tiers > 1 or drops[i].tiers[1] ~= firstTier ) then
+							sameTier = false;
+							break;
+						end
+					end
+				end
+				-- if same instance or tier, check if we have same difficulties and same instanceType
+				local sameDifficulty = false;
+				local sameInstanceType = false;
+				if ( sameInstance or sameTier ) then
+					sameDifficulty = true;
+					sameInstanceType = true;
+					for i = 2, #drops do
+						if ( drops[1].instanceType ~= drops[i].instanceType ) then
+							sameInstanceType = false;
+						end
+						if ( #drops[1].difficulties ~= #drops[i].difficulties ) then
+							sameDifficulty = false;
+						else
+							for j = 1, #drops[1].difficulties do
+								if ( drops[1].difficulties[j] ~= drops[i].difficulties[j] ) then
+									sameDifficulty = false;
+									break;
+								end
+							end
+						end
+					end
+				end
+				-- override sourceText if sameInstance or sameTier
+				if ( sameInstance ) then
+					sourceLocation = firstInstance;
+					showDifficulty = sameDifficulty;
+				elseif ( sameTier ) then
+					local location = firstTier;
+					if ( sameInstanceType ) then
+						if ( drops[1].instanceType == INSTANCE_TYPE_DUNGEON ) then
+							location = string.format(WARDROBE_TOOLTIP_DUNGEONS, location);
+						elseif ( drops[1].instanceType == INSTANCE_TYPE_RAID ) then
+							location = string.format(WARDROBE_TOOLTIP_RAIDS, location);
+						end
+					end
+					sourceLocation = location;
+				end
+			end
+
+			if ( showDifficulty ) then
+				local drop = drops[1];
+				if ( drop.difficulties[1] ) then
+					sourceDifficulties = table.concat(drop.difficulties, PLAYER_LIST_DELIMITER);
+				end
+			end
+		end
+	end
 
 	if warningString then
 		GameTooltip_AddNormalLine(tooltip, warningString);
+	end
+
+	local useError;
+	if showUseError and not CollectionWardrobeUtil.IsAppearanceUsable(sources[headerIndex], inLegionArtifactCategory) then
+		useError = sources[headerIndex].useError;
+		GameTooltip_AddErrorLine(tooltip, useError);
 	end
 
 	if ( not appearanceCollected ) then
@@ -201,7 +334,6 @@ function CollectionWardrobeUtil.SetAppearanceTooltip(tooltip, sources, primarySo
 		GameTooltip_AddColoredLine(tooltip, sourceText, sourceColor);
 	end
 
-	local useError;
 	if ( #sources > 1 and not appearanceCollected ) then
 		-- only add "Other items using this appearance" if we're continuing to the same visualID
 		if ( firstVisualID == sources[2].visualID ) then
@@ -216,13 +348,10 @@ function CollectionWardrobeUtil.SetAppearanceTooltip(tooltip, sources, primarySo
 				GameTooltip_AddHighlightLine(tooltip, WARDROBE_ALTERNATE_ITEMS);
 			end
 
-			local name, nameColor = CollectionWardrobeUtil.GetAppearanceNameTextAndColor(sources[i], inLegionArtifactCategory);
-			local sourceText, sourceColor = CollectionWardrobeUtil.GetAppearanceSourceTextAndColor(sources[i]);
+			name, nameColor = CollectionWardrobeUtil.GetAppearanceNameTextAndColor(sources[i], inLegionArtifactCategory);
+			sourceText, sourceColor = CollectionWardrobeUtil.GetAppearanceSourceTextAndColor(sources[i]);
 			if ( i == headerIndex ) then
 				name = WARDROBE_TOOLTIP_CYCLE_ARROW_ICON..name;
-				if showUseError and not CollectionWardrobeUtil.IsAppearanceUsable(sources[i], inLegionArtifactCategory) then
-					useError = sources[i].useError;
-				end
 			else
 				name = WARDROBE_TOOLTIP_CYCLE_SPACER_ICON..name;
 			end
@@ -242,22 +371,16 @@ function CollectionWardrobeUtil.SetAppearanceTooltip(tooltip, sources, primarySo
 			GameTooltip_AddBlankLineToTooltip(tooltip);
 			CollectionWardrobeUtil.AddTrackingTooltipLine(tooltip, sources[headerIndex].sourceID);
 		end
-		if showUseError and not CollectionWardrobeUtil.IsAppearanceUsable(sources[headerIndex], inLegionArtifactCategory) then
-			useError = sources[headerIndex].useError;
-		end
 	end
-
-	if ( appearanceCollected  ) then
-		if ( useError ) then
-			GameTooltip_AddErrorLine(tooltip, useError);
-		elseif ( not C_Transmog.IsAtTransmogNPC() ) then
+	
+	if ( appearanceCollected and not useError ) then
+		if ( not C_Transmog.IsAtTransmogNPC() ) then
 			GameTooltip_AddColoredLine(tooltip, WARDROBE_TOOLTIP_TRANSMOGRIFIER, GRAY_FONT_COLOR);
 		end
-		if ( not useError ) then
-			local holidayName = C_TransmogCollection.GetSourceRequiredHoliday(headerSourceID);
-			if ( holidayName ) then
-				GameTooltip_AddColoredLine(tooltip, TRANSMOG_APPEARANCE_USABLE_HOLIDAY:format(holidayName), LIGHTBLUE_FONT_COLOR);
-			end
+
+		local holidayName = C_TransmogCollection.GetSourceRequiredHoliday(headerSourceID);
+		if ( holidayName ) then
+			GameTooltip_AddColoredLine(tooltip, TRANSMOG_APPEARANCE_USABLE_HOLIDAY:format(holidayName), LIGHTBLUE_FONT_COLOR);
 		end
 	end
 
@@ -272,7 +395,9 @@ function CollectionWardrobeUtil.AddTrackingTooltipLine(tooltip, sourceID)
 		GameTooltip_AddColoredLine(tooltip, CONTENT_TRACKING_DISABLED_TOOLTIP_PROMPT, GRAY_FONT_COLOR);
 		return;
 	end
-	if ( C_ContentTracking.IsTrackable(Enum.ContentTrackingType.Appearance, sourceID) ) then
+
+	local hasData, canCollect = C_TransmogCollection.PlayerCanCollectSource(sourceID);
+	if ( canCollect and C_ContentTracking.IsTrackable(Enum.ContentTrackingType.Appearance, sourceID) ) then
 		if ( C_ContentTracking.IsTracking(Enum.ContentTrackingType.Appearance, sourceID) ) then
 			GameTooltip_AddColoredLine(tooltip, CreateAtlasMarkup("waypoint-mappin-minimap-untracked", 16, 16, -3, 0)..CONTENT_TRACKING_UNTRACK_TOOLTIP_PROMPT, GREEN_FONT_COLOR);
 		else
@@ -298,7 +423,7 @@ function CollectionWardrobeUtil.GetPreferredSourceID(initialSourceID, appearance
 			return initialSourceID, hasData, canCollect;
 		end
 		-- the initialSourceID is not collectable, try to find another one
-		local category, itemAppearanceID = C_TransmogCollection.GetAppearanceSourceInfo(initialSourceID);
+		local _category, itemAppearanceID = C_TransmogCollection.GetAppearanceSourceInfo(initialSourceID);
 		if itemAppearanceID then
 			local sourceIDs = C_TransmogCollection.GetAllAppearanceSources(itemAppearanceID);
 			for i, sourceID in pairs(sourceIDs) do
@@ -315,6 +440,8 @@ function CollectionWardrobeUtil.GetPreferredSourceID(initialSourceID, appearance
 			end
 		end
 		-- couldn't find a valid one for player
+		return initialSourceID, hasAllData, false;
+	elseif not appearanceInfo.isAnySourceValidForPlayer then
 		return initialSourceID, hasAllData, false;
 	else
 		-- if initialSourceID is known and the collection state matches, we're good
@@ -335,18 +462,7 @@ function CollectionWardrobeUtil.GetPreferredSourceID(initialSourceID, appearance
 	end
 end
 
--- This wraps C_TransmogCollection.PlayerCanCollectSource but calls C_TransmogCollection.GetAppearanceInfoBySource first
--- since that covers the majority of cases and doesn't need sparse
--- returns: hasData, canCollect
-function CollectionWardrobeUtil.PlayerCanCollectSource(sourceID)
-	local appearanceInfo = C_TransmogCollection.GetAppearanceInfoBySource(sourceID);
-	if appearanceInfo then
-		return true, true;
-	end
-	return C_TransmogCollection.PlayerCanCollectSource(sourceID);
-end
-
-function CollectionWardrobeUtil.GetVisibilityWarning(model, transmogLocation)
+function CollectionWardrobeUtil.GetSlotVisibilityWarning(model, transmogLocation)
 	if transmogLocation and model then
 		local slotID = transmogLocation.slotID;
 		if model:IsGeoReady() then
@@ -359,4 +475,16 @@ function CollectionWardrobeUtil.GetVisibilityWarning(model, transmogLocation)
 		end
 	end
 	return nil;
+end
+
+function CollectionWardrobeUtil.GetAppearanceVisibilityWarning(appearanceID)
+	if not C_TransmogCollection.CanAppearanceBeDisplayedOnPlayer(appearanceID) then
+		return TRANSMOG_SLOT_APPEARANCE_INVISIBLE;
+	end
+
+	return nil;
+end
+
+function CollectionWardrobeUtil.GetBestVisibilityWarning(model, transmogLocation, appearanceID)
+	return CollectionWardrobeUtil.GetAppearanceVisibilityWarning(appearanceID) or CollectionWardrobeUtil.GetSlotVisibilityWarning(model, transmogLocation);
 end

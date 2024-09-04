@@ -72,6 +72,7 @@ function SetCharacterRace(id)
 	local race, fileString = C_CharacterCreation.GetNameForRace(CharacterCreate.selectedRace);
 	CharacterCreateRaceLabel:SetText(race);
 	fileString = strupper(fileString);
+	local gender;
 	if ( C_CharacterCreation.GetSelectedSex() == Enum.UnitSex.Male ) then
 		gender = "MALE";
 	else
@@ -84,7 +85,7 @@ function SetCharacterRace(id)
 	-- Loop over all the ability strings we can find and concatenate them into a giant block.
 	local abilityIndex = 1;
 	local tempText = _G["ABILITY_INFO_"..fileString..abilityIndex];
-	abilityText = "";
+	local abilityText = "";
 	if (tempText) then
 		abilityText = tempText;
 		abilityIndex = abilityIndex + 1;

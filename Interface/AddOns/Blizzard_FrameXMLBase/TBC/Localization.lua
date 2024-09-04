@@ -1,3 +1,5 @@
+-- luacheck: ignore 111 (setting non-standard global variable)
+
 -- TODO: This is mostly wrong, need to redo the entire file because the originals have already been
 -- nuked...rebuild this from whatever is in the repo, don't even try to piece it together
 
@@ -56,7 +58,7 @@ local l10nTable = {
 
 	ptBR = {
 		localizeFrames = function()
-			UIDropDownMenu_SetWidth(FriendsFriendsFrameDropDown, 132);
+			FriendsFriendsFrameDropdown:SetWidth(132);
 		end,
 	},
 
@@ -67,7 +69,7 @@ local l10nTable = {
 		end,
 
 		localizeFrames = function()
-			UIDropDownMenu_SetWidth(FriendsFriendsFrameDropDown, 132);
+			FriendsFriendsFrameDropdown:SetWidth(132);
 		end
 	},
 
@@ -106,9 +108,6 @@ local l10nTable = {
 
 			MIN_CHARACTER_SEARCH = 1;
 
-			-- Interface Options
-			InterfaceOptionsSocialPanelProfanityFilter:Disable();
-
 			-- Quest Log
 			QuestLogQuestCount:SetPoint("TOPRIGHT", QuestLogCountTopRight, "BOTTOMLEFT", 1, 6); -- +0, +3
 			QuestLogDailyQuestCount:SetPoint("TOPRIGHT", QuestLogQuestCount, "BOTTOMRIGHT", 0, 1); -- +0, +3
@@ -141,8 +140,8 @@ local l10nTable = {
 			Advanced_UIScaleSliderHigh:SetText(LARGE);
 
 			-- Audio options
-			AudioOptionsSoundPanelSoundChannelsDropDownLabel:SetPoint("BOTTOM",  AudioOptionsSoundPanelSoundChannelsDropDown, "TOP", 0, 0);
-			AudioOptionsSoundPanelHardwareDropDownLabel:SetPoint("BOTTOM",  AudioOptionsSoundPanelHardwareDropDown, "TOP", 0, 1);
+			AudioOptionsSoundPanelSoundChannelsDropdownLabel:SetPoint("BOTTOM",  AudioOptionsSoundPanelSoundChannelsDropdown, "TOP", 0, 0);
+			AudioOptionsSoundPanelHardwareDropdownLabel:SetPoint("BOTTOM",  AudioOptionsSoundPanelHardwareDropdown, "TOP", 0, 1);
 
 			MIN_CHARACTER_SEARCH = 1;
 

@@ -30,21 +30,31 @@ function TexelSnappingVisualizerMixin:OnCreated()
 		titleLabel:SetPoint("TOP", 0, -8);
 	end
 
-	local dropdownFrame = CreateFrame("FRAME", nil, self, "UIDropDownMenuTemplate");
+	local dropdownFrame = FrameUtil.CreateFrame(nil, self, "WowStyle1DropdownTemplate");
 	do
-		dropdownFrame:SetPoint("TOPLEFT", 0, -40);
-
-		local function OpenDropdown(dropdownFrame, level, menuList)
-			self:OpenDropdown(dropdownFrame, level, menuList);
+		dropdownFrame:SetPoint("TOPLEFT", 20, -40);
+			
+		local function IsSelected(value)
+			return GetCVar("overridePixelGridSnapping") == value;
 		end
-		UIDropDownMenu_Initialize(dropdownFrame, OpenDropdown);
-		UIDropDownMenu_SetSelectedValue(dropdownFrame, GetCVar("overridePixelGridSnapping"));
+
+		local function SetSelected(value)
+			SetCVar("overridePixelGridSnapping", value); 
+		end
+
+		dropdownFrame:SetupMenu(function(dropdown, rootDescription)
+			rootDescription:SetTag("MENU_TEXEL_VIS");
+
+			rootDescription:CreateRadio("Default", IsSelected, SetSelected, "-1");
+			rootDescription:CreateRadio("Override On", IsSelected, SetSelected, "1");
+			rootDescription:CreateRadio("Override Off", IsSelected, SetSelected, "0");
+		end);
 	end
 
 	do
 		local dropdownLabel = self:CreateFontString(nil, "ARTWORK", "GameFontHighlight");
 		dropdownLabel:SetText("Vertex Pixel Snapping:");
-		dropdownLabel:SetPoint("BOTTOMLEFT", dropdownFrame, "TOPLEFT", 10, 3);
+		dropdownLabel:SetPoint("BOTTOMLEFT", dropdownFrame, "TOPLEFT", 0, 3);
 	end
 
 	do
@@ -98,26 +108,6 @@ function TexelSnappingVisualizerMixin:OnCreated()
 		local closeButton = CreateFrame("BUTTON", nil, self, "UIPanelCloseButton");
 		closeButton:SetPoint("TOPRIGHT", -5, -5);
 		closeButton:SetScript("OnClick", function() self:Hide() end);
-	end
-end
-
-local PIXEL_SNAPPING_OPTIONS = {
-	{ text = "Default", cvarValue = "-1" },
-	{ text = "Override On", cvarValue = "1" },
-	{ text = "Override Off", cvarValue = "0" },
-};
-
-function TexelSnappingVisualizerMixin:OpenDropdown(dropdownFrame, level, menuList)
-	for i, pixelSnappingOptions in ipairs(PIXEL_SNAPPING_OPTIONS) do
-		local info = UIDropDownMenu_CreateInfo();
-		info.text = pixelSnappingOptions.text;
-		info.checked = GetCVar("overridePixelGridSnapping") == pixelSnappingOptions.cvarValue;
-		info.func = function() 
-			SetCVar("overridePixelGridSnapping", pixelSnappingOptions.cvarValue); 
-			UIDropDownMenu_SetSelectedValue(dropdownFrame, pixelSnappingOptions.cvarValue); 
-		end;
-		info.value = pixelSnappingOptions.cvarValue;
-		UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
 	end
 end
 

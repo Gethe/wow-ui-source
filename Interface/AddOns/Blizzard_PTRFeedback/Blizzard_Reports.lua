@@ -127,7 +127,7 @@ function PTR_IssueReporter.CreateReports()
     
     ----------------------------------- Currency Reporting ---------------------------------------------
     local GetIconFromCurrencyID = function(value)
-        return select(3, GetCurrencyInfo(value))
+		return C_CurrencyInfo.GetCurrencyInfo(value).iconFileID;
     end
     
     local currencyReport = PTR_IssueReporter.CreateSurvey(classicReportOffset + 8, "Bug Report: %s")

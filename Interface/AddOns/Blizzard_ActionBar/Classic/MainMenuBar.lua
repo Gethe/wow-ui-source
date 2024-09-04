@@ -158,10 +158,8 @@ function MainMenuBar_UpdateExperienceBars(newLevel)
 
 		local isCapped;
 		-- do something different for friendships
-		local level;
 		if ( ReputationWatchBar.friendshipID ) then
 			local friendID, friendRep, friendMaxRep, friendName, friendText, friendTexture, friendTextLevel, friendThreshold, nextFriendThreshold = GetFriendshipReputation(factionID);
-			level = GetFriendshipReputationRanks(factionID);
 			if ( nextFriendThreshold ) then
 				min, max, value = friendThreshold, nextFriendThreshold, friendRep;
 			else
@@ -170,8 +168,6 @@ function MainMenuBar_UpdateExperienceBars(newLevel)
 				isCapped = true;
 			end
 			colorIndex = 5;		-- always color friendships green
-		else
-			level = reaction;
 		end
 
 		-- See if it was already shown or not
@@ -504,7 +500,6 @@ local ipTypes = { "IPv4", "IPv6" }
 
 function MainMenuBarPerformanceBarFrame_OnEnter(self)
 	local string = "";
-	local i, j, k = 0, 0, 0;
 
 	GameTooltip_SetDefaultAnchor(GameTooltip, self);
 	

@@ -106,6 +106,20 @@ local QuestLog =
 			},
 		},
 		{
+			Name = "IsQuestFromContentPush",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isFromContentPush", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetMapForQuestPOIs",
 			Type = "Function",
 
@@ -248,22 +262,23 @@ local QuestLog =
 		{
 			Name = "QuestFrequency",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 3,
 			Fields =
 			{
 				{ Name = "Default", Type = "QuestFrequency", EnumValue = 0 },
 				{ Name = "Daily", Type = "QuestFrequency", EnumValue = 1 },
 				{ Name = "Weekly", Type = "QuestFrequency", EnumValue = 2 },
+				{ Name = "ResetByScheduler", Type = "QuestFrequency", EnumValue = 3 },
 			},
 		},
 		{
 			Name = "QuestTag",
 			Type = "Enumeration",
-			NumValues = 10,
+			NumValues = 11,
 			MinValue = 1,
-			MaxValue = 102,
+			MaxValue = 288,
 			Fields =
 			{
 				{ Name = "Group", Type = "QuestTag", EnumValue = 1 },
@@ -276,6 +291,7 @@ local QuestLog =
 				{ Name = "Raid25", Type = "QuestTag", EnumValue = 89 },
 				{ Name = "Scenario", Type = "QuestTag", EnumValue = 98 },
 				{ Name = "Account", Type = "QuestTag", EnumValue = 102 },
+				{ Name = "Delve", Type = "QuestTag", EnumValue = 288 },
 			},
 		},
 		{

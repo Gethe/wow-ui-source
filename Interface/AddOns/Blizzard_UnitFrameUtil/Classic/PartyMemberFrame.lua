@@ -4,6 +4,9 @@ MAX_PARTY_DEBUFFS = 4;
 MAX_PARTY_TOOLTIP_BUFFS = 16;
 MAX_PARTY_TOOLTIP_DEBUFFS = 8;
 
+CVarCallbackRegistry:SetCVarCachable("showPartyPets");
+CVarCallbackRegistry:SetCVarCachable("showPartyBackground");
+
 function HidePartyFrame()
 	for i=1, MAX_PARTY_MEMBERS, 1 do
 		_G["PartyMemberFrame"..i]:Hide();
@@ -102,8 +105,6 @@ function PartyMemberFrame_OnLoad (self)
 	self:RegisterEvent("UPDATE_ACTIVE_BATTLEFIELD");
 	self:RegisterEvent("PARTY_LEADER_CHANGED");
 	self:RegisterEvent("PARTY_LOOT_METHOD_CHANGED");
-	self:RegisterEvent("MUTELIST_UPDATE");
-	self:RegisterEvent("IGNORELIST_UPDATE");
 	self:RegisterEvent("UNIT_FACTION");
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("READY_CHECK");
@@ -115,13 +116,18 @@ function PartyMemberFrame_OnLoad (self)
 	self:RegisterEvent("UNIT_PHASE");
 	self:RegisterEvent("UNIT_FLAGS");
 	self:RegisterEvent("UNIT_OTHER_PARTY_CHANGED");
-	local id = self:GetID();
 	self:RegisterUnitEvent("UNIT_AURA", self.unitToken, self.petUnitToken);
 	self:RegisterUnitEvent("UNIT_PET",  self.unitToken, self.petUnitToken);
-	local showmenu = function()
-		ToggleDropDownMenu(1, nil, _G["PartyMemberFrame"..self:GetID().."DropDown"], self:GetName(), 47, 15);
+	
+	local function OpenContextMenu(frame, unit, button, isKeyPress)
+		local contextData =
+		{
+			unit = unit,
+		};
+		UnitPopup_OpenMenu("PARTY", contextData);
 	end
-	SecureUnitButton_OnLoad(self, self.unitToken, showmenu);
+
+	SecureUnitButton_OnLoad(self, self.unitToken, OpenContextMenu);
 
 	PartyMemberFrame_UpdateArt(self);
 
@@ -176,7 +182,6 @@ function PartyMemberFrame_UpdateMember (self)
 	PartyMemberFrame_UpdatePet(self);
 	PartyMemberFrame_UpdatePvPStatus(self);
 	RefreshDebuffs(self, "party"..id, nil, nil, true);
-	PartyMemberFrame_UpdateVoiceStatus(self);
 	PartyMemberFrame_UpdateReadyCheck(self);
 	PartyMemberFrame_UpdateOnlineStatus(self);
 	PartyMemberFrame_UpdateNotPresentIcon(self);
@@ -191,7 +196,7 @@ function PartyMemberFrame_UpdatePet (self, id)
 	local frameName = "PartyMemberFrame"..id;
 	local petFrame = _G["PartyMemberFrame"..id.."PetFrame"];
 
-	if ( UnitIsConnected("party"..id) and UnitExists("partypet"..id) and SHOW_PARTY_PETS == "1" ) then
+	if ( UnitIsConnected("party"..id) and UnitExists("partypet"..id) and CVarCallbackRegistry:GetCVarValueBool("showPartyPets") ) then
 		petFrame:Show();
 		petFrame:SetPoint("TOPLEFT", frameName, "TOPLEFT", 23, -43);
 	else
@@ -260,25 +265,6 @@ function PartyMemberFrame_UpdatePvPStatus (self)
 		icon:Show();
 	else
 		icon:Hide();
-	end
-end
-
-function PartyMemberFrame_UpdateVoiceStatus (self)
-	local id = self:GetID();
-	if ( not UnitName("party"..id) ) then
-		--No need to update if the frame doesn't have a unit.
-		return;
-	end
-
-	local mode;
-	local inInstance, instanceType = IsInInstance();
-
-	if ( (instanceType == "pvp") or (instanceType == "arena") ) then
-		mode = "Battleground";
-	elseif ( IsInRaid() ) then
-		mode = "raid";
-	else
-		mode = "party";
 	end
 end
 
@@ -351,8 +337,6 @@ function PartyMemberFrame_OnEvent(self, event, ...)
 		return;
 	elseif ( event == "PARTY_LEADER_CHANGED" ) then
 		PartyMemberFrame_UpdateLeader(self);
-	elseif ( event == "MUTELIST_UPDATE" or event == "IGNORELIST_UPDATE" ) then
-		PartyMemberFrame_UpdateVoiceStatus(self);
 	elseif ( event == "UNIT_FACTION" ) then
 		if ( arg1 == unit ) then
 			PartyMemberFrame_UpdatePvPStatus(self);
@@ -522,22 +506,12 @@ function PartyMemberHealthCheck (self, value)
 	end
 end
 
-function PartyFrameDropDown_OnLoad (self)
-	UIDropDownMenu_SetInitializeFunction(self, PartyFrameDropDown_Initialize);
-	UIDropDownMenu_SetDisplayMode(self, "MENU");
-end
-
-function PartyFrameDropDown_Initialize (self)
-	local dropdown = UIDROPDOWNMENU_OPEN_MENU or self;
-	UnitPopup_ShowMenu(dropdown, "PARTY", "party"..dropdown:GetParent():GetID());
-end
-
 function UpdatePartyMemberBackground ()
 	if ( not PartyMemberBackground ) then
 		return;
 	end
 	local numMembers = GetNumSubgroupMembers();
-	if ( numMembers > 0 and SHOW_PARTY_BACKGROUND == "1" and GetDisplayedAllyFrames() == "party" ) then
+	if ( numMembers > 0 and CVarCallbackRegistry:GetCVarValueBool("showPartyBackground") and GetDisplayedAllyFrames() == "party" ) then
 		if ( _G["PartyMemberFrame"..numMembers.."PetFrame"]:IsShown() ) then
 			PartyMemberBackground:SetPoint("BOTTOMLEFT", "PartyMemberFrame"..numMembers, "BOTTOMLEFT", -5, -21);
 		else

@@ -152,13 +152,11 @@ function MiniMapLFGFrame_OnLoad(self)
 	self:RegisterEvent("LFG_QUEUE_STATUS_UPDATE");
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	self:SetFrameLevel(self:GetFrameLevel()+1)
-
-	UIDropDownMenu_Initialize(self.DropDown, QueueStatusDropDown_Update, "MENU");
 end
 
 function MiniMapLFGFrame_OnClick(self, button)
 	if ( button == "RightButton" ) then
-		QueueStatusDropDown_Show(self.DropDown, self:GetName());
+		QueueStatusDropdown_Show(self);
 	else
 		local inBattlefield, showScoreboard = QueueStatus_InActiveBattlefield();
 		if ( IsInLFDBattlefield() ) then
@@ -249,7 +247,7 @@ function EyeTemplate_StopAnimating(eye)
 	eye.Texture:SetTexCoord(0, textureInfo.iconSize / textureInfo.width, 0, textureInfo.iconSize / textureInfo.height);
 end
 
-function MinimapButton_OnMouseDown(self, button)
+function MinimapButton_OnMouseDown(self, mouseButton)
 	if ( self.isDown ) then
 		return;
 	end
@@ -311,116 +309,6 @@ function MinimapMailFrameUpdate()
 	GameTooltip:SetText(toolText);
 end
 
-function MiniMapTracking_Update()
-	UIDropDownMenu_RefreshAll(MiniMapTrackingDropDown);
-end
-
-function MiniMapTrackingDropDown_OnLoad(self)
-	UIDropDownMenu_Initialize(self, MiniMapTrackingDropDown_Initialize, "MENU");
-	self.noResize = true;
-end
-
-function MiniMapTracking_SetTracking (self, id, unused, on)
-	C_Minimap.SetTracking(id, on);
-	UIDropDownMenu_Refresh(MiniMapTrackingDropDown);
-end
-
-function MiniMapTrackingDropDownButton_IsActive(button)
-	local name, texture, active, category = C_Minimap.GetTrackingInfo(button.arg1);
-	return active;
-end
-
-function MiniMapTrackingDropDown_IsNoTrackingActive()
-	local name, texture, active, category;
-	local count = C_Minimap.GetNumTrackingTypes();
-	for id=1, count do
-		name, texture, active, category  = C_Minimap.GetTrackingInfo(id);
-		if (active) then
-			return false;
-		end
-	end
-	return true;
-end
-
-function MiniMapTrackingDropDown_Initialize(self, level)
-	local name, texture, active, category, nested, numTracking;
-	local count = C_Minimap.GetNumTrackingTypes();
-	local info;
-	local _, class = UnitClass("player");
-
-	if (level == 1) then
-		info = UIDropDownMenu_CreateInfo();
-		info.text=MINIMAP_TRACKING_NONE;
-		info.checked = MiniMapTrackingDropDown_IsNoTrackingActive;
-		info.func = C_Minimap.ClearAllTracking;
-		info.icon = nil;
-		info.arg1 = nil;
-		info.isNotRadio = true;
-		info.keepShownOnClick = true;
-		UIDropDownMenu_AddButton(info, level);
-
-		if (class == "HUNTER") then --only show hunter dropdown for hunters
-			numTracking = 0;
-			-- make sure there are at least two options in dropdown
-			for id=1, count do
-				name, texture, active, category, nested = C_Minimap.GetTrackingInfo(id);
-				if (nested == HUNTER_TRACKING and category == "spell") then
-					numTracking = numTracking + 1;
-				end
-			end
-			if (numTracking > 1) then
-				info.text = HUNTER_TRACKING_TEXT;
-				info.func =  nil;
-				info.notCheckable = true;
-				info.keepShownOnClick = false;
-				info.hasArrow = true;
-				info.value = HUNTER_TRACKING;
-				UIDropDownMenu_AddButton(info, level)
-			end
-		end
-
-		info.text = TOWNSFOLK_TRACKING_TEXT;
-		info.func =  nil;
-		info.notCheckable = true;
-		info.keepShownOnClick = false;
-		info.hasArrow = true;
-		info.value = TOWNSFOLK;
-		UIDropDownMenu_AddButton(info, level)
-	end
-
-	for id=1, count do
-		name, texture, active, category, nested = C_Minimap.GetTrackingInfo(id);
-		info = UIDropDownMenu_CreateInfo();
-		info.text = name;
-		info.checked = MiniMapTrackingDropDownButton_IsActive;
-		info.func = MiniMapTracking_SetTracking;
-		info.icon = texture;
-		info.arg1 = id;
-		info.isNotRadio = true;
-		info.keepShownOnClick = true;
-		if ( category == "spell" ) then
-			info.tCoordLeft = 0.0625;
-			info.tCoordRight = 0.9;
-			info.tCoordTop = 0.0625;
-			info.tCoordBottom = 0.9;
-		else
-			info.tCoordLeft = 0;
-			info.tCoordRight = 1;
-			info.tCoordTop = 0;
-			info.tCoordBottom = 1;
-		end
-		if (level == 1 and
-			(nested < 0 or -- this tracking shouldn't be nested
-			(nested == HUNTER_TRACKING and class ~= "HUNTER") or
-			(numTracking == 1 and category == "spell"))) then -- this is a hunter tracking ability, but you only have one
-			UIDropDownMenu_AddButton(info, level);
-		elseif (level == 2 and (nested == TOWNSFOLK or (nested == HUNTER_TRACKING and class == "HUNTER")) and nested == UIDROPDOWNMENU_MENU_VALUE) then
-			UIDropDownMenu_AddButton(info, level);
-		end
-	end
-
-end
-
 function MiniMapTrackingShineFadeIn()
 	-- Fade in the shine and then fade it out with the ComboPointShineFadeOut function
 	local fadeInfo = {};
@@ -435,75 +323,83 @@ function MiniMapTrackingShineFadeOut()
 end
 
 -- ============================================ BATTLEFIELDS ===============================================================================
-local wrappedFuncs = {};
-local function wrapFunc(func) --Lets us directly set .func = on dropdown entries.
-	if ( not wrappedFuncs[func] ) then
-		wrappedFuncs[func] = function(button, ...) func(...) end;
-	end
-	return wrappedFuncs[func];
+function MiniMapBattlefieldFrame_OnClick(self, button)
+	-- Hide tooltip
+	GameTooltip:Hide();
+	if ( button == "RightButton" ) then
+		MiniMapBattlefieldFrame_ShowContextMenu(self);
+	elseif ( self.status == "active") then
+		if ( IsShiftKeyDown() ) then
+			ToggleBattlefieldMap();
+		else
+			ToggleWorldStateScoreFrame();
+		end
+    end
 end
 
+function MiniMapBattlefieldFrame_ShowContextMenu(owner)
+	MenuUtil.CreateContextMenu(owner, function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_MINIMAP_BATTLEFIELD");
 
-function MiniMapBattlefieldDropDown_OnLoad(self)
-	UIDropDownMenu_Initialize(self, MiniMapBattlefieldDropDown_Initialize, "MENU");
-end
+		local numShown = 0;
 
-function MiniMapBattlefieldDropDown_Initialize()
-	local info;
-	local status, mapName, instanceID, asGroup;
-	local numQueued = 0;
-	for i=1, MAX_BATTLEFIELD_QUEUES do
-		status, mapName, instanceID,_,_,_,_,_,_,_,_,_,asGroup = GetBattlefieldStatus(i);
-		if ( status == "queued" or status == "confirm" ) then
-			numQueued = numQueued+1;
-			-- Add a spacer if there were dropdown items before this
-			if ( numQueued > 1 ) then
-				info = {};
-				info.text = "";
-				info.isTitle = 1;
-				info.notCheckable = 1;
-				UIDropDownMenu_AddButton(info);
+		for i=1, MAX_BATTLEFIELD_QUEUES do
+			local status, mapName, instanceID, levelRangeMin, levelRangeMax, teamSize, isRankedArena, _, _, _, _, _, asGroup = GetBattlefieldStatus(i);
+			if ( status ~= "none" ) then
+				numShown = numShown + 1;
+				if ( numShown > 1 ) then
+					rootDescription:CreateSpacer();
+				end
 			end
 
-			info = {};
-			info.text = mapName;
-			info.isTitle = 1;
-			info.notCheckable = 1;
-			UIDropDownMenu_AddButton(info);
-			if ( status == "queued" ) then
-				-- TODO: Fix me. :)
-				--[[info = {};
-				info.text = CHANGE_INSTANCE;
-				info.func = ShowBattlefieldList;
-				info.arg1 = i;
-				info.notCheckable = 1;
-				UIDropDownMenu_AddButton(info);]]
-				info = {};
-				info.text = LEAVE_QUEUE;
-				info.func = wrapFunc(AcceptBattlefieldPort);
-				info.arg1 = i;
-				info.arg2 = nil;
-				info.disabled = asGroup and not UnitIsGroupLeader("player");
-				info.notCheckable = 1;
-				UIDropDownMenu_AddButton(info);
-			elseif ( status == "confirm" ) then
-				info = {};
-				info.text = ENTER_BATTLE;
-				info.func = wrapFunc(AcceptBattlefieldPort);
-				info.arg1 = i;
-				info.arg2 = 1;
-				info.notCheckable = 1;
-				UIDropDownMenu_AddButton(info);
-				info = {};
-				info.text = LEAVE_QUEUE;
-				info.func = wrapFunc(AcceptBattlefieldPort);
-				info.arg1 = i;
-				info.arg2 = nil;
-				info.notCheckable = 1;
-				UIDropDownMenu_AddButton(info);
+			if ( status == "queued" or status == "confirm" ) then
+				local text;
+				if ( teamSize ~= 0 ) then
+					if ( isRankedArena ) then
+						text = ARENA_RATED_MATCH.." "..format(PVP_TEAMSIZE, teamSize, teamSize);
+					else
+						text = ARENA_CASUAL.." "..format(PVP_TEAMSIZE, teamSize, teamSize);
+					end
+				else
+					text = mapName;
+				end
+				rootDescription:CreateTitle(text);
+
+				if ( status == "queued" ) then
+					local button = rootDescription:CreateButton(LEAVE_QUEUE, function()
+						AcceptBattlefieldPort(i);
+					end);
+
+					if asGroup and not UnitIsGroupLeader("player") then
+						button:SetEnabled(false);
+					end
+				elseif ( status == "confirm" ) then
+					rootDescription:CreateButton(ENTER_BATTLE, function()
+						AcceptBattlefieldPort(i, 1);
+					end);
+
+					if ( teamSize == 0 ) then
+						rootDescription:CreateButton(LEAVE_QUEUE, function()
+							AcceptBattlefieldPort(i);
+						end);
+					end
+				end
+			elseif ( status == "active" ) then
+				local titleText;
+				if ( teamSize ~= 0 ) then
+					titleText = mapName.." "..format(PVP_TEAMSIZE, teamSize, teamSize);
+				else
+					titleText = mapName;
+				end
+				rootDescription:CreateTitle(titleText);
+
+				local text = IsActiveBattlefieldArena() and LEAVE_ARENA or LEAVE_BATTLEGROUND;
+				rootDescription:CreateButton(text, function()
+					LeaveBattlefield();
+				end);
 			end
 		end
-	end
+	end);
 end
 
 function BattlefieldFrame_UpdateStatus(tooltipOnly)
@@ -603,21 +499,5 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly)
 		if ( UnitFactionGroup("player") ) then
 			MiniMapBattlefieldIcon:SetTexture("Interface\\BattlefieldFrame\\Battleground-"..UnitFactionGroup("player"));
 		end
-	end
-end
-
--- ============================================ LookingForGroup ===============================================================================
-function MiniMapLFGDropDown_OnLoad(self)
-	UIDropDownMenu_Initialize(self, MiniMapLFGDropDown_Initialize, "MENU");
-end
-
-function MiniMapLFGDropDown_Initialize()
-	if (C_LFGList.HasActiveEntryInfo() and LFGListingUtil_CanEditListing()) then
-		local info = UIDropDownMenu_CreateInfo();
-		info.text = LFG_LIST_UNLIST;
-		info.func = wrapFunc(C_LFGList.RemoveListing);
-		info.disabled = not C_LFGList.HasActiveEntryInfo();
-		info.notCheckable = 1;
-		UIDropDownMenu_AddButton(info);
 	end
 end

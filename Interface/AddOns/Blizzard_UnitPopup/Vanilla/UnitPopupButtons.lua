@@ -1,80 +1,94 @@
 function UnitPopupLootThresholdButtonMixin:GetColor()
-	return { ITEM_QUALITY_COLORS[GetLootThreshold()].r, ITEM_QUALITY_COLORS[GetLootThreshold()].g, ITEM_QUALITY_COLORS[GetLootThreshold()].b }; 
+	local color = ITEM_QUALITY_COLORS[GetLootThreshold()];
+	return color.r, color.g, color.b;
 end
 
---------------------------- UnitPopup Button Overrides ------------------------------------------
-function UnitPopupRaidDifficulty1ButtonMixin:IsChecked()
-	local _, instanceType, instanceDifficultyID, _, _, _, isDynamicInstance = GetInstanceInfo();
-	if ( isDynamicInstance ) then
+-- Overrides
+function UnitPopupRaidDifficulty1ButtonMixin:IsChecked(contextData)
+	local instanceDifficultyID, _, _, _, isDynamicInstance = select(3, GetInstanceInfo());
+	if isDynamicInstance then
 		local difficulty = self:GetDifficultyID();
-		if ( IsLegacyDifficulty(instanceDifficultyID) ) then
-			if ((instanceDifficultyID == DIFFICULTY_RAID10_NORMAL or instanceDifficultyID == DIFFICULTY_RAID25_NORMAL) and difficulty == DIFFICULTY_PRIMARYRAID_NORMAL) then
-				return true;
-			elseif ((instanceDifficultyID == DIFFICULTY_RAID10_HEROIC or instanceDifficultyID == DIFFICULTY_RAID25_HEROIC) and difficulty == DIFFICULTY_PRIMARYRAID_HEROIC) then
+		if IsLegacyDifficulty(instanceDifficultyID) then
+			local validNormalSize = instanceDifficultyID == DIFFICULTY_RAID10_NORMAL or instanceDifficultyID == DIFFICULTY_RAID25_NORMAL;
+			if validNormalSize and difficulty == DIFFICULTY_PRIMARYRAID_NORMAL then
 				return true;
 			end
-		elseif ( instanceDifficultyID == difficulty ) then
+			
+			local validHeroicSize = difficultyID == DIFFICULTY_RAID10_HEROIC or difficultyID == DIFFICULTY_RAID25_HEROIC;
+			if validHeroicSize and difficulty == DIFFICULTY_PRIMARYRAID_HEROIC then
+				return true;
+			end
+		elseif instanceDifficultyID == difficulty then
 			return true;
 		end
-	else
-		if ( difficulty == self:GetDifficultyID() ) then
+		
+		if difficulty == self:GetDifficultyID() then
 			return true;
-		end
+		end	
 	end
+	
 	return false; 
 end
 
-function UnitPopupRaidDifficultyButtonMixin:CanShow()
+function UnitPopupRaidDifficultyButtonMixin:CanShow(contextData)
 	return false;
 end
 
-function UnitPopupInviteButtonMixin:CanShow()
-	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu()
-	if ( UnitPopupSharedUtil.GetIsLocalPlayer(dropdownMenu) or UnitPopupSharedUtil.IsPlayerOffline(dropdownMenu) ) then
+function UnitPopupInviteButtonMixin:CanShow(contextData)
+	if UnitPopupSharedUtil.GetIsLocalPlayer(contextData) then
 		return false;
-	elseif ( dropdownMenu.unit ) then
-		if ( not UnitPopupSharedUtil.CanCooperate(dropdownMenu) or UnitIsUnit("player", dropdownMenu.unit) ) then
+	end
+	
+	if UnitPopupSharedUtil.IsPlayerOffline(contextData)then
+		return false;
+	end
+
+	local unit = contextData.unit;
+	if unit then
+		if not UnitPopupSharedUtil.CanCooperate(contextData) then
 			return false;
 		end
-	elseif ( (dropdownMenu == ChannelRosterDropDown) ) then
-		if ( UnitInRaid(dropdownMenu.name) ~= nil ) then
+		
+		if UnitIsUnit("player", unit) then
 			return false;
 		end
-	elseif ( dropdownMenu == FriendsDropDown and dropdownMenu.isMobile ) then
+	elseif contextData.fromRosterFrame then
+		if UnitInRaid(contextData.name) ~= nil then
+			return false;
+		end
+	elseif contextData.fromFriendFrame and contextData.isMobile then
 		return false;
-	elseif ( dropdownMenu == GuildMenuDropDown and dropdownMenu.isMobile ) then 
-		return false; 
 	else
-		if ( dropdownMenu.name == UnitName("party1") or
-				dropdownMenu.name == UnitName("party2") or
-				dropdownMenu.name == UnitName("party3") or
-				dropdownMenu.name == UnitName("party4") or
-				dropdownMenu.name == UnitName("player")) then
-			return false
+		local name = contextData.name;
+		if name == UnitName("party1") or
+			name == UnitName("party2") or
+			name == UnitName("party3") or
+			name == UnitName("party4") or
+			name == UnitName("player") then
+			return false;
 		end
 	end
 
-	local displayedInvite = GetDisplayedInviteType(UnitPopupSharedUtil.GetGUID());
-	if ( self:GetButtonName() ~= displayedInvite ) then
-		return false;
-	end
-	return true;
+	local displayedInvite = GetDisplayedInviteType(UnitPopupSharedUtil.GetGUID(contextData));
+	return self:GetInviteName() == displayedInvite;
+
 end
 
-function UnitPopupDungeonDifficultyButtonMixin:CanShow()
+function UnitPopupDungeonDifficultyButtonMixin:CanShow(contextData)
 	return false;
 end
 
-function UnitPopupAchievementButtonMixin:CanShow()
+function UnitPopupAchievementButtonMixin:CanShow(contextData)
 	return false; 
 end
 
-function UnitPopupSetFocusButtonMixin:CanShow()
+function UnitPopupSetFocusButtonMixin:CanShow(contextData)
 	return false; 
 end 
 
 UnitPopupDuelToTheDeathButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
-function UnitPopupDuelToTheDeathButtonMixin:GetText()
+
+function UnitPopupDuelToTheDeathButtonMixin:GetText(contextData)
 	return DUEL_TO_DEATH;
 end
 
@@ -86,23 +100,32 @@ function UnitPopupDuelToTheDeathButtonMixin:IsDisabledInKioskMode()
 	return false;
 end
 
-function UnitPopupDuelToTheDeathButtonMixin:CanShow()
-	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
-	if ((UnitCanAttack("player", dropdownMenu.unit) or not UnitPopupSharedUtil.IsPlayer()) or not C_GameRules.IsHardcoreActive()) then
+function UnitPopupDuelToTheDeathButtonMixin:CanShow(contextData)
+	if UnitCanAttack("player", contextData.unit) then
 		return false;
 	end
-	return true;
-end
 
-function UnitPopupDuelToTheDeathButtonMixin:OnClick()
-	local fullName = UnitPopupSharedUtil.GetFullPlayerName();
-	StaticPopup_Show("DUEL_TO_THE_DEATH_CHALLENGE_CONFIRM", fullName);
-end
-
-function UnitPopupDuelToTheDeathButtonMixin:IsEnabled()
-	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
-	if ( UnitIsDeadOrGhost("player") or (not HasFullControl()) or UnitIsDeadOrGhost(dropdownMenu.unit) ) then
+	if not UnitPopupSharedUtil.IsPlayer(contextData) then
 		return false;
 	end
-	return true;
+
+	return C_GameRules.IsHardcoreActive();
+end
+
+function UnitPopupDuelToTheDeathButtonMixin:OnClick(contextData)
+	local fullName = UnitPopupSharedUtil.GetFullPlayerName(contextData);
+	local text2 = nil;
+	StaticPopup_Show("DUEL_TO_THE_DEATH_CHALLENGE_CONFIRM", fullName, text2, contextData);
+end
+
+function UnitPopupDuelToTheDeathButtonMixin:IsEnabled(contextData)
+	if UnitIsDeadOrGhost("player") then
+		return false;
+	end
+
+	if not HasFullControl() then
+		return false;
+	end
+
+	return not UnitIsDeadOrGhost(contextData.unit);
 end

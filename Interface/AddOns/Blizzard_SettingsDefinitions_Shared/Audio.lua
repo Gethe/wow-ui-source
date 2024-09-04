@@ -236,17 +236,21 @@ local function InitVoiceSettings(category, layout)
 			end
 
 			local defaultValue = GetDefaultOutputDeviceID();
-			local setting = Settings.RegisterProxySetting(category, "PROXY_VOICE_OUTPUT_DEVICE", Settings.DefaultVarLocation,
+			local setting = Settings.RegisterProxySetting(category, "PROXY_VOICE_OUTPUT_DEVICE",
 				Settings.VarType.String, VOICE_CHAT_OUTPUT_DEVICE, defaultValue, GetActiveOutputDeviceID, C_VoiceChat.SetOutputDevice);
 
-			outputInitializer = Settings.CreateDropDown(category, setting, GetOptions, OPTION_TOOLTIP_VOICE_OUTPUT);
+			outputInitializer = Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_VOICE_OUTPUT);
 		end
-		
+
 		-- Volume
 		do
 			local defaultValue = tonumber(GetCVarDefault("VoiceOutputVolume"));
-			local setting = Settings.RegisterProxySetting(category, "PROXY_VOICE_OUTPUT_VOLUME", Settings.DefaultVarLocation,
-				Settings.VarType.Number, VOICE_CHAT_VOLUME, defaultValue, C_VoiceChat.GetOutputVolume, C_VoiceChat.SetOutputVolume);
+			local function GetValue()
+				return C_VoiceChat.GetOutputVolume() or defaultValue;
+			end
+
+			local setting = Settings.RegisterProxySetting(category, "PROXY_VOICE_OUTPUT_VOLUME",
+				Settings.VarType.Number, VOICE_CHAT_VOLUME, defaultValue, GetValue, C_VoiceChat.SetOutputVolume);
 
 			local minValue, maxValue, step = 0, VoiceMaxValue, 1;
 			local options = Settings.CreateSliderOptions(minValue, maxValue, step);
@@ -268,7 +272,7 @@ local function InitVoiceSettings(category, layout)
 			end
 		
 			local defaultValue = tonumber(GetCVarDefault("VoiceChatMasterVolumeScale"));
-			local setting = Settings.RegisterProxySetting(category, "PROXY_VOICE_DUCKING", Settings.DefaultVarLocation,
+			local setting = Settings.RegisterProxySetting(category, "PROXY_VOICE_DUCKING",
 				Settings.VarType.Number, VOICE_CHAT_DUCKING_SCALE, defaultValue, GetValue, SetValue);
 
 			local minValue, maxValue, step = 0, max, .01;
@@ -292,16 +296,16 @@ local function InitVoiceSettings(category, layout)
 			end
 
 			local defaultValue = GetDefaultInputDeviceID();
-			local setting = Settings.RegisterProxySetting(category, "PROXY_VOICE_INPUT_DEVICE", Settings.DefaultVarLocation, 
+			local setting = Settings.RegisterProxySetting(category, "PROXY_VOICE_INPUT_DEVICE", 
 				Settings.VarType.String, VOICE_CHAT_MIC_DEVICE, defaultValue, GetActiveInputDeviceID, C_VoiceChat.SetInputDevice);
 
-			inputInitializer = Settings.CreateDropDown(category, setting, GetOptions, OPTION_TOOLTIP_VOICE_INPUT);
+			inputInitializer = Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_VOICE_INPUT);
 		end
 
 		-- Volume
 		do
 			local defaultValue = tonumber(GetCVarDefault("VoiceInputVolume"));
-			local setting = Settings.RegisterProxySetting(category, "PROXY_VOICE_INPUT_VOLUME", Settings.DefaultVarLocation,
+			local setting = Settings.RegisterProxySetting(category, "PROXY_VOICE_INPUT_VOLUME",
 				Settings.VarType.Number, VOICE_CHAT_MIC_VOLUME, defaultValue, C_VoiceChat.GetInputVolume, C_VoiceChat.SetInputVolume);
 
 			local minValue, maxValue, step = 0, VoiceMaxValue, 1;
@@ -325,7 +329,7 @@ local function InitVoiceSettings(category, layout)
 			end
 
 			local defaultValue = tonumber(GetCVarDefault("VoiceVADSensitivity"));
-			local setting = Settings.RegisterProxySetting(category, "PROXY_VOICE_SENSITIVITY", Settings.DefaultVarLocation,
+			local setting = Settings.RegisterProxySetting(category, "PROXY_VOICE_SENSITIVITY",
 				Settings.VarType.Number, VOICE_CHAT_MIC_SENSITIVITY, defaultValue, GetValue, SetValue);
 
 			local options = Settings.CreateSliderOptions(minValue, maxValue, step);
@@ -357,10 +361,10 @@ local function InitVoiceSettings(category, layout)
 			end
 
 			local defaultValue = Enum.CommunicationMode.PushToTalk;
-			local setting = Settings.RegisterProxySetting(category, "PROXY_VOICE_CHAT_MODE", Settings.DefaultVarLocation,
+			local setting = Settings.RegisterProxySetting(category, "PROXY_VOICE_CHAT_MODE",
 				Settings.VarType.Number, VOICE_CHAT_MODE, defaultValue, C_VoiceChat.GetCommunicationMode, C_VoiceChat.SetCommunicationMode);
 
-			chatModeInitializer = Settings.CreateDropDown(category, setting, GetOptionData, OPTION_TOOLTIP_VOICE_CHAT_MODE);
+			chatModeInitializer = Settings.CreateDropdown(category, setting, GetOptionData, OPTION_TOOLTIP_VOICE_CHAT_MODE);
 		end
 
 		-- Push To Talk
@@ -379,7 +383,7 @@ local function Register()
 	Settings.AUDIO_CATEGORY_ID = category:GetID();
 
 	-- Enable Sound
-	Settings.SetupCVarCheckBox(category, "Sound_EnableAllSound", ENABLE_SOUND, OPTION_TOOLTIP_ENABLE_SOUND);
+	Settings.SetupCVarCheckbox(category, "Sound_EnableAllSound", ENABLE_SOUND, OPTION_TOOLTIP_ENABLE_SOUND);
 
 	-- Game Sound Ouptut
 	do
@@ -393,7 +397,7 @@ local function Register()
 			return container:GetData();
 		end
 
-		Settings.SetupCVarDropDown(category, "Sound_OutputDriverIndex", Settings.VarType.Number, GetOptions, AUDIO_OUTPUT_DEVICE, OPTION_TOOLTIP_AUDIO_OUTPUT);
+		Settings.SetupCVarDropdown(category, "Sound_OutputDriverIndex", Settings.VarType.Number, GetOptions, AUDIO_OUTPUT_DEVICE, OPTION_TOOLTIP_AUDIO_OUTPUT);
 		Settings.SetOnValueChangedCallback("Sound_OutputDriverIndex", Sound_GameSystem_RestartSoundSystem);
 	end
 	
@@ -414,32 +418,34 @@ local function Register()
 		initializer:SetParentInitializer(masterInitializer);
 
 		-- Effects Volume
-		local setting, initializer = Settings.SetupCVarSlider(category, "Sound_SFXVolume", options, FX_VOLUME, OPTION_TOOLTIP_FX_VOLUME);
+		setting, initializer = Settings.SetupCVarSlider(category, "Sound_SFXVolume", options, FX_VOLUME, OPTION_TOOLTIP_FX_VOLUME);
 		initializer:SetParentInitializer(masterInitializer);
 
 		-- Ambience Volume
-		local setting, initializer = Settings.SetupCVarSlider(category, "Sound_AmbienceVolume", options, AMBIENCE_VOLUME, OPTION_TOOLTIP_AMBIENCE_VOLUME);
+		setting, initializer = Settings.SetupCVarSlider(category, "Sound_AmbienceVolume", options, AMBIENCE_VOLUME, OPTION_TOOLTIP_AMBIENCE_VOLUME);
 		initializer:SetParentInitializer(masterInitializer);
 		
 		-- Dialog Volume
-		local setting, initializer = Settings.SetupCVarSlider(category, "Sound_DialogVolume", options, DIALOG_VOLUME, OPTION_TOOLTIP_DIALOG_VOLUME);
+		setting, initializer = Settings.SetupCVarSlider(category, "Sound_DialogVolume", options, DIALOG_VOLUME, OPTION_TOOLTIP_DIALOG_VOLUME);
 		initializer:SetParentInitializer(masterInitializer);
 	end
 	
 	-- Music
 	do
-		local musicSetting, musicInitializer = Settings.SetupCVarCheckBox(category, "Sound_EnableMusic", ENABLE_MUSIC, OPTION_TOOLTIP_ENABLE_MUSIC);
+		local musicSetting, musicInitializer = Settings.SetupCVarCheckbox(category, "Sound_EnableMusic", ENABLE_MUSIC, OPTION_TOOLTIP_ENABLE_MUSIC);
 
 		-- Loop Music
-		local loopingSetting, loopingInitializer = Settings.SetupCVarCheckBox(category, "Sound_ZoneMusicNoDelay", ENABLE_MUSIC_LOOPING, OPTION_TOOLTIP_ENABLE_MUSIC_LOOPING);
+		do
+		local loopingSetting, loopingInitializer = Settings.SetupCVarCheckbox(category, "Sound_ZoneMusicNoDelay", ENABLE_MUSIC_LOOPING, OPTION_TOOLTIP_ENABLE_MUSIC_LOOPING);
 		local function IsModifiable()
 			return musicSetting:GetValue();
 		end
 		loopingInitializer:SetParentInitializer(musicInitializer, IsModifiable);
+		end
 		
 		-- Pet Battle Music
 		if C_CVar.GetCVar("Sound_EnablePetBattleMusic") then
-			local petBattleSetting, petBattleInitializer = Settings.SetupCVarCheckBox(category, "Sound_EnablePetBattleMusic", ENABLE_PET_BATTLE_MUSIC, OPTION_TOOLTIP_ENABLE_PET_BATTLE_MUSIC);
+			local petBattleSetting, petBattleInitializer = Settings.SetupCVarCheckbox(category, "Sound_EnablePetBattleMusic", ENABLE_PET_BATTLE_MUSIC, OPTION_TOOLTIP_ENABLE_PET_BATTLE_MUSIC);
 			local function IsModifiable()
 				return musicSetting:GetValue();
 			end
@@ -449,29 +455,33 @@ local function Register()
 
 	-- Sound Effects
 	do
-		local soundFXSetting, soundFXInitializer = Settings.SetupCVarCheckBox(category, "Sound_EnableSFX", ENABLE_SOUNDFX, OPTION_TOOLTIP_ENABLE_SOUNDFX);
+		local soundFXSetting, soundFXInitializer = Settings.SetupCVarCheckbox(category, "Sound_EnableSFX", ENABLE_SOUNDFX, OPTION_TOOLTIP_ENABLE_SOUNDFX);
 
 		-- Pet Sounds
-		local petSoundsSetting, petSoundsInitializer = Settings.SetupCVarCheckBox(category, "Sound_EnablePetSounds", ENABLE_PET_SOUNDS, OPTION_TOOLTIP_ENABLE_PET_SOUNDS);
+		do
+		local petSoundsSetting, petSoundsInitializer = Settings.SetupCVarCheckbox(category, "Sound_EnablePetSounds", ENABLE_PET_SOUNDS, OPTION_TOOLTIP_ENABLE_PET_SOUNDS);
 		local function IsModifiable()
 			return soundFXSetting:GetValue();
 		end
 		petSoundsInitializer:SetParentInitializer(soundFXInitializer, IsModifiable);
+		end
 			
+		do
 		-- Emote Sounds
-		local emoteSoundsSetting, emoteSoundsInitializer = Settings.SetupCVarCheckBox(category, "Sound_EnableEmoteSounds", ENABLE_EMOTE_SOUNDS, OPTION_TOOLTIP_ENABLE_EMOTE_SOUNDS);
+		local emoteSoundsSetting, emoteSoundsInitializer = Settings.SetupCVarCheckbox(category, "Sound_EnableEmoteSounds", ENABLE_EMOTE_SOUNDS, OPTION_TOOLTIP_ENABLE_EMOTE_SOUNDS);
 		local function IsModifiable()
 			return soundFXSetting:GetValue();
 		end
 		emoteSoundsInitializer:SetParentInitializer(soundFXInitializer, IsModifiable);
 	end
+	end
 
 	-- Dialog
 	do
-		local dialogSetting, dialogInitializer = Settings.SetupCVarCheckBox(category, "Sound_EnableDialog", ENABLE_DIALOG, OPTION_TOOLTIP_ENABLE_DIALOG);
+		local dialogSetting, dialogInitializer = Settings.SetupCVarCheckbox(category, "Sound_EnableDialog", ENABLE_DIALOG, OPTION_TOOLTIP_ENABLE_DIALOG);
 
 		-- Error Speech
-		local errorSpeechSetting, errorSpeechInitializer = Settings.SetupCVarCheckBox(category, "Sound_EnableErrorSpeech", ENABLE_ERROR_SPEECH, OPTION_TOOLTIP_ENABLE_ERROR_SPEECH);
+		local errorSpeechSetting, errorSpeechInitializer = Settings.SetupCVarCheckbox(category, "Sound_EnableErrorSpeech", ENABLE_ERROR_SPEECH, OPTION_TOOLTIP_ENABLE_ERROR_SPEECH);
 		local function IsModifiable()
 			return dialogSetting:GetValue();
 		end
@@ -479,16 +489,16 @@ local function Register()
 	end
 	
 	-- Ambient Sounds
-	Settings.SetupCVarCheckBox(category, "Sound_EnableAmbience", ENABLE_AMBIENCE, OPTION_TOOLTIP_ENABLE_AMBIENCE);
+	Settings.SetupCVarCheckbox(category, "Sound_EnableAmbience", ENABLE_AMBIENCE, OPTION_TOOLTIP_ENABLE_AMBIENCE);
 	
 	-- Sound in Background
-	Settings.SetupCVarCheckBox(category, "Sound_EnableSoundWhenGameIsInBG", ENABLE_BGSOUND, OPTION_TOOLTIP_ENABLE_BGSOUND);
+	Settings.SetupCVarCheckbox(category, "Sound_EnableSoundWhenGameIsInBG", ENABLE_BGSOUND, OPTION_TOOLTIP_ENABLE_BGSOUND);
 
 	-- Enable Reverb
-	Settings.SetupCVarCheckBox(category, "Sound_EnableReverb", ENABLE_REVERB, OPTION_TOOLTIP_ENABLE_REVERB);
+	Settings.SetupCVarCheckbox(category, "Sound_EnableReverb", ENABLE_REVERB, OPTION_TOOLTIP_ENABLE_REVERB);
 	
 	-- Distance Filtering
-	Settings.SetupCVarCheckBox(category, "Sound_EnablePositionalLowPassFilter", ENABLE_SOFTWARE_HRTF, OPTION_TOOLTIP_ENABLE_SOFTWARE_HRTF);
+	Settings.SetupCVarCheckbox(category, "Sound_EnablePositionalLowPassFilter", ENABLE_SOFTWARE_HRTF, OPTION_TOOLTIP_ENABLE_SOFTWARE_HRTF);
 
 	-- Sound Channels
 	do
@@ -511,23 +521,36 @@ local function Register()
 			return container:GetData();
 		end
 
-		Settings.SetupCVarDropDown(category, "Sound_MaxCacheSizeInBytes", Settings.VarType.Number, GetOptions, AUDIO_CACHE_SIZE, OPTION_TOOLTIP_AUDIO_CACHE_SIZE);
-	end
-
-	--Voice
-	if not IsOnGlueScreen() then
-		if C_VoiceChat.IsVoiceChatConnected() then
-			InitVoiceSettings(category, layout);
-		else
-			local function ContinueInitVoiceSettings()
-				InitVoiceSettings(category, layout);
-			end
-			EventUtil.ContinueAfterAllEvents(ContinueInitVoiceSettings, "VOICE_CHAT_CONNECTION_SUCCESS", "VOICE_CHAT_VAD_SETTINGS_UPDATED");
-		end
+		Settings.SetupCVarDropdown(category, "Sound_MaxCacheSizeInBytes", Settings.VarType.Number, GetOptions, AUDIO_CACHE_SIZE, OPTION_TOOLTIP_AUDIO_CACHE_SIZE);
 	end
 
 	-- Ping System
 	AudioOverrides.CreatePingSoundSettings(category, layout);
+
+	--Voice
+	if not IsOnGlueScreen() then
+		--[[
+		Initializing the voice settings requires the voice proxy process to be initialized. Continue to
+		make attempts until this occurs. No timeout.
+		]]--
+
+		local timerHandle = nil;
+
+		local function TryInitVoiceSettings()
+			if C_VoiceChat.CanAccessSettings() then
+				InitVoiceSettings(category, layout);
+
+				-- Check should not be necessary unless the callback is invoked before NewTicker returns,
+				-- but in case this ever changes, prevent the error here.
+				if timerHandle then
+					timerHandle:Cancel();
+				end
+			end
+		end
+
+		local timeSeconds = 5;
+		timerHandle = C_Timer.NewTicker(timeSeconds, TryInitVoiceSettings);
+	end
 
 	Settings.RegisterCategory(category, SETTING_GROUP_SYSTEM);
 end

@@ -941,8 +941,8 @@ function UnitFrame_UpdateThreatIndicator(indicator, numericIndicator, unit)
 			end
 
 			if ( numericIndicator ) then
-				if ( ShowNumericThreat() and not (UnitClassification(indicator.unit) == "minus") ) then
-					local isTanking, status, percentage, rawPercentage = UnitDetailedThreatSituation(indicator.feedbackUnit, indicator.unit);
+				if ( ShowNumericThreat() and UnitClassification(indicator.unit) ~= "minus" ) then
+					local isTanking, detailedStatus, percentage, rawPercentage = UnitDetailedThreatSituation(indicator.feedbackUnit, indicator.unit);
 					local display = rawPercentage;
 					if ( isTanking ) then
 						display = UnitThreatPercentageOfLead(indicator.feedbackUnit, indicator.unit);
@@ -951,7 +951,7 @@ function UnitFrame_UpdateThreatIndicator(indicator, numericIndicator, unit)
 					if ( display and display ~= 0 ) then
 						display = min(display, MAX_DISPLAYED_THREAT_PERCENT);
 						numericIndicator.text:SetText(format("%1.0f", display).."%");
-						numericIndicator.bg:SetVertexColor(GetThreatStatusColor(status));
+						numericIndicator.bg:SetVertexColor(GetThreatStatusColor(detailedStatus));
 						numericIndicator:Show();
 					else
 						numericIndicator:Hide();

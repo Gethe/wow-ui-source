@@ -57,8 +57,6 @@ function ReputationFrame_Update()
 
 	local gender = UnitSex("player");
 	
-	local i;
-	
 	local offScreenFudgeFactor = 5;
 	local previousBigTextureRows = 0;
 	local previousBigTextureRows2 = 0;
@@ -94,7 +92,7 @@ function ReputationFrame_Update()
 			factionRow.tooltip = HIGHLIGHT_FONT_COLOR_CODE.." "..barValue.." / "..barMax..FONT_COLOR_CODE_CLOSE;
 			factionBar:SetMinMaxValues(0, barMax);
 			factionBar:SetValue(barValue);
-			local color = FACTION_BAR_COLORS[standingID];
+			color = FACTION_BAR_COLORS[standingID];
 			factionBar:SetStatusBarColor(color.r, color.g, color.b);
 			
 			if ( isHeader and not isChild ) then
@@ -148,33 +146,33 @@ function ReputationFrame_Update()
 					ReputationDetailFactionName:SetText(name);
 					ReputationDetailFactionDescription:SetText(description);
 					if ( atWarWith ) then
-						ReputationDetailAtWarCheckBox:SetChecked(1);
+						ReputationDetailAtWarCheckbox:SetChecked(1);
 					else
-						ReputationDetailAtWarCheckBox:SetChecked(nil);
+						ReputationDetailAtWarCheckbox:SetChecked(nil);
 					end
 					if ( canToggleAtWar and (not isHeader)) then
-						ReputationDetailAtWarCheckBox:Enable();
-						ReputationDetailAtWarCheckBoxText:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+						ReputationDetailAtWarCheckbox:Enable();
+						ReputationDetailAtWarCheckboxText:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 					else
-						ReputationDetailAtWarCheckBox:Disable();
-						ReputationDetailAtWarCheckBoxText:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+						ReputationDetailAtWarCheckbox:Disable();
+						ReputationDetailAtWarCheckboxText:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 					end
 					if ( not isHeader ) then
-						ReputationDetailInactiveCheckBox:Enable();
-						ReputationDetailInactiveCheckBoxText:SetTextColor(ReputationDetailInactiveCheckBoxText:GetFontObject():GetTextColor());
+						ReputationDetailInactiveCheckbox:Enable();
+						ReputationDetailInactiveCheckboxText:SetTextColor(ReputationDetailInactiveCheckboxText:GetFontObject():GetTextColor());
 					else
-						ReputationDetailInactiveCheckBox:Disable();
-						ReputationDetailInactiveCheckBoxText:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+						ReputationDetailInactiveCheckbox:Disable();
+						ReputationDetailInactiveCheckboxText:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 					end
 					if ( IsFactionInactive(factionIndex) ) then
-						ReputationDetailInactiveCheckBox:SetChecked(1);
+						ReputationDetailInactiveCheckbox:SetChecked(1);
 					else
-						ReputationDetailInactiveCheckBox:SetChecked(nil);
+						ReputationDetailInactiveCheckbox:SetChecked(nil);
 					end
 					if ( isWatched ) then
-						ReputationDetailMainScreenCheckBox:SetChecked(1);
+						ReputationDetailMainScreenCheckbox:SetChecked(1);
 					else
-						ReputationDetailMainScreenCheckBox:SetChecked(nil);
+						ReputationDetailMainScreenCheckbox:SetChecked(nil);
 					end
 					_G["ReputationBar"..i.."ReputationBarHighlight1"]:Show();
 					_G["ReputationBar"..i.."ReputationBarHighlight2"]:Show();
@@ -191,9 +189,8 @@ function ReputationFrame_Update()
 		ReputationDetailFrame:Hide();
 	end
 	
-	local i = NUM_
 	for i = (NUM_FACTIONS_DISPLAYED + factionOffset + 1), numFactions, 1 do
-		local name, description, standingID, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed, hasRep, isWatched, isChild  = GetFactionInfo(i);
+		name, description, standingID, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed, hasRep, isWatched, isChild  = GetFactionInfo(i);
 		if not name then break; end
 		
 		if ( isHeader and not isChild ) then

@@ -82,7 +82,7 @@ function GlueTooltip_AddLine(self, text, r, g, b, wrap)
 	r = r or self.defaultColor.r;
 	g = g or self.defaultColor.g;
 	b = b or self.defaultColor.b;
-	a = 1;
+	local a = 1;
 	-- find a free line
 	local freeLine;
 	for i = 1, GLUETOOLTIP_NUM_LINES do
@@ -129,4 +129,3 @@ function GlueTooltip_AddLine(self, text, r, g, b, wrap)
 	end
 	self:SetHeight(height);
 end
-

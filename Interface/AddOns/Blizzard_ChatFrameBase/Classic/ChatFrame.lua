@@ -1,3 +1,10 @@
+
+local forceinsecure = forceinsecure;
+local issecure = issecure;
+local securecallfunction = securecallfunction;
+local secureexecuterange = secureexecuterange;
+local tWipe = table.wipe;
+
 MESSAGE_SCROLLBUTTON_INITIAL_DELAY = 0;
 MESSAGE_SCROLLBUTTON_SCROLL_DELAY = 0.05;
 CHAT_BUTTON_FLASH_TIME = 0.5;
@@ -8,6 +15,8 @@ CHAT_FOCUS_OVERRIDE = nil;
 NUM_REMEMBERED_TELLS = 10;
 MAX_WOW_CHAT_CHANNELS = 20;
 MAX_COUNTDOWN_SECONDS = 3600; -- One Hour
+ACTIVE_CHAT_EDIT_BOX = nil;
+LAST_ACTIVE_CHAT_EDIT_BOX = nil;
 
 CHAT_SHOW_IME = false;
 
@@ -674,7 +683,6 @@ EMOTE522_TOKEN = "BOOP"
 -- NOTE: The indices used to iterate the tokens may not be contiguous, keep that in mind when updating this value.
 local MAXEMOTEINDEX = 522;
 
-
 ICON_LIST = {
 	"|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_1:",
 	"|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_2:",
@@ -765,6 +773,35 @@ GROUP_LANGUAGE_INDEPENDENT_STRINGS =
 	"g8",
 };
 
+local function TextEmoteSort(token1, token2)
+	local i = 1;
+	local string1, string2;
+	local token = _G["EMOTE"..i.."_TOKEN"];
+	while ( i <= MAXEMOTEINDEX ) do
+		if ( token == token1 ) then
+			string1 = _G["EMOTE"..i.."_CMD1"];
+			if ( string2 ) then
+				break;
+			end
+		end
+		if ( token == token2 ) then
+			string2 = _G["EMOTE"..i.."_CMD1"];
+			if ( string1 ) then
+				break;
+			end
+		end
+		i = i + 1;
+		token = _G["EMOTE"..i.."_TOKEN"];
+	end
+	return string1 < string2;
+end
+
+if not IsOnGlueScreen() then
+	table.sort(EmoteList, TextEmoteSort);
+	table.sort(TextEmoteSpeechList, TextEmoteSort);
+end
+
+
 -- Arena Team Helper Function
 function ArenaTeam_GetTeamSizeID(teamsizearg)
 	local teamname, teamsize, id;
@@ -788,8 +825,8 @@ function ChatFrame_TruncateToMaxLength(text, maxLength)
 	return text;
 end
 
-function ChatFrame_ResolvePrefixedChannelName(communityChannel)
-	local prefix, communityChannel = communityChannel:match("(%d+. )(.*)");
+function ChatFrame_ResolvePrefixedChannelName(communityChannelArg)
+	local prefix, communityChannel = communityChannelArg:match("(%d+. )(.*)");
 	return prefix..ChatFrame_ResolveChannelName(communityChannel);
 end
 
@@ -1077,7 +1114,7 @@ local function CastRandomManager_OnEvent(self, event, ...)
 
 	if ( unit == "player" ) then
 		local name = strlower(GetSpellInfo(spellID));
-		local rank = strlower(GetSpellSubtext(spellID));
+		local rank = strlower(C_Spell.GetSpellSubtext(spellID));
 		local nameplus = name.."()";
 		local fullname = name.."("..rank..")";
 		for sequence, entry in pairs(CastRandomTable) do
@@ -1531,7 +1568,10 @@ SecureCmdList["DUEL_TO_THE_DEATH"] = function(msg)
 	if (msg == "" or not msg or not C_GameRules.IsHardcoreActive()) then
 		return;
 	end
-	StaticPopup_Show("DUEL_TO_THE_DEATH_CHALLENGE_CONFIRM", msg);
+
+	local text2 = nil;
+	local data = {unit = "target"};
+	StaticPopup_Show("DUEL_TO_THE_DEATH_CHALLENGE_CONFIRM", msg, text2, data);
 end
 
 SecureCmdList["DUEL_CANCEL"] = function(msg)
@@ -2698,7 +2738,7 @@ function ChatFrame_SetupListProxyTable(list)
 end
 
 function ChatFrame_ImportListToHash(list, hash)
-	for k, v in pairs(list) do
+	local function ImportHash(k, v, hash)
 		local i = 1;
 		local tag = _G["SLASH_"..k..i];
 		while(tag) do
@@ -2714,8 +2754,9 @@ function ChatFrame_ImportListToHash(list, hash)
 		local proxyTable = getmetatable(list).__index;
 		proxyTable[k] = v;
 	end
+	secureexecuterange(list, ImportHash, hash);
 
-	table.wipe(list);
+	securecallfunction(tWipe, list);
 end
 
 function ChatFrame_ImportEmoteTokensToHash()
@@ -2799,7 +2840,7 @@ function ChatFrame_RegisterForMessages(self, ...)
 		messageGroup = ChatTypeGroup[select(i, ...)];
 		if ( messageGroup ) then
 			self.messageTypeList[index] = select(i, ...);
-			for index, value in pairs(messageGroup) do
+			for _, value in pairs(messageGroup) do
 				self:RegisterEvent(value);
 				if ( value == "CHAT_MSG_VOICE_TEXT" ) then
 					self:RegisterEvent("VOICE_CHAT_CHANNEL_TRANSCRIBING_CHANGED");
@@ -3082,10 +3123,6 @@ end
 
 function ChatFrame_ConfigEventHandler(self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		self.defaultLanguage = GetDefaultLanguage();
-		self.alternativeDefaultLanguage = GetAlternativeDefaultLanguage();
-		return true;
-	elseif ( event == "NEUTRAL_FACTION_SELECT_RESULT" ) then
 		self.defaultLanguage = GetDefaultLanguage();
 		self.alternativeDefaultLanguage = GetAlternativeDefaultLanguage();
 		return true;
@@ -3400,7 +3437,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 		if ( chatGroup == "CHANNEL" ) then
 			chatTarget = tostring(arg8);
 		elseif ( chatGroup == "WHISPER" or chatGroup == "BN_WHISPER" ) then
-			if(not(strsub(arg2, 1, 2) == "|K")) then
+			if strsub(arg2, 1, 2) ~= "|K" then
 				chatTarget = strupper(arg2);
 			else
 				chatTarget = arg2;
@@ -3531,7 +3568,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 				local _, accountName, battleTag, _, characterName, _, client = BNGetFriendInfoByID(arg13);
 				if (client and client ~= "") then
 					C_Texture.GetTitleIconTexture(client, Enum.TitleIconVersion.Small, function(success, texture)
-						if success then
+						if success and texture then
 							local characterName = BNet_GetValidatedCharacterNameWithClientEmbeddedTexture(characterName, battleTag, texture, 32, 32, 10);
 							local linkDisplayText = ("[%s] (%s)"):format(arg2, characterName);
 							local playerLink = GetBNPlayerLink(arg2, linkDisplayText, arg13, arg11, Chat_GetChatCategory(type), 0);
@@ -3903,21 +3940,6 @@ function MessageFrameScrollButton_OnUpdate(self, elapsed)
 	end
 end
 
-function ChatFrame_ToggleMenu()
-	ChatMenu:SetShown(not ChatMenu:IsShown());
-end
-
-function ChatFrameMenu_UpdateAnchorPoint()
-	--Update the menu anchor point
-	if ( FCF_GetButtonSide(DEFAULT_CHAT_FRAME) == "right" ) then
-		ChatMenu:ClearAllPoints();
-		ChatMenu:SetPoint("BOTTOMRIGHT", ChatFrameMenuButton, "TOPLEFT");
-	else
-		ChatMenu:ClearAllPoints();
-		ChatMenu:SetPoint("BOTTOMLEFT", ChatFrameMenuButton, "TOPRIGHT");
-	end
-end
-
 function ChatFrame_SendTell(name, chatFrame)
 	local editBox = ChatEdit_ChooseBoxForSend(chatFrame);
 
@@ -4082,7 +4104,7 @@ function ChatFrame_DisplayTimePlayed(self, totalTime, levelTime)
 	self:AddMessage(string, info.r, info.g, info.b, info.id);
 
 	d, h, m, s = ChatFrame_TimeBreakDown(levelTime);
-	local string = format(TIME_PLAYED_LEVEL, format(TIME_DAYHOURMINUTESECOND, d, h, m, s));
+	string = format(TIME_PLAYED_LEVEL, format(TIME_DAYHOURMINUTESECOND, d, h, m, s));
 	self:AddMessage(string, info.r, info.g, info.b, info.id);
 end
 
@@ -4742,6 +4764,13 @@ function ChatEdit_CustomTabPressed(self)
 end
 
 local tabCompleteTables = { hash_ChatTypeInfoList, hash_EmoteTokenList };
+local function ChatEdit_SearchTabCompleteTable(tableCompleteTable, command, cmdString)
+	repeat	--Loop through this table to find matching items.
+		cmdString = next(tableCompleteTable, cmdString);
+	until ( not cmdString or strfind(cmdString, strupper(command), 1, 1) );	--Either we finished going through this table or we found a match.
+	return cmdString;
+end
+
 function ChatEdit_SecureTabPressed(self)
 	local chatType = self:GetAttribute("chatType");
 	if ( chatType == "WHISPER" or chatType == "BN_WHISPER" ) then
@@ -4773,9 +4802,7 @@ function ChatEdit_SecureTabPressed(self)
 
 	local cmdString = lastTabComplete;
 	repeat	--The outer loop lets us go through multiple hash tables of commands.
-		repeat	--Loop through this table to find matching items.
-			cmdString = next(tabCompleteTables[self.tabCompleteTableIndex], cmdString);
-		until ( not cmdString or strfind(cmdString, strupper(command), 1, 1) );	--Either we finished going through this table or we found a match.
+		cmdString = securecallfunction(ChatEdit_SearchTabCompleteTable, tabCompleteTables[self.tabCompleteTableIndex], command, cmdString);
 		if ( not cmdString ) then	--Nothing else in the current table, move to the next one.
 			self.tabCompleteTableIndex = self.tabCompleteTableIndex + 1;
 		end
@@ -4870,6 +4897,12 @@ function ChatEdit_OnInputLanguageChanged(self)
 	local button = _G[self:GetName().."Language"];
 	local variable = _G["INPUT_"..self:GetInputLanguage()];
 	button:SetText(variable);
+end
+
+function ChatEdit_SetGameLanguage(self, language, languageId)
+	self.language = language;
+	self.languageID = languageId;
+	ChatEdit_UpdateHeader(self);
 end
 
 local function processChatType(editBox, msg, index, send)
@@ -5096,199 +5129,6 @@ function ChatEdit_ExtractChannel(editBox, msg)
 	ChatEdit_UpdateHeader(editBox);
 end
 
--- Chat menu functions
-function ChatMenu_SetChatType(chatFrame, type)
-	local editBox = ChatFrame_OpenChat("");
-	editBox:SetAttribute("chatType", type);
-	ChatEdit_UpdateHeader(editBox);
-end
-
-function ChatMenu_Say(self)
-	ChatMenu_SetChatType(self:GetParent().chatFrame, "SAY");
-end
-
-function ChatMenu_Party(self)
-	ChatMenu_SetChatType(self:GetParent().chatFrame, "PARTY");
-end
-
-function ChatMenu_Raid(self)
-	ChatMenu_SetChatType(self:GetParent().chatFrame, "RAID");
-end
-
-function ChatMenu_InstanceChat(self)
-	ChatMenu_SetChatType(self:GetParent().chatFrame, "INSTANCE_CHAT");
-end
-
-function ChatMenu_Guild(self)
-	ChatMenu_SetChatType(self:GetParent().chatFrame, "GUILD");
-end
-
-function ChatMenu_Yell(self)
-	ChatMenu_SetChatType(self:GetParent().chatFrame, "YELL");
-end
-
-function ChatMenu_Whisper(self)
-	local editBox = ChatFrame_OpenChat(SLASH_SMART_WHISPER1.." ");
-	editBox:SetText(SLASH_SMART_WHISPER1.." "..editBox:GetText());
-end
-
-function ChatMenu_Emote(self)
-	ChatMenu_SetChatType(self:GetParent().chatFrame, "EMOTE");
-end
-
-function ChatMenu_Reply(self)
-	ChatFrame_ReplyTell();
-end
-
-function ChatMenu_VoiceMacro(self)
-	ChatMenu_SetChatType(self:GetParent().chatFrame, "YELL");
-end
-
-function ChatMenu_OnLoad(self)
-	self.chatFrame = DEFAULT_CHAT_FRAME;
-
-	UIMenu_Initialize(self);
-	UIMenu_AddButton(self, SAY_MESSAGE, SLASH_SAY1, ChatMenu_Say);
-	UIMenu_AddButton(self, PARTY_MESSAGE, SLASH_PARTY1, ChatMenu_Party);
-	UIMenu_AddButton(self, RAID_MESSAGE, SLASH_RAID1, ChatMenu_Raid);
-	UIMenu_AddButton(self, INSTANCE_CHAT_MESSAGE, SLASH_INSTANCE_CHAT3, ChatMenu_InstanceChat);
-	UIMenu_AddButton(self, GUILD_MESSAGE, SLASH_GUILD1, ChatMenu_Guild);
-	UIMenu_AddButton(self, YELL_MESSAGE, SLASH_YELL1, ChatMenu_Yell);
-	UIMenu_AddButton(self, WHISPER_MESSAGE, SLASH_SMART_WHISPER1, ChatMenu_Whisper);
-	UIMenu_AddButton(self, EMOTE_MESSAGE, SLASH_EMOTE1, ChatMenu_Emote, "EmoteMenu");
-	UIMenu_AddButton(self, REPLY_MESSAGE, SLASH_REPLY1, ChatMenu_Reply);
-	UIMenu_AddButton(self, LANGUAGE, nil, nil, "LanguageMenu");
-	UIMenu_AddButton(self, VOICEMACRO_LABEL, nil, nil, "VoiceMacroMenu");
-	UIMenu_AddButton(self, MACRO, SLASH_MACRO1, ShowMacroFrame);
-	UIMenu_AutoSize(self);
-end
-
-function ChatMenu_OnShow(self)
-	UIMenu_OnShow(self);
-	EmoteMenu:Hide();
-	LanguageMenu:Hide();
-	VoiceMacroMenu:Hide();
-end
-
-function EmoteMenu_Click(self)
-	DoEmote(EmoteList[self:GetID()]);
-	ChatMenu:Hide();
-end
-
-function TextEmoteSort(token1, token2)
-	local i = 1;
-	local string1, string2;
-	local token = _G["EMOTE"..i.."_TOKEN"];
-	while ( i <= MAXEMOTEINDEX ) do
-		if ( token == token1 ) then
-			string1 = _G["EMOTE"..i.."_CMD1"];
-			if ( string2 ) then
-				break;
-			end
-		end
-		if ( token == token2 ) then
-			string2 = _G["EMOTE"..i.."_CMD1"];
-			if ( string1 ) then
-				break;
-			end
-		end
-		i = i + 1;
-		token = _G["EMOTE"..i.."_TOKEN"];
-	end
-	return string1 < string2;
-end
-
-function OnMenuLoad(self,list,func)
-	sort(list, TextEmoteSort);
-	UIMenu_Initialize(self);
-	self.parentMenu = "ChatMenu";
-	for index, value in pairs(list) do
-		local i = 1;
-		local token = _G["EMOTE"..i.."_TOKEN"];
-		while ( i < MAXEMOTEINDEX ) do
-			if ( token == value ) then
-				break;
-			end
-			i = i + 1;
-			token = _G["EMOTE"..i.."_TOKEN"];
-		end
-		local label = _G["EMOTE"..i.."_CMD1"];
-		if ( not label ) then
-			label = value;
-		end
-		UIMenu_AddButton(self, label, nil, func);
-	end
-	UIMenu_AutoSize(self);
-end
-
-function EmoteMenu_OnLoad(self)
-	OnMenuLoad(self, EmoteList, EmoteMenu_Click);
-end
-
-function LanguageMenu_OnLoad(self)
-	UIMenu_Initialize(self);
-	self.parentMenu = "ChatMenu";
-	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-	self:RegisterEvent("LANGUAGE_LIST_CHANGED");
-end
-
-function VoiceMacroMenu_Click(self)
-	local emote = TextEmoteSpeechList[self:GetID()];
-
-	DoEmote(emote);
-	ChatMenu:Hide();
-end
-
-function VoiceMacroMenu_OnLoad(self)
-	OnMenuLoad(self, TextEmoteSpeechList, VoiceMacroMenu_Click);
-end
-
-function LanguageMenu_OnEvent(self, event, ...)
-	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		self:Hide();
-		UIMenu_Initialize(self);
-		LanguageMenu_LoadLanguages(self);
-		self:GetParent().chatFrame.editBox.language, self:GetParent().chatFrame.editBox.languageID = GetDefaultLanguage();
-		return;
-	end
-	if ( event == "LANGUAGE_LIST_CHANGED" ) then
-		self:Hide();
-		UIMenu_Initialize(self);
-		LanguageMenu_LoadLanguages(self);
-		return;
-	end
-	if ( event == "NEUTRAL_FACTION_SELECT_RESULT" ) then
-		self:Hide();
-		self:GetParent().chatFrame.editBox.language, self:GetParent().chatFrame.editBox.languageID = GetDefaultLanguage();
-		return;
-	end
-end
-
-function LanguageMenu_LoadLanguages(self)
-	local numLanguages = GetNumLanguages();
-	local i;
-	local editBoxLanguageID = self:GetParent().chatFrame.editBox.languageID;
-	local languageKnown = false;
-	for i = 1, numLanguages, 1 do
-		local language, languageID = GetLanguageByIndex(i);
-		UIMenu_AddButton(self, language, nil, LanguageMenu_Click);
-		if ( languageID == editBoxLanguageID ) then
-			languageKnown = true;
-		end
-	end
-
-	if ( languageKnown ~= true ) then
-		self:GetParent().chatFrame.editBox.language, self:GetParent().chatFrame.editBox.languageID = GetLanguageByIndex(1);
-	end
-
-	UIMenu_AutoSize(self);
-end
-
-function LanguageMenu_Click(self)
-	self:GetParent():GetParent().chatFrame.editBox.language, self:GetParent():GetParent().chatFrame.editBox.languageID = GetLanguageByIndex(self:GetID());
-	ChatMenu:Hide();
-end
-
 function ChatFrame_ActivateCombatMessages(chatFrame)
 	ChatFrame_AddMessageGroup(chatFrame, "OPENING");
 	ChatFrame_AddMessageGroup(chatFrame, "TRADESKILLS");
@@ -5299,62 +5139,35 @@ function ChatFrame_ActivateCombatMessages(chatFrame)
 	ChatFrame_AddMessageGroup(chatFrame, "COMBAT_FACTION_CHANGE");
 end
 
-function ChatChannelDropDown_Show(chatFrame, chatType, chatTarget, chatName)
-	HideDropDownMenu(1);
-	ChatChannelDropDown.initialize = ChatChannelDropDown_Initialize;
-	ChatChannelDropDown.displayMode = "MENU";
-	ChatChannelDropDown.chatType = chatType;
-	ChatChannelDropDown.chatTarget = chatTarget;
-	ChatChannelDropDown.chatName = chatName;
-	ChatChannelDropDown.chatFrame = chatFrame;
-	ToggleDropDownMenu(1, nil, ChatChannelDropDown, "cursor");
+function ChatChannelDropdown_Show(chatFrame, chatType, chatTarget, chatName)
+	MenuUtil.CreateContextMenu(chatFrame, function(owner, rootDescription)
+		rootDescription:SetTag("MENU_CHAT_FRAME_CHANNEL");
+
+		rootDescription:CreateTitle(ChatFrame_ResolveChannelName(chatName));
+
+		local clubId, streamId = ChatFrame_GetCommunityAndStreamFromChannel(chatName);
+		if clubId and streamId and C_Club.IsEnabled() then
+			rootDescription:CreateButton(CHAT_CHANNEL_DROP_DOWN_OPEN_COMMUNITIES_FRAME, function()
+				if not CommunitiesFrame or not CommunitiesFrame:IsShown() then
+					ToggleCommunitiesFrame();
+				end
+
+				CommunitiesFrame:SelectStream(clubId, streamId);
+				CommunitiesFrame:SelectClub(clubId);
+			end);
+		end
+
+		local button = rootDescription:CreateButton(MOVE_TO_NEW_WINDOW, function()
+			ChatChannelDropdown_PopOutChat(chatFrame, chatType, chatTarget);
+		end);
+
+		if not FCF_CanOpenNewWindow() then
+			button:SetEnabled(false);
+		end
+	end);
 end
 
-function ChatChannelDropDown_Initialize()
-	local frame = ChatChannelDropDown;
-
-	local info = UIDropDownMenu_CreateInfo();
-
-	info.text = ChatFrame_ResolveChannelName(frame.chatName);
-	info.notCheckable = true;
-	info.isTitle = true;
-	UIDropDownMenu_AddButton(info, 1);
-
-	local clubId, streamId = ChatFrame_GetCommunityAndStreamFromChannel(frame.chatName);
-	if clubId and streamId and C_Club.IsEnabled() then
-		info = UIDropDownMenu_CreateInfo();
-		info.text = CHAT_CHANNEL_DROP_DOWN_OPEN_COMMUNITIES_FRAME;
-		info.notCheckable = true;
-		info.func = function ()
-			if not CommunitiesFrame or not CommunitiesFrame:IsShown() then
-				ToggleCommunitiesFrame();
-			end
-
-			CommunitiesFrame:SelectStream(clubId, streamId);
-			CommunitiesFrame:SelectClub(clubId);
-		end;
-
-		UIDropDownMenu_AddButton(info);
-	end
-
-	info = UIDropDownMenu_CreateInfo();
-
-	info.text = MOVE_TO_NEW_WINDOW;
-	info.notCheckable = 1;
-	info.func = ChatChannelDropDown_PopOutChat;
-	info.arg1 = frame.chatType;
-	info.arg2 = frame.chatTarget;
-
-	if ( FCF_GetNumActiveChatFrames() == NUM_CHAT_WINDOWS ) then
-		info.disabled = 1;
-	end
-
-	UIDropDownMenu_AddButton(info);
-end
-
-function ChatChannelDropDown_PopOutChat(self, chatType, chatTarget)
-	local sourceChatFrame = ChatChannelDropDown.chatFrame;
-
+function ChatChannelDropdown_PopOutChat(sourceChatFrame, chatType, chatTarget)
 	local windowName;
 	if ( chatType == "CHANNEL" ) then
 		windowName = Chat_GetChannelShortcutName(chatTarget);
@@ -5419,10 +5232,6 @@ function Chat_GetChannelShortcutName(index)
 	return name;
 end
 
-function ChatChannelDropDown_PopInChat(self, chatType, chatTarget)
-	--PopOutChat_PopInChat(chatType, chatTarget);
-end
-
 function Chat_ShouldColorChatByClass(chatTypeInfo)
 	local override = ChatClassColorOverrideShown();
 	local colorByClass = chatTypeInfo and chatTypeInfo.colorNameByClass;
@@ -5444,4 +5253,134 @@ function Chat_GetColoredChatName(chatType, chatTarget)
 		local colorString = format("|cff%02x%02x%02x", info.r * 255, info.g * 255, info.b * 255);
 		return format("%s|Hchannel:%s|h[%s]|h|r", colorString, chatType, _G[chatType]);
 	end
+end
+
+local function GetSelectedLanguageID()
+	return DEFAULT_CHAT_FRAME.editBox.languageID;
+end
+
+ChatFrameMenuButtonMixin = {};
+
+function ChatFrameMenuButtonMixin:OnLoad()
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("LANGUAGE_LIST_CHANGED");
+
+	local function SetChatTypeAttribute(chatType)
+		local editBox = ChatFrame_OpenChat("");
+		editBox:SetAttribute("chatType", chatType);
+		ChatEdit_UpdateHeader(editBox);
+	end
+	
+	local function AddEmotes(description, list, func)
+		for index, value in ipairs(list) do
+			local i = 1;
+			local token = _G["EMOTE"..i.."_TOKEN"];
+			while ( i < MAXEMOTEINDEX ) do
+				if ( token == value ) then
+					break;
+				end
+				i = i + 1;
+				token = _G["EMOTE"..i.."_TOKEN"];
+			end
+	
+			local label = _G["EMOTE"..i.."_CMD1"] or value;
+			description:CreateButton(label, function(...)
+				func(index);
+			end);
+		end
+	end
+	
+	local function IsLanguageSelected(language)
+		return GetSelectedLanguageID() == language[2];
+	end
+	
+	local function SetLanguageSelected(languageData)
+		ChatEdit_SetGameLanguage(DEFAULT_CHAT_FRAME.editBox, languageData[1], languageData[2]);
+	end
+
+	local function AddSlashInitializer(button, chatShortcut)
+		button:AddInitializer(function(button, description, menu)
+			local fontString2 = button:AttachFontString();
+			local offset = description:HasElements() and -20 or 0;
+			fontString2:SetPoint("RIGHT", offset, 0);
+			fontString2:SetJustifyH("RIGHT");
+			fontString2:SetTextToFit(chatShortcut);
+
+			button.fontString:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
+		end);
+	end
+	
+	local function ColorInitializer(button, description, menu)
+		button.fontString:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
+	end
+
+	self:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_CHAT_SHORTCUTS", block);
+		rootDescription:SetMinimumWidth(180);
+
+		local function CreateButtonWithShortcut(chatName, chatShortcut, chatType)
+			local button = rootDescription:CreateButton(chatName, function()
+				SetChatTypeAttribute(chatType);
+			end);
+
+			AddSlashInitializer(button, chatShortcut);
+			return button;
+		end
+
+		CreateButtonWithShortcut(SAY_MESSAGE, SLASH_SAY1, "SAY");
+		CreateButtonWithShortcut(PARTY_MESSAGE, SLASH_PARTY1, "PARTY");
+		CreateButtonWithShortcut(RAID_MESSAGE, SLASH_RAID1, "RAID");
+		CreateButtonWithShortcut(INSTANCE_CHAT_MESSAGE, SLASH_INSTANCE_CHAT3, "INSTANCE_CHAT");
+		CreateButtonWithShortcut(GUILD_MESSAGE, SLASH_GUILD1, "GUILD");
+		CreateButtonWithShortcut(YELL_MESSAGE, SLASH_YELL1, "YELL");
+
+		local whisperButton = rootDescription:CreateButton(WHISPER_MESSAGE, function()
+			local editBox = ChatFrame_OpenChat(SLASH_SMART_WHISPER1.." ");
+			editBox:SetText(SLASH_SMART_WHISPER1.." "..editBox:GetText());
+		end);
+		AddSlashInitializer(whisperButton, SLASH_SMART_WHISPER1);
+
+		local emoteSubmenu = CreateButtonWithShortcut(EMOTE_MESSAGE, SLASH_EMOTE1, "EMOTE");
+		AddEmotes(emoteSubmenu, EmoteList, function(index)
+			DoEmote(EmoteList[index]);
+		end);
+		
+		local replyButton = rootDescription:CreateButton(REPLY_MESSAGE, function()
+			ChatFrame_ReplyTell();
+		end);
+		AddSlashInitializer(replyButton, SLASH_REPLY1);
+
+		local voiceEmoteSubmenu = rootDescription:CreateButton(VOICEMACRO_LABEL);
+		voiceEmoteSubmenu:AddInitializer(ColorInitializer);
+
+		AddEmotes(voiceEmoteSubmenu, TextEmoteSpeechList, function(index)
+			local emote = TextEmoteSpeechList[index];
+			if (emote == EMOTE454_TOKEN) or (emote == EMOTE455_TOKEN) then
+				local faction = UnitFactionGroup("player", true);
+				if faction == "Alliance" then
+					emote = EMOTE454_TOKEN;
+				elseif faction == "Horde" then
+					emote = EMOTE455_TOKEN;
+				end
+			end
+			DoEmote(emote);
+		end);
+
+		local macroButton = rootDescription:CreateButton(MACRO, function()
+			ShowMacroFrame();
+		end);
+		AddSlashInitializer(macroButton, SLASH_MACRO1);
+	end);
+end
+
+function ChatFrameMenuButtonMixin:Reinitialize()
+	self:GenerateMenu();
+end
+
+function ChatFrameMenuButtonMixin:OnEvent(event, ...)
+	self:Reinitialize();
+end
+
+function ChatFrameMenuButtonMixin:OnShow()
+	self:Reinitialize();
 end

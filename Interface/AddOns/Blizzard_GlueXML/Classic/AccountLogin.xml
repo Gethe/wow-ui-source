@@ -7,7 +7,7 @@
 			<KeyValue key="backdropBorderColor" value="GLUE_BACKDROP_BORDER_COLOR" type="global"/>
 		</KeyValues>
 	</Frame>
-
+	
 	<Button name="AccountNameButton" virtual="true">
 		<Size x="250" y="20"/>
 		<Layers>
@@ -132,15 +132,26 @@
 						<Anchor point="TOP" x="0" y="-80"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="TextTitle" inherits="GlueFontNormalLarge" justifyH="CENTER" text="CHINA_AGE_APPROPRIATENESS_TEXT_TITLE">
+				<FontString parentKey="HealthyGamingTextTitle" inherits="GlueFontNormalLarge" justifyH="CENTER" text="CHINA_HEALTHY_GAMING_TEXT_TITLE">
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.Icon" relativePoint="BOTTOM" x="0" y="-50"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="Text" inherits="GlueFontNormalLarge" justifyH="LEFT" text="CHINA_AGE_APPROPRIATENESS_TEXT">
+				<FontString parentKey="HealthyGamingText" inherits="GlueFontNormalLarge" justifyH="LEFT" text="CHINA_HEALTHY_GAMING_TEXT">
 					<Size x="940" y="0"/>
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.TextTitle" relativePoint="BOTTOM" x="0" y="0"/>
+						<Anchor point="TOP" relativeKey="$parent.HealthyGamingTextTitle" relativePoint="BOTTOM" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="AgeAppropriatenessTextTitle" inherits="GlueFontNormalLarge" justifyH="CENTER" text="CHINA_AGE_APPROPRIATENESS_TEXT_TITLE">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.HealthyGamingText" relativePoint="BOTTOM" x="0" y="-25"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="AgeAppropriatenessText" inherits="GlueFontNormalLarge" justifyH="LEFT" text="CHINA_AGE_APPROPRIATENESS_TEXT">
+					<Size x="940" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.AgeAppropriatenessTextTitle" relativePoint="BOTTOM" x="0" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -150,7 +161,7 @@
 			<Button parentKey="OkayButton" inherits="GlueButtonTemplate" text="OKAY">
 				<Size x="150" y="30"/>
 				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.Text" relativePoint="BOTTOM" x="0" y="-50"/>
+					<Anchor point="TOP" relativeKey="$parent.AgeAppropriatenessText" relativePoint="BOTTOM" x="0" y="-50"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="ChinaAgeAppropriatenessWarning_Close"/>
@@ -819,14 +830,11 @@
 							<OnKeyDown function="TokenEntry_OnKeyDown"/>
 						</Scripts>
 					</Frame>
-					<Frame parentKey="AccountsDropDown" name="AccountLoginDropDown" inherits="UIDropDownMenuTemplate">
+					<DropdownButton parentKey="AccountsDropdown" inherits="WowStyle1DropdownTemplate">
 						<Anchors>
-							<Anchor point="TOP" relativeKey="$parent.AccountEditBox" relativePoint="BOTTOM" x="2" y="5"/>
+							<Anchor point="TOP" relativeKey="$parent.AccountEditBox" relativePoint="BOTTOM" x="2" y="-2"/>
 						</Anchors>
-						<Scripts>
-							<OnLoad function="AccountLoginDropDown_OnLoad"/>
-						</Scripts>
-					</Frame>
+					</DropdownButton>
 				</Frames>
 				<Animations>
 					<AnimationGroup parentKey="FadeIn" setToFinalAlpha="true">

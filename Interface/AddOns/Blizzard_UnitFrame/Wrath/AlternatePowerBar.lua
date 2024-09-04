@@ -35,7 +35,6 @@ function AlternatePowerBar_OnEvent(self, event, arg1)
 		AlternatePowerBar_UpdateValue(self);
 		AlternatePowerBar_UpdatePowerType(self);
 	elseif( (event == "UNIT_MAXPOWER") ) then
-		local parent = self:GetParent();
 		if arg1 == parent.unit then
 			AlternatePowerBar_UpdateMaxValues(self);
 		end

@@ -10,30 +10,6 @@ function CollectionsJournal_GetTab(self)
 	return PanelTemplates_GetSelectedTab(self);
 end
 
-local function ShouldShowHeirloomTabHelpTip()
-	if GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HEIRLOOM_JOURNAL_TAB) or Kiosk.IsEnabled() then
-		return false;
-	end
-
-	if PetJournal_HelpPlate and HelpPlate_IsShowing(PetJournal_HelpPlate) then
-		return false;
-	end
-
-	return C_Heirloom.ShouldShowHeirloomHelp();
-end
-
-local function ShouldShowWardrobeTabHelpTip()
-	if GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_JOURNAL_TAB) or Kiosk.IsEnabled() then
-		return false;
-	end
-
-	if PetJournal_HelpPlate and HelpPlate_IsShowing(PetJournal_HelpPlate) then
-		return false;
-	end
-
-	return true;
-end
-
 function CollectionsJournal_ValidateTab(tabNum)
 	return true;
 end

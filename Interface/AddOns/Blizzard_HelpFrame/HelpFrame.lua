@@ -101,14 +101,15 @@ function HelpFrameMixin:OnError(msg)
 	end
 
 end
-function HelpFrameMixin:ShowFrame(key)
+function HelpFrameMixin:ShowFrame(key, contextKey)
 	if key == HELPFRAME_SUBMIT_TICKET then
 		navigateHomeOnShow = false;
 	else
 		navigateHomeOnShow = true;
 	end
 
-	ShowUIPanel(HelpFrame);
+	local force = nil;
+	ShowUIPanel(HelpFrame, force, contextKey);
 end
 
 function HelpFrame_IsGMTicketQueueActive()

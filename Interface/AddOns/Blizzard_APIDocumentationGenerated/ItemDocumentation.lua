@@ -15,6 +15,20 @@ local Item =
 			Type = "Function",
 		},
 		{
+			Name = "CanBeRefunded",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canBeRefunded", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CanItemTransmogAppearance",
 			Type = "Function",
 
@@ -233,6 +247,7 @@ local Item =
 				{ Name = "includeBank", Type = "bool", Nilable = false, Default = false },
 				{ Name = "includeUses", Type = "bool", Nilable = false, Default = false },
 				{ Name = "includeReagentBank", Type = "bool", Nilable = false, Default = false },
+				{ Name = "includeAccountBank", Type = "bool", Nilable = false, Default = false },
 			},
 
 			Returns =
@@ -297,6 +312,21 @@ local Item =
 			{
 				{ Name = "gemName", Type = "string", Nilable = false },
 				{ Name = "gemLink", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "GetItemGemID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "gemID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -420,6 +450,20 @@ local Item =
 			},
 		},
 		{
+			Name = "GetItemInventorySlotKey",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "inventorySlot", Type = "InventoryType", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "GetItemInventoryType",
 			Type = "Function",
 
@@ -515,6 +559,34 @@ local Item =
 			Returns =
 			{
 				{ Name = "itemName", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "GetItemNumAddedSockets",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "socketCount", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetItemNumSockets",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "socketCount", Type = "number", Nilable = false },
 			},
 		},
 		{

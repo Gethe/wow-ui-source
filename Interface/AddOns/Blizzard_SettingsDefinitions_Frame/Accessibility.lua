@@ -18,15 +18,25 @@ function QuestTextPreviewMixin:UpdatePreview(value)
 	self.BodyText:SetTextColor(textColor[1], textColor[2], textColor[3]);
 end
 
+ArachnophobiaMixin = {};
+
+function ArachnophobiaMixin:OnLoad()
+	SettingsCheckboxControlMixin.OnLoad(self);
+
+	self.SubTextContainer:SetPoint("TOPLEFT", self.Checkbox, "TOPRIGHT", 0, 0);
+	self.SubTextContainer.SubText:ClearAllPoints();
+	self.SubTextContainer.SubText:SetPoint("LEFT", self.Checkbox, "RIGHT", 8, 0);
+end
+
 local function Register()
 	local category, layout = Settings.RegisterVerticalLayoutCategory(ACCESSIBILITY_GENERAL_LABEL);
 
 	-- Move Pad
-	Settings.SetupCVarCheckBox(category, "enableMovePad", MOVE_PAD, OPTION_TOOLTIP_MOVE_PAD);
+	Settings.SetupCVarCheckbox(category, "enableMovePad", MOVE_PAD, OPTION_TOOLTIP_MOVE_PAD);
 	Settings.LoadAddOnCVarWatcher("enableMovePad", "Blizzard_MovePad");
 
 	--Cinematic Subtitles
-	Settings.SetupCVarCheckBox(category, "movieSubtitle", CINEMATIC_SUBTITLES, OPTION_TOOLTIP_CINEMATIC_SUBTITLES);
+	Settings.SetupCVarCheckbox(category, "movieSubtitle", CINEMATIC_SUBTITLES, OPTION_TOOLTIP_CINEMATIC_SUBTITLES);
 	
 	-- Alternate Full Screen Effects
 	AccessibilityOverrides.CreatePhotosensitivitySetting(category);
@@ -42,8 +52,8 @@ local function Register()
 				SetCVar("questTextContrast", value);
 			end
 
-			local function OnEntryEnter(value)
-				SettingsPanel.QuestTextPreview:UpdatePreview(value);
+			local function OnOptionEnter(optionData)
+				SettingsPanel.QuestTextPreview:UpdatePreview(optionData.value);
 			end
 		
 			local function GetOptions()
@@ -53,12 +63,19 @@ local function Register()
 				container:Add(2, QUEST_BG_LIGHT2);
 				container:Add(3, QUEST_BG_LIGHT3);
 				container:Add(4, QUEST_BG_DARK);
+
 				local data = container:GetData();
-				for index, entryData in ipairs(data) do
-					entryData.OnEnter = OnEntryEnter;
+				for index, optionData in ipairs(data) do
+					optionData.onEnter = OnOptionEnter;
 				end
 				return data;
 			end
+
+			local defaultValue = 0;
+			local setting = Settings.RegisterProxySetting(category, "PROXY_QUEST_TEXT_CONTRAST",
+				Settings.VarType.Number, ENABLE_QUEST_TEXT_CONTRAST, defaultValue, GetValue, SetValue);
+
+			local initializer = Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_ENABLE_QUEST_TEXT_CONTRAST);
 
 			local function OnShow()
 				SettingsPanel.QuestTextPreview:Show();
@@ -68,12 +85,8 @@ local function Register()
 				SettingsPanel.QuestTextPreview:Hide();
 			end
 			
-			local defaultValue = 0;
-			local setting = Settings.RegisterProxySetting(category, "PROXY_QUEST_TEXT_CONTRAST", Settings.DefaultVarLocation,
-				Settings.VarType.Number, ENABLE_QUEST_TEXT_CONTRAST, defaultValue, GetValue, SetValue);
-			setting.OnShow = OnShow;
-			setting.OnHide = OnHide;
-			Settings.CreateDropDown(category, setting, GetOptions, OPTION_TOOLTIP_ENABLE_QUEST_TEXT_CONTRAST);
+			initializer.OnShow = OnShow;
+			initializer.OnHide = OnHide;
 		end
 	end
 
@@ -99,9 +112,9 @@ local function Register()
 		end
 
 		local defaultValue = false;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_SICKNESS", Settings.DefaultVarLocation, 
+		local setting = Settings.RegisterProxySetting(category, "PROXY_SICKNESS",
 			Settings.VarType.Boolean, MOTION_SICKNESS_CHECKBOX, defaultValue, GetValue, SetValue);
-		local initializer = Settings.CreateCheckBox(category, setting, OPTION_TOOLTIP_MOTION_SICKNESS_CHECKBOX);
+		local initializer = Settings.CreateCheckbox(category, setting, OPTION_TOOLTIP_MOTION_SICKNESS_CHECKBOX);
 		initializer:AddSearchTags(MOTION_SICKNESS_CHECKBOX);
 	end
 
@@ -144,9 +157,9 @@ local function Register()
 		end
 
 		local defaultValue = 3;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_SICKNESS_SHAKE", Settings.DefaultVarLocation,
+		local setting = Settings.RegisterProxySetting(category, "PROXY_SICKNESS_SHAKE",
 			Settings.VarType.Number, ADJUST_MOTION_SICKNESS_SHAKE, defaultValue, GetValue, SetValue);
-		local initializer = Settings.CreateDropDown(category, setting, GetOptions, OPTION_TOOLTIP_ADJUST_MOTION_SICKNESS_SHAKE);
+		local initializer = Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_ADJUST_MOTION_SICKNESS_SHAKE);
 		initializer:AddSearchTags(MOTION_SICKNESS_CHECKBOX);
 	end
 
@@ -167,11 +180,14 @@ local function Register()
 			return container:GetData();
 		end
 		local setting = Settings.RegisterCVarSetting(category, "cursorSizePreferred", Settings.VarType.Number, CURSOR_SIZE);
-		Settings.CreateDropDown(category, setting, GetOptions, CURSOR_SIZE_TOOLTIP);
+		Settings.CreateDropdown(category, setting, GetOptions, CURSOR_SIZE_TOOLTIP);
 	end
 
 	-- Enable Raid Self Highlight (Source in Combat)
 	layout:AddMirroredInitializer(Settings.RaidSelfHighlightInitializer);
+
+	-- Show Silhouette when Obscured (Source in Combat)
+	layout:AddMirroredInitializer(Settings.OccludedSilhouettePlayerInitializer);
 
 	-- Enable Spell Alert Opacity (Source in Combat)
 	if C_CVar.GetCVar("spellActivationOverlayOpacity") then
@@ -200,9 +216,9 @@ local function Register()
 		end
 		
 		local defaultValue = false;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_TARGET_TOOLTIP", Settings.DefaultVarLocation, 
+		local setting = Settings.RegisterProxySetting(category, "PROXY_TARGET_TOOLTIP",
 			Settings.VarType.Boolean, TARGET_TOOLTIP_OPTION, defaultValue, GetValue, SetValue);
-		Settings.CreateCheckBox(category, setting, OPTION_TOOLTIP_TARGET_TOOLTIP);
+		Settings.CreateCheckbox(category, setting, OPTION_TOOLTIP_TARGET_TOOLTIP);
 	end
 
 	-- Interact Key Icons
@@ -248,10 +264,15 @@ local function Register()
 			return container:GetData();
 		end
 
-		local defaultValue = 3;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_INTERACT_ICONS", Settings.DefaultVarLocation,
+		local defaultValue = 1;
+		local setting = Settings.RegisterProxySetting(category, "PROXY_INTERACT_ICONS",
 			Settings.VarType.Number, INTERACT_ICONS_OPTION, defaultValue, GetValue, SetValue);
-		Settings.CreateDropDown(category, setting, GetOptions, OPTION_TOOLTIP_INTERACT_ICONS);
+		Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_INTERACT_ICONS);
+	end
+
+	-- Arachnophobia 
+	do
+		AccessibilityOverrides.CreateArachnophobiaSetting(category, layout);
 	end
 
 	Settings.RegisterCategory(category, SETTING_GROUP_ACCESSIBILITY);

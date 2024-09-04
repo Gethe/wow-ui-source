@@ -269,6 +269,15 @@ local Transmog =
 			},
 		},
 		{
+			Name = "LoadOutfit",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "outfitID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "SetPending",
 			Type = "Function",
 
@@ -425,6 +434,17 @@ local Transmog =
 			{
 				{ Name = "itemLink", Type = "string", Nilable = false },
 				{ Name = "text", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "TransmogSetItemInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false },
+				{ Name = "itemModifiedAppearanceID", Type = "number", Nilable = false },
+				{ Name = "invSlot", Type = "number", Nilable = false },
+				{ Name = "invType", Type = "string", Nilable = false },
 			},
 		},
 		{

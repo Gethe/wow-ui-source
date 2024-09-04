@@ -7,6 +7,10 @@ function IsPlayerGuid(guid)
 end
 
 function IsPlayerInitialSpec()
+	if(GetSpecialization() == nil) then
+		return false
+	end
+
 	return GetSpecialization() > GetNumSpecializations();
 end
 
