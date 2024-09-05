@@ -265,6 +265,8 @@ function AuctionFrame_OnLoad (self)
 	MoneyInputFrame_SetNextFocus(BuyoutPrice, AuctionsStackSizeEntry);
 
 	BrowseFilterScrollFrame.ScrollBar.scrollStep = BROWSE_FILTER_HEIGHT;
+
+	BrowseDropdown.Text:SetJustifyH("RIGHT");
 	
 	-- Init search dot count
 	AuctionFrameBrowse.dotCount = 0;

@@ -55,10 +55,10 @@ end
 do
 	local inset = 
 	{
-		left = 12, 
-		top = 7, 
-		right = 12,
-		bottom = 7,
+		left = 16, 
+		top = 10, 
+		right = 16,
+		bottom = 10,
 	};
 
 	function MenuStyle1Mixin:GetInset()

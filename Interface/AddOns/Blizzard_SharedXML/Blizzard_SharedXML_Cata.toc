@@ -34,6 +34,7 @@ EasingUtil.lua
 PixelUtilSecure.lua
 PixelUtil.lua
 AnchorUtil.lua
+GridLayoutUtil.lua
 VectorLib.xml
 Classic\NineSliceLayouts.lua
 NineSlice.lua

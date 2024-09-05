@@ -1,3 +1,4 @@
+local envTable = GetCurrentEnvironment();
 
 --Local variables (here instead of as members on frames for now)
 local JustOrderedProduct = false;
@@ -931,9 +932,7 @@ function StoreFrame_OnLoad(self)
 		self:SetScript("OnKeyDown",
 			function(self, key)
 				if ( key == "ESCAPE" ) then
-					if ( _G.ModelPreviewFrame:IsShown() ) then
-						_G.ModelPreviewFrame:Hide();
-					else
+					if not StoreOutbound.TryHideModelPreviewFrame() then
 						StoreFrame:SetAttribute("action", "EscapePressed");
 					end
 				end
@@ -1076,7 +1075,7 @@ function StoreFrame_OnEvent(self, event, ...)
 	elseif (event == "SUBSCRIPTION_CHANGED_KICK_IMMINENT") then
 		if not SimpleCheckout:IsShown() then
 			self:Hide();
-			_G.GlueDialog_Show("SUBSCRIPTION_CHANGED_KICK_WARNING");
+			GlueDialog_Show("SUBSCRIPTION_CHANGED_KICK_WARNING");
 		end
 	elseif (event == "LOGIN_STATE_CHANGED") then
 		if (IsOnGlueScreen()) then
@@ -1116,7 +1115,7 @@ function StoreFrame_OnShow(self)
 	PlaySound(SOUNDKIT.UI_IG_STORE_WINDOW_OPEN_BUTTON);
 end
 
-function StoreFrame_OnHide(self)	
+function StoreFrame_OnHide(self)
 	self:SetAttribute("isshown", false);
 	-- TODO: Fix so will only hide if Store showed the preview frame
 	StoreOutbound.HidePreviewFrame();
@@ -1124,7 +1123,7 @@ function StoreFrame_OnHide(self)
 		StoreOutbound.UpdateMicroButtons();
 	else
 		GlueParent_RemoveModalFrame(self);
-		GlueParent_UpdateDialogs();
+		StoreOutbound.UpdateDialogs();
 	end
 
 	if (VASReady) then
@@ -1151,10 +1150,10 @@ function StoreFrame_OnMouseWheel(self, value)
 end
 
 function StoreFrame_OnCharacterBoostDelivered(self)
-	if (IsOnGlueScreen() and BoostDeliveredUsageReason and not _G.CharacterSelect.undeleting) then
+	if (IsOnGlueScreen() and BoostDeliveredUsageReason and not StoreOutbound.IsCharacterSelectUndeleting()) then
 		self:Hide();
 
-		_G.CharacterUpgradePopup_OnCharacterBoostDelivered(BoostType, BoostDeliveredUsageGUID, BoostDeliveredUsageReason);
+		CharacterUpgradePopup_OnCharacterBoostDelivered(BoostType, BoostDeliveredUsageGUID, BoostDeliveredUsageReason);
 	elseif (not IsOnGlueScreen() and StoreFrameHasBeenShown and not StoreOutbound.IsExpansionTrialUpgradeDialogShowing()) then
 		self:Hide();
 
@@ -1173,7 +1172,7 @@ end
 function StoreFrame_OnLegionDelivered(self)
 	self:Hide();
 	if (IsOnGlueScreen()) then
-		_G.GlueDialog_Show("LEGION_PURCHASE_READY");
+		GlueDialog_Show("LEGION_PURCHASE_READY");
 	else
 		ServicesLogoutPopup_SetShowReason(ServicesLogoutPopup, "forLegion");
 	end
@@ -1587,6 +1586,7 @@ function SplashSingleBuyButton_OnLeave(self)
 	StoreProductCard_OnLeave(parent);
 end
 
+
 function StoreFrame_BeginPurchase(entryID)
 	local entryInfo = C_StoreSecure.GetEntryInfo(entryID);
 	if ( entryInfo.alreadyOwned ) then
@@ -1993,7 +1993,7 @@ function StoreVASValidationFrame_SetVASStart(self)
 	end
 
 	VASServiceType = productInfo.sharedData.vasServiceType;
-	VASServiceCanChangeAccount = productInfo.sharedData.canChangeAccount and (productInfo.sharedData.canChangeBNetAccount or (#_G.C_Login.GetGameAccounts() > 1));
+	VASServiceCanChangeAccount = productInfo.sharedData.canChangeAccount and (productInfo.sharedData.canChangeBNetAccount or (#C_Login.GetGameAccounts() > 1));
 
 	SelectedCharacter = nil;
 	for list, _ in pairs(StoreDropdownLists) do
@@ -2004,7 +2004,7 @@ function StoreVASValidationFrame_SetVASStart(self)
 	self.CharacterSelectionFrame.ContinueButton:Show();
 	self.CharacterSelectionFrame.Spinner:Hide();
 	local realmList = C_StoreSecure.GetRealmList();
-	SelectedRealm = #realmList > 0 and realmList[1] or _G.GetServerName();
+	SelectedRealm = #realmList > 0 and realmList[1] or GetServerName();
 
 	SelectedDestinationRealmID = nil;
 	SelectedDestinationWowAccount = nil;
@@ -2147,7 +2147,7 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 			JustFinishedOrdering = WaitingOnVASToComplete == WaitingOnVASToCompleteToken;
 			local fromVASPurchaseCompletion = true;
 			StoreFrame_UpdateActivePanel(StoreFrame, fromVASPurchaseCompletion);
-		elseif (IsOnGlueScreen() and _G.CharacterSelect:IsVisible()) then
+		elseif (IsOnGlueScreen() and StoreOutbound.IsCharacterSelectVisible()) then
 			StoreVASValidationFrame_OnVasProductComplete(StoreVASValidationFrame);
 		end
 	elseif ( event == "VAS_TRANSFER_VALIDATION_UPDATE" ) then
@@ -2180,13 +2180,13 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 			queueTime = factionTransfer;
 		end
 		if (queueTime > Enum.VasQueueStatus.UnderAnHour) then
-				self.Disclaimer:SetTextColor("P", _G.RED_FONT_COLOR:GetRGB());
+				self.Disclaimer:SetTextColor("P", RED_FONT_COLOR:GetRGB());
 		else
-				self.Disclaimer:SetTextColor("P", 0, 0, 0);
+				self.Disclaimer:SetTextColor("P",0, 0, 0);
 		end
 		local currencyInfo = SecureCurrencyUtil.GetActiveCurrencyInfo();
 		local vasDisclaimerData = currencyInfo.vasDisclaimerData;
-		self.Disclaimer:SetText(HTML_START_CENTERED..string.format(vasDisclaimerData[VASServiceType].disclaimer, _G["VAS_QUEUE_"..VasQueueStatusToString[queueTime]])..HTML_END);
+		self.Disclaimer:SetText(HTML_START_CENTERED..string.format(vasDisclaimerData[VASServiceType].disclaimer, envTable["VAS_QUEUE_"..VasQueueStatusToString[queueTime]])..HTML_END);
 
 		-- More visible alert for Classic FCM.
 		if (VASServiceType == Enum.VasServiceType.CharacterTransfer) then
@@ -2198,7 +2198,7 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 				stringColor = "|cff000000";
 			end
 
-			local timeString = _G["VAS_QUEUE_"..VasQueueStatusToString[queueTime]];
+			local timeString = envTable["VAS_QUEUE_"..VasQueueStatusToString[queueTime]];
 			if (stringColor) then
 				timeString = stringColor .. timeString .. "|r";
 			end
@@ -2456,7 +2456,7 @@ end
 function StoreProductCard_CheckShowStorePreviewOnClick(self)
 	local showPreview;
 	if ( IsOnGlueScreen() ) then
-		showPreview = _G.IsControlKeyDown();
+		showPreview = IsControlKeyDown();
 	else
 		showPreview = IsModifiedClick("DRESSUP");
 	end
@@ -3211,23 +3211,23 @@ function VASCharacterSelectionChangeIconFrame_OnEnter(self)
 	for i = 1, #races do
 		local raceInfo = races[i];
 		if (raceInfo.isAlliedRace and not raceInfo.isHeritageArmorUnlocked) then
-			descStr = descStr .. string.format(_G.BLIZZARD_STORE_VAS_RACE_CHANGE_TOOLTIP_LINE_ALLIED_RACE, raceInfo.raceName);
+			descStr = descStr .. string.format(BLIZZARD_STORE_VAS_RACE_CHANGE_TOOLTIP_LINE_ALLIED_RACE, raceInfo.raceName);
 			seenAlliedRace = true;
 		else
-			descStr = descStr .. string.format(_G.BLIZZARD_STORE_VAS_RACE_CHANGE_TOOLTIP_LINE, raceInfo.raceName);
+			descStr = descStr .. string.format(BLIZZARD_STORE_VAS_RACE_CHANGE_TOOLTIP_LINE, raceInfo.raceName);
 		end
 		if (i ~= #races) then
 			descStr = descStr .. "|n";
 		end
 	end
 	if (seenAlliedRace) then
-		descStr = descStr .. "|n" .. _G.BLIZZARD_STORE_VAS_ALLIED_RACE_CHANGE_HERITAGE_WARNING;
+		descStr = descStr .. "|n" .. BLIZZARD_STORE_VAS_ALLIED_RACE_CHANGE_HERITAGE_WARNING;
 	end
 
 	StoreTooltip:ClearAllPoints();
 	StoreTooltip:SetPoint("BOTTOMLEFT", self, "TOP", 0, -4);
 	local title = "";
-	title = string.format(_G.BLIZZARD_STORE_VAS_RACE_CHANGE_TITLE, character.name);
+	title = string.format(BLIZZARD_STORE_VAS_RACE_CHANGE_TITLE, character.name);
 	StoreTooltip_Show(title, descStr);
 end
 
@@ -3246,7 +3246,7 @@ function VASCharacterSelectionChangeIconFrame_SetIcons(character, serviceType)
 	end
 
 	local fromIcon = frame.FromIcon;
-	fromIcon.Icon:SetAtlas(_G.GetRaceAtlas(string.lower(character.raceFileName), gender), false);
+	fromIcon.Icon:SetAtlas(GetRaceAtlas(string.lower(character.raceFileName), gender), false);
 	fromIcon.Icon:SetTexCoord(0.0625, 0.9375, 0.0625, 0.9375);
 	fromIcon:Show();
 
@@ -3272,7 +3272,7 @@ function VASCharacterSelectionChangeIconFrame_SetIcons(character, serviceType)
 	end
 	toIcon:Show();
 
-	frame.ViewRaces:SetText(_G.BLIZZARD_STORE_VAS_RACE_CHANGE_VIEW_AVAILABLE_RACES);
+	frame.ViewRaces:SetText(BLIZZARD_STORE_VAS_RACE_CHANGE_VIEW_AVAILABLE_RACES);
 
 	frame:Show();
 end
@@ -3492,7 +3492,7 @@ function VASCharacterSelectionTransferRealmEditBoxAutoCompleteButton_OnClick(sel
 	local doRussianCategoryHack = (realmInfo.categoryID == 12 and C_StoreSecure.GetCurrentRealmContentSet() >= 1 and realmInfo.expansionLevel >= 1);
 
 	if (character and realmInfo and realmInfo.factionRestriction >= 0 and realmInfo.factionRestriction ~= character.faction) then
-		frame.TransferRealmCheckbox.Warning:SetTextColor(_G.RED_FONT_COLOR:GetRGB());
+		frame.TransferRealmCheckbox.Warning:SetTextColor(RED_FONT_COLOR:GetRGB());
 		frame.TransferRealmCheckbox.Warning:SetText(BLIZZARD_STORE_VAS_TRANSFER_INELIGIBLE_FACTION_WARNING);
 		frame.TransferRealmCheckbox.Warning:Show();
 	elseif (realmInfo and realmInfo.categoryID and realmInfo.category and
@@ -3555,13 +3555,13 @@ function VASCharacterSelectionTransferRealmEditBox_UpdateAutoComplete(self, text
 		button:SetScript("OnClick", VASCharacterSelectionTransferRealmEditBoxAutoCompleteButton_OnClick);
 		button.info = VAS_AUTO_COMPLETE_ENTRIES[entryIndex];
 		local rpPvpInfo = RealmInfoMap[VAS_AUTO_COMPLETE_ENTRIES[entryIndex]];
-		local tag = _G.VAS_PVE_PARENTHESES;
+		local tag = VAS_PVE_PARENTHESES;
 		if (rpPvpInfo.pvp and rpPvpInfo.rp) then
-			tag = _G.VAS_RPPVP_PARENTHESES;
+			tag = VAS_RPPVP_PARENTHESES;
 		elseif (rpPvpInfo.pvp) then
-			tag = _G.VAS_PVP_PARENTHESES;
+			tag = VAS_PVP_PARENTHESES;
 		elseif (rpPvpInfo.rp) then
-			tag = _G.VAS_RP_PARENTHESES;
+			tag = VAS_RP_PARENTHESES;
 		end
 
 		-- Russian realms are all part of the same CFG_Categories, so we cannot use that to differentiate between progression/era/seasonal
@@ -3855,11 +3855,11 @@ function VASCharacterSelectionContinueButton_OnClick(self)
 	if ( VASServiceType == Enum.VasServiceType.NameChange ) then
 		NewCharacterName = self:GetParent().NewCharacterName:GetText();
 
-		local valid, reason = _G.C_CharacterCreation.IsCharacterNameValid(NewCharacterName);
+		local valid, reason = C_CharacterCreation.IsCharacterNameValid(NewCharacterName);
 		if ( not valid) then
 			self:GetParent().ValidationDescription:SetFontObject("GameFontBlackSmall2");
 			self:GetParent().ValidationDescription:SetTextColor(1.0, 0.1, 0.1);
-			self:GetParent().ValidationDescription:SetText(_G[reason]);
+			self:GetParent().ValidationDescription:SetText(envTable[reason]);
 			self:GetParent().ValidationDescription:Show();
 			StoreVASValidationState_Unlock();
 			self:GetParent().ContinueButton:Disable();
@@ -3885,7 +3885,7 @@ function VASCharacterSelectionContinueButton_OnClick(self)
 			wowAccountGUID = C_StoreSecure.GetWoWAccountGUIDFromName(SelectedDestinationWowAccount, true);
 		end
 	end
-	
+
 	if ( C_StoreSecure.PurchaseVASProduct(entryInfo.productID, characters[SelectedCharacter].guid, NewCharacterName, DestinationRealmMapping[SelectedDestinationRealmID], wowAccountGUID, bnetAccountGUID, CharacterTransferFactionChangeBundle) ) then
 		WaitingOnConfirmation = true;
 		WaitingOnConfirmationTime = GetTime();
@@ -3909,7 +3909,7 @@ function VASCharacterSelectionTransferAccountDropdown_OnClick(self)
 	end
 	local characters = C_StoreSecure.GetCharactersForRealm(SelectedRealm);
 	local character = characters[SelectedCharacter];
-	local gameAccounts = _G.C_Login.GetGameAccounts();
+	local gameAccounts = C_Login.GetGameAccounts();
 	local infoTable = {};
 	for i, gameAccount in ipairs(gameAccounts) do
 		if (C_StoreSecure.GetWoWAccountGUIDFromName(gameAccount, true) ~= character.wowAccount) then

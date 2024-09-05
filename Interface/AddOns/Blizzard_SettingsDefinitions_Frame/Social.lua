@@ -18,11 +18,40 @@ local function Register()
 			ChatConfigFrame_OnChatDisabledChanged(disabled);
 		end
 
+		local function GetDisabledChatTooltip()
+			local tooltip = OPTION_TOOLTIP_DISABLE_CHAT;
+
+			-- If the account is muted give the player extra information on how to unmute it.
+			if C_SocialRestrictions.IsMuted() == true then
+				tooltip = tooltip .. "\n\n" .. RED_FONT_COLOR:WrapTextInColorCode(OPTION_TOOLTIP_DISABLE_CHAT_ACCOUNT_MUTE);
+			end
+
+			return tooltip;
+		end
+
+		local function CanDisableChatBeChanged()
+			-- The option can't be changed if the account is muted.
+			return C_SocialRestrictions.IsMuted() == false;
+		end
+
 		local defaultValue = false;
+		
+		local function GetDisableChatDefaultValue()
+			-- The option defaults to true if the account is muted.
+			if C_SocialRestrictions.IsMuted() == true then
+				return true;
+			end
+
+			return defaultValue;
+		end
+
 		local setting = Settings.RegisterProxySetting(category, "PROXY_DISABLE_CHAT",
 			Settings.VarType.Boolean, RESTRICT_CHAT_CONFIG_DISABLE, defaultValue, C_SocialRestrictions.IsChatDisabled, SetChatDisabled);
-		local initializer = Settings.CreateCheckbox(category, setting, OPTION_TOOLTIP_DISABLE_CHAT);
+		setting.GetDefaultValueDerived = GetDisableChatDefaultValue;
+
+		local initializer = Settings.CreateCheckbox(category, setting, GetDisabledChatTooltip);
 		initializer:SetSettingIntercept(InterceptDisableChatChanged);
+		initializer:AddModifyPredicate(CanDisableChatBeChanged);
 
 		EventRegistry:RegisterFrameEventAndCallback("CHAT_DISABLED_CHANGED", function()
 			setting:SetValue(C_SocialRestrictions.IsChatDisabled());

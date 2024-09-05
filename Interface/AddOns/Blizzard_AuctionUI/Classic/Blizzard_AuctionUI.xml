@@ -1114,10 +1114,11 @@
 						</Scripts>
 					</EditBox>
 					<DropdownButton name="BrowseDropdown" inherits="WowStyle1DropdownTemplate" id="1">
+						<Size x="130" y="24" />
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="BrowseMaxLevel" relativePoint="TOPRIGHT">
 								<Offset>
-									<AbsDimension x="-6" y="5"/>
+									<AbsDimension x="10" y="4"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -1127,7 +1128,7 @@
 									<Anchors>
 										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
 											<Offset>
-												<AbsDimension x="20" y="0"/>
+												<AbsDimension x="0" y="1"/>
 											</Offset>
 										</Anchor>
 									</Anchors>

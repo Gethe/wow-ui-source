@@ -1,5 +1,5 @@
 function MenuVariants.GetDefaultMenuMixin()
-	return MenuStyle2Mixin;
+	return MenuStyle1Mixin;
 end
 
 function MenuVariants.GetDefaultContextMenuMixin()
