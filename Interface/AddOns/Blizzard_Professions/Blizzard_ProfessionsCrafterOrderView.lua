@@ -301,6 +301,13 @@ function ProfessionsCrafterOrderViewMixin:OnLoad()
     self:InitButtons();
     self:InitRegions();
 
+	local function OnUseBestQualityModified(o, checked)
+		local transaction = self.OrderDetails.SchematicForm:GetTransaction();
+		Professions.AllocateAllBasicReagents(transaction, checked);
+		self:UpdateCreateButton();
+	end
+
+	self.OrderDetails.SchematicForm:RegisterCallback(ProfessionsRecipeSchematicFormMixin.Event.UseBestQualityModified, OnUseBestQualityModified, self);
     self.OrderDetails.SchematicForm.postInit = function() self:SchematicPostInit(); end;
 end
 

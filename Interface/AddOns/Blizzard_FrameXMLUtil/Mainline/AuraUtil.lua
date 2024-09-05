@@ -78,10 +78,16 @@ do
 			local slot = select(i, ...);
 			local done;
 			local auraInfo = C_UnitAuras.GetAuraDataBySlot(unit, slot);
-			if usePackedAura then
-				done = func(auraInfo);
+
+			-- Protect against GetAuraDataBySlot desyncing with GetAuraSlots and report an error if that occurs so that the inconsistency can be tracked down
+			if auraInfo then
+				if usePackedAura then
+					done = func(auraInfo);
+				else
+					done = func(AuraUtil.UnpackAuraData(auraInfo));
+				end
 			else
-				done = func(AuraUtil.UnpackAuraData(auraInfo));
+				assertsafe(false, "GetAuraDataBySlot failed in ForEachAuraHelper");
 			end
 			if done then
 				-- if func returns true then no further slots are needed, so don't return continuationToken
