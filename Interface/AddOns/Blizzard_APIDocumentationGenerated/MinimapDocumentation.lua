@@ -20,6 +20,10 @@ local Minimap =
 			Type = "Function",
 		},
 		{
+			Name = "ClearMinimapInsetInfo",
+			Type = "Function",
+		},
+		{
 			Name = "GetDefaultTrackingValue",
 			Type = "Function",
 
@@ -206,6 +210,17 @@ local Minimap =
 			Arguments =
 			{
 				{ Name = "ignore", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetMinimapInsetInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "minAngle", Type = "number", Nilable = false },
+				{ Name = "maxAngle", Type = "number", Nilable = false },
+				{ Name = "scalar", Type = "number", Nilable = false },
 			},
 		},
 		{

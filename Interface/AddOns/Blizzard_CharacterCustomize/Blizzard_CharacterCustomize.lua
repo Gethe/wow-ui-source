@@ -1104,8 +1104,17 @@ function CharCustomizeDropdownElementDetailsMixin:UpdateText(choiceData, isSelec
 		self.SelectionName:Show();
 		self.SelectionName:SetWidth(0);
 		self.SelectionName:SetText(choiceData.name);
-		self.SelectionNumber:SetWidth(25);
-		self.SelectionNumberBG:SetWidth(25);
+
+		-- Truncates selected customization text
+		local margins = 2;
+		local selectionNumberWidth = 25;
+		local maxWidth = self:GetParent():GetWidth() - margins - (not hideNumber and selectionNumberWidth or 0);
+		if self.SelectionName:GetWidth() > maxWidth then
+			self.SelectionName:SetWidth(maxWidth);
+		end
+
+		self.SelectionNumber:SetWidth(selectionNumberWidth);
+		self.SelectionNumberBG:SetWidth(selectionNumberWidth);
 	else
 		self.SelectionName:Hide();
 		self.SelectionNumber:SetWidth(0);
@@ -1192,7 +1201,7 @@ function CharCustomizeDropdownElementDetailsMixin:Init(choiceData, index, isSele
 	self:UpdateText(choiceData, isSelected, hasAFailedReq, hideNumber, color1);
 
 	if clampNameSize then
-	local maxNameWidth = 126;
+		local maxNameWidth = 126;
 		if self.SelectionName:GetWidth() > maxNameWidth then
 			self.SelectionName:SetWidth(maxNameWidth);
 		end

@@ -2611,6 +2611,16 @@ function WardrobeItemsCollectionMixin:RefreshAppearanceTooltip()
 		return;
 	end
 	local sources = CollectionWardrobeUtil.GetSortedAppearanceSourcesForClass(self.tooltipVisualID, C_TransmogCollection.GetClassFilter(), self.activeCategory, self.transmogLocation);
+	
+	-- When swapping Classes in the Collections panel,
+	-- There is a quick period of time when moving the
+	-- cursor to another element can produce a size 0
+	-- sources list. This causes a nil error if not 
+	-- guarded against
+	if #sources == 0 then
+		return;
+	end
+
 	local chosenSourceID = self:GetChosenVisualSource(self.tooltipVisualID);	
 	local warningString = CollectionWardrobeUtil.GetBestVisibilityWarning(self.tooltipModel, self.transmogLocation, self.tooltipVisualID);	
 	self:GetParent():SetAppearanceTooltip(self, sources, chosenSourceID, warningString);
@@ -3674,6 +3684,12 @@ function WardrobeSetsCollectionMixin:OnShow()
 		rootDescription:SetTag("MENU_WARDROBE_VARIANT_SETS");
 
 		local selectedSetID = self:GetSelectedSetID();
+		-- If the player has all sets filtered out, there is a chance for this to be nil
+		-- If this is nil, the VariantSetsDropdown should not be visible
+		if not selectedSetID then
+			return;
+		end
+
 		local baseSetID = C_TransmogSets.GetBaseSetID(selectedSetID);
 
 		local function IsSelected(variantSet)

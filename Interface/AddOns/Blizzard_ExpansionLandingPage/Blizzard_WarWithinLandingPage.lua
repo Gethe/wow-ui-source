@@ -108,3 +108,7 @@ function WarWithinLandingOverlayMixin:SetUpMajorFactionList()
 
 	self.MajorFactionList:SetExpansionFilter(LE_EXPANSION_WAR_WITHIN);
 end
+
+function WarWithinLandingOverlayMixin:GetMinimapInsetInfo()
+	return 2.07, 2.54, 0.8;
+end

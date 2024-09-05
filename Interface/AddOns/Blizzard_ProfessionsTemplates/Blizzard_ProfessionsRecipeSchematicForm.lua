@@ -1438,8 +1438,15 @@ function ProfessionsRecipeSchematicFormMixin:UpdateOutputItem()
 	local text;
 	if outputItemInfo.hyperlink then
 		local item = Item:CreateFromItemLink(outputItemInfo.hyperlink);
-		text = WrapTextInColor(item:GetItemName(), item:GetItemQualityColor().color);
-	else
+		if item:IsItemDataCached() then
+			text = WrapTextInColor(item:GetItemName(), item:GetItemQualityColor().color);
+		else
+			item:ContinueOnItemLoad(function()
+				self:UpdateOutputItem();
+			end);
+		end
+	end
+	if not text then
 		text = WrapTextInColor(self.recipeSchematic.name, NORMAL_FONT_COLOR);
 	end
 		
