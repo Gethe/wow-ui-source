@@ -29,7 +29,7 @@ function ScrollBoxListViewMixin:Init()
 	end);
 
 	self.factory = function(frameTemplateOrFrameType, initializer)
-		local frame, new = self.frameFactory:Create(self:GetScrollTarget(), frameTemplateOrFrameType);
+		local frame, new = self.frameFactory:Create(self:GetScrollTarget(), frameTemplateOrFrameType, self.frameFactoryResetter);
 		self.initializers[frame] = initializer;
 
 		if not frame then
@@ -386,9 +386,11 @@ end
 -- factory object is called once layout has completed, ensuring that the frame can access it's effective
 -- dimensions inside it's own initializer.
 function ScrollBoxListViewMixin:InvokeInitializers()
-	for frame, initializer in pairs(self.initializers) do
+	local function SecureInvokeInitializer(frame, initializer)
 		self:InvokeInitializer(frame, initializer);
 	end
+
+	secureexecuterange(self.initializers, SecureInvokeInitializer);
 	wipe(self.initializers);
 end
 
@@ -500,6 +502,10 @@ end
 ]]
 function ScrollBoxListViewMixin:SetElementFactory(elementFactory)
 	self.elementFactory = elementFactory;
+end
+
+function ScrollBoxListViewMixin:SetFrameFactoryResetter(resetter)
+	self.frameFactoryResetter = resetter;
 end
 
 function ScrollBoxListViewMixin:SetElementResetter(resetter)

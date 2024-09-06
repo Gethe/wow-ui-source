@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
-	<Frame name="ColorSwatchTemplate" mixin="ColorSwatchMixin" virtual="true">
+	<Frame name="ColorSwatchTemplate" mixin="ColorSwatchMixin" propagateMouseInput="Both" virtual="true">
 		<Size x="16" y="16"/>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-3">
@@ -37,6 +37,8 @@
 				PixelUtil.SetSize(self.InnerBorder, 12, 12);
 				PixelUtil.SetSize(self.Color, 10, 10);
 			</OnShow>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Frame>
 </Ui>

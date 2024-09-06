@@ -195,6 +195,7 @@ local ScenarioInfo =
 				{ Name = "failed", Type = "bool", Nilable = false, Default = false },
 				{ Name = "isWeightedProgress", Type = "bool", Nilable = false, Default = false },
 				{ Name = "isFormatted", Type = "bool", Nilable = false, Default = false },
+				{ Name = "quantityString", Type = "string", Nilable = false },
 			},
 		},
 		{

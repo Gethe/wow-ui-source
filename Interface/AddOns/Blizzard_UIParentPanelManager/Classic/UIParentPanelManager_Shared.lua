@@ -65,9 +65,6 @@ UISpecialFrames = {
 };
 
 UIMenus = {
-	"ChatMenu",
-	"EmoteMenu",
-	"LanguageMenu",
 	"DropDownList1",
 	"DropDownList2",
 };
@@ -190,6 +187,7 @@ UIPARENT_MANAGED_FRAME_POSITIONS = {
 	-- variable so that other modules can use the most up-to-date value of FOO without having knowledge of the UIPARENT_MANAGED_FRAME_POSITIONS table.
 	["CONTAINER_OFFSET_X"] = {baseX = 0, rightActionBarsX = "variable", isVar = "xAxis"};
 	["CONTAINER_OFFSET_Y"] = {baseY = 70, bottomEither = 27, bottomRight = 0, watchBar = 1, isVar = "yAxis", pet = 1}; -- Adjusted so that Backpack + 4 Mooncloth Bags takes up only 2 columns (like 1.12).
+	["PETACTIONBAR_YOFFSET"] = {baseY = 0, bottomEither = actionBarOffset, watchBar = 1, maxLevel = 1, isVar = "yAxis"};
 	["MULTICASTACTIONBAR_YPOS"] = {baseY = 0, bottomLeft = actionBarOffset, watchBar = 1, maxLevel = 1, isVar = "yAxis"};
 	["OBJTRACKER_OFFSET_X"] = {baseX = 12, rightActionBarsX = "variable", isVar = "xAxis"};
 	["BATTLEFIELD_TAB_OFFSET_Y"] = {baseY = 260, bottomRight = actionBarOffset, watchBar = 1, isVar = "yAxis"};

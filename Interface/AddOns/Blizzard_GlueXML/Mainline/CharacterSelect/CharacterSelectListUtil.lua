@@ -121,7 +121,7 @@ function CharacterSelectListUtil.BuildCharIndexToIDMapping(listSize)
 end
 
 function CharacterSelectListUtil.CheckBuildCharIndexToIDMapping()
-	if not s_characterReorderTranslation or #s_characterReorderTranslation == 0 then
+	if CharacterSelect.undeleteChanged or not s_characterReorderTranslation or #s_characterReorderTranslation == 0 then
 		CharacterSelectListUtil.BuildCharIndexToIDMapping();
 	end
 end
@@ -516,7 +516,7 @@ end
 
 function CharacterSelectListUtil.UpdateCharacterHighlight(guid, isHighlight)
 	CharacterSelectListUtil.ForEachCharacterDo(function(frame)
-		if frame.characterInfo.guid == guid then
+		if frame.characterInfo and frame.characterInfo.guid == guid then
 			frame:UpdateHighlightUI(isHighlight);
 		end
 	end);
@@ -524,6 +524,11 @@ end
 
 -- Click the actual character button in the scroll list, in case it may be otherwise disabled.
 function CharacterSelectListUtil.ClickCharacterFrameByGUID(guid, isDoubleClick)
+	-- If UI is hidden, double clicks are disabled.
+	if not CharacterSelectUI:GetVisibilityState() then
+		isDoubleClick = false;
+	end
+
 	-- First scroll to the character to have the frame present.
 	local characterElementData = CharacterSelectCharacterFrame.ScrollBox:FindElementDataByPredicate(function(elementData)
 		return CharacterSelectListUtil.GetCharacterPositionData(guid, elementData) ~= nil;

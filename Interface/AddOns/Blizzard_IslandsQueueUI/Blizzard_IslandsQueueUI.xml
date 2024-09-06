@@ -194,8 +194,8 @@
 					if (self.notAvailableText) then 
 						GameTooltip_AddColoredLine(EmbeddedItemTooltip, self.notAvailableText, RED_FONT_COLOR, true);
 					end
-					if (HaveQuestData(self.questId) and HaveQuestRewardData(self.questId)) then
-						GameTooltip_AddQuestRewardsToTooltip(EmbeddedItemTooltip, self.questId, TOOLTIP_QUEST_REWARDS_STYLE_ISLANDS_QUEUE);
+					if (HaveQuestData(self.questID) and HaveQuestRewardData(self.questID)) then
+						GameTooltip_AddQuestRewardsToTooltip(EmbeddedItemTooltip, self.questID, TOOLTIP_QUEST_REWARDS_STYLE_ISLANDS_QUEUE);
 						GameTooltip_SetTooltipWaitingForData(EmbeddedItemTooltip, false);
 					else
 						GameTooltip_AddColoredLine(EmbeddedItemTooltip, RETRIEVING_DATA, RED_FONT_COLOR, true);

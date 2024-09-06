@@ -50,16 +50,26 @@ function ClearNewActionHighlight(action, preventIdenticalActionsFromClearing)
 	end
 end
 
-function GetNewActionHighlightMark(action)
+-- Keys within ON_BAR_HIGHLIGHT_MARKS and ACTION_HIGHLIGHT_MARKS are vulnerable to taint from
+-- talent and spellbook code. Will require some investigation.
+local function SecureGetNewActionHighlightMark(action)
 	return ACTION_HIGHLIGHT_MARKS[action];
+end
+
+function GetNewActionHighlightMark(action)
+	return securecallfunction(SecureGetNewActionHighlightMark, action);
 end
 
 function ClearOnBarHighlightMarks()
 	ON_BAR_HIGHLIGHT_MARKS = {};
 end
 
-function GetOnBarHighlightMark(action)
+local function SecureGetOnBarHighlightMark(action)
 	return ON_BAR_HIGHLIGHT_MARKS[action];
+end
+
+function GetOnBarHighlightMark(action)
+	return securecallfunction(SecureGetOnBarHighlightMark, action);
 end
 
 local function UpdateOnBarHighlightMarks(actionButtonSlots)

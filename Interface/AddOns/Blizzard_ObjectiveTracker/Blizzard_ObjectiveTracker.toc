@@ -3,6 +3,7 @@
 ## RequiredDep: Blizzard_MawBuffs
 ## OptionalDeps: Blizzard_UIWidgets, Blizzard_UIWidgets_WoWLabs
 
+Blizzard_ObjectiveTrackerFonts.xml
 Blizzard_ObjectiveTrackerManager.lua
 Blizzard_ObjectiveTrackerShared.lua
 Blizzard_ObjectiveTrackerShared.xml

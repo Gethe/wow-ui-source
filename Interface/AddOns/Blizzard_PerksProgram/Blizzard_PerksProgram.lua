@@ -136,8 +136,8 @@ function PerksProgramMixin:GetAttackAnimationSetting()
 	return self.attackAnimationPlaying;
 end
 
-function PerksProgramMixin:PlayerSetAttackAnimationOnClick(playAttackAnimation)
-	if self:GetAttackAnimationSetting() ~= playAttackAnimation then
+function PerksProgramMixin:PlayerSetAttackAnimationOnClick(playAttackAnimation, forceUpdate)
+	if forceUpdate or self:GetAttackAnimationSetting() ~= playAttackAnimation then
 		self.attackAnimationPlaying = playAttackAnimation;
 		EventRegistry:TriggerEvent("PerksProgram.OnPlayerAttackAnimationSet", playAttackAnimation);
 	end

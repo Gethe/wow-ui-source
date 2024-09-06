@@ -366,6 +366,13 @@ function HelpTipTemplateMixin:OnHide()
 	self:UnregisterEvent("DISPLAY_SIZE_CHANGED");
 
 	local info = self.info;
+	if not self.acknowledged and info.acknowledgeOnHide then
+		self:HandleAcknowledge();
+	end
+	-- Have to release before doing callbacks or reentry could happen because of deferred OnShow/OnHide
+	local acknowledged = self.acknowledged;
+	HelpTip:Release(self);
+
 	local appendFrame = info.appendFrame;
 	if appendFrame then
 		appendFrame:Hide();
@@ -374,15 +381,11 @@ function HelpTipTemplateMixin:OnHide()
 	end
 
 	if info.onHideCallback then
-		info.onHideCallback(self.acknowledged, info.callbackArg);
+		info.onHideCallback(acknowledged, info.callbackArg);
 	end
-	if not self.acknowledged and info.acknowledgeOnHide then
-		self:HandleAcknowledge();
-	end
-	if self.acknowledged and info.onAcknowledgeCallback then
+	if acknowledged and info.onAcknowledgeCallback then
 		info.onAcknowledgeCallback(info.callbackArg);
 	end
-	HelpTip:Release(self);
 end
 
 function HelpTipTemplateMixin:OnEvent()

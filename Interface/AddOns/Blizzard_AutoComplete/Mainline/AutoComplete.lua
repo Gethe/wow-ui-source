@@ -139,7 +139,8 @@ function AutoComplete_OnLoad(self)
 end
 
 local function CheckRequestGuildRoster(canRequestGuildRoster )
-	if canRequestGuildRoster and C_GameModeManager.GetFeatureSetting(Enum.GameModeFeatureSetting.Guilds) then
+	local guildsDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.GuildsDisabled);
+	if canRequestGuildRoster and not guildsDisabled then
 		if ( IsInGuild() ) then
 			C_GuildInfo.GuildRoster();
 			self:UnRegisterEvent("GUILD_ROSTER_UPDATE");

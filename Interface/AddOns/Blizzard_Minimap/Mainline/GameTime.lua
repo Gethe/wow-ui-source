@@ -143,7 +143,8 @@ end
 
 function GameTimeFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.InGameCalendar) then
+	local inGameCalendarDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.IngameCalendarDisabled);
+	if not inGameCalendarDisabled then
 		self:RegisterEvent("CALENDAR_UPDATE_PENDING_INVITES");
 		self:RegisterEvent("CALENDAR_EVENT_ALARM");
 	else

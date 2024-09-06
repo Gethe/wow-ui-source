@@ -109,13 +109,15 @@ function PetJournal_OnLoad(self)
 	view:SetPadding(0,0,44,0,0);
 
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
-	
+
 	PetJournal_InitFilterDropdown(self);
 
 	PetJournal_ShowPetCard(1);
 end
 
 function PetJournal_InitFilterDropdown(self)
+	self.FilterDropdown:SetWidth(90);
+
 	self.FilterDropdown:SetIsDefaultCallback(function()
 		return C_PetJournal.IsUsingDefaultFilters();
 	end);

@@ -129,7 +129,8 @@ function SetItemRef(link, text, button, chatFrame)
 		GMChatStatusFrame_OnClick();
 		return;
 	elseif ( strsub(link, 1, 7) == "levelup" ) then
-		if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.ChatLinkLevelToasts) then
+		local chatLinkLevelToastsDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.ChatLinkLevelToastsDisabled);
+		if not chatLinkLevelToastsDisabled then
 			local _, level, levelUpType, arg1 = strsplit(":", link);
 			EventToastManagerSideDisplay:DisplayToastsByLevel(level);
 		end
@@ -434,15 +435,7 @@ function SetItemRef(link, text, button, chatFrame)
 	elseif (strsub(link, 1, 11) == "talentbuild") then
 		local fixedLink = GetFixedLink(text);
 		if not HandleModifiedItemClick(fixedLink) then
-			local specID, level, inspectString = string.split(":", linkData);
-			level = tonumber(level);
-
-			PlayerSpellsFrame_LoadUI();
-
-			PlayerSpellsFrame:SetInspectString(inspectString, level);
-			if not PlayerSpellsFrame:IsShown() then
-				ShowUIPanel(PlayerSpellsFrame);
-			end
+			PlayerSpellsUtil.InspectLoadout(linkData);
 		end
 		return;
 	elseif ( strsub(link, 1, 13) == "perksactivity" ) then

@@ -95,20 +95,24 @@ end
 
 local EJ_TIER_DATA =
 {
-	[1] = { backgroundAtlas = "UI-EJ-Classic", r = 1.0, g = 0.8, b = 0.0 },
-	[2] = { backgroundAtlas = "UI-EJ-BurningCrusade", r = 0.6, g = 0.8, b = 0.0 },
-	[3] = { backgroundAtlas = "UI-EJ-WrathoftheLichKing", r = 0.2, g = 0.8, b = 1.0 },
-	[4] = { backgroundAtlas = "UI-EJ-Cataclysm", r = 1.0, g = 0.4, b = 0.0 },
-	[5] = { backgroundAtlas = "UI-EJ-MistsofPandaria", r = 0.0, g = 0.6, b = 0.2 },
-	[6] = { backgroundAtlas = "UI-EJ-WarlordsofDraenor", r = 0.82, g = 0.55, b = 0.1 },
-	[7] = { backgroundAtlas = "UI-EJ-Legion", r = 0.0, g = 0.6, b = 0.2 },
-	[8] = { backgroundAtlas = "UI-EJ-BattleforAzeroth", r = 0.8, g = 0.4, b = 0.0 },
-	[9] = { backgroundAtlas = "UI-EJ-Shadowlands", r = 0.278, g = 0.471, b = .937 },
-	[10] = { backgroundAtlas = "UI-EJ-Dragonflight", r = 0.2, g = 0.8, b = 1.0 },
-	[11] = { backgroundAtlas = "UI-EJ-Dragonflight", r = 0.2, g = 0.8, b = 1.0 },
+	[1] = { backgroundAtlas = "UI-EJ-Classic"},
+	[2] = { backgroundAtlas = "UI-EJ-BurningCrusade"},
+	[3] = { backgroundAtlas = "UI-EJ-WrathoftheLichKing"},
+	[4] = { backgroundAtlas = "UI-EJ-Cataclysm"},
+	[5] = { backgroundAtlas = "UI-EJ-MistsofPandaria"},
+	[6] = { backgroundAtlas = "UI-EJ-WarlordsofDraenor"},
+	[7] = { backgroundAtlas = "UI-EJ-Legion"},
+	[8] = { backgroundAtlas = "UI-EJ-BattleforAzeroth"},
+	[9] = { backgroundAtlas = "UI-EJ-Shadowlands"},
+	[10] = { backgroundAtlas = "UI-EJ-Dragonflight"},
+	[11] = { backgroundAtlas = "UI-EJ-TheWarWithin"},
 }
 
 function GetEJTierData(tier)
+	if tier > #EJ_TIER_DATA then
+		local serverExpansionLevel = GetServerExpansionLevel();
+		return EJ_TIER_DATA[serverExpansionLevel]
+	end
 	return EJ_TIER_DATA[tier] or EJ_TIER_DATA[1];
 end
 
@@ -123,6 +127,7 @@ ExpansionEnumToEJTierDataTableId = {
 	[LE_EXPANSION_BATTLE_FOR_AZEROTH] = 8,
 	[LE_EXPANSION_SHADOWLANDS] = 9,
 	[LE_EXPANSION_DRAGONFLIGHT] = 10,
+	[LE_EXPANSION_WAR_WITHIN] = 11,
 }
 
 function GetEJTierDataTableID(expansion)
@@ -676,7 +681,7 @@ function EncounterJournal_ResetDisplay(instanceID, instanceType, difficultyID)
 end
 
 function EncounterJournal_OnShow(self)
-	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.EncounterJournal) then
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.EncounterJournalDisabled) then
 		return;
 	end
 
@@ -1060,25 +1065,12 @@ local function EncounterJournal_SetupIconFlags(sectionID, infoHeaderButton)
 	end
 end
 
-local function UpdateDifficultyAnchoring(difficultyFrame)
-	local infoFrame = difficultyFrame:GetParent();
-	infoFrame.reset:ClearAllPoints();
-
-	if difficultyFrame:IsShown() then
-		infoFrame.reset:SetPoint("RIGHT", difficultyFrame, "LEFT", -12, -3);
-	else
-		infoFrame.reset:SetPoint("TOPRIGHT", infoFrame, "TOPRIGHT", -21, -10);
-	end
-end
-
 local function UpdateDifficultyVisibility()
 	local shouldDisplayDifficulty = select(9, EJ_GetInstanceInfo());
 
 	-- As long as the current tab isn't the model tab, which always suppresses the difficulty, then update the shown state.
 	local info = EncounterJournal.encounter.info;
 	info.difficulty:SetShown(shouldDisplayDifficulty and (info.tab ~= 4));
-
-	UpdateDifficultyAnchoring(info.difficulty);
 end
 
 local IconIndexByDifficulty = {

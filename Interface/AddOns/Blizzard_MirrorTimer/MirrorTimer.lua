@@ -82,9 +82,31 @@ function MirrorTimerContainerMixin:ForceUpdateTimers()
 	end
 end
 
-function MirrorTimerContainerMixin:SetIsInEditMode(isInEditMode)
+function MirrorTimerContainerMixin:ShouldShow()
+	if self.isInEditMode then
+		return true;
+	end
+
 	for index, timerFrame in ipairs(self.mirrorTimers) do
-		timerFrame:SetIsInEditMode(isInEditMode);
+		if timerFrame:ShouldShow() then
+			return true;
+		end
+	end
+
+	return false;
+end
+
+
+function MirrorTimerContainerMixin:SetIsInEditMode(isInEditMode)
+	self.isInEditMode = isInEditMode;
+	for index, timerFrame in ipairs(self.mirrorTimers) do
+		timerFrame:SetIsInEditModeInternal(isInEditMode);
+	end
+
+	self:SetShown(self:ShouldShow());
+
+	for index, timerFrame in ipairs(self.mirrorTimers) do
+		timerFrame:UpdateShownState();
 	end
 end
 
@@ -151,11 +173,19 @@ function MirrorTimerMixin:HasTimer()
 	return self.timer;
 end
 
-function MirrorTimerMixin:SetIsInEditMode(isInEditMode)
+function MirrorTimerMixin:SetIsInEditModeInternal(isInEditMode)
 	self.isInEditMode = isInEditMode;
+end
+
+function MirrorTimerMixin:SetIsInEditMode(isInEditMode)
+	self:SetIsInEditModeInternal(isInEditMode);
 	self:UpdateShownState();
 end
 
+function MirrorTimerMixin:ShouldShow()
+	return self.isInEditMode or self.timer;
+end
+
 function MirrorTimerMixin:UpdateShownState()
-	self:SetShown(self.isInEditMode or self.timer);
+	self:SetShown(self:ShouldShow());
 end

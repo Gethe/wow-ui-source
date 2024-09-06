@@ -84,11 +84,6 @@
 						<Anchor point="LEFT" y="-2"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="middleName" inherits="GameFontNormalLarge" justifyH="LEFT">
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="10" y="0"/>
-					</Anchors>
-				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
@@ -311,12 +306,12 @@
 				</KeyValues>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture atlas="evergreen-scenario-pattern-background" useAtlasSize="true" alphaMode="ADD">
+						<Texture atlas="evergreen-scenario-pattern-background" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-6"/>
 							</Anchors>
 						</Texture>
-						<Texture atlas="evergreen-scenario-pattern-background" useAtlasSize="true" alphaMode="ADD">
+						<Texture atlas="evergreen-scenario-pattern-background" useAtlasSize="true" alpha="0.5">
 							<Anchors>
 								<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="-2"/>
 							</Anchors>
@@ -575,6 +570,24 @@
 		</Layers>
 	</Frame>
 
+	<Frame name="EventToastManagerSingleLineWithIconTemplate" mixin="EventToastManagerSingleLineWithIconMixin" inherits="EventToastManagerFrameTemplateNormal" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size x="24" y="24"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Title" inherits="GameFontNormalHuge" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT"  relativeKey="$parent.Icon" relativePoint="RIGHT" x="10" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
 	<Frame name="EventToastManagerFrame" inherits="ResizeLayoutFrame" mixin="EventToastManagerFrameMixin" enableMouse="true" toplevel="true" parent="UIParent" hidden="true" frameStrata="HIGH">
 		<KeyValues>
 			<KeyValue key="fixedWidth" value="418" type="number"/>
@@ -775,7 +788,7 @@
 		<Size x="520" y="90"/>
 		<KeyValues>
 			<KeyValue key="animInStartDelay" value="0" type="number"/>
-			<KeyValue key="animInEndDelay" value="4.5" type="number"/>
+			<KeyValue key="animInEndDelay" value="5.5" type="number"/>
 			<KeyValue key="animOutDuration" value="0.23" type="number"/>
 			<KeyValue key="hideParentAnim" value="true" type="boolean"/>
 		</KeyValues>
@@ -786,431 +799,103 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture parentKey="BGLine2" atlas="greatVault-bg-line2" useAtlasSize="true">
+						<Texture parentKey="BG_Line2" atlas="greatVault-bg-line2" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER" x="0" y="-150"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="BGtext" atlas="greatVault-bg-text" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER" x="0" y="-75"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="FrameDis" atlas="greatVault-frame-dis" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="BACKGROUND" textureSubLevel="1">
-						<Texture parentKey="GVCircGlw" atlas="greatVault-bg-circGlow" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="GVBGGlw" atlas="greatVault-bg-glow" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER" x="0" y="37"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="BGLine2White" atlas="greatVault-bg-line2-white" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER" x="0" y="-150"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="BACKGROUND" textureSubLevel="2">
-						<Texture parentKey="BGLine3" atlas="greatVault-bg-line3-white" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="BGLine1White" atlas="greatVault-bg-line1-white" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="BGLine1" atlas="greatVault-bg-line1" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="BORDER">
-						<Texture parentKey="GVHandles" atlas="greatVault-handles" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="BORDER" textureSubLevel="1">
-						<Texture parentKey="WindFX1" atlas="greatVault-windFX-1" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="WindFX2" atlas="greatVault-windFX-2" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="Particle1" atlas="greatVault-Particle1" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="ARTWORK">
-						<Texture parentKey="SlotFillDis" atlas="greatVault-slotFill-dis" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="Particle1B" atlas="greatVault-Particle1" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="Particle2" atlas="greatVault-Particle2" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-						<FontString parentKey="Title" inherits="DestinyFontHuge" justifyH="CENTER">
-							<Anchors>
-								<Anchor point="TOP" y="-3" relativeKey="$parent.BGtext" relativePoint="CENTER"/>
-							</Anchors>
-							<Color r="1.0" g="0.68" b="0.31"/>
-						</FontString>
-						<FontString parentKey="SubTitle" inherits="SystemFont_Shadow_Large" justifyH="CENTER">
-							<Anchors>
-								<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-3"/>
-							</Anchors>
-							<Color color="WHITE_FONT_COLOR"/>
-						</FontString>
-					</Layer>
-					<Layer level="ARTWORK" textureSubLevel="1">
-						<Texture parentKey="SlotFill" atlas="greatVault-slotFill" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="ARTWORK" textureSubLevel="2">
-						<Texture parentKey="Lock" atlas="greatVault-lock" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="ARTWORK" textureSubLevel="3">
-						<Texture parentKey="LockGleam" atlas="greatVault-lock-gleam" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="ARTWORK" textureSubLevel="5">
-						<Texture parentKey="Frame" atlas="greatVault-frame-whole" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="ARTWORK" textureSubLevel="6">
-						<Texture parentKey="FrameGleam" atlas="greatVault-frame-gleam" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY">
-						<Texture parentKey="GVStart" atlas="greatVault-dis-start" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="ParticleStart" atlas="greatVault-Particle1" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY" textureSubLevel="1">
-						<Texture parentKey="FBFrameUnlock" atlas="greatVault-unlocked-anim">
-							<Size x="180" y="180"/>
-							<Anchors>
-								<Anchor point="CENTER" x="0" y="5"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY" textureSubLevel="2">
-						<Texture parentKey="KeyholeLine" atlas="greatVault-keyHole_line" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER" x="-1" y="0"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="KeyholeGlow" atlas="greatVault-keyHole-glow" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER" x="-1" y="-0.5"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Animations>
-					<AnimationGroup parentKey="GVUnlockAnim" setToFinalAlpha="true">
-						<Alpha childKey="Title" startDelay="1.67" fromAlpha="0" toAlpha="1" duration="0" order="1"/>
-						<Alpha childKey="SubTitle" startDelay="1.97" fromAlpha="0" toAlpha="1" duration="0" order="1"/>
-						<FlipBook childKey="FBFrameUnlock" duration="1.8" order="1" startDelay="0" flipBookRows="11" flipBookColumns="5" flipBookFrames="54" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
-						<Scale childKey="GVStart" duration="0.33" order="1" smoothing="IN" fromScaleX="3.5" fromScaleY="3.5" toScaleX="1" toScaleY="1"/>
-						<Alpha childKey="GVStart" duration="0.33" order="1" smoothing="IN" fromAlpha="0" toAlpha="1"/>
-						<Alpha childKey="GVStart" duration="0" order="1" startDelay="0.33" fromAlpha="1" toAlpha="0"/>
-						<Alpha childKey="FrameGleam" duration="1.4" order="1" fromAlpha="0" toAlpha="0"/>
-						<Alpha childKey="FrameGleam" duration="0.87" order="1" startDelay="1.4" fromAlpha="1" toAlpha="1"/>
-						<Alpha childKey="FrameGleam" duration="0.37" order="1" startDelay="2.27" fromAlpha="1" toAlpha="0"/>
-						<Alpha childKey="Frame" duration="1.4" order="1" fromAlpha="0" toAlpha="0"/>
-						<Alpha childKey="Frame" duration="0.87" order="1" startDelay="1.4" fromAlpha="1" toAlpha="1"/>
-						<Alpha childKey="KeyholeLine" duration="0.33" order="1" fromAlpha="0" toAlpha="0"/>
-						<Alpha childKey="KeyholeLine" duration="1.8" order="1" startDelay="0.33" fromAlpha="1" toAlpha="1"/>
-						<Alpha childKey="KeyholeLine" duration="0.5" order="1" startDelay="2.13" fromAlpha="1" toAlpha="0"/>
-						<Alpha childKey="KeyholeGlow" duration="0.46" order="1" fromAlpha="0" toAlpha="0"/>
-						<Alpha childKey="KeyholeGlow" duration="0.5" order="1" startDelay="0.46" fromAlpha="0" toAlpha="1"/>
-						<Alpha childKey="KeyholeGlow" duration="0.83" order="1" startDelay="0.96" fromAlpha="1" toAlpha="1"/>
-						<Alpha childKey="KeyholeGlow" duration="0.5" order="1" startDelay="1.79" fromAlpha="1" toAlpha="0"/>
-						<Alpha childKey="LockGleam" duration="1.4" order="1" fromAlpha="0" toAlpha="0"/>
-						<Alpha childKey="LockGleam" duration="0.87" order="1" startDelay="1.4" fromAlpha="1" toAlpha="1"/>
-						<Alpha childKey="LockGleam" duration="0.37" order="1" startDelay="2.27" fromAlpha="1" toAlpha="0"/>
-						<Alpha childKey="Lock" duration="1.4" order="1" fromAlpha="0" toAlpha="0"/>
-						<Alpha childKey="Lock" duration="0.87" order="1" startDelay="1.4" fromAlpha="1" toAlpha="1"/>
-						<Alpha childKey="SlotFill" duration="0.97" order="1" fromAlpha="0" toAlpha="0"/>
-						<Alpha childKey="SlotFill" duration="0.43" order="1" startDelay="0.97" fromAlpha="0" toAlpha="1"/>
-						<Rotation childKey="SlotFill" duration="6" order="1" degrees="-100">
-							<Origin point="CENTER"/>
-						</Rotation>
-						<Alpha childKey="SlotFillDis" duration="0.33" order="1" fromAlpha="0" toAlpha="0"/>
-						<Alpha childKey="SlotFillDis" duration="1.03" order="1" startDelay="0.33" fromAlpha="1" toAlpha="1"/>
-						<Alpha childKey="SlotFillDis" duration="0.01" order="1" startDelay="1.36" fromAlpha="0" toAlpha="0"/>
-						<Scale childKey="ParticleStart" duration="0.4" order="1" fromScaleX="3.5" fromScaleY="3.5" toScaleX="0.8" toScaleY="1"/>
-						<Alpha childKey="ParticleStart" duration="0.6" order="1" fromAlpha="1" toAlpha="0"/>
-						<Rotation childKey="ParticleStart" duration="20" order="1" degrees="-50">
-							<Origin point="CENTER"/>
-						</Rotation>
-						<Alpha childKey="FrameDis" duration="0.33" order="1" fromAlpha="0" toAlpha="0"/>
-						<Alpha childKey="FrameDis" duration="1.07" order="1" startDelay="0.33" fromAlpha="1" toAlpha="1"/>
-						<Alpha childKey="FrameDis" duration="0.01" order="1" startDelay="1.4" fromAlpha="0" toAlpha="0"/>
-						<Alpha childKey="GVHandles" duration="1.03" order="1" fromAlpha="0" toAlpha="0"/>
-						<Alpha childKey="GVHandles" duration="0.17" order="1" startDelay="1.03" fromAlpha="0" toAlpha="1"/>
-						<Rotation childKey="GVHandles" duration="1.03" order="1" degrees="0">
-							<Origin point="CENTER"/>
-						</Rotation>
-						<Rotation childKey="GVHandles" duration="0.3" order="1" startDelay="1.03" degrees="8">
-							<Origin point="CENTER"/>
-						</Rotation>
-						<Rotation childKey="GVHandles" duration="0.23" order="1" startDelay="1.33" degrees="-135.5">
-							<Origin point="CENTER"/>
-						</Rotation>
-						<Rotation childKey="GVHandles" duration="0.23" order="1" startDelay="1.56" degrees="-23">
-							<Origin point="CENTER"/>
-						</Rotation>
-						<Rotation childKey="GVHandles" duration="0.17" order="1" startDelay="1.79" degrees="-3">
-							<Origin point="CENTER"/>
-						</Rotation>
-						<Rotation childKey="GVHandles" duration="0.17" order="1" startDelay="1.96" degrees="5">
-							<Origin point="CENTER"/>
-						</Rotation>
-						<Rotation childKey="GVHandles" duration="0.17" order="1" startDelay="2.13" degrees="-5">
-							<Origin point="CENTER"/>
-						</Rotation>
-						<Alpha childKey="GVHandles" duration="0.37" order="1" startDelay="2.3" fromAlpha="1" toAlpha="0"/>
-						<Alpha childKey="WindFX1" duration="1.03" order="1" fromAlpha="0" toAlpha="0"/>
-						<Alpha childKey="WindFX1" duration="0.13" order="1" startDelay="1.03" fromAlpha="0" toAlpha="0.75"/>
-						<Alpha childKey="WindFX1" duration="0.53" order="1" startDelay="1.16" fromAlpha="0.75" toAlpha="0.4"/>
-						<Alpha childKey="WindFX1" duration="0.8" order="1" startDelay="1.69" fromAlpha="0.4" toAlpha="0"/>
-						<Rotation childKey="WindFX1" duration="1.03" order="1" degrees="0">
-							<Origin point="CENTER"/>
-						</Rotation>
-						<Rotation childKey="WindFX1" duration="0.13" order="1" startDelay="1.03" degrees="-5">
-							<Origin point="CENTER"/>
-						</Rotation>
-						<Rotation childKey="WindFX1" duration="0.53" order="1" startDelay="1.16" degrees="-20">
-							<Origin point="CENTER"/>
-						</Rotation>
-						<Rotation childKey="WindFX1" duration="0.8" order="1" startDelay="1.69" degrees="-5">
-							<Origin point="CENTER"/>
-						</Rotation>
-						<Alpha childKey="WindFX2" duration="1.17" order="1" fromAlpha="0" toAlpha="0"/>
-						<Alpha childKey="WindFX2" duration="0.53" order="1" startDelay="1.17" fromAlpha="0" toAlpha="1"/>
-						<Alpha childKey="WindFX2" duration="0.67" order="1" startDelay="1.7" fromAlpha="1" toAlpha="0.4"/>
-						<Rotation childKey="WindFX2" duration="1.17" order="1" degrees="0">
-							<Origin point="CENTER"/>
-						</Rotation>
-						<Rotation childKey="WindFX2" duration="0.53" order="1" startDelay="1.17" degrees="-25">
-							<Origin point="CENTER"/>
-						</Rotation>
-						<Rotation childKey="WindFX2" duration="6" order="1" startDelay="1.7" degrees="-20">
-							<Origin point="CENTER"/>
-						</Rotation>
-						<Alpha childKey="Particle1" duration="1.03" order="1" fromAlpha="0" toAlpha="0"/>
-						<Alpha childKey="Particle1" duration="0.01" order="1" startDelay="1.03" fromAlpha="0.37" toAlpha="0.37"/>
-						<Alpha childKey="Particle1" duration="1.67" order="1" startDelay="1.04" fromAlpha="0.37" toAlpha="0"/>
-						<Scale childKey="Particle1" duration="1.67" order="1" fromScaleX="1.35" fromScaleY="1.35" toScaleX="1.35" toScaleY="1.35"/>
-						<Rotation childKey="Particle1" duration="1.03" order="1" degrees="64">
-							<Origin point="CENTER"/>
-						</Rotation>
-						<Rotation childKey="Particle1" duration="1.67" order="1" startDelay="1.04" degrees="-73">
-							<Origin point="CENTER"/>
-						</Rotation>
-						<Alpha childKey="Particle1B" duration="1.03" order="1" fromAlpha="0" toAlpha="0"/>
-						<Alpha childKey="Particle1B" duration="0.01" order="1" startDelay="1.03" fromAlpha="0.4" toAlpha="0.4"/>
-						<Alpha childKey="Particle1B" duration="1.17" order="1" startDelay="1.04" fromAlpha="0.4" toAlpha="0"/>
-						<Scale childKey="Particle1B" duration="1" order="1" fromScaleX="1.35" fromScaleY="1.35" toScaleX="1.1" toScaleY="1.1"/>
-						<Rotation childKey="Particle1B" duration="1.03" order="1" degrees="30">
-							<Origin point="CENTER"/>
-						</Rotation>
-						<Rotation childKey="Particle1B" duration="1" order="1" startDelay="1.04" degrees="-88">
-							<Origin point="CENTER"/>
-						</Rotation>
-						<Alpha childKey="Particle2" duration="1.17" order="1" fromAlpha="0" toAlpha="0"/>
-						<Alpha childKey="Particle2" duration="1" order="1" startDelay="1.17" fromAlpha="0" toAlpha="0.6"/>
-						<Scale childKey="Particle2" duration="1" order="1" startDelay="1.17" fromScaleX="1.27" fromScaleY="1.27" toScaleX="1" toScaleY="1"/>
-						<Rotation childKey="Particle2" duration="1.17" order="1" degrees="10">
-							<Origin point="CENTER"/>
-						</Rotation>
-						<Rotation childKey="Particle2" duration="5" order="1" startDelay="1.17" degrees="-10">
-							<Origin point="CENTER"/>
-						</Rotation>
-						<Alpha childKey="BGLine3" duration="1" order="1" fromAlpha="0" toAlpha="0"/>
-						<Alpha childKey="BGLine3" duration="0.23" order="1" startDelay="1" fromAlpha="1" toAlpha="0.5"/>
-						<Scale childKey="BGLine3" duration="0.23" order="1" startDelay="1" fromScaleX="0.16" fromScaleY="1" toScaleX="1.06" toScaleY="1"/>
-						<Scale childKey="BGLine3" duration="1.27" order="1" startDelay="1.23" fromScaleX="1.06" fromScaleY="1" toScaleX="1.56" toScaleY="1"/>
-						<Alpha childKey="BGLine3" duration="1.27" order="1" startDelay="1.23" fromAlpha="0.5" toAlpha="0"/>
-						<Alpha childKey="BGLine1White" duration="1" order="1" fromAlpha="0" toAlpha="0"/>
-						<Alpha childKey="BGLine1White" duration="0.23" order="1" startDelay="1" fromAlpha="0" toAlpha="1"/>
-						<Alpha childKey="BGLine1White" duration="0.5" order="1" startDelay="1.23" fromAlpha="1" toAlpha="0"/>
-						<Alpha childKey="BGLine1" duration="1" order="1" fromAlpha="0" toAlpha="0"/>
-						<Alpha childKey="BGLine1" duration="0.23" order="1" startDelay="1" fromAlpha="0" toAlpha="1"/>
-						<Alpha childKey="GVCircGlw" duration="1" order="1" fromAlpha="0" toAlpha="0"/>
-						<Alpha childKey="GVCircGlw" duration="0.01" order="1" startDelay="1" fromAlpha="1" toAlpha="1"/>
-						<Alpha childKey="GVCircGlw" duration="0.23" order="1" startDelay="1.01" fromAlpha="1" toAlpha="1"/>
-						<Alpha childKey="GVCircGlw" duration="0.6" order="1" startDelay="1.24" fromAlpha="1" toAlpha="0"/>
-						<Scale childKey="GVCircGlw" duration="0.23" order="1" startDelay="1" fromScaleX="0.29" fromScaleY="0.29" toScaleX="1" toScaleY="1"/>
-						<Scale childKey="GVCircGlw" duration="0.6" order="1" startDelay="1.24" fromScaleX="1" fromScaleY="1" toScaleX="1.17" toScaleY="1.17"/>
-						<Alpha childKey="GVBGGlw" duration="1" order="1" fromAlpha="0" toAlpha="0"/>
-						<Alpha childKey="GVBGGlw" duration="0.01" order="1" startDelay="1" fromAlpha="1" toAlpha="1"/>
-						<Alpha childKey="BGLine2White" duration="1.8" order="1" fromAlpha="0" toAlpha="0"/>
-						<Alpha childKey="BGLine2White" duration="0.01" order="1" startDelay="1.8" fromAlpha="1" toAlpha="1"/>
-						<Alpha childKey="BGLine2White" duration="1.37" order="1" startDelay="1.81" fromAlpha="1" toAlpha="0"/>
-						<Scale childKey="BGLine2White" duration="0.17" order="1" startDelay="1.8" fromScaleX="0.2" fromScaleY="1" toScaleX="1" toScaleY="1"/>
-						<Alpha childKey="BGLine2" duration="1.8" order="1" fromAlpha="0" toAlpha="0"/>
-						<Alpha childKey="BGLine2" duration="0.01" order="1" startDelay="1.8" fromAlpha="1" toAlpha="1"/>
-						<Scale childKey="BGLine2" duration="0.17" order="1" startDelay="1.8" fromScaleX="0.2" fromScaleY="1" toScaleX="1" toScaleY="1"/>
-						<Alpha childKey="BGtext" duration="1.8" order="1" fromAlpha="0" toAlpha="0"/>
-						<Alpha childKey="BGtext" duration="0.57" order="1" startDelay="1.8" fromAlpha="0" toAlpha="1"/>
-						<Scale childKey="BGtext" duration="0.57" order="1" startDelay="1.8" smoothing="OUT" fromScaleX="0.42" fromScaleY="1" toScaleX="1" toScaleY="1"/>
-					</AnimationGroup>
-				</Animations>
-				<Scripts>
-					<OnMouseDown method="OnMouseDown"/>
-				</Scripts>
-			</Frame>
-		</Frames>
-	</Frame>
-
-	<Frame name="EventToastManagerWeeklyRewardToastUpgradeTemplate" inherits="EventToastAnimationsTemplate" mixin="EventToastWeeklyRewardUpgradeToastMixin" alpha="0" virtual="true">
-		<Size x="520" y="90"/>
-		<KeyValues>
-			<KeyValue key="animInStartDelay" value="0" type="number"/>
-			<KeyValue key="animInEndDelay" value="4" type="number"/>
-			<KeyValue key="animOutDuration" value="0.23" type="number"/>
-			<KeyValue key="hideParentAnim" value="true" type="boolean"/>
-		</KeyValues>
-		<Frames>
-			<Frame parentKey="Contents" inherits="ResizeLayoutFrame" mixin="EventToastWeeklyContentsMixin" enableMouse="true">
-				<Anchors>
-					<Anchor point="BOTTOM"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="BGtext" atlas="greatVault-bg-text" useAtlasSize="true">
+						<Texture parentKey="BG_text" atlas="greatVault-bg-text" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER" x="0" y="-75"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 					<Layer level="BACKGROUND" textureSubLevel="1">
-						<Texture parentKey="GVCircGlw" atlas="greatVault-bg-circGlow" useAtlasSize="true">
+						<Texture parentKey="GV_Circ_Glw" atlas="greatVault-bg-circGlow" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="GVBGGlw" atlas="greatVault-bg-glow" useAtlasSize="true">
+						<Texture parentKey="GV_BG_Glw" atlas="greatVault-bg-glow" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER" x="0" y="37"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="BGLine2" atlas="greatVault-bg-line2" useAtlasSize="true">
+						<Texture parentKey="BG_Line2_White" atlas="greatVault-bg-line2-white" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER" x="0" y="-150"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 					<Layer level="BACKGROUND" textureSubLevel="2">
-						<Texture parentKey="BGLine1White" atlas="greatVault-bg-line1-white" useAtlasSize="true">
+						<Texture parentKey="BG_Line3" atlas="greatVault-bg-line3-white" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="BGLine1" atlas="greatVault-bg-line1" useAtlasSize="true">
+						<Texture parentKey="BG_Line1_White" atlas="greatVault-bg-line1-white" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="BGLine2White" atlas="greatVault-bg-line2-white" useAtlasSize="true">
+						<Texture parentKey="BG_Line1" atlas="greatVault-bg-line1" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="CENTER" x="0" y="-150"/>
+								<Anchor point="CENTER"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 					<Layer level="BORDER">
-						<Texture parentKey="WindFX1" atlas="greatVault-windFX-1" useAtlasSize="true">
+						<Texture parentKey="Wind_FX_1" alpha="1" atlas="greatVault-windFX-1" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 					<Layer level="BORDER" textureSubLevel="1">
-						<Texture parentKey="WindFX2" atlas="greatVault-windFX-2" useAtlasSize="true">
+						<Texture parentKey="Gold_FX_3" atlas="greatVault-FX-gold3" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 					<Layer level="BORDER" textureSubLevel="2">
-						<Texture parentKey="Particle2" atlas="greatVault-Particle2" useAtlasSize="true">
+						<Texture parentKey="Gold_FX_2A" alpha="0" atlas="greatVault-FX-gold1" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="Particle1" atlas="greatVault-Particle1" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="Particle1B" atlas="greatVault-Particle1" useAtlasSize="true">
+					</Layer>
+					<Layer level="BORDER" textureSubLevel="3">
+						<Texture parentKey="Gold_FX_2B" alpha="0" atlas="greatVault-FX-gold1" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
-						<Texture parentKey="SlotFill" atlas="greatVault-slotFill" useAtlasSize="true">
+						<Texture parentKey="FX_Wind_Glow" alpha="0" atlas="greatVault-FX-wind" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FX_Circ_Glow" alpha="0" atlas="greatVault-FX-circGlow" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Particle_2" alpha="0" atlas="greatVault-FX-particles2" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Particle_1" alpha="0" atlas="greatVault-FX-particles1" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
 						</Texture>
 						<FontString parentKey="Title" inherits="DestinyFontHuge" justifyH="CENTER">
 							<Anchors>
-								<Anchor point="TOP" y="-3" relativeKey="$parent.BGtext" relativePoint="CENTER"/>
+								<Anchor point="TOP" y="-3" relativeKey="$parent.BG_text" relativePoint="CENTER"/>
 							</Anchors>
 							<Color r="1.0" g="0.68" b="0.31"/>
 						</FontString>
@@ -1222,150 +907,191 @@
 						</FontString>
 					</Layer>
 					<Layer level="ARTWORK" textureSubLevel="5">
-						<Texture parentKey="Frame" atlas="greatVault-frame-whole" useAtlasSize="true">
+						<Texture parentKey="Handles_Dis" atlas="greatVault-handles-dis" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="LockGleam" atlas="greatVault-lock-gleam" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="Lock" atlas="greatVault-lock" useAtlasSize="true">
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="6">
+						<Texture parentKey="CenterPlate_Dis" atlas="greatVault-centerPlate-dis" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
-						<Texture parentKey="FrameGlw" atlas="greatVault-frame-glow" useAtlasSize="true">
+						<Texture parentKey="GV_Start" atlas="greatVault-blur-dis" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="FrameGlw2" atlas="greatVault-frame-glow" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="FrameGleam" atlas="greatVault-frame-gleam" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="LockHoleGlw" atlas="greatVault-lockHole-glow" useAtlasSize="true">
+						<Texture parentKey="Particle_Start" atlas="greatVault-FX-particles1" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
 						</Texture>
 					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="FB_FX_Unlock" atlas="greatVault-anim-unlocked-FX">
+							<Size x="160" y="200"/>
+							<Anchors>
+								<Anchor point="CENTER" x="-3" y="-4"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="2">
+						<Texture parentKey="GV_Normal" atlas="greatVault-whole-normal" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="-1" y="1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="3">
+						<Texture parentKey="Keyhole_Glow" atlas="greatVault-keyhole-start1" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="-1" y="-0.5"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="4">
+						<Texture parentKey="Keyhole_Line" atlas="greatVault-keyhole-outline-glow" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="-1" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
 				</Layers>
 				<Animations>
-					<AnimationGroup parentKey="GVUpgradeAnim" setToFinalAlpha="true">
-						<Alpha childKey="Title" startDelay="0.53" fromAlpha="0" toAlpha="1" duration="0" order="1"/>
-						<Alpha childKey="SubTitle" startDelay="0.67" fromAlpha="0" toAlpha="1" duration="0" order="1"/>
-						<Alpha childKey="FrameGlw" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
-						<Scale childKey="FrameGlw" duration="0.2" order="1" fromScaleX="2.75" fromScaleY="2.75" toScaleX="1" toScaleY="1"/>
-						<Alpha childKey="FrameGlw" duration="0.33" order="1" startDelay="0.2" fromAlpha="1" toAlpha="0.85"/>
-						<Alpha childKey="FrameGlw" duration="0.3" order="1" startDelay="0.53" fromAlpha="0.85" toAlpha="0"/>
-						<Alpha childKey="FrameGlw2" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
-						<Scale childKey="FrameGlw2" duration="0.2" order="1" fromScaleX="2.75" fromScaleY="2.75" toScaleX="1" toScaleY="1"/>
-						<Alpha childKey="FrameGlw2" duration="0.37" order="1" startDelay="0.2" fromAlpha="1" toAlpha="0"/>
-						<Alpha childKey="FrameGleam" duration="0.2" order="1" fromAlpha="0" toAlpha="0"/>
-						<Alpha childKey="FrameGleam" duration="0.8" order="1" startDelay="0.2" fromAlpha="1" toAlpha="1"/>
-						<Alpha childKey="FrameGleam" duration="0.33" order="1" startDelay="1" fromAlpha="1" toAlpha="0"/>
-						<Alpha childKey="Frame" duration="0.2" order="1" fromAlpha="0" toAlpha="0"/>
-						<Alpha childKey="Frame" duration="0.01" order="1" startDelay="0.2" fromAlpha="1" toAlpha="1"/>
-						<Alpha childKey="LockHoleGlw" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
-						<Scale childKey="LockHoleGlw" duration="0.3" order="1" fromScaleX="2.75" fromScaleY="2.75" toScaleX="1" toScaleY="1"/>
-						<Alpha childKey="LockHoleGlw" duration="0.4" order="1" startDelay="0.3" fromAlpha="1" toAlpha="0"/>
-						<Alpha childKey="LockGleam" duration="0.2" order="1" fromAlpha="0" toAlpha="0"/>
-						<Alpha childKey="LockGleam" duration="1" order="1" startDelay="0.2" fromAlpha="1" toAlpha="1"/>
-						<Alpha childKey="LockGleam" duration="0.33" order="1" startDelay="1.2" fromAlpha="1" toAlpha="0"/>
-						<Alpha childKey="Lock" duration="0.2" order="1" fromAlpha="0" toAlpha="0"/>
-						<Alpha childKey="Lock" duration="0.01" order="1" startDelay="0.2" fromAlpha="1" toAlpha="1"/>
-						<Alpha childKey="SlotFill" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
-						<Scale childKey="SlotFill" duration="0.2" order="1" fromScaleX="2.75" fromScaleY="2.75" toScaleX="1" toScaleY="1"/>
-						<Rotation childKey="SlotFill" duration="0" order="1" degrees="50">
+					<AnimationGroup parentKey="GVUnlockAnim" setToFinalAlpha="true">
+						<Alpha childKey="Title" startDelay="3.06" fromAlpha="0" toAlpha="1" duration="0" order="1"/>
+						<Alpha childKey="SubTitle" startDelay="3.53" fromAlpha="0" toAlpha="1" duration="0" order="1"/>
+
+						<Alpha childKey="BG_Line3" duration="2.67" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="BG_Line3" duration="0.23" order="1" startDelay="2.67" fromAlpha="1" toAlpha="0.5"/>
+						<Scale childKey="BG_Line3" duration="0.23" order="1" startDelay="2.67" fromScaleX="0.16" fromScaleY="1" toScaleX="1.06" toScaleY="1"/>
+						<Scale childKey="BG_Line3" duration="1.27" order="1" startDelay="2.9" fromScaleX="1.06" fromScaleY="1" toScaleX="1.56" toScaleY="1"/>
+						<Alpha childKey="BG_Line3" duration="1.27" order="1" startDelay="2.9" fromAlpha="0.5" toAlpha="0"/>
+						<Alpha childKey="BG_Line1_White" duration="2.67" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="BG_Line1_White" duration="0.23" order="1" startDelay="2.67" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="BG_Line1_White" duration="0.5" order="1" startDelay="2.9" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="BG_Line1" duration="2.67" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="BG_Line1" duration="0.23" order="1" startDelay="2.67" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="GV_Circ_Glw" duration="2.67" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="GV_Circ_Glw" duration="0.01" order="1" startDelay="2.67" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="GV_Circ_Glw" duration="0.23" order="1" startDelay="2.68" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="GV_Circ_Glw" duration="0.6" order="1" startDelay="2.91" fromAlpha="1" toAlpha="0"/>
+						<Scale childKey="GV_Circ_Glw" duration="0.23" order="1" startDelay="2.68" fromScaleX="0.29" fromScaleY="0.29" toScaleX="1" toScaleY="1"/>
+						<Scale childKey="GV_Circ_Glw" duration="0.6" order="1" startDelay="2.91" fromScaleX="1" fromScaleY="1" toScaleX="1.17" toScaleY="1.17"/>
+						<Alpha childKey="GV_BG_Glw" duration="2.67" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="GV_BG_Glw" duration="0.01" order="1" startDelay="2.67" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="BG_Line2_White" duration="3.47" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="BG_Line2_White" duration="0.01" order="1" startDelay="3.47" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="BG_Line2_White" duration="1.37" order="1" startDelay="3.48" fromAlpha="1" toAlpha="0"/>
+						<Scale childKey="BG_Line2_White" duration="0.17" order="1" startDelay="3.47" fromScaleX="0.2" fromScaleY="1" toScaleX="1" toScaleY="1"/>
+						<Alpha childKey="BG_Line2" duration="3.47" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="BG_Line2" duration="0.01" order="1" startDelay="3.47" fromAlpha="1" toAlpha="1"/>
+						<Scale childKey="BG_Line2" duration="0.17" order="1" startDelay="3.47" fromScaleX="0.2" fromScaleY="1" toScaleX="1" toScaleY="1"/>
+						<Alpha childKey="BG_text" duration="3.47" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="BG_text" duration="0.57" order="1" startDelay="3.47" fromAlpha="0" toAlpha="1"/>
+						<Scale childKey="BG_text" duration="0.57" order="1" startDelay="3.47" smoothing="OUT" fromScaleX="0.42" fromScaleY="1" toScaleX="1" toScaleY="1"/>
+
+						<Alpha childKey="Wind_FX_1" duration="1.03" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="Wind_FX_1" duration="0.83" order="1" startDelay="1.03" fromAlpha="0" toAlpha="0.7"/>
+						<Alpha childKey="Wind_FX_1" duration="1.33" order="1" startDelay="1.86" fromAlpha="0.7" toAlpha="0"/>
+						<Rotation childKey="Wind_FX_1" duration="2.17" order="1" startDelay="1.03" degrees="-45">
 							<Origin point="CENTER"/>
 						</Rotation>
-						<Rotation childKey="SlotFill" duration="3.13" order="1" startDelay="0.2" degrees="-50">
+						<Alpha childKey="Gold_FX_3" duration="1.87" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="Gold_FX_3" duration="0.53" order="1" startDelay="1.87" fromAlpha="0" toAlpha="0.8"/>
+						<Alpha childKey="Gold_FX_3" duration="3.6" order="1" startDelay="2.4" fromAlpha="0.8" toAlpha="0.6"/>
+						<Scale childKey="Gold_FX_3" duration="0.53" order="1" startDelay="1.87" fromScaleX="1.5" fromScaleY="1.5" toScaleX="1" toScaleY="1"/>
+						<Rotation childKey="Gold_FX_2A" duration="1.87" order="1" degrees="-60">
 							<Origin point="CENTER"/>
 						</Rotation>
-						<Alpha childKey="Particle2" duration="0.33" order="1" fromAlpha="0" toAlpha="0"/>
-						<Alpha childKey="Particle2" duration="1" order="1" startDelay="0.33" fromAlpha="0" toAlpha="0.5"/>
-						<Scale childKey="Particle2" duration="1" order="1" startDelay="0.33" fromScaleX="1.27" fromScaleY="1.27" toScaleX="1" toScaleY="1"/>
-						<Rotation childKey="Particle2" duration="2" order="1" startDelay="0.33" degrees="-15">
+						<Rotation childKey="Gold_FX_2A" duration="1.33" order="1" startDelay="1.87" degrees="-76">
 							<Origin point="CENTER"/>
 						</Rotation>
-						<Rotation childKey="Particle2" duration="3" order="1" startDelay="2.33" degrees="-15">
+						<Rotation childKey="Gold_FX_2A" duration="2.8" order="1" startDelay="3.2" degrees="-28">
 							<Origin point="CENTER"/>
 						</Rotation>
-						<Rotation childKey="Particle2" duration="0.33" order="1" degrees="30">
+						<Alpha childKey="Gold_FX_2A" duration="1.87" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="Gold_FX_2A" duration="1.33" order="1" startDelay="1.87" fromAlpha="0" toAlpha="0.8"/>
+						<Alpha childKey="Gold_FX_2A" duration="2.8" order="1" startDelay="3.2" fromAlpha="0.8" toAlpha="0"/>
+						<Scale childKey="Gold_FX_2A" duration="1" order="1" fromScaleX="1.1" fromScaleY="1.1" toScaleX="1.1" toScaleY="1.1"/>
+						<Rotation childKey="Gold_FX_2B" duration="2.8" order="1" smoothing="IN_OUT" degrees="-360">
 							<Origin point="CENTER"/>
 						</Rotation>
-						<Alpha childKey="Particle1" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
-						<Scale childKey="Particle1" duration="0.2" order="1" fromScaleX="3.75" fromScaleY="3.75" toScaleX="1.35" toScaleY="1.35"/>
-						<Rotation childKey="Particle1" duration="0.01" order="1" degrees="30">
+						<Scale childKey="Gold_FX_2B" duration="5" order="1" fromScaleX="1.2" fromScaleY="1.2" toScaleX="1.2" toScaleY="1.2"/>
+						<Alpha childKey="Gold_FX_2B" duration="1.87" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="Gold_FX_2B" duration="0.47" order="1" startDelay="1.87" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="Gold_FX_2B" duration="0.47" order="1" startDelay="2.34" fromAlpha="1" toAlpha="0"/>
+						<Rotation childKey="Particle_2" duration="3.37" order="1" smoothing="IN_OUT" degrees="-190">
 							<Origin point="CENTER"/>
 						</Rotation>
-						<Rotation childKey="Particle1" duration="1.13" order="1" startDelay="0.2" degrees="-17">
+						<Alpha childKey="Particle_2" duration="1" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="Particle_2" duration="0.33" order="1" startDelay="1" fromAlpha="0" toAlpha="0.4"/>
+						<Alpha childKey="Particle_2" duration="2" order="1" startDelay="1.33" fromAlpha="0.4" toAlpha="0"/>
+						<Scale childKey="Particle_2" duration="1" order="1" fromScaleX="0.85" fromScaleY="0.85" toScaleX="0.85" toScaleY="0.85"/>
+						<Rotation childKey="Particle_1" duration="6" order="1" smoothing="IN_OUT" degrees="-200">
 							<Origin point="CENTER"/>
 						</Rotation>
-						<Scale childKey="Particle1" duration="1.13" order="1" startDelay="0.2" fromScaleX="1" fromScaleY="1" toScaleX="0.8" toScaleY="0.8"/>
-						<Alpha childKey="Particle1" duration="1.13" order="1" startDelay="0.2" fromAlpha="0.4" toAlpha="0"/>
-						<Alpha childKey="Particle1" duration="2.17" order="1" startDelay="1.33" fromAlpha="0" toAlpha="0.5"/>
-						<Rotation childKey="Particle1" duration="2.17" order="1" startDelay="1.33" degrees="-13">
+						<Alpha childKey="Particle_1" duration="1" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="Particle_1" duration="1.53" order="1" startDelay="1" fromAlpha="0" toAlpha="0.4"/>
+						<Alpha childKey="Particle_1" duration="4" order="1" startDelay="2.53" fromAlpha="0.4" toAlpha="0"/>
+						<Scale childKey="Particle_1" duration="2" order="1" fromScaleX="1.2" fromScaleY="1.2" toScaleX="1.2" toScaleY="1.2"/>
+						<Scale childKey="Particle_1" duration="2" order="1" startDelay="2" fromScaleX="1.2" fromScaleY="1.2" toScaleX="1" toScaleY="1"/>
+
+						<FlipBook childKey="FB_FX_Unlock" duration="2.57" order="1" startDelay="0.43" flipBookRows="9" flipBookColumns="9" flipBookFrames="77" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<Alpha childKey="FB_FX_Unlock" duration="0.43" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="FB_FX_Unlock" duration="2.57" order="1" startDelay="0.43" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="FB_FX_Unlock" duration="0.5" order="1" startDelay="3" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="FB_FX_Unlock" duration="0.5" order="1" startDelay="3.5" fromAlpha="1" toAlpha="0"/>
+						<Scale childKey="GV_Start" duration="0.23" order="1" smoothing="IN" fromScaleX="2.5" fromScaleY="2.5" toScaleX="1" toScaleY="1"/>
+						<Alpha childKey="GV_Start" duration="0.23" order="1" smoothing="IN" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="GV_Start" duration="0.1" order="1" startDelay="0.23" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="CenterPlate_Dis" duration="0.23" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="CenterPlate_Dis" duration="1" order="1" startDelay="0.23" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="CenterPlate_Dis" duration="1" order="1" startDelay="0.43" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="Handles_Dis" duration="0.23" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="Handles_Dis" duration="1" order="1" startDelay="0.23" fromAlpha="1" toAlpha="1"/>
+						<Rotation childKey="Handles_Dis" duration="0.23" order="1" degrees="-3">
 							<Origin point="CENTER"/>
 						</Rotation>
-						<Scale childKey="Particle1" duration="2.17" order="1" startDelay="1.33" fromScaleX="0.8" fromScaleY="0.8" toScaleX="0.92" toScaleY="0.92"/>
-						<Alpha childKey="Particle1B" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
-						<Alpha childKey="Particle1B" duration="1.63" order="1" startDelay="0.2" fromAlpha="0.4" toAlpha="0"/>
-						<Scale childKey="Particle1B" duration="0.2" order="1" fromScaleX="3.75" fromScaleY="3.75" toScaleX="1.3" toScaleY="1.3"/>
-						<Rotation childKey="Particle1B" duration="2.3" order="1" degrees="-120">
+						<Rotation childKey="Handles_Dis" duration="0.13" order="1" startDelay="0.23" degrees="5">
 							<Origin point="CENTER"/>
 						</Rotation>
-						<Alpha childKey="WindFX2" duration="0.33" order="1" fromAlpha="0" toAlpha="0"/>
-						<Alpha childKey="WindFX2" duration="0.53" order="1" startDelay="0.33" fromAlpha="0" toAlpha="1"/>
-						<Alpha childKey="WindFX2" duration="0.8" order="1" startDelay="0.86" fromAlpha="1" toAlpha="0.6"/>
-						<Alpha childKey="WindFX2" duration="2" order="1" startDelay="1.66" fromAlpha="0.6" toAlpha="0.3"/>
-						<Rotation childKey="WindFX2" duration="0.01" order="1" degrees="50">
+						<Rotation childKey="Handles_Dis" duration="0.07" order="1" startDelay="0.36" degrees="-2">
 							<Origin point="CENTER"/>
 						</Rotation>
-						<Rotation childKey="WindFX2" duration="4" order="1" startDelay="0.01" degrees="-50">
+						<Alpha childKey="Handles_Dis" duration="1" order="1" startDelay="0.43" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="Keyhole_Line" duration="0.23" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="Keyhole_Line" duration="2" order="1" startDelay="0.23" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="Keyhole_Line" duration="1" order="1" startDelay="2.23" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="Keyhole_Glow" duration="0.23" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="Keyhole_Glow" duration="0.2" order="1" startDelay="0.23" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="Keyhole_Glow" duration="0.74" order="1" startDelay="0.43" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="Keyhole_Glow" duration="0.8" order="1" startDelay="1.17" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="GV_Normal" duration="3" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="GV_Normal" duration="0.5" order="1" startDelay="3" fromAlpha="0" toAlpha="1"/>
+						<Scale childKey="Particle_Start" duration="0.23" order="1" fromScaleX="1.9" fromScaleY="1.9" toScaleX="1" toScaleY="1"/>
+						<Alpha childKey="Particle_Start" duration="0.3" order="1" fromAlpha="1" toAlpha="1"/>
+						<Rotation childKey="Particle_Start" duration="0.3" order="1" degrees="-8">
 							<Origin point="CENTER"/>
 						</Rotation>
-						<Alpha childKey="WindFX1" duration="0.2" order="1" fromAlpha="0" toAlpha="0"/>
-						<Alpha childKey="WindFX1" duration="0.13" order="1" startDelay="0.2" fromAlpha="0" toAlpha="0.76"/>
-						<Alpha childKey="WindFX1" duration="0.53" order="1" startDelay="0.33" fromAlpha="0.76" toAlpha="0.4"/>
-						<Alpha childKey="WindFX1" duration="0.8" order="1" startDelay="0.86" fromAlpha="0.4" toAlpha="0"/>
-						<Rotation childKey="WindFX1" duration="1.66" order="1" degrees="-30">
+						<Rotation childKey="Particle_Start" duration="1" order="1" startDelay="0.3" degrees="-35">
 							<Origin point="CENTER"/>
 						</Rotation>
-						<Alpha childKey="BGLine1White" duration="0.37" order="1" fromAlpha="0" toAlpha="0"/>
-						<Alpha childKey="BGLine1White" duration="0.3" order="1" startDelay="0.37" fromAlpha="0" toAlpha="1"/>
-						<Alpha childKey="BGLine1White" duration="0.5" order="1" startDelay="0.67" fromAlpha="1" toAlpha="0"/>
-						<Alpha childKey="BGLine1" duration="0.37" order="1" fromAlpha="0" toAlpha="0"/>
-						<Alpha childKey="BGLine1" duration="0.3" order="1" startDelay="0.37" fromAlpha="0" toAlpha="1"/>
-						<Alpha childKey="GVCircGlw" duration="0.37" order="1" fromAlpha="0" toAlpha="0"/>
-						<Alpha childKey="GVCircGlw" duration="0.01" order="1" startDelay="0.37" fromAlpha="1" toAlpha="1"/>
-						<Alpha childKey="GVCircGlw" duration="0.3" order="1" startDelay="0.38" fromAlpha="1" toAlpha="1"/>
-						<Alpha childKey="GVCircGlw" duration="0.5" order="1" startDelay="0.68" fromAlpha="1" toAlpha="0"/>
-						<Scale childKey="GVCircGlw" duration="0.3" order="1" startDelay="0.37" fromScaleX="0.29" fromScaleY="0.29" toScaleX="1" toScaleY="1"/>
-						<Scale childKey="GVCircGlw" duration="0.5" order="1" startDelay="0.68" fromScaleX="1" fromScaleY="1" toScaleX="1.17" toScaleY="1.17"/>
-						<Alpha childKey="GVBGGlw" duration="0.37" order="1" fromAlpha="0" toAlpha="0"/>
-						<Alpha childKey="GVBGGlw" duration="0.3" order="1" startDelay="0.37" fromAlpha="0" toAlpha="1"/>
-						<Alpha childKey="BGLine2White" duration="0.67" order="1" fromAlpha="0" toAlpha="0"/>
-						<Alpha childKey="BGLine2White" duration="0.13" order="1" startDelay="0.67" fromAlpha="1" toAlpha="1"/>
-						<Alpha childKey="BGLine2White" duration="1.37" order="1" startDelay="0.8" fromAlpha="1" toAlpha="0"/>
-						<Scale childKey="BGLine2White" duration="0.13" order="1" startDelay="0.67" fromScaleX="0.2" fromScaleY="1" toScaleX="1" toScaleY="1"/>
-						<Alpha childKey="BGLine2" duration="0.67" order="1" fromAlpha="0" toAlpha="0"/>
-						<Alpha childKey="BGLine2" duration="0.13" order="1" startDelay="0.67" fromAlpha="1" toAlpha="1"/>
-						<Scale childKey="BGLine2" duration="0.13" order="1" startDelay="0.67" fromScaleX="0.2" fromScaleY="1" toScaleX="1" toScaleY="1"/>
-						<Alpha childKey="BGtext" duration="0.67" order="1" fromAlpha="0" toAlpha="0"/>
-						<Alpha childKey="BGtext" duration="0.45" order="1" startDelay="0.67" fromAlpha="0" toAlpha="1"/>
-						<Scale childKey="BGtext" duration="0.45" order="1" startDelay="0.67" smoothing="OUT" fromScaleX="0.42" fromScaleY="1" toScaleX="1" toScaleY="1"/>
+						<Alpha childKey="Particle_Start" duration="1" order="1" startDelay="0.3" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="FX_Wind_Glow" duration="0.4" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="FX_Wind_Glow" duration="0.37" order="1" startDelay="0.4" fromAlpha="0" toAlpha="0.2"/>
+						<Alpha childKey="FX_Wind_Glow" duration="0.83" order="1" startDelay="0.77" fromAlpha="0.2" toAlpha="0"/>
+						<Rotation childKey="FX_Wind_Glow" duration="1.2" order="1" degrees="-45">
+							<Origin point="CENTER"/>
+						</Rotation>
+						<Alpha childKey="FX_Circ_Glow" duration="0.23" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="FX_Circ_Glow" duration="0.53" order="1" startDelay="0.23" fromAlpha="0.5" toAlpha="0"/>
+						<Scale childKey="FX_Circ_Glow" duration="0.53" order="1" startDelay="0.23" fromScaleX="0.65" fromScaleY="0.65" toScaleX="0.8" toScaleY="0.8"/>
 					</AnimationGroup>
 				</Animations>
 				<Scripts>
@@ -1374,7 +1100,255 @@
 			</Frame>
 		</Frames>
 	</Frame>
+	
+	<Frame name="EventToastManagerWeeklyRewardToastUpgradeTemplate" inherits="EventToastAnimationsTemplate" mixin="EventToastWeeklyRewardUpgradeToastMixin" alpha="0" virtual="true">
+		<Size x="520" y="90"/>
+		<KeyValues>
+			<KeyValue key="animInStartDelay" value="0" type="number"/>
+			<KeyValue key="animInEndDelay" value="3.5" type="number"/>
+			<KeyValue key="animOutDuration" value="0.23" type="number"/>
+			<KeyValue key="hideParentAnim" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="Contents" inherits="ResizeLayoutFrame" mixin="EventToastWeeklyContentsMixin" enableMouse="true">
+				<Anchors>
+					<Anchor point="BOTTOM"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="BG_Line2" atlas="greatVault-bg-line2" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="-150"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BG_text" atlas="greatVault-bg-text" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="-75"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="1">
+						<Texture parentKey="GV_Circ_Glw" atlas="greatVault-bg-circGlow" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="GV_BG_Glw" atlas="greatVault-bg-glow" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="37"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BG_Line2_White" atlas="greatVault-bg-line2-white" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="-150"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="2">
+						<Texture parentKey="BG_Line3" atlas="greatVault-bg-line3-white" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BG_Line1_White" atlas="greatVault-bg-line1-white" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BG_Line1" atlas="greatVault-bg-line1" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture parentKey="Wind_FX_1" alpha="1" atlas="greatVault-windFX-1" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER" textureSubLevel="1">
+						<Texture parentKey="Gold_FX_3" atlas="greatVault-FX-gold3" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER" textureSubLevel="2">
+						<Texture parentKey="Gold_FX_2A" alpha="0" atlas="greatVault-FX-gold1" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Particle_2" alpha="0" atlas="greatVault-FX-particles2" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Particle_1" alpha="0" atlas="greatVault-FX-particles1" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FX_Wind_Glow" alpha="0" atlas="greatVault-FX-wind" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FX_Circ_Glow" alpha="0" atlas="greatVault-FX-circGlow" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="Title" inherits="DestinyFontHuge" justifyH="CENTER">
+							<Anchors>
+								<Anchor point="TOP" y="-3" relativeKey="$parent.BG_text" relativePoint="CENTER"/>
+							</Anchors>
+							<Color r="1.0" g="0.68" b="0.31"/>
+						</FontString>
+						<FontString parentKey="SubTitle" inherits="SystemFont_Shadow_Large" justifyH="CENTER">
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-3"/>
+							</Anchors>
+							<Color color="WHITE_FONT_COLOR"/>
+						</FontString>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="GV_Start" atlas="greatVault-blur-normal" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="GV_Normal" atlas="greatVault-whole-normal" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="-1" y="1"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Particle_Start" atlas="greatVault-FX-particles1" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="FB_FX_Unlock" atlas="greatVault-anim-upgrade-FX">
+							<Size x="220" y="210"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="23"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="GVUpgradeAnim" setToFinalAlpha="true">
+						<Alpha childKey="Title" startDelay="1.57" fromAlpha="0" toAlpha="1" duration="0" order="1"/>
+						<Alpha childKey="SubTitle" startDelay="2" fromAlpha="0" toAlpha="1" duration="0" order="1"/>
 
+						<Alpha childKey="BG_Line3" duration="1.17" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="BG_Line3" duration="0.23" order="1" startDelay="1.17" fromAlpha="1" toAlpha="0.5"/>
+						<Scale childKey="BG_Line3" duration="0.23" order="1" startDelay="1.17" fromScaleX="0.16" fromScaleY="1" toScaleX="1.06" toScaleY="1"/>
+						<Scale childKey="BG_Line3" duration="1.27" order="1" startDelay="1.4" fromScaleX="1.06" fromScaleY="1" toScaleX="1.56" toScaleY="1"/>
+						<Alpha childKey="BG_Line3" duration="1.27" order="1" startDelay="1.4" fromAlpha="0.5" toAlpha="0"/>
+						<Alpha childKey="BG_Line1_White" duration="1.17" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="BG_Line1_White" duration="0.23" order="1" startDelay="1.17" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="BG_Line1_White" duration="0.5" order="1" startDelay="1.4" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="BG_Line1" duration="1.17" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="BG_Line1" duration="0.23" order="1" startDelay="1.17" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="GV_Circ_Glw" duration="1.17" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="GV_Circ_Glw" duration="0.01" order="1" startDelay="1.17" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="GV_Circ_Glw" duration="0.23" order="1" startDelay="1.18" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="GV_Circ_Glw" duration="0.6" order="1" startDelay="1.41" fromAlpha="1" toAlpha="0"/>
+						<Scale childKey="GV_Circ_Glw" duration="0.23" order="1" startDelay="1.18" fromScaleX="0.29" fromScaleY="0.29" toScaleX="1" toScaleY="1"/>
+						<Scale childKey="GV_Circ_Glw" duration="0.6" order="1" startDelay="1.41" fromScaleX="1" fromScaleY="1" toScaleX="1.17" toScaleY="1.17"/>
+						<Alpha childKey="GV_BG_Glw" duration="1.17" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="GV_BG_Glw" duration="0.01" order="1" startDelay="1.17" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="BG_Line2_White" duration="1.63" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="BG_Line2_White" duration="0.01" order="1" startDelay="1.63" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="BG_Line2_White" duration="1.37" order="1" startDelay="1.64" fromAlpha="1" toAlpha="0"/>
+						<Scale childKey="BG_Line2_White" duration="0.17" order="1" startDelay="1.63" fromScaleX="0.2" fromScaleY="1" toScaleX="1" toScaleY="1"/>
+						<Alpha childKey="BG_Line2" duration="1.63" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="BG_Line2" duration="0.01" order="1" startDelay="1.63" fromAlpha="1" toAlpha="1"/>
+						<Scale childKey="BG_Line2" duration="0.17" order="1" startDelay="1.64" fromScaleX="0.2" fromScaleY="1" toScaleX="1" toScaleY="1"/>
+						<Alpha childKey="BG_text" duration="1.63" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="BG_text" duration="0.57" order="1" startDelay="1.63" fromAlpha="0" toAlpha="1"/>
+						<Scale childKey="BG_text" duration="0.57" order="1" startDelay="1.63" smoothing="OUT" fromScaleX="0.42" fromScaleY="1" toScaleX="1" toScaleY="1"/>
+
+						<Alpha childKey="Wind_FX_1" duration="1.03" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="Wind_FX_1" duration="0.83" order="1" startDelay="1.03" fromAlpha="0" toAlpha="0.7"/>
+						<Alpha childKey="Wind_FX_1" duration="1.33" order="1" startDelay="1.86" fromAlpha="0.7" toAlpha="0"/>
+						<Rotation childKey="Wind_FX_1" duration="2.17" order="1" startDelay="1.03" degrees="-45">
+							<Origin point="CENTER"/>
+						</Rotation>
+						<Alpha childKey="Gold_FX_3" duration="1.87" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="Gold_FX_3" duration="0.53" order="1" startDelay="1.87" fromAlpha="0" toAlpha="0.8"/>
+						<Alpha childKey="Gold_FX_3" duration="3.6" order="1" startDelay="2.4" fromAlpha="0.8" toAlpha="0.7"/>
+						<Scale childKey="Gold_FX_3" duration="0.53" order="1" startDelay="1.87" fromScaleX="1.5" fromScaleY="1.5" toScaleX="1" toScaleY="1"/>
+						<Rotation childKey="Gold_FX_2A" duration="1.87" order="1" degrees="-60">
+							<Origin point="CENTER"/>
+						</Rotation>
+						<Rotation childKey="Gold_FX_2A" duration="1.33" order="1" startDelay="1.87" degrees="-76">
+							<Origin point="CENTER"/>
+						</Rotation>
+						<Rotation childKey="Gold_FX_2A" duration="2" order="1" startDelay="3.2" degrees="-28">
+							<Origin point="CENTER"/>
+						</Rotation>
+						<Alpha childKey="Gold_FX_2A" duration="1.87" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="Gold_FX_2A" duration="1.33" order="1" startDelay="1.87" fromAlpha="0" toAlpha="0.4"/>
+						<Alpha childKey="Gold_FX_2A" duration="2" order="1" startDelay="3.2" fromAlpha="0.4" toAlpha="0"/>
+						<Scale childKey="Gold_FX_2A" duration="1" order="1" fromScaleX="1.1" fromScaleY="1.1" toScaleX="1.1" toScaleY="1.1"/>
+						<Rotation childKey="Particle_2" duration="3" order="1" smoothing="IN_OUT" degrees="-190">
+							<Origin point="CENTER"/>
+						</Rotation>
+						<Alpha childKey="Particle_2" duration="1" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="Particle_2" duration="0.33" order="1" startDelay="1" fromAlpha="0" toAlpha="0.4"/>
+						<Alpha childKey="Particle_2" duration="1" order="1" startDelay="1.33" fromAlpha="0.4" toAlpha="0"/>
+						<Rotation childKey="Particle_1" duration="4" order="1" smoothing="IN_OUT" degrees="-200">
+							<Origin point="CENTER"/>
+						</Rotation>
+						<Alpha childKey="Particle_1" duration="1" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="Particle_1" duration="1.53" order="1" startDelay="1" fromAlpha="0" toAlpha="0.4"/>
+						<Alpha childKey="Particle_1" duration="1.5" order="1" startDelay="2.53" fromAlpha="0.4" toAlpha="0"/>
+						<Scale childKey="Particle_1" duration="1" order="1" fromScaleX="1.2" fromScaleY="1.2" toScaleX="1" toScaleY="1"/>
+
+						<FlipBook childKey="FB_FX_Unlock" duration="2.13" order="1" startDelay="0.23" flipBookRows="8" flipBookColumns="9" flipBookFrames="64" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<Alpha childKey="FB_FX_Unlock" duration="0.23" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="FB_FX_Unlock" duration="2.13" order="1" startDelay="0.23" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="FB_FX_Unlock" duration="0.33" order="1" startDelay="2.36" fromAlpha="1" toAlpha="0"/>
+						<Scale childKey="GV_Start" duration="0.23" order="1" smoothing="IN" fromScaleX="2.5" fromScaleY="2.5" toScaleX="1" toScaleY="1"/>
+						<Alpha childKey="GV_Start" duration="0.23" order="1" smoothing="IN" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="GV_Start" duration="0.1" order="1" startDelay="0.23" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="GV_Normal" duration="0.23" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="GV_Normal" duration="1" order="1" startDelay="0.23" fromAlpha="1" toAlpha="1"/>
+						<Scale childKey="Particle_Start" duration="0.23" order="1" fromScaleX="1.9" fromScaleY="1.9" toScaleX="1" toScaleY="1"/>
+						<Alpha childKey="Particle_Start" duration="0.3" order="1" fromAlpha="1" toAlpha="1"/>
+						<Rotation childKey="Particle_Start" duration="0.3" order="1" degrees="-8">
+							<Origin point="CENTER"/>
+						</Rotation>
+						<Rotation childKey="Particle_Start" duration="1" order="1" startDelay="0.3" degrees="-35">
+							<Origin point="CENTER"/>
+						</Rotation>
+						<Alpha childKey="Particle_Start" duration="1" order="1" startDelay="0.3" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="FX_Wind_Glow" duration="0.4" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="FX_Wind_Glow" duration="0.37" order="1" startDelay="0.4" fromAlpha="0" toAlpha="0.2"/>
+						<Alpha childKey="FX_Wind_Glow" duration="0.83" order="1" startDelay="0.77" fromAlpha="0.2" toAlpha="0"/>
+						<Rotation childKey="FX_Wind_Glow" duration="1.2" order="1" degrees="-45">
+							<Origin point="CENTER"/>
+						</Rotation>
+						<Alpha childKey="FX_Circ_Glow" duration="0.23" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="FX_Circ_Glow" duration="0.53" order="1" startDelay="0.23" fromAlpha="0.5" toAlpha="0"/>
+						<Scale childKey="FX_Circ_Glow" duration="0.53" order="1" startDelay="0.23" fromScaleX="0.65" fromScaleY="0.65" toScaleX="0.8" toScaleY="0.8"/>			
+					</AnimationGroup>
+				</Animations>
+				<Scripts>
+					<OnMouseDown method="OnMouseDown"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Frame>
+	
 	<Frame name="EventToastFlightpointDiscoveredTemplate" mixin="EventToastFlightpointDiscoveredMixin" inherits="EventToastWithIconLargeTextTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="animInStartDelay" value="0" type="number"/>

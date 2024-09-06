@@ -87,7 +87,7 @@ function CurrencyTransferToggleButtonMixin:UpdateEnabledState()
 	self:SetEnabled(dataReady and canTransfer);
 	self:SetDisabledTooltip(self:GetDisabledErrorMessage(dataReady, failureReason), "ANCHOR_RIGHT");
 	
-	local isValidCurrency = failureReason ~= Enum.AccountCurrencyTransferResult.InvalidCurrency;
+	local isValidCurrency = C_CurrencyInfo.IsAccountTransferableCurrency(self.currencyID);
 	local hasDisabledTooltip = self:GetDisabledTooltip() ~= nil;
 	self:SetShown(self:IsEnabled() or (isValidCurrency and hasDisabledTooltip));
 end
@@ -320,6 +320,16 @@ end
 
 function CurrencyTransferBalancePreviewMixin:SetCurrencyBalance(amount)
 	self.BalanceInfo.Amount:SetText(amount and BreakUpLargeNumbers(amount) or 0);
+	self:RefreshTransferCostDisplay();
+end
+
+function CurrencyTransferBalancePreviewMixin:RefreshTransferCostDisplay()
+	if self.showTransferCost then
+		-- Reanchor the transfer cost display so it always stays next to the amount, regardless of how many digits it has
+		self.BalanceInfo.TransferCostDisplay:ClearAllPoints();
+		local padding = 2;
+		self.BalanceInfo.TransferCostDisplay:SetPoint("RIGHT", self.BalanceInfo.Amount, "RIGHT", -(self.BalanceInfo.Amount:GetStringWidth() + padding), 0);
+	end
 	self.BalanceInfo.TransferCostDisplay:SetShown(self.showTransferCost and self:GetCurrencyTransferMenu():GetCurrencyTransferLoss() ~= 0);
 end
 
@@ -338,10 +348,30 @@ function CurrencyTransferCancelButtonMixin:OnClick()
 	HideUIPanel(CurrencyTransferMenu);
 end
 
-CurrencyTransferAmountSelectorMixin = {};
+CurrencyTransferAmountSelectorMixin = CreateFromMixins(CallbackRegistryMixin);
+
+CurrencyTransferAmountSelectorMixin:GenerateCallbackEvents({
+	"RequestSetSourceCharacterMaxQuantity",
+});
+
+function CurrencyTransferAmountSelectorMixin:OnLoad()
+	CallbackRegistryMixin.OnLoad(self);
+	self:AddDynamicEventMethod(self, CurrencyTransferAmountSelectorMixin.Event.RequestSetSourceCharacterMaxQuantity, self.OnRequestSetSourceCharacterMaxQuantity);
+
+	self.MaxQuantityButton:SetScript("OnClick", function() 
+		self:TriggerEvent(CurrencyTransferAmountSelectorMixin.Event.RequestSetSourceCharacterMaxQuantity);
+	end);
+
+	self:Reset();
+end
 
 function CurrencyTransferAmountSelectorMixin:OnHide()
+	CallbackRegistrantMixin.OnHide(self);
 	self:Reset();
+end
+
+function CurrencyTransferAmountSelectorMixin:OnRequestSetSourceCharacterMaxQuantity()
+	self.InputBox:TrySetFullSourceCharacterCurrencyQuantity();
 end
 
 function CurrencyTransferAmountSelectorMixin:GetRequestedCurrencyTransferAmount()
@@ -368,18 +398,25 @@ end
 
 CurrencyTransferAmountInputBoxMixin = CreateFromMixins(CurrencyTransferSystemMixin);
 
-function CurrencyTransferAmountInputBoxMixin:OnShow()
-	self:SetNumber(0);
-end
-
 function CurrencyTransferAmountInputBoxMixin:OnEditFocusLost()
 	EditBox_ClearHighlight(self);
 	self:ValidateAndSetValue();
 end
 
 function CurrencyTransferAmountInputBoxMixin:ValidateAndSetValue()
-	self:SetNumber(self:GetClampedInputAmount(self:GetNumber()));
-	self:GetCurrencyTransferMenu():TriggerEvent(CurrencyTransferMenuMixin.Event.CurrencyTransferAmountUpdated, self:GetNumber());
+	local inputValue = self:GetNumber();
+	local clampedInputValue = self:GetClampedInputAmount(inputValue);
+	self:SetNumber(clampedInputValue);
+
+	-- We only need to update the transfer amount in the menu if it is going to change after being clamped
+	if self.currentValue ~= clampedInputValue then
+		self.currentValue = clampedInputValue;
+		self:GetCurrencyTransferMenu():TriggerEvent(CurrencyTransferMenuMixin.Event.CurrencyTransferAmountUpdated, self.currentValue);
+	end
+end
+
+function CurrencyTransferAmountInputBoxMixin:TrySetFullSourceCharacterCurrencyQuantity()
+	self:SetNumber(self:GetCurrencyTransferMenu():GetSourceCharacterCurrencyQuantity() or 0);
 end
 
 function CurrencyTransferAmountInputBoxMixin:GetClampedInputAmount(inputAmount)
@@ -404,7 +441,11 @@ function CurrencyTransferAmountInputBoxMixin:GetClampedInputAmount(inputAmount)
 end
 
 function CurrencyTransferAmountInputBoxMixin:Reset()
-	self:SetText("");
+	self:SetNumber(0);
+end
+
+function CurrencyTransferAmountInputBoxMixin:OnTextChanged()
+	self:ValidateAndSetValue();
 end
 
 CurrencyTransferCostDisplayMixin = CreateFromMixins(CurrencyTransferSystemMixin);
@@ -454,6 +495,20 @@ function CurrencyTransferSourceSelectorMixin:AutoSelectHighestQuantitySource()
 end
 
 function CurrencyTransferSourceSelectorMixin:SetupCharacterDropdown()
+	local duplicateNameCount = {};
+	for index, currencyData in ipairs(self.rosterCurrencyData) do
+		if not duplicateNameCount[currencyData.characterName] then
+			duplicateNameCount[currencyData.characterName] = 0;
+		else
+			duplicateNameCount[currencyData.characterName] = duplicateNameCount[currencyData.characterName] + 1;
+		end
+	end
+
+	local function GetBestNameForRadioButton(currencyData)
+		local isNameDuplicatedInList = duplicateNameCount[currencyData.characterName] and (duplicateNameCount[currencyData.characterName] > 0) or false;
+		return isNameDuplicatedInList and currencyData.fullCharacterName or currencyData.characterName;
+	end
+
 	local function IsSelected(currencyData)
 		local sourceCharacterData = self:GetCurrencyTransferMenu():GetSourceCharacterData();
 		return sourceCharacterData and (sourceCharacterData.characterGUID == currencyData.characterGUID) or false;
@@ -464,7 +519,7 @@ function CurrencyTransferSourceSelectorMixin:SetupCharacterDropdown()
 	end
 	
 	local function CreateRadioWithIcon(rootDescription, currencyData, currencyInfo)
-		local radio = rootDescription:CreateRadio(currencyData.characterName, IsSelected, SetSelected, currencyData);
+		local radio = rootDescription:CreateRadio(GetBestNameForRadioButton(currencyData), IsSelected, SetSelected, currencyData);
 		radio:AddInitializer(function(button, description, menu)
 			local rightTexture = button:AttachTexture();
 			rightTexture:SetSize(18, 18);
@@ -472,8 +527,9 @@ function CurrencyTransferSourceSelectorMixin:SetupCharacterDropdown()
 			rightTexture:SetTexture(currencyInfo.icon);
 		
 			local fontString = button.fontString;
-			fontString:SetPoint("RIGHT", rightTexture, "LEFT");
 			fontString:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
+			local maxCharacterNameWidth = 225;
+			fontString:SetWidth(math.min(fontString:GetUnboundedStringWidth(), maxCharacterNameWidth));
 
 			local fontString2 = button:AttachFontString();
 			fontString2:SetHeight(20);
@@ -483,7 +539,7 @@ function CurrencyTransferSourceSelectorMixin:SetupCharacterDropdown()
 
 			-- Manual calculation required to accomodate aligned text.
 			local pad = 20;
-			local width = pad + fontString:GetUnboundedStringWidth() + 
+			local width = pad + fontString:GetWidth() + 
 				fontString2:GetUnboundedStringWidth() +
 				rightTexture:GetWidth();
 
@@ -491,6 +547,19 @@ function CurrencyTransferSourceSelectorMixin:SetupCharacterDropdown()
 			return width, height;
 		end);
 	
+		radio:SetOnEnter(function(button)
+			if button.fontString:IsTruncated() then
+				local tooltip = GetAppropriateTooltip();
+				tooltip:SetOwner(self, "ANCHOR_NONE");
+				tooltip:SetPoint("BOTTOMLEFT", button, "RIGHT", 0, 0);
+				GameTooltip_AddHighlightLine(tooltip, button.fontString:GetText());
+				tooltip:Show();
+			end
+		end);
+		radio:SetOnLeave(function(button)
+			GameTooltip_Hide();
+		end);
+
 		return radio;
 	end
 
@@ -634,7 +703,7 @@ function CurrencyTransferLogEntryMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	local arrowIcon = CreateAtlasMarkup("arrow-short", 16, 16);
 	local wrapText = true;
-	GameTooltip_AddNormalLine(GameTooltip, self.transactionData.sourceCharacterName .. " " .. arrowIcon .. " " .. self.transactionData.destinationCharacterName, wrapText);
+	GameTooltip_AddNormalLine(GameTooltip, self.transactionData.fullSourceCharacterName .. " " .. arrowIcon .. " " .. self.transactionData.fullDestinationCharacterName, wrapText);
 	GameTooltip_AddHighlightLine(GameTooltip, CURRENCY_TRANSFER_LOG_CURRENCY_FORMAT:format(BreakUpLargeNumbers(self.transactionData.quantityTransferred), self.currencyInfo and self.currencyInfo.name or ""), wrapText)
 	GameTooltip_AddHighlightLine(GameTooltip, CURRENCY_TRANSFER_LOG_TIME_FORMAT:format(transactionAgeFormatter:Format(GetServerTime() - self.transactionData.timestamp)), wrapText);
 	GameTooltip:Show();

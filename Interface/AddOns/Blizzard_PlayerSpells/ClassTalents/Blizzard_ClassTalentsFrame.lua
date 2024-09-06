@@ -435,6 +435,13 @@ function ClassTalentsFrameMixin:ResetToLastConfigID()
 	end
 end
 
+function ClassTalentsFrameMixin:GenerateChatLink()
+	local linkDisplayText = ("[%s]"):format(TALENT_BUILD_CHAT_LINK_TEXT:format(PlayerUtil.GetSpecName(), PlayerUtil.GetClassName()));
+	local linkText = LinkUtil.FormatLink("talentbuild", linkDisplayText, PlayerUtil.GetCurrentSpecID(), UnitLevel("player"), self:GetLoadoutExportString());
+	local chatLink = PlayerUtil.GetClassColor():WrapTextInColorCode(linkText);
+	return chatLink;
+end
+
 function ClassTalentsFrameMixin:InitializeLoadSystem()
 	local dropdown = self.LoadSystem:GetDropdown();
 	dropdown:SetWidth(200);
@@ -518,9 +525,7 @@ function ClassTalentsFrameMixin:InitializeLoadSystem()
 	end
 
 	local function ChatLinkCallback()
-		local linkDisplayText = ("[%s]"):format(TALENT_BUILD_CHAT_LINK_TEXT:format(PlayerUtil.GetSpecName(), PlayerUtil.GetClassName()));
-		local linkText = LinkUtil.FormatLink("talentbuild", linkDisplayText, PlayerUtil.GetCurrentSpecID(), UnitLevel("player"), self:GetLoadoutExportString());
-		local chatLink = PlayerUtil.GetClassColor():WrapTextInColorCode(linkText);
+		local chatLink = self:GenerateChatLink();
 		if not ChatEdit_InsertLink(chatLink) then
 			ChatFrame_OpenChat(chatLink);
 		end
@@ -709,10 +714,8 @@ function ClassTalentsFrameMixin:UpdateTreeCurrencyInfo(skipButtonUpdates)
 
 	if not skipButtonUpdates then
 		for condID, condInfo in pairs(self.condInfoCache) do
-			if condInfo.isGate then
-				self:MarkCondInfoCacheDirty(condID);
-				self:ForceCondInfoUpdate(condID);
-			end
+			self:MarkCondInfoCacheDirty(condID);
+			self:ForceCondInfoUpdate(condID);
 		end
 
 		self:RefreshGates();
@@ -840,6 +843,16 @@ end
 
 function ClassTalentsFrameMixin:SetConfigID(configID, forceUpdate)
 	if not forceUpdate and (configID == self:GetConfigID()) then
+		return;
+	end
+
+	if not configID then
+		-- We're probably returning from an Inspect state back to current play with no chosen spec
+        -- So clear everything back out as it was when we first loaded
+		TalentFrameBaseMixin.SetConfigID(self, configID);
+		self.configurationInfo = nil;
+		local forceTreeUpdate = true;
+		self:SetTalentTreeID(nil, forceTreeUpdate);
 		return;
 	end
 
@@ -1554,6 +1567,10 @@ function ClassTalentsFrameMixin:OnHeroSpecSelectionClosed()
 
 	-- Certain Apply button glows are deactivatd if the Selection dialog is also showing them
 	self:UpdateConfigButtonsState();
+end
+
+function ClassTalentsFrameMixin:IsHeroSpecActive(subTreeID)
+	return self.HeroTalentsContainer:IsHeroSpecActive(subTreeID);
 end
 
 function ClassTalentsFrameMixin:IsPreviewingSubTree(subTreeID)

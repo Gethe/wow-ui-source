@@ -27,7 +27,16 @@ function ProfessionsCrafterOrderListElementMixin:OnLineEnter()
 
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 
-	local reagents = {};
+	local reagents;
+	if self.option.reagents and #self.option.reagents > 0 then
+		-- Customer provided finishing reagents can alter the quality of the output item.
+		-- Calculate the exact item output based on these reagents so that quality is correct.
+		local transaction = ProfessionsUtil.CreateProfessionsRecipeTransactionFromCraftingOrder(self.option);
+		reagents = transaction:CreateCraftingReagentInfoTbl();
+	else
+		reagents = {};
+	end
+
 	local qualityIDs = C_TradeSkillUI.GetQualitiesForRecipe(self.option.spellID);
 	local qualityIdx = self.option.minQuality or 1;
 	GameTooltip:SetRecipeResultItem(self.option.spellID, reagents, nil, nil, qualityIDs and qualityIDs[qualityIdx]);
@@ -137,6 +146,8 @@ function ProfessionsCraftingOrderPageMixin:InitOrderTypeTabs()
 	self.BrowseFrame.NpcOrdersButton:ClearAllPoints();
 	self.BrowseFrame.NpcOrdersButton:SetPoint("LEFT", isInGuild and self.BrowseFrame.GuildOrdersButton or self.BrowseFrame.PublicOrdersButton, "RIGHT", 0, 0);
 
+	self.BrowseFrame.NpcOrdersNewFeature:SetShown(not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_NPC_CRAFTING_ORDER_TAB_NEW));
+
 	for _, typeTab in ipairs(self.BrowseFrame.orderTypeTabs) do
 		typeTab:SetScript("OnClick", function()
 			PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
@@ -144,6 +155,12 @@ function ProfessionsCraftingOrderPageMixin:InitOrderTypeTabs()
 
 			self:ClearCachedRequests();
 			self:StartDefaultSearch();
+
+			-- Show NEW feature label on NPC tab until first clicked
+			if typeTab.orderType == Enum.CraftingOrderType.Npc then
+				SetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_NPC_CRAFTING_ORDER_TAB_NEW, true);
+				self.BrowseFrame.NpcOrdersNewFeature:SetShown(false);
+			end
 		end);
 
 		typeTab:HandleRotation();
@@ -186,7 +203,7 @@ function ProfessionsCraftingOrderPageMixin:InitRecipeList()
 		self:RequestOrders(selectedRecipe, searchFavorites, initialNonPublicSearch);
 	end
 
-	Professions.InitFilterMenu(self.BrowseFrame.RecipeList.FilterDropdown, OnFilterDefault, OnFilterUpdate, ignoreSkillLine);
+	Professions.InitFilterMenu(self.BrowseFrame.RecipeList.FilterDropdown, OnFilterUpdate, OnFilterDefault, ignoreSkillLine);
 
 	local function OnDataRangeChanged(sortPending, indexBegin, indexEnd)
 		if (not self.expectMoreRows) or (self.requestCallback ~= nil) or (not self.numOrders) then
@@ -297,8 +314,9 @@ function ProfessionsCraftingOrderPageMixin:SetupTable()
 		8, PTC.ItemName.RightCellPadding, ProfessionsSortOrder.ItemName, "ProfessionsCrafterTableCellItemNameTemplate");
 
 	if browseType == OrderBrowseType.Flat then
+		local customerColumnName = self.orderType == Enum.CraftingOrderType.Npc and CRAFTING_ORDERS_BROWSE_HEADER_NPC_NAME or CRAFTING_ORDERS_BROWSE_HEADER_CUSTOMER_NAME;
 		self.tableBuilder:AddUnsortableFixedWidthColumn(self, PTC.NoPadding, PTC.CustomerName.Width, PTC.CustomerName.LeftCellPadding,
-										  	  PTC.CustomerName.RightCellPadding, CRAFTING_ORDERS_BROWSE_HEADER_CUSTOMER_NAME, "ProfessionsCrafterTableCellCustomerNameTemplate");
+										  	  PTC.CustomerName.RightCellPadding, customerColumnName, "ProfessionsCrafterTableCellCustomerNameTemplate");
 		self.tableBuilder:AddFixedWidthColumn(self, PTC.NoPadding, PTC.Tip.Width, PTC.Tip.LeftCellPadding,
 										  	  PTC.Tip.RightCellPadding, ProfessionsSortOrder.Tip, "ProfessionsCrafterTableCellActualCommissionTemplate");
 		self.tableBuilder:AddFixedWidthColumn(self, PTC.NoPadding, PTC.Reagents.Width, PTC.Reagents.LeftCellPadding,
@@ -399,7 +417,8 @@ function ProfessionsCraftingOrderPageMixin:StartDefaultSearch()
 	elseif self.orderType ~= Enum.CraftingOrderType.Public then
 		local selectedSkillLineAbility = nil;
 		local searchFavorites = false;
-		local initialNonPublicSearch = true;
+		-- Filters are only applied if initialNonPublicSearch is set to false, so only set it to true if using default filters.
+		local initialNonPublicSearch = Professions.IsUsingDefaultFilters(ignoreSkillLine); 
 		self:RequestOrders(selectedSkillLineAbility, searchFavorites, initialNonPublicSearch);
 	elseif C_TradeSkillUI.HasFavoriteOrderRecipes() then
 		local selectedRecipe = nil;

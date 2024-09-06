@@ -543,7 +543,7 @@ function ClubFinderCancelOrAcceptApplicant(self, shouldInvite, forceAccept)
 end 
 
 function ClubFinderMessageApplicant(self)
-local communityFrame = self:GetParent():GetParent():GetParent():GetParent():GetParent();
+	local communityFrame = self:GetParent():GetParent():GetParent():GetParent();
 	local clubId = communityFrame:GetSelectedClubId();
 	if (clubId) then 
 		local clubInfo = C_Club.GetClubInfo(clubId);
@@ -557,7 +557,7 @@ local communityFrame = self:GetParent():GetParent():GetParent():GetParent():GetP
 			end
 
 			if(applicantType) then 
-				C_ClubFinder.SendChatWhisper(self:GetParent().Info.clubFinderGUID, self:GetParent().Info.playerGUID, applicantType, ConcatinateServerNameToPlayerName(self:GetParent().Info.playerGUID));
+				C_ClubFinder.SendChatWhisper(self.Info.clubFinderGUID, self.Info.playerGUID, applicantType, ConcatinateServerNameToPlayerName(self.Info.playerGUID));
 			end
 		end
 	end 

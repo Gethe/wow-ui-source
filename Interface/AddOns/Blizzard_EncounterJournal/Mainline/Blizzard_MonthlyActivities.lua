@@ -27,6 +27,10 @@ MonthlyActivities_HelpPlate = {
 	[2] = { ButtonPos = { x = 230,  y = -176 }, HighLightBox = { x = 230, y = -176, width = 560, height = 295 },	ToolTipDir = "RIGHT",   ToolTipText = MONTHLY_ACTIVITIES_HELP_2 },
 }
 
+local CurrentProgressBar;
+local ProgressBarContainer;
+local BonusThresholdLevel;
+
 local function IsActivityPendingComplete(activityID)
 	return EncounterJournal.MonthlyActivitiesFrame:IsActivityPendingComplete(activityID);
 end
@@ -506,10 +510,14 @@ function MonthlyActivitiesThresholdMixin:SetThresholdInfo(thresholdInfo, showLin
 	self.showLine = showLine;
 
 	self.RewardCurrency:SetThresholdInfo(thresholdInfo);
+	self.RewardCurrency:SetShown(thresholdInfo.currencyAwardAmount > 0);
 
 	self.RewardItem:SetShown(thresholdInfo.itemReward ~= nil);
 	if thresholdInfo.itemReward then
 		self.RewardItem:SetRewardItem(thresholdInfo.itemReward);
+		-- any progress AFTER the reward item is considered "bonus".  This is only relevant
+		-- when the reward item is NOT at the end
+		BonusThresholdLevel = thresholdInfo.requiredContributionAmount;
 	end
 end
 
@@ -758,9 +766,13 @@ function MonthlyActivitiesFrameMixin:OnLoad()
 	self:ResetCachedPendingCompleteActivities();
 
 	-- Anchors can't be set on BarFill in layout, has to be OnLoad
-	self.ThresholdBar.BarFillGlow:SetPoint("LEFT", self.ThresholdBar.BarFill, "LEFT", 0, 0);
-	self.ThresholdBar.BarFillGlow:SetPoint("RIGHT", self.ThresholdBar.BarFill, "RIGHT", 0, 0);
-	self.ThresholdBar.BarEnd:SetPoint("CENTER", self.ThresholdBar.BarFill, "RIGHT", 0, 0);
+	ProgressBarContainer = self.ThresholdContainer;
+	CurrentProgressBar = ProgressBarContainer.ThresholdBar;
+	ProgressBarContainer.BarFillGlow:SetPoint("LEFT", CurrentProgressBar.BarFill, "LEFT", 0, 0);
+	ProgressBarContainer.BarFillGlow:SetPoint("RIGHT", CurrentProgressBar.BarFill, "RIGHT", 0, 0);
+	ProgressBarContainer.BarEnd:SetPoint("CENTER", CurrentProgressBar.BarFill, "RIGHT", 0, 0);
+
+	self.InBonusMode = false;
 
 	local DefaultPad = 0;
 	local DefaultSpacing = 0;
@@ -1340,7 +1352,7 @@ function MonthlyActivitiesFrameMixin:OnUpdate()
 		end
 	end
 
-	local curValue = self.ThresholdBar:GetValue();
+	local curValue = CurrentProgressBar:GetValue();
 	local barValue = math.min(curValue + 5, self.targetValue);
 	if barValue >= self.targetValue then
 		if self.progressionSoundHandle then
@@ -1359,15 +1371,22 @@ function MonthlyActivitiesFrameMixin:OnUpdate()
 end
 
 function MonthlyActivitiesFrameMixin:SetCurrentPoints(barValue)
-	self.ThresholdBar:SetValue(barValue);
-	self.ThresholdBar.BarFillGlow:SetTexCoord(self.ThresholdBar.BarFill:GetTexCoord());
+	if BonusThresholdLevel and (barValue >= BonusThresholdLevel) and not self.InBonusMode then
+		ProgressBarContainer.ThresholdBar:SetValue(BonusThresholdLevel);
+		ProgressBarContainer.BonusThresholdBar:SetShown(true);
+		CurrentProgressBar = ProgressBarContainer.BonusThresholdBar;
+		ProgressBarContainer.BarEnd:SetPoint("CENTER", CurrentProgressBar.BarFill, "RIGHT", 0, 0);
+		self.InBonusMode = true;
+	end
+	CurrentProgressBar:SetValue(barValue);
+	ProgressBarContainer.BarFillGlow:SetTexCoord(CurrentProgressBar.BarFill:GetTexCoord());
 
 	for _, thresholdFrame in pairs(self.thresholdFrames) do
 		thresholdFrame:SetCurrentPoints(barValue);
 	end
 
-	self.ThresholdBar.TextContainer.ProgressText:SetText(MONTHLY_ACTIVITIES_PROGRESS_TEXT:format(barValue, self.thresholdMax));
-	self.ThresholdBar.BarEnd:SetShown(barValue > 0);
+	ProgressBarContainer.TextContainer.ProgressText:SetText(MONTHLY_ACTIVITIES_PROGRESS_TEXT:format(barValue, self.thresholdMax));
+	ProgressBarContainer.BarEnd:SetShown(barValue > 0);
 
 	local allRewardsEarned = barValue >= self.thresholdMax;
 	self:SetRewardsEarnedAndCollected(allRewardsEarned, self.allRewardsCollected);
@@ -1387,13 +1406,14 @@ function MonthlyActivitiesFrameMixin:SetAnimating(isAnimating)
 		self.isAnimating = isAnimating;
 
 		local reverse = not isAnimating;
-		self.ThresholdBar.GlowAnim:Play(reverse);
+		ProgressBarContainer.GlowAnim:Play(reverse);
 	end
 end
 
 function MonthlyActivitiesFrameMixin:SetThresholds(thresholds, earnedThresholdAmount, thresholdMax)
 	-- Setup point threshold bar
-	self.ThresholdBar:SetMinMaxValues(0, thresholdMax);
+	ProgressBarContainer.ThresholdBar:SetMinMaxValues(0, thresholdMax);
+	ProgressBarContainer.BonusThresholdBar:SetMinMaxValues(0, thresholdMax);
 
 	self.thresholdMax = thresholdMax;
 
@@ -1408,16 +1428,16 @@ function MonthlyActivitiesFrameMixin:SetThresholds(thresholds, earnedThresholdAm
 	for _, thresholdInfo in pairs(thresholds) do
 		thresholdCount = thresholdCount + 1;
 		local thresholdName = "Threshold" .. thresholdCount;
-		local thresholdFrame = self.ThresholdBar[thresholdName];
+		local thresholdFrame = ProgressBarContainer[thresholdName];
 		if not thresholdFrame then
-			thresholdFrame = CreateFrame("Frame", nil, self.ThresholdBar, "MonthlyActivitiesThresholdTemplate");
-			self.ThresholdBar[thresholdName] = thresholdFrame;
+			thresholdFrame = CreateFrame("Frame", nil, ProgressBarContainer, "MonthlyActivitiesThresholdTemplate");
+			ProgressBarContainer[thresholdName] = thresholdFrame;
 			table.insert(self.thresholdFrames, thresholdFrame);
 		end
 		
-		local xOffset = thresholdInfo.requiredContributionAmount * self.ThresholdBar:GetWidth() / thresholdMax;
+		local xOffset = thresholdInfo.requiredContributionAmount * ProgressBarContainer:GetWidth() / thresholdMax;
 		local yOffset = 0;
-		thresholdFrame:SetPoint("CENTER", self.ThresholdBar, "BOTTOMLEFT", xOffset, yOffset);
+		thresholdFrame:SetPoint("CENTER", ProgressBarContainer, "BOTTOMLEFT", xOffset, yOffset);
 
 		local showLine = thresholdCount < thresholdTotal;
 
@@ -1446,16 +1466,16 @@ function MonthlyActivitiesFrameMixin:SetRewardsEarnedAndCollected(allRewardsEarn
 
 		if restricted then
 			self.BarComplete:SetAlpha(0);
-			self.ThresholdBar:Hide();
+			CurrentProgressBar:Hide();
 		elseif allRewardsEarned then
 			self.BarComplete.FadeInAnim:Play();
-			self.ThresholdBar.FadeOutAnim:Play();
+			ProgressBarContainer.FadeOutAnim:Play();
 		else
 			self.BarComplete.FadeInAnim:Stop();
-			self.ThresholdBar.FadeOutAnim:Stop();
+			ProgressBarContainer.FadeOutAnim:Stop();
 			self.BarComplete:SetAlpha(0);
-			self.ThresholdBar:SetAlpha(1);
-			self.ThresholdBar:Show();
+			CurrentProgressBar:SetAlpha(1);
+			CurrentProgressBar:Show();
 		end
 	end
 

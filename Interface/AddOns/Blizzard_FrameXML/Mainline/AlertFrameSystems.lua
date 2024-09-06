@@ -385,7 +385,7 @@ function AchievementAlertFrame_OnClick (self, button, down)
 		return;
 	end
 
-	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.AchievementsPanel) then
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.AchievementsPanelDisabled) then
 		return;
 	end
 
@@ -468,9 +468,9 @@ LOOTWONALERTFRAME_VALUES={
 }
 
 -- NOTE - This may also be called for an externally created frame. (E.g. bonus roll has its own frame)
-function LootWonAlertFrame_SetUp(self, itemLink, originalQuantity, rollType, roll, specID, isCurrency, showFactionBG, lootSource, lessAwesome, isUpgraded, isCorrupted, wonRoll, showRatedBG, isSecondaryResult)
-	local itemName, itemTexture, quantity, itemRarity;
-	itemName, itemTexture, quantity, itemRarity, itemLink = ItemUtil.GetItemDetails(itemLink, originalQuantity, isCurrency, lootSource);
+function LootWonAlertFrame_SetUp(self, originalLink, originalQuantity, rollType, roll, specID, isCurrency, showFactionBG, lootSource, lessAwesome, isUpgraded, isCorrupted, wonRoll, showRatedBG, isSecondaryResult)
+	local itemLink, itemName, itemTexture, quantity, itemRarity;
+	itemName, itemTexture, quantity, itemRarity, itemLink = ItemUtil.GetItemDetails(originalLink, originalQuantity, isCurrency, lootSource);
 
 	self.isCurrency = isCurrency;
 
@@ -1192,12 +1192,10 @@ function NewPetAlertFrameMixin:OnClick(button, down)
 		return;
 	end
 
-	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CollectionsPanel) then
-		return;
-	end
-
 	SetCollectionsJournalShown(true, COLLECTIONS_JOURNAL_TAB_INDEX_PETS);
-	PetJournal_SelectPet(PetJournal, self.petID);
+	if CollectionsJournal then
+		PetJournal_SelectPet(PetJournal, self.petID);
+	end
 end
 
 -- [[ NewMountAlertFrame ]] --
@@ -1221,12 +1219,7 @@ function NewMountAlertFrameMixin:OnClick(button, down)
 		return;
 	end
 
-	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CollectionsPanel) then
-		return;
-	end
-
 	SetCollectionsJournalShown(true, COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS);
-
 	if CollectionsJournal:IsShown() then
 		MountJournal_SelectByMountID(self.mountID);
 	end

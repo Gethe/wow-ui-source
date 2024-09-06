@@ -81,9 +81,7 @@ end
 
 function ItemUpgradeMixin:OnEvent(event, ...)
 	if event == "ITEM_UPGRADE_MASTER_SET_ITEM" then
-		if not self.upgradeAnimationsInProgress then
-			self:UpdateUpgradeItemInfo();
-		end
+		self:UpdateUpgradeItemInfo();
 		StaticPopup_Hide("CONFIRM_UPGRADE_ITEM");
 	elseif event == "BAG_UPDATE" or event == "CURRENCY_DISPLAY_UPDATE" then
 		self:UpdateIfTargetReached();

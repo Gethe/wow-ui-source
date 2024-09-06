@@ -1,7 +1,7 @@
 BaseMapPoiPinMixin = CreateFromMixins(MapCanvasPinMixin);
 
---[[static]] function BaseMapPoiPinMixin:CreateSubPin(pinFrameLevel)
-	local subPin = CreateFromMixins(self);
+--[[static]] function BaseMapPoiPinMixin:CreateSubPin(pinFrameLevel, ...)
+	local subPin = CreateFromMixins(self, ...);
 	subPin.pinFrameLevel = pinFrameLevel;
 	return subPin;
 end
@@ -331,21 +331,58 @@ function ClearCachedActivitiesForPlayer()
 	ClearCachedAreaPOIsForPlayer();
 end
 
--- Cache for C_TaskQuest.GetQuestsForPlayerByMapID
 local questCache = {};
-function GetQuestsForPlayerByMapIDCached(mapID)
+function GetQuestsOnMapCached(mapID)
 	local entry = questCache[mapID];
 	if entry then
 		return entry;
 	end
 
-	local quests = C_TaskQuest.GetQuestsForPlayerByMapID(mapID);
+	local quests = C_QuestLog.GetQuestsOnMap(mapID);
 	questCache[mapID] = quests;
 	return quests;
 end
 
+-- Cache for C_TaskQuest.GetQuestsOnMap
+local function AddIndicatorQuestsToTasks(container, mapID)
+	local questsOnMap = GetQuestsOnMapCached(mapID);
+
+	if questsOnMap then
+		for i, info in ipairs(questsOnMap) do
+			if(info.isMapIndicatorQuest) then
+				if (info.type ~= Enum.QuestTagType.Islands or ShouldShowIslandsWeeklyPOI()) then
+					info.inProgress = true;
+					info.numObjectives = C_QuestLog.GetNumQuestObjectives(info.questID);
+					info.mapID = mapID;
+					info.isQuestStart = false; -- not an offer
+					info.isDaily = false;
+					info.isCombatAllyQuest = false;
+					info.isMeta = false;
+					-- info.childDepth avoided
+				
+					table.insert(container, info);
+				end
+			end
+		end
+	end
+end
+
+local taskCache = {};
+function GetTasksOnMapCached(mapID)
+	local entry = taskCache[mapID];
+	if entry then
+		return entry;
+	end
+
+	local tasks = C_TaskQuest.GetQuestsOnMap(mapID);
+	AddIndicatorQuestsToTasks(tasks, mapID);
+	taskCache[mapID] = tasks;
+	return tasks;
+end
+
 function ClearCachedQuestsForPlayer()
 	questCache = {};
+	taskCache = {};
 end
 
 -- Cache for C_AreaPoiInfo.GetAreaPOIForMap
@@ -475,6 +512,8 @@ function SuperTrackablePinMixin:OnMouseClickAction(button)
 			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 			C_SuperTrack[self:GetSuperTrackMutatorAPIName()](self:GetSuperTrackData());
 		end
+
+		return true;
 	end
 end
 

@@ -54,10 +54,6 @@ local function IsBoostFlowValidForCharacter(flowData, level, boostInProgress, is
 		return false;
 	end
 
-	if (flowData.level < 70) and (raceFilename == "Dracthyr") then
-		return false;
-	end
-
 	local timerunningSeasonID = playerGUID and GetCharacterTimerunningSeasonID(playerGUID);
 	if timerunningSeasonID then
 		return false;
@@ -335,6 +331,9 @@ function CharacterSelectBlockBase:Initialize(results)
 end
 
 function CharacterSelectBlockBase:ShouldShowPopup()
+	-- Heritage armor restriction has been removed.
+	-- Re-enable this if needed
+	--[[
 	local characterInfo = CharacterSelectUtil.GetCharacterInfoTable(self.charid);
 	if characterInfo then
 		local raceData = C_CharacterCreation.GetRaceDataByID(C_CharacterCreation.GetRaceIDFromName(characterInfo.raceFilename));
@@ -342,6 +341,7 @@ function CharacterSelectBlockBase:ShouldShowPopup()
 		self.seenPopup = true;
 		return characterInfo.isTrialBoost == false and raceData.isAlliedRace and not raceData.hasHeritageArmor and not seenPopupBefore;
 	end
+	--]]
 	return false;
 end
 
@@ -1318,7 +1318,8 @@ function RPEUpgradeSpecSelectBlock:Initialize(results, wasFromRewind)
 	end
 
 	-- Force expand character list if collapsed.
-	CharacterSelectUI:ExpandCharacterList();
+	local isExpanded = true;
+	CharacterSelectUI:ExpandCharacterList(isExpanded);
 	CharacterSelectUI:SetCharacterListToggleEnabled(false);
 
 	local basicInfo = GetBasicCharacterInfo(characterGuid);
@@ -1439,5 +1440,5 @@ function RPEUpgradeMinimizedFrameMixin:OnLeave()
 end
 
 function RPEUpgradeMinimizedFrameMixin:OnClick()
-	CharSelectServicesFlow_Maximize()
+	CharSelectServicesFlow_Maximize();
 end

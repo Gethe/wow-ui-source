@@ -121,10 +121,10 @@ function GetIconForRoleEnum(role, showDisabled)
 end
 
 local MicroLFGRoleIcons = {
-	["GUIDE"] = "UI-LFG-RoleIcon-Leader-Micro",
-	["TANK"] = "UI-LFG-RoleIcon-Tank-Micro",
-	["HEALER"] = "UI-LFG-RoleIcon-Healer-Micro",
-	["DAMAGER"] = "UI-LFG-RoleIcon-DPS-Micro",
+	["GUIDE"] = "UI-LFG-RoleIcon-Leader-Micro-GroupFinder",
+	["TANK"] = "UI-LFG-RoleIcon-Tank-Micro-GroupFinder",
+	["HEALER"] = "UI-LFG-RoleIcon-Healer-Micro-GroupFinder",
+	["DAMAGER"] = "UI-LFG-RoleIcon-DPS-Micro-GroupFinder",
 };
 
 function GetMicroIconForRole(role)

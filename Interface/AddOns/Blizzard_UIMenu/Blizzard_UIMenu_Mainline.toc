@@ -1,8 +1,0 @@
-## Title: Blizzard_UIMenu
-## Author: Blizzard Entertainment
-## DefaultState: enabled
-## AllowLoad: both
-## AllowLoadGameType: mainline
-## Dependencies: Blizzard_SharedXML
-Mainline\UIMenu.lua
-Mainline\UIMenu.xml

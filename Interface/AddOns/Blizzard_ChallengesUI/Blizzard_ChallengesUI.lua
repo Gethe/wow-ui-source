@@ -284,28 +284,32 @@ ChallengeModeWeeklyChestMixin = CreateFromMixins(WeeklyRewardMixin);
 function ChallengeModeWeeklyChestMixin:Update(bestMapID, dungeonScore)
 	local chestState = CHEST_STATE_WALL_OF_TEXT;
 
+	local vaultIconState = "";
 	if C_WeeklyRewards.HasAvailableRewards() then
 		chestState = CHEST_STATE_COLLECT;
 
-		self.Icon:SetAtlas("mythicplus-dragonflight-greatvault-collect", TextureKitConstants.UseAtlasSize);
-		self.Highlight:SetAtlas("mythicplus-dragonflight-greatvault-collect", TextureKitConstants.UseAtlasSize);
+		vaultIconState = "collect";
 		self.RunStatus:SetText(MYTHIC_PLUS_COLLECT_GREAT_VAULT);
 		self.AnimTexture:Show();
 		self.AnimTexture.Anim:Play();
 	elseif self:HasUnlockedRewards(Enum.WeeklyRewardChestThresholdType.Activities) then
 		chestState = CHEST_STATE_COMPLETE;
 
-		self.Icon:SetAtlas("mythicplus-dragonflight-greatvault-complete", TextureKitConstants.UseAtlasSize);
-		self.Highlight:SetAtlas("mythicplus-dragonflight-greatvault-complete", TextureKitConstants.UseAtlasSize);
+		vaultIconState = "complete";
 		self.RunStatus:SetText(MYTHIC_PLUS_COMPLETE_MYTHIC_DUNGEONS);
 		self.AnimTexture:Hide();
 	elseif C_MythicPlus.GetOwnedKeystoneLevel() or (dungeonScore and dungeonScore > 0) then
 		chestState = CHEST_STATE_INCOMPLETE;
 
-		self.Icon:SetAtlas("mythicplus-dragonflight-greatvault-incomplete", TextureKitConstants.UseAtlasSize);
-		self.Highlight:SetAtlas("mythicplus-dragonflight-greatvault-incomplete", TextureKitConstants.UseAtlasSize);
+		vaultIconState = "incomplete";
 		self.RunStatus:SetText(MYTHIC_PLUS_COMPLETE_MYTHIC_DUNGEONS);
 		self.AnimTexture:Hide();
+	end
+
+	local vaultIconAtlas = "gficon-chest-evergreen-greatvault-";
+	if vaultIconState ~= "" then
+		self.Icon:SetAtlas(vaultIconAtlas..vaultIconState, TextureKitConstants.UseAtlasSize);
+		self.Highlight:SetAtlas(vaultIconAtlas..vaultIconState, TextureKitConstants.UseAtlasSize);
 	end
 
 	self.state = chestState;
@@ -345,6 +349,20 @@ function ChallengeModeWeeklyChestMixin:OnEnter()
 
 	GameTooltip_AddInstructionLine(GameTooltip, WEEKLY_REWARDS_CLICK_TO_PREVIEW_INSTRUCTIONS);
 	GameTooltip:Show();
+
+	if self.AnimTexture.Anim:IsPlaying() then
+		self.AnimTexture:Hide();
+		self.AnimTexture.Anim:Stop();
+	end
+end
+
+function ChallengeModeWeeklyChestMixin:OnLeave()
+	GameTooltip_Hide();
+	
+	if C_WeeklyRewards.HasAvailableRewards() then
+		self.AnimTexture:Show();
+		self.AnimTexture.Anim:Play();
+	end
 end
 
 ChallengeModeLegacyWeeklyChestMixin = {};
@@ -488,6 +506,21 @@ function ChallengesDungeonIconMixin:SetUp(mapInfo, isFirst)
     end
 end
 
+local function AddAffixScoreToTooltip(affixInfo)
+	GameTooltip_AddBlankLineToTooltip(GameTooltip);
+	GameTooltip_AddNormalLine(GameTooltip, LFG_LIST_BEST_RUN);
+	GameTooltip_AddColoredLine(GameTooltip, MYTHIC_PLUS_POWER_LEVEL:format(affixInfo.level), HIGHLIGHT_FONT_COLOR);
+
+	local displayZeroHours = affixInfo.durationSec >= SECONDS_PER_HOUR;
+	local durationText = SecondsToClock(affixInfo.durationSec, displayZeroHours);
+
+	if affixInfo.overTime then
+		local overtimeText = DUNGEON_SCORE_OVERTIME_TIME:format(durationText);
+		GameTooltip_AddColoredLine(GameTooltip, overtimeText, LIGHTGRAY_FONT_COLOR);
+	else
+		GameTooltip_AddColoredLine(GameTooltip, durationText, HIGHLIGHT_FONT_COLOR);
+	end
+end
 
 function ChallengesDungeonIconMixin:OnEnter()
     local name = C_ChallengeMode.GetMapUIInfo(self.mapID);
@@ -495,37 +528,21 @@ function ChallengesDungeonIconMixin:OnEnter()
     GameTooltip:SetText(name, 1, 1, 1);
 
     local inTimeInfo, overtimeInfo = C_MythicPlus.GetSeasonBestForMap(self.mapID);
-	local affixScores, overAllScore = C_MythicPlus.GetSeasonBestAffixScoreInfoForMap(self.mapID);
-	local isOverTimeRun = false;
+	local affixScores, overallScore = C_MythicPlus.GetSeasonBestAffixScoreInfoForMap(self.mapID);
 
-	local seasonBestDurationSec, seasonBestLevel, members;
-
-	if(overAllScore and (inTimeInfo or overtimeInfo)) then
-		local color = C_ChallengeMode.GetSpecificDungeonOverallScoreRarityColor(overAllScore);
-		if(not color) then
-			color = HIGHLIGHT_FONT_COLOR;
-		end
-		GameTooltip_AddNormalLine(GameTooltip, DUNGEON_SCORE_TOTAL_SCORE:format(color:WrapTextInColorCode(overAllScore)), GREEN_FONT_COLOR);
+	if overallScore and (inTimeInfo or overtimeInfo) then
+		local color = C_ChallengeMode.GetSpecificDungeonOverallScoreRarityColor(overallScore) or HIGHLIGHT_FONT_COLOR;
+		local overallText = DUNGEON_SCORE_TOTAL_SCORE:format(color:WrapTextInColorCode(overallScore));
+		GameTooltip_AddNormalLine(GameTooltip, overallText, GREEN_FONT_COLOR);
 	end
 
-	if(affixScores and #affixScores > 0) then
-		for _, affixInfo in ipairs(affixScores) do
-			GameTooltip_AddBlankLineToTooltip(GameTooltip);
-			GameTooltip_AddNormalLine(GameTooltip, DUNGEON_SCORE_BEST_AFFIX:format(affixInfo.name));
-			GameTooltip_AddColoredLine(GameTooltip, MYTHIC_PLUS_POWER_LEVEL:format(affixInfo.level), HIGHLIGHT_FONT_COLOR);
-			if(affixInfo.overTime) then
-				if(affixInfo.durationSec >= SECONDS_PER_HOUR) then
-					GameTooltip_AddColoredLine(GameTooltip, DUNGEON_SCORE_OVERTIME_TIME:format(SecondsToClock(affixInfo.durationSec, true)), LIGHTGRAY_FONT_COLOR);
-				else
-					GameTooltip_AddColoredLine(GameTooltip, DUNGEON_SCORE_OVERTIME_TIME:format(SecondsToClock(affixInfo.durationSec, false)), LIGHTGRAY_FONT_COLOR);
-				end
-			else
-				if(affixInfo.durationSec >= SECONDS_PER_HOUR) then
-					GameTooltip_AddColoredLine(GameTooltip, SecondsToClock(affixInfo.durationSec, true), HIGHLIGHT_FONT_COLOR);
-				else
-					GameTooltip_AddColoredLine(GameTooltip, SecondsToClock(affixInfo.durationSec, false), HIGHLIGHT_FONT_COLOR);
-				end
-			end
+	if affixScores then
+		local fastestAffixScore = TableUtil.FindMin(affixScores, function(affixScore)
+			return affixScore.durationSec;
+		end);
+
+		if fastestAffixScore then
+			AddAffixScoreToTooltip(fastestAffixScore);
 		end
 	end
 

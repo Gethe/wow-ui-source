@@ -1,6 +1,7 @@
 -- Season/reward data
-local MIN_REP_RANK_FOR_REWARDS = 2;
-local MAX_REP_RANK_FOR_REWARDS = 11;
+local MIN_REP_RANK_FOR_REWARDS = 1;
+local MIN_REP_THRESHOLD_BAR_VALUE = MIN_REP_RANK_FOR_REWARDS - 1;
+local MAX_REP_RANK_FOR_REWARDS = 10;
 local MAX_NUM_REWARDS = 10;
 local DELVES_SEASON_RENOWN_CVAR = "lastRenownForDelvesSeason";
 local REPUTATION_UPDATE_TIMEOUT_SECONDS = 0.2; -- 200ms
@@ -49,7 +50,7 @@ function DelvesDashboardFrameMixin:OnShow()
 	self.renownInfo = C_MajorFactions.GetMajorFactionRenownInfo(C_DelvesUI.GetDelvesFactionForSeason());
 	self.rewardsInfo = self:GetRewardsInfo();
 
-    PVEFrame:SetPortraitToAsset("Interface\\ICONS\\INV_Cape_Special_Explorer_B_03");
+    PVEFrame:SetPortraitToAsset("Interface\\ICONS\\UI_Delves");
 	self:UpdateTitles();
 	self:SetThresholds();
 	self:UpdateGreatVaultVisibility();
@@ -63,15 +64,15 @@ function DelvesDashboardFrameMixin:SetThresholds()
 	self.shouldPlayAnims = thresholdValue > oldThresholdValue;
 	SetCVar(DELVES_SEASON_RENOWN_CVAR, thresholdValue);
 
-	self.ThresholdBar:SetMinMaxValues(1, MAX_REP_RANK_FOR_REWARDS);
+	self.ThresholdBar:SetMinMaxValues(MIN_REP_THRESHOLD_BAR_VALUE, MAX_REP_RANK_FOR_REWARDS);
 	self.ThresholdBar:SetValue(thresholdValueForBar);
-	self.ThresholdBar.BarEnd:SetShown(self.ThresholdBar:GetValue() > 1);
+	self.ThresholdBar.BarEnd:SetShown(self.ThresholdBar:GetValue() >= MIN_REP_RANK_FOR_REWARDS);
 
 	if not self.thresholdFrames then
 		self.thresholdFrames = {};
 	end
 
-	local currentThreshold = 2;
+	local currentThreshold = MIN_REP_RANK_FOR_REWARDS;
 	for i, thresholdInfo in pairs(self.rewardsInfo) do
 		local thresholdName = "Threshold" .. currentThreshold;
 		local thresholdFrame = self.ThresholdBar[thresholdName];
@@ -334,9 +335,19 @@ end
 
 function GreatVaultButtonMixin:OnShow()
 	local state = self:GetState();
-	local atlas = "pvpqueue-chest-dragonflight-greatvault-"..state;
-	self.ChestTexture:SetAtlas(atlas);
-	self.Highlight:SetAtlas(atlas);
+	
+	if C_WeeklyRewards.HasAvailableRewards() then
+		self.AnimTexture:Show();
+		self.AnimTexture.Anim:Play();
+	else
+		self.AnimTexture.Anim:Stop();
+		self.AnimTexture:Hide();
+	end
+
+	local atlas = "gficon-chest-evergreen-greatvault-"..state;
+	local useAtlasSize = true;
+	self.ChestTexture:SetAtlas(atlas, useAtlasSize);
+	self.Highlight:SetAtlas(atlas, useAtlasSize);
 
 	local desaturated = not HasActiveSeason();
 	self.ChestTexture:SetDesaturated(desaturated);
@@ -365,20 +376,37 @@ function GreatVaultButtonMixin:OnEnter()
 		return;
 	end
 
-	local state = self:GetState();
 	local maxUnlocks = self:GetMaxNumRewards(Enum.WeeklyRewardChestThresholdType.World);
 	local unlocksCompleted = self:GetNumUnlockedRewards(Enum.WeeklyRewardChestThresholdType.World);
-	local description = DELVES_GREAT_VAULT_TOOLTIP:format(unlocksCompleted, maxUnlocks);
 
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip_SetTitle(GameTooltip, GREAT_VAULT_REWARDS);
 
 	if maxUnlocks > 0 then
-		GameTooltip_AddNormalLine(GameTooltip, description);
+		if C_WeeklyRewards.HasAvailableRewards() then
+			GameTooltip_AddNormalLine(GameTooltip, DELVES_WEEKLY_REWARDS_UNCLAIMED_TEXT);
+		else
+			local description = DELVES_GREAT_VAULT_TOOLTIP:format(unlocksCompleted, maxUnlocks);
+			GameTooltip_AddNormalLine(GameTooltip, description);
+		end
 	end
 
 	GameTooltip_AddInstructionLine(GameTooltip, WEEKLY_REWARDS_CLICK_TO_PREVIEW_INSTRUCTIONS);
 	GameTooltip:Show();
+
+	if self.AnimTexture.Anim:IsPlaying() then
+		self.AnimTexture.Anim:Stop();
+		self.AnimTexture:Hide();
+	end
+end
+
+function GreatVaultButtonMixin:OnLeave()
+	GameTooltip:Hide();
+
+	if C_WeeklyRewards.HasAvailableRewards() then
+		self.AnimTexture:Show();
+		self.AnimTexture.Anim:Play();
+	end
 end
 
 function GreatVaultButtonMixin:OnMouseUp(...)
@@ -387,4 +415,20 @@ function GreatVaultButtonMixin:OnMouseUp(...)
 	end
 
 	WeeklyRewardMixin.OnMouseUp(self, ...);
+end
+
+DelvesDashboardButtonPanelFrameMixin = {};
+
+function DelvesDashboardButtonPanelFrameMixin:OnEnter()
+	if self.PanelDescription:IsTruncated() then
+		GameTooltip:SetOwner(self.PanelDescription, "ANCHOR_RIGHT");
+		GameTooltip_AddNormalLine(GameTooltip, self.PanelDescription:GetText());
+		GameTooltip:Show();
+	end
+end
+
+function DelvesDashboardButtonPanelFrameMixin:OnLeave()
+	if GameTooltip:GetOwner() == self.PanelDescription then
+		GameTooltip:Hide();
+	end
 end

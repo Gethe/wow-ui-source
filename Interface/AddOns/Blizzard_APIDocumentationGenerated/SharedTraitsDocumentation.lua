@@ -7,6 +7,22 @@ local SharedTraits =
 	Functions =
 	{
 		{
+			Name = "CanEditConfig",
+			Type = "Function",
+			Documentation = { "Returns whether the player can make changes to the specified talent config." },
+
+			Arguments =
+			{
+				{ Name = "configID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canEdit", Type = "bool", Nilable = false },
+				{ Name = "errorMessage", Type = "cstring", Nilable = false, Documentation = { "If canEdit is false, this will be filled out with text explaining why the player can not make changes." } },
+			},
+		},
+		{
 			Name = "CanPurchaseRank",
 			Type = "Function",
 
@@ -720,8 +736,10 @@ local SharedTraits =
 				{ Name = "condID", Type = "number", Nilable = false },
 				{ Name = "ranksGranted", Type = "number", Nilable = true },
 				{ Name = "isAlwaysMet", Type = "bool", Nilable = false },
-				{ Name = "isMet", Type = "bool", Nilable = false },
+				{ Name = "isMet", Type = "bool", Nilable = false, Documentation = { "True if the source for the condition has been fulfilled." } },
 				{ Name = "isGate", Type = "bool", Nilable = false },
+				{ Name = "isSufficient", Type = "bool", Nilable = false, Documentation = { "True if meeting the requirements for the condition means any nodes using this condition are considered fulfilled if the condition is met." } },
+				{ Name = "type", Type = "number", Nilable = false, Documentation = { "The value from the TraitConditionType enum the condition uses." } },
 				{ Name = "questID", Type = "number", Nilable = true },
 				{ Name = "achievementID", Type = "number", Nilable = true },
 				{ Name = "specSetID", Type = "number", Nilable = true },
@@ -777,6 +795,7 @@ local SharedTraits =
 				{ Name = "type", Type = "TraitNodeEntryType", Nilable = false },
 				{ Name = "maxRanks", Type = "number", Nilable = false },
 				{ Name = "isAvailable", Type = "bool", Nilable = false },
+				{ Name = "isDisplayError", Type = "bool", Nilable = false, Documentation = { "True if this entry fails the TRAIT_CONDITION_TYPE_DISPLAY_ERROR condition check. Used to communicate a problem with the node to the player (e.g. A prerequisite node has not been purchased.) but will not prevent the player from spending points on the node." } },
 				{ Name = "conditionIDs", Type = "table", InnerType = "number", Nilable = false },
 			},
 		},
@@ -813,6 +832,7 @@ local SharedTraits =
 				{ Name = "canRefundRank", Type = "bool", Nilable = false },
 				{ Name = "isAvailable", Type = "bool", Nilable = false },
 				{ Name = "isVisible", Type = "bool", Nilable = false },
+				{ Name = "isDisplayError", Type = "bool", Nilable = false, Documentation = { "True if this node fails the TRAIT_CONDITION_TYPE_DISPLAY_ERROR condition check. Used to communicate a problem with the node to the player (e.g. A prerequisite node has not been purchased.) but will not prevent the player from spending points on the node." } },
 				{ Name = "ranksPurchased", Type = "number", Nilable = false },
 				{ Name = "activeRank", Type = "number", Nilable = false },
 				{ Name = "currentRank", Type = "number", Nilable = false },

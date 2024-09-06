@@ -210,7 +210,7 @@ function TimerunningTimeRemainingFormatter:GetMinInterval(seconds)
 end
 
 function TimerunningEventBannerMixin:OnLoad()
-	local createCharacterButton = CharacterSelectUI.CharacterList.CreateCharacterButton;
+	local createCharacterButton = CharacterSelectUI.VisibilityFramesContainer.CharacterList.CreateCharacterButton;
 
 	local onEnableScript = createCharacterButton:GetScript("OnEnable");
 	createCharacterButton:SetScript("OnEnable", function()
@@ -246,7 +246,7 @@ function TimerunningEventBannerMixin:UpdateShown()
 	local showTimerunning = GetActiveTimerunningSeasonID() ~= nil;
 	self:SetShown(showTimerunning);
 
-	local createCharacterEnabled = CharacterSelectUI.CharacterList.CreateCharacterButton:IsEnabled();
+	local createCharacterEnabled = CharacterSelectUI.VisibilityFramesContainer.CharacterList.CreateCharacterButton:IsEnabled();
 	TimerunningCreateCharacterButtonGlow:SetShown(createCharacterEnabled and showTimerunning);
 end
 

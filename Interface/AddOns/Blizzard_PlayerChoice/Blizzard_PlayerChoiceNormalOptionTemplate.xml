@@ -65,7 +65,7 @@
 										<KeyValue key="layoutIndex" value="1" type="number"/>
 									</KeyValues>
 								</Texture>
-								<FontString parentKey="Text" font="SystemFont_Large" justifyV="MIDDLE" maxLines="2">
+								<FontString parentKey="Text" font="SystemFont_Med3" justifyV="MIDDLE" maxLines="2">
 									<Size y="30"/>
 									<KeyValues>
 										<KeyValue key="layoutIndex" value="2" type="number"/>

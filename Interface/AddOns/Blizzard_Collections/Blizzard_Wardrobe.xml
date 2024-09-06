@@ -596,7 +596,7 @@
 					<KeyValue key="resizeToText" type="boolean" value="false"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.SearchBox" relativePoint="RIGHT" x="7" y="0"/>
+					<Anchor point="LEFT" relativeKey="$parent.SearchBox" relativePoint="RIGHT" x="5" y="0"/>
 				</Anchors>
 			</DropdownButton>
 

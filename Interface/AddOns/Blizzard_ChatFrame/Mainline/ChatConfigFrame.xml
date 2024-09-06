@@ -697,13 +697,13 @@
 							<Frame name="$parentMisc">
 								<Size x="10" y="10"/>
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+									<Anchor point="TOPLEFT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT" x="16" y="0"/>
 								</Anchors>
 								<Layers>
 									<Layer level="BACKGROUND">
 										<FontString inherits="GameFontHighlight" text="MISCELLANEOUS">
 											<Anchors>
-												<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT"/>
+												<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="-6"/>
 											</Anchors>
 										</FontString>
 									</Layer>
@@ -1453,6 +1453,7 @@
 				</Frames>
 				<Scripts>
 					<OnLoad function="ChatConfigCombat_OnLoad"/>
+					<OnEvent function="ChatConfigCombat_OnEvent"/>
 					<OnShow function="ChatConfigCombat_OnShow"/>
 					<OnHide function="ChatConfigCombat_OnHide"/>
 				</Scripts>

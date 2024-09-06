@@ -27,13 +27,13 @@
             </Layer>
             <Layer level="BORDER">
                 <Texture parentKey="Texture">
-                    <Size x="62" y="68"/>
+                    <Size x="50" y="50"/>
                     <Anchors>
                         <Anchor point="CENTER" x="1" y="-1"/>
                     </Anchors>
                 </Texture>
                 <Texture parentKey="HighlightTexture" hidden="true" alphaMode="ADD" alpha="0.2">
-                    <Size x="62" y="68"/>
+                    <Size x="50" y="50"/>
                     <Anchors>
                         <Anchor point="CENTER" x="1" y="-1"/>
                     </Anchors>
@@ -51,27 +51,28 @@
             </Layer>
             <Layer level="ARTWORK" >
                 <Texture parentKey="Border" atlas="talents-node-pvp-locked">
-                    <Size x="80" y="75"/>
+                    <Size x="70" y="65"/>
                     <Anchors>
                         <Anchor point="CENTER"/>
                     </Anchors>
                 </Texture>
                 <Texture parentKey="BorderHighlight" alphaMode="ADD" alpha="0.4" hidden="true">
-                    <Size x="80" y="75"/>
+                    <Size x="70" y="65"/>
                     <Anchors>
                         <Anchor point="CENTER"/>
                     </Anchors>
                 </Texture>
-                <FontString parentKey="Label" justifyH="LEFT" inherits="SystemFont_Med2">
+                <FontString parentKey="Label" justifyH="LEFT" inherits="SystemFont_Med3">
                     <Size x="200" y="10"/>
                     <Anchors>
-                        <Anchor point="LEFT" relativeKey="$parent" relativePoint="RIGHT" x="10" y="10"/>
+                        <Anchor point="CENTER" relativeKey="$parent" relativePoint="CENTER"/>
+                        <Anchor point="LEFT" relativeKey="$parent" relativePoint="RIGHT" x="5" y="12"/>
                     </Anchors>
                 </FontString>
-                <FontString parentKey="Value" justifyH="LEFT" inherits="GameFontNormalMed1">
-                    <Size x="200" y="10"/>
+                <FontString parentKey="Value" justifyH="LEFT" justifyV="TOP" inherits="GameFontNormalMed2">
+                    <Size x="200" y="30"/>
                     <Anchors>
-                        <Anchor point="TOP" relativeKey="$parent.Label" relativePoint="BOTTOM" y="-10"/>
+                        <Anchor point="TOP" relativeKey="$parent.Label" relativePoint="BOTTOM" y="-6"/>
                     </Anchors>
                 </FontString>
             </Layer>
@@ -90,7 +91,7 @@
             </Frame>
             <Frame parentKey="OptionsList" inherits="CompanionConfigListTemplate" mixin="CompanionConfigSlotOptionsListMixin" hidden="true">
                 <Anchors>
-                    <Anchor point="TOP" relativeKey="$parent.Texture" relativePoint="CENTER" x="-2" y="-20"/>
+                    <Anchor point="TOP" relativeKey="$parent.Texture" relativePoint="BOTTOM" x="-2" y="-1"/>
                 </Anchors>
                 <Scripts>
                     <OnShow method="OnShow"/>
@@ -203,9 +204,15 @@
             </Layer>
         </Layers>
         <Frames>
+            <Frame parentKey="Border" inherits="DialogBorderTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-8" y="9"/>
+					<Anchor point="BOTTOMRIGHT" x="8" y="-9"/>
+				</Anchors>
+			</Frame>
             <Button parentKey="CloseButton" inherits="UIPanelCloseButton" frameLevel="510">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="1" y="1"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.Border" relativePoint="TOPRIGHT"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -231,7 +238,8 @@
 					</Layer>
 
 					<Layer level="BORDER">
-						<Texture parentKey="Border" atlas="delves-companion-portrait-frame" useAtlasSize="true">
+						<Texture parentKey="Border" atlas="delves-companion-portrait-frame" useAtlasSize="false">
+                            <Size x="180" y="200"/>
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.Icon"/>
 							</Anchors>
@@ -246,9 +254,9 @@
 
             <!-- Companion Experience Ring -->
             <Cooldown parentKey="CompanionExperienceRingFrame" mixin="CompanionExperienceRingFrameMixin" reverse="true" hideCountdownNumbers="true" rotation="180">
-                <Size x="128" y="128"/>
+                <Size x="131" y="136"/>
                 <Anchors>
-                    <Anchor point="CENTER" relativeKey="$parent.CompanionPortraitFrame" relativePoint="CENTER" y="9"/>
+                    <Anchor point="CENTER" relativeKey="$parent.CompanionPortraitFrame" relativePoint="CENTER" x="-1" y="10"/>
                 </Anchors>
                 <SwipeTexture file="Interface\Delves\delves-companion-progress-fill"/>
             </Cooldown>
@@ -261,10 +269,10 @@
                 </Anchors>
                 <Layers>
                     <Layer level="ARTWORK">
-                        <FontString parentKey="CompanionLevel" justifyH="CENTER" inherits="GameFontNormalMed1">
+                        <FontString parentKey="CompanionLevel" justifyH="CENTER" inherits="SystemFont_Large2">
                             <Size x="30" y="25"/>
                             <Anchors>
-                                <Anchor point="CENTER"/> 
+                                <Anchor point="CENTER" x="-1" y="-1"/> 
                             </Anchors>
                         </FontString>
                     </Layer>
@@ -275,11 +283,18 @@
             <Frame parentKey="CompanionInfoFrame" mixin="CompanionInfoFrameMixin">
                 <Size x="340" y="90"/>
                 <Anchors>
-                    <Anchor point="TOP" relativeKey="$parent.CompanionLevelFrame" relativePoint="BOTTOM" y="-10"/>
+                    <Anchor point="TOP" relativeKey="$parent.CompanionLevelFrame" relativePoint="BOTTOM" y="-17"/>
                     <Anchor point="CENTER" relativeKey="$parent" relativePoint="CENTER"/>
                 </Anchors>
                 <Layers>
                     <Layer level="ARTWORK">
+                        <Texture parentKey="InfoFrameShadow" atlas="delves-companion-shadow" useAtlasSize="false">
+                            <Size x="340" y="135"/>
+                            <Anchors>
+                                <Anchor point="CENTER" y="25"/>
+                            </Anchors>
+                        </Texture>
+
                         <FontString parentKey="CompanionName" justifyH="CENTER" inherits="SystemFont_Huge4">
                             <Size x="340" y="30"/>
                             <Anchors>
@@ -290,11 +305,11 @@
                         <FontString parentKey="CompanionDescription" justifyH="CENTER" inherits="GameFontNormalLarge">
                             <Size x="340" y="25"/>
                             <Anchors>
-                                <Anchor point="TOP" relativeKey="$parent.CompanionName" relativePoint="BOTTOM"/>
+                                <Anchor point="TOP" relativeKey="$parent.CompanionName" relativePoint="BOTTOM" y="5"/>
                             </Anchors>
                         </FontString>
 
-                        <Texture name="CompanionInfoGLine" atlas="UI-World-Quest-golden-line" useAtlasSize="false">
+                        <Texture name="CompanionInfoGLine" atlas="delves-companion-divider" useAtlasSize="false">
                             <Size x="285" y="5"/>
                             <Anchors>
                                 <Anchor point="TOP" relativeKey="$parent.CompanionDescription" relativePoint="BOTTOM" y="-10"/>
@@ -310,7 +325,7 @@
                     <KeyValue type="string" key="type" value="Role"/>
                 </KeyValues>
                 <Anchors>
-                    <Anchor point="TOPLEFT" relativeKey="$parent.CompanionInfoFrame" relativePoint="BOTTOMLEFT" x="30"/>
+                    <Anchor point="TOPLEFT" relativeKey="$parent.CompanionInfoFrame" relativePoint="BOTTOMLEFT" x="35" y="10"/>
                 </Anchors>
             </Button>
 
@@ -319,7 +334,7 @@
                     <KeyValue type="string" key="type" value="Combat"/>
                 </KeyValues>
                 <Anchors>
-                    <Anchor point="TOP" relativeKey="$parent.CompanionCombatRoleSlot" relativePoint="BOTTOM" y="-13"/>
+                    <Anchor point="TOP" relativeKey="$parent.CompanionCombatRoleSlot" relativePoint="BOTTOM" y="-2"/>
                 </Anchors>
             </Button>
 
@@ -328,7 +343,7 @@
                     <KeyValue type="string" key="type" value="Utility"/>
                 </KeyValues>
                 <Anchors>
-                    <Anchor point="TOP" relativeKey="$parent.CompanionCombatTrinketSlot" relativePoint="BOTTOM" y="-13"/>
+                    <Anchor point="TOP" relativeKey="$parent.CompanionCombatTrinketSlot" relativePoint="BOTTOM" y="-2"/>
                 </Anchors>
             </Button>
 
@@ -336,7 +351,7 @@
             <Button parentKey="CompanionConfigShowAbilitiesButton" inherits="UIPanelButtonTemplate" mixin="CompanionConfigShowAbilitiesButtonMixin">
                 <Size x="170" y="25"/>
                 <Anchors>
-                    <Anchor point="BOTTOM"  y="15"/>
+                    <Anchor point="BOTTOM"  y="40"/>
                 </Anchors>
                 <Layers>
                     <Layer level="OVERLAY">

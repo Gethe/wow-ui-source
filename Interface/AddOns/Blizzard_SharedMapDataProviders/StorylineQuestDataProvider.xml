@@ -24,7 +24,7 @@
 
 	<Frame name="QuestHubPinTemplate" inherits="AreaPOIPinTemplate, HeightIndicatorMapPinTemplate" mixin="QuestHubPinMixin, QuestHubPinGlowMixin" virtual="true">
 		<Layers>
-			<Layer level="ARTWORK">
+			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture parentKey="PriorityQuest" atlas="QuestNormal">
 					<Size x="18" y="18" />
 					<Anchors>

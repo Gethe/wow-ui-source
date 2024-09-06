@@ -86,7 +86,8 @@ function InstanceDifficultyMixin:DeferredUpdate()
 end
 
 function InstanceDifficultyMixin:Update()
-	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.InstanceDifficultyBanner) then
+	local instanceDifficultyBannerDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.InstanceDifficultyBannerDisabled);
+	if instanceDifficultyBannerDisabled then
 		for _, frame in ipairs(self.ContentModes) do
 			frame:Hide();
 		end
@@ -118,7 +119,7 @@ function InstanceDifficultyMixin:Update()
 	end
 
 	if ( contentFrame == guildFrame ) then
-		if ( instanceGroupSize == 0 ) then
+		if ( instanceGroupSize == 0 or self:IsInDelve() ) then
 			instanceFrame.Text:SetText("");
 		else
 			instanceFrame.Text:SetText(instanceGroupSize);
@@ -126,7 +127,11 @@ function InstanceDifficultyMixin:Update()
 
 		SetSmallGuildTabardTextures("player", guildFrame.Emblem, guildFrame.Background, guildFrame.Border);
 	elseif ( contentFrame == defaultFrame ) then
-		instanceFrame.Text:SetText(instanceGroupSize);
+		if ( self:IsInDelve() ) then
+			instanceFrame.Text:SetText("");
+		else
+			instanceFrame.Text:SetText(instanceGroupSize);
+		end
 	end
 	
 	if (instanceFrame) then

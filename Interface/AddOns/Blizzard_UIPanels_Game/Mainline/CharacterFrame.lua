@@ -22,7 +22,7 @@ local characterFrameDisplayInfo = {
 
 local NUM_CHARACTERFRAME_TABS = 3;
 function ToggleCharacter (tab, onlyShow)
-	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CharacterPanel) then
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.CharacterPanelDisabled) then
 		return;
 	end
 

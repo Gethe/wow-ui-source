@@ -171,8 +171,11 @@ function ProfessionsRecipeTrackerMixin:AddRecipe(recipeID, isRecraft)
 				local metQuantity = quantity >= quantityRequired;
 				local dashStyle = metQuantity and OBJECTIVE_DASH_STYLE_HIDE or OBJECTIVE_DASH_STYLE_SHOW;
 				local colorStyle = OBJECTIVE_TRACKER_COLOR[metQuantity and "Complete" or "Normal"];
-				local line = block:AddObjective(slotIndex, text, nil, nil, dashStyle, colorStyle);				
+				local line = block:AddObjective(slotIndex, text, nil, nil, dashStyle, colorStyle);
 				line.Icon:SetShown(metQuantity);
+				if metQuantity then
+					line.Icon:SetAtlas("ui-questtracker-tracker-check", false);
+				end
 			end
 		end
 	end

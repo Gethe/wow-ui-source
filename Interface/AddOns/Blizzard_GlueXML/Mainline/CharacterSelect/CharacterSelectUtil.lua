@@ -142,7 +142,7 @@ function CharacterSelectUtil.SetTooltipForCharacterInfo(characterInfo, character
 		GameTooltip_AddBlankLineToTooltip(GlueTooltip);
 
 		local color = CreateColor(GetClassColor(characterInfo.classFilename));
-		if specName and className then
+		if specName and specName ~= "" and className then
 			local formattedSpecAndClass = TALENT_SPEC_AND_CLASS:format(specName, className);
 			GameTooltip_AddColoredLine(GlueTooltip, color:WrapTextInColorCode(formattedSpecAndClass), BLUE_FONT_COLOR);
 		elseif className then

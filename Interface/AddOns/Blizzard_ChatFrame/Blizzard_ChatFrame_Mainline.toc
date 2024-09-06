@@ -12,8 +12,6 @@ Mainline\VoiceChatHeadsetButton.lua
 Mainline\VoiceChatHeadsetButton.xml
 Mainline\FloatingChatFrameVoiceChat.xml
 Mainline\FloatingChatFrameAlertFrame.xml
-Mainline\FloatingChatFrameMenus.lua
-Mainline\FloatingChatFrameMenus.xml
 Mainline\BattlegroundChatFilters.lua
 Mainline\BattlegroundChatFilters.xml
 Shared\VoiceChatTranscriptionFrame.lua

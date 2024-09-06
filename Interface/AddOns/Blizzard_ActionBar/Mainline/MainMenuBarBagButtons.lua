@@ -432,7 +432,8 @@ function BagsBarMixin:OnLoad()
 	self.bagBarExpandToggleInitialWidth = BagBarExpandToggle:GetWidth();
 	self.bagBarExpandToggleInitialHeight = BagBarExpandToggle:GetHeight();
 
-	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.Bags) then
+	local bagsUIDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.BagsUIDisabled);
+	if bagsUIDisabled then
 		self:Hide();
 		return;
 	end

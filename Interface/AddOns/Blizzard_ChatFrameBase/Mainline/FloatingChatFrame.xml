@@ -640,7 +640,7 @@
 		</Scripts>
 	</ScrollingMessageFrame>
 	<!-- ChatFrame1 Specific buttons -->
-	<Button name="ChatFrameMenuButton" frameStrata="MEDIUM" parent="ChatFrame1ButtonFrame" mixin="ChatFrameMenuButtonMixin">
+	<DropdownButton name="ChatFrameMenuButton" frameStrata="MEDIUM" parent="ChatFrame1ButtonFrame" mixin="ChatFrameMenuButtonMixin">
 		<Size x="32" y="32"/>
 		<Anchors>
 			<Anchor point="BOTTOM" relativePoint="BOTTOM" x="0" y="0"/>
@@ -649,21 +649,13 @@
 			<OnLoad method="OnLoad"/>
 			<OnClick method="OnClick"/>
 			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
 		</Scripts>
 		<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-Chat-Up"/>
 		<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-Chat-Down"/>
 		<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-Chat-Disabled"/>
 		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-	</Button>
-	<Frame name="ChatMenu" inherits="UIMenuTemplate" hidden="true" clampedToScreen="true" parent="UIParent">
-		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="ChatFrameMenuButton" relativePoint="TOPRIGHT"/>
-		</Anchors>
-		<Scripts>
-			<OnLoad inherit="prepend" function="ChatMenu_OnLoad"/>
-			<OnShow function="ChatMenu_OnShow"/>
-		</Scripts>
-	</Frame>
+	</DropdownButton>
 	<Button name="ChatFrame2Tab" inherits="ChatTabTemplate" id="2"/>
 	<ScrollingMessageFrame name="ChatFrame2" inherits="FloatingChatFrameTemplate" id="2">
 		<Scripts>

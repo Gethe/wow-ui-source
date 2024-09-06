@@ -1431,8 +1431,8 @@ function EditModeManagerFrameMixin:UnblockEnteringEditMode(blockingFrame)
 end
 
 function EditModeManagerFrameMixin:CanEnterEditMode()
-	return C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.EditMode) and
-			not C_PlayerInfo.IsPlayerNPERestricted() and TableIsEmpty(self.FramesBlockingEditMode);
+	local editModeDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.EditModeDisabled);
+	return (not editModeDisabled) and (not C_PlayerInfo.IsPlayerNPERestricted()) and TableIsEmpty(self.FramesBlockingEditMode);
 end
 
 EditModeGridMixin = {}
@@ -2347,13 +2347,13 @@ EditModeManagerTutorialMixin = {};
 
 local HelpTipInfos = {
 	[1] = { text = EDIT_MODE_HELPTIPS_LAYOUTS, buttonStyle = HelpTip.ButtonStyle.Next, offsetX = 0, offsetY = 0, targetPoint = HelpTip.Point.RightEdgeCenter, relativeRegionParentKey="LayoutDropdown",
-			cvarBitfield = "closedInfoFramesAccountWide", bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_EDIT_MODE_MANAGER, useParentStrata = true, checkCVars = true },
+			cvarBitfield = "closedInfoFramesAccountWide", bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_EDIT_MODE_MANAGER, useParentStrata = true },
 	[2] = { text = EDIT_MODE_HELPTIPS_SHOW_HIDDEN_FRAMES, buttonStyle = HelpTip.ButtonStyle.Next, offsetX = 0, offsetY = 0, targetPoint = HelpTip.Point.RightEdgeCenter, relativeRegionParentKey="AccountSettings",
-			cvarBitfield = "closedInfoFramesAccountWide", bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_EDIT_MODE_MANAGER, useParentStrata = true, checkCVars = true },
+			cvarBitfield = "closedInfoFramesAccountWide", bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_EDIT_MODE_MANAGER, useParentStrata = true },
 	[3] = { text = EDIT_MODE_HELPTIPS_ADVANCED_OPTIONS, buttonStyle = HelpTip.ButtonStyle.Next, offsetX = 0, offsetY = 0, targetPoint = HelpTip.Point.RightEdgeCenter, relativeRegionParentKey="EnableAdvancedOptionsCheckButton",
-			cvarBitfield = "closedInfoFramesAccountWide", bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_EDIT_MODE_MANAGER, useParentStrata = true, checkCVars = true },
+			cvarBitfield = "closedInfoFramesAccountWide", bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_EDIT_MODE_MANAGER, useParentStrata = true },
 	[4] = { text = EDIT_MODE_HELPTIPS_SELECT_FRAMES, buttonStyle = HelpTip.ButtonStyle.GotIt, offsetX = 0, offsetY = 0, targetPoint = HelpTip.Point.BottomEdgeCenter, hideArrow = true,
-			cvarBitfield = "closedInfoFramesAccountWide", bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_EDIT_MODE_MANAGER, useParentStrata = true, checkCVars = true },
+			cvarBitfield = "closedInfoFramesAccountWide", bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_EDIT_MODE_MANAGER, useParentStrata = true },
 };
 
 function EditModeManagerTutorialMixin:OnLoad()

@@ -48,12 +48,16 @@ function SetRaidDifficulties(primaryRaid, difficultyID)
 		local otherDifficulty = GetLegacyRaidDifficultyID();
 		local size = DifficultyUtil.GetMaxPlayers(otherDifficulty);
 		local newDifficulty = GetMappedLegacyDifficultyID(difficultyID, size);
-		SetLegacyRaidDifficultyID(newDifficulty, force);
+		if newDifficulty ~= nil then
+			SetLegacyRaidDifficultyID(newDifficulty, force);
+		end
 	else
 		local otherDifficulty = GetRaidDifficultyID();
 		local size = DifficultyUtil.GetMaxPlayers(difficultyID);
 		local newDifficulty = GetMappedLegacyDifficultyID(otherDifficulty, size)
-		SetLegacyRaidDifficultyID(newDifficulty);
+		if newDifficulty ~= nil then
+			SetLegacyRaidDifficultyID(newDifficulty);
+		end
 	end
 end
 

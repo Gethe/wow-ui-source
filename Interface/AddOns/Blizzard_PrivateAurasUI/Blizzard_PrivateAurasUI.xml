@@ -32,10 +32,6 @@
 				<OnShow function="GameTooltip_OnShow"/>
 				<OnHide function="SharedTooltip_OnHide"/>
 				<OnTooltipCleared function="SharedTooltip_ClearInsertedFrames"/>
-				<OnTooltipCleared>
-					GameTooltip_ClearMoney(self);
-					SharedTooltip_ClearInsertedFrames(self);
-				</OnTooltipCleared>
 				<OnEvent method="OnEvent"/>
 			</Scripts>
 		</GameTooltip>

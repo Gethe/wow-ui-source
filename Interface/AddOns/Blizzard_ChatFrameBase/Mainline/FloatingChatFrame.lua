@@ -1233,8 +1233,6 @@ function FCF_SetButtonSide(chatFrame, buttonSide, forceUpdate)
 	chatFrame.buttonSide = buttonSide;
 
 	if ( chatFrame == DEFAULT_CHAT_FRAME ) then
-		ChatFrameMenu_UpdateAnchorPoint();
-
 		if ChatAlertFrame then
 			ChatAlertFrame:SetChatButtonSide(buttonSide);
 		end

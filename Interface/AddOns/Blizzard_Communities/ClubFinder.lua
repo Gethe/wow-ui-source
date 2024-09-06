@@ -470,7 +470,7 @@ local FocusRoleFlags = {
 ClubFocusDropdownMixin = {};
 
 function ClubFocusDropdownMixin:SetupMenu()
-	WowStyle1DropdownMixin.SetupMenu(self, function(dropdown, rootDescription)
+	DropdownButtonMixin.SetupMenu(self, function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_CLUB_FOCUS");
 
 		local function IsSelected(value)
@@ -516,7 +516,7 @@ function ClubLookingForDropdownMixin:SetupMenu(checkedList)
 		return CLUB_FINDER_ANY_FLAG;
 	end);
 
-	WowStyle1DropdownMixin.SetupMenu(self, function(dropdown, rootDescription)
+	DropdownButtonMixin.SetupMenu(self, function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_CLUB_LOOKING_FOR");
 
 		local sex = UnitSex("player");
@@ -548,20 +548,22 @@ function ClubLookingForDropdownMixin:SetupMenu(checkedList)
 
 			for classID = 1, GetNumClasses() do
 				local classInfo = C_CreatureInfo.GetClassInfo(classID);
-				local classColor = GetClassColorObj(classInfo.classFile);
-				local className = classInfo.className;
+				if classInfo then
+					local classColor = GetClassColorObj(classInfo.classFile);
+					local className = classInfo.className;
 
-				for specIndex = 1, GetNumSpecializationsForClassID(classID) do
-					local specID, specName, _, _, role = GetSpecializationInfoForClassID(classID, specIndex, sex);
-					if role == tbl.role then
-						local function SetSpecSelected(specID)
-							local isSpecInList = self:IsSpecInList(specID);
-							self:ModifyTrackedSpecList(specName, className, specID, not isSpecInList);
+					for specIndex = 1, GetNumSpecializationsForClassID(classID) do
+						local specID, specName, _, _, role = GetSpecializationInfoForClassID(classID, specIndex, sex);
+						if role == tbl.role then
+							local function SetSpecSelected(specID)
+								local isSpecInList = self:IsSpecInList(specID);
+								self:ModifyTrackedSpecList(specName, className, specID, not isSpecInList);
+							end
+
+							local classText = TALENT_SPEC_AND_CLASS:format(specName, className);
+							local text = classColor:WrapTextInColorCode(classText);
+							submenu:CreateCheckbox(text, IsSpecSelected, SetSpecSelected, specID);
 						end
-
-						local classText = TALENT_SPEC_AND_CLASS:format(specName, className);
-						local text = classColor:WrapTextInColorCode(classText);
-						submenu:CreateCheckbox(text, IsSpecSelected, SetSpecSelected, specID);
 					end
 				end
 			end
@@ -691,7 +693,7 @@ function ClubFinderFilterDropdownMixin:SetupMenu(localeFlags)
 		return tbl.text;
 	end);
 
-	WowStyle1DropdownMixin.SetupMenu(self, function(dropdown, rootDescription)
+	DropdownButtonMixin.SetupMenu(self, function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_CLUB_FILTER");
 
 		-- Cross Faction

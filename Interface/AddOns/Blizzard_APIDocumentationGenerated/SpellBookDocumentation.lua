@@ -321,8 +321,8 @@ local SpellBook =
 			Returns =
 			{
 				{ Name = "itemType", Type = "SpellBookItemType", Nilable = false },
-				{ Name = "actionID", Type = "number", Nilable = false, Documentation = { "Represents a spellID for spells, flyoutID for flyouts, or petActionID for pet actions" } },
-				{ Name = "spellID", Type = "number", Nilable = true, Documentation = { "May be nil if item is not a spell; may be different from actionID if item is an overriden spell" } },
+				{ Name = "actionID", Type = "number", Nilable = false, Documentation = { "Represents a base spellID for spells, flyoutID for flyouts, or petActionID for pet actions" } },
+				{ Name = "spellID", Type = "number", Nilable = true, Documentation = { "May be nil if item is not a spell; Will be the overriding spellID if spell is overriden, otherwise will match actionID" } },
 			},
 		},
 		{
@@ -469,7 +469,7 @@ local SpellBook =
 
 			Returns =
 			{
-				{ Name = "inRange", Type = "bool", Nilable = true, Documentation = { "May be nil if the range check was invalid, ie due to invalid spell, missing/invalid target, unknown spell, etc" } },
+				{ Name = "inRange", Type = "bool", Nilable = true, Documentation = { "May be nil if the range check was invalid, ie due to unknown/invalid spell, missing/invalid target, etc" } },
 			},
 		},
 		{
@@ -708,8 +708,8 @@ local SpellBook =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "actionID", Type = "number", Nilable = false, Documentation = { "Represents a spellID for spells, flyoutID for flyouts, or petActionID for pet actions" } },
-				{ Name = "spellID", Type = "number", Nilable = true, Documentation = { "May be nil if item is not a spell; may be different from actionID if spell is overriden" } },
+				{ Name = "actionID", Type = "number", Nilable = false, Documentation = { "Represents a base spellID for spells, flyoutID for flyouts, or petActionID for pet actions" } },
+				{ Name = "spellID", Type = "number", Nilable = true, Documentation = { "May be nil if item is not a spell; Will be the overriding spellID if spell is overriden, otherwise will match actionID" } },
 				{ Name = "itemType", Type = "SpellBookItemType", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "subName", Type = "string", Nilable = false, Documentation = { "May be empty if flyout, or if spell's data isn't loaded yet; Listen for SPELL_TEXT_UPDATE event, or use SpellMixin to load asynchronously" } },

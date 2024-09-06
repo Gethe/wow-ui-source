@@ -243,6 +243,15 @@ function QuestLogMixin:ResetLayoutIndex()
 	self.layoutIndex = 1;
 end
 
+function QuestLogMixin:GetLastLayoutIndex()
+	-- the current value is what the next frame would get in SetFrameLayoutIndex
+	if self.layoutIndex then
+		return self.layoutIndex - 1;
+	else
+		return 0;
+	end
+end
+
 function QuestLogMixin:ShowMapLegend()
 	self.MapLegend:Show();
 	self:HideCampaignOverview();
@@ -1007,8 +1016,10 @@ function QuestMapFrame_ShowQuestDetails(questID)
 	local mapFrame = QuestMapFrame:GetParent();
 	local questPortrait, questPortraitText, questPortraitName, questPortraitMount, questPortraitModelSceneID = C_QuestLog.GetQuestLogPortraitGiver();
 	if (questPortrait and questPortrait ~= 0 and QuestLogShouldShowPortrait() and (UIParent:GetRight() - mapFrame:GetRight() > QuestModelScene:GetWidth() + 6)) then
-		QuestFrame_ShowQuestPortrait(mapFrame, questPortrait, questPortraitMount, questPortraitModelSceneID, questPortraitText, questPortraitName, -2, -43);
-		QuestModelScene:SetFrameLevel(mapFrame:GetFrameLevel() + 2);
+		local useCompactDescription = false;
+		QuestFrame_ShowQuestPortrait(mapFrame, questPortrait, questPortraitMount, questPortraitModelSceneID, questPortraitText, questPortraitName, 1, -43, useCompactDescription);
+		QuestModelScene:SetFrameStrata("HIGH");
+		QuestModelScene:SetFrameLevel(1000);
 	else
 		QuestFrame_HideQuestPortrait();
 	end
@@ -1066,8 +1077,8 @@ function QuestMapFrame_CloseQuestDetails(optPortraitOwnerCheckFrame)
 	StaticPopup_Hide("ABANDON_QUEST_WITH_ITEMS");
 end
 
-function QuestMapFrame_PingQuestID(questId)
-	QuestMapFrame:GetParent():PingQuestID(questId);
+function QuestMapFrame_PingQuestID(questID)
+	QuestMapFrame:GetParent():PingQuestID(questID);
 end
 
 function QuestMapFrame_UpdateSuperTrackedQuest(self)
@@ -1606,23 +1617,13 @@ local function QuestLogQuests_BuildSingleQuestInfo(questLogIndex, questInfoConta
 
 		local isCampaign = info.campaignID ~= nil;
 		info.shouldDisplay = isCampaign and not QuestSearcher:IsActive(); -- Always display campaign headers (unless searching), the rest start as hidden
-		info.questSortType = QuestUtils_GetQuestSortType(info);
 	else
-		info.isCalling = C_QuestLog.IsQuestCalling(info.questID);
-		info.questSortType = QuestUtils_GetQuestSortType(info);
-
 		if lastHeader and not lastHeader.shouldDisplay then
 			lastHeader.shouldDisplay = QuestLogQuests_ShouldShowQuestButton(info);
 		end
 
 		-- Make it easy for a quest to look up its header
 		info.header = lastHeader;
-
-		-- Might as well just keep this in Lua
-		if info.isCalling and info.header then
-			info.header.isCalling = true;
-			info.header.questSortType = QuestUtils_GetQuestSortType(info.header);
-		end
 	end
 
 	return lastHeader;
@@ -1645,7 +1646,7 @@ local function QuestLogQuests_GetCampaignInfos(questInfoContainer)
 
 	-- questInfoContainer is sorted with all campaigns coming first
 	for index, info in ipairs(questInfoContainer) do
-		if info.questSortType == QuestSortType.Campaign then
+		if info.questClassification == Enum.QuestClassification.Campaign then
 			table.insert(infos, info);
 		else
 			break;
@@ -1659,7 +1660,7 @@ local function QuestLogQuests_GetCovenantCallingsInfos(questInfoContainer)
 	local infos = {};
 
 	for index, info in ipairs(questInfoContainer) do
-		if info.questSortType == QuestSortType.Calling then
+		if info.questClassification == Enum.QuestClassification.Calling then
 			table.insert(infos, info);
 		end
 	end
@@ -1667,11 +1668,17 @@ local function QuestLogQuests_GetCovenantCallingsInfos(questInfoContainer)
 	return infos;
 end
 
+local nonNormalQuestClassifications =
+{
+	[Enum.QuestClassification.Campaign] = true,
+	[Enum.QuestClassification.Calling] = true,
+};
+
 local function QuestLogQuests_GetQuestInfos(questInfoContainer)
 	local infos = {};
 
 	for index, info in ipairs(questInfoContainer) do
-		if info.questSortType == QuestSortType.Normal or info.questSortType == QuestSortType.Legendary then
+		if not nonNormalQuestClassifications[info.questClassification] then
 			table.insert(infos, info);
 		end
 	end
@@ -1688,7 +1695,7 @@ local function QuestLogQuests_GetBestTagID(questID, info)
 		return "FAILED";
 	end
 
-	if info.isCalling then
+	if info.questClassification == Enum.QuestClassification.Calling then
 		local secondsRemaining = C_TaskQuest.GetQuestTimeLeftSeconds(questID);
 		if secondsRemaining then
 			if secondsRemaining < 3600 then -- 1 hour
@@ -1937,9 +1944,9 @@ local function QuestLogQuests_AddHeaderButton(displayState, info)
 	displayState.hasShownAnyHeader = true;
 
 	local button;
-	if info.questSortType == QuestSortType.Campaign then
+	if info.questClassification == Enum.QuestClassification.Campaign then
 		button = QuestLogQuests_AddCampaignHeaderButton(displayState, info);
-	elseif info.questSortType == QuestSortType.Calling then
+	elseif info.questClassification == Enum.QuestClassification.Calling then
 		button = QuestLogQuests_AddCovenantCallingsHeaderButton(displayState, info);
 	else
 		button = QuestLogQuests_AddStandardHeaderButton(displayState, info);
@@ -2031,11 +2038,14 @@ function QuestLogQuests_Update()
 	end
 
 	local separator = QuestScrollFrame.Contents.Separator;
-	separator:SetShown(displayState.campaignShown or storyAchievementID);
 	QuestMapFrame:SetFrameLayoutIndex(separator);
 
 	-- Display the rest of the normal quests and their headers.
 	QuestLogQuests_DisplayQuestsFromIndices(displayState, questInfos);
+
+	-- show the separator if there is something before it and something after it
+	local shouldShowSeparator = separator.layoutIndex > 1 and QuestMapFrame:GetLastLayoutIndex() ~= separator.layoutIndex;
+	separator:SetShown(shouldShowSeparator);
 
 	QuestScrollFrame.SearchBox:UpdateState(displayState);
 	QuestScrollFrame:UpdateBackground(displayState);
@@ -2108,7 +2118,10 @@ function QuestMapLogTitleButton_OnEnter(self)
 
 	QuestUtil.SetQuestLegendToTooltip(questID, GameTooltip);
 
-	GameTooltip_CheckAddQuestTimeToTooltip(GameTooltip, questID);
+	local classification = C_QuestInfoSystem.GetQuestClassification(questID);
+	if classification ~= Enum.QuestClassification.Recurring then
+		GameTooltip_CheckAddQuestTimeToTooltip(GameTooltip, questID);
+	end
 
 	if C_QuestLog.IsFailed(info.questID) then
 		QuestUtils_AddQuestTagLineToTooltip(GameTooltip, FAILED, "FAILED", nil, RED_FONT_COLOR);
@@ -2339,7 +2352,8 @@ function QuestLogPopupDetailFrame_Show(questID)
 	-- portrait
 	local questPortrait, questPortraitText, questPortraitName, questPortraitMount, questPortraitModelSceneID = C_QuestLog.GetQuestLogPortraitGiver();
 	if (questPortrait and questPortrait ~= 0 and QuestLogShouldShowPortrait()) then
-		QuestFrame_ShowQuestPortrait(QuestLogPopupDetailFrame, questPortrait, questPortraitMount, questPortraitModelSceneID, questPortraitText, questPortraitName, -3, -42);
+		local useCompactDescription = true;
+		QuestFrame_ShowQuestPortrait(QuestLogPopupDetailFrame, questPortrait, questPortraitMount, questPortraitModelSceneID, questPortraitText, questPortraitName, 1, -42, useCompactDescription);
 	else
 		QuestFrame_HideQuestPortrait();
 	end

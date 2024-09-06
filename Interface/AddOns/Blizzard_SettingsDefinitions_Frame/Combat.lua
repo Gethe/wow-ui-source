@@ -46,7 +46,8 @@ local function Register()
 
 	-- Show Silhouette when Obscured
 	do
-		CombatOverrides.CreateOccludedSilhouettePlayerSetting(category);
+		local setting, initializer = CombatOverrides.CreateOccludedSilhouettePlayerSetting(category);
+		Settings.OccludedSilhouettePlayerInitializer = initializer;
 	end
 
 	-- Target of Target
@@ -135,7 +136,7 @@ local function Register()
 		end
 
 		local defaultValue = 4;
-		local selfCastSetting = Settings.RegisterProxySetting(category, "PROXY_SELF_CAST", Settings.DefaultVarLocation,
+		local selfCastSetting = Settings.RegisterProxySetting(category, "PROXY_SELF_CAST",
 			Settings.VarType.Number, SELF_CAST, defaultValue, GetValue, SetValue);
 		local selfCastInitializer = Settings.CreateDropdown(category, selfCastSetting, GetOptions, OPTION_TOOLTIP_AUTO_SELF_CAST);
 		
@@ -212,7 +213,7 @@ local function Register()
 		end
 		
 		local defaultValue = false;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_ACTION_TARGETING", Settings.DefaultVarLocation, 
+		local setting = Settings.RegisterProxySetting(category, "PROXY_ACTION_TARGETING",
 			Settings.VarType.Boolean, ACTION_TARGETING_OPTION, defaultValue, GetValue, SetValue);
 		Settings.CreateCheckbox(category, setting, OPTION_TOOLTIP_ACTION_TARGETING);
 	end);

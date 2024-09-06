@@ -1,9 +1,9 @@
 PVPConquestRewardMixin = { };
 function PVPConquestRewardMixin:Setup()
-	local weeklyProgress = C_WeeklyRewards.GetConquestWeeklyProgress();
-	local progress = weeklyProgress.progress;
-	local maxProgress = weeklyProgress.maxProgress;
-	local displayType = weeklyProgress.displayType;
+	local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CONQUEST_CURRENCY_ID);
+
+	local maxProgress = currencyInfo.maxQuantity;
+	local progress = currencyInfo.totalEarned;
 
 	if progress < maxProgress then
 		self:SetTexture("Interface\\icons\\achievement_legionpvp2tier3", 1);

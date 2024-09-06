@@ -314,9 +314,14 @@ function PVPReadyDialog_Display(self, index, displayName, isRated, queueType, ga
 		showTitle = false;
 		self.label:SetText(ARENA_IS_READY);
 		self.leaveButton:Hide();
-	elseif (queueType == "BRAWLSHUFFLE") or (queueType == "RATEDSHUFFLE") or (queueType == "BRAWLSOLORBG") or (queueType == "RATEDSOLORBG") then
+	elseif (queueType == "BRAWLSHUFFLE") or (queueType == "RATEDSHUFFLE") then
 		self.background:SetTexCoord(0, 1, 0, 1);
 		self.background:SetTexture("Interface\\LFGFrame\\UI-LFG-BACKGROUND-RANDOMDUNGEON");
+		self.label:SetText(BATTLEGROUND_IS_READY);
+		self.leaveButton:Hide();
+	elseif (queueType == "BRAWLSOLORBG") or (queueType == "RATEDSOLORBG") then
+		self.background:SetTexCoord(0, 1, 0, 1);
+		self.background:SetTexture("Interface\\PVPFrame\\PvpBg-TwinPeaks-ToastBG");
 		self.label:SetText(BATTLEGROUND_IS_READY);
 		self.leaveButton:Hide();
 	elseif ( queueType == "WARGAME" ) then

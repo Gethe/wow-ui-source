@@ -285,7 +285,7 @@ function IslandsQueueFrameDifficultyMixin:RefreshDifficultyButtons()
 		self.previousDifficulty = button;
 		button.difficulty = info.difficultyId;
 		button.tooltipText = ButtonTooltips[buttonIndex];
-		button.questId = info.previewRewardQuestId;
+		button.questID = info.previewRewardQuestId;
 		local isAvailable, _, _, totalGroupSizeRequired = IsLFGDungeonJoinable(button.difficulty);
 
 		if (not isAvailable) then

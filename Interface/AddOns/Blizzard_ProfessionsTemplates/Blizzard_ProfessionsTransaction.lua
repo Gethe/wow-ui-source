@@ -437,6 +437,11 @@ function ProfessionsRecipeTransactionMixin:HasAllocatedItemID(itemID)
 	return self:HasAllocatedReagent(reagent);
 end
 
+function ProfessionsRecipeTransactionMixin:HasAllocatedCurrencyID(currencyID)
+	local reagent = Professions.CreateCraftingReagentByCurrencyID(currencyID);
+	return self:HasAllocatedReagent(reagent);
+end
+
 function ProfessionsRecipeTransactionMixin:ClearSalvageAllocations()
 	self:SetSalvageAllocation(nil);
 end
@@ -644,8 +649,13 @@ function ProfessionsRecipeTransactionMixin:HasMetPrerequisiteRequirements()
 		local reagentSlotSchematic = reagentTbl.reagentSlotSchematic;
 		for reagentIndex, reagent in ipairs(reagentSlotSchematic.reagents) do
 			local allocation = allocations:FindAllocationByReagent(reagent);
-			if allocation and not self:AreAllRequirementsAllocatedByItemID(reagent.itemID) then
-				return false;
+			if allocation then
+				if reagent.itemID and not self:AreAllRequirementsAllocatedByItemID(reagent.itemID) then
+					return false;
+				end
+				if reagent.currencyID and not self:HasAllocatedCurrencyID(reagent.currencyID) then
+					return false;
+				end
 			end
 		end
 	end

@@ -88,7 +88,7 @@ local function Register()
 		end
 
 		local defaultValue = 2;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_NPC_NAMES", Settings.DefaultVarLocation,
+		local setting = Settings.RegisterProxySetting(category, "PROXY_NPC_NAMES",
 			Settings.VarType.Number, SHOW_NPC_NAMES, defaultValue, GetValue, SetValue);
 		Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_NPC_NAMES_DROPDOWN);
 	end);
@@ -277,7 +277,7 @@ local function Register()
 		end
 
 		local defaultValue = 4;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_STATUS_TEXT", Settings.DefaultVarLocation, 
+		local setting = Settings.RegisterProxySetting(category, "PROXY_STATUS_TEXT",
 			Settings.VarType.Number, STATUSTEXT_LABEL, defaultValue, GetValue, SetValue);
 		Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_STATUS_TEXT_DISPLAY);
 	end
@@ -319,7 +319,7 @@ local function Register()
 		end
 
 		local defaultValue = 1;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_CHAT_BUBBLES", Settings.DefaultVarLocation, 
+		local setting = Settings.RegisterProxySetting(category, "PROXY_CHAT_BUBBLES",
 			Settings.VarType.Number, CHAT_BUBBLES_TEXT, defaultValue, GetValue, SetValue);
 		Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_CHAT_BUBBLES);
 	end
@@ -335,6 +335,11 @@ local function Register()
 			Settings.SetupCVarCheckbox(category, "ReplaceMyPlayerPortrait", REPLACE_MY_PLAYER_PORTRAIT, OPTION_TOOLTIP_REPLACE_MY_PLAYER_PORTRAIT);
 		end
 	end);
+
+	-- Quest Settings
+	do
+		InterfaceOverrides.CreateQuestSettings(category, layout);
+	end
 
 	InterfaceOverrides.AdjustDisplaySettings(category);
 

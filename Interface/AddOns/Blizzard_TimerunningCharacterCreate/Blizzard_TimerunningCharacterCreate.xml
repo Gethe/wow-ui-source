@@ -429,7 +429,7 @@
 		</Scripts>
 	</Frame>
 	
-	<Button name="TimerunningEventBanner" mixin="TimerunningEventBannerMixin" parent="CharacterSelectUI" frameStrata="HIGH" enableMouse="true">
+	<Button name="TimerunningEventBanner" mixin="TimerunningEventBannerMixin" parent="VisibilityFramesContainer" frameStrata="HIGH" enableMouse="true">
 		<Anchors>
 			<Anchor point="TOPLEFT" x="271" y="-13"/>
 		</Anchors>

@@ -684,29 +684,29 @@ COMBAT_CONFIG_MESSAGETYPES_RIGHT = {
 };
 COMBAT_CONFIG_MESSAGETYPES_MISC = {
 	[1] = {
-		text = DAMAGE_SHIELD,
-		checked = function () return HasMessageType("DAMAGE_SHIELD", "DAMAGE_SHIELD_MISSED"); end;
-		func = function (self, checked) ToggleMessageType(checked, "DAMAGE_SHIELD", "DAMAGE_SHIELD_MISSED"); end;
-		tooltip = DAMAGE_SHIELD_COMBATLOG_TOOLTIP,
-	},
-	[2] = {
-		text = ENVIRONMENTAL_DAMAGE,
-		checked = function () return HasMessageType("ENVIRONMENTAL_DAMAGE"); end;
-		func = function (self, checked) ToggleMessageType(checked, "ENVIRONMENTAL_DAMAGE"); end;
-		tooltip = ENVIRONMENTAL_DAMAGE_COMBATLOG_TOOLTIP,
-	},
-	[3] = {
 		text = KILLS,
 		checked = function () return HasMessageType("PARTY_KILL"); end;
 		func = function (self, checked) ToggleMessageType(checked, "PARTY_KILL"); end;
 		tooltip = KILLS_COMBATLOG_TOOLTIP,
 	},
-	[4] = {
+	[2] = {
+		text = DAMAGE_SHIELD,
+		checked = function () return HasMessageType("DAMAGE_SHIELD", "DAMAGE_SHIELD_MISSED"); end;
+		func = function (self, checked) ToggleMessageType(checked, "DAMAGE_SHIELD", "DAMAGE_SHIELD_MISSED"); end;
+		tooltip = DAMAGE_SHIELD_COMBATLOG_TOOLTIP,
+	},
+	[3] = {
 		text = DEATHS,
 		type = {"UNIT_DIED", "UNIT_DESTROYED", "UNIT_DISSIPATES"};
 		checked = function () return HasMessageType("UNIT_DIED", "UNIT_DESTROYED", "UNIT_DISSIPATES"); end;
 		func = function (self, checked) ToggleMessageType(checked, "UNIT_DIED", "UNIT_DESTROYED", "UNIT_DISSIPATES"); end;
 		tooltip = DEATHS_COMBATLOG_TOOLTIP,
+	},
+	[4] = {
+		text = ENVIRONMENTAL_DAMAGE,
+		checked = function () return HasMessageType("ENVIRONMENTAL_DAMAGE"); end;
+		func = function (self, checked) ToggleMessageType(checked, "ENVIRONMENTAL_DAMAGE"); end;
+		tooltip = ENVIRONMENTAL_DAMAGE_COMBATLOG_TOOLTIP,
 	},
 };
 COMBAT_CONFIG_UNIT_COLORS = {
@@ -764,7 +764,7 @@ function ChatConfigFrame_OnEvent(self, event, ...)
 		ChatConfig_CreateCheckboxes(CombatConfigMessageSourcesDoneTo, COMBAT_CONFIG_MESSAGESOURCES_TO, "ChatConfigCheckboxTemplate", DONE_TO);
 		ChatConfig_CreateTieredCheckboxes(CombatConfigMessageTypesLeft, COMBAT_CONFIG_MESSAGETYPES_LEFT, "ChatConfigCheckButtonTemplate", "ChatConfigSmallCheckButtonTemplate");
 		ChatConfig_CreateTieredCheckboxes(CombatConfigMessageTypesRight, COMBAT_CONFIG_MESSAGETYPES_RIGHT, "ChatConfigCheckButtonTemplate", "ChatConfigSmallCheckButtonTemplate");
-		ChatConfig_CreateTieredCheckboxes(CombatConfigMessageTypesMisc, COMBAT_CONFIG_MESSAGETYPES_MISC, "ChatConfigSmallCheckButtonTemplate", "ChatConfigSmallCheckButtonTemplate");
+		ChatConfig_CreateTieredCheckboxes(CombatConfigMessageTypesMisc, COMBAT_CONFIG_MESSAGETYPES_MISC, "ChatConfigSmallCheckButtonTemplate", "ChatConfigSmallCheckButtonTemplate", 2, 60);
 		ChatConfig_CreateColorSwatches(CombatConfigColorsUnitColors, COMBAT_CONFIG_UNIT_COLORS, "ChatConfigSwatchTemplate", UNIT_COLORS);
 
 		if ( COMBATLOG_FILTER_VERSION and COMBATLOG_FILTER_VERSION > Blizzard_CombatLog_Filter_Version ) then
@@ -934,7 +934,7 @@ function ChatConfig_CreateTieredCheckboxes(frame, checkBoxTable, checkBoxTemplat
 					_G[subCheckboxName.."Text"]:SetText(subText);
 					count = count+0.6;
 				end
-				yOffset = -(22*ceil(#value.subTypes/numColumns) + 16);
+				yOffset = -(22*ceil(#value.subTypes/numColumns) + 8);
 			else
 				yOffset = 0;
 			end
@@ -1685,7 +1685,7 @@ COMBAT_CONFIG_TABS = {
 	[5] = { text = SETTINGS, frame = "CombatConfigSettings" },
 };
 CHAT_CONFIG_COMBAT_TAB_NAME = "CombatConfigTab";
-function ChatConfigCombat_OnLoad()
+function ChatConfigCombat_OnLoad(self)
 	-- Create tabs
 	local tab;
 	local tabName = CHAT_CONFIG_COMBAT_TAB_NAME;
@@ -1705,6 +1705,9 @@ function ChatConfigCombat_OnLoad()
 			PanelTemplates_TabResize(tab, 0);
 		end
 	end
+	
+	-- Update tab widths when scale changes
+	self:RegisterEvent("UI_SCALE_CHANGED");
 
 	local view = CreateScrollBoxListLinearView();
 	view:SetElementInitializer("ConfigFilterButtonTemplate", function(button, elementData)
@@ -1712,6 +1715,20 @@ function ChatConfigCombat_OnLoad()
 	end);
 
 	ScrollUtil.InitScrollBoxListWithScrollBar(ChatConfigCombatSettings.Filters.ScrollBox, ChatConfigCombatSettings.Filters.ScrollBar, view);
+end
+
+function ChatConfigCombat_OnEvent(self, event)
+	if event == "UI_SCALE_CHANGED" then
+		-- Scale change can affect font height which changes string width, so tab text needs resized to avoid truncation
+		local tabName = CHAT_CONFIG_COMBAT_TAB_NAME;
+		for index, value in ipairs(COMBAT_CONFIG_TABS) do
+			local name = tabName..index;
+			local tab = _G[name];
+			if tab then
+				PanelTemplates_TabResize(tab, 0);
+			end
+		end
+	end
 end
 
 function ChatConfigCombatButton_OnClick(button, buttonName, down)

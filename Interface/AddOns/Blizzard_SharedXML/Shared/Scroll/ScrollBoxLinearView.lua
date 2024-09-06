@@ -177,6 +177,10 @@ function ScrollBoxLinearViewMixin:RequiresFullUpdateOnScrollTargetSizeChange()
 	return true;
 end
 
+function ScrollBoxLinearViewMixin:GetDataScrollOffset(scrollBox)
+	return scrollBox:GetUpperPadding();
+end
+
 function ScrollBoxLinearViewMixin:RecalculateExtent(scrollBox)
 	local extent = 0;
 	

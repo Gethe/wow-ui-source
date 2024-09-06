@@ -289,6 +289,36 @@ function TableUtil.Transform(tbl, op)
 	return result;
 end
 
+-- Returns the value in a table deemed smallest by evaluating each value returned by the op function parameter. 
+-- The return of the op function must return a number.
+function TableUtil.FindMin(tbl, op)
+	local result = nil;
+	local min = math.huge;
+	for k, v in pairs(tbl) do
+		local value = op(v);
+		if value < min then
+			min = value;
+			result = v;
+		end
+	end
+	return result;
+end
+
+-- Returns the value in a table deemed largest by evaluating each value returned by the op function parameter. 
+-- The return of the op function must return a number.
+function TableUtil.FindMax(tbl, op)
+	local result = nil;
+	local max = -math.huge;
+	for k, v in pairs(tbl) do
+		local value = op(v);
+		if value > max then
+			max = value;
+			result = v;
+		end
+	end
+	return result;
+end
+
 function ContainsIf(tbl, pred)
 	for k, v in pairs(tbl) do
 		if (pred(v)) then

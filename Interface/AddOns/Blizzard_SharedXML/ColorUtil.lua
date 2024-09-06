@@ -44,6 +44,10 @@ function AreColorsEqual(left, right)
 	return left == right;
 end
 
+function IsRGBAEqualToColor(r, g, b, a, color)
+	return (color.r == r) and (color.g == g) and (color.b == b) and (color.a == a);
+end
+
 function GetClassColor(classFilename)
 	local color = RAID_CLASS_COLORS[classFilename];
 	if color then

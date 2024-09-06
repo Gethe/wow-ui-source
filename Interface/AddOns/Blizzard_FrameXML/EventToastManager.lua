@@ -80,7 +80,6 @@ local scenarioTextureKitOffsets = {
 local eventToastTemplatesByToastType = {
 	[Enum.EventToastDisplayType.NormalSingleLine] = {template = "EventToastManagerNormalSingleLineTemplate", frameType = "FRAME", hideAutomatically = true,},
 	[Enum.EventToastDisplayType.NormalBlockText] = {template ="EventToastManagerNormalBlockTextTemplate", frameType = "FRAME", hideAutomatically = true,},
-	[Enum.EventToastDisplayType.CapstoneUnlocked] = {template ="EventToastManagerCapstoneUnlockedTemplate", frameType = "FRAME", hideAutomatically = true,},
 	[Enum.EventToastDisplayType.NormalTitleAndSubTitle] = {template = "EventToastManagerNormalTitleAndSubtitleTemplate", frameType = "FRAME", hideAutomatically = true,},
 	[Enum.EventToastDisplayType.NormalTextWithIcon] = {template = "EventToastWithIconNormalTemplate", frameType = "FRAME", hideAutomatically = true,},
 	[Enum.EventToastDisplayType.LargeTextWithIcon] = {template = "EventToastWithIconLargeTextTemplate", frameType = "FRAME", hideAutomatically = true,},
@@ -91,6 +90,8 @@ local eventToastTemplatesByToastType = {
 	[Enum.EventToastDisplayType.WeeklyRewardUnlock] = {template = "EventToastManagerWeeklyRewardToastUnlockTemplate", frameType = "FRAME", hideAutomatically = true,},
 	[Enum.EventToastDisplayType.WeeklyRewardUpgrade] = {template = "EventToastManagerWeeklyRewardToastUpgradeTemplate", frameType = "FRAME", hideAutomatically = true,},
 	[Enum.EventToastDisplayType.FlightpointDiscovered] = {template = "EventToastFlightpointDiscoveredTemplate", frameType = "FRAME", hideAutomatically = true,},
+	[Enum.EventToastDisplayType.CapstoneUnlocked] = {template ="EventToastManagerCapstoneUnlockedTemplate", frameType = "FRAME", hideAutomatically = true,},
+	[Enum.EventToastDisplayType.SingleLineWithIcon] = {template = "EventToastManagerSingleLineWithIconTemplate", frameType = "FRAME", hideAutomatically = true,},
 };
 
 EventToastManagerMixin = { };
@@ -508,7 +509,6 @@ function EventToastScenarioBaseToastMixin:PlayAnim()
 end
 
 function EventToastScenarioBaseToastMixin:SetupGLineAtlas(useWhiteGLineAtlas)
-	local atlas = useWhiteGLineAtlas and "levelup-bar-white" or "levelup-bar-gold"
 	local parent = self:GetParent();
 	parent.GLine:SetAtlas("evergreen-scenario-line-bottom", TextureKitConstants.UseAtlasSize);
 	parent.GLine:SetPoint("BOTTOM", 0, -4);
@@ -975,6 +975,17 @@ function EventToastManagerCapstoneUnlockedMixin:SetupGLineAtlas(useWhiteGLineAtl
 	local glineWidth = self:GetWidth() + 100;
 	parent.GLine:SetWidth(glineWidth);
 	parent.GLine2:SetWidth(glineWidth);
+end
+
+EventToastManagerSingleLineWithIconMixin = CreateFromMixins(EventToastManagerNormalMixin);
+function EventToastManagerSingleLineWithIconMixin:Setup(toastInfo)
+	EventToastManagerNormalMixin.Setup(self, toastInfo);
+	self.Icon:SetTexture(toastInfo.iconFileID);
+	self.Title:SetText(toastInfo.title);
+	self:AnchorWidgetFrame(self.Title);
+	self:Show();
+	self:AnimIn();
+	self:Layout();
 end
 
 EventToastAnimationsMixin = { };

@@ -172,11 +172,13 @@ function QuestLogOwnerMixin:OnUIClose()
 end
 
 function QuestLogOwnerMixin:ShouldShowQuestLogPanel()
-	return C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.QuestLogPanel) and GetCVarBool("questLogOpen");
+	local questLogPanelDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.QuestLogPanelDisabled);
+	return not questLogPanelDisabled and GetCVarBool("questLogOpen");
 end
 
 function QuestLogOwnerMixin:ShouldBeMinimized()
-	return not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.MaximizeWorldMap) or GetCVarBool("miniWorldMap");
+	local maximizeWorldMapDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.MaximizeWorldMapDisabled);
+	return maximizeWorldMapDisabled or GetCVarBool("miniWorldMap");
 end
 
 function QuestLogOwnerMixin:ShouldBeMaximized()

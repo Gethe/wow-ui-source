@@ -129,6 +129,8 @@ local Actor_X_ModelID = {
 	[82709] = "nightborne",
 	[86343] = "magharorc",
 	[86342] = "magharorc",
+	[121634] = "earthendwarf",
+	[121635] = "earthendwarf-female",
 };
 
 function AlliedRacesFrameMixin:UpdateModel(modelID)

@@ -104,7 +104,8 @@ function WaypointLocationDataProviderMixin:OnWayPointLocationToggleUpdate(isActi
 end
 
 function WaypointLocationDataProviderMixin:CanPlacePin()
-	return C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.WorldMapTrackingPin) and (self.toggleActive or IsControlKeyDown());
+	local worldMapTrackingPinDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.WorldMapTrackingPinDisabled);
+	return not worldMapTrackingPinDisabled and (self.toggleActive or IsControlKeyDown());
 end
 
 WaypointLocationPinMixin = CreateFromMixins(MapCanvasPinMixin);

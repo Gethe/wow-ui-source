@@ -2,6 +2,10 @@ local function IsElementDataItemInfo(elementData)
 	return elementData.isItemInfo;
 end
 
+local function IsFilterStateChecked(filterInfo)
+	return PerksProgramFrame:GetFilterState(filterInfo);
+end
+
 ----------------------------------------------------------------------------------
 -- PerksProgramProductsFrameMixin
 ----------------------------------------------------------------------------------
@@ -31,6 +35,38 @@ function PerksProgramProductsFrameMixin:OnLoad()
 	-- This dropdown's template displays selections in its text, but in this
 	-- case we only ever want to display "Filter".
 	self.PerksProgramFilter:OverrideText(FILTER);
+
+	self.PerksProgramFilter:SetIsDefaultCallback(function()
+		if not IsFilterStateChecked("collected") then
+			return false;
+		end
+
+		if not IsFilterStateChecked("uncollected") then
+			return false;
+		end
+
+		if IsFilterStateChecked("useable") then
+			return false;
+		end
+
+		for i, category in ipairs(PerksProgramFrame:GetCategories()) do
+			if not IsFilterStateChecked(category.ID) then
+				return false;
+			end
+		end
+
+		return true;
+	end);
+	
+	self.PerksProgramFilter:SetDefaultCallback(function()
+		PerksProgramFrame:SetFilterState("collected", true);
+		PerksProgramFrame:SetFilterState("uncollected", true);
+		PerksProgramFrame:SetFilterState("useable", false);
+
+		for i, category in ipairs(PerksProgramFrame:GetCategories()) do
+			PerksProgramFrame:SetFilterState(category.ID, true);
+		end
+	end);
 end
 
 function PerksProgramProductsFrameMixin:Init()
@@ -573,10 +609,6 @@ end
 
 local function SetSortField(filterInfo)
 	PerksProgramFrame:SetSortField(filterInfo);
-end
-
-local function IsFilterStateChecked(filterInfo)
-	return PerksProgramFrame:GetFilterState(filterInfo);
 end
 
 local function SetFilterState(filterInfo)

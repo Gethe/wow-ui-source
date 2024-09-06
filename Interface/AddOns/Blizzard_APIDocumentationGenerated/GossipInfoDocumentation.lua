@@ -358,6 +358,7 @@ local GossipInfo =
 				{ Name = "id", Type = "number", Nilable = false },
 				{ Name = "quantity", Type = "number", Nilable = false },
 				{ Name = "rewardType", Type = "GossipOptionRewardType", Nilable = false },
+				{ Name = "context", Type = "ItemCreationContext", Nilable = false },
 			},
 		},
 		{

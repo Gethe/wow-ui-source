@@ -66,6 +66,7 @@ function ExpansionLandingPageMixin:RefreshExpansionOverlay()
 		end
 
 		if self.overlay then
+			C_Minimap.ClearMinimapInsetInfo();
 			local minimapAnimationEvents = self.overlay.GetMinimapAnimationEvents();
 			if minimapAnimationEvents then
 				FrameUtil.UnregisterFrameForEvents(self, minimapAnimationEvents);
@@ -75,6 +76,9 @@ function ExpansionLandingPageMixin:RefreshExpansionOverlay()
 		self.overlay = newestOverlay;
 
 		if self.overlay then
+			if self.overlay.GetMinimapInsetInfo then
+				C_Minimap.SetMinimapInsetInfo(self.overlay.GetMinimapInsetInfo());
+			end
 			self.overlayFrame = newestOverlay.CreateOverlay(self.Overlay);
 			self.overlayFrame:Show();
 

@@ -217,7 +217,7 @@ function TalentSelectionChoiceMixin:OnClick(button)
 
 			selectionChoiceFrame:SetSelectedEntryID(self:GetEntryID());
 		end
-	else
+	elseif not self:GetTalentFrame():IsLocked() then
 		local baseButton = self:GetBaseButton();
 		if baseButton and self:IsGhosted() then
 			baseButton:ClearCascadeRepurchaseHistory();
@@ -356,6 +356,10 @@ function TalentSelectionChoiceMixin:CalculateVisualState()
 
 		return TalentButtonUtil.BaseVisualState.Disabled;
 	elseif self.isCurrentSelection then
+		-- The entry must be selected before it should be visually displayed as an error.
+		if self.entryInfo.isDisplayError then
+			return TalentButtonUtil.BaseVisualState.DisplayError;
+		end
 		return TalentButtonUtil.BaseVisualState.Maxed;
 	elseif self:IsInspecting() then
 		return TalentButtonUtil.BaseVisualState.Disabled;
@@ -486,4 +490,19 @@ end
 function TalentSelectionChoiceMixin:GetNodeInfo()
 	local selectionBaseButton = self:GetBaseButton();
 	return selectionBaseButton and selectionBaseButton:GetNodeInfo() or nil;
+end
+
+function TalentSelectionChoiceMixin:IsInDeactivatedSubTree()
+	local selectionBaseButton = self:GetBaseButton();
+	return selectionBaseButton:IsInDeactivatedSubTree();
+end
+
+function TalentSelectionChoiceMixin:IsInspecting()
+	local selectionBaseButton = self:GetBaseButton();
+	return selectionBaseButton:IsInspecting();
+end
+
+function TalentSelectionChoiceMixin:ShouldShowTooltipErrors()
+	local selectionBaseButton = self:GetBaseButton();
+	return selectionBaseButton:ShouldShowTooltipErrors();
 end

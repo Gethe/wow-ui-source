@@ -66,8 +66,7 @@ function TokenEntryMixin:IsSelected()
 end
 
 function TokenEntryMixin:RefreshBackgroundHighlight()
-	local entryNeedsHighlight = self:IsSelected() or self:IsMouseOver();
-	self.Content.BackgroundHighlight:SetAlpha(entryNeedsHighlight and 0.10 or 0);
+	self.Content.BackgroundHighlight:SetAlpha((self:IsSelected() and self.selectedHighlightAlpha) or (self:IsMouseOver() and self.mouseOverHighlightAlpha) or 0);
 end
 
 function TokenEntryMixin:RefreshAccountCurrencyIcon()
@@ -110,29 +109,23 @@ function TokenEntryMixin:OnMouseUp()
 end
 
 function TokenEntryMixin:OnClick()
-	TokenFrame.selectedToken = self.Content.Name:GetText();
 	local linkedToChat = false;
 	if IsModifiedClick("CHATLINK") then
 		linkedToChat = HandleModifiedItemClick(C_CurrencyInfo.GetCurrencyListLink(self.currencyIndex));
 	end
 	if not linkedToChat then
 		if IsModifiedClick("TOKENWATCHTOGGLE") then
-			TokenFrame.selectedID = self.currencyIndex;
-			local toggledState = not self.elementData.isShowInBackpack;
-			local success = TokenFrame:SetTokenWatched(TokenFrame.selectedID, toggledState);
-			if success then
-				self.elementData.isShowInBackpack = toggledState;
-			end
-			
-			if TokenFrame.selectedID == self.currencyIndex then
-				TokenFrame:UpdatePopup(self);
-			end
+			TokenFrame:SetTokenWatched(self.currencyIndex, not self.elementData.isShowInBackpack);
 		else
 			local showPopup = not TokenFramePopup:IsShown() or TokenFrame.selectedID ~= self.currencyIndex;
 			TokenFramePopup:SetShown(showPopup);
 
+			-- Toggle the selected state of this currency on a regular (non-modified) left click
+			local alreadySelected = self:IsSelected();
+			TokenFrame.selectedToken = (not alreadySelected and self.Content.Name:GetText()) or nil;
+			-- Set the selectedID as well if we're going to show the options for this currency
+			TokenFrame.selectedID = showPopup and self.currencyIndex or nil;
 			if showPopup then
-				TokenFrame.selectedID = self.currencyIndex;
 				TokenFrame:UpdatePopup(self);
 			end
 		end
@@ -288,17 +281,20 @@ end
 function TokenFrameMixin:OnShow()
 	SetButtonPulse(CharacterFrameTab3, 0, 1); --Stop the button pulse
 
-	local resetScrollPosition = true;
-	self:Update(resetScrollPosition);
+	self:Update();
 end
 
 function TokenFrameMixin:OnHide()
+	-- Reset the selected currency for the next time we open the window
+	self.selectedToken = nil;
+	self.selectedID = nil;
+
 	TokenFramePopup:Hide();
 	HideUIPanel(CurrencyTransferMenu);
 	CurrencyTransferLog:Hide();
 end
 
-function TokenFrameMixin:Update(resetScrollPosition)
+function TokenFrameMixin:Update()
 	local numTokenTypes = C_CurrencyInfo.GetCurrencyListSize();
 	CharacterFrameTab3:SetShown(numTokenTypes > 0);
 
@@ -311,7 +307,19 @@ function TokenFrameMixin:Update(resetScrollPosition)
 		end
 	end
 
-	self.ScrollBox:SetDataProvider(CreateDataProvider(currencyList), not resetScrollPosition and ScrollBoxConstants.RetainScrollPosition);
+	self.ScrollBox:SetDataProvider(CreateDataProvider(currencyList), ScrollBoxConstants.RetainScrollPosition);
+
+	-- If we're updating the currency list while the "Options" popup is open then we should refresh it as well
+	if self.selectedID and self.Popup:IsShown() then
+		local function FindSelectedTokenButton(button, elementData)
+			return elementData.currencyIndex == self.selectedID;
+		end	
+
+		local selectedEntry = self.ScrollBox:FindFrameByPredicate(FindSelectedTokenButton);
+		if selectedEntry then
+			self:UpdatePopup(selectedEntry);
+		end
+	end
 
 	self.ScrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnDataRangeChanged, GenerateClosure(self.RefreshAccountTransferableCurrenciesTutorial), self);
 end
@@ -370,6 +378,10 @@ function TokenFramePopupMixin:CloseIfHidden()
 		end
 	end
 	if ( not selectedFound ) then
+		-- Clear out the selected currency if we can't find it anymore
+		TokenFrame.selectedToken = nil;
+		TokenFrame.selectedID = nil;
+
 		TokenFramePopup:Hide();
 	end
 end
@@ -588,6 +600,9 @@ BackpackTokenMixin = {};
 function BackpackTokenMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetBackpackToken(self:GetID());
+	GameTooltip_AddBlankLineToTooltip(GameTooltip);
+	GameTooltip_AddInstructionLine(GameTooltip, TOKEN_REMOVE_FROM_BACKPACK_INSTRUCTION);
+	GameTooltip:Show();
 end
 
 function BackpackTokenMixin:OnLeave()
@@ -596,7 +611,18 @@ end
 
 function BackpackTokenMixin:OnClick()
 	if IsModifiedClick("CHATLINK") then
-		HandleModifiedItemClick(C_CurrencyInfo.GetCurrencyLink(self.currencyID));
+		local linkedToChat = HandleModifiedItemClick(C_CurrencyInfo.GetCurrencyLink(self.currencyID));
+		if linkedToChat then
+			return;
+		end
+	end
+	
+	if IsModifiedClick("TOKENWATCHTOGGLE") then
+		C_CurrencyInfo.SetCurrencyBackpackByID(self.currencyID, false);
+		BackpackTokenFrame:Update();
+		if TokenFrame and TokenFrame:IsShown() then
+			TokenFrame:Update();
+		end
 	else
 		CharacterFrame:ToggleTokenFrame();
 	end

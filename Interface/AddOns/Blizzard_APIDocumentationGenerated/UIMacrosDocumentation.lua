@@ -7,6 +7,34 @@ local UIMacros =
 	Functions =
 	{
 		{
+			Name = "GetMacroName",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "macroId", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "name", Type = "cstring", Nilable = true },
+			},
+		},
+		{
+			Name = "GetSelectedMacroIcon",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "macroId", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "textureNum", Type = "fileID", Nilable = false },
+			},
+		},
+		{
 			Name = "RunMacroText",
 			Type = "Function",
 

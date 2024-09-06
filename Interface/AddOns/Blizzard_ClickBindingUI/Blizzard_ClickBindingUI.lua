@@ -677,7 +677,16 @@ end
 function ClickBindingFrameMixin:ClearFocusedFrame()
 	local focusedFrame = self:GetFocusedFrame();
 	if focusedFrame and focusedFrame:IsShown() then
-		HideUIPanel(focusedFrame);
+		if focusedFrame == PlayerSpellsFrame then
+			-- If the player selects a different tab on the PlayerSpellsFrame it will need to
+			-- maximize which results in hiding this frame. In that case suppress the behavior
+			-- of automatically hiding the focused frame.
+			if PlayerSpellsFrame:GetTab() == PlayerSpellsFrame:GetDefaultMinimizableTab() then
+				HideUIPanel(focusedFrame);
+			end
+		else
+			HideUIPanel(focusedFrame);
+		end
 	end
 	self.focusedFrame = nil;
 

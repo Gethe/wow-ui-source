@@ -405,13 +405,13 @@ function MiniMapTrackingButtonMixin:OnLoad()
 	
 		local hunterCount = #hunterInfo;
 		if hunterCount > 0 then
+			local hunterMenuDesc = rootDescription;
 			if hunterCount > 1 then
-				local hunterMenuDesc = rootDescription:CreateButton(HUNTER_TRACKING_TEXT);
-				for index, info in ipairs(hunterInfo) do
-					CreateCheckboxWithIcon(hunterMenuDesc, info);
-				end
-			else
-				CreateCheckboxWithIcon(rootDescription, info);
+				hunterMenuDesc = rootDescription:CreateButton(HUNTER_TRACKING_TEXT);
+			end
+
+			for index, info in ipairs(hunterInfo) do
+				CreateCheckboxWithIcon(hunterMenuDesc, info);
 			end
 		end
 	
@@ -562,21 +562,18 @@ function GuildInstanceDifficulty_OnEnter(self)
 end
 
 -- ============================================ BATTLEFIELDS ===============================================================================
-function MiniMapBattlefieldFrame_OnClick(self)
+function MiniMapBattlefieldFrame_OnClick(self, button)
 	-- Hide tooltip
-	if ( self.status == "active") then
-		GameTooltip:Hide();
-		if ( button == "RightButton" ) then
-			MiniMapBattlefieldFrame_ShowContextMenu(self);
-		elseif ( IsShiftKeyDown() ) then
+	GameTooltip:Hide();
+	if ( button == "RightButton" ) then
+		MiniMapBattlefieldFrame_ShowContextMenu(self);
+	elseif ( self.status == "active") then
+		if ( IsShiftKeyDown() ) then
 			ToggleBattlefieldMap();
 		else
 			ToggleWorldStateScoreFrame();
 		end
-	elseif ( button == "RightButton" ) then
-		GameTooltip:Hide();
-		MiniMapBattlefieldFrame_ShowContextMenu(self);
-	end
+    end
 end
 
 function MiniMapBattlefieldFrame_ShowContextMenu(owner)

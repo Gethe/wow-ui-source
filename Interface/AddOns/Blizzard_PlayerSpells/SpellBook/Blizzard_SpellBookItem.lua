@@ -11,6 +11,13 @@ local TRAINABLE_FX_ID = 176;
 SpellBookItemMixin = {};
 
 function SpellBookItemMixin:OnLoad()
+	-- Moved to a container to center all of the text vertically.
+	-- Aliasing them to preserve functionality and reduce the amount
+	-- of things in the hierarchy to list on the Lua side
+	self.Name = self.TextContainer.Name;
+	self.SubName = self.TextContainer.SubName;
+	self.RequiredLevel = self.TextContainer.RequiredLevel;
+
 	self.Backplate:SetAlpha(self.defaultBackplateAlpha);
 	self.Button.IconHighlight:SetAlpha(self.iconHighlightHoverAlpha);
 end
@@ -150,9 +157,32 @@ function SpellBookItemMixin:ToggleFlyout(reason)
 	end
 
 	local offSpecID = self.isOffSpec and self.elementData.specID or nil;
-	local distance, isActionBar, showFullTooltip = 1, false, true;
+	local distance, isActionBar, showFullTooltip = -2, false, true;
 	SpellFlyout:Toggle(self.spellBookItemInfo.actionID, self.Button, "RIGHT", distance, isActionBar, offSpecID, showFullTooltip, reason);
 	SpellFlyout:SetBorderSize(42);
+
+	local rotation = SpellFlyout:IsShown() and 180 or 0;
+	SetClampedTextureRotation(self.Button.FlyoutArrow, rotation);
+end
+
+local function TrimTextSpace(textFrame)
+	if (not textFrame:GetText() or textFrame:GetText() == "") then
+		textFrame:SetHeight(1);
+		textFrame:Hide();
+	else
+		textFrame:SetHeight(min(textFrame:GetStringHeight(), textFrame:GetLineHeight() * textFrame:GetMaxLines()));
+		textFrame:Show();
+	end
+end
+
+function SpellBookItemMixin:UpdateTextContainer()
+	-- The TrimTextSpace function call here is needed to work around
+	-- a bug with FontStrings with a specified maxLine count
+	TrimTextSpace(self.Name);
+	TrimTextSpace(self.SubName);
+	TrimTextSpace(self.RequiredLevel);
+
+	self.TextContainer:Layout();
 end
 
 function SpellBookItemMixin:UpdateVisuals()
@@ -164,11 +194,13 @@ function SpellBookItemMixin:UpdateVisuals()
 	else
 		self.SubName:SetText("");
 		if self.spellBookItemInfo.spellID then
-			local spell = Spell:CreateFromSpellID(spellID);
+			local spell = Spell:CreateFromSpellID(self.spellBookItemInfo.spellID);
 			self.cancelSpellLoadCallback = spell:ContinueWithCancelOnSpellLoad(function()
 				local spellSubName = spell:GetSpellSubtext();
 				self:UpdateSubName(spellSubName);
 				self.cancelSpellLoadCallback = nil;
+
+				self:UpdateTextContainer();
 			end);
 		end
 	end
@@ -260,6 +292,7 @@ function SpellBookItemMixin:UpdateVisuals()
 	self.Button.TrainableShadow:SetShown(self.isTrainable);
 	self.Button.TrainableBackplate:SetShown(self.isTrainable);
 
+	self:UpdateTextContainer();
 	self:UpdateActionBarStatus();
 	self:UpdateCooldown();
 	self:UpdateAutoCast();
@@ -397,8 +430,8 @@ function SpellBookItemMixin:UpdateGlyphState(isActivationStart)
 		hasGlyph = not self.activeGlyphCast.isRemoval;
 	-- Otherwise get current glyph state normally
 	elseif self.spellBookItemInfo.itemType == Enum.SpellBookItemType.Spell and not self.isOffSpec then
-		hasGlyph = HasAttachedGlyph(self.spellBookItemInfo.spellID);
-		isValidForPendingGlyph = IsSpellValidForPendingGlyph(self.spellBookItemInfo.spellID);
+		hasGlyph = HasAttachedGlyph(self.spellBookItemInfo.actionID);
+		isValidForPendingGlyph = IsSpellValidForPendingGlyph(self.spellBookItemInfo.actionID);
 	end
 
 	self.Button.GlyphIcon:SetShown(hasGlyph);
@@ -429,8 +462,8 @@ function SpellBookItemMixin:UpdateClickBindState()
 	self.inClickBindMode = InClickBindingMode();
 	self.canClickBind = false;
 
-	if self.inClickBindMode and self.spellBookItemInfo.spellID and not self.isUnlearned then
-		self.canClickBind = C_ClickBindings.CanSpellBeClickBound(self.spellBookItemInfo.spellID);
+	if self.inClickBindMode and self.spellBookItemInfo.actionID and not self.isUnlearned then
+		self.canClickBind = C_ClickBindings.CanSpellBeClickBound(self.spellBookItemInfo.actionID);
 	end
 
 	self.Button.ClickBindingHighlight:SetShown(self.canClickBind and ClickBindingFrame:HasEmptySlot());
@@ -534,14 +567,14 @@ function SpellBookItemMixin:OnIconClick(button)
 	-- If using a glyph or vanishing powder, handle trying to apply glyph
 	elseif HasPendingGlyphCast() and self.spellBank == Enum.SpellBookSpellBank.Player then
 		if itemType == Enum.SpellBookItemType.Spell and not self.isOffSpec then
-			if HasAttachedGlyph(spellID) then
+			if HasAttachedGlyph(actionID) then
 				if IsPendingGlyphRemoval() then
-					StaticPopup_Show("CONFIRM_GLYPH_REMOVAL", nil, nil, {name = GetCurrentGlyphNameForSpell(spellID), id = spellID});
+					StaticPopup_Show("CONFIRM_GLYPH_REMOVAL", nil, nil, {name = GetCurrentGlyphNameForSpell(actionID), id = actionID});
 				else
-					StaticPopup_Show("CONFIRM_GLYPH_PLACEMENT", nil, nil, {name = GetPendingGlyphName(), currentName = GetCurrentGlyphNameForSpell(spellID), id = spellID});
+					StaticPopup_Show("CONFIRM_GLYPH_PLACEMENT", nil, nil, {name = GetPendingGlyphName(), currentName = GetCurrentGlyphNameForSpell(actionID), id = actionID});
 				end
 			else
-				AttachGlyphToSpell(spellID);
+				AttachGlyphToSpell(actionID);
 			end
 		elseif itemType == Enum.SpellBookItemType.Flyout then
 			self:ToggleFlyout(nil);

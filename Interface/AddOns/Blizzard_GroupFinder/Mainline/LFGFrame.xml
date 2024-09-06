@@ -534,7 +534,7 @@
 								<Texture name="$parentTexture" atlas="UI-LFG-RoleIcon-Generic"/>
 							</Layer>
 							<Layer level="OVERLAY">
-								<Texture name="$parentLeaderIcon" atlas="UI-LFG-RoleIcon-Leader-Micro">
+								<Texture name="$parentLeaderIcon" atlas="UI-LFG-RoleIcon-Leader-Micro-GroupFinder">
 									<Size x="24" y="24"/>
 									<Anchors>
 										<Anchor point="TOPLEFT" x="-3"/>

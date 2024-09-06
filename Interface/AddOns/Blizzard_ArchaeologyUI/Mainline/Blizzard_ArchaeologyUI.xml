@@ -904,9 +904,9 @@
 					</Frame>
 				</Frames>
 			</Frame>
-			<Button name="$parentInfoButton" inherits="UIPanelInfoButton" parentKey="infoButton" id="0">
+			<Button name="$parentInfoButton" inherits="MainHelpPlateButton" parentKey="infoButton" id="0">
 				<Anchors>
-					<Anchor point="TOPLEFT"  x="60" y="-3" />
+					<Anchor point="TOPLEFT" x="39" y="20"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>

@@ -7,7 +7,7 @@
 	</Frame>
 
 	<!-- Player has enough tokens or gold. -->
-	<Frame name="ReactivateAccountDialog" toplevel="true" parent="CharacterSelect" enableMouse="true" frameStrata="HIGH" hidden="true" inherits="ReactivateDialogBackground">
+	<Frame name="ReactivateAccountDialog" toplevel="true" parent="VisibilityFramesContainer" enableMouse="true" frameStrata="HIGH" hidden="true" inherits="ReactivateDialogBackground">
 		<Size x="450" y="64"/>
 		<Anchors>
 			<Anchor point="BOTTOM" x="0" y="167"/>
@@ -56,7 +56,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="AccountReactivationInProgressDialog" toplevel="true" parent="CharacterSelect" enableMouse="true" frameStrata="DIALOG" hidden="true" inherits="ReactivateDialogBackground">
+	<Frame name="AccountReactivationInProgressDialog" toplevel="true" parent="CharacterSelectUI" enableMouse="true" frameStrata="DIALOG" hidden="true" inherits="ReactivateDialogBackground">
 		<Size x="350" y="64"/>
 		<Anchors>
 			<Anchor point="CENTER" x="0" y="140"/>
@@ -98,7 +98,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="GoldReactivateConfirmationDialog" toplevel="true" parent="CharacterSelect" enableMouse="true" frameStrata="HIGH" hidden="true" inherits="ReactivateDialogBackground">
+	<Frame name="GoldReactivateConfirmationDialog" toplevel="true" parent="VisibilityFramesContainer" enableMouse="true" frameStrata="HIGH" hidden="true" inherits="ReactivateDialogBackground">
 		<Size x="450" y="64"/>
 		<Anchors>
 			<Anchor point="TOP" x="0" y="-150"/>
@@ -195,7 +195,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="TokenReactivateConfirmationDialog" toplevel="true" parent="CharacterSelect" enableMouse="true" frameStrata="DIALOG" hidden="true" inherits="ReactivateDialogBackground">
+	<Frame name="TokenReactivateConfirmationDialog" toplevel="true" parent="VisibilityFramesContainer" enableMouse="true" frameStrata="DIALOG" hidden="true" inherits="ReactivateDialogBackground">
 		<Size x="450" y="64"/>
 		<Anchors>
 			<Anchor point="CENTER" x="0" y="64"/>
@@ -267,7 +267,7 @@
 	</Frame>
 
 	<!-- Not Enough Gold and no tokens. Display if attempt to login with a greater than level 20 character/ -->
-	<Frame name="SubscriptionRequestDialog" toplevel="true" parent="CharacterSelect" enableMouse="true" frameStrata="DIALOG" hidden="true" inherits="ReactivateDialogBackground">
+	<Frame name="SubscriptionRequestDialog" toplevel="true" parent="VisibilityFramesContainer" enableMouse="true" frameStrata="DIALOG" hidden="true" inherits="ReactivateDialogBackground">
 		<Size x="450" y="64"/>
 		<Anchors>
 			<Anchor point="CENTER" x="0" y="64"/>

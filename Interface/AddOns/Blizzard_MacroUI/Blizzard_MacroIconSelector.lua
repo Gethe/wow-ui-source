@@ -70,13 +70,15 @@ function MacroPopupFrameMixin:Update()
 	elseif ( self.mode == IconSelectorPopupFrameModes.Edit ) then
 		local macroFrame = self:GetMacroFrame();
 		local actualIndex = macroFrame:GetMacroDataIndex(macroFrame:GetSelectedIndex());
-		local name = GetMacroInfo(actualIndex);
-		self.BorderBox.IconSelectorEditBox:SetText(name);
-		self.BorderBox.IconSelectorEditBox:HighlightText();
+		local name = C_Macro.GetMacroName(actualIndex);
+		if ( name ) then
+			self.BorderBox.IconSelectorEditBox:SetText(name);
+			self.BorderBox.IconSelectorEditBox:HighlightText();
 
-		local texture = macroFrame.SelectedMacroButton:GetIconTexture();
-		self.IconSelector:SetSelectedIndex(self:GetIndexOfIcon(texture));
-		self.BorderBox.SelectedIconArea.SelectedIconButton:SetIconTexture(texture);
+			local texture = C_Macro.GetSelectedMacroIcon(actualIndex);
+			self.IconSelector:SetSelectedIndex(self:GetIndexOfIcon(texture));
+			self.BorderBox.SelectedIconArea.SelectedIconButton:SetIconTexture(texture);
+		end
 	end
 
 	local getSelection = GenerateClosure(self.GetIconByIndex, self);

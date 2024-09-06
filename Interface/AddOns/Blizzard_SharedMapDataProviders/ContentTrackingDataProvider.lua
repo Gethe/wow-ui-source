@@ -129,14 +129,19 @@ end
 
 function ContentTrackingPinMixin:OnMouseEnter()
 	POIButtonMixin.OnEnter(self);
-
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 
 	local trackableMapInfo = self.trackableMapInfo;
 	local title = C_ContentTracking.GetTitle(trackableMapInfo.trackableType, trackableMapInfo.trackableID)
-	GameTooltip_SetTitle(GameTooltip, title);
-
 	local objectiveText = C_ContentTracking.GetObjectiveText(trackableMapInfo.targetType, trackableMapInfo.targetID);
+
+	if not title or not objectiveText then
+		GameTooltip_SetTitle(GameTooltip, RETRIEVING_DATA, RED_FONT_COLOR);
+		GameTooltip:Show();
+		return;
+	end
+
+	GameTooltip_SetTitle(GameTooltip, title);
 	GameTooltip_AddNormalLine(GameTooltip, CONTENT_TRACKING_OBJECTIVE_FORMAT:format(objectiveText));
 
 	if self.isWaypoint then

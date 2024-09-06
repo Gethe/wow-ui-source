@@ -30,6 +30,7 @@ TOOLTIP_QUEST_REWARDS_STYLE_WORLD_QUEST = {
 	wrapHeaderText = true,
 	fullItemDescription = true,
 	showCollectionText = true,
+	showFirstTimeRepRewardNotice = true,
 }
 
 TOOLTIP_QUEST_REWARDS_STYLE_NO_HEADER = {
@@ -216,7 +217,8 @@ end
 function GameTooltip_AddQuestTimeToTooltip(tooltip, questID)
 	local formattedTime, color, secondsRemaining = WorldMap_GetQuestTimeForTooltip(questID);
 	if formattedTime and color then
-		GameTooltip_AddColoredLine(tooltip, formattedTime, color);
+		formattedTime = color:WrapTextInColorCode(formattedTime);
+		GameTooltip_AddNormalLine(tooltip, MAP_TOOLTIP_TIME_LEFT:format(formattedTime));
 	end
 end
 
@@ -382,9 +384,8 @@ function GameTooltip_OnHide(self)
 
 	self:ClearHandlerInfo();
 
-	if self.StatusBar then
-		self.StatusBar:ClearWatch();
-	end
+	GameTooltip_ClearStatusBars(self);
+	GameTooltip_ClearStatusBarWatch(self);
 
 	EventRegistry:TriggerEvent("GameTooltip.HideTooltip", self);
 end
@@ -465,6 +466,17 @@ function GameTooltip_ClearStatusBars(self)
 	if self.statusBarPool then
 		self.statusBarPool:ReleaseAll();
 	end
+end
+
+function GameTooltip_ClearStatusBarWatch(self)
+	if self.StatusBar then
+		self.StatusBar:ClearWatch();
+	end
+end
+
+function GameTooltip_ClearAllStatusBars(self)
+	GameTooltip_ClearStatusBars(self);
+	GameTooltip_ClearStatusBarWatch(self);
 end
 
 function GameTooltip_ShowStatusBar(self, min, max, value, text)
@@ -613,8 +625,9 @@ function GameTooltip_AddQuest(self, questIDArg)
 
 		local factionData = factionID and C_Reputation.GetFactionDataByID(factionID);
 		if factionData then
+			local questAwardsReputationWithFaction = C_QuestLog.DoesQuestAwardReputationWithFaction(questID, factionID);
 			local reputationYieldsRewards = (not capped) or C_Reputation.IsFactionParagon(factionID);
-			if reputationYieldsRewards then
+			if questAwardsReputationWithFaction and reputationYieldsRewards then
 				GameTooltip:AddLine(factionData.name);
 			else
 				GameTooltip:AddLine(factionData.name, GRAY_FONT_COLOR:GetRGB());

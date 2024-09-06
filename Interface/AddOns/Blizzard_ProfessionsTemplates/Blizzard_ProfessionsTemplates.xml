@@ -148,6 +148,11 @@
 					<Anchor point="RIGHT"/>
 				</Anchors>
 			</Frame>
+			<Frame parentKey="RewardsContainer" inherits="VerticalLayoutFrame">
+				<KeyValues>
+					<KeyValue key="spacing" value="2" type="number"/>
+				</KeyValues>
+			</Frame>
 		</Frames>
 		<Layers>
 			<Layer level="ARTWORK">

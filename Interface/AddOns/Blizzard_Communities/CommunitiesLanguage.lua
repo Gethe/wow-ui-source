@@ -57,7 +57,7 @@ function CommunitiesLanguageDropdownMixin:SetupMenu(localeId)
 		return nil;
 	end);
 
-	WowStyle1DropdownMixin.SetupMenu(self, function(dropdown, rootDescription)
+	DropdownButtonMixin.SetupMenu(self, function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_COMMUNITIES_LANGUAGE");
 
 		local function IsChecked(localeInfo)

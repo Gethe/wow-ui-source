@@ -26,7 +26,9 @@ function ProfessionsReagentSlotButtonMixin:Reset()
 	self.locked = nil;
 	self.currencyID = nil;
 	self.isModifyingRequired = false;
-	self.CropFrame:Hide();
+	if self.CropFrame then
+		self.CropFrame:Hide();
+	end
 	self:Update();
 end
 

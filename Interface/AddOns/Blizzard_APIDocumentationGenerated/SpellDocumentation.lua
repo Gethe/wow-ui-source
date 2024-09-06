@@ -524,7 +524,7 @@ local Spell =
 
 			Returns =
 			{
-				{ Name = "inRange", Type = "bool", Nilable = true, Documentation = { "May be nil if the range check was invalid, ie due to invalid spell, missing/invalid target, unknown spell, etc" } },
+				{ Name = "inRange", Type = "bool", Nilable = true, Documentation = { "May be nil if the range check was invalid, ie due to unknown/invalid spell, missing/invalid target, etc" } },
 			},
 		},
 		{

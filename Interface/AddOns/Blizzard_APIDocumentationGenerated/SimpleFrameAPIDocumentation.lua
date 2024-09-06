@@ -126,6 +126,20 @@ local SimpleFrameAPI =
 			},
 		},
 		{
+			Name = "DoesHyperlinkPropagateToParent",
+			Type = "Function",
+			Documentation = { "Returns whether hyperlink events (ex. OnHyperlinkEnter, OnHyperlinkLeave, OnHyperlinkClick) are propagated to this frame's parent." },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "canPropagate", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "EnableDrawLayer",
 			Type = "Function",
 
@@ -957,6 +971,16 @@ local SimpleFrameAPI =
 				{ Name = "right", Type = "uiUnit", Nilable = false },
 				{ Name = "top", Type = "uiUnit", Nilable = false },
 				{ Name = "bottom", Type = "uiUnit", Nilable = false },
+			},
+		},
+		{
+			Name = "SetHyperlinkPropagateToParent",
+			Type = "Function",
+			Documentation = { "Enables or disables propagating hyperlink events (ex. OnHyperlinkEnter, OnHyperlinkLeave, OnHyperlinkClick) to this frame's parent." },
+
+			Arguments =
+			{
+				{ Name = "canPropagate", Type = "bool", Nilable = false },
 			},
 		},
 		{

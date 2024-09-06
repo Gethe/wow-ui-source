@@ -1750,40 +1750,6 @@
 									<Anchor point="TOPRIGHT" x="-19" y="-13"/>
 								</Anchors>
 							</DropdownButton>
-							<Button name="$parentResetButton" parentKey="reset" hidden="true">
-								<Size x="26" y="26"/>
-								<Anchors>
-									<Anchor point="RIGHT" relativeTo="$parentDifficulty" relativePoint="LEFT" x="-10" y="0"/>
-								</Anchors>
-								<Layers>
-									<Layer level="OVERLAY">
-										<Texture name="$parentTexture" inherits="UI-EJ-ReturnToDefault">
-											<Anchors>
-												<Anchor point="CENTER"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-								</Layers>
-								<NormalTexture inherits="UI-EJ-FilterButtonUp"/>
-								<PushedTexture inherits="UI-EJ-FilterButtonDown"/>
-								<HighlightTexture inherits="UI-EJ-FilterButtonHighlight" alphaMode="ADD"/>
-								<Scripts>
-									<OnMouseDown>
-										_G[self:GetName().."Texture"]:SetPoint("CENTER", 1, -1);
-									</OnMouseDown>
-									<OnMouseUp>
-										_G[self:GetName().."Texture"]:SetPoint("CENTER", 0, 0);
-									</OnMouseUp>
-									<OnClick function="EncounterJournal_ResetHeaders"/>
-									<OnEnter>
-										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-										GameTooltip:SetText(RETURN_TO_DEFAULT);
-									</OnEnter>
-									<OnLeave>
-										GameTooltip:Hide();
-									</OnLeave>
-								</Scripts>
-							</Button>
 							<ScrollFrame name="$parentDetailsScrollFrame" parentKey="detailsScroll" inherits="ScrollFrameTemplate">
 								<Size x="350" y="383"/>
 								<KeyValues>
@@ -1816,16 +1782,10 @@
 								<Scripts>
 									<OnShow>
 										EncounterJournal_HideCreatures();
-										EncounterJournal.encounter.info.reset:Show()
 										EncounterJournal.encounter.info.LootContainer:Hide()
 										EncounterJournal.encounter.info.rightShadow:Show()
 										EncounterJournal.encounter.info.encounterTitle:Show();
 									</OnShow>
-									<OnHide>
-										if (not self:GetParent().overviewScroll:IsShown()) then
-											EncounterJournal.encounter.info.reset:Hide();
-										end
-									</OnHide>
 								</Scripts>
 							</ScrollFrame>
 							<ScrollFrame name="$parentOverviewScrollFrame" parentKey="overviewScroll" inherits="ScrollFrameTemplate">
@@ -1880,16 +1840,10 @@
 								<Scripts>
 									<OnShow>
 										EncounterJournal_HideCreatures();
-										EncounterJournal.encounter.info.reset:Show()
 										EncounterJournal.encounter.info.LootContainer:Hide()
 										EncounterJournal.encounter.info.rightShadow:Show()
 										EncounterJournal.encounter.info.encounterTitle:Show();
 									</OnShow>
-									<OnHide>
-										if (not self:GetParent().detailsScroll:IsShown()) then
-											EncounterJournal.encounter.info.reset:Hide()
-										end
-									</OnHide>
 								</Scripts>
 							</ScrollFrame>
 

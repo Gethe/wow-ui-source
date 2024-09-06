@@ -3,6 +3,16 @@ G_CinematicsMenuContextKey = "CinematicsMenu";
 
 -- These are movieID from the MOVIE database file.
 MOVIE_LIST = {
+	-- Movie sequence 13 - WarWithin
+	{
+		expansion = LE_EXPANSION_WAR_WITHIN,
+		movieIDs = { 1023 },
+		upAtlas = "StreamCinematic-WarWithin2-Large-Up",
+		downAtlas = "StreamCinematic-WarWithin2-Large-Down",
+		title = WARWITHIN_TITLE2,
+		disableAutoPlay = true,
+	},
+
 	-- Movie sequence 12 = WarWithin
 	{
 		expansion = LE_EXPANSION_WAR_WITHIN,

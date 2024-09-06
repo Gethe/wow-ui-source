@@ -366,7 +366,7 @@ function QuestObjectiveTrackerMixin:ShouldDisplayQuest(quest)
 		return false;
 	end
 
-	return quest:GetSortType() ~= QuestSortType.Campaign;
+	return quest:GetQuestClassification() ~= Enum.QuestClassification.Campaign;
 end
 
 -- *****************************************************************************************************

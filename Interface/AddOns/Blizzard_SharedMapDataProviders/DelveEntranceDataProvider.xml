@@ -2,5 +2,5 @@
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="DelveEntranceDataProvider.lua"/>
 
-	<Frame name="DelveEntrancePinTemplate" inherits="BaseSuperTrackableMapPoiPinTemplate" mixin="DelveEntrancePinMixin" virtual="true"/>
+	<Frame name="DelveEntrancePinTemplate" inherits="LegendHighlightableMapPoiPinTemplate, BaseSuperTrackableMapPoiPinTemplate" mixin="DelveEntrancePinMixin" virtual="true"/>
 </Ui>

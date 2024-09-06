@@ -16,11 +16,11 @@ function AddPerksProgramTutorials()
 		TutorialManager:AddWatcher(Class_PerksProgramProductPurchased:new(), true);
 	end
 
-	if not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_PERKS_PROGRAM_ACTIVITIES_OPEN) then
+	if not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_PERKS_PROGRAM_ACTIVITIES_OPEN) then
 		TutorialManager:AddWatcher(Class_PerksProgramActivitiesPromptWatcher:new(), true);
 	end
 
-	if not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_PERKS_PROGRAM_ACTIVITIES_INTRO) then
+	if not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_PERKS_PROGRAM_ACTIVITIES_INTRO) then
 		TutorialManager:AddWatcher(Class_PerksProgramActivitiesOpenWatcher:new(), true);
 	end
 end
@@ -277,6 +277,7 @@ function Class_PerksProgramActivitiesPromptWatcher:OnInitialize()
 		buttonStyle = HelpTip.ButtonStyle.Close,
 		targetPoint = HelpTip.Point.TopEdgeCenter,
 		alignment = HelpTip.Alignment.Right,
+		system = "MicroButtons",
 		onAcknowledgeCallback = GenerateClosure(self.FinishTutorial, self),
 		checkCVars = true,
 		acknowledgeOnHide = true,

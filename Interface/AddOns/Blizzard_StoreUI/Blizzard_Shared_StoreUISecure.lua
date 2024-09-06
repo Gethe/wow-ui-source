@@ -2625,7 +2625,7 @@ function StoreVASValidationFrame_OnVasProductComplete(self)
 	local productInfo = C_StoreSecure.GetProductInfo(productID);
 	if (IsOnGlueScreen()) then
 		self:GetParent():Hide();
-		StoreFrame_ShowGlueDialog(string.format(BLIZZARD_STORE_VAS_PRODUCT_READY, productInfo.sharedData.name), guid, realmName, shouldHandle);
+		StoreOutbound.StoreFrameShowGlueDialog(string.format(BLIZZARD_STORE_VAS_PRODUCT_READY, productInfo.sharedData.name), guid, realmName, shouldHandle);
 	else
 		self:GetParent():Hide();
 

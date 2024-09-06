@@ -42,18 +42,8 @@ local function Register()
 
 	-- Sticky Targeting
 	do
-		local function GetValue()
-			return not GetCVarBool("deselectOnClick");
-		end
-
-		local function SetValue(value)
-			SetCVar("deselectOnClick", not value);
-		end
-
-		local defaultValue = false;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_DESELECT_ON_CLICK", Settings.DefaultVarLocation,
-			Settings.VarType.Boolean, GAMEFIELD_DESELECT_TEXT, defaultValue, GetValue, SetValue);
-		Settings.CreateCheckbox(category, setting, OPTION_TOOLTIP_GAMEFIELD_DESELECT);
+		local setting = Settings.SetupCVarCheckbox(category, "deselectOnClick", GAMEFIELD_DESELECT_TEXT, OPTION_TOOLTIP_GAMEFIELD_DESELECT);
+		setting:NegateBoolean();
 	end
 
 	ControlsOverrides.SetupAutoDismountSetting(category);
@@ -93,7 +83,7 @@ local function Register()
 		end
 
 		local defaultValue = false;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_ENABLE_INTERACT", Settings.DefaultVarLocation,
+		local setting = Settings.RegisterProxySetting(category, "PROXY_ENABLE_INTERACT",
 			Settings.VarType.Boolean, ENABLE_INTERACT_TEXT, defaultValue, GetValue, SetValue);
 		Settings.CreateCheckbox(category, setting, OPTION_TOOLTIP_ENABLE_INTERACT);
 	end);
@@ -129,6 +119,7 @@ local function Register()
 
 	-- Mouse Look Speed
 	do
+
 		local function GetValue()
 			return tonumber(C_CVar.GetCVar("cameraYawMoveSpeed"));
 		end
@@ -139,7 +130,7 @@ local function Register()
 		end
 
 		local defaultValue = 180;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_MOUSE_LOOK_SPEED", Settings.DefaultVarLocation,
+		local setting = Settings.RegisterProxySetting(category, "PROXY_MOUSE_LOOK_SPEED",
 			Settings.VarType.Number, MOUSE_LOOK_SPEED, defaultValue, GetValue, SetValue);
 
 		local minValue, maxValue, step = 90, 270, 10;
@@ -202,7 +193,7 @@ local function Register()
 		end
 
 		local defaultValue = 180;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_CAMERA_SPEED", Settings.DefaultVarLocation,
+		local setting = Settings.RegisterProxySetting(category, "PROXY_CAMERA_SPEED",
 			Settings.VarType.Number, AUTO_FOLLOW_SPEED, defaultValue, GetValue, SetValue);
 
 		local minValue, maxValue, step = 90, 270, 10;

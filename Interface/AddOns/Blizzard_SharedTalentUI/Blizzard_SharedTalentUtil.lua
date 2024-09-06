@@ -221,6 +221,7 @@ TalentButtonUtil.BaseVisualState = {
 	Maxed = 6,
 	Invisible = 7,
 	RefundInvalid = 8,
+	DisplayError = 9,
 };
 
 local HoverAlphaByVisualState = {
@@ -232,6 +233,7 @@ local HoverAlphaByVisualState = {
 	[TalentButtonUtil.BaseVisualState.Maxed] = 1,
 	[TalentButtonUtil.BaseVisualState.Invisible] = 0,
 	[TalentButtonUtil.BaseVisualState.RefundInvalid] = 0.4,
+	[TalentButtonUtil.BaseVisualState.DisplayError] = 1,
 };
 
 function TalentButtonUtil.GetTemplateForTalentType(nodeInfo, talentType, useLarge)
@@ -290,6 +292,8 @@ function TalentButtonUtil.GetColorForBaseVisualState(visualState)
 	elseif visualState == TalentButtonUtil.BaseVisualState.Selectable then
 		return GREEN_FONT_COLOR;
 	elseif visualState == TalentButtonUtil.BaseVisualState.RefundInvalid then
+		return RED_FONT_COLOR;
+	elseif visualState == TalentButtonUtil.BaseVisualState.DisplayError then
 		return RED_FONT_COLOR;
 	end
 
@@ -439,37 +443,66 @@ local OriginalGetConditionInfo = C_Traits.GetConditionInfo;
 C_Traits.GetConditionInfo = function (...)
 	local configID, condID, ignoreFontColor = ...;
 	local condInfo = OriginalGetConditionInfo(configID, condID);
-	if condInfo then
-		local function EvaluateConditionTooltipText()
-			local tooltipFormat = condInfo.tooltipFormat;
-			if not tooltipFormat then
-				return nil;
-			end
+	if not condInfo then
+		return nil;
+	end
 
-			if condInfo.isAlwaysMet then
-				return tooltipFormat;
-			elseif condInfo.questID then
-				return tooltipFormat:format(C_QuestLog.GetTitleForQuestID(condInfo.questID) or "");
-			elseif condInfo.achievementID then
-				local id, achievementName = GetAchievementInfo(condInfo.achievementID);
-				return tooltipFormat:format(achievementName);
-			elseif condInfo.specSetID then
-				local specName = PlayerUtil.GetSpecName() or "";
-				local className = PlayerUtil.GetClassName() or "";
-				return tooltipFormat:format(specName, className);
-			elseif condInfo.playerLevel then
-				return tooltipFormat:format(condInfo.playerLevel);
-			elseif condInfo.spentAmountRequired then
-				local TEMP_GATE_FORMAT_STRING_ARG = ""; -- TODO:: Remove this once the appropriate strings have been updated.
-				return tooltipFormat:format(condInfo.spentAmountRequired, TEMP_GATE_FORMAT_STRING_ARG);
-			end
-
+	local function EvaluateConditionTooltipText()
+		local tooltipFormat = condInfo.tooltipFormat;
+		if not tooltipFormat then
 			return nil;
 		end
 
-		local tooltipText = EvaluateConditionTooltipText();
-		condInfo.tooltipText = (tooltipText and not condInfo.isMet) and (not ignoreFontColor and RED_FONT_COLOR:WrapTextInColorCode(tooltipText)) or tooltipText;
+		if condInfo.isAlwaysMet then
+			return tooltipFormat;
+		elseif condInfo.questID then
+			return tooltipFormat:format(C_QuestLog.GetTitleForQuestID(condInfo.questID) or "");
+		elseif condInfo.achievementID then
+			local id, achievementName = GetAchievementInfo(condInfo.achievementID);
+			return tooltipFormat:format(achievementName);
+		elseif condInfo.specSetID then
+			local specName = PlayerUtil.GetSpecName() or "";
+			local className = PlayerUtil.GetClassName() or "";
+			return tooltipFormat:format(specName, className);
+		elseif condInfo.playerLevel then
+			return tooltipFormat:format(condInfo.playerLevel);
+		elseif condInfo.spentAmountRequired then
+			local TEMP_GATE_FORMAT_STRING_ARG = ""; -- TODO:: Remove this once the appropriate strings have been updated.
+			return tooltipFormat:format(condInfo.spentAmountRequired, TEMP_GATE_FORMAT_STRING_ARG);
+		end
+
+		return nil;
 	end
+
+	local tooltipText = EvaluateConditionTooltipText();
+
+	local function FormatConditionTooltipText()
+		if not tooltipText then
+			return nil;
+		end
+
+		-- Tooltips of met conditions shouldn't do any formatting.
+		if condInfo.isMet then
+			-- Unless they're DisplayError type, in which case they should always be formatted
+			-- whether they're met or not.
+			if condInfo.type ~= Enum.TraitConditionType.DisplayError then
+				return tooltipText;
+			end
+		end
+
+		if ignoreFontColor then
+			return tooltipText;
+		end;
+
+		-- Designers can use tokens (e.g. $@spellname1234) for condition tooltips and the parsing code
+		-- automatically applies colorization that isn't desired so remove it prior to coloring the entire string red.
+		local strippedTooltipText = StripHyperlinks(tooltipText);
+
+		local coloredTooltipText = RED_FONT_COLOR:WrapTextInColorCode(strippedTooltipText);
+		return coloredTooltipText;
+	end
+
+	condInfo.tooltipText = FormatConditionTooltipText();
 
 	return condInfo;
 end;

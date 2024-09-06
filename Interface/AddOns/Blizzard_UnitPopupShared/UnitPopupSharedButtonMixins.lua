@@ -907,14 +907,11 @@ function UnitPopupPartyInstanceLeaveButtonMixin:IsEnabled(contextData)
 		return false;
 	end
 
-	if C_PartyInfo.IsPartyWalkIn() then
-		return C_PartyInfo.IsDelveComplete();
-	end
 	return true;
 end
 
 function UnitPopupPartyInstanceLeaveButtonMixin:OnClick(contextData)
-	ConfirmOrLeaveLFGParty();
+	ConfirmOrLeaveParty();
 end
 
 UnitPopupFollowButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
@@ -1359,6 +1356,22 @@ end
 function UnitPopupDungeonDifficultyButtonMixin:GetEntries()
 end
 
+function UnitPopupDungeonDifficultyButtonMixin:IsEnabled(contextData)
+	return not DifficultyUtil.InStoryRaid();
+end
+
+function UnitPopupDungeonDifficultyButtonMixin:TooltipWhileDisabled()
+	return true;
+end
+
+function UnitPopupDungeonDifficultyButtonMixin:NoTooltipWhileEnabled()
+	return true;
+end
+
+function UnitPopupDungeonDifficultyButtonMixin:GetTooltipText()
+	return RED_FONT_COLOR:WrapTextInColorCode(DIFFICULTY_LOCKED_REASON_STORY_RAID);
+end
+
 UnitPopupDungeonDifficulty1ButtonMixin = CreateFromMixins(UnitPopupRadioButtonMixin);
 
 function UnitPopupDungeonDifficulty1ButtonMixin:GetText(contextData)
@@ -1418,6 +1431,22 @@ UnitPopupRaidDifficultyButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
 
 function UnitPopupRaidDifficultyButtonMixin:GetText(contextData)
 	return RAID_DIFFICULTY;
+end
+
+function UnitPopupRaidDifficultyButtonMixin:IsEnabled(contextData)
+	return not DifficultyUtil.InStoryRaid();
+end
+
+function UnitPopupRaidDifficultyButtonMixin:TooltipWhileDisabled()
+	return true;
+end
+
+function UnitPopupRaidDifficultyButtonMixin:NoTooltipWhileEnabled()
+	return true;
+end
+
+function UnitPopupRaidDifficultyButtonMixin:GetTooltipText()
+	return RED_FONT_COLOR:WrapTextInColorCode(DIFFICULTY_LOCKED_REASON_STORY_RAID);
 end
 
 function UnitPopupRaidDifficultyButtonMixin:GetEntries()
@@ -2724,7 +2753,6 @@ end
 function UnitPopupSelfHighlightSelectButtonMixin:GetEntries()
 	return {
 		UnitPopupSelfHighlightCircleButtonMixin,
-		UnitPopupSelfHighlightOutlineButtonMixin,
 		UnitPopupSelfHighlightIconButtonMixin,
 	};
 end
@@ -2733,7 +2761,6 @@ UnitPopupSelfHighlightCommonMixin = CreateFromMixins(UnitPopupCheckboxButtonMixi
 
 function UnitPopupSelfHighlightCommonMixin:SetFindSelfAnywhere()
 	local shouldFindSelfAnywhere = GetCVarBool("findYourselfModeCircle") or
-		GetCVarBool("findYourselfModeOutline") or
 		GetCVarBool("findYourselfModeIcon");
 			
 	SetCVar("findYourselfAnywhere", shouldFindSelfAnywhere);
@@ -2744,7 +2771,8 @@ function UnitPopupSelfHighlightCommonMixin:OnClick(contextData)
 	SetCVar(cvarName, not GetCVarBool(cvarName));
 
 	self:SetFindSelfAnywhere();
-	EventRegistry:TriggerEvent("SelfHighlight.ValueChanged");
+
+	Settings.NotifyUpdate("PROXY_SELF_HIGHLIGHT");
 end
 
 function UnitPopupSelfHighlightCommonMixin:IsChecked(contextData)
@@ -2763,16 +2791,6 @@ end
 
 function UnitPopupSelfHighlightCircleButtonMixin:GetCVarName()
 	return "findYourselfModeCircle";
-end
-
-UnitPopupSelfHighlightOutlineButtonMixin = CreateFromMixins(UnitPopupSelfHighlightCommonMixin);
-
-function UnitPopupSelfHighlightOutlineButtonMixin:GetText(contextData)
-	return SELF_HIGHLIGHT_OUTLINE;
-end
-
-function UnitPopupSelfHighlightOutlineButtonMixin:GetCVarName()
-	return "findYourselfModeOutline";
 end
 
 UnitPopupSelfHighlightIconButtonMixin = CreateFromMixins(UnitPopupSelfHighlightCommonMixin);
@@ -3247,7 +3265,7 @@ function UnitPopupCommunityInviteButtonMixin:OnClick(contextData)
 	local clubInfo = contextData.clubInfo;
 
 	local streams = C_Club.GetStreams(clubInfo.clubId);
-	local defaultStreamId = streams[1];
+	local defaultStreamId = streams[1] and streams[1].streamId or nil;
 	for i, stream in ipairs(streams) do
 		local streamType = stream.streamType;
 		if streamType == Enum.ClubStreamType.General or streamType == Enum.ClubStreamType.Guild then

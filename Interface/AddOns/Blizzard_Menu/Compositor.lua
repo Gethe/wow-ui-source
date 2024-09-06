@@ -1,6 +1,9 @@
 local frameDummy = CreateFrame("Frame");
 local frameFactory = CreateFrameFactory();
 
+local AttributeDelegate = CreateFrame("Frame");
+local CallProtectedFunctionsAttribute = "call-protected-functions";
+
 local function PoolReset(pool, region, new)
 	Pool_HideAndClearAnchors(pool, region);
 
@@ -72,7 +75,7 @@ end
 local function SetFrameToDefaults(frame)
 	SetRegionToDefaults(frame);
 
-	frame:SetPropagateKeyboardInput(false);
+	AttributeDelegate:SetAttribute(CallProtectedFunctionsAttribute, frame);
 
 	frame:SetScript("OnLoad", nil);
 	frame:SetScript("OnShow", nil);
@@ -480,3 +483,21 @@ function CreateCompositor(target)
 	tbl:Init(target);
 	return tbl;
 end
+
+-- These functions need to only be called from the attribute handler to be successful
+-- in insecure contexts where a protection is in effect. These functions should 
+-- only ever return the frame to its initial state at creation.
+local function CallProtectedFunctions(frame)
+	frame:SetPropagateKeyboardInput(false);
+	frame:SetPropagateMouseMotion(false);
+	frame:SetPropagateMouseClicks(false);
+end
+
+function AttributeDelegate:OnAttributeChanged(name, value)
+	if name == CallProtectedFunctionsAttribute then
+		CallProtectedFunctions(value);
+	end
+end
+
+AttributeDelegate:SetScript("OnAttributeChanged", AttributeDelegate.OnAttributeChanged);
+AttributeDelegate:SetForbidden();

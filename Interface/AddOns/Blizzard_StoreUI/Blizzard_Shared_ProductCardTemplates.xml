@@ -67,10 +67,10 @@
 					<Texture parentKey="Icon" hidden="true" />
 				</Layer>
 				<Layer level="ARTWORK" textureSubLevel="-1">
-					<Texture parentKey="IconBorder" inherits="store-itemicon-border" hidden="true" />
+					<Texture parentKey="IconBorder" atlas="tokens-frame-regular" useAtlasSize="true" hidden="true" />
 				</Layer>
 				<Layer level="ARTWORK">
-					<Texture parentKey="ItemQuantityCircle" atlas="shop-count-ring" useAtlasSize="true" hidden="true" />
+					<Texture parentKey="ItemQuantityCircle" atlas="tokens-counterbg" useAtlasSize="true" hidden="true" />
 					<FontString parentKey="ItemQuantity" inherits="GameFontNormalMed2" justifyH="LEFT" hidden="true" />
 					<FontString parentKey="CurrentMarketPrice" inherits="GameFontNormalMed2" justifyH="LEFT" hidden="true" />
 					<FontString parentKey="CurrentPrice" inherits="GameFontNormalMed3" />
@@ -291,5 +291,3 @@
 
 	</ScopedModifier>
 </Ui>
-
-

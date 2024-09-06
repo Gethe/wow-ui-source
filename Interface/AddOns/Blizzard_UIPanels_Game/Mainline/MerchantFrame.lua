@@ -696,6 +696,18 @@ end
 
 LIST_DELIMITER = ", "
 
+local function ShouldAppendSpecText(itemLink)
+	if C_Item.IsItemBindToAccountUntilEquip(itemLink) then
+		local _itemID, _itemType, _itemSubType, _itemEquipLoc, _icon, classID, subclassID = C_Item.GetItemInfoInstant(itemLink) ;
+		-- If the merchant item is "Warbound until equipped", then we only want to show a list of specs for weapons and shields
+		local isWeapon = classID == Enum.ItemClass.Weapon;
+		local isShield = (classID == Enum.ItemClass.Armor) and (subclassID == Enum.ItemArmorSubclass.Shield);
+		return isWeapon or isShield;
+	end
+
+	return true;
+end
+
 function MerchantFrame_ConfirmExtendedItemCost(itemButton, numToPurchase)
 	local index = itemButton:GetID();
 	local itemsString;
@@ -766,7 +778,7 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, numToPurchase)
 	popupData.count = numToPurchase;
 
 	local specText;
-	if (specs and #specs > 0) then
+	if (ShouldAppendSpecText(itemButton.link) and specs and #specs > 0) then
 		specText = "\n\n";
 		for i=1, #specs do
 			local specID, specName, specDesc, specIcon = GetSpecializationInfoByID(specs[i], UnitSex("player"));

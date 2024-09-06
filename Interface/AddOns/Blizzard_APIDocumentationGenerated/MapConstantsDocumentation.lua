@@ -20,9 +20,9 @@ local MapConstants =
 		{
 			Name = "UIMapFlag",
 			Type = "Enumeration",
-			NumValues = 21,
+			NumValues = 22,
 			MinValue = 1,
-			MaxValue = 1048576,
+			MaxValue = 2097152,
 			Fields =
 			{
 				{ Name = "NoHighlight", Type = "UIMapFlag", EnumValue = 1 },
@@ -46,6 +46,18 @@ local MapConstants =
 				{ Name = "ForceAllowMapLinks", Type = "UIMapFlag", EnumValue = 262144 },
 				{ Name = "DoNotShowOnNavbar", Type = "UIMapFlag", EnumValue = 524288 },
 				{ Name = "IsCityMap", Type = "UIMapFlag", EnumValue = 1048576 },
+				{ Name = "IgnoreInTranslationsToParent", Type = "UIMapFlag", EnumValue = 2097152 },
+			},
+		},
+		{
+			Name = "UIMapGroupFlag",
+			Type = "Enumeration",
+			NumValues = 1,
+			MinValue = 1,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "ShowIconsAcrossFloors", Type = "UIMapGroupFlag", EnumValue = 1 },
 			},
 		},
 		{

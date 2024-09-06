@@ -6,17 +6,14 @@
 
 	<Frame name="SpellBookFrameTemplate" mixin="SpellBookFrameMixin" inherits="TabSystemOwnerTemplate" virtual="true">
 		<KeyValues>
-			<KeyValue key="view1YOffset" value="-65" type="number" />
-			<KeyValue key="view1MaximizedXOffset" value="85" type="number" />
-			<KeyValue key="view1MinimizedXOffset" value="75" type="number" />
+			<KeyValue key="topBarFullWidth" value="1614" type="number" />
 		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture parentKey="TopBar" atlas="spellbook-background-evergreen-header">
-					<Size y="54"/>
+					<Size x="1612" y="54"/>
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
-						<Anchor point="TOPRIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="BookBGHalved" atlas="spellbook-background-evergreen-right" useAtlasSize="false" hidden="true" parentArray="minimizedArt">
@@ -119,7 +116,6 @@
 					<Frame parentKey="View1" inherits="StaticGridLayoutFrame" parentArray="ViewFrames">
 						<Size x="680" y="650"/>
 						<Anchors>
-							<!-- These offsets update dynamically when switching in/out of minimized mode, see KeyValuePairs at top level frame -->
 							<Anchor point="TOPLEFT" x="85" y="-65" />
 						</Anchors>
 					</Frame>

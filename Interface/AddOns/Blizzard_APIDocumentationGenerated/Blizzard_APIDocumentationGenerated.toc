@@ -219,6 +219,7 @@ TradeInfoDocumentation.lua
 TrainerDocumentation.lua
 TraitConfigDocumentation.lua
 TransmogDocumentation.lua
+TransmogItemsDocumentation.lua
 TutorialDocumentation.lua
 UIColorDocumentation.lua
 UIEventToastManagerDocumentation.lua
@@ -309,8 +310,8 @@ SplashScreenDocumentation.lua
 SuperTrackManagerDocumentation.lua
 SystemDocumentation.lua
 TalkingHeadDocumentation.lua
+TimerunningUIDocumentation.lua
 TradeSkillUIDocumentation.lua
-TransmogItemsDocumentation.lua
 TransmogSetsDocumentation.lua
 UIFrameManagerDocumentation.lua
 UIModifiedInstanceDocumentation.lua
@@ -322,6 +323,7 @@ AccountConstantsDocumentation.lua
 ActionDocumentation.lua
 AppearanceSourceDocumentation.lua
 ArrowCalloutConstantsDocumentation.lua
+AuctionHouseConstantsDocumentation.lua
 AuctionHouseEnumsDocumentation.lua
 AzeriteConstantsDocumentation.lua
 BagConstantsDocumentation.lua
@@ -352,6 +354,7 @@ GARRISON_FOLLOWER_TYPEConstantsDocumentation.lua
 GARRISON_TYPEConstantsDocumentation.lua
 GameEnvironmentConstantsDocumentation.lua
 GamePadConstDocumentation.lua
+GameRulesConstantsDocumentation.lua
 GarrisonConstantsDocumentation.lua
 GossipConstantsDocumentation.lua
 GuildInfoSharedDocumentation.lua
@@ -385,6 +388,7 @@ ProfessionConstantsDocumentation.lua
 PvPFactionConstantsDocumentation.lua
 PvpInfoConstantsDocumentation.lua
 QuestConstantsDocumentation.lua
+QuestInfoSharedDocumentation.lua
 QuestRewardsDocumentation.lua
 QuestSessionConstantsDocumentation.lua
 QueueSpecificDocumentation.lua
@@ -401,6 +405,7 @@ SpellBookConstantsDocumentation.lua
 SpellSharedDocumentation.lua
 TextureSharedDocumentation.lua
 TimeDocumentation.lua
+TimerConstantsDocumentation.lua
 TimerunningConstantsDocumentation.lua
 TooltipConstantsDocumentation.lua
 TooltipInfoSharedDocumentation.lua
@@ -421,7 +426,6 @@ ValidateNameConstantsDocumentation.lua
 VectorSharedDocumentation.lua
 VignetteConstantsDocumentation.lua
 WeeklyRewardsSharedDocumentation.lua
-AuctionHouseConstants_MainlineDocumentation.lua
 ClickBindingsConstantsDocumentation.lua
 CovenantCallingsConstantsDocumentation.lua
 CovenantSanctumConstantsDocumentation.lua

@@ -1,7 +1,7 @@
 ## Title: Blizzard_ChatFrameBase
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_UIMenu, Blizzard_AutoComplete, Blizzard_Settings_Shared, Blizzard_TimerunningUtil
+## Dependencies: Blizzard_AutoComplete, Blizzard_Settings_Shared, Blizzard_TimerunningUtil
 ## OptionalDeps: Blizzard_GlueStubs, Blizzard_EditMode
 ## AllowLoad: both
 ## AllowLoadGameType: mainline

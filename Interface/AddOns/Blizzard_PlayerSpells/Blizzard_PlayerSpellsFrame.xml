@@ -53,7 +53,7 @@
 				</KeyValues>
 				<Size x="1612" y="856"/>
 				<Anchors>
-					<Anchor point="BOTTOM" x="0" y="4"/>
+					<Anchor point="BOTTOMLEFT" x="0" y="4"/>
 				</Anchors>
 			</Frame>
 		</Frames>

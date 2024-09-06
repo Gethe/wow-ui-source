@@ -12,18 +12,44 @@ function CharacterSelectUIMixin:OnLoad()
 	self.ClampedHeightTopPercent = 0.8;
 	self.ClampedHeightBottomPercent = 0.2;
 	self.DoubleClickThreshold = 0.3;
-	self.ListToggle:SetExpandTarget(self.CharacterList);
+	self.TooltipTimerDuration = 0.5;
+
+	local function OnToggleCallback(isExpanded, isUserInput)
+		if isUserInput then
+			SetCVar("expandWarbandCharacterList", isExpanded);
+		end
+	end
+	self.VisibilityFramesContainer.ListToggle:SetExpandTarget(self.VisibilityFramesContainer.CharacterList);
+	self.VisibilityFramesContainer.ListToggle:SetOnToggleCallback(OnToggleCallback);
 
 	local function MapFadeInOnFinished()
 		self.FadeInBackground:Hide();
 		self:SetupCharacterOverlayFrames();
 	end
-
 	self.MapFadeIn:SetScript("OnFinished", MapFadeInOnFinished);
+
+	self.inVisibilityDoubleClickThreshold = false;
+	self.visibilityState = true;
+	local function VisibilityToggleOnClick()
+		local visibilityState = not self.VisibilityFramesContainer:IsShown();
+
+		self.visibilityState = visibilityState;
+
+		self.VisibilityFramesContainer:SetShown(visibilityState);
+
+		local buttonArtKit = visibilityState and "128-redbutton-visibilityon" or "128-redbutton-visibilityoff";
+		self.VisibilityToggleButton:SetButtonArtKit(buttonArtKit);
+
+		self.VisibilityToggleButton:SetShown(visibilityState);
+
+		CharacterSelect_UpdateLogo();
+		SetCharacterSelectUIVisibilityState(visibilityState);
+	end
+	self.VisibilityToggleButton:SetScript("OnClick", VisibilityToggleOnClick);
 
 	self.LoadedOverlayFrameCharacterIDs = {};
 	self.CharacterHeaderFramePool = CreateFramePool("BUTTON", self, "CharacterHeaderFrameTemplate", nil);
-	self.CharacterFooterFramePool = CreateFramePool("FRAME", self, "CharacterFooterFrameTemplate", nil);
+	self.CharacterFooterFramePool = CreateFramePool("FRAME", self.VisibilityFramesContainer, "CharacterFooterFrameTemplate", nil);
 
 	self.loadedMapManifest = nil;
 
@@ -42,6 +68,7 @@ function CharacterSelectUIMixin:OnLoad()
 	self:RegisterEvent("CHARACTER_LIST_RESTRICTIONS_RECEIVED");
 	self:RegisterEvent("CHARACTER_LIST_MAIL_RECEIVED");
 	self:RegisterEvent("ACCOUNT_CONVERSION_DISPLAY_STATE");
+	self:RegisterEvent("ACCOUNT_CVARS_LOADED");
 end
 
 function CharacterSelectUIMixin:OnEvent(event, ...)
@@ -60,7 +87,9 @@ function CharacterSelectUIMixin:OnEvent(event, ...)
 		-- Trigger any updates on the character model UI
 		for headerFrame in self.CharacterHeaderFramePool:EnumerateActive() do
 			if headerFrame.basicCharacterInfo and headerFrame.basicCharacterInfo.guid == guid then
-				headerFrame:SetTooltipAndShow();
+				self.tooltipTimer = C_Timer.NewTimer(self.TooltipTimerDuration, function()
+					headerFrame:SetTooltipAndShow();
+				end);
 				break;
 			end
 		end
@@ -73,6 +102,10 @@ function CharacterSelectUIMixin:OnEvent(event, ...)
 
 		self.currentMapSceneHoverGUID = nil;
 
+		if self.tooltipTimer then
+			self.tooltipTimer:Cancel();
+			self.tooltipTimer = nil;
+		end
 		GlueTooltip:Hide();
 
 		-- Trigger any updates on the character list entry, if visible.
@@ -102,6 +135,9 @@ function CharacterSelectUIMixin:OnEvent(event, ...)
 				GlueDialog_Show("RETRIEVING_CHARACTER_LIST");
 			end
 		end
+	elseif event == "ACCOUNT_CVARS_LOADED" then
+		local isExpanded = GetCVarBool("expandWarbandCharacterList");
+		self:ExpandCharacterList(isExpanded);
 	end
 end
 
@@ -132,8 +168,9 @@ function CharacterSelectUIMixin:OnMouseUp(button)
         self.RotationStartX = nil
     end
 
+	-- Character model selection logic.
 	if self.mouseDownMapSceneHoverGUID and self.mouseDownMapSceneHoverGUID == self.currentMapSceneHoverGUID then
-		local isDoubleClick = self.doubleClickHoverGUID and self.doubleClickHoverGUID == self.currentMapSceneHoverGUID;
+		local isCharacterDoubleClick = self.doubleClickHoverGUID and self.doubleClickHoverGUID == self.currentMapSceneHoverGUID;
 		if not self.doubleClickHoverGUID then
 			C_Timer.After(self.DoubleClickThreshold, function()
 				self.doubleClickHoverGUID = nil;
@@ -141,19 +178,36 @@ function CharacterSelectUIMixin:OnMouseUp(button)
 			self.doubleClickHoverGUID = self.currentMapSceneHoverGUID;
 		end
 
-		CharacterSelectListUtil.ClickCharacterFrameByGUID(self.mouseDownMapSceneHoverGUID, isDoubleClick);
+		CharacterSelectListUtil.ClickCharacterFrameByGUID(self.mouseDownMapSceneHoverGUID, isCharacterDoubleClick);
 	end
 	self.mouseDownMapSceneHoverGUID = nil;
+
+	-- Visibility toggle logic.
+	if self:GetVisibilityState() then
+		return;
+	end
+
+	local isVisibilityDoubleClick = self.inVisibilityDoubleClickThreshold;
+	if not self.inVisibilityDoubleClickThreshold then
+		C_Timer.After(self.DoubleClickThreshold, function()
+			self.inVisibilityDoubleClickThreshold = false;
+		end);
+		self.inVisibilityDoubleClickThreshold = true;
+	end
+
+	if isVisibilityDoubleClick then
+		self:ToggleVisibilityButtonState();
+		self.inVisibilityDoubleClickThreshold = false;
+	end
 end
 
-function CharacterSelectUIMixin:ExpandCharacterList()
-	local isExpanded = true;
+function CharacterSelectUIMixin:ExpandCharacterList(isExpanded)
 	local isUserInput = false;
-	self.ListToggle:SetExpanded(isExpanded, isUserInput);
+	self.VisibilityFramesContainer.ListToggle:SetExpanded(isExpanded, isUserInput);
 end
 
 function CharacterSelectUIMixin:SetCharacterListToggleEnabled(isEnabled)
-	self.ListToggle:SetEnabledState(isEnabled);
+	self.VisibilityFramesContainer.ListToggle:SetEnabledState(isEnabled);
 end
 
 function CharacterSelectUIMixin:SetCharacterDisplay(selectedCharacterID)
@@ -327,7 +381,7 @@ end
 
 function CharacterSelectUIMixin:SetStoreEnabled(enabled)
 	self.shouldStoreBeEnabled = enabled;
-	self.NavBar:SetStoreButtonEnabled(enabled);
+	self.VisibilityFramesContainer.NavBar:SetStoreButtonEnabled(enabled);
 
 	if GlueMenuFrame:IsShown() then
 		GlueMenuFrame:InitButtons();
@@ -343,11 +397,29 @@ function CharacterSelectUIMixin:ShouldStoreBeEnabled()
 end
 
 function CharacterSelectUIMixin:SetMenuEnabled(enabled)
-	self.NavBar:SetMenuButtonEnabled(enabled);
+	self.VisibilityFramesContainer.NavBar:SetMenuButtonEnabled(enabled);
 end
 
 function CharacterSelectUIMixin:SetChangeRealmEnabled(enabled)
-	self.NavBar:SetRealmsButtonEnabled(enabled);
+	self.VisibilityFramesContainer.NavBar:SetRealmsButtonEnabled(enabled);
+end
+
+function CharacterSelectUIMixin:GetVisibilityState()
+	return self.visibilityState;
+end
+
+function CharacterSelectUIMixin:ToggleVisibilityState()
+	self.VisibilityToggleButton:Click();
+end
+
+function CharacterSelectUIMixin:ToggleVisibilityButtonState()
+	self.VisibilityToggleButton:SetShown(not self.VisibilityToggleButton:IsShown());
+end
+
+function CharacterSelectUIMixin:ResetVisibilityState()
+	if not self:GetVisibilityState() then
+		self:ToggleVisibilityState();
+	end
 end
 
 
@@ -400,7 +472,9 @@ function CharacterSelectHeaderMixin:OnEnter()
 		return;
 	end
 
-	self:SetTooltipAndShow();
+	self.tooltipTimer = C_Timer.NewTimer(CharacterSelectUI.TooltipTimerDuration, function()
+		self:SetTooltipAndShow();
+	end);
 
 	-- Trigger any updates on the character list entry, if visible.
 	local isHighlight = true;
@@ -415,6 +489,10 @@ function CharacterSelectHeaderMixin:OnLeave()
 		return;
 	end
 
+	if self.tooltipTimer then
+		self.tooltipTimer:Cancel();
+		self.tooltipTimer = nil;
+	end
 	GlueTooltip:Hide();
 
 	-- Trigger any updates on the character list entry, if visible.
@@ -441,6 +519,13 @@ function CharacterSelectHeaderMixin:OnDoubleClick()
 
 	local isDoubleClick = true;
 	CharacterSelectListUtil.ClickCharacterFrameByGUID(self.basicCharacterInfo.guid, isDoubleClick);
+
+	-- Visibility toggle logic.
+	if CharacterSelectUI:GetVisibilityState() then
+		return;
+	end
+
+	CharacterSelectUI:ToggleVisibilityButtonState();
 end
 
 function CharacterSelectHeaderMixin:Initialize(characterID)
@@ -467,7 +552,7 @@ function CharacterSelectHeaderMixin:Initialize(characterID)
 end
 
 function CharacterSelectHeaderMixin:SetTooltipAndShow()
-	if not self.basicCharacterInfo then
+	if not self.basicCharacterInfo or not CharacterSelectUI:GetVisibilityState() then
 		return;
 	end
 

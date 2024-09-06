@@ -183,7 +183,7 @@ local CraftingOrderUIShared =
 			{
 				{ Name = "itemLink", Type = "string", Nilable = true },
 				{ Name = "currencyType", Type = "number", Nilable = true },
-				{ Name = "currencyAmount", Type = "number", Nilable = true },
+				{ Name = "count", Type = "number", Nilable = false },
 			},
 		},
 		{

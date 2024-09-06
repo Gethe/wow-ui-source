@@ -236,6 +236,11 @@ function ScrollUtil.InitScrollFrameWithScrollBar(scrollFrame, scrollBar)
 	scrollBar:RegisterCallback(BaseScrollBoxEvents.OnScroll, onScrollBarScroll, scrollFrame);
 end
 
+function ScrollUtil.EnableSnapToInterval(scrollBox, scrollBar)
+	scrollBox:EnableSnapToInterval();
+	scrollBar:EnableSnapToInterval();
+end
+
 -- Utility for managing the visibility of a ScrollBar and reanchoring of the
 -- ScrollBox as the visibility changes.
 ManagedScrollBarVisibilityBehaviorMixin = CreateFromMixins(CallbackRegistryMixin);
@@ -476,8 +481,12 @@ function SelectionBehaviorMixin:SelectOffsetElementData(offset, predicate)
 	end
 end
 
+local function SecureSelectElementData(behavior, elementData)
+	behavior:SetElementDataSelected_Internal(elementData, true);
+end
+
 function SelectionBehaviorMixin:SelectElementData(elementData)
-	self:SetElementDataSelected_Internal(elementData, true);
+	securecallfunction(SecureSelectElementData, self, elementData);
 end
 
 function SelectionBehaviorMixin:SelectElementDataByPredicate(predicate)
