@@ -194,7 +194,7 @@ function SpellBookItemMixin:UpdateVisuals()
 	else
 		self.SubName:SetText("");
 		if self.spellBookItemInfo.spellID then
-			local spell = Spell:CreateFromSpellID(spellID);
+			local spell = Spell:CreateFromSpellID(self.spellBookItemInfo.spellID);
 			self.cancelSpellLoadCallback = spell:ContinueWithCancelOnSpellLoad(function()
 				local spellSubName = spell:GetSpellSubtext();
 				self:UpdateSubName(spellSubName);
@@ -430,8 +430,8 @@ function SpellBookItemMixin:UpdateGlyphState(isActivationStart)
 		hasGlyph = not self.activeGlyphCast.isRemoval;
 	-- Otherwise get current glyph state normally
 	elseif self.spellBookItemInfo.itemType == Enum.SpellBookItemType.Spell and not self.isOffSpec then
-		hasGlyph = HasAttachedGlyph(self.spellBookItemInfo.spellID);
-		isValidForPendingGlyph = IsSpellValidForPendingGlyph(self.spellBookItemInfo.spellID);
+		hasGlyph = HasAttachedGlyph(self.spellBookItemInfo.actionID);
+		isValidForPendingGlyph = IsSpellValidForPendingGlyph(self.spellBookItemInfo.actionID);
 	end
 
 	self.Button.GlyphIcon:SetShown(hasGlyph);
@@ -462,8 +462,8 @@ function SpellBookItemMixin:UpdateClickBindState()
 	self.inClickBindMode = InClickBindingMode();
 	self.canClickBind = false;
 
-	if self.inClickBindMode and self.spellBookItemInfo.spellID and not self.isUnlearned then
-		self.canClickBind = C_ClickBindings.CanSpellBeClickBound(self.spellBookItemInfo.spellID);
+	if self.inClickBindMode and self.spellBookItemInfo.actionID and not self.isUnlearned then
+		self.canClickBind = C_ClickBindings.CanSpellBeClickBound(self.spellBookItemInfo.actionID);
 	end
 
 	self.Button.ClickBindingHighlight:SetShown(self.canClickBind and ClickBindingFrame:HasEmptySlot());
@@ -567,14 +567,14 @@ function SpellBookItemMixin:OnIconClick(button)
 	-- If using a glyph or vanishing powder, handle trying to apply glyph
 	elseif HasPendingGlyphCast() and self.spellBank == Enum.SpellBookSpellBank.Player then
 		if itemType == Enum.SpellBookItemType.Spell and not self.isOffSpec then
-			if HasAttachedGlyph(spellID) then
+			if HasAttachedGlyph(actionID) then
 				if IsPendingGlyphRemoval() then
-					StaticPopup_Show("CONFIRM_GLYPH_REMOVAL", nil, nil, {name = GetCurrentGlyphNameForSpell(spellID), id = spellID});
+					StaticPopup_Show("CONFIRM_GLYPH_REMOVAL", nil, nil, {name = GetCurrentGlyphNameForSpell(actionID), id = actionID});
 				else
-					StaticPopup_Show("CONFIRM_GLYPH_PLACEMENT", nil, nil, {name = GetPendingGlyphName(), currentName = GetCurrentGlyphNameForSpell(spellID), id = spellID});
+					StaticPopup_Show("CONFIRM_GLYPH_PLACEMENT", nil, nil, {name = GetPendingGlyphName(), currentName = GetCurrentGlyphNameForSpell(actionID), id = actionID});
 				end
 			else
-				AttachGlyphToSpell(spellID);
+				AttachGlyphToSpell(actionID);
 			end
 		elseif itemType == Enum.SpellBookItemType.Flyout then
 			self:ToggleFlyout(nil);

@@ -12,7 +12,7 @@ local ClickBindings =
 
 			Arguments =
 			{
-				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false, Documentation = { "Base spellID for spell, spellID for PetAction" } },
 			},
 
 			Returns =
