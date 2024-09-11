@@ -54,10 +54,10 @@ do
 			return;
 		end
 	
-		for index, focus in ipairs(GetMouseFoci()) do
-			if not HandlesGlobalMouseEvent(focus, buttonName) then
-				manager:HandleGlobalMouseEvent(buttonName, event);
-			end
+		-- Only interested in the top focus.
+		local foci = GetMouseFoci();
+		if not HandlesGlobalMouseEvent(foci[1], buttonName) then
+			manager:HandleGlobalMouseEvent(buttonName, event);
 		end
 	end);
 end

@@ -1919,8 +1919,7 @@ function FriendsFriendsFrameMixin:OnShow()
 	
 	local function SetSelected(value)
 		FriendsFriendsFrame.view = value;
-		FriendsFriends_SetSelection(nil);
-		FriendsFriendsFrame:Update();
+		FriendsFriendsList_Update();
 	end;
 
 	self.FriendsDropdown:SetupMenu(function(dropdown, rootDescription)

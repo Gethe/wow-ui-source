@@ -413,7 +413,7 @@ SECURE_ACTIONS.macro =
             local text =
                 SecureButton_GetModifiedAttribute(self, "macrotext", button);
             if ( text ) then
-                RunMacroText(text, button);
+                C_Macro.RunMacroText(text, button);
             end
         end
     end;
