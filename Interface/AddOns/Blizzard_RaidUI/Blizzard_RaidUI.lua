@@ -1255,8 +1255,18 @@ function RaidPulloutFrameTemplate_CreateContextMenu(self)
 
 		rootDescription:CreateRadio(SHOW_TARGET, IsPulloutKeySelected, SetPulloutKeySelected, "showTarget");
 		
+		local function IsShowTargetTargetSelected()
+			return self.showTargetTarget;
+		end
+
+		local function SetShowTargetTargetSelected()
+			self.showTargetTarget = (self.showTargetTarget == nil) and 1 or nil;
+			RaidPullout_Update(self);
+			RaidPullout_SaveFrames(self);
+		end
+
 		if self.showTarget == 1 then
-			rootDescription:CreateRadio(SHOW_TARGET_OF_TARGET_TEXT, IsPulloutKeySelected, SetShowTargetChecked, "showTargetTarget");
+			rootDescription:CreateRadio(SHOW_TARGET_OF_TARGET_TEXT, IsShowTargetTargetSelected, SetShowTargetTargetSelected, "showTargetTarget");
 		end
 
 		local function IsShowBuffsSelected()
@@ -1264,9 +1274,9 @@ function RaidPulloutFrameTemplate_CreateContextMenu(self)
 		end
 
 		local function SetShowBuffsSelected()
-			currentPullout.showBuffs = 1;
-			RaidPullout_Update(currentPullout);
-			RaidPullout_SaveFrames(currentPullout);
+			self.showBuffs = 1;
+			RaidPullout_Update(self);
+			RaidPullout_SaveFrames(self);
 		end
 
 		-- Show buffs or debuffs they are exclusive for now
@@ -1277,13 +1287,13 @@ function RaidPulloutFrameTemplate_CreateContextMenu(self)
 		end
 
 		local function SetShowDebuffsSelected()
-			currentPullout.showBuffs = nil;
-			RaidPullout_Update(currentPullout);
-			RaidPullout_SaveFrames(currentPullout);
+			self.showBuffs = nil;
+			RaidPullout_Update(self);
+			RaidPullout_SaveFrames(self);
 		end
 		rootDescription:CreateRadio(SHOW_DEBUFFS, IsShowDebuffsSelected, SetShowDebuffsSelected);
 
-		local backdrop = _G[currentPullout:GetName().."MenuBackdrop"];
+		local backdrop = _G[self:GetName().."MenuBackdrop"];
 
 		local function IsHidePulloutBgSelected()
 			return not backdrop:IsShown();

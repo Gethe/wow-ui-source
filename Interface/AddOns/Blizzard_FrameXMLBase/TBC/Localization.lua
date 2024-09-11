@@ -44,10 +44,6 @@ local l10nTable = {
 		localizeFrames = function()
 			local point, relativeTo, relativePoint, xOfs, yOfs;
 
-			-- Player Frame
-			point, relativeTo, relativePoint, xOfs, yOfs = PlayerFrameHealthBarText:GetPoint();
-			PlayerFrameHealthBarText:SetPoint(point, relativeTo, relativePoint, 50, 3);
-
 			-- Pet Frame
 			PetFrameHealthBarText:SetPoint("CENTER", PetFrameHealthBarText:GetParent(), "TOPLEFT", 81, -26);
 			PetFrameManaBarText:SetPoint("CENTER", PetFrameManaBarText:GetParent(), "TOPLEFT", 81, -35);
@@ -93,10 +89,6 @@ local l10nTable = {
 
 			local point, relativeTo, relativePoint, xOfs, yOfs;
 
-			-- Player Frame
-			point, relativeTo, relativePoint, xOfs, yOfs = PlayerFrameHealthBarText:GetPoint();
-			PlayerFrameHealthBarText:SetPoint(point, relativeTo, relativePoint, 50, 3);
-
 			-- Pet Frame
 			PetFrameHealthBarText:SetPoint("CENTER", PetFrameHealthBarText:GetParent(), "TOPLEFT", 82, -26);
 			PetFrameManaBarText:SetPoint("CENTER", PetFrameManaBarText:GetParent(), "TOPLEFT", 82, -34);
@@ -124,24 +116,12 @@ local l10nTable = {
 
 			local point, relativeTo, relativePoint, xOfs, yOfs;
 
-			-- Player Frame
-			point, relativeTo, relativePoint, xOfs, yOfs = PlayerFrameHealthBarText:GetPoint();
-			PlayerFrameHealthBarText:SetPoint(point, relativeTo, relativePoint, 50, 3);
-
 			-- Pet Frame
 			PetFrameHealthBarText:SetPoint("CENTER", PetFrameHealthBarText:GetParent(), "TOPLEFT", 82, -25);
 			PetFrameManaBarText:SetPoint("CENTER", PetFrameManaBarText:GetParent(), "TOPLEFT", 82, -36);
 
 			-- Trade Frame
 			TradeFramePlayerEnchantText:SetPoint("TOPLEFT", TradeFrame, 26, -371);
-
-			-- Video options
-			Advanced_UIScaleSliderLow:SetText(SMALL);
-			Advanced_UIScaleSliderHigh:SetText(LARGE);
-
-			-- Audio options
-			AudioOptionsSoundPanelSoundChannelsDropdownLabel:SetPoint("BOTTOM",  AudioOptionsSoundPanelSoundChannelsDropdown, "TOP", 0, 0);
-			AudioOptionsSoundPanelHardwareDropdownLabel:SetPoint("BOTTOM",  AudioOptionsSoundPanelHardwareDropdown, "TOP", 0, 1);
 
 			MIN_CHARACTER_SEARCH = 1;
 
