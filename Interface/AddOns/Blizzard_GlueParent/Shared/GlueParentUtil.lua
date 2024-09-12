@@ -29,7 +29,13 @@ end
 function GlueParentBlockingFrame_OnKeyDown(self, key)
 	if key == "ESCAPE" then
 		local frame = modalFrames[#modalFrames];
-		frame:Hide();
+		local continueHide = true;
+		if frame.onCloseCallback then
+			continueHide = frame.onCloseCallback(self);
+		end
+		if continueHide then
+			frame:Hide();
+		end
 	elseif key == "PRINTSCREEN" then
 		Screenshot();
 	end

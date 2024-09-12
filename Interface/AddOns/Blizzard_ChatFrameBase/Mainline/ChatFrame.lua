@@ -735,7 +735,7 @@ EMOTE627_TOKEN = "QUACK"
 -- NOTE: The indices used to iterate the tokens may not be contiguous, keep that in mind when updating this value.
 MAXEMOTEINDEX = 627;
 
-if not IsOnGlueScreen() then
+if not C_Glue.IsOnGlueScreen() then
 	table.sort(EmoteList, TextEmoteSort);
 	table.sort(TextEmoteSpeechList, TextEmoteSort);
 end
@@ -1836,7 +1836,7 @@ SecureCmdList["GUILD_DISBAND"] = function(msg)
 	end
 end
 
-if not IsOnGlueScreen() then
+if not C_Glue.IsOnGlueScreen() then
 	local function CleanupPingTypeString(pingTypeString)
 		local cleanString = pingTypeString:gsub("%s+", "");
 		cleanString = strupper(cleanString);
@@ -3287,7 +3287,7 @@ local function IsMacroEditBox(editBox)
 end
 
 -- Set up a private editbox to handle macro execution
-if not IsOnGlueScreen() then
+if not C_Glue.IsOnGlueScreen() then
 	local function GetDefaultChatEditBox(field)
 		return DEFAULT_CHAT_FRAME.editBox;
 	end
@@ -3401,7 +3401,7 @@ function ChatFrame_UpdateDefaultChatTarget(self)
 end
 
 function ChatFrame_ConfigEventHandler(self, event, ...)
-	if IsOnGlueScreen() and not C_GameRules.IsGameRuleActive(Enum.GameRule.FrontEndChat) then
+	if C_Glue.IsOnGlueScreen() and not C_GameRules.IsGameRuleActive(Enum.GameRule.FrontEndChat) then
 		return;
 	end
 
@@ -3447,7 +3447,7 @@ function ChatFrame_ConfigEventHandler(self, event, ...)
 
 		ChatFrame_UpdateDefaultChatTarget(self);
 
-		if not IsOnGlueScreen() then
+		if not C_Glue.IsOnGlueScreen() then
 			-- GMOTD may have arrived before this frame registered for the event
 			if ( not self.checkedGMOTD and self:IsEventRegistered("GUILD_MOTD") ) then
 				self.checkedGMOTD = true;
@@ -3670,7 +3670,7 @@ function ChatFrame_CanChatGroupPerformExpressionExpansion(chatGroup)
 end
 
 function DoesActivePlayerHaveMentorStatus()
-	if IsOnGlueScreen() then
+	if C_Glue.IsOnGlueScreen() then
 		return false;
 	end
 
@@ -3678,7 +3678,7 @@ function DoesActivePlayerHaveMentorStatus()
 end
 
 function IsActivePlayerGuide()
-	if IsOnGlueScreen() then
+	if C_Glue.IsOnGlueScreen() then
 		return false;
 	end
 
@@ -3686,7 +3686,7 @@ function IsActivePlayerGuide()
 end
 
 function IsActivePlayerNewcomer()
-	if IsOnGlueScreen() then
+	if C_Glue.IsOnGlueScreen() then
 		return false;
 	end
 
@@ -4231,7 +4231,7 @@ function ChatFrame_OnUpdate(self, elapsedSec)
 end
 
 function ChatFrame_OnHyperlinkShow(self, link, text, button)
-	if not IsOnGlueScreen() then
+	if not C_Glue.IsOnGlueScreen() then
 		SetItemRef(link, text, button, self);
 	end
 end
@@ -4284,7 +4284,7 @@ function ChatFrame_OpenChat(text, chatFrame, desiredCursorPosition)
 				end
 
 				local chatType = "SAY";
-				if IsOnGlueScreen() then
+				if C_Glue.IsOnGlueScreen() then
 					chatType = "PARTY";
 				elseif isInGroup then
 					chatType = "INSTANCE_CHAT";
@@ -5818,7 +5818,7 @@ function ChatFrameMenuButtonMixin:OnLoad()
 			return button;
 		end
 
-		local isOnGlueScreen = IsOnGlueScreen();
+		local isOnGlueScreen = C_Glue.IsOnGlueScreen();
 		if not isOnGlueScreen then
 			CreateButtonWithShortcut(SAY_MESSAGE, SLASH_SAY1, "SAY");
 		end

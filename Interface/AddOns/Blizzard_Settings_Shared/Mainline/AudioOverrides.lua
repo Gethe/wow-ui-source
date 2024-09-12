@@ -1,7 +1,7 @@
 AudioOverrides = {}
 
 function AudioOverrides.CreatePingSoundSettings(category, layout)
-	if not IsOnGlueScreen() then
+	if not C_Glue.IsOnGlueScreen() then
 		layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(PING_SYSTEM_LABEL));
 
 		-- Enable Ping Sounds and Ping Volume

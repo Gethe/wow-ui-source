@@ -230,7 +230,7 @@
 		<Size x="32" y="13"/>
 		<Scripts>
 			<OnEnter>
-				if not IsOnGlueScreen() then
+				if not C_Glue.IsOnGlueScreen() then
 					local tooltip = GetAppropriateTooltip();
 					tooltip:SetOwner(self, "ANCHOR_RIGHT");
 					tooltip:SetMerchantCostItem(self.index, self.item);

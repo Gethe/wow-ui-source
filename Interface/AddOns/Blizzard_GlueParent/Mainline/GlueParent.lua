@@ -557,6 +557,9 @@ end
 -- playIntroMovie CVar is set to the index of the last cinematic played.
 -- So we will play the cinematic at that index + 1 if there is one.
 function GlueParent_CheckCinematic()
+	if not C_Glue.IsFirstLoadThisSession() then
+		return;
+	end
 	local firstCinematicIndex, lastCinematicIndex = GetCinematicsIndexRangeForExpansion(LE_EXPANSION_LEVEL_CURRENT);
 	if not firstCinematicIndex or not lastCinematicIndex then
 		return;

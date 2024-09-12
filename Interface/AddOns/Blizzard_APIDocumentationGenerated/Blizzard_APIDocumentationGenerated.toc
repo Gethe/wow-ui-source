@@ -253,6 +253,7 @@ ArtifactUIDocumentation.lua
 CVarDocumentation.lua
 ChallengeModeInfoDocumentation.lua
 ChromieTimeUIDocumentation.lua
+CinematicListDocumentation.lua
 ClassColorDocumentation.lua
 ClassTalentsDocumentation.lua
 ClickBindingsDocumentation.lua

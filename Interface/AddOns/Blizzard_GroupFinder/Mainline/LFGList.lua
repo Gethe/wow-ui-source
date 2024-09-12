@@ -605,8 +605,8 @@ function LFGListCategorySelection_AddButton(self, btnIndex, categoryID, filters)
 	end
 
 	--Try with the suffix and then without it
-	if ( not button.Icon:SetAtlas(atlasName..suffix) ) then
-		button.Icon:SetAtlas(atlasName);
+	if not CheckSetAtlas(button.Icon, atlasName..suffix) then
+		CheckSetAtlas(button.Icon, atlasName);
 	end
 
 	local selected = self.selectedCategory == categoryID and self.selectedFilters == filters;

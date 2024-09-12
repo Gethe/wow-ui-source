@@ -399,6 +399,10 @@ end
 
 POIButtonMixin = {};
 
+function POIButtonMixin:IsPOIButton()
+    return true;
+end
+
 function POIButtonMixin:OnShow()
 	EventRegistry:RegisterCallback("Supertracking.OnChanged", self.OnSuperTrackingChanged, self);
 end

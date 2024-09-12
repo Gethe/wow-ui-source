@@ -788,6 +788,11 @@ function FramePositionDelegate:EvaluateAutoMinimize(frame)
 	end
 
 	setMinimizedFunc(frame, shouldBeMinimized);
+
+	-- Now that the panel's minimized state has changed, ensure any scale to fit is updated for changes in size
+	if GetUIPanelAttribute(frame, "checkFit") == 1 then
+		self:UpdateScaleForFit(frame);
+	end
 end
 
 function FramePositionDelegate:UIParentManageFramePositions()

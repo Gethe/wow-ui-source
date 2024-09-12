@@ -84,7 +84,12 @@ function DelvesDifficultyPickerFrameMixin:OnShow()
 	self.Dropdown:RegisterCallback(DropdownButtonMixin.Event.OnMenuOpen, function(dropdown)
 		local selectedOption = self:GetSelectedOption();
 		local index = selectedOption and selectedOption.orderIndex or 1;
-		dropdown.menu.ScrollBox:ScrollToElementDataIndex(index, ScrollBoxConstants.AlignBegin);
+		local scrollboxView = dropdown.menu.ScrollBox:GetView();
+
+		-- It's possible for the ScrollBox view used here (ScrollBoxListView) to have a nil DataProvider. Make sure we it is non-nil before we call ScrollToElementDataIndex.
+		if scrollboxView and scrollboxView:GetDataProvider() then
+			dropdown.menu.ScrollBox:ScrollToElementDataIndex(index, ScrollBoxConstants.AlignBegin);
+		end
 	end, self.Dropdown);
 	
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);

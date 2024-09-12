@@ -770,6 +770,8 @@ function ClubFinderOptionsMixin:OnLoad()
 	self.SortByDropdown:SetWidth(100);
 	self.SortByDropdown:SetPoint("RIGHT", self.ClubFilterDropdown, "RIGHT", 110, 0);
 
+	self.Search:SetSearchBox(self.SearchBox);
+
 	self:InitializeRoleButtons();
 	self:SetEnabledRoles();
 end
@@ -791,7 +793,7 @@ function ClubFinderOptionsMixin:CheckDisabled()
 	self.HealerRoleFrame:SetEnabled(canBeHealer and enabled);
 	self.DpsRoleFrame:SetEnabled(canBeDPS and enabled);
 	self.SearchBox:SetEnabled(enabled);
-	self.Search:SetEnabled(enabled and self.Search:ShouldBeEnabled());
+	self.Search:UpdateEnabledState();
 end
 
 function ClubFinderOptionsMixin:SetType(isGuildType)
@@ -993,13 +995,23 @@ end
 
 ClubFinderSearchButtonMixin = { };
 
+function ClubFinderSearchButtonMixin:SetSearchBox(searchBox)
+	self.searchBox = searchBox;
+end
+
 function ClubFinderSearchButtonMixin:OnClick()
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	self:GetParent():OnSearchButtonClick();
 end
 
 function ClubFinderSearchButtonMixin:ShouldBeEnabled()
-	local searchTextLen = strlenutf8(self:GetParent().SearchBox:GetText());
+	-- If the editbox is disabled for any reason (e.g. C_ClubFinder.GetClubFinderDisableReason() is not nil)
+	-- the search button should also be disabled.
+	if not self.searchBox:IsEnabled() then
+		return false;
+	end
+
+	local searchTextLen = strlenutf8(self.searchBox:GetText());
 	return searchTextLen == 0 or searchTextLen >= 3;
 end
 
@@ -1019,7 +1031,8 @@ function ClubFinderSearchButtonMixin:UpdateEnabledState()
 end
 
 function ClubFinderSearchButtonMixin:UpdateTooltip()
-	if self.mouseInButton and not self:IsEnabled() then
+	-- If the editbox has been disabled don't show the tooltip instructing the player to enter a search term.
+	if self.mouseInButton and not self:IsEnabled() and self.searchBox:IsEnabled() then
 		self:ShowTooltip();
 	else
 		self:HideTooltip();

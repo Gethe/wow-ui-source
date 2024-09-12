@@ -50,6 +50,8 @@ function CharacterSelectUIMixin:OnLoad()
 	self.LoadedOverlayFrameCharacterIDs = {};
 	self.CharacterHeaderFramePool = CreateFramePool("BUTTON", self, "CharacterHeaderFrameTemplate", nil);
 	self.CharacterFooterFramePool = CreateFramePool("FRAME", self.VisibilityFramesContainer, "CharacterFooterFrameTemplate", nil);
+	self.headerFrames = {};
+	self.footerFrames = {};
 
 	self.loadedMapManifest = nil;
 
@@ -330,6 +332,8 @@ end
 function CharacterSelectUIMixin:ReleaseCharacterOverlayFrames()
 	self.CharacterHeaderFramePool:ReleaseAll();
 	self.CharacterFooterFramePool:ReleaseAll();
+	self.headerFrames = {};
+	self.footerFrames = {};
 end
 
 function CharacterSelectUIMixin:SetupOverlayFrameForCharacter(characterID)
@@ -354,20 +358,54 @@ function CharacterSelectUIMixin:SetupOverlayFrameForCharacter(characterID)
 	local clampedTopY = math.min(topPoint2D.y, clampedHeightTop);
 	local clampedBottomY = math.max(bottomPoint2D.y, clampedHeightBottom);
 
-	-- Create and place the overlay frames.
-	local headerFrame = self.CharacterHeaderFramePool:Acquire();
+	-- Do not create overlay frames if the position is off screen (can happen when initially loading things up, before the MapSceneModelLoaded callback)
+	if topPoint2D.x < 0 or topPoint2D.x > width or topPoint2D.y < 0 or topPoint2D.y > height then
+		return;
+	end
 
+	-- Create and place the overlay frames.
+	local characterGuid = GetCharacterGUID(characterID);
+	local headersToRelease = {};
+	for _, header in ipairs(self.headerFrames) do
+		if header.basicCharacterInfo.guid == characterGuid then
+			table.insert(headersToRelease, header);
+		end
+	end
+
+	for _, header in ipairs(headersToRelease) do
+		self.CharacterHeaderFramePool:Release(header);
+		local index = tIndexOf(self.headerFrames, header);
+		table.remove(self.headerFrames, index);
+	end
+
+	local headerFrame = self.CharacterHeaderFramePool:Acquire();
 	headerFrame:ClearAllPoints();
 	headerFrame:SetPoint("BOTTOM", self, "BOTTOMLEFT", topPoint2D.x, clampedTopY);
 	headerFrame:Initialize(characterID);
 	headerFrame:Show();
+	table.insert(self.headerFrames, headerFrame);
 
 	if characterID == selectedCharacterID then
+		local footersToRelease = {};
+		for _, footer in ipairs(self.footerFrames) do
+			if footer.characterGuid == characterGuid then
+				table.insert(footersToRelease, footer);
+			end
+		end
+
+		for _, footer in ipairs(footersToRelease) do
+			self.CharacterFooterFramePool:Release(footer);
+			local index = tIndexOf(self.footerFrames, footer);
+			table.remove(self.footerFrames, index);
+		end
+
 		local footerFrame = self.CharacterFooterFramePool:Acquire();
 		footerFrame:ClearAllPoints();
 
 		footerFrame:SetPoint("TOP", self, "BOTTOMLEFT", bottomPoint2D.x, clampedBottomY);
+		footerFrame.characterGuid = characterGuid;
 		footerFrame:Show();
+		table.insert(self.footerFrames, footerFrame);
 	end
 end
 

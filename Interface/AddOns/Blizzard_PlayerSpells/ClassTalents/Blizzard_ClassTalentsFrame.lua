@@ -1250,6 +1250,9 @@ function ClassTalentsFrameMixin:UpdateConfigButtonsState()
 	if self.heroSpecSelectionDialog:IsActive() then
 		-- If Hero Spec Selection is up, have it update its "Apply Changes" shortcut button and find out whether it's currently displaying it
 		isHeroSpecApplyButtonShowing = self.heroSpecSelectionDialog:UpdateApplyButtons(anyChangesPending, canApplyChanges);
+
+		-- Changes to the config buttons may also result in changes to the hero spec activate button.
+		self.heroSpecSelectionDialog:UpdateActivateButtons();
 	end
 
 	self.ApplyButton:SetEnabled(canApplyChanges);

@@ -112,10 +112,10 @@ function MacroPopupFrameMixin:OkayButton_OnClick()
 		index = EditMacro(actualIndex, text, iconTexture) - macroFrame.macroBase;
 	end
 
-	macroFrame:SelectMacro(index);
+	local scrollToSelected = true;
+	macroFrame:SelectMacro(index, scrollToSelected);
 
-	local retainScrollPosition = true;
-	macroFrame:Update(retainScrollPosition);
+	macroFrame:Update();
 end
 
 function MacroPopupFrameMixin:GetMacroFrame()

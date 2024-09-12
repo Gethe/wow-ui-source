@@ -63,6 +63,14 @@ local function UnseenCuriosAcknowledged()
     return DelvesCompanionConfigurationFrame.unseenCuriosAcknowledged;
 end
 
+local function ConfigChangeAllowed()
+    local _, _, distance = ClosestUnitPosition(DELVES_SUPPLIES_CREATURE_ID);
+    local delveInProgress = C_PartyInfo.IsDelveInProgress();
+    local playerMustInteractWithSupplies = delveInProgress and distance > DELVES_SUPPLIES_MAX_DISTANCE;
+
+    return not UnitAffectingCombat("player") and not playerMustInteractWithSupplies;
+end
+
 --[[ Config Frame ]]
 DelvesCompanionConfigurationFrameMixin = {};
 
@@ -585,6 +593,13 @@ end
 CompanionConfigListButtonMixin = {};
 
 function CompanionConfigListButtonMixin:OnClick()
+    local optionsList = self:GetParent():GetParent():GetParent();
+
+    if not ConfigChangeAllowed() then
+        optionsList:Hide();
+        return;
+    end
+
     if IsModifiedClick("CHATLINK") and self.data and self.data.spellID and self.data.entryID and self.data.configID then
         local entryInfo = C_Traits.GetEntryInfo(self.data.configID, self.data.entryID);
         if entryInfo then
@@ -603,7 +618,6 @@ function CompanionConfigListButtonMixin:OnClick()
         EventRegistry:TriggerEvent("CompanionConfigListButton.Commit");
     end
 
-    local optionsList = self:GetParent():GetParent():GetParent();
     optionsList:Hide();
 end
 

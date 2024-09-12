@@ -165,7 +165,7 @@
 						</MaskTexture>
 					</Layer>
 					<Layer level="OVERLAY">
-						<Texture parentKey="IconBorder" atlas="delves-dashboard-bar-reward-border-disabled" useAtlasSize="false">
+						<Texture parentKey="IconBorder" atlas="delves-dashboard-bar-reward-border" useAtlasSize="false">
 							<Size x="56" y="56"/>
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>

@@ -23,7 +23,7 @@ local sortFunc = function(lhs, rhs)
 end
 
 function DebugBarManager:GetScreenScale()
-	if IsOnGlueScreen() then
+	if C_Glue.IsOnGlueScreen() then
 		return PixelUtil.GetPixelToUIUnitFactor();
 	else
 		return UIParent:GetScale();
@@ -104,7 +104,7 @@ do
 		EventRegistry:RegisterCallback("UI_SCALE_CHANGED", DebugBarManager.UpdateAnchors, DebugBarManager);
 		EventRegistry:RegisterFrameEvent("DISPLAY_SIZE_CHANGED");
 		EventRegistry:RegisterCallback("DISPLAY_SIZE_CHANGED", DebugBarManager.UpdateAnchors, DebugBarManager);
-		if IsOnGlueScreen() then
+		if C_Glue.IsOnGlueScreen() then
 			local watcherFrame = CreateFrame("FRAME");
 			watcherFrame:SetScript("OnUpdate", function() DebugBarManager:UpdateAnchors(); end);
 		else

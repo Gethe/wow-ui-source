@@ -1787,6 +1787,8 @@ function MenuManagerMixin:RemoveMenu(menu)
 
 	self:CollapseMenusUntilLevel(menu:GetLevel());
 
+	local proxy = menu:ToProxy();
+
 	-- All scripts must be finished before the compositor flushes our keys.
 	-- Notify listeners that the menu is closing.
 	menu.menuDescription:GetMenuReleasedCallbacks():ExecuteRange(function(index, onReleased)
@@ -1804,7 +1806,6 @@ function MenuManagerMixin:RemoveMenu(menu)
 	The proxy for a menu must be manually removed because a pool frame is never
 	dereferenced and will always persist.
 	]]
-	local proxy = menu:ToProxy();
 	Proxies:RemoveProxy(proxy);
 
 	-- Renable any scrolling we disabled when the menu was opened.

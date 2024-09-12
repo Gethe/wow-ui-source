@@ -1,4 +1,4 @@
-if IsOnGlueScreen() then
+if C_Glue.IsOnGlueScreen() then
 	Settings.GetOrCreateSettingsGroup(SETTING_GROUP_SYSTEM, 1);
 else
 	Settings.GetOrCreateSettingsGroup(SETTING_GROUP_GAMEPLAY, 1);

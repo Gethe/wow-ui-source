@@ -370,3 +370,12 @@ function GetFinalAtlasFromTextureKitIfExists(texture, textureKit)
 	local atlasInfo = C_Texture.GetAtlasInfo(atlas);
 	return atlasInfo and atlas or nil;
 end
+
+function CheckSetAtlas(texture, atlasName, ...)
+	if C_Texture.GetAtlasInfo(atlasName) then
+		texture:SetAtlas(atlasName, ...);
+		return true;
+	end
+
+	return false;
+end

@@ -995,7 +995,7 @@ function CRFRaidMarkersMixin:SetTab(frame)
 	if self.activeTab ~= frame then
 		self.activeTab = frame;
 		for _, tab in ipairs(self.Tabs) do
-			tab:GetNormalTexture():SetAtlas(tab == frame and "GM-tab-active" or "GM-tab-inActive", TextureKitConstants.IgnoreAtlasSize);
+			tab:GetNormalTexture():SetAtlas(tab == frame and "GM-tab-selected" or "GM-tab-inActive", TextureKitConstants.IgnoreAtlasSize);
 			tab:SetNormalFontObject(tab == frame and GameFontHighlightSmall or GameFontNormalSmall);
 		end
 	end

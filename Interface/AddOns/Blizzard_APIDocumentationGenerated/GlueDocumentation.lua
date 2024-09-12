@@ -2,9 +2,19 @@ local Glue =
 {
 	Name = "Glue",
 	Type = "System",
+	Namespace = "C_Glue",
 
 	Functions =
 	{
+		{
+			Name = "IsFirstLoadThisSession",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "IsFirstLoadThisSession", Type = "bool", Nilable = false },
+			},
+		},
 		{
 			Name = "IsOnGlueScreen",
 			Type = "Function",

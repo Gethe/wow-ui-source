@@ -546,7 +546,7 @@ UnitPopupRemoveBnetFriendButtonMixin = CreateFromMixins(UnitPopupRemoveFriendBut
 function UnitPopupRemoveBnetFriendButtonMixin:OnClick(contextData)
 	local accountInfo = contextData.accountInfo;
 	local promptText;
-	if not IsOnGlueScreen() then 
+	if not C_Glue.IsOnGlueScreen() then 
 	if accountInfo then
 		if accountInfo.isBattleTagFriend then
 			promptText = string.format(BATTLETAG_REMOVE_FRIEND_CONFIRMATION, accountInfo.accountName);

@@ -73,12 +73,7 @@
 	<CheckButton name="ChatConfigBaseCheckButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
 		<Size x="32" y="32"/>
 		<Scripts>
-			<OnMouseUp>
-				if C_SocialRestrictions.IsChatDisabled() and IsShiftKeyDown() then
-					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-					Settings.OpenToCategory(Settings.SOCIAL_CATEGORY_ID);
-				end
-			</OnMouseUp>
+			<OnMouseUp function="ChatConfigBaseCheckButton_MouseUp"/>
 			<OnClick>
 				local checked = self:GetChecked();
 				if ( self.func ) then

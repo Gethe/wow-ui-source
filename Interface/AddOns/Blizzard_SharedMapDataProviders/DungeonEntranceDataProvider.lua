@@ -52,7 +52,7 @@ function DungeonEntrancePinMixin:OnAcquired(dungeonEntranceInfo) -- override
 	SuperTrackablePoiPinMixin.OnAcquired(self, dungeonEntranceInfo);
 
 	self.journalInstanceID = dungeonEntranceInfo.journalInstanceID;
-    self.isRaid = select(11, EJ_GetInstanceInfo(self.journalInstanceID));
+	self.isRaid = select(11, EJ_GetInstanceInfo(self.journalInstanceID));
 end
 
 function DungeonEntrancePinMixin:ShouldMouseButtonBePassthrough(button)
@@ -91,4 +91,8 @@ end
 
 function DungeonEntrancePinMixin:UpdateSupertrackedHighlight()
 	MapPinHighlight_CheckHighlightPin(self:GetHighlightType(), self, self.Texture);
+end
+
+function DungeonEntrancePinMixin:GetSuperTrackMarkerOffset()
+	return -8, 8;
 end

@@ -48,7 +48,7 @@ function AreaPOIEventDataProviderMixin:RefreshAllData(fromOnShow)
 	end
 end
 
-AreaPOIEventPinMixin = CreateFromMixins(AreaPOIPinMixin);
+AreaPOIEventPinMixin = AreaPOIPinMixin:CreateSubPin("PIN_FRAME_LEVEL_AREA_POI_EVENT");
 
 function AreaPOIEventPinMixin:OnAcquired(poiInfo) -- override
 	AreaPOIPinMixin.OnAcquired(self, poiInfo);

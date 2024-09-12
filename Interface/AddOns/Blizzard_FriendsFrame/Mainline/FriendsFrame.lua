@@ -122,7 +122,7 @@ function FriendsFrame_ShouldShowSummonButton(self)
 end
 
 function FriendsFrame_SummonButton_Update (self)
-	if IsOnGlueScreen() or (C_GameEnvironmentManager.GetCurrentGameEnvironment() == Enum.GameEnvironment.WoWLabs) then
+	if C_Glue.IsOnGlueScreen() or (C_GameEnvironmentManager.GetCurrentGameEnvironment() == Enum.GameEnvironment.WoWLabs) then
 		return;
 	end
 
@@ -189,7 +189,7 @@ function FriendsFrame_ShowDropdown(name, connected, lineID, chatType, chatFrame,
 		};
 
 		-- MENU RETEST IsOnGlueScreen
-		local which = connected and (IsOnGlueScreen() and "GLUE_FRIEND" or "FRIEND") or "FRIEND_OFFLINE";
+		local which = connected and (C_Glue.IsOnGlueScreen() and "GLUE_FRIEND" or "FRIEND") or "FRIEND_OFFLINE";
 		UnitPopup_OpenMenu(which, contextData);
 	end
 end
@@ -213,7 +213,7 @@ function FriendsFrame_ShowBNDropdown(name, connected, lineID, chatType, chatFram
 		};
 
 		-- MENU RETEST IsOnGlueScreen
-		local which = connected and (IsOnGlueScreen() and "GLUE_FRIEND" or "BN_FRIEND") or "BN_FRIEND_OFFLINE";
+		local which = connected and (C_Glue.IsOnGlueScreen() and "GLUE_FRIEND" or "BN_FRIEND") or "BN_FRIEND_OFFLINE";
 		UnitPopup_OpenMenu(which, contextData);
 	end
 end
@@ -253,7 +253,7 @@ function FriendsFrame_OnLoad(self)
 
 	self:SetParent(GetAppropriateTopLevelParent());
 	local inGameFriendsListDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.IngameFriendsListDisabled);
-	if IsOnGlueScreen() or inGameFriendsListDisabled then
+	if C_Glue.IsOnGlueScreen() or inGameFriendsListDisabled then
 		self:ClearAllPoints();
 		self:SetPoint("TOPLEFT", 50, -50);
 
@@ -266,7 +266,7 @@ function FriendsFrame_OnLoad(self)
 		FriendsFrameTab4:Hide();
 	end
 
-	if IsOnGlueScreen() then
+	if C_Glue.IsOnGlueScreen() then
 		self:RegisterEvent("FRAMES_LOADED");
 	end
 
@@ -334,7 +334,7 @@ local function IsRAFHelpTipShowing()
 end
 
 function FriendsFrame_OnShow(self)
-	if not IsOnGlueScreen() and (C_GameEnvironmentManager.GetCurrentGameEnvironment() ~= Enum.GameEnvironment.WoWLabs) then
+	if not C_Glue.IsOnGlueScreen() and (C_GameEnvironmentManager.GetCurrentGameEnvironment() ~= Enum.GameEnvironment.WoWLabs) then
 		playerRealmID = GetRealmID();
 		playerRealmName = GetRealmName();
 		playerFactionGroup = UnitFactionGroup("player");
@@ -441,7 +441,7 @@ function FriendsFrame_UpdateQuickJoinTab(numGroups)
 end
 
 function FriendsFrame_OnHide(self)
-	if not IsOnGlueScreen() and (C_GameEnvironmentManager.GetCurrentGameEnvironment() ~= Enum.GameEnvironment.WoWLabs) then
+	if not C_Glue.IsOnGlueScreen() and (C_GameEnvironmentManager.GetCurrentGameEnvironment() ~= Enum.GameEnvironment.WoWLabs) then
 		UpdateMicroButtons();
 		RaidInfoFrame:Hide();
 		RecruitAFriendFrame:UpdateRAFTutorialTips();
@@ -525,7 +525,7 @@ function FriendsTabHeaderMixin:OnLoad()
 		return string.format("\124T%s.tga:16:16:0:0\124t", selection.data);
 	end);
 
-	if not IsOnGlueScreen() then
+	if not C_Glue.IsOnGlueScreen() then
 		self.StatusDropdown:SetScript("OnEnter", function()
 			local statusText;
 			if ( self.bnStatus == FRIENDS_TEXTURE_ONLINE ) then
@@ -554,7 +554,7 @@ end
 function FriendsTabHeaderMixin:SetRAFSystemEnabled(rafEnabled)
 	if rafEnabled then
 		local inGameFriendsListDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.IngameFriendsListDisabled);
-		rafEnabled = not IsOnGlueScreen() and (not inGameFriendsListDisabled);
+		rafEnabled = not C_Glue.IsOnGlueScreen() and (not inGameFriendsListDisabled);
 	end
 
 	FRIEND_HEADER_TAB_COUNT = rafEnabled and 3 or 2;
@@ -672,7 +672,7 @@ function FriendsList_Update(forceUpdate)
 	local numWoWOnline = 0;
 	local numWoWOffline = 0;
 
-	if not IsOnGlueScreen() and not InWoWLabs() then
+	if not C_Glue.IsOnGlueScreen() and not InWoWLabs() then
 		numWoWTotal = C_FriendList.GetNumFriends();
 		numWoWOnline = C_FriendList.GetNumOnlineFriends();
 		numWoWOffline = numWoWTotal - numWoWOnline;
@@ -967,7 +967,7 @@ end
 function WhoFrameDropdown_OnLoad(self)
 	WowStyle1DropdownMixin.OnLoad(self);
 
-	if not IsOnGlueScreen() then
+	if not C_Glue.IsOnGlueScreen() then
 		local function IsSelected(sortData)
 			return sortData.value == whoSortValue;
 		end
@@ -1182,7 +1182,7 @@ end
 
 function FriendsFrameAddFriendButton_OnClick(self)
 	local name = nil;
-	if not IsOnGlueScreen() then 
+	if not C_Glue.IsOnGlueScreen() then 
 		name = GetUnitName("target", true);
 	end
 
@@ -1295,7 +1295,7 @@ function ToggleFriendsFrame(tab)
 	end
 
 	local inGameFriendsListDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.IngameFriendsListDisabled);
-	if not IsOnGlueScreen() and inGameFriendsListDisabled then
+	if not C_Glue.IsOnGlueScreen() and inGameFriendsListDisabled then
 		return;
 	end
 
@@ -2406,7 +2406,7 @@ function FriendsFriendsFrameMixin:Update()
 end
 
 function FriendsFriendsFrame_Close()
-	if not IsOnGlueScreen() then
+	if not C_Glue.IsOnGlueScreen() then
 		StaticPopupSpecial_Hide(FriendsFriendsFrame);
 	end
 end
@@ -2682,7 +2682,7 @@ local inviteTypeIsCrossFaction =
 };
 
 function TravelPassButton_OnEnter(self)
-	if IsOnGlueScreen() then 
+	if C_Glue.IsOnGlueScreen() then 
 		return;
 	end
 

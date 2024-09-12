@@ -30,7 +30,7 @@ end
 function ScrollBoxSelectorMixin:UpdateSelections()
 	if self.initialized then
 		local dataProvider = CreateIndexRangeDataProvider(self:GetNumSelections());
-		self.ScrollBox:SetDataProvider(dataProvider);
+		self.ScrollBox:SetDataProvider(dataProvider, self.retainScrollPosition);
 	end
 end
 

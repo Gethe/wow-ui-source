@@ -719,15 +719,15 @@ end
 
 function EventToastFlightpointDiscoveredMixin:SetupGLineAtlas(useWhiteGLineAtlas)
 	local parent = self:GetParent();
-	local atlas = "UI-World-Quest-golden-line-2x";
+	local atlas = "UI-World-Quest-golden-line";
 	local glineWidth = self:GetWidth() + 35;
 
-	parent.GLine:SetAtlas(atlas, false);
-	parent.GLine:SetSize(glineWidth, 7);
+	parent.GLine:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
+	parent.GLine:SetWidth(glineWidth);
 	parent.GLine:SetPoint("BOTTOM", 0, -3);
 
-	parent.GLine2:SetAtlas(atlas, false);
-	parent.GLine2:SetSize(glineWidth, 7);
+	parent.GLine2:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
+	parent.GLine2:SetWidth(glineWidth);
 end
 
 EventToastWithIconWithRarityMixin = { };

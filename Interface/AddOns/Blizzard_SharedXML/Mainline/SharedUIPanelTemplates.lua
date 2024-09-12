@@ -291,7 +291,7 @@ function PanelTabButtonMixin:OnShow()
 end
 
 function PanelTabButtonMixin:OnEnter()
-	if not IsOnGlueScreen() then
+	if not C_Glue.IsOnGlueScreen() then
 		GameTooltip_Hide();
 	end
 
@@ -302,7 +302,7 @@ function PanelTabButtonMixin:OnEnter()
 end
 
 function PanelTabButtonMixin:OnLeave()
-	if not IsOnGlueScreen() then
+	if not C_Glue.IsOnGlueScreen() then
 		GameTooltip_Hide();
 	end
 end

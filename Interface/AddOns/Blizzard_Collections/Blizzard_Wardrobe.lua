@@ -1371,6 +1371,8 @@ function WardrobeCollectionFrameMixin:OnHide()
 	for i, frame in ipairs(self.ContentFrames) do
 		frame:Hide();
 	end
+
+	self.FilterButton:SetText(FILTER);
 end
 
 function WardrobeCollectionFrameMixin:OnKeyDown(key)
