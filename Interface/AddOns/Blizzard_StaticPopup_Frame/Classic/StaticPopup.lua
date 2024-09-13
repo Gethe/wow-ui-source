@@ -4405,10 +4405,10 @@ StaticPopupDialogs["TRANSMOG_APPLY_WARNING"] = {
 	button1 = OKAY,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		return WardrobeTransmogFrame_ApplyPending(self.data.warningIndex);
+		return WardrobeTransmogFrame:ApplyPending(self.data.warningIndex);
 	end,
 	OnHide = function()
-		WardrobeTransmogFrame_UpdateApplyButton();
+		WardrobeTransmogFrame:UpdateApplyButton();
 	end,
 	timeout = 0,
 	hideOnEscape = 1,
@@ -4637,9 +4637,7 @@ StaticPopupDialogs["REGIONAL_CHAT_DISABLED"] = {
 	button1 = REGIONAL_RESTRICT_CHAT_DIALOG_ENABLE,
 	button2 = REGIONAL_RESTRICT_CHAT_DIALOG_DISABLE,
 	OnAccept = function()
-		local disabled = false;
-		C_SocialRestrictions.SetChatDisabled(disabled);
-		ChatConfigFrame_OnChatDisabledChanged(disabled);
+		Settings.OpenToCategory(Settings.SOCIAL_CATEGORY_ID);
 	end,
 	OnShow = function(self)
 		C_SocialRestrictions.AcknowledgeRegionalChatDisabled();
