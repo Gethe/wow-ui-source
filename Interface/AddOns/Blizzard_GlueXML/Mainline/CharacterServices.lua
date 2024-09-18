@@ -519,7 +519,7 @@ local function CharacterServices_IsCurrentSpecializationAllowed(classID, gender,
 end
 
 function CharacterServices_UpdateSpecializationButtons(classID, gender, parentFrame, owner, allowAllSpecs, isTrialBoost, currentSpecID, allowAutoSelectSpec)
-	local numSpecs = GetNumSpecializationsForClassID(classID);
+	local numSpecs = C_SpecializationInfo.GetNumSpecializationsForClassID(classID);
 
 	if not parentFrame.SpecButtons then
 		parentFrame.SpecButtons = {}

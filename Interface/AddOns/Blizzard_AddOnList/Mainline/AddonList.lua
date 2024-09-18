@@ -223,6 +223,9 @@ function AddonList_OnLoad(self)
 				tinsert(self.outOfDateIndexes, i);
 			end
 		end
+
+		-- In Glue this defaults to "All", in-game it should default to the current character at design request.
+		addonCharacter = UnitGUID("player");
 	end
 
 	local view = CreateScrollBoxListLinearView();
@@ -499,12 +502,13 @@ function AddonList_OnShow(self)
 
 				-- Check each entry if it's an empty character.
 				if characterInfo then
-					rootDescription:CreateRadio(characterInfo.name, IsSelected, SetSelected, characterInfo.name);
+					rootDescription:CreateRadio(characterInfo.name, IsSelected, SetSelected, characterInfo.guid);
 				end
 			end
 		else
 			local text = UnitName("player");
-			rootDescription:CreateRadio(text, IsSelected, SetSelected, text);
+			local guid = UnitGUID("player");
+			rootDescription:CreateRadio(text, IsSelected, SetSelected, guid);
 		end
 	end);
 

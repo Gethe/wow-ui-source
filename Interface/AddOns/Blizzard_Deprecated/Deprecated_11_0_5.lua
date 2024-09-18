@@ -6,3 +6,12 @@ if not GetCVarBool("loadDeprecationFallbacks") then
 end
 
 C_TaskQuest.GetQuestsForPlayerByMapID = C_TaskQuest.GetQuestsOnMap;
+
+do
+	GetMerchantItemInfo = function(index)
+		local info = C_MerchantFrame.GetItemInfo(index);
+		if info then
+			return info.name, info.texture, info.price, info.stackCount, info.numAvailable, info.isPurchasable, info.isUsable, info.hasExtendedCost, info.currencyID, info.spellID;
+		end
+	end
+end

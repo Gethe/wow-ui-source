@@ -2151,7 +2151,7 @@ end
 function CharacterCreateClassTrialSpecsMixin:UpdateButtons()
 	self.specButtonPool:ReleaseAll();
 
-	local numSpecs = GetNumSpecializationsForClassID(self.selectedClassID);
+	local numSpecs = C_SpecializationInfo.GetNumSpecializationsForClassID(self.selectedClassID);
 
 	for specIndex = 1, numSpecs do
 		local button = self.specButtonPool:Acquire();

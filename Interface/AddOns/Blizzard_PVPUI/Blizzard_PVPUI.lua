@@ -1637,7 +1637,7 @@ function PVPStandardRewardMixin:RefreshRoleShortageBonus()
 
 	local playerCanQueueForBonus = false;	
 	local playerClassID = PlayerUtil.GetClassID();
-	for specIndex = 1, GetNumSpecializationsForClassID(playerClassID) do
+	for specIndex = 1, C_SpecializationInfo.GetNumSpecializationsForClassID(playerClassID) do
 		local specID, specName, specDescription, specIcon, role, isRecommended, isAllowed = GetSpecializationInfoForClassID(playerClassID, specIndex);
 		if tContains(self.RoleShortageBonus.rewardInfo.validRoles, role) then
 			playerCanQueueForBonus = true;

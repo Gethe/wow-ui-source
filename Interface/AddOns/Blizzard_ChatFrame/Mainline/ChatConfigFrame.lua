@@ -8,7 +8,7 @@ CHATCONFIG_CHANNELS_MAXWIDTH = 145;
 CHAT_CONFIG_CURRENT_COLOR_SWATCH = nil;
 
 local function ShouldDisplayDisabled()
-	return C_SocialRestrictions.IsMuted() or C_SocialRestrictions.IsChatDisabled();
+	return not C_SocialRestrictions.CanReceiveChat();
 end
 
 --Chat options
