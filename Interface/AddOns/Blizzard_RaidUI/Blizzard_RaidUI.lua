@@ -1240,6 +1240,10 @@ function RaidPullout_GetFrame(filterID)
 end
 
 function RaidPulloutFrameTemplate_CreateContextMenu(self)
+	if (not self) then
+		return;
+	end
+
 	MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
 		rootDescription:SetTag("MENU_RAID_PULLOUT");
 
