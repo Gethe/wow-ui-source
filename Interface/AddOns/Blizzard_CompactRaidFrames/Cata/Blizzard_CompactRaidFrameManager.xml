@@ -332,11 +332,12 @@
 							<Anchor point="TOPLEFT" relativeTo="$parentHeaderDelineator" relativePoint="BOTTOMLEFT" x="-10" y="4"/>
 						</Anchors>
 					</Frame>
-					<Frame name="$parentProfileSelector" inherits="UIDropDownMenuTemplate" parentKey="profileSelector">
+					<DropdownButton name="$parentProfileSelector" inherits="WowStyle1DropdownTemplate" parentKey="profileSelector">
 						<Scripts>
-							<OnShow function="CompactRaidFrameManagerDisplayFrameProfileSelector_SetUp"/>
+							<OnLoad function="CompactRaidFrameManagerDisplayFrameProfileSelector_OnLoad"/>
+							<OnShow function="CompactRaidFrameManagerDisplayFrameProfileSelector_OnShow"/>
 						</Scripts>
-					</Frame>
+					</DropdownButton>
 					<Frame name="$parentFilterOptions" parentKey="filterOptions">
 						<Size x="200" y="85"/>
 						<Layers>
@@ -541,32 +542,18 @@
 									</OnClick>
 								</Scripts>
 							</Button>
-							<Button name="$parentRaidWorldMarkerButton" inherits="UIMenuButtonStretchTemplate">
+							<DropdownButton parentKey="raidMarkerDropdown" name="$parentRaidWorldMarkerButton" inherits="UIMenuButtonStretchTemplate">
 								<Size x="40" y="20"/>
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="$parentInitiateReadyCheck" relativePoint="TOPRIGHT" x="0" y="0"/>
 								</Anchors>
-								<Frames>
-									<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" parentKey="dropDown">
-										<Scripts>
-											<OnLoad>
-												UIDropDownMenu_Initialize(self, CRFManager_RaidWorldMarkerDropDown_Update, "MENU");
-											</OnLoad>
-										</Scripts>
-									</Frame>
-								</Frames>
-								<Scripts>
-									<OnClick>
-										ToggleDropDownMenu(1, nil, self.dropDown, self:GetName(), 0, 0);
-									</OnClick>
-								</Scripts>
 								<NormalTexture file="Interface\RaidFrame\Raid-WorldPing">
 									<Size x="14" y ="14"/>
 									<Anchors>
 										<Anchor point="CENTER" x="0" y="-1"/>
 									</Anchors>
 								</NormalTexture>
-							</Button>
+							</DropdownButton>
 						</Frames>
 					</Frame>
 					<CheckButton name="$parentEveryoneIsAssistButton" parentKey="everyoneIsAssistButton" hidden="true" inherits="UICheckButtonTemplate">

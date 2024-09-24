@@ -1,35 +1,4 @@
 
----------------
---NOTE - Please do not change this section without understanding the full implications of the secure environment
---We usually don't want to call out of this environment from this file. Calls should usually go through Outbound
-local _, tbl = ...;
-
-if tbl then
-	tbl.SecureCapsuleGet = SecureCapsuleGet;
-
-	local function Import(name)
-		tbl[name] = tbl.SecureCapsuleGet(name);
-	end
-
-	Import("IsOnGlueScreen");
-
-	if ( tbl.IsOnGlueScreen() ) then
-		tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
-		Import("C_StoreGlue");
-	end
-
-	setfenv(1, tbl);
-
-	Import("math");
-	Import("PlaySound");
-	Import("SOUNDKIT");
-	Import("SCROLL_FRAME_SCROLL_BAR_TEMPLATE");
-	Import("SCROLL_FRAME_SCROLL_BAR_OFFSET_LEFT");
-	Import("SCROLL_FRAME_SCROLL_BAR_OFFSET_TOP");
-	Import("SCROLL_FRAME_SCROLL_BAR_OFFSET_BOTTOM");
-end
-----------------
-
 function EditBox_OnTabPressed(self)
 	if ( self.previousEditBox and IsShiftKeyDown() ) then
 		self.previousEditBox:SetFocus();

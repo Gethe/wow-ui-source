@@ -13,11 +13,6 @@ TradeSkillTypeColor["header"]	= { r = 1.00, g = 0.82, b = 0,    font = "GameFont
 local currentTradeSkillName = "";
 
 function TradeSkillFrame_OnShow(self)
-	CloseDropDownMenus();
-	TradeSkillSubClassDropDown:Hide();
-	TradeSkillSubClassDropDown:Show();
-	TradeSkillInvSlotDropDown:Hide();
-	TradeSkillInvSlotDropDown:Show();
 	ShowUIPanel(TradeSkillFrame);
 	TradeSkillCreateButton:Disable();
 	TradeSkillCreateAllButton:Disable();
@@ -30,11 +25,76 @@ function TradeSkillFrame_OnShow(self)
 	TradeSkillListScrollFrameScrollBar:SetMinMaxValues(0, 0);
 	TradeSkillListScrollFrameScrollBar:SetValue(0);
 	SetPortraitTexture(TradeSkillFramePortrait, "player");
-	TradeSkillFrame_Update();
+	TradeSkillFrame_Update(self);
+
+	TradeSkillInputBox:SetNumber(1);
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
+
+	TradeSkillFrame_SetupSubClassDropdown(self);
+	TradeSkillFrame_SetupInvSlotDropdown(self);
+end
+
+function TradeSkillFrame_SetupSubClassDropdown(self)
+	local tbl = {GetTradeSkillSubClasses()};
+
+	local function IsSelected(index)
+		if index > 0 and (GetTradeSkillSubClassFilter(0) == 1) then
+			return false;
+		end
+		return GetTradeSkillSubClassFilter(index) == 1;
+	end
+
+	local function SetSelected(index)
+		local on = 1;
+		local exclusive = 1;
+		SetTradeSkillSubClassFilter(index, on, exclusive);
+	end
+
+	self.SubClassDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_TRADESKILL_SUBCLASS");
+
+		rootDescription:CreateRadio(ALL_SUBCLASSES, IsSelected, SetSelected, 0);
+		for index, name in ipairs(tbl) do
+			rootDescription:CreateRadio(name, IsSelected, SetSelected, index);
+		end
+	end);
+end
+
+function TradeSkillFrame_SetupInvSlotDropdown(self)
+	SetTradeSkillInvSlotFilter(0);
+	
+	local tbl = {GetTradeSkillInvSlots()};
+
+	local function IsSelected(index)
+		return GetTradeSkillInvSlotFilter(index) == 1;
+	end
+
+	local function SetSelected(index)
+		local on = 1;
+		local exclusive = 1;
+		SetTradeSkillInvSlotFilter(index, on, exclusive);
+	end
+
+	self.InvSlotDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_TRADESKILL_SUBCLASS_INV_SLOTS");
+
+		rootDescription:CreateRadio(ALL_INVENTORY_SLOTS, IsSelected, SetSelected, 0);
+		for index, name in ipairs(tbl) do
+			rootDescription:CreateRadio(name, IsSelected, SetSelected, index);
+		end
+	end);
+end
+
+function TradeSkillFrame_OnHide(self)
+	CloseTradeSkill();
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 end
 
 function TradeSkillFrame_Hide()
 	HideUIPanel(TradeSkillFrame);
+end
+
+function TradeSkillFrame_OnMouseWheel(self)
 end
 
 function TradeSkillFrame_OnLoad(self)
@@ -42,6 +102,9 @@ function TradeSkillFrame_OnLoad(self)
 	self:RegisterEvent("TRADE_SKILL_UPDATE");
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
 	self:RegisterEvent("UPDATE_TRADESKILL_RECAST");
+	
+	self.SubClassDropdown:SetWidth(120);
+	self.InvSlotDropdown:SetWidth(120);
 end
 
 function TradeSkillFrame_OnEvent(self, event, ...)
@@ -65,7 +128,7 @@ function TradeSkillFrame_OnEvent(self, event, ...)
 			end
 			TradeSkillListScrollFrameScrollBar:SetValue(0);
 		end
-		TradeSkillFrame_Update();
+		TradeSkillFrame_Update(self);
 	elseif ( event == "UNIT_PORTRAIT_UPDATE" ) then
 		if ( arg1 == "player" ) then
 			SetPortraitTexture(TradeSkillFramePortrait, "player");
@@ -77,7 +140,7 @@ function TradeSkillFrame_OnEvent(self, event, ...)
 	end
 end
 
-function TradeSkillFrame_Update()
+function TradeSkillFrame_Update(self)
 	local numTradeSkills = GetNumTradeSkills();
 	local skillOffset = FauxScrollFrame_GetOffset(TradeSkillListScrollFrame);
 	local name, rank, maxRank = GetTradeSkillLine();
@@ -341,7 +404,7 @@ end
 function TradeSkillSkillButton_OnClick(self, button)
 	if ( button == "LeftButton" ) then
 		TradeSkillFrame_SetSelection(self:GetID());
-		TradeSkillFrame_Update();
+		TradeSkillFrame_Update(self);
 	end
 end
 
@@ -382,110 +445,6 @@ function TradeSkillCollapseAllButton_OnClick(self)
 		TradeSkillListScrollFrameScrollBar:SetValue(0);
 		CollapseTradeSkillSubClass(0);
 	end
-end
-
-function TradeSkillSubClassDropDown_OnLoad(self)
-	UIDropDownMenu_Initialize(self, TradeSkillSubClassDropDown_Initialize);
-	UIDropDownMenu_SetWidth(self, 120);
-	UIDropDownMenu_SetSelectedID(self, 1);
-end
-
-function TradeSkillSubClassDropDown_OnShow(self)
-	UIDropDownMenu_Initialize(self, TradeSkillSubClassDropDown_Initialize);
-	if ( GetTradeSkillSubClassFilter(0) ) then
-		UIDropDownMenu_SetSelectedID(TradeSkillSubClassDropDown, 1);
-	end
-end
-
-function TradeSkillSubClassDropDown_Initialize()
-	TradeSkillFilterFrame_LoadSubClasses(GetTradeSkillSubClasses());
-end
-
-function TradeSkillFilterFrame_LoadSubClasses(...)
-	local allChecked = GetTradeSkillSubClassFilter(0);
-	local info = {};
-	local argN = select("#", ...);
-	if ( argN > 1 ) then
-		info.text = ALL_SUBCLASSES;
-		info.func = TradeSkillSubClassDropDownButton_OnClick;
-		info.checked = allChecked;
-		UIDropDownMenu_AddButton(info);
-	end
-
-	local checked;
-	for i=1, argN, 1 do
-		if ( allChecked and argN > 1 ) then
-			checked = nil;
-			UIDropDownMenu_SetText(TradeSkillSubClassDropDown, ALL_SUBCLASSES);
-		else
-			checked = GetTradeSkillSubClassFilter(i);
-			if ( checked ) then
-				UIDropDownMenu_SetText(TradeSkillSubClassDropDown, select(i, ...));
-			end
-		end
-		info = {};
-		info.text = select(i, ...);
-		info.func = TradeSkillSubClassDropDownButton_OnClick;
-		info.checked = checked;
-		UIDropDownMenu_AddButton(info);
-	end
-end
-
-function TradeSkillInvSlotDropDown_OnLoad(self)
-	UIDropDownMenu_Initialize(self, TradeSkillInvSlotDropDown_Initialize);
-	UIDropDownMenu_SetWidth(self, 120);
-	UIDropDownMenu_SetSelectedID(self, 1);
-end
-
-function TradeSkillInvSlotDropDown_OnShow(self)
-	UIDropDownMenu_Initialize(self, TradeSkillInvSlotDropDown_Initialize);
-	if ( GetTradeSkillInvSlotFilter(0) ) then
-		UIDropDownMenu_SetSelectedID(self, 1);
-	end
-end
-
-function TradeSkillInvSlotDropDown_Initialize()
-	TradeSkillFilterFrame_LoadInvSlots(GetTradeSkillInvSlots());
-end
-
-function TradeSkillFilterFrame_LoadInvSlots(...)
-	local allChecked = GetTradeSkillInvSlotFilter(0);
-	local info = {}
-	local argN = select("#", ...);
-	if ( argN > 1 ) then
-		info.text = ALL_INVENTORY_SLOTS;
-		info.func = TradeSkillInvSlotDropDownButton_OnClick;
-		info.checked = allChecked;
-		UIDropDownMenu_AddButton(info);
-	end
-
-	local checked;
-	for i=1, argN, 1 do
-		if ( allChecked and argN > 1 ) then
-			checked = nil;
-			UIDropDownMenu_SetText(TradeSkillInvSlotDropDown, ALL_INVENTORY_SLOTS);
-		else
-			checked = GetTradeSkillInvSlotFilter(i);
-			if ( checked ) then
-				UIDropDownMenu_SetText(TradeSkillInvSlotDropDown, select(i, ...));
-			end
-		end
-		info = {};
-		info.text = select(i, ...);
-		info.func = TradeSkillInvSlotDropDownButton_OnClick;
-		info.checked = checked;
-		UIDropDownMenu_AddButton(info);
-	end
-end
-
-function TradeSkillSubClassDropDownButton_OnClick(self)
-	UIDropDownMenu_SetSelectedID(TradeSkillSubClassDropDown, self:GetID());
-	SetTradeSkillSubClassFilter(self:GetID() - 1, 1, 1);
-end
-
-function TradeSkillInvSlotDropDownButton_OnClick(self)
-	UIDropDownMenu_SetSelectedID(TradeSkillInvSlotDropDown, self:GetID())
-	SetTradeSkillInvSlotFilter(self:GetID() - 1, 1, 1);
 end
 
 function TradeSkillFrameIncrement_OnClick(self)

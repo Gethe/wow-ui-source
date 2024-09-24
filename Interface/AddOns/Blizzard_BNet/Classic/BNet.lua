@@ -111,7 +111,6 @@ function BNToastMixin:OnClick()
 			ChatFrame_SendBNetTell(accountName);
 		end
 	elseif toastType == BN_TOAST_TYPE_CLUB_INVITATION then
-		Communities_LoadUI();
 		ShowUIPanel(CommunitiesFrame);
 		CommunitiesFrame:SelectClub(toastData.club.clubId);
 	end

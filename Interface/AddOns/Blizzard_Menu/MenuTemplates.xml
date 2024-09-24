@@ -1,0 +1,92 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<DropdownButton name="WowStyle2DropdownTemplate" mixin="WowStyle2DropdownMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="menuMixin" value="MenuStyle2Mixin" type="global"/>
+		</KeyValues>
+		<Size x="122" y="25"/>
+		<Frames>
+			<!--This button template is not typically intended to be used as a filter button, but because an instance
+			exists in the trading post, this reset button was added.-->
+			<Button parentKey="ResetButton" inherits="UIResetButtonTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOPRIGHT" x="-3" y="-5"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="common-dropdown-c-button" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-7" y="7"/>
+						<Anchor point="BOTTOMRIGHT" x="7" y="-7"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Arrow" atlas="common-dropdown-c-button-hover-arrow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM" y="-5"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Text" inherits="GameFontNormal" wordwrap="false" justifyH="CENTER">
+					<Size x="0" y="20"/>
+					<Anchors>
+						<Anchor point="LEFT" x="13"/>
+						<Anchor point="RIGHT" x="-13"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<!--OnShow attempts to generate the menu description if one was not ready.-->
+			<OnShow method="OnShow"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnEnable method="OnEnable"/>
+			<OnDisable method="OnDisable"/>
+		</Scripts>
+	</DropdownButton>
+
+	<!--Accompanies the style of WowStyle2Dropdown-->
+	<Button name="WowStyle2IconButtonTemplate" mixin="WowStyle2IconButtonMixin" virtual="true">
+		<Size x="26" y="25"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Icon">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnEnable method="OnEnable"/>
+			<OnDisable method="OnDisable"/>
+		</Scripts>
+	</Button>
+
+	<Button name="WowMenuAutoHideButtonTemplate" propagateMouseInput="Motion" virtual="true">
+		<Layers>
+			<Layer>
+				<Texture parentKey="Texture"/>
+			</Layer>
+		</Layers>
+	</Button>
+</Ui>

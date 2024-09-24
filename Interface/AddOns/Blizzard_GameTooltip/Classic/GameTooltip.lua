@@ -1,3 +1,4 @@
+local envTable = GetCurrentEnvironment();
 
 TOOLTIP_QUEST_REWARDS_STYLE_DEFAULT = {
 	headerText = QUEST_REWARDS,
@@ -133,6 +134,10 @@ end
 
 function GameTooltip_AddInstructionLine(tooltip, text, wrap)
 	GameTooltip_AddColoredLine(tooltip, text, GREEN_FONT_COLOR, wrap);
+end
+
+function GameTooltip_AddErrorLine(tooltip, text, wrap)
+	GameTooltip_AddColoredLine(tooltip, text, RED_FONT_COLOR, wrap);
 end
 
 function GameTooltip_AddColoredLine(tooltip, text, color, wrap)
@@ -300,15 +305,15 @@ function SetTooltipMoney(frame, money, type, prefixText, suffixText)
 		frame.shownMoneyFrames = 0;
 	end
 	local name = frame:GetName().."MoneyFrame"..frame.shownMoneyFrames+1;
-	local moneyFrame = _G[name];
+	local moneyFrame = envTable[name];
 	if ( not moneyFrame ) then
 		frame.numMoneyFrames = frame.numMoneyFrames+1;
 		moneyFrame = CreateFrame("Frame", name, frame, "TooltipMoneyFrameTemplate");
 		name = moneyFrame:GetName();
 		MoneyFrame_SetType(moneyFrame, "STATIC");
 	end
-	_G[name.."PrefixText"]:SetText(prefixText);
-	_G[name.."SuffixText"]:SetText(suffixText);
+	envTable[name.."PrefixText"]:SetText(prefixText);
+	envTable[name.."SuffixText"]:SetText(suffixText);
 	if ( type ) then
 		MoneyFrame_SetType(moneyFrame, type);
 	end
@@ -332,11 +337,11 @@ function SetTooltipMoney(frame, money, type, prefixText, suffixText)
 	-- Align money frames
 	local widths = {};
 	for i=1, frame.shownMoneyFrames do
-		moneyFrame = _G[frame:GetName().."MoneyFrame"..i];
+		moneyFrame = envTable[frame:GetName().."MoneyFrame"..i];
 		MoneyFrame_AccumulateAlignmentWidths(moneyFrame, widths);
 	end
 	for i=1, frame.shownMoneyFrames do
-		moneyFrame = _G[frame:GetName().."MoneyFrame"..i];
+		moneyFrame = envTable[frame:GetName().."MoneyFrame"..i];
 		MoneyFrame_UpdateAlignment(moneyFrame, widths);
 	end
 
@@ -353,7 +358,7 @@ function GameTooltip_ClearMoney(self)
 
 	local moneyFrame;
 	for i=1, self.shownMoneyFrames do
-		moneyFrame = _G[self:GetName().."MoneyFrame"..i];
+		moneyFrame = envTable[self:GetName().."MoneyFrame"..i];
 		if(moneyFrame) then
 			moneyFrame:Hide();
 			MoneyFrame_SetType(moneyFrame, "STATIC");
@@ -365,7 +370,7 @@ end
 
 function GameTooltip_InsertFrame(tooltipFrame, frame)
 	local textSpacing = 2;
-	local textHeight = _G[tooltipFrame:GetName().."TextLeft2"]:GetLineHeight();
+	local textHeight = envTable[tooltipFrame:GetName().."TextLeft2"]:GetLineHeight();
 	local numLinesNeeded = math.ceil(frame:GetHeight() / (textHeight + textSpacing));
 	local currentLine = tooltipFrame:NumLines();
 	GameTooltip_AddBlankLinesToTooltip(tooltipFrame, numLinesNeeded);
@@ -482,7 +487,7 @@ end
 
 function GameTooltip_OnTooltipSetUnit(self)
 	if self:IsUnit("mouseover") then
-		_G[self:GetName().."TextLeft1"]:SetTextColor(GameTooltip_UnitColor("mouseover"));
+		envTable[self:GetName().."TextLeft1"]:SetTextColor(GameTooltip_UnitColor("mouseover"));
 	end
 	GameTooltip_HideBattlePetTooltip();
 end

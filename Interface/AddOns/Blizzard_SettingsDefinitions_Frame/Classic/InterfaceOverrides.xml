@@ -2,11 +2,7 @@
 ..\..\Blizzard_SharedXML\UI.xsd">
 	<Script file="Classic\InterfaceOverrides.lua"/>
 
-	<Frame name="RaidProfilesTemplate" inherits="SettingsDropDownControlTemplate" mixin="RaidProfilesMixin" virtual="true">
-		<KeyValues>
-			<KeyValue key="dropDownType" value="Frame" type="string"/>
-			<KeyValue key="dropDownTemplate" value="SettingsSelectionPopoutWithButtonsTemplate" type="string"/>
-		</KeyValues>
+	<Frame name="RaidProfilesTemplate" inherits="SettingsDropdownControlTemplate" mixin="RaidProfilesMixin" virtual="true">
 		<Size y="54"/>
 		<Frames>
 			<Button parentKey="NewButton" inherits="UIPanelButtonTemplate">

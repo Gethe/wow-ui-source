@@ -216,8 +216,8 @@ end
 CurrencyTemplateMixin = {};
 
 function CurrencyTemplateMixin:SetCurrencyFromID(currencyID, amount, formatString, colorCode)
-	local _, _, currencyTexture = GetCurrencyInfo(currencyID);
-	local markup = CreateTextureMarkup(currencyTexture, 64, 64, 16, 16, 0, 1, 0, 1);
+	local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyID);
+	local markup = CreateTextureMarkup(currencyInfo.iconFileID, 64, 64, 16, 16, 0, 1, 0, 1);
 	colorCode = colorCode or HIGHLIGHT_FONT_COLOR_CODE;
 
 	local currencyString = ("%s%s %s|r"):format(colorCode, BreakUpLargeNumbers(amount), markup);

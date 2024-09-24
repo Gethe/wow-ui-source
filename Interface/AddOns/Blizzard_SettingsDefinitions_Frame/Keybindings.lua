@@ -246,9 +246,9 @@ local function Register()
 		end
 
 		local defaultValue = Settings.CannotDefault;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_CHARACTER_SPECIFIC_BINDINGS", Settings.DefaultVarLocation,
+		local setting = Settings.RegisterProxySetting(category, "PROXY_CHARACTER_SPECIFIC_BINDINGS",
 			Settings.VarType.Boolean, CHARACTER_SPECIFIC_KEYBINDINGS, defaultValue, GetValue, SetValue);
-		local initializer = Settings.CreateCheckBox(category, setting, CHARACTER_SPECIFIC_KEYBINDING_TOOLTIP);
+		local initializer = Settings.CreateCheckbox(category, setting, CHARACTER_SPECIFIC_KEYBINDING_TOOLTIP);
 		
 		-- Changing from character to account bindings requires confirmation since it overwrites
 		-- character with account bindings.

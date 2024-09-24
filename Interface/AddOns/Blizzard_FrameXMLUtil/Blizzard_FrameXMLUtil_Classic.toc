@@ -2,7 +2,6 @@
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
 ## Dependencies: Blizzard_SharedXMLGame
-## SuppressLocalTableRef: 1
 ## AllowLoad: Game
 ## AllowLoadGameType: classic
 PartyUtil.lua
@@ -19,3 +18,9 @@ DifficultyUtil.lua
 AdventureGuideUtil.lua
 ItemUtil.lua
 CollectionsUtil.lua
+FadingFrame.lua
+Classic\RaidWarning.lua
+Cooldown.lua
+Classic\Cooldown.xml
+Localization.lua
+Classic\Localization.lua

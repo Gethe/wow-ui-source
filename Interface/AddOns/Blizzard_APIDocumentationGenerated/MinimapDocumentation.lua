@@ -64,12 +64,7 @@ local Minimap =
 
 			Returns =
 			{
-				{ Name = "name", Type = "cstring", Nilable = false },
-				{ Name = "textureFileID", Type = "fileID", Nilable = false },
-				{ Name = "active", Type = "bool", Nilable = false },
-				{ Name = "type", Type = "cstring", Nilable = false },
-				{ Name = "subType", Type = "number", Nilable = false },
-				{ Name = "spellID", Type = "number", Nilable = true },
+				{ Name = "trackingInfo", Type = "MinimapScriptTrackingInfo", Nilable = true },
 			},
 		},
 		{
@@ -126,7 +121,7 @@ local Minimap =
 			Fields =
 			{
 				{ Name = "name", Type = "cstring", Nilable = false },
-				{ Name = "textureFileID", Type = "fileID", Nilable = false },
+				{ Name = "texture", Type = "fileID", Nilable = false },
 				{ Name = "active", Type = "bool", Nilable = false },
 				{ Name = "type", Type = "cstring", Nilable = false },
 				{ Name = "subType", Type = "number", Nilable = false },

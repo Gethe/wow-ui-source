@@ -2,7 +2,6 @@
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
 ## Dependencies: Blizzard_SettingsDefinitions_Shared
-## SuppressLocalTableRef: 1
 ## AllowLoad: Game
 ## AllowLoadGameType: classic
 Classic\GameplaySettingsGroup.lua
@@ -14,7 +13,6 @@ Classic\SocialOverrides.lua
 Classic\ColorblindOverrides.lua
 Classic\KeybindingsOverrides.lua
 Classic\AccessibilityOverrides.lua
-Mac.lua
 Controls.xml
 Interface.xml
 Combat.lua

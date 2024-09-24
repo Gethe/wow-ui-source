@@ -17,9 +17,9 @@ local AuctionHouseEnums =
 		{
 			Name = "AuctionHouseError",
 			Type = "Enumeration",
-			NumValues = 26,
+			NumValues = 27,
 			MinValue = 0,
-			MaxValue = 25,
+			MaxValue = 26,
 			Fields =
 			{
 				{ Name = "NotEnoughMoney", Type = "AuctionHouseError", EnumValue = 0 },
@@ -48,6 +48,7 @@ local AuctionHouseEnums =
 				{ Name = "DoubleBid", Type = "AuctionHouseError", EnumValue = 23 },
 				{ Name = "FavoritesMaxed", Type = "AuctionHouseError", EnumValue = 24 },
 				{ Name = "ItemNotAvailable", Type = "AuctionHouseError", EnumValue = 25 },
+				{ Name = "ItemBoundToAccountUntilEquip", Type = "AuctionHouseError", EnumValue = 26 },
 			},
 		},
 		{

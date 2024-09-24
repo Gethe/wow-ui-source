@@ -7,7 +7,7 @@
 			<KeyValue key="backdropBorderColor" value="GLUE_BACKDROP_BORDER_COLOR" type="global"/>
 		</KeyValues>
 	</Frame>
-
+	
 	<Button name="AccountNameButton" virtual="true">
 		<Size x="250" y="20"/>
 		<Layers>
@@ -830,14 +830,11 @@
 							<OnKeyDown function="TokenEntry_OnKeyDown"/>
 						</Scripts>
 					</Frame>
-					<Frame parentKey="AccountsDropDown" name="AccountLoginDropDown" inherits="UIDropDownMenuTemplate">
+					<DropdownButton parentKey="AccountsDropdown" inherits="WowStyle1DropdownTemplate">
 						<Anchors>
-							<Anchor point="TOP" relativeKey="$parent.AccountEditBox" relativePoint="BOTTOM" x="2" y="5"/>
+							<Anchor point="TOP" relativeKey="$parent.AccountEditBox" relativePoint="BOTTOM" x="2" y="-2"/>
 						</Anchors>
-						<Scripts>
-							<OnLoad function="AccountLoginDropDown_OnLoad"/>
-						</Scripts>
-					</Frame>
+					</DropdownButton>
 				</Frames>
 				<Animations>
 					<AnimationGroup parentKey="FadeIn" setToFinalAlpha="true">

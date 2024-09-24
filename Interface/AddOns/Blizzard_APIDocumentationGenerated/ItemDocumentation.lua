@@ -15,6 +15,20 @@ local Item =
 			Type = "Function",
 		},
 		{
+			Name = "CanBeRefunded",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canBeRefunded", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CanItemTransmogAppearance",
 			Type = "Function",
 
@@ -233,6 +247,7 @@ local Item =
 				{ Name = "includeBank", Type = "bool", Nilable = false, Default = false },
 				{ Name = "includeUses", Type = "bool", Nilable = false, Default = false },
 				{ Name = "includeReagentBank", Type = "bool", Nilable = false, Default = false },
+				{ Name = "includeAccountBank", Type = "bool", Nilable = false, Default = false },
 			},
 
 			Returns =

@@ -4,7 +4,7 @@
 		<Frames>
 			<ScrollFrame parentKey="ScrollContainer" inherits="MapCanvasFrameScrollContainerTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="11" y="-70"/>
+					<Anchor point="TOPLEFT" x="11" y="-22"/>
 					<Anchor point="BOTTOMRIGHT" x="-11" y="30"/>
 				</Anchors>
 				<Scripts>
@@ -60,7 +60,7 @@
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset>
-										<AbsDimension x="12" y="-28"/>
+										<AbsDimension x="12" y="0"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -81,22 +81,13 @@
 							<Anchors>
 								<Anchor point="CENTER" relativePoint ="TOP">
 									<Offset>
-										<AbsDimension x="0" y="-40"/>
+										<AbsDimension x="0" y="-12"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
-			</Frame>
-			<Frame name="WorldMapTitleDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
-				<Anchors>
-					<Anchor point="CENTER" relativePoint ="TOP">
-						<Offset>
-							<AbsDimension x="0" y="-40"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
 			</Frame>
 			<Button name="WorldMapTitleButton" parent="WorldMapFrame">
 				<Size>
@@ -275,7 +266,7 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame name="WorldMapContinentDropDown" parentKey="ContinentDropDown" inherits="UIDropDownMenuTemplate" id="1">
+			<DropdownButton name="WorldMapContinentDropdown" parentKey="ContinentDropdown" inherits="WowStyle1DropdownTemplate" id="1">
 				<Anchors>
 					<Anchor point="TOP" relativePoint="TOP">
 						<Offset>
@@ -297,19 +288,15 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad>
-						WorldMapContinentDropDown_OnLoad(self);
-					</OnLoad>
-					<OnShow>
-						WorldMapContinentDropDown_Initialize(self);
-					</OnShow>
+					<OnLoad function="WorldMapContinentDropdown_OnLoad"/>
+					<OnShow function="WorldMapContinentDropdown_OnShow"/>
 				</Scripts>
-			</Frame>
-			<Frame name="WorldMapZoneDropDown" parentKey="ZoneDropDown" inherits="UIDropDownMenuTemplate" id="2">
+			</DropdownButton>
+			<DropdownButton name="WorldMapZoneDropdown" parentKey="ZoneDropdown" inherits="WowStyle1DropdownTemplate" id="2">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="WorldMapContinentDropDown" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="WorldMapContinentDropdown" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="-33" y="0"/>
+							<AbsDimension x="5" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -327,17 +314,13 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad>
-						WorldMapZoneDropDown_OnLoad(self);
-					</OnLoad>
-					<OnShow>
-						UIDropDownMenu_Initialize(self, WorldMapZoneDropDown_Initialize);
-					</OnShow>
+					<OnLoad function="WorldMapZoneDropdown_OnLoad"/>
+					<OnShow function="WorldMapZoneDropdown_OnShow"/>
 				</Scripts>
-			</Frame>
-			<Frame name="WorldMapZoneMinimapDropDown" inherits="UIDropDownMenuTemplate">
+			</DropdownButton>
+			<DropdownButton parentKey="MinimapDropdown" name="WorldMapZoneMinimapDropdown" inherits="WowStyle1DropdownTemplate">
 				<Anchors>
-					<Anchor point="RIGHT" relativeTo="WorldMapContinentDropDown" relativePoint="LEFT">
+					<Anchor point="RIGHT" relativeTo="WorldMapContinentDropdown" relativePoint="LEFT">
 						<Offset>
 							<AbsDimension x="-50"/>
 						</Offset>
@@ -357,20 +340,20 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad function="WorldMapZoneMinimapDropDown_OnLoad"/>
-					<OnShow function="WorldMapZoneMinimapDropDown_Initialize"/>
-					<OnEnter function="WorldMapZoneMinimapDropDown_OnEnter"/>
-					<OnLeave function="WorldMapZoneMinimapDropDown_OnLeave"/>
+					<OnLoad function="WorldMapZoneMinimapDropdown_OnLoad"/>
+					<OnShow function="WorldMapZoneMinimapDropdown_OnShow"/>
+					<OnEnter function="WorldMapZoneMinimapDropdown_OnEnter"/>
+					<OnLeave function="WorldMapZoneMinimapDropdown_OnLeave"/>
 				</Scripts>
-			</Frame>
+			</DropdownButton>
 			<Button name="WorldMapZoomOutButton" inherits="UIPanelButtonTemplate" text="ZOOM_OUT">
 				<Size>
 					<AbsDimension x="110" y="22"/>
 				</Size>
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="WorldMapZoneDropDown" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="WorldMapZoneDropdown" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="-10" y="3"/>
+							<AbsDimension x="5" y="3"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -432,7 +415,7 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<CheckButton name="WorldMapTrackQuest" inherits="OptionsCheckButtonTemplate" hidden="true">
+			<CheckButton name="WorldMapTrackQuest" inherits="OptionsBaseCheckButtonTemplate" hidden="true">
 				<Size x="24" y="24"/>
 				<Scripts>
 					<OnLoad>
@@ -452,7 +435,7 @@
 					</OnLeave>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="WorldMapQuestShowObjectives" inherits="OptionsCheckButtonTemplate" hidden="true">
+			<CheckButton name="WorldMapQuestShowObjectives" inherits="OptionsSmallCheckButtonTemplate" hidden="true">
 				<Size x="24" y="24"/>
 				<Scripts>
 					<OnLoad>
@@ -472,7 +455,7 @@
 					</OnLeave>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="WorldMapShowDigsites" inherits="OptionsCheckButtonTemplate" hidden="false">
+			<CheckButton name="WorldMapShowDigsites" inherits="OptionsSmallCheckButtonTemplate" hidden="false">
 				<Size x="24" y="24"/>
 				<Scripts>
 					<OnLoad>

@@ -280,12 +280,12 @@ end
 
 function PVPFrame_UpdateCurrency(self)
 	local currencyID = PVPFrameCurrency.currencyID;
-	local currencyName, currencyAmount;
+	local currencyInfo;
 	if ( currencyID ) then
-		currencyName, currencyAmount = GetCurrencyInfo(currencyID);
+		currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyID);
 	end
 
-	if ( currencyName and (currencyAmount > 0)) then
+	if ( currencyInfo and currencyInfo.name and currencyInfo.quantity) then
 		-- show conquest bar?
 		if ( currencyID == Constants.CurrencyConsts.CONQUEST_POINTS_CURRENCY_ID ) then
 			PVPFrameCurrency:Hide();
@@ -309,11 +309,11 @@ function PVPFrame_UpdateCurrency(self)
 			end
 
 			CapProgressBar_Update(PVPFrameConquestBar, tier1Quantity, tier1Limit, tier2Quantity, tier2Limit, pointsThisWeek, maxPointsThisWeek, false);
-			PVPFrameConquestBar.label:SetText(currencyName);
+			PVPFrameConquestBar.label:SetText(currencyInfo.name);
 		else
 			PVPFrameCurrency:Show();
 			PVPFrameConquestBar:Hide();
-			PVPFrameCurrencyValue:SetText(currencyAmount);
+			PVPFrameCurrencyValue:SetText(currencyInfo.quantity);
 		end
 	else
 		PVPFrameCurrency:Hide();

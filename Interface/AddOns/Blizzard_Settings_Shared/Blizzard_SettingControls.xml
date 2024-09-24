@@ -21,6 +21,9 @@
 				</FontString>
 			</Layer>
 		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
 	</Frame>
 
 	<Frame name="SettingsAddOnDisabledLabelTemplate" virtual="true">
@@ -66,7 +69,7 @@
 		</Frames>
 	</Frame>
 
-	<CheckButton name="SettingsCheckBoxTemplate" mixin="SettingsCheckBoxMixin" motionScriptsWhileDisabled="true" virtual="true">
+	<CheckButton name="SettingsCheckboxTemplate" mixin="SettingsCheckboxMixin" motionScriptsWhileDisabled="true" virtual="true">
 		<Size x="30" y="29"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -84,7 +87,7 @@
 		<DisabledCheckedTexture atlas="checkmark-minimal-disabled" useAtlasSize="true"/>
 	</CheckButton>
 
-	<Frame name="SettingsCheckBoxControlTemplate" inherits="SettingsListElementTemplate" mixin="SettingsCheckBoxControlMixin" virtual="true">
+	<Frame name="SettingsCheckboxControlTemplate" inherits="SettingsListElementTemplate" mixin="SettingsCheckboxControlMixin" virtual="true">
 		<Size x="280" y="26"/>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
@@ -98,11 +101,20 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="SettingsDropDownControlTemplate" inherits="SettingsListElementTemplate" mixin="SettingsDropDownControlMixin" virtual="true">
-		<!--<KeyValues>
-			<KeyValue key="dropDownType" value="" type="string"/>
-			<KeyValue key="dropDownTemplate" value="" type="string"/>
-		</KeyValues>-->
+	<Button name="SettingsDropdownButtonTemplate" inherits="DarkMenuElementTemplate" motionScriptsWhileDisabled="true" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" font="GameFontNormal" justifyH="LEFT" maxLines="1">
+					<Size x="200" y="20"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="14"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Button>
+	
+	<Frame name="SettingsDropdownControlTemplate" inherits="SettingsListElementTemplate" mixin="SettingsDropdownControlMixin" virtual="true">
 		<Size x="280" y="26"/>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
@@ -116,88 +128,49 @@
 		</Scripts>
 	</Frame>
 	
-	<Frame name="SettingsCheckBoxWithButtonControlTemplate" inherits="SettingsListElementTemplate" mixin="SettingsCheckBoxWithButtonControlMixin" virtual="true">
+	<Frame name="SettingsCheckboxWithButtonControlTemplate" inherits="SettingsListElementTemplate" mixin="SettingsCheckboxWithButtonControlMixin" virtual="true">
 		<Size x="280" y="26"/>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</Frame>
 
-	<Frame name="SettingsCheckBoxSliderControlTemplate" inherits="SettingsListElementTemplate" mixin="SettingsCheckBoxSliderControlMixin" virtual="true">
+	<Frame name="SettingsCheckboxSliderControlTemplate" inherits="SettingsListElementTemplate" mixin="SettingsCheckboxSliderControlMixin" virtual="true">
 		<Size x="280" y="26"/>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</Frame>
 
-	<Frame name="SettingsCheckBoxDropDownControlTemplate" inherits="SettingsListElementTemplate" mixin="SettingsCheckBoxDropDownControlMixin" virtual="true">
+	<Frame name="SettingsCheckboxDropdownControlTemplate" inherits="SettingsListElementTemplate" mixin="SettingsCheckboxDropdownControlMixin" virtual="true">
 		<Size x="280" y="26"/>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</Frame>
-	
-	<Button name="SettingsSelectionPopoutEntryTemplate" inherits="SelectionPopoutEntryTemplate" motionScriptsWhileDisabled="true" mixin="SettingsSelectionPopoutEntryMixin" virtual="true">
-		<KeyValues>
-			<KeyValue key="defaultWidth" value="225" type="number"/>
-		</KeyValues>
+
+	<Frame name="Metal2DropdownWithSteppersAndLabelTemplate" inherits="DropdownWithSteppersTemplate" mixin="DropdownWithSteppersAndLabelMixin" virtual="true">
 		<Frames>
-			<Frame parentKey="SelectionDetails" setAllPoints="true" mixin="SettingsSelectionPopoutDetailsMixin">
-				<KeyValues>
-					<KeyValue key="selectionNamePadding" value="14" type="number"/>
-				</KeyValues>
-				<Size x="250" y="20"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" x="14" y="0"/>
-				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY" textureSubLevel="1">
-						<FontString parentKey="SelectionName" font="GameFontNormal" justifyH="LEFT" maxLines="1" hidden="true"/>
-					</Layer>
-				</Layers>
-			</Frame>
-		</Frames>
-		<Scripts>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-		</Scripts>
-	</Button>
-	
-	<Frame name="SettingsSelectionPopoutWithButtonsTemplate" inherits="SelectionPopoutWithButtonsTemplate" virtual="true">
-		<KeyValues>
-			<KeyValue key="decrementOffsetX" value="4" type="number"/>
-			<KeyValue key="incrementOffsetX" value="-4" type="number"/>
-		</KeyValues>
-		<Frames>
-			<EventButton parentKey="Button" inherits="SelectionPopoutButtonTemplate" mixin="SettingsSelectionPopoutButtonMixin">
-				<Size x="250" y="38"/>
+			<DropdownButton parentKey="Dropdown" inherits="WowStyle2DropdownTemplate">
 				<Anchors>
 					<Anchor point="CENTER"/>
 				</Anchors>
-				<KeyValues>
-					<KeyValue key="selectionEntryTemplates" value="SettingsSelectionPopoutEntryTemplate" type="string"/>
-				</KeyValues>
-				<Frames>
-					<Frame parentKey="SelectionDetails" setAllPoints="true" mixin="SettingsSelectionPopoutDetailsMixin">
-						<Size x="250" y="20"/>
-						<Layers>
-							<Layer level="OVERLAY" textureSubLevel="1">
-								<FontString parentKey="SelectionName" font="GameFontNormal" justifyH="CENTER" maxLines="1" hidden="true"/>
-							</Layer>
-						</Layers>
-					</Frame>
-				</Frames>
-			</EventButton>
+			</DropdownButton>
 		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" font="GameFontHighlightMed2">
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.DecrementButton" relativePoint="LEFT" x="-34"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
 	</Frame>
 
-	<Frame name="SettingsTextDropDownControlTemplate" inherits="SettingsDropDownControlTemplate" virtual="true">
-		<KeyValues>
-			<KeyValue key="dropDownType" value="Frame" type="string"/>
-			<KeyValue key="dropDownTemplate" value="SettingsSelectionPopoutWithButtonsTemplate" type="string"/>
-		</KeyValues>
-	</Frame>
-
+	<!-- Retained for ease of replacing all dropdown + stepper combos that are used across Settings-->
+	<Frame name="SettingsDropdownWithButtonsTemplate" inherits="Metal2DropdownWithSteppersAndLabelTemplate" virtual="true"/>
+	
 	<EventFrame name="SettingsExpandableSectionTemplate" mixin="SettingsExpandableSectionMixin" virtual="true">
 		<Size y="25"/>
 		<Frames>

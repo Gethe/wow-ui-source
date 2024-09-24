@@ -1,5 +1,5 @@
 ---------------------------- Main Menus ----------------------------------------------
-function UnitPopupMenuSelf:GetMenuButtons()
+function UnitPopupMenuSelf:GetEntries()
 	return {
 		UnitPopupSelectRoleButtonMixin,
 		UnitPopupRaidTargetButtonMixin,
@@ -26,7 +26,7 @@ function UnitPopupMenuSelf:GetMenuButtons()
 	}
 end
 
-function UnitPopupMenuParty:GetMenuButtons()
+function UnitPopupMenuParty:GetEntries()
 	return {
 		UnitPopupSelectRoleButtonMixin,
 		UnitPopupMenuFriendlyPlayer, --This is a submenu
@@ -50,7 +50,7 @@ function UnitPopupMenuParty:GetMenuButtons()
 	}
 end
 
-function UnitPopupMenuEnemyPlayer:GetMenuButtons()
+function UnitPopupMenuEnemyPlayer:GetEntries()
 	return {
 		UnitPopupSetFocusButtonMixin,
 		UnitPopupInspectButtonMixin, 
@@ -62,7 +62,7 @@ function UnitPopupMenuEnemyPlayer:GetMenuButtons()
 	}
 end
 
-function UnitPopupMenuRaidPlayer:GetMenuButtons()
+function UnitPopupMenuRaidPlayer:GetEntries()
 	return {
 		UnitPopupSelectRoleButtonMixin,
 		UnitPopupMenuFriendlyPlayer, --This is a subMenu
@@ -87,7 +87,7 @@ function UnitPopupMenuRaidPlayer:GetMenuButtons()
 	}
 end
 
-function UnitPopupMenuBnFriend:GetMenuButtons()
+function UnitPopupMenuBnFriend:GetEntries()
 	return { 
 		UnitPopupPopoutChatButtonMixin,
 		UnitPopupBnetTargetButtonMixin,
@@ -107,7 +107,7 @@ function UnitPopupMenuBnFriend:GetMenuButtons()
 	}
 end 
 
-function UnitPopupMenuBnFriendOffline:GetMenuButtons()
+function UnitPopupMenuBnFriendOffline:GetEntries()
 	return { 
 		UnitPopupSetBNetNoteButtonMixin, 
 		UnitPopupViewBnetFriendsButtonMixin,
@@ -118,7 +118,7 @@ function UnitPopupMenuBnFriendOffline:GetMenuButtons()
 	}
 end
 
-function UnitPopupMenuCommunitiesWowMember:GetMenuButtons()
+function UnitPopupMenuCommunitiesWowMember:GetEntries()
 	return {
 		UnitPopupAddFriendMenuButtonMixin, 
 		UnitPopupSubsectionSeperatorMixin, 
@@ -139,7 +139,7 @@ function UnitPopupMenuCommunitiesWowMember:GetMenuButtons()
 	}
 end
 
-function UnitPopupMenuCommunitiesGuildMember:GetMenuButtons()
+function UnitPopupMenuCommunitiesGuildMember:GetEntries()
 	return {
 		UnitPopupVoiceChatMicrophoneVolumeButtonMixin, 
 		UnitPopupVoiceChatSpeakerVolumeButtonMixin,
@@ -159,7 +159,7 @@ end
 
 UnitPopupMenuTeam = CreateFromMixins(UnitPopupTopLevelMenuMixin);
 UnitPopupManager:RegisterMenu("TEAM", UnitPopupMenuTeam);
-function UnitPopupMenuTeam:GetMenuButtons()
+function UnitPopupMenuTeam:GetEntries()
 	return {
 		UnitPopupWhisperButtonMixin,
 		UnitPopupInviteButtonMixin,

@@ -2,10 +2,9 @@
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
 ## Dependencies: Blizzard_SharedXMLGame
-## SuppressLocalTableRef: 1
 ## AllowLoad: game
 ## AllowLoadGameType: classic
-Shared\AutoCastShine.lua
-Shared\AutoCastShine.xml
+Classic\AutoCastShine.lua
+Classic\AutoCastShine.xml
 Classic\UIPanelTemplates.lua
 Classic\UIPanelTemplates.xml

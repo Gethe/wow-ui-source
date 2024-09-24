@@ -3,7 +3,7 @@
 	<!--Intended for scroll boxes using a data provider.-->
 	<Frame name="WowScrollBoxList" inherits="ScrollBoxBaseTemplate" mixin="ScrollBoxListMixin" virtual="true">
 		<!--
-		The created DragBehavior table will be assigned to MyScrollBox.dragBehavior
+		A drag behavior will be created appropriate to it's view and assigned to .dragBehavior
 		<KeyValue key="enableDefaultDrag" value="true" type="boolean"/>
 		-->
 	</Frame>

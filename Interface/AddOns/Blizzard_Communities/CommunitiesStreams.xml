@@ -140,7 +140,7 @@
 					</OnLoad>
 				</Scripts>
 			</ScrollFrame>
-			<CheckButton parentKey="TypeCheckBox" inherits="UICheckButtonTemplate">
+			<CheckButton parentKey="TypeCheckbox" inherits="UICheckButtonTemplate">
 				<Size x="20" y="20"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.TypeLabel" relativePoint="LEFT" x="-3" y="0"/>
@@ -202,15 +202,11 @@
 					<KeyValue key="OnCancel" value="CommunitiesNotificationSettingsDialogCancelButton_OnClick" type="global"/>
 				</KeyValues>
 			</Frame>
-			<Frame parentKey="CommunitiesListDropDownMenu" inherits="CommunitiesListDropDownMenuTemplate">
-				<Size x="40" y="28"/>
+			<DropdownButton parentKey="CommunitiesListDropdown" inherits="CommunitiesListDropdownTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-10" y="-22"/>
+					<Anchor point="TOPRIGHT" x="-20" y="-22"/>
 				</Anchors>
-				<KeyValues>
-					<KeyValue key="width" value="160" type="number"/>
-				</KeyValues>
-			</Frame>
+			</DropdownButton>
 			<ScrollFrame parentKey="ScrollFrame" inherits="ScrollFrameTemplate">
 				<KeyValues>
 					<KeyValue key="scrollBarX" value="5" type="number"/>
@@ -289,8 +285,9 @@
 			<OnShow method="OnShow"/>
 		</Scripts>
 	</Frame>
-	
-	<DropDownToggleButton name="AddToChatButtonTemplate" inherits="UIMenuButtonStretchTemplate" mixin="CommunitiesAddToChatMixin" virtual="true">
+
+	<DropdownButton name="AddToChatButtonTemplate" inherits="UIMenuButtonStretchTemplate" mixin="CommunitiesAddToChatMixin" virtual="true">
+		<Size x="22" y="22"/>
 		<Layers>
 			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture file="Interface\Buttons\SquareButtonTextures" parentKey="icon">
@@ -309,22 +306,13 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<Frames>
-			<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate">
-				<Size x="10" y="10"/>
-				<Scripts>
-					<OnLoad function="CommunitiesAddToChatDropDown_OnLoad"/>
-				</Scripts>
-			</Frame>
-		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
-			<OnMouseDown method="OnMouseDown"/>
+			<OnShow method="OnShow"/>
 		</Scripts>
-	</DropDownToggleButton>
+	</DropdownButton>
 		
-	<Frame name="StreamDropDownMenuTemplate" inherits="UIDropDownMenuTemplate" mixin="CommunitiesStreamDropDownMixin" virtual="true">
-		<Size x="40" y="28"/>
+	<DropdownButton name="StreamDropdownTemplate" inherits="WowStyle1DropdownTemplate" mixin="CommunitiesStreamDropdownMixin" virtual="true">
 		<Frames>
 			<Frame parentKey="NotificationOverlay" frameLevel="100" setAllPoints="true" hidden="true">
 				<Layers>
@@ -342,5 +330,5 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 		</Scripts>
-	</Frame>
+	</DropdownButton>
 </Ui>

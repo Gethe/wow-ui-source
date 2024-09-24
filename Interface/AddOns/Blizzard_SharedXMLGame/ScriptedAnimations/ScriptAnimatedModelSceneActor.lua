@@ -49,8 +49,8 @@ function ScriptAnimatedModelSceneActorMixin:DeltaUpdate(elapsed)
 end
 
 local function GetAngleForModel(source, target)
-	local sourceX, sourceY = source:GetCenter();
-	local targetX, targetY = target:GetCenter();
+	local sourceX, sourceY = GetScaledCenter(source);
+	local targetX, targetY = GetScaledCenter(target);
 	local direction = CreateVector2D(targetX - sourceX, targetY - sourceY);
 
 	-- Missiles face right by default, so calculate the angle between the right normal (1, 0), and the direction we'd like to face.

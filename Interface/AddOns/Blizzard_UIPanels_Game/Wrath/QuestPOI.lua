@@ -22,7 +22,7 @@ function QuestPOIHighlightManager:ClearHighlight()
 		return;
 	end
 	local oldID = QuestPOIHighlightManager.questID;
-	QuestPOIHighlightManager.questID = nil;	
+	QuestPOIHighlightManager.questID = nil;
 	EventRegistry:TriggerEvent("ClearHighlightedQuestPOI", oldID);
 end
 
@@ -136,7 +136,7 @@ function QuestPOIDisplayLayerMixin:UpdatePoint(isPushed)
 	end
 end
 
-function QuestPOIDisplayLayerMixin:SetNumber(value)	
+function QuestPOIDisplayLayerMixin:SetNumber(value)
 	local poiButton = self:GetParent();
 	local color = poiButton.selected and QUEST_POI_COLOR_BLACK or QUEST_POI_COLOR_YELLOW;
 	QuestPOI_SetTexture(self.Icon, 32, 32, "Interface/WorldMap/UI-QuestPoi-NumberIcons", QuestPOI_CalculateNumericTexCoords(value, color));
@@ -253,7 +253,7 @@ function QuestPOI_UpdateNormalStyleTexture(poiButton)
 		QuestPOI_SetTexture(poiButton.PushedTexture, 32, 32, QuestPOI_GetTextureInfoPushed(poiButton));
 		QuestPOI_SetTexture(poiButton.HighlightTexture, 32, 32, QuestPOI_GetTextureInfoHighlight(poiButton));
 	end
-	
+
 	local buttonAlpha = QuestPOI_GetButtonAlpha(poiButton);
 	poiButton.NormalTexture:SetAlpha(buttonAlpha);
 	poiButton.PushedTexture:SetAlpha(buttonAlpha);
@@ -302,7 +302,7 @@ end
 
 local function QuestPOI_GetButtonInternal(parent, questID, style, index)
 	local poiButton;
-			
+
 	if style == "numeric" then
 		-- numbered POI
 		poiButton = parent.poiTable[style][index];
@@ -325,10 +325,10 @@ local function QuestPOI_GetButtonInternal(parent, questID, style, index)
 		if not poiButton then
 			poiButton = CreateFrame("Button", nil, parent, "QuestPOICompletedTemplate");
 			tinsert(parent.poiTable["completed"], poiButton);
-			QuestPOI_CallOnCreateFunction(parent, poiButton);	
+			QuestPOI_CallOnCreateFunction(parent, poiButton);
 		end
 	end
-	
+
 	poiButton:SetEnabled(style ~= "disabled");
 	poiButton.questID = questID;
 	poiButton.style = style;
@@ -375,7 +375,7 @@ function QuestPOI_SelectButton(poiButton)
 	if parent.poiSelectedButton then
 		QuestPOI_ClearSelection(parent);
 	end
-	
+
 	parent.poiSelectedButton = poiButton;
 	poiButton.selected = true;
 	QuestPOI_UpdateButtonStyle(poiButton);

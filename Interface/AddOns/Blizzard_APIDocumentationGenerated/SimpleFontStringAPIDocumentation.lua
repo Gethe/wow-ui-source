@@ -522,6 +522,15 @@ local SimpleFontStringAPI =
 			},
 		},
 		{
+			Name = "SetTextToFit",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "text", Type = "cstring", Nilable = false, Default = "" },
+			},
+		},
+		{
 			Name = "SetWordWrap",
 			Type = "Function",
 

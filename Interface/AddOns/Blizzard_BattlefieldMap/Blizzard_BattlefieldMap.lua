@@ -45,18 +45,45 @@ end
 function BattlefieldMapTabMixin:OnClick(button)
 	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 
-	-- If Rightclick bring up the options menu
 	if button == "RightButton" then
-		local function InitializeOptionsDropDown(self)
-			self:GetParent():InitializeOptionsDropDown();
+		MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
+			rootDescription:SetTag("MENU_BATTLEFIELD_MAP");
+
+			do
+				-- Show battlefield players
+				local function IsSelected()
+					return BattlefieldMapOptions.showPlayers;
+				end
+
+				local function SetSelected()
+					BattlefieldMapOptions.showPlayers = not BattlefieldMapOptions.showPlayers;
+					BattlefieldMapFrame:UpdateUnitsVisibility();
+				end
+				rootDescription:CreateCheckbox(SHOW_BATTLEFIELDMINIMAP_PLAYERS, IsSelected, SetSelected);
+			end
+
+			do
+				-- Battlefield minimap lock
+				local function IsSelected()
+					return BattlefieldMapOptions.locked;
+				end
+
+				local function SetSelected()
+					BattlefieldMapOptions.locked = not BattlefieldMapOptions.locked;
+				end
+				rootDescription:CreateCheckbox(LOCK_BATTLEFIELDMINIMAP, IsSelected, SetSelected);
+			end
+
+			do
+				-- Opacity
+				rootDescription:CreateButton(BATTLEFIELDMINIMAP_OPACITY_LABEL, function()
+					self:ShowOpacity();
+				end);
 		end
-		UIDropDownMenu_Initialize(self.OptionsDropDown, InitializeOptionsDropDown, "MENU");
-		ToggleDropDownMenu(1, nil, self.OptionsDropDown, self, 0, 0);	
+		end);
+
 		return;
 	end
-
-	-- Close all dropdowns
-	CloseDropDownMenus();
 
 	-- If frame is not locked then allow the frame to be dragged or dropped
 	if self:GetButtonState() == "PUSHED" then
@@ -85,39 +112,6 @@ end
 function BattlefieldMapTabMixin:OnDragStop()
 	BattlefieldMapFrame:StopMovingOrSizing();
 	ValidateFramePosition(self);
-end
-
-function BattlefieldMapTabMixin:InitializeOptionsDropDown()
-	local checked;
-	local info = UIDropDownMenu_CreateInfo();
-
-	-- Show battlefield players
-	info.text = SHOW_BATTLEFIELDMINIMAP_PLAYERS;
-	info.func = function()
-		BattlefieldMapOptions.showPlayers = not BattlefieldMapOptions.showPlayers;
-		BattlefieldMapFrame:UpdateUnitsVisibility();
-	end;
-	info.checked = BattlefieldMapOptions.showPlayers;
-	info.classicChecks = true;
-	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
-
-	-- Battlefield minimap lock
-	info.text = LOCK_BATTLEFIELDMINIMAP;
-	info.func = function()
-		BattlefieldMapOptions.locked = not BattlefieldMapOptions.locked;
-	end;
-	info.checked = BattlefieldMapOptions.locked;
-	info.classicChecks = true;
-	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
-
-	-- Opacity
-	info.text = BATTLEFIELDMINIMAP_OPACITY_LABEL;
-	info.func = function()
-		self:ShowOpacity();
-	end;
-	info.notCheckable = true;
-	info.leftPadding = 24;
-	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
 end
 
 function BattlefieldMapTabMixin:ShowOpacity()
@@ -185,7 +179,6 @@ function BattlefieldMapMixin:OnHide()
 	MapCanvasMixin.OnHide(self);
 	PlaySound(SOUNDKIT.IG_QUEST_LOG_CLOSE);
 	BattlefieldMapTab:Hide();
-	CloseDropDownMenus();
 end
 
 function BattlefieldMapMixin:OnEvent(event, ...)

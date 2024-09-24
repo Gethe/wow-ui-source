@@ -180,7 +180,7 @@
 		</Size>
 		<Frames>
 			<!--These frames exist so we can put tooltips on individual columns in the realm list.-->
-			<Frame name ="RealmTypeTooltipHitbox">
+			<Button name ="RealmTypeTooltipHitbox">
 				<Size>
 					<AbsDimension x="190" y="12"/>
 				</Size>
@@ -190,8 +190,14 @@
 				<Scripts>
 					<OnEnter function ="RealmTypeTooltipHitbox_OnEnter"/>
 					<OnLeave function ="RealmButton_RemoveTooltip"/>
+					<OnClick>
+						RealmSelectButton_OnClick(self:GetParent());
+					</OnClick>
+					<OnDoubleClick>
+						RealmSelectButton_OnDoubleClick(self:GetParent());
+					</OnDoubleClick> 
 				</Scripts>
-			</Frame>
+			</Button>
 		</Frames>
 		<Layers>
 			<Layer level="BACKGROUND">

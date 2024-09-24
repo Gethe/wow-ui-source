@@ -5,10 +5,7 @@ COMMUNITIES_GUILD_DETAIL_OFFICER_HEIGHT = 228;
 CommunitiesGuildMemberDetailMixin = {};
 
 function CommunitiesGuildMemberDetailMixin:OnLoad()
-	UIDropDownMenu_JustifyText(self.RankDropdown, "LEFT");
-	UIDropDownMenu_Initialize(self.RankDropdown, CommunitiesGuildMemberRankDropdown_Initialize);
-	UIDropDownMenu_SetWidth(self.RankDropdown, 159 - self.RankLabel:GetWidth());
-	UIDropDownMenu_JustifyText(self.RankDropdown, "LEFT");
+	self.RankDropdown:SetWidth(169 - self.RankLabel:GetWidth());
 end
 
 function CommunitiesGuildMemberDetailMixin:OnShow()
@@ -16,6 +13,49 @@ function CommunitiesGuildMemberDetailMixin:OnShow()
 	CommunitiesFrame:RegisterDialogShown(self);
 end
 
+function CommunitiesGuildMemberDetailMixin:SetupRankDropdown()
+	local memberInfo = self:GetMemberInfo();
+	if memberInfo == nil or memberInfo.guildRankOrder == nil or memberInfo.guid == nil then
+		return;
+	end
+	
+	local myMemberInfo = C_Club.GetMemberInfoForSelf(self:GetClubId());
+	if myMemberInfo == nil or myMemberInfo.guildRankOrder == nil then
+		return;
+	end
+
+	self.RankDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_GUILD_RANKS");
+
+		local memberRankOrder = memberInfo.guildRankOrder;
+		local highestRankOrder = CanGuildPromote() and (myMemberInfo.guildRankOrder + 1) or memberRankOrder;
+		local lowestRankOrder = CanGuildDemote() and GuildControlGetNumRanks() or memberRankOrder;
+
+		local function IsSelected(listRankOrder)
+			return memberRankOrder == listRankOrder;
+		end
+
+		local function SetSelected(listRankOrder)
+			if memberRankOrder ~= listRankOrder then
+				C_GuildInfo.SetGuildRankOrder(memberInfo.guid, listRankOrder);
+			end
+		end
+
+		for listRankOrder = highestRankOrder, lowestRankOrder do
+			local text = GuildControlGetRankName(listRankOrder);
+			local radio = rootDescription:CreateRadio(text, IsSelected, SetSelected, listRankOrder);
+
+			if not C_GuildInfo.IsGuildRankAssignmentAllowed(memberInfo.guid, listRankOrder) then
+				radio:SetEnabled(false);
+				radio:SetTooltip(function(tooltip, elementDescription)
+					GameTooltip_SetTitle(tooltip, GUILD_RANK_UNAVAILABLE);
+					GameTooltip_AddNormalLine(tooltip, GUILD_RANK_UNAVAILABLE_AUTHENTICATOR);
+				end);
+			end
+		end
+	end);
+end
+	
 function CommunitiesGuildMemberDetailMixin:OnHide()
 	self:UnregisterEvent("GUILD_ROSTER_UPDATE");
 end
@@ -32,6 +72,8 @@ function CommunitiesGuildMemberDetailMixin:OnEvent(event, ...)
 		if clubId ~= nil and memberInfo ~= nil then
 			self:DisplayMember(clubId, memberInfo);
 		end
+
+		self:SetupRankDropdown();
 	end
 end
 
@@ -101,7 +143,6 @@ function CommunitiesGuildMemberDetailMixin:DisplayMember(clubId, memberInfo)
 		self.RankLabel:SetHeight(20);
 		self.RankDropdown:Show();
 		self.RankText:Hide();
-		UIDropDownMenu_SetText(self.RankDropdown, memberInfo.guildRank);
 	else
 		self.RankLabel:SetHeight(0);
 		self.RankDropdown:Hide();
@@ -135,60 +176,8 @@ function CommunitiesGuildMemberDetailMixin:DisplayMember(clubId, memberInfo)
 	
 	self.RemoveButton:SetEnabled(CanGuildRemove() and rankOrder > myRankOrder);
 	self.GroupInviteButton:SetEnabled(memberInfo.lastOnlineHour == nil and not memberInfo.isRemoteChat and memberInfo.presence ~= Enum.ClubMemberPresence.OnlineMobile);
-	
+
+	self:SetupRankDropdown();
+
 	self:Show();
-end
-
-function CommunitiesGuildMemberRankDropdown_Initialize(self)
-	local numRanks = GuildControlGetNumRanks();
-	local memberInfo = self:GetParent():GetMemberInfo();
-	if memberInfo == nil or memberInfo.guildRankOrder == nil or memberInfo.guid == nil then
-		return;
-	end
-	
-	local memberRankOrder = memberInfo.guildRankOrder;
-	
-	local myMemberInfo = C_Club.GetMemberInfoForSelf(self:GetParent():GetClubId());
-	if myMemberInfo == nil or myMemberInfo.guildRankOrder == nil then
-		return;
-	end
-
-	local userRankOrder = myMemberInfo.guildRankOrder;
-	
-	local highestRankOrder = userRankOrder + 1;
-	if not CanGuildPromote() then
-		highestRankOrder = memberRankOrder;
-	end
-	
-	local lowestRankOrder = numRanks;
-	if not CanGuildDemote() then
-		lowestRankOrder = memberRankOrder;
-	end
-		
-	for listRankOrder = highestRankOrder, lowestRankOrder do
-		local info = UIDropDownMenu_CreateInfo();
-		info.text = GuildControlGetRankName(listRankOrder);
-		
-		if memberRankOrder ~= listRankOrder then
-			info.func = function()
-				C_GuildInfo.SetGuildRankOrder(memberInfo.guid, listRankOrder);
-			end;
-		end
-		
-		info.checked = listRankOrder == memberRankOrder;
-		info.value = listRankOrder;
-		-- check
-		if not info.checked then
-			if not C_GuildInfo.IsGuildRankAssignmentAllowed(memberInfo.guid, listRankOrder) then
-				info.disabled = true;
-				info.tooltipWhileDisabled = 1;
-				info.tooltipTitle = GUILD_RANK_UNAVAILABLE;
-				
-				-- We only disallow a rank if it requires an authenticator.
-				info.tooltipText = GUILD_RANK_UNAVAILABLE_AUTHENTICATOR;
-				info.tooltipOnButton = 1;
-			end
-		end
-		UIDropDownMenu_AddButton(info);
-	end
 end

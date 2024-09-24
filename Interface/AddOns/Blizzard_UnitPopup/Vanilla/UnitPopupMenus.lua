@@ -1,5 +1,5 @@
 ---------------------------- Main Menus ----------------------------------------------
-function UnitPopupMenuSelf:GetMenuButtons()
+function UnitPopupMenuSelf:GetEntries()
 	return {
 		UnitPopupRaidTargetButtonMixin, 
 		UnitPopupSetFocusButtonMixin,
@@ -26,7 +26,7 @@ function UnitPopupMenuSelf:GetMenuButtons()
 end
 
 UnitPopupMenuFriendlyPlayerInteract = CreateFromMixins(UnitPopupTopLevelMenuMixin);
-function UnitPopupMenuFriendlyPlayerInteract:GetMenuButtons()
+function UnitPopupMenuFriendlyPlayerInteract:GetEntries()
 	return {
 		UnitPopupWhisperButtonMixin,
 		UnitPopupInspectButtonMixin, 
@@ -39,7 +39,7 @@ function UnitPopupMenuFriendlyPlayerInteract:GetMenuButtons()
 	}
 end 
 
-function UnitPopupMenuParty:GetMenuButtons()
+function UnitPopupMenuParty:GetEntries()
 	return {
 		UnitPopupMenuFriendlyPlayer, --This is a submenu
 		UnitPopupRafSummonButtonMixin,
@@ -62,7 +62,7 @@ function UnitPopupMenuParty:GetMenuButtons()
 	}
 end
 
-function UnitPopupMenuEnemyPlayer:GetMenuButtons()
+function UnitPopupMenuEnemyPlayer:GetEntries()
 	return {
 		UnitPopupMovePlayerFrameButtonMixin,
 		UnitPopupMoveTargetFrameButtonMixin,
@@ -72,7 +72,7 @@ function UnitPopupMenuEnemyPlayer:GetMenuButtons()
 	}
 end
 
-function UnitPopupMenuRaidPlayer:GetMenuButtons()
+function UnitPopupMenuRaidPlayer:GetEntries()
 	return {
 		UnitPopupMenuFriendlyPlayer, --This is a subMenu
 		UnitPopupRafSummonButtonMixin,
@@ -96,7 +96,7 @@ function UnitPopupMenuRaidPlayer:GetMenuButtons()
 	}
 end
 
-function UnitPopupMenuBnFriend:GetMenuButtons()
+function UnitPopupMenuBnFriend:GetEntries()
 	return { 
 		UnitPopupPopoutChatButtonMixin,
 		UnitPopupBnetTargetButtonMixin,
@@ -116,7 +116,7 @@ function UnitPopupMenuBnFriend:GetMenuButtons()
 	}
 end 
 
-function UnitPopupMenuBnFriendOffline:GetMenuButtons()
+function UnitPopupMenuBnFriendOffline:GetEntries()
 	return { 
 		UnitPopupSetBNetNoteButtonMixin, 
 		UnitPopupViewBnetFriendsButtonMixin,
@@ -127,7 +127,7 @@ function UnitPopupMenuBnFriendOffline:GetMenuButtons()
 	}
 end
 
-function UnitPopupMenuCommunitiesWowMember:GetMenuButtons()
+function UnitPopupMenuCommunitiesWowMember:GetEntries()
 	return {
 		UnitPopupAddFriendMenuButtonMixin, 
 		UnitPopupSubsectionSeperatorMixin, 
@@ -148,7 +148,7 @@ function UnitPopupMenuCommunitiesWowMember:GetMenuButtons()
 	}
 end
 
-function UnitPopupMenuCommunitiesGuildMember:GetMenuButtons()
+function UnitPopupMenuCommunitiesGuildMember:GetEntries()
 	return {
 		UnitPopupVoiceChatMicrophoneVolumeButtonMixin, 
 		UnitPopupVoiceChatSpeakerVolumeButtonMixin,

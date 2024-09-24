@@ -312,38 +312,6 @@
 					<OnLeave function="ContainerFramePortraitButton_OnLeave" />
 				</Scripts>
 			</Button>
-			<!--<Button parentKey="FilterIcon" hidden="true">
-				<Size x="28" y="28"/>
-				<Anchors>
-					<Anchor point="CENTER" relativeKey="$parent.Portrait" relativePoint="BOTTOMRIGHT" x="-9" y="14"/>
-				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY">
-						<Texture parentKey="Icon" atlas="bags-icon-consumables" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnShow>
-						self:SetFrameLevel(self:GetParent().PortraitButton:GetFrameLevel()+1);
-					</OnShow>
-					<OnEnter>
-						local target = self:GetParent().PortraitButton;
-						target:GetScript("OnEnter")(target);
-					</OnEnter>
-					<OnLeave>
-						local target = self:GetParent().PortraitButton;
-						target:GetScript("OnLeave")(target);
-					</OnLeave>
-					<OnClick>
-						local target = self:GetParent().PortraitButton;
-						target:GetScript("OnClick")(target);
-					</OnClick>
-				</Scripts>
-			</Button>-->
 			<Button name="$parentAddSlotsButton" hidden="true">
 				<Size x="24" y="24"/>
 				<Anchors>

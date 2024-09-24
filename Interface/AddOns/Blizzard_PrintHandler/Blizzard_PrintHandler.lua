@@ -65,7 +65,7 @@ local tostringall = tostringall;
 
 local LOCAL_PrintHandler =
     function(...)
-		local printMsg = strjoin(" ", tostringall(...));
+		local printMsg = string.join(" ", tostringall(...));
 		if DEFAULT_CHAT_FRAME then
 			DEFAULT_CHAT_FRAME:AddMessage(printMsg);
 		end

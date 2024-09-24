@@ -229,9 +229,9 @@ function SpellBookFrame_UpdatePages()
 		showSpellRanks = false;
 	end
 	if ( SpellBookFrame.bookType == BOOKTYPE_SPELL and showSpellRanks ) then
-		ShowAllSpellRanksCheckBox:Show();
+		ShowAllSpellRanksCheckbox:Show();
 	else
-		ShowAllSpellRanksCheckBox:Hide();
+		ShowAllSpellRanksCheckbox:Hide();
 	end
 end
 

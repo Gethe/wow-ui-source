@@ -161,7 +161,7 @@ function PTR_IssueReporter.AttachMultipleChoiceQuestion(frame, question, answers
     questionFrame:Show()
     
     for key, choice in pairs (answers) do
-        PTR_IssueReporter.AttachCheckBoxToQuestion(questionFrame, choice, canSelectMultiple, displayVertically)
+        PTR_IssueReporter.AttachCheckboxToQuestion(questionFrame, choice, canSelectMultiple, displayVertically)
     end
     
     local numberOfCurrentCheckboxes = #questionFrame.Checkboxes
@@ -199,9 +199,9 @@ function PTR_IssueReporter.AttachMultipleChoiceQuestion(frame, question, answers
     table.insert(frame.FrameComponents, questionFrame) 
 end
 ----------------------------------------------------------------------------------------------------
-function PTR_IssueReporter.AttachCheckBoxToQuestion(questionFrame, answer, canSelectMultiple, isVertical)
+function PTR_IssueReporter.AttachCheckboxToQuestion(questionFrame, answer, canSelectMultiple, isVertical)
     
-    local newCheckBox
+    local newCheckbox
     
     if not (PTR_IssueReporter.Data.UnusedFrameComponents.Checkbox) then
         PTR_IssueReporter.Data.UnusedFrameComponents.Checkbox = {}
@@ -210,30 +210,30 @@ function PTR_IssueReporter.AttachCheckBoxToQuestion(questionFrame, answer, canSe
     local numberOfUnusedFrames = #PTR_IssueReporter.Data.UnusedFrameComponents.Checkbox
     
     if  numberOfUnusedFrames > 0 then -- Check if there is a frame we should reuse
-        newCheckBox = PTR_IssueReporter.Data.UnusedFrameComponents.Checkbox[numberOfUnusedFrames]
+        newCheckbox = PTR_IssueReporter.Data.UnusedFrameComponents.Checkbox[numberOfUnusedFrames]
         PTR_IssueReporter.Data.UnusedFrameComponents.Checkbox[numberOfUnusedFrames] = nil
         numberOfUnusedFrames = #PTR_IssueReporter.Data.UnusedFrameComponents.Checkbox
     else
-        newCheckBox = CreateFrame("CheckButton", nil, questionFrame.QuestionBackground, "UICheckButtonTemplate")
-        newCheckBox.Text = newCheckBox:CreateFontString(nil, "OVERLAY", "GameTooltipText")        
-        newCheckBox.Text:SetJustifyH("CENTER")
-        newCheckBox.Text:SetJustifyV("MIDDLE")
-        newCheckBox.Text:SetTextColor(1, 1, 1)
+        newCheckbox = CreateFrame("CheckButton", nil, questionFrame.QuestionBackground, "UICheckButtonTemplate")
+        newCheckbox.Text = newCheckbox:CreateFontString(nil, "OVERLAY", "GameTooltipText")        
+        newCheckbox.Text:SetJustifyH("CENTER")
+        newCheckbox.Text:SetJustifyV("MIDDLE")
+        newCheckbox.Text:SetTextColor(1, 1, 1)
     end
     
-    newCheckBox.Text:ClearAllPoints()
+    newCheckbox.Text:ClearAllPoints()
     if (isVertical) then        
-        newCheckBox.Text:SetPoint("LEFT", newCheckBox, "RIGHT", 0, 0)
+        newCheckbox.Text:SetPoint("LEFT", newCheckbox, "RIGHT", 0, 0)
     else
-        newCheckBox.Text:SetPoint("TOP", newCheckBox, "BOTTOM", 0, 0)
+        newCheckbox.Text:SetPoint("TOP", newCheckbox, "BOTTOM", 0, 0)
     end
     
-    newCheckBox:SetChecked(false)
-    newCheckBox:SetParent(questionFrame.QuestionBackground)
-    newCheckBox.Text:SetText(answer)
-    newCheckBox:Show()
+    newCheckbox:SetChecked(false)
+    newCheckbox:SetParent(questionFrame.QuestionBackground)
+    newCheckbox.Text:SetText(answer)
+    newCheckbox:Show()
     
-    table.insert(questionFrame.Checkboxes, newCheckBox)
+    table.insert(questionFrame.Checkboxes, newCheckbox)
 end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.AttachModelViewer(surveyFrame, survey, dataPackage)

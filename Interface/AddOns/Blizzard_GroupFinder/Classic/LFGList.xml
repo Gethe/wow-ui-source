@@ -248,10 +248,7 @@
 			<OnLoad>
 				self:RegisterForClicks("RightButtonUp");
 			</OnLoad>
-			<OnMouseDown>
-				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-				EasyMenu(LFGListUtil_GetApplicantMemberMenu(self:GetParent().applicantID, self.memberIdx), LFGListFrameDropDown, self, 60, -5, "MENU");
-			</OnMouseDown>
+			<OnMouseDown function="LFGListApplicantMember_OnMouseDown"/>
 			<OnEnter function="LFGListApplicantMember_OnEnter"/>
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
@@ -999,7 +996,6 @@
 			<Anchor point="TOPLEFT" x="224" y="0"/>
 		</Anchors>
 		<Frames>
-			<Frame name="LFGListFrameDropDown" inherits="UIDropDownMenuTemplate"/>
 			<Frame parentKey="CategorySelection" inherits="LFGListPanelTemplate">
 				<KeyValues>
 					<KeyValue key="updateAll" value="LFGListCategorySelection_UpdateCategoryButtons" type="global"/>
@@ -1156,36 +1152,11 @@
 							</OnEditFocusLost>
 						</Scripts>
 					</EditBox>
-					<DropDownToggleButton parentKey="FilterButton" inherits="UIMenuButtonStretchTemplate" text="FILTER">
-						<Size x="93" y="22"/>
+					<DropdownButton parentKey="FilterButton" inherits="WowStyle1FilterDropdownTemplate">
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.SearchBox" relativePoint="RIGHT" x="2" y="0"/>
 						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK">
-								<Texture parentKey="Icon" file="Interface\ChatFrame\ChatFrameExpandArrow">
-									<Size x="10" y="12"/>
-									<Anchors>
-										<Anchor point="RIGHT" x="-5"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnMouseDown>
-								UIMenuButtonStretchMixin.OnMouseDown(self, button);
-								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-								ToggleDropDownMenu(1, nil, LFGListLanguageFilterDropDownFrame, self, 0, -2, "MENU");
-							</OnMouseDown>
-						</Scripts>
-					</DropDownToggleButton>
-					<Frame name="LFGListLanguageFilterDropDownFrame" inherits="UIDropDownMenuTemplate">
-						<Scripts>
-							<OnLoad>
-								UIDropDownMenu_Initialize(self, LFGListUtil_InitializeLangaugeFilter, "MENU");
-							</OnLoad>
-						</Scripts>
-					</Frame>
+					</DropdownButton>
 					<Frame parentKey="AutoCompleteFrame" frameLevel="20">
 						<Size x="0" y="30"/>
 						<Anchors>
@@ -1856,18 +1827,16 @@
 							</OnEnable>
 						</Scripts>
 					</EditBox>
-					<Frame parentKey="GroupDropDown" name="LFGListEntryCreationGroupDropDown" inherits="UIDropDownMenuTemplate">
-						<Size x="175" y="32"/>
+					<DropdownButton parentKey="GroupDropdown" name="LFGListEntryCreationGroupDropdown" inherits="WowStyle1DropdownTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="0" y="-76"/>
+							<Anchor point="TOPLEFT" x="19" y="-76"/>
 						</Anchors>
-					</Frame>
-					<Frame parentKey="ActivityDropDown" name="LFGListEntryCreationActivityDropDown" inherits="UIDropDownMenuTemplate">
-						<Size x="175" y="32"/>
+					</DropdownButton>
+					<DropdownButton parentKey="ActivityDropdown" name="LFGListEntryCreationActivityDropdown" inherits="WowStyle1DropdownTemplate">
 						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.GroupDropDown" relativePoint="RIGHT" x="-15" y="0"/>
+							<Anchor point="LEFT" relativeKey="$parent.GroupDropdown" relativePoint="RIGHT" x="15" y="0"/>
 						</Anchors>
-					</Frame>
+					</DropdownButton>
 					<ScrollFrame parentKey="Description" name="LFGListCreationDescription" mixin="LFGListCreationDescriptionMixin" inherits="InputScrollFrameTemplate">
 						<Size x="283" y="46"/>
 						<Anchors>
@@ -1896,12 +1865,12 @@
 							</Button>
 						</Frames>
 					</ScrollFrame>
-					<Frame parentKey="PlayStyleDropdown" name="LFGListEntryCreationPlayStyleDropdown" inherits="UIDropDownMenuTemplate">
+					<DropdownButton parentKey="PlayStyleDropdown" name="LFGListEntryCreationPlayStyleDropdown" inherits="WowStyle1DropdownTemplate">
 						<Size x="175" y="32"/>
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.PlayStyleLabel" relativePoint="RIGHT" x="6" y="-2"/>
 						</Anchors>
-					</Frame>
+					</DropdownButton>
 					<Frame parentKey="ItemLevel" inherits="LFGListRequirementTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT" x="20" y="-258"/>

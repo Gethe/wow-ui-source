@@ -568,8 +568,6 @@ function MasterLooterFrame_Show(selectedLootButton)
 	MasterLooterFrame:Show();
 	MasterLooterFrame_UpdatePlayers();
 	MasterLooterFrame:SetPoint("TOPLEFT", selectedLootButton, "BOTTOMLEFT", 0, 0);
-
-	CloseDropDownMenus();
 end
 
 function MasterLooterFrame_UpdatePlayers()

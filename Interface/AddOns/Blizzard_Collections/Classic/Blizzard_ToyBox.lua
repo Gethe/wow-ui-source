@@ -12,7 +12,7 @@ function ToyBox_OnLoad(self)
 	ToyBox_UpdatePages();
 	ToyBox_UpdateProgressBar(self);
 
-	UIDropDownMenu_Initialize(self.toyOptionsMenu, ToyBoxOptionsMenu_Init, "MENU");
+	ToyBox_InitFilterDropdown(self);
 
 	self:RegisterEvent("TOYS_UPDATED");
 	self:RegisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
@@ -35,6 +35,26 @@ function ToyBox_OnLoad(self)
 		end
 		]]--
 	end
+end
+
+function ToyBox_InitFilterDropdown(self)
+	self.FilterDropdown:SetUpdateCallback(function(description)
+		ToyBox.firstCollectedToyID = 0;
+		ToyBox_UpdatePages();
+		ToyBox_UpdateButtons();
+	end);
+	
+	self.FilterDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_TOYBOX_FILTER");
+
+		rootDescription:CreateCheckbox(COLLECTED, C_ToyBox.GetCollectedShown, function()
+			C_ToyBox.SetCollectedShown(not C_ToyBox.GetCollectedShown());
+		end);
+
+		rootDescription:CreateCheckbox(NOT_COLLECTED, C_ToyBox.GetUncollectedShown, function()
+			C_ToyBox.SetUncollectedShown(not C_ToyBox.GetUncollectedShown());
+		end);
+	end);
 end
 
 function ToyBox_OnEvent(self, event, itemID, new, fanfare)
@@ -98,47 +118,6 @@ function ToyBox_OnMouseWheel(self, value)
 	ToyBox.PagingFrame:OnMouseWheel(value);
 end
 
-function ToyBoxOptionsMenu_Init(self, level)
-	local info = UIDropDownMenu_CreateInfo();
-	info.notCheckable = true;
-	info.disabled = nil;
-
-	local isFavorite = ToyBox.menuItemID and C_ToyBox.GetIsFavorite(ToyBox.menuItemID);
-
-	if (isFavorite) then
-		info.text = BATTLE_PET_UNFAVORITE;
-		info.func = function()
-			C_ToyBox.SetIsFavorite(ToyBox.menuItemID, false);
-		end
-	else
-		info.text = BATTLE_PET_FAVORITE;
-		info.func = function()
-			C_ToyBox.SetIsFavorite(ToyBox.menuItemID, true);
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_FAVORITE, true);
-			--HelpTip:Hide(ToyBox, TOYBOX_FAVORITE_HELP);
-		end
-	end
-
-	UIDropDownMenu_AddButton(info, level);
-	info.disabled = nil;
-
-	info.text = CANCEL;
-	info.func = nil;
-	UIDropDownMenu_AddButton(info, level);
-end
-
-function ToyBox_ShowToyDropdown(itemID, anchorTo, offsetX, offsetY)
-	ToyBox.menuItemID = itemID;
-	ToggleDropDownMenu(1, nil, ToyBox.toyOptionsMenu, anchorTo, offsetX, offsetY);
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-end
-
-function ToyBox_HideToyDropdown()
-	if (UIDropDownMenu_GetCurrentDropDown() == ToyBox.toyOptionsMenu) then
-		HideDropDownMenu(1);
-	end
-end
-
 function ToySpellButton_OnShow(self)
 	self:RegisterEvent("TOYS_UPDATED");
 
@@ -187,9 +166,28 @@ function ToySpellButton_OnClick(self, button)
 		end
 	elseif ( button == "RightButton" ) then
 		if (PlayerHasToy(self.itemID)) then
-			ToyBox_ShowToyDropdown(self.itemID, self, 0, 0);
+			ToySpellButton_CreateContextMenu(self, self.itemID);
 		end
 	end
+end
+
+function ToySpellButton_CreateContextMenu(self, itemID)
+	MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
+		rootDescription:SetTag("MENU_TOYBOX_FAVORITE");
+
+		local isFavorite = C_ToyBox.GetIsFavorite(itemID);
+		if isFavorite then
+			rootDescription:CreateButton(BATTLE_PET_UNFAVORITE, function()
+				C_ToyBox.SetIsFavorite(itemID, false);
+			end);
+		else
+			rootDescription:CreateButton(BATTLE_PET_FAVORITE, function()
+				C_ToyBox.SetIsFavorite(itemID, true);
+
+				SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_FAVORITE, true);
+			end);
+		end
+	end);
 end
 
 function ToySpellButton_FadeInIcon(self)
@@ -381,67 +379,5 @@ function ToyBox_OnSearchTextChanged(self)
 		C_ToyBox.SetFilterString(ToyBox.searchString);
 		ToyBox_UpdatePages();
 		ToyBox_UpdateButtons();
-	end
-end
-
-function ToyBoxFilterDropDown_OnLoad(self)
-	UIDropDownMenu_Initialize(self, ToyBoxFilterDropDown_Initialize, "MENU");
-end
-
-function ToyBoxUpdateFilteredInformation()
-	ToyBox.firstCollectedToyID = 0;
-	ToyBox_UpdatePages();
-	ToyBox_UpdateButtons();
-end
-
-function ToyBoxFilterDropDown_ResetFilters()
-	C_ToyBoxInfo.SetDefaultFilters();
-end
-
-function ToyBoxFilterDropDown_OnUpdate()
-	ToyBoxUpdateFilteredInformation();
-end
-
--- The global string for this filter reads "USABLE ONLY" (which would mean SetUnusableShown should be false when checked)
-function ToyBoxFilterDropDown_SetUsableOnlyShown(value)
-	C_ToyBox.SetUnusableShown(not value);
-end
-
-function ToyBoxFilterDropDown_GetUsableOnlyShown()
-	return not C_ToyBox.GetUnusableShown();
-end
-
-function ToyBoxFilterDropDown_SetAllSourceTypeFilters(value)
-	C_ToyBox.SetAllSourceTypeFilters(value);
-	UIDropDownMenu_Refresh(ToyBoxFilterDropDown, UIDROPDOWNMENU_MENU_VALUE, UIDROPDOWNMENU_MENU_LEVEL);
-end
-
-function ToyBoxFilterDropDown_SetAllExpansionTypeFilters(value)
-	C_ToyBox.SetAllExpansionTypeFilters(value);
-	UIDropDownMenu_Refresh(ToyBoxFilterDropDown, UIDROPDOWNMENU_MENU_VALUE, UIDROPDOWNMENU_MENU_LEVEL);
-end
-
-function ToyBoxFilterDropDown_Initialize(self, level)
-	local info = UIDropDownMenu_CreateInfo();
-	info.keepShownOnClick = true;
-
-	if level == 1 then
-		info.text = COLLECTED;
-		info.func = function(_, _, _, value)
-						C_ToyBox.SetCollectedShown(value);
-						ToyBoxUpdateFilteredInformation();
-					end
-		info.checked = C_ToyBox.GetCollectedShown();
-		info.isNotRadio = true;
-		UIDropDownMenu_AddButton(info, level);
-
-		info.text = NOT_COLLECTED;
-		info.func = function(_, _, _, value)
-						C_ToyBox.SetUncollectedShown(value);
-						ToyBoxUpdateFilteredInformation();
-					end
-		info.checked = C_ToyBox.GetUncollectedShown();
-		info.isNotRadio = true;
-		UIDropDownMenu_AddButton(info, level);
 	end
 end

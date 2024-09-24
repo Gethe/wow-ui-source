@@ -2,7 +2,6 @@
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
 ## Dependencies: Blizzard_CharacterFrame
-## SuppressLocalTableRef: 1
 ## AllowLoadGameType: cata
 ## AllowLoad: Game
 Classic\MainMenuBarBagButtons.lua

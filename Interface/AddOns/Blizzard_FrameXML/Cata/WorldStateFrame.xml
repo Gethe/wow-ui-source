@@ -767,7 +767,6 @@
 				</Scripts>
 			</Button>
 
-			<Frame name="WorldStateButtonDropDown" inherits="UIDropDownMenuTemplate" clampedToScreen="true" id="1" hidden="true" />
 			<Frame name="WorldStateScoreButton1" inherits="WorldStateScoreTemplate" id="1">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="17" y="-78"/>

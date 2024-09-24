@@ -119,9 +119,9 @@ local Video =
 		{
 			Name = "GraphicsValidationResult",
 			Type = "Enumeration",
-			NumValues = 42,
+			NumValues = 43,
 			MinValue = 0,
-			MaxValue = 41,
+			MaxValue = 42,
 			Fields =
 			{
 				{ Name = "Supported", Type = "GraphicsValidationResult", EnumValue = 0 },
@@ -165,7 +165,8 @@ local Video =
 				{ Name = "NvidiaGpuUnsupported", Type = "GraphicsValidationResult", EnumValue = 38 },
 				{ Name = "QualcommGpuUnsupported", Type = "GraphicsValidationResult", EnumValue = 39 },
 				{ Name = "GpuDriver", Type = "GraphicsValidationResult", EnumValue = 40 },
-				{ Name = "Unknown", Type = "GraphicsValidationResult", EnumValue = 41 },
+				{ Name = "CompatMode", Type = "GraphicsValidationResult", EnumValue = 41 },
+				{ Name = "Unknown", Type = "GraphicsValidationResult", EnumValue = 42 },
 			},
 		},
 		{

@@ -1,3 +1,5 @@
+local envTable = GetCurrentEnvironment();
+
 MODELFRAME_DRAG_ROTATION_CONSTANT = 0.010;
 MODELFRAME_MAX_ZOOM = 0.7;
 MODELFRAME_MIN_ZOOM = 0.0;
@@ -183,8 +185,8 @@ function Model_OnUpdate(self, elapsedTime, rotationsPerSecond)
 		leftButton = self.controlFrame.rotateLeftButton;
 		rightButton = self.controlFrame.rotateRightButton;
 	else
-		leftButton = self.RotateLeftButton or (self:GetName() and _G[self:GetName().."RotateLeftButton"]);
-		rightButton = self.RotateRightButton or (self:GetName() and _G[self:GetName().."RotateRightButton"]);
+		leftButton = self.RotateLeftButton or (self:GetName() and envTable[self:GetName().."RotateLeftButton"]);
+		rightButton = self.RotateRightButton or (self:GetName() and envTable[self:GetName().."RotateRightButton"]);
 	end
 
 	Model_UpdateRotation(self, leftButton, rightButton, elapsedTime, rotationsPerSecond);

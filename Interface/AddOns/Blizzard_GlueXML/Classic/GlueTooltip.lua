@@ -129,4 +129,3 @@ function GlueTooltip_AddLine(self, text, r, g, b, wrap)
 	end
 	self:SetHeight(height);
 end
-

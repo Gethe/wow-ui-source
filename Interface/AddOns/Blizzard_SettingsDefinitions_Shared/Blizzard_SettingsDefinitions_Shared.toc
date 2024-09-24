@@ -2,7 +2,6 @@
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
 ## Dependencies: Blizzard_Settings_Shared, Blizzard_TextStatusBar
-## SuppressLocalTableRef: 1
 ## AllowLoad: Both
 Groups.lua
 Graphics.xml
@@ -10,4 +9,3 @@ Audio.xml
 Languages.xml
 Network.lua
 Mac.lua
-New.lua

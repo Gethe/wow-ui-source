@@ -165,62 +165,6 @@ StaticPopupDialogs["CONFIRM_GLYPH_PLACEMENT"] = {
 	exclusive = 1,
 }
 
-StaticPopupDialogs["CONFIRM_RESET_VIDEO_SETTINGS"] = {
-	text = CONFIRM_RESET_SETTINGS,
-	button1 = ALL_SETTINGS,
-	button3 = CURRENT_SETTINGS,
-	button2 = CANCEL,
-	OnAccept = function ()
-		VideoOptionsFrame_SetAllToDefaults();
-	end,
-	OnAlt = function ()
-		VideoOptionsFrame_SetCurrentToDefaults();
-	end,
-	OnCancel = function() end,
-	showAlert = 1,
-	timeout = 0,
-	exclusive = 1,
-	hideOnEscape = 1,
-	whileDead = 1,
-}
-
-StaticPopupDialogs["CONFIRM_RESET_AUDIO_SETTINGS"] = {
-	text = CONFIRM_RESET_SETTINGS,
-	button1 = ALL_SETTINGS,
-	button3 = CURRENT_SETTINGS,
-	button2 = CANCEL,
-	OnAccept = function ()
-		AudioOptionsFrame_SetAllToDefaults();
-	end,
-	OnAlt = function ()
-		AudioOptionsFrame_SetCurrentToDefaults();
-	end,
-	OnCancel = function() end,
-	showAlert = 1,
-	timeout = 0,
-	exclusive = 1,
-	hideOnEscape = 1,
-	whileDead = 1,
-}
-
-StaticPopupDialogs["CONFIRM_RESET_INTERFACE_SETTINGS"] = {
-	text = CONFIRM_RESET_INTERFACE_SETTINGS,
-	button1 = ALL_SETTINGS,
-	button3 = CURRENT_SETTINGS,
-	button2 = CANCEL,
-	OnAccept = function ()
-		InterfaceOptionsFrame_SetAllToDefaults();
-	end,
-	OnAlt = function ()
-		InterfaceOptionsFrame_SetCurrentToDefaults();
-	end,
-	OnCancel = function() end,
-	timeout = 0,
-	exclusive = 1,
-	hideOnEscape = 1,
-	whileDead = 1,
-}
-
 StaticPopupDialogs["CONFIRM_RESET_TEXTTOSPEECH_SETTINGS"] = {
 	text = CONFIRM_TEXT_TO_SPEECH_RESET,
 	button1 = ACCEPT,
@@ -778,7 +722,7 @@ StaticPopupDialogs["CONFIRM_LOOT_DISTRIBUTION"] = {
 		if ( data == "LootWindow" ) then
 			MasterLooterFrame_GiveMasterLoot();
 		elseif ( data == "LootHistory" ) then
-			LootHistoryDropDown_GiveMasterLoot();
+			LootHistoryDropdown_GiveMasterLoot();
 		end
 	end,
 	timeout = 0,
@@ -2668,6 +2612,16 @@ StaticPopupDialogs["REMOVE_GUILDMEMBER"] = {
 	whileDead = 1,
 	hideOnEscape = 1
 };
+
+local function AddGuildRank(text)
+	GuildControlAddRank(text);
+	local rank = GuildControlGetRank();
+	GuildControlSetRank(rank);
+	GuildControlPopupFrameDropdown:GenerateMenu();
+	GuildControlPopupFrameEditBox:SetText(GuildControlGetRankName(rank));
+	GuildControlCheckboxUpdate(C_GuildInfo.GuildControlGetRankFlags(rank));
+end
+
 StaticPopupDialogs["ADD_GUILDRANK"] = {
 	text = ADD_GUILDRANK_LABEL,
 	button1 = ACCEPT,
@@ -2675,12 +2629,7 @@ StaticPopupDialogs["ADD_GUILDRANK"] = {
 	hasEditBox = 1,
 	maxLetters = 15,
 	OnAccept = function(self)
-		GuildControlAddRank(self.editBox:GetText());
-		GuildControlSetRank(UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown));
-		UIDropDownMenu_SetSelectedID(GuildControlPopupFrameDropDown, UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown));
-		GuildControlPopupFrameEditBox:SetText(GuildControlGetRankName(UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown)));
-		GuildControlCheckboxUpdate(C_GuildInfo.GuildControlGetRankFlags(UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown)));
-		CloseDropDownMenus();
+		AddGuildRank(self.editBox:GetText());
 	end,
 	OnShow = function(self)
 		self.editBox:SetFocus();
@@ -2691,12 +2640,7 @@ StaticPopupDialogs["ADD_GUILDRANK"] = {
 	end,
 	EditBoxOnEnterPressed = function(self)
 		local parent = self:GetParent();
-		GuildControlAddRank(parent.editBox:GetText());
-		GuildControlSetRank(UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown));
-		UIDropDownMenu_SetSelectedID(GuildControlPopupFrameDropDown, UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown));
-		GuildControlPopupFrameEditBox:SetText(GuildControlGetRankName(UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown)));
-		GuildControlCheckboxUpdate(C_GuildInfo.GuildControlGetRankFlags(UIDropDownMenu_GetSelectedID(GuildControlPopupFrameDropDown)));
-		CloseDropDownMenus();
+		AddGuildRank(parent.editBox:GetText());
 		parent:Hide();
 	end,
 	EditBoxOnEscapePressed = function(self)
@@ -3130,8 +3074,7 @@ if (C_GameRules.IsHardcoreActive()) then
 		maxLetters = math.max(12, string.len(HARDCORE_DUEL_CONFIRMATION)),
 		wide = true,
 		OnAccept = function(self)
-			local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
-			StartDuel(dropdownMenu.unit, true, true);
+			StartDuel(self.data.unit, true, true);
 		end,
 		OnCancel = function(self)
 			-- Duel hasn't started yet
@@ -3889,9 +3832,7 @@ StaticPopupDialogs["WOW_MOUSE_NOT_FOUND"] = {
 	button1 = OKAY,
 	OnHide = function(self)
 		SetCVar("enableWoWMouse", "0");
-		if ( InterfaceOptionsFrame:IsShown() ) then
-			InterfaceOptionsMousePanelWoWMouse:Click();
-		end
+		-- FIXME - Open Settings
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -4302,7 +4243,7 @@ StaticPopupDialogs["NAME_TRANSMOG_OUTFIT"] = {
 	button1 = SAVE,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		WardrobeOutfitFrame:NameOutfit(self.editBox:GetText(), self.data);
+		WardrobeOutfitManager:NameOutfit(self.editBox:GetText(), self.data);
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -4339,7 +4280,7 @@ StaticPopupDialogs["CONFIRM_OVERWRITE_TRANSMOG_OUTFIT"] = {
 	text = TRANSMOG_OUTFIT_CONFIRM_OVERWRITE,
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function (self) WardrobeOutfitFrame:SaveOutfit(self.data) end,
+	OnAccept = function (self) WardrobeOutfitManager:SaveOutfit(self.data) end,
 	OnCancel = function (self)
 		local name = self.data;
 		self:Hide();
@@ -4358,7 +4299,9 @@ StaticPopupDialogs["CONFIRM_DELETE_TRANSMOG_OUTFIT"] = {
 	text = TRANSMOG_OUTFIT_CONFIRM_DELETE,
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function (self) WardrobeOutfitFrame:DeleteOutfit(self.data); end,
+	OnAccept = function (self) 
+		C_TransmogCollection.DeleteOutfit(self.data); 
+	end,
 	OnCancel = function (self) end,
 	hideOnEscape = 1,
 	timeout = 0,
@@ -4383,17 +4326,10 @@ StaticPopupDialogs["TRANSMOG_OUTFIT_ALL_INVALID_APPEARANCES"] = {
 
 StaticPopupDialogs["TRANSMOG_OUTFIT_SOME_INVALID_APPEARANCES"] = {
 	text = TRANSMOG_OUTFIT_SOME_INVALID_APPEARANCES,
-	button1 = OKAY,
+	button1 = SAVE,
 	button2 = CANCEL,
-	OnShow = function(self)
-		if ( WardrobeOutfitFrame.name ) then
-			self.button1:SetText(SAVE);
-		else
-			self.button1:SetText(CONTINUE);
-		end
-	end,
 	OnAccept = function(self)
-		WardrobeOutfitFrame:ContinueWithSave();
+		WardrobeOutfitManager:ContinueWithSave();
 	end,
 	hideOnEscape = 1,
 	timeout = 0,
@@ -4405,10 +4341,10 @@ StaticPopupDialogs["TRANSMOG_APPLY_WARNING"] = {
 	button1 = OKAY,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		return WardrobeTransmogFrame_ApplyPending(self.data.warningIndex);
+		return WardrobeTransmogFrame:ApplyPending(self.data.warningIndex);
 	end,
 	OnHide = function()
-		WardrobeTransmogFrame_UpdateApplyButton();
+		WardrobeTransmogFrame:UpdateApplyButton();
 	end,
 	timeout = 0,
 	hideOnEscape = 1,
@@ -4422,7 +4358,7 @@ StaticPopupDialogs["TRANSMOG_FAVORITE_WARNING"] = {
 	OnAccept = function(self)
 		local setFavorite = 1;
 		local confirmed = true;
-		WardrobeCollectionFrameModelDropDown_SetFavorite(self.data, setFavorite, confirmed);
+		WardrobeCollectionFrameModelDropdown_SetFavorite(self.data, setFavorite, confirmed);
 	end,
 	timeout = 0,
 	hideOnEscape = 1,
@@ -4744,6 +4680,16 @@ StaticPopupDialogs["RAID_PROFILE_DELETION"] = {
 	whileDead = 1,
 	showAlert = 1,
 	hideOnEscape = 1
+};
+
+StaticPopupDialogs["DOWNLOAD_HIGH_RES_TEXTURES"] = {
+    text = IsMacClient() and HD_TEXTURES_DLG_TEXT_MAC or HD_TEXTURES_DLG_TEXT,
+    button1 = IsMacClient() and HD_TEXTURES_DLG_ACCEPT_MAC or HD_TEXTURES_DLG_ACCEPT,
+    button2 = CANCEL,
+    escapeHides = true,
+	OnAccept = function()
+		C_BattleNet.InstallHighResTextures();
+	end,
 };
 
 StaticPopupDialogs["RAID_PROFILE_NEW"] = {

@@ -139,7 +139,7 @@
 					</Anchor>
 				</Anchors>
 				<Frames>
-					<Frame name="MiniMapTrackingFrame" enableMouse="true" hidden="true">
+					<Frame name="MiniMapTracking" enableMouse="true" hidden="true">
 						<Size>
 							<AbsDimension x="33" y="33"/>
 						</Size>
@@ -185,9 +185,9 @@
 									local icon = GetTrackingTexture();
 									if ( icon ) then
 										MiniMapTrackingIcon:SetTexture(icon);
-										MiniMapTrackingFrame:Show();
+										MiniMapTracking:Show();
 									else
-										MiniMapTrackingFrame:Hide();
+										MiniMapTracking:Hide();
 									end
 								end
 							</OnEvent>
@@ -320,15 +320,6 @@
 								</Texture>
 							</Layer>
 						</Layers>
-						<Frames>
-							<Frame name="MiniMapBattlefieldDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
-								<Scripts>
-									<OnLoad>
-										MiniMapBattlefieldDropDown_OnLoad(self);
-									</OnLoad>
-								</Scripts>
-							</Frame>
-						</Frames>
 						<Scripts>
 							<OnLoad>
 								self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
@@ -352,22 +343,7 @@
 							<OnLeave>
 								GameTooltip:Hide();
 							</OnLeave>
-							<OnClick>
-								-- Hide tooltip
-								if ( MiniMapBattlefieldFrame.status == "active") then
-									GameTooltip:Hide();
-									if ( button == "RightButton" ) then
-										ToggleDropDownMenu(1, nil, MiniMapBattlefieldDropDown, "MiniMapBattlefieldFrame", 10, -5);
-									elseif ( IsShiftKeyDown() ) then
-										ToggleBattlefieldMap();
-									else
-										ToggleWorldStateScoreFrame();
-									end
-								elseif ( button == "RightButton" ) then
-									GameTooltip:Hide();
-									ToggleDropDownMenu(1, nil, MiniMapBattlefieldDropDown, "MiniMapBattlefieldFrame", 10, -5);
-								end
-							</OnClick>
+							<OnClick function="MiniMapBattlefieldFrame_OnClick"/>
 						</Scripts>
 					</Button>
 					<Frame name="MinimapBackdrop">
@@ -502,7 +478,6 @@
 											<Anchor point="CENTER"/>
 										</Anchors>
 									</Frame>
-									<Frame parentKey="DropDown" name="$parentDropDown" inherits="UIDropDownMenuTemplate"/>
 								</Frames>
 								<Scripts>
 									<OnLoad function="MiniMapLFGFrame_OnLoad"/>

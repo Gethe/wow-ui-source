@@ -32,9 +32,63 @@ function PetJournal_OnLoad(self)
 
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 
-	UIDropDownMenu_Initialize(self.petOptionsMenu, PetOptionsMenu_Init, "MENU");
+	PetJournal_InitFilterDropdown(self);
 
 	PetJournal_ShowPetCard(1);
+end
+
+function PetJournal_InitFilterDropdown(self)
+	local function IsFamilyChecked(filterIndex) 
+		return C_PetJournal.IsPetTypeChecked(filterIndex)
+	end
+
+	local function SetFamilyChecked(filterIndex) 
+		C_PetJournal.SetPetTypeFilter(filterIndex, not IsFamilyChecked(filterIndex));
+	end
+	
+	local function IsSourceChecked(filterIndex) 
+		return C_PetJournal.IsPetSourceChecked(filterIndex)
+	end
+
+	local function SetSourceChecked(filterIndex) 
+		C_PetJournal.SetPetSourceChecked(filterIndex, not IsSourceChecked(filterIndex));
+	end
+	
+	local function IsSortByChecked(parameter) 
+		return C_PetJournal.GetPetSortParameter() == parameter;
+	end
+
+	local function SetSortByChecked(parameter) 
+		C_PetJournal.SetPetSortParameter(parameter); 
+		PetJournal_UpdatePetList(); 
+	end
+	
+	local petSourceOrderPriorities = {
+		[Enum.BattlePetSources.Drop] = 5,
+		[Enum.BattlePetSources.Quest] = 5,
+		[Enum.BattlePetSources.Vendor] = 5,
+		[Enum.BattlePetSources.Profession] = 5,
+		[Enum.BattlePetSources.WildPet] = 5,
+		[Enum.BattlePetSources.Achievement] = 5,
+		[Enum.BattlePetSources.WorldEvent] = 5,
+		[Enum.BattlePetSources.Discovery] = 5,
+		[Enum.BattlePetSources.TradingPost] = 4,
+		[Enum.BattlePetSources.Promotion] = 3,
+		[Enum.BattlePetSources.PetStore] = 2,
+		[Enum.BattlePetSources.Tcg] = 1,
+	};
+	
+	self.FilterDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_PET_COLLECTION_FILTER");
+
+		rootDescription:CreateCheckbox(COLLECTED, PetJournalFilterDropdown_GetCollectedFilter, function()
+			PetJournalFilterDropdown_SetCollectedFilter(not PetJournalFilterDropdown_GetCollectedFilter());
+		end);
+
+		rootDescription:CreateCheckbox(NOT_COLLECTED, PetJournalFilterDropdown_GetNotCollectedFilter, function()
+			PetJournalFilterDropdown_SetNotCollectedFilter(not PetJournalFilterDropdown_GetNotCollectedFilter());
+		end);
+	end);
 end
 
 function PetJournal_OnShow(self)
@@ -61,12 +115,10 @@ function PetJournal_OnEvent(self, event, ...)
 		end
 		PetJournal_FindPetCardIndex();
 		PetJournal_UpdatePetCard(PetJournalPetCard);
-		PetJournal_HidePetDropdown();
 	elseif event == "PET_JOURNAL_LIST_UPDATE" then
 		PetJournal_FindPetCardIndex();
 		PetJournal_UpdatePetList();
 		PetJournal_UpdatePetCard(PetJournalPetCard);
-		PetJournal_HidePetDropdown();
 	elseif event == "COMPANION_UPDATE" then
 		local companionType = ...;
 		if companionType == "CRITTER" then
@@ -92,7 +144,12 @@ function PetJournal_SelectSpecies(self, targetSpeciesID)
 		self.ScrollBox:ScrollToElementDataByPredicate(FindPet);
 	end
 
-	PetJournal_ShowPetCardBySpeciesID(targetSpeciesID);
+	if foundFrame.petID then
+		PetJournal_ShowPetCardByID(foundFrame.petID)
+	else
+		PetJournal_ShowPetCardBySpeciesID(targetSpeciesID);
+	end
+
 end
 
 function PetJournal_SelectPet(self, petID)
@@ -260,7 +317,7 @@ function PetJournal_InitPetButton(pet, elementData)
 		else
 			-- Only display the unusable texture if you'll never be able to summon this pet.
 			local isSummonable, error, errorText = C_PetJournal.GetPetSummonInfo(petID);
-			local neverUsable = error == Enum.PetJournalError.InvalidFaction or error == Enum.PetJournalError.InvalidCovenant;
+			local neverUsable = error == Enum.PetJournalError.InvalidFaction;
 			pet.iconBorder:SetShown(not neverUsable);
 			CollectionItemListButton_SetRedOverlayShown(pet, neverUsable);
 		end
@@ -320,18 +377,63 @@ function PetJournal_OnSearchTextChanged(self)
 	C_PetJournal.SetSearchFilter(self:GetText());
 end
 
+local function CreateContextMenu(owner, rootDescription, petID)
+	rootDescription:SetTag("MENU_PET_COLLECTION_PET");
+
+	local needsFanfare = petID and C_PetJournal.PetNeedsFanfare(petID);
+	if needsFanfare then
+		rootDescription:CreateButton(UNWRAP, function()
+			PetJournal_UnwrapPet(petID);
+		end);
+		return;
+	end
+
+	local isRevoked = petID and C_PetJournal.PetIsRevoked(petID);
+	local isLockedForConvert = petID and C_PetJournal.PetIsLockedForConvert(petID);
+	if not isRevoked and not isLockedForConvert then
+		local canDismiss = petID and C_PetJournal.IsCurrentlySummoned(petID);
+		local text = canDismiss and PET_DISMISS or BATTLE_PET_SUMMON;
+		local button = rootDescription:CreateButton(text, function()
+			C_PetJournal.SummonPetByGUID(petID);
+		end);
+
+		if petID and not C_PetJournal.PetIsSummonable(petID) then
+			button:SetEnabled(false);
+		end
+	end
+
+	local isFavorite = petID and C_PetJournal.PetIsFavorite(petID);
+	if isFavorite or (not isRevoked and not isLockedForConvert) then
+		local button = nil;
+		if isFavorite then
+			button = rootDescription:CreateButton(BATTLE_PET_UNFAVORITE, function()
+				C_PetJournal.SetFavorite(petID, 0);
+			end);
+		else
+			button = rootDescription:CreateButton(BATTLE_PET_FAVORITE, function()
+				C_PetJournal.SetFavorite(petID, 1);
+			end);
+		end
+		button:SetEnabled(C_PetJournal.IsJournalUnlocked());
+	end
+end
+
 function PetJournalListItem_OnClick(self, button)
 	if ( IsModifiedClick("CHATLINK") ) then
 		local id = self.petID;
 		if ( id and MacroFrame and MacroFrame:IsShown() ) then
 			-- Macros are not yet supported
 		elseif (id) then
-			--local petLink = C_PetJournal.GetBattlePetLink(id);
-			--ChatEdit_InsertLink(petLink);
+			local petLink = C_PetJournal.GetBattlePetLink(id);
+			ChatEdit_InsertLink(petLink);
+		else
+			local _, species  = C_PetJournal.GetPetInfoByIndex(self.index)
+			local petLink = C_PetJournal.GetBattlePetLinkFromSpecies(species);
+			ChatEdit_InsertLink(petLink);
 		end
 	elseif button == "RightButton" then
 		if self.owned then
-			PetJournal_ShowPetDropdown(self.index, self, 80, 20);
+			PetJournal_ShowPetDropdown(self, self.index);
 		end
 	elseif SpellIsTargeting() then
 		C_PetJournal.SpellTargetBattlePet(self.petID);
@@ -359,13 +461,17 @@ function PetJournalDragButton_OnClick(self, button)
 		if ( id and MacroFrame and MacroFrame:IsShown() ) then
 			-- Macros are not yet supported
 		elseif (id) then
-			--local petLink = C_PetJournal.GetBattlePetLink(id);
-			--ChatEdit_InsertLink(petLink);
+			local petLink = C_PetJournal.GetBattlePetLink(id);
+			ChatEdit_InsertLink(petLink);
+		else
+			local _, species  = C_PetJournal.GetPetInfoByIndex(self.index)
+			local petLink = C_PetJournal.GetBattlePetLinkFromSpecies(species);
+			ChatEdit_InsertLink(petLink);
 		end
 	elseif ( button == "RightButton" ) then
 		local parent = self:GetParent();
 		if ( parent.owned ) then
-			PetJournal_ShowPetDropdown(parent.index, self, 0, 0);
+			PetJournal_ShowPetDropdown(self, parent.index);
 		end
 	elseif SpellIsTargeting() then
 		C_PetJournal.SpellTargetBattlePet(self:GetParent().petID);
@@ -385,7 +491,6 @@ function PetJournalDragButton_OnDragStart(self)
 		return;
 	end
 
-	PetJournal_HidePetDropdown();
 	C_PetJournal.PickupPet(self:GetParent().petID);
 end
 
@@ -398,21 +503,12 @@ function PetJournalDragButton_OnEvent(self, event, ...)
 	end
 end
 
-function PetJournal_ShowPetDropdown(index, anchorTo, offsetX, offsetY, petID)
-	if (index) then
-		PetJournal.menuPetID = C_PetJournal.GetPetInfoByIndex(index);
-	elseif (petID) then
-		PetJournal.menuPetID = petID;
-	else
-		return;
-	end
-	ToggleDropDownMenu(1, nil, PetJournal.petOptionsMenu, anchorTo, offsetX, offsetY);
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-end
-
-function PetJournal_HidePetDropdown()
-	if (UIDropDownMenu_GetCurrentDropDown() == PetJournal.petOptionsMenu) then
-		HideDropDownMenu(1);
+function PetJournal_ShowPetDropdown(button, index, petID)
+	if index then
+		local usePetID = C_PetJournal.GetPetInfoByIndex(index);
+		MenuUtil.CreateContextMenu(button, CreateContextMenu, usePetID);
+	elseif petID then
+		MenuUtil.CreateContextMenu(button, CreateContextMenu, petID);
 	end
 end
 
@@ -421,8 +517,6 @@ function PetJournal_ShowPetCardByID(petID)
 		PetJournal_ShowPetCard(1);
 		return;
 	end
-
-	PetJournal_HidePetDropdown();
 
 	PetJournalPetCard.petID = petID;
 	PetJournalPetCard.speciesID = C_PetJournal.GetPetInfoByPetID(petID);
@@ -439,8 +533,6 @@ function PetJournal_ShowPetCardBySpeciesID(speciesID)
 		return;
 	end
 
-	PetJournal_HidePetDropdown();
-
 	PetJournalPetCard.petID = nil;
 	PetJournalPetCard.speciesID = speciesID;
 
@@ -451,7 +543,6 @@ function PetJournal_ShowPetCardBySpeciesID(speciesID)
 end
 
 function PetJournal_ShowPetCard(index)
-	PetJournal_HidePetDropdown();
 	PetJournalPetCard.petIndex = index;
 	local owned;
 
@@ -494,12 +585,16 @@ function PetJournalPetCard_OnClick(self, button)
 		if ( id and MacroFrame and MacroFrame:IsShown() ) then
 			-- Macros are not yet supported
 		elseif (id) then
-			--local petLink = C_PetJournal.GetBattlePetLink(id);
-			--ChatEdit_InsertLink(petLink);
+			local petLink = C_PetJournal.GetBattlePetLink(id);
+			ChatEdit_InsertLink(petLink);
+		else
+			local _, species  = C_PetJournal.GetPetInfoByIndex(self.index)
+			local petLink = C_PetJournal.GetBattlePetLinkFromSpecies(species);
+			ChatEdit_InsertLink(petLink);
 		end
 	elseif button == "RightButton" then
 		if ( PetJournalPetCard.petID ) then
-			PetJournal_ShowPetDropdown(PetJournalPetCard.petIndex, self, 0, 0, PetJournalPetCard.petID);
+			PetJournal_ShowPetDropdown(self, PetJournalPetCard.petIndex, PetJournalPetCard.petID);
 		end
 	else
 		PetJournalDragButton_OnDragStart(self);
@@ -645,135 +740,28 @@ function GetPetTypeTexture(petType)
 	end
 end
 
-function PetJournalFilterDropDown_OnLoad(self)
-	UIDropDownMenu_Initialize(self, PetJournalFilterDropDown_Initialize, "MENU");
-end
-
-function PetJournalFilterDropDown_ResetFilters()
-	C_PetJournal.SetDefaultFilters();
-end
-
-function PetJournalFilterDropDown_SetCollectedFilter(value)
+function PetJournalFilterDropdown_SetCollectedFilter(value)
 	C_PetJournal.SetFilterChecked(LE_PET_JOURNAL_FILTER_COLLECTED, value);
 end
 
-function PetJournalFilterDropDown_GetCollectedFilter()
+function PetJournalFilterDropdown_GetCollectedFilter()
 	return C_PetJournal.IsFilterChecked(LE_PET_JOURNAL_FILTER_COLLECTED);
 end
 
-function PetJournalFilterDropDown_SetNotCollectedFilter(value)
+function PetJournalFilterDropdown_SetNotCollectedFilter(value)
 	C_PetJournal.SetFilterChecked(LE_PET_JOURNAL_FILTER_NOT_COLLECTED, value);
 end
 
-function PetJournalFilterDropDown_GetNotCollectedFilter()
+function PetJournalFilterDropdown_GetNotCollectedFilter()
 	return C_PetJournal.IsFilterChecked(LE_PET_JOURNAL_FILTER_NOT_COLLECTED);
 end
 
-function PetJournalFilterDropDown_SetAllPetTypes(value)
+function PetJournalFilterDropdown_SetAllPetTypes(value)
 	C_PetJournal.SetAllPetTypesChecked(value);
-	UIDropDownMenu_Refresh(PetJournalFilterDropDown, UIDROPDOWNMENU_MENU_VALUE, UIDROPDOWNMENU_MENU_LEVEL);
 end 
 
-function PetJournalFilterDropDown_SetAllPetSources(value)
+function PetJournalFilterDropdown_SetAllPetSources(value)
 	C_PetJournal.SetAllPetSourcesChecked(value);
-	UIDropDownMenu_Refresh(PetJournalFilterDropDown, UIDROPDOWNMENU_MENU_VALUE, UIDROPDOWNMENU_MENU_LEVEL);
-end
-
-function PetJournalFilterDropDown_Initialize(self, level)
-	local info = UIDropDownMenu_CreateInfo();
-	info.keepShownOnClick = true;
-
-	if level == 1 then
-
-		info.text = COLLECTED
-		info.func = 	function(_, _, _, value)
-							C_PetJournal.SetFilterChecked(LE_PET_JOURNAL_FILTER_COLLECTED, value);
-						end
-		info.checked = C_PetJournal.IsFilterChecked(LE_PET_JOURNAL_FILTER_COLLECTED);
-		info.isNotRadio = true;
-		UIDropDownMenu_AddButton(info, level);
-
-		info.disabled = nil;
-
-		info.text = NOT_COLLECTED;
-		info.func = 	function(_, _, _, value)
-							C_PetJournal.SetFilterChecked(LE_PET_JOURNAL_FILTER_NOT_COLLECTED, value);
-						end
-		info.checked = C_PetJournal.IsFilterChecked(LE_PET_JOURNAL_FILTER_NOT_COLLECTED);
-		info.isNotRadio = true;
-		UIDropDownMenu_AddButton(info, level);
-	end
-end
-
-function PetJournalFilterDropDown_AddInSortParameters(filterSystem, level)
-	local sortParameters = {
-		{ text = NAME, parameter = LE_SORT_BY_NAME, },
-		{ text = LEVEL, parameter = LE_SORT_BY_LEVEL, },
-		{ text = RARITY, parameter = LE_SORT_BY_RARITY, },
-		{ text = TYPE, parameter = LE_SORT_BY_PETTYPE, },
-	};
-
-	for index, sortParameter in ipairs(sortParameters) do
-		local setSelected = function() 
-					C_PetJournal.SetPetSortParameter(sortParameter.parameter); 
-					PetJournal_UpdatePetList(); 
-				end
-		local isSelected = function() return C_PetJournal.GetPetSortParameter() == sortParameter.parameter end;
-		FilterDropDownSystem.AddRadioButtonToFilterSystem(filterSystem, sortParameter.text, setSelected, isSelected, level);
-	end
-end
-
-function PetOptionsMenu_Init(self, level)
-	local info = UIDropDownMenu_CreateInfo();
-	info.notCheckable = true;
-
-	local needsFanfare = PetJournal.menuPetID and C_PetJournal.PetNeedsFanfare(PetJournal.menuPetID);
-
-	if needsFanfare then
-		info.text = UNWRAP;
-		info.func = function() PetJournal_UnwrapPet(PetJournal.menuPetID); end
-		UIDropDownMenu_AddButton(info, level);
-	else
-		local isRevoked = PetJournal.menuPetID and C_PetJournal.PetIsRevoked(PetJournal.menuPetID);
-		local isLockedForConvert = PetJournal.menuPetID and C_PetJournal.PetIsLockedForConvert(PetJournal.menuPetID);
-
-		if (not isRevoked and not isLockedForConvert) then
-			info.text = BATTLE_PET_SUMMON;
-			local speciesID = PetJournal.menuPetID and C_PetJournal.GetPetInfoByPetID(PetJournal.menuPetID)
-			info.func = function() C_PetJournal.SummonPetByGUID(PetJournal.menuPetID); end
-			if (PetJournal.menuPetID and C_PetJournal.IsCurrentlySummoned(PetJournal.menuPetID)) then
-				info.text = PET_DISMISS;
-				info.func = function() C_PetJournal.DismissSummonedPet(PetJournal.menuPetID); end
-			end
-			if (PetJournal.menuPetID and not C_PetJournal.PetIsSummonable(PetJournal.menuPetID)) then
-				info.disabled = true;
-			end
-			UIDropDownMenu_AddButton(info, level);
-			info.disabled = nil;
-		end
-
-		local isFavorite = PetJournal.menuPetID and C_PetJournal.PetIsFavorite(PetJournal.menuPetID);
-		if (isFavorite or (not isRevoked and not isLockedForConvert)) then
-			if (isFavorite) then
-				info.text = BATTLE_PET_UNFAVORITE;
-				info.func = function()
-					C_PetJournal.SetFavorite(PetJournal.menuPetID, 0);
-				end
-			else
-				info.text = BATTLE_PET_FAVORITE;
-				info.func = function()
-					C_PetJournal.SetFavorite(PetJournal.menuPetID, 1);
-				end
-			end
-			info.disabled = not C_PetJournal.IsJournalUnlocked();
-			UIDropDownMenu_AddButton(info, level);
-			info.disabled = nil;
-		end
-	end
-
-	info.text = CANCEL
-	info.func = nil
-	UIDropDownMenu_AddButton(info, level)
 end
 
 function PetJournalPetCount_OnEnter(self)

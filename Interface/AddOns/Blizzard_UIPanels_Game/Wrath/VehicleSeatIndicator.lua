@@ -86,8 +86,6 @@ function VehicleSeatIndicator_OnLoad(self)
 	self:RegisterEvent("UNIT_EXITED_VEHICLE");
 	self:RegisterEvent("PLAYER_LOSES_VEHICLE_DATA");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-
-	UIDropDownMenu_Initialize( VehicleSeatIndicatorDropDown, VehicleSeatIndicatorDropDown_Initialize, "MENU");
 end
 
 function VehicleSeatIndicator_OnEvent(self, event, ...)
@@ -140,7 +138,13 @@ end
 function VehicleSeatIndicatorButton_OnClick(self, button)
 	local seatIndex = self.virtualID;
 	if ( button == "RightButton" and CanEjectPassengerFromSeat(seatIndex)) then
-		ToggleDropDownMenu(1, seatIndex, VehicleSeatIndicatorDropDown, self:GetName(), 0, -5);
+		MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
+			rootDescription:SetTag("MENU_VEHICLE_SEAT");
+
+			rootDescription:CreateButton(EJECT_PASSENGER, function()
+				EjectPassengerFromSeat(seatIndex);
+			end);
+		end);
 	else
 		UnitSwitchToVehicleSeat("player", seatIndex);
 	end
@@ -211,16 +215,4 @@ end
 function VehicleSeatIndicatorButton_OnLeave(self)
 	GameTooltip:Hide();
 	SetCursor(nil);
-end
-
-function VehicleSeatIndicatorDropDown_OnClick()
-	EjectPassengerFromSeat(UIDROPDOWNMENU_MENU_VALUE);
-	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
-end
-
-function VehicleSeatIndicatorDropDown_Initialize()
-	local info = UIDropDownMenu_CreateInfo();
-	info.text = EJECT_PASSENGER;
-	info.func = VehicleSeatIndicatorDropDown_OnClick;
-	UIDropDownMenu_AddButton(info);
 end

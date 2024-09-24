@@ -146,6 +146,17 @@ function PaperDollFrame_OnLoad(self)
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("COMBAT_RATING_UPDATE");
 	self:RegisterEvent("UNIT_POWER_UPDATE");
+
+	self.TitleDropdown:SetWidth(160);
+	self.TitleDropdown:SetDefaultText(PAPERDOLL_SELECT_TITLE);
+end
+
+local function IsTitleSelected(value)
+	return GetCurrentTitle() == value;
+end
+
+local function SetTitleSelected(value)
+	SetCurrentTitle(value);
 end
 
 function PaperDollFrame_OnShow(self)
@@ -158,16 +169,20 @@ function PaperDollFrame_OnShow(self)
 		CharacterAmmoSlot:Show();
 	end
 
-	PlayerTitleDropDown:SetShown(PlayerTitleDropDown_IsTitleAvailable());
+	self.TitleDropdown:SetShown(PlayerTitleDropdown_IsTitleAvailable());
+	self.TitleDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_PAPERDOLL_FRAME_TITLE");
 
-	local currentTitle = GetCurrentTitle();
-	if ( currentTitle == 0 ) then
-		UIDropDownMenu_SetText(PlayerTitleDropDown, PAPERDOLL_SELECT_TITLE);	
-	elseif ( currentTitle == -1 ) then
-		UIDropDownMenu_SetText(PlayerTitleDropDown, NONE);	
-	else
-		UIDropDownMenu_SetText(PlayerTitleDropDown, GetTitleName(currentTitle));	
-	end
+		for i=1, GetNumTitles() do
+			-- Changed to base 0 for simplicity, change when the opportunity arrises.
+			if ( IsTitleKnown(i) ) then
+				local text = GetTitleName(i);
+				rootDescription:CreateRadio(text, IsTitleSelected, SetTitleSelected, i);
+			end
+		end
+
+		rootDescription:CreateRadio(NONE, IsTitleSelected, SetTitleSelected, -1);
+	end);
 end
 
 function PaperDollFrame_OnHide (self)
@@ -184,20 +199,20 @@ function PaperDollFrame_OnEvent(self, event, ...)
 
 	if ( event == "VARIABLES_LOADED" ) then
 		-- Set defaults if invalid settings for the dropdowns
-		local playerStatLeftDropDownValue = GetCVar("playerStatLeftDropdown");
-		local playerStatRightDropDownValue = GetCVar("playerStatRightDropdown");
-		local playerStatLeftDropDownValueValid, playerStatRightDropDownValueValid = false, false;
+		local playerStatLeftDropdownValue = GetCVar("playerStatLeftDropdown");
+		local playerStatRightDropdownValue = GetCVar("playerStatRightDropdown");
+		local playerStatLeftDropdownValueValid, playerStatRightDropdownValueValid = false, false;
 
 		for i=1, getn(PLAYERSTAT_DROPDOWN_OPTIONS) do
-			if (PLAYERSTAT_DROPDOWN_OPTIONS[i] == playerStatLeftDropDownValue) then
-				playerStatLeftDropDownValueValid = true;
+			if (PLAYERSTAT_DROPDOWN_OPTIONS[i] == playerStatLeftDropdownValue) then
+				playerStatLeftDropdownValueValid = true;
 			end
-			if (PLAYERSTAT_DROPDOWN_OPTIONS[i] == playerStatRightDropDownValue) then
-				playerStatRightDropDownValueValid = true;
+			if (PLAYERSTAT_DROPDOWN_OPTIONS[i] == playerStatRightDropdownValue) then
+				playerStatRightDropdownValueValid = true;
 			end
 		end
 
-		if ( not playerStatLeftDropDownValueValid or not playerStatRightDropDownValueValid ) then
+		if ( not playerStatLeftDropdownValueValid or not playerStatRightDropdownValueValid ) then
 			local temp, classFileName = UnitClass("player");
 			classFileName = strupper(classFileName);
 			SetCVar("playerStatLeftDropdown", "PLAYERSTAT_BASE_STATS");
@@ -210,12 +225,8 @@ function PaperDollFrame_OnEvent(self, event, ...)
 			end
 		end
 
-		playerStatLeftDropDownValue = GetCVar("playerStatLeftDropdown");
-		playerStatRightDropDownValue = GetCVar("playerStatRightDropdown");
-		UIDropDownMenu_SetSelectedValue(PlayerStatFrameLeftDropDown, playerStatLeftDropDownValue);
-		UIDropDownMenu_SetText(PlayerStatFrameLeftDropDown, _G[playerStatLeftDropDownValue]);
-		UIDropDownMenu_SetSelectedValue(PlayerStatFrameRightDropDown, playerStatRightDropDownValue);
-		UIDropDownMenu_SetText(PlayerStatFrameRightDropDown, _G[playerStatRightDropDownValue]);
+		self.Attributes.LeftPlayerStatDropdown:GenerateMenu();
+		self.Attributes.RightPlayerStatDropdown:GenerateMenu();
 
 		PaperDollFrame_UpdateStats();
 	end
@@ -266,132 +277,56 @@ function PaperDoll_IsEquippedSlot(slot)
 	return false;
 end
 
---[[ STAT DROPDOWN FUNCTIONS ]]
-
-function PlayerStatFrameLeftDropDown_OnLoad(self)
-	UIDropDownMenu_Initialize(self, PlayerStatFrameLeftDropDown_Initialize);
-	UIDropDownMenu_SetSelectedValue(self, GetCVar("playerStatLeftDropdown"));
-	UIDropDownMenu_SetWidth(self, 99);
-	UIDropDownMenu_JustifyText(self, "LEFT");
+function CharacterAttributesFrame_OnLoad(self)
+	self.LeftPlayerStatDropdown:SetWidth(100);
+	self.RightPlayerStatDropdown:SetWidth(100);
 end
 
-function PlayerStatFrameLeftDropDown_Initialize(self)
-	-- Setup buttons
-	local info = UIDropDownMenu_CreateInfo();
-	local checked;
-	local cvarValue = GetCVar("playerStatLeftDropdown");
-	for i=1, getn(PLAYERSTAT_DROPDOWN_OPTIONS) do
-		if ( PLAYERSTAT_DROPDOWN_OPTIONS[i] == cvarValue ) then
-			checked = 1;
-		else
-			checked = nil;
+local function IsLeftStatSelected(value)
+	return value == GetCVar("playerStatLeftDropdown");
+end
+
+local function SetLeftStatSelected(value)
+	SetCVar("playerStatLeftDropdown", value);
+	UpdatePaperdollStats("PlayerStatFrameLeft", value);
+end
+
+local function IsRightStatSelected(value)
+	return value == GetCVar("playerStatLeftDropdown");
+end
+
+local function SetRightStatSelected(value)
+	SetCVar("playerStatRightDropdown", value);
+	UpdatePaperdollStats("PlayerStatFrameRight", value);
+end
+
+function CharacterAttributesFrame_OnShow(self)
+	self.LeftPlayerStatDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_PAPERDOLL_FRAME_LEFT_STAT");
+
+		for i=1, getn(PLAYERSTAT_DROPDOWN_OPTIONS) do
+			local text = getglobal(PLAYERSTAT_DROPDOWN_OPTIONS[i]);
+			rootDescription:CreateRadio(text, IsLeftStatSelected, SetLeftStatSelected, PLAYERSTAT_DROPDOWN_OPTIONS[i]);
 		end
-		info.text = getglobal(PLAYERSTAT_DROPDOWN_OPTIONS[i]);
-		info.func = PlayerStatFrameLeftDropDown_OnClick;
-		info.value = PLAYERSTAT_DROPDOWN_OPTIONS[i];
-		info.checked = checked;
-		info.owner = UIDROPDOWNMENU_OPEN_MENU;
-		UIDropDownMenu_AddButton(info);
-	end
-end
+	end);
 
-function PlayerStatFrameLeftDropDown_OnClick(self)
-	UIDropDownMenu_SetSelectedValue(self.owner, self.value);
-	SetCVar("playerStatLeftDropdown", self.value);
-	UpdatePaperdollStats("PlayerStatFrameLeft", self.value);
-end
+	self.RightPlayerStatDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_PAPERDOLL_FRAME_RIGHT_STAT");
 
-function PlayerStatFrameRightDropDown_OnLoad(self)
-	UIDropDownMenu_Initialize(self, PlayerStatFrameRightDropDown_Initialize);
-	UIDropDownMenu_SetSelectedValue(self, GetCVar("playerStatRightDropdown"));
-	UIDropDownMenu_SetWidth(self, 99);
-	UIDropDownMenu_JustifyText(self, "LEFT");
-end
-
-function PlayerStatFrameRightDropDown_Initialize(self)
-	-- Setup buttons
-	local info = UIDropDownMenu_CreateInfo();
-	local checked;
-	local cvarValue = GetCVar("playerStatRightDropdown");
-	for i=1, getn(PLAYERSTAT_DROPDOWN_OPTIONS) do
-		if ( PLAYERSTAT_DROPDOWN_OPTIONS[i] == cvarValue ) then
-			checked = 1;
-		else
-			checked = nil;
+		for i=1, getn(PLAYERSTAT_DROPDOWN_OPTIONS) do
+			local text = getglobal(PLAYERSTAT_DROPDOWN_OPTIONS[i]);
+			rootDescription:CreateRadio(text, IsRightStatSelected, SetRightStatSelected, PLAYERSTAT_DROPDOWN_OPTIONS[i]);
 		end
-		info.text = getglobal(PLAYERSTAT_DROPDOWN_OPTIONS[i]);
-		info.func = PlayerStatFrameRightDropDown_OnClick;
-		info.value = PLAYERSTAT_DROPDOWN_OPTIONS[i];
-		info.checked = checked;
-		info.owner = UIDROPDOWNMENU_OPEN_MENU;
-		UIDropDownMenu_AddButton(info);
-	end
+	end);
 end
 
-function PlayerStatFrameRightDropDown_OnClick(self)
-	UIDropDownMenu_SetSelectedValue(self.owner, self.value);
-	SetCVar("playerStatRightDropdown", self.value);
-	UpdatePaperdollStats("PlayerStatFrameRight", self.value);
-end
-
--- Player title dropdown functions
-function PlayerTitleDropDown_OnLoad(self)
-	UIDropDownMenu_Initialize(self, PlayerTitleDropDown_Initialize);
-	UIDropDownMenu_SetSelectedValue(self, GetCurrentTitle());
-	UIDropDownMenu_SetWidth(self, 160);
-	UIDropDownMenu_JustifyText(self, "LEFT");
-	PlayerTitleDropDownLeft:SetHeight(50);
-	PlayerTitleDropDownMiddle:SetHeight(50);
-	PlayerTitleDropDownRight:SetHeight(50);
-	PlayerTitleDropDownButton:SetPoint("TOPRIGHT", PlayerTitleDropDownRight, "TOPRIGHT", -16, -12);
-end
-
-function PlayerTitleDropDown_IsTitleAvailable()
+function PlayerTitleDropdown_IsTitleAvailable()
 	for index = 1, GetNumTitles() do
 		if IsTitleKnown(index) then
 			return true;
 		end
 	end
 	return false;
-end
-
-function PlayerTitleDropDown_Initialize()
-	-- Setup buttons
-	local info = UIDropDownMenu_CreateInfo();
-	local checked;
-	local currentTitle = GetCurrentTitle();
-	local titleName;
-	for i=1, GetNumTitles() do
-		-- Changed to base 0 for simplicity, change when the opportunity arrises.
-		if ( IsTitleKnown(i) ) then
-			if ( i == currentTitle ) then
-				checked = 1;
-			else
-				checked = nil;
-			end
-			titleName = GetTitleName(i);
-			info.text = titleName;
-			info.func = PlayerTitleDropDown_OnClick;
-			info.value = i;
-			UIDropDownMenu_AddButton(info);
-		end
-	end
-	-- Add none button
-	if ( currentTitle == 0 or currentTitle == -1 ) then
-		checked = 1;
-	else
-		checked = nil;
-	end
-	info.text = NONE;
-	info.func = PlayerTitleDropDown_OnClick;
-	info.value = -1;
-	info.checked = checked;
-	UIDropDownMenu_AddButton(info);
-end
-
-function PlayerTitleDropDown_OnClick(self)
-	UIDropDownMenu_SetSelectedValue(PlayerTitleDropDown, self.value);
-	SetCurrentTitle(self.value);
 end
 
 --[[ STAT UPDATING FUNCTIONS ]]
@@ -465,10 +400,6 @@ function UpdatePaperdollStats(prefix, index)
 		PaperDollFrame_SetBlock(stat5);
 		PaperDollFrame_SetResilience(stat6);
 	end
-
-	-- Shouldn't really be necessary, since the VARIABLES_LOADED should take care of this on startup and the OnClick should handle it from there.
-	-- But this covers us to be safe.
-	UIDropDownMenu_SetText(_G[prefix.."DropDown"], _G[index]);
 end
 
 function PaperDollFrame_SetStat(statFrame, statIndex)

@@ -1,28 +1,4 @@
 
----------------
---NOTE - Please do not change this section without understanding the full implications of the secure environment
-local _, tbl = ...;
-
-if tbl then
-	tbl.SecureCapsuleGet = SecureCapsuleGet;
-
-	local function Import(name)
-		tbl[name] = tbl.SecureCapsuleGet(name);
-	end
-
-	Import("IsOnGlueScreen");
-
-	if ( tbl.IsOnGlueScreen() ) then
-		tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
-	end
-
-	setfenv(1, tbl);
-
-	Import("math");
-	Import("CalculateDistanceSq");
-end
-----------------
-
 RegionUtil = {};
 
 function RegionUtil.IsDescendantOf(potentialDescendant, potentialAncestor)
@@ -47,6 +23,16 @@ function RegionUtil.IsDescendantOfOrSame(potentialDescendant, potentialAncestorO
 	end
 
 	return RegionUtil.IsDescendantOf(potentialDescendant, potentialAncestorOrSame);
+end
+
+function RegionUtil.IsAnyDescendantOfOrSame(potentialDescendants, potentialAncestorOrSame)
+	for _, potentialDescendant in ipairs(potentialDescendants) do
+		if RegionUtil.IsDescendantOfOrSame(potentialDescendant, potentialAncestorOrSame) then
+			return true;
+		end
+	end
+
+	return false;
 end
 
 function RegionUtil.CalculateDistanceSqBetween(region1, region2)

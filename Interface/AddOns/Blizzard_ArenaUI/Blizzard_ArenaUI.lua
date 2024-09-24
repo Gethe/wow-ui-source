@@ -1,5 +1,8 @@
 MAX_ARENA_ENEMIES = 5;
 
+CVarCallbackRegistry:SetCVarCachable("showPartyBackground");
+CVarCallbackRegistry:SetCVarCachable("showArenaEnemyPets");
+
 function ArenaEnemyFrames_OnLoad(self)
 	self:RegisterEvent("CVAR_UPDATE");
 	self:RegisterEvent("VARIABLES_LOADED");
@@ -15,7 +18,7 @@ function ArenaEnemyFrames_OnLoad(self)
 		CastingBarFrame_UpdateIsShown(castFrame);
 	end
 	
-	UpdateArenaEnemyBackground(GetCVarBool("showPartyBackground"));
+	UpdateArenaEnemyBackground();
 	ArenaEnemyBackground_SetOpacity(tonumber(GetCVar("partyBackgroundOpacity")));
 	ArenaEnemyFrames_UpdateVisible();
 	ArenaEnemyFrames_ResetCrowdControlCooldownData();
@@ -35,9 +38,9 @@ function ArenaEnemyFrames_OnEvent(self, event, ...)
 			CastingBarFrame_UpdateIsShown(castFrame);
 		end
 		for i=1, MAX_ARENA_ENEMIES do
-			ArenaEnemyFrame_UpdatePet(_G["ArenaEnemyFrame"..i], i, true);
+			ArenaEnemyFrame_UpdatePet(_G["ArenaEnemyFrame"..i], i);
 		end
-		UpdateArenaEnemyBackground(GetCVarBool("showPartyBackground"));
+		UpdateArenaEnemyBackground();
 		ArenaEnemyBackground_SetOpacity(tonumber(GetCVar("partyBackgroundOpacity")));
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		ArenaEnemyFrames_CheckEffectiveEnableState(self);
@@ -129,8 +132,6 @@ function ArenaEnemyFrame_OnLoad(self)
 	self:RegisterEvent("ARENA_CROWD_CONTROL_SPELL_UPDATE");
 	self:RegisterEvent("UNIT_MAXHEALTH");
 	self:RegisterEvent("UNIT_HEAL_PREDICTION");
-	
-	UIDropDownMenu_Initialize(self.DropDown, ArenaEnemyDropDown_Initialize, "MENU");
 	
 	local setfocus = function()
 		FocusUnit("arena"..self:GetID());
@@ -426,7 +427,7 @@ function ArenaEnemyFrames_GetBestAnchorUnitFrameForOppponent(opponentNumber)
 	return _G["ArenaEnemyFrame" .. math.min(opponentNumber, MAX_ARENA_ENEMIES)];
 end
 
-function ArenaEnemyFrame_UpdatePet(self, id, useCVars)	--At some points, we need to use CVars instead of UVars even though UVars are faster.
+function ArenaEnemyFrame_UpdatePet(self, id)
 	if ( not id ) then
 		id = self:GetID();
 	end
@@ -434,11 +435,7 @@ function ArenaEnemyFrame_UpdatePet(self, id, useCVars)	--At some points, we need
 	local unitFrame = _G["ArenaEnemyFrame"..id];
 	local petFrame = _G["ArenaEnemyFrame"..id.."PetFrame"];
 	
-	local showArenaEnemyPets = (SHOW_ARENA_ENEMY_PETS == "1");
-	if ( useCVars ) then
-		showArenaEnemyPets = GetCVarBool("showArenaEnemyPets");
-	end
-	
+	local showArenaEnemyPets = CVarCallbackRegistry:GetCVarValueBool("showArenaEnemyPets");
 	if ( UnitGUID(petFrame.unit) and showArenaEnemyPets) then
 		petFrame:Show();
 	else
@@ -459,11 +456,9 @@ function ArenaEnemyPetFrame_OnLoad(self)
 	SecureUnitButton_OnLoad(self, unit);
 	self:SetID(id);
 	self:SetParent(ArenaEnemyFrames);
-	ArenaEnemyFrame_UpdatePet(self, id, true);
+	ArenaEnemyFrame_UpdatePet(self, id);
 	self:RegisterEvent("ARENA_OPPONENT_UPDATE");
 	self:RegisterEvent("UNIT_CLASSIFICATION_CHANGED");
-	
-	UIDropDownMenu_Initialize(self.DropDown, ArenaEnemyPetDropDown_Initialize, "MENU");
 	
 	local setfocus = function()
 		FocusUnit("arenapet"..self:GetID());
@@ -507,16 +502,8 @@ function ArenaEnemyPetFrame_OnEvent(self, event, ...)
 	UnitFrame_OnEvent(self, event, ...);
 end
 
-function ArenaEnemyDropDown_Initialize(self)
-	UnitPopup_ShowMenu(self, "ARENAENEMY", "arena"..self:GetParent():GetID());
-end
-
-function ArenaEnemyPetDropDown_Initialize(self)
-	UnitPopup_ShowMenu(self, "ARENAENEMY", "arenapet"..self:GetParent():GetID());
-end
-
-function UpdateArenaEnemyBackground(force)
-	if ( (SHOW_PARTY_BACKGROUND == "1") or force ) then
+function UpdateArenaEnemyBackground()
+	if (CVarCallbackRegistry:GetCVarValueBool("showPartyBackground")) then
 		ArenaEnemyBackground:Show();
 		local numOpps = min(GetNumArenaOpponents(), MAX_ARENA_ENEMIES);
 		if ( numOpps > 0 ) then
@@ -583,8 +570,8 @@ function ArenaPrepFrames_UpdateFrames()
 	
 end
 
-function ArenaPrepFrames_UpdateBackground(force)
-	if ( (SHOW_PARTY_BACKGROUND == "1") or force ) then
+function ArenaPrepFrames_UpdateBackground()
+	if (CVarCallbackRegistry:GetCVarValueBool("showPartyBackground")) then
 		ArenaPrepBackground:Show();
 		local numOpps = GetNumArenaOpponents();
 		if ( numOpps > 0 ) then

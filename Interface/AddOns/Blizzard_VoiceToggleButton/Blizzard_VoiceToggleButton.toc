@@ -3,6 +3,5 @@
 ## DefaultState: enabled
 ## Dependencies: Blizzard_SharedXML
 ## AllowLoad: game
-## SuppressLocalTableRef: 1
 VoiceToggleButton.lua
 VoiceToggleButton.xml

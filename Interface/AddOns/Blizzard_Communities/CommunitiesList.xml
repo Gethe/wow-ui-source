@@ -169,12 +169,6 @@
 					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="6" y="2"/>
 				</Anchors>
 			</EventFrame>
-			<Frame parentKey="EntryDropDown" inherits="UIDropDownMenuTemplate">
-				<Scripts>
-					<OnLoad function="CommunitiesListEntryDropDown_OnLoad"/>
-					<OnHide function="CommunitiesListEntryDropDown_OnHide"/>
-				</Scripts>
-			</Frame>
 			<Frame parentKey="FilligreeOverlay" frameLevel="100">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="3" y="-1"/>
@@ -267,8 +261,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="CommunitiesListDropDownMenuTemplate" inherits="UIDropDownMenuTemplate" mixin="CommunitiesListDropDownMenuMixin" virtual="true">
-		<Size x="40" y="28"/>
+	<DropdownButton name="CommunitiesListDropdownTemplate" inherits="WowStyle1DropdownTemplate" mixin="CommunitiesListDropdownMixin" virtual="true">
 		<Frames>
 			<Frame parentKey="NotificationOverlay" frameLevel="100" setAllPoints="true" hidden="true">
 				<Layers>
@@ -276,7 +269,7 @@
 						<Texture parentKey="UnreadNotificationIcon" atlas="communities-icon-notification">
 							<Size x="11" y="11"/>
 							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOPRIGHT" x="-19" y="-4"/>
+								<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOPRIGHT" x="0" y="-0"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -288,5 +281,5 @@
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 		</Scripts>
-	</Frame>
+	</DropdownButton>
 </Ui>

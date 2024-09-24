@@ -1,7 +1,8 @@
 NewSettings = {};
 
+local version = GetBuildInfo();
+
 function IsNewSettingInCurrentVersion(variable)
-	local version = GetBuildInfo();
 	local currentNewSettings = NewSettings[version];
 	if currentNewSettings then
 		for _, var in ipairs(currentNewSettings) do

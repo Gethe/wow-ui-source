@@ -4,11 +4,6 @@ VERTICAL_MULTI_BAR_WIDTH = 41;
 VERTICAL_MULTI_BAR_VERTICAL_SPACING = 20;
 VERTICAL_MULTI_BAR_HORIZONTAL_SPACING = 2;
 VERTICAL_MULTI_BAR_MIN_SCALE = 0.8333;
-STATE_AlwaysShowMultibars = nil;
-STATE_MultiBar1 = nil;
-STATE_MultiBar2 = nil;
-STATE_MultiBar3 = nil;
-STATE_MultiBar4 = nil;
 
 function MultiActionButtonDown (bar, id)
 	local button = _G[bar.."Button"..id];
@@ -54,10 +49,10 @@ function MultiActionBar_Update ()
 	local showLeft = false;
 	local showRight = false;
 	
-	UpdateMultiActionBar(MultiBarBottomLeft, SHOW_MULTI_ACTIONBAR_1, BOTTOMLEFT_ACTIONBAR_PAGE);
-	UpdateMultiActionBar(MultiBarBottomRight, SHOW_MULTI_ACTIONBAR_2, BOTTOMRIGHT_ACTIONBAR_PAGE);
-	UpdateMultiActionBar(MultiBarRight, SHOW_MULTI_ACTIONBAR_3, RIGHT_ACTIONBAR_PAGE, function(var) showRight = var; end);
-	UpdateMultiActionBar(MultiBarLeft, SHOW_MULTI_ACTIONBAR_3 and SHOW_MULTI_ACTIONBAR_4, LEFT_ACTIONBAR_PAGE, function(var) showLeft = var; end);
+	UpdateMultiActionBar(MultiBarBottomLeft, MultiBar1_IsVisible(), BOTTOMLEFT_ACTIONBAR_PAGE);
+	UpdateMultiActionBar(MultiBarBottomRight, MultiBar2_IsVisible(), BOTTOMRIGHT_ACTIONBAR_PAGE);
+	UpdateMultiActionBar(MultiBarRight, MultiBar3_IsVisible(), RIGHT_ACTIONBAR_PAGE, function(var) showRight = var; end);
+	UpdateMultiActionBar(MultiBarLeft, MultiBar3_IsVisible() and MultiBar4_IsVisible(), LEFT_ACTIONBAR_PAGE, function(var) showLeft = var; end);
 
 	if ( showRight ) then
 		local maxWidth = VERTICAL_MULTI_BAR_WIDTH * 2 + VERTICAL_MULTI_BAR_HORIZONTAL_SPACING;
@@ -138,7 +133,7 @@ function MultiActionBar_UpdateGrid (barName, show)
 end
 
 function MultiActionBar_UpdateGridVisibility ()
-	if ( Settings.GetValue("PROXY_ALWAYS_SHOW_ACTION_BARS") ) then
+	if ( Settings.GetValue("alwaysShowActionBars") ) then
 		MultiActionBar_ShowAllGrids();
 	else
 		MultiActionBar_HideAllGrids();
@@ -150,26 +145,21 @@ function Multibar_EmptyFunc (show)
 end
 
 function MultibarGrid_IsVisible ()
-	STATE_AlwaysShowMultibars = Settings.GetValue("PROXY_ALWAYS_SHOW_ACTION_BARS");
-	return STATE_AlwaysShowMultibars;
+	return Settings.GetValue("alwaysShowActionBars");
 end
 
-function MultiBar1_IsVisible ()
-	STATE_MultiBar1 = SHOW_MULTI_ACTIONBAR_1;
-	return SHOW_MULTI_ACTIONBAR_1;
+function MultiBar1_IsVisible()
+	return Settings.GetValue("PROXY_SHOW_ACTIONBAR_2");
 end
 
-function MultiBar2_IsVisible ()
-	STATE_MultiBar2 = SHOW_MULTI_ACTIONBAR_2;
-	return SHOW_MULTI_ACTIONBAR_2;
+function MultiBar2_IsVisible()
+	return Settings.GetValue("PROXY_SHOW_ACTIONBAR_3");
 end
 
-function MultiBar3_IsVisible ()
-	STATE_MultiBar3 = SHOW_MULTI_ACTIONBAR_3;
-	return SHOW_MULTI_ACTIONBAR_3;
+function MultiBar3_IsVisible()
+	return Settings.GetValue("PROXY_SHOW_ACTIONBAR_4");
 end
 
-function MultiBar4_IsVisible ()
-	STATE_MultiBar4 = SHOW_MULTI_ACTIONBAR_4;
-	return SHOW_MULTI_ACTIONBAR_4;
+function MultiBar4_IsVisible()
+	return Settings.GetValue("PROXY_SHOW_ACTIONBAR_5");
 end

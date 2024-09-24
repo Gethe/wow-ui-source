@@ -405,6 +405,7 @@
 					</Frame>
 				</Frames>
 			</CheckButton>
+			
 			<CheckButton parentKey="GuildBenefitsTab" hidden="true" inherits="CommunitiesFrameTabTemplate">
 				<KeyValues>
 					<KeyValue key="tooltip" value="COMMUNITIES_GUILD_BENEFITS_TAB_TOOLTIP" type="global"/>
@@ -425,30 +426,26 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.GuildBenefitsTab" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
 				</Anchors>
 			</CheckButton>
-			<Frame parentKey="StreamDropDownMenu" inherits="StreamDropDownMenuTemplate">
-				<Size x="40" y="28"/>
+			<DropdownButton parentKey="StreamDropdown" inherits="StreamDropdownTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="188" y="-32"/>
 				</Anchors>
-			</Frame>
-			<Frame parentKey="GuildMemberListDropDownMenu" inherits="GuildMemberListDropDownMenuTemplate">
-				<Size x="40" y="28"/>
+			</DropdownButton>
+			<DropdownButton parentKey="GuildMemberListDropdown" inherits="GuildMemberListDropdownTemplate" frameLevel="5">
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-10" y="-27"/>
 				</Anchors>
-			</Frame>
-			<Frame parentKey="CommunityMemberListDropDownMenu" inherits="CommunityMemberListDropDownMenuTemplate">
-				<Size x="40" y="28"/>
+			</DropdownButton>
+			<DropdownButton parentKey="CommunityMemberListDropdown" inherits="CommunityMemberListDropdownTemplate" frameLevel="5">
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-10" y="-27"/>
 				</Anchors>
-			</Frame>
-			<Frame parentKey="CommunitiesListDropDownMenu" inherits="CommunitiesListDropDownMenuTemplate">
-				<Size x="40" y="28"/>
+			</DropdownButton>
+			<DropdownButton parentKey="CommunitiesListDropdown" inherits="CommunitiesListDropdownTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="-10" y="-28"/>
+					<Anchor point="TOPLEFT" x="5" y="-28"/>
 				</Anchors>
-			</Frame>
+			</DropdownButton>
 			<Frame parentKey="VoiceChatHeadset" inherits="VoiceChatHeadsetTemplate">
 				<Size x="54" y="27"/>
 				<!-- Anchored in code -->
@@ -562,13 +559,12 @@
 					<Anchor point="TOP" relativeTo="UIParent" x="0" y="-80"/>
 				</Anchors>
 			</Frame>
-			<DropDownToggleButton parentKey="AddToChatButton" inherits="AddToChatButtonTemplate">
-				<Size x="22" y="22"/>
+			<DropdownButton parentKey="AddToChatButton" inherits="AddToChatButtonTemplate">
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.StreamDropDownMenu" relativePoint="RIGHT" x="170" y="3"/>
+					<Anchor point="RIGHT" relativeKey="$parent.StreamDropdown" relativePoint="RIGHT" x="170" y="3"/>
 				</Anchors>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-			</DropDownToggleButton>
+			</DropdownButton>
 			<Button parentKey="InviteButton" inherits="CommunitiesInviteButtonTemplate" motionScriptsWhileDisabled="true">
 				<Size x="130" y="20"/>
 				<Anchors>

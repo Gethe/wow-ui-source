@@ -16,7 +16,10 @@ SHINES_TO_ANIMATE = {};
 
 -- Macros
 MAX_ACCOUNT_MACROS = 120;
-MAX_CHARACTER_MACROS = 18;
+MAX_CHARACTER_MACROS = 30;
+
+CVarCallbackRegistry:SetCVarCachable("showCastableBuffs");
+CVarCallbackRegistry:SetCVarCachable("showDispelDebuffs");
 
 -- Move this stuff to UIParentPanelManager for TBC when it is created
 -- These are windows that rely on a parent frame to be open.  If the parent closes or a pushable frame overlaps them they must be hidden.
@@ -39,9 +42,6 @@ UISpecialFrames = {
 };
 
 UIMenus = {
-	"ChatMenu",
-	"EmoteMenu",
-	"LanguageMenu",
 	"DropDownList1",
 	"DropDownList2",
 };
@@ -161,10 +161,6 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("AUCTION_HOUSE_CLOSED");
 	self:RegisterEvent("AUCTION_HOUSE_DISABLED");
 
-	-- Events for trainer UI handling
-	self:RegisterEvent("TRAINER_SHOW");
-	self:RegisterEvent("TRAINER_CLOSED");
-
 	-- Events for trade skill UI handling
 	self:RegisterEvent("TRADE_SKILL_SHOW");
 	self:RegisterEvent("TRADE_SKILL_CLOSE");
@@ -245,7 +241,6 @@ end
 function UIParent_OnUpdate(self, elapsed)
 	FCF_OnUpdate(elapsed);
 	ButtonPulse_OnUpdate(elapsed);
-	UnitPopup_OnUpdate(elapsed);
 	AnimatedShine_OnUpdate(elapsed);
 	BattlefieldFrame_OnUpdate(elapsed);
 	HelpOpenWebTicketButton_OnUpdate(HelpOpenWebTicketButton, elapsed);
@@ -357,10 +352,6 @@ function Arena_LoadUI()
 	UIParentLoadAddOn("Blizzard_ArenaUI");
 end
 
-function Store_LoadUI()
-	UIParentLoadAddOn("Blizzard_StoreUI");
-end
-
 function APIDocumentation_LoadUI()
 	UIParentLoadAddOn("Blizzard_APIDocumentationGenerated");
 end
@@ -373,10 +364,6 @@ end
 
 function DeathRecap_LoadUI()
 	UIParentLoadAddOn("Blizzard_DeathRecap");
-end
-
-function Communities_LoadUI()
-	UIParentLoadAddOn("Blizzard_Communities");
 end
 
 local playerEnteredWorld = false;
@@ -497,7 +484,6 @@ function CanShowEncounterJournal()
 end
 
 function ToggleCommunitiesFrame()
-	Communities_LoadUI();
 	ToggleFrame(CommunitiesFrame);
 end
 
@@ -509,8 +495,6 @@ function ToggleStoreUI()
 	if (Kiosk.IsEnabled()) then
 		return;
 	end
-
-	Store_LoadUI();
 
 	local wasShown = StoreFrame_IsShown();
 	if ( not wasShown ) then
@@ -524,8 +508,6 @@ function SetStoreUIShown(shown)
 	if (Kiosk.IsEnabled()) then
 		return;
 	end
-
-	Store_LoadUI();
 
 	local wasShown = StoreFrame_IsShown();
 	if ( not wasShown and shown ) then
@@ -1025,17 +1007,6 @@ function UIParent_OnEvent(self, event, ...)
 		end
 	elseif ( event == "AUCTION_HOUSE_DISABLED" ) then
 		StaticPopup_Show("AUCTION_HOUSE_DISABLED");
-
-	-- Events for trainer UI handling
-	elseif ( event == "TRAINER_SHOW" ) then
-		ClassTrainerFrame_LoadUI();
-		if ( ClassTrainerFrame_Show ) then
-			ClassTrainerFrame_Show();
-		end
-	elseif ( event == "TRAINER_CLOSED" ) then
-		if ( ClassTrainerFrame_Hide ) then
-			ClassTrainerFrame_Hide();
-		end
 
 	-- Events for trade skill UI handling
 	elseif ( event == "TRADE_SKILL_SHOW" ) then
@@ -1681,6 +1652,10 @@ end
 
 -- Function that handles the escape key functions
 function ToggleGameMenu()
+	if Menu.GetManager():HandleESC() then
+		return;
+	end
+
 	if ( CanAutoSetGamePadCursorControl(true) and (not IsModifierKeyDown()) ) then
 		-- There are a few gameplay related cancel cases we want to handle before toggling cursor control on.
 		if ( SpellStopCasting() ) then
@@ -1704,14 +1679,8 @@ function ToggleGameMenu()
 		HideUIPanel(GameMenuFrame);
 	elseif ( HelpFrame:IsShown() ) then
 		ToggleHelpFrame();
-	elseif ( VideoOptionsFrame:IsShown() ) then
-		VideoOptionsFrameCancel:Click();
-	elseif ( AudioOptionsFrame:IsShown() ) then
-		AudioOptionsFrameCancel:Click();
 	elseif ( SocialBrowserFrame and SocialBrowserFrame:IsShown() ) then
 		SocialBrowserFrame:Hide();
-	elseif ( InterfaceOptionsFrame:IsShown() ) then
-		InterfaceOptionsFrameCancel:Click();
 	elseif ( SocialPostFrame and Social_IsShown() ) then
 		Social_SetShown(false);
 	elseif ( securecall("FCFDockOverflow_CloseLists") ) then
@@ -1986,7 +1955,7 @@ function RefreshBuffs(frame, unit, numBuffs, suffix, checkCVar)
 	local name, icon, count, debuffType, duration, expirationTime;
 
 	local filter;
-	if ( checkCVar and SHOW_CASTABLE_BUFFS == "1" and UnitCanAssist("player", unit) ) then
+	if ( checkCVar and CVarCallbackRegistry:GetCVarValueBool("showCastableBuffs") and UnitCanAssist("player", unit) ) then
 		filter = "RAID";
 	end
 
@@ -2030,7 +1999,7 @@ function RefreshDebuffs(frame, unit, numDebuffs, suffix, checkCVar)
 	local isEnemy = UnitCanAttack("player", unit);
 
 	local filter;
-	if ( checkCVar and SHOW_DISPELLABLE_DEBUFFS == "1" and UnitCanAssist("player", unit) ) then
+	if ( checkCVar and CVarCallbackRegistry:GetCVarValueBool("showDispelDebuffs") and UnitCanAssist("player", unit) ) then
 		filter = "RAID";
 	end
 

@@ -303,12 +303,4 @@
 			<OnHide function="LootHistoryFrame_OnHide"/>
 		</Scripts>
 	</Frame>
-	<Frame name="LootHistoryDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
-		<Anchors>
-			<Anchor point="TOPLEFT"/>
-		</Anchors>
-		<Scripts>
-			<OnLoad function="LootHistoryDropDown_OnLoad"/>
-		</Scripts>
-	</Frame>
 </Ui>

@@ -93,7 +93,6 @@ local DIRECT_MACRO_CONDITIONAL_NAMES = {
 
 local OTHER_SAFE_FUNCTION_NAMES = {
     "GetBindingKey", "HasAction",
-    "IsHarmfulSpell", "IsHelpfulSpell", "IsPressHoldReleaseSpell",
     "GetMultiCastTotemSpells", "FindSpellBookSlotBySpellID", "UnitTargetsVehicleInRaidUI"
 };
 
@@ -112,6 +111,10 @@ local ENV = RESTRICTED_FUNCTIONS_SCOPE;
 
 ENV.IsHarmfulItem = C_Item.IsHarmfulItem;
 ENV.IsHelpfulItem = C_Item.IsHelpfulItem;
+ENV.IsSpellHelpful = C_Spell.IsSpellHelpful;
+ENV.IsSpellHarmful = C_Spell.IsSpellHarmful;
+ENV.IsPressHoldReleaseSpell = C_Spell.IsPressHoldReleaseSpell;
+
 
 function ENV.PlayerCanAttack( unit )
     return UnitCanAttack( "player", unit )

@@ -381,6 +381,7 @@ local PvpInfo =
 				{ Name = "ratedBattlegrounds", Type = "bool", Nilable = false },
 				{ Name = "ratedArenas", Type = "bool", Nilable = false },
 				{ Name = "ratedSoloShuffle", Type = "bool", Nilable = false },
+				{ Name = "ratedBGBlitz", Type = "bool", Nilable = false },
 			},
 		},
 		{

@@ -1,8 +1,7 @@
 ## Title: Blizzard_ActionBar
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_UIParent, Blizzard_Options_Frame_Legacy, Blizzard_FrameXML, Blizzard_TextStatusBar
-## SuppressLocalTableRef: 1
+## Dependencies: Blizzard_UIParent, Blizzard_FrameXML, Blizzard_TextStatusBar
 ## AllowLoadGameType: vanilla
 ## AllowLoad: Game
 Shared\MainMenuBarMicroButtons.lua

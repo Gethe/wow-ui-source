@@ -54,13 +54,13 @@ function WorldMapMixin:SynchronizeDisplayState()
 
 		self.BlackoutFrame:Show();	
 		self.BorderFrame:Show();
-		WorldMapContinentDropDown:Show();
-		WorldMapZoneDropDown:Show();
+		WorldMapTitleButton:Hide();
+		WorldMapContinentDropdown:Show();
+		WorldMapZoneDropdown:Show();
 		WorldMapZoomOutButton:Show();
-		WorldMapZoneMinimapDropDown:Show();
+		WorldMapZoneMinimapDropdown:Show();
 		WorldMapMagnifyingGlassButton:Show();
 		
-
 		WorldMapFrameCloseButton:SetPoint("TOPRIGHT", self.BorderFrame, "TOPRIGHT", 5, 4);
 		self.MaximizeMinimizeFrame:SetPoint("RIGHT", WorldMapFrameCloseButton, "LEFT", 12, 0);
 		self.ScrollContainer:SetPoint("TOPLEFT", WorldMapFrame, "TOPLEFT", 11, -70);
@@ -80,15 +80,16 @@ function WorldMapMixin:SynchronizeDisplayState()
 		
 		self.BlackoutFrame:Hide();
 		self.BorderFrame:Hide();
-		WorldMapContinentDropDown:Hide();
-		WorldMapZoneDropDown:Hide();
+		WorldMapTitleButton:Show();
+		WorldMapContinentDropdown:Hide();
+		WorldMapZoneDropdown:Hide();
 		WorldMapZoomOutButton:Hide();
-		WorldMapZoneMinimapDropDown:Hide();
+		WorldMapZoneMinimapDropdown:Hide();
 		WorldMapMagnifyingGlassButton:Hide();
 
 		WorldMapFrameCloseButton:SetPoint("TOPRIGHT", MiniBorderRight, "TOPRIGHT", -44, 5);
 		self.MaximizeMinimizeFrame:SetPoint("RIGHT", WorldMapFrameCloseButton, "LEFT", 10, 0);
-		self.ScrollContainer:SetPoint("TOPLEFT", WorldMapFrame, "TOPLEFT", 20, -50);
+		self.ScrollContainer:SetPoint("TOPLEFT", WorldMapFrame, "TOPLEFT", 20, -22);
 		self.ScrollContainer:SetPoint("BOTTOMRIGHT", WorldMapFrame, "BOTTOMRIGHT", -10, 28);
 		
 		RestoreUIPanelArea(self);
@@ -108,6 +109,8 @@ end
 function WorldMapMixin:Maximize()
 	self.isMaximized = true;
 
+	UpdateUIPanelPositions(self);
+
 	self:SynchronizeDisplayState();
 
 	self:OnFrameSizeChanged();
@@ -115,7 +118,7 @@ end
 
 function WorldMapMixin:SetupMinimizeMaximizeButton()
 	self.minimizedWidth = 610;
-	self.minimizedHeight = 463;
+	self.minimizedHeight = 438;
 	self.maximizedWidth = 1024;
 	self.maximizedHeight = 768;
 
@@ -137,7 +140,7 @@ function WorldMapMixin:IsMaximized()
 end
 
 function WorldMapMixin:OnLoad()
-	UIPanelWindows[self:GetName()] = { area = "left", pushable = 0, xoffset = 0, yoffset = 0, whileDead = 1, minYOffset = 0, maximizePoint = "CENTER" };
+	UIPanelWindows[self:GetName()] = { area = "center", pushable = 0, xoffset = 0, yoffset = 0, whileDead = 1, minYOffset = 0, maximizePoint = "top", allowOtherPanels = 1 };
 
 	MapCanvasMixin.OnLoad(self);
 	self:SetupMinimizeMaximizeButton();
@@ -160,8 +163,9 @@ function WorldMapMixin:OnEvent(event, ...)
 	MapCanvasMixin.OnEvent(self, event, ...);
 
 	if event == "VARIABLES_LOADED" then
-		WorldMapZoneMinimapDropDown_Update();
+		WorldMapZoneMinimapDropdown:GenerateMenu();
 	elseif event == "DISPLAY_SIZE_CHANGED" or event == "UI_SCALE_CHANGED" then
+		UpdateUIPanelPositions(self);
 		self:SynchronizeDisplayState();
 	end
 end
@@ -255,8 +259,6 @@ function WorldMapMixin:OnMapChanged()
 		C_MapInternal.SetDebugMap(self:GetMapID());
 	end
 
-	CloseDropDownMenus();
-
 	-- Enable/Disable zoom out button
 	self.continentInfo = self:GetCurrentMapContinent();
 	if (self.continentInfo) then
@@ -266,8 +268,8 @@ function WorldMapMixin:OnMapChanged()
 	end
 
 	-- Update dropdown text.
-	WorldMapContinentDropDown_Update(self.ContinentDropDown);
-	WorldMapZoneDropDown_Update(self.ZoneDropDown);
+	WorldMapContinentDropdown:GenerateMenu();
+	WorldMapZoneDropdown:GenerateMenu();
 	WorldMapFrame_SetMapName();
 end
 
@@ -278,8 +280,6 @@ function WorldMapMixin:OnShow()
 	self:ResetZoom();
 
 	PlaySound(SOUNDKIT.IG_QUEST_LOG_OPEN);
-
-	WorldMapZoneMinimapDropDown_Update();
 
 	local miniWorldMap = GetCVarBool("miniWorldMap");
 	local maximized = self:IsMaximized();
@@ -331,125 +331,146 @@ end
 -- ============================================ DROPDOWNS ===============================================================================
 
 -- Cache variables so that we don't have to recompute the dropdown buttons more than once.
-local continentDropDownButtons = nil;
-local zoneDropDownCache = { }; -- Key is continent ID; value is a list of buttons.
+local continentMapChildInfos = nil;
+local zoneInfoCache = { }; -- Key is continent ID; value is a list of buttons.
 
-function WorldMapContinentDropDown_OnLoad(self)
-	UIDropDownMenu_Initialize(self, WorldMapContinentDropDown_Initialize);
-	UIDropDownMenu_SetWidth(self, 130);
+function WorldMapContinentDropdown_OnLoad(self)
+	WowStyle1DropdownMixin.OnLoad(self);
+
+	self:SetWidth(130);
 end
 
-function WorldMapContinentDropDown_Initialize(self)
-	local mapID = _G["WorldMapFrame"]:GetMapID();
-	if (mapID) then
-		-- Work our way back up to the top (World), then move down to find the continents.
+do
+	local function IsSelected(continentInfo)
+		local info = WorldMapFrame.continentInfo;
+		return info and (info.mapID == continentInfo.mapID);
+	end
+	
+	local function SetSelected(continentInfo)
+		WorldMapFrame:SetMapID(continentInfo.mapID);
+	end
+	
+	function WorldMapContinentDropdown_OnShow(self)
+		local mapID = WorldMapFrame:GetMapID();
+		if not mapID then
+			return;
+		end
+	
 		local azerothMapInfo = MapUtil.GetMapParentInfo(mapID, Enum.UIMapType.World, TOPMOST);
-		if (azerothMapInfo.mapID) then
+		if not azerothMapInfo.mapID then
+			return;
+		end
 
-			-- If we don't have a cached button list, we'll need to create it here.
-			if (not continentDropDownButtons) then
-				continentDropDownButtons = { };
-				-- Get the continents.
-				local continents = C_Map.GetMapChildrenInfo(azerothMapInfo.mapID);
-				if ( continents ) then
-					local info;
-					for i, continentInfo in ipairs(continents) do
-						-- Filter out anything else that might have the World as a parent (e.g. Battlegrounds).
-						if (continentInfo.mapType == Enum.UIMapType.Continent) then
-							info = {};
-							info.value = continentInfo.mapID;
-							info.text = continentInfo.name;
-							info.func = function(self) _G["WorldMapFrame"]:SetMapID(self.value); end;
-							info.checked = function(self)  if (_G["WorldMapFrame"].continentInfo) then return _G["WorldMapFrame"].continentInfo.mapID == self.value; end end;
-							info.classicChecks = true;
+		-- If we don't have a cached button list, we'll need to create it here.
+		if not continentMapChildInfos then
+			continentMapChildInfos = {};
 
-							-- Save our button list.
-							tinsert(continentDropDownButtons, info);
-						end
+			-- Get the continents.
+			local continents = C_Map.GetMapChildrenInfo(azerothMapInfo.mapID);
+			if (continents) then
+				for i, mapInfo in ipairs(continents) do
+					-- Filter out anything else that might have the World as a parent (e.g. Battlegrounds).
+					if (mapInfo.mapType == Enum.UIMapType.Continent) then
+						tinsert(continentMapChildInfos, mapInfo);
 					end
 				end
 			end
-
-			for i, entry in ipairs(continentDropDownButtons) do
-				UIDropDownMenu_AddButton(entry);
-			end
 		end
+
+		self:SetupMenu(function(dropdown, rootDescription)
+			rootDescription:SetTag("MENU_WORLD_MAP_CONTINENT");
+
+			for i, continentInfo in ipairs(continentMapChildInfos) do
+				if (continentInfo.mapType == Enum.UIMapType.Continent) then
+					rootDescription:CreateRadio(continentInfo.name, IsSelected, SetSelected, continentInfo);
+				end
+			end
+		end);
 	end
 end
 
-function WorldMapContinentDropDown_Update(self)
-	local continentInfo = _G["WorldMapFrame"].continentInfo;
-	if (continentInfo) then
-		--[[
-			HACK: This panel is in unusual situation of 1. having two drop downs and 2. needing to change the text display for the drop downs outside of an OnClick.
-			Unfortunately, UIDropDownMenu doesn't handle this setup very well, so functions like UIDropDownMenu_SetSelectedValue won't work.
+function WorldMapZoneDropdown_OnLoad(self)
+	WowStyle1DropdownMixin.OnLoad(self);
 
-			One potential fix is to call _Initialize before the value is set each time, but that tanks performance when changing maps.
-			So we'll go with the hacky way, and just set the raw text value rather than using the DropDown functions.
-		]]
-		self.Text:SetText(continentInfo.name);
-	else
-		UIDropDownMenu_ClearAll(self);
-	end
+	self:SetWidth(130);
+				end
+
+do
+	local function IsSelected(zoneInfo)
+		return WorldMapFrame:GetMapID() == zoneInfo.mapID;
+		end
+
+	local function SetSelected(zoneInfo)
+		WorldMapFrame:SetMapID(zoneInfo.mapID);
 end
 
-function WorldMapZoneDropDown_OnLoad(self)
-	UIDropDownMenu_Initialize(self, WorldMapZoneDropDown_Initialize);
-	UIDropDownMenu_SetWidth(self, 130);
+	function WorldMapZoneDropdown_OnShow(self)
+		local continentInfo = WorldMapFrame.continentInfo;
+		if not continentInfo then
+			return;
 end
-
-function WorldMapZoneDropDown_Initialize(self)
-	-- Start at the current continent and work our way down.
-	local continentInfo = _G["WorldMapFrame"].continentInfo;
-	if (continentInfo) then
 
 		-- If we don't have a cached button list, we'll need to create it here.
-		if (not zoneDropDownCache[continentInfo.mapID]) then
-			local zones = C_Map.GetMapChildrenInfo(continentInfo.mapID);
-			if (zones) then
-				local info;
-				local list = {};
-				for i, zoneInfo in ipairs(zones) do
-					info = {};
-					info.value = zoneInfo.mapID;
-					info.text = zoneInfo.name;
-					info.func = function(self) _G["WorldMapFrame"]:SetMapID(self.value); end;
-					info.checked = function(self) return _G["WorldMapFrame"]:GetMapID() == self.value; end;
-					info.classicChecks = true;
-					tinsert(list, info);
-				end
-				table.sort(list, function(entry1, entry2) return entry1.text < entry2.text; end);
+		if not zoneInfoCache[continentInfo.mapID] then
+			local zoneInfos = C_Map.GetMapChildrenInfo(continentInfo.mapID);
+			if zoneInfos then
+				table.sort(zoneInfos, function(zoneInfo1, zoneInfo2)
+					return zoneInfo1.name < zoneInfo2.name; 
+				end);
+				zoneInfoCache[continentInfo.mapID] = zoneInfos;
+	end
+end
 
-				-- Save our button list.
-				tinsert(zoneDropDownCache, continentInfo.mapID, list);
+		self:SetupMenu(function(dropdown, rootDescription)
+			rootDescription:SetTag("MENU_WORLD_MAP_ZONE");
+
+			for i, zoneInfo in ipairs(zoneInfoCache[continentInfo.mapID]) do
+				rootDescription:CreateRadio(zoneInfo.name, IsSelected, SetSelected, zoneInfo);
+	end
+		end);
+end
+end
+
+function WorldMapZoneMinimapDropdown_OnLoad(self)
+	WowStyle1DropdownMixin.OnLoad(self);
+
+	self:SetWidth(130);
+end
+
+function WorldMapZoneMinimapDropdown_OnShow(self)
+	local function IsSelected(cvarIndex)
+		return GetCVar("showBattlefieldMinimap") == cvarIndex;
+end
+
+	local function SetSelected(cvarIndex)
+		SetCVar("showBattlefieldMinimap", cvarIndex);
+
+		if ( DoesInstanceTypeMatchBattlefieldMapSettings()) then
+			if ( not BattlefieldMapFrame ) then
+				BattlefieldMap_LoadUI();
+			end
+			BattlefieldMapFrame:Show();
+		else
+			if ( BattlefieldMapFrame ) then
+				BattlefieldMapFrame:Hide();
 			end
 		end
+	end
 
-		for i, entry in ipairs(zoneDropDownCache[continentInfo.mapID]) do
-			UIDropDownMenu_AddButton(entry);
+	self:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_WORLD_MAP_ZONE_MINIMAP");
+
+		for index = 1, 3 do
+			local cvarIndex = index - 1;
+			local text = WorldMapZoneMinimapDropdown_GetText(cvarIndex);
+			rootDescription:CreateRadio(text, IsSelected, SetSelected, tostring(cvarIndex));
 		end
-	end
+	end);
 end
 
-function WorldMapZoneMinimapDropDown_OnLoad(self)
-	UIDropDownMenu_Initialize(self, WorldMapZoneMinimapDropDown_Initialize);
-	UIDropDownMenu_SetWidth(self, 130);
-end
+function WorldMapZoneMinimapDropdown_OnEnter(self)
+	WowStyle1DropdownMixin.OnEnter(self);
 
-function WorldMapZoneMinimapDropDown_Initialize()
-	for index = 1, 3 do
-		local info = UIDropDownMenu_CreateInfo();
-		info.value = tostring(index - 1);
-		info.text = WorldMapZoneMinimapDropDown_GetText(info.value);
-		info.func = WorldMapZoneMinimapDropDown_OnClick;
-		info.classicChecks = true;
-		-- info.checked skipped because the checked property is assigned
-		-- in the dropdown by selection comparison
-		UIDropDownMenu_AddButton(info);
-	end
-end
-
-function WorldMapZoneMinimapDropDown_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
 	local bindingKeyStr = GetBindingKey("TOGGLEBATTLEFIELDMINIMAP");
 	local text = TOGGLE_BATTLEFIELDMINIMAP_TOOLTIP_NO_SHORTCUT;
@@ -460,60 +481,21 @@ function WorldMapZoneMinimapDropDown_OnEnter(self)
 	GameTooltip:Show();
 end
 
-function WorldMapZoneMinimapDropDown_OnLeave(self)
-	GameTooltip:Hide();
-end
+function WorldMapZoneMinimapDropdown_OnLeave(self)
+	WowStyle1DropdownMixin.OnLeave(self);
 
-function WorldMapZoneMinimapDropDown_GetText(value)
-	if ( value == "0" ) then
+	GameTooltip:Hide();
+		end
+
+function WorldMapZoneMinimapDropdown_GetText(value)
+	if ( value == 0 ) then
 		return BATTLEFIELD_MINIMAP_SHOW_NEVER;
-	elseif ( value == "1" ) then
+	elseif ( value == 1 ) then
 		return BATTLEFIELD_MINIMAP_SHOW_BATTLEGROUNDS;
-	elseif ( value == "2" ) then
+	elseif ( value == 2 ) then
 		return BATTLEFIELD_MINIMAP_SHOW_ALWAYS;
 	end
 	return nil;
-end
-
-function WorldMapZoneMinimapDropDown_Update()
-	local value = GetCVar("showBattlefieldMinimap");
-	UIDropDownMenu_SetSelectedValue(WorldMapZoneMinimapDropDown, value);
-	UIDropDownMenu_SetText(WorldMapZoneMinimapDropDown, WorldMapZoneMinimapDropDown_GetText(value));
-end
-
-function WorldMapZoneMinimapDropDown_OnClick(self)
-	UIDropDownMenu_SetSelectedValue(WorldMapZoneMinimapDropDown, self.value);
-	SetCVar("showBattlefieldMinimap", self.value);
-
-	if ( DoesInstanceTypeMatchBattlefieldMapSettings()) then
-		if ( not BattlefieldMapFrame ) then
-			BattlefieldMap_LoadUI();
-		end
-		BattlefieldMapFrame:Show();
-	else
-		if ( BattlefieldMapFrame ) then
-			BattlefieldMapFrame:Hide();
-		end
-	end
-end
-
-function WorldMapZoneDropDown_Update(self)
-	UIDropDownMenu_ClearAll(self);
-
-	local mapID = _G["WorldMapFrame"]:GetMapID();
-	if (mapID) then
-		local mapInfo = C_Map.GetMapInfo(mapID);
-		if (mapInfo.mapType > Enum.UIMapType.Continent) then
-			--[[
-				HACK: This panel is in unusual situation of 1. having two drop downs and 2. needing to change the text display for the drop downs outside of an OnClick.
-				Unfortunately, UIDropDownMenu doesn't handle this setup very well, so functions like UIDropDownMenu_SetSelectedValue won't work.
-
-				One potential fix is to call _Initialize before the value is set each time, but that tanks performance when changing maps.
-				So we'll go with the hacky way, and just set the raw text value rather than using the DropDown functions.
-			]]
-			self.Text:SetText(mapInfo.name);
-		end
-	end
 end
 
 function DoesInstanceTypeMatchBattlefieldMapSettings()
@@ -534,7 +516,7 @@ function WorldMapFrame_SetMapName()
 	
 	-- mapInfo is nil for instances, Azeroth, or the cosmic view, in which case we'll keep the "World Map" title
 	if ( mapInfo) then
-		mapName = UIDropDownMenu_GetText(WorldMapZoneDropDown);
+		mapName = WorldMapZoneDropdown:GetText();
 		if ( not mapName ) then
 			mapName = mapInfo.name;
 		end
@@ -545,33 +527,9 @@ end
 function WorldMapTitleButton_OnLoad(self)
 	self:RegisterForClicks("LeftButtonDown", "LeftButtonUp", "RightButtonUp");
 	self:RegisterForDrag("LeftButton");
-	UIDropDownMenu_Initialize(WorldMapTitleDropDown, WorldMapTitleDropDown_Initialize, "MENU");
 end
 
 local locked = true;
-function WorldMapTitleDropDown_Initialize()
-	local checked;
-	local info = UIDropDownMenu_CreateInfo();
-
-	-- Lock/Unlock
-	info.text = LOCK_WINDOW;
-	info.func = WorldMapTitleDropDown_ToggleLock;
-	info.checked = locked;
-	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
-	
-	-- Opacity
-	info.text = CHANGE_OPACITY;
-	info.func = WorldMapTitleDropDown_ToggleOpacity;
-	info.checked = nil;
-	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
-
-	--Reset mini world Map
-	info.text = RESET;
-	info.func = WorldMapTitleDropDown_Reset;
-	info.checked = nil;
-	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
-end
-
 function WorldMapTitleButton_OnClick(self, button)
 	--PlaySound("UChatScrollButton");
 
@@ -584,16 +542,28 @@ function WorldMapTitleButton_OnClick(self, button)
 	
 	-- If Rightclick bring up the options menu
 	if ( button == "RightButton" ) then
-		ToggleDropDownMenu(1, nil, WorldMapTitleDropDown, "cursor", 0, 0);
-		return;
+		MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
+			rootDescription:SetTag("MENU_WORLD_MAP_TITLE");
+
+			local function IsSelected()
+				return locked;
+			end
+
+			local function SetSelected()
+				locked = not locked;
+			end
+
+			rootDescription:CreateButton(LOCK_WINDOW, IsSelected, SetSelected);
+
+			rootDescription:CreateButton(CHANGE_OPACITY, function()
+				WorldMapTitleDropdown_ToggleOpacity();
+			end);
+
+			rootDescription:CreateButton(RESET, function()
+				WorldMapTitleDropdown_Reset();
+			end);
+		end);
 	end
-
-	-- Close all dropdowns
-	CloseDropDownMenus();
-end
-
-function WorldMapTitleDropDown_ToggleLock()
-	locked = not locked;
 end
 
 function WorldMapTitleButton_OnDragStart()
@@ -614,18 +584,18 @@ function WorldMapTitleButton_OnDragStop()
 	end
 end
 
-function WorldMapTitleDropDown_Reset()
+function WorldMapTitleDropdown_Reset()
 	SetCVar("worldMapOpacity", 0);
 	WorldMapFrame_SetOpacity(0);
 	WorldMapFrame:ClearAllPoints();
-	WorldMapFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 16, -116);
+	WorldMapFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 16, -104);
 	WorldMapScreenAnchor:ClearAllPoints();
-	WorldMapScreenAnchor:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 16, -116);
+	WorldMapScreenAnchor:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 16, -104);
 	WorldMapFrame:SetUserPlaced(false);
 end
 
 -- ============================================ OPACITY ===============================================================================
-function WorldMapTitleDropDown_ToggleOpacity()
+function WorldMapTitleDropdown_ToggleOpacity()
 	if ( OpacityFrame:IsShown() ) then
 		OpacityFrame:Hide();
 		return;
