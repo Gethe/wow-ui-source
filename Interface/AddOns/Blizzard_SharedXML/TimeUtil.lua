@@ -267,7 +267,7 @@ function SecondsToTime(seconds, noSeconds, notAbbreviated, maxCount, roundUp)
 	local time = "";
 	local count = 0;
 	local tempTime;
-	seconds = roundUp and ceil(seconds) or floor(seconds);
+	seconds = roundUp and math.ceil(seconds) or math.floor(seconds);
 	maxCount = maxCount or 2;
 
 	-- When limited to a single term, use a higher threshold of 1.5 min/hr/day.
@@ -277,16 +277,16 @@ function SecondsToTime(seconds, noSeconds, notAbbreviated, maxCount, roundUp)
 	if ( seconds >= SECONDS_PER_DAY * threshold ) then
 		count = count + 1;
 		if ( count == maxCount and roundUp ) then
-			tempTime = ceil(seconds / SECONDS_PER_DAY);
+			tempTime = math.ceil(seconds / SECONDS_PER_DAY);
 		else
-			tempTime = floor(seconds / SECONDS_PER_DAY);
+			tempTime = math.floor(seconds / SECONDS_PER_DAY);
 		end
 		if ( notAbbreviated ) then
 			time = D_DAYS:format(tempTime);
 		else
 			time = DAYS_ABBR:format(tempTime);
 		end
-		seconds = mod(seconds, SECONDS_PER_DAY);
+		seconds = seconds % SECONDS_PER_DAY;
 	end
 	if ( count < maxCount and seconds >= SECONDS_PER_HOUR * threshold ) then
 		count = count + 1;
@@ -294,16 +294,16 @@ function SecondsToTime(seconds, noSeconds, notAbbreviated, maxCount, roundUp)
 			time = time..TIME_UNIT_DELIMITER;
 		end
 		if ( count == maxCount and roundUp ) then
-			tempTime = ceil(seconds / SECONDS_PER_HOUR);
+			tempTime = math.ceil(seconds / SECONDS_PER_HOUR);
 		else
-			tempTime = floor(seconds / SECONDS_PER_HOUR);
+			tempTime = math.floor(seconds / SECONDS_PER_HOUR);
 		end
 		if ( notAbbreviated ) then
 			time = time..D_HOURS:format(tempTime);
 		else
 			time = time..HOURS_ABBR:format(tempTime);
 		end
-		seconds = mod(seconds, SECONDS_PER_HOUR);
+		seconds = seconds % SECONDS_PER_HOUR;
 	end
 	if ( count < maxCount and seconds >= SECONDS_PER_MIN * threshold ) then
 		count = count + 1;
@@ -311,16 +311,16 @@ function SecondsToTime(seconds, noSeconds, notAbbreviated, maxCount, roundUp)
 			time = time..TIME_UNIT_DELIMITER;
 		end
 		if ( count == maxCount and roundUp ) then
-			tempTime = ceil(seconds / SECONDS_PER_MIN);
+			tempTime = math.ceil(seconds / SECONDS_PER_MIN);
 		else
-			tempTime = floor(seconds / SECONDS_PER_MIN);
+			tempTime = math.floor(seconds / SECONDS_PER_MIN);
 		end
 		if ( notAbbreviated ) then
 			time = time..D_MINUTES:format(tempTime);
 		else
 			time = time..MINUTES_ABBR:format(tempTime);
 		end
-		seconds = mod(seconds, SECONDS_PER_MIN);
+		seconds = seconds % SECONDS_PER_MIN;
 	end
 	if ( count < maxCount and seconds > 0 and not noSeconds ) then
 		if ( time ~= "" ) then
@@ -344,13 +344,13 @@ function MinutesToTime(mins, hideDays)
 	if ( mins > 1440 and not hideDays ) then
 		tempTime = floor(mins / 1440);
 		time = TIME_UNIT_DELIMITER .. format(DAYS_ABBR, tempTime);
-		mins = mod(mins, 1440);
+		mins = mins % 1440;
 		count = count + 1;
 	end
 	if ( mins > 60  ) then
 		tempTime = floor(mins / 60);
 		time = time .. TIME_UNIT_DELIMITER .. format(HOURS_ABBR, tempTime);
-		mins = mod(mins, 60);
+		mins = mins % 60;
 		count = count + 1;
 	end
 	if ( count < 2 ) then

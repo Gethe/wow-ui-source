@@ -554,15 +554,18 @@ function ProfessionsCrafterOrderViewMixin:SchematicPostInit()
     if not self.order.isFulfillable then
         for _, reagentInfo in ipairs(self.order.reagents) do
             local allocations = transaction:GetAllocations(reagentInfo.slotIndex);
-
-			-- isBasicReagent check here to handle multiple allocations within the same slot (qualities)
-            if not self.reagentSlotProvidedByCustomer[reagentInfo.slotIndex] or not reagentInfo.isBasicReagent then
-                allocations:Clear();
-                self.reagentSlotProvidedByCustomer[reagentInfo.slotIndex] = true;
-            end
-            -- These allocations get cleared before sending the craft, but we allocate them for craft readiness validation
-            allocations:Allocate(reagentInfo.reagent, reagentInfo.reagent.quantity);
-            reagentSlotToItemID[reagentInfo.slotIndex] = reagentInfo.reagent.itemID;
+			if allocations then
+				-- isBasicReagent check here to handle multiple allocations within the same slot (qualities)
+				if not self.reagentSlotProvidedByCustomer[reagentInfo.slotIndex] or not reagentInfo.isBasicReagent then
+					allocations:Clear();
+					self.reagentSlotProvidedByCustomer[reagentInfo.slotIndex] = true;
+				end
+				-- These allocations get cleared before sending the craft, but we allocate them for craft readiness validation
+				allocations:Allocate(reagentInfo.reagent, reagentInfo.reagent.quantity);
+				reagentSlotToItemID[reagentInfo.slotIndex] = reagentInfo.reagent.itemID;
+			else
+				assertsafe(false, "Crafting order reagents do not match recipe for spellID=%d", self.order.spellID);
+			end
         end
     end
 

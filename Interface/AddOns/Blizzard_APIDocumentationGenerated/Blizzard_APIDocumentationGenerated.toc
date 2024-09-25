@@ -193,6 +193,7 @@ SimpleTextureBaseAPIDocumentation.lua
 SkillInfoDocumentation.lua
 SlashCommandDocumentation.lua
 SocialQueueDocumentation.lua
+SocialRestrictionsDocumentation.lua
 SoundDocumentation.lua
 SpecializationInfoDocumentation.lua
 SpecializationSharedDocumentation.lua
@@ -305,7 +306,6 @@ ScrappingMachineUIDocumentation.lua
 ScriptedAnimationsDocumentation.lua
 SeasonInfoDocumentation.lua
 SimpleMapSceneAPIDocumentation.lua
-SocialRestrictionsDocumentation.lua
 SoulbindsDocumentation.lua
 SplashScreenDocumentation.lua
 SuperTrackManagerDocumentation.lua

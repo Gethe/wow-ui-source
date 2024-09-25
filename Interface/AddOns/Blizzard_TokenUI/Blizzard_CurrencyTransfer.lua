@@ -222,27 +222,35 @@ end
 
 function CurrencyTransferMenuMixin:CalculateEarnableCurrencyLimit()
 	if not self.currencyInfo then
-		return nil;
+		return 0;
 	end
 
-	local hasWeeklyCurrencyCap = self.currencyInfo.maxWeeklyQuantity > 0;
-	local hasGeneralCurrencyCap = self.currencyInfo.maxQuantity > 0;
-	local noCurrencyCap = not hasWeeklyCurrencyCap and not hasGeneralCurrencyCap; 
-	if noCurrencyCap then
-		return nil;
+	-- There are 3 currency limits that we care about:
+	-- A currency can have a weekly limit set
+	local hasWeeklyCurrencyLimit = self.currencyInfo.maxWeeklyQuantity > 0;
+	-- A currency can have a general/overall limit set
+	local hasGeneralCurrencyLimit = self.currencyInfo.maxQuantity > 0;
+	-- And then ALL currencies have a hard limit of MAX_CURRENCY_QUANTITY, even if they don't have a manually set limit
+	local remainingHardLimitEarnableQuantity = Constants.CurrencyConsts.MAX_CURRENCY_QUANTITY - self.currencyInfo.quantity;
+
+	local noCurrencyLimitSet = not hasWeeklyCurrencyLimit and not hasGeneralCurrencyLimit;
+	if noCurrencyLimitSet then
+		return remainingHardLimitEarnableQuantity;
 	end
 
-	if hasWeeklyCap and hasGeneralCurrencyCap then
+	if hasWeeklyCurrencyLimit and hasGeneralCurrencyLimit then
 		local remainingWeeklyEarnableQuantity = self.currencyInfo.maxWeeklyQuantity - self.currencyInfo.quantityEarnedThisWeek;
 		local remainingGeneralEarnableQuantity = self.currencyInfo.maxQuantity - self.currencyInfo.quantity;
-		return math.min(remainingWeeklyEarnableQuantity, remainingGeneralEarnableQuantity);
-	elseif hasWeeklyCap then
-		return self.currencyInfo.maxWeeklyQuantity - self.currencyInfo.quantityEarnedThisWeek;
-	elseif hasGeneralCurrencyCap then
-		return self.currencyInfo.maxQuantity - self.currencyInfo.quantity;
+		return math.min(remainingWeeklyEarnableQuantity, remainingGeneralEarnableQuantity, remainingHardLimitEarnableQuantity);
+	elseif hasWeeklyCurrencyLimit then
+		local remainingWeeklyEarnableQuantity = self.currencyInfo.maxWeeklyQuantity - self.currencyInfo.quantityEarnedThisWeek;
+		return math.min(remainingWeeklyEarnableQuantity, remainingHardLimitEarnableQuantity);
+	elseif hasGeneralCurrencyLimit then
+		local remainingGeneralEarnableQuantity = self.currencyInfo.maxQuantity - self.currencyInfo.quantity;
+		return math.min(remainingGeneralEarnableQuantity, remainingHardLimitEarnableQuantity);
 	end
 
-	return nil;
+	return remainingHardLimitEarnableQuantity;
 end
 
 function CurrencyTransferMenuMixin:GetCurrencyID()
@@ -416,7 +424,9 @@ function CurrencyTransferAmountInputBoxMixin:ValidateAndSetValue()
 end
 
 function CurrencyTransferAmountInputBoxMixin:TrySetFullSourceCharacterCurrencyQuantity()
-	self:SetNumber(self:GetCurrencyTransferMenu():GetSourceCharacterCurrencyQuantity() or 0);
+	local sourceCharacterCurrencyQuantity = self:GetCurrencyTransferMenu():GetSourceCharacterCurrencyQuantity() or 0;
+	local maxInputValue = math.min(sourceCharacterCurrencyQuantity, self:GetMaxTransferAmountPerTransaction());
+	self:SetNumber(maxInputValue);
 end
 
 function CurrencyTransferAmountInputBoxMixin:GetClampedInputAmount(inputAmount)
@@ -424,20 +434,14 @@ function CurrencyTransferAmountInputBoxMixin:GetClampedInputAmount(inputAmount)
 	local remainingEarnableQuantity = CurrencyTransferMenu:CalculateEarnableCurrencyLimit();
 	local sourceCharacterMaxTransferQuantity = C_CurrencyInfo.GetMaxTransferableAmountFromQuantity(CurrencyTransferMenu:GetCurrencyID(), CurrencyTransferMenu:GetSourceCharacterCurrencyQuantity()) or 0;
 
-	local maxTransferAmount = nil;
-	if sourceCharacterMaxTransferQuantity and remainingEarnableQuantity then
-		maxTransferAmount = math.min(sourceCharacterMaxTransferQuantity, remainingEarnableQuantity);
-	elseif sourceCharacterMaxTransferQuantity then
-		maxTransferAmount = sourceCharacterMaxTransferQuantity;
-	elseif remainingEarnableQuantity then
-		maxTransferAmount = remainingEarnableQuantity;
+	local maxTransferAmount = self:GetMaxTransferAmountPerTransaction();
+	if sourceCharacterMaxTransferQuantity then
+		maxTransferAmount = math.min(sourceCharacterMaxTransferQuantity, remainingEarnableQuantity, maxTransferAmount);
+	else
+		maxTransferAmount = math.min(remainingEarnableQuantity, maxTransferAmount);
 	end
 
-	if maxTransferAmount then
-		return Clamp(inputAmount, 0, maxTransferAmount);
-	else
-		return (inputAmount >= 0) and inputAmount or 0;
-	end
+	return Clamp(inputAmount, 0, maxTransferAmount);
 end
 
 function CurrencyTransferAmountInputBoxMixin:Reset()
@@ -446,6 +450,10 @@ end
 
 function CurrencyTransferAmountInputBoxMixin:OnTextChanged()
 	self:ValidateAndSetValue();
+end
+
+function CurrencyTransferAmountInputBoxMixin:GetMaxTransferAmountPerTransaction()
+	return 10^(self:GetMaxLetters()) - 1;
 end
 
 CurrencyTransferCostDisplayMixin = CreateFromMixins(CurrencyTransferSystemMixin);

@@ -836,7 +836,7 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 								
 								local allocationsCopy = transaction:GetAllocationsCopy(slotIndex);
 								local disallowZeroAllocations = false;
-								local characterInventoryOnly = true;
+								local characterInventoryOnly = transaction:ShouldUseCharacterInventoryOnly();
 								self.QualityDialog:Open(recipeID, reagentSlotSchematic, allocationsCopy, slotIndex, disallowZeroAllocations, characterInventoryOnly);
 							end
 						end

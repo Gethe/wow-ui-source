@@ -15,18 +15,13 @@
 					<Layer level="ARTWORK">
 						<FontString parentKey="TransferRealmLabel" inherits="GameFontNormalMed3" justifyH="LEFT" text="PCT_FLOW_DESTINATION_REALM_LABEL">
 							<Size x="0" y="20"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="90" y="-102"/>
+							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>
-					<CheckButton parentKey="FollowGuildCheckbox" inherits="CharacterServicesCheckButtonWithLabelTemplate" mixin="FollowGuildMixin">
-						<Anchors>
-							<Anchor point="TOPLEFT" x="89" y="-86"/>
-						</Anchors>
-						<Scripts>
-							<OnClick method="OnClick"/>
-						</Scripts>
-					</CheckButton>
 					<EditBox parentKey="TransferRealmEditbox" mixin="TransferRealmEditboxMixin" inherits="CharacterServicesEditBoxWithAutoCompleteTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.TransferRealmLabel" relativePoint="BOTTOMLEFT" x="2" y="-2"/>
@@ -42,18 +37,6 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.TransferRealmEditbox" relativePoint="BOTTOMLEFT" x="-2" y="-32"/>
 						</Anchors>
-					</Frame>
-					<Frame parentKey="LoadingSpinner" inherits="SpinnerTemplate">
-						<Size x="30" y="30"/>
-						<Layers>
-							<Layer level="OVERLAY">
-								<FontString parentKey="SearchingText" inherits="GameFontNormal" text="SEARCHING">
-									<Anchors>
-										<Anchor point="LEFT" relativePoint="RIGHT" x="5" y="0"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
 					</Frame>
 				</Frames>
 			</Frame>

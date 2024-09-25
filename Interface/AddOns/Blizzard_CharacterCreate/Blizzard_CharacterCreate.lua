@@ -1119,6 +1119,8 @@ function CharacterCreateRaceButtonMixin:SetRace(raceData, selectedRaceID, select
 				self:AddPostTooltipLine(CHAR_CREATE_DRACTHYR_DUPLICATE, RED_FONT_COLOR);
 			elseif raceData.disabledReason == Enum.CreationRaceDisabledReason.RaceLimitLevel then
 				self:AddPostTooltipLine(CHAR_CREATE_DRACTHYR_LEVEL_REQUIREMENT, RED_FONT_COLOR);
+			elseif raceData.disabledReason == Enum.CreationRaceDisabledReason.InvalidForNewPlayers then
+				self:AddPostTooltipLine(CHAR_CREATE_NEW_PLAYER_RESTRICTED_RACE, RED_FONT_COLOR);
 			else
 				local requirements = C_CharacterCreation.GetAlliedRaceAchievementRequirements(raceData.raceID);
 				if requirements then

@@ -58,6 +58,11 @@ function SpellBookFrameMixin:OnLoad()
 	FrameUtil.RegisterFrameForEvents(self, SpellBookLifetimeEvents);
 	EventRegistry:RegisterCallback("ClickBindingFrame.UpdateFrames", self.OnClickBindingUpdate, self);
 
+	-- If already in the world (ie due to load on demand), make sure to register for in-world events
+	if IsPlayerInWorld() then
+		FrameUtil.RegisterFrameForEvents(self, SpellBookInWorldEvents);
+	end
+
 	local onPagingButtonEnter = GenerateClosure(self.OnPagingButtonEnter, self);
 	local onPagingButtonLeave = GenerateClosure(self.OnPagingButtonLeave, self);
 	self.PagedSpellsFrame.PagingControls:SetButtonHoverCallbacks(onPagingButtonEnter, onPagingButtonLeave);

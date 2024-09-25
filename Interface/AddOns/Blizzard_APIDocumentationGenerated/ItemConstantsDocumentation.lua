@@ -570,7 +570,7 @@ local ItemConstants =
 				{ Name = "Bankbag", Type = "SubcontainerType", EnumValue = 3 },
 				{ Name = "Mail", Type = "SubcontainerType", EnumValue = 4 },
 				{ Name = "Auction", Type = "SubcontainerType", EnumValue = 5 },
-				{ Name = "KeyringObsolete", Type = "SubcontainerType", EnumValue = 6 },
+				{ Name = "Keyring", Type = "SubcontainerType", EnumValue = 6 },
 				{ Name = "GuildBank0", Type = "SubcontainerType", EnumValue = 7 },
 				{ Name = "GuildBank1", Type = "SubcontainerType", EnumValue = 8 },
 				{ Name = "GuildBank2", Type = "SubcontainerType", EnumValue = 9 },
