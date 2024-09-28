@@ -34,6 +34,9 @@ Classic\CharacterServicesPaidFactionChange.lua
 Classic\CharacterServicesPaidFactionChange.xml
 Classic\CharacterServicesPaidRaceChange.lua
 Classic\CharacterServicesPaidRaceChange.xml
+Shared\CharacterServicesPaidNameChange.lua
+Classic\CharacterServicesPaidNameChange.lua
+Classic\CharacterServicesPaidNameChange.xml
 Classic\CharacterServicesCharacterSelector.lua
 Classic\CharacterServicesCharacterSelector.xml
 Vanilla\CharacterCreate.lua

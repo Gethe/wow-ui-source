@@ -305,7 +305,7 @@
 							<Size x="0" y="15"/>
 							<Anchors>
 								<Anchor point="LEFT">
-									<Offset x="12" y="1"/>
+									<Offset x="12" y="0"/>
 								</Anchor>
 							</Anchors>
 						</FontString>
@@ -313,7 +313,7 @@
 							<Size x="0" y="15"/>
 							<Anchors>
 								<Anchor point="RIGHT">
-									<Offset x="-12" y="1"/>
+									<Offset x="-12" y="0"/>
 								</Anchor>
 							</Anchors>
 						</FontString>
