@@ -891,10 +891,7 @@ function ChallengeModeCompleteBannerMixin:PlayBanner(data)
         PlaySound(SOUNDKIT.UI_70_CHALLENGE_MODE_KEYSTONE_UPGRADE);
 		local chatPrintText;
 
-		if (data.isAffixRecord) then
-			local affixName = C_ChallengeMode.GetAffixInfo(data.primaryAffix);
-			chatPrintText = CHALLENGE_MODE_TIMED_DUNGEON_CHAT_LINK_AFFIX_RECORD:format(name, data.level, timeText, timeFormatter:Format(timeRemaining, false, true), affixName)
-		elseif (data.isMapRecord) then
+		if (data.isMapRecord) then
 			chatPrintText = CHALLENGE_MODE_TIMED_DUNGEON_CHAT_LINK_RECORD:format(name, data.level, timeText, timeFormatter:Format(timeRemaining, false, true))
 		else
 			chatPrintText = CHALLENGE_MODE_TIMED_DUNGEON_CHAT_LINK:format(name, data.level, timeText, timeFormatter:Format(timeRemaining, false, true))
@@ -907,10 +904,7 @@ function ChallengeModeCompleteBannerMixin:PlayBanner(data)
         PlaySound(SOUNDKIT.UI_70_CHALLENGE_MODE_COMPLETE_NO_UPGRADE);
 
 		local chatPrintText;
-		if (data.isAffixRecord) then
-			local affixName = C_ChallengeMode.GetAffixInfo(data.primaryAffix);
-			chatPrintText = CHALLENGE_MODE_TIMED_DUNGEON_CHAT_LINK_OVERTIME_AFFIX_RECORD:format(name, data.level, timeText, timeFormatter:Format(timeRemaining, false, true), affixName)
-		elseif (data.isMapRecord) then
+		if (data.isMapRecord) then
 			chatPrintText = CHALLENGE_MODE_TIMED_DUNGEON_CHAT_LINK_OVERTIME_RECORD:format(name, data.level, timeText, timeFormatter:Format(timeRemaining, false, true))
 		else
 			chatPrintText = CHALLENGE_MODE_TIMED_DUNGEON_OVERTIME_CHAT_LINK:format(name, data.level, timeText, timeFormatter:Format(timeRemaining, false, true))

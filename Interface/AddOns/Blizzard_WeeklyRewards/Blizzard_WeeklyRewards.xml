@@ -607,7 +607,7 @@
 					<Anchor point="TOPLEFT" x="68" y="-470"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="WorldFrame" inherits="WeeklyRewardActivityTypeTemplate" hidden="true">
+			<Frame parentKey="WorldFrame" inherits="WeeklyRewardActivityTypeTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="68" y="-470"/>
 				</Anchors>
