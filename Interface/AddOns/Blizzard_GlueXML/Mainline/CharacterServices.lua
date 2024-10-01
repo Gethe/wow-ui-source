@@ -54,10 +54,6 @@ local function IsBoostFlowValidForCharacter(flowData, level, boostInProgress, is
 		return false;
 	end
 
-	if (flowData.level < 70) and (raceFilename == "Dracthyr") then
-		return false;
-	end
-
 	local timerunningSeasonID = playerGUID and GetCharacterTimerunningSeasonID(playerGUID);
 	if timerunningSeasonID then
 		return false;

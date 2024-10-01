@@ -268,7 +268,9 @@ local function POIButton_UpdateQuestInProgressStyle(poiButton)
 		POIButton_SetAtlas(poiButton.HighlightTexture, nil, nil, POIButton_GetAtlasInfoHighlight(poiButton));
 	end
 
-	 poiButton:UpdateInProgress();
+	poiButton:ClearQuestTagInfo();
+	poiButton:UpdateInProgress();
+	poiButton:UpdateUnderlay();
 end
 
 local function POIButton_UpdateNormalStyle(poiButton)
@@ -501,7 +503,7 @@ function POIButtonMixin:OnEnter()
 		else
 			self.HighlightTexture:Show();
 
-			if self.UnderlayBannerAtlasHighlight then
+			if self.UnderlayBannerAtlasHighlight and self:IsUnderlayBannerEnabled() then
 				self.UnderlayBannerAtlasHighlight:Show();
 			end
 		end
@@ -667,6 +669,14 @@ function POIButtonMixin:GetQuestTagInfo()
 	return self.questTagInfo;
 end
 
+function POIButtonMixin:SetUnderlayBannerEnabled(enabled)
+	self.underlayBannerEnabled = enabled;
+end
+
+function POIButtonMixin:IsUnderlayBannerEnabled()
+	return self.underlayBannerEnabled;
+end
+
 do
 	local function CreateUnderlay(self)
 		local t = self:CreateTexture(nil, "BORDER");
@@ -701,7 +711,9 @@ do
 
 	local function GetUnderlayBannerAtlas(self)
 		local info = self:GetQuestTagInfo();
-		if info and (info.worldQuestType == Enum.QuestTagType.Capstone) then
+		self:SetUnderlayBannerEnabled(info and (info.worldQuestType == Enum.QuestTagType.Capstone));
+		
+		if self:IsUnderlayBannerEnabled() then
 			return "worldquest-Capstone-Banner", TextureKitConstants.IgnoreAtlasSize;
 		end
 	end

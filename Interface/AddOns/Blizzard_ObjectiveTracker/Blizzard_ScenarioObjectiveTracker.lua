@@ -841,7 +841,7 @@ function ScenarioObjectiveTrackerProvingGroundsMixin:OnLoad()
 	self.CountdownAnimFrame.Anim:SetScript("OnFinished", GenerateClosure(self.OnAnimFinished, self));
 end
 
-function ScenarioObjectiveTrackerProvingGroundsMixin:OnEvent(...)
+function ScenarioObjectiveTrackerProvingGroundsMixin:OnEvent(event, ...)
 	local score = ...
 	self.Score:SetText(score);
 end
