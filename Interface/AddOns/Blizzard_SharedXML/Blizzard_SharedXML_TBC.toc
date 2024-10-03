@@ -106,6 +106,7 @@ Spinner.xml
 Classic\SharedUIPanelTemplates.lua
 PortraitFrame.lua
 Classic\SharedUIPanelTemplates.xml
+Classic\SliderTemplates.xml
 Shared\Tabs\MinimalTab.lua
 Shared\Tabs\MinimalTab.xml
 ScriptAnimationUtil.lua
