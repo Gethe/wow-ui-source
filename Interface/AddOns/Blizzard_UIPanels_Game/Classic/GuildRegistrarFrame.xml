@@ -234,10 +234,15 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="GuildRegistrar_OnLoad"/>
-			<OnEvent function="GuildRegistrar_OnEvent"/>
-			<OnShow function="GuildRegistrar_OnShow"/>
-			<OnHide function="GuildRegistrar_OnHide"/>
+			<OnShow>
+				GuildRegistrar_OnShow();
+				PlaySound(SOUNDKIT.IG_QUEST_LIST_OPEN);
+			</OnShow>
+			<OnHide>
+				PlaySound(SOUNDKIT.IG_QUEST_LIST_CLOSE);
+				StaticPopup_Hide("CONFIRM_GUILD_CHARTER_PURCHASE");
+				ClosePetitionRegistrar();
+			</OnHide>
 		</Scripts>
 	</Frame>
 </Ui>

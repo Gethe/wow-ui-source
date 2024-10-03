@@ -20,6 +20,20 @@ local ExpansionInfo =
 			},
 		},
 		{
+			Name = "ClassicExpansionAtMost",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "expansionLevel", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isAtMost", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetClassicExpansionLevel",
 			Type = "Function",
 

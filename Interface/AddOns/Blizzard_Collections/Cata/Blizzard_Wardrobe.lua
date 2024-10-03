@@ -2388,6 +2388,7 @@ function WardrobeItemsModelMixin:OnMouseUp(button)
 			rootDescription:QueueSpacer();
 			rootDescription:QueueTitle(WARDROBE_TRANSMOGRIFY_AS);
 
+			local itemsCollectionFrame = self:GetParent();
 			local activeCategory = itemsCollectionFrame:GetActiveCategory();
 			local transmogLocation = itemsCollectionFrame.transmogLocation;
 			local chosenSourceID = itemsCollectionFrame:GetChosenVisualSource(appearanceID);

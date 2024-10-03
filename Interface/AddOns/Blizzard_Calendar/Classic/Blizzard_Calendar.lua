@@ -769,6 +769,8 @@ local function _CalendarFrame_CacheEventDungeons_Internal(eventType, textures)
 		return false;
 	end
 
+	local overlappingMapIDs = (eventType == Enum.CalendarEventType.Raid or eventType == Enum.CalendarEventType.Dungeon) and {};
+
 	local cacheIndex = 1;
 	for textureIndex = 1, numTextures do
 		if ( not CalendarEventDungeonCache[cacheIndex] ) then
@@ -788,16 +790,44 @@ local function _CalendarFrame_CacheEventDungeons_Internal(eventType, textures)
 			difficultyName = "";
 		end
 
-		CalendarEventDungeonCache[cacheIndex].textureIndex = textureIndex;
-		CalendarEventDungeonCache[cacheIndex].title = title;
-		CalendarEventDungeonCache[cacheIndex].texture = texture;
-		CalendarEventDungeonCache[cacheIndex].expansionLevel = expansionLevel;
-		CalendarEventDungeonCache[cacheIndex].difficultyName = difficultyName;
-		CalendarEventDungeonCache[cacheIndex].isLFR = isLFR;
-		CalendarEventDungeonCache[cacheIndex].displayHeroic = displayHeroic;
-		CalendarEventDungeonCache[cacheIndex].displayMythic = displayMythic;
+		if overlappingMapIDs and overlappingMapIDs[mapID] then
+			-- Already exists a map, collapse the difficulty
+			local firstCacheIndex = overlappingMapIDs[mapID];
+			local cacheEntry = CalendarEventDungeonCache[firstCacheIndex];
 
-		cacheIndex = cacheIndex + 1;
+			if cacheEntry.isLFR and not isLFR then
+				-- Prefer a non-LFR name over a LFR name
+				cacheEntry.title = title;
+				cacheEntry.isLFR = nil;
+			end
+
+			if cacheEntry.displayHeroic or cacheEntry.displayMythic and (not displayHeroic and not displayMythic) then
+				-- Prefer normal difficulty name over higher difficulty
+				cacheEntry.title = title;
+				cacheEntry.displayHeroic = nil;
+				cacheEntry.displayMythic = nil;
+			end
+
+			table.insert(cacheEntry.difficulties, { textureIndex = textureIndex, difficultyName = difficultyName });
+		else
+			CalendarEventDungeonCache[cacheIndex].textureIndex = textureIndex;
+			CalendarEventDungeonCache[cacheIndex].title = title;
+			CalendarEventDungeonCache[cacheIndex].texture = texture;
+			CalendarEventDungeonCache[cacheIndex].expansionLevel = expansionLevel;
+			CalendarEventDungeonCache[cacheIndex].difficultyName = difficultyName;
+			CalendarEventDungeonCache[cacheIndex].isLFR = isLFR;
+			CalendarEventDungeonCache[cacheIndex].displayHeroic = displayHeroic;
+			CalendarEventDungeonCache[cacheIndex].displayMythic = displayMythic;
+
+			if overlappingMapIDs then
+				if not overlappingMapIDs[mapID] then
+					overlappingMapIDs[mapID] = cacheIndex;
+				end
+				CalendarEventDungeonCache[cacheIndex].difficulties = { { textureIndex = textureIndex, difficultyName = difficultyName } };
+			end
+
+			cacheIndex = cacheIndex + 1;
+		end
 	end
 
 	cacheIndex = 1;
@@ -2808,7 +2838,7 @@ function CalendarViewEventFrame_Update()
 		SetDesaturation(CalendarViewEventIcon, true);
 		CalendarViewEventTypeName:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 		CalendarViewEventCreatorName:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-		CalendarViewEventDescriptionContainer:SetTextColor(GRAY_FONT_COLOR);
+		CalendarViewEventDescriptionContainer.ScrollingFont:SetTextColor(GRAY_FONT_COLOR);
 	else
 		-- set the event title
 		CalendarViewEventTitle:SetText(eventInfo.title);
@@ -4482,11 +4512,7 @@ function CalendarTexturePicker_InitButton(button, elementData)
 		end
 
 		local name = dungeonCacheEntry.title;
-		if (eventType == Enum.CalendarEventType.Dungeon) then
-			dungeonCacheEntry.difficultyName = "";
-		end
-		
-		button.Title:SetText(GetDungeonNameWithDifficulty(name,  dungeonCacheEntry.difficultyName));
+		button.Title:SetText(GetDungeonNameWithDifficulty(name, dungeonCacheEntry.difficulties == nil and dungeonCacheEntry.difficultyName or ""));
 		button.Title:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 		button.Title:ClearAllPoints();
 		button.Title:SetPoint("LEFT", button.Icon, "RIGHT");

@@ -770,7 +770,7 @@ function RaidPullout_UpdateTarget(pullOutFrame, pullOutButton, unit, which)
 				end
 			else
 				SecureUnitButton_OnLoad(statusBar, unit, function()
-					RaidPulloutFrameTemplate_CreateContextMenu(pulloutFrame);
+					RaidPulloutFrameTemplate_CreateContextMenu(pullOutFrame);
 				end);
 			end
 		else
@@ -921,7 +921,7 @@ function RaidPullout_Update(pullOutFrame)
 			-- Set for tooltip support
 			pulloutClearButton = pulloutButton.clearButton;
 			SecureUnitButton_OnLoad(pulloutClearButton, unit, function()
-				RaidPulloutFrameTemplate_CreateContextMenu(pulloutFrame);
+				RaidPulloutFrameTemplate_CreateContextMenu(pullOutFrame);
 			end);
 			pullOutFrame.name = name;
 			pullOutFrame.single = single;

@@ -13,7 +13,6 @@ Classic\SocialOverrides.lua
 Classic\ColorblindOverrides.lua
 Classic\KeybindingsOverrides.lua
 Classic\AccessibilityOverrides.lua
-Mac.lua
 Controls.xml
 Interface.xml
 Combat.lua

@@ -78,7 +78,7 @@ local function ClubFinderGetTotalNumSpecializations()
 	local count = 0;
 	for i = 1, numClasses do
 		local _, _, classID = GetClassInfo(i);
-		for j = 1, GetNumSpecializationsForClassID(classID) do
+		for j = 1, C_SpecializationInfo.GetNumSpecializationsForClassID(classID) do
 			count = count + 1
 		end
 	end
@@ -552,7 +552,7 @@ function ClubLookingForDropdownMixin:SetupMenu(checkedList)
 					local classColor = GetClassColorObj(classInfo.classFile);
 					local className = classInfo.className;
 
-					for specIndex = 1, GetNumSpecializationsForClassID(classID) do
+					for specIndex = 1, C_SpecializationInfo.GetNumSpecializationsForClassID(classID) do
 						local specID, specName, _, _, role = GetSpecializationInfoForClassID(classID, specIndex, sex);
 						if role == tbl.role then
 							local function SetSpecSelected(specID)
@@ -604,7 +604,7 @@ function ClubLookingForDropdownMixin:IsEverySpecCheckedForRole(roleToMatch)
 	local sex = UnitSex("player");
 	for i = 1, numClasses do
 		local className, classTag, classID = GetClassInfo(i);
-		for j = 1, GetNumSpecializationsForClassID(classID) do
+		for j = 1, C_SpecializationInfo.GetNumSpecializationsForClassID(classID) do
 			local specID, specName, _, _, role = GetSpecializationInfoForClassID(classID, j, sex);
 			if(role == roleToMatch) then
 				if (not self:IsSpecInList(specID)) then
@@ -621,7 +621,7 @@ function ClubLookingForDropdownMixin:CheckOrUncheckAll(info, roleToMatch, checkA
 	local sex = UnitSex("player");
 	for i = 1, numClasses do
 		local className, classTag, classID = GetClassInfo(i);
-		for j = 1, GetNumSpecializationsForClassID(classID) do
+		for j = 1, C_SpecializationInfo.GetNumSpecializationsForClassID(classID) do
 			local specID, specName, _, _, role = GetSpecializationInfoForClassID(classID, j, sex);
 			if(role == roleToMatch) then
 				self:ModifyTrackedSpecList(specName, className, specID, checkAll);
@@ -1487,7 +1487,7 @@ function ClubFinderGetPlayerSpecIds()
 	if (not playerSpecs) then
 		playerSpecs = { };
 		local classID = select(3, UnitClass("player"));
-		for i = 1, GetNumSpecializationsForClassID(classID) do
+		for i = 1, C_SpecializationInfo.GetNumSpecializationsForClassID(classID) do
 			local specID = GetSpecializationInfoForClassID(classID, i);
 			if (specID) then
 				table.insert(playerSpecs, specID);

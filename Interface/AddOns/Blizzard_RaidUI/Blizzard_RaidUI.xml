@@ -419,7 +419,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<StatusBar name="$parentHealthBar" drawLayer="ARTWORK" inherits="TextStatusBar" enableMouse="false">
+			<StatusBar name="$parentHealthBar" drawLayer="ARTWORK" inherits="TextStatusBar" enableMouse="false" propagateMouseInput="Clicks">
 				<Size x="51" y="5"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="3" y="-12"/>
@@ -446,7 +446,7 @@
 							UnitFrameHealthBar_OnValueChanged(self, value);
 						end
 					</OnValueChanged>
-				</Scripts>
+					</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
 			<StatusBar name="$parentManaBar" drawLayer="ARTWORK" inherits="TextStatusBar" enableMouse="false">
@@ -728,11 +728,11 @@
 			<OnDragStop>
 				RaidPulloutStopMoving(self);
 			</OnDragStop>
-			<OnMouseDown>
+			<OnClick>
 				if (button == "RightButton") then
 					RaidPulloutFrameTemplate_CreateContextMenu(self);
 				end
-			</OnMouseDown>
+			</OnClick>
 			<OnMouseUp>
 				self:StopMovingOrSizing();
 				self:SetFrameStrata("BACKGROUND");

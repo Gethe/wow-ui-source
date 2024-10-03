@@ -61,7 +61,7 @@ function UnitPopupSharedUtil.TryCreatePlayerLocation(contextData)
 
 	local whoIndex = contextData.whoIndex;
 	if whoIndex then
-		return PlayerLocation:CreateFromWhoIndex(contextDatawhoIndex);
+		return PlayerLocation:CreateFromWhoIndex(whoIndex);
 	end
 
 	return nil;

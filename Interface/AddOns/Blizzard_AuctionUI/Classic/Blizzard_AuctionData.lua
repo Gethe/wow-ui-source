@@ -406,9 +406,13 @@ do -- Armor
 	plateChestCategory:AddFilter(Enum.ItemClass.Armor, Enum.ItemArmorSubclass.Plate, Enum.InventoryType.IndexRobeType);
 
 	armorCategory:CreateSubCategoryAndFilter(Enum.ItemClass.Armor, Enum.ItemArmorSubclass.Shield);
-	armorCategory:CreateSubCategoryAndFilter(Enum.ItemClass.Armor, Enum.ItemArmorSubclass.Libram);
-	armorCategory:CreateSubCategoryAndFilter(Enum.ItemClass.Armor, Enum.ItemArmorSubclass.Idol);
-	armorCategory:CreateSubCategoryAndFilter(Enum.ItemClass.Armor, Enum.ItemArmorSubclass.Totem);
+	if ClassicExpansionAtLeast(LE_EXPANSION_CATACLYSM) then
+		armorCategory:CreateSubCategoryAndFilter(Enum.ItemClass.Armor, Enum.ItemArmorSubclass.Relic);
+	else
+		armorCategory:CreateSubCategoryAndFilter(Enum.ItemClass.Armor, Enum.ItemArmorSubclass.Libram);
+		armorCategory:CreateSubCategoryAndFilter(Enum.ItemClass.Armor, Enum.ItemArmorSubclass.Idol);
+		armorCategory:CreateSubCategoryAndFilter(Enum.ItemClass.Armor, Enum.ItemArmorSubclass.Totem);
+	end
 end
 
 do -- Containers
@@ -443,13 +447,17 @@ do -- Trade Goods (SubClasses Added in TBC)
 end
 
 do -- Projectile
-	local projectileCategory = AuctionFrame_CreateCategory(AUCTION_CATEGORY_PROJECTILE);
-	projectileCategory:GenerateSubCategoriesAndFiltersFromSubClass(Enum.ItemClass.Projectile);
+	if ClassicExpansionAtMost(LE_EXPANSION_WRATH_OF_THE_LICH_KING) then
+		local projectileCategory = AuctionFrame_CreateCategory(AUCTION_CATEGORY_PROJECTILE);
+		projectileCategory:GenerateSubCategoriesAndFiltersFromSubClass(Enum.ItemClass.Projectile);
+	end
 end
 
 do -- Quiver
-	local quiverCategory = AuctionFrame_CreateCategory(AUCTION_CATEGORY_QUIVER);
-	quiverCategory:GenerateSubCategoriesAndFiltersFromSubClass(Enum.ItemClass.Quiver);
+	if ClassicExpansionAtMost(LE_EXPANSION_WRATH_OF_THE_LICH_KING) then
+		local quiverCategory = AuctionFrame_CreateCategory(AUCTION_CATEGORY_QUIVER);
+		quiverCategory:GenerateSubCategoriesAndFiltersFromSubClass(Enum.ItemClass.Quiver);
+	end
 end
 
 do -- Recipes

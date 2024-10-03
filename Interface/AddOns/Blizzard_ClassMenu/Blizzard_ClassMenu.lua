@@ -111,7 +111,7 @@ function ClassMenu.InitClassSpecDropdown(dropdown, getClassFilter, getSpecFilter
 			rootDescription:CreateTitle(HEIRLOOMS_CLASS_FILTER_FORMAT:format(colorStr, name));
 
 			local sex = UnitSex("player");
-			for index = 1, GetNumSpecializationsForClassID(classID) do
+			for index = 1, C_SpecializationInfo.GetNumSpecializationsForClassID(classID) do
 				local specID, specName = GetSpecializationInfoForClassID(classID, index, sex);
 				rootDescription:CreateRadio(specName, IsSpecSelected, SetSelected, CreateData(classID, specID));
 			end

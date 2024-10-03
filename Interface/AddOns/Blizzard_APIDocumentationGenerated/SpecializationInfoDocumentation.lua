@@ -6,6 +6,20 @@ local SpecializationInfo =
 
 	Functions =
 	{
+		{
+			Name = "GetNumSpecializationsForClassID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "specID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "specCount", Type = "number", Nilable = false },
+			},
+		},
 	},
 
 	Events =
