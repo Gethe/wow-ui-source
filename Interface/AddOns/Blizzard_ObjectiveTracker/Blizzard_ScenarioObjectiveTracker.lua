@@ -195,15 +195,18 @@ function ScenarioObjectiveTrackerMixin:LayoutContents()
 	local dungeonDisplay = (scenarioType == LE_SCENARIO_TYPE_USE_DUNGEON_DISPLAY);
 	local inWarfront = (scenarioType == LE_SCENARIO_TYPE_WARFRONT);
 	local scenarioCompleted = currentStage > numStages;
+	local isCollapsed = self:IsCollapsed() or (self.parentContainer and self.parentContainer:IsCollapsed());
 
 	-- determine sliding state
 	local slidingState = ObjectiveTrackerSlidingState.None;
 	if hasNewStage and not inChallengeMode then
-		if currentStage == 1 or currentStage == self.slidOutStage then
-			slidingState = ObjectiveTrackerSlidingState.SlideIn;
-		else
-			if not scenarioCompleted then
-				slidingState = ObjectiveTrackerSlidingState.SlideOut;
+		if not isCollapsed then
+			if currentStage == 1 or currentStage == self.slidOutStage then
+				slidingState = ObjectiveTrackerSlidingState.SlideIn;
+			else
+				if not scenarioCompleted then
+					slidingState = ObjectiveTrackerSlidingState.SlideOut;
+				end
 			end
 		end
 		-- play sound if not the first stage
@@ -471,9 +474,9 @@ function ScenarioObjectiveTrackerStageMixin:OnEnter()
 end
 
 local textureKitOffsets = {
-	["evergreen-scenario"] = {normalBGX = -7, normalBGY = 3, finalBGX = -7, finalBGY = 3},
-	["thewarwithin-scenario"] = {normalBGX = -7, normalBGY = 3, finalBGX = -7, finalBGY = 3},
-	["delves-scenario"] = {normalBGX = -7, normalBGY = 3, finalBGX = -7, finalBGY = 3},
+	["evergreen-scenario"] = {normalBGX = 0, normalBGY = 0, finalBGX = -4, finalBGY = 2},
+	["thewarwithin-scenario"] = {normalBGX = 0, normalBGY = 0, finalBGX = 3, finalBGY = -2},
+	["delves-scenario"] = {normalBGX = -2, normalBGY = 1, finalBGX = -2, finalBGY = 1},
 };
 
 local defaultOffsets = {normalBGX = 0, normalBGY = 0, finalBGX = -10, finalBGY = 3};

@@ -813,14 +813,20 @@ function CharacterSelect_SelectCharacter(index, noCreate)
             GlueParent_SetScreen("charcreate");
         end
     else
-		local selectedCharacterID = CharacterSelectListUtil.GetCharIDFromIndex(index);
-		SelectCharacter(selectedCharacterID);
+		if (not C_WowTokenPublic.GetCurrentMarketPrice() or
+			not CAN_BUY_RESULT_FOUND or (CAN_BUY_RESULT_FOUND ~= LE_TOKEN_RESULT_ERROR_SUCCESS and CAN_BUY_RESULT_FOUND ~= LE_TOKEN_RESULT_ERROR_SUCCESS_NO) ) then
+			AccountReactivate_RecheckEligibility();
+		end
+		ReactivateAccountDialog_Open();
 
-        if (not C_WowTokenPublic.GetCurrentMarketPrice() or
-            not CAN_BUY_RESULT_FOUND or (CAN_BUY_RESULT_FOUND ~= LE_TOKEN_RESULT_ERROR_SUCCESS and CAN_BUY_RESULT_FOUND ~= LE_TOKEN_RESULT_ERROR_SUCCESS_NO) ) then
-            AccountReactivate_RecheckEligibility();
-        end
-        ReactivateAccountDialog_Open();
+		local selectedCharacterID = CharacterSelectListUtil.GetCharIDFromIndex(index);
+
+		-- This is an empty slot.
+		if selectedCharacterID == 0 then
+			return;
+		end
+
+		SelectCharacter(selectedCharacterID);
 
         -- Update the text of the EnterWorld button based on the type of character that's selected, default to "enter world"
         local text = ENTER_WORLD;

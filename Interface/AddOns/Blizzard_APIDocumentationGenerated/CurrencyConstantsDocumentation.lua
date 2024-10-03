@@ -23,6 +23,19 @@ local CurrencyConstants =
 			},
 		},
 		{
+			Name = "CurrencyFilterType",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "None", Type = "CurrencyFilterType", EnumValue = 0 },
+				{ Name = "DiscoveredOnly", Type = "CurrencyFilterType", EnumValue = 1 },
+				{ Name = "DiscoveredAndAllAccountTransferable", Type = "CurrencyFilterType", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "CurrencyFlags",
 			Type = "Enumeration",
 			NumValues = 32,

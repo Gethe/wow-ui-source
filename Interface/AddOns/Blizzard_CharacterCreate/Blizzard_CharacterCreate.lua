@@ -24,7 +24,6 @@ local ClassTrialSpecs;
 local ZoneChoiceFrame;
 local NewPlayerTutorial;
 
-local EVOKER_CLASS_ID = 13;
 local HUMAN_RADE_ID = 1;
 local ORC_RACE_ID = 2;
 
@@ -823,12 +822,8 @@ function CharacterCreateMixin:NavForward()
 
 	if self:CanNavForward() then
 		if self:IsMode(CHAR_CREATE_MODE_CLASS_RACE) then
-			if C_CharacterCreation.IsNewPlayerRestricted() and C_CharacterCreation.GetSelectedClass().classID == EVOKER_CLASS_ID then
-				GlueDialog_Show("EVOKER_NEW_PLAYER_WARNING");
-			else
-				PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
-				self:UpdateMode(1);
-			end
+			PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
+			self:UpdateMode(1);
 		elseif self:IsMode(CHAR_CREATE_MODE_CUSTOMIZE) and ZoneChoiceFrame:ShouldShow() then
 			PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
 			self:UpdateMode(1);
@@ -1381,7 +1376,6 @@ function CharacterCreateRaceAndClassMixin:CanTrialBoostCharacter()
 		not C_CharacterCreation.IsNewPlayerRestricted() and
 		not C_CharacterCreation.IsTrialAccountRestricted() and
 		not CharacterCreateFrame:HasService() and
-		(self.selectedClassID ~= EVOKER_CLASS_ID) and
 		(C_CharacterCreation.GetCharacterCreateType() ~= Enum.CharacterCreateType.Boost) and
 		not C_CharacterCreation.GetTimerunningSeasonID();
 end

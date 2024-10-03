@@ -1239,20 +1239,18 @@ local scenarioHeaderTextureKitInfo =
 {
 	["jailerstower-scenario"] = {fontObject = GameFontNormalLarge, fontMinLineHeight = 16, fontColor = WHITE_FONT_COLOR, textAnchorOffsets = {xOffset = 33, yOffset = -8}},
 	["jailerstower-scenario-nodeaths"] = {fontObject = GameFontNormalLarge, fontMinLineHeight = 16, fontColor = WHITE_FONT_COLOR, textAnchorOffsets = {xOffset = 33, yOffset = -8}},
-	["EmberCourtScenario-Tracker"] = {fontObject = GameFontNormalMed3, fontMinLineHeight = 10, headerTextHeight = 20},
-	["dragonflight-scenario"] = {fontObject = GameFontNormalMed3, fontMinLineHeight = 10, headerTextHeight = 20},
-	["plunderstorm-scenariotracker-active"] = {fontObject = SystemFont_Shadow_Large, fontMinLineHeight = 16, headerTextHeight = 20, headerTextWidth = 300, textAnchorOffsets = {xOffset = 40, yOffset = -25}},
-	["plunderstorm-scenariotracker-waiting"] = {fontObject = SystemFont_Shadow_Large, fontMinLineHeight = 16, headerTextHeight = 20, headerTextWidth = 300, textAnchorOffsets = {xOffset = 40, yOffset = -25}},
-	["delves-scenario"] = {fontObject = SystemFont_Shadow_Large, fontColor = DELVES_SCENARIO_NAME_COLOR, fontMinLineHeight = 16, headerTextHeight = 20, textAnchorOffsets = {xOffset = 24, yOffset = -16}},
+	["plunderstorm-scenariotracker-active"] = {fontObject = SystemFont_Shadow_Large, fontMinLineHeight = 16, headerTextWidth = 300, textAnchorOffsets = {xOffset = 40, yOffset = -25}},
+	["plunderstorm-scenariotracker-waiting"] = {fontObject = SystemFont_Shadow_Large, fontMinLineHeight = 16, headerTextWidth = 300, textAnchorOffsets = {xOffset = 40, yOffset = -25}},
+	["delves-scenario"] = {fontObject = SystemFont_Shadow_Large, fontColor = DELVES_SCENARIO_NAME_COLOR, fontMinLineHeight = 16, textAnchorOffsets = {xOffset = 24, yOffset = -16}},
 }
 
-local scenarioHeaderDefaultFontObject = Game18Font;
+local scenarioHeaderDefaultFontObject = GameFontNormalMed3;
 local scenarioHeaderDefaultFontColor = SCENARIO_STAGE_COLOR;
-local scenarioHeaderDefaultFontMinLineHeight = 12;
+local scenarioHeaderDefaultFontMinLineHeight = 10;
 local scenarioHeaderDefaultTextAnchorOffsets = {xOffset = 15, yOffset = -8};
 local scenarioHeaderDefaultDecorationAnchorOffsets = {xOffset = -11, yOffset = -7};
-local scenarioHeaderDefaultHeaderTextHeight = 36;
-local scenarioHeaderDefaultHeaderTextWidth = 172;
+local scenarioHeaderDefaultHeaderTextHeight = 20;
+local scenarioHeaderDefaultHeaderTextWidth = 220;
 local scenarioHeaderStageChangeWaitTime = 1.5;
 
 -- This returns true if we are waiting for the stage header to slide out

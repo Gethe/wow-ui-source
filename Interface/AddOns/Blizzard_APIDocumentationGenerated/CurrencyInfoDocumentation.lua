@@ -22,6 +22,15 @@ local CurrencyInfo =
 			},
 		},
 		{
+			Name = "DoesCurrentFilterRequireAccountCurrencyData",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "doesCurrentFilterRequireAccountCurrencyData", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "DoesWarModeBonusApply",
 			Type = "Function",
 
@@ -193,6 +202,15 @@ local CurrencyInfo =
 			Returns =
 			{
 				{ Name = "description", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCurrencyFilter",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "filterType", Type = "CurrencyFilterType", Nilable = false },
 			},
 		},
 		{
@@ -468,6 +486,15 @@ local CurrencyInfo =
 			{
 				{ Name = "currencyType", Type = "number", Nilable = false },
 				{ Name = "backpack", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetCurrencyFilter",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "filterType", Type = "CurrencyFilterType", Nilable = false },
 			},
 		},
 		{

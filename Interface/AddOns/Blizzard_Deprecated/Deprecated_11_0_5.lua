@@ -15,3 +15,18 @@ do
 		end
 	end
 end
+
+do
+	C_ChallengeMode.GetCompletionInfo = function()
+		local info = C_ChallengeMode.GetChallengeCompletionInfo();
+		if info then
+			return info.mapChallengeModeID, info.level, info.time, info.onTime, info.keystoneUpgradeLevels, info.practiceRun, info.oldOverallDungeonScore, info.newOverallDungeonScore, info.isAffixRecord, info.isMapRecord, 0, info.isEligibleForScore, info.members;
+		end
+	end
+end
+
+do
+	C_MythicPlus.IsWeeklyRewardAvailable = function()
+		return false;
+	end
+end

@@ -232,6 +232,10 @@ function TokenSubHeaderToggleCollapseButtonMixin:OnClick()
 	self:GetHeader():ToggleCollapsed();
 end
 
+local TOKEN_FRAME_EVENTS = {
+	"ACCOUNT_CHARACTER_CURRENCY_DATA_RECEIVED",
+};
+
 TokenFrameMixin = {};
 
 function TokenFrameMixin:OnLoad()
@@ -276,15 +280,77 @@ function TokenFrameMixin:OnLoad()
 	view:SetPadding(topPadding, bottomPadding, leftPadding, rightPadding, elementSpacing);
 
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
+
+	self.filterDropdown:SetWidth(130);
+end
+
+local function IsFilterTypeSelected(filterType)
+	return C_CurrencyInfo.GetCurrencyFilter() == filterType;
+end
+
+local function SetFilterTypeSelected(filterType)
+	-- Clear out whatever we currently have selected because we're changing the filter type
+	TokenFrame.selectedToken = nil;
+	TokenFrame.selectedID = nil;
+	TokenFramePopup:Hide();
+	HideUIPanel(CurrencyTransferMenu);
+
+	C_CurrencyInfo.SetCurrencyFilter(filterType);
+end
+
+local CurrencyFilterFilterTypeOrder = {
+	Enum.CurrencyFilterType.DiscoveredAndAllAccountTransferable,
+	Enum.CurrencyFilterType.DiscoveredOnly,
+};
+
+local function GetCurrencyFilterTypeName(filterType)
+	local CurrencyFilterTypeNames = {
+		[Enum.CurrencyFilterType.DiscoveredAndAllAccountTransferable] = CURRENCY_FILTER_TYPE_TRANSFERABLE,
+		-- [Enum.CurrencyFilterType.DiscoveredOnly] = CURRENCY_FILTER_TYPE_CHARACTER:format(UnitName("player")),
+	};
+
+	-- We don't store the player's name in case it is modified/updated during a play session
+	if filterType == Enum.CurrencyFilterType.DiscoveredOnly then
+		return CURRENCY_FILTER_TYPE_CHARACTER:format(UnitName("player"));
+	end
+
+	return CurrencyFilterTypeNames[filterType];
+end
+
+local function GetCurrencyFilterTypeTooltipDescription(filterType)
+	local CurrencyFilterTypeTooltipDescriptions = {
+		[Enum.CurrencyFilterType.DiscoveredAndAllAccountTransferable] = CURRENCY_FILTER_TYPE_TRANSFERABLE_TOOLTIP,
+	};
+
+	return CurrencyFilterTypeTooltipDescriptions[filterType];
 end
 
 function TokenFrameMixin:OnShow()
+	FrameUtil.RegisterFrameForEvents(self, TOKEN_FRAME_EVENTS);
+
 	SetButtonPulse(CharacterFrameTab3, 0, 1); --Stop the button pulse
 
 	self:Update();
+
+	self.filterDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_CURRENCY_FRAME_FILTER");
+
+		for index, filterType in ipairs(CurrencyFilterFilterTypeOrder) do
+			local button = rootDescription:CreateRadio(GetCurrencyFilterTypeName(filterType), IsFilterTypeSelected, SetFilterTypeSelected, filterType);
+
+			local tooltipDescription = GetCurrencyFilterTypeTooltipDescription(filterType);
+			if tooltipDescription then				
+				button:SetTooltip(function(tooltip, elementDescription)
+					GameTooltip_AddHighlightLine(tooltip, tooltipDescription);
+				end);
+			end
+		end
+	end);
 end
 
 function TokenFrameMixin:OnHide()
+	FrameUtil.UnregisterFrameForEvents(self, TOKEN_FRAME_EVENTS);
+
 	-- Reset the selected currency for the next time we open the window
 	self.selectedToken = nil;
 	self.selectedID = nil;
@@ -294,9 +360,23 @@ function TokenFrameMixin:OnHide()
 	CurrencyTransferLog:Hide();
 end
 
+function TokenFrameMixin:OnEvent(event, ...)
+	if event == "ACCOUNT_CHARACTER_CURRENCY_DATA_RECEIVED" then
+		if C_CurrencyInfo.DoesCurrentFilterRequireAccountCurrencyData() then
+			self:Update();
+		end
+	end
+end
+
 function TokenFrameMixin:Update()
 	local numTokenTypes = C_CurrencyInfo.GetCurrencyListSize();
 	CharacterFrameTab3:SetShown(numTokenTypes > 0);
+
+	local currencyDataReady = not C_CurrencyInfo.DoesCurrentFilterRequireAccountCurrencyData() or C_CurrencyInfo.IsAccountCharacterCurrencyDataReady();
+	self:SetLoadingSpinnerShown(not currencyDataReady);
+	if not currencyDataReady then
+		return;
+	end
 
 	local currencyList = {};
 	for currencyIndex = 1, numTokenTypes do
@@ -351,6 +431,13 @@ function TokenFrameMixin:RefreshAccountTransferableCurrenciesTutorial()
 	HelpTip:Show(self, helpTipInfo, accountTransferableCurrency);
 end
 
+function TokenFrameMixin:SetLoadingSpinnerShown(shown)
+	self.ScrollBox:SetShown(not shown);
+	self.ScrollBar:SetShown(not shown);
+
+	self.LoadingSpinner:SetShown(shown);
+end
+
 function TokenFrameMixin:SetTokenWatched(id, watched)
 	if watched then
 		local maxWatched = BackpackTokenFrame:GetMaxTokensWatched();
@@ -396,16 +483,33 @@ function TokenFramePopupMixin:OnHide()
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 end
 
+function TokenFramePopupMixin:CalculateBestHeight()
+	local showingCheckboxes = self.InactiveCheckbox:IsShown() or self.BackpackCheckbox:IsShown();
+	local showingCurrencyTransferButton = self.CurrencyTransferToggleButton:IsShown();
+
+	if showingCheckboxes and showingCurrencyTransferButton then
+		return 135;
+	elseif showingCurrencyTransferButton then
+		return 90;
+	end
+
+	return 100;
+end
+
 function GetNumWatchedTokens()
 	return BackpackTokenFrame:GetNumWatchedTokens();
 end
 
 function TokenFrameMixin:UpdatePopup(button)
+	TokenFramePopup.InactiveCheckbox:SetShown(button.elementData.discovered);
 	TokenFramePopup.InactiveCheckbox:SetChecked(button.elementData.isTypeUnused);
+
+	TokenFramePopup.BackpackCheckbox:SetShown(button.elementData.discovered);
 	TokenFramePopup.BackpackCheckbox:SetChecked(button.elementData.isShowInBackpack);
 
 	TokenFramePopup.CurrencyTransferToggleButton:Refresh(button.elementData);
-	TokenFramePopup:SetHeight(button.elementData.isAccountTransferable and 135 or 100);
+	
+	TokenFramePopup:SetHeight(TokenFramePopup:CalculateBestHeight());
 end
 
 InactiveCurrencyCheckboxMixin = {};
