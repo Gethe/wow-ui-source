@@ -66,10 +66,6 @@ function GraphicsOverrides.GetTextureResolutionOptions(settingTextureResolution,
 end 
 
 function GraphicsOverrides.CreateHiResOptions(category, layout)
-	if ( IsTestBuild() and IsPublicBuild() ) then
-		return;
-	end
-
 	local function GetOptions()
 		local container = Settings.CreateControlTextContainer();
 		container:Add(false, VIDEO_OPTIONS_DISABLED);
@@ -91,7 +87,7 @@ function GraphicsOverrides.CreateHiResOptions(category, layout)
 	end
 
 	local setting = Settings.RegisterProxySetting(category, "PROXY_HIGH_RES_TEXTURES", 
-	Settings.VarType.Boolean, OPTION_HD_TEXTURES, Settings.Default.True, GetValue, nil, SetValue);
+	Settings.VarType.Boolean, OPTION_HD_TEXTURES, Settings.Default.True, GetValue, SetValue);
 	setting:SetCommitFlags(Settings.CommitFlag.Apply);
 
 	local initializer = Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_HD_TEXTURES);

@@ -141,10 +141,6 @@ function CharacterSelectLockedButtonMixin:OnClick()
 end
 
 local function ShouldShowHighResButton()
-	if ( IsTestBuild() and IsPublicBuild() ) then
-		return false;
-	end
-
 	return not C_BattleNet.AreHighResTexturesInstalled();
 end
 

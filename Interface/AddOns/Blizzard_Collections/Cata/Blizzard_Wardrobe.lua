@@ -971,7 +971,7 @@ function WardrobeCollectionFrameMixin:SetContainer(parent)
 		self.ItemsCollectionFrame.SlotsFrame:Show();
 		self.ItemsCollectionFrame.BGCornerTopLeft:Hide();
 		self.ItemsCollectionFrame.BGCornerTopRight:Hide();
-		self.ItemsCollectionFrame.WeaponDropdown:SetPoint("TOPRIGHT", -25, -58);
+		self.ItemsCollectionFrame.WeaponDropdown:SetPoint("TOPRIGHT", -25, -23);
 		self.ItemsCollectionFrame.NoValidItemsLabel:Hide();
 		self.ItemsTab:SetPoint("TOPLEFT", 58, -28);
 		self:SetTab(self.selectedCollectionTab);
@@ -1013,9 +1013,20 @@ function WardrobeCollectionFrameMixin:SetTab(tabID)
 		self.SearchBox:SetEnabled(enableSearchAndFilter);
 		self.FilterButton:Show();
 		self.FilterButton:SetEnabled(enableSearchAndFilter);
+		self:InitItemsFilterButton();
 	end
 	WardrobeFrame:TriggerEvent(WardrobeFrameMixin.Event.OnCollectionTabChanged);
 end
+
+local transmogSourceOrderPriorities = {
+	[Enum.TransmogSource.JournalEncounter] = 5,
+	[Enum.TransmogSource.Quest] = 5,
+	[Enum.TransmogSource.Vendor] = 5,
+	[Enum.TransmogSource.WorldDrop] = 5,
+	[Enum.TransmogSource.Achievement] = 5,
+	[Enum.TransmogSource.Profession] = 5,
+	[Enum.TransmogSource.TradingPost] = 4,
+};
 
 function WardrobeCollectionFrameMixin:InitItemsFilterButton()
 	-- Source filters are in a submenu when unless we're at a transmogrifier.

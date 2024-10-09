@@ -420,6 +420,7 @@ function AlertFrameMixin:OnLoad()
 	--self:RegisterEvent("CRITERIA_EARNED");		need to investigate what alerts criteria updates send out and whether or not they are directly related to the achievement system... tbd
 	self:RegisterEvent("ACHIEVEMENT_EARNED");
 	self:RegisterEvent("STORE_PRODUCT_DELIVERED");
+	self:RegisterEvent("NEW_TOY_ADDED");
 end
 
 function AlertFrameMixin:OnEvent(event, ...)
@@ -585,6 +586,9 @@ function AlertFrameMixin:OnEvent(event, ...)
 			-- May be invasion reward
 			InvasionAlertSystem:AddCoalesceData(questID, rewardItemLink, texture);
 		end
+	elseif ( event == "NEW_TOY_ADDED") then
+		local toyID = ...;
+		NewToyAlertSystem:AddAlert(toyID);
 	end
 end
 
