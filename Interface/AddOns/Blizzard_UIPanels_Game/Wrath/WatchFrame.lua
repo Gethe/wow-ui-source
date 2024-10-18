@@ -83,30 +83,31 @@ local function WatchFrame_ReleaseUnusedLinkButtons ()
 	end
 end
 
-function WatchFrameLinkButtonTemplate_ShowContextMenu()
+function WatchFrameLinkButtonTemplate_ShowContextMenu(self, button)
 	MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
 		rootDescription:SetTag("MENU_WATCH_FRAME_LINK");
 
 		if ( self.type == "QUEST" ) then
 			local questLogIndex = GetQuestIndexForWatch(self.index);
-			rootDescription:CreateTitle(GetQuestLogTitle(questLogIndex));
+			local questTitle = GetQuestLogTitle(questLogIndex);
+			rootDescription:CreateTitle(questTitle);
 			rootDescription:CreateButton(OBJECTIVES_VIEW_IN_QUESTLOG, function()
-				WatchFrame_OpenQuestLog(self.index, true);
+				WatchFrame_OpenQuestLog(button, self.index, true);
 			end);
 
 			rootDescription:CreateButton(OBJECTIVES_STOP_TRACKING, function()
-				WatchFrame_StopTrackingQuest(self.index);
+				WatchFrame_StopTrackingQuest(button, self.index);
 			end);
 
 			if ( GetQuestLogPushable(GetQuestIndexForWatch(self.index)) and ( GetNumGroupMembers() > 0 ) ) then
 				rootDescription:CreateButton(SHARE_QUEST, function()
-					WatchFrame_ShareQuest(self.index);
+					WatchFrame_ShareQuest(button, self.index);
 				end);
 			end
 
 			if ( WatchFrame.showObjectives ) then
 				rootDescription:CreateButton(OBJECTIVES_SHOW_QUEST_MAP, function()
-					WatchFrame_OpenMapToQuest(self.index);
+					WatchFrame_OpenMapToQuest(button, self.index);
 				end);
 			end
 			local numVisibleWatches = #VISIBLE_WATCHES;
@@ -114,20 +115,20 @@ function WatchFrameLinkButtonTemplate_ShowContextMenu()
 				local visibleIndex = WatchFrame_GetVisibleIndex(questLogIndex);
 				if ( visibleIndex > 1 ) then
 					rootDescription:CreateButton(TRACKER_SORT_MANUAL_UP, function()
-						WatchFrame_MoveQuest(questLogIndex, -1);
+						WatchFrame_MoveQuest(button, questLogIndex, -1);
 					end);
 
 					rootDescription:CreateButton(TRACKER_SORT_MANUAL_TOP, function()
-						WatchFrame_MoveQuest(questLogIndex, -100);
+						WatchFrame_MoveQuest(button, questLogIndex, -100);
 					end);
 				end
 				if ( visibleIndex < numVisibleWatches ) then
 					rootDescription:CreateButton(TRACKER_SORT_MANUAL_DOWN, function()
-						WatchFrame_MoveQuest(questLogIndex, 1);
+						WatchFrame_MoveQuest(button, questLogIndex, 1);
 					end);
 
 					rootDescription:CreateButton(TRACKER_SORT_MANUAL_BOTTOM, function()
-						WatchFrame_MoveQuest(questLogIndex, 100);
+						WatchFrame_MoveQuest(button, questLogIndex, 100);
 					end);
 				end
 			end
@@ -137,11 +138,11 @@ function WatchFrameLinkButtonTemplate_ShowContextMenu()
 			rootDescription:CreateTitle(achievementName);
 
 			rootDescription:CreateButton(OBJECTIVES_VIEW_ACHIEVEMENT, function()
-				WatchFrame_OpenAchievementFrame(self.index);
+				WatchFrame_OpenAchievementFrame(button, self.index);
 			end);
 
 			rootDescription:CreateButton(OBJECTIVES_STOP_TRACKING, function()
-				WatchFrame_StopTrackingAchievement(self.index);
+				WatchFrame_StopTrackingAchievement(button, self.index);
 			end);
 		end
 	end);
@@ -164,7 +165,7 @@ function WatchFrameLinkButtonTemplate_OnClick (self, button, pushed)
 	elseif ( button ~= "RightButton" ) then
 		WatchFrameLinkButtonTemplate_OnLeftClick(self, button);
 	else
-		WatchFrameLinkButtonTemplate_ShowContextMenu(self);
+		WatchFrameLinkButtonTemplate_ShowContextMenu(self, button);
 	end
 end
 

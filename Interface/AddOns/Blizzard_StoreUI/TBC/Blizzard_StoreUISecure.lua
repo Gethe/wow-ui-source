@@ -2929,7 +2929,7 @@ function StoreProductCardItem_OnEnter(self)
 		point = "BOTTOMLEFT";
 	end
 
-	if entryInfo.sharedData.itemID and not tbl.IsOnGlueScreen() then
+	if entryInfo.sharedData.itemID and not IsOnGlueScreen() then
 		self.hasItemTooltip = true;
 		StoreTooltip:Hide();
 		StoreOutbound.SetItemTooltip(entryInfo.sharedData.itemID, x, y, point);

@@ -158,7 +158,7 @@ function MiniMapLFGFrame_OnClick(self, button)
 			local unlistButton = rootDescription:CreateButton(LFG_LIST_UNLIST, function()
 				C_LFGList.RemoveListing();
 			end);
-			if not (C_LFGList.HasActiveEntryInfo() and LFGListingUtil_CanEditListing()) then
+			if not (C_LFGList.HasActiveEntryInfo() and LFGListUtil_IsAppEmpowered()) then
 				unlistButton:SetEnabled(false);
 			end
 		end);

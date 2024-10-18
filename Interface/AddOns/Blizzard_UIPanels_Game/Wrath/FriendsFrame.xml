@@ -64,7 +64,7 @@ TRAVEL PASS
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="DeclineButton" inherits="UIMenuButtonStretchTemplate" motionScriptsWhileDisabled="true">
+			<DropdownButton parentKey="DeclineButton" inherits="UIMenuButtonStretchTemplate" motionScriptsWhileDisabled="true">
 				<Size x="24" y="22"/>
 				<Anchors>
 					<Anchor point="RIGHT" x="-7" y="1"/>
@@ -79,7 +79,7 @@ TRAVEL PASS
 					</Layer>
 				</Layers>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-			</Button>
+			</DropdownButton>
 			<Button parentKey="AcceptButton" inherits="UIMenuButtonStretchTemplate" text="ACCEPT">
 				<Size x="0" y="22"/>
 				<Anchors>
@@ -100,6 +100,9 @@ TRAVEL PASS
 				</Scripts>
 			</Button>
 		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
 	</Frame>
 	<Button name="FriendsFrameButtonTemplate" hidden="true" virtual="true">
 		<Size x="298" y="34"/>
@@ -4611,12 +4614,7 @@ TRAVEL PASS
 			</OnHide>
 		</Scripts>
 	</Frame>
-	<Frame name="FriendsFriendsFrame" inherits="BackdropTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" mixin="FriendsFriendsFrameMixin">
-		<KeyValues>
-			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
-			<KeyValue key="exclusive" value="true" type="boolean"/>
-			<KeyValue key="hideOnEscape" value="true" type="boolean"/>
-		</KeyValues>
+	<Frame name="FriendsFriendsFrame" parent="UIParent" hidden="true" frameStrata="DIALOG" mixin="FriendsFriendsFrameMixin">
 		<Size x="314" y="345"/>
 		<Anchors>
 			<Anchor point="CENTER" x="0" y="50"/>
@@ -4633,9 +4631,10 @@ TRAVEL PASS
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
 			<DropdownButton parentKey="FriendsDropdown" name="FriendsFriendsFrameDropdown" inherits="WowStyle1DropdownTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="8" y="-40"/>
+					<Anchor point="TOPLEFT" x="26" y="-40"/>
 				</Anchors>
 			</DropdownButton>
 			<Frame name="FriendsFriendsList" inherits="TooltipBackdropTemplate">
