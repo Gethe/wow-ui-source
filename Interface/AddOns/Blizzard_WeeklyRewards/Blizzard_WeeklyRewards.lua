@@ -574,15 +574,19 @@ function WeeklyRewardsActivityMixin:OnEnter()
 			self:ShowIncompleteTooltip(WEEKLY_REWARDS_UNLOCK_REWARD, description, formatRemainingProgress)
 		elseif self.info.type == Enum.WeeklyRewardChestThresholdType.Raid then
 			local description;
+			local showRaidCompletionInTooltip = false;
 			if self.info.progress == 0 then
 				description = GREAT_VAULT_REWARDS_RAID_INCOMPLETE;
 			else
 				description = GREAT_VAULT_REWARDS_RAID_INPROGRESS;
+				showRaidCompletionInTooltip = true;
 			end
 			local formatRemainingProgress = true;
 			self:ShowIncompleteTooltip(WEEKLY_REWARDS_UNLOCK_REWARD, description, formatRemainingProgress, nil, self:GetRaidName() or RAID)
 
-			self:AddRaidCompletionInfoToGameTooltip();
+			if showRaidCompletionInTooltip then
+				self:AddRaidCompletionInfoToGameTooltip();
+			end
 			GameTooltip:Show();
 
 		end
@@ -650,15 +654,6 @@ function WeeklyRewardsActivityMixin:ShowPreviewItemTooltip()
 	GameTooltip:Show();
 end
 
-function WeeklyRewardsActivityMixin:GetRaidName()
-	local encounters = C_WeeklyRewards.GetActivityEncounterInfo(self.info.type, self.info.index);
-	if encounters and encounters[1] then
-		local name, description, encounterID, rootSectionID, link, instanceID = EJ_GetEncounterInfo(encounters[1].encounterID);
-		local instanceName = EJ_GetInstanceInfo(instanceID);
-		return instanceName;
-	end
-end
-
 local function EncountersSort(left, right)
 	if left.instanceID ~= right.instanceID then
 		return left.instanceID < right.instanceID;
@@ -669,6 +664,18 @@ local function EncountersSort(left, right)
 		return leftCompleted;
 	end
 	return left.uiOrder < right.uiOrder;
+end
+
+function WeeklyRewardsActivityMixin:GetRaidName()
+	local encounters = C_WeeklyRewards.GetActivityEncounterInfo(self.info.type, self.info.index);
+	if encounters then
+		table.sort(encounters, EncountersSort);
+		if encounters[1] then
+			local name, description, encounterID, rootSectionID, link, instanceID = EJ_GetEncounterInfo(encounters[1].encounterID);
+			local instanceName = EJ_GetInstanceInfo(instanceID);
+			return instanceName;
+		end
+	end
 end
 
 function WeeklyRewardsActivityMixin:AddRaidCompletionInfoToGameTooltip()

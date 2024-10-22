@@ -423,6 +423,7 @@ end
 
 local function ResetWidget(pool, widgetFrame)
 	widgetFrame:OnReset();
+	widgetFrame:SetParent(nil);
 end
 
 function UIWidgetContainerMixin:GetWidgetFromPools(templateInfo)

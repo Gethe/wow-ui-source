@@ -5,7 +5,7 @@ function StaticPopup_ResizeWidth(dialog, info)
 	if (info.showAlert or info.showAlertGear or info.customAlertIcon or info.closeButton or info.wide) then
 		width = 420;
 	elseif ( info.editBoxWidth and info.editBoxWidth > 260 ) then
-		width = width + (info.editBoxWidth - 260);
+		width = 320 + (info.editBoxWidth - 260);
 	elseif ( which == "GUILD_IMPEACH" ) then
 		width = 375;
 	end

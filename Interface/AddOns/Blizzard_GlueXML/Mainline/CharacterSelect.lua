@@ -753,6 +753,8 @@ function UpdateCharacterList(skipSelect)
 		end
 		CharacterSelect.selectGuid = nil;
 		CharacterSelect.undeleteGuid = nil;
+	else
+		CharacterSelect.selectedIndex = tonumber(GetCVar("lastCharacterIndex")) + 1;
 	end
 
     CharacterSelect_UpdateButtonState();
@@ -769,27 +771,27 @@ function UpdateCharacterList(skipSelect)
 	CharacterTemplatesFrame.CreateTemplateButton:Hide();
 
     local connected = IsConnectedToServer();
-    if (CanCreateCharacter() and not CharacterSelect.undeleting) then
+    if CanCreateCharacter() and not CharacterSelect.undeleting then
         CharacterSelect.createIndex = numChars + 1;
-        if ( connected ) then
+        if connected then
 			CharacterSelectUI.VisibilityFramesContainer.CharacterList:SetCharacterCreateEnabled(true);
             CharSelectUndeleteCharacterButton:Show();
 			CharacterTemplatesFrame.CreateTemplateButton:Show();
         end
     end
 
-    if ( numChars == 0 and not skipSelect ) then
+    if numChars == 0 and not skipSelect then
         CharacterSelect.selectedIndex = 0;
 		local noCreate = true;
         CharacterSelect_SelectCharacter(CharacterSelect.selectedIndex, noCreate);
         return;
     end
-
-    if ( (CharacterSelect.selectedIndex == 0) or (CharacterSelect.selectedIndex > numChars) ) then
+	
+    if CharacterSelect.selectedIndex == 0 or CharacterSelect.selectedIndex > numChars then
         CharacterSelect.selectedIndex = 1;
     end
 
-    if ( not skipSelect ) then
+    if not skipSelect then
 		local noCreate = true;
         CharacterSelect_SelectCharacter(CharacterSelect.selectedIndex, noCreate);
     end

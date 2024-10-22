@@ -1222,6 +1222,18 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
 	end
 	background:SetTexture(backgroundTexture);
 
+	if (dungeonID == 2714) then
+		background:ClearAllPoints();
+		background:SetWidth(512);
+		background:SetHeight(394);
+		background:SetPoint("TOPLEFT", background:GetParent(), "TOPLEFT", 6, -148);
+	elseif (background == LFDQueueFrameBackground) then
+		background:ClearAllPoints();
+		background:SetWidth(512);
+		background:SetHeight(256);
+		background:SetPoint("BOTTOMLEFT", background:GetParent(), "BOTTOMLEFT", 6, 26);
+	end
+
 	local lastFrame = parentFrame.rewardsLabel;
 	if ( isTimewalker ) then
 		parentFrame.rewardsDescription:SetText(LFD_RANDOM_REWARD_EXPLANATION2);

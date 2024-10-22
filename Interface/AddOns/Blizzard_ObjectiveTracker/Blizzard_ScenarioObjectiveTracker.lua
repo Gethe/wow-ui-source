@@ -180,6 +180,7 @@ function ScenarioObjectiveTrackerMixin:LayoutContents()
 		self.currentStage = nil;
 		self.scenarioID = nil;
 		self.slidOutStage = nil;
+		self.StageBlock:ClearWidgetSet();
 		AcknowledgeEmberCourtHelpTip();
 		return;
 	end
@@ -569,6 +570,11 @@ function ScenarioObjectiveTrackerStageMixin:UpdateFindGroupButton(scenarioID)
 			self.findGroupButton:Hide();
 		end
 	end
+end
+
+function ScenarioObjectiveTrackerStageMixin:ClearWidgetSet()
+	self.widgetSetID = nil;
+	self:UpdateWidgetRegistration();
 end
 
 function ScenarioObjectiveTrackerStageMixin:UpdateWidgetRegistration()
