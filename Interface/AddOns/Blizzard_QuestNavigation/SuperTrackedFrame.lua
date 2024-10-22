@@ -20,6 +20,7 @@ function SuperTrackedFrameMixin:OnEvent(event, ...)
 		self:ShutdownNavigationFrame();
 	elseif event == "SUPER_TRACKING_CHANGED" then
 		self:UpdateIcon();
+		self:ForceTransparentUntil(GetTime() + 0.2);
 	end
 end
 
@@ -95,6 +96,12 @@ do
 			return 0;
 		end
 
+		if self.transparentUntil and self.transparentUntil > GetTime() then
+			return 0;
+		end
+
+		self.transparentUntil = nil;
+
 		local additionalFade = 1.0;
 
 		if self:IsMouseOver() then
@@ -117,6 +124,11 @@ do
 
 	function SuperTrackedFrameMixin:UpdateAlpha()
 		self:SetAlpha(self:GetTargetAlpha());
+	end
+
+	function SuperTrackedFrameMixin:ForceTransparentUntil(time)
+		self:SetAlpha(0);
+		self.transparentUntil = time;
 	end
 end
 
@@ -148,16 +160,6 @@ do
 		self.Arrow:SetShown(self.isClamped);
 	end
 
-	function SuperTrackedFrameMixin:ClampCircular()
-		local centerX, centerY = GetCenterScreenPoint();
-		local navX, navY = self.navFrame:GetCenter();
-		local v = self.circularVec;
-		v:SetXY(navX - centerX, navY - centerY);
-		v:Normalize();
-		v:ScaleBy(self.clampRadius);
-		self:SetPoint("CENTER", WorldFrame, "CENTER", v.x, v.y);
-	end
-
 	function SuperTrackedFrameMixin:ClampElliptical()
 		local centerX, centerY = GetCenterScreenPoint();
 		local navX, navY = self.navFrame:GetCenter();
@@ -181,11 +183,7 @@ do
 			self:ClearAllPoints();
 
 			if self.isClamped then
-				if self.clampMode == 0 then
-					self:ClampCircular();
-				else
-					self:ClampElliptical();
-				end
+				self:ClampElliptical();
 			else
 				self:SetPoint("CENTER", self.navFrame, "CENTER");
 			end
@@ -259,14 +257,6 @@ function SuperTrackedFrameMixin:InitializeNavigationFrame()
 	if self.navFrame then
 		self:SetPoint("CENTER", self.navFrame);
 		self:UpdateIcon();
-
-		-- Experimental clamping modes, pick one and erase the other
-		self.clampMode = 1;
-
-		-- Circular
-		self.clampRadius = 350;
-
-		-- Elliptical
 		self:SetEllipticalRadii(500, 200);
 	end
 end

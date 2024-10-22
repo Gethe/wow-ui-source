@@ -38,8 +38,7 @@ local function ShowConfigTooltip(frame, data, offsetX, offsetY)
     GameTooltip:SetOwner(frame, "ANCHOR_RIGHT", offsetX, offsetY);
     if data.spellID then
         local isPet = false;
-        local showSubtext = true;
-        GameTooltip:SetSpellByID(data.spellID, isPet, showSubtext);
+        GameTooltip:SetSpellByID(data.spellID, isPet);
     elseif data.name and data.description then
         GameTooltip_SetTitle(GameTooltip, data.name);
         GameTooltip_AddNormalLine(GameTooltip, data.description);
@@ -62,6 +61,14 @@ end
 
 local function UnseenCuriosAcknowledged()
     return DelvesCompanionConfigurationFrame.unseenCuriosAcknowledged;
+end
+
+local function ConfigChangeAllowed()
+    local _, _, distance = ClosestUnitPosition(DELVES_SUPPLIES_CREATURE_ID);
+    local delveInProgress = C_PartyInfo.IsDelveInProgress();
+    local playerMustInteractWithSupplies = delveInProgress and distance > DELVES_SUPPLIES_MAX_DISTANCE;
+
+    return not UnitAffectingCombat("player") and not playerMustInteractWithSupplies;
 end
 
 --[[ Config Frame ]]
@@ -333,14 +340,19 @@ function CompanionConfigSlotTemplateMixin:OnMouseDown()
         return;
     end
 
-    -- TODO: Not supported currently, but being able to show spell subtext in chatlinks would be nice for showing curio ranks...
-    --       ...or being able to pass in a rarity color or something. Since we're stuck with the spellID and not the itemID
     if IsModifiedClick("CHATLINK") and self:HasSelectionAndInfo() then
         local selection = self.selectionNodeOptions[self.selectionNodeInfo.activeEntry.entryID];
         if selection.spellID then
-            local curioSpellLink = C_Spell.GetSpellLink(selection.spellID);
-            ChatEdit_InsertLink(curioSpellLink);
-            return;
+            local entryInfo = C_Traits.GetEntryInfo(self.configID, self.selectionNodeInfo.activeEntry.entryID);
+            if entryInfo then
+                local conditionInfo = C_Traits.GetConditionInfo(self.configID, entryInfo.conditionIDs[1]);
+                if conditionInfo then
+                    local rarity = C_DelvesUI.GetCurioRarityByTraitCondAccountElementID(conditionInfo.traitCondAccountElementID);
+                    local curioLink = C_DelvesUI.GetCurioLink(selection.spellID, rarity);
+                    ChatEdit_InsertLink(curioLink);
+                    return;
+                end
+            end
         end
     end
 
@@ -460,48 +472,50 @@ function CompanionConfigSlotTemplateMixin:Refresh(keepOptionsListOpen)
 end
 
 function CompanionConfigSlotTemplateMixin:PopulateOptionsList()
-    local activeEntryID = self:HasActiveEntry() and self.selectionNodeInfo.activeEntry.entryID;
-    local dataProvider = CreateDataProvider();
-    local buttonCount = 0;
-
-    for id, entryInfo in pairs(self.selectionNodeOptions) do
-        local isUnseen = false;
-        for _, unseenID in ipairs(self.unseenCurios) do
-            if id == unseenID then
-                isUnseen = true;
-                break;
-            end
-        end
-
-        local additionalEntryInfo = C_Traits.GetEntryInfo(self.configID, id);
-        local selectedEntryRarity = Enum.CurioRarity.Common;
-
-        if additionalEntryInfo then
-            for _, conditionID in ipairs(additionalEntryInfo.conditionIDs) do
-                local conditionInfo = C_Traits.GetConditionInfo(self.configID, conditionID, true);
-                if conditionInfo and conditionInfo.traitCondAccountElementID then
-                    selectedEntryRarity = C_DelvesUI.GetCurioRarityByTraitCondAccountElementID(conditionInfo.traitCondAccountElementID);
+    C_Timer.After(SET_SEEN_CURIOS_DELAY, function() 
+        local activeEntryID = self:HasActiveEntry() and self.selectionNodeInfo.activeEntry.entryID;
+        local dataProvider = CreateDataProvider();
+        local buttonCount = 0;
+    
+        for id, entryInfo in pairs(self.selectionNodeOptions) do
+            local isUnseen = false;
+            for _, unseenID in ipairs(self.unseenCurios) do
+                if id == unseenID then
+                    isUnseen = true;
+                    break;
                 end
             end
+    
+            local additionalEntryInfo = C_Traits.GetEntryInfo(self.configID, id);
+            local selectedEntryRarity = Enum.CurioRarity.Common;
+    
+            if additionalEntryInfo then
+                for _, conditionID in ipairs(additionalEntryInfo.conditionIDs) do
+                    local conditionInfo = C_Traits.GetConditionInfo(self.configID, conditionID, true);
+                    if conditionInfo and conditionInfo.traitCondAccountElementID then
+                        selectedEntryRarity = C_DelvesUI.GetCurioRarityByTraitCondAccountElementID(conditionInfo.traitCondAccountElementID);
+                    end
+                end
+            end
+    
+            dataProvider:Insert({
+                entryID = id,
+                name = entryInfo.name,
+                atlas = entryInfo.atlas,
+                textureID = entryInfo.textureID,
+                selected = activeEntryID == id,
+                spellID = entryInfo.spellID,
+                description = entryInfo.description,
+                isUnseen = isUnseen,
+                borderColor = borderColorForRarity[selectedEntryRarity],
+            });
+            buttonCount = buttonCount + 1;
         end
-
-        dataProvider:Insert({
-            entryID = id,
-            name = entryInfo.name,
-            atlas = entryInfo.atlas,
-            textureID = entryInfo.textureID,
-            selected = activeEntryID == id,
-            spellID = entryInfo.spellID,
-            description = entryInfo.description,
-            isUnseen = isUnseen,
-            borderColor = borderColorForRarity[selectedEntryRarity],
-        });
-        buttonCount = buttonCount + 1;
-    end
-    self.OptionsList.ScrollBox:SetDataProvider(dataProvider);
-
-    local buttonHeight = C_XMLUtil.GetTemplateInfo("CompanionConfigListButtonTemplate").height;
-    self.OptionsList:SetHeight(buttonCount * buttonHeight);
+        self.OptionsList.ScrollBox:SetDataProvider(dataProvider);
+    
+        local buttonHeight = C_XMLUtil.GetTemplateInfo("CompanionConfigListButtonTemplate").height;
+        self.OptionsList:SetHeight(buttonCount * buttonHeight);
+    end);
 end
 
 function CompanionConfigSlotTemplateMixin:GetSlotLabelText()
@@ -578,13 +592,25 @@ end
 --[[ Config List Button ]]
 CompanionConfigListButtonMixin = {};
 
--- TODO: Not supported currently, but being able to show spell subtext in chatlinks would be nice for showing curio ranks...
---       ...or being able to pass in a rarity color or something. Since we're stuck with the spellID and not the itemID
 function CompanionConfigListButtonMixin:OnClick()
-    if IsModifiedClick("CHATLINK") and self.data and self.data.spellID then
-        local curioSpellLink = C_Spell.GetSpellLink(self.data.spellID);
-        ChatEdit_InsertLink(curioSpellLink);
+    local optionsList = self:GetParent():GetParent():GetParent();
+
+    if not ConfigChangeAllowed() then
+        optionsList:Hide();
         return;
+    end
+
+    if IsModifiedClick("CHATLINK") and self.data and self.data.spellID and self.data.entryID and self.data.configID then
+        local entryInfo = C_Traits.GetEntryInfo(self.data.configID, self.data.entryID);
+        if entryInfo then
+            local conditionInfo = C_Traits.GetConditionInfo(self.data.configID, entryInfo.conditionIDs[1]);
+            if conditionInfo then
+                local rarity = C_DelvesUI.GetCurioRarityByTraitCondAccountElementID(conditionInfo.traitCondAccountElementID);
+                local curioLink = C_DelvesUI.GetCurioLink(self.data.spellID, rarity);
+                ChatEdit_InsertLink(curioLink);
+                return;
+            end
+        end
     end
 
     if TrySelectTrait(self.data.configID, self.data.selectionNodeID, self.data.entryID) then
@@ -592,7 +618,6 @@ function CompanionConfigListButtonMixin:OnClick()
         EventRegistry:TriggerEvent("CompanionConfigListButton.Commit");
     end
 
-    local optionsList = self:GetParent():GetParent():GetParent();
     optionsList:Hide();
 end
 

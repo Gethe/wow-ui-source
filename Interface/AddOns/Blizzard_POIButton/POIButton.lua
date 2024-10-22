@@ -399,6 +399,10 @@ end
 
 POIButtonMixin = {};
 
+function POIButtonMixin:IsPOIButton()
+    return true;
+end
+
 function POIButtonMixin:OnShow()
 	EventRegistry:RegisterCallback("Supertracking.OnChanged", self.OnSuperTrackingChanged, self);
 end
@@ -718,13 +722,14 @@ do
 		end
 	end
 
-	local function CheckCreateExtraTexture(self, parentKey, getAtlas, factory)
-		local atlas, useAtlasSize = getAtlas(self);
-		local texture = self[parentKey];
+	local function CheckCreateExtraTexture(self, parentKey, getAtlas, factory, overrideParent)
+		local atlas, useAtlasSize = getAtlas(self); -- self must be a POIButton here
+		local parent = overrideParent or self;
+		local texture = parent[parentKey];
 		if atlas and not texture then
-			texture = factory(self);
+			texture = factory(parent);
 			texture:SetAtlas(atlas, useAtlasSize);
-			self[parentKey] = texture;
+			parent[parentKey] = texture;
 		end
 
 		if texture then
@@ -747,7 +752,7 @@ do
 		end
 	end
 
-	local function CreateSubTypeIcon(self)
+	local function CreateSubTypeIcon(self) -- NOTE: self is a POIButton.Display here.
 		local t = self:CreateTexture(nil, "ARTWORK", nil, 2);
 		t:SetSize(32, 32); -- TODO: The 2x atlases weren't made correctly, must override size...remove this when the fix propagates
 		t:SetPoint("CENTER", self, "CENTER", 0, 0); -- TODO: Would be ideal to avoid hardcoding these sizes/offsets
@@ -755,7 +760,7 @@ do
 	end
 
 	function POIButtonMixin:UpdateSubTypeIcon()
-		CheckCreateExtraTexture(self, "SubTypeIcon", GetSubTypeAtlas, CreateSubTypeIcon);
+		CheckCreateExtraTexture(self, "SubTypeIcon", GetSubTypeAtlas, CreateSubTypeIcon, self.Display);
 	end
 end
 

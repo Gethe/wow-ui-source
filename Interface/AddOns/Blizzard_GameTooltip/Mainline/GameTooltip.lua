@@ -217,7 +217,8 @@ end
 function GameTooltip_AddQuestTimeToTooltip(tooltip, questID)
 	local formattedTime, color, secondsRemaining = WorldMap_GetQuestTimeForTooltip(questID);
 	if formattedTime and color then
-		GameTooltip_AddColoredLine(tooltip, formattedTime, color);
+		formattedTime = color:WrapTextInColorCode(formattedTime);
+		GameTooltip_AddNormalLine(tooltip, MAP_TOOLTIP_TIME_LEFT:format(formattedTime));
 	end
 end
 

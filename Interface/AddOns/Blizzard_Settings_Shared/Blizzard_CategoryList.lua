@@ -305,11 +305,22 @@ function SettingsCategoryListMixin:SetCurrentCategory(category)
 	-- Ensure that our current category list set contains the category, otherwise select the required set.
 	self:SetCategorySet(category:GetCategorySet());
 
-	-- We won't find the category if it is a subcategory whose parent is not expanded. Expand the parent
-	-- if necessary, then regenerate the list.
+	-- All parent categories in the hierarchy must be expanded. If a parent category was expanded or the current category
+	-- was already expanded, require the categories to be recreated. The latter is expected if the category was expanded
+	-- explicitly via OpenToCategory().
+	local recreateCategories = false;
+
 	local parentCategory = category:GetParentCategory();
-	if parentCategory and not parentCategory:IsExpanded() then
-		parentCategory:SetExpanded(true);
+	while parentCategory ~= nil do
+		if not parentCategory:IsExpanded() then
+			parentCategory:SetExpanded(true);
+
+			recreateCategories = true;
+		end
+		parentCategory = parentCategory:GetParentCategory();
+	end
+
+	if recreateCategories or category:IsExpanded() then
 		self:CreateCategories();
 	end
 

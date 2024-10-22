@@ -155,7 +155,7 @@ function QuestDataProviderMixin:RefreshAllData(fromOnShow)
 	local pinsToQuantize = { };
 
 	local mapInfo = C_Map.GetMapInfo(mapID);
-	local questsOnMap = C_QuestLog.GetQuestsOnMap(mapID);
+	local questsOnMap = GetQuestsOnMapCached(mapID);
 	local doesMapShowTaskObjectives = C_TaskQuest.DoesMapShowTaskQuestObjectives(mapID);
 
 	local function CheckAddQuest(questID, x, y, isMapIndicatorQuest, frameLevelOffset, isWaypoint)

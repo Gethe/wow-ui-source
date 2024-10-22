@@ -40,7 +40,7 @@ function CommunitiesGuildRewardsButtonMixin:Init(elementData)
 		self.Icon:SetDesaturated(false);
 		self.Name:SetFontObject(GameFontNormal);
 		self.Lock:Hide();
-		if ( repLevel > guildFactionData.reaction ) then
+		if ( guildFactionData and repLevel > guildFactionData.reaction ) then
 			local factionStandingtext = GetText("FACTION_STANDING_LABEL"..repLevel, gender);
 			self.SubText:SetFormattedText(REQUIRES_GUILD_FACTION, factionStandingtext);
 			self.SubText:Show();
@@ -204,6 +204,9 @@ end
 
 function CommunitiesGuildFactionBarMixin:UpdateFaction()
 	local guildFactionData = C_Reputation.GetGuildFactionData();
+	if not guildFactionData then 
+		return;
+	end
 	
 	if not self:IsMouseOver() then
 		local gender = UnitSex("player");

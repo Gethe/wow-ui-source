@@ -5,4 +5,5 @@
 ## LoadOnDemand: 0
 
 Deprecated_11_0_2.lua
+Deprecated_11_0_5.lua
 11_0_0_SpellBookAPITransitionGuide.lua

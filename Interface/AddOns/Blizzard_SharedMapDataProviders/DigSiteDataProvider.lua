@@ -29,3 +29,7 @@ end
 function DigSitePinMixin:GetSuperTrackData()
 	return Enum.SuperTrackingMapPinType.DigSite, self.poiInfo.researchSiteID;
 end
+
+function DigSitePinMixin:GetSuperTrackMarkerOffset()
+	return -2, 2;
+end

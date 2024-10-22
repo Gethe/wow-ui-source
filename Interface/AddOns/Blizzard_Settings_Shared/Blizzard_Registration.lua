@@ -1,5 +1,5 @@
 do
-	if not IsOnGlueScreen() then
+	if not C_Glue.IsOnGlueScreen() then
 		local attributes = 
 		{ 
 			area = "center",

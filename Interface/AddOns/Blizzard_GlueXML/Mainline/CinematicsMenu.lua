@@ -1,125 +1,13 @@
 
 G_CinematicsMenuContextKey = "CinematicsMenu";
 
--- These are movieID from the MOVIE database file.
-MOVIE_LIST = {
-	-- Movie sequence 13 - WarWithin
-	{
-		expansion = LE_EXPANSION_WAR_WITHIN,
-		movieIDs = { 1023 },
-		upAtlas = "StreamCinematic-WarWithin2-Large-Up",
-		downAtlas = "StreamCinematic-WarWithin2-Large-Down",
-		title = WARWITHIN_TITLE2,
-		disableAutoPlay = true,
-	},
-
-	-- Movie sequence 12 = WarWithin
-	{
-		expansion = LE_EXPANSION_WAR_WITHIN,
-		movieIDs = { 1014 },
-		upAtlas = "StreamCinematic-WarWithin-Large-Up",
-		downAtlas = "StreamCinematic-WarWithin-Large-Down",
-	},
-
-	-- Movie sequence 11 = Dragonflight2
-	{
-		expansion = LE_EXPANSION_DRAGONFLIGHT,
-		movieIDs = { 973 },
-		upAtlas = "StreamCinematic-Dragonflight2-Large-Up",
-		downAtlas = "StreamCinematic-Dragonflight2-Large-Down",
-		title = DRAGONFLIGHT_TOTHESKIES,
-		disableAutoPlay = true,
-	},
-
-	-- Movie sequence 10 = Dragonflight
-	{
-		expansion = LE_EXPANSION_DRAGONFLIGHT,
-		movieIDs = { 960 },
-		upAtlas = "StreamCinematic-Dragonflight-Large-Up",
-		downAtlas = "StreamCinematic-Dragonflight-Large-Down",
-	},
-
-	-- Movie sequence 9 = Shadowlands
-	{
-		expansion = LE_EXPANSION_SHADOWLANDS,
-		movieIDs = { 936 },
-		upAtlas = "StreamCinematic-Shadowlands-Large-Up",
-		downAtlas = "StreamCinematic-Shadowlands-Large-Down",
-	},
-
-	-- Movie sequence 8 = BFA
-	{
-		expansion = LE_EXPANSION_BATTLE_FOR_AZEROTH,
-		movieIDs = { 852 },
-		upAtlas = "StreamCinematic-BFA-Large-Up",
-		downAtlas = "StreamCinematic-BFA-Large-Down",
-	},
-
-	-- Movie sequence 7 = Legion
-	{
-		expansion = LE_EXPANSION_LEGION,
-		movieIDs = { 470 },
-		upAtlas = "StreamCinematic-Legion-Large-Up",
-		downAtlas = "StreamCinematic-Legion-Large-Down",
-	},
-
-	-- Movie sequence 6 = WoD
-	{
-		expansion = LE_EXPANSION_WARLORDS_OF_DRAENOR,
-		movieIDs = { 195 },
-		upAtlas = "StreamCinematic-WOD-Large-Up",
-		downAtlas = "StreamCinematic-WOD-Large-Down",
-	},
-
-	-- Movie sequence 5 = MP
-	{
-		expansion = LE_EXPANSION_MISTS_OF_PANDARIA,
-		movieIDs = { 115 },
-		upAtlas = "StreamCinematic-MOP-Large-Up",
-		downAtlas = "StreamCinematic-MOP-Large-Down",
-	},
-
-	-- Movie sequence 4 = CC
-	{
-		expansion = LE_EXPANSION_CATACLYSM,
-		movieIDs = { 23 },
-		upAtlas = "StreamCinematic-CC-Large-Up",
-		downAtlas = "StreamCinematic-CC-Large-Down",
-	},
-
-	-- Movie sequence 3 = LK
-	{
-		expansion = LE_EXPANSION_WRATH_OF_THE_LICH_KING,
-		movieIDs = { 18 },
-		upAtlas = "StreamCinematic-LK-Large-Up",
-		downAtlas = "StreamCinematic-LK-Large-Down",
-	},
-
-	-- Movie sequence 2 = BC
-	{
-		expansion = LE_EXPANSION_BURNING_CRUSADE,
-		movieIDs = { 27 },
-		upAtlas = "StreamCinematic-BC-Large-Up",
-		downAtlas = "StreamCinematic-BC-Large-Down",
-	},
-
-	-- Movie sequence 1 = Wow Classic
-	{
-		expansion = LE_EXPANSION_CLASSIC, 
-		movieIDs = { 1, 2 },
-		upAtlas = "StreamCinematic-Classic-Large-Up",
-		downAtlas = "StreamCinematic-Classic-Large-Down",
-	},
-};
-
-local function GetMovieIDs(movieIndex)
-	local movieEntry = MOVIE_LIST[movieIndex];
+local function GetMovieIDs(movieEntry)
 	local movieIDs = movieEntry and movieEntry.movieIDs;
 	return movieIDs;
 end
 
-local function CheckMovieList(movieIndex, func)
-	local movieIDs = GetMovieIDs(movieIndex)
+local function CheckMovieList(movieEntry, func)
+	local movieIDs = GetMovieIDs(movieEntry)
 	if not movieIDs then
 		return false;
 	end
@@ -131,36 +19,31 @@ local function CheckMovieList(movieIndex, func)
 	return true;
 end
 
-local function IsMovieReadableByIndex(movieIndex)
-	return CheckMovieList(movieIndex, IsMovieReadable);
+local function IsMovieEntryReadable(movieEntry)
+	return CheckMovieList(movieEntry, IsMovieReadable);
 end
 
-local function IsMovieLocalByIndex(movieIndex)
-	return CheckMovieList(movieIndex, IsMovieLocal);
+local function IsMovieEntryLocal(movieEntry)
+	return CheckMovieList(movieEntry, IsMovieLocal);
 end
 
-local function IsMoviePlayableByIndex(movieIndex)
-	return CheckMovieList(movieIndex, IsMoviePlayable);
+local function IsMovieEntryPlayable(movieEntry)
+	return CheckMovieList(movieEntry, IsMoviePlayable);
 end
 
-do
-	local function FilterMovieList()
-		local filteredMovieList = {};
-		local maxExpansion = GetClientDisplayExpansionLevel();
-		for index, movieEntry in ipairs(MOVIE_LIST) do
-			if movieEntry.expansion <= maxExpansion then
-				if IsMovieReadableByIndex(index) then
-					table.insert(filteredMovieList, movieEntry);
-				end
-			end
-		end
-		MOVIE_LIST = filteredMovieList;
+local function RefreshMovieList()
+	local unfilteredMovieList = C_CinematicList.GetUICinematicList();
+
+	local filteredMovieList = {};
+	local maxExpansion = GetClientDisplayExpansionLevel();
+	for index, movieEntry in ipairs(unfilteredMovieList) do
+		table.insert(filteredMovieList, movieEntry);
 	end
-	FilterMovieList();
+	MOVIE_LIST = filteredMovieList;
 end
 
-local function GetMovieDownloadProgressByIndex(movieIndex)
-	local movieIDs = GetMovieIDs(movieIndex);
+local function GetMovieEntryDownloadProgress(movieEntry)
+	local movieIDs = GetMovieIDs(movieEntry);
 	if not movieIDs then
 		return;
 	end
@@ -191,7 +74,6 @@ function CinematicsMenuMixin:OnLoad()
 	self.ButtonList:SetGetNumResultsFunction(function()
 		return #MOVIE_LIST;
 	end);
-
 	local stride = 3;
 	local padding = 17;
 	local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRight, stride, padding, padding);
@@ -203,6 +85,9 @@ end
 
 function CinematicsMenuMixin:OnShow()
 	self:Raise();
+
+	RefreshMovieList();
+	self.ButtonList:ResetList();
 
 	GlueParent_AddModalFrame(self);
 end
@@ -270,14 +155,15 @@ end
 function CinematicsMenuButtonMixin:OnSelected()
 	-- Overrides TemplatedListElementMixin.
 
-	local movieIndex = self:GetListIndex();
+	local movieIndex = self:GetMovieIndex();
+	local movieEntry = MOVIE_LIST[movieIndex];
 	if self.isLocal or (self.inProgress and self.isPlayable) then
 		MovieFrame.version = movieIndex;
 		MovieFrame.showError = true;
 		GlueParent_OpenSecondaryScreen("movie", G_CinematicsMenuContextKey);
 	else
-		local inProgress = GetMovieDownloadProgressByIndex(movieIndex);
-		local movieIDs = GetMovieIDs(movieIndex);
+		local inProgress = GetMovieEntryDownloadProgress(movieEntry);
+		local movieIDs = GetMovieIDs(movieEntry);
 		if movieIDs then
 			for _, movieID in ipairs(movieIDs) do
 				if not IsMovieLocal(movieID) then
@@ -294,16 +180,23 @@ function CinematicsMenuButtonMixin:OnSelected()
 	end
 end
 
+function CinematicsMenuButtonMixin:GetMovieIndex()
+	-- We want to show newest cinematics first.
+	-- Note we don't want to just invert the list because that screws up the autoplay functionality
+	return #MOVIE_LIST - self:GetListIndex() + 1;
+end
+
 function CinematicsMenuButtonMixin:UpdateState()
-	local movieIndex = self:GetListIndex();
+	local movieIndex = self:GetMovieIndex();
 
 	local movieEntry = MOVIE_LIST[movieIndex];
 	local buttonText = movieEntry.title or _G["EXPANSION_NAME" .. movieEntry.expansion];
 	self:SetText(buttonText);
-	self:SetNormalAtlas(movieEntry.upAtlas);
-	self:SetPushedAtlas(movieEntry.downAtlas);
 
-	if IsMovieLocalByIndex(movieIndex) then
+	self:SetNormalAtlas(movieEntry.buttonUpAtlas);
+	self:SetPushedAtlas(movieEntry.buttonDownAtlas);
+
+	if IsMovieEntryLocal(movieEntry) then
 		self:GetNormalTexture():SetDesaturated(false);
 		self:GetPushedTexture():SetDesaturated(false);
 		self.PlayButton:Show();
@@ -314,8 +207,8 @@ function CinematicsMenuButtonMixin:UpdateState()
 		self:SetScript("OnUpdate", nil);
 		self.isLocal = true;
 	else
-		local inProgress, downloaded, total = GetMovieDownloadProgressByIndex(movieIndex);
-		local isPlayable = IsMoviePlayableByIndex(movieIndex);
+		local inProgress, downloaded, total = GetMovieEntryDownloadProgress(movieEntry);
+		local isPlayable = IsMovieEntryPlayable(movieEntry);
 
 		-- HACK - When you pause the download, sometimes the progress will appear to rewind temporarily (bug with the API?)
 		-- This ensures that the progress bar never goes backwards
@@ -377,4 +270,8 @@ end
 
 function CinematicsMenuSubtitlesCheckboxMixin:OnClick()
 	SetCVar("movieSubtitle", self:GetChecked());
+end
+
+do
+	RefreshMovieList();
 end

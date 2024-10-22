@@ -582,10 +582,8 @@ function PerksProgramPurchaseButtonMixin:UpdateState()
 	self:SetEnabled(enabled);
 
 	if enabled then
-		GlowEmitterFactory:SetHeight(95);
-		GlowEmitterFactory:SetOffset(23.5, -0.5);
-
-		GlowEmitterFactory:Show(self, GlowEmitterMixin.Anims.GreenGlow);
+		local offsetX, offsetY, width, height = 23.5, -0.5, nil, 95;
+		GlowEmitterFactory:Show(self, GlowEmitterMixin.Anims.GreenGlow, offsetX, offsetY, width, height);
 	else
 		GlowEmitterFactory:Hide(self);
 	end

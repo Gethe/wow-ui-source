@@ -605,8 +605,8 @@ function LFGListCategorySelection_AddButton(self, btnIndex, categoryID, filters)
 	end
 
 	--Try with the suffix and then without it
-	if ( not button.Icon:SetAtlas(atlasName..suffix) ) then
-		button.Icon:SetAtlas(atlasName);
+	if not CheckSetAtlas(button.Icon, atlasName..suffix) then
+		CheckSetAtlas(button.Icon, atlasName);
 	end
 
 	local selected = self.selectedCategory == categoryID and self.selectedFilters == filters;
@@ -4106,16 +4106,29 @@ function LFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
 		tooltip:AddLine(" ");
 	end
 
+	local memberInfoList = {};
+
 	--enumerates both class and role
 	if ( activityInfo.displayType == Enum.LFGListDisplayType.ClassEnumerate or activityInfo.displayType == Enum.LFGListDisplayType.RoleEnumerate ) then
+		for i=1, searchResultInfo.numMembers do
+			local role, class, classLocalized, specLocalized, isLeader = C_LFGList.GetSearchResultMemberInfo(resultID, i);
+
+			if role then
+				table.insert(memberInfoList, {role = role, class =  class, classLocalized = classLocalized, specLocalized = specLocalized, isLeader = isLeader});
+			end
+		end
+	end
+
+	-- If member info has been filled out for each member then display them individually. Otherwise just display member counts.
+	if #memberInfoList == searchResultInfo.numMembers then
 		local leaderIcon = CreateAtlasMarkup("groupfinder-icon-leader", 14, 9, 0, 0);
 		tooltip:AddLine(MEMBERS_COLON);
 		for i=1, searchResultInfo.numMembers do
-			local role, class, classLocalized, specLocalized, isLeader = C_LFGList.GetSearchResultMemberInfo(resultID, i);
-			local classColor = RAID_CLASS_COLORS[class] or NORMAL_FONT_COLOR;
-			local roleIcon = CreateAtlasMarkup(LFG_LIST_GROUP_DATA_ATLASES_BORDERLESS[role], 13, 13, 0, 0);
-			local leaderString = isLeader and " "..leaderIcon or "";
-			tooltip:AddLine(roleIcon.." "..string.format(LFG_LIST_TOOLTIP_CLASS_ROLE, classLocalized, specLocalized)..leaderString, classColor.r, classColor.g, classColor.b);
+			local memberInfo = memberInfoList[i];
+			local classColor = RAID_CLASS_COLORS[memberInfo.class] or NORMAL_FONT_COLOR;
+			local roleIcon = CreateAtlasMarkup(LFG_LIST_GROUP_DATA_ATLASES_BORDERLESS[memberInfo.role], 13, 13, 0, 0);
+			local leaderString = memberInfo.isLeader and " "..leaderIcon or "";
+			tooltip:AddLine(roleIcon.." "..string.format(LFG_LIST_TOOLTIP_CLASS_ROLE, memberInfo.classLocalized, memberInfo.specLocalized)..leaderString, classColor.r, classColor.g, classColor.b);
 		end
 	else
 		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_MEMBERS, searchResultInfo.numMembers, memberCounts.TANK, memberCounts.HEALER, memberCounts.DAMAGER));

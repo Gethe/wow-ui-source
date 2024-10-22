@@ -423,6 +423,7 @@ end
 
 local function ResetWidget(pool, widgetFrame)
 	widgetFrame:OnReset();
+	widgetFrame:SetParent(nil);
 end
 
 function UIWidgetContainerMixin:GetWidgetFromPools(templateInfo)
@@ -482,6 +483,12 @@ function UIWidgetContainerMixin:ProcessWidget(widgetID, widgetType)
 
 	local widgetFrame = self.widgetFrames[widgetID];
 	local widgetAlreadyExisted = (widgetFrame ~= nil);
+
+	if widgetAlreadyExisted and widgetFrame.widgetType ~= widgetType then
+		-- This widget existed already but the type has changed, so release the old widget frame and treat it as a brand new widget
+		self:RemoveWidget(widgetID);
+		widgetAlreadyExisted = false;
+	end
 
 	local oldOrderIndex;
 	local oldLayoutDirection;

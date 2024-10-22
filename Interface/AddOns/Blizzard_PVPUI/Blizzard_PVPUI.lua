@@ -1637,7 +1637,7 @@ function PVPStandardRewardMixin:RefreshRoleShortageBonus()
 
 	local playerCanQueueForBonus = false;	
 	local playerClassID = PlayerUtil.GetClassID();
-	for specIndex = 1, GetNumSpecializationsForClassID(playerClassID) do
+	for specIndex = 1, C_SpecializationInfo.GetNumSpecializationsForClassID(playerClassID) do
 		local specID, specName, specDescription, specIcon, role, isRecommended, isAllowed = GetSpecializationInfoForClassID(playerClassID, specIndex);
 		if tContains(self.RoleShortageBonus.rewardInfo.validRoles, role) then
 			playerCanQueueForBonus = true;
@@ -2342,7 +2342,7 @@ end
 
 function PVPRewardRoleShortageBonusMixin:OnEnter()
 	if self.rewardInfo then
-		self.rewardInfo.rewardSpell:ContinueOnSpellLoad(GenerateClosure(self.RefreshTooltip, self));
+		self.spellLoadCancel = self.rewardInfo.rewardSpell:ContinueWithCancelOnSpellLoad(GenerateClosure(self.RefreshTooltip, self));
 	end
 end
 
@@ -2358,4 +2358,8 @@ end
 
 function PVPRewardRoleShortageBonusMixin:OnLeave()
 	EmbeddedItemTooltip:Hide();
+	if self.spellLoadCancel then
+		self.spellLoadCancel();
+		self.spellLoadCancel = nil;
+	end
 end

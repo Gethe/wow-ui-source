@@ -109,13 +109,13 @@ function BankFrameItemButton_Update (button)
 	else
 		local questInfo = C_Container.GetContainerItemQuestInfo(container, buttonID);
 		local isQuestItem = questInfo.isQuestItem;
-		local questId = questInfo.questID;
+		local questID = questInfo.questID;
 		local isActive = questInfo.isActive;
 		local questTexture = button["IconQuestTexture"];
-		if ( questId and not isActive ) then
+		if ( questID and not isActive ) then
 			questTexture:SetTexture(TEXTURE_ITEM_QUEST_BANG);
 			questTexture:Show();
-		elseif ( questId or isQuestItem ) then
+		elseif ( questID or isQuestItem ) then
 			questTexture:SetTexture(TEXTURE_ITEM_QUEST_BORDER);
 			questTexture:Show();
 		else
@@ -542,8 +542,11 @@ function BankFrame_AutoSortButtonOnClick()
 	elseif (self.activeTabIndex == 2) then
 		C_Container.SortReagentBankBags();
 	elseif (self.activeTabIndex == 3) then
-		local textArg1, textArg2 = nil, nil;
-		StaticPopup_Show("BANK_CONFIRM_CLEANUP", textArg1, textArg2, { bankType = self:GetActiveBankType() });
+		if GetCVarBool("bankConfirmTabCleanUp") then
+			StaticPopupSpecial_Show(BankCleanUpConfirmationPopup);
+		else
+			C_Container.SortAccountBankBags();
+		end
 	end
 end
 
@@ -745,24 +748,55 @@ StaticPopupDialogs["BANK_MONEY_DEPOSIT"] = {
 	end,
 };
 
-StaticPopupDialogs["BANK_CONFIRM_CLEANUP"] = {
-	text = ACCOUNT_BANK_CONFIRM_CLEANUP_PROMPT,
-	wide = true,
-	wideText = true,
-
-	button1 = ACCEPT,
+StaticPopupDialogs["ACCOUNT_BANK_DEPOSIT_NO_REFUND_CONFIRM"] = {
+	text = END_REFUND,
+	button1 = OKAY,
 	button2 = CANCEL,
+	OnCancel = function(self)
+		ClearCursor();
+	end,
+	OnAccept = function(self, data)
+		if (BankFrame:GetActiveBankType() ~= Enum.BankType.Account) or not C_Bank.CanUseBank(Enum.BankType.Account) or not data.itemToDeposit then
+			return;
+		end
 
-	timeout = 0,
-	hideOnEscape = 1,
+		local depositAtTargetLocation = data.targetItemLocation ~= nil;
+		if depositAtTargetLocation then
+			local cursorItemLocation = C_Cursor.GetCursorItem();
+			local cursorItemChanged = not cursorItemLocation or (C_Item.GetItemGUID(cursorItemLocation) ~= data.itemToDeposit:GetItemGUID());
+			if cursorItemChanged then
+				return;
+			end
 
-	OnAccept = function(self)
-		if self.data.bankType == Enum.BankType.Account then
-			C_Container.SortAccountBankBags();
+			local targetBag, targetSlot = data.targetItemLocation:GetBagAndSlot();
+			if targetBag and targetSlot then
+				C_Container.PickupContainerItem(targetBag, targetSlot);
+			end
+		else
+			-- Auto deposit the item
+			local itemLocation = data.itemToDeposit:GetItemLocation();
+			local bag, slot = itemLocation:GetBagAndSlot();
+			if bag and slot then
+				local unitToken, isReagentBankOpen = nil, false;
+				C_Container.UseContainerItem(bag, slot, unitToken, Enum.BankType.Account, isReagentBankOpen);
+			end
 		end
 	end,
-	OnHide = function(self)
+	timeout = 0,
+	exclusive = 1,
+	hideOnEscape = 1,
+};
+
+StaticPopupDialogs["ACCOUNT_BANK_DEPOSIT_ALL_NO_REFUND_CONFIRM"] = {
+	text = ACCOUNT_BANK_DEPOSIT_ALL_NO_REFUND_CONFIRM,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		C_Bank.AutoDepositItemsIntoBank(Enum.BankType.Account);
 	end,
+	timeout = 0,
+	exclusive = 1,
+	hideOnEscape = 1,
 };
 
 function BankFrameMixin:GetActiveBankType()
@@ -1049,14 +1083,14 @@ function BankPanelItemButtonMixin:Refresh()
 
 	local questItemInfo = self.questItemInfo;
 	local isQuestItem = questItemInfo.isQuestItem;
-	local questId = questItemInfo.questID;
+	local questID = questItemInfo.questID;
 	local isActive = questItemInfo.isActive;
-	if questId and not isActive then
+	if questID and not isActive then
 		self.IconQuestTexture:SetTexture(TEXTURE_ITEM_QUEST_BANG);
-	elseif questId or isQuestItem then
+	elseif questID or isQuestItem then
 		self.IconQuestTexture:SetTexture(TEXTURE_ITEM_QUEST_BORDER);
 	end
-	self.IconQuestTexture:SetShown(questId or isQuestItem);
+	self.IconQuestTexture:SetShown(questID or isQuestItem);
 
 	local itemInfo = self.itemInfo;
 	if itemInfo then
@@ -1131,8 +1165,9 @@ function BankPanelMixin:OnLoad()
 
 	self.bankTabPool = CreateFramePool("BUTTON", self, "BankPanelTabTemplate");
 
-	local function BankItemButtonResetter(framePool, frame)
-		frame.isInitialized = false;
+	local function BankItemButtonResetter(itemButtonPool, itemButton)
+		itemButton.isInitialized = false;
+		Pool_HideAndClearAnchors(itemButtonPool, itemButton);
 	end
 	self.itemButtonPool = CreateFramePool("ItemButton", self, "AccountBankItemButtonTemplate", BankItemButtonResetter);
 
@@ -1185,11 +1220,12 @@ function BankPanelMixin:OnUpdate()
 end
 
 function BankPanelMixin:CloseAllBankPopups()
-	StaticPopup_Hide("CONFIRM_BUY_BANK_TAB");
-	StaticPopup_Hide("BANK_MONEY_WITHDRAW");
-	StaticPopup_Hide("BANK_MONEY_DEPOSIT");
-	StaticPopup_Hide("BANK_CONFIRM_CLEANUP");
+	StaticPopup_Hide("ACCOUNT_BANK_DEPOSIT_ALL_NO_REFUND_CONFIRM");
 	StaticPopup_Hide("ACCOUNT_BANK_DEPOSIT_NO_REFUND_CONFIRM");
+	StaticPopup_Hide("BANK_MONEY_DEPOSIT");
+	StaticPopup_Hide("BANK_MONEY_WITHDRAW");
+	StaticPopup_Hide("CONFIRM_BUY_BANK_TAB");
+	StaticPopupSpecial_Hide(BankCleanUpConfirmationPopup);
 end
 
 function BankPanelMixin:HideAllPrompts()
@@ -1577,9 +1613,30 @@ end
 
 BankPanelItemDepositButtonMixin = CreateFromMixins(BankPanelSystemMixin);
 
+function BankPanelItemDepositButtonMixin:GetItemDepositConfirmationPopup()
+	if self:GetActiveBankType() == Enum.BankType.Account then
+		local depositContainsRefundableItems = ItemUtil.IteratePlayerInventory(function(itemLocation)
+			return C_Bank.IsItemAllowedInBankType(Enum.BankType.Account, itemLocation) and C_Item.CanBeRefunded(itemLocation);
+		end);
+		if depositContainsRefundableItems then
+			return "ACCOUNT_BANK_DEPOSIT_ALL_NO_REFUND_CONFIRM";
+		end
+	end
+end
+
 function BankPanelItemDepositButtonMixin:OnClick()
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
-	C_Bank.AutoDepositItemsIntoBank(self:GetActiveBankType());
+	self:AutoDepositItems();
+end
+
+function BankPanelItemDepositButtonMixin:AutoDepositItems()
+	local itemDepositConfirmationPopup = self:GetItemDepositConfirmationPopup();
+	if itemDepositConfirmationPopup then
+		local textArg1, textArg2 = nil, nil;
+		StaticPopup_Show(itemDepositConfirmationPopup, textArg1, textArg2, { bankType = self:GetActiveBankType() });
+	else
+		C_Bank.AutoDepositItemsIntoBank(self:GetActiveBankType());
+	end
 end
 
 BankPanelTabCostMoneyDisplayMixin = {};
@@ -1637,6 +1694,7 @@ function BankPanelWithdrawMoneyButtonMixin:OnClick()
 		return;
 	end
 
+	local textArg1, textArg2 = nil, nil;
 	StaticPopup_Show("BANK_MONEY_WITHDRAW", textArg1, textArg2, { bankType = self:GetActiveBankType() });
 end
 
@@ -1661,6 +1719,7 @@ function BankPanelDepositMoneyButtonMixin:OnClick()
 		return;
 	end
 
+	local textArg1, textArg2 = nil, nil;
 	StaticPopup_Show("BANK_MONEY_DEPOSIT", textArg1, textArg2, { bankType = self:GetActiveBankType() });
 end
 
@@ -2012,3 +2071,37 @@ function BankPanelIncludeReagentsCheckboxMixin:OnClick()
 	SetCVar("bankAutoDepositReagents", self:GetChecked());
 end
 
+BankCleanUpConfirmationPopupMixin = CreateFromMixins(BankPanelSystemMixin);
+
+function BankCleanUpConfirmationPopupMixin:OnShow()
+	self:Layout();
+end
+
+function BankCleanUpConfirmationPopupMixin:OnLoad()
+	self.AcceptButton:SetScript("OnClick", function()
+		local shouldShowConfirmationPopup = not self.HidePopupCheckbox.Checkbox:GetChecked();
+		SetCVar("bankConfirmTabCleanUp", shouldShowConfirmationPopup);
+
+		self:CleanUpActiveBank();
+		StaticPopupSpecial_Hide(self);
+	end);
+
+	self.CancelButton:SetScript("OnClick", function()
+		StaticPopupSpecial_Hide(self);
+	end);
+
+	self.HidePopupCheckbox.Checkbox:SetScript("OnShow", function(self) 
+		BankPanelCheckboxMixin.OnShow(self);
+
+		-- The player may click the checkbox but then re-enable the popup in the same play session, so let's just refresh it in the OnShow
+		local shouldShowConfirmationPopup = GetCVarBool("bankConfirmTabCleanUp");
+		self:SetChecked(not shouldShowConfirmationPopup);
+	end);
+end
+
+function BankCleanUpConfirmationPopupMixin:CleanUpActiveBank()
+	local bankType = self:GetActiveBankType();
+	if bankType == Enum.BankType.Account then
+		C_Container.SortAccountBankBags();
+	end
+end

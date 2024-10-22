@@ -159,7 +159,7 @@ function GetPlayerActorLabelTag()
 	local playerGender;
 	local playerRaceNameActorTag = nil;
 	local hasAlternateForm, inAlternateForm = false, false;
-	if IsOnGlueScreen() then
+	if C_Glue.IsOnGlueScreen() then
 		local characterGuid = GetCharacterGUID(GetCharacterSelection());
 		if characterGuid then
 			local basicCharacterInfo = GetBasicCharacterInfo(characterGuid);

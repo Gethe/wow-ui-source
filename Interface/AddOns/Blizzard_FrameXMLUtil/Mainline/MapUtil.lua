@@ -34,11 +34,11 @@ function MapUtil.ShouldShowTask(mapID, info)
 	if (info.isQuestStart and info.inProgress) then
 		return false
 	end
-	if not HaveQuestData(info.questId) then
+	if not HaveQuestData(info.questID) then
 		return false;
 	end
 	-- callings are allowed on other maps if they are zone maps 
-	if C_QuestLog.IsQuestCalling(info.questId) and MapUtil.IsMapTypeZone(mapID) then
+	if C_QuestLog.IsQuestCalling(info.questID) and MapUtil.IsMapTypeZone(mapID) then
 		return true;
 	end
 	return mapID == info.mapID;

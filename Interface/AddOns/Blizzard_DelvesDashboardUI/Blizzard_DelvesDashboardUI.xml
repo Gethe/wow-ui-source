@@ -151,13 +151,13 @@
 						<Texture parentKey="Icon">
                             <Size x="50" y="50"/>
 							<Anchors>
-								<Anchor point="CENTER" x="0" y="0"/>
+								<Anchor point="CENTER" x="0" y="3"/>
 							</Anchors>
 						</Texture>
                         <MaskTexture parentKey="CircleMask" atlas="CircleMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
-							<Size x="48" y="44"/>
+							<Size x="44" y="44"/>
 							<Anchors>
-								<Anchor point="CENTER" x="-1" y="0"/>
+								<Anchor point="CENTER" x="0" y="3"/>
 							</Anchors>
 							<MaskedTextures>
 								<MaskedTexture childKey="Icon"/>
@@ -165,10 +165,10 @@
 						</MaskTexture>
 					</Layer>
 					<Layer level="OVERLAY">
-						<Texture parentKey="IconBorder" atlas="delves-dashboard-bar-reward-border-disabled" useAtlasSize="false">
+						<Texture parentKey="IconBorder" atlas="delves-dashboard-bar-reward-border" useAtlasSize="false">
 							<Size x="56" y="56"/>
 							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER" y="3"/>
+								<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
 							</Anchors>
 						</Texture>
 						<Texture parentKey="Sparkles" alpha="0" alphaMode="ADD" atlas="activities-complete-diamond-sparkles">

@@ -435,15 +435,7 @@ function SetItemRef(link, text, button, chatFrame)
 	elseif (strsub(link, 1, 11) == "talentbuild") then
 		local fixedLink = GetFixedLink(text);
 		if not HandleModifiedItemClick(fixedLink) then
-			local specID, level, inspectString = string.split(":", linkData);
-			level = tonumber(level);
-
-			PlayerSpellsFrame_LoadUI();
-
-			PlayerSpellsFrame:SetInspectString(inspectString, level);
-			if not PlayerSpellsFrame:IsShown() then
-				ShowUIPanel(PlayerSpellsFrame);
-			end
+			PlayerSpellsUtil.InspectLoadout(linkData);
 		end
 		return;
 	elseif ( strsub(link, 1, 13) == "perksactivity" ) then

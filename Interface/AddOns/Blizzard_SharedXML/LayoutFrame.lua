@@ -94,12 +94,19 @@ function BaseLayoutMixin:MarkDirty()
 	end
 end
 
+function BaseLayoutMixin:ShouldClearOnUpdateAfterClean()
+	return self:IsDirty() and (self.OnUpdate == BaseLayoutMixin.OnUpdate);
+end
+
 function BaseLayoutMixin:MarkClean()
+	local canClearScript = self:ShouldClearOnUpdateAfterClean();
+
 	self.dirty = false;
 	self:OnCleaned();
 
-	-- Clear OnUpdate once cleaned, unless it has been overridden in which case assume it needs to be called continuously.
-	if self.OnUpdate == BaseLayoutMixin.OnUpdate then
+	-- The OnUpdate script is only cleared if it was assigned the original update function in MarkDirty.
+	-- If this script is overridden, its the override's responsibility to call the original OnUpdate function.
+	if canClearScript then
 		self:SetScript("OnUpdate", nil);
 	end
 end

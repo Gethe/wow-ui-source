@@ -5,9 +5,9 @@ local CurrencyConstants =
 		{
 			Name = "AccountCurrencyTransferResult",
 			Type = "Enumeration",
-			NumValues = 9,
+			NumValues = 10,
 			MinValue = 0,
-			MaxValue = 8,
+			MaxValue = 9,
 			Fields =
 			{
 				{ Name = "Success", Type = "AccountCurrencyTransferResult", EnumValue = 0 },
@@ -19,6 +19,20 @@ local CurrencyConstants =
 				{ Name = "NoValidSourceCharacter", Type = "AccountCurrencyTransferResult", EnumValue = 6 },
 				{ Name = "ServerError", Type = "AccountCurrencyTransferResult", EnumValue = 7 },
 				{ Name = "CannotUseCurrency", Type = "AccountCurrencyTransferResult", EnumValue = 8 },
+				{ Name = "TransactionInProgress", Type = "AccountCurrencyTransferResult", EnumValue = 9 },
+			},
+		},
+		{
+			Name = "CurrencyFilterType",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "None", Type = "CurrencyFilterType", EnumValue = 0 },
+				{ Name = "DiscoveredOnly", Type = "CurrencyFilterType", EnumValue = 1 },
+				{ Name = "DiscoveredAndAllAccountTransferable", Type = "CurrencyFilterType", EnumValue = 2 },
 			},
 		},
 		{
@@ -60,7 +74,7 @@ local CurrencyConstants =
 				{ Name = "CurrencyIsAllianceOnly", Type = "CurrencyFlags", EnumValue = 268435456 },
 				{ Name = "CurrencyIsHordeOnly", Type = "CurrencyFlags", EnumValue = 536870912 },
 				{ Name = "CurrencyLimitWarmodeBonusOncePerTooltip", Type = "CurrencyFlags", EnumValue = 1073741824 },
-				{ Name = "DeprecatedCurrencyFlag", Type = "CurrencyFlags", EnumValue = 2147483648 },
+				{ Name = "CurrencyUsesLedgerBalance", Type = "CurrencyFlags", EnumValue = 2147483648 },
 			},
 		},
 		{

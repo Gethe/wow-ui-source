@@ -67,6 +67,22 @@ function ScrollControllerMixin:OnMouseWheel(value)
 	end
 end
 
+-- Constrains the scroll percentage to intervals, which can be used to prevent elements
+-- from being partially clipped when dragging the scrollbar thumb. See most uses of
+-- ScrollingMessageFrame for an example.
+function ScrollControllerMixin:EnableSnapToInterval()
+	self.snapToInterval = true;
+end
+
+function ScrollControllerMixin:GetIntervalRange()
+	local visibleExtentPercentage = self:GetVisibleExtentPercentage();
+	if visibleExtentPercentage > 0 then
+		local intervals = math.floor((1 / visibleExtentPercentage) + MathUtil.Epsilon);
+		return intervals - 1;
+	end
+	return 0;
+end
+
 function ScrollControllerMixin:ScrollIncrease(panFactor)
 	local panPercentage = self:GetWheelPanPercentage() * (panFactor or 1.0);
 	self:ScrollInDirection(panPercentage, ScrollControllerMixin.Directions.Increase);
@@ -78,10 +94,19 @@ function ScrollControllerMixin:ScrollDecrease(panFactor)
 end
 
 function ScrollControllerMixin:ScrollInDirection(scrollPercentage, direction)
-	if self:IsScrollAllowed() then
-		local delta = scrollPercentage * direction;
-		self:SetScrollPercentage(Saturate(self:GetScrollPercentage() + delta));
+	if not self:IsScrollAllowed() then
+		return;
 	end
+
+	if self.snapToInterval then
+		local range = self:GetIntervalRange();
+		if range > 0 then
+			scrollPercentage = math.max(1 / range, scrollPercentage);
+		end
+	end
+
+	local delta = scrollPercentage * direction;
+	self:SetScrollPercentage(Saturate(self:GetScrollPercentage() + delta));
 end
 
 function ScrollControllerMixin:GetPanExtentPercentage()
@@ -109,6 +134,14 @@ function ScrollControllerMixin:IsAtEnd()
 end
 
 function ScrollControllerMixin:SetScrollPercentage(scrollPercentage)
+	if self.snapToInterval then
+		local range = self:GetIntervalRange();
+		if range > 0 then
+			local percentage = 1 / range;
+			scrollPercentage = Round(scrollPercentage / percentage) / range;
+		end
+	end
+
 	self.scrollPercentage = Saturate(scrollPercentage);
 end
 

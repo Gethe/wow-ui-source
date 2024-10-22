@@ -597,6 +597,9 @@ function EncounterJournal_LoadUI()
 end
 
 function CollectionsJournal_LoadUI()
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.CollectionsPanelDisabled) then
+		return;
+	end
 	UIParentLoadAddOn("Blizzard_Collections");
 end
 

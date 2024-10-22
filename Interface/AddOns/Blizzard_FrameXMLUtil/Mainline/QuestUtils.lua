@@ -1059,7 +1059,7 @@ end
 
 function QuestUtils_GetQuestTimeColor(secondsRemaining)
 	local isWithinCriticalTime = secondsRemaining <= MinutesToSeconds(WORLD_QUESTS_TIME_CRITICAL_MINUTES);
-	return isWithinCriticalTime and RED_FONT_COLOR or NORMAL_FONT_COLOR;
+	return isWithinCriticalTime and RED_FONT_COLOR or HIGHLIGHT_FONT_COLOR;
 end
 
 function QuestUtils_ShouldDisplayExpirationWarning(questID)

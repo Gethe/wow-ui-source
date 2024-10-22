@@ -546,7 +546,7 @@ UnitPopupRemoveBnetFriendButtonMixin = CreateFromMixins(UnitPopupRemoveFriendBut
 function UnitPopupRemoveBnetFriendButtonMixin:OnClick(contextData)
 	local accountInfo = contextData.accountInfo;
 	local promptText;
-	if not IsOnGlueScreen() then 
+	if not C_Glue.IsOnGlueScreen() then 
 	if accountInfo then
 		if accountInfo.isBattleTagFriend then
 			promptText = string.format(BATTLETAG_REMOVE_FRIEND_CONFIRMATION, accountInfo.accountName);
@@ -2753,7 +2753,6 @@ end
 function UnitPopupSelfHighlightSelectButtonMixin:GetEntries()
 	return {
 		UnitPopupSelfHighlightCircleButtonMixin,
-		UnitPopupSelfHighlightOutlineButtonMixin,
 		UnitPopupSelfHighlightIconButtonMixin,
 	};
 end
@@ -2762,7 +2761,6 @@ UnitPopupSelfHighlightCommonMixin = CreateFromMixins(UnitPopupCheckboxButtonMixi
 
 function UnitPopupSelfHighlightCommonMixin:SetFindSelfAnywhere()
 	local shouldFindSelfAnywhere = GetCVarBool("findYourselfModeCircle") or
-		GetCVarBool("findYourselfModeOutline") or
 		GetCVarBool("findYourselfModeIcon");
 			
 	SetCVar("findYourselfAnywhere", shouldFindSelfAnywhere);
@@ -2793,16 +2791,6 @@ end
 
 function UnitPopupSelfHighlightCircleButtonMixin:GetCVarName()
 	return "findYourselfModeCircle";
-end
-
-UnitPopupSelfHighlightOutlineButtonMixin = CreateFromMixins(UnitPopupSelfHighlightCommonMixin);
-
-function UnitPopupSelfHighlightOutlineButtonMixin:GetText(contextData)
-	return SELF_HIGHLIGHT_OUTLINE;
-end
-
-function UnitPopupSelfHighlightOutlineButtonMixin:GetCVarName()
-	return "findYourselfModeOutline";
 end
 
 UnitPopupSelfHighlightIconButtonMixin = CreateFromMixins(UnitPopupSelfHighlightCommonMixin);

@@ -1354,13 +1354,6 @@
 			<KeyValue key="animInStartDelay" value="0" type="number"/>
 		</KeyValues>
 		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="FiligreeGlow" atlas="UI-World-Quest-filigree-glow" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.$parent.GLine" relativePoint="CENTER" y="-6"/>
-					</Anchors>
-				</Texture>
-			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="TopIcon" atlas="UI-Flightpoint-Discovery-Toast-Frame" useAtlasSize="true">
 					<Anchors>
@@ -1382,7 +1375,14 @@
 				</FontString>
 				<Texture parentKey="Filigree" atlas="UI-World-Quest-filigree" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.$parent.GLine" relativePoint="CENTER" y="-6"/>
+						<Anchor point="CENTER" relativeKey="$parent.$parent.GLine" relativePoint="CENTER" y="-3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="FiligreeGlow" atlas="UI-World-Quest-filigree-glow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Filigree"/>
 					</Anchors>
 				</Texture>
 			</Layer>

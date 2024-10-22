@@ -1,4 +1,4 @@
-local AuctionHouseConstants_Mainline =
+local AuctionHouseConstants =
 {
 	Tables =
 	{
@@ -13,4 +13,4 @@ local AuctionHouseConstants_Mainline =
 	},
 };
 
-APIDocumentation:AddDocumentationTable(AuctionHouseConstants_Mainline);
+APIDocumentation:AddDocumentationTable(AuctionHouseConstants);

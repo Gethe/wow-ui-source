@@ -87,7 +87,10 @@ local function SetupPieceVisuals(piece, setupInfo, pieceLayout, textureKit, user
 	local info = C_Texture.GetAtlasInfo(atlasName);
 	piece:SetHorizTile(info and info.tilesHorizontally or false);
 	piece:SetVertTile(info and info.tilesVertically or false);
-	piece:SetAtlas(atlasName, true);
+
+	if info then
+		piece:SetAtlas(atlasName, true);
+	end
 end
 
 local function SetupCorner(container, piece, setupInfo, pieceLayout)

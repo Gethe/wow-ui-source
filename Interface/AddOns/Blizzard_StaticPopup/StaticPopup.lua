@@ -82,12 +82,9 @@ function StaticPopup_Resize(dialog, which)
 	if ( info.verticalButtonLayout ) then
 		width = width + 30;
 	else
-		if (info.showAlert or info.showAlertGear or info.customAlertIcon or info.closeButton or info.wide) then
-			width = 420;
-		elseif ( info.editBoxWidth and info.editBoxWidth > 260 ) then
-			width = width + (info.editBoxWidth - 260);
-		elseif ( which == "GUILD_IMPEACH" ) then
-			width = 375;
+		local newWidth = StaticPopup_ResizeWidth(dialog, info);
+		if newWidth then
+			width = newWidth;
 		end
 	end
 
@@ -121,54 +118,59 @@ function StaticPopup_Resize(dialog, which)
 		dialog.SubText:SetWidth(290);
 	end
 
-	-- Slightly reducing width to prevent the text from feeling cramped
-	if ( info.normalSizedSubText and not info.wideText ) then
-		local currentWidth = dialog.SubText:GetWidth();
-		dialog.SubText:SetWidth(currentWidth - 20);
-	end
-
-	local height = 32 + text:GetHeight() + 2;
-	if ( info.extraButton ) then
-		height = height + 40 + extraButton:GetHeight();
-	end
-	if ( not info.nobuttons ) then
-		height = height + 6 + button1:GetHeight();
-	end
-	if ( info.hasEditBox ) then
-		height = height + 8 + editBox:GetHeight();
-	elseif ( info.hasMoneyFrame ) then
-		height = height + 16;
-	elseif ( info.hasMoneyInputFrame ) then
-		height = height + 22;
-	end
-	if ( info.hasDropdown ) then
-		height = height + 8 + dialog.Dropdown:GetHeight();
-	end
-	if ( dialog.insertedFrame ) then
-		height = height + dialog.insertedFrame:GetHeight();
-	end
-	if ( info.hasItemFrame ) then
-		if ( info.compactItemFrame ) then
-			height = height + 44;
-		else
-			height = height + 64;
+	if (info.height) then
+		dialog:SetHeight(info.height);
+		dialog.maxHeightSoFar = info.height;
+	else
+		-- Slightly reducing width to prevent the text from feeling cramped
+		if ( info.normalSizedSubText and not info.wideText ) then
+			local currentWidth = dialog.SubText:GetWidth();
+			dialog.SubText:SetWidth(currentWidth - 20);
 		end
-	end
-	if ( dialog.SubText:IsShown() ) then
-		height = height + dialog.SubText:GetHeight() + 8;
-		-- Adding a bit more vertical space to prevent the text from feeling cramped
-		if ( info.normalSizedSubText and info.compactItemFrame) then
-			height = height + 18;
+
+		local height = 32 + text:GetHeight() + 2;
+		if ( info.extraButton ) then
+			height = height + 40 + extraButton:GetHeight();
 		end
-	end
+		if ( not info.nobuttons ) then
+			height = height + 6 + button1:GetHeight();
+		end
+		if ( info.hasEditBox ) then
+			height = height + 8 + editBox:GetHeight();
+		elseif ( info.hasMoneyFrame ) then
+			height = height + 16;
+		elseif ( info.hasMoneyInputFrame ) then
+			height = height + 22;
+		end
+		if ( info.hasDropdown ) then
+			height = height + 8 + dialog.Dropdown:GetHeight();
+		end
+		if ( dialog.insertedFrame ) then
+			height = height + dialog.insertedFrame:GetHeight();
+		end
+		if ( info.hasItemFrame ) then
+			if ( info.compactItemFrame ) then
+				height = height + 44;
+			else
+				height = height + 64;
+			end
+		end
+		if ( dialog.SubText:IsShown() ) then
+			height = height + dialog.SubText:GetHeight() + 8;
+			-- Adding a bit more vertical space to prevent the text from feeling cramped
+			if ( info.normalSizedSubText and info.compactItemFrame) then
+				height = height + 18;
+			end
+		end
 
-	if ( info.verticalButtonLayout ) then
-		height = height + 16 + (26 * (dialog.numButtons - 1));
-	end
+		if ( info.verticalButtonLayout ) then
+			height = height + 16 + (26 * (dialog.numButtons - 1));
+		end
 
-	if ( height > maxHeightSoFar ) then
-		dialog:SetHeight(height);
-		dialog.maxHeightSoFar = height;
+		if ( height > maxHeightSoFar ) then
+			dialog:SetHeight(height);
+			dialog.maxHeightSoFar = height;
+		end
 	end
 end
 
@@ -384,6 +386,9 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		 (which == "AREA_SPIRIT_HEAL") or
 		 (which == "CONFIRM_REMOVE_COMMUNITY_MEMBER") or
 		 (which == "CONFIRM_DESTROY_COMMUNITY_STREAM") or
+		 (which == "ON_BATTLEFIELD_AUTO_QUEUE") or
+		 (which == "ON_BATTLEFIELD_AUTO_QUEUE_EJECT") or
+		 (which == "ON_WORLD_PVP_QUEUE") or
 		 (which == "CONFIRM_RUNEFORGE_LEGENDARY_CRAFT") or
 		 (which == "ANIMA_DIVERSION_CONFIRM_CHANNEL")) then
 		text:SetText(" ");	-- The text will be filled in later.
@@ -416,13 +421,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 	-- Show or hide the close button
 	if ( info.closeButton ) then
 		local closeButton = dialog.CloseButton;
-		if ( info.closeButtonIsHide ) then
-			closeButton:SetNormalAtlas("RedButton-Exit");
-			closeButton:SetPushedAtlas("RedButton-exit-pressed");
-		else
-			closeButton:SetNormalAtlas("RedButton-MiniCondense");
-			closeButton:SetPushedAtlas("RedButton-MiniCondense-pressed");
-		end
+		StaticPopup_SetCloseButtonTexture(closeButton, info);
 		closeButton:Show();
 	else
 		dialog.CloseButton:Hide();
@@ -568,8 +567,8 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 
 		if not (info["button"..index] and ( not info["DisplayButton"..index] or info["DisplayButton"..index](dialog))) then
 			table.remove(buttons, index);
+			end
 		end
-	end
 
 	dialog.numButtons = #buttons;
 
@@ -768,10 +767,18 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 			local text = _G[dialog:GetName().."Text"];
 			timeleft = ceil(timeleft);
 			if ( (which == "INSTANCE_BOOT") or (which == "GARRISON_BOOT") ) then
-				if ( timeleft < 60 ) then
-					text:SetFormattedText(StaticPopupDialogs[which].text, timeleft, SECONDS);
-				else
-					text:SetFormattedText(StaticPopupDialogs[which].text, ceil(timeleft / 60), MINUTES);
+				if( GetClassicExpansionLevel() < LE_EXPANSION_WRATH_OF_THE_LICH_KING ) then
+					if ( timeleft < 60 ) then
+						text:SetFormattedText(StaticPopupDialogs[which].text, GetBindLocation(), timeleft, SECONDS);
+					else
+						text:SetFormattedText(StaticPopupDialogs[which].text, GetBindLocation(), ceil(timeleft / 60), MINUTES);
+					end
+				else -- In Wrath+ player is booted to graveyard rather than bind location, so one less format param
+					if ( timeleft < 60 ) then
+						text:SetFormattedText(StaticPopupDialogs[which].text, timeleft, SECONDS);
+					else
+						text:SetFormattedText(StaticPopupDialogs[which].text, ceil(timeleft / 60), MINUTES);
+					end
 				end
 			elseif ( which == "CONFIRM_SUMMON" or which == "CONFIRM_SUMMON_SCENARIO" or which == "CONFIRM_SUMMON_STARTING_AREA" ) then
 				if ( timeleft < 60 ) then
@@ -1103,6 +1110,7 @@ end
 
 function StaticPopup_SetUpAnchor(dialog, idx)
 	dialog:SetParent(GetFullscreenFrame());
+	dialog:ClearAllPoints();
 	dialog:SetFrameStrata("DIALOG");
 	local lastFrame = StaticPopup_DisplayedFrames[idx - 1];
 	if ( lastFrame ) then

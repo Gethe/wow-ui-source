@@ -25,7 +25,7 @@
 			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</Frame>
-
+	
 	<Button name="MonthlyActivitiesButtonTemplate" mixin="MonthlyActivitiesButtonMixin" hidden="true" virtual="true">
 		<Size x="521" y="78"/>
 		<Layers>
@@ -178,7 +178,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<ItemButton parentKey="RewardItem" mixin="MonthlyActivitiesRewardButtonMixin" hidden="true">
+			<ItemButton parentKey="RewardItem" mixin="MonthlyActivitiesRewardButtonMixin" frameStrata="HIGH" hidden="true">
 				<Size x="64" y="64"/>
 				<Anchors>
 					<Anchor point="CENTER" x="12" y="16"/>
@@ -333,8 +333,7 @@
 				</Scripts>
 			</Button>
 			<!-- Use frameBuffer to make fade out look clean with reward item layers -->
-			<StatusBar parentKey="ThresholdBar" frameBuffer="true" frameLevel="510">
-				<BarTexture parentKey="BarFill" atlas="activities-bar-fill"/>
+			<Frame parentKey="ThresholdContainer">				
 				<Size x="663" y="33"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="46" y="-74"/>
@@ -378,18 +377,14 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Frame parentKey="BarEnd" useParentLevel="true">
-						<Size x="16" y="48"/>
-						<Layers>
-							<Layer level="OVERLAY">
-								<Texture parentKey="line" atlas="activities-bar-end" useAtlasSize="true">
-									<Anchors>
-										<Anchor point="CENTER" x="0" y="0"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
-					</Frame>
+					<StatusBar parentKey="ThresholdBar" frameBuffer="true" frameLevel="510" setAllPoints="true">
+						<BarTexture parentKey="BarFill" atlas="activities-bar-fill"/>
+						<Size x="663" y="33"/>
+					</StatusBar>
+					<StatusBar parentKey="BonusThresholdBar" frameBuffer="true" frameLevel="505" setAllPoints="true" hidden="true">
+						<BarTexture parentKey="BarFill" atlas="activities-bar-fill-bonus"/>
+						<Size x="663" y="33"/>
+					</StatusBar>
 					<Frame parentKey="TextContainer" frameStrata="HIGH" setAllPoints="true">
 						<Layers>
 							<Layer level="OVERLAY">
@@ -408,6 +403,18 @@
 							</Layer>
 						</Layers>
 					</Frame>
+					<Frame parentKey="BarEnd" frameLevel="520" >
+						<Size x="16" y="48"/>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture parentKey="line" atlas="activities-bar-end" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" x="0" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
 				</Frames>
 				<Animations>
 					<AnimationGroup parentKey="FadeOutAnim" inherits="TargetsHiddenOnFinishedAnimGroupTemplate" setToFinalAlpha="true">
@@ -419,8 +426,9 @@
 						<Alpha childKey="BarBackgroundGlow" duration="0.25" fromAlpha="0" toAlpha="1"/>
 						<Alpha childKey="BarFillGlow" duration="0.25" fromAlpha="0" toAlpha="1"/>
 					</AnimationGroup>
-				</Animations>
-			</StatusBar>
+				</Animations>				
+				
+			</Frame>
 			<Frame parentKey="BarComplete" setAllPoints="true">
 				<Layers>
 					<Layer level="BACKGROUND">

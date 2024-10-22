@@ -336,7 +336,7 @@
 		</Scripts>
 	</Frame>
 
-	<Button name="RPEUpgradeMinimizedFrame" parent="CharacterSelectUI" mixin="RPEUpgradeMinimizedFrameMixin" hidden="true" frameStrata="HIGH">
+	<Button name="RPEUpgradeMinimizedFrame" parent="VisibilityFramesContainer" mixin="RPEUpgradeMinimizedFrameMixin" hidden="true" frameStrata="HIGH">
 		<Size x="362" y="95"/>
 		<Anchors>
 			<Anchor point="LEFT" x="4" y="0"/>

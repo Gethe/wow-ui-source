@@ -253,8 +253,8 @@
 									<Layer level="BORDER">
 										<Texture parentKey="Icon">
 											<Anchors>
-												<Anchor point="TOPLEFT" relativeKey="$parent.NormalTexture" x="31" y="-31"/>
-												<Anchor point="BOTTOMRIGHT" relativeKey="$parent.NormalTexture" x="-31" y="31"/>
+												<Anchor point="TOPLEFT" relativeKey="$parent" x="31" y="-31"/>
+												<Anchor point="BOTTOMRIGHT" relativeKey="$parent" x="-31" y="31"/>
 											</Anchors>
 										</Texture>
 									</Layer>

@@ -172,5 +172,5 @@ end
 function RuneforgeCraftItemButtonMixin:SetCraftState(canCraft, errorString)
 	self:SetEnabled(canCraft);
 	self.errorString = errorString;
-	GlowEmitterFactory:SetShown(self, canCraft, GlowEmitterMixin.Anims.FaintFadeAnim);
+	GlowEmitterFactory:SetShown(canCraft, self, GlowEmitterMixin.Anims.FaintFadeAnim);
 end

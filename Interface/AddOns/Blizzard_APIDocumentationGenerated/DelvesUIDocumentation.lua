@@ -21,6 +21,22 @@ local DelvesUI =
 			},
 		},
 		{
+			Name = "GetCurioLink",
+			Type = "Function",
+			Documentation = { "Given the spell ID for an owned curio and its rarity, return a spell link style hyperlink for the curio spell, since they aren't items when learned" },
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "rarity", Type = "CurioRarity", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "curioLink", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "GetCurioNodeForCompanion",
 			Type = "Function",
 

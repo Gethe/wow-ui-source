@@ -524,6 +524,11 @@ end
 
 -- Click the actual character button in the scroll list, in case it may be otherwise disabled.
 function CharacterSelectListUtil.ClickCharacterFrameByGUID(guid, isDoubleClick)
+	-- If UI is hidden, double clicks are disabled.
+	if not CharacterSelectUI:GetVisibilityState() then
+		isDoubleClick = false;
+	end
+
 	-- First scroll to the character to have the frame present.
 	local characterElementData = CharacterSelectCharacterFrame.ScrollBox:FindElementDataByPredicate(function(elementData)
 		return CharacterSelectListUtil.GetCharacterPositionData(guid, elementData) ~= nil;

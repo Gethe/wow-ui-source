@@ -606,8 +606,30 @@ function Class_QuestCompleteHelp:OnBegin()
 end
 
 function Class_QuestCompleteHelp:ShowHelp()
-	if ObjectiveTrackerBlocksFrameHeader and ObjectiveTrackerBlocksFrameHeader:IsShown() then
-		self:ShowPointerTutorial(NPEV2_QUEST_COMPLETE_HELP, "RIGHT", ObjectiveTrackerBlocksFrameHeader, -40, 0, nil, "RIGHT");
+	local questAnchorFrame = nil;
+
+	-- Find the module in the Objective Tracker that contains the quest.
+	local function FindQuestAnchorFrame(module)
+		-- If the quest has already been found stop searching. There shouldn't be more than one in
+		-- this case, but technically there could be (e.g. quests and achievements can have the
+		-- same ID) and if so give priority to the first one found.
+		if questAnchorFrame then
+			return;
+		end
+
+		-- If the player has collapsed the Objective Tracker then expand it so the quest is visible.
+		module:ForceExpand();
+
+		questAnchorFrame = module:GetExistingBlock(self.questID);
+	end
+	ObjectiveTrackerFrame:ForEachModule(FindQuestAnchorFrame);
+
+	assertsafe(questAnchorFrame, "Quest not found in objective tracker.");
+
+	if questAnchorFrame and questAnchorFrame:IsShown() then
+		local xOffset = -40;
+		local yOffset = 5;
+		self:ShowPointerTutorial(NPEV2_QUEST_COMPLETE_HELP, "RIGHT", questAnchorFrame, xOffset, yOffset, nil, "RIGHT");
 	end
 end
 

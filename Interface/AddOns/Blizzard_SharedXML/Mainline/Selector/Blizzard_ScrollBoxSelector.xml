@@ -2,6 +2,9 @@
 ..\..\UI.xsd">
 	<!--Lua include required in .toc as it requires the shared copy-->
 	<Frame name="ScrollBoxSelectorTemplate" mixin="ScrollBoxSelectorMixin" inherits="SelectorTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="retainScrollPosition" value="false" type="boolean"/>
+		</KeyValues>
 		<Size x="494" y="375"/>
 		<Frames>
 			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">

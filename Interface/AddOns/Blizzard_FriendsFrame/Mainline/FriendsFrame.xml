@@ -319,7 +319,7 @@
 				<Scripts>
 					<OnEnter function="TravelPassButton_OnEnter"/>
 					<OnLeave>
-						if not IsOnGlueScreen() then
+						if not C_Glue.IsOnGlueScreen() then
 							GameTooltip:Hide();
 						end
 					</OnLeave>

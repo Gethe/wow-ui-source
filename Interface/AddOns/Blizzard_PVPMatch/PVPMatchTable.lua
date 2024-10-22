@@ -441,7 +441,7 @@ function ConstructPVPMatchTable(tableBuilder, useAlternateColor)
 			-- Skirmish is considered rated for matchmaking reasons.
 			ratingChange = not IsArenaSkirmish();
 			ratingPost = true;
-			mmrPre = C_PvP.IsRatedSoloShuffle();
+			mmrPre = C_PvP.IsRatedSoloShuffle() or C_PvP.IsRatedSoloRBG();
 		else
 			ratingPre = true;
 		end

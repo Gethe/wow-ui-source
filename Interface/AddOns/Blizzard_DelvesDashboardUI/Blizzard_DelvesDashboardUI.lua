@@ -185,8 +185,6 @@ function ReputationThresholdMixin:Setup(thresholdInfo, renownInfo, thresholdLeve
 			self.LineIncomplete:Hide();
 			self.LineComplete:Show();
 			self.Reward.IconBorder:SetAtlas("delves-dashboard-bar-diamond-complete");
-		else
-			self.Reward.IconBorder:SetAtlas("delves-dashboard-bar-reward-border");
 		end
 
 		local oldThresholdValue = math.floor(GetCVarNumberOrDefault(DELVES_SEASON_RENOWN_CVAR));
@@ -208,15 +206,13 @@ function ReputationThresholdMixin:Setup(thresholdInfo, renownInfo, thresholdLeve
 			self.Reward.EarnedCheckmark:SetAlpha(1);
 		end
 	else
-		self.Reward.IconBorder:SetDesaturated(true);
 		if not isFinalReward then
+			self.Reward.IconBorder:SetDesaturated(true);
 			self.LineIncomplete:Show();
 			self.LineComplete:Hide();
 			self.Reward.IconBorder:SetAtlas("delves-dashboard-bar-diamond-incomplete");
-		else
-			self.Reward.IconBorder:SetAtlas("delves-dashboard-bar-reward-border-disabled");
+			self.Reward.Icon:SetDesaturated(true);
 		end
-		self.Reward.Icon:SetDesaturated(true);
 		self.Reward.Glow:SetAlpha(0);
 		self.Reward.EarnedCheckmark:SetAlpha(0);
 	end

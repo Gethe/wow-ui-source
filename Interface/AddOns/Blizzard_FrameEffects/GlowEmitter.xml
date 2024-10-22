@@ -63,5 +63,8 @@
 				<Alpha fromAlpha="1" toAlpha=".5" duration="1" order="2" smoothing="NONE"/>
 			</AnimationGroup>
 		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
 	</Frame>
 </Ui>

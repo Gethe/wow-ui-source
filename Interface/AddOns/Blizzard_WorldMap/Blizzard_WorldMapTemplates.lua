@@ -173,6 +173,20 @@ function WorldMapTrackingOptionsButtonMixin:SetupMenu()
 			return parent:CreateCheckbox(filter:GetText(), IsFilterChecked, SetFilterChecked, filter);
 		end
 
+		local function AddFilterWithNewIndicator(description, cvarName, tutorialBit)
+			local filter = AddFilter(description, cvarName);
+			filter:AddInitializer(function(button, description, menu)
+				if not GetCVarBitfield("closedInfoFramesAccountWide", tutorialBit) then
+					button.newFeatureFrame = MenuTemplates.AttachNewFeatureFrame(button);
+					button.newFeatureFrame:SetPoint("RIGHT", button.leftTexture1, "LEFT", 0, 0);
+				end
+
+				button:SetScript("OnHide", function() SetCVarBitfield("closedInfoFramesAccountWide", tutorialBit, true); end)
+			end);
+
+			return filter;
+		end
+
 		if self:ShouldShowWorldQuestFilters(mapID) then
 			local submenu = AddFilter(rootDescription, "questPOIWQ");
 
@@ -213,7 +227,7 @@ function WorldMapTrackingOptionsButtonMixin:SetupMenu()
 		AddFilter(rootDescription, "showDungeonEntrancesOnMap");
 		AddFilter(rootDescription, "showDelveEntrancesOnMap");
 		AddFilter(rootDescription, "showTamers");
-		AddFilter(rootDescription, "questPOILocalStory");
+		AddFilterWithNewIndicator(rootDescription, "questPOILocalStory", LE_FRAME_TUTORIAL_ACCOUNT_LOCAL_STORIES_FILTER_SEEN);
 		
 		local trivialQuestsFilter = AddFilter(rootDescription, "trivialQuests");
 		trivialQuestsFilter:SetOnEnter(function(button)
@@ -225,15 +239,7 @@ function WorldMapTrackingOptionsButtonMixin:SetupMenu()
 			GameTooltip_Hide();
 		end);
 
-		local accountCompletedQuestsFilter = AddFilter(rootDescription, "showAccountCompletedQuests");
-		accountCompletedQuestsFilter:AddInitializer(function(button, description, menu)
-			if not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_COMPLETED_QUESTS_FILTER_SEEN) then
-				button.newFeatureFrame = MenuTemplates.AttachNewFeatureFrame(button);
-				button.newFeatureFrame:SetPoint("RIGHT", button.leftTexture1, "LEFT", 0, 0);
-			end
-
-			button:SetScript("OnHide", function() SetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_COMPLETED_QUESTS_FILTER_SEEN, true); end)
-		end);
+		local accountCompletedQuestsFilter = AddFilterWithNewIndicator(rootDescription, "showAccountCompletedQuests", LE_FRAME_TUTORIAL_ACCOUNT_COMPLETED_QUESTS_FILTER_SEEN);
 		accountCompletedQuestsFilter:SetOnEnter(function(button)
 			GameTooltip:SetOwner(button.fontString, "ANCHOR_BOTTOMLEFT", -22, 75);
 			GameTooltip_AddHighlightLine(GameTooltip, ACCOUNT_COMPLETED_QUESTS_FILTER_DESCRIPTION);

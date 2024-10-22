@@ -78,7 +78,7 @@ local function ClubFinderGetTotalNumSpecializations()
 	local count = 0;
 	for i = 1, numClasses do
 		local _, _, classID = GetClassInfo(i);
-		for j = 1, GetNumSpecializationsForClassID(classID) do
+		for j = 1, C_SpecializationInfo.GetNumSpecializationsForClassID(classID) do
 			count = count + 1
 		end
 	end
@@ -548,20 +548,22 @@ function ClubLookingForDropdownMixin:SetupMenu(checkedList)
 
 			for classID = 1, GetNumClasses() do
 				local classInfo = C_CreatureInfo.GetClassInfo(classID);
-				local classColor = GetClassColorObj(classInfo.classFile);
-				local className = classInfo.className;
+				if classInfo then
+					local classColor = GetClassColorObj(classInfo.classFile);
+					local className = classInfo.className;
 
-				for specIndex = 1, GetNumSpecializationsForClassID(classID) do
-					local specID, specName, _, _, role = GetSpecializationInfoForClassID(classID, specIndex, sex);
-					if role == tbl.role then
-						local function SetSpecSelected(specID)
-							local isSpecInList = self:IsSpecInList(specID);
-							self:ModifyTrackedSpecList(specName, className, specID, not isSpecInList);
+					for specIndex = 1, C_SpecializationInfo.GetNumSpecializationsForClassID(classID) do
+						local specID, specName, _, _, role = GetSpecializationInfoForClassID(classID, specIndex, sex);
+						if role == tbl.role then
+							local function SetSpecSelected(specID)
+								local isSpecInList = self:IsSpecInList(specID);
+								self:ModifyTrackedSpecList(specName, className, specID, not isSpecInList);
+							end
+
+							local classText = TALENT_SPEC_AND_CLASS:format(specName, className);
+							local text = classColor:WrapTextInColorCode(classText);
+							submenu:CreateCheckbox(text, IsSpecSelected, SetSpecSelected, specID);
 						end
-
-						local classText = TALENT_SPEC_AND_CLASS:format(specName, className);
-						local text = classColor:WrapTextInColorCode(classText);
-						submenu:CreateCheckbox(text, IsSpecSelected, SetSpecSelected, specID);
 					end
 				end
 			end
@@ -602,7 +604,7 @@ function ClubLookingForDropdownMixin:IsEverySpecCheckedForRole(roleToMatch)
 	local sex = UnitSex("player");
 	for i = 1, numClasses do
 		local className, classTag, classID = GetClassInfo(i);
-		for j = 1, GetNumSpecializationsForClassID(classID) do
+		for j = 1, C_SpecializationInfo.GetNumSpecializationsForClassID(classID) do
 			local specID, specName, _, _, role = GetSpecializationInfoForClassID(classID, j, sex);
 			if(role == roleToMatch) then
 				if (not self:IsSpecInList(specID)) then
@@ -619,7 +621,7 @@ function ClubLookingForDropdownMixin:CheckOrUncheckAll(info, roleToMatch, checkA
 	local sex = UnitSex("player");
 	for i = 1, numClasses do
 		local className, classTag, classID = GetClassInfo(i);
-		for j = 1, GetNumSpecializationsForClassID(classID) do
+		for j = 1, C_SpecializationInfo.GetNumSpecializationsForClassID(classID) do
 			local specID, specName, _, _, role = GetSpecializationInfoForClassID(classID, j, sex);
 			if(role == roleToMatch) then
 				self:ModifyTrackedSpecList(specName, className, specID, checkAll);
@@ -768,6 +770,8 @@ function ClubFinderOptionsMixin:OnLoad()
 	self.SortByDropdown:SetWidth(100);
 	self.SortByDropdown:SetPoint("RIGHT", self.ClubFilterDropdown, "RIGHT", 110, 0);
 
+	self.Search:SetSearchBox(self.SearchBox);
+
 	self:InitializeRoleButtons();
 	self:SetEnabledRoles();
 end
@@ -789,7 +793,7 @@ function ClubFinderOptionsMixin:CheckDisabled()
 	self.HealerRoleFrame:SetEnabled(canBeHealer and enabled);
 	self.DpsRoleFrame:SetEnabled(canBeDPS and enabled);
 	self.SearchBox:SetEnabled(enabled);
-	self.Search:SetEnabled(enabled and self.Search:ShouldBeEnabled());
+	self.Search:UpdateEnabledState();
 end
 
 function ClubFinderOptionsMixin:SetType(isGuildType)
@@ -991,13 +995,23 @@ end
 
 ClubFinderSearchButtonMixin = { };
 
+function ClubFinderSearchButtonMixin:SetSearchBox(searchBox)
+	self.searchBox = searchBox;
+end
+
 function ClubFinderSearchButtonMixin:OnClick()
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	self:GetParent():OnSearchButtonClick();
 end
 
 function ClubFinderSearchButtonMixin:ShouldBeEnabled()
-	local searchTextLen = strlenutf8(self:GetParent().SearchBox:GetText());
+	-- If the editbox is disabled for any reason (e.g. C_ClubFinder.GetClubFinderDisableReason() is not nil)
+	-- the search button should also be disabled.
+	if not self.searchBox:IsEnabled() then
+		return false;
+	end
+
+	local searchTextLen = strlenutf8(self.searchBox:GetText());
 	return searchTextLen == 0 or searchTextLen >= 3;
 end
 
@@ -1017,7 +1031,8 @@ function ClubFinderSearchButtonMixin:UpdateEnabledState()
 end
 
 function ClubFinderSearchButtonMixin:UpdateTooltip()
-	if self.mouseInButton and not self:IsEnabled() then
+	-- If the editbox has been disabled don't show the tooltip instructing the player to enter a search term.
+	if self.mouseInButton and not self:IsEnabled() and self.searchBox:IsEnabled() then
 		self:ShowTooltip();
 	else
 		self:HideTooltip();
@@ -1485,7 +1500,7 @@ function ClubFinderGetPlayerSpecIds()
 	if (not playerSpecs) then
 		playerSpecs = { };
 		local classID = select(3, UnitClass("player"));
-		for i = 1, GetNumSpecializationsForClassID(classID) do
+		for i = 1, C_SpecializationInfo.GetNumSpecializationsForClassID(classID) do
 			local specID = GetSpecializationInfoForClassID(classID, i);
 			if (specID) then
 				table.insert(playerSpecs, specID);

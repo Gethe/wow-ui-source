@@ -538,7 +538,17 @@ function PVPMatchResultsRatingMixin:OnEnter()
 		GameTooltip_AddNormalLine(GameTooltip, PVP_RATING_CURRENT:format(HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(self.ratingNew)));
 	end
 	GameTooltip_AddBlankLineToTooltip(GameTooltip);
+
+	
 	local wrapText = false;
+	if C_PvP.IsRatedSoloRBG() then
+		local localPlayerScoreInfo = C_PvP.GetScoreInfoByPlayerGuid(GetPlayerGuid());
+		if localPlayerScoreInfo then
+			local prematchMMR = HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(BreakUpLargeNumbers(localPlayerScoreInfo.prematchMMR));
+			local postmatchMMR = HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(BreakUpLargeNumbers(localPlayerScoreInfo.postmatchMMR));
+			GameTooltip_AddNormalLine(GameTooltip, MATCHMAKING_YOUR_UPDATED_MATCHMAKING_VALUE:format(prematchMMR, postmatchMMR), wrapText);
+		end
+	end
 	GameTooltip_AddNormalLine(GameTooltip, self.friendlyMMR, wrapText);
 	GameTooltip_AddNormalLine(GameTooltip, self.enemyMMR, wrapText);
 	

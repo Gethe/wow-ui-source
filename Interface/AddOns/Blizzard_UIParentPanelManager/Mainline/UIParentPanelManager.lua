@@ -304,7 +304,7 @@ function FramePositionDelegate:ShowUIPanel(frame, force, contextKey)
 				-- Push left to right
 				self:MoveUIPanel("left", "right", UIPANEL_SKIP_SET_POINT);
 			end
-		elseif ( centerFrame and CanShowRightUIPanel(centerFrame) ) then
+		elseif ( centerFrame ) then
 			self:MoveUIPanel("center", "right", UIPANEL_SKIP_SET_POINT);
 		end
 		self:SetUIPanel("doublewide", frame);
@@ -788,6 +788,11 @@ function FramePositionDelegate:EvaluateAutoMinimize(frame)
 	end
 
 	setMinimizedFunc(frame, shouldBeMinimized);
+
+	-- Now that the panel's minimized state has changed, ensure any scale to fit is updated for changes in size
+	if GetUIPanelAttribute(frame, "checkFit") == 1 then
+		self:UpdateScaleForFit(frame);
+	end
 end
 
 function FramePositionDelegate:UIParentManageFramePositions()

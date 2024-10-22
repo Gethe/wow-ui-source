@@ -767,6 +767,11 @@ local function Register()
 			aaSetting = Settings.RegisterProxySetting(category, "PROXY_ANTIALIASING",
 				Settings.VarType.Number, ANTIALIASING, defaultValue, GetValue, SetValue);
 			aaSetting:SetCommitFlags(Settings.CommitFlag.Apply);
+			aaSetting:SetCommitOrder(3);
+
+			Settings.SetOnValueChangedCallback(aaSetting:GetVariable(), function(o, setting, value)
+				SetValue(value);
+			end);
 
 			aaInitializer = Settings.CreateDropdown(category, aaSetting, GetOptions, OPTION_TOOLTIP_ANTIALIASING);
 		end
@@ -792,6 +797,7 @@ local function Register()
 			local setting = Settings.RegisterProxySetting(category, "PROXY_FXAA",
 				Settings.VarType.Number, FXAA_CMAA_LABEL, getDefaultValue(), getValue, setValue);
 			setting:SetCommitFlags(Settings.CommitFlag.Apply);
+			setting:SetCommitOrder(1);
 			aaSettings.fxaa = setting;
 
 			local initializer = Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_ANTIALIASING_IB);
@@ -835,6 +841,7 @@ local function Register()
 			local setting = Settings.RegisterProxySetting(category, "PROXY_MSAA",
 				Settings.VarType.Number, MSAA_LABEL, defaultValue, GetValue, SetValue);
 			setting:SetCommitFlags(Settings.CommitFlag.Apply);
+			setting:SetCommitOrder(2);
 			aaSettings.msaa = setting;
 
 			local initializer = Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_ADVANCED_MSAA);
@@ -870,6 +877,8 @@ local function Register()
 			initializer:SetParentInitializer(aaInitializer, IsModifiable);
 		end
 	end
+
+	GraphicsOverrides.CreateHiResOptions(category, layout);
 
 	-- Camera FOV
 	if C_CVar.GetCVar("cameraFov") then

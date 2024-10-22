@@ -71,7 +71,7 @@ local questClassificationToPinTemplate = {
 };
 
 function BonusObjectiveDataProviderMixin:GetPinTemplateFromTask(taskInfo)
-	return questClassificationToPinTemplate[C_QuestInfoSystem.GetQuestClassification(taskInfo.questId)];
+	return questClassificationToPinTemplate[C_QuestInfoSystem.GetQuestClassification(taskInfo.questID)];
 end
 
 function BonusObjectiveDataProviderMixin:RefreshAllData(fromOnShow)
@@ -82,14 +82,14 @@ function BonusObjectiveDataProviderMixin:RefreshAllData(fromOnShow)
 		return;
 	end
 
-	local taskInfo = GetQuestsForPlayerByMapIDCached(mapID);
+	local taskInfo = GetTasksOnMapCached(mapID);
 
 	if taskInfo and #taskInfo > 0 then
 		self:CancelCallbacks();
 		self.cancelCallbacks = {};
 
 		for i, info in ipairs(taskInfo) do
-			local callback = QuestEventListener:AddCancelableCallback(info.questId, function()
+			local callback = QuestEventListener:AddCancelableCallback(info.questID, function()
 				if MapUtil.ShouldShowTask(mapID, info) then
 					local pinTemplate = self:GetPinTemplateFromTask(info);
 					if pinTemplate then
@@ -120,7 +120,7 @@ end
 
 function BonusObjectivePinMixin:OnAcquired(taskInfo)
 	self:SetPosition(taskInfo.x, taskInfo.y);
-	self:SetQuestID(taskInfo.questId);
+	self:SetQuestID(taskInfo.questID);
 	self.numObjectives = taskInfo.numObjectives;
 	self.isQuestStart = taskInfo.isQuestStart;
 	self.isCombatAllyQuest = taskInfo.isCombatAllyQuest;

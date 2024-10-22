@@ -1,5 +1,5 @@
 ---------------------------- Main Menus ----------------------------------------------
-function UnitPopupMenuSelf:GetMenuButtons()
+function UnitPopupMenuSelf:GetEntries()
 	return {
 		UnitPopupSetFocusButtonMixin,
 		UnitPopupOtherSubsectionTitle,
@@ -8,7 +8,7 @@ function UnitPopupMenuSelf:GetMenuButtons()
 	}
 end
 
-function UnitPopupMenuPlayer:GetMenuButtons()
+function UnitPopupMenuPlayer:GetEntries()
 	return {
 		UnitPopupMenuFriendlyPlayer, --This is a subMenu
 		UnitPopupMenuFriendlyPlayerInteract, --This is a subMenu
@@ -18,7 +18,7 @@ function UnitPopupMenuPlayer:GetMenuButtons()
 	}
 end
 
-function UnitPopupMenuVehicle:GetMenuButtons()
+function UnitPopupMenuVehicle:GetEntries()
 	return {
 		UnitPopupSetFocusButtonMixin, 
 		UnitPopupOtherSubsectionTitle, 
@@ -27,7 +27,7 @@ function UnitPopupMenuVehicle:GetMenuButtons()
 	}
 end
 
-function UnitPopupMenuTarget:GetMenuButtons()
+function UnitPopupMenuTarget:GetEntries()
 	return {
 		UnitPopupSetFocusButtonMixin, 
 		UnitPopupAddFriendButtonMixin, 
@@ -38,7 +38,7 @@ function UnitPopupMenuTarget:GetMenuButtons()
 	}
 end
 
-function UnitPopupMenuFocus:GetMenuButtons()
+function UnitPopupMenuFocus:GetEntries()
 	return {
 		UnitPopupClearFocusButtonMixin,
 		UnitPopupOtherSubsectionTitle,
@@ -48,7 +48,7 @@ function UnitPopupMenuFocus:GetMenuButtons()
 end
 
 
-function UnitPopupMenuParty:GetMenuButtons()
+function UnitPopupMenuParty:GetEntries()
 	return {
 		UnitPopupMenuFriendlyPlayer, --This is a submenu
 		UnitPopupVoiceChatButtonMixin, 
@@ -57,7 +57,7 @@ function UnitPopupMenuParty:GetMenuButtons()
 	}
 end
 
-function UnitPopupMenuEnemyPlayer:GetMenuButtons()
+function UnitPopupMenuEnemyPlayer:GetEntries()
 	return {
 		UnitPopupSetFocusButtonMixin,
 		UnitPopupInteractSubsectionTitle,
@@ -66,7 +66,7 @@ function UnitPopupMenuEnemyPlayer:GetMenuButtons()
 	}
 end
 
-function UnitPopupMenuRaidPlayer:GetMenuButtons()
+function UnitPopupMenuRaidPlayer:GetEntries()
 	return {
 		UnitPopupMenuFriendlyPlayer, --This is a subMenu
 		UnitPopupOtherSubsectionTitle,
@@ -77,7 +77,7 @@ function UnitPopupMenuRaidPlayer:GetMenuButtons()
 	}
 end
 
-function UnitPopupMenuBnFriend:GetMenuButtons()
+function UnitPopupMenuBnFriend:GetEntries()
 	return { 
 		UnitPopupPopoutChatButtonMixin,
 		UnitPopupBnetTargetButtonMixin,
@@ -100,7 +100,7 @@ function UnitPopupMenuBnFriend:GetMenuButtons()
 	}
 end 
 
-function UnitPopupMenuBnFriendOffline:GetMenuButtons()
+function UnitPopupMenuBnFriendOffline:GetEntries()
 	return { 
 		UnitPopupSetBNetNoteButtonMixin, 
 		UnitPopupViewBnetFriendsButtonMixin,
@@ -115,7 +115,7 @@ function UnitPopupMenuBnFriendOffline:GetMenuButtons()
 	}
 end
 
-function UnitPopupMenuCommunitiesWowMember:GetMenuButtons()
+function UnitPopupMenuCommunitiesWowMember:GetEntries()
 	return {
 		UnitPopupTargetButtonMixin,
 		UnitPopupAddFriendMenuButtonMixin, 
@@ -137,7 +137,7 @@ function UnitPopupMenuCommunitiesWowMember:GetMenuButtons()
 	}
 end
 
-function UnitPopupMenuCommunitiesGuildMember:GetMenuButtons()
+function UnitPopupMenuCommunitiesGuildMember:GetEntries()
 	return {
 		UnitPopupTargetButtonMixin,
 		UnitPopupAddFriendMenuButtonMixin, 
@@ -160,7 +160,7 @@ end
 
 UnitPopupRafRecruit = CreateFromMixins(UnitPopupTopLevelMenuMixin);
 UnitPopupManager:RegisterMenu("RAF_RECRUIT", UnitPopupRafRecruit);
-function UnitPopupRafRecruit:GetMenuButtons()
+function UnitPopupRafRecruit:GetEntries()
 	return {
 		UnitPopupAddFriendButtonMixin,
 		UnitPopupAddFriendMenuButtonMixin, 
@@ -174,7 +174,7 @@ function UnitPopupRafRecruit:GetMenuButtons()
 	}
 end
 
-function UnitPopupMenuFriendlyPlayer:GetMenuButtons()
+function UnitPopupMenuFriendlyPlayer:GetEntries()
 	return {
 		UnitPopupSetFocusButtonMixin,
 		UnitPopupAddFriendButtonMixin,
@@ -183,19 +183,19 @@ function UnitPopupMenuFriendlyPlayer:GetMenuButtons()
 	}
 end 
 
-function UnitPopupMenuFriendlyPlayerInteract:GetMenuButtons()
+function UnitPopupMenuFriendlyPlayerInteract:GetEntries()
 	return {
 		UnitPopupWhisperButtonMixin,
 	}
 end 
 
 -- No party invites inside a Plunderstorm match.
-function UnitPopupMenuFriendlyPlayerInviteOptions:GetMenuButtons()
+function UnitPopupMenuFriendlyPlayerInviteOptions:GetEntries()
 	return {
 	}
 end
 
-function UnitPopupMenuBattlePet:GetMenuButtons()
+function UnitPopupMenuBattlePet:GetEntries()
 	return { 
 		UnitPopupSetFocusButtonMixin, 
 		UnitPopupOtherSubsectionTitle,
@@ -203,7 +203,7 @@ function UnitPopupMenuBattlePet:GetMenuButtons()
 	}
 end 
 
-function UnitPopupMenuOtherBattlePet:GetMenuButtons()
+function UnitPopupMenuOtherBattlePet:GetEntries()
 	return { 
 		UnitPopupSetFocusButtonMixin, 
 		UnitPopupOtherSubsectionTitle,

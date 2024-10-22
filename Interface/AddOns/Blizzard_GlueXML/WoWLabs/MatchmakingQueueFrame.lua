@@ -192,9 +192,8 @@ end
 
 local function ShowReadyGlow(target, enabled)
 	if enabled then
-		GlowEmitterFactory:SetHeight(94);
-		GlowEmitterFactory:SetOffset(24, 0);
-		GlowEmitterFactory:Show(target, GlowEmitterMixin.Anims.GreenGlow);
+		local offsetX, offsetY, width, height = 24, 0, nil, 94;
+		GlowEmitterFactory:Show(target, GlowEmitterMixin.Anims.GreenGlow, offsetX, offsetY, width, height);
 	else
 		GlowEmitterFactory:Hide(target);
 	end

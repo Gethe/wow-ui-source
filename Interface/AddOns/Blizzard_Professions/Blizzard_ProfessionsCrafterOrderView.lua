@@ -374,11 +374,7 @@ function ProfessionsCrafterOrderViewMixin:OnEvent(event, ...)
             return;
         end
 
-		if result == Enum.CraftingOrderResult.NoAccountItems then
-			UIErrorsFrame:AddExternalErrorMessage(CRAFTING_ORDER_FAILED_ACCOUNT_ITEMS);
-		else
-			UIErrorsFrame:AddExternalErrorMessage(PROFESSIONS_ORDER_OP_FAILED);
-		end
+		UIErrorsFrame:AddExternalErrorMessage(PROFESSIONS_ORDER_OP_FAILED);
 	elseif event == "CRAFTINGORDERS_FULFILL_ORDER_RESPONSE" then
 		local result, orderID = ...;
 		if orderID ~= self.order.orderID then
@@ -558,15 +554,18 @@ function ProfessionsCrafterOrderViewMixin:SchematicPostInit()
     if not self.order.isFulfillable then
         for _, reagentInfo in ipairs(self.order.reagents) do
             local allocations = transaction:GetAllocations(reagentInfo.slotIndex);
-
-			-- isBasicReagent check here to handle multiple allocations within the same slot (qualities)
-            if not self.reagentSlotProvidedByCustomer[reagentInfo.slotIndex] or not reagentInfo.isBasicReagent then
-                allocations:Clear();
-                self.reagentSlotProvidedByCustomer[reagentInfo.slotIndex] = true;
-            end
-            -- These allocations get cleared before sending the craft, but we allocate them for craft readiness validation
-            allocations:Allocate(reagentInfo.reagent, reagentInfo.reagent.quantity);
-            reagentSlotToItemID[reagentInfo.slotIndex] = reagentInfo.reagent.itemID;
+			if allocations then
+				-- isBasicReagent check here to handle multiple allocations within the same slot (qualities)
+				if not self.reagentSlotProvidedByCustomer[reagentInfo.slotIndex] or not reagentInfo.isBasicReagent then
+					allocations:Clear();
+					self.reagentSlotProvidedByCustomer[reagentInfo.slotIndex] = true;
+				end
+				-- These allocations get cleared before sending the craft, but we allocate them for craft readiness validation
+				allocations:Allocate(reagentInfo.reagent, reagentInfo.reagent.quantity);
+				reagentSlotToItemID[reagentInfo.slotIndex] = reagentInfo.reagent.itemID;
+			else
+				assertsafe(false, "Crafting order reagents do not match recipe for spellID=%d", self.order.spellID);
+			end
         end
     end
 
@@ -884,7 +883,6 @@ function ProfessionsCrafterOrderViewMixin:SetOrder(order)
     local isRecraft = self:IsRecrafting();
 	local recipeSchematic = C_TradeSkillUI.GetRecipeSchematic(self.order.spellID, isRecraft);
     self.OrderDetails.SchematicForm.transaction = CreateProfessionsRecipeTransaction(recipeSchematic);
-    self.OrderDetails.SchematicForm.transaction:SetUseCharacterInventoryOnly(true);
     if isRecraft then
         self.OrderDetails.SchematicForm.transaction:SetRecraftAllocationOrderID(order.orderID);
     end

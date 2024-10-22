@@ -35,9 +35,9 @@ function CharacterSelectFrameMixin:OnLoad()
 	self.selectLast = false;
 	self.backFromCharCreate = false;
 	self.connectingToPlunderstorm = false;
-    self.characterPadlockPool = CreateFramePool("BUTTON", self, "CharSelectLockedButtonTemplate");
 	self.waitingforCharacterList = true;
 	self.showSocialContract = false;
+	self.autoRealmSwap = false;
     self:RegisterEvent("CHARACTER_LIST_UPDATE");
     self:RegisterEvent("UPDATE_SELECTED_CHARACTER");
     self:RegisterEvent("FORCE_RENAME_CHARACTER");
@@ -71,6 +71,7 @@ function CharacterSelectFrameMixin:OnLoad()
 	self:RegisterEvent("ACCOUNT_LOCKED_POST_SAVE_UPDATE");
 	self:RegisterEvent("REALM_HIDDEN_INFO_UPDATE");
 	self:RegisterEvent("TIMERUNNING_SEASON_UPDATE");
+	self:RegisterEvent("AUTO_REALM_SWAP");
 
 	self:AddDynamicEventMethod(EventRegistry, "GameEnvironment.Selected", self.OnGameEnvironmentSelected);
 	self:AddDynamicEventMethod(EventRegistry, "RealmList.Cancel", self.OnRealmListCancel);	
@@ -79,11 +80,12 @@ function CharacterSelectFrameMixin:OnLoad()
 	CharacterSelectCharacterFrame:Init();
 
 	local shouldHideGM = IsGMClient() and HideGMOnly();
-	CharacterSelectUI.ToolTray:RegisterToolFrame(PlayersOnServer);
-	CharacterSelectUI.ToolTray:RegisterToolFrame(CharacterTemplatesFrame);
-	CharacterSelectUI.ToolTray:RegisterToolFrame(CopyCharacterButton);
+	local toolTray = self.CharacterSelectUI.VisibilityFramesContainer.ToolTray;
+	toolTray:RegisterToolFrame(PlayersOnServer);
+	toolTray:RegisterToolFrame(CharacterTemplatesFrame);
+	toolTray:RegisterToolFrame(CopyCharacterButton);
 	CopyCharacterButton:UpdateButtonState();
-	CharacterSelectUI.ToolTray:SetShown(not shouldHideGM);
+	toolTray:SetShown(not shouldHideGM);
 
 	-- If UI is reloaded while at character select, make sure timerunning addon gets loaded if necessary
 	CharacterSelect_UpdateTimerunning();
@@ -92,12 +94,12 @@ end
 function CharacterSelectFrameMixin:OnGameEnvironmentSelected(requestedEnvironment)
 	assert(requestedEnvironment);
 	if C_GameEnvironmentManager.GetCurrentGameEnvironment() ~= requestedEnvironment then
-		self.CharacterSelectUI.GameEnvironmentToggleFrame:ChangeGameEnvironment(requestedEnvironment);
+		self.CharacterSelectUI.VisibilityFramesContainer.GameEnvironmentToggleFrame:ChangeGameEnvironment(requestedEnvironment);
 	end
 end
 
 function CharacterSelectFrameMixin:OnRealmListCancel()
-	self.CharacterSelectUI.GameEnvironmentToggleFrame:SelectRadioButtonForEnvironment(Enum.GameEnvironment.WoW);
+	self.CharacterSelectUI.VisibilityFramesContainer.GameEnvironmentToggleFrame:SelectRadioButtonForEnvironment(Enum.GameEnvironment.WoW);
 end
 
 function CharacterSelectFrameMixin:OnShow()
@@ -118,6 +120,9 @@ function CharacterSelectFrameMixin:OnShow()
 
     local FROM_LOGIN_STATE_CHANGE = false;
     CharacterSelect_UpdateState(FROM_LOGIN_STATE_CHANGE);
+
+	-- If for any reason we had the UI disabled, turn it back on.
+	CharacterSelectUI:ResetVisibilityState();
 
     -- Gameroom billing stuff (For Korea and China only)
     if ( SHOW_GAMEROOM_BILLING_FRAME ) then
@@ -226,9 +231,9 @@ function CharacterSelectFrameMixin:OnShow()
 		C_SocialContractGlue.GetShouldShowSocialContract();
 	end
 
-	self.CharacterSelectUI.GameEnvironmentToggleFrame:SelectRadioButtonForEnvironment(Enum.GameEnvironment.WoW);
+	self.CharacterSelectUI.VisibilityFramesContainer.GameEnvironmentToggleFrame:SelectRadioButtonForEnvironment(Enum.GameEnvironment.WoW);
 
-	CharacterSelectUI.ToolTray:SetExpanded(not g_characterSelectToolTrayCollapsed);
+	self.CharacterSelectUI.VisibilityFramesContainer.ToolTray:SetExpanded(not g_characterSelectToolTrayCollapsed);
 	GeneralDockManager:Hide();
 	ChatFrame1:Hide();
 
@@ -363,6 +368,8 @@ function CharacterSelectFrameMixin:OnKeyDown(key)
     if key == "ESCAPE" then
         if GlueParent_IsSecondaryScreenOpen("options") then
             GlueParent_CloseSecondaryScreen();
+		elseif not CharacterSelectUI:GetVisibilityState() then
+			CharacterSelectUI:ToggleVisibilityState();
         elseif C_Login.IsLauncherLogin() then
 			GlueMenuFrameUtil.ToggleMenu();
         elseif CharSelectServicesFlowFrame:IsShown() then
@@ -396,6 +403,8 @@ function CharacterSelectFrameMixin:OnKeyDown(key)
             return;
         end
         CharacterSelectScrollDown_OnClick();
+	elseif key == "Z" and IsAltKeyDown() then
+		CharacterSelectUI:ToggleVisibilityState();
     end
 end
 
@@ -418,7 +427,7 @@ function CharacterSelectFrameMixin:OnEvent(event, ...)
 				CharacterSelect_EndCharacterUndelete();
 				self.undeleteNoCharacters = true;
 				return;
-			elseif (not self.connectingToPlunderstorm and not self.backFromCharCreate) then
+			elseif (not self.connectingToPlunderstorm and not self.backFromCharCreate and not self.autoRealmSwap) then
 				if (IsKioskGlueEnabled()) then
 					GlueParent_SetScreen("kioskmodesplash");
 				else
@@ -472,6 +481,10 @@ function CharacterSelectFrameMixin:OnEvent(event, ...)
 		else
 			local index = CharacterSelectListUtil.GetIndexFromCharID(charID);
 		    self.selectedIndex = index;
+
+			local noCreate = true;
+			CharacterSelect_SelectCharacter(self.selectedIndex, noCreate);
+
 			local guid = GetCharacterGUID(charID);
 			if guid then
 				local basicInfo = GetBasicCharacterInfo(guid);
@@ -558,15 +571,9 @@ function CharacterSelectFrameMixin:OnEvent(event, ...)
 		CharacterSelect_UpdateIfUpdateIsNotPending();
 	elseif event == "STORE_PRODUCTS_UPDATED" then
 		CharacterSelect_UpdateIfUpdateIsNotPending();
-    elseif ( event == "CHARACTER_DELETION_RESULT" ) then
+    elseif event == "CHARACTER_DELETION_RESULT" then
         local success, errorToken = ...;
-        if ( success ) then
-			local last = false;
-			local firstCharacterIndex = CharacterSelectListUtil.GetFirstOrLastCharacterIndex(last);
-			if firstCharacterIndex then
-				local noCreate = true;
-				CharacterSelect_SelectCharacter(firstCharacterIndex, noCreate);
-			end
+        if success then
             GlueDialog_Hide();
         else
             GlueDialog_Show("OKAY", _G[errorToken]);
@@ -624,6 +631,9 @@ function CharacterSelectFrameMixin:OnEvent(event, ...)
 		end
 	elseif (event == "TIMERUNNING_SEASON_UPDATE") then
 		CharacterSelect_UpdateTimerunning();
+	elseif (event == "AUTO_REALM_SWAP") then
+		local swapping = ...;
+		self.autoRealmSwap = swapping;
 	end
 end
 
@@ -690,13 +700,13 @@ function CharacterSelect_CheckDialogStates()
 		end
 
 		local includeSeenWarnings = true;
-		CharacterSelectUI.ConfigurationWarnings:SetShown(#C_ConfigurationWarnings.GetConfigurationWarnings(includeSeenWarnings) > 0);
+		CharacterSelectUI.VisibilityFramesContainer.ConfigurationWarnings:SetShown(#C_ConfigurationWarnings.GetConfigurationWarnings(includeSeenWarnings) > 0);
 	end
 end
 
 function UpdateCharacterList(skipSelect)
 	if CharacterSelect.waitingforCharacterList then
-		CharacterSelectUI.CharacterList:SetCharacterCreateEnabled(false);
+		CharacterSelectUI.VisibilityFramesContainer.CharacterList:SetCharacterCreateEnabled(false);
 		CharSelectUndeleteCharacterButton:Hide();
 		CharacterTemplatesFrame.CreateTemplateButton:Hide();
 		CharacterSelect.selectedIndex = 0;
@@ -743,6 +753,8 @@ function UpdateCharacterList(skipSelect)
 		end
 		CharacterSelect.selectGuid = nil;
 		CharacterSelect.undeleteGuid = nil;
+	else
+		CharacterSelect.selectedIndex = tonumber(GetCVar("lastCharacterIndex")) + 1;
 	end
 
     CharacterSelect_UpdateButtonState();
@@ -754,32 +766,32 @@ function UpdateCharacterList(skipSelect)
 
     CharacterSelect.createIndex = 0;
 
-    CharacterSelectUI.CharacterList:SetCharacterCreateEnabled(false);
+    CharacterSelectUI.VisibilityFramesContainer.CharacterList:SetCharacterCreateEnabled(false);
     CharSelectUndeleteCharacterButton:Hide();
 	CharacterTemplatesFrame.CreateTemplateButton:Hide();
 
     local connected = IsConnectedToServer();
-    if (CanCreateCharacter() and not CharacterSelect.undeleting) then
+    if CanCreateCharacter() and not CharacterSelect.undeleting then
         CharacterSelect.createIndex = numChars + 1;
-        if ( connected ) then
-			CharacterSelectUI.CharacterList:SetCharacterCreateEnabled(true);
+        if connected then
+			CharacterSelectUI.VisibilityFramesContainer.CharacterList:SetCharacterCreateEnabled(true);
             CharSelectUndeleteCharacterButton:Show();
 			CharacterTemplatesFrame.CreateTemplateButton:Show();
         end
     end
 
-    if ( numChars == 0 and not skipSelect ) then
+    if numChars == 0 and not skipSelect then
         CharacterSelect.selectedIndex = 0;
 		local noCreate = true;
         CharacterSelect_SelectCharacter(CharacterSelect.selectedIndex, noCreate);
         return;
     end
-
-    if ( (CharacterSelect.selectedIndex == 0) or (CharacterSelect.selectedIndex > numChars) ) then
+	
+    if CharacterSelect.selectedIndex == 0 or CharacterSelect.selectedIndex > numChars then
         CharacterSelect.selectedIndex = 1;
     end
 
-    if ( not skipSelect ) then
+    if not skipSelect then
 		local noCreate = true;
         CharacterSelect_SelectCharacter(CharacterSelect.selectedIndex, noCreate);
     end
@@ -803,14 +815,20 @@ function CharacterSelect_SelectCharacter(index, noCreate)
             GlueParent_SetScreen("charcreate");
         end
     else
-		local selectedCharacterID = CharacterSelectListUtil.GetCharIDFromIndex(index);
-		SelectCharacter(selectedCharacterID);
+		if (not C_WowTokenPublic.GetCurrentMarketPrice() or
+			not CAN_BUY_RESULT_FOUND or (CAN_BUY_RESULT_FOUND ~= LE_TOKEN_RESULT_ERROR_SUCCESS and CAN_BUY_RESULT_FOUND ~= LE_TOKEN_RESULT_ERROR_SUCCESS_NO) ) then
+			AccountReactivate_RecheckEligibility();
+		end
+		ReactivateAccountDialog_Open();
 
-        if (not C_WowTokenPublic.GetCurrentMarketPrice() or
-            not CAN_BUY_RESULT_FOUND or (CAN_BUY_RESULT_FOUND ~= LE_TOKEN_RESULT_ERROR_SUCCESS and CAN_BUY_RESULT_FOUND ~= LE_TOKEN_RESULT_ERROR_SUCCESS_NO) ) then
-            AccountReactivate_RecheckEligibility();
-        end
-        ReactivateAccountDialog_Open();
+		local selectedCharacterID = CharacterSelectListUtil.GetCharIDFromIndex(index);
+
+		-- This is an empty slot.
+		if selectedCharacterID == 0 then
+			return;
+		end
+
+		SelectCharacter(selectedCharacterID);
 
         -- Update the text of the EnterWorld button based on the type of character that's selected, default to "enter world"
         local text = ENTER_WORLD;
@@ -956,8 +974,9 @@ end
 
 function CharacterSelectUI_ResetEnvironmentButton()
 	-- because of the CharacterSelect animations, we need to set the initial alpha of the WoW Toggle to 1
-	CharacterSelect.CharacterSelectUI.GameEnvironmentToggleFrame.SelectWoWToggle:SetAlpha(1);
-	CharacterSelect.CharacterSelectUI.GameEnvironmentToggleFrame.SelectWoWLabsToggle:SetAlpha(0.5);
+	local gameEnvironmentToggleFrame = CharacterSelect.CharacterSelectUI.VisibilityFramesContainer.GameEnvironmentToggleFrame;
+	gameEnvironmentToggleFrame.SelectWoWToggle:SetAlpha(1);
+	gameEnvironmentToggleFrame.SelectWoWLabsToggle:SetAlpha(0.5);
 end
 
 function CharacterSelectRotateRight_OnUpdate(self)
@@ -1146,13 +1165,14 @@ end
 
 function CharacterSelect_UpdateLogo()
 	-- For now, Timerunning overrides the event realms (plunderstorm) if both are active at once. Revisit if we have Plunderstorm and Timerunning at the same time.
-	local showEnvironmentToggle = C_GameEnvironmentManager.GetCurrentEventRealmQueues() ~= Enum.EventRealmQueues.None and GetActiveTimerunningSeasonID() == nil;
+	local showEnvironmentToggle = CharacterSelectUI:GetVisibilityState() and C_GameEnvironmentManager.GetCurrentEventRealmQueues() ~= Enum.EventRealmQueues.None and GetActiveTimerunningSeasonID() == nil;
 	CharacterSelectLogo:SetShown(not showEnvironmentToggle);
-	CharacterSelect.CharacterSelectUI.GameEnvironmentToggleFrame:SetShown(showEnvironmentToggle);
-	CharacterSelect.CharacterSelectUI.LimitedTimeEventFrame:SetShown(showEnvironmentToggle);
+	local visibilityFramesContainer = CharacterSelect.CharacterSelectUI.VisibilityFramesContainer;
+	visibilityFramesContainer.GameEnvironmentToggleFrame:SetShown(showEnvironmentToggle);
+	visibilityFramesContainer.LimitedTimeEventFrame:SetShown(showEnvironmentToggle);
 	local currentExpansionLevel = AccountUpgradePanel_GetBannerInfo();
 	if ( showEnvironmentToggle ) then
-		SetExpansionLogo(CharacterSelect.CharacterSelectUI.GameEnvironmentToggleFrame.SelectWoWToggle.NormalTexture, currentExpansionLevel);
+		SetExpansionLogo(visibilityFramesContainer.GameEnvironmentToggleFrame.SelectWoWToggle.NormalTexture, currentExpansionLevel);
 	else
 		SetExpansionLogo(CharacterSelectLogo, currentExpansionLevel);
 	end
@@ -1193,7 +1213,7 @@ function AccountUpgradePanel_Update(isExpanded, isUserInput)
     if ( shouldShowBanner ) then
 		CharSelectAccountUpgradeButton:SetText(upgradeButtonText);
 
-		local gameEnvironmentToggleShown = CharacterSelect.CharacterSelectUI.GameEnvironmentToggleFrame:IsShown();
+		local gameEnvironmentToggleShown = CharacterSelect.CharacterSelectUI.VisibilityFramesContainer.GameEnvironmentToggleFrame:IsShown();
 		local showChains = not gameEnvironmentToggleShown and (not currentExpansionLevel or currentExpansionLevel < LE_EXPANSION_WAR_WITHIN);
 
 		CharSelectAccountUpgradeButton.TopChain1:SetShown(showChains);
@@ -1299,7 +1319,7 @@ function CharacterTemplatesFrame_Update()
 
     local numTemplates = C_CharacterCreation.GetNumCharacterTemplates();
 	local isShown = (numTemplates > 0) and IsConnectedToServer();
-	CharacterSelectUI.ToolTray:SetToolFrameShown(CharacterTemplatesFrame, isShown);
+	CharacterSelectUI.VisibilityFramesContainer.ToolTray:SetToolFrameShown(CharacterTemplatesFrame, isShown);
 end
 
 function CharacterTemplatesFrame_OnLoad(self)
@@ -1364,12 +1384,12 @@ function PlayersOnServer_Update()
     local self = PlayersOnServer;
     local connected = IsConnectedToServer();
 	if not connected then
-		CharacterSelectUI.ToolTray:SetToolFrameShown(self, false);
+		CharacterSelectUI.VisibilityFramesContainer.ToolTray:SetToolFrameShown(self, false);
         return;
     end
 
     local showPlayers, numHorde, numAlliance = GetPlayersOnServer();
-	CharacterSelectUI.ToolTray:SetToolFrameShown(self, showPlayers);
+	CharacterSelectUI.VisibilityFramesContainer.ToolTray:SetToolFrameShown(self, showPlayers);
     if showPlayers then
         self.HordeCount:SetText(numHorde);
         self.AllianceCount:SetText(numAlliance);
@@ -1457,7 +1477,8 @@ function CharacterSelect_UpdateButtonState()
 	CharSelectEnterWorldButton:SetEnabled(allowedToEnterWorld);
 	CharacterSelectBackButton:SetEnabled(servicesEnabled and not undeleting and not boostInProgress);
 	CharacterSelectCharacterFrame:SetDeleteEnabled(hasCharacters and servicesEnabled and not undeleting and not redemptionInProgress and not CharacterSelect_IsRetrievingCharacterList() and not isAccountLocked, disabledTooltip);
-	CharacterSelectUI.CharacterList:SetCharacterCreateEnabled(servicesEnabled and not undeleting and not redemptionInProgress and not isAccountLocked, disabledTooltip);
+	CharacterSelectUI.VisibilityFramesContainer.CharacterList:SetCharacterCreateEnabled(servicesEnabled and not undeleting and not redemptionInProgress and not isAccountLocked, disabledTooltip);
+	CharacterSelectUI.VisibilityToggleButton:SetEnabled(servicesEnabled and not undeleting and not redemptionInProgress);
 	CharSelectUndeleteCharacterButton:SetEnabled(servicesEnabled and undeleteEnabled and not undeleteOnCooldown and not redemptionInProgress and not isAccountLocked);
 	CopyCharacterButton:SetEnabled(servicesEnabled and not undeleting and not redemptionInProgress and not isAccountLocked);
 	ActivateFactionChange:SetEnabled(servicesEnabled and not undeleting and not redemptionInProgress and not isAccountLocked);
@@ -1585,14 +1606,14 @@ function CharacterServicesMaster_UpdateServiceButton()
 		end
 
 		CharacterSelect.VASPools = CreateFramePoolCollection();
-		CharacterSelect.VASPools:CreatePool("BUTTON", CharacterSelectUI.VASTokenContainer, "CharacterBoostTemplate", vasResetter);
-		CharacterSelect.VASPools:CreatePool("BUTTON", CharacterSelectUI.VASTokenContainer, "CharacterVASTemplate", vasResetter);
+		CharacterSelect.VASPools:CreatePool("BUTTON", CharacterSelectUI.VisibilityFramesContainer.VASTokenContainer, "CharacterBoostTemplate", vasResetter);
+		CharacterSelect.VASPools:CreatePool("BUTTON", CharacterSelectUI.VisibilityFramesContainer.VASTokenContainer, "CharacterVASTemplate", vasResetter);
 	end
 
 	CharacterSelect.VASPools:ReleaseAll();
 
     UpgradePopupFrame:Hide();
-    CharacterSelectUI.WarningText:Hide();
+    CharacterSelectUI.VisibilityFramesContainer.WarningText:Hide();
 
     if CharacterSelect.undeleting or (CharSelectServicesFlowFrame:ShouldDisableButtons()) then
         return;
@@ -1623,12 +1644,12 @@ function CharacterServicesMaster_UpdateServiceButton()
 
     -- support refund notice for Korea
     if hasPurchasedBoost and C_StoreSecure.GetCurrencyID() == CURRENCY_KRW then
-        CharacterSelectUI.WarningText:Show();
+        CharacterSelectUI.VisibilityFramesContainer.WarningText:Show();
     end
 
 	CharacterServicesMaster_UpdateVASButtons(displayOrder);
 	CharacterServicesMaster_UpdateBoostButtons(displayOrder, upgradeInfo);
-	CharacterSelectUI.VASTokenContainer:Layout();
+	CharacterSelectUI.VisibilityFramesContainer.VASTokenContainer:Layout();
 end
 
 function CharSelectServicesFlow_Minimize()
@@ -1907,14 +1928,15 @@ function BeginCharacterServicesFlow(flow, data)
 		CharSelectServicesFlowFrame:Initialize(flow);
 
 		CharSelectServices_ShowFlowFrame();
-		
+
 		flow:SetTarget(data); -- NOTE: It seems like data can be changed in the middle of a flow, so keeping this here until that is determined.
 		CharacterServicesMaster_SetFlow(CharacterServicesMaster, flow);
 
 		-- RPE force expands the character list when player clicks the first 'next' button in the flow, since that is automatically started compared to other flows.
 		if flow ~= RPEUpgradeFlow then
 			-- In case the character select list was collapsed, ensure that it is now expanded.
-			CharacterSelectUI:ExpandCharacterList();
+			local isExpanded = true;
+			CharacterSelectUI:ExpandCharacterList(isExpanded);
 			CharacterSelectUI:SetCharacterListToggleEnabled(false);
 		end
 	end
@@ -2439,6 +2461,7 @@ function CharacterSelect_StartCharacterUndelete()
     CharacterSelect.undeleting = true;
     CharacterSelect.undeleteChanged = true;
 
+	CharacterSelectUI.VisibilityToggleButton:Hide();
     CharacterSelectCharacterFrame:UpdateUndeleteState();
 	CharacterTemplatesFrame.CreateTemplateButton:Hide();
 
@@ -2452,6 +2475,7 @@ function CharacterSelect_EndCharacterUndelete()
     CharacterSelect.undeleting = false;
     CharacterSelect.undeleteChanged = true;
 
+	CharacterSelectUI.VisibilityToggleButton:Show();
 	CharacterSelectCharacterFrame:UpdateUndeleteState();
 	CharacterTemplatesFrame.CreateTemplateButton:Show();
 
@@ -2546,7 +2570,7 @@ end
 
 function CopyCharacterButtonMixin:UpdateButtonState()
 	local isShown = C_CharacterServices.IsLiveRegionCharacterListEnabled() or C_CharacterServices.IsLiveRegionCharacterCopyEnabled() or C_CharacterServices.IsLiveRegionAccountCopyEnabled() or C_CharacterServices.IsLiveRegionKeyBindingsCopyEnabled();
-	CharacterSelectUI.ToolTray:SetToolFrameShown(self, isShown);
+	CharacterSelectUI.VisibilityFramesContainer.ToolTray:SetToolFrameShown(self, isShown);
 end
 
 function CopyCharacterSearch_OnClick(self)

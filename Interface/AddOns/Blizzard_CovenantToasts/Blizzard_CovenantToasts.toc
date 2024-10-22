@@ -1,6 +1,7 @@
 ## Title: Blizzard Covenant Toasts
 ## Author: Blizzard Entertainment
 ## LoadOnDemand: 0
+## AllowLoadGameType: standard
 
 Blizzard_CovenantToasts.lua
 Blizzard_CovenantToasts.xml

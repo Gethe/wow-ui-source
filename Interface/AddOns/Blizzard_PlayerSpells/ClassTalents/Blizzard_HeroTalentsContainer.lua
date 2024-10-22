@@ -157,6 +157,10 @@ function HeroTalentsContainerMixin:UpdateAvailableHeroSpecs()
 	end
 end
 
+function HeroTalentsContainerMixin:IsNodeInAvailableSubTree(nodeInfo)
+	return nodeInfo and nodeInfo.subTreeID and tContains(self.availableHeroSpecSubTreeIDs, nodeInfo.subTreeID);
+end
+
 -- Updates the first available SubTreeSelection node; Returns true if the node has changed since last update
 function HeroTalentsContainerMixin:UpdateActiveHeroSpecSelectionNode()
 	local talentFrame = self:GetTalentFrame();
@@ -347,7 +351,7 @@ function HeroTalentsContainerMixin:UpdateSearchDisplay(skipCheckingCollapseState
 				elseif not bestInactiveSubTreeMatch or nodeMatchType > bestInactiveSubTreeMatch then
 					-- For nodes not in the active sub tree, ensure the node is contained within one
 					-- of the sub trees for the current spec.
-					if tContains(self.availableHeroSpecSubTreeIDs, nodeInfo.subTreeID) then
+					if self:IsNodeInAvailableSubTree(nodeInfo) then
 						bestInactiveSubTreeMatch = nodeMatchType;
 					end
 				end

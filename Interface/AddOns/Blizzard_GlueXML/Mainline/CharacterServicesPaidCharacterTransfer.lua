@@ -7,7 +7,6 @@ local function RequestAssignPCTForResults(results, isValidationOnly)
 		results.destinationRealmAddress,
 		results.account.accountGUID,
 		results.account.bnetAccountGUID,
-		results.isGuildFollow,
 		isValidationOnly
 	);
 end
@@ -95,28 +94,6 @@ function TransferRealmEditboxMixin:GetRealmAddress()
 	return self:GetAutoCompleteUserDataForValue(self:GetText());
 end
 
-FollowGuildMixin = {};
-
-function FollowGuildMixin:Initialize(results, wasFromRewind)
-	if not wasFromRewind then
-		self:SetChecked(false);
-	end
-end
-
-function FollowGuildMixin:OnClick()
-	self:CallOnClickedCallback();
-end
-
-function FollowGuildMixin:SetOnClickedCallback(callback)
-	self.callback = callback;
-end
-
-function FollowGuildMixin:CallOnClickedCallback()
-	if self.callback then
-		self.callback();
-	end
-end
-
 local PCTDestinationSelectBlock = {
 	FrameName = "PCTDestinationSelect",
 	Back = true,
@@ -127,112 +104,22 @@ local PCTDestinationSelectBlock = {
 };
 
 function PCTDestinationSelectBlock:Initialize(results, wasFromRewind)
+	local controlsFrame = self.frame.ControlsFrame;
+
 	if not wasFromRewind then
 		local checkUpdate = function()
 			self:CheckUpdate();
 		end
 
-		self.frame.ControlsFrame.TransferRealmEditbox:SetOnTextChangedCallback(checkUpdate);
-		self.frame.ControlsFrame.TransferAccountContainer:SetOnSelectedCallback(checkUpdate);
-		self.frame.ControlsFrame.FollowGuildCheckbox:SetOnClickedCallback(checkUpdate);
-
-		self.frame.ControlsFrame.LoadingSpinner:ClearAllPoints();
-		self.frame.ControlsFrame.LoadingSpinner:SetPoint("TOPLEFT", self.frame.ControlsFrame:GetParent().StepActiveLabel, "BOTTOMLEFT", 0, -10);
-		self.frame.ControlsFrame.FollowGuildCheckbox.Label:SetSize(230, 30);
+		controlsFrame.TransferRealmEditbox:SetOnTextChangedCallback(checkUpdate);
+		controlsFrame.TransferAccountContainer:SetOnSelectedCallback(checkUpdate);
 	end
 
-	self.frame.ControlsFrame.TransferRealmEditbox:Initialize(results, wasFromRewind);
-	self.frame.ControlsFrame.TransferAccountContainer:Initialize(results, wasFromRewind);
-	self.frame.ControlsFrame.FollowGuildCheckbox:Initialize(results, wasFromRewind);
-
-	self:RequestGuildFollowInfo(results.selectedCharacterGUID);
-end
-
-function PCTDestinationSelectBlock:RequestGuildFollowInfo(characterGUID)
-	--- Request information about whether or not this character will need to follow a guild for this transfer.
-	EventRegistry:RegisterFrameEvent("STORE_GUILD_FOLLOW_INFO_RECEIVED");
-	EventRegistry:RegisterCallback("STORE_GUILD_FOLLOW_INFO_RECEIVED", self.OnStoreGuildFollowInfoReceived, self);
-
-	self.awaitingGuildFollowCharacterGUID = characterGUID;
-
-	local currentRealmAddress = select(5, GetServerName());
-	C_StoreSecure.RequestCharacterGuildFollowInfo(characterGUID, currentRealmAddress); -- TODO: Await results if this has already been requested?
-	self:SetState("AwaitingGuildFollowInfo");
-end
-
-function PCTDestinationSelectBlock:OnStoreGuildFollowInfoReceived(characterGUID, guildFollowInfo)
-	EventRegistry:UnregisterFrameEvent("STORE_GUILD_FOLLOW_INFO_RECEIVED");
-	EventRegistry:UnregisterCallback("STORE_GUILD_FOLLOW_INFO_RECEIVED", self);
-
-	local guildFollowResultsMatchCharacter = characterGUID == self.awaitingGuildFollowCharacterGUID;
-	self:SetCanFollowGuild(guildFollowInfo and guildFollowInfo.transferredRealm);
-	self:UpdateFollowGuildCheckbox(guildFollowResultsMatchCharacter, guildFollowInfo);
-	self:SetState("GuildFollowReceived");
-end
-
-function PCTDestinationSelectBlock:UpdateFollowGuildCheckbox(guildFollowResultsMatchCharacter, guildFollowInfo)
-	if guildFollowInfo and guildFollowInfo.transferredRealm then
-		local checkboxString = BLIZZARD_STORE_VAS_FOLLOW_GUILD_FACTION_CHANGE;
-		if guildFollowInfo.transferredRealm then
-			checkboxString = BLIZZARD_STORE_VAS_FOLLOW_GUILD_TRANSFER:format(guildFollowInfo.transferredRealm);
-		end
-
-		self.frame.ControlsFrame.FollowGuildCheckbox.Label:SetText(checkboxString);
-		self.frame.ControlsFrame.FollowGuildCheckbox:SetChecked(true);
-		self.frame.ControlsFrame.FollowGuildCheckbox:OnClick(true);
-		self.frame.ControlsFrame.FollowGuildCheckbox:Show();
-	else
-		self.frame.ControlsFrame.FollowGuildCheckbox:Hide();
-	end
-end
-
-function PCTDestinationSelectBlock:UpdateVisibleState()
-	local isWaiting = self:GetState() == "AwaitingGuildFollowInfo";
-	local hasFollowInfo = self:GetState() == "GuildFollowReceived";
-	local hasGuildFollowOption = hasFollowInfo and self:CanFollowGuild();
-	local willFollowGuild = hasGuildFollowOption and self:WillFollowGuild();
-	local showDestinationSelectFrames = not (isWaiting or willFollowGuild);
-
-	local controlsFrame = self.frame.ControlsFrame;
-
-	controlsFrame.TransferRealmLabel:SetShown(showDestinationSelectFrames);
-	controlsFrame.TransferRealmEditbox:SetShown(showDestinationSelectFrames);
-	controlsFrame.TransferAccountContainer:SetShown(showDestinationSelectFrames);
-	controlsFrame.FollowGuildCheckbox:SetShown(hasGuildFollowOption);
-	controlsFrame.LoadingSpinner:SetShown(isWaiting);
-
-	controlsFrame.TransferRealmLabel:ClearAllPoints();
-	if hasGuildFollowOption then
-		controlsFrame.TransferRealmLabel:SetPoint("TOPLEFT", controlsFrame.FollowGuildCheckbox, "BOTTOMLEFT", 1, -23);
-	else
-		controlsFrame.TransferRealmLabel:SetPoint("TOPLEFT", controlsFrame, "TOPLEFT", 90, -102);
-	end
-end
-
-function PCTDestinationSelectBlock:SetState(state)
-	self.state = state;
-	self:UpdateVisibleState();
-	self:CheckUpdate();
-end
-
-function PCTDestinationSelectBlock:GetState()
-	return self.state;
-end
-
-function PCTDestinationSelectBlock:CanFollowGuild()
-	return self.canFollowGuild;
-end
-
-function PCTDestinationSelectBlock:SetCanFollowGuild(follow)
-	self.canFollowGuild = follow;
-end
-
-function PCTDestinationSelectBlock:WillFollowGuild()
-	return self.frame.ControlsFrame.FollowGuildCheckbox:GetChecked();
+	controlsFrame.TransferRealmEditbox:Initialize(results, wasFromRewind);
+	controlsFrame.TransferAccountContainer:Initialize(results, wasFromRewind);
 end
 
 function PCTDestinationSelectBlock:CheckUpdate()
-	self:UpdateVisibleState();
 	CharacterServicesMaster_Update();
 end
 
@@ -260,15 +147,6 @@ end
 function PCTDestinationSelectBlock:IsFinished(wasFromRewind)
 	if wasFromRewind then
 		return false;
-	end
-
-	if self:GetState() == "AwaitingGuildFollowInfo" then
-		return false;
-	end
-
-	-- Not sure about this yet, seems like the user actually does have an option, but we always return true here if the user can and will follow the guild
-	if self:CanFollowGuild() and self:WillFollowGuild() then
-		return true;
 	end
 
 	local result = self:GetResult();
@@ -299,7 +177,6 @@ function PCTDestinationSelectBlock:GetResult()
 		destinationRealm = self.frame.ControlsFrame.TransferRealmEditbox:GetRealmName(),
 		destinationRealmAddress = self.frame.ControlsFrame.TransferRealmEditbox:GetRealmAddress(),
 		account = self.frame.ControlsFrame.TransferAccountContainer:GetResult(),
-		isGuildFollow = self:WillFollowGuild(),
 	};
 end
 

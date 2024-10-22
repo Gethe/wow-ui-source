@@ -563,6 +563,18 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "IconAndTextShiftTextType",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "None", Type = "IconAndTextShiftTextType", EnumValue = 0 },
+				{ Name = "ShiftText", Type = "IconAndTextShiftTextType", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "IconAndTextWidgetState",
 			Type = "Enumeration",
 			NumValues = 4,
@@ -1384,6 +1396,7 @@ local UIWidgetManager =
 				{ Name = "tooltip", Type = "string", Nilable = false },
 				{ Name = "dynamicTooltip", Type = "string", Nilable = false },
 				{ Name = "tooltipLoc", Type = "UIWidgetTooltipLocation", Nilable = false },
+				{ Name = "shiftTextType", Type = "IconAndTextShiftTextType", Nilable = false },
 				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
 				{ Name = "textureKit", Type = "textureKit", Nilable = false },
 				{ Name = "frameTextureKit", Type = "textureKit", Nilable = false },

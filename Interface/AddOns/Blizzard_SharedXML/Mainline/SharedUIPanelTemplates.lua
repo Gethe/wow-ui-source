@@ -291,7 +291,7 @@ function PanelTabButtonMixin:OnShow()
 end
 
 function PanelTabButtonMixin:OnEnter()
-	if not IsOnGlueScreen() then
+	if not C_Glue.IsOnGlueScreen() then
 		GameTooltip_Hide();
 	end
 
@@ -302,7 +302,7 @@ function PanelTabButtonMixin:OnEnter()
 end
 
 function PanelTabButtonMixin:OnLeave()
-	if not IsOnGlueScreen() then
+	if not C_Glue.IsOnGlueScreen() then
 		GameTooltip_Hide();
 	end
 end
@@ -1091,6 +1091,10 @@ function UIButtonMixin:OnEnter()
 
 			if self.tooltipText then
 				local wrap = true;
+				if self.tooltipDisableWrapText then
+					wrap = false;
+				end
+
 				GameTooltip_AddColoredLine(tooltip, self.tooltipText, self.tooltipTextColor or NORMAL_FONT_COLOR, wrap);
 			end
 
@@ -2729,13 +2733,6 @@ function RingedMaskedButtonMixin:OnMouseDown(button)
 end
 
 function RingedMaskedButtonMixin:OnMouseUp(button)
-	if button == "RightButton" and self.expandedTooltipFrame then
-		self.tooltipsExpanded = not self.tooltipsExpanded;
-		if self:IsMouseMotionFocus() then
-			self:OnEnter();
-		end
-	end
-
 	self.CheckedTexture:SetPoint("CENTER");
 	self.CircleMask:SetPoint("TOPLEFT", self.NormalTexture, "TOPLEFT", self.circleMaskSizeOffset, -self.circleMaskSizeOffset);
 	self.CircleMask:SetPoint("BOTTOMRIGHT", self.NormalTexture, "BOTTOMRIGHT", -self.circleMaskSizeOffset, self.circleMaskSizeOffset);

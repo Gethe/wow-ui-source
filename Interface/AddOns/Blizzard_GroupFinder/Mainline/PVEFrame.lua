@@ -390,6 +390,7 @@ function PVEFrameMixin:OnLoad()
 	PanelTemplates_SetNumTabs(self, #panels);
 
 	self:RegisterEvent("AJ_PVP_ACTION");
+	self:RegisterEvent("AJ_PVP_SPECIAL_BG_ACTION");
 	self:RegisterEvent("AJ_PVP_SKIRMISH_ACTION");
 	self:RegisterEvent("AJ_PVP_LFG_ACTION");
 	self:RegisterEvent("AJ_PVP_RBG_ACTION");
@@ -443,6 +444,14 @@ function PVEFrameMixin:OnEvent(event, ...)
 		PVEFrame_ShowFrame("PVPUIFrame", "HonorFrame");
 		HonorFrameSpecificList_FindAndSelectBattleground(id);
 		HonorFrame_SetType("specific");
+	elseif ( event == "AJ_PVP_SPECIAL_BG_ACTION" ) then
+		PVEFrame_ShowFrame("PVPUIFrame", "HonorFrame");
+		HonorFrame_SetType("bonus");
+		
+		if (HonorFrame.BonusFrame.BrawlButton2) then
+			HonorFrameBonusFrame_SelectButton(HonorFrame.BonusFrame.BrawlButton2);
+		end
+
 	elseif ( event == "AJ_PVP_SKIRMISH_ACTION" ) then
 		PVEFrame_ShowFrame("PVPUIFrame", "HonorFrame");
 		HonorFrame_SetType("bonus");

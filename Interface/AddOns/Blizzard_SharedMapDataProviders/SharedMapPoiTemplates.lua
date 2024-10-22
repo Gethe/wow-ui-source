@@ -1,9 +1,7 @@
 BaseMapPoiPinMixin = CreateFromMixins(MapCanvasPinMixin);
 
---[[static]] function BaseMapPoiPinMixin:CreateSubPin(pinFrameLevel, ...)
-	local subPin = CreateFromMixins(self, ...);
-	subPin.pinFrameLevel = pinFrameLevel;
-	return subPin;
+--[[static]] function BaseMapPoiPinMixin:CreateSubPin(pinFrameLevel)
+	return CreateFromMixins(self, { pinFrameLevel = pinFrameLevel });
 end
 
 function BaseMapPoiPinMixin:OnLoad()
@@ -16,15 +14,21 @@ end
 local ATLAS_WITH_TEXTURE_KIT_PREFIX = "%s-%s";
 function BaseMapPoiPinMixin:SetTexture(poiInfo)
 	poiInfo = poiInfo or self:GetPoiInfo();
+	local useAtlasSize, textureWidth, textureHeight = self:GetTextureSizeInfo(poiInfo);
 	local atlasName = poiInfo.atlasName;
+
 	if atlasName then
 		if poiInfo.textureKit then
 			atlasName = ATLAS_WITH_TEXTURE_KIT_PREFIX:format(poiInfo.textureKit, atlasName);
 		end
 
-		self.Texture:SetAtlas(atlasName, true);
+		self.Texture:SetAtlas(atlasName, useAtlasSize);
+		if not useAtlasSize and textureWidth and textureHeight then
+			self.Texture:SetSize(textureWidth, textureHeight);
+		end
+
 		if self.HighlightTexture then
-			self.HighlightTexture:SetAtlas(atlasName, true);
+			self.HighlightTexture:SetAtlas(atlasName, useAtlasSize);
 		end
 
 		local sizeX, sizeY = self.Texture:GetSize();
@@ -39,8 +43,7 @@ function BaseMapPoiPinMixin:SetTexture(poiInfo)
 		end
 	else
 		self:SetSize(32, 32);
-		self.Texture:SetWidth(16);
-		self.Texture:SetHeight(16);
+		self.Texture:SetSize(textureWidth, textureHeight);
 		self.Texture:SetTexture("Interface/Minimap/POIIcons");
 		if self.HighlightTexture then
 			self.HighlightTexture:SetTexture("Interface/Minimap/POIIcons");
@@ -51,6 +54,16 @@ function BaseMapPoiPinMixin:SetTexture(poiInfo)
 		if self.HighlightTexture then
 			self.HighlightTexture:SetTexCoord(x1, x2, y1, y2);
 		end
+	end
+end
+
+function BaseMapPoiPinMixin:GetTextureSizeInfo(poiInfo)
+	poiInfo = poiInfo or self:GetPoiInfo();
+	local atlasName = poiInfo.atlasName;
+	if atlasName then
+		return TextureKitConstants.UseAtlasSize;
+	else
+		return TextureKitConstants.IgnoreAtlasSize, 16, 16;
 	end
 end
 
@@ -331,21 +344,58 @@ function ClearCachedActivitiesForPlayer()
 	ClearCachedAreaPOIsForPlayer();
 end
 
--- Cache for C_TaskQuest.GetQuestsForPlayerByMapID
 local questCache = {};
-function GetQuestsForPlayerByMapIDCached(mapID)
+function GetQuestsOnMapCached(mapID)
 	local entry = questCache[mapID];
 	if entry then
 		return entry;
 	end
 
-	local quests = C_TaskQuest.GetQuestsForPlayerByMapID(mapID);
+	local quests = C_QuestLog.GetQuestsOnMap(mapID);
 	questCache[mapID] = quests;
 	return quests;
 end
 
+-- Cache for C_TaskQuest.GetQuestsOnMap
+local function AddIndicatorQuestsToTasks(container, mapID)
+	local questsOnMap = GetQuestsOnMapCached(mapID);
+
+	if questsOnMap then
+		for i, info in ipairs(questsOnMap) do
+			if(info.isMapIndicatorQuest) then
+				if (info.type ~= Enum.QuestTagType.Islands or ShouldShowIslandsWeeklyPOI()) then
+					info.inProgress = true;
+					info.numObjectives = C_QuestLog.GetNumQuestObjectives(info.questID);
+					info.mapID = mapID;
+					info.isQuestStart = false; -- not an offer
+					info.isDaily = false;
+					info.isCombatAllyQuest = false;
+					info.isMeta = false;
+					-- info.childDepth avoided
+				
+					table.insert(container, info);
+				end
+			end
+		end
+	end
+end
+
+local taskCache = {};
+function GetTasksOnMapCached(mapID)
+	local entry = taskCache[mapID];
+	if entry then
+		return entry;
+	end
+
+	local tasks = C_TaskQuest.GetQuestsOnMap(mapID);
+	AddIndicatorQuestsToTasks(tasks, mapID);
+	taskCache[mapID] = tasks;
+	return tasks;
+end
+
 function ClearCachedQuestsForPlayer()
 	questCache = {};
+	taskCache = {};
 end
 
 -- Cache for C_AreaPoiInfo.GetAreaPOIForMap
@@ -520,9 +570,15 @@ function SuperTrackablePinMixin:UpdateSuperTrackTextureAnchors()
 		self.SuperTrackGlow:SetPoint("TOPLEFT", self.Texture, "TOPLEFT", -18, 18);
 		self.SuperTrackGlow:SetPoint("BOTTOMRIGHT", self.Texture, "BOTTOMRIGHT", 18, -18);
 
+		local x, y = self:GetSuperTrackMarkerOffset();
 		self.SuperTrackMarker:ClearAllPoints();
-		self.SuperTrackMarker:SetPoint("CENTER", self.Texture, "BOTTOMRIGHT", -5, 5);
+		self.SuperTrackMarker:SetPoint("CENTER", self.Texture, "BOTTOMRIGHT", x, y);
 	end
+end
+
+function SuperTrackablePinMixin:GetSuperTrackMarkerOffset()
+	-- override
+	return -5, 5;
 end
 
 function SuperTrackablePinMixin:GetSuperTrackData()

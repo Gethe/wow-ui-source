@@ -39,6 +39,8 @@ local DelvesConstants =
 				{ Name = "DELVES_COMPANION_TOOLTIP_WIDGET_SET_ID", Type = "number", Value = 1331 },
 				{ Name = "DELVES_COMPANION_TRAIT_SYSTEM_ID", Type = "number", Value = 6 },
 				{ Name = "BRANN_COMPANION_INFO_ID", Type = "number", Value = 1 },
+				{ Name = "BRANN_MAX_LEVEL", Type = "number", Value = 60 },
+				{ Name = "BRANN_XP_FACTION_ID", Type = "number", Value = 1203 },
 			},
 		},
 	},

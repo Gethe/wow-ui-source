@@ -205,9 +205,9 @@ function WorldQuestDataProviderMixin:DoesWorldQuestInfoPassFilters(info)
 	return WorldMap_DoesWorldQuestInfoPassFilters(info, ignoreTypeRequirements);
 end
 
-function WorldQuestDataProviderMixin:ShouldOverrideShowQuest(mapID, questId)
+function WorldQuestDataProviderMixin:ShouldOverrideShowQuest(mapID, questID)
 	local mapInfo = C_Map.GetMapInfo(mapID);
-	if questId == C_SuperTrack.GetSuperTrackedQuestID() and mapInfo.mapType == Enum.UIMapType.Continent then
+	if questID == C_SuperTrack.GetSuperTrackedQuestID() and mapInfo.mapType == Enum.UIMapType.Continent then
 		return true;
 	end
 	return false;
@@ -215,8 +215,8 @@ end
 
 function WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
 	local pinsToRemove = {};
-	for questId in pairs(self.activePins) do
-		pinsToRemove[questId] = true;
+	for questID in pairs(self.activePins) do
+		pinsToRemove[questID] = true;
 	end
 
 	local taskInfo;
@@ -224,28 +224,28 @@ function WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
 
 	local mapID = mapCanvas:GetMapID();
 	if (mapID) then
-		taskInfo = GetQuestsForPlayerByMapIDCached(mapID);
+		taskInfo = GetTasksOnMapCached(mapID);
 		self.matchWorldMapFilters = MapUtil.MapShouldShowWorldQuestFilters(mapID);
 	end
 
 	if taskInfo and GetCVarBool("questPOIWQ") then
 		for i, info in ipairs(taskInfo) do
-			if self:ShouldOverrideShowQuest(mapID, info.questId) or self:ShouldShowQuest(info) and HaveQuestData(info.questId) then
-				if QuestUtils_IsQuestWorldQuest(info.questId) then
+			if self:ShouldOverrideShowQuest(mapID, info.questID) or self:ShouldShowQuest(info) and HaveQuestData(info.questID) then
+				if QuestUtils_IsQuestWorldQuest(info.questID) or info.isMapIndicatorQuest then
 					if self:DoesWorldQuestInfoPassFilters(info) then
-						pinsToRemove[info.questId] = nil;
-						local pin = self.activePins[info.questId];
+						pinsToRemove[info.questID] = nil;
+						local pin = self.activePins[info.questID];
 						if pin then
 							pin:RefreshVisuals();
 							pin.numObjectives = info.numObjectives;	-- Fix for quests with sequenced objectives
 							pin:SetPosition(info.x, info.y); -- Fix for WOW8-48605 - WQ starting location may move based on player location and viewed map
 							pin:AddIconWidgets();
 
-							if self.pingPin and self.pingPin:GetID() == info.questId then
+							if self.pingPin and self.pingPin:GetID() == info.questID then
 								self.pingPin:SetPosition(info.x, info.y);
 							end
 						else
-							self.activePins[info.questId] = self:AddWorldQuest(info);
+							self.activePins[info.questID] = self:AddWorldQuest(info);
 						end
 					end
 				end
@@ -253,13 +253,13 @@ function WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
 		end
 	end
 
-	for questId in pairs(pinsToRemove) do
-		if self.pingPin and self.pingPin:GetID() == questId then
+	for questID in pairs(pinsToRemove) do
+		if self.pingPin and self.pingPin:GetID() == questID then
 			self.pingPin:Stop();
 		end
 
-		mapCanvas:RemovePin(self.activePins[questId]);
-		self.activePins[questId] = nil;
+		mapCanvas:RemovePin(self.activePins[questID]);
+		self.activePins[questID] = nil;
 	end
 
 	mapCanvas:TriggerEvent("WorldQuestsUpdate", mapCanvas:GetNumActivePinsByTemplate(self:GetPinTemplate()));
@@ -273,12 +273,12 @@ function WorldQuestDataProviderMixin:OnSuperTrackingChanged()
 end
 
 function WorldQuestDataProviderMixin:ShouldShowQuest(info)
-	if self:IsQuestSuppressed(info.questId) then
+	if self:IsQuestSuppressed(info.questID) then
 		return false;
 	end
 
 	if self.focusedQuestID then
-		return C_QuestLog.IsQuestCalling(self.focusedQuestID) and self:ShouldSupertrackHighlightInfo(info.questId);
+		return C_QuestLog.IsQuestCalling(self.focusedQuestID) and self:ShouldSupertrackHighlightInfo(info.questID);
 	end
 
 	return true;
@@ -323,7 +323,7 @@ function WorldQuestDataProviderMixin:AddWorldQuest(info)
 	local pin = self:GetMap():AcquirePin(pinTemplate);
 	pin:UseFrameLevelType("PIN_FRAME_LEVEL_WORLD_QUEST", self:GetMap():GetNumActivePinsByTemplate(pinTemplate));
 
-	local questID = info.questId;
+	local questID = info.questID;
 	local tagInfo = C_QuestLog.GetQuestTagInfo(questID);
 
 	pin.info = info;
@@ -334,14 +334,18 @@ function WorldQuestDataProviderMixin:AddWorldQuest(info)
 	pin.tagInfo = tagInfo;
 	pin.worldQuestType = tagInfo.worldQuestType;
 
+	if info.isMapIndicatorQuest then
+		pin.shouldShowObjectivesAsStatusBar = true;
+	end
+
 	pin:InitializeVisuals();
 	pin:SetPosition(info.x, info.y);
 
-	pin.iconWidgetSet = C_TaskQuest.GetQuestIconUIWidgetSet(pin.questID);
+	pin.iconWidgetSet = C_TaskQuest.GetQuestIconUIWidgetSet(questID);
 	pin:AddIconWidgets();
 
-	if not HaveQuestRewardData(info.questId) then
-		C_TaskQuest.RequestPreloadRewardData(info.questId);
+	if not HaveQuestRewardData(questID) then
+		C_TaskQuest.RequestPreloadRewardData(questID);
 	end
 
 	return pin;

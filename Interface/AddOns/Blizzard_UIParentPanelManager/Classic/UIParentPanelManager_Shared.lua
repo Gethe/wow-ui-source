@@ -928,7 +928,7 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		end
 	else
 		if (SlidingActionBarTexture0 and SlidingActionBarTexture1) then
-			if (PetActionBarFrame_IsAboveStance and PetActionBarFrame_IsAboveStance()) then
+			if ((MultiBarBottomRight and MultiBarBottomRight:IsShown()) or (PetActionBarFrame_IsAboveStance and PetActionBarFrame_IsAboveStance())) then
 				SlidingActionBarTexture0:Hide();
 				SlidingActionBarTexture1:Hide();
 			else

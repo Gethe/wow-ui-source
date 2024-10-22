@@ -1333,6 +1333,10 @@ function TalentButtonSelectMixin:OnClick(button)
 		return;
 	end
 
+	if self:IsLocked() then
+		return;
+	end
+
 	if button == "RightButton" then
 		if self:IsGhosted() then
 			self:ClearCascadeRepurchaseHistory();
@@ -1396,8 +1400,14 @@ function TalentButtonSelectMixin:AddTooltipCost(tooltip)
 	-- Override TalentButtonBaseMixin.
 end
 
-function TalentButtonSelectMixin:AddTooltipErrors(unused_tooltip)
+function TalentButtonSelectMixin:AddTooltipErrors(tooltip)
 	-- Overrides TalentDisplayMixin.
+
+	local isLocked, errorMessage = self:GetTalentFrame():IsLocked();
+	if isLocked and errorMessage then
+		GameTooltip_AddBlankLineToTooltip(tooltip);
+		GameTooltip_AddErrorLine(tooltip, errorMessage);
+	end
 end
 
 function TalentButtonSelectMixin:UpdateNodeInfo(skipUpdate)

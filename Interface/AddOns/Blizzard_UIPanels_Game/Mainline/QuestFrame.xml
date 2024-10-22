@@ -296,10 +296,10 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="1">
+			<Layer level="OVERLAY" textureSubLevel="4">
 				<Texture parentKey="ModelNameDivider" atlas="ui-frame-bossportrait-divider" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.ModelBackground" relativePoint="BOTTOM" y="-6"/>
+						<Anchor point="CENTER" relativeKey="$parent.ModelBackground" relativePoint="BOTTOM" x="-1" y="-6"/>
 					</Anchors>
 				</Texture>
 				<FontString name="QuestNPCModelNameText" inherits="GameFontNormal">
@@ -401,9 +401,10 @@
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="2">
 				<Texture parentKey="TopBarBg" atlas="ui-frame-bossportrait-tile" horizTile="true">
+					<Size y="20"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Border" x="11" y="-8"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Border" relativePoint="TOPRIGHT" x="-11" y="-26"/>
+						<Anchor point="LEFT" relativeKey="$parent.Border" relativePoint="TOPLEFT" x="11" y="-17"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Border" relativePoint="TOPRIGHT" x="-11" y="-17"/>
 					</Anchors>
 				</Texture>
 			</Layer>

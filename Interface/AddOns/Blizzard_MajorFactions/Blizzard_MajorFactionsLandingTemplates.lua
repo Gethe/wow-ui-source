@@ -425,7 +425,7 @@ function MajorFactionButtonUnlockedStateMixin:ShowParagonRewardsTooltip()
 
 		GameTooltip_AddNormalLine(EmbeddedItemTooltip, description);
 
-		if not hasRewardPending then
+		if not hasRewardPending and currentValue and threshold then
 			local value = mod(currentValue, threshold);
 			-- Show overflow if a reward is pending
 			if hasRewardPending then

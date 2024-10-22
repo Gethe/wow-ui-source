@@ -70,9 +70,9 @@ local AccountConstants =
 		{
 			Name = "AccountTransType",
 			Type = "Enumeration",
-			NumValues = 54,
+			NumValues = 55,
 			MinValue = 0,
-			MaxValue = 53,
+			MaxValue = 54,
 			Fields =
 			{
 				{ Name = "ProxyForwarder", Type = "AccountTransType", EnumValue = 0 },
@@ -129,6 +129,7 @@ local AccountConstants =
 				{ Name = "BitVectors", Type = "AccountTransType", EnumValue = 51 },
 				{ Name = "CombinedQuestLog", Type = "AccountTransType", EnumValue = 52 },
 				{ Name = "PlayerDataElements", Type = "AccountTransType", EnumValue = 53 },
+				{ Name = "CharacterDataMerge", Type = "AccountTransType", EnumValue = 54 },
 			},
 		},
 		{

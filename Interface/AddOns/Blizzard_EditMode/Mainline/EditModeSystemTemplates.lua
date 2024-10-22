@@ -16,6 +16,8 @@ function EditModeSystemMixin:OnSystemLoad()
 	self.ClearAllPointsBase = self.ClearAllPoints;
 	self.ClearAllPoints = self.ClearAllPointsOverride;
 
+	self:SetupVisibilityFunctionOverrides();
+
 	EditModeManagerFrame:RegisterSystemFrame(self);
 
 	self.Selection:SetGetLabelTextFunction(function() return self:GetSystemName(); end);
@@ -24,6 +26,13 @@ function EditModeSystemMixin:OnSystemLoad()
 	self.downKeys = {};
 
 	self.settingDisplayInfoMap = EditModeSettingDisplayInfoManager:GetSystemSettingDisplayInfoMap(self.system);
+end
+
+function EditModeSystemMixin:SetupVisibilityFunctionOverrides()
+	self.SetShownBase = self.SetShown;
+	self.SetShown = self.SetShownOverride;
+	self.HideBase = self.Hide;
+	self.Hide = self.HideOverride;
 end
 
 function EditModeSystemMixin:OnSystemHide()
@@ -143,6 +152,22 @@ end
 function EditModeSystemMixin:ClearAllPointsOverride()
 	self:ClearAllPointsBase();
 	self:ClearFrameSnap();
+end
+
+function EditModeSystemMixin:HideOverride()
+	if self:ShouldBreakSnappedFramesOnHide() then
+		self:BreakSnappedFrames();
+	end
+
+	return self:HideBase();
+end
+
+function EditModeSystemMixin:SetShownOverride(shown)
+	if shown then
+		return self:Show();
+	else 
+		return self:Hide();
+	end
 end
 
 function EditModeSystemMixin:UpdateClampOffsets()
@@ -637,6 +662,11 @@ function EditModeSystemMixin:BreakSnappedFrames()
 	for snappedFrame in pairs(self.snappedFrames) do
 		snappedFrame:BreakFrameSnap();
 	end
+end
+
+function EditModeSystemMixin:ShouldBreakSnappedFramesOnHide()
+	-- Override as necessary, LayoutFrames (automatically sized frames) will typically need to do this
+	return self.IsLayoutFrame and self:IsLayoutFrame();
 end
 
 function EditModeSystemMixin:SetSnappedToFrame(frame)
@@ -1418,14 +1448,24 @@ function EditModeBossUnitFrameSystemMixin:OnEditModeExit()
 	self:UpdateShownState();
 end
 
-function EditModeBossUnitFrameSystemMixin:UpdateShownState()
-	local isAnyBossFrameShowing = false;
+function EditModeBossUnitFrameSystemMixin:ShouldAnyBossFrameShow()
 	for index, bossFrame in ipairs(self.BossTargetFrames) do
-		bossFrame:UpdateShownState();
-		isAnyBossFrameShowing = isAnyBossFrameShowing or bossFrame:IsShown();
+		if bossFrame:ShouldShow() then
+			return true;
+		end
 	end
 
-	self:SetShown(self.isInEditMode or isAnyBossFrameShowing);
+	return false;
+end
+
+function EditModeBossUnitFrameSystemMixin:UpdateShownState()
+	-- Change the visibility state of the container before the children to allow the container to continue to have a valid rect
+	-- during edit mode changes so that snapped frames can be properly repositioned.
+	self:SetShown(self.isInEditMode or self:ShouldAnyBossFrameShow());
+
+	for index, bossFrame in ipairs(self.BossTargetFrames) do
+		bossFrame:UpdateShownState();
+	end
 end
 
 EditModeArenaUnitFrameSystemMixin = {};

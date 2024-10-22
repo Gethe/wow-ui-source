@@ -1,22 +1,22 @@
 local playerUnitToken = "player";
 
-function AddDracthyrTutorials()
-	local _, raceFilename = UnitRace(playerUnitToken);
-	if raceFilename == "Dracthyr" then
+function AddEvokerTutorials()
+	local _, classFilename = UnitClass(playerUnitToken);
+	if classFilename == "EVOKER" then
 		if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_DRACTHYR_ESSENCE) then
-			local class = Class_DracthyrEssenceWatcher:new();
+			local class = Class_EvokerEssenceWatcher:new();
 			class:OnInitialize();
 			class:StartWatching();
 		end
 
 		if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_DRACTHYR_EMPOWERED) then
-			local class = Class_DracthyrEmpoweredSpellWatcher:new();
+			local class = Class_EvokerEmpoweredSpellWatcher:new();
 			class:OnInitialize();
 			class:StartWatching();
 		end
 
 		if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_DRACTHYR_LOW_HEALTH) then
-			local class = Class_DracthyrLowHealthWatcher:new();
+			local class = Class_EvokerLowHealthWatcher:new();
 			class:OnInitialize();
 			class:StartWatching();
 		end
@@ -24,11 +24,11 @@ function AddDracthyrTutorials()
 end
 
 -- ------------------------------------------------------------------------------------------------------------
--- Dracthyr Essence Watcher
+-- Evoker Essence Watcher
 -- ------------------------------------------------------------------------------------------------------------
-Class_DracthyrEssenceWatcher = class("DracthyrEssenceWatcher", Class_TutorialBase);
-function Class_DracthyrEssenceWatcher:OnInitialize()
-	self.questID = 64864; -- Dracthyr Essence Quest
+Class_EvokerEssenceWatcher = class("EvokerEssenceWatcher", Class_TutorialBase);
+function Class_EvokerEssenceWatcher:OnInitialize()
+	self.questID = 64864; -- Evoker Essence Quest
 	self.helpTipInfo = {
 		text = TUTORIAL_DRACTHYR_ESSENCE,
 		cvarBitfield = "closedInfoFrames",
@@ -41,11 +41,11 @@ function Class_DracthyrEssenceWatcher:OnInitialize()
 	};
 end
 
-function Class_DracthyrEssenceWatcher:ShowHelpTip()
+function Class_EvokerEssenceWatcher:ShowHelpTip()
 	HelpTip:Show(EssencePlayerFrame, self.helpTipInfo);
 end
 
-function Class_DracthyrEssenceWatcher:StartWatching()
+function Class_EvokerEssenceWatcher:StartWatching()
 	if C_QuestLog.IsQuestFlaggedCompleted(self.questID) then
 		C_Timer.After(0.1, function()
 			self:ShowHelpTip();
@@ -55,33 +55,33 @@ function Class_DracthyrEssenceWatcher:StartWatching()
 	end
 end
 
-function Class_DracthyrEssenceWatcher:StopWatching()
+function Class_EvokerEssenceWatcher:StopWatching()
 	EventRegistry:UnregisterFrameEventAndCallback("QUEST_TURNED_IN", self);
 end
 
-function Class_DracthyrEssenceWatcher:OnQuestTurnedIn(questID)
+function Class_EvokerEssenceWatcher:OnQuestTurnedIn(questID)
 	if questID == self.questID then
 		EventRegistry:UnregisterFrameEventAndCallback("QUEST_TURNED_IN", self);
 		self:ShowHelpTip();
 	end
 end
 
-function Class_DracthyrEssenceWatcher:OnInterrupt(interruptedBy)
+function Class_EvokerEssenceWatcher:OnInterrupt(interruptedBy)
 	self:Complete();
 end
 
-function Class_DracthyrEssenceWatcher:FinishTutorial()
+function Class_EvokerEssenceWatcher:FinishTutorial()
 	self:StopWatching();
 	HelpTip:Hide(EssencePlayerFrame, TUTORIAL_DRACTHYR_ESSENCE);
 end
 
 -- ------------------------------------------------------------------------------------------------------------
--- Dracthyr Empowered Ability Watcher
+-- Evoker Empowered Ability Watcher
 -- ------------------------------------------------------------------------------------------------------------
-Class_DracthyrEmpoweredSpellWatcher = class("DracthyrEmpoweredAbilityWatcher", Class_TutorialBase);
-function Class_DracthyrEmpoweredSpellWatcher:OnInitialize()
-	self.questID = 64872; -- Dracthyr Empowered Quest
-	self.empoweredSpellID = 357208; -- Dracthyr Empowered Spell
+Class_EvokerEmpoweredSpellWatcher = class("EvokerEmpoweredAbilityWatcher", Class_TutorialBase);
+function Class_EvokerEmpoweredSpellWatcher:OnInitialize()
+	self.questID = 64872; -- Evoker Empowered Quest
+	self.empoweredSpellID = 357208; -- Evoker Empowered Spell
 	self.helpTipInfo = {
 		text = TUTORIAL_DRACTHYR_EMPOWERED_HOLD,
 		cvarBitfield = "closedInfoFrames",
@@ -94,7 +94,7 @@ function Class_DracthyrEmpoweredSpellWatcher:OnInitialize()
 	self:UpdateHelpTipString();
 end
 
-function Class_DracthyrEmpoweredSpellWatcher:UpdateHelpTipString()
+function Class_EvokerEmpoweredSpellWatcher:UpdateHelpTipString()
 	local empoweredSetting = Settings.GetSetting("empowerTapControls");
 	local usingEmpoweredTap = empoweredSetting:GetValue() == 1;
 
@@ -106,7 +106,7 @@ function Class_DracthyrEmpoweredSpellWatcher:UpdateHelpTipString()
 	self.helpTipInfo.text = self.helpString;
 end
 
-function Class_DracthyrEmpoweredSpellWatcher:ShowHelpTip()
+function Class_EvokerEmpoweredSpellWatcher:ShowHelpTip()
 	self:UpdateHelpTipString();
 	self.actionButton = TutorialHelper:GetActionButtonBySpellID(self.empoweredSpellID);
 	if self.actionButton then
@@ -116,7 +116,7 @@ function Class_DracthyrEmpoweredSpellWatcher:ShowHelpTip()
 	end
 end
 
-function Class_DracthyrEmpoweredSpellWatcher:OnQuestAccepted(questID)
+function Class_EvokerEmpoweredSpellWatcher:OnQuestAccepted(questID)
 	if questID == self.questID then
 		EventRegistry:RegisterFrameEventAndCallback("QUEST_TURNED_IN", self.OnQuestTurnedIn, self);
 		EventRegistry:RegisterFrameEventAndCallback("QUEST_REMOVED", self.OnQuestRemoved, self);
@@ -128,20 +128,20 @@ function Class_DracthyrEmpoweredSpellWatcher:OnQuestAccepted(questID)
 	end
 end
 
-function Class_DracthyrEmpoweredSpellWatcher:OnQuestTurnedIn(questID)
+function Class_EvokerEmpoweredSpellWatcher:OnQuestTurnedIn(questID)
 	if questID == self.questID then
 		self:FinishTutorial();
 	end
 end
 
-function Class_DracthyrEmpoweredSpellWatcher:OnQuestRemoved(questID)
+function Class_EvokerEmpoweredSpellWatcher:OnQuestRemoved(questID)
 	if questID == self.questID then
 		HelpTip:Hide(self.actionButton, self.helpString);
 		EventRegistry:RegisterFrameEventAndCallback("QUEST_ACCEPTED", self.OnQuestAccepted, self);
 	end
 end
 
-function Class_DracthyrEmpoweredSpellWatcher:OnStartEmpowerCast()
+function Class_EvokerEmpoweredSpellWatcher:OnStartEmpowerCast()
 	HelpTip:Hide(self.actionButton, self.helpString);
 end
 
@@ -158,7 +158,7 @@ local function TutorialObjectivesCompleted(questID)
 	return false;
 end
 
-function Class_DracthyrEmpoweredSpellWatcher:OnStopEmpowerCast()
+function Class_EvokerEmpoweredSpellWatcher:OnStopEmpowerCast()
 	if TutorialObjectivesCompleted(self.questID) then
 		self:FinishTutorial();
 	else
@@ -166,7 +166,7 @@ function Class_DracthyrEmpoweredSpellWatcher:OnStopEmpowerCast()
 	end
 end
 
-function Class_DracthyrEmpoweredSpellWatcher:StartWatching()
+function Class_EvokerEmpoweredSpellWatcher:StartWatching()
 	if C_QuestLog.IsQuestFlaggedCompleted(self.questID) then
 		self:FinishTutorial();
 	else
@@ -189,25 +189,25 @@ function Class_DracthyrEmpoweredSpellWatcher:StartWatching()
 	end
 end
 
-function Class_DracthyrEmpoweredSpellWatcher:StopWatching()
+function Class_EvokerEmpoweredSpellWatcher:StopWatching()
 	EventRegistry:UnregisterFrameEventAndCallback("QUEST_ACCEPTED", self);
 	EventRegistry:UnregisterFrameEventAndCallback("QUEST_TURNED_IN", self);
 	EventRegistry:UnregisterFrameEventAndCallback("UNIT_SPELLCAST_EMPOWER_START", self);
 	EventRegistry:UnregisterFrameEventAndCallback("UNIT_SPELLCAST_EMPOWER_STOP", self);
 end
 
-function Class_DracthyrEmpoweredSpellWatcher:FinishTutorial()
+function Class_EvokerEmpoweredSpellWatcher:FinishTutorial()
 	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_DRACTHYR_EMPOWERED, true);
 	self:StopWatching();
 	HelpTip:Hide(self.actionButton, self.helpString);
 end
 
 -- ------------------------------------------------------------------------------------------------------------
--- Dracthyr Low Health Watcher
+-- Evoker Low Health Watcher
 -- ------------------------------------------------------------------------------------------------------------
-Class_DracthyrLowHealthWatcher = class("DracthyrLowHealthWatcher", Class_TutorialBase);
-function Class_DracthyrLowHealthWatcher:OnInitialize()
-	self.spellID = 361469; -- Dracthyr Living Flame Spell
+Class_EvokerLowHealthWatcher = class("EvokerLowHealthWatcher", Class_TutorialBase);
+function Class_EvokerLowHealthWatcher:OnInitialize()
+	self.spellID = 361469; -- Evoker Living Flame Spell
 
 	self.actionButtonHelpTipInfo = {
 		text = TUTORIAL_DRACTHYR_SELF_CAST,
@@ -237,7 +237,7 @@ function Class_DracthyrLowHealthWatcher:OnInitialize()
 	};
 end
 
-function Class_DracthyrLowHealthWatcher:StartWatching()
+function Class_EvokerLowHealthWatcher:StartWatching()
 	EventRegistry:RegisterFrameEventAndCallback("UNIT_HEALTH", self.OnUnitHealthChanged, self);
 	EventRegistry:RegisterFrameEventAndCallback("PLAYER_REGEN_DISABLED", self.UpdateTutorialState, self);
 	EventRegistry:RegisterFrameEventAndCallback("PLAYER_REGEN_ENABLED", self.UpdateTutorialState, self);
@@ -245,7 +245,7 @@ function Class_DracthyrLowHealthWatcher:StartWatching()
 	self.selfCastKeyChangedHandler = Settings.SetOnValueChangedCallback("SELFCAST", self.UpdateTutorialState, self);
 end
 
-function Class_DracthyrLowHealthWatcher:StopWatching()
+function Class_EvokerLowHealthWatcher:StopWatching()
 	EventRegistry:UnregisterFrameEventAndCallback("UNIT_HEALTH", self);
 	EventRegistry:UnregisterFrameEventAndCallback("PLAYER_REGEN_DISABLED", self);
 	EventRegistry:UnregisterFrameEventAndCallback("PLAYER_REGEN_ENABLED", self);
@@ -253,14 +253,14 @@ function Class_DracthyrLowHealthWatcher:StopWatching()
 	self.selfCastKeyChangedHandler:Unregister();
 end
 
-function Class_DracthyrLowHealthWatcher:OnUnitHealthChanged(arg1)
+function Class_EvokerLowHealthWatcher:OnUnitHealthChanged(arg1)
 	if arg1 == playerUnitToken then
 		self:UpdateTutorialState();
 	end
 end
 
 local LOW_HEALTH_PERCENTAGE = 0.5;
-function Class_DracthyrLowHealthWatcher:UpdateTutorialState()
+function Class_EvokerLowHealthWatcher:UpdateTutorialState()
 	if not self:ShouldUpdateTutorialState() then
 		return;
 	end
@@ -305,13 +305,13 @@ function Class_DracthyrLowHealthWatcher:UpdateTutorialState()
 	end
 end
 
-function Class_DracthyrLowHealthWatcher:FinishTutorial()
+function Class_EvokerLowHealthWatcher:FinishTutorial()
 	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_DRACTHYR_LOW_HEALTH, true);
 	self:StopWatching();
 	self:HideHelpTips();
 end
 
-function Class_DracthyrLowHealthWatcher:ShouldUpdateTutorialState()
+function Class_EvokerLowHealthWatcher:ShouldUpdateTutorialState()
 	if self.isShowingHelpTip then
 		return true;
 	end
@@ -326,7 +326,7 @@ function Class_DracthyrLowHealthWatcher:ShouldUpdateTutorialState()
 	return not isDeadOrGhost and healthPercent <= LOW_HEALTH_PERCENTAGE;
 end
 
-function Class_DracthyrLowHealthWatcher:HideHelpTips()
+function Class_EvokerLowHealthWatcher:HideHelpTips()
 	if self.actionButton then
 		HelpTip:Hide(self.actionButton, self.actionButtonHelpTipInfo.text);
 		self.actionButton = nil;
@@ -337,7 +337,7 @@ function Class_DracthyrLowHealthWatcher:HideHelpTips()
 	self.isShowingHelpTip = false;
 end
 
-function Class_DracthyrLowHealthWatcher:ShowActionButtonHelpTip(actionButton, selfCastKeyModifier)
+function Class_EvokerLowHealthWatcher:ShowActionButtonHelpTip(actionButton, selfCastKeyModifier)
 	self:HideHelpTips();
 
 	self.actionButton = actionButton;
@@ -346,7 +346,7 @@ function Class_DracthyrLowHealthWatcher:ShowActionButtonHelpTip(actionButton, se
 	self.isShowingHelpTip = true;
 end
 
-function Class_DracthyrLowHealthWatcher:ShowSettingsHelpTip()
+function Class_EvokerLowHealthWatcher:ShowSettingsHelpTip()
 	self:HideHelpTips();
 
 	HelpTip:Show(MicroMenu, self.settingsHelpTipInfo);

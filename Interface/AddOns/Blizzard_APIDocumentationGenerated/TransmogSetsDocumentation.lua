@@ -258,6 +258,20 @@ local TransmogSets =
 			},
 		},
 		{
+			Name = "GetValidClassForSet",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "transmogSetID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "classID", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetVariantSets",
 			Type = "Function",
 

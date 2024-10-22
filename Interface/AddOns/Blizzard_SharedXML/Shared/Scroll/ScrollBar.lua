@@ -129,10 +129,6 @@ function ScrollBarMixin:EnableInternalPriority()
 	self.internalPriority = true;
 end
 
-function ScrollBarMixin:EnableSnapToInterval(snapToInterval)
-	self.snapToInterval = true;
-end
-
 function ScrollBarMixin:SetScrollPercentage(scrollPercentage, forceImmediate)
 	-- While steppers, track, or thumb is held, attempts to change the scroll percentage
 	-- externally are discarded. This is to prevent scroll bars from jittering when receiving
@@ -150,19 +146,8 @@ function ScrollBarMixin:SetScrollPercentage(scrollPercentage, forceImmediate)
 	end
 end
 
+
 function ScrollBarMixin:SetScrollPercentageInternal(scrollPercentage)
-	-- Constrains the scroll percentage to intervals. This is useful for SMF where message
-	-- lines are never partially visible and it is undesirable to have the thumb position change
-	-- without actually causing any messages to scroll.
-	if self.snapToInterval then
-		local visibleExtentPercentage = self:GetVisibleExtentPercentage();
-		if visibleExtentPercentage > 0 then
-			local intervals = math.floor((1 / visibleExtentPercentage) + MathUtil.Epsilon);
-			local r = intervals - 1;
-			scrollPercentage = math.min(math.floor(scrollPercentage / visibleExtentPercentage), r) / math.max(r, 1);
-		end
-	end
-	
 	ScrollControllerMixin.SetScrollPercentage(self, scrollPercentage);
 	
 	self:Update();

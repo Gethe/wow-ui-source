@@ -528,7 +528,7 @@ local function Register()
 	AudioOverrides.CreatePingSoundSettings(category, layout);
 
 	--Voice
-	if not IsOnGlueScreen() then
+	if not C_Glue.IsOnGlueScreen() then
 		--[[
 		Initializing the voice settings requires the voice proxy process to be initialized. Continue to
 		make attempts until this occurs. No timeout.

@@ -133,6 +133,11 @@ function InterfaceOverrides.CreatePvpFrameSettings(category, layout)
 	end
 end
 
+-- These popups have a "Don't show this again" checkbox that the player can click to skip them in the future.
+local function ResetConfirmationPopups()
+	SetCVar("bankConfirmTabCleanUp", true);
+end
+
 function InterfaceOverrides.ShowTutorialsOnButtonClick()
 		SetCVar("closedInfoFrames", ""); -- reset the help plates too
 		SetCVar("closedInfoFramesAccountWide", "");
@@ -141,10 +146,48 @@ function InterfaceOverrides.ShowTutorialsOnButtonClick()
 		TutorialFrame_ClearQueue();
 		NPETutorial_AttemptToBegin();
 		TriggerTutorial(1);
+		ResetConfirmationPopups();
 end
 
 function InterfaceOverrides.RunSettingsCallback(callback)
 	if not Settings.IsPlunderstorm() then
 		callback();
 	end
+end
+
+function InterfaceOverrides.CreateQuestSettings(category, layout)
+	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(QUEST_SETTINGS_LABEL));
+
+	local function SetQuestTracking(filter, value)
+		local filterIndex = MinimapUtil.GetFilterIndexForFilterID(filter);
+		if filterIndex then
+			C_Minimap.SetTracking(filterIndex, value);
+		end
+	end
+
+	-- Account completed quest filter
+	local function SetAccountCompletedQuestTracking(value)
+		SetQuestTracking(Enum.MinimapTrackingFilter.AccountCompletedQuests, value);
+	end
+
+	local function IsTrackingAccountCompletedQuests()
+		return not C_Minimap.IsFilteredOut(Enum.MinimapTrackingFilter.AccountCompletedQuests);
+	end
+
+	local accountCompletedQuestFilterSetting = Settings.RegisterProxySetting(category, "PROXY_ACCOUNT_COMPLETED_QUEST_FILTERING",
+		Settings.VarType.Boolean, SETTINGS_ACCOUNT_COMPLETED_QUEST_FILTER, Settings.Default.False, IsTrackingAccountCompletedQuests, SetAccountCompletedQuestTracking);
+	Settings.CreateCheckbox(category, accountCompletedQuestFilterSetting, ACCOUNT_COMPLETED_QUESTS_FILTER_DESCRIPTION);
+
+	-- Trivial quest filter
+	local function SetTrivialQuestTracking(value)
+		SetQuestTracking(Enum.MinimapTrackingFilter.TrivialQuests, value);
+	end
+
+	local function IsTrackingTrivialQuests()
+		return not C_Minimap.IsFilteredOut(Enum.MinimapTrackingFilter.TrivialQuests);
+	end
+
+	local trivialQuestFilterSetting = Settings.RegisterProxySetting(category, "PROXY_TRIVIAL_QUEST_FILTERING",
+		Settings.VarType.Boolean, SETTINGS_TRIVIAL_QUEST_FILTER, Settings.Default.False, IsTrackingTrivialQuests, SetTrivialQuestTracking);
+	Settings.CreateCheckbox(category, trivialQuestFilterSetting);
 end

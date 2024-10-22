@@ -29,13 +29,13 @@ end
 function QuestOfferDataProviderMixin:RemoveAllData()
 	self:GetMap():RemoveAllPinsByTemplate("QuestOfferPinTemplate");
 	self:GetMap():RemoveAllPinsByTemplate("QuestHubPinTemplate");
-	self:ResetQuestLines();
+	self:ResetQuestOffers();
 	self:ResetQuestHubs();
 	self:ResetSuppressor();
 end
 
-function QuestOfferDataProviderMixin:ResetQuestLines()
-	self.questLines = nil;
+function QuestOfferDataProviderMixin:ResetQuestOffers()
+	self.questOffers = nil;
 end
 
 function QuestOfferDataProviderMixin:ResetQuestHubs()
@@ -47,7 +47,7 @@ function QuestOfferDataProviderMixin:ResetSuppressor()
 end
 
 function QuestOfferDataProviderMixin:GetQuestOffers()
-	return GetOrCreateTableEntry(self, "questLines");
+	return GetOrCreateTableEntry(self, "questOffers");
 end
 
 function QuestOfferDataProviderMixin:GetQuestHubs()
@@ -109,11 +109,9 @@ end
 
 local function InitializeCommonQuestOfferData(info)
 	if info then
-		local questID = info.questID or info.questId;
-		local questClassification = C_QuestInfoSystem.GetQuestClassification(questID);
+		local questClassification = C_QuestInfoSystem.GetQuestClassification(info.questID);
 		local pinData = questOfferPinData[questClassification];
 		if pinData then
-			info.questID = questID;
 			info.questClassification = questClassification;
 			info.pinLevel = pinData.level;
 			info.questIcon = pinData.atlas;
@@ -142,7 +140,6 @@ local function CreateQuestOfferFromTaskInfo(mapID, info)
 	if InitializeCommonQuestOfferData(info) then
 		-- These are fields that are not present on taskInfo that are present on questLineInfo
 		-- Also called out to maintain parity.
-		info.questID = info.questId; -- Named differently, don't want to go update all the places that this old name exists yet.
 		info.questLineName = nil;
 
 		local title, factionID, capped = C_TaskQuest.GetQuestInfoByQuestID(info.questID);
@@ -177,7 +174,7 @@ function QuestOfferDataProviderMixin:AddQuestLinesToQuestOffers(questOffers, map
 end
 
 function QuestOfferDataProviderMixin:AddTaskInfoToQuestOffers(questOffers, mapID)
-	local taskInfo = GetQuestsForPlayerByMapIDCached(mapID);
+	local taskInfo = GetTasksOnMapCached(mapID);
 	if taskInfo then
 		for i, info in ipairs(taskInfo) do
 			CheckAddOffer(questOffers, CreateQuestOfferFromTaskInfo(mapID, info));

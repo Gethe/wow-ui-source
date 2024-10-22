@@ -59,6 +59,11 @@ local AdventureJournal =
 			LiteralName = "AJ_PVP_SKIRMISH_ACTION",
 		},
 		{
+			Name = "AjPvpSpecialBgAction",
+			Type = "Event",
+			LiteralName = "AJ_PVP_SPECIAL_BG_ACTION",
+		},
+		{
 			Name = "AjQuestLogOpen",
 			Type = "Event",
 			LiteralName = "AJ_QUEST_LOG_OPEN",

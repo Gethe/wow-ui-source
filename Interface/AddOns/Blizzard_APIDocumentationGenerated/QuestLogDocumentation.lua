@@ -528,7 +528,7 @@ local QuestLog =
 
 			Returns =
 			{
-				{ Name = "quests", Type = "table", InnerType = "QuestOnMapInfo", Nilable = false },
+				{ Name = "quests", Type = "table", InnerType = "QuestPOIMapInfo", Nilable = false },
 			},
 		},
 		{
@@ -1467,18 +1467,6 @@ local QuestLog =
 				{ Name = "finished", Type = "bool", Nilable = false },
 				{ Name = "numFulfilled", Type = "number", Nilable = false },
 				{ Name = "numRequired", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "QuestOnMapInfo",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "questID", Type = "number", Nilable = false },
-				{ Name = "x", Type = "number", Nilable = false },
-				{ Name = "y", Type = "number", Nilable = false },
-				{ Name = "type", Type = "number", Nilable = false },
-				{ Name = "isMapIndicatorQuest", Type = "bool", Nilable = false },
 			},
 		},
 		{

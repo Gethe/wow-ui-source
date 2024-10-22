@@ -21,6 +21,10 @@ MenuAttributeDelegate:SetForbidden();
 Menu = {};
 
 local frameDummy = CreateFrame("Frame");
+local mouseEventEnterData = nil;
+local mouseEventLeaveData = nil;
+local mouseEventTime = .33;
+local mouseEventTimeRemaining = nil;
 
 local isEditorShown = nil;
 local isEditMenuShown = nil;
@@ -54,10 +58,10 @@ do
 			return;
 		end
 	
-		for index, focus in ipairs(GetMouseFoci()) do
-			if not HandlesGlobalMouseEvent(focus, buttonName) then
-				manager:HandleGlobalMouseEvent(buttonName, event);
-			end
+		-- Only interested in the top focus.
+		local foci = GetMouseFoci();
+		if not HandlesGlobalMouseEvent(foci[1], buttonName) then
+			manager:HandleGlobalMouseEvent(buttonName, event);
 		end
 	end);
 end
@@ -1699,6 +1703,36 @@ end
 
 local MenuManagerMixin = CreateFromMixinsPrivate(ProxyConvertablePrivateMixin);
 
+function MenuManagerMixin:ProcessMouseEventLeaveData()
+	if not mouseEventLeaveData then
+		return;
+	end
+	mouseEventLeaveData = nil;
+
+	if not self:ContainsCursor() then
+		self:CollapseMenusUntilLevel(self:GetRetainMenuLevel());
+	end
+end
+
+function MenuManagerMixin:ProcessMouseEventEnterData()
+	if not mouseEventEnterData then
+		return;
+	end
+
+	local frame = mouseEventEnterData.frame;
+	local level = mouseEventEnterData.level;
+	mouseEventEnterData = nil;
+
+	if frame:IsMouseOver() then
+		self:CheckForSubmenu(frame, level);
+	end
+end
+
+function MenuManagerMixin:CancelMouseEventTimer()
+	mouseEventTimeRemaining = nil;
+	frameDummy:SetScript("OnUpdate", nil);
+end
+
 function MenuManagerMixin:Init(proxy)
 	local tags = ProxyConvertablePrivateMixin.Init(self, proxy, Proxies);
 	tags[proxy] = "MenuManagerMixin";
@@ -1707,6 +1741,36 @@ function MenuManagerMixin:Init(proxy)
 	self.frameFactory = CreateFrameFactory();
 	
 	self:SetRetainMenuLevel(0);
+
+	self.mouseEventTimerCallback = function(frame, dt)
+		if not (mouseEventEnterData or mouseEventLeaveData) then
+			return;
+		end
+
+		mouseEventTimeRemaining = mouseEventTimeRemaining - dt;
+		if mouseEventTimeRemaining > 0 then
+			return;
+		end
+
+		self:ProcessMouseEventLeaveData();
+		self:ProcessMouseEventEnterData();
+
+		self:CancelMouseEventTimer();
+	end
+end
+
+function MenuManagerMixin:RestartMouseEventTimer()
+	if mouseEventTimeRemaining == nil then
+		frameDummy:SetScript("OnUpdate", self.mouseEventTimerCallback);
+	end
+	mouseEventTimeRemaining = mouseEventTime;
+end
+
+function MenuManagerMixin:StopMouseEventTimer()
+	mouseEventEnterData = nil;
+	mouseEventLeaveData = nil;
+
+	self:CancelMouseEventTimer();
 end
 
 local function GetMenuDescriptionTag(tags, menu)
@@ -1787,6 +1851,8 @@ function MenuManagerMixin:RemoveMenu(menu)
 
 	self:CollapseMenusUntilLevel(menu:GetLevel());
 
+	local proxy = menu:ToProxy();
+
 	-- All scripts must be finished before the compositor flushes our keys.
 	-- Notify listeners that the menu is closing.
 	menu.menuDescription:GetMenuReleasedCallbacks():ExecuteRange(function(index, onReleased)
@@ -1804,7 +1870,6 @@ function MenuManagerMixin:RemoveMenu(menu)
 	The proxy for a menu must be manually removed because a pool frame is never
 	dereferenced and will always persist.
 	]]
-	local proxy = menu:ToProxy();
 	Proxies:RemoveProxy(proxy);
 
 	-- Renable any scrolling we disabled when the menu was opened.
@@ -1815,6 +1880,10 @@ function MenuManagerMixin:RemoveMenu(menu)
 	end
 
 	self.frameFactory:Release(proxy);
+
+	if self.menus:IsEmpty() then
+		self:StopMouseEventTimer();
+	end
 end
 
 function MenuManagerMixin:FindMenu(menuDescription)
@@ -2102,19 +2171,27 @@ do
 	end
 end
 
-function MenuManagerMixin:EnterFrame(frame, menu, level)
-	self:SetRetainMenuLevel(level);
+function MenuManagerMixin:SetEventLeaveData()
+	mouseEventLeaveData = true;
+	self:RestartMouseEventTimer();
+end
 
-	self:CheckForSubmenu(frame, level);
+function MenuManagerMixin:SetEventEnterData(frame, menu, level)
+	mouseEventEnterData = {frame = frame, menu = menu, level = level};
+	self:RestartMouseEventTimer();
+end
+
+function MenuManagerMixin:EnterFrame(frame, menu, level)
+	self:SetEventEnterData(frame, menu, level);
+
+	self:SetRetainMenuLevel(level);
 
 	local descriptionProxy = frame:GetElementDescription();
 	descriptionProxy:HandleOnEnter(frame);
 end
 
 function MenuManagerMixin:LeaveFrame(frame, menu)
-	if not self:ContainsCursor() then
-		self:CollapseMenusUntilLevel(self:GetRetainMenuLevel());
-	end
+	self:SetEventLeaveData();
 
 	local descriptionProxy = frame:GetElementDescription();
 	descriptionProxy:HandleOnLeave(frame);
@@ -2125,9 +2202,7 @@ function MenuManagerMixin:OnMenuEnter(level)
 end
 
 function MenuManagerMixin:OnMenuLeave()
-	if not self:ContainsCursor() then
-		self:CollapseMenusUntilLevel(self:GetRetainMenuLevel());
-	end
+	self:SetEventLeaveData();
 end
 
 local function SecureTaggedMenuOpened(menuDescription)
@@ -2169,6 +2244,10 @@ function MenuManagerMixin:GenerateMenuInternal(params)
 	menuPositionFunc(menu:ToProxy());	
 	
 	local function OnMouseDown(frame)
+		-- The enter is discarded when we stop the timer, but we still need to process the leave.
+		self:ProcessMouseEventLeaveData();
+		self:StopMouseEventTimer();
+
 		self:CheckForSubmenu(frame, menu:GetLevel());
 	end
 

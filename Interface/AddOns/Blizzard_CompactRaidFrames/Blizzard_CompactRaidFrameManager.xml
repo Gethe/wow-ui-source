@@ -409,12 +409,13 @@
 									<OnClick method="OnClick"/>
 								</Scripts>
 							</Button>
-							<Button name="$parentLeaveInstanceGroupButton" inherits="UIPanelButtonTemplate" mixin="LeaveInstanceGroupButtonMixin" text="INSTANCE_PARTY_LEAVE">
+							<Button name="$parentLeaveInstanceGroupButton" inherits="UIPanelButtonTemplate, TruncatedButtonTemplate" mixin="LeaveInstanceGroupButtonMixin" text="INSTANCE_PARTY_LEAVE">
 								<Size x="160" y="24"/>
 								<Anchors>
 									<Anchor point="TOP" relativeTo="$parentLeavePartyButton" relativePoint="BOTTOM" x="0" y="-5"/>
 								</Anchors>
 								<Scripts>
+									<OnLoad method="OnLoad"/>
 									<OnShow method="OnShow"/>
 									<OnClick method="OnClick"/>
 								</Scripts>

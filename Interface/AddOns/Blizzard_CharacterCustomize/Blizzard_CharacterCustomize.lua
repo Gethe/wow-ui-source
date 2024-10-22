@@ -289,7 +289,7 @@ function CharCustomizeFrameWithExpandableTooltipMixin:AddExtraStuffToTooltip()
 	local tooltip = self:GetAppropriateTooltip();
 
 	if self.expandedTooltipFrame then
-		if self.tooltipsExpanded then
+		if CharCustomizeFrame:GetTooltipsExpanded() then
 			GameTooltip_AddBlankLineToTooltip(tooltip);
 			GameTooltip_InsertFrame(tooltip, self.expandedTooltipFrame);
 			GameTooltip_AddBlankLineToTooltip(tooltip);
@@ -307,6 +307,16 @@ function CharCustomizeFrameWithExpandableTooltipMixin:AddExtraStuffToTooltip()
 			GameTooltip_AddColoredLine(tooltip, lineInfo.text, lineInfo.color);
 		end
 	end
+end
+
+function CharCustomizeFrameWithExpandableTooltipMixin:OnMouseUp(button)
+	if button == "RightButton" and self.expandedTooltipFrame then
+		CharCustomizeFrame:ToggleTooltipsExpanded();
+		if self:IsMouseMotionFocus() then
+			self:OnEnter();
+		end
+	end
+	RingedMaskedButtonMixin.OnMouseUp(self);
 end
 
 CharCustomizeAlteredFormButtonMixin = CreateFromMixins(CharCustomizeMaskedButtonMixin);
@@ -1923,4 +1933,12 @@ end
 
 function CharCustomizeMixin:SetMissingOptionWarningEnabled(enabled)
 	EventRegistry:TriggerEvent("CharCustomize.SetMissingOptionWarningEnabled", enabled);
+end
+
+function CharCustomizeMixin:ToggleTooltipsExpanded()
+	self.tooltipsExpanded = not self.tooltipsExpanded;
+end
+
+function CharCustomizeMixin:GetTooltipsExpanded()
+	return self.tooltipsExpanded;
 end

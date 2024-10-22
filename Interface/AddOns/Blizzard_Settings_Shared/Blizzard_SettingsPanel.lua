@@ -154,7 +154,7 @@ function SettingsPanelMixin:OnShow()
 	end
 
 	-- WOW10-16900
-	if IsOnGlueScreen() then
+	if C_Glue.IsOnGlueScreen() then
 		self:SetFrameStrata("DIALOG");
 		GlueParent_AddModalFrame(self);
 
@@ -186,7 +186,7 @@ function SettingsPanelMixin:OnHide()
 
 	self:ClearActiveCategoryTutorial();
 
-	if IsOnGlueScreen() then
+	if C_Glue.IsOnGlueScreen() then
 		GlueParent_RemoveModalFrame(self);
 		GlueParent_CloseSecondaryScreen();
 		return;
@@ -248,7 +248,7 @@ end
 function SettingsPanelMixin:TransitionBackOpeningPanel()
 	HideUIPanel(self);
 
-	if not IsOnGlueScreen() then
+	if not C_Glue.IsOnGlueScreen() then
 		if EditModeManagerFrame:IsEditModeActive() then
 			ShowUIPanel(EditModeManagerFrame);
 		else
@@ -286,7 +286,7 @@ function SettingsPanelMixin:SetKeybindingsCategory(category)
 end
 
 function SettingsPanelMixin:CommitBindings()
-	if not IsOnGlueScreen() then
+	if not C_Glue.IsOnGlueScreen() then
 		SaveBindings(GetCurrentBindingSet());
 
 		local shouldSave = true;
