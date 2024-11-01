@@ -110,8 +110,9 @@ local EJ_TIER_DATA =
 
 function GetEJTierData(tier)
 	if tier > #EJ_TIER_DATA then
-		local serverExpansionLevel = GetServerExpansionLevel();
-		return EJ_TIER_DATA[serverExpansionLevel]
+		-- GetServerExpansionLevel returns a 0 based expansion level. Adjust it to map to EJ_TIER_DATA.
+		local serverExpansionLevel = GetServerExpansionLevel() + 1;
+		return EJ_TIER_DATA[serverExpansionLevel] or EJ_TIER_DATA[1];
 	end
 	return EJ_TIER_DATA[tier] or EJ_TIER_DATA[1];
 end

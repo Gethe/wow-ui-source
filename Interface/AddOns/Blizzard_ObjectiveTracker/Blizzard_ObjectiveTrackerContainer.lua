@@ -207,6 +207,17 @@ end
 function ObjectiveTrackerContainerMixin:ForceExpand()
 	if self:IsCollapsed() then
 		self:ToggleCollapsed();
+	else
+		-- One of its modules may be requesting this as a result of the module's own ForceExpand
+		-- function. If the tracker is already expanded, it needs an immediate update so the module
+		-- has the correct layout.
+		self:Update();
+	end
+end
+
+function ObjectiveTrackerContainerMixin:ForEachModule(callback)
+	for i, module in ipairs(self.modules) do
+		callback(module);
 	end
 end
 

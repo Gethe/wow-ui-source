@@ -1,16 +1,21 @@
-function WowStyle1DropdownMixin:GetArrowAtlas()
-	if self:IsEnabled() then
-		if self:IsDownOver() then
+-- Requires the button to inherit ButtonStateBehaviorMixin
+function GetWowStyle1ArrowButtonState(button)
+	if button:IsEnabled() then
+		if button:IsDownOver() then
 			return "common-dropdown-classic-a-buttonDown-pressedhover";
-		elseif self:IsOver() then
+		elseif button:IsOver() then
 			return "common-dropdown-classic-a-buttonDown-hover";
-		elseif self:IsDown() then
+		elseif button:IsDown() then
 			return "common-dropdown-classic-a-buttonDown-pressed";
 		else
 			return "common-dropdown-classic-a-buttonDown";
 		end
 	end
 	return "common-dropdown-classic-a-buttonDown-disabled";
+end
+
+function WowStyle1DropdownMixin:GetArrowAtlas()
+	return GetWowStyle1ArrowButtonState(self);
 end
 
 function WowStyle1DropdownMixin:OnSizeChanged(width, height)
@@ -36,6 +41,11 @@ function WowStyle1FilterDropdownMixin:GetBackgroundAtlas()
 	return "common-dropdown-b-button-disabled";
 end
 
+function WowStyle1ArrowDropdownMixin:OnButtonStateChanged()
+	local atlas = GetWowStyle1ArrowButtonState(self);
+	self.Arrow:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
+end
+
 MenuStyle1Mixin = CreateFromMixins(MenuStyleMixin);
 
 function MenuStyle1Mixin:Generate()
@@ -55,10 +65,10 @@ end
 do
 	local inset = 
 	{
-		left = 12, 
-		top = 7, 
-		right = 12,
-		bottom = 7,
+		left = 16, 
+		top = 10, 
+		right = 16,
+		bottom = 10,
 	};
 
 	function MenuStyle1Mixin:GetInset()

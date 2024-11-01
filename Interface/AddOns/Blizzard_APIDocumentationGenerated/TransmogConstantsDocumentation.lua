@@ -3,15 +3,15 @@ local TransmogConstants =
 	Tables =
 	{
 		{
-			Name = "TransmogIllisionFlags",
+			Name = "TransmogIllusionFlags",
 			Type = "Enumeration",
 			NumValues = 2,
 			MinValue = 1,
 			MaxValue = 2,
 			Fields =
 			{
-				{ Name = "HideUntilCollected", Type = "TransmogIllisionFlags", EnumValue = 1 },
-				{ Name = "PlayerConditionGrantsOnLogin", Type = "TransmogIllisionFlags", EnumValue = 2 },
+				{ Name = "HideUntilCollected", Type = "TransmogIllusionFlags", EnumValue = 1 },
+				{ Name = "PlayerConditionGrantsOnLogin", Type = "TransmogIllusionFlags", EnumValue = 2 },
 			},
 		},
 		{

@@ -1,0 +1,9 @@
+## Title: Blizzard Matchmaking Queue Display
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## AllowLoadGameType: mainline
+## AllowLoad: Both
+## Dependencies: Blizzard_SharedXML
+
+Blizzard_MatchmakingQueueDisplay.lua
+Blizzard_MatchmakingQueueDisplay.xml

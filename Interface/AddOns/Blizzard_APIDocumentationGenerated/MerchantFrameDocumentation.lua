@@ -21,6 +21,20 @@ local MerchantFrame =
 			},
 		},
 		{
+			Name = "GetItemInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "MerchantItemInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetNumJunkItems",
 			Type = "Function",
 
@@ -88,6 +102,24 @@ local MerchantFrame =
 
 	Tables =
 	{
+		{
+			Name = "MerchantItemInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = true },
+				{ Name = "texture", Type = "fileID", Nilable = false },
+				{ Name = "price", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "stackCount", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "numAvailable", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "isPurchasable", Type = "bool", Nilable = false, Default = false },
+				{ Name = "isUsable", Type = "bool", Nilable = false, Default = false },
+				{ Name = "hasExtendedCost", Type = "bool", Nilable = false, Default = false },
+				{ Name = "currencyID", Type = "number", Nilable = true },
+				{ Name = "spellID", Type = "number", Nilable = true },
+				{ Name = "isQuestStartItem", Type = "bool", Nilable = false, Default = false },
+			},
+		},
 	},
 };
 

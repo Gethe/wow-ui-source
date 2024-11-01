@@ -716,7 +716,7 @@ function PTR_IssueReporter.GetStandaloneSurveyFrame(followUpSurvey)
         submitButton:SetSize(submitButton:GetTextWidth()*1.5, PTR_IssueReporter.Data.SubmitButtonHeight)
         submitButton:SetScript("OnClick", function()
             surveyFrame:SubmitIssueReport()
-            if not(IsOnGlueScreen()) then
+            if not(C_Glue.IsOnGlueScreen()) then
                 PTR_IssueReporter.CheckSurveyQueue()
             end
         end)
@@ -769,7 +769,7 @@ function PTR_IssueReporter.CreateSurveyFrame()
     surveyFrame.SurveyString = ""
     surveyFrame:SetFrameStrata("HIGH")
 
-    if(IsOnGlueScreen()) then
+    if(C_Glue.IsOnGlueScreen()) then
         PTR_IssueReporter:HookScript("OnHide",function() surveyFrame:Hide() end)
     end
     
@@ -869,7 +869,7 @@ function PTR_IssueReporter.SetBugButtonContext(context, buttonTooltip, bugIcon)
                 tooltip:AddLine(buttonTooltip or PTR_IssueReporter.Data.BugReportString, nil, nil, nil, true);
                 tooltip:SetMinimumWidth(100);
                 tooltip:Show()
-                if not(IsOnGlueScreen()) then
+                if not(C_Glue.IsOnGlueScreen()) then
                     ActionButton_HideOverlayGlow(PTR_IssueReporter.ReportBug)
                 end
             end)
@@ -996,7 +996,7 @@ function PTR_IssueReporter.CreateMainView()
         end
     end)
 
-    if IsOnGlueScreen() then
+    if C_Glue.IsOnGlueScreen() then
         PTR_IssueReporter.CreateGlueView()
     else
         PTR_IssueReporter.CreateInGameMenu()
@@ -1009,7 +1009,7 @@ function PTR_IssueReporter.CreateMainView()
         local left, bottom = self:GetRect()
         Blizzard_PTRIssueReporter_Saved.x = left
         Blizzard_PTRIssueReporter_Saved.y = bottom
-        if not(IsOnGlueScreen()) then
+        if not(C_Glue.IsOnGlueScreen()) then
             PTR_IssueReporter.Reminder(false, PTR_IssueReporter.Confused, PTR_IssueReporter.ReportBug)
         end
     end)

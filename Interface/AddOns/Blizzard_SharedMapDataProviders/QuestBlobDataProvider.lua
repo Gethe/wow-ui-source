@@ -14,7 +14,6 @@ end
 
 function QuestBlobDataProviderMixin:OnAdded(mapCanvas)
 	MapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
-	self:GetMap():SetPinTemplateType("QuestBlobPinTemplate", "QuestPOIFrame");
 
 	-- a single permanent pin
 	local pin = self:GetMap():AcquirePin("QuestBlobPinTemplate");

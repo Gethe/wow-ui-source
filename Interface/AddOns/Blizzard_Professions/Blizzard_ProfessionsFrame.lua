@@ -194,6 +194,7 @@ function ProfessionsMixin:SetProfessionInfo(professionInfo, useLastSkillLine)
 			SearchBoxTemplate_ClearText(self.CraftingPage.RecipeList.SearchBox);
 			SearchBoxTemplate_ClearText(self.OrdersPage.BrowseFrame.RecipeList.SearchBox);
 			Professions.SetAllSourcesFiltered(false);
+			self.CraftingPage.RecipeList.FilterDropdown:ValidateResetState();
 		end
 		C_TradeSkillUI.SetProfessionChildSkillLineID(useNewSkillLine and professionInfo.professionID or self.professionInfo.professionID);
 	end

@@ -143,7 +143,6 @@ local function DisableMicroButtons(disableMainMenu)
 	LFDMicroButton:Disable();
 
 	AchievementMicroButton.disabledTooltip = nil;
-	AchievementMicroButton.tooltipText = nil;
 	AchievementMicroButton:Disable();
 
 	EJMicroButton.disabledTooltip = nil;
@@ -348,24 +347,67 @@ end
 --Mixins (In order of placement)
 MainMenuBarMicroButtonMixin = {};
 
-function MainMenuBarMicroButtonMixin:OnEnter()
-	if ( not KeybindFrames_InQuickKeybindMode() ) then
-		if ( self:IsEnabled() or self.minLevel or self.disabledTooltip or self.factionGroup) then
-			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-			GameTooltip_SetTitle(GameTooltip, self.tooltipText);
-			if ( not self:IsEnabled() ) then
-				if ( self.factionGroup == "Neutral" ) then
-					GameTooltip:AddLine(FEATURE_NOT_AVAILBLE_PANDAREN, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
-				elseif ( self.minLevel and not MICRO_BUTTONS_DISABLED ) then
-					GameTooltip:AddLine(format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, self.minLevel), RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
-				elseif ( self.disabledTooltip ) then
-					local disabledTooltipText = GetValueOrCallFunction(self, "disabledTooltip");
-					GameTooltip:AddLine(disabledTooltipText, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
-				end
-			end
-			GameTooltip:Show();
+function MainMenuBarMicroButtonMixin:ShouldShowTooltip()
+	if KeybindFrames_InQuickKeybindMode() then
+		return false;
+	end
+
+	-- This function can be called at times other than when the mouse focus changes so ensure only
+	-- the mouse focus is displaying a tooltip.
+	if not self:IsMouseMotionFocus() then
+		return false;
+	end
+
+	-- Enabled buttons always show a tooltip.
+	if self:IsEnabled() then
+		return true;
+	end
+
+	-- When all the micro buttons are disabled (except the store and maybe main menu) none of the
+	-- disabled ones should have a tooltip.
+	if MICRO_BUTTONS_DISABLED then
+		return false;
+	end
+
+	-- Some buttons need to show a tooltip explaining why they're disabled.
+	if self.minLevel or self.disabledTooltip or self.factionGroup then
+		return true;
+	end
+
+	return false;
+end
+
+function MainMenuBarMicroButtonMixin:EvaluateTooltipVisibility()
+	if not self:ShouldShowTooltip() then
+		-- The button was showing a tooltip but shouldn't be any longer.
+		if GameTooltip:GetOwner() == self then
+			GameTooltip:Hide();
+		end
+
+		return;
+	end
+
+	-- Every button shows its name and keybind.
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip_SetTitle(GameTooltip, self.tooltipText);
+
+	-- Some buttons display extra info when disabled.
+	if not self:IsEnabled() then
+		if self.factionGroup == "Neutral" then
+			GameTooltip:AddLine(FEATURE_NOT_AVAILBLE_PANDAREN, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
+		elseif self.minLevel then
+			GameTooltip:AddLine(format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, self.minLevel), RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
+		elseif self.disabledTooltip then
+			local disabledTooltipText = GetValueOrCallFunction(self, "disabledTooltip");
+			GameTooltip:AddLine(disabledTooltipText, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
 		end
 	end
+
+	GameTooltip:Show();
+end
+
+function MainMenuBarMicroButtonMixin:OnEnter()
+	self:EvaluateTooltipVisibility();
 
 	--The shadow is baked into the highlight texture so we shouldn't show the normal texture while the highlight is happening
 	local normalTexture = self:GetNormalTexture();
@@ -375,6 +417,8 @@ function MainMenuBarMicroButtonMixin:OnEnter()
 end
 
 function MainMenuBarMicroButtonMixin:OnLeave()
+	GameTooltip:Hide();
+
 	local normalTexture = self:GetNormalTexture();
 	if(normalTexture) then 
 		normalTexture:SetAlpha(1);
@@ -421,6 +465,16 @@ function MainMenuBarMicroButtonMixin:OnMouseUp()
 	if self:IsEnabled() and not self:IsMouseOver() then
 		UpdateMicroButtons();
 	end
+end
+
+function MainMenuBarMicroButtonMixin:OnEnable()
+	self:SetAlpha(1);
+	self:EvaluateTooltipVisibility();
+end
+
+function MainMenuBarMicroButtonMixin:OnDisable()
+	self:SetAlpha(0.5);
+	self:EvaluateTooltipVisibility();
 end
 
 CharacterMicroButtonMixin = {};
@@ -1011,7 +1065,7 @@ end
 
 function GuildMicroButtonMixin:UpdateNotificationIcon()
 	if CommunitiesFrame_IsEnabled() and self:IsEnabled() then
-		self.NotificationOverlay:SetShown(not C_SocialRestrictions.IsChatDisabled() and (self:HasUnseenInvitations() or CommunitiesUtil.DoesAnyCommunityHaveUnreadMessages()));
+		self.NotificationOverlay:SetShown(C_SocialRestrictions.CanReceiveChat() and (self:HasUnseenInvitations() or CommunitiesUtil.DoesAnyCommunityHaveUnreadMessages()));
 	else
 		self.NotificationOverlay:SetShown(false);
 	end

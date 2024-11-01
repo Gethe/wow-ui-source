@@ -304,7 +304,9 @@ function ProfessionsCrafterOrderViewMixin:OnLoad()
 	local function OnUseBestQualityModified(o, checked)
 		local transaction = self.OrderDetails.SchematicForm:GetTransaction();
 		Professions.AllocateAllBasicReagents(transaction, checked);
-		self:UpdateCreateButton();
+
+		-- SchematicPostInit handles overriding customer provided reagents and restoring to a correct state after re-allocating the basic reagents.
+		self:SchematicPostInit();
 	end
 
 	self.OrderDetails.SchematicForm:RegisterCallback(ProfessionsRecipeSchematicFormMixin.Event.UseBestQualityModified, OnUseBestQualityModified, self);
@@ -374,11 +376,7 @@ function ProfessionsCrafterOrderViewMixin:OnEvent(event, ...)
             return;
         end
 
-		if result == Enum.CraftingOrderResult.NoAccountItems then
-			UIErrorsFrame:AddExternalErrorMessage(CRAFTING_ORDER_FAILED_ACCOUNT_ITEMS);
-		else
-			UIErrorsFrame:AddExternalErrorMessage(PROFESSIONS_ORDER_OP_FAILED);
-		end
+		UIErrorsFrame:AddExternalErrorMessage(PROFESSIONS_ORDER_OP_FAILED);
 	elseif event == "CRAFTINGORDERS_FULFILL_ORDER_RESPONSE" then
 		local result, orderID = ...;
 		if orderID ~= self.order.orderID then
@@ -558,15 +556,18 @@ function ProfessionsCrafterOrderViewMixin:SchematicPostInit()
     if not self.order.isFulfillable then
         for _, reagentInfo in ipairs(self.order.reagents) do
             local allocations = transaction:GetAllocations(reagentInfo.slotIndex);
-
-			-- isBasicReagent check here to handle multiple allocations within the same slot (qualities)
-            if not self.reagentSlotProvidedByCustomer[reagentInfo.slotIndex] or not reagentInfo.isBasicReagent then
-                allocations:Clear();
-                self.reagentSlotProvidedByCustomer[reagentInfo.slotIndex] = true;
-            end
-            -- These allocations get cleared before sending the craft, but we allocate them for craft readiness validation
-            allocations:Allocate(reagentInfo.reagent, reagentInfo.reagent.quantity);
-            reagentSlotToItemID[reagentInfo.slotIndex] = reagentInfo.reagent.itemID;
+			if allocations then
+				-- isBasicReagent check here to handle multiple allocations within the same slot (qualities)
+				if not self.reagentSlotProvidedByCustomer[reagentInfo.slotIndex] or not reagentInfo.isBasicReagent then
+					allocations:Clear();
+					self.reagentSlotProvidedByCustomer[reagentInfo.slotIndex] = true;
+				end
+				-- These allocations get cleared before sending the craft, but we allocate them for craft readiness validation
+				allocations:Allocate(reagentInfo.reagent, reagentInfo.reagent.quantity);
+				reagentSlotToItemID[reagentInfo.slotIndex] = reagentInfo.reagent.itemID;
+			else
+				assertsafe(false, "Crafting order reagents do not match recipe for spellID=%d", self.order.spellID);
+			end
         end
     end
 
@@ -681,7 +682,7 @@ function ProfessionsCrafterOrderViewMixin:SchematicPostInit()
         self.OrderDetails.SchematicForm.recraftSlot.OutputSlot:SetScript("OnEnter", function(slot)
             GameTooltip:SetOwner(slot, "ANCHOR_RIGHT");
             local reagents = transaction:CreateCraftingReagentInfoTbl();
-            GameTooltip:SetRecipeResultItemForOrder(self.order.spellID, reagents, self.order.orderID, self.OrderDetails.SchematicForm:GetCurrentRecipeLevel());
+            GameTooltip:SetRecipeResultItemForOrder(self.order.spellID, reagents, self.order.orderID, self.OrderDetails.SchematicForm:GetCurrentRecipeLevel(), self.OrderDetails.SchematicForm:GetOutputOverrideQuality());
         end);
         self.OrderDetails.SchematicForm.recraftSlot.InputSlot:SetScript("OnMouseDown", nil);
     end
@@ -884,7 +885,6 @@ function ProfessionsCrafterOrderViewMixin:SetOrder(order)
     local isRecraft = self:IsRecrafting();
 	local recipeSchematic = C_TradeSkillUI.GetRecipeSchematic(self.order.spellID, isRecraft);
     self.OrderDetails.SchematicForm.transaction = CreateProfessionsRecipeTransaction(recipeSchematic);
-    self.OrderDetails.SchematicForm.transaction:SetUseCharacterInventoryOnly(true);
     if isRecraft then
         self.OrderDetails.SchematicForm.transaction:SetRecraftAllocationOrderID(order.orderID);
     end

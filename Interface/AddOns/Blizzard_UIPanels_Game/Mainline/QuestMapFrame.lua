@@ -243,6 +243,15 @@ function QuestLogMixin:ResetLayoutIndex()
 	self.layoutIndex = 1;
 end
 
+function QuestLogMixin:GetLastLayoutIndex()
+	-- the current value is what the next frame would get in SetFrameLayoutIndex
+	if self.layoutIndex then
+		return self.layoutIndex - 1;
+	else
+		return 0;
+	end
+end
+
 function QuestLogMixin:ShowMapLegend()
 	self.MapLegend:Show();
 	self:HideCampaignOverview();
@@ -1068,8 +1077,8 @@ function QuestMapFrame_CloseQuestDetails(optPortraitOwnerCheckFrame)
 	StaticPopup_Hide("ABANDON_QUEST_WITH_ITEMS");
 end
 
-function QuestMapFrame_PingQuestID(questId)
-	QuestMapFrame:GetParent():PingQuestID(questId);
+function QuestMapFrame_PingQuestID(questID)
+	QuestMapFrame:GetParent():PingQuestID(questID);
 end
 
 function QuestMapFrame_UpdateSuperTrackedQuest(self)
@@ -2029,11 +2038,14 @@ function QuestLogQuests_Update()
 	end
 
 	local separator = QuestScrollFrame.Contents.Separator;
-	separator:SetShown(displayState.campaignShown or storyAchievementID);
 	QuestMapFrame:SetFrameLayoutIndex(separator);
 
 	-- Display the rest of the normal quests and their headers.
 	QuestLogQuests_DisplayQuestsFromIndices(displayState, questInfos);
+
+	-- show the separator if there is something before it and something after it
+	local shouldShowSeparator = separator.layoutIndex > 1 and QuestMapFrame:GetLastLayoutIndex() ~= separator.layoutIndex;
+	separator:SetShown(shouldShowSeparator);
 
 	QuestScrollFrame.SearchBox:UpdateState(displayState);
 	QuestScrollFrame:UpdateBackground(displayState);
@@ -2106,7 +2118,10 @@ function QuestMapLogTitleButton_OnEnter(self)
 
 	QuestUtil.SetQuestLegendToTooltip(questID, GameTooltip);
 
-	GameTooltip_CheckAddQuestTimeToTooltip(GameTooltip, questID);
+	local classification = C_QuestInfoSystem.GetQuestClassification(questID);
+	if classification ~= Enum.QuestClassification.Recurring then
+		GameTooltip_CheckAddQuestTimeToTooltip(GameTooltip, questID);
+	end
 
 	if C_QuestLog.IsFailed(info.questID) then
 		QuestUtils_AddQuestTagLineToTooltip(GameTooltip, FAILED, "FAILED", nil, RED_FONT_COLOR);

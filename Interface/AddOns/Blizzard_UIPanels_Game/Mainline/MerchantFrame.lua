@@ -252,46 +252,47 @@ function MerchantFrame_UpdateMerchantInfo()
 
 	MerchantPageText:SetFormattedText(MERCHANT_PAGE_NUMBER, MerchantFrame.page, math.ceil(numMerchantItems / MERCHANT_ITEMS_PER_PAGE));
 
-	local name, texture, price, stackCount, numAvailable, isPurchasable, isUsable, extendedCost, currencyID, spellID;
 	for i=1, MERCHANT_ITEMS_PER_PAGE do
 		local index = (((MerchantFrame.page - 1) * MERCHANT_ITEMS_PER_PAGE) + i);
 		local itemButton = _G["MerchantItem"..i.."ItemButton"];
 		local merchantButton = _G["MerchantItem"..i];
 		local merchantMoney = _G["MerchantItem"..i.."MoneyFrame"];
 		local merchantAltCurrency = _G["MerchantItem"..i.."AltCurrencyFrame"];
-		if ( index <= numMerchantItems ) then
-			name, texture, price, stackCount, numAvailable, isPurchasable, isUsable, extendedCost, currencyID, spellID = GetMerchantItemInfo(index);
-
-			if(currencyID) then
-				name, texture, numAvailable = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyID, numAvailable, name, texture, nil);
+		local info;
+		if index <= numMerchantItems then
+			info = C_MerchantFrame.GetItemInfo(index);
+		end
+		if info then
+			if info.currencyID then
+				info.name, info.texture, info.numAvailable = CurrencyContainerUtil.GetCurrencyContainerInfo(info.currencyID, info.numAvailable, info.name, info.texture, nil);
 			end
 
 			local canAfford = CanAffordMerchantItem(index);
-			_G["MerchantItem"..i.."Name"]:SetText(name);
-			SetItemButtonCount(itemButton, stackCount);
-			SetItemButtonStock(itemButton, numAvailable);
-			SetItemButtonTexture(itemButton, texture);
+			_G["MerchantItem"..i.."Name"]:SetText(info.name);
+			SetItemButtonCount(itemButton, info.stackCount);
+			SetItemButtonStock(itemButton, info.numAvailable);
+			SetItemButtonTexture(itemButton, info.texture);
 
-			if ( extendedCost and (price <= 0) ) then
+			if ( info.hasExtendedCost and (info.price <= 0) ) then
 				itemButton.price = nil;
 				itemButton.extendedCost = true;
-				itemButton.name = name;
+				itemButton.name = info.name;
 				itemButton.link = GetMerchantItemLink(index);
-				itemButton.texture = texture;
+				itemButton.texture = info.texture;
 				MerchantFrame_UpdateAltCurrency(index, i, canAfford);
 				merchantAltCurrency:ClearAllPoints();
 				merchantAltCurrency:SetPoint("BOTTOMLEFT", "MerchantItem"..i.."NameFrame", "BOTTOMLEFT", 0, 31);
 				merchantMoney:Hide();
 				merchantAltCurrency:Show();
-			elseif ( extendedCost and (price > 0) ) then
-				itemButton.price = price;
+			elseif ( info.hasExtendedCost and (info.price > 0) ) then
+				itemButton.price = info.price;
 				itemButton.extendedCost = true;
-				itemButton.name = name;
+				itemButton.name = info.name;
 				itemButton.link = GetMerchantItemLink(index);
-				itemButton.texture = texture;
+				itemButton.texture = info.texture;
 				local altCurrencyWidth = MerchantFrame_UpdateAltCurrency(index, i, canAfford);
 				MoneyFrame_SetMaxDisplayWidth(merchantMoney, MAX_MONEY_DISPLAY_WIDTH - altCurrencyWidth);
-				MoneyFrame_Update(merchantMoney:GetName(), price);
+				MoneyFrame_Update(merchantMoney:GetName(), info.price);
 				local color;
 				if (canAfford == false) then
 					color = "gray";
@@ -302,13 +303,13 @@ function MerchantFrame_UpdateMerchantInfo()
 				merchantAltCurrency:Show();
 				merchantMoney:Show();
 			else
-				itemButton.price = price;
+				itemButton.price = info.price;
 				itemButton.extendedCost = nil;
-				itemButton.name = name;
+				itemButton.name = info.name;
 				itemButton.link = GetMerchantItemLink(index);
-				itemButton.texture = texture;
+				itemButton.texture = info.texture;
 				MoneyFrame_SetMaxDisplayWidth(merchantMoney, MAX_MONEY_DISPLAY_WIDTH);
-				MoneyFrame_Update(merchantMoney:GetName(), price);
+				MoneyFrame_Update(merchantMoney:GetName(), info.price);
 				local color;
 				if (canAfford == false) then
 					color = "gray";
@@ -316,6 +317,13 @@ function MerchantFrame_UpdateMerchantInfo()
 				SetMoneyFrameColor(merchantMoney:GetName(), color);
 				merchantAltCurrency:Hide();
 				merchantMoney:Show();
+			end
+
+			if info.isQuestStartItem then
+				itemButton.IconQuestTexture:SetTexture(TEXTURE_ITEM_QUEST_BANG);
+				itemButton.IconQuestTexture:Show();
+			else
+				itemButton.IconQuestTexture:Hide();
 			end
 
 			local itemLink = GetMerchantItemLink(index);
@@ -331,11 +339,11 @@ function MerchantFrame_UpdateMerchantInfo()
 			itemButton:SetID(index);
 			itemButton:Show();
 
-			local tintRed = not isPurchasable or (not isUsable and not isHeirloom);
+			local tintRed = not info.isPurchasable or (not info.isUsable and not isHeirloom);
 
 			SetItemButtonDesaturated(itemButton, isKnownHeirloom);
 
-			if ( numAvailable == 0 or isKnownHeirloom ) then
+			if ( info.numAvailable == 0 or isKnownHeirloom ) then
 				-- If not available and not usable
 				if ( tintRed ) then
 					SetItemButtonNameFrameVertexColor(merchantButton, 0.5, 0, 0);
@@ -370,6 +378,7 @@ function MerchantFrame_UpdateMerchantInfo()
 			_G["MerchantItem"..i.."Name"]:SetText("");
 			_G["MerchantItem"..i.."MoneyFrame"]:Hide();
 			_G["MerchantItem"..i.."AltCurrencyFrame"]:Hide();
+
 		end
 	end
 
@@ -647,29 +656,29 @@ function MerchantItemButton_OnModifiedClick(self, button)
 		end
 		if ( IsModifiedClick("SPLITSTACK")) then
 			local maxStack = GetMerchantItemMaxStack(self:GetID());
-			local _, _, price, stackCount, _, _, _, extendedCost = GetMerchantItemInfo(self:GetID());
+			local info = C_MerchantFrame.GetItemInfo(self:GetID());
 
 			local canAfford;
-			if (price and price > 0) then
-				canAfford = floor(GetMoney() / (price / stackCount));
+			if (info.price and info.price > 0) then
+				canAfford = floor(GetMoney() / (info.price / info.stackCount));
 			else
 				canAfford = maxStack;
 			end
 
-			if (extendedCost) then
+			if (info.hasExtendedCost) then
 				local itemCount = GetMerchantItemCostInfo(self:GetID());
 				for i = 1, MAX_ITEM_COST do
 					local itemTexture, itemValue, itemLink, currencyName = GetMerchantItemCostItem(self:GetID(), i);
 					if (itemLink and not currencyName) then
 						local myCount = C_Item.GetItemCount(itemLink, false, false, true);
-						canAfford = min(canAfford, floor(myCount / (itemValue / stackCount)));
+						canAfford = min(canAfford, floor(myCount / (itemValue / info.stackCount)));
 					end
 				end
 			end
 
 			if ( maxStack > 1 ) then
 				local maxPurchasable = min(maxStack, canAfford);
-				StackSplitFrame:OpenStackSplitFrame(maxPurchasable, self, "BOTTOMLEFT", "TOPLEFT", stackCount);
+				StackSplitFrame:OpenStackSplitFrame(maxPurchasable, self, "BOTTOMLEFT", "TOPLEFT", info.stackCount);
 			end
 			return;
 		end
@@ -698,9 +707,11 @@ LIST_DELIMITER = ", "
 
 local function ShouldAppendSpecText(itemLink)
 	if C_Item.IsItemBindToAccountUntilEquip(itemLink) then
-		-- If the merchant item is "Warbound until equipped", then we only want to show a list of specs for weapons
-		local isWeapon = select(6, C_Item.GetItemInfoInstant(itemLink)) == Enum.ItemClass.Weapon;
-		return isWeapon;
+		local _itemID, _itemType, _itemSubType, _itemEquipLoc, _icon, classID, subclassID = C_Item.GetItemInfoInstant(itemLink) ;
+		-- If the merchant item is "Warbound until equipped", then we only want to show a list of specs for weapons and shields
+		local isWeapon = classID == Enum.ItemClass.Weapon;
+		local isShield = (classID == Enum.ItemClass.Armor) and (subclassID == Enum.ItemArmorSubclass.Shield);
+		return isWeapon or isShield;
 	end
 
 	return true;

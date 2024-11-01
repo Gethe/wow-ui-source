@@ -133,6 +133,19 @@ function PlayerSpellsUtil.TogglePlayerSpellsFrame(suggestedTab, inspectUnit)
 	return true;
 end
 
+function PlayerSpellsUtil.InspectLoadout(linkData)
+	CheckLoadPlayerSpellsFrame();
+
+	local _specID, level, inspectString = string.split(":", linkData);
+	level = tonumber(level);
+
+	PlayerSpellsFrame:SetInspectString(inspectString, level);
+
+	if PlayerSpellsFrame:TrySetTab(PlayerSpellsUtil.FrameTabs.ClassTalents) then
+		ShowUIPanel(PlayerSpellsFrame);
+	end
+end
+
 function PlayerSpellsUtil.SetPlayerSpellsFrameMinimizedOnNextShow(minimizedOnNextShow)
 	CheckLoadPlayerSpellsFrame();
 

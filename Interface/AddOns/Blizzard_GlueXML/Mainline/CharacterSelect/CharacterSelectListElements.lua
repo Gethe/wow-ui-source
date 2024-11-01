@@ -232,14 +232,18 @@ end
 
 function CharacterSelectListCharacterMixin:UpdateVASState()
 	local paidServiceButton = self.PaidService;
-	local upgradeIcon = self.UpgradeIcon;
+	local restoreCharacterServiceFrame = self.RestoreCharacterServiceFrame;
+	local notificationButton = self.InnerContent.NotificationButton;
+
+	local tooltip1 = nil;
+	local tooltip2 = nil;
+	notificationButton:SetHasInProgress(false, tooltip1, tooltip2);
+	restoreCharacterServiceFrame:Hide();
+
 	if CharacterServicesFlow_IsShowing() then
 		paidServiceButton:Hide();
-		upgradeIcon:Hide();
 		return;
 	end
-
-	upgradeIcon:Hide();
 
 	local guid = self.guid;
 	local characterInfo = self:GetCharacterInfo();
@@ -247,15 +251,14 @@ function CharacterSelectListCharacterMixin:UpdateVASState()
 	local modifyServiceType = true;
 	local serviceType, disableService;
 	if vasServiceState == Enum.VasPurchaseProgress.PaymentPending then
-		upgradeIcon:Show();
-		upgradeIcon.tooltip = CHARACTER_UPGRADE_PROCESSING;
-		upgradeIcon.tooltip2 = CHARACTER_STATE_ORDER_PROCESSING;
-	elseif (vasServiceState == Enum.VasPurchaseProgress.ApplyingLicense) and (#vasServiceErrors > 0) then
-        upgradeIcon:Show();
+		tooltip1 = CHARACTER_UPGRADE_PROCESSING;
+		tooltip2 = CHARACTER_STATE_ORDER_PROCESSING;
+		notificationButton:SetHasInProgress(true, tooltip1, tooltip2);
+	elseif vasServiceState == Enum.VasPurchaseProgress.ApplyingLicense and #vasServiceErrors > 0 then
         local tooltip, desc;
         local info = StoreFrame_GetVASErrorMessage(guid, vasServiceErrors);
-        if (info) then
-            if (info.other) then
+        if info then
+            if info.other then
                 tooltip = VAS_ERROR_ERROR_HAS_OCCURRED;
             else
                 tooltip = VAS_ERROR_ADDRESS_THESE_ISSUES;
@@ -265,46 +268,37 @@ function CharacterSelectListCharacterMixin:UpdateVASState()
             tooltip = VAS_ERROR_ERROR_HAS_OCCURRED;
             desc = BLIZZARD_STORE_VAS_ERROR_OTHER;
         end
-        upgradeIcon.tooltip = "|cffffd200" .. tooltip .. "|r";
-        upgradeIcon.tooltip2 = "|cffff2020" .. desc .. "|r";
-    elseif characterInfo and characterInfo.boostInProgress then
-		upgradeIcon:Show();
-		upgradeIcon.tooltip = CHARACTER_UPGRADE_PROCESSING;
-		upgradeIcon.tooltip2 = CHARACTER_SERVICES_PLEASE_WAIT;
-	elseif vasServiceState == Enum.VasPurchaseProgress.WaitingOnQueue then
-		upgradeIcon:Show();
-		upgradeIcon.tooltip = CHARACTER_UPGRADE_PROCESSING;
 
+		tooltip1 = "|cffffd200" .. tooltip .. "|r";
+		tooltip2 = "|cffff2020" .. desc .. "|r";
+		notificationButton:SetHasInProgress(true, tooltip1, tooltip2);
+    elseif characterInfo and characterInfo.boostInProgress then
+		tooltip1 = CHARACTER_UPGRADE_PROCESSING;
+		tooltip2 = CHARACTER_SERVICES_PLEASE_WAIT;
+		notificationButton:SetHasInProgress(true, tooltip1, tooltip2);
+	elseif vasServiceState == Enum.VasPurchaseProgress.WaitingOnQueue then
+		tooltip2 = CHARACTER_SERVICES_PLEASE_WAIT;
 		if vasProductInfo then
-			upgradeIcon.tooltip2 = VAS_SERVICE_PROCESSING:format(vasProductInfo.sharedData.name);
+			tooltip2 = VAS_SERVICE_PROCESSING:format(vasProductInfo.sharedData.name);
 			local queueTime = CharacterSelectUtil.GetVASQueueTime(guid);
 			if queueTime and queueTime > 0 then
-				upgradeIcon.tooltip2 = upgradeIcon.tooltip2 .. "|n" .. VAS_PROCESSING_ESTIMATED_TIME:format(SecondsToTime(queueTime * 60, true, false, 2, true));
+				tooltip2 = tooltip2 .. "|n" .. VAS_PROCESSING_ESTIMATED_TIME:format(SecondsToTime(queueTime * 60, true, false, 2, true));
 			end
-		else
-			upgradeIcon.tooltip2 = CHARACTER_SERVICES_PLEASE_WAIT;
 		end
+
+		tooltip1 = CHARACTER_UPGRADE_PROCESSING;
+		notificationButton:SetHasInProgress(true, tooltip1, tooltip2);
 	elseif vasServiceState == Enum.VasPurchaseProgress.ProcessingFactionChange then
-		upgradeIcon:Show();
-		upgradeIcon.tooltip = CHARACTER_UPGRADE_PROCESSING;
-		upgradeIcon.tooltip2 = CHARACTER_SERVICES_PLEASE_WAIT;
+		tooltip1 = CHARACTER_UPGRADE_PROCESSING;
+		tooltip2 = CHARACTER_SERVICES_PLEASE_WAIT;
+		notificationButton:SetHasInProgress(true, tooltip1, tooltip2);
 	elseif guid and IsCharacterVASLocked(guid) then
-		upgradeIcon:Show();
-		upgradeIcon.tooltip = CHARACTER_UPGRADE_PROCESSING;
-		upgradeIcon.tooltip2 = CHARACTER_SERVICES_PLEASE_WAIT;
+		tooltip1 = CHARACTER_UPGRADE_PROCESSING;
+		tooltip2 = CHARACTER_SERVICES_PLEASE_WAIT;
+		notificationButton:SetHasInProgress(true, tooltip1, tooltip2);
 	elseif CharacterSelect.undeleting then
 		if self:IsSelected() then
-			paidServiceButton.GoldBorder:Hide();
-			paidServiceButton.VASIcon:Hide();
-			paidServiceButton.Texture:SetTexCoord(.5, 1, .5, 1);
-			paidServiceButton.Texture:Show();
-			paidServiceButton.tooltip = UNDELETE_SERVICE_TOOLTIP;
-			paidServiceButton.disabledTooltip = nil;
-			paidServiceButton:Show();
-			modifyServiceType = false;
-		else
-			paidServiceButton:Hide();
-			paidServiceButton.serviceType = nil;
+			restoreCharacterServiceFrame:Show();
 		end
 	elseif characterInfo and characterInfo.hasFactionChange then
 		serviceType = PAID_FACTION_CHANGE;
@@ -551,10 +545,12 @@ function CharacterSelectListCharacterInnerContentMixin:SetData(characterInfo)
 		return;
 	end
 
-	if self.padlock then
-		CharacterSelect.characterPadlockPool:Release(self.padlock);
-		self.padlock = nil;
-	end
+	local guid = nil;
+	local characterSelectButton = nil;
+	local tooltip1 = nil;
+	local tooltip2 = nil;
+	local tooltipTextColor = NORMAL_FONT_COLOR;
+	self.NotificationButton:SetHasLock(false, guid, characterSelectButton, tooltip1, tooltip2, tooltipTextColor);
 
 	self:UpdateLastLogin(self.characterInfo.lastLoginBuild);
 	self:UpdateCharacterDisplayInfo();
@@ -608,7 +604,8 @@ function CharacterSelectListCharacterInnerContentMixin:UpdateLastLogin(lastLogin
 end
 
 function CharacterSelectListCharacterInnerContentMixin:UpdateCharacterDisplayInfo()
-	self.MailIndicationButton:Hide();
+	local mailSenders = nil;
+	self.NotificationButton:SetHasMail(false, mailSenders);
 
 	if not self.characterInfo then
 		return;
@@ -736,11 +733,11 @@ function CharacterSelectListCharacterInnerContentMixin:UpdateCharacterDisplayInf
 
 			if characterInfo.isLockedByExpansion or characterInfo.isRevokedCharacterUpgrade then
 				self:SetupPadlock();
-			else
-				local mailSenders = characterInfo.mailSenders;
-				self.MailIndicationButton:SetShown(mailSenders and #mailSenders >= 1);
-				self.MailIndicationButton:SetMailSenders(mailSenders);
 			end
+
+			mailSenders = characterInfo.mailSenders;
+			local showMailNotification = mailSenders and #mailSenders >= 1;
+			self.NotificationButton:SetHasMail(showMailNotification, mailSenders);
 		end
 	end
 end
@@ -750,46 +747,40 @@ function CharacterSelectListCharacterInnerContentMixin:SetupPadlock()
 		return;
 	end
 
-	local padlock = CharacterSelect.characterPadlockPool:Acquire();
-	self.padlock = padlock;
-	padlock.characterSelectButton = self:GetParent();
-
 	local characterInfo = self.characterInfo;
-	local guid = characterInfo.guid;
-	padlock.guid = guid;
-	padlock.tooltipTextColor = NORMAL_FONT_COLOR;
+	local tooltipTextColor = NORMAL_FONT_COLOR;
+	local tooltip1 = nil;
+	local tooltip2 = nil;
 
 	if CharacterSelectUtil.IsAccountLocked() then
-		padlock.tooltipTitle = nil;
-		padlock.tooltipText = CHARACTER_SELECT_ACCOUNT_LOCKED;
-		padlock.tooltipTextColor = RED_FONT_COLOR;
+		tooltip2 = CHARACTER_SELECT_ACCOUNT_LOCKED;
+		tooltipTextColor = RED_FONT_COLOR;
 	elseif characterInfo.isExpansionTrialCharacter then
 		if IsExpansionTrial() or CanUpgradeExpansion() then
 			-- Player has to upgrade to unlock this character
-			padlock.tooltipTitle = CHARACTER_SELECT_INFO_EXPANSION_TRIAL_BOOST_LOCKED_TOOLTIP_TITLE;
-			padlock.tooltipText = CHARACTER_SELECT_INFO_EXPANSION_TRIAL_BOOST_LOCKED_TOOLTIP_TEXT;
+			tooltip1 = CHARACTER_SELECT_INFO_EXPANSION_TRIAL_BOOST_LOCKED_TOOLTIP_TITLE;
+			tooltip2 = CHARACTER_SELECT_INFO_EXPANSION_TRIAL_BOOST_LOCKED_TOOLTIP_TEXT;
 		else
 			-- Player just needs to boost to get this character
-			padlock.tooltipTitle = CHARACTER_SELECT_INFO_TRIAL_BOOST_LOCKED_TOOLTIP_TITLE;
-			padlock.tooltipText = CHARACTER_SELECT_INFO_TRIAL_BOOST_LOCKED_TOOLTIP_TEXT;
+			tooltip1 = CHARACTER_SELECT_INFO_TRIAL_BOOST_LOCKED_TOOLTIP_TITLE;
+			tooltip2 = CHARACTER_SELECT_INFO_TRIAL_BOOST_LOCKED_TOOLTIP_TEXT;
 		end
 	elseif characterInfo.isTrialBoost and characterInfo.isTrialBoostCompleted then
-		padlock.tooltipTitle = CHARACTER_SELECT_INFO_TRIAL_BOOST_LOCKED_TOOLTIP_TITLE;
-		padlock.tooltipText = CHARACTER_SELECT_INFO_TRIAL_BOOST_LOCKED_TOOLTIP_TEXT;
+		tooltip1 = CHARACTER_SELECT_INFO_TRIAL_BOOST_LOCKED_TOOLTIP_TITLE;
+		tooltip2 = CHARACTER_SELECT_INFO_TRIAL_BOOST_LOCKED_TOOLTIP_TEXT;
 	elseif characterInfo.isRevokedCharacterUpgrade then
-		padlock.tooltipTitle = CHARACTER_SELECT_REVOKED_BOOST_TOKEN_LOCKED_TOOLTIP_TITLE;
-		padlock.tooltipText = CHARACTER_SELECT_REVOKED_BOOST_TOKEN_LOCKED_TOOLTIP_TEXT;
+		tooltip1 = CHARACTER_SELECT_REVOKED_BOOST_TOKEN_LOCKED_TOOLTIP_TITLE;
+		tooltip2 = CHARACTER_SELECT_REVOKED_BOOST_TOKEN_LOCKED_TOOLTIP_TEXT;
 	elseif characterInfo.isLockedByExpansion then
-		padlock.tooltipTitle = CHARACTER_SELECT_INFO_EXPANSION_TRIAL_BOOST_LOCKED_TOOLTIP_TITLE;
-		padlock.tooltipText = CHARACTER_SELECT_INFO_EXPANSION_TRIAL_BOOST_BUY_EXPANSION;
+		tooltip1 = CHARACTER_SELECT_INFO_EXPANSION_TRIAL_BOOST_LOCKED_TOOLTIP_TITLE;
+		tooltip2 = CHARACTER_SELECT_INFO_EXPANSION_TRIAL_BOOST_BUY_EXPANSION;
 	else
 		GMError("Invalid lock type");
 	end
 
-	padlock:SetParent(self);
-	padlock:SetPoint("RIGHT", self, "LEFT", 5, 0);
-
-	padlock:SetShown(not CharSelectServicesFlowFrame:IsShown());
+	local guid = characterInfo.guid;
+	local characterSelectButton = self:GetParent();
+	self.NotificationButton:SetHasLock(true, guid, characterSelectButton, tooltip1, tooltip2, tooltipTextColor);
 end
 
 function CharacterSelectListCharacterInnerContentMixin:UpdateFactionEmblem()
@@ -948,23 +939,6 @@ function CharacterSelectListEmptyCharacterGlowFadeAnimMixin:OnFinished()
 end
 
 
-CharacterSelectListServicesProcessingIconMixin = {};
-
-function CharacterSelectListServicesProcessingIconMixin:OnEnter()
-	GlueTooltip:SetOwner(self, "ANCHOR_LEFT", -20, 0);
-	GameTooltip_AddHighlightLine(GlueTooltip, self.tooltip);
-
-	local wrap = true;
-	local leftOffset = 1;
-	GameTooltip_AddNormalLine(GlueTooltip, self.tooltip2, wrap, leftOffset);
-	GlueTooltip:Show();
-end
-
-function CharacterSelectListServicesProcessingIconMixin:OnLeave()
-	GlueTooltip:Hide();
-end
-
-
 CharacterSelectListPaidServiceMixin = {};
 
 function CharacterSelectListPaidServiceMixin:OnClick()
@@ -987,14 +961,7 @@ function CharacterSelectListPaidServiceMixin:OnClick()
 	CharacterCreateFrame:SetPaidServiceInfo(self.serviceType, characterID);
 
 	PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
-	if CharacterSelect.undeleting then
-		local guid = GetCharacterGUID(characterID);
-		CharacterSelect.pendingUndeleteGuid = guid;
-		local timeStr = SecondsToTime(CHARACTER_UNDELETE_COOLDOWN, false, true, 1, false);
-		GlueDialog_Show("UNDELETE_CONFIRM", UNDELETE_CONFIRMATION:format(timeStr));
-	else
-		GlueParent_SetScreen("charcreate");
-	end
+	GlueParent_SetScreen("charcreate");
 end
 
 function CharacterSelectListPaidServiceMixin:OnEnter()
@@ -1008,20 +975,220 @@ function CharacterSelectListPaidServiceMixin:OnLeave()
 end
 
 
-CharacterSelectListMailIndicationButtonMixin = {};
+CharacterSelectListNotificationButtonMixin = {};
 
-function CharacterSelectListMailIndicationButtonMixin:OnEnter()
-	if self.mailSenders and #self.mailSenders >= 1 then
+function CharacterSelectListNotificationButtonMixin:OnLoad()
+	self.hasNotificationMail = false;
+	self.hasNotificationLock = false;
+	self.hasNotificationInProgress = false;
+end
+
+function CharacterSelectListNotificationButtonMixin:OnEnter()
+	self.IconFrame.Icon:SetAtlas(self.formattedIconHover, TextureKitConstants.UseAtlasSize);
+
+	if self.hasNotificationInProgress then
 		GlueTooltip:SetOwner(self, "ANCHOR_LEFT");
-		FormatUnreadMailTooltip(GlueTooltip, HAVE_MAIL_FROM, self.mailSenders);
+		GameTooltip_AddHighlightLine(GlueTooltip, self.inProgressTooltip1);
+
+		local wrap = true;
+		local leftOffset = 1;
+		GameTooltip_AddNormalLine(GlueTooltip, self.inProgressTooltip2, wrap, leftOffset);
 		GlueTooltip:Show();
+	elseif self.hasNotificationLock then
+		GlueTooltip:SetOwner(self, "ANCHOR_LEFT");
+		GameTooltip_SetTitle(GlueTooltip, self.lockTooltip1, nil, false);
+		GameTooltip_AddColoredLine(GlueTooltip, self.lockTooltip2, self.lockTooltipTextColor);
+
+		if not self.lockCharacterSelectButton.isAccountLocked then
+			local requiresPurchase = self:CanUnlockByExpansionPurchase() or not C_CharacterServices.HasRequiredBoostForUnrevoke();
+			if requiresPurchase then
+				GameTooltip_AddDisabledLine(GlueTooltip, CHARACTER_SELECT_REVOKED_BOOST_TOKEN_LOCKED_TOOLTIP_HELP_SHOP);
+			else
+				GameTooltip_AddDisabledLine(GlueTooltip, CHARACTER_SELECT_REVOKED_BOOST_TOKEN_LOCKED_TOOLTIP_HELP_USE_BOOST);
+			end
+		end
+
+		GlueTooltip:Show();
+	elseif self.hasNotificationMail then
+		if self.mailSenders and #self.mailSenders >= 1 then
+			GlueTooltip:SetOwner(self, "ANCHOR_LEFT");
+			FormatUnreadMailTooltip(GlueTooltip, HAVE_MAIL_FROM, self.mailSenders);
+			GlueTooltip:Show();
+		end
 	end
 end
 
-function CharacterSelectListMailIndicationButtonMixin:OnLeave()
+function CharacterSelectListNotificationButtonMixin:OnLeave()
+	self.IconFrame.Icon:SetAtlas(self.formattedIcon, TextureKitConstants.UseAtlasSize);
 	GlueTooltip:Hide();
 end
 
-function CharacterSelectListMailIndicationButtonMixin:SetMailSenders(mailSenders)
+function CharacterSelectListNotificationButtonMixin:OnClick()
+	if self.hasNotificationLock and not self.hasNotificationInProgress then
+		self:OnClickLock();
+	end
+end
+
+function CharacterSelectListNotificationButtonMixin:SetHasMail(state, mailSenders)
+	self.hasNotificationMail = state;
 	self.mailSenders = mailSenders;
+	self:UpdateNotificationType();
+end
+
+function CharacterSelectListNotificationButtonMixin:SetHasLock(state, guid, characterSelectButton, tooltip1, tooltip2, tooltipTextColor)
+	self.hasNotificationLock = state;
+	self.lockGuid = guid;
+	self.lockCharacterSelectButton = characterSelectButton;
+	self.lockTooltip1 = tooltip1;
+	self.lockTooltip2 = tooltip2;
+	self.lockTooltipTextColor = tooltipTextColor;
+	self:UpdateNotificationType();
+end
+
+function CharacterSelectListNotificationButtonMixin:SetHasInProgress(state, tooltip1, tooltip2)
+	self.hasNotificationInProgress = state;
+	self.inProgressTooltip1 = tooltip1;
+	self.inProgressTooltip2 = tooltip2;
+	self:UpdateNotificationType();
+end
+
+function CharacterSelectListNotificationButtonMixin:UpdateNotificationType()
+	local currentNotificationType = nil;
+	if self.hasNotificationInProgress then
+		currentNotificationType = "inProgress";
+	elseif self.hasNotificationLock then
+		currentNotificationType = "lock";
+	elseif self.hasNotificationMail then
+		currentNotificationType = "mail";
+	end
+
+	self:SetShown(currentNotificationType);
+	if currentNotificationType then
+		self:UpdateIcon(currentNotificationType);
+	end
+end
+
+function CharacterSelectListNotificationButtonMixin:UpdateIcon(icon)
+	self.formattedIcon = ("glues-characterSelect-icon-notify-%s"):format(icon);
+	self.formattedIconHover = ("glues-characterSelect-icon-notify-%s-hover"):format(icon);
+
+	self.IconFrame.Icon:SetAtlas(self.formattedIcon, TextureKitConstants.UseAtlasSize);
+end
+
+-- Lock specific logic.
+function CharacterSelectListNotificationButtonMixin:OnClickLock()
+	local isAccountLocked = self.lockCharacterSelectButton.isAccountLocked;
+	if not isAccountLocked and self:CanUnlockByExpansionPurchase() then
+		ToggleStoreUI();
+		StoreFrame_SetGamesCategory();
+		return;
+	end
+
+	self.lockCharacterSelectButton:OnClick();
+
+    if isAccountLocked then
+        return;
+    end
+
+	if GlobalGlueContextMenu_GetOwner() == self then
+		GlobalGlueContextMenu_Release();
+	else
+		local availableBoostTypes = GetAvailableBoostTypesForCharacterByGUID(self.lockGuid);
+		if #availableBoostTypes > 1 then
+			local glueContextMenu = GlobalGlueContextMenu_Acquire(self);
+			glueContextMenu:SetPoint("TOPRIGHT", self, "TOPLEFT", 15, -12);
+
+			for i, boostType in ipairs(availableBoostTypes) do
+				local flowData = C_CharacterServices.GetCharacterServiceDisplayData(boostType);
+				local function CharacterSelectLockedButtonContextMenuButton_OnClick()
+					CharacterUpgradePopup_BeginCharacterUpgradeFlow(flowData, self.lockGuid);
+				end
+
+				glueContextMenu:AddButton(CHARACTER_SELECT_PADLOCK_DROP_DOWN_USE_BOOST:format(flowData.flowTitle), CharacterSelectLockedButtonContextMenuButton_OnClick);
+			end
+
+			local function CloseContextMenu()
+				GlobalGlueContextMenu_Release();
+			end
+
+			glueContextMenu:AddButton(CANCEL, CloseContextMenu);
+
+			glueContextMenu:Show();
+		else
+			self:ShowBoostUnlockDialog();
+		end
+	end
+end
+
+function CharacterSelectListNotificationButtonMixin:CanUnlockByExpansionPurchase()
+	return (self.lockCharacterSelectButton.isLockedByExpansion or IsExpansionTrialCharacter(self.lockGuid)) and CanUpgradeExpansion();
+end
+
+function CharacterSelectListNotificationButtonMixin:ShowBoostUnlockDialog()
+	local serviceInfo = GetServiceCharacterInfo(self.lockGuid);
+	if serviceInfo.isTrialBoost and serviceInfo.isTrialBoostCompleted then
+		self:CheckApplyBoostToUnlockTrialCharacter(self.lockGuid);
+	elseif serviceInfo.isExpansionTrialCharacter then
+		self:CheckApplyBoostToUnlockTrialCharacter(self.lockGuid);
+	elseif serviceInfo.isRevokedCharacterUpgrade then
+		self:CheckApplyBoostToUnrevokeBoost(self.lockGuid);
+	end
+end
+
+function CharacterSelectListNotificationButtonMixin:CheckApplyBoostToUnlockTrialCharacter(guid)
+	local availableBoostTypes = GetAvailableBoostTypesForCharacterByGUID(guid);
+	if #availableBoostTypes >= 1 then
+		-- We should only ever get in this case if #availableBoostTypes == 1. If there is more than 1 available
+		-- boost type then users use a dropdown to choose a boost.
+		local flowData = C_CharacterServices.GetCharacterServiceDisplayData(availableBoostTypes[1]);
+		CharacterUpgradePopup_BeginCharacterUpgradeFlow(flowData, guid);
+	else
+		local purchasableBoostType = C_CharacterServices.GetActiveCharacterUpgradeBoostType();
+		self:ShowStoreFrameForBoostType(purchasableBoostType, guid, "forClassTrialUnlock");
+	end
+end
+
+function CharacterSelectListNotificationButtonMixin:CheckApplyBoostToUnrevokeBoost(guid)
+	local hasBoost, boostType = C_CharacterServices.HasRequiredBoostForUnrevoke();
+	if hasBoost then
+		local flowData = C_CharacterServices.GetCharacterServiceDisplayData(boostType);
+		CharacterUpgradePopup_BeginCharacterUpgradeFlow(flowData, guid);
+	else
+		local purchasableBoostType = C_CharacterServices.GetActiveCharacterUpgradeBoostType();
+		self:ShowStoreFrameForBoostType(purchasableBoostType, guid, "forUnrevokeBoost");
+	end
+end
+
+function CharacterSelectListNotificationButtonMixin:ShowStoreFrameForBoostType(boostType, guid, reason)
+	if not StoreFrame_IsShown or not StoreFrame_IsShown() then
+		ToggleStoreUI();
+	end
+
+	StoreFrame_SelectBoost(boostType, reason, guid);
+end
+
+
+RestoreCharacterServiceButtonMixin = {};
+
+function RestoreCharacterServiceButtonMixin:OnClick()
+	if CharacterSelectUtil.IsAccountLocked() then
+		return;
+	end
+
+	PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
+
+	local characterID = self:GetParent():GetParent():GetCharacterID();
+	local guid = GetCharacterGUID(characterID);
+	CharacterSelect.pendingUndeleteGuid = guid;
+	local timeStr = SecondsToTime(CHARACTER_UNDELETE_COOLDOWN, false, true, 1, false);
+	GlueDialog_Show("UNDELETE_CONFIRM", UNDELETE_CONFIRMATION:format(timeStr));
+end
+
+function RestoreCharacterServiceButtonMixin:OnEnter()
+	GlueTooltip:SetOwner(self, "ANCHOR_LEFT", 4, -8);
+	GlueTooltip:SetText(UNDELETE_SERVICE_TOOLTIP, 1.0, 1.0, 1.0);
+end
+
+function RestoreCharacterServiceButtonMixin:OnLeave()
+	GlueTooltip:Hide();
 end

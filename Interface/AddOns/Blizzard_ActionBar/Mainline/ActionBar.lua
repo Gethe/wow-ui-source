@@ -254,11 +254,17 @@ end
 EditModeActionBarMixin = {}
 
 function EditModeActionBarMixin:EditModeActionBar_OnLoad()
-    self:ActionBar_OnLoad();
+	self:ActionBar_OnLoad();
 	self:OnSystemLoad();
 
     self.isShownExternal = self:IsShown();
 
+    self:RegisterEvent("PLAYER_REGEN_ENABLED");
+	self:RegisterEvent("PLAYER_REGEN_DISABLED");
+end
+
+function EditModeActionBarMixin:SetupVisibilityFunctionOverrides()
+	-- This is called from EditModeSystemMixin.
     -- Need to override all the show/hide methods so that we can manage our visibility based on settings
     self.IsShownBase = self.IsShown;
     self.IsShown = self.IsShownOverride;
@@ -268,9 +274,6 @@ function EditModeActionBarMixin:EditModeActionBar_OnLoad()
     self.Show = self.ShowOverride;
     self.HideBase = self.Hide;
     self.Hide = self.HideOverride;
-
-    self:RegisterEvent("PLAYER_REGEN_ENABLED");
-	self:RegisterEvent("PLAYER_REGEN_DISABLED");
 end
 
 function EditModeActionBarMixin:EditModeActionBar_OnEvent(event, ...)
@@ -319,6 +322,10 @@ end
 
 function EditModeActionBarMixin:HideOverride()
     self.isShownExternal = false;
+
+	if self:ShouldBreakSnappedFramesOnHide() then
+		self:BreakSnappedFrames();
+	end
 
     -- Action bars may have fancy visibility rules which we have to follow rather than just directly showing/hiding
     self:UpdateVisibility();

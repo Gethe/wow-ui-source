@@ -183,7 +183,15 @@ function ClassTalentSearchMixin:GetAllSearchableNodeInfos()
 		local nodeID = talentButton:GetNodeID();
 		local nodeInfo = talentButton:GetNodeInfo();
 		if nodeID and nodeInfo then
-			self.cachedSearchableNodesMap[nodeID] = nodeInfo;
+			-- Only include talents that belong to a hero talent spec if that hero talent spec is
+			-- available to the current class talent spec.
+			if nodeInfo.subTreeID then
+				if self.HeroTalentsContainer:IsNodeInAvailableSubTree(nodeInfo) then
+					self.cachedSearchableNodesMap[nodeID] = nodeInfo;
+				end
+			else
+				self.cachedSearchableNodesMap[nodeID] = nodeInfo;
+			end
 		end
 	end
 	return self.cachedSearchableNodesMap;

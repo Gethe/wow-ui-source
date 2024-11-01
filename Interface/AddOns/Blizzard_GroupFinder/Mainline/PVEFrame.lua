@@ -8,7 +8,7 @@ local panels = {
 	{ name = "GroupFinderFrame", addon = nil },
 	{ name = "PVPUIFrame", addon = "Blizzard_PVPUI" },
 	{ name = "ChallengesFrame", addon = "Blizzard_ChallengesUI", check = function() return UnitLevel("player") >= GetMaxLevelForPlayerExpansion(); end, hideLeftInset = true },
-	{ name = "DelvesDashboardFrame", addon = "Blizzard_DelvesDashboardUI", check = function() return GetExpansionLevel() >= LE_EXPANSION_WAR_WITHIN end, hideLeftInset = true },
+	{ name = "DelvesDashboardFrame", addon = "Blizzard_DelvesDashboardUI", check = function() return UnitLevel("player") >= C_DelvesUI.GetDelvesMinRequiredLevel() and GetExpansionLevel() >= LE_EXPANSION_WAR_WITHIN end, hideLeftInset = true },
 }
 
 function LFGListPVPStub_OnShow(self)
@@ -390,6 +390,7 @@ function PVEFrameMixin:OnLoad()
 	PanelTemplates_SetNumTabs(self, #panels);
 
 	self:RegisterEvent("AJ_PVP_ACTION");
+	self:RegisterEvent("AJ_PVP_SPECIAL_BG_ACTION");
 	self:RegisterEvent("AJ_PVP_SKIRMISH_ACTION");
 	self:RegisterEvent("AJ_PVP_LFG_ACTION");
 	self:RegisterEvent("AJ_PVP_RBG_ACTION");
@@ -424,9 +425,23 @@ function PVEFrameMixin:OnShow()
 		end
 	end	
 
-	-- hide the PVP and Mythic+ tabs if timerunning is enabled
-	self.tab2:SetShown(not self:TimerunningEnabled());
-	self.tab3:SetShown(not self:TimerunningEnabled());
+	-- If timerunning enabled, hide PVP and M+, and re-anchor delves to Dungeons tab
+	if self:TimerunningEnabled() then
+		self.tab2:Hide();
+		self.tab3:Hide();
+		if self.tab4:IsShown() then
+			self.tab4:SetPoint("TOPLEFT", self.tab1, "TOPRIGHT", 3, 0);
+		end
+	else
+	-- Otherwise, anchor Delves tab to PVP if M+ hidden, or to M+ if both are shown - to prevent a gap if the player is ineligible for M+ and we hide the tab
+		if self.tab4:IsShown() then
+			if self.tab2:IsShown() and not self.tab3:IsShown() then
+				self.tab4:SetPoint("TOPLEFT", self.tab2, "TOPRIGHT", 3, 0);
+			elseif self.tab2:IsShown() and self.tab3:IsShown() then
+				self.tab4:SetPoint("TOPLEFT", self.tab3, "TOPRIGHT", 3, 0);
+			end
+		end
+	end
 
 	UpdateMicroButtons();
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
@@ -443,6 +458,14 @@ function PVEFrameMixin:OnEvent(event, ...)
 		PVEFrame_ShowFrame("PVPUIFrame", "HonorFrame");
 		HonorFrameSpecificList_FindAndSelectBattleground(id);
 		HonorFrame_SetType("specific");
+	elseif ( event == "AJ_PVP_SPECIAL_BG_ACTION" ) then
+		PVEFrame_ShowFrame("PVPUIFrame", "HonorFrame");
+		HonorFrame_SetType("bonus");
+		
+		if (HonorFrame.BonusFrame.BrawlButton2) then
+			HonorFrameBonusFrame_SelectButton(HonorFrame.BonusFrame.BrawlButton2);
+		end
+
 	elseif ( event == "AJ_PVP_SKIRMISH_ACTION" ) then
 		PVEFrame_ShowFrame("PVPUIFrame", "HonorFrame");
 		HonorFrame_SetType("bonus");

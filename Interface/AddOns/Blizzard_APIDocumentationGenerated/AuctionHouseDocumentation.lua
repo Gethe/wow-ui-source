@@ -875,10 +875,6 @@ local AuctionHouse =
 			Documentation = { "This function should be used in place of an 'allItem' QueryAuctionItems call to query the entire auction house." },
 		},
 		{
-			Name = "RequestFavorites",
-			Type = "Function",
-		},
-		{
 			Name = "RequestMoreBrowseResults",
 			Type = "Function",
 		},

@@ -671,7 +671,8 @@ function BonusObjectiveBlockMixin:TryShowRewardsTooltip()
 		GameTooltip_SetTooltipWaitingForData(GameTooltip, false);
 	end
 
-	GameTooltip:Show();
+	GameTooltip:Show();    
+	EventRegistry:TriggerEvent("BonusObjectiveBlock.QuestRewardTooltipShown", self, self.id, true);
 	self.hasRewardsTooltip = true;
 end
 
@@ -707,6 +708,7 @@ function ObjectiveTrackerTopBannerMixin:DisplayForQuest(questID, module)
 	self.questID = questID;
 	self.module = module;
 	self.questTitle = questTitle;
+	self.showWorldQuests = module.showWorldQuests;
 	TopBannerManager_Show(ObjectiveTrackerTopBannerFrame);
 	return true;
 end

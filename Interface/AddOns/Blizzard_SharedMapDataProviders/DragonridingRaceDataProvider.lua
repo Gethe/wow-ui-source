@@ -24,3 +24,7 @@ end
 
 --[[ Pin ]]--
 DragonridingRacePinMixin = BaseMapPoiPinMixin:CreateSubPin("PIN_FRAME_LEVEL_DRAGONRIDING_RACE");
+
+function DragonridingRacePinMixin:GetSuperTrackMarkerOffset()
+	return -2, 2;
+end

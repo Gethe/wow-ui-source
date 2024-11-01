@@ -13,7 +13,7 @@ local Spell =
 
 			Arguments =
 			{
-				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false, Documentation = { "Spell ID, name, name(subtext), or link" } },
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false, Documentation = { "Spell ID, name, name(subtext), or link; Using name will always check for an override on that spell" } },
 			},
 
 			Returns =
@@ -177,7 +177,7 @@ local Spell =
 
 			Arguments =
 			{
-				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false, Documentation = { "Spell ID, name, name(subtext), or link; If passed a spell ID, will return same id as was passed" } },
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false, Documentation = { "Spell ID, name, name(subtext), or link; Using name will always check for an override on that spell; If passed a spell ID, will return same id as was passed" } },
 			},
 
 			Returns =
@@ -192,7 +192,7 @@ local Spell =
 
 			Arguments =
 			{
-				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false, Documentation = { "Spell ID, name, name(subtext), or link" } },
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false, Documentation = { "Spell ID, name, name(subtext), or link; Using name will always check for an override on that spell" } },
 			},
 
 			Returns =

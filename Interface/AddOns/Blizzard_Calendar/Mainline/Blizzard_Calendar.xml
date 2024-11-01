@@ -379,7 +379,19 @@
 				</KeyValues>
 					</Frame>
 			<Button name="CalendarViewHolidayCloseButton" inherits="CalendarEventCloseButtonTemplate"/>
-			<Frame name="$parentModalOverlay" inherits="CalendarModalEventOverlayTemplate" hidden="true"/>
+			<Frame name="$parentModalOverlay" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="10" y="-10"/>
+					<Anchor point="BOTTOMRIGHT" x="-10" y="10"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture setAllPoints="true">
+							<Color r="0" g="0" b="0" a="0.5"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad function="CalendarViewHolidayFrame_OnLoad"/>

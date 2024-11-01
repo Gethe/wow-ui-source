@@ -66,7 +66,7 @@ local function WarbandsHide()
     PTR_IssueReporter:Hide()
 end
 
-if IsOnGlueScreen() then
+if C_Glue.IsOnGlueScreen() then
     -- Temporarily hiding until functionality built properly
     CharCustomizeFrame:HookScript("OnShow", PlayerEnteringCharacterCustomization)
     CharCustomizeFrame:HookScript("OnHide", CustomizationScreenExit)

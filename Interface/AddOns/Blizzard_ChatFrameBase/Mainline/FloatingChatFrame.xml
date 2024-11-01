@@ -298,6 +298,19 @@
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp", "MiddleButtonUp");
 				self:RegisterForDrag("LeftButton");
 			</OnLoad>
+			<OnEnter>
+				if MOVING_CHATFRAME then
+					return;
+				end
+
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GameTooltip_SetTitle(GameTooltip, string.format(CHAT_TAB_NAME, self:GetText()));
+				GameTooltip_AddColoredLine(GameTooltip, CHAT_TAB_RIGHT_CLICK, GREEN_FONT_COLOR);
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 			<OnClick>
 				FCF_Tab_OnClick(self, button);
 				PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
@@ -345,6 +358,8 @@
 				--This is a hack fix we need to do because when SetParent is called, the OnDragStop never fires for the matching OnDragStart.
 				self.dragButton = button;
 				self:SetScript("OnUpdate", FCFTab_OnUpdate);
+				
+				GameTooltip:Hide();
 			</OnDragStart>
 			<!--OnDragStop>
 				FCF_StopDragging(_G["ChatFrame"..self:GetID()]);

@@ -101,7 +101,7 @@ function FriendsFrame_ShouldShowSummonButton(self)
 		--Get the information by WoW friends list ID (not BNet id.)
 		local info = C_FriendList.GetFriendInfoByIndex(id);
 
-		if not info or info.mobile or not info.connected or info.rafLinkType == Enum.RafLinkType.None then
+		if not info or not info.connected or info.rafLinkType == Enum.RafLinkType.None then
 			return false, false;
 		end
 
@@ -122,7 +122,7 @@ function FriendsFrame_ShouldShowSummonButton(self)
 end
 
 function FriendsFrame_SummonButton_Update (self)
-	if IsOnGlueScreen() or (C_GameEnvironmentManager.GetCurrentGameEnvironment() == Enum.GameEnvironment.WoWLabs) then
+	if C_Glue.IsOnGlueScreen() or (C_GameEnvironmentManager.GetCurrentGameEnvironment() == Enum.GameEnvironment.WoWLabs) then
 		return;
 	end
 
@@ -170,7 +170,7 @@ function FriendsFrame_ClickSummonButton (self)
 	end
 end
 
-function FriendsFrame_ShowDropdown(name, connected, lineID, chatType, chatFrame, friendsList, isMobile, communityClubID, communityStreamID, communityEpoch, communityPosition, guid)
+function FriendsFrame_ShowDropdown(name, connected, lineID, chatType, chatFrame, friendsList, ommunityClubID, communityStreamID, communityEpoch, communityPosition, guid)
 	if connected or friendsList then
 		local contextData = 
 		{	
@@ -185,17 +185,16 @@ function FriendsFrame_ShowDropdown(name, connected, lineID, chatType, chatFrame,
 			chatTarget = name,
 			chatFrame = chatFrame,
 			bnetIDAccount = nil,
-			isMobile = isMobile,
 			guid = guid,
 		};
 
 		-- MENU RETEST IsOnGlueScreen
-		local which = connected and (IsOnGlueScreen() and "GLUE_FRIEND" or "FRIEND") or "FRIEND_OFFLINE";
+		local which = connected and (C_Glue.IsOnGlueScreen() and "GLUE_FRIEND" or "FRIEND") or "FRIEND_OFFLINE";
 		UnitPopup_OpenMenu(which, contextData);
 	end
 end
 
-function FriendsFrame_ShowBNDropdown(name, connected, lineID, chatType, chatFrame, friendsList, bnetIDAccount, communityClubID, communityStreamID, communityEpoch, communityPosition, mobile, battleTag)
+function FriendsFrame_ShowBNDropdown(name, connected, lineID, chatType, chatFrame, friendsList, bnetIDAccount, communityClubID, communityStreamID, communityEpoch, communityPosition, battleTag)
 	if connected or friendsList then
 		local contextData = 
 		{	
@@ -211,11 +210,10 @@ function FriendsFrame_ShowBNDropdown(name, connected, lineID, chatType, chatFram
 			chatFrame = chatFrame,
 			bnetIDAccount = bnetIDAccount,
 			battleTag = battleTag,
-			isMobile = mobile,
 		};
 
 		-- MENU RETEST IsOnGlueScreen
-		local which = connected and (IsOnGlueScreen() and "GLUE_FRIEND" or "BN_FRIEND") or "BN_FRIEND_OFFLINE";
+		local which = connected and (C_Glue.IsOnGlueScreen() and "GLUE_FRIEND" or "BN_FRIEND") or "BN_FRIEND_OFFLINE";
 		UnitPopup_OpenMenu(which, contextData);
 	end
 end
@@ -255,7 +253,7 @@ function FriendsFrame_OnLoad(self)
 
 	self:SetParent(GetAppropriateTopLevelParent());
 	local inGameFriendsListDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.IngameFriendsListDisabled);
-	if IsOnGlueScreen() or inGameFriendsListDisabled then
+	if C_Glue.IsOnGlueScreen() or inGameFriendsListDisabled then
 		self:ClearAllPoints();
 		self:SetPoint("TOPLEFT", 50, -50);
 
@@ -268,7 +266,7 @@ function FriendsFrame_OnLoad(self)
 		FriendsFrameTab4:Hide();
 	end
 
-	if IsOnGlueScreen() then
+	if C_Glue.IsOnGlueScreen() then
 		self:RegisterEvent("FRAMES_LOADED");
 	end
 
@@ -336,7 +334,7 @@ local function IsRAFHelpTipShowing()
 end
 
 function FriendsFrame_OnShow(self)
-	if not IsOnGlueScreen() and (C_GameEnvironmentManager.GetCurrentGameEnvironment() ~= Enum.GameEnvironment.WoWLabs) then
+	if not C_Glue.IsOnGlueScreen() and (C_GameEnvironmentManager.GetCurrentGameEnvironment() ~= Enum.GameEnvironment.WoWLabs) then
 		playerRealmID = GetRealmID();
 		playerRealmName = GetRealmName();
 		playerFactionGroup = UnitFactionGroup("player");
@@ -443,7 +441,7 @@ function FriendsFrame_UpdateQuickJoinTab(numGroups)
 end
 
 function FriendsFrame_OnHide(self)
-	if not IsOnGlueScreen() and (C_GameEnvironmentManager.GetCurrentGameEnvironment() ~= Enum.GameEnvironment.WoWLabs) then
+	if not C_Glue.IsOnGlueScreen() and (C_GameEnvironmentManager.GetCurrentGameEnvironment() ~= Enum.GameEnvironment.WoWLabs) then
 		UpdateMicroButtons();
 		RaidInfoFrame:Hide();
 		RecruitAFriendFrame:UpdateRAFTutorialTips();
@@ -527,7 +525,7 @@ function FriendsTabHeaderMixin:OnLoad()
 		return string.format("\124T%s.tga:16:16:0:0\124t", selection.data);
 	end);
 
-	if not IsOnGlueScreen() then
+	if not C_Glue.IsOnGlueScreen() then
 		self.StatusDropdown:SetScript("OnEnter", function()
 			local statusText;
 			if ( self.bnStatus == FRIENDS_TEXTURE_ONLINE ) then
@@ -556,7 +554,7 @@ end
 function FriendsTabHeaderMixin:SetRAFSystemEnabled(rafEnabled)
 	if rafEnabled then
 		local inGameFriendsListDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.IngameFriendsListDisabled);
-		rafEnabled = not IsOnGlueScreen() and (not inGameFriendsListDisabled);
+		rafEnabled = not C_Glue.IsOnGlueScreen() and (not inGameFriendsListDisabled);
 	end
 
 	FRIEND_HEADER_TAB_COUNT = rafEnabled and 3 or 2;
@@ -653,7 +651,7 @@ function FriendsList_CanWhisperFriend(friendType, friendIndex)
 		return true;
 	elseif friendType == FRIENDS_BUTTON_TYPE_WOW then
 		local info = C_FriendList.GetFriendInfoByIndex(friendIndex);
-		return info.connected and not info.mobile;
+		return info.connected;
 	end
 
 	return false;
@@ -674,7 +672,7 @@ function FriendsList_Update(forceUpdate)
 	local numWoWOnline = 0;
 	local numWoWOffline = 0;
 
-	if not IsOnGlueScreen() and not InWoWLabs() then
+	if not C_Glue.IsOnGlueScreen() and not InWoWLabs() then
 		numWoWTotal = C_FriendList.GetNumFriends();
 		numWoWOnline = C_FriendList.GetNumOnlineFriends();
 		numWoWOffline = numWoWTotal - numWoWOnline;
@@ -969,7 +967,7 @@ end
 function WhoFrameDropdown_OnLoad(self)
 	WowStyle1DropdownMixin.OnLoad(self);
 
-	if not IsOnGlueScreen() then
+	if not C_Glue.IsOnGlueScreen() then
 		local function IsSelected(sortData)
 			return sortData.value == whoSortValue;
 		end
@@ -1184,7 +1182,7 @@ end
 
 function FriendsFrameAddFriendButton_OnClick(self)
 	local name = nil;
-	if not IsOnGlueScreen() then 
+	if not C_Glue.IsOnGlueScreen() then 
 		name = GetUnitName("target", true);
 	end
 
@@ -1297,7 +1295,7 @@ function ToggleFriendsFrame(tab)
 	end
 
 	local inGameFriendsListDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.IngameFriendsListDisabled);
-	if not IsOnGlueScreen() and inGameFriendsListDisabled then
+	if not C_Glue.IsOnGlueScreen() and inGameFriendsListDisabled then
 		return;
 	end
 
@@ -1552,14 +1550,11 @@ local function ShowRichPresenceOnly(client, wowProjectID, faction, realmID, area
 	end;
 end
 
-local function GetOnlineInfoText(client, isMobile, rafLinkType, locationText)
+local function GetOnlineInfoText(client, rafLinkType, locationText)
 	if not locationText then
 		return UNKNOWN;
 	end
-	if isMobile then
-		return LOCATION_MOBILE_APP;
-	end
-	if (client == BNET_CLIENT_WOW) and (rafLinkType ~= Enum.RafLinkType.None) and not isMobile then
+	if (client == BNET_CLIENT_WOW) and (rafLinkType ~= Enum.RafLinkType.None) then
 		if rafLinkType == Enum.RafLinkType.Recruit then
 			return RAF_RECRUIT_FRIEND:format(locationText);
 		else
@@ -1645,7 +1640,7 @@ function FriendsFrame_UpdateFriendButton(button, elementData)
 			end
 			nameText = info.name..", "..format(FRIENDS_LEVEL_TEMPLATE, info.level, info.className);
 			nameColor = FRIENDS_WOW_NAME_COLOR;
-			infoText = GetOnlineInfoText(BNET_CLIENT_WOW, info.mobile, info.rafLinkType, info.area);
+			infoText = GetOnlineInfoText(BNET_CLIENT_WOW, info.rafLinkType, info.area);
 		else
 			button.background:SetColorTexture(FRIENDS_OFFLINE_BACKGROUND_COLOR.r, FRIENDS_OFFLINE_BACKGROUND_COLOR.g, FRIENDS_OFFLINE_BACKGROUND_COLOR.b, FRIENDS_OFFLINE_BACKGROUND_COLOR.a);
 			button.status:SetTexture(FRIENDS_TEXTURE_OFFLINE);
@@ -1672,9 +1667,9 @@ function FriendsFrame_UpdateFriendButton(button, elementData)
 				button.background:SetColorTexture(FRIENDS_BNET_BACKGROUND_COLOR.r, FRIENDS_BNET_BACKGROUND_COLOR.g, FRIENDS_BNET_BACKGROUND_COLOR.b, FRIENDS_BNET_BACKGROUND_COLOR.a);
 
 				if ShowRichPresenceOnly(accountInfo.gameAccountInfo.clientProgram, accountInfo.gameAccountInfo.wowProjectID, accountInfo.gameAccountInfo.factionName, accountInfo.gameAccountInfo.realmID, accountInfo.gameAccountInfo.areaName) then
-					infoText = GetOnlineInfoText(accountInfo.gameAccountInfo.clientProgram, accountInfo.gameAccountInfo.isWowMobile, accountInfo.rafLinkType, accountInfo.gameAccountInfo.richPresence);
+					infoText = GetOnlineInfoText(accountInfo.gameAccountInfo.clientProgram, accountInfo.rafLinkType, accountInfo.gameAccountInfo.richPresence);
 				else
-					infoText = GetOnlineInfoText(accountInfo.gameAccountInfo.clientProgram, accountInfo.gameAccountInfo.isWowMobile, accountInfo.rafLinkType, accountInfo.gameAccountInfo.areaName);
+					infoText = GetOnlineInfoText(accountInfo.gameAccountInfo.clientProgram, accountInfo.rafLinkType, accountInfo.gameAccountInfo.areaName);
 				end
 
 					C_Texture.SetTitleIconTexture(button.gameIcon, accountInfo.gameAccountInfo.clientProgram, Enum.TitleIconVersion.Medium);
@@ -2051,7 +2046,7 @@ function FriendsListButtonMixin:OnEnter()
 						text = TimerunningUtil.AddSmallIcon(text);
 					end
 					FriendsFrameTooltip_SetLine(FriendsTooltipGameAccount1Name, nil, text);
-					local areaName = accountInfo.gameAccountInfo.isWowMobile and LOCATION_MOBILE_APP or (accountInfo.gameAccountInfo.areaName or UNKNOWN);
+					local areaName = accountInfo.gameAccountInfo.areaName or UNKNOWN;
 					if accountInfo.gameAccountInfo.isInCurrentRegion then
 						local realmName = accountInfo.gameAccountInfo.realmDisplayName or UNKNOWN;
 						anchor = FriendsFrameTooltip_SetLine(FriendsTooltipGameAccount1Info, nil, BNET_FRIEND_TOOLTIP_ZONE_AND_REALM:format(areaName, realmName), -4);
@@ -2101,7 +2096,7 @@ function FriendsListButtonMixin:OnEnter()
 		if info.connected then
 			FriendsTooltipHeader:SetTextColor(FRIENDS_WOW_NAME_COLOR.r, FRIENDS_WOW_NAME_COLOR.g, FRIENDS_WOW_NAME_COLOR.b);
 			FriendsFrameTooltip_SetLine(FriendsTooltipGameAccount1Name, nil, string.format(FRIENDS_LEVEL_TEMPLATE, info.level, info.className));
-			anchor = FriendsFrameTooltip_SetLine(FriendsTooltipGameAccount1Info, nil, info.mobile and LOCATION_MOBILE_APP or info.area);
+			anchor = FriendsFrameTooltip_SetLine(FriendsTooltipGameAccount1Info, nil, info.area);
 		else
 			FriendsTooltipHeader:SetTextColor(FRIENDS_GRAY_COLOR.r, FRIENDS_GRAY_COLOR.g, FRIENDS_GRAY_COLOR.b);
 			FriendsTooltipGameAccount1Name:Hide();
@@ -2218,12 +2213,12 @@ function FriendsListButtonMixin:OnClick(button)
 			-- bnet friend
 			local accountInfo = C_BattleNet.GetFriendAccountInfo(self.id);
 			if accountInfo then
-				FriendsFrame_ShowBNDropdown(accountInfo.accountName, accountInfo.gameAccountInfo.isOnline, nil, nil, nil, 1, accountInfo.bnetAccountID, nil, nil, nil, nil, accountInfo.gameAccountInfo.isWowMobile, accountInfo.battleTag);
+				FriendsFrame_ShowBNDropdown(accountInfo.accountName, accountInfo.gameAccountInfo.isOnline, nil, nil, nil, 1, accountInfo.bnetAccountID, nil, nil, nil, nil, accountInfo.battleTag);
 			end
 		else
 			-- wow friend
 			local info = C_FriendList.GetFriendInfoByIndex(self.id);
-			FriendsFrame_ShowDropdown(info.name, info.connected, nil, nil, nil, 1, info.mobile, nil, nil, nil, nil, info.guid);
+			FriendsFrame_ShowDropdown(info.name, info.connected, nil, nil, nil, 1, nil, nil, nil, nil, info.guid);
 		end
 	end
 end
@@ -2411,7 +2406,7 @@ function FriendsFriendsFrameMixin:Update()
 end
 
 function FriendsFriendsFrame_Close()
-	if not IsOnGlueScreen() then
+	if not C_Glue.IsOnGlueScreen() then
 		StaticPopupSpecial_Hide(FriendsFriendsFrame);
 	end
 end
@@ -2628,8 +2623,6 @@ function FriendsFrame_GetInviteRestriction(index)
 				restriction = max(INVITE_RESTRICTION_INFO, restriction);
 			elseif (gameAccountInfo.wowProjectID == WOW_PROJECT_CLASSIC) and (gameAccountInfo.realmID ~= playerRealmID) then
 				restriction = max(INVITE_RESTRICTION_REALM, restriction);
-			elseif gameAccountInfo.isWowMobile then
-				restriction = INVITE_RESTRICTION_MOBILE;
 			elseif not gameAccountInfo.isInCurrentRegion then
 				restriction = INVITE_RESTRICTION_REGION;
 			else
@@ -2689,7 +2682,7 @@ local inviteTypeIsCrossFaction =
 };
 
 function TravelPassButton_OnEnter(self)
-	if IsOnGlueScreen() then 
+	if C_Glue.IsOnGlueScreen() then 
 		return;
 	end
 

@@ -412,6 +412,8 @@ local PerksProgram =
 				{ Name = "isPurchasePending", Type = "bool", Nilable = false },
 				{ Name = "doesNotExpire", Type = "bool", Nilable = false },
 				{ Name = "price", Type = "number", Nilable = false },
+				{ Name = "originalPrice", Type = "number", Nilable = true },
+				{ Name = "showSaleBanner", Type = "bool", Nilable = false },
 				{ Name = "perksVendorItemID", Type = "number", Nilable = false },
 				{ Name = "itemID", Type = "number", Nilable = false },
 				{ Name = "iconTexture", Type = "string", Nilable = false },

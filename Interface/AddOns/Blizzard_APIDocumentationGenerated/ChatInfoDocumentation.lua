@@ -303,6 +303,25 @@ local ChatInfo =
 			},
 		},
 		{
+			Name = "IsLoggingChat",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsLoggingCombat",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+				{ Name = "advanced", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsPartyChannelType",
 			Type = "Function",
 
@@ -593,6 +612,16 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
 				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ChatLoggingChanged",
+			Type = "Event",
+			LiteralName = "CHAT_LOGGING_CHANGED",
+			Payload =
+			{
+				{ Name = "whichLog", Type = "number", Nilable = false },
+				{ Name = "isEnabled", Type = "bool", Nilable = false },
 			},
 		},
 		{

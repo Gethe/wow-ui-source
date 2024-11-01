@@ -62,10 +62,6 @@ function ArrowCalloutMixin:OnLoad()
 	self:RegisterEvent("SHOW_ARROW_CALLOUT");
 	self:RegisterEvent("HIDE_ARROW_CALLOUT");
 	self:RegisterEvent("PLAYER_SOFT_INTERACT_CHANGED");
-	
-	if C_GameEnvironmentManager.GetCurrentGameEnvironment() == Enum.GameEnvironment.WoWLabs then
-		EventRegistry:RegisterCallback("GameTooltip.HideTooltip", function() C_ArrowCalloutManager.HideWorldLootObjectCallout() end);
-	end
 
 	self.currentCallouts = { }; 
 	self.calloutPool = CreateFramePoolCollection();
@@ -75,16 +71,7 @@ function ArrowCalloutMixin:OnLoad()
 end 
 
 function ArrowCalloutMixin:OnEvent(event, ...)
-	if(event == "PLAYER_SOFT_INTERACT_CHANGED") then 
-		local previousTarget, currentTarget = ...;
-		if (previousTarget ~= currentTarget) then
-			C_ArrowCalloutManager.HideWorldLootObjectCallout();
-
-			if (currentTarget) then 
-				C_ArrowCalloutManager.SetWorldLootObjectCalloutFromGUID(currentTarget); 
-			end
-		end
-	elseif (event == "SHOW_ARROW_CALLOUT") then 
+	if (event == "SHOW_ARROW_CALLOUT") then 
 		local calloutInfo = ...;
 		self:Setup(calloutInfo); 
 	elseif (event == "HIDE_ARROW_CALLOUT") then
@@ -145,25 +132,6 @@ function ArrowCalloutMixin:AnchorCallout(callout, calloutInfo)
 	callout:SetPoint(directionData.Anchor, anchorFrame, directionData.RelativePoint, calloutInfo.offsetX, calloutInfo.offsetY);
 end		
 
-function ArrowCalloutMixin:OnKeyDown(key)
-	if(key == "TAB" and self.calloutPool:GetNumActive() > 0) then 
-		C_ArrowCalloutManager.SwapWorldLootObjectCallout();
-		self:SetPropagateKeyboardInput(false);	
-	else
-		self:SetPropagateKeyboardInput(true);
-	end 
-end
-
-function ArrowCalloutMixin:OnGamePadButtonDown(key)
-	if(key == "PAD4" and self.calloutPool:GetNumActive() > 0) then 
-		C_ArrowCalloutManager.SwapWorldLootObjectCallout();
-	else 
-		local keybind = GetBindingFromClick(key);
-		if(keybind) then 
-			RunBinding(keybind);
-		end 
-	end
-end
 
 ArrowCalloutContainerMixin = { }
 function ArrowCalloutContainerMixin:OnLoad()
@@ -173,15 +141,6 @@ function ArrowCalloutContainerMixin:OnLoad()
 	self.arrowPool:CreatePool("FRAME", self, "ArrowCalloutPointerLeft");
 	self.arrowPool:CreatePool("FRAME", self, "ArrowCalloutPointerRight");
 end 
-
-function ArrowCalloutContainerMixin:OnKeyDown(key)
-	if(#self.currentCallouts > 0 and key == "TAB") then 
-		self:SetPropagateKeyboardInput(false);
-		C_ArrowCalloutManager.SwapWorldLootObjectCallout();
-	else
-		self:SetPropagateKeyboardInput(true);
-	end 
-end
 
 function ArrowCalloutContainerMixin:Setup(calloutInfo)
 	local content = calloutInfo.calloutText; 

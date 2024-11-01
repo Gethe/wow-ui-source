@@ -3,7 +3,6 @@ ScenarioDataProviderMixin = CreateFromMixins(MapCanvasDataProviderMixin);
 
 function ScenarioDataProviderMixin:OnAdded(mapCanvas)
 	MapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
-	self:GetMap():SetPinTemplateType("ScenarioBlobPinTemplate", "ScenarioPOIFrame");
 
 	-- a single permanent pin for the blob
 	local blobPin = self:GetMap():AcquirePin("ScenarioBlobPinTemplate");

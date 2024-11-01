@@ -42,6 +42,14 @@ end
 --[[ Pin ]]--
 PetTamerPinMixin = BaseMapPoiPinMixin:CreateSubPin("PIN_FRAME_LEVEL_PET_TAMER");
 
+function PetTamerPinMixin:GetTextureSizeInfo(_poiInfo)
+	return TextureKitConstants.IgnoreAtlasSize, 16, 16;
+end
+
+function PetTamerPinMixin:GetSuperTrackMarkerOffset()
+	return -2, 2;
+end
+
 function PetTamerPinMixin:OnAcquired(...)
 	SuperTrackablePoiPinMixin.OnAcquired(self, ...);
 end

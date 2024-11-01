@@ -162,73 +162,18 @@ end
 
 -- Overrides
 function UnitPopupRaidDifficulty1ButtonMixin:IsChecked(contextData)
-	local difficultyID, _, _, _, isDynamicInstance = select(3, GetInstanceInfo());
-	if isDynamicInstance then
-		if IsLegacyDifficulty(difficultyID) then
-			local validNormalSize = difficultyID == DifficultyUtil.ID.Raid10Normal or difficultyID == DifficultyUtil.ID.Raid25Normal;
-			if validNormalSize and self:GetDifficultyID() == DifficultyUtil.ID.PrimaryRaidNormal then
-				return true;
-			end
-			
-			local validHeroicSize = difficultyID == DifficultyUtil.ID.Raid10Heroic or difficultyID == DifficultyUtil.ID.Raid25Heroic;
-			if validHeroicSize and self:GetDifficultyID() == DifficultyUtil.ID.PrimaryRaidHeroic then
-				return true;
-			end
-		elseif difficultyID == self:GetDifficultyID() then
-			return true;
-		end
-	elseif GetRaidDifficultyID() == self:GetDifficultyID() then
-			return true;
-		end
-	return false; 
-	end
-
-function UnitPopupRaidDifficulty1ButtonMixin:IsDisabled(contextData)
-	if IsInInstance() then
-		return true;
+	local difficultyID = self:GetDifficultyID();
+	return DifficultyUtil.DoesCurrentRaidDifficultyMatch(difficultyID);
 end
 
-	if IsInGroup() and not UnitIsGroupLeader("player") then
-		return true; 
-	end
-	
-	if IsInGroup(LE_PARTY_CATEGORY_INSTANCE) then
-		return true;
-	end
-
-	local difficultyID, _, _, _, isDynamicInstance = select(3, GetInstanceInfo());
-	if isDynamicInstance and CanChangePlayerDifficulty() then
-		local toggleDifficultyID = select(7, GetDifficultyInfo(difficultyID));
-		if toggleDifficultyID then
-		return CheckToggleDifficulty(toggleDifficultyID, self:GetDifficultyID());
-	end
-	end
-	
-	return false;
+function UnitPopupRaidDifficulty1ButtonMixin:IsDisabled(contextData)
+	local difficultyID = self:GetDifficultyID();
+	return not DifficultyUtil.IsRaidDifficultyEnabled(difficultyID);
 end	
 
 function UnitPopupRaidDifficulty1ButtonMixin:IsEnabled(contextData)
-	if IsInInstance() then
-		return false;
-	end
-
-	if IsInGroup() and not UnitIsGroupLeader("player") then
-		return false;
-	end
-
-	if IsInGroup(LE_PARTY_CATEGORY_INSTANCE) then
-		return false;
-	end
-
-	local difficultyID, _, _, _, isDynamicInstance = select(3, GetInstanceInfo());
-	if isDynamicInstance and CanChangePlayerDifficulty() then
-		local toggleDifficultyID = select(7, GetDifficultyInfo(difficultyID));
-		if toggleDifficultyID then
-		return CheckToggleDifficulty(toggleDifficultyID, self:GetDifficultyID());
-	end
-end
-
-	return true; 
+	local difficultyID = self:GetDifficultyID();
+	return DifficultyUtil.IsRaidDifficultyEnabled(difficultyID);
 end
 
 function UnitPopupInviteButtonMixin:CanShow(contextData)
@@ -520,26 +465,6 @@ end
 
 function UnitPopupEnterEditModeMixin:OnClick(contextData)
 	ShowUIPanel(EditModeManagerFrame);
-end
-
-function UnitPopupSelectRoleButtonMixin:CanShow(contextData)
-	if not CanShowSetRoleButton() then
-		return false;
-	end
-
-	if C_Scenario.IsInScenario() then
-		return false;
-	end
-
-	if not IsInGroup() then
-		return false; 
-	end
-
-	if HasLFGRestrictions() then
-		return false;
-end
-
-	return UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") or UnitIsUnit(contextData.unit, "player");
 end
 
 function UnitPopupPetAbandonButtonMixin:GetText()

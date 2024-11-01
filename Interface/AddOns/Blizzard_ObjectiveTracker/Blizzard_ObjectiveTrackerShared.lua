@@ -44,15 +44,16 @@ function QuestObjectiveItemButtonMixin:OnUpdate(elapsed)
 	-- Handle range indicator
 	local rangeTimer = self.rangeTimer;
 	if rangeTimer then
+		local questLogIndex = self:GetAttribute("questLogIndex");
 		rangeTimer = rangeTimer - elapsed;
 		if rangeTimer <= 0 then
-			local link, item, charges, showItemWhenComplete = GetQuestLogSpecialItemInfo(self.questLogIndex);
+			local link, item, charges, showItemWhenComplete = GetQuestLogSpecialItemInfo(questLogIndex);
 			if not charges or charges ~= self.charges then
 				QuestObjectiveTracker:MarkDirty();
 				return;
 			end
 			local count = self.HotKey;
-			local valid = IsQuestLogSpecialItemInRange(self.questLogIndex);
+			local valid = IsQuestLogSpecialItemInRange(questLogIndex);
 			if valid == 0 then
 				count:Show();
 				count:SetVertexColor(1.0, 0.1, 0.1);
@@ -81,23 +82,25 @@ end
 
 function QuestObjectiveItemButtonMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetQuestLogSpecialItem(self.questLogIndex);
+	local questLogIndex = self:GetAttribute("questLogIndex");
+	GameTooltip:SetQuestLogSpecialItem(questLogIndex);
 end
 
 function QuestObjectiveItemButtonMixin:OnClick(button)
+	local questLogIndex = self:GetAttribute("questLogIndex");
 	if IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() then
-		local link, item, charges, showItemWhenComplete = GetQuestLogSpecialItemInfo(self.questLogIndex);
+		local link, item, charges, showItemWhenComplete = GetQuestLogSpecialItemInfo(questLogIndex);
 		if link then
 			ChatEdit_InsertLink(link);
 		end
 	else
-		UseQuestLogSpecialItem(self.questLogIndex);
+		UseQuestLogSpecialItem(questLogIndex);
 	end
 end
 
 function QuestObjectiveItemButtonMixin:SetUp(questLogIndex)
 	local link, item, charges, showItemWhenComplete = GetQuestLogSpecialItemInfo(questLogIndex);
-	self.questLogIndex = questLogIndex;
+	self:SetAttribute("questLogIndex", questLogIndex);
 	self.charges = charges;
 	self.rangeTimer = -1;
 	SetItemButtonTexture(self, item);
@@ -106,7 +109,8 @@ function QuestObjectiveItemButtonMixin:SetUp(questLogIndex)
 end
 
 function QuestObjectiveItemButtonMixin:UpdateCooldown()
-	local start, duration, enable = GetQuestLogSpecialItemCooldown(self.questLogIndex);
+	local questLogIndex = self:GetAttribute("questLogIndex");
+	local start, duration, enable = GetQuestLogSpecialItemCooldown(questLogIndex);
 	if start then
 		CooldownFrame_Set(self.Cooldown, start, duration, enable);
 		if duration > 0 and enable == 0 then
@@ -124,7 +128,7 @@ end
 QuestObjectiveFindGroupButtonMixin = { };
 
 function QuestObjectiveFindGroupButtonMixin:SetUp(questID)
-	self.questID = questID;
+	self:SetAttribute("questID", questID);
 end
 
 function QuestObjectiveFindGroupButtonMixin:OnMouseDown()
@@ -148,8 +152,9 @@ end
 
 function QuestObjectiveFindGroupButtonMixin:OnClick()
 	local isFromGreenEyeButton = true;
+	local questID = self:GetAttribute("questID");
 	-- We only want green eye button groups to display the create a group button if there are already groups there.
-	LFGListUtil_FindQuestGroup(self.questID, isFromGreenEyeButton);
+	LFGListUtil_FindQuestGroup(questID, isFromGreenEyeButton);
 end
 
 -- *****************************************************************************************************

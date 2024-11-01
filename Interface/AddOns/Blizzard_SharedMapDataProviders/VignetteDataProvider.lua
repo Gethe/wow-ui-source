@@ -1,6 +1,24 @@
 VignetteDataProviderMixin = CreateFromMixins(MapCanvasDataProviderMixin);
 
-function VignetteDataProviderMixin:GetPinTemplate()
+function VignetteDataProviderMixin:GetPinTemplates()
+	local templates = self.pinTemplates;
+	if not templates then
+		templates = { "VignettePinTemplate", "VignettePinPOIButtonTemplate" };
+		self.pinTemplates = templates;
+	end
+
+	return templates;
+end
+
+function VignetteDataProviderMixin:GetPinTemplate(vignetteInfo)
+	if vignetteInfo.mapPin then
+		return "VignettePinPOIButtonTemplate";
+	end
+
+	return self:GetDefaultPinTemplate();
+end
+
+function VignetteDataProviderMixin:GetDefaultPinTemplate()
 	return "VignettePinTemplate";
 end
 
@@ -9,6 +27,9 @@ function VignetteDataProviderMixin:OnAdded(mapCanvas)
 	self:GetMap():RegisterCallback("SetBounty", self.SetBounty, self);
 	self:GetMap():RegisterCallback("HighlightMapPins.Vignettes", self.ForceHighlightVignettePins, self);
 	self:InitializeAllTrackingTables();
+
+	-- TODO: Remove asap, this will no longer be required
+	self:GetMap():SetPinTemplateType("VignettePinPOIButtonTemplate", "Button");
 end
 
 function VignetteDataProviderMixin:OnRemoved(mapCanvas)
@@ -62,7 +83,10 @@ function VignetteDataProviderMixin:OnEvent(event, ...)
 end
 
 function VignetteDataProviderMixin:RemoveAllData()
-	self:GetMap():RemoveAllPinsByTemplate(self:GetPinTemplate());
+	for index, template in ipairs(self:GetPinTemplates()) do
+		self:GetMap():RemoveAllPinsByTemplate(template);
+	end
+
 	if self.fyrakkFlightPin then
 		self.fyrakkFlightPin:Remove();
 	end
@@ -87,7 +111,6 @@ function VignetteDataProviderMixin:RefreshAllData(fromOnShow)
 		pinsToRemove[vignetteGUID] = pin;
 	end
 
-	local pinTemplate = self:GetPinTemplate();
 	local vignetteGUIDs = C_VignetteInfo.GetVignettes();
 	for i, vignetteGUID in ipairs(vignetteGUIDs) do
 		local vignetteInfo = C_VignetteInfo.GetVignetteInfo(vignetteGUID);
@@ -122,9 +145,10 @@ function VignetteDataProviderMixin:ShouldShowVignette(vignetteInfo)
 end
 
 function VignetteDataProviderMixin:OnSuperTrackingChanged()
-	local template = self:GetPinTemplate();
-	for pin in self:GetMap():EnumeratePinsByTemplate(template) do
-		pin:UpdateSupertrackedHighlight();
+	for index, template in ipairs(self:GetPinTemplates()) do
+		for pin in self:GetMap():EnumeratePinsByTemplate(template) do
+			pin:UpdateSupertrackedHighlight();
+		end
 	end
 end
 
@@ -187,9 +211,9 @@ function VignetteDataProviderMixin:GetPin(vignetteGUID, vignetteInfo)
 		end
 		return self.fyrakkFlightPin;
 	else
-		local pinTemplate = self:GetPinTemplate();
-		-- GetNumActivePinsByTemplate will return the number right now, before this pin is added
-		local frameIndex = self:GetMap():GetNumActivePinsByTemplate(pinTemplate) + 1;
+		local pinTemplate = self:GetPinTemplate(vignetteInfo);
+		-- GetNumActivePinsByTemplate will return the number right now, before this pin is added, use a consistent template here for the count.
+		local frameIndex = self:GetMap():GetNumActivePinsByTemplate(self:GetDefaultPinTemplate()) + 1;
 		return self:GetMap():AcquirePin(pinTemplate, vignetteGUID, vignetteInfo, frameIndex);
 	end
 end
@@ -219,13 +243,13 @@ function SuperTrackableVignettePinMixin:GetSuperTrackData()
 	return self.vignetteGUID;
 end
 
-VignettePinMixin = CreateFromMixins(MapCanvasPinMixin, SuperTrackableVignettePinMixin);
+VignettePinBaseMixin = CreateFromMixins(MapCanvasPinMixin);
 
-function VignettePinMixin:OnLoad()
+function VignettePinBaseMixin:OnLoad()
 	self:SetScalingLimits(1, 1.0, 1.2);
 end
 
-function VignettePinMixin:OnAcquired(vignetteGUID, vignetteInfo, frameIndex)
+function VignettePinBaseMixin:OnAcquired(vignetteGUID, vignetteInfo, frameIndex)
 	SuperTrackablePinMixin.OnAcquired(self, vignetteInfo, frameIndex);
 
 	self.dataProvider = vignetteInfo.dataProvider;
@@ -237,7 +261,7 @@ function VignettePinMixin:OnAcquired(vignetteGUID, vignetteInfo, frameIndex)
 	self.tooltipWidgetSet = vignetteInfo.tooltipWidgetSet;
 	self.iconWidgetSet = vignetteInfo.iconWidgetSet;
 	self.vignetteInfo = vignetteInfo;
-	
+
 	self:EnableMouseMotion(self.hasTooltip);
 
 	self:ApplyTextures();
@@ -253,7 +277,7 @@ function VignettePinMixin:OnAcquired(vignetteGUID, vignetteInfo, frameIndex)
 	self:SetFrameLevelType(frameIndex);
 end
 
-function VignettePinMixin:ApplyTextures()
+function VignettePinBaseMixin:ApplyTextures()
 	local atlasName = self.vignetteInfo.atlasName;
 
 	self.Texture:SetAtlas(atlasName, true);
@@ -261,39 +285,51 @@ function VignettePinMixin:ApplyTextures()
 
 	local sizeX, sizeY = self.Texture:GetSize();
 	self.HighlightTexture:SetSize(sizeX, sizeY);
-	
+
 	self:SetSize(sizeX, sizeY);
 end
 
-function VignettePinMixin:SetFrameLevelType(frameIndex)
+function VignettePinBaseMixin:SetFrameLevelType(frameIndex)
 	self:UseFrameLevelType("PIN_FRAME_LEVEL_VIGNETTE", frameIndex);
 end
 
-function VignettePinMixin:IsUnique()
+function VignettePinBaseMixin:IsUnique()
 	return self.isUnique;
 end
 
-function VignettePinMixin:GetVignetteID()
+function VignettePinBaseMixin:GetRemainingHealthPercentage()
+	return C_VignetteInfo.GetVignetteHealthPct(self:GetVignetteGUID());
+end
+
+function VignettePinBaseMixin:GetRemainingHealthPercentageString()
+	local health = self:GetRemainingHealthPercentage();
+	if health then
+		local roundToNearestInt = true;
+		return VIGNETTE_HEALTH_REMAINING_TOOLTIP:format(FormatPercentage(health, roundToNearestInt));
+	end
+end
+
+function VignettePinBaseMixin:GetVignetteID()
 	return self.vignetteID;
 end
 
-function VignettePinMixin:GetVignetteGUID()
+function VignettePinBaseMixin:GetVignetteGUID()
 	return self.vignetteGUID;
 end
 
-function VignettePinMixin:GetObjectGUID()
+function VignettePinBaseMixin:GetObjectGUID()
 	return self.vignetteInfo.objectGUID;
 end
 
-function VignettePinMixin:GetVignetteType()
+function VignettePinBaseMixin:GetVignetteType()
 	return self.vignetteInfo.type;
 end
 
-function VignettePinMixin:GetVignetteName()
+function VignettePinBaseMixin:GetVignetteName()
 	return self.name;
 end
 
-function VignettePinMixin:GetRewardQuestID()
+function VignettePinBaseMixin:GetRewardQuestID()
 	if self.vignetteInfo.rewardQuestID and (self.vignetteInfo.rewardQuestID > 0) then
 		return self.vignetteInfo.rewardQuestID;
 	else
@@ -301,14 +337,14 @@ function VignettePinMixin:GetRewardQuestID()
 	end
 end
 
-function VignettePinMixin:UpdateFogOfWar(vignetteInfo)
+function VignettePinBaseMixin:UpdateFogOfWar(vignetteInfo)
 	self.Texture:SetDesaturation(vignetteInfo.inFogOfWar and 1 or 0);
 	self.Texture:SetAlpha(vignetteInfo.inFogOfWar and .55 or 1);
 
 	self.HighlightTexture:SetDesaturation(vignetteInfo.inFogOfWar and 1 or .75);
 end
 
-function VignettePinMixin:OnCanvasScaleChanged() -- override
+function VignettePinBaseMixin:OnCanvasScaleChanged() -- override
 	local position = C_VignetteInfo.GetVignettePosition(self.vignetteGUID, self:GetMap():GetMapID());
 	-- Do not update things that could show the pin, if we have no valid position on the map.
 	if position then
@@ -327,7 +363,7 @@ function VignettePinMixin:OnCanvasScaleChanged() -- override
 	end
 end
 
-function VignettePinMixin:UpdatePosition(bestUniqueVignette)
+function VignettePinBaseMixin:UpdatePosition(bestUniqueVignette)
 	local showPin = false;
 	local position = C_VignetteInfo.GetVignettePosition(self.vignetteGUID, self:GetMap():GetMapID());
 	if position then
@@ -338,11 +374,11 @@ function VignettePinMixin:UpdatePosition(bestUniqueVignette)
 	self:SetShown(showPin);
 end
 
-function VignettePinMixin:ShouldUseForcedHighlightType()
+function VignettePinBaseMixin:ShouldUseForcedHighlightType()
 	return self.dataProvider.forcedPinHighlightType and (self:GetVignetteType() == Enum.VignetteType.Normal);
 end
 
-function VignettePinMixin:GetHighlightType() -- override
+function VignettePinBaseMixin:GetHighlightType() -- override
 	if self:ShouldUseForcedHighlightType() then
 		return self.dataProvider.forcedPinHighlightType;
 	end
@@ -369,11 +405,11 @@ function VignettePinMixin:GetHighlightType() -- override
 	return MapPinHighlightType.None;
 end
 
-function VignettePinMixin:UpdateSupertrackedHighlight()
+function VignettePinBaseMixin:UpdateSupertrackedHighlight()
 	MapPinHighlight_CheckHighlightPin(self:GetHighlightType(), self, self.Texture);
 end
 
-function VignettePinMixin:OnMouseEnter()
+function VignettePinBaseMixin:OnMouseEnter()
 	if self.hasTooltip then
 		local verticalPadding = nil;
 
@@ -409,21 +445,33 @@ function VignettePinMixin:OnMouseEnter()
     self:OnLegendPinMouseEnter();
 end
 
-function VignettePinMixin:OnMouseLeave()
+function VignettePinBaseMixin:OnMouseLeave()
 	GameTooltip:Hide();
     self:OnLegendPinMouseLeave();
 end
 
-function VignettePinMixin:DisplayNormalTooltip()
+function VignettePinBaseMixin:DisplayNormalTooltip()
 	local vignetteName = self:GetVignetteName();
 	if vignetteName ~= "" then
 		GameTooltip_SetTitle(GameTooltip, vignetteName);
+
+		-- TODO: Add group recommended if needed
+		-- TODO: Add linked faction if needed
+		-- Adding health remaining, but adding this to the quest objective (if it even exists) could prove challenging
+		local healthString = self:GetRemainingHealthPercentageString();
+		if healthString then
+			GameTooltip_AddNormalLine(GameTooltip, healthString);
+		end
+
+		-- TODO: Add rewards if needed
+
 		return true;
 	end
+
 	return false;
 end
 
-function VignettePinMixin:DisplayPvpBountyTooltip()
+function VignettePinBaseMixin:DisplayPvpBountyTooltip()
 	local player = PlayerLocation:CreateFromGUID(self:GetObjectGUID());
 	local class = select(3, C_PlayerInfo.GetClass(player));
 	local race = C_PlayerInfo.GetRace(player);
@@ -446,13 +494,39 @@ function VignettePinMixin:DisplayPvpBountyTooltip()
 	return false;
 end
 
-function VignettePinMixin:DisplayTorghastTooltip()
+function VignettePinBaseMixin:DisplayTorghastTooltip()
 	SharedTooltip_SetBackdropStyle(GameTooltip, GAME_TOOLTIP_BACKDROP_STYLE_RUNEFORGE_LEGENDARY);
 	return self:DisplayNormalTooltip();
 end
 
-function VignettePinMixin:Remove()
+function VignettePinBaseMixin:Remove()
 	self:GetMap():RemovePin(self);
+end
+
+-- Order matters, if base and derived have the same method names, then derived must override base in order to invoke the base methods correctly.
+VignettePinMixin = CreateFromMixins(SuperTrackableVignettePinMixin, VignettePinBaseMixin);
+VignettePinPOIButtonMixin = CreateFromMixins(VignettePinBaseMixin, POIButtonMixin);
+
+function VignettePinPOIButtonMixin:DisableInheritedMotionScriptsWarning()
+	-- The vignette pin will override these anyway, we don't need to handle
+	-- onEnter/Leave for the POIButton
+	return true;
+end
+
+function VignettePinPOIButtonMixin:IsSuperTrackingExternallyHandled()
+	return true;
+end
+
+function VignettePinPOIButtonMixin:OnAcquired(vignetteGUID, vignetteInfo, frameIndex)
+	self:SetVignette(vignetteGUID);
+	self:SetMapPinInfo(vignetteInfo.mapPin);
+	VignettePinBaseMixin.OnAcquired(self, vignetteGUID, vignetteInfo, frameIndex);
+end
+
+function VignettePinPOIButtonMixin:ApplyTextures()
+	self:SetStyle(POIButtonUtil.Style.Vignette);
+	self:UpdateButtonStyle();
+	self:UpdateSelected();
 end
 
 --[[ Fyakk Flight Pin ]]--
@@ -467,12 +541,12 @@ function FyrakkFlightVignettePinMixin:OnLoad()
 		local w, h = texture:GetSize();
 		texture.rotationVector = CreateVector2D(0.5 - (x / w), 0.5 - (y / h));
 	end
-	
+
 	self.Anim:Play();
-	
+
 	VignettePinMixin.OnLoad(self);
 end
-		
+
 function FyrakkFlightVignettePinMixin:ApplyTextures()
 	-- fixed textures
 end
@@ -514,7 +588,7 @@ function FyrakkFlightVignettePinMixin:UpdateSuperTrackTextureAnchors()
 		self.SuperTrackGlow:SetPoint("TOPLEFT", self, "TOPLEFT", -50, 50);
 		self.SuperTrackGlow:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 50, -50);
 
-		self.SuperTrackMarker:ClearAllPoints();		
+		self.SuperTrackMarker:ClearAllPoints();
 		self.SuperTrackMarker:SetPoint("CENTER", self, "BOTTOMRIGHT", 0, -15);
 	end
 end

@@ -283,6 +283,7 @@ function GuildMicroButtonMixin:OnLoad()
 	self:RegisterEvent("CHAT_DISABLED_CHANGED");
 	self:RegisterEvent("CHAT_DISABLED_CHANGE_FAILED");
 	self:RegisterEvent("PLAYER_GUILD_UPDATE");
+	self:RegisterEvent("CVAR_UPDATE");
 	if ( IsCommunitiesUIDisabledByTrialAccount() ) then
 		self:Disable();
 		self.disabledTooltip = ERR_RESTRICTED_ACCOUNT_TRIAL;
@@ -332,6 +333,11 @@ function GuildMicroButtonMixin:OnEvent(event, ...)
 		self:EvaluateAlertVisibility();
 	elseif ( event == "CHAT_DISABLED_CHANGE_FAILED" or event == "CHAT_DISABLED_CHANGED" ) then
 		self:UpdateNotificationIcon();
+	elseif event == "CVAR_UPDATE" then
+		local arg1 = ...;
+		if (arg1 == "useClassicGuildUI") then
+			self:UpdateMicroButton();
+		end
 	end
 end
 
@@ -359,17 +365,20 @@ function GuildMicroButtonMixin:UpdateMicroButton()
 		else
 			self.disabledTooltip = ERR_RESTRICTED_ACCOUNT_TRIAL;
 		end
-	elseif ( C_Club.IsEnabled() and not BNConnected() ) then
+	elseif ( C_Club.IsEnabled() and not BNConnected() and not C_CVar.GetCVarBool("useClassicGuildUI") ) then
 		self:Disable();
 		self.disabledTooltip = BLIZZARD_COMMUNITIES_SERVICES_UNAVAILABLE;
-	elseif ( C_Club.IsEnabled() and C_Club.IsRestricted() ~= Enum.ClubRestrictionReason.None ) then
+	elseif ( C_Club.IsEnabled() and C_Club.IsRestricted() ~= Enum.ClubRestrictionReason.None and not C_CVar.GetCVarBool("useClassicGuildUI")) then
 		self:Disable();
 		self.disabledTooltip = UNAVAILABLE;
 	elseif ( CommunitiesFrame and CommunitiesFrame:IsShown() ) or ( GuildFrame and GuildFrame:IsShown() ) then
 		self:Enable();
 	else
 		self:Enable();
-		if ( CommunitiesFrame_IsEnabled() ) then
+		if ( C_CVar.GetCVarBool("useClassicGuildUI") ) then
+			self.tooltipText = MicroButtonTooltipText(GUILD, "TOGGLEGUILDTAB");
+			self.newbieText = NEWBIE_TOOLTIP_GUILDTAB;
+		elseif ( CommunitiesFrame_IsEnabled() ) then
 			self.tooltipText = MicroButtonTooltipText(GUILD_AND_COMMUNITIES, "TOGGLEGUILDTAB");
 			self.newbieText = NEWBIE_TOOLTIP_GUILDTAB;
 		elseif ( IsInGuild() ) then
@@ -415,7 +424,7 @@ end
 
 function GuildMicroButtonMixin:UpdateNotificationIcon()
 	if CommunitiesFrame_IsEnabled() and self:IsEnabled() then
-		self.NotificationOverlay:SetShown(not C_SocialRestrictions.IsChatDisabled() and (self:HasUnseenInvitations() or CommunitiesUtil.DoesAnyCommunityHaveUnreadMessages()));
+		self.NotificationOverlay:SetShown(C_SocialRestrictions.CanReceiveChat() and (self:HasUnseenInvitations() or CommunitiesUtil.DoesAnyCommunityHaveUnreadMessages()));
 	else
 		self.NotificationOverlay:SetShown(false);
 	end

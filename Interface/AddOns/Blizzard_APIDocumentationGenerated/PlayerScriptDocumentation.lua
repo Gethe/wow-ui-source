@@ -1251,6 +1251,8 @@ local PlayerScript =
 				{ Name = "mainHandAttackPower", Type = "number", Nilable = false },
 				{ Name = "offHandAttackPower", Type = "number", Nilable = false },
 				{ Name = "rangedAttackPower", Type = "number", Nilable = false },
+				{ Name = "baseAttackPower", Type = "number", Nilable = false },
+				{ Name = "baseRangedAttackPower", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -1488,6 +1490,18 @@ local PlayerScript =
 
 	Tables =
 	{
+		{
+			Name = "PlayerAttackPowerInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "mainHandAttackPower", Type = "number", Nilable = false },
+				{ Name = "offHandAttackPower", Type = "number", Nilable = false },
+				{ Name = "rangedAttackPower", Type = "number", Nilable = false },
+				{ Name = "baseAttackPower", Type = "number", Nilable = false },
+				{ Name = "baseRangedAttackPower", Type = "number", Nilable = false },
+			},
+		},
 	},
 };
 

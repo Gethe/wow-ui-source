@@ -84,3 +84,7 @@ end
 function FlightPointPinMixin:GetSuperTrackData()
 	return Enum.SuperTrackingMapPinType.TaxiNode, self.poiInfo.nodeID;
 end
+
+function FlightPointPinMixin:GetSuperTrackMarkerOffset()
+	return -4, 4;
+end

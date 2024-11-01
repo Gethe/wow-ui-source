@@ -233,9 +233,9 @@ function FramePositionDelegate:ShowUIPanel(frame, force, contextKey)
 	local doublewideFrame = self:GetUIPanel("doublewide");
 	local rightFrame = self:GetUIPanel("right");
 
-	-- If we have a full-screen frame open, ignore other non-fullscreen open requests
+	-- If we have a full-screen frame open, ignore other non-fullscreen open requests, unless certain conditions are met
 	if ( fullScreenFrame and (frameArea ~= "full") ) then
-		if ( force ) then
+		if force or GetUIPanelAttribute(fullScreenFrame, "allowOtherPanels") == 1 then
 			self:SetUIPanel("fullscreen", nil, 1);
 		else
 			self:ShowUIPanelFailed(frame);
@@ -304,7 +304,7 @@ function FramePositionDelegate:ShowUIPanel(frame, force, contextKey)
 				-- Push left to right
 				self:MoveUIPanel("left", "right", UIPANEL_SKIP_SET_POINT);
 			end
-		elseif ( centerFrame and CanShowRightUIPanel(centerFrame) ) then
+		elseif ( centerFrame ) then
 			self:MoveUIPanel("center", "right", UIPANEL_SKIP_SET_POINT);
 		end
 		self:SetUIPanel("doublewide", frame);
@@ -788,6 +788,11 @@ function FramePositionDelegate:EvaluateAutoMinimize(frame)
 	end
 
 	setMinimizedFunc(frame, shouldBeMinimized);
+
+	-- Now that the panel's minimized state has changed, ensure any scale to fit is updated for changes in size
+	if GetUIPanelAttribute(frame, "checkFit") == 1 then
+		self:UpdateScaleForFit(frame);
+	end
 end
 
 function FramePositionDelegate:UIParentManageFramePositions()
@@ -1021,7 +1026,8 @@ end
 
 -- Returns false if there are exclusive-area frames blocking other non-exclusive frames from opening
 function CanOpenPanels()
-	if ( GetUIPanel("fullscreen") ) then
+	local fullScreenFrame = GetUIPanel("fullscreen");
+	if fullScreenFrame and GetUIPanelAttribute(fullScreenFrame, "allowOtherPanels") ~= 1 then
 		return false;
 	end
 

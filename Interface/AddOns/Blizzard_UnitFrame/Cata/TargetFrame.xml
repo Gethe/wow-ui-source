@@ -39,7 +39,7 @@
 				end
 				local unit = self:GetParent().unit;
 				local filter;
-				if ( SHOW_DISPELLABLE_DEBUFFS == "1" and UnitCanAssist("player", unit) ) then
+				if ( GetCVarBool("showDispelDebuffs") and UnitCanAssist("player", unit) ) then
 					filter = "RAID";
 				end
 				GameTooltip:SetUnitDebuff(unit, self:GetID(), filter);
@@ -543,7 +543,7 @@
 				self.showClassification = true;
 				self.showAuraCount = true;
 				self:SetHitRectInsets(96, 40, 10, 9);		-- allows mouseover over health and mana bars
-				TargetFrame_OnLoad(self, "target", TargetFrameDropdown_Initialize);
+				TargetFrame_OnLoad(self, "target", TargetFrame_OpenMenu);
 				TargetFrame_CreateSpellbar(self, "PLAYER_TARGET_CHANGED");
 				TargetFrame_CreateTargetofTarget(self, "targettarget");
 				self:RegisterEvent("PLAYER_TARGET_CHANGED");
@@ -581,7 +581,7 @@
 				self.showPortrait = true;
 				self.showClassification = true;
 				self.showAuraCount = true;
-				TargetFrame_OnLoad(self, "focus", FocusFrameDropdown_Initialize);
+				TargetFrame_OnLoad(self, "focus", FocusFrame_OpenMenu);
 				TargetFrame_CreateSpellbar(self, "PLAYER_FOCUS_CHANGED");
 				TargetFrame_CreateTargetofTarget(self, "focustarget");
 				self:RegisterEvent("PLAYER_FOCUS_CHANGED");

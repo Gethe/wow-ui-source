@@ -1140,4 +1140,66 @@
 			<OnHide function="BankFrame_OnHide"/>
 		</Scripts>
 	</Frame>
+
+	<Frame name="BankCleanUpConfirmationPopup" parent="UIParent" frameStrata="DIALOG" mixin="BankCleanUpConfirmationPopupMixin" inherits="ResizeLayoutFrame" hidden="true">
+		<KeyValues>
+			<KeyValue key="minimumWidth" value="420" type="number"/>
+			<KeyValue key="heightPadding" value="18" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontHighlight" text="ACCOUNT_BANK_CONFIRM_CLEANUP_PROMPT">
+					<Size x="350"/>
+					<Anchors>
+						<Anchor point="TOP" y="-16"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
+
+			<Frame parentKey="HidePopupCheckbox">
+				<Size x="300" y="23"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Text" relativePoint="BOTTOM" y="-7"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Label" justifyH="CENTER" inherits="GameFontNormalSmall" text="CONFIRM_POPUP_DONT_SHOW_AGAIN" maxLines="1">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<CheckButton parentKey="Checkbox" inherits="BankPanelCheckboxTemplate">
+						<Size x="24" y="23"/>
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.Label" relativePoint="LEFT" x="-3"/>
+						</Anchors>
+					</CheckButton>
+				</Frames>
+			</Frame>
+
+			<Button parentKey="AcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
+				<Size x="128" y="21"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.HidePopupCheckbox" relativePoint="BOTTOM" x="-7" y="-7"/>
+				</Anchors>
+			</Button>
+
+			<Button parentKey="CancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
+				<Size x="128" y="21"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.HidePopupCheckbox" relativePoint="BOTTOM" x="7" y="-7"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
 </Ui>

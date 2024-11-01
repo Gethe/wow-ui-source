@@ -1,0 +1,8 @@
+## Title: Blizzard World Loot Obejct List
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## AllowLoadGameType: wowlabs
+## AllowLoad: Game
+
+Blizzard_WorldLootObjectList.lua
+Blizzard_WorldLootObjectList.xml

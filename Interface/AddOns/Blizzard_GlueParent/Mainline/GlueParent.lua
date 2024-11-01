@@ -82,7 +82,7 @@ function GlueParentMixin:OnLoad()
 	self:RegisterEvent("LUA_WARNING");
 	self:RegisterEvent("SUBSCRIPTION_CHANGED_KICK_IMMINENT");
 	self:RegisterEvent("GAME_ENVIRONMENT_SWITCHED");
-	self:RegisterEvent("CONNECT_TO_PLUNDERSTORM_FAILED");
+	self:RegisterEvent("CONNECT_TO_EVENT_REALM_FAILED");
 	-- Events for Global Mouse Down
 	self:RegisterEvent("GLOBAL_MOUSE_DOWN");
 	self:RegisterEvent("GLOBAL_MOUSE_UP");
@@ -172,10 +172,10 @@ function GlueParentMixin:OnEvent(event, ...)
 		local screen = isWoWLabs and "plunderstorm" or "charselect";
 		GlueParent_SetScreen(screen);
 		GlueDialog_Hide("SWAPPING_ENVIRONMENT");
-	elseif ( event == "CONNECT_TO_PLUNDERSTORM_FAILED" ) then
+	elseif ( event == "ERROR_CONNECT_TO_EVENT_REALM_FAILED" ) then
 		CharacterSelect.connectingToPlunderstorm = false;
 		C_RealmList.ClearRealmList();
-		GlueDialog_Show("ERROR_CONNECT_TO_PLUNDERSTORM_FAILED");
+		GlueDialog_Show("ERROR_CONNECT_TO_EVENT_REALM_FAILED");
 	elseif (event == "GLOBAL_MOUSE_DOWN" or event == "GLOBAL_MOUSE_UP") then
 		local buttonID = ...;
 		if not IsGlobalMouseEventHandled(buttonID, event) then
@@ -557,6 +557,9 @@ end
 -- playIntroMovie CVar is set to the index of the last cinematic played.
 -- So we will play the cinematic at that index + 1 if there is one.
 function GlueParent_CheckCinematic()
+	if not C_Glue.IsFirstLoadThisSession() then
+		return;
+	end
 	local firstCinematicIndex, lastCinematicIndex = GetCinematicsIndexRangeForExpansion(LE_EXPANSION_LEVEL_CURRENT);
 	if not firstCinematicIndex or not lastCinematicIndex then
 		return;

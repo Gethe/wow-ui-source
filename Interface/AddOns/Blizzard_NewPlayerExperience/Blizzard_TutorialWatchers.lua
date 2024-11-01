@@ -558,22 +558,49 @@ end
 function Class_HunterStableWatcher:StopWatching()
 	Dispatcher:UnregisterEvent("PET_STABLE_SHOW", self);
 	Dispatcher:UnregisterEvent("PET_STABLE_CLOSED", self);
+	Dispatcher:UnregisterEvent("PET_STABLE_UPDATE", self);
+end
+
+function Class_HunterStableWatcher:TryComplete()
+	local count = C_StableInfo.GetNumStablePets();
+	if count > 0 then
+		self:Complete();
+		return true;
+	end
+
+	return false;
+end
+
+function Class_HunterStableWatcher:GetPointerAnchorFrame()
+	if StableFrame then
+		return StableFrame.StableTogglePetButton;
+	end
+	return nil;
 end
 
 function Class_HunterStableWatcher:PET_STABLE_SHOW()
-	local count = C_StableInfo.GetNumStablePets();
-	if count > 0 then
-		self:Complete();
+	if self:TryComplete() then
 		return;
 	end
-	self:ShowPointerTutorial(NPEV2_HUNTER_STABLE_PET, "LEFT", StableFrame.ActivePetList.PetButton5, 10, 0, nil, "LEFT");
+
+	Dispatcher:RegisterEvent("PET_STABLE_UPDATE", self);
+
+	local pointerAnchorFrame = self:GetPointerAnchorFrame();
+	assertsafe(pointerAnchorFrame, "Put In Stable button not found.");
+
+	self:ShowPointerTutorial(NPEV2_HUNTER_STABLE_PET, "LEFT", pointerAnchorFrame, 10, 0, nil, "LEFT");
 end
 
 function Class_HunterStableWatcher:PET_STABLE_CLOSED()
-	local count = C_StableInfo.GetNumStablePets();
-	if count > 0 then
-		self:Complete();
+	if self:TryComplete() then
+		return;
 	end
+
+	Dispatcher:UnregisterEvent("PET_STABLE_UPDATE", self);
+end
+
+function Class_HunterStableWatcher:PET_STABLE_UPDATE()
+	self:TryComplete();
 end
 
 function Class_HunterStableWatcher:OnInterrupt(interruptedBy)

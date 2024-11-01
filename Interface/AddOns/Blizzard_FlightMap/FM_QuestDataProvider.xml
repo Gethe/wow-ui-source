@@ -2,5 +2,5 @@
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="FM_QuestDataProvider.lua"/>
 
-	<Frame name="FlightMap_QuestPinTemplate" inherits="QuestPinTemplate" mixin="FlightMap_QuestPinMixin" virtual="true"/>
+	<Button name="FlightMap_QuestPinTemplate" inherits="QuestPinTemplate" mixin="FlightMap_QuestPinMixin" virtual="true"/>
 </Ui>

@@ -1403,7 +1403,7 @@ function CompactUnitFrame_UpdateLootFrame(frame)
 
 	frame.classificationIndicator:Hide();
 	frame.PlayerLevelDiffFrame:Hide();
-	frame.healthBar:Hide();
+	frame.HealthBarsContainer:Hide();
 	frame.name:Hide();
 	frame:SetScale(0.75);
 

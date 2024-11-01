@@ -518,7 +518,8 @@ function MajorFactionRenownHeaderFrameMixin:OnEnter()
 		GameTooltip_AddNormalLine(GameTooltip, MAJOR_FACTION_RENOWN_CURRENT_PROGRESS:format(currentFactionData.renownReputationEarned, currentFactionData.renownLevelThreshold));
 	end
 
-	GameTooltip:Show(); 
+	EventRegistry:TriggerEvent("MajorFactionRenown.Header.OnEnter", self, GameTooltip, currentFactionID);
+	GameTooltip:Show();
 end 
 
 function MajorFactionRenownHeaderFrameMixin:OnLeave()

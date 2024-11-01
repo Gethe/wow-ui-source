@@ -11,8 +11,19 @@ CharacterSelectListUtil = {
 local s_characterReorderTranslation = {};
 
 function CharacterSelectListUtil.CanReorder()
+	local sortByLastActive = GetCVarBool("sortCharListByLastActive");
+	if sortByLastActive then
+		return false;
+	end
 	return (CharacterSelectCharacterFrame.SearchBox:IsShown() and CharacterSelectCharacterFrame.SearchBox:GetText() == "") and
 	not CharacterSelectUtil.IsUndeleting() and CharacterServicesMaster_AllowCharacterReordering(CharacterServicesMaster);
+end
+
+local function LastActiveTimeComparator(lhs, rhs)
+	if lhs.lastActiveTime ~= rhs.lastActiveTime then
+		return lhs.lastActiveTime > rhs.lastActiveTime;
+	end
+	return lhs.characterID < rhs.characterID;
 end
 
 function CharacterSelectListUtil.CreateCompleteDataProvider()
@@ -21,7 +32,13 @@ function CharacterSelectListUtil.CreateCompleteDataProvider()
 	-- The starting index for ungrouped characters.
 	local ungroupedCharacterIndex = 1;
 
-	if not CharacterSelect.undeleting then
+	local sortByLastActive = GetCVarBool("sortCharListByLastActive");
+	if sortByLastActive then
+		dataProvider:SetSortComparator(LastActiveTimeComparator);
+	end
+
+	-- if we decide to show groups while sorting by last active, update LastActiveTimeComparator to account for them
+	if not CharacterSelect.undeleting and not sortByLastActive then
 		local groupID = 1;
 		local collapsedState = GetWarbandGroupCollapsedState(groupID);
 
@@ -71,7 +88,16 @@ function CharacterSelectListUtil.CreateCompleteDataProvider()
 			isEmpty = false,
 			height = CharacterSelectListUtil.CharacterHeight
 		}
-		dataProvider:Insert(characterData);
+		if sortByLastActive then
+			local characterGuid = GetCharacterGUID(characterID);
+			if characterGuid then
+				local basicInfo = GetBasicCharacterInfo(characterGuid);
+				characterData.lastActiveTime = basicInfo.lastActiveTime;
+				dataProvider:Insert(characterData);
+			end
+		else
+			dataProvider:Insert(characterData);
+		end
 	end
 
 	return dataProvider;
@@ -131,6 +157,12 @@ function CharacterSelectListUtil.SaveCharacterOrder()
 end
 
 function CharacterSelectListUtil.UpdateCharacterOrderFromDataProvider(dataProvider)
+	-- This function shouldn't be called while sorted, but just in case
+	local sortByLastActive = GetCVarBool("sortCharListByLastActive");
+	if sortByLastActive then
+		return;
+	end
+
 	s_characterReorderTranslation = {};
 	for _, elementData in dataProvider:EnumerateEntireRange() do
 		if elementData.isGroup then
@@ -524,6 +556,11 @@ end
 
 -- Click the actual character button in the scroll list, in case it may be otherwise disabled.
 function CharacterSelectListUtil.ClickCharacterFrameByGUID(guid, isDoubleClick)
+	-- If UI is hidden, double clicks are disabled.
+	if not CharacterSelectUI:GetVisibilityState() then
+		isDoubleClick = false;
+	end
+
 	-- First scroll to the character to have the frame present.
 	local characterElementData = CharacterSelectCharacterFrame.ScrollBox:FindElementDataByPredicate(function(elementData)
 		return CharacterSelectListUtil.GetCharacterPositionData(guid, elementData) ~= nil;

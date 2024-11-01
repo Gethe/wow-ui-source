@@ -98,10 +98,19 @@
 		</Scripts>
 	</Button>
 
-	<Frame name="GameEnvironmentFrameTemplate" mixin="GameEnvironmentFrameMixin" setAllPoints="true" virtual="true">
+	<Frame name="GameEnvironmentFrameTemplate" mixin="GameEnvironmentFrameMixin" virtual="true" inherits="ResizeLayoutFrame" hidden="true">
+		<KeyValues>
+			<KeyValue key="widthPadding" value="20" type="number"/>
+			<KeyValue key="heightPadding" value="80" type="number"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture parentKey="BackgroundShadow" atlas="plunderstorm-glues-logo-shadow" setAllPoints="true" />
+				<FontString parentKey="NoGameModesText" inherits="GameFontNormalLarge" text="WOWLABS_NO_GAME_MODES_FOUND" hidden="true">
+					<Size x="250"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -112,13 +121,13 @@
 					</Layer>
 				</Layers>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="40" y="-40"/>
+					<Anchor point="TOPLEFT" y="-40"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="gameEnvironment" value="Enum.GameEnvironment.WoW" type="global" />
 				</KeyValues>
 			</Button>
-			<Button parentKey="SelectWoWLabsToggle" inherits ="GameEnvironmentButtonPulsingTemplate">
+			<Button parentKey="SelectWoWLabsToggle" inherits="GameEnvironmentButtonPulsingTemplate">
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture parentKey="NormalTexture" file="Interface\Glues\Common\Glues-WoW-PlunderstormLogo">
@@ -129,6 +138,16 @@
 						</Texture>
 					</Layer>
 				</Layers>
+				<Frames>
+					<Frame parentKey="LimitedTimeEventText" inherits="NewFeatureLabelNoAnimateTemplate" hidden="true" setAllPoints="true">
+						<KeyValues>
+							<KeyValue key="label" value="LIMITED_TIME_EVENT" type="global"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOP" x="0" y="-8" relativePoint="BOTTOM"/>
+						</Anchors>
+					</Frame>
+				</Frames>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.SelectWoWToggle" relativePoint="RIGHT" x="9" y="0"/>
 				</Anchors>
@@ -136,9 +155,17 @@
 					<KeyValue key="gameEnvironment" value="Enum.GameEnvironment.WoWLabs" type="global" />
 				</KeyValues>
 			</Button>
+			<Frame parentKey="Border" inherits="NineSlicePanelTemplate" useParentLevel="true" >
+				<KeyValues>
+					<KeyValue key="layoutType" value="PerksProgramProductsPanelTemplate" type="string"/>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnKeyDown method="OnKeyDown"/>
 		</Scripts>
 	</Frame>
 	

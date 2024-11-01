@@ -7,12 +7,32 @@ local WorldLootObject =
 	Functions =
 	{
 		{
-			Name = "GetCurrentWorldLootObjectSwapInventoryType",
+			Name = "DoesSlotMatchInventoryType",
 			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "slot", Type = "number", Nilable = false },
+				{ Name = "inventoryType", Type = "InventoryType", Nilable = false },
+			},
 
 			Returns =
 			{
-				{ Name = "inventoryType", Type = "InventoryType", Nilable = false },
+				{ Name = "matches", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetWorldLootObjectDistanceSquared",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "distanceSquared", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -22,6 +42,20 @@ local WorldLootObject =
 			Arguments =
 			{
 				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "WorldLootObjectInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetWorldLootObjectInfoByGUID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "objectGUID", Type = "WOWGUID", Nilable = false },
 			},
 
 			Returns =
@@ -64,6 +98,7 @@ local WorldLootObject =
 			Arguments =
 			{
 				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
+				{ Name = "isLeftClick", Type = "bool", Nilable = false },
 			},
 		},
 	},
@@ -78,11 +113,6 @@ local WorldLootObject =
 			{
 				{ Name = "guid", Type = "WOWGUID", Nilable = false },
 			},
-		},
-		{
-			Name = "WorldLootObjectSwapInventoryTypeUpdated",
-			Type = "Event",
-			LiteralName = "WORLD_LOOT_OBJECT_SWAP_INVENTORY_TYPE_UPDATED",
 		},
 	},
 

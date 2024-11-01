@@ -103,7 +103,7 @@ function UnitPopupManager:OpenMenu(which, contextData)
 			local title, class = GetNameAndClass(contextData.unit, contextData.name);
 			frame.fontString:SetText(title);
 
-			if class and not IsOnGlueScreen() then
+			if class and not C_Glue.IsOnGlueScreen() then
 				local colorCode = select(4, GetClassColor(class));
 				local color = CreateColorFromHexString(colorCode);
 				frame.fontString:SetTextColor(color:GetRGBA());

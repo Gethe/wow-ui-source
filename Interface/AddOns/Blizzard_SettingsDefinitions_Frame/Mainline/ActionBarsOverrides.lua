@@ -57,7 +57,7 @@ function ActionBarsOverrides.AdjustActionBarSettings(category, layout)
 	-- Add mirrors of these keybindings for easy access
 	if Settings.IsPlunderstorm() then
 		local actions = { "WOWLABS_ACTIONBUTTON1", "WOWLABS_ACTIONBUTTON2", "WOWLABS_MULTIACTIONBAR1BUTTON1", "WOWLABS_MULTIACTIONBAR1BUTTON2", 
-						"WOWLABS_MULTIACTIONBAR2BUTTON1", "WOWLABS_MULTIACTIONBAR2BUTTON2", "WOWLABS_ITEM1" };
+						"WOWLABS_MULTIACTIONBAR2BUTTON1", "WOWLABS_MULTIACTIONBAR2BUTTON2", "WOWLABS_ITEM1", "WOWLABS_SWAP_OFFENSIVES", "WOWLABS_SWAP_UTILITIES" };
 		for _, action in pairs(actions) do
 			local bindingIndex = C_KeyBindings.GetBindingIndex(action);
 			if bindingIndex then

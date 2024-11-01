@@ -1192,12 +1192,10 @@ function NewPetAlertFrameMixin:OnClick(button, down)
 		return;
 	end
 
-	if C_GameRules.IsGameRuleActive(Enum.GameRule.CollectionsPanelDisabled) then
-		return;
-	end
-
 	SetCollectionsJournalShown(true, COLLECTIONS_JOURNAL_TAB_INDEX_PETS);
-	PetJournal_SelectPet(PetJournal, self.petID);
+	if CollectionsJournal then
+		PetJournal_SelectPet(PetJournal, self.petID);
+	end
 end
 
 -- [[ NewMountAlertFrame ]] --
@@ -1221,12 +1219,7 @@ function NewMountAlertFrameMixin:OnClick(button, down)
 		return;
 	end
 
-	if C_GameRules.IsGameRuleActive(Enum.GameRule.CollectionsPanelDisabled) then
-		return;
-	end
-
 	SetCollectionsJournalShown(true, COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS);
-
 	if CollectionsJournal:IsShown() then
 		MountJournal_SelectByMountID(self.mountID);
 	end

@@ -50,16 +50,26 @@ function ClearNewActionHighlight(action, preventIdenticalActionsFromClearing)
 	end
 end
 
-function GetNewActionHighlightMark(action)
+-- Keys within ON_BAR_HIGHLIGHT_MARKS and ACTION_HIGHLIGHT_MARKS are vulnerable to taint from
+-- talent and spellbook code. Will require some investigation.
+local function SecureGetNewActionHighlightMark(action)
 	return ACTION_HIGHLIGHT_MARKS[action];
+end
+
+function GetNewActionHighlightMark(action)
+	return securecallfunction(SecureGetNewActionHighlightMark, action);
 end
 
 function ClearOnBarHighlightMarks()
 	ON_BAR_HIGHLIGHT_MARKS = {};
 end
 
-function GetOnBarHighlightMark(action)
+local function SecureGetOnBarHighlightMark(action)
 	return ON_BAR_HIGHLIGHT_MARKS[action];
+end
+
+function GetOnBarHighlightMark(action)
+	return securecallfunction(SecureGetOnBarHighlightMark, action);
 end
 
 local function UpdateOnBarHighlightMarks(actionButtonSlots)
@@ -1207,11 +1217,11 @@ end
 
 function ActionBarActionButtonMixin:PlaySpellCastAnim(actionButtonCastType)
 	self.cooldown:SetSwipeColor(0, 0, 0, 0);
-	self.hideCooldownFrame = true; 
-	self:ClearInterruptDisplay(); 
+	self.hideCooldownFrame = true;
+	self:ClearInterruptDisplay();
 	self:ClearReticle();
-	self.SpellCastAnimFrame:Setup(actionButtonCastType); 
-	self.actionButtonCastType = actionButtonCastType; 
+	self.SpellCastAnimFrame:Setup(actionButtonCastType);
+	self.actionButtonCastType = actionButtonCastType;
 end
 
 function ActionBarActionButtonMixin:PlayTargettingReticleAnim()
@@ -1597,44 +1607,51 @@ function ActionButtonInterruptFrameMixin:OnHide()
 	self.Highlight.AnimIn:Stop();
 end
 
-ActionButtonCastingAnimFrameMixin = { }; 
+ActionButtonCastingAnimFrameMixin = { };
 
 function ActionButtonCastingAnimFrameMixin:Setup(actionButtonCastType)
-	local startTime, endTime; 
+	local startTime, endTime;
 
 	local isChannelCast = actionButtonCastType == ActionButtonCastType.Channel; 
 	local isEmpoweredCast = actionButtonCastType == ActionButtonCastType.Empowered;
-	local _; 
-	if(isChannelCast or isEmpoweredCast) then 
+	local _;
+	if (isChannelCast or isEmpoweredCast) then
 		_, _, _, startTime, endTime = UnitChannelInfo("player");
-	else 
+	else
 		_, _, _, startTime, endTime = UnitCastingInfo("player");
-	end 
-	self.EndBurst:Hide(); 
+	end
 
-	local fillFrame = self.Fill; 
-	fillFrame.CastFill:ClearAllPoints(); 
-	local castingAnim = self.Fill.CastingAnim; 
-	local finishCastAnim = self.EndBurst.FinishCastAnim; 
+	self.EndBurst:Hide();
+
+	local fillFrame = self.Fill;
+	fillFrame.CastFill:ClearAllPoints();
+	local castingAnim = self.Fill.CastingAnim;
+	local finishCastAnim = self.EndBurst.FinishCastAnim;
 
 	castingAnim:Stop();
-	finishCastAnim:Stop(); 
-	if(isChannelCast) then 
-		fillFrame.CastFill:SetAtlas("UI-HUD-ActionBar-Channel-Fill", true); 
+	finishCastAnim:Stop();
+	if (isChannelCast) then
+		fillFrame.CastFill:SetAtlas("UI-HUD-ActionBar-Channel-Fill", true);
 		fillFrame.InnerGlowTexture:SetAtlas("UI-HUD-ActionBar-Channel-InnerGlow", true);
 		fillFrame.CastFill:SetPoint("CENTER", 45, 0);
 		fillFrame.CastingAnim.CastFillTranslation:SetOffset(-43, 0);
-	else 
+	else
 		fillFrame.CastFill:SetAtlas("UI-HUD-ActionBar-Cast-Fill", true); 
 		fillFrame.InnerGlowTexture:SetAtlas("UI-HUD-ActionBar-Casting-InnerGlow", true);
 		fillFrame.CastFill:SetPoint("CENTER", -45, 0);
 		fillFrame.CastingAnim.CastFillTranslation:SetOffset(43, 0);
 	end
 
-	local totalTimeInSeconds = (endTime - startTime) / 1000;
+	local totalTimeInSeconds = 0;
+	if not startTime or not endTime then
+		assertsafe(false, "Attempting to set up casting anim with nil start or end time.");
+	else
+		totalTimeInSeconds = (endTime - startTime) / 1000;
+	end
+
 	castingAnim.CastFillTranslation:SetDuration(totalTimeInSeconds);
-	castingAnim:Play(); 
-	self:Show(); 
+	castingAnim:Play();
+	self:Show();
 end
 
 function ActionButtonCastingAnimFrameMixin:OnHide()

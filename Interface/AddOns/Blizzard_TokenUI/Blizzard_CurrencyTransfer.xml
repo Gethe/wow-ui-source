@@ -1,12 +1,12 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 
-	<EditBox name="CurrencyTransferAmountInputEditBoxTemplate" letters="6" numeric="true" multiLine="false" autoFocus="false" mixin="CurrencyTransferAmountInputBoxMixin" inherits="LargeInputBoxTemplate" virtual="true">
-		<Size x="70" y="33"/>
+	<EditBox name="CurrencyTransferAmountInputEditBoxTemplate" letters="7" numeric="true" multiLine="false" autoFocus="false" mixin="CurrencyTransferAmountInputBoxMixin" inherits="LargeInputBoxTemplate" virtual="true">
+		<Size x="75" y="33"/>
 		<Scripts>
-			<OnShow method="OnShow"/>
 			<OnEditFocusLost method="OnEditFocusLost"/>
 			<OnEnterPressed function="EditBox_ClearFocus"/>
+			<OnTextChanged method="OnTextChanged"/>
 		</Scripts>
 	</EditBox>
 
@@ -51,7 +51,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="CurrencyTransferAmountSelectorTemplate" mixin="CurrencyTransferAmountSelectorMixin" virtual="true">
+	<Frame name="CurrencyTransferAmountSelectorTemplate" inherits="CallbackRegistrantTemplate" mixin="CurrencyTransferAmountSelectorMixin" virtual="true">
 		<Size y="40"/>
 		<Layers>
 			<Layer level="BORDER">
@@ -69,8 +69,15 @@
 					<Anchor point="RIGHT" x="-2"/>
 				</Anchors>
 			</EditBox>
+			<Button parentKey="MaxQuantityButton" inherits="UIPanelButtonTemplate" text="CURRENCY_TRANSFER_MAX_QUANTITY_BUTTON">
+				<Size x="75" y="22"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.InputBox" relativePoint="LEFT" x="-2" y="3"/>
+				</Anchors>
+			</Button>
 		</Frames>
 		<Scripts>
+			<OnLoad method="OnLoad"/>
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
@@ -96,7 +103,7 @@
 		</KeyValues>-->
 		<Frames>
 			<Frame parentKey="BalanceInfo">
-				<Size x="110" y="24"/>
+				<Size x="115" y="24"/>
 				<Anchors>
 					<Anchor point="RIGHT"/>
 				</Anchors>

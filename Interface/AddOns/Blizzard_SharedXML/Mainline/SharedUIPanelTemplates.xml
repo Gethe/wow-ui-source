@@ -2006,6 +2006,7 @@
 		tooltipTextColor: a color for tooltipText.
 		tooltipOffsetX: x offset for the tooltip relative to tooltipAnchor for SetOwner.
 		tooltipOffsetY: y offset for the tooltip relative to tooltipAnchor for SetOwner.
+		tooltipDisableWrapText: should the tooltip text wrapping be disabled.
 
 		<KeyValues>
 			<KeyValue key="buttonArtKit" value="128-RedButton" type="string"/>
@@ -2016,6 +2017,7 @@
 			<KeyValue key="tooltipText" value="REFRESH_BUTTON_TOOLTIP" type="string"/>
 			<KeyValue key="tooltipOffsetX" value="0" type="number"/>
 			<KeyValue key="tooltipOffsetY" value="0" type="number"/>
+			<KeyValue key="tooltipDisableWrapText" value="true" type="boolean"/>
 			<KeyValue key="disabledTooltip" value="REFRESH_BUTTON_TOOLTIP_DISABLED" type="string"/>
 			<KeyValue key="disabledTooltipAnchor" value="ANCHOR_RIGHT" type="string"/>
 			<KeyValue key="disabledTooltipOffsetX" value="0" type="number"/>

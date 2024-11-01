@@ -71,6 +71,7 @@
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>	
 </Ui>

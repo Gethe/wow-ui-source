@@ -421,7 +421,7 @@ function ReputationEntryMixin:ShowMajorFactionRenownTooltip()
 
 	GameTooltip_AddBlankLineToTooltip(GameTooltip);
 	GameTooltip_AddInstructionLine(GameTooltip, REPUTATION_BUTTON_TOOLTIP_CLICK_INSTRUCTION);
-
+	EventRegistry:TriggerEvent("ShowMajorFactionRenown.Tooltip.OnEnter", self, GameTooltip, factionID);
 	GameTooltip:Show();
 end
 
@@ -753,7 +753,7 @@ function ReputationParagonFrame_SetupParagonTooltip(frame)
 			end
 		end
 		GameTooltip_AddNormalLine(EmbeddedItemTooltip, description);
-		if ( not hasRewardPending ) then
+		if ( not hasRewardPending and currentValue and threshold ) then
 			local value = mod(currentValue, threshold);
 			-- show overflow if reward is pending
 			if ( hasRewardPending ) then
@@ -786,6 +786,8 @@ ReputationDetailFrameMixin = CreateFromMixins(CallbackRegistryMixin);
 function ReputationDetailFrameMixin:OnLoad()
 	CallbackRegistryMixin.OnLoad(self);
 	self:AddStaticEventMethod(EventRegistry, "ReputationFrame.NewFactionSelected", self.Refresh);
+
+	ScrollUtil.RegisterScrollBoxWithScrollBar(self.ScrollingDescription:GetScrollBox(), self.ScrollingDescriptionScrollBar);
 end
 
 function ReputationDetailFrameMixin:OnShow()
@@ -806,7 +808,7 @@ function ReputationDetailFrameMixin:Refresh()
 	end
 
 	self.Title:SetText(factionData.name);
-	self.Description:SetText(factionData.description);
+	self.ScrollingDescription:SetText(factionData.description);
 
 	self.AtWarCheckbox:SetEnabled(factionData.canToggleAtWar and not factionData.isHeader);
 	self.AtWarCheckbox:SetChecked(factionData.atWarWith);

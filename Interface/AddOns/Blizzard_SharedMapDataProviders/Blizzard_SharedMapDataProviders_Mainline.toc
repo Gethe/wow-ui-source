@@ -22,7 +22,8 @@ AreaLabelDataProvider.xml
 BattlefieldFlagDataProvider.xml
 BonusObjectiveDataProvider.xml
 VehicleDataProvider.xml
-StorylineQuestDataProvider.xml
+QuestOfferDataProvider.lua
+QuestOfferDataProvider.xml
 EncounterJournalDataProvider.xml
 FogOfWarDataProvider.xml
 PlunderstormCircleDataProvider.xml
@@ -41,8 +42,9 @@ BannerDataProvider.xml
 ContributionCollectorDataProvider.xml
 MapLinkDataProvider.xml
 SelectableGraveyardDataProvider.xml
-MapIndicatorQuestDataProvider.xml
 QuestSessionDataProvider.lua
 WaypointLocationDataProvider.xml
 DragonridingRaceDataProvider.xml
 DelveEntranceDataProvider.xml
+SuperTrackWaypointDataProvider.lua
+SuperTrackWaypointDataProvider.xml

@@ -4,8 +4,13 @@
 
 <Frame name="PlunderstormLobbyFrame" hidden="true" setAllPoints="true" parent="GlueParent" inherits="CallbackRegistrantTemplate" mixin="PlunderstormLobbyMixin">
 	<Frames>
-		<Frame parentKey="GameEnvironmentToggleFrame" inherits="GameEnvironmentFrameTemplate" />
-
+		<Frame parentKey="NavBar" inherits="CharacterSelectNavBarTemplate">
+			<Anchors>
+				<Anchor point="TOPLEFT"/>
+				<Anchor point="TOPRIGHT"/>
+			</Anchors>
+		</Frame>
+		
 		<Frame parentKey="GameModeDescriptionFrame">
 			<Size x="420" y="150"/>
 			<Layers>
@@ -91,21 +96,14 @@
 				<OnClick method="OnClick"/>
 			</Scripts>
 		</Button>
-
-		<Button parentKey="PlunderstormLobbyMenuButton" mixin="PlunderstormLobbyMenuButtonMixin" inherits="GlueButtonTemplate" text="MAINMENU">
-			<Size x="190" y="34"/>
-			<Anchors>
-				<Anchor point="BOTTOM" relativeKey="$parent.PlunderstormLobbyBackButton" relativePoint="TOP" x="0" y="18"/>
-			</Anchors>
-			<Scripts>
-				<OnClick method="OnClick"/>
-			</Scripts>
-		</Button>
-
-		<Frame parentKey="GameModeSettingsFrame" inherits="GameModeSettingsFrameTemplate">
+		
+		<Frame parentKey="GameModeSettingsFrame" inherits="QueueTypeSettingsFrameTemplate">
 			<Anchors>
 				<Anchor point="BOTTOM" x="0" y="40"/>
 			</Anchors>
+			<Frames>
+				<Button parentKey="GameReadyButton" inherits="QueueReadyButtonTemplate"/>
+			</Frames>
 		</Frame>
 
 		<Button parentKey="PlunderstormLobbyCustomize" mixin="PlunderstormCustomizeCharacterButtonMixin" inherits="GlueButtonTemplate" text="WOWLABS_CUSTOMIZE_CHARACTER">
@@ -133,6 +131,9 @@
 			<Anchors>
 				<Anchor point="BOTTOM" x="0" y="40"/>
 			</Anchors>
+			<Frames>
+				<Button parentKey="LeaveQueueButton" inherits="LeaveQueueButtonTemplate"/>
+			</Frames>
 		</Frame>
 
 		<Frame parentKey="SubNoticeFrame" hidden="true">

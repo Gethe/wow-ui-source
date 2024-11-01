@@ -700,8 +700,7 @@ function HonorFrame_UpdateQueueButtons()
 			elseif(isInCrossFactionGroup) then
 				if isBrawl or isSpecialBrawl then 
 					local brawlInfo = isSpecialBrawl and C_PvP.GetSpecialEventBrawlInfo() or C_PvP.GetAvailableBrawlInfo();
-					local allowCrossFactionGroups = brawlInfo and brawlInfo.brawlType == Enum.BrawlType.SoloRbg;
-					if (not allowCrossFactionGroups) then
+					if (brawlInfo and not brawlInfo.crossFactionAllowed) then
 						HonorFrame.QueueButton:Disable();
 						disabledReason = CROSS_FACTION_PVP_ERROR;
 					end
@@ -1637,7 +1636,7 @@ function PVPStandardRewardMixin:RefreshRoleShortageBonus()
 
 	local playerCanQueueForBonus = false;	
 	local playerClassID = PlayerUtil.GetClassID();
-	for specIndex = 1, GetNumSpecializationsForClassID(playerClassID) do
+	for specIndex = 1, C_SpecializationInfo.GetNumSpecializationsForClassID(playerClassID) do
 		local specID, specName, specDescription, specIcon, role, isRecommended, isAllowed = GetSpecializationInfoForClassID(playerClassID, specIndex);
 		if tContains(self.RoleShortageBonus.rewardInfo.validRoles, role) then
 			playerCanQueueForBonus = true;
@@ -2342,7 +2341,7 @@ end
 
 function PVPRewardRoleShortageBonusMixin:OnEnter()
 	if self.rewardInfo then
-		self.rewardInfo.rewardSpell:ContinueOnSpellLoad(GenerateClosure(self.RefreshTooltip, self));
+		self.spellLoadCancel = self.rewardInfo.rewardSpell:ContinueWithCancelOnSpellLoad(GenerateClosure(self.RefreshTooltip, self));
 	end
 end
 
@@ -2358,4 +2357,8 @@ end
 
 function PVPRewardRoleShortageBonusMixin:OnLeave()
 	EmbeddedItemTooltip:Hide();
+	if self.spellLoadCancel then
+		self.spellLoadCancel();
+		self.spellLoadCancel = nil;
+	end
 end

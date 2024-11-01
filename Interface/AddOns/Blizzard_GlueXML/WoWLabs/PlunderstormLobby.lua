@@ -21,7 +21,9 @@ function PlunderstormLobbyMixin:OnLoad()
 	self:AddDynamicEventMethod(EventRegistry, "FriendsFrame.OnFriendsOnlineUpdated", self.OnFriendsOnlineUpdated);
 	self:AddDynamicEventMethod(EventRegistry, "GameEnvironment.Selected", self.OnGameEnvironmentSelected);
 	self:AddDynamicEventMethod(EventRegistry, "RealmList.Cancel", self.OnRealmListCancel);
-	self:AddDynamicEventMethod(EventRegistry, "GameMode.PlayerUpdatedPartyList", self.OnPlayerUpdatedPartyList);
+	self:AddDynamicEventMethod(EventRegistry, "MatchmakingQueueType.PlayerUpdatedPartyList", self.OnPlayerUpdatedPartyList);
+
+	self.NavBar:SetRealmsButtonEnabled(false);
 end
 
 function PlunderstormLobbyMixin:ChangeGameEnvironment(newEnvironment)
@@ -35,7 +37,7 @@ function PlunderstormLobbyMixin:ChangeGameEnvironment(newEnvironment)
 		-- If we changed character order persist it
 		CharacterSelect_SaveCharacterOrder();
 		-- Swap to the Plunderstorm Realm
-		C_RealmList.ConnectToPlunderstorm(GetCVar("plunderStormRealm")); --WOWLABSTODO: Should this CVar thing be hidden from lua?
+		C_RealmList.ConnectToEventRealm(GetCVar("plunderStormRealm")); --WOWLABSTODO: Should this CVar thing be hidden from lua?
 		                                                                 --WOWLABSTODO: This returns false on failure, we should show an error message
 	else
 		-- Ensure we have auto realm select enabled
@@ -50,7 +52,7 @@ end
 function PlunderstormLobbyMixin:OnGameEnvironmentSelected(requestedEnvironment)
 	assert(requestedEnvironment);
 	if C_GameEnvironmentManager.GetCurrentGameEnvironment() ~= requestedEnvironment then
-		self.GameEnvironmentToggleFrame:ChangeGameEnvironment(requestedEnvironment);
+		self.NavBar.GameEnvironmentButton.SelectionDrawer:ChangeGameEnvironment(requestedEnvironment);
 	end
 end
 
@@ -59,8 +61,12 @@ function PlunderstormLobbyMixin:OnShow()
 
 	C_AddOns.LoadAddOn("Blizzard_PlunderstormBasics");
 	PlunderstormBasicsContainerFrame:SetParent(self);
-	PlunderstormBasicsContainerFrame:SetPoint("TOPRIGHT", self, "TOPRIGHT", -46, -40);
-	PlunderstormBasicsContainerFrame:SetBottomFrame(self.PlunderstormLobbyMenuButton);
+	PlunderstormBasicsContainerFrame:ClearAllPoints();
+	PlunderstormBasicsContainerFrame:SetPoint("TOPRIGHT", self, "TOPRIGHT", -46, -70);
+	PlunderstormBasicsContainerFrame:SetBottomFrame(self.PlunderstormLobbyBackButton);
+
+	C_AddOns.LoadAddOn("Blizzard_AccountStore");
+	AccountStoreFrame:SetStoreFrontID(Constants.AccountStoreConsts.PlunderstormStoreFrontID);
 
 	ChatFrame1:SetPoint("BOTTOMLEFT", 32, 60);
 	ChatFrame1:Show();
@@ -75,7 +81,7 @@ function PlunderstormLobbyMixin:OnShow()
     GluePartyPoseFrame:Show();
 	GluePartyPoseFrame:Init();
 
-	self.GameEnvironmentToggleFrame:SelectRadioButtonForEnvironment(Enum.GameEnvironment.WoWLabs);
+	self.NavBar.GameEnvironmentButton.SelectionDrawer:SelectRadioButtonForEnvironment(Enum.GameEnvironment.WoWLabs);
 
 	if BNConnected() then
 		local numInvites = BNGetNumFriendInvites() + C_WoWLabsMatchmaking.GetNumPartyInvites();
@@ -90,7 +96,7 @@ function PlunderstormLobbyMixin:OnShow()
 end
 
 function PlunderstormLobbyMixin:OnRealmListCancel()
-	self.GameEnvironmentToggleFrame:SelectRadioButtonForEnvironment(Enum.GameEnvironment.WoWLabs);
+	self.NavBar.GameEnvironmentButton.SelectionDrawer:SelectRadioButtonForEnvironment(Enum.GameEnvironment.WoWLabs);
 end
 
 function PlunderstormLobbyMixin:OnFriendsOnlineUpdated(numOnlineFriends)
@@ -106,6 +112,10 @@ function PlunderstormLobbyMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents (self,PlunderstormLobbyEvents);
 	CharacterSelect.connectingToPlunderstorm = false;
 	self.PlunderstormLobbyFriendsButton:DisableUntilNextUpdate();
+
+	if AccountStoreFrame and AccountStoreFrame:IsShown() then
+		AccountStoreUtil.SetAccountStoreShown(false);
+	end
 end
 
 function PlunderstormLobbyMixin:OnPlayerUpdatedPartyList()
@@ -139,6 +149,13 @@ function PlunderstormLobbyMixin:OnEvent(event, ...)
 end
 
 function PlunderstormLobbyMixin:Update()
+	if C_WoWLabsMatchmaking.IsFastLogin() then
+		self.MatchmakingQueueFrame:SetSquadSize(C_WoWLabsMatchmaking.GetPartyPlaylistEntry());
+		self.MatchmakingQueueFrame.LeaveQueueButton:Disable();
+		self.GameModeSettingsFrame:UpdateButtons();
+		return;
+	end
+
 	if IsTrialAccount() or IsVeteranTrialAccount() then
 		self.MatchmakingQueueFrame:Hide();
 		self.GameModeSettingsFrame:Hide();
@@ -166,6 +183,7 @@ function PlunderstormLobbyMixin:Update()
 			self.MatchmakingQueueFrame.LeaveQueueButton:Disable();
 		end
     end
+
 	self.GameModeSettingsFrame:UpdateButtons();
 end
 

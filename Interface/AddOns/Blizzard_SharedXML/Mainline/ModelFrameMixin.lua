@@ -62,7 +62,7 @@ local playerRaceSex;
 -- TODO:: WoWLabs temp compatibility changes, figure out better handling for Unit* functions.
 if ( C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm ) then
 	playerRaceSex = "HumanMale";
-elseif ( not IsOnGlueScreen() ) then
+elseif ( not C_Glue.IsOnGlueScreen() ) then
 	local _;
 	_, playerRaceSex = UnitRace("player");
 	if ( UnitSex("player") == 2 ) then

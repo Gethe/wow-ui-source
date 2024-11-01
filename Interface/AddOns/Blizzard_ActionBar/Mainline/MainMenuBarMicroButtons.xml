@@ -33,15 +33,8 @@
 			<OnHide method="OnHide" inherit="append"/>
 			<OnMouseDown method="OnMouseDown" inherit="append"/>
 			<OnMouseUp method="OnMouseUp"/>
-			<OnEnable>
-				self:SetAlpha(1);
-			</OnEnable>
-			<OnDisable>
-				self:SetAlpha(0.5);
-			</OnDisable>
-			<OnLeave inherit="append">
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnEnable method="OnEnable"/>
+			<OnDisable method="OnDisable"/>
 		</Scripts>
 	</Button>
 

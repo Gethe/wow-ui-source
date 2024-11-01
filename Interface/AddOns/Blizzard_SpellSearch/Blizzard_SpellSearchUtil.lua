@@ -109,7 +109,8 @@ function SpellSearchUtil.GetActionbarStatusForSpellBookItemInfo(spellBookItemInf
 	if itemType == Enum.SpellBookItemType.Spell then
 		-- Currently avoiding flagging auto combat spells as not on action bars
 		if not C_Spell.IsAutoAttackSpell(spellBookItemInfo.spellID) and not C_Spell.IsRangedAutoAttackSpell(spellBookItemInfo.spellID) then
-			status = SpellSearchUtil.GetActionbarStatusForSpell(spellBookItemInfo.spellID);
+			-- Use the base spell ID to match what's stored on the action bar.
+			status = SpellSearchUtil.GetActionbarStatusForSpell(spellBookItemInfo.actionID);
 		end
 	elseif itemType == Enum.SpellBookItemType.PetAction then
 		status = ActionButtonUtil.GetActionBarStatusForPetAction(spellBookItemInfo.actionID);

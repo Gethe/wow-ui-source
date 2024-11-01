@@ -39,4 +39,8 @@ function DelveEntranceDataProviderMixin:RefreshAllData(fromOnShow)
 end
 
 --[[ Pin ]]--
-DelveEntrancePinMixin = BaseMapPoiPinMixin:CreateSubPin("PIN_FRAME_LEVEL_DELVE_ENTRANCE", AreaPOIPinMixin);
+DelveEntrancePinMixin = AreaPOIPinMixin:CreateSubPin("PIN_FRAME_LEVEL_DELVE_ENTRANCE");
+
+function DelveEntrancePinMixin:GetSuperTrackMarkerOffset()
+	return -7, 7;
+end

@@ -530,7 +530,6 @@ local FriendList =
 				{ Name = "dnd", Type = "bool", Nilable = false },
 				{ Name = "afk", Type = "bool", Nilable = false },
 				{ Name = "rafLinkType", Type = "RafLinkType", Nilable = false },
-				{ Name = "mobile", Type = "bool", Nilable = false },
 			},
 		},
 		{

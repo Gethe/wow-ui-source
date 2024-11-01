@@ -2,5 +2,5 @@
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="FM_WorldQuestDataProvider.lua"/>
 
-	<Frame name="FlightMap_WorldQuestPinTemplate" inherits="WorldQuestPinTemplate" mixin="FlightMap_WorldQuestPinMixin" virtual="true"/>
+	<Button name="FlightMap_WorldQuestPinTemplate" inherits="WorldQuestPinTemplate" mixin="FlightMap_WorldQuestPinMixin" virtual="true"/>
 </Ui>

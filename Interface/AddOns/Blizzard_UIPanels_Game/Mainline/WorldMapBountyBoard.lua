@@ -498,10 +498,10 @@ end
 
 function WorldMapBountyBoardMixin:CalculateNumActivitiesForSelectedBountyByMap(mapID)
 	local numQuests = 0;
-	local taskInfo = GetQuestsForPlayerByMapIDCached(mapID);
+	local taskInfo = GetTasksOnMapCached(mapID);
 	for i, info in ipairs(taskInfo) do
-		if QuestUtils_IsQuestWorldQuest(info.questId) and info.mapID == mapID then -- ignore worlds quests that are on surrounding maps but viewable from this map
-			if self:IsWorldQuestCriteriaForSelectedBounty(info.questId) then
+		if QuestUtils_IsQuestWorldQuest(info.questID) and info.mapID == mapID then -- ignore worlds quests that are on surrounding maps but viewable from this map
+			if self:IsWorldQuestCriteriaForSelectedBounty(info.questID) then
 				numQuests = numQuests + 1;
 			end
 		end
@@ -739,10 +739,10 @@ end
 
 function WorldMapActivityTrackerMixin:CalculateNumActiveTaskQuestsForSelectedBountyByMap(mapID)
 	local numTaskQuests = 0;
-	local taskQuests = GetQuestsForPlayerByMapIDCached(mapID);
+	local taskQuests = GetTasksOnMapCached(mapID);
 	for i, taskInfo in ipairs(taskQuests) do
-		local questTitle, taskFactionID, capped, displayAsObjective = C_TaskQuest.GetQuestInfoByQuestID(taskInfo.questId);
-		if (C_QuestLog.IsQuestCriteriaForBounty(taskInfo.questId, self.selectedBounty.questID) or taskFactionID and taskFactionID == self.selectedBounty.factionID) and taskInfo.mapID == mapID then -- Ignore Task Quests that are on surrounding maps but viewable from this map
+		local questTitle, taskFactionID, capped, displayAsObjective = C_TaskQuest.GetQuestInfoByQuestID(taskInfo.questID);
+		if (C_QuestLog.IsQuestCriteriaForBounty(taskInfo.questID, self.selectedBounty.questID) or taskFactionID and taskFactionID == self.selectedBounty.factionID) and taskInfo.mapID == mapID then -- Ignore Task Quests that are on surrounding maps but viewable from this map
 			numTaskQuests = numTaskQuests + 1;
 		end
 	end
@@ -770,7 +770,7 @@ function WorldMapActivityTrackerMixin:CalculateNumActiveQuestsForSelectedBountyF
 		return numActiveQuests;
 	end
 
-	local quests = C_QuestLog.GetQuestsOnMap(mapID);
+	local quests = GetQuestsOnMapCached(mapID);
 	for i, info in ipairs(quests) do
 		if C_QuestLog.DoesQuestAwardReputationWithFaction(info.questID, self.selectedBounty.factionID) and GetQuestUiMapID(info.questID) == mapID then -- Ignore Active Quests that are on surrounding maps but viewable from this map
 			numActiveQuests = numActiveQuests + 1;

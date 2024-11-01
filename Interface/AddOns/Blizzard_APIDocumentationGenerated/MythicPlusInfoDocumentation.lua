@@ -221,15 +221,6 @@ local MythicPlusInfo =
 			},
 		},
 		{
-			Name = "IsWeeklyRewardAvailable",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "weeklyRewardAvailable", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "RequestCurrentAffixes",
 			Type = "Function",
 		},

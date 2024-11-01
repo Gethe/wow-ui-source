@@ -92,7 +92,7 @@
 					<OnClick method="OnClick"/>
 				</Scripts>
 			</Button>
-			<Button parentKey="ViewRewardsButton" mixin="SpectateViewRewardsButtonMixin" inherits="UIPanelButtonNoTooltipResizeToFitTemplate" text="WOW_LABS_VIEW_REWARDS">
+			<Button parentKey="LeaveMatchButton" mixin="SpectateLeaveMatchButtonMixin" inherits="UIPanelButtonNoTooltipResizeToFitTemplate" text="WOW_LABS_REMATCH">
 				<KeyValues>
 					<KeyValue key="fixedHeight" value="32" type="number"/>
 					<KeyValue key="widthPadding" value="80" type="number"/>
@@ -107,14 +107,14 @@
 				<NormalFont style="GameFontNormalLarge"/>
 				<HighlightFont style="GameFontHighlightLarge"/>
 			</Button>
-			<Button parentKey="LeaveMatchButton" mixin="SpectateLeaveMatchButtonMixin" inherits="UIPanelButtonNoTooltipResizeToFitTemplate" text="WOW_LABS_REMATCH">
+			<Button parentKey="MatchDetailsButton" mixin="MatchDetailsButtonMixin" inherits="UIPanelButtonNoTooltipResizeToFitTemplate" text="WOW_LABS_RETURN_TO_MATCH_DETAILS">
 				<KeyValues>
 					<KeyValue key="fixedHeight" value="32" type="number"/>
 					<KeyValue key="widthPadding" value="80" type="number"/>
 				</KeyValues>
 				<Size x="150" y="32"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.ViewRewardsButton" relativePoint="LEFT" x="-12" y="0"/>
+					<Anchor point="RIGHT" relativeKey="$parent.LeaveMatchButton" relativePoint="LEFT" x="-12" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnClick method="OnClick"/>

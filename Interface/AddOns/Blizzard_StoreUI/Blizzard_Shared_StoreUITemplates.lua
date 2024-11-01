@@ -214,8 +214,10 @@ end
 
 function CategoryTreeScrollContainerMixin:ExpandSelectFirstChild(node, dataProvider)
 	node:SetCollapsed(false);
-	local parentFrame = self.ScrollBox:FindFrame(node);	
-	parentFrame.ParentIndicator:SetAtlas("Campaign_HeaderIcon_Open");
+	local parentFrame = self.ScrollBox:FindFrame(node);
+	if parentFrame then
+		parentFrame.ParentIndicator:SetAtlas("Campaign_HeaderIcon_Open");
+	end
 
 	local firstChildNode = node.nodes[1];
 	self.selectionBehavior:SelectElementData(firstChildNode);

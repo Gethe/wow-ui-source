@@ -7,7 +7,7 @@ function GameTutorials:Initialize()
 end
 
 function GameTutorials:OnTutorialsInit()
-	AddDracthyrTutorials();
+	AddEvokerTutorials();
 end
 
 function GameTutorials:OnTutorialsEnabled()

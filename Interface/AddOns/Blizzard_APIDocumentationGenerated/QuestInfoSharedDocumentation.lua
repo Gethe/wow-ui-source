@@ -23,6 +23,26 @@ local QuestInfoShared =
 				{ Name = "WorldQuest", Type = "QuestClassification", EnumValue = 10 },
 			},
 		},
+		{
+			Name = "QuestPOIMapInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "childDepth", Type = "number", Nilable = true },
+				{ Name = "questTagType", Type = "QuestTagType", Nilable = true },
+				{ Name = "questID", Type = "number", Nilable = false },
+				{ Name = "numObjectives", Type = "number", Nilable = false },
+				{ Name = "mapID", Type = "number", Nilable = false },
+				{ Name = "x", Type = "number", Nilable = false },
+				{ Name = "y", Type = "number", Nilable = false },
+				{ Name = "isQuestStart", Type = "bool", Nilable = false },
+				{ Name = "isDaily", Type = "bool", Nilable = false },
+				{ Name = "isCombatAllyQuest", Type = "bool", Nilable = false },
+				{ Name = "isMeta", Type = "bool", Nilable = false },
+				{ Name = "inProgress", Type = "bool", Nilable = false },
+				{ Name = "isMapIndicatorQuest", Type = "bool", Nilable = false },
+			},
+		},
 	},
 };
 

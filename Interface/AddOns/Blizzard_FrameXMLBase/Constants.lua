@@ -673,6 +673,17 @@ CONQUEST_SIZE_STRINGS = { RATED_SOLO_SHUFFLE_SIZE, RATED_BG_BLITZ_SIZE, ARENA_2V
 CONQUEST_TYPE_STRINGS = { ARENA, BATTLEGROUNDS, ARENA, ARENA, BATTLEGROUNDS };
 CONQUEST_SIZES = { 1, 1, 2, 3, 10 };
 CONQUEST_BRACKET_INDEXES = { 7, 9, 1, 2, 4 }; -- 5v5 was removed
+CONQUEST_BRACKET_NAMES = {
+	[1] = CONQUEST_BRACKET_NAME_2V2,
+	[2] = CONQUEST_BRACKET_NAME_3V3,
+	-- [3] = 5v5 (Deprecated)
+	[4] = CONQUEST_BRACKET_NAME_RBG,
+	-- [5] = Arena Skirmish (Not rated)
+	-- [6] = Brawl Solo Shuffle (Not rated)
+	[7] = CONQUEST_BRACKET_NAME_SOLO_SHUFFLE,
+	-- [8] = Brawl Battleground Blitz (Not rated)
+	[9] = CONQUEST_BRACKET_NAME_BATTLEGROUND_BLITZ,
+};
 
 -- Chat
 CHANNEL_INVITE_TIMEOUT = 60;
@@ -696,8 +707,8 @@ QUEST_TAG_ATLAS = {
 	["STORY"] = "questlog-questtypeicon-story",
 	["ALLIANCE"] = "questlog-questtypeicon-alliance",
 	["HORDE"] = "questlog-questtypeicon-horde",
-	["EXPIRING_SOON"] = "questlog-questtypeicon-expiringsoon",
-	["EXPIRING"] = "questlog-questtypeicon-expiring",
+	["EXPIRING_SOON"] = "questlog-questtypeicon-clockorange",
+	["EXPIRING"] = "questlog-questtypeicon-clockyellow",
 	[Enum.QuestTag.Dungeon] = "questlog-questtypeicon-dungeon",
 	[Enum.QuestTag.Scenario] = "questlog-questtypeicon-scenario",
 	[Enum.QuestTag.Group] = "questlog-questtypeicon-group",

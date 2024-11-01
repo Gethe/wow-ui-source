@@ -76,6 +76,11 @@ function SuperTrackEventMixin:GetSuperTrackedContent()
 end
 
 function SuperTrackEventMixin:OnQuestAccepted(questID)
+	local superTrackType, superTrackID = C_SuperTrack.GetSuperTrackedMapPin();
+	if superTrackType == Enum.SuperTrackingMapPinType.QuestOffer and superTrackID == questID then
+		C_SuperTrack.ClearSuperTrackedMapPin();
+	end
+
 	QuestUtil.CheckAutoSuperTrackQuest(questID);
 end
 
@@ -105,6 +110,10 @@ end
 
 function QuestSuperTracking_GetSuperTrackedMapPin(supertracker)
 	return GetSupertrackedData(supertracker, "GetSuperTrackedMapPin");
+end
+
+function QuestSuperTracking_GetSuperTrackedVignette(supertracker)
+	return GetSupertrackedData(supertracker, "GetSuperTrackedVignette");
 end
 
 function QuestSuperTracking_ShouldHighlightWorldQuests(uiMapID)

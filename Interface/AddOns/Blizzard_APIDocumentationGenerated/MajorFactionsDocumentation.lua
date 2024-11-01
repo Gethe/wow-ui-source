@@ -7,20 +7,6 @@ local MajorFactions =
 	Functions =
 	{
 		{
-			Name = "GetCovenantIDForMajorFaction",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "majorFactionID", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "covenantID", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "GetCurrentRenownLevel",
 			Type = "Function",
 

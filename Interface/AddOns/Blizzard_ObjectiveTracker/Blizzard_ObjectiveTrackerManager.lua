@@ -164,6 +164,18 @@ function ObjectiveTrackerManager:CanShowPOIs(module)
 	return self.questPOIEnabled;
 end
 
+function ObjectiveTrackerManager:EnumerateActiveBlocksByTag(tag, callback)
+	local ContainerEnumerateActiveModuleBlocksByTag = function(module)
+		if module:MatchesTag(tag) then
+			module:EnumerateActiveBlocks(callback);
+		end
+	end
+
+	for container in pairs(self.containers) do
+		container:ForEachModule(ContainerEnumerateActiveModuleBlocksByTag);
+	end
+end
+
 function ObjectiveTrackerManager:OnPlayerEnteringWorld(isInitialLogin, isReloadingUI)
 	if not isInitialLogin and not isReloadingUI then
 		return;

@@ -130,7 +130,7 @@ function ModelPreviewFrame_ShowModelInternal(displayID, modelSceneID, allowZoom,
 		local autoDress = bit.band(flags, Enum.UIModelSceneFlags.Autodress) == Enum.UIModelSceneFlags.Autodress;
 
 		local playerRaceName;
-		if IsOnGlueScreen() then
+		if C_Glue.IsOnGlueScreen() then
 			local characterGuid = GetCharacterGUID(GetCharacterSelection());
 			if characterGuid then
 				local basicCharacterInfo = GetBasicCharacterInfo(characterGuid);

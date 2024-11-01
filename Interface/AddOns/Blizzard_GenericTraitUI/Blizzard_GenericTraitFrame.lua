@@ -163,6 +163,11 @@ function GenericTraitFrameMixin:ApplyLayout(layoutInfo)
 end
 
 function GenericTraitFrameMixin:OnShow()
+	-- Changes can happen to the tree while it was hidden that may require a full update so mark it
+	-- as dirty before calling the base OnShow. For example, skyriding talents can be automatically
+	-- purchased on level up.
+	self:MarkTreeDirty();
+
 	-- 11.0 Placeholder
 	local treeID = self.traitTreeID;
 	local layout = GetGenericTraitFrameLayoutInfo(treeID);

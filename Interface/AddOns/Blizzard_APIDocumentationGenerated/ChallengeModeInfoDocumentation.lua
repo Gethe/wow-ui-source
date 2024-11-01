@@ -65,24 +65,12 @@ local ChallengeModeInfo =
 			},
 		},
 		{
-			Name = "GetCompletionInfo",
+			Name = "GetChallengeCompletionInfo",
 			Type = "Function",
 
 			Returns =
 			{
-				{ Name = "mapChallengeModeID", Type = "number", Nilable = false },
-				{ Name = "level", Type = "number", Nilable = false },
-				{ Name = "time", Type = "number", Nilable = false },
-				{ Name = "onTime", Type = "bool", Nilable = false },
-				{ Name = "keystoneUpgradeLevels", Type = "number", Nilable = false },
-				{ Name = "practiceRun", Type = "bool", Nilable = false },
-				{ Name = "oldOverallDungeonScore", Type = "number", Nilable = true },
-				{ Name = "newOverallDungeonScore", Type = "number", Nilable = true },
-				{ Name = "IsMapRecord", Type = "bool", Nilable = false },
-				{ Name = "IsAffixRecord", Type = "bool", Nilable = false },
-				{ Name = "PrimaryAffix", Type = "number", Nilable = false },
-				{ Name = "isEligibleForScore", Type = "bool", Nilable = false },
-				{ Name = "members", Type = "table", InnerType = "ChallengeModeCompletionMemberInfo", Nilable = false },
+				{ Name = "info", Type = "ChallengeCompletionInfo", Nilable = false },
 			},
 		},
 		{
@@ -354,6 +342,25 @@ local ChallengeModeInfo =
 
 	Tables =
 	{
+		{
+			Name = "ChallengeCompletionInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "mapChallengeModeID", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "level", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "time", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "onTime", Type = "bool", Nilable = false, Default = false },
+				{ Name = "keystoneUpgradeLevels", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "practiceRun", Type = "bool", Nilable = false, Default = false },
+				{ Name = "oldOverallDungeonScore", Type = "number", Nilable = true },
+				{ Name = "newOverallDungeonScore", Type = "number", Nilable = true },
+				{ Name = "isMapRecord", Type = "bool", Nilable = false, Default = false },
+				{ Name = "isAffixRecord", Type = "bool", Nilable = false, Default = false },
+				{ Name = "isEligibleForScore", Type = "bool", Nilable = false, Default = false },
+				{ Name = "members", Type = "table", InnerType = "ChallengeModeCompletionMemberInfo", Nilable = false },
+			},
+		},
 		{
 			Name = "ChallengeModeCompletionMemberInfo",
 			Type = "Structure",

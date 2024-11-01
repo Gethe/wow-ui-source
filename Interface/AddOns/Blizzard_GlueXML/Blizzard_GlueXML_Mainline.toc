@@ -1,17 +1,11 @@
 ## Title: Blizzard_GlueXML
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_GlueDialogs, Blizzard_TimerunningUtil, Blizzard_Menu, Blizzard_MoneyFrame
+## Dependencies: Blizzard_GlueDialogs, Blizzard_TimerunningUtil, Blizzard_Menu, Blizzard_MoneyFrame, Blizzard_MatchmakingQueueDisplay
 ## LoadFirst: 1
 ## AllowLoad: Glue
 ## AllowLoadGameType: mainline
 Mainline\Localization.lua
-WoWLabs\GluePartyPoseUI.lua
-WoWLabs\GluePartyPoseUI.xml
-WoWLabs\MatchmakingQueueFrame.lua
-WoWLabs\MatchmakingQueueFrame.xml
-WoWLabs\PlunderstormLobby.lua
-WoWLabs\PlunderstormLobby.xml
 Mainline\GlueTooltip.xml
 Mainline\GlueMenuFrame.lua
 Mainline\GlueMenuFrame.xml
@@ -40,6 +34,10 @@ Mainline\CharacterSelect\CharacterSelectUI.lua
 Mainline\CharacterSelect\CharacterSelectUI.xml
 Mainline\CharacterSelect.lua
 Mainline\CharacterSelect.xml
+WoWLabs\GluePartyPoseUI.lua
+WoWLabs\GluePartyPoseUI.xml
+WoWLabs\PlunderstormLobby.lua
+WoWLabs\PlunderstormLobby.xml
 Mainline\AccountReactivate.lua
 Mainline\AccountReactivate.xml
 Mainline\KioskModeSplash.lua

@@ -690,7 +690,12 @@ do
 
 	function PoolCollectionProxyMixin:GetPool(...)
 		local poolCollection = Proxies:ToPrivate(self);
-		return poolCollection:GetPool(...):ToProxy();
+		local pool = poolCollection:GetPool(...);
+		if not pool then
+			return nil;
+		end
+
+		return pool:ToProxy();
 	end
 
 	function PoolCollectionProxyMixin:CreatePool(...)

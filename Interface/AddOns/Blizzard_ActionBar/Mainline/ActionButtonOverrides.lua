@@ -22,7 +22,21 @@ if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
 		self:RegisterEvent("PLAYER_LOGIN");
 		self:RegisterEvent("SPECTATE_BEGIN");
 		self:RegisterEvent("SPECTATE_END");
-		self:RegisterEvent("WORLD_LOOT_OBJECT_SWAP_INVENTORY_TYPE_UPDATED");
+
+		EventRegistry:RegisterCallback("WorldLootObjectTooltip.Shown", self.OnWorldLootObjectTooltipShown, self);
+		EventRegistry:RegisterCallback("WorldLootObjectTooltip.Hidden", self.OnWorldLootObjectTooltipHidden, self);
+	end
+
+	function ActionBarButtonEventsDerivedFrameMixin:OnWorldLootObjectTooltipShown(...)
+		for k, frame in pairs(self.frames) do
+			frame:OnWorldLootObjectTooltipShown(...);
+		end
+	end
+
+	function ActionBarButtonEventsDerivedFrameMixin:OnWorldLootObjectTooltipHidden()
+		for k, frame in pairs(self.frames) do
+			frame:OnWorldLootObjectTooltipHidden();
+		end
 	end
 
 	ActionBarActionButtonDerivedMixin = CreateFromMixins(ActionBarActionButtonMixin);
@@ -191,20 +205,25 @@ if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
 		self.feedback_action = action;
 	end
 
-	function ActionBarActionButtonDerivedMixin:UpdateSwappableState()
-		if not WOWLABS_ACTIONBUTTON_MAP[self.action] then
-			return;
+	function ActionBarActionButtonDerivedMixin:CanSwapWithInventoryType(inventoryType)
+		if not WOWLABS_ACTIONBUTTON_MAP[self.action] or C_SpectatingUI.IsSpectating() then
+			return false;
 		end
 
 		local slot = WOWLABS_ACTIONBUTTON_MAP[self.action]["INVSLOT"];
-		local itemLink = GetInventoryItemLink("player", slot);
-		local isSpectating = C_SpectatingUI.IsSpectating(); 
-		local swapInventoryType = C_WorldLootObject.GetCurrentWorldLootObjectSwapInventoryType();
-		if not isSpectating and swapInventoryType and itemLink and (swapInventoryType == C_Item.GetItemInventoryTypeByID(itemLink)) then
-			self:SetNormalAtlas("plunderstorm-actionbar-slot-border-swappable");
-		else
-			self:SetNormalAtlas("plunderstorm-actionbar-slot-border");
-		end
+		return C_WorldLootObject.DoesSlotMatchInventoryType(slot, inventoryType);
+	end
+
+	function ActionBarActionButtonDerivedMixin:OnWorldLootObjectTooltipShown(inventoryType)
+		self:SetSwappableState(self:CanSwapWithInventoryType(inventoryType));
+	end
+
+	function ActionBarActionButtonDerivedMixin:OnWorldLootObjectTooltipHidden()
+		self:SetSwappableState(false);
+	end
+
+	function ActionBarActionButtonDerivedMixin:SetSwappableState(swappable)
+		self:SetNormalAtlas(swappable and "plunderstorm-actionbar-slot-border-swappable" or "plunderstorm-actionbar-slot-border");
 	end
 
 	function ActionBarActionButtonDerivedMixin:UpdateBorder()
@@ -305,9 +324,7 @@ if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
 			end
 		elseif ( event == "SPECTATE_BEGIN" or event == "SPECTATE_END" ) then
 			self:Update();
-			self:UpdateSwappableState();
-		elseif ( event == "WORLD_LOOT_OBJECT_SWAP_INVENTORY_TYPE_UPDATED" ) then
-			self:UpdateSwappableState();
+			self:SetSwappableState(false);
 		end
 
 		ActionBarActionButtonMixin.OnEvent(self, event, ...)

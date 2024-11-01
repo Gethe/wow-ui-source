@@ -20,6 +20,7 @@ local settings = {
 QuestObjectiveTrackerMixin = CreateFromMixins(ObjectiveTrackerModuleMixin, settings, AutoQuestPopupTrackerMixin);
 
 function QuestObjectiveTrackerMixin:InitModule()
+	self:AddTag("quest");
 	self:WatchMoney(false);
 end
 

@@ -23,7 +23,7 @@ end
 --      Note: when adding new meta data types, be sure to update MapLegendButtonMixin:MetaDataMatches to check the new data comparison
 --  BackgroundAtlas - Optional Atlas name for background to icon
 local QuestsCategoryData = {
-  {Atlas = "Quest-Campaign-Available", fixedWidth = 28, fixedHeight = 28, Name = MAP_LEGEND_CAMPAIGN,   Tooltip = MAP_LEGEND_CAMPAIGN_TOOLTIP,    TemplateNames = {"QuestPinTemplate","QuestOfferPinTemplate"},  MetaData = {questClassification = Enum.QuestClassification.Campaign }},
+  {Atlas = "Quest-Campaign-Available", fixedWidth = 24, fixedHeight = 24, Name = MAP_LEGEND_CAMPAIGN,   Tooltip = MAP_LEGEND_CAMPAIGN_TOOLTIP,    TemplateNames = {"QuestPinTemplate","QuestOfferPinTemplate"},  MetaData = {questClassification = Enum.QuestClassification.Campaign }},
   {Atlas = "UI-QuestPoiImportant-QuestBang", fixedWidth = 28, fixedHeight = 32,  Name = MAP_LEGEND_IMPORTANT,  Tooltip = MAP_LEGEND_IMPORTANT_TOOLTIP,   TemplateNames = {"QuestPinTemplate","QuestOfferPinTemplate"},  MetaData = {questClassification = Enum.QuestClassification.Important}},
   {Atlas = "UI-QuestPoiLegendary-QuestBang",  Name = MAP_LEGEND_LEGENDARY,  Tooltip = MAP_LEGEND_LEGENDARY_TOOLTIP,   TemplateNames = {"QuestPinTemplate","QuestOfferPinTemplate"}, MetaData = {questClassification = Enum.QuestClassification.Legendary}},
   {Atlas = "UI-QuestPoiWrapper-QuestBang",    Name = MAP_LEGEND_META,       Tooltip = MAP_LEGEND_META_TOOLTIP,        TemplateNames = {"QuestPinTemplate","QuestOfferPinTemplate"}, MetaData = {questClassification = Enum.QuestClassification.Meta}},
@@ -37,9 +37,9 @@ local LimitedCategoryData = {
   {Atlas = "worldquest-icon",               Name = MAP_LEGEND_WORLDQUEST,     Tooltip = MAP_LEGEND_WORLDQUEST_TOOLTIP,      TemplateNames = {"WorldQuestPinTemplate", "WorldMap_WorldQuestPinTemplate"},  BackgroundAtlas = "UI-QuestPoi-QuestNumber"},
   {Atlas = "vignettekillboss",              Name = MAP_LEGEND_WORLDBOSS,      Tooltip = MAP_LEGEND_WORLDBOSS_TOOLTIP,       TemplateNames = {"WorldQuestPinTemplate", "WorldMap_WorldQuestPinTemplate"},  MetaData = {worldQuestType = Enum.QuestTagType.WorldBoss}},
   {Atlas = "Bonus-Objective-Star",           Name = MAP_LEGEND_BONUSOBJECTIVE, Tooltip = MAP_LEGEND_BONUSOBJECTIVE_TOOLTIP,  TemplateNames = {"BonusObjectivePinTemplate"}, BackgroundAtlas = "UI-QuestPoi-QuestNumber"},
-  {Atlas = "minimap-genericevent-hornicon", Name = MAP_LEGEND_EVENT,          Tooltip = MAP_LEGEND_EVENT_TOOLTIP,           TemplateNames = {"AreaPOIEventPinTemplate"}, MetaData = {AtlasPrefix="UI-EventPoi"}},
-  {Atlas = "VignetteKill",                  Name = MAP_LEGEND_RARE,           Tooltip = MAP_LEGEND_RARE_TOOLTIP,            TemplateNames = {"VignettePinTemplate"},                                      MetaData = {Atlas="VignetteKill"}},
-  {Atlas = "VignetteKillElite",             Name = MAP_LEGEND_RAREELITE,      Tooltip = MAP_LEGEND_RAREELITE_TOOLTIP,       TemplateNames = {"VignettePinTemplate"},                                      MetaData = {Atlas="VignetteKillElite"}},
+  {Atlas = "minimap-genericevent-hornicon", fixedWidth = 32, fixedHeight = 32, Name = MAP_LEGEND_EVENT,          Tooltip = MAP_LEGEND_EVENT_TOOLTIP,           TemplateNames = {"AreaPOIEventPinTemplate"}, MetaData = {AtlasPrefix="UI-EventPoi"}},
+  {Atlas = "VignetteKill",                  Name = MAP_LEGEND_RARE,           Tooltip = MAP_LEGEND_RARE_TOOLTIP,            TemplateNames = {"VignettePinPOIButtonTemplate"}, MetaData = {Atlas="VignetteKill"}},
+  {Atlas = "VignetteKillElite",             Name = MAP_LEGEND_RAREELITE,      Tooltip = MAP_LEGEND_RAREELITE_TOOLTIP,       TemplateNames = {"VignettePinPOIButtonTemplate"}, MetaData = {Atlas="VignetteKillElite"}},
 };
 
 local ActivitiesCategoryData = {
@@ -47,14 +47,14 @@ local ActivitiesCategoryData = {
   {Atlas = "Raid",                     Name = MAP_LEGEND_RAID,      Tooltip = MAP_LEGEND_RAID_TOOLTIP,      TemplateNames = {"DungeonEntrancePinTemplate"}, MetaData = {isRaid = true}},
   {Atlas = "poi-hub",                  Name = MAP_LEGEND_HUB,       Tooltip = MAP_LEGEND_HUB_TOOLTIP,       TemplateNames = {"QuestHubPinTemplate"}},
   {Atlas = "ArchBlob",                 Name = MAP_LEGEND_DIGSITE,   Tooltip = MAP_LEGEND_DIGSITE_TOOLTIP,   TemplateNames = {"DigSitePinTemplate"}},
-  {Atlas = "WildBattlePetCapturable", fixedWidth = 28, fixedHeight = 28, Name = MAP_LEGEND_PETBATTLE, Tooltip = MAP_LEGEND_PETBATTLE_TOOLTIP, TemplateNames = {"PetTamerPinTemplate"}},
-  {Atlas = "delves-regular",		   Name = MAP_LEGEND_DELVE,		Tooltip = MAP_LEGEND_DELVE_TOOLTIP,		TemplateNames = {"DelveEntrancePinTemplate", "AreaPOIPinTemplate"}, MetaData = {AtlasPrefix="delves-"}},	
+  {Atlas = "WildBattlePetCapturable", fixedWidth = 24, fixedHeight = 24, Name = MAP_LEGEND_PETBATTLE, Tooltip = MAP_LEGEND_PETBATTLE_TOOLTIP, TemplateNames = {"PetTamerPinTemplate"}},
+  {Atlas = "delves-regular",		   Name = MAP_LEGEND_DELVE,		Tooltip = MAP_LEGEND_DELVE_TOOLTIP,		TemplateNames = {"DelveEntrancePinTemplate", "AreaPOIPinTemplate"}, MetaData = {AtlasPrefix="delves-"}},
 };
 
 local MovementCategoryData = {
   {Atlas = "TaxiNode_Continent_Neutral",  Name = MAP_LEGEND_TELEPORT,     Tooltip = MAP_LEGEND_TELEPORT_TOOLTIP,    TemplateNames = {"AreaPOIPinTemplate"}, MetaData = {AtlasPrefix = "TaxiNode_Continent"}},
   {Atlas = "CaveUnderground-Up",          Name = MAP_LEGEND_CAVE,         Tooltip = MAP_LEGEND_CAVE_TOOLTIP,        TemplateNames = {"MapLinkPinTemplate"}},
-  {Atlas = "FlightPath",                  Name = MAP_LEGEND_FLIGHTPOINT,  Tooltip = MAP_LEGEND_FLIGHTPOINT_TOOLTIP, TemplateNames = {"FlightPointPinTemplate"}},
+  {Atlas = "FlightPath",                  fixedWidth = 24, fixedHeight = 24, Name = MAP_LEGEND_FLIGHTPOINT,  Tooltip = MAP_LEGEND_FLIGHTPOINT_TOOLTIP, TemplateNames = {"FlightPointPinTemplate"}},
 };
 
 --Legend Data
@@ -70,20 +70,20 @@ local MapLegendData = {
 
 function MapLegendMixin:SetupCategories()
 	for index, data in ipairs(MapLegendData) do
-		local category = CreateFrame("Frame", data.CategoryTitle, self.ScrollFrame.ScrollChild, "MapLegendCategoryTemplate", index);
+		local category = CreateFrame("Frame", nil, self.ScrollFrame.ScrollChild, "MapLegendCategoryTemplate", index);
 		category.TitleText:SetText(data.CategoryTitle);
 		category.layoutIndex = index;
 		category:Show();
 
 		local buttons = {};
 		for i, categoryData in ipairs(data.CategoryData) do
-			local button = CreateFrame("Button", categoryData.Name, category, "MapLegendButtonTemplate", i);
+			local button = CreateFrame("Button", nil, category, "MapLegendButtonTemplate", i);
 			button:InitilizeButton(categoryData, i);
 			table.insert(buttons, button);
 		end
 
 		local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRight, 2, 0, 5);
-		local anchor = CreateAnchor("TOPLEFT", category, "TOPLEFT", 0, 0);
+		local anchor = CreateAnchor("TOPLEFT", category, "TOPLEFT", 0, -3);
 		AnchorUtil.GridLayout(buttons, anchor, layout);
 
 		category:Layout();
@@ -119,6 +119,10 @@ function MapLegendButtonMixin:InitilizeButton(buttonInfo, index)
 	if (buttonInfo.BackgroundAtlas) then
 		self.IconBack:SetAtlas(buttonInfo.BackgroundAtlas, TextureKitConstants.UseAtlasSize);
 		self.IconBack:Show();
+		-- Adjusting IconBack so the circle of the BackgroundAtlas ("UI-QuestPoi-QuestNumber") aligns with other circle atlases.
+		self.IconBack:SetPoint("LEFT", -1, 0);
+	else
+		self.IconBack:SetPoint("LEFT", 0, 0);
 	end
 	self:SetText(buttonInfo.Name);
 	self:Show();

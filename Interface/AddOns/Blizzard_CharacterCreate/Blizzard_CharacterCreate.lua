@@ -24,7 +24,6 @@ local ClassTrialSpecs;
 local ZoneChoiceFrame;
 local NewPlayerTutorial;
 
-local EVOKER_CLASS_ID = 13;
 local HUMAN_RADE_ID = 1;
 local ORC_RACE_ID = 2;
 
@@ -823,12 +822,8 @@ function CharacterCreateMixin:NavForward()
 
 	if self:CanNavForward() then
 		if self:IsMode(CHAR_CREATE_MODE_CLASS_RACE) then
-			if C_CharacterCreation.IsNewPlayerRestricted() and C_CharacterCreation.GetSelectedClass().classID == EVOKER_CLASS_ID then
-				GlueDialog_Show("EVOKER_NEW_PLAYER_WARNING");
-			else
-				PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
-				self:UpdateMode(1);
-			end
+			PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
+			self:UpdateMode(1);
 		elseif self:IsMode(CHAR_CREATE_MODE_CUSTOMIZE) and ZoneChoiceFrame:ShouldShow() then
 			PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
 			self:UpdateMode(1);
@@ -1119,6 +1114,8 @@ function CharacterCreateRaceButtonMixin:SetRace(raceData, selectedRaceID, select
 				self:AddPostTooltipLine(CHAR_CREATE_DRACTHYR_DUPLICATE, RED_FONT_COLOR);
 			elseif raceData.disabledReason == Enum.CreationRaceDisabledReason.RaceLimitLevel then
 				self:AddPostTooltipLine(CHAR_CREATE_DRACTHYR_LEVEL_REQUIREMENT, RED_FONT_COLOR);
+			elseif raceData.disabledReason == Enum.CreationRaceDisabledReason.InvalidForNewPlayers then
+				self:AddPostTooltipLine(CHAR_CREATE_NEW_PLAYER_RESTRICTED_RACE, RED_FONT_COLOR);
 			else
 				local requirements = C_CharacterCreation.GetAlliedRaceAchievementRequirements(raceData.raceID);
 				if requirements then
@@ -1379,7 +1376,6 @@ function CharacterCreateRaceAndClassMixin:CanTrialBoostCharacter()
 		not C_CharacterCreation.IsNewPlayerRestricted() and
 		not C_CharacterCreation.IsTrialAccountRestricted() and
 		not CharacterCreateFrame:HasService() and
-		(self.selectedClassID ~= EVOKER_CLASS_ID) and
 		(C_CharacterCreation.GetCharacterCreateType() ~= Enum.CharacterCreateType.Boost) and
 		not C_CharacterCreation.GetTimerunningSeasonID();
 end
@@ -2151,7 +2147,7 @@ end
 function CharacterCreateClassTrialSpecsMixin:UpdateButtons()
 	self.specButtonPool:ReleaseAll();
 
-	local numSpecs = GetNumSpecializationsForClassID(self.selectedClassID);
+	local numSpecs = C_SpecializationInfo.GetNumSpecializationsForClassID(self.selectedClassID);
 
 	for specIndex = 1, numSpecs do
 		local button = self.specButtonPool:Acquire();
@@ -2202,6 +2198,7 @@ function CharacterCreateZoneChoiceMixin:Setup()
 		return;
 	end
 
+	self:SetUseNPE(true);
 	self.shouldShow = true;
 
 	-- If there is more than one choice, the normal starting zone will always be first

@@ -83,6 +83,7 @@ end
 
 SettingsElementHierarchyMixin = {};
 
+-- When adding a parent setting that is informed by children settings, set commit orders so that the parent setting is committed last. See CLASS-35305.
 function SettingsElementHierarchyMixin:SetParentInitializer(parentInitializer, modifyPredicate)
 	assert(parentInitializer);
 	if parentInitializer == self then
@@ -558,7 +559,7 @@ end
 function SettingsDropdownControlMixin:EvaluateState()
 	SettingsListElementMixin.EvaluateState(self);
 	local enabled = SettingsControlMixin.IsEnabled(self);
-	self.Control.Dropdown:SetEnabled(enabled);
+	self.Control:SetEnabled(enabled);
 
 	self:DisplayEnabled(enabled);
 	return enabled;

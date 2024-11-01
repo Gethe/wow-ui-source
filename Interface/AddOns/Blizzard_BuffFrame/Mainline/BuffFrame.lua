@@ -158,6 +158,7 @@ function AuraFrameMixin:AuraFrame_OnLoad()
 	self.auraFrames = {};
 	for i = 1, self.maxAuras, 1 do
 		local auraFrame = CreateFrame("BUTTON", nil, self.AuraContainer, "AuraButtonTemplate");
+		auraFrame:Hide(); -- default hidden until shown with valid aura info in UpdateAuraButtons
 		table.insert(self.auraFrames, auraFrame);
 	end
 	for _, anchorframe in ipairs(self.PrivateAuraAnchors or {}) do
@@ -673,6 +674,10 @@ end
 
 function AuraButtonMixin:OnUpdate()
 	if self.isExample then
+		return;
+	end
+
+	if not self.buttonInfo then
 		return;
 	end
 

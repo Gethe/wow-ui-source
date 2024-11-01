@@ -146,6 +146,7 @@ local QuestLineInfo =
 				{ Name = "inProgress", Type = "bool", Nilable = false },
 				{ Name = "isQuestStart", Type = "bool", Nilable = false },
 				{ Name = "floorLocation", Type = "QuestLineFloorLocation", Nilable = false },
+				{ Name = "startMapID", Type = "number", Nilable = false },
 			},
 		},
 	},

@@ -156,14 +156,16 @@ end
 
 function BattlePetTooltipJournalClick_OnClick(self)
 	SetCollectionsJournalShown(true, COLLECTIONS_JOURNAL_TAB_INDEX_PETS);
-	local battlePetID = self:GetParent().battlePetID;
-	if ( battlePetID ) then
-		local speciesID = C_PetJournal.GetPetInfoByPetID(battlePetID);
-		if ( speciesID and speciesID == self:GetParent().speciesID ) then
-			PetJournal_SelectPet(PetJournal, battlePetID);
-			return;
+	if CollectionsJournal then
+		local battlePetID = self:GetParent().battlePetID;
+		if ( battlePetID ) then
+			local speciesID = C_PetJournal.GetPetInfoByPetID(battlePetID);
+			if ( speciesID and speciesID == self:GetParent().speciesID ) then
+				PetJournal_SelectPet(PetJournal, battlePetID);
+				return;
+			end
 		end
+		PetJournal_SelectSpecies(PetJournal, self:GetParent().speciesID);
 	end
-	PetJournal_SelectSpecies(PetJournal, self:GetParent().speciesID);
 end
 

@@ -699,7 +699,12 @@ function LFDQueueFrameFindGroupButton_Update()
 	if ( C_LFGList.HasActiveEntryInfo() ) then
 		lfgListDisabled = CANNOT_DO_THIS_WHILE_LFGLIST_LISTED;
 	elseif(C_PartyInfo.IsCrossFactionParty()) then
-		lfgListDisabled = CROSS_FACTION_RAID_DUNGEON_FINDER_ERROR;
+		local isDungeonID = LFDQueueFrame.type and (type(LFDQueueFrame.type) == "number");
+		if isDungeonID then
+			lfgListDisabled = LFG_TryGetCrossFactionQueueFailureMessage({ LFDQueueFrame.type });
+		elseif LFDQueueFrame.type == "specific" or LFDQueueFrame.type == "follower" then
+			lfgListDisabled = LFG_TryGetCrossFactionQueueFailureMessage(LFG_BuildSelectedEntriesList(LFDDungeonList, LFDHiddenByCollapseList));
+		end
 	end
 
 	if ( lfgListDisabled ) then

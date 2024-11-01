@@ -1300,8 +1300,12 @@ function BossTargetFrameMixin:OnHide()
 	BossTargetFrameContainer:UpdateSize();
 end
 
+function BossTargetFrameMixin:ShouldShow()
+	return BossTargetFrameContainer.isInEditMode or ShouldShowTargetFrame(self);
+end
+
 function BossTargetFrameMixin:UpdateShownState()
-	self:SetShown(BossTargetFrameContainer.isInEditMode or ShouldShowTargetFrame(self));
+	self:SetShown(self:ShouldShow());
 	self.spellbar:SetShown(BossTargetFrameContainer.isInEditMode or self.spellbar.casting);
 end
 

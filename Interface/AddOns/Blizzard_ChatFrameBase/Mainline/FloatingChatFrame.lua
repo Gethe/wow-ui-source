@@ -241,7 +241,7 @@ function FloatingChatFrame_Update(id, onUpdateEvent)
 		FCF_SetUninteractable(chatFrame, uninteractable);
 	end
 
-	if ( (id == 2) and IsOnGlueScreen() ) then
+	if ( (id == 2) and C_Glue.IsOnGlueScreen() ) then
 		docked = false;
 		shown = false;
 	end
@@ -286,7 +286,7 @@ function FCF_Tab_SetupMenu(self)
 	local name, fontSize, r, g, b, a, shown = FCF_GetChatWindowInfo(FCF_GetCurrentChatFrameID());
 		local currentChatFrame = FCF_GetCurrentChatFrame();
 		local isTemporary = currentChatFrame and currentChatFrame.isTemporary;
-		local isOnGlueScreen = IsOnGlueScreen();
+		local isOnGlueScreen = C_Glue.IsOnGlueScreen();
 		local tabChatFrame = FCF_GetChatFrameByID(self:GetID());
 
 	-- Window options

@@ -91,21 +91,6 @@ function CovenantCallingQuestMixin:UpdateTooltipQuestActive()
 	GameTooltip_AddQuestTimeToTooltip(GameTooltip, questID);
 
 	-- Add the objectives
-	local questCompleted = C_QuestLog.IsComplete(questID);
-	local shouldShowObjectivesAsStatusBar = false; -- Not sure where to pull this from yet, MapIndicatorQuestDataProviderMixin:AddMapIndicatorQuest is what was setting it before
-
-	if shouldShowObjectivesAsStatusBar then
-		if questCompleted then
-			GameTooltip_AddColoredLine(GameTooltip, QUEST_DASH .. QUEST_WATCH_QUEST_READY, HIGHLIGHT_FONT_COLOR);
-		else
-			local questLogIndex = C_QuestLog.GetLogIndexForQuestID(questID);
-			if questLogIndex then
-				local questDescription = select(2, GetQuestLogQuestText(questLogIndex));
-				GameTooltip_AddColoredLine(GameTooltip, QUEST_DASH .. questDescription, HIGHLIGHT_FONT_COLOR);
-			end
-		end
-	end
-
 	-- Likely false, which means that the checks against this for showObjective are likely true
 	-- This is just maintaining parity with TaskPOI_OnEnter, but even that should possibly get refactored.
 	local isThreat = C_QuestLog.IsThreatQuest(questID);
@@ -251,7 +236,6 @@ function CovenantCallingsMixin:OnCovenantCallingsUpdated(callings)
 	end
 end
 
--- TODO: Not sure how we want the sort to behave yet...maybe using time remaining similar to emissary quests?
 local function CompareCallings(c1, c2)
 	if c1:IsLocked() ~= c2:IsLocked() then
 		return c2:IsLocked();

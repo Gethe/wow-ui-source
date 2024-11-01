@@ -250,9 +250,9 @@ local ItemConstants =
 		{
 			Name = "ItemGemColor",
 			Type = "Enumeration",
-			NumValues = 27,
+			NumValues = 30,
 			MinValue = 1,
-			MaxValue = 67108864,
+			MaxValue = 536870912,
 			Fields =
 			{
 				{ Name = "Meta", Type = "ItemGemColor", EnumValue = 1 },
@@ -282,6 +282,9 @@ local ItemConstants =
 				{ Name = "Tinker", Type = "ItemGemColor", EnumValue = 16777216 },
 				{ Name = "Primordial", Type = "ItemGemColor", EnumValue = 33554432 },
 				{ Name = "Fragrance", Type = "ItemGemColor", EnumValue = 67108864 },
+				{ Name = "SingingThunder", Type = "ItemGemColor", EnumValue = 134217728 },
+				{ Name = "SingingSea", Type = "ItemGemColor", EnumValue = 268435456 },
+				{ Name = "SingingWind", Type = "ItemGemColor", EnumValue = 536870912 },
 			},
 		},
 		{
@@ -382,9 +385,9 @@ local ItemConstants =
 		{
 			Name = "ItemSocketType",
 			Type = "Enumeration",
-			NumValues = 27,
+			NumValues = 30,
 			MinValue = 0,
-			MaxValue = 26,
+			MaxValue = 29,
 			Fields =
 			{
 				{ Name = "None", Type = "ItemSocketType", EnumValue = 0 },
@@ -414,6 +417,9 @@ local ItemConstants =
 				{ Name = "Tinker", Type = "ItemSocketType", EnumValue = 24 },
 				{ Name = "Primordial", Type = "ItemSocketType", EnumValue = 25 },
 				{ Name = "Fragrance", Type = "ItemSocketType", EnumValue = 26 },
+				{ Name = "SingingThunder", Type = "ItemSocketType", EnumValue = 27 },
+				{ Name = "SingingSea", Type = "ItemSocketType", EnumValue = 28 },
+				{ Name = "SingingWind", Type = "ItemSocketType", EnumValue = 29 },
 			},
 		},
 		{
@@ -570,7 +576,7 @@ local ItemConstants =
 				{ Name = "Bankbag", Type = "SubcontainerType", EnumValue = 3 },
 				{ Name = "Mail", Type = "SubcontainerType", EnumValue = 4 },
 				{ Name = "Auction", Type = "SubcontainerType", EnumValue = 5 },
-				{ Name = "KeyringObsolete", Type = "SubcontainerType", EnumValue = 6 },
+				{ Name = "Keyring", Type = "SubcontainerType", EnumValue = 6 },
 				{ Name = "GuildBank0", Type = "SubcontainerType", EnumValue = 7 },
 				{ Name = "GuildBank1", Type = "SubcontainerType", EnumValue = 8 },
 				{ Name = "GuildBank2", Type = "SubcontainerType", EnumValue = 9 },

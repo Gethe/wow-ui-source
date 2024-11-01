@@ -10,34 +10,78 @@ local function GetPlayerPartyMemberInfo()
 	return nil;
 end
 
+PlunderstormAccountStoreToggleMixin = {};
 
-PlunderstormBasicsLifetimePlunderMixin = {};
-
-function PlunderstormBasicsLifetimePlunderMixin:OnEnter()
-	local tooltip = GetAppropriateTooltip();
-	tooltip:SetOwner(self, "ANCHOR_LEFT");
-	GameTooltip_AddHighlightLine(tooltip, PLUNDERSTORM_LIFETIME_PLUNDER_TOOLTIP);
-	tooltip:Show();
+function PlunderstormAccountStoreToggleMixin:OnClick()
+	AccountStoreUtil.ToggleAccountStore();
 end
-
-function PlunderstormBasicsLifetimePlunderMixin:OnLeave()
-	local tooltip = GetAppropriateTooltip();
-	if tooltip:GetOwner() == self then
-		tooltip:Hide();
-	end
-end
-
 
 PlunderstormBasicsContainerFrameMixin = {};
 
+local PlunderstormBasicsContainerFrameEvents = {
+	"ACCOUNT_STORE_CURRENCY_AVAILABLE_UPDATED",
+};
+
 function PlunderstormBasicsContainerFrameMixin:OnShow()
-	local lifetimePlunder = self:GetLifetimePlunder();
-	local hasLifetimePlunder = (lifetimePlunder ~= nil);
-	self.LifetimePlunder:SetShown(hasLifetimePlunder);
-	if hasLifetimePlunder then
-		local LifetimePlunderIconID = 133784;
-		local iconMarkup = CreateSimpleTextureMarkup(LifetimePlunderIconID, 16, 16);
-		self.LifetimePlunder:SetText(("%s %s"):format(BreakUpLargeNumbers(lifetimePlunder), iconMarkup));
+	FrameUtil.RegisterFrameForEvents(self, PlunderstormBasicsContainerFrameEvents);
+
+	if C_Glue.IsOnGlueScreen() and not self.PlunderstoreToggle then
+		local plunderstoreToggle = CreateFrame("BUTTON", nil, self, "PlunderstormAccountStoreToggleTemplate");
+		self.PlunderstoreToggle = plunderstoreToggle;
+		plunderstoreToggle.layoutIndex = self.PlunderDisplay.layoutIndex + 1;
+		plunderstoreToggle.topPadding = 20;
+		plunderstoreToggle.align = "center";
+		plunderstoreToggle.bottomPadding = 20;
+		self.PlunderDisplay.bottomPadding = 20;
+
+		plunderstoreToggle:SetScript("OnClick", function()
+			-- TODO:: play a sound
+
+			-- The Plunderstore should only show if we already have party member info since this
+			-- will be required to check which things you own from the original Plunderstorm Renown track.
+			if GetPlayerPartyMemberInfo() ~= nil then
+				AccountStoreUtil.ToggleAccountStore();
+			end
+		end);
+
+		plunderstoreToggle:Show();
+	end
+
+	self.PlunderDisplay:SetScript("OnEnter", function ()
+		local lifetimePlunder = self:GetLifetimePlunder();
+		local hasLifetimePlunder = (lifetimePlunder ~= nil);
+		if hasLifetimePlunder then
+			local tooltip = GetAppropriateTooltip();
+			tooltip:SetOwner(self.PlunderDisplay, "ANCHOR_LEFT");
+
+			local accountStoreCurrencyID = C_AccountStore.GetCurrencyIDForStore(Constants.AccountStoreConsts.PlunderstormStoreFrontID);
+			if accountStoreCurrencyID then
+				AccountStoreUtil.AddCurrencyTotalTooltip(tooltip, accountStoreCurrencyID);
+			end
+
+			local lifetimePlunderText = LIFETIME_PLUNDER_TOOLTIP_FORMAT:format(BreakUpLargeNumbers(lifetimePlunder));
+			GameTooltip_AddHighlightLine(tooltip, lifetimePlunderText);
+			tooltip:Show();
+		end
+	end);
+
+	self.PlunderDisplay:SetScript("OnLeave", function ()
+		GetAppropriateTooltip():Hide();
+	end);
+
+	self:UpdatePlunderAmount();
+
+	BaseLayoutMixin.OnShow(self);
+end
+
+function PlunderstormBasicsContainerFrameMixin:OnHide()
+	FrameUtil.UnregisterFrameForEvents(self, PlunderstormBasicsContainerFrameEvents);
+end
+
+function PlunderstormBasicsContainerFrameMixin:OnEvent(event)
+	if event == "ACCOUNT_STORE_CURRENCY_AVAILABLE_UPDATED" then
+		-- No need to check which currency was updated since there should be only one in Plunderstorm.
+		self:UpdatePlunderAmount();
 	end
 end
 
@@ -58,6 +102,21 @@ function PlunderstormBasicsContainerFrameMixin:GetLifetimePlunder()
 	end
 
 	return nil;
+end
+
+function PlunderstormBasicsContainerFrameMixin:UpdatePlunderAmount()
+	local accountStoreCurrencyID = C_AccountStore.GetCurrencyIDForStore(Constants.AccountStoreConsts.PlunderstormStoreFrontID);
+	if not accountStoreCurrencyID then
+		self.PlunderDisplay.PlunderAmount:SetText("-");
+		return;
+	end
+
+	if not AccountStoreUtil then
+		C_AddOns.LoadAddOn("Blizzard_AccountStore");
+	end
+
+	local text = AccountStoreUtil.FormatCurrencyTotalDisplay(accountStoreCurrencyID);
+	self.PlunderDisplay.PlunderAmount:SetText(text);
 end
 
 function PlunderstormBasicsContainerFrameMixin:SetBottomFrame(bottomFrame)
@@ -83,109 +142,4 @@ function PlunderstormBasicsContainerFrameMixin:UpdateScaleToFit()
 	end
 
 	self:SetScale((totalSpace + bottomSpace) / totalSpace);
-end
-
-
-PlunderstormRenownPreviewMixin = {};
-
-function PlunderstormRenownPreviewMixin:OnLoad()
-	self:RegisterEvent("LOBBY_MATCHMAKER_PARTY_UPDATE");
-
-	self.rewardsPool = CreateFramePool("FRAME", self.RewardsContainer, "MajorFactionRenownRewardTemplate");
-end
-
-function PlunderstormRenownPreviewMixin:OnShow()
-	self:UpdateRewards();
-end
-
-function PlunderstormRenownPreviewMixin:OnEvent(event)
-	if event == "LOBBY_MATCHMAKER_PARTY_UPDATE" then
-		self:UpdateRewards();
-	end
-end
-
-function PlunderstormRenownPreviewMixin:GetMajorFactionID()
-	return Constants.MajorFactionsConsts.PLUNDERSTORM_MAJOR_FACTION_ID;
-end
-
-function PlunderstormRenownPreviewMixin:GetCurrentRenownLevel()
-	if C_MajorFactions then
-		return C_MajorFactions.GetCurrentRenownLevel(self:GetMajorFactionID());
-	else
-		local memberInfo = GetPlayerPartyMemberInfo();
-		if memberInfo then
-			return memberInfo.renownLevel;
-		end
-	end
-
-	return nil;
-end
-
-function PlunderstormRenownPreviewMixin:HasMaximumRenownLevel()
-	if C_MajorFactions then
-		return C_MajorFactions.HasMaximumRenown(self:GetMajorFactionID());
-	else
-		local currentRenown = self:GetCurrentRenownLevel();
-		return currentRenown and C_PlunderstormRenown.IsMaximumRenownLevel(currentRenown) or false;
-	end
-end
-
-function PlunderstormRenownPreviewMixin:GetRenownRewardsForLevel(renownLevel)
-	if C_MajorFactions then
-		return C_MajorFactions.GetRenownRewardsForLevel(self:GetMajorFactionID(), renownLevel);
-	else
-		return C_PlunderstormRenown.GetRenownRewardsForLevel(renownLevel);
-	end
-end
-
-function PlunderstormRenownPreviewMixin:GetRenownTextureKit()
-	if C_MajorFactions then
-		return C_MajorFactions.GetMajorFactionData(self:GetMajorFactionID()).textureKit;
-	else
-		return C_PlunderstormRenown.GetRenownTextureKit();
-	end
-end
-
-function PlunderstormRenownPreviewMixin:UpdateRewards()
-	BaseLayoutMixin.OnShow(self);
-
-	self.rewardsPool:ReleaseAll();
-	self:GetParent():MarkDirty();
-
-	local currentRenownLevel = self:GetCurrentRenownLevel();
-
-	-- If we don't have data or are maxed then we don't show a reward preview.
-	if not currentRenownLevel or self:HasMaximumRenownLevel() then
-		self.ignoreInLayout = true;
-		self:Hide();
-		return;
-	else
-		self.ignoreInLayout = nil;
-		self:Show();
-	end
-
-	local previewLevel = currentRenownLevel + 1;
-
-	local rewardAnchor = self.RewardsContainer;
-	self.PreviewDescription:SetText(WOWLABS_RENOWN_PREVIEW_BODY_FORMAT:format(previewLevel));
-	local rewards = self:GetRenownRewardsForLevel(previewLevel);
-	for i, rewardInfo in ipairs(rewards) do
-		local rewardFrame = self.rewardsPool:Acquire();
-
-		-- We're showing a preview of next level's rewards.
-		local rewardUnlocked = false;
-		rewardFrame:SetReward(rewardInfo, rewardUnlocked, self:GetRenownTextureKit());
-		rewardFrame:SetScale(0.65);
-
-		if i == 1 then
-			rewardFrame:SetPoint("TOP", rewardAnchor, "TOP");
-		else
-			rewardFrame:SetPoint("TOP", rewardAnchor, "BOTTOM", 0, -10);
-		end
-
-		rewardAnchor = rewardFrame;
-	end
-
-	self.RewardsContainer:MarkDirty();
-	self:MarkDirty();
 end

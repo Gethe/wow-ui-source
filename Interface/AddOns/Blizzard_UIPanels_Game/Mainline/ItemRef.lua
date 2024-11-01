@@ -1,6 +1,5 @@
 local DUNGEON_SCORE_LINK_INDEX_START = 11; 
 local DUNGEON_SCORE_LINK_ITERATE = 3; 
-local PVP_LINK_ITERATE = 3; 
 local PVP_LINK_ITERATE_BRACKET = 4; 
 local PVP_LINK_INDEX_START = 7;
 
@@ -435,15 +434,7 @@ function SetItemRef(link, text, button, chatFrame)
 	elseif (strsub(link, 1, 11) == "talentbuild") then
 		local fixedLink = GetFixedLink(text);
 		if not HandleModifiedItemClick(fixedLink) then
-			local specID, level, inspectString = string.split(":", linkData);
-			level = tonumber(level);
-
-			PlayerSpellsFrame_LoadUI();
-
-			PlayerSpellsFrame:SetInspectString(inspectString, level);
-			if not PlayerSpellsFrame:IsShown() then
-				ShowUIPanel(PlayerSpellsFrame);
-			end
+			PlayerSpellsUtil.InspectLoadout(linkData);
 		end
 		return;
 	elseif ( strsub(link, 1, 13) == "perksactivity" ) then
@@ -641,7 +632,7 @@ end
 
 function AddPvpRatingsToTable()
 	local pvpLinkInfoTable = { };
-	for i = 1, PVP_LINK_ITERATE do 
+	for i = 1, #CONQUEST_BRACKET_INDEXES do 
 		local bracketIndex = CONQUEST_BRACKET_INDEXES[i];
 		local rating, seasonBest, weeklyBest, seasonPlayed, seasonWon, weeklyPlayed, weeklyWon, lastWeeksBest, hasWon, pvpTier, ranking, roundsSeasonPlayed, roundsSeasonWon, roundsWeeklyPlayed, roundsWeeklyWon = GetPersonalRatedInfo(bracketIndex);
 		local tierInfo = C_PvP.GetPvpTierInfo(pvpTier);

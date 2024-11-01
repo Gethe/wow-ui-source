@@ -88,6 +88,10 @@
 
 	<Button name="TokenEntryTemplate" mixin="TokenEntryMixin" virtual="true">
 		<Size y="22"/>
+		<KeyValues>
+			<KeyValue key="selectedHighlightAlpha" value="0.20" type="number"/>
+			<KeyValue key="mouseOverHighlightAlpha" value="0.10" type="number"/>
+		</KeyValues>
 		<Frames>
 			<Frame parentKey="Content" setAllPoints="true">
 				<Frames>
@@ -198,11 +202,27 @@
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollBar" relativePoint="TOPRIGHT" x="4" y="12"/>
 				</Anchors>
 			</Button>
+
+			<Frame parentKey="LoadingSpinner" hidden="true" inherits="SpinnerTemplate">
+				<Size x="60" y="60"/>
+				<Anchors>
+					<!-- We're anchoring the spinner to the background art, which is part of the CharacterFrame -->
+					<Anchor point="CENTER" relativeKey="$parent.$parent.Background"/>
+				</Anchors>
+			</Frame>
+
+			<DropdownButton parentKey="filterDropdown" inherits="WowStyle1DropdownTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-38" y="-30"/>
+				</Anchors>
+			</DropdownButton>
+			
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
 
@@ -212,8 +232,8 @@
 		</Anchors>
 	</Frame>
 
-	<Frame name="TokenFramePopup" parent="TokenFrame" toplevel="true" hidden="true" enableMouse="true" mixin="TokenFramePopupMixin">
-		<Size x="205" y="100"/>
+	<Frame name="TokenFramePopup" parentKey="Popup" parent="TokenFrame" toplevel="true" hidden="true" enableMouse="true" mixin="TokenFramePopupMixin">
+		<Size x="197" y="100"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="TokenFrame" relativePoint="TOPRIGHT" x="3" y="-28"/>
 		</Anchors>
@@ -231,7 +251,7 @@
 			<CheckButton parentKey="InactiveCheckbox" inherits="UICheckButtonTemplate" mixin="InactiveCurrencyCheckboxMixin">
 				<Size x="26" y="26"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="32" y="-32"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="-5" y="-5"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
@@ -254,7 +274,8 @@
 			</CheckButton>
 			<Button parentKey="CurrencyTransferToggleButton" inherits="CurrencyTransferToggleButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.BackpackCheckbox" relativePoint="BOTTOMLEFT" y="-8"/>
+					<Anchor point="LEFT" x="23"/>
+					<Anchor point="BOTTOM" y="25"/>
 				</Anchors>
 			</Button>
 			<Button parentKey="$parent.CloseButton" inherits="UIPanelCloseButton">
@@ -268,6 +289,7 @@
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
+
 	<Button name="BackpackTokenTemplate" mixin="BackpackTokenMixin" hidden="true" virtual="true">
 		<Size x="50" y="12"/>
 		<Layers>
@@ -293,6 +315,7 @@
 			<OnClick method="OnClick"/>
 		</Scripts>
 	</Button>
+
 	<Frame name="BackpackTokenFrameTemplate" mixin="BackpackTokenFrameMixin" virtual="true">
 		<Size x="1" y="17"/>
 		<Frames>

@@ -486,8 +486,6 @@ function ProfessionsCustomerOrderFormMixin:OnEvent(event, ...)
 					errorText = CRAFTING_ORDER_FAILED_TARGET_CANT_CRAFT;
 				elseif result == Enum.CraftingOrderResult.MaxOrdersReached then
 					errorText = PROFESSIONS_MAX_ORDERS_REACHED;
-				elseif result == Enum.CraftingOrderResult.NoAccountItems then
-					errorText = CRAFTING_ORDER_FAILED_ACCOUNT_ITEMS;
 				else
 					errorText = PROFESSIONS_ORDER_PLACEMENT_FAILED;
 				end
@@ -838,7 +836,7 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 								
 								local allocationsCopy = transaction:GetAllocationsCopy(slotIndex);
 								local disallowZeroAllocations = false;
-								local characterInventoryOnly = true;
+								local characterInventoryOnly = transaction:ShouldUseCharacterInventoryOnly();
 								self.QualityDialog:Open(recipeID, reagentSlotSchematic, allocationsCopy, slotIndex, disallowZeroAllocations, characterInventoryOnly);
 							end
 						end
@@ -1094,7 +1092,6 @@ function ProfessionsCustomerOrderFormMixin:InitSchematic()
 
 	local recipeSchematic = self.order.spellID and C_TradeSkillUI.GetRecipeSchematic(self.order.spellID, self.order.isRecraft);
 	self.transaction = recipeSchematic and CreateProfessionsRecipeTransaction(recipeSchematic);
-	self.transaction:SetUseCharacterInventoryOnly(true);
 
 	if self.order.isRecraft then
 		if self.recraftGUID then

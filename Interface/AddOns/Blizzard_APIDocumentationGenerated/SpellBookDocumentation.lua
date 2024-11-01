@@ -633,6 +633,17 @@ local SpellBook =
 			},
 		},
 		{
+			Name = "SpellPushedToFlyoutOnActionbar",
+			Type = "Event",
+			LiteralName = "SPELL_PUSHED_TO_FLYOUT_ON_ACTIONBAR",
+			Payload =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "flyoutSlot", Type = "luaIndex", Nilable = false },
+				{ Name = "flyoutPage", Type = "luaIndex", Nilable = false },
+			},
+		},
+		{
 			Name = "SpellUpdateCharges",
 			Type = "Event",
 			LiteralName = "SPELL_UPDATE_CHARGES",

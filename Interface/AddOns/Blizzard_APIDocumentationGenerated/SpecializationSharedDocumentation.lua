@@ -6,20 +6,6 @@ local SpecializationShared =
 	Functions =
 	{
 		{
-			Name = "GetNumSpecializationsForClassID",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "specID", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "specCount", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "GetSpecializationInfoForClassID",
 			Type = "Function",
 

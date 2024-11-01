@@ -1853,6 +1853,49 @@ function LFGDungeonList_DisableEntries()
 	end
 end
 
+local function IsValidSelectedEntry(entryID)
+	return LFGEnabledList[entryID] and not LFGIsIDHeader(entryID);
+end
+
+function LFG_BuildSelectedEntriesList(visibleEntryList, hiddenByCollapseEntryList)
+	local selectedIDsList = {};
+
+	if visibleEntryList then
+		for _index, visibleEntryID in pairs(visibleEntryList) do
+			if IsValidSelectedEntry(visibleEntryID) then
+				table.insert(selectedIDsList, visibleEntryID);
+			end
+		end
+	end
+
+	if hiddenByCollapseEntryList then
+		for _index, hiddenByCollapseEntryID in pairs(hiddenByCollapseEntryList) do
+			if IsValidSelectedEntry(hiddenByCollapseEntryID) then
+				table.insert(selectedIDsList, hiddenByCollapseEntryID);
+			end
+		end
+	end
+
+	return selectedIDsList;
+end
+
+function LFG_TryGetCrossFactionQueueFailureMessage(selectedEntryIDs)
+	if not selectedEntryIDs then
+		return;
+	end
+
+	local isQueueingForMultiple = #selectedEntryIDs > 1;
+	for _index, entryID in ipairs(selectedEntryIDs) do
+		if not C_LFGInfo.AreCrossFactionGroupQueuesAllowed(entryID) then
+			return isQueueingForMultiple and ERR_LFG_NO_CROSS_FACTION_PARTIES_MULTIPLE or ERR_LFG_NO_CROSS_FACTION_PARTIES;
+		end
+	
+		if C_LFGInfo.DoesCrossFactionQueueRequireFullPremade(entryID) and not C_LFGInfo.DoesActivePartyMeetPremadeLaunchCount(entryID) then
+			return CROSS_FACTION_RAID_DUNGEON_FINDER_NOT_ENOUGH_MEMBERS_ERROR;
+		end
+	end
+end
+
 function LFGDungeonList_SetDungeonEnabled(dungeonID, isEnabled)
 
 	if C_PlayerInfo.IsPlayerNPERestricted() then

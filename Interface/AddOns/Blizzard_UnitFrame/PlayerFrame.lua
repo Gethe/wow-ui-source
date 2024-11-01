@@ -95,6 +95,8 @@ function PlayerFrame_OnLoad(self)
 	end
 
 	SecureUnitButton_OnLoad(self, "player", OpenContextMenu);
+
+	PlayerFrame_UpdateGroupIndicator();
 end
 
 function PlayerFrame_OnEvent(self, event, ...)
@@ -636,7 +638,7 @@ function PlayerFrame_ToVehicleArt(self, vehicleType)
 	PlayerFrame_UpdateRolesAssigned();
 	PlayerFrame_UpdatePlayerNameTextAnchor();
 	local playerFrameTargetContextual = PlayerFrame_GetPlayerFrameContentContextual();
-	playerFrameTargetContextual.GroupIndicator:SetPoint("BOTTOMRIGHT", PlayerFrame, "TOPLEFT", 210, -26);
+	playerFrameTargetContextual.GroupIndicator:SetPoint("BOTTOMRIGHT", PlayerFrame, "TOPLEFT", 210, -28);
 	playerFrameTargetContextual.RoleIcon:SetPoint("TOPLEFT", 194, -27);
 	PlayerLevelText:Hide();
 
@@ -743,7 +745,7 @@ function PlayerFrame_ToPlayerArt(self)
 	PlayerFrame_UpdateRolesAssigned();
 	PlayerFrame_UpdatePlayerNameTextAnchor();
 	local playerFrameTargetContextual = PlayerFrame_GetPlayerFrameContentContextual();
-	playerFrameTargetContextual.GroupIndicator:SetPoint("BOTTOMRIGHT", PlayerFrame, "TOPLEFT", 210, -27);
+	playerFrameTargetContextual.GroupIndicator:SetPoint("BOTTOMRIGHT", PlayerFrame, "TOPLEFT", 210, -29);
 	playerFrameTargetContextual.RoleIcon:SetPoint("TOPLEFT", 196, -27);
 
 	if alternatePowerBar then

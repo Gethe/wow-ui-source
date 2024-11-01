@@ -27,7 +27,16 @@ function ProfessionsCrafterOrderListElementMixin:OnLineEnter()
 
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 
-	local reagents = {};
+	local reagents;
+	if self.option.reagents and #self.option.reagents > 0 then
+		-- Customer provided finishing reagents can alter the quality of the output item.
+		-- Calculate the exact item output based on these reagents so that quality is correct.
+		local transaction = ProfessionsUtil.CreateProfessionsRecipeTransactionFromCraftingOrder(self.option);
+		reagents = transaction:CreateCraftingReagentInfoTbl();
+	else
+		reagents = {};
+	end
+
 	local qualityIDs = C_TradeSkillUI.GetQualitiesForRecipe(self.option.spellID);
 	local qualityIdx = self.option.minQuality or 1;
 	GameTooltip:SetRecipeResultItem(self.option.spellID, reagents, nil, nil, qualityIDs and qualityIDs[qualityIdx]);

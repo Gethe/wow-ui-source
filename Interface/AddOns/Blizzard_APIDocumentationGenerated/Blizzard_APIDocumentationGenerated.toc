@@ -6,8 +6,10 @@
 
 # Start documentation files here
 AccountInfoDocumentation.lua
+AccountStoreDocumentation.lua
 AchievementInfoDocumentation.lua
 ActionBarFrameDocumentation.lua
+AddOnProfilerDocumentation.lua
 AddOnsDocumentation.lua
 AdventureJournalDocumentation.lua
 AdventureMapDocumentation.lua
@@ -57,6 +59,7 @@ DuelInfoDocumentation.lua
 EditModeManagerDocumentation.lua
 EncounterInfoDocumentation.lua
 EncounterJournalDocumentation.lua
+EndOfMatchUIDocumentation.lua
 EquipmentManagerDocumentation.lua
 EventUtilsDocumentation.lua
 ExpansionDocumentation.lua
@@ -74,6 +77,7 @@ FrameAPISimpleCheckoutDocumentation.lua
 FrameAPITabardModelBaseDocumentation.lua
 FrameAPIUnitPositionFrameDocumentation.lua
 FrameScriptDocumentation.lua
+FriendListDocumentation.lua
 GMTicketInfoDocumentation.lua
 GameCursorDocumentation.lua
 GameEnvironmentManagerDocumentation.lua
@@ -146,6 +150,7 @@ ReportSystemDocumentation.lua
 ReputationInfoDocumentation.lua
 ResearchInfoDocumentation.lua
 RestrictedActionsDocumentation.lua
+ScenarioInfoDocumentation.lua
 ScreenDocumentation.lua
 ScriptWarningsDocumentation.lua
 SecureTransferDocumentation.lua
@@ -193,6 +198,7 @@ SimpleTextureBaseAPIDocumentation.lua
 SkillInfoDocumentation.lua
 SlashCommandDocumentation.lua
 SocialQueueDocumentation.lua
+SocialRestrictionsDocumentation.lua
 SoundDocumentation.lua
 SpecializationInfoDocumentation.lua
 SpecializationSharedDocumentation.lua
@@ -219,7 +225,9 @@ TradeInfoDocumentation.lua
 TrainerDocumentation.lua
 TraitConfigDocumentation.lua
 TransmogDocumentation.lua
+TransmogItemsDocumentation.lua
 TutorialDocumentation.lua
+UIActionDocumentation.lua
 UIColorDocumentation.lua
 UIEventToastManagerDocumentation.lua
 UIGenericWidgetDisplayDocumentation.lua
@@ -232,6 +240,7 @@ UIWidgetManagerDocumentation.lua
 URLDocumentation.lua
 UnitDocumentation.lua
 UnitAuraDocumentation.lua
+UnitRoleDocumentation.lua
 UserFeedbackDocumentation.lua
 VehicleDocumentation.lua
 VideoDocumentation.lua
@@ -252,6 +261,7 @@ ArtifactUIDocumentation.lua
 CVarDocumentation.lua
 ChallengeModeInfoDocumentation.lua
 ChromieTimeUIDocumentation.lua
+CinematicListDocumentation.lua
 ClassColorDocumentation.lua
 ClassTalentsDocumentation.lua
 ClickBindingsDocumentation.lua
@@ -271,7 +281,6 @@ FrameAPIDressUpModelDocumentation.lua
 FrameAPIModelSceneFrameActorDocumentation.lua
 FrameAPIScenarioPOIDocumentation.lua
 FrameAPITabardModelDocumentation.lua
-FriendListDocumentation.lua
 GarrisonInfoDocumentation.lua
 InGameNavigationDocumentation.lua
 IncomingSummonDocumentation.lua
@@ -298,12 +307,10 @@ ProfessionSpecUIDocumentation.lua
 QuestHubInfoDocumentation.lua
 QuestItemUseDocumentation.lua
 ReturningPlayerUIDocumentation.lua
-ScenarioInfoDocumentation.lua
 ScrappingMachineUIDocumentation.lua
 ScriptedAnimationsDocumentation.lua
 SeasonInfoDocumentation.lua
 SimpleMapSceneAPIDocumentation.lua
-SocialRestrictionsDocumentation.lua
 SoulbindsDocumentation.lua
 SplashScreenDocumentation.lua
 SuperTrackManagerDocumentation.lua
@@ -311,7 +318,6 @@ SystemDocumentation.lua
 TalkingHeadDocumentation.lua
 TimerunningUIDocumentation.lua
 TradeSkillUIDocumentation.lua
-TransmogItemsDocumentation.lua
 TransmogSetsDocumentation.lua
 UIFrameManagerDocumentation.lua
 UIModifiedInstanceDocumentation.lua
@@ -323,6 +329,7 @@ AccountConstantsDocumentation.lua
 ActionDocumentation.lua
 AppearanceSourceDocumentation.lua
 ArrowCalloutConstantsDocumentation.lua
+AuctionHouseConstantsDocumentation.lua
 AuctionHouseEnumsDocumentation.lua
 AzeriteConstantsDocumentation.lua
 BagConstantsDocumentation.lua
@@ -344,6 +351,7 @@ ContentTrackingTypesDocumentation.lua
 CurrencyConstantsDocumentation.lua
 CursorConstDocumentation.lua
 DamageConstantsDocumentation.lua
+DelvesConstantsDocumentation.lua
 EditModeManagerSharedDocumentation.lua
 EncounterJournalConstantsDocumentation.lua
 ExpansionLandingPageConstantsDocumentation.lua
@@ -392,6 +400,7 @@ QuestSessionConstantsDocumentation.lua
 QueueSpecificDocumentation.lua
 RecruitAFriendSharedDocumentation.lua
 ReportSystemConstantsDocumentation.lua
+ScreenLocationConstantsDocumentation.lua
 ScriptRegionSharedDocumentation.lua
 SharedScriptObjectModelLightDocumentation.lua
 SharedScriptObjectUnitPositionFrameDocumentation.lua
@@ -410,7 +419,10 @@ TooltipInfoSharedDocumentation.lua
 TradeSkillUITypesDocumentation.lua
 TraitConstantsDocumentation.lua
 TransmogSharedDocumentation.lua
+UIActionConstantsDocumentation.lua
+UIButtonSharedDocumentation.lua
 UIFileAssetSharedDocumentation.lua
+UIMapPinSharedDocumentation.lua
 UIModelInfoSharedDocumentation.lua
 UISharedDocumentation.lua
 UITextureAssetSharedDocumentation.lua
@@ -424,7 +436,6 @@ ValidateNameConstantsDocumentation.lua
 VectorSharedDocumentation.lua
 VignetteConstantsDocumentation.lua
 WeeklyRewardsSharedDocumentation.lua
-AuctionHouseConstants_MainlineDocumentation.lua
 ClickBindingsConstantsDocumentation.lua
 CovenantCallingsConstantsDocumentation.lua
 CovenantSanctumConstantsDocumentation.lua
@@ -432,7 +443,6 @@ CovenantsConstantsDocumentation.lua
 CraftingOrderUIConstantsDocumentation.lua
 CraftingOrderUISharedDocumentation.lua
 CurrencyConstants_MainlineDocumentation.lua
-DelvesConstantsDocumentation.lua
 GarrisonSharedDocumentation.lua
 ItemConstants_MainlineDocumentation.lua
 LegendaryCraftingTypesDocumentation.lua

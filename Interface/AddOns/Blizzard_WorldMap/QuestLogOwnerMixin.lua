@@ -6,12 +6,28 @@ local DISPLAY_STATE_OPEN_MAXIMIZED = 4;
 
 QuestLogOwnerMixin = { }
 
+function QuestLogOwnerMixin:GetOpenDisplayState()
+	local displayState;
+	if self:ShouldBeMinimized() then
+		if self:ShouldShowQuestLogPanel() then
+			displayState = DISPLAY_STATE_OPEN_MINIMIZED_WITH_LOG;
+		else
+			displayState = DISPLAY_STATE_OPEN_MINIMIZED_NO_LOG;
+		end
+	else
+		displayState = DISPLAY_STATE_OPEN_MAXIMIZED;
+	end
+	return displayState;
+end
+
 function QuestLogOwnerMixin:HandleUserActionToggleSelf()
 	local displayState;
 	if self:IsShown() then
 		if self:IsMaximized() then
 			displayState = DISPLAY_STATE_CLOSED;
 		else
+			-- When the quest log is hidden, you can press L (ToggleQuestLog) to view the quest log temporarily.
+			-- Then pressing M will then either hide the quest log or show the maximized world map. This handles those transitions.
 			if self:ShouldShowQuestLogPanel() == self.QuestLog:IsShown() then
 				if self:ShouldBeMaximized() then
 					displayState = DISPLAY_STATE_OPEN_MAXIMIZED;
@@ -29,15 +45,8 @@ function QuestLogOwnerMixin:HandleUserActionToggleSelf()
 	else
 		self.wasShowingQuestLog = nil;
 
-		if self:ShouldBeMinimized() then
-			if self:ShouldShowQuestLogPanel() then
-				displayState = DISPLAY_STATE_OPEN_MINIMIZED_WITH_LOG;
-			else
-				displayState = DISPLAY_STATE_OPEN_MINIMIZED_NO_LOG;
-			end
-		else
-			displayState = DISPLAY_STATE_OPEN_MAXIMIZED;
-		end
+		-- Simple case where the world map is closed and needs to be opened to the correct state based on cvars.
+		displayState = self:GetOpenDisplayState();
 	end
 	self:SetDisplayState(displayState);
 end
@@ -113,13 +122,13 @@ function QuestLogOwnerMixin:SetDisplayState(displayState)
 				hasSynchronizedDisplayState = true;
 			end
 		elseif displayState == DISPLAY_STATE_OPEN_MINIMIZED_NO_LOG then
-			if self:IsMaximized() then
+			if not self:IsMinimized() then
 				self:Minimize();
 				hasSynchronizedDisplayState = true;
 			end
 			self:SetQuestLogPanelShown(false);
 		elseif displayState == DISPLAY_STATE_OPEN_MINIMIZED_WITH_LOG then
-			if self:IsMaximized() then
+			if not self:IsMinimized() then
 				self:Minimize();
 				self.BorderFrame.MaximizeMinimizeFrame:SetMaximizedLook();
 				hasSynchronizedDisplayState = true;

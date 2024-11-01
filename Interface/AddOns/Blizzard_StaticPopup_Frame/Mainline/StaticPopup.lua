@@ -1754,7 +1754,8 @@ local function GetBindWarning(itemLocation)
 		return;
 	end
 
-	local isArmor = select(6, C_Item.GetItemInfoInstant(item:GetItemID())) == Enum.ItemClass.Armor;
+	local _itemID, _itemType, _itemSubType, _itemEquipLoc, _icon, itemClassID, itemSubclassID = C_Item.GetItemInfoInstant(item:GetItemID());
+	local isArmor = (itemClassID == Enum.ItemClass.Armor) and (itemSubclassID ~= Enum.ItemArmorSubclass.Shield);
 	if isArmor and not IsItemPreferredArmorType(item:GetItemLocation()) then
 		return NOT_BEST_ARMOR_TYPE_WARNING;
 	end
@@ -1890,45 +1891,6 @@ StaticPopupDialogs["USE_NO_REFUND_CONFIRM"] = {
 	timeout = 0,
 	exclusive = 1,
 	hideOnEscape = 1
-};
-
-StaticPopupDialogs["ACCOUNT_BANK_DEPOSIT_NO_REFUND_CONFIRM"] = {
-	text = END_REFUND,
-	button1 = OKAY,
-	button2 = CANCEL,
-	OnCancel = function(self)
-		ClearCursor();
-	end,
-	OnAccept = function(self, data)
-		if (BankFrame:GetActiveBankType() ~= Enum.BankType.Account) or not C_Bank.CanUseBank(Enum.BankType.Account) or not data.itemToDeposit then
-			return;
-		end
-
-		local depositAtTargetLocation = data.targetItemLocation ~= nil;
-		if depositAtTargetLocation then
-			local cursorItemLocation = C_Cursor.GetCursorItem();
-			local cursorItemChanged = not cursorItemLocation or (C_Item.GetItemGUID(cursorItemLocation) ~= data.itemToDeposit:GetItemGUID());
-			if cursorItemChanged then
-				return;
-			end
-
-			local targetBag, targetSlot = data.targetItemLocation:GetBagAndSlot();
-			if targetBag and targetSlot then
-				C_Container.PickupContainerItem(targetBag, targetSlot);
-			end
-		else
-			-- Auto deposit the item
-			local itemLocation = data.itemToDeposit:GetItemLocation();
-			local bag, slot = itemLocation:GetBagAndSlot();
-			if bag and slot then
-				local unitToken, isReagentBankOpen = nil, false;
-				C_Container.UseContainerItem(bag, slot, unitToken, Enum.BankType.Account, isReagentBankOpen);
-			end
-		end
-	end,
-	timeout = 0,
-	exclusive = 1,
-	hideOnEscape = 1,
 };
 
 StaticPopupDialogs["CONFIRM_AZERITE_EMPOWERED_BIND"] = {

@@ -1943,33 +1943,24 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<DropdownButton parentKey="SpecDropdown" inherits="UIMenuButtonStretchTemplate">
+					<DropdownButton parentKey="SpecDropdown" inherits="WowStyle1ArrowDropdownTemplate">
+						<KeyValues>
+							<KeyValue key="hasShadow" type="boolean" value="false"/>
+						</KeyValues>
 						<Size x="22" y="22"/>
 						<Anchors>
-							<Anchor point="RIGHT" relativeKey="$parent.ApplyButton" relativePoint="LEFT" x="1" y="0"/>
+							<Anchor point="RIGHT" relativeKey="$parent.ApplyButton" relativePoint="LEFT" x="0" y="-2"/>
 						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK" textureSubLevel="1">
-								<Texture file="Interface\Buttons\SquareButtonTextures" parentKey="Icon">
-									<Size x="12" y="12"/>
-									<Anchors>
-										<Anchor point="CENTER" x="0" y="0"/>
-									</Anchors>
-									<TexCoords left="0.45312500" right="0.64062500" top="0.20312500" bottom="0.01562500"/>
-								</Texture>
-							</Layer>
-						</Layers>
-						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 						<Scripts>
+							<OnLoad method="OnLoad"/>
 							<OnMouseDown>
-								UIMenuButtonStretchMixin.OnMouseDown(self, button);
+								ButtonStateBehaviorMixin.OnMouseDown(self, button);
 								HelpTip:Hide(self:GetParent(), TRANSMOG_SPECS_BUTTON_TUTORIAL);
 								SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_SPECS_BUTTON, true);
-								self.Icon:SetPoint("CENTER", -1, -1);
 							</OnMouseDown>
-							<OnMouseUp>
-								self.Icon:SetPoint("CENTER", 0, 0);
-							</OnMouseUp>
+							<OnMouseUp method="OnMouseUp"/>
+							<OnEnter method="OnEnter"/>
+							<OnLeave method="OnLeave"/>
 						</Scripts>
 					</DropdownButton>
 				</Frames>

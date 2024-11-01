@@ -435,6 +435,13 @@ function ClassTalentsFrameMixin:ResetToLastConfigID()
 	end
 end
 
+function ClassTalentsFrameMixin:GenerateChatLink()
+	local linkDisplayText = ("[%s]"):format(TALENT_BUILD_CHAT_LINK_TEXT:format(PlayerUtil.GetSpecName(), PlayerUtil.GetClassName()));
+	local linkText = LinkUtil.FormatLink("talentbuild", linkDisplayText, PlayerUtil.GetCurrentSpecID(), UnitLevel("player"), self:GetLoadoutExportString());
+	local chatLink = PlayerUtil.GetClassColor():WrapTextInColorCode(linkText);
+	return chatLink;
+end
+
 function ClassTalentsFrameMixin:InitializeLoadSystem()
 	local dropdown = self.LoadSystem:GetDropdown();
 	dropdown:SetWidth(200);
@@ -518,9 +525,7 @@ function ClassTalentsFrameMixin:InitializeLoadSystem()
 	end
 
 	local function ChatLinkCallback()
-		local linkDisplayText = ("[%s]"):format(TALENT_BUILD_CHAT_LINK_TEXT:format(PlayerUtil.GetSpecName(), PlayerUtil.GetClassName()));
-		local linkText = LinkUtil.FormatLink("talentbuild", linkDisplayText, PlayerUtil.GetCurrentSpecID(), UnitLevel("player"), self:GetLoadoutExportString());
-		local chatLink = PlayerUtil.GetClassColor():WrapTextInColorCode(linkText);
+		local chatLink = self:GenerateChatLink();
 		if not ChatEdit_InsertLink(chatLink) then
 			ChatFrame_OpenChat(chatLink);
 		end
@@ -1245,6 +1250,9 @@ function ClassTalentsFrameMixin:UpdateConfigButtonsState()
 	if self.heroSpecSelectionDialog:IsActive() then
 		-- If Hero Spec Selection is up, have it update its "Apply Changes" shortcut button and find out whether it's currently displaying it
 		isHeroSpecApplyButtonShowing = self.heroSpecSelectionDialog:UpdateApplyButtons(anyChangesPending, canApplyChanges);
+
+		-- Changes to the config buttons may also result in changes to the hero spec activate button.
+		self.heroSpecSelectionDialog:UpdateActivateButtons();
 	end
 
 	self.ApplyButton:SetEnabled(canApplyChanges);

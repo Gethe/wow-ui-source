@@ -171,10 +171,37 @@ function GameEnvironmentFrameMixin:OnLoad()
 	self.buttonGroup:AddButton(self.SelectWoWLabsToggle);
 	self.environments = {Enum.GameEnvironment.WoW, Enum.GameEnvironment.WoWLabs};
 	self.buttonGroup:RegisterCallback(ButtonGroupBaseMixin.Event.Selected, self.SelectGameEnvironment, self);
+
+	self:TryShowEnvironmentButtons();
+
+	local currentExpansionLevel = AccountUpgradePanel_GetBannerInfo();
+	if currentExpansionLevel then
+		SetExpansionLogo(self.SelectWoWToggle.NormalTexture, currentExpansionLevel);
+	end
+end
+
+function GameEnvironmentFrameMixin:OnShow()
+	ResizeLayoutMixin.OnShow(self);
+
+	self:TryShowEnvironmentButtons();
+end
+
+function GameEnvironmentFrameMixin:TryShowEnvironmentButtons()
+	self.shouldShowButtons = C_GameEnvironmentManager.GetCurrentEventRealmQueues() ~= Enum.EventRealmQueues.None;
+
+	self.buttonGroup:SetShown(self.shouldShowButtons);
+	self.NoGameModesText:SetShown(not self.shouldShowButtons);
+end
+
+function GameEnvironmentFrameMixin:OnKeyDown(key)
+	if key == "ESCAPE" and self:IsShown() then
+		EventRegistry:TriggerEvent("GameEnvironmentFrame.Hide");
+	end
 end
 
 function GameEnvironmentFrameMixin:ChangeGameEnvironment(newEnvironment)
 	assert(newEnvironment);
+
 	if C_GameEnvironmentManager.GetCurrentGameEnvironment() == newEnvironment then		
 		return;
 	end
@@ -184,7 +211,7 @@ function GameEnvironmentFrameMixin:ChangeGameEnvironment(newEnvironment)
 		-- If we changed character order persist it
 		CharacterSelectListUtil.SaveCharacterOrder();
 		-- Swap to the Plunderstorm Realm
-		C_RealmList.ConnectToPlunderstorm(GetCVar("plunderStormRealm")); --WOWLABSTODO: Should this CVar thing be hidden from lua?
+		C_RealmList.ConnectToEventRealm(GetCVar("plunderStormRealm")); --WOWLABSTODO: Should this CVar thing be hidden from lua?
 		CharacterSelect.connectingToPlunderstorm = true;
 	else
 		-- Ensure we have auto realm select enabled
@@ -201,6 +228,8 @@ function GameEnvironmentFrameMixin:SelectRadioButtonForEnvironment(requestedEnvi
 	self.SelectWoWToggle:SetSelectedState(requestedEnvironment == Enum.GameEnvironment.WoW);
 	self.SelectWoWLabsToggle:SetSelectedState(requestedEnvironment == Enum.GameEnvironment.WoWLabs);
 	self.SelectWoWLabsToggle:SetPulsePlaying(requestedEnvironment ~= Enum.GameEnvironment.WoWLabs);
+
+	EventRegistry:TriggerEvent("GameEnvironment.UpdateNavBar");
 end
 
 function GameEnvironmentFrameMixin:SelectGameEnvironment(button, buttonIndex)
@@ -208,4 +237,12 @@ function GameEnvironmentFrameMixin:SelectGameEnvironment(button, buttonIndex)
 	assert(requestedEnvironment);
 
 	EventRegistry:TriggerEvent("GameEnvironment.Selected", requestedEnvironment);
+end
+
+function GameEnvironmentFrameMixin:GetSelectedGameEnvironment()
+	if self.SelectWoWLabsToggle:IsSelected() then
+		return Enum.GameEnvironment.WoWLabs;
+	end
+
+	return Enum.GameEnvironment.WoW;
 end

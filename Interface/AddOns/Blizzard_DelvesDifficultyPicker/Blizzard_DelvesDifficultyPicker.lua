@@ -22,6 +22,9 @@ local BOUNTIFUL_DELVE_WIDGET_TAG = "delveBountiful";
 -- If the last selected isn't available, we'll default to the highest unlocked tier.
 local LAST_TIER_SELECTED_CVAR = "lastSelectedDelvesTier";
 
+local TIER_SELECT_DROPDOWN_MENU_MIN_WIDTH = 110;
+local TIER_SELECT_DROPDOWN_MENU_BTN_WIDTH = 130;
+
 local DelvesKeyState = EnumUtil.MakeEnum(
 	"None",
 	"Normal"
@@ -52,7 +55,7 @@ function DelvesDifficultyPickerFrameMixin:OnLoad()
 		allowOtherPanels = 1,
 	};
 	RegisterUIPanel(self, panelAttributes);
-	self.Dropdown:SetWidth(130);
+	self.Dropdown:SetWidth(TIER_SELECT_DROPDOWN_MENU_BTN_WIDTH);
 end
 
 function DelvesDifficultyPickerFrameMixin:OnEvent(event, ...)
@@ -77,8 +80,17 @@ function DelvesDifficultyPickerFrameMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, DELVES_DIFFICULTY_PICKER_EVENTS);
 	self.Dropdown:RegisterCallback(DropdownButtonMixin.Event.OnMenuClose, self.TryShowHelpTip, self);
 	self.Dropdown:RegisterCallback(DropdownButtonMixin.Event.OnMenuOpen, self.HideHelpTip, self);
-	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
+	
+	self.Dropdown:RegisterCallback(DropdownButtonMixin.Event.OnMenuOpen, function(dropdown)
+		local selectedOption = self:GetSelectedOption();
+		local index = selectedOption and selectedOption.orderIndex or 1;
 
+		if dropdown.menu.ScrollBox:HasScrollableExtent() then
+			dropdown.menu.ScrollBox:ScrollToElementDataIndex(index, ScrollBoxConstants.AlignBegin);
+		end
+	end, self.Dropdown);
+	
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	self:SetInitialLevel();
 	self:CheckForActiveDelveAndUpdate();
 	self:TryShowHelpTip();
@@ -138,6 +150,11 @@ function DelvesDifficultyPickerFrameMixin:SetupDropdown()
 	self.Dropdown:SetupMenu(function(owner, rootDescription)
 		rootDescription:SetTag("MENU_DELVES_DIFFICULTY");
 
+		local buttonSize = 20;
+		local maxButtons = 7;
+		rootDescription:SetScrollMode(buttonSize * maxButtons);
+		rootDescription:SetMinimumWidth(TIER_SELECT_DROPDOWN_MENU_MIN_WIDTH);
+		
 		local options = DelvesDifficultyPickerFrame:GetOptions();
 		if not options then
 			return;

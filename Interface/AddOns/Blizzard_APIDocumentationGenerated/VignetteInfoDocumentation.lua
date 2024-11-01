@@ -21,6 +21,20 @@ local VignetteInfo =
 			},
 		},
 		{
+			Name = "GetVignetteHealthPct",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "vignetteGUID", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "healthPct", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetVignetteInfo",
 			Type = "Function",
 
@@ -104,6 +118,7 @@ local VignetteInfo =
 				{ Name = "tooltipWidgetSet", Type = "number", Nilable = true },
 				{ Name = "iconWidgetSet", Type = "number", Nilable = true },
 				{ Name = "addPaddingAboveTooltipWidgets", Type = "bool", Nilable = true },
+				{ Name = "mapPin", Type = "UIMapPinInfo", Nilable = true },
 			},
 		},
 	},

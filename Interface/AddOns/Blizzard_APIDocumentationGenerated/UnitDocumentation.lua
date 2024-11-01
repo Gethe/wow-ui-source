@@ -20,15 +20,6 @@ local Unit =
 			},
 		},
 		{
-			Name = "CanShowSetRoleButton",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "result", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "CanSwitchVehicleSeat",
 			Type = "Function",
 
@@ -361,15 +352,6 @@ local Unit =
 				{ Name = "virtualSeatIndex", Type = "number", Nilable = false },
 				{ Name = "xPos", Type = "number", Nilable = false },
 				{ Name = "yPos", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "InitiateRolePoll",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "result", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -2329,36 +2311,6 @@ local Unit =
 			Returns =
 			{
 				{ Name = "result", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "UnitSetRole",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
-				{ Name = "roleStr", Type = "cstring", Nilable = true },
-			},
-
-			Returns =
-			{
-				{ Name = "result", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "UnitSetRoleEnum",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
-				{ Name = "role", Type = "LFGRole", Nilable = true },
-			},
-
-			Returns =
-			{
-				{ Name = "result", Type = "bool", Nilable = false },
 			},
 		},
 		{

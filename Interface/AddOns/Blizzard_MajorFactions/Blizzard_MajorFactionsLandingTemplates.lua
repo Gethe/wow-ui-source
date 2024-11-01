@@ -382,6 +382,7 @@ function MajorFactionButtonUnlockedStateMixin:ShowRenownRewardsTooltip()
 	end
 
 	GameTooltip_AddColoredLine(GameTooltip, MAJOR_FACTION_BUTTON_TOOLTIP_VIEW_RENOWN, GREEN_FONT_COLOR);
+	EventRegistry:TriggerEvent("MajorFactionRenown.Header.OnEnter", self, GameTooltip, factionID);
 	GameTooltip:Show();
 end
 
@@ -425,7 +426,7 @@ function MajorFactionButtonUnlockedStateMixin:ShowParagonRewardsTooltip()
 
 		GameTooltip_AddNormalLine(EmbeddedItemTooltip, description);
 
-		if not hasRewardPending then
+		if not hasRewardPending and currentValue and threshold then
 			local value = mod(currentValue, threshold);
 			-- Show overflow if a reward is pending
 			if hasRewardPending then

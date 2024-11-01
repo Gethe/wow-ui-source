@@ -8,7 +8,7 @@ CHATCONFIG_CHANNELS_MAXWIDTH = 145;
 CHAT_CONFIG_CURRENT_COLOR_SWATCH = nil;
 
 local function ShouldDisplayDisabled()
-	return not C_SocialRestrictions.IsMuted() and C_SocialRestrictions.IsChatDisabled();
+	return not C_SocialRestrictions.CanReceiveChat();
 end
 
 --Chat options
@@ -752,7 +752,7 @@ end
 function ChatConfigFrame_OnEvent(self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		-- Chat Settings
-		ChatConfigFrame_ReplaceChatConfigLeftTooltips(C_SocialRestrictions.IsChatDisabled());
+		ChatConfigFrame_ReplaceChatConfigLeftTooltips(ShouldDisplayDisabled());
 		ChatConfig_CreateCheckboxes(ChatConfigChatSettingsLeft, CHAT_CONFIG_CHAT_LEFT, "ChatConfigWideCheckboxWithSwatchTemplate", PLAYER_MESSAGES);
 		ChatConfig_CreateCheckboxes(ChatConfigOtherSettingsCombat, CHAT_CONFIG_OTHER_COMBAT, "ChatConfigCheckboxWithSwatchTemplate", COMBAT);
 		ChatConfig_CreateCheckboxes(ChatConfigOtherSettingsPVP, CHAT_CONFIG_OTHER_PVP, "ChatConfigCheckboxWithSwatchTemplate", PVP);
@@ -2059,6 +2059,13 @@ function CanCreateFilters()
 		return false;
 	end
 	return true;
+end
+
+function ChatConfigBaseCheckButton_MouseUp()
+	if ShouldDisplayDisabled() and IsShiftKeyDown() then
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		Settings.OpenToCategory(Settings.SOCIAL_CATEGORY_ID);
+	end
 end
 
 function ChatConfigFrame_PlayCheckboxSound (checked)

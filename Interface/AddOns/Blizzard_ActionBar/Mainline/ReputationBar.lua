@@ -99,7 +99,9 @@ function ReputationStatusBarMixin:Update()
 	if C_Reputation.IsFactionParagon(factionID) then
 		local currentValue, threshold, _, hasRewardPending = C_Reputation.GetFactionParagonInfo(factionID);
 		minBar, maxBar  = 0, threshold;
-		value = currentValue % threshold;
+		if currentValue and threshold then
+			value = currentValue % threshold;
+		end
 		level = maxLevel;
 		if hasRewardPending then
 			value = value + threshold;

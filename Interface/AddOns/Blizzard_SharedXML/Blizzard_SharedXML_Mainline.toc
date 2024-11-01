@@ -93,9 +93,9 @@ Mainline\Scroll\OribosScrollBar.lua
 Mainline\Scroll\OribosScrollBar.xml
 Shared\Scroll\MinimalScrollBar.lua
 Shared\Scroll\MinimalScrollBar.xml
-Mainline\ButtonTray\ButtonTrayUtil.lua
-Mainline\ButtonTray\ButtonTray.lua
-Mainline\ButtonTray\ButtonTray.xml
+Shared\ButtonTray\ButtonTrayUtil.lua
+Shared\ButtonTray\ButtonTray.lua
+Shared\ButtonTray\ButtonTray.xml
 StringUtil.lua
 TypeUtil.lua
 Dump.lua
@@ -142,8 +142,8 @@ Blizzard_RadialWheel.lua
 Blizzard_RadialWheel.xml
 Backdrop.xml
 
-Mainline\LoadSystem\LoadSystemTemplates.lua
-Mainline\LoadSystem\LoadSystemTemplates.xml
+Shared\LoadSystem\LoadSystemTemplates.lua
+Shared\LoadSystem\LoadSystemTemplates.xml
 Mainline\TabSystem\TabSystemTemplates.lua
 Mainline\TabSystem\TabSystemTemplates.xml
 Mainline\TabSystem\TabSystemOwner.lua

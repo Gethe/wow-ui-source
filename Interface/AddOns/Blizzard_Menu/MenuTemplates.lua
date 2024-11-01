@@ -166,7 +166,12 @@ function MenuTemplates.RecurseSetupFontString(frame)
 			
 			if originalSetTextColor then
 				fontString.SetTextColor = function(self, r, g, b, a)
-					autoEnableTextColors[true] = CreateColor(r, g, b, a);
+					-- The intention here is to update the cached color for 'enabled/true' so that it can be
+					-- restored as the frame changes enabled state. This treats any color other than 
+					-- DISABLED_FONT_COLOR as an enabled color.
+					if not IsRGBAEqualToColor(r, g, b, a, autoEnableTextColors[false]) then
+						autoEnableTextColors[true] = CreateColor(r, g, b, a);
+					end
 					originalSetTextColor(self, r, g, b, a);
 				end;
 				fontString.autoEnableTextColors = autoEnableTextColors;
@@ -721,6 +726,14 @@ function WowStyle2DropdownMixin:OnMenuClosed(menu)
 	DropdownButtonMixin.OnMenuClosed(self, menu);
 
 	self:OnButtonStateChanged();
+end
+
+WowStyle1ArrowDropdownMixin = CreateFromMixins(ButtonStateBehaviorMixin);
+
+function WowStyle1ArrowDropdownMixin:OnLoad()
+	ValidateIsDropdownButtonIntrinsic(self);
+	ButtonStateBehaviorMixin.OnLoad(self);
+	DropdownButtonMixin.OnLoad(self);
 end
 
 MenuStyleMixin = {};

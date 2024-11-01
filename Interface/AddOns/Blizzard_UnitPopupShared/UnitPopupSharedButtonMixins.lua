@@ -546,7 +546,7 @@ UnitPopupRemoveBnetFriendButtonMixin = CreateFromMixins(UnitPopupRemoveFriendBut
 function UnitPopupRemoveBnetFriendButtonMixin:OnClick(contextData)
 	local accountInfo = contextData.accountInfo;
 	local promptText;
-	if not IsOnGlueScreen() then 
+	if not C_Glue.IsOnGlueScreen() then 
 	if accountInfo then
 		if accountInfo.isBattleTagFriend then
 			promptText = string.format(BATTLETAG_REMOVE_FRIEND_CONFIRMATION, accountInfo.accountName);
@@ -1400,20 +1400,8 @@ function UnitPopupDungeonDifficulty1ButtonMixin:isDisabled(contextData)
 end
 
 function UnitPopupDungeonDifficulty1ButtonMixin:IsEnabled(contextData)
-	local inInstance, instanceType = IsInInstance();
-	if inInstance then
-	return false;
-end
-
-	if instanceType == "raid" then
-		return false;
-	end
-
-	if IsInGroup() and not UnitIsGroupLeader("player") then
-		return false;
-	end
-
-	return not UnitPopupSharedUtil.HasLFGRestrictions();
+	local difficultyID = self:GetDifficultyID();
+	return DifficultyUtil.IsDungeonDifficultyEnabled(difficultyID);
 end
 
 UnitPopupDungeonDifficulty2ButtonMixin = CreateFromMixins(UnitPopupDungeonDifficulty1ButtonMixin);
@@ -2753,7 +2741,6 @@ end
 function UnitPopupSelfHighlightSelectButtonMixin:GetEntries()
 	return {
 		UnitPopupSelfHighlightCircleButtonMixin,
-		UnitPopupSelfHighlightOutlineButtonMixin,
 		UnitPopupSelfHighlightIconButtonMixin,
 	};
 end
@@ -2762,7 +2749,6 @@ UnitPopupSelfHighlightCommonMixin = CreateFromMixins(UnitPopupCheckboxButtonMixi
 
 function UnitPopupSelfHighlightCommonMixin:SetFindSelfAnywhere()
 	local shouldFindSelfAnywhere = GetCVarBool("findYourselfModeCircle") or
-		GetCVarBool("findYourselfModeOutline") or
 		GetCVarBool("findYourselfModeIcon");
 			
 	SetCVar("findYourselfAnywhere", shouldFindSelfAnywhere);
@@ -2793,16 +2779,6 @@ end
 
 function UnitPopupSelfHighlightCircleButtonMixin:GetCVarName()
 	return "findYourselfModeCircle";
-end
-
-UnitPopupSelfHighlightOutlineButtonMixin = CreateFromMixins(UnitPopupSelfHighlightCommonMixin);
-
-function UnitPopupSelfHighlightOutlineButtonMixin:GetText(contextData)
-	return SELF_HIGHLIGHT_OUTLINE;
-end
-
-function UnitPopupSelfHighlightOutlineButtonMixin:GetCVarName()
-	return "findYourselfModeOutline";
 end
 
 UnitPopupSelfHighlightIconButtonMixin = CreateFromMixins(UnitPopupSelfHighlightCommonMixin);
@@ -3541,9 +3517,24 @@ function UnitPopupSelectRoleButtonMixin:GetText(contextData)
 	return SET_ROLE; 
 end 
 
---Override in UnitPopupButtons
 function UnitPopupSelectRoleButtonMixin:CanShow(contextData)
-	return false; 
+	if not CanShowSetRoleButton() then
+		return false;
+	end
+
+	if C_Scenario.IsInScenario() then
+		return false;
+	end
+
+	if not IsInGroup() then
+		return false; 
+	end
+
+	if HasLFGRestrictions() then
+		return false;
+	end
+
+	return UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") or UnitIsUnit(contextData.unit, "player");
 end
 
 function UnitPopupSelectRoleButtonMixin:GetEntries()
@@ -3567,7 +3558,7 @@ function UnitPopupSetRoleNoneButton:GetTextHeight()
 end
 
 function UnitPopupSetRoleNoneButton:GetRole()
-	return nill;
+	return nil;
 end
 
 function UnitPopupSetRoleNoneButton:OnClick(contextData)
@@ -3590,6 +3581,10 @@ function UnitPopupSetRoleTankButton:GetRole()
 end
 
 function UnitPopupSetRoleTankButton:IsEnabled(contextData)
+	if (AreClassRolesSoftSuggestions()) then
+		return true;
+	end
+
 	local canBeTank, canBeHealer, canBeDamager = UnitGetAvailableRoles(contextData.unit);
 	return canBeTank;
 end
@@ -3605,6 +3600,10 @@ function UnitPopupSetRoleDpsButton:GetRole()
 end
 
 function UnitPopupSetRoleDpsButton:IsEnabled(contextData)
+	if (AreClassRolesSoftSuggestions()) then
+		return true;
+	end
+
 	local canBeTank, canBeHealer, canBeDamager = UnitGetAvailableRoles(contextData.unit);
 	return canBeDamager;
 end
@@ -3620,6 +3619,10 @@ function UnitPopupSetRoleHealerButton:GetRole()
 end
 
 function UnitPopupSetRoleHealerButton:IsEnabled(contextData)
+	if (AreClassRolesSoftSuggestions()) then
+		return true;
+	end
+
 	local canBeTank, canBeHealer, canBeDamager = UnitGetAvailableRoles(contextData.unit);
 	return canBeHealer;
 end

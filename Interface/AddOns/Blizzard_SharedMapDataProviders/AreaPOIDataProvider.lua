@@ -216,7 +216,8 @@ function AreaPOIPinMixin:TryShowTooltip()
 			local secondsLeft = C_AreaPoiInfo.GetAreaPOISecondsLeft(self.areaPoiID);
 			if secondsLeft and secondsLeft > 0 then
 				local timeString = SecondsToTime(secondsLeft);
-				GameTooltip_AddNormalLine(tooltip, BONUS_OBJECTIVE_TIME_LEFT:format(timeString));
+				timeString = HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(timeString);
+				GameTooltip_AddNormalLine(tooltip, MAP_TOOLTIP_TIME_LEFT:format(timeString));
 				addedTooltipLine = true;
 			end
 		end

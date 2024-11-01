@@ -65,6 +65,15 @@ local InGameNavigation =
 	Events =
 	{
 		{
+			Name = "NavigationDestinationReached",
+			Type = "Event",
+			LiteralName = "NAVIGATION_DESTINATION_REACHED",
+			Payload =
+			{
+				{ Name = "isWaypoint", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "NavigationFrameCreated",
 			Type = "Event",
 			LiteralName = "NAVIGATION_FRAME_CREATED",
