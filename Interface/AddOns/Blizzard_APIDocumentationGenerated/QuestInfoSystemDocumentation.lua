@@ -17,7 +17,7 @@ local QuestInfoSystem =
 
 			Returns =
 			{
-				{ Name = "classification", Type = "QuestClassification", Nilable = true },
+				{ Name = "classification", Type = "QuestClassification", Nilable = false },
 			},
 		},
 		{

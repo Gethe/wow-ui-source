@@ -5,6 +5,8 @@ function RaidFinderFrame_OnLoad(self)
 	self:RegisterEvent("AJ_RAID_ACTION");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("LFG_UPDATE_RANDOM_INFO");
+
+	EventRegistry:RegisterCallback("LobbyMatchmaker.UpdateQueueState", RaidFinderFrameFindRaidButton_Update);
 end
 
 function RaidFinderFrame_OnEvent(self, event, ...)
@@ -379,6 +381,12 @@ function RaidFinderQueueFrameRewards_UpdateFrame()
 end
 
 function RaidFinderFrameFindRaidButton_Update()
+	if C_LobbyMatchmakerInfo.IsInQueue() then
+		RaidFinderFrameFindRaidButton:Disable();
+		RaidFinderFrameFindRaidButton.disabledTooltip = WOW_LABS_CANNOT_ENTER_NON_PLUNDER_QUEUE;
+		return;
+	end
+
 	local mode, subMode = GetLFGMode(LE_LFG_CATEGORY_RF, RaidFinderQueueFrame.raid);
 	--Update the text on the button
 	if ( mode == "queued" or mode == "rolecheck" or mode == "proposal" or mode == "suspended" ) then

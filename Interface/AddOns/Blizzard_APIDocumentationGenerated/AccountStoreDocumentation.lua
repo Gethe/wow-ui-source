@@ -119,6 +119,20 @@ local AccountStore =
 			},
 		},
 		{
+			Name = "GetStoreFrontState",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "storeFrontID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "state", Type = "AccountStoreState", Nilable = false },
+			},
+		},
+		{
 			Name = "RefundItem",
 			Type = "Function",
 
@@ -161,6 +175,15 @@ local AccountStore =
 			Payload =
 			{
 				{ Name = "itemID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "StoreFrontStateUpdated",
+			Type = "Event",
+			LiteralName = "STORE_FRONT_STATE_UPDATED",
+			Payload =
+			{
+				{ Name = "storeFrontID", Type = "number", Nilable = false },
 			},
 		},
 	},

@@ -113,6 +113,8 @@ function PetJournal_OnLoad(self)
 	PetJournal_InitFilterDropdown(self);
 
 	PetJournal_ShowPetCard(1);
+
+	EventRegistry:RegisterCallback("LobbyMatchmaker.UpdateQueueState", PetJournal_UpdateFindBattleButton);
 end
 
 function PetJournal_InitFilterDropdown(self)
@@ -1758,7 +1760,7 @@ function PetJournalFindBattle_Update(self)
 end
 
 function PetJournal_UpdateFindBattleButton()
-	PetJournal.FindBattleButton:SetEnabled(C_PetJournal.IsFindBattleEnabled() and C_PetJournal.IsJournalUnlocked());
+	PetJournal.FindBattleButton:SetEnabled(not C_LobbyMatchmakerInfo.IsInQueue() and C_PetJournal.IsFindBattleEnabled() and C_PetJournal.IsJournalUnlocked());
 end
 
 function PetJournalFindBattle_OnEnter(self)
@@ -1766,7 +1768,9 @@ function PetJournalFindBattle_OnEnter(self)
 	GameTooltip:SetText(FIND_BATTLE, 1, 1, 1);
 	GameTooltip:AddLine(BATTLE_PETS_FIND_BATTLE_TOOLTIP, nil, nil, nil, true);
 
-	if (not C_PetJournal.IsFindBattleEnabled()) then
+	if (C_LobbyMatchmakerInfo.IsInQueue()) then
+		GameTooltip_AddErrorLine(GameTooltip, WOW_LABS_CANNOT_ENTER_NON_PLUNDER_QUEUE);
+	elseif (not C_PetJournal.IsFindBattleEnabled()) then
 		GameTooltip:AddLine(BATTLE_PET_FIND_BATTLE_DISABLED, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
 	elseif (not C_PetJournal.IsJournalUnlocked()) then
 		GameTooltip:AddLine(BATTLE_PET_FIND_BATTLE_READONLY, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);

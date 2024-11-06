@@ -33,13 +33,27 @@
 		</Layers>	
 	</Frame>
 	
-	<Button name="EndOfMatchButtonBaseTemplate" inherits="BigRedThreeSliceButtonTemplate" virtual="true" mixin="EndOfMatchButtonBaseMixin" hidden="true">
+	<Button name="EndOfMatchButtonBaseTemplate" inherits="BigRedThreeSliceButtonTemplate" virtual="true" mixin="EndOfMatchButtonBaseMixin" motionScriptsWhileDisabled="true" hidden="true">
 		<Size x="1" y="32"/>
 		<KeyValues>
 			<KeyValue key="isLarge" type="boolean" value="false"/>
 		</KeyValues>
 		<Scripts>
 			<OnShow method="OnShow"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Button name="EndOfMatchButtonGoldButtonBaseTemplate" inherits="BigGoldRedThreeSliceButtonTemplate" virtual="true" mixin="EndOfMatchButtonBaseMixin" motionScriptsWhileDisabled="true" hidden="true">
+		<Size x="1" y="32"/>
+		<KeyValues>
+			<KeyValue key="isLarge" type="boolean" value="false"/>
+		</KeyValues>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Button>
 	

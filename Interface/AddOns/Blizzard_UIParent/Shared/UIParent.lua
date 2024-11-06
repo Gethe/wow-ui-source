@@ -11,7 +11,7 @@ end
 
 function ToggleLFGFrame()
 	if (C_LFGList.GetPremadeGroupFinderStyle() == Enum.PremadeGroupFinderStyle.Vanilla) then
-		if (not C_AddOns.IsAddOnLoaded("Blizzard_LookingForGroupUI")) then
+		if (not C_AddOns.IsAddOnLoaded("Blizzard_GroupFinder_VanillaStyle")) then
 			return;
 		end
 

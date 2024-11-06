@@ -83,9 +83,18 @@ end
 ---------------------------------------------------
 -- GAME ENVIRONMENT BUTTON MIXIN
 GameEnvironmentButtonMixin = {};
+
+local GameEnvironmentButtonScales = {
+	[Enum.GameEnvironment.WoW] = 0.9,
+	[Enum.GameEnvironment.WoWLabs] = 0.68,
+};
+
 function GameEnvironmentButtonMixin:OnLoad()
 	SelectableButtonMixin.OnLoad(self);
 	self:SetAlpha(0.5);
+
+	self.selectedScale = GameEnvironmentButtonScales[self.gameEnvironment];
+	self.deselectedScale = self.selectedScale - 0.09;
 end
 
 function GameEnvironmentButtonMixin:OnEnter()
@@ -100,10 +109,23 @@ function GameEnvironmentButtonMixin:OnLeave()
 	end
 end
 
+local LimitedTimeEventTextScale = {
+	selected = 0.95,
+	deselected = 0.85,
+};
+
 function GameEnvironmentButtonMixin:SetSelectedState(selected)
 	SelectableButtonMixin.SetSelectedState(self, selected);
-	self.SelectedTexture:SetShown(selected);
-	self.BackgroundGlowTexture:SetShown(selected);
+	self.SelectionArrow:SetShown(selected);
+	self.BackgroundGlowTop:SetShown(selected);
+	self.BackgroundGlowBottom:SetShown(selected);
+	
+	self.NormalTexture:SetScale(selected and self.selectedScale or self.deselectedScale);
+
+	if self.LimitedTimeEventText then
+		self.LimitedTimeEventText:SetScale(selected and LimitedTimeEventTextScale.selected or LimitedTimeEventTextScale.deselected);
+	end
+
 	self:SetAlpha(selected and 1 or 0.5);
 end
 
@@ -123,6 +145,12 @@ function GameEnvironmentButtonPulsingMixin:OnLoad()
 	self:SetPulsePlaying(true);
 end
 
+function GameEnvironmentButtonPulsingMixin:RefreshScale()
+	local selected = self:IsSelected();
+	self.PulseTexture:SetScale(selected and self.selectedScale or self.deselectedScale);
+	self.PulseTextureTwo:SetScale(selected and self.selectedScale or self.deselectedScale);
+end
+
 function GameEnvironmentButtonPulsingMixin:OnShow()
 	self:SetPulsePlaying(true);
 end
@@ -140,7 +168,7 @@ function GameEnvironmentButtonPulsingMixin:OnLeave()
 end
 
 function GameEnvironmentButtonPulsingMixin:OnSelected(newSelected)
-	self:SetPulsePlaying(not newSelected);	
+	self:SetPulsePlaying(not newSelected);
 end
 
 function GameEnvironmentButtonPulsingMixin:SetPulsePlaying(playing)
@@ -148,6 +176,8 @@ function GameEnvironmentButtonPulsingMixin:SetPulsePlaying(playing)
 	if self.pulsePlaying == playing then
 		return;
 	end
+
+	self:RefreshScale();
 
 	if not playing then
 		self.PulseTexture:Hide();
@@ -173,11 +203,6 @@ function GameEnvironmentFrameMixin:OnLoad()
 	self.buttonGroup:RegisterCallback(ButtonGroupBaseMixin.Event.Selected, self.SelectGameEnvironment, self);
 
 	self:TryShowEnvironmentButtons();
-
-	local currentExpansionLevel = AccountUpgradePanel_GetBannerInfo();
-	if currentExpansionLevel then
-		SetExpansionLogo(self.SelectWoWToggle.NormalTexture, currentExpansionLevel);
-	end
 end
 
 function GameEnvironmentFrameMixin:OnShow()
@@ -189,8 +214,16 @@ end
 function GameEnvironmentFrameMixin:TryShowEnvironmentButtons()
 	self.shouldShowButtons = C_GameEnvironmentManager.GetCurrentEventRealmQueues() ~= Enum.EventRealmQueues.None;
 
+	local currentExpansionLevel = AccountUpgradePanel_GetBannerInfo();
+	if currentExpansionLevel and self.shownExpansionLevel ~= currentExpansionLevel then
+		SetExpansionLogo(self.SelectWoWToggle.NormalTexture, currentExpansionLevel);
+		self.shownExpansionLevel = currentExpansionLevel;
+	end
+
 	self.buttonGroup:SetShown(self.shouldShowButtons);
 	self.NoGameModesText:SetShown(not self.shouldShowButtons);
+	self.widthPadding = not self.shouldShowButtons and 20 or 0;
+	self:Layout();
 end
 
 function GameEnvironmentFrameMixin:OnKeyDown(key)

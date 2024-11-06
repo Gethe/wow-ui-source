@@ -9,6 +9,7 @@ function EndOfMatchFrameMixin:OnLoad()
 	self.hasMatchDetails = false;
 	self.detailPool = CreateFramePool("Frame", self.DetailsContainer, "MatchDetailFrameTemplate");
 	self.actionsButtonPool = CreateFramePool("Button", self, "EndOfMatchButtonBaseTemplate");
+	self.goldActionsButtonPool = CreateFramePool("Button", self, "EndOfMatchButtonGoldButtonBaseTemplate");
 
 	EventRegistry:RegisterCallback("EndOfMatchUI.TryShow", self.TryShow, self)
 
@@ -102,7 +103,12 @@ local ActionTemplates = {
 		-- Open Plunderstore
 		{
 			label = WOW_LABS_ACCOUNT_STORE,
+			isGold = true,
 			OnClick = OpenPlunderstore,
+			disabledTooltip = ACCOUNT_STORE_UNAVAILABLE,
+			shouldBeEnabled = function()
+				return C_AccountStore.GetStoreFrontState(Constants.AccountStoreConsts.PlunderstormStoreFrontID) == Enum.AccountStoreState.Available;
+			end,
 		},
 		-- Spectate
 		{
@@ -140,8 +146,9 @@ function EndOfMatchFrameMixin:TryUpdateMatchDetails()
 	local regularLayoutIndex = 1;
 
 	self.actionsButtonPool:ReleaseAll();
+	self.goldActionsButtonPool:ReleaseAll();
 	for index, actionInfo in ipairs(actionsTemplate) do
-		local currAction = self.actionsButtonPool:Acquire();
+		local currAction = actionInfo.isGold and self.goldActionsButtonPool:Acquire() or self.actionsButtonPool:Acquire();
 
 		if actionInfo.useCenterActionContainer then
 			currAction:SetParent(self.CenterActionsContainer);
@@ -155,6 +162,9 @@ function EndOfMatchFrameMixin:TryUpdateMatchDetails()
 
 		currAction:Init(actionInfo);
 		currAction:SetShown(actionInfo.showAtEndOfMatch or not self.matchEnded);
+
+		currAction.disabledTooltip = actionInfo.disabledTooltip;
+		currAction:SetEnabled(not actionInfo.shouldBeEnabled or actionInfo.shouldBeEnabled());
 	end
 
 	self.CenterActionsContainer:Layout();
@@ -203,7 +213,7 @@ function MatchDetailFrameMixin:Init(type, description, value, iconAtlas)
 			GameTooltip:Show();
 		end);
 
-		self:SetScript("OnLeave", function() GameTooltip_Hide(); print("hide"); end);
+		self:SetScript("OnLeave", GameTooltip_Hide);
 	else
 		self:SetScript("OnEnter", nil);
 		self:SetScript("OnLeave", nil);
@@ -226,6 +236,7 @@ function EndOfMatchButtonBaseMixin:Init(actionInfo)
 	self:SetScript("OnClick", actionInfo.OnClick);
 
 	self:SetNormalFontObject(self.isLarge and "GameFontNormalHuge" or "GameFontNormalLarge" );
+	self:SetDisabledFontObject(self.isLarge and "GameFontDisableHuge" or "GameFontDisableLarge" );
 	self:SetHighlightFontObject(self.isLarge and "GameFontHighlightHuge" or "GameFontHighlightLarge");
 
 	local widthPadding = self.isLarge and 120 or 80;
@@ -252,4 +263,16 @@ function EndOfMatchButtonBaseMixin:OnShow()
 	else
 		GlowEmitterFactory:Hide(self);
 	end
+end
+
+function EndOfMatchButtonBaseMixin:OnEnter()
+	if not self:IsEnabled() and self.disabledTooltip then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetText(self.disabledTooltip);
+		GameTooltip:Show();
+	end
+end
+
+function EndOfMatchButtonBaseMixin:OnLeave()
+	GameTooltip_Hide();
 end

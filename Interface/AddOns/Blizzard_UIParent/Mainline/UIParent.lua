@@ -392,11 +392,8 @@ function UIParent_OnShow(self)
 		UIParentRightManagedFrameContainer:UpdateManagedFrames();
 	end
 
-	-- Temporary hook to load the Plunderstore.
-	if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
-		C_AddOns.LoadAddOn("Blizzard_AccountStore");
-		AccountStoreFrame:SetStoreFrontID(Constants.AccountStoreConsts.PlunderstormStoreFrontID);
-	end
+	C_AddOns.LoadAddOn("Blizzard_AccountStore");
+	AccountStoreFrame:SetStoreFrontID(Constants.AccountStoreConsts.PlunderstormStoreFrontID);
 end
 
 function UIParent_OnHide(self)
@@ -1526,11 +1523,14 @@ function UIParent_OnEvent(self, event, ...)
 		StaticPopup_Hide("GUILD_INVITE");
 	elseif ( event == "PLAYER_CAMPING" ) then
 		StaticPopup_Show("CAMP");
+	elseif ( event == "PLAYER_PLUNDERSTORM_TRANSFERING" ) then
+		StaticPopup_Show("PLUNDERSTORM_LEAVE");
 	elseif ( event == "PLAYER_QUITING" ) then
 		StaticPopup_Show("QUIT");
 	elseif ( event == "LOGOUT_CANCEL" ) then
 		CancelLogout();
 		StaticPopup_Hide("CAMP");
+		StaticPopup_Hide("PLUNDERSTORM_LEAVE");
 		StaticPopup_Hide("QUIT");
 	elseif ( event == "LOOT_BIND_CONFIRM" ) then
 		local texture, item, quantity, currencyID, quality, locked = GetLootSlotInfo(arg1);

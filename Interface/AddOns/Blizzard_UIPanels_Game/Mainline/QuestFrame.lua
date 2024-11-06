@@ -343,7 +343,7 @@ function QuestFrameGreetingPanel_OnShow()
 			end
 
 			local activeQuestID = GetActiveQuestID(i);
-			QuestUtil.ApplyQuestIconActiveToTextureForQuestID(questTitleButton.Icon, activeQuestID, isComplete, IsActiveQuestLegendary(i));
+			QuestUtil.ApplyQuestIconActiveToTextureForQuestID(questTitleButton.Icon, activeQuestID, isComplete);
 			questTitleButton:SetHeight(math.max(questTitleButton:GetTextHeight() + 2, questTitleButton.Icon:GetHeight()));
 			questTitleButton:SetID(i);
 			questTitleButton.isActive = 1;

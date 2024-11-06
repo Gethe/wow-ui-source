@@ -31,17 +31,21 @@
 		<Size x="244" y="122"/>
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture parentKey="SelectedTexture" atlas="plunderstorm-glues-logoarrow" useAtlasSize="true" hidden="true" >
+				<Texture parentKey="SelectionArrow" atlas="plunderstorm-glues-logoarrow" useAtlasSize="true" hidden="true" >
 					<Anchors>
-						<Anchor point="CENTER" relativePoint="TOP" x="0" y="15"/>
+						<Anchor point="CENTER" relativePoint="TOP" x="0" y="6"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level ="BACKGROUND">
-				<Texture parentKey="BackgroundGlowTexture" atlas="plunderstorm-glues-logo-backglow" hidden="true">
-					<Size x="256" y="237"/>
+				<Texture parentKey="BackgroundGlowTop" atlas="glues-gameMode-glw-top" hidden="true" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="CENTER" relativePoint="CENTER" x="0" y="0"/>
+						<Anchor point="TOP" relativePoint="TOP" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BackgroundGlowBottom" atlas="glues-gameMode-glw-bottom" hidden="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM" relativePoint="BOTTOM" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -71,12 +75,12 @@
 			<Layer level="OVERLAY">
 				<Texture parentKey="PulseTexture" alphaMode="ADD">
 					<Anchors>
-						<Anchor point="TOP" x="0" y="0" relativeKey="$parent.NormalTexture" relativePoint="TOP"/>
+						<Anchor point="CENTER" x="0" y="-39" relativeKey="$parent.NormalTexture" relativePoint="CENTER"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="PulseTextureTwo" alphaMode="ADD">
 					<Anchors>
-						<Anchor point="TOP" x="0" y="0" relativeKey="$parent.NormalTexture" relativePoint="TOP"/>
+						<Anchor point="CENTER" x="0" y="-39" relativeKey="$parent.NormalTexture" relativePoint="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -100,10 +104,17 @@
 
 	<Frame name="GameEnvironmentFrameTemplate" mixin="GameEnvironmentFrameMixin" virtual="true" inherits="ResizeLayoutFrame" hidden="true">
 		<KeyValues>
-			<KeyValue key="widthPadding" value="20" type="number"/>
-			<KeyValue key="heightPadding" value="80" type="number"/>
+			<KeyValue key="fixedHeight" value="122"/>
 		</KeyValues>
 		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="glues-gameMode-BG">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10"/>
+						<Anchor point="BOTTOMRIGHT" x="-10"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="OVERLAY">
 				<FontString parentKey="NoGameModesText" inherits="GameFontNormalLarge" text="WOWLABS_NO_GAME_MODES_FOUND" hidden="true">
 					<Size x="250"/>
@@ -114,14 +125,19 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="SelectWoWToggle" inherits ="GameEnvironmentButtonTemplate">
+			<Button parentKey="SelectWoWToggle" inherits="GameEnvironmentButtonTemplate">
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture parentKey="NormalTexture" name="CurrentExpansionLogo" useAtlasSize="true" />
+						<Texture parentKey="NormalTexture">
+							<Size x="244" y="122"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
 					</Layer>
 				</Layers>
 				<Anchors>
-					<Anchor point="TOPLEFT" y="-40"/>
+					<Anchor point="TOPLEFT" y="0"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="gameEnvironment" value="Enum.GameEnvironment.WoW" type="global" />
@@ -133,34 +149,56 @@
 						<Texture parentKey="NormalTexture" file="Interface\Glues\Common\Glues-WoW-PlunderstormLogo">
 							<Size x="244" y="244"/>
 							<Anchors>
-								<Anchor point="TOP" x="0" y="0"/>
+								<Anchor point="CENTER" x="0" y="-39" relativePoint="CENTER"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 				</Layers>
 				<Frames>
-					<Frame parentKey="LimitedTimeEventText" inherits="NewFeatureLabelNoAnimateTemplate" hidden="true" setAllPoints="true">
-						<KeyValues>
-							<KeyValue key="label" value="LIMITED_TIME_EVENT" type="global"/>
-						</KeyValues>
+					<Frame parentKey="LimitedTimeEventText">
+						<Size x="140" y="22"/>
 						<Anchors>
-							<Anchor point="TOP" x="0" y="-8" relativePoint="BOTTOM"/>
+							<!-- Due to weirdness with the Plunder logo, the CENTER anchor is essentially the BOTTOM of the texture -->
+							<Anchor point="TOP" x="0" y="-2" relativePoint="CENTER" relativeKey="$parent.NormalTexture"/>
 						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="BGLabel" inherits="GameFontNormal_NoShadow" justifyH="CENTER" text="LIMITED_TIME_EVENT">
+									<KeyValues>
+										<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+									</KeyValues>
+									<Color color="NEW_FEATURE_SHADOW_COLOR"/>
+									<Anchors>
+										<Anchor point="CENTER" x="0.5" y="-0.5"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="Label" inherits="GameFontHighlight" justifyH="CENTER" text="LIMITED_TIME_EVENT">
+									<Shadow>
+										<Color color="NEW_FEATURE_SHADOW_COLOR"/>
+									</Shadow>
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="Glow" atlas="glues-gameMode-txtBG">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Label" x="-20" y="10"/>
+										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Label" x="20" y="-10"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
 					</Frame>
 				</Frames>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.SelectWoWToggle" relativePoint="RIGHT" x="9" y="0"/>
+					<Anchor point="LEFT" relativeKey="$parent.SelectWoWToggle" relativePoint="RIGHT" x="-24" y="0"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="gameEnvironment" value="Enum.GameEnvironment.WoWLabs" type="global" />
 				</KeyValues>
 			</Button>
-			<Frame parentKey="Border" inherits="NineSlicePanelTemplate" useParentLevel="true" >
-				<KeyValues>
-					<KeyValue key="layoutType" value="PerksProgramProductsPanelTemplate" type="string"/>
-					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
-				</KeyValues>
-			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

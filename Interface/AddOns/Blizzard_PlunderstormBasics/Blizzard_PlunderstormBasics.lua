@@ -13,13 +13,33 @@ end
 PlunderstormAccountStoreToggleMixin = {};
 
 function PlunderstormAccountStoreToggleMixin:OnClick()
-	AccountStoreUtil.ToggleAccountStore();
+	-- TODO:: play a sound
+
+	-- The Plunderstore should only show if we already have party member info since this
+	-- will be required to check which things you own from the original Plunderstorm Renown track.
+	if GetPlayerPartyMemberInfo() ~= nil then
+		AccountStoreUtil.ToggleAccountStore();
+	end
+end
+
+function PlunderstormAccountStoreToggleMixin:OnEnter()
+	if not self:IsEnabled() then
+		local tooltip = GetAppropriateTooltip();
+		tooltip:SetOwner(self, "ANCHOR_LEFT");
+		tooltip:SetText(ACCOUNT_STORE_UNAVAILABLE);
+		tooltip:Show();
+	end
+end
+
+function PlunderstormAccountStoreToggleMixin:OnLeave()
+	GetAppropriateTooltip():Hide();
 end
 
 PlunderstormBasicsContainerFrameMixin = {};
 
 local PlunderstormBasicsContainerFrameEvents = {
 	"ACCOUNT_STORE_CURRENCY_AVAILABLE_UPDATED",
+	"STORE_FRONT_STATE_UPDATED",
 };
 
 function PlunderstormBasicsContainerFrameMixin:OnShow()
@@ -33,17 +53,7 @@ function PlunderstormBasicsContainerFrameMixin:OnShow()
 		plunderstoreToggle.align = "center";
 		plunderstoreToggle.bottomPadding = 20;
 		self.PlunderDisplay.bottomPadding = 20;
-
-		plunderstoreToggle:SetScript("OnClick", function()
-			-- TODO:: play a sound
-
-			-- The Plunderstore should only show if we already have party member info since this
-			-- will be required to check which things you own from the original Plunderstorm Renown track.
-			if GetPlayerPartyMemberInfo() ~= nil then
-				AccountStoreUtil.ToggleAccountStore();
-			end
-		end);
-
+		plunderstoreToggle:SetEnabled(C_AccountStore.GetStoreFrontState(Constants.AccountStoreConsts.PlunderstormStoreFrontID) == Enum.AccountStoreState.Available);
 		plunderstoreToggle:Show();
 	end
 
@@ -82,6 +92,8 @@ function PlunderstormBasicsContainerFrameMixin:OnEvent(event)
 	if event == "ACCOUNT_STORE_CURRENCY_AVAILABLE_UPDATED" then
 		-- No need to check which currency was updated since there should be only one in Plunderstorm.
 		self:UpdatePlunderAmount();
+	elseif event == "STORE_FRONT_STATE_UPDATED" then
+		self.PlunderstoreToggle:SetEnabled(C_AccountStore.GetStoreFrontState(Constants.AccountStoreConsts.PlunderstormStoreFrontID) == Enum.AccountStoreState.Available);
 	end
 end
 

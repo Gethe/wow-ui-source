@@ -298,14 +298,47 @@ function VignettePinBaseMixin:IsUnique()
 end
 
 function VignettePinBaseMixin:GetRemainingHealthPercentage()
-	return C_VignetteInfo.GetVignetteHealthPct(self:GetVignetteGUID());
+	return C_VignetteInfo.GetHealthPercent(self:GetVignetteGUID());
+end
+
+function VignettePinBaseMixin:GetRecommendedGroupSize()
+	return C_VignetteInfo.GetRecommendedGroupSize(self:GetVignetteGUID());
 end
 
 function VignettePinBaseMixin:GetRemainingHealthPercentageString()
 	local health = self:GetRemainingHealthPercentage();
 	if health then
 		local roundToNearestInt = true;
-		return VIGNETTE_HEALTH_REMAINING_TOOLTIP:format(FormatPercentage(health, roundToNearestInt));
+		return FormatPercentage(health, roundToNearestInt);
+	end
+
+	return "";
+end
+
+function VignettePinBaseMixin:GetRecommendedGroupSizeString()
+	local minSize, maxSize = self:GetRecommendedGroupSize();
+	if minSize and maxSize then
+		if minSize == maxSize then
+			return VIGNETTE_SUGGESTED_GROUP_NUM:format(minSize);
+		else
+			return VIGNETTE_SUGGESTED_GROUP_NUM_RANGE:format(minSize, maxSize);
+		end
+	end
+end
+
+local objectiveTypeToString =
+{
+	[Enum.VignetteObjectiveType.Defeat] = TOOLTIP_VIGNETTE_OBJECTIVE_DEFEAT,
+	[Enum.VignetteObjectiveType.DefeatShowRemainingHealth] = TOOLTIP_VIGNETTE_OBJECTIVE_DEFEAT_SHOW_HEALTH,
+	
+};
+
+function VignettePinBaseMixin:GetObjectiveString()
+	if self.vignetteInfo.objectiveType then
+		local objectiveString = objectiveTypeToString[self.vignetteInfo.objectiveType];
+		if objectiveString then
+			return objectiveString:format(self:GetVignetteName(), self:GetRemainingHealthPercentageString());
+		end
 	end
 end
 
@@ -455,15 +488,16 @@ function VignettePinBaseMixin:DisplayNormalTooltip()
 	if vignetteName ~= "" then
 		GameTooltip_SetTitle(GameTooltip, vignetteName);
 
-		-- TODO: Add group recommended if needed
-		-- TODO: Add linked faction if needed
-		-- Adding health remaining, but adding this to the quest objective (if it even exists) could prove challenging
-		local healthString = self:GetRemainingHealthPercentageString();
-		if healthString then
-			GameTooltip_AddNormalLine(GameTooltip, healthString);
+		local groupSizeString = self:GetRecommendedGroupSizeString();
+		if groupSizeString then
+			GameTooltip_AddInstructionLine(GameTooltip, groupSizeString);
 		end
 
-		-- TODO: Add rewards if needed
+		local objectiveString = self:GetObjectiveString();
+		if objectiveString then
+			local noWrap = false;
+			GameTooltip_AddHighlightLine(GameTooltip, objectiveString, noWrap);
+		end
 
 		return true;
 	end

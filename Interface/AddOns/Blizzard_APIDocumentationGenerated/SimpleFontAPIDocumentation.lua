@@ -174,6 +174,15 @@ local SimpleFontAPI =
 			},
 		},
 		{
+			Name = "SetFontHeight",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "height", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "SetFontObject",
 			Type = "Function",
 

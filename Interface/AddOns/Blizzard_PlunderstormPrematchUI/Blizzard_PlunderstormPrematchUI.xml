@@ -64,7 +64,7 @@
 				</Anchors>
 			</Frame>
 
-			<Button parentKey="PlunderstoreButton" mixin="HeaderPlunderstoreButtonMixin" inherits="PrematchHeaderButtonTemplate">
+			<Button parentKey="PlunderstoreButton" mixin="HeaderPlunderstoreButtonMixin" inherits="PrematchHeaderButtonTemplate" motionScriptsWhileDisabled="true">
 				<KeyValues>
 					<KeyValue key="selectedStateEvent" value="AccountStore.ShownState" type="string" />
 					<KeyValue key="textureKit" value="shop" type="string" />

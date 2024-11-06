@@ -21,7 +21,7 @@ local VignetteInfo =
 			},
 		},
 		{
-			Name = "GetVignetteHealthPct",
+			Name = "GetHealthPercent",
 			Type = "Function",
 
 			Arguments =
@@ -32,6 +32,21 @@ local VignetteInfo =
 			Returns =
 			{
 				{ Name = "healthPct", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetRecommendedGroupSize",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "vignetteGUID", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "minGroupSize", Type = "number", Nilable = false },
+				{ Name = "maxGroupSize", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -119,6 +134,7 @@ local VignetteInfo =
 				{ Name = "iconWidgetSet", Type = "number", Nilable = true },
 				{ Name = "addPaddingAboveTooltipWidgets", Type = "bool", Nilable = true },
 				{ Name = "mapPin", Type = "UIMapPinInfo", Nilable = true },
+				{ Name = "objectiveType", Type = "VignetteObjectiveType", Nilable = true },
 			},
 		},
 	},

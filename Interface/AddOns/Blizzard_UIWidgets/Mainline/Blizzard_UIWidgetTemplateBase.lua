@@ -385,7 +385,7 @@ function UIWidgetBaseCurrencyTemplateMixin:Setup(widgetContainer, currencyInfo, 
 		SetUpFontString(self.LeadingText, currencyInfo.leadingText);
 
 		self.LeadingText:Show();
-		self.Icon:SetPoint("LEFT", self, "RIGHT", 5, 0);
+		self.Icon:SetPoint("LEFT", self.LeadingText, "RIGHT", 5, 0);
 		totalWidth = totalWidth + self.LeadingText:GetWidth() + 5;
 		widgetHeight = math.max(widgetHeight, self.LeadingText:GetHeight());
 	else

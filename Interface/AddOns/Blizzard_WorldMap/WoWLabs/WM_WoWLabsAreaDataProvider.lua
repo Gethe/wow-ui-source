@@ -58,7 +58,8 @@ WoWLabsAreaDataProviderMixin = CreateFromMixins(MapCanvasDataProviderMixin);
 
 local WoWLabsAreaDataProviderEvents = {
 	"SELECT_WOW_LABS_AREA_FAILED",
-	"LOBBY_MATCHMAKER_PARTY_UPDATE",
+	"WOW_LABS_AREA_INFO_UPDATED",
+	"WOW_LABS_AREA_SELECTED",
 	"WOW_LABS_MATCH_STATE_UPDATED",
 };
 
@@ -76,17 +77,21 @@ function WoWLabsAreaDataProviderMixin:OnHide()
 
 	EventRegistry:UnregisterCallback("PlunderstormCountdown.TimerFinished", self);
 	EventRegistry:UnregisterCallback("WoWLabsAreaPin.AreaSelected", self);
+	EventRegistry:UnregisterCallback("WoWLabsAreaPin.AutoSelect", self);
+	EventRegistry:UnregisterCallback("WoWLabsAreaPin.ConfirmSelection", self);
 end
 
-function AreaPOIDataProviderMixin:OnEvent(event, ...)
+function WoWLabsAreaDataProviderMixin:OnEvent(event, ...)
 	if event == "AREA_POIS_UPDATED" then
 		self:RefreshAllData();
 	elseif event == "SELECT_WOW_LABS_AREA_FAILED" then
 		self:RefreshAllData();
 	elseif event == "WOW_LABS_MATCH_STATE_UPDATED" then
 		self:RefreshAllData();
-	elseif event == "LOBBY_MATCHMAKER_PARTY_UPDATE" then
-		self.finalAreaID = C_WoWLabsMatchmaking.GetConfirmedWoWLabsArea();
+	elseif event == "WOW_LABS_AREA_INFO_UPDATED" then
+		self:RefreshAllData();
+	elseif event == "WOW_LABS_AREA_SELECTED" then
+		self.finalAreaID = C_WowLabsDataManager.GetConfirmedWoWLabsArea();
 		self:RefreshAllData();
 	end
 end
@@ -101,10 +106,12 @@ function WoWLabsAreaDataProviderMixin:OnAreaSelected(areaID)
 end
 
 function WoWLabsAreaDataProviderMixin:OnAutoSelect()
-	-- TODO:: REPLACE DEBUG AREAS These should be replaced by a request/response flow with the server.
-	local randomArea = DebugDropAreas[math.random(1, #DebugDropAreas)];
-	self.selectedAreaID = randomArea.id;
-	self:OnConfirmSelection();
+	local areas = C_WowLabsDataManager.GetWoWLabsAreaInfo();
+	if not TableIsEmpty(areas) then
+		local randomArea = areas[math.random(1, #areas)];
+		self.selectedAreaID = randomArea.wowLabsAreaID;
+		self:OnConfirmSelection();
+	end
 end
 
 function WoWLabsAreaDataProviderMixin:OnConfirmSelection()
@@ -112,7 +119,7 @@ function WoWLabsAreaDataProviderMixin:OnConfirmSelection()
 		return;
 	end
 
-	C_WoWLabsMatchmaking.SelectWoWLabsArea(self.selectedAreaID);
+	C_WowLabsDataManager.SelectWoWLabsArea(self.selectedAreaID);
 	self.requestedAreaID = self.selectedAreaID;
 	self:RefreshAllData();
 end
@@ -129,15 +136,19 @@ local function ShouldShowWoWLabsAreas()
 		return false;
 	end
 
-	-- For now only the party leader can select an area.
-	return UnitLeadsAnyGroup("player");
+	return true;
 end
 
 function WoWLabsAreaDataProviderMixin:RefreshAllData(fromOnShow)
 	self:RemoveAllData();
 
 	if ShouldShowWoWLabsAreas() then
-		self.confirmedAreaID = C_WoWLabsMatchmaking.GetConfirmedWoWLabsArea();
+		local areas = C_WowLabsDataManager.GetWoWLabsAreaInfo();
+		if TableIsEmpty(areas) then
+			return;
+		end
+
+		self.confirmedAreaID = C_WowLabsDataManager.GetConfirmedWoWLabsArea();
 
 		local shouldBeEnabled = (self.requestedAreaID == nil) and (self.confirmedAreaID == nil);
 		if shouldBeEnabled then
@@ -146,14 +157,13 @@ function WoWLabsAreaDataProviderMixin:RefreshAllData(fromOnShow)
 			controlsPin.ConfirmSelectionButton:SetEnabled(self.selectedAreaID ~= nil);
 		end
 
-		-- TODO:: REPLACE DEBUG AREAS These should be replaced by a request/response flow with the server.
-		for i, dropArea in ipairs(DebugDropAreas) do
+		for i, dropArea in ipairs(areas) do
 			local areaInfo = {
 				position = select(2, C_Map.GetMapPosFromWorldPos(2695, { x = dropArea.x, y = dropArea.y })),
 				areaType = dropArea.areaType,
-				id = dropArea.id,
-				selected = (dropArea.id == self.selectedAreaID),
-				confirmed = (dropArea.id == self.confirmedAreaID),
+				id = dropArea.wowLabsAreaID,
+				selected = (dropArea.wowLabsAreaID == self.selectedAreaID),
+				confirmed = (dropArea.wowLabsAreaID == self.confirmedAreaID),
 				enabled = shouldBeEnabled,
 			};
 

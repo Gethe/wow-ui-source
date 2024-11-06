@@ -77,8 +77,8 @@
 						<KeyValues>
 							<KeyValue key="partyPlaylistEntry" value="Enum.PartyPlaylistEntry.TrainingGameMode" type="global"/>
 							<KeyValue key="queueTypeString" value="FRONT_END_LOBBY_PRACTICE" type="global"/>
-							<KeyValue key="queueTypeIcon" value="plunderstorm-glues-queueselector-trio" type="string"/>
-							<KeyValue key="queueTypeIconSelected" value="plunderstorm-glues-queueselector-trio-selected" type="string"/>
+							<KeyValue key="queueTypeIcon" value="plunderstorm-glues-queueselector-training" type="string"/>
+							<KeyValue key="queueTypeIconSelected" value="plunderstorm-glues-queueselector-training-selected" type="string"/>
 						</KeyValues>
 					</Button>
 					<Button parentKey="Solo" inherits="QueueTypeSelectionButtonTemplate" enableMouse="true">

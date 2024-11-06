@@ -369,26 +369,7 @@ function UnitPopupDungeonDifficultyButtonMixin:GetEntries()
 end 
 
 function UnitPopupPartyInstanceLeaveButtonMixin:CanShow(contextData)
-	if not IsInGroup() then
-		return false;
-	end
-
-	if not IsInGroup(LE_PARTY_CATEGORY_INSTANCE) then
-		return false;
-	end
-	
-	if IsPartyWorldPVP() then
-		return false;
-end
-
-	local instanceType = select(2, IsInInstance());
-	if instanceType == "pvp" or instanceType == "arena" then
-		return false;
-	end
-	
-	local partyLFGSlot = GetPartyLFGID();
-	local partyLFGCategory = UnitPopupSharedUtil.GetLFGCategoryForLFGSlot(partyLFGSlot);
-	return partyLFGCategory ~= LE_LFG_CATEGORY_WORLDPVP;
+	return PartyUtil.CanLeaveInstance();
 end
 
 function UnitPopupPvpFlagButtonMixin:IsEnabled(contextData)

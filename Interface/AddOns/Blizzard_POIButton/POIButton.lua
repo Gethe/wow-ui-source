@@ -253,7 +253,8 @@ end
 
 local function POIButton_GetQuestCompleteAtlas(poiButton)
 	local questID = poiButton:GetQuestID();
-	local isLegendaryQuest = questID and C_QuestLog.IsLegendaryQuest(questID) or false;
+	local questClassification = poiButton:GetQuestClassification();
+	local isLegendaryQuest = questID and questClassification == Enum.QuestClassification.Legendary;
 	return isLegendaryQuest and "UI-QuestPoiLegendary-QuestBangTurnIn" or "UI-QuestIcon-TurnIn-Normal";
 end
 

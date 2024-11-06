@@ -133,6 +133,10 @@ function WorldMapMixin:OnLoad()
 	self:AddStandardDataProviders();
 	self:AddOverlayFrames();
 
+	if WoWLabsAreaDataProviderMixin then
+		self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	end
+
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:RegisterEvent("UI_SCALE_CHANGED");
@@ -151,7 +155,11 @@ end
 function WorldMapMixin:OnEvent(event, ...)
 	MapCanvasMixin.OnEvent(self, event, ...);
 
-	if event == "VARIABLES_LOADED" then
+	if event == "PLAYER_ENTERING_WORLD" then
+		-- Query data for WoWLabsAreaDataProviderMixin.
+		C_WowLabsDataManager.QuerySelectedWoWLabsArea();
+		C_WowLabsDataManager.QueryWoWLabsAreaInfo();
+	elseif event == "VARIABLES_LOADED" then
 		local displayState = self:GetOpenDisplayState();
 		self:SetDisplayState(displayState);
 	elseif event == "DISPLAY_SIZE_CHANGED" or event == "UI_SCALE_CHANGED" then

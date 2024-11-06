@@ -45,7 +45,10 @@ local function ToggleGameEnvironmentDrawer(navBar)
 	local selectionDrawer = navBar.GameEnvironmentButton.SelectionDrawer;
 	selectionDrawer:SetShown(not selectionDrawer:IsShown());
 
-	navBar.GameEnvironmentButton:SetLockHighlight(selectionDrawer:IsShown());
+	local enabled = true;
+	local highlight = selectionDrawer:IsShown();
+	navBar.GameEnvironmentButton:formatButtonTextCallback(enabled, highlight);
+	navBar.GameEnvironmentButton:SetLockHighlight(highlight);
 end
 
 local function ToggleAccountStoreUI()
@@ -85,7 +88,24 @@ function CharacterSelectNavBarMixin:OnLoad()
 	EventRegistry:RegisterCallback("GameEnvironmentFrame.Hide", ToggleGameEnvironmentDrawer, self);
 
 	if self:GetParent() == PlunderstormLobbyFrame then
+		self:RegisterEvent("STORE_FRONT_STATE_UPDATED");
+
 		self.PlunderstoreButton = self.ButtonTray:AddControl(WOWLABS_PLUNDERSTORE_NAV_LABEL, ToggleAccountStoreUI);
+		self.PlunderstoreButton:Disable();
+
+		self.PlunderstoreButton:SetMotionScriptsWhileDisabled(true);
+		self.PlunderstoreButton:SetScript("OnEnter", function(buttonSelf)
+			if not buttonSelf:IsEnabled() then
+				local tooltip = GetAppropriateTooltip();
+				tooltip:SetOwner(buttonSelf, "ANCHOR_BOTTOM");
+				tooltip:SetText(ACCOUNT_STORE_UNAVAILABLE);
+				tooltip:Show();
+			end
+		end);
+
+		self.PlunderstoreButton:SetScript("OnLeave", function()
+			GetAppropriateTooltip():Hide();
+		end);
 	else
 		self.StoreButton = self.ButtonTray:AddControl(nil, ToggleStoreUI);
 	end
@@ -105,6 +125,10 @@ function CharacterSelectNavBarMixin:OnEvent(event, ...)
 			not self.GameEnvironmentButton:IsMouseOver() and
 			not self.GameEnvironmentButton.SelectionDrawer:IsMouseOver() then
 			ToggleGameEnvironmentDrawer(self);
+		end
+	elseif event == "STORE_FRONT_STATE_UPDATED" then
+		if self.PlunderstoreButton then
+			self.PlunderstoreButton:SetEnabled(C_AccountStore.GetStoreFrontState(Constants.AccountStoreConsts.PlunderstormStoreFrontID) == Enum.AccountStoreState.Available);
 		end
 	end
 end
@@ -152,28 +176,28 @@ function CharacterSelectNavBarMixin:SetButtonVisuals()
 		self.StoreButton:SetWidth(self.StoreButton:GetTextWidth() + CharacterSelectNavBarMixin.NavBarButtonWidthBuffer);
 	end
 
+	local function FormatGameEnvironmentButtonText(self, enabled, highlight)
+		local selectionDownArrow = "glues-characterSelect-icon-arrowDown";
+		if not enabled then
+			selectionDownArrow = "glues-characterSelect-icon-arrowDown-disabled";
+		elseif highlight then
+			selectionDownArrow = "glues-characterSelect-icon-arrowDown-hover";
+		end
+
+		self:SetText(WOWLABS_MODE_NAV_BUTTON .. (not self.SelectionDrawer:IsShown() and CreateAtlasMarkup(selectionDownArrow, 28, 28, 0, 1) or ""));
+	end
+	self.GameEnvironmentButton.formatButtonTextCallback = FormatGameEnvironmentButtonText;
+
 	self:UpdateSelectedGameMode();
 end
 
 function CharacterSelectNavBarMixin:UpdateSelectedGameMode()
-	local function GetLogoTextureMarkup(selectedEnvironment)
-		if selectedEnvironment == Enum.GameEnvironment.WoWLabs then
-			return CreateTextureMarkup([[Interface\Glues\Common\Glues-WoW-PlunderstormLogo]], 244, 244, 72, 72, 0, 1, 0, 1, 0, -18);
-		end
-
-		local currentExpansionLevel = AccountUpgradePanel_GetBannerInfo();
-		if currentExpansionLevel then
-			local environmentTexture = GetDisplayedExpansionLogo(currentExpansionLevel);
-			return environmentTexture and CreateTextureMarkup(environmentTexture, 244, 122, 72, 36, 0, 1, 0, 1, 0, 0) or "";
-		end
-
-		return "";
-	end
-
 	-- Texture on the Modes button is dependent on the selected game mode
 	local selectedEnvironment = self.GameEnvironmentButton.SelectionDrawer:GetSelectedGameEnvironment();
-	local logoTextureMarkup = GetLogoTextureMarkup(selectedEnvironment);
-	self.GameEnvironmentButton:SetText(logoTextureMarkup .. WOWLABS_MODE_NAV_BUTTON);
+	
+	local enabled = true;
+	local highlight = false;
+	self.GameEnvironmentButton:formatButtonTextCallback(enabled, highlight);
 	self.GameEnvironmentButton:SetWidth(self.GameEnvironmentButton:GetTextWidth() + CharacterSelectNavBarMixin.NavBarButtonWidthBuffer);
 
 	self.ButtonTray:Layout();
@@ -198,6 +222,9 @@ end
 
 function CharacterSelectNavBarMixin:SetGameEnvironmentButtonEnabled(enabled)
 	self.GameEnvironmentButton:SetEnabled(enabled);
+
+	local highlight = false;
+	self.GameEnvironmentButton:formatButtonTextCallback(enabled, highlight);
 
 	self:UpdateButtonDividerState(self.StoreButton or self.PlunderstoreButton);
 end

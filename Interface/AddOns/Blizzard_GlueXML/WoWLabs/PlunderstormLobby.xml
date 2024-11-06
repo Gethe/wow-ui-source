@@ -3,6 +3,17 @@
 	<Script file="PlunderstormLobby.lua"/>
 
 <Frame name="PlunderstormLobbyFrame" hidden="true" setAllPoints="true" parent="GlueParent" inherits="CallbackRegistrantTemplate" mixin="PlunderstormLobbyMixin">
+	<Layers>
+		<Layer level="ARTWORK">
+			<Texture parentKey="PlunderstormLogo" file="Interface\Glues\Common\Glues-WoW-PlunderstormLogo">
+				<Size x="244" y="244"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="3" y="-2"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+	</Layers>
+	
 	<Frames>
 		<Frame parentKey="NavBar" inherits="CharacterSelectNavBarTemplate">
 			<Anchors>

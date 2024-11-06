@@ -150,12 +150,13 @@ local function CreateQuestOfferFromTaskInfo(mapID, info)
 		info.questLineName = nil;
 
 		local title, factionID, capped = C_TaskQuest.GetQuestInfoByQuestID(info.questID);
+		local questClassification = C_QuestInfoSystem.GetQuestClassification(info.questID);
 		info.questName = title;
 		info.questLineID = nil;
 		info.isHidden = C_QuestLog.IsQuestTrivial(info.questID);
-		info.isLegendary = C_QuestLog.IsLegendaryQuest(info.questID);
+		info.isLegendary = questClassification == Enum.QuestClassification.Legendary;
 		info.isCampaign = false; -- This cannot be a campaign for a task, it would be in a quest line
-		info.isImportant = C_QuestLog.IsImportantQuest(info.questID);
+		info.isImportant = questClassification == Enum.QuestClassification.Important;
 		info.isAccountCompleted = C_QuestLog.IsQuestFlaggedCompletedOnAccount(info.questID);
 		info.floorLocation = Enum.QuestLineFloorLocation.Same; -- This data may not be exposed yet
 		info.isLocalStory = false;

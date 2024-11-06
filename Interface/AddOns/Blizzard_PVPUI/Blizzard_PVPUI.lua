@@ -307,7 +307,7 @@ end
 -- CATEGORY FRAME
 ---------------------------------------------------------------
 
-local pvpFrames = { "HonorFrame", "ConquestFrame", "LFGListPVPStub" }
+local pvpFrames = { "HonorFrame", "ConquestFrame", "LFGListPVPStub", "PlunderstormFrame" }
 
 function PVPQueueFrame_OnLoad(self)
 	--set up side buttons
@@ -319,6 +319,27 @@ function PVPQueueFrame_OnLoad(self)
 
 	SetPortraitToTexture(self.CategoryButton3.Icon, "Interface\\Icons\\Achievement_General_StayClassy");
 	self.CategoryButton3.Name:SetText(PVP_TAB_GROUPS);
+
+	self.CategoryButton4.Icon:SetAtlas("plunderstorm-pvpqueue-catergory-icon");
+	self.CategoryButton4.Name:SetText(WOW_LABS_PLUNDERSTORM_CATEGORY);
+
+	-- If Plunderstorm is available, we have some different anchoring
+	local plunderstormAvailable = C_GameEnvironmentManager.GetCurrentEventRealmQueues() ~= Enum.EventRealmQueues.None and C_LobbyMatchmakerInfo.GetQueueFromMainlineEnabled();
+	local overrideAnchoringParent = self.CategoryButton2;
+	local categoryButtonOffsets = -101;
+	local showPlunderstormNewText = false;
+	if plunderstormAvailable then
+		overrideAnchoringParent = self.CategoryButton4;
+		categoryButtonOffsets = -61;
+		showPlunderstormNewText = true;
+	end
+
+	-- Sets the list to fit 3 or 4 elements differently
+	self.CategoryButton1:SetPoint("TOPLEFT", self, "TOPLEFT", 10, categoryButtonOffsets);
+	-- Reanchors the Premade Group button to the Plunderstorm button
+	self.CategoryButton3:SetPoint("TOP", overrideAnchoringParent, "BOTTOM", 0, -30);
+	self.CategoryButton4:SetShown(plunderstormAvailable);
+	self.CategoryButton4.NewText:SetShown(showPlunderstormNewText);
 
 	-- disable unusable side buttons
 	local disabledButtons = false;
@@ -334,6 +355,14 @@ function PVPQueueFrame_OnLoad(self)
 		disabledButtons = true;
 		PVPQueueFrame_SetCategoryButtonState(self.CategoryButton3, false);
 		self.CategoryButton3.tooltip = failureReason;
+	end
+
+	canUse = not (IsTrialAccount() or IsVeteranTrialAccount());
+	failureReason = WOWLABS_SUB_REQUIRED;
+	if not canUse then
+		-- disabledButtons doesn't do anything for us in this case so no need to set it to true
+		PVPQueueFrame_SetCategoryButtonState(self.CategoryButton4, false);
+		self.CategoryButton4.tooltip = failureReason;
 	end
 
 	if disabledButtons then
@@ -555,6 +584,8 @@ function HonorFrame_OnLoad(self)
 	self:RegisterEvent("LFG_LIST_SEARCH_RESULT_UPDATED");
     self:RegisterEvent("PLAYER_LEVEL_UP");
 	self:RegisterEvent("PVP_WORLDSTATE_UPDATE");
+
+	EventRegistry:RegisterCallback("LobbyMatchmaker.UpdateQueueState", HonorFrame_UpdateQueueButtons);
 end
 
 function HonorFrame_OnShow(self)
@@ -626,6 +657,11 @@ function HonorFrame_UpdateQueueButtons()
 	end
 
 	local disabledReason;
+
+	if C_LobbyMatchmakerInfo.IsInQueue() then
+		disabledReason = WOW_LABS_CANNOT_ENTER_NON_PLUNDER_QUEUE;
+		canQueue = false;
+	end
 
 	if arenaID then
 		local battlemasterListInfo = C_PvP.GetSkirmishInfo(arenaID);
@@ -1103,6 +1139,8 @@ function ConquestFrame_OnLoad(self)
 
 	self:RegisterEvent("PVP_TYPES_ENABLED");
 
+	EventRegistry:RegisterCallback("LobbyMatchmaker.UpdateQueueState", ConquestFrame_UpdateJoinButton);
+
 	ConquestFrame_EvaluateSeasonState(self);
 end
 
@@ -1326,6 +1364,12 @@ end
 function ConquestFrame_UpdateJoinButton()
 	local button = ConquestFrame.JoinButton;
 	local groupSize = GetNumGroupMembers();
+
+	if C_LobbyMatchmakerInfo.IsInQueue() then
+		button:Disable();
+		button.tooltip = WOW_LABS_CANNOT_ENTER_NON_PLUNDER_QUEUE;
+		return;
+	end
 
 	if not ConquestFrame_HasActiveSeason() then
 		button:Disable();
@@ -1697,12 +1741,19 @@ PVPUIHonorInsetMixin = { }
 function PVPUIHonorInsetMixin:Update()
 	local activePanel = PVPQueueFrame.selection;
 	if activePanel == HonorFrame then
+		self.Background:SetAtlas("pvpqueue-sidebar-background", TextureKitConstants.UseAtlasSize);
 		self:Show();
 		self:DisplayCasualPanel();
 		return HONOR_INSET_WIDTH;
 	elseif activePanel == ConquestFrame then
+		self.Background:SetAtlas("pvpqueue-sidebar-background", TextureKitConstants.UseAtlasSize);
 		self:Show();
 		self:DisplayRatedPanel();
+		return HONOR_INSET_WIDTH;
+	elseif activePanel == PlunderstormFrame then
+		self.Background:SetAtlas("plunderstorm-pvpqueue-sidebar-background", TextureKitConstants.UseAtlasSize);
+		self:Show();
+		self:DisplayPlunderstormPanel();
 		return HONOR_INSET_WIDTH;
 	end
 
@@ -1713,6 +1764,7 @@ end
 function PVPUIHonorInsetMixin:DisplayCasualPanel()
 	self.CasualPanel:Show();
 	self.RatedPanel:Hide();
+	self.PlunderstormPanel:Hide();
 end
 
 local function GetPVPSeasonAchievementID()
@@ -1738,6 +1790,13 @@ end
 
 function PVPUIHonorInsetMixin:DisplayRatedPanel()
 	self.RatedPanel:Show();
+	self.CasualPanel:Hide();
+	self.PlunderstormPanel:Hide();
+end
+
+function PVPUIHonorInsetMixin:DisplayPlunderstormPanel()
+	self.PlunderstormPanel:Show();
+	self.RatedPanel:Hide();
 	self.CasualPanel:Hide();
 end
 
@@ -2196,6 +2255,107 @@ end
 
 local function PVPQuestRewardSortFunction(firstValue, secondValue)
 	return firstValue > secondValue;
+end
+
+PlunderstormQueueFrameMixin = {};
+
+function PlunderstormQueueFrameMixin:OnLoad()
+	self.QueueSelect.useLocalPlayIndex = true;
+end
+
+StartPlunderstormQueueButtonMixin = {};
+
+local PlunderstormQueueButtonEvents = {
+	"LOBBY_MATCHMAKER_QUEUE_STATUS_UPDATE",
+	"LOBBY_MATCHMAKER_QUEUE_ABANDONED",
+}
+
+function StartPlunderstormQueueButtonMixin:OnShow()
+	self:UpdateState();
+
+	FrameUtil.RegisterFrameForEvents(self, PlunderstormQueueButtonEvents);
+	EventRegistry:RegisterCallback("QueueStatusUpdate.QueuesUpdated", self.UpdateState, self);
+end
+
+function StartPlunderstormQueueButtonMixin:OnHide()
+	FrameUtil.UnregisterFrameForEvents(self, PlunderstormQueueButtonEvents);
+	EventRegistry:UnregisterCallback("QueueStatusUpdate.QueuesUpdated", self);
+end
+
+function StartPlunderstormQueueButtonMixin:OnClick()
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+
+	if ( C_LobbyMatchmakerInfo.IsInQueue() ) then
+		C_LobbyMatchmakerInfo.AbandonQueue();
+	else
+		local queueSelect = self:GetParent().QueueSelect;
+		local queueType = queueSelect:GetQueueType();
+		C_LobbyMatchmakerInfo.EnterQueue(queueType);
+	end
+
+	self:UpdateState();
+end
+
+function StartPlunderstormQueueButtonMixin:OnEnter()
+	if ( self.tooltip ) then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetText(self.tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, true);
+	end
+end
+
+function StartPlunderstormQueueButtonMixin:OnLeave()
+	GameTooltip:Hide();
+end
+
+function StartPlunderstormQueueButtonMixin:OnEvent(event, ...)
+	if ( event == "LOBBY_MATCHMAKER_QUEUE_STATUS_UPDATE" or
+		 event == "LOBBY_MATCHMAKER_QUEUE_ABANDONED") then
+		self:UpdateState();
+	end
+end
+
+function StartPlunderstormQueueButtonMixin:UpdateState()
+	local enabled = true;
+	local tooltip = nil;
+	if ( not QueueStatusFrame:HasNonPlunderstormQueue() ) then
+		enabled = false;
+		tooltip = PLUNDERSTORM_QUEUE_TOOLTIP_ERROR;
+	end
+
+	self:SetEnabled(enabled);
+	self.tooltip = tooltip;
+	self:SetText(not C_LobbyMatchmakerInfo.IsInQueue() and WOW_LABS_JOIN_QUEUE or WOW_LABS_LEAVE_QUEUE);
+end
+
+PlunderstormPanelMixin = {};
+
+function PlunderstormPanelMixin:OnLoad()
+	self.PlunderstoreButton:SetScript("OnClick", function()
+		AccountStoreUtil.ToggleAccountStore();
+	end);
+end
+
+function PlunderstormPanelMixin:OnShow()
+	self:UpdatePlunder();
+
+	self:RegisterEvent("ACCOUNT_STORE_CURRENCY_AVAILABLE_UPDATED");
+end
+
+function PlunderstormPanelMixin:OnHide()
+	self:UnregisterEvent("ACCOUNT_STORE_CURRENCY_AVAILABLE_UPDATED");
+end
+
+function PlunderstormPanelMixin:OnEvent(event, ...)
+	if event == "ACCOUNT_STORE_CURRENCY_AVAILABLE_UPDATED" then
+		self:UpdatePlunder();
+	end
+end
+
+local PLUNDER_CURRENCY_ID = 3139;
+function PlunderstormPanelMixin:UpdatePlunder()
+	local currencyInfo = C_AccountStore.GetCurrencyInfo(PLUNDER_CURRENCY_ID);
+	local text = BreakUpLargeNumbers(currencyInfo.amount) .. " " .. CreateSimpleTextureMarkup(currencyInfo.icon, 12, 12);
+	self.PlunderDisplay.PlunderAmount:SetText(text);
 end
 
 PVPQuestRewardMixin = { };

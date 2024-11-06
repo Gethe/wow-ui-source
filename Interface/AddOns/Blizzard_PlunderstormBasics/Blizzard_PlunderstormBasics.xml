@@ -1,9 +1,15 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 
-	<Button name="PlunderstormAccountStoreToggleTemplate" mixin="PlunderstormAccountStoreToggleMixin" inherits="BigRedThreeSliceButtonTemplate" text="PLUNDERSTORM_PLUNDER_STORE_TITLE" virtual="true">
+	<Button name="PlunderstormAccountStoreToggleTemplate" mixin="PlunderstormAccountStoreToggleMixin" inherits="BigGoldRedThreeSliceButtonTemplate" text="PLUNDERSTORM_PLUNDER_STORE_TITLE" motionScriptsWhileDisabled="true" virtual="true">
 		<Size x="220" y="60"/>
 		<NormalFont style="GameFontNormalHuge" />
+		<DisabledFont style="GameFontDisableHuge" />
+		<Scripts>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
 	</Button>
 
 	<Frame name="PlunderstormBasicsContainerFrame" mixin="PlunderstormBasicsContainerFrameMixin" inherits="VerticalLayoutFrame" frameLevel="1000" >

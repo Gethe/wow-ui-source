@@ -1369,8 +1369,8 @@ function LeaveInstanceGroupButtonMixin:OnShow()
 		self:SetText(INSTANCE_PARTY_LEAVE);
 	end
 	
-	local isInstance, instanceType = IsInInstance();
-	self:SetEnabled(isInstance);
+	local enabled = PartyUtil.CanLeaveInstance();
+	self:SetEnabled(enabled);
 end
 
 function LeaveInstanceGroupButtonMixin:OnClick()

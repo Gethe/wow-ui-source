@@ -71,9 +71,6 @@ function PlunderstormLobbyMixin:OnShow()
 	ChatFrame1:SetPoint("BOTTOMLEFT", 32, 60);
 	ChatFrame1:Show();
 
-	local currentExpansionLevel, shouldShowBanner, upgradeButtonText, upgradeLogo, upgradeBanner, features = AccountUpgradePanel_GetBannerInfo();
-	SetExpansionLogo(CurrentExpansionLogo, currentExpansionLevel);
-
 	FrameUtil.RegisterFrameForEvents(self,PlunderstormLobbyEvents);
 	self.PlunderstormBackground:SetSequence(0);
 	self.PlunderstormBackground:SetCamera(0);

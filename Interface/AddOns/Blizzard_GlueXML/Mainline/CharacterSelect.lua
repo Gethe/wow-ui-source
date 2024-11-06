@@ -977,18 +977,6 @@ function CharacterSelectUI_InitGameEnvironmentButtons()
 	local gameEnvironmentToggleFrame = CharacterSelect.CharacterSelectUI.VisibilityFramesContainer.NavBar.GameEnvironmentButton.SelectionDrawer;
 	gameEnvironmentToggleFrame.SelectWoWToggle:SetAlpha(1);
 	gameEnvironmentToggleFrame.SelectWoWLabsToggle:SetAlpha(0.5);
-
-	local eventLabel = gameEnvironmentToggleFrame.SelectWoWLabsToggle.LimitedTimeEventText;
-	local eventLabelWidth = 160;
-	eventLabel:SetWidth(eventLabelWidth);
-
-	eventLabel.BGLabel:SetWidth(eventLabelWidth);
-	eventLabel.Label:SetWidth(eventLabelWidth);
-	
-	eventLabel.BGLabel:SetMaxLines(2);
-	eventLabel.Label:SetMaxLines(2);
-
-	eventLabel:Show();
 end
 
 function CharacterSelectRotateRight_OnUpdate(self)

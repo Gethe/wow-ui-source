@@ -1718,6 +1718,20 @@ StaticPopupDialogs["CAMP"] = {
 	hideOnEscape = 1
 };
 
+StaticPopupDialogs["PLUNDERSTORM_LEAVE"] = {
+	text = PLUNDERSTORM_LOGOUT_TEXT,
+	button1 = CANCEL,
+	OnAccept = function(self)
+		CancelLogout();
+	end,
+	OnCancel = function(self)
+		CancelLogout();
+	end,
+	timeout = 20,
+	whileDead = 1,
+	hideOnEscape = 1
+}
+
 StaticPopupDialogs["QUIT"] = {
 	text = QUIT_TIMER,
 	button1 = QUIT_NOW,

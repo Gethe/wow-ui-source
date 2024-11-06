@@ -59,7 +59,7 @@
 				<Scripts>
 					<OnShow>
 						UIPanelButton_OnShow(self);
-						if ( not StaticPopup_Visible("CAMP") and not StaticPopup_Visible("QUIT") and not Kiosk.IsEnabled() ) then
+						if ( not StaticPopup_Visible("CAMP") and not StaticPopup_Visible("PLUNDERSTORM_LEAVE") and not StaticPopup_Visible("QUIT") and not Kiosk.IsEnabled() ) then
 							self:Enable();
 						else
 							self:Disable();
@@ -75,7 +75,7 @@
 				<Scripts>
 					<OnShow>
 						UIPanelButton_OnShow(self);
-						if ( not StaticPopup_Visible("CAMP") and not StaticPopup_Visible("QUIT") and not Kiosk.IsEnabled() ) then
+						if ( not StaticPopup_Visible("CAMP") and not StaticPopup_Visible("PLUNDERSTORM_LEAVE") and not StaticPopup_Visible("QUIT") and not Kiosk.IsEnabled() ) then
 							self:Enable();
 						else
 							self:Disable();

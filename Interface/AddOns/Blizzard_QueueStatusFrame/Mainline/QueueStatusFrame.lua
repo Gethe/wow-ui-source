@@ -216,6 +216,11 @@ function QueueStatusButtonMixin:ShowContextMenu()
 	MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
 		rootDescription:SetTag("MENU_QUEUE_STATUS_FRAME");
 
+		--Plunderstorm
+		if ( C_LobbyMatchmakerInfo.IsInQueue() ) then
+			QueueStatusDropdown_AddPlunderstormButtons(rootDescription);
+		end
+
 		--All LFG types
 		for i=1, NUM_LE_LFG_CATEGORYS do
 			local mode, submode = GetLFGMode(i);
@@ -462,6 +467,13 @@ function QueueStatusFrameMixin:OnLoad()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 
+	--For Plunderstorm 
+	self:RegisterEvent("LOBBY_MATCHMAKER_QUEUE_STATUS_UPDATE");
+	self:RegisterEvent("LOBBY_MATCHMAKER_QUEUE_ABANDONED");
+	self:RegisterEvent("LOBBY_MATCHMAKER_QUEUE_POPPED");
+	self:RegisterEvent("LOBBY_MATCHMAKER_QUEUE_EXPIRED");
+	self:RegisterEvent("LOBBY_MATCHMAKER_QUEUE_ERROR");
+
 	--For LFG
 	self:RegisterEvent("LFG_UPDATE");
 	self:RegisterEvent("LFG_ROLE_CHECK_UPDATE");
@@ -495,7 +507,7 @@ end
 function QueueStatusFrameMixin:OnEvent(event, ...)
 	self:Update();
 
-	if event == "LFG_PROPOSAL_SHOW" then
+	if event == "LFG_PROPOSAL_SHOW" or event == "LOBBY_MATCHMAKER_QUEUE_POPPED" then
 		QueueStatusButton.Eye:StartFoundAnimationInit();
 	elseif event == "LFG_PROPOSAL_FAILED" then
 		QueueStatusButton.Eye:StartSearchingAnimation();
@@ -561,6 +573,32 @@ function QueueStatusFrameMixin:Update()
 	local totalHeight = 4; --Add some buffer height
 
 	self.statusEntriesPool:ReleaseAll();
+	
+	-- NOTE: Plunderstorm Queue is exclusive to all other queues
+	local queuedForPlunderstorm = C_LobbyMatchmakerInfo.IsInQueue();
+	if queuedForPlunderstorm then
+		local entry = self:GetEntry(nextEntry);
+		QueueStatusEntry_SetUpPlunderstorm(entry, C_LobbyMatchmakerInfo.GetCurrQueuePlaylistEntry());
+		entry:Show();
+		totalHeight = totalHeight + entry:GetHeight();
+		nextEntry = nextEntry + 1;
+
+		local queueSearching = true;
+		if (queueSearching) then
+			makeEyeStatic = false;
+
+			--Gates the animation from playing from anything that isn't a static eye -> queued eye
+			if ( QueueStatusButton.Eye.currAnim
+			and	QueueStatusButton.Eye.currAnim ~= LFG_EYE_SEARCHING_ANIM
+			and QueueStatusButton.Eye.currAnim ~= LFG_EYE_INIT_ANIM
+			and QueueStatusButton.Eye.currAnim ~= LFG_EYE_HOVER_ANIM
+			and QueueStatusButton.Eye.currAnim ~= LFG_EYE_NONE_ANIM ) then
+				QueueStatusButton.Eye:StartSearchingAnimation();
+			end
+		end
+	end
+
+	EventRegistry:TriggerEvent("LobbyMatchmaker.UpdateQueueState");
 
 	--Try each LFG type
 	for i=1, NUM_LE_LFG_CATEGORYS do
@@ -693,6 +731,8 @@ function QueueStatusFrameMixin:Update()
 		end
 	end
 
+	self.hasNonPlunderstormQueue = (nextEntry - (queuedForPlunderstorm and 1 or 0)) <= 1;
+
 	-- NOTICE: Keep this as the last possible entry
 	-- If you're in edit mode and there are no other entries then add one for edit mode so the eye shows
 	if ( nextEntry <= 1 and EditModeManagerFrame:IsEditModeActive() ) then
@@ -723,6 +763,11 @@ function QueueStatusFrameMixin:Update()
 	end
 
 	QueueStatusButton.Eye:SetStaticMode(makeEyeStatic);
+	EventRegistry:TriggerEvent("QueueStatusUpdate.QueuesUpdated");
+end
+
+function QueueStatusFrameMixin:HasNonPlunderstormQueue()
+	return self.hasNonPlunderstormQueue;
 end
 
 function QueueStatusFrameMixin:UpdatePosition(microMenuPosition, isMenuHorizontal)
@@ -809,6 +854,37 @@ local function GetDisplayNameFromCategory(category)
 	end
 
 	return LFG_CATEGORY_NAMES[category];
+end
+
+function QueueStatusEntry_SetUpPlunderstorm(entry, queueType)
+	local title = WOW_LABS_PLUNDERSTORM_CATEGORY;
+	local status = QUEUED_STATUS_IN_PROGRESS;
+
+	local subTitle = FRONT_END_LOBBY_PRACTICE; -- QueueType
+	if queueType == Enum.PartyPlaylistEntry.SoloGameMode then
+		subTitle = FRONT_END_LOBBY_SOLOS;
+	elseif queueType == Enum.PartyPlaylistEntry.DuoGameMode then
+		subTitle = FRONT_END_LOBBY_DUOS;
+	elseif queueType == Enum.PartyPlaylistEntry.TrioGameMode then
+		subTitle = FRONT_END_LOBBY_TRIOS;
+	end
+
+	local extraText = nil;
+	local queueTime = C_LobbyMatchmakerInfo.GetQueueStartTime();
+
+	local queueState = C_LobbyMatchmakerInfo.GetCurrQueueState();
+	if ( queueState == Enum.PlunderstormQueueState.Queued ) then
+		status = nil;
+	elseif ( queueState == Enum.PlunderstormQueueState.Proposed ) then
+		status = QUEUED_STATUS_PROPOSAL;
+	elseif ( queueState == Enum.PlunderstormQueueState.Suspended ) then
+		status = QUEUED_STATUS_SUSPENDED;
+	else
+		status = QUEUED_STATUS_UNKNOWN;
+	end
+
+	QueueStatusEntry_SetMinimalDisplay(entry, title, status, subTitle, extraText, queueTime);
+	entry:SetHeight(entry:GetHeight() + 8);
 end
 
 function QueueStatusEntry_SetUpLFG(entry, category)
@@ -993,7 +1069,23 @@ function QueueStatusEntry_SetUpPetBattlePvP(entry)
 	end
 end
 
-function QueueStatusEntry_SetMinimalDisplay(entry, title, status, subTitle, extraText)
+local function AddQueuedTimeToEntry(entry, queuedTime, heightOffset)
+	if ( queuedTime ) then
+		entry.queuedTime = queuedTime;
+		local elapsed = GetTime() - queuedTime;
+		entry.TimeInQueue:SetFormattedText(TIME_IN_QUEUE, (elapsed >= 60) and SecondsToTime(elapsed) or LESS_THAN_ONE_MINUTE);
+		entry:SetScript("OnUpdate", QueueStatusEntry_OnUpdate);
+	else
+		entry.TimeInQueue:SetFormattedText(TIME_IN_QUEUE, LESS_THAN_ONE_MINUTE);
+		entry:SetScript("OnUpdate", nil);
+	end
+	entry.TimeInQueue:SetPoint("TOPLEFT", entry, "TOPLEFT", 10, -(heightOffset + 5));
+	entry.TimeInQueue:Show();
+	
+	return entry.TimeInQueue:GetHeight();
+end
+
+function QueueStatusEntry_SetMinimalDisplay(entry, title, status, subTitle, extraText, queuedTime)
 	local height = 10;
 
 	entry.Title:SetText(title);
@@ -1013,6 +1105,8 @@ function QueueStatusEntry_SetMinimalDisplay(entry, title, status, subTitle, extr
 		entry.SubTitle:Hide();
 	end
 
+	height = height + AddQueuedTimeToEntry(entry, queuedTime, height);
+
 	if ( extraText ) then
 		entry.ExtraText:SetText(extraText);
 		entry.ExtraText:Show();
@@ -1022,7 +1116,6 @@ function QueueStatusEntry_SetMinimalDisplay(entry, title, status, subTitle, extr
 		entry.ExtraText:Hide();
 	end
 
-	entry.TimeInQueue:Hide();
 	entry.AverageWait:Hide();
 
 	for i=1, LFD_NUM_ROLES do
@@ -1033,8 +1126,6 @@ function QueueStatusEntry_SetMinimalDisplay(entry, title, status, subTitle, extr
 	entry.TanksFound:Hide();
 	entry.HealersFound:Hide();
 	entry.DamagersFound:Hide();
-
-	entry:SetScript("OnUpdate", nil);
 
 	entry:SetHeight(height + 6);
 end
@@ -1123,18 +1214,7 @@ function QueueStatusEntry_SetFullDisplay(entry, title, queuedTime, myWait, isTan
 		height = height + entry.AverageWait:GetHeight();
 	end
 
-	if ( queuedTime ) then
-		entry.queuedTime = queuedTime;
-		local elapsed = GetTime() - queuedTime;
-		entry.TimeInQueue:SetFormattedText(TIME_IN_QUEUE, (elapsed >= 60) and SecondsToTime(elapsed) or LESS_THAN_ONE_MINUTE);
-		entry:SetScript("OnUpdate", QueueStatusEntry_OnUpdate);
-	else
-		entry.TimeInQueue:SetFormattedText(TIME_IN_QUEUE, LESS_THAN_ONE_MINUTE);
-		entry:SetScript("OnUpdate", nil);
-	end
-	entry.TimeInQueue:SetPoint("TOPLEFT", entry, "TOPLEFT", 10, -(height + 5));
-	entry.TimeInQueue:Show();
-	height = height + entry.TimeInQueue:GetHeight();
+	height = height + AddQueuedTimeToEntry(entry, queuedTime, height);
 
 	if ( extraText ) then
 		entry.ExtraText:SetText(extraText);
@@ -1406,6 +1486,14 @@ function QueueStatusDropdown_AddLFGListApplicationButtons(description, resultID)
 	if IsInGroup() and not UnitIsGroupLeader("player") then
 		button:SetEnabled(false);
 	end
+end
+
+function QueueStatusDropdown_AddPlunderstormButtons(description)
+	description:CreateTitle(WOW_LABS_PLUNDERSTORM_CATEGORY);
+
+	local button = description:CreateButton(WOW_LABS_LEAVE_QUEUE, function()
+		C_LobbyMatchmakerInfo.AbandonQueue();
+	end);
 end
 
 function QueueStatusDropdown_AcceptQueuedPVPMatch()

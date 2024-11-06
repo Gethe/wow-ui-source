@@ -74,8 +74,8 @@ function QueueTypeSettingsFrameMixin:OnQueueTypeSelected(button, partyPlayIndex)
 	local isPartyLeader = C_WoWLabsMatchmaking.IsPartyLeader();
 	if isPartyLeader then
 		button:SetSelected(true);
-		if self.TEMPuseLocalPlayIndex then
-			self.TEMPlocalPlayIndex = partyPlayIndex;
+		if self.useLocalPlayIndex then
+			self.localPlayIndex = partyPlayIndex;
 		else
 			local result = C_WoWLabsMatchmaking.SetPartyPlaylistEntry(partyPlayIndex);
 			if result then 
@@ -85,6 +85,10 @@ function QueueTypeSettingsFrameMixin:OnQueueTypeSelected(button, partyPlayIndex)
 	end
 
 	self:UpdateButtons();
+end
+
+function QueueTypeSettingsFrameMixin:GetQueueType()
+	return self.useLocalPlayIndex and self.localPlayIndex or C_WoWLabsMatchmaking.GetPartyPlaylistEntry();
 end
 
 function QueueTypeSettingsFrameMixin:OnLeaveQueue()
@@ -102,14 +106,14 @@ function QueueTypeSettingsFrameMixin:UpdateButtons()
 	local trioActive = bit.band(currentEventRealmQueues, Enum.EventRealmQueues.PlunderstormTrio) == Enum.EventRealmQueues.PlunderstormTrio;
 	local duoActive = bit.band(currentEventRealmQueues, Enum.EventRealmQueues.PlunderstormDuo) == Enum.EventRealmQueues.PlunderstormDuo;
 	local soloActive = bit.band(currentEventRealmQueues, Enum.EventRealmQueues.PlunderstormSolo) == Enum.EventRealmQueues.PlunderstormSolo;
-	
+
 	local enableTraining = isPartyLeader and trainingActive;
-	local enableTrio = isPartyLeader and trioActive;
-	local enableDuo = isPartyLeader and (partySize == 2 or partySize == 1) and duoActive;
-	local enableSolo = isPartyLeader and (partySize == 1) and soloActive;
+	local enableTrio = isPartyLeader and (partySize <= 3) and trioActive;
+	local enableDuo = isPartyLeader and (partySize <= 2) and duoActive;
+	local enableSolo = isPartyLeader and (partySize <= 1) and soloActive;
 
 	if isAlone or isPartyLeader then
-		self.QueueContainer.Training:Show();
+		self.QueueContainer.Training:SetShown(not self.isInTrainingMode);
 		self.QueueContainer.Trio:SetShown(trioActive);
 		self.QueueContainer.Duo:Show();
 		self.QueueContainer.Solo:Show();
@@ -126,7 +130,7 @@ function QueueTypeSettingsFrameMixin:UpdateButtons()
 
 	self:UpdateQueueTypeSelection();
 
-	local queueTypeSelection = self.TEMPuseLocalPlayIndex and self.TEMPlocalPlayIndex or C_WoWLabsMatchmaking.GetPartyPlaylistEntry();
+	local queueTypeSelection = self:GetQueueType();
 	self.QueueContainer.Trio:SetSelected(queueTypeSelection == Enum.PartyPlaylistEntry.TrioGameMode);
 	self.QueueContainer.Duo:SetSelected(queueTypeSelection == Enum.PartyPlaylistEntry.DuoGameMode);
 	self.QueueContainer.Solo:SetSelected(queueTypeSelection == Enum.PartyPlaylistEntry.SoloGameMode);
@@ -156,7 +160,7 @@ end
 
 function QueueTypeSettingsFrameMixin:UpdateQueueTypeSelection()
 	local needsUpdate = false;
-	local queueTypeSelection = self.TEMPuseLocalPlayIndex and self.TEMPlocalPlayIndex or C_WoWLabsMatchmaking.GetPartyPlaylistEntry();
+	local queueTypeSelection = self:GetQueueType();
 
 	if (queueTypeSelection == Enum.PartyPlaylistEntry.TrainingGameMode) and not self.QueueContainer.Training:IsEnabled() then
 		needsUpdate = true;

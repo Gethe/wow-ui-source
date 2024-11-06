@@ -19,10 +19,7 @@ local TIMER_DATA = {
 			[3] = { SOUNDKIT.PLUNDERSTORM_COUNTDOWN4, },
 		},
 		startCallback = function()
-			-- For now only the party leader can select an area.
-			if UnitLeadsAnyGroup("player") then
-				OpenWorldMap();
-			end
+			OpenWorldMap();
 		end,
 		finishedCallback = function ()
 			EventRegistry:TriggerEvent("PlunderstormCountdown.TimerFinished");

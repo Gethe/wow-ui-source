@@ -110,7 +110,7 @@ function GameMenuFrameMixin:InitButtons()
 
 	self:AddSection();
 
-	local exitDisabled = isKioskDisabled or StaticPopup_Visible("CAMP") or StaticPopup_Visible("QUIT");
+	local exitDisabled = isKioskDisabled or StaticPopup_Visible("CAMP") or StaticPopup_Visible("PLUNDERSTORM_LEAVE") or StaticPopup_Visible("QUIT");
 	self:AddButton(LOG_OUT, GenerateMenuCallback(Logout, SOUNDKIT.IG_MAINMENU_LOGOUT), exitDisabled);
 	self:AddButton(EXIT_GAME, GenerateMenuCallback(Quit, SOUNDKIT.IG_MAINMENU_QUIT), exitDisabled);
 

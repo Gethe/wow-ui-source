@@ -105,6 +105,7 @@ KeyBindingsDocumentation.lua
 LFGInfoDocumentation.lua
 LFGListInfoDocumentation.lua
 LoadingScreenDocumentation.lua
+LobbyMatchmakerInfoDocumentation.lua
 LocaleDocumentation.lua
 LocalizationDocumentation.lua
 LootDocumentation.lua

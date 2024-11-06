@@ -118,6 +118,11 @@ function QuestUtil.GetWorldQuestAtlasInfo(questID, tagInfo, inProgress)
 	return "Worldquest-icon", 32, 32;
 end
 
+-- This should be removed in favor of using C_QuestInfoSystem.GetQuestClassification; note that meta quests are typically weekly but shouldn't be considered recurring
+local function IsFrequencyRecurring(meta, frequency)
+	return not meta and (frequency == Enum.QuestFrequency.Daily or frequency == Enum.QuestFrequency.Weekly or frequency == Enum.QuestFrequency.ResetByScheduler);
+end
+
 function QuestUtil.GetQuestIconOffer(isLegendary, frequency, isRepeatable, isCampaign, isCovenantCalling, isImportant, isMeta)
 	if isCampaign then
 		return "CampaignAvailableQuestIcon", true;
@@ -129,7 +134,7 @@ function QuestUtil.GetQuestIconOffer(isLegendary, frequency, isRepeatable, isCam
 		return "importantavailablequesticon", true;
 	elseif isMeta then
 		return "Wrapperavailablequesticon", true;
-	elseif QuestUtil.IsFrequencyRecurring(frequency) then
+	elseif IsFrequencyRecurring(isMeta, frequency) then
 		return "Recurringavailablequesticon", true;
 	elseif isRepeatable then
 		return "Interface/GossipFrame/DailyActiveQuestIcon", false;
@@ -152,35 +157,34 @@ function QuestUtil.ApplyQuestIconOfferToTexture(texture, ...)
 end
 
 function QuestUtil.GetQuestIconActive(isComplete, isLegendary, frequency, isRepeatable, isCampaign, isCovenantCalling, isImportant, isMeta)
-	-- Frequency and isRepeatable aren't used yet, reserved for differentiating daily/weekly quests from other ones...
 	if isComplete then
 		if isCampaign then
 			return "CampaignActiveQuestIcon", true;
-		elseif isLegendary then
-			return "legendaryactivequesticon", true;
 		elseif isCovenantCalling then
 			return "CampaignActiveDailyQuestIcon", true;
+		elseif IsFrequencyRecurring(isMeta, frequency) then
+			return "Recurringactivequesticon", true;
+		elseif isLegendary then
+			return "legendaryactivequesticon", true;
 		elseif isImportant then
 			return "importantactivequesticon", true;
 		elseif isMeta then
 			return "Wrapperactivequesticon", true;
-		elseif QuestUtil.IsFrequencyRecurring(frequency) then
-			return "Recurringactivequesticon", true;
-		else
-			return "Interface/GossipFrame/ActiveQuestIcon", false;
 		end
+			
+		return "Interface/GossipFrame/ActiveQuestIcon", false;
 	end
 
 	if isCampaign or isCovenantCalling then
 		return "CampaignInProgressQuestIcon", true;
+	elseif IsFrequencyRecurring(isMeta, frequency) then
+		return "RepeatableInProgressquesticon", true;
 	elseif isLegendary then
 		return "legendaryInProgressquesticon", true;
 	elseif isImportant then
 		return "importantInProgressquesticon", true;
 	elseif isMeta then
 		return "WrapperInProgressquesticon", true;
-	elseif QuestUtil.IsFrequencyRecurring(frequency) then
-		return "RepeatableInProgressquesticon", true;
 	end
 
 	return "SideInProgressquesticon", true;
@@ -190,38 +194,25 @@ function QuestUtil.ApplyQuestIconActiveToTexture(texture, ...)
 	ApplyAssetToTexture(texture, QuestUtil.GetQuestIconActive(...));
 end
 
-function QuestUtil.ShouldQuestIconsUseCampaignAppearance(questID)
+local function GetQuestIconLookInfo(questID, isComplete, _isLegendary, frequency, _isRepeatable, _isImportant, _isMeta)
 	local quest = QuestCache:Get(questID);
-	if quest:IsCampaign() then
-		return not CampaignCache:Get(quest:GetCampaignID()):UsesNormalQuestIcons();
-	end
-
-	return false;
-end
-
-local function GetQuestIconLookInfo(questID, isComplete, isLegendary, frequency, isRepeatable, isImportant, isMeta)
-	local quest = QuestCache:Get(questID);
-	-- allow for possible overrides
+	-- allow for possible overrides. For most things, prefer what the client API classification returns
 	if isComplete == nil then
 		isComplete = quest:IsComplete();
 	end
-	if isLegendary == nil then
-		isLegendary = quest:IsLegendary();
-	end
+
 	if frequency == nil then
 		frequency = quest.frequency;
 	end
-	if isRepeatable == nil then
-		isRepeatable = quest:IsRepeatableQuest();
-	end
-	if isImportant == nil then
-		isImportant = quest:IsImportant();
-	end
-	if isMeta == nil then
-		isMeta = quest:IsMeta();
-	end
-	local isCampaign = QuestUtil.ShouldQuestIconsUseCampaignAppearance(questID);
-	local isCalling = C_QuestLog.IsQuestCalling(questID);
+
+	local classification = C_QuestInfoSystem.GetQuestClassification(questID);
+	local isLegendary = classification == Enum.QuestClassification.Legendary;
+	local isRepeatable = classification == Enum.QuestClassification.Recurring;
+	local isImportant = classification == Enum.QuestClassification.Important;
+	local isMeta = classification == Enum.QuestClassification.Meta;
+	local isCampaign = classification == Enum.QuestClassification.Campaign;
+	local isCalling = classification == Enum.QuestClassification.Calling;
+	
 	return isComplete, isLegendary, frequency, isRepeatable, isCampaign, isCalling, isImportant, isMeta;
 end
 
@@ -1080,10 +1071,6 @@ end
 
 function QuestUtils_IsQuestWatched(questID)
 	return questID and C_QuestLog.GetQuestWatchType(questID) ~= nil;
-end
-
-function QuestUtil.IsFrequencyRecurring(frequency)
-	return frequency == Enum.QuestFrequency.Daily or frequency == Enum.QuestFrequency.Weekly or frequency == Enum.QuestFrequency.ResetByScheduler;
 end
 
 -- This determines the alpha of quest icons when a quest giver has a list of available quests

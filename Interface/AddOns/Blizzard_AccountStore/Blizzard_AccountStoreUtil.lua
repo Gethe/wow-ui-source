@@ -82,7 +82,7 @@ function AccountStoreUtil.AddCurrencyTotalTooltip(tooltip, accountStoreCurrencyI
 		if currencyInfo.amount >= currencyInfo.maxQuantity then
 			local text = PrependWarning(ACCOUNT_STORE_CURRENCY_MAX_TOOLTIP_FORMAT:format(currencyInfo.name));
 			GameTooltip_AddNormalLine(tooltip, text);
-		elseif currencyInfo.amount >= currencyInfo.maxQuantity * AccountStoreWarningThresholdPercentage then
+		elseif currencyInfo.amount >= (currencyInfo.maxQuantity * AccountStoreWarningThresholdPercentage) then
 			local text = PrependWarning(ACCOUNT_STORE_CURRENCY_APPROACHING_MAX_TOOLTIP_FORMAT:format(currencyInfo.name));
 			GameTooltip_AddNormalLine(tooltip, text);
 		end
