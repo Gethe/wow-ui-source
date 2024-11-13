@@ -789,7 +789,7 @@
 	This is the inner frame used by ButtonFrameTemplate
 *******************************************************************************
 -->
-	<Frame name="InsetFrameTemplate" virtual="true">
+	<Frame name="InsetFrameTemplate" useParentLevel="true" virtual="true">
 		<Size x="64" y="64"/>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-5">

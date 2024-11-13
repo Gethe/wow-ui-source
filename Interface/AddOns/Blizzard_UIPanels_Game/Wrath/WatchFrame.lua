@@ -83,30 +83,31 @@ local function WatchFrame_ReleaseUnusedLinkButtons ()
 	end
 end
 
-function WatchFrameLinkButtonTemplate_ShowContextMenu()
+function WatchFrameLinkButtonTemplate_ShowContextMenu(self, button)
 	MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
 		rootDescription:SetTag("MENU_WATCH_FRAME_LINK");
 
 		if ( self.type == "QUEST" ) then
 			local questLogIndex = GetQuestIndexForWatch(self.index);
-			rootDescription:CreateTitle(GetQuestLogTitle(questLogIndex));
+			local questTitle = GetQuestLogTitle(questLogIndex);
+			rootDescription:CreateTitle(questTitle);
 			rootDescription:CreateButton(OBJECTIVES_VIEW_IN_QUESTLOG, function()
-				WatchFrame_OpenQuestLog(self.index, true);
+				WatchFrame_OpenQuestLog(button, self.index, true);
 			end);
 
 			rootDescription:CreateButton(OBJECTIVES_STOP_TRACKING, function()
-				WatchFrame_StopTrackingQuest(self.index);
+				WatchFrame_StopTrackingQuest(button, self.index);
 			end);
 
 			if ( GetQuestLogPushable(GetQuestIndexForWatch(self.index)) and ( GetNumGroupMembers() > 0 ) ) then
 				rootDescription:CreateButton(SHARE_QUEST, function()
-					WatchFrame_ShareQuest(self.index);
+					WatchFrame_ShareQuest(button, self.index);
 				end);
 			end
 
 			if ( WatchFrame.showObjectives ) then
 				rootDescription:CreateButton(OBJECTIVES_SHOW_QUEST_MAP, function()
-					WatchFrame_OpenMapToQuest(self.index);
+					WatchFrame_OpenMapToQuest(button, self.index);
 				end);
 			end
 			local numVisibleWatches = #VISIBLE_WATCHES;
@@ -114,20 +115,20 @@ function WatchFrameLinkButtonTemplate_ShowContextMenu()
 				local visibleIndex = WatchFrame_GetVisibleIndex(questLogIndex);
 				if ( visibleIndex > 1 ) then
 					rootDescription:CreateButton(TRACKER_SORT_MANUAL_UP, function()
-						WatchFrame_MoveQuest(questLogIndex, -1);
+						WatchFrame_MoveQuest(button, questLogIndex, -1);
 					end);
 
 					rootDescription:CreateButton(TRACKER_SORT_MANUAL_TOP, function()
-						WatchFrame_MoveQuest(questLogIndex, -100);
+						WatchFrame_MoveQuest(button, questLogIndex, -100);
 					end);
 				end
 				if ( visibleIndex < numVisibleWatches ) then
 					rootDescription:CreateButton(TRACKER_SORT_MANUAL_DOWN, function()
-						WatchFrame_MoveQuest(questLogIndex, 1);
+						WatchFrame_MoveQuest(button, questLogIndex, 1);
 					end);
 
 					rootDescription:CreateButton(TRACKER_SORT_MANUAL_BOTTOM, function()
-						WatchFrame_MoveQuest(questLogIndex, 100);
+						WatchFrame_MoveQuest(button, questLogIndex, 100);
 					end);
 				end
 			end
@@ -137,11 +138,11 @@ function WatchFrameLinkButtonTemplate_ShowContextMenu()
 			rootDescription:CreateTitle(achievementName);
 
 			rootDescription:CreateButton(OBJECTIVES_VIEW_ACHIEVEMENT, function()
-				WatchFrame_OpenAchievementFrame(self.index);
+				WatchFrame_OpenAchievementFrame(button, self.index);
 			end);
 
 			rootDescription:CreateButton(OBJECTIVES_STOP_TRACKING, function()
-				WatchFrame_StopTrackingAchievement(self.index);
+				WatchFrame_StopTrackingAchievement(button, self.index);
 			end);
 		end
 	end);
@@ -164,7 +165,7 @@ function WatchFrameLinkButtonTemplate_OnClick (self, button, pushed)
 	elseif ( button ~= "RightButton" ) then
 		WatchFrameLinkButtonTemplate_OnLeftClick(self, button);
 	else
-		WatchFrameLinkButtonTemplate_ShowContextMenu(self);
+		WatchFrameLinkButtonTemplate_ShowContextMenu(self, button);
 	end
 end
 
@@ -349,8 +350,8 @@ function WatchFrame_OnEvent (self, event, ...)
 		-- WATCHFRAME_FILTER_TYPE = 4;
 		-- WATCHFRAME_SORT_TYPE = 0;
 	elseif ( event == "QUEST_AUTOCOMPLETE" ) then
-		local questId = ...;
-		if (WatchFrameAutoQuest_AddPopUp(questId, "COMPLETE")) then
+		local questID = ...;
+		if (WatchFrameAutoQuest_AddPopUp(questID, "COMPLETE")) then
 			PlaySound(SOUNDKIT.UI_AUTO_QUEST_COMPLETE);
 		end
 	end
@@ -1305,18 +1306,18 @@ function WatchFrame_GetCurrentMapQuests()
 	local numQuests = QuestMapUpdateAllQuests();
 	table.wipe(CURRENT_MAP_QUESTS);	
 	for i = 1, numQuests do
-		local questId = QuestPOIGetQuestIDByVisibleIndex(i);
-		CURRENT_MAP_QUESTS[questId] = i;
+		local questID = QuestPOIGetQuestIDByVisibleIndex(i);
+		CURRENT_MAP_QUESTS[questID] = i;
 	end
 end
 
 function WatchFrameQuestPOI_OnClick(self, button)
-	QuestPOI_SelectButtonByQuestId(WatchFrameLines, self.questId);
+	QuestPOI_SelectButtonByQuestId(WatchFrameLines, self.questID);
 	if ( WorldMapFrame:IsShown() ) then
-		WorldMapFrame_SelectQuestById(self.questId);
-		QuestPOI_SelectButtonByQuestID(WorldMapFrame, questID)
+		WorldMapFrame_SelectQuestById(self.questID);
+		QuestPOI_SelectButtonByQuestID(WorldMapFrame, self.questID)
 	end
-	--SetSuperTrackedQuestID(self.questId);
+	--SetSuperTrackedQuestID(self.questID);
 	PlaySound("igMainMenuOptionCheckBoxOn");
 end
 
@@ -1463,7 +1464,7 @@ function WatchFrameAutoQuest_DisplayAutoQuestPopUps(lineFrame, nextAnchor, maxHe
 			frame:ClearAllPoints();
 			frame:SetParent(lineFrame);
 			
-			if (not frame.questId) then
+			if (not frame.questID) then
 				-- Only show the animation for new notifications
 				frame.ScrollChild.Flash:Hide();
 				WatchFrameAutoQuest_SlideIn(frame, 0.4);
@@ -1476,7 +1477,7 @@ function WatchFrameAutoQuest_DisplayAutoQuestPopUps(lineFrame, nextAnchor, maxHe
 				frame.ScrollChild.BottomText:Hide();
 				frame.ScrollChild.TopText:SetPoint("TOP", 0, -12);
 				frame.ScrollChild.QuestName:SetPoint("TOP", 0, -32);
-				if (frame.questId and frame.type=="OFFER") then
+				if (frame.questID and frame.type=="OFFER") then
 					frame.ScrollChild.Flash:Show();
 				end
 				frame.type="COMPLETED";
@@ -1507,7 +1508,7 @@ function WatchFrameAutoQuest_DisplayAutoQuestPopUps(lineFrame, nextAnchor, maxHe
 			frame:SetPoint("LEFT", lineFrame, "LEFT", -30, 0);
 
 			frame.ScrollChild.QuestName:SetText(questTitle);
-			frame.questId = questID;
+			frame.questID = questID;
 			
 			maxWidth = max(maxWidth, frame:GetWidth());
 			nextAnchor = frame;
@@ -1516,7 +1517,7 @@ function WatchFrameAutoQuest_DisplayAutoQuestPopUps(lineFrame, nextAnchor, maxHe
 	end
 	
 	for i=numPopUps+1, numPopUpFrames do
-		_G["WatchFrameAutoQuestPopUp"..i].questId = nil;
+		_G["WatchFrameAutoQuestPopUp"..i].questID = nil;
 		_G["WatchFrameAutoQuestPopUp"..i]:Hide();
 	end
 	
@@ -1579,8 +1580,8 @@ function WatchFrameAutoQuest_SlideIn(frame, slideInTime)
 	frame:SetScript("OnUpdate", WatchFrameAutoQuest_OnUpdate);
 end
 
-function WatchFrameAutoQuest_AddPopUp(questId, type)
-	if (AddAutoQuestPopUp(questId, type)) then
+function WatchFrameAutoQuest_AddPopUp(questID, type)
+	if (AddAutoQuestPopUp(questID, type)) then
 		WatchFrame_Update(WatchFrame);
 		WatchFrame_Expand(WatchFrame);
 		return true;
@@ -1588,12 +1589,12 @@ function WatchFrameAutoQuest_AddPopUp(questId, type)
 	return false;
 end
 
-function WatchFrameAutoQuest_ClearPopUp(questId)
-	RemoveAutoQuestPopUp(questId);
+function WatchFrameAutoQuest_ClearPopUp(questID)
+	RemoveAutoQuestPopUp(questID);
 	WatchFrame_Update(WatchFrame);
 end
 
 function WatchFrameAutoQuest_ClearPopUpByLogIndex(questIndex)
-	local questId = select(9, GetQuestLogTitle(questIndex));
-	WatchFrameAutoQuest_ClearPopUp(questId);
+	local questID = select(9, GetQuestLogTitle(questIndex));
+	WatchFrameAutoQuest_ClearPopUp(questID);
 end

@@ -420,6 +420,7 @@ function AlertFrameMixin:OnLoad()
 	--self:RegisterEvent("CRITERIA_EARNED");		need to investigate what alerts criteria updates send out and whether or not they are directly related to the achievement system... tbd
 	self:RegisterEvent("ACHIEVEMENT_EARNED");
 	self:RegisterEvent("STORE_PRODUCT_DELIVERED");
+	self:RegisterEvent("NEW_TOY_ADDED");
 end
 
 function AlertFrameMixin:OnEvent(event, ...)

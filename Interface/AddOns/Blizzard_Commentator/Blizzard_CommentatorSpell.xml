@@ -18,7 +18,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Cooldown parentKey="Cooldown" hideCountdownNumbers="false" inherits="CooldownFrameTemplate" Mixin="CommentatorCooldownMixin" >
+			<Cooldown parentKey="Cooldown" hideCountdownNumbers="false" inherits="CooldownFrameTemplate" mixin="CommentatorCooldownMixin" >
 				<Scripts>
 					<OnLoad method="OnLoad"/>
 				</Scripts>

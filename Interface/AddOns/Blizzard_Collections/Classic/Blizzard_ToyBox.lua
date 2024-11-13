@@ -16,6 +16,8 @@ function ToyBox_OnLoad(self)
 
 	self:RegisterEvent("TOYS_UPDATED");
 	self:RegisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
+	
+	self.FilterDropdown:SetWidth(85);
 
 	self.OnPageChanged = function(userAction)
 		PlaySound(SOUNDKIT.IG_ABILITY_PAGE_TURN);

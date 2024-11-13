@@ -4,6 +4,8 @@ function WorldMapMixin:SynchronizeDisplayState()
 	if self:IsMaximized() then
 		self.MiniBorderFrame:Hide();
 
+		self.WorldMapLevelDropDown:ClearAllPoints();
+
 		WorldMapFrame_SetOpacity(0);
 
 		self:SetSize(self.maximizedWidth, self.maximizedHeight);
@@ -16,11 +18,19 @@ function WorldMapMixin:SynchronizeDisplayState()
 		WorldMapZoomOutButton:Show();
 		WorldMapZoneMinimapDropdown:Show();
 		WorldMapMagnifyingGlassButton:Show();
-
+		if(self.WorldMapLevelDropDown:IsShown()) then
+			WorldMapLevelUpButton:Show();
+			WorldMapLevelDownButton:Show();
+		end
+		self.WorldMapLevelDropDown.header:Show();
+		
 		WorldMapFrameCloseButton:SetPoint("TOPRIGHT", self.BorderFrame, "TOPRIGHT", 5, 4);
 		self.MaximizeMinimizeFrame:SetPoint("RIGHT", WorldMapFrameCloseButton, "LEFT", 12, 0);
 		self.ScrollContainer:SetPoint("TOPLEFT", WorldMapFrame, "TOPLEFT", 11, -70);
 		WorldMapTrackQuest:SetPoint("BOTTOMLEFT", WorldMapFrame, "BOTTOMLEFT", 10, 4);
+		self.WorldMapLevelDropDown:SetPoint("TOPRIGHT", self, "TOPRIGHT", -65, -35);
+		WorldMapLevelUpButton:SetPoint("TOPLEFT", self.WorldMapLevelDropDown, "TOPRIGHT", 5, 8);
+		WorldMapLevelDownButton:SetPoint("BOTTOMLEFT", self.WorldMapLevelDropDown, "BOTTOMRIGHT", 5, -8);
 
 		MaximizeUIPanel(self);
 	else
@@ -28,6 +38,7 @@ function WorldMapMixin:SynchronizeDisplayState()
 		self:SetMovable("true");
 
 		WorldMapFrame:ClearAllPoints();
+		self.WorldMapLevelDropDown:ClearAllPoints();
 		WorldMapFrame:SetPoint("TOPLEFT", WorldMapScreenAnchor, 0, 0);
 		WorldMapFrame:SetUserPlaced(true);
 
@@ -43,12 +54,17 @@ function WorldMapMixin:SynchronizeDisplayState()
 		WorldMapZoomOutButton:Hide();
 		WorldMapZoneMinimapDropdown:Hide();
 		WorldMapMagnifyingGlassButton:Hide();
+		WorldMapLevelUpButton:Hide();
+		WorldMapLevelDownButton:Hide();
+		self.WorldMapLevelDropDown.header:Hide();
 
 		WorldMapFrameCloseButton:SetPoint("TOPRIGHT", MiniBorderRight, "TOPRIGHT", -44, 5);
 		self.MaximizeMinimizeFrame:SetPoint("RIGHT", WorldMapFrameCloseButton, "LEFT", 10, 0);
 		self.ScrollContainer:SetPoint("TOPLEFT", WorldMapFrame, "TOPLEFT", 20, -22);
 		self.ScrollContainer:SetPoint("BOTTOMRIGHT", WorldMapFrame, "BOTTOMRIGHT", -10, 28);
 		WorldMapTrackQuest:SetPoint("BOTTOMLEFT", WorldMapFrame, "BOTTOMLeft", 20, 4);
+		self.WorldMapLevelDropDown:SetFrameLevel(self:GetParent():GetFrameLevel() + 4);
+		self.WorldMapLevelDropDown:SetPoint("TOPLEFT", self:GetCanvasContainer(), "TOPLEFT", 0, 0);
 		
 		RestoreUIPanelArea(self);
 	end
@@ -229,6 +245,8 @@ end
 
 function WorldMapMixin:AddOverlayFrames()
 	self:AddOverlayFrame("WorldMapZoneTimerTemplate", "FRAME", "BOTTOM", self:GetCanvasContainer(), "BOTTOM", 0, 20);
+	self.WorldMapLevelDropDown = self:AddOverlayFrame("WorldMapFloorNavigationFrameTemplate", "DROPDOWNBUTTON", "TOPRIGHT", self, "TOPRIGHT", -65, -35);
+	self.WorldMapLevelDropDown:SetWidth(130);
 end
 
 function WorldMapMixin:OnMapChanged()
@@ -252,6 +270,15 @@ function WorldMapMixin:OnMapChanged()
 	WorldMapContinentDropdown:GenerateMenu();
 	WorldMapZoneDropdown:GenerateMenu();
 	WorldMapFrame_SetMapName();
+
+	--Update Area Dropdown arrows
+	if(self.WorldMapLevelDropDown:IsShown() and self:IsMaximized()) then
+		WorldMapLevelUpButton:Show();
+		WorldMapLevelDownButton:Show();
+	else
+		WorldMapLevelUpButton:Hide();
+		WorldMapLevelDownButton:Hide();
+	end
 end
 
 function WorldMapMixin:OnShow()
@@ -546,6 +573,50 @@ function WorldMapZoneMinimapDropdown_GetText(value)
 		return BATTLEFIELD_MINIMAP_SHOW_ALWAYS;
 	end
 	return nil;
+end
+
+function WorldMapLevelDown_OnClick(self)
+	local mapID = self:GetParent():GetMapID();
+
+	local mapGroupID = C_Map.GetMapGroupID(mapID);
+	if not mapGroupID then
+		return;
+	end
+
+	local mapGroupMembersInfo = C_Map.GetMapGroupMembersInfo(mapGroupID);
+	if not mapGroupMembersInfo then
+		return;
+	end
+
+	for i, mapGroupMemberInfo in ipairs(mapGroupMembersInfo) do
+		if(mapGroupMemberInfo.mapID == mapID and i ~= #mapGroupMembersInfo) then
+			self:GetParent():SetMapID(mapGroupMembersInfo[i+1].mapID);
+		end
+	end
+
+	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
+end
+
+function WorldMapLevelUp_OnClick(self)
+	local mapID = self:GetParent():GetMapID();
+
+	local mapGroupID = C_Map.GetMapGroupID(mapID);
+	if not mapGroupID then
+		return;
+	end
+
+	local mapGroupMembersInfo = C_Map.GetMapGroupMembersInfo(mapGroupID);
+	if not mapGroupMembersInfo then
+		return;
+	end
+
+	for i, mapGroupMemberInfo in ipairs(mapGroupMembersInfo) do
+		if(mapGroupMemberInfo.mapID == mapID and i ~= 1) then
+			self:GetParent():SetMapID(mapGroupMembersInfo[i-1].mapID);
+		end
+	end
+
+	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 end
 
 function DoesInstanceTypeMatchBattlefieldMapSettings()

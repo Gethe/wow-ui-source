@@ -228,8 +228,6 @@ function CharacterCreateMixin:OnShow()
 		CharacterCreateRandomName:Show();
 	end
 
-	SetGameLogo(CharacterCreateLogo);
-
 	if( IsKioskGlueEnabled() ) then
 		local templateIndex = Kiosk.GetCharacterTemplateSetIndex();
 		if (templateIndex) then
@@ -451,8 +449,13 @@ function CharacterCreate_Okay()
 		else
 			KioskModeSplash:SetAutoEnterWorld(false)
 		end
+
+		local isPvP = select(2, GetServerName()); -- Grabbing whether we're a PvP realm from GetServerName()
+
 		if (HardcorePopUpFrame and C_GameRules.IsHardcoreActive()) then
 			HardcorePopUpFrame:ShowCharacterCreationWarning();
+		elseif (RealmWarningPopUpFrame and isPvP == true) then
+			RealmWarningPopUpFrame:ShowCharacterCreationWarning();
 		else
 			C_CharacterCreation.CreateCharacter(CharacterCreateNameEdit:GetText());
 		end

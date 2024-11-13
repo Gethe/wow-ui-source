@@ -141,7 +141,7 @@ function Settings.OpenToCategory(categoryID, scrollToElementName)
 end
 
 function Settings.SafeLoadBindings(bindingSet)
-	if not IsOnGlueScreen() then
+	if not C_Glue.IsOnGlueScreen() then
 		LoadBindings(bindingSet);
 	end
 end

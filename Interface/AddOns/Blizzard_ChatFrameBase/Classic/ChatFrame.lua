@@ -796,7 +796,7 @@ local function TextEmoteSort(token1, token2)
 	return string1 < string2;
 end
 
-if not IsOnGlueScreen() then
+if not C_Glue.IsOnGlueScreen() then
 	table.sort(EmoteList, TextEmoteSort);
 	table.sort(TextEmoteSpeechList, TextEmoteSort);
 end
@@ -5370,6 +5370,18 @@ function ChatFrameMenuButtonMixin:OnLoad()
 			ShowMacroFrame();
 		end);
 		AddSlashInitializer(macroButton, SLASH_MACRO1);
+
+		local numLanguages = GetNumLanguages();
+		if(numLanguages) then
+			local languageSubmenu = rootDescription:CreateButton(LANGUAGE);
+			languageSubmenu:AddInitializer(ColorInitializer);
+
+			for i = 1, GetNumLanguages() do
+				local language, languageID = GetLanguageByIndex(i);
+				local languageData = {language, languageID};
+				languageSubmenu:CreateRadio(language, IsLanguageSelected, SetLanguageSelected, languageData);
+			end
+		end
 	end);
 end
 

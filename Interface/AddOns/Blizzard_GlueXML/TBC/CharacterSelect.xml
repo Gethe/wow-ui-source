@@ -511,21 +511,11 @@
 							<OnUpdate function="CharacterSelect_UpdateModel" />
 						</Scripts>
 					</ModelFFX>
-					<Frame name="LogoHoist" frameStrata="HIGH">
-						<Size x="1" y="1"/>
+					<Frame name="CharacterSelectLogo" parentKey="GameLogo" frameStrata="HIGH" inherits="GlueGameLogoTemplate">
+						<Size x="256" y="128"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="0" y="0"/>
+							<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="8" y="-16"/>
 						</Anchors>
-						<Layers>
-							<Layer level="OVERLAY">
-								<Texture name="CharacterSelectLogo">
-									<Size x="256" y="128"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" x="8" y="-16"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
 					</Frame>
 					<Button name="CharSelectAccountUpgradeButton" inherits="GlueButtonTemplate" text="UPGRADE">
 						<Size x="239" y="72"/>

@@ -247,7 +247,7 @@ function GroupFinderFrame_EvaluateButtonVisibility(self)
 		GroupFinderFrameButton_SetEnabled(self.groupButton2, true);
 	end
 
-	visible = C_LFGInfo.IsPremadeGroupEnabled();
+	visible = C_LFGList.IsPremadeGroupFinderEnabled();
 	canUse, failureReason = C_LFGInfo.CanPlayerUsePremadeGroup();
 	if not visible then
 		self.groupButton3:Hide();

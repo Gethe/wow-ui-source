@@ -408,6 +408,7 @@ local FriendList =
 			Payload =
 			{
 				{ Name = "friendId", Type = "number", Nilable = false },
+				{ Name = "isCompanionApp", Type = "bool", Nilable = false, Default = false },
 			},
 		},
 		{
@@ -417,6 +418,7 @@ local FriendList =
 			Payload =
 			{
 				{ Name = "friendId", Type = "number", Nilable = false },
+				{ Name = "isCompanionApp", Type = "bool", Nilable = false, Default = false },
 			},
 		},
 		{
@@ -486,6 +488,20 @@ local FriendList =
 			LiteralName = "MUTELIST_UPDATE",
 		},
 		{
+			Name = "NewMatchmakingPartyInvite",
+			Type = "Event",
+			LiteralName = "NEW_MATCHMAKING_PARTY_INVITE",
+		},
+		{
+			Name = "RejectedMatchmakingPartyInvite",
+			Type = "Event",
+			LiteralName = "REJECTED_MATCHMAKING_PARTY_INVITE",
+			Payload =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "WhoListUpdate",
 			Type = "Event",
 			LiteralName = "WHO_LIST_UPDATE",
@@ -508,6 +524,7 @@ local FriendList =
 				{ Name = "level", Type = "number", Nilable = false },
 				{ Name = "dnd", Type = "bool", Nilable = false },
 				{ Name = "afk", Type = "bool", Nilable = false },
+				{ Name = "rafLinkType", Type = "RafLinkType", Nilable = false },
 			},
 		},
 		{

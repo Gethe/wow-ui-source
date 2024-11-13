@@ -217,27 +217,11 @@
 		<Frames>
 			<Frame name="CharacterCreateFrame" mixin="CharacterCreateMixin" setAllPoints="true" enableMouse="true">
 				<Frames>
-					<Frame name="CharacterCreateWoWLogo">
-						<Size>
-							<AbsDimension x="256" y="128"/>
-						</Size>
+					<Frame name="CharacterCreateGameLogo" parentKey="GameLogo" inherits="GlueGameLogoTemplate">
+						<Size x="256" y="128"/>
 						<Anchors>
-							<Anchor point="TOPRIGHT" x="-19" y="0"/>
+							<Anchor point="TOPRIGHT" x="-19" y="0" relativeTo="CharacterCreateFrame"/>
 						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK">
-								<Texture name="CharacterCreateLogo">
-									<Size>
-										<AbsDimension x="256" y="128"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOP" relativePoint="TOPLEFT">
-											<Offset x="128" y="0"/>
-										</Anchor>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
 					</Frame>
 					<Frame name="CharacterCreateCharacterRace" inherits="BackdropTemplate">
 						<KeyValues>
@@ -245,7 +229,7 @@
 						</KeyValues>
 						<Size x="267" y="287"/>
 						<Anchors>
-							<Anchor point="TOP" relativeTo="CharacterCreateWoWLogo" relativePoint="BOTTOM" x="0" y="5"/>
+							<Anchor point="TOP" relativeTo="CharacterCreateGameLogo" relativePoint="BOTTOM" x="0" y="5"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BORDER">
@@ -453,7 +437,7 @@
 									<Anchors>
 										<Anchor point="TOP" relativeTo="CharacterCreateBanners" relativePoint="TOP">
 											<Offset>
-												<AbsDimension x="-50" y="-16"/>
+												<AbsDimension x="-50" y="-8"/>
 											</Offset>
 										</Anchor>
 									</Anchors>
@@ -462,7 +446,7 @@
 									<Anchors>
 										<Anchor point="TOP" relativeTo="CharacterCreateBanners" relativePoint="TOP">
 											<Offset>
-												<AbsDimension x="50" y="-16"/>
+												<AbsDimension x="50" y="-8"/>
 											</Offset>
 										</Anchor>
 									</Anchors>

@@ -141,7 +141,7 @@ function CharacterSelectLockedButtonMixin:OnClick()
 end
 
 local function ShouldShowHighResButton()
-	return false;
+	return not C_BattleNet.AreHighResTexturesInstalled();
 end
 
 function CharacterSelectStoreButton_OnLoad(self)
@@ -1870,7 +1870,6 @@ end
 
 function AccountUpgradePanel_Update(isExpanded)
 	local currentExpansionLevel, shouldShowBanner, upgradeButtonText, upgradeLogo, upgradeBanner, features = AccountUpgradePanel_GetBannerInfo();
-	SetGameLogo(CharacterSelectLogo);
     if ( shouldShowBanner ) then
 		CharSelectAccountUpgradeButton:SetText(upgradeButtonText);
         CharacterSelectServerAlertFrame:SetPoint("TOP", CharSelectAccountUpgradeMiniPanel, "BOTTOM", 0, -35);
@@ -3678,8 +3677,8 @@ function CharacterSelect_ShowSeasonNotification()
 
 	if(GetSoMNotificationEnabled() and GetCVar("seenSoMNotification") == "0" and not C_Seasons.HasActiveSeason()) then
 		RealmCallout:Show();
-		GlowEmitterFactory:SetOffset(3, 1);
-		GlowEmitterFactory:Show(CharSelectChangeRealmButton, GlowEmitterMixin.Anims.NPE_RedButton_GreenGlow);
+		local offsetX, offsetY = 3, 1;
+		GlowEmitterFactory:Show(CharSelectChangeRealmButton, GlowEmitterMixin.Anims.NPE_RedButton_GreenGlow, offsetX, offsetY);
 		RealmCallout.Text:SetText(SEASON_CHARACTER_SELECT_NOTIFICATIONS[Enum.SeasonID.SeasonOfMastery]);
 	else
 		RealmCallout:Hide();

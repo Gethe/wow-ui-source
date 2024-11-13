@@ -35,9 +35,12 @@
 				</Scripts>
 			</EditBox>
 			<DropdownButton parentKey="FilterDropdown" inherits="WowStyle1FilterDropdownTemplate">
-							<Anchors>
+				<Anchors>
 					<Anchor point="TOPRIGHT" x="-12" y="-35"/>
-							</Anchors>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="resizeToText" type="boolean" value="false"/>
+				</KeyValues>
 			</DropdownButton>
 			<Frame parentKey="iconsFrame" inherits="CollectionsBackgroundTemplate">
 				<Layers>

@@ -280,7 +280,7 @@
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset>
-										<AbsDimension x="20" y="10"/>
+										<AbsDimension x="20" y="13"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -306,7 +306,7 @@
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset>
-										<AbsDimension x="20" y="10"/>
+										<AbsDimension x="20" y="13"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -332,7 +332,7 @@
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset>
-										<AbsDimension x="20" y="10"/>
+										<AbsDimension x="20" y="13"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -362,6 +362,42 @@
 						self:GetParent():NavigateToParentMap();
 					</OnClick>
 				</Scripts>
+			</Button>
+			<Button name="WorldMapLevelUpButton">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="5" y="8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick function="WorldMapLevelUp_OnClick"/>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\Arrow-Up-Up"/>
+				<PushedTexture file="Interface\Buttons\Arrow-Up-Down"/>
+				<DisabledTexture file="Interface\Buttons\Arrow-Up-Disabled"/>
+			</Button>
+			<Button name="WorldMapLevelDownButton">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="5" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick function="WorldMapLevelDown_OnClick"/>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\Arrow-Down-Up"/>
+				<PushedTexture file="Interface\Buttons\Arrow-Down-Down"/>
+				<DisabledTexture file="Interface\Buttons\Arrow-Down-Disabled"/>
 			</Button>
 			<Button name="WorldMapMagnifyingGlassButton">
 				<Size>

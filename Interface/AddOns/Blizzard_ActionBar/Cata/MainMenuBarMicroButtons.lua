@@ -4,6 +4,7 @@ MICRO_BUTTONS = {
 	"TalentMicroButton",
 	"AchievementMicroButton",
 	"QuestLogMicroButton",
+	"SocialsMicroButton",
 	"GuildMicroButton",
 	"EJMicroButton",
 	"CollectionsMicroButton",
@@ -62,6 +63,10 @@ function UpdateMicroButtons()
 	else
 		QuestLogMicroButton:SetButtonState("NORMAL");
 	end
+
+	SocialsMicroButton:UpdateMicroButton();
+
+	GuildMicroButton:UpdateMicroButton();
 
 	if ( EncounterJournal and EncounterJournal:IsShown() ) then
 		EJMicroButton:SetButtonState("PUSHED", 1);
@@ -129,8 +134,6 @@ function UpdateMicroButtons()
 			AchievementMicroButton:Disable();
 		end
 	end
-
-	GuildMicroButton:UpdateMicroButton();
 end
 
 function AchievementMicroButton_OnLoad()

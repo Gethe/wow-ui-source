@@ -24,7 +24,7 @@ function SimpleCheckoutMixin:OnEvent(event, ...)
 		self:CalculateDesiredSize();
 		self:RecalculateSize();
 	elseif (event == "SUBSCRIPTION_CHANGED_KICK_IMMINENT") then
-		if (IsOnGlueScreen()) then
+		if (C_Glue.IsOnGlueScreen()) then
 			self.closeShopOnHide = true;
 		end
 	end
@@ -42,7 +42,7 @@ function SimpleCheckoutMixin:OnHide()
 	self:UnregisterEvent("DISPLAY_SIZE_CHANGED");
 	self:UnregisterEvent("SUBSCRIPTION_CHANGED_KICK_IMMINENT");
 	
-	if (IsOnGlueScreen() and self.closeShopOnHide) then
+	if (C_Glue.IsOnGlueScreen() and self.closeShopOnHide) then
 		_G.SetStoreUIShown(false);
 		_G.GlueDialog_Show("SUBSCRIPTION_CHANGED_KICK_WARNING");
 		self.closeShopOnHide = false;

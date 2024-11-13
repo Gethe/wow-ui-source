@@ -12,21 +12,21 @@
 	<Frame name="CommentatorDefensiveTrayTemplate" inherits="CommentatorSpellTrayTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="spellTemplate" value="CommentatorSpellTemplate"/>
-			<KeyValue key="category" value="Enum.TrackedSpellCategory.Defensive" type="Global"/>
+			<KeyValue key="category" value="Enum.TrackedSpellCategory.Defensive" type="global"/>
 		</KeyValues>
 	</Frame>
 	
 	<Frame name="CommentatorDebuffTrayTemplate" inherits="CommentatorSpellTrayTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="spellTemplate" value="CommentatorDebuffTemplate"/>
-			<KeyValue key="category" value="Enum.TrackedSpellCategory.Debuff" type="Global"/>
+			<KeyValue key="category" value="Enum.TrackedSpellCategory.Debuff" type="global"/>
 		</KeyValues>
 	</Frame>
 
 	<Frame name="CommentatorOffensiveTrayTemplate" inherits="CommentatorSpellTrayTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="spellTemplate" value="CommentatorSpellTemplate"/>
-			<KeyValue key="category" value="Enum.TrackedSpellCategory.Offensive" type="Global"/>
+			<KeyValue key="category" value="Enum.TrackedSpellCategory.Offensive" type="global"/>
 		</KeyValues>
 	</Frame>
 </Ui>

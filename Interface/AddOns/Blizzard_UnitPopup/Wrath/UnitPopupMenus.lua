@@ -4,6 +4,7 @@ function UnitPopupMenuSelf:GetEntries()
 		UnitPopupSelectRoleButtonMixin,
 		UnitPopupRaidTargetButtonMixin,
 		UnitPopupSetFocusButtonMixin,
+		UnitPopupSelfHighlightSelectButtonMixin,
 		UnitPopupPvpFlagButtonMixin,
 		UnitPopupLootSubsectionTitle,
 		UnitPopupLootMethodButtonMixin,

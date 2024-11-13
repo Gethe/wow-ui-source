@@ -108,7 +108,7 @@ function GetSecureMoneyString(money, separateThousands, forceColorBlind)
 	local silver = floor((money - (gold * COPPER_PER_SILVER * SILVER_PER_GOLD)) / COPPER_PER_SILVER);
 	local copper = money % COPPER_PER_SILVER;
 
-	if ( (not IsOnGlueScreen() and GetCVar("colorblindMode") == "1" ) or forceColorBlind ) then
+	if ( (not C_Glue.IsOnGlueScreen() and GetCVar("colorblindMode") == "1" ) or forceColorBlind ) then
 		if (separateThousands) then
 			goldString = SecureCurrencyUtil.FormatLargeNumber(gold)..GOLD_AMOUNT_SYMBOL;
 		else
@@ -494,7 +494,7 @@ function StoreFrame_UpdateCard(card, entryID, discountReset, forceModelUpdate)
 	end
 
 	if (card.DisabledOverlay) then
-		local restrictedInGame = entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.VasService and not IsOnGlueScreen();
+		local restrictedInGame = entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.VasService and not C_Glue.IsOnGlueScreen();
 		local disabled = not card:IsEnabled();
 
 		-- If the only reason we can't buy this product is that we're in-world, redirect to the glue shop.
@@ -915,7 +915,7 @@ function StoreFrame_OnLoad(self)
 	-- We have to call this from CharacterSelect on the glue screen because the addon engine will load
 	-- the store addon more than once if we try to make it ondemand, forcing us to load it before we
 	-- have a connection.
-	if (not IsOnGlueScreen()) then
+	if (not C_Glue.IsOnGlueScreen()) then
 		C_StoreSecure.GetPurchaseList();
 	end
 
@@ -925,7 +925,7 @@ function StoreFrame_OnLoad(self)
 	SetPortraitToTexture(self.portrait, "Interface\\Icons\\Inv_Misc_Note_02");
 	StoreFrame_UpdateBuyButton();
 
-	if ( IsOnGlueScreen() ) then
+	if ( C_Glue.IsOnGlueScreen() ) then
 		self:SetFrameStrata("FULLSCREEN_DIALOG");
 		-- block keys
 		self:EnableKeyboard(true);
@@ -1078,7 +1078,7 @@ function StoreFrame_OnEvent(self, event, ...)
 			GlueDialog_Show("SUBSCRIPTION_CHANGED_KICK_WARNING");
 		end
 	elseif (event == "LOGIN_STATE_CHANGED") then
-		if (IsOnGlueScreen()) then
+		if (C_Glue.IsOnGlueScreen()) then
 			local auroraState, connectedToWoW, wowConnectionState, hasRealmList, waitingForRealmList = C_Login.GetState();
 			if ( wowConnectionState == LE_WOW_CONNECTION_STATE_NONE ) then
 				self:Hide();
@@ -1093,7 +1093,7 @@ function StoreFrame_OnShow(self)
 	self:SetAttribute("isshown", true);
 	WasVeteran = IsVeteranTrialAccount();
 	StoreFrame_UpdateActivePanel(self);
-	if ( not IsOnGlueScreen() ) then
+	if ( not C_Glue.IsOnGlueScreen() ) then
 		StoreOutbound.UpdateMicroButtons();
 	else
 		GlueParent_AddModalFrame(self);
@@ -1119,7 +1119,7 @@ function StoreFrame_OnHide(self)
 	self:SetAttribute("isshown", false);
 	-- TODO: Fix so will only hide if Store showed the preview frame
 	StoreOutbound.HidePreviewFrame();
-	if ( not IsOnGlueScreen() ) then
+	if ( not C_Glue.IsOnGlueScreen() ) then
 		StoreOutbound.UpdateMicroButtons();
 	else
 		GlueParent_RemoveModalFrame(self);
@@ -1128,7 +1128,7 @@ function StoreFrame_OnHide(self)
 
 	if (VASReady) then
 		StoreVASValidationFrame_OnVasProductComplete(StoreVASValidationFrame);
-	elseif (WaitingOnVASToComplete > 0 and IsOnGlueScreen()) then
+	elseif (WaitingOnVASToComplete > 0 and C_Glue.IsOnGlueScreen()) then
 		GetCharacterListUpdate();
 	end
 
@@ -1150,11 +1150,11 @@ function StoreFrame_OnMouseWheel(self, value)
 end
 
 function StoreFrame_OnCharacterBoostDelivered(self)
-	if (IsOnGlueScreen() and BoostDeliveredUsageReason and not StoreOutbound.IsCharacterSelectUndeleting()) then
+	if (C_Glue.IsOnGlueScreen() and BoostDeliveredUsageReason and not StoreOutbound.IsCharacterSelectUndeleting()) then
 		self:Hide();
 
 		CharacterUpgradePopup_OnCharacterBoostDelivered(BoostType, BoostDeliveredUsageGUID, BoostDeliveredUsageReason);
-	elseif (not IsOnGlueScreen() and StoreFrameHasBeenShown and not StoreOutbound.IsExpansionTrialUpgradeDialogShowing()) then
+	elseif (not C_Glue.IsOnGlueScreen() and StoreFrameHasBeenShown and not StoreOutbound.IsExpansionTrialUpgradeDialogShowing()) then
 		self:Hide();
 
 		local showReason = "forBoost";
@@ -1171,7 +1171,7 @@ end
 
 function StoreFrame_OnLegionDelivered(self)
 	self:Hide();
-	if (IsOnGlueScreen()) then
+	if (C_Glue.IsOnGlueScreen()) then
 		GlueDialog_Show("LEGION_PURCHASE_READY");
 	else
 		ServicesLogoutPopup_SetShowReason(ServicesLogoutPopup, "forLegion");
@@ -1332,7 +1332,7 @@ function StoreFrame_OnAttributeChanged(self, name, value)
 			buyButton:GetScript("OnClick")(buyButton);
 		end
 	elseif ( name == "getvaserrormessage" ) then
-		if (IsOnGlueScreen()) then
+		if (C_Glue.IsOnGlueScreen()) then
 			self:SetAttribute("vaserrormessageresult", nil);
 			local data = value;
 			local character = C_StoreSecure.GetCharacterInfoByGUID(data.guid);
@@ -1415,7 +1415,7 @@ function StoreFrame_UpdateActivePanel(self, fromVASPurchaseCompletion)
 		StoreFrame_SetAlert(self, BLIZZARD_STORE_LOADING, BLIZZARD_STORE_PLEASE_WAIT);
 	elseif ( #GetStoreProductGroups() == 0 ) then
 		StoreFrame_SetAlert(self, BLIZZARD_STORE_NO_ITEMS, BLIZZARD_STORE_CHECK_BACK_LATER);
-	elseif ( not IsOnGlueScreen() and not StoreFrame_HasFreeBagSlots() ) then
+	elseif ( not C_Glue.IsOnGlueScreen() and not StoreFrame_HasFreeBagSlots() ) then
 		StoreFrame_SetAlert(self, BLIZZARD_STORE_BAG_FULL, BLIZZARD_STORE_BAG_FULL_DESC);
 	elseif ( not SecureCurrencyUtil.GetActiveCurrencyInfo() ) then
 		StoreFrame_SetAlert(self, BLIZZARD_STORE_INTERNAL_ERROR, BLIZZARD_STORE_INTERNAL_ERROR_SUBTEXT);
@@ -1636,7 +1636,7 @@ function StoreFrame_CheckForFree(self, event)
 	if (event == "PRODUCT_DISTRIBUTIONS_UPDATED") then
 		self.distributionsUpdated = true;
 	end
-	if (self.variablesLoaded and self.distributionsUpdated and C_SharedCharacterServices.HasFreePromotionalUpgrade() and not C_SharedCharacterServices.HasSeenFreePromotionalUpgradePopup() and not IsOnGlueScreen()) then
+	if (self.variablesLoaded and self.distributionsUpdated and C_SharedCharacterServices.HasFreePromotionalUpgrade() and not C_SharedCharacterServices.HasSeenFreePromotionalUpgradePopup() and not C_Glue.IsOnGlueScreen()) then
 		C_SharedCharacterServices.SetPromotionalPopupSeen(true);
 		self:Hide();
 		ServicesLogoutPopup.Background.Title:SetText(FREE_CHARACTER_UPGRADE_READY);
@@ -1950,7 +1950,7 @@ function StoreVASValidationFrame_OnLoad(self)
 		self.CharacterSelectionFrame[checkbox].Label:SetFontObjectsToTry("GameFontBlack", "GameFontBlackSmall", "GameFontBlackSmall2", "GameFontBlackTiny", "GameFontBlackTiny2");
 	end
 
-	if (IsOnGlueScreen()) then
+	if (C_Glue.IsOnGlueScreen()) then
 		self.CharacterSelectionFrame.NewCharacterName:SetFontObject("GlueEditBoxFont");
 		self.CharacterSelectionFrame.TransferRealmEditbox:SetFontObject("GlueEditBoxFont");
 		self.CharacterSelectionFrame.TransferBattlenetAccountEditbox:SetFontObject("GlueEditBoxFont");
@@ -2079,7 +2079,7 @@ function StoreVASValidationFrame_UpdateCharacterTransferValidationPosition()
 end
 
 local VasQueueStatusToString
-if (IsOnGlueScreen()) then
+if (C_Glue.IsOnGlueScreen()) then
 	VasQueueStatusToString = {
 		[Enum.VasQueueStatus.UnderAnHour] = "SEVERAL_MINUTES",
 		[Enum.VasQueueStatus.OneToThreeHours] = "ONE_THREE_HOURS",
@@ -2147,7 +2147,7 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 			JustFinishedOrdering = WaitingOnVASToComplete == WaitingOnVASToCompleteToken;
 			local fromVASPurchaseCompletion = true;
 			StoreFrame_UpdateActivePanel(StoreFrame, fromVASPurchaseCompletion);
-		elseif (IsOnGlueScreen() and StoreOutbound.IsCharacterSelectVisible()) then
+		elseif (C_Glue.IsOnGlueScreen() and StoreOutbound.IsCharacterSelectVisible()) then
 			StoreVASValidationFrame_OnVasProductComplete(StoreVASValidationFrame);
 		end
 	elseif ( event == "VAS_TRANSFER_VALIDATION_UPDATE" ) then
@@ -2271,7 +2271,7 @@ function StoreVASValidationFrame_OnVasProductComplete(self)
 		return;
 	end
 	local productInfo = C_StoreSecure.GetProductInfo(productID);
-	if (IsOnGlueScreen()) then
+	if (C_Glue.IsOnGlueScreen()) then
 		self:GetParent():Hide();
 		StoreOutbound.StoreFrameShowGlueDialog(string.format(BLIZZARD_STORE_VAS_PRODUCT_READY, productInfo.sharedData.name), guid, realmName, shouldHandle);
 	else
@@ -2342,7 +2342,7 @@ function StoreProductCard_UpdateState(card)
 	if (card.HighlightTexture) then
 		local entryID = card:GetID();
 		local entryInfo = C_StoreSecure.GetEntryInfo(entryID);
-		local enableHighlight = card:GetID() ~= selectedEntryID and not isRotating and (entryInfo.sharedData.productDecorator ~= Enum.BattlepayProductDecorator.VasService or IsOnGlueScreen());
+		local enableHighlight = card:GetID() ~= selectedEntryID and not isRotating and (entryInfo.sharedData.productDecorator ~= Enum.BattlepayProductDecorator.VasService or C_Glue.IsOnGlueScreen());
 		card.HighlightTexture:SetAlpha(enableHighlight and 1 or 0);
 		if (not card.Description and card:IsMouseMotionFocus()) then
 			if (isRotating) then
@@ -2389,7 +2389,7 @@ function StoreProductCard_UpdateState(card)
 
 				StoreTooltip:ClearAllPoints();
 				StoreTooltip:SetPoint(point, card, rpoint, xoffset, 0);
-				if (entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.VasService and not IsOnGlueScreen()) then
+				if (entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.VasService and not C_Glue.IsOnGlueScreen()) then
 					name = "";
 					description = BLIZZARD_STORE_LOG_OUT_TO_PURCHASE_THIS_PRODUCT;
 				end
@@ -2433,7 +2433,7 @@ end
 
 function StoreProductCard_OnEnter(self)
 	local entryInfo = C_StoreSecure.GetEntryInfo(self:GetID());
-	if (entryInfo.sharedData.productDecorator ~= Enum.BattlepayProductDecorator.VasService or IsOnGlueScreen()) then
+	if (entryInfo.sharedData.productDecorator ~= Enum.BattlepayProductDecorator.VasService or C_Glue.IsOnGlueScreen()) then
 		if (self.HighlightTexture) then
 			self.HighlightTexture:SetShown(selectedEntryID ~= self:GetID());
 		end
@@ -2455,7 +2455,7 @@ end
 
 function StoreProductCard_CheckShowStorePreviewOnClick(self)
 	local showPreview;
-	if ( IsOnGlueScreen() ) then
+	if ( C_Glue.IsOnGlueScreen() ) then
 		showPreview = IsControlKeyDown();
 	else
 		showPreview = IsModifiedClick("DRESSUP");
@@ -2481,7 +2481,7 @@ function StoreProductCard_OnClick(self,button,down)
 		end
 	end
 
-	if (entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.VasService and not IsOnGlueScreen()) then
+	if (entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.VasService and not C_Glue.IsOnGlueScreen()) then
 		return;
 	end
 

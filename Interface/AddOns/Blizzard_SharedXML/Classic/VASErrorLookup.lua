@@ -135,22 +135,30 @@ local vasErrorData = {
 			local str = "";
 			local moneyCapForLevel = 0;
 			if GetExpansionLevel() >= LE_EXPANSION_WRATH_OF_THE_LICH_KING then
-				if (character.level > 80) then
-					moneyCapForLevel = 50000 * COPPER_PER_SILVER * SILVER_PER_GOLD;
-				elseif (character.level > 50) then
-					moneyCapForLevel = 25000 * COPPER_PER_SILVER * SILVER_PER_GOLD;
-				elseif (character.level > 30) then
-					moneyCapForLevel = 2500 * COPPER_PER_SILVER * SILVER_PER_GOLD;
-				else
+				-- PAY_MONEY_LEVEL_01
+				if (character.level < 31) then
+					-- PAY_MONEY_LIMIT_01
 					moneyCapForLevel = 500 * COPPER_PER_SILVER * SILVER_PER_GOLD;
+				-- PAY_MONEY_LEVEL_02
+				elseif (character.level < 51) then
+					-- PAY_MONEY_LIMIT_02
+					moneyCapForLevel = 2500 * COPPER_PER_SILVER * SILVER_PER_GOLD;
+				-- Additional breakpoints 81, 86, 91, 101, 111 and 121 all cap at 50000
+				else
+					moneyCapForLevel = 50000 * COPPER_PER_SILVER * SILVER_PER_GOLD;
 				end
 			else
-				if (character.level > 50) then
-					moneyCapForLevel = 5000 * COPPER_PER_SILVER * SILVER_PER_GOLD;
-				elseif (character.level > 30) then
-					moneyCapForLevel = 500 * COPPER_PER_SILVER * SILVER_PER_GOLD;
-				else
+				-- PAY_MONEY_LEVEL_01
+				if (character.level < 31) then
+					-- PAY_MONEY_LIMIT_01
 					moneyCapForLevel = 100 * COPPER_PER_SILVER * SILVER_PER_GOLD;
+				-- PAY_MONEY_LEVEL_02
+				elseif (character.level < 51) then
+					-- PAY_MONEY_LIMIT_02
+					moneyCapForLevel = 500 * COPPER_PER_SILVER * SILVER_PER_GOLD;
+				-- Additional breakpoints 61, 71, 81, 81, 100, 110, and 121 all cap at 50000
+				else
+					moneyCapForLevel = 50000 * COPPER_PER_SILVER * SILVER_PER_GOLD;
 				end
 			end
 			if (moneyCapForLevel > 0) then

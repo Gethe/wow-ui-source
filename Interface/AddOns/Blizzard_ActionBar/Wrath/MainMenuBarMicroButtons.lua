@@ -4,6 +4,7 @@ MICRO_BUTTONS = {
 	"TalentMicroButton",
 	"AchievementMicroButton",
 	"QuestLogMicroButton",
+	"SocialsMicroButton",
 	"GuildMicroButton",
 	"CollectionsMicroButton",
 	"PVPMicroButton",
@@ -61,6 +62,10 @@ function UpdateMicroButtons()
 	else
 		QuestLogMicroButton:SetButtonState("NORMAL");
 	end
+
+	SocialsMicroButton:UpdateMicroButton();
+
+	GuildMicroButton:UpdateMicroButton();
 
 	if ( PVPParentFrame and PVPParentFrame:IsShown() ) then
 		PVPMicroButton:SetButtonState("PUSHED", true);
@@ -122,8 +127,6 @@ function UpdateMicroButtons()
 			AchievementMicroButton:Disable();
 		end
 	end
-
-	GuildMicroButton:UpdateMicroButton();
 end
 
 function AchievementMicroButton_OnLoad()

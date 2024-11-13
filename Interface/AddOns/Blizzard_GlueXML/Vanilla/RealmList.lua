@@ -287,6 +287,9 @@ function RealmList_OnConnectToRealm()
 	if (realmInfo.seasonID == Enum.SeasonID.Hardcore and realmInfo.numCharacters == 0) then
 		HardcorePopUpFrame:SetRealmInfo(RealmList.selectedRealm)
 		HardcorePopUpFrame:ShowRealmSelectionWarning();
+	elseif (realmInfo.isPvP == true and realmInfo.numCharacters == 0) then
+		RealmWarningPopUpFrame:SetRealmInfo(RealmList.selectedRealm)
+		RealmWarningPopUpFrame:ShowRealmSelectionWarning();
 	else
 		C_RealmList.ConnectToRealm(RealmList.selectedRealm);
 	end

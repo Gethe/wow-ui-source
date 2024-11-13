@@ -337,6 +337,9 @@
 	<Font name="LFGActivityEntryTrivial" inherits="GameFontNormalLeft" virtual="true">
 		<Color r="0.5" g="0.5" b="0.5"/>
 	</Font>
+	<Font name="LFGActivityEntryDifficult" inherits="GameFontNormalLeft" virtual="true">
+		<Color r="1.0" g="0.5" b="0.25"/>
+	</Font>
 	<Font name="OptionsFontSmall" inherits="GameFontNormalSmall" virtual="true"/>
 	<Font name="OptionsFontHighlightSmall" inherits="GameFontHighlightSmall" virtual="true"/>
 	<Font name="OptionsFontHighlight" inherits="GameFontHighlight" virtual="true"/>

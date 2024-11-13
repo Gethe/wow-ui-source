@@ -11,6 +11,8 @@ Classic\GlueTooltip.lua
 Classic\GlueTooltip.xml
 ServerAlert.lua
 ServerAlert.xml
+Classic\GlueGameLogo.lua
+Classic\GlueGameLogo.xml
 Classic\AccountLogin.lua
 Classic\AccountLogin.xml
 TBC\RealmList.lua
@@ -52,3 +54,5 @@ Classic\GlueMenuFrame.lua
 Classic\GlueMenuFrame.xml
 SocialContract.lua
 SocialContract.xml
+Classic\RealmWarning.lua
+Classic\RealmWarning.xml

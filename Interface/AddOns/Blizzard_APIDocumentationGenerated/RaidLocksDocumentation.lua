@@ -7,6 +7,21 @@ local RaidLocks =
 	Functions =
 	{
 		{
+			Name = "GetRedirectedDifficultyID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "mapID", Type = "number", Nilable = false },
+				{ Name = "difficultyID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "redirectedDifficultyID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "IsEncounterComplete",
 			Type = "Function",
 

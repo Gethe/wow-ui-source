@@ -1,8 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
-	<Script file="../../Interface/FrameXML/FriendsFrame_Shared.lua"/>
-	<Script file="FriendsFrame_TBC.lua"/>
-
 <!-- Patchwerk
 TRAVEL PASS
 <Texture name="TravelPass-Pressed.png" >
@@ -44,7 +41,7 @@ TRAVEL PASS
 			</Layer>
 		</Layers>
 	</Frame>
-	<Frame name="FriendsFrameFriendInviteTemplate" virtual="true">
+	<Frame name="FriendsFrameFriendInviteTemplate" mixin="FriendsFrameInviteTemplateMixin" virtual="true">
 		<Size x="298" y="34"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -67,7 +64,7 @@ TRAVEL PASS
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="DeclineButton" inherits="UIMenuButtonStretchTemplate" motionScriptsWhileDisabled="true">
+			<DropdownButton parentKey="DeclineButton" inherits="UIMenuButtonStretchTemplate" motionScriptsWhileDisabled="true">
 				<Size x="24" y="22"/>
 				<Anchors>
 					<Anchor point="RIGHT" x="-7" y="1"/>
@@ -82,7 +79,7 @@ TRAVEL PASS
 					</Layer>
 				</Layers>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-			</Button>
+			</DropdownButton>
 			<Button parentKey="AcceptButton" inherits="UIMenuButtonStretchTemplate" text="ACCEPT">
 				<Size x="0" y="22"/>
 				<Anchors>
@@ -103,6 +100,9 @@ TRAVEL PASS
 				</Scripts>
 			</Button>
 		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
 	</Frame>
 	<Button name="FriendsFrameButtonTemplate" hidden="true" virtual="true">
 		<Size x="298" y="34"/>
@@ -449,7 +449,7 @@ TRAVEL PASS
 				</FontString>
 				<FontString name="$parentClass" inherits="GameFontHighlightSmall" justifyH="LEFT">
 					<Size>
-						<AbsDimension x="100" y="14"/>
+						<AbsDimension x="87" y="14"/>
 					</Size>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentLevel" relativePoint="RIGHT">
@@ -647,6 +647,7 @@ TRAVEL PASS
 		</Layers>
 		<Scripts>
 			<OnClick>
+				GuildControlPopupFrame.numSkipUpdates = GuildControlPopupFrame.numSkipUpdates + 1;
 				if ( self:GetChecked() ) then
 					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 				else
@@ -1027,7 +1028,7 @@ TRAVEL PASS
 					</Frame>
 					<DropdownButton parentKey="StatusDropdown" name="FriendsFrameStatusDropdown" inherits="WowStyle1DropdownTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="43" y="-27"/>
+							<Anchor point="TOPLEFT" x="52" y="-27"/>
 						</Anchors>
 					</DropdownButton>
 					<EditBox name="FriendsFrameBroadcastInput" letters="127" countInvisibleLetters="true" autoFocus="false" hidden="true">
@@ -1172,44 +1173,7 @@ TRAVEL PASS
 							<OnClick function="FriendsTabHeader_ClickTab"/>
 						</Scripts>
 					</Button>
-					<!--<Button name="$parentGroupsButton" motionScriptsWhileDisabled="true" parentKey="groupsButton">
-						<Size x="26" y="26"/>
-						<Anchors>
-							<Anchor point="TOPRIGHT" x="-8" y="-55"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture name="$parentIcon" parentKey="Icon"/>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnLoad>
-								GroupsButton_Update(self);
-								self:RegisterEvent("STREAM_VIEW_MARKER_UPDATED");
-								self:RegisterEvent("INITIAL_CLUBS_LOADED");
-								self:RegisterEvent("CLUB_INVITATION_ADDED_FOR_SELF");
-								self:RegisterEvent("CLUB_INVITATION_REMOVED_FOR_SELF");
-								self:RegisterEvent("BN_DISCONNECTED");
-								self:RegisterEvent("BN_CONNECTED");
-							</OnLoad>
-							<OnClick>
-								ToggleCommunitiesFrame();
-							</OnClick>
-							<OnEnter>
-								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-								GameTooltip:SetText(BLIZZARD_GROUPS_BUTTON);
-								GameTooltip:AddLine(BLIZZARD_GROUPS_BUTTON_TOOLTIP, 1, 1, 1, true);
-								GameTooltip:Show();
-							</OnEnter>
-							<OnLeave>
-								GameTooltip:Hide();
-							</OnLeave>
-						</Scripts>
-						<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
-						<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square" parentKey="highlight"/>
-					</Button>-->
-				
-			</Frames>
+				</Frames>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
 				</Scripts>
@@ -2625,6 +2589,7 @@ TRAVEL PASS
 					<OnHide>
 						GuildControlPopupFrame:Hide();
 						GuildMemberDetailFrame:Hide();
+						GuildEventLogFrame:Hide();
 					</OnHide>
 				</Scripts>
 			</Frame>
@@ -2743,9 +2708,6 @@ TRAVEL PASS
 										</Offset>
 									</Anchor>
 								</Anchors>
-								<HitRectInsets>
-									<AbsInset left="0" right="20" top="0" bottom="0"/>
-								</HitRectInsets>
 								<Scripts>
 									<OnLoad function="GuildControlPopupFrameDropdown_OnLoad"/>
 								</Scripts>
@@ -2757,7 +2719,7 @@ TRAVEL PASS
 								<Anchors>
 									<Anchor point="LEFT" relativeTo="GuildControlPopupFrameDropdown" relativePoint="RIGHT">
 										<Offset>
-											<AbsDimension x="-15" y="1"/>
+											<AbsDimension x="1" y="1"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -3358,18 +3320,6 @@ TRAVEL PASS
 								</Anchor>
 							</Anchors>
 						</FontString>
-						<Texture file="Interface\FriendsFrame\UI-GuildMember-Patch">
-							<Size>
-								<AbsDimension x="375" y="32"/>
-							</Size>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="12" y="3"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</Texture>
 					</Layer>
 				</Layers>
 				<Frames>
@@ -3397,18 +3347,22 @@ TRAVEL PASS
 									</Anchor>
 								</Anchors>
 								<Scripts>
+									<OnLoad inherit="prepend">
+										self.scrollBarHideable = 1;
+										self.ScrollBar:Hide();
+									</OnLoad>
 									<OnMouseDown>
 										if ( CanEditGuildInfo() ) then
-											GuildInfoEditBox:SetFocus();
+										GuildInfoEditBox:SetFocus();
 										else
-											GuildInfoEditBox:ClearFocus();
+										GuildInfoEditBox:ClearFocus();
 										end
 									</OnMouseDown>
 									<OnMouseUp>
 										if ( CanEditGuildInfo() ) then
-											GuildInfoEditBox:SetFocus();
+										GuildInfoEditBox:SetFocus();
 										else
-											GuildInfoEditBox:ClearFocus();
+										GuildInfoEditBox:ClearFocus();
 										end
 									</OnMouseUp>
 								</Scripts>
@@ -3473,12 +3427,12 @@ TRAVEL PASS
 					</Button>
 					<Button name="GuildInfoSaveButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
 						<Size>
-							<AbsDimension x="139" y="22"/>
+							<AbsDimension x="90" y="22"/>
 						</Size>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="10" y="12"/>
+									<AbsDimension x="108" y="12"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -3494,7 +3448,7 @@ TRAVEL PASS
 					</Button>
 					<Button name="GuildInfoCancelButton" inherits="UIPanelButtonTemplate" text="CLOSE">
 						<Size>
-							<AbsDimension x="139" y="22"/>
+							<AbsDimension x="90" y="22"/>
 						</Size>
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="GuildInfoSaveButton" relativePoint="RIGHT">
@@ -3507,6 +3461,22 @@ TRAVEL PASS
 							<OnClick>
 								GuildInfoFrame:Hide();
 							</OnClick>
+						</Scripts>
+						<NormalFont style="GameFontNormalSmall"/>
+						<HighlightFont style="GameFontHighlightSmall"/>
+						<DisabledFont style="GameFontDisableSmall"/>
+					</Button>
+					<Button name="GuildInfoGuildEventButton" inherits="UIPanelButtonTemplate" text="GUILD_EVENT_LOG">
+						<Size>
+							<AbsDimension x="65" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="RIGHT" relativeTo="GuildInfoSaveButton" relativePoint="LEFT">
+								<Offset x="-32" y="0"/>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick function="ToggleGuildEventLog"/>
 						</Scripts>
 						<NormalFont style="GameFontNormalSmall"/>
 						<HighlightFont style="GameFontHighlightSmall"/>
@@ -3686,7 +3656,8 @@ TRAVEL PASS
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								StaticPopup_Show("REMOVE_GUILDMEMBER");
+								local data = { name = GuildFrame.selectedName };
+								StaticPopup_Show("REMOVE_GUILDMEMBER", nil, nil, data);
 							</OnClick>
 							<OnEnter>
 								GameTooltip_AddNewbieTip(self, REMOVE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GUILDREMOVE, 1);
@@ -3744,7 +3715,7 @@ TRAVEL PASS
 								GuildFramePromoteButton:Disable();
 							</OnClick>
 							<OnEnter>
-								GameTooltip_AddNewbieTip(self, PROMOTE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_PROMOTE, 1);
+								GameTooltip_AddNewbieTip(self, GUILDCONTROL_OPTION5, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_PROMOTE, 1);
 							</OnEnter>
 							<OnLeave>
 								GameTooltip:Hide();
@@ -3776,7 +3747,7 @@ TRAVEL PASS
 								GuildFrameDemoteButton:Disable();
 							</OnClick>
 							<OnEnter>
-								GameTooltip_AddNewbieTip(self, DEMOTE, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_DEMOTE, 1);
+								GameTooltip_AddNewbieTip(self, GUILDCONTROL_OPTION6, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_DEMOTE, 1);
 							</OnEnter>
 							<OnLeave>
 								GameTooltip:Hide();
@@ -3855,9 +3826,128 @@ TRAVEL PASS
 					</Frame>
 				</Frames>
 			</Frame>
+			<Frame name="GuildEventLogFrame" inherits="BackdropTemplate" toplevel="true" enableMouse="true" hidden="true">
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+				</KeyValues>
+				<Size>
+					<AbsDimension x="395" y="435"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GuildControlPopupFrame">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="GuildEventLogCorner" file="Interface\DialogFrame\UI-DialogBox-Corner">
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="-6" y="-7"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<FontString name="GuildEventLogTitle" inherits="GameFontNormal" text="GUILD_EVENT_LOG">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="17" y="-17"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="GuildEventFrame" inherits="TooltipBackdropTemplate">
+						<Size>
+							<AbsDimension x="375" y="370"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="11" y="-32"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Frames>
+							<ScrollFrame name="GuildEventLogScrollFrame" inherits="UIPanelScrollFrameTemplate">
+								<Size>
+									<AbsDimension x="340" y="359"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPRIGHT" relativeTo="GuildEventFrame" relativePoint="TOPRIGHT">
+										<Offset x="-28" y="-6"/>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad inherit="prepend">
+										self.scrollBarHideable = 1;
+										self.ScrollBar:Hide();
+									</OnLoad>
+								</Scripts>
+								<ScrollChild>
+									<Frame name="GuildEventLogScrollChildFrame">
+										<Size>
+											<AbsDimension x="340" y="359"/>
+										</Size>
+										<Layers>
+											<Layer level="OVERLAY">
+												<FontString name="GuildEventMessage" inherits="ChatFontNormal" justifyH="LEFT">
+													<Size>
+														<AbsDimension x="340" y="0"/>
+													</Size>
+													<Anchors>
+														<Anchor point="TOPLEFT" />
+													</Anchors>
+												</FontString>
+											</Layer>
+										</Layers>
+									</Frame>
+								</ScrollChild>
+							</ScrollFrame>
+						</Frames>
+					</Frame>
+					<Button name="GuildEventLogCloseButton" inherits="UIPanelCloseButton">
+						<Anchors>
+							<Anchor point="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="-3" y="-3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="GuildEventLogCancelButton" inherits="UIPanelButtonTemplate" text="CLOSE">
+						<Size>
+							<AbsDimension x="139" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativeTo="GuildEventLogFrame" relativePoint="BOTTOMRIGHT">
+								<Offset x="-9" y="13"/>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick function="HideParentPanel"/>
+						</Scripts>
+						<NormalFont style="GameFontNormalSmall"/>
+						<HighlightFont style="GameFontHighlightSmall"/>
+						<DisabledFont style="GameFontDisableSmall"/>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnShow function="QueryGuildEventLog"/>
+				</Scripts>
+			</Frame>
 			<Button name="FriendsFrameTab1" inherits="FriendsFrameTabTemplate" id="1" text="FRIENDS" motionScriptsWhileDisabled="false">
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" x="-2" y="-30"/>
+					<Anchor point="BOTTOMLEFT" x="-2" y="-31"/>
 				</Anchors>
 				<Scripts>
 					<OnShow>
@@ -3885,24 +3975,9 @@ TRAVEL PASS
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
-			<Button name="FriendsFrameTab3" inherits="FriendsFrameTabTemplate" id="3" text="RAID" motionScriptsWhileDisabled="false">
+			<Button name="FriendsFrameTab3" inherits="FriendsFrameTabTemplate" id="3" text="GUILD" motionScriptsWhileDisabled="false">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="FriendsFrameTab2" relativePoint="RIGHT" x="-14" y="0"/>
-				</Anchors>
-				<Scripts>
-					<OnShow>
-						self:SetWidth(0);
-						PanelTemplates_TabResize(self, 0, nil);
-					</OnShow>
-					<OnEnter>
-						GameTooltip_AddNewbieTip(self, MicroButtonTooltipText(RAID, "TOGGLERAIDTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_RAIDTAB, 1);
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
-			</Button>
-			<Button name="FriendsFrameTab4" inherits="FriendsFrameTabTemplate" id="4" text="GUILD" motionScriptsWhileDisabled="false">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="FriendsFrameTab3" relativePoint="RIGHT" x="-14" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -3919,9 +3994,9 @@ TRAVEL PASS
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
-			<Button name="FriendsFrameTab5" inherits="FriendsFrameTabTemplate" id="5" text="BLIZZARD_GROUPS_SHORT" motionScriptsWhileDisabled="false" hidden="true">
+			<Button name="FriendsFrameTab4" inherits="FriendsFrameTabTemplate" id="4" text="RAID" motionScriptsWhileDisabled="false">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="FriendsFrameTab4" relativePoint="RIGHT" x="-14" y="0"/>
+					<Anchor point="LEFT" relativeTo="FriendsFrameTab3" relativePoint="RIGHT" x="-14" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnShow>
@@ -3929,24 +4004,10 @@ TRAVEL PASS
 						PanelTemplates_TabResize(self, 0, nil);
 					</OnShow>
 					<OnEnter>
-						GameTooltip_AddNewbieTip(self, MicroButtonTooltipText(BLIZZARD_GROUPS_SHORT, "TOGGLEBATTLENETGROUPS"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_BLIZZARDGROUPSTAB, 1);
+						GameTooltip_AddNewbieTip(self, MicroButtonTooltipText(RAID, "TOGGLERAIDTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_RAIDTAB, 1);
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
-				<Frames>
-					<Frame parentKey="NotificationOverlay" frameLevel="100" setAllPoints="true" hidden="true">
-						<Layers>
-							<Layer level="OVERLAY">
-								<Texture parentKey="UnreadNotificationIcon" atlas="hud-microbutton-communities-icon-notification">
-									<Size x="12" y="12"/>
-									<Anchors>
-										<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOP" x="22" y="-8"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
-					</Frame>
-				</Frames>
 			</Button>
 			<Frame name="FriendsTooltip" inherits="TooltipBackdropTemplate" frameStrata="TOOLTIP" hidden="true" clampedToScreen="true">
 				<Size x="200" y="200"/>
@@ -4487,12 +4548,7 @@ TRAVEL PASS
 			</OnHide>
 		</Scripts>
 	</Frame>
-	<Frame name="FriendsFriendsFrame" inherits="BackdropTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" mixin="FriendsFriendsFrameMixin">
-		<KeyValues>
-			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
-			<KeyValue key="exclusive" value="true" type="boolean"/>
-			<KeyValue key="hideOnEscape" value="true" type="boolean"/>
-		</KeyValues>
+	<Frame name="FriendsFriendsFrame" parent="UIParent" hidden="true" frameStrata="DIALOG" mixin="FriendsFriendsFrameMixin">
 		<Size x="314" y="345"/>
 		<Anchors>
 			<Anchor point="CENTER" x="0" y="50"/>
@@ -4509,9 +4565,10 @@ TRAVEL PASS
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
 			<DropdownButton parentKey="FriendsDropdown" name="FriendsFriendsFrameDropdown" inherits="WowStyle1DropdownTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="8" y="-40"/>
+					<Anchor point="TOPLEFT" x="26" y="-40"/>
 				</Anchors>
 			</DropdownButton>
 			<Frame name="FriendsFriendsList" inherits="TooltipBackdropTemplate">

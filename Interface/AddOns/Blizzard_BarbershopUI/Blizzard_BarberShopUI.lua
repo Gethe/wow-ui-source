@@ -3,6 +3,7 @@ GILNEAN_RACE_ID = 23;
 
 function BarberShop_OnLoad(self)
 	self:RegisterEvent("BARBER_SHOP_RESULT");
+	self:RegisterEvent("BARBER_SHOP_FORCE_CUSTOMIZATIONS_UPDATE");
 	if ( C_BarberShop.IsValidCustomizationType(Enum.CharCustomizationType.Skin) ) then
 		if ( C_BarberShop.IsValidCustomizationType(Enum.CharCustomizationType.HairColor) ) then
 			-- tauren, worgen, female pandaren
@@ -19,11 +20,8 @@ end
 function BarberShop_SetViewingAlteredForm(viewingAlteredForm)
 	if(C_BarberShop.IsViewingAlteredForm() ~= viewingAlteredForm) then
 		C_BarberShop.SetViewingAlteredForm(viewingAlteredForm);
-		BarberShop_CheckForInvalidOptions(BarberShopFrame);
 		BarberShopAlternateFormTop:SetChecked(not viewingAlteredForm);
 		BarberShopAlternateFormBottom:SetChecked(viewingAlteredForm);
-		BarberShop_ResetAll();
-		BarberShop_Update(BarberShopFrame);
 	end
 end
 
@@ -53,7 +51,6 @@ function BarberShop_CheckForInvalidOptions(self)
 	else
 		self.HairColorSelector:Hide();
 	end
-	BarberShop_Update(self);
 end
 
 function BarberShop_OnShow(self)
@@ -69,8 +66,11 @@ function BarberShop_OnShow(self)
 	self:ClearAllPoints();
 	self:SetPoint("RIGHT", min(-50, -CONTAINER_OFFSET_X), -50);
 	BarberShop_UpdateSexSelectors();
+	BarberShop_HandleAlternateFormButtons(false);
 
 	BarberShop_CheckForInvalidOptions(self);
+	BarberShop_Update(self);
+
 	local isViewingAlteredForm = C_BarberShop.IsViewingAlteredForm();
 	BarberShopAlternateFormTop:SetChecked(not isViewingAlteredForm);
 	BarberShopAlternateFormBottom:SetChecked(isViewingAlteredForm);
@@ -94,7 +94,11 @@ function BarberShop_OnEvent(self, event, ...)
 		PlaySound(SOUNDKIT.BARBERSHOP_HAIRCUT);
 		BarberShop_ResetAll();
 		isResult = true;
+	elseif(event == "BARBER_SHOP_FORCE_CUSTOMIZATIONS_UPDATE") then
+	    BarberShop_ResetBanner();
+		BarberShop_CheckForInvalidOptions(self);	
 	end
+
 	if (self:IsShown()) then
 		BarberShop_Update(self);
 		if isResult then
@@ -105,7 +109,10 @@ function BarberShop_OnEvent(self, event, ...)
 end
 
 function BarberShop_UpdateCost(self)
-	MoneyFrame_Update(BarberShopFrameMoneyFrame:GetName(), C_BarberShop.GetCurrentCost());
+	-- [CLASS - 34071]: Remove Barbershop Cost code
+	-- Cost is now deprecated for Classic and Mainline
+	-- MoneyFrame_Update(BarberShopFrameMoneyFrame:GetName(), C_BarberShop.GetCurrentCost());
+
 	-- The 4th return from GetBarberShopStyleInfo is whether the selected style is the active character style
 	-- Enable the okay and reset buttons if anything has changed
 	for i=1, #self.Selector do
@@ -141,13 +148,20 @@ function BarberShop_Update(self, updateBanner)
 	BarberShop_UpdateCustomizationOptions(self);
 end
 
+-- Returns true if the Banner Name was updated.
 function BarberShop_UpdateSelector(self, updateBanner)
 	updateBanner = updateBanner or 1;
 	local customName, name, isCurrent = C_BarberShop.GetCustomizationTypeInfo(self:GetID());
 	if updateBanner == 1 then
 		BarberShop_UpdateBanner(name);
 		BarberShop_SetLabelColor(self.Category, not isCurrent);
+
+		if ( name and name ~= "" ) then
+			return true;
+		end
 	end
+
+	return false;
 end
 
 function BarberShop_UpdateCustomizationOptions(self)
@@ -190,7 +204,6 @@ end
 
 function BarberShop_SetSelectedSex(self, sex)
 	if not C_BarberShop.IsViewingVisibleSex(sex) then
-		BarberShop_ResetBanner();
 		C_BarberShop.SetSelectedSex(sex);
 		if sex == 0 then
 			BarberShopFrameMaleButton:SetChecked(1);
@@ -199,9 +212,6 @@ function BarberShop_SetSelectedSex(self, sex)
 			BarberShopFrameMaleButton:SetChecked(nil);
 			BarberShopFrameFemaleButton:SetChecked(1);
 		end
-		BarberShop_Update(self);
-	else
-		BarberShop_Update(self, 0);
 	end
 	self.FacialHairSelector.Category:SetText(C_BarberShop.GetCustomizationTypeInfo(Enum.CharCustomizationType.FacialHair));
 	BarberShop_HandleAlternateFormButtons(false, sex);

@@ -166,7 +166,12 @@ function MenuTemplates.RecurseSetupFontString(frame)
 			
 			if originalSetTextColor then
 				fontString.SetTextColor = function(self, r, g, b, a)
-					autoEnableTextColors[true] = CreateColor(r, g, b, a);
+					-- The intention here is to update the cached color for 'enabled/true' so that it can be
+					-- restored as the frame changes enabled state. This treats any color other than 
+					-- DISABLED_FONT_COLOR as an enabled color.
+					if not IsRGBAEqualToColor(r, g, b, a, autoEnableTextColors[false]) then
+						autoEnableTextColors[true] = CreateColor(r, g, b, a);
+					end
 					originalSetTextColor(self, r, g, b, a);
 				end;
 				fontString.autoEnableTextColors = autoEnableTextColors;

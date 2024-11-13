@@ -66,6 +66,8 @@ local GMTicketInfo =
 				{ Name = "caseIndex", Type = "number", Nilable = true },
 				{ Name = "waitTimeMinutes", Type = "number", Nilable = true },
 				{ Name = "waitMessage", Type = "cstring", Nilable = true },
+				{ Name = "caseTitle", Type = "cstring", Nilable = true },
+				{ Name = "caseDescription", Type = "cstring", Nilable = true },
 			},
 		},
 	},

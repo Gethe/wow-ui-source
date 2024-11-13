@@ -52,7 +52,7 @@ local ModelSettings = {
 }
 
 local playerRaceSex;
-if ( not IsOnGlueScreen() ) then
+if ( not C_Glue.IsOnGlueScreen() ) then
 	local _;
 	_, playerRaceSex = UnitRace("player");
 	if ( UnitSex("player") == 2 ) then

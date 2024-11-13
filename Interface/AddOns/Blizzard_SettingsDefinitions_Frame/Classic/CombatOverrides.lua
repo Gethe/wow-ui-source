@@ -1,14 +1,41 @@
 CombatOverrides = {}
 
 function CombatOverrides.CreateRaidSelfHighlightSetting(category)
+-- The get and set essentially perform bitwise operations with powers of 2 instead of bits 
+	local function GetValue()
+		local circleOn = GetCVarBool("findYourselfModeCircle");
+		local iconOn = GetCVarBool("findYourselfModeIcon");
+
+		local value = (circleOn and 1 or 0) + (iconOn and 2 or 0); 
+		return value;
+	end
+
+	local function SetValue(value)
+		local NUM_COMBINATIONS = 4;
+		SetCVar("findYourselfAnywhere", value > 0 and value < NUM_COMBINATIONS);
+
+		SetCVar("findYourselfModeIcon", value >= 2);
+		if (value >= 2) then
+			value = value - 2;
+		end
+
+		SetCVar("findYourselfModeCircle", value >= 1);
+	end
+
 	local function GetOptions()
 		local container = Settings.CreateControlTextContainer();
-		container:Add(0, SELF_HIGHLIGHT_MODE_CIRCLE);
-		container:Add(-1, OFF);
+		container:Add(1, SELF_HIGHLIGHT_MODE_CIRCLE);
+		container:Add(2, SELF_HIGHLIGHT_MODE_ICON);
+		container:Add(3, SELF_HIGHLIGHT_MODE_CIRCLE_AND_ICON);
+
+		container:Add(0, OFF);
 		return container:GetData();
 	end
 
-	return Settings.SetupCVarDropdown(category, "findYourselfMode", Settings.VarType.Number, GetOptions, SELF_HIGHLIGHT_OPTION, OPTION_TOOLTIP_SELF_HIGHLIGHT);
+	local defaultValue = 0;
+	local setting = Settings.RegisterProxySetting(category, "PROXY_SELF_HIGHLIGHT",
+		Settings.VarType.Number, SELF_HIGHLIGHT_OPTION, defaultValue, GetValue, SetValue);
+	return setting, Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_SELF_HIGHLIGHT);
 end
 
 function CombatOverrides.CreateFloatingCombatTextSetting(category)

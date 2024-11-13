@@ -72,9 +72,6 @@ function GlueParent_OnEvent(self, event, ...)
 		GlueParent_EnsureValidScreen();
 		GlueParent_UpdateDialogs();
 		GlueParent_CheckCinematic();
-		if ( AccountLogin:IsVisible() ) then
-			SetGameLogo(AccountLogin.UI.GameLogo);
-		end
 	elseif ( event == "LOGIN_STATE_CHANGED" ) then
 		GlueParent_EnsureValidScreen();
 		GlueParent_UpdateDialogs();
@@ -707,36 +704,6 @@ end
 
 function IsKioskGlueEnabled()
 	return Kiosk.IsEnabled() and not IsCompetitiveModeEnabled();
-end
-
-
-function GetDisplayedExpansionLogo(expansionLevel, desiredReleaseType)
-	local expansionInfo = GetExpansionDisplayInfo(expansionLevel, desiredReleaseType);
-
-	if expansionInfo then
-		return expansionInfo.logo;
-	end
-
-	return nil;
-end
-
-
-function SetGameLogo(texture, desiredExpansionLevel, desiredReleaseType)
-	local expansionLevel = desiredExpansionLevel or GetClientDisplayExpansionLevel();
-	local releaseType = desiredReleaseType or LE_RELEASE_TYPE_CLASSIC;
-
-	if(GetCNLogoReleaseType) then
-		releaseType = GetCNLogoReleaseType();
-	end
-
-	local logo = GetDisplayedExpansionLogo(expansionLevel, releaseType);
-
-	if logo then
-		texture:SetTexture(logo);
-		texture:Show();
-	else
-		texture:Hide();
-	end
 end
 
 function UpgradeAccount()

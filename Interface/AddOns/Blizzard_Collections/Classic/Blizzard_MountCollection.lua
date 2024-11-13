@@ -36,6 +36,9 @@ function MountJournal_OnLoad(self)
 	self.ScrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnUpdate, MountJournal_EvaluateListHelpTip, self);
 
 	MountJournal_InitFilterButton(self);
+
+	self.FilterDropdown:SetWidth(85);
+
 end
 
 function MountJournal_InitFilterButton(self)
@@ -68,7 +71,6 @@ function MountJournal_InitFilterButton(self)
 	local function SetSourceChecked(filterIndex) 
 		C_MountJournal.SetSourceFilter(filterIndex, not IsSourceChecked(filterIndex));
 	end
-	
 	self.FilterDropdown:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_MOUNT_COLLECTION_FILTER");
 

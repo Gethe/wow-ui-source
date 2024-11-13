@@ -269,6 +269,15 @@ local Transmog =
 			},
 		},
 		{
+			Name = "LoadOutfit",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "outfitID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "SetPending",
 			Type = "Function",
 

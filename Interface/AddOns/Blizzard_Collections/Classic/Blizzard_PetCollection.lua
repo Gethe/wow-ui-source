@@ -35,6 +35,8 @@ function PetJournal_OnLoad(self)
 	PetJournal_InitFilterDropdown(self);
 
 	PetJournal_ShowPetCard(1);
+
+	self.FilterDropdown:SetWidth(85)
 end
 
 function PetJournal_InitFilterDropdown(self)
@@ -77,7 +79,17 @@ function PetJournal_InitFilterDropdown(self)
 		[Enum.BattlePetSources.PetStore] = 2,
 		[Enum.BattlePetSources.Tcg] = 1,
 	};
+
+	self.FilterDropdown:SetIsDefaultCallback(function()
+		return PetJournalFilterDropdown_GetCollectedFilter() and PetJournalFilterDropdown_GetNotCollectedFilter();
+	end);
 	
+	self.FilterDropdown:SetDefaultCallback(function()
+		PetJournalFilterDropdown_SetCollectedFilter(true);
+		PetJournalFilterDropdown_SetNotCollectedFilter(true);
+	end);
+	
+
 	self.FilterDropdown:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_PET_COLLECTION_FILTER");
 

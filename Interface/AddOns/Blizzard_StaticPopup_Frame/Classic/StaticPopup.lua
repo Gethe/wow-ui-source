@@ -2604,7 +2604,7 @@ StaticPopupDialogs["REMOVE_GUILDMEMBER"] = {
 		if data then
 			self.text:SetFormattedText(REMOVE_GUILDMEMBER_LABEL, data.name);
 		else
-			self.text:SetText(GuildFrame.selectedName);
+			self.text:SetFormattedText(REMOVE_GUILDMEMBER_LABEL, GuildFrame.selectedName);
 		end
 	end,
 	timeout = 0,
@@ -4280,9 +4280,9 @@ StaticPopupDialogs["CONFIRM_OVERWRITE_TRANSMOG_OUTFIT"] = {
 	text = TRANSMOG_OUTFIT_CONFIRM_OVERWRITE,
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function (self) WardrobeOutfitManager:SaveOutfit(self.data) end,
+	OnAccept = function (self) WardrobeOutfitManager:OverwriteOutfit(self.data.outfitID) end,
 	OnCancel = function (self)
-		local name = self.data;
+		local name = self.data.name;
 		self:Hide();
 		local dialog = StaticPopup_Show("NAME_TRANSMOG_OUTFIT");
 		if ( dialog ) then

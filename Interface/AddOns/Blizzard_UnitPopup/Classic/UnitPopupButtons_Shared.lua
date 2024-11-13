@@ -245,27 +245,6 @@ function UnitPopupLootPromoteButtonMixin:OnClick(contextData)
 	SetLootMethod("master", UnitPopupSharedUtil.GetFullPlayerName(contextData), 2);
 end
 
-function UnitPopupRafGrantLevelButtonMixin:GetText(contextData)
-	return RAF_GRANT_LEVEL;
-end 
-
-function UnitPopupRafGrantLevelButtonMixin:CanShow(contextData)
-	return C_RecruitAFriend.IsReferAFriendLinked(contextData.unit)
-end
-
-function UnitPopupRafGrantLevelButtonMixin:IsEnabled(contextData)
-	return C_RecruitAFriend.CanGrantLevel(contextData.unit)
-end
-
-function UnitPopupRafGrantLevelButtonMixin:OnClick(contextData)
-	local isAlliedRace = UnitAlliedRaceInfo(contextData.unit);
-	if isAlliedRace then
-		StaticPopup_Show("RAF_GRANT_LEVEL_ALLIED_RACE", nil, nil, contextData.unit);
-	else
-		GrantLevel(contextData.unit);
-	end
-end 
-
 -- Overrides
 function UnitPopupRaidDifficulty1ButtonMixin:IsDisabled()
 	if IsInGroup(LE_PARTY_CATEGORY_INSTANCE) then
@@ -423,13 +402,13 @@ end
 
 function UnitPopupRafSummonButtonMixin:CanShow(contextData)
 	local guid = UnitPopupSharedUtil.GetGUID(contextData);
-	return guid and C_RecruitAFriend.IsReferAFriendLinked(guid);
+	return guid and C_RecruitAFriend.IsRecruitAFriendLinked(guid);
 end	
 
 function UnitPopupRafSummonButtonMixin:OnClick(contextData)
 	local guid = UnitPopupSharedUtil.GetGUID(contextData);
-	local name = UnitPopupSharedUtil.GetFullPlayerName(contextData);
-	C_RecruitAFriend.SummonFriend(guid, name); 
+	local fullName = UnitPopupSharedUtil.GetFullPlayerName(contextData);
+	C_RecruitAFriend.SummonFriend(guid, fullName);
 end
 
 function UnitPopupBnetTargetButtonMixin:IsEnabled(contextData)
@@ -599,3 +578,4 @@ end
 function UnitPopupGuildInviteButtonMixin:CanShow()
 	return CanGuildInvite();
 end 
+

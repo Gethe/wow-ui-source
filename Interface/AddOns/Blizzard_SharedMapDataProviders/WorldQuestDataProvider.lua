@@ -193,8 +193,8 @@ end
 
 function WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
 	local pinsToRemove = {};
-	for questId in pairs(self.activePins) do
-		pinsToRemove[questId] = true;
+	for questID in pairs(self.activePins) do
+		pinsToRemove[questID] = true;
 	end
 	--[[
 	local taskInfo;
@@ -202,26 +202,26 @@ function WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
 	
 	local mapID = mapCanvas:GetMapID();
 	if (mapID) then
-		taskInfo = C_TaskQuest.GetQuestsForPlayerByMapID(mapID);
+		taskInfo = C_TaskQuest.GetQuestsOnMap(mapID);
 		self.matchWorldMapFilters = MapUtil.MapHasEmissaries(mapID);
 	end
 
 	if taskInfo then
 		for i, info in ipairs(taskInfo) do
-			if self:ShouldShowQuest(info) and HaveQuestData(info.questId) then
-				if QuestUtils_IsQuestWorldQuest(info.questId) then
+			if self:ShouldShowQuest(info) and HaveQuestData(info.questID) then
+				if QuestUtils_IsQuestWorldQuest(info.questID) then
 					if self:DoesWorldQuestInfoPassFilters(info) then
-						pinsToRemove[info.questId] = nil;
-						local pin = self.activePins[info.questId];
+						pinsToRemove[info.questID] = nil;
+						local pin = self.activePins[info.questID];
 						if pin then
 							pin:RefreshVisuals();
 							pin:SetPosition(info.x, info.y); -- Fix for WOW8-48605 - WQ starting location may move based on player location and viewed map
 
-							if self.pingPin and self.pingPin:IsAttachedToQuest(info.questId) then
+							if self.pingPin and self.pingPin:IsAttachedToQuest(info.questID) then
 								self.pingPin:SetPosition(info.x, info.y);
 							end
 						else
-							self.activePins[info.questId] = self:AddWorldQuest(info);
+							self.activePins[info.questID] = self:AddWorldQuest(info);
 						end
 					end
 				end
@@ -229,20 +229,20 @@ function WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
 		end
 	end
 	]]
-	for questId in pairs(pinsToRemove) do
-		if self.pingPin and self.pingPin:IsAttachedToQuest(questId) then
+	for questID in pairs(pinsToRemove) do
+		if self.pingPin and self.pingPin:IsAttachedToQuest(questID) then
 			self.pingPin:Stop();
 		end
 
-		mapCanvas:RemovePin(self.activePins[questId]);
-		self.activePins[questId] = nil;
+		mapCanvas:RemovePin(self.activePins[questID]);
+		self.activePins[questID] = nil;
 	end
 
 	mapCanvas:TriggerEvent("WorldQuestsUpdate", mapCanvas:GetNumActivePinsByTemplate(self:GetPinTemplate()));
 end
 
 function WorldQuestDataProviderMixin:ShouldShowQuest(info)
-	return not self.focusedQuestID and not self:IsQuestSuppressed(info.questId);
+	return not self.focusedQuestID and not self:IsQuestSuppressed(info.questID);
 end
 
 function WorldQuestDataProviderMixin:GetPinTemplate()
@@ -251,14 +251,14 @@ end
 
 function WorldQuestDataProviderMixin:AddWorldQuest(info)
 	local pin = self:GetMap():AcquirePin(self:GetPinTemplate());
-	pin.questID = info.questId;
+	pin.questID = info.questID;
 	pin.dataProvider = self;
 
 	pin.worldQuest = true;
 	pin.numObjectives = info.numObjectives;
 	pin:UseFrameLevelType("PIN_FRAME_LEVEL_WORLD_QUEST", self:GetMap():GetNumActivePinsByTemplate(self:GetPinTemplate()));
 
-	local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex, displayTimeLeft = GetQuestTagInfo(info.questId);
+	local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex, displayTimeLeft = GetQuestTagInfo(info.questID);
 	local tradeskillLineID = tradeskillLineIndex and select(7, GetProfessionInfo(tradeskillLineIndex));
 
 	pin.worldQuestType = worldQuestType;
@@ -307,7 +307,7 @@ function WorldQuestDataProviderMixin:AddWorldQuest(info)
 		pin.Underlay:Hide();
 	end
 
-	local timeLeftMinutes = C_TaskQuest.GetQuestTimeLeftMinutes(info.questId);
+	local timeLeftMinutes = C_TaskQuest.GetQuestTimeLeftMinutes(info.questID);
 	if timeLeftMinutes and timeLeftMinutes <= WORLD_QUESTS_TIME_LOW_MINUTES then
 		pin.TimeLowFrame:Show();
 	else
@@ -316,7 +316,7 @@ function WorldQuestDataProviderMixin:AddWorldQuest(info)
 
 	pin:SetPosition(info.x, info.y);
 
-	C_TaskQuest.RequestPreloadRewardData(info.questId);
+	C_TaskQuest.RequestPreloadRewardData(info.questID);
 
 	return pin;
 end

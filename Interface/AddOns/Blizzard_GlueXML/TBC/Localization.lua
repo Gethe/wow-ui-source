@@ -55,7 +55,7 @@ local l10nTable = {
 			CLASSIC_MODERN_LOGO_OVERRIDE = {filename = 'Interface\\Glues\\Common\\GLUES-WOW-CLASSICLOGO', uv = { 0, 1, 0, 1 }};
 			BURNING_CRUSADE_ORIGINAL_LOGO_OVERRIDE = {filename = 'Interface\\Glues\\Common\\GLUES-WOW-CHINESEBCLOGO', uv = { 0, 1, 0, 1 }};
 
-			_G["CharacterCreateWoWLogo"]:SetPoint("TOPLEFT", _G["CharacterCreateFrame"], 3, 14) -- -3, +11
+			_G["CharacterCreateConfigurationFrame"].GameLogo:SetPoint("TOPLEFT", _G["CharacterCreateFrame"], 34, -3);
 			_G["CharacterSelectLogo"]:SetPoint("TOPLEFT", 5, -5);
 			_G["AccountLogin"].UI.GameLogo:SetPoint("TOPLEFT", 5, -5);
 

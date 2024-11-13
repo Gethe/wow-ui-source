@@ -236,6 +236,11 @@ function ScrollUtil.InitScrollFrameWithScrollBar(scrollFrame, scrollBar)
 	scrollBar:RegisterCallback(BaseScrollBoxEvents.OnScroll, onScrollBarScroll, scrollFrame);
 end
 
+function ScrollUtil.EnableSnapToInterval(scrollBox, scrollBar)
+	scrollBox:EnableSnapToInterval();
+	scrollBar:EnableSnapToInterval();
+end
+
 -- Utility for managing the visibility of a ScrollBar and reanchoring of the
 -- ScrollBox as the visibility changes.
 ManagedScrollBarVisibilityBehaviorMixin = CreateFromMixins(CallbackRegistryMixin);

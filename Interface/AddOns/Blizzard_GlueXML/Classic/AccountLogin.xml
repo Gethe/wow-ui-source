@@ -207,12 +207,6 @@
 						</FontString>
 					</Layer>
 					<Layer level="OVERLAY">
-						<Texture parentKey="GameLogo">
-							<Size x="256" y="128"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="8" y="-16"/>
-							</Anchors>
-						</Texture>
 						<Texture name="WorldOfWarcraftRating" hidden="true">
 							<Size x="128" y="128"/>
 							<Anchors>
@@ -222,6 +216,12 @@
 					</Layer>
 				</Layers>
 				<Frames>
+					<Frame parentKey="GameLogo" inherits="GlueGameLogoTemplate">
+						<Size x="256" y="128"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="8" y="-16"/>
+						</Anchors>
+					</Frame>
 					<EditBox parentKey="AccountEditBox" inherits="AccountLoginBackdropTemplate" parentArray="ManualLoginRegions" letters="320">
 						<Size x="160" y="37"/>
 						<Anchors>

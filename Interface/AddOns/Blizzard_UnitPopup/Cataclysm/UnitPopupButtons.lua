@@ -265,15 +265,3 @@ end
 function UnitPopupAchievementButtonMixin:OnClick(contextData)
 	InspectAchievements(contextData.unit);
 end
-
-function UnitPopupSelectRoleButtonMixin:CanShow(contextData)
-	if not CanShowSetRoleButton() then
-		return false;
-	end
-
-	if not IsInGroup() then
-		return false;
-	end
-
-	return UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") or UnitIsUnit(contextData.unit, "player"); 
-end

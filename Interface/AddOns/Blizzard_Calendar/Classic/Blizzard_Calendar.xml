@@ -630,7 +630,7 @@
 		 I know it's a little unclear. I thought CreateOrEditEventFrame sounded kind of silly.
 	-->
 	<Frame name="CalendarCreateEventFrame" toplevel="true" parent="CalendarFrame" enableMouse="true" frameStrata="HIGH" hidden="true">
-		<Size x="320" y="580"/>
+		<Size x="348" y="580"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-24"/>
 		</Anchors>
@@ -700,7 +700,7 @@
 			</EditBox>
 			<DropdownButton parentKey="EventTypeDropdown" inherits="WowStyle1DropdownTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="190" y="-82"/>
+					<Anchor point="TOPLEFT" x="220" y="-82"/>
 				</Anchors>
 			</DropdownButton>
 			<DropdownButton parentKey="HourDropdown" inherits="WowStyle1DropdownTemplate">
@@ -720,7 +720,7 @@
 			</DropdownButton>
 			<DropdownButton parentKey="DifficultyOptionDropdown" inherits="WowStyle1DropdownTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="190" y="-114"/>
+					<Anchor point="TOPLEFT" x="220" y="-114"/>
 				</Anchors>
 			</DropdownButton>
 			<DropdownButton parentKey="CommunityDropdown" inherits="WowStyle1DropdownTemplate" hidden="true">
@@ -729,14 +729,14 @@
 				</Anchors>
 			</DropdownButton>
 			<Frame name="CalendarCreateEventInviteListSection">
-				<Size x="320" y="330"/>
+				<Size x="348" y="330"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="0" y="-210"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BORDER">
 						<Texture name="CalendarCreateEventDivider" file="Interface\DialogFrame\UI-DialogBox-Divider">
-							<Size x="303" y="16"/>
+							<Size x="331" y="16"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="10" y="-20"/>
 							</Anchors>
@@ -834,7 +834,7 @@
 				</Frames>
 			</Frame>
 			<Frame name="CalendarCreateEventDescriptionContainer" inherits="TooltipBackdropTemplate">
-				<Size x="287" y="65"/>
+				<Size x="315" y="65"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="16" y="-146"/>
 				</Anchors>

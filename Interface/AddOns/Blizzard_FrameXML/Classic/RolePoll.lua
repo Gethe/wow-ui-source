@@ -31,18 +31,18 @@ function RolePollPopup_Show(self)
 		RolePollPopupRoleButton_SetNotRecommended(RolePollPopupRoleButtonDPS);
 	end
 	
-	self.role = UnitGroupRolesAssigned("player");
+	self.role = UnitGroupRolesAssignedEnum("player");
 	RolePollPopup_UpdateChecked(self);
 	
 	StaticPopupSpecial_Show(RolePollPopup);
 end
 
 function RolePollPopup_UpdateChecked(self)
-	RolePollPopupRoleButtonTank.checkButton:SetChecked(self.role == "TANK");
-	RolePollPopupRoleButtonHealer.checkButton:SetChecked(self.role == "HEALER");
-	RolePollPopupRoleButtonDPS.checkButton:SetChecked(self.role == "DAMAGER");
+	RolePollPopupRoleButtonTank.checkButton:SetChecked(self.role == Enum.LFGRole.Tank);
+	RolePollPopupRoleButtonHealer.checkButton:SetChecked(self.role == Enum.LFGRole.Healer);
+	RolePollPopupRoleButtonDPS.checkButton:SetChecked(self.role == Enum.LFGRole.Damage);
 	
-	if ( self.role == "TANK" or self.role == "HEALER" or self.role == "DAMAGER" ) then
+	if ( self.role == Enum.LFGRole.Tank or self.role == Enum.LFGRole.Healer or self.role == Enum.LFGRole.Damage ) then
 		self.acceptButton:Enable();
 	else
 		self.acceptButton:Disable();
@@ -69,7 +69,7 @@ function RolePollPopupRoleButtonCheckButton_OnClick(self, button)
 		RolePollPopup.role = self:GetParent().role;
 	else
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
-		RolePollPopup.role = "NONE";
+		RolePollPopup.role = Constants.LFG_ROLEConstants.LFG_ROLE_NO_ROLE;
 	end
 
 	RolePollPopup_UpdateChecked(RolePollPopup);
@@ -77,7 +77,7 @@ end
 
 function RolePollPopupAccept_OnClick(self, button)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	UnitSetRole("player", self:GetParent().role);
+	UnitSetRoleEnum("player", self:GetParent().role);
 	StaticPopupSpecial_Hide(self:GetParent());
 end
 
@@ -105,4 +105,3 @@ function RoleChangedFrame_OnEvent(self, event, ...)
 		end
 	end
 end
-

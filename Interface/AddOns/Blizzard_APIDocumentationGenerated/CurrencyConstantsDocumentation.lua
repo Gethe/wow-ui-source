@@ -5,9 +5,9 @@ local CurrencyConstants =
 		{
 			Name = "AccountCurrencyTransferResult",
 			Type = "Enumeration",
-			NumValues = 9,
+			NumValues = 10,
 			MinValue = 0,
-			MaxValue = 8,
+			MaxValue = 9,
 			Fields =
 			{
 				{ Name = "Success", Type = "AccountCurrencyTransferResult", EnumValue = 0 },
@@ -19,6 +19,7 @@ local CurrencyConstants =
 				{ Name = "NoValidSourceCharacter", Type = "AccountCurrencyTransferResult", EnumValue = 6 },
 				{ Name = "ServerError", Type = "AccountCurrencyTransferResult", EnumValue = 7 },
 				{ Name = "CannotUseCurrency", Type = "AccountCurrencyTransferResult", EnumValue = 8 },
+				{ Name = "TransactionInProgress", Type = "AccountCurrencyTransferResult", EnumValue = 9 },
 			},
 		},
 		{

@@ -2,7 +2,24 @@
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_WorldMapTemplates.lua"/>
 
-	<DropdownButton name="WorldMapFloorNavigationFrameTemplate" frameStrata="HIGH" inherits="WowStyle1DropdownTemplate" mixin="WorldMapFloorNavigationFrameMixin" virtual="true"/>
+	<DropdownButton name="WorldMapFloorNavigationFrameTemplate" frameStrata="HIGH" inherits="WowStyle1DropdownTemplate" mixin="WorldMapFloorNavigationFrameMixin" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString inherits="GameFontNormalSmall" text="FLOOR" parentKey="header">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="20" y="10"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</DropdownButton>
 
 	<DropdownButton name="WorldMapTrackingOptionsButtonTemplate" frameStrata="HIGH" mixin="WorldMapTrackingOptionsButtonMixin" virtual="true">
 		<Size x="32" y="32"/>

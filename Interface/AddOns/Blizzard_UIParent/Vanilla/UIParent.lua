@@ -34,12 +34,7 @@ WORLD_QUEST_QUALITY_COLORS = {
 	[LE_WORLD_QUEST_QUALITY_EPIC] = ITEM_QUALITY_COLORS[LE_ITEM_QUALITY_EPIC];
 };
 
--- Protecting from addons since we use this in GetScaledCursorDelta which is used in secure code.
-local _UIParentGetEffectiveScale;
-local _UIParentRef;
 function UIParent_OnLoad(self)
-	_UIParentGetEffectiveScale = self.GetEffectiveScale;
-	_UIParentRef = self;
 	self:RegisterEvent("PLAYER_LOGIN");
 	self:RegisterEvent("PLAYER_DEAD");
 	self:RegisterEvent("SELF_RES_SPELL_CHANGED");
@@ -385,6 +380,11 @@ end
 
 function ToggleGuildFrame()
 	if (Kiosk.IsEnabled()) then
+		return;
+	end
+
+	if(C_CVar.GetCVarBool("useClassicGuildUI")) then
+		ToggleFriendsFrame(FRIEND_TAB_GUILD);
 		return;
 	end
 
@@ -1580,7 +1580,7 @@ function GetScaledCursorPosition()
 end
 
 function GetScaledCursorDelta()
-	local uiScale = _UIParentGetEffectiveScale(_UIParentRef);
+	local uiScale = GetAppropriateTopLevelParent():GetEffectiveScale();
 	local x, y = GetCursorDelta();
 	return x / uiScale, y / uiScale;
 end
@@ -2692,16 +2692,8 @@ end
 
 -- Set the overall UI state to show or not show the LFG UI.
 function SetLookingForGroupUIAvailable(available)
-	if (available) then
-		WorldMapMicroButton:Hide()
-		LFGMicroButton:Show();
-		MiniMapWorldMapButton:Show();
-		MiniMapTracking:SetPoint("TOPLEFT", -24, -24);
-	else
-		WorldMapMicroButton:Show()
-		LFGMicroButton:Hide();
-		MiniMapWorldMapButton:Hide();
-		MiniMapTracking:SetPoint("TOPLEFT", -15, 0);
+	if (available and C_LFGList.GetPremadeGroupFinderStyle() == Enum.PremadeGroupFinderStyle.Vanilla) then
+		UIParentLoadAddOn("Blizzard_GroupFinder_VanillaStyle");
 	end
 end
 

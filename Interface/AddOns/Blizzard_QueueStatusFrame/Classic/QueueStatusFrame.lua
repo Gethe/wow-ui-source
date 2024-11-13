@@ -367,7 +367,7 @@ end
 
 function QueueStatusEntry_SetUpLFGListApplication(entry, resultID)
 	local searchResultInfo = C_LFGList.GetSearchResultInfo(resultID);
-	local activityName = C_LFGList.GetActivityFullName(searchResultInfo.activityID, nil, searchResultInfo.isWarMode);
+	local activityName = C_LFGList.GetActivityFullName(searchResultInfo.activityIDs[1], nil, searchResultInfo.isWarMode);
 	QueueStatusEntry_SetMinimalDisplay(entry, searchResultInfo.name, QUEUED_STATUS_SIGNED_UP, activityName);
 end
 
@@ -581,15 +581,7 @@ end
 ----------------------------------------------
 function QueueStatusDropdown_Show(source)
 	MenuUtil.CreateContextMenu(source, function(owner, rootDescription)
-		rootDescription:SetTag("MENU_QUEUE_STATUS_FRAME");
-
-		--All LFG types
-		for i=1, NUM_LE_LFG_CATEGORYS do
-			local mode, submode = GetLFGMode(i);
-			if ( mode and submode ~= "noteleport" ) then
-				QueueStatusDropdown_AddLFGButtons(rootDescription, i);
-end
-end
+	rootDescription:SetTag("MENU_QUEUE_STATUS_FRAME");
 
 	--All LFG types
 	for i=1, NUM_LE_LFG_CATEGORYS do

@@ -114,7 +114,7 @@ function SetupPlayerForModelScene(modelScene, overrideActorName, itemModifiedApp
 		sheatheWeapons = (sheatheWeapons == nil) or sheatheWeapons;
 		hideWeapons = (hideWeapons == nil) or hideWeapons;
 		useNativeForm = (useNativeForm == nil) or useNativeForm;
-		if IsOnGlueScreen() then
+		if C_Glue.IsOnGlueScreen() then
 			local characterIndex = nil;  -- defaults to selected character.
 			actor:SetPlayerModelFromGlues(characterIndex, sheatheWeapons, autoDress, hideWeapons, useNativeForm);
 		else

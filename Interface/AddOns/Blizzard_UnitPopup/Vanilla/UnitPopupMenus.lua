@@ -17,6 +17,7 @@ function UnitPopupMenuSelf:GetEntries()
 		UnitPopupResetInstancesButtonMixin,
 		UnitPopupOtherSubsectionTitle,
 		UnitPopupVoiceChatButtonMixin, 
+		UnitPopupSelectRoleButtonMixin,
 		UnitPopupMovePlayerFrameButtonMixin,
 		UnitPopupMoveTargetFrameButtonMixin,
 		UnitPopupPartyInstanceLeaveButtonMixin,
@@ -50,6 +51,7 @@ function UnitPopupMenuParty:GetEntries()
 		UnitPopupMenuFriendlyPlayerInteract, --This is a submenu
 		UnitPopupOtherSubsectionTitle,
 		UnitPopupVoiceChatButtonMixin, 
+		UnitPopupSelectRoleButtonMixin,
 		UnitPopupMovePlayerFrameButtonMixin,
 		UnitPopupMoveTargetFrameButtonMixin,
 		UnitPopupReportGroupMemberButtonMixin,
@@ -84,6 +86,7 @@ function UnitPopupMenuRaidPlayer:GetEntries()
 		UnitPopupMenuFriendlyPlayerInteract, --This is a subMenu
 		UnitPopupOtherSubsectionTitle,
 		UnitPopupVoiceChatButtonMixin, 
+		UnitPopupSelectRoleButtonMixin,
 		UnitPopupMovePlayerFrameButtonMixin,
 		UnitPopupMoveTargetFrameButtonMixin,
 		UnitPopupReportGroupMemberButtonMixin,

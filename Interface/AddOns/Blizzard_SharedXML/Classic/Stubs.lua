@@ -18,8 +18,11 @@ end
 function HelpTip:Hide( p1, p2 )
 end
 
-
 function HelpTip:HideAll(parent)
+end
+
+function HelpTip:IsShowing( p1, p2 )
+	return false;
 end
 
 HelpTip.Alignment = {

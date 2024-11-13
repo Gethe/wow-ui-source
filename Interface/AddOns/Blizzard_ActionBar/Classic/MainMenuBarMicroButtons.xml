@@ -105,28 +105,28 @@
 			<OnLoad function="CharacterMicroButton_OnLoad"/>
 			<OnMouseDown>
 				if ( self.down ) then
-				self.down = nil;
-				ToggleCharacter("PaperDollFrame");
-				return;
+					self.down = nil;
+					ToggleCharacter("PaperDollFrame");
+					return;
 				end
 				CharacterMicroButton_SetPushed();
 				self.down = 1;
 			</OnMouseDown>
 			<OnMouseUp>
 				if ( self.down ) then
-				self.down = nil;
-				if ( self:IsMouseOver() ) then
-				ToggleCharacter("PaperDollFrame");
-				end
-				UpdateMicroButtons();
-				return;
+					self.down = nil;
+					if ( self:IsMouseOver() ) then
+						ToggleCharacter("PaperDollFrame");
+					end
+					UpdateMicroButtons();
+					return;
 				end
 				if ( self:GetButtonState() == "NORMAL" ) then
-				CharacterMicroButton_SetPushed();
-				self.down = 1;
+					CharacterMicroButton_SetPushed();
+					self.down = 1;
 				else
-				CharacterMicroButton_SetNormal();
-				self.down = 1;
+					CharacterMicroButton_SetNormal();
+					self.down = 1;
 				end
 			</OnMouseUp>
 			<OnEvent function="CharacterMicroButton_OnEvent"/>
@@ -200,16 +200,25 @@
 			</OnClick>
 		</Scripts>
 	</Button>
-	<Button name="GuildMicroButton" inherits="MainMenuBarMicroButton" mixin="GuildMicroButtonMixin">
+	<Button name="SocialsMicroButton" inherits="MainMenuBarMicroButton" mixin="SocialsMicroButtonMixin">
+		<!-- Note: SocialMicroButton and GuildMicroButton occupy the same space. Only one will be visible at a time. -->
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="QuestLogMicroButton" relativePoint="BOTTOMRIGHT" x="-3" y="0"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow function="MicroButton_KioskModeDisable" inherit="append"/>
+			<OnClick method="OnClick" inherit="append"/>
+		</Scripts>
+	</Button>
+	<Button name="GuildMicroButton" inherits="MainMenuBarMicroButton" mixin="GuildMicroButtonMixin" hidden="true">
+		<!-- Note: SocialMicroButton and GuildMicroButton occupy the same space. Only one will be visible at a time. -->
 		<KeyValues>
 			<KeyValue key="commandName" value="TOGGLEGUILDTAB" type="string"/>
 		</KeyValues>
 		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="QuestLogMicroButton" relativePoint="BOTTOMRIGHT">
-				<Offset>
-					<AbsDimension x="-3" y="0"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="CENTER" relativeTo="SocialsMicroButton" relativePoint="CENTER"/>
 		</Anchors>
 		<Frames>
 			<Frame parentKey="NotificationOverlay" frameLevel="100" setAllPoints="true" hidden="true"/>
@@ -241,53 +250,6 @@
 			<OnClick>
 				ToggleWorldMap();
 			</OnClick>
-		</Scripts>
-	</Button>
-	<Button name="LFGMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent" hidden="true">
-		<Anchors>
-			<Anchor point="CENTER" relativeTo="WorldMapMicroButton"/>
-		</Anchors>
-		<Scripts>
-			<OnLoad function="LFGMicroButton_OnLoad"/>
-			<OnEvent>
-				self.tooltipText = MicroButtonTooltipText(LFG_BUTTON, "TOGGLEGROUPFINDER");
-				self.newbieText = NEWBIE_TOOLTIP_LFGPARENT;
-			</OnEvent>
-			<OnMouseDown>
-				if ( self:IsEnabled() ) then
-					if ( self.down ) then
-						self.down = nil;
-						PVEFrame_ToggleFrame();
-						return;
-					end
-					self.down = 1;
-				end
-			</OnMouseDown>
-			<OnMouseUp>
-				if ( self:IsEnabled() ) then
-					if ( self.down ) then
-						self.down = nil;
-						if ( self:IsMouseOver() ) then
-							PVEFrame_ToggleFrame();
-						end
-						UpdateMicroButtons();
-						return;
-					end
-					if ( self:GetButtonState() == "NORMAL" ) then
-						self.down = 1;
-					else
-						self.down = 1;
-					end
-				end
-			</OnMouseUp>
-			<OnEnable>
-				self:SetAlpha(1);
-				self:GetDisabledTexture():SetDesaturated(false);
-			</OnEnable>
-			<OnDisable>
-				self:SetAlpha(0.5);
-				self:GetDisabledTexture():SetDesaturated(true);
-			</OnDisable>
 		</Scripts>
 	</Button>
 	<Button name="MainMenuMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">

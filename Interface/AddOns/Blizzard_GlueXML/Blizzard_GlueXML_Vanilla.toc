@@ -11,6 +11,8 @@ Classic\GlueTooltip.lua
 Classic\GlueTooltip.xml
 ServerAlert.lua
 ServerAlert.xml
+Classic\GlueGameLogo.lua
+Classic\GlueGameLogo.xml
 Classic\AccountLogin.lua
 Classic\AccountLogin.xml
 Vanilla\RealmList.lua
@@ -57,3 +59,5 @@ SocialContract.lua
 SocialContract.xml
 Classic\HardcoreFrames.lua
 Classic\HardcoreFrames.xml
+Classic\RealmWarning.lua
+Classic\RealmWarning.xml

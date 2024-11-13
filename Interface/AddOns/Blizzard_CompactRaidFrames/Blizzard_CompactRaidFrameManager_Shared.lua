@@ -193,6 +193,7 @@ function CompactRaidFrameManager_UpdateOptionsFlowContainer(self)
 
 	if ( GetDisplayedAllyFrames() == "raid" ) then
 		FlowContainer_AddObject(container, self.displayFrame.profileSelector);
+		FlowContainer_SetStartingOffset(container, 20, 0);
 		self.displayFrame.profileSelector:Show();
 	else
 		self.displayFrame.profileSelector:Hide();

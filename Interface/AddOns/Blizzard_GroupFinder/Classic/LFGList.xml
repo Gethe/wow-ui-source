@@ -1156,6 +1156,9 @@
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.SearchBox" relativePoint="RIGHT" x="2" y="0"/>
 						</Anchors>
+						<KeyValues>
+							<KeyValue key="resizeToText" type="boolean" value="false"/>
+						</KeyValues>
 					</DropdownButton>
 					<Frame parentKey="AutoCompleteFrame" frameLevel="20">
 						<Size x="0" y="30"/>
@@ -2002,12 +2005,6 @@
 		</Scripts>
 	</Frame>
 	<Frame name="LFGListApplicationDialog" inherits="LFGListApplicationDialogTemplate"/>
-	<Frame name="LFGListCreateRoleDialog" inherits="LFGListApplicationDialogTemplate">
-		<Size x="306" y="152"/>
-		<Scripts>
-			<OnLoad inherit="prepend" function="LFGListCreateRoleDialog_OnLoad"/>
-		</Scripts>
-	</Frame>
 	<Frame name="LFGListInviteDialog" parent="UIParent" frameStrata="DIALOG" hidden="true" enableMouse="true">
 		<Size x="314" y="210"/>
 		<Layers>

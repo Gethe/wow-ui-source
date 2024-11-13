@@ -169,6 +169,10 @@ function InterfaceOverrides.AdjustDisplaySettings(category)
 		Settings.SetupCVarCheckbox(category, "alwaysShowRuneIcons", ALWAYS_SHOW_RUNE_ICONS, OPTION_TOOLTIP_ALWAYS_SHOW_RUNE_ICONS);		
 	end
 
+	if GetClassicExpansionLevel() <= LE_EXPANSION_WRATH_OF_THE_LICH_KING then
+		Settings.SetupCVarCheckbox(category, "useClassicGuildUI", CLASSIC_GUILD_UI_TEXT, OPTION_TOOLTIP_CLASSIC_GUILD_UI);
+	end
+
 	if ClassicExpansionAtLeast(LE_EXPANSION_WRATH_OF_THE_LICH_KING) then
 		do
 			-- Use Equipment Manager

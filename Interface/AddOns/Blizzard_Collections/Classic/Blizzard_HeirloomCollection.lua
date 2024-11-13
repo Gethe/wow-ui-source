@@ -99,6 +99,9 @@ function HeirloomsMixin:OnLoad()
 
 	self:RegisterEvent("HEIRLOOMS_UPDATED");
 	self:RegisterEvent("HEIRLOOM_UPGRADE_TARGETING_CHANGED");
+
+	self.FilterDropdown:SetWidth(85);
+
 end
 
 function HeirloomsMixin:InitFilterDropdown()

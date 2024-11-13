@@ -66,6 +66,53 @@ function GraphicsOverrides.GetTextureResolutionOptions(settingTextureResolution,
 end 
 
 function GraphicsOverrides.CreateHiResOptions(category, layout)
+	if (not AreHighResTexturesAvailable()) then 
+		return;
+	end
+
+	local function GetOptions()
+		local container = Settings.CreateControlTextContainer();
+		container:Add(false, VIDEO_OPTIONS_DISABLED);
+		container:Add(true, VIDEO_OPTIONS_ENABLED);
+		return container:GetData();
+	end
+
+	local function GetValue()
+		if C_BattleNet.AreHighResTexturesInstalled() then
+			return GetCVarBool("useHighResTextures");
+		end
+		return false;
+	end
+
+	local function SetValue(value)
+		if C_BattleNet.AreHighResTexturesInstalled() then
+			SetCVar("useHighResTextures", value);
+		end
+	end
+
+	local setting = Settings.RegisterProxySetting(category, "PROXY_HIGH_RES_TEXTURES", 
+	Settings.VarType.Boolean, OPTION_HD_TEXTURES, Settings.Default.True, GetValue, SetValue);
+	setting:SetCommitFlags(Settings.CommitFlag.Apply);
+
+	local initializer = Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_HD_TEXTURES);
+	initializer:AddShownPredicate(BNConnected);
+	initializer:AddModifyPredicate(C_BattleNet.AreHighResTexturesInstalled);
+
+	if not C_BattleNet.AreHighResTexturesInstalled() then
+		local function OnClick()
+			local dialog = GlueDialog_Show or StaticPopup_Show;
+		    dialog("DOWNLOAD_HIGH_RES_TEXTURES");
+		end
+
+		local addSearchTags = true;
+		local hdTexturesInitializer = CreateSettingsButtonInitializer(OPTION_HD_TEXTURES, HD_TEXTURES_BUTTON, OnClick, OPTION_TOOLTIP_HD_TEXTURES, addSearchTags);
+		hdTexturesInitializer.hideText = true;
+
+		local version = GetBuildInfo();
+		hdTexturesInitializer.showNew = version == "4.4.1";
+		hdTexturesInitializer:AddShownPredicate(BNConnected);
+		layout:AddInitializer(hdTexturesInitializer);
+	end
 end
 
 function GraphicsOverrides.RunSettingsCallback(callback)
