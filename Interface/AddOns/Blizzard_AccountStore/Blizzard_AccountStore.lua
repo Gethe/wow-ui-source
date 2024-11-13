@@ -22,10 +22,12 @@ function AccountStoreMixin:OnLoad()
 end
 
 function AccountStoreMixin:OnShow()
+	PlaySound(SOUNDKIT.ACCOUNT_STORE_OPEN);
 	EventRegistry:TriggerEvent("AccountStore.ShownState", true);
 end
 
 function AccountStoreMixin:OnHide()
+	PlaySound(SOUNDKIT.ACCOUNT_STORE_CLOSE);
 	EventRegistry:TriggerEvent("AccountStore.ShownState", false);
 
 	if self.inFullscreenMode then

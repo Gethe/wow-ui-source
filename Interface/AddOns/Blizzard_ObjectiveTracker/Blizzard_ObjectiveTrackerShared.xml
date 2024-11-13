@@ -4,6 +4,13 @@
 	<Button name="QuestObjectiveItemButtonTemplate" mixin="QuestObjectiveItemButtonMixin" virtual="true">
 		<Size x="26" y="26"/>
 		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Glow" atlas="UI-QuestTrackerButton-QuestItem-Frame-Glow" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="ARTWORK">
 				<FontString parentKey="HotKey" inherits="NumberFontNormalSmallGray" justifyH="LEFT" text="RANGE_INDICATOR">
 					<Size x="29" y="10"/>
@@ -24,6 +31,19 @@
 		<Frames>
 			<Cooldown parentKey="Cooldown" inherits="CooldownFrameTemplate"/>
 		</Frames>
+		<NormalTexture parentKey="NormalTexture" atlas="UI-QuestTrackerButton-QuestItem-Frame">
+			<Size x="42" y="42"/>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</NormalTexture>
+		<PushedTexture atlas="UI-QuestTrackerButton-QuestItem-Frame"/>
+		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+		<Animations>
+			<AnimationGroup parentKey="GlowAnim" looping="BOUNCE">
+				<Alpha childKey="Glow" fromAlpha="0" toAlpha="1" duration="1"/>
+			</AnimationGroup>
+		</Animations>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
@@ -34,14 +54,6 @@
 			<OnLeave function="GameTooltip_Hide"/>
 			<OnClick method="OnClick"/>
 		</Scripts>
-		<NormalTexture parentKey="NormalTexture" file="Interface\Buttons\UI-Quickslot2">
-			<Size x="42" y="42"/>
-			<Anchors>
-				<Anchor point="CENTER"/>
-			</Anchors>
-		</NormalTexture>
-		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
-		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 	</Button>
 
 	<Button name="QuestObjectiveFindGroupButtonTemplate" mixin="QuestObjectiveFindGroupButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
@@ -193,9 +205,9 @@
 		</Animations>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
-		</Scripts>	
+		</Scripts>
 	</Frame>
-	
+
 	<Frame name="ObjectiveTrackerLineTemplate" mixin="ObjectiveTrackerLineMixin" hyperlinksEnabled="true" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
@@ -211,7 +223,7 @@
 						<Anchor point="RIGHT"/>
 					</Anchors>
 				</FontString>
-			</Layer>				
+			</Layer>
 		</Layers>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
@@ -270,7 +282,7 @@
 			</StatusBar>
 		</Frames>
 	</Frame>
-	
+
 	<Frame name="ObjectiveTrackerTimerBarTemplate" mixin="ObjectiveTrackerTimerBarMixin" virtual="true" hidden="true">
 		<Size x="192" y="20"/>
 		<Anchors>

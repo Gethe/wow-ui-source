@@ -1172,6 +1172,7 @@ function LFDMicroButtonMixin:UpdateMicroButton()
 		else
 			self:Enable();
 			self:SetNormal();
+			EventRegistry:TriggerEvent("PlunderstormQueueTutorial.Update");
 		end
 	end
 end

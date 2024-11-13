@@ -1086,13 +1086,6 @@
 								</FontString>
 							</Layer>
 						</Layers>
-						<Frames>
-							<Frame parentKey="NewText" inherits="NewFeatureLabelNoAnimateTemplate" setAllPoints="true">
-								<Anchors>
-									<Anchor point="RIGHT" x="-4" y="0" relativePoint="TOPRIGHT"/>
-								</Anchors>
-							</Frame>
-						</Frames>
 					</Button>
 					<!-- Casual  -->
 					<Frame name="HonorFrame">
@@ -1507,6 +1500,7 @@
 						
 						<Scripts>
 							<OnLoad method="OnLoad"/>
+							<OnShow method="OnShow"/>
 						</Scripts>
 					</Frame>
 					<Frame name="LFGListPVPStub" hidden="true">
@@ -1658,41 +1652,22 @@
 							<Frame parentKey="PlunderstormPanel" mixin="PlunderstormPanelMixin" setAllPoints="true" hidden="true">
 								<Layers>
 									<Layer level="ARTWORK">
-										<Texture parentKey="SwordDecoration" atlas="plunderstorm-glues-tutorial-swords" useAtlasSize="true">
-											<Anchors>
-												<Anchor point="TOP" y="-48"/>
-											</Anchors>
-										</Texture>
 										<FontString parentKey="PlunderDesc" inherits="GameFontHighlight" justifyV="MIDDLE" justifyH="CENTER" text="WOW_LABS_PLUNDER_LFG_DESC">
 											<Size x="150" y="40"/>
 											<Anchors>
 												<Anchor point="BOTTOM" y="78"/>
 											</Anchors>
 										</FontString>
+										<FontString parentKey="PlunderDisplay" inherits="GameFontHighlightLarge" justifyV="MIDDLE" justifyH="CENTER">
+											<Size x="150" y="20"/>
+											<Anchors>
+												<Anchor point="TOP" relativeKey="$parent.PlunderDesc" relativePoint="BOTTOM" y="-8"/>
+											</Anchors>
+										</FontString>
 									</Layer>
 								</Layers>
 								<Frames>
-									<Button parentKey="PlunderDisplay">
-										<Size x="150" y="20"/>
-										<Anchors>
-											<Anchor point="TOP" relativeKey="$parent.PlunderDesc" relativePoint="BOTTOM" y="-8"/>
-										</Anchors>
-										<Layers>
-											<Layer level="ARTWORK">
-												<FontString parentKey="PlunderLabel" inherits="GameFontHighlightLarge" text="PLUNDER_DISPLAY_LABEL" justifyV="MIDDLE" justifyH="RIGHT">
-													<Anchors>
-														<Anchor point="RIGHT" relativePoint="CENTER" x="-8"/>
-													</Anchors>
-												</FontString>
-												<FontString parentKey="PlunderAmount" inherits="GameFontHighlightLarge" justifyV="MIDDLE" justifyH="LEFT">
-													<Anchors>
-														<Anchor point="LEFT" relativePoint="CENTER" x="8"/>
-													</Anchors>
-												</FontString>
-											</Layer>
-										</Layers>
-									</Button>
-									<Button parentKey="PlunderstoreButton" inherits="BigRedThreeSliceButtonTemplate" text="PLUNDERSTORM_PLUNDER_STORE_TITLE">
+									<Button parentKey="PlunderstoreButton" inherits="BigGoldRedThreeSliceButtonTemplate" text="PLUNDERSTORM_PLUNDER_STORE_TITLE">
 										<Size x="150" y="32"/>
 										<Anchors>
 											<Anchor point="TOP" relativeKey="$parent.PlunderDisplay" relativePoint="BOTTOM" y="-8"/>

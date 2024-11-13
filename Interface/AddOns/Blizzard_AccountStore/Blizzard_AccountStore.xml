@@ -75,7 +75,7 @@
 		</Layers>
 	</Frame>
 
-	<Frame name="AccountStoreFrame" mixin="AccountStoreMixin" frameStrata="HIGH" parent="UIParent" inherits="PortraitFrameTemplate, PingReceiverAttributeTemplate" enableMouse="true" hidden="true">
+	<Frame name="AccountStoreFrame" mixin="AccountStoreMixin" frameStrata="HIGH" parent="UIParent" inherits="PortraitFrameTemplate, PingReceiverAttributeTemplate" enableMouse="true" hidden="true" toplevel="true">
 		<Size x="800" y="537" />
 		<Anchors>
 			<Anchor point="LEFT" x="50" y="0" />

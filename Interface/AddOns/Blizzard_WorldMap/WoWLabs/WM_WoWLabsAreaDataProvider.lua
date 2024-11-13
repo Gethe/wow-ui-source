@@ -97,7 +97,9 @@ function WoWLabsAreaDataProviderMixin:OnEvent(event, ...)
 end
 
 function WoWLabsAreaDataProviderMixin:OnPlunderstormCountdownFinished()
-	self:RefreshAllData();
+	if WorldMapFrame:IsShown() then
+		ToggleWorldMap();
+	end
 end
 
 function WoWLabsAreaDataProviderMixin:OnAreaSelected(areaID)
@@ -207,6 +209,7 @@ function WoWLabsAreaPinMixin:OnMouseUp()
 end
 
 function WoWLabsAreaPinMixin:OnMouseEnter()
+	PlaySound(SOUNDKIT.WOWLABS_AREA_SELECT_HOVER);
 	self:UpdateIconState();
 end
 
@@ -222,6 +225,9 @@ function WoWLabsAreaPinMixin:OnAcquired(areaInfo)
 
 	local size = AreaTypeToSize[areaInfo.areaType];
 	self:SetSize(size, size);
+
+	local hitRectInsetSize = size * 0.2;
+	self:SetHitRectInsets(hitRectInsetSize, hitRectInsetSize, hitRectInsetSize, hitRectInsetSize);
 
 	local textureKit = AreaTypeToTextureKit[areaInfo.areaType];
 	if textureKit then
@@ -269,10 +275,12 @@ function WoWLabsAreaSelectionControlsPinMixin:OnLoad()
 	self:UseFrameLevelType("PIN_FRAME_LEVEL_TOPMOST");
 
 	self.AutoSelectButton:SetScript("OnClick", function()
+		PlaySound(SOUNDKIT.WOWLABS_AREA_AUTO_SELECT);
 		EventRegistry:TriggerEvent("WoWLabsAreaPin.AutoSelect");
 	end);
 
 	self.ConfirmSelectionButton:SetScript("OnClick", function()
+		PlaySound(SOUNDKIT.WOWLABS_AREA_CONFIRM_SELECTION);
 		EventRegistry:TriggerEvent("WoWLabsAreaPin.ConfirmSelection");
 	end);
 end

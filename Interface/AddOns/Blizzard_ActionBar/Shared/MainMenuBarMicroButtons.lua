@@ -1,3 +1,4 @@
+CVarCallbackRegistry:SetCVarCachable("useClassicGuildUI");
 
 DISPLAYED_COMMUNITIES_INVITATIONS = DISPLAYED_COMMUNITIES_INVITATIONS or {};
 
@@ -266,6 +267,51 @@ function LFGMicroButton_OnLoad(self)
 	self.minLevel = SHOW_LFD_LEVEL;
 end
 
+SocialsMicroButtonMixin = {};
+
+function SocialsMicroButtonMixin:OnLoad()
+	LoadMicroButtonTextures(self, "Socials");
+	self.tooltipText = MicroButtonTooltipText(SOCIAL_BUTTON, "TOGGLESOCIAL");
+	self.newbieText = NEWBIE_TOOLTIP_SOCIAL;
+	self:RegisterEvent("CVAR_UPDATE");
+
+	self:UpdateVisibility();
+end
+
+function SocialsMicroButtonMixin:OnEvent(event, ...)
+	if ( Kiosk.IsEnabled() ) then
+		return;
+	end
+
+	if ( event == "UPDATE_BINDINGS" ) then
+		self.tooltipText = MicroButtonTooltipText(SOCIAL_BUTTON, "TOGGLESOCIAL");
+	elseif event == "CVAR_UPDATE" then
+		local arg1 = ...;
+		if (arg1 == "useClassicGuildUI") then
+			self:UpdateVisibility();
+		end
+	end
+end
+
+function SocialsMicroButtonMixin:OnClick(button, down)
+	if ( not KeybindFrames_InQuickKeybindMode() ) then
+		ToggleFriendsFrame();
+	end
+end
+
+function SocialsMicroButtonMixin:UpdateVisibility()
+	-- With non-Classic Guild UI, use GuildMicroButton instead.
+	self:SetShown(CVarCallbackRegistry:GetCVarValueBool("useClassicGuildUI"));
+end
+
+function SocialsMicroButtonMixin:UpdateMicroButton()
+	if ( FriendsFrame and FriendsFrame:IsShown() ) then
+		self:SetButtonState("PUSHED", true);
+	else
+		self:SetButtonState("NORMAL");
+	end
+end
+
 GuildMicroButtonMixin = {};
 
 function GuildMicroButtonMixin:OnLoad()
@@ -284,6 +330,7 @@ function GuildMicroButtonMixin:OnLoad()
 	self:RegisterEvent("CHAT_DISABLED_CHANGE_FAILED");
 	self:RegisterEvent("PLAYER_GUILD_UPDATE");
 	self:RegisterEvent("CVAR_UPDATE");
+
 	if ( IsCommunitiesUIDisabledByTrialAccount() ) then
 		self:Disable();
 		self.disabledTooltip = ERR_RESTRICTED_ACCOUNT_TRIAL;
@@ -292,6 +339,7 @@ function GuildMicroButtonMixin:OnLoad()
 		self:Disable();
 	end
 	self.needsUpdate = true;
+	self:UpdateVisibility();
 end
 
 function GuildMicroButtonMixin:OnEvent(event, ...)
@@ -336,6 +384,7 @@ function GuildMicroButtonMixin:OnEvent(event, ...)
 	elseif event == "CVAR_UPDATE" then
 		local arg1 = ...;
 		if (arg1 == "useClassicGuildUI") then
+			self:UpdateVisibility();
 			self:UpdateMicroButton();
 		end
 	end
@@ -345,6 +394,11 @@ function GuildMicroButtonMixin:OnClick(button, down)
 	if ( not KeybindFrames_InQuickKeybindMode() ) then
 		ToggleGuildFrame();
 	end
+end
+
+function GuildMicroButtonMixin:UpdateVisibility()
+	-- With Classic Guild UI, use SocialsMicroButton instead.
+	self:SetShown(not CVarCallbackRegistry:GetCVarValueBool("useClassicGuildUI"));
 end
 
 function GuildMicroButtonMixin:UpdateMicroButton()
@@ -371,8 +425,6 @@ function GuildMicroButtonMixin:UpdateMicroButton()
 	elseif ( C_Club.IsEnabled() and C_Club.IsRestricted() ~= Enum.ClubRestrictionReason.None and not C_CVar.GetCVarBool("useClassicGuildUI")) then
 		self:Disable();
 		self.disabledTooltip = UNAVAILABLE;
-	elseif ( CommunitiesFrame and CommunitiesFrame:IsShown() ) or ( GuildFrame and GuildFrame:IsShown() ) then
-		self:Enable();
 	else
 		self:Enable();
 		if ( C_CVar.GetCVarBool("useClassicGuildUI") ) then
@@ -388,6 +440,12 @@ function GuildMicroButtonMixin:UpdateMicroButton()
 			self.tooltipText = MicroButtonTooltipText(LOOKINGFORGUILD, "TOGGLEGUILDTAB");
 			self.newbieText = NEWBIE_TOOLTIP_LOOKINGFORGUILDTAB;
 		end
+	end
+
+	if ( CommunitiesFrame and CommunitiesFrame:IsShown() ) or ( GuildFrame and GuildFrame:IsShown() ) then
+		self:SetButtonState("PUSHED", true);
+	else
+		self:SetButtonState("NORMAL");
 	end
 
 	self:UpdateNotificationIcon();

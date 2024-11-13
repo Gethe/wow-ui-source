@@ -58,6 +58,11 @@ function AccountStoreBaseCardMixin:OnHide()
 end
 
 function AccountStoreBaseCardMixin:OnEnter()
+	if not self.hoverSoundPlayed then
+		self.hoverSoundPlayed = true;
+		PlaySound(SOUNDKIT.ACCOUNT_STORE_ITEM_HOVER);
+	end
+
 	local itemInfo = self.itemInfo;
 	local description = itemInfo.description;
 	if not description then
@@ -79,6 +84,10 @@ function AccountStoreBaseCardMixin:OnEnter()
 end
 
 function AccountStoreBaseCardMixin:OnLeave()
+	if not self:IsMouseOver() and not self.ModelScene:IsMouseOver() then
+		self.hoverSoundPlayed = false;
+	end
+
 	GetAppropriateTooltip():Hide();
 end
 
@@ -147,6 +156,8 @@ function AccountStoreBaseCardMixin:SetItemID(itemID)
 end
 
 function AccountStoreBaseCardMixin:SelectCard()
+	PlaySound(SOUNDKIT.ACCOUNT_STORE_ITEM_SELECT);
+
 	local itemInfo = self.itemInfo;
 	local isRefundable = itemInfo.status == Enum.AccountStoreItemStatus.Refundable;
 	local confirmationFormat = isRefundable and ACCOUNT_STORE_REFUND_CONFIRMATION_FORMAT or PLUNDERSTORE_PURCHASE_CONFIRMATION_FORMAT;
@@ -156,6 +167,7 @@ function AccountStoreBaseCardMixin:SelectCard()
 		StaticPopup_Hide("GENERIC_CONFIRMATION");
 
 		StaticPopup_ShowGenericConfirmation(confirmation, function ()
+			PlaySound(SOUNDKIT.ACCOUNT_STORE_ITEM_PURCHASE);
 			if isRefundable then
 				C_AccountStore.RefundItem(itemInfo.id);
 			else

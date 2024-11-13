@@ -223,6 +223,10 @@ if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
 	end
 
 	function ActionBarActionButtonDerivedMixin:SetSwappableState(swappable)
+		if not WOWLABS_ACTIONBUTTON_MAP[self.action] then
+			return;
+		end
+
 		self:SetNormalAtlas(swappable and "plunderstorm-actionbar-slot-border-swappable" or "plunderstorm-actionbar-slot-border");
 	end
 

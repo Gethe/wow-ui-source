@@ -19,7 +19,9 @@ local TIMER_DATA = {
 			[3] = { SOUNDKIT.PLUNDERSTORM_COUNTDOWN4, },
 		},
 		startCallback = function()
-			OpenWorldMap();
+			if C_GameRules.IsGameRuleActive(Enum.GameRule.PlunderstormAreaSelection) and not C_WowLabsDataManager.GetConfirmedWoWLabsArea() then
+				OpenWorldMap();
+			end
 		end,
 		finishedCallback = function ()
 			EventRegistry:TriggerEvent("PlunderstormCountdown.TimerFinished");

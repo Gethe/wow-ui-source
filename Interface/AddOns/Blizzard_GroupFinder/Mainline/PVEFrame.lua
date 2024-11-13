@@ -445,11 +445,13 @@ function PVEFrameMixin:OnShow()
 
 	UpdateMicroButtons();
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
+	EventRegistry:TriggerEvent("PlunderstormQueueTutorial.Update");
 end
 
 function PVEFrameMixin:OnHide()
 	UpdateMicroButtons();
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
+	EventRegistry:TriggerEvent("PlunderstormQueueTutorial.Update");
 end
 
 function PVEFrameMixin:OnEvent(event, ...)
@@ -483,4 +485,82 @@ function PVEFrameMixin:OnEvent(event, ...)
 	elseif ( event == "SHOW_DELVES_DISPLAY_UI" ) then
 		PVEFrame_ShowFrame("DelvesDashboardFrame");
 	end
+end
+
+PlunderstormQueueTutorialMixin = {}
+
+local PlunderstormTutorialStates = {
+	NoneAcknowledged = 0,
+	MicroButtonAcknowledged = 1,
+	PvpTabAcknowledged = 2,
+	PlunderstormCategoryAcknowledged = 3,
+};
+
+PLUNDERSTORM_QUEUE_FROM_MAINLINE_TUTORIAL_STATE = PLUNDERSTORM_QUEUE_FROM_MAINLINE_TUTORIAL_STATE or PlunderstormTutorialStates.NoneAcknowledged;
+
+local function IsPlunderstormAvailable()
+	return C_GameEnvironmentManager.GetCurrentEventRealmQueues() ~= Enum.EventRealmQueues.None and
+		C_LobbyMatchmakerInfo.GetQueueFromMainlineEnabled() and
+		not (IsTrialAccount() or IsVeteranTrialAccount()) and
+		not C_PlayerInfo.IsPlayerNPERestricted();
+end
+
+function PlunderstormQueueTutorialMixin:OnLoad()
+	EventRegistry:RegisterCallback("PlunderstormQueueTutorial.Update", self.UpdateTutorialState, self);
+end
+
+function PlunderstormQueueTutorialMixin:OnShow()
+	if not IsPlunderstormAvailable() or PLUNDERSTORM_QUEUE_FROM_MAINLINE_TUTORIAL_STATE >= PlunderstormTutorialStates.PlunderstormCategoryAcknowledged then
+		self:Hide();
+		return;
+	end
+end
+
+function PlunderstormQueueTutorialMixin:UpdateTutorialState()
+	local plunderstormAvailable = IsPlunderstormAvailable();
+
+	if not plunderstormAvailable or PLUNDERSTORM_QUEUE_FROM_MAINLINE_TUTORIAL_STATE >= PlunderstormTutorialStates.PlunderstormCategoryAcknowledged then
+		self:Hide();
+		return;
+	end
+
+	self:ClearAllPoints();
+
+	if PlunderstormFrame and PlunderstormFrame:IsShown() then
+		PLUNDERSTORM_QUEUE_FROM_MAINLINE_TUTORIAL_STATE = PlunderstormTutorialStates.PlunderstormCategoryAcknowledged;
+
+		self:Hide();
+		self:SetParent(nil);
+		return;
+	end
+
+	
+	if PVPUIFrame and PVPUIFrame:IsVisible() then
+		PLUNDERSTORM_QUEUE_FROM_MAINLINE_TUTORIAL_STATE = PlunderstormTutorialStates.PvpTabAcknowledged;
+		
+		self:SetParent(PVPQueueFrameCategoryButton4);
+		self:SetPoint("RIGHT", PVPQueueFrameCategoryButton4, "TOPRIGHT", -4, 0);
+
+		self:Show();
+		self.BadgeTexture:Hide();
+		self.NewText:Show();
+		return;
+	end
+
+	self.BadgeTexture:Show();
+	self.NewText:Hide();
+
+	if PVEFrame:IsShown() then
+		PLUNDERSTORM_QUEUE_FROM_MAINLINE_TUTORIAL_STATE = PlunderstormTutorialStates.MicroButtonAcknowledged;
+
+		self:SetParent(PVEFrameTab2);
+		self:SetPoint("CENTER", PVEFrameTab2, "BOTTOM", 0, 4);
+	else
+		PLUNDERSTORM_QUEUE_FROM_MAINLINE_TUTORIAL_STATE = PlunderstormTutorialStates.NoneAcknowledged;
+
+		self:SetParent(LFDMicroButton);
+		self:SetPoint("CENTER", LFDMicroButton, "TOPRIGHT", -6, -4);
+	end
+
+	self:Show();
 end

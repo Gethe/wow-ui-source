@@ -1,3 +1,8 @@
+
+local function ShouldWoWLabsAreaBeActive()
+	return WoWLabsAreaDataProviderMixin and C_GameRules.IsGameRuleActive(Enum.GameRule.PlunderstormAreaSelection);
+end
+
 WorldMapMixin = {};
 
 local TITLE_CANVAS_SPACER_FRAME_HEIGHT = 67;
@@ -133,7 +138,7 @@ function WorldMapMixin:OnLoad()
 	self:AddStandardDataProviders();
 	self:AddOverlayFrames();
 
-	if WoWLabsAreaDataProviderMixin then
+	if ShouldWoWLabsAreaBeActive() then
 		self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	end
 
@@ -212,7 +217,7 @@ function WorldMapMixin:AddStandardDataProviders()
 	end
 
 	-- WoWLabs areas only appear when in WoWLabs since these feature(s) aren't fully data-driven yet.
-	if WoWLabsAreaDataProviderMixin then
+	if ShouldWoWLabsAreaBeActive() then
 		self:AddDataProvider(CreateFromMixins(WoWLabsAreaDataProviderMixin));
 	end
 

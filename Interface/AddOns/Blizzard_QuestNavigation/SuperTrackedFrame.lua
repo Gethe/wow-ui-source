@@ -79,12 +79,6 @@ do
 
 	function SuperTrackedFrameMixin:GetTargetAlphaBaseValue()
 		local state = C_Navigation.GetTargetState();
-
-		local superTrackingType = C_SuperTrack.GetHighestPrioritySuperTrackingType();
-		if (superTrackingType == Enum.SuperTrackingType.PartyMember) and not self.isClamped and (state ~= Enum.NavigationState.Occluded) then
-			return 0;
-		end
-
 		local alpha = navStateToTargetAlpha[state];
 		if alpha and alpha > 0 then
 			if self.isClamped then
@@ -263,7 +257,7 @@ local superTrackMapPinTypesThatClearWhenDestinationReached =
 local superTrackTypesThatClearWhenDestinationReached =
 {
 	[Enum.SuperTrackingType.UserWaypoint] = true,
-	[Enum.SuperTrackingType.PartyMember] = true,
+	[Enum.SuperTrackingType.PartyMember] = false,
 	[Enum.SuperTrackingType.Vignette] = true,
 	[Enum.SuperTrackingType.MapPin] = function()
 		local pinType, typeID = C_SuperTrack.GetSuperTrackedMapPin();

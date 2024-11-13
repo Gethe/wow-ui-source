@@ -203,7 +203,7 @@ PlunderstormDropMapButtonMixin = {};
 function PlunderstormDropMapButtonMixin:OnShow()
 	PrematchHeaderBaseButtonMixin.OnShow(self);
 
-	if (IsInTrainingMode()) then
+	if (IsInTrainingMode() or not C_GameRules.IsGameRuleActive(Enum.GameRule.PlunderstormAreaSelection)) then
 		self:Hide();
 		return;
 	end

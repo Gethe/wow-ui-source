@@ -37,6 +37,9 @@ function QuestObjectiveItemButtonMixin:OnEvent(event, ...)
 		self.rangeTimer = -1;
 	elseif event == "BAG_UPDATE_COOLDOWN" then
 		self:UpdateCooldown(self);
+	elseif event == "PLAYER_INSIDE_QUEST_BLOB_STATE_CHANGED" then
+		local questID, inside = ...;
+		self:UpdateInsideBlob(questID, inside);
 	end
 end
 
@@ -73,11 +76,13 @@ end
 function QuestObjectiveItemButtonMixin:OnShow()
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
 	self:RegisterEvent("BAG_UPDATE_COOLDOWN");
+	self:RegisterEvent("PLAYER_INSIDE_QUEST_BLOB_STATE_CHANGED");
 end
 
 function QuestObjectiveItemButtonMixin:OnHide()
 	self:UnregisterEvent("PLAYER_TARGET_CHANGED");
 	self:UnregisterEvent("BAG_UPDATE_COOLDOWN");
+	self:UnregisterEvent("PLAYER_INSIDE_QUEST_BLOB_STATE_CHANGED");
 end
 
 function QuestObjectiveItemButtonMixin:OnEnter()
@@ -101,11 +106,13 @@ end
 function QuestObjectiveItemButtonMixin:SetUp(questLogIndex)
 	local link, item, charges, showItemWhenComplete = GetQuestLogSpecialItemInfo(questLogIndex);
 	self:SetAttribute("questLogIndex", questLogIndex);
+	self:SetAttribute("questID", C_QuestLog.GetQuestIDForLogIndex(questLogIndex));
 	self.charges = charges;
 	self.rangeTimer = -1;
 	SetItemButtonTexture(self, item);
 	SetItemButtonCount(self, charges);
 	self:UpdateCooldown(self);
+	self:CheckUpdateInsideBlob();
 end
 
 function QuestObjectiveItemButtonMixin:UpdateCooldown()
@@ -117,6 +124,22 @@ function QuestObjectiveItemButtonMixin:UpdateCooldown()
 			SetItemButtonTextureVertexColor(self, 0.4, 0.4, 0.4);
 		else
 			SetItemButtonTextureVertexColor(self, 1, 1, 1);
+		end
+	end
+end
+
+function QuestObjectiveItemButtonMixin:CheckUpdateInsideBlob()
+	local questID = self:GetAttribute("questID");
+	self:UpdateInsideBlob(questID, C_Minimap.IsInsideQuestBlob(questID));
+end
+
+function QuestObjectiveItemButtonMixin:UpdateInsideBlob(questID, inside)
+	if questID == self:GetAttribute("questID") then
+		self.Glow:SetShown(inside); -- maybe fade out anim and then stop glow
+		if inside then
+			self.GlowAnim:Play();
+		else
+			self.GlowAnim:Stop();
 		end
 	end
 end

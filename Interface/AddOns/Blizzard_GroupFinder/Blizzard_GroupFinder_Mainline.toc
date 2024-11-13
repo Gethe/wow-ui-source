@@ -4,6 +4,7 @@
 ## Dependencies: Blizzard_EditMode, Blizzard_GameTooltip, Blizzard_UIPanelTemplates
 ## AllowLoad: game
 ## AllowLoadGameType: mainline
+## SavedVariables: PLUNDERSTORM_QUEUE_FROM_MAINLINE_TUTORIAL_STATE
 Mainline\QueueUpdater.lua
 Mainline\PVEFrame.lua
 Mainline\PVEFrame.xml

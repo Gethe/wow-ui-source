@@ -130,12 +130,16 @@ function PVPUIFrame_OnShow(self)
 	PVPUIFrame_UpdateSelectedRoles();
 	PVPUIFrame_UpdateRolesChangeable();
 	PVPUIFrame_EvaluateHelpTips(self);
+
+	EventRegistry:TriggerEvent("PlunderstormQueueTutorial.Update");
 end
 
 function PVPUIFrame_OnHide(self)
 	UpdateMicroButtons();
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 	ClearBattlemaster();
+
+	EventRegistry:TriggerEvent("PlunderstormQueueTutorial.Update");
 end
 
 function PVPUIFrame_OnEvent(self, event, ...)
@@ -327,11 +331,9 @@ function PVPQueueFrame_OnLoad(self)
 	local plunderstormAvailable = C_GameEnvironmentManager.GetCurrentEventRealmQueues() ~= Enum.EventRealmQueues.None and C_LobbyMatchmakerInfo.GetQueueFromMainlineEnabled();
 	local overrideAnchoringParent = self.CategoryButton2;
 	local categoryButtonOffsets = -101;
-	local showPlunderstormNewText = false;
 	if plunderstormAvailable then
 		overrideAnchoringParent = self.CategoryButton4;
 		categoryButtonOffsets = -61;
-		showPlunderstormNewText = true;
 	end
 
 	-- Sets the list to fit 3 or 4 elements differently
@@ -339,7 +341,6 @@ function PVPQueueFrame_OnLoad(self)
 	-- Reanchors the Premade Group button to the Plunderstorm button
 	self.CategoryButton3:SetPoint("TOP", overrideAnchoringParent, "BOTTOM", 0, -30);
 	self.CategoryButton4:SetShown(plunderstormAvailable);
-	self.CategoryButton4.NewText:SetShown(showPlunderstormNewText);
 
 	-- disable unusable side buttons
 	local disabledButtons = false;
@@ -359,6 +360,14 @@ function PVPQueueFrame_OnLoad(self)
 
 	canUse = not (IsTrialAccount() or IsVeteranTrialAccount());
 	failureReason = WOWLABS_SUB_REQUIRED;
+	if not canUse then
+		-- disabledButtons doesn't do anything for us in this case so no need to set it to true
+		PVPQueueFrame_SetCategoryButtonState(self.CategoryButton4, false);
+		self.CategoryButton4.tooltip = failureReason;
+	end
+
+	canUse = not C_PlayerInfo.IsPlayerNPERestricted();
+	failureReason = FEATURE_NOT_YET_AVAILABLE;
 	if not canUse then
 		-- disabledButtons doesn't do anything for us in this case so no need to set it to true
 		PVPQueueFrame_SetCategoryButtonState(self.CategoryButton4, false);
@@ -2263,6 +2272,10 @@ function PlunderstormQueueFrameMixin:OnLoad()
 	self.QueueSelect.useLocalPlayIndex = true;
 end
 
+function PlunderstormQueueFrameMixin:OnShow()
+	EventRegistry:TriggerEvent("PlunderstormQueueTutorial.Update");
+end
+
 StartPlunderstormQueueButtonMixin = {};
 
 local PlunderstormQueueButtonEvents = {
@@ -2329,33 +2342,60 @@ end
 
 PlunderstormPanelMixin = {};
 
+local PlunderstormPanelEvents = {
+	"ACCOUNT_STORE_CURRENCY_AVAILABLE_UPDATED",
+	"STORE_FRONT_STATE_UPDATED",
+};
+
 function PlunderstormPanelMixin:OnLoad()
 	self.PlunderstoreButton:SetScript("OnClick", function()
 		AccountStoreUtil.ToggleAccountStore();
 	end);
+
+	self.PlunderDisplay:SetScript("OnEnter", function(onEnterSelf)
+		GameTooltip:SetOwner(onEnterSelf, "ANCHOR_RIGHT");
+
+		local accountStoreCurrencyID = C_AccountStore.GetCurrencyIDForStore(Constants.AccountStoreConsts.PlunderstormStoreFrontID);
+		if accountStoreCurrencyID then
+			AccountStoreUtil.AddCurrencyTotalTooltip(GameTooltip, accountStoreCurrencyID);
+			GameTooltip:Show();
+		end
+	end);
+
+	self.PlunderDisplay:SetScript("OnLeave", function() GameTooltip_Hide(); end);
+end
+
+local function IsPlunderstoreEnabled()
+	return C_AccountStore.GetStoreFrontState(Constants.AccountStoreConsts.PlunderstormStoreFrontID) == Enum.AccountStoreState.Available;
 end
 
 function PlunderstormPanelMixin:OnShow()
+	FrameUtil.RegisterFrameForEvents(self, PlunderstormPanelEvents);
+
 	self:UpdatePlunder();
 
-	self:RegisterEvent("ACCOUNT_STORE_CURRENCY_AVAILABLE_UPDATED");
+	self.PlunderstoreButton:SetEnabled(IsPlunderstoreEnabled());
 end
 
 function PlunderstormPanelMixin:OnHide()
-	self:UnregisterEvent("ACCOUNT_STORE_CURRENCY_AVAILABLE_UPDATED");
+	FrameUtil.UnregisterFrameForEvents(self, PlunderstormPanelEvents);
 end
 
 function PlunderstormPanelMixin:OnEvent(event, ...)
 	if event == "ACCOUNT_STORE_CURRENCY_AVAILABLE_UPDATED" then
 		self:UpdatePlunder();
+	elseif event == "STORE_FRONT_STATE_UPDATED" then
+		self.PlunderstoreButton:SetEnabled(IsPlunderstoreEnabled());
 	end
 end
 
-local PLUNDER_CURRENCY_ID = 3139;
 function PlunderstormPanelMixin:UpdatePlunder()
-	local currencyInfo = C_AccountStore.GetCurrencyInfo(PLUNDER_CURRENCY_ID);
-	local text = BreakUpLargeNumbers(currencyInfo.amount) .. " " .. CreateSimpleTextureMarkup(currencyInfo.icon, 12, 12);
-	self.PlunderDisplay.PlunderAmount:SetText(text);
+	local accountStoreCurrencyID = C_AccountStore.GetCurrencyIDForStore(Constants.AccountStoreConsts.PlunderstormStoreFrontID);
+	if not accountStoreCurrencyID then
+		self.PlunderDisplay:SetText("-");
+	end
+
+	self.PlunderDisplay:SetText(AccountStoreUtil.FormatCurrencyTotalDisplay(accountStoreCurrencyID));
 end
 
 PVPQuestRewardMixin = { };

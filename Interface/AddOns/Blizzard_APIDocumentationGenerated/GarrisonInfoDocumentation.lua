@@ -445,6 +445,20 @@ local GarrisonInfo =
 			},
 		},
 		{
+			Name = "IsLandingPageMinimapButtonVisible",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "garrType", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isLandingPageMinimapButtonVisible", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsTalentConditionMet",
 			Type = "Function",
 

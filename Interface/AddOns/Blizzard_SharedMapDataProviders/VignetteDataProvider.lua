@@ -315,9 +315,13 @@ function VignettePinBaseMixin:GetRemainingHealthPercentageString()
 	return "";
 end
 
+local function IsSuggestableGroupSize(size)
+	return size and size > 1;
+end
+
 function VignettePinBaseMixin:GetRecommendedGroupSizeString()
 	local minSize, maxSize = self:GetRecommendedGroupSize();
-	if minSize and maxSize then
+	if IsSuggestableGroupSize(minSize) and IsSuggestableGroupSize(maxSize) then
 		if minSize == maxSize then
 			return VIGNETTE_SUGGESTED_GROUP_NUM:format(minSize);
 		else

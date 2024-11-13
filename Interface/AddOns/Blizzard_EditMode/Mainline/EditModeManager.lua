@@ -153,6 +153,7 @@ function EditModeManagerFrameMixin:OnEvent(event, ...)
 	if event == "EDIT_MODE_LAYOUTS_UPDATED" then
 		local layoutInfo, reconcileLayouts = ...;
 		self:UpdateLayoutInfo(layoutInfo, reconcileLayouts);
+		self:UpdateTopFramePositions();
 		self:InitializeAccountSettings();
 	elseif event == "PLAYER_SPECIALIZATION_CHANGED" then
 		local layoutInfo = C_EditMode.GetLayouts();
@@ -612,6 +613,11 @@ function EditModeManagerFrameMixin:UpdateBottomActionBarPositions()
 	end
 
 	UIParent_ManageFramePositions();
+end
+
+function EditModeManagerFrameMixin:UpdateTopFramePositions()
+	-- Currently only needed for GMTicketFrame, but this can be used for managing any future top frames
+	UIParent_UpdateTopFramePositions();
 end
 
 function EditModeManagerFrameMixin:SelectSystem(selectFrame)

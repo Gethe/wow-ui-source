@@ -179,6 +179,7 @@ function PartyMemberFrameMixin:ToPlayerArt()
 	if (UNIT_FRAME_SHOW_HEALTH_ONLY) then
 		self.HealthBarContainer:SetSize(74, 30);
 		self.HealthBarContainer:SetPoint("TOPLEFT", self, "TOPLEFT", 43, -16);
+		self.HealthBarContainer.HealthBar:SetSize(74, 30);
 		self:UpdateHealthBarTextAnchors();
 		self.Texture:SetAtlas("plunderstorm-UI-HUD-UnitFrame-Party-PortraitOn");
 

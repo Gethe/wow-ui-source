@@ -403,6 +403,8 @@ function ObjectiveTrackerModuleMixin:InternalAddBlock(block)
 		return false;
 	end
 
+	block.nextBlock = nil;
+
 	local offsetY = self:AnchorBlock(block);
 	if self.lastBlock then
 		self.lastBlock.nextBlock = block;

@@ -138,11 +138,11 @@ function PlunderstormQueuePopupMixin:OnEvent(event, ...)
 end
 
 local function GetQueueTypeTextAndIcon(playlistEntryID)
-	if queueType == Enum.PartyPlaylistEntry.SoloGameMode then
+	if playlistEntryID == Enum.PartyPlaylistEntry.SoloGameMode then
 		return FRONT_END_LOBBY_SOLOS, "plunderstorm-glues-queueselector-solo-selected";
-	elseif queueType == Enum.PartyPlaylistEntry.DuoGameMode then
+	elseif playlistEntryID == Enum.PartyPlaylistEntry.DuoGameMode then
 		return FRONT_END_LOBBY_DUOS, "plunderstorm-glues-queueselector-duo-selected";
-	elseif queueType == Enum.PartyPlaylistEntry.TrioGameMode then
+	elseif playlistEntryID == Enum.PartyPlaylistEntry.TrioGameMode then
 		return FRONT_END_LOBBY_TRIOS, "plunderstorm-glues-queueselector-trio-selected";
 	end
 

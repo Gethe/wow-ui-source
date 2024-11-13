@@ -82,7 +82,6 @@ GMTicketInfoDocumentation.lua
 GameCursorDocumentation.lua
 GameEnvironmentManagerDocumentation.lua
 GameErrorDocumentation.lua
-GameModeManagerDocumentation.lua
 GamePadDocumentation.lua
 GameRulesDocumentation.lua
 GameUIDocumentation.lua
@@ -364,6 +363,7 @@ GamePadConstDocumentation.lua
 GameRulesConstantsDocumentation.lua
 GarrisonConstantsDocumentation.lua
 GossipConstantsDocumentation.lua
+GroupFinderConstantsDocumentation.lua
 GuildInfoSharedDocumentation.lua
 InputConstantsDocumentation.lua
 ItemConstantsDocumentation.lua

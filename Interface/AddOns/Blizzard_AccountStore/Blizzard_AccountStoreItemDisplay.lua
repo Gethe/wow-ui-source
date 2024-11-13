@@ -9,8 +9,15 @@ function AccountStoreItemDisplayMixin:OnLoad()
 	self.categoryTypeToItemRack = {};
 	self.currentPage = 1;
 
-	self.Footer.PrevPageButton:SetScript("OnClick", function() self:SetPage(self.currentPage - 1); end);
-	self.Footer.NextPageButton:SetScript("OnClick", function() self:SetPage(self.currentPage + 1); end);
+	self.Footer.PrevPageButton:SetScript("OnClick", function()
+		PlaySound(SOUNDKIT.ACCOUNT_STORE_PAGE_NAVIGATION);
+		self:SetPage(self.currentPage - 1);
+	end);
+
+	self.Footer.NextPageButton:SetScript("OnClick", function()
+		PlaySound(SOUNDKIT.ACCOUNT_STORE_PAGE_NAVIGATION);
+		self:SetPage(self.currentPage + 1);
+	end);
 
 	self.Footer.CurrencyAvailable:SetScript("OnEnter", function(onEnterSelf)
 		local tooltip = GetAppropriateTooltip();
