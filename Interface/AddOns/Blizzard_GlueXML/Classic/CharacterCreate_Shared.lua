@@ -437,6 +437,11 @@ end
 function CharacterCreate_Okay()
 	PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CREATE_CHAR);
 
+	-- CLASS-36892: Fixes self found state in CPP mismatching the UI
+	if CharacterCreateSelfFound then
+		C_CharacterCreation.ToggleSelfFoundMode(CharacterCreateSelfFound:GetChecked());
+	end
+
 	if CharacterCreateFrame.paidServiceType then
 		GlueDialog_Show("CONFIRM_PAID_SERVICE");
 	elseif CharacterCreateFrame.vasType == Enum.ValueAddedServiceType.PaidFactionChange or CharacterCreateFrame.vasType == Enum.ValueAddedServiceType.PaidRaceChange then
