@@ -63,6 +63,7 @@
 		</KeyValues>
 		<Scripts>
 			<OnLoad method="OnLoad" />
+			<OnShow method="OnShow" />
 			<OnClick method="OnClick" />
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>

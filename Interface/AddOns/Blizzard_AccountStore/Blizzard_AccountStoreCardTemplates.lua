@@ -139,6 +139,9 @@ function AccountStoreBaseCardMixin:SetItemID(itemID)
 	local isOwned = (itemInfo.status == Enum.AccountStoreItemStatus.Owned) or (itemInfo.status == Enum.AccountStoreItemStatus.Refundable);
 	self.OwnedCheckmark:SetShown(isOwned);
 
+	local displayNew = not isOwned and FlagsUtil.IsSet(self.itemInfo.flags, Enum.AccountStoreItemFlag.DisplayAsNew);
+	self.New:SetShown(displayNew);
+
 	local isRefundable = itemInfo.status == Enum.AccountStoreItemStatus.Refundable;
 	local canAfford = itemInfo.price <= C_AccountStore.GetCurrencyAvailable(itemInfo.currencyID);
 	local enabled = isRefundable or (canAfford and not isOwned);

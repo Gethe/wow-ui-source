@@ -133,7 +133,7 @@ end
 
 function AccountStoreItemDisplayMixin:UpdateCurrencyAvailable()
 	local currencyID = self.currencyID;
-	self.Footer.CurrencyAvailable:SetText(AccountStoreUtil.FormatCurrencyTotalDisplay(currencyID));
+	self.Footer.CurrencyAvailable:SetText(AccountStoreUtil.FormatCurrencyDisplayWithWarning(currencyID));
 
 	if self.currentItemRack then
 		self.currentItemRack:Refresh();

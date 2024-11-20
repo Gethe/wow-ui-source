@@ -125,6 +125,7 @@ local AchievementInfo =
 			{
 				{ Name = "achievementID", Type = "number", Nilable = false },
 				{ Name = "description", Type = "cstring", Nilable = false },
+				{ Name = "achievementAlreadyEarnedOnAccount", Type = "bool", Nilable = false },
 			},
 		},
 		{

@@ -264,6 +264,9 @@ function TrainingLobbyQueueMixin:OnShow()
 	QueueTypeSettingsFrameMixin.OnShow(self);
 
 	EventRegistry:TriggerEvent("TrainingLobbyQueue.ShownState", true);
+
+	local padding = 50;
+	self:SetWidth(self.QueueContainer:GetWidth() + padding);
 end
 
 function TrainingLobbyQueueMixin:OnHide()

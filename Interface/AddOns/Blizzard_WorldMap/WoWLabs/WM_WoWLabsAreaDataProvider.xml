@@ -32,12 +32,12 @@
 
 	<Frame name="WoWLabsAreaSelectionControlsPinTemplate" mixin="WoWLabsAreaSelectionControlsPinMixin" virtual="true">
 		<Frames>
-			<Button parentKey="AutoSelectButton" inherits="WoWLabsAreaSelectionControlsButtonTemplate" text="WOWLABS_AREA_MAP_AUTO_SELECT">
+			<Button parentKey="ConfirmSelectionButton" inherits="WoWLabsAreaSelectionControlsButtonTemplate" text="WOWLABS_AREA_MAP_CONFIRM_SELECTION">
 				<Anchors>
 					<Anchor point="BOTTOM" x="-190" y="10"/>
 				</Anchors>
 			</Button>
-			<Button parentKey="ConfirmSelectionButton" inherits="WoWLabsAreaSelectionControlsButtonTemplate" text="WOWLABS_AREA_MAP_CONFIRM_SELECTION">
+			<Button parentKey="AutoSelectButton" inherits="WoWLabsAreaSelectionControlsButtonTemplate" text="WOWLABS_AREA_MAP_AUTO_SELECT">
 				<Anchors>
 					<Anchor point="BOTTOM" x="190" y="10"/>
 				</Anchors>

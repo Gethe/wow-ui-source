@@ -30,6 +30,11 @@
 					</Layer>
 				</Layers>
 			</Frame>
+			<Frame parentKey="New" inherits="NewFeatureLabelTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-16" y="-16" />
+				</Anchors>
+			</Frame>
 		</Frames>
 		<Layers>
 			<Layer level="ARTWORK">

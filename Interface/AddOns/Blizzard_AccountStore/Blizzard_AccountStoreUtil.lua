@@ -46,7 +46,7 @@ function AccountStoreUtil.IsCurrencyAtWarningThreshold(accountStoreCurrencyID)
 	return false;
 end
 
-function AccountStoreUtil.FormatCurrencyTotalDisplay(accountStoreCurrencyID)
+function AccountStoreUtil.FormatCurrencyDisplayWithWarning(accountStoreCurrencyID, currencyAmount)
 	local currencyInfo = C_AccountStore.GetCurrencyInfo(accountStoreCurrencyID);
 	if not currencyInfo then
 		return "";
@@ -56,7 +56,7 @@ function AccountStoreUtil.FormatCurrencyTotalDisplay(accountStoreCurrencyID)
 		return text .. " " .. CreateSimpleTextureMarkup(currencyInfo.icon, 12, 12);
 	end
 
-	local currencyAmount = BreakUpLargeNumbers(currencyInfo.amount);
+	currencyAmount = BreakUpLargeNumbers(currencyAmount or currencyInfo.amount);
 	if currencyInfo.maxQuantity then
 		if currencyInfo.amount >= currencyInfo.maxQuantity then
 			currencyAmount = RED_FONT_COLOR:WrapTextInColorCode(currencyAmount);

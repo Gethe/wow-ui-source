@@ -533,7 +533,6 @@ function PlunderstormQueueTutorialMixin:UpdateTutorialState()
 		self:SetParent(nil);
 		return;
 	end
-
 	
 	if PVPUIFrame and PVPUIFrame:IsVisible() then
 		PLUNDERSTORM_QUEUE_FROM_MAINLINE_TUTORIAL_STATE = PlunderstormTutorialStates.PvpTabAcknowledged;

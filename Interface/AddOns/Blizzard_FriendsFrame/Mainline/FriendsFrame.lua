@@ -170,7 +170,7 @@ function FriendsFrame_ClickSummonButton (self)
 	end
 end
 
-function FriendsFrame_ShowDropdown(name, connected, lineID, chatType, chatFrame, friendsList, ommunityClubID, communityStreamID, communityEpoch, communityPosition, guid)
+function FriendsFrame_ShowDropdown(name, connected, lineID, chatType, chatFrame, friendsList, communityClubID, communityStreamID, communityEpoch, communityPosition, guid)
 	if connected or friendsList then
 		local contextData = 
 		{	

@@ -64,6 +64,7 @@ local function LeaveMatch()
 end
 
 local function Requeue()
+	C_WoWLabsMatchmaking.ClearFastLogin();
 	C_WoWLabsMatchmaking.SetAutoQueueOnLogout(true);
 	LeaveMatch();
 end
@@ -189,8 +190,8 @@ function MatchDetailFrameMixin:Init(type, description, value, iconAtlas)
 
 	if type == Enum.MatchDetailType.PlunderAcquired then
 		local accountStoreCurrencyID = C_AccountStore.GetCurrencyIDForStore(Constants.AccountStoreConsts.PlunderstormStoreFrontID);
-		if value and accountStoreCurrencyID and AccountStoreUtil.IsCurrencyAtWarningThreshold(accountStoreCurrencyID) then
-			value = value .. " " .. CreateSimpleTextureMarkup([[Interface\DialogFrame\UI-Dialog-Icon-AlertNew]], 16, 16);
+		if value and accountStoreCurrencyID then
+			value = AccountStoreUtil.FormatCurrencyDisplayWithWarning(accountStoreCurrencyID, value);
 		end
 
 		self.Description:SetText(description);

@@ -127,7 +127,7 @@ function PlunderstormBasicsContainerFrameMixin:UpdatePlunderAmount()
 		C_AddOns.LoadAddOn("Blizzard_AccountStore");
 	end
 
-	local text = AccountStoreUtil.FormatCurrencyTotalDisplay(accountStoreCurrencyID);
+	local text = AccountStoreUtil.FormatCurrencyDisplayWithWarning(accountStoreCurrencyID);
 	self.PlunderDisplay.PlunderAmount:SetText(text);
 end
 

@@ -13,8 +13,7 @@ AccountStoreMixin = {};
 function AccountStoreMixin:OnLoad()
 	self:SetTitle(PLUNDERSTORM_PLUNDER_STORE_TITLE);
 
-	self:SetPortraitToAsset("Interface\\Icons\\WoW_Store");
-	self:SetPortraitTextureSizeAndOffset(60, -5, 7);
+	self:SetPortraitToAsset("Interface\\Icons\\UI_PlunderCoins");
 
 	if UIPanelWindows then
 		UIPanelWindows["AccountStoreFrame"] = { area = "left", pushable = 1, whileDead = 1 };

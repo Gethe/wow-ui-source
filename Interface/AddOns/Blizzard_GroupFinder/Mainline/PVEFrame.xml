@@ -272,7 +272,7 @@
 		<Size x="1" y="1"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture parentKey="BadgeTexture" atlas="plunderstorm-new-dot-lg" useAtlasSize="true">
+				<Texture parentKey="BadgeTexture" atlas="plunderstorm-new-dot-sm" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>

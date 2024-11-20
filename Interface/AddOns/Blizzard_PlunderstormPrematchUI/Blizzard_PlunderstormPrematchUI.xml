@@ -2,7 +2,7 @@
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 
 	<Frame name="TrainingLobbyQueueFrameTemplate" inherits="PortraitFrameTemplate, QueueTypeSettingsFrameTemplate" virtual="true" hidden="true" frameStrata="DIALOG" mixin="TrainingLobbyQueueMixin">
-		<Size x="320" y="350"/>
+		<Size x="320" y="200"/>
 		<Frames>
 			<Button parentKey="StartQueueButton" inherits="SharedButtonSmallTemplate" mixin="StartQueueButtonMixin" text="WOW_LABS_START_QUEUE">
 				<Anchors>

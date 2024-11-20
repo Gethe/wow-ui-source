@@ -358,22 +358,6 @@ function PVPQueueFrame_OnLoad(self)
 		self.CategoryButton3.tooltip = failureReason;
 	end
 
-	canUse = not (IsTrialAccount() or IsVeteranTrialAccount());
-	failureReason = WOWLABS_SUB_REQUIRED;
-	if not canUse then
-		-- disabledButtons doesn't do anything for us in this case so no need to set it to true
-		PVPQueueFrame_SetCategoryButtonState(self.CategoryButton4, false);
-		self.CategoryButton4.tooltip = failureReason;
-	end
-
-	canUse = not C_PlayerInfo.IsPlayerNPERestricted();
-	failureReason = FEATURE_NOT_YET_AVAILABLE;
-	if not canUse then
-		-- disabledButtons doesn't do anything for us in this case so no need to set it to true
-		PVPQueueFrame_SetCategoryButtonState(self.CategoryButton4, false);
-		self.CategoryButton4.tooltip = failureReason;
-	end
-
 	if disabledButtons then
 		PVPQueueFrame:SetScript("OnEvent", PVPQueueFrame_OnEvent);
 		PVPQueueFrame:RegisterEvent("PLAYER_LEVEL_CHANGED");
@@ -458,6 +442,20 @@ function PVPQueueFrame_OnShow(self)
 	PVPQueueFrame_UpdateTitle();
 
 	PVEFrame.TopTileStreaks:Show()
+
+	local canUsePlunderButton = not (IsTrialAccount() or IsVeteranTrialAccount());
+	local failureReason = WOWLABS_SUB_REQUIRED;
+	if not canUsePlunderButton then
+		PVPQueueFrame_SetCategoryButtonState(self.CategoryButton4, false);
+		self.CategoryButton4.tooltip = failureReason;
+	end
+
+	canUsePlunderButton = not C_PlayerInfo.IsPlayerNPERestricted();
+	failureReason = FEATURE_NOT_YET_AVAILABLE;
+	if not canUsePlunderButton then
+		PVPQueueFrame_SetCategoryButtonState(self.CategoryButton4, false);
+		self.CategoryButton4.tooltip = failureReason;
+	end
 end
 
 function PVPQueueFrame_UpdateTitle()
@@ -2395,7 +2393,7 @@ function PlunderstormPanelMixin:UpdatePlunder()
 		self.PlunderDisplay:SetText("-");
 	end
 
-	self.PlunderDisplay:SetText(AccountStoreUtil.FormatCurrencyTotalDisplay(accountStoreCurrencyID));
+	self.PlunderDisplay:SetText(AccountStoreUtil.FormatCurrencyDisplayWithWarning(accountStoreCurrencyID));
 end
 
 PVPQuestRewardMixin = { };

@@ -97,9 +97,13 @@ function GameEnvironmentButtonMixin:OnLoad()
 	self.deselectedScale = self.selectedScale - 0.09;
 end
 
+function GameEnvironmentButtonMixin:OnShow()
+	self:SetAlpha(self:IsSelected() and 1 or 0.5);
+end
+
 function GameEnvironmentButtonMixin:OnEnter()
 	if not self:IsSelected() then
-		self:SetAlpha(0.7);
+		self:SetAlpha(1.0);
 	end
 end
 
@@ -152,6 +156,8 @@ function GameEnvironmentButtonPulsingMixin:RefreshScale()
 end
 
 function GameEnvironmentButtonPulsingMixin:OnShow()
+	GameEnvironmentButtonMixin.OnShow(self);
+
 	self:SetPulsePlaying(true);
 end
 

@@ -60,7 +60,7 @@ function SetItemRef(link, text, button, chatFrame)
 				end
 
 			elseif ( button == "RightButton" and (not isGMLink) and FriendsFrame_ShowDropdown) then
-				FriendsFrame_ShowDropdown(name, 1, lineID, chatType, chatFrame, nil, nil, communityClubID, communityStreamID, communityEpoch, communityPosition);
+				FriendsFrame_ShowDropdown(name, 1, lineID, chatType, chatFrame, nil, communityClubID, communityStreamID, communityEpoch, communityPosition);
 			else
 				ChatFrame_SendTell(name, chatFrame);
 			end
