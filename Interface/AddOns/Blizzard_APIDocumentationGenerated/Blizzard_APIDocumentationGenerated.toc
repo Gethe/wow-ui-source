@@ -344,6 +344,7 @@ RecruitAFriendSharedDocumentation.lua
 ReportSystemConstantsDocumentation.lua
 ScreenLocationConstantsDocumentation.lua
 ScriptRegionSharedDocumentation.lua
+SeasonsConstantsDocumentation.lua
 SharedScriptObjectModelLightDocumentation.lua
 SharedScriptObjectUnitPositionFrameDocumentation.lua
 SharedTraitsEnumsDocumentation.lua
@@ -379,7 +380,6 @@ AuctionHouseConstants_ClassicDocumentation.lua
 CurrencyConstants_ClassicDocumentation.lua
 ItemConstants_ClassicDocumentation.lua
 QuestConstants_ClassicDocumentation.lua
-SeasonsConstantsDocumentation.lua
 TalentAndGlyphConstantsDocumentation.lua
 TransmogConstantsDocumentation.lua
 # End documentation files here

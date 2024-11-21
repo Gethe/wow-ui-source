@@ -45,17 +45,17 @@ end
 
 function RealmWarningPopUpFrameMixin:ShowRealmSelectionWarning()
 	self:SetBodyText(HTML_START .. PVP_REALM_WARNING .. HTML_END);
-    self:SetSize(510, 300);
-    self.ScrollBox:SetSize(400,300);
+    self:SetSize(510, 240);
+    self.ScrollBox:SetSize(430,120);
     self.screen = REALM_WARNING_POPUP_SCREEN.REALM_SELECT;
     self:Show();
 end
 
 function RealmWarningPopUpFrameMixin:ShowCharacterCreationWarning()
     self:SetBodyText(HTML_START .. PVP_CHARACTER_CREATION_WARNING .. PVP_CHARACTER_CREATION_WARNING_TWO .. HTML_END);
-    self:SetSize(510, 560);
+    self:SetSize(510, 360);
     self.screen = REALM_WARNING_POPUP_SCREEN.CHARACTER_SELECT;
-    self.ScrollBox:SetSize(400,560);
+    self.ScrollBox:SetSize(430,240);
     self:Show();
 end
 
