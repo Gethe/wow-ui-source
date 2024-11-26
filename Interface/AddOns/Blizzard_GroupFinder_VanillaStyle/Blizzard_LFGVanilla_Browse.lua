@@ -216,7 +216,7 @@ function LFGBrowseMixin:UpdateButtonState()
 	self.GroupInviteButton:SetText(inviteText);
 	self.GroupInviteButton.inviteFunc = inviteFunc;
 
-	self.SendMessageButton:SetEnabled(self.selectionBehavior:HasSelection() and self.GroupInviteButton.inviteFunc);
+	self.SendMessageButton:SetEnabled(self.selectionBehavior:HasSelection());
 	self.GroupInviteButton:SetEnabled(self.selectionBehavior:HasSelection() and self.GroupInviteButton.inviteFunc);
 	
 	self.RefreshButton:SetEnabled(not self.searching);

@@ -164,6 +164,7 @@ characterCopyRegions = {
 SEASON_NAMES = {
 	[Enum.SeasonID.SeasonOfMastery]					= SEASON_OF_MASTERY_REALM_TYPE,
 	[Enum.SeasonID.Hardcore]						= HARDCORE_REALM_NAME,
+	[Enum.SeasonID.FreshHardcore]					= HARDCORE_REALM_NAME,
 };
 SEASON_TOOLTIPS = {
 	[Enum.SeasonID.SeasonOfMastery]					= SEASON_OF_MASTERY_REALM_TOOLTIP,
