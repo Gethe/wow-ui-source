@@ -9,6 +9,7 @@
 					<Anchor point="BOTTOM" relativePoint="BOTTOM" y="10"/>
 				</Anchors>
 				<Scripts>
+					<OnShow method="OnShow"/>
 					<OnClick method="OnClick"/>
 				</Scripts>
 			</Button>

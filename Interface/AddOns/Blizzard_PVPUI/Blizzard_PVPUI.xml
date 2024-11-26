@@ -1501,6 +1501,8 @@
 						<Scripts>
 							<OnLoad method="OnLoad"/>
 							<OnShow method="OnShow"/>
+							<OnHide method="OnHide"/>
+							<OnEvent method="OnEvent"/>
 						</Scripts>
 					</Frame>
 					<Frame name="LFGListPVPStub" hidden="true">
@@ -1652,8 +1654,8 @@
 							<Frame parentKey="PlunderstormPanel" mixin="PlunderstormPanelMixin" setAllPoints="true" hidden="true">
 								<Layers>
 									<Layer level="ARTWORK">
-										<FontString parentKey="PlunderDesc" inherits="GameFontHighlight" justifyV="MIDDLE" justifyH="CENTER" text="WOW_LABS_PLUNDER_LFG_DESC">
-											<Size x="150" y="40"/>
+										<FontString parentKey="PlunderDesc" inherits="GameFontHighlight" justifyV="BOTTOM" justifyH="CENTER" text="WOW_LABS_PLUNDER_LFG_DESC">
+											<Size x="150" y="64"/>
 											<Anchors>
 												<Anchor point="BOTTOM" y="78"/>
 											</Anchors>

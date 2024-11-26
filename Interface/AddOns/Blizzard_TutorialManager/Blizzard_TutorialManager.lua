@@ -57,6 +57,10 @@ function TutorialManager:OnSettingsLoaded(cvar, value)
 	end
 end
 
+function TutorialManager:ResetTutorials()
+	EventRegistry:TriggerEvent("TutorialManager.TutorialsReset");
+end
+
 function TutorialManager:OnCVARsUpdated(cvar, value)
 	if (cvar == "showTutorials" ) then
 		local isActive = (value == "1");

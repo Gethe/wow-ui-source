@@ -34,8 +34,6 @@ local l10nTable = {
 
 			ServerAlertFrame:SetWidth(350);
 			ServerAlertFrame:SetHeight(400);
-
-			SHOW_KOREAN_RATINGS = true;
         end,
 	},
 	ptBR = {},
@@ -52,8 +50,6 @@ local l10nTable = {
 
 			-- Hide save username button
 			HIDE_SAVE_ACCOUNT_NAME_CHECKBUTTON = true;
-
-			SHOW_CHINA_AGE_APPROPRIATENESS_WARNING = true;
         end,
 	},
 	zhTW = {

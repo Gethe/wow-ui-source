@@ -20,6 +20,7 @@ function WorldLootObjectListButtonMixin:Init(widget)
 	local widgetInfo = widget.widgetInfo;
 	self.widgetContainer = widget.widgetContainer;
 	self.WidgetDisplay:Setup(widget.widgetInfo, widget.widgetContainer);
+	self.WidgetDisplay.Spell.tooltipXOffset = 230;
 
 	local spellInfo = widgetInfo.spellInfo;
 
@@ -38,6 +39,18 @@ function WorldLootObjectListButtonMixin:OnUpdate(dt)
 	if self.widgetID then
 		self:Refresh();
 	end
+end
+
+function WorldLootObjectListButtonMixin:OnEnter()
+	self.WidgetDisplay.Spell:OnEnter();
+end
+
+function WorldLootObjectListButtonMixin:OnLeave()
+	self.WidgetDisplay.Spell:OnLeave();
+end
+
+function WorldLootObjectListButtonMixin:OnMouseDown(...)
+	self.WidgetDisplay:OnMouseDown(...);
 end
 
 function WorldLootObjectListButtonMixin:SetDummy(isDummy)

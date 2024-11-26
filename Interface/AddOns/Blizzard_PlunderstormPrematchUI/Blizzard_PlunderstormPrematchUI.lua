@@ -277,6 +277,10 @@ end
 
 StartQueueButtonMixin = {};
 
+function StartQueueButtonMixin:OnShow()
+	self:SetText(not C_WoWLabsMatchmaking.IsPartyLeader() and WOWLABS_READY_GAME or WOW_LABS_START_QUEUE);
+end
+
 function StartQueueButtonMixin:OnClick()
 	local parent = self:GetParent();
 	C_WoWLabsMatchmaking.SetAutoQueueOnLogout(true, parent:GetQueueType());

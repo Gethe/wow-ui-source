@@ -2,6 +2,7 @@
 AccountStoreCategoryMixin = {};
 
 function AccountStoreCategoryMixin:OnClick()
+	PlaySound(SOUNDKIT.ACCOUNT_STORE_CATEGORY_SELECT);
 	EventRegistry:TriggerEvent("AccountStore.CategorySelected", self.categoryID);
 end
 

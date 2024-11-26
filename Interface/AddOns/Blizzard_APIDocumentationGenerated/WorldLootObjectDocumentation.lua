@@ -78,6 +78,20 @@ local WorldLootObject =
 			},
 		},
 		{
+			Name = "IsWorldLootObjectByGUID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "guid", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isWorldLootObject", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsWorldLootObjectInRange",
 			Type = "Function",
 

@@ -808,19 +808,6 @@ local UIWidgetManager =
 			},
 		},
 		{
-			Name = "UIWidgetModelSceneLayer",
-			Type = "Enumeration",
-			NumValues = 3,
-			MinValue = 0,
-			MaxValue = 2,
-			Fields =
-			{
-				{ Name = "None", Type = "UIWidgetModelSceneLayer", EnumValue = 0 },
-				{ Name = "Front", Type = "UIWidgetModelSceneLayer", EnumValue = 1 },
-				{ Name = "Back", Type = "UIWidgetModelSceneLayer", EnumValue = 2 },
-			},
-		},
-		{
 			Name = "UIWidgetMotionType",
 			Type = "Enumeration",
 			NumValues = 2,

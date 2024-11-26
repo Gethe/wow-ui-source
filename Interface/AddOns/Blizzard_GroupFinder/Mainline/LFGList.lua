@@ -2416,9 +2416,10 @@ local function LFGListSearchPanel_SetupAdvancedFilter(dropdown, rootDescription)
 		local levelRangeFrame = rootDescription:CreateTemplate("LevelRangeFrameTemplate");
 		levelRangeFrame:AddInitializer(function(frame, elementDescription, menu)
 			frame:Reset();
-			frame:SetWidth(38);
-			frame.MaxLevel:Hide();
+			frame.MinLevel:SetMaxLetters(4);
+			frame.MinLevel:SetWidth(38);
 			frame.MinLevel.Dash:Hide();
+			frame.MaxLevel:Hide();
 
 			local enabled = C_LFGList.GetAdvancedFilter();
 			local minLevel = enabled.minimumRating;

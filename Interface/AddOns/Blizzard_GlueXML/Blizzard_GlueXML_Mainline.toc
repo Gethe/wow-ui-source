@@ -1,7 +1,7 @@
 ## Title: Blizzard_GlueXML
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_GlueDialogs, Blizzard_TimerunningUtil, Blizzard_Menu, Blizzard_MoneyFrame, Blizzard_MatchmakingQueueDisplay
+## Dependencies: Blizzard_GlueDialogs, Blizzard_LoginWarningDialogs, Blizzard_TimerunningUtil, Blizzard_Menu, Blizzard_MoneyFrame, Blizzard_MatchmakingQueueDisplay
 ## LoadFirst: 1
 ## AllowLoad: Glue
 ## AllowLoadGameType: mainline

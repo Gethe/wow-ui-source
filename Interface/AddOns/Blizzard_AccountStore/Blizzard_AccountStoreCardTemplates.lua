@@ -3,10 +3,10 @@ local AccountStoreCardUpdateCadenceSeconds = 1.0;
 local CreatureModelSceneID = 76;
 local TransmogModelSceneID = 420;
 local DefaultTransmogSetAppearances = {
-	195323, -- Chest
-	198778, -- Gloves
-	198782, -- Legs
-	198784, -- Boots
+	169000, -- Chest
+	169001, -- Waist
+	169002, -- Legs
+	169003, -- Boots
 };
 
 
@@ -170,10 +170,11 @@ function AccountStoreBaseCardMixin:SelectCard()
 		StaticPopup_Hide("GENERIC_CONFIRMATION");
 
 		StaticPopup_ShowGenericConfirmation(confirmation, function ()
-			PlaySound(SOUNDKIT.ACCOUNT_STORE_ITEM_PURCHASE);
 			if isRefundable then
+				PlaySound(SOUNDKIT.ACCOUNT_STORE_ITEM_REFUND);
 				C_AccountStore.RefundItem(itemInfo.id);
 			else
+				PlaySound(SOUNDKIT.ACCOUNT_STORE_ITEM_PURCHASE);
 				C_AccountStore.BeginPurchase(itemInfo.id);
 			end
 		end);
@@ -258,10 +259,40 @@ function AccountStoreTransmogSetCardMixin:UpdateCardDisplay()
 	local forceUpdate = true;
 	self.ModelScene:SetFromModelSceneID(modelSceneID, forceUpdate);
 
+	local function GetPlayerActorName()
+		local useNativeForm = true;
+		local playerRaceName = nil;
+		local playerGender = nil;
+		if C_Glue.IsOnGlueScreen() then
+			local members = C_WoWLabsMatchmaking.GetCurrentParty();
+			for i, member in ipairs(members) do
+				if member.isLocalPlayer then
+					playerRaceName = member.raceFilename;
+					playerGender = member.gender;
+					break;
+				end
+			end
+		else
+			local _, raceFilename = UnitRace("player");
+			playerRaceName = raceFilename:lower();
+			playerGender = UnitSex("player");
+		end
+
+		local overrideActorName;
+		if playerRaceName == "dracthyr" then
+			useNativeForm = false;
+			overrideActorName = "dracthyr-alt";
+		end
+
+		return playerRaceName and playerRaceName:lower() or overrideActorName, playerGender, useNativeForm;
+	end
+
 	local function SetUpPlayerActor()
 		if C_Glue.IsOnGlueScreen() then
 			local members = C_WoWLabsMatchmaking.GetCurrentParty();
-			local playerActor = self.ModelScene:GetPlayerActor();
+			local playerRaceName, playerGender = GetPlayerActorName();
+			local overrideActorName = nil;
+			local playerActor = self.ModelScene:GetPlayerActor(overrideActorName, playerRaceName, playerGender);
 			if playerActor then
 				playerActor:ReleaseFrontEndCharacterDisplays();
 			end
@@ -274,15 +305,15 @@ function AccountStoreTransmogSetCardMixin:UpdateCardDisplay()
 
 			return playerActor;
 		else
+			local playerRaceName, playerGender, useNativeForm = GetPlayerActorName();
 			local overrideActorName = nil;
 			local flags = select(4, C_ModelInfo.GetModelSceneInfoByID(modelSceneID));
 			local sheatheWeapons = bit.band(flags, Enum.UIModelSceneFlags.SheatheWeapon) == Enum.UIModelSceneFlags.SheatheWeapon;
 			local hideWeapons = bit.band(flags, Enum.UIModelSceneFlags.HideWeapon) == Enum.UIModelSceneFlags.HideWeapon;
 			local autoDress = bit.band(flags, Enum.UIModelSceneFlags.Autodress) == Enum.UIModelSceneFlags.Autodress;
-			local useNativeForm = true;
 			local itemModifiedAppearanceIDs = nil; -- We set these below.
-			SetupPlayerForModelScene(self.ModelScene, overrideActorName, itemModifiedAppearanceIDs, sheatheWeapons, autoDress, hideWeapons, useNativeForm);
-			return self.ModelScene:GetPlayerActor(overrideActorName);
+			SetupPlayerForModelScene(self.ModelScene, overrideActorName, itemModifiedAppearanceIDs, sheatheWeapons, autoDress, hideWeapons, useNativeForm, playerRaceName, playerGender);
+			return self.ModelScene:GetPlayerActor(overrideActorName, playerRaceName, playerGender);
 		end
 	end
 

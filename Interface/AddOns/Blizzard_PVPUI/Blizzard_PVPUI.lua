@@ -2266,12 +2266,31 @@ end
 
 PlunderstormQueueFrameMixin = {};
 
+PlunderstormQueueFrameEvents = {
+	"PARTY_LEADER_CHANGED",
+	"GROUP_ROSTER_UPDATE",
+	"GROUP_FORMED",
+}
+
 function PlunderstormQueueFrameMixin:OnLoad()
 	self.QueueSelect.useLocalPlayIndex = true;
 end
 
 function PlunderstormQueueFrameMixin:OnShow()
 	EventRegistry:TriggerEvent("PlunderstormQueueTutorial.Update");
+	FrameUtil.RegisterFrameForEvents(self, PlunderstormQueueFrameEvents);
+end
+
+function PlunderstormQueueFrameMixin:OnHide()
+	FrameUtil.UnregisterFrameForEvents(self, PlunderstormQueueFrameEvents);
+end
+
+function PlunderstormQueueFrameMixin:OnEvent(event, ...)
+	if event == "PARTY_LEADER_CHANGED" or
+	   event == "GROUP_ROSTER_UPDATE" or
+	   event == "GROUP_FORMED" then
+		self.QueueSelect:UpdateButtons();
+	end
 end
 
 StartPlunderstormQueueButtonMixin = {};
@@ -2279,6 +2298,7 @@ StartPlunderstormQueueButtonMixin = {};
 local PlunderstormQueueButtonEvents = {
 	"LOBBY_MATCHMAKER_QUEUE_STATUS_UPDATE",
 	"LOBBY_MATCHMAKER_QUEUE_ABANDONED",
+	"PARTY_LEADER_CHANGED",
 }
 
 function StartPlunderstormQueueButtonMixin:OnShow()
@@ -2320,7 +2340,8 @@ end
 
 function StartPlunderstormQueueButtonMixin:OnEvent(event, ...)
 	if ( event == "LOBBY_MATCHMAKER_QUEUE_STATUS_UPDATE" or
-		 event == "LOBBY_MATCHMAKER_QUEUE_ABANDONED") then
+		 event == "LOBBY_MATCHMAKER_QUEUE_ABANDONED" or
+		 event == "PARTY_LEADER_CHANGED" ) then
 		self:UpdateState();
 	end
 end
@@ -2331,6 +2352,11 @@ function StartPlunderstormQueueButtonMixin:UpdateState()
 	if ( not QueueStatusFrame:HasNonPlunderstormQueue() ) then
 		enabled = false;
 		tooltip = PLUNDERSTORM_QUEUE_TOOLTIP_ERROR;
+	end
+
+	if ( UnitInParty("player") and not UnitIsGroupLeader("player") ) then
+		enabled = false;
+		tooltip = ERR_NOT_LEADER;
 	end
 
 	self:SetEnabled(enabled);
@@ -2349,6 +2375,16 @@ function PlunderstormPanelMixin:OnLoad()
 	self.PlunderstoreButton:SetScript("OnClick", function()
 		AccountStoreUtil.ToggleAccountStore();
 	end);
+
+	self.PlunderDesc:SetScript("OnEnter", function(onEnterSelf)
+		if (onEnterSelf:IsTruncated()) then
+			GameTooltip:SetOwner(onEnterSelf, "ANCHOR_RIGHT");
+			GameTooltip:AddLine(onEnterSelf:GetText());
+			GameTooltip:Show();
+		end
+	end);
+
+	self.PlunderDesc:SetScript("OnLeave", function() GameTooltip_Hide(); end);
 
 	self.PlunderDisplay:SetScript("OnEnter", function(onEnterSelf)
 		GameTooltip:SetOwner(onEnterSelf, "ANCHOR_RIGHT");

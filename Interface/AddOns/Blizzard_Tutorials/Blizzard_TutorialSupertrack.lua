@@ -31,7 +31,7 @@ function SupertrackTutorialMixin:CheckStartTutorialTimer()
 			self:AcknowledgeTutorial();
 		end
 	else
-		self:StartTimer()
+		self:StartTimer();
 	end
 end
 
@@ -52,16 +52,18 @@ function SupertrackTutorialMixin:TryShowSupertrackTutorial()
 	self:StopTimer();
 
 	local target = self:FindTutorialTargetFrame();
-	if target then
+	if target and target:IsVisible() then
 		local helpTipInfo = {
 			text = TUTORIAL_SUPERTRACK_STEP_1,
 			buttonStyle = HelpTip.ButtonStyle.Close,
 			targetPoint = HelpTip.Point.LeftEdgeCenter,
 			alignment = HelpTip.Alignment.Center,
 			autoEdgeFlipping = true,
+			autoHideWhenTargetHides = true,
 			system = self:GetSystem(),
 			callbackArg = self,
 			onAcknowledgeCallback = self.AcknowledgeTutorial,
+			onHideCallback = function(acknowledged, arg, reason) self:OnTutorialHidden(reason); end,
 		};
 
 		HelpTip:Show(UIParent, helpTipInfo, target);
@@ -103,8 +105,20 @@ function SupertrackTutorialMixin:AcknowledgeTutorial()
 	StateMachineBasedTutorialMixin.AcknowledgeTutorial(self);
 end
 
-TutorialManager:CheckHasCompletedFrameTutorial(LE_FRAME_TUTORIAL_HOW_TO_SUPERTRACK, function(hasCompletedTutorial)
-	if not hasCompletedTutorial then
-		CreateAndInitFromMixin(SupertrackTutorialMixin):BeginInitialState();
+local function CheckBeginTutorial()
+	TutorialManager:CheckHasCompletedFrameTutorial(LE_FRAME_TUTORIAL_HOW_TO_SUPERTRACK, function(hasCompletedTutorial)
+		if not hasCompletedTutorial then
+			CreateAndInitFromMixin(SupertrackTutorialMixin):BeginInitialState();
+		end
+	end);
+end
+
+function SupertrackTutorialMixin:OnTutorialHidden(reason)
+	if reason == HelpTip.HideReason.TargetHidden then
+		CheckBeginTutorial();
 	end
-end);
+end
+
+EventRegistry:RegisterCallback("TutorialManager.TutorialsEnabled", CheckBeginTutorial);
+EventRegistry:RegisterCallback("TutorialManager.TutorialsReset", CheckBeginTutorial);
+CheckBeginTutorial();

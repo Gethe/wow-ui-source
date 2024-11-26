@@ -45,6 +45,17 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BG" atlas="plunderstorm-pickup-BG" useAtlasSize="false">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Size x="188" y="35"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.BindingAction" relativePoint="CENTER" x="12" y="0" />
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 	</Frame>
 
@@ -65,6 +76,7 @@
 				<KeyValues>
 					<KeyValue key="spellSlot" value ="1" type="number"/>
 					<KeyValue key="layoutIndex" value="2" type="number"/>
+					<KeyValue key="topPadding" value="10" type="number"/>
 				</KeyValues>
 			</Frame>
 		</Frames>

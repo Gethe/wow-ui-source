@@ -302,7 +302,10 @@ function WorldMapMixin:AddOverlayFrames()
 		topRightButtonPoolXOffset = topRightButtonPoolXOffset + topRightButtonPoolXOffsetAmount;
 	end
 
-	self:AddOverlayFrame("WorldMapShowLegendButtonTemplate", "BUTTON", "TOPRIGHT", self:GetCanvasContainer(), "TOPRIGHT", topRightButtonPoolXOffset, -2);
+	local worldMapLegendDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.WorldMapLegendDisabled);
+	if not worldMapLegendDisabled then
+		self:AddOverlayFrame("WorldMapShowLegendButtonTemplate", "BUTTON", "TOPRIGHT", self:GetCanvasContainer(), "TOPRIGHT", topRightButtonPoolXOffset, -2);
+	end
 
 	self:AddOverlayFrame("WorldMapBountyBoardTemplate", "FRAME", nil, self:GetCanvasContainer());
 	self:AddOverlayFrame("WorldMapActionButtonTemplate", "FRAME", nil, self:GetCanvasContainer());
@@ -332,6 +335,11 @@ function WorldMapMixin:OnMapChanged()
 end
 
 function WorldMapMixin:OnShow()
+	local frameStrata = C_GameRules.GetGameRuleAsFrameStrata(Enum.GameRule.WorldMapFrameStrata);
+	if frameStrata and frameStrata ~= "UNKNOWN" then
+		self:SetFrameStrata(frameStrata);
+	end
+
 	local mapID = MapUtil.GetDisplayableMapForPlayer();
 	self:SetMapID(mapID);
 	MapCanvasMixin.OnShow(self);

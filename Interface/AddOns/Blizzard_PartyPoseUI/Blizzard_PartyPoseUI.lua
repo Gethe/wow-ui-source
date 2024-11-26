@@ -320,6 +320,7 @@ do
 		local maxWidgetWidth = 1;
 
 		for index, widgetFrame in ipairs(sortedWidgets) do
+			widgetFrame:ClearAllPoints();
 			if ( index == 1 ) then
 				widgetFrame:SetPoint("TOP", widgetContainerFrame, "TOP", 0, 0);
 				widgetsHeight = widgetsHeight + widgetFrame:GetWidgetHeight();

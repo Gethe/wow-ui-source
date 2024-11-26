@@ -3,6 +3,21 @@ local ChatConstants =
 	Tables =
 	{
 		{
+			Name = "ChannelPlayerFlags",
+			Type = "Enumeration",
+			NumValues = 5,
+			MinValue = 0,
+			MaxValue = 8,
+			Fields =
+			{
+				{ Name = "ChannelPlayerNone", Type = "ChannelPlayerFlags", EnumValue = 0 },
+				{ Name = "ChannelPlayerOwner", Type = "ChannelPlayerFlags", EnumValue = 1 },
+				{ Name = "ChannelPlayerModerator", Type = "ChannelPlayerFlags", EnumValue = 2 },
+				{ Name = "ChannelPlayerTextAllow", Type = "ChannelPlayerFlags", EnumValue = 4 },
+				{ Name = "ChannelPlayerHidden", Type = "ChannelPlayerFlags", EnumValue = 8 },
+			},
+		},
+		{
 			Name = "ChatChannelRuleset",
 			Type = "Enumeration",
 			NumValues = 9,

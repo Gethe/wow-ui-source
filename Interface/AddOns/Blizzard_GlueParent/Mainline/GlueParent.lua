@@ -577,18 +577,6 @@ function GlueParent_CheckCinematic()
 	end
 end
 
-function GlueParent_CheckPhotosensitivity()
-	local lastPhotosensitivityExpansionShown = (tonumber(GetCVar("showPhotosensitivityWarning")) or 0);
-	if LE_EXPANSION_LEVEL_CURRENT > lastPhotosensitivityExpansionShown then
-		SetCVar("showPhotosensitivityWarning", LE_EXPANSION_LEVEL_CURRENT);
-		GlueParent_OpenSecondaryScreen("photosensitivity");
-		
-		return true;
-	end
-
-	return false;
-end
-
 function ToggleFrame(frame)
 	frame:SetShown(not frame:IsShown());
 end

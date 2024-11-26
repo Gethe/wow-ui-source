@@ -2811,12 +2811,15 @@ function UnitPopupChatPromoteButtonMixin:CanShow(contextData)
 	end
 
 	-- TODO: Name matching is wrong here, needs full name comparison
-	return contextData.name == UnitNameUnmodified("player");
+	if contextData.name == UnitNameUnmodified("player") then
+		return false;
+	end
+
+	return true;
 end
 
-UnitPopupChatPromoteButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
-function UnitPopupChatPromoteButtonMixin:GetText(contextData)
-	return MAKE_MODERATOR;
+function UnitPopupChatPromoteButtonMixin:OnClick(contextData)
+	ChannelModerator(contextData.channelName, contextData.name)
 end
 
 UnitPopupChatDemoteButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
@@ -2837,9 +2840,13 @@ function UnitPopupChatDemoteButtonMixin:CanShow(contextData)
 	if not IsDisplayChannelOwner() then
 		return false;
 	end
-
+	
 	-- TODO: Name matching is wrong here, needs full name comparison
-	return contextData.name ~= UnitNameUnmodified("player");
+	if contextData.name == UnitNameUnmodified("player") then
+		return false;
+	end
+
+	return true;
 end
 
 function UnitPopupChatDemoteButtonMixin:OnClick(contextData)

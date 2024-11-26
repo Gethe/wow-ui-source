@@ -181,7 +181,11 @@ function MerchantFrame_Update()
 		MerchantFrame.lastTab = MerchantFrame.selectedTab;
 	end
 
-	MerchantFrame.FilterDropdown:Update();
+	local filterDropdownDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.MerchantFilterDisabled);
+	MerchantFrame.FilterDropdown:SetShown(not filterDropdownDisabled);
+	if ( not filterDropdownDisabled ) then
+		MerchantFrame.FilterDropdown:Update();
+	end
 
 	if ( MerchantFrame.selectedTab == 1 ) then
 		MerchantFrame_UpdateMerchantInfo();

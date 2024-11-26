@@ -1511,12 +1511,12 @@ function ResizeCheckButtonMixin:SetControlEnabled(enabled)
 	self.Button:SetEnabled(enabled);
 
 	self:UpdateLabelFont();
-	end
+end
 
 function ResizeCheckButtonMixin:IsControlEnabled()
 	if self.Button == nil then
 		return false;
-end
+	end
 
 	return self.Button:IsEnabled();
 end
@@ -1544,20 +1544,6 @@ function ResizeCheckButtonMixin:UpdateLabelFont()
 	local disabledFont = self.disabledLabelFont or "GameFontDisableLarge";
 	local enabled = self:IsControlEnabled();
 	self.Label:SetFontObject(enabled and enabledFont or disabledFont);
-end
-
-function ResizeCheckButtonMixin:OnEnter()
-	if(self.tooltipText ~= nil and not self.tooltipDisabled) then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip_SetTitle(GameTooltip, self.tooltipText);
-		GameTooltip:Show();
-	end
-end
-
-function ResizeCheckButtonMixin:OnLeave()
-	if(self.tooltipText ~= nil and not self.tooltipDisabled) then
-		GameTooltip:Hide();
-	end
 end
 
 SharedEditBoxMixin = {}

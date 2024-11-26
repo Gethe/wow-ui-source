@@ -445,12 +445,13 @@ StaticPopupDialogs["ACCOUNT_STORE_BEGIN_PURCHASE_OR_REFUND"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function()
-		PlaySound(SOUNDKIT.ACCOUNT_STORE_ITEM_PURCHASE);
-
+		
 		local itemInfo = GlueDialog.data;
 		if itemInfo.status == Enum.AccountStoreItemStatus.Refundable then
+			PlaySound(SOUNDKIT.ACCOUNT_STORE_ITEM_REFUND);
 			C_AccountStore.RefundItem(itemInfo.id);
 		else
+			PlaySound(SOUNDKIT.ACCOUNT_STORE_ITEM_PURCHASE);
 			C_AccountStore.BeginPurchase(itemInfo.id);
 		end
 	end

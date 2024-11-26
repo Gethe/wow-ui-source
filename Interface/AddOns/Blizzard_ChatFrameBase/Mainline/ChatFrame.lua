@@ -4641,6 +4641,11 @@ function ChatEdit_ResetChatType(self)
 	if ( self:GetAttribute("chatType") == "INSTANCE_CHAT" and (not IsInGroup(LE_PARTY_CATEGORY_INSTANCE)) ) then
 		self:SetAttribute("chatType", "SAY");
 	end
+
+	if ( C_Glue.IsOnGlueScreen() and C_GameEnvironmentManager.GetCurrentGameEnvironment() == Enum.GameEnvironment.WoWLabs and IsInGroup(LE_PARTY_CATEGORY_HOME) ) then
+		self:SetAttribute("chatType", "PARTY");
+	end
+
 	self.lastTabComplete = nil;
 	self.tabCompleteText = nil;
 	self.tabCompleteTableIndex = 1;

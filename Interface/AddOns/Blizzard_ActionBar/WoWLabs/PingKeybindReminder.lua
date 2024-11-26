@@ -28,12 +28,11 @@ function KeybindReminderMixin:OnEvent(event, ...)
 	end
 	if(event == "PLAYER_SOFT_INTERACT_CHANGED") then 
 		local previousTarget, currentTarget = ...;
-		
 		if(currentTarget ~= nil) then
-			local isWorldLootObj = C_WorldLootObject.IsWorldLootObject(currentTarget);
+			local isWorldLootObj = C_WorldLootObject.IsWorldLootObjectByGUID(currentTarget);
 			if(isWorldLootObj) then
-				self:ShowReminder(C_WorldLootObject.GetWorldLootObjectInfo(currentTarget).inventoryType);
-			else
+				self:ShowReminder(C_WorldLootObject.GetWorldLootObjectInfoByGUID(currentTarget).inventoryType);
+			elseif(self.spellSlot ~= nil) then
 				self:HideReminder();
 			end
 		elseif(self.spellSlot ~= nil) then
