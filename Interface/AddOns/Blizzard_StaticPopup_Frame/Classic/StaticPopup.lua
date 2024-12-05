@@ -2588,7 +2588,8 @@ StaticPopupDialogs["REMOVE_GUILDMEMBER"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function(self, data)
-		if data then
+		--The Classic Guild UI (FriendFrame) does not provide a guid while the modern version does.
+		if data and data.guid then
 			C_GuildInfo.RemoveFromGuild(data.guid);
 			if CommunitiesFrame then
 				CommunitiesFrame:CloseGuildMemberDetailFrame();
@@ -2601,7 +2602,7 @@ StaticPopupDialogs["REMOVE_GUILDMEMBER"] = {
 		end
 	end,
 	OnShow = function(self, data)
-		if data then
+		if data and data.name then
 			self.text:SetFormattedText(REMOVE_GUILDMEMBER_LABEL, data.name);
 		else
 			self.text:SetFormattedText(REMOVE_GUILDMEMBER_LABEL, GuildFrame.selectedName);
