@@ -204,7 +204,7 @@ function RaidProfilesMixin:OnLoad()
 	SettingsDropdownControlMixin.OnLoad(self);
 
 	self.NewButton:ClearAllPoints();
-	self.NewButton:SetPoint("TOPRIGHT", self.Control.Dropdown.Button, "BOTTOM");
+	self.NewButton:SetPoint("TOPRIGHT", self.Control.Dropdown, "BOTTOM");
 
 	self.DeleteButton:ClearAllPoints();
 	self.DeleteButton:SetPoint("TOPLEFT", self.NewButton, "TOPRIGHT", -10);
