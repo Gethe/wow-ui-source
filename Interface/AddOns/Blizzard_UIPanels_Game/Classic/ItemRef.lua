@@ -401,7 +401,13 @@ function SetItemRef(link, text, button, chatFrame)
 		ReportFrame:InitiateReport(reportInfo, playerName);
 		return; 
 	elseif ( strsub(link, 1, 14) == "aadcopenconfig" ) then
-		ShowUIPanel(ChatConfigFrame);
+		-- When muted, the ToggleChatButton in the chat config frame is not shown, and the Disable Chat 
+		-- option in settings has a tooltip with an explanation of how to unmute.
+		if C_SocialRestrictions.IsMuted() then
+			Settings.OpenToCategory(Settings.SOCIAL_CATEGORY_ID);
+		else
+			ShowUIPanel(ChatConfigFrame);
+		end
 		return;
 	elseif ( strsub(link, 1, 10) == "lfglisting" ) then
 		PVEFrame_ShowFrame();
