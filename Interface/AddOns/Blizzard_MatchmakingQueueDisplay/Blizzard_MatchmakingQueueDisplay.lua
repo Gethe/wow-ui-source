@@ -12,6 +12,27 @@ function QueueTypeSelectionButtonMixin:OnClick()
 	EventRegistry:TriggerEvent("MatchmakingQueueType.Selected", self, self.partyPlaylistEntry);
 end
 
+function QueueTypeSelectionButtonMixin:OnEnter()
+	if C_Glue.IsOnGlueScreen() then
+		return;
+	end
+
+	local isPartyLeader = C_WoWLabsMatchmaking.IsPartyLeader();
+	if not self:IsEnabled() and not isPartyLeader then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:AddLine(ERR_NOT_LEADER, RED_FONT_COLOR:GetRGB());
+		GameTooltip:Show();
+	end
+end
+
+function QueueTypeSelectionButtonMixin:OnLeave()
+	if C_Glue.IsOnGlueScreen() then
+		return;
+	end
+
+	GameTooltip_Hide();
+end
+
 function QueueTypeSelectionButtonMixin:SetSelected(selected)
 	SelectableButtonMixin.SetSelectedState(self, selected);
 	if selected then
@@ -225,6 +246,18 @@ function QueueReadyButtonMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self,QueueReadyButtonEvents);
 end
 
+local function GetQueueTypeButton(queueContainer, queueType)
+	if queueType == Enum.PartyPlaylistEntry.SoloGameMode then
+		return queueContainer.Solo;
+	elseif queueType == Enum.PartyPlaylistEntry.DuoGameMode then
+		return queueContainer.Duo;
+	elseif queueType == Enum.PartyPlaylistEntry.TrioGameMode then
+		return queueContainer.Trio;
+	end
+
+	return queueContainer.Training;
+end
+
 function QueueReadyButtonMixin:OnEvent(event)
 	if event == "GLUES_RESUMED" then
 		local autoQueue, queueType = C_WoWLabsMatchmaking.GetAutoQueueOnLogout();
@@ -232,16 +265,7 @@ function QueueReadyButtonMixin:OnEvent(event)
 			C_WoWLabsMatchmaking.SetAutoQueueOnLogout(false);
 
 			local gameModeSettingsFrame = self:GetParent();
-			local queueContainer = gameModeSettingsFrame.QueueContainer;
-			local queueTypeButton = queueContainer.Training;
-			if queueType == Enum.PartyPlaylistEntry.SoloGameMode then
-				queueTypeButton = queueContainer.Solo;
-			elseif queueType == Enum.PartyPlaylistEntry.DuoGameMode then
-				queueTypeButton = queueContainer.Duo;
-			elseif queueType == Enum.PartyPlaylistEntry.TrioGameMode then
-				queueTypeButton = queueContainer.Trio;
-			end
-
+			local queueTypeButton = GetQueueTypeButton(gameModeSettingsFrame.QueueContainer, queueType);
 			if self:IsEnabled() then
 				queueTypeButton:OnClick();
 				self:OnClick();
@@ -320,6 +344,10 @@ function QueueReadyButtonMixin:Update()
 			end
 
 			gameModeSettingsFrame.useLocalPlayIndex = false;
+
+			local queueType = gameModeSettingsFrame.localPlayIndex;
+			local queueTypeButton = GetQueueTypeButton(gameModeSettingsFrame.QueueContainer, queueType);
+			queueTypeButton:OnClick();
 			self:OnClick();
 		end
 	end

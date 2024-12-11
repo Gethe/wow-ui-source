@@ -16,6 +16,8 @@ local function ExitPlunderstormLobby()
     C_Login.DisconnectFromServer();
 end
 
+g_newGameModeAvailableAcknowledged = g_newGameModeAvailableAcknowledged or nil;
+
 PlunderstormLobbyMixin = { };
 function PlunderstormLobbyMixin:OnLoad()
 	self:SetBackgroundModel(PlunderstormBackground);
@@ -92,6 +94,9 @@ function PlunderstormLobbyMixin:OnShow()
 	local isFrontEndChatEnabled = C_GameRules.IsGameRuleActive(Enum.GameRule.FrontEndChat);
 	GeneralDockManager:SetShown(isFrontEndChatEnabled);
 	ChatFrame1:SetShown(isFrontEndChatEnabled);
+
+	-- Plunderstorm has been seen as a mode
+	g_newGameModeAvailableAcknowledged = 1;
 end
 
 function PlunderstormLobbyMixin:OnRealmListCancel()

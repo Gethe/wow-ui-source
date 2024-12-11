@@ -117,6 +117,16 @@ function CharacterSelectNavBarMixin:OnLoad()
 
 	-- Any specific button setups.
 	self:SetButtonVisuals();
+
+	self.GameEnvironmentButton.TutorialBadge:ClearAllPoints();
+	self.GameEnvironmentButton.TutorialBadge:SetPoint("CENTER", self.GameEnvironmentButton:GetFontString(), "LEFT", -10, 0);
+end
+
+function CharacterSelectNavBarMixin:OnShow()
+	CallbackRegistrantMixin.OnShow(self);
+
+	self.GameEnvironmentButton.TutorialBadge:Hide();
+	self.tryForceShowModes = not g_newGameModeAvailableAcknowledged and C_GameEnvironmentManager.GetCurrentEventRealmQueues() ~= Enum.EventRealmQueues.None;
 end
 
 function CharacterSelectNavBarMixin:OnEvent(event, ...)
@@ -227,6 +237,13 @@ function CharacterSelectNavBarMixin:SetGameEnvironmentButtonEnabled(enabled)
 	self.GameEnvironmentButton:formatButtonTextCallback(enabled, highlight);
 
 	self:UpdateButtonDividerState(self.StoreButton or self.PlunderstoreButton);
+
+	-- When a new mode is available we want to make sure the player knows
+	if enabled and self.tryForceShowModes then
+		ToggleGameEnvironmentDrawer(self);
+		self.tryForceShowModes = false;
+		self.GameEnvironmentButton.TutorialBadge:Show();
+	end
 end
 
 function CharacterSelectNavBarMixin:SetStoreButtonEnabled(enabled)
