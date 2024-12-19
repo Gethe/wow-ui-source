@@ -38,6 +38,31 @@
 		</Scripts>
 	</DropdownButton>
 
+	<DropdownButton name="WowStyle1ArrowDropdownTemplate" mixin="WowStyle1ArrowDropdownMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="hasShadow" type="boolean" value="true"/>
+		</KeyValues>
+		<Size x="25" y="25"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Arrow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnEnable method="OnEnable"/>
+			<OnDisable method="OnDisable"/>
+		</Scripts>
+	</DropdownButton>
+
 	<DropdownButton name="WowStyle1FilterDropdownTemplate" mixin="WowStyle1FilterDropdownMixin" virtual="true">
 		<Size x="135" y="18"/>
 		<KeyValues>

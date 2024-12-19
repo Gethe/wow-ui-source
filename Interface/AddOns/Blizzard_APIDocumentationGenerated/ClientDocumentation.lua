@@ -42,6 +42,15 @@ local Client =
 			},
 		},
 		{
+			Name = "IsCpuBound",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isCpuBound", Type = "bool", Nilable = true },
+			},
+		},
+		{
 			Name = "ReportBug",
 			Type = "Function",
 

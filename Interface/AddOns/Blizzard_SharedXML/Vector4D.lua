@@ -100,18 +100,22 @@ end
 
 function Vector4DMixin:ScaleBy(scalar)
 	self:SetXYZW(Vector4D_ScaleBy(scalar, self:GetXYZW()));
+	return self;
 end
 
 function Vector4DMixin:DivideBy(scalar)
 	self:SetXYZW(Vector4D_DivideBy(scalar, self:GetXYZW()));
+	return self;
 end
 
 function Vector4DMixin:Add(other)
 	self:SetXYZW(Vector4D_Add(self.x, self.y, self.z, self.w, other:GetXYZW()));
+	return self;
 end
 
 function Vector4DMixin:Subtract(other)
 	self:SetXYZW(Vector4D_Subtract(self.x, self.y, self.z, self.w, other:GetXYZW()));
+	return self;
 end
 
 function Vector4DMixin:Dot(other)
@@ -128,6 +132,7 @@ end
 
 function Vector4DMixin:Normalize()
 	self:SetXYZW(Vector4D_Normalize(self:GetXYZW()));
+	return self;
 end
 
 function Vector4DMixin:Clone()

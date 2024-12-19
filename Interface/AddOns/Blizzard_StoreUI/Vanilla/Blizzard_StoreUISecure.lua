@@ -19,6 +19,9 @@ local WasVeteran = false;
 local StoreFrameHasBeenShown = false;
 local VasTargetedCharacterGUID = nil;
 
+--Lua constants
+local WOW_TOKEN_CATEGORY_ID = 30;
+
 --Data
 local NUM_STORE_PRODUCT_CARDS = 8;
 local NUM_STORE_PRODUCT_CARD_ROWS = 2;

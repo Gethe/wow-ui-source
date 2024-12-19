@@ -74,7 +74,7 @@ local INVITE_RESTRICTION_WOW_PROJECT_CATACLYSM = 11;
 local INVITE_RESTRICTION_NONE = 12;
 
 local FriendListEntries = { };
-local playerRealmID;
+local playerNativeRealmID;
 local playerRealmName;
 local playerFactionGroup;
 
@@ -1316,7 +1316,7 @@ function FriendsFrame_CheckBattlenetStatus()
 	if ( BNFeaturesEnabled() ) then
 		local frame = FriendsFrameBattlenetFrame;
 		if ( BNConnected() ) then
-			playerRealmID = GetRealmID();
+			playerNativeRealmID = GetNativeRealmID();
 			playerRealmName = GetRealmName();
 			playerFactionGroup = UnitFactionGroup("player");
 			FriendsFrameBattlenetFrame_UpdateBroadcast();
@@ -1389,7 +1389,7 @@ local function ShowRichPresenceOnly(client, wowProjectID, faction, realmID)
 	if (client ~= BNET_CLIENT_WOW) or (wowProjectID ~= WOW_PROJECT_ID) then
 		-- If they are not in wow or in a different version of wow, always show rich presence only
 		return true;
-	elseif ((faction ~= playerFactionGroup) or (realmID ~= playerRealmID)) then
+	elseif ((faction ~= playerFactionGroup) or (realmID ~= playerNativeRealmID)) then
 		-- If we are both in wow classic and our factions or realms don't match, show rich presence only
 		return true;
 	else
@@ -2228,7 +2228,7 @@ function FriendsFrame_SetupTravelPassDropdown(friendIndex, attachedTo)
 					restriction = INVITE_RESTRICTION_WOW_PROJECT_ID;
 				elseif ( realmID == 0 ) then
 					restriction = INVITE_RESTRICTION_INFO;
-				elseif ( realmID ~= playerRealmID ) then
+				elseif ( realmID ~= playerNativeRealmID ) then
 					-- The Classics don't allow grouping across realms
 					restriction = INVITE_RESTRICTION_REALM;
 				end
@@ -2316,7 +2316,7 @@ function FriendsFrame_GetInviteRestriction(index)
 				restriction = max(INVITE_RESTRICTION_FACTION, restriction);
 			elseif ( realmID == 0 ) then
 				restriction = max(INVITE_RESTRICTION_INFO, restriction);
-			elseif ( realmID ~= playerRealmID ) then
+			elseif ( realmID ~= playerNativeRealmID ) then
 				-- The Classics don't allow grouping across realms
 				restriction = max(INVITE_RESTRICTION_REALM, restriction);
 			else

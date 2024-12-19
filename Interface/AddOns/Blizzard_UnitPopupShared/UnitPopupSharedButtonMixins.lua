@@ -1400,20 +1400,8 @@ function UnitPopupDungeonDifficulty1ButtonMixin:isDisabled(contextData)
 end
 
 function UnitPopupDungeonDifficulty1ButtonMixin:IsEnabled(contextData)
-	local inInstance, instanceType = IsInInstance();
-	if inInstance then
-	return false;
-end
-
-	if instanceType == "raid" then
-		return false;
-	end
-
-	if IsInGroup() and not UnitIsGroupLeader("player") then
-		return false;
-	end
-
-	return not UnitPopupSharedUtil.HasLFGRestrictions();
+	local difficultyID = self:GetDifficultyID();
+	return DifficultyUtil.IsDungeonDifficultyEnabled(difficultyID);
 end
 
 UnitPopupDungeonDifficulty2ButtonMixin = CreateFromMixins(UnitPopupDungeonDifficulty1ButtonMixin);
@@ -2823,12 +2811,15 @@ function UnitPopupChatPromoteButtonMixin:CanShow(contextData)
 	end
 
 	-- TODO: Name matching is wrong here, needs full name comparison
-	return contextData.name == UnitNameUnmodified("player");
+	if contextData.name == UnitNameUnmodified("player") then
+		return false;
+	end
+
+	return true;
 end
 
-UnitPopupChatPromoteButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
-function UnitPopupChatPromoteButtonMixin:GetText(contextData)
-	return MAKE_MODERATOR;
+function UnitPopupChatPromoteButtonMixin:OnClick(contextData)
+	ChannelModerator(contextData.channelName, contextData.name)
 end
 
 UnitPopupChatDemoteButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
@@ -2849,9 +2840,13 @@ function UnitPopupChatDemoteButtonMixin:CanShow(contextData)
 	if not IsDisplayChannelOwner() then
 		return false;
 	end
-
+	
 	-- TODO: Name matching is wrong here, needs full name comparison
-	return contextData.name ~= UnitNameUnmodified("player");
+	if contextData.name == UnitNameUnmodified("player") then
+		return false;
+	end
+
+	return true;
 end
 
 function UnitPopupChatDemoteButtonMixin:OnClick(contextData)

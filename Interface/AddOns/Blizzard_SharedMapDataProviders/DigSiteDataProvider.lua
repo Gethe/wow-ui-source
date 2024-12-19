@@ -1,11 +1,6 @@
 DigSiteDataProviderMixin = CreateFromMixins(CVarMapCanvasDataProviderMixin);
 DigSiteDataProviderMixin:Init("digSites");
 
-function DigSiteDataProviderMixin:OnAdded(mapCanvas)
-	MapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
-	self:GetMap():SetPinTemplateType("DigSiteBlobPinTemplate", "ArchaeologyDigSiteFrame");
-end
-
 function DigSiteDataProviderMixin:RemoveAllData()
 	self:GetMap():RemoveAllPinsByTemplate("DigSitePinTemplate");
 	self:GetMap():RemoveAllPinsByTemplate("DigSiteBlobPinTemplate");
@@ -30,7 +25,7 @@ end
 
 function DigSiteDataProviderMixin:RefreshAllData(fromOnShow)
 	self:RemoveAllData();
-	
+
 	if not self:IsCVarSet() then
 		return;
 	end
@@ -39,7 +34,7 @@ function DigSiteDataProviderMixin:RefreshAllData(fromOnShow)
 	local digSites = C_ResearchInfo.GetDigSitesForMap(mapID);
 	self.pins = {};
 	for i, digSiteInfo in ipairs(digSites) do
-		
+
 
 		if(self:IsZoneMapType()) then
 			-- Only use blob pins if we are zoomed into a zone on the world map
@@ -88,7 +83,7 @@ function DigSiteBlobPinMixin:OnAcquired(poiInfo)
 	self.description = poiInfo.description;
 	self.tooltipWidgetSet = poiInfo.tooltipWidgetSet;
 
-	self:SetPosition(0.5, 0.5); 
+	self:SetPosition(0.5, 0.5);
 	self:SetSize(self:GetMap():DenormalizeHorizontalSize(1.0), self:GetMap():DenormalizeVerticalSize(1.0));
 end
 

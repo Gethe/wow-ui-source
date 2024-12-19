@@ -388,6 +388,11 @@ end
 function UnitFrame_UpdateTooltip (self)
 	GameTooltip_SetDefaultAnchor(GameTooltip, self);
 	if ( GameTooltip:SetUnit(self.unit, self.hideStatusOnTooltip) ) then
+		-- Should be moved to line data in a future revision.
+		GameTooltip_AddBlankLineToTooltip(GameTooltip);
+		GameTooltip_AddInstructionLine(GameTooltip, UNIT_POPUP_RIGHT_CLICK);
+		GameTooltip:Show();
+
 		self.UpdateTooltip = UnitFrame_UpdateTooltip;
 	else
 		self.UpdateTooltip = nil;

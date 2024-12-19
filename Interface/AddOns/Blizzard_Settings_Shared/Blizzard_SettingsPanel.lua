@@ -294,6 +294,10 @@ function SettingsPanelMixin:CommitBindings()
 	end
 end
 
+function SettingsPanelMixin:IsCommitInProgress()
+	return self.isCommitInProgress;
+end
+
 function SettingsPanelMixin:CommitSettings(unrevertable)
 	self.revertableSettings = {};
 
@@ -308,21 +312,27 @@ function SettingsPanelMixin:CommitSettings(unrevertable)
 	end
 	SortTableByCommitOrder(settings);
 
-	for index, setting in ipairs(settings) do
-		saveBindings = saveBindings or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.SaveBindings);
-		gxRestart = gxRestart or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.GxRestart);
-		windowUpdate = windowUpdate or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.UpdateWindow);
-		
-		if not unrevertable then
-			if securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.Revertable) then
-				local originalValue = securecallfunction(setting.GetValueDerived, setting);
-				table.insert(self.revertableSettings, {setting = setting, originalValue = originalValue});
+	if #settings > 0 then
+		self.isCommitInProgress = true;
+
+		for index, setting in ipairs(settings) do
+			saveBindings = saveBindings or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.SaveBindings);
+			gxRestart = gxRestart or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.GxRestart);
+			windowUpdate = windowUpdate or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.UpdateWindow);
+			
+			if not unrevertable then
+				if securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.Revertable) then
+					local originalValue = securecallfunction(setting.GetValueDerived, setting);
+					table.insert(self.revertableSettings, {setting = setting, originalValue = originalValue});
+				end
 			end
+			
+			securecallfunction(setting.Commit, setting);
 		end
-		
-		securecallfunction(setting.Commit, setting);
+
+		self.isCommitInProgress = nil;
 	end
-	
+
 	self:FinalizeCommit(saveBindings, gxRestart, windowUpdate);
 
 	if #self.revertableSettings > 0 then
@@ -334,6 +344,7 @@ function SettingsPanelMixin:CommitSettings(unrevertable)
 		end
 		self.Timer = C_Timer.NewTimer(duration, Timer);
 	end
+
 end
 
 function SettingsPanelMixin:FinalizeCommit(saveBindings, gxRestart, windowUpdate)

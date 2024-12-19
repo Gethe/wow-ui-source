@@ -563,6 +563,7 @@ local PvpInfo =
 				{ Name = "minLevel", Type = "number", Nilable = false },
 				{ Name = "maxLevel", Type = "number", Nilable = false },
 				{ Name = "groupsAllowed", Type = "bool", Nilable = false },
+				{ Name = "crossFactionAllowed", Type = "bool", Nilable = false, Default = false },
 				{ Name = "timeLeftUntilNextChange", Type = "number", Nilable = true },
 				{ Name = "lfgDungeonID", Type = "number", Nilable = false },
 				{ Name = "brawlType", Type = "BrawlType", Nilable = false },

@@ -2168,7 +2168,7 @@ function AnimatedShine_OnUpdate(elapsed)
 end
 
 function ConsolePrint(...)
-	ConsoleAddMessage(strjoin(" ", tostringall(...)));
+	ConsoleAddMessage(string.join(" ", tostringall(...)));
 end
 
 function LFD_IsEmpowered()

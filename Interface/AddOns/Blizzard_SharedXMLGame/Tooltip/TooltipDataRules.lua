@@ -200,3 +200,15 @@ function TooltipDataRules.Separator(tooltip, lineData)
 	tooltip:AddTexture(asset, textureSettings);
 end
 TooltipDataProcessor.AddLinePostCall(LineTypeEnums.Separator, TooltipDataRules.Separator);
+
+function TooltipDataRules.WorldLootObjectPickUpIndicator(tooltip, tooltipData)
+	local inventoryType = tooltipData.worldLootObjectInventoryType;
+	if not inventoryType then
+		return;
+	end
+
+	EventRegistry:TriggerEvent("WorldLootObjectTooltip.Shown", inventoryType, tooltip, tooltipData.id, tooltipData.worldLootObjectGUID); 
+
+	-- TODO:: Anchor the spell pickup indicator to the tooltip here.
+end
+TooltipDataProcessor.AddTooltipPostCall(TooltipTypeEnums.Spell, TooltipDataRules.WorldLootObjectPickUpIndicator);

@@ -27,3 +27,4 @@ Pools.lua
 ButtonStateBehavior.lua
 ColorSwatch.xml
 ColorSwatch.lua
+FrameWatcher.lua

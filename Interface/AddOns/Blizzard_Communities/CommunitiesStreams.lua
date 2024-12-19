@@ -356,11 +356,6 @@ end
 
 CommunitiesAddToChatMixin = {};
 
-function CommunitiesAddToChatMixin:OnLoad()
-	SquareButton_SetIcon(self, "DOWN");
-end
-
-
 function CommunitiesAddToChatMixin:OnShow()
 	self:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_COMMUNITIES_ADD_TO_CHAT");

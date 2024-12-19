@@ -80,6 +80,29 @@ function PartyUtil.GetPhasedReasonString(phaseReason, unitToken)
 	end
 end
 
+function PartyUtil.CanLeaveInstance()
+	if not IsInGroup() then
+		return false;
+	end
+
+	if not IsInGroup(LE_PARTY_CATEGORY_INSTANCE) then
+		return false;
+	end
+	
+	if IsPartyWorldPVP() then
+		return false;
+	end
+
+	local instanceType = select(2, IsInInstance());
+	if instanceType == "pvp" or instanceType == "arena" then
+		return false;
+	end
+	
+	local partyLFGSlot = GetPartyLFGID();
+	local partyLFGCategory = partyLFGSlot and GetLFGCategoryForID(partyLFGSlot);
+	return partyLFGCategory ~= LE_LFG_CATEGORY_WORLDPVP;
+end
+
 function GetGroupMemberCountsForDisplay()
 	local data = GetGroupMemberCounts();
 	data.DAMAGER = data.DAMAGER + data.NOROLE; --People without a role count as damage

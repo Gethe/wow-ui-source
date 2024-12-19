@@ -18,6 +18,14 @@ local TIMER_DATA = {
 			[5] = { SOUNDKIT.PLUNDERSTORM_COUNTDOWN3, },
 			[3] = { SOUNDKIT.PLUNDERSTORM_COUNTDOWN4, },
 		},
+		startCallback = function()
+			if C_GameRules.IsGameRuleActive(Enum.GameRule.PlunderstormAreaSelection) and not C_WowLabsDataManager.GetConfirmedWoWLabsArea() then
+				OpenWorldMap();
+			end
+		end,
+		finishedCallback = function ()
+			EventRegistry:TriggerEvent("PlunderstormCountdown.TimerFinished");
+		end,
 	},
 };
 
@@ -94,6 +102,7 @@ function TimerTracker_StartTimerOfType(self, timerType, timeSeconds, totalTime, 
 		end
 	end
 
+	local timerData = GetTimerData(timerType);
 	if isTimerRunning and timer.type ~= Enum.StartTimerType.PlayerCountdown then
 		-- don't interupt the final count down
 		if not timer.startNumbers:IsPlaying() then
@@ -140,7 +149,6 @@ function TimerTracker_StartTimerOfType(self, timerType, timeSeconds, totalTime, 
 		timer.glow1:SetTexture(timer.style.texture.."Glow");
 		timer.glow2:SetTexture(timer.style.texture.."Glow");
 			
-		local timerData = GetTimerData(timer.type);
 		timer.updateTime = timerData.updateInterval;
 		timer:SetScript("OnUpdate", StartTimer_BigNumberOnUpdate);
 		timer:Show();
@@ -163,6 +171,10 @@ function TimerTracker_StartTimerOfType(self, timerType, timeSeconds, totalTime, 
 		if systemMessage then
 			ChatFrame_DisplaySystemMessageInPrimary(systemMessage);
 		end
+	end
+
+	if timerData.startCallback then
+		timerData.startCallback();
 	end
 end
 
@@ -367,6 +379,11 @@ function StartTimer_NumberAnimOnFinished(self)
 		else
 			PlaySound(SOUNDKIT.UI_BATTLEGROUND_COUNTDOWN_FINISHED);
 		end
+
+		if timerData.finishedCallback then
+			timerData.finishedCallback();
+		end
+
 		FreeTimerTrackerTimer(self);
 		self.GoTextureAnim:Play();
 	end

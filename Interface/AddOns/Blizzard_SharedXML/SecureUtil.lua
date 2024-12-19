@@ -104,12 +104,12 @@ function AutoScalingFontStringMixin:ScaleTextToFit()
 end
 
 --------------------------------------------------
-function SetupPlayerForModelScene(modelScene, overrideActorName, itemModifiedAppearanceIDs, sheatheWeapons, autoDress, hideWeapons, useNativeForm)
+function SetupPlayerForModelScene(modelScene, overrideActorName, itemModifiedAppearanceIDs, sheatheWeapons, autoDress, hideWeapons, useNativeForm, playerRaceName, playerGender)
 	if not modelScene then
 		return;
 	end
 
-	local actor = modelScene:GetPlayerActor(overrideActorName);
+	local actor = modelScene:GetPlayerActor(overrideActorName, playerRaceName, playerGender);
 	if actor then
 		sheatheWeapons = (sheatheWeapons == nil) or sheatheWeapons;
 		hideWeapons = (hideWeapons == nil) or hideWeapons;

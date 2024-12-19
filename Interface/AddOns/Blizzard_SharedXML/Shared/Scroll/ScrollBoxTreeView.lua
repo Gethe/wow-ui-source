@@ -148,12 +148,13 @@ function ScrollBoxListTreeListViewMixin:UnassignAccessors(frame)
 end
 
 function ScrollBoxListTreeListViewMixin:GetLayoutFunction()
+	local elementStretchDisabled = self:IsElementStretchDisabled();
 	local setPoint = self:IsHorizontal() and ScrollBoxViewUtil.SetHorizontalPoint or ScrollBoxViewUtil.SetVerticalPoint;
 	local scrollTarget = self:GetScrollTarget();
 	local function Layout(index, frame, offset)
 		local elementData = frame:GetElementData();
 		local indent = (elementData:GetDepth() - 1) * self:GetElementIndent();
-		return setPoint(frame, offset, indent, scrollTarget);
+		return setPoint(frame, offset, indent, elementStretchDisabled, scrollTarget);
 	end
 	return Layout;
 end

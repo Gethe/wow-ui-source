@@ -154,23 +154,25 @@ function ModelSceneMixin:AttachPlayerToMount(mountActor, animID, isSelfMount, di
 	end
 end
 
-function GetPlayerActorLabelTag()
-	local playerRaceName;
-	local playerGender;
+function GetPlayerActorLabelTag(overrideRaceFilename, overrideGender)
+	local playerRaceName = overrideRaceFilename;
+	local playerGender = overrideGender;
 	local playerRaceNameActorTag = nil;
 	local hasAlternateForm, inAlternateForm = false, false;
-	if C_Glue.IsOnGlueScreen() then
-		local characterGuid = GetCharacterGUID(GetCharacterSelection());
-		if characterGuid then
-			local basicCharacterInfo = GetBasicCharacterInfo(characterGuid);
-			playerRaceName = basicCharacterInfo.raceFilename;
-			playerGender = basicCharacterInfo.genderEnum;
+	if not overrideRaceFilename or not overrideGender then
+		if C_Glue.IsOnGlueScreen() then
+			local characterGuid = GetCharacterGUID(GetCharacterSelection());
+			if characterGuid then
+				local basicCharacterInfo = GetBasicCharacterInfo(characterGuid);
+				playerRaceName = overrideRaceFilename or basicCharacterInfo.raceFilename;
+				playerGender = overrideGender or basicCharacterInfo.genderEnum;
+			end
+		else
+			hasAlternateForm, inAlternateForm = C_PlayerInfo.GetAlternateFormInfo();
+			local _, raceFilename = UnitRace("player");
+			playerRaceName = overrideRaceFilename or raceFilename;
+			playerGender = overrideGender or UnitSex("player");
 		end
-	else
-		hasAlternateForm, inAlternateForm = C_PlayerInfo.GetAlternateFormInfo();
-		local _, raceFilename = UnitRace("player");
-		playerRaceName = raceFilename;
-		playerGender = UnitSex("player");
 	end
 	if not playerRaceName or not playerGender then
 		return playerRaceName, playerRaceNameActorTag;
@@ -184,12 +186,12 @@ function GetPlayerActorLabelTag()
 	return playerRaceName, playerRaceNameActorTag;
 end
 
-function ModelSceneMixin:GetPlayerActor(overrideActorName)
+function ModelSceneMixin:GetPlayerActor(overrideActorName, overrideRaceFilename, overrideGender)
 	local actor;
 	if overrideActorName then
 		actor = self:GetActorByTag(overrideActorName);
 	else
-		local playerRaceName, playerRaceNameActorTag = GetPlayerActorLabelTag();
+		local playerRaceName, playerRaceNameActorTag = GetPlayerActorLabelTag(overrideRaceFilename, overrideGender);
 		actor = self:GetActorByTag(playerRaceNameActorTag);
 		if not actor then		
 			actor = self:GetActorByTag(playerRaceName);

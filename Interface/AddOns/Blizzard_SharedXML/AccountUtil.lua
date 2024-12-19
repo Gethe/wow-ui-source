@@ -92,5 +92,10 @@ function BNet_GetValidatedCharacterNameWithClientEmbeddedAtlas(characterName, ba
 end
 
 function BNet_GetValidatedCharacterNameWithClientEmbeddedTexture(characterName, battleTag, texture, fileWidth, fileHeight, texWidth, texHeight, texXOffset, texYOffset)
-	return BNet_GetClientEmbeddedTexture(texture, fileWidth, fileHeight, texWidth, texHeight, texXOffset, texYOffset).." "..BNet_GetValidatedCharacterName(characterName, battleTag, client);
+	local width = texWidth or 0;
+	local height = texHeight or width;
+	local xOffset = texXOffset or 0;
+	local yOffset = texYOffset or 0;
+	
+	return CreateTextureMarkup(texture, fileWidth, fileHeight, width, height, 0, 1, 0, 1, xOffset, yOffset).." "..BNet_GetValidatedCharacterName(characterName, battleTag, client);
 end

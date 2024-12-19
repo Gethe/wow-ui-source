@@ -1,12 +1,15 @@
-MAX_RAID_INFOS = 20;
+RaidParentFrameMixin = {}
+RaidFrameMixin = {}
+RaidInfoFrameMixin = {}
+RaidInstanceFrameMixin = {}
 
-function RaidParentFrame_OnLoad(self)
+function RaidParentFrameMixin:OnLoad()
 	SetPortraitToTexture(self.portrait, "Interface\\LFGFrame\\UI-LFR-PORTRAIT");
 	PanelTemplates_SetNumTabs(self, 2);
 	PanelTemplates_SetTab(self, 1);
 end
 
-function RaidFrame_OnLoad(self)
+function RaidFrameMixin:OnLoad()
 	self:RegisterEvent("PLAYER_LOGIN");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("UPDATE_INSTANCE_INFO");
@@ -18,7 +21,7 @@ function RaidFrame_OnLoad(self)
 
 	-- Update party frame visibility
 	RaidOptionsFrame_UpdatePartyFrames();
-	RaidFrame_Update();
+	self:Update();
 
 	RaidFrame.hasRaidInfo = nil;
 	-- Set this as the first tab
@@ -26,11 +29,71 @@ function RaidFrame_OnLoad(self)
 	ClaimRaidFrame(RaidParentFrame);
 end
 
-function RaidFrame_OnShow(self)
+function RaidInfoFrameMixin:OnLoad()
+	local view = CreateScrollBoxListLinearView();
+    view:SetElementInitializer("RaidInfoInstanceTemplate", function(button, elementData)
+        local savedInstances = GetNumSavedInstances();
+		local index = elementData.index;
+
+		if not index then
+			return;
+		end
+
+		if index > savedInstances then -- Should never happen
+			return;
+		end
+
+		button.raidIndex = index;
+
+		local instanceName, instanceID, instanceReset, _, _, _, _, _, _, instanceDifficulty, encountersTotal = GetSavedInstanceInfo(index);
+		button.Name:SetText(instanceName);
+		button.Difficulty:SetText(instanceDifficulty);
+		button.ID:SetText(instanceID);
+		button.Reset:SetText(SecondsToTime(instanceReset, true, nil, 3));
+    end);
+
+    ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
+
+	self:RegisterEvent("UPDATE_INSTANCE_INFO");
+end
+
+function RaidInstanceFrameMixin:OnHover()
+	local name = self:GetName();
+	local raidID = self.ID:GetText();
+	local raidName = self.Name:GetText();
+	local raidIndex = self.raidIndex;
+
+	if not raidID or not raidName or not raidIndex then
+		return
+	end
+	
+	local _, _, _, _, _, _, _, _, _, _, numBosses = GetSavedInstanceInfo(raidIndex);
+
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	
+	GameTooltip:AddLine(string.format(INSTANCE_LOCK_SS, UnitName("player"), raidName));
+	
+	for i = 1, numBosses do
+		local bossName, _, isKilled = GetSavedInstanceEncounterInfo(raidIndex, i);
+		if isKilled then
+			GameTooltip:AddDoubleLine(bossName, BOSS_DEAD, 1, 1, 1, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+		else
+			GameTooltip:AddDoubleLine(bossName, BOSS_ALIVE, 1, 1, 1, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
+		end
+	end
+	
+	GameTooltip:Show();
+end
+
+function RaidInstanceFrameMixin:OnLeave()
+	GameTooltip_Hide();
+end
+
+function RaidFrameMixin:OnShow()
 	ButtonFrameTemplate_ShowAttic(self:GetParent());
 	self:GetParent().TitleText:SetText(RAID);
 	
-	RaidFrame_Update();
+	self:Update();
 	
 	if ( GetNumSavedInstances() > 0 ) then
 		RaidFrameRaidInfoButton:Enable();
@@ -43,17 +106,17 @@ function RaidFrame_OnShow(self)
 	UpdateMicroButtons();
 end
 
-function RaidFrame_OnEvent(self, event, ...)
+function RaidFrameMixin:OnEvent(event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		RequestRaidInfo();
 	elseif ( event == "PLAYER_LOGIN" ) then
 		if ( IsInRaid() ) then
 			RaidFrame_LoadUI();
-			RaidFrame_Update();
+			self:Update();
 		end
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
 		RaidFrame_LoadUI();
-		RaidFrame_Update();
+			self:Update();
 		RaidPullout_RenewFrames();
 	elseif ( event == "READY_CHECK" or
 		 event == "READY_CHECK_CONFIRM" ) then
@@ -75,9 +138,8 @@ function RaidFrame_OnEvent(self, event, ...)
 		else
 			RaidFrameRaidInfoButton:Disable();
 		end
-		RaidInfoFrame_Update(true);
 	elseif ( event == "GROUP_ROSTER_UPDATE" or event == "PARTY_LEADER_CHANGED" or event == "PARTY_LFG_RESTRICTED" ) then
-		RaidFrame_Update();
+		self:Update();
 	end
 end
 
@@ -96,7 +158,7 @@ function RaidParentFrame_SetView(tab)
 	end
 end
 
-function RaidFrame_Update()
+function RaidFrameMixin:Update()
 	-- If not in a raid hide all the UI and just display raid explanation text
 	if ( not IsInRaid() ) then
 		RaidFrameConvertToRaidButton:Show();
@@ -130,52 +192,21 @@ function RaidOptionsFrame_UpdatePartyFrames()
 end
 
 -- Populates Raid Info Data
-function RaidInfoFrame_Update()
+function RaidInfoFrameMixin:UpdateRaids()
+	local dataProvider = CreateDataProvider();
+
 	local savedInstances = GetNumSavedInstances();
-	local instanceName, instanceID, instanceReset, instanceDifficulty, _;
-	if ( savedInstances > 0 ) then
-		--RaidInfoScrollFrameScrollUpButton:SetPoint("BOTTOM", RaidInfoScrollFrame, "TOP", 0, 16);
-		for i=1, MAX_RAID_INFOS do
-			if ( i <=  savedInstances) then
-				instanceName, instanceID, instanceReset, _, _, _, _, _, _, instanceDifficulty, _ = GetSavedInstanceInfo(i);
-				getglobal("RaidInfoInstance"..i.."Name"):SetText(instanceName);
-				getglobal("RaidInfoInstance"..i.."Difficulty"):SetText(instanceDifficulty);
-				getglobal("RaidInfoInstance"..i.."ID"):SetText(instanceID);
-				getglobal("RaidInfoInstance"..i.."Reset"):SetText(SecondsToTime(instanceReset, true, nil, 3));
-				getglobal("RaidInfoInstance"..i):Show();
-			else
-				getglobal("RaidInfoInstance"..i):Hide();
-			end
-			
-		end
-		if ( savedInstances > 4 ) then
-			RaidInfoScrollFrameScrollBar:Show();
-			RaidInfoScrollFrameTop:Show();
-			RaidInfoScrollFrameBottom:Show();
 
-			RaidInfoScrollFrame:SetWidth(295);
-			RaidInfoInstanceLabel:SetWidth(150);
-			RaidInfoIDLabel:SetWidth(150);
+	for i = 1, savedInstances do
+		dataProvider:Insert({index=i});
+	end
 
-			for i=1, savedInstances do
-				getglobal("RaidInfoInstance"..i):SetWidth(295);
-			end
+    self.ScrollBox:SetDataProvider(dataProvider);
+end
 
-			RaidInfoScrollFrameScrollBar:SetPoint("TOPLEFT", RaidInfoScrollFrame, "TOPRIGHT", 6, -16);
-		else	
-			RaidInfoScrollFrameScrollBar:Hide();
-			RaidInfoScrollFrameTop:Hide();
-			RaidInfoScrollFrameBottom:Hide();
-
-			RaidInfoScrollFrame:SetWidth(315);
-			RaidInfoInstanceLabel:SetWidth(160);
-			RaidInfoIDLabel:SetWidth(160);
-
-			for i=1, savedInstances do
-				getglobal("RaidInfoInstance"..i):SetWidth(315);
-			end
-		end
-		RaidInfoScrollFrame:UpdateScrollChildRect();
+function RaidInfoFrameMixin:OnEvent(event, ...)
+	if ( event == "UPDATE_INSTANCE_INFO" ) then
+		self:UpdateRaids();
 	end
 end
 

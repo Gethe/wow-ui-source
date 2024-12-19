@@ -45,6 +45,7 @@ function CommunitiesGuildNewsFrame_OnLoad(self)
 end
 
 function CommunitiesGuildNewsFrame_OnShow(self)
+	-- GuildNewsSort will cause a GUILD_NEWS_UPDATE event to get signalled, and CommunitiesGuildNews_Update will get called.
 	GuildNewsSort(0);	-- normal sort, taking into account filters and stickies
 end
 
@@ -52,7 +53,7 @@ function CommunitiesGuildNewsFrame_OnEvent(self, event)
 	if event == "PLAYER_ENTERING_WORLD" then
 		QueryGuildNews();
 	else
-		if ( self:IsShown() ) then
+		if ( self:IsVisible() ) then
 			CommunitiesGuildNews_Update(self);
 		end
 	end

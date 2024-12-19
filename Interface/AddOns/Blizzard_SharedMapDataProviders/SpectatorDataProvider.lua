@@ -2,7 +2,7 @@ SpectatorDataProviderMixin = CreateFromMixins(MapCanvasDataProviderMixin);
 
 function SpectatorDataProviderMixin:OnAdded(mapCanvas)
 	MapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
-	self:GetMap():SetPinTemplateType("SpectatorPinTemplate", "UnitPositionFrame");
+
 	-- a single permanent pin
 	local pin = self:GetMap():AcquirePin("SpectatorPinTemplate", self);
 	pin:SetPosition(0.5, 0.5);
