@@ -189,9 +189,11 @@ function MatchDetailFrameMixin:Init(type, description, value, iconAtlas)
 	self:Show();
 
 	if type == Enum.MatchDetailType.PlunderAcquired then
+		C_AccountStore.RequestStoreFrontInfoUpdate(Constants.AccountStoreConsts.PlunderstormStoreFrontID);
 		local accountStoreCurrencyID = C_AccountStore.GetCurrencyIDForStore(Constants.AccountStoreConsts.PlunderstormStoreFrontID);
 		if value and accountStoreCurrencyID then
-			value = AccountStoreUtil.FormatCurrencyDisplayWithWarning(accountStoreCurrencyID, value);
+			local hideIcon = true;
+			value = AccountStoreUtil.FormatCurrencyDisplayWithWarning(accountStoreCurrencyID, value, hideIcon);
 		end
 
 		self.Description:SetText(description);

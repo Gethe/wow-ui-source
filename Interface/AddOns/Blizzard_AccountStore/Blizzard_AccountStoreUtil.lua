@@ -46,7 +46,7 @@ function AccountStoreUtil.IsCurrencyAtWarningThreshold(accountStoreCurrencyID)
 	return false;
 end
 
-function AccountStoreUtil.FormatCurrencyDisplayWithWarning(accountStoreCurrencyID, currencyAmount)
+function AccountStoreUtil.FormatCurrencyDisplayWithWarning(accountStoreCurrencyID, currencyAmount, hideIcon)
 	local currencyInfo = C_AccountStore.GetCurrencyInfo(accountStoreCurrencyID);
 	if not currencyInfo then
 		return "";
@@ -57,17 +57,27 @@ function AccountStoreUtil.FormatCurrencyDisplayWithWarning(accountStoreCurrencyI
 	end
 
 	currencyAmount = BreakUpLargeNumbers(currencyAmount or currencyInfo.amount);
+	local showWarning = false;
 	if currencyInfo.maxQuantity then
 		if currencyInfo.amount >= currencyInfo.maxQuantity then
 			currencyAmount = RED_FONT_COLOR:WrapTextInColorCode(currencyAmount);
-			return PrependWarning(AppendIcon(currencyAmount));
+			showWarning = true;
 		elseif currencyInfo.amount >= (currencyInfo.maxQuantity * AccountStoreWarningThresholdPercentage) then
 			currencyAmount = NORMAL_FONT_COLOR:WrapTextInColorCode(currencyAmount);
-			return PrependWarning(AppendIcon(currencyAmount));
+			showWarning = true;
 		end
 	end
+	
+	local currencyText = currencyAmount;
+	if not hideIcon then
+		currencyText = AppendIcon(currencyText);
+	end
 
-	return AppendIcon(currencyAmount);
+	if showWarning then
+		currencyText = PrependWarning(currencyText);
+	end
+
+	return currencyText;
 end
 
 function AccountStoreUtil.AddCurrencyTotalTooltip(tooltip, accountStoreCurrencyID)
@@ -102,7 +112,7 @@ function AccountStoreUtil.ShowDisabledItemInfoTooltip(frame, itemInfo)
 	if itemInfo.status == Enum.AccountStoreItemStatus.Refundable then
 		tooltip:SetText(PLUNDERSTORE_REFUNDABLE_TOOLTIP);
 	elseif itemInfo.status == Enum.AccountStoreItemStatus.Owned then
-		tooltip:SetText(PLUNDERSTORE_ALREADY_OWNED_TOOLTIP);
+		tooltip:SetText(HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(AccountStoreUtil.FormatCurrencyDisplay(itemInfo.price, itemInfo.currencyID)));
 	else
 		tooltip:SetText(PLUNDERSTORE_INSUFFICIENT_FUNDS_TOOLTIP);
 	end

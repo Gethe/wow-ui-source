@@ -149,6 +149,8 @@ function AccountStoreBaseCardMixin:SetItemID(itemID)
 
 	if isRefundable then
 		self.BuyButton:SetText(PLUNDERSTORE_REFUND_BUTTON_TEXT);
+	elseif isOwned then
+		self.BuyButton:SetText(PLUNDERSTORE_ALREADY_OWNED_TOOLTIP);
 	else
 		self.BuyButton:SetText(AccountStoreUtil.FormatCurrencyDisplay(itemInfo.price, itemInfo.currencyID));
 	end

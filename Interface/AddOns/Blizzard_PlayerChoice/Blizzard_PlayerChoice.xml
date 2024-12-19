@@ -6,6 +6,8 @@
 		<KeyValues>
 			<KeyValue key="fixedWidth" value="100" type="number"/>
 			<KeyValue key="expand" value="true" type="boolean"/>
+			<KeyValue key="skipChildLayout" value="true" type="boolean"/>
+			<KeyValue key="skipLayoutOnShow" value="true" type="boolean"/>
 		</KeyValues>
 		<Anchors>
 			<Anchor point="CENTER"/>

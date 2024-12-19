@@ -171,11 +171,9 @@ function PlayerChoiceFrameMixin:TryShow()
 	self.textureKitInfo = self:GetTextureKitInfo();
 
 	self:SetupFrame();
-	self:SetupOptions();
-
 	self.Title.Text:SetText(choiceInfo.questionText);
 
-	self:Layout();
+	self:SetupOptions();
 
 	ShowUIPanel(self);
 end
@@ -323,6 +321,7 @@ function PlayerChoiceFrameMixin:SetupFrame()
 		else
 			self:SetupTextureKits(self.Header, borderFrameTextureKitRegions);
 			self.Header:SetPoint("BOTTOM", self, "TOP", 0, self.textureKitInfo.headerYoffset);
+			self.Header:Layout();
 			self.Header:Show();
 		end
 
@@ -367,7 +366,7 @@ function PlayerChoiceFrameMixin:SetupOptions()
 	local soloOption = (#self.choiceInfo.options == 1);
 
 	-- First create and call Setup on all the options.
-	-- This needs to be done in a separate loop from the Finalize call (in AlignOptionHeights), because Setup collects the max heights of all the aligned sections, and then Finalize adjusts the heights
+	-- This needs to be done in a separate loop from the AlignSections call (in AlignOptionHeights), because Setup collects the max heights of all the aligned sections, and then AlignSections adjusts the heights
 	for optionIndex, optionInfo in ipairs(self.choiceInfo.options) do
 		local optionFrame = self.optionPools:Acquire(self.optionFrameTemplate);
 		optionFrame.layoutIndex = optionIndex;
@@ -397,6 +396,9 @@ function PlayerChoiceFrameMixin:AlignOptionHeights(skipAlignSections)
 	end
 
 	self.optionsAligned = true;
+
+	-- Now that all the options have been had their heights aligned, call Layout on ourselves to adjust our own height accordingly
+	self:Layout();
 end
 
 function PlayerChoiceFrameMixin:AreOptionsAligned()

@@ -201,6 +201,7 @@
 					<KeyValue key="layoutIndex" value="20" type="number"/>
 					<KeyValue key="topPadding" value="5" type="number"/>
 					<KeyValue key="showAndHideOnWidgetSetRegistration" value="false" type="boolean"/>
+					<KeyValue key="skipLayoutOnShow" value="true" type="boolean"/>
 				</KeyValues>
 			</Frame>
 		</Frames>
