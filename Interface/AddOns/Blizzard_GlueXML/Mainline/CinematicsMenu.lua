@@ -103,6 +103,11 @@ function CinematicsMenuMixin:OnKeyDown(key)
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 		GlueParent_CloseSecondaryScreen();
 	end
+	return false;
+end
+
+function CinematicsMenuMixin:OnChar(key)
+	return false;
 end
 
 CinematicsMenuButtonMixin = {};

@@ -412,14 +412,34 @@ function CopyTransformedValuesAsKeys(tbl, transformOp)
 	return output;
 end
 
+-- Addresses the problem where nil values within a varargs list are not preserved when constructing
+-- a table, resulting a table with a smaller size than expected. Should be paired with a call to 
+-- SafeUnpack when unpacking the table.
 function SafePack(...)
 	local tbl = { ... };
 	tbl.n = select("#", ...);
 	return tbl;
 end
 
+-- Upacks a table that was constructed using SafePack.
 function SafeUnpack(tbl, startIndex)
 	return unpack(tbl, startIndex or 1, tbl.n);
+end
+
+-- Returns the length of a table, accounting for the possibility of a table constructed using SafePack.
+function SafeLength(tbl)
+	if not tbl then
+		return 0;
+	end
+
+	local operatorCount = #tbl;
+	local safePackCount = tbl.n;
+
+	if safePackCount and operatorCount ~= safePackCount then
+		return safePackCount;
+	end
+
+	return operatorCount;
 end
 
 function GetOrCreateTableEntry(table, key, defaultValue)

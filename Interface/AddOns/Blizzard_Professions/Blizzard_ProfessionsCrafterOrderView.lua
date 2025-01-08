@@ -304,7 +304,9 @@ function ProfessionsCrafterOrderViewMixin:OnLoad()
 	local function OnUseBestQualityModified(o, checked)
 		local transaction = self.OrderDetails.SchematicForm:GetTransaction();
 		Professions.AllocateAllBasicReagents(transaction, checked);
-		self:UpdateCreateButton();
+
+		-- SchematicPostInit handles overriding customer provided reagents and restoring to a correct state after re-allocating the basic reagents.
+		self:SchematicPostInit();
 	end
 
 	self.OrderDetails.SchematicForm:RegisterCallback(ProfessionsRecipeSchematicFormMixin.Event.UseBestQualityModified, OnUseBestQualityModified, self);
@@ -680,7 +682,7 @@ function ProfessionsCrafterOrderViewMixin:SchematicPostInit()
         self.OrderDetails.SchematicForm.recraftSlot.OutputSlot:SetScript("OnEnter", function(slot)
             GameTooltip:SetOwner(slot, "ANCHOR_RIGHT");
             local reagents = transaction:CreateCraftingReagentInfoTbl();
-            GameTooltip:SetRecipeResultItemForOrder(self.order.spellID, reagents, self.order.orderID, self.OrderDetails.SchematicForm:GetCurrentRecipeLevel());
+            GameTooltip:SetRecipeResultItemForOrder(self.order.spellID, reagents, self.order.orderID, self.OrderDetails.SchematicForm:GetCurrentRecipeLevel(), self.OrderDetails.SchematicForm:GetOutputOverrideQuality());
         end);
         self.OrderDetails.SchematicForm.recraftSlot.InputSlot:SetScript("OnMouseDown", nil);
     end

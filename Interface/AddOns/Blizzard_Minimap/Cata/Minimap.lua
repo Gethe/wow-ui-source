@@ -798,30 +798,3 @@ function MiniMapBattlefieldFrame_isArena()
 		MiniMapBattlefieldIcon:SetPoint("CENTER", "MiniMapBattlefieldFrame", "CENTER", -1, 0);
 	end
 end
-
--- ============================================ LookingForGroup ===============================================================================
-function MiniMapLFGFrame_OnClick(self, button)
-	if ( button == "RightButton" ) then
-		if (C_LFGList.HasActiveEntryInfo() and LFGListingUtil_CanEditListing()) then
-			MenuUtil.CreateContextMenu(MiniMapLFGFrame, function(dropdown, rootDescription)
-				rootDescription:SetTag("MENU_MINIMAP_LFG");
-
-				local editListButton = rootDescription:CreateButton(LFG_LIST_EDIT, function()
-					PVEFrame_ShowFrame();
-				end);
-				if not (C_LFGList.HasActiveEntryInfo() and LFGListingUtil_CanEditListing()) then
-					editListButton:SetEnabled(false);
-				end
-
-				local unlistButton = rootDescription:CreateButton(LFG_LIST_UNLIST, function()
-					C_LFGList.RemoveListing();
-				end);
-				if not (C_LFGList.HasActiveEntryInfo() and LFGListingUtil_CanEditListing()) then
-					unlistButton:SetEnabled(false);
-				end
-			end);
-		end
-	else
-		PVEFrame_ToggleFrame();
-	end
-end

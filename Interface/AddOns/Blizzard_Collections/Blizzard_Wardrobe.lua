@@ -1377,23 +1377,20 @@ end
 
 function WardrobeCollectionFrameMixin:OnKeyDown(key)
 	if self.tooltipCycle and key == WARDROBE_CYCLE_KEY then
-		self:SetPropagateKeyboardInput(false);
 		if IsShiftKeyDown() then
 			self.tooltipSourceIndex = self.tooltipSourceIndex - 1;
 		else
 			self.tooltipSourceIndex = self.tooltipSourceIndex + 1;
 		end
 		self.tooltipContentFrame:RefreshAppearanceTooltip();
+		return false;
 	elseif key == WARDROBE_PREV_VISUAL_KEY or key == WARDROBE_NEXT_VISUAL_KEY or key == WARDROBE_UP_VISUAL_KEY or key == WARDROBE_DOWN_VISUAL_KEY then
 		if self.activeFrame:CanHandleKey(key) then
-			self:SetPropagateKeyboardInput(false);
 			self.activeFrame:HandleKey(key);
-		else
-			self:SetPropagateKeyboardInput(true);
+			return false;
 		end
-	else
-		self:SetPropagateKeyboardInput(true);
 	end
+	return true;
 end
 
 function WardrobeCollectionFrameMixin:OpenTransmogLink(link)
@@ -2632,7 +2629,7 @@ function WardrobeItemsCollectionMixin:RefreshAppearanceTooltip()
 	end
 
 	local chosenSourceID = self:GetChosenVisualSource(self.tooltipVisualID);	
-	local warningString = CollectionWardrobeUtil.GetBestVisibilityWarning(self.tooltipModel, self.transmogLocation, self.tooltipVisualID);	
+	local warningString = CollectionWardrobeUtil.GetBestVisibilityWarning(self.tooltipModel, self.transmogLocation, sources);
 	self:GetParent():SetAppearanceTooltip(self, sources, chosenSourceID, warningString);
 end
 
@@ -3028,8 +3025,8 @@ function WardrobeSetsTransmogModelMixin:OnMouseUp(button)
 
 						for index, variantSet in ipairs(C_TransmogSets.GetVariantSets(baseSetID)) do
 							C_TransmogSets.SetIsFavorite(variantSet.setID, false);
-	end
-end
+						end
+					end
 
 					C_TransmogSets.SetIsFavorite(self.setID, true);
 				end);
@@ -3720,7 +3717,9 @@ function WardrobeSetsCollectionMixin:OnShow()
 					colorCode = GRAY_FONT_COLOR_CODE;
 				end
 
-				local text = format(ITEM_SET_NAME, (variantSet.description)..colorCode, numSourcesCollected, numSourcesTotal);
+				assertsafe(variantSet.description ~= nil, "TransmogSet %s (%d) missing description / difficulty variant", variantSet.name, variantSet.setID);
+
+				local text = format(ITEM_SET_NAME, (variantSet.description or variantSet.name)..colorCode, numSourcesCollected, numSourcesTotal);
 				rootDescription:CreateRadio(text, IsSelected, SetSelected, variantSet);
 			end
 		end
@@ -3995,7 +3994,7 @@ function WardrobeSetsCollectionMixin:RefreshAppearanceTooltip()
 		tinsert(sources, sourceInfo);
 	end
 	CollectionWardrobeUtil.SortSources(sources, sources[1].visualID, self.tooltipPrimarySourceID); 
-	local warningString = CollectionWardrobeUtil.GetBestVisibilityWarning(self.Model, self.transmogLocation, sources[1].visualID);	
+	local warningString = CollectionWardrobeUtil.GetBestVisibilityWarning(self.Model, self.transmogLocation, sources);
 	self:GetParent():SetAppearanceTooltip(self, sources, self.tooltipPrimarySourceID, warningString, self.tooltipSlot);
 end
 

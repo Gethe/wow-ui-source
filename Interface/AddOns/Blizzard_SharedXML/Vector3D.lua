@@ -125,22 +125,27 @@ end
 
 function Vector3DMixin:ScaleBy(scalar)
 	self:SetXYZ(Vector3D_ScaleBy(scalar, self:GetXYZ()));
+	return self;
 end
 
 function Vector3DMixin:DivideBy(scalar)
 	self:SetXYZ(Vector3D_DivideBy(scalar, self:GetXYZ()));
+	return self;
 end
 
 function Vector3DMixin:Add(other)
 	self:SetXYZ(Vector3D_Add(self.x, self.y, self.z, other:GetXYZ()));
+	return self;
 end
 
 function Vector3DMixin:Subtract(other)
 	self:SetXYZ(Vector3D_Subtract(self.x, self.y, self.z, other:GetXYZ()));
+	return self;
 end
 
 function Vector3DMixin:Cross(other)
 	self:SetXYZ(Vector3D_Cross(self.x, self.y, self.z, other:GetXYZ()));
+	return self;
 end
 
 function Vector3DMixin:Dot(other)
@@ -157,6 +162,7 @@ end
 
 function Vector3DMixin:Normalize()
 	self:SetXYZ(Vector3D_Normalize(self:GetXYZ()));
+	return self;
 end
 
 function Vector3DMixin:Clone()

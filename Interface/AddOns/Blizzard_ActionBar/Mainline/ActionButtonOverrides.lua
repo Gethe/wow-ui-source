@@ -22,11 +22,25 @@ if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
 		self:RegisterEvent("PLAYER_LOGIN");
 		self:RegisterEvent("SPECTATE_BEGIN");
 		self:RegisterEvent("SPECTATE_END");
-		self:RegisterEvent("WORLD_LOOT_OBJECT_SWAP_INVENTORY_TYPE_UPDATED");
+
+		EventRegistry:RegisterCallback("WorldLootObjectTooltip.Shown", self.OnWorldLootObjectTooltipShown, self);
+		EventRegistry:RegisterCallback("WorldLootObjectTooltip.Hidden", self.OnWorldLootObjectTooltipHidden, self);
+	end
+
+	function ActionBarButtonEventsDerivedFrameMixin:OnWorldLootObjectTooltipShown(...)
+		for k, frame in pairs(self.frames) do
+			frame:OnWorldLootObjectTooltipShown(...);
+		end
+	end
+
+	function ActionBarButtonEventsDerivedFrameMixin:OnWorldLootObjectTooltipHidden()
+		for k, frame in pairs(self.frames) do
+			frame:OnWorldLootObjectTooltipHidden();
+		end
 	end
 
 	ActionBarActionButtonDerivedMixin = CreateFromMixins(ActionBarActionButtonMixin);
-	function ActionBarActionButtonDerivedMixin:OnLoad()
+	function ActionBarActionButtonDerivedMixin:ActionBarActionButtonDerivedMixin_OnLoad()
 		ActionBarActionButtonMixin.OnLoad(self);
 		self:SetAttribute("showgrid", 1);
 		self.initialFlyout = false;
@@ -44,6 +58,34 @@ if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
 		self.RarityPipContainer:SetPoint("BOTTOM", self.RarityPipBackground, "BOTTOM", 0, 2);
 
 		self:SetButtonArt();
+	end
+
+	function ActionBarActionButtonDerivedMixin:ActionBarActionButtonDerivedMixin_OnAttributeChanged()
+		ActionBarActionButtonMixin.OnAttributeChanged(self);
+	end
+
+	function ActionBarActionButtonDerivedMixin:ActionBarActionButtonDerivedMixin_OnPostClick()
+		ActionBarActionButtonMixin.UpdateState(self);
+	end
+
+	function ActionBarActionButtonDerivedMixin:ActionBarActionButtonDerivedMixin_OnEnter()
+		ActionBarActionButtonMixin.OnEnter(self);
+		QuickKeybindButtonTemplateMixin.QuickKeybindButtonOnEnter(self);
+	end
+
+	function ActionBarActionButtonDerivedMixin:ActionBarActionButtonDerivedMixin_OnLeave()
+		ActionBarActionButtonMixin.OnLeave(self);
+		QuickKeybindButtonTemplateMixin.QuickKeybindButtonOnLeave(self);
+	end
+
+	function ActionBarActionButtonDerivedMixin:ActionBarActionButtonDerivedMixin_OnShow()
+		ActionBarActionButtonMixin.OnShow(self);
+		QuickKeybindButtonTemplateMixin.QuickKeybindButtonOnShow(self);
+	end
+
+	function ActionBarActionButtonDerivedMixin:ActionBarActionButtonDerivedMixin_OnHide()
+		ActionBarActionButtonMixin.OnHide(self);
+		QuickKeybindButtonTemplateMixin.QuickKeybindButtonOnHide(self);
 	end
 
 	function ActionBarActionButtonDerivedMixin:UpdateButtonArt()
@@ -191,20 +233,29 @@ if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
 		self.feedback_action = action;
 	end
 
-	function ActionBarActionButtonDerivedMixin:UpdateSwappableState()
+	function ActionBarActionButtonDerivedMixin:CanSwapWithInventoryType(inventoryType)
+		if not WOWLABS_ACTIONBUTTON_MAP[self.action] or C_SpectatingUI.IsSpectating() then
+			return false;
+		end
+
+		local slot = WOWLABS_ACTIONBUTTON_MAP[self.action]["INVSLOT"];
+		return C_WorldLootObject.DoesSlotMatchInventoryType(slot, inventoryType);
+	end
+
+	function ActionBarActionButtonDerivedMixin:OnWorldLootObjectTooltipShown(inventoryType)
+		self:SetSwappableState(self:CanSwapWithInventoryType(inventoryType));
+	end
+
+	function ActionBarActionButtonDerivedMixin:OnWorldLootObjectTooltipHidden()
+		self:SetSwappableState(false);
+	end
+
+	function ActionBarActionButtonDerivedMixin:SetSwappableState(swappable)
 		if not WOWLABS_ACTIONBUTTON_MAP[self.action] then
 			return;
 		end
 
-		local slot = WOWLABS_ACTIONBUTTON_MAP[self.action]["INVSLOT"];
-		local itemLink = GetInventoryItemLink("player", slot);
-		local isSpectating = C_SpectatingUI.IsSpectating(); 
-		local swapInventoryType = C_WorldLootObject.GetCurrentWorldLootObjectSwapInventoryType();
-		if not isSpectating and swapInventoryType and itemLink and (swapInventoryType == C_Item.GetItemInventoryTypeByID(itemLink)) then
-			self:SetNormalAtlas("plunderstorm-actionbar-slot-border-swappable");
-		else
-			self:SetNormalAtlas("plunderstorm-actionbar-slot-border");
-		end
+		self:SetNormalAtlas(swappable and "plunderstorm-actionbar-slot-border-swappable" or "plunderstorm-actionbar-slot-border");
 	end
 
 	function ActionBarActionButtonDerivedMixin:UpdateBorder()
@@ -289,7 +340,7 @@ if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
 		end
 	end 
 
-	function ActionBarActionButtonDerivedMixin:OnEvent(event, ...)
+	function ActionBarActionButtonDerivedMixin:ActionBarActionButtonDerivedMixin_OnEvent(event, ...)
 		if(event == "ACTIONBAR_SLOT_CHANGED" ) then
 			if ( arg1 == 0 or arg1 == tonumber(self.action) ) then
 				ClearNewActionHighlight(self.action, true);
@@ -305,9 +356,7 @@ if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
 			end
 		elseif ( event == "SPECTATE_BEGIN" or event == "SPECTATE_END" ) then
 			self:Update();
-			self:UpdateSwappableState();
-		elseif ( event == "WORLD_LOOT_OBJECT_SWAP_INVENTORY_TYPE_UPDATED" ) then
-			self:UpdateSwappableState();
+			self:SetSwappableState(false);
 		end
 
 		ActionBarActionButtonMixin.OnEvent(self, event, ...)
@@ -411,7 +460,7 @@ if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
 	-- this is a hack to prevent the action from being cast when we're arranging spells on the loadout bar
 	local onClickCooldown = 0
 
-	function ActionBarActionButtonDerivedMixin:OnClick(button, down)
+	function ActionBarActionButtonDerivedMixin:ActionBarActionButtonDerivedMixin_OnClick(button, down)
 		local infoType = select(1, GetCursorInfo());
 
 		if ( down and infoType == "merchant" ) then
@@ -478,7 +527,7 @@ if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
 		end
 	end
 
-	function ActionBarActionButtonDerivedMixin:OnDragStart()
+	function ActionBarActionButtonDerivedMixin:ActionBarActionButtonDerivedMixin_OnDragStart()
 		--local useKeyDownCvar = GetCVarBool("ActionButtonUseKeyDown");
 		local id = self.action;
 		if (WOWLABS_ACTIONBUTTON_MAP[id]) then
@@ -494,12 +543,12 @@ if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
 		end
 	end
 
-	function ActionBarActionButtonDerivedMixin:OnReceiveDrag()
+	function ActionBarActionButtonDerivedMixin:ActionBarActionButtonDerivedMixin_OnReceiveDrag()
 		self:UpdateState();
 		self:UpdateFlash();
 	end
 
-	function ActionBarActionButtonDerivedMixin:OnDragStop()
+	function ActionBarActionButtonDerivedMixin:ActionBarActionButtonDerivedMixin_OnDragStop()
 		for slot, _ in pairs(WOWLABS_ACTIONBUTTON_MAP) do
 			local actionButton = _G[WOWLABS_ACTIONBUTTON_MAP[slot]["FRAME"]]
 			if actionButton:IsMouseOver() then
@@ -510,8 +559,60 @@ if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
 
 		DeleteCursorItem()
 	end
-else
+else -- Not Enum.GameMode.Plunderstorm
 	ActionBarButtonEventsDerivedFrameMixin = CreateFromMixins(ActionBarButtonEventsFrameMixin);
 	ActionBarActionButtonDerivedMixin = CreateFromMixins(ActionBarActionButtonMixin);
-	function ActionBarActionButtonDerivedMixin:OnDragStop() end 
+	
+	function ActionBarActionButtonDerivedMixin:ActionBarActionButtonDerivedMixin_OnLoad()
+		ActionBarActionButtonMixin.OnLoad(self);
+	end
+
+	function ActionBarActionButtonDerivedMixin:ActionBarActionButtonDerivedMixin_OnAttributeChanged()
+		ActionBarActionButtonMixin.OnAttributeChanged(self);
+	end
+
+	function ActionBarActionButtonDerivedMixin:ActionBarActionButtonDerivedMixin_OnEvent(event, ...)
+		ActionBarActionButtonMixin.OnAttributeChanged(self, event, ...);
+	end
+
+	function ActionBarActionButtonDerivedMixin:ActionBarActionButtonDerivedMixin_OnClick(button, down)
+		ActionBarActionButtonMixin.OnClick(self, button, down);
+		QuickKeybindButtonTemplateMixin.QuickKeybindButtonOnClick(self, button, down);
+	end
+
+	function ActionBarActionButtonDerivedMixin:ActionBarActionButtonDerivedMixin_OnPostClick()
+		ActionBarActionButtonMixin.UpdateState(self);
+	end
+
+	function ActionBarActionButtonDerivedMixin:ActionBarActionButtonDerivedMixin_OnDragStart()
+		ActionBarActionButtonMixin.OnDragStart(self);
+	end
+
+	function ActionBarActionButtonDerivedMixin:ActionBarActionButtonDerivedMixin_OnReceiveDrag()
+		ActionBarActionButtonMixin.OnReceiveDrag(self);
+	end
+
+	function ActionBarActionButtonDerivedMixin:ActionBarActionButtonDerivedMixin_OnDragStop()
+		
+	end
+
+	function ActionBarActionButtonDerivedMixin:ActionBarActionButtonDerivedMixin_OnEnter()
+		ActionBarActionButtonMixin.OnEnter(self);
+		QuickKeybindButtonTemplateMixin.QuickKeybindButtonOnEnter(self);
+	end
+
+	function ActionBarActionButtonDerivedMixin:ActionBarActionButtonDerivedMixin_OnLeave()
+		ActionBarActionButtonMixin.OnLeave(self);
+		QuickKeybindButtonTemplateMixin.QuickKeybindButtonOnLeave(self);
+	end
+
+	function ActionBarActionButtonDerivedMixin:ActionBarActionButtonDerivedMixin_OnShow()
+		ActionBarActionButtonMixin.OnShow(self);
+		QuickKeybindButtonTemplateMixin.QuickKeybindButtonOnShow(self);
+	end
+
+	function ActionBarActionButtonDerivedMixin:ActionBarActionButtonDerivedMixin_OnHide()
+		ActionBarActionButtonMixin.OnHide(self);
+		QuickKeybindButtonTemplateMixin.QuickKeybindButtonOnHide(self);
+	end
 end

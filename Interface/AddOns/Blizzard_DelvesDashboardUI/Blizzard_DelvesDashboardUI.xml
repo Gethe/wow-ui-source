@@ -40,7 +40,7 @@
                 <FontString parentKey="PanelDescription" inherits="GameFontNormalMed2" wordwrap="true" justifyV="TOP">
                     <Size x="160" y="55"/>
                     <Anchors>
-                        <Anchor point="TOP" relativeKey="$parent.PanelTitle" relativePoint="BOTTOM" y="6"/>
+                        <Anchor point="TOP" relativeKey="$parent.PanelTitle" relativePoint="BOTTOM" y="3"/>
                     </Anchors>
                 </FontString>
             </Layer>
@@ -227,7 +227,7 @@
         </Layers>
         <Frames>
             <!-- Reputation ThresholdBar -->
-			<StatusBar parentKey="ThresholdBar" frameBuffer="true">
+			<StatusBar parentKey="ThresholdBar" mixin="DelvesThresholdBarMixin" frameBuffer="true">
 				<BarTexture parentKey="BarFill" atlas="delves-dashboard-bar-fill"/>
 				<Size x="475" y="25"/>
 				<Anchors>
@@ -303,6 +303,10 @@
 						<Alpha childKey="BarFillGlow" duration="0.25" fromAlpha="0" toAlpha="1"/>
 					</AnimationGroup>
 				</Animations>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
 			</StatusBar>
 
             <!-- Button Panels -->

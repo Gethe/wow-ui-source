@@ -1072,6 +1072,21 @@
 							</Layer>
 						</Layers>
 					</Button>
+					<Button name="$parentCategoryButton4" inherits="PVPQueueFrameButtonTemplate" parentKey="CategoryButton4" id="4" hidden="true">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentCategoryButton2" relativePoint="BOTTOM" x="0" y="-30" />
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Name" inherits="GameFontNormalLarge" spacing="2" justifyH="LEFT" mixin="AutoScalingFontStringMixin">
+									<Size x="106" y="0"/>
+									<Anchors>
+										<Anchor point="LEFT" relativeKey="$parent.Ring" relativePoint="RIGHT" x="0" y="0" />
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Button>
 					<!-- Casual  -->
 					<Frame name="HonorFrame">
 						<Size x="402" y="403"/>
@@ -1418,6 +1433,78 @@
 							</OnHide>
 						</Scripts>
 					</Frame>
+					<!-- Plunderstorm -->
+					<Frame name="PlunderstormFrame" hidden="true" mixin="PlunderstormQueueFrameMixin">
+						<Size x="402" y="407"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="220" y="-22"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="Background" atlas="plunderstorm-pvpqueue-background" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOP" x="0" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame parentKey="Inset" useParentLevel="true" inherits="InsetFrameTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" x="4" y="0"/>
+									<Anchor point="BOTTOMRIGHT" x="-5" y="26"/>
+								</Anchors>
+							</Frame>
+							<Frame parentKey="QueueSelect" inherits="QueueTypeSettingsFrameTemplate">
+								<Size x="270" y="100"/>
+								<Anchors>
+									<Anchor point="TOP" y="-24"/>
+								</Anchors>
+							</Frame>
+							<Button parentKey="StartQueue" inherits="MagicButtonTemplate" text="Queue" motionScriptsWhileDisabled="true" mixin="StartPlunderstormQueueButtonMixin">
+								<Size x="116" y="22"/>
+								<Anchors>
+									<Anchor point="BOTTOM" y= "0"/>
+								</Anchors>
+								<Scripts>
+									<OnShow method="OnShow"/>
+									<OnClick method="OnClick"/>
+									<OnEnter method="OnEnter"/>
+									<OnLeave method="OnLeave"/>
+									<OnEvent method="OnEvent"/>
+								</Scripts>
+							</Button>
+						</Frames>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="PlunderstormLine" atlas="plunderstorm-glues-tutorial-line" >
+									<Size x="343" y="2"/>
+									<Anchors>
+										<Anchor point="TOP" relativeKey="$parent.QueueSelect" relativePoint="BOTTOM" y="-12"/>
+									</Anchors>
+								</Texture>
+								<FontString parentKey="BasicsTitle" inherits="GameFontNormalLarge" text="WOWLABS_GAME_BASICS_TITLE" justifyV="MIDDLE" justifyH="LEFT">
+									<Size x="325" y="40"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.PlunderstormLine" relativePoint="BOTTOMLEFT" y="-32"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="BasicsBody" inherits="GameFontHighlight" text="WOWLABS_GAME_BASICS_BODY" justifyV="TOP" justifyH="LEFT">
+									<Size x="325" y="0"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.BasicsTitle" relativePoint="BOTTOMLEFT"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnShow method="OnShow"/>
+							<OnHide method="OnHide"/>
+							<OnEvent method="OnEvent"/>
+						</Scripts>
+					</Frame>
 					<Frame name="LFGListPVPStub" hidden="true">
 						<Size x="339" y="428"/>
 						<Anchors>
@@ -1435,7 +1522,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture atlas="pvpqueue-sidebar-background" useAtlasSize="true">
+								<Texture parentKey="Background" atlas="pvpqueue-sidebar-background" useAtlasSize="true">
 									<Anchors>
 										<Anchor point="TOP" x="0" y="-3"/>
 									</Anchors>
@@ -1559,6 +1646,39 @@
 									</Frame>
 								</Frames>
 								<Scripts>
+									<OnShow method="OnShow"/>
+									<OnHide method="OnHide"/>
+									<OnEvent method="OnEvent"/>
+								</Scripts>
+							</Frame>
+							<Frame parentKey="PlunderstormPanel" mixin="PlunderstormPanelMixin" setAllPoints="true" hidden="true">
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString parentKey="PlunderDesc" inherits="GameFontHighlight" justifyV="BOTTOM" justifyH="CENTER" text="WOW_LABS_PLUNDER_LFG_DESC">
+											<Size x="150" y="64"/>
+											<Anchors>
+												<Anchor point="BOTTOM" y="78"/>
+											</Anchors>
+										</FontString>
+										<FontString parentKey="PlunderDisplay" inherits="GameFontHighlightLarge" justifyV="MIDDLE" justifyH="CENTER">
+											<Size x="150" y="20"/>
+											<Anchors>
+												<Anchor point="TOP" relativeKey="$parent.PlunderDesc" relativePoint="BOTTOM" y="-8"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Frames>
+									<Button parentKey="PlunderstoreButton" inherits="BigGoldRedThreeSliceButtonTemplate" text="PLUNDERSTORM_PLUNDER_STORE_TITLE">
+										<Size x="150" y="32"/>
+										<Anchors>
+											<Anchor point="TOP" relativeKey="$parent.PlunderDisplay" relativePoint="BOTTOM" y="-8"/>
+										</Anchors>
+										<NormalFont style="GameFontNormalLarge" />
+									</Button>
+								</Frames>
+								<Scripts>
+									<OnLoad method="OnLoad"/>
 									<OnShow method="OnShow"/>
 									<OnHide method="OnHide"/>
 									<OnEvent method="OnEvent"/>

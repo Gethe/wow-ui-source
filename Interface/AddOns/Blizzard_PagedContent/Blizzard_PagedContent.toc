@@ -1,5 +1,6 @@
 ## Title: Blizzard Paged Content
 ## LoadOnDemand: 0
+## AllowLoad: Both
 
 Blizzard_PagingControls.lua
 Blizzard_PagingControls.xml

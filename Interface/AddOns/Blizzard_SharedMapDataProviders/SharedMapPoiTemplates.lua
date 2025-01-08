@@ -372,7 +372,7 @@ local function AddIndicatorQuestsToTasks(container, mapID)
 					info.isCombatAllyQuest = false;
 					info.isMeta = false;
 					-- info.childDepth avoided
-				
+
 					table.insert(container, info);
 				end
 			end
@@ -427,12 +427,13 @@ function MapPinPingMixin:SetNumLoops(numLoops)
 	self.numLoops = numLoops;
 end
 
-function MapPinPingMixin:SetID(id)
+function MapPinPingMixin:SetID(idKey, id)
+	self.idKey = idKey;
 	self.id = id;
 end
 
-function MapPinPingMixin:GetID(id)
-	return self.id;
+function MapPinPingMixin:GetID()
+	return self.idKey, self.id;
 end
 
 function MapPinPingMixin:PlayAt(x, y)
@@ -465,7 +466,12 @@ end
 
 function MapPinPingMixin:Clear()
 	self:Hide();
+	self.idKey = nil;
 	self.id = nil;
+end
+
+function MapPinPingMixin:IsActive()
+	return self.id ~= nil;
 end
 
 MapPinPingDriverAnimationMixin = {};
@@ -487,7 +493,7 @@ function SuperTrackablePinMixin:IsSuperTrackingExternallyHandled()
 	-- Exists because Events need to implement both AreaPOIPin and POIButton
 	-- and POIButton handles the supertracking with custom textures.
 	-- By default, anything that actually uses SuperTrackablePinMixin
-	-- should handle its own supertracking, but event pins do no
+	-- should handle its own supertracking, but event pins do not
 	return false;
 end
 
@@ -527,6 +533,18 @@ function SuperTrackablePinMixin:OnMouseClickAction(button)
 		end
 
 		return true;
+	end
+end
+
+function SuperTrackablePinMixin:OnMouseDownAction(button)
+	if self:DoesMapTypeAllowSuperTrack() then
+		self:AdjustPointsOffset(1, -1);
+	end
+end
+
+function SuperTrackablePinMixin:OnMouseUpAction(button, upInside)
+	if self:DoesMapTypeAllowSuperTrack() then
+		self:AdjustPointsOffset(-1, 1);
 	end
 end
 

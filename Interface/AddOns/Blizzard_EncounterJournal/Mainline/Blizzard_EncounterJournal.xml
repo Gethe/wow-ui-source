@@ -1526,6 +1526,64 @@
 									</OnMouseUp>
 								</Scripts>
 							</Button>
+							<Button name="$parentMajorFactionRewardsButton" parentKey="majorFactionRewardsButton" hidden="true">
+								<Size x="64" y="64"/>
+								<Anchors>
+									<Anchor point="BOTTOMRIGHT" x="-29" y="123"/>
+								</Anchors>
+								<Layers>
+									<Layer level="BORDER">
+										<Texture name="$parentMajorFactionRewardsButtonBorder" parentKey="majorFactionRewardsButtonBorder" atlas="Map_Faction_Ring" useAtlasSize="false">
+											<Size x="64" y="64"/>
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+									<Layer level="BACKGROUND">
+										<Texture name="$parentMajorFactionRewardsButtonBackground" parentKey="majorFactionRewardsButtonBackground">
+											<Size x="50" y="50"/>
+											<Color color="BLACK_COLOR"/>
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+										</Texture>
+										<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+											<Size x="50" y="50"/>
+											<Anchors>
+												<Anchor point="CENTER" relativeKey="$parent.majorFactionRewardsButtonBackground" relativePoint="CENTER"/>
+											</Anchors>
+											<MaskedTextures>
+												<MaskedTexture childKey="majorFactionRewardsButtonBackground"/>
+											</MaskedTextures>
+										</MaskTexture>
+									</Layer>
+									<Layer level="ARTWORK">
+										<Texture name="$parentMajorFactionRewardsButtonIcon" parentKey="majorFactionRewardsButtonIcon">
+											<Size x="50" y="50"/>
+											<Anchors>
+												<Anchor point="CENTER" x="-1" y="1"/>
+											</Anchors>
+										</Texture>
+										<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+											<Size x="46" y="46"/>
+											<Anchors>
+												<Anchor point="CENTER" relativeKey="$parent.majorFactionRewardsButtonIcon" relativePoint="CENTER"/>
+											</Anchors>
+											<MaskedTextures>
+												<MaskedTexture childKey="majorFactionRewardsButtonIcon"/>
+											</MaskedTextures>
+										</MaskTexture>
+									</Layer>
+								</Layers>
+								<HighlightTexture alphaMode="ADD" file="Interface\CharacterFrame\TempPortraitAlphaMask">
+									<Size x="55" y="55"/>
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+									<Color r="0.2" g="0.2" b="0.2" a="0.4"/>
+								</HighlightTexture>
+							</Button>
 							<Frame parentKey="LoreScrollingFont" inherits="ScrollingFontTemplate" frameStrata="HIGH">
 								<Size x="315" y="100"/>
 								<Anchors>

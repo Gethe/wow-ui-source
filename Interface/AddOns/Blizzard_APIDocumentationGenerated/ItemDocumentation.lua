@@ -278,6 +278,21 @@ local Item =
 			},
 		},
 		{
+			Name = "GetDelvePreviewItemQuality",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false },
+				{ Name = "context", Type = "ItemCreationContext", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemQuality", Type = "ItemQuality", Nilable = false },
+			},
+		},
+		{
 			Name = "GetDetailedItemLevelInfo",
 			Type = "Function",
 

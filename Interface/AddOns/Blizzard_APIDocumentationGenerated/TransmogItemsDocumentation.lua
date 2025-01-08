@@ -40,20 +40,6 @@ local TransmogItems =
 			},
 		},
 		{
-			Name = "CanAppearanceBeDisplayedOnPlayer",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "itemAppearanceID", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "canAppearanceBeDisplayedOnPlayer", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "CanAppearanceHaveIllusion",
 			Type = "Function",
 

@@ -2343,6 +2343,9 @@
 				</Scripts>
 			</Button>
 			<DropdownButton name="AchievementFrameFilterDropdown" inherits="WowStyle1FilterDropdownTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="resizeToText" type="boolean" value="false"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="144" y="8"/>
 				</Anchors>

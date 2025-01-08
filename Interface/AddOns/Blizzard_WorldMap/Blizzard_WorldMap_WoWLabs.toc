@@ -1,0 +1,15 @@
+## Title: Blizzard_WorldMap
+## Author: Blizzard Entertainment
+## RequiredDep: Blizzard_MapCanvas, Blizzard_SharedMapDataProviders
+## LoadOnDemand: 0
+## AllowLoadGameType: wowlabs
+
+QuestLogOwnerMixin.lua
+MapTexturePreloader.lua
+WM_WorldQuestDataProvider.xml
+WM_EventOverlayDataProvider.xml
+WM_DebugDataProvider.xml
+WoWLabs/WM_WoWLabsAreaDataProvider.lua
+WoWLabs/WM_WoWLabsAreaDataProvider.xml
+Blizzard_WorldMapTemplates.xml
+Blizzard_WorldMap.xml

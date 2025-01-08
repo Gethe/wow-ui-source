@@ -1,18 +1,8 @@
-
-SHOW_KOREAN_RATINGS = SHOW_KOREAN_RATINGS or nil;
-SHOW_CHINA_AGE_APPROPRIATENESS_WARNING = SHOW_CHINA_AGE_APPROPRIATENESS_WARNING or nil;
-
 function ShouldShowRegulationOverlay()
-	return SHOW_KOREAN_RATINGS or (SHOW_CHINA_AGE_APPROPRIATENESS_WARNING and not C_Login.WasEverLauncherLogin());
+	return KoreanRatings:ShouldShow() or ChinaAgeAppropriatenessWarning:ShouldShow() or TaiwanFraudWarning:ShouldShow();
 end
 
 local selectedSavedAccount = nil;
-
-AccountLoginEditBoxBehaviorMixin = {}
-
-function AccountLoginEditBoxBehaviorMixin:OnKeyDown(key)
-	EventRegistry:TriggerEvent("AccountLogin.OnKeyDown", key);
-end
 
 function AccountLogin_OnLoad(self)
 	local version, internalVersion, date, _, versionType, buildType = GetBuildInfo();
@@ -25,6 +15,16 @@ function AccountLogin_OnLoad(self)
 	self:RegisterEvent("LOGIN_STATE_CHANGED");
 	self:RegisterEvent("LAUNCHER_LOGIN_STATUS_CHANGED");
 	self:RegisterEvent("SHOULD_RECONNECT_TO_REALM_LIST");
+
+	local function OnLoginWarningDialogClosed()
+		if PhotosensitivityWarningFrame:GetLockedByOtherWarning() then
+			PhotosensitivityWarningFrame:TryShow();
+		else
+			AccountLogin_Update();
+			AccountLogin_CheckAutoLogin();
+		end
+	end
+	EventRegistry:RegisterCallback("LoginWarningDialogs.DialogClosed", OnLoginWarningDialogClosed);
 
 	AccountLogin_CheckLoginState(self);
 
@@ -88,25 +88,15 @@ function AccountLogin_OnShow(self)
 end
 
 function AccountLogin_Update()
-	local showButtonsAndStuff = true;
-	if ( ShouldShowRegulationOverlay() ) then
-		showButtonsAndStuff = false;
-		if ( SHOW_KOREAN_RATINGS ) then
-			KoreanRatings:Show();
-		elseif ( SHOW_CHINA_AGE_APPROPRIATENESS_WARNING ) then
-			ChinaAgeAppropriatenessWarning:Show();
-		end
-	else
-		KoreanRatings:Hide();
-		ChinaAgeAppropriatenessWarning:Hide();
-	end
+	local showedRegulationOverlay = KoreanRatings:TryShow() or ChinaAgeAppropriatenessWarning:TryShow() or TaiwanFraudWarning:TryShow();
+	local showButtonsAndStuff = not showedRegulationOverlay;
 
 	local isLauncherLogin = C_Login.IsLauncherLogin();
 	if ( isLauncherLogin ) then
 		showButtonsAndStuff = false;
 	end
 
-	local shouldSuppressServerAlert = isLauncherLogin or ShouldShowRegulationOverlay();
+	local shouldSuppressServerAlert = isLauncherLogin or showedRegulationOverlay;
 	ServerAlertFrame:SetSuppressed(shouldSuppressServerAlert);
 
 	EventRegistry:TriggerEvent("AccountLogin.Update", showButtonsAndStuff);
@@ -152,6 +142,14 @@ function AccountLogin_UpdateSavedData(self)
 	AccountLoginDropdown_SetupList();
 end
 
+function AccountLoginEditBox_OnKeyDown(self, key)
+	local binding = GetBindingFromInput(key);
+	if binding and ((binding == "TOGGLEMUSIC") or (binding == "TOGGLESOUND") or (binding == "TOGGLEAMBIENCE")) then
+		return true;
+	end
+	return false;
+end
+
 function AccountLogin_OnKeyDown(self, key)
 	-- Reconnect button isn't an edit box, so can't respond to these on its own.
 	if key == "ENTER" then
@@ -159,16 +157,15 @@ function AccountLogin_OnKeyDown(self, key)
 		if reconnectButton:IsShown() and reconnectButton:IsEnabled() and C_Login.IsLoginReady() then
 			AccountLogin_ReconnectLogin();
 		end
-	elseif ( key == "ESCAPE" ) then
-		AccountLogin_OnEscapePressed();
+		return false;
 	elseif key == "TAB" then
 		local switchButton = self.UI.ReconnectSwitchButton;
 		if switchButton:IsShown() and switchButton:IsEnabled() then
 			AccountLogin_ClearReconnectLogin();
 		end
+		return false;
 	end
-
-	EventRegistry:TriggerEvent("AccountLogin.OnKeyDown", key);
+	return true;
 end
 
 function AccountLogin_Login()
@@ -208,10 +205,9 @@ function AccountLogin_ClearReconnectLogin()
 	AccountLogin_Update();
 end
 
-function AccountLogin_OnEscapePressed()
-	if GlueParent_IsSecondaryScreenOpen("options") then
-		GlueParent_CloseSecondaryScreen();
-	end
+function AccountLogin_OnEscapePressed(editBox)
+	editBox:ClearFocus();
+	return true;
 end
 
 function AccountLogin_Exit()
@@ -505,65 +501,6 @@ end
 function AccountLogin_LaunchCommunitySite()
 	PlaySound(SOUNDKIT.GS_LOGIN_NEW_ACCOUNT);
 	LaunchURL(COMMUNITY_URL);
-end
-
--- =============================================================
--- Korean Ratings
--- =============================================================
-
-KoreanRatingsMixin = {};
-
-local KOREAN_RATINGS_AUTO_CLOSE_TIMER; -- seconds until automatically closing
-function KoreanRatingsMixin:OnLoad()
-	if ( WasScreenFirstDisplayed() ) then
-		self:ScreenDisplayed();
-	else
-		self:RegisterEvent("SCREEN_FIRST_DISPLAYED");
-	end
-end
-
-function KoreanRatingsMixin:OnEvent(event, ...)
-	if ( event == "SCREEN_FIRST_DISPLAYED" ) then
-		self:ScreenDisplayed();
-		self:UnregisterEvent("SCREEN_FIRST_DISPLAYED");
-	end
-end
-
-function KoreanRatingsMixin:ScreenDisplayed()
-	self:SetScript("OnUpdate", self.OnUpdate);
-end
-
-function KoreanRatingsMixin:OnShow()
-	self.locked = true;
-	KOREAN_RATINGS_AUTO_CLOSE_TIMER = 3;
-	KoreanRatingsText:SetTextHeight(10); -- this is just dumb ... sort out this bug later.
-	KoreanRatingsText:SetTextHeight(50);
-end
-
-function KoreanRatingsMixin:OnUpdate(elapsed)
-	KOREAN_RATINGS_AUTO_CLOSE_TIMER = KOREAN_RATINGS_AUTO_CLOSE_TIMER - elapsed;
-	if ( KOREAN_RATINGS_AUTO_CLOSE_TIMER <= 0 ) then
-		SHOW_KOREAN_RATINGS = false;
-
-		if PhotosensitivityWarningFrame:GetLockedByOtherWarning() then
-			KoreanRatings:Hide();
-			PhotosensitivityWarningFrame:TryShow();
-		else
-			AccountLogin_Update();
-			AccountLogin_CheckAutoLogin();
-		end
-	end
-end
-
-function ChinaAgeAppropriatenessWarning_Close()
-	SHOW_CHINA_AGE_APPROPRIATENESS_WARNING = false;
-	if PhotosensitivityWarningFrame:GetLockedByOtherWarning() then
-		ChinaAgeAppropriatenessWarning:Hide();
-		PhotosensitivityWarningFrame:TryShow();
-	else
-		AccountLogin_Update();
-		AccountLogin_CheckAutoLogin();
-	end
 end
 
 SaveAccountNameCheckButton = {};

@@ -135,11 +135,9 @@ function ToyBox_InitFilterDropdown(self)
 		expansionSubmenu:CreateButton(UNCHECK_ALL, SetAllExpansionTypeFilters, false);
 
 		for filterIndex = 1, GetNumExpansions() do
-			if C_ToyBoxInfo.IsToySourceValid(filterIndex) then
-				 -- EXPANSION_NAME is indexed from 0
-				local adjustedFilterIndex = (filterIndex - 1);
-				expansionSubmenu:CreateCheckbox(_G["EXPANSION_NAME"..adjustedFilterIndex], IsExpansionChecked, SetExpansionChecked, filterIndex);
-			end
+			-- EXPANSION_NAME is indexed from 0
+			local adjustedFilterIndex = (filterIndex - 1);
+			expansionSubmenu:CreateCheckbox(_G["EXPANSION_NAME"..adjustedFilterIndex], IsExpansionChecked, SetExpansionChecked, filterIndex);
 		end
 	end);
 end

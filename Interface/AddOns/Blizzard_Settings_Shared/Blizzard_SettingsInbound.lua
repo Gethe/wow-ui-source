@@ -43,7 +43,9 @@ SettingsInbound.AssignLayoutToCategoryAttribute = "assign-layout-to-category";
 SettingsInbound.AssignTutorialToCategoryAttribute = "assign-tutorial-to-category";
 SettingsInbound.CreateAddOnSettingAttribute = "create-add-on-setting";
 SettingsInbound.CreateProxySettingAttribute = "create-proxy-setting";
-SettingsInbound.CreateSettingInitializerAttribute = "create-initializer";
+SettingsInbound.CreateElementInitializerAttribute = "create-element-initializer";
+SettingsInbound.CreateSettingInitializerAttribute = "create-setting-initializer";
+SettingsInbound.CreatePanelInitializerAttribute = "create-panel-initializer";
 SettingsInbound.OnSettingValueChangedAttribute = "on-setting-value-changed";
 SettingsInbound.OpenToCategoryAttribute = "open-to-category";
 SettingsInbound.RegisterCanvasLayoutCategoryAttribute = "register-canvas-layout-category";
@@ -125,8 +127,18 @@ function SettingsInbound.RegisterOnSettingValueChanged(variable)
 	Settings.SetOnValueChangedCallback(variable, SettingsInboundValueChangedCallback, SettingsInbound);
 end
 
+function SettingsInbound.CreateElementInitializer(frameTemplate, data)
+	AttributeDelegate:SetAttribute(SettingsInbound.CreateElementInitializerAttribute, { frameTemplate, data, });
+	return AttributeDelegate:GetSecureAttributeResults();
+end
+
 function SettingsInbound.CreateSettingInitializer(frameTemplate, data)
 	AttributeDelegate:SetAttribute(SettingsInbound.CreateSettingInitializerAttribute, { frameTemplate, data, });
+	return AttributeDelegate:GetSecureAttributeResults();
+end
+
+function SettingsInbound.CreatePanelInitializer(frameTemplate, data)
+	AttributeDelegate:SetAttribute(SettingsInbound.CreatePanelInitializerAttribute, { frameTemplate, data, });
 	return AttributeDelegate:GetSecureAttributeResults();
 end
 
@@ -208,14 +220,35 @@ function AttributeDelegate:OnAttributeChanged(name, value)
 	elseif name == SettingsInbound.RegisterInitializerAttribute then
 		local category, initializer = SecureUnpackArgs(value);
 		SettingsPanel:RegisterInitializer(category, initializer);
+	elseif name == SettingsInbound.CreateElementInitializerAttribute then
+		local frameTemplate, data = SecureUnpackArgs(value);
+		local initializer = CreateFromMixins(SettingsListElementInitializer);
+		initializer:Init(frameTemplate, data);
+		self:SetSecureAttributeResults(initializer);
 	elseif name == SettingsInbound.CreateSettingInitializerAttribute then
 		local frameTemplate, data = SecureUnpackArgs(value);
 		local initializer = CreateFromMixins(PrivateSettingsListElementInitializer);
 		initializer:Init(frameTemplate, data);
+		
 		local setting = securecallfunction(PrivateSettingsListElementInitializer.GetSetting, initializer);
 		if setting then
 			local settingName = securecallfunction(setting.GetName, setting);
 			initializer:AddSearchTags(settingName);
+		end
+
+		self:SetSecureAttributeResults(initializer);
+	elseif name == SettingsInbound.CreatePanelInitializerAttribute then
+		local frameTemplate, data = SecureUnpackArgs(value);
+		local initializer = CreateFromMixins(SettingsListPanelInitializer);
+		initializer:Init(frameTemplate, data);
+
+		local settings = data.settings;
+		if settings then
+			local tags = {};
+			for _, setting in pairs(settings) do
+				table.insert(tags, setting:GetName());
+			end
+			initializer:AddSearchTags(unpack(tags));
 		end
 
 		self:SetSecureAttributeResults(initializer);

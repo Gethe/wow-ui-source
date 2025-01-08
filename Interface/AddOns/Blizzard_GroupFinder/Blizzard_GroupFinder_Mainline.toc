@@ -4,6 +4,7 @@
 ## Dependencies: Blizzard_EditMode, Blizzard_GameTooltip, Blizzard_UIPanelTemplates
 ## AllowLoad: game
 ## AllowLoadGameType: mainline
+## SavedVariables: PLUNDERSTORM_QUEUE_FROM_MAINLINE_TUTORIAL_STATE
 Mainline\QueueUpdater.lua
 Mainline\PVEFrame.lua
 Mainline\PVEFrame.xml
@@ -11,8 +12,8 @@ Mainline\LFGFrame.lua
 Mainline\LFGFrame.xml
 Mainline\LFDFrame.lua
 Mainline\LFDFrame.xml
-Mainline\RaidFinder.lua
-Mainline\RaidFinder.xml
+Shared\RaidFinder.lua
+Shared\RaidFinder.xml
 Mainline\LFGList.lua
 Mainline\LFGList.xml
 Mainline\PvpPopup.lua

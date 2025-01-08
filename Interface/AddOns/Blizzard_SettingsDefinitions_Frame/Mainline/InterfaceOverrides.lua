@@ -147,6 +147,7 @@ function InterfaceOverrides.ShowTutorialsOnButtonClick()
 		NPETutorial_AttemptToBegin();
 		TriggerTutorial(1);
 		ResetConfirmationPopups();
+		TutorialManager:ResetTutorials();
 end
 
 function InterfaceOverrides.RunSettingsCallback(callback)

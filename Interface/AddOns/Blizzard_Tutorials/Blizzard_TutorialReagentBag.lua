@@ -1,51 +1,4 @@
-local StateMachineMixin = {};
-
-function StateMachineMixin:AddState(stateName, onBegin, onEnd)
-	if not self.states then
-		self.states = {};
-	end
-
-	self.states[stateName] = { onBegin = onBegin, onEnd = onEnd };
-end
-
-function StateMachineMixin:BeginState(stateName, ...)
-	self:Deactivate();
-
-	if self:CallStateTransition(stateName, "onBegin", ...) then
-		self.activeStateName = stateName;
-	end
-end
-
-function StateMachineMixin:GetActiveStateName()
-	return self.activeStateName;
-end
-
-function StateMachineMixin:Deactivate()
-	if self:GetActiveStateName() then
-		self:EndState(self:GetActiveStateName());
-	end
-end
-
-function StateMachineMixin:EndState(stateName)
-	self:CallStateTransition(stateName, "onEnd");
-	self.activeStateName = nil;
-end
-
-function StateMachineMixin:GetState(stateName)
-	return self.states and self.states[stateName];
-end
-
-function StateMachineMixin:CallStateTransition(stateName, stateTransitionKey, ...)
-	local state = self:GetState(stateName);
-	if state then
-		self[state[stateTransitionKey]](self, ...);
-		return true;
-	end
-
-	return false;
-end
-
-local ReagentBagTutorialMixin = CreateFromMixins(StateMachineMixin);
+local ReagentBagTutorialMixin = CreateFromMixins(StateMachineBasedTutorialMixin);
 
 function ReagentBagTutorialMixin:Init()
 	self:AddState("ListenForBagUpdate", "StartPhase_ListenForBagUpdate", "StopPhase_ListenForBagUpdate");
@@ -53,6 +6,7 @@ function ReagentBagTutorialMixin:Init()
 	self:AddState("HelpPlayerOpenAllBags", "StartPhase_HelpPlayerOpenAllBags", "StopPhase_HelpPlayerOpenAllBags");
 	self:AddState("PointAtReagentBagItem", "StartPhase_PointAtReagentBagItem", "StopPhase_PointAtReagentBagItem");
 
+	self:SetInitialStateName("ListenForBagUpdate");
 	self:SetTutorialFlagType("closedInfoFrames", LE_FRAME_TUTORIAL_EQUIP_REAGENT_BAG);
 end
 
@@ -186,38 +140,12 @@ function ReagentBagTutorialMixin:HasReagentBagEquipped()
 	return ContainerFrame_GetContainerNumSlots(Enum.BagIndex.ReagentBag) > 0;
 end
 
-function ReagentBagTutorialMixin:AcknowledgeTutorial()
-	local forceComplete = true;
-	self:CheckComplete(forceComplete);
-end
-
-function ReagentBagTutorialMixin:CheckComplete(forceComplete)
-	if self:HasReagentBagEquipped() or forceComplete then
-		self:MarkTutorialComplete();
-		self:Deactivate();
-	end
-end
-
-function ReagentBagTutorialMixin:RestartTutorial()
-	HelpTip:HideAllSystem(self:GetSystem());
-	self:BeginState("ListenForBagUpdate");
-end
-
-function ReagentBagTutorialMixin:SetTutorialFlagType(cvar, flag)
-	self.cvar = cvar;
-	self.cvarFlag = flag;
-end
-
-function ReagentBagTutorialMixin:GetTutorialCVar()
-	return self.cvar;
-end
-
-function ReagentBagTutorialMixin:GetTutorialFlag()
-	return self.cvarFlag;
+function ReagentBagTutorialMixin:IsComplete()
+	return self:HasReagentBagEquipped();
 end
 
 function ReagentBagTutorialMixin:MarkTutorialComplete()
-	SetCVarBitfield(self:GetTutorialCVar(), self:GetTutorialFlag(), true);
+	StateMachineBasedTutorialMixin.MarkTutorialComplete(self);
 	EventRegistry:UnregisterFrameEventAndCallback("BAG_CONTAINER_UPDATE", self);
 end
 
@@ -227,6 +155,6 @@ end
 
 TutorialManager:CheckHasCompletedFrameTutorial(LE_FRAME_TUTORIAL_EQUIP_REAGENT_BAG, function(hasCompletedTutorial)
 	if not hasCompletedTutorial then
-		CreateAndInitFromMixin(ReagentBagTutorialMixin):BeginState("ListenForBagUpdate");
+		CreateAndInitFromMixin(ReagentBagTutorialMixin):BeginInitialState();
 	end
 end);

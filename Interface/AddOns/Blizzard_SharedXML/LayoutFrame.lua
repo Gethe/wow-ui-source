@@ -242,7 +242,7 @@ function VerticalLayoutMixin:LayoutChildren(children, expandToWidth)
 
 	-- Calculate width and height based on children
 	for i, child in ipairs(children) do
-		if IsLayoutFrame(child) then
+		if not self.skipChildLayout and IsLayoutFrame(child) then
 			child:Layout();
 		end
 
@@ -336,7 +336,7 @@ function HorizontalLayoutMixin:LayoutChildren(children, ignored, expandToHeight)
 
 	-- Calculate width and height based on children
 	for i, child in ipairs(children) do
-		if IsLayoutFrame(child) then
+		if not self.skipChildLayout and IsLayoutFrame(child) then
 			child:Layout();
 		end
 

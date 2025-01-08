@@ -40,8 +40,12 @@ function EventUtil.ContinueAfterAllEvents(callback, ...)
 	obj:Init(callback, ...);
 end
 
+function EventUtil.AreVariablesLoaded()
+	return GlueParent or (UIParent and UIParent.variablesLoaded);
+end
+
 function EventUtil.ContinueOnVariablesLoaded(callback)
-	if GlueParent or (UIParent and UIParent.variablesLoaded) then
+	if EventUtil.AreVariablesLoaded() then
 		callback();
 		return;
 	end

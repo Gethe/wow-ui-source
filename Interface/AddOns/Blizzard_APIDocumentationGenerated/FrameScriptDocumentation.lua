@@ -12,6 +12,7 @@ local FrameScript =
 			Arguments =
 			{
 				{ Name = "popupStyle", Type = "bool", Nilable = false, Default = true },
+				{ Name = "topMost", Type = "bool", Nilable = false, Default = false },
 			},
 
 			Returns =

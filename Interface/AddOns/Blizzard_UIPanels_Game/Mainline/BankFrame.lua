@@ -452,9 +452,7 @@ function BankFrameItemButtonGeneric_OnModifiedClick (self, button)
 	end
 	if ( not CursorHasItem() and IsModifiedClick("SPLITSTACK") ) then
 		local info = C_Container.GetContainerItemInfo(container, self:GetID());
-		local itemCount = info.stackCount;
-		local locked = info.isLocked;
-		if ( not locked and itemCount and itemCount > 1) then
+		if ( info and not info.isLocked and info.stackCount > 1) then
 			StackSplitFrame:OpenStackSplitFrame(self.count, self, "BOTTOMLEFT", "TOPLEFT");
 		end
 		return;
@@ -1009,10 +1007,8 @@ function BankPanelItemButtonMixin:OnModifiedClick()
 	end
 
 	if not CursorHasItem() and IsModifiedClick("SPLITSTACK") then
-		local itemInfo = C_Container.GetContainerItemInfo(bankTabID, containerSlotID);
-		local itemCount = itemInfo.stackCount;
-		local locked = itemInfo.isLocked;
-		if not locked and itemCount and itemCount > 1 then
+		local info = C_Container.GetContainerItemInfo(bankTabID, containerSlotID);
+		if info and not info.isLocked and info.stackCount > 1 then
 			StackSplitFrame:OpenStackSplitFrame(self.count, self, "BOTTOMLEFT", "TOPLEFT");
 		end
 	end

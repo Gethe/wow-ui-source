@@ -185,9 +185,9 @@
 				<Layers>
 					<Layer level="OVERLAY">
 						<Texture parentKey="UnreadNotificationIcon" atlas="UI-HUD-MicroMenu-Communities-Icon-Notification">
-							<Size x="10" y="10"/>
+							<Size x="15" y="15"/>
 							<Anchors>
-								<Anchor point="TOP" relativeKey="$parent" relativePoint="TOP" x="-1" y="1"/>
+								<Anchor point="TOP" relativeKey="$parent" relativePoint="TOP" y="3"/>
 							</Anchors>
 						</Texture>
 					</Layer>

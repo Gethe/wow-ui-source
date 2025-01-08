@@ -99,6 +99,59 @@
 		</Scripts>
 	</Frame>
 
+	<Frame name="PlunderstormFramePopup" mixin="PlunderstormQueuePopupMixin" parent="UIParent" frameStrata="DIALOG" hidden="true">
+		<Size x="320" y="240"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="QueueTypeIcon">
+					<Size x="60" y="60"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="QueueTypeText" inherits="GameFontHighlight" justifyH="CENTER" justifyV="MIDDLE">
+					<Size x="240" y="24"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.QueueTypeIcon" relativePoint="BOTTOM" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Title" inherits="GameFontHighlight" justifyH="CENTER" justifyV="MIDDLE">
+					<Size x="240" y="24"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-24"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="SubTitle" inherits="GameFontNormal" justifyH="CENTER" justifyV="MIDDLE">
+					<Size x="240" y="24"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderDarkTemplate"/>
+			<Button parentKey="AcceptButton" inherits="UIPanelButtonTemplate" text="ENTER_LFG">
+				<Size x="115" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-7" y="25"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="DeclineButton" inherits="UIPanelButtonTemplate" text="DECLINE">
+				<Size x="115" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM" x="7" y="25"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
 	<Frame name="PVPRoleCheckPopup" parent="UIParent" frameStrata="DIALOG" hidden="true" enableMouse="true">
 		<Size x="306" y="180"/>
 		<Layers>

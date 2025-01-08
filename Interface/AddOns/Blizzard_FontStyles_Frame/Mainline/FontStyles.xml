@@ -29,9 +29,6 @@
 		<Color r="0.9" g="0.0" b="0.0"/>
 	</Font>
 	<Font name="GameFontNormalRight" inherits="GameFontNormal" justifyH="RIGHT" virtual="true"/>
-	<Font name="GameFontWhiteSmall" inherits="GameFontBlackSmall" virtual="true">
-		<Color r="1.0" g="1.0" b="1.0"/>
-	</Font>
 	<Font name="GameFontHighlightSmallLeftTop" inherits="GameFontHighlightSmallLeft" justifyV="TOP" virtual="true"/>
 	<Font name="GameFontHighlightSmallRight" inherits="GameFontHighlightSmall" justifyH="RIGHT" virtual="true"/>
 	<Font name="GameFontHighlightExtraSmall" inherits="GameFontHighlightSmall" virtual="true">

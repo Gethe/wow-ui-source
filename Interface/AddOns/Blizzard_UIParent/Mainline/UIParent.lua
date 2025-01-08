@@ -87,12 +87,7 @@ WORLD_QUEST_QUALITY_COLORS = {
 	[Enum.WorldQuestQuality.Epic] = ITEM_QUALITY_COLORS[Enum.ItemQuality.Epic];
 };
 
--- Protecting from addons since we use this in GetScaledCursorDelta which is used in secure code.
-local _UIParentGetEffectiveScale;
-local _UIParentRef;
 function UIParent_OnLoad(self)
-	_UIParentGetEffectiveScale = self.GetEffectiveScale;
-	_UIParentRef = self;
 	self:RegisterEvent("PLAYER_LOGIN");
 	self:RegisterEvent("PLAYER_DEAD");
 	self:RegisterEvent("SELF_RES_SPELL_CHANGED");
@@ -208,6 +203,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("CRAFTINGORDERS_SHOW_CRAFTER");
 	self:RegisterEvent("CRAFTINGORDERS_HIDE_CRAFTER");
 	self:RegisterEvent("PROFESSION_EQUIPMENT_CHANGED");
+	self:RegisterEvent("PROFESSION_RESPEC_CONFIRMATION");
 
 	-- Events for Item socketing UI
 	self:RegisterEvent("SOCKET_INFO_UPDATE");
@@ -396,6 +392,9 @@ function UIParent_OnShow(self)
 	if ( UIParentRightManagedFrameContainer ) then
 		UIParentRightManagedFrameContainer:UpdateManagedFrames();
 	end
+
+	C_AddOns.LoadAddOn("Blizzard_AccountStore");
+	AccountStoreFrame:SetStoreFrontID(Constants.AccountStoreConsts.PlunderstormStoreFrontID);
 end
 
 function UIParent_OnHide(self)
@@ -1024,6 +1023,7 @@ COLLECTIONS_JOURNAL_TAB_INDEX_PETS = COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS + 1;
 COLLECTIONS_JOURNAL_TAB_INDEX_TOYS = COLLECTIONS_JOURNAL_TAB_INDEX_PETS + 1;
 COLLECTIONS_JOURNAL_TAB_INDEX_HEIRLOOMS = COLLECTIONS_JOURNAL_TAB_INDEX_TOYS + 1;
 COLLECTIONS_JOURNAL_TAB_INDEX_APPEARANCES = COLLECTIONS_JOURNAL_TAB_INDEX_HEIRLOOMS + 1;
+COLLECTIONS_JOURNAL_TAB_INDEX_WARBAND_SCENES = COLLECTIONS_JOURNAL_TAB_INDEX_APPEARANCES + 1;
 
 function ToggleCollectionsJournal(tabIndex)
 	if DISALLOW_FRAME_TOGGLING then
@@ -1525,11 +1525,14 @@ function UIParent_OnEvent(self, event, ...)
 		StaticPopup_Hide("GUILD_INVITE");
 	elseif ( event == "PLAYER_CAMPING" ) then
 		StaticPopup_Show("CAMP");
+	elseif ( event == "PLAYER_PLUNDERSTORM_TRANSFERING" ) then
+		StaticPopup_Show("PLUNDERSTORM_LEAVE");
 	elseif ( event == "PLAYER_QUITING" ) then
 		StaticPopup_Show("QUIT");
 	elseif ( event == "LOGOUT_CANCEL" ) then
 		CancelLogout();
 		StaticPopup_Hide("CAMP");
+		StaticPopup_Hide("PLUNDERSTORM_LEAVE");
 		StaticPopup_Hide("QUIT");
 	elseif ( event == "LOOT_BIND_CONFIRM" ) then
 		local texture, item, quantity, currencyID, quality, locked = GetLootSlotInfo(arg1);
@@ -1986,6 +1989,8 @@ function UIParent_OnEvent(self, event, ...)
 			};
 			HelpTip:Show(ProfessionsFrame.CraftingPage, helpTipInfo, ProfessionsFrame.CraftingPage);
 		end
+	elseif ( event == "PROFESSION_RESPEC_CONFIRMATION" ) then 
+		StaticPopup_Show("CONFIRM_PROFESSION_RESPEC", arg1);
 	-- Event for item socketing handling
 	elseif ( event == "SOCKET_INFO_UPDATE" ) then
 		ItemSocketingFrame_LoadUI();
@@ -2317,11 +2322,9 @@ function UIParent_OnEvent(self, event, ...)
 
 		ShowUIPanel(RuneforgeFrame);
 	elseif (event == "TRAIT_SYSTEM_INTERACTION_STARTED") then
-		-- TODO / NOTE : This is temporary, until we have a GameObject specifically for opening delves configuration.
-		--				 Until then, we're piggybacking off of the generic trait frame
 		local traitTreeID = ...;
-		local DELVES_TEST_TREE = 874;
-		if traitTreeID == DELVES_TEST_TREE then
+		--! TODO Getting companionID either from season data or player data has not been implemented yet. When done, pass companionID to this function
+		if traitTreeID == C_DelvesUI.GetTraitTreeForCompanion() then
 			ShowUIPanel(DelvesCompanionConfigurationFrame);
 		else
 			GenericTraitUI_LoadUI();
@@ -2744,7 +2747,7 @@ function GetScaledCursorPosition()
 end
 
 function GetScaledCursorDelta()
-	local uiScale = _UIParentGetEffectiveScale(_UIParentRef);
+	local uiScale = GetAppropriateTopLevelParent():GetEffectiveScale();
 	local x, y = GetCursorDelta();
 	return x / uiScale, y / uiScale;
 end
@@ -2937,103 +2940,6 @@ function AnimateTexCoords(texture, textureWidth, textureHeight, frameWidth, fram
 		texture.throttle = texture.throttle + elapsed;
 	end
 end
-
-
--- Bindings --
-function GetBindingFullInput(input)
-	local fullInput = "";
-
-	-- MUST BE IN THIS ORDER (ALT, CTRL, SHIFT, META)
-	if ( IsAltKeyDown() ) then
-		fullInput = fullInput.."ALT-";
-	end
-
-	if ( IsControlKeyDown() ) then
-		fullInput = fullInput.."CTRL-"
-	end
-
-	if ( IsShiftKeyDown() ) then
-		fullInput = fullInput.."SHIFT-"
-	end
-
-	 if ( IsMetaKeyDown() ) then
-		 fullInput = fullInput.."META-"
-	 end
-
-	if ( input == "LeftButton" ) then
-		fullInput = fullInput.."BUTTON1";
-	elseif ( input == "RightButton" ) then
-		fullInput = fullInput.."BUTTON2";
-	elseif ( input == "MiddleButton" ) then
-		fullInput = fullInput.."BUTTON3";
-	elseif ( input == "Button4" ) then
-		fullInput = fullInput.."BUTTON4";
-	elseif ( input == "Button5" ) then
-		fullInput = fullInput.."BUTTON5";
-	elseif ( input == "Button6" ) then
-		fullInput = fullInput.."BUTTON6";
-	elseif ( input == "Button7" ) then
-		fullInput = fullInput.."BUTTON7";
-	elseif ( input == "Button8" ) then
-		fullInput = fullInput.."BUTTON8";
-	elseif ( input == "Button9" ) then
-		fullInput = fullInput.."BUTTON9";
-	elseif ( input == "Button10" ) then
-		fullInput = fullInput.."BUTTON10";
-	elseif ( input == "Button11" ) then
-		fullInput = fullInput.."BUTTON11";
-	elseif ( input == "Button12" ) then
-		fullInput = fullInput.."BUTTON12";
-	elseif ( input == "Button13" ) then
-		fullInput = fullInput.."BUTTON13";
-	elseif ( input == "Button14" ) then
-		fullInput = fullInput.."BUTTON14";
-	elseif ( input == "Button15" ) then
-		fullInput = fullInput.."BUTTON15";
-	elseif ( input == "Button16" ) then
-		fullInput = fullInput.."BUTTON16";
-	elseif ( input == "Button17" ) then
-		fullInput = fullInput.."BUTTON17";
-	elseif ( input == "Button18" ) then
-		fullInput = fullInput.."BUTTON18";
-	elseif ( input == "Button19" ) then
-		fullInput = fullInput.."BUTTON19";
-	elseif ( input == "Button20" ) then
-		fullInput = fullInput.."BUTTON20";
-	elseif ( input == "Button21" ) then
-		fullInput = fullInput.."BUTTON21";
-	elseif ( input == "Button22" ) then
-		fullInput = fullInput.."BUTTON22";
-	elseif ( input == "Button23" ) then
-		fullInput = fullInput.."BUTTON23";
-	elseif ( input == "Button24" ) then
-		fullInput = fullInput.."BUTTON24";
-	elseif ( input == "Button25" ) then
-		fullInput = fullInput.."BUTTON25";
-	elseif ( input == "Button26" ) then
-		fullInput = fullInput.."BUTTON26";
-	elseif ( input == "Button27" ) then
-		fullInput = fullInput.."BUTTON27";
-	elseif ( input == "Button28" ) then
-		fullInput = fullInput.."BUTTON28";
-	elseif ( input == "Button29" ) then
-		fullInput = fullInput.."BUTTON29";
-	elseif ( input == "Button30" ) then
-		fullInput = fullInput.."BUTTON30";
-	elseif ( input == "Button31" ) then
-		fullInput = fullInput.."BUTTON31";
-	else
-		fullInput = fullInput..input;
-	end
-
-	return fullInput;
-end
-
-function GetBindingFromClick(input)
-	local fullInput = GetBindingFullInput(input);
-	return GetBindingByKey(fullInput);
-end
-
 
 -- Game Logic --
 
@@ -3549,7 +3455,7 @@ end
 
 
 function ConsolePrint(...)
-	ConsoleAddMessage(strjoin(" ", tostringall(...)));
+	ConsoleAddMessage(string.join(" ", tostringall(...)));
 end
 
 function LFD_IsEmpowered()

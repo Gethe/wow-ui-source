@@ -1,108 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
-	<Texture name="MissionOptionWarningTemplate" atlas="charactercreate-icon-requiredarrow" useAtlasSize="true" virtual="true">
-		<Animations>
-			<AnimationGroup parentKey="PulseAnim" looping="BOUNCE">
-				<Alpha fromAlpha=".2" toAlpha="1" duration="1"/>
-			</AnimationGroup>
-		</Animations>
-	</Texture>
-
-	<GameTooltip name="CharCustomizeNoHeaderTooltip" inherits="SharedTooltipTemplate, TopLevelParentScaleFrameTemplate">
-		<KeyValues>
-			<KeyValue key="textLeft1Font" value="GameFontNormalMed2" type="string"/>
-			<KeyValue key="textRight1Font" value="GameFontNormalMed2" type="string"/>
-			<KeyValue key="textLeft2Font" value="GameFontNormalMed2" type="string"/>
-			<KeyValue key="textRight2Font" value="GameFontNormalMed2" type="string"/>
-		</KeyValues>
-	</GameTooltip>
-
-	<Button name="CharCustomizeBaseButtonTemplate" mixin="CharCustomizeBaseButtonMixin" virtual="true">
-		<Scripts>
-			<OnClick method="OnBaseButtonClick"/>
-		</Scripts>
-	</Button>
-
-	<Frame name="CharCustomizeFrameWithTooltipTemplate" inherits="RingedFrameWithTooltipTemplate" mixin="CharCustomizeFrameWithTooltipMixin" virtual="true"/>
-	<CheckButton name="CharCustomizeMaskedButtonTemplate" inherits="CharCustomizeBaseButtonTemplate, RingedMaskedButtonTemplate" mixin="CharCustomizeMaskedButtonMixin" virtual="true"/>
-
-	<Button name="CharCustomizeSmallButtonTemplate" inherits="CharCustomizeBaseButtonTemplate, CharCustomizeFrameWithTooltipTemplate" mixin="CharCustomizeSmallButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
-		<Size x="48" y="48"/>
-		<KeyValues>
-			<KeyValue key="tooltipAnchor" value="ANCHOR_BOTTOMRIGHT" type="string"/>
-			<KeyValue key="tooltipXOffset" value="-5" type="number"/>
-			<KeyValue key="tooltipYOffset" value="-5" type="number"/>
-			<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
-		</KeyValues>
-		<HitRectInsets left="6" right="6" top="6" bottom="6"/>
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture parentKey="Icon">
-					<Size x="24" y="23"/>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnMouseDown method="OnMouseDown"/>
-			<OnMouseUp method="OnMouseUp"/>
-			<OnClick method="OnClick" inherit="prepend"/>
-		</Scripts>
-		<NormalTexture parentKey="NormalTexture" atlas="common-button-square-gray-up"/>
-		<HighlightTexture parentKey="HighlightTexture" alphaMode="ADD" alpha="0.4">
-			<Anchors>
-				<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT"/>
-				<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT"/>
-			</Anchors>
-		</HighlightTexture>
-		<PushedTexture parentKey="PushedTexture" atlas="common-button-square-gray-down">
-			<Anchors>
-				<Anchor point="TOPLEFT" x="1" y="-1"/>
-				<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
-			</Anchors>
-		</PushedTexture>
-	</Button>
-
-	<Button name="CharCustomizeClickOrHoldButtonTemplate" inherits="CharCustomizeSmallButtonTemplate" mixin="CharCustomizeClickOrHoldButtonMixin" virtual="true">
-		<KeyValues>
-			<KeyValue key="holdWaitTimeSeconds" value="0.25" type="number"/>
-		</KeyValues>
-		<Scripts>
-			<OnHide method="OnHide"/>
-		</Scripts>
-	</Button>
-
-	<CheckButton name="CharCustomizeAlteredFormButtonTemplate" inherits="CharCustomizeMaskedButtonTemplate" mixin="CharCustomizeAlteredFormButtonMixin" virtual="true">
-		<Size x="79" y="79"/>
-		<KeyValues>
-			<KeyValue key="ringAtlas" value="charactercreate-ring-metallight" type="string"/>
-			<KeyValue key="ringWidth" value="139" type="number"/>
-			<KeyValue key="ringHeight" value="140" type="number"/>
-			<KeyValue key="checkedTextureSize" value="118" type="number"/>
-			<KeyValue key="disabledOverlayAlpha" value="0.5" type="number"/>
-			<KeyValue key="tooltipYOffset" value="-5" type="number"/>
-			<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
-			<KeyValue key="flipTextures" value="true" type="boolean"/>
-		</KeyValues>
-	</CheckButton>
-
-	<CheckButton name="CharCustomizeAlteredFormSmallButtonTemplate" inherits="CharCustomizeMaskedButtonTemplate" mixin="CharCustomizeAlteredFormButtonMixin" virtual="true">
-		<Size x="64" y="64"/>
-		<KeyValues>
-			<KeyValue key="ringAtlas" value="charactercreate-ring-metallight" type="string"/>
-			<KeyValue key="ringWidth" value="109" type="number"/>
-			<KeyValue key="ringHeight" value="110" type="number"/>
-			<KeyValue key="checkedTextureSize" value="93" type="number"/>
-			<KeyValue key="disabledOverlayAlpha" value="0.5" type="number"/>
-			<KeyValue key="tooltipYOffset" value="-5" type="number"/>
-			<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
-			<KeyValue key="flipTextures" value="true" type="boolean"/>
-		</KeyValues>
-	</CheckButton>
-
-	<CheckButton name="CharCustomizeCategoryButtonTemplate" inherits="CharCustomizeMaskedButtonTemplate" mixin="CharCustomizeCategoryButtonMixin" virtual="true">
+	<CheckButton name="CharCustomizeCategoryButtonTemplate" inherits="CustomizationMaskedButtonTemplate" mixin="CustomizationCategoryButtonMixin" virtual="true">
 		<Size x="104" y="105"/>
 		<KeyValues>
 			<KeyValue key="ringAtlas" value="charactercreate-ring-metallight" type="string"/>
@@ -118,7 +16,35 @@
 		<HitRectInsets left="15" right="15" top="15" bottom="15"/>
 	</CheckButton>
 
-	<CheckButton name="CharCustomizeConditionalModelButtonTemplate" inherits="CharCustomizeMaskedButtonTemplate" mixin="CharCustomizeRidingDrakeButtonMixin" virtual="true">
+	<CheckButton name="CharCustomizeAlteredFormButtonTemplate" inherits="CustomizationMaskedButtonTemplate" mixin="CharCustomizeAlteredFormButtonMixin" virtual="true">
+		<Size x="79" y="79"/>
+		<KeyValues>
+			<KeyValue key="ringAtlas" value="charactercreate-ring-metallight" type="string"/>
+			<KeyValue key="ringWidth" value="139" type="number"/>
+			<KeyValue key="ringHeight" value="140" type="number"/>
+			<KeyValue key="checkedTextureSize" value="118" type="number"/>
+			<KeyValue key="disabledOverlayAlpha" value="0.5" type="number"/>
+			<KeyValue key="tooltipYOffset" value="-5" type="number"/>
+			<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
+			<KeyValue key="flipTextures" value="true" type="boolean"/>
+		</KeyValues>
+	</CheckButton>
+
+	<CheckButton name="CharCustomizeAlteredFormSmallButtonTemplate" inherits="CustomizationMaskedButtonTemplate" mixin="CharCustomizeAlteredFormButtonMixin" virtual="true">
+		<Size x="64" y="64"/>
+		<KeyValues>
+			<KeyValue key="ringAtlas" value="charactercreate-ring-metallight" type="string"/>
+			<KeyValue key="ringWidth" value="109" type="number"/>
+			<KeyValue key="ringHeight" value="110" type="number"/>
+			<KeyValue key="checkedTextureSize" value="93" type="number"/>
+			<KeyValue key="disabledOverlayAlpha" value="0.5" type="number"/>
+			<KeyValue key="tooltipYOffset" value="-5" type="number"/>
+			<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
+			<KeyValue key="flipTextures" value="true" type="boolean"/>
+		</KeyValues>
+	</CheckButton>
+
+	<CheckButton name="CharCustomizeConditionalModelButtonTemplate" inherits="CustomizationMaskedButtonTemplate" mixin="CharCustomizeRidingDrakeButtonMixin" virtual="true">
 		<Size x="64" y="64"/>
 		<KeyValues>
 			<KeyValue key="ringAtlas" value="charactercreate-ring-metallight" type="string"/>
@@ -130,7 +56,7 @@
 		</KeyValues>
 	</CheckButton>
 
-	<CheckButton name="CharCustomizeBodyTypeButtonTemplate" inherits="CharCustomizeMaskedButtonTemplate" mixin="CharCustomizeBodyTypeButtonMixin" virtual="true">
+	<CheckButton name="CharCustomizeBodyTypeButtonTemplate" inherits="CustomizationMaskedButtonTemplate" mixin="CharCustomizeBodyTypeButtonMixin" virtual="true">
 		<Size x="46" y="46"/>
 		<KeyValues>
 			<KeyValue key="ringAtlas" value="charactercreate-ring-metaldark" type="string"/>
@@ -141,7 +67,6 @@
 			<KeyValue key="tooltipAnchor" value="ANCHOR_BOTTOMRIGHT" type="string"/>
 			<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
 		</KeyValues>
-
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="BlackBG">
@@ -155,289 +80,10 @@
 		</Layers>
 	</CheckButton>
 
-	<Frame name="CharCustomizeOptionSliderTemplate" inherits="SliderWithButtonsAndLabelTemplate, CharCustomizeFrameWithTooltipTemplate" mixin="CharCustomizeOptionSliderMixin" virtual="true">
+	<Frame name="CharCustomizeFrame" mixin="CharCustomizeMixin" inherits="CustomizationFrameBaseTemplate" parent="UIParent" setAllPoints="true">
 		<KeyValues>
-			<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
-			<KeyValue key="tooltipXOffset" value="0" type="number"/>
+			<KeyValue key="categoryButtonTemplate" value="CharCustomizeCategoryButtonTemplate" type="string"/>
 		</KeyValues>
-	</Frame>
-
-	<Frame name="CharCustomizeOptionCheckButtonTemplate" inherits="CharCustomizeFrameWithTooltipTemplate" mixin="CharCustomizeOptionCheckButtonMixin" virtual="true">
-		<Size x="32" y="38"/>
-		<KeyValues>
-			<KeyValue key="tooltipAnchor" value="ANCHOR_LEFT" type="string"/>
-			<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
-			<KeyValue key="tooltipXOffset" value="0" type="number"/>
-		</KeyValues>
-		<Frames>
-			<CheckButton parentKey="Button">
-				<Size x="32" y="32"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" x="-1" y="-3"/>
-				</Anchors>
-				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
-				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
-				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
-				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
-				<Scripts>
-					<OnClick>
-						self:GetParent():OnCheckButtonClick();
-					</OnClick>
-					<OnEnter>
-						self:GetParent():OnEnter();
-					</OnEnter>
-					<OnLeave>
-						self:GetParent():OnLeave();
-					</OnLeave>
-				</Scripts>
-			</CheckButton>
-			<Frame parentKey="New" inherits="NewFeatureLabelNoAnimateTemplate">
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent.Button" relativePoint="TOPRIGHT" x="3" y="-5"/>
-				</Anchors>
-			</Frame>
-		</Frames>
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString parentKey="Label" inherits="GameFontHighlightMedium">
-					<KeyValues>
-						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
-					</KeyValues>
-					<Anchors>
-						<Anchor point="RIGHT" relativePoint="LEFT" x="-34"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-	</Frame>
-
-	<Frame name="CharCustomizeDropdownElementDetailsTemplate" mixin="CharCustomizeDropdownElementDetailsMixin" virtual="true">
-		<KeyValues>
-			<KeyValue key="selectable" value="true" type="boolean"/>
-		</KeyValues>
-		<Layers>
-			<Layer level="ARTWORK" textureSubLevel="1">
-				<FontString parentKey="SelectionNumberBG" font="GameFontNormal_NoShadow" justifyH="LEFT">
-					<KeyValues>
-						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
-					</KeyValues>
-					<Size x="25" y="20"/>
-					<Color color="NEW_FEATURE_SHADOW_COLOR"/>
-					<Anchors>
-						<Anchor point="LEFT" x="0.5" y="-0.5"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="SelectionNumber" font="GameFontNormal" justifyH="LEFT">
-					<Size x="25" y="20"/>
-					<Anchors>
-						<Anchor point="LEFT"/>
-					</Anchors>
-					<Shadow>
-						<Color color="NEW_FEATURE_SHADOW_COLOR"/>
-					</Shadow>
-				</FontString>
-				<FontString parentKey="SelectionName" font="GameFontNormal" justifyH="LEFT"  maxLines="1" hidden="true">
-					<Size x="25" y="20"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.SelectionNumber" relativePoint="RIGHT"/>
-					</Anchors>
-				</FontString>
-				<Texture parentKey="ColorSwatch1" atlas="charactercreate-customize-palette" useAtlasSize="true" hidden="true">
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.SelectionNumber" relativePoint="RIGHT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="ColorSwatch2" atlas="charactercreate-customize-palette" useAtlasSize="false" hidden="true">
-					<Size x="36" y="8"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.SelectionNumber" relativePoint="RIGHT" x="18" y="-2"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="0">
-				<Texture parentKey="NewGlow" atlas="charactercreate-customize-dropdown-newtagglow" useAtlasSize="true" hidden="true">
-					<KeyValues>
-						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
-					</KeyValues>
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.SelectionNumber" relativePoint="LEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="LockIcon" atlas="charactercreate-customize-dropdown-icon-lock" useAtlasSize="true" hidden="true">
-					<Anchors>
-						<Anchor point="RIGHT" x="-13"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="2">
-				<Texture parentKey="ColorSwatch1Glow" atlas="charactercreate-customize-palette-glow" useAtlasSize="true" alphaMode="ADD" hidden="true">
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.ColorSwatch1" relativePoint="CENTER"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="ColorSwatch2Glow" atlas="charactercreate-customize-palette-glow" useAtlasSize="false" alphaMode="ADD" hidden="true">
-					<Size x="36" y="8"/>
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.ColorSwatch2" relativePoint="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="3">
-				<Texture parentKey="ColorSelected" atlas="charactercreate-customize-palette-selected" useAtlasSize="true" hidden="true">
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.ColorSwatch1" relativePoint="LEFT" x="-4"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-	</Frame>
-
-	<Button name="CharCustomizeDropdownElementTemplate" inherits="DarkMenuElementTemplate" mixin="CharCustomizeDropdownElementMixin" virtual="true">
-		<KeyValues>
-			<KeyValue key="ignoreAllChildren" value="true" type="boolean"/>
-		</KeyValues>
-		<Frames>
-			<Frame parentKey="SelectionDetails" inherits="CharCustomizeDropdownElementDetailsTemplate">
-				<KeyValues>
-					<KeyValue key="includeInLayout" value="true" type="boolean"/>
-				</KeyValues>
-				<Size x="144" y="20"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" x="14" y="0"/>
-				</Anchors>
-			</Frame>
-		</Frames>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-		</Scripts>
-	</Button>
-
-	<Frame name="CharCustomizeDropdownWithSteppersAndLabelTemplate" inherits="DropdownWithSteppersAndLabelTemplate, CharCustomizeFrameWithTooltipTemplate" mixin="CharCustomizeDropdownWithSteppersAndLabelMixin" virtual="true">
-		<KeyValues>
-			<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
-			<KeyValue key="tooltipXOffset" value="0" type="number"/>
-		</KeyValues>
-		<Frames>
-			<DropdownButton parentKey="Dropdown" inherits="WowStyle2DropdownTemplate" mixin="CharCustomizeDropdownMixin">
-				<KeyValues>
-					<KeyValue key="menuPoint" type="string" value="TOPRIGHT"/>
-					<KeyValue key="menuRelativePoint" type="string" value="BOTTOMRIGHT"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="CENTER"/>
-				</Anchors>
-				<Frames>
-					<Frame parentKey="SelectionDetails" inherits="CharCustomizeDropdownElementDetailsTemplate, ResizeLayoutFrame">
-						<KeyValues>
-							<KeyValue key="selectable" value="false" type="boolean"/>
-						</KeyValues>
-						<Size x="144" y="20"/>
-						<Layers>
-							<Layer>
-								<Texture>
-									<Size x="20" y="20"/>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Anchors>
-							<Anchor point="CENTER"/>
-						</Anchors>
-					</Frame>
-				</Frames>
-			</DropdownButton>
-			<Frame parentKey="New" inherits="NewFeatureLabelNoAnimateTemplate">
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent.Dropdown" relativePoint="TOPRIGHT" x="-9" y="-5"/>
-				</Anchors>
-			</Frame>
-		</Frames>
-	</Frame>
-
-	<Frame name="CharCustomizeAudioInterface" hidden="true" mixin="CharCustomizeAudioInterfaceMixin" virtual="true">
-		<Size x="144" y="38" />
-		<Frames>
-			<Frame parentKey="PlayWaveform" inherits="TooltipBorderBackdropTemplate">
-				<Size x="144" y="28"/>
-				<KeyValues>
-					<KeyValue key="backdropBorderColor" value="DARKGRAY_COLOR" type="global"/>
-					<KeyValue key="backdropColorAlpha" value=".9" type="number"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="RIGHT"/>
-				</Anchors>
-				<Frames>
-					<StatusBar parentKey="Waveform" minValue="0" maxValue="1" defaultValue="1">
-						<Anchors>
-							<Anchor point="TOPLEFT" x="6" y="-6"/>
-							<Anchor point="BOTTOMRIGHT" x="-6" y="6"/>
-						</Anchors>
-						<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
-						<BarColor r="0.0" g="1" b="0.0" />
-					</StatusBar>
-				</Frames>
-			</Frame>
-			<Button parentKey="PlayButton" inherits="AlphaHighlightButtonTemplate" mixin="CharCustomizeAudioInterfacePlayButtonMixin" motionScriptsWhileDisabled="true">
-				<Size x="32" y="32"/>
-				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.PlayWaveform" relativePoint="LEFT" x="-5"/>
-				</Anchors>
-				<NormalTexture parentKey="NormalTexture" atlas="charactercreate-customize-playbutton"/>
-				<PushedTexture parentKey="PushedTexture" atlas="charactercreate-customize-playbutton-down"/>
-				<Scripts>
-					<OnClick method="OnClick"/>
-					<OnEnter method="OnEnter"/>
-					<OnLeave method="OnLeave"/>
-				</Scripts>
-			</Button>
-			<Button parentKey="MuteButton" inherits="AlphaHighlightButtonTemplate" hidden="true" mixin="CharCustomizeAudioInterfaceMuteButtonMixin">
-				<Size x="32" y="32"/>
-				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.PlayButton" relativePoint="LEFT" x="-5" />
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture parentKey="UnmuteGlow" alpha="0" alphaMode="ADD" atlas="charactercreate-customize-button-redglow">
-							<Anchors>
-								<Anchor point="TOPRIGHT" x="2" y="2" />
-								<Anchor point="BOTTOMLEFT" x="-2" y="-2" />
-							</Anchors>
-							<Color color="PURE_RED_COLOR"/>
-						</Texture>
-					</Layer>
-				</Layers>
-				<NormalTexture parentKey="NormalTexture" atlas="charactercreate-customize-speakeroffbutton"/>
-				<PushedTexture parentKey="PushedTexture" atlas="charactercreate-customize-speakeroffbutton-down"/>
-				<Animations>
-					<AnimationGroup parentKey="PulseAnim" looping="BOUNCE">
-						<Alpha childKey="UnmuteGlow" fromAlpha="0" toAlpha="1" duration="1" smoothing="IN"/>
-						<Scripts>
-							<OnPlay>
-								self.loopCount = 10;
-							</OnPlay>
-							<OnLoop>
-								self.loopCount = self.loopCount - 1;
-								if self.loopCount == 0 then
-								self:Stop();
-								end
-							</OnLoop>
-						</Scripts>
-					</AnimationGroup>
-				</Animations>
-				<Scripts>
-					<OnLoad method="CharCustomizeAudioInterfaceMuteButton_OnLoad" inherit="append"/>
-					<OnClick method="OnClick"/>
-					<OnEnter method="OnEnter"/>
-					<OnLeave method="OnLeave"/>
-				</Scripts>
-			</Button>
-		</Frames>
-		<Scripts>
-			<OnEvent method="OnEvent"/>
-		</Scripts>
-	</Frame>
-
-	<Frame name="CharCustomizeFrame" mixin="CharCustomizeMixin" parent="UIParent" setAllPoints="true">
 		<Frames>
 			<Frame parentKey="AlteredForms" inherits="HorizontalLayoutFrame">
 				<KeyValues>
@@ -458,14 +104,7 @@
 				</Anchors>
 			</Frame>
 
-			<Button parentKey="RandomizeAppearanceButton" inherits="CharCustomizeSmallButtonTemplate" mixin="CharCustomizeRandomizeAppearanceButtonMixin">
-				<KeyValues>
-					<KeyValue key="iconAtlas" value="charactercreate-icon-dice" type="string"/>
-					<KeyValue key="simpleTooltipLine" value="RANDOMIZE_APPEARANCE" type="global"/>
-					<KeyValue key="tooltipAnchor" value="ANCHOR_LEFT" type="string"/>
-					<KeyValue key="tooltipXOffset" value="9" type="number"/>
-					<KeyValue key="tooltipYOffset" value="-9" type="number"/>
-				</KeyValues>
+			<Button parentKey="RandomizeAppearanceButton" inherits="CustomizationRandomizeAppearanceButtonTemplate">
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.Categories" relativePoint="LEFT" x="-9"/>
 				</Anchors>
@@ -490,61 +129,36 @@
 					<Anchor point="TOPLEFT" x="40" y="-30"/>
 				</Anchors>
 				<Frames>
-					<Button parentKey="ResetCameraButton" inherits="CharCustomizeSmallButtonTemplate" mixin="CharCustomizeResetCameraButtonMixin">
+					<Button parentKey="ResetCameraButton" inherits="CustomizationResetCameraButtonTemplate" parentArray="ControlButtons">
 						<KeyValues>
 							<KeyValue key="layoutIndex" value="1" type="number"/>
-							<KeyValue key="iconAtlas" value="common-icon-undo" type="string"/>
-							<KeyValue key="simpleTooltipLine" value="RESET_CAMERA" type="global"/>
 						</KeyValues>
 					</Button>
-					<Button parentKey="ZoomOutButton" inherits="CharCustomizeClickOrHoldButtonTemplate" mixin="CharCustomizeZoomButtonMixin">
+					<Button parentKey="ZoomOutButton" inherits="CustomizationZoomOutButtonTemplate" parentArray="ControlButtons">
 						<KeyValues>
 							<KeyValue key="layoutIndex" value="2" type="number"/>
-							<KeyValue key="iconAtlas" value="common-icon-zoomout" type="string"/>
-							<KeyValue key="simpleTooltipLine" value="ZOOM_OUT" type="global"/>
-							<KeyValue key="clickAmount" value="-20" type="number"/>
-							<KeyValue key="holdAmountPerSecond" value="-200" type="number"/>
 						</KeyValues>
 					</Button>
-					<Button parentKey="ZoomInButton" inherits="CharCustomizeClickOrHoldButtonTemplate" mixin="CharCustomizeZoomButtonMixin">
+					<Button parentKey="ZoomInButton" inherits="CustomizationZoomInButtonTemplate" parentArray="ControlButtons">
 						<KeyValues>
 							<KeyValue key="layoutIndex" value="3" type="number"/>
-							<KeyValue key="iconAtlas" value="common-icon-zoomin" type="string"/>
-							<KeyValue key="simpleTooltipLine" value="ZOOM_IN" type="global"/>
-							<KeyValue key="clickAmount" value="20" type="number"/>
-							<KeyValue key="holdAmountPerSecond" value="200" type="number"/>
 						</KeyValues>
 					</Button>
-					<Button parentKey="RotateLeftButton" inherits="CharCustomizeClickOrHoldButtonTemplate" mixin="CharCustomizeRotateButtonMixin">
+					<Button parentKey="RotateLeftButton" inherits="CustomizationRotateLeftButtonTemplate" parentArray="ControlButtons">
 						<KeyValues>
 							<KeyValue key="layoutIndex" value="4" type="number"/>
-							<KeyValue key="iconAtlas" value="common-icon-rotateleft" type="string"/>
-							<KeyValue key="simpleTooltipLine" value="ROTATE_LEFT" type="global"/>
-							<KeyValue key="leftPadding" value="30" type="number"/>
-							<KeyValue key="clickAmount" value="-10" type="number"/>
-							<KeyValue key="holdAmountPerSecond" value="-100" type="number"/>
 						</KeyValues>
 					</Button>
-					<Button parentKey="RotateRightButton" inherits="CharCustomizeClickOrHoldButtonTemplate" mixin="CharCustomizeRotateButtonMixin">
+					<Button parentKey="RotateRightButton" inherits="CustomizationRotateRightButtonTemplate" parentArray="ControlButtons">
 						<KeyValues>
 							<KeyValue key="layoutIndex" value="5" type="number"/>
-							<KeyValue key="iconAtlas" value="common-icon-rotateright" type="string"/>
-							<KeyValue key="simpleTooltipLine" value="ROTATE_RIGHT" type="global"/>
-							<KeyValue key="clickAmount" value="10" type="number"/>
-							<KeyValue key="holdAmountPerSecond" value="100" type="number"/>
 						</KeyValues>
 					</Button>
 				</Frames>
 			</Frame>
 		</Frames>
-
 		<Scripts>
-			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
-			<OnHide method="OnHide"/>
-			<OnMouseWheel method="OnMouseWheel"/>
-			<OnEvent method="OnEvent"/>
-			<OnUpdate method="OnUpdate"/>
 		</Scripts>
 	</Frame>
 </Ui>

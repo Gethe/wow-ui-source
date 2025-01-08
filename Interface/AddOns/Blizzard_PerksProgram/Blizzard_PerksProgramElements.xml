@@ -207,17 +207,85 @@
 								<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="8" y="0"/>
 							</Anchors>
 						</FontString>
-						<FontString parentKey="Price" inherits="GameFontNormalMed3" wordwrap="true" justifyH="RIGHT">
-							<Color color="WHITE_FONT_COLOR"/>
-							<Size x="72" y="38" />
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="DiscountContainer" hidden="true">
+						<Size x="33" y="28"/>
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.Icon" y="-1" relativePoint="LEFT"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="Background" inherits="store-corner-discount-middle">
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+										<Anchor point="BOTTOMRIGHT" />
+									</Anchors>
+								</Texture>
+								<FontString parentKey="Text" inherits="GameFontHighlightSmall2" justifyH="RIGHT">
+									<Anchors>
+										<Anchor point="RIGHT" x="-2" y="2"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame parentKey="PriceContainer" inherits="ResizeLayoutFrame">
+						<Size y="1"/>
+						<KeyValues>
+							<KeyValue key="fixedWidth" value="44" type="number"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.Label" relativePoint="RIGHT"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="SalePrice" inherits="GameFontNormalMed3" wordwrap="false" justifyH="RIGHT">
+									<Color color="WHITE_FONT_COLOR"/>
+									<Anchors>
+										<Anchor point="TOPRIGHT"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="Price" inherits="GameFontNormalMed3" wordwrap="false" justifyH="RIGHT">
+									<Color color="WHITE_FONT_COLOR"/>
+									<Anchors>
+										<Anchor point="TOPRIGHT" relativeKey="$parent.SalePrice" relativePoint="BOTTOMRIGHT"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+							<Layer level="OVERLAY">
+								<Texture parentKey="PriceStrikethrough" atlas="pricestrikethrough-gray" hidden="true" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent.Price"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame parentKey="PurchasePendingSpinner" inherits="SpinnerTemplate" mixin="PerksProgramPurchasePendingSpinnerMixin" passThroughButtons="LeftButton, RightButton" hidden="true">
+						<Size x="25" y="25"/>
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.PriceContainer" x="1" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnEnter method="OnEnter"/>
+							<OnLeave method="OnLeave"/>
+						</Scripts>
+					</Frame>
+				</Frames>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="PriceIcon">
+							<Size x="21" y="21"/>
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.Label" relativePoint="RIGHT"/>
+								<Anchor point="LEFT" relativeKey="$parent.PriceContainer" x="8" y="0" relativePoint="RIGHT"/>
 							</Anchors>
-						</FontString>
+						</Texture>
 						<Texture parentKey="RefundIcon" atlas="common-icon-undo" hidden="true" alphaMode="ADD" mixin="PerksRefundIconTooltipMixin">
 							<Size x="21" y="21"/>
 							<Anchors>
-								<Anchor point="RIGHT" relativeKey="$parent.Price"/>
+								<Anchor point="RIGHT" relativeKey="$parent.PriceIcon"/>
 							</Anchors>
 							<Scripts>
 								<OnEnter method="OnEnter"/>
@@ -226,14 +294,14 @@
 						</Texture>
 						<Texture parentKey="PurchasedIcon" atlas="perks-owned-small" hidden="true" useAtlasSize="true" alphaMode="ADD">
 							<Anchors>
-								<Anchor point="RIGHT" relativeKey="$parent.Price"/>
+								<Anchor point="RIGHT" relativeKey="$parent.PriceIcon"/>
 							</Anchors>
 						</Texture>
 						<FontString parentKey="TimeRemaining" inherits="GameFontNormalMed3" wordwrap="true" justifyH="CENTER">
 							<Color color="WHITE_FONT_COLOR"/>
 							<Size x="42" y="38" />
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.Price" relativePoint="RIGHT" x="30" y="0"/>
+								<Anchor point="LEFT" relativeKey="$parent.PriceIcon" relativePoint="RIGHT" x="30" y="0"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -245,18 +313,6 @@
 						</Texture>
 					</Layer>
 				</Layers>
-				<Frames>
-					<Frame parentKey="PurchasePendingSpinner" inherits="SpinnerTemplate" mixin="PerksProgramPurchasePendingSpinnerMixin" passThroughButtons="LeftButton, RightButton" hidden="true">
-						<Size x="25" y="25"/>
-						<Anchors>
-							<Anchor point="RIGHT" relativeKey="$parent.Price" x="1" y="0"/>
-						</Anchors>
-						<Scripts>
-							<OnEnter method="OnEnter"/>
-							<OnLeave method="OnLeave"/>
-						</Scripts>
-					</Frame>
-				</Frames>
 			</Frame>
 		</Frames>
 		<Scripts>

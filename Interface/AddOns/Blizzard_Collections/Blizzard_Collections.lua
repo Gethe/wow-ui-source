@@ -25,6 +25,7 @@ local titles =
 	[3] = TOY_BOX,
 	[4] = HEIRLOOMS,
 	[5] = WARDROBE,
+	[6] = WARBAND_SCENES,
 };
 
 local function GetTitleText(titleIndex)
@@ -52,6 +53,7 @@ function CollectionsJournal_UpdateSelectedTab(self)
 			WardrobeCollectionFrame:Hide();
 		end
 	end
+	WarbandSceneJournal:SetShown(selected == 6);
 
 	self:SetTitle(GetTitleText(selected));
 

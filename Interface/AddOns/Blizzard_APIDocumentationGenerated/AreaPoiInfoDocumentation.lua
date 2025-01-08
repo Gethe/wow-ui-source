@@ -26,7 +26,7 @@ local AreaPoiInfo =
 
 			Arguments =
 			{
-				{ Name = "uiMapID", Type = "number", Nilable = false },
+				{ Name = "uiMapID", Type = "number", Nilable = true },
 				{ Name = "areaPoiID", Type = "number", Nilable = false },
 			},
 

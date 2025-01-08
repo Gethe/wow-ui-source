@@ -136,6 +136,8 @@ function ScenarioQueueFrameSpecific_Update()
 			button:Hide();
 		end
 	end
+
+	ScenarioQueueFrameFindGroupButton_Update();
 end
 
 -- Random
@@ -234,7 +236,12 @@ function ScenarioQueueFrameFindGroupButton_Update()
 	if ( C_LFGList.HasActiveEntryInfo() ) then
 		lfgListDisabled = CANNOT_DO_THIS_WHILE_LFGLIST_LISTED;
 	elseif(C_PartyInfo.IsCrossFactionParty()) then
-		lfgListDisabled = CROSS_FACTION_RAID_DUNGEON_FINDER_ERROR;
+		local isScenarioID = ScenarioQueueFrame.type and (type(ScenarioQueueFrame.type) == "number");
+		if isScenarioID then
+			lfgListDisabled = LFG_TryGetCrossFactionQueueFailureMessage({ ScenarioQueueFrame.type });
+		elseif ScenarioQueueFrame.type == "specific" then
+			lfgListDisabled = LFG_TryGetCrossFactionQueueFailureMessage(LFG_BuildSelectedEntriesList(ScenariosList, ScenariosHiddenByCollapseList));
+		end
 	end
 
 	if ( lfgListDisabled ) then

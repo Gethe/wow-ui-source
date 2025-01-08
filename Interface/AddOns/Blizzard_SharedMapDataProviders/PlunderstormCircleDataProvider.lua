@@ -19,7 +19,7 @@ local OuterCircleColor = CreateColorFromHexString("537B9BFF");
 local InnerCircleIdleColor = OuterCircleColor; -- Same as outer for now.
 
 function PlunderstormCircleDataProviderMixin:OnAdded(owningMap)
-	self.owningMap = owningMap;
+	MapCanvasDataProviderMixin.OnAdded(self, owningMap);
 	self:RegisterEvent("WOW_LABS_DATA_BR_CIRCLE");
 	C_WowLabsDataManager.PushCircleInfoToLua();
 end

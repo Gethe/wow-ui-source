@@ -20,13 +20,6 @@
 			</AnimationGroup>
 		</Animations>
 		<Layers>
-			<Layer level="BACKGROUND" textureSubLevel="-1">
-				<Texture parentKey="NameFrame" atlas="scoreboard-footer-lootbackground" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Icon" x="60" y="-8"/>
-					</Anchors>
-				</Texture>
-			</Layer>
 			<Layer level="BORDER" textureSubLevel="1">
 				<Texture parentKey="Icon">
 					<Size x="55" y="55" />
@@ -35,22 +28,29 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-      <Layer level="BORDER" textureSubLevel="2">
-        <Texture parentKey="IconOverlay" hidden="true">
-          <!-- The overlay is inset to prevent an overlap with the IconBorder.-->
-          <Size x="47" y="47" />
-          <Anchors>
-            <Anchor point="CENTER" relativeKey="$parent.Icon"/>
-          </Anchors>
-        </Texture>
-      </Layer>
-      <Layer level="BORDER" textureSubLevel="3">
-        <Texture parentKey="IconBorder" useAtlasSize="true">
-          <Anchors>
-            <Anchor point="CENTER" relativeKey="$parent.Icon"/>
-          </Anchors>
-        </Texture>
-      </Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture parentKey="NameFrame" atlas="scoreboard-footer-lootbackground" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" x="60" y="-8"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="2">
+				<Texture parentKey="IconOverlay" hidden="true">
+					<!-- The overlay is inset to prevent an overlap with the IconBorder.-->
+					<Size x="47" y="47" />
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="3">
+				<Texture parentKey="IconBorder" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="BORDER">
 				<FontString parentKey="Name" inherits="GameFontHighlightMedium" justifyH="LEFT">
 					<Size x="160" y="40"/>
@@ -146,8 +146,8 @@
 						</Anchors>
 						<Animations>
 							<AnimationGroup parentKey="RewardModelAnim" setToFinalAlpha="true">
-								<Alpha childKey="HoldModelScene" startDelay=".3" fromAlpha="0" toAlpha="1" order="1" duration=".5"/>
-								<Alpha childKey="HoldModelScene" startDelay="1.25" fromAlpha="1" toAlpha="0" order="2" duration=".5"/>
+								<Alpha startDelay=".3" fromAlpha="0" toAlpha="1" order="1" duration=".5"/>
+								<Alpha startDelay="1.25" fromAlpha="1" toAlpha="0" order="2" duration=".5"/>
 							</AnimationGroup>
 						</Animations>
 					</ModelScene>

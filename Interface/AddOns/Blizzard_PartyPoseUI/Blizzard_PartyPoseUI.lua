@@ -320,6 +320,7 @@ do
 		local maxWidgetWidth = 1;
 
 		for index, widgetFrame in ipairs(sortedWidgets) do
+			widgetFrame:ClearAllPoints();
 			if ( index == 1 ) then
 				widgetFrame:SetPoint("TOP", widgetContainerFrame, "TOP", 0, 0);
 				widgetsHeight = widgetsHeight + widgetFrame:GetWidgetHeight();
@@ -372,8 +373,12 @@ function PartyPoseMixin:GetPartyPoseData(mapID, winner)
 	local playerFactionGroup = UnitFactionGroup("player");
 	local partyPoseData = {};
 	partyPoseData.partyPoseInfo = C_PartyPose.GetPartyPoseInfoByMapID(mapID);
-	--winner is a faction string for warfronts & islands.. Otherwise it is a boolean. 
-	partyPoseData.playerWon = (type(winner) == "string") and (PLAYER_FACTION_GROUP[winner] == playerFactionGroup) or winner;
+	--winner is either a boolean or a faction numer for warfronts & islands. 
+	if type(winner) == "boolean" then
+		partyPoseData.playerWon = winner;
+	else
+		partyPoseData.playerWon = (winner == PLAYER_FACTION_GROUP[playerFactionGroup]);
+	end
 	return partyPoseData;
 end
 
@@ -381,8 +386,12 @@ function PartyPoseMixin:GetPartyPoseDataFromPartyPoseID(partyPoseID, winner)
 	local playerFactionGroup = UnitFactionGroup("player");
 	local partyPoseData = {};
 	partyPoseData.partyPoseInfo = C_PartyPose.GetPartyPoseInfoByID(partyPoseID)
-	--winner is a faction string for warfronts & islands.. Otherwise it is a boolean. 
-	partyPoseData.playerWon = (type(winner) == "string") and (PLAYER_FACTION_GROUP[winner] == playerFactionGroup) or winner;
+	--winner is either a boolean or a faction numer for warfronts & islands.  
+	if type(winner) == "boolean" then
+		partyPoseData.playerWon = winner;
+	else
+		partyPoseData.playerWon = (winner == PLAYER_FACTION_GROUP[playerFactionGroup]);
+	end
 	return partyPoseData;
 end
 

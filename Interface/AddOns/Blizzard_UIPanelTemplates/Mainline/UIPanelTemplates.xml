@@ -1092,8 +1092,8 @@
 			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.TitleBg"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.TitleBg"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent"/>
 					</Anchors>
 					<Color r="0.302" g="0.102" b="0.204" a="1"/>
 				</Texture>

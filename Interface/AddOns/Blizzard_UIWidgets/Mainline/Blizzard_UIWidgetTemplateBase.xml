@@ -180,6 +180,14 @@
 					</Anchors>
 				</FontString>
 			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="EarnedCheck" atlas="common-icon-checkmark" hidden="true">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="3" y="3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Scripts>
 			<OnEvent method="OnEvent"/>

@@ -1,0 +1,8 @@
+## Title: Blizzard End of Match UI
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## AllowLoadGameType: wowlabs
+## AllowLoad: Game
+
+Blizzard_EndOfMatchUI.lua
+Blizzard_EndOfMatchUI.xml

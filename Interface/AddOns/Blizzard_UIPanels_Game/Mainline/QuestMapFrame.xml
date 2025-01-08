@@ -308,6 +308,45 @@
 			</Layer>
 		</Layers>
 	</Frame>
+	<Frame name="QuestLogTabButtonTemplate" parentArray="TabButtons" mixin="QuestLogTabButtonMixin" virtual="true">
+		<Size x="43" y="55"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="questlog-tab-side" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Anchors>
+						<Anchor point="CENTER" x="-2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="SelectedTexture" atlas="QuestLog-Tab-side-Glow-select" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>			
+			<Layer level="HIGHLIGHT">
+				<Texture atlas="QuestLog-Tab-side-Glow-hover" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+	</Frame>
 
 	<Frame name="QuestLogPopupDetailFrame" toplevel="true" enableMouse="true" parent="UIParent" hidden="true" inherits="ButtonFrameTemplate, QuestFramePanelTemplate">
 		<Size x="338" y="496"/>
@@ -437,204 +476,488 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<DropdownButton parentKey="SettingsDropdown" mixin="QuestLogSettingsButtonMixin">
-				<Size x="15" y="16"/>
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="-3" y="-4"/>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture parentKey="Icon" atlas="questlog-icon-setting" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="HIGHLIGHT">
-						<Texture atlas="questlog-icon-setting" useAtlasSize="true" inherits="QuestLogHighlightTextureTemplate">
-							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.Icon"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnMouseDown method="OnMouseDown"/>
-					<OnMouseUp method="OnMouseUp"/>
-				</Scripts>
-			</DropdownButton>
-			<EventScrollFrame parentKey="QuestsFrame" name="QuestScrollFrame" mixin="QuestLogScrollFrameMixin" inherits="ScrollFrameTemplate">
+			<Frame parentKey="QuestsTab" inherits="QuestLogTabButtonTemplate">
 				<KeyValues>
-					<KeyValue key="scrollBarX" value="8" type="number"/>
-					<KeyValue key="scrollBarTopY" value="2" type="number"/>
-					<KeyValue key="scrollBarBottomY" value="-4" type="number"/>
+					<KeyValue key="displayMode" value="QuestLogDisplayMode.Quests" type="global"/>
+					<KeyValue key="activeAtlas" value="questlog-tab-icon-quest" type="string"/>
+					<KeyValue key="inactiveAtlas" value="questlog-tab-icon-quest-inactive" type="string"/>
+					<KeyValue key="tooltipText" value="QUESTS_LABEL" type="global"/>
 				</KeyValues>
-				<!-- NOTE: See QuestMapFrame_UpdateQuestSessionState for anchor updates, these are default -->
 				<Anchors>
-					<Anchor point="TOPLEFT" y="-29"/>
-					<Anchor point="BOTTOMRIGHT"/>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="3" y="-28"/>
 				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="Background" atlas="QuestLog-main-background" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="TOPLEFT"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="ARTWORK">
-						<FontString parentKey="NoSearchResultsText" inherits="SystemFont_Med3" text="QUEST_LOG_NO_RESULTS" hidden="true">
-							<Size x="250"/>
-							<Anchors>
-								<Anchor point="TOP" y="-30"/>
-							</Anchors>
-						</FontString>
-						<FontString parentKey="EmptyText" inherits="Game16Font" text="QUEST_LOG_NO_QUESTS" hidden="true">
-							<Size x="250"/>
-							<Anchors>
-								<Anchor point="CENTER" y="50"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-					<Layer level="OVERLAY">
-						<Texture parentKey="Edge" atlas="questlog_line_scrollbar" useAtlasSize="true" alpha="0">
-							<Anchors>
-								<Anchor point="TOPRIGHT" x="25" y="0"/>
-								<Anchor point="BOTTOMRIGHT" x="25" y="3"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<ScrollChild>
-					<Frame parentKey="Contents" inherits="VerticalLayoutFrame, POIButtonOwnerTemplate">
-						<Size x="304" y="454"/>
+			</Frame>
+			<Frame parentKey="EventsTab" inherits="QuestLogTabButtonTemplate">
+				<KeyValues>
+					<KeyValue key="displayMode" value="QuestLogDisplayMode.Events" type="global"/>
+					<KeyValue key="activeAtlas" value="questlog-tab-icon-event" type="string"/>
+					<KeyValue key="inactiveAtlas" value="questlog-tab-icon-event-inactive" type="string"/>
+					<KeyValue key="tooltipText" value="EVENT_SCHEDULER_FRAME_LABEL" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.QuestsTab" relativePoint="BOTTOM" x="0" y="-3"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="MapLegendTab" inherits="QuestLogTabButtonTemplate">
+				<KeyValues>
+					<KeyValue key="displayMode" value="QuestLogDisplayMode.MapLegend" type="global"/>
+					<KeyValue key="activeAtlas" value="questlog-tab-icon-maplegend" type="string"/>
+					<KeyValue key="inactiveAtlas" value="questlog-tab-icon-maplegend-inactive" type="string"/>
+					<KeyValue key="tooltipText" value="MAP_LEGEND_FRAME_LABEL" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.EventsTab" relativePoint="BOTTOM" x="0" y="-3"/>
+				</Anchors>
+			</Frame>			
+			<!-- This frame is for the others to anchor relative to because QuestSessionManagement will move things up.
+					 They could have been children but I didn't want to push them another level down in the hierarchy. -->
+			<Frame parentKey="ContentsAnchor">
+				<Anchors>
+					<!-- NOTE: See QuestMapFrame_UpdateQuestSessionState for anchor updates, these are default -->
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="RIGHT"/>
+					<Anchor point="BOTTOM"/>
+				</Anchors>				
+			</Frame>
+			<Frame parentKey="QuestsFrame" parentArray="ContentFrames">
+				<KeyValues>
+					<KeyValue key="displayMode" value="QuestLogDisplayMode.Quests" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ContentsAnchor"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ContentsAnchor" x="-22"/>
+				</Anchors>
+				<Frames>
+					<EventScrollFrame parentKey="ScrollFrame" name="QuestScrollFrame" mixin="QuestLogScrollFrameMixin" inherits="ScrollFrameTemplate">
+						<KeyValues>
+							<KeyValue key="scrollBarX" value="8" type="number"/>
+							<KeyValue key="scrollBarTopY" value="2" type="number"/>
+							<KeyValue key="scrollBarBottomY" value="-4" type="number"/>
+						</KeyValues>
 						<Anchors>
-							<Anchor point="TOPLEFT"/>
+							<Anchor point="TOPLEFT" y="-29"/>
+							<Anchor point="BOTTOMRIGHT"/>
 						</Anchors>
-						<Frames>
-							<Frame parentKey="Separator" hidden="true">								
-								<Size x="304" y="15"/>
-								<KeyValues>
-									<KeyValue key="leftPadding" value="2" type="number"/>
-								</KeyValues>
-								<Layers>
-									<Layer level="OVERLAY">
-										<Texture parentKey="Divider" atlas="QuestLog-frame-devider" setAllPoints="true"/>
-									</Layer>
-								</Layers>
-							</Frame>
-							<Frame parentKey="StoryHeader" mixin="StoryHeaderMixin" hidden="true">
-								<Size x="304" y="69"/>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="Background" atlas="QuestLog-main-background" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<FontString parentKey="NoSearchResultsText" inherits="SystemFont_Med3" text="QUEST_LOG_NO_RESULTS" hidden="true">
+									<Size x="250"/>
+									<Anchors>
+										<Anchor point="TOP" y="-30"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="EmptyText" inherits="Game16Font" text="QUEST_LOG_NO_QUESTS" hidden="true">
+									<Size x="250"/>
+									<Anchors>
+										<Anchor point="CENTER" y="50"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+							<Layer level="OVERLAY">
+								<Texture parentKey="Edge" atlas="questlog_line_scrollbar" useAtlasSize="true" alpha="0">
+									<Anchors>
+										<Anchor point="TOPRIGHT" x="25" y="0"/>
+										<Anchor point="BOTTOMRIGHT" x="25" y="3"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<ScrollChild>
+							<Frame parentKey="Contents" inherits="VerticalLayoutFrame, POIButtonOwnerTemplate">
+								<Size x="304" y="454"/>
 								<Anchors>
-									<Anchor point="TOPLEFT" x="1" y="1"/>
+									<Anchor point="TOPLEFT"/>
+								</Anchors>
+								<Frames>									
+									<Frame parentKey="Separator" hidden="true">								
+										<Size x="304" y="15"/>
+										<KeyValues>
+											<KeyValue key="leftPadding" value="2" type="number"/>
+										</KeyValues>
+										<Layers>
+											<Layer level="OVERLAY">
+												<Texture parentKey="Divider" atlas="QuestLog-frame-devider" setAllPoints="true"/>
+											</Layer>
+										</Layers>
+									</Frame>
+									<Frame parentKey="StoryHeader" mixin="StoryHeaderMixin" hidden="true">
+										<Size x="304" y="69"/>
+										<Anchors>
+											<Anchor point="TOPLEFT" x="1" y="1"/>
+										</Anchors>
+										<Layers>
+											<Layer level="BACKGROUND">
+												<Texture parentKey="Background" atlas="StoryHeader-BG">
+													<Size x="304" y="69"/>
+													<Anchors>
+														<Anchor point="TOP" x="0" y="-5"/>
+													</Anchors>
+												</Texture>
+											</Layer>
+											<Layer level="ARTWORK">
+												<FontString parentKey="Text" inherits="GameFontHighlightMedium">
+													<Anchors>
+														<Anchor point="TOPLEFT" x="18" y="-20"/>
+													</Anchors>
+												</FontString>
+												<FontString parentKey="Progress" inherits="GameFontHighlightSmall">
+													<Anchors>
+														<Anchor point="TOPLEFT" relativeKey="$parent.Text" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+													</Anchors>
+												</FontString>
+											</Layer>
+											<Layer level="OVERLAY" textureSubLevel="-1">
+												<Texture parentKey="HighlightTexture" atlas="StoryHeader-BG" hidden="true" inherits="QuestLogHighlightTextureTemplate">
+													<Anchors>
+														<Anchor point="TOPLEFT" relativeKey="$parent.Background"/>
+														<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background"/>
+													</Anchors>
+												</Texture>
+											</Layer>
+											<Layer level="OVERLAY">
+												<Texture parentKey="Divider" atlas="QuestLog-frame-devider">
+													<Size x="0" y="15"/>
+													<Anchors>
+														<Anchor point="TOPLEFT" x="3" y="3"/>
+														<Anchor point="TOPRIGHT" x="3" y="3"/>
+													</Anchors>
+												</Texture>
+											</Layer>
+										</Layers>
+										<Scripts>
+											<OnEnter method="OnEnter"/>
+											<OnLeave method="OnLeave"/>
+										</Scripts>
+									</Frame>
+								</Frames>
+							</Frame>
+						</ScrollChild>
+						<Frames>
+							<EditBox parentKey="SearchBox" mixin="QuestLogSearchBoxMixin" inherits="SearchBoxTemplate" letters="60">
+								<Size x="301" y="20"/>
+								<Anchors>
+									<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="6" y="7"/>
+								</Anchors>
+								<Scripts>
+									<OnTextChanged method="OnTextChanged"/>
+								</Scripts>
+							</EditBox>
+							<DropdownButton parentKey="SettingsDropdown" mixin="QuestLogSettingsButtonMixin">
+								<Size x="15" y="16"/>
+								<Anchors>
+									<Anchor point="TOPRIGHT" x="19" y="25"/>
 								</Anchors>
 								<Layers>
-									<Layer level="BACKGROUND">
-										<Texture parentKey="Background" atlas="StoryHeader-BG">
-											<Size x="304" y="69"/>
-											<Anchors>
-												<Anchor point="TOP" x="0" y="-5"/>
-											</Anchors>
-										</Texture>
-									</Layer>
 									<Layer level="ARTWORK">
-										<FontString parentKey="Text" inherits="GameFontHighlightMedium">
+										<Texture parentKey="Icon" atlas="questlog-icon-setting" useAtlasSize="true">
 											<Anchors>
-												<Anchor point="TOPLEFT" x="18" y="-20"/>
-											</Anchors>
-										</FontString>
-										<FontString parentKey="Progress" inherits="GameFontHighlightSmall">
-											<Anchors>
-												<Anchor point="TOPLEFT" relativeKey="$parent.Text" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
-											</Anchors>
-										</FontString>
-									</Layer>
-									<Layer level="OVERLAY" textureSubLevel="-1">
-										<Texture parentKey="HighlightTexture" atlas="StoryHeader-BG" hidden="true" inherits="QuestLogHighlightTextureTemplate">
-											<Anchors>
-												<Anchor point="TOPLEFT" relativeKey="$parent.Background"/>
-												<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background"/>
+												<Anchor point="CENTER"/>
 											</Anchors>
 										</Texture>
 									</Layer>
-									<Layer level="OVERLAY">
-										<Texture parentKey="Divider" atlas="QuestLog-frame-devider">
-											<Size x="0" y="15"/>
+									<Layer level="HIGHLIGHT">
+										<Texture atlas="questlog-icon-setting" useAtlasSize="true" inherits="QuestLogHighlightTextureTemplate">
 											<Anchors>
-												<Anchor point="TOPLEFT" x="3" y="3"/>
-												<Anchor point="TOPRIGHT" x="3" y="3"/>
+												<Anchor point="CENTER" relativeKey="$parent.Icon"/>
 											</Anchors>
 										</Texture>
 									</Layer>
 								</Layers>
 								<Scripts>
-									<OnEnter method="OnEnter"/>
-									<OnLeave method="OnLeave"/>
+									<OnMouseDown method="OnMouseDown"/>
+									<OnMouseUp method="OnMouseUp"/>
 								</Scripts>
+							</DropdownButton>							
+							<Frame parentKey="BorderFrame" inherits="QuestLogBorderFrameTemplate">
+								<Layers>
+									<Layer level="BACKGROUND">
+										<Texture parentKey="Shadow" atlas="questlog-frame-gradient-bottom" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="BOTTOM" y="4"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+							</Frame>
+							<Frame parentKey="StoryTooltip" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true" inherits="TooltipBackdropTemplate">
+								<Size x="10" y="10"/>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString parentKey="Title" inherits="GameFontHighlightMedium">
+											<Anchors>
+												<Anchor point="TOPLEFT" x="10" y="-10"/>
+											</Anchors>
+										</FontString>
+										<FontString parentKey="ProgressLabel" inherits="GameFontNormal" text="STORY_PROGRESS">
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="0" y="-11"/>
+											</Anchors>
+										</FontString>
+										<FontString parentKey="ProgressCount" inherits="GameFontHighlightSmall">
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeKey="$parent.ProgressLabel" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+											</Anchors>
+										</FontString>
+										<FontString parentKey="Line1" parentArray="Lines" inherits="GameFontHighlight">
+											<Anchors>
+												<Anchor point="TOP" relativeKey="$parent.ProgressCount" relativePoint="BOTTOM" x="0" y="-12"/>
+												<Anchor point="LEFT" x="10" y="0"/>
+											</Anchors>
+										</FontString>
+										<Texture parentArray="CheckMarks" inherits="GreenCheckMarkTemplate">
+											<Anchors>
+												<Anchor point="RIGHT" relativeKey="$parent.Line1" relativePoint="LEFT" x="-4" y="-1"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
 							</Frame>
 						</Frames>
-					</Frame>
-				</ScrollChild>
-				<Frames>
-					<EditBox parentKey="SearchBox" mixin="QuestLogSearchBoxMixin" inherits="SearchBoxTemplate" letters="60">
-						<Size x="301" y="20"/>
-						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="6" y="7"/>
-						</Anchors>
 						<Scripts>
-							<OnTextChanged method="OnTextChanged"/>
+							<OnLoad method="OnLoad"/>
+							<OnSizeChanged method="OnSizeChanged"/>
 						</Scripts>
-					</EditBox>
-					<Frame parentKey="BorderFrame" inherits="QuestLogBorderFrameTemplate">
+					</EventScrollFrame>
+					<Frame parentKey="DetailsFrame" mixin="QuestLogQuestDetailsMixin" hidden="true">
+						<Size x="308" y="502"/>
+						<Anchors>
+							<Anchor point="TOPRIGHT" y="-1"/>
+							<!-- No bottom anchor because it never displays with QuestSessionManagement -->
+						</Anchors>
 						<Layers>
-							<Layer level="BORDER">
-								<Texture parentKey="Shadow" atlas="questlog-frame-gradient-bottom" useAtlasSize="true">
+							<Layer level="BACKGROUND">
+								<Texture parentKey="Bg" atlas="QuestDetailsBackgrounds" useAtlasSize="true">
 									<Anchors>
-										<Anchor point="BOTTOM" y="4"/>
+										<Anchor point="TOPLEFT"/>
+										<Anchor point="TOPRIGHT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="BORDER" textureSubLevel="-1">
+								<Texture parentKey="SealMaterialBG" hidden="true">
+									<Anchors>
+										<Anchor point="TOP" y="-40"/>
 									</Anchors>
 								</Texture>
 							</Layer>
 						</Layers>
+						<Frames>
+							<Frame parentKey="BorderFrame" inherits="QuestLogBorderFrameTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" x="-3" y="4"/>
+									<Anchor point="BOTTOMRIGHT" x="3" y="17"/>
+								</Anchors>
+							</Frame>
+							<Frame parentKey="BackFrame">
+								<Size x="307" y="52"/>
+								<Anchors>
+									<Anchor point="TOPLEFT"/>
+								</Anchors>
+								<Layers>
+									<Layer level="BORDER">
+										<Texture atlas="questlog-reward-top-frame" useAtlasSize="true">
+											<!-- buttons background -->
+											<Anchors>
+												<Anchor point="TOPLEFT"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Frames>
+									<Button parentKey="BackButton" inherits="UIPanelButtonTemplate" text="BACK">
+										<Size x="90" y="22"/>
+										<Anchors>
+											<Anchor point="LEFT" x="11" y="4"/>
+										</Anchors>
+										<Scripts>
+											<OnClick>
+												PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+												QuestMapFrame_ReturnFromQuestDetails();
+											</OnClick>
+										</Scripts>
+									</Button>
+									<Frame parentKey="AccountCompletedNotice" inherits="QuestAccountCompletedNoticeTemplate">
+										<Anchors>
+											<Anchor point="TOPRIGHT" x="-13" y="-16"/>
+										</Anchors>
+									</Frame>
+								</Frames>
+							</Frame>
+							<Button parentKey="DestinationMapButton" inherits="QuestLogPathButtonTemplate" frameLevel="100">
+								<Anchors>
+									<Anchor point="TOPRIGHT" x="-15" y="-50"/>
+								</Anchors>
+								<KeyValues>
+									<KeyValue key="tooltipText" value="QUEST_WAYPOINT_FINAL" type="global"/>
+								</KeyValues>
+								<Scripts>
+									<OnLoad>
+										self.Icon:SetAtlas("questlog-waypoint-finaldestination-questionmark");
+										self.Icon:SetSize(16, 24);
+										self.HighlightIcon:SetAtlas("questlog-waypoint-finaldestination-questionmark");
+									</OnLoad>
+								</Scripts>
+							</Button>
+							<Button parentKey="WaypointMapButton" inherits="QuestLogPathButtonTemplate" frameLevel="100">
+								<Anchors>
+									<Anchor point="TOPRIGHT" x="-15" y="-50"/>
+								</Anchors>
+								<KeyValues>
+									<KeyValue key="tooltipText" value="QUEST_WAYPOINT_ROUTE" type="global"/>
+								</KeyValues>
+								<Scripts>
+									<OnLoad>
+										self.Icon:SetAtlas("poi-traveldirections-arrow", false);
+										self.Icon:SetSize(15, 19);
+										self.HighlightIcon:SetAtlas("poi-traveldirections-arrow", false);
+									</OnLoad>
+								</Scripts>
+							</Button>
+							<Frame parentKey="RewardsFrameContainer" frameLevel="50" clipChildren="true">
+								<Size x="307" y="100"/>
+								<Anchors>
+									<Anchor point="BOTTOMLEFT" x="0" y="23"/>
+								</Anchors>
+								<Frames>
+									<Frame parentKey="RewardsFrame">
+										<Size x="307" y="275"/>
+										<Anchors>
+											<Anchor point="TOPLEFT"/>
+										</Anchors>
+										<Layers>
+											<Layer level="BORDER" textureSubLevel="1">
+												<Texture parentKey="Bottom" atlas="questlog-reward-bottom" useAtlasSize="true">
+													<Anchors>
+														<Anchor point="BOTTOMLEFT"/>
+													</Anchors>
+												</Texture>
+												<Texture parentKey="Top" atlas="questlog-reward-header-top" useAtlasSize="true">
+													<Anchors>
+														<Anchor point="TOPLEFT"/>
+													</Anchors>
+												</Texture>
+											</Layer>
+											<Layer level="BACKGROUND">
+												<Texture parentKey="Background" atlas="questlog-reward-tile-vertical">
+													<Anchors>
+														<Anchor point="TOPLEFT" relativeKey="$parent.Top" relativePoint="BOTTOMLEFT"/>
+														<Anchor point="RIGHT" relativeKey="$parent.Bottom"/>
+														<Anchor point="BOTTOM"/>
+													</Anchors>
+												</Texture>
+											</Layer>
+											<Layer level="ARTWORK">
+												<FontString parentKey="Label" inherits="QuestFont_Huge" text="REWARDS">
+													<Anchors>
+														<Anchor point="TOP" x="0" y="-22"/>
+													</Anchors>
+													<Color r="0.902" g="0.788" b="0.671"/>
+												</FontString>
+											</Layer>
+										</Layers>
+									</Frame>
+								</Frames>
+							</Frame>
+							<EventScrollFrame parentKey="ScrollFrame" name="QuestMapDetailsScrollFrame" inherits="ScrollFrameTemplate">
+								<Size x="298" y="430"/>
+								<KeyValues>
+									<KeyValue key="scrollBarX" value="13" type="number"/>
+									<KeyValue key="scrollBarTopY" value="17" type="number"/>
+									<KeyValue key="scrollBarBottomY" value="-27" type="number"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="TOPLEFT" x="5" y="-43"/>
+								</Anchors>
+								<ScrollChild>
+									<Frame parentKey="Contents">
+										<Size x="298" y="199"/>
+										<Anchors>
+											<Anchor point="TOPLEFT"/>
+										</Anchors>
+									</Frame>
+								</ScrollChild>
+							</EventScrollFrame>
+							<Button parentKey="AbandonButton" inherits="UIPanelButtonTemplate" text="ABANDON_QUEST_ABBREV">
+								<Size x="105" y="22"/>
+								<Anchors>
+									<Anchor point="BOTTOMLEFT" x="-3" y="-2"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										QuestMapQuestOptions_AbandonQuest(QuestMapFrame_GetDetailQuestID())
+									</OnClick>
+								</Scripts>
+							</Button>
+							<Button parentKey="ShareButton" inherits="UIPanelButtonTemplate" text="SHARE_QUEST_ABBREV">
+								<Size x="103" y="22"/>
+								<Anchors>
+									<Anchor point="LEFT" relativeKey="$parent.AbandonButton" relativePoint="RIGHT"/>
+								</Anchors>
+								<Layers>
+									<Layer level="OVERLAY">
+										<Texture inherits="UI-Frame-BtnDivMiddle">
+											<Anchors>
+												<Anchor point="RIGHT" relativePoint="LEFT" x="6" y="0"/>
+											</Anchors>
+										</Texture>
+										<Texture inherits="UI-Frame-BtnDivMiddle">
+											<Anchors>
+												<Anchor point="LEFT" relativePoint="RIGHT" x="-6" y="0"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnClick>
+										QuestMapQuestOptions_ShareQuest(QuestMapFrame_GetDetailQuestID())
+									</OnClick>
+								</Scripts>
+							</Button>
+							<Button parentKey="TrackButton" inherits="UIPanelButtonTemplate" text="TRACK_QUEST_ABBREV">
+								<Size x="105" y="22"/>
+								<Anchors>
+									<Anchor point="LEFT" relativeKey="$parent.ShareButton" relativePoint="RIGHT"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+										QuestMapQuestOptions_TrackQuest(QuestMapFrame_GetDetailQuestID())
+									</OnClick>
+								</Scripts>
+							</Button>
+						</Frames>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnShow method="OnShow"/>
+							<OnHide method="OnHide"/>
+						</Scripts>
 					</Frame>
-					<Frame parentKey="StoryTooltip" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true" inherits="TooltipBackdropTemplate">
-						<Size x="10" y="10"/>
-						<Layers>
-							<Layer level="ARTWORK">
-								<FontString parentKey="Title" inherits="GameFontHighlightMedium">
-									<Anchors>
-										<Anchor point="TOPLEFT" x="10" y="-10"/>
-									</Anchors>
-								</FontString>
-								<FontString parentKey="ProgressLabel" inherits="GameFontNormal" text="STORY_PROGRESS">
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="0" y="-11"/>
-									</Anchors>
-								</FontString>
-								<FontString parentKey="ProgressCount" inherits="GameFontHighlightSmall">
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeKey="$parent.ProgressLabel" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
-									</Anchors>
-								</FontString>
-								<FontString parentKey="Line1" parentArray="Lines" inherits="GameFontHighlight">
-									<Anchors>
-										<Anchor point="TOP" relativeKey="$parent.ProgressCount" relativePoint="BOTTOM" x="0" y="-12"/>
-										<Anchor point="LEFT" x="10" y="0"/>
-									</Anchors>
-								</FontString>
-								<Texture parentArray="CheckMarks" inherits="GreenCheckMarkTemplate">
-									<Anchors>
-										<Anchor point="RIGHT" relativeKey="$parent.Line1" relativePoint="LEFT" x="-4" y="-1"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
-					</Frame>
+					<Frame parentKey="CampaignOverview" inherits="CampaignOverviewTemplate" hidden="true" setAllPoints="true"/>
 				</Frames>
-				<Scripts>
-					<OnLoad method="OnLoad"/>
-					<OnSizeChanged method="OnSizeChanged"/>
-				</Scripts>
-			</EventScrollFrame>
+			</Frame>
+			<Frame parentKey="EventsFrame" parentArray="ContentFrames" inherits="EventSchedulerFrameTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="displayMode" value="QuestLogDisplayMode.Events" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ContentsAnchor" y="-29"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ContentsAnchor" x="-22"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture setAllPoints="true">
+							<Color r="1" g="1" b="0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
 			<Frame parentKey="QuestSessionManagement" mixin="QuestSessionManagementMixin">
 				<Size x="0" y="49"/>
 				<Anchors>
@@ -708,223 +1031,13 @@
 					<OnEvent method="OnEvent"/>
 				</Scripts>
 			</Frame>
-			<Frame parentKey="DetailsFrame" mixin="QuestLogQuestDetailsMixin" hidden="true">
-				<Size x="308" y="502"/>
+			<Frame parentKey="MapLegend" parentArray="ContentFrames" inherits="MapLegendFrameTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="displayMode" value="QuestLogDisplayMode.MapLegend" type="global"/>
+				</KeyValues>				
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-22" y="-1"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="Bg" atlas="QuestDetailsBackgrounds" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="TOPLEFT"/>
-								<Anchor point="TOPRIGHT"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="BORDER" textureSubLevel="-1">
-						<Texture parentKey="SealMaterialBG" hidden="true">
-							<Anchors>
-								<Anchor point="TOP" y="-40"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Frame parentKey="BorderFrame" inherits="QuestLogBorderFrameTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" x="-3" y="4"/>
-							<Anchor point="BOTTOMRIGHT" x="3" y="17"/>
-						</Anchors>
-					</Frame>
-					<Frame parentKey="BackFrame">
-						<Size x="307" y="52"/>
-						<Anchors>
-							<Anchor point="TOPLEFT"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BORDER">
-								<Texture atlas="questlog-reward-top-frame" useAtlasSize="true">	<!-- buttons background -->
-									<Anchors>
-										<Anchor point="TOPLEFT"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Frames>
-							<Button parentKey="BackButton" inherits="UIPanelButtonTemplate" text="BACK">
-								<Size x="90" y="22"/>
-								<Anchors>
-									<Anchor point="LEFT" x="11" y="4"/>
-								</Anchors>
-								<Scripts>
-									<OnClick>
-										PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-										QuestMapFrame_ReturnFromQuestDetails();
-									</OnClick>
-								</Scripts>
-							</Button>
-						</Frames>
-					</Frame>
-					<Button parentKey="DestinationMapButton" inherits="QuestLogPathButtonTemplate" frameLevel="100">
-						<Anchors>
-							<Anchor point="TOPRIGHT" x="-15" y="-50"/>
-						</Anchors>
-						<KeyValues>
-							<KeyValue key="tooltipText" value="QUEST_WAYPOINT_FINAL" type="global"/>
-						</KeyValues>
-						<Scripts>
-							<OnLoad>
-								self.Icon:SetAtlas("questlog-waypoint-finaldestination-questionmark");
-								self.Icon:SetSize(16, 24);
-								self.HighlightIcon:SetAtlas("questlog-waypoint-finaldestination-questionmark");
-							</OnLoad>
-						</Scripts>
-					</Button>
-					<Button parentKey="WaypointMapButton" inherits="QuestLogPathButtonTemplate" frameLevel="100">
-						<Anchors>
-							<Anchor point="TOPRIGHT" x="-15" y="-50"/>
-						</Anchors>
-						<KeyValues>
-							<KeyValue key="tooltipText" value="QUEST_WAYPOINT_ROUTE" type="global"/>
-						</KeyValues>
-						<Scripts>
-							<OnLoad>
-								self.Icon:SetAtlas("poi-traveldirections-arrow", false);
-								self.Icon:SetSize(15, 19);
-								self.HighlightIcon:SetAtlas("poi-traveldirections-arrow", false);
-							</OnLoad>
-						</Scripts>
-					</Button>
-					<Frame parentKey="RewardsFrameContainer" frameLevel="50" clipChildren="true">
-						<Size x="307" y="100"/>
-						<Anchors>
-							<Anchor point="BOTTOMLEFT" x="0" y="23"/>
-						</Anchors>						
-						<Frames>
-							<Frame parentKey="RewardsFrame">
-								<Size x="307" y="275"/>
-								<Anchors>
-									<Anchor point="TOPLEFT"/>
-								</Anchors>
-								<Layers>
-									<Layer level="BORDER" textureSubLevel="1">
-										<Texture parentKey="Bottom" atlas="questlog-reward-bottom" useAtlasSize="true">
-											<Anchors>
-												<Anchor point="BOTTOMLEFT"/>
-											</Anchors>
-										</Texture>
-										<Texture parentKey="Top" atlas="questlog-reward-header-top" useAtlasSize="true">
-											<Anchors>
-												<Anchor point="TOPLEFT"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-									<Layer level="BACKGROUND">
-										<Texture parentKey="Background" atlas="questlog-reward-tile-vertical">
-											<Anchors>
-												<Anchor point="TOPLEFT" relativeKey="$parent.Top" relativePoint="BOTTOMLEFT"/>
-												<Anchor point="RIGHT" relativeKey="$parent.Bottom"/>
-												<Anchor point="BOTTOM"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-									<Layer level="ARTWORK">
-										<FontString parentKey="Label" inherits="QuestFont_Huge" text="REWARDS">
-											<Anchors>
-												<Anchor point="TOP" x="0" y="-22"/>
-											</Anchors>
-											<Color r="0.902" g="0.788" b="0.671"/>
-										</FontString>
-									</Layer>
-								</Layers>
-							</Frame>
-						</Frames>
-					</Frame>
-					<EventScrollFrame parentKey="ScrollFrame" name="QuestMapDetailsScrollFrame" inherits="ScrollFrameTemplate">
-						<Size x="298" y="430"/>
-						<KeyValues>
-							<KeyValue key="scrollBarX" value="13" type="number"/>
-							<KeyValue key="scrollBarTopY" value="20" type="number"/>
-							<KeyValue key="scrollBarBottomY" value="-27" type="number"/>
-						</KeyValues>
-						<Anchors>
-							<Anchor point="TOPLEFT" x="5" y="-43"/>
-						</Anchors>
-						<ScrollChild>
-							<Frame parentKey="Contents">
-								<Size x="298" y="199"/>
-								<Anchors>
-									<Anchor point="TOPLEFT"/>
-								</Anchors>
-							</Frame>
-						</ScrollChild>
-					</EventScrollFrame>
-					<Button parentKey="AbandonButton" inherits="UIPanelButtonTemplate" text="ABANDON_QUEST_ABBREV">
-						<Size x="105" y="22"/>
-						<Anchors>
-							<Anchor point="BOTTOMLEFT" x="-3" y="-2"/>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								QuestMapQuestOptions_AbandonQuest(QuestMapFrame_GetDetailQuestID())
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Button parentKey="ShareButton" inherits="UIPanelButtonTemplate" text="SHARE_QUEST_ABBREV">
-						<Size x="103" y="22"/>
-						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.AbandonButton" relativePoint="RIGHT"/>
-						</Anchors>
-						<Layers>
-							<Layer level="OVERLAY">
-								<Texture inherits="UI-Frame-BtnDivMiddle">
-									<Anchors>
-										<Anchor point="RIGHT" relativePoint="LEFT" x="6" y="0"/>
-									</Anchors>
-								</Texture>
-								<Texture inherits="UI-Frame-BtnDivMiddle">
-									<Anchors>
-										<Anchor point="LEFT" relativePoint="RIGHT" x="-6" y="0"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnClick>
-								QuestMapQuestOptions_ShareQuest(QuestMapFrame_GetDetailQuestID())
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Button parentKey="TrackButton" inherits="UIPanelButtonTemplate" text="TRACK_QUEST_ABBREV">
-						<Size x="105" y="22"/>
-						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.ShareButton" relativePoint="RIGHT"/>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-								QuestMapQuestOptions_TrackQuest(QuestMapFrame_GetDetailQuestID())
-							</OnClick>
-						</Scripts>
-					</Button>
-				</Frames>
-				<Scripts>
-					<OnLoad method="OnLoad"/>
-					<OnShow method="OnShow"/>
-					<OnHide method="OnHide"/>
-				</Scripts>
-			</Frame>
-			<Frame parentKey="CampaignOverview" inherits="CampaignOverviewTemplate" hidden="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.QuestsFrame"/>
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.QuestsFrame"/>
-				</Anchors>
-			</Frame>
-			<Frame parentKey="MapLegend" inherits="MapLegendFrameTemplate" hidden="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.QuestsFrame"/>
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.QuestsFrame"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ContentsAnchor" y="-29"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ContentsAnchor" x="-22"/>
 				</Anchors>
 			</Frame>
 		</Frames>

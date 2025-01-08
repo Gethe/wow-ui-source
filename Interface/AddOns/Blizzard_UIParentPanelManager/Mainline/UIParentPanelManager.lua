@@ -233,9 +233,9 @@ function FramePositionDelegate:ShowUIPanel(frame, force, contextKey)
 	local doublewideFrame = self:GetUIPanel("doublewide");
 	local rightFrame = self:GetUIPanel("right");
 
-	-- If we have a full-screen frame open, ignore other non-fullscreen open requests
+	-- If we have a full-screen frame open, ignore other non-fullscreen open requests, unless certain conditions are met
 	if ( fullScreenFrame and (frameArea ~= "full") ) then
-		if ( force ) then
+		if force or GetUIPanelAttribute(fullScreenFrame, "allowOtherPanels") == 1 then
 			self:SetUIPanel("fullscreen", nil, 1);
 		else
 			self:ShowUIPanelFailed(frame);
@@ -1026,7 +1026,8 @@ end
 
 -- Returns false if there are exclusive-area frames blocking other non-exclusive frames from opening
 function CanOpenPanels()
-	if ( GetUIPanel("fullscreen") ) then
+	local fullScreenFrame = GetUIPanel("fullscreen");
+	if fullScreenFrame and GetUIPanelAttribute(fullScreenFrame, "allowOtherPanels") ~= 1 then
 		return false;
 	end
 

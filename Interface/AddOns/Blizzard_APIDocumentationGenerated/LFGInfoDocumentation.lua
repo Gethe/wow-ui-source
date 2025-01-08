@@ -7,6 +7,20 @@ local LFGInfo =
 	Functions =
 	{
 		{
+			Name = "AreCrossFactionGroupQueuesAllowed",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "lfgDungeonID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "areCrossFactionGroupQueuesAllowed", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CanPlayerUseGroupFinder",
 			Type = "Function",
 
@@ -69,6 +83,34 @@ local LFGInfo =
 		{
 			Name = "ConfirmLfgExpandSearch",
 			Type = "Function",
+		},
+		{
+			Name = "DoesActivePartyMeetPremadeLaunchCount",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "lfgDungeonID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "doesActivePartyMeetPremadeLaunchCount", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "DoesCrossFactionQueueRequireFullPremade",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "lfgDungeonID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "doesCrossFactionQueueRequireFullPremade", Type = "bool", Nilable = false },
+			},
 		},
 		{
 			Name = "GetAllEntriesForCategory",
@@ -174,15 +216,6 @@ local LFGInfo =
 		},
 		{
 			Name = "IsLFREnabled",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "enabled", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "IsPremadeGroupEnabled",
 			Type = "Function",
 
 			Returns =

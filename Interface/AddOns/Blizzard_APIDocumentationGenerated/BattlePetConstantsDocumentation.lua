@@ -339,9 +339,9 @@ local BattlePetConstants =
 		{
 			Name = "BattlepetDbFlags",
 			Type = "Enumeration",
-			NumValues = 13,
+			NumValues = 14,
 			MinValue = 0,
-			MaxValue = 1024,
+			MaxValue = 2048,
 			Fields =
 			{
 				{ Name = "None", Type = "BattlepetDbFlags", EnumValue = 0 },
@@ -356,15 +356,16 @@ local BattlePetConstants =
 				{ Name = "DisplayOverridden", Type = "BattlepetDbFlags", EnumValue = 256 },
 				{ Name = "AcquiredViaLicense", Type = "BattlepetDbFlags", EnumValue = 512 },
 				{ Name = "TradingPost", Type = "BattlepetDbFlags", EnumValue = 1024 },
+				{ Name = "AccountStore", Type = "BattlepetDbFlags", EnumValue = 2048 },
 				{ Name = "LockMask", Type = "BattlepetDbFlags", EnumValue = 12 },
 			},
 		},
 		{
 			Name = "BattlepetDeletedReason",
 			Type = "Enumeration",
-			NumValues = 7,
+			NumValues = 8,
 			MinValue = 0,
-			MaxValue = 6,
+			MaxValue = 7,
 			Fields =
 			{
 				{ Name = "Unknown", Type = "BattlepetDeletedReason", EnumValue = 0 },
@@ -374,6 +375,7 @@ local BattlePetConstants =
 				{ Name = "CageError", Type = "BattlepetDeletedReason", EnumValue = 4 },
 				{ Name = "DelJournal", Type = "BattlepetDeletedReason", EnumValue = 5 },
 				{ Name = "TradingPost", Type = "BattlepetDeletedReason", EnumValue = 6 },
+				{ Name = "AccountStore", Type = "BattlepetDeletedReason", EnumValue = 7 },
 			},
 		},
 		{

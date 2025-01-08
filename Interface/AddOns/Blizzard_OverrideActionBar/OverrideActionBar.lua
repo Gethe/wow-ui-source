@@ -297,3 +297,29 @@ end
 function OverrideActionBarMixin:IsShownOverride()
 	return self:IsShownBase() and (not self.slideOut:IsPlaying() or self.slideOut:IsReverse());
 end
+
+OverrideActionBarButtonMixin = {};
+
+local START_JOB_SPELL_ID = 455055;
+
+function OverrideActionBarButtonMixin:EvaluateTutorials(spellType, id)
+	local showedTutorial = false;
+	local spellID = (spellType == "spell") and id;
+	if self.glowShowing and spellID == START_JOB_SPELL_ID then
+		local startJobHelpTipInfo = {
+			text = DRIVE_START_JOB_HELP_TIP,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_DRIVE_START_JOB,
+			checkCVars = true,
+			autoEdgeFlipping = true;
+			targetPoint = HelpTip.Point.TopEdgeCenter,
+		};
+
+		showedTutorial = HelpTip:Show(self, startJobHelpTipInfo);
+	end
+
+	if not showedTutorial then
+		HelpTip:HideAll(self);
+	end
+end

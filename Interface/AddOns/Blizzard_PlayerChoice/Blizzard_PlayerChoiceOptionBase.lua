@@ -5,6 +5,9 @@ function PlayerChoiceBaseOptionTemplateMixin:OnLoad()
 		-- If this is a LayoutFrame call Layout to ensure initial anchors are set up
 		self:Layout()
 	end
+
+	self.OptionButtonsContainer.buttonFrameTemplate = "PlayerChoiceBaseOptionButtonFrameTemplate";
+	self.OptionButtonsContainer.listButtonFrameTemplate = "PlayerChoiceSmallerOptionButtonFrameTemplate";
 end
 
 function PlayerChoiceBaseOptionTemplateMixin:OnShow()
@@ -31,11 +34,12 @@ function PlayerChoiceBaseOptionTemplateMixin:OnSelected()
 	PlayerChoiceFrame:OnSelectionMade();
 end
 
-function PlayerChoiceBaseOptionTemplateMixin:Setup(optionInfo, frameTextureKit, soloOption)
+function PlayerChoiceBaseOptionTemplateMixin:Setup(optionInfo, frameTextureKit, soloOption, showAsList)
 	self.optionInfo = optionInfo;
 	self.uiTextureKit = optionInfo.uiTextureKit;
 	self.frameTextureKit = frameTextureKit;
 	self.soloOption = soloOption;
+	self.showAsList = showAsList;
 
 	self:SetupFrame();
 	self:SetupHeader();
@@ -254,7 +258,7 @@ function PlayerChoiceBaseOptionTemplateMixin:SetupWidgets()
 end
 
 function PlayerChoiceBaseOptionTemplateMixin:SetupButtons()
-	self.OptionButtonsContainer:Setup(self.optionInfo);
+	self.OptionButtonsContainer:Setup(self.optionInfo, self.showAsList);
 end
 
 PlayerChoiceBaseOptionAlignedSectionMixin = {};
@@ -330,21 +334,66 @@ function PlayerChoiceBaseOptionTextTemplateMixin:IsTruncated()
 	return not self.useHTML and self.String:IsTruncated();
 end
 
+PlayerChoiceBaseOptionButtonFrameTemplateMixin = {};
+
+function PlayerChoiceBaseOptionButtonFrameTemplateMixin:OnLoad()
+	self.Button = CreateFrame("Button", nil, self, self.buttonTemplate);
+end
+
+local listFontByDisabledState = {
+	[false] = WHITE_FONT_COLOR,
+	[true] = GRAY_FONT_COLOR,
+};
+
+function PlayerChoiceBaseOptionButtonFrameTemplateMixin:Setup(buttonInfo, optionInfo, showAsList)
+	if showAsList then
+		local fontColor = listFontByDisabledState[buttonInfo.disabled];
+		self.ListText:SetTextColor(fontColor:GetRGBA());
+		self.ListText:SetText(buttonInfo.listText);
+		self.ListText:Show();
+	else
+		self.ListText:Hide();
+	end
+
+	self.Button:Setup(buttonInfo, optionInfo);
+	self:Layout();
+end
+
 PlayerChoiceBaseOptionButtonTemplateMixin = {};
 
 function PlayerChoiceBaseOptionButtonTemplateMixin:OnLoad()
-	self.parentOption = self:GetParent():GetParent();
+	self.parentOption = self:GetParent():GetParent():GetParent();
 end
 
+local COMPLETED_ATLAS_MARKUP = CreateAtlasMarkup("common-icon-checkmark", 16, 16);
+
 function PlayerChoiceBaseOptionButtonTemplateMixin:Setup(buttonInfo, optionInfo)
+	local enabledState = not buttonInfo.disabled;
+	if self.Text then
+		if buttonInfo.showCheckmark then
+			self:SetText(COMPLETED_ATLAS_MARKUP);
+		else
+			self:SetText(buttonInfo.text);
+		end
+
+		if buttonInfo.hideButtonShowText then
+			self.Text:SetIgnoreParentAlpha(true);
+			self:SetAlpha(0);
+			enabledState = false;
+		else
+			self.Text:SetIgnoreParentAlpha(false);
+			self:SetAlpha(1);
+		end
+	end
+
+	self:SetEnabled(enabledState);
+
 	self.confirmation = buttonInfo.confirmation;
 	self.tooltip = buttonInfo.tooltip;
 	self.rewardQuestID = buttonInfo.rewardQuestID;
-	self:SetText(buttonInfo.text);
 	self.buttonID = buttonInfo.id;
 	self.optionID = optionInfo.id;
 	self.soundKitID = buttonInfo.soundKitID;
-	self:SetEnabled(not buttonInfo.disabled);
 	self.keepOpenAfterChoice = buttonInfo.keepOpenAfterChoice;
 end
 
@@ -457,12 +506,10 @@ end
 
 PlayerChoiceBaseOptionButtonsContainerMixin = {};
 
-local DEFAULT_BUTTON_TEMPLATE = "PlayerChoiceBaseOptionButtonTemplate";
-
 function PlayerChoiceBaseOptionButtonsContainerMixin:OnLoad()
-	self.buttonPool = CreateFramePoolCollection();
+	self.buttonFramePool = CreateFramePoolCollection();
 	self.initialAnchor = AnchorUtil.CreateAnchor("TOPLEFT", self, "TOPLEFT", 0, 0);
-	self.buttonTemplate = DEFAULT_BUTTON_TEMPLATE;
+	self.numColumns = 1;
 end
 
 function PlayerChoiceBaseOptionButtonsContainerMixin:OnHide()
@@ -474,32 +521,33 @@ function PlayerChoiceBaseOptionButtonsContainerMixin:SetPaddedHeight(paddedHeigh
 	self.topPadding = math.max(paddingHeight, 5);
 end
 
-function PlayerChoiceBaseOptionButtonsContainerMixin:Setup(optionInfo, numColumns)
-	numColumns = numColumns or 1;
-	local buttonStride = math.max(math.floor(#optionInfo.buttons / numColumns), 1);
+function PlayerChoiceBaseOptionButtonsContainerMixin:Setup(optionInfo, showAsList)
+	local buttonStride = math.max(math.floor(#optionInfo.buttons / self.numColumns), 1);
 
 	if buttonStride ~= self.lastStride then
 		self.layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRightVertical, buttonStride, 20, 5);
 		self.lastStride = buttonStride;
 	end
 
-	self.buttonPool:ReleaseAll();
-	self.buttonPool:GetOrCreatePool("Button", self, self.buttonTemplate);
+	self.buttonFramePool:ReleaseAll();
 
-	local buttons = {};
+	local buttonFrameTemplate = showAsList and self.listButtonFrameTemplate or self.buttonFrameTemplate;
+	self.buttonFramePool:GetOrCreatePool("Frame", self, buttonFrameTemplate);
+
+	local buttonFrames = {};
 	for buttonIndex, buttonInfo in ipairs(optionInfo.buttons) do
-		local button = self.buttonPool:Acquire(self.buttonTemplate);
-		button:Setup(buttonInfo, optionInfo);
-		button:Show();
-		table.insert(buttons, button);
+		local buttonFrame = self.buttonFramePool:Acquire(buttonFrameTemplate);
+		buttonFrame:Setup(buttonInfo, optionInfo, showAsList);
+		buttonFrame:Show();
+		table.insert(buttonFrames, buttonFrame);
 	end
 
-	AnchorUtil.GridLayout(buttons, self.initialAnchor, self.layout);
+	AnchorUtil.GridLayout(buttonFrames, self.initialAnchor, self.layout);
 end
 
 function PlayerChoiceBaseOptionButtonsContainerMixin:DisableButtons()
-	for button in self.buttonPool:EnumerateActive() do
-		button:Disable();
+	for buttonFrame in self.buttonFramePool:EnumerateActive() do
+		buttonFrame.Button:Disable();
 	end
 end
 

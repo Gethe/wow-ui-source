@@ -83,14 +83,27 @@ end
 ---------------------------------------------------
 -- GAME ENVIRONMENT BUTTON MIXIN
 GameEnvironmentButtonMixin = {};
+
+local GameEnvironmentButtonScales = {
+	[Enum.GameEnvironment.WoW] = 0.9,
+	[Enum.GameEnvironment.WoWLabs] = 0.68,
+};
+
 function GameEnvironmentButtonMixin:OnLoad()
 	SelectableButtonMixin.OnLoad(self);
 	self:SetAlpha(0.5);
+
+	self.selectedScale = GameEnvironmentButtonScales[self.gameEnvironment];
+	self.deselectedScale = self.selectedScale - 0.09;
+end
+
+function GameEnvironmentButtonMixin:OnShow()
+	self:SetAlpha(self:IsSelected() and 1 or 0.5);
 end
 
 function GameEnvironmentButtonMixin:OnEnter()
 	if not self:IsSelected() then
-		self:SetAlpha(0.7);
+		self:SetAlpha(1.0);
 	end
 end
 
@@ -100,10 +113,23 @@ function GameEnvironmentButtonMixin:OnLeave()
 	end
 end
 
+local LimitedTimeEventTextScale = {
+	selected = 0.95,
+	deselected = 0.85,
+};
+
 function GameEnvironmentButtonMixin:SetSelectedState(selected)
 	SelectableButtonMixin.SetSelectedState(self, selected);
-	self.SelectedTexture:SetShown(selected);
-	self.BackgroundGlowTexture:SetShown(selected);
+	self.SelectionArrow:SetShown(selected);
+	self.BackgroundGlowTop:SetShown(selected);
+	self.BackgroundGlowBottom:SetShown(selected);
+	
+	self.NormalTexture:SetScale(selected and self.selectedScale or self.deselectedScale);
+
+	if self.LimitedTimeEventText then
+		self.LimitedTimeEventText:SetScale(selected and LimitedTimeEventTextScale.selected or LimitedTimeEventTextScale.deselected);
+	end
+
 	self:SetAlpha(selected and 1 or 0.5);
 end
 
@@ -123,7 +149,15 @@ function GameEnvironmentButtonPulsingMixin:OnLoad()
 	self:SetPulsePlaying(true);
 end
 
+function GameEnvironmentButtonPulsingMixin:RefreshScale()
+	local selected = self:IsSelected();
+	self.PulseTexture:SetScale(selected and self.selectedScale or self.deselectedScale);
+	self.PulseTextureTwo:SetScale(selected and self.selectedScale or self.deselectedScale);
+end
+
 function GameEnvironmentButtonPulsingMixin:OnShow()
+	GameEnvironmentButtonMixin.OnShow(self);
+
 	self:SetPulsePlaying(true);
 end
 
@@ -140,7 +174,7 @@ function GameEnvironmentButtonPulsingMixin:OnLeave()
 end
 
 function GameEnvironmentButtonPulsingMixin:OnSelected(newSelected)
-	self:SetPulsePlaying(not newSelected);	
+	self:SetPulsePlaying(not newSelected);
 end
 
 function GameEnvironmentButtonPulsingMixin:SetPulsePlaying(playing)
@@ -148,6 +182,8 @@ function GameEnvironmentButtonPulsingMixin:SetPulsePlaying(playing)
 	if self.pulsePlaying == playing then
 		return;
 	end
+
+	self:RefreshScale();
 
 	if not playing then
 		self.PulseTexture:Hide();
@@ -171,10 +207,40 @@ function GameEnvironmentFrameMixin:OnLoad()
 	self.buttonGroup:AddButton(self.SelectWoWLabsToggle);
 	self.environments = {Enum.GameEnvironment.WoW, Enum.GameEnvironment.WoWLabs};
 	self.buttonGroup:RegisterCallback(ButtonGroupBaseMixin.Event.Selected, self.SelectGameEnvironment, self);
+
+	self:TryShowEnvironmentButtons();
+end
+
+function GameEnvironmentFrameMixin:OnShow()
+	ResizeLayoutMixin.OnShow(self);
+
+	self:TryShowEnvironmentButtons();
+end
+
+function GameEnvironmentFrameMixin:TryShowEnvironmentButtons()
+	self.shouldShowButtons = C_GameEnvironmentManager.GetCurrentEventRealmQueues() ~= Enum.EventRealmQueues.None;
+
+	local currentExpansionLevel = AccountUpgradePanel_GetBannerInfo();
+	if currentExpansionLevel and self.shownExpansionLevel ~= currentExpansionLevel then
+		SetExpansionLogo(self.SelectWoWToggle.NormalTexture, currentExpansionLevel);
+		self.shownExpansionLevel = currentExpansionLevel;
+	end
+
+	self.buttonGroup:SetShown(self.shouldShowButtons);
+	self.NoGameModesText:SetShown(not self.shouldShowButtons);
+	self.widthPadding = not self.shouldShowButtons and 20 or 0;
+	self:Layout();
+end
+
+function GameEnvironmentFrameMixin:OnKeyDown(key)
+	if key == "ESCAPE" and self:IsShown() then
+		EventRegistry:TriggerEvent("GameEnvironmentFrame.Hide");
+	end
 end
 
 function GameEnvironmentFrameMixin:ChangeGameEnvironment(newEnvironment)
 	assert(newEnvironment);
+
 	if C_GameEnvironmentManager.GetCurrentGameEnvironment() == newEnvironment then		
 		return;
 	end
@@ -184,7 +250,7 @@ function GameEnvironmentFrameMixin:ChangeGameEnvironment(newEnvironment)
 		-- If we changed character order persist it
 		CharacterSelectListUtil.SaveCharacterOrder();
 		-- Swap to the Plunderstorm Realm
-		C_RealmList.ConnectToPlunderstorm(GetCVar("plunderStormRealm")); --WOWLABSTODO: Should this CVar thing be hidden from lua?
+		C_RealmList.ConnectToEventRealm(GetCVar("plunderStormRealm")); --WOWLABSTODO: Should this CVar thing be hidden from lua?
 		CharacterSelect.connectingToPlunderstorm = true;
 	else
 		-- Ensure we have auto realm select enabled
@@ -201,6 +267,8 @@ function GameEnvironmentFrameMixin:SelectRadioButtonForEnvironment(requestedEnvi
 	self.SelectWoWToggle:SetSelectedState(requestedEnvironment == Enum.GameEnvironment.WoW);
 	self.SelectWoWLabsToggle:SetSelectedState(requestedEnvironment == Enum.GameEnvironment.WoWLabs);
 	self.SelectWoWLabsToggle:SetPulsePlaying(requestedEnvironment ~= Enum.GameEnvironment.WoWLabs);
+
+	EventRegistry:TriggerEvent("GameEnvironment.UpdateNavBar");
 end
 
 function GameEnvironmentFrameMixin:SelectGameEnvironment(button, buttonIndex)
@@ -208,4 +276,12 @@ function GameEnvironmentFrameMixin:SelectGameEnvironment(button, buttonIndex)
 	assert(requestedEnvironment);
 
 	EventRegistry:TriggerEvent("GameEnvironment.Selected", requestedEnvironment);
+end
+
+function GameEnvironmentFrameMixin:GetSelectedGameEnvironment()
+	if self.SelectWoWLabsToggle:IsSelected() then
+		return Enum.GameEnvironment.WoWLabs;
+	end
+
+	return Enum.GameEnvironment.WoW;
 end

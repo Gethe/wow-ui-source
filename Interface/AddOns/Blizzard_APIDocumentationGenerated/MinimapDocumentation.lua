@@ -159,6 +159,20 @@ local Minimap =
 			},
 		},
 		{
+			Name = "IsInsideQuestBlob",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isInside", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsRotateMinimapIgnored",
 			Type = "Function",
 
@@ -266,6 +280,16 @@ local Minimap =
 			Name = "MinimapUpdateZoom",
 			Type = "Event",
 			LiteralName = "MINIMAP_UPDATE_ZOOM",
+		},
+		{
+			Name = "PlayerInsideQuestBlobStateChanged",
+			Type = "Event",
+			LiteralName = "PLAYER_INSIDE_QUEST_BLOB_STATE_CHANGED",
+			Payload =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+				{ Name = "isInside", Type = "bool", Nilable = false },
+			},
 		},
 	},
 

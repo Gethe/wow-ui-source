@@ -108,6 +108,19 @@
 					<Anchor point="CENTER"/>
 					<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-10"/>
 				</Anchors>
+				<Frames>
+					<Frame parentKey="NewLabel" inherits="NewFeatureLabelTemplate" hidden="true" useParentLevel="true">
+						<KeyValues>
+							<KeyValue key="animateGlow" value="true" type="boolean"/>
+							<KeyValue key="label" value="DELVES_NEW_CURIO" type="global"/>
+							<KeyValue key="justifyH" value="CENTER" type="string"/>
+						</KeyValues>
+						<Size x="50" y="20"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent" relativePoint="RIGHT" x="-16" y="10"/>
+						</Anchors>
+					</Frame>
+				</Frames>
 				<Scripts>
 					<OnEnter method="OnEnter"/>
 					<OnLeave method="OnLeave"/>

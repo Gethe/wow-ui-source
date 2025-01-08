@@ -11,7 +11,12 @@ function FramerateFrameMixin:OnUpdate(elapsed)
 	if timeLeft <= 0 then
 		self.fpsTime = FRAMERATE_FREQUENCY;
 		local framerate = GetFramerate();
-		self.FramerateText:SetFormattedText("%.1f", framerate);
+		local isCpuBound = IsCpuBound();
+		if (isCpuBound == nil or FPS_COUNTER_CPU_BOUND == nil or FPS_COUNTER_GPU_BOUND == nil) then
+			self.FramerateText:SetFormattedText("%.1f", framerate);
+		else
+			self.FramerateText:SetFormattedText(isCpuBound and FPS_COUNTER_CPU_BOUND or FPS_COUNTER_GPU_BOUND, framerate);
+		end
 		self:Layout();
 	else
 		self.fpsTime = timeLeft;

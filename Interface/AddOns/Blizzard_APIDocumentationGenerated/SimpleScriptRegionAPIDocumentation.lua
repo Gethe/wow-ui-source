@@ -261,6 +261,20 @@ local SimpleScriptRegionAPI =
 			},
 		},
 		{
+			Name = "Intersects",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "region", Type = "ScriptRegion", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "intersects", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsAnchoringRestricted",
 			Type = "Function",
 

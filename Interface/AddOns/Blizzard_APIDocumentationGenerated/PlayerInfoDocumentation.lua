@@ -25,6 +25,15 @@ local PlayerInfo =
 			},
 		},
 		{
+			Name = "CanPlayerUseEventScheduler",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canUseEventScheduler", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CanPlayerUseMountEquipment",
 			Type = "Function",
 

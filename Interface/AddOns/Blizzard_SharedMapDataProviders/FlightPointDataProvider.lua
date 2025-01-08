@@ -60,6 +60,7 @@ FlightPointPinMixin = BaseMapPoiPinMixin:CreateSubPin("PIN_FRAME_LEVEL_FLIGHT_PO
 
 function FlightPointPinMixin:OnAcquired(poiInfo)
 	SuperTrackablePoiPinMixin.OnAcquired(self, poiInfo);
+	self:AddTag(MapPinTags.FlightPoint);
 
 	self:ClearNudgeSettings();
 

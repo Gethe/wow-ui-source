@@ -2380,6 +2380,7 @@ end
 function CalendarDayEventButton_OnLeave(self)
 	local dayButton = self:GetParent();
 	CalendarDayButton_OnLeave(dayButton);
+	dayButton:UnlockHighlight();
 end
 
 function CalendarDayEventButton_OnClick(self, button)

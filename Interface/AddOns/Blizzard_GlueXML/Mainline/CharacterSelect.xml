@@ -310,7 +310,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY">
-								<Texture name="CharacterSelectLogo">
+								<Texture name="CharacterSelectLogo" hidden="true">
 									<Size x="256" y="128"/>
 									<Anchors>
 										<Anchor point="TOPLEFT" x="0" y="15"/>
@@ -443,6 +443,7 @@
 							</OnLoad>
 						</Scripts>
 					</Frame>
+					<Frame parentKey="CollectionsFrame" inherits="GlueCollectionsTemplate" hidden="true"/>
 					<Frame parentKey="VisibilityFramesContainer" name="VisibilityFramesContainer" setAllPoints="true" useParentLevel="true">
 						<Layers>
 							<Layer level="ARTWORK">
@@ -754,39 +755,6 @@
 									<OnLoad method="OnLoad"/>
 									<OnShow method="OnShow"/>
 									<OnHide method="OnHide"/>
-								</Scripts>
-							</Frame>
-							<Frame parentKey="GameEnvironmentToggleFrame" inherits="GameEnvironmentFrameTemplate, DefaultScaleFrame"/>
-							<Frame parentKey="LimitedTimeEventFrame" mixin="LimitedTimeEventFrameMixin">
-								<Size x="128" y="128"/>
-								<Anchors>
-									<Anchor point="CENTER" x="-5" y="-3" relativePoint="TOPRIGHT" relativeKey="$parent.GameEnvironmentToggleFrame.SelectWoWLabsToggle"/>
-								</Anchors>
-								<Layers>
-									<Layer level="BACKGROUND">
-										<Texture parentKey="GlowPulse" atlas="plunderstorm-logo-limitedtimeevent-glow-background" setAllPoints="true" alphaMode="ADD"/>
-									</Layer>
-									<Layer level="OVERLAY">
-										<Texture parentKey="GlowTexture" atlas="plunderstorm-logo-limitedtimeevent-glow">
-											<Size x="64" y="64"/>
-											<Anchors>
-												<Anchor point="CENTER" x="0" y="0"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-								</Layers>
-								<Frames>
-									<Frame parentKey="Text" inherits="NewFeatureLabelNoAnimateTemplate" hidden="false">
-										<KeyValues>
-											<KeyValue key="label" value="LIMITED_TIME_EVENT" type="global"/>
-										</KeyValues>
-										<Anchors>
-											<Anchor point="CENTER" x="0" y="0"/>
-										</Anchors>
-									</Frame>
-								</Frames>
-								<Scripts>
-									<OnLoad method="OnLoad"/>
 								</Scripts>
 							</Frame>
 							<Frame parentKey="WarningText" hidden="true">
@@ -1196,11 +1164,10 @@
 						<Scripts>
 							<OnFinished>
 								CharacterServicesMaster_UpdateServiceButton();
-								CharacterSelectUI_ResetEnvironmentButton();
 							</OnFinished>
 						</Scripts>
 					</AnimationGroup>
-					<AnimationGroup parentKey="MapFadeIn" setToFinalAlpha="true">
+					<AnimationGroup parentKey="MapFadeIn" setToFinalAlpha="false">
 						<Alpha childKey="FadeInBackground" fromAlpha="1" toAlpha="0" duration=".3" order="1"/>
 					</AnimationGroup>
 				</Animations>

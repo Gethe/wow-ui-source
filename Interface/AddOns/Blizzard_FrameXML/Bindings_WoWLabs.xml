@@ -47,7 +47,31 @@
 		if ( keystate == "up" ) then
 		UseInventoryItem(36);
 		end
-	</Binding>	
+	</Binding>
+	<Binding name="WOWLABS_SWAP_OFFENSIVES" runOnUp="true" category="WOWLABS_BINDING_HEADER">
+		if ( keystate == "up" ) then
+			ClearCursor();
+			if not HasAction(61) then
+				PickupInventoryItem(INVSLOT_OFFENSIVE_2);
+				PickupInventoryItem(INVSLOT_OFFENSIVE_1);
+			else
+				PickupInventoryItem(INVSLOT_OFFENSIVE_1);
+				PickupInventoryItem(INVSLOT_OFFENSIVE_2);
+			end
+		end
+	</Binding>
+	<Binding name="WOWLABS_SWAP_UTLITIES" runOnUp="true" category="WOWLABS_BINDING_HEADER">
+		if ( keystate == "up" ) then
+			ClearCursor();
+			if not HasAction(49) then
+				PickupInventoryItem(INVSLOT_UTILITY_2);
+				PickupInventoryItem(INVSLOT_UTILITY_1);
+			else
+				PickupInventoryItem(INVSLOT_UTILITY_1);
+				PickupInventoryItem(INVSLOT_UTILITY_2);
+			end
+		end
+	</Binding>
 	
 	<!-- Ping System keybindings header="BINDING_HEADER_PING_SYSTEM" -->
 	<Binding name="TOGGLEPINGLISTENER" runOnUp="true" category="BINDING_HEADER_PING_SYSTEM">
@@ -367,7 +391,6 @@
 	<Binding name="TARGETLASTTARGET" category="BINDING_HEADER_TARGETING">
 		TargetLastTarget();
 	</Binding>
-
 	<Binding name="INTERACTMOUSEOVER" category="BINDING_HEADER_TARGETING">
 		if ( not C_PlayerInteractionManager.InteractUnit("mouseover") ) then
 		C_PlayerInteractionManager.InteractUnit("anyinteract");
@@ -375,6 +398,9 @@
 	</Binding>
 	<Binding name="INTERACTTARGET" category="BINDING_HEADER_TARGETING">
 		C_PlayerInteractionManager.InteractUnit("anyinteract");
+	</Binding>
+	<Binding name="LOOTLEFT" category="BINDING_HEADER_TARGETING">
+		C_PlayerInteractionManager.InteractUnit("anyleftInteract");
 	</Binding>
 	<Binding name="ASSISTTARGET" category="BINDING_HEADER_TARGETING">
 		AssistUnit("target");

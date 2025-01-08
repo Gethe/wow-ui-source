@@ -387,6 +387,7 @@ function ProfessionsCrafterTableCellItemNameMixin:Populate(rowData, dataIndex)
 
 	local item;
 
+	local baseItemID = order.itemID;
 	if order.reagents and #order.reagents > 0 then
 		-- Customer provided finishing reagents can alter the quality of the output item.
 		-- Calculate the exact item output based on these reagents so that quality is correct.
@@ -394,11 +395,11 @@ function ProfessionsCrafterTableCellItemNameMixin:Populate(rowData, dataIndex)
 		local outputItemInfo = C_TradeSkillUI.GetRecipeOutputItemData(transaction:GetRecipeID(), transaction:CreateCraftingReagentInfoTbl());
 		item = Item:CreateFromItemLink(outputItemInfo.hyperlink);
 	else
-		item = Item:CreateFromItemID(order.itemID);
+		item = Item:CreateFromItemID(baseItemID);
 	end
 
 	item:ContinueOnItemLoad(function()
-		if item:GetItemID() ~= self.rowData.option.itemID then
+		if baseItemID ~= self.rowData.option.itemID then
 			-- Callback from a previous async request
 			return;
 		end

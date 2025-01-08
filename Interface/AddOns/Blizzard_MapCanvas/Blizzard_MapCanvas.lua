@@ -19,6 +19,7 @@ function MapCanvasMixin:OnLoad()
 	self.mouseClickHandlers = {};
 	self.globalPinMouseActionHandlers = {};
 	self.cursorHandlers = {};
+	self.pinSuppressors = {};
 
 	self:EvaluateLockReasons();
 
@@ -27,8 +28,10 @@ end
 
 function MapCanvasMixin:OnUpdate()
 	ClearCachedActivitiesForPlayer();
+	self:UpdatePinSuppression();
 	self:UpdatePinNudging();
 	self:ProcessCursorHandlers();
+	self:RunDataProviderOnUpdate();
 end
 
 function MapCanvasMixin:SetMapID(mapID)
@@ -80,33 +83,80 @@ function MapCanvasMixin:GetMapInsetPool()
 	return self.mapInsetPool;
 end
 
-function MapCanvasMixin:OnShow()
-	ClearCachedActivitiesForPlayer();
-
-	local FROM_ON_SHOW = true;
-	self:RefreshAll(FROM_ON_SHOW);
-
-	local function MapCanvasOnDataProviderShow(dataProvider, included)
+do
+	local function MapCanvasOnDataProviderShow(dataProvider, _included)
 		dataProvider:OnShow();
 	end
 
-	secureexecuterange(self.dataProviders, MapCanvasOnDataProviderShow);
+	function MapCanvasMixin:OnShow()
+		ClearCachedActivitiesForPlayer();
+
+		local FROM_ON_SHOW = true;
+		self:RefreshAll(FROM_ON_SHOW);
+
+		secureexecuterange(self.dataProviders, MapCanvasOnDataProviderShow);
+
+		self:RegisterEvent("HANDLE_UI_ACTION");
+	end
 end
 
-function MapCanvasMixin:OnHide()
-	local function MapCanvasOnDataProviderHide(dataProvider, included)
+do
+	local function MapCanvasOnDataProviderHide(dataProvider, _included)
 		dataProvider:OnHide();
 	end
 
-	secureexecuterange(self.dataProviders, MapCanvasOnDataProviderHide);
+	function MapCanvasMixin:OnHide()
+		self:UnregisterEvent("HANDLE_UI_ACTION");
+
+		secureexecuterange(self.dataProviders, MapCanvasOnDataProviderHide);
+	end
 end
 
-function MapCanvasMixin:OnEvent(event, ...)
-	local function MapCanvasOnDataProviderEvent(dataProvider, included, ...)
+do
+	local function MapCanvasOnDataProviderEvent(dataProvider, _included, event, ...)
 		dataProvider:SignalEvent(event, ...);
 	end
 
-	secureexecuterange(self.dataProviders, MapCanvasOnDataProviderEvent, ...);
+	function MapCanvasMixin:OnEvent(event, ...)
+		-- UIActions are now directly delivered to data providers
+		if event == "HANDLE_UI_ACTION" then
+			self:HandleUIAction(...);
+		else
+			secureexecuterange(self.dataProviders, MapCanvasOnDataProviderEvent, event, ...);
+		end
+	end
+end
+
+function MapCanvasMixin:ModifyDataProviderOnUpdate(dataProvider, registered)
+	GetOrCreateTableEntry(self, "pendingOnUpdateDataProviders")[dataProvider] = registered;
+	self.onUpdateDataProvidersDirty = true;
+end
+
+function MapCanvasMixin:RegisterDataProviderOnUpdate(dataProvider)
+	self:ModifyDataProviderOnUpdate(dataProvider, true);
+end
+
+function MapCanvasMixin:UnregisterDataProviderOnUpdate(dataProvider)
+	self:ModifyDataProviderOnUpdate(dataProvider, false);
+end
+
+do
+	local function MapCanvasOnDataProviderOnUpdate(dataProvider, _included)
+		dataProvider:OnUpdate();
+	end
+
+	function MapCanvasMixin:RunDataProviderOnUpdate()
+		if self.onUpdateDataProvidersDirty then
+			local onUpdateContainer = GetOrCreateTableEntry(self, "onUpdateDataProviders");
+			for provider, registered in pairs(self.pendingOnUpdateDataProviders) do
+				onUpdateContainer[provider] = registered and true or nil;
+			end
+		end
+
+		if self.onUpdateDataProviders then
+			secureexecuterange(self.onUpdateDataProviders, MapCanvasOnDataProviderOnUpdate);
+		end
+	end
 end
 
 function MapCanvasMixin:AddDataProvider(dataProvider)
@@ -135,12 +185,55 @@ function MapCanvasMixin:RemoveDataProviderEvent(event)
 	end
 end
 
-function MapCanvasMixin:SetPinNudgingDirty(dirty)
-	self.pinNudgingDirty = dirty;
+function MapCanvasMixin:SetPinNudgingDirty()
+	self.pinNudgingDirty = true;
+end
+
+function MapCanvasMixin:AddPinToNudge(pin)
+	table.insert(self.pinsToNudge, pin);
+end
+
+function MapCanvasMixin:IsPinNudgingDirty()
+	return self.pinNudgingDirty or (self.pinsToNudge and #self.pinsToNudge > 0);
+end
+
+function MapCanvasMixin:ExecuteOnPinsToNudge(callbackAllPins, callbackSpecificPins, ...)
+	if self.pinNudgingDirty then
+		self:ExecuteOnAllPins(callbackAllPins, ...);
+	elseif #self.pinsToNudge then
+		secureexecuterange(self.pinsToNudge, callbackSpecificPins, ...);
+	end
+end
+
+function MapCanvasMixin:MarkPinNudgingClean()
+	self.pinNudgingDirty = false;
+	self.pinsToNudge = {};
+end
+
+function MapCanvasMixin:SetPinSuppressionDirty()
+	self.pinSuppressionDirty = true;
+end
+
+function MapCanvasMixin:IsPinSuppressionDirty()
+	return self.pinSuppressionDirty;
+end
+
+function MapCanvasMixin:MarkPinSuppressionClean()
+	self.pinSuppressionDirty = false;
+end
+
+function MapCanvasMixin:SetPinPostProcessDirty()
+	self:SetPinNudgingDirty();
+	self:SetPinSuppressionDirty();
 end
 
 do
 	local function OnPinReleased(pinPool, pin)
+		local map = pin:GetMap();
+		if map then
+			map:UnregisterPin(pin);
+		end
+
 		Pool_HideAndClearAnchors(pinPool, pin);
 		pin:OnReleased();
 
@@ -157,7 +250,7 @@ do
 
 	function MapCanvasMixin:AcquirePin(pinTemplate, ...)
 		if not self.pinPools[pinTemplate] then
-			local pinTemplateType = self.pinTemplateTypes[pinTemplate] or "FRAME";
+			local pinTemplateType = self:GetPinTemplateType(pinTemplate);
 			self.pinPools[pinTemplate] = CreateFramePool(pinTemplateType, self:GetCanvas(), pinTemplate, OnPinReleased);
 		end
 
@@ -208,12 +301,28 @@ do
 		-- dynamic setups that requires input propagation adjustment.
 		pin:CheckMouseButtonPassthrough("RightButton");
 
+		self:RegisterPin(pin);
+
 		return pin;
 	end
 end
 
 function MapCanvasMixin:SetPinTemplateType(pinTemplate, pinTemplateType)
 	self.pinTemplateTypes[pinTemplate] = pinTemplateType;
+end
+
+function MapCanvasMixin:GetPinTemplateType(pinTemplate)
+	-- Can always be overridden by manually calling SetPinTemplateType, but by default this will use the template
+	-- to look up type information and discover the most likely type so that pins can avoid needing to call
+	-- SetPinTemplateType.
+	local pinTemplateType = self.pinTemplateTypes[pinTemplate];
+	if not pinTemplateType then
+		local templateInfo = C_XMLUtil.GetTemplateInfo(pinTemplate);
+		pinTemplateType = templateInfo and templateInfo.type or "FRAME";
+		self.pinTemplateTypes[pinTemplate] = pinTemplateType;
+	end
+
+	return pinTemplateType;
 end
 
 function MapCanvasMixin:RemoveAllPinsByTemplate(pinTemplate)
@@ -225,7 +334,7 @@ end
 
 function MapCanvasMixin:RemovePin(pin)
 	if pin:GetNudgeSourceRadius() > 0 then
-		self.pinNudgingDirty = true;
+		self:SetPinPostProcessDirty();
 	end
 
 	self.pinPools[pin.pinTemplate]:Release(pin);
@@ -246,14 +355,34 @@ function MapCanvasMixin:GetNumActivePinsByTemplate(pinTemplate)
 	return 0;
 end
 
-function MapCanvasMixin:ExecuteOnAllPins(callback, ...)
-	local function MapCanvasExecuteOnPinPools(poolKey, pool, ...)
+do
+	local function MapCanvasExecuteOnPinPools(_poolKey, pool, callback, ...)
 		for activePin in pool:EnumerateActive() do
 			callback(activePin, ...);
 		end
 	end
 
-	secureexecuterange(self.pinPools, MapCanvasExecuteOnPinPools, ...);
+	function MapCanvasMixin:ExecuteOnAllPins(callback, ...)
+		secureexecuterange(self.pinPools, MapCanvasExecuteOnPinPools, callback, ...);
+	end
+end
+
+function MapCanvasMixin:RegisterPin(pin)
+	if pin:IsPinSuppressor() and not tContains(self.pinSuppressors, pin) then
+		table.insert(self.pinSuppressors, pin);
+		self:SetPinSuppressionDirty();
+	end
+end
+
+function MapCanvasMixin:UnregisterPin(pin)
+	if pin:IsPinSuppressor() then
+		tDeleteItem(self.pinSuppressors, pin);
+		self:SetPinSuppressionDirty();
+	end	
+end
+
+function MapCanvasMixin:GetPinSuppressors()
+	return self.pinSuppressors;
 end
 
 function MapCanvasMixin:AcquireAreaTrigger(namespace)
@@ -325,6 +454,42 @@ function MapCanvasMixin:UpdateAreaTriggers(scrollRect)
 	self:TryRefreshingDebugAreaTriggers();
 end
 
+do
+	local function DoPinSuppression(targetPin, mapCanvas)
+		-- If the pin was already suppressed by another suppressor it doesn't need a check.
+		if targetPin:IsSuppressed() then
+			return;
+		end
+
+		for index, suppressor in ipairs(mapCanvas:GetPinSuppressors()) do
+			if suppressor:ShouldSuppressPin(targetPin) then
+				suppressor:TrackSuppressedPin(targetPin);
+				targetPin:SetSuppressed(suppressor);
+			end
+		end
+	end
+
+	function MapCanvasMixin:UpdatePinSuppression()
+		if self:IsPinSuppressionDirty() then
+			-- Every time the user zooms in or out suppression needs to be rechecked for each pin that was suppressed.
+			-- So restore the state to be in the right position and visible.			
+			for index, suppressor in ipairs(self:GetPinSuppressors()) do
+				suppressor:ResetSuppression();
+			end
+
+			-- Now check each pin to see if it needs to be suppressed.
+			self:ExecuteOnAllPins(DoPinSuppression, self);
+
+			-- Finalize suppressors so they can do any necessary updates afterwards
+			for index, suppressor in ipairs(self:GetPinSuppressors()) do
+				suppressor:FinalizeSuppression();
+			end
+
+			self:MarkPinSuppressionClean();
+		end
+	end
+end
+
 function SquaredDistanceBetweenPoints(firstX, firstY, secondX, secondY)
 	local xDiff = firstX - secondX;
 	local yDiff = firstY - secondY;
@@ -374,28 +539,23 @@ function MapCanvasMixin:CalculatePinNudging(targetPin)
 	end
 end
 
-function MapCanvasMixin:UpdatePinNudging()
-	if not self.pinNudgingDirty and #self.pinsToNudge == 0 then
-		return;
-	end
-
-	if self.pinNudgingDirty then
-		local function MapCanvasCalculatePinNudgingCallback(targetPin)
-			self:CalculatePinNudging(targetPin);
-		end
-
-		self:ExecuteOnAllPins(MapCanvasCalculatePinNudgingCallback);
-	else
-		for _, targetPin in ipairs(self.pinsToNudge) do
-			-- It's possible this pin was unattached before this update had a chance to run.
-			if targetPin:GetMap() == self then
-				self:CalculatePinNudging(targetPin);
-			end
+do
+	local function MapCanvasCalculatePinNudgingCallback(targetPin, mapCanvas)
+		if targetPin:GetMap() == mapCanvas then
+			mapCanvas:CalculatePinNudging(targetPin);
 		end
 	end
+	
+	local function MapCanvasCalculatePinNudgingCallbackSpecificPins(pinIndex, pin, mapCanvas)
+		MapCanvasCalculatePinNudgingCallback(pin, mapCanvas);
+	end
 
-	self.pinNudgingDirty = false;
-	self.pinsToNudge = {};
+	function MapCanvasMixin:UpdatePinNudging()
+		if self:IsPinNudgingDirty() then
+			self:ExecuteOnPinsToNudge(MapCanvasCalculatePinNudgingCallback, MapCanvasCalculatePinNudgingCallbackSpecificPins, self);
+			self:MarkPinNudgingClean();
+		end
+	end
 end
 
 function MapCanvasMixin:TryRefreshingDebugAreaTriggers()
@@ -471,12 +631,14 @@ function MapCanvasMixin:AdjustDetailLayerAlpha()
 	self.ScrollContainer:AdjustDetailLayerAlpha(self.detailLayerPool);
 end
 
-function MapCanvasMixin:RefreshAllDataProviders(fromOnShow)
-	local function MapCanvasRefreshAllDataProvidersCallback(dataProvider, included)
+do
+	local function MapCanvasRefreshAllDataProvidersCallback(dataProvider, _included)
 		dataProvider:RefreshAllData(fromOnShow);
 	end
 
-	secureexecuterange(self.dataProviders, MapCanvasRefreshAllDataProvidersCallback);
+	function MapCanvasMixin:RefreshAllDataProviders(fromOnShow)
+		secureexecuterange(self.dataProviders, MapCanvasRefreshAllDataProvidersCallback);
+	end
 end
 
 function MapCanvasMixin:ResetInsets()
@@ -511,9 +673,9 @@ function MapCanvasMixin:SetPinPosition(pin, normalizedX, normalizedY, insetIndex
 	if not pin:IgnoresNudging() then
 		if pin:GetNudgeSourceRadius() > 0 then
 			-- If we nudge other things we need to recalculate all nudging.
-			self.pinNudgingDirty = true;
+			self:SetPinNudgingDirty();
 		else
-			self.pinsToNudge[#self.pinsToNudge + 1] = pin;
+			self:AddPinToNudge(pin);
 		end
 	end
 end
@@ -561,18 +723,23 @@ function MapCanvasMixin:GetCanvasContainer()
 	return self.ScrollContainer;
 end
 
-function MapCanvasMixin:CallMethodOnPinsAndDataProviders(methodName, ...)
-	local function MapCanvasCallMethodOnDataProvidersCallback(dataProvider, included, ...)
+do
+	local function MapCanvasCallMethodOnDataProvidersCallback(dataProvider, _included, methodName, ...)
 		dataProvider[methodName](dataProvider, ...);
 	end
 
-	secureexecuterange(self.dataProviders, MapCanvasCallMethodOnDataProvidersCallback, ...);
-
-	local function MapCanvasCallMethodOnPinsCallback(pin, ...)
+	local function MapCanvasCallMethodOnPinsCallback(pin, methodName, ...)
 		pin[methodName](pin, ...);
 	end
 
-	self:ExecuteOnAllPins(MapCanvasCallMethodOnPinsCallback);
+	function MapCanvasMixin:CallMethodOnDataProviders(methodName, ...)
+		secureexecuterange(self.dataProviders, MapCanvasCallMethodOnDataProvidersCallback, methodName, ...);
+	end	
+
+	function MapCanvasMixin:CallMethodOnPinsAndDataProviders(methodName, ...)
+		self:CallMethodOnDataProviders(methodName, ...);
+		self:ExecuteOnAllPins(MapCanvasCallMethodOnPinsCallback, methodName, ...);
+	end
 end
 
 function MapCanvasMixin:OnMapInsetSizeChanged(mapID, mapInsetIndex, expanded)
@@ -588,14 +755,15 @@ function MapCanvasMixin:OnMapInsetMouseLeave(mapInsetIndex)
 	self:CallMethodOnPinsAndDataProviders("OnMapInsetMouseLeave", mapInsetIndex);
 end
 
-function MapCanvasMixin:OnMapChanged()
-	ClearCachedActivitiesForPlayer();
-
-	local function MapCanvasOnMapChangedCallback(dataProvider, included)
+do
+	local function MapCanvasOnMapChangedCallback(dataProvider, _included)
 		dataProvider:OnMapChanged();
 	end
 
-	secureexecuterange(self.dataProviders, MapCanvasOnMapChangedCallback);
+	function MapCanvasMixin:OnMapChanged()
+		ClearCachedActivitiesForPlayer();
+		secureexecuterange(self.dataProviders, MapCanvasOnMapChangedCallback);
+	end
 end
 
 function MapCanvasMixin:OnCanvasScaleChanged()
@@ -608,6 +776,7 @@ function MapCanvasMixin:OnCanvasScaleChanged()
 	end
 
 	self:CallMethodOnPinsAndDataProviders("OnCanvasScaleChanged");
+	self:SetPinSuppressionDirty();
 end
 
 function MapCanvasMixin:OnCanvasPanChanged()
@@ -790,14 +959,16 @@ function MapCanvasMixin:GetPinFrameLevelsManager()
 	return self.pinFrameLevelsManager;
 end
 
-function MapCanvasMixin:ReapplyPinFrameLevels(pinFrameLevelType)
-	local function MapCanvasReapplyPinFrameLevelsCallback(pin)
+do
+	local function MapCanvasReapplyPinFrameLevelsCallback(pin, pinFrameLevelType)
 		if pin:GetFrameLevelType() == pinFrameLevelType then
 			pin:ApplyFrameLevel();
 		end
 	end
 
-	self:ExecuteOnAllPins(MapCanvasReapplyPinFrameLevelsCallback);
+	function MapCanvasMixin:ReapplyPinFrameLevels(pinFrameLevelType)
+		self:ExecuteOnAllPins(MapCanvasReapplyPinFrameLevelsCallback, pinFrameLevelType);
+	end
 end
 
 function MapCanvasMixin:NavigateToParentMap()
@@ -919,15 +1090,16 @@ function MapCanvasMixin:GetGlobalPinScale()
 	return self.globalPinScale or 1;
 end
 
-function MapCanvasMixin:SetGlobalPinScale(scale)
-	if self.globalPinScale ~= scale then
-		self.globalPinScale = scale;
+do
+	local function MapCanvasSetPinScaleCallback(pin)
+		pin:ApplyCurrentScale();
+	end
 
-		local function MapCanvasSetPinScaleCallback(pin)
-			pin:ApplyCurrentScale();
+	function MapCanvasMixin:SetGlobalPinScale(scale)
+		if self.globalPinScale ~= scale then
+			self.globalPinScale = scale;
+			self:ExecuteOnAllPins(MapCanvasSetPinScaleCallback);
 		end
-
-		self:ExecuteOnAllPins(MapCanvasSetPinScaleCallback);
 	end
 end
 
@@ -935,18 +1107,20 @@ function MapCanvasMixin:GetGlobalAlpha()
 	return self.globalAlpha or 1;
 end
 
-function MapCanvasMixin:SetGlobalAlpha(globalAlpha)
-	if self.globalAlpha ~= globalAlpha then
-		self.globalAlpha = globalAlpha;
-		for detailLayer in self.detailLayerPool:EnumerateActive() do
-			detailLayer:SetGlobalAlpha(globalAlpha);
-		end
+do
+	local function MapCanvasOnGlobalAlphaChangedCallback(dataProvider, _included)
+		dataProvider:OnGlobalAlphaChanged();
+	end
 
-		local function MapCanvasOnGlobalAlphaChangedCallback(dataProvider, included)
-			dataProvider:OnGlobalAlphaChanged();
-		end
+	function MapCanvasMixin:SetGlobalAlpha(globalAlpha)
+		if self.globalAlpha ~= globalAlpha then
+			self.globalAlpha = globalAlpha;
+			for detailLayer in self.detailLayerPool:EnumerateActive() do
+				detailLayer:SetGlobalAlpha(globalAlpha);
+			end
 
-		secureexecuterange(self.dataProviders, MapCanvasOnGlobalAlphaChangedCallback);
+			secureexecuterange(self.dataProviders, MapCanvasOnGlobalAlphaChangedCallback);
+		end
 	end
 end
 
@@ -1009,5 +1183,11 @@ function MapCanvasMixin:RefreshMaskableTextures()
 				texture:RemoveMaskTexture(maskTexture);
 			end
 		end
+	end
+end
+
+function MapCanvasMixin:HandleUIAction(actionType)
+	if actionType == Enum.UIActionType.UpdateMapSystem then
+		self:RefreshAllDataProviders();
 	end
 end

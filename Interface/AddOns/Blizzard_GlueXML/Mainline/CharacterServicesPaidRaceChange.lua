@@ -122,7 +122,8 @@ function PaidRaceChangeFlow:Initialize(controller)
 end
 
 function PaidRaceChangeFlow:OnStoreCharacterListReceived()
-	self:GetStep(1):CheckEnable();
+	local fromInitialize = false;
+	self:GetStep(1):CheckEnable(fromInitialize);
 	EventRegistry:UnregisterFrameEvent("STORE_CHARACTER_LIST_RECEIVED");
 	EventRegistry:UnregisterCallback("STORE_CHARACTER_LIST_RECEIVED", self);
 end

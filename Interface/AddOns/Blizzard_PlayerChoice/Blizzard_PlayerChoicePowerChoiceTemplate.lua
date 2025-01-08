@@ -4,7 +4,7 @@ function PlayerChoicePowerChoiceTemplateMixin:OnLoad()
 	PlayerChoiceBaseOptionTemplateMixin.OnLoad(self);
 	self.OptionText:SetUseHTML(false);
 	self.OptionText:SetJustifyH("CENTER");
-	self.OptionButtonsContainer.buttonTemplate = "PlayerChoiceSmallerOptionButtonTemplate";
+	self.OptionButtonsContainer.buttonFrameTemplate = "PlayerChoiceSmallerOptionButtonFrameTemplate";
 end
 
 function PlayerChoicePowerChoiceTemplateMixin:Reset()
@@ -188,6 +188,12 @@ function PlayerChoicePowerChoiceTemplateMixin:SetupOptionText()
 	self.OptionText:SetStringHeight(OPTION_TEXT_HEIGHT);
 	self.OptionText:SetWidth(OPTION_TEXT_WIDTH);
 	self.OptionText:SetText(self:GetRarityDescriptionString()..self.optionInfo.description);
+end
+
+function PlayerChoicePowerChoiceTemplateMixin:SetupButtons()
+	-- PowerChoice Player Choices don't support showing their buttons as a list
+	local showAsListNo = false;
+	self.OptionButtonsContainer:Setup(self.optionInfo, showAsListNo);
 end
 
 local rarityToString = 

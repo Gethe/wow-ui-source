@@ -37,10 +37,22 @@ function AddOnUtil.LoadAddOn(addonName, restoreEnabledState)
 	if not C_AddOns.IsAddOnLoaded(addonName) then
 		local dependencyTable = GetAddOnDependenciesRecursive(addonName);
 		for depAddonName in pairs(dependencyTable) do
-			EnableAndLoadAddOnHelper(depAddonName, restoreEnabledState);
+			if not C_AddOns.IsAddOnLoaded(depAddonName) then
+				EnableAndLoadAddOnHelper(depAddonName, restoreEnabledState);
+			end
 		end
 		return EnableAndLoadAddOnHelper(addonName, restoreEnabledState);
 	end
 
 	return true; -- It was already loaded, no status message for addons that are already loaded.
+end
+
+function AddOnUtil.SetEnableStateForAddOnAndDependencies(addonName, character, enabled)
+	local setter = enabled and C_AddOns.EnableAddOn or C_AddOns.DisableAddOn;
+
+	local dependencyTable = GetAddOnDependenciesRecursive(addonName);
+	for depAddonName in pairs(dependencyTable) do
+		setter(depAddonName, character);
+	end
+	setter(addonName, character);
 end

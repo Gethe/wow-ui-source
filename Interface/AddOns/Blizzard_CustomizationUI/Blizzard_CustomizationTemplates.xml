@@ -1,0 +1,69 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<GameTooltip name="CustomizationNoHeaderTooltip" inherits="SharedTooltipTemplate, TopLevelParentScaleFrameTemplate">
+		<KeyValues>
+			<KeyValue key="textLeft1Font" value="GameFontNormalMed2" type="string"/>
+			<KeyValue key="textRight1Font" value="GameFontNormalMed2" type="string"/>
+			<KeyValue key="textLeft2Font" value="GameFontNormalMed2" type="string"/>
+			<KeyValue key="textRight2Font" value="GameFontNormalMed2" type="string"/>
+		</KeyValues>
+	</GameTooltip>
+
+	<Button name="CustomizationBaseButtonTemplate" mixin="CustomizationBaseButtonMixin" virtual="true">
+		<Scripts>
+			<OnClick method="OnBaseButtonClick"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="CustomizationFrameWithTooltipTemplate" inherits="RingedFrameWithTooltipTemplate" mixin="CustomizationFrameWithTooltipMixin" virtual="true"/>
+	<CheckButton name="CustomizationMaskedButtonTemplate" inherits="CustomizationBaseButtonTemplate, RingedMaskedButtonTemplate" mixin="CustomizationMaskedButtonMixin" virtual="true"/>
+
+	<Button name="CustomizationSmallButtonTemplate" inherits="CustomizationBaseButtonTemplate, CustomizationFrameWithTooltipTemplate" mixin="CustomizationSmallButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
+		<Size x="48" y="48"/>
+		<KeyValues>
+			<KeyValue key="tooltipAnchor" value="ANCHOR_BOTTOMRIGHT" type="string"/>
+			<KeyValue key="tooltipXOffset" value="-5" type="number"/>
+			<KeyValue key="tooltipYOffset" value="-5" type="number"/>
+			<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
+		</KeyValues>
+		<HitRectInsets left="6" right="6" top="6" bottom="6"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Icon">
+					<Size x="24" y="23"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnClick method="OnClick" inherit="prepend"/>
+		</Scripts>
+		<NormalTexture parentKey="NormalTexture" atlas="common-button-square-gray-up"/>
+		<HighlightTexture parentKey="HighlightTexture" alphaMode="ADD" alpha="0.4">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT"/>
+				<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT"/>
+			</Anchors>
+		</HighlightTexture>
+		<PushedTexture parentKey="PushedTexture" atlas="common-button-square-gray-down">
+			<Anchors>
+				<Anchor point="TOPLEFT" x="1" y="-1"/>
+				<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
+			</Anchors>
+		</PushedTexture>
+	</Button>
+
+	<Button name="CustomizationClickOrHoldButtonTemplate" inherits="CustomizationSmallButtonTemplate" mixin="CustomizationClickOrHoldButtonMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="holdWaitTimeSeconds" value="0.25" type="number"/>
+		</KeyValues>
+		<Scripts>
+			<OnHide method="OnHide"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+</Ui>

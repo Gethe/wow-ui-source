@@ -695,20 +695,6 @@ local QuestLog =
 			},
 		},
 		{
-			Name = "IsLegendaryQuest",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "questID", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "isLegendaryQuest", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "IsMetaQuest",
 			Type = "Function",
 
@@ -876,20 +862,6 @@ local QuestLog =
 			Returns =
 			{
 				{ Name = "isInvasion", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "IsQuestRepeatableType",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "questID", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "isRepeatableType", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1467,6 +1439,7 @@ local QuestLog =
 				{ Name = "finished", Type = "bool", Nilable = false },
 				{ Name = "numFulfilled", Type = "number", Nilable = false },
 				{ Name = "numRequired", Type = "number", Nilable = false },
+				{ Name = "objectiveType", Type = "QuestObjectiveType", Nilable = true },
 			},
 		},
 		{

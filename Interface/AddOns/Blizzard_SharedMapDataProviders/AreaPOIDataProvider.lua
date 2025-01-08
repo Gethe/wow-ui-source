@@ -110,10 +110,7 @@ end
 function AreaPOIPinMixin:OnAcquired(poiInfo) -- override
 	SuperTrackablePoiPinMixin.OnAcquired(self, poiInfo);
 
-	self.areaPoiID = poiInfo.areaPoiID;
-	self.factionID = poiInfo.factionID;
-	self.shouldGlow = poiInfo.shouldGlow;
-	self.addPaddingAboveTooltipWidgets = poiInfo.addPaddingAboveTooltipWidgets;
+	self.poiInfo = poiInfo;
 	self:SetupHoverInfo(poiInfo);
 	MapPinHighlight_CheckHighlightPin(self:GetHighlightType(), self, self.Texture, AREAPOI_HIGHLIGHT_PARAMS);
 
@@ -145,13 +142,13 @@ function AreaPOIPinMixin:SetupHoverInfo(poiInfo)
 end
 
 function AreaPOIPinMixin:GetHighlightType() -- override
-	if self.shouldGlow then
+	if self.poiInfo.shouldGlow then
 		return MapPinHighlightType.SupertrackedHighlight;
 	end
 
 	local bountyQuestID, bountyFactionID, bountyFrameType = self:GetDataProvider():GetBountyInfo();
 	if bountyFrameType == BountyFrameType.ActivityTracker then
-		if bountyFactionID and self.factionID == bountyFactionID then
+		if bountyFactionID and self.poiInfo.factionID == bountyFactionID then
 			return MapPinHighlightType.SupertrackedHighlight;
 		end
 	end
@@ -160,7 +157,7 @@ function AreaPOIPinMixin:GetHighlightType() -- override
 end
 
 function AreaPOIPinMixin:OnMouseEnter()
-	if not self.name  then
+	if not self:HasDisplayName() then
 		return;
 	end
 
@@ -168,10 +165,10 @@ function AreaPOIPinMixin:OnMouseEnter()
 
 	local tooltipShown = self:TryShowTooltip();
 	if not tooltipShown then
-		self:GetMap():TriggerEvent("SetAreaLabel", MAP_AREA_LABEL_TYPE.POI, self.name, self.description);
+		self:GetMap():TriggerEvent("SetAreaLabel", MAP_AREA_LABEL_TYPE.POI, self:GetDisplayName(), self.description);
 	end
 
-	EventRegistry:TriggerEvent("AreaPOIPin.MouseOver", self, tooltipShown, self.areaPoiID, self.name);
+	EventRegistry:TriggerEvent("AreaPOIPin.MouseOver", self, tooltipShown, self.poiInfo.areaPoiID, self:GetDisplayName());
     self:OnLegendPinMouseEnter();
 
 	if self.highlightWorldQuestsOnHover then
@@ -188,73 +185,10 @@ function AreaPOIPinMixin:AddCustomTooltipData(tooltip)
 end
 
 function AreaPOIPinMixin:TryShowTooltip()
-	local hasName = self.name ~= "";
-	local hasDescription = self.description and self.description ~= "";
-	local isTimed, hideTimer = C_AreaPoiInfo.IsAreaPOITimed(self.areaPoiID);
-	local showTimer = isTimed and not hideTimer;
-	local hasWidgetSet = self.tooltipWidgetSet ~= nil;
-
-	local hasTooltip = hasDescription or showTimer or hasWidgetSet;
-	local addedTooltipLine = false;
-
-	if hasTooltip then
-		local tooltip = GetAppropriateTooltip();
-		local verticalPadding = nil;
-
-		tooltip:SetOwner(self, "ANCHOR_RIGHT");
-		if hasName then
-			GameTooltip_SetTitle(tooltip, self.name, HIGHLIGHT_FONT_COLOR);
-			addedTooltipLine = true;
-		end
-
-		if hasDescription then
-			GameTooltip_AddNormalLine(tooltip, self.description);
-			addedTooltipLine = true;
-		end
-
-		if showTimer then
-			local secondsLeft = C_AreaPoiInfo.GetAreaPOISecondsLeft(self.areaPoiID);
-			if secondsLeft and secondsLeft > 0 then
-				local timeString = SecondsToTime(secondsLeft);
-				timeString = HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(timeString);
-				GameTooltip_AddNormalLine(tooltip, MAP_TOOLTIP_TIME_LEFT:format(timeString));
-				addedTooltipLine = true;
-			end
-		end
-
-		if self.textureKit == "OribosGreatVault" then
-			GameTooltip_AddBlankLineToTooltip(tooltip);
-			GameTooltip_AddInstructionLine(tooltip, ORIBOS_GREAT_VAULT_POI_TOOLTIP_INSTRUCTIONS, false);
-			addedTooltipLine = true;
-		end
-
-		if hasWidgetSet then
-			local overflow = GameTooltip_AddWidgetSet(tooltip, self.tooltipWidgetSet, addedTooltipLine and self.addPaddingAboveTooltipWidgets and 10);
-			if overflow then
-				verticalPadding = -overflow;
-			end
-		end
-
-		if self.textureKit then
-			local backdropStyle = GAME_TOOLTIP_TEXTUREKIT_BACKDROP_STYLES[self.textureKit];
-			if (backdropStyle) then
-				SharedTooltip_SetBackdropStyle(tooltip, backdropStyle);
-			end
-		end
-
+	local function customFn(tooltip)
 		self:AddCustomTooltipData(tooltip);
-
-		tooltip:Show();
-
-		-- need to set padding after Show or else there will be a flicker
-		if verticalPadding then
-			tooltip:SetPadding(0, verticalPadding);
-		end
-
-		return true;
 	end
-
-	return false;
+	AreaPoiUtil.TryShowTooltip(self, "ANCHOR_RIGHT", self.poiInfo, customFn);
 end
 
 function AreaPOIPinMixin:OnMouseLeave()
@@ -271,4 +205,12 @@ function AreaPOIPinMixin:OnMouseLeave()
     self:OnLegendPinMouseLeave();
 
 	GameTooltip:Hide();
+end
+
+function AreaPOIPinMixin:GetDisplayName()
+	return self.poiInfo.name or "";
+end
+
+function AreaPOIPinMixin:HasDisplayName()
+	return self.poiInfo.name and self.poiInfo.name ~= "";
 end

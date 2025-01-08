@@ -7,8 +7,6 @@ end
 function ContentTrackingDataProviderMixin:OnAdded(mapCanvas)
 	CVarMapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
 
-	mapCanvas:SetPinTemplateType(self:GetPinTemplate(), "BUTTON");
-
 	if not self.poiQuantizer then
 		self.poiQuantizer = CreateFromMixins(WorldMapPOIQuantizerMixin);
 		self.poiQuantizer.size = 75;
@@ -44,27 +42,18 @@ function ContentTrackingDataProviderMixin:RefreshAllData(fromOnShow)
 
 	local pinsToQuantize = { };
 
-	local function AddTrackableToMap(trackableMapInfo, isWaypoint)
-		local pin = self:AddTrackable(trackableMapInfo, isWaypoint);
+	local function AddTrackableToMap(trackableMapInfo)
+		local pin = self:AddTrackable(trackableMapInfo);
 		pin:Show();
 		table.insert(pinsToQuantize, pin);
 	end
 
 	for i, trackableType in ipairs(C_ContentTracking.GetCollectableSourceTypes()) do
-		local unusued_trackingResult, trackableMapInfos = C_ContentTracking.GetTrackablesOnMap(trackableType, mapID);
+		local unused_trackingResult, trackableMapInfos = C_ContentTracking.GetTrackablesOnMap(trackableType, mapID);
 
 		-- Note: regardless of whether data is pending, let's add what we can.
 		for j, trackableMapInfo in ipairs(trackableMapInfos) do
-			AddTrackableToMap(trackableMapInfo, false --[[ isWaypoint ]]);
-		end
-	end
-
-	local trackableType, trackableID = C_SuperTrack.GetSuperTrackedContent();
-	if trackableType then
-		local trackingResult, mapInfo = C_ContentTracking.GetNextWaypointForTrackable(trackableType, trackableID, mapID);
-		if trackingResult == Enum.ContentTrackingResult.Success then
-			local isWaypoint = true;
-			AddTrackableToMap(mapInfo, isWaypoint);
+			AddTrackableToMap(trackableMapInfo);
 		end
 	end
 
@@ -80,9 +69,9 @@ function ContentTrackingDataProviderMixin:OnCanvasSizeChanged()
 	self.poiQuantizer:Resize(math.ceil(self.poiQuantizer.size * ratio), self.poiQuantizer.size);
 end
 
-function ContentTrackingDataProviderMixin:AddTrackable(trackableMapInfo, isWaypoint)
+function ContentTrackingDataProviderMixin:AddTrackable(trackableMapInfo)
 	local pin = self:GetMap():AcquirePin(self:GetPinTemplate());
-	pin:Init(self, trackableMapInfo, isWaypoint);
+	pin:Init(self, trackableMapInfo);
 
 	local trackableType, trackableID = C_SuperTrack.GetSuperTrackedContent();
 	local isSuperTracked = (trackableType == trackableMapInfo.trackableType) and (trackableID == trackableMapInfo.trackableID);
@@ -95,7 +84,7 @@ function ContentTrackingDataProviderMixin:AddTrackable(trackableMapInfo, isWaypo
 	end
 
 	pin:SetSelected(isSuperTracked);
-	pin:SetStyle(isWaypoint and POIButtonUtil.Style.Waypoint or POIButtonUtil.Style.ContentTracking);
+	pin:SetStyle(POIButtonUtil.Style.ContentTracking);
 	pin:SetTrackable(trackableMapInfo.trackableType, trackableMapInfo.trackableID);
 
 	pin:UpdateButtonStyle();
@@ -121,10 +110,9 @@ function ContentTrackingPinMixin:DisableInheritedMotionScriptsWarning()
 	return true;
 end
 
-function ContentTrackingPinMixin:Init(dataProvider, trackableMapInfo, isWaypoint)
+function ContentTrackingPinMixin:Init(dataProvider, trackableMapInfo)
 	self.dataProvider = dataProvider;
 	self.trackableMapInfo = trackableMapInfo;
-	self.isWaypoint = isWaypoint;
 end
 
 function ContentTrackingPinMixin:OnMouseEnter()
@@ -143,11 +131,6 @@ function ContentTrackingPinMixin:OnMouseEnter()
 
 	GameTooltip_SetTitle(GameTooltip, title);
 	GameTooltip_AddNormalLine(GameTooltip, CONTENT_TRACKING_OBJECTIVE_FORMAT:format(objectiveText));
-
-	if self.isWaypoint then
-		GameTooltip_AddNormalLine(GameTooltip, CONTENT_TRACKING_OBJECTIVE_FORMAT:format(self.trackableMapInfo.waypointText));
-	end
-
 	GameTooltip:Show();
 end
 

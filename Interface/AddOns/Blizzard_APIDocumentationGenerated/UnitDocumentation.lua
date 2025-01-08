@@ -20,15 +20,6 @@ local Unit =
 			},
 		},
 		{
-			Name = "CanShowSetRoleButton",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "result", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "CanSwitchVehicleSeat",
 			Type = "Function",
 
@@ -361,15 +352,6 @@ local Unit =
 				{ Name = "virtualSeatIndex", Type = "number", Nilable = false },
 				{ Name = "xPos", Type = "number", Nilable = false },
 				{ Name = "yPos", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "InitiateRolePoll",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "result", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -2332,36 +2314,6 @@ local Unit =
 			},
 		},
 		{
-			Name = "UnitSetRole",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
-				{ Name = "roleStr", Type = "cstring", Nilable = true },
-			},
-
-			Returns =
-			{
-				{ Name = "result", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "UnitSetRoleEnum",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
-				{ Name = "role", Type = "LFGRole", Nilable = true },
-			},
-
-			Returns =
-			{
-				{ Name = "result", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "UnitSex",
 			Type = "Function",
 
@@ -3931,6 +3883,7 @@ local Unit =
 				{ Name = "flashAtMinPower", Type = "bool", Nilable = false },
 				{ Name = "fractionalCounter", Type = "bool", Nilable = false },
 				{ Name = "animateNumbers", Type = "bool", Nilable = false },
+				{ Name = "attachTooltipToBar", Type = "bool", Nilable = false },
 			},
 		},
 	},

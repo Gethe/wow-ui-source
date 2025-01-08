@@ -11,6 +11,9 @@
 
 	<Button name="PlayerChoiceBaseOptionButtonTemplate" inherits="UIPanelButtonTemplate" mixin="PlayerChoiceBaseOptionButtonTemplateMixin" motionScriptsWhileDisabled="true" virtual="true">
 		<Size x="175" y="22"/>
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="2" type="number"/>
+		</KeyValues>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnClick method="OnClick"/>
@@ -19,16 +22,40 @@
 		</Scripts>
 	</Button>
 
-	<Button name="PlayerChoiceSmallerOptionButtonTemplate" inherits="PlayerChoiceBaseOptionButtonTemplate" virtual="true">
+	<Button name="PlayerChoiceBaseSmallerOptionButtonTemplate" inherits="PlayerChoiceBaseOptionButtonTemplate" virtual="true">
 		<Size x="120" y="22"/>
 	</Button>
+
+	<Frame name="PlayerChoiceBaseOptionButtonFrameTemplate" inherits="HorizontalLayoutFrame" mixin="PlayerChoiceBaseOptionButtonFrameTemplateMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="buttonTemplate" value="PlayerChoiceBaseOptionButtonTemplate" type="string"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="ListText" inherits="GameFontNormal" justifyH="LEFT" hidden="true">
+					<Size x="200" y="22"/>
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="1" type="number"/>
+					</KeyValues>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="PlayerChoiceSmallerOptionButtonFrameTemplate" inherits="PlayerChoiceBaseOptionButtonFrameTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="buttonTemplate" value="PlayerChoiceBaseSmallerOptionButtonTemplate" type="string"/>
+		</KeyValues>
+	</Frame>
 
 	<Frame name="PlayerChoiceBaseOptionAlignedSection" parentArray="AlignedSections"  mixin="PlayerChoiceBaseOptionAlignedSectionMixin" virtual="true" />
 
 	<Frame name="PlayerChoiceBaseOptionButtonsContainer" inherits="PlayerChoiceBaseCenteredFrame, ResizeLayoutFrame, PlayerChoiceBaseOptionAlignedSection"  mixin="PlayerChoiceBaseOptionButtonsContainerMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="alignedSectionKey" value="buttons" type="string"/>
-			<KeyValue key="buttonTemplate" value="PlayerChoiceBaseOptionButtonTemplate" type="string"/>
 		</KeyValues>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
@@ -201,6 +228,7 @@
 					<KeyValue key="layoutIndex" value="20" type="number"/>
 					<KeyValue key="topPadding" value="5" type="number"/>
 					<KeyValue key="showAndHideOnWidgetSetRegistration" value="false" type="boolean"/>
+					<KeyValue key="skipLayoutOnShow" value="true" type="boolean"/>
 				</KeyValues>
 			</Frame>
 		</Frames>

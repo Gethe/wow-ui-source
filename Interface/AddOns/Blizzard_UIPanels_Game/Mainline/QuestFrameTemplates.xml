@@ -165,4 +165,24 @@
 			<Anchor point="TOPLEFT" relativeTo="QuestFrame" x="5" y="-65"/>
 		</Anchors>
 	</ScrollFrame>
+	<Frame name="QuestAccountCompletedNoticeTemplate" mixin="QuestAccountCompletedNoticeMixin" virtual="true">
+		<Size x="50" y="14"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontNormalSmall" maxLines="1" text="ACCOUNT_COMPLETED_QUEST_NOTICE_LABEL">
+					<Color color="DISABLED_FONT_COLOR"/>
+				</FontString>
+				<Texture parentKey="AccountCompletedIcon" useAtlasSize="true" atlas="warband-completed-icon" scale="0.9">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Text" relativePoint="BOTTOMLEFT" x="1" y="-13"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
 </Ui>

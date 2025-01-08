@@ -10,6 +10,7 @@ function SuperTrackedFrameMixin:OnLoad()
 
 	self:RegisterEvent("NAVIGATION_FRAME_CREATED");
 	self:RegisterEvent("NAVIGATION_FRAME_DESTROYED");
+	self:RegisterEvent("NAVIGATION_DESTINATION_REACHED");
 	self:RegisterEvent("SUPER_TRACKING_CHANGED");
 end
 
@@ -21,6 +22,9 @@ function SuperTrackedFrameMixin:OnEvent(event, ...)
 	elseif event == "SUPER_TRACKING_CHANGED" then
 		self:UpdateIcon();
 		self:ForceTransparentUntil(GetTime() + 0.2);
+	elseif event == "NAVIGATION_DESTINATION_REACHED" then
+		local isWaypoint = ...;
+		self:OnDestinationReached(isWaypoint);
 	end
 end
 
@@ -75,12 +79,6 @@ do
 
 	function SuperTrackedFrameMixin:GetTargetAlphaBaseValue()
 		local state = C_Navigation.GetTargetState();
-
-		local superTrackingType = C_SuperTrack.GetHighestPrioritySuperTrackingType();
-		if (superTrackingType == Enum.SuperTrackingType.PartyMember) and not self.isClamped and (state ~= Enum.NavigationState.Occluded) then
-			return 0;
-		end
-
 		local alpha = navStateToTargetAlpha[state];
 		if alpha and alpha > 0 then
 			if self.isClamped then
@@ -247,6 +245,45 @@ function SuperTrackedFrameMixin:UpdateIcon()
 	end
 
 	self:UpdateIconSize();
+end
+
+local superTrackMapPinTypesThatClearWhenDestinationReached =
+{
+	[Enum.SuperTrackingMapPinType.AreaPOI] = true,
+	[Enum.SuperTrackingMapPinType.TaxiNode] = true,
+	[Enum.SuperTrackingMapPinType.DigSite] = true,
+};
+
+local superTrackTypesThatClearWhenDestinationReached =
+{
+	[Enum.SuperTrackingType.UserWaypoint] = true,
+	[Enum.SuperTrackingType.PartyMember] = false,
+	[Enum.SuperTrackingType.Vignette] = true,
+	[Enum.SuperTrackingType.MapPin] = function()
+		local pinType, typeID = C_SuperTrack.GetSuperTrackedMapPin();
+		if pinType then
+			return superTrackMapPinTypesThatClearWhenDestinationReached[pinType];
+		end
+
+		return false;
+	end,
+};
+
+function SuperTrackedFrameMixin:ShouldClearSuperTrackWhenDestinationReached(isWaypoint)
+	if isWaypoint then
+		return false;
+	end
+
+	local superTrackType = C_SuperTrack.GetHighestPrioritySuperTrackingType();
+	return GetValueOrCallFunction(superTrackTypesThatClearWhenDestinationReached, superTrackType);
+end
+
+function SuperTrackedFrameMixin:OnDestinationReached(isWaypoint)
+	-- NOTE: Anything that clears also displays a message.
+	if self:ShouldClearSuperTrackWhenDestinationReached(isWaypoint) then
+		UIErrorsFrame:AddExternalWarningMessage(NAVIGATION_DESTINATION_REACHED_MESSAGE);
+		C_SuperTrack.ClearAllSuperTracked();
+	end
 end
 
 function SuperTrackedFrameMixin:InitializeNavigationFrame()

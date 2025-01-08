@@ -284,7 +284,16 @@
 			<Frame parentKey="CooldownFlash" inherits="ActionButtonCooldownFlashTemplate" hidden="true"/>
 		</Frames>
 	</CheckButton>
-	<CheckButton name="ActionButtonTemplate" inherits="ActionButtonSpellFXTemplate" mixin="BaseActionButtonMixin" virtual="true">
+	<CheckButton name="ActionButtonTemplate" inherits="ActionButtonSpellFXTemplate, FlyoutButtonTemplate" mixin="BaseActionButtonMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="popupDirection" value="UP" type="string"/>
+			<KeyValue key="popupOffset" value="-4" type="number"/>
+			<KeyValue key="popupCrossAxisSize" value="47" type="number"/>
+			<KeyValue key="openArrowOffset" value="2" type="number"/>
+			<KeyValue key="closedArrowOffset" value="4" type="number"/>
+			<KeyValue key="arrowMainAxisSize" value="18" type="number"/>
+			<KeyValue key="arrowCrossAxisSize" value="7" type="number"/>
+		</KeyValues>
 		<Size x="45" y="45"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -304,12 +313,6 @@
 				<Texture name="$parentFlash" parentKey="Flash" atlas="UI-HUD-ActionBar-IconFrame-Flash" useAtlasSize="true" hidden="true">
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentFlyoutBorderShadow" parentKey="FlyoutBorderShadow" atlas="UI-HUD-ActionBar-IconFrame-FlyoutBorderShadow" hidden="true">
-					<Size x="52" y="52"/>
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.icon" x="0.2" y="0.5"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -373,30 +376,6 @@
 					<OnLoad method="OnLoad"/>
 				</Scripts>
 			</Frame>
-			<Frame parentKey="FlyoutArrowContainer" setAllPoints="true">
-				<Layers>
-					<Layer level="ARTWORK" textureSubLevel="2">
-						<Texture parentKey="FlyoutArrowNormal" atlas="UI-HUD-ActionBar-Flyout" hidden="true">
-							<Size x="18" y="7"/>
-							<Anchors>
-								<Anchor point="TOP"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="FlyoutArrowPushed" atlas="UI-HUD-ActionBar-Flyout-Down" hidden="true">
-							<Size x="19" y="8"/>
-							<Anchors>
-								<Anchor point="TOP"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="FlyoutArrowHighlight" atlas="UI-HUD-ActionBar-Flyout-Mouseover" hidden="true">
-							<Size x="18" y="7"/>
-							<Anchors>
-								<Anchor point="TOP"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-			</Frame>
 
 			<Frame parentKey="AutoCastOverlay" inherits="AutoCastOverlayTemplate" hidden="true">
 				<Anchors>
@@ -417,7 +396,10 @@
 		</Frames>
 
 		<Scripts>
-			<OnLoad method="BaseActionButtonMixin_OnLoad" inherit="append"/>
+			<OnLoad method="BaseActionButtonMixin_OnLoad"/>
+			<OnEnter method="BaseActionButtonMixin_OnEnter"/>
+			<OnLeave method="BaseActionButtonMixin_OnLeave"/>
+			<OnDragStart method="BaseActionButtonMixin_OnDragStart"/>
 		</Scripts>
 
 		<NormalTexture name="$parentNormalTexture" parentKey="NormalTexture" atlas="UI-HUD-ActionBar-IconFrame">
@@ -448,27 +430,34 @@
 
 	<CheckButton name="ActionBarButtonCodeTemplate" inherits="SecureActionButtonTemplate, QuickKeybindButtonTemplate, ActionButtonSpellFXTemplate" virtual="true" mixin="ActionBarActionButtonDerivedMixin">
 		<Scripts>
-			<OnLoad method="OnLoad" inherit="append"/>
-			<OnAttributeChanged method="OnAttributeChanged"/>
-			<OnEvent method="OnEvent"/>
-			<OnClick method="OnClick" inherit="prepend"/>
-			<PostClick method="UpdateState"/>
-			<OnDragStart method="OnDragStart"/>
-			<OnReceiveDrag method="OnReceiveDrag"/>
-			<OnDragStop method="OnDragStop"/>
-			<OnEnter method="OnEnter" inherit="append"/>
-			<OnLeave method="OnLeave" inherit="append"/>
-			<OnShow method="OnShow"/>
-			<OnHide method="OnHide"/>
+			<OnLoad method="ActionBarActionButtonDerivedMixin_OnLoad"/>
+			<OnAttributeChanged method="ActionBarActionButtonDerivedMixin_OnAttributeChanged"/>
+			<OnEvent method="ActionBarActionButtonDerivedMixin_OnEvent"/>
+			<OnClick method="ActionBarActionButtonDerivedMixin_OnClick"/>
+			<PostClick method="ActionBarActionButtonDerivedMixin_OnPostClick"/>
+			<OnDragStart method="ActionBarActionButtonDerivedMixin_OnDragStart"/>
+			<OnReceiveDrag method="ActionBarActionButtonDerivedMixin_OnReceiveDrag"/>
+			<OnDragStop method="ActionBarActionButtonDerivedMixin_OnDragStop"/>
+			<OnEnter method="ActionBarActionButtonDerivedMixin_OnEnter"/>
+			<OnLeave method="ActionBarActionButtonDerivedMixin_OnLeave"/>
+			<OnShow method="ActionBarActionButtonDerivedMixin_OnShow"/>
+			<OnHide method="ActionBarActionButtonDerivedMixin_OnHide"/>
 		</Scripts>
 	</CheckButton>
 
-	<CheckButton name="ActionBarButtonTemplate" inherits="ActionButtonTemplate, ActionBarButtonCodeTemplate" virtual="true"/>
-
+	<CheckButton name="ActionBarButtonTemplate" inherits="ActionButtonTemplate, ActionBarButtonCodeTemplate" virtual="true" mixin="ActionBarButtonMixin">
+		<Scripts>
+			<OnLoad method="ActionBarButtonMixin_OnLoad"/>
+			<OnEnter method="ActionBarButtonMixin_OnEnter"/>
+			<OnLeave method="ActionBarButtonMixin_OnLeave"/>
+			<OnDragStart method="ActionBarButtonMixin_OnDragStart"/>
+		</Scripts>
+	</CheckButton>
+	
 	<CheckButton name="SmallActionButtonTemplate" inherits="ActionButtonTemplate" mixin="SmallActionButtonMixin" virtual="true">
 		<Size x="30" y="30"/>
 		<Scripts>
-			<OnLoad method="SmallActionButtonMixin_OnLoad" inherit="prepend"/>
+			<OnLoad method="SmallActionButtonMixin_OnLoad"/>
 		</Scripts>
 	</CheckButton>
 </Ui>

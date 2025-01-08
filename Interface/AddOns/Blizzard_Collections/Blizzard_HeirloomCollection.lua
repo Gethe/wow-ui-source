@@ -120,6 +120,7 @@ function HeirloomsMixin:InitFilterDropdown()
 	
 	self.FilterDropdown:SetDefaultCallback(function()
 		C_HeirloomInfo.SetDefaultFilters();
+		self:FullRefreshIfVisible();
 	end);
 
 	self.FilterDropdown:SetupMenu(function(dropdown, rootDescription)

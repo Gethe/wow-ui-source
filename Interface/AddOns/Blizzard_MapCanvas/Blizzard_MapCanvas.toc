@@ -1,8 +1,7 @@
-## Title: Blizzard Map Canvas
-## Author: Blizzard Entertainment
+## Title: Blizzard_MapCanvas
 ## LoadOnDemand: 1
+## RequiredDep: Blizzard_SharedXMLBase
 
 MapCanvas_DataProviderBase.lua
 MapCanvas_PinFrameLevelsManager.lua
-
 Blizzard_MapCanvas.xml

@@ -119,7 +119,7 @@ function Class_PerksProgramOverwriteFrozenItemWatcher:StopWatching()
 end
 
 function Class_PerksProgramOverwriteFrozenItemWatcher:OnPerkProgramFrameShow()
-	self.hasFrozenItem = PerksProgramFrame:HasFrozenItem();
+	self.hasFrozenItem = PerksProgramFrame and PerksProgramFrame:HasFrozenItem();
 	self:TryShowHelptip();
 end
 
@@ -129,7 +129,7 @@ function Class_PerksProgramOverwriteFrozenItemWatcher:OnProductFrozen()
 		return;
 	end
 
-	self.hasFrozenItem = PerksProgramFrame:HasFrozenItem();
+	self.hasFrozenItem = PerksProgramFrame and PerksProgramFrame:HasFrozenItem();
 	self:TryShowHelptip();
 end
 

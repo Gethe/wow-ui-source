@@ -53,8 +53,9 @@ function AdventureMap_QuestOfferDataProviderMixin:RefreshAllData(fromOnShow)
 	self.playRevealAnims = false;
 end
 
-local function DetermineAtlas(isTrivial, frequency, isLegendary)
-	if QuestUtil.IsFrequencyRecurring(frequency) then
+local function DetermineAtlas(questID)
+	local classification = C_QuestInfoSystem.GetQuestClassification(questID);
+	if classification == Enum.QuestClassification.Recurring then
 		return "AdventureMapIcon-DailyQuest";
 	end
 
@@ -69,7 +70,7 @@ function AdventureMap_QuestOfferDataProviderMixin:AddQuest(questID, isTrivial, f
 	pin.title = title;
 	pin.description = description;
 
-	local iconAtlas = DetermineAtlas(isTrivial, frequency, isLegendary);
+	local iconAtlas = DetermineAtlas(questID);
 	pin.Icon:SetAtlas(iconAtlas, true);
 	pin.IconHighlight:SetAtlas(iconAtlas, true);
 

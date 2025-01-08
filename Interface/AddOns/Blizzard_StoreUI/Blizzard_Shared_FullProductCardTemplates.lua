@@ -167,7 +167,7 @@ function FullStoreCardMixin:ShowIcon(displayData)
 	self.Icon:ClearAllPoints();
 	
 	local overrideTexture = displayData.overrideTexture;
-	local useSquareBorder = bit.band(displayData.flags, Enum.BattlepayDisplayFlag.UseSquareIconBorder) == Enum.BattlepayDisplayFlag.UseSquareIconBorder;
+	local useSquareBorder = bit.band(displayData.flags, Enum.BattlepayDisplayFlags.UseSquareIconBorder) == Enum.BattlepayDisplayFlags.UseSquareIconBorder;
 
 	if overrideTexture then
 		self.IconBorder:Hide();

@@ -36,7 +36,6 @@ GossipAvailableQuestButtonMixin = CreateFromMixins(GossipSharedAvailableQuestBut
 
 function GossipAvailableQuestButtonMixin:Setup(questInfo)
 	QuestUtil.ApplyQuestIconOfferToTextureForQuestID(self.Icon, questInfo.questID, questInfo.isLegendary, questInfo.frequency, questInfo.isRepeatable, questInfo.isImportant, questInfo.isMeta);
-	self.Icon:SetAlpha(QuestUtil.GetAvailableQuestIconAlpha(questInfo.questID));
 	GossipSharedAvailableQuestButtonMixin.Setup(self, questInfo);
 end
 

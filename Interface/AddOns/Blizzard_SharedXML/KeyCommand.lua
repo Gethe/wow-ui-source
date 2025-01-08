@@ -6,6 +6,102 @@ local generalMetaKeys =
 	META = IsMetaKeyDown,
 };
 
+function GetBindingFullInput(input)
+	local fullInput = "";
+	-- MUST BE IN THIS ORDER (ALT, CTRL, SHIFT, META)
+	if ( IsAltKeyDown() ) then
+		fullInput = fullInput.."ALT-";
+	end
+
+	if ( IsControlKeyDown() ) then
+		fullInput = fullInput.."CTRL-"
+	end
+
+	if ( IsShiftKeyDown() ) then
+		fullInput = fullInput.."SHIFT-"
+	end
+
+	if ( IsMetaKeyDown() ) then
+		fullInput = fullInput.."META-"
+	end
+
+	if ( input == "LeftButton" ) then
+		fullInput = fullInput.."BUTTON1";
+	elseif ( input == "RightButton" ) then
+		fullInput = fullInput.."BUTTON2";
+	elseif ( input == "MiddleButton" ) then
+		fullInput = fullInput.."BUTTON3";
+	elseif ( input == "Button4" ) then
+		fullInput = fullInput.."BUTTON4";
+	elseif ( input == "Button5" ) then
+		fullInput = fullInput.."BUTTON5";
+	elseif ( input == "Button6" ) then
+		fullInput = fullInput.."BUTTON6";
+	elseif ( input == "Button7" ) then
+		fullInput = fullInput.."BUTTON7";
+	elseif ( input == "Button8" ) then
+		fullInput = fullInput.."BUTTON8";
+	elseif ( input == "Button9" ) then
+		fullInput = fullInput.."BUTTON9";
+	elseif ( input == "Button10" ) then
+		fullInput = fullInput.."BUTTON10";
+	elseif ( input == "Button11" ) then
+		fullInput = fullInput.."BUTTON11";
+	elseif ( input == "Button12" ) then
+		fullInput = fullInput.."BUTTON12";
+	elseif ( input == "Button13" ) then
+		fullInput = fullInput.."BUTTON13";
+	elseif ( input == "Button14" ) then
+		fullInput = fullInput.."BUTTON14";
+	elseif ( input == "Button15" ) then
+		fullInput = fullInput.."BUTTON15";
+	elseif ( input == "Button16" ) then
+		fullInput = fullInput.."BUTTON16";
+	elseif ( input == "Button17" ) then
+		fullInput = fullInput.."BUTTON17";
+	elseif ( input == "Button18" ) then
+		fullInput = fullInput.."BUTTON18";
+	elseif ( input == "Button19" ) then
+		fullInput = fullInput.."BUTTON19";
+	elseif ( input == "Button20" ) then
+		fullInput = fullInput.."BUTTON20";
+	elseif ( input == "Button21" ) then
+		fullInput = fullInput.."BUTTON21";
+	elseif ( input == "Button22" ) then
+		fullInput = fullInput.."BUTTON22";
+	elseif ( input == "Button23" ) then
+		fullInput = fullInput.."BUTTON23";
+	elseif ( input == "Button24" ) then
+		fullInput = fullInput.."BUTTON24";
+	elseif ( input == "Button25" ) then
+		fullInput = fullInput.."BUTTON25";
+	elseif ( input == "Button26" ) then
+		fullInput = fullInput.."BUTTON26";
+	elseif ( input == "Button27" ) then
+		fullInput = fullInput.."BUTTON27";
+	elseif ( input == "Button28" ) then
+		fullInput = fullInput.."BUTTON28";
+	elseif ( input == "Button29" ) then
+		fullInput = fullInput.."BUTTON29";
+	elseif ( input == "Button30" ) then
+		fullInput = fullInput.."BUTTON30";
+	elseif ( input == "Button31" ) then
+		fullInput = fullInput.."BUTTON31";
+	else
+		fullInput = fullInput..input;
+	end
+
+	return fullInput;
+end
+
+function GetBindingFromInput(input)
+	local fullInput = GetBindingFullInput(input);
+	return GetBindingByKey(fullInput);
+end
+
+-- May deprecate GetBindingFromClick.
+GetBindingFromClick = GetBindingFromInput;
+
 local keyStates = {};
 
 local function IsSingleKeyDown(key)

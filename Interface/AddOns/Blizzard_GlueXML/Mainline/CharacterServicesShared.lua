@@ -139,12 +139,13 @@ function VASCharacterSelectBlockBase:Initialize(results, wasFromRewind)
 	self.results = nil;
 	self:SetResultsShown(false);
 
-	self:CheckEnable();
+	local fromInitialize = true;
+	self:CheckEnable(fromInitialize);
 
 	CharSelectServicesFlowFrame:ClearErrorMessage();
 end
 
-function VASCharacterSelectBlockBase:CheckEnable()
+function VASCharacterSelectBlockBase:CheckEnable(fromInitialize)
 	-- This is called by the event handler for getting the valid characters for a VAS product.
 	local currentRealmAddress = select(5, GetServerName());
 	local isGuildVAS = false;
@@ -152,7 +153,7 @@ function VASCharacterSelectBlockBase:CheckEnable()
 
 	-- This is only valid if something doesn't end up changing which characters can be selected during this process (this is potentially subject to issues from rewinding the flow)
 	if #characters > 0 then
-		self:ShowCharacterSelector();
+		self:ShowCharacterSelector(fromInitialize);
 	end
 end
 
@@ -172,9 +173,10 @@ function VASCharacterSelectBlockBase:GetServiceInfoByCharacterID(characterID)
 	--]]
 end
 
-function VASCharacterSelectBlockBase:ShowCharacterSelector()
+function VASCharacterSelectBlockBase:ShowCharacterSelector(fromInitialize)
 	CharacterServicesCharacterSelector:Show();
-	CharacterServicesCharacterSelector:UpdateDisplay(self);
+	local canShowArrow = not fromInitialize;
+	CharacterServicesCharacterSelector:UpdateDisplay(self, canShowArrow);
 end
 
 function VASCharacterSelectBlockBase:OnHide()

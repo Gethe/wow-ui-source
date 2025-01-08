@@ -86,7 +86,7 @@ StaticPopupDialogs["ERROR_CINEMATIC"] = {
 	button2 = nil,
 }
 
-StaticPopupDialogs["ERROR_CONNECT_TO_PLUNDERSTORM_FAILED"] = {
+StaticPopupDialogs["ERROR_CONNECT_TO_EVENT_REALM_FAILED"] = {
 	text = ERROR_CONNECT_TO_PLUNDERSTORM_FAILED_DIALOG,
 	button1 = OKAY,
 	button2 = nil,
@@ -439,6 +439,35 @@ StaticPopupDialogs["CREATE_CHARACTER_REALM_CONFIRMATION"] = {
 		end
 	end
 }
+
+StaticPopupDialogs["ACCOUNT_STORE_BEGIN_PURCHASE_OR_REFUND"] = {
+	text = "",
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function()
+		
+		local itemInfo = GlueDialog.data;
+		if itemInfo.status == Enum.AccountStoreItemStatus.Refundable then
+			PlaySound(SOUNDKIT.ACCOUNT_STORE_ITEM_REFUND);
+			C_AccountStore.RefundItem(itemInfo.id);
+		else
+			PlaySound(SOUNDKIT.ACCOUNT_STORE_ITEM_PURCHASE);
+			C_AccountStore.BeginPurchase(itemInfo.id);
+		end
+	end
+};
+
+StaticPopupDialogs["CONFIRM_DELETE_CHARACTER_GROUP"] = {
+	text = CONFIRM_DELETE_CHARACTER_GROUP_TEXT,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function()
+		if GlueDialog.data then
+			GlueDialog.data();
+		end
+	end,
+	cover = true
+};
 
 local function GlueDialog_SetCustomOnHideScript(self, script)
 	self.customOnHideScript = script;

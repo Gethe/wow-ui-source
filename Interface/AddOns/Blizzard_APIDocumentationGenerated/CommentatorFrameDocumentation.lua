@@ -1405,6 +1405,20 @@ local CommentatorFrame =
 			Type = "Function",
 		},
 		{
+			Name = "SpellUsesItemCharges",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "spellUsesItemCharges", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "StartWargame",
 			Type = "Function",
 

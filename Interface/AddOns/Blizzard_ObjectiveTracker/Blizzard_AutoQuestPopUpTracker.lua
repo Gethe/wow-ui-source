@@ -6,8 +6,8 @@ function AutoQuestPopupTrackerMixin:ShouldDisplayAutoQuest(questID)
 	return not C_QuestLog.IsQuestBounty(questID) and self:ShouldDisplayQuest(QuestCache:Get(questID));
 end
 
-local function MakeBlockKey(questID, popupType)
-	return questID .. popupType;
+local function MakeBlockKey(questID, popUpType)
+	return questID .. popUpType;
 end
 
 function AutoQuestPopupTrackerMixin:AddAutoQuestObjectives()
@@ -108,7 +108,7 @@ end
 
 function AutoQuestPopupBlockMixin:UpdateIcon(questID, popUpType)
 	local contents = self.Contents;
-	local isCampaign = QuestUtil.ShouldQuestIconsUseCampaignAppearance(questID);
+	local isCampaign = C_QuestInfoSystem.GetQuestClassification(questID) == Enum.QuestClassification.Campaign;
 	contents.QuestIconBadgeBorder:SetShown(not isCampaign);
 
 	local isComplete = popUpType == "COMPLETE";
@@ -166,7 +166,7 @@ function AutoQuestPopupBlockMixin:AdjustSlideAnchor(offsetY)
 end
 
 function AutoQuestPopupBlockMixin:OnAnimFinished()
-	if self.popUpType == "COMPLETED" then
+	if self.popUpType == "COMPLETE" then
 		self.Contents.FlashFrame:Show();
 	end
 end

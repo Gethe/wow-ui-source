@@ -107,6 +107,10 @@ local BattleNet =
 				{ Name = "gameAccountInfo", Type = "BNetGameAccountInfo", Nilable = true },
 			},
 		},
+		{
+			Name = "InstallHighResTextures",
+			Type = "Function",
+		},
 	},
 
 	Events =

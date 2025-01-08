@@ -328,6 +328,9 @@ end
 function PlayerSpellsFrameMixin:GetSpecName()
 	local unitSex = self:GetUnitSex();
 	local specID = self:GetSpecID();
+	if not specID then
+		return "";
+	end
 	return select(2, GetSpecializationInfoByID(specID, unitSex));
 end
 

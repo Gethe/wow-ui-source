@@ -11,7 +11,7 @@ local ipairs = ipairs;
 local select = select;
 local wipe = wipe;
 local pcall = pcall;
-local strjoin = strjoin;
+local strjoin = string.join;
 local PrintToDebugWindow = PrintToDebugWindow;
 
 ---------------------------------------------------------------------------
@@ -22,7 +22,7 @@ local PrintToDebugWindow = PrintToDebugWindow;
 -- func = getprinthandler() -- Gets the current print handler
 -- print(...) -- Passes its arguments to the current print handler
 --
--- The default print handler simply strjoin's its arguments with a " "
+-- The default print handler simply string.join's its arguments with a " "
 -- delimiter and adds it to DEFAULT_CHAT_FRAME
 
 local LOCAL_ToStringAllTemp = {};

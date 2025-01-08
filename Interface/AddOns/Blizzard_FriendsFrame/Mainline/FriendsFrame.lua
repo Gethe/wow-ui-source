@@ -170,7 +170,7 @@ function FriendsFrame_ClickSummonButton (self)
 	end
 end
 
-function FriendsFrame_ShowDropdown(name, connected, lineID, chatType, chatFrame, friendsList, ommunityClubID, communityStreamID, communityEpoch, communityPosition, guid)
+function FriendsFrame_ShowDropdown(name, connected, lineID, chatType, chatFrame, friendsList, communityClubID, communityStreamID, communityEpoch, communityPosition, guid)
 	if connected or friendsList then
 		local contextData = 
 		{	
@@ -334,7 +334,9 @@ local function IsRAFHelpTipShowing()
 end
 
 function FriendsFrame_OnShow(self)
-	if not C_Glue.IsOnGlueScreen() and (C_GameEnvironmentManager.GetCurrentGameEnvironment() ~= Enum.GameEnvironment.WoWLabs) then
+	local onGlues =  C_Glue.IsOnGlueScreen();
+	local inPlunderstorm = C_GameEnvironmentManager.GetCurrentGameEnvironment() == Enum.GameEnvironment.WoWLabs;
+	if not onGlues and not inPlunderstorm then
 		playerRealmID = GetRealmID();
 		playerRealmName = GetRealmName();
 		playerFactionGroup = UnitFactionGroup("player");
@@ -367,10 +369,12 @@ function FriendsFrame_OnShow(self)
 		self:Hide();
 	end, self);
 
-	-- Raid tab is unavailable while in raid story content.
-	local inStoryRaid = DifficultyUtil.InStoryRaid();
-	local enableRaidTab = not inStoryRaid;
-	PanelTemplates_SetTabEnabled(self, 3, enableRaidTab);
+	if not onGlues then
+		-- Raid tab is unavailable while in raid story content.
+		local inStoryRaid = DifficultyUtil.InStoryRaid();
+		local enableRaidTab = not inStoryRaid;
+		PanelTemplates_SetTabEnabled(self, 3, enableRaidTab);
+	end
 
 	if enableRaidTab then
 		FriendsFrameTab3:SetScript("OnEnter", nil);

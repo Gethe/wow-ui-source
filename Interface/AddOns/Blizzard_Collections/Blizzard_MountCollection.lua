@@ -173,11 +173,11 @@ function MountJournal_OnLoad(self)
 	self.SlotRequirementLabel:SetText(levelRequiredText);
 	self.SlotRequirementLabel:SetTextColor(LOCKED_EQUIPMENT_LABEL_COLOR:GetRGB());
 	
-	MountJournal_SetPendingDragonMountChanges(false);
+	MountJournal_SetPendingMountChanges(false);
 
 	self.SuppressedMountEquipmentButton = bottomLeftInset.SuppressedMountEquipmentButton;
 
-	self.ToggleDynamicFlightFlyoutButton:SetFlyout(self.DynamicFlightFlyout);
+	self.ToggleDynamicFlightFlyoutButton:SetPopup(self.DynamicFlightFlyoutPopup);
 
 	MountJournal_UpdateEquipment(self);
 end
@@ -710,12 +710,12 @@ function MountJournalMountButton_ChooseFallbackMountToDisplay(mountID, random)
 	return 0;
 end
 
-function MountJournal_SetPendingDragonMountChanges(isPending)
-	MountJournal.PendingDragonMountChanges = isPending;
+function MountJournal_SetPendingMountChanges(isPending)
+	MountJournal.PendingMountChanges = isPending;
 end
 
-function MountJournal_GetPendingDragonMountChanges()
-	return MountJournal.PendingDragonMountChanges;
+function MountJournal_GetPendingMountChanges()
+	return MountJournal.PendingMountChanges;
 end
 
 function MountJournal_OnModelLoaded(mountActor)
@@ -726,8 +726,8 @@ function MountJournal_UpdateMountDisplay(forceSceneChange)
 	if ( MountJournal.selectedMountID ) then
 		local creatureName, spellID, icon, active, isUsable, sourceType = C_MountJournal.GetMountInfoByID(MountJournal.selectedMountID);
 		local needsFanfare = C_MountJournal.NeedsFanfare(MountJournal.selectedMountID);
-		if ( MountJournal.MountDisplay.lastDisplayed ~= spellID or forceSceneChange or MountJournal_GetPendingDragonMountChanges()) then
-			MountJournal_SetPendingDragonMountChanges(false);
+		if ( MountJournal.MountDisplay.lastDisplayed ~= spellID or forceSceneChange or MountJournal_GetPendingMountChanges()) then
+			MountJournal_SetPendingMountChanges(false);
 			local creatureDisplayID, descriptionText, sourceText, isSelfMount, _, modelSceneID, animID, spellVisualKitID, disablePlayerMountPreview = C_MountJournal.GetMountInfoExtraByID(MountJournal.selectedMountID);
 			if not creatureDisplayID then
 				local randomSelection = false;
@@ -1038,8 +1038,7 @@ function MountJournalDynamicFlightModeButtonMixin:OnEvent(event, ...)
 end
 
 function MountJournalDynamicFlightModeButtonMixin:OnClick()
-	self.flyoutButton:CloseFlyout();
-
+	FlyoutPopupButtonMixin.OnClick(self);
 	C_MountJournal.SwapDynamicFlightMode();
 end
 
@@ -1049,10 +1048,6 @@ end
 
 function MountJournalDynamicFlightModeButtonMixin:OnEnter()
 	self:DisplayTooltip();
-end
-
-function MountJournalDynamicFlightModeButtonMixin:SetFlyoutButton(flyoutButton)
-	self.flyoutButton = flyoutButton;
 end
 
 function MountJournalDynamicFlightModeButtonMixin:UpdateIcon()
@@ -1076,12 +1071,8 @@ function MountJournalOpenDynamicFlightSkillTreeButtonMixin:OnLoad()
 	self.PushedTexture:SetDrawLayer("OVERLAY");
 end
 
-function MountJournalOpenDynamicFlightSkillTreeButtonMixin:SetFlyoutButton(flyoutButton)
-	self.flyoutButton = flyoutButton;
-end
-
 function MountJournalOpenDynamicFlightSkillTreeButtonMixin:OnClick()
-	self.flyoutButton:CloseFlyout();
+	FlyoutPopupButtonMixin.OnClick(self);
 
 	GenericTraitUI_LoadUI();
 
@@ -1100,29 +1091,7 @@ function MountJournalOpenDynamicFlightSkillTreeButtonMixin:OnLeave()
 end
 
 --------------------------------------------------
-MountJournalToggleDynamicFlightFlyoutButtonMixin = CreateFromMixins(ButtonStateBehaviorMixin);
-
-function MountJournalToggleDynamicFlightFlyoutButtonMixin:SetFlyout(flyout)
-	self.flyout = flyout;
-	self.flyout.OpenDynamicFlightSkillTreeButton:SetFlyoutButton(self);
-	self.flyout.DynamicFlightModeButton:SetFlyoutButton(self);
-
-	self:UpdateArrow();
-end
-
-function MountJournalToggleDynamicFlightFlyoutButtonMixin:ToggleFlyout()
-	self.flyout:SetShown(not self.flyout:IsShown());
-
-	self:UpdateArrow();
-	self:UpdateUnspentGlyphsAnimation();
-end
-
-function MountJournalToggleDynamicFlightFlyoutButtonMixin:CloseFlyout()
-	self.flyout:Hide();
-
-	self:UpdateArrow();
-	self:UpdateUnspentGlyphsAnimation();
-end
+MountJournalToggleDynamicFlightFlyoutButtonMixin = CreateFromMixins(FlyoutButtonMixin);
 
 function MountJournalToggleDynamicFlightFlyoutButtonMixin:OnEvent(event, ...)
 	if event == "TRAIT_TREE_CURRENCY_INFO_UPDATED" then
@@ -1133,30 +1102,22 @@ function MountJournalToggleDynamicFlightFlyoutButtonMixin:OnEvent(event, ...)
 	end
 end
 
-function MountJournalToggleDynamicFlightFlyoutButtonMixin:OnHide()
-	self:UnregisterEvent("TRAIT_TREE_CURRENCY_INFO_UPDATED");
+function MountJournalToggleDynamicFlightFlyoutButtonMixin:OnPopupToggled()
+	FlyoutButtonMixin.OnPopupToggled(self);
 
-	self:CloseFlyout();
+	self:UpdateUnspentGlyphsAnimation();
+end
+
+function MountJournalToggleDynamicFlightFlyoutButtonMixin:OnHide()
+	FlyoutButtonMixin.OnHide(self);
+
+	self:UnregisterEvent("TRAIT_TREE_CURRENCY_INFO_UPDATED");
 end
 
 function MountJournalToggleDynamicFlightFlyoutButtonMixin:OnShow()
 	self:RegisterEvent("TRAIT_TREE_CURRENCY_INFO_UPDATED");
 
 	self:UpdateCanSpendGlyphs();
-end
-
-function MountJournalToggleDynamicFlightFlyoutButtonMixin:OnClick()
-	self:ToggleFlyout();
-end
-
-function MountJournalToggleDynamicFlightFlyoutButtonMixin:OnButtonStateChanged()
-	self:UpdateArrow();
-end
-
-function MountJournalToggleDynamicFlightFlyoutButtonMixin:SetArrowPosition(arrow, rotation, offset)
-	SetClampedTextureRotation(arrow, rotation);
-	arrow:ClearAllPoints();
-	arrow:SetPoint("BOTTOM", self, "BOTTOM", 0, offset);
 end
 
 function MountJournalToggleDynamicFlightFlyoutButtonMixin:UpdateCanSpendGlyphs()
@@ -1176,36 +1137,12 @@ function MountJournalToggleDynamicFlightFlyoutButtonMixin:UpdateVisibility()
 end
 
 function MountJournalToggleDynamicFlightFlyoutButtonMixin:UpdateUnspentGlyphsAnimation()
-	-- If the flyout is shown MountJournalOpenDynamicFlightSkillTreeButtonMixin takes over the pulsing animation.
-	local isFlyoutShown = self.flyout:IsShown();
+	-- If the popup is open MountJournalOpenDynamicFlightSkillTreeButtonMixin takes over the pulsing animation.
+	local isPopupOpen = self:IsPopupOpen();
 
-	self.UnspentGlyphsAnim:SetPlaying(self.canSpendDragonridingGlyphs and not isFlyoutShown);
+	self.UnspentGlyphsAnim:SetPlaying(self.canSpendDragonridingGlyphs and not isPopupOpen);
 
-	self.flyout.OpenDynamicFlightSkillTreeButton.UnspentGlyphsAnim:SetPlaying(self.canSpendDragonridingGlyphs and isFlyoutShown);
-end
-
-function MountJournalToggleDynamicFlightFlyoutButtonMixin:UpdateArrow()
-	if self:IsDown() then
-		self.FlyoutArrowNormal:Hide();
-		self.FlyoutArrowHighlight:Hide();
-		self.FlyoutArrowPushed:Show();
-	else
-		self.FlyoutArrowNormal:Show();
-		self.FlyoutArrowHighlight:Show();
-		self.FlyoutArrowPushed:Hide();
-	end
-
-	if self.flyout:IsShown() then
-		local rotation = 180;
-		self:SetArrowPosition(self.FlyoutArrowNormal, rotation, self.openArrowOffset);
-		self:SetArrowPosition(self.FlyoutArrowHighlight, rotation, self.openArrowOffset);
-		self:SetArrowPosition(self.FlyoutArrowPushed, rotation, self.openArrowOffset);
-	else
-		local rotation = 0;
-		self:SetArrowPosition(self.FlyoutArrowNormal, rotation, self.closedArrowOffset);
-		self:SetArrowPosition(self.FlyoutArrowHighlight, rotation, self.closedArrowOffset);
-		self:SetArrowPosition(self.FlyoutArrowPushed, rotation, self.closedArrowOffset);
-	end
+	self.popup.OpenDynamicFlightSkillTreeButton.UnspentGlyphsAnim:SetPlaying(self.canSpendDragonridingGlyphs and isPopupOpen);
 end
 
 --------------------------------------------------------

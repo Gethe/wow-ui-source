@@ -2,6 +2,8 @@ local tooltipButton;
 
 QuestLogButtonTypes = EnumUtil.MakeEnum("None", "Any", "Header", "HeaderCampaign", "HeaderCampaignMinimal", "HeaderCallings", "StoryHeader", "Quest");
 
+QuestLogDisplayMode = EnumUtil.MakeEnum("Quests", "Events", "MapLegend");
+
 local QuestSearcherObject = { };
 
 function QuestSearcherObject:Init(questInfo)
@@ -195,7 +197,107 @@ function QuestSearcher:RestoreHeaderStates()
 	self.headerStates = nil;
 end
 
+QuestLogTabButtonMixin = { };
+
+function QuestLogTabButtonMixin:OnMouseDown(button)
+	if button == "LeftButton" then
+		self.Icon:SetPoint("CENTER", -1, -1);
+	end
+end
+
+function QuestLogTabButtonMixin:OnMouseUp(button, upInside)
+	if button == "LeftButton" then
+		self.Icon:SetPoint("CENTER", -2, 0);
+		PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
+	end
+end
+
+function QuestLogTabButtonMixin:SetChecked(checked)
+	if checked then
+		self.Icon:SetAtlas(self.activeAtlas, TextureKitConstants.UseAtlasSize);
+	else
+		self.Icon:SetAtlas(self.inactiveAtlas, TextureKitConstants.UseAtlasSize);
+	end
+	self.SelectedTexture:SetShown(checked);
+end
+
+function QuestLogTabButtonMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -4, -4);
+	GameTooltip:SetText(self.tooltipText);
+end
+
 QuestLogMixin = { };
+
+function QuestLogMixin:GetPanelExtraWidth()
+	local frame = self.TabButtons[1];
+	return frame:GetWidth();
+end
+
+function QuestLogMixin:SetDisplayMode(displayMode)
+	if displayMode == self.displayMode then
+		return;
+	end
+
+	self.displayMode = displayMode;
+
+	for i, frame in ipairs(self.TabButtons) do
+		frame:SetChecked(frame.displayMode == displayMode);
+	end
+
+	for i, frame in ipairs(self.ContentFrames) do
+		frame:SetShown(frame.displayMode == displayMode);
+	end
+
+	EventRegistry:TriggerEvent("QuestLog.SetDisplayMode", displayMode);
+end
+
+function QuestLogMixin:ValidateTabs()
+	local hasEvents = C_PlayerInfo.CanPlayerUseEventScheduler();
+	local showingEventsTab = self.EventsTab:IsShown();
+	local mapLegendRelativeTab = nil;
+	if hasEvents and not showingEventsTab then
+		self.EventsTab:Show();
+		mapLegendRelativeTab = self.EventsTab;
+	elseif not hasEvents and showingEventsTab then
+		self.EventsTab:Hide();
+		mapLegendRelativeTab = self.QuestsTab;
+		if self.displayMode == QuestLogDisplayMode.Events then
+			self:SetDisplayMode(QuestLogDisplayMode.Quests);
+		end
+	end
+
+	if mapLegendRelativeTab then
+		self.MapLegendTab:SetPoint("TOP", mapLegendRelativeTab, "BOTTOM", 0, -3);
+	end
+end
+
+function QuestLogMixin:CheckEventsTabTutorial()
+	local shouldShowHelp = self.EventsTab:IsShown() and C_PlayerInfo.CanPlayerUseEventScheduler() and not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_EVENT_SCHEDULER_TAB_SEEN);
+	if shouldShowHelp then
+		local helpTipInfo = {
+			text = EVENT_SCHEDULER_WORLD_MAP_HELP_TEXT,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			cvarBitfield = "closedInfoFramesAccountWide",
+			bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_EVENT_SCHEDULER_TAB_SEEN,
+			targetPoint = HelpTip.Point.RightEdgeCenter,
+			offsetY = 4,
+		};
+
+		HelpTip:Show(self.EventsTab, helpTipInfo);
+	end
+end
+
+function QuestLogMixin:GetHelpInfoText()
+	if self.displayMode == QuestLogDisplayMode.Events then
+		return WORLD_MAP_TUTORIAL6;
+	elseif self.displayMode == QuestLogDisplayMode.MapLegend then
+		return WORLD_MAP_TUTORIAL5;
+	elseif self.displayMode == QuestLogDisplayMode.Quests then
+		if QuestScrollFrame:IsShown() then
+			return WORLD_MAP_TUTORIAL2;
+		end
+	end
+end
 
 function QuestLogMixin:GetCurrentMapID()
 	if self:GetParent():IsShown() then
@@ -225,6 +327,9 @@ function QuestLogMixin:Refresh()
 	local numPOIs = QuestMapUpdateAllQuests();
 	QuestMapFrame_ResetFilters();
 	QuestMapFrame_UpdateAll(numPOIs);
+
+	self:ValidateTabs();
+	self:CheckEventsTabTutorial();
 end
 
 function QuestLogMixin:UpdatePOIs()
@@ -252,32 +357,19 @@ function QuestLogMixin:GetLastLayoutIndex()
 	end
 end
 
-function QuestLogMixin:ShowMapLegend()
-	self.MapLegend:Show();
-	self:HideCampaignOverview();
-	self.DetailsFrame:Hide();
-	QuestScrollFrame:Hide();
-end
-
-function QuestLogMixin:HideMapLegend()
-	self.MapLegend:Hide();
-	QuestScrollFrame:Show();
-	EventRegistry:TriggerEvent("MapLegendHidden");
-end
-
 function QuestLogMixin:ShowCampaignOverview(campaignID)
-	self.CampaignOverview:Show();
-	self.CampaignOverview:SetCampaign(campaignID);
+	self.QuestsFrame.CampaignOverview:Show();
+	self.QuestsFrame.CampaignOverview:SetCampaign(campaignID);
 	QuestScrollFrame:Hide();
 end
 
 function QuestLogMixin:HideCampaignOverview(campaignID)
-	self.CampaignOverview:Hide();
+	self.QuestsFrame.CampaignOverview:Hide();
 	QuestScrollFrame:Show();
 end
 
 function QuestLogMixin:OnHighlightedQuestPOIChange(questID)
-	local poiButton = self.QuestsFrame.Contents:FindButtonByQuestID(questID);
+	local poiButton = self.QuestsFrame.ScrollFrame.Contents:FindButtonByQuestID(questID);
 	if poiButton then
 		poiButton:EvaluateManagedHighlight();
 	end
@@ -448,19 +540,30 @@ function QuestMapFrame_OnLoad(self)
 
 	EventRegistry:RegisterCallback("SetHighlightedQuestPOI", self.OnHighlightedQuestPOIChange, self);
 	EventRegistry:RegisterCallback("ClearHighlightedQuestPOI", self.OnHighlightedQuestPOIChange, self);
-	EventRegistry:RegisterCallback("HideMapLegend", self.HideMapLegend, self);
-	EventRegistry:RegisterCallback("ShowMapLegend", self.ShowMapLegend, self);
 
 	self.completedCriteria = {};
 	local onCreateFunc = nil;
 	local useHighlightManager = true;
 	QuestScrollFrame.Contents:Init(onCreateFunc, useHighlightManager);
 
+	QuestMapFrame.DetailsFrame = QuestMapFrame.QuestsFrame.DetailsFrame;
 	QuestMapFrame.DetailsFrame.ScrollFrame:RegisterCallback("OnScrollRangeChanged", function(o, xrange, yrange)
 		QuestMapFrame_AdjustPathButtons();
 	end);
 
 	QuestMapFrame_SetupSettingsDropdown(self);
+
+	local function TabHandler(tab, button, upInside)
+		QuestLogTabButtonMixin.OnMouseUp(tab, button, upInside);
+		if button == "LeftButton" and upInside then
+			self:SetDisplayMode(tab.displayMode);
+		end
+	end
+	for i, frame in ipairs(self.TabButtons) do
+		frame:SetScript("OnMouseUp", TabHandler);
+	end
+
+	self:SetDisplayMode(QuestLogDisplayMode.Quests);
 end
 
 function QuestMapFrame_SetupSettingsDropdown(self)
@@ -473,7 +576,7 @@ function QuestMapFrame_SetupSettingsDropdown(self)
 		QuestLogQuests_Update();
 	end
 
-	self.SettingsDropdown:SetupMenu(function(dropdown, rootDescription)
+	self.QuestsFrame.ScrollFrame.SettingsDropdown:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_QUEST_MAP_FRAME_SETTINGS");
 
 		rootDescription:CreateCheckbox(QUEST_LOG_SHOW_OBJECTIVES, IsSelected, SetSelected);
@@ -792,9 +895,9 @@ function QuestMapFrame_UpdateQuestSessionState(self)
 	self.QuestSessionManagement:UpdateVisibility();
 	self.QuestSessionManagement:UpdateTooltip();
 	if self.QuestSessionManagement:IsShown() then
-		self.QuestsFrame:SetPoint("BOTTOMRIGHT", self.QuestSessionManagement, "TOPRIGHT", -22, 5);
+		self.ContentsAnchor:SetPoint("BOTTOM", self.QuestSessionManagement, "TOP", 0, 5);
 	else
-		self.QuestsFrame:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -22, 9);
+		self.ContentsAnchor:SetPoint("BOTTOM", self, "BOTTOM", 0, 9);
 	end
 end
 
@@ -804,11 +907,6 @@ function QuestMapFrame_OnShow(self)
 	if not self.initialCampaignHeadersUpdate then
 		self.initialCampaignHeadersUpdate = true;
 		C_QuestLog.UpdateCampaignHeaders();
-	end
-
-	if self.MapLegend:IsShown() then
-		self:HideCampaignOverview();
-		QuestScrollFrame:Hide();
 	end
 end
 
@@ -999,9 +1097,6 @@ function QuestLogQuestDetailsMixin:AdjustRewardsFrameContainer()
 end
 
 function QuestMapFrame_ShowQuestDetails(questID)
-	QuestMapFrame_PingQuestID(questID);
-
-	EventRegistry:TriggerEvent("HideMapLegend");
 	EventRegistry:TriggerEvent("QuestLog.HideCampaignOverview");
 	C_QuestLog.SetSelectedQuest(questID);
 	local detailsFrame = QuestMapFrame.DetailsFrame;
@@ -1010,6 +1105,7 @@ function QuestMapFrame_ShowQuestDetails(questID)
 	QuestInfo_Display(QUEST_TEMPLATE_MAP_DETAILS, detailsFrame.ScrollFrame.Contents);
 	QuestInfo_Display(QUEST_TEMPLATE_MAP_REWARDS, detailsFrame.RewardsFrameContainer.RewardsFrame, nil, nil, true);
 	detailsFrame:AdjustBackgroundTexture(detailsFrame.SealMaterialBG);
+	detailsFrame.BackFrame.AccountCompletedNotice:Refresh(questID);
 
 	detailsFrame.ScrollFrame.ScrollBar:ScrollToBegin();
 
@@ -1033,7 +1129,7 @@ function QuestMapFrame_ShowQuestDetails(questID)
 	end
 	detailsFrame:SetRewardsHeight(height);
 
-	QuestMapFrame.QuestsFrame:Hide();
+	QuestMapFrame.QuestsFrame.ScrollFrame:Hide();
 	detailsFrame:Show();
 
 	-- save current view
@@ -1054,6 +1150,7 @@ function QuestMapFrame_ShowQuestDetails(questID)
 	detailsFrame.questMapID = mapID;
 	if ( mapID ~= 0 ) then
 		QuestMapFrame:GetParent():SetMapID(mapID);
+		EventRegistry:TriggerEvent("MapCanvas.PingQuestID", questID);
 	end
 
 	QuestMapFrame_UpdateQuestDetailsButtons();
@@ -1064,7 +1161,7 @@ function QuestMapFrame_ShowQuestDetails(questID)
 end
 
 function QuestMapFrame_CloseQuestDetails(optPortraitOwnerCheckFrame)
-	QuestMapFrame.QuestsFrame:Show();
+	QuestMapFrame.QuestsFrame.ScrollFrame:Show();
 	QuestMapFrame.DetailsFrame:Hide();
 	QuestMapFrame.DetailsFrame.questID = nil;
 	QuestMapFrame:GetParent():ClearFocusedQuestID();
@@ -1075,10 +1172,6 @@ function QuestMapFrame_CloseQuestDetails(optPortraitOwnerCheckFrame)
 
 	StaticPopup_Hide("ABANDON_QUEST");
 	StaticPopup_Hide("ABANDON_QUEST_WITH_ITEMS");
-end
-
-function QuestMapFrame_PingQuestID(questID)
-	QuestMapFrame:GetParent():PingQuestID(questID);
 end
 
 function QuestMapFrame_UpdateSuperTrackedQuest(self)
@@ -1175,16 +1268,18 @@ function QuestLogScrollFrameMixin:OnLoad()
 		self:UpdateBottomShadow(offset);
 	end);
 
-	self.titleFramePool = CreateFramePool("BUTTON", QuestMapFrame.QuestsFrame.Contents, "QuestLogTitleTemplate", function(framePool, frame)
+	local contentsFrame = QuestMapFrame.QuestsFrame.ScrollFrame.Contents;
+
+	self.titleFramePool = CreateFramePool("BUTTON", contentsFrame, "QuestLogTitleTemplate", function(framePool, frame)
 		Pool_HideAndClearAnchors(framePool, frame);
 		frame.info = nil;
 	end);
 
-	self.objectiveFramePool = CreateFramePool("FRAME", QuestMapFrame.QuestsFrame.Contents, "QuestLogObjectiveTemplate");
-	self.headerFramePool = CreateFramePool("BUTTON", QuestMapFrame.QuestsFrame.Contents, "QuestLogHeaderTemplate");
-	self.campaignHeaderFramePool = CreateFramePool("FRAME", QuestMapFrame.QuestsFrame.Contents, "CampaignHeaderTemplate");
-	self.campaignHeaderMinimalFramePool = CreateFramePool("BUTTON", QuestMapFrame.QuestsFrame.Contents, "CampaignHeaderMinimalTemplate");
-	self.covenantCallingsHeaderFramePool = CreateFramePool("BUTTON", QuestMapFrame.QuestsFrame.Contents, "CovenantCallingsHeaderTemplate");
+	self.objectiveFramePool = CreateFramePool("FRAME", contentsFrame, "QuestLogObjectiveTemplate");
+	self.headerFramePool = CreateFramePool("BUTTON", contentsFrame, "QuestLogHeaderTemplate");
+	self.campaignHeaderFramePool = CreateFramePool("FRAME", contentsFrame, "CampaignHeaderTemplate");
+	self.campaignHeaderMinimalFramePool = CreateFramePool("BUTTON", contentsFrame, "CampaignHeaderMinimalTemplate");
+	self.covenantCallingsHeaderFramePool = CreateFramePool("BUTTON", contentsFrame, "CovenantCallingsHeaderTemplate");
 	self.CampaignTooltip = CreateFrame("Frame", nil, UIParent, "CampaignTooltipTemplate");
 
 	self.SearchBox.Instructions:SetText(SEARCH_QUEST_LOG);

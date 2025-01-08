@@ -129,9 +129,6 @@ function AuctionHouseItemListMixin:SetCustomError(errorText)
 	self.ResultsText:SetText(errorText);
 end
 
--- Can be removed once the exceptions on related to nil rowData have been confirmed fixed.
-local canAssertOnInvalidRowData = true;
-
 function AuctionHouseItemListMixin:Init()
 	if self.isInitialized then
 		return;
@@ -169,15 +166,15 @@ function AuctionHouseItemListMixin:Init()
 			local highlightShown = false;
 			local highlightAlpha = 1.0;
 
-			-- rowData and elementData are expected to be non-nil.
+			-- rowData or elementData has been found to occasionally be nil, likely due to this callback 
+			-- being invoked before the row has been fully initialized by the table builder. Since this seems to
+			-- resolve itself when displayed, just allow the unhighlighted state in the event this occurs.
 			local rowData = button.rowData;
-			local elementData = button:GetElementData();
-			if rowData and elementData then
-				highlightShown, highlightAlpha = self.highlightCallback(rowData, self.selectedRowData, elementData);
-			elseif canAssertOnInvalidRowData then
-				-- We don't need/want an assert for every element in the range. Once will suffice.
-				canAssertOnInvalidRowData = false;
-				assertsafe(false, "Missing row data for auction house item list.")
+			if rowData then
+				local elementData = button:GetElementData();
+				if elementData then
+					highlightShown, highlightAlpha = self.highlightCallback(rowData, self.selectedRowData, elementData);
+				end
 			end
 
 			if not self.hideStripes then

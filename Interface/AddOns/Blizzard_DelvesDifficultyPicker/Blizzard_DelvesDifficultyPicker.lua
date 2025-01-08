@@ -22,6 +22,10 @@ local BOUNTIFUL_DELVE_WIDGET_TAG = "delveBountiful";
 -- If the last selected isn't available, we'll default to the highest unlocked tier.
 local LAST_TIER_SELECTED_CVAR = "lastSelectedDelvesTier";
 
+-- Stores the highest unlocked delve difficulty tier. Default is 1
+-- If this does not match the actual highest tier, we'll notify the player that they have new, higher tiers available
+local HIGHEST_TIER_UNLOCKED_CVAR = "highestUnlockedDelvesTier";
+
 local TIER_SELECT_DROPDOWN_MENU_MIN_WIDTH = 110;
 local TIER_SELECT_DROPDOWN_MENU_BTN_WIDTH = 130;
 
@@ -78,25 +82,65 @@ function DelvesDifficultyPickerFrameMixin:OnShow()
 	self:ClearAllPoints();
 	self:SetPoint("CENTER", UIParent, "CENTER", 0, 110);
 	FrameUtil.RegisterFrameForEvents(self, DELVES_DIFFICULTY_PICKER_EVENTS);
-	self.Dropdown:RegisterCallback(DropdownButtonMixin.Event.OnMenuClose, self.TryShowHelpTip, self);
-	self.Dropdown:RegisterCallback(DropdownButtonMixin.Event.OnMenuOpen, self.HideHelpTip, self);
-	
 	self.Dropdown:RegisterCallback(DropdownButtonMixin.Event.OnMenuOpen, function(dropdown)
-		local selectedOption = self:GetSelectedOption();
-		local index = selectedOption and selectedOption.orderIndex or 1;
+		self:HideHelpTip();
+
+		if dropdown.NewLabel:IsShown() then
+			dropdown.NewLabel:Hide();
+		end
 
 		if dropdown.menu.ScrollBox:HasScrollableExtent() then
+			local selectedOption = self:GetSelectedOption();
+			local index = selectedOption and selectedOption.orderIndex or 1;
 			dropdown.menu.ScrollBox:ScrollToElementDataIndex(index, ScrollBoxConstants.AlignBegin);
 		end
 	end, self.Dropdown);
+
+	self.Dropdown:RegisterCallback(DropdownButtonMixin.Event.OnMenuClose, function()
+		self:TryShowHelpTip();
+		self.newTiers = {};
+	end);
 	
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	self:SetInitialLevel();
 	self:CheckForActiveDelveAndUpdate();
 	self:TryShowHelpTip();
+	self:CheckForNewTierUnlocks();
 	self.partyTierEligibility = {};
 	if self.gossipOptions then
 		C_DelvesUI.RequestPartyEligibilityForDelveTiers(self.gossipOptions[1].gossipOptionID);
+	end
+end
+
+function DelvesDifficultyPickerFrameMixin:CheckForNewTierUnlocks()
+	-- Track new tiers, since you can unlock more than one at a time
+	-- The "NEW" label we show if *anything* new is unlocked, but inside the dropdown we want to show which tiers are new with pips
+	self.newTiers = {};
+
+	local options = self:GetOptions();
+	if options then
+		local oldHighestUnlockedTier = GetCVarNumberOrDefault(HIGHEST_TIER_UNLOCKED_CVAR);
+		local newHighestUnlockedTier = nil;
+		for tier, optionInfo in ipairs(options) do
+			local tierIsUnlocked = optionInfo.status == Enum.GossipOptionStatus.Available or optionInfo.status == Enum.GossipOptionStatus.AlreadyComplete;
+			local tierIsLocked = optionInfo.status == Enum.GossipOptionStatus.Unavailable or optionInfo.status == Enum.GossipOptionStatus.Locked;
+			-- Tier is unlocked and new, let the player know
+			if tierIsUnlocked and tier > oldHighestUnlockedTier then
+				self.newTiers[tier] = true;
+				self.Dropdown.NewLabel:Show();
+				newHighestUnlockedTier = tier;
+			-- Tier is locked, but old highest is higher somehow or doesn't exist - we should rollback or reset 
+			elseif tierIsLocked and oldHighestUnlockedTier >= tier then
+				newHighestUnlockedTier = tier -	1;
+				if newHighestUnlockedTier < 1 or not options[newHighestUnlockedTier] then 
+					newHighestUnlockedTier = 1;
+				end
+				break;
+			end
+		end
+		if newHighestUnlockedTier then
+			SetCVar(HIGHEST_TIER_UNLOCKED_CVAR, newHighestUnlockedTier);
+		end
 	end
 end
 
@@ -176,6 +220,17 @@ function DelvesDifficultyPickerFrameMixin:SetupDropdown()
 
 		local function SetupButton(option, isLocked)
 			local radio = rootDescription:CreateRadio(option.name, IsSelected, SetSelected, option);
+
+			-- Add the "new" tier pip for recently unlocked tiers
+			radio:AddInitializer(function(button, description, menu)
+				local optionUnlocked = option.status == Enum.GossipOptionStatus.Available or option.status == Enum.GossipOptionStatus.AlreadyComplete;
+				if optionUnlocked and self.newTiers and self.newTiers[option.orderIndex + 1] then
+					local texture = button:AttachTexture();
+					texture:SetSize(13, 13);
+					texture:SetPoint("LEFT", button.fontString, "RIGHT", 3, 0);
+					texture:SetAtlas("ui-hud-micromenu-communities-icon-notification");
+				end
+			end);
 
 			if isLocked then
 				radio:SetEnabled(false);
@@ -473,7 +528,8 @@ function DelveRewardsContainerFrameMixin:SetRewards()
 		for  _, reward in ipairs(optionRewards) do
 			if	reward.rewardType == Enum.GossipOptionRewardType.Item then 
 				local name, _, quality, _, _, _, _, _, _, itemIcon = C_Item.GetItemInfo(reward.id);
-				table.insert(rewardInfo, {id = reward.id, quality = quality, quantity = reward.quantity, texture = itemIcon, name = name, context = reward.context});
+				local contextQuality = reward.context and C_Item.GetDelvePreviewItemQuality(reward.id, reward.context) or nil;
+				table.insert(rewardInfo, {id = reward.id, quality = contextQuality or quality, quantity = reward.quantity, texture = itemIcon, name = name, context = reward.context});
 			end
 		end
 

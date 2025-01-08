@@ -23,6 +23,10 @@ function UIWidgetTemplateSpellDisplayMixin:OnLoad()
 	self.rarityPipPool = CreateTexturePool(self, "OVERLAY", 7, "RarityPipTemplate");
 end		
 
+local function IsWorldLootObject(object)
+	return object and C_WorldLootObject.IsWorldLootObject(object) or false;
+end
+
 function UIWidgetTemplateSpellDisplayMixin:Setup(widgetInfo, widgetContainer)
 	self.hadSpellID = false;
 	self.attachedUnit = widgetContainer.attachedUnit;
@@ -41,10 +45,12 @@ function UIWidgetTemplateSpellDisplayMixin:Setup(widgetInfo, widgetContainer)
 	self:SetMouseClickEnabled(true);
 	self:SetScript("OnMouseDown", self.OnMouseDown);
 	self:UpdateRarityPips(widgetInfo.spellInfo);
-end
 
-local function IsWorldLootObject(object)
-	return object and C_WorldLootObject.IsWorldLootObject(object) or false;
+	if IsWorldLootObject(self.attachedUnit) then
+		self.widgetInfo = widgetInfo;
+		self.displayedWorldLootObject = self.attachedUnit;
+		EventRegistry:TriggerEvent("WorldLootObject.ObjectShown", self.displayedWorldLootObject, self);
+	end
 end
 
 function UIWidgetTemplateSpellDisplayMixin:UpdateRarityPips(spellInfo)
@@ -74,6 +80,12 @@ function UIWidgetTemplateSpellDisplayMixin:UpdateRarityPips(spellInfo)
 end
 
 function UIWidgetTemplateSpellDisplayMixin:OnReset()
+	if self.displayedWorldLootObject then
+		EventRegistry:TriggerEvent("WorldLootObject.ObjectHidden", self.displayedWorldLootObject, self);
+		self.widgetInfo = nil;
+		self.displayedWorldLootObject = nil;
+	end
+
 	UIWidgetBaseTemplateMixin.OnReset(self);
 	self.Spell:OnReset();
 end
@@ -83,7 +95,7 @@ function UIWidgetTemplateSpellDisplayMixin:SetFontStringColor(fontColor)
 end
 
 function UIWidgetTemplateSpellDisplayMixin:OnUpdate()
-	if self.hadSpellID == true then
+	if not self.widgetID or self.hadSpellID == true then
 		return;
 	end
 
@@ -96,9 +108,13 @@ function UIWidgetTemplateSpellDisplayMixin:OnUpdate()
 	end
 end
 
-function UIWidgetTemplateSpellDisplayMixin:OnMouseDown()
+function UIWidgetTemplateSpellDisplayMixin:OnMouseDown(button)
 	if IsWorldLootObject(self.attachedUnit) then
-		C_WorldLootObject.OnWorldLootObjectClick(self.attachedUnit);
+		if button =="RightButton" then 
+			C_WorldLootObject.OnWorldLootObjectClick(self.attachedUnit, false);
+		else
+			C_WorldLootObject.OnWorldLootObjectClick(self.attachedUnit, true);
+		end
 	end
 end
 

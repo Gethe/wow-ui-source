@@ -491,6 +491,7 @@ function AlertFrameMixin:OnLoad()
 	self:RegisterEvent("NEW_PET_ADDED");
 	self:RegisterEvent("NEW_MOUNT_ADDED");
 	self:RegisterEvent("NEW_TOY_ADDED");
+	self:RegisterEvent("NEW_WARBAND_SCENE_ADDED");
 	self:RegisterEvent("NEW_RUNEFORGE_POWER_ADDED");
 	self:RegisterEvent("TRANSMOG_COSMETIC_COLLECTION_SOURCE_ADDED");
 	self:RegisterEvent("TRANSMOG_COLLECTION_SOURCE_ADDED");
@@ -516,9 +517,8 @@ local function ShouldToastAchievement(achievementID, alreadyEarnedOnAccount)
 	local id, name, points, completed, month, day, year, description, flags, icon, rewardText, isGuildAchievement, wasEarnedByMe, earnedBy = GetAchievementInfo(achievementID);
 	local isAccountAchievement = FlagsUtil.IsSet(flags, ACHIEVEMENT_FLAGS_ACCOUNT);
 
-	-- By default we don't toast a character achievement if you already earned it on another character
-	local isCharacterAchievement = not isAccountAchievement and not isGuildAchievement;
-	if isCharacterAchievement and alreadyEarnedOnAccount then
+	-- By default we don't toast an achievement if you already earned it on another character
+	if not isGuildAchievement and alreadyEarnedOnAccount then
 		return FlagsUtil.IsSet(flags, ACHIEVEMENT_FLAGS_TOAST_ON_REPEAT_COMPLETION);
 	end
 
@@ -537,7 +537,7 @@ function AlertFrameMixin:OnEvent(event, ...)
 
 		local achievementID, alreadyEarnedOnAccount = ...;
 		if ShouldToastAchievement(achievementID, alreadyEarnedOnAccount) then
-			AchievementAlertSystem:AddAlert(...);
+			AchievementAlertSystem:AddAlert(achievementID, alreadyEarnedOnAccount);
 		end
 	elseif ( event == "CRITERIA_EARNED" ) then
 		if (Kiosk.IsEnabled()) then
@@ -548,7 +548,11 @@ function AlertFrameMixin:OnEvent(event, ...)
 			AchievementFrame_LoadUI();
 		end
 
-		CriteriaAlertSystem:AddAlert(...);
+		-- Only toast progress towards an achievement if we would (eventually) toast the achievement itself
+		local achievementID, description, achievementAlreadyEarnedOnAccount = ...;
+		if ShouldToastAchievement(achievementID, achievementAlreadyEarnedOnAccount) then
+			CriteriaAlertSystem:AddAlert(achievementID, description);
+		end
 	elseif ( event == "LFG_COMPLETION_REWARD" ) then
 		if ( C_Scenario.IsInScenario() and not C_Scenario.TreatScenarioAsDungeon() ) then
 			local scenarioType = select(10, C_Scenario.GetInfo());
@@ -713,6 +717,9 @@ function AlertFrameMixin:OnEvent(event, ...)
 	elseif ( event == "NEW_TOY_ADDED") then
 		local toyID = ...;
 		NewToyAlertSystem:AddAlert(toyID);
+	elseif ( event == "NEW_WARBAND_SCENE_ADDED" ) then
+		local warbandSceneID = ...;
+		NewWarbandSceneAlertSystem:AddAlert(warbandSceneID);
 	elseif ( event == "NEW_RUNEFORGE_POWER_ADDED") then
 		local powerID = ...;
 		NewRuneforgePowerAlertSystem:AddAlert(powerID);

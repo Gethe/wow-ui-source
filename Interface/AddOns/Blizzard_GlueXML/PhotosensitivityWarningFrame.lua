@@ -54,7 +54,7 @@ function PhotosensitivityWarningFrameMixin:ShowNextFrame()
 
 	GlueParent_UpdateDialogs();
 	GlueParent_CheckCinematic();
-	if ( AccountLogin:IsVisible() ) then
+	if AccountLogin:IsVisible() and SetExpansionLogo then
 		SetExpansionLogo(AccountLogin.UI.GameLogo, GetClientDisplayExpansionLevel());
 	end
 end

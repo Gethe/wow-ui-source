@@ -65,15 +65,6 @@ local BarberShop =
 			},
 		},
 		{
-			Name = "GetCustomizationScope",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "customizationScope", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "GetViewingChrModel",
 			Type = "Function",
 
@@ -98,6 +89,20 @@ local BarberShop =
 			Returns =
 			{
 				{ Name = "hasChanges", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "HasCustomizationFeature",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "featureMask", Type = "ChrModelFeatureFlags", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasCustomizationFeature", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -206,7 +211,7 @@ local BarberShop =
 
 			Arguments =
 			{
-				{ Name = "sex", Type = "number", Nilable = false },
+				{ Name = "sex", Type = "UnitSex", Nilable = false },
 			},
 		},
 		{
@@ -225,6 +230,7 @@ local BarberShop =
 			Arguments =
 			{
 				{ Name = "chrModelID", Type = "number", Nilable = true },
+				{ Name = "spellShapeshiftFormID", Type = "number", Nilable = true },
 			},
 		},
 		{

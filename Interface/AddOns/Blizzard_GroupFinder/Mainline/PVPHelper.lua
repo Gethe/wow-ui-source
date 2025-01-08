@@ -100,6 +100,69 @@ function PVPFramePopup_OnResponse(accepted)
 	StaticPopupSpecial_Hide(PVPFramePopup);
 end
 
+---- Plunderstorm Popup Functions
+
+PlunderstormQueuePopupMixin = {};
+
+local PlunderstormQueuePopupEvents = {
+	"LOBBY_MATCHMAKER_QUEUE_POPPED",
+	"LOBBY_MATCHMAKER_QUEUE_ABANDONED",
+	"LOBBY_MATCHMAKER_QUEUE_EXPIRED",
+}
+
+function PlunderstormQueuePopupMixin:OnLoad()
+	local function AcknowledgeQueuePopup(accept)
+		PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
+		C_LobbyMatchmakerInfo.RespondToQueuePop(accept);
+		StaticPopupSpecial_Hide(self);
+	end
+
+	self.AcceptButton:SetScript("OnClick", function()
+		AcknowledgeQueuePopup(true);
+	end);
+
+	self.DeclineButton:SetScript("OnClick", function()
+		AcknowledgeQueuePopup(false);
+	end);
+
+	FrameUtil.RegisterFrameForEvents(self, PlunderstormQueuePopupEvents);
+end
+
+function PlunderstormQueuePopupMixin:OnEvent(event, ...)
+	if event == "LOBBY_MATCHMAKER_QUEUE_POPPED" then
+		self:ShowPopup();
+	elseif event == "LOBBY_MATCHMAKER_QUEUE_ABANDONED" or 
+		event == "LOBBY_MATCHMAKER_QUEUE_EXPIRED" then
+		StaticPopupSpecial_Hide(self);
+	end
+end
+
+local function GetQueueTypeTextAndIcon(playlistEntryID)
+	if playlistEntryID == Enum.PartyPlaylistEntry.SoloGameMode then
+		return FRONT_END_LOBBY_SOLOS, "plunderstorm-glues-queueselector-solo-selected";
+	elseif playlistEntryID == Enum.PartyPlaylistEntry.DuoGameMode then
+		return FRONT_END_LOBBY_DUOS, "plunderstorm-glues-queueselector-duo-selected";
+	elseif playlistEntryID == Enum.PartyPlaylistEntry.TrioGameMode then
+		return FRONT_END_LOBBY_TRIOS, "plunderstorm-glues-queueselector-trio-selected";
+	end
+
+	return FRONT_END_LOBBY_PRACTICE, "plunderstorm-glues-queueselector-training-selected";
+end
+
+function PlunderstormQueuePopupMixin:ShowPopup()
+	self.Title:SetText(WOW_LABS_PLUNDERSTORM_FORMED);
+	self.SubTitle:SetText(WOW_LABS_PLUNDERSTORM_CATEGORY);
+
+	local queueType = C_LobbyMatchmakerInfo.GetCurrQueuePlaylistEntry();
+	local queueTypeText, queueTypeIcon = GetQueueTypeTextAndIcon(queueType);
+	
+	self.QueueTypeText:SetText(queueTypeText);
+	self.QueueTypeIcon:SetAtlas(queueTypeIcon, TextureKitConstants.UseAtlasSize);
+
+	StaticPopupSpecial_Show(self);
+	PlaySound(SOUNDKIT.READY_CHECK);
+	FlashClientIcon();
+end
 
 ---- PVPTimer
 

@@ -1843,10 +1843,18 @@ if not C_Glue.IsOnGlueScreen() then
 		return cleanString;
 	end
 	local pingNameToTypeTable = {
-		[CleanupPingTypeString(PING_TYPE_ASSIST)] = Enum.PingSubjectType.Assist,
+		["1"] = Enum.PingSubjectType.Attack,
 		[CleanupPingTypeString(PING_TYPE_ATTACK)] = Enum.PingSubjectType.Attack,
-		[CleanupPingTypeString(PING_TYPE_ON_MY_WAY)] = Enum.PingSubjectType.OnMyWay,
+		["2"] = Enum.PingSubjectType.Warning,
 		[CleanupPingTypeString(PING_TYPE_WARNING)] = Enum.PingSubjectType.Warning,
+		["3"] = Enum.PingSubjectType.OnMyWay,
+		[CleanupPingTypeString(PING_TYPE_ON_MY_WAY)] = Enum.PingSubjectType.OnMyWay,
+		["4"] = Enum.PingSubjectType.Assist,
+		[CleanupPingTypeString(PING_TYPE_ASSIST)] = Enum.PingSubjectType.Assist,
+		["5"] = Enum.PingSubjectType.AlertNotThreat,
+		[CleanupPingTypeString(PING_TYPE_NOT_THREAT)] = Enum.PingSubjectType.AlertNotThreat,
+		["6"] = Enum.PingSubjectType.AlertThreat,
+		[CleanupPingTypeString(PING_TYPE_THREAT)] = Enum.PingSubjectType.AlertThreat,
 	};
 	SecureCmdList["PING"] = function(msg)
 		local action, target = SecureCmdOptionParse(msg);
@@ -3708,6 +3716,10 @@ function ChatFrame_GetMentorChannelStatus(entityStatus, channelRuleSet)
 	return Enum.PlayerMentorshipStatus.None;
 end
 
+local function GetAssertPFlagMessage(specialFlag)
+	return string.format("'pflag' at _G[CHAT_FLAG_%s] doesn't exist.", specialFlag);
+end
+
 local function GetPFlag(specialFlag, zoneChannelID, localChannelID)
 	if specialFlag ~= "" then
 		if specialFlag == "GM" or specialFlag == "DEV" then
@@ -3722,7 +3734,9 @@ local function GetPFlag(specialFlag, zoneChannelID, localChannelID)
 				return NPEV2_CHAT_USER_TAG_NEWCOMER;
 			end
 		else
-			return _G["CHAT_FLAG_"..specialFlag];
+			local pflag = _G["CHAT_FLAG_"..specialFlag];
+			assertsafe(pflag ~= nil, GetAssertPFlagMessage, specialFlag);
+			return pflag or "";
 		end
 	end
 
@@ -3763,6 +3777,16 @@ local function FlashTabIfNotShown(frame, info, type, chatGroup, chatTarget)
 			end
 		end
 	end
+end
+
+local function GetAssertOutMessageFormatKeyMessage(type)
+	return string.format("'formatKey' at _G[CHAT_%s_TYPE] doesn't exist.", type);
+end
+
+local function GetOutMessageFormatKey(type)
+	local formatKey = _G["CHAT_"..type.."_GET"];
+	assertsafe(formatKey ~= nil, GetAssertOutMessageFormatKeyMessage, type);
+	return formatKey or "";
 end
 
 function ChatFrame_MessageEventHandler(self, event, ...)
@@ -3914,7 +3938,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			self:AddMessage(CHAT_RESTRICTED_TRIAL, info.r, info.g, info.b, info.id);
 		elseif ( type == "CHANNEL_LIST") then
 			if(channelLength > 0) then
-				self:AddMessage(format(_G["CHAT_"..type.."_GET"]..arg1, tonumber(arg8), arg4), info.r, info.g, info.b, info.id);
+				self:AddMessage(format(GetOutMessageFormatKey(type)..arg1, tonumber(arg8), arg4), info.r, info.g, info.b, info.id);
 			else
 				self:AddMessage(arg1, info.r, info.g, info.b, info.id);
 			end
@@ -4094,26 +4118,26 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 				if ( usingDifferentLanguage ) then
 					local languageHeader = "["..arg3.."] ";
 					if ( showLink and (arg2 ~= "") ) then
-						outMsg = format(_G["CHAT_"..type.."_GET"]..languageHeader..message, pflag..playerLink);
+						outMsg = format(GetOutMessageFormatKey(type)..languageHeader..message, pflag..playerLink);
 					else
-						outMsg = format(_G["CHAT_"..type.."_GET"]..languageHeader..message, pflag..arg2);
+						outMsg = format(GetOutMessageFormatKey(type)..languageHeader..message, pflag..arg2);
 					end
 				else
 					if ( not showLink or arg2 == "" ) then
 						if ( type == "TEXT_EMOTE" ) then
 							outMsg = message;
 						else
-							outMsg = format(_G["CHAT_"..type.."_GET"]..message, pflag..arg2, arg2);
+							outMsg = format(GetOutMessageFormatKey(type)..message, pflag..arg2, arg2);
 						end
 					else
 						if ( type == "EMOTE" ) then
-							outMsg = format(_G["CHAT_"..type.."_GET"]..message, pflag..playerLink);
+							outMsg = format(GetOutMessageFormatKey(type)..message, pflag..playerLink);
 						elseif ( type == "TEXT_EMOTE") then
 							outMsg = string.gsub(message, arg2, pflag..playerLink, 1);
 						elseif (type == "GUILD_ITEM_LOOTED") then
 							outMsg = string.gsub(message, "$s", GetPlayerLink(arg2, playerLinkDisplayText));
 						else
-							outMsg = format(_G["CHAT_"..type.."_GET"]..message, pflag..playerLink);
+							outMsg = format(GetOutMessageFormatKey(type)..message, pflag..playerLink);
 						end
 					end
 				end
@@ -4633,6 +4657,11 @@ function ChatEdit_ResetChatType(self)
 	if ( self:GetAttribute("chatType") == "INSTANCE_CHAT" and (not IsInGroup(LE_PARTY_CATEGORY_INSTANCE)) ) then
 		self:SetAttribute("chatType", "SAY");
 	end
+
+	if ( C_Glue.IsOnGlueScreen() and C_GameEnvironmentManager.GetCurrentGameEnvironment() == Enum.GameEnvironment.WoWLabs and IsInGroup(LE_PARTY_CATEGORY_HOME) ) then
+		self:SetAttribute("chatType", "PARTY");
+	end
+
 	self.lastTabComplete = nil;
 	self.tabCompleteText = nil;
 	self.tabCompleteTableIndex = 1;
@@ -4776,6 +4805,11 @@ end
 
 function ChatEdit_GetLastActiveWindow()
 	return LAST_ACTIVE_CHAT_EDIT_BOX;
+end
+
+function ChatEdit_GetActiveChatType()
+	local editBox = ChatEdit_GetActiveWindow();
+	return editBox and editBox:GetAttribute("chatType") or nil;
 end
 
 function ChatEdit_FocusActiveWindow()

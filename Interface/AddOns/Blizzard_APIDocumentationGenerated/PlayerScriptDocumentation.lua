@@ -33,15 +33,6 @@ local PlayerScript =
 			},
 		},
 		{
-			Name = "AreAccountAchievementsHidden",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "result", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "AutoEquipCursorItem",
 			Type = "Function",
 		},
@@ -542,7 +533,7 @@ local PlayerScript =
 			Returns =
 			{
 				{ Name = "lifetimeHonorableKills", Type = "number", Nilable = false },
-				{ Name = "lifetimeMaxPVPRank", Type = "number", Nilable = false },
+				{ Name = "lifetimeMaxPVPRank", Type = "PvPRanks", Nilable = false },
 			},
 		},
 		{
@@ -999,6 +990,15 @@ local PlayerScript =
 			},
 		},
 		{
+			Name = "IsDrivableArea",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsDualWielding",
 			Type = "Function",
 
@@ -1387,15 +1387,6 @@ local PlayerScript =
 			Returns =
 			{
 				{ Name = "result", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "ShowAccountAchievements",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "hide", Type = "bool", Nilable = false, Default = false },
 			},
 		},
 		{

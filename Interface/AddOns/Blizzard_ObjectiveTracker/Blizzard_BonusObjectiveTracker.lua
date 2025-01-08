@@ -69,7 +69,7 @@ function BonusObjectiveTrackerMixin:OnBlockHeaderClick(block, button)
 					local mapID = C_TaskQuest.GetQuestZoneID(questID);
 					if mapID then
 						OpenQuestLog(mapID);
-						WorldMapPing_StartPingQuest(questID);
+						EventRegistry:TriggerEvent("MapCanvas.PingQuestID", questID);
 					end
 				end
 			end

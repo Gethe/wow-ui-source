@@ -48,6 +48,8 @@ function LFDFrame_OnLoad(self)
 
 	ScrollUtil.InitScrollBoxListWithScrollBar(LFDQueueFrame.Specific.ScrollBox, LFDQueueFrame.Specific.ScrollBar, view);
 	ScrollUtil.InitScrollBoxListWithScrollBar(LFDQueueFrame.Follower.ScrollBox, LFDQueueFrame.Follower.ScrollBar, viewFollower);
+
+	EventRegistry:RegisterCallback("LobbyMatchmaker.UpdateQueueState", LFDQueueFrameFindGroupButton_Update);
 end
 
 function LFDFrame_OnEvent(self, event, ...)
@@ -650,6 +652,12 @@ function LFDQueueFrameRandomCooldownFrame_OnUpdate(self, elapsed)
 end
 
 function LFDQueueFrameFindGroupButton_Update()
+	if C_LobbyMatchmakerInfo.IsInQueue() then
+		LFDQueueFrameFindGroupButton:Disable();
+		LFDQueueFrameFindGroupButton.tooltip = WOW_LABS_CANNOT_ENTER_NON_PLUNDER_QUEUE;
+		return;
+	end
+
 	local mode, subMode = GetLFGMode(LE_LFG_CATEGORY_LFD);
 	--Update the text on the button
 	if ( mode == "queued" or mode == "rolecheck" or mode == "proposal" or mode == "suspended" ) then
@@ -699,7 +707,12 @@ function LFDQueueFrameFindGroupButton_Update()
 	if ( C_LFGList.HasActiveEntryInfo() ) then
 		lfgListDisabled = CANNOT_DO_THIS_WHILE_LFGLIST_LISTED;
 	elseif(C_PartyInfo.IsCrossFactionParty()) then
-		lfgListDisabled = CROSS_FACTION_RAID_DUNGEON_FINDER_ERROR;
+		local isDungeonID = LFDQueueFrame.type and (type(LFDQueueFrame.type) == "number");
+		if isDungeonID then
+			lfgListDisabled = LFG_TryGetCrossFactionQueueFailureMessage({ LFDQueueFrame.type });
+		elseif LFDQueueFrame.type == "specific" or LFDQueueFrame.type == "follower" then
+			lfgListDisabled = LFG_TryGetCrossFactionQueueFailureMessage(LFG_BuildSelectedEntriesList(LFDDungeonList, LFDHiddenByCollapseList));
+		end
 	end
 
 	if ( lfgListDisabled ) then

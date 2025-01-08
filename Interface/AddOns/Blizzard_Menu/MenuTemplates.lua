@@ -728,6 +728,14 @@ function WowStyle2DropdownMixin:OnMenuClosed(menu)
 	self:OnButtonStateChanged();
 end
 
+WowStyle1ArrowDropdownMixin = CreateFromMixins(ButtonStateBehaviorMixin);
+
+function WowStyle1ArrowDropdownMixin:OnLoad()
+	ValidateIsDropdownButtonIntrinsic(self);
+	ButtonStateBehaviorMixin.OnLoad(self);
+	DropdownButtonMixin.OnLoad(self);
+end
+
 MenuStyleMixin = {};
 
 function MenuStyleMixin:Generate()

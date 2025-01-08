@@ -5,9 +5,9 @@ local TooltipInfoShared =
 		{
 			Name = "TooltipDataItemBinding",
 			Type = "Enumeration",
-			NumValues = 10,
+			NumValues = 11,
 			MinValue = 0,
-			MaxValue = 9,
+			MaxValue = 10,
 			Fields =
 			{
 				{ Name = "Quest", Type = "TooltipDataItemBinding", EnumValue = 0 },
@@ -20,6 +20,7 @@ local TooltipInfoShared =
 				{ Name = "BindOnEquip", Type = "TooltipDataItemBinding", EnumValue = 7 },
 				{ Name = "BindOnUse", Type = "TooltipDataItemBinding", EnumValue = 8 },
 				{ Name = "AccountUntilEquipped", Type = "TooltipDataItemBinding", EnumValue = 9 },
+				{ Name = "BindToAccountUntilEquipped", Type = "TooltipDataItemBinding", EnumValue = 10 },
 			},
 		},
 		{

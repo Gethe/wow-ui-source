@@ -153,20 +153,68 @@ end
 function PerksProgramProductButtonMixin:UpdateItemPriceElement()
 	if self.itemInfo then
 		local price = self.itemInfo.price;
+		local salePrice = nil;
+
+		if (self.itemInfo.originalPrice) then
+			price = self.itemInfo.originalPrice;
+			salePrice = self.itemInfo.price;
+		end
+
+		local itemOnSale = salePrice and salePrice < price;
 		local playerCurrencyAmount = C_PerksProgram.GetCurrencyAmount();
+
+		local priceText = "";
+		local salePriceText = "";
 		if playerCurrencyAmount then
-			if self.itemInfo.price > playerCurrencyAmount then
-				price = GRAY_FONT_COLOR:WrapTextInColorCode(price);
+			if itemOnSale then
+				priceText = GRAY_FONT_COLOR:WrapTextInColorCode(price);
+				
+				if salePrice > playerCurrencyAmount then
+					salePriceText = ORANGE_FONT_COLOR:WrapTextInColorCode(salePrice);
+				else
+					salePriceText = GREEN_FONT_COLOR:WrapTextInColorCode(salePrice);
+				end
 			else
-				price = WHITE_FONT_COLOR:WrapTextInColorCode(price);
+				if price > playerCurrencyAmount then
+					priceText = GRAY_FONT_COLOR:WrapTextInColorCode(price);
+				else
+					priceText = WHITE_FONT_COLOR:WrapTextInColorCode(price);
+				end
 			end
 		end
 
 		local container = self.ContentsContainer;
 
-		container.Price:SetText(format(PERKS_PROGRAM_PRICE_FORMAT, price, PerksProgramFrame:GetCurrencyIconMarkup()));
+		container.PriceContainer.Price:SetText(priceText);
+		container.PriceContainer.Price:SetHeight(container.PriceContainer.Price:GetStringHeight());
 
-		container.Price:SetShown(not self.itemInfo.purchased and not self.itemInfo.refundable and not self.itemInfo.isPurchasePending);
+		container.PriceContainer.SalePrice:SetShown(itemOnSale);
+
+		if itemOnSale then
+			container.PriceContainer.SalePrice:SetText(salePriceText);
+			container.PriceContainer.SalePrice:SetHeight(container.PriceContainer.SalePrice:GetStringHeight());
+		else
+			container.PriceContainer.SalePrice:SetHeight(1);
+		end
+
+		container.PriceContainer.PriceStrikethrough:SetShown(itemOnSale);
+
+		local showDiscountContainer = itemOnSale and self.itemInfo.showSaleBanner;
+		container.DiscountContainer:SetShown(showDiscountContainer);
+		if showDiscountContainer then
+			local salePercentage = itemOnSale and (((price - salePrice) / price) * 100) or 0;
+			salePercentage = math.round(salePercentage);
+			container.DiscountContainer.Text:SetText(string.format(PERKS_PROGRAM_SALE_PERCENT, salePercentage));
+		end
+		
+		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CURRENCY_ID_PERKS_PROGRAM_DISPLAY_INFO);
+		container.PriceIcon:SetTexture(currencyInfo.iconFileID);
+
+		container.PriceContainer:Layout();
+
+		local showPrice = not self.itemInfo.purchased and not self.itemInfo.refundable and not self.itemInfo.isPurchasePending;
+		container.PriceContainer:SetShown(showPrice);
+		container.PriceIcon:SetShown(showPrice);
 		container.PurchasePendingSpinner:SetShown(self.itemInfo.isPurchasePending);
 		container.RefundIcon:SetShown(self.itemInfo.refundable);
 		container.PurchasedIcon:SetShown(self.itemInfo.purchased and not self.itemInfo.refundable);
@@ -351,7 +399,7 @@ function PerksProgramFrozenProductButtonMixin:ClearItemInfo()
 
 	local container = self.ContentsContainer;
 	container.Label:Hide();
-	container.Price:Hide();
+	container.PriceContainer:Hide();
 	container.RefundIcon:Hide();
 	container.PurchasedIcon:Hide();
 	container.Icon:Hide();

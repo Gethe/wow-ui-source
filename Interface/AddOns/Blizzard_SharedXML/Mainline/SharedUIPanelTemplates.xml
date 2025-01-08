@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\UI.xsd">
-  <Texture name="UIPanelButtonHighlightTexture" file="Interface\Buttons\UI-Panel-Button-Highlight" alphaMode="ADD" virtual="true">
+	<Texture name="UIPanelButtonHighlightTexture" file="Interface\Buttons\UI-Panel-Button-Highlight" alphaMode="ADD" virtual="true">
 		<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>
 	</Texture>
 
@@ -508,6 +508,18 @@
 				</FontString>
 			</Layer>
 		</Layers>
+	</CheckButton>
+
+	<CheckButton name="MinimalCheckboxArtTemplate" virtual="true">
+		<NormalTexture parentKey="NormalTexture" atlas="checkbox-minimal" useAtlasSize="true"/>
+		<PushedTexture parentKey="PushedTexture" atlas="checkbox-minimal" useAtlasSize="true"/>
+		<HighlightTexture parentKey="HighlightTexture" atlas="checkbox-minimal" useAtlasSize="true" alphaMode="ADD"/>
+		<CheckedTexture parentKey="CheckedTexture" atlas="checkmark-minimal" useAtlasSize="true"/>
+		<DisabledCheckedTexture parentKey="DisabledCheckedTexture" atlas="checkmark-minimal-disabled" useAtlasSize="true"/>
+	</CheckButton>
+
+	<CheckButton name="MinimalCheckboxTemplate" inherits="MinimalCheckboxArtTemplate" virtual="true">
+		<Size x="30" y="29"/>
 	</CheckButton>
 
 	<Slider name="UISliderTemplate" orientation="HORIZONTAL" enableMouse="true" virtual="true">
@@ -1958,6 +1970,13 @@
 		<NormalFont style="GameFontNormal"/>
 		<HighlightFont style="GameFontHighlight"/>
 		<DisabledFont style="GameFontDisable"/>
+	</Button>
+
+	<Button name="SharedButtonExtraSmallTemplate" inherits="BigRedThreeSliceButtonTemplate" virtual="true">
+		<Size x="50" y="20"/>
+		<NormalFont style="GameFontNormalSmall"/>
+		<HighlightFont style="GameFontHighlightSmall"/>
+		<DisabledFont style="GameFontDisableSmall"/>
 	</Button>
 
 	<Button name="BigGoldRedThreeSliceButtonTemplate" inherits="ThreeSliceButtonTemplate" virtual="true">

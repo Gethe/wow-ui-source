@@ -130,12 +130,16 @@ function PVPUIFrame_OnShow(self)
 	PVPUIFrame_UpdateSelectedRoles();
 	PVPUIFrame_UpdateRolesChangeable();
 	PVPUIFrame_EvaluateHelpTips(self);
+
+	EventRegistry:TriggerEvent("PlunderstormQueueTutorial.Update");
 end
 
 function PVPUIFrame_OnHide(self)
 	UpdateMicroButtons();
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 	ClearBattlemaster();
+
+	EventRegistry:TriggerEvent("PlunderstormQueueTutorial.Update");
 end
 
 function PVPUIFrame_OnEvent(self, event, ...)
@@ -307,7 +311,7 @@ end
 -- CATEGORY FRAME
 ---------------------------------------------------------------
 
-local pvpFrames = { "HonorFrame", "ConquestFrame", "LFGListPVPStub" }
+local pvpFrames = { "HonorFrame", "ConquestFrame", "LFGListPVPStub", "PlunderstormFrame" }
 
 function PVPQueueFrame_OnLoad(self)
 	--set up side buttons
@@ -319,6 +323,24 @@ function PVPQueueFrame_OnLoad(self)
 
 	SetPortraitToTexture(self.CategoryButton3.Icon, "Interface\\Icons\\Achievement_General_StayClassy");
 	self.CategoryButton3.Name:SetText(PVP_TAB_GROUPS);
+
+	self.CategoryButton4.Icon:SetAtlas("plunderstorm-pvpqueue-catergory-icon");
+	self.CategoryButton4.Name:SetText(WOW_LABS_PLUNDERSTORM_CATEGORY);
+
+	-- If Plunderstorm is available, we have some different anchoring
+	local plunderstormAvailable = C_GameEnvironmentManager.GetCurrentEventRealmQueues() ~= Enum.EventRealmQueues.None and C_LobbyMatchmakerInfo.GetQueueFromMainlineEnabled();
+	local overrideAnchoringParent = self.CategoryButton2;
+	local categoryButtonOffsets = -101;
+	if plunderstormAvailable then
+		overrideAnchoringParent = self.CategoryButton4;
+		categoryButtonOffsets = -61;
+	end
+
+	-- Sets the list to fit 3 or 4 elements differently
+	self.CategoryButton1:SetPoint("TOPLEFT", self, "TOPLEFT", 10, categoryButtonOffsets);
+	-- Reanchors the Premade Group button to the Plunderstorm button
+	self.CategoryButton3:SetPoint("TOP", overrideAnchoringParent, "BOTTOM", 0, -30);
+	self.CategoryButton4:SetShown(plunderstormAvailable);
 
 	-- disable unusable side buttons
 	local disabledButtons = false;
@@ -420,6 +442,27 @@ function PVPQueueFrame_OnShow(self)
 	PVPQueueFrame_UpdateTitle();
 
 	PVEFrame.TopTileStreaks:Show()
+
+	local canUsePlunderButton = not (IsTrialAccount() or IsVeteranTrialAccount());
+	local failureReason = WOWLABS_SUB_REQUIRED;
+	if not canUsePlunderButton then
+		PVPQueueFrame_SetCategoryButtonState(self.CategoryButton4, false);
+		self.CategoryButton4.tooltip = failureReason;
+
+		return;
+	end
+
+	canUsePlunderButton = not C_PlayerInfo.IsPlayerNPERestricted();
+	failureReason = FEATURE_NOT_YET_AVAILABLE;
+	if not canUsePlunderButton then
+		PVPQueueFrame_SetCategoryButtonState(self.CategoryButton4, false);
+		self.CategoryButton4.tooltip = failureReason;
+
+		return;
+	end
+
+	self.CategoryButton4.tooltip = nil;
+	PVPQueueFrame_SetCategoryButtonState(self.CategoryButton4, true);
 end
 
 function PVPQueueFrame_UpdateTitle()
@@ -555,6 +598,8 @@ function HonorFrame_OnLoad(self)
 	self:RegisterEvent("LFG_LIST_SEARCH_RESULT_UPDATED");
     self:RegisterEvent("PLAYER_LEVEL_UP");
 	self:RegisterEvent("PVP_WORLDSTATE_UPDATE");
+
+	EventRegistry:RegisterCallback("LobbyMatchmaker.UpdateQueueState", HonorFrame_UpdateQueueButtons);
 end
 
 function HonorFrame_OnShow(self)
@@ -626,6 +671,11 @@ function HonorFrame_UpdateQueueButtons()
 	end
 
 	local disabledReason;
+
+	if C_LobbyMatchmakerInfo.IsInQueue() then
+		disabledReason = WOW_LABS_CANNOT_ENTER_NON_PLUNDER_QUEUE;
+		canQueue = false;
+	end
 
 	if arenaID then
 		local battlemasterListInfo = C_PvP.GetSkirmishInfo(arenaID);
@@ -700,8 +750,7 @@ function HonorFrame_UpdateQueueButtons()
 			elseif(isInCrossFactionGroup) then
 				if isBrawl or isSpecialBrawl then 
 					local brawlInfo = isSpecialBrawl and C_PvP.GetSpecialEventBrawlInfo() or C_PvP.GetAvailableBrawlInfo();
-					local allowCrossFactionGroups = brawlInfo and brawlInfo.brawlType == Enum.BrawlType.SoloRbg;
-					if (not allowCrossFactionGroups) then
+					if (brawlInfo and not brawlInfo.crossFactionAllowed) then
 						HonorFrame.QueueButton:Disable();
 						disabledReason = CROSS_FACTION_PVP_ERROR;
 					end
@@ -1104,6 +1153,8 @@ function ConquestFrame_OnLoad(self)
 
 	self:RegisterEvent("PVP_TYPES_ENABLED");
 
+	EventRegistry:RegisterCallback("LobbyMatchmaker.UpdateQueueState", ConquestFrame_UpdateJoinButton);
+
 	ConquestFrame_EvaluateSeasonState(self);
 end
 
@@ -1327,6 +1378,12 @@ end
 function ConquestFrame_UpdateJoinButton()
 	local button = ConquestFrame.JoinButton;
 	local groupSize = GetNumGroupMembers();
+
+	if C_LobbyMatchmakerInfo.IsInQueue() then
+		button:Disable();
+		button.tooltip = WOW_LABS_CANNOT_ENTER_NON_PLUNDER_QUEUE;
+		return;
+	end
 
 	if not ConquestFrame_HasActiveSeason() then
 		button:Disable();
@@ -1698,12 +1755,19 @@ PVPUIHonorInsetMixin = { }
 function PVPUIHonorInsetMixin:Update()
 	local activePanel = PVPQueueFrame.selection;
 	if activePanel == HonorFrame then
+		self.Background:SetAtlas("pvpqueue-sidebar-background", TextureKitConstants.UseAtlasSize);
 		self:Show();
 		self:DisplayCasualPanel();
 		return HONOR_INSET_WIDTH;
 	elseif activePanel == ConquestFrame then
+		self.Background:SetAtlas("pvpqueue-sidebar-background", TextureKitConstants.UseAtlasSize);
 		self:Show();
 		self:DisplayRatedPanel();
+		return HONOR_INSET_WIDTH;
+	elseif activePanel == PlunderstormFrame then
+		self.Background:SetAtlas("plunderstorm-pvpqueue-sidebar-background", TextureKitConstants.UseAtlasSize);
+		self:Show();
+		self:DisplayPlunderstormPanel();
 		return HONOR_INSET_WIDTH;
 	end
 
@@ -1714,6 +1778,7 @@ end
 function PVPUIHonorInsetMixin:DisplayCasualPanel()
 	self.CasualPanel:Show();
 	self.RatedPanel:Hide();
+	self.PlunderstormPanel:Hide();
 end
 
 local function GetPVPSeasonAchievementID()
@@ -1739,6 +1804,13 @@ end
 
 function PVPUIHonorInsetMixin:DisplayRatedPanel()
 	self.RatedPanel:Show();
+	self.CasualPanel:Hide();
+	self.PlunderstormPanel:Hide();
+end
+
+function PVPUIHonorInsetMixin:DisplayPlunderstormPanel()
+	self.PlunderstormPanel:Show();
+	self.RatedPanel:Hide();
 	self.CasualPanel:Hide();
 end
 
@@ -2197,6 +2269,174 @@ end
 
 local function PVPQuestRewardSortFunction(firstValue, secondValue)
 	return firstValue > secondValue;
+end
+
+PlunderstormQueueFrameMixin = {};
+
+PlunderstormQueueFrameEvents = {
+	"PARTY_LEADER_CHANGED",
+	"GROUP_ROSTER_UPDATE",
+	"GROUP_FORMED",
+}
+
+function PlunderstormQueueFrameMixin:OnLoad()
+	self.QueueSelect.useLocalPlayIndex = true;
+end
+
+function PlunderstormQueueFrameMixin:OnShow()
+	EventRegistry:TriggerEvent("PlunderstormQueueTutorial.Update");
+	FrameUtil.RegisterFrameForEvents(self, PlunderstormQueueFrameEvents);
+end
+
+function PlunderstormQueueFrameMixin:OnHide()
+	FrameUtil.UnregisterFrameForEvents(self, PlunderstormQueueFrameEvents);
+end
+
+function PlunderstormQueueFrameMixin:OnEvent(event, ...)
+	if event == "PARTY_LEADER_CHANGED" or
+	   event == "GROUP_ROSTER_UPDATE" or
+	   event == "GROUP_FORMED" then
+		self.QueueSelect:UpdateButtons();
+	end
+end
+
+StartPlunderstormQueueButtonMixin = {};
+
+local PlunderstormQueueButtonEvents = {
+	"LOBBY_MATCHMAKER_QUEUE_STATUS_UPDATE",
+	"LOBBY_MATCHMAKER_QUEUE_ABANDONED",
+	"PARTY_LEADER_CHANGED",
+}
+
+function StartPlunderstormQueueButtonMixin:OnShow()
+	self:UpdateState();
+
+	FrameUtil.RegisterFrameForEvents(self, PlunderstormQueueButtonEvents);
+	EventRegistry:RegisterCallback("QueueStatusUpdate.QueuesUpdated", self.UpdateState, self);
+end
+
+function StartPlunderstormQueueButtonMixin:OnHide()
+	FrameUtil.UnregisterFrameForEvents(self, PlunderstormQueueButtonEvents);
+	EventRegistry:UnregisterCallback("QueueStatusUpdate.QueuesUpdated", self);
+end
+
+function StartPlunderstormQueueButtonMixin:OnClick()
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+
+	if ( C_LobbyMatchmakerInfo.IsInQueue() ) then
+		C_LobbyMatchmakerInfo.AbandonQueue();
+	else
+		local queueSelect = self:GetParent().QueueSelect;
+		local queueType = queueSelect:GetQueueType();
+		C_LobbyMatchmakerInfo.EnterQueue(queueType);
+	end
+
+	self:UpdateState();
+end
+
+function StartPlunderstormQueueButtonMixin:OnEnter()
+	if ( self.tooltip ) then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetText(self.tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, true);
+	end
+end
+
+function StartPlunderstormQueueButtonMixin:OnLeave()
+	GameTooltip:Hide();
+end
+
+function StartPlunderstormQueueButtonMixin:OnEvent(event, ...)
+	if ( event == "LOBBY_MATCHMAKER_QUEUE_STATUS_UPDATE" or
+		 event == "LOBBY_MATCHMAKER_QUEUE_ABANDONED" or
+		 event == "PARTY_LEADER_CHANGED" ) then
+		self:UpdateState();
+	end
+end
+
+function StartPlunderstormQueueButtonMixin:UpdateState()
+	local enabled = true;
+	local tooltip = nil;
+	if ( not QueueStatusFrame:HasNonPlunderstormQueue() ) then
+		enabled = false;
+		tooltip = PLUNDERSTORM_QUEUE_TOOLTIP_ERROR;
+	end
+
+	if ( UnitInParty("player") and not UnitIsGroupLeader("player") ) then
+		enabled = false;
+		tooltip = ERR_NOT_LEADER;
+	end
+
+	self:SetEnabled(enabled);
+	self.tooltip = tooltip;
+	self:SetText(not C_LobbyMatchmakerInfo.IsInQueue() and WOW_LABS_JOIN_QUEUE or WOW_LABS_LEAVE_QUEUE);
+end
+
+PlunderstormPanelMixin = {};
+
+local PlunderstormPanelEvents = {
+	"ACCOUNT_STORE_CURRENCY_AVAILABLE_UPDATED",
+	"STORE_FRONT_STATE_UPDATED",
+};
+
+function PlunderstormPanelMixin:OnLoad()
+	self.PlunderstoreButton:SetScript("OnClick", function()
+		AccountStoreUtil.ToggleAccountStore();
+	end);
+
+	self.PlunderDesc:SetScript("OnEnter", function(onEnterSelf)
+		if (onEnterSelf:IsTruncated()) then
+			GameTooltip:SetOwner(onEnterSelf, "ANCHOR_RIGHT");
+			GameTooltip:AddLine(onEnterSelf:GetText());
+			GameTooltip:Show();
+		end
+	end);
+
+	self.PlunderDesc:SetScript("OnLeave", function() GameTooltip_Hide(); end);
+
+	self.PlunderDisplay:SetScript("OnEnter", function(onEnterSelf)
+		GameTooltip:SetOwner(onEnterSelf, "ANCHOR_RIGHT");
+
+		local accountStoreCurrencyID = C_AccountStore.GetCurrencyIDForStore(Constants.AccountStoreConsts.PlunderstormStoreFrontID);
+		if accountStoreCurrencyID then
+			AccountStoreUtil.AddCurrencyTotalTooltip(GameTooltip, accountStoreCurrencyID);
+			GameTooltip:Show();
+		end
+	end);
+
+	self.PlunderDisplay:SetScript("OnLeave", function() GameTooltip_Hide(); end);
+end
+
+local function IsPlunderstoreEnabled()
+	return C_AccountStore.GetStoreFrontState(Constants.AccountStoreConsts.PlunderstormStoreFrontID) == Enum.AccountStoreState.Available;
+end
+
+function PlunderstormPanelMixin:OnShow()
+	FrameUtil.RegisterFrameForEvents(self, PlunderstormPanelEvents);
+
+	self:UpdatePlunder();
+
+	self.PlunderstoreButton:SetEnabled(IsPlunderstoreEnabled());
+end
+
+function PlunderstormPanelMixin:OnHide()
+	FrameUtil.UnregisterFrameForEvents(self, PlunderstormPanelEvents);
+end
+
+function PlunderstormPanelMixin:OnEvent(event, ...)
+	if event == "ACCOUNT_STORE_CURRENCY_AVAILABLE_UPDATED" then
+		self:UpdatePlunder();
+	elseif event == "STORE_FRONT_STATE_UPDATED" then
+		self.PlunderstoreButton:SetEnabled(IsPlunderstoreEnabled());
+	end
+end
+
+function PlunderstormPanelMixin:UpdatePlunder()
+	local accountStoreCurrencyID = C_AccountStore.GetCurrencyIDForStore(Constants.AccountStoreConsts.PlunderstormStoreFrontID);
+	if not accountStoreCurrencyID then
+		self.PlunderDisplay:SetText("-");
+	end
+
+	self.PlunderDisplay:SetText(AccountStoreUtil.FormatCurrencyDisplayWithWarning(accountStoreCurrencyID));
 end
 
 PVPQuestRewardMixin = { };

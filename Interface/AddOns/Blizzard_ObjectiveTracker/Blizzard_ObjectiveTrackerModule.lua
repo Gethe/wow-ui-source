@@ -281,6 +281,14 @@ function ObjectiveTrackerModuleMixin:GetBlock(id, optTemplate)
 	return block, wasAlreadyActive;
 end
 
+function ObjectiveTrackerModuleMixin:EnumerateActiveBlocks(callback)
+	for template, blocks in pairs(self.usedBlocks) do
+		for blockID, block in pairs(blocks) do
+			callback(block);
+		end
+	end
+end
+
 function ObjectiveTrackerModuleMixin:GetExistingBlock(id, optTemplate)
 	local template = optTemplate or self.blockTemplate;
 
@@ -394,6 +402,8 @@ function ObjectiveTrackerModuleMixin:InternalAddBlock(block)
 	if self:IsCollapsed() then
 		return false;
 	end
+
+	block.nextBlock = nil;
 
 	local offsetY = self:AnchorBlock(block);
 	if self.lastBlock then
@@ -723,6 +733,18 @@ function ObjectiveTrackerModuleMixin:CheckCachedBlocks(upcomingBlock)
 
 	-- All the cached blocks that could be added have been added by now
 	self.cacheIndex = numItems + 1;
+end
+
+function ObjectiveTrackerModuleMixin:MatchesTag(tag)
+	return self:GetTag() == tag;
+end
+
+function ObjectiveTrackerModuleMixin:GetTag()
+	return self.tag;
+end
+
+function ObjectiveTrackerModuleMixin:AddTag(tag)
+	self.tag = tag;
 end
 
 -- *****************************************************************************************************

@@ -1,7 +1,8 @@
 ToolWindowOwnerMixin = {};
 
-function ToolWindowOwnerMixin:MoveToNewWindow(title, width, height, minWidth, minHeight)
-	local window = CreateWindow();
+function ToolWindowOwnerMixin:MoveToNewWindow(title, width, height, minWidth, minHeight, topMost)
+	local popupStyle = true; -- No window title bar or window borders
+	local window = CreateWindow(popupStyle, topMost); -- topMost sets "Always on top", must be set at window creation time. defaults to false
 	if not window then
 		return false;
 	end

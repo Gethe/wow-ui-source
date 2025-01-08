@@ -330,40 +330,6 @@ local PerksProgram =
 	Tables =
 	{
 		{
-			Name = "ModelSceneActorData",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "actorID", Type = "number", Nilable = true },
-				{ Name = "scriptTag", Type = "string", Nilable = true },
-				{ Name = "posX", Type = "number", Nilable = true },
-				{ Name = "posY", Type = "number", Nilable = true },
-				{ Name = "posZ", Type = "number", Nilable = true },
-				{ Name = "yaw", Type = "number", Nilable = true },
-				{ Name = "pitch", Type = "number", Nilable = true },
-				{ Name = "roll", Type = "number", Nilable = true },
-				{ Name = "normalizedScale", Type = "number", Nilable = true },
-			},
-		},
-		{
-			Name = "ModelSceneCameraData",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "cameraID", Type = "number", Nilable = true },
-				{ Name = "scriptTag", Type = "string", Nilable = true },
-				{ Name = "targetX", Type = "number", Nilable = true },
-				{ Name = "targetY", Type = "number", Nilable = true },
-				{ Name = "targetZ", Type = "number", Nilable = true },
-				{ Name = "yaw", Type = "number", Nilable = true },
-				{ Name = "pitch", Type = "number", Nilable = true },
-				{ Name = "roll", Type = "number", Nilable = true },
-				{ Name = "defaultZoom", Type = "number", Nilable = true },
-				{ Name = "zoomMin", Type = "number", Nilable = true },
-				{ Name = "zoomMax", Type = "number", Nilable = true },
-			},
-		},
-		{
 			Name = "PerksProgramItemDisplayInfo",
 			Type = "Structure",
 			Fields =
@@ -412,6 +378,8 @@ local PerksProgram =
 				{ Name = "isPurchasePending", Type = "bool", Nilable = false },
 				{ Name = "doesNotExpire", Type = "bool", Nilable = false },
 				{ Name = "price", Type = "number", Nilable = false },
+				{ Name = "originalPrice", Type = "number", Nilable = true },
+				{ Name = "showSaleBanner", Type = "bool", Nilable = false },
 				{ Name = "perksVendorItemID", Type = "number", Nilable = false },
 				{ Name = "itemID", Type = "number", Nilable = false },
 				{ Name = "iconTexture", Type = "string", Nilable = false },

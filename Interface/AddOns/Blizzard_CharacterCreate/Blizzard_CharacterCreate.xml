@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
-	<GameTooltip name="CharCustomizeTooltip" inherits="SharedTooltipTemplate" parent="GlueParent">
+	<GameTooltip name="CharCreateTooltip" inherits="SharedTooltipTemplate" parent="GlueParent">
 		<KeyValues>
 			<KeyValue key="textLeft1Font" value="GameFontNormalLarge2" type="string"/>
 			<KeyValue key="textRight1Font" value="GameFontNormalLarge2" type="string"/>
@@ -9,7 +9,7 @@
 		</KeyValues>
 	</GameTooltip>
 
-	<Button name="CharacterCreateNavButtonTemplate" inherits="CharCustomizeBaseButtonTemplate, GlueButtonTemplate" mixin="CharacterCreateNavButtonMixin" frameLevel="10" virtual="true">
+	<Button name="CharacterCreateNavButtonTemplate" inherits="CustomizationBaseButtonTemplate, GlueButtonTemplate" mixin="CharacterCreateNavButtonMixin" frameLevel="10" virtual="true">
 		<NormalFont style="GameFontNormalOutline22"/>
 		<HighlightFont style="GameFontHighlightOutline22"/>
 		<DisabledFont style="GameFontDisableOutline22"/>
@@ -54,7 +54,7 @@
 		</Layers>
 	</Frame>
 
-	<CheckButton name="CharacterCreateClassButtonTemplate" inherits="CharCustomizeMaskedButtonTemplate" mixin="CharacterCreateClassButtonMixin" virtual="true">
+	<CheckButton name="CharacterCreateClassButtonTemplate" inherits="CustomizationMaskedButtonTemplate" mixin="CharacterCreateClassButtonMixin" virtual="true">
 		<Size x="67" y="67"/>
 		<KeyValues>
 			<KeyValue key="ringAtlas" value="charactercreate-ring-metaldark" type="string"/>
@@ -79,7 +79,7 @@
 		</Layers>
 	</CheckButton>
 
-	<CheckButton name="CharacterCreateRaceButtonTemplate" inherits="CharCustomizeMaskedButtonTemplate" mixin="CharacterCreateRaceButtonMixin" flattenRenderLayers="true" virtual="true">
+	<CheckButton name="CharacterCreateRaceButtonTemplate" inherits="CustomizationMaskedButtonTemplate" mixin="CharacterCreateRaceButtonMixin" flattenRenderLayers="true" virtual="true">
 		<Size x="79" y="79"/>
 		<KeyValues>
 			<KeyValue key="ringWidth" value="139" type="number"/>
@@ -139,7 +139,7 @@
 		</KeyValues>
 	</CheckButton>
 
-	<CheckButton name="CharacterCreateSpecButtonTemplate" inherits="CharCustomizeMaskedButtonTemplate" mixin="CharacterCreateSpecButtonMixin" virtual="true">
+	<CheckButton name="CharacterCreateSpecButtonTemplate" inherits="CustomizationMaskedButtonTemplate" mixin="CharacterCreateSpecButtonMixin" virtual="true">
 		<Size x="54" y="54"/>
 		<KeyValues>
 			<KeyValue key="ringAtlas" value="charactercreate-ring-metaldark" type="string"/>
@@ -172,7 +172,7 @@
 	<Frame name="CharacterCreateStartingZoneTemplate" mixin="CharacterCreateStartingZoneMixin" virtual="true">
 		<Size x ="746" y="564" />
 		<Frames>
-			<Button parentKey="ZoneArt" inherits="CharCustomizeBaseButtonTemplate" mixin="CharacterCreateStartingZoneArtMixin">
+			<Button parentKey="ZoneArt" mixin="CharacterCreateStartingZoneArtMixin">
 				<Size x ="750" y="494" />
 				<Anchors>
 					<Anchor point="TOP"/>
@@ -352,7 +352,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Frame parentKey="AllianceHeader" inherits="ResizeLayoutFrame, CharCustomizeFrameWithTooltipTemplate" mixin="CharacterCreateFactionHeaderMixin">
+					<Frame parentKey="AllianceHeader" inherits="ResizeLayoutFrame, CustomizationFrameWithTooltipTemplate" mixin="CharacterCreateFactionHeaderMixin">
 						<KeyValues>
 							<KeyValue key="tooltipAnchor" value="ANCHOR_TOPLEFT" type="string"/>
 							<KeyValue key="tooltipXOffset" value="260" type="number"/>
@@ -376,7 +376,7 @@
 							</Layer>
 						</Layers>
 					</Frame>
-					<Frame parentKey="HordeHeader" inherits="ResizeLayoutFrame, CharCustomizeFrameWithTooltipTemplate" mixin="CharacterCreateFactionHeaderMixin">
+					<Frame parentKey="HordeHeader" inherits="ResizeLayoutFrame, CustomizationFrameWithTooltipTemplate" mixin="CharacterCreateFactionHeaderMixin">
 						<KeyValues>
 							<KeyValue key="tooltipAnchor" value="ANCHOR_TOPRIGHT" type="string"/>
 							<KeyValue key="tooltipXOffset" value="260" type="number"/>
@@ -436,7 +436,7 @@
 							<Anchor point="BOTTOM" y="62"/>
 						</Anchors>
 					</Frame>
-					<Frame parentKey="ClassTrialCheckButton" inherits="CharCustomizeFrameWithTooltipTemplate, ResizeCheckButtonTemplate" mixin="ClassTrialCheckButtonMixin" hidden="true">
+					<Frame parentKey="ClassTrialCheckButton" inherits="CustomizationFrameWithTooltipTemplate, ResizeCheckButtonTemplate" mixin="ClassTrialCheckButtonMixin" hidden="true">
 						<KeyValues>
 							<KeyValue key="labelText" value="CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER" type="global"/>
 							<KeyValue key="tooltipAnchor" value="ANCHOR_LEFT" type="string"/>
@@ -494,7 +494,7 @@
 							<Anchor point="TOP" relativeKey="$parent.Label" relativePoint="BOTTOM" y="-2"/>
 						</Anchors>
 						<Frames>
-							<Button parentKey="NameAvailabilityState" inherits="CharCustomizeFrameWithTooltipTemplate" mixin="CharacterCreateNameAvailabilityStateMixin">
+							<Button parentKey="NameAvailabilityState" inherits="CustomizationFrameWithTooltipTemplate" mixin="CharacterCreateNameAvailabilityStateMixin">
 								<Size x="20" y="20"/>
 								<Anchors>
 									<Anchor point="LEFT" relativePoint="RIGHT" x="22"/>
@@ -520,7 +520,7 @@
 							<OnTextChanged method="OnTextChanged"/>
 						</Scripts>
 					</EditBox>
-					<Button parentKey="RandomNameButton" inherits="CharCustomizeSmallButtonTemplate" mixin="CharacterCreateRandomNameButtonMixin" hidden="true">
+					<Button parentKey="RandomNameButton" inherits="CustomizationSmallButtonTemplate" mixin="CharacterCreateRandomNameButtonMixin" hidden="true">
 						<Anchors>
 							<Anchor point="RIGHT" relativeKey="$parent.EditBox" relativePoint="LEFT" x="0" y="-1"/>
 						</Anchors>

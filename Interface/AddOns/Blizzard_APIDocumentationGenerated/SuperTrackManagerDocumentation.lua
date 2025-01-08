@@ -28,6 +28,22 @@ local SuperTrackManager =
 			},
 		},
 		{
+			Name = "GetNextWaypointForMap",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "x", Type = "number", Nilable = false },
+				{ Name = "y", Type = "number", Nilable = false },
+				{ Name = "waypointDescription", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSuperTrackedContent",
 			Type = "Function",
 
@@ -35,6 +51,16 @@ local SuperTrackManager =
 			{
 				{ Name = "trackableType", Type = "ContentTrackingType", Nilable = false },
 				{ Name = "trackableID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSuperTrackedItemName",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "description", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -174,6 +200,11 @@ local SuperTrackManager =
 			Name = "SuperTrackingChanged",
 			Type = "Event",
 			LiteralName = "SUPER_TRACKING_CHANGED",
+		},
+		{
+			Name = "SuperTrackingPathUpdated",
+			Type = "Event",
+			LiteralName = "SUPER_TRACKING_PATH_UPDATED",
 		},
 	},
 

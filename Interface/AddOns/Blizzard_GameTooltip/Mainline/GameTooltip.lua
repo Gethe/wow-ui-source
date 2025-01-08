@@ -288,6 +288,10 @@ function GameTooltip_SetBottomText(self, text, lineColor)
 	end
 end
 
+function GameTooltip_SetBottomInstructions(self, ...)
+	GameTooltip_SetBottomText(self, table.concat({ ... }, "\n"), GREEN_FONT_COLOR);
+end
+
 function GameTooltip_OnLoad(self)
 	SharedTooltip_OnLoad(self);
 	self.updateTooltipTimer = TOOLTIP_UPDATE_TIME;
@@ -366,6 +370,13 @@ function GameTooltip_OnShow(self)
 end
 
 function GameTooltip_OnHide(self)
+	for i, info in ipairs(self.infoList or {}) do
+		local inventoryType = info.tooltipData.worldLootObjectInventoryType;
+		if inventoryType then
+			EventRegistry:TriggerEvent("WorldLootObjectTooltip.Hidden", inventoryType, self);
+		end
+	end
+
 	self.waitingForData = false;
 	local style = nil;
 	SharedTooltip_SetBackdropStyle(self, style, self.IsEmbedded);
@@ -386,8 +397,6 @@ function GameTooltip_OnHide(self)
 
 	GameTooltip_ClearStatusBars(self);
 	GameTooltip_ClearStatusBarWatch(self);
-
-	EventRegistry:TriggerEvent("GameTooltip.HideTooltip", self);
 end
 
 function GameTooltip_CycleSecondaryComparedItem(self)
@@ -922,17 +931,19 @@ function GameTooltipDataMixin:OnEvent(event, ...)
 end
 
 function GameTooltipDataMixin:SetWorldCursor(anchorType)
+	local tooltipData = C_TooltipInfo.GetWorldCursor();
 	if anchorType == Enum.WorldCursorAnchorType.Default then
 		GameTooltip_SetDefaultAnchor(self, UIParent);
 	elseif anchorType == Enum.WorldCursorAnchorType.Cursor then
-		self:SetOwner(UIParent, "ANCHOR_CURSOR");
+		local tooltipAnchor = (tooltipData and tooltipData.worldLootObjectInventoryType) and "ANCHOR_CURSOR_RIGHT" or "ANCHOR_CURSOR";
+		self:SetOwner(UIParent, tooltipAnchor);
 	elseif anchorType == Enum.WorldCursorAnchorType.Nameplate then
 		self:SetOwner(UIParent, "ANCHOR_NONE");
 		self:SetObjectTooltipPosition();
 	end
 
 	local oldInfo = self:GetPrimaryTooltipInfo();
-	local tooltipData = C_TooltipInfo.GetWorldCursor();
+	
 	if tooltipData then
 		local tooltipInfo = {
 			getterName = "GetWorldCursor",

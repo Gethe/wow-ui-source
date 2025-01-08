@@ -1,5 +1,3 @@
-local showDebugTooltipInfo = GetCVarBool("debugTargetInfo");
-
 local CHAR_CREATE_MODE_CLASS_RACE = 1;
 local CHAR_CREATE_MODE_CUSTOMIZE = 2;
 local CHAR_CREATE_MODE_ZONE_CHOICE = 3;
@@ -89,6 +87,10 @@ function CharacterCreateMixin:OnLoad()
 
 	self.BackButton:UpdateText(BACK, BACKWARD_ARROW);
 
+	self.BackButton:SetCustomizationFrame(CharCustomizeFrame);
+	self.ForwardButton:SetCustomizationFrame(CharCustomizeFrame);
+	self.NameChoiceFrame.RandomNameButton:SetCustomizationFrame(CharCustomizeFrame);
+
 	self:SetSequence(0);
 	self:SetCamera(0);
 	self:OnDisplaySizeChanged();
@@ -165,7 +167,7 @@ function CharacterCreateMixin:OnEvent(event, ...)
 	elseif event == "CVAR_UPDATE" then
 		local cvarName, cvarValue = ...;
 		if cvarName == "debugTargetInfo" then
-			showDebugTooltipInfo = (cvarValue == "1");
+			CustomizationUtil.UpdateShowDebugTooltipInfo();
 			if RaceAndClassFrame:IsShown() then
 				RaceAndClassFrame:UpdateButtons();
 			end
@@ -498,7 +500,7 @@ function CharacterCreateMixin:OnUpdateAlphaCharacter(elapsed)
 end
 
 function CharacterCreateMixin:SetMode(mode, instantRotate)
-	self:ResetCharacterRotation(mode, instantRotate);
+	self:ResetSubjectRotation(mode, instantRotate);
 
 	if self:IsMode(mode) then
 		self.creatingCharacter = false;
@@ -662,8 +664,8 @@ function CharacterCreateMixin:CheckDynamicNavBlockers()
 	self:SetMissingOptionsNavBlockersEnabled(hasMissingOptions);
 
 	if hasMissingOptions then
-		EventRegistry:RegisterCallback("CharCustomize.OnSetCustomizations", self.CheckDynamicNavBlockers, self);
-		EventRegistry:RegisterCallback("CharCustomize.OnCategorySelected", function(owner, hadCategoryChange)
+		EventRegistry:RegisterCallback("Customization.OnSetCustomizations", self.CheckDynamicNavBlockers, self);
+		EventRegistry:RegisterCallback("Customization.OnCategorySelected", function(owner, hadCategoryChange)
 			if hadCategoryChange then
 				self:SetMissingOptionsNavBlockersEnabled(false);
 			end
@@ -757,8 +759,8 @@ function CharacterCreateMixin:SetViewingAlteredForm(viewingAlteredForm)
 	self:UpdateCharCustomizationFrame();
 end
 
-function CharacterCreateMixin:ResetCharacterRotation(mode, instantRotate)
-	self:RotateCharacterToTarget(C_CharacterCreation.GetDefaultCharacterCreateFacing(), instantRotate and 0 or ROTATION_ADJUST_SECONDS);
+function CharacterCreateMixin:ResetSubjectRotation(mode, instantRotate)
+	self:RotateSubjectToTarget(C_CharacterCreation.GetDefaultCharacterCreateFacing(), instantRotate and 0 or ROTATION_ADJUST_SECONDS);
 end
 
 function CharacterCreateMixin:ZoomCamera(zoomAmount, zoomTime, force)
@@ -769,11 +771,11 @@ function CharacterCreateMixin:GetCurrentCameraZoom()
 	return C_CharacterCreation.GetCurrentCameraZoom();
 end
 
-function CharacterCreateMixin:RotateCharacter(rotationAmount)
+function CharacterCreateMixin:RotateSubject(rotationAmount)
 	C_CharacterCreation.SetCharacterCreateFacing(C_CharacterCreation.GetCharacterCreateFacing() + rotationAmount);
 end
 
-function CharacterCreateMixin:RotateCharacterToTarget(targetRotation, duration)
+function CharacterCreateMixin:RotateSubjectToTarget(targetRotation, duration)
 	if not self.mouseRotating then
 		local currentRotation = C_CharacterCreation.GetCharacterCreateFacing();
 
@@ -786,11 +788,11 @@ function CharacterCreateMixin:RotateCharacterToTarget(targetRotation, duration)
 		self.isRotationNegative = (rotationDiff < 0);
 		self.perSecondRotation = rotationDiff / duration;
 		self.targetRotation = targetRotation;
-		self:SetScript("OnUpdate", self.OnUpdateRotateCharacterToTarget);
+		self:SetScript("OnUpdate", self.OnUpdateRotateSubjectToTarget);
 	end
 end
 
-function CharacterCreateMixin:OnUpdateRotateCharacterToTarget(elapsed)
+function CharacterCreateMixin:OnUpdateRotateSubjectToTarget(elapsed)
 	local rotateAmount = self.perSecondRotation * elapsed;
 	local currentRotation = C_CharacterCreation.GetCharacterCreateFacing();
 	local newRotation = currentRotation + rotateAmount;
@@ -862,7 +864,7 @@ end
 CharacterCreateNavButtonMixin = {};
 
 function CharacterCreateNavButtonMixin:GetAppropriateTooltip()
-	return CharCustomizeNoHeaderTooltip;
+	return CustomizationNoHeaderTooltip;
 end
 
 function CharacterCreateNavButtonMixin:OnEnter()
@@ -907,7 +909,7 @@ function CharacterCreateNavForwardButtonMixin:OnLoad_NavForward()
 	end);
 end
 
-CharacterCreateClassButtonMixin = CreateFromMixins(CharCustomizeMaskedButtonMixin);
+CharacterCreateClassButtonMixin = CreateFromMixins(CustomizationMaskedButtonMixin);
 
 local classLayoutIndices = {
 	WARRIOR = 1,
@@ -1000,7 +1002,7 @@ function CharacterCreateClassButtonMixin:SetClass(classData, selectedClassID)
 		self:AddTooltipLine(tooltipDisabledReason, RED_FONT_COLOR);
 	end
 
-	if showDebugTooltipInfo then
+	if CustomizationUtil.ShouldShowDebugTooltipInfo() then
 		self:AddBlankTooltipLine();
 		self:AddTooltipLine("Class ID: "..classData.classID, HIGHLIGHT_FONT_COLOR);
 	end
@@ -1029,7 +1031,7 @@ function CharacterCreateClassButtonMixin:IsDisabledByRace()
 end
 
 function CharacterCreateClassButtonMixin:OnEnter()
-	CharCustomizeFrameWithTooltipMixin.OnEnter(self);
+	CustomizationFrameWithTooltipMixin.OnEnter(self);
 	if not CharacterCreateFrame:HasService() and self:IsDisabledByRace() then
 		local validRaces = C_CharacterCreation.GetValidRacesForClass(self.classData.classID);
 		local validRacesMap = {};
@@ -1041,22 +1043,26 @@ function CharacterCreateClassButtonMixin:OnEnter()
 end
 
 function CharacterCreateClassButtonMixin:OnLeave()
-	CharCustomizeFrameWithTooltipMixin.OnLeave(self);
+	CustomizationFrameWithTooltipMixin.OnLeave(self);
 	if self:IsDisabledByRace() then
 		RaceAndClassFrame:SetClassValidRaces(nil);
 	end
 end
 
-CharacterCreateRaceButtonMixin = CreateFromMixins(CharCustomizeMaskedButtonMixin, CharCustomizeFrameWithExpandableTooltipMixin);
+function CharacterCreateClassButtonMixin:GetDebugName()
+	return self.classData and self.classData.name or nil;
+end
+
+CharacterCreateRaceButtonMixin = CreateFromMixins(CustomizationMaskedButtonMixin, CustomizationFrameWithExpandableTooltipMixin);
 
 function CharacterCreateRaceButtonMixin:GetAppropriateTooltip()
-	return CharCustomizeTooltip;
+	return CharCreateTooltip;
 end
 
 function CharacterCreateRaceButtonMixin:AddExtraStuffToTooltip()
-	CharCustomizeFrameWithExpandableTooltipMixin.AddExtraStuffToTooltip(self);
+	CustomizationFrameWithExpandableTooltipMixin.AddExtraStuffToTooltip(self);
 
-	if showDebugTooltipInfo then
+	if CustomizationUtil.ShouldShowDebugTooltipInfo() then
 		local tooltip = self:GetAppropriateTooltip();
 		GameTooltip_AddBlankLineToTooltip(tooltip);
 		GameTooltip_AddHighlightLine(tooltip, "Race ID: "..self.raceData.raceID);
@@ -1148,7 +1154,7 @@ function CharacterCreateRaceButtonMixin:OnEnter()
 	end
 
 	RaceAndClassFrame.RacialAbilityList:SetupRacialAbilties(self.raceData.racialAbilities);
-	CharCustomizeFrameWithTooltipMixin.OnEnter(self);
+	CustomizationFrameWithTooltipMixin.OnEnter(self);
 end
 
 function CharacterCreateRaceButtonMixin:OnClick()
@@ -1156,7 +1162,11 @@ function CharacterCreateRaceButtonMixin:OnClick()
 	RaceAndClassFrame:SetCharacterRace(self.raceData.raceID, self.faction);
 end
 
-CharacterCreateSpecButtonMixin = CreateFromMixins(CharCustomizeMaskedButtonMixin);
+function CharacterCreateRaceButtonMixin:GetDebugName()
+	return self.raceData and self.raceData.name or nil;
+end
+
+CharacterCreateSpecButtonMixin = CreateFromMixins(CustomizationMaskedButtonMixin);
 
 function CharacterCreateSpecButtonMixin:SetSpec(specData, selectedSpecID, layoutIndex)
 	self.specData = specData;
@@ -1185,7 +1195,7 @@ function CharacterCreateSpecButtonMixin:SetSpec(specData, selectedSpecID, layout
 		self:AddTooltipLine(CLASS_TRIAL_RECOMMENDED_SPEC_ONLY, RED_FONT_COLOR);
 	end
 
-	if showDebugTooltipInfo then
+	if CustomizationUtil.ShouldShowDebugTooltipInfo() then
 		self:AddBlankTooltipLine();
 		self:AddTooltipLine("Spec ID: "..specData.specID, HIGHLIGHT_FONT_COLOR);
 	end
@@ -1200,7 +1210,7 @@ function CharacterCreateSpecButtonMixin:SetSpec(specData, selectedSpecID, layout
 end
 
 function CharacterCreateSpecButtonMixin:GetAppropriateTooltip()
-	return CharCustomizeTooltip;
+	return CharCreateTooltip;
 end
 
 function CharacterCreateSpecButtonMixin:OnClick()
@@ -1476,7 +1486,7 @@ function CharacterCreateRaceAndClassMixin:PlayClassAnimations()
 
 		local spellVisualKitID = self.selectedClassData.spellVisualKitID;
 		if spellVisualKitID then
-			self:GetParent():RotateCharacterToTarget(C_CharacterCreation.GetDefaultCharacterCreateFacing(), 0);
+			self:GetParent():RotateSubjectToTarget(C_CharacterCreation.GetDefaultCharacterCreateFacing(), 0);
 
 			self.currentSpellVisualKitID = spellVisualKitID;
 
@@ -1529,7 +1539,7 @@ end
 
 function CharacterCreateRaceAndClassMixin:PlayClassIdleAnimation(useBlending, overrideAnimLoopWaitTimeSeconds)
 	self:StopClassAnimations();
-	CharacterCreateFrame:ResetCharacterRotation(nil, true);
+	CharacterCreateFrame:ResetSubjectRotation(nil, true);
 	C_CharacterCreation.PlayClassIdleAnimationOnCharacter(not useBlending);
 
 	self.allowClassAnimationsAfterSeconds = overrideAnimLoopWaitTimeSeconds or self.selectedClassData.animLoopWaitTimeSeconds;
@@ -1622,7 +1632,7 @@ end
 
 function CharacterCreateRaceAndClassMixin:SetCharacterRace(raceID, faction)
 	if self.selectedRaceID ~= raceID then
-		CharacterCreateFrame:ResetCharacterRotation(nil, true);
+		CharacterCreateFrame:ResetSubjectRotation(nil, true);
 		self.allowClassAnimationsAfterSeconds = CLASS_ANIM_WAIT_TIME_SECONDS;
 		self:ClearCurrentSpellVisualKit();
 		C_CharacterCreation.SetSelectedRace(raceID);
@@ -1647,7 +1657,7 @@ end
 
 function CharacterCreateRaceAndClassMixin:SetCharacterSex(sexID)
 	if self.selectedSexID ~= sexID  then
-		CharacterCreateFrame:ResetCharacterRotation(nil, true);
+		CharacterCreateFrame:ResetSubjectRotation(nil, true);
 		self.allowClassAnimationsAfterSeconds = CLASS_ANIM_WAIT_TIME_SECONDS;
 		self:ClearCurrentSpellVisualKit();
 		C_CharacterCreation.SetSelectedSex(sexID);
@@ -1745,6 +1755,7 @@ function CharacterCreateRaceAndClassMixin:UpdateSexButtons(releaseButtons)
 	local sexes = {Enum.UnitSex.Male, Enum.UnitSex.Female};
 	for index, sexID in ipairs(sexes) do
 		local button = self.buttonPool:Acquire("CharCustomizeBodyTypeButtonTemplate");
+		button:SetCustomizationFrame(CharCustomizeFrame);
 		button:SetBodyType(sexID, self.selectedSexID, index);
 		button:Show();
 	end
@@ -1775,6 +1786,7 @@ function CharacterCreateRaceAndClassMixin:UpdateRaceButtons(releaseButtons)
 				templateCount[buttonTemplate] = templateCount[buttonTemplate] + 1;
 			end
 
+			button:SetCustomizationFrame(CharCustomizeFrame);
 			button:SetRace(raceData, self.selectedRaceID, self.selectedFaction, templateCount[buttonTemplate]);
 			button:Show();
 		end
@@ -1830,6 +1842,7 @@ function CharacterCreateRaceAndClassMixin:UpdateClassButtons(releaseButtons)
 
 	local function FactoryFunction(index)
 		local button = self.buttonPool:Acquire("CharacterCreateClassButtonTemplate");
+		button:SetCustomizationFrame(CharCustomizeFrame);
 		button:SetClass(classes[index], self.selectedClassID);
 		button:Show();
 		button:SetScale(scale);
@@ -1863,7 +1876,7 @@ end
 CharacterCreateFactionHeaderMixin = {};
 
 function CharacterCreateFactionHeaderMixin:OnLoad()
-	CharCustomizeFrameWithTooltipMixin.OnLoad(self);
+	CustomizationFrameWithTooltipMixin.OnLoad(self);
 end
 
 function CharacterCreateFactionHeaderMixin:SetupAnchors(tooltip)

@@ -540,7 +540,7 @@ function QuickJoinToast_GetPriorityFromQueue(queue)
 	local itemLevel = GetAverageItemLevel();
 	if ( queueData.queueType == "lfglist" ) then
 		local searchResultInfo = C_LFGList.GetSearchResultInfo(queueData.lfgListID);
-		local activityInfo = C_LFGList.GetActivityInfoTable(searchResultInfo.activityID, nil, searchResultInfo.isWarMode);
+		local activityInfo = C_LFGList.GetActivityInfoTable(searchResultInfo.activityIDs[1], nil, searchResultInfo.isWarMode);
 		--Filter by activity flags
 		if ( not activityInfo or not activityInfo.showQuickJoinToast ) then
 			return 0;

@@ -267,4 +267,28 @@
 			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
+
+	<Frame name="PlunderstormQueueTutorialFrame" parent="UIParent" mixin="PlunderstormQueueTutorialMixin" hidden="true">
+		<Size x="1" y="1"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="BadgeTexture" atlas="plunderstorm-new-dot-sm" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="NewText" inherits="NewFeatureLabelNoAnimateTemplate" setAllPoints="true">
+				<Anchors>
+					<Anchor point="RIGHT"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
 </Ui>

@@ -13,7 +13,7 @@ local SpecializationShared =
 			{
 				{ Name = "classID", Type = "number", Nilable = false },
 				{ Name = "index", Type = "number", Nilable = false },
-				{ Name = "gender", Type = "number", Nilable = true },
+				{ Name = "gender", Type = "UnitSex", Nilable = true },
 			},
 
 			Returns =
@@ -36,7 +36,7 @@ local SpecializationShared =
 			Arguments =
 			{
 				{ Name = "specID", Type = "number", Nilable = false },
-				{ Name = "gender", Type = "number", Nilable = true },
+				{ Name = "gender", Type = "UnitSex", Nilable = true },
 			},
 
 			Returns =
@@ -59,7 +59,7 @@ local SpecializationShared =
 			Arguments =
 			{
 				{ Name = "specID", Type = "number", Nilable = false },
-				{ Name = "gender", Type = "number", Nilable = true },
+				{ Name = "gender", Type = "UnitSex", Nilable = true },
 			},
 
 			Returns =

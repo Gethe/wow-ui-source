@@ -19,7 +19,7 @@ function ProductCardBuyButtonMixin:UpdateBuyButton(currencyInfo, entryInfo, curr
 	local completelyOwned = StoreFrame_IsCompletelyOwned(entryInfo);
 	
 	self:SetOriginalSize();
-	if bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlag.HiddenPrice) == Enum.BattlepayDisplayFlag.HiddenPrice then
+	if bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlags.HiddenPrice) == Enum.BattlepayDisplayFlags.HiddenPrice then
 		local text = entryInfo.browseBuyButtonText or BLIZZARD_STORE_BUY;
 		self.BuyButton:Show();
 		self.BuyButton:SetText(text);

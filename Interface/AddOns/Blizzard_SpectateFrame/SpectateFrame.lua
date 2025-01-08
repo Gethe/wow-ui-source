@@ -19,6 +19,8 @@ end
 function SpectateFrameMixin:OnShow()
 	self:UpdateArrowText(self.ArrowLeft, "STRAFELEFT", "TURNLEFT", PreferSpectatePreviousKey);
 	self:UpdateArrowText(self.ArrowRight, "STRAFERIGHT", "TURNRIGHT", PreferSpectateNextKey);
+
+	self.MatchDetailsButton:SetShown(EndOfMatchFrame:HasMatchDetails());
 end
 
 function SpectateFrameMixin:OnUpdate(dt)
@@ -73,8 +75,8 @@ function SpectateFrameMixin:UpdateArrowText(arrow, strafeCommand, turnCommand, p
 	arrow:SetArrowText(strafeKey or turnKey or "");
 end
 
-function SpectateFrameMixin:ShouldBeInSpecateMode()
-	if (not C_SpectatingUI.IsSpectating()) then 
+function SpectateFrameMixin:ShouldBeInSpectateMode()
+	if (not C_SpectatingUI.IsSpectating() or EndOfMatchFrame:IsShown()) then 
 		self:LeaveSpectatingMode(); 
 		return false; 
 	end 
@@ -99,7 +101,7 @@ function SpectateFrameMixin:IsZoomingFOV(command)
 end
 
 function SpectateFrameMixin:InitializeSpectateMode()
-	if(not self:ShouldBeInSpecateMode()) then 
+	if(not self:ShouldBeInSpectateMode()) then 
 		return; 
 	end	
 
@@ -107,7 +109,6 @@ function SpectateFrameMixin:InitializeSpectateMode()
 	EditModeManagerFrame:SetOverrideLayout(1); 
 	self:Show();
 	self:UpdatePlayerName();
-	C_ArrowCalloutManager.HideWorldLootObjectCallout();
 end
 
 function SpectateFrameMixin:UpdatePlayerName()
@@ -201,14 +202,18 @@ StaticPopupDialogs["CONFIRM_LEAVE_MATCH_WITH_PLUNDER_SOLO"] = {
 	showAlert = true,
 }
 
-SpectateViewRewardsButtonMixin = {};
-function SpectateViewRewardsButtonMixin:OnClick()
-	ToggleMajorFactionRenown(Constants.MajorFactionsConsts.PLUNDERSTORM_MAJOR_FACTION_ID);
-end
-
 SpectateLeaveMatchButtonMixin = {};
 function SpectateLeaveMatchButtonMixin:OnClick()
 	LeaveMatchUtil_LeaveMatchPopup();
+end
+
+MatchDetailsButtonMixin = {};
+function MatchDetailsButtonMixin:OnClick()
+	local spectateFrame = self:GetParent();	
+	spectateFrame:LeaveSpectatingMode();
+
+	local checkSpectating = false;
+	EventRegistry:TriggerEvent("EndOfMatchUI.TryShow", checkSpectating);
 end
 
 SpectateCycleModeMixin = { };

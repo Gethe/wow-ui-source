@@ -23,6 +23,21 @@ local GameRules =
 			},
 		},
 		{
+			Name = "GetGameRuleAsFrameStrata",
+			Type = "Function",
+			Documentation = { "Returns the value specified in the Game Rule converted to a frame strata" },
+
+			Arguments =
+			{
+				{ Name = "gameRule", Type = "GameRule", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "frameStrata", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "IsGameRuleActive",
 			Type = "Function",
 

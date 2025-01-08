@@ -503,11 +503,10 @@ end
 
 function DressUpOutfitDetailsPanelMixin:OnKeyDown(key)
 	if key == WARDROBE_CYCLE_KEY and self.mousedOverFrame then
-		self:SetPropagateKeyboardInput(false);
 		self.mousedOverFrame:OnCycleKeyDown();
-	else
-		self:SetPropagateKeyboardInput(true);
+		return false;
 	end
+	return true;
 end
 
 function DressUpOutfitDetailsPanelMixin:MarkDirty()

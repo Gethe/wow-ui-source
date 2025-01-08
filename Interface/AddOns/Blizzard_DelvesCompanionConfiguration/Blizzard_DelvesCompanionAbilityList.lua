@@ -11,8 +11,7 @@ local COMPANION_ABILITY_LIST_ON_SHOW_EVENTS = {
 -- Update the cvar list of locked abilities, so we know when to show the "new" ability glow
 local function UpdateLastLockedAbilities()
 	C_Timer.After(UPDATE_LAST_LOCKED_ABILITIES_DELAY, function()
-		--! TODO BRANN_COMPANION_INFO_ID to be replaced with other data source in the future, keeping it explicit for now
-		local traitTreeID = C_DelvesUI.GetTraitTreeForCompanion(Constants.DelvesConsts.BRANN_COMPANION_INFO_ID);
+		local traitTreeID = C_DelvesUI.GetTraitTreeForCompanion();
 
 		local lastLockedAbilities = "";
 		local configID = C_Traits.GetConfigIDByTreeID(traitTreeID);
@@ -48,8 +47,6 @@ function DelvesCompanionAbilityListFrameMixin:OnLoad()
 	self.DelvesCompanionAbilityListPagingControls:Init();
 	self:ClearButtons();
 
-	--! TODO BRANN_COMPANION_INFO_ID to be replaced with other data source in the future, keeping it explicit for now
-	SetPortraitTextureFromCreatureDisplayID(self:GetPortrait(), C_DelvesUI.GetCreatureDisplayInfoForCompanion(Constants.DelvesConsts.BRANN_COMPANION_INFO_ID));
 	self:SetTitle(DELVES_COMPANION_ABILITY_LIST_TITLE);
 	UpdateLastLockedAbilities();
 end
@@ -59,8 +56,7 @@ function DelvesCompanionAbilityListFrameMixin:ClearButtons()
 end
 
 function DelvesCompanionAbilityListFrameMixin:OnShow()
-	--! TODO BRANN_COMPANION_INFO_ID to be replaced with other data source in the future, keeping it explicit for now
-	local traitTreeID = C_DelvesUI.GetTraitTreeForCompanion(Constants.DelvesConsts.BRANN_COMPANION_INFO_ID);
+	local traitTreeID = C_DelvesUI.GetTraitTreeForCompanion();
 
 	FrameUtil.RegisterFrameForEvents(self, COMPANION_ABILITY_LIST_ON_SHOW_EVENTS);
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
@@ -68,6 +64,7 @@ function DelvesCompanionAbilityListFrameMixin:OnShow()
 	self:SetTalentTreeID(traitTreeID);
 	TalentFrameBaseMixin.OnShow(self);
 	self.DelvesCompanionAbilityListPagingControls:SetCurrentPage(1);
+	SetPortraitTextureFromCreatureDisplayID(self:GetPortrait(), C_DelvesUI.GetCreatureDisplayInfoForCompanion());
 	self:Refresh();
 end
 
@@ -121,8 +118,7 @@ function DelvesCompanionAbilityListFrameMixin:Refresh(ignoreDropdown, ignoreLoad
 	-- If the ability list is opened and a player has not selected Brann's role yet, refresh with the first option selected instead
 	-- so that we show *something*
 	if #self.buttons == 0 and #self.DelvesCompanionRoleDropdown.options > 0 then
-		--! TODO BRANN_COMPANION_INFO_ID to be replaced with other data source in the future, keeping it explicit for now
-		self:SetSelection(C_DelvesUI.GetRoleNodeForCompanion(Constants.DelvesConsts.BRANN_COMPANION_INFO_ID), self.DelvesCompanionRoleDropdown.options[1].entryID);
+		self:SetSelection(C_DelvesUI.GetRoleNodeForCompanion(), self.DelvesCompanionRoleDropdown.options[1].entryID);
 		self:Refresh();
 		self:RollbackConfig(self, true);
 	end
@@ -315,35 +311,33 @@ DelvesCompanionRoleDropdownMixin = {};
 
 function DelvesCompanionRoleDropdownMixin:OnLoad()
 	WowStyle1DropdownMixin.OnLoad(self);
-
 	self:SetWidth(150);
-	
 	self.selectedEntryID = nil;
-	end
+end
 
 local function GetRoleOptionText(option)
 	if option.iconAtlas then
-			local iconSize = 16;
+		local iconSize = 12;
 		local fmt = CreateAtlasMarkup(option.iconAtlas, iconSize, iconSize);
 		return DELVES_ABILITY_LIST_DROPDOWN_OPTION_LABEL:format(fmt, option.name);
-			end
+	end
 	return option.name;
-				end
+end
 
---! TODO BRANN_COMPANION_INFO_ID to be replaced with other data source in the future, keeping it explicit for now
 local function GetRoleIconAtlas(entryInfo)
-	if entryInfo.subTreeID == C_DelvesUI.GetRoleSubtreeForCompanion(Constants.DelvesConsts.BRANN_COMPANION_INFO_ID, Enum.CompanionRoleType.Dps) then
+	if entryInfo.subTreeID == C_DelvesUI.GetRoleSubtreeForCompanion(Enum.CompanionRoleType.Dps) then
 		return "ui-lfg-roleicon-dps-micro-raid";
-	elseif entryInfo.subTreeID == C_DelvesUI.GetRoleSubtreeForCompanion(Constants.DelvesConsts.BRANN_COMPANION_INFO_ID, Enum.CompanionRoleType.Heal) then
+	elseif entryInfo.subTreeID == C_DelvesUI.GetRoleSubtreeForCompanion(Enum.CompanionRoleType.Heal) then
 		return "ui-lfg-roleicon-healer-micro-raid";
+	elseif entryInfo.subTreeID == C_DelvesUI.GetRoleSubtreeForCompanion(Enum.CompanionRoleType.Tank) then
+		return "ui-lfg-roleicon-tank-micro-raid";
 	end
 	return nil;
 end
 
---! TODO BRANN_COMPANION_INFO_ID to be replaced with other data source in the future, keeping it explicit for now
 function DelvesCompanionRoleDropdownMixin:Refresh()
 	local abilityListFrame = self:GetParent();
-	local roleNode = abilityListFrame:GetAndCacheNodeInfo(C_DelvesUI.GetRoleNodeForCompanion(Constants.DelvesConsts.BRANN_COMPANION_INFO_ID));
+	local roleNode = abilityListFrame:GetAndCacheNodeInfo(C_DelvesUI.GetRoleNodeForCompanion());
 
 	self.options = {};
 	for idx, entryID in ipairs(roleNode.entryIDs) do
@@ -362,6 +356,11 @@ function DelvesCompanionRoleDropdownMixin:Refresh()
 		});
 	end
 
+	local function OptionNameSort(opt1, opt2)
+		return strcmputf8i(opt1.name, opt2.name) < 0;
+	end
+	table.sort(self.options, OptionNameSort);
+
 	local function IsSelected(option)
 		return self.selectedEntryID == option.entryID;
 	end
@@ -371,7 +370,7 @@ function DelvesCompanionRoleDropdownMixin:Refresh()
 			self.selectedEntryID = option.entryID;
 
 			if not option.isActive then
-				abilityListFrame:SetSelection(C_DelvesUI.GetRoleNodeForCompanion(Constants.DelvesConsts.BRANN_COMPANION_INFO_ID), option.entryID);
+				abilityListFrame:SetSelection(C_DelvesUI.GetRoleNodeForCompanion(), option.entryID);
 			end
 
 			abilityListFrame:Refresh(true);

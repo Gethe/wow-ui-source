@@ -304,7 +304,8 @@ function CharacterSelectBlockBase:Initialize(results)
 	end
 
 	CharacterServicesCharacterSelector:Show();
-	CharacterServicesCharacterSelector:UpdateDisplay(self);
+	local canShowArrow = true;
+	CharacterServicesCharacterSelector:UpdateDisplay(self, canShowArrow);
 
 	self.frame.ControlsFrame.BonusLabel:SetHeight(self.frame.ControlsFrame.BonusLabel.BonusText:GetHeight());
 	self.frame.ControlsFrame.BonusLabel:SetPoint("BOTTOM", CharSelectServicesFlowFrame, "BOTTOM", 0, 28);
@@ -405,7 +406,8 @@ function CharacterSelectBlockBase:OnAdvance()
 		local enable = frame.characterID == self.charid;
 		frame.InnerContent:SetEnabledState(enable);
 		frame:SetSelectedState(enable);
-		frame:SetArrowButtonShown(enable);
+		frame:SetArrowButtonShown(false);
+		frame.Arrow.IdleAnim:ClearSyncedStart();
 	end);
 end
 
@@ -1159,11 +1161,7 @@ end
 local function SetKeepQuestsAndContinue(keepQuests)
 	return function()
 		GlueDialog.data.keepQuests = keepQuests;
-
-		local specName = GetSpecializationNameForSpecID(GlueDialog.data.spec);
-		local formattedText = string.format(StaticPopupDialogs["RPE_UPGRADE_CONFIRM"].text, specName);
-		GlueDialog_Show("RPE_UPGRADE_CONFIRM", formattedText, GlueDialog.data);
-		CharSelectServicesFlowFrame:Hide();
+		CharacterServicesMasterFinishButton_OnClick();
     end
 end
 
@@ -1180,20 +1178,13 @@ StaticPopupDialogs["RPE_UPGRADE_CONFIRM"] = {
     button1 = RPE_CONFIRM,
     button2 = CANCEL,
     OnAccept = function()
-        local results = GlueDialog.data;
-		C_CharacterServices.RPEResetCharacter(results.playerguid, results.faction, results.spec, results.keepQuests);
-		CharacterSelectCharacterFrame:UpdateCharacterMatchingGUID(results.playerguid); --update the character button so it says 'processing'
-		GlueDialog_Show("RPE_UPGRADE_COMPLETE_WARNING");
+		GlueDialog.data.warningState = "accepted";
+		CharacterServicesMasterFinishButton_OnClick();
     end,
     OnCancel = function()
-		BeginCharacterServicesFlow(RPEUpgradeFlow, {});
-		CharacterServicesMaster.flow:Advance(CharacterServicesMaster);
+		GlueDialog.data.warningState = "declined";
+		CharacterServicesMasterFinishButton_OnClick();
 	end,
-}
-
-StaticPopupDialogs["RPE_UPGRADE_COMPLETE_WARNING"] = {
-    text = RPE_UPGRADE_COMPLETE_WARNING,
-    button1 = OKAY,
 }
 
 function RPEUpgradeFlow:Finish(controller)
@@ -1212,19 +1203,37 @@ function RPEUpgradeFlow:Finish(controller)
 
 	CharacterServicesMaster.pendingGuid = results.playerguid;
 
-	ValidateSpec(results);
-	local serviceInfo = GetServiceCharacterInfo(guid);
-	if serviceInfo.rpeResetQuestClearAvailable then
-		GlueDialog_Show("RPE_UPGRADE_QUEST_CLEAR_CONFIRM", nil, results);
-		return false; --flow will be closed by the RPE_UPGRADE_QUEST_CLEAR_CONFIRM dialog.
-	else
-		results.keepQuests = true;
+	-- Now check any confirmation dialogs.
+	CharSelectServicesFlowFrame.FinishButton:Hide();
+	CharSelectServicesFlowFrame.BackButton:Hide();
+	CharSelectServicesFlowFrame.MinimizeButton:Hide();
 
+	ValidateSpec(results);
+	if results.warningState == nil then
 		local specName = GetSpecializationNameForSpecID(results.spec);
 		local formattedText = string.format(StaticPopupDialogs["RPE_UPGRADE_CONFIRM"].text, specName);
-		GlueDialog_Show("RPE_UPGRADE_CONFIRM", formattedText, results);
-		return true;
+		GlueDialog_Show("RPE_UPGRADE_CONFIRM", formattedText, self:GetCurrentStep());
+		return false;
+	elseif results.warningState == "declined" then
+		self:Restart(controller);
+		CharacterServicesMaster.flow:Advance(CharacterServicesMaster);
+		CharSelectServicesFlowFrame.MinimizeButton:Show();
+		return false;
+	elseif results.warningState == "accepted" then
+		local serviceInfo = GetServiceCharacterInfo(guid);
+		if serviceInfo.rpeResetQuestClearAvailable and results.keepQuests == nil then
+			GlueDialog_Show("RPE_UPGRADE_QUEST_CLEAR_CONFIRM", nil, self:GetCurrentStep());
+			return false;
+		else
+			if results.keepQuests == nil then
+				results.keepQuests = true;
+			end
+
+			C_CharacterServices.RPEResetCharacter(results.playerguid, results.faction, results.spec, results.keepQuests);
+			CharacterSelectCharacterFrame:UpdateCharacterMatchingGUID(results.playerguid); --update the character button so it says 'processing'
+		end
 	end
+	return true;
 end
 
 
@@ -1351,6 +1360,9 @@ function RPEUpgradeSpecSelectBlock:SkipIf(results)
 end
 
 function RPEUpgradeReviewBlock:Initialize(results, wasFromRewind)
+	self.keepQuests = nil;
+	self.warningState = nil;
+
 	local characterGuid = GetCharacterGUID(results.charid);
 	if not characterGuid then
 		return;
@@ -1380,7 +1392,7 @@ function RPEUpgradeReviewBlock:IsFinished(wasFromRewind)
 end
 
 function RPEUpgradeReviewBlock:GetResult()
-	return {};
+	return { keepQuests = self.keepQuests, warningState = self.warningState };
 end
 
 

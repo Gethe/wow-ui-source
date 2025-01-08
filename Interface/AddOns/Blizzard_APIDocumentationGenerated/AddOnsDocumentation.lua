@@ -155,6 +155,20 @@ local AddOns =
 			},
 		},
 		{
+			Name = "IsAddOnDefaultEnabled",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "uiAddon", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "defaultEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsAddOnLoadOnDemand",
 			Type = "Function",
 

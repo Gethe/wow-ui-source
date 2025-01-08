@@ -4,12 +4,6 @@ EncounterJournalDataProviderMixin = CreateFromMixins(MapCanvasDataProviderMixin)
 local TRACKING_PIN_OFFSET_Y = -0.02;
 local TRACKING_PIN_OFFSET_X = 0.012;
 
-function EncounterJournalDataProviderMixin:OnAdded(mapCanvas)
-	MapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
-	mapCanvas:SetPinTemplateType("EncounterJournalPinTemplate", "BUTTON");
-	mapCanvas:SetPinTemplateType("EncounterMapTrackingPinTemplate", "BUTTON");
-end
-
 function EncounterJournalDataProviderMixin:OnShow()
 	self:RegisterEvent("PORTRAITS_UPDATED");
 

@@ -1718,6 +1718,20 @@ StaticPopupDialogs["CAMP"] = {
 	hideOnEscape = 1
 };
 
+StaticPopupDialogs["PLUNDERSTORM_LEAVE"] = {
+	text = PLUNDERSTORM_LOGOUT_TEXT,
+	button1 = CANCEL,
+	OnAccept = function(self)
+		CancelLogout();
+	end,
+	OnCancel = function(self)
+		CancelLogout();
+	end,
+	timeout = 20,
+	whileDead = 1,
+	hideOnEscape = 1
+}
+
 StaticPopupDialogs["QUIT"] = {
 	text = QUIT_TIMER,
 	button1 = QUIT_NOW,
@@ -1754,7 +1768,8 @@ local function GetBindWarning(itemLocation)
 		return;
 	end
 
-	local isArmor = select(6, C_Item.GetItemInfoInstant(item:GetItemID())) == Enum.ItemClass.Armor;
+	local _itemID, _itemType, _itemSubType, _itemEquipLoc, _icon, itemClassID, itemSubclassID = C_Item.GetItemInfoInstant(item:GetItemID());
+	local isArmor = (itemClassID == Enum.ItemClass.Armor) and (itemSubclassID ~= Enum.ItemArmorSubclass.Shield);
 	if isArmor and not IsItemPreferredArmorType(item:GetItemLocation()) then
 		return NOT_BEST_ARMOR_TYPE_WARNING;
 	end
@@ -4453,4 +4468,20 @@ StaticPopupDialogs["PERKS_PROGRAM_DISABLED"] = {
 StaticPopupDialogs["REMIX_END_OF_EVENT_NOTICE"] = {
     text = REMIX_END_OF_EVENT_NOTICE,
     button1 = OKAY,
+}
+
+StaticPopupDialogs["CONFIRM_PROFESSION_RESPEC"] = {
+	text = PROFESSION_RESPEC_CONFIRMATION,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(self) C_TradeSkillUI.ConfirmProfessionRespec(); HideUIPanel(ProfessionsFrame); end,
+	OnCancel = function(self) C_TradeSkillUI.CancelProfessionRespec(); end,
+	OnUpdate = function(self, elapsed)
+		if ( not C_TradeSkillUI.CheckRespecNPC() ) then
+			StaticPopup_Hide("CONFIRM_PROFESSION_RESPEC");
+		end
+	end,
+	hideOnEscape = true,
+	timeout = 0,
+	exclusive = true,
 }

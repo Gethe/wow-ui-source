@@ -521,7 +521,8 @@ function GridLayoutUtilSectionStrategy.SplitRegionsIntoSectionsBySize(maxSection
 			currentSectionSize = newSectionSize;
 		else
 			currentSection = sectionGroup:AddEmptySection();
-			currentSectionSize = regionSize;
+			currentSectionSize = 0;
+			currentSectionSize = sectionSizeCalculator(region, currentSectionSize);
 		end
 
 		currentSection:AddRegion(region);

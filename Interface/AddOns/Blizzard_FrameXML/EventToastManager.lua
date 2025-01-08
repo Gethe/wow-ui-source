@@ -1,3 +1,4 @@
+
 local textureKitRegionFormatStrings = {
 	["BG1"] = "%s-TitleBG",
 	["BG2"] = "%s-TitleBG",
@@ -138,6 +139,8 @@ EventToastManagerFrameMixin = CreateFromMixins(EventToastManagerMixin);
 function EventToastManagerFrameMixin:OnLoad()
 	EventToastManagerMixin.OnLoad(self);
 
+	EventRegistry:RegisterCallback("EventToastManager.CloseActiveToasts", self.CloseActiveToasts, self);
+
 	self:UpdateAnchor();
 	self:RegisterEvent("DISPLAY_EVENT_TOASTS");
 end
@@ -225,6 +228,7 @@ function EventToastManagerFrameMixin:CloseActiveToasts()
 		self.hideAutomatically = true;
 		self.currentDisplayingToast.hideAutomatically = true;
 		self.animationsPaused = false;
+		self.currentDisplayingToast:SetSuppressAnimOut(false);
 		self.currentDisplayingToast:SetAnimOutStartDelay(0);
 		self.currentDisplayingToast:AnimOut();
 	end
@@ -789,6 +793,21 @@ end
 
 EventToastManagerNormalTitleAndSubtitleMixin = CreateFromMixins(EventToastManagerNormalMixin);
 
+local function LeaveMatch()
+	PlaySound(SOUNDKIT.IG_MAINMENU_LOGOUT);
+	ForceLogout();
+end
+
+local function Requeue()
+	C_WoWLabsMatchmaking.SetAutoQueueOnLogout(true);
+	LeaveMatch();
+end
+
+local function StartSpectating()
+	EventRegistry:TriggerEvent("EventToastManager.CloseActiveToasts");
+	C_SpectatingUI.StartSpectating();
+end
+
 local NormalTitleAndSubtitleTextureKitInfo = {
 	["plunderstorm-toast-levelup-background"] = {
 		useCustomBackground = true,
@@ -805,12 +824,27 @@ local NormalTitleAndSubtitleTextureKitInfo = {
 
 	["plunderstorm-toast-finish-lose"] = {
 		useCustomBackground = true,
-		suppressAnimOut = false,
+		suppressAnimOut = true,
 		flipTitleAndSubtitle = true,
 		titleFont = "Game40Font_Shadow2",
 		subtitleFont = "SystemFont_Shadow_Large2",
 		textOffsetY = 4,
 		widgetOffsetY = -23,
+		specialActions = {
+			{
+				label = SPECTATE,
+				action = StartSpectating,
+			},
+			{
+				label = WOW_LABS_REQUEUE,
+				isLarge = true,
+				action = Requeue,
+			},
+			{
+				label = WOW_LABS_REMATCH,
+				action = LeaveMatch,
+			},
+		},
 	},
 
 	["plunderstorm-toast-finish-win"] = {
@@ -823,17 +857,18 @@ local NormalTitleAndSubtitleTextureKitInfo = {
 		widgetOffsetY = -23,
 		specialActions = {
 			{
-				label = WOW_LABS_VIEW_REWARDS,
-				action = function()
-					ToggleMajorFactionRenown(Constants.MajorFactionsConsts.PLUNDERSTORM_MAJOR_FACTION_ID);
-				end,
+				label = SPECTATE,
+				disabled = true;
+				action = StartSpectating,
+			},
+			{
+				label = WOW_LABS_REQUEUE,
+				isLarge = true,
+				action = Requeue,
 			},
 			{
 				label = WOW_LABS_REMATCH,
-				action = function()
-					PlaySound(SOUNDKIT.IG_MAINMENU_LOGOUT);
-					ForceLogout();
-				end,
+				action = LeaveMatch,
 			},
 		},
 	},
@@ -895,14 +930,17 @@ function EventToastManagerNormalTitleAndSubtitleMixin:Setup(toastInfo)
 			if not specialActionButton then
 				specialActionButton = CreateFrame("BUTTON", nil, self.specialActionContainer, "UIPanelButtonNoTooltipResizeToFitTemplate");
 				specialActionButton.layoutIndex = i;
-				specialActionButton.fixedHeight = 32;
-				specialActionButton.widthPadding = 80;
-				specialActionButton:SetNormalFontObject("GameFontNormalLarge");
-				specialActionButton:SetHighlightFontObject("GameFontHighlightLarge");
 				specialActionButton:SetPoint("LEFT");
 				self.specialActionContainer.buttons[i] = specialActionButton;
 			end
 
+			specialActionButton.fixedHeight = specialActionInfo.isLarge and 48 or 32;
+			specialActionButton.widthPadding = specialActionInfo.isLarge and 120 or 80;
+			specialActionButton:SetNormalFontObject(specialActionInfo.isLarge and "GameFontNormalHuge" or "GameFontNormalLarge" );
+			specialActionButton:SetHighlightFontObject(specialActionInfo.isLarge and "GameFontHighlightHuge" or "GameFontHighlightLarge");
+
+			specialActionButton:SetEnabled(not specialActionInfo.disabled);
+			specialActionButton:Show();
 			specialActionButton:SetText(specialActionInfo.label);
 			specialActionButton:FitToText();
 			maxButtonWidth = math.max(maxButtonWidth, specialActionButton:GetWidth());

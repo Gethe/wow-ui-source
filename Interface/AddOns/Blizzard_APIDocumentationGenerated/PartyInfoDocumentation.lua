@@ -521,27 +521,6 @@ local PartyInfo =
 			},
 		},
 		{
-			Name = "RoleChangedInform",
-			Type = "Event",
-			LiteralName = "ROLE_CHANGED_INFORM",
-			Payload =
-			{
-				{ Name = "changedName", Type = "cstring", Nilable = false },
-				{ Name = "fromName", Type = "cstring", Nilable = false },
-				{ Name = "oldRole", Type = "cstring", Nilable = false },
-				{ Name = "newRole", Type = "cstring", Nilable = false },
-			},
-		},
-		{
-			Name = "RolePollBegin",
-			Type = "Event",
-			LiteralName = "ROLE_POLL_BEGIN",
-			Payload =
-			{
-				{ Name = "fromName", Type = "cstring", Nilable = false },
-			},
-		},
-		{
 			Name = "VoteKickReasonNeeded",
 			Type = "Event",
 			LiteralName = "VOTE_KICK_REASON_NEEDED",

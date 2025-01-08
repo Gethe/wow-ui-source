@@ -421,47 +421,33 @@
 							<Frame parentKey="GroupIndicator" hidden="true">
 								<Size x="10" y="16"/>
 								<Anchors>
-									<Anchor point="BOTTOMRIGHT" relativePoint="TOPLEFT" x="210" y="-27"/>
+									<Anchor point="BOTTOMRIGHT" relativePoint="TOPLEFT" x="210" y="-29"/>
 								</Anchors>
 								<Layers>
 									<Layer level="BACKGROUND">
-										<Texture name="PlayerFrameGroupIndicatorLeft" file="Interface\CharacterFrame\UI-CharacterFrame-GroupIndicator">
-											<Size x="24" y="16"/>
+										<Texture parentKey="GroupIndicatorLeft" atlas="UI-HUD-UnitFrame-Player-GroupIndicatorLeft" useAtlasSize="true">
 											<Anchors>
 												<Anchor point="TOPLEFT"/>
 											</Anchors>
-											<TexCoords left="0" right="0.1875" top="0" bottom="1"/>
 										</Texture>
-										<Texture name="PlayerFrameGroupIndicatorRight" file="Interface\CharacterFrame\UI-CharacterFrame-GroupIndicator">
-											<Size x="24" y="16"/>
+										<Texture parentKey="GroupIndicatorRight" atlas="UI-HUD-UnitFrame-Player-GroupIndicatorRight" useAtlasSize="true">
 											<Anchors>
 												<Anchor point="TOPRIGHT"/>
 											</Anchors>
-											<TexCoords left="0.53125" right="0.71875" top="0" bottom="1"/>
 										</Texture>
-										<Texture name="PlayerFrameGroupIndicatorMiddle" file="Interface\CharacterFrame\UI-CharacterFrame-GroupIndicator">
-											<Size x="0" y="16"/>
+										<Texture atlas="_UI-HUD-UnitFrame-Player-GroupIndicatorMid" useAtlasSize="true">
 											<Anchors>
-												<Anchor point="LEFT" relativeTo="PlayerFrameGroupIndicatorLeft" relativePoint="RIGHT"/>
-												<Anchor point="RIGHT" relativeTo="PlayerFrameGroupIndicatorRight" relativePoint="LEFT"/>
+												<Anchor point="LEFT" relativeKey="$parent.GroupIndicatorLeft" relativePoint="RIGHT"/>
+												<Anchor point="RIGHT" relativeKey="$parent.GroupIndicatorRight" relativePoint="LEFT"/>
 											</Anchors>
-											<TexCoords left="0.1875" right="0.53125" top="0" bottom="1"/>
 										</Texture>
-										<FontString name="PlayerFrameGroupIndicatorText" inherits="GameFontHighlightSmall">
+										<FontString name="PlayerFrameGroupIndicatorText" alpha=".7" inherits="GameFontHighlightSmall">
 											<Anchors>
-												<Anchor point="LEFT" x="20" y="-2"/>
+												<Anchor point="LEFT" x="20" y="2"/>
 											</Anchors>
 										</FontString>
 									</Layer>
 								</Layers>
-								<Scripts>
-									<OnLoad>
-										PlayerFrameGroupIndicatorLeft:SetAlpha(0.3);
-										PlayerFrameGroupIndicatorRight:SetAlpha(0.3);
-										PlayerFrameGroupIndicatorMiddle:SetAlpha(0.3);
-										PlayerFrameGroupIndicatorText:SetAlpha(0.7);
-									</OnLoad>
-								</Scripts>
 							</Frame>
 						</Frames>
 					</Frame>

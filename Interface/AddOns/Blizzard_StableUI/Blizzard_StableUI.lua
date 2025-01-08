@@ -59,6 +59,12 @@ local selectedListBackgroundForPetSpec = {
 	[STABLE_PET_SPEC_TENACITY] = "pet-list-bg-tenacity-active",
 };
 
+local dropdownIconForPetSpec = {
+	[STABLE_PET_SPEC_CUNNING] = "cunning-icon-small",
+	[STABLE_PET_SPEC_FEROCITY] = "ferocity-icon-small",
+	[STABLE_PET_SPEC_TENACITY] = "tenacity-icon-small",
+};
+
 -- StableUI local functions
 local function GetBackgroundForPetSpecialization(specialization)
 	return backgroundForPetSpec[specialization] or nil;
@@ -70,6 +76,10 @@ end
 
 local function GetSelectedListBackgroundForPetSpecialization(specialization)
 	return selectedListBackgroundForPetSpec[specialization];
+end
+
+local function GetDropdownIconForPetSpec(specialization)
+	return dropdownIconForPetSpec[specialization];
 end
 
 local function SetPortraitTextureFromCreatureDisplayIDFlipped(texture, creatureDisplayID)
@@ -260,6 +270,7 @@ function StableFrameMixin:OnPetSelected(pet)
 	if not self.selectedPet or pet.slotID ~= self.selectedPet.slotID then
 		self.selectedPet = pet;
 		self.PetModelScene:SetPet(self.selectedPet or FindFirstPet());
+		self.PetModelScene.PetInfo.Specialization:Refresh();
 	end
 end
 
@@ -640,21 +651,44 @@ end
 
 function StableActivePetButtonTemplateMixin:RefreshTooltip()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -20, -15);
-	if self.locked and not self.isSecondarySlot then
-		GameTooltip_SetTitle(GameTooltip, RED_FONT_COLOR:WrapTextInColorCode(PET_STABLE_SLOT_LOCKED));
-		local nextCallPetSpellID = CALL_PET_SPELL_IDS[self:GetID()];
-		local spellInfo = C_Spell.GetSpellInfo(nextCallPetSpellID);
-		if (spellInfo.name and spellInfo.name ~= "") then
-			GameTooltip_AddHighlightLine(GameTooltip, PET_STABLE_SLOT_LOCKED_TOOLTIP:format(spellInfo.name));
+
+	if self.locked then
+		-- Secondary slot is locked, player needs the BM animal companion talent
+		if self.isSecondarySlot and self.disabledTooltip then
+			GameTooltip_AddErrorLine(GameTooltip, self.disabledTooltip);
+		else
+		-- The call pet spell for this slot hasn't been learned yet
+			GameTooltip_SetTitle(GameTooltip, RED_FONT_COLOR:WrapTextInColorCode(PET_STABLE_SLOT_LOCKED));
+			local nextCallPetSpellID = CALL_PET_SPELL_IDS[self:GetID()];
+			local spellInfo = C_Spell.GetSpellInfo(nextCallPetSpellID);
+			if (spellInfo.name and spellInfo.name ~= "") then
+				GameTooltip_AddHighlightLine(GameTooltip, PET_STABLE_SLOT_LOCKED_TOOLTIP:format(spellInfo.name));
+			end
 		end
-	elseif not self:IsEnabled() and self.disabledTooltip then
-		GameTooltip_AddErrorLine(GameTooltip, self.disabledTooltip);
-	elseif self.petData then
-		GameTooltip_AddHighlightLine(GameTooltip, self.petData.name);
-		if self.petData.slotID == GetSummonedPetStableSlot() then
-			GameTooltip_AddNormalLine(GameTooltip, STABLE_SUMMONED_PET_LABEL);
+	else
+		if not self.isSecondarySlot then
+			-- Not a secondary slot (animal companion), slot is not empty
+			if self.petData then
+				GameTooltip_AddHighlightLine(GameTooltip, self.petData.name);
+				if self.petData.slotID == GetSummonedPetStableSlot() then
+					GameTooltip_AddNormalLine(GameTooltip, STABLE_SUMMONED_PET_LABEL);
+				end
+			else
+			-- Not a secondary slot, slot is empty
+				GameTooltip_AddHighlightLine(GameTooltip, STABLE_EMPTY_SLOT_LABEL);
+			end
+		elseif self.isSecondarySlot then
+			-- Secondary slot is filled (not pulling a random pet for the bonus pet), remind players it is their animal companion
+			if self.petData then
+				GameTooltip_AddHighlightLine(GameTooltip, self.petData.name);
+				GameTooltip_AddNormalLine(GameTooltip, STABLE_SECONDARY_PET_LABEL);
+			else
+			-- Secondary slot is empty, let players know it is for animal companion
+				GameTooltip_AddHighlightLine(GameTooltip, STABLE_SECONDARY_PET_LABEL);
+			end
 		end
 	end
+
 	GameTooltip:Show();
 end
 
@@ -727,7 +761,6 @@ StablePetInfoMixin = {};
 function StablePetInfoMixin:SetPet(petData)
 	self.petData = petData;
 	self.NameBox:SetPet(petData);
-	self.Specialization:SetText(STABLE_PET_INFO_SPECIALIZATION_TYPE_LABEL:format(petData.specialization, petData.type));
 	self.Exotic:SetText(petData.isExotic and STABLE_EXOTIC_TYPE_LABEL or nil);
 
 	local petIconMarkup = CreateSimpleTextureMarkup(petData.icon or QUESTION_MARK_ICON, 16, 16);
@@ -735,6 +768,7 @@ function StablePetInfoMixin:SetPet(petData)
 	self.Type:SetText(STABLE_PET_INFO_FAMILY_LABEL:format(petFamilyString));
 
 	self.FavoriteButton:RefreshVisuals();
+	self.Specialization:Refresh();
 end
 
 StablePetTypeStringMixin = {};
@@ -988,7 +1022,16 @@ function StableStabledPetListMixin:PetPassesSearch(pet)
 	end
 
 	-- pet abilities
-	for i, abilityID in ipairs(pet.abilities) do
+	local combinedAbilities = {};
+	for _, ability in ipairs(pet.petAbilities) do
+		tinsert(combinedAbilities, ability);
+	end
+
+	for _, ability in ipairs(pet.specAbilities) do
+		tinsert(combinedAbilities, ability);
+	end
+
+	for i, abilityID in ipairs(combinedAbilities) do
 		local abilityInfo = C_Spell.GetSpellInfo(abilityID);
 		if string.find(string.lower(abilityInfo.name), searchString) then
 			foundPet = true;
@@ -1070,7 +1113,7 @@ end
 
 StablePetAbilityMixin = {};
 
-function StablePetAbilityMixin:Initialize(spellID)
+function StablePetAbilityMixin:Initialize(spellID, specialization)
 	self.spellID = spellID;
 	if not self.spellID then
 		self.Icon:SetTexture(QUESTION_MARK_ICON);
@@ -1080,6 +1123,13 @@ function StablePetAbilityMixin:Initialize(spellID)
 	end
 
 	local spellInfo = C_Spell.GetSpellInfo(spellID);
+	
+	if specialization then
+		self.SpecializationIndicator:SetAtlas(GetDropdownIconForPetSpec(specialization));
+	else
+		self.SpecializationIndicator:SetAtlas(nil);
+	end
+	
 	self.Icon:SetTexture(spellInfo.iconID);
 	self.Name:SetText(spellInfo.name);
 
@@ -1118,6 +1168,7 @@ function StablePetAbilitiesListMixin:OnLoad()
 
 	local function AbilityResetter(framePool, frame)
 		frame.spellID = nil;
+		frame.SpecializationIndicator:SetAtlas(nil);
 		frame.Icon:SetTexture(QUESTION_MARK_ICON);
 		frame.Name:SetText("");
 		frame:ClearAllPoints();
@@ -1128,14 +1179,14 @@ function StablePetAbilitiesListMixin:OnLoad()
 end
 
 function StablePetAbilitiesListMixin:OnPetSelected(pet)
-	if not pet or not pet.abilities then
+	if not pet or not (pet.petAbilities or pet.specAbilities) then
 		return;
 	end
 
 	self.abilityPool:ReleaseAll();
 
 	local lastAbility;
-	for index, abilityID in ipairs(pet.abilities) do
+	for index, abilityID in ipairs(pet.petAbilities) do
 		local ability = self.abilityPool:Acquire();
 		ability:Initialize(abilityID);
 
@@ -1149,5 +1200,85 @@ function StablePetAbilitiesListMixin:OnPetSelected(pet)
 		lastAbility = ability;
 	end
 
+	-- Pet specializations need to be treated a little differently
+	for index, abilityID in ipairs(pet.specAbilities) do
+		local ability = self.abilityPool:Acquire();
+		ability:Initialize(abilityID, pet.specialization);
+
+		if lastAbility then
+			ability:SetPoint("TOPLEFT", lastAbility, "BOTTOMLEFT", 0, -4);
+		else
+			ability:SetPoint("TOPLEFT", self, "TOPLEFT", 0, -4);
+		end
+
+		lastAbility = ability;
+	end
+
 	self:Layout();
+end
+
+StablePetSpecializationMixin = {};
+
+function StablePetSpecializationMixin:OnLoad()
+	WowStyle1DropdownMixin.OnLoad(self);
+	self:SetWidth(135);
+	self.activeSpecIndex = nil;
+end
+
+function StablePetSpecializationMixin:Refresh()
+	self.options = {};
+	for _, petSpecInfo in ipairs(C_StableInfo.GetAvailablePetSpecInfos()) do
+		local selectedPet = GetSelectedPet();
+		if selectedPet then
+			local isActive = petSpecInfo.specID == selectedPet.specID;
+			if isActive then
+				self.activeSpecIndex = petSpecInfo.specIndex;
+			end
+
+			tinsert(self.options, {
+				specIndex = petSpecInfo.specIndex,
+				name = petSpecInfo.specializationName,
+				isActive = isActive,
+				iconAtlas = GetDropdownIconForPetSpec(petSpecInfo.specializationName),
+			});
+		end
+	end
+
+	local function OptionNameSort(opt1, opt2)
+		return strcmputf8i(opt1.name, opt2.name) < 0;
+	end
+	table.sort(self.options, OptionNameSort);
+
+	local function IsSelected(option)
+		return self.activeSpecIndex == option.specIndex;
+	end
+
+	local function SetSelected(option)
+		if self.activeSpecIndex ~= option.specIndex then 
+			self.activeSpecIndex = option.specIndex;
+
+			if not option.isActive then
+				local selectedPet = GetSelectedPet();
+				if selectedPet then
+					C_SpecializationInfo.SetPetSpecialization(option.specIndex, selectedPet.petNumber);
+				end
+			end
+		end
+	end
+
+	self:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_PET_SPEC_OPTIONS");
+		rootDescription:CreateTitle(SPECIALIZATION);
+
+		for idx, option in ipairs(self.options) do
+			local radio = rootDescription:CreateRadio(option.name, IsSelected, SetSelected, option);
+
+			radio:AddInitializer(function(button, description, menu)
+				local texture = button:AttachTexture();
+				texture:SetSize(25, 25);
+				texture:SetPoint("LEFT", button.fontString, "RIGHT", 5, 0);
+				texture:SetAtlas(GetDropdownIconForPetSpec(option.name));
+			end);
+		end
+	end);
 end

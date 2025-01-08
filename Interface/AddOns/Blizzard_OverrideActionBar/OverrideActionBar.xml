@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
 	<Script file="OverrideActionBar.lua"/>
-	<CheckButton name="OverrideActionBarButtonTemplate" inherits="ActionBarButtonTemplate" virtual="true">
+	<CheckButton name="OverrideActionBarButtonTemplate" inherits="ActionBarButtonTemplate" mixin="OverrideActionBarButtonMixin" virtual="true">
 		<Size x="45" y="45"/>
 		<Scripts>
 			<OnLoad inherit="append">

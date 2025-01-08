@@ -122,6 +122,20 @@ function MapUtil.IsChildMap(mapID, ancestorMapID)
 	return false;
 end
 
+local g_childMapCache = { };
+
+function MapUtil.IsChildMapCached(mapID, ancestorMapID)
+	local key = mapID * 100000 + ancestorMapID;
+	local result = g_childMapCache[key];
+	if result ~= nil then
+		return result;
+	end
+
+	result = MapUtil.IsChildMap(mapID, ancestorMapID);
+	g_childMapCache[key] = result;
+	return result;
+end
+
 function MapUtil.IsOribosMap(mapID)
 	return tContains(ORIBOS_UI_MAP_IDS, mapID);
 end

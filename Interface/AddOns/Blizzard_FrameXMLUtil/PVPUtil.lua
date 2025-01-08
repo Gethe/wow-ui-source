@@ -9,8 +9,8 @@ end
 function PVPUtil.GetTierDescription(tierEnum)
 	return _G["PVP_RANK_"..tierEnum.."_NEXT_RANK_DESC"];
 end
-function PVPUtil.GetBracketName(bracket)
-	return _G["PVP_BRACKET_"..bracket];
+function PVPUtil.GetBracketName(bracketIndex)
+	return CONQUEST_BRACKET_NAMES[bracketIndex];
 end
 
 function PVPUtil.IsInActiveBattlefield()

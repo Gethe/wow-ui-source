@@ -1400,20 +1400,8 @@ function UnitPopupDungeonDifficulty1ButtonMixin:isDisabled(contextData)
 end
 
 function UnitPopupDungeonDifficulty1ButtonMixin:IsEnabled(contextData)
-	local inInstance, instanceType = IsInInstance();
-	if inInstance then
-	return false;
-end
-
-	if instanceType == "raid" then
-		return false;
-	end
-
-	if IsInGroup() and not UnitIsGroupLeader("player") then
-		return false;
-	end
-
-	return not UnitPopupSharedUtil.HasLFGRestrictions();
+	local difficultyID = self:GetDifficultyID();
+	return DifficultyUtil.IsDungeonDifficultyEnabled(difficultyID);
 end
 
 UnitPopupDungeonDifficulty2ButtonMixin = CreateFromMixins(UnitPopupDungeonDifficulty1ButtonMixin);
@@ -2823,12 +2811,15 @@ function UnitPopupChatPromoteButtonMixin:CanShow(contextData)
 	end
 
 	-- TODO: Name matching is wrong here, needs full name comparison
-	return contextData.name == UnitNameUnmodified("player");
+	if contextData.name == UnitNameUnmodified("player") then
+		return false;
+	end
+
+	return true;
 end
 
-UnitPopupChatPromoteButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
-function UnitPopupChatPromoteButtonMixin:GetText(contextData)
-	return MAKE_MODERATOR;
+function UnitPopupChatPromoteButtonMixin:OnClick(contextData)
+	ChannelModerator(contextData.channelName, contextData.name)
 end
 
 UnitPopupChatDemoteButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
@@ -2849,9 +2840,13 @@ function UnitPopupChatDemoteButtonMixin:CanShow(contextData)
 	if not IsDisplayChannelOwner() then
 		return false;
 	end
-
+	
 	-- TODO: Name matching is wrong here, needs full name comparison
-	return contextData.name ~= UnitNameUnmodified("player");
+	if contextData.name == UnitNameUnmodified("player") then
+		return false;
+	end
+
+	return true;
 end
 
 function UnitPopupChatDemoteButtonMixin:OnClick(contextData)
@@ -3529,9 +3524,24 @@ function UnitPopupSelectRoleButtonMixin:GetText(contextData)
 	return SET_ROLE; 
 end 
 
---Override in UnitPopupButtons
 function UnitPopupSelectRoleButtonMixin:CanShow(contextData)
-	return false; 
+	if not CanShowSetRoleButton() then
+		return false;
+	end
+
+	if C_Scenario.IsInScenario() then
+		return false;
+	end
+
+	if not IsInGroup() then
+		return false; 
+	end
+
+	if HasLFGRestrictions() then
+		return false;
+	end
+
+	return UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") or UnitIsUnit(contextData.unit, "player");
 end
 
 function UnitPopupSelectRoleButtonMixin:GetEntries()
@@ -3555,7 +3565,7 @@ function UnitPopupSetRoleNoneButton:GetTextHeight()
 end
 
 function UnitPopupSetRoleNoneButton:GetRole()
-	return nill;
+	return nil;
 end
 
 function UnitPopupSetRoleNoneButton:OnClick(contextData)
@@ -3578,6 +3588,10 @@ function UnitPopupSetRoleTankButton:GetRole()
 end
 
 function UnitPopupSetRoleTankButton:IsEnabled(contextData)
+	if (AreClassRolesSoftSuggestions()) then
+		return true;
+	end
+
 	local canBeTank, canBeHealer, canBeDamager = UnitGetAvailableRoles(contextData.unit);
 	return canBeTank;
 end
@@ -3593,6 +3607,10 @@ function UnitPopupSetRoleDpsButton:GetRole()
 end
 
 function UnitPopupSetRoleDpsButton:IsEnabled(contextData)
+	if (AreClassRolesSoftSuggestions()) then
+		return true;
+	end
+
 	local canBeTank, canBeHealer, canBeDamager = UnitGetAvailableRoles(contextData.unit);
 	return canBeDamager;
 end
@@ -3608,6 +3626,10 @@ function UnitPopupSetRoleHealerButton:GetRole()
 end
 
 function UnitPopupSetRoleHealerButton:IsEnabled(contextData)
+	if (AreClassRolesSoftSuggestions()) then
+		return true;
+	end
+
 	local canBeTank, canBeHealer, canBeDamager = UnitGetAvailableRoles(contextData.unit);
 	return canBeHealer;
 end

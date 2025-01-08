@@ -7,8 +7,10 @@ end
 local ERROR_FORMAT = [[|cffffd200Message:|r|cffffffff %s|r
 |cffffd200Time:|r|cffffffff %s|r
 |cffffd200Count:|r|cffffffff %s|r
-|cffffd200Stack:|r|cffffffff %s|r
-|cffffd200Locals:|r|cffffffff %s|r]];
+|cffffd200Stack:|r
+|cffffffff%s|r
+|cffffd200Locals:|r
+|cffffffff%s|r]];
 
 local WARNING_AS_ERROR_FORMAT = [[|cffffd200Message:|r|cffffffff %s|r
 |cffffd200Time:|r|cffffffff %s|r
@@ -183,7 +185,7 @@ function ScriptErrorsFrameMixin:OnShow()
 	self:Update();
 end
 
-function ScriptErrorsFrameMixin:DisplayMessageInternal(msg, warnType, keepHidden, locals, msgKey)
+function ScriptErrorsFrameMixin:DisplayMessageInternal(msg, warnType, keepHidden, locals, stack, msgKey)
 	addframetext("Lua Error: "..msgKey);
 	local index = self.seen[msgKey];
 	if ( index ) then
@@ -192,7 +194,7 @@ function ScriptErrorsFrameMixin:DisplayMessageInternal(msg, warnType, keepHidden
 		self.times[index] = date();
 		self.locals[index] = locals;
 	else
-		tinsert(self.order, msgKey);
+		tinsert(self.order, stack);
 		index = #self.order;
 		self.count[index] = 1;
 		self.messages[index] = msg;
@@ -233,7 +235,8 @@ function ScriptErrorsFrameMixin:OnError(msg, warnType, keepHidden)
 		LogAuroraClient("ae", "Lua Error ", "message", msg, "stack", stack);
 	end
 
-	self:DisplayMessageInternal(msg, warnType, keepHidden, locals, msg.."\n"..stack);
+	local msgKey = msg.."\n"..stack;
+	self:DisplayMessageInternal(msg, warnType, keepHidden, locals, stack, msgKey);
 
 	-- process any exception after displaying, this ensures frame text is updated
 	if (ProcessExceptionClient) then
@@ -242,7 +245,10 @@ function ScriptErrorsFrameMixin:OnError(msg, warnType, keepHidden)
 end
 
 function ScriptErrorsFrameMixin:OnWarning(msg, warnType, keepHidden)
-	self:DisplayMessageInternal(msg, warnType, keepHidden, "", msg);
+	local locals = "";
+	local stack = "";
+	local msgKey = msg;
+	self:DisplayMessageInternal(msg, warnType, keepHidden, locals, stack, msgKey);
 end
 
 function ScriptErrorsFrameMixin:UpdateTitle(messageType)

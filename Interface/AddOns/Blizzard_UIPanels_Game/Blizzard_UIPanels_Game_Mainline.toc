@@ -20,8 +20,9 @@ Mainline\ReputationFrame.lua
 Mainline\ReputationFrame.xml
 Mainline\FriendshipStatusBar.lua
 Mainline\FriendshipStatusBar.xml
-Mainline\QuestFrame.lua
+Mainline\QuestFrameTemplates.lua
 Mainline\QuestFrameTemplates.xml
+Mainline\QuestFrame.lua
 Mainline\QuestFrame.xml
 Mainline\QuestInfo.lua
 Mainline\QuestInfo.xml
@@ -63,6 +64,8 @@ Mainline\CampaignOverview.lua
 Mainline\CampaignOverview.xml
 Mainline\MapLegendFrame.lua
 Mainline\MapLegendFrame.xml
+Mainline\EventScheduler.lua
+Mainline\EventScheduler.xml
 Mainline\QuestMapFrame.lua
 Mainline\QuestMapFrame.xml
 Mainline\TabardModelControlButtonMixin.lua

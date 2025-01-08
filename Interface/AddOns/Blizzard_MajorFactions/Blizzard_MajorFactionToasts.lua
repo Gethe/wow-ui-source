@@ -3,23 +3,12 @@ MajorFactionUnlockToasts = {};
 -- Entry Ids in the UIScriptedAnimationEffect table.
 local majorFactionSwirlEffects = 
 {
-	Expedition = {152},
-	Centaur = {152},
-	Tuskarr = {152},
-	Valdrakken = {152},
-	Niffen = {152},
-	Dream = {152},
-	web = {178},
-	storm = {178},
-	candle = {178},
-	flame = {178},
+	[LE_EXPANSION_DRAGONFLIGHT] = {152},
+	[LE_EXPANSION_WAR_WITHIN] = {178},
 };
 
--- Entries in the GlobalColor table.
-local majorFactionColorFormat = "%s_MAJOR_FACTION_COLOR";
-
-function MajorFactionUnlockToasts.GetSwirlEffectsByTextureKit(textureKit)
-	return majorFactionSwirlEffects[textureKit];
+function MajorFactionUnlockToasts.GetSwirlEffectsByExpansion(expansion)
+	return majorFactionSwirlEffects[expansion];
 end
 
 MajorFactionCelebrationBannerMixin = {};
@@ -38,10 +27,11 @@ function MajorFactionCelebrationBannerMixin:SetMajorFactionTextureKit(textureKit
 	};
 
 	SetupTextureKitOnFrames(textureKit, textureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+end
 
+function MajorFactionCelebrationBannerMixin:SetMajorFactionSwirlEffects(expansion)
 	self:CancelIconSwirlEffects();
-
-	self:AddSwirlEffects(textureKit);
+	self:AddSwirlEffects(expansion);
 end
 
 function MajorFactionCelebrationBannerMixin:SetMajorFactionExpansionLayoutInfo(expansionLayoutInfo)
@@ -81,8 +71,8 @@ function MajorFactionCelebrationBannerMixin:SetMajorFactionExpansionLayoutInfo(e
 	end
 end
 
-function MajorFactionCelebrationBannerMixin:AddSwirlEffects(textureKit)
-	local swirlEffects = MajorFactionUnlockToasts.GetSwirlEffectsByTextureKit(textureKit);
+function MajorFactionCelebrationBannerMixin:AddSwirlEffects(expansion)
+	local swirlEffects = MajorFactionUnlockToasts.GetSwirlEffectsByExpansion(expansion);
 	if not swirlEffects then
 		return;
 	end
@@ -90,8 +80,4 @@ function MajorFactionCelebrationBannerMixin:AddSwirlEffects(textureKit)
 	for i, effect in ipairs(swirlEffects) do
 		self.IconSwirlModelScene:AddEffect(effect, self);
 	end
-end
-
-function MajorFactionCelebrationBannerMixin:GetFactionColorByTextureKit(textureKit)
-	return _G[majorFactionColorFormat:format(strupper(textureKit))] or HIGHLIGHT_FONT_COLOR;
 end

@@ -71,6 +71,31 @@ function CharacterSelectUIMixin:OnLoad()
 	self:RegisterEvent("CHARACTER_LIST_MAIL_RECEIVED");
 	self:RegisterEvent("ACCOUNT_CONVERSION_DISPLAY_STATE");
 	self:RegisterEvent("ACCOUNT_CVARS_LOADED");
+
+	local function OnCollectionsShow()
+		if self.ModelFFX:IsShown() then
+			CharacterSelectRotateLeft:Hide();
+			CharacterSelectRotateRight:Hide();
+		else
+			for _, footer in ipairs(self.footerFrames) do
+				footer:Hide();
+			end
+		end
+	end
+
+	local function OnCollectionsHide()
+		if self.ModelFFX:IsShown() then
+			CharacterSelectRotateLeft:Show();
+			CharacterSelectRotateRight:Show();
+		else
+			for _, footer in ipairs(self.footerFrames) do
+				footer:Show();
+			end
+		end
+	end
+
+	EventRegistry:RegisterCallback("GlueCollections.OnShow", OnCollectionsShow);
+	EventRegistry:RegisterCallback("GlueCollections.OnHide", OnCollectionsHide);
 end
 
 function CharacterSelectUIMixin:OnEvent(event, ...)
@@ -204,8 +229,10 @@ function CharacterSelectUIMixin:OnMouseUp(button)
 end
 
 function CharacterSelectUIMixin:ExpandCharacterList(isExpanded)
-	local isUserInput = false;
-	self.VisibilityFramesContainer.ListToggle:SetExpanded(isExpanded, isUserInput);
+	if self.VisibilityFramesContainer.ListToggle:IsEnabled() then
+		local isUserInput = false;
+		self.VisibilityFramesContainer.ListToggle:SetExpanded(isExpanded, isUserInput);
+	end
 end
 
 function CharacterSelectUIMixin:SetCharacterListToggleEnabled(isEnabled)
@@ -221,27 +248,31 @@ function CharacterSelectUIMixin:SetCharacterDisplay(selectedCharacterID)
 		local showModelFFX = true;
 		-- See if the map scene assets are present to load.
 		if selectedElementData.isGroup then
-			-- Only 1 map currently, when multiple are introduced this will update.
-			local mapSceneID = 1;
+			local warbandSceneID = selectedElementData.warbandSceneID;
 
-			if self.loadedMapManifest ~= mapSceneID and LoadMapManifest(mapSceneID) then
-				self.loadedMapManifest = mapSceneID;
-				if not CheckMapManifestLocality() then
-					PreloadMapManifest();
+			if warbandSceneID == C_WarbandScene.GetRandomEntryID() then
+				warbandSceneID = selectedElementData.randomWarbandSceneID;
+			end
+
+			if self.loadedMapManifest ~= warbandSceneID and LoadMapManifest(warbandSceneID) then
+				self.loadedMapManifest = warbandSceneID;
+				if not CheckMapManifestLocality(warbandSceneID) then
+					PreloadMapManifest(warbandSceneID);
 				end
 			end
 
 			-- Explicitly check as the above load could have failed, and we only want to fire off LoadMapManifest until loaded successfully.
-			if self.loadedMapManifest == mapSceneID and CheckMapManifestLocality() then
+			if self.loadedMapManifest == warbandSceneID and CheckMapManifestLocality(warbandSceneID) then
 				showModelFFX = false;
 
-				local loadedMapScene = GetLoadedMapScene();
-				local mapSceneLoaded = loadedMapScene and loadedMapScene == mapSceneID;
+				local loadedWarbandScene = GetLoadedMapScene();
+				local warbandSceneLoaded = loadedWarbandScene and loadedWarbandScene == warbandSceneID;
 				-- No need to reload the same map every time.
-				if not mapSceneLoaded then
+				if not warbandSceneLoaded then
 					self.FadeInBackground:Show();
-					LoadMapScene(mapSceneID);
+					LoadMapScene(warbandSceneID);
 					self.mapSceneLoading = true;
+					self:ReleaseCharacterOverlayFrames();
 				end
 
 				for index, childElementData in ipairs(selectedElementData.characterData) do
@@ -253,7 +284,7 @@ function CharacterSelectUIMixin:SetCharacterDisplay(selectedCharacterID)
 				self:ShowModelScene();
 
 				-- We show the overlay frames at the end of MapFadeIn otherwise.
-				if mapSceneLoaded then
+				if warbandSceneLoaded then
 					self:SetupCharacterOverlayFrames();
 				end
 
@@ -261,7 +292,7 @@ function CharacterSelectUIMixin:SetCharacterDisplay(selectedCharacterID)
 					if childElementData.characterID == selectedCharacterID then
 						PlayRandomAnimation(childElementData.characterID, Enum.WarbandSceneAnimationEvent.Select, isSceneChange);
 					elseif not childElementData.isEmpty then
-						local pose = mapSceneLoaded and Enum.WarbandSceneAnimationEvent.Deselect or Enum.WarbandSceneAnimationEvent.StartingPose;
+						local pose = warbandSceneLoaded and Enum.WarbandSceneAnimationEvent.Deselect or Enum.WarbandSceneAnimationEvent.StartingPose;
 						PlayRandomAnimation(childElementData.characterID, pose, isSceneChange);
 					end
 				end
@@ -284,8 +315,6 @@ end
 function CharacterSelectUIMixin:ShowModelScene()
 	self.ModelFFX:Hide();
 	self.MapScene:Show();
-
-	PlayGlueAmbience(GLUE_AMBIENCE_TRACKS["WARBANDS_MAPSCENE"], 4.0);
 
 	CharacterSelectRotateLeft:Hide();
 	CharacterSelectRotateRight:Hide();
@@ -404,7 +433,7 @@ function CharacterSelectUIMixin:SetupOverlayFrameForCharacter(characterID)
 
 		footerFrame:SetPoint("TOP", self, "BOTTOMLEFT", bottomPoint2D.x, clampedBottomY);
 		footerFrame.characterGuid = characterGuid;
-		footerFrame:Show();
+		footerFrame:SetShown(not CharacterSelectUI:IsCollectionsActive());
 		table.insert(self.footerFrames, footerFrame);
 	end
 end
@@ -434,12 +463,24 @@ function CharacterSelectUIMixin:ShouldStoreBeEnabled()
 	return self.shouldStoreBeEnabled;
 end
 
+function CharacterSelectUIMixin:IsCollectionsActive()
+	return self.CollectionsFrame:IsShown();
+end
+
+function CharacterSelectUIMixin:SetGameEnvironmentEnabled(enabled)
+	self.VisibilityFramesContainer.NavBar:SetGameEnvironmentButtonEnabled(enabled);
+end
+
 function CharacterSelectUIMixin:SetMenuEnabled(enabled)
 	self.VisibilityFramesContainer.NavBar:SetMenuButtonEnabled(enabled);
 end
 
 function CharacterSelectUIMixin:SetChangeRealmEnabled(enabled)
 	self.VisibilityFramesContainer.NavBar:SetRealmsButtonEnabled(enabled);
+end
+
+function CharacterSelectUIMixin:SetEditCampEnabled(enabled)
+	self.VisibilityFramesContainer.NavBar:SetCampsButtonEnabled(enabled);
 end
 
 function CharacterSelectUIMixin:GetVisibilityState()
@@ -481,7 +522,7 @@ function CharacterSelectMapSceneMixin:OnModelLoaded(mapSceneIndex)
 	if elementData and elementData.isGroup then
 		for index, childElementData in ipairs(elementData.characterData) do
 			if index == mapSceneIndex then
-				CharacterSelect.CharacterSelectUI:MapSceneModelLoaded(childElementData.characterID);
+				CharacterSelectUI:MapSceneModelLoaded(childElementData.characterID);
 				break;
 			end
 		end
@@ -654,4 +695,98 @@ function CharacterDeletionDialogMixin:DeleteCharacter()
 	self:Hide();
 	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
 	GlueDialog_Show("CHAR_DELETE_IN_PROGRESS");
+end
+
+
+CharacterListEditGroupFrameMixin = {
+	DialogHeightNoDelete = 119,
+	DialogHeightDelete = 174
+};
+
+function CharacterListEditGroupFrameMixin:OnLoad()
+	self.AcceptButton:SetScript("OnClick", function()
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		self:OnAccept();
+	end);
+
+	self.CancelButton:SetScript("OnClick", function()
+		PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
+		self:Hide();
+	end);
+
+	self.DeleteButton:SetScript("OnClick", function()
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		self:OnDelete();
+	end);
+
+	self.EditBox:SetScript("OnEnterPressed", function()
+		self:OnAccept();
+	end);
+
+	self.EditBox:SetScript("OnEscapePressed", function()
+		self:Hide();
+	end);
+
+	self.EditBox:SetScript("OnTextChanged", function()
+		self.AcceptButton:SetEnabled(self.EditBox:GetText() ~= "");
+	end);
+end
+
+function CharacterListEditGroupFrameMixin:OnShow()
+	GlueParent_AddModalFrame(self);
+end
+
+function CharacterListEditGroupFrameMixin:OnHide()
+	GlueParent_RemoveModalFrame(self);
+end
+
+function CharacterListEditGroupFrameMixin:OnAccept()
+	if self.groupID == nil then
+		-- Save any moves before we add, so characters don't jump back to previous positions.
+		-- We save off the pending action to run after things finish updating.
+		CharacterSelectListUtil.SaveCharacterOrder();
+		CharacterSelectCharacterFrame:SetPendingGroupCreation(self.EditBox:GetText());
+		CharacterSelectListUtil.GetCharacterListUpdate();
+	elseif UpdateCharacterListGroup(self.groupID, self.EditBox:GetText()) then
+		CharacterSelectCharacterFrame:UpdateCharacterSelection();
+	end
+	self:Hide();
+end
+
+function CharacterListEditGroupFrameMixin:OnDelete()
+	local deleteGroupCallback = function()
+		-- Save any moves before we delete, so characters don't jump back to previous positions.
+		-- We save off the pending action to run after things finish updating.
+		CharacterSelectListUtil.SaveCharacterOrder();
+		CharacterSelectCharacterFrame:SetPendingGroupDeletion(self.groupID);
+		CharacterSelectListUtil.GetCharacterListUpdate();
+	end;
+
+	local formattedText = string.format(StaticPopupDialogs["CONFIRM_DELETE_CHARACTER_GROUP"].text, self.groupName);
+	GlueDialog_Show("CONFIRM_DELETE_CHARACTER_GROUP", formattedText, deleteGroupCallback);
+	self:Hide();
+end
+
+function CharacterListEditGroupFrameMixin:ShowNewGroupFrame()
+	self.groupID = nil;
+	self.groupName = nil;
+
+	self.Separator:Hide();
+	self.DeleteButton:Hide();
+	self.EditBox:SetText("");
+	self:SetHeight(CharacterListEditGroupFrameMixin.DialogHeightNoDelete);
+
+	self:Show();
+end
+
+function CharacterListEditGroupFrameMixin:ShowEditGroupFrame(groupID, groupName, isOnlyGroup)
+	self.groupID = groupID;
+	self.groupName = groupName;
+
+	self.Separator:SetShown(not isOnlyGroup);
+	self.DeleteButton:SetShown(not isOnlyGroup);
+	self.EditBox:SetText(self.groupName);
+	self:SetHeight(isOnlyGroup and CharacterListEditGroupFrameMixin.DialogHeightNoDelete or CharacterListEditGroupFrameMixin.DialogHeightDelete);
+
+	self:Show();
 end
