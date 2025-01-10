@@ -241,6 +241,7 @@ function LFGListFrame_OnEvent(self, event, ...)
 			local searchResultInfo = C_LFGList.GetSearchResultInfo(searchResultID);
 			self.declines = self.declines or {};
 			self.declines[searchResultInfo.partyGUID] = newStatus;
+
 			LFGListSearchPanel_UpdateResults(LFGListFrame.SearchPanel) --don't sort
 		else
 			LFGListSearchPanel_UpdateResultList(LFGListFrame.SearchPanel)
@@ -2628,7 +2629,7 @@ function LFGListSearchPanel_UpdateResults(self)
 		self.ScrollBox.NoResultsFound:Hide();
 		self.ScrollBox.StartGroupButton:Hide();
 		self.ScrollBox:RemoveDataProvider();
-	else
+	elseif ( self.results ) then
 		self.SearchingSpinner:Hide();
 
 		local dataProvider = CreateDataProvider();

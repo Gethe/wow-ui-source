@@ -133,8 +133,9 @@ function QuestObjectiveItemButtonMixin:CheckUpdateInsideBlob()
 	self:UpdateInsideBlob(questID, C_Minimap.IsInsideQuestBlob(questID));
 end
 
-function QuestObjectiveItemButtonMixin:UpdateInsideBlob(questID, inside)
+function QuestObjectiveItemButtonMixin:UpdateInsideBlob(questID, _inside)
 	if questID == self:GetAttribute("questID") then
+		local inside = false; -- disabled for now
 		self.Glow:SetShown(inside); -- maybe fade out anim and then stop glow
 		if inside then
 			self.GlowAnim:Play();
