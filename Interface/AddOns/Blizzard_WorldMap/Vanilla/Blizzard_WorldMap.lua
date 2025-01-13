@@ -393,42 +393,43 @@ function WorldMapZoneDropdown_OnLoad(self)
 	WowStyle1DropdownMixin.OnLoad(self);
 
 	self:SetWidth(130);
-				end
+end
 
 do
 	local function IsSelected(zoneInfo)
 		return WorldMapFrame:GetMapID() == zoneInfo.mapID;
-		end
+	end
 
 	local function SetSelected(zoneInfo)
 		WorldMapFrame:SetMapID(zoneInfo.mapID);
-end
+	end
 
 	function WorldMapZoneDropdown_OnShow(self)
-		local continentInfo = WorldMapFrame.continentInfo;
-		if not continentInfo then
-			return;
-end
-
-		-- If we don't have a cached button list, we'll need to create it here.
-		if not zoneInfoCache[continentInfo.mapID] then
-			local zoneInfos = C_Map.GetMapChildrenInfo(continentInfo.mapID);
-			if zoneInfos then
-				table.sort(zoneInfos, function(zoneInfo1, zoneInfo2)
-					return zoneInfo1.name < zoneInfo2.name; 
-				end);
-				zoneInfoCache[continentInfo.mapID] = zoneInfos;
-	end
-end
-
 		self:SetupMenu(function(dropdown, rootDescription)
+			local continentInfo = WorldMapFrame.continentInfo;
+			if not continentInfo then
+				return;
+			end
+
+			-- If we don't have a cached button list, we'll need to create it here.
+			if not zoneInfoCache[continentInfo.mapID] then
+				local zoneInfos = C_Map.GetMapChildrenInfo(continentInfo.mapID);
+				if zoneInfos then
+					table.sort(zoneInfos, function(zoneInfo1, zoneInfo2)
+						return zoneInfo1.name < zoneInfo2.name; 
+					end);
+					zoneInfoCache[continentInfo.mapID] = zoneInfos;
+				end
+			end	
+
 			rootDescription:SetTag("MENU_WORLD_MAP_ZONE");
 
 			for i, zoneInfo in ipairs(zoneInfoCache[continentInfo.mapID]) do
 				rootDescription:CreateRadio(zoneInfo.name, IsSelected, SetSelected, zoneInfo);
-	end
+			end
+
 		end);
-end
+	end
 end
 
 function WorldMapZoneMinimapDropdown_OnLoad(self)

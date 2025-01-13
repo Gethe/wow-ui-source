@@ -196,9 +196,7 @@ end
 -- GROUP FINDER
 ---------------------------------------------------------------
 
--- TODO: SHARING PASS
---local groupFrames = { "LFDParentFrame", "RaidFinderFrame", "LFGListPVEStub" }
-local groupFrames = { "LFDParentFrame", "LFGListPVEStub" }
+local groupFrames = { "LFDParentFrame", "RaidFinderFrame", "LFGListPVEStub" }
 
 function GroupFinderFrame_OnLoad(self)
 	SetPortraitToTexture(self.groupButton1.icon, "Interface\\Icons\\INV_Helmet_08");
@@ -324,10 +322,13 @@ function GroupFinderFrame_ShowGroupFrame(frame)
 	-- hide the other frames and select the right button
 	for index, frameName in pairs(groupFrames) do
 		local groupFrame = _G[frameName];
-		if ( groupFrame == frame ) then
-			GroupFinderFrame_SelectGroupButton(index);
-		else
-			groupFrame:Hide();
+
+		if groupFrame then
+			if ( groupFrame == frame ) then
+				GroupFinderFrame_SelectGroupButton(index);
+			else
+				groupFrame:Hide();
+			end
 		end
 	end
 	frame:Show();
