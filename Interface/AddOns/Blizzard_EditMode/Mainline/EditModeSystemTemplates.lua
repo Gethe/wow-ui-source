@@ -2235,7 +2235,7 @@ function EditModeBagsSystemMixin:UpdateDisplayInfoOptions(displayInfo)
 	return updatedDisplayInfo;
 end
 
-function EditModeBagsSystemMixin:UpdateSystemSettingOrientation()
+function EditModeBagsSystemMixin:UpdateSystemSettingOrientation(entireSystemUpdate)
 	self.isHorizontal = self:DoesSettingValueEqual(Enum.EditModeBagsSetting.Orientation, Enum.BagsOrientation.Horizontal);
 
 	-- If this is for an entire system update then no need to update direction
@@ -2265,7 +2265,7 @@ function EditModeBagsSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate
 	end
 
 	if setting == Enum.EditModeBagsSetting.Orientation and self:HasSetting(Enum.EditModeBagsSetting.Orientation) then
-		self:UpdateSystemSettingOrientation();
+		self:UpdateSystemSettingOrientation(entireSystemUpdate);
 	elseif setting == Enum.EditModeBagsSetting.Direction and self:HasSetting(Enum.EditModeBagsSetting.Direction) then
 		self:UpdateSystemSettingDirection();
 	elseif setting == Enum.EditModeBagsSetting.Size and self:HasSetting(Enum.EditModeBagsSetting.Size) then

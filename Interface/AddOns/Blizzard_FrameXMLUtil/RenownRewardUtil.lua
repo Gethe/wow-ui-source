@@ -110,7 +110,7 @@ function RenownRewardUtil.AddMajorFactionToTooltip(tooltip, factionID, callback)
 
 	GameTooltip_SetTitle(tooltip, majorFactionData.name, HIGHLIGHT_FONT_COLOR);
 	ReputationUtil.TryAppendAccountReputationLineToTooltip(tooltip, majorFactionData.factionID);
-	GameTooltip_AddHighlightLine(tooltip, RENOWN_LEVEL_LABEL .. majorFactionData.renownLevel);
+	GameTooltip_AddHighlightLine(tooltip, RENOWN_LEVEL_LABEL:format(majorFactionData.renownLevel));
 
 	GameTooltip_AddBlankLineToTooltip(tooltip);
 	GameTooltip_AddNormalLine(tooltip, MAJOR_FACTION_RENOWN_TOOLTIP_PROGRESS:format(majorFactionData.name));

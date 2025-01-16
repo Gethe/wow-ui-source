@@ -48,6 +48,10 @@
 			Setting skipLayoutOnShow to true prevents Layout from being called when the frame is shown
 			Useful for cases where Layout is called separately and/or using custom logic (e.g. the widget container inside PlayerChoiceOptions, which is used as a filler frame)
 			<KeyValue key="skipLayoutOnShow" value="false" type="boolean"/>
+
+			Setting usePreciseChildSizes to true will turn off the rounding we normally perform when getting the size of child frames for layout purposes
+			WARNING: Turning this on will cause layout frames that need to update while they are showing to sometimes "jiggle" on update
+			<KeyValue key="usePreciseChildSizes" value="false" type="boolean"/>
 		</KeyValues>
 		-->
 
@@ -90,9 +94,6 @@
 			By default the child frames are anchored left to right (actual point used depends on the align keyvalue on each child frame)
 			Possible choices here are "leftToRight" and "rightToLeft"
 			<KeyValue key="childLayoutDirection" value="leftToRight" type="string"/>
-		
-			Determines if child scale is taken into account when laying out children
-			<KeyValue key="respectChildScale" value="true" type="boolean"/>
 		-->
 	</Frame>
 

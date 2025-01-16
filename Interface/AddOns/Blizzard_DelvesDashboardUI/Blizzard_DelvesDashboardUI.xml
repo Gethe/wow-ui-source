@@ -32,12 +32,15 @@
             </Layer>
             <Layer level="ARTWORK">
                 <FontString parentKey="PanelTitle" inherits="GameFontHighlightLarge">
-                    <Size x="180" y="32"/>
+                    <Size x="180" y="40"/>
                     <Anchors>
                         <Anchor point="TOP" y="-25"/>
                     </Anchors>
                 </FontString>
-                <FontString parentKey="PanelDescription" inherits="GameFontNormalMed2" wordwrap="true" justifyV="TOP">
+                <FontString parentKey="PanelDescription" inherits="GameFontNormalMed2" mixin="AutoScalingFontStringMixin" wordwrap="true" justifyV="TOP">
+                    <KeyValues>
+                        <KeyValue key="minLineHeight" value="12" type="number"/>
+                    </KeyValues>
                     <Size x="160" y="55"/>
                     <Anchors>
                         <Anchor point="TOP" relativeKey="$parent.PanelTitle" relativePoint="BOTTOM" y="3"/>
@@ -327,9 +330,9 @@
                         <Frames>
                             <!-- Companion Display -->
                             <ModelScene parentKey="CompanionModelScene" inherits="NoCameraControlModelSceneMixinTemplate" mixin="CompanionConfigButtonPanelModelSceneMixin">
-                                <Size x="125" y="155"/>
+                                <Size x="125" y="135"/>
                                 <Anchors>
-                                    <Anchor point="CENTER" y="-4"/>
+                                    <Anchor point="CENTER" y="-19"/>
                                 </Anchors>
                                 <Scripts>
                                     <OnShow method="OnShow"/>
@@ -339,7 +342,7 @@
                             <Button parentKey="CompanionConfigButton" inherits="MagicButtonTemplate" mixin="CompanionConfigButtonPanelMixin" motionScriptsWhileDisabled="true">
                                 <Size x="130" y="30"/>
                                 <Anchors>
-                                    <Anchor point="BOTTOM"  y="32"/>
+                                    <Anchor point="BOTTOM" y="27"/>
                                 </Anchors>
                                 <Layers>
                                     <Layer level="OVERLAY">
@@ -373,7 +376,7 @@
                             <Frame parentKey="GreatVaultButton" mixin="GreatVaultButtonMixin">
                                 <Size x="84" y="70"/>
                                 <Anchors>
-                                    <Anchor point="CENTER" x="-1" y="-20"/>
+                                    <Anchor point="CENTER" x="-1" y="-40"/>
                                 </Anchors>
                                 <Layers>
                                     <Layer level="ARTWORK">

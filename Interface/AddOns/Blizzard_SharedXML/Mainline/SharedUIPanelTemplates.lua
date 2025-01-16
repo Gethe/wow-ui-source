@@ -840,6 +840,28 @@ function TruncatedTooltipScript_OnLeave(self)
 	end
 end
 
+TruncatedTooltipFontStringMixin = {}
+
+function TruncatedTooltipFontStringMixin:OnEnterInternal(owner)
+	if self:IsTruncated() then
+		local tooltip = GetAppropriateTooltip();
+		tooltip:SetOwner(owner or self, "ANCHOR_RIGHT");
+		tooltip:SetText(self:GetText(), self:GetTextColor());
+		tooltip:Show();
+	end
+end
+
+function TruncatedTooltipFontStringMixin:OnEnter()
+	self:OnEnterInternal();
+end
+
+function TruncatedTooltipFontStringMixin:OnLeave()
+	local tooltip = GetAppropriateTooltip();
+	if tooltip:GetOwner() == self then
+		tooltip:Hide();
+	end
+end
+
 -- Add more methods as needed to pass functionality through to the FontString (like SetText and SetTextColor below)
 TruncatedTooltipFontStringWrapperMixin = {}
 
@@ -853,12 +875,7 @@ function TruncatedTooltipFontStringWrapperMixin:SetTextColor(...)
 end
 
 function TruncatedTooltipFontStringWrapperMixin:OnEnter()
-	if self.Text:IsTruncated() then
-		local tooltip = GetAppropriateTooltip();
-		tooltip:SetOwner(self, "ANCHOR_RIGHT");
-		tooltip:SetText(self.Text:GetText(), self.Text:GetTextColor());
-		tooltip:Show();
-	end
+	TruncatedTooltipFontStringMixin.OnEnterInternal(self.Text, self);
 end
 
 function TruncatedTooltipFontStringWrapperMixin:OnLeave()

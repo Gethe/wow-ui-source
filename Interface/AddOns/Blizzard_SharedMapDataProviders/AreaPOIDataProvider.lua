@@ -188,7 +188,7 @@ function AreaPOIPinMixin:TryShowTooltip()
 	local function customFn(tooltip)
 		self:AddCustomTooltipData(tooltip);
 	end
-	AreaPoiUtil.TryShowTooltip(self, "ANCHOR_RIGHT", self.poiInfo, customFn);
+	return AreaPoiUtil.TryShowTooltip(self, "ANCHOR_RIGHT", self.poiInfo, customFn);
 end
 
 function AreaPOIPinMixin:OnMouseLeave()

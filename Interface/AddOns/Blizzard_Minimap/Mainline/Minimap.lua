@@ -739,7 +739,7 @@ function MiniMapTrackingButtonMixin:OnEvent(event, ...)
 	if event == "CVAR_UPDATE" or event == "VARIABLES_LOADED" or event == "SPELLS_CHANGED" then		
 		if event == "CVAR_UPDATE" then
 			local cvarName, value = ...;
-			local isMinimapTrackingCVar = (cvarName == "minimapTrackedInfov3");
+			local isMinimapTrackingCVar = (cvarName == "minimapTrackedInfov4");
 			if not isMinimapTrackingCVar then
 				return;
 			end

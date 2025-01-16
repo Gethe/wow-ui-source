@@ -38,8 +38,8 @@ WoWLabs\GluePartyPoseUI.lua
 WoWLabs\GluePartyPoseUI.xml
 WoWLabs\PlunderstormLobby.lua
 WoWLabs\PlunderstormLobby.xml
-Mainline\AccountReactivate.lua
-Mainline\AccountReactivate.xml
+Shared\AccountReactivate.lua
+Shared\AccountReactivate.xml
 Mainline\KioskModeSplash.lua
 Mainline\KioskModeSplash.xml
 Mainline\CharacterServicesShared.lua

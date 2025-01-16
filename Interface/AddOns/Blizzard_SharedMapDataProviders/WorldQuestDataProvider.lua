@@ -29,13 +29,7 @@ function WorldQuestDataProviderMixin:EvaluateSpellEffectPin()
 		return;
 	end
 
-	if self:IsUsingSpellEffect() then
-		if not self.spellEffectPin then
-			-- a single permanent pin because we don't know the lifetime of the visual
-			self.spellEffectPin = self:GetMap():AcquirePin("WorldQuestSpellEffectPinTemplate");
-			self.spellEffectPin.dataProvider = self;
-		end
-	else
+	if not self:IsUsingSpellEffect() then
 		if self.spellEffectPin then
 			self:GetMap():RemoveAllPinsByTemplate("WorldQuestSpellEffectPinTemplate");
 			self.spellEffectPin = nil;
@@ -44,7 +38,16 @@ function WorldQuestDataProviderMixin:EvaluateSpellEffectPin()
 end
 
 function WorldQuestDataProviderMixin:HandleClick(pin)
-	return self.spellEffectPin and self.spellEffectPin:TryCastSpell(pin.questID);
+	if self:IsUsingSpellEffect() then
+		if not self.spellEffectPin then
+			-- a single permanent pin because we don't know the lifetime of the visual
+			-- but defer creation until first used for perf reasons
+			self.spellEffectPin = self:GetMap():AcquirePin("WorldQuestSpellEffectPinTemplate");
+			self.spellEffectPin.dataProvider = self;
+		end
+
+		return self.spellEffectPin:TryCastSpell(pin.questID);
+	end
 end
 
 function WorldQuestDataProviderMixin:SetCheckBounties(checkBounties)

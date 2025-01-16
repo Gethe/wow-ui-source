@@ -248,6 +248,13 @@ function QuestLogMixin:SetDisplayMode(displayMode)
 		frame:SetShown(frame.displayMode == displayMode);
 	end
 
+	if displayMode == QuestLogDisplayMode.Events then
+		if not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_EVENT_SCHEDULER_TAB_SEEN) then
+			HelpTip:Hide(self.EventsTab, EVENT_SCHEDULER_WORLD_MAP_HELP_TEXT);
+			SetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_EVENT_SCHEDULER_TAB_SEEN, true);
+		end
+	end
+
 	EventRegistry:TriggerEvent("QuestLog.SetDisplayMode", displayMode);
 end
 
@@ -1292,7 +1299,7 @@ function QuestLogScrollFrameMixin:OnSizeChanged()
 	self:ResizeBackground();
 end
 
-function QuestLogScrollFrameMixin:OnMapCanvasPinEnter(questID)
+function QuestLogScrollFrameMixin:OnMapCanvasPinEnter(unused_pin, questID)
 	self.calloutQuestID = questID;
 	if GetCVarBool("scrollToLogQuest") then
 		self:ExpandHeaderForQuest(questID);

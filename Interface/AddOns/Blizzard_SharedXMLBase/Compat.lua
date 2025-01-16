@@ -1,7 +1,7 @@
 --[[
 	These defitinitions are for compatability with lua 4 code.
 	THIS FILE WILL BE REMOVED IN A FUTURE UPDATE!
-	PLEASE UPDATE ALL EXISTING CODE ASAP TO USE THE LUA 5.2 EQUIVALENTS
+	PLEASE UPDATE ALL EXISTING CODE ASAP TO USE THE LUA 5.1 EQUIVALENTS
 ]]
 
 -------------------------------------------------------------------

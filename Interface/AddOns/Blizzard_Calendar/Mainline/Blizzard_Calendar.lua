@@ -1,4 +1,3 @@
-
 -- static popups
 StaticPopupDialogs["CALENDAR_DELETE_EVENT"] = {
 	text = "%s",
@@ -953,6 +952,15 @@ local function _CalendarFrame_GetInviteToRaidCount(maxInviteCount)
 	return inviteCount;
 end
 
+local function _CalendarFrame_TryShowEventFrameBlocker(frame)
+	-- Only block the event frame if it is NOT an event frame in edit mode, or if it is NOT a CalendarViewHolidayFrame
+	if ( not CalendarEventFrameBlocker:IsShown() and ((frame.mode and frame.mode ~= "edit") or (frame:GetName() ~= "CalendarViewHolidayFrame")) ) then
+		CalendarEventFrameBlocker:Show();
+	else
+		CalendarEventFrameBlocker:Hide();
+	end
+end
+
 
 -- CalendarFrame
 
@@ -991,7 +999,7 @@ function CalendarFrame_ShowEventFrame(frame)
 		CalendarFrame.eventFrame = frame;
 		if ( frame ) then
 			frame:Show();
-			CalendarEventFrameBlocker:Show();
+			_CalendarFrame_TryShowEventFrameBlocker(frame);
 		end
 	end
 end
@@ -1914,6 +1922,15 @@ function CalendarEventFrameBlocker_OnShow(self)
 		local eventFrameOverlay = _G[eventFrame:GetName().."ModalOverlay"];
 		if ( eventFrameOverlay ) then
 			eventFrameOverlay:Show();
+			-- EventFrameBlocker should already be shown by this point, but make sure it should *actually* be shown
+			-- Only block the event frame if it is NOT an event frame in edit mode, or if it is NOT a CalendarViewHolidayFrame
+			-- Not using _CalendarFrame_TryShowEventFrameBlocker here since it is already shown, and we want to ensure the 
+			-- CalendarEventFrameBlocker blocks event editing while selecting an event icon texture
+			if ( (eventFrame.mode and eventFrame.mode ~= "edit") or (eventFrame:GetName() ~= "CalendarViewHolidayFrame") ) then
+				CalendarEventFrameBlocker:Show();
+			else
+				CalendarEventFrameBlocker:Hide();
+			end
 		end
 	else
 		CalendarEventFrameBlocker:Hide();
@@ -1938,11 +1955,11 @@ function CalendarEventFrameBlocker_Update()
 			--CalendarEventFrameBlocker:SetAllPoints(eventFrame);
 			CalendarEventFrameBlocker:SetWidth(eventFrame:GetWidth());
 			CalendarEventFrameBlocker:SetHeight(eventFrame:GetHeight());
-			CalendarEventFrameBlocker:Show();
 
 			local eventFrameOverlay = _G[eventFrame:GetName().."ModalOverlay"];
 			if ( eventFrameOverlay ) then
 				eventFrameOverlay:Show();
+				_CalendarFrame_TryShowEventFrameBlocker(eventFrame);
 			end
 		end
 	else

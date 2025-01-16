@@ -1696,12 +1696,19 @@
 	Note that you MUST have a child FontString with ParentKey "Text"
 *******************************************************************************
 -->
-	<Frame name="TruncatedTooltipFontStringWrapperTemplate" inherits="ResizeLayoutFrame" virtual="true" mixin="TruncatedTooltipFontStringWrapperMixin">
+	<Frame name="TruncatedTooltipFontStringWrapperTemplate" inherits="ResizeLayoutFrame" mixin="TruncatedTooltipFontStringWrapperMixin" virtual="true">
 		<Scripts>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Frame>
+
+	<FontString name="TruncatedTooltipFontStringTemplate" mixin="TruncatedTooltipFontStringMixin" virtual="true">
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</FontString>
 
 	<!--
 *******************************************************************************

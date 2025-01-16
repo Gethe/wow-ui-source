@@ -119,6 +119,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("UNIT_QUEST_LOG_CHANGED");
 	self:RegisterEvent("CURSOR_CHANGED");
 	self:RegisterEvent("LOCALPLAYER_PET_RENAMED");
+	self:RegisterEvent("SETTINGS_LOADED");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
 	self:RegisterEvent("DUEL_REQUESTED");
@@ -1601,12 +1602,12 @@ function UIParent_OnEvent(self, event, ...)
 			StaticPopup_Hide("EQUIP_BIND");
 			StaticPopup_Hide("EQUIP_BIND_TRADEABLE");
 		end
-	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
-		-- Get multi-actionbar states (before CloseAllWindows() since that may be hooked by AddOns)
+	elseif ( event == "SETTINGS_LOADED" ) then
+		-- Get multi-actionbar states
 		-- We don't want to call this, as the values GetActionBarToggles() returns are incorrect if it's called before the client mirrors SetActionBarToggles values from the server.
 		-- SHOW_MULTI_ACTIONBAR_1, SHOW_MULTI_ACTIONBAR_2, SHOW_MULTI_ACTIONBAR_3, SHOW_MULTI_ACTIONBAR_4 = GetActionBarToggles();
 		MultiActionBar_Update();
-
+	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		-- Close any windows that were previously open
 		CloseAllWindows(1);
 

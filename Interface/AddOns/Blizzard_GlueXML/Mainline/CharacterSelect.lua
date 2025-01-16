@@ -806,14 +806,22 @@ function UpdateCharacterList(skipSelect)
         end
     end
 
-	if numChars == 0 and not skipSelect then
+	local numCharsNoEmptySlots = GetNumCharacters();
+	if numCharsNoEmptySlots == 0 and not skipSelect then
 		CharacterSelect.selectedIndex = 0;
 		local noCreate = true;
 		CharacterSelect_SelectCharacter(CharacterSelect.selectedIndex, noCreate);
 
 		-- Clean things up if needed before continuing that a normal character selection would otherwise handle.
 		CharacterSelectCharacterFrame:UpdateCharacterSelection();
-		CharacterSelectUI:ReleaseCharacterOverlayFrames();
+
+		for _, elementData in CharacterSelectCharacterFrame.ScrollBox:EnumerateDataProviderEntireRange() do
+			if elementData.isGroup then
+				local selectedCharacterID = nil;
+				CharacterSelectUI:SetDisplay(elementData, selectedCharacterID);
+				break;
+			end
+		end
 		return;
 	end
 	

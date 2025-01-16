@@ -26,3 +26,4 @@ Accessibility.xml
 Colorblind.xml
 TextToSpeech.xml
 Mounts.lua
+Subtitles.xml

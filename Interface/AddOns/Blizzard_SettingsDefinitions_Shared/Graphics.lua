@@ -1000,21 +1000,6 @@ local function Register()
 		Settings.SetupCVarDropdown(category, cvar, Settings.VarType.Number, GetOptions, RT_SHADOW_QUALITY, OPTION_TOOLTIP_RT_SHADOW_QUALITY);
 	end
 
-	-- Ambient Occlusion Type
-	do
-		local cvar = "ResolvedSSAOType";
-
-		local function GetOptions()
-			local container = Settings.CreateControlTextContainer();
-			AddValidatedCVarOption(container, cvar, 0, GX_ADAPTER_AUTO_DETECT);
-			AddValidatedCVarOption(container, cvar, 1, SSAO_TYPE_ASSAO);
-			AddValidatedCVarOption(container, cvar, 2, SSAO_TYPE_CACAO);
-			return container:GetData();
-		end
-
-		Settings.SetupCVarDropdown(category, cvar, Settings.VarType.Number, GetOptions, SSAO_TYPE_LABEL, OPTION_TOOLTIP_SSAO);
-	end
-
 	-- Resample Quality
 	do
 		local cvar = "ResampleQuality";
