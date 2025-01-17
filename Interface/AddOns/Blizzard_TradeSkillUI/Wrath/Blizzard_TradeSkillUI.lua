@@ -47,6 +47,10 @@ function TradeSkillFrame_OnShow(self)
 end
 
 function TradeSkillFrame_SetupSubClassDropdown(self)
+	if not TradeSkillFrame:IsShown() then
+		return;
+	end
+
 	SetTradeSkillSubClassFilter(0);
 
 	local tbl = {GetTradeSkillSubClasses()};
@@ -79,6 +83,10 @@ function TradeSkillFrame_SetupSubClassDropdown(self)
 end
 
 function TradeSkillFrame_SetupInvSlotDropdown(self)
+	if not TradeSkillFrame:IsShown() then
+		return;
+	end
+
 	local tbl = {GetTradeSkillInvSlots()};
 
 	local function IsSelected(index)
