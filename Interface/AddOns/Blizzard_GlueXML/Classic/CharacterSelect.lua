@@ -2811,6 +2811,34 @@ function CharacterBoostMixin:OnClick()
 	end
 end
 
+GameLogoDarkBackdropMixin = {};
+
+function GameLogoDarkBackdropMixin:OnLoad()
+	self:RegisterEvent("GAME_MODE_CHANGED");
+	self:Update();
+end
+
+function GameLogoDarkBackdropMixin:OnEvent(event)
+	if event == "GAME_MODE_CHANGED" then
+		self:Update();
+	end
+end
+
+function GameLogoDarkBackdropMixin:Update()
+	local gameModeRecordID = C_GameModeManager.GetCurrentGameModeRecordID();
+	if gameModeRecordID then
+		local gameModeDisplayInfo = C_GameModeManager.GetGameModeDisplayInfo(gameModeRecordID);
+		if gameModeDisplayInfo then
+			if gameModeDisplayInfo.logoUsesDarkBackdrop then
+				self.BackdropTexture:Show();
+				return;
+			end
+		end
+	end
+
+	self.BackdropTexture:Hide();
+end
+
 function CharacterServicesMaster_OnLoad(self)
     self.flows = {};
 
