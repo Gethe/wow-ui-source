@@ -1,54 +1,84 @@
--- Factory for animated frames.
--- The factory template requires Play(...), where ... are optional arguments forwarded
--- at the factory callsite. The derived factory requires Attach(frame, target), and must
--- invoke EffectFactoryMixin.OnLoad() with the desired template name.
--- See GlowEmitter.lua as example.
+--[[
+Factory for animated frames.
+
+The template frame must implement Play(animEnum) and forward the Play() call 
+to the appropriate animation object.
+
+The derived factory must call Init() with the frame type, template name, and strata, 
+and implement Attach() for any custom position handling.
+
+See GlowEmitter.lua as an example.
+]]--
 
 EffectFactoryMixin = {};
 
-function EffectFactoryMixin:OnLoad(template)
-	self.template = template;
+-- Derive
+function EffectFactoryMixin:Init(frameType, template, strata)
+	self.pool = CreateFramePool(frameType, nil, template);
+	self.strata = strata;
 end
 
-function EffectFactoryMixin:Show(target, ...)
-	if not self.pool then
-		self.pool = CreateFramePool("FRAME", nil, self.template);
+-- Derive
+function EffectFactoryMixin:Attach(frame, target, offsetX, offsetY, width, height)
+	frame:SetParent(target);
+	frame:SetFrameStrata(self.strata);
+	frame:ClearAllPoints();
+	
+	if not frame.originalWidth then
+		frame.originalWidth = frame:GetWidth();
 	end
 
-	if not self:GetExisting(target) then
-		local frame = self.pool:Acquire();
-		frame.target = target;
-
-		self:Attach(frame, target);
-
-		frame:Show();
-		frame:Play(...);
+	if not frame.originalHeight then
+		frame.originalHeight = frame:GetHeight();
 	end
+
+	frame:SetWidth(width or frame.originalWidth);
+	frame:SetHeight(height or frame.originalHeight);
+end
+
+function EffectFactoryMixin:Show(target, animEnum, offsetX, offsetY, width, height)
+	assert(animEnum ~= nil, "EffectFactory missing animEnum");
+
+	if self:HasExisting(target) then
+		return;
+	end
+
+	local frame = self.pool:Acquire();
+	frame.target = target;
+
+	self:Attach(frame, target, offsetX, offsetY, width, height);
+
+	frame:Show();
+	frame:Play(animEnum);
 end
 
 function EffectFactoryMixin:Hide(target)
 	local frame = self:GetExisting(target);
-	if frame then
-		frame:StopAnimating();
-
-		self.pool:Release(frame);
+	if not frame then
+		return;
 	end
+
+	frame:StopAnimating();
+	
+	self.pool:Release(frame);
 end
 
-function EffectFactoryMixin:SetShown(target, shown, ...)
+function EffectFactoryMixin:SetShown(shown, target, animEnum, offsetX, offsetY, width, height)
 	if shown then
-		self:Show(target, ...);
+		self:Show(target, animEnum, offsetX, offsetY, width, height);
 	else
 		self:Hide(target);
 	end
 end
 
 function EffectFactoryMixin:GetExisting(target)
-	if self.pool then
-		for frame in self.pool:EnumerateActive() do
-			if frame.target == target then
-				return frame;
-			end
+	for frame in self.pool:EnumerateActive() do
+		if frame.target == target then
+			return frame;
 		end
 	end
+end
+
+function EffectFactoryMixin:HasExisting(target)
+	return self:GetExisting(target) ~= nil;
 end

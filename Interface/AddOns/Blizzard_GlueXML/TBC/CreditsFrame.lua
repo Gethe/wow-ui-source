@@ -83,7 +83,9 @@ end
 
 function CreditsFrameMixin:Update()
 	PlayCreditsMusic(self.expansion);
-	SetGameLogo(self.Logo, self.expansion, self.releaseType);
+	self.GameLogo:SetExpansion(self.expansion);
+	self.GameLogo:SetReleaseType(self.releaseType);
+	self.GameLogo:SetGameMode(0);
 
 	self:SetSpeed(CREDITS_SCROLL_RATE_PLAY);
 	self.artCount = #CREDITS_ART_INFO[self.expansion][self.releaseType];

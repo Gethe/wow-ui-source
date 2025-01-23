@@ -29,7 +29,7 @@ function MapCanvasMixin:SetMapID(mapID)
 	local mapArtID = C_Map.GetMapArtID(mapID) -- phased map art may be different for the same mapID
 	if self.mapID ~= mapID or self.mapArtID ~= mapArtID then
 		self.areDetailLayersDirty = true;
-		self.mapID = mapID; 
+		self.mapID = mapID;
 		self.mapArtID = mapArtID;
 		self.expandedMapInsetsByMapID = {};
 		self.ScrollContainer:SetMapID(mapID);
@@ -129,7 +129,7 @@ do
 
 	function MapCanvasMixin:AcquirePin(pinTemplate, ...)
 		if not self.pinPools[pinTemplate] then
-			local pinTemplateType = self.pinTemplateTypes[pinTemplate] or "FRAME";
+			local pinTemplateType = self:GetPinTemplateType(pinTemplate);
 			self.pinPools[pinTemplate] = CreateFramePool(pinTemplateType, self:GetCanvas(), pinTemplate, OnPinReleased);
 		end
 
@@ -168,13 +168,27 @@ do
 		self.ScrollContainer:MarkCanvasDirty();
 		pin:Show();
 		pin:OnAcquired(...);
-		
+
 		return pin;
 	end
 end
 
 function MapCanvasMixin:SetPinTemplateType(pinTemplate, pinTemplateType)
 	self.pinTemplateTypes[pinTemplate] = pinTemplateType;
+end
+
+function MapCanvasMixin:GetPinTemplateType(pinTemplate)
+	-- Can always be overridden by manually calling SetPinTemplateType, but by default this will use the template
+	-- to look up type information and discover the most likely type so that pins can avoid needing to call
+	-- SetPinTemplateType.
+	local pinTemplateType = self.pinTemplateTypes[pinTemplate];
+	if not pinTemplateType then
+		local templateInfo = C_XMLUtil.GetTemplateInfo(pinTemplate);
+		pinTemplateType = templateInfo and templateInfo.type or "FRAME";
+		self.pinTemplateTypes[pinTemplate] = pinTemplateType;
+	end
+
+	return pinTemplateType;
 end
 
 function MapCanvasMixin:RemoveAllPinsByTemplate(pinTemplate)
@@ -188,7 +202,7 @@ function MapCanvasMixin:RemovePin(pin)
 	if pin:GetNudgeSourceRadius() > 0 then
 		self.pinNudgingDirty = true;
 	end
-	
+
 	self.pinPools[pin.pinTemplate]:Release(pin);
 	self.ScrollContainer:MarkCanvasDirty();
 end
@@ -299,7 +313,7 @@ end
 function SquaredDistanceBetweenPoints(firstX, firstY, secondX, secondY)
 	local xDiff = firstX - secondX;
 	local yDiff = firstY - secondY;
-	
+
 	return xDiff * xDiff + yDiff * yDiff;
 end
 
@@ -311,18 +325,18 @@ function MapCanvasMixin:CalculatePinNudging(targetPin)
 			if targetPin ~= sourcePin and not sourcePin:IgnoresNudging() and sourcePin:GetNudgeSourceRadius() > 0 then
 				local otherNormalizedX, otherNormalizedY = sourcePin:GetPosition();
 				local distanceSquared = SquaredDistanceBetweenPoints(normalizedX, normalizedY, otherNormalizedX, otherNormalizedY);
-				
+
 				local nudgeFactor = targetPin:GetNudgeTargetFactor() * sourcePin:GetNudgeSourceRadius();
 				if distanceSquared < nudgeFactor * nudgeFactor then
 					local distance = math.sqrt(distanceSquared);
-					
+
 					-- Avoid divide by zero: just push it right.
 					if distanceSquared == 0 then
 						targetPin:SetNudgeVector(sourcePin:GetNudgeSourceZoomedOutMagnitude(), sourcePin:GetNudgeSourceZoomedInMagnitude(), 1, 0);
 					else
 						targetPin:SetNudgeVector(sourcePin:GetNudgeSourceZoomedOutMagnitude(), sourcePin:GetNudgeSourceZoomedInMagnitude(), (normalizedX - otherNormalizedX) / distance, (normalizedY - otherNormalizedY) / distance);
 					end
-					
+
 					targetPin:SetNudgeFactor(1 - (distance / nudgeFactor));
 					break; -- This is non-exact: each target pin only gets pushed by one source pin.
 				end
@@ -335,7 +349,7 @@ function MapCanvasMixin:UpdatePinNudging()
 	if not self.pinNudgingDirty and #self.pinsToNudge == 0 then
 		return;
 	end
-	
+
 	if self.pinNudgingDirty then
 		for targetPin in self:EnumerateAllPins() do
 			self:CalculatePinNudging(targetPin);
@@ -345,7 +359,7 @@ function MapCanvasMixin:UpdatePinNudging()
 			self:CalculatePinNudging(targetPin);
 		end
 	end
-	
+
 	self.pinNudgingDirty = false;
 	self.pinsToNudge = {};
 end
@@ -363,7 +377,7 @@ function MapCanvasMixin:RefreshDebugAreaTriggers()
 		self.debugAreaTriggerPool = CreateTexturePool(self:GetCanvas(), "OVERLAY", 7, "MapCanvasDebugTriggerAreaTemplate");
 		self.debugAreaTriggerColors = {};
 	end
-	
+
 	self.debugAreaTriggerPool:ReleaseAll();
 
 	local canvas = self:GetCanvas();
@@ -474,14 +488,14 @@ function MapCanvasMixin:ApplyPinPosition(pin, normalizedX, normalizedY, insetInd
 		if normalizedX and normalizedY then
 			local x = normalizedX;
 			local y = normalizedY;
-			
+
 			local nudgeVectorX, nudgeVectorY = pin:GetNudgeVector();
 			if nudgeVectorX and nudgeVectorY then
 				local finalNudgeFactor = pin:GetNudgeFactor() * pin:GetNudgeTargetFactor() * pin:GetNudgeZoomFactor();
 				x = normalizedX + nudgeVectorX * finalNudgeFactor;
 				y = normalizedY + nudgeVectorY * finalNudgeFactor;
 			end
-			
+
 			local canvas = self:GetCanvas();
 			local scale = pin:GetScale();
 			pin:SetParent(canvas);

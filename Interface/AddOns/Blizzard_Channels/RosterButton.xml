@@ -6,7 +6,7 @@
 		<Size x="160" y="22"/>
 		<Layers>
 			<Layer level="BORDER">
-				<FontString parentKey="Name" justifyH="LEFT" wordWrap="false" inherits="GameFontHighlightSmall">
+				<FontString parentKey="Name" justifyH="LEFT" wordwrap="false" inherits="GameFontHighlightSmall">
 					<Anchors>
 						<Anchor point="LEFT" x="8" y="0" />
 					</Anchors>

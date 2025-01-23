@@ -450,8 +450,8 @@ function QuestMapFrame_CloseQuestDetails(optPortraitOwnerCheckFrame)
 	StaticPopup_Hide("ABANDON_QUEST_WITH_ITEMS");
 end
 
-function QuestMapFrame_PingQuestID(questId)
-	QuestMapFrame:GetParent():PingQuestID(questId);
+function QuestMapFrame_PingQuestID(questID)
+	QuestMapFrame:GetParent():PingQuestID(questID);
 end
 
 function QuestMapFrame_OpenToQuestDetails(questID)

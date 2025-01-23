@@ -355,7 +355,7 @@ function ScriptErrorsFrameMixin:ShowNext()
 end
 
 local function IsErrorCVarEnabled(errorTypeCVar)
-	return IsOnGlueScreen() or GetCVarBool(errorTypeCVar);
+	return C_Glue.IsOnGlueScreen() or GetCVarBool(errorTypeCVar);
 end
 
 local function DisplayMessageInternal(errorTypeCVar, warnType, msg, messageType)

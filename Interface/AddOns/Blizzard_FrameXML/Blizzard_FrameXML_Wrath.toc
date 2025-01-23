@@ -17,6 +17,7 @@ SecureHoverDriver.lua
 Classic\SecureTemplates.xml
 SecureHandlerTemplates.xml
 SecureGroupHeaders.xml
+WardrobeOutfits.xml		   
 Classic\NavigationBar.lua
 Classic\NavigationBar.xml
 Classic\CharacterFrameTemplates.xml
@@ -53,8 +54,7 @@ Wrath\TalentFrameBase.lua
 Classic\Blizzard_TalentUITemplates.xml
 Classic\MovieFrame.lua
 Classic\MovieFrame.xml
-Wrath\RolePoll.lua
-Wrath\RolePoll.xml
+Classic\RolePoll.xml
 Classic\StreamingFrame.lua
 Classic\StreamingFrame.xml
 IconIntroAnimation.lua

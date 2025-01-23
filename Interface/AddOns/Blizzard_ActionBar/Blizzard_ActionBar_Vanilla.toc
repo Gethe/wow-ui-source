@@ -4,6 +4,7 @@
 ## Dependencies: Blizzard_UIParent, Blizzard_FrameXML, Blizzard_TextStatusBar
 ## AllowLoadGameType: vanilla
 ## AllowLoad: Game
+ActionButtonUtil.lua
 Shared\MainMenuBarMicroButtons.lua
 Classic\MainMenuBarMicroButtons.lua
 Classic\MainMenuBarMicroButtons.xml

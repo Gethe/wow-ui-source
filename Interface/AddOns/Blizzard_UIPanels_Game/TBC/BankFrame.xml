@@ -80,7 +80,7 @@
 		<TexCoords left="0.01562500" right="0.20312500" top="0.00781250" bottom="0.10156250"/>
 	</Texture>
 
-	<Frame name="BankFrame" toplevel="true" movable="true" enableMouse="true" hidden="true" parent="UIParent">
+	<Frame name="BankFrame" toplevel="true" movable="true" enableMouse="true" hidden="true" parent="UIParent" mixin="BankFrameMixin">
 		<Size x="384" y="512"/>
 		<Anchors>
 			<Anchor point="TOPLEFT">

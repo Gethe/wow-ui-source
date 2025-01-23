@@ -474,6 +474,22 @@ local Club =
 			},
 		},
 		{
+			Name = "GetLastTicketResponse",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "ticket", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "error", Type = "ClubErrorType", Nilable = false },
+				{ Name = "info", Type = "ClubInfo", Nilable = true },
+				{ Name = "showError", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetMemberInfo",
 			Type = "Function",
 

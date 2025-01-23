@@ -7,7 +7,6 @@ local function RequestAssignPCTForResults(results, isValidationOnly)
 		results.destinationRealmAddress,
 		GetCurrentWoWAccountGUID(),
 		GetCurrentBNetAccountGUID(),
-		false,
 		isValidationOnly
 	);
 end
@@ -95,24 +94,17 @@ local PCTDestinationSelectBlock = {
 };
 
 function PCTDestinationSelectBlock:Initialize(results, wasFromRewind)
+	local controlsFrame = self.frame.ControlsFrame;
+
 	if not wasFromRewind then
 		local checkUpdate = function()
 			self:CheckUpdate();
 		end
 
-		self.frame.ControlsFrame.TransferRealmEditbox:SetOnTextChangedCallback(checkUpdate);
+		controlsFrame.TransferRealmEditbox:SetOnTextChangedCallback(checkUpdate);
 	end
 
-	self.frame.ControlsFrame.TransferRealmEditbox:Initialize(results, wasFromRewind);
-end
-
-function PCTDestinationSelectBlock:SetState(state)
-	self.state = state;
-	self:CheckUpdate();
-end
-
-function PCTDestinationSelectBlock:GetState()
-	return self.state;
+	controlsFrame.TransferRealmEditbox:Initialize(results, wasFromRewind);
 end
 
 function PCTDestinationSelectBlock:CheckUpdate()

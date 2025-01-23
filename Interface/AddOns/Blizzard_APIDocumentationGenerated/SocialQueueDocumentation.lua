@@ -10,6 +10,21 @@ local SocialQueue =
 
 	Events =
 	{
+		{
+			Name = "SocialQueueConfigUpdated",
+			Type = "Event",
+			LiteralName = "SOCIAL_QUEUE_CONFIG_UPDATED",
+		},
+		{
+			Name = "SocialQueueUpdate",
+			Type = "Event",
+			LiteralName = "SOCIAL_QUEUE_UPDATE",
+			Payload =
+			{
+				{ Name = "groupGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "numAddedItems", Type = "number", Nilable = true },
+			},
+		},
 	},
 
 	Tables =
@@ -55,6 +70,7 @@ local SocialQueue =
 				{ Name = "needHealer", Type = "bool", Nilable = false },
 				{ Name = "needDamage", Type = "bool", Nilable = false },
 				{ Name = "isSoloQueueParty", Type = "bool", Nilable = false },
+				{ Name = "questSessionActive", Type = "bool", Nilable = false },
 				{ Name = "leaderGUID", Type = "WOWGUID", Nilable = false },
 			},
 		},

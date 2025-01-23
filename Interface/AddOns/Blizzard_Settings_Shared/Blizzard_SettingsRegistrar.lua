@@ -3,7 +3,7 @@ local securecallfunction = securecallfunction;
 SettingsRegistrar = {};
 
 function SettingsRegistrar:OnLoad()
-	if IsOnGlueScreen() then
+	if C_Glue.IsOnGlueScreen() then
 		self.allowCallRegistrants = true;
 	else
 		self.registrants = {};

@@ -273,23 +273,3 @@ function UnitPopupSelectRoleButtonMixin:CanShow(contextData)
 
 	return UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") or UnitIsUnit(contextData.unit, "player"); 
 end
-
-function UnitPopupSelectRoleButtonMixin:GetEntries()
-	return {
-		UnitPopupSetRoleTankButton,
-		UnitPopupSetRoleHealerButton,
-		UnitPopupSetRoleDpsButton,
-	}
-end
-
-function UnitPopupSetRoleTankButton:IsEnabled()
-	return true;
-end
-
-function UnitPopupSetRoleHealerButton:IsEnabled()
-	return true;
-end
-
-function UnitPopupSetRoleDpsButton:IsEnabled()
-	return true;
-end

@@ -3,9 +3,9 @@ MICRO_BUTTONS = {
 	"SpellbookMicroButton",
 	"TalentMicroButton",
 	"QuestLogMicroButton",
+	"SocialsMicroButton",
 	"GuildMicroButton",
 	"WorldMapMicroButton",
-	"LFGMicroButton",
 	"MainMenuMicroButton",
 	"HelpMicroButton",
 }
@@ -54,21 +54,14 @@ function UpdateMicroButtons()
 		QuestLogMicroButton:SetButtonState("NORMAL");
 	end
 
+	SocialsMicroButton:UpdateMicroButton();
+
+	GuildMicroButton:UpdateMicroButton();
+
 	if (  WorldMapFrame and WorldMapFrame:IsShown() ) then
 		WorldMapMicroButton:SetButtonState("PUSHED", true);
 	else
 		WorldMapMicroButton:SetButtonState("NORMAL");
-	end
-
-	if ( PVEFrame and PVEFrame:IsShown() ) then
-		LFGMicroButton:SetButtonState("PUSHED", true);
-	else
-		if ( playerLevel < LFGMicroButton.minLevel ) then
-			LFGMicroButton:Disable();
-		else
-			LFGMicroButton:Enable();
-			LFGMicroButton:SetButtonState("NORMAL");
-		end
 	end
 
 	if ( ( GameMenuFrame and GameMenuFrame:IsShown() )
@@ -95,8 +88,6 @@ function UpdateMicroButtons()
 			KeyRingButton:SetButtonState("NORMAL");
 		end
 	end
-
-	GuildMicroButton:UpdateMicroButton();
 end
 
 function SocialsMicroButton_UpdateNotificationIcon(self)

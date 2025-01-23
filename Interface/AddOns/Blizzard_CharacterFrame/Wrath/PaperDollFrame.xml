@@ -237,7 +237,7 @@
 
 	<Frame name="PaperDollFrame" setAllPoints="true" enableMouse="true" parent="CharacterFrame" useParentLevel="true" id="1">
 		<HitRectInsets>
-			<AbsInset left="0" right="30" top="0" bottom="75"/>
+			<AbsInset left="0" right="30" top="0" bottom="77"/>
 		</HitRectInsets>
 		<Layers>
 			<Layer level="BORDER">
@@ -306,15 +306,15 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="TitleDropdown" name="PlayerTitleDropdown" inherits="WowStyle1DropdownTemplate">
+			<DropdownButton parentKey="TitleDropdown" name="PlayerTitleDropdown" inherits="WowStyle1DropdownTemplate">
 				<Anchors>
 					<Anchor point="TOP" relativeTo="CharacterLevelText" relativePoint="BOTTOM">
 						<Offset>
-							<AbsDimension x="0" y="-6"/>
+							<AbsDimension x="0" y="-4"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
-			</Frame>
+			</DropdownButton>
 			<PlayerModel name="CharacterModelFrame">
 				<Size x="233" y="224"/>
 				<Anchors>
@@ -592,24 +592,24 @@
 							</Anchor>
 						</Anchors>
 					</Frame>
-					<Frame parentKey="LeftPlayerStatDropdown" name="PlayerStatFrameLeftDropdown" inherits="WowStyle1DropdownTemplate">
+					<DropdownButton parentKey="LeftPlayerStatDropdown" name="PlayerStatFrameLeftDropdown" inherits="WowStyle1DropdownTemplate">
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" relativeTo="PlayerStatLeftTop" relativePoint="TOPLEFT">
 								<Offset>
-									<AbsDimension x="-17" y="-8"/>
+									<AbsDimension x="1" y="0"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
-					</Frame>
-					<Frame parentKey="RightPlayerStatDropdown" name="PlayerStatFrameRightDropdown" inherits="WowStyle1DropdownTemplate">
+					</DropdownButton>
+					<DropdownButton parentKey="RightPlayerStatDropdown" name="PlayerStatFrameRightDropdown" inherits="WowStyle1DropdownTemplate">
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" relativeTo="PlayerStatRightTop" relativePoint="TOPLEFT">
 								<Offset>
-									<AbsDimension x="-17" y="-8"/>
+									<AbsDimension x="1" y="0"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
-					</Frame>
+					</DropdownButton>
 				</Frames>
 				<Scripts>
 					<OnLoad function="CharacterAttributesFrame_OnLoad"/>

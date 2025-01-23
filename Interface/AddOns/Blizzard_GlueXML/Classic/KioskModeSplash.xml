@@ -6,17 +6,13 @@
 				<FogColor r="0.25" g="0.06" b="0.015"/>
 			</ModelFFX>
 			<Frame parentKey="UI" setAllPoints="true">
-				<Layers>
-					<Layer level="OVERLAY">
-						<Texture parentKey="GameLogo">
-							<Size x="256" y="128"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="8" y="-16"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
 				<Frames>
+					<Frame parentKey="GameLogo" inherits="GlueGameLogoTemplate">
+						<Size x="256" y="128"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="8" y="-16"/>
+						</Anchors>
+					</Frame>
 					<Button parentKey="NewCharacterChoice" mixin="NewCharacterButtonMixin" id="1" inherits="GlueButtonTemplateBlue" text="CREATE_CHARACTER">
 						<Size x="200" y="45"/>
 						<Anchors>

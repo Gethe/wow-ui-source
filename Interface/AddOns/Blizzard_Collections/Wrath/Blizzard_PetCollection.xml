@@ -1,0 +1,354 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Texture name="ExpBar-Divider" atlas="PetJournal-ExpBar-Divider" useAtlasSize="true" virtual="true"/>
+
+	<Button name="CompanionListButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
+		<Size x="208" y="46"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="background" atlas="PetList-ButtonBackground"/>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="icon">
+					<Size x="38" y="38"/>
+					<Anchors>
+						<Anchor point="LEFT" x="-42" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="petTypeIcon">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
+					</Anchors>
+					<Size x="90" y="44"/>
+					<TexCoords left="0.00781250" right="0.71093750" top="0.74609375" bottom="0.91796875"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="-1">
+				<Texture parentKey="iconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeKey="$parent.icon"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeKey="$parent.icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<FontString inherits="GameFontNormal" justifyH="LEFT" parentKey="name">
+					<Size x="147" y="25"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeKey="$parent.icon" x="10" y="-3"/>
+					</Anchors>
+				</FontString>
+				<FontString inherits="GameFontNormalSmall" justifyH="LEFT" parentKey="subName">
+					<Size x="147" y="12"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.name" x="0" y="-4"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="1"/>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="isDead" file="Interface\PetBattles\DeadPetIcon" hidden="true">
+					<Size x="38" y="38"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.icon" relativePoint="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="PetList-ButtonSelect" parentKey="selectedTexture" hidden="true"/>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<FontString parentKey="new" inherits="GameFontHighlight" wordwrap="false" justifyH="CENTER" text="NEW_CAPS" hidden="true">
+					<Anchors>
+						<Anchor point="RIGHT" x="-15" y="0"/>
+					</Anchors>
+					<Shadow>
+						<Color color="NEW_FEATURE_SHADOW_COLOR"/>
+					</Shadow>
+				</FontString>
+
+				<Texture parentKey="newGlow" atlas="collections-newglow" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.new" x="-20" y="10"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.new" x="20" y="-10"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="dragButton">
+				<Size x="40" y="40"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.icon" x="0" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture file="Interface\Buttons\CheckButtonHilight" parentKey="ActiveTexture" alphaMode="ADD"/>
+						<Texture name="$parentFavorite" atlas="PetJournal-FavoritesIcon" useAtlasSize="true" parentKey="favorite">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-8" y="8"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Cooldown parentKey="Cooldown" drawBling="false" inherits="CooldownFrameTemplate"/>
+				</Frames>
+				<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+				<Scripts>
+					<OnClick function="PetJournalDragButton_OnClick"/>
+					<OnLoad>
+						self:RegisterForDrag("LeftButton");
+						self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+					</OnLoad>
+					<OnShow>
+						self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
+					</OnShow>
+					<OnHide>
+						self:UnregisterEvent("SPELL_UPDATE_COOLDOWN");
+					</OnHide>
+					<OnEnter function="PetJournalDragButton_OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
+					<OnEvent function="PetJournalDragButton_OnEvent"/>
+					<OnDragStart function="PetJournalDragButton_OnDragStart"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<HighlightTexture atlas="PetList-ButtonHighlight"/>
+		<Scripts>
+			<OnLoad>
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				self:RegisterForDrag("LeftButton");
+			</OnLoad>
+			<OnClick function="PetJournalListItem_OnClick"/>
+			<OnDragStart>
+				PetJournalDragButton_OnDragStart(self.dragButton);
+			</OnDragStart>
+		</Scripts>
+	</Button>
+	<Frame name="PetJournal" parent="CollectionsJournal" setAllPoints="true" hidden="true">
+		<Frames>
+			<Frame parentKey="PetCount" useParentLevel="true" inherits="InsetFrameTemplate3">
+				<Size x="130" y="20"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="70" y="-35"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Count" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="RIGHT" x="-10" y="0"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="Label" inherits="GameFontNormalSmall" text="BATTLE_PETS_TOTAL_PETS" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="LEFT" x="10" y="0"/>
+								<Anchor point="RIGHT" relativeKey="$parent.Count" relativePoint="LEFT" x="-3" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter function="PetJournalPetCount_OnEnter"/>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentLeftInset" useParentLevel="true" inherits="InsetFrameTemplate" parentKey="LeftInset">
+				<Size x="260" y="496"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="4" y="-60" />
+					<Anchor point="BOTTOMLEFT" x="4" y="26" />
+				</Anchors>
+			</Frame>
+			<!--Frame name="$parentPetCardInset" useParentLevel="true" inherits="InsetFrameTemplate" parentKey="PetCardInset">
+				<Size x="411" y="171"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-6" y="-60" />
+				</Anchors>
+			</Frame-->
+			<Frame name="$parentRightInset" useParentLevel="true" inherits="InsetFrameTemplate" parentKey="RightInset">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-6" y="-60"/>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parentLeftInset" relativePoint="BOTTOMRIGHT" x="20" y="0"/>
+				</Anchors>
+			</Frame>
+			<EditBox name="$parentSearchBox" inherits="SearchBoxTemplate" parentKey="searchBox" letters="40">
+				<Size x="145" y="20"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentLeftInset" x="15" y="-9"/>
+				</Anchors>
+				<Scripts>
+					<OnTextChanged function="PetJournal_OnSearchTextChanged"/>
+				</Scripts>
+			</EditBox>
+			<DropdownButton parentKey="FilterDropdown" inherits="WowStyle1FilterDropdownTemplate">
+				<KeyValues>
+					<KeyValue key="resizeToText" type="boolean" value="false"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parentLeftInset" x="-5" y="-10"/>
+				</Anchors>
+			</DropdownButton>
+
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList" frameStrata="HIGH">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.LeftInset" x="3" y="-36"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.LeftInset" x="-2" y="3"/>
+				</Anchors>
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar" frameStrata="HIGH">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="3" y="36"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="3" y="-4"/>
+				</Anchors>
+			</EventFrame>
+
+			<Frame name="$parentPetCard" parentKey="PetCard">
+				<Size x="405" y="512"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentRightInset" x="3" y="-3"/>
+
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="PetBackground" file="Interface\PetBattles\MountJournal-BG" setAllPoints="true">
+							<TexCoords left="0" right="0.78515625" top="0" bottom="1"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="ShadowOverlay" inherits="ShadowOverlayTemplate" useParentLevel="true" setAllPoints="true"/>
+					<Button name="$parentPetInfo" parentKey="PetInfo">
+						<Size x="275" y="42"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="0" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture name="$parentIcon" parentKey="icon" file="Interface\Common\WhiteIconFrame">
+									<Size x="38" y="38"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="30" y="-40"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<FontString name="$parentName" inherits="GameFontHighlightLarge" justifyH="LEFT" justifyV="MIDDLE" parentKey="name" maxLines="2">
+									<Size x="270" y="35"/>
+									<Anchors>
+										<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentIcon" x="10" y="0"/>
+									</Anchors>
+								</FontString>
+								<FontString name="$parentSubName" inherits="GameFontNormalSmall" justifyH="LEFT" parentKey="subName">
+									<Size x="0" y="0"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parentName" x="0" y="-2"/>
+									</Anchors>
+									<Color r="1" g="1" b="1" a="1"/>
+								</FontString>
+								<Texture parentKey="isDead" file="Interface\PetBattles\DeadPetIcon" hidden="true">
+									<Size x="38" y="38"/>
+									<Anchors>
+										<Anchor point="CENTER" relativeTo="$parentIcon" relativePoint="CENTER" x="0" y="0"/>
+									</Anchors>
+								</Texture>
+								<Texture name="$parentFavorite" atlas="PetJournal-FavoritesIcon" useAtlasSize="true" parentKey="favorite">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="$parentIcon" x="-8" y="8"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY" textureSubLevel="2">
+								<FontString parentKey="new" inherits="GameFontHighlight" wordwrap="false" justifyH="CENTER" text="NEW_CAPS" hidden="true">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativeKey="$parent.name" relativePoint="BOTTOMLEFT" x="8" y="0"/>
+									</Anchors>
+									<Shadow>
+										<Color color="NEW_FEATURE_SHADOW_COLOR"/>
+									</Shadow>
+								</FontString>
+
+								<Texture parentKey="newGlow" atlas="collections-newglow" hidden="true">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.new" x="-20" y="10"/>
+										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.new" x="20" y="-10"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnClick function="PetJournalPetCard_OnClick"/>
+							<OnLoad>
+								self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+								self:RegisterForDrag("LeftButton");
+							</OnLoad>
+							<OnEnter>
+								if ( self.sourceText and self.sourceText ~= "" ) then
+								GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", -160, 0);
+								GameTooltip:SetText(self.speciesName, 1, 1, 1);
+								GameTooltip:AddLine(self.sourceText, 1, 1, 1, true);
+								if ( not self.tradable ) then
+								GameTooltip:AddLine(BATTLE_PET_NOT_TRADABLE, 1, 0.1, 0.1, true);
+								end
+								if ( self.unique ) then
+								GameTooltip:AddLine(ITEM_UNIQUE, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
+								end
+								if ( self.description and self.description ~= "" ) then
+								GameTooltip:AddLine(" ");
+								GameTooltip:AddLine(self.description, nil, nil, nil, true);
+								end
+								GameTooltip:Show();
+								end
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide"/>
+							<OnDragStart function="PetJournalDragButton_OnDragStart"/>
+						</Scripts>
+					</Button>
+					<ModelScene parentKey="modelScene" useParentLevel="true" inherits="WrappedAndUnwrappedModelScene">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+						<Frames>
+							<Button parentKey="RotateLeftButton" inherits="RotateOrbitCameraLeftButtonTemplate" />
+							<Button parentKey="RotateRightButton" inherits="RotateOrbitCameraRightButtonTemplate" />
+						</Frames>
+						<Scripts>
+							<OnMouseUp inherit="append">
+								if PetJournalPetCard.petID then
+								PetJournal_UnwrapPet(PetJournalPetCard.petID);
+								end
+							</OnMouseUp>
+						</Scripts>
+						<ViewInsets left="0" right="0" top="300" bottom="-50"/>
+					</ModelScene>
+				</Frames>
+			</Frame>
+			<!-- PetCard -->
+
+			<Button name="$parentSummonButton" motionScriptsWhileDisabled="true" inherits="MagicButtonTemplate" parentKey="SummonButton" text="BATTLE_PET_SUMMON">
+				<Size x="160" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:Disable(); --No XML attribute for disabling by default :(
+						MagicButton_OnLoad(self);
+					</OnLoad>
+					<OnClick function="PetJournalSummonButton_OnClick"/>
+					<OnEnter function="PetJournalSummonButton_OnEnter"/>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow function="PetJournal_OnShow"/>
+			<OnHide function="PetJournal_OnHide"/>
+			<OnLoad function="PetJournal_OnLoad"/>
+			<OnEvent function="PetJournal_OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

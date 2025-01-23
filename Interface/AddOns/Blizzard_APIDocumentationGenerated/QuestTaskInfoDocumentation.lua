@@ -110,7 +110,7 @@ local QuestTaskInfo =
 			},
 		},
 		{
-			Name = "GetQuestsForPlayerByMapID",
+			Name = "GetQuestsOnMap",
 			Type = "Function",
 
 			Arguments =
@@ -120,7 +120,7 @@ local QuestTaskInfo =
 
 			Returns =
 			{
-				{ Name = "taskPOIs", Type = "table", InnerType = "TaskPOIData", Nilable = false },
+				{ Name = "taskPOIs", Type = "table", InnerType = "QuestPOIMapInfo", Nilable = false },
 			},
 		},
 		{
@@ -163,24 +163,6 @@ local QuestTaskInfo =
 
 	Tables =
 	{
-		{
-			Name = "TaskPOIData",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "questId", Type = "number", Nilable = false },
-				{ Name = "x", Type = "number", Nilable = false },
-				{ Name = "y", Type = "number", Nilable = false },
-				{ Name = "inProgress", Type = "bool", Nilable = false },
-				{ Name = "numObjectives", Type = "number", Nilable = false },
-				{ Name = "mapID", Type = "number", Nilable = false },
-				{ Name = "isQuestStart", Type = "bool", Nilable = false },
-				{ Name = "isDaily", Type = "bool", Nilable = false },
-				{ Name = "isCombatAllyQuest", Type = "bool", Nilable = false },
-				{ Name = "isMeta", Type = "bool", Nilable = false },
-				{ Name = "childDepth", Type = "number", Nilable = true },
-			},
-		},
 	},
 };
 

@@ -70,7 +70,8 @@ function MacroFrameMixin:OnLoad()
 
 	local function MacroFrameMacroButtonSelectedCallback(selectionIndex)
 		MacroFrame:SaveMacro();
-		MacroFrame:SelectMacro(selectionIndex);
+		local scrollToSelected = true;
+		MacroFrame:SelectMacro(selectionIndex, scrollToSelected);
 		MacroPopupFrame:Hide();
 		MacroFrameText:ClearFocus();
 	end
@@ -112,7 +113,7 @@ end
 
 function MacroFrameMixin:OnEvent(event, ...)
 	if event == "UPDATE_MACROS" then
-		self:Update(true);
+		self:Update();
 		self:SelectMacro(self.MacroSelector:GetSelectedIndex());
 	end
 end
@@ -146,14 +147,16 @@ function MacroFrameMixin:SetAccountMacros()
 	self.macroBase = 0;
 	self.macroMax = MAX_ACCOUNT_MACROS;
 	self:Update();
-	self:SelectMacro(1);
+	local scrollToSelected = true;
+	self:SelectMacro(1, scrollToSelected);
 end
 
 function MacroFrameMixin:SetCharacterMacros()
 	self.macroBase = MAX_ACCOUNT_MACROS;
 	self.macroMax = MAX_CHARACTER_MACROS;
 	self:Update();
-	self:SelectMacro(1);
+	local scrollToSelected = true;
+	self:SelectMacro(1, scrollToSelected);
 end
 
 function MacroFrameMixin:Update()
@@ -242,8 +245,7 @@ function MacroFrameSaveButton_OnClick()
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	MacroFrame:SaveMacro();
 
-	local retainScrollPosition = true;
-	MacroFrame:Update(retainScrollPosition);
+	MacroFrame:Update();
 
 	MacroPopupFrame:Hide();
 	MacroFrameText:ClearFocus();
@@ -252,14 +254,13 @@ end
 function MacroFrameCancelButton_OnClick()
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
-	local retainScrollPosition = true;
-	MacroFrame:Update(retainScrollPosition);
+	MacroFrame:Update();
 
 	MacroPopupFrame:Hide();
 	MacroFrameText:ClearFocus();
 end
 
-function MacroFrameMixin:SelectMacro(index)
+function MacroFrameMixin:SelectMacro(index, scrollToSelected)
 	if index then
 		local macroCount = select(PanelTemplates_GetSelectedTab(self), GetNumMacros());
 		if macroCount < index then
@@ -267,7 +268,11 @@ function MacroFrameMixin:SelectMacro(index)
 		end
 	end
 
-	self.MacroSelector:SetSelectedIndex(index);
+	self.MacroSelector:SetSelectedIndex(index or 1);
+
+	if scrollToSelected then
+		self.MacroSelector:ScrollToElementDataIndex(index or 1, ScrollBoxConstants.AlignNearest);
+	end
 
 	if index then
 		local actualIndex = self:GetMacroDataIndex(index);
@@ -293,10 +298,10 @@ function MacroFrameMixin:DeleteMacro()
 
 	local macroCount = select(PanelTemplates_GetSelectedTab(self), GetNumMacros());
 	local newMacroIndex = math.min(macroCount, selectedMacroIndex);
-	self:SelectMacro(newMacroIndex > 0 and newMacroIndex or nil);
+	local scrollToSelected = true;
+	self:SelectMacro(newMacroIndex > 0 and newMacroIndex or nil, scrollToSelected);
 
-	local retainScrollPosition = true;
-	self:Update(retainScrollPosition);
+	self:Update();
 
 	MacroFrameText:ClearFocus();
 end

@@ -196,9 +196,7 @@ end
 -- GROUP FINDER
 ---------------------------------------------------------------
 
--- TODO: SHARING PASS
---local groupFrames = { "LFDParentFrame", "RaidFinderFrame", "LFGListPVEStub" }
-local groupFrames = { "LFDParentFrame", "LFGListPVEStub" }
+local groupFrames = { "LFDParentFrame", "RaidFinderFrame", "LFGListPVEStub" }
 
 function GroupFinderFrame_OnLoad(self)
 	SetPortraitToTexture(self.groupButton1.icon, "Interface\\Icons\\INV_Helmet_08");
@@ -247,7 +245,7 @@ function GroupFinderFrame_EvaluateButtonVisibility(self)
 		GroupFinderFrameButton_SetEnabled(self.groupButton2, true);
 	end
 
-	visible = C_LFGInfo.IsPremadeGroupEnabled();
+	visible = C_LFGList.IsPremadeGroupFinderEnabled();
 	canUse, failureReason = C_LFGInfo.CanPlayerUsePremadeGroup();
 	if not visible then
 		self.groupButton3:Hide();

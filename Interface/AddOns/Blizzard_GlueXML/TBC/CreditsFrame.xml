@@ -309,14 +309,6 @@
 					<TexCoords left="1.0" right="0" top="0" bottom="1.0"/>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="1">
-				<Texture parentKey="Logo" file="Interface\Glues\Common\WOW_Classic-LogoHR">
-					<Size x="256" y="128"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="3" y="-7"/>
-					</Anchors>
-				</Texture>
-			</Layer>
 			<Layer level="OVERLAY">
 				<Texture name="CreditsBorder1" file="Interface\Glues\Credits\Border1">
 					<Size x="1408" y="64"/>
@@ -353,6 +345,12 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="GameLogo" inherits="GlueGameLogoTemplate">
+				<Size x="256" y="128"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="3" y="-7"/>
+				</Anchors>
+			</Frame>
 			<ScrollFrame parentKey="ScrollFrame">
 				<Size x="250" y="740"/>
 				<Anchors>

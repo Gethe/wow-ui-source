@@ -4,11 +4,11 @@
 ## Dependencies: Blizzard_SharedXMLBase
 ## LoadFirst: 1
 ## AllowLoad: Both
-## AllowLoadGameType: classic
+## AllowLoadGameType: vanilla, tbc, wrath
 MenuConstants.lua
 Classic\MenuConstants.lua
 MenuVariants.lua
-Classic\MenuVariants.lua
+Vanilla\MenuVariants.lua
 Compositor.lua
 Menu.lua
 Menu.xml

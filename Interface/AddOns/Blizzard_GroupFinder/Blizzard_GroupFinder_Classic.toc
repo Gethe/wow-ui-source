@@ -17,3 +17,5 @@ Classic\LFGList.xml
 Classic\PVPHelper.lua
 Classic\PVPHelper.xml
 Classic\Localization.lua
+Shared\RaidFinder.lua
+Shared\RaidFinder.xml

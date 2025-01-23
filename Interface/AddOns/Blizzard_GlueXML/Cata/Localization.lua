@@ -26,8 +26,6 @@ local l10nTable = {
 			ServerAlertFrame:SetWidth(350);
 			ServerAlertFrame:SetHeight(400);
 
-			SHOW_KOREAN_RATINGS = true;
-
 			CharacterCreateConfigurationFrame.AllianceText:SetFontObject("FactionName_Shadow_MediumLarge");
 			CharacterCreateConfigurationFrame.HordeText:SetFontObject("FactionName_Shadow_MediumLarge");
 		end,
@@ -70,8 +68,6 @@ local l10nTable = {
 			_G["CharacterSelectLogo"]:SetPoint("TOPLEFT", 5, -5);
 			_G["AccountLogin"].UI.GameLogo:SetPoint("TOPLEFT", 5, -5);
 			_G["CharacterCreateGender"]:Hide();
-
-			SHOW_CHINA_AGE_APPROPRIATENESS_WARNING = true;
 		end,
 	},
 	zhTW = {},

@@ -510,7 +510,7 @@ function WorldMapZoneMinimapDropdown_OnLoad(self)
 	self:SetWidth(130);
 end
 
-function WorldMapZoneMinimapDropdown_OnShow()
+function WorldMapZoneMinimapDropdown_OnShow(self)
 	local function IsSelected(cvarIndex)
 		return GetCVar("showBattlefieldMinimap") == cvarIndex;
 	end
@@ -535,8 +535,8 @@ function WorldMapZoneMinimapDropdown_OnShow()
 
 		for index = 1, 3 do
 			local cvarIndex = index - 1;
-			local text = WorldMapZoneMinimapDropdwn_GetText(cvarIndex);
-			dropdown:CreateRadio(text, IsSelected, SetSelected, cvarIndex);
+			local text = WorldMapZoneMinimapDropdown_GetText(cvarIndex);
+			rootDescription:CreateRadio(text, IsSelected, SetSelected, tostring(cvarIndex));
 		end
 	end);
 end

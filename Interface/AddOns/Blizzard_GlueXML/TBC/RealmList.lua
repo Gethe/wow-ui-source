@@ -240,6 +240,9 @@ function RealmList_OnOk()
 
 		if ( realmInfo.populationState == "FULL" and realmInfo.numCharacters == 0 ) then
 			GlueDialog_Show("REALM_IS_FULL");
+		elseif (realmInfo.isPvP == true and realmInfo.numCharacters == 0) then
+			RealmWarningPopUpFrame:SetRealmInfo(RealmList.selectedRealm)
+			RealmWarningPopUpFrame:ShowRealmSelectionWarning();
 		else
 			C_RealmList.ConnectToRealm(RealmList.selectedRealm);
 		end

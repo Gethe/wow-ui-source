@@ -47,7 +47,7 @@
                 </Texture>
             </Layer>
             <Layer level="BORDER">
-                <FontString parentKey="TitleText" inherits="Game16Font" text="HARDCORE_TITLE_WARNING">
+                <FontString parentKey="TitleText" inherits="Game16Font" text="TITLE_WARNING">
                     <Size x="350" y="30"/>
                     <Anchors>
                         <Anchor point="CENTER" relativePoint="CENTER" relativeKey="$parent.TopInset"/>
@@ -79,7 +79,7 @@
                     <Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomInsetEdge" relativePoint="TOPRIGHT" x="-5" y="-2"/>
                 </Anchors>
             </EventFrame>
-            <Button parentKey="AcceptButton" mixin="HardcorePopUpAcceptButtonMixin" inherits="UIPanelButtonTemplate" text="HARDCORE_AGREE">
+            <Button parentKey="AcceptButton" mixin="HardcorePopUpAcceptButtonMixin" inherits="UIPanelButtonTemplate" text="AGREE">
                 <Size x="136" y="22"/>
                 <Anchors>
                     <Anchor point="TOP" relativePoint="TOP" relativeKey="$parent.BottomInset" x="-75" y="-6"/>

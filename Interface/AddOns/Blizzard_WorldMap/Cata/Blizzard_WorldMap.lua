@@ -410,7 +410,7 @@ do
 		local info = WorldMapFrame.continentInfo;
 		return info and (info.mapID == continentInfo.mapID);
 	end
-	
+
 	local function SetSelected(continentInfo)
 		WorldMapFrame:SetMapID(continentInfo.mapID);
 	end
@@ -479,26 +479,26 @@ do
 	
 	local function SetSelected(zoneInfo)
 		WorldMapFrame:SetMapID(zoneInfo.mapID);
-end
+	end
 
 	function WorldMapZoneDropdown_OnShow(self)
-		local continentInfo = WorldMapFrame.continentInfo;
-		if not continentInfo then
-			return;
-		end
-
-		-- If we don't have a cached button list, we'll need to create it here.
-		if not zoneInfoCache[continentInfo.mapID] then
-			local zoneInfos = C_Map.GetMapChildrenInfo(continentInfo.mapID);
-			if zoneInfos then
-				table.sort(zoneInfos, function(zoneInfo1, zoneInfo2)
-					return zoneInfo1.name < zoneInfo2.name; 
-				end);
-				zoneInfoCache[continentInfo.mapID] = zoneInfos;
-			end
-		end
-
 		self:SetupMenu(function(dropdown, rootDescription)
+			local continentInfo = WorldMapFrame.continentInfo;
+			if not continentInfo then
+				return;
+			end
+
+			-- If we don't have a cached button list, we'll need to create it here.
+			if not zoneInfoCache[continentInfo.mapID] then
+				local zoneInfos = C_Map.GetMapChildrenInfo(continentInfo.mapID);
+				if zoneInfos then
+					table.sort(zoneInfos, function(zoneInfo1, zoneInfo2)
+						return zoneInfo1.name < zoneInfo2.name; 
+					end);
+					zoneInfoCache[continentInfo.mapID] = zoneInfos;
+				end
+			end
+
 			rootDescription:SetTag("MENU_WORLD_MAP_ZONE");
 
 			for i, zoneInfo in ipairs(zoneInfoCache[continentInfo.mapID]) do
@@ -512,7 +512,7 @@ function WorldMapZoneMinimapDropdown_OnLoad(self)
 	WowStyle1DropdownMixin.OnLoad(self);
 
 	self:SetWidth(130);
-				end
+end
 
 function WorldMapZoneMinimapDropdown_OnShow(self)
 	local function IsSelected(cvarIndex)

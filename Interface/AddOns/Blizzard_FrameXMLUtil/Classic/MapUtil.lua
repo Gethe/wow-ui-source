@@ -27,7 +27,7 @@ function MapUtil.ShouldMapTypeShowQuests(mapType)
 end
 
 function MapUtil.ShouldShowTask(mapID, info)
-	return (mapID == info.mapID) and HaveQuestData(info.questId);
+	return (mapID == info.mapID) and HaveQuestData(info.questID);
 end
 
 function MapUtil.MapHasUnlockedBounties(mapID)

@@ -2248,9 +2248,10 @@ function CloseAuctionStaticPopups()
 end
 
 function AuctionsCreateAuctionButton_OnClick()
-	if (C_WowTokenPublic.IsAuctionableWowToken(select(10, GetAuctionSellItemInfo()))) then
+	local itemId, itemGUID = select(10, GetAuctionSellItemInfo());
+	if (C_WowTokenPublic.IsAuctionableWowToken(itemId)) then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
-		C_WowTokenPublic.SellToken();
+		C_WowTokenUI.StartTokenSell(itemGUID);
 	else
 		LAST_ITEM_START_BID = MoneyInputFrame_GetCopper(StartPrice);
 		LAST_ITEM_BUYOUT = MoneyInputFrame_GetCopper(BuyoutPrice);

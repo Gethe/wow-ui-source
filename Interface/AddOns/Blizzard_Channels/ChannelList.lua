@@ -366,22 +366,24 @@ function ChannelListMixin:ShowDropdown(channel)
 		local voiceChannelID = channel:ChannelSupportsVoice() and channel:GetVoiceChannelID() or nil;
 
 		if channel:ChannelSupportsText() then
+			local category = channel:GetCategory();
 			if channelFrame:IsCategoryCustom(category) then
-				-- SET PASSWORD if it is a custom Channel and is owner
-				rootDescription:CreateButton(CHAT_PASSWORD, function()
-					StaticPopup_Show("CHANNEL_PASSWORD", channelName, nil, channelName);
-				end);
 
-				-- INVITE if it is a custom Channel and is owner
-				if IsDisplayChannelModerator() then
+				if IsChannelOwner(channel.name) then
+					rootDescription:CreateButton(CHAT_PASSWORD, function()
+						StaticPopup_Show("CHANNEL_PASSWORD", channelName, nil, channelName);
+					end);
+				end
+
+				if IsChannelModerator(channel.name) or IsChannelOwner(channel.name) then
 					rootDescription:CreateButton(PARTY_INVITE, function()
 						StaticPopup_Show("CHANNEL_INVITE", channelName, nil, channelName);
 					end);
 				end
+
 			end
 
 			-- JOIN if it is a Global Channel
-			local category = channel:GetCategory();
 			if channelFrame:IsCategoryGlobal(category) and not channel:IsActive() then
 				rootDescription:CreateButton(CHAT_JOIN, function()
 					JoinPermanentChannel(channelName);

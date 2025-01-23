@@ -533,7 +533,7 @@ function CommunitiesListEntryMixin:Init(elementData)
 end
 
 function CommunitiesListEntryMixin:UpdateUnreadNotification()
-	if C_SocialRestrictions.IsChatDisabled() then
+	if not C_SocialRestrictions.CanReceiveChat() then
 		self.UnreadNotificationIcon:SetShown(false);
 	else
 		local isNewInvitation = self.isInvitation and not DISPLAYED_COMMUNITIES_INVITATIONS[self.clubId];

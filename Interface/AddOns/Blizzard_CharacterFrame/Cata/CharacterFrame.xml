@@ -408,6 +408,9 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.InsetRight" x="4" y="-4"/>
 						</Anchors>
+						<KeyValues>
+							<KeyValue key="wheelPanScalar" value="0.1" type="number"/>
+						</KeyValues>
 						<Frames>
 							<Frame parentKey="Contents" inherits="ResizeLayoutFrame">
 								<Size x="1" y="1"/>
@@ -427,6 +430,9 @@
 						</Frames>
 					</Frame>
 					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+						<KeyValues>
+							<KeyValue key="wheelPanScalar" value="0.1" type="number"/>
+						</KeyValues>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="8" y="-5"/>
 							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="8" y="4"/>

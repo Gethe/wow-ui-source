@@ -99,7 +99,6 @@ end
 
 function KioskModeSplashMixin:OnShow()
 	self.mode = nil;
-	SetGameLogo(self.UI.GameLogo);
 end
 
 function KioskModeSplashMixin:SetMode(mode)

@@ -2,7 +2,7 @@ if not IsGMClient() then
 	return; -- This tool only functions in GM builds
 end
 
-if IsOnGlueScreen() then
+if C_Glue.IsOnGlueScreen() then
 	return;
 end
 

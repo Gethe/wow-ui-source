@@ -48,11 +48,24 @@ local LFGConstants =
 			},
 		},
 		{
-			Name = "GroupFinderConstants",
+			Name = "PremadeGroupFinderStyle",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Disabled", Type = "PremadeGroupFinderStyle", EnumValue = 0 },
+				{ Name = "Mainline", Type = "PremadeGroupFinderStyle", EnumValue = 1 },
+				{ Name = "Vanilla", Type = "PremadeGroupFinderStyle", EnumValue = 2 },
+			},
+		},
+		{
+			Name = "LFGConstsExposed",
 			Type = "Constants",
 			Values =
 			{
-				{ Name = "MAX_GROUP_FINDER_ACTIVITIES", Type = "number", Value = 41 },
+				{ Name = "GROUP_FINDER_MAX_ACTIVITY_CAPACITY", Type = "number", Value = 16 },
 			},
 		},
 		{
@@ -62,6 +75,16 @@ local LFGConstants =
 			{
 				{ Name = "LFG_ROLE_NO_ROLE", Type = "LFGRole", Value = -1 },
 				{ Name = "LFG_ROLE_ANY", Type = "LFGRole", Value = Enum.LFGRoleMeta.NumValues },
+			},
+		},
+		{
+			Name = "LFGRoles",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "tank", Type = "bool", Nilable = false },
+				{ Name = "healer", Type = "bool", Nilable = false },
+				{ Name = "dps", Type = "bool", Nilable = false },
 			},
 		},
 	},

@@ -166,7 +166,9 @@ function RaidGroupFrame_OnHide()
 end
 
 function RaidGroupFrame_OnEvent(self, event, ...)
-	RaidFrame_OnEvent(self, event, ...);
+
+	self:OnEvent(event, ...);
+
 	if ( event == "UNIT_LEVEL" ) then
 		local arg1 = ...;
 		local id, found = gsub(arg1, "raid([0-9]+)", "%1");
@@ -652,7 +654,7 @@ function RaidGroupButton_OnEnter(raidbutton)
 end
 
 function RaidButton_OnClick(self, button)
-	RaidFrame_Update();
+	self:Update();
 end
 
 -------------------- Pullout Button Functions --------------------

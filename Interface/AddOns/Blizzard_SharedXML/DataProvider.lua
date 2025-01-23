@@ -170,6 +170,10 @@ function DataProviderMixin:RemoveIndexRange(indexBegin, indexEnd)
 	end
 end
 
+function DataProviderMixin:ReplaceAtIndex(index, newElementData)
+	self:RemoveIndex(index);
+	self:InsertAtIndex(newElementData, index);
+end
 
 function DataProviderMixin:SetSortComparator(sortComparator, skipSort)
 	self.sortComparator = sortComparator;

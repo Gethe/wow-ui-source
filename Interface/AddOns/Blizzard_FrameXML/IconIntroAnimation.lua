@@ -11,61 +11,66 @@ function IconIntroTrackerMixin:OnLoad()
 	local actionBarIconIntroDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.ActionbarIconIntroDisabled);
 	if not actionBarIconIntroDisabled then
 		self:RegisterEvent("SPELL_PUSHED_TO_ACTIONBAR");
+		self:RegisterEvent("SPELL_PUSHED_TO_FLYOUT_ON_ACTIONBAR");
 	end
 end
 
 function IconIntroTrackerMixin:OnEvent(event, ...)
-	if event == "SPELL_PUSHED_TO_ACTIONBAR" then
+	if event == "SPELL_PUSHED_TO_ACTIONBAR" or event == "SPELL_PUSHED_TO_FLYOUT_ON_ACTIONBAR" then
 		local spellID, slotIndex, slotPos = ...;
-		ClearNewActionHighlight(slotIndex, true);
-
-		local page = math.floor((slotIndex - 1) / NUM_ACTIONBAR_BUTTONS) + 1;
-		local currentPage = GetActionBarPage();
-
-		local bonusBarIndex = GetBonusBarIndex();
-		if (HasBonusActionBar() and bonusBarIndex ~= 0) then
-			currentPage = bonusBarIndex;
-		end
-
-		if (page ~= currentPage and page ~= MULTIBOTTOMLEFTINDEX) then
-			return;
-		end
-
-		MarkNewActionHighlight(slotIndex);
-
-		local icon = C_Spell.GetSpellTexture(spellID);
-		local freeIcon;
-
-		for a,b in pairs(self.iconList) do
-			if b.isFree then
-				freeIcon = b;
-			end
-		end
-
-		if not freeIcon then -- Make a new one
-			freeIcon = CreateFrame("FRAME", self:GetName().."Icon"..(#self.iconList+1), UIParent, "IconIntroTemplate");
-			self.iconList[#self.iconList+1] = freeIcon;
-		end
-
-		freeIcon.icon.icon:SetTexture(icon);
-		freeIcon.icon.slot = slotIndex;
-		freeIcon.icon.pos = slotPos;
- 		freeIcon:ClearAllPoints();
-
-
-		if (page == MULTIBOTTOMLEFTINDEX) then
-			freeIcon:SetPoint("CENTER", _G["MultiBarBottomLeftButton"..slotPos], 0, 0);
-			freeIcon:SetFrameLevel(_G["MultiBarBottomLeftButton"..slotPos]:GetFrameLevel()+1);
-			freeIcon.icon.multibar = true;
-		else
-			freeIcon:SetPoint("CENTER", _G["ActionButton"..slotPos], 0, 0);
-			freeIcon:SetFrameLevel(_G["ActionButton"..slotPos]:GetFrameLevel()+1);
-			freeIcon.icon.multibar = false;
-		end
-
-		freeIcon.icon.flyin:Play(1);
-		freeIcon.isFree = false;
+		self:PushSpellToActionBar(spellID, slotIndex, slotPos);
 	end
+end
+
+function IconIntroTrackerMixin:PushSpellToActionBar(spellID, slotIndex, slotPos)
+	ClearNewActionHighlight(slotIndex, true);
+
+	local page = math.floor((slotIndex - 1) / NUM_ACTIONBAR_BUTTONS) + 1;
+	local currentPage = GetActionBarPage();
+
+	local bonusBarIndex = GetBonusBarIndex();
+	if (HasBonusActionBar() and bonusBarIndex ~= 0) then
+		currentPage = bonusBarIndex;
+	end
+
+	if (page ~= currentPage and page ~= MULTIBOTTOMLEFTINDEX) then
+		return;
+	end
+
+	MarkNewActionHighlight(slotIndex);
+
+	local icon = C_Spell.GetSpellTexture(spellID);
+	local freeIcon;
+
+	for a,b in pairs(self.iconList) do
+		if b.isFree then
+			freeIcon = b;
+		end
+	end
+
+	if not freeIcon then -- Make a new one
+		freeIcon = CreateFrame("FRAME", self:GetName().."Icon"..(#self.iconList+1), UIParent, "IconIntroTemplate");
+		self.iconList[#self.iconList+1] = freeIcon;
+	end
+
+	freeIcon.icon.icon:SetTexture(icon);
+	freeIcon.icon.slot = slotIndex;
+	freeIcon.icon.pos = slotPos;
+	 freeIcon:ClearAllPoints();
+
+
+	if (page == MULTIBOTTOMLEFTINDEX) then
+		freeIcon:SetPoint("CENTER", _G["MultiBarBottomLeftButton"..slotPos], 0, 0);
+		freeIcon:SetFrameLevel(_G["MultiBarBottomLeftButton"..slotPos]:GetFrameLevel()+1);
+		freeIcon.icon.multibar = true;
+	else
+		freeIcon:SetPoint("CENTER", _G["ActionButton"..slotPos], 0, 0);
+		freeIcon:SetFrameLevel(_G["ActionButton"..slotPos]:GetFrameLevel()+1);
+		freeIcon.icon.multibar = false;
+	end
+
+	freeIcon.icon.flyin:Play(1);
+	freeIcon.isFree = false;
 end
 
 function IconIntroTrackerMixin:ResetAll()

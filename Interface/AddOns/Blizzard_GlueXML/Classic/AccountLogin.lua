@@ -1,9 +1,5 @@
-
-SHOW_KOREAN_RATINGS = SHOW_KOREAN_RATINGS or nil;
-SHOW_CHINA_AGE_APPROPRIATENESS_WARNING = SHOW_CHINA_AGE_APPROPRIATENESS_WARNING or nil;
-
-local function ShouldShowRegulationOverlay()
-	return SHOW_KOREAN_RATINGS or (SHOW_CHINA_AGE_APPROPRIATENESS_WARNING and not C_Login.WasEverLauncherLogin());
+function ShouldShowRegulationOverlay()
+	return KoreanRatings:ShouldShow() or ChinaAgeAppropriatenessWarning:ShouldShow() or TaiwanFraudWarning:ShouldShow();
 end
 
 local selectedSavedAccount = nil;
@@ -19,6 +15,16 @@ function AccountLogin_OnLoad(self)
 	self:RegisterEvent("LOGIN_STATE_CHANGED");
 	self:RegisterEvent("LAUNCHER_LOGIN_STATUS_CHANGED");
 	self:RegisterEvent("SHOULD_RECONNECT_TO_REALM_LIST");
+
+	local function OnLoginWarningDialogClosed()
+		if PhotosensitivityWarningFrame:GetLockedByOtherWarning() then
+			PhotosensitivityWarningFrame:TryShow();
+		else
+			AccountLogin_Update();
+			AccountLogin_CheckAutoLogin();
+		end
+	end
+	EventRegistry:RegisterCallback("LoginWarningDialogs.DialogClosed", OnLoginWarningDialogClosed);
 
 	AccountLogin_CheckLoginState(self);
 
@@ -71,7 +77,6 @@ function AccountLogin_CheckLoginState(self)
 end
 
 function AccountLogin_OnShow(self)
-	SetGameLogo(self.UI.GameLogo);
 	self.UI.AccountEditBox:SetText("");
 	AccountLogin_UpdateSavedData(self);
     CharacterCreate_CancelReincarnation(); -- If we're back at this screen, we're not reincarnating
@@ -80,25 +85,15 @@ function AccountLogin_OnShow(self)
 end
 
 function AccountLogin_Update()
-	local showButtonsAndStuff = true;
-	if ( ShouldShowRegulationOverlay() ) then
-		showButtonsAndStuff = false;
-		if ( SHOW_KOREAN_RATINGS ) then
-			KoreanRatings:Show();
-		elseif ( SHOW_CHINA_AGE_APPROPRIATENESS_WARNING ) then
-			ChinaAgeAppropriatenessWarning:Show();
-		end
-	else
-		KoreanRatings:Hide();
-		ChinaAgeAppropriatenessWarning:Hide();
-	end
+	local showedRegulationOverlay = KoreanRatings:TryShow() or ChinaAgeAppropriatenessWarning:TryShow() or TaiwanFraudWarning:TryShow();
+	local showButtonsAndStuff = not showedRegulationOverlay;
 
 	local isLauncherLogin = C_Login.IsLauncherLogin();
 	if ( isLauncherLogin ) then
 		showButtonsAndStuff = false;
 	end
 
-	local shouldSuppressServerAlert = isLauncherLogin or ShouldShowRegulationOverlay();
+	local shouldSuppressServerAlert = isLauncherLogin or showedRegulationOverlay;
 	ServerAlertFrame:SetSuppressed(shouldSuppressServerAlert);
 
 	--Cached login
@@ -554,50 +549,4 @@ end
 function AccountLogin_LaunchCommunitySite()
 	PlaySound(SOUNDKIT.GS_LOGIN_NEW_ACCOUNT);
 	LaunchURL(COMMUNITY_URL);
-end
-
--- =============================================================
--- Korean Ratings
--- =============================================================
-
-local KOREAN_RATINGS_AUTO_CLOSE_TIMER; -- seconds until automatically closing
-function KoreanRatings_OnLoad(self)
-	if ( WasScreenFirstDisplayed() ) then
-		KoreanRatings_ScreenDisplayed(self);
-	else
-		self:RegisterEvent("SCREEN_FIRST_DISPLAYED");
-	end
-end
-
-function KoreanRatings_OnEvent(self, event, ...)
-	if ( event == "SCREEN_FIRST_DISPLAYED" ) then
-		KoreanRatings_ScreenDisplayed(self);
-		self:UnregisterEvent("SCREEN_FIRST_DISPLAYED");
-	end
-end
-
-function KoreanRatings_ScreenDisplayed(self)
-	self:SetScript("OnUpdate", KoreanRatings_OnUpdate);
-end
-
-function KoreanRatings_OnShow(self)
-	self.locked = true;
-	KOREAN_RATINGS_AUTO_CLOSE_TIMER = 3;
-	KoreanRatingsText:SetTextHeight(10); -- this is just dumb ... sort out this bug later.
-	KoreanRatingsText:SetTextHeight(50);
-end
-
-function KoreanRatings_OnUpdate(self, elapsed)
-	KOREAN_RATINGS_AUTO_CLOSE_TIMER = KOREAN_RATINGS_AUTO_CLOSE_TIMER - elapsed;
-	if ( KOREAN_RATINGS_AUTO_CLOSE_TIMER <= 0 ) then
-		SHOW_KOREAN_RATINGS = false;
-		AccountLogin_Update();
-		AccountLogin_CheckAutoLogin();
-	end
-end
-
-function ChinaAgeAppropriatenessWarning_Close()
-	SHOW_CHINA_AGE_APPROPRIATENESS_WARNING = false;
-	AccountLogin_Update();
-	AccountLogin_CheckAutoLogin();
 end

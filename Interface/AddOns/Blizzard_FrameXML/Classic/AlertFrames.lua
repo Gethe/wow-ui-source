@@ -586,9 +586,6 @@ function AlertFrameMixin:OnEvent(event, ...)
 			-- May be invasion reward
 			InvasionAlertSystem:AddCoalesceData(questID, rewardItemLink, texture);
 		end
-	elseif ( event == "NEW_TOY_ADDED") then
-		local toyID = ...;
-		NewToyAlertSystem:AddAlert(toyID);
 	end
 end
 

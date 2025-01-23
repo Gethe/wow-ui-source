@@ -139,15 +139,6 @@ local LFGInfo =
 				{ Name = "enabled", Type = "bool", Nilable = false },
 			},
 		},
-		{
-			Name = "IsPremadeGroupEnabled",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "enabled", Type = "bool", Nilable = false },
-			},
-		},
 	},
 
 	Events =

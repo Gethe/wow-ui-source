@@ -223,16 +223,25 @@
 			</OnClick>
 		</Scripts>
 	</Button>
-	<Button name="GuildMicroButton" inherits="MainMenuBarMicroButton" mixin="GuildMicroButtonMixin">
+	<Button name="SocialsMicroButton" inherits="MainMenuBarMicroButton" mixin="SocialsMicroButtonMixin">
+		<!-- Note: SocialMicroButton and GuildMicroButton occupy the same space. Only one will be visible at a time. -->
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="QuestLogMicroButton" relativePoint="BOTTOMRIGHT" x="-3" y="0"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow function="MicroButton_KioskModeDisable" inherit="append"/>
+			<OnClick method="OnClick" inherit="append"/>
+		</Scripts>
+	</Button>
+	<Button name="GuildMicroButton" inherits="MainMenuBarMicroButton" mixin="GuildMicroButtonMixin" hidden="true">
+		<!-- Note: SocialMicroButton and GuildMicroButton occupy the same space. Only one will be visible at a time. -->
 		<KeyValues>
 			<KeyValue key="commandName" value="TOGGLEGUILDTAB" type="string"/>
 		</KeyValues>
 		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="QuestLogMicroButton" relativePoint="BOTTOMRIGHT">
-				<Offset>
-					<AbsDimension x="-3" y="0"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="CENTER" relativeTo="SocialsMicroButton" relativePoint="CENTER"/>
 		</Anchors>
 		<Frames>
 			<Frame parentKey="NotificationOverlay" frameLevel="100" setAllPoints="true" hidden="true"/>

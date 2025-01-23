@@ -36,8 +36,11 @@ function GlueTooltip_SetOwner(self, owner, anchor, xOffset, yOffset )
 	yOffset = yOffset or 0;
 
 	self:ClearAllPoints();
+	-- Fix for calling with ANCHOR_NONE and having points become nil
 	local points = tooltipAnchorPointMapping[anchor];
-	self:SetPoint(points.myPoint, owner, points.ownerPoint, xOffset, yOffset);
+	if(points ~= nil) then
+		self:SetPoint(points.myPoint, owner, points.ownerPoint, xOffset, yOffset);
+	end	
 	self:Show();
 end
 

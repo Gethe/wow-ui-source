@@ -1,6 +1,6 @@
 
 function ShowAppropriateDialog(popupType, textArg1, textArg2, data, insertedFrame)
-	if IsOnGlueScreen() then
+	if C_Glue.IsOnGlueScreen() then
 		GlueDialog_Show(popupType, textArg1, data);
 	else
 		StaticPopup_Show(popupType, textArg1, textArg2, data, insertedFrame);
@@ -8,7 +8,7 @@ function ShowAppropriateDialog(popupType, textArg1, textArg2, data, insertedFram
 end
 
 function HideAppropriateDialog(popupType)
-	if IsOnGlueScreen() then
+	if C_Glue.IsOnGlueScreen() then
 		GlueDialog_Hide(popupType);
 	else
 		StaticPopup_Hide(popupType);

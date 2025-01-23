@@ -165,14 +165,18 @@
 			</OnMouseUp>
 			<OnEnter>
 				if ( CharacterSelect.selectedIndex == self.index ) then
-					CharacterSelectButton_ShowMoveButtons(self);
+				CharacterSelectButton_ShowMoveButtons(self);
 				end
-				if ( self.isVeteranLocked and CharSelectAccountUpgradeButton:IsEnabled()) then
-					GlueTooltip:SetText(CHARSELECT_CHAR_LIMITED_TOOLTIP, nil, nil, nil, nil, true);
-					GlueTooltip:Show();
-					GlueTooltip:SetOwner(self, "ANCHOR_LEFT", -16, -5);
-					CharSelectAccountUpgradeButtonPointerFrame:Show();
-					CharSelectAccountUpgradeButtonGlow:Show();
+				if ( (self.isVeteranLocked or self.isWowTokenModeLocked) and CharSelectAccountUpgradeButton:IsEnabled()) then
+				local text = CHARSELECT_CHAR_LIMITED_TOOLTIP;
+				if (self.isWowTokenModeLocked) then
+				text = CHARSELECT_CHAR_SUB_LIMITED_TOOLTIP;
+				end
+				GlueTooltip:SetText(text, nil, nil, nil, nil, true);
+				GlueTooltip:Show();
+				GlueTooltip:SetOwner(self, "ANCHOR_LEFT", -16, -5);
+				CharSelectAccountUpgradeButtonPointerFrame:Show();
+				CharSelectAccountUpgradeButtonGlow:Show();
 				end
 			</OnEnter>
 			<OnLeave>
@@ -503,6 +507,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
+					<Frame parentKey="VisibilityFramesContainer" name="VisibilityFramesContainer" setAllPoints="true" useParentLevel="true"/>
 					<ModelFFX name="CharacterSelectModel" setAllPoints="true">
 						<Scripts>
 							<OnLoad>
@@ -511,44 +516,18 @@
 							<OnUpdate function="CharacterSelect_UpdateModel" />
 						</Scripts>
 					</ModelFFX>
-					<Frame name="LogoHoist" frameStrata="HIGH">
-						<Size x="1" y="1"/>
+					<Frame name="CharacterSelectLogo" parentKey="GameLogo" frameStrata="HIGH" inherits="GlueGameLogoTemplate">
+						<Size x="256" y="128"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="0" y="0"/>
+							<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="8" y="-16"/>
 						</Anchors>
-						<Layers>
-							<Layer level="OVERLAY">
-								<Texture name="CharacterSelectLogo">
-									<Size x="256" y="128"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" x="8" y="-16"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
 					</Frame>
-					<Button name="CharSelectAccountUpgradeButton" inherits="GlueButtonTemplate" text="UPGRADE">
+					<Button name="CharSelectAccountUpgradeButton" inherits="GlueButtonTemplate" text="ACCOUNT_UPGRADE_BANNER_RESUBSCRIBE">
 						<Size x="239" y="72"/>
 						<Anchors>
 							<Anchor point="TOP" relativeTo="CharacterSelectLogo" relativePoint="BOTTOM" x="0" y="-10"/>
 						</Anchors>
 						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture name="$parentChains1" file="Interface\Glues\AccountUpgrade\golden-main">
-									<Size x="20" y="62"/>
-									<Anchors>
-										<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="38" y="-15"/>
-									</Anchors>
-									<TexCoords left="0.148" right="0.227" top="0.508" bottom="0.777"/>
-								</Texture>
-								<Texture name="$parentChains2" file="Interface\Glues\AccountUpgrade\golden-main">
-									<Size x="20" y="62"/>
-									<Anchors>
-										<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="-38" y="-15"/>
-									</Anchors>
-									<TexCoords left="0.148" right="0.227" top="0.508" bottom="0.777"/>
-								</Texture>
-							</Layer>
 							<Layer level="OVERLAY">
 								<Texture name="$parentBorder" file="Interface\Glues\AccountUpgrade\golden-main">
 									<Size x="244" y="72"/>

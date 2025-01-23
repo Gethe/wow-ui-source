@@ -1,5 +1,11 @@
 local popupOwner;
 
+function MoneyInputFrame_SetEnabled(moneyFrame, enabled)
+	_G[moneyFrame:GetName().."Gold"]:SetEnabled(enabled);
+	_G[moneyFrame:GetName().."Silver"]:SetEnabled(enabled);
+	_G[moneyFrame:GetName().."Copper"]:SetEnabled(enabled);
+end
+
 function MoneyInputFrame_ResetMoney(moneyFrame)
 	_G[moneyFrame:GetName().."Gold"]:SetText("");
 	_G[moneyFrame:GetName().."Silver"]:SetText("");

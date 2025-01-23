@@ -12,3 +12,11 @@ end
 function WowTokenOutbound.AuctionWowTokenUpdate()
 	securecall("AuctionWowToken_UpdateMarketPrice");
 end
+
+function WowTokenOutbound.RecruitAFriendTryPlayClaimRewardFanfare()
+	securecall("RecruitAFriend_TryPlayClaimRewardFanfare");
+end
+
+function WowTokenOutbound.RecruitAFriendTryCancelAutoClaim()
+	securecall("RecruitAFriend_TryCancelAutoClaim");
+end

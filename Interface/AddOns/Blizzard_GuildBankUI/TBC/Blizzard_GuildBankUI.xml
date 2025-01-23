@@ -99,7 +99,7 @@
 		</Frames>
 	</Frame>
 
-	<Frame name="GuildBankTabTemplate" mixin="GuildBankTabMixin" enableMouse="true" parentArray="BankTabs" virtual="true">
+	<Frame name="GuildBankTabTemplate" mixin="GuildBankTabMixin" enableMouse="true" parentArray="BankTabs" virtual="true" hidden="true">
 		<Size x="42" y="50"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" x="0" y="0"/>

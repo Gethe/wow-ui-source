@@ -3281,7 +3281,7 @@ function GearManagerPopupFrameMixin:OnShow()
 
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	self.iconDataProvider = CreateAndInitFromMixin(IconDataProviderMixin, IconDataProviderExtraType.Equipment);
-	self.BorderBox.IconTypeDropdown:SetSelectedValue(IconSelectorPopupFrameIconFilterTypes.All);
+	self:SetIconFilter(IconSelectorPopupFrameIconFilterTypes.All);
 	self:Update();
 	self.BorderBox.IconSelectorEditBox:OnTextChanged();
 

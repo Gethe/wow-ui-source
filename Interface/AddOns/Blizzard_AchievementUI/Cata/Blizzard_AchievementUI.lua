@@ -65,13 +65,14 @@ function AchievementFrame_OnLoad (self)
 	end
 
 	local function SetFilterSelected(filter)
+		AchievementFrameFilterDropdown:SetText(filter.text);
 		if filter.func ~= ACHIEVEMENTUI_SELECTEDFILTER then
 			ACHIEVEMENTUI_SELECTEDFILTER = filter.func;
 			AchievementFrameAchievements_ForceUpdate();
 		end
 	end
 
-	AchievementFrameFilterDropdown:SetWidth(112);
+	AchievementFrameFilterDropdown:SetWidth(118);
 	AchievementFrameFilterDropdown:SetFrameLevel(AchievementFrameFilterDropdown:GetFrameLevel() + 1);
 	AchievementFrameFilterDropdown:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_ACHIEVEMENT_FILTER", block);

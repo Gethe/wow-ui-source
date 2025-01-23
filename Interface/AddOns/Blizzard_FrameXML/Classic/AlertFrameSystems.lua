@@ -718,11 +718,11 @@ function StorePurchaseAlertFrame_OnClick(self, button, down)
 			OpenBag(slot);
 		end
 	elseif (self.type == Enum.StoreDeliveryType.Mount) then
-		ToggleCollectionsJournal(1);
+		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS);
 	elseif (self.type == Enum.StoreDeliveryType.Battlepet) then
-		ToggleCollectionsJournal(2);
+		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_PETS);
 	elseif (self.type == Enum.StoreDeliveryType.Collection) then
-		ToggleCollectionsJournal(5);
+		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_TOYS);
 	end
 end
 

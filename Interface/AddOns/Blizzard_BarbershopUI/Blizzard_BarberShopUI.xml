@@ -104,7 +104,10 @@
 						C_BarberShop.CycleCharCustomization(parent:GetID(), true);
 						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 						BarberShop_UpdateCost(parent:GetParent());
-						BarberShop_UpdateSelector(parent);
+						local updatedBannerName = BarberShop_UpdateSelector(parent);
+						if (not updatedBannerName) then
+							BarberShop_ResetBanner();
+						end
 					</OnClick>
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
@@ -127,7 +130,10 @@
 						C_BarberShop.CycleCharCustomization(parent:GetID(), false);
 						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 						BarberShop_UpdateCost(parent:GetParent());
-						BarberShop_UpdateSelector(parent);
+						local updatedBannerName = BarberShop_UpdateSelector(parent);
+						if (not updatedBannerName) then
+							BarberShop_ResetBanner();
+						end
 					</OnClick>
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
@@ -396,6 +402,10 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
+			<!--
+			[CLASS - 34071]: Remove Barbershop Cost code
+			Cost is now deprecated for Classic and Mainline
+			
 			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate">
 				<KeyValues>
 					<KeyValue key="layoutIndex" value="11" type="number"/>
@@ -421,6 +431,7 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
+			-->
 			<Button name="$parentOkayButton" inherits="UIPanelButtonTemplate" text="OKAY">
 				<KeyValues>
 					<KeyValue key="layoutIndex" value="12" type="number"/>
@@ -547,6 +558,10 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<!--
+			[CLASS - 34071]: Remove Barbershop Cost code
+			Cost is now deprecated for Classic and Mainline
+			
 			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate">
 				<KeyValues>
 					<KeyValue key="layoutIndex" value="2" type="number"/>
@@ -573,6 +588,7 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
+			-->
 			<Button name="$parentBarbersChoiceOkayButton" inherits="UIPanelButtonTemplate" text="I'm Sure">
 				<KeyValues>
 					<KeyValue key="layoutIndex" value="3" type="number"/>
