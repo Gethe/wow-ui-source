@@ -1336,15 +1336,17 @@ function ContainerFrameItemButton_OnClick(self, button)
 				return;
 			end
 		else
-			local itemLocation = ItemLocation:CreateFromBagAndSlot(self:GetParent():GetID(), self:GetID());
-			local itemIsValidAuctionItem = (itemLocation:IsValid() and C_AuctionHouse.IsSellItemValid(itemLocation, --[[ displayError = ]] false));
-			local itemIsValidItem = itemLocation:IsValid() and C_Item.DoesItemExist(itemLocation);
+			if ( not IsUsingLegacyAuctionClient() ) then
+				local itemLocation = ItemLocation:CreateFromBagAndSlot(self:GetParent():GetID(), self:GetID());
+				local itemIsValidAuctionItem = (itemLocation:IsValid() and C_AuctionHouse.IsSellItemValid(itemLocation, --[[ displayError = ]] false));
+				local itemIsValidItem = itemLocation:IsValid() and C_Item.DoesItemExist(itemLocation);
 
-			-- Don't send invalid items to auction house unless it's on the listing page (it will show an error for this case).
-			local shouldAuctionReceiveEvent = AuctionHouseFrame and AuctionHouseFrame:IsShown() and (AuctionHouseFrame:IsListingAuctions() or itemIsValidAuctionItem);
-			if shouldAuctionReceiveEvent then
-				AuctionHouseFrame:SetPostItem(itemLocation);
-				return;
+				-- Don't send invalid items to auction house unless it's on the listing page (it will show an error for this case).
+				local shouldAuctionReceiveEvent = AuctionHouseFrame and AuctionHouseFrame:IsShown() and (AuctionHouseFrame:IsListingAuctions() or itemIsValidAuctionItem);
+				if shouldAuctionReceiveEvent then
+					AuctionHouseFrame:SetPostItem(itemLocation);
+					return;
+				end
 			end
 		end
 		C_Container.UseContainerItem(self:GetParent():GetID(), self:GetID(), nil, nil, BankFrame:IsShown() and (BankFrame.selectedTab == 2));
