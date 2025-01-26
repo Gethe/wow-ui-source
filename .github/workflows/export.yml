@@ -7,62 +7,65 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write
+
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Remove old files
-      run: |
-        shopt -s extglob
-        rm -r !(*.git*|*.sublime-*|*.md)
+      - name: Set up cache
+        uses: actions/cache@v3
+        with:
+          path: cache
+          key: cache
+          restore-keys: cache
 
-    - name: Install Packages
-      run: sudo apt-get update && sudo apt-get install libcurl4-openssl-dev
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 9.0.x
 
-    - name: Install Lua
-      uses: leafo/gh-actions-lua@v10.0.0
-      with:
-        luaVersion: "5.1"
+      - name: Checkout TACTSharp
+        uses: actions/checkout@v4
+        with:
+          repository: Marlamin/TACTSharp
+          path: TACTSharp
+          ref: 7d5f014fde0c2af048f3ee4c98dc7c991cd34fe2
 
-    - name: Install Luarocks
-      uses: leafo/gh-actions-luarocks@v4
-      with:
-        luarocksVersion: "3.11.0"
+      - name: Build TACTTool
+        run: dotnet build --configuration Release --output TACTTool TACTSharp/TACTTool/TACTTool.csproj
+        working-directory: ${{ github.action_path }}
+        shell: pwsh
+        env:
+          DOTNET_NOLOGO: 1
+          DOTNET_CLI_TELEMETRY_OPTOUT: 1
+          DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
 
-    - name: Install lua-zlib
-      run: luarocks install lua-zlib
+      - name: Add TACTTool to PATH
+        run: Add-Content $env:GITHUB_PATH (Join-Path (Get-Location) TACTTool)
+        working-directory: ${{ github.action_path }}
+        shell: pwsh
 
-    - name: Install luacurl
-      run: luarocks install luacurl CURL_INCDIR=/usr/include/$(gcc -dumpmachine)
+      - name: Clean existing source files
+        run: Remove-Item -Force -Recurse ./Interface
+        shell: pwsh
 
-    - name: Install LuaFileSystem
-      run: luarocks install LuaFileSystem
+      - name: Export source files
+        uses: Meorawr/wow-ui-source-exporter@main
+        with:
+          product: wowxptr
 
-    - name: Install md5
-      run: luarocks install md5
+      - id: version
+        name: Get build version
+        run: Add-Content $env:GITHUB_OUTPUT "version=$(Get-Content ./version.txt)"
+        shell: pwsh
 
-    - name: Checkout InterfaceExport
-      uses: actions/checkout@v3
-      with:
-        repository: Gethe/InterfaceExport
-        path: InterfaceExport
-
-    - name: Run Export
-      env:
-        LUA_PATH: "./InterfaceExport/libs/?.lua;./InterfaceExport/libs/?/init.lua"
-      run: |
-        lua InterfaceExport/export.lua retail ptr2 code
-
-    - name: Get build version
-      id: version
-      uses: andstor/file-reader-action@v1
-      with:
-        path: "version.txt"
-
-    - name: Add & Commit
-      uses: EndBug/add-and-commit@latest
-      with:
-        message: ${{ steps.version.outputs.contents }}
-        default_author: github_actions
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Commit files
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_author: github-actions <41898282+github-actions[bot]@users.noreply.github.com>
+          commit_message: ${{ steps.version.outputs.version }}
+          file_pattern: ./Interface/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
