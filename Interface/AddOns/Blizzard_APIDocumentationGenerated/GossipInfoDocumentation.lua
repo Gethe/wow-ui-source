@@ -67,6 +67,7 @@ local GossipInfo =
 		{
 			Name = "GetFriendshipReputation",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

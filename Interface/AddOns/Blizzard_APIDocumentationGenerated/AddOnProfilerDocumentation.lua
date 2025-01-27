@@ -19,6 +19,7 @@ local AddOnProfiler =
 		{
 			Name = "CheckForPerformanceMessage",
 			Type = "Function",
+			MayReturnNothing = true,
 			Documentation = { "Optimized check for determining if AddOns are severely impacting UI performance." },
 
 			Returns =

@@ -1450,7 +1450,7 @@
 						<Layers>
 							<Layer level="BACKGROUND">
 								<Texture name="$parentBG" file="Interface\EncounterJournal\UI-EJ-LOREBG-Default" parentKey="loreBG">
-									<Size x="390" y="336"/>
+									<Size x="390" y="330"/>
 									<Anchors>
 										<Anchor point="TOP" x="3" y="-9"/>
 									</Anchors>
@@ -1585,7 +1585,7 @@
 								</HighlightTexture>
 							</Button>
 							<Frame parentKey="LoreScrollingFont" inherits="ScrollingFontTemplate" frameStrata="HIGH">
-								<Size x="315" y="100"/>
+								<Size x="315" y="95"/>
 								<Anchors>
 									<Anchor point="BOTTOMLEFT" x="35" y="5"/>
 								</Anchors>

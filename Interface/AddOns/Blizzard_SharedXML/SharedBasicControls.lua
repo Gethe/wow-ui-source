@@ -240,7 +240,7 @@ function ScriptErrorsFrameMixin:OnError(msg, warnType, keepHidden)
 
 	-- process any exception after displaying, this ensures frame text is updated
 	if (ProcessExceptionClient) then
-		ProcessExceptionClient(EXCEPTION_FORMAT:format(msg or "", locals or ""));
+		ProcessExceptionClient(EXCEPTION_FORMAT:format(msg or "", locals or ""), msg);
 	end
 end
 

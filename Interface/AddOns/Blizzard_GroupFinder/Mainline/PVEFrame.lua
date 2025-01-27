@@ -558,7 +558,7 @@ function PlunderstormQueueTutorialMixin:UpdateTutorialState()
 		PLUNDERSTORM_QUEUE_FROM_MAINLINE_TUTORIAL_STATE = PlunderstormTutorialStates.NoneAcknowledged;
 
 		self:SetParent(LFDMicroButton);
-		self:SetPoint("CENTER", LFDMicroButton, "TOPRIGHT", -6, -4);
+		self:SetPoint("CENTER", LFDMicroButton, "TOP", 0, -5);
 	end
 
 	self:Show();

@@ -96,6 +96,7 @@ local SimpleEditBoxAPI =
 		{
 			Name = "GetDisplayText",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -244,6 +245,7 @@ local SimpleEditBoxAPI =
 		{
 			Name = "GetNumLetters",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

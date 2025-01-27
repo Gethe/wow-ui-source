@@ -144,6 +144,16 @@ function EventSchedulerAnimationManager:GetEventFrame(scrollBox, eventKey)
 	return frame;
 end
 
+function EventSchedulerAnimationManager:GetNumExpiredAnims()
+	local count = 0;
+	for i, anim in ipairs(self.anims) do
+		if anim.animType == AnimType.Expired and anim.animState ~= AnimState.Finished then
+			count = count + 1;
+		end
+	end
+	return count;
+end
+
 EventSchedulerMixin = { };
 
 function EventSchedulerMixin:OnLoad()
@@ -628,6 +638,8 @@ end
 function EventSchedulerScheduledEntryMixin:PlayStartedAnim(elapsedTime)
 	local reverse = false;
 	self.StartedAnim:Play(reverse, elapsedTime);
+	local forceNoDuplicates = true;
+	PlaySound(SOUNDKIT.UI_EVENT_SCHEDULER_EVENT_ACTIVE, nil, forceNoDuplicates);
 end
 
 function EventSchedulerScheduledEntryMixin:OnStartedAnimFinished()
@@ -660,10 +672,11 @@ function EventSchedulerBaseLabelMixin:Init(data)
 				SCHEDULED_ENTRY_HEIGHT = templateInfo.height;
 			end
 			local height;
-			if data.entryCount <= 1 then
+			local count = EventSchedulerAnimationManager:GetNumExpiredAnims();
+			if count <= 1 then
 				height = SCHEDULED_ENTRY_HEIGHT;
 			else
-				height = data.entryCount * SCHEDULED_ENTRY_HEIGHT + (data.entryCount - 1) * ELEMENT_SPACING;				
+				height = count * SCHEDULED_ENTRY_HEIGHT + (count - 1) * ELEMENT_SPACING;				
 			end
 			self.Timeline:SetHeight(height + SCHEDULED_HEADER_SPACING);
 		end
@@ -799,6 +812,8 @@ function EventSchedulerReminderManager:AnnounceEvent(eventInfo, time)
 			local timeText = eventSecondsFormatter:Format(time);
 			Chat_AddSystemMessage(EVENT_SCHEDULER_CHAT_REMINDER_SOON:format(nameLink, timeText));
 		end
+		local forceNoDuplicates = true;
+		PlaySound(SOUNDKIT.UI_EVENT_SCHEDULER_CHIME, nil, forceNoDuplicates);
 	end
 end
 

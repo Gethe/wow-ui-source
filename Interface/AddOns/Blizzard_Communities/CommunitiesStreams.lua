@@ -62,7 +62,6 @@ function CommunitiesStreamDropdownMixin:SetupMenu()
 			local text = GetStreamName(clubId, stream);
 			stream.dropdownText = text;
 			
-			-- TODO:: Support mention-based notifications once we have support for mentions.
 			local notifyAll = streamToNotificationSetting[streamId] == Enum.ClubStreamNotificationFilter.All;
 			if notifyAll and CommunitiesUtil.DoesCommunityStreamHaveUnreadMessages(clubId, streamId) then
 				text = CreateCommunitiesIconNotificationMarkup(text);

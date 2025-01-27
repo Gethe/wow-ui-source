@@ -9,6 +9,7 @@ local PlayerChoice =
 		{
 			Name = "GetCurrentPlayerChoiceInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{

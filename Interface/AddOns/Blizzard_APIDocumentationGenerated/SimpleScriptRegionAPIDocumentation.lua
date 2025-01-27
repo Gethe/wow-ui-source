@@ -61,6 +61,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "GetBottom",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -74,6 +75,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "GetCenter",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -102,6 +104,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "GetLeft",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -115,6 +118,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "GetRect",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -131,6 +135,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "GetRight",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -144,6 +149,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "GetScaledRect",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -203,6 +209,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "GetTop",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

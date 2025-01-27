@@ -31,6 +31,7 @@ local Unit =
 		{
 			Name = "ClosestGameObjectPosition",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -47,6 +48,7 @@ local Unit =
 		{
 			Name = "ClosestUnitPosition",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -96,6 +98,7 @@ local Unit =
 		{
 			Name = "GetUnitChargedPowerPoints",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -181,6 +184,7 @@ local Unit =
 		{
 			Name = "GetUnitPowerBarInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -195,6 +199,7 @@ local Unit =
 		{
 			Name = "GetUnitPowerBarInfoByID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -325,6 +330,7 @@ local Unit =
 		{
 			Name = "GetVehicleUIIndicator",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -340,6 +346,7 @@ local Unit =
 		{
 			Name = "GetVehicleUIIndicatorSeat",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -778,6 +785,7 @@ local Unit =
 		{
 			Name = "UnitClass",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -794,6 +802,7 @@ local Unit =
 		{
 			Name = "UnitClassBase",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -885,6 +894,7 @@ local Unit =
 		{
 			Name = "UnitDetailedThreatSituation",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -2094,6 +2104,7 @@ local Unit =
 		{
 			Name = "UnitPowerBarTimerInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -2142,6 +2153,7 @@ local Unit =
 		{
 			Name = "UnitPowerType",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -2203,6 +2215,7 @@ local Unit =
 		{
 			Name = "UnitRace",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -2530,6 +2543,7 @@ local Unit =
 		{
 			Name = "UnitVehicleSeatInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -2579,6 +2593,7 @@ local Unit =
 		{
 			Name = "UnitWidgetSet",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

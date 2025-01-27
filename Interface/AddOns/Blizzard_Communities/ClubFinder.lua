@@ -546,11 +546,11 @@ function ClubLookingForDropdownMixin:SetupMenu(checkedList)
 				return MenuResponse.Refresh;
 			end);
 
-			for classID = 1, GetNumClasses() do
-				local classInfo = C_CreatureInfo.GetClassInfo(classID);
-				if classInfo then
-					local classColor = GetClassColorObj(classInfo.classFile);
-					local className = classInfo.className;
+			for classIndex = 1, GetNumClasses() do
+				local className, classFile, classID = GetClassInfo(classIndex);
+
+				if className and classFile and classID then
+					local classColor = GetClassColorObj(classFile);
 
 					for specIndex = 1, C_SpecializationInfo.GetNumSpecializationsForClassID(classID) do
 						local specID, specName, _, _, role = GetSpecializationInfoForClassID(classID, specIndex, sex);

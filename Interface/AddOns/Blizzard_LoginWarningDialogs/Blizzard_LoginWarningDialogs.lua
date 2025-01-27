@@ -53,7 +53,7 @@ function KoreanRatingsMixin:ScreenDisplayed()
 end
 
 function KoreanRatingsMixin:ShouldShow()
-	return self.localeMatches and not self.wasShown;
+	return self.localeMatches and (not self.wasShown or self.closeTimer);
 end
 
 function KoreanRatingsMixin:OnShow()

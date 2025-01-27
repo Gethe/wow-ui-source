@@ -31,6 +31,7 @@ local BarberShop =
 		{
 			Name = "GetAvailableCustomizations",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -49,6 +50,7 @@ local BarberShop =
 		{
 			Name = "GetCurrentCharacterData",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{

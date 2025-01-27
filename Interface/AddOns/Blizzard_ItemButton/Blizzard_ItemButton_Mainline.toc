@@ -4,4 +4,6 @@
 ## Dependencies: Blizzard_FontStyles_Frame, Blizzard_SharedXML
 ## AllowLoad: Game
 ## AllowLoadGameType: mainline
+Shared\ItemButtonTemplate.lua
+Shared\ItemButtonTemplate.xml
 Mainline\ItemButtonTemplate.xml

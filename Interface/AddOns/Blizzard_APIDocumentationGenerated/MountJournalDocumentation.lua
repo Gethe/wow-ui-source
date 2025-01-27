@@ -95,6 +95,7 @@ local MountJournal =
 		{
 			Name = "GetDisplayedMountAllCreatureDisplayInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -123,6 +124,7 @@ local MountJournal =
 		{
 			Name = "GetDisplayedMountInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -149,6 +151,7 @@ local MountJournal =
 		{
 			Name = "GetDisplayedMountInfoExtra",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -195,6 +198,7 @@ local MountJournal =
 		{
 			Name = "GetMountAllCreatureDisplayInfoByID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -255,6 +259,7 @@ local MountJournal =
 		{
 			Name = "GetMountInfoByID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -281,6 +286,7 @@ local MountJournal =
 		{
 			Name = "GetMountInfoExtraByID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -317,6 +323,7 @@ local MountJournal =
 		{
 			Name = "GetMountUsabilityByID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

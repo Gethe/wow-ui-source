@@ -326,6 +326,7 @@ UIModifiedInstanceDocumentation.lua
 WarCampaignDocumentation.lua
 WarbandSceneInfoDocumentation.lua
 WeeklyRewardsDocumentation.lua
+WorldSafeLocsUIInternalDocumentation.lua
 ZoneAbilityDocumentation.lua
 PerksProgramDocumentation.lua
 AccountConstantsDocumentation.lua

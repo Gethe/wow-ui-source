@@ -150,6 +150,7 @@ local PvpInfo =
 		{
 			Name = "GetArenaCrowdControlInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -166,6 +167,7 @@ local PvpInfo =
 		{
 			Name = "GetArenaRewards",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -238,6 +240,7 @@ local PvpInfo =
 		{
 			Name = "GetBattlefieldVehicleInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -253,6 +256,7 @@ local PvpInfo =
 		{
 			Name = "GetBattlefieldVehicles",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -267,6 +271,7 @@ local PvpInfo =
 		{
 			Name = "GetBrawlRewards",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -304,6 +309,7 @@ local PvpInfo =
 		{
 			Name = "GetGlobalPvpScalingInfoForSpecID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -415,6 +421,7 @@ local PvpInfo =
 		{
 			Name = "GetPVPSeasonRewardAchievementID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -652,6 +659,7 @@ local PvpInfo =
 		{
 			Name = "GetSkirmishInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -728,6 +736,7 @@ local PvpInfo =
 		{
 			Name = "GetZonePVPInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{

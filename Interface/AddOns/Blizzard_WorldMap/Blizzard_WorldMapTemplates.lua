@@ -288,7 +288,6 @@ function WorldMapTrackingOptionsButtonMixin:SetupMenu()
 
 			submenu:CreateTitle(WORLD_QUEST_REWARD_FILTERS_TITLE);
 
-			-- TODO:: Further adjustments to more cleanly determine filters per map and make this future-proof.
 			if MapUtil.IsShadowlandsZoneMap(mapID) then
 				AddFilter(submenu, "worldQuestFilterAnima");
 			else

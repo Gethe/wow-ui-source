@@ -31,6 +31,7 @@ local Totem =
 		{
 			Name = "GetTotemInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

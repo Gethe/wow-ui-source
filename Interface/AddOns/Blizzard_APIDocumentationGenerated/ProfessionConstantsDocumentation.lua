@@ -18,12 +18,11 @@ local ProfessionConstants =
 		{
 			Name = "CraftingOrderFlags",
 			Type = "Enumeration",
-			NumValues = 6,
-			MinValue = 0,
+			NumValues = 5,
+			MinValue = 1,
 			MaxValue = 16,
 			Fields =
 			{
-				{ Name = "None", Type = "CraftingOrderFlags", EnumValue = 0 },
 				{ Name = "IsRecraft", Type = "CraftingOrderFlags", EnumValue = 1 },
 				{ Name = "HasNoneReagents", Type = "CraftingOrderFlags", EnumValue = 2 },
 				{ Name = "HasSomeReagents", Type = "CraftingOrderFlags", EnumValue = 4 },

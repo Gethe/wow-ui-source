@@ -465,6 +465,7 @@ local UIWidgetManager =
 		{
 			Name = "GetWidgetSetInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

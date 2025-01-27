@@ -87,7 +87,7 @@
 			</OnClick>
 		</Scripts>
 	</Button>
-	<Frame name="PartyPoseFrameTemplate" enableMouse="true" frameStrata="FULLSCREEN" hidden="true" virtual="true">
+	<Frame name="PartyPoseFrameTemplate" enableMouse="true" enableKeyboard="true" frameStrata="FULLSCREEN" hidden="true" virtual="true">
 		<Size x="760" y="549"/>
 		<Frames>
 			<Frame parentKey="Border" inherits="NineSlicePanelTemplate">
@@ -126,6 +126,7 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
+			<OnKeyDown method="OnKeyDown"/>
 		</Scripts>
 		<Frames>
 			<Frame parentKey="RewardAnimations">

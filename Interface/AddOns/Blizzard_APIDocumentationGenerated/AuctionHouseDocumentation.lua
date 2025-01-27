@@ -251,6 +251,7 @@ local AuctionHouse =
 		{
 			Name = "GetExtraBrowseInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -317,6 +318,7 @@ local AuctionHouse =
 		{
 			Name = "GetItemKeyRequiredLevel",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -557,6 +559,7 @@ local AuctionHouse =
 		{
 			Name = "GetReplicateItemBattlePetInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

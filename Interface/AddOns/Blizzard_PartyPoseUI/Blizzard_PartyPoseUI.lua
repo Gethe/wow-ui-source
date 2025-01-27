@@ -422,6 +422,30 @@ function PartyPoseMixin:OnEvent(event, ...)
 	if (event == "UI_MODEL_SCENE_INFO_UPDATED") then
 		self:ReloadPartyPose();
 	elseif ( event == "PLAYER_LEAVING_WORLD" ) then
-		HideUIPanel(self);
+		self:Dismiss();
 	end
+end
+
+function PartyPoseMixin:OnKeyDown(key)
+	if key == "ESCAPE" then
+		self:Dismiss();
+	end
+end
+
+function PartyPoseMixin:Dismiss()
+	-- Implement in your derived mixin for any logic to be performed when the
+	-- panel should be hidden by user interaction such as an 'ESC' keypress
+	-- or clicking a Leave button.
+
+	HideUIPanel(self);
+end
+
+PartyPoseUtil = {};
+
+function PartyPoseUtil.AddDismissClickHandler(button, panelFrame)
+	local function OnClick()
+		panelFrame:Dismiss();
+	end
+
+	button:SetScript("OnClick", OnClick);
 end

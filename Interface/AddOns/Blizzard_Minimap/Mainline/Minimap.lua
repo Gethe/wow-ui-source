@@ -14,8 +14,6 @@ GARRISON_ALERT_CONTEXT_MISSION = {
 	[Enum.GarrisonFollowerType.FollowerType_6_0_Boat] = 4,
 	[Enum.GarrisonFollowerType.FollowerType_7_0_GarrisonFollower] = 5,
 	[Enum.GarrisonFollowerType.FollowerType_8_0_GarrisonFollower] = 6,
-
-	-- TODO:: Replace with the correct flash.
 	[Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower] = 6,
 };
 GARRISON_ALERT_CONTEXT_INVASION = 3;

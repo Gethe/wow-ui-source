@@ -54,6 +54,7 @@ local WeeklyRewards =
 		{
 			Name = "GetActivityEncounterInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -78,6 +79,7 @@ local WeeklyRewards =
 		{
 			Name = "GetDifficultyIDForActivityTier",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -92,6 +94,7 @@ local WeeklyRewards =
 		{
 			Name = "GetExampleRewardItemHyperlinks",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -107,6 +110,7 @@ local WeeklyRewards =
 		{
 			Name = "GetItemHyperlink",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

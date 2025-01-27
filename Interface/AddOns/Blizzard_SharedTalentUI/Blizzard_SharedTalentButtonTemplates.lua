@@ -1542,7 +1542,6 @@ function TalentButtonSelectMixin:UpdateIconTexture()
 	if self:HasSelectedEntryID() then
 		TalentDisplayMixin.UpdateIconTexture(self);
 	else
-		-- TODO:: Better empty state.
 		self.Icon:SetTexture([[Interface\Icons\INV_Misc_QuestionMark]]);
 	end
 end

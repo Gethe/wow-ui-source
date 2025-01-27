@@ -75,6 +75,7 @@ local FriendList =
 		{
 			Name = "GetFriendInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -89,6 +90,7 @@ local FriendList =
 		{
 			Name = "GetFriendInfoByIndex",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -172,6 +174,7 @@ local FriendList =
 		{
 			Name = "GetWhoInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

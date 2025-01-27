@@ -192,6 +192,7 @@
 			<Layers>
 				<Layer level="ARTWORK">
 					<FontString parentKey="Description" inherits="GameFontNormalMed1" justifyH="LEFT" justifyV="TOP">
+						<Size y="80"/>
 						<Color r="1" g="0.84" b="0.55" />
 					</FontString>
 				</Layer>

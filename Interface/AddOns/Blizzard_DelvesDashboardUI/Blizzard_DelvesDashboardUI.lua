@@ -235,9 +235,13 @@ function CompanionConfigButtonPanelMixin:OnShow()
 	local companionFactionID = C_DelvesUI.GetFactionForCompanion();
 
     local companionFactionInfo = C_Reputation.GetFactionDataByID(companionFactionID);
-
-    self.PanelTitle:SetText(companionFactionInfo.name);
-    self.PanelDescription:SetText(DELVES_COMPANION_LABEL);
+	if companionFactionInfo then
+		self.PanelTitle:SetText(companionFactionInfo.name);
+		self.PanelDescription:SetText(DELVES_COMPANION_LABEL);
+	else
+		self.PanelTitle:SetText(DELVES_COMPANION_LABEL);
+		self.PanelDescription:SetText("");
+	end
 
 	if not C_Traits.GetConfigIDByTreeID(traitTreeID) then
 		self.CompanionConfigButton.disabled = true;

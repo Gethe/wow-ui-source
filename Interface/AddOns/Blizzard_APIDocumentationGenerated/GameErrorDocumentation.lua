@@ -8,6 +8,7 @@ local GameError =
 		{
 			Name = "GetGameMessageInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

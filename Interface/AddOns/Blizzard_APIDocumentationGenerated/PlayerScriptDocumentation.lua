@@ -66,6 +66,7 @@ local PlayerScript =
 		{
 			Name = "CanLootUnit",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -613,6 +614,7 @@ local PlayerScript =
 		{
 			Name = "GetPlayerInfoByGUID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -712,6 +714,7 @@ local PlayerScript =
 		{
 			Name = "GetRestState",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -734,6 +737,7 @@ local PlayerScript =
 		{
 			Name = "GetRuneCooldown",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -750,6 +754,7 @@ local PlayerScript =
 		{
 			Name = "GetRuneCount",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -1245,6 +1250,7 @@ local PlayerScript =
 		{
 			Name = "PlayerEffectiveAttackPower",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{

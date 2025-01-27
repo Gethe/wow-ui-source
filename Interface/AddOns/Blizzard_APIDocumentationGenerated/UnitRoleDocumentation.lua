@@ -36,6 +36,7 @@ local UnitRole =
 		{
 			Name = "UnitGetAvailableRoles",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

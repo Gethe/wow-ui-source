@@ -51,6 +51,7 @@ local DeathInfo =
 		{
 			Name = "GetSelfResurrectOptions",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{

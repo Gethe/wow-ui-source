@@ -67,6 +67,7 @@ local PerksProgram =
 		{
 			Name = "GetFrozenPerksVendorItemInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{

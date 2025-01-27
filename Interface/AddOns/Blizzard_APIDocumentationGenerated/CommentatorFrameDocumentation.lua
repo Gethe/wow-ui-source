@@ -110,6 +110,7 @@ local CommentatorFrame =
 		{
 			Name = "FindSpectatedUnit",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -192,6 +193,7 @@ local CommentatorFrame =
 		{
 			Name = "GetAdditionalCameraWeightByToken",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -215,6 +217,7 @@ local CommentatorFrame =
 		{
 			Name = "GetCamera",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -239,6 +242,7 @@ local CommentatorFrame =
 		{
 			Name = "GetCameraPosition",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -336,6 +340,7 @@ local CommentatorFrame =
 		{
 			Name = "GetInstanceInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -364,6 +369,7 @@ local CommentatorFrame =
 		{
 			Name = "GetMapInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -462,6 +468,7 @@ local CommentatorFrame =
 		{
 			Name = "GetNumPlayers",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -491,6 +498,7 @@ local CommentatorFrame =
 		{
 			Name = "GetPlayerAuraInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -509,6 +517,7 @@ local CommentatorFrame =
 		{
 			Name = "GetPlayerAuraInfoByUnit",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -526,6 +535,7 @@ local CommentatorFrame =
 		{
 			Name = "GetPlayerCooldownInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -544,6 +554,7 @@ local CommentatorFrame =
 		{
 			Name = "GetPlayerCooldownInfoByUnit",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -561,6 +572,7 @@ local CommentatorFrame =
 		{
 			Name = "GetPlayerCrowdControlInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -578,6 +590,7 @@ local CommentatorFrame =
 		{
 			Name = "GetPlayerCrowdControlInfoByUnit",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -638,6 +651,7 @@ local CommentatorFrame =
 		{
 			Name = "GetPlayerItemCooldownInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -656,6 +670,7 @@ local CommentatorFrame =
 		{
 			Name = "GetPlayerItemCooldownInfoByUnit",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -673,6 +688,7 @@ local CommentatorFrame =
 		{
 			Name = "GetPlayerOverrideName",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -687,6 +703,7 @@ local CommentatorFrame =
 		{
 			Name = "GetPlayerSpellCharges",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -706,6 +723,7 @@ local CommentatorFrame =
 		{
 			Name = "GetPlayerSpellChargesByUnit",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -760,6 +778,7 @@ local CommentatorFrame =
 		{
 			Name = "GetStartLocation",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -870,6 +889,7 @@ local CommentatorFrame =
 		{
 			Name = "GetWargameInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

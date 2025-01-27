@@ -23,6 +23,7 @@ local ChatInfo =
 		{
 			Name = "GetChannelInfoFromIdentifier",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -37,6 +38,7 @@ local ChatInfo =
 		{
 			Name = "GetChannelRosterInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

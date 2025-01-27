@@ -129,6 +129,7 @@ local LFGInfo =
 		{
 			Name = "GetDungeonInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

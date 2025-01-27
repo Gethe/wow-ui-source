@@ -436,11 +436,14 @@ function AddonList_Update()
 
 	local addonCategoryToTreeNode = {};
 	local addonGroupToTreeNode = {};
+	local addonGroupPendingChildren = {};
 
 	local filterText = AddonList.SearchBox:GetText():lower();
 
 	for i = 1, C_AddOns.GetNumAddOns() do
 		-- Group is automatically set by C++ for addons with similar names and dependencies, but addons can override for any unusual cases.
+		-- Every addon gets a group set, if there are no similar addons detected the group is simply the name of the addon.
+		-- If this value is overriden, the value must EXACTLY match the name of the parent addon that this child addon will be grouped under.
 		local group = C_AddOns.GetAddOnMetadata(i, "Group");
 
 		-- Category is an addon defined field that allows for tree view organization of similar addons.
@@ -455,9 +458,13 @@ function AddonList_Update()
 		local match = #filterText == 0 or titleL:find(filterText) or groupL:find(filterText) or (categoryL and categoryL:find(filterText));
 		if match then
 			local groupNode = addonGroupToTreeNode[group];
+
+			-- If the group was already created, add as a child
 			if groupNode then
 				groupNode:Insert({ addonIndex = i });
-			else
+
+			-- If this addon is the parent of a group, create the group node
+			elseif name == group then
 				if not category then
 					-- Default secure addons to an Uncategorized category to separate them from user addons
 					if security == "SECURE" then
@@ -478,7 +485,28 @@ function AddonList_Update()
 				end
 
 				addonGroupToTreeNode[group] = groupNode;
+
+				local pending = addonGroupPendingChildren[group];
+				if pending then
+					for _, child in ipairs(pending) do
+						groupNode:Insert(child);
+					end
+
+					addonGroupPendingChildren[group] = nil;
+				end
+
+			-- If children are sorted before the parent in a group, store the children temporarily until the parent is reached
+			else
+				table.insert(GetOrCreateTableEntry(addonGroupPendingChildren, group), { addonIndex = i });
+
 			end
+		end
+	end
+
+	-- Fallback to add any addons with invalid groups to the list so they don't disappear entirely
+	for group, children in pairs(addonGroupPendingChildren) do
+		for _, child in ipairs(children) do
+			dataProvider:Insert(child);
 		end
 	end
 
@@ -801,11 +829,9 @@ function AddonTooltip_Update(owner)
 	if ( security == "BANNED" ) then
 		AddonTooltip:SetText(ADDON_BANNED_TOOLTIP);
 	else
-		if ( title ) then
-			AddonTooltip:AddLine(title);
-		else
-			AddonTooltip:AddLine(name);
-		end
+		local tooltipTitle = title or name;
+		local version = C_AddOns.GetAddOnMetadata(owner:GetID(), "Version");
+		AddonTooltip:AddDoubleLine(tooltipTitle, version);
 		AddonTooltip:AddLine(notes, 1.0, 1.0, 1.0, true);
 		AddonTooltip:AddLine(AddonTooltip_BuildDeps(C_AddOns.GetAddOnDependencies(owner:GetID())));
 	end
@@ -946,10 +972,15 @@ function AddonListEntryMixin:OnLoad()
 	self:SetScript("OnEnter", function()
 		AddonTooltip:SetOwner(self, "ANCHOR_RIGHT", -270, 0);
 
-		-- Expensive call - update once when shown, not in OnUpdate
+		-- Expensive call - update once when shown, not in OnUpdate, only once per 15 sec
 		-- For addon performance display, which is not shown in glues
 		if not InGlue() then
-			UpdateAddOnMemoryUsage();
+			local now = GetTime();
+			local SECONDS_BETWEEN_MEMORY_UPDATE = 15;
+			if not self.lastMemoryUpdate or now > self.lastMemoryUpdate + SECONDS_BETWEEN_MEMORY_UPDATE then
+				self.lastMemoryUpdate = now;
+				UpdateAddOnMemoryUsage();
+			end
 		end
 
 		AddonTooltip_Update(self);

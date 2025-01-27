@@ -51,7 +51,7 @@
 		</KeyValues>
 		<Layers>
 			<Layer level="BORDER">
-				<Texture parentKey="Shadow" atlas="UI-HUD-MicroMenu-Portrait-Shadow-2x" useAtlasSize="true">
+				<Texture parentKey="Shadow" atlas="UI-HUD-MicroMenu-Portrait-Shadow" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -76,7 +76,7 @@
 						<MaskedTexture childKey="Portrait"/>
 					</MaskedTextures>
 				</MaskTexture>
-				<Texture parentKey="PushedShadow" atlas="UI-HUD-MicroMenu-Portrait-Down-2x" useAtlasSize="true" hidden="true">
+				<Texture parentKey="PushedShadow" atlas="UI-HUD-MicroMenu-Portrait-Down" useAtlasSize="true" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER" x="1" y="-4"/>
 					</Anchors>
@@ -185,9 +185,9 @@
 				<Layers>
 					<Layer level="OVERLAY">
 						<Texture parentKey="UnreadNotificationIcon" atlas="UI-HUD-MicroMenu-Communities-Icon-Notification">
-							<Size x="15" y="15"/>
+							<Size x="21" y="21"/>
 							<Anchors>
-								<Anchor point="TOP" relativeKey="$parent" relativePoint="TOP" y="3"/>
+								<Anchor point="TOP" relativeKey="$parent" relativePoint="TOP" y="6"/>
 							</Anchors>
 						</Texture>
 					</Layer>

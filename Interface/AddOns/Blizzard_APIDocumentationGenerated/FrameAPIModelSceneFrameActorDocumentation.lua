@@ -68,6 +68,7 @@ local FrameAPIModelSceneFrameActor =
 		{
 			Name = "GetItemTransmogInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

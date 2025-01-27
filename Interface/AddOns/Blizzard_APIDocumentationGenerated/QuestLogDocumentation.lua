@@ -80,6 +80,7 @@ local QuestLog =
 		{
 			Name = "GetAbandonQuestItems",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -89,6 +90,7 @@ local QuestLog =
 		{
 			Name = "GetActiveThreatMaps",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -121,6 +123,7 @@ local QuestLog =
 		{
 			Name = "GetBountySetInfoForMapID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -138,6 +141,7 @@ local QuestLog =
 		{
 			Name = "GetDistanceSqToQuest",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -225,6 +229,7 @@ local QuestLog =
 		{
 			Name = "GetNextWaypoint",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -241,6 +246,7 @@ local QuestLog =
 		{
 			Name = "GetNextWaypointForMap",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -257,6 +263,7 @@ local QuestLog =
 		{
 			Name = "GetNextWaypointText",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -402,6 +409,7 @@ local QuestLog =
 		{
 			Name = "GetQuestLogMajorFactionReputationRewards",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -416,6 +424,7 @@ local QuestLog =
 		{
 			Name = "GetQuestLogPortraitGiver",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -434,6 +443,7 @@ local QuestLog =
 		{
 			Name = "GetQuestObjectives",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -520,6 +530,7 @@ local QuestLog =
 		{
 			Name = "GetQuestsOnMap",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -572,6 +583,7 @@ local QuestLog =
 		{
 			Name = "GetTimeAllowed",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -617,6 +629,7 @@ local QuestLog =
 		{
 			Name = "GetZoneStoryInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

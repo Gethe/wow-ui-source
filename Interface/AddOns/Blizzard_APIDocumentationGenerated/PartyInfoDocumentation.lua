@@ -116,6 +116,7 @@ local PartyInfo =
 		{
 			Name = "GetActiveCategories",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -125,6 +126,7 @@ local PartyInfo =
 		{
 			Name = "GetInviteConfirmationInvalidQueues",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -139,6 +141,7 @@ local PartyInfo =
 		{
 			Name = "GetInviteReferralInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

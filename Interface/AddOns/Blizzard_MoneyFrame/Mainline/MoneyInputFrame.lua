@@ -26,11 +26,6 @@ function MoneyInputFrame_SetGoldOnly(moneyFrame, set)
 	end
 end
 
-function MoneyInputFrame_SetCopperShown(moneyFrame, shown)
-	moneyFrame.copper:SetShown(shown);
-	moneyFrame:SetWidth(shown and 176 or 126);
-end
-
 function MoneyInputFrame_GetCopper(moneyFrame)
 	local totalCopper = 0;
 	local copper = moneyFrame.copper:GetText();
@@ -271,72 +266,4 @@ end
 
 function LargeMoneyInputBoxMixin:OnTextChanged()
 	self:GetParent():OnAmountChanged();
-end
-
-LargeMoneyInputFrameMixin = {};
-
-function LargeMoneyInputFrameMixin:OnLoad()
-	if self.hideCopper then
-		self.CopperBox:Hide();
-		self.SilverBox:ClearAllPoints();
-		self.SilverBox:SetPoint("RIGHT", self.CopperBox, "RIGHT");
-
-		self.GoldBox.nextEditBox = self.SilverBox;
-		self.SilverBox.previousEditBox = self.GoldBox;
-		self.SilverBox.nextEditBox = self.nextEditBox;
-	else
-		self.GoldBox.nextEditBox = self.SilverBox;
-		self.SilverBox.previousEditBox = self.GoldBox;
-		self.SilverBox.nextEditBox = self.CopperBox;
-		self.CopperBox.previousEditBox = self.GoldBox;
-		self.CopperBox.nextEditBox = self.nextEditBox;
-	end
-end
-
-function LargeMoneyInputFrameMixin:SetNextEditBox(nextEditBox)
-	if self.hideCopper then
-		self.SilverBox.nextEditBox = nextEditBox or self.GoldBox;
-
-		if nextEditBox then
-			nextEditBox.previousEditBox = self.SilverBox;
-		end
-	else
-		self.CopperBox.nextEditBox = nextEditBox or self.GoldBox;
-
-		if nextEditBox then
-			nextEditBox.previousEditBox = self.CopperBox;
-		end
-	end
-end
-
-function LargeMoneyInputFrameMixin:Clear()
-	self.CopperBox:Clear();
-	self.SilverBox:Clear();
-	self.GoldBox:Clear();
-end
-
-function LargeMoneyInputFrameMixin:SetEnabled(enabled)
-	self.CopperBox:SetEnabled(enabled);
-	self.SilverBox:SetEnabled(enabled);
-	self.GoldBox:SetEnabled(enabled);
-end
-
-function LargeMoneyInputFrameMixin:SetAmount(amount)
-	self.CopperBox:SetAmount(amount % COPPER_PER_SILVER);
-	self.SilverBox:SetAmount(math.floor((amount % COPPER_PER_GOLD) / COPPER_PER_SILVER));
-	self.GoldBox:SetAmount(math.floor(amount / COPPER_PER_GOLD));
-end
-
-function LargeMoneyInputFrameMixin:GetAmount()
-	return self.CopperBox:GetAmount() + (self.SilverBox:GetAmount() * COPPER_PER_SILVER) + (self.GoldBox:GetAmount() * COPPER_PER_GOLD);
-end
-
-function LargeMoneyInputFrameMixin:SetOnValueChangedCallback(callback)
-	self.onValueChangedCallback = callback;
-end
-
-function LargeMoneyInputFrameMixin:OnAmountChanged(callback)
-	if self.onValueChangedCallback then
-		self.onValueChangedCallback();
-	end
 end

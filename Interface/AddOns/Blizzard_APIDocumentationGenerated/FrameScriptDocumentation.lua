@@ -50,6 +50,7 @@ local FrameScript =
 		{
 			Name = "GetEventTime",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

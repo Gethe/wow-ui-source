@@ -118,6 +118,7 @@ local PlayerInfo =
 		{
 			Name = "GetInstancesUnlockedAtLevel",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -156,6 +157,7 @@ local PlayerInfo =
 		{
 			Name = "GetPlayerCharacterData",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -165,6 +167,7 @@ local PlayerInfo =
 		{
 			Name = "GetPlayerMythicPlusRatingSummary",
 			Type = "Function",
+			MayReturnNothing = true,
 			Documentation = { "Returns the players mythic+ rating summary which includes the runs they've completed as well as their current season m+ rating" },
 
 			Arguments =

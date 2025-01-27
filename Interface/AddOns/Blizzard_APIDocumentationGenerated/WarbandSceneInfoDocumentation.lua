@@ -18,6 +18,7 @@ local WarbandSceneInfo =
 		{
 			Name = "GetWarbandSceneEntry",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

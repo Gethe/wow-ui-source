@@ -19,6 +19,7 @@ local EventSchedulerUI =
 		{
 			Name = "GetActiveContinentName",
 			Type = "Function",
+			MayReturnNothing = true,
 			Documentation = { "Returns the name of the continent with current events" },
 
 			Returns =
@@ -59,6 +60,7 @@ local EventSchedulerUI =
 		{
 			Name = "GetOngoingEvents",
 			Type = "Function",
+			MayReturnNothing = true,
 			Documentation = { "Will request data from the server on a throttle" },
 
 			Returns =
@@ -69,6 +71,7 @@ local EventSchedulerUI =
 		{
 			Name = "GetScheduledEvents",
 			Type = "Function",
+			MayReturnNothing = true,
 			Documentation = { "Will request data from the server on a throttle" },
 
 			Returns =

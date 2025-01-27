@@ -38,6 +38,15 @@ local GameEnvironmentManager =
 	Events =
 	{
 		{
+			Name = "EventRealmQueuesUpdated",
+			Type = "Event",
+			LiteralName = "EVENT_REALM_QUEUES_UPDATED",
+			Payload =
+			{
+				{ Name = "gameEnvironment", Type = "EventRealmQueues", Nilable = false },
+			},
+		},
+		{
 			Name = "GameEnvironmentSwitched",
 			Type = "Event",
 			LiteralName = "GAME_ENVIRONMENT_SWITCHED",

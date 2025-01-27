@@ -27,7 +27,7 @@
 		<Size x="295" y="25"/>
 	</Frame>
 
-	<Frame name="EventSchedulerScheduledHeaderTemplate" inherits="EventSchedulerHeaderTemplate" frameLevel="100" virtual="true">
+	<Frame name="EventSchedulerScheduledHeaderTemplate" inherits="EventSchedulerHeaderTemplate" virtual="true">
 		<HitRectInsets left="0" right="0" top="3" bottom="3"/>
 		<Size x="295" y="29"/>
 		<Layers>
@@ -37,7 +37,7 @@
 					<Anchors>
 						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="16" y="5"/>
 					</Anchors>
-					<Color r="1" g="0.82335" b="0" a="0.5"/>
+					<Color r="0.588" g="0.482" b="0.051"/>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -102,20 +102,20 @@
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
-					<Color r="1" g="0.82335" b="0" a="0.5"/>
+					<Color r="0.588" g="0.482" b="0.051"/>
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Background" atlas="event-scheduler-event-card-active" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="LEFT"/>
+						<Anchor point="LEFT" x="2"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture parentKey="Background2" atlas="event-scheduler-event-card-active" useAtlasSize="true" alpha="0">
 					<Anchors>
-						<Anchor point="LEFT"/>
+						<Anchor point="LEFT" x="2"/>
 					</Anchors>
 				</Texture>
 			</Layer>

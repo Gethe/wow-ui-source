@@ -58,6 +58,7 @@ local GuildInfo =
 		{
 			Name = "GetGuildNewsInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -206,6 +207,7 @@ local GuildInfo =
 		{
 			Name = "QueryGuildMembersForRecipe",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

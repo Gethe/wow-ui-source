@@ -23,6 +23,7 @@ local AreaPoiInfo =
 		{
 			Name = "GetAreaPOIInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -38,6 +39,7 @@ local AreaPoiInfo =
 		{
 			Name = "GetAreaPOISecondsLeft",
 			Type = "Function",
+			MayReturnNothing = true,
 			Documentation = { "Returns the number of seconds until the POI expires." },
 
 			Arguments =

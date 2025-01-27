@@ -29,6 +29,7 @@ local FrameAPIDressUpModel =
 		{
 			Name = "GetItemTransmogInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
