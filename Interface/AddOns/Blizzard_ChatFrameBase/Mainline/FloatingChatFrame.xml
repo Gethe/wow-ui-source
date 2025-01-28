@@ -308,13 +308,17 @@
 					return;
 				end
 				
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip_SetTitle(GameTooltip, string.format(CHAT_TAB_NAME, tabName));
-				GameTooltip_AddColoredLine(GameTooltip, CHAT_TAB_RIGHT_CLICK, GREEN_FONT_COLOR);
-				GameTooltip:Show();
+				if GameTooltip then
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GameTooltip_SetTitle(GameTooltip, string.format(CHAT_TAB_NAME, tabName));
+					GameTooltip_AddColoredLine(GameTooltip, CHAT_TAB_RIGHT_CLICK, GREEN_FONT_COLOR);
+					GameTooltip:Show();
+				end
 			</OnEnter>
 			<OnLeave>
-				GameTooltip:Hide();
+				if GameTooltip then
+					GameTooltip:Hide();
+				end
 			</OnLeave>
 			<OnClick>
 				FCF_Tab_OnClick(self, button);

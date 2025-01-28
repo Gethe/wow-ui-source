@@ -1221,7 +1221,7 @@ function NewMountAlertFrameMixin:OnClick(button, down)
 	end
 
 	SetCollectionsJournalShown(true, COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS);
-	if CollectionsJournal:IsShown() then
+	if CollectionsJournal and CollectionsJournal:IsShown() then
 		MountJournal_SelectByMountID(self.mountID);
 	end
 end

@@ -53,6 +53,13 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Highlight" atlas="event-scheduler-ongoing-events-card-hover" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Icon">
 					<Anchors>
@@ -77,13 +84,6 @@
 					</Anchors>
 					<Color color="EVENT_SCHEDULER_LOCATION_COLOR"/>
 				</FontString>
-			</Layer>
-			<Layer level="HIGHLIGHT">
-				<Texture atlas="event-scheduler-ongoing-events-card-hover" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -136,6 +136,13 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="BORDER" textureSubLevel="1">
+				<Texture parentKey="Highlight" atlas="event-scheduler-event-card-hover" useAtlasSize="true" alphaMode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="ReminderIcon" atlas="event-scheduler-reminder-icon" useAtlasSize="true">
 					<Anchors>
@@ -168,13 +175,6 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="HIGHLIGHT">
-				<Texture atlas="event-scheduler-event-card-hover" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
 		</Layers>
 		<Animations>
 			<AnimationGroup parentKey="StartedAnim" setToFinalAlpha="true">
@@ -191,7 +191,7 @@
 				<Alpha childKey="Background2" duration="0.6" order="1" startDelay="1.15" fromAlpha="1" toAlpha="0"/>				
 			</AnimationGroup>
 				<AnimationGroup parentKey="ExpiredAnim" setToFinalAlpha="true">
-					<Alpha parentKey="Alpha" duration="0.35" order="1" smoothing="IN" fromAlpha="1" toAlpha="0" endDelay="0.05"/>
+					<Alpha parentKey="Alpha" duration="1.00" order="1" smoothing="IN" fromAlpha="1" toAlpha="0" endDelay="0.05"/>
 				</AnimationGroup>
 		</Animations>
 		<Scripts>

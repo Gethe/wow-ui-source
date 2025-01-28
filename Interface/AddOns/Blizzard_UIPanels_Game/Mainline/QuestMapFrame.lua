@@ -1951,7 +1951,6 @@ local function QuestLogQuests_AddQuestButton(displayState, info)
 
 	-- extra room because of POI icon
 	totalHeight = totalHeight + 6;
-	button.Text:SetPoint("TOPLEFT", 31, -8);
 	button:SetHeight(totalHeight);
 
 	return button;

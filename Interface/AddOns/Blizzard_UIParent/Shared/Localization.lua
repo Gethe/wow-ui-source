@@ -15,9 +15,10 @@ function LocalizeNumberAbbreviation_Asian()
 	end
 
 	NUMBER_ABBREVIATION_DATA = {
-		-- Order these from largest to smallest
-		{ breakpoint = 1000000000,	abbreviation = SECOND_NUMBER_CAP_NO_SPACE,	significandDivisor = 10000000,	fractionDivisor = 1 },
-		{ breakpoint = 10000000,	abbreviation = SECOND_NUMBER_CAP_NO_SPACE,	significandDivisor = 1000000,	fractionDivisor = 10 },
+		-- Order these from largest to smallest.
+		{ breakpoint = 1000000000,	abbreviation = SECOND_NUMBER_CAP_NO_SPACE,	significandDivisor = 100000000,	fractionDivisor = 1 },
+		{ breakpoint = 100000000,	abbreviation = SECOND_NUMBER_CAP_NO_SPACE,	significandDivisor = 10000000,	fractionDivisor = 10 },
+		{ breakpoint = 100000,		abbreviation = FIRST_NUMBER_CAP_NO_SPACE,	significandDivisor = 10000,		fractionDivisor = 1 },
 		{ breakpoint = 10000,		abbreviation = FIRST_NUMBER_CAP_NO_SPACE,	significandDivisor = 1000,		fractionDivisor = 10 },
 	}
 end

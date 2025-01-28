@@ -40,6 +40,20 @@ local AddOns =
 			},
 		},
 		{
+			Name = "DoesAddOnHaveLoadError",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "uiAddon", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hadError", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "EnableAddOn",
 			Type = "Function",
 

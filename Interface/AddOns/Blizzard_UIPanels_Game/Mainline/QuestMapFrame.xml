@@ -213,8 +213,8 @@
 					</Anchors>
 				</Texture>
 				<FontString parentKey="Text" inherits="GameFontNormalLeft">
-					<Size x="215" y="0"/>
 					<Anchors>
+						<Anchor point="TOPLEFT" x="31" y="-8"/>
 						<Anchor point="TOP" x="0" y="-8"/>
 						<Anchor point="RIGHT" relativeKey="$parent.StorylineTexture" relativePoint="LEFT" x="-4"/>
 					</Anchors>

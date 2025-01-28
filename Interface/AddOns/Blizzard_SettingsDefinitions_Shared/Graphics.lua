@@ -847,7 +847,7 @@ local function Register()
 			local initializer = Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_ADVANCED_MSAA);
 			local function IsModifiable()
 				local value = aaSetting:GetValue();
-				return value == AA_MULTISAMPLE or value == AA_ADVANCED;
+				return (value == AA_MULTISAMPLE or value == AA_ADVANCED) and MultiSampleAntiAliasingSupported();
 			end
 			initializer:SetParentInitializer(aaInitializer, IsModifiable);
 		end
@@ -872,7 +872,7 @@ local function Register()
 			local initializer = Settings.CreateCheckboxWithOptions(category, setting, GetOptions, OPTION_TOOLTIP_MULTISAMPLE_ALPHA_TEST);
 			local function IsModifiable()
 				local value = aaSetting:GetValue();
-				return value == AA_MULTISAMPLE or value == AA_ADVANCED;
+				return (value == AA_MULTISAMPLE or value == AA_ADVANCED) and MultiSampleAntiAliasingSupported();
 			end
 			initializer:SetParentInitializer(aaInitializer, IsModifiable);
 		end
