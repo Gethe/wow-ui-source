@@ -102,6 +102,16 @@ local Minimap =
 			Type = "Event",
 			LiteralName = "MINIMAP_UPDATE_ZOOM",
 		},
+		{
+			Name = "PlayerInsideQuestBlobStateChanged",
+			Type = "Event",
+			LiteralName = "PLAYER_INSIDE_QUEST_BLOB_STATE_CHANGED",
+			Payload =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+				{ Name = "isInside", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Tables =

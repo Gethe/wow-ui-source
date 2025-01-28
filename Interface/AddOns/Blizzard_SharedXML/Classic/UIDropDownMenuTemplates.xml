@@ -352,4 +352,82 @@
 			</OnHide>
 		</Scripts>
 	</Frame>
+	<DropDownToggleButton name="UIDropDownMenuButtonScriptTemplate" mixin="DropDownMenuButtonMixin" virtual="true">
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnMouseDown method="OnMouseDown"/>
+		</Scripts>
+	</DropDownToggleButton>
+
+	<Frame name="LargeUIDropDownMenuTemplate" virtual="true">
+		<Frames>
+			<DropDownToggleButton parentKey="Button" mixin="LargeDropDownMenuButtonMixin" inherits="UIDropDownMenuButtonScriptTemplate" motionScriptsWhileDisabled="true">
+				<Size x="27" y="26"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="-3" y="2"/>
+				</Anchors>
+				<NormalTexture parentKey="NormalTexture" atlas="auctionhouse-ui-dropdown-arrow-up" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</NormalTexture>
+				<PushedTexture parentKey="PushedTexture" atlas="auctionhouse-ui-dropdown-arrow-down" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</PushedTexture>
+				<DisabledTexture parentKey="DisabledTexture" atlas="auctionhouse-ui-dropdown-arrow-disabled" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</DisabledTexture>
+				<HighlightTexture parentKey="HighlightTexture" file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD">
+					<Size x="33" y="32"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.NormalTexture" relativePoint="CENTER"/>
+					</Anchors>
+				</HighlightTexture>
+			</DropDownToggleButton>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Left" atlas="auctionhouse-ui-dropdown-left" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Right" atlas="auctionhouse-ui-dropdown-right" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Middle" atlas="auctionhouse-ui-dropdown-middle">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Text" inherits="GameFontHighlight" wordwrap="false" justifyH="RIGHT">
+					<Size x="0" y="10"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.Button" relativePoint="LEFT" x="-4" y="1"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Icon" hidden="true">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" x="30" y="2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnHide>
+				CloseDropDownMenus();
+			</OnHide>
+		</Scripts>
+	</Frame>
 </Ui>

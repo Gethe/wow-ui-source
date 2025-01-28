@@ -47,9 +47,11 @@ function TradeSkillFrame_OnShow(self)
 end
 
 function TradeSkillFrame_SetupSubClassDropdown(self)
-	SetTradeSkillSubClassFilter(0);
+	if not TradeSkillFrame:IsShown() then
+		return;
+	end
 
-	local tbl = {GetTradeSkillSubClasses()};
+	SetTradeSkillSubClassFilter(0);
 
 	local function IsSelected(index)
 		if index > 0 and (GetTradeSkillSubClassFilter(0) == 1) then
@@ -72,14 +74,16 @@ function TradeSkillFrame_SetupSubClassDropdown(self)
 		rootDescription:SetTag("MENU_TRADESKILL_SUBCLASS");
 
 		rootDescription:CreateRadio(ALL_SUBCLASSES, IsSelected, SetSelected, 0);
-		for index, name in ipairs(tbl) do
+		for index, name in ipairs({GetTradeSkillSubClasses()}) do -- Dropdown table can change, so ensure we do not cache this.
 			rootDescription:CreateRadio(name, IsSelected, SetSelected, index);
 		end
 	end);
 end
 
 function TradeSkillFrame_SetupInvSlotDropdown(self)
-	local tbl = {GetTradeSkillInvSlots()};
+	if not TradeSkillFrame:IsShown() then
+		return;
+	end
 
 	local function IsSelected(index)
 		return GetTradeSkillInvSlotFilter(index) == 1;
@@ -99,7 +103,7 @@ function TradeSkillFrame_SetupInvSlotDropdown(self)
 		rootDescription:SetTag("MENU_TRADESKILL_SUBCLASS_INV_SLOTS");
 
 		rootDescription:CreateRadio(ALL_INVENTORY_SLOTS, IsSelected, SetSelected, 0);
-		for index, name in ipairs(tbl) do
+		for index, name in ipairs({GetTradeSkillInvSlots()}) do -- Dropdown table can change, so ensure we do not cache this.
 			rootDescription:CreateRadio(name, IsSelected, SetSelected, index);
 		end
 	end);

@@ -3,7 +3,7 @@
 ## DefaultState: enabled
 ## AllowLoad: Both
 ## AllowLoadGameType: vanilla
-## Dependencies: Blizzard_PrintHandler, Blizzard_Menu
+## Dependencies: Blizzard_SharedXMLBase, Blizzard_SharedXMLBase, Blizzard_PrintHandler, Blizzard_Menu
 ## OptionalDep: Blizzard_FontStyles_Glue, Blizzard_FontStyles_Frame
 Shared\LocalizationMachinery.lua
 EnvironmentUtil.lua
@@ -21,6 +21,7 @@ Vanilla\ClassColors.lua
 
 LinkUtil.lua
 InterfaceUtil.lua
+UnitUtil.lua
 FormattingUtil.lua
 AccountUtil.lua
 TabGroup.lua
@@ -84,6 +85,9 @@ Shared\Scroll\TrimScrollBar.xml
 Classic\Scroll\TrimScrollBar.xml
 Shared\Scroll\ScrollTemplates.lua
 Shared\Scroll\ScrollTemplates.xml
+Shared\ButtonTray\ButtonTrayUtil.lua
+Shared\ButtonTray\ButtonTray.lua
+Shared\ButtonTray\ButtonTray.xml
 Dump.lua
 
 Shared\Selector\Blizzard_SelectorUI.lua
@@ -105,6 +109,8 @@ SecureScrollTemplates.lua
 SecureScrollTemplates.xml
 
 Backdrop.xml
+Shared\LoadSystem\LoadSystemTemplates.lua
+Shared\LoadSystem\LoadSystemTemplates.xml
 LayoutFrame.lua
 LayoutFrame.xml
 SharedTooltipTemplates.lua

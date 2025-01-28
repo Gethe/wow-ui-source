@@ -1,7 +1,7 @@
 ## Title: Blizzard_GlueXML
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_GlueDialogs
+## Dependencies: Blizzard_GlueDialogs, Blizzard_LoginWarningDialogs
 ## LoadFirst: 1
 ## AllowLoad: Glue
 ## AllowLoadGameType: tbc
@@ -46,6 +46,8 @@ PromotionFrame.xml
 StarterEditionPopUp.xml
 MovieFrame.lua
 MovieFrame.xml
+PhotosensitivityWarningFrame.lua
+PhotosensitivityWarningFrame.xml
 Classic\CinematicsFrame.lua
 Classic\CinematicsFrame.xml
 TBC\CreditsFrame.lua

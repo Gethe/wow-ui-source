@@ -249,3 +249,44 @@ function CharacterCreate_CancelReincarnation()
 	CharacterReincarnatePopUpDialog:Hide();
 	C_Reincarnation.StopReincarnation();
 end
+
+CharacterCreateConfigurationMixin = {};
+
+function CharacterCreateConfigurationMixin:OnLoad()
+	self:RegisterEvent("GAME_MODE_CHANGED");
+	local _, _, _, characterCreateOuterBorderXOffset, _ = CharacterCreateOuterBorder1:GetPoint(1);
+	self.defaultCharacterCreateOuterBorderXOffset = characterCreateOuterBorderXOffset;
+	self.defaultCharacterCreateOuterBorder2Height = CharacterCreateOuterBorder2:GetHeight();
+	self.defaultBackgroundTexture = CharacterCreateOuterBorder2:GetTexture();
+	self:Update();
+end
+
+function CharacterCreateConfigurationMixin:OnEvent(event)
+	if event == "GAME_MODE_CHANGED" then
+		self:Update();
+	end
+end
+
+function CharacterCreateConfigurationMixin:Update()
+	local extraHeight = 0;
+	local outerBorderFileID = self.defaultBackgroundTexture;
+	
+	local gameModeRecordID = C_GameModeManager.GetCurrentGameModeRecordID();
+	if gameModeRecordID then
+		local gameModeDisplayInfo = C_GameModeManager.GetGameModeDisplayInfo(gameModeRecordID);
+		if gameModeDisplayInfo then
+			extraHeight = gameModeDisplayInfo.characterCreateExtraHeight;
+
+			if (gameModeDisplayInfo.characterCreateOuterBorder) then
+				outerBorderFileID = gameModeDisplayInfo.characterCreateOuterBorder;
+			end
+		end
+	end
+
+	CharacterCreateOuterBorder2:SetHeight(self.defaultCharacterCreateOuterBorder2Height + extraHeight);
+	CharacterCreateOuterBorder1:SetPoint("TOP", self.defaultCharacterCreateOuterBorderXOffset, extraHeight);
+
+	CharacterCreateOuterBorder1:SetTexture(outerBorderFileID);
+	CharacterCreateOuterBorder2:SetTexture(outerBorderFileID);
+	CharacterCreateOuterBorder3:SetTexture(outerBorderFileID);
+end

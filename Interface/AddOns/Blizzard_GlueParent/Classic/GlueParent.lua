@@ -8,12 +8,13 @@ GLUE_SCREENS = {
 };
 
 GLUE_SECONDARY_SCREENS = {
-	["cinematics"] =	{ frame = "CinematicsFrame", 	playMusic = true,	playAmbience = false,	fullScreen = false,	showSound = SOUNDKIT.GS_TITLE_OPTIONS },
-	["credits"] = 		{ frame = "CreditsFrame", 		playMusic = false,	playAmbience = false,	fullScreen = true,	showSound = SOUNDKIT.GS_TITLE_CREDITS },
+	["cinematics"] =		{ frame = "CinematicsFrame", 				playMusic = true,	playAmbience = false,	fullScreen = false,	showSound = SOUNDKIT.GS_TITLE_OPTIONS },
+	["credits"] = 			{ frame = "CreditsFrame", 					playMusic = false,	playAmbience = false,	fullScreen = true,	showSound = SOUNDKIT.GS_TITLE_CREDITS },
 	-- Bug 477070 We have some rare race condition crash in the sound engine that happens when the MovieFrame's "showSound" sound plays at the same time the movie audio is starting.
 	-- Removing the showSound from the MovieFrame in attempt to avoid the crash, until we can actually find and fix the bug in the sound engine.
-	["movie"] = 		{ frame = "MovieFrame", 		playMusic = false,	playAmbience = false,	fullScreen = true },
-	["options"] = 		{ frame = "SettingsPanel",	playMusic = true,	playAmbience = false,	fullScreen = false,	showSound = SOUNDKIT.GS_TITLE_OPTIONS },
+	["movie"] = 			{ frame = "MovieFrame", 					playMusic = false,	playAmbience = false,	fullScreen = true },
+	["photosensitivity"] =	{ frame = "PhotosensitivityWarningFrame",	playMusic = false,	playAmbience = false,	fullScreen = true },
+	["options"] = 			{ frame = "SettingsPanel",					playMusic = true,	playAmbience = false,	fullScreen = false,	showSound = SOUNDKIT.GS_TITLE_OPTIONS },
 };
 
 ACCOUNT_SUSPENDED_ERROR_CODE = 53;
@@ -71,7 +72,9 @@ function GlueParent_OnEvent(self, event, ...)
 		LocalizeFrames();
 		GlueParent_EnsureValidScreen();
 		GlueParent_UpdateDialogs();
-		GlueParent_CheckCinematic();
+		if not GlueParent_CheckPhotosensitivity() then
+			GlueParent_CheckCinematic();
+		end
 	elseif ( event == "LOGIN_STATE_CHANGED" ) then
 		GlueParent_EnsureValidScreen();
 		GlueParent_UpdateDialogs();

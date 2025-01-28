@@ -46,7 +46,7 @@ Classic\ProductChoice.lua
 Classic\ProductChoice.xml
 Classic\FriendsFrame.lua
 Classic\FriendsFrame.xml
-Wrath\RaidFrame.lua
+Classic\RaidFrame.lua
 Wrath\RaidFrame.xml
 Classic\UnitPositionFrameTemplates.lua
 Classic\UnitPositionFrameTemplates.xml

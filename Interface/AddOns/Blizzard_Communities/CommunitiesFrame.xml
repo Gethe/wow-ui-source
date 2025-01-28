@@ -561,9 +561,8 @@
 			</Frame>
 			<DropdownButton parentKey="AddToChatButton" inherits="AddToChatButtonTemplate">
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.StreamDropdown" relativePoint="RIGHT" x="170" y="3"/>
+					<Anchor point="RIGHT" relativeKey="$parent.StreamDropdown" relativePoint="RIGHT" x="170" y="-1"/>
 				</Anchors>
-				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</DropdownButton>
 			<Button parentKey="InviteButton" inherits="CommunitiesInviteButtonTemplate" motionScriptsWhileDisabled="true">
 				<Size x="130" y="20"/>

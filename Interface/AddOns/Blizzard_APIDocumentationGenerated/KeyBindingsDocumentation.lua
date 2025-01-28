@@ -82,6 +82,15 @@ local KeyBindings =
 				{ Name = "VoicePushToTalk", Type = "CustomBindingType", EnumValue = 0 },
 			},
 		},
+		{
+			Name = "InputCommandCallback",
+			Type = "CallbackType",
+
+			Arguments =
+			{
+				{ Name = "keystate", Type = "cstring", Nilable = false },
+			},
+		},
 	},
 };
 

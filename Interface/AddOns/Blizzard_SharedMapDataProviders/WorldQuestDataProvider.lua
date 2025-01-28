@@ -91,8 +91,6 @@ function WorldQuestDataProviderMixin:OnAdded(mapCanvas)
 	self.suppressedQuests = {};
 	MapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
 
-	self:GetMap():SetPinTemplateType("WorldQuestSpellEffectPinTemplate", "CinematicModel");
-
 	self:RegisterEvent("SUPER_TRACKED_QUEST_CHANGED");
 
 	if not self.setFocusedQuestIDCallback then
@@ -199,7 +197,7 @@ function WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
 	--[[
 	local taskInfo;
 	local mapCanvas = self:GetMap();
-	
+
 	local mapID = mapCanvas:GetMapID();
 	if (mapID) then
 		taskInfo = C_TaskQuest.GetQuestsOnMap(mapID);
@@ -297,7 +295,7 @@ function WorldQuestDataProviderMixin:AddWorldQuest(info)
 
 		pin.Highlight:SetTexCoord(0.625, 0.750, 0.875, 1);
 	end
-	
+
 	pin:RefreshVisuals();
 
 	if isElite then
@@ -352,7 +350,7 @@ function WorldQuestPinMixin:RefreshVisuals()
 	local selected = self.questID == GetSuperTrackedQuestID();
 	self.Glow:SetShown(selected);
 	self.SelectedGlow:SetShown(rarity ~= LE_WORLD_QUEST_QUALITY_COMMON and selected);
-	
+
 	if rarity == LE_WORLD_QUEST_QUALITY_COMMON then
 		if selected then
 			self.Background:SetTexCoord(0.500, 0.625, 0.375, 0.5);
@@ -395,7 +393,7 @@ function WorldQuestPinMixin:RefreshVisuals()
 	else
 		self.Texture:SetAtlas("worldquest-questmarker-questbang");
 		self.Texture:SetSize(12, 30);
-	end	
+	end
 end
 
 function WorldQuestPinMixin:OnMouseEnter()
@@ -474,7 +472,7 @@ function WorldQuestSpellEffectPinMixin:CastSpell(questID)
 			self:SetCameraPosition(0, 0, 25);
 			self:SetSpellVisualKit(spellVisualKitID);
 		end
-	end	
+	end
 end
 
 --[[ World Quest Ping Pin ]]--
@@ -496,7 +494,7 @@ function WorldQuestPingPinMixin:Play(questID)
 		self.questID = questID;
 	else
 		self:Stop();
-	end	
+	end
 end
 
 function WorldQuestPingPinMixin:Stop()

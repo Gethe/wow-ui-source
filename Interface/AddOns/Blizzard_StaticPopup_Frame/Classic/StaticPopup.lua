@@ -53,6 +53,108 @@ local function OnResurrectButtonClick(selectedOption, reason)
 	end
 end
 
+StaticPopupDialogs["GENERIC_CONFIRMATION"] = {
+	text = "",		-- supplied dynamically.
+	button1 = "",	-- supplied dynamically.
+	button2 = "",	-- supplied dynamically.
+	OnShow = function(self, data)
+		self.text:SetFormattedText(data.text, data.text_arg1, data.text_arg2);
+		self.button1:SetText(data.acceptText or YES);
+		self.button2:SetText(data.cancelText or NO);
+
+		if data.showAlert then
+			self.AlertIcon:Show();
+		end
+	end,
+	OnAccept = function(self, data)
+		data.callback();
+	end,
+	OnCancel = function(self, data)
+		local cancelCallback = data and data.cancelCallback or nil;
+		if cancelCallback ~= nil then
+			cancelCallback();
+		end
+	end,
+	hideOnEscape = 1,
+	timeout = 0,
+	multiple = 1,
+	whileDead = 1,
+	wide = 1, -- Always wide to accomodate the alert icon if it is present.
+};
+
+StaticPopupDialogs["GENERIC_INPUT_BOX"] = {
+	text = "",		-- supplied dynamically.
+	button1 = "",	-- supplied dynamically.
+	button2 = "",	-- supplied dynamically.
+	hasEditBox = 1,
+	OnShow = function(self, data)
+		self.text:SetFormattedText(data.text, data.text_arg1, data.text_arg2);
+		self.button1:SetText(data.acceptText or DONE);
+		self.button2:SetText(data.cancelText or CANCEL);
+
+		self.editBox:SetMaxLetters(data.maxLetters or 24);
+		self.editBox:SetCountInvisibleLetters(not not data.countInvisibleLetters);
+	end,
+	OnAccept = function(self, data)
+		local text = self.editBox:GetText();
+		data.callback(text);
+	end,
+	OnCancel = function(self, data)
+		local cancelCallback = data.cancelCallback;
+		if cancelCallback ~= nil then
+			cancelCallback();
+		end
+	end,
+	EditBoxOnEnterPressed = function(self, data)
+		local parent = self:GetParent();
+		if parent.button1:IsEnabled() then
+			local text = parent.editBox:GetText();
+			data.callback(text);
+			parent:Hide();
+		end
+	end,
+	EditBoxOnTextChanged = StaticPopup_StandardNonEmptyTextHandler,
+	EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
+	hideOnEscape = 1,
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,
+};
+
+StaticPopupDialogs["GENERIC_DROP_DOWN"] = {
+	text = "", -- supplied dynamically.
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	hasDropDown = 1,
+	dropDownOptions = {};
+	OnShow = function(self, data)
+		self.text:SetText(data.text);
+		self.DropDownControl:SetOptions(data.options, data.defaultOption);
+
+		local hasButtons = not not data.hasButtons;
+		self.button1:SetShown(hasButtons);
+		self.button2:SetShown(hasButtons);
+
+		if hasButtons then
+			self.DropDownControl:SetOptionSelectedCallback(nil);
+		else
+			local function StaticPopupGenericDropDownOptionSelectedCallback(option)
+				data.callback(option);
+				self:Hide();
+			end
+
+			self.DropDownControl:SetOptionSelectedCallback(StaticPopupGenericDropDownOptionSelectedCallback);
+		end
+	end,
+	OnAccept = function(self, data)
+		data.callback(self.DropDownControl:GetSelectedValue());
+	end,
+	hideOnEscape = 1,
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,
+};
+
 StaticPopupDialogs["CONFIRM_OVERWRITE_EQUIPMENT_SET"] = {
 	text = CONFIRM_OVERWRITE_EQUIPMENT_SET,
 	button1 = YES,

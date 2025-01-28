@@ -2,7 +2,7 @@ GroupMembersDataProviderMixin = CreateFromMixins(MapCanvasDataProviderMixin);
 
 function GroupMembersDataProviderMixin:OnAdded(mapCanvas)
 	MapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
-	self:GetMap():SetPinTemplateType("GroupMembersPinTemplate", "UnitPositionFrame");
+
 	-- a single permanent pin
 	local pin = self:GetMap():AcquirePin("GroupMembersPinTemplate", self);
 	pin:SetPosition(0.5, 0.5);

@@ -174,16 +174,14 @@ function LFGListingMixin:FetchSavedInstances()
 	self.savedInstances = {};
 	local numSavedInstances = GetNumSavedInstances();
 	if ( numSavedInstances > 0 ) then
-		for i=1, MAX_RAID_INFOS do
-			if ( i <=  numSavedInstances) then
-				local instanceName, instanceID, _, difficultyID, _, _, _, _, _, _, encountersTotal, encountersCompleted, _, mapID = GetSavedInstanceInfo(i);
-				self.savedInstances[i] = {};
-				self.savedInstances[i].mapID = mapID;
-				self.savedInstances[i].difficultyID = difficultyID;
-				self.savedInstances[i].redirectedDifficultyID = C_RaidLocks.GetRedirectedDifficultyID(mapID, difficultyID);
-				self.savedInstances[i].encountersCompleted = encountersCompleted;
-				self.savedInstances[i].encountersTotal = encountersTotal;
-			end
+		for i=1, numSavedInstances do
+			local instanceName, instanceID, _, difficultyID, _, _, _, _, _, _, encountersTotal, encountersCompleted, _, mapID = GetSavedInstanceInfo(i);
+			self.savedInstances[i] = {};
+			self.savedInstances[i].mapID = mapID;
+			self.savedInstances[i].difficultyID = difficultyID;
+			self.savedInstances[i].redirectedDifficultyID = C_RaidLocks.GetRedirectedDifficultyID(mapID, difficultyID);
+			self.savedInstances[i].encountersCompleted = encountersCompleted;
+			self.savedInstances[i].encountersTotal = encountersTotal;
 		end
 	end
 end

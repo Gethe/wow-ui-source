@@ -25,8 +25,6 @@ local l10nTable = {
 
 			ServerAlertFrame:SetWidth(350);
 			ServerAlertFrame:SetHeight(400);
-
-			SHOW_KOREAN_RATINGS = true;
 		end,
 	},
 	ptBR = {},
@@ -63,8 +61,6 @@ local l10nTable = {
 			tbcInfoPaneInfographicAtlas = "classic-announcementpopup-bcinfographic-zhcn";
 			choicePaneCurrentLogoAtlas = "classic-burningcrusadetransition-choice-logo-current-zhcn";
 			choicePaneOtherLogoAtlas = "classic-burningcrusadetransition-choice-logo-other-zhcn";
-
-			SHOW_CHINA_AGE_APPROPRIATENESS_WARNING = true;
 		end,
 	},
 

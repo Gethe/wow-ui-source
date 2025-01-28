@@ -85,22 +85,27 @@ end
 
 function Vector2DMixin:ScaleBy(scalar)
 	self:SetXY(Vector2D_ScaleBy(scalar, self:GetXY()));
+	return self;
 end
 
 function Vector2DMixin:DivideBy(scalar)
 	self:SetXY(Vector2D_DivideBy(scalar, self:GetXY()));
+	return self;
 end
 
 function Vector2DMixin:Add(other)
 	self:SetXY(Vector2D_Add(self.x, self.y, other:GetXY()));
+	return self;
 end
 
 function Vector2DMixin:Subtract(other)
 	self:SetXY(Vector2D_Subtract(self.x, self.y, other:GetXY()));
+	return self;
 end
 
 function Vector2DMixin:Cross(other)
 	self:SetXY(Vector2D_Cross(self.x, self.y, other:GetXY()));
+	return self;
 end
 
 function Vector2DMixin:Dot(other)
@@ -121,10 +126,12 @@ end
 
 function Vector2DMixin:Normalize()
 	self:SetXY(Vector2D_Normalize(self:GetXY()));
+	return self;
 end
 
 function Vector2DMixin:RotateDirection(rotationRadians)
 	self:SetXY(Vector2D_RotateDirection(rotationRadians, self:GetXY()));
+	return self;
 end
 
 function Vector2DMixin:Clone()

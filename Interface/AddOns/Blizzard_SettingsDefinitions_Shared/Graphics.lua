@@ -1288,20 +1288,35 @@ local function Register()
 	do
 		local monitorCVar = CreateCVarAccessor("gxMonitor", Settings.VarType.Number);
 		local displayModeCVar = CreateCVarAccessor("gxMaximize", Settings.VarType.Boolean);
+		
+		local function HandleDisplaySizeChanged()
+			local resSetting = Settings.GetSetting("PROXY_RESOLUTION");
+			local resScaleSetting = Settings.GetSetting("PROXY_RESOLUTION_RENDER_SCALE");
+			resSetting:SetIgnoreApplyOverride(true);
+			resScaleSetting:SetIgnoreApplyOverride(true);
+
+			local size = C_VideoOptions.GetCurrentGameWindowSize(monitorCVar:GetValue(), displayModeCVar:GetValue());
+			Settings.SetValue("PROXY_RESOLUTION", FormatScreenResolution(size.x, size.y));
+
+			resSetting:SetIgnoreApplyOverride(false);
+			resScaleSetting:SetIgnoreApplyOverride(false);
+		end
+
+		local deferred = false;
 		local listener = Mixin(CreateFrame("Frame"));
 		listener:RegisterEvent("DISPLAY_SIZE_CHANGED");
 		listener:SetScript("OnEvent", function(self, event, ...)
 			if event == "DISPLAY_SIZE_CHANGED" then
-				local resSetting = Settings.GetSetting("PROXY_RESOLUTION");
-				local resScaleSetting = Settings.GetSetting("PROXY_RESOLUTION_RENDER_SCALE");
-				resSetting:SetIgnoreApplyOverride(true);
-				resScaleSetting:SetIgnoreApplyOverride(true);
+				if deferred then
+					return;
+				end
 
-				local size = C_VideoOptions.GetCurrentGameWindowSize(monitorCVar:GetValue(), displayModeCVar:GetValue());
-				Settings.SetValue("PROXY_RESOLUTION", FormatScreenResolution(size.x, size.y));
-
-				resSetting:SetIgnoreApplyOverride(false);
-				resScaleSetting:SetIgnoreApplyOverride(false);
+				if Settings.IsCommitInProgress() then
+					deferred = true;
+					RunNextFrame(HandleDisplaySizeChanged);
+				else
+					HandleDisplaySizeChanged();
+				end
 			end
 		end);
 	end

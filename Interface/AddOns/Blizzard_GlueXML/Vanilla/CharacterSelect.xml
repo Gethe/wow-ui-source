@@ -522,8 +522,30 @@
 
 	<Button name="CharacterBoostTemplate" inherits="CharacterVASTemplate" mixin="CharacterBoostMixin" virtual="true"/>
 
+	<Frame name="GameLogoDarkBackdropTemplate" mixin="GameLogoDarkBackdropMixin" virtual="true">
+		<Size x="1024" y="512"/>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BackdropTexture" alphaMode="BLEND" alpha="0.7" file="Interface\Glues\CharacterSelect\Glues-CharacterSelect-Logo-BG.blp">
+					<Size x="1024" y="512"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+	
 	<Frame name="CharacterSelect" toplevel="true" parent="GlueParent" setAllPoints="true" enableKeyboard="true" hidden="true">
 		<Frames>
+			<Frame parentKey="GameLogoDarkBackdrop" inherits="GameLogoDarkBackdropTemplate"/>
 			<Frame name="CharacterSelectUI" setAllPoints="true" enableMouse="true">
 				<Layers>
 					<Layer level="ARTWORK">

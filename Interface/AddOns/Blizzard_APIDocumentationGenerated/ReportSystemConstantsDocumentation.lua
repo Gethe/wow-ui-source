@@ -19,9 +19,9 @@ local ReportSystemConstants =
 		{
 			Name = "ReportMinorCategory",
 			Type = "Enumeration",
-			NumValues = 16,
+			NumValues = 17,
 			MinValue = 1,
-			MaxValue = 32768,
+			MaxValue = 65536,
 			Fields =
 			{
 				{ Name = "TextChat", Type = "ReportMinorCategory", EnumValue = 1 },
@@ -40,6 +40,7 @@ local ReportSystemConstants =
 				{ Name = "Description", Type = "ReportMinorCategory", EnumValue = 8192 },
 				{ Name = "Name", Type = "ReportMinorCategory", EnumValue = 16384 },
 				{ Name = "HarmfulToMinors", Type = "ReportMinorCategory", EnumValue = 32768 },
+				{ Name = "Disruption", Type = "ReportMinorCategory", EnumValue = 65536 },
 			},
 		},
 		{

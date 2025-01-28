@@ -646,7 +646,7 @@
 							</ScrollFrame>
 						</Frames>
 					</Frame>
-					<Frame name="CharacterCreateConfigurationFrame">
+					<Frame name="CharacterCreateConfigurationFrame" mixin="CharacterCreateConfigurationMixin">
 						<Size>
 							<AbsDimension x="206" y="600"/>
 						</Size>
@@ -659,45 +659,6 @@
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
-								<Texture name="CharacterCreateOuterBorder1" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-OuterBorder">
-									<Size>
-										<AbsDimension x="224" y="236"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOP">
-											<Offset>
-												<AbsDimension x="0" y="0"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-									<TexCoords left="0" right="0.875" top="1" bottom="0"/>
-								</Texture>
-								<Texture name="CharacterCreateOuterBorder2" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-OuterBorder">
-									<Size>
-										<AbsDimension x="224" y="240"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOP" relativeTo="CharacterCreateOuterBorder1" relativePoint="BOTTOM">
-											<Offset>
-												<AbsDimension x="0" y="0"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-									<TexCoords left="0" right="0.875" top="0" bottom="0.9375"/>
-								</Texture>
-								<Texture name="CharacterCreateOuterBorder3" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-OuterBorder">
-									<Size>
-										<AbsDimension x="224" y="210"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOP" relativeTo="CharacterCreateOuterBorder2" relativePoint="BOTTOM">
-											<Offset>
-												<AbsDimension x="0" y="0"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-									<TexCoords left="0" right="0.875" top="0.1796875" bottom="1.0"/>
-								</Texture>
 								<Texture name="CharacterCreateBanners" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Banners">
 									<Size>
 										<AbsDimension x="256" y="259"/>
@@ -712,22 +673,26 @@
 								</Texture>
 							</Layer>
 							<Layer level="BACKGROUND">
-								<Texture name="CharacterCreateBackground" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Background">
-									<Size>
-										<AbsDimension x="218" y="30"/>
-									</Size>
+								<Texture name="CharacterCreateOuterBorder1" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-OuterBorder-Classic">
+									<Size x="230" y="231"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="CharacterCreateOuterBorder1">
-											<Offset>
-												<AbsDimension x="6" y="0"/>
-											</Offset>
-										</Anchor>
-										<Anchor point="BOTTOMLEFT" relativeTo="CharacterCreateOuterBorder3">
-											<Offset>
-												<AbsDimension x="0" y="6"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOP" x="3" y="0"/>
 									</Anchors>
+									<TexCoords left="0" right="0.64" top="0" bottom="0.33"/>
+								</Texture>
+								<Texture name="CharacterCreateOuterBorder2" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-OuterBorder-Classic">
+									<Size x="230" y="231"/>
+									<Anchors>
+										<Anchor point="TOP" relativeTo="CharacterCreateOuterBorder1" relativePoint="BOTTOM"/>
+									</Anchors>
+									<TexCoords left="0" right="0.64" top="0.33" bottom="0.67"/>
+								</Texture>
+								<Texture name="CharacterCreateOuterBorder3" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-OuterBorder-Classic">
+									<Size x="230" y="231"/>
+									<Anchors>
+										<Anchor point="TOP" relativeTo="CharacterCreateOuterBorder2" relativePoint="BOTTOM"/>
+									</Anchors>
+									<TexCoords left="0" right="0.64" top="0.67" bottom="1"/>
 								</Texture>
 							</Layer>
 						</Layers>
@@ -1017,6 +982,10 @@
 								</Scripts>
 							</Button>
 						</Frames>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnEvent method="OnEvent"/>
+						</Scripts>
 					</Frame>
 					<EditBox name="CharacterCreateNameEdit" inherits="TooltipBackdropTemplate" letters="12">
 						<Size>

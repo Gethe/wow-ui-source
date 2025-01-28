@@ -12,7 +12,9 @@ local l10nTable = {
 	ruRU = {
 		localize = function()
 			--Adjust text widths for long Russian words
-			PetJournalHealPetButtonSpellName:SetWidth(90);
+			if (PetJournalHealPetButtonSpellName) then
+				PetJournalHealPetButtonSpellName:SetWidth(90);
+			end
 		end,
 	},
 	zhCN = {},

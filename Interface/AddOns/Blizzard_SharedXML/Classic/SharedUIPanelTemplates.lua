@@ -834,6 +834,17 @@ function MaximizeMinimizeButtonFrameMixin:Minimize()
 	self.MinimizeButton:Hide();
 end
 
+
+function MaximizeMinimizeButtonFrameMixin:SetMinimizedLook()
+	self.MaximizeButton:Hide();
+	self.MinimizeButton:Show();
+end
+
+function MaximizeMinimizeButtonFrameMixin:SetMaximizedLook()
+	self.MaximizeButton:Show();
+	self.MinimizeButton:Hide();
+end
+
 PortraitFrameTemplateMixin = {}
 
 function PortraitFrameTemplateMixin:OnLoad()
@@ -1364,6 +1375,62 @@ function PanelDragBarMixin:OnDragStop()
 	if SetCursor then
 		SetCursor(nil);
 	end
+end
+
+NumericInputBoxMixin = {};
+function NumericInputBoxMixin:OnTextChanged(isUserInput)
+	self.valueChangedCallback(self:GetNumber(), isUserInput);
+end
+function NumericInputBoxMixin:OnEditFocusLost()
+	EditBox_ClearHighlight(self);
+	self.valueFinalizedCallback(self:GetNumber());
+end
+function NumericInputBoxMixin:SetOnValueChangedCallback(valueChangedCallback)
+	self.valueChangedCallback = valueChangedCallback;
+end
+function NumericInputBoxMixin:SetOnValueFinalizedCallback(valueFinalizedCallback)
+	self.valueFinalizedCallback = valueFinalizedCallback;
+end
+SliderControlFrameMixin = {};
+function SliderControlFrameMixin:OnEnter()
+end
+function SliderControlFrameMixin:OnLeave()
+end
+function SliderControlFrameMixin:SetupSlider(minValue, maxValue, value, valueStep, label)
+	self.minValue = minValue;
+	self.maxValue = maxValue;
+	self.Slider:SetMinMaxValues(minValue, maxValue);
+	self.valueStep = valueStep;
+	self.Slider:SetValueStep(valueStep);
+	self.value = value;
+	self.Slider:SetValue(value);
+	self.Label:SetText(label);
+end
+function SliderControlFrameMixin:OnSliderValueChanged(value, userInput)
+	-- Override in your mixin.
+end
+SliderAndEditControlMixin = CreateFromMixins(SliderControlFrameMixin);
+function SliderAndEditControlMixin:SetupSlider(minValue, maxValue, value, valueStep, label)
+	SliderControlFrameMixin.SetupSlider(self, minValue, maxValue, value, valueStep, label);
+	self.ValueBox:SetNumber(value);
+	local function ValueBoxFinalizedCallback(valueBoxValue)
+		local isUserInput = true;
+		self:SetValue(valueBoxValue, isUserInput);
+	end
+	self.ValueBox:SetOnValueFinalizedCallback(ValueBoxFinalizedCallback);
+end
+function SliderAndEditControlMixin:OnSliderValueChanged(value, isUserInput)
+	-- Overrides SliderControlFrameMixin.
+	self.ValueBox:SetNumber(value);
+	if self.callback ~= nil then
+		self.callback(value, isUserInput);
+	end
+end
+function SliderAndEditControlMixin:SetValue(value, isUserInput)
+	self.Slider:SetValue(Clamp(value, self.minValue, self.maxValue), isUserInput);
+end
+function SliderAndEditControlMixin:SetCallback(callback)
+	self.callback = callback;
 end
 
 PanelResizeButtonMixin = {};
@@ -2019,6 +2086,137 @@ function ButtonControllerMixin:OnShow()
 	if self:GetParent().UpdateButton then
 		self:GetParent():UpdateButton();
 	end
+end
+
+-- Hack to set an alias for addon backward compatibility.
+function UICheckButtonFontString_SetParentKeyAlias(fontString)
+	local parent = fontString:GetParent();
+	parent.text = fontString;
+end
+
+ResizeCheckButtonMixin = {}
+function ResizeCheckButtonMixin:OnLoad()
+	self.onBoxToggled = self.onBoxToggled or nop;
+
+	if self.Label ~= nil then
+		self.Label:SetText(self.labelText);
+		self:UpdateLabelFont();
+	end
+end
+
+function ResizeCheckButtonMixin:OnShow()
+	ResizeLayoutMixin.OnShow(self);
+end
+
+function ResizeCheckButtonMixin:SetButton(button)
+	self.Button = button;
+	self:MarkDirty();
+end
+
+function ResizeCheckButtonMixin:SetLabel(labelFontString)
+	self.Label = labelFontString;
+	self.Label:SetText(self.labelText);
+	self:UpdateLabelFont();
+	self:MarkDirty();
+end
+
+function ResizeCheckButtonMixin:OnCheckButtonClick()
+	local isUserInput = true;
+	self.onBoxToggled(self:IsControlChecked(), isUserInput);
+end
+
+function ResizeCheckButtonMixin:SetLabelText(labelText)
+	self.labelText = labelText;
+
+	if self.Label ~= nil then
+		self.Label:SetText(labelText);
+		self:MarkDirty();
+	end
+end
+
+function ResizeCheckButtonMixin:SetTooltipText(tooltipText)
+	self.tooltipText = tooltipText;
+end
+
+function ResizeCheckButtonMixin:SetTooltipDisabled(disabled)
+	self.tooltipDisabled = disabled;
+
+	if self.tooltipDisabled and GameTooltip:GetOwner() == self then
+		GameTooltip:Hide();
+	end
+end
+
+function ResizeCheckButtonMixin:SetCallback(onBoxToggled)
+	self.onBoxToggled = onBoxToggled;
+end
+
+function ResizeCheckButtonMixin:GetCallback()
+	return self.onBoxToggled;
+end
+
+function ResizeCheckButtonMixin:SetControlChecked(checked, isUserInput)
+	if self:IsControlChecked() == checked then
+		return;
+	end
+
+	if self.Button == nil then
+		return;
+	end
+
+	self.Button:SetChecked(checked);
+
+	self.onBoxToggled(self:IsControlChecked(), not not isUserInput);
+end
+
+function ResizeCheckButtonMixin:IsControlChecked()
+	if self.Button == nil then
+		return false;
+	end
+
+	return self.Button:GetChecked();
+end
+
+function ResizeCheckButtonMixin:SetControlEnabled(enabled)
+	if self.Button == nil then
+		return;
+	end
+
+	self.Button:SetEnabled(enabled);
+
+	self:UpdateLabelFont();
+end
+
+function ResizeCheckButtonMixin:IsControlEnabled()
+	if self.Button == nil then
+		return false;
+	end
+
+	return self.Button:IsEnabled();
+end
+
+function ResizeCheckButtonMixin:OnEnter()
+	if(self.tooltipText ~= nil and not self.tooltipDisabled) then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip_SetTitle(GameTooltip, self.tooltipText);
+		GameTooltip:Show();
+	end
+end
+
+function ResizeCheckButtonMixin:OnLeave()
+	if(self.tooltipText ~= nil and not self.tooltipDisabled) then
+		GameTooltip:Hide();
+	end
+end
+
+function ResizeCheckButtonMixin:UpdateLabelFont()
+	if not self.Label then
+		return;
+	end
+
+	local enabledFont = self.labelFont or "GameFontHighlightLarge";
+	local disabledFont = self.disabledLabelFont or "GameFontDisableLarge";
+	local enabled = self:IsControlEnabled();
+	self.Label:SetFontObject(enabled and enabledFont or disabledFont);
 end
 
 AlphaHighlightButtonMixin = {};

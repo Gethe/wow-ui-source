@@ -314,9 +314,7 @@ function Settings.CreateSettingInitializerData(setting, options, tooltip)
 end
 
 function Settings.CreateElementInitializer(frameTemplate, data)
-	local initializer = CreateFromMixins(SettingsListElementInitializer);
-	initializer:Init(frameTemplate, data);
-	return initializer;
+	return SettingsInbound.CreateElementInitializer(frameTemplate, data);
 end
 
 function Settings.CreateSettingInitializer(frameTemplate, data)
@@ -324,18 +322,7 @@ function Settings.CreateSettingInitializer(frameTemplate, data)
 end
 
 function Settings.CreatePanelInitializer(frameTemplate, data)
-	local initializer = CreateFromMixins(SettingsListPanelInitializer);
-	initializer:Init(frameTemplate);
-	initializer.data = data;
-	local settings = data.settings;
-	if settings then
-		local tags = {};
-		for _, setting in pairs(settings) do
-			table.insert(tags, setting:GetName());
-		end
-		initializer:AddSearchTags(unpack(tags));
-	end
-	return initializer;
+	return SettingsInbound.CreatePanelInitializer(frameTemplate, data);
 end
 
 function Settings.CreateControlInitializer(frameTemplate, setting, options, tooltip)
@@ -666,6 +653,10 @@ function Settings.CallWhenRegistered(variable, callback, owner)
 		end
 		handle = Settings.SetOnValueChangedCallback(variable, OnInitialized, owner);
 	end
+end
+
+function Settings.IsCommitInProgress()
+	return SettingsPanel:IsCommitInProgress();
 end
 
 SettingsCallbackHandleContainerMixin = CreateFromMixins(CallbackHandleContainerMixin);
