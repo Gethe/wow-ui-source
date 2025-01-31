@@ -362,7 +362,8 @@ function BonusObjectiveTrackerMixin:SetUpQuestBlock(block, forceShowCompleted)
 
 	local showAsCompleted = isThreatQuest and isQuestComplete;
 	local hasAddedTimeLeft = false;
-	for objectiveIndex = 1, block.numObjectives do
+	local numObjectives = block.numObjectives or 0;
+	for objectiveIndex = 1, numObjectives do
 		local text, objectiveType, finished = GetQuestObjectiveInfo(questID, objectiveIndex, forceShowCompleted);
 		if text then
 			if finished then
