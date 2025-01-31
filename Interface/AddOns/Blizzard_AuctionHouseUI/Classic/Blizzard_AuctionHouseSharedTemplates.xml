@@ -31,4 +31,11 @@
 			</Layer>
 		</Layers>
 	</Button>
+
+	<EventFrame name="DummyAuctionHouseScrollBarTemplate" inherits="WowClassicScrollBar" virtual="true">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-7" y="0"/>
+			<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="-2"/>
+		</Anchors>
+	</EventFrame>
 </Ui>

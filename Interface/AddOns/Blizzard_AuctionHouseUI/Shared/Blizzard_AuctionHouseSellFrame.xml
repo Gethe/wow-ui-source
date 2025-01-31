@@ -75,9 +75,9 @@
 		<Frames>
 			<Frame name ="MoneyInputFrame" parentKey="MoneyInputFrame" inherits="LargeMoneyInputFrameTemplate">
 				<KeyValues>
-					<KeyValue key="hideCopper" value="true" type="boolean"/>
+					<KeyValue key="useAuctionHouseCopperValue" value="true" type="boolean"/>
 				</KeyValues>
-				<Size x="150" y="33"/>
+				<Size x="190" y="33"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.Label" relativePoint="RIGHT" x="18" y="-2"/>
 				</Anchors>
@@ -143,7 +143,7 @@
 					<Anchor point="RIGHT"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="hideCopper" value="true" type="boolean"/>
+					<KeyValue key="useAuctionHouseCopperValue" value="true" type="boolean"/>
 					<KeyValue key="leftAlign" value="true" type="boolean"/>
 					<KeyValue key="useAuctionHouseIcons" value="true" type="boolean"/>
 				</KeyValues>
@@ -171,8 +171,8 @@
 			<KeyValue key="backgroundAtlas" value="auctionhouse-background-sell-left" type="string"/>
 			<KeyValue key="backgroundTextureClassic" value="Interface\QuestFrame\UI-TextBackground-BackdropBackground" type="string"/>
 			<KeyValue key="textureWidthClassic" value="357" type="number"/>
-			<KeyValue key="textureHeightClassic" value="437" type="number"/>
-			<KeyValue key="textureXOffsetClassic" value="4" type="number"/>
+			<KeyValue key="textureHeightClassic" value="438" type="number"/>
+			<KeyValue key="textureXOffsetClassic" value="3" type="number"/>
 			<KeyValue key="textureYOffsetClassic" value="-2" type="number"/>
 		</KeyValues>
 		<Layers>

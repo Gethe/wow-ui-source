@@ -269,6 +269,11 @@ local ActionBarFrame =
 			LiteralName = "UPDATE_BONUS_ACTIONBAR",
 		},
 		{
+			Name = "UpdateExtraActionbar",
+			Type = "Event",
+			LiteralName = "UPDATE_EXTRA_ACTIONBAR",
+		},
+		{
 			Name = "UpdateMultiCastActionbar",
 			Type = "Event",
 			LiteralName = "UPDATE_MULTI_CAST_ACTIONBAR",

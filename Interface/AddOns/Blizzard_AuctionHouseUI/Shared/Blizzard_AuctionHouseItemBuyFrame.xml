@@ -21,9 +21,9 @@
 					<KeyValue key="itemButtonYOffset" value="-2" type="number"/>
 					<KeyValue key="backgroundTextureClassic" value="Interface\QuestFrame\UI-TextBackground-BackdropBackground" type="string"/>
 					<KeyValue key="textureWidthClassic" value="617" type="number"/>
-					<KeyValue key="textureHeightClassic" value="81" type="number"/>
+					<KeyValue key="textureHeightClassic" value="82" type="number"/>
 					<KeyValue key="textureXOffsetClassic" value="3" type="number"/>
-					<KeyValue key="textureYOffsetClassic" value="-3" type="number"/>
+					<KeyValue key="textureYOffsetClassic" value="-2" type="number"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.BackButton" relativePoint="BOTTOM" x="0" y="-10"/>
@@ -45,7 +45,7 @@
 				<KeyValues>
 					<KeyValue key="backgroundAtlas" value="auctionhouse-background-buy-noncommodities-market" type="string"/>
 					<KeyValue key="textureWidthClassic" value="595" type="number"/>
-					<KeyValue key="textureHeightClassic" value="277" type="number"/>
+					<KeyValue key="textureHeightClassic" value="278" type="number"/>
 					<KeyValue key="refreshFrameXOffset" value="-4" type="number"/>
 					<KeyValue key="refreshFrameYOffset" value="132" type="number"/>
 				</KeyValues>

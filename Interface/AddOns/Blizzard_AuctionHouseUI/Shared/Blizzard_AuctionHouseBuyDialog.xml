@@ -73,7 +73,7 @@
 					<Anchor point="TOP" relativeKey="$parent.ItemDisplay.ItemText" relativePoint="BOTTOM" x="0" y="-6"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="hideCopper" value="true" type="boolean"/>
+					<KeyValue key="useAuctionHouseCopperValue" value="true" type="boolean"/>
 					<KeyValue key="resizeToFit" value="true" type="boolean"/>
 					<KeyValue key="useAuctionHouseIcons" value="true" type="boolean"/>
 				</KeyValues>

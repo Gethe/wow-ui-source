@@ -228,12 +228,17 @@ function AuctionHouseItemSellFrameMixin:UpdatePriceSelection()
 		local defaultBid = not self.SecondaryPriceInput:IsShown() or self.SecondaryPriceInput:GetAmount() == 0;
 		local defaultBuyout = self.PriceInput:GetAmount() == defaultPrice;
 
-		-- If the user hasn't entered a price, update to the lowest price available.
-		if defaultBid and defaultBuyout then
-			local bestEntry = self:GetBestEntry();
-			if bestEntry ~= nil then
-				self:GetItemSellList():SetSelectedEntry(bestEntry);
+
+		if (C_AuctionHouse.ShouldAutoPopulatePrice()) then
+			-- If the user hasn't entered a price, update to the lowest price available.
+			if defaultBid and defaultBuyout then
+				local bestEntry = self:GetBestEntry();
+				if bestEntry ~= nil then
+					self:GetItemSellList():SetSelectedEntry(bestEntry);
+				end
 			end
+		else
+			self:GetItemSellList():SetSelectedEntry(nil);
 		end
 	end
 end
@@ -309,10 +314,14 @@ function AuctionHouseItemSellFrameMixin:InitializeItemSellList()
 end
 
 function AuctionHouseItemSellFrameMixin:OnSearchResultSelected(searchResult)
+	if (not searchResult) then
+		return;
+	end
+
 	if self.SecondaryPriceInput:IsShown() then
 		self.SecondaryPriceInput:SetAmount(searchResult.bidAmount or 0);
 	end
-
+	
 	self.PriceInput:SetAmount(searchResult.buyoutAmount or 0);
 	self:SetSearchResultPrice(searchResult.buyoutAmount);
 

@@ -656,7 +656,8 @@ function AuctionHouseBidFrameMixin:SetBidCallback(bidCallback)
 end
 
 function AuctionHouseBidFrameMixin:OnLoad()
-	MoneyInputFrame_SetCopperShown(self.BidAmount, false);
+	local displayCopper = C_AuctionHouse.SupportsCopperValues();
+	MoneyInputFrame_SetCopperShown(self.BidAmount, displayCopper);
 end
 
 function AuctionHouseBidFrameMixin:SetPrice(minBid, isOwnerItem, isPlayerHighBid)

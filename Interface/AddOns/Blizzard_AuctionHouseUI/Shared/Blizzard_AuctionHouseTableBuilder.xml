@@ -38,7 +38,7 @@
 		<Frames>
 			<Frame parentKey="MoneyDisplay" inherits="MoneyDisplayFrameTemplate" setAllPoints="true">
 				<KeyValues>
-					<KeyValue key="hideCopper" value="true" type="boolean"/>
+					<KeyValue key="useAuctionHouseCopperValue" value="true" type="boolean"/>
 					<KeyValue key="useAuctionHouseIcons" value="true" type="boolean"/>
 				</KeyValues>
 			</Frame>

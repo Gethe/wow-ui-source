@@ -31,4 +31,11 @@
 			</Layer>
 		</Layers>
 	</Button>
+
+	<EventFrame name="DummyAuctionHouseScrollBarTemplate" inherits="MinimalScrollBar" virtual="true">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="5" y="-2"/>
+			<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="5" y="7"/>
+		</Anchors>
+	</EventFrame>
 </Ui>

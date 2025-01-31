@@ -593,7 +593,11 @@ function AuctionHouseUtil.IsOwnedAuction(rowData)
 end
 
 function AuctionHouseUtil.SanitizeAuctionHousePrice(rawPrice)
-	return math.ceil(rawPrice / COPPER_PER_SILVER) * COPPER_PER_SILVER;
+	if ( not C_AuctionHouse.SupportsCopperValues() ) then
+		return math.ceil(rawPrice / COPPER_PER_SILVER) * COPPER_PER_SILVER;
+	else
+		return math.ceil(rawPrice);
+	end	
 end
 
 function AuctionHouseUtil.RowDataIsWoWToken(rowData)
@@ -649,4 +653,3 @@ function AuctionHouseUtil.IsAuctionIDUniqueShadowlandsCrafted(auctionID)
 	local isUniqueShadowlandsCrafted = uniqueLimitCategory == UniqueShadowlandsCraftedLimitCategoryID;
 	return isUniqueShadowlandsCrafted, categoryName;
 end
-

@@ -24,7 +24,7 @@
 		<KeyValues>
 			<KeyValue key="backgroundAtlas" value="auctionhouse-background-buy-commodities-market" type="string"/>
 			<KeyValue key="textureWidthClassic" value="221" type="number"/>
-			<KeyValue key="textureHeightClassic" value="396" type="number"/>
+			<KeyValue key="textureHeightClassic" value="397" type="number"/>
 			<KeyValue key="backgroundYOffset" value="0" type="number"/>
 			<KeyValue key="searchContext" value="AuctionHouseSearchContext.BuyCommodities" type="global"/>
 		</KeyValues>
@@ -34,7 +34,7 @@
 		<KeyValues>
 			<KeyValue key="backgroundAtlas" value="auctionhouse-background-sell-right" type="string"/>
 			<KeyValue key="textureWidthClassic" value="399" type="number"/>
-			<KeyValue key="textureHeightClassic" value="418" type="number"/>
+			<KeyValue key="textureHeightClassic" value="419" type="number"/>
 			<KeyValue key="searchContext" value="AuctionHouseSearchContext.SellCommodities" type="global"/>
 			<KeyValue key="refreshFrameXOffset" value="-8" type="number"/>
 			<KeyValue key="refreshFrameYOffset" value="30" type="number"/>

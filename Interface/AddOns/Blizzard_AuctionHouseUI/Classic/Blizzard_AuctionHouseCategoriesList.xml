@@ -63,7 +63,7 @@
 			<KeyValue key="layoutType" value="InsetFrameTemplate" type="string"/>
 			<KeyValue key="backgroundAtlas" value="auctionhouse-background-categories" type="string"/>
 			<KeyValue key="textureWidthClassic" value="138" type="number"/>
-			<KeyValue key="textureHeightClassic" value="433" type="number"/>
+			<KeyValue key="textureHeightClassic" value="434" type="number"/>
 		</KeyValues>
 		<Frames>
 			<Frame parentKey="NineSlice" useParentLevel="true" inherits="NineSlicePanelTemplate"/>

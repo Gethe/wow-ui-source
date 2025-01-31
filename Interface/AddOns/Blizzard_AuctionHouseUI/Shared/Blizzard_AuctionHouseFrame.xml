@@ -127,7 +127,7 @@
 				<KeyValues>
 					<KeyValue key="backgroundAtlas" value="auctionhouse-background-sell-right" type="string"/>
 					<KeyValue key="textureWidthClassic" value="399" type="number"/>
-					<KeyValue key="textureHeightClassic" value="418" type="number"/>
+					<KeyValue key="textureHeightClassic" value="419" type="number"/>
 					<KeyValue key="refreshFrameXOffset" value="-4" type="number"/>
 					<KeyValue key="refreshFrameYOffset" value="30" type="number"/>
 				</KeyValues>
@@ -191,7 +191,7 @@
 					<Anchor point="CENTER"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="hideCopper" value="true" type="boolean"/>
+					<KeyValue key="useAuctionHouseCopperValue" value="true" type="boolean"/>
 					<KeyValue key="useAuctionHouseIcons" value="true" type="boolean"/>
 					<KeyValue key="resizeToFit" value="true" type="boolean"/>
 				</KeyValues>
