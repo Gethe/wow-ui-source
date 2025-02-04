@@ -1,5 +1,3 @@
-GiantItemButtonStyleTemplate = GiantItemButtonTemplate;
-
 function AuctionCategoryMixin:AddBulkInventoryTypeCategories(classID, subClassID, inventoryTypes)
 	local inventoryTypeNone = nil;
 	local useParentFilters = true;

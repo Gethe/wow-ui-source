@@ -375,11 +375,13 @@ function WorldMapMixin:OnHide()
 	UpdateMicroButtons();
 end
 
+local function SecureRefreshOverlayFrame(_, frame)
+	frame:Refresh();
+end
+
 function WorldMapMixin:RefreshOverlayFrames()
 	if self.overlayFrames then
-		for i, frame in ipairs(self.overlayFrames) do
-			frame:Refresh();
-		end
+		secureexecuterange(self.overlayFrames, SecureRefreshOverlayFrame);
 	end
 end
 

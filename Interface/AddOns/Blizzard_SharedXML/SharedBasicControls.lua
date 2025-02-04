@@ -215,25 +215,9 @@ function ScriptErrorsFrameMixin:DisplayMessageInternal(msg, warnType, keepHidden
 end
 
 function ScriptErrorsFrameMixin:OnError(msg, warnType, keepHidden)
-	-- Example of how debug stack level is calculated
-	-- Current stack: [1, 2, 3, 4, 5] (current function is at 1, total current height is 5)
-	-- Stack at time of error: [1, 2] (these are currently now index 4 and 5, but at the time of error the stack height is 2)
-	-- To calcuate the level to debug (4): curentStackHeight - (errorStackHeight - 1) = 5 - (2 - 1) = 4
-	local currentStackHeight = GetCallstackHeight();
-	local errorCallStackHeight = GetErrorCallstackHeight();
-	local errorStackOffset = errorCallStackHeight and (errorCallStackHeight - 1);
-	local debugStackLevel = currentStackHeight - (errorStackOffset or 0);
-	local skipFunctionsAndUserdata = true;
+	local stack, locals = GetErrorData();
 
-	local stack = debugstack(debugStackLevel);
-	local locals = debuglocals(debugStackLevel, skipFunctionsAndUserdata);
-
-	-- Prevent K-string locals from causing SetText to fail validation
-	locals = string.gsub(locals, "|([kK])", "%1");
-
-	if LogAuroraClient then
-		LogAuroraClient("ae", "Lua Error ", "message", msg, "stack", stack);
-	end
+	C_Log.LogMessage(Enum.LogPriority.Error, string.format("Lua error: message=%s stack=%s", msg, stack));
 
 	local msgKey = msg.."\n"..stack;
 	self:DisplayMessageInternal(msg, warnType, keepHidden, locals, stack, msgKey);
@@ -360,15 +344,9 @@ function ScriptErrorsFrameMixin:ShowNext()
 	self:ChangeDisplayedIndex(1);
 end
 
-local function IsErrorCVarEnabled(errorTypeCVar)
-	return C_Glue.IsOnGlueScreen() or GetCVarBool(errorTypeCVar);
-end
-
 local function DisplayMessageInternal(errorTypeCVar, warnType, msg, messageType)
-	local hideErrorFrame = not IsErrorCVarEnabled(errorTypeCVar);
+	local hideErrorFrame = not GetCVarBool(errorTypeCVar);
 	ScriptErrorsFrame:DisplayMessage(msg, warnType, hideErrorFrame, messageType);
-
-	return msg;
 end
 
 function HandleLuaWarning(warnType, warningMessage)
@@ -380,8 +358,23 @@ function HandleLuaWarning(warnType, warningMessage)
 	DisplayMessageInternal(cvarName, warnType, warningMessage, MESSAGE_TYPE_WARNING);
 end
 
+local errorHandlers = {};
+
+function AddLuaErrorHandler(handler)
+	assert(issecure());
+	table.insert(errorHandlers, handler);
+end
+
 function HandleLuaError(errorMessage)
-	DisplayMessageInternal("scriptErrors", false, errorMessage, MESSAGE_TYPE_ERROR);
+	for index, handler in ipairs(errorHandlers) do
+		pcall(handler, errorMessage);
+	end
 end
 
 seterrorhandler(HandleLuaError);
+
+AddLuaErrorHandler(function(errorMessage)
+	local cvarName = "scriptErrors";
+	local warnType = false;
+	DisplayMessageInternal(cvarName, warnType, errorMessage, MESSAGE_TYPE_ERROR);
+end);

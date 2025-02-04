@@ -446,6 +446,7 @@ function SelectionBehaviorMixin:ToggleSelectElementData(elementData)
 
 	local newSelected = not oldSelected;
 	self:SetElementDataSelected_Internal(elementData, newSelected);
+	return newSelected;
 end
 
 function SelectionBehaviorMixin:SelectFirstElementData(predicate)
@@ -538,7 +539,7 @@ function SelectionBehaviorMixin:Select(frame)
 end
 
 function SelectionBehaviorMixin:ToggleSelect(frame)
-	self:ToggleSelectElementData(frame:GetElementData());
+	return self:ToggleSelectElementData(frame:GetElementData());
 end
 
 function ScrollUtil.AddSelectionBehavior(scrollBox, ...)

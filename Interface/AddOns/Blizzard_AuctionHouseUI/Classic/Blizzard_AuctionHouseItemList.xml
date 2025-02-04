@@ -45,8 +45,8 @@
 			<KeyValue key="layoutType" value="InsetFrameTemplate" type="string"/>
 			<KeyValue key="backgroundYOffset" value="-19" type="number"/>
 			<KeyValue key="backgroundTextureClassic" value="Interface\FrameGeneral\UI-Background-Marble" type="string"/>
-			<KeyValue key="textureXOffsetClassic" value="3" type="number"/>
-			<KeyValue key="textureYOffsetClassic" value="-3" type="number"/>
+			<KeyValue key="textureXOffsetClassic" value="2" type="number"/>
+			<KeyValue key="textureYOffsetClassic" value="-2" type="number"/>
 		</KeyValues>
 		<Frames>
 			<Frame parentKey="RefreshFrame" inherits="AuctionHouseRefreshFrameTemplate">

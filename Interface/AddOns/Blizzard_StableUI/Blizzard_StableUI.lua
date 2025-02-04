@@ -1276,8 +1276,9 @@ function StablePetSpecializationMixin:Refresh()
 			radio:AddInitializer(function(button, description, menu)
 				local texture = button:AttachTexture();
 				texture:SetSize(25, 25);
-				texture:SetPoint("LEFT", button.fontString, "RIGHT", 5, 0);
+				texture:SetPoint("LEFT", texture:GetParent(), "LEFT", 15, 0);
 				texture:SetAtlas(GetDropdownIconForPetSpec(option.name));
+				button.fontString:SetPoint("LEFT", texture, "RIGHT", 3, 0);
 			end);
 		end
 	end);

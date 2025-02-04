@@ -83,7 +83,7 @@
 
 			<Frame parentKey="BidFrame" inherits="AuctionHouseBidFrameTemplate">
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.BuyoutFrame" relativePoint="LEFT" x="-60" y="0"/>
+					<Anchor point="RIGHT" relativeKey="$parent.BuyoutFrame" relativePoint="LEFT" x="-58" y="0"/>
 				</Anchors>
 			</Frame>
 
@@ -92,7 +92,7 @@
 					<KeyValue key="backgroundAtlas" value="auctionhouse-background-summarylist" type="string"/>
 					<KeyValue key="backgroundTextureClassic" value="Interface\QuestFrame\UI-TextBackground-BackdropBackground" type="string"/>
 					<KeyValue key="textureWidthClassic" value="138" type="number"/>
-					<KeyValue key="textureHeightClassic" value="433" type="number"/>
+					<KeyValue key="textureHeightClassic" value="434" type="number"/>
 					<KeyValue key="textureXOffsetClassic" value="3" type="number"/>
 					<KeyValue key="textureYOffsetClassic" value="-2" type="number"/>
 				</KeyValues>
@@ -129,8 +129,8 @@
 					<KeyValue key="backgroundAtlas" value="auctionhouse-background-buy-noncommodities-header" type="string"/>
 					<KeyValue key="backgroundTextureClassic" value="Interface\QuestFrame\UI-TextBackground-BackdropBackground" type="string"/>
 					<KeyValue key="textureWidthClassic" value="617" type="number"/>
-					<KeyValue key="textureHeightClassic" value="81" type="number"/>
-					<KeyValue key="textureYOffsetClassic" value="-3" type="number"/>
+					<KeyValue key="textureHeightClassic" value="82" type="number"/>
+					<KeyValue key="textureYOffsetClassic" value="-2" type="number"/>
 					<KeyValue key="textureXOffsetClassic" value="3" type="number"/>
 					
 				</KeyValues>
@@ -145,7 +145,7 @@
 				<KeyValues>
 					<KeyValue key="backgroundAtlas" value="auctionhouse-background-index" type="string"/>
 					<KeyValue key="textureWidthClassic" value="595" type="number"/>
-					<KeyValue key="textureHeightClassic" value="413" type="number"/>
+					<KeyValue key="textureHeightClassic" value="414" type="number"/>
 					<KeyValue key="refreshFrameXOffset" value="-4" type="number"/>
 					<KeyValue key="refreshFrameYOffset" value="34" type="number"/>
 				</KeyValues>
@@ -160,7 +160,7 @@
 				<KeyValues>
 					<KeyValue key="backgroundAtlas" value="auctionhouse-background-index" type="string"/>
 					<KeyValue key="textureWidthClassic" value="595" type="number"/>
-					<KeyValue key="textureHeightClassic" value="413" type="number"/>
+					<KeyValue key="textureHeightClassic" value="414" type="number"/>
 					<KeyValue key="refreshFrameXOffset" value="-4" type="number"/>
 					<KeyValue key="refreshFrameYOffset" value="34" type="number"/>
 				</KeyValues>
@@ -174,7 +174,7 @@
 				<KeyValues>
 					<KeyValue key="backgroundAtlas" value="auctionhouse-background-auctions" type="string"/>
 					<KeyValue key="textureWidthClassic" value="595" type="number"/>
-					<KeyValue key="textureHeightClassic" value="314" type="number"/>
+					<KeyValue key="textureHeightClassic" value="315" type="number"/>
 					<KeyValue key="refreshFrameXOffset" value="-4" type="number"/>
 					<KeyValue key="refreshFrameYOffset" value="133" type="number"/>
 				</KeyValues>
@@ -190,7 +190,7 @@
 				<KeyValues>
 					<KeyValue key="backgroundAtlas" value="auctionhouse-background-auctions" type="string"/>
 					<KeyValue key="textureWidthClassic" value="595" type="number"/>
-					<KeyValue key="textureHeightClassic" value="314" type="number"/>
+					<KeyValue key="textureHeightClassic" value="315" type="number"/>
 					<KeyValue key="searchContext" value="AuctionHouseSearchContext.AuctionsCommodities" type="global"/>
 					<KeyValue key="refreshFrameXOffset" value="-4" type="number"/>
 					<KeyValue key="refreshFrameYOffset" value="133" type="number"/>

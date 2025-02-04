@@ -988,6 +988,15 @@ local AuctionHouse =
 			},
 		},
 		{
+			Name = "ShouldAutoPopulatePrice",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "shouldAutoPopulatePrice", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "StartCommoditiesPurchase",
 			Type = "Function",
 
@@ -995,6 +1004,15 @@ local AuctionHouse =
 			{
 				{ Name = "itemID", Type = "number", Nilable = false },
 				{ Name = "quantity", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SupportsCopperValues",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "supportsCopperValues", Type = "bool", Nilable = false },
 			},
 		},
 	},

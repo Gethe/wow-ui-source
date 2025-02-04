@@ -97,18 +97,20 @@ function GlueWarbandSceneJounalMixin:SetupJournalDropdown()
 	end
 
 	local function IsSelected(index)
-		return self.selectedGroupInfo.groupID == self.GroupInfo[index].groupID;
+		return self.selectedGroupInfo and self.selectedGroupInfo.groupID == self.GroupInfo[index].groupID;
 	end
 
 	local function SetSelected(index)
 		SetSelectedGroupInfo(self.GroupInfo[index].groupID, self.GroupInfo[index].warbandSceneID);
 
-		self.IconsFrame.Icons:GoToElementByPredicate(function(elementData)
-			return elementData.warbandSceneID == self.selectedGroupInfo.warbandSceneID;
-		end);
+		if self.selectedGroupInfo then
+			self.IconsFrame.Icons:GoToElementByPredicate(function(elementData)
+				return elementData.warbandSceneID == self.selectedGroupInfo.warbandSceneID;
+			end);
 
-		-- Update selected states.
-		self:SelectWarbandScene(self.selectedGroupInfo.warbandSceneID);
+			-- Update selected states.
+			self:SelectWarbandScene(self.selectedGroupInfo.warbandSceneID);
+		end
 	end
 
 	-- Set initial selected dropdown entry based on current selected character. If they are in a group use that, if they are not select first entry.
@@ -119,12 +121,11 @@ function GlueWarbandSceneJounalMixin:SetupJournalDropdown()
 
 	self.selectedGroupInfo = nil;
 	for _, groupInfo in ipairs(self.GroupInfo) do
-		if selectedElementData and selectedElementData.isGroup then
-			if selectedElementData.groupID == groupInfo.groupID then
-				SetSelectedGroupInfo(groupInfo.groupID, groupInfo.warbandSceneID);
-				break;
-			end
-		else
+		if self.selectedGroupInfo == nil then
+			SetSelectedGroupInfo(groupInfo.groupID, groupInfo.warbandSceneID);
+		end
+
+		if selectedElementData and selectedElementData.isGroup and selectedElementData.groupID == groupInfo.groupID then
 			SetSelectedGroupInfo(groupInfo.groupID, groupInfo.warbandSceneID);
 			break;
 		end

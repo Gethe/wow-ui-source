@@ -48,7 +48,7 @@ end
 function AuctionHouseCommoditiesSellFrameMixin:UpdatePriceSelection()
 	self:ClearSearchResultPrice();
 
-	if self:GetUnitPrice() == self:GetDefaultPrice() then
+	if (self:GetUnitPrice() == self:GetDefaultPrice() and C_AuctionHouse.ShouldAutoPopulatePrice()) then
 		local itemLocation = self:GetItem();
 		if itemLocation then
 			local firstSearchResult = C_AuctionHouse.GetCommoditySearchResultInfo(C_Item.GetItemID(itemLocation), 1);
@@ -56,10 +56,16 @@ function AuctionHouseCommoditiesSellFrameMixin:UpdatePriceSelection()
 				self:GetCommoditiesSellList():SetSelectedEntry(firstSearchResult);
 			end
 		end
+	else
+		self:GetCommoditiesSellList():SetSelectedEntry(nil);
 	end
 end
 
 function AuctionHouseCommoditiesSellFrameMixin:OnAuctionSelected(commoditySearchResult)
+	if (not commoditySearchResult) then
+		return;
+	end
+
 	self.PriceInput:SetAmount(commoditySearchResult.unitPrice);
 	self:SetSearchResultPrice(commoditySearchResult.unitPrice);
 end

@@ -11,6 +11,13 @@ local function GetEventPOI(uiMapID, areaPoiID)
 	return poiInfo;
 end
 
+local function ShouldShowTimeLeftInTooltip(poiInfo)
+	if poiInfo.tooltipWidgetSet == 1355 then
+		return false;
+	end
+	return true;
+end
+
 local function ShouldHideRewardedEvents()
 	-- return GetCVarBool("hideRewardedEvents");
 	return false; -- remove this when issues are addressed
@@ -436,7 +443,7 @@ end
 EventSchedulerBaseEntryMixin = { };
 
 function EventSchedulerBaseEntryMixin:OnEnter()
-	AreaPoiUtil.TryShowTooltip(self, "ANCHOR_RIGHT", self.info);
+	self:UpdateTooltip();
 	if not self:HasRewardsClaimed() then
 		self.Name:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
 		self.Location:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
@@ -460,6 +467,16 @@ function EventSchedulerBaseEntryMixin:OnMouseUp(button, upInside)
 			OpenMapToEventPoi(self.info.areaPoiID);
 		end
 	end
+end
+
+function EventSchedulerBaseEntryMixin:UpdateTooltip()
+	if self.showTimeLeft then
+		self.info.secondsLeft = self.eventInfo.endTime - time();
+	else
+		self.info.secondsLeft = nil;
+	end
+
+	AreaPoiUtil.TryShowTooltip(self, "ANCHOR_RIGHT", self.info);
 end
 
 function EventSchedulerBaseEntryMixin:HasDisplayName()
@@ -549,6 +566,9 @@ function EventSchedulerScheduledEntryMixin:Init(data)
 
 	self.info = data.poiInfo;
 	self.eventInfo = data.eventInfo;
+
+	-- data.active also rules out ongoing events, which do not have an active state
+	self.showTimeLeft = data.active and ShouldShowTimeLeftInTooltip(self.info);
 
 	if not EventSchedulerAnimationManager:HasAnim(self.eventInfo.eventKey, AnimType.Expired) then
 		self:SetAlpha(1);

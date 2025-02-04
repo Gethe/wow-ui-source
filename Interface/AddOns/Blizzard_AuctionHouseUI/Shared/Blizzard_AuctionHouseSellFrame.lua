@@ -408,6 +408,10 @@ function AuctionHouseSellFrameMixin:GetItem()
 end
 
 function AuctionHouseSellFrameMixin:GetDefaultPrice()
+	if (not C_AuctionHouse.ShouldAutoPopulatePrice() ) then
+		return 0;
+	end
+
 	local itemLocation = self:GetItem();
 	if itemLocation and itemLocation:IsValid() then
 		local itemLink = C_Item.GetItemLink(itemLocation);
@@ -484,7 +488,10 @@ end
 
 function AuctionHouseSellFrameMixin:UpdateDeposit()
 	local depositCost = self:GetDepositAmount();
-	depositCost = math.ceil(depositCost / COPPER_PER_SILVER) * COPPER_PER_SILVER;
+
+	if ( not C_AuctionHouse.SupportsCopperValues() ) then
+		depositCost = math.ceil(depositCost / COPPER_PER_SILVER) * COPPER_PER_SILVER;
+	end
 	self.Deposit:SetAmount(depositCost);
 end
 

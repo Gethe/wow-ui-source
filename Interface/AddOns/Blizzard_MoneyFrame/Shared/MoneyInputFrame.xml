@@ -24,8 +24,10 @@
 
 	<Frame name="LargeMoneyInputFrameTemplate" mixin="LargeMoneyInputFrameMixin" virtual="true">
 		<!-- hideCopper: Hide the copper display for this input frame.
+		useAuctionHouseCopperValue: Defer to auction house whether we should hide copper amount.
 		<KeyValues>
 			<KeyValue key="hideCopper" value="true" type="boolean"/>
+			<KeyValue key="useAuctionHouseCopperValue" value="true" type="boolean"/>
 		</KeyValues>
 		-->
 		<Frames>

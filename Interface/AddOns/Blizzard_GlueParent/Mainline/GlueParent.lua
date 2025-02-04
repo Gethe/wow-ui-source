@@ -375,9 +375,7 @@ function GlueParent_EnsureValidScreen()
 	if ( not GlueParent_IsScreenValid(currentScreen) ) then
 		local bestScreen = GlueParent_GetBestScreen();
 
-		LogAuroraClient("ae", "Screen invalid. Changing ",
-			"changingFrom", currentScreen,
-			"changingTo", bestScreen);
+		C_Log.LogMessage(Enum.LogPriority.Normal, string.format("Screen invalid. Changing from=\"%s\" to=\"%s\"", currentScreen or "none", bestScreen));
 
 		GlueParent_SetScreen(bestScreen);
 	end
@@ -395,7 +393,7 @@ local function GlueParent_UpdateScreenSound(screenInfo)
 end
 
 local function GlueParent_ChangeScreen(screenInfo, screenTable)
-	LogAuroraClient("ae", "Switching to screen ", "screen", screenInfo.frame);
+	C_Log.LogMessage(Enum.LogPriority.Normal, string.format("Switching to screen=\"%s\"", screenInfo.frame));
 
 	--Hide all other screens
 	for key, info in pairs(screenTable) do
@@ -900,7 +898,7 @@ end
 local GLUE_PrintHandler =
     function(...)
 		local printMsg = string.join(" ", tostringall(...));
-		ConsoleAddMessage(printMsg)
+		C_Log.LogMessage(Enum.LogPriority.Normal, printMsg);
 	end
 
 setprinthandler(GLUE_PrintHandler);

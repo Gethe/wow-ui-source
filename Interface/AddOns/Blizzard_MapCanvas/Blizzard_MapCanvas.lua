@@ -16,9 +16,9 @@ function MapCanvasMixin:OnLoad()
 	self.pinsToNudge = {};
 	self.pinFrameLevelsManager = CreateFromMixins(MapCanvasPinFrameLevelsManagerMixin);
 	self.pinFrameLevelsManager:Initialize();
-	self.mouseClickHandlers = {};
-	self.globalPinMouseActionHandlers = {};
-	self.cursorHandlers = {};
+	self.mouseClickHandlers = MapCanvasSecureUtil.CreateHandlerRegistry();
+	self.globalPinMouseActionHandlers = MapCanvasSecureUtil.CreateHandlerRegistry();
+	self.cursorHandlers = MapCanvasSecureUtil.CreateHandlerRegistry();
 	self.pinSuppressors = {};
 
 	self:EvaluateLockReasons();
@@ -988,76 +988,44 @@ function MapCanvasMixin:NavigateToCursor(ignoreZoneMapPositionData)
 	return false;
 end
 
-local function PrioritySorter(left, right)
-	return left.priority > right.priority;
-end
-
 -- Add a function that will be checked when the canvas is clicked
 -- If the function returns true then handling will stop
 -- A priority can optionally be specified, higher priority values will be called first
 function MapCanvasMixin:AddCanvasClickHandler(handler, priority)
-	table.insert(self.mouseClickHandlers, { handler = handler, priority = priority or 0 });
-	table.sort(self.mouseClickHandlers, PrioritySorter);
+	self.mouseClickHandlers:AddHandler(handler, priority);
 end
 
 function MapCanvasMixin:RemoveCanvasClickHandler(handler, priority)
-	for i, handlerInfo in ipairs(self.mouseClickHandlers) do
-		if handlerInfo.handler == handler and (not priority or handlerInfo.priority == priority) then
-			table.remove(self.mouseClickHandlers, i);
-			break;
-		end
-	end
+	self.mouseClickHandlers:RemoveHandler(handler, priority);
 end
 
 function MapCanvasMixin:ProcessCanvasClickHandlers(button, cursorX, cursorY)
-	for i, handlerInfo in ipairs(self.mouseClickHandlers) do
-		local success, stopChecking = xpcall(handlerInfo.handler, CallErrorHandler, self, button, cursorX, cursorY);
-		if success and stopChecking then
-			return true;
-		end
-	end
-	return false;
+	local success, stopChecking = self.mouseClickHandlers:InvokeHandlers(self, button, cursorX, cursorY);
+	return success, stopChecking;
 end
 
 -- Add a function that will be checked when any pin is clicked
 -- If the function returns true then handling will stop
 -- A priority can optionally be specified, higher priority values will be called first
 function MapCanvasMixin:AddGlobalPinMouseActionHandler(handler, priority)
-	table.insert(self.globalPinMouseActionHandlers, { handler = handler, priority = priority or 0 });
-	table.sort(self.globalPinMouseActionHandlers, PrioritySorter);
+	self.globalPinMouseActionHandlers:AddHandler(handler, priority);
 end
 
 function MapCanvasMixin:RemoveGlobalPinMouseActionHandler(handler, priority)
-	for i, handlerInfo in ipairs(self.globalPinMouseActionHandlers) do
-		if handlerInfo.handler == handler and (not priority or handlerInfo.priority == priority) then
-			table.remove(self.globalPinMouseActionHandlers, i);
-			break;
-		end
-	end
+	self.globalPinMouseActionHandlers:RemoveHandler(handler, priority);
 end
 
 function MapCanvasMixin:ProcessGlobalPinMouseActionHandlers(mouseAction, button)
-	for i, handlerInfo in ipairs(self.globalPinMouseActionHandlers) do
-		local success, stopChecking = xpcall(handlerInfo.handler, CallErrorHandler, self, mouseAction, button);
-		if success and stopChecking then
-			return true;
-		end
-	end
-	return false;
+	local success, stopChecking = self.globalPinMouseActionHandlers:InvokeHandlers(self, mouseAction, button);
+	return success, stopChecking;
 end
 
 function MapCanvasMixin:AddCursorHandler(handler, priority)
-	table.insert(self.cursorHandlers, { handler = handler, priority = priority or 0 });
-	table.sort(self.cursorHandlers, PrioritySorter);
+	self.cursorHandlers:AddHandler(handler, priority);
 end
 
 function MapCanvasMixin:RemoveCursorHandler(handler, priority)
-	for i, handlerInfo in ipairs(self.cursorHandlers) do
-		if handlerInfo.handler == handler and (not priority or handlerInfo.priority == priority) then
-			table.remove(self.cursorHandlers, i);
-			break;
-		end
-	end
+	self.cursorHandlers:RemoveHandler(handler, priority);
 end
 
 function MapCanvasMixin:ProcessCursorHandlers()
@@ -1071,13 +1039,11 @@ function MapCanvasMixin:ProcessCursorHandlers()
 	end
 	-- pins have a .owningMap, our pins should be pointing to us
 	if self.ScrollContainer:IsMouseMotionFocus() or isFocusOwningMap then
-		for i, handlerInfo in ipairs(self.cursorHandlers) do
-			local success, cursor = xpcall(handlerInfo.handler, CallErrorHandler, self);
-			if success and cursor then
-				self.lastCursor = cursor;
-				SetCursor(cursor);
-				return;
-			end
+		local success, cursor = self.cursorHandlers:InvokeHandlers(self);
+		if success and cursor then
+			self.lastCursor = cursor;
+			SetCursor(cursor);
+			return;
 		end
 	end
 	if self.lastCursor then

@@ -70,6 +70,9 @@ end
 
 function DelvesCompanionAbilityListFrameMixin:Refresh(ignoreDropdown, ignoreLoadTree)
 	if not ignoreLoadTree then
+		local traitTreeID = C_DelvesUI.GetTraitTreeForCompanion();
+		self:SetConfigID(C_Traits.GetConfigIDByTreeID(traitTreeID));
+		self:SetTalentTreeID(traitTreeID);
 		self:ClearButtons();
 		self:LoadTalentTree();
 	else

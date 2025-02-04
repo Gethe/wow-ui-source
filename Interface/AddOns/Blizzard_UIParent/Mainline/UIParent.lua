@@ -3355,7 +3355,8 @@ end
 
 
 function ConsolePrint(...)
-	ConsoleAddMessage(string.join(" ", tostringall(...)));
+	local printMsg = string.join(" ", tostringall(...));
+	C_Log.LogMessage(Enum.LogPriority.Normal, printMsg);
 end
 
 function LFD_IsEmpowered()
@@ -3526,17 +3527,7 @@ NUMBER_ABBREVIATION_DATA = {
 	{ breakpoint = 1000000,			abbreviation = SECOND_NUMBER_CAP_NO_SPACE,		significandDivisor = 100000,		fractionDivisor = 10 },
 	{ breakpoint = 10000,			abbreviation = FIRST_NUMBER_CAP_NO_SPACE,		significandDivisor = 1000,			fractionDivisor = 1 },
 	{ breakpoint = 1000,			abbreviation = FIRST_NUMBER_CAP_NO_SPACE,		significandDivisor = 100,			fractionDivisor = 10 },
-}
-
-function AbbreviateNumbers(value)
-	for i, data in ipairs(NUMBER_ABBREVIATION_DATA) do
-		if value >= data.breakpoint then
-			local finalValue = math.floor(value / data.significandDivisor) / data.fractionDivisor;
-			return finalValue .. data.abbreviation;
-		end
-	end
-	return tostring(value);
-end
+};
 
 function IsInLFDBattlefield()
 	return IsLFGModeActive(LE_LFG_CATEGORY_BATTLEFIELD);

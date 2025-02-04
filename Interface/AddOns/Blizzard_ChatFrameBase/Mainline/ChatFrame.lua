@@ -18,6 +18,10 @@ MAX_COUNTDOWN_SECONDS = 3600; -- One Hour
 ACTIVE_CHAT_EDIT_BOX = nil;
 LAST_ACTIVE_CHAT_EDIT_BOX = nil;
 
+DevTools_AddMessageHandler(function(msg)
+	DEFAULT_CHAT_FRAME:AddMessage(msg);
+end);
+
 function GetBNPlayerLink(name, linkDisplayText, bnetIDAccount, lineID, chatType, chatTarget)
 	return LinkUtil.FormatLink("BNplayer", linkDisplayText, name, bnetIDAccount, lineID or 0, chatType, chatTarget);
 end
@@ -3517,7 +3521,7 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 		local oldLevel, newLevel, real = ...;
 		if real and oldLevel ~= 0 and newLevel ~= 0 then
 			if newLevel > oldLevel then
-				local chatLinkLevelToastsDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.ChatLinkLevelToastsDisabled);
+				local chatLinkLevelToastsDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.ChatLinkLevelToastsDisabled) or C_PlayerInfo.IsPlayerNPERestricted();
 				local levelstring = not chatLinkLevelToastsDisabled and format(LEVEL_UP, newLevel, newLevel) or format(LEVEL_UP_NO_LINK, newLevel);
 				local info = ChatTypeInfo["SYSTEM"];
 				self:AddMessage(levelstring, info.r, info.g, info.b, info.id);

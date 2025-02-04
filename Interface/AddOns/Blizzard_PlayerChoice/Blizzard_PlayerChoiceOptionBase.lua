@@ -351,8 +351,12 @@ function PlayerChoiceBaseOptionButtonFrameTemplateMixin:Setup(buttonInfo, option
 		self.ListText:SetTextColor(fontColor:GetRGBA());
 		self.ListText:SetText(buttonInfo.listText);
 		self.ListText:Show();
+		self:SetScript("OnEnter", function() self.Button:OnEnter() end);
+		self:SetScript("OnLeave", function() self.Button:OnLeave() end);
 	else
 		self.ListText:Hide();
+		self:SetScript("OnEnter", nil);
+		self:SetScript("OnLeave", nil);
 	end
 
 	self.Button:Setup(buttonInfo, optionInfo);
@@ -465,6 +469,10 @@ function PlayerChoiceBaseOptionButtonTemplateMixin:OnClick()
 		end
 	else
 		self:OnConfirm();
+	end
+
+	if self.soundKitID then
+		PlaySound(self.soundKitID);
 	end
 end
 

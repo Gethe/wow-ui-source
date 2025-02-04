@@ -1813,6 +1813,10 @@ function PanelDragBarMixin:OnDragStart()
 		continueDragStart = target.onDragStartCallback(self);
 	end
 
+	if self.onDragStartCallback then
+		continueDragStart = self.onDragStartCallback(self);
+	end
+
 	if continueDragStart then
 		target:StartMoving();
 	end
@@ -1830,6 +1834,10 @@ function PanelDragBarMixin:OnDragStop()
 		continueDragStop = target.onDragStopCallback(self);
 	end
 
+	if self.onDragStopCallback then
+		continueDragStop = self.onDragStopCallback(self);
+	end
+
 	if continueDragStop then
 		target:StopMovingOrSizing();
 	end
@@ -1837,6 +1845,14 @@ function PanelDragBarMixin:OnDragStop()
 	if SetCursor then
 		SetCursor(nil);
 	end
+end
+
+function PanelDragBarMixin:SetOnDragStartCallback(onDragStartCallback)
+	self.onDragStartCallback = onDragStartCallback;
+end
+
+function PanelDragBarMixin:SetOnDragStopCallback(onDragStopCallback)
+	self.onDragStopCallback = onDragStopCallback;
 end
 
 PanelResizeButtonMixin = {};
@@ -1852,16 +1868,26 @@ function PanelResizeButtonMixin:Init(target, minWidth, minHeight, maxWidth, maxH
 	target:SetScript("OnSizeChanged", function(target, width, height)
 		originalTargetOnSizeChanged(target, width, height);
 
+		local newWidth = width;
 		if width < self.minWidth then
-			target:SetWidth(self.minWidth);
+			newWidth = self.minWidth;
+			target:SetWidth(newWidth);
 		elseif self.maxWidth and width > self.maxWidth then
-			target:SetWidth(self.maxWidth);
+			newWidth = self.maxWidth;
+			target:SetWidth(newWidth);
 		end
 
+		local newHeight = height;
 		if height < self.minHeight then
-			target:SetHeight(self.minHeight);
+			newHeight = self.minHeight;
+			target:SetHeight(newHeight);
 		elseif self.maxHeight and height > self.maxHeight then
-			target:SetHeight(self.maxHeight);
+			newHeight = self.maxHeight;
+			target:SetHeight(newHeight);
+		end
+
+		if self.resizeCallback then
+			self.resizeCallback(self, newWidth, newHeight, self.isActive);
 		end
 	end);
 
@@ -1951,6 +1977,10 @@ end
 
 function PanelResizeButtonMixin:SetOnResizeStoppedCallback(resizeStoppedCallback)
 	self.resizeStoppedCallback = resizeStoppedCallback;
+end
+
+function PanelResizeButtonMixin:SetOnResizeCallback(resizeCallback)
+	self.resizeCallback = resizeCallback;
 end
 
 AlphaHighlightButtonMixin = {};

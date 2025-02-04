@@ -12,6 +12,7 @@ local MAX_NUM_MESSAGE_HISTORY = 1000;
 
 DeveloperConsoleMixin = {};
 
+
 function DeveloperConsoleMixin:OnLoad()
 	self:RegisterEvent("ADDON_LOADED");
 	self:RegisterEvent("ADDONS_UNLOADING");
@@ -50,6 +51,10 @@ function DeveloperConsoleMixin:OnLoad()
 	if IsGMClient() then
 		self.CheatBrowserToggle:Show();
 	end
+
+	DevTools_AddMessageHandler(function(msg)
+		self.MessageFrame:AddMessage(msg);
+	end);
 end
 
 function DeveloperConsoleMixin:RestoreMessageHistory()
@@ -212,6 +217,7 @@ function DeveloperConsoleMixin:UpdateAnchors()
 	self:ValidateHeight();
 	self.AutoComplete:OnAvailableHeightChanged();
 end
+
 
 function DeveloperConsoleMixin:OnMouseWheel(delta)
 	if IsControlKeyDown() then

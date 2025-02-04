@@ -249,7 +249,9 @@ do
 				self:AddBlankTooltipLine();
 			end
 			self:AddTooltipLine("Option ID: "..optionData.id, HIGHLIGHT_FONT_COLOR);
-			self:AddTooltipLine("Choice ID: "..currentChoice.id, HIGHLIGHT_FONT_COLOR);
+			if currentChoice then
+				self:AddTooltipLine("Choice ID: "..currentChoice.id, HIGHLIGHT_FONT_COLOR);
+			end
 		end
 
 		local rootDescription = MenuUtil.CreateRootMenuDescription(MenuStyle2Mixin);

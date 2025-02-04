@@ -33,6 +33,7 @@ local function TryHideTooltip(frame)
 	local tooltip = GetAppropriateTooltip();
 	if tooltip:GetOwner() == frame then
 		tooltip:Hide();
+		tooltip:SetWindow(nil);
 	end
 end
 
@@ -1993,6 +1994,7 @@ function MenuManagerMixin:GenerateSubmenuInternal(menuDescription, level, relati
 	params.menuDescription = menuDescription;
 	params.level = level;
 	params.menuPositionFunc = SetMenuPosition;
+	params.relativeFrame = relativeFrame;
 	return self:GenerateMenuInternal(params);
 end
 
@@ -2076,6 +2078,17 @@ function MenuManagerMixin:AcquireMenu(params)
 	if anchor then
 		local relativeTo = anchor:GetRelativeTo();
 		window = relativeTo:GetWindow();
+	end
+
+	if not window then
+		local relativeFrame = params.relativeFrame;
+		if relativeFrame then
+			window = relativeFrame:GetWindow();
+		end
+	end
+
+	if (not window) and ownerRegion then
+		window = ownerRegion:GetWindow();
 	end
 
 	proxy:SetWindow(window);

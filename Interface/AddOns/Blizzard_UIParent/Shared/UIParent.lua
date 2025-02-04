@@ -21,6 +21,23 @@ function ToggleLFGFrame()
 	end
 end
 
+-- Note: Numeric abbreviation data is presently defined in game-specific files.
+NUMBER_ABBREVIATION_DATA = {};
+
+function GetLocalizedNumberAbbreviationData()
+	return NUMBER_ABBREVIATION_DATA;
+end
+
+function AbbreviateNumbers(value)
+	for i, data in ipairs(GetLocalizedNumberAbbreviationData()) do
+		if value >= data.breakpoint then
+			local finalValue = math.floor(value / data.significandDivisor) / data.fractionDivisor;
+			return finalValue .. data.abbreviation;
+		end
+	end
+	return tostring(value);
+end
+
 UIParentManagedFrameMixin = { };
 function UIParentManagedFrameMixin:OnShow()
 	self.layoutParent:AddManagedFrame(self);

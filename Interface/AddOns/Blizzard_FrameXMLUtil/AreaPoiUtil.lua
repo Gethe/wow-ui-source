@@ -3,7 +3,7 @@ AreaPoiUtil = {};
 function AreaPoiUtil.TryShowTooltip(region, anchor, poiInfo, customFn)
 	local hasDescription = poiInfo.description and poiInfo.description ~= "";
 	local isTimed, hideTimer = C_AreaPoiInfo.IsAreaPOITimed(poiInfo.areaPoiID);
-	local showTimer = isTimed and not hideTimer;
+	local showTimer = poiInfo.secondsLeft or (isTimed and not hideTimer);
 	local hasWidgetSet = poiInfo.tooltipWidgetSet ~= nil;
 
 	local hasTooltip = hasDescription or showTimer or hasWidgetSet;
@@ -25,7 +25,7 @@ function AreaPoiUtil.TryShowTooltip(region, anchor, poiInfo, customFn)
 		end
 
 		if showTimer then
-			local secondsLeft = C_AreaPoiInfo.GetAreaPOISecondsLeft(poiInfo.areaPoiID);
+			local secondsLeft = poiInfo.secondsLeft or C_AreaPoiInfo.GetAreaPOISecondsLeft(poiInfo.areaPoiID);
 			if secondsLeft and secondsLeft > 0 then
 				local timeString = SecondsToTime(secondsLeft);
 				timeString = HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(timeString);

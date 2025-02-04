@@ -1,12 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
-
-	<EventFrame name="DummyAuctionHouseScrollBarTemplate" inherits="MinimalScrollBar" virtual="true">
-		<Anchors>
-			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="5" y="-2"/>
-			<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="5" y="7"/>
-		</Anchors>
-	</EventFrame>
 	
 	<Frame name="BrowseWowTokenResultsTemplate" inherits="AuctionHouseBackgroundTemplate" virtual="true">
 		<KeyValues>
@@ -14,7 +7,7 @@
 			<KeyValue key="backgroundTextureClassic" value="Interface\FrameGeneral\UI-Background-Marble" type="string"/>
 			<KeyValue key="textureWidthClassic" value="595" type="number"/>
 			<KeyValue key="textureHeightClassic" value="413" type="number"/>
-			<KeyValue key="textureXOffsetClassic" value="3" type="number"/>
+			<KeyValue key="textureXOffsetClassic" value="2" type="number"/>
 			<KeyValue key="textureYOffsetClassic" value="-3" type="number"/>
 		</KeyValues>
 		<Size x="634" y="306"/>
@@ -286,8 +279,11 @@
 	<Frame name="WoWTokenSellFrameTemplate" mixin="WoWTokenSellFrameMixin" inherits="AuctionHouseBackgroundTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="backgroundAtlas" value="auctionhouse-background-sell-left" type="string"/>
+			<KeyValue key="backgroundTextureClassic" value="Interface\QuestFrame\UI-TextBackground-BackdropBackground" type="string"/>
+			<KeyValue key="textureXOffsetClassic" value="3" type="number"/>
+			<KeyValue key="textureYOffsetClassic" value="-2" type="number"/>
 			<KeyValue key="textureWidthClassic" value="357" type="number"/>
-			<KeyValue key="textureHeightClassic" value="437" type="number"/>
+			<KeyValue key="textureHeightClassic" value="438" type="number"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -391,8 +387,11 @@
 			<Frame parentKey="DummyItemList" inherits="AuctionHouseBackgroundTemplate">
 				<KeyValues>
 					<KeyValue key="backgroundAtlas" value="auctionhouse-background-sell-right" type="string"/>
+					<KeyValue key="backgroundTextureClassic" value="Interface\FrameGeneral\UI-Background-Marble" type="string"/>
 					<KeyValue key="textureWidthClassic" value="399" type="number"/>
 					<KeyValue key="textureHeightClassic" value="418" type="number"/>
+					<KeyValue key="textureXOffsetClassic" value="2" type="number"/>
+					<KeyValue key="textureYOffsetClassic" value="-3" type="number"/>
 				</KeyValues>
 				<Size x="405" y="0"/>
 				<Anchors>

@@ -33,6 +33,10 @@ end
 LargeMoneyInputFrameMixin = {};
 
 function LargeMoneyInputFrameMixin:OnLoad()
+	if ( self.useAuctionHouseCopperValue) then
+		self.hideCopper = not C_AuctionHouse.SupportsCopperValues();
+	end
+
 	if self.hideCopper then
 		self.CopperBox:Hide();
 		self.SilverBox:ClearAllPoints();
@@ -51,6 +55,10 @@ function LargeMoneyInputFrameMixin:OnLoad()
 end
 
 function LargeMoneyInputFrameMixin:SetNextEditBox(nextEditBox)
+	if ( self.useAuctionHouseCopperValue) then
+		self.hideCopper = not C_AuctionHouse.SupportsCopperValues();
+	end
+
 	if self.hideCopper then
 		self.SilverBox.nextEditBox = nextEditBox or self.GoldBox;
 

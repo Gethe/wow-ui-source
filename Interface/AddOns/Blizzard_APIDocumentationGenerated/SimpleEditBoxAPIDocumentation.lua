@@ -257,6 +257,19 @@ local SimpleEditBoxAPI =
 			},
 		},
 		{
+			Name = "GetNumLines",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "lines", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetNumber",
 			Type = "Function",
 

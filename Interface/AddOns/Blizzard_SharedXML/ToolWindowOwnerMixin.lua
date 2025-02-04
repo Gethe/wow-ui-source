@@ -56,6 +56,15 @@ function ToolWindowOwnerMixin:MoveToNewWindow(title, width, height, minWidth, mi
 	return true;
 end
 
+function ToolWindowOwnerMixin:SetWindowFocus()
+	local window = self:GetWindow();
+	if not window then
+		return;
+	end
+
+	window:SetFocus();
+end
+
 function ToolWindowOwnerMixin:MoveToMainWindow()
 	local window = self:GetWindow();
 	if not window then

@@ -12,9 +12,9 @@
 
 			<KeyValue key="backgroundAtlas" value="auctionhouse-background-buy-commodities" type="string"/>
 			<KeyValue key="backgroundTextureClassic" value="Interface\QuestFrame\UI-TextBackground-BackdropBackground" type="string"/>
-			<KeyValue key="textureWidthClassic" value="367" type="number"/>
-			<KeyValue key="textureHeightClassic" value="396" type="number"/>
-			<KeyValue key="textureXOffsetClassic" value="3" type="number"/>
+			<KeyValue key="textureWidthClassic" value="368" type="number"/>
+			<KeyValue key="textureHeightClassic" value="397" type="number"/>
+			<KeyValue key="textureXOffsetClassic" value="2" type="number"/>
 			<KeyValue key="textureYOffsetClassic" value="-2" type="number"/>
 		</KeyValues>
 		<Frames>

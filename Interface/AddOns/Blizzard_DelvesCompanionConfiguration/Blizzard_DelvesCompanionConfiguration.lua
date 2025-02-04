@@ -318,7 +318,7 @@ function CompanionConfigSlotTemplateMixin:OnShow()
     local traitTreeID = C_DelvesUI.GetTraitTreeForCompanion();
 
     self:RegisterEvent("GLOBAL_MOUSE_DOWN");
-    self.configID = self.configID or C_Traits.GetConfigIDByTreeID(traitTreeID);
+    self.configID = C_Traits.GetConfigIDByTreeID(traitTreeID);
     self.NewLabel:Hide();
     self.NewGlowHighlight:Hide();
     self:Refresh();
@@ -330,16 +330,20 @@ function CompanionConfigSlotTemplateMixin:OnHide()
 end
 
 function CompanionConfigSlotTemplateMixin:HasActiveEntry()
-    return self.selectionNodeInfo.activeEntry and self.selectionNodeInfo.activeEntry.entryID;
+    if not self.selectionNodeInfo then 
+        return false;
+    else
+        return self.selectionNodeInfo.activeEntry and self.selectionNodeInfo.activeEntry.entryID;
+    end
 end
 
 function CompanionConfigSlotTemplateMixin:HasSelectionAndInfo()
-    return self:HasActiveEntry() and self.selectionNodeOptions[self.selectionNodeInfo.activeEntry.entryID];
+    return self:HasActiveEntry() and self.selectionNodeOptions and self.selectionNodeOptions[self.selectionNodeInfo.activeEntry.entryID];
 end
 
 function CompanionConfigSlotTemplateMixin:OnEnter()
     self:CheckToggleAllowed();
-    if self:HasSelectionAndInfo() then
+    if not self.toggleNotAllowed and self:HasSelectionAndInfo() then
         local selection = self.selectionNodeOptions[self.selectionNodeInfo.activeEntry.entryID];
 
         ShowConfigTooltip(self, {

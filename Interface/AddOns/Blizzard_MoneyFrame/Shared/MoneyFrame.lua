@@ -402,6 +402,10 @@ function MoneyDisplayFrameMixin:OnLoad()
 	self.GoldDisplay:SetShowsZeroAmount(self.alwaysShowGold);
 	self.GoldDisplay:SetFormatter(BreakUpLargeNumbers);
 
+	if ( self.useAuctionHouseCopperValue) then
+		self.hideCopper = not C_AuctionHouse.SupportsCopperValues();
+	end
+
 	if self.hideCopper then
 		self.CopperDisplay:SetForcedHidden(true);
 	end

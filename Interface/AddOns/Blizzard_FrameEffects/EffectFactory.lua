@@ -4,7 +4,7 @@ Factory for animated frames.
 The template frame must implement Play(animEnum) and forward the Play() call 
 to the appropriate animation object.
 
-The derived factory must call Init() with the frame type, template name, and strata, 
+The derived factory must call Init() with the frame type, template name, 
 and implement Attach() for any custom position handling.
 
 See GlowEmitter.lua as an example.
@@ -13,15 +13,16 @@ See GlowEmitter.lua as an example.
 EffectFactoryMixin = {};
 
 -- Derive
-function EffectFactoryMixin:Init(frameType, template, strata)
+function EffectFactoryMixin:Init(frameType, template)
 	self.pool = CreateFramePool(frameType, nil, template);
-	self.strata = strata;
 end
 
 -- Derive
 function EffectFactoryMixin:Attach(frame, target, offsetX, offsetY, width, height)
 	frame:SetParent(target);
-	frame:SetFrameStrata(self.strata);
+
+	local strata = frame:GetFrameStrata();
+	frame:SetFrameStrata(strata);
 	frame:ClearAllPoints();
 	
 	if not frame.originalWidth then

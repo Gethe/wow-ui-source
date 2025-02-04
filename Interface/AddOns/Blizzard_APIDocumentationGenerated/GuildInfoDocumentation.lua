@@ -396,6 +396,11 @@ local GuildInfo =
 			LiteralName = "GUILD_REWARDS_LIST",
 		},
 		{
+			Name = "GuildRewardsListUpdate",
+			Type = "Event",
+			LiteralName = "GUILD_REWARDS_LIST_UPDATE",
+		},
+		{
 			Name = "GuildRosterUpdate",
 			Type = "Event",
 			LiteralName = "GUILD_ROSTER_UPDATE",
