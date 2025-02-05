@@ -56,7 +56,7 @@ function AuctionHouseItemDisplayMixin:OnEnter()
 			local itemKey = self:GetItemKey();
 			if itemKey then
 				GameTooltip:SetOwner(self.ItemButton, "ANCHOR_RIGHT");
-				--GameTooltip:SetItemKey(itemKey.itemID, itemKey.itemLevel, itemKey.itemSuffix, C_AuctionHouse.GetItemKeyRequiredLevel(itemKey));
+				GameTooltip:SetItemKey(itemKey.itemID, itemKey.itemLevel, itemKey.itemSuffix, C_AuctionHouse.GetItemKeyRequiredLevel(itemKey));
 				GameTooltip:Show();
 			else
 				local itemLink = self:GetItemLink();
