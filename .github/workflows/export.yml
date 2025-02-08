@@ -1,6 +1,9 @@
 name: Extract interface files from CDN
 
 on:
+  schedule:
+    - cron: '0 0/3 * * *'
+
   workflow_dispatch:
 
 jobs:
@@ -11,61 +14,8 @@ jobs:
       contents: write
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up cache
-        uses: actions/cache@v3
-        with:
-          path: cache
-          key: cache
-          restore-keys: cache
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: 9.0.x
-
-      - name: Checkout TACTSharp
-        uses: actions/checkout@v4
-        with:
-          repository: Marlamin/TACTSharp
-          path: TACTSharp
-          ref: 7d5f014fde0c2af048f3ee4c98dc7c991cd34fe2
-
-      - name: Build TACTTool
-        run: dotnet build --configuration Release --output TACTTool TACTSharp/TACTTool/TACTTool.csproj
-        working-directory: ${{ github.action_path }}
-        shell: pwsh
-        env:
-          DOTNET_NOLOGO: 1
-          DOTNET_CLI_TELEMETRY_OPTOUT: 1
-          DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
-
-      - name: Add TACTTool to PATH
-        run: Add-Content $env:GITHUB_PATH (Join-Path (Get-Location) TACTTool)
-        working-directory: ${{ github.action_path }}
-        shell: pwsh
-
-      - name: Clean existing source files
-        run: Remove-Item -Force -Recurse ./Interface
-        shell: pwsh
-
-      - name: Export source files
-        uses: Meorawr/wow-ui-source-exporter@main
+      - name: Export UI source files
+        uses: Gethe/wow-ui-source@automation
         with:
           product: wowxptr
-
-      - id: version
-        name: Get build version
-        run: Add-Content $env:GITHUB_OUTPUT "version=$(Get-Content ./version.txt)"
-        shell: pwsh
-
-      - name: Commit files
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_author: github-actions <41898282+github-actions[bot]@users.noreply.github.com>
-          commit_message: ${{ steps.version.outputs.version }}
-          file_pattern: ./Interface/*
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
