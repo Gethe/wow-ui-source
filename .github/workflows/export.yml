@@ -1,6 +1,9 @@
 name: Extract interface files from CDN
 
 on:
+  schedule:
+    - cron: '0 0/3 * * *'
+
   workflow_dispatch:
 
 jobs:
@@ -8,61 +11,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-
-    - name: Remove old files
-      run: |
-        shopt -s extglob
-        rm -r !(*.git*|*.sublime-*|*.md)
-
-    - name: Install Packages
-      run: sudo apt-get update && sudo apt-get install libcurl4-openssl-dev
-
-    - name: Install Lua
-      uses: leafo/gh-actions-lua@v10.0.0
-      with:
-        luaVersion: "5.1"
-
-    - name: Install Luarocks
-      uses: leafo/gh-actions-luarocks@v4
-      with:
-        luarocksVersion: "3.11.0"
-
-    - name: Install lua-zlib
-      run: luarocks install lua-zlib
-
-    - name: Install luacurl
-      run: luarocks install luacurl CURL_INCDIR=/usr/include/$(gcc -dumpmachine)
-
-    - name: Install LuaFileSystem
-      run: luarocks install LuaFileSystem
-
-    - name: Install md5
-      run: luarocks install md5
-
-    - name: Checkout InterfaceExport
-      uses: actions/checkout@v3
-      with:
-        repository: Gethe/InterfaceExport
-        path: InterfaceExport
-
-    - name: Run Export
-      env:
-        LUA_PATH: "./InterfaceExport/libs/?.lua;./InterfaceExport/libs/?/init.lua"
-      run: |
-        lua InterfaceExport/export.lua vanilla code
-
-    - name: Get build version
-      id: version
-      uses: andstor/file-reader-action@v1
-      with:
-        path: "version.txt"
-
-    - name: Add & Commit
-      uses: EndBug/add-and-commit@latest
-      with:
-        message: ${{ steps.version.outputs.contents }}
-        default_author: github_actions
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Export UI source files
+        uses: Gethe/wow-ui-source@automation
+        with:
+          product: wow_classic_era
+          token: ${{ secrets.GITHUB_TOKEN }}
