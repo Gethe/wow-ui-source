@@ -1,0 +1,3 @@
+[submodule "TACTSharp"]
+	path = TACTSharp
+	url = https://github.com/wowdev/TACTSharp

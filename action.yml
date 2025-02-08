@@ -1,0 +1,75 @@
+---
+name: WoW UI Source Exporter
+description: Exports UI source files for the current World of Warcraft build on the CDN
+
+inputs:
+  product:
+    description: Product to export UI source files for
+    required: true
+
+  region:
+    description: CDN region to query
+    required: true
+    default: us
+
+  token:
+    description: Access token for repository push
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout UI exporter
+      uses: actions/checkout@v4
+      with:
+        ref: automation
+        submodules: true
+
+    - name: Checkout UI source
+      uses: actions/checkout@v4
+      with:
+        path: wow-ui-source
+        token: ${{ inputs.token }}
+        persist-credentials: true
+
+    - name: Set up cache
+      uses: actions/cache@v4
+      with:
+        path: cache
+        key: cache
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 9.0.x
+
+    - name: Build TACTTool
+      run: dotnet build --configuration Release --output cache/bin --property WarningLevel=0 --verbosity quiet TACTSharp/TACTTool/TACTTool.csproj
+      shell: pwsh
+      env:
+        DOTNET_NOLOGO: 1
+        DOTNET_CLI_TELEMETRY_OPTOUT: 1
+        DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+
+    - name: Add TACTTool to PATH
+      run: Add-Content $env:GITHUB_PATH (Join-Path (Get-Location) cache/bin)
+      shell: pwsh
+
+    - id: export
+      name: Export UI source
+      run: pwsh ./ExportInterfaceFiles.ps1 -Product ${{ inputs.product }} -Region ${{ inputs.region }} -OutputDirectory wow-ui-source
+      shell: pwsh
+
+    - name: Commit UI source
+      run: |
+        git -C wow-ui-source config --local user.name 'github-actions'
+        git -C wow-ui-source config --local user.email '41898282+github-actions[bot]@users.noreply.github.com'
+        git -C wow-ui-source add -A
+        git -C wow-ui-source commit -m '${{ steps.export.outputs.schema }} (${{ steps.export.outputs.build }})'
+        git -C wow-ui-source push
+
+        if ('${{ steps.export.outputs.tag }}') {
+          git -C wow-ui-source tag --force '${{ steps.export.outputs.tag }}'
+          git -C wow-ui-source push --tags --force
+        }
+      shell: pwsh
