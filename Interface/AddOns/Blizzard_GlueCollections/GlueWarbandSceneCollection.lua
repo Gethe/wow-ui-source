@@ -13,6 +13,10 @@ end
 function WarbandSceneGlueEntryMixin:SetSelectedState(isSelected)
 	self:SetChecked(isSelected);
 	self.HighlightTexture:SetAtlas(isSelected and "campcollection-frame-selected-hover" or "campcollection-frame-hover", TextureKitConstants.IgnoreAtlasSize);
+
+	if isSelected then
+		CharacterSelectUI.CollectionsFrame.GlueWarbandSceneJournal.ApplyButton:SetEnabled(self:GetIsOwned());
+	end
 end
 
 
@@ -59,9 +63,9 @@ function GlueWarbandSceneJounalMixin:OnLoad()
 
 	self.IconsFrame.Icons:SetElementTemplateData(WarbandSceneTemplates);
 
-	-- Only show owned when viewing in glues.
+	-- Initial filters
 	self.activeSearchParams = {
-		ownedOnly = true
+		ownedOnly = false
 	};
 
 	local function OnCharacterSelectionUpdated()

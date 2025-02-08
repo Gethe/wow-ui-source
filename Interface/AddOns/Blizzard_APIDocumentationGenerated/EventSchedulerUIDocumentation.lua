@@ -80,6 +80,16 @@ local EventSchedulerUI =
 			},
 		},
 		{
+			Name = "HasData",
+			Type = "Function",
+			Documentation = { "True if the server sent a list, even if the list had 0 events." },
+
+			Returns =
+			{
+				{ Name = "hasData", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "HasSavedReminders",
 			Type = "Function",
 			Documentation = { "Returns whether there are any event reminders saved. Can include reminders that have expired since set and haven't gotten removed yet. Has to be called after cvars are loaded." },

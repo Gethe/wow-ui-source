@@ -363,6 +363,9 @@ function CommunitiesAddToChatMixin:OnShow()
 		local streamId = self:GetParent():GetSelectedStreamId();
 		local streamInfo = C_Club.GetStreamInfo(clubId, streamId);
 		local channelName = Chat_GetCommunitiesChannelName(clubId, streamId);
+		if not streamInfo then
+			return;
+		end
 		local isGuildStream = streamInfo.streamType == Enum.ClubStreamType.Guild or streamInfo.streamType == Enum.ClubStreamType.Officer;
 	
 		rootDescription:CreateTitle(COMMUNITIES_ADD_TO_CHAT_DROP_DOWN_TITLE);

@@ -168,7 +168,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString parentKey="RewardText" inherits="GameFontNormal" text="REWARD_ITEMS_ONLY">
+						<FontString parentKey="RewardText" inherits="GameFontNormal" text="DROP_CHANCE_ITEMS_ONLY">
 							<Anchors>
 								<Anchor point="TOPLEFT" x="15"/>
 							</Anchors>

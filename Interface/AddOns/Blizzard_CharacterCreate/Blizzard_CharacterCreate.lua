@@ -2168,6 +2168,7 @@ function CharacterCreateClassTrialSpecsMixin:UpdateButtons()
 		local specData = {};
 		specData.specID, specData.name, specData.description, specData.icon, specData.role, specData.isRecommended, specData.isAllowed = GetSpecializationInfoForClassID(self.selectedClassID, specIndex, self.selectedSexID + 1);
 
+		button:SetCustomizationFrame(CharCustomizeFrame);
 		button:SetSpec(specData, self.selectedSpecID, specIndex);
 		button:Show();
 	end

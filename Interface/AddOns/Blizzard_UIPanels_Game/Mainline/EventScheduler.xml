@@ -265,6 +265,12 @@
 								<Anchor point="BOTTOMRIGHT"/>
 							</Anchors>
 						</Texture>
+						<FontString parentKey="EmptyText" inherits="Game16Font" text="EVENT_SCHEDULER_NO_EVENTS" hidden="true">
+							<Size x="250"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
 					</Layer>
 				</Layers>
 			</Frame>

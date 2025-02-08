@@ -98,6 +98,20 @@ function ScrollingMessageFrameMixin:TransformMessages(predicate, transformFuncti
 	end
 end
 
+function ScrollingMessageFrameMixin:ForEachVisibleLineText(op)
+	-- Reverse order so the lines can be logically evaluated top-down.
+	for index, visibleLine in ipairs_reverse(self.visibleLines) do
+		op(visibleLine:GetText());
+	end
+end
+
+function ScrollingMessageFrameMixin:ForEachMessageInfoText(op)
+	for index = 1, self:GetNumMessages() do
+		local messageText = self:GetMessageInfo(index);
+		op(messageText);
+	end
+end
+
 function ScrollingMessageFrameMixin:SetScrollAllowed(allowed)
 	self.allowScroll = allowed;
 end

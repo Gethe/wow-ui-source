@@ -1,0 +1,8 @@
+## Title: Blizzard_ScriptErrorFrame
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_ScriptError, Blizzard_SharedXML
+## EscalateErrorDuringLoad: 1
+## AllowLoad: Both
+Blizzard_ScriptErrorFrame.lua
+Blizzard_ScriptErrorFrame.xml

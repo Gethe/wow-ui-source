@@ -6,6 +6,7 @@ function CharacterSelectListMixin:OnLoad()
 		-- Clear helptip if not yet closed.
 		SetCVar("seenCharacterSelectAddGroupHelpTip", 1);
 		HelpTip:Hide(self.AddGroupButton, CHARACTER_SELECT_ADD_GROUP_HELPTIP);
+		PlaySound(SOUNDKIT.GS_TITLE_OPTIONS);
 
 		CharacterListEditGroupFrame:ShowNewGroupFrame();
 	end);

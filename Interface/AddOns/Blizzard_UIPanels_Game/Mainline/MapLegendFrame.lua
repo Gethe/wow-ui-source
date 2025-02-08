@@ -111,7 +111,7 @@ function MapLegendButtonMixin:InitilizeButton(buttonInfo, index)
 		self.IconBack:SetAtlas(buttonInfo.BackgroundAtlas, TextureKitConstants.UseAtlasSize);
 		self.IconBack:Show();
 		-- Adjusting IconBack so the circle of the BackgroundAtlas ("UI-QuestPoi-QuestNumber") aligns with other circle atlases.
-		self.IconBack:SetPoint("LEFT", -1, 0);
+		self.IconBack:SetPoint("LEFT", -2, 0);
 	else
 		self.IconBack:SetPoint("LEFT", 0, 0);
 	end

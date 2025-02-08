@@ -414,15 +414,23 @@ function EventSchedulerMixin:Refresh()
 
 	local dataProvider = CreateTreeDataProvider();
 
-	-- show the loading frame if there are no events of any kind
 	local ongoingEvents = C_EventScheduler.GetOngoingEvents();
 	local scheduledEvents = C_EventScheduler.GetScheduledEvents();
+
+	-- show the loading frame while waiting on server response, and empty text if there were no events
 	if not ongoingEvents and not scheduledEvents then
-		self.LoadingFrame:Show();
+		if C_EventScheduler.HasData() then
+			self.LoadingFrame:Hide();
+			self.ScrollBox.EmptyText:Show();
+		else
+			self.LoadingFrame:Show();
+			self.ScrollBox.EmptyText:Hide();
+		end
 		self.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.DiscardScrollPosition);
 		return;
 	else
 		self.LoadingFrame:Hide();
+		self.ScrollBox.EmptyText:Hide();
 	end
 
 	self:AddAllEvents(dataProvider, ongoingEvents, scheduledEvents);
@@ -509,7 +517,7 @@ function EventSchedulerOngoingEntryMixin:Init(data)
 	self.Icon:SetAtlas(self.info.atlasName, TextureKitConstants.UseAtlasSize);
 
 	local hasRewardsClaimed = self:HasRewardsClaimed();
-	if self.hasRewardsClaimed then
+	if hasRewardsClaimed then
 		self.Background:SetAtlas("event-scheduler-ongoing-events-card-complete", TextureKitConstants.UseAtlasSize);
 		self.Name:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
 		self.Name:SetWidth(220);
@@ -520,7 +528,7 @@ function EventSchedulerOngoingEntryMixin:Init(data)
 		self.Name:SetWidth(250);
 		self.Location:SetTextColor(EVENT_SCHEDULER_LOCATION_COLOR:GetRGB());
 	end
-	self.CheckIcon:SetShown(self.hasRewardsClaimed);
+	self.CheckIcon:SetShown(hasRewardsClaimed);
 end
 
 function EventSchedulerOngoingEntryMixin:OnMouseUp(button, upInside)

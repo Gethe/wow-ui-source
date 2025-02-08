@@ -459,6 +459,16 @@ function SelectionBehaviorMixin:SelectFirstElementData(predicate)
 	end
 end
 
+function SelectionBehaviorMixin:SelectLastElementData(predicate)
+	-- Select the last element which satisfies the predicate
+	for index, elementData in self.scrollBox:ReverseEnumerateDataProviderEntireRange() do
+		if not predicate or predicate(elementData) then
+			self:SelectElementData(elementData);
+			return;
+		end
+	end
+end
+
 function SelectionBehaviorMixin:SelectNextElementData(predicate)
 	return self:SelectOffsetElementData(1, predicate);
 end
