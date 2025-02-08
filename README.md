@@ -1,9 +1,7 @@
-This repo contains the latest WoW UI source code.  Branches should reflect the most recent patches to their respective clients (live, ptr and beta). 
+# WoW UI Source
 
-Diffs from Live:
-  * [live -> ptr](https://github.com/Gethe/wow-ui-source/compare/live...ptr)
-  * [live -> beta](https://github.com/Gethe/wow-ui-source/compare/live...beta)
-  * [live -> classic](https://github.com/Gethe/wow-ui-source/compare/live...classic)
+This repo contains the latest WoW UI source code. Branches should reflect the most recent patches to their respective clients.
 
-Diffs to most recent Classic:
-  * [classic_era -> classic](https://github.com/Gethe/wow-ui-source/compare/classic_era...classic)
+- [live -> ptr](https://github.com/Gethe/wow-ui-source/compare/live...ptr)
+- [live -> ptr2](https://github.com/Gethe/wow-ui-source/compare/live...ptr2)
+- [live -> beta](https://github.com/Gethe/wow-ui-source/compare/live...beta)
