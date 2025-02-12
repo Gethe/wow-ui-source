@@ -481,6 +481,7 @@ function VerticalFullStoreCardMixin:SetStyle(entryInfo)
 	self.Description:SetPoint("TOPLEFT", self.ProductName, "BOTTOMLEFT", 0, -16);
 	self.Description:SetFontObject("GameFontNormalLarge");
 	self.Description:SetWidth(340);
+	self.Description:SetHeight(0);
 	self.Description:SetJustifyH("LEFT");
 
 	self.SalePrice:SetFontObject("GameFontNormalLarge2");
