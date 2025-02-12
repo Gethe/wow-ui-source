@@ -1230,7 +1230,7 @@ function StoreFrame_OnCharacterBoostDelivered(self)
 	if (C_Glue.IsOnGlueScreen() and BoostDeliveredUsageReason and not StoreOutbound.IsCharacterSelectUndeleting()) then
 		self:Hide();
 
-		CharacterUpgradePopup_OnCharacterBoostDelivered(BoostType, BoostDeliveredUsageGUID, BoostDeliveredUsageReason);
+		StoreOutbound.OnCharacterBoostDelivered(BoostType, BoostDeliveredUsageGUID, BoostDeliveredUsageReason);
 	elseif (not C_Glue.IsOnGlueScreen() and StoreFrameHasBeenShown and not StoreOutbound.IsExpansionTrialUpgradeDialogShowing()) then
 		self:Hide();
 
