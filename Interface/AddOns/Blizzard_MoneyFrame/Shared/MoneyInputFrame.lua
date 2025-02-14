@@ -12,6 +12,14 @@ function LargeMoneyInputBoxMixin:OnLoad()
 	if self.iconAtlas then
 		self.Icon:SetAtlas(self.iconAtlas);
 	end
+
+	local colorblindMode = CVarCallbackRegistry:GetCVarValueBool("colorblindMode");
+	if colorblindMode then
+		local denomination = MONEY_DENOMINATION_SYMBOLS_BY_DISPLAY_TYPE[self.displayType];
+		self.Text:SetText(denomination);
+	end
+
+	self.Icon:SetShown(not colorblindMode);
 end
 
 function LargeMoneyInputBoxMixin:Clear()
@@ -35,6 +43,10 @@ LargeMoneyInputFrameMixin = {};
 function LargeMoneyInputFrameMixin:OnLoad()
 	if ( self.useAuctionHouseCopperValue) then
 		self.hideCopper = not C_AuctionHouse.SupportsCopperValues();
+	end
+
+	if MONEY_INPUT_MAX_GOLD_DIGITS then
+		self.GoldBox:SetMaxLetters(MONEY_INPUT_MAX_GOLD_DIGITS);
 	end
 
 	if self.hideCopper then

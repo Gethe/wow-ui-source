@@ -84,6 +84,11 @@ AuctionHouseAlignedPriceInputFrameMixin = {};
 
 function AuctionHouseAlignedPriceInputFrameMixin:OnLoad()
 	AuctionHouseSellFrameAlignedControlMixin.OnLoad(self);
+
+	if (C_AuctionHouse.SupportsCopperValues()) then
+		self.PerItemPostfix:ClearAllPoints();
+		self.PerItemPostfix:SetPoint("RIGHT", self.MoneyInputFrame, "LEFT", -20, -10);
+	end
 end
 
 function AuctionHouseAlignedPriceInputFrameMixin:SetNextEditBox(nextEditBox)

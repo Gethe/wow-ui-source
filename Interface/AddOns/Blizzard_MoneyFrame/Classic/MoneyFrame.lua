@@ -1,4 +1,4 @@
-
+MONEY_INPUT_MAX_GOLD_DIGITS = 6;
 
 function MoneyFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_MONEY");
