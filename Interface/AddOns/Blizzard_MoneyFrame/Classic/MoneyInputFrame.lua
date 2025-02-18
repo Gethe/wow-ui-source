@@ -1,5 +1,11 @@
 local popupOwner;
 
+function MoneyInputFrame_SetEnabled(moneyFrame, enabled)
+	_G[moneyFrame:GetName().."Gold"]:SetEnabled(enabled);
+	_G[moneyFrame:GetName().."Silver"]:SetEnabled(enabled);
+	_G[moneyFrame:GetName().."Copper"]:SetEnabled(enabled);
+end
+
 function MoneyInputFrame_ResetMoney(moneyFrame)
 	_G[moneyFrame:GetName().."Gold"]:SetText("");
 	_G[moneyFrame:GetName().."Silver"]:SetText("");
@@ -163,7 +169,7 @@ function MoneyInputFrame_SetOnValueChangedFunc(moneyFrame, func)
 end
 
 function MoneyInputFrame_OnShow(moneyFrame)
-	if ( ENABLE_COLORBLIND_MODE == "1" ) then
+	if (  CVarCallbackRegistry:GetCVarValueBool("colorblindMode") or ENABLE_COLORBLIND_MODE == "1") then
 		moneyFrame.copper.texture:Hide();
 		moneyFrame.gold.texture:Hide();
 		moneyFrame.silver.texture:Hide();

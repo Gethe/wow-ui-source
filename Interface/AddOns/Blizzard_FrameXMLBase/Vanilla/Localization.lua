@@ -1,10 +1,5 @@
 local l10n_Spanish = {
 	localizeFrames = function()
-		-- To accomodate Groups tab.
-		FriendsFrameTab1:SetPoint("BOTTOMLEFT", -6, -30);
-		for i=2,5 do
-			_G["FriendsFrameTab"..i]:SetPoint("LEFT", "FriendsFrameTab"..i-1, "RIGHT", -18, 0);
-		end
 	end,
 };
 
@@ -23,11 +18,6 @@ local l10nTable = {
 			FriendsFriendsFrameDropdown:SetWidth(146);
 
 			SideDressUpModelResetButton:SetWidth(105);
-
-			-- To accomodate Groups tab.
-			for i=2,5 do
-				_G["FriendsFrameTab"..i]:SetPoint("LEFT", "FriendsFrameTab"..i-1, "RIGHT", -16, 0);
-			end
 		end,
 	},
 

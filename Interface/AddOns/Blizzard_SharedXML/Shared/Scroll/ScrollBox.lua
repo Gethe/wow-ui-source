@@ -477,6 +477,7 @@ ScrollBoxListMixin:GenerateCallbackEvents(
 		"OnReleasedFrame",
 		"OnDataRangeChanged",
 		"OnUpdate",
+		"OnDataProviderReassigned",
 	}
 );
 
@@ -498,6 +499,7 @@ function ScrollBoxListMixin:SetView(view)
 	ScrollBoxBaseMixin.SetView(self, view);
 
 	view:RegisterCallback(ScrollBoxListViewMixin.Event.OnDataChanged, self.OnViewDataChanged, self);
+	view:RegisterCallback(ScrollBoxListViewMixin.Event.OnDataProviderReassigned, self.OnViewDataProviderReassigned, self);
 	view:RegisterCallback(ScrollBoxListViewMixin.Event.OnAcquiredFrame, self.OnViewAcquiredFrame, self);
 	view:RegisterCallback(ScrollBoxListViewMixin.Event.OnInitializedFrame, self.OnViewInitializedFrame, self);
 	view:RegisterCallback(ScrollBoxListViewMixin.Event.OnReleasedFrame, self.OnViewReleasedFrame, self);
@@ -651,6 +653,10 @@ end
 
 function ScrollBoxListMixin:OnViewDataChanged()
 	self:FullUpdate(ScrollBoxConstants.UpdateImmediately);
+end
+
+function ScrollBoxListMixin:OnViewDataProviderReassigned()
+	self:TriggerEvent(ScrollBoxListMixin.Event.OnDataProviderReassigned);
 end
 
 function ScrollBoxListMixin:Rebuild(retainScrollPosition)

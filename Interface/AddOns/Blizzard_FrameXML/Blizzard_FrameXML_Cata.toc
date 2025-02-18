@@ -54,8 +54,7 @@ Cata\TalentFrameBase.lua
 Cata\Blizzard_TalentUITemplates.xml
 Classic\MovieFrame.lua
 Classic\MovieFrame.xml
-Wrath\RolePoll.lua
-Wrath\RolePoll.xml
+Classic\RolePoll.xml
 Classic\StreamingFrame.lua
 Classic\StreamingFrame.xml
 IconIntroAnimation.lua

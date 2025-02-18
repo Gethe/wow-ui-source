@@ -5,6 +5,7 @@ ScrollBoxListViewMixin = CreateFromMixins(ScrollBoxViewMixin, CallbackRegistryMi
 ScrollBoxListViewMixin:GenerateCallbackEvents(
 	{
 		"OnDataChanged",
+		"OnDataProviderReassigned",
 		"OnAcquiredFrame",
 		"OnInitializedFrame",
 		"OnReleasedFrame",
@@ -294,6 +295,7 @@ function ScrollBoxListViewMixin:SetDataProvider(dataProvider, retainScrollPositi
 		dataProvider:RegisterCallback(DataProviderMixin.Event.OnSort, self.OnDataProviderSort, self);
 	end
 	
+	self:TriggerEvent(ScrollBoxListViewMixin.Event.OnDataProviderReassigned);
 	self:SignalDataChangeEvent(InvalidationReason.DataProviderReassigned);
 end
 

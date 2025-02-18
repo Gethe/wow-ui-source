@@ -39,9 +39,8 @@ Classic\ItemRef.lua
 Classic\ItemRef.xml
 Classic\ProductChoice.lua
 Classic\ProductChoice.xml
-Classic\FriendsFrame_Shared.lua
-Vanilla\FriendsFrame.lua
-Vanilla\FriendsFrame.xml
+Classic\FriendsFrame.lua
+Classic\FriendsFrame.xml
 Classic\RaidFrame.lua
 Classic\RaidFrame.xml
 Classic\UnitPositionFrameTemplates.lua

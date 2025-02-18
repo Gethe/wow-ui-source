@@ -101,7 +101,7 @@ end
 
 function CommunitiesInvitationFrameMixin:OnHyperlinkClick(link, text, button, ...)
 	if button == "RightButton" then
-		FriendsFrame_ShowDropdown(self.inviterInfo.name or "", 1, nil, nil, nil, nil, nil, self.clubId, nil, nil, nil, self.inviterInfo.guid)
+		FriendsFrame_ShowDropdown(self.inviterInfo.name or "", 1, nil, nil, nil, nil, self.clubId, nil, nil, nil, self.inviterInfo.guid)
 	else
 		SetItemRef(link, text, button, nil);
 	end

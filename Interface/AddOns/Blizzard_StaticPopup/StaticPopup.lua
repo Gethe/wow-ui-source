@@ -290,7 +290,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		end
 	end
 
-	if ( (which == "CAMP") or (which == "QUIT") ) then
+	if ( (which == "CAMP") or (which == "PLUNDERSTORM_LEAVE") or (which == "QUIT") ) then
 		for index = 1, STATICPOPUP_NUMDIALOGS, 1 do
 			local frame = StaticPopup_GetDialog(index);
 			if ( frame and frame:IsShown() and not StaticPopupDialogs[frame.which].notClosableByLogout ) then
@@ -371,6 +371,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 	text:Show();
 	if ( (which == "DEATH") or
 	     (which == "CAMP") or
+		 (which == "PLUNDERSTORM_LEAVE") or 
 		 (which == "QUIT") or
 		 (which == "DUEL_OUTOFBOUNDS") or
 		 (which == "RECOVER_CORPSE") or
@@ -752,6 +753,7 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 
 		if ( (which == "DEATH") or
 		     (which == "CAMP")  or
+			 (which == "PLUNDERSTORM_LEAVE") or 
 			 (which == "QUIT") or
 			 (which == "DUEL_OUTOFBOUNDS") or
 			 (which == "INSTANCE_BOOT") or

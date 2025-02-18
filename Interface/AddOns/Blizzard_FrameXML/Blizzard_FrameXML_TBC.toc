@@ -264,7 +264,7 @@ ItemTextFrame.xml
 TaxiFrame.xml
 ..\..\Interface_TBC\Blizzard_FrameXML\BankFrame.xml
 ItemRef.xml
-..\..\Interface_TBC\Blizzard_FrameXML\FriendsFrame.xml
+..\..\Interface_Wrath\Blizzard_FrameXML\FriendsFrame.xml
 RaidFrame.xml
 PetActionBarFrame.xml
 MainMenuBarBagButtons.xml
@@ -294,6 +294,7 @@ TextToSpeechFrame.xml
 TextToSpeech.xml
 Classic\MovieFrame.lua
 Classic\MovieFrame.xml
+Classic\RolePoll.xml
 AnimationSystem.lua
 CompactUnitFrame.xml
 CompactRaidGroup.xml

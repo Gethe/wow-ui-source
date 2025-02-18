@@ -41,6 +41,7 @@ local QuestLineInfo =
 				{ Name = "isHidden", Type = "bool", Nilable = false },
 				{ Name = "isLegendary", Type = "bool", Nilable = false },
 				{ Name = "floorLocation", Type = "QuestLineFloorLocation", Nilable = false },
+				{ Name = "startMapID", Type = "number", Nilable = false },
 			},
 		},
 	},

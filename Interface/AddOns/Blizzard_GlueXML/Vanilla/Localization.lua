@@ -44,8 +44,6 @@ local l10nTable = {
 
 			ServerAlertFrame:SetWidth(350);
 			ServerAlertFrame:SetHeight(400);
-
-			SHOW_KOREAN_RATINGS = true;
 		end,
 	},
 
@@ -79,7 +77,7 @@ local l10nTable = {
 			CLASSIC_MODERN_LOGO_OVERRIDE = {filename = 'Interface\\Glues\\Common\\GLUES-WOW-CLASSICLOGO', uv = { 0, 1, 0, 1 }};
 			BURNING_CRUSADE_ORIGINAL_LOGO_OVERRIDE = {filename = 'Interface\\Glues\\Common\\GLUES-WOW-CHINESEBCLOGO', uv = { 0, 1, 0, 1 }};
 
-			_G["CharacterCreateWoWLogo"]:SetPoint("TOPLEFT", _G["CharacterCreateFrame"], 3, 14) -- -3, +11
+			_G["CharacterCreateConfigurationFrame"].GameLogo:SetPoint("TOPLEFT", _G["CharacterCreateFrame"], 3, 14) -- -3, +11
 			_G["CharacterSelectLogo"]:SetPoint("TOPLEFT", 5, -5);
 			_G["AccountLogin"].UI.GameLogo:SetPoint("TOPLEFT", 5, -5);
 
@@ -88,7 +86,8 @@ local l10nTable = {
 			choicePaneCurrentLogoAtlas = "classic-burningcrusadetransition-choice-logo-current-zhcn";
 			choicePaneOtherLogoAtlas = "classic-burningcrusadetransition-choice-logo-other-zhcn";
 
-			SHOW_CHINA_AGE_APPROPRIATENESS_WARNING = true;
+			CreditsFrameSwitchButton1:SetWidth(CreditsFrameSwitchButton2:GetWidth() + 32);
+			CreditsFrameSwitchButton2:SetWidth(CreditsFrameSwitchButton2:GetWidth() + 32);
 		end,
 	},
 

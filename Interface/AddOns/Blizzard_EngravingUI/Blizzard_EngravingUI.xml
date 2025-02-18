@@ -150,6 +150,9 @@
 					<Anchor point="TOPLEFT" x="-10" y="57"/>
 					<Anchor point="BOTTOMRIGHT" x="10" y="-21"/>
 				</Anchors>
+				<Scripts>
+					<OnLoad function="LowerFrameLevel"/>
+				</Scripts>
 			</Frame>
 			<Frame name="$parentSideInset" inherits="InsetFrameTemplate" parentKey="sideInset">
 				<Anchors>

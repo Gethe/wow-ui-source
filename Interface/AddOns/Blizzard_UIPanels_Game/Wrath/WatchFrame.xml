@@ -286,11 +286,11 @@
 		<Scripts>
 			<OnMouseUp>
 				if (self.type == "OFFER") then
-				ShowQuestOffer(GetQuestLogIndexByID(self.questId));
+					ShowQuestOffer(GetQuestLogIndexByID(self.questID));
 				else
-				ShowQuestComplete(GetQuestLogIndexByID(self.questId));
+					ShowQuestComplete(GetQuestLogIndexByID(self.questID));
 				end
-				WatchFrameAutoQuest_ClearPopUp(self.questId);
+				WatchFrameAutoQuest_ClearPopUp(self.questID);
 			</OnMouseUp>
 			<OnLoad>
 				self:SetHorizontalScroll(-28.5);

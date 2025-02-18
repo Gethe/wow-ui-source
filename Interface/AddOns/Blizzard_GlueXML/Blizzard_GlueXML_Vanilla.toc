@@ -1,7 +1,7 @@
 ## Title: Blizzard_GlueXML
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_GlueDialogs
+## Dependencies: Blizzard_GlueDialogs, Blizzard_LoginWarningDialogs
 ## LoadFirst: 1
 ## AllowLoad: Glue
 ## AllowLoadGameType: vanilla
@@ -11,6 +11,8 @@ Classic\GlueTooltip.lua
 Classic\GlueTooltip.xml
 ServerAlert.lua
 ServerAlert.xml
+Classic\GlueGameLogo.lua
+Classic\GlueGameLogo.xml
 Classic\AccountLogin.lua
 Classic\AccountLogin.xml
 Vanilla\RealmList.lua
@@ -18,8 +20,8 @@ Vanilla\RealmList.xml
 Classic\CharacterServicesPatchwerk.xml
 Classic\CharacterSelect.lua
 Vanilla\CharacterSelect.xml
-Classic\AccountReactivate.lua
-Classic\AccountReactivate.xml
+Shared\AccountReactivate.lua
+Shared\AccountReactivate.xml
 Classic\KioskModeSplash.lua
 Classic\KioskModeSplash.xml
 Classic\CharacterServicesShared.lua
@@ -47,6 +49,8 @@ PromotionFrame.xml
 StarterEditionPopUp.xml
 MovieFrame.lua
 MovieFrame.xml
+PhotosensitivityWarningFrame.lua
+PhotosensitivityWarningFrame.xml
 Classic\CinematicsFrame.lua
 Classic\CinematicsFrame.xml
 Vanilla\CreditsFrame.lua
@@ -57,3 +61,5 @@ SocialContract.lua
 SocialContract.xml
 Classic\HardcoreFrames.lua
 Classic\HardcoreFrames.xml
+Classic\RealmWarning.lua
+Classic\RealmWarning.xml

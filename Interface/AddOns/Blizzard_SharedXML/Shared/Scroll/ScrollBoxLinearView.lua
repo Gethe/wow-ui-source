@@ -87,11 +87,12 @@ function ScrollBoxLinearBaseViewMixin:GetElementIndent(frame)
 end
 
 function ScrollBoxLinearBaseViewMixin:GetLayoutFunction()
+	local elementStretchDisabled = self:IsElementStretchDisabled();
 	local setPoint = self:IsHorizontal() and ScrollBoxViewUtil.SetHorizontalPoint or ScrollBoxViewUtil.SetVerticalPoint;
 	local scrollTarget = self:GetScrollTarget();
 	local function Layout(index, frame, offset)
 		local indent = self:GetElementIndent(frame);
-		return setPoint(frame, offset, indent, scrollTarget);
+		return setPoint(frame, offset, indent, elementStretchDisabled, scrollTarget);
 	end
 	return Layout;
 end

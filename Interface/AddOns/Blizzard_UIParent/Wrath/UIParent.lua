@@ -34,12 +34,7 @@ WORLD_QUEST_QUALITY_COLORS = {
 	[LE_WORLD_QUEST_QUALITY_EPIC] = ITEM_QUALITY_COLORS[LE_ITEM_QUALITY_EPIC];
 };
 
--- Protecting from addons since we use this in GetScaledCursorDelta which is used in secure code.
-local _UIParentGetEffectiveScale;
-local _UIParentRef;
 function UIParent_OnLoad(self)
-	_UIParentGetEffectiveScale = self.GetEffectiveScale;
-	_UIParentRef = self;
 	self:RegisterEvent("PLAYER_LOGIN");
 	self:RegisterEvent("PLAYER_DEAD");
 	self:RegisterEvent("SELF_RES_SPELL_CHANGED");
@@ -136,6 +131,8 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("AUCTION_HOUSE_SHOW");
 	self:RegisterEvent("AUCTION_HOUSE_CLOSED");
 	self:RegisterEvent("AUCTION_HOUSE_DISABLED");
+	self:RegisterEvent("AUCTION_HOUSE_SHOW_FORMATTED_NOTIFICATION");
+	self:RegisterEvent("AUCTION_HOUSE_SHOW_NOTIFICATION")
 
 
 	-- Events for trade skill UI handling
@@ -221,7 +218,6 @@ end
 function UIParent_OnUpdate(self, elapsed)
 	FCF_OnUpdate(elapsed);
 	ButtonPulse_OnUpdate(elapsed);
-	UnitPopup_OnUpdate(elapsed);
 	AnimatedShine_OnUpdate(elapsed);
 	BattlefieldTimerFrame_OnUpdate(nil, elapsed);
 	HelpOpenWebTicketButton_OnUpdate(HelpOpenWebTicketButton, elapsed);
@@ -243,7 +239,11 @@ function UIParentLoadAddOn(name)
 end
 
 function AuctionFrame_LoadUI()
-	UIParentLoadAddOn("Blizzard_AuctionUI");
+	if( IsUsingLegacyAuctionClient() ) then
+		UIParentLoadAddOn("Blizzard_AuctionUI");
+	else
+		UIParentLoadAddOn("Blizzard_AuctionHouseUI");
+	end
 end
 
 function BattlefieldMap_LoadUI()
@@ -472,6 +472,11 @@ end
 
 function ToggleGuildFrame()
 	if (Kiosk.IsEnabled()) then
+		return;
+	end
+
+	if(C_CVar.GetCVarBool("useClassicGuildUI")) then
+		ToggleFriendsFrame(FRIEND_TAB_GUILD);
 		return;
 	end
 
@@ -1103,6 +1108,9 @@ function UIParent_OnEvent(self, event, ...)
 		end
 	elseif ( event == "AUCTION_HOUSE_DISABLED" ) then
 		StaticPopup_Show("AUCTION_HOUSE_DISABLED");
+	elseif ( event == "AUCTION_HOUSE_SHOW_NOTIFICATION" or event == "AUCTION_HOUSE_SHOW_FORMATTED_NOTIFICATION" ) then
+		local auctionHouseNotification, formatArg = ...;
+		Chat_AddSystemMessage(ChatFrameUtil.GetAuctionHouseNotificationText(auctionHouseNotification, formatArg));
 
 	-- Events for trade skill UI handling
 	elseif ( event == "TRADE_SKILL_SHOW" ) then
@@ -1704,7 +1712,7 @@ function GetScaledCursorPosition()
 end
 
 function GetScaledCursorDelta()
-	local uiScale = _UIParentGetEffectiveScale(_UIParentRef);
+	local uiScale = GetAppropriateTopLevelParent():GetEffectiveScale();
 	local x, y = GetCursorDelta();
 	return x / uiScale, y / uiScale;
 end
@@ -2290,7 +2298,7 @@ function AnimatedShine_OnUpdate(elapsed)
 end
 
 function ConsolePrint(...)
-	ConsoleAddMessage(strjoin(" ", tostringall(...)));
+	ConsoleAddMessage(string.join(" ", tostringall(...)));
 end
 
 function LFD_IsEmpowered()

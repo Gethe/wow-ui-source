@@ -131,6 +131,8 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("AUCTION_HOUSE_SHOW");
 	self:RegisterEvent("AUCTION_HOUSE_CLOSED");
 	self:RegisterEvent("AUCTION_HOUSE_DISABLED");
+	self:RegisterEvent("AUCTION_HOUSE_SHOW_FORMATTED_NOTIFICATION");
+	self:RegisterEvent("AUCTION_HOUSE_SHOW_NOTIFICATION")
 
 	-- Events for trade skill UI handling
 	self:RegisterEvent("TRADE_SKILL_SHOW");
@@ -244,7 +246,11 @@ function UIParentLoadAddOn(name)
 end
 
 function AuctionFrame_LoadUI()
-	UIParentLoadAddOn("Blizzard_AuctionUI");
+	if( IsUsingLegacyAuctionClient() ) then
+		UIParentLoadAddOn("Blizzard_AuctionUI");
+	else
+		UIParentLoadAddOn("Blizzard_AuctionHouseUI");
+	end
 end
 
 function BattlefieldMap_LoadUI()
@@ -485,6 +491,11 @@ end
 
 function ToggleGuildFrame()
 	if (Kiosk.IsEnabled()) then
+		return;
+	end
+
+	if(C_CVar.GetCVarBool("useClassicGuildUI")) then
+		ToggleFriendsFrame(FRIEND_TAB_GUILD);
 		return;
 	end
 
@@ -1137,6 +1148,10 @@ function UIParent_OnEvent(self, event, ...)
 		end
 	elseif ( event == "AUCTION_HOUSE_DISABLED" ) then
 		StaticPopup_Show("AUCTION_HOUSE_DISABLED");
+	elseif ( event == "AUCTION_HOUSE_SHOW_NOTIFICATION" or event == "AUCTION_HOUSE_SHOW_FORMATTED_NOTIFICATION" ) then
+		local auctionHouseNotification, formatArg = ...;
+		Chat_AddSystemMessage(ChatFrameUtil.GetAuctionHouseNotificationText(auctionHouseNotification, formatArg));
+
 	-- Events for trade skill UI handling
 	elseif ( event == "TRADE_SKILL_SHOW" ) then
 		TradeSkillFrame_LoadUI();
@@ -2347,7 +2362,7 @@ function AnimatedShine_OnUpdate(elapsed)
 end
 
 function ConsolePrint(...)
-	ConsoleAddMessage(strjoin(" ", tostringall(...)));
+	ConsoleAddMessage(string.join(" ", tostringall(...)));
 end
 
 function LFD_IsEmpowered()

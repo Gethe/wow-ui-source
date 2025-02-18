@@ -16,3 +16,7 @@ function WowTokenRedemptionFrame_GetBalanceString()
 	WowTokenRedemptionFrame:SetAttribute("getbalancestring");
 	return WowTokenRedemptionFrame:GetAttribute("balancestring");
 end
+
+function WowTokenRedemptionFrame_ShowDialog(dialogName, dialogData)
+	WowTokenRedemptionFrame:SetAttribute("showdialog", { dialogName, dialogData });
+end

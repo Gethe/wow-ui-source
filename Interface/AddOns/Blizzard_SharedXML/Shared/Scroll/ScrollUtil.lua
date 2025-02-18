@@ -236,6 +236,11 @@ function ScrollUtil.InitScrollFrameWithScrollBar(scrollFrame, scrollBar)
 	scrollBar:RegisterCallback(BaseScrollBoxEvents.OnScroll, onScrollBarScroll, scrollFrame);
 end
 
+function ScrollUtil.EnableSnapToInterval(scrollBox, scrollBar)
+	scrollBox:EnableSnapToInterval();
+	scrollBar:EnableSnapToInterval();
+end
+
 -- Utility for managing the visibility of a ScrollBar and reanchoring of the
 -- ScrollBox as the visibility changes.
 ManagedScrollBarVisibilityBehaviorMixin = CreateFromMixins(CallbackRegistryMixin);
@@ -366,6 +371,14 @@ function SelectionBehaviorMixin:Init(scrollBox, ...)
 	if not self.selectionFlags:IsSet(SelectionBehaviorFlags.Intrusive) then
 		self.selections = {};
 	end
+
+	scrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnDataProviderReassigned, self.OnScrollBoxDataProviderReassigned, self);
+end
+
+function SelectionBehaviorMixin:OnScrollBoxDataProviderReassigned()
+	-- Important to clear references to previous data provider elements to prevent a memory leak.
+	-- ClearSelections does not work here because the data provider is already reassigned and GetSelectedElementData returns an empty list.
+	self.selections = {};
 end
 
 function SelectionBehaviorMixin:SetSelectionFlags(...)
@@ -506,7 +519,7 @@ function SelectionBehaviorMixin:SetElementDataSelected_Internal(elementData, new
 	if self.selectionFlags:IsSet(SelectionBehaviorFlags.Intrusive) then
 		elementData.selected = newSelected;
 	else
-		self.selections[elementData] = newSelected;
+		self.selections[elementData] = newSelected or nil;
 	end
 
 	if deselected then
@@ -1572,8 +1585,9 @@ end
 
 ScrollBoxFactoryInitializerMixin = {};
 
-function ScrollBoxFactoryInitializerMixin:Init(frameTemplate)
+function ScrollBoxFactoryInitializerMixin:Init(frameTemplate, data)
 	self.frameTemplate = frameTemplate;
+	self.data = data or {};
 end
 
 function ScrollBoxFactoryInitializerMixin:GetTemplate()

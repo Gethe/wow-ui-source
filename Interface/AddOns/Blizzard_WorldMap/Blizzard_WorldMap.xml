@@ -271,7 +271,7 @@
 				<Anchors>
 					<Anchor point="TOP" relativePoint="TOP">
 						<Offset>
-							<AbsDimension x="-80" y="-35"/>
+							<AbsDimension x="-80" y="-36"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -279,11 +279,7 @@
 					<Layer level="OVERLAY">
 						<FontString inherits="GameFontNormalSmall" text="CONTINENT">
 							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset>
-										<AbsDimension x="20" y="10"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPLEFT" x="0" y="12"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -305,11 +301,7 @@
 					<Layer level="OVERLAY">
 						<FontString inherits="GameFontNormalSmall" text="ZONE">
 							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset>
-										<AbsDimension x="20" y="10"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPLEFT" x="0" y="12"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -331,11 +323,7 @@
 					<Layer level="OVERLAY">
 						<FontString inherits="GameFontNormalSmall" text="BATTLEFIELD_MINIMAP">
 							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset>
-										<AbsDimension x="20" y="10"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPLEFT" x="0" y="12"/>
 							</Anchors>
 						</FontString>
 					</Layer>

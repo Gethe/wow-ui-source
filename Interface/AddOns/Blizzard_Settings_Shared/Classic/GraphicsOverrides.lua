@@ -66,6 +66,10 @@ function GraphicsOverrides.GetTextureResolutionOptions(settingTextureResolution,
 end 
 
 function GraphicsOverrides.CreateHiResOptions(category, layout)
+	if (not AreHighResTexturesAvailable()) then 
+		return;
+	end
+
 	local function GetOptions()
 		local container = Settings.CreateControlTextContainer();
 		container:Add(false, VIDEO_OPTIONS_DISABLED);

@@ -245,7 +245,7 @@ function GroupFinderFrame_EvaluateButtonVisibility(self)
 		GroupFinderFrameButton_SetEnabled(self.groupButton2, true);
 	end
 
-	visible = C_LFGInfo.IsPremadeGroupEnabled();
+	visible = C_LFGList.IsPremadeGroupFinderEnabled();
 	canUse, failureReason = C_LFGInfo.CanPlayerUsePremadeGroup();
 	if not visible then
 		self.groupButton3:Hide();
@@ -322,13 +322,10 @@ function GroupFinderFrame_ShowGroupFrame(frame)
 	-- hide the other frames and select the right button
 	for index, frameName in pairs(groupFrames) do
 		local groupFrame = _G[frameName];
-
-		if groupFrame then
-			if ( groupFrame == frame ) then
-				GroupFinderFrame_SelectGroupButton(index);
-			else
-				groupFrame:Hide();
-			end
+		if ( groupFrame == frame ) then
+			GroupFinderFrame_SelectGroupButton(index);
+		else
+			groupFrame:Hide();
 		end
 	end
 	frame:Show();

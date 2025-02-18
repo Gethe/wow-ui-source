@@ -286,28 +286,17 @@
 		</Scripts>
 	</Frame>
 
-	<DropdownButton name="AddToChatButtonTemplate" inherits="UIMenuButtonStretchTemplate" mixin="CommunitiesAddToChatMixin" virtual="true">
-		<Size x="22" y="22"/>
+	<DropdownButton name="AddToChatButtonTemplate" inherits="WowStyle1ArrowDropdownTemplate" mixin="CommunitiesAddToChatMixin" virtual="true">
 		<Layers>
-			<Layer level="ARTWORK" textureSubLevel="1">
-				<Texture file="Interface\Buttons\SquareButtonTextures" parentKey="icon">
-					<Size x="12" y="12"/>
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-					<TexCoords left="0.45312500" right="0.64062500" top="0.20312500" bottom="0.01562500"/>
-				</Texture>
-			</Layer>
 			<Layer>
 				<FontString parentKey="Label" inherits="GameFontNormalSmall" text="COMMUNITIES_ADD_TO_CHAT">
 					<Anchors>
-						<Anchor point="RIGHT" relativeKey="$parent" relativePoint="LEFT" x="-1" y="0.5"/>
+						<Anchor point="RIGHT" relativeKey="$parent" relativePoint="LEFT" x="-5" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
 		</Scripts>
 	</DropdownButton>

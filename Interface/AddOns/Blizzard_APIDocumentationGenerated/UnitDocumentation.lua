@@ -6,15 +6,6 @@ local Unit =
 	Functions =
 	{
 		{
-			Name = "CanShowSetRoleButton",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "result", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "GetUnitPowerBarInfo",
 			Type = "Function",
 
@@ -372,21 +363,6 @@ local Unit =
 			Returns =
 			{
 				{ Name = "maxPower", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "UnitSetRoleEnum",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
-				{ Name = "role", Type = "LFGRole", Nilable = true },
-			},
-
-			Returns =
-			{
-				{ Name = "result", Type = "bool", Nilable = false },
 			},
 		},
 		{

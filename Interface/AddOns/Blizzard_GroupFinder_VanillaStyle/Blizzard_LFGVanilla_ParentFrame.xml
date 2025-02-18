@@ -1,0 +1,135 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Script file="Blizzard_LFGVanilla_ParentFrame.lua"/>
+	<Button name="LFGDropDownTemplate" virtual="true" inherits="UIDropDownMenuTemplate">
+		<HitRectInsets>
+			<AbsInset left="25" right="40" top="0" bottom="0"/>
+		</HitRectInsets>
+		<Scripts>
+			<OnEnter function="LFGDropDown_OnEnter"/>
+			<OnLeave function="LFGDropDown_OnLeave"/>
+			<OnClick function="LFGDropDown_OnClick"/>
+		</Scripts>
+	</Button>
+	<DropdownButton name="LFGOptionsButton" virtual="true" mixin="LFGOptionsButton">
+		<KeyValues>
+			<KeyValue key="menuMixin" value="MenuStyle2Mixin" type="global"/>
+		</KeyValues>
+		<Size x="16" y="16"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" atlas="OptionsIcon-Brown" alpha="0.8"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+		</Scripts>
+	</DropdownButton>
+	<!-- Start LFG Parent Frame -->
+	<Frame name="LFGParentFrame" toplevel="true" hidden="true" enableMouse="true" parent="UIParent" mixin="LFGParentFrameMixin">
+		<Size x="384" y="512"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" x="0" y="0"/>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="30" top="0" bottom="74"/>
+		</HitRectInsets>
+		<Frames>
+			<Button inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-26" y="-8"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentTab1" parentKey="Tab1" inherits="CharacterFrameTabButtonTemplate" id="1" text="LFG_LIST_TAB_1">
+				<!-- Text updated in script.-->
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="16" y="45"/>
+					<!-- Reanchored in code. -->
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.selectedTextY = 4;
+						LowerFrameLevel(self);
+						self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+					</OnLoad>
+					<OnShow>
+						PanelTemplates_TabResize(self, 0);
+					</OnShow>
+					<OnClick>
+						LFGParentFrameTab1_OnClick();
+					</OnClick>
+					<OnEnter>
+						if (C_LFGList.HasActiveEntryInfo()) then
+						GameTooltip_AddNewbieTip(self, MicroButtonTooltipText(LFG_LIST_EDIT, "TOGGLELFGTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_LFG_LIST_EDIT, 1);
+						else
+						GameTooltip_AddNewbieTip(self, MicroButtonTooltipText(LFG_LIST_TAB_1, "TOGGLELFGTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_LFG_LIST_TAB_1, 1);
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="$parentTab2" parentKey="Tab2" inherits="CharacterFrameTabButtonTemplate" id="2" text="LFG_LIST_TAB_2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="LFGParentFrameTab1" relativePoint="RIGHT" x="-14" y="0"/>
+					<!-- Reanchored in code. -->
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.selectedTextY = 4;
+						LowerFrameLevel(self);
+						self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+					</OnLoad>
+					<OnShow>
+						PanelTemplates_TabResize(self, 0);
+					</OnShow>
+					<OnClick>
+						LFGParentFrameTab2_OnClick();
+					</OnClick>
+					<OnEnter>
+						GameTooltip_AddNewbieTip(self, MicroButtonTooltipText(LFG_LIST_TAB_2, "TOGGLELFMTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_LFG_LIST_TAB_2, 1);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Frame name="$parentPortrait" inherits="LFGEyeTemplate" hidden="false">
+				<Size x="64" y="64"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="9" y="-5"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentIcon" file="Interface\LFGFrame\UI-LFG-PORTRAIT">
+							<Size x="64" y="64"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="3" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad function="LowerFrameLevel"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow>
+				UpdateMicroButtons();
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
+			</OnShow>
+			<OnHide>
+				UpdateMicroButtons();
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
+			</OnHide>
+		</Scripts>
+	</Frame>
+	<!-- End LFG Parent Frame -->
+</Ui>

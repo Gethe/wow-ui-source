@@ -39,9 +39,6 @@ local l10nTable = {
 
 			-- Adjust Macro Name Input Box's Texture Width
 			MacroPopupFrame.BorderBox.IconSelectorEditBox.IconSelectorPopupNameMiddle:SetWidth(190);
-
-			-- Adjust MacroTab2 size
-			PanelTemplates_TabResize(MacroFrameTab2, -15, nil, 130);
 		end,
 	},
 };

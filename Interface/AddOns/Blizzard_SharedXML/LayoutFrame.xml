@@ -40,6 +40,14 @@
 				By default the child frames are anchored top to bottom (actual point used depends on the align keyvalue on each child frame)
 				Possible choices here are "topToBottom" and "bottomToTop"
 				<KeyValue key="childLayoutDirection" value="topToBottom" type="string"/>
+	
+				Setting skipChildLayout to true prevents Layout from being called on child LayoutFrames when Layout is called on the parent
+				Useful for cases where child layout frames need to have Layout called in custom ways (e.g. PlayerChoiceOptions inside PlayerChoiceFrame)
+				<KeyValue key="skipChildLayout" value="false" type="boolean"/>
+
+				Setting skipLayoutOnShow to true prevents Layout from being called when the frame is shown
+				Useful for cases where Layout is called separately and/or using custom logic (e.g. the widget container inside PlayerChoiceOptions, which is used as a filler frame)
+				<KeyValue key="skipLayoutOnShow" value="false" type="boolean"/>
 			</KeyValues>
 			-->
 
@@ -109,6 +117,7 @@
 				<KeyValue key="maximumWidth" value="300" type="number"/>
 				<KeyValue key="maximumHeight" value="300" type="number"/>
 				<KeyValue key="skipChildLayout" value="false" type="boolean"/>
+				<KeyValue key="skipLayoutOnShow" value="false" type="boolean"/>
 				<KeyValue key="ignoreAllChildren" value="false" type="boolean"/>
 			</KeyValues>
 			-->

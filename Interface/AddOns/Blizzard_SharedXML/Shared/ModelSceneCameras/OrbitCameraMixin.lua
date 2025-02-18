@@ -535,7 +535,7 @@ function OrbitCameraMixin:UpdateCameraOrientationAndPosition()
 
 	local width = self:GetOwningScene():GetWidth();
 	local height = self:GetOwningScene():GetHeight();
-	local scaleFactor = math.sqrt(width * width + height * height);
+	local scaleFactor = (width ~= 0 and height ~= 0) and math.sqrt(width * width + height * height) or 1;
 	local zoomFactor = 1;
 	if zoomDistance > 1 then
 		zoomFactor = zoomDistance - (1 / (zoomDistance * zoomDistance * zoomDistance));

@@ -5,6 +5,7 @@
 ## LoadFirst: 1
 ## AllowLoadGameType: cata
 ## AllowLoad: Game
+ActionButtonUtil.lua
 Shared\MainMenuBarMicroButtons.lua
 Cata\MainMenuBarMicroButtons.lua
 Cata\MainMenuBarMicroButtons.xml
@@ -25,4 +26,6 @@ Classic\MultiCastActionBarFrame.lua
 Classic\MultiCastActionBarFrame.xml
 Cata\SpellFlyout.lua
 Cata\SpellFlyout.xml
+Cata\ExtraActionBar.lua
+Cata\ExtraActionBar.xml
 Classic\Localization.lua

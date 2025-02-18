@@ -796,7 +796,7 @@ local function TextEmoteSort(token1, token2)
 	return string1 < string2;
 end
 
-if not IsOnGlueScreen() then
+if not C_Glue.IsOnGlueScreen() then
 	table.sort(EmoteList, TextEmoteSort);
 	table.sort(TextEmoteSpeechList, TextEmoteSort);
 end
@@ -2574,6 +2574,10 @@ end
 
 SlashCmdList["OPEN_LOOT_HISTORY"] = function(msg)
 	ToggleLootHistoryFrame();
+end
+
+SlashCmdList["RAIDFINDER"] = function(msg)
+	PVEFrame_ToggleFrame("GroupFinderFrame", RaidFinderFrame);
 end
 
 SlashCmdList["API"] = function(msg)
@@ -4474,6 +4478,21 @@ function ChatEdit_InsertLink(text)
 		CommunitiesFrame.ChatEditBox:Insert(text);
 		return true;
 	end
+	if ( not IsUsingLegacyAuctionClient() and AuctionHouseFrame and AuctionHouseFrame:IsVisible() ) then
+		local item;
+		if ( strfind(text, "battlepet:") ) then
+			local petName = strmatch(text, "%[(.+)%]");
+			item = petName;
+		elseif ( strfind(text, "item:", 1, true) ) then
+			item = C_Item.GetItemInfo(text);
+		end
+		if ( item ) then
+			if ( AuctionHouseFrame:SetSearchText(item) ) then
+				return true;
+			end
+		end
+	end
+
 	return false;
 end
 
@@ -5255,6 +5274,11 @@ function Chat_GetColoredChatName(chatType, chatTarget)
 	end
 end
 
+function Chat_AddSystemMessage(messageText)
+	local info = ChatTypeInfo["SYSTEM"];
+	DEFAULT_CHAT_FRAME:AddMessage(messageText, info.r, info.g, info.b, info.id);
+end
+
 local function GetSelectedLanguageID()
 	return DEFAULT_CHAT_FRAME.editBox.languageID;
 end
@@ -5370,6 +5394,18 @@ function ChatFrameMenuButtonMixin:OnLoad()
 			ShowMacroFrame();
 		end);
 		AddSlashInitializer(macroButton, SLASH_MACRO1);
+
+		local numLanguages = GetNumLanguages();
+		if(numLanguages) then
+			local languageSubmenu = rootDescription:CreateButton(LANGUAGE);
+			languageSubmenu:AddInitializer(ColorInitializer);
+
+			for i = 1, GetNumLanguages() do
+				local language, languageID = GetLanguageByIndex(i);
+				local languageData = {language, languageID};
+				languageSubmenu:CreateRadio(language, IsLanguageSelected, SetLanguageSelected, languageData);
+			end
+		end
 	end);
 end
 

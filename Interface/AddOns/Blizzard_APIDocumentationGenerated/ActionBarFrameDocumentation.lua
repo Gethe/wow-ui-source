@@ -23,10 +23,11 @@ local ActionBarFrame =
 		{
 			Name = "FindSpellActionButtons",
 			Type = "Function",
+			Documentation = { "Returns the list of action bar slots that contain a specified spell." },
 
 			Arguments =
 			{
-				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false, Documentation = { "Expects a base spell, so if a spell is overridden the base ID should be provided." } },
 			},
 
 			Returns =
@@ -266,6 +267,11 @@ local ActionBarFrame =
 			Name = "UpdateBonusActionbar",
 			Type = "Event",
 			LiteralName = "UPDATE_BONUS_ACTIONBAR",
+		},
+		{
+			Name = "UpdateExtraActionbar",
+			Type = "Event",
+			LiteralName = "UPDATE_EXTRA_ACTIONBAR",
 		},
 		{
 			Name = "UpdateMultiCastActionbar",

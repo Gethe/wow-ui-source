@@ -350,8 +350,8 @@ function WatchFrame_OnEvent (self, event, ...)
 		-- WATCHFRAME_FILTER_TYPE = 4;
 		-- WATCHFRAME_SORT_TYPE = 0;
 	elseif ( event == "QUEST_AUTOCOMPLETE" ) then
-		local questId = ...;
-		if (WatchFrameAutoQuest_AddPopUp(questId, "COMPLETE")) then
+		local questID = ...;
+		if (WatchFrameAutoQuest_AddPopUp(questID, "COMPLETE")) then
 			PlaySound(SOUNDKIT.UI_AUTO_QUEST_COMPLETE);
 		end
 	end
@@ -1306,18 +1306,18 @@ function WatchFrame_GetCurrentMapQuests()
 	local numQuests = QuestMapUpdateAllQuests();
 	table.wipe(CURRENT_MAP_QUESTS);	
 	for i = 1, numQuests do
-		local questId = QuestPOIGetQuestIDByVisibleIndex(i);
-		CURRENT_MAP_QUESTS[questId] = i;
+		local questID = QuestPOIGetQuestIDByVisibleIndex(i);
+		CURRENT_MAP_QUESTS[questID] = i;
 	end
 end
 
 function WatchFrameQuestPOI_OnClick(self, button)
-	QuestPOI_SelectButtonByQuestId(WatchFrameLines, self.questId);
+	QuestPOI_SelectButtonByQuestId(WatchFrameLines, self.questID);
 	if ( WorldMapFrame:IsShown() ) then
-		WorldMapFrame_SelectQuestById(self.questId);
-		QuestPOI_SelectButtonByQuestID(WorldMapFrame, questID)
+		WorldMapFrame_SelectQuestById(self.questID);
+		QuestPOI_SelectButtonByQuestID(WorldMapFrame, self.questID)
 	end
-	--SetSuperTrackedQuestID(self.questId);
+	--SetSuperTrackedQuestID(self.questID);
 	PlaySound("igMainMenuOptionCheckBoxOn");
 end
 
@@ -1464,7 +1464,7 @@ function WatchFrameAutoQuest_DisplayAutoQuestPopUps(lineFrame, nextAnchor, maxHe
 			frame:ClearAllPoints();
 			frame:SetParent(lineFrame);
 			
-			if (not frame.questId) then
+			if (not frame.questID) then
 				-- Only show the animation for new notifications
 				frame.ScrollChild.Flash:Hide();
 				WatchFrameAutoQuest_SlideIn(frame, 0.4);
@@ -1477,7 +1477,7 @@ function WatchFrameAutoQuest_DisplayAutoQuestPopUps(lineFrame, nextAnchor, maxHe
 				frame.ScrollChild.BottomText:Hide();
 				frame.ScrollChild.TopText:SetPoint("TOP", 0, -12);
 				frame.ScrollChild.QuestName:SetPoint("TOP", 0, -32);
-				if (frame.questId and frame.type=="OFFER") then
+				if (frame.questID and frame.type=="OFFER") then
 					frame.ScrollChild.Flash:Show();
 				end
 				frame.type="COMPLETED";
@@ -1508,7 +1508,7 @@ function WatchFrameAutoQuest_DisplayAutoQuestPopUps(lineFrame, nextAnchor, maxHe
 			frame:SetPoint("LEFT", lineFrame, "LEFT", -30, 0);
 
 			frame.ScrollChild.QuestName:SetText(questTitle);
-			frame.questId = questID;
+			frame.questID = questID;
 			
 			maxWidth = max(maxWidth, frame:GetWidth());
 			nextAnchor = frame;
@@ -1517,7 +1517,7 @@ function WatchFrameAutoQuest_DisplayAutoQuestPopUps(lineFrame, nextAnchor, maxHe
 	end
 	
 	for i=numPopUps+1, numPopUpFrames do
-		_G["WatchFrameAutoQuestPopUp"..i].questId = nil;
+		_G["WatchFrameAutoQuestPopUp"..i].questID = nil;
 		_G["WatchFrameAutoQuestPopUp"..i]:Hide();
 	end
 	
@@ -1580,8 +1580,8 @@ function WatchFrameAutoQuest_SlideIn(frame, slideInTime)
 	frame:SetScript("OnUpdate", WatchFrameAutoQuest_OnUpdate);
 end
 
-function WatchFrameAutoQuest_AddPopUp(questId, type)
-	if (AddAutoQuestPopUp(questId, type)) then
+function WatchFrameAutoQuest_AddPopUp(questID, type)
+	if (AddAutoQuestPopUp(questID, type)) then
 		WatchFrame_Update(WatchFrame);
 		WatchFrame_Expand(WatchFrame);
 		return true;
@@ -1589,12 +1589,12 @@ function WatchFrameAutoQuest_AddPopUp(questId, type)
 	return false;
 end
 
-function WatchFrameAutoQuest_ClearPopUp(questId)
-	RemoveAutoQuestPopUp(questId);
+function WatchFrameAutoQuest_ClearPopUp(questID)
+	RemoveAutoQuestPopUp(questID);
 	WatchFrame_Update(WatchFrame);
 end
 
 function WatchFrameAutoQuest_ClearPopUpByLogIndex(questIndex)
-	local questId = select(9, GetQuestLogTitle(questIndex));
-	WatchFrameAutoQuest_ClearPopUp(questId);
+	local questID = select(9, GetQuestLogTitle(questIndex));
+	WatchFrameAutoQuest_ClearPopUp(questID);
 end

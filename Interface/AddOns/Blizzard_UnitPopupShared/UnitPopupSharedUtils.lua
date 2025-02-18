@@ -3,7 +3,6 @@ local PROJECT_IMPL_REQUIRED = "Add implementation in UnitPopupUtils.lua";
 UnitPopupSharedUtil = { }; 
 
 function UnitPopupSharedUtil.GetBNetIDAccount(contextData)
-	error(PROJECT_IMPL_REQUIRED);
 	return nil;
 end
 
@@ -26,7 +25,6 @@ function UnitPopupSharedUtil.GetGUID(contextData)
 end
 
 function UnitPopupSharedUtil.GetBNetAccountInfo(contextData)
-	error(PROJECT_IMPL_REQUIRED);
 	return nil; 
 end
 
@@ -50,7 +48,6 @@ function UnitPopupSharedUtil.GetIsMobile(contextData)
 end
 
 function UnitPopupSharedUtil.TryCreatePlayerLocation(contextData)
-	error(PROJECT_IMPL_REQUIRED);
 	return nil; 
 end
 
@@ -98,10 +95,6 @@ end
 function UnitPopupSharedUtil.IsPlayer(contextData)
 	local unit = contextData.unit;
 	return unit and UnitIsPlayer(unit);
-end
-
-function UnitPopupSharedUtil.GetLFGCategoryForLFGSlot(lfgSlot)
-	return lfgSlot and GetLFGCategoryForID(lfgSlot);
 end
 
 function UnitPopupSharedUtil.IsPlayerOffline(contextData)
@@ -235,7 +228,6 @@ function UnitPopupSharedUtil.TryBNInvite(contextData)
 end
 
 function UnitPopupSharedUtil.TryInvite(contextData, inviteType, fullname)
-	error(PROJECT_IMPL_REQUIRED);
 	return nil;
 end
 
@@ -259,7 +251,6 @@ function UnitPopupSharedUtil.CreateUnitPopupReportPet(reportType, playerName, pe
 end
 
 function UnitPopupSharedUtil.GetFullPlayerName(contextData)
-	error(PROJECT_IMPL_REQUIRED);
 	return nil; 
 end		
 

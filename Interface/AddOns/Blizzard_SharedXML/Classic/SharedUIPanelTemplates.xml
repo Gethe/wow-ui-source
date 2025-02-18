@@ -461,7 +461,15 @@
 		</CheckedTexture>
 	</CheckButton>
 
-	<CheckButton name="UICheckButtonTemplate" virtual="true">
+	<CheckButton name="UICheckButtonArtTemplate" virtual="true">
+		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+		<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+	</CheckButton>
+
+	<CheckButton name="UICheckButtonTemplate" inherits="UICheckButtonArtTemplate" virtual="true">
 		<Size x="32" y="32"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -469,14 +477,12 @@
 					<Anchors>
 						<Anchor point="LEFT" relativePoint="RIGHT" x="-2" y="0"/>
 					</Anchors>
+					<Scripts>
+						<OnLoad function="UICheckButtonFontString_SetParentKeyAlias"/>
+					</Scripts>
 				</FontString>
 			</Layer>
 		</Layers>
-		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
-		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
-		<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
-		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
-		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 	</CheckButton>
 
 	<Slider name="UISliderTemplate" orientation="HORIZONTAL" enableMouse="true" virtual="true">
@@ -525,8 +531,8 @@
 						</Texture>
 						<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.portrait" x="2" y="0"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.portrait" x="-2" y="4"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.portrait" x="2" y="-2"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.portrait" x="-5" y="4"/>
 							</Anchors>
 							<MaskedTextures>
 								<MaskedTexture childKey="portrait"/>
@@ -556,7 +562,7 @@
 		</Frames>
 	</Frame>
 
-	<Frame name="PortraitFrameTemplateNoCloseButton" virtual="true" mixin="PortraitFrameTemplateMixin">
+	<Frame name="PortraitFrameTemplateNoCloseButton" inherits="PortraitFrameBaseTemplate" virtual="true" mixin="PortraitFrameTemplateMixin">
 		<Size x="338" y="424"/>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-6">
@@ -789,67 +795,19 @@
 	This is the inner frame used by ButtonFrameTemplate
 *******************************************************************************
 -->
+
 	<Frame name="InsetFrameTemplate" useParentLevel="true" virtual="true">
-		<Size x="64" y="64"/>
+		<KeyValues>
+			<KeyValue key="layoutType" value="InsetFrameTemplate" type="string"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-5">
-				<Texture name="$parentBg" file="Interface\FrameGeneral\UI-Background-Marble" horizTile="true" vertTile="true" parentKey="Bg">
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-						<Anchor point="BOTTOMRIGHT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="BORDER" textureSubLevel="-5">
-				<Texture name="$parentInsetTopLeftCorner" inherits="UI-Frame-InnerTopLeft" parentKey="InsetBorderTopLeft">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Bg"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentInsetTopRightCorner" inherits="UI-Frame-InnerTopRight" parentKey="InsetBorderTopRight">
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.Bg"/>
-					</Anchors>
-				</Texture>
-
-				<Texture name="$parentInsetBotLeftCorner" inherits="UI-Frame-InnerBotLeftCorner" parentKey="InsetBorderBottomLeft">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Bg" y="-1"/>
-					</Anchors>
-				</Texture>
-
-				<Texture name="$parentInsetBotRightCorner" inherits="UI-Frame-InnerBotRight" parentKey="InsetBorderBottomRight">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Bg" y="-1"/>
-					</Anchors>
-				</Texture>
-
-				<Texture name="$parentInsetTopBorder" inherits="_UI-Frame-InnerTopTile" parentKey="InsetBorderTop">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.InsetBorderTopLeft" relativePoint="TOPRIGHT"/>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.InsetBorderTopRight" relativePoint="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentInsetBottomBorder" inherits="_UI-Frame-InnerBotTile" parentKey="InsetBorderBottom">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.InsetBorderBottomLeft" relativePoint="BOTTOMRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.InsetBorderBottomRight" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentInsetLeftBorder" inherits="!UI-Frame-InnerLeftTile" parentKey="InsetBorderLeft">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.InsetBorderTopLeft" relativePoint="BOTTOMLEFT" x="0" y="0" />
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.InsetBorderBottomLeft" relativePoint="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentInsetRightBorder" inherits="!UI-Frame-InnerRightTile" parentKey="InsetBorderRight">
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.InsetBorderTopRight" relativePoint="BOTTOMRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.InsetBorderBottomRight" relativePoint="TOPRIGHT"/>
-					</Anchors>
-				</Texture>
+				<Texture parentKey="Bg" name="$parentBg" file="Interface\FrameGeneral\UI-Background-Marble" horizTile="true" vertTile="true" setAllPoints="true"/>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Frame parentKey="NineSlice" useParentLevel="true" inherits="NineSlicePanelTemplate"/>
+		</Frames>
 	</Frame>
 
 <!--
@@ -1807,6 +1765,48 @@
 			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</Frame>
+	
+	<Button name="ColumnDisplayButtonShortTemplate" virtual="true">
+		<Size x="10" y="19"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Left" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size x="5" y="19"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.078125" top="0" bottom="0.59375"/>
+				</Texture>
+				<Texture parentKey="Right" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size x="4" y="19"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.90625" right="0.96875" top="0" bottom="0.59375"/>
+				</Texture>
+				<Texture parentKey="Middle" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size x="0" y="19"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT"/>
+					</Anchors>
+					<TexCoords left="0.078125" right="0.90625" top="0" bottom="0.59375"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<ButtonText parentKey="Text">
+			<Anchors>
+				<Anchor point="LEFT" x="8" y="0"/>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GameFontHighlightSmall"/>
+		<HighlightTexture file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="TOPLEFT" x="0" y="0"/>
+				<Anchor point="BOTTOMRIGHT" x="4" y="-2"/>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
 
 	<Button name="ColumnDisplayButtonTemplate" virtual="true">
 		<Size x="10" y="24"/>
@@ -1980,7 +1980,9 @@
 			</Scripts>
 		</Button>
 
-		<Button name="IconButtonTemplate" mixin="IconButtonMixin" inherits="UIButtonTemplate" virtual="true">
+	<Button name="BigRedExitButtonTemplate" inherits="UIPanelCloseButtonNoScripts" virtual="true"/>
+
+	<Button name="IconButtonTemplate" mixin="IconButtonMixin" inherits="UIButtonTemplate" virtual="true">
 		<!--
 		icon: texture file to be displayed on the button.
 		iconSize: size for square icons. iconSize/{iconWidth iconHeight}/useAtlasSize are exclusive.
@@ -2034,6 +2036,97 @@
 		<DisabledTexture file="Interface\Buttons\UI-SquareButton-Disabled"/>
 		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 	</Button>
+	
+	<Button name="CommonSquareIconButtonTemplate" mixin="SquareIconButtonMixin" inherits="SquareIconButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="iconSize" value="24" type="number"/>
+		</KeyValues>
+		<Size x="48" y="48"/>
+		<HitRectInsets left="6" right="6" top="6" bottom="6"/>
+		<NormalTexture parentKey="NormalTexture" atlas="common-button-square-gray-up"/>
+		<HighlightTexture parentKey="HighlightTexture" alphaMode="ADD" alpha="0.4">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT"/>
+				<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT"/>
+			</Anchors>
+		</HighlightTexture>
+		<PushedTexture parentKey="PushedTexture" atlas="common-button-square-gray-down">
+			<Anchors>
+				<Anchor point="TOPLEFT" x="1" y="-1"/>
+				<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
+			</Anchors>
+		</PushedTexture>
+		<DisabledTexture parentKey="NormalTexture" atlas="common-button-square-gray-up"/>
+	</Button>
+
+	<Button name="RefreshButtonTemplate" inherits="SquareIconButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="icon" value="Interface\Buttons\UI-RefreshButton" type="string"/>
+		</KeyValues>
+	</Button>
+
+	<Frame name="ResizeCheckButtonBehaviorTemplate" inherits="ResizeLayoutFrame" mixin="ResizeCheckButtonMixin" virtual="true">
+		<!--
+		onBoxToggled: a function that takes two arguments: a boolean for whether the box is checked or not, and a boolean for whether it
+						was toggled by the user or programmatically. Called when the checked state changes.
+		labelText: The text to use on the label
+		labelFont: The font to use for the label
+		<KeyValues>
+			<KeyValue key="onBoxToggled" value="nop" type="global"/>
+			<KeyValue key="labelText" value="CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER" type="global"/>
+			<KeyValue key="labelFont" value="GameFontHighlightLarge" type="string"/>
+		</KeyValues>
+		-->
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="ResizeCheckButtonTemplate" inherits="ResizeCheckButtonBehaviorTemplate" virtual="true">
+		<Size x="1" y="1"/>
+		<Frames>
+			<CheckButton parentKey="Button" inherits="UICheckButtonTemplate">
+				<Size x="28" y="28"/>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():OnCheckButtonClick();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" inherits="GameFontHighlightLarge">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Button" relativePoint="RIGHT" x="2" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="LabeledEnumDropDownControlTemplate" mixin="LabeledEnumDropDownControlMixin" inherits="DropDownControlTemplate" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Label" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.DropDownMenu" relativePoint="TOPLEFT" x="20" y="2"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
 
 	<Frame name="ClickToDragTemplate" mixin="ClickToDragMixin" movable="true" virtual="true">
 		<Scripts>
@@ -2049,6 +2142,65 @@
 			<OnDragStart method="OnDragStart"/>
 			<OnDragStop method="OnDragStop"/>
 		</Scripts>
+	</Frame>
+
+	<EditBox name="NumericInputBoxTemplate" mixin="NumericInputBoxMixin" inherits="InputBoxTemplate" numeric="true" virtual="true">
+		<KeyValues>
+			<!--
+			valueChangedCallback: a function that takes two arguments, the numeric value of the edit box, and a boolean for whether
+										it was set by user input (as opposed to set by script). Called whenever the value changes
+			valueFinalizedCallback: a function that takes the numeric value of the edit box when the focus is cleared (i.e. enter pressed).
+			-->
+			<KeyValue key="valueChangedCallback" value="nop" type="global"/>
+			<KeyValue key="valueFinalizedCallback" value="nop" type="global"/>
+		</KeyValues>
+		<Scripts>
+			<OnTextChanged method="OnTextChanged"/>
+			<OnEnterPressed function="EditBox_ClearFocus"/>
+			<OnEditFocusLost method="OnEditFocusLost"/>
+		</Scripts>
+	</EditBox>
+
+	<Frame name="SliderAndEditControlTemplate" mixin="SliderAndEditControlMixin" inherits="ResizeLayoutFrame" virtual="true">
+		<KeyValues>
+			<KeyValue key="widthPadding" value="12" type="number"/>
+			<KeyValue key="heightPadding" value="6" type="number"/>
+		</KeyValues>
+		<Frames>
+			<EditBox parentKey="ValueBox" inherits="NumericInputBoxTemplate" letters="3" autoFocus="false">
+				<Size x="30" y="22"/>
+				<Anchors>
+					<Anchor point="LEFT" x="6" y="6"/>
+				</Anchors>
+			</EditBox>
+
+			<Slider parentKey="Slider" inherits="UISliderTemplate" obeyStepOnDrag="true">
+				<Size x="120" y="20"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.ValueBox" relativePoint="RIGHT" x="4" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						self:GetParent():OnEnter();
+					</OnEnter>
+					<OnLeave>
+						self:GetParent():OnLeave();
+					</OnLeave>
+					<OnValueChanged>
+						self:GetParent():OnSliderValueChanged(value, userInput);
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" font="GameFontHighlight">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Slider" relativePoint="BOTTOM" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
 	</Frame>
 
 	<Button name="PanelResizeButtonTemplate" mixin="PanelResizeButtonMixin" virtual="true">
@@ -2432,6 +2584,39 @@
 		</Scripts>
 	</Button>
 
+	<EditBox name="LevelRangeEditBoxTemplate" inherits="InputBoxTemplate" letters="3" numeric="true" autoFocus="false" virtual="true">
+		<Size x="28" y="16"/>
+	</EditBox>
+
+	<Frame name="LevelRangeFrameTemplate" mixin="LevelRangeFrameMixin" virtual="true">
+		<Size x="80" y="22"/>
+		<Frames>
+			<EditBox parentKey="MinLevel" inherits="LevelRangeEditBoxTemplate">
+				<Anchors>
+					<Anchor point="LEFT" x="8" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Dash" inherits="GameFontHighlightSmall" text="-">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent" relativePoint="RIGHT" x="0" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</EditBox>
+			<EditBox parentKey="MaxLevel" inherits="LevelRangeEditBoxTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.MinLevel" relativePoint="RIGHT" x="10" y="0"/>
+				</Anchors>
+			</EditBox>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+	
 	<Frame name="BottomPopupScrollBoxTemplate" frameStrata="DIALOG" virtual="true">
 		<Size x="600" y="400"/>
 		<Anchors>

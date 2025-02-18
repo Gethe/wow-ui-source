@@ -6,8 +6,10 @@
 
 # Start documentation files here
 AccountInfoDocumentation.lua
+AccountStoreDocumentation.lua
 AchievementInfoDocumentation.lua
 ActionBarFrameDocumentation.lua
+AddOnProfilerDocumentation.lua
 AddOnsDocumentation.lua
 AdventureJournalDocumentation.lua
 AdventureMapDocumentation.lua
@@ -57,6 +59,7 @@ DuelInfoDocumentation.lua
 EditModeManagerDocumentation.lua
 EncounterInfoDocumentation.lua
 EncounterJournalDocumentation.lua
+EndOfMatchUIDocumentation.lua
 EquipmentManagerDocumentation.lua
 EventUtilsDocumentation.lua
 ExpansionDocumentation.lua
@@ -74,11 +77,11 @@ FrameAPISimpleCheckoutDocumentation.lua
 FrameAPITabardModelBaseDocumentation.lua
 FrameAPIUnitPositionFrameDocumentation.lua
 FrameScriptDocumentation.lua
+FriendListDocumentation.lua
 GMTicketInfoDocumentation.lua
 GameCursorDocumentation.lua
 GameEnvironmentManagerDocumentation.lua
 GameErrorDocumentation.lua
-GameModeManagerDocumentation.lua
 GamePadDocumentation.lua
 GameRulesDocumentation.lua
 GameUIDocumentation.lua
@@ -101,6 +104,7 @@ KeyBindingsDocumentation.lua
 LFGInfoDocumentation.lua
 LFGListInfoDocumentation.lua
 LoadingScreenDocumentation.lua
+LobbyMatchmakerInfoDocumentation.lua
 LocaleDocumentation.lua
 LocalizationDocumentation.lua
 LootDocumentation.lua
@@ -146,6 +150,7 @@ ReportSystemDocumentation.lua
 ReputationInfoDocumentation.lua
 ResearchInfoDocumentation.lua
 RestrictedActionsDocumentation.lua
+ScenarioInfoDocumentation.lua
 ScreenDocumentation.lua
 ScriptWarningsDocumentation.lua
 SecureTransferDocumentation.lua
@@ -193,6 +198,7 @@ SimpleTextureBaseAPIDocumentation.lua
 SkillInfoDocumentation.lua
 SlashCommandDocumentation.lua
 SocialQueueDocumentation.lua
+SocialRestrictionsDocumentation.lua
 SoundDocumentation.lua
 SpecializationInfoDocumentation.lua
 SpecializationSharedDocumentation.lua
@@ -221,6 +227,7 @@ TraitConfigDocumentation.lua
 TransmogDocumentation.lua
 TransmogItemsDocumentation.lua
 TutorialDocumentation.lua
+UIActionDocumentation.lua
 UIColorDocumentation.lua
 UIEventToastManagerDocumentation.lua
 UIGenericWidgetDisplayDocumentation.lua
@@ -233,6 +240,7 @@ UIWidgetManagerDocumentation.lua
 URLDocumentation.lua
 UnitDocumentation.lua
 UnitAuraDocumentation.lua
+UnitRoleDocumentation.lua
 UserFeedbackDocumentation.lua
 VehicleDocumentation.lua
 VideoDocumentation.lua
@@ -255,13 +263,12 @@ FrameAPICharacterModelBaseDocumentation.lua
 FrameAPIDressUpModelDocumentation.lua
 FrameAPIModelSceneFrameActorDocumentation.lua
 FrameAPITabardModelDocumentation.lua
-FriendListDocumentation.lua
+LFGListRolesDocumentation.lua
 MailInfoDocumentation.lua
 MapDocumentation.lua
 ReforgeDocumentation.lua
 ScriptedAnimationsDocumentation.lua
 SeasonsDocumentation.lua
-SocialRestrictionsDocumentation.lua
 SystemDocumentation.lua
 TradeSkillUIDocumentation.lua
 AccountConstantsDocumentation.lua
@@ -290,6 +297,7 @@ ContentTrackingTypesDocumentation.lua
 CurrencyConstantsDocumentation.lua
 CursorConstDocumentation.lua
 DamageConstantsDocumentation.lua
+DelvesConstantsDocumentation.lua
 EditModeManagerSharedDocumentation.lua
 EncounterJournalConstantsDocumentation.lua
 ExpansionLandingPageConstantsDocumentation.lua
@@ -301,6 +309,7 @@ GamePadConstDocumentation.lua
 GameRulesConstantsDocumentation.lua
 GarrisonConstantsDocumentation.lua
 GossipConstantsDocumentation.lua
+GroupFinderConstantsDocumentation.lua
 GuildInfoSharedDocumentation.lua
 InputConstantsDocumentation.lua
 ItemConstantsDocumentation.lua
@@ -338,7 +347,9 @@ QuestSessionConstantsDocumentation.lua
 QueueSpecificDocumentation.lua
 RecruitAFriendSharedDocumentation.lua
 ReportSystemConstantsDocumentation.lua
+ScreenLocationConstantsDocumentation.lua
 ScriptRegionSharedDocumentation.lua
+SeasonsConstantsDocumentation.lua
 SharedScriptObjectModelLightDocumentation.lua
 SharedScriptObjectUnitPositionFrameDocumentation.lua
 SharedTraitsEnumsDocumentation.lua
@@ -356,7 +367,10 @@ TooltipInfoSharedDocumentation.lua
 TradeSkillUITypesDocumentation.lua
 TraitConstantsDocumentation.lua
 TransmogSharedDocumentation.lua
+UIActionConstantsDocumentation.lua
+UIButtonSharedDocumentation.lua
 UIFileAssetSharedDocumentation.lua
+UIMapPinSharedDocumentation.lua
 UIModelInfoSharedDocumentation.lua
 UISharedDocumentation.lua
 UITextureAssetSharedDocumentation.lua
@@ -374,7 +388,6 @@ AuctionHouseConstants_ClassicDocumentation.lua
 CurrencyConstants_ClassicDocumentation.lua
 ItemConstants_ClassicDocumentation.lua
 QuestConstants_ClassicDocumentation.lua
-SeasonsConstantsDocumentation.lua
 TalentAndGlyphConstantsDocumentation.lua
 TransmogConstantsDocumentation.lua
 # End documentation files here

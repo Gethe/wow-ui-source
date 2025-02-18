@@ -1883,4 +1883,12 @@
 			<OnClick method="OnClick"/>
 		</Scripts>
 	</Button>
+
+	<Button name="ButtonWithDisableTooltipTemplate" mixin="ButtonWithDisableMixin" motionScriptsWhileDisabled="true" virtual="true">
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+	</Button>
+	
 </Ui>

@@ -5,9 +5,9 @@ local CurrencyConstants =
 		{
 			Name = "AccountCurrencyTransferResult",
 			Type = "Enumeration",
-			NumValues = 9,
+			NumValues = 10,
 			MinValue = 0,
-			MaxValue = 8,
+			MaxValue = 9,
 			Fields =
 			{
 				{ Name = "Success", Type = "AccountCurrencyTransferResult", EnumValue = 0 },
@@ -19,6 +19,7 @@ local CurrencyConstants =
 				{ Name = "NoValidSourceCharacter", Type = "AccountCurrencyTransferResult", EnumValue = 6 },
 				{ Name = "ServerError", Type = "AccountCurrencyTransferResult", EnumValue = 7 },
 				{ Name = "CannotUseCurrency", Type = "AccountCurrencyTransferResult", EnumValue = 8 },
+				{ Name = "TransactionInProgress", Type = "AccountCurrencyTransferResult", EnumValue = 9 },
 			},
 		},
 		{
@@ -66,9 +67,9 @@ local CurrencyConstants =
 		{
 			Name = "CurrencyFlagsB",
 			Type = "Enumeration",
-			NumValues = 8,
+			NumValues = 9,
 			MinValue = 1,
-			MaxValue = 128,
+			MaxValue = 256,
 			Fields =
 			{
 				{ Name = "CurrencyBUseTotalEarnedForEarned", Type = "CurrencyFlagsB", EnumValue = 1 },
@@ -79,6 +80,7 @@ local CurrencyConstants =
 				{ Name = "CurrencyBDontDisplayIfZero", Type = "CurrencyFlagsB", EnumValue = 32 },
 				{ Name = "CurrencyBScaleMaxQuantityBySeasonWeeks", Type = "CurrencyFlagsB", EnumValue = 64 },
 				{ Name = "CurrencyBScaleMaxQuantityByWeeksSinceStart", Type = "CurrencyFlagsB", EnumValue = 128 },
+				{ Name = "CurrencyBForceMaxQuantityOnConversion", Type = "CurrencyFlagsB", EnumValue = 256 },
 			},
 		},
 		{

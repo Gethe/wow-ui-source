@@ -464,15 +464,19 @@ function CompositorMixin:Clear()
 	self.replacedMetatables = {self.target};
 end
 
-function CompositorMixin:Detach()
-	self:ClearTicker();
+local function SecureDetach(compositor)
+	compositor:ClearTicker();
 	
-	for index, region in ipairs(self.replacedMetatables) do
+	for index, region in ipairs(compositor.replacedMetatables) do
 		RestoreOriginalMetatable(region);
 	end
-	self.replacedMetatables = {};
+	compositor.replacedMetatables = {};
 
-	ReleaseAttachments(self);
+	ReleaseAttachments(compositor);
+end
+
+function CompositorMixin:Detach()
+	securecallfunction(SecureDetach, self);
 end
 
 CompositorMixin.__index = CompositorMixin;

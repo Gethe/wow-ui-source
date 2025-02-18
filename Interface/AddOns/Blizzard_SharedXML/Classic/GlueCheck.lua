@@ -1,3 +1,3 @@
 function InGlue()
-	return IsOnGlueScreen();
+	return C_Glue.IsOnGlueScreen();
 end

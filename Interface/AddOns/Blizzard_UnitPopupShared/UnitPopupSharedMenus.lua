@@ -22,14 +22,20 @@ function UnitPopupTopLevelMenuMixin:IsInlineMenu()
 end 
 
 function UnitPopupTopLevelMenuMixin:AssembleMenuEntries(contextData)
-	local entries = {}; 
-	for index, buttonMixin in ipairs(self:GetEntries()) do 
-		if buttonMixin:IsInlineMenu() then 
-			tAppendAll(entries, buttonMixin:GetEntries());
-		else 
-			table.insert(entries, buttonMixin);
+	local entries = {};
+	local topLevelEntries = self:GetEntries();
+	if topLevelEntries then
+		for index, buttonMixin in ipairs(self:GetEntries()) do 
+			if buttonMixin:IsInlineMenu() then 
+				local mixinEntries = buttonMixin:GetEntries();
+				if mixinEntries then
+					tAppendAll(entries, buttonMixin:GetEntries());
+				end
+			else 
+				table.insert(entries, buttonMixin);
+			end
+		end
 	end
-end		
 	return entries;
 end
 
@@ -230,13 +236,13 @@ end
 UnitPopupMenuBnFriend = CreateFromMixins(UnitPopupTopLevelMenuMixin)
 UnitPopupManager:RegisterMenu("BN_FRIEND", UnitPopupMenuBnFriend);
 function UnitPopupMenuBnFriend:GetEntries()
-	error(PROJECT_IMPL_REQUIRED);
+	return nil;
 end 
 
 UnitPopupMenuBnFriendOffline = CreateFromMixins(UnitPopupTopLevelMenuMixin)
 UnitPopupManager:RegisterMenu("BN_FRIEND_OFFLINE", UnitPopupMenuBnFriendOffline);
 function UnitPopupMenuBnFriendOffline:GetEntries()
-	error(PROJECT_IMPL_REQUIRED);
+	return nil;
 end
 
 UnitPopupMenuGlueFriend = CreateFromMixins(UnitPopupTopLevelMenuMixin)

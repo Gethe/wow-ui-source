@@ -96,6 +96,19 @@ local PartyInfo =
 	Events =
 	{
 		{
+			Name = "BnetRequestInviteConfirmation",
+			Type = "Event",
+			LiteralName = "BNET_REQUEST_INVITE_CONFIRMATION",
+			Payload =
+			{
+				{ Name = "gameAccountID", Type = "number", Nilable = false },
+				{ Name = "questSessionActive", Type = "bool", Nilable = false },
+				{ Name = "tank", Type = "bool", Nilable = false },
+				{ Name = "healer", Type = "bool", Nilable = false },
+				{ Name = "dps", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "EnteredDifferentInstanceFromParty",
 			Type = "Event",
 			LiteralName = "ENTERED_DIFFERENT_INSTANCE_FROM_PARTY",
@@ -245,27 +258,6 @@ local PartyInfo =
 			Payload =
 			{
 				{ Name = "preempted", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "RoleChangedInform",
-			Type = "Event",
-			LiteralName = "ROLE_CHANGED_INFORM",
-			Payload =
-			{
-				{ Name = "changedName", Type = "cstring", Nilable = false },
-				{ Name = "fromName", Type = "cstring", Nilable = false },
-				{ Name = "oldRole", Type = "cstring", Nilable = false },
-				{ Name = "newRole", Type = "cstring", Nilable = false },
-			},
-		},
-		{
-			Name = "RolePollBegin",
-			Type = "Event",
-			LiteralName = "ROLE_POLL_BEGIN",
-			Payload =
-			{
-				{ Name = "fromName", Type = "cstring", Nilable = false },
 			},
 		},
 		{

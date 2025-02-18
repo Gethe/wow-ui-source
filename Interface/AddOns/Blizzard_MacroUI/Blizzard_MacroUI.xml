@@ -96,6 +96,7 @@
 			<Frame parentKey="MacroSelector" inherits="ScrollBoxSelectorTemplate" frameStrata="HIGH">
 				<KeyValues>
 					<KeyValue key="buttonTemplate" value="MacroButtonTemplate" type="string"/>
+					<KeyValue key="retainScrollPosition" value="true" type="boolean"/>
 				</KeyValues>
 				<Size x="319" y="146"/>
 				<Anchors>

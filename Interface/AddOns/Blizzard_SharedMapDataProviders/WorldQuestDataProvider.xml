@@ -36,7 +36,7 @@
 						<Anchor point="CENTER" />
 					</Anchors>
 				</Texture>
-				<Texture parentKey="PushedBackground" textureSubLevel="-1" hidden="true">
+				<Texture parentKey="PushedBackground" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER" />
 					</Anchors>
