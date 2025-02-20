@@ -468,7 +468,7 @@ function StoreFrame_UpdateCard(card, entryID, discountReset, forceModelUpdate)
 
 	-- This is a hack to solve an issue with the Warpath Pack bundle. 
 	-- This should be fixed properly with a flag to hide the icon in a data driven manner
-	local shouldShowWarPathIcon = entryInfo.productID ~= 1121 or not card.isSplash;
+	local shouldShowWarPathIcon = (entryInfo.productID ~= 1121 and entryInfo.productID ~= 975) or not card.isSplash;
 	if not shouldShowWarPathIcon then
 		-- Upgrade Arrow will continue to show if we don't do this separately
 		card.UpgradeArrow:Hide();
