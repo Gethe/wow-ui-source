@@ -439,11 +439,11 @@ function MultiCastActionButton_OnLoad(self)
 	-- setup action button stuff
 	self.buttonType = "MULTICASTACTIONBUTTON";
 	self.buttonIndex = self:GetID();
-	ActionBarActionButtonDerivedMixin.OnLoad(self);
+	ActionBarActionButtonDerivedMixin.ActionBarActionButtonDerivedMixin_OnLoad(self);
 end
 
 function MultiCastActionButton_OnEvent(self, event, ...)
-	ActionBarActionButtonDerivedMixin.OnEvent(self, event, ...);
+	ActionBarActionButtonDerivedMixin.ActionBarActionButtonDerivedMixin_OnEvent(self, event, ...);
 	if ( event == "MODIFIER_STATE_CHANGED" ) then
 		if ( IsModifiedClick("SHOWMULTICASTFLYOUT") and self:IsMouseOver() ) then
 			MultiCastActionButton_OnEnter(self);

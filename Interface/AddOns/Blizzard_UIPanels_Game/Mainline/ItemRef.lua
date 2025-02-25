@@ -448,6 +448,20 @@ function SetItemRef(link, text, button, chatFrame)
 		-- local links only
 		EventRegistry:TriggerEvent("SetItemRef", link, text, button, chatFrame);
 		return;
+	elseif ( strsub(link, 1, 12) == "warbandScene" ) then
+		local _, warbandSceneID = strsplit(":", link);
+		local warbandSceneInfo = C_WarbandScene.GetWarbandSceneEntry(tonumber(warbandSceneID));
+		if warbandSceneInfo then
+			ItemRefTooltip:ClearHandlerInfo();
+			ItemRefTooltip:SetOwner(UIParent, "ANCHOR_PRESERVE");
+
+			local isOwned = C_WarbandScene.HasWarbandScene(warbandSceneInfo.warbandSceneID);
+			SharedCollectionUtil.ShowWarbandSceneEntryTooltip(ItemRefTooltip, warbandSceneInfo, isOwned);
+		end
+		return;
+	elseif ( strsub(link, 1, 8) == "eventpoi" ) then
+		local _, areaPoiID = strsplit(":", link);
+		OpenMapToEventPoi(tonumber(areaPoiID));
 	end
 	if ( IsModifiedClick() ) then
 		local fixedLink = GetFixedLink(text);

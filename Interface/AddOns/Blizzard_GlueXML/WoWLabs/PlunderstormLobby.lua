@@ -28,6 +28,7 @@ function PlunderstormLobbyMixin:OnLoad()
 	self:AddDynamicEventMethod(EventRegistry, "MatchmakingQueueType.PlayerUpdatedPartyList", self.OnPlayerUpdatedPartyList);
 
 	self.NavBar:SetRealmsButtonEnabled(false);
+	self.NavBar:SetCampsButtonEnabled(false);
 end
 
 function PlunderstormLobbyMixin:ChangeGameEnvironment(newEnvironment)

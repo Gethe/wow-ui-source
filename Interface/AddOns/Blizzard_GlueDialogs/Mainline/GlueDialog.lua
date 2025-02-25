@@ -457,6 +457,18 @@ StaticPopupDialogs["ACCOUNT_STORE_BEGIN_PURCHASE_OR_REFUND"] = {
 	end
 };
 
+StaticPopupDialogs["CONFIRM_DELETE_CHARACTER_GROUP"] = {
+	text = CONFIRM_DELETE_CHARACTER_GROUP_TEXT,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function()
+		if GlueDialog.data then
+			GlueDialog.data();
+		end
+	end,
+	cover = true
+};
+
 local function GlueDialog_SetCustomOnHideScript(self, script)
 	self.customOnHideScript = script;
 end

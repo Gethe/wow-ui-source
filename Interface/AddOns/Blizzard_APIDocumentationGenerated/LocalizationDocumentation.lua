@@ -41,7 +41,7 @@ local Localization =
 			Arguments =
 			{
 				{ Name = "name", Type = "cstring", Nilable = false },
-				{ Name = "gender", Type = "number", Nilable = true },
+				{ Name = "gender", Type = "UnitSex", Nilable = true },
 				{ Name = "declensionSet", Type = "luaIndex", Nilable = false },
 			},
 
@@ -57,7 +57,7 @@ local Localization =
 			Arguments =
 			{
 				{ Name = "name", Type = "cstring", Nilable = false },
-				{ Name = "gender", Type = "number", Nilable = true },
+				{ Name = "gender", Type = "UnitSex", Nilable = true },
 			},
 
 			Returns =

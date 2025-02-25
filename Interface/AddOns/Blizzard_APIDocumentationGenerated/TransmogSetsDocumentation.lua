@@ -41,6 +41,7 @@ local TransmogSets =
 		{
 			Name = "GetAllSourceIDs",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -55,6 +56,7 @@ local TransmogSets =
 		{
 			Name = "GetBaseSetID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -78,6 +80,7 @@ local TransmogSets =
 		{
 			Name = "GetBaseSetsFilter",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -122,6 +125,7 @@ local TransmogSets =
 		{
 			Name = "GetIsFavorite",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -146,6 +150,7 @@ local TransmogSets =
 		{
 			Name = "GetSetInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -160,6 +165,7 @@ local TransmogSets =
 		{
 			Name = "GetSetNewSources",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -174,6 +180,7 @@ local TransmogSets =
 		{
 			Name = "GetSetPrimaryAppearances",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -188,6 +195,7 @@ local TransmogSets =
 		{
 			Name = "GetSetsContainingSourceID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -202,6 +210,7 @@ local TransmogSets =
 		{
 			Name = "GetSourceIDsForSlot",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -217,6 +226,7 @@ local TransmogSets =
 		{
 			Name = "GetSourcesForSlot",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -274,6 +284,7 @@ local TransmogSets =
 		{
 			Name = "GetVariantSets",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

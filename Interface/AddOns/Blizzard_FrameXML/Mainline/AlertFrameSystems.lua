@@ -19,6 +19,7 @@ function AlertFrameSystems_Register()
 	NewPetAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewPetAlertFrameTemplate", NewPetAlertFrame_SetUp);
 	NewMountAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewMountAlertFrameTemplate", NewMountAlertFrame_SetUp);
 	NewToyAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewToyAlertFrameTemplate", NewToyAlertFrame_SetUp);
+	NewWarbandSceneAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewWarbandSceneAlertFrameTemplate", NewWarbandSceneAlertFrame_SetUp);
 	NewRuneforgePowerAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewRuneforgePowerAlertFrameTemplate", NewRuneforgePowerAlertSystem_SetUp);
 	NewCosmeticAlertFrameSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewCosmeticAlertFrameTemplate", NewCosmeticAlertFrameSystem_SetUp);
 end
@@ -1246,6 +1247,35 @@ function NewToyAlertFrameMixin:OnClick(button, down)
 	end
 
 	ToggleToyCollection(self.toyID);
+end
+
+-- [[ NewWarbandSceneAlertFrame ]] --
+
+function NewWarbandSceneAlertFrame_SetUp(frame, warbandSceneID)
+	frame:SetUp(warbandSceneID);
+end
+
+NewWarbandSceneAlertFrameMixin = CreateFromMixins(ItemAlertFrameMixin);
+
+function NewWarbandSceneAlertFrameMixin:SetUp(warbandSceneID)
+	self.warbandSceneID = warbandSceneID;
+
+	local warbandSceneInfo = C_WarbandScene.GetWarbandSceneEntry(warbandSceneID);
+	local icon = "Interface\\ICONS\\UI_CampCollection";
+	self:SetUpDisplay(icon, warbandSceneInfo.quality, warbandSceneInfo.name, YOU_COLLECTED_LABEL);
+end
+
+function NewWarbandSceneAlertFrameMixin:OnClick(button, down)
+	if AlertFrame_OnClick(self, button, down) then
+		return;
+	end
+
+	SetCollectionsJournalShown(true, COLLECTIONS_JOURNAL_TAB_INDEX_WARBAND_SCENES);
+	if CollectionsJournal:IsShown() then
+		WarbandSceneJournal.IconsFrame.Icons:GoToElementByPredicate(function(elementData)
+			return elementData.warbandSceneID == self.warbandSceneID;
+		end);
+	end
 end
 
 -- [[ NewRuneforgePowerAlertSystem ]] --

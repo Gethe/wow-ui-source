@@ -915,9 +915,13 @@ function ProfessionsCrafterOrderViewMixin:SetOrder(order)
             local itemLink = craftedItem:GetItemLink();
             local quality = craftedItem:GetItemQuality();
             Professions.SetupOutputIconCommon(self.OrderDetails.FulfillmentForm.ItemIcon, schematic.quantityMin, schematic.quantityMax, icon, itemLink, quality);
-    
-            local color = craftedItem:GetItemQualityColor().color;
-            local itemNameText = WrapTextInColor(craftedItem:GetItemName(), color);
+
+			local itemNameText = craftedItem:GetItemName();
+			local colorData = craftedItem:GetItemQualityColor();
+			if colorData then
+				itemNameText = WrapTextInColor(itemNameText, colorData.color);
+			end
+
             self.OrderDetails.FulfillmentForm.ItemName:SetWidth(500);
             self.OrderDetails.FulfillmentForm.ItemName:SetText(itemNameText);
             self.OrderDetails.FulfillmentForm.ItemName:SetWidth(self.OrderDetails.FulfillmentForm.ItemName:GetStringWidth());

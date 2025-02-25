@@ -188,7 +188,8 @@ function PlayerChoiceNormalOptionTemplateMixin:SetupOptionText()
 end
 
 function PlayerChoiceNormalOptionTemplateMixin:SetupButtons()
-	self.OptionButtonsContainer:Setup(self.optionInfo, self.soloOption and 2 or 1);
+	self.OptionButtonsContainer.numColumns = (self.soloOption and not self.showAsList) and 2 or 1;
+	PlayerChoiceBaseOptionTemplateMixin.SetupButtons(self);
 end
 
 function PlayerChoiceNormalOptionTemplateMixin:SetupRewards()

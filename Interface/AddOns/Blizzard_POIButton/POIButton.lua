@@ -11,12 +11,15 @@ local function POIButton_SetTextureSize(texture, width, height)
 	end
 end
 
-local function POIButton_SetAtlas(texture, width, height, atlas)
+local function POIButton_SetAtlas(texture, width, height, atlas, scale)
 	-- Using this with shared controls that may not have all the same children
 	if texture then
 		local useAtlasSize = not width and not height;
 		texture:SetTexCoord(0, 1, 0, 1);
 		texture:SetAtlas(atlas, useAtlasSize);
+
+		scale = scale or 1;
+		texture:SetScale(scale);
 
 		if not useAtlasSize then
 			POIButton_SetTextureSize(texture, width, height);
@@ -53,8 +56,8 @@ function POIButtonDisplayLayerMixin:SetTextureSize(width, height)
 	POIButton_SetTextureSize(self.Icon, width, height);
 end
 
-function POIButtonDisplayLayerMixin:SetAtlas(width, height, atlas)
-	POIButton_SetAtlas(self.Icon, width, height, atlas);
+function POIButtonDisplayLayerMixin:SetAtlas(width, height, atlas, scale)
+	POIButton_SetAtlas(self.Icon, width, height, atlas, scale);
 end
 
 function POIButtonDisplayLayerMixin:SetIconShown(iconShown)
@@ -316,7 +319,8 @@ local function POIButton_UpdateNormalStyle(poiButton)
 		POIButton_SetAtlas(poiButton.PushedTexture, nil, nil, POIButton_GetBonusObjectiveAtlasInfoPushed(poiButton));
 		POIButton_SetAtlas(poiButton.HighlightTexture, nil, nil, POIButton_GetAtlasInfoHighlight(poiButton));
 	elseif style == POIButtonUtil.Style.AreaPOI then
-		poiButton.Display:SetAtlas(nil, nil, POIButton_GetAreaPOIDisplay(poiButton)); -- TODO: This could need to support textures, it just won't for now.
+		local scale = 0.72;
+		poiButton.Display:SetAtlas(nil, nil, POIButton_GetAreaPOIDisplay(poiButton), scale); -- TODO: This could need to support textures, it just won't for now.
 		POIButton_SetAtlas(poiButton.Glow, nil, nil, "UI-QuestPoi-OuterGlow");
 		POIButton_SetAtlas(poiButton.NormalTexture, nil, nil, POIButton_GetAreaPOIAtlasInfoNormal(poiButton));
 		POIButton_SetAtlas(poiButton.PushedTexture, nil, nil, POIButton_GetAreaPOIAtlasInfoPushed(poiButton));
@@ -493,7 +497,7 @@ function POIButtonMixin:OnClick(button)
 
 		C_SuperTrack.SetSuperTrackedQuestID(questID);
 		if self:GetPingWorldMap() then
-			WorldMapPing_StartPingQuest(questID);
+			EventRegistry:TriggerEvent("MapCanvas.PingQuestID", questID);
 		end
 		return;
 	end
@@ -706,6 +710,10 @@ function POIButtonMixin:IsSelected()
 	-- This can be returned as true/false/nil
 	-- Nil indicates that it has not been initialized yet so that the selected update can easily work.
 	return self.selected;
+end
+
+function POIButtonMixin:IsSuperTracked()
+	return self:IsSelected();
 end
 
 function POIButtonMixin:ChangeSelected(selected)

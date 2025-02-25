@@ -101,8 +101,18 @@ function TreeNodeMixin:Insert(data)
 	return self:InsertNode(node);
 end
 
-function TreeNodeMixin:InsertNode(node)
-	table.insert(self.nodes, node);
+function TreeNodeMixin:InsertNodeAtIndex(data, insertIndex)
+	local node = CreateTreeNode(self.dataProvider, self, data);
+	return self:InsertNode(node, insertIndex);
+end
+
+function TreeNodeMixin:InsertNode(node, insertIndex)
+	if insertIndex then
+		table.insert(self.nodes, insertIndex, node);
+	else
+		table.insert(self.nodes, node);
+	end
+
 	self:Invalidate();
 
 	self:Sort();
@@ -241,6 +251,10 @@ end
 
 function TreeDataProviderMixin:Insert(data)
 	return self.node:Insert(data);
+end
+
+function TreeDataProviderMixin:InsertAtIndex(data, index)
+	return self.node:InsertNodeAtIndex(data, index);
 end
 
 function TreeDataProviderMixin:Remove(node)

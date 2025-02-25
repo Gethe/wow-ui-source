@@ -45,15 +45,6 @@
 				</Anchors>
 			</DropdownButton>
 			<Frame parentKey="iconsFrame" inherits="CollectionsBackgroundTemplate">
-				<Layers>
-					<Layer level="BORDER" textureSubLevel="1">
-						<Texture parentKey="watermark" atlas="collections-watermark-toy" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-25" y="17"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
 				<!-- Toy Buttons -->
 				<Frames>
 					<CheckButton parentKey="spellButton1" inherits="ToySpellButtonTemplate" id="1">

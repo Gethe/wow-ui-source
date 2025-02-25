@@ -873,11 +873,10 @@
 		<Scripts>
 			<OnKeyDown>
 				if ( key == "SPACE" ) then
-					self:SetPropagateKeyboardInput(false);
 					self.ViewButton:Click();
-				else
-					self:SetPropagateKeyboardInput(true);
+					return false;
 				end
+				return true;
 			</OnKeyDown>
 		</Scripts>
 	</Frame>

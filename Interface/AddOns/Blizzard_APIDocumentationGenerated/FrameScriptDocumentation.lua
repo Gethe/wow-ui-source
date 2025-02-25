@@ -12,6 +12,7 @@ local FrameScript =
 			Arguments =
 			{
 				{ Name = "popupStyle", Type = "bool", Nilable = false, Default = true },
+				{ Name = "topMost", Type = "bool", Nilable = false, Default = false },
 			},
 
 			Returns =
@@ -49,6 +50,7 @@ local FrameScript =
 		{
 			Name = "GetEventTime",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

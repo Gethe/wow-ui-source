@@ -4,12 +4,6 @@ end
 
 local selectedSavedAccount = nil;
 
-AccountLoginEditBoxBehaviorMixin = {}
-
-function AccountLoginEditBoxBehaviorMixin:OnKeyDown(key)
-	EventRegistry:TriggerEvent("AccountLogin.OnKeyDown", key);
-end
-
 function AccountLogin_OnLoad(self)
 	local version, internalVersion, date, _, versionType, buildType = GetBuildInfo();
 	self.UI.ClientVersion:SetFormattedText(VERSION_TEMPLATE, versionType, version, internalVersion, buildType, date);
@@ -148,6 +142,14 @@ function AccountLogin_UpdateSavedData(self)
 	AccountLoginDropdown_SetupList();
 end
 
+function AccountLoginEditBox_OnKeyDown(self, key)
+	local binding = GetBindingFromInput(key);
+	if binding and ((binding == "TOGGLEMUSIC") or (binding == "TOGGLESOUND") or (binding == "TOGGLEAMBIENCE")) then
+		return true;
+	end
+	return false;
+end
+
 function AccountLogin_OnKeyDown(self, key)
 	-- Reconnect button isn't an edit box, so can't respond to these on its own.
 	if key == "ENTER" then
@@ -155,16 +157,15 @@ function AccountLogin_OnKeyDown(self, key)
 		if reconnectButton:IsShown() and reconnectButton:IsEnabled() and C_Login.IsLoginReady() then
 			AccountLogin_ReconnectLogin();
 		end
-	elseif ( key == "ESCAPE" ) then
-		AccountLogin_OnEscapePressed();
+		return false;
 	elseif key == "TAB" then
 		local switchButton = self.UI.ReconnectSwitchButton;
 		if switchButton:IsShown() and switchButton:IsEnabled() then
 			AccountLogin_ClearReconnectLogin();
 		end
+		return false;
 	end
-
-	EventRegistry:TriggerEvent("AccountLogin.OnKeyDown", key);
+	return true;
 end
 
 function AccountLogin_Login()
@@ -204,10 +205,9 @@ function AccountLogin_ClearReconnectLogin()
 	AccountLogin_Update();
 end
 
-function AccountLogin_OnEscapePressed()
-	if GlueParent_IsSecondaryScreenOpen("options") then
-		GlueParent_CloseSecondaryScreen();
-	end
+function AccountLogin_OnEscapePressed(editBox)
+	editBox:ClearFocus();
+	return true;
 end
 
 function AccountLogin_Exit()

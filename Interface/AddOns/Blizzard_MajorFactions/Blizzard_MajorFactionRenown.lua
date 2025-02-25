@@ -11,11 +11,6 @@ local trackTextureKitRegions = {
 	["Glow"] = "UI-%s-Highlight-Middle",
 };
 
--- "Burst" effect on the renown reward as you unlock it
-local levelEffects = {
-	[LE_EXPANSION_DRAGONFLIGHT] = 144,
-	[LE_EXPANSION_WAR_WITHIN] = 144,
-}
 -- Animated Effects behind the renown reward;
 local finalToastSwirlEffects = {
 };
@@ -389,14 +384,13 @@ function MajorFactionRenownMixin:OnLevelEffectFinished()
 end
 
 function MajorFactionRenownMixin:PlayLevelEffect()
-	local effectID = levelEffects[currentFactionData.expansionID];
-	if not effectID then
+	if not currentFactionData or not currentFactionData.renownTrackLevelEffectID then
 		return;
 	end
 
 	local target, onEffectFinish = nil, nil;
 	local onEffectResolution = GenerateClosure(self.OnLevelEffectFinished, self);
-	self.levelEffect = self.LevelModelScene:AddEffect(effectID, self.TrackFrame, self.TrackFrame, onEffectFinish, onEffectResolution);
+	self.levelEffect = self.LevelModelScene:AddEffect(currentFactionData.renownTrackLevelEffectID, self.TrackFrame, self.TrackFrame, onEffectFinish, onEffectResolution);
 
 	local centerIndex = self.TrackFrame:GetCenterIndex();
 	local elements = self.TrackFrame:GetElements();

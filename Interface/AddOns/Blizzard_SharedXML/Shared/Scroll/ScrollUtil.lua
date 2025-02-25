@@ -446,11 +446,22 @@ function SelectionBehaviorMixin:ToggleSelectElementData(elementData)
 
 	local newSelected = not oldSelected;
 	self:SetElementDataSelected_Internal(elementData, newSelected);
+	return newSelected;
 end
 
 function SelectionBehaviorMixin:SelectFirstElementData(predicate)
 	-- Select the first element which satisfies the predicate
 	for index, elementData in self.scrollBox:EnumerateDataProviderEntireRange() do
+		if not predicate or predicate(elementData) then
+			self:SelectElementData(elementData);
+			return;
+		end
+	end
+end
+
+function SelectionBehaviorMixin:SelectLastElementData(predicate)
+	-- Select the last element which satisfies the predicate
+	for index, elementData in self.scrollBox:ReverseEnumerateDataProviderEntireRange() do
 		if not predicate or predicate(elementData) then
 			self:SelectElementData(elementData);
 			return;
@@ -538,7 +549,7 @@ function SelectionBehaviorMixin:Select(frame)
 end
 
 function SelectionBehaviorMixin:ToggleSelect(frame)
-	self:ToggleSelectElementData(frame:GetElementData());
+	return self:ToggleSelectElementData(frame:GetElementData());
 end
 
 function ScrollUtil.AddSelectionBehavior(scrollBox, ...)

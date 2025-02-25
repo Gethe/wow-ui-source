@@ -942,7 +942,7 @@
 	<xs:complexType name="ColorSelectType">
 		<xs:complexContent>
 			<xs:extension base="FrameType">
-				<xs:sequence>
+				<xs:sequence minOccurs="0">
 					<xs:choice maxOccurs="unbounded">
 						<xs:element name="ColorWheelTexture" type="TextureType"/>
 						<xs:element name="ColorWheelThumbTexture" type="TextureType"/>

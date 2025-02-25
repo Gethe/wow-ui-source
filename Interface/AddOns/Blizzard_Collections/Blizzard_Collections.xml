@@ -42,13 +42,18 @@
 					<Anchor point="LEFT" relativeKey="$parent.HeirloomsTab" relativePoint="RIGHT" x="-16" y="0"/>
 				</Anchors>
 			</Button>
+			<Button name="$parentTab6" parentKey="WarbandScenesTab" inherits="CollectionsJournalTab" text="WARBAND_SCENES" id="6">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.WardrobeTab" relativePoint="RIGHT" x="-16" y="0"/>
+				</Anchors>
+			</Button>
 		</Frames>
 
 		<Scripts>
 			<OnLoad>
 				self:SetTitle(COLLECTIONS);
 				self:SetPortraitToAsset("Interface\\Icons\\MountJournalPortrait");
-				PanelTemplates_SetNumTabs(self, 5);
+				PanelTemplates_SetNumTabs(self, 6);
 
 				PanelTemplates_SetTab(self, tonumber(GetCVar("petJournalTab")) or 1);
 			</OnLoad>

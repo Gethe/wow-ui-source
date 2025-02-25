@@ -372,9 +372,9 @@
 				<Layers>
 					<Layer level="OVERLAY">
 						<Texture parentKey="UnreadNotificationIcon" atlas="communities-icon-notification">
-							<Size x="11" y="11"/>
+							<Size x="17" y="17"/>
 							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOPRIGHT" x="0" y="0"/>
+								<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOPRIGHT" x="-1" y="-1"/>
 							</Anchors>
 						</Texture>
 						<Texture parentKey="Flash" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight-yellow" setAllPoints="true" alphaMode="ADD">

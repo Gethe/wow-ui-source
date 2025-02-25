@@ -221,6 +221,21 @@ function MainMenuBarPerformanceBarFrame_OnEnter(self)
 		end
 	end
 
+	local addonCount = C_AddOns.GetNumAddOns();
+
+	if C_AddOnProfiler.IsEnabled() and addonCount > 0 then
+		GameTooltip_AddBlankLineToTooltip(GameTooltip);
+		GameTooltip_AddColoredLine(GameTooltip, AddonList:GetOverallMetric(ADDON_LIST_PERFORMANCE_AVERAGE_CPU, Enum.AddOnProfilerMetric.SessionAverageTime), WHITE_FONT_COLOR);
+		GameTooltip_AddColoredLine(GameTooltip, AddonList:GetOverallMetric(ADDON_LIST_PERFORMANCE_PEAK_CPU, Enum.AddOnProfilerMetric.PeakTime), WHITE_FONT_COLOR);
+
+		local addonCPU = C_AddOnProfiler.GetTopKAddOnsForMetric(Enum.AddOnProfilerMetric.RecentAverageTime, 3);
+		if #addonCPU > 0 then
+			for _, result in ipairs(addonCPU) do
+				GameTooltip_AddColoredLine(GameTooltip, AddonList:GetAddonMetricPercent(result.addOnName, ADDON_PERFORMANCE_MENU_TOOLTIP, Enum.AddOnProfilerMetric.RecentAverageTime), WHITE_FONT_COLOR);
+			end
+		end
+	end
+
 	-- AddOn mem usage
 	for i=1, NUM_ADDONS_TO_DISPLAY, 1 do
 		topAddOns[i].value = 0;
@@ -229,7 +244,7 @@ function MainMenuBarPerformanceBarFrame_OnEnter(self)
 	UpdateAddOnMemoryUsage();
 	local totalMem = 0;
 
-	for i=1, C_AddOns.GetNumAddOns(), 1 do
+	for i=1, addonCount, 1 do
 		local mem = GetAddOnMemoryUsage(i);
 		totalMem = totalMem + mem;
 		for j=1, NUM_ADDONS_TO_DISPLAY, 1 do
@@ -266,8 +281,8 @@ function MainMenuBarPerformanceBarFrame_OnEnter(self)
 				break;
 			end
 			size = topAddOns[i].value;
-			if ( size > 1000 ) then
-				size = size / 1000;
+			if ( size > 1024 ) then
+				size = size / 1024;
 				string = format(ADDON_MEM_MB_ABBR, size, topAddOns[i].name);
 			else
 				string = format(ADDON_MEM_KB_ABBR, size, topAddOns[i].name);

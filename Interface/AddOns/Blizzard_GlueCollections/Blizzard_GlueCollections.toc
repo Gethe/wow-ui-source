@@ -1,0 +1,9 @@
+## Title: Blizzard_GlueCollections
+## Author: Blizzard Entertainment
+## Dependencies: Blizzard_SharedXML, Blizzard_PagedContent
+## AllowLoad: Glue
+## AllowLoadGameType: mainline
+GlueWarbandSceneCollection.lua
+GlueWarbandSceneCollection.xml
+GlueCollections.lua
+GlueCollections.xml

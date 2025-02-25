@@ -51,6 +51,7 @@ local UIModelInfo =
 		{
 			Name = "GetModelSceneActorDisplayInfoByID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -65,6 +66,7 @@ local UIModelInfo =
 		{
 			Name = "GetModelSceneActorInfoByID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -79,6 +81,7 @@ local UIModelInfo =
 		{
 			Name = "GetModelSceneCameraInfoByID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -93,6 +96,7 @@ local UIModelInfo =
 		{
 			Name = "GetModelSceneInfoByID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

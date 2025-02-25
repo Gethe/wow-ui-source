@@ -391,11 +391,11 @@
 				</Anchors>
 				<Frames>
 					<Frame parentKey="NotificationOverlay" setAllPoints="true" hidden="true">
-						<Size x="14" y="14"/>
+						<Size x="17" y="17"/>
 						<Layers>
 							<Layer level="OVERLAY">
 								<Texture parentKey="UnreadNotificationIcon" atlas="communities-icon-notification">
-									<Size x="14" y="14"/>
+									<Size x="17" y="17"/>
 									<Anchors>
 										<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOPRIGHT" x="0" y="0"/>
 									</Anchors>
@@ -530,7 +530,7 @@
 					<Anchor point="BOTTOMRIGHT" x="-12" y="30"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="GuildDetailsFrame" name="$parentGuildDetailsFrame" inherits="GuildDetailsFrameTemplate">
+			<Frame parentKey="GuildDetailsFrame" name="$parentGuildDetailsFrame" inherits="GuildDetailsFrameTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.CommunitiesList" relativePoint="TOPRIGHT" x="24" y="-40"/>
 					<Anchor point="BOTTOMRIGHT" x="-12" y="30"/>

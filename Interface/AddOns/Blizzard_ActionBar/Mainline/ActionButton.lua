@@ -870,18 +870,30 @@ function ActionButton_SetupOverlayGlow(button)
 end
 
 function ActionBarActionButtonMixin:UpdateOverlayGlow()
+	local showGlow = false;
 	local spellType, id, subType  = GetActionInfo(self.action);
 	if spellType == "spell" and IsSpellOverlayed(id) then
+		showGlow = true;
+	elseif spellType == "macro" and id and IsSpellOverlayed(id) then
+		showGlow = true;
+	end
+
+	self:SetOverlayGlowShown(showGlow);
+	self:EvaluateTutorials(spellType, id);
+end
+
+function ActionBarActionButtonMixin:SetOverlayGlowShown(show)
+	self.glowShowing = show;
+
+	if show then
 		ActionButton_ShowOverlayGlow(self);
-	elseif spellType == "macro" then
-		if id and IsSpellOverlayed(id) then
-			ActionButton_ShowOverlayGlow(self);
-		else
-			ActionButton_HideOverlayGlow(self);
-		end
 	else
 		ActionButton_HideOverlayGlow(self);
 	end
+end
+
+-- Override as needed
+function ActionBarActionButtonMixin:EvaluateTutorials(spellType, id)
 end
 
 -- Shared between action button and MainMenuBarMicroButton
@@ -891,7 +903,6 @@ function ActionButton_ShowOverlayGlow(button)
 	if not button.SpellActivationAlert:IsShown() then
 		button.SpellActivationAlert:Show();
 		button.SpellActivationAlert.ProcStartAnim:Play();
-
 	end
 end
 
@@ -1337,82 +1348,20 @@ end
 
 -- Shared between action bar buttons and spell flyout buttons
 function ActionBarActionButtonMixin:UpdateFlyout(isButtonDownOverride)
-	if (not self.FlyoutArrowContainer or
-		not self.FlyoutBorderShadow) then
+	if not self.HasPopup then
 		return;
 	end
 
 	local actionType = GetActionInfo(self.action);
-	if (actionType ~= "flyout") then
-		self.FlyoutBorderShadow:Hide();
-		self.FlyoutArrowContainer:Hide();
-		return;
-	end
-
-	-- Update border
-	local isMouseOverButton = self:IsMouseMotionFocus();
-	local isFlyoutShown = SpellFlyout and SpellFlyout:IsShown() and SpellFlyout:GetParent() == self;
-	if (isFlyoutShown or isMouseOverButton) then
-		self.FlyoutBorderShadow:Show();
+	if (actionType == "flyout" and SpellFlyout) then
+		self:SetPopup(SpellFlyout);
 	else
-		self.FlyoutBorderShadow:Hide();
-	end
-
-	-- Update arrow
-	local isButtonDown;
-	if (isButtonDownOverride ~= nil) then
-		isButtonDown = isButtonDownOverride;
-	else
-		isButtonDown = self:GetButtonState() == "PUSHED";
-	end
-
-	local flyoutArrowTexture = self.FlyoutArrowContainer.FlyoutArrowNormal;
-
-	if (isButtonDown) then
-		flyoutArrowTexture = self.FlyoutArrowContainer.FlyoutArrowPushed;
-
-		self.FlyoutArrowContainer.FlyoutArrowNormal:Hide();
-		self.FlyoutArrowContainer.FlyoutArrowHighlight:Hide();
-	elseif (isMouseOverButton) then
-		flyoutArrowTexture = self.FlyoutArrowContainer.FlyoutArrowHighlight;
-
-		self.FlyoutArrowContainer.FlyoutArrowNormal:Hide();
-		self.FlyoutArrowContainer.FlyoutArrowPushed:Hide();
-	else
-		self.FlyoutArrowContainer.FlyoutArrowHighlight:Hide();
-		self.FlyoutArrowContainer.FlyoutArrowPushed:Hide();
-	end
-
-	self.FlyoutArrowContainer:Show();
-	flyoutArrowTexture:Show();
-	flyoutArrowTexture:ClearAllPoints();
-
-	local arrowDirection = self:GetAttribute("flyoutDirection");
-	local arrowDistance = isFlyoutShown and 1 or 4;
-
-	-- If you are on an action bar then base your direction based on the action bar's orientation
-	if (self.bar) then
-		arrowDirection = self.bar:GetSpellFlyoutDirection();
-	end
-
-	if (arrowDirection == "LEFT") then
-		SetClampedTextureRotation(flyoutArrowTexture, isFlyoutShown and 90 or 270);
-		flyoutArrowTexture:SetPoint("LEFT", self, "LEFT", -arrowDistance, 0);
-	elseif (arrowDirection == "RIGHT") then
-		SetClampedTextureRotation(flyoutArrowTexture, isFlyoutShown and 270 or 90);
-		flyoutArrowTexture:SetPoint("RIGHT", self, "RIGHT", arrowDistance, 0);
-	elseif (arrowDirection == "DOWN") then
-		SetClampedTextureRotation(flyoutArrowTexture, isFlyoutShown and 0 or 180);
-		flyoutArrowTexture:SetPoint("BOTTOM", self, "BOTTOM", 0, -arrowDistance);
-	else
-		SetClampedTextureRotation(flyoutArrowTexture, isFlyoutShown and 180 or 0);
-		flyoutArrowTexture:SetPoint("TOP", self, "TOP", 0, arrowDistance);
+		self:ClearPopup();
 	end
 end
 
 function ActionBarActionButtonMixin:SetButtonStateOverride(state)
 	self:SetButtonStateBase(state);
-	self:UpdateFlyout();
 end
 
 function ActionBarActionButtonMixin:OnClick(button, down)
@@ -1448,8 +1397,6 @@ function ActionBarActionButtonMixin:OnClick(button, down)
 			SecureActionButton_OnClick(self, button, down, isKeyPress, isSecureAction);
 		end
 	end
-
-	self:UpdateFlyout(down);
 end
 
 function ActionBarActionButtonMixin:OnDragStart()
@@ -1478,7 +1425,6 @@ function ActionBarActionButtonMixin:OnEnter()
 	self:SetTooltip();
 	ActionBarButtonEventsFrame.tooltipOwner = self;
 	ActionBarActionEventsFrame.tooltipOwner = self;
-	self:UpdateFlyout();
 	if self.bindingAction then
 		ActionButtonBindingHighlightCallbackRegistry:TriggerEvent(self.bindingAction, true);
 	end
@@ -1488,7 +1434,6 @@ function ActionBarActionButtonMixin:OnLeave()
 	GameTooltip:Hide();
 	ActionBarButtonEventsFrame.tooltipOwner = nil;
 	ActionBarActionEventsFrame.tooltipOwner = nil;
-	self:UpdateFlyout();
 	if self.bindingAction then
 		ActionButtonBindingHighlightCallbackRegistry:TriggerEvent(self.bindingAction, false);
 	end
@@ -1497,10 +1442,24 @@ end
 BaseActionButtonMixin = {}
 
 function BaseActionButtonMixin:BaseActionButtonMixin_OnLoad()
+	FlyoutButtonMixin.OnLoad(self);
+
 	self:UpdateButtonArt();
 
 	self.NormalTexture:SetDrawLayer("OVERLAY");
 	self.PushedTexture:SetDrawLayer("OVERLAY");
+end
+
+function BaseActionButtonMixin:BaseActionButtonMixin_OnEnter()
+	FlyoutButtonMixin.OnEnter(self);
+end
+
+function BaseActionButtonMixin:BaseActionButtonMixin_OnLeave()
+	FlyoutButtonMixin.OnLeave(self);
+end
+
+function BaseActionButtonMixin:BaseActionButtonMixin_OnDragStart()
+	FlyoutButtonMixin.OnDragStart(self);
 end
 
 function BaseActionButtonMixin:GetShowGrid()
@@ -1551,9 +1510,33 @@ function BaseActionButtonMixin:UpdateButtonArt()
 	end
 end
 
+ActionBarButtonMixin = {};
+
+function ActionBarButtonMixin:ActionBarButtonMixin_OnLoad()
+	BaseActionButtonMixin.BaseActionButtonMixin_OnLoad(self);
+	ActionBarActionButtonDerivedMixin.ActionBarActionButtonDerivedMixin_OnLoad(self);
+end
+
+function ActionBarButtonMixin:ActionBarButtonMixin_OnEnter()
+	BaseActionButtonMixin.BaseActionButtonMixin_OnEnter(self);
+	ActionBarActionButtonDerivedMixin.ActionBarActionButtonDerivedMixin_OnEnter(self);
+end
+
+function ActionBarButtonMixin:ActionBarButtonMixin_OnLeave()
+	BaseActionButtonMixin.BaseActionButtonMixin_OnLeave(self);
+	ActionBarActionButtonDerivedMixin.ActionBarActionButtonDerivedMixin_OnLeave(self);
+end
+
+function ActionBarButtonMixin:ActionBarButtonMixin_OnDragStart()
+	BaseActionButtonMixin.BaseActionButtonMixin_OnDragStart(self);
+	ActionBarActionButtonDerivedMixin.ActionBarActionButtonDerivedMixin_OnDragStart(self);
+end
+
 SmallActionButtonMixin = {}
 
 function SmallActionButtonMixin:SmallActionButtonMixin_OnLoad()
+	BaseActionButtonMixin.BaseActionButtonMixin_OnLoad(self);
+
 	self.HotKey:ClearAllPoints();
 	self.HotKey:SetPoint("TOPRIGHT", -3, -4);
 

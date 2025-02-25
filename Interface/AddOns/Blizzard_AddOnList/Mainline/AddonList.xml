@@ -1,48 +1,76 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
-	<Button name="AddonListEntryTemplate" virtual="true">
+
+	<Button name="AddonListBaseTemplate" enableMouseClicks="true" registerForClicks="LeftButtonDown, RightButtonDown" virtual="true">
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD">
+			<Size x="0" y="22"/>
+			<Anchors>
+				<Anchor point="LEFT" x="40"/>
+				<Anchor point="RIGHT"/>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
+	
+	<Button name="AddonListCategoryTemplate" mixin="AddonListCategoryMixin" inherits="AddonListBaseTemplate" virtual="true">
 		<Size x="520" y="16"/>
+		<Frames>
+			<Button parentKey="CollapseExpand" mixin="AddonCategoryCollapseExpandMixin">
+				<Size x="10" y="16"/>
+				<Anchors>
+					<Anchor point="LEFT" x="13" y="0"/>
+				</Anchors>
+				<NormalTexture parentKey="Normal" atlas="bag-arrow"/>
+				<PushedTexture parentKey="Pushed" atlas="bag-arrow"/>
+				<HighlightTexture parentKey="Highlight" alpha="0.4" alphaMode="ADD" atlas="bag-arrow"/>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<FontString name="$parentTitle" inherits="GameFontNormal" justifyH="LEFT" parentKey="Title" >
+				<FontString parentKey="Title" inherits="GameFontNormal" justifyH="LEFT">
 					<Size x="220" y="12"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.CollapseExpand" relativePoint="RIGHT" x="8" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+
+	<Button name="AddonListEntryTemplate" mixin="AddonListEntryMixin" inherits="AddonListBaseTemplate" virtual="true">
+		<Size x="520" y="16"/>
+		<Scripts>
+			<OnClick method="OnClick"/>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString inherits="GameFontNormal" justifyH="LEFT" parentKey="Title" >
+					<Size x="300" y="12"/>
 					<Anchors>
 						<Anchor point="LEFT" x="32" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentStatus" inherits="GameFontNormalSmall" justifyH="LEFT" parentKey="Status">
-					<Size x="220" y="12"/>
+				<FontString inherits="GameFontNormalSmall" justifyH="LEFT" parentKey="Status">
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Title" relativePoint="RIGHT" x="70" y="0"/>
+						<Anchor point="RIGHT" relativePoint="RIGHT" x="0" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentReload" inherits="GameFontRed" justifyH="LEFT" parentKey="Reload" text="REQUIRES_RELOAD">
+				<FontString inherits="GameFontRed" justifyH="LEFT" parentKey="Reload" text="REQUIRES_RELOAD">
 					<Size x="220" y="12"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Title" relativePoint="RIGHT" x="70" y="0"/>
+						<Anchor point="RIGHT" relativePoint="RIGHT" x="0" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="Security" hidden="true">
-				<Size x="16" y="16"/>
-				<Anchors>
-					<Anchor point="RIGHT" relativePoint="LEFT" x="2" y="0"/>
-				</Anchors>
-				<Scripts>
-					<OnEnter>
-						AddonTooltip:SetOwner(self, "ANCHOR_RIGHT", -270, 0);
-						AddonTooltip:SetText(self.tooltip);
-						AddonTooltip:Show();
-					</OnEnter>
-					<OnLeave>
-						AddonTooltip:Hide();
-					</OnLeave>
-				</Scripts>
-				<NormalTexture parentKey="Icon" name="$parentIcon" file="Interface\Glues\CharacterSelect\Glues-AddOn-Icons"/>
-			</Button>
-			<CheckButton parentKey="Enabled">
+			<CheckButton parentKey="Enabled" inherits="MinimalCheckboxArtTemplate">
 				<Size x="24" y="24"/>
 				<Anchors>
 					<Anchor point="LEFT" x="5" y="0"/>
@@ -50,51 +78,17 @@
 				<HitRectInsets>
 					<AbsInset left="0" right="0" top="0" bottom="8"/>
 				</HitRectInsets>
-				<Scripts>
-					<OnClick>
-						AddonList_Enable(self:GetParent():GetID(), self:GetChecked());
-					</OnClick>
-					<OnEnter>
-						if ( self.tooltip ) then
-							AddonTooltip:SetOwner(self, "ANCHOR_RIGHT", -270, 0)
-							AddonTooltip:SetText(self.tooltip);
-							AddonTooltip:Show();
-						end
-					</OnEnter>
-					<OnLeave>
-						AddonTooltip:Hide();
-					</OnLeave>
-				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
-			 	<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
-				<CheckedTexture parentKey="CheckedTexture" file="Interface\Buttons\UI-CheckBox-Check"/>
-				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 			</CheckButton>
-			<Button name="$parentLoad" inherits="UIPanelButtonTemplate" text="LOAD_ADDON" hidden="true" parentKey="LoadAddonButton">
+			<Button inherits="UIPanelButtonTemplate" text="LOAD_ADDON" hidden="true" parentKey="LoadAddonButton">
 				<Size x="100" y="22"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.Title" relativePoint="RIGHT" x="70" y="0"/>
 				</Anchors>
-				<Scripts>
-					<OnClick>
-						AddonList_LoadAddOn(self:GetParent():GetID())
-					</OnClick>
-				</Scripts>
 			</Button>
 		</Frames>
-		<Scripts>
-			<OnEnter>
-				AddonTooltip:SetOwner(self, "ANCHOR_RIGHT", -270, 0)
-				AddonTooltip_Update(self);
-				AddonTooltip:Show();
-			</OnEnter>
-			<OnLeave>
-				AddonTooltip:Hide();
-			</OnLeave>
-		</Scripts>
 	</Button>
-	<Frame name="AddonDialog" toplevel="true" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true">
+	
+	<Frame name="AddonDialog" mixin="AddonDialogMixin" toplevel="true" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true">
 		<Frames>
 			<Frame name="AddonDialogBackground" inherits="DialogBorderTemplate">
 				<Size x="512" y="256"/>
@@ -119,20 +113,12 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				AddonDialogBackground:ClearAllPoints();
-				AddonDialogBackground:SetPoint("CENTER");
-			</OnLoad>
-			<OnShow>
-				self:Raise();
-			</OnShow>
-			<OnKeyDown>
-				AddonDialog_OnKeyDown(key);
-			</OnKeyDown>
+			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</Frame>
-	<Frame name="AddonList" enableMouse="true" inherits="ButtonFrameTemplate" hidden="true">
-		<Size x="500" y="478"/>
+	
+	<Frame name="AddonList" enableMouse="true" inherits="ButtonFrameTemplate" mixin="AddonListMixin" hidden="true">
+		<Size x="600" y="550"/>
 		<Anchors>
 			<Anchor point="CENTER" x="0" y="24"/>
 		</Anchors>
@@ -142,10 +128,9 @@
 					<Anchor point="TOPLEFT" x="12" y="-30"/>
 				</Anchors>
 			</DropdownButton>
-			<CheckButton name="AddonListForceLoad">
-				<Size x="32" y="32"/>
+			<CheckButton parentKey="ForceLoad" inherits="MinimalCheckboxTemplate">
 				<Anchors>
-					<Anchor point="TOP" x="75" y="-30"/>
+					<Anchor point="TOP" x="-80" y="-27"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -156,71 +141,82 @@
 						</FontString>
 					</Layer>
 				</Layers>
-				<Scripts>
-					<OnShow>
-						self:SetChecked(not C_AddOns.IsAddonVersionCheckEnabled());
-					</OnShow>
-					<OnClick>
-						if ( self:GetChecked() ) then
-							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-							C_AddOns.SetAddonVersionCheck(false);
-						else
-							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
-							C_AddOns.SetAddonVersionCheck(true);
-						end
-						AddonList_Update();
-					</OnClick>
-				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
-				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
-				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
-				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 			</CheckButton>
-			<Button name="$parentCancelButton" inherits="SharedButtonSmallTemplate" parentKey="CancelButton" text="CANCEL">
+			<EditBox parentKey="SearchBox" inherits="SearchBoxTemplate">
+				<Size x="160" y="22"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-10" y="-31"/>
+				</Anchors>
+			</EditBox>
+			<Frame parentKey="Performance" collapsesLayout="true">
+				<Size x="0" y="55"/>
+				<Anchors>
+					<Anchor point="LEFT" x="25" y="0"/>
+					<Anchor point="TOP" x="0" y="-65"/>
+					<Anchor point="RIGHT" x="-25" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Header" inherits="GameFontNormal" text="ADDON_LIST_PERFORMANCE_HEADER">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="-8"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="Current" inherits="GameFontWhite">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="0" y="-26"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="Average" inherits="GameFontWhite">
+							<Anchors>
+								<Anchor point="TOP" relativePoint="TOP" x="0" y="-26"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="Peak" inherits="GameFontWhite">
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="0" y="-26"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="Divider" atlas="Options_HorizontalDivider" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="LEFT" x="0" y="0"/>
+								<Anchor point="RIGHT" x="0" y="0"/>
+								<Anchor point="BOTTOM" relativePoint="BOTTOM" x="0" y="5"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Button parentKey="CancelButton" inherits="SharedButtonSmallTemplate" text="CANCEL">
 				<Size x="80" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" x="-4" y="4"/>
 				</Anchors>
-				<Scripts>
-					<OnClick>
-						AddonList_OnCancel();
-					</OnClick>
-				</Scripts>
 			</Button>
-			<Button name="$parentOkayButton" inherits="SharedButtonSmallTemplate" parentKey="OkayButton" text="OKAY">
+			<Button parentKey="OkayButton" inherits="SharedButtonSmallTemplate" text="OKAY">
 				<Size x="80" y="22"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parentCancelButton" relativePoint="TOPLEFT" x="0" y="0"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.CancelButton" relativePoint="TOPLEFT" x="0" y="0"/>
 				</Anchors>
-				<Scripts>
-					<OnClick>
-						AddonList_OnOkay();
-					</OnClick>
-				</Scripts>
 			</Button>
-			<Button name="$parentEnableAllButton" inherits="SharedButtonSmallTemplate" parentKey="EnableAllButton" text="ENABLE_ALL_ADDONS">
+			<Button parentKey="EnableAllButton" inherits="SharedButtonSmallTemplate" text="ENABLE_ALL_ADDONS">
 				<Size x="120" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="4" y="4"/>
 				</Anchors>
-				<Scripts>
-					<OnClick function="AddonList_EnableAll"/>
-				</Scripts>
 			</Button>
-			<Button name="$parentDisableAllButton" inherits="SharedButtonSmallTemplate" parentKey="DisableAllButton" text="DISABLE_ALL_ADDONS">
+			<Button parentKey="DisableAllButton" inherits="SharedButtonSmallTemplate" text="DISABLE_ALL_ADDONS">
 				<Size x="120" y="22"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentEnableAllButton" relativePoint="TOPRIGHT" x="0" y="0"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.EnableAllButton" relativePoint="TOPRIGHT" x="0" y="0"/>
 				</Anchors>
-				<Scripts>
-					<OnClick function="AddonList_DisableAll"/>
-				</Scripts>
 			</Button>
 			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 				<Size x="466" y="386"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="7" y="-64"/>
+					<Anchor point="TOP" relativeKey="$parent.Performance" relativePoint="BOTTOM" x="0" y="0"/>
+					<Anchor point="LEFT" x="7" y="0"/>
+					<Anchor point="BOTTOMRIGHT" x="-34" y="28"/>
 				</Anchors>
 			</Frame>
 			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
@@ -231,9 +227,10 @@
 			</EventFrame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="AddonList_OnLoad"/>
-			<OnShow function="AddonList_OnShow"/>
-			<OnHide function="AddonList_OnHide"/>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnUpdate method="OnUpdate"/>
 		</Scripts>
 	</Frame>
 </Ui>

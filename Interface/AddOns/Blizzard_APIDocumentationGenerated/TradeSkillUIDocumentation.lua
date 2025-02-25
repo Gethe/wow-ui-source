@@ -21,7 +21,24 @@ local TradeSkillUI =
 			},
 		},
 		{
+			Name = "CancelProfessionRespec",
+			Type = "Function",
+		},
+		{
+			Name = "CheckRespecNPC",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canInteract", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CloseTradeSkill",
+			Type = "Function",
+		},
+		{
+			Name = "ConfirmProfessionRespec",
 			Type = "Function",
 		},
 		{
@@ -1126,6 +1143,15 @@ local TradeSkillUI =
 				{ Name = "recipeID", Type = "number", Nilable = false },
 				{ Name = "skillLineID", Type = "number", Nilable = false },
 				{ Name = "expansionSkillLineID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "ProfessionRespecConfirmation",
+			Type = "Event",
+			LiteralName = "PROFESSION_RESPEC_CONFIRMATION",
+			Payload =
+			{
+				{ Name = "skillName", Type = "cstring", Nilable = false },
 			},
 		},
 		{

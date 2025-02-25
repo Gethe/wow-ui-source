@@ -8,6 +8,7 @@ local Instance =
 		{
 			Name = "CanChangePlayerDifficulty",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{

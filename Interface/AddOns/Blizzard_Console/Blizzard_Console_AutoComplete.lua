@@ -365,58 +365,20 @@ function DeveloperConsoleAutoCompleteMixin:CheckYield()
 	end
 end
 
-local function ScoreStrings(searchText, otherString)
-	-- lower is better
-
-	local subStringStartIndex, subStringEndIndex = otherString:find(searchText, 1, true);
-	local hasSubString = not not subStringStartIndex;
-
-	local editDistance = CalculateStringEditDistance(searchText, otherString);
-	if not hasSubString and editDistance == math.max(#searchText, #otherString) then
-		return 100; -- not even close
-	end
-	
-	local subStringScore = hasSubString and -#searchText * 10 or 0;
-	local startOfMatchScore = hasSubString and ClampedPercentageBetween(subStringStartIndex, 15, 1) * -2 * #searchText or 0;
-
-	return editDistance + subStringScore + startOfMatchScore;
-end
-
-local function BinaryInsert(t, value)
-	local startIndex = 1;
-	local endIndex = #t;
-	local midIndex = 1;
-	local preInsert = true;
-
-	while startIndex <= endIndex do
-		midIndex = math.floor((startIndex + endIndex) / 2);
-
-		if value.score < t[midIndex].score then
-			endIndex = midIndex - 1;
-			preInsert = true;
-		else
-			startIndex = midIndex + 1;
-			preInsert = false;
-		end
-	end
-
-	table.insert(t, midIndex + (preInsert and 0 or 1), value);
-end
-
 function DeveloperConsoleAutoCompleteMixin:StepAutoCompleteSearchCoroutine(searchText)
 	local consoleCommands = ConsoleGetAllCommands();
 
 	local lowerSearchText = searchText:lower();
 	for i, commandInfo in ipairs(consoleCommands) do
 		self:CheckYield();
-		commandInfo.score = ScoreStrings(lowerSearchText, commandInfo.command:lower());
+		commandInfo.score = CommandLineUtil.ScoreStrings(lowerSearchText, commandInfo.command:lower());
 	end
 
 	for i, commandInfo in ipairs(consoleCommands) do
 		self:CheckYield();
 
 		if commandInfo.score < #searchText / 2 then
-			BinaryInsert(self.bestResults, commandInfo);
+			CommandLineUtil.BinaryInsert(self.bestResults, commandInfo);
 			if #self.bestResults > self.maxResults then
 				self.bestResults[#self.bestResults] = nil;
 			end

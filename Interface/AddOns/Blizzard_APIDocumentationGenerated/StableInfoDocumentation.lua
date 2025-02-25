@@ -20,6 +20,15 @@ local StableInfo =
 			},
 		},
 		{
+			Name = "GetAvailablePetSpecInfos",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "petSpecInfos", Type = "table", InnerType = "PetSpecInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetNumActivePets",
 			Type = "Function",
 
@@ -171,13 +180,25 @@ local StableInfo =
 				{ Name = "familyName", Type = "string", Nilable = false },
 				{ Name = "specialization", Type = "string", Nilable = false },
 				{ Name = "type", Type = "string", Nilable = false },
-				{ Name = "abilities", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "petAbilities", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "specAbilities", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "displayID", Type = "number", Nilable = false },
 				{ Name = "isFavorite", Type = "bool", Nilable = false },
 				{ Name = "isExotic", Type = "bool", Nilable = false },
 				{ Name = "uiModelSceneID", Type = "number", Nilable = false, Default = 718 },
 				{ Name = "petNumber", Type = "number", Nilable = false },
 				{ Name = "creatureID", Type = "number", Nilable = false },
+				{ Name = "specID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "PetSpecInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "specID", Type = "number", Nilable = false },
+				{ Name = "specIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "specializationName", Type = "string", Nilable = false },
 			},
 		},
 	},

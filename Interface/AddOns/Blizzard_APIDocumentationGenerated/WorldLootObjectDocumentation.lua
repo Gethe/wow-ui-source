@@ -38,6 +38,7 @@ local WorldLootObject =
 		{
 			Name = "GetWorldLootObjectInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -52,6 +53,7 @@ local WorldLootObject =
 		{
 			Name = "GetWorldLootObjectInfoByGUID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

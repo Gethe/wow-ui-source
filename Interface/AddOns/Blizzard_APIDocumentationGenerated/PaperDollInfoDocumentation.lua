@@ -61,6 +61,7 @@ local PaperDollInfo =
 		{
 			Name = "GetInspectAzeriteItemEmpoweredChoices",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

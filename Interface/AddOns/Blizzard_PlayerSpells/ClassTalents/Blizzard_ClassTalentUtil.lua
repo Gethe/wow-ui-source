@@ -65,7 +65,7 @@ local SpecializationVisuals = {
 	[73] = { background = "talents-background-warrior-protection", heroContainerOffset = -15, },
 };
 
--- TODO:: Replace panOffset fixups.
+-- panOffsets are required to account for minor differences in the positioning between different classes.
 local ClassVisuals = {
 	[1]	 --[[Warrior--]]	 = { activationFX = "talents-animations-class-warrior", panOffset = { x = 60, y = 31 }, },
 	[2]  --[[Paladin--]] 	 = { activationFX = "talents-animations-class-paladin", panOffset = { x = -60, y = -29 }, },

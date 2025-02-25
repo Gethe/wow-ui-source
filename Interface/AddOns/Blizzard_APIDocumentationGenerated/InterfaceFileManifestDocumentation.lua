@@ -9,6 +9,7 @@ local InterfaceFileManifest =
 		{
 			Name = "GetInterfaceArtFiles",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{

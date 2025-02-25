@@ -6,6 +6,8 @@
 ## AllowLoadGameType: mainline
 ## SavedVariables: GLOW_HUB_QUESTS_ACKNOWLEDGED
 
+MapPinTags.lua
+FrameCloneManager.lua
 SharedMapPoiTemplates.xml
 QuestDataProvider.xml
 ContentTrackingDataProvider.xml

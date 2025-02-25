@@ -160,6 +160,7 @@ NEW_ITEM_ATLAS_BY_QUALITY = {
 
 -- Loot
 LOOT_BORDER_BY_QUALITY = {
+	[Enum.ItemQuality.Common] = "loottoast-itemborder-white",
 	[Enum.ItemQuality.Uncommon] = "loottoast-itemborder-green",
 	[Enum.ItemQuality.Rare] = "loottoast-itemborder-blue",
 	[Enum.ItemQuality.Epic] = "loottoast-itemborder-purple",

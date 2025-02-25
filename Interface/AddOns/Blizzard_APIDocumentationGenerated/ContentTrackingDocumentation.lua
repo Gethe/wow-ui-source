@@ -44,6 +44,7 @@ local ContentTracking =
 		{
 			Name = "GetCurrentTrackingTarget",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -60,6 +61,7 @@ local ContentTracking =
 		{
 			Name = "GetEncounterTrackingInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -91,6 +93,7 @@ local ContentTracking =
 		{
 			Name = "GetObjectiveText",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -107,6 +110,7 @@ local ContentTracking =
 		{
 			Name = "GetTitle",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -152,6 +156,7 @@ local ContentTracking =
 		{
 			Name = "GetVendorTrackingInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -166,6 +171,7 @@ local ContentTracking =
 		{
 			Name = "GetWaypointText",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

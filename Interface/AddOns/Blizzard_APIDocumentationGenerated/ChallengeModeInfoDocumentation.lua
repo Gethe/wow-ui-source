@@ -51,6 +51,7 @@ local ChallengeModeInfo =
 		{
 			Name = "GetAffixInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -76,6 +77,7 @@ local ChallengeModeInfo =
 		{
 			Name = "GetDeathCount",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -101,6 +103,7 @@ local ChallengeModeInfo =
 		{
 			Name = "GetGuildLeaders",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -125,6 +128,7 @@ local ChallengeModeInfo =
 		{
 			Name = "GetMapScoreInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -143,6 +147,7 @@ local ChallengeModeInfo =
 		{
 			Name = "GetMapUIInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -171,6 +176,7 @@ local ChallengeModeInfo =
 		{
 			Name = "GetPowerLevelDamageHealthMod",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -186,6 +192,7 @@ local ChallengeModeInfo =
 		{
 			Name = "GetSlottedKeystoneInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{

@@ -33,24 +33,6 @@
 							</Anchors>
 						</Texture>
 					</Layer>
-					<Layer level="BORDER">
-						<Texture parentKey="GlowLeft" alphaMode="ADD" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="LEFT" x="-8"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="GlowRight" alphaMode="ADD" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="RIGHT" x="8"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="GlowCenter" alphaMode="ADD">
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.GlowLeft" relativePoint="RIGHT"/>
-								<Anchor point="RIGHT" relativeKey="$parent.GlowRight" relativePoint="LEFT"/>
-							</Anchors>
-						</Texture>
-					</Layer>
 					<Layer level="OVERLAY">
 						<Texture parentKey="BorderLeft" useAtlasSize="true">
 							<Anchors>
@@ -89,6 +71,24 @@
 								<Anchor point="CENTER"/>
 							</Anchors>
 						</FontString>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="-1">
+						<Texture parentKey="GlowLeft" alphaMode="ADD" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.BorderLeft"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="GlowRight" alphaMode="ADD" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent.BorderRight"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="GlowCenter" alphaMode="ADD">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.GlowLeft" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeKey="$parent.GlowRight" relativePoint="LEFT"/>
+							</Anchors>
+						</Texture>
 					</Layer>
 				</Layers>
 				<Animations>

@@ -158,6 +158,7 @@ local GarrisonInfo =
 		{
 			Name = "GetFollowerAutoCombatSpells",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -323,6 +324,7 @@ local GarrisonInfo =
 		{
 			Name = "GetTalentTreeIDsByClassID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -387,6 +389,7 @@ local GarrisonInfo =
 		{
 			Name = "GetTalentUnlockWorldQuest",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

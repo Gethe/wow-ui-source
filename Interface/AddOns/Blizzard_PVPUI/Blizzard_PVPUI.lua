@@ -448,6 +448,8 @@ function PVPQueueFrame_OnShow(self)
 	if not canUsePlunderButton then
 		PVPQueueFrame_SetCategoryButtonState(self.CategoryButton4, false);
 		self.CategoryButton4.tooltip = failureReason;
+
+		return;
 	end
 
 	canUsePlunderButton = not C_PlayerInfo.IsPlayerNPERestricted();
@@ -455,7 +457,12 @@ function PVPQueueFrame_OnShow(self)
 	if not canUsePlunderButton then
 		PVPQueueFrame_SetCategoryButtonState(self.CategoryButton4, false);
 		self.CategoryButton4.tooltip = failureReason;
+
+		return;
 	end
+
+	self.CategoryButton4.tooltip = nil;
+	PVPQueueFrame_SetCategoryButtonState(self.CategoryButton4, true);
 end
 
 function PVPQueueFrame_UpdateTitle()

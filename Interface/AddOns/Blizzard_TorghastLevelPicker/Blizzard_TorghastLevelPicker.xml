@@ -49,6 +49,14 @@
 	<Button name="TorghastLevelPickerRewardCircleTemplate" frameStrata="HIGH" motionScriptsWhileDisabled="true" mixin="TorghastLevelPickerRewardCircleMixin" virtual="true">
 		<Size x="40" y="40"/>
 		<Layers>
+			<Layer level="BORDER" textureSubLevel="2">
+				<Texture parentKey="RewardBorder" atlas="jailerstower-wayfinder-rewardcircle" useAtlasSize="true"/>
+				<Texture parentKey="QuestComplete" atlas="jailerstower-wayfinder-rewardcheckmark" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.RewardBorder" x="0" y="3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="BORDER" textureSubLevel="-2">
 					<Texture parentKey="HighlightGlow" atlas="jailerstower-wayfinder-rewardglow" useAtlasSize="true" alphaMode="ADD" hidden="true">
 						<Anchors>
@@ -60,14 +68,6 @@
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.RewardBorder" x="-7" y="7"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RewardBorder" x="7" y="-7"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="BORDER" textureSubLevel="2">
-				<Texture parentKey="RewardBorder" atlas="jailerstower-wayfinder-rewardcircle" useAtlasSize="true"/>
-				<Texture parentKey="QuestComplete" atlas="jailerstower-wayfinder-rewardcheckmark" useAtlasSize="true" hidden="true">
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.RewardBorder" x="0" y="3"/>
 					</Anchors>
 				</Texture>
 			</Layer>

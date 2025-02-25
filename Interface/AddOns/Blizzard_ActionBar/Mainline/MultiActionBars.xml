@@ -15,23 +15,21 @@
 	<CheckButton name="MultiBar3ButtonTemplate" virtual="true" inherits="ActionBarButtonTemplate">
 		<KeyValues>
 			<KeyValue key="buttonType" value="MULTIACTIONBAR3BUTTON" type="string"/>
+			<KeyValue key="popupDirection" value="LEFT" type="string"/>
+			<KeyValue key="popupOffset" value="-4" type="number"/>
+			<KeyValue key="openArrowOffset" value="3" type="number"/>
+			<KeyValue key="closedArrowOffset" value="5" type="number"/>
 		</KeyValues>
-		<Scripts>
-			<OnLoad inherit="append">
-				self:SetAttribute("flyoutDirection", "LEFT");
-			</OnLoad>
-		</Scripts>
 	</CheckButton>
 
 	<CheckButton name="MultiBar4ButtonTemplate" virtual="true" inherits="ActionBarButtonTemplate">
 		<KeyValues>
 			<KeyValue key="buttonType" value="MULTIACTIONBAR4BUTTON" type="string"/>
+			<KeyValue key="popupDirection" value="LEFT" type="string"/>
+			<KeyValue key="popupOffset" value="-4" type="number"/>
+			<KeyValue key="openArrowOffset" value="3" type="number"/>
+			<KeyValue key="closedArrowOffset" value="5" type="number"/>
 		</KeyValues>
-		<Scripts>
-			<OnLoad inherit="append">
-				self:SetAttribute("flyoutDirection", "LEFT");
-			</OnLoad>
-		</Scripts>
 	</CheckButton>
 
 	<CheckButton name="MultiBar5ButtonTemplate" virtual="true" inherits="ActionBarButtonTemplate">

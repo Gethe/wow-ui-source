@@ -23,6 +23,7 @@ local EditModeManager =
 		{
 			Name = "ConvertStringToLayoutInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

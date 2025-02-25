@@ -11,6 +11,7 @@ end
 
 -- IMPORTANT: useOldNineSlice preserves old functionality and should not be used in the future
 local customTextureKitInfo = {
+	-- Normal texture kit options (using PlayerChoiceNormalOptionTemplate, inherited from defaultTextureKitInfo)
 	neutral = {
 		useOldNineSlice = true,
 	},
@@ -37,39 +38,6 @@ local customTextureKitInfo = {
 	mechagon = {
 		closeButtonX = 3,
 		closeButtonY = 3,
-		useOldNineSlice = true,
-	},
-
-	jailerstower = {
-		optionFrameTemplate = "PlayerChoiceTorghastOptionTemplate",
-		optionsTopPadding = 30,
-		optionsBottomPadding = 55,
-		showOptionsOnly = true,
-		frameYOffset = 95,
-		useOldNineSlice = true,
-	},
-
-	cypherchoice = {
-		optionFrameTemplate = "PlayerChoiceCypherOptionTemplate",
-		optionsTopPadding = 120,
-		optionsBottomPadding = 55,
-		showOptionsOnly = true,
-		frameYOffset = 95,
-		toggleXOffset = 0,
-		toggleYOffset = -20,
-		timerXOffset = 0,
-		timerYOffset = -5,
-		useOldNineSlice = true,
-	},
-
-	Oribos = {
-		optionFrameTemplate = "PlayerChoiceCovenantChoiceOptionTemplate",
-		exitButtonSoundKit = SOUNDKIT.UI_COVENANT_CHOICE_CLOSE,
-		optionsTopPadding = 124,
-		optionsBottomPadding = 36,
-		optionsSidePadding = 59,
-		optionsSpacing = 6,
-		uniqueCorners = true,
 		useOldNineSlice = true,
 	},
 
@@ -102,6 +70,26 @@ local customTextureKitInfo = {
 		useOldNineSlice = true,
 	},
 
+	thewarwithin = {
+		closeButtonX = -9,
+		closeButtonY = -9,
+	},
+
+	-- Texture Kits below here use custom templates 
+
+	-- Oribos is a special texture kit type, used for the covenant choice UI in Shadowlands
+	Oribos = {
+		optionFrameTemplate = "PlayerChoiceCovenantChoiceOptionTemplate",
+		exitButtonSoundKit = SOUNDKIT.UI_COVENANT_CHOICE_CLOSE,
+		optionsTopPadding = 124,
+		optionsBottomPadding = 36,
+		optionsSidePadding = 59,
+		optionsSpacing = 6,
+		uniqueCorners = true,
+		useOldNineSlice = true,
+	},
+
+	-- The remaining textures kits are variants of the Torghast-style power choice (genericplayerchoice is the evergreen version)
 	genericplayerchoice = {
 		optionFrameTemplate = "PlayerChoiceGenericPowerChoiceOptionTemplate",
 		optionsTopPadding = 120,
@@ -113,9 +101,26 @@ local customTextureKitInfo = {
 		useOldNineSlice = true,
 	},
 
-	thewarwithin = {
-		closeButtonX = -9,
-		closeButtonY = -9,
+	jailerstower = {
+		optionFrameTemplate = "PlayerChoiceTorghastOptionTemplate",
+		optionsTopPadding = 30,
+		optionsBottomPadding = 55,
+		showOptionsOnly = true,
+		frameYOffset = 95,
+		useOldNineSlice = true,
+	},
+
+	cypherchoice = {
+		optionFrameTemplate = "PlayerChoiceCypherOptionTemplate",
+		optionsTopPadding = 120,
+		optionsBottomPadding = 55,
+		showOptionsOnly = true,
+		frameYOffset = 95,
+		toggleXOffset = 0,
+		toggleYOffset = -20,
+		timerXOffset = 0,
+		timerYOffset = -5,
+		useOldNineSlice = true,
 	},
 };
 
@@ -363,14 +368,15 @@ function PlayerChoiceFrameMixin:SetupOptions()
 	self.optionFrameTemplate = self.textureKitInfo.optionFrameTemplate;
 	self.optionPools:GetOrCreatePool("FRAME", self, self.optionFrameTemplate, HideAndAnchorTopLeft);
 
-	local soloOption = (#self.choiceInfo.options == 1);
+	local showAsList = self.choiceInfo.showChoicesAsList;
+	local soloOption = showAsList or (#self.choiceInfo.options == 1);
 
 	-- First create and call Setup on all the options.
 	-- This needs to be done in a separate loop from the AlignSections call (in AlignOptionHeights), because Setup collects the max heights of all the aligned sections, and then AlignSections adjusts the heights
 	for optionIndex, optionInfo in ipairs(self.choiceInfo.options) do
 		local optionFrame = self.optionPools:Acquire(self.optionFrameTemplate);
 		optionFrame.layoutIndex = optionIndex;
-		optionFrame:Setup(optionInfo, self.uiTextureKit, soloOption);
+		optionFrame:Setup(optionInfo, self.uiTextureKit, soloOption, showAsList);
 	end
 
 	self:AlignOptionHeights(soloOption);

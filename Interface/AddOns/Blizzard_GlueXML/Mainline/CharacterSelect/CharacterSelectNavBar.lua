@@ -56,8 +56,39 @@ local function ToggleAccountStoreUI()
 	AccountStoreUtil.ToggleAccountStore();
 end
 
+local function UpdateButtonStatesForCollections(enabledState)
+	-- Various UI being enabled/shown is based on if collections are showing or not.
+	CharacterSelect_UpdateButtonState();
+	CharacterServicesMaster_UpdateServiceButton();
+	CharacterSelect_SelectCharacter(CharacterSelect.selectedIndex, 1);
+
+	if not enabledState then
+		-- Use saved state when going back, do not assume player wants list expanded.
+		local isExpanded = GetCVarBool("expandWarbandCharacterList");
+		CharacterSelectUI:ExpandCharacterList(isExpanded);
+	else
+		CharacterSelectUI:ExpandCharacterList(false);
+	end
+	CharacterSelectUI:SetCharacterListToggleEnabled(not enabledState);
+end
+
+local function ToggleCollections()
+	local collections = CharacterSelectUI.CollectionsFrame;
+	local enabledState = not collections:IsShown();
+
+	-- Clear helptip if not yet closed.
+	if enabledState and not GetCVarBool("seenCharacterSelectNavBarCampsHelpTip") then
+		SetCVar("seenCharacterSelectNavBarCampsHelpTip", 1);
+		HelpTip:Hide(CharacterSelectUI.VisibilityFramesContainer.NavBar.CampsButton, CHARACTER_SELECT_NAV_BAR_CAMPS_HELPTIP);
+	end
+
+	collections:SetShown(enabledState);
+	UpdateButtonStatesForCollections(enabledState);
+end
+
 local CharacterSelectNavBarEvents = {
 	"GLOBAL_MOUSE_DOWN",
+	"ACCOUNT_CVARS_LOADED",
 	"EVENT_REALM_QUEUES_UPDATED",
 };
 
@@ -86,8 +117,6 @@ function CharacterSelectNavBarMixin:OnLoad()
 	self.GameEnvironmentButton.SelectionDrawer = CreateFrame("FRAME", nil, self.GameEnvironmentButton, "GameEnvironmentFrameTemplate");
 	self.GameEnvironmentButton.SelectionDrawer:SetPoint("TOP", self.GameEnvironmentButton, "BOTTOM", 0, -20);
 
-	EventRegistry:RegisterCallback("GameEnvironmentFrame.Hide", ToggleGameEnvironmentDrawer, self);
-
 	if self:GetParent() == PlunderstormLobbyFrame then
 		self:RegisterEvent("STORE_FRONT_STATE_UPDATED");
 
@@ -113,8 +142,15 @@ function CharacterSelectNavBarMixin:OnLoad()
 
 	self.MenuButton = self.ButtonTray:AddControl(CHARACTER_SELECT_NAV_BAR_MENU, GlueMenuFrameUtil.ShowMenu);
 	self.RealmsButton = self.ButtonTray:AddControl(CHARACTER_SELECT_NAV_BAR_REALMS, realmsCallback);
+	self.CampsButton = self.ButtonTray:AddControl(CHARACTER_SELECT_NAV_BAR_CAMPS, ToggleCollections);
 
+	EventRegistry:RegisterCallback("GameEnvironmentFrame.Hide", ToggleGameEnvironmentDrawer, self);
 	EventRegistry:RegisterCallback("GameEnvironment.UpdateNavBar", self.UpdateSelectedGameMode, self);
+
+	local function OnCollectionsHide()
+		UpdateButtonStatesForCollections(false);
+	end
+	EventRegistry:RegisterCallback("GlueCollections.OnHide", OnCollectionsHide);
 
 	-- Any specific button setups.
 	self:SetButtonVisuals();
@@ -137,6 +173,8 @@ function CharacterSelectNavBarMixin:OnEvent(event, ...)
 			not self.GameEnvironmentButton.SelectionDrawer:IsMouseOver() then
 			ToggleGameEnvironmentDrawer(self);
 		end
+	elseif event == "ACCOUNT_CVARS_LOADED" then
+		self:EvaluateHelptips();
 	elseif event == "STORE_FRONT_STATE_UPDATED" then
 		if self.PlunderstoreButton then
 			self.PlunderstoreButton:SetEnabled(C_AccountStore.GetStoreFrontState(Constants.AccountStoreConsts.PlunderstormStoreFrontID) == Enum.AccountStoreState.Available);
@@ -151,28 +189,31 @@ function CharacterSelectNavBarMixin:OnEvent(event, ...)
 end
 
 function CharacterSelectNavBarMixin:SetButtonVisuals()
+	local leftmostButton = self.GameEnvironmentButton;
+	local rightmostButton = self.CampsButton;
+
 	-- The leftmost and rightmost buttons in the nav bar have different textures than the default.
-	self.GameEnvironmentButton.Highlight:ClearAllPoints();
-	self.GameEnvironmentButton.Highlight:SetPoint("TOPLEFT", -45, 0);
-	self.GameEnvironmentButton.Highlight:SetPoint("BOTTOMRIGHT", 0, 0);
-	self.GameEnvironmentButton.Highlight.Backdrop:SetAtlas("glues-characterselect-tophud-selected-left", TextureKitConstants.IgnoreAtlasSize);
-	self.GameEnvironmentButton.Highlight.Line:SetAtlas("glues-characterselect-tophud-selected-line-left", TextureKitConstants.IgnoreAtlasSize);
-	self.GameEnvironmentButton.NormalTexture:SetAtlas("glues-characterselect-tophud-left-bg", TextureKitConstants.IgnoreAtlasSize);
-	self.GameEnvironmentButton.NormalTexture:SetPoint("TOPLEFT", -102, 0);
-	self.GameEnvironmentButton.DisabledTexture:SetAtlas("glues-characterselect-tophud-left-dis-bg", TextureKitConstants.IgnoreAtlasSize);
-	self.GameEnvironmentButton.DisabledTexture:SetPoint("TOPLEFT", -102, 0);
+	leftmostButton.Highlight:ClearAllPoints();
+	leftmostButton.Highlight:SetPoint("TOPLEFT", -45, 0);
+	leftmostButton.Highlight:SetPoint("BOTTOMRIGHT", 0, 0);
+	leftmostButton.Highlight.Backdrop:SetAtlas("glues-characterselect-tophud-selected-left", TextureKitConstants.IgnoreAtlasSize);
+	leftmostButton.Highlight.Line:SetAtlas("glues-characterselect-tophud-selected-line-left", TextureKitConstants.IgnoreAtlasSize);
+	leftmostButton.NormalTexture:SetAtlas("glues-characterselect-tophud-left-bg", TextureKitConstants.IgnoreAtlasSize);
+	leftmostButton.NormalTexture:SetPoint("TOPLEFT", -102, 0);
+	leftmostButton.DisabledTexture:SetAtlas("glues-characterselect-tophud-left-dis-bg", TextureKitConstants.IgnoreAtlasSize);
+	leftmostButton.DisabledTexture:SetPoint("TOPLEFT", -102, 0);
 
 	-- Do not show divider bar on rightmost option.
-	self.RealmsButton.Bar:Hide();
-	self.RealmsButton.Highlight:ClearAllPoints();
-	self.RealmsButton.Highlight:SetPoint("TOPLEFT", 0, 0);
-	self.RealmsButton.Highlight:SetPoint("BOTTOMRIGHT", 45, 0);
-	self.RealmsButton.Highlight.Backdrop:SetAtlas("glues-characterselect-tophud-selected-right", TextureKitConstants.IgnoreAtlasSize);
-	self.RealmsButton.Highlight.Line:SetAtlas("glues-characterselect-tophud-selected-line-right", TextureKitConstants.IgnoreAtlasSize);
-	self.RealmsButton.NormalTexture:SetAtlas("glues-characterselect-tophud-right-bg", TextureKitConstants.IgnoreAtlasSize);
-	self.RealmsButton.NormalTexture:SetPoint("BOTTOMRIGHT", 102, 0);
-	self.RealmsButton.DisabledTexture:SetAtlas("glues-characterselect-tophud-right-dis-bg", TextureKitConstants.IgnoreAtlasSize);
-	self.RealmsButton.DisabledTexture:SetPoint("BOTTOMRIGHT", 102, 0);
+	rightmostButton.Bar:Hide();
+	rightmostButton.Highlight:ClearAllPoints();
+	rightmostButton.Highlight:SetPoint("TOPLEFT", 0, 0);
+	rightmostButton.Highlight:SetPoint("BOTTOMRIGHT", 45, 0);
+	rightmostButton.Highlight.Backdrop:SetAtlas("glues-characterselect-tophud-selected-right", TextureKitConstants.IgnoreAtlasSize);
+	rightmostButton.Highlight.Line:SetAtlas("glues-characterselect-tophud-selected-line-right", TextureKitConstants.IgnoreAtlasSize);
+	rightmostButton.NormalTexture:SetAtlas("glues-characterselect-tophud-right-bg", TextureKitConstants.IgnoreAtlasSize);
+	rightmostButton.NormalTexture:SetPoint("BOTTOMRIGHT", 102, 0);
+	rightmostButton.DisabledTexture:SetAtlas("glues-characterselect-tophud-right-dis-bg", TextureKitConstants.IgnoreAtlasSize);
+	rightmostButton.DisabledTexture:SetPoint("BOTTOMRIGHT", 102, 0);
 
 	if self.StoreButton then
 		-- The store button has a custom icon that must match the text state.
@@ -232,6 +273,8 @@ function CharacterSelectNavBarMixin:UpdateButtonDividerState(button)
 		isDividerBarEnabled = isDividerBarEnabled or self.MenuButton:IsEnabled();
 	elseif button == self.MenuButton then
 		isDividerBarEnabled = isDividerBarEnabled or self.RealmsButton:IsEnabled();
+	elseif button == self.RealmsButton then
+		isDividerBarEnabled = isDividerBarEnabled or self.CampsButton:IsEnabled();
 	end
 
 	button.Bar:SetAtlas(isDividerBarEnabled and "glues-characterselect-tophud-bg-divider" or "glues-characterselect-tophud-bg-divider-dis", TextureKitConstants.UseAtlasSize);
@@ -286,4 +329,23 @@ function CharacterSelectNavBarMixin:SetRealmsButtonEnabled(enabled)
 
 	self:UpdateButtonDividerState(self.MenuButton);
 	self:UpdateButtonDividerState(self.RealmsButton);
+end
+
+function CharacterSelectNavBarMixin:SetCampsButtonEnabled(enabled)
+	self.CampsButton:SetEnabled(enabled);
+
+	self:UpdateButtonDividerState(self.RealmsButton);
+	self:UpdateButtonDividerState(self.CampsButton);
+end
+
+function CharacterSelectNavBarMixin:EvaluateHelptips()
+	local campsHelpTipInfo = {
+		text = CHARACTER_SELECT_NAV_BAR_CAMPS_HELPTIP,
+		buttonStyle = HelpTip.ButtonStyle.Close,
+		targetPoint = HelpTip.Point.BottomEdgeCenter,
+		cvar = "seenCharacterSelectNavBarCampsHelpTip",
+		cvarValue = "1",
+		checkCVars = true
+	};
+	HelpTip:Show(self.CampsButton, campsHelpTipInfo);
 end

@@ -443,6 +443,7 @@
 							</OnLoad>
 						</Scripts>
 					</Frame>
+					<Frame parentKey="CollectionsFrame" inherits="GlueCollectionsTemplate" hidden="true"/>
 					<Frame parentKey="VisibilityFramesContainer" name="VisibilityFramesContainer" setAllPoints="true" useParentLevel="true">
 						<Layers>
 							<Layer level="ARTWORK">
@@ -1166,7 +1167,7 @@
 							</OnFinished>
 						</Scripts>
 					</AnimationGroup>
-					<AnimationGroup parentKey="MapFadeIn" setToFinalAlpha="true">
+					<AnimationGroup parentKey="MapFadeIn" setToFinalAlpha="false">
 						<Alpha childKey="FadeInBackground" fromAlpha="1" toAlpha="0" duration=".3" order="1"/>
 					</AnimationGroup>
 				</Animations>

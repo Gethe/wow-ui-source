@@ -116,6 +116,7 @@ function BonusObjectivePinMixin:OnLoad()
 end
 
 function BonusObjectivePinMixin:OnAcquired(taskInfo)
+	self:AddTag(MapPinTags.BonusObjective);
 	self:SetPosition(taskInfo.x, taskInfo.y);
 	self:SetQuestID(taskInfo.questID);
 	self.numObjectives = taskInfo.numObjectives;
@@ -180,6 +181,11 @@ end
 
 function BonusObjectivePinMixin:OnMouseClickAction(button)
 	POIButtonMixin.OnClick(self, button);
+end
+
+function WorldQuestPinMixin:GetDisplayName()
+	local title = C_TaskQuest.GetQuestInfoByQuestID(self:GetQuestID());
+	return title or "";
 end
 
 --[[ Threat Objective Pin ]]--

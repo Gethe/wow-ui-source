@@ -9,6 +9,7 @@ local LootJournal =
 		{
 			Name = "GetItemSetItems",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -23,6 +24,7 @@ local LootJournal =
 		{
 			Name = "GetItemSets",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

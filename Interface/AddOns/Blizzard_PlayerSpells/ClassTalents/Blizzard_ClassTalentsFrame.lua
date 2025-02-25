@@ -173,7 +173,6 @@ function ClassTalentsFrameMixin:UpdateClassVisuals()
 		end
 	end
 
-	-- TODO:: Replace this temporary fix up.
 	local classOffsets = classVisuals and classVisuals.panOffset;
 	if classOffsets then
 		local basePanOffsetX = self.initialBasePanOffsetX - (classOffsets.x or 0);

@@ -288,23 +288,18 @@ function WorldMapMixin:AddOverlayFrames()
 	local floorDropdown = self:AddOverlayFrame("WorldMapFloorNavigationFrameTemplate", "DROPDOWNBUTTON", "TOPLEFT", self:GetCanvasContainer(), "TOPLEFT", 2, 0);
 	floorDropdown:SetWidth(160);
 
-	local topRightButtonPoolXOffset = -4;
-	local topRightButtonPoolXOffsetAmount = -32;
+	local topRightButtonPoolYOffset = -2;
+	local topRightButtonPoolYOffsetAmount = -32;
 	local worldTrackingOptionsDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.WorldMapTrackingOptionsDisabled);
 	if not worldTrackingOptionsDisabled then
-		self:AddOverlayFrame("WorldMapTrackingOptionsButtonTemplate", "DROPDOWNBUTTON", "TOPRIGHT", self:GetCanvasContainer(), "TOPRIGHT", topRightButtonPoolXOffset, -2);
-		topRightButtonPoolXOffset = topRightButtonPoolXOffset + topRightButtonPoolXOffsetAmount;
+		self:AddOverlayFrame("WorldMapTrackingOptionsButtonTemplate", "DROPDOWNBUTTON", "TOPRIGHT", self:GetCanvasContainer(), "TOPRIGHT", -4, topRightButtonPoolYOffset);
+		topRightButtonPoolYOffset = topRightButtonPoolYOffset + topRightButtonPoolYOffsetAmount;
 	end
 
 	local worldMapTrackingPinDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.WorldMapTrackingPinDisabled);
 	if not worldMapTrackingPinDisabled then
-		self:AddOverlayFrame("WorldMapTrackingPinButtonTemplate", "BUTTON", "TOPRIGHT", self:GetCanvasContainer(), "TOPRIGHT", topRightButtonPoolXOffset, -2);
-		topRightButtonPoolXOffset = topRightButtonPoolXOffset + topRightButtonPoolXOffsetAmount;
-	end
-
-	local worldMapLegendDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.WorldMapLegendDisabled);
-	if not worldMapLegendDisabled then
-		self:AddOverlayFrame("WorldMapShowLegendButtonTemplate", "BUTTON", "TOPRIGHT", self:GetCanvasContainer(), "TOPRIGHT", topRightButtonPoolXOffset, -2);
+		self:AddOverlayFrame("WorldMapTrackingPinButtonTemplate", "BUTTON", "TOPRIGHT", self:GetCanvasContainer(), "TOPRIGHT", -4, topRightButtonPoolYOffset);
+		topRightButtonPoolYOffset = topRightButtonPoolYOffset + topRightButtonPoolYOffsetAmount;
 	end
 
 	self:AddOverlayFrame("WorldMapBountyBoardTemplate", "FRAME", nil, self:GetCanvasContainer());
@@ -380,11 +375,13 @@ function WorldMapMixin:OnHide()
 	UpdateMicroButtons();
 end
 
+local function SecureRefreshOverlayFrame(_, frame)
+	frame:Refresh();
+end
+
 function WorldMapMixin:RefreshOverlayFrames()
 	if self.overlayFrames then
-		for i, frame in ipairs(self.overlayFrames) do
-			frame:Refresh();
-		end
+		secureexecuterange(self.overlayFrames, SecureRefreshOverlayFrame);
 	end
 end
 
@@ -451,10 +448,10 @@ WorldMapTutorialMixin = { }
 
 function WorldMapTutorialMixin:OnLoad()
 	self.helpInfo = {
-		FramePos = { x = 4,	y = -40 },
-		FrameSize = { width = 985, height = 500	},
-		[1] = { ButtonPos = { x = 350,	y = -180 }, HighLightBox = { x = 0, y = -30, width = 695, height = 464 }, ToolTipDir = "DOWN", ToolTipText = WORLD_MAP_TUTORIAL1 },
-		[2] = { ButtonPos = { x = 350,	y = 16 }, HighLightBox = { x = 50, y = 16, width = 645, height = 44 }, ToolTipDir = "DOWN", ToolTipText = WORLD_MAP_TUTORIAL4 },
+		FramePos = { x = 4,	y = -26 },
+		FrameSize = { width = 1028, height = 500	},
+		[1] = { ButtonPos = { x = 350,	y = -180 }, HighLightBox = { x = 0, y = -44, width = 695, height = 464 }, ToolTipDir = "DOWN", ToolTipText = WORLD_MAP_TUTORIAL1 },
+		[2] = { ButtonPos = { x = 350,	y = 16 }, HighLightBox = { x = 50, y = 2, width = 645, height = 44 }, ToolTipDir = "DOWN", ToolTipText = WORLD_MAP_TUTORIAL4 },
 	};
 end
 
@@ -484,17 +481,35 @@ end
 
 function WorldMapTutorialMixin:ToggleHelpInfo()
 	local mapFrame = self:GetParent():GetParent();
-	if ( mapFrame.QuestLog:IsShown() ) then
-		self.helpInfo[3] = { ButtonPos = { x = 810,	y = -180 }, HighLightBox = { x = 700, y = 16, width = 285, height = 510 },	ToolTipDir = "DOWN", ToolTipText = WORLD_MAP_TUTORIAL2 };
-	else
-		self.helpInfo[3] = nil;
-	end
-
 	if ( not HelpPlate_IsShowing(self.helpInfo) and mapFrame:IsShown()) then
+		self:SetHelpInfo3();
 		HelpPlate_Show(self.helpInfo, mapFrame, self, true);
 		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WORLD_MAP_FRAME, true);
+		EventRegistry:RegisterCallback("QuestLog.SetDisplayMode", self.UpdateHelpInfo, self);
 	else
 		HelpPlate_Hide(true);
+		EventRegistry:UnregisterCallback("QuestLog.SetDisplayMode", self);
+	end
+end
+
+function WorldMapTutorialMixin:UpdateHelpInfo()
+	if not HelpPlate_IsShowing(self.helpInfo) then
+		return;
+	end
+
+	self:SetHelpInfo3();
+	local mapFrame = self:GetParent():GetParent();
+		HelpPlate_Show(self.helpInfo, mapFrame, self, true);
+end
+
+function WorldMapTutorialMixin:SetHelpInfo3()
+	local mapFrame = self:GetParent():GetParent();
+	local shownQuestLog = mapFrame.QuestLog and mapFrame.QuestLog:IsShown();
+	local questLogHelpText = shownQuestLog and mapFrame.QuestLog.GetHelpInfoText and mapFrame.QuestLog:GetHelpInfoText();
+	if questLogHelpText then
+		self.helpInfo[3] = { ButtonPos = { x = 810,	y = -180 }, HighLightBox = { x = 700, y = 2, width = 328, height = 510 },	ToolTipDir = "DOWN", ToolTipText = questLogHelpText };
+	else
+		self.helpInfo[3] = nil;
 	end
 end
 
@@ -526,12 +541,6 @@ function WorldMapMixin:ClearFocusedQuestID()
 	self:TriggerEvent("ClearFocusedQuestID");
 end
 
-function WorldMapMixin:PingQuestID(questID)
-	if self:IsVisible() then
-		self:TriggerEvent("PingQuestID", questID);
-	end
-end
-
 -- ============================================ GLOBAL API ===============================================================================
 function ToggleQuestLog()
 	WorldMapFrame:HandleUserActionToggleQuestLog();
@@ -547,4 +556,12 @@ end
 
 function OpenQuestLog(mapID)
 	WorldMapFrame:HandleUserActionOpenQuestLog(mapID);
+end
+
+function OpenMapToEventPoi(areaPoiID)
+	local mapID = C_EventScheduler.GetEventUiMapID(areaPoiID);
+	if mapID then
+		OpenWorldMap(mapID);
+		EventRegistry:TriggerEvent("PingAreaPOIEvent", areaPoiID);
+	end
 end

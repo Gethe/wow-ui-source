@@ -278,8 +278,24 @@ local Item =
 			},
 		},
 		{
+			Name = "GetDelvePreviewItemQuality",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false },
+				{ Name = "context", Type = "ItemCreationContext", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemQuality", Type = "ItemQuality", Nilable = false },
+			},
+		},
+		{
 			Name = "GetDetailedItemLevelInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -431,6 +447,7 @@ local Item =
 		{
 			Name = "GetItemGem",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -447,6 +464,7 @@ local Item =
 		{
 			Name = "GetItemGemID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -532,6 +550,7 @@ local Item =
 		{
 			Name = "GetItemInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -562,6 +581,7 @@ local Item =
 		{
 			Name = "GetItemInfoInstant",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -837,6 +857,7 @@ local Item =
 		{
 			Name = "GetItemSpecInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -851,6 +872,7 @@ local Item =
 		{
 			Name = "GetItemSpell",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -866,6 +888,7 @@ local Item =
 		{
 			Name = "GetItemStatDelta",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -881,6 +904,7 @@ local Item =
 		{
 			Name = "GetItemStats",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -895,6 +919,7 @@ local Item =
 		{
 			Name = "GetItemSubClassInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -911,6 +936,7 @@ local Item =
 		{
 			Name = "GetItemUniqueness",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -926,6 +952,7 @@ local Item =
 		{
 			Name = "GetItemUniquenessByID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -943,6 +970,7 @@ local Item =
 		{
 			Name = "GetLimitedCurrencyItemInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -961,6 +989,7 @@ local Item =
 		{
 			Name = "GetSetBonusesForSpecializationByItemID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

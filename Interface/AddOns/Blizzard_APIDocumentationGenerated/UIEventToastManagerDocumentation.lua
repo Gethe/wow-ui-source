@@ -9,6 +9,7 @@ local UIEventToastManager =
 		{
 			Name = "GetLevelUpDisplayToastsFromLevel",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -23,6 +24,7 @@ local UIEventToastManager =
 		{
 			Name = "GetNextToastToDisplay",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{

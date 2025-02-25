@@ -95,7 +95,14 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Button parentKey="Button" mixin="SpellBookItemButtonMixin">
+			<Button parentKey="Button" mixin="SpellBookItemButtonMixin" inherits="FlyoutButtonTemplate">
+				<KeyValues>
+					<KeyValue key="popupDirection" value="RIGHT" type="string"/>
+					<KeyValue key="popupOffset" value="-4" type="number"/>
+					<KeyValue key="popupCrossAxisSize" value="42" type="number"/>
+					<KeyValue key="openArrowOffset" value="2" type="number"/>
+					<KeyValue key="closedArrowOffset" value="4" type="number"/>
+				</KeyValues>
 				<Size x="40" y="40"/>
 				<Anchors>
 					<Anchor point="LEFT"/>
@@ -216,13 +223,6 @@
 									<Alpha fromAlpha="1" toAlpha="0.5" duration="0.5" order="2" smoothing="IN"/>
 								</AnimationGroup>
 							</Animations>
-						</Texture>
-						<Texture parentKey="FlyoutArrow" file="Interface\Buttons\ActionBarFlyoutButton" hidden="true" rotation="-90">
-							<Size x="23" y="11"/>
-							<Anchors>
-								<Anchor point="RIGHT" x="14" y="0"/>
-							</Anchors>
-							<TexCoords left="0.62500000" right="0.98437500" top="0.74218750" bottom="0.82812500"/>
 						</Texture>
 						<Texture parentKey="ClickBindingHighlight" atlas="ClickCast-Highlight-Spellbook" useAtlasSize="true" alphaMode="ADD" hidden="true">
 							<Anchors>

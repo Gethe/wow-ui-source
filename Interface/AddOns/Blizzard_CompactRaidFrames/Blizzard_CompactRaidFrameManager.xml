@@ -455,7 +455,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad method="OnLoad"/>
-							<OnShow method="OnShow"/>
+							<OnUpdate method="OnUpdate"/>
 							<OnClick method="OnClick"/>
 						</Scripts>
 					</Button>

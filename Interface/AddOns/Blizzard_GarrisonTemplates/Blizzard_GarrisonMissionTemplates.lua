@@ -1669,7 +1669,6 @@ end
 
 function GarrisonMissionComplete:OnSkipKeyPressed(key)
 	if ( key == "SPACE" ) then
-		self:SetPropagateKeyboardInput(false);
 		local animIndex = self.animIndex;
 		-- checking for animIndex to see if animations have started
 		if ( animIndex and not self.skipAnimations ) then
@@ -1774,9 +1773,9 @@ function GarrisonMissionComplete:OnSkipKeyPressed(key)
 			-- it's not going to do anything if animations haven't started yet
 			self.NextMissionButton:Click();
 		end
-	else
-		self:SetPropagateKeyboardInput(true);
+		return false;
 	end
+	return true;
 end
 
 ---------------------------------------------------------------------------------

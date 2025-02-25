@@ -427,12 +427,13 @@ function MapPinPingMixin:SetNumLoops(numLoops)
 	self.numLoops = numLoops;
 end
 
-function MapPinPingMixin:SetID(id)
+function MapPinPingMixin:SetID(idKey, id)
+	self.idKey = idKey;
 	self.id = id;
 end
 
-function MapPinPingMixin:GetID(id)
-	return self.id;
+function MapPinPingMixin:GetID()
+	return self.idKey, self.id;
 end
 
 function MapPinPingMixin:PlayAt(x, y)
@@ -465,7 +466,12 @@ end
 
 function MapPinPingMixin:Clear()
 	self:Hide();
+	self.idKey = nil;
 	self.id = nil;
+end
+
+function MapPinPingMixin:IsActive()
+	return self.id ~= nil;
 end
 
 MapPinPingDriverAnimationMixin = {};

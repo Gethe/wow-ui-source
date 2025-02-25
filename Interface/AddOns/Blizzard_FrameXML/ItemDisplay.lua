@@ -4,19 +4,13 @@ function LootItemExtendedMixin:Init(itemLink, originalQuantity, specID, isCurren
 	local itemName, itemTexture, quantity, itemRarity;
 	itemName, itemTexture, quantity, itemRarity, itemLink = ItemUtil.GetItemDetails(itemLink, originalQuantity, isCurrency);
 
-	local atlas = LOOT_BORDER_BY_QUALITY[itemRarity];
-	local desaturate = false;
-	if (not atlas) then
-		atlas = "loottoast-itemborder-gold";
-		desaturate = true;
-	end
+	local atlas = LOOT_BORDER_BY_QUALITY[itemRarity] or "loottoast-itemborder-white";
 
 	self.IconOverlay:SetVertexColor(1, 1, 1);
 	self.IconOverlay:SetScale(1);
 	self.IconOverlay2:SetScale(1);
 
 	self:SetIconBorderAtlas(atlas);
-	self:SetIconBorderDesaturated(desaturate);
 	self:SetTexture(itemTexture);
 	self:SetIconDrawLayer(iconDrawLayer or "BORDER");
 	self:SetIconBorderShown(isIconBorderShown or false);

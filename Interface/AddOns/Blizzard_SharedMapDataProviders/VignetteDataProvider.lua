@@ -443,7 +443,11 @@ function VignettePinBaseMixin:GetHighlightType() -- override
 end
 
 function VignettePinBaseMixin:UpdateSupertrackedHighlight()
-	MapPinHighlight_CheckHighlightPin(self:GetHighlightType(), self, self.Texture);
+	MapPinHighlight_CheckHighlightPin(self:GetHighlightType(), self, self:GetPinHighlightTexture());
+end
+
+function VignettePinBaseMixin:GetPinHighlightTexture()
+	return self.Texture;
 end
 
 function VignettePinBaseMixin:OnMouseEnter()
@@ -565,6 +569,10 @@ function VignettePinPOIButtonMixin:ApplyTextures()
 	self:SetStyle(POIButtonUtil.Style.Vignette);
 	self:UpdateButtonStyle();
 	self:UpdateSelected();
+end
+
+function VignettePinPOIButtonMixin:GetPinHighlightTexture()
+	return self:GetNormalTexture();
 end
 
 --[[ Fyakk Flight Pin ]]--

@@ -111,6 +111,7 @@ local ClassTalents =
 		{
 			Name = "GetHeroTalentSpecsForClassSpec",
 			Type = "Function",
+			MayReturnNothing = true,
 			Documentation = { "Returns the SubTreeIDs of the Hero Talent Specializations available to a Class Specialization and config; Returns nothing if none available" },
 
 			Arguments =

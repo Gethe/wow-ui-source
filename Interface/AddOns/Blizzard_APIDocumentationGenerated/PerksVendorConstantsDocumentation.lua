@@ -5,9 +5,9 @@ local PerksVendorConstants =
 		{
 			Name = "PerksVendorCategoryType",
 			Type = "Enumeration",
-			NumValues = 6,
+			NumValues = 7,
 			MinValue = 1,
-			MaxValue = 8,
+			MaxValue = 9,
 			Fields =
 			{
 				{ Name = "Transmog", Type = "PerksVendorCategoryType", EnumValue = 1 },
@@ -16,6 +16,7 @@ local PerksVendorConstants =
 				{ Name = "Toy", Type = "PerksVendorCategoryType", EnumValue = 5 },
 				{ Name = "Illusion", Type = "PerksVendorCategoryType", EnumValue = 7 },
 				{ Name = "Transmogset", Type = "PerksVendorCategoryType", EnumValue = 8 },
+				{ Name = "WarbandScene", Type = "PerksVendorCategoryType", EnumValue = 9 },
 			},
 		},
 	},

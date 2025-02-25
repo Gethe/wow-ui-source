@@ -491,6 +491,7 @@ function AlertFrameMixin:OnLoad()
 	self:RegisterEvent("NEW_PET_ADDED");
 	self:RegisterEvent("NEW_MOUNT_ADDED");
 	self:RegisterEvent("NEW_TOY_ADDED");
+	self:RegisterEvent("NEW_WARBAND_SCENE_ADDED");
 	self:RegisterEvent("NEW_RUNEFORGE_POWER_ADDED");
 	self:RegisterEvent("TRANSMOG_COSMETIC_COLLECTION_SOURCE_ADDED");
 	self:RegisterEvent("TRANSMOG_COLLECTION_SOURCE_ADDED");
@@ -716,6 +717,9 @@ function AlertFrameMixin:OnEvent(event, ...)
 	elseif ( event == "NEW_TOY_ADDED") then
 		local toyID = ...;
 		NewToyAlertSystem:AddAlert(toyID);
+	elseif ( event == "NEW_WARBAND_SCENE_ADDED" ) then
+		local warbandSceneID = ...;
+		NewWarbandSceneAlertSystem:AddAlert(warbandSceneID);
 	elseif ( event == "NEW_RUNEFORGE_POWER_ADDED") then
 		local powerID = ...;
 		NewRuneforgePowerAlertSystem:AddAlert(powerID);

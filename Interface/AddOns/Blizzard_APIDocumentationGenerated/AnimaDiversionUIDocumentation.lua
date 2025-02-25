@@ -13,6 +13,7 @@ local AnimaDiversionUI =
 		{
 			Name = "GetAnimaDiversionNodes",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{

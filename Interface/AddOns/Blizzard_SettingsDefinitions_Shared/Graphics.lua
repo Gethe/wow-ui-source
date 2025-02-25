@@ -847,7 +847,7 @@ local function Register()
 			local initializer = Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_ADVANCED_MSAA);
 			local function IsModifiable()
 				local value = aaSetting:GetValue();
-				return value == AA_MULTISAMPLE or value == AA_ADVANCED;
+				return (value == AA_MULTISAMPLE or value == AA_ADVANCED) and MultiSampleAntiAliasingSupported();
 			end
 			initializer:SetParentInitializer(aaInitializer, IsModifiable);
 		end
@@ -872,7 +872,7 @@ local function Register()
 			local initializer = Settings.CreateCheckboxWithOptions(category, setting, GetOptions, OPTION_TOOLTIP_MULTISAMPLE_ALPHA_TEST);
 			local function IsModifiable()
 				local value = aaSetting:GetValue();
-				return value == AA_MULTISAMPLE or value == AA_ADVANCED;
+				return (value == AA_MULTISAMPLE or value == AA_ADVANCED) and MultiSampleAntiAliasingSupported();
 			end
 			initializer:SetParentInitializer(aaInitializer, IsModifiable);
 		end
@@ -998,21 +998,6 @@ local function Register()
 		end
 
 		Settings.SetupCVarDropdown(category, cvar, Settings.VarType.Number, GetOptions, RT_SHADOW_QUALITY, OPTION_TOOLTIP_RT_SHADOW_QUALITY);
-	end
-
-	-- Ambient Occlusion Type
-	do
-		local cvar = "ResolvedSSAOType";
-
-		local function GetOptions()
-			local container = Settings.CreateControlTextContainer();
-			AddValidatedCVarOption(container, cvar, 0, GX_ADAPTER_AUTO_DETECT);
-			AddValidatedCVarOption(container, cvar, 1, SSAO_TYPE_ASSAO);
-			AddValidatedCVarOption(container, cvar, 2, SSAO_TYPE_CACAO);
-			return container:GetData();
-		end
-
-		Settings.SetupCVarDropdown(category, cvar, Settings.VarType.Number, GetOptions, SSAO_TYPE_LABEL, OPTION_TOOLTIP_SSAO);
 	end
 
 	-- Resample Quality

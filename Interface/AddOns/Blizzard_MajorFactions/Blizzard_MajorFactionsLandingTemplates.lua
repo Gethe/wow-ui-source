@@ -81,8 +81,10 @@ function MajorFactionListMixin:Refresh()
 
 	local majorFactionIDs = C_MajorFactions.GetMajorFactionIDs(self.expansionFilter);
 	for index, majorFactionID in ipairs(majorFactionIDs) do
-		local majorFactionData = C_MajorFactions.GetMajorFactionData(majorFactionID);
-		tinsert(factionList, majorFactionData);
+		if not C_MajorFactions.IsMajorFactionHiddenFromExpansionPage(majorFactionID) then
+			local majorFactionData = C_MajorFactions.GetMajorFactionData(majorFactionID);
+			tinsert(factionList, majorFactionData);
+		end
 	end
 
 	local function MajorFactionSort(faction1, faction2)
@@ -355,87 +357,18 @@ function MajorFactionButtonUnlockedStateMixin:RefreshTooltip()
 	end
 end
 
-local function TryAppendAccountReputationLineToTooltip(tooltip, factionID)
-	if not tooltip or not factionID or not C_Reputation.IsAccountWideReputation(factionID) then
-		return;
-	end
-
-	local wrapText = false;
-	GameTooltip_AddColoredLine(tooltip, REPUTATION_TOOLTIP_ACCOUNT_WIDE_LABEL, ACCOUNT_WIDE_FONT_COLOR, wrapText);
-end
-
 function MajorFactionButtonUnlockedStateMixin:ShowRenownRewardsTooltip()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	local factionID = self:GetParent().factionID;
-	local majorFactionData = C_MajorFactions.GetMajorFactionData(factionID);
-	local tooltipTitle = majorFactionData.name;
-	GameTooltip_SetTitle(GameTooltip, tooltipTitle, HIGHLIGHT_FONT_COLOR);
-	TryAppendAccountReputationLineToTooltip(GameTooltip, factionID);
-
-	if not C_MajorFactions.HasMaximumRenown(factionID) then
-		GameTooltip_AddNormalLine(GameTooltip, MAJOR_FACTION_RENOWN_CURRENT_PROGRESS:format(majorFactionData.renownReputationEarned, majorFactionData.renownLevelThreshold));
-		GameTooltip_AddBlankLineToTooltip(GameTooltip);
-		local nextRenownRewards = C_MajorFactions.GetRenownRewardsForLevel(factionID, C_MajorFactions.GetCurrentRenownLevel(factionID) + 1);
-		if #nextRenownRewards > 0 then
-			self:AddRenownRewardsToTooltip(nextRenownRewards);
-		end
-	end
-
+	RenownRewardUtil.AddMajorFactionLandingPageSummaryToTooltip(GameTooltip, factionID, GenerateClosure(self.ShowRenownRewardsTooltip, self));	
 	GameTooltip_AddColoredLine(GameTooltip, MAJOR_FACTION_BUTTON_TOOLTIP_VIEW_RENOWN, GREEN_FONT_COLOR);
 	EventRegistry:TriggerEvent("MajorFactionRenown.Header.OnEnter", self, GameTooltip, factionID);
 	GameTooltip:Show();
 end
 
-function MajorFactionButtonUnlockedStateMixin:AddRenownRewardsToTooltip(renownRewards)
-	GameTooltip_AddHighlightLine(GameTooltip, MAJOR_FACTION_BUTTON_TOOLTIP_NEXT_REWARDS);
-
-	for i, rewardInfo in ipairs(renownRewards) do
-		local renownRewardString;
-		local icon, name, description = RenownRewardUtil.GetRenownRewardInfo(rewardInfo, GenerateClosure(self.RefreshTooltip, self));
-		if icon then
-			local file, width, height = icon, 16, 16;
-			local rewardTexture = CreateSimpleTextureMarkup(file, width, height);
-			renownRewardString = rewardTexture .. " " .. name;
-		end
-		local wrapText = false;
-		GameTooltip_AddNormalLine(GameTooltip, renownRewardString, wrapText);
-	end
-
-	GameTooltip_AddBlankLineToTooltip(GameTooltip);
-end
-
 function MajorFactionButtonUnlockedStateMixin:ShowParagonRewardsTooltip()
 	EmbeddedItemTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	local factionID = self:GetParent().factionID;
-	local majorFactionData = C_MajorFactions.GetMajorFactionData(factionID);
-	local currentValue, threshold, rewardQuestID, hasRewardPending, tooLowLevelForParagon = C_Reputation.GetFactionParagonInfo(factionID);
-
-	if tooLowLevelForParagon then
-		GameTooltip_SetTitle(EmbeddedItemTooltip, PARAGON_REPUTATION_TOOLTIP_TEXT_LOW_LEVEL, NORMAL_FONT_COLOR);
-	else
-		GameTooltip_SetTitle(EmbeddedItemTooltip, MAJOR_FACTION_MAX_RENOWN_REACHED, HIGHLIGHT_FONT_COLOR);
-		local description = PARAGON_REPUTATION_TOOLTIP_TEXT:format(majorFactionData.name);
-		if hasRewardPending then
-			local questIndex = C_QuestLog.GetLogIndexForQuestID(rewardQuestID);
-			local text = GetQuestLogCompletionText(questIndex);
-			if text and text ~= "" then
-				description = text;
-			end
-		end
-		TryAppendAccountReputationLineToTooltip(EmbeddedItemTooltip, factionID);
-
-		GameTooltip_AddNormalLine(EmbeddedItemTooltip, description);
-
-		if not hasRewardPending and currentValue and threshold then
-			local value = mod(currentValue, threshold);
-			-- Show overflow if a reward is pending
-			if hasRewardPending then
-				value = value + threshold;
-			end
-			GameTooltip_ShowProgressBar(EmbeddedItemTooltip, 0, threshold, value, REPUTATION_PROGRESS_FORMAT:format(value, threshold));
-		end
-		GameTooltip_AddQuestRewardsToTooltip(EmbeddedItemTooltip, rewardQuestID);
-	end
+	ReputationUtil.AddParagonRewardsToTooltip(EmbeddedItemTooltip, self:GetParent().factionID)
 	GameTooltip_SetBottomText(EmbeddedItemTooltip, MAJOR_FACTION_BUTTON_TOOLTIP_VIEW_RENOWN, GREEN_FONT_COLOR);
 	EmbeddedItemTooltip:Show();
 end

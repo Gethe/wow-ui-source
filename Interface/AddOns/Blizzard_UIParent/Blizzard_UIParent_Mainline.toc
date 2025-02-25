@@ -7,7 +7,7 @@
 ChatBubbleTemplates.xml
 Mainline\WorldFrame.lua
 Mainline\WorldFrame.xml
+Shared\UIParent.lua
 Mainline\UIParent.lua
 Mainline\UIParent.xml
 Shared\Localization.lua
-Shared\UIParent.lua

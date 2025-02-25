@@ -4,7 +4,7 @@
 ## Version: 1.0
 ## LoadOnDemand: 1
 ## AllowLoad: game
-## Dependencies: Blizzard_ClassMenu
+## Dependencies: Blizzard_ClassMenu, Blizzard_Flyout, Blizzard_PagedContent
 ## AllowLoadGameType: mainline
 Blizzard_CollectionTemplates.xml
 Blizzard_Collections.xml
@@ -14,4 +14,6 @@ Blizzard_PetCollection.xml
 Blizzard_ToyBox.xml
 Blizzard_HeirloomCollection.xml
 Blizzard_Wardrobe.xml
+Blizzard_WarbandSceneCollection.lua
+Blizzard_WarbandSceneCollection.xml
 Localization.lua

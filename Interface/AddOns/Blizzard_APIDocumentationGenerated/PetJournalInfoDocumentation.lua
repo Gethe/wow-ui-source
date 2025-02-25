@@ -72,6 +72,7 @@ local PetJournalInfo =
 		{
 			Name = "GetPetAbilityInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -88,6 +89,7 @@ local PetJournalInfo =
 		{
 			Name = "GetPetAbilityListTable",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -102,6 +104,7 @@ local PetJournalInfo =
 		{
 			Name = "GetPetInfoTableByPetID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -116,6 +119,7 @@ local PetJournalInfo =
 		{
 			Name = "GetPetLoadOutInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

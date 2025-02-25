@@ -19,7 +19,7 @@ local AccountStoreBaseCardEvents = {
 
 function AccountStoreBaseCardMixin:OnLoad()
 	self.BuyButton:SetScript("OnEnter", function()
-		if not self.BuyButton:IsEnabled() and self.itemInfo then
+		if not self.BuyButton:IsEnabled() then
 			AccountStoreUtil.ShowDisabledItemInfoTooltip(self.BuyButton, self.itemInfo);
 		end
 	end);
@@ -58,16 +58,12 @@ function AccountStoreBaseCardMixin:OnHide()
 end
 
 function AccountStoreBaseCardMixin:OnEnter()
-	local itemInfo = self.itemInfo;
-	if not itemInfo then
-		return;
-	end
-
 	if not self.hoverSoundPlayed then
 		self.hoverSoundPlayed = true;
 		PlaySound(SOUNDKIT.ACCOUNT_STORE_ITEM_HOVER);
 	end
 
+	local itemInfo = self.itemInfo;
 	local description = itemInfo.description;
 	if not description then
 		return;
@@ -114,7 +110,7 @@ function AccountStoreBaseCardMixin:OnEvent(event, ...)
 		self:UpdateCardDisplay();
 	elseif event == "ACCOUNT_STORE_ITEM_INFO_UPDATED" then
 		local itemID = ...;
-		if itemID == self.itemID then
+		if itemID == self.itemInfo.id then
 			self:SetItemID(itemID);
 		end
 	end
@@ -165,13 +161,9 @@ function AccountStoreBaseCardMixin:SetItemID(itemID)
 end
 
 function AccountStoreBaseCardMixin:SelectCard()
-	local itemInfo = self.itemInfo;
-	if not itemInfo then
-		return;
-	end
-
 	PlaySound(SOUNDKIT.ACCOUNT_STORE_ITEM_SELECT);
 
+	local itemInfo = self.itemInfo;
 	local isRefundable = itemInfo.status == Enum.AccountStoreItemStatus.Refundable;
 	local confirmationFormat = isRefundable and ACCOUNT_STORE_REFUND_CONFIRMATION_FORMAT or PLUNDERSTORE_PURCHASE_CONFIRMATION_FORMAT;
 	local confirmation = confirmationFormat:format(itemInfo.name, AccountStoreUtil.FormatCurrencyDisplay(itemInfo.price, itemInfo.currencyID));
@@ -201,7 +193,7 @@ function AccountStoreBaseCardMixin:CheckForItemStateUpdate()
 
 	refreshedItemInfo.status = Enum.AccountStoreItemStatus.Refundable;
 
-	if not self.itemInfo or (refreshedItemInfo.status ~= self.itemInfo.status) then
+	if refreshedItemInfo.status ~= self.itemInfo.status then
 		self:SetItemID(self.itemID);
 	elseif refreshedItemInfo.refundSecondsRemaining ~= self.itemInfo.refundSecondsRemaining then
 		self.itemInfo.refundSecondsRemaining = refreshedItemInfo.refundSecondsRemaining;
@@ -211,10 +203,6 @@ end
 
 function AccountStoreBaseCardMixin:UpdateRefundTime()
 	local itemInfo = self.itemInfo;
-	if not itemInfo then
-		return;
-	end
-
 	local refundable = (itemInfo.status == Enum.AccountStoreItemStatus.Refundable) and itemInfo.refundSecondsRemaining;
 	self.RefundText:SetShown(refundable);
 	self:SetScript("OnUpdate", refundable and self.OnUpdate or nil);

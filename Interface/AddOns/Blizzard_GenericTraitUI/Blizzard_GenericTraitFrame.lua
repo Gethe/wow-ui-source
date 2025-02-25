@@ -11,9 +11,11 @@ local GenericTraitFrameLayoutOptions = {
 	-- now we're just going to use what we have.
 	Default = {
 		NineSliceTextureKit = "thewarwithin",
+		NineSliceFormatString = "ui-frame-%s-border",
 		TitleDividerAtlas = "dragonriding-talents-line",
 		BackgroundAtlas = "ui-frame-thewarwithin-backgroundtile",
 		HeaderSize = { Width = 500, Height = 50 },
+		FrameSize = { Width = 650, Height = 750 },
 		ShowInset = false,
 		HeaderOffset = { x = 0, y = -30 },
 		CurrencyOffset = { x = 0, y = -20 },
@@ -50,6 +52,14 @@ local GenericTraitFrameLayoutOptions = {
 	TheVizier = {
 		Title = GENERIC_TRAIT_FRAME_THE_VIZIER_TITLE,
 	},
+
+	DRIVE = {
+		NineSliceFormatString = "ui-frame-%s-border-small",
+		Title = GENERIC_TRAIT_FRAME_DRIVE_TITLE,
+		HeaderSize = { Width = 250, Height = 50 },
+		PanOffset = { x = 140, y = -35 },
+		FrameSize = { Width = 350, Height = 575 },
+	},
 };
 
 local GenericTraitFrameLayouts = {
@@ -66,6 +76,9 @@ local GenericTraitFrameLayouts = {
 
 	-- Pact: The Vizier
 	[1046] = GenericTraitFrameLayoutOptions.TheVizier,
+
+	-- D.R.I.V.E
+	[1056] = GenericTraitFrameLayoutOptions.DRIVE,
 };
 
 function GetGenericTraitFrameLayoutInfo(treeID)
@@ -130,6 +143,7 @@ function GenericTraitFrameMixin:OnLoad()
 end
 
 function GenericTraitFrameMixin:ApplyLayout(layoutInfo)
+	self:SetSize(layoutInfo.FrameSize.Width, layoutInfo.FrameSize.Height);
 	self.Background:SetAtlas(layoutInfo.BackgroundAtlas);
 	self.Header.Title:SetText(layoutInfo.Title or "");
 	self.Header:SetSize(layoutInfo.HeaderSize.Width, layoutInfo.HeaderSize.Height);
@@ -147,8 +161,7 @@ function GenericTraitFrameMixin:ApplyLayout(layoutInfo)
 	self.BorderOverlay:SetShown(useNewNineSlice);
 
 	if useNewNineSlice then
-		local borderFrameTextureKitRegion = "UI-Frame-%s-Border";
-		self.BorderOverlay:SetAtlas(borderFrameTextureKitRegion:format(layoutInfo.NineSliceTextureKit));
+		self.BorderOverlay:SetAtlas(layoutInfo.NineSliceFormatString:format(layoutInfo.NineSliceTextureKit));
 	else
 		self.NineSlice.DetailTop:SetAtlas(layoutInfo.DetailTopAtlas, true);
 		if layoutInfo.NineSliceTextureKit ~= nil then

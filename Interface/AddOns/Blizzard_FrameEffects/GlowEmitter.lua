@@ -42,4 +42,4 @@ function GlowEmitterFactory:Attach(frame, target, offsetX, offsetY, width, heigh
 	frame:SetPoint("RIGHT", target, offsetX, offsetY);
 end
 
-GlowEmitterFactory:Init("Frame", "GlowEmitterTemplate", "DIALOG");
+GlowEmitterFactory:Init("Frame", "GlowEmitterTemplate");

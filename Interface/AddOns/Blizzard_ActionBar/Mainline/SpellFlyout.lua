@@ -1,11 +1,20 @@
 
 local SPELLFLYOUT_DEFAULT_SPACING = 4;
-local SPELLFLYOUT_INITIAL_SPACING = 7;
+local SPELLFLYOUT_INITIAL_SPACING = 9;
 local SPELLFLYOUT_FINAL_SPACING = 9;
 
 SpellFlyoutOpenReason = EnumUtil.MakeEnum("GlyphPending", "GlyphActivated");
 
-function SpellFlyoutButton_OnClick(self)
+SpellFlyoutPopupButtonMixin = {};
+
+function SpellFlyoutPopupButtonMixin:OnLoad()
+	self:RegisterForDrag("LeftButton");
+	_G[self:GetName().."Count"]:SetPoint("BOTTOMRIGHT", 0, 0);
+	self.maxDisplayCount = 99;
+end
+
+function SpellFlyoutPopupButtonMixin:OnClick()
+	EventRegistry:TriggerEvent("SpellFlyoutPopupButtonMixin.OnClick", self);
 
 	if ( IsModifiedClick("CHATLINK") ) then
 		if ( MacroFrameText and MacroFrameText:HasFocus() ) then
@@ -21,7 +30,7 @@ function SpellFlyoutButton_OnClick(self)
 				ChatEdit_InsertLink(spellLink);
 			end
 		end
-		SpellFlyoutButton_UpdateState(self);
+		self:UpdateState();
 	else
 		if ( HasPendingGlyphCast() ) then
 			if ( HasAttachedGlyph(self.spellID) ) then
@@ -40,31 +49,31 @@ function SpellFlyoutButton_OnClick(self)
 			return;
 		elseif ( spellID ) then
 			CastSpellByID(spellID);
-			self:GetParent():Hide();
+			self:ClosePopup();
 		elseif ( self.spellName ) then
 			CastSpellByName(self.spellName);
-			self:GetParent():Hide();
+			self:ClosePopup();
 		end
 	end
 end
 
-function SpellFlyoutButton_OnDrag(self)
-	if (not self:GetParent().isActionBar or not Settings.GetValue("lockActionBars") or IsModifiedClick("PICKUPACTION")) then
+function SpellFlyoutPopupButtonMixin:OnDragStart()
+	if (not self.isActionBar or not Settings.GetValue("lockActionBars") or IsModifiedClick("PICKUPACTION")) then
 		if (self.spellID) then
 			C_Spell.PickupSpell(self.spellID);
 		end
 	end
 end
 
-function SpellFlyoutButton_SetTooltip(self)
+function SpellFlyoutPopupButtonMixin:SetTooltip()
 	if ( GetCVar("UberTooltips") == "1" or self.showFullTooltip ) then
-		if (SpellFlyout.isActionBar) then
+		if (self.isActionBar) then
 			GameTooltip_SetDefaultAnchor(GameTooltip, self);
 		else
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 4, 4);
 		end
 		if ( GameTooltip:SetSpellByID(self.spellID) ) then
-			self.UpdateTooltip = SpellFlyoutButton_SetTooltip;
+			self.UpdateTooltip = self.SetTooltip;
 		else
 			self.UpdateTooltip = nil;
 		end
@@ -81,11 +90,15 @@ function SpellFlyoutButton_SetTooltip(self)
 	end
 end
 
-function SpellFlyoutButton_UpdateCooldown(self)
+function SpellFlyoutPopupButtonMixin:OnLeave()
+	GameTooltip:Hide();
+end
+
+function SpellFlyoutPopupButtonMixin:UpdateCooldown()
 	ActionButton_UpdateCooldown(self);
 end
 
-function SpellFlyoutButton_UpdateState(self)
+function SpellFlyoutPopupButtonMixin:UpdateState()
 	if ( C_Spell.IsCurrentSpell(self.spellID) ) then
 		self:SetChecked(true);
 	else
@@ -93,11 +106,11 @@ function SpellFlyoutButton_UpdateState(self)
 	end
 end
 
-function SpellFlyoutButton_UpdateUsable(self)
+function SpellFlyoutPopupButtonMixin:UpdateUsable()
 	local isUsable, notEnoughMana = C_Spell.IsSpellUsable(self.spellID);
 	local name = self:GetName();
 	local icon = _G[name.."Icon"];
-	if ( isUsable or not self:GetParent().isActionBar) then
+	if ( isUsable or not self.isActionBar) then
 		icon:SetVertexColor(1.0, 1.0, 1.0);
 	elseif ( notEnoughMana ) then
 		icon:SetVertexColor(0.5, 0.5, 1.0);
@@ -106,7 +119,7 @@ function SpellFlyoutButton_UpdateUsable(self)
 	end
 end
 
-function SpellFlyoutButton_UpdateGlyphState(self, reason)
+function SpellFlyoutPopupButtonMixin:UpdateGlyphState(reason)
 	self.GlyphIcon:SetShown(HasAttachedGlyph(self.spellID));
 	if (HasPendingGlyphCast() and IsSpellValidForPendingGlyph(self.spellID)) then
 		self.AbilityHighlight:Show();
@@ -130,7 +143,7 @@ function SpellFlyoutButton_UpdateGlyphState(self, reason)
 	end
 end
 
-function SpellFlyoutButton_UpdateCount (self)
+function SpellFlyoutPopupButtonMixin:UpdateCount()
 	local text = _G[self:GetName().."Count"];
 	if ( IsConsumableSpell(self.spellID)) then
 		local count = C_Spell.GetSpellCastCount(self.spellID);
@@ -144,102 +157,91 @@ function SpellFlyoutButton_UpdateCount (self)
 	end
 end
 
-function SpellFlyout_OnLoad(self)
-	self.Toggle = SpellFlyout_Toggle;
-	self.SetBorderColor = SpellFlyout_SetBorderColor;
-	self.SetBorderSize = SpellFlyout_SetBorderSize;
-	self.GetFlyoutButtonForSpell = SpellFlyout_GetFlyoutButtonForSpell;
+SpellFlyoutMixin = {};
+
+function SpellFlyoutMixin:OnLoad()
 	self.eventsRegistered = false;
 end
 
-function SpellFlyout_OnEvent(self, event, ...)
+function SpellFlyoutMixin:OnEvent(event, ...)
 	if (event == "SPELL_UPDATE_COOLDOWN") then
 		local i = 1;
-		local button = _G["SpellFlyoutButton"..i];
+		local button = _G["SpellFlyoutPopupButton"..i];
 		while (button and button:IsShown()) do
-			SpellFlyoutButton_UpdateCooldown(button);
+			button:UpdateCooldown();
 			i = i+1;
-			button = _G["SpellFlyoutButton"..i];
+			button = _G["SpellFlyoutPopupButton"..i];
 		end
 	elseif (event == "CURRENT_SPELL_CAST_CHANGED") then
 		local i = 1;
-		local button = _G["SpellFlyoutButton"..i];
+		local button = _G["SpellFlyoutPopupButton"..i];
 		while (button and button:IsShown()) do
-			SpellFlyoutButton_UpdateState(button);
+			button:UpdateState();
 			i = i+1;
-			button = _G["SpellFlyoutButton"..i];
+			button = _G["SpellFlyoutPopupButton"..i];
 		end
 	elseif (event == "SPELL_UPDATE_USABLE") then
 		local i = 1;
-		local button = _G["SpellFlyoutButton"..i];
+		local button = _G["SpellFlyoutPopupButton"..i];
 		while (button and button:IsShown()) do
-			SpellFlyoutButton_UpdateUsable(button);
+			button:UpdateUsable();
 			i = i+1;
-			button = _G["SpellFlyoutButton"..i];
+			button = _G["SpellFlyoutPopupButton"..i];
 		end
 	elseif (event == "BAG_UPDATE") then
 		local i = 1;
-		local button = _G["SpellFlyoutButton"..i];
+		local button = _G["SpellFlyoutPopupButton"..i];
 		while (button and button:IsShown()) do
-			SpellFlyoutButton_UpdateCount(button);
-			SpellFlyoutButton_UpdateUsable(button);
+			button:UpdateCount();
+			button:UpdateUsable();
 			i = i+1;
-			button = _G["SpellFlyoutButton"..i];
+			button = _G["SpellFlyoutPopupButton"..i];
 		end
 	elseif (event == "SPELL_FLYOUT_UPDATE") then
 		local i = 1;
-		local button = _G["SpellFlyoutButton"..i];
+		local button = _G["SpellFlyoutPopupButton"..i];
 		while (button and button:IsShown()) do
-			SpellFlyoutButton_UpdateCooldown(button);
-			SpellFlyoutButton_UpdateState(button);
-			SpellFlyoutButton_UpdateUsable(button);
-			SpellFlyoutButton_UpdateCount(button);
-			SpellFlyoutButton_UpdateGlyphState(button);
+			button:UpdateCooldown();
+			button:UpdateState();
+			button:UpdateUsable();
+			button:UpdateCount();
+			button:UpdateGlyphState();
 			i = i+1;
-			button = _G["SpellFlyoutButton"..i];
+			button = _G["SpellFlyoutPopupButton"..i];
 		end
 	elseif (event == "PET_STABLE_UPDATE" or event == "PET_STABLE_SHOW") then
-		self:Hide();
+		self:Close();
 	elseif (event == "ACTIONBAR_PAGE_CHANGED") then
-		self:Hide();
+		self:Close();
 	end
 end
 
-function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActionBar, specID, showFullTooltip, reason)
-	if (self:IsShown() and self:GetParent() == parent) then
-		self.glyphActivating = false;
-		self:Hide();
-		return;
-	end
-
+function SpellFlyoutMixin:Toggle(flyoutButton, flyoutID, isActionBar, specID, showFullTooltip, reason)
 	if (self:IsShown() and self.glyphActivating) then
 		return;
 	end
 
+	if self:IsShown() then
+		local sameButton = self:IsAttachedToButton(flyoutButton);
+
+		self:Close();
+
+		if sameButton then
+			return;
+		end
+	end
+
 	local offSpec = specID and (specID ~= 0);
 
-	-- Save previous parent to update at the end
-	local oldParent = self:GetParent();
-	local oldIsActionBar = self.isActionBar;
-
 	local _, _, numSlots, isKnown = GetFlyoutInfo(flyoutID);
-	self:SetParent(parent);
 	self.isActionBar = isActionBar;
 
 	-- Make sure this flyout is known or we are showing an offSpec flyout
 	if ((not isKnown and not offSpec) or numSlots == 0) then
-		self:Hide();
 		return;
 	end
 
-	if (not direction) then
-		direction = "UP";
-	end
-
-	-- If you're on an action bar then base your direction on the action bar's orientation and position
-	if (isActionBar) then
-		direction = parent.bar:GetSpellFlyoutDirection();
-	end
+	local direction = flyoutButton:GetPopupDirection();
 
 	-- Update all spell buttons for this flyout
 	local prevButton = nil;
@@ -255,9 +257,9 @@ function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActio
 		end
 
 		if ( ((not offSpec or slotSpecID == 0) and visible and isKnownSlot) or (offSpec and slotSpecID == specID) ) then
-			local button = _G["SpellFlyoutButton"..numButtons+1];
+			local button = _G["SpellFlyoutPopupButton"..numButtons+1];
 			if (not button) then
-				button = CreateFrame("CHECKBUTTON", "SpellFlyoutButton"..numButtons+1, SpellFlyout, "SpellFlyoutButtonTemplate");
+				button = CreateFrame("CHECKBUTTON", "SpellFlyoutPopupButton"..numButtons+1, SpellFlyout, "SpellFlyoutPopupButtonTemplate");
 			end
 
 			button:ClearAllPoints();
@@ -289,6 +291,7 @@ function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActio
 
 			button:Show();
 			button.showFullTooltip = showFullTooltip;
+			button.isActionBar = isActionBar;
 
 			_G[button:GetName().."Icon"]:SetTexture(C_Spell.GetSpellTexture(overrideSpellID));
 			_G[button:GetName().."Icon"]:SetDesaturated(offSpec);
@@ -300,11 +303,11 @@ function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActio
 			else
 				button:Enable();
 			end
-			SpellFlyoutButton_UpdateCooldown(button);
-			SpellFlyoutButton_UpdateState(button);
-			SpellFlyoutButton_UpdateUsable(button);
-			SpellFlyoutButton_UpdateCount(button);
-			SpellFlyoutButton_UpdateGlyphState(button, reason);
+			button:UpdateCooldown();
+			button:UpdateState();
+			button:UpdateUsable();
+			button:UpdateCount();
+			button:UpdateGlyphState(reason);
 
 			prevButton = button;
 			numButtons = numButtons+1;
@@ -313,96 +316,31 @@ function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActio
 
 	-- Hide unused buttons
 	local unusedButtonIndex = numButtons+1;
-	while (_G["SpellFlyoutButton"..unusedButtonIndex]) do
-		_G["SpellFlyoutButton"..unusedButtonIndex]:Hide();
+	while (_G["SpellFlyoutPopupButton"..unusedButtonIndex]) do
+		_G["SpellFlyoutPopupButton"..unusedButtonIndex]:Hide();
 		unusedButtonIndex = unusedButtonIndex+1;
 	end
 
 	if (numButtons == 0) then
-		self:Hide();
 		return;
 	end
 
-	-- Show the flyout
 	self:SetFrameStrata("DIALOG");
-	self:ClearAllPoints();
-
-	if (not distance) then
-		distance = 0;
-	end
-
-	self.Background.End:ClearAllPoints();
-	self.Background.Start:ClearAllPoints();
-	if (direction == "UP") then
-		self:SetPoint("BOTTOM", parent, "TOP");
-		self.Background.End:SetPoint("TOP", 0, SPELLFLYOUT_INITIAL_SPACING);
-		SetClampedTextureRotation(self.Background.End, 0);
-		SetClampedTextureRotation(self.Background.VerticalMiddle, 0);
-		self.Background.Start:SetPoint("TOP", self.Background.VerticalMiddle, "BOTTOM");
-		SetClampedTextureRotation(self.Background.Start, 0);
-		self.Background.HorizontalMiddle:Hide();
-		self.Background.VerticalMiddle:Show();
-		self.Background.VerticalMiddle:ClearAllPoints();
-		self.Background.VerticalMiddle:SetPoint("TOP", self.Background.End, "BOTTOM");
-		self.Background.VerticalMiddle:SetPoint("BOTTOM", 0, distance);
-	elseif (direction == "DOWN") then
-		self:SetPoint("TOP", parent, "BOTTOM");
-		self.Background.End:SetPoint("BOTTOM", 0, -SPELLFLYOUT_INITIAL_SPACING);
-		SetClampedTextureRotation(self.Background.End, 180);
-		SetClampedTextureRotation(self.Background.VerticalMiddle, 180);
-		self.Background.Start:SetPoint("BOTTOM", self.Background.VerticalMiddle, "TOP");
-		SetClampedTextureRotation(self.Background.Start, 180);
-		self.Background.HorizontalMiddle:Hide();
-		self.Background.VerticalMiddle:Show();
-		self.Background.VerticalMiddle:ClearAllPoints();
-		self.Background.VerticalMiddle:SetPoint("BOTTOM", self.Background.End, "TOP");
-		self.Background.VerticalMiddle:SetPoint("TOP", 0, -distance);
-	elseif (direction == "LEFT") then
-		self:SetPoint("RIGHT", parent, "LEFT");
-		self.Background.End:SetPoint("LEFT", -SPELLFLYOUT_INITIAL_SPACING, 0);
-		SetClampedTextureRotation(self.Background.End, 270);
-		SetClampedTextureRotation(self.Background.HorizontalMiddle, 180);
-		self.Background.Start:SetPoint("LEFT", self.Background.HorizontalMiddle, "RIGHT");
-		SetClampedTextureRotation(self.Background.Start, 270);
-		self.Background.VerticalMiddle:Hide();
-		self.Background.HorizontalMiddle:Show();
-		self.Background.HorizontalMiddle:ClearAllPoints();
-		self.Background.HorizontalMiddle:SetPoint("LEFT", self.Background.End, "RIGHT");
-		self.Background.HorizontalMiddle:SetPoint("RIGHT", -distance, 0);
-	elseif (direction == "RIGHT") then
-		self:SetPoint("LEFT", parent, "RIGHT");
-		self.Background.End:SetPoint("RIGHT", SPELLFLYOUT_INITIAL_SPACING, 0);
-		SetClampedTextureRotation(self.Background.End, 90);
-		SetClampedTextureRotation(self.Background.HorizontalMiddle, 0);
-		self.Background.Start:SetPoint("RIGHT", self.Background.HorizontalMiddle, "LEFT");
-		SetClampedTextureRotation(self.Background.Start, 90);
-		self.Background.VerticalMiddle:Hide();
-		self.Background.HorizontalMiddle:Show();
-		self.Background.HorizontalMiddle:ClearAllPoints();
-		self.Background.HorizontalMiddle:SetPoint("RIGHT", self.Background.End, "LEFT");
-		self.Background.HorizontalMiddle:SetPoint("LEFT", distance, 0);
-	end
-
+	self:SetWidthPadding(8);
+	self:SetHeightPadding(8);
 	self:Layout();
-
-	self.direction = direction;
 	self:SetBorderColor(0.7, 0.7, 0.7);
-	self:SetBorderSize(47);
 
-	self:Show();
-
-	if (oldParent and oldIsActionBar) then
-		oldParent:UpdateFlyout();
-	end
+	flyoutButton:TogglePopup();
 end
 
-function SpellFlyout_HideIfWorldMapMaximized(self)
+function SpellFlyoutMixin:CloseIfWorldMapMaximized()
 	if (WorldMapFrame:IsMaximized()) then
-		self:Hide();
+		self:Close();
 	end
 end
 
-function SpellFlyout_OnShow(self)
+function SpellFlyoutMixin:OnShow()
 	if (self.eventsRegistered == false) then
 		self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
 		self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED");
@@ -412,16 +350,15 @@ function SpellFlyout_OnShow(self)
 		self:RegisterEvent("PET_STABLE_UPDATE");
 		self:RegisterEvent("PET_STABLE_SHOW");
 		self:RegisterEvent("SPELL_FLYOUT_UPDATE");
-		EventRegistry:RegisterCallback("WorldMapMaximized", self.Hide, self);
-		EventRegistry:RegisterCallback("WorldMapOnShow", SpellFlyout_HideIfWorldMapMaximized, self);
+		EventRegistry:RegisterCallback("WorldMapMaximized", self.Close, self);
+		EventRegistry:RegisterCallback("WorldMapOnShow", self.CloseIfWorldMapMaximized, self);
 		self.eventsRegistered = true;
-	end
-	if (self.isActionBar) then
-		self:GetParent():UpdateFlyout();
 	end
 end
 
-function SpellFlyout_OnHide(self)
+function SpellFlyoutMixin:OnHide()
+	FlyoutPopupMixin.OnHide(self);
+
 	if (self.eventsRegistered == true) then
 		self:UnregisterEvent("SPELL_UPDATE_COOLDOWN");
 		self:UnregisterEvent("CURRENT_SPELL_CAST_CHANGED");
@@ -431,52 +368,27 @@ function SpellFlyout_OnHide(self)
 		self:UnregisterEvent("PET_STABLE_UPDATE");
 		self:UnregisterEvent("PET_STABLE_SHOW");
 		self:UnregisterEvent("SPELL_FLYOUT_UPDATE");
-		EventRegistry:UnregisterCallback("WorldMapMaximized", self.Hide);
-		EventRegistry:UnregisterCallback("WorldMapOnShow", SpellFlyout_HideIfWorldMapMaximized);
+		EventRegistry:UnregisterCallback("WorldMapMaximized", self.Close);
+		EventRegistry:UnregisterCallback("WorldMapOnShow", self.CloseIfWorldMapMaximized);
 		self.eventsRegistered = false;
 	end
-	if (self:IsShown()) then
-		self:Hide();
-	end
-	if (self.isActionBar) then
-		self:GetParent():UpdateFlyout();
-	end
+
+	self.glyphActivating = false;
 end
 
-function SpellFlyout_SetBorderColor(self, r, g, b)
-	self.Background.Start:SetVertexColor(r, g, b);
-	self.Background.HorizontalMiddle:SetVertexColor(r, g, b);
-	self.Background.VerticalMiddle:SetVertexColor(r, g, b);
-	self.Background.End:SetVertexColor(r, g, b);
-end
-
-function SpellFlyout_SetBorderSize(self, size)
-	if (not self.direction or self.direction == "UP" or self.direction == "DOWN") then
-		self.Background.Start:SetWidth(size);
-		self.Background.HorizontalMiddle:SetWidth(size);
-		self.Background.VerticalMiddle:SetWidth(size);
-		self.Background.End:SetWidth(size);
-	else
-		self.Background.Start:SetHeight(size);
-		self.Background.HorizontalMiddle:SetHeight(size);
-		self.Background.VerticalMiddle:SetHeight(size);
-		self.Background.End:SetHeight(size);
-	end
-end
-
-function SpellFlyout_GetFlyoutButtonForSpell(self, spellID)
+function SpellFlyoutMixin:GetFlyoutButtonForSpell(spellID)
 	if (not self:IsShown()) then
 		return nil;
 	end
 
 	local i = 1;
-	local button = _G["SpellFlyoutButton"..i];
+	local button = _G["SpellFlyoutPopupButton"..i];
 	while (button and button:IsShown()) do
 		if (button.spellID == spellID) then
 			return button;
 		end
 		i = i+1;
-		button = _G["SpellFlyoutButton"..i];
+		button = _G["SpellFlyoutPopupButton"..i];
 	end
 	return nil;
 end

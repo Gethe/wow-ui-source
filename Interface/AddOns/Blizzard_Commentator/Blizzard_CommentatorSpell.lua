@@ -78,8 +78,7 @@ end
 function CommentatorSpellMixin:UsesItemCharges()
 	-- Special case to allow us to properly track/display Healthstones
 	-- We should always show the cooldown swipe to mimic the behavior of items in the action bar.
-	local healthstoneSpellID = 6262;
-	return self.spellCache and self.spellCache.spellID == healthstoneSpellID;
+	return self.spellCache and C_Commentator.SpellUsesItemCharges(self.spellCache.spellID);
 end
 
 

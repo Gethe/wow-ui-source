@@ -119,6 +119,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("UNIT_QUEST_LOG_CHANGED");
 	self:RegisterEvent("CURSOR_CHANGED");
 	self:RegisterEvent("LOCALPLAYER_PET_RENAMED");
+	self:RegisterEvent("SETTINGS_LOADED");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
 	self:RegisterEvent("DUEL_REQUESTED");
@@ -203,6 +204,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("CRAFTINGORDERS_SHOW_CRAFTER");
 	self:RegisterEvent("CRAFTINGORDERS_HIDE_CRAFTER");
 	self:RegisterEvent("PROFESSION_EQUIPMENT_CHANGED");
+	self:RegisterEvent("PROFESSION_RESPEC_CONFIRMATION");
 
 	-- Events for Item socketing UI
 	self:RegisterEvent("SOCKET_INFO_UPDATE");
@@ -1022,6 +1024,7 @@ COLLECTIONS_JOURNAL_TAB_INDEX_PETS = COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS + 1;
 COLLECTIONS_JOURNAL_TAB_INDEX_TOYS = COLLECTIONS_JOURNAL_TAB_INDEX_PETS + 1;
 COLLECTIONS_JOURNAL_TAB_INDEX_HEIRLOOMS = COLLECTIONS_JOURNAL_TAB_INDEX_TOYS + 1;
 COLLECTIONS_JOURNAL_TAB_INDEX_APPEARANCES = COLLECTIONS_JOURNAL_TAB_INDEX_HEIRLOOMS + 1;
+COLLECTIONS_JOURNAL_TAB_INDEX_WARBAND_SCENES = COLLECTIONS_JOURNAL_TAB_INDEX_APPEARANCES + 1;
 
 function ToggleCollectionsJournal(tabIndex)
 	if DISALLOW_FRAME_TOGGLING then
@@ -1599,12 +1602,12 @@ function UIParent_OnEvent(self, event, ...)
 			StaticPopup_Hide("EQUIP_BIND");
 			StaticPopup_Hide("EQUIP_BIND_TRADEABLE");
 		end
-	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
-		-- Get multi-actionbar states (before CloseAllWindows() since that may be hooked by AddOns)
+	elseif ( event == "SETTINGS_LOADED" ) then
+		-- Get multi-actionbar states
 		-- We don't want to call this, as the values GetActionBarToggles() returns are incorrect if it's called before the client mirrors SetActionBarToggles values from the server.
 		-- SHOW_MULTI_ACTIONBAR_1, SHOW_MULTI_ACTIONBAR_2, SHOW_MULTI_ACTIONBAR_3, SHOW_MULTI_ACTIONBAR_4 = GetActionBarToggles();
 		MultiActionBar_Update();
-
+	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		-- Close any windows that were previously open
 		CloseAllWindows(1);
 
@@ -1987,6 +1990,8 @@ function UIParent_OnEvent(self, event, ...)
 			};
 			HelpTip:Show(ProfessionsFrame.CraftingPage, helpTipInfo, ProfessionsFrame.CraftingPage);
 		end
+	elseif ( event == "PROFESSION_RESPEC_CONFIRMATION" ) then 
+		StaticPopup_Show("CONFIRM_PROFESSION_RESPEC", arg1);
 	-- Event for item socketing handling
 	elseif ( event == "SOCKET_INFO_UPDATE" ) then
 		ItemSocketingFrame_LoadUI();
@@ -2318,11 +2323,9 @@ function UIParent_OnEvent(self, event, ...)
 
 		ShowUIPanel(RuneforgeFrame);
 	elseif (event == "TRAIT_SYSTEM_INTERACTION_STARTED") then
-		-- TODO / NOTE : This is temporary, until we have a GameObject specifically for opening delves configuration.
-		--				 Until then, we're piggybacking off of the generic trait frame
 		local traitTreeID = ...;
-		local DELVES_TEST_TREE = 874;
-		if traitTreeID == DELVES_TEST_TREE then
+		--! TODO Getting companionID either from season data or player data has not been implemented yet. When done, pass companionID to this function
+		if traitTreeID == C_DelvesUI.GetTraitTreeForCompanion() then
 			ShowUIPanel(DelvesCompanionConfigurationFrame);
 		else
 			GenericTraitUI_LoadUI();
@@ -2468,107 +2471,6 @@ function UIParent_UpdateTopFramePositions()
 	if BuffFrame:IsInDefaultPosition() then
 		local y = -(buffOffset + 13)
 		BuffFrame:SetPoint("TOPRIGHT", MinimapCluster, "TOPLEFT", -10, y);
-	end
-end
-
-UIParentManagedFrameMixin = { };
-function UIParentManagedFrameMixin:OnShow()
-	self.layoutParent:AddManagedFrame(self);
-end
-
-function UIParentManagedFrameMixin:OnHide()
-	self.layoutParent:RemoveManagedFrame(self);
-end
-
-UIParentManagedFrameContainerMixin = {};
-
-function UIParentManagedFrameContainerMixin:OnLoad()
-	self.showingFrames = {};
-end
-
-function UIParentManagedFrameContainerMixin:UpdateFrame(frame)
-	frame:ClearAllPoints();
-	frame:SetParent(frame.layoutOnBottom and self.BottomManagedLayoutContainer or self);
-	self:Layout();
-	self.BottomManagedLayoutContainer:Layout();
-
-	if frame.isRightManagedFrame and ObjectiveTrackerFrame then
-		ObjectiveTrackerFrame:UpdateHeight();
-	end
-end
-
-function UIParentManagedFrameContainerMixin:AddManagedFrame(frame)
-	if frame.ignoreFramePositionManager then
-		return;
-	end
-
-	if frame.IsInDefaultPosition and not frame:IsInDefaultPosition() then
-		return;
-	end
-
-	if not frame:IsShown() then
-		return;
-	end
-
-	self.showingFrames[frame] = frame;
-	self:UpdateFrame(frame);
-end
-
-function UIParentManagedFrameContainerMixin:UpdateManagedFrames()
-	for _, frame in pairs(self.showingFrames) do
-		if frame then
-			self:UpdateFrame(frame);
-		end
-	end
-
-	self:AnimInManagedFrames();
-end
-
-function UIParentManagedFrameContainerMixin:ClearManagedFrames()
-	self:AnimOutManagedFrames();
-end
-
-function UIParentManagedFrameContainerMixin:RemoveManagedFrame(frame)
-	if not self.showingFrames[frame] then
-		return;
-	end
-	self.showingFrames[frame] = nil;
-
-	if not frame.IsInDefaultPosition then
-		frame:ClearAllPoints();
-	end
-
-	if ObjectiveTrackerFrame then
-		ObjectiveTrackerFrame:UpdateHeight();
-	end
-
-	self:Layout();
-	self.BottomManagedLayoutContainer:Layout();
-end
-
-function UIParentManagedFrameContainerMixin:UpdateManagedFramesAlphaState()
-	local isActionBarOverriden = OverrideActionBar and OverrideActionBar:IsShown();
-	for frame in pairs(self.showingFrames) do
-		if(frame.hideWhenActionBarIsOverriden) then
-			local setToAlpha = isActionBarOverriden and 0 or 1;
-			local currentFrameAlpha = frame:GetAlpha();
-			if(setToAlpha ~= currentFrameAlpha) then
-				frame:SetAlpha(setToAlpha);
-			end
-		end
-	end
-end
-
---Aubrie TODO determine if we want to actually apply a fade out for pet battles?
-function UIParentManagedFrameContainerMixin:AnimOutManagedFrames()
-	for frame in pairs(self.showingFrames) do
-		frame:SetAlpha(0);
-	end
-end
-
-function UIParentManagedFrameContainerMixin:AnimInManagedFrames()
-	for frame in pairs(self.showingFrames) do
-		frame:SetAlpha(1);
 	end
 end
 
@@ -2938,103 +2840,6 @@ function AnimateTexCoords(texture, textureWidth, textureHeight, frameWidth, fram
 		texture.throttle = texture.throttle + elapsed;
 	end
 end
-
-
--- Bindings --
-function GetBindingFullInput(input)
-	local fullInput = "";
-
-	-- MUST BE IN THIS ORDER (ALT, CTRL, SHIFT, META)
-	if ( IsAltKeyDown() ) then
-		fullInput = fullInput.."ALT-";
-	end
-
-	if ( IsControlKeyDown() ) then
-		fullInput = fullInput.."CTRL-"
-	end
-
-	if ( IsShiftKeyDown() ) then
-		fullInput = fullInput.."SHIFT-"
-	end
-
-	 if ( IsMetaKeyDown() ) then
-		 fullInput = fullInput.."META-"
-	 end
-
-	if ( input == "LeftButton" ) then
-		fullInput = fullInput.."BUTTON1";
-	elseif ( input == "RightButton" ) then
-		fullInput = fullInput.."BUTTON2";
-	elseif ( input == "MiddleButton" ) then
-		fullInput = fullInput.."BUTTON3";
-	elseif ( input == "Button4" ) then
-		fullInput = fullInput.."BUTTON4";
-	elseif ( input == "Button5" ) then
-		fullInput = fullInput.."BUTTON5";
-	elseif ( input == "Button6" ) then
-		fullInput = fullInput.."BUTTON6";
-	elseif ( input == "Button7" ) then
-		fullInput = fullInput.."BUTTON7";
-	elseif ( input == "Button8" ) then
-		fullInput = fullInput.."BUTTON8";
-	elseif ( input == "Button9" ) then
-		fullInput = fullInput.."BUTTON9";
-	elseif ( input == "Button10" ) then
-		fullInput = fullInput.."BUTTON10";
-	elseif ( input == "Button11" ) then
-		fullInput = fullInput.."BUTTON11";
-	elseif ( input == "Button12" ) then
-		fullInput = fullInput.."BUTTON12";
-	elseif ( input == "Button13" ) then
-		fullInput = fullInput.."BUTTON13";
-	elseif ( input == "Button14" ) then
-		fullInput = fullInput.."BUTTON14";
-	elseif ( input == "Button15" ) then
-		fullInput = fullInput.."BUTTON15";
-	elseif ( input == "Button16" ) then
-		fullInput = fullInput.."BUTTON16";
-	elseif ( input == "Button17" ) then
-		fullInput = fullInput.."BUTTON17";
-	elseif ( input == "Button18" ) then
-		fullInput = fullInput.."BUTTON18";
-	elseif ( input == "Button19" ) then
-		fullInput = fullInput.."BUTTON19";
-	elseif ( input == "Button20" ) then
-		fullInput = fullInput.."BUTTON20";
-	elseif ( input == "Button21" ) then
-		fullInput = fullInput.."BUTTON21";
-	elseif ( input == "Button22" ) then
-		fullInput = fullInput.."BUTTON22";
-	elseif ( input == "Button23" ) then
-		fullInput = fullInput.."BUTTON23";
-	elseif ( input == "Button24" ) then
-		fullInput = fullInput.."BUTTON24";
-	elseif ( input == "Button25" ) then
-		fullInput = fullInput.."BUTTON25";
-	elseif ( input == "Button26" ) then
-		fullInput = fullInput.."BUTTON26";
-	elseif ( input == "Button27" ) then
-		fullInput = fullInput.."BUTTON27";
-	elseif ( input == "Button28" ) then
-		fullInput = fullInput.."BUTTON28";
-	elseif ( input == "Button29" ) then
-		fullInput = fullInput.."BUTTON29";
-	elseif ( input == "Button30" ) then
-		fullInput = fullInput.."BUTTON30";
-	elseif ( input == "Button31" ) then
-		fullInput = fullInput.."BUTTON31";
-	else
-		fullInput = fullInput..input;
-	end
-
-	return fullInput;
-end
-
-function GetBindingFromClick(input)
-	local fullInput = GetBindingFullInput(input);
-	return GetBindingByKey(fullInput);
-end
-
 
 -- Game Logic --
 
@@ -3550,7 +3355,8 @@ end
 
 
 function ConsolePrint(...)
-	ConsoleAddMessage(string.join(" ", tostringall(...)));
+	local printMsg = string.join(" ", tostringall(...));
+	C_Log.LogMessage(Enum.LogPriority.Normal, printMsg);
 end
 
 function LFD_IsEmpowered()
@@ -3698,27 +3504,30 @@ function AbbreviateLargeNumbers(value)
 end
 
 NUMBER_ABBREVIATION_DATA = {
-	-- Order these from largest to smallest
-	-- (significandDivisor and fractionDivisor should multiply to be equal to breakpoint)
+	-- Order these from largest to smallest.
+	--
+	-- significandDivisor and fractionDivisor should multiply such that they
+	-- become equal to a named order of magnitude, such as thousands or
+	-- millions.
+	--
+	-- Breakpoints should generally be specified as pairs, with one at the
+	-- named order (1,000) with fractionDivisor = 10, and one a single order
+	-- higher (eg. 10,000) with fractionDivisor = 1.
+	--
+	-- This ruleset means numbers like "1234" will be abbreviated to "1.2k"
+	-- and numbers like "12345" to "12k".
+	--
+	-- Note that this table may be overridden in Localization!
+
 	{ breakpoint = 10000000000000,	abbreviation = FOURTH_NUMBER_CAP_NO_SPACE,		significandDivisor = 1000000000000,	fractionDivisor = 1 },
 	{ breakpoint = 1000000000000,	abbreviation = FOURTH_NUMBER_CAP_NO_SPACE,		significandDivisor = 100000000000,	fractionDivisor = 10 },
 	{ breakpoint = 10000000000,		abbreviation = THIRD_NUMBER_CAP_NO_SPACE,		significandDivisor = 1000000000,	fractionDivisor = 1 },
-	{ breakpoint = 1000000000,		abbreviation = THIRD_NUMBER_CAP_NO_SPACE,		significandDivisor = 100000000,	fractionDivisor = 10 },
-	{ breakpoint = 10000000,		abbreviation = SECOND_NUMBER_CAP_NO_SPACE,		significandDivisor = 1000000,	fractionDivisor = 1 },
+	{ breakpoint = 1000000000,		abbreviation = THIRD_NUMBER_CAP_NO_SPACE,		significandDivisor = 100000000,		fractionDivisor = 10 },
+	{ breakpoint = 10000000,		abbreviation = SECOND_NUMBER_CAP_NO_SPACE,		significandDivisor = 1000000,		fractionDivisor = 1 },
 	{ breakpoint = 1000000,			abbreviation = SECOND_NUMBER_CAP_NO_SPACE,		significandDivisor = 100000,		fractionDivisor = 10 },
-	{ breakpoint = 10000,			abbreviation = FIRST_NUMBER_CAP_NO_SPACE,		significandDivisor = 1000,		fractionDivisor = 1 },
-	{ breakpoint = 1000,			abbreviation = FIRST_NUMBER_CAP_NO_SPACE,		significandDivisor = 100,		fractionDivisor = 10 },
-}
-
-function AbbreviateNumbers(value)
-	for i, data in ipairs(NUMBER_ABBREVIATION_DATA) do
-		if value >= data.breakpoint then
-			local finalValue = math.floor(value / data.significandDivisor) / data.fractionDivisor;
-			return finalValue .. data.abbreviation;
-		end
-	end
-	return tostring(value);
-end
+	{ breakpoint = 10000,			abbreviation = FIRST_NUMBER_CAP_NO_SPACE,		significandDivisor = 1000,			fractionDivisor = 1 },
+	{ breakpoint = 1000,			abbreviation = FIRST_NUMBER_CAP_NO_SPACE,		significandDivisor = 100,			fractionDivisor = 10 },
+};
 
 function IsInLFDBattlefield()
 	return IsLFGModeActive(LE_LFG_CATEGORY_BATTLEFIELD);

@@ -513,10 +513,8 @@ function UIWidgetBaseSpellTemplateMixin:Setup(widgetContainer, spellInfo, width,
 	end
 
 	local spellData = C_Spell.GetSpellInfo(spellInfo.spellID);
-
 	self.Icon:SetTexture(spellData and spellData.iconID or [[Interface\Icons\INV_Misc_QuestionMark]]);
-	self.Icon:SetDesaturated(enabledState == Enum.WidgetEnabledState.Disabled);
-
+	self.Icon:SetDesaturated(spellInfo.enabledState == Enum.WidgetEnabledState.Disabled);
 	local iconSize = GetWidgetIconSize(spellInfo.iconSizeType);
 	self.Icon:SetSize(iconSize, iconSize);
 
@@ -621,7 +619,8 @@ function UIWidgetBaseSpellTemplateMixin:Setup(widgetContainer, spellInfo, width,
 	self.DebuffBorder:SetShown(spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Debuff);
 	self.IconMask:SetShown(spellInfo.iconDisplayType ~= Enum.SpellDisplayIconDisplayType.Circular);
 	self.CircleMask:SetShown(spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Circular);
-
+	self.EarnedCheck:SetShown(spellInfo.showAsEarned);
+	
 	local widgetHeight = math.max(self.Icon:GetHeight(), self.Text:GetHeight());
 	self:SetEnabledState(spellInfo.enabledState);
 	self.spellID = spellInfo.spellID;
@@ -711,7 +710,17 @@ local partitionTextureKitString = "%s-BorderTick";
 local partitionFullTextureKitString = "%s-BorderTick-Full";
 local partitionFlashTextureKitString = "%s-BorderTick-Flash";
 
+local partitionTextureKitOptions =
+{
+	["junkyard-scorebar"] = { useParentLevel = true },
+}
+
+local defaultPartitionTextureKitOptions = { useParentLevel = false };
+
 function UIWidgetBaseStatusBarPartitionTemplateMixin:Setup(partitionValue, textureKit)
+	local texKitOptions = partitionTextureKitOptions[textureKit] or defaultPartitionTextureKitOptions;
+	self:SetUsingParentLevel(texKitOptions.useParentLevel);
+
 	self.value = partitionValue;
 	self.textureKit = textureKit;
 	self.emptyAtlasName = partitionTextureKitString:format(textureKit);

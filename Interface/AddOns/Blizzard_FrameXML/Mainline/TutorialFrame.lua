@@ -256,6 +256,8 @@ function TutorialFrame_OnKeyDown(self, key)
 			TutorialFrame_Hide();
 		end
 	end
+
+	return true;
 end
 
 function TutorialFrame_OnMouseDown(self, button)
@@ -287,6 +289,8 @@ function TutorialFrame_OnMouseDown(self, button)
 	if (anyArrows and allOff) then
 		TutorialFrame_Hide();
 	end
+
+	return true;
 end
 
 function TutorialFrame_CheckNextPrevButtons()

@@ -105,6 +105,62 @@ function MapCanvasDataProviderMixin:HandleMouseAction(button, action)
 	return not overriden;
 end
 
+function MapCanvasDataProviderMixin:PingPin(idKey, id, frameLevelType, numLoops)
+	if self.pingPin then
+		self.pingPin:Stop();
+	end
+
+	local targetPin;
+	for pin in self:GetMap():EnumeratePinsByTemplate(self:GetPinTemplate()) do
+		if pin[idKey] == id then
+			targetPin = pin;
+			break;
+		end
+	end
+
+	if not targetPin then
+		return false;
+	end
+
+	if not self.pingPin then
+		self.pingPin = self:GetMap():AcquirePin("MapPinPingTemplate");
+		self.pingPin.dataProvider = self;
+		self.pingPin:UseFrameLevelType(frameLevelType);
+	end
+
+	self.pingPin:SetNumLoops(numLoops or 1);
+	self.pingPin:SetID(idKey, id);
+	local x, y = targetPin:GetPosition();
+	self.pingPin:PlayAt(x, y);
+
+	return true;
+end
+
+function MapCanvasDataProviderMixin:UpdatePing()
+	if not self.pingPin or not self.pingPin:IsActive() then
+		return;
+	end
+	
+	local idKey, id = self.pingPin:GetID();
+	local targetPin = self:GetPingTargetPin(idKey, id);
+	if not targetPin then
+		self.pingPin:Stop();
+		return;
+	end
+
+	local x, y = targetPin:GetPosition();
+	self.pingPin:PlayAt(x, y);
+end
+
+function MapCanvasDataProviderMixin:GetPingTargetPin(idKey, id)
+	for pin in self:GetMap():EnumeratePinsByTemplate(self:GetPinTemplate()) do
+		if pin[idKey] == id then
+			return pin;
+		end
+	end
+	return nil;
+end
+
 -- A base template for data providers that are enabled or disabled with a CVar, e.g. archaeology digsites.
 CVarMapCanvasDataProviderMixin = CreateFromMixins(MapCanvasDataProviderMixin);
 
@@ -134,7 +190,7 @@ function CVarMapCanvasDataProviderMixin:OnEvent(event, ...)
 end
 
 -- Provides a basic interface for something that is visible on the map canvas, like icons, blobs or text
-MapCanvasPinMixin = {};
+MapCanvasPinMixin = CreateFromMixins(TaggableObjectMixin);
 
 function MapCanvasPinMixin:OnLoad()
 	-- Override in your mixin, called when this pin is created
@@ -515,4 +571,32 @@ end
 
 function MapCanvasPinMixin:GetDebugInspectionSystem()
 	return "MapCanvasPin";
+end
+
+function MapCanvasPinMixin:IsPinSuppressor()
+	-- Override in your mixin
+	return false;
+end
+
+function MapCanvasPinMixin:IsSuppressed()
+	return self.pinSuppressor ~= nil;
+end
+
+function MapCanvasPinMixin:SetSuppressed(suppressor)
+	self.pinSuppressor = suppressor;
+	self:SetShown(suppressor == nil);
+end
+
+function MapCanvasPinMixin:ClearSuppression()
+	self:SetSuppressed(nil);
+end
+
+function MapCanvasPinMixin:GetPinSuppressor()
+	return self.pinSuppressor;
+end
+
+function MapCanvasPinMixin:GetDisplayName()
+	-- Override in your mixin if needed.
+	-- Purposefully asserting here because this should only be called when it can return useful info.
+	assertsafe(false);
 end

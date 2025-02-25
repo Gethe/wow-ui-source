@@ -88,7 +88,7 @@
 			<Layer level="ARTWORK">
 				<Texture parentKey="Divider" atlas="glues-characterSelect-cardDivider" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOP" x="5" y="-23"/>
+						<Anchor point="TOP" x="5" y="-16"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -112,46 +112,22 @@
 		<Frames>
 			<Frame parentKey="Arrow" inherits="CharacterServicesArrowTemplate" hidden="true">
 				<Anchors>
-					<Anchor point="RIGHT" relativePoint="LEFT"/>
+					<Anchor point="RIGHT" relativePoint="LEFT" x="37" y="0"/>
 				</Anchors>
 			</Frame>
-			<Button parentKey="PaidService" parentArray="PaidServiceButtons" mixin="CharacterSelectListPaidServiceMixin" hidden="true" motionScriptsWhileDisabled="true">
-				<Size x="64" y="64"/>
+            <Button parentKey="PaidServiceButton" mixin="PaidServiceButtonMixin" hidden="true">
+                <Size x="58" y="58"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativePoint="LEFT" x="-10" y="0"/>
+					<Anchor point="RIGHT" relativePoint="LEFT" x="-5" y="0"/>
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture parentKey="VASIcon" hidden="true">
-							<Size x="46" y="46"/>
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY">
-						<Texture parentKey="GoldBorder" atlas="services-icon-goldborder" useAtlasSize="true" hidden="true">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnClick method="OnClick"/>
-					<OnEnter method="OnEnter"/>
-					<OnLeave method="OnLeave"/>
-				</Scripts>
-				<NormalTexture parentKey="Texture" file="Interface\Buttons\UI-PaidCharacterCustomization-Button">
-					<TexCoords left="0" right=".5" top="0" bottom=".5"/>
-				</NormalTexture>
-				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD">
-					<Size x="46" y="46"/>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</HighlightTexture>
-			</Button>
+                <Scripts>
+                    <OnClick method="OnClick"/>
+                    <OnEnter method="OnEnter"/>
+                    <OnLeave method="OnLeave"/>
+                </Scripts>
+                <NormalTexture parentKey="NormalTexture"/>
+                <HighlightTexture parentKey="HighlightTexture"/>
+            </Button>
 			<Frame parentKey="RestoreCharacterServiceFrame" hidden="true">
 				<Size x="75" y="90"/>
 				<Anchors>

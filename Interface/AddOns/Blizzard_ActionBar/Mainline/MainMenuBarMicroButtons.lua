@@ -93,6 +93,8 @@ function ResetMicroMenuPosition()
 	MicroMenu:SetParent(MicroMenuContainer);
 	MicroMenu.stride = MicroMenu.numButtons;
 
+	MicroMenu:ClearOverrideScale();
+
 	local forceFullUpdate = true;
 	EditModeManagerFrame:UpdateSystem(MicroMenuContainer, forceFullUpdate);
 
@@ -100,7 +102,7 @@ function ResetMicroMenuPosition()
 end
 
 function OverrideMicroMenuPosition(parent, anchor, anchorTo, relAnchor, x, y, isStacked)
-	MicroMenu:SetScaleAdjustment(0.85);
+	MicroMenu:SetOverrideScale(0.85);
 	MicroMenu:SetParent(parent);
 
 	MicroMenu.isStacked = isStacked;
@@ -1693,7 +1695,7 @@ MicroMenuMixin = {};
 
 function MicroMenuMixin:OnLoad()
 	self:InitializeButtons();
-	self:SetScaleAdjustment(1);
+	self:SetNormalScale(1);
 end
 
 function MicroMenuMixin:InitializeButtons()
@@ -1848,13 +1850,28 @@ function MicroMenuMixin:Layout()
 	self:UpdateHelpTicketButtonAnchor(position);
 end
 
-function MicroMenuMixin:SetScaleAdjustment(scale)
+function MicroMenuMixin:UpdateScale()
+	local useScale = self.overrideScale or self.normalScale;
 	local featureScale = C_GameRules.GetGameRuleAsFloat(Enum.GameRule.MicrobarScale);
 	if featureScale ~= 0 then
-		self:SetScale(scale * featureScale);
+		self:SetScale(useScale * featureScale);
 	else
-		self:SetScale(scale);
+		self:SetScale(useScale);
 	end
+end
+
+function MicroMenuMixin:SetNormalScale(scale)
+	self.normalScale = scale;
+	self:UpdateScale();
+end
+
+function MicroMenuMixin:SetOverrideScale(overrideScale)
+	self.overrideScale = overrideScale;
+	self:UpdateScale();
+end
+
+function MicroMenuMixin:ClearOverrideScale()
+	self:SetOverrideScale(nil);
 end
 
 MicroMenuContainerMixin = {};

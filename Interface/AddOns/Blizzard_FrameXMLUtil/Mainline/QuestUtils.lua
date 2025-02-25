@@ -1073,18 +1073,3 @@ function QuestUtils_IsQuestWatched(questID)
 	return questID and C_QuestLog.GetQuestWatchType(questID) ~= nil;
 end
 
--- This determines the alpha of quest icons when a quest giver has a list of available quests
-function QuestUtil.GetAvailableQuestIconAlpha(questID)
-	local questIgnoresAccountCompletedFilter = C_QuestLog.QuestIgnoresAccountCompletedFiltering(questID);
-	-- We're making an assumption here:
-	-- If you're talking to an NPC with an available quest, then the map you're currently on is the correct map for the quest line (if the quest has one)
-	local uiMapID = C_Map.GetBestMapForUnit("player");
-	local questLineInfo = C_QuestLine.GetQuestLineInfo(questID, uiMapID);
-	local questLineIgnoresAccountCompletedFilter = (questLineInfo and uiMapID) and C_QuestLine.QuestLineIgnoresAccountCompletedFiltering(uiMapID, questLineInfo.questLineID) or false;
-	local isQuestAccountFiltered = not C_Minimap.IsTrackingAccountCompletedQuests() and not questIgnoresAccountCompletedFilter and not questLineIgnoresAccountCompletedFilter;
-	if C_QuestLog.IsQuestFlaggedCompletedOnAccount(questID) and isQuestAccountFiltered then
-		return 0.5;
-	end
-
-	return 1.0;
-end

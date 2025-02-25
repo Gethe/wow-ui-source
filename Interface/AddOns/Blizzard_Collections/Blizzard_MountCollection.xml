@@ -189,25 +189,25 @@
 		</Scripts>
 	</Button>
 
-	<Button name="DynamicFlightFlyoutButtonTemplate" virtual="true">
-		<Size x="30" y="30"/>
+	<Button name="DynamicFlightFlyoutPopupButtonTemplate" inherits="FlyoutPopupButtonTemplate" virtual="true">
+		<Size x="28" y="28"/>
 		<KeyValues>
 			<KeyValue key="align" value="center" type="string"/>
 		</KeyValues>
 		<NormalTexture parentKey="NormalTexture" atlas="UI-HUD-ActionBar-IconFrame">
-			<Size x="31" y="31"/>
+			<Size x="29" y="29"/>
 			<Anchors>
 				<Anchor point="TOPLEFT"/>
 			</Anchors>
 		</NormalTexture>
 		<PushedTexture atlas="UI-HUD-ActionBar-IconFrame-Down" parentKey="PushedTexture">
-			<Size x="31" y="31"/>
+			<Size x="29" y="29"/>
 			<Anchors>
 				<Anchor point="TOPLEFT"/>
 			</Anchors>
 		</PushedTexture>
 		<HighlightTexture atlas="UI-HUD-ActionBar-IconFrame-Mouseover" parentKey="HighlightTexture">
-			<Size x="31" y="31"/>
+			<Size x="29" y="29"/>
 			<Anchors>
 				<Anchor point="TOPLEFT"/>
 			</Anchors>
@@ -257,15 +257,11 @@
 				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
 				<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 			</Button>
-			<Button parentKey="ToggleDynamicFlightFlyoutButton" mixin="MountJournalToggleDynamicFlightFlyoutButtonMixin" frameLevel="1000">
+			<Button parentKey="ToggleDynamicFlightFlyoutButton" mixin="MountJournalToggleDynamicFlightFlyoutButtonMixin" inherits="FlyoutButtonTemplate" frameLevel="1000">
 				<Size x="33" y="33"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeKey="$parent.SummonRandomFavoriteButton" x="-210"/>
 				</Anchors>
-				<KeyValues>
-					<KeyValue key="openArrowOffset" value="-3" type="number"/>
-					<KeyValue key="closedArrowOffset" value="-5" type="number"/>
-				</KeyValues>
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture file="Interface/ICONS/Ability_DragonRiding_UpwardFlap01" setAllPoints="true"/>
@@ -286,29 +282,9 @@
 						</FontString>
 					</Layer>
 					<Layer level="OVERLAY" textureSubLevel="2">
-						<Texture parentKey="FlyoutArrowNormal" atlas="UI-HUD-ActionBar-Flyout" rotation="180">
-							<Size x="15" y="6"/>
-							<Anchors>
-								<Anchor point="BOTTOM"/>
-							</Anchors>
-						</Texture>
 						<Texture parentKey="UnspentGlyphsHighlight" atlas="newplayertutorial-drag-slotgreen" useAtlasSize="true" alphaMode="ADD" alpha="0">
 							<Anchors>
 								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="FlyoutArrowPushed" atlas="UI-HUD-ActionBar-Flyout-Down" rotation="180">
-							<Size x="15" y="6"/>
-							<Anchors>
-								<Anchor point="BOTTOM"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="HIGHLIGHT" textureSubLevel="2">
-						<Texture parentKey="FlyoutArrowHighlight" atlas="UI-HUD-ActionBar-Flyout-Mouseover" rotation="180">
-							<Size x="15" y="6"/>
-							<Anchors>
-								<Anchor point="BOTTOM"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -321,57 +297,19 @@
 				</Animations>
 				<Scripts>
 					<OnEvent method="OnEvent"/>
-					<OnClick method="OnClick"/>
-					<OnEnter method="OnEnter"/>
-					<OnLeave method="OnLeave"/>
-					<OnMouseDown method="OnMouseDown"/>
-					<OnMouseUp method="OnMouseUp"/>
 					<OnHide method="OnHide"/>
 					<OnShow method="OnShow"/>
 				</Scripts>
 				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
 				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 			</Button>
-			<Frame parentKey="DynamicFlightFlyout" inherits="VerticalLayoutFrame" hidden="true" frameLevel="9">
+			<Frame parentKey="DynamicFlightFlyoutPopup" inherits="FlyoutPopupTemplate, VerticalLayoutFrame" hidden="true" frameLevel="9">
 				<KeyValues>
-					<KeyValue key="topPadding" value="5" type="number"/>
-					<KeyValue key="bottomPadding" value="6" type="number"/>
-					<KeyValue key="leftPadding" value="3" type="number"/>
-					<KeyValue key="rightPadding" value="6" type="number"/>
+					<KeyValue key="topPadding" value="8" type="number"/>
+					<KeyValue key="bottomPadding" value="5" type="number"/>
 				</KeyValues>
-				<Anchors>
-					<Anchor point="TOP" relativePoint="BOTTOM" relativeKey="$parent.ToggleDynamicFlightFlyoutButton" x="0" y="0"/>
-				</Anchors>
 				<Frames>
-					<Frame parentKey="Background" setAllPoints="true">
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture parentKey="Start" atlas="UI-HUD-ActionBar-IconFrame-FlyoutBottom" useAtlasSize="true" rotation="180">
-									<Anchors>
-										<Anchor point="TOP" y="10"/>
-										<Anchor point="LEFT"/>
-										<Anchor point="RIGHT"/>
-									</Anchors>
-								</Texture>
-								<Texture parentKey="End" atlas="UI-HUD-ActionBar-IconFrame-FlyoutButton" useAtlasSize="true" rotation="180">
-									<Anchors>
-										<Anchor point="BOTTOM"/>
-										<Anchor point="LEFT"/>
-										<Anchor point="RIGHT"/>
-									</Anchors>
-								</Texture>
-								<Texture parentKey="VerticalMiddle" atlas="!UI-HUD-ActionBar-IconFrame-FlyoutMid" vertTile="true" rotation="180">
-									<Anchors>
-										<Anchor point="TOP" relativeKey="$parent.Start" relativePoint="BOTTOM" />
-										<Anchor point="BOTTOM" relativeKey="$parent.End" relativePoint="TOP" />
-										<Anchor point="LEFT"/>
-										<Anchor point="RIGHT"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
-					</Frame>
-					<Button parentKey="OpenDynamicFlightSkillTreeButton" inherits="DynamicFlightFlyoutButtonTemplate" mixin="MountJournalOpenDynamicFlightSkillTreeButtonMixin">
+					<Button parentKey="OpenDynamicFlightSkillTreeButton" inherits="DynamicFlightFlyoutPopupButtonTemplate" mixin="MountJournalOpenDynamicFlightSkillTreeButtonMixin">
 						<KeyValues>
 							<KeyValue key="layoutIndex" value="0" type="number"/>
 						</KeyValues>
@@ -401,7 +339,7 @@
 							<OnLeave method="OnLeave"/>
 						</Scripts>
 					</Button>
-					<Button parentKey="DynamicFlightModeButton"  inherits="DynamicFlightFlyoutButtonTemplate" mixin="MountJournalDynamicFlightModeButtonMixin">
+					<Button parentKey="DynamicFlightModeButton"  inherits="DynamicFlightFlyoutPopupButtonTemplate" mixin="MountJournalDynamicFlightModeButtonMixin">
 						<KeyValues>
 							<KeyValue key="layoutIndex" value="1" type="number"/>
 						</KeyValues>

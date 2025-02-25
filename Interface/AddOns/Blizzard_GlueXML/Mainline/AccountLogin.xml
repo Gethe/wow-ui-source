@@ -7,13 +7,7 @@
 			<KeyValue key="backdropBorderColor" value="GLUE_BACKDROP_BORDER_COLOR" type="global"/>
 		</KeyValues>
 	</Frame>
-
-	<EditBox name="AccountLoginEditBoxBehaviorTemplate" mixin="AccountLoginEditBoxBehaviorMixin" virtual="true">
-		<Scripts>
-			<OnKeyDown method="OnKeyDown"/>
-		</Scripts>
-	</EditBox>
-
+	
 	<Button name="AccountNameButtonTemplate" mixin="AccountNameMixin" virtual="true">
 		<Size x="250" y="20"/>
 		<Layers>
@@ -89,7 +83,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<EditBox parentKey="AccountEditBox" parentArray="ManualLoginRegions" letters="320" inherits="AccountLoginEditBoxBehaviorTemplate AccountLoginBackdropTemplate">
+					<EditBox parentKey="AccountEditBox" autoFocus="false" parentArray="ManualLoginRegions" letters="320" inherits="AccountLoginBackdropTemplate">
 						<Size x="320" y="42"/>
 						<Anchors>
 							<Anchor point="CENTER" x="0" y="50"/>
@@ -119,6 +113,7 @@
 							</OnEnterPressed>
 							<OnEditFocusLost function="AccountLogin_OnEditFocusLost"/>
 							<OnEditFocusGained function="AccountLogin_OnEditFocusGained"/>
+							<OnKeyDown function="AccountLoginEditBox_OnKeyDown"/>
 							<OnTextChanged>
 								local accountName = GetSavedAccountName();
 								if ( accountName ~= "" and accountName ~= self:GetText() ) then
@@ -138,7 +133,7 @@
 							<AbsInset left="12" right="5" bottom="5"/>
 						</TextInsets>
 					</EditBox>
-					<EditBox parentKey="PasswordEditBox" parentArray="ManualLoginRegions" letters="128" password="1" inherits="AccountLoginEditBoxBehaviorTemplate AccountLoginBackdropTemplate">
+					<EditBox parentKey="PasswordEditBox" autoFocus="false" parentArray="ManualLoginRegions" letters="128" password="1" inherits="AccountLoginBackdropTemplate">
 						<Size x="320" y="42"/>
 						<Anchors>
 							<Anchor point="TOP" relativeKey="$parent.AccountEditBox" relativePoint="BOTTOM" x="0" y="-30"/>
@@ -156,6 +151,7 @@
 						<Scripts>
 							<OnTabPressed function="AccountLogin_FocusAccount"/>
 							<OnEscapePressed function="AccountLogin_OnEscapePressed"/>
+							<OnKeyDown function="AccountLoginEditBox_OnKeyDown"/>
 							<OnEnterPressed>
 								if ( C_Login.IsLoginReady() ) then
 									AccountLogin_Login();

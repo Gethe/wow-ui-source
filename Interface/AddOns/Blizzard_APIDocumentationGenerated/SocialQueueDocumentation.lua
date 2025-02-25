@@ -24,6 +24,7 @@ local SocialQueue =
 		{
 			Name = "GetConfig",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -33,6 +34,7 @@ local SocialQueue =
 		{
 			Name = "GetGroupForPlayer",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -48,6 +50,7 @@ local SocialQueue =
 		{
 			Name = "GetGroupInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -69,6 +72,7 @@ local SocialQueue =
 		{
 			Name = "GetGroupMembers",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -83,6 +87,7 @@ local SocialQueue =
 		{
 			Name = "GetGroupQueues",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

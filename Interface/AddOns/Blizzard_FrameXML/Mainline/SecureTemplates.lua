@@ -335,8 +335,8 @@ SECURE_ACTIONS.action =
             local cursorType = GetCursorInfo();
 
             if ( actionType == "flyout" and not cursorType ) then
-				local direction = SecureButton_GetModifiedAttribute(self, "flyoutDirection", button);
-                SpellFlyout:Toggle(flyoutId, self, direction, 0, true);
+                local isActionBar, specID, showFullTooltip, reason = true, 0, false, nil;
+                SpellFlyout:Toggle(self, flyoutId, isActionBar, specID, showFullTooltip, reason);
             else
                 SpellFlyout:Hide();
                 UseAction(action, unit, button, isKeyPress);
@@ -363,9 +363,9 @@ SECURE_ACTIONS.pet =
 
 SECURE_ACTIONS.flyout =
         function (self, unit, button)
-                local flyoutId = SecureButton_GetModifiedAttribute(self, "spell", button);
-				local direction = SecureButton_GetModifiedAttribute(self, "flyoutDirection", button);
-                SpellFlyout:Toggle(flyoutId, self, direction, 0, true);
+            local flyoutId = SecureButton_GetModifiedAttribute(self, "spell", button);
+            local isActionBar, specID, showFullTooltip, reason = true, 0, false, nil;
+            SpellFlyout:Toggle(button, flyoutId, isActionBar, specID, showFullTooltip, reason);
         end;
 
 SECURE_ACTIONS.multispell =

@@ -31,6 +31,7 @@ local ItemUpgrade =
 		{
 			Name = "GetHighWatermarkForItem",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -46,6 +47,7 @@ local ItemUpgrade =
 		{
 			Name = "GetHighWatermarkForSlot",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -61,6 +63,7 @@ local ItemUpgrade =
 		{
 			Name = "GetHighWatermarkSlotForItem",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -75,6 +78,7 @@ local ItemUpgrade =
 		{
 			Name = "GetItemHyperlink",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -84,6 +88,7 @@ local ItemUpgrade =
 		{
 			Name = "GetItemUpgradeCurrentLevel",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -94,6 +99,7 @@ local ItemUpgrade =
 		{
 			Name = "GetItemUpgradeEffect",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -110,6 +116,7 @@ local ItemUpgrade =
 		{
 			Name = "GetItemUpgradeItemInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -119,6 +126,7 @@ local ItemUpgrade =
 		{
 			Name = "GetItemUpgradePvpItemLevelDeltaValues",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

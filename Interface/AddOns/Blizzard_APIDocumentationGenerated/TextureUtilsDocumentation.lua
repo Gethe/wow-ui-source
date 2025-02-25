@@ -46,6 +46,7 @@ local TextureUtils =
 		{
 			Name = "GetAtlasInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

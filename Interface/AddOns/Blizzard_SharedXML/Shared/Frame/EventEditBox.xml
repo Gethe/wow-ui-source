@@ -13,6 +13,8 @@
 			<OnTextChanged method="OnTextChanged_Intrinsic"/>
 			<OnCursorChanged method="OnCursorChanged_Intrinsic"/>
 			<OnEscapePressed method="OnEscapePressed_Intrinsic"/>
+			<OnEnterPressed method="OnEnterPressed_Intrinsic"/>
+			<OnKeyDown method="OnKeyDown_Intrinsic"/>
 			<OnEditFocusGained method="OnEditFocusGained_Intrinsic"/>
 			<OnEditFocusLost method="OnEditFocusLost_Intrinsic"/>
 		</Scripts>

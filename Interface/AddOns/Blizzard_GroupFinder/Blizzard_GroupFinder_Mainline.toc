@@ -12,8 +12,8 @@ Mainline\LFGFrame.lua
 Mainline\LFGFrame.xml
 Mainline\LFDFrame.lua
 Mainline\LFDFrame.xml
-Mainline\RaidFinder.lua
-Mainline\RaidFinder.xml
+Shared\RaidFinder.lua
+Shared\RaidFinder.xml
 Mainline\LFGList.lua
 Mainline\LFGList.xml
 Mainline\PvpPopup.lua

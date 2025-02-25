@@ -23,6 +23,7 @@ local QuestInfoSystem =
 		{
 			Name = "GetQuestRewardCurrencies",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -52,6 +53,7 @@ local QuestInfoSystem =
 		{
 			Name = "GetQuestRewardSpells",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

@@ -327,6 +327,7 @@ function CompactRaidFrameManager_Expand()
 	CompactRaidFrameManager.displayFrame:Show();
 	CompactRaidFrameManager.toggleButtonBack:Show();
 	CompactRaidFrameManager.toggleButtonForward:Hide();
+	CompactRaidFrameManager.BottomButtons:Show();
 end
 
 function CompactRaidFrameManager_Collapse()
@@ -335,6 +336,7 @@ function CompactRaidFrameManager_Collapse()
 	CompactRaidFrameManager.displayFrame:Hide();
 	CompactRaidFrameManager.toggleButtonBack:Hide();
 	CompactRaidFrameManager.toggleButtonForward:Show();
+	CompactRaidFrameManager.BottomButtons:Hide();
 end
 
 RaidFrameToggleButtonMixin = {}
@@ -1362,7 +1364,7 @@ function LeaveInstanceGroupButtonMixin:OnLoad()
 	self.Text:SetMaxLines(1);
 end
 
-function LeaveInstanceGroupButtonMixin:OnShow()
+function LeaveInstanceGroupButtonMixin:OnUpdate()
 	if C_PartyInfo.IsPartyWalkIn() then
 		self:SetText(INSTANCE_WALK_IN_LEAVE);
 	else

@@ -57,6 +57,11 @@
 					<OnLoad function="RaiseFrameLevelByTwo"/>
 				</Scripts>
 			</Frame>
+			<Frame parentKey="AccountCompletedNotice" inherits="QuestAccountCompletedNoticeTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.TopTileStreaks" x="-8"/>
+				</Anchors>
+			</Frame>
  			<Frame name="QuestFrameRewardPanel" inherits="QuestFramePanelTemplate" hidden="true">
  				<Frames>
 					<Button name="QuestFrameCompleteQuestButton" inherits="UIPanelButtonTemplate" text="COMPLETE_QUEST">

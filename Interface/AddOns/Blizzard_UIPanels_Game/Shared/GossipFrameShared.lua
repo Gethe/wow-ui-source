@@ -72,8 +72,18 @@ function GossipOptionButtonMixin:Setup(optionInfo)
 	self:SetID(optionInfo.orderIndex or 0);
 	self.spellID = optionInfo.spellID;
 
-	if (FlagsUtil.IsSet(optionInfo.flags, Enum.GossipOptionRecFlags.QuestLabelPrepend)) then
-		self:SetText(GOSSIP_QUEST_OPTION_PREPEND:format(optionInfo.name));
+	if (FlagsUtil.IsAnySet(optionInfo.flags, bit.bor(Enum.GossipOptionRecFlags.QuestLabelPrepend, Enum.GossipOptionRecFlags.PlayMovieLabelPrepend))) then
+		local prepends = {};
+		if FlagsUtil.IsSet(optionInfo.flags, Enum.GossipOptionRecFlags.QuestLabelPrepend) then
+			table.insert(prepends, QUEST_PREPEND);
+		end
+
+		if FlagsUtil.IsSet(optionInfo.flags, Enum.GossipOptionRecFlags.PlayMovieLabelPrepend) then
+			table.insert(prepends, PLAY_MOVIE_PREPEND);
+		end
+
+		local prependString = table.concat(prepends, ' ');
+		self:SetText(GOSSIP_OPTION_PREPEND:format(prependString, optionInfo.name));
 	else
 		self:SetText(optionInfo.name);
 	end

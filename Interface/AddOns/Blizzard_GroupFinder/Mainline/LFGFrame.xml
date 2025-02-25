@@ -736,11 +736,15 @@
 		<Size x="298" y="1"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentTitle" inherits="QuestTitleFontBlackShadow" justifyH="LEFT" parentKey="title" text="LFG_TYPE_RANDOM_DUNGEON">
+				<FontString name="$parentTitle" inherits="TruncatedTooltipFontStringTemplate" justifyH="LEFT" parentKey="title" mixin="LFGRewardFrameTemplateTitleMixin">
+					<Size x="0" y="18"/>
 					<Anchors>
-						<!--Location different in LFGFrame-->
-						<Anchor point="TOPLEFT" x="10" y="-15"/>
+						<Anchor point="TOPLEFT" x="10" y="-8"/>
+						<Anchor point="TOPRIGHT" x="0" y="-8"/>
 					</Anchors>
+					<Scripts>
+						<OnLoad method="OnLoad"/>
+					</Scripts>
 				</FontString>
 				<FontString name="$parentDescription" inherits="QuestFont" justifyH="LEFT" parentKey="description" text="LFD_RANDOM_EXPLANATION">
 					<Size x="280" y="0"/>

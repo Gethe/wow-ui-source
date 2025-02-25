@@ -19,6 +19,7 @@ local ActionBarFrame =
 		{
 			Name = "FindFlyoutActionButtons",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -33,6 +34,7 @@ local ActionBarFrame =
 		{
 			Name = "FindPetActionButtons",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -47,6 +49,7 @@ local ActionBarFrame =
 		{
 			Name = "FindSpellActionButtons",
 			Type = "Function",
+			MayReturnNothing = true,
 			Documentation = { "Returns the list of action bar slots that contain a specified spell." },
 
 			Arguments =
@@ -90,6 +93,7 @@ local ActionBarFrame =
 		{
 			Name = "GetPetActionPetBarIndices",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

@@ -6,15 +6,24 @@ end
 
 function AreaPOIEventDataProviderMixin:OnShow()
 	self:RegisterEvent("AREA_POIS_UPDATED");
+	EventRegistry:RegisterCallback("PingAreaPOIEvent", self.OnPingAreaPOIEvent, self);
 end
 
 function AreaPOIEventDataProviderMixin:OnHide()
 	self:UnregisterEvent("AREA_POIS_UPDATED");
+	EventRegistry:UnregisterCallback("PingAreaPOIEvent", self);
 end
 
 function AreaPOIEventDataProviderMixin:OnEvent(event, ...)
 	if event == "AREA_POIS_UPDATED" then
 		self:RefreshAllData();
+	end
+end
+
+function AreaPOIEventDataProviderMixin:OnPingAreaPOIEvent(areaPOIID)
+	local numLoops = 2;
+	if self:PingPin("areaPOIID", areaPOIID, "PIN_FRAME_LEVEL_QUEST_PING", numLoops) then
+		PlaySound(SOUNDKIT.MAP_PING);
 	end
 end
 
@@ -41,12 +50,15 @@ function AreaPOIEventDataProviderMixin:RefreshAllData(fromOnShow)
 			map:AcquirePin(self:GetPinTemplate(), poiInfo);
 		end
 	end
+
+	self:UpdatePing();
 end
 
 AreaPOIEventPinMixin = AreaPOIPinMixin:CreateSubPin("PIN_FRAME_LEVEL_AREA_POI_EVENT");
 
 function AreaPOIEventPinMixin:OnAcquired(poiInfo) -- override
 	AreaPOIPinMixin.OnAcquired(self, poiInfo);
+	self:AddTag(MapPinTags.Event);
 
 	self:SetMapPinScale(1.3, 1, 1.3, 1.3);
 	self:SetStyle(POIButtonUtil.Style.AreaPOI);

@@ -66,8 +66,8 @@ function MajorFactionsRenownToastMixin:OnHide()
 	TopBannerManager_BannerFinished();
 end
 
-function MajorFactionsRenownToastMixin:AddSwirlEffects(textureKit) -- override
-	local swirlEffects = MajorFactionUnlockToasts.GetSwirlEffectsByTextureKit(textureKit);
+function MajorFactionsRenownToastMixin:AddSwirlEffects(expansion) -- override
+	local swirlEffects = MajorFactionUnlockToasts.GetSwirlEffectsByExpansion(expansion);
 	if not swirlEffects then
 		return;
 	end
@@ -86,7 +86,7 @@ function MajorFactionsRenownToastMixin:ShowRenownLevelUpToast(majorFactionData, 
 		TopBannerManager_Show(self, {
 			majorFactionID = majorFactionData.factionID,
 			renownLevel = renownLevel,
-			factionColor = self:GetFactionColorByTextureKit(majorFactionData.textureKit),
+			factionColor = majorFactionData.factionFontColor and majorFactionData.factionFontColor.color or HIGHLIGHT_FONT_COLOR,
 			textureKit = majorFactionData.textureKit,
 			celebrationSoundKit = majorFactionData.celebrationSoundKit,
 			expansionID = majorFactionData.expansionID,
@@ -139,6 +139,7 @@ function MajorFactionsRenownToastMixin:PlayBanner(data)
 	self.RenownLabel:SetFormattedText(MAJOR_FACTION_RENOWN_LEVEL_TOAST, data.renownLevel);
 	self.RenownLabel:SetTextColor(data.factionColor:GetRGB());
 	self:SetMajorFactionTextureKit(data.textureKit);
+	self:SetMajorFactionSwirlEffects(data.expansionID);
 
 	local expansionLayoutInfo = ExpansionLayoutInfo[data.expansionID] or ExpansionLayoutInfo[LE_EXPANSION_DRAGONFLIGHT];
 	self:SetMajorFactionExpansionLayoutInfo(expansionLayoutInfo);

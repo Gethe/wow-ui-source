@@ -72,6 +72,7 @@ local ReputationInfo =
 		{
 			Name = "GetFactionParagonInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

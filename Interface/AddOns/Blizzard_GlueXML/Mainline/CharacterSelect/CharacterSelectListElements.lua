@@ -7,7 +7,7 @@ function CharacterSelectListGroupMixin:OnLoad()
 end
 
 function CharacterSelectListGroupMixin:Init(elementData)
-	self.Header.Text:SetText(elementData.name);
+	self.Header:Init(elementData);
 	self:OnExpandedChanged();
 
 	self.characterButtonPool:ReleaseAll();
@@ -80,6 +80,7 @@ CharacterSelectListGroupHeaderMixin = CreateFromMixins(ButtonStateBehaviorMixin)
 function CharacterSelectListGroupHeaderMixin:OnLoad()
 	local x, y = 1, -1;
 	self:SetDisplacedRegions(x, y, self.Icon, self.Text);
+	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 end
 
 function CharacterSelectListGroupHeaderMixin:OnEnter()
@@ -94,12 +95,34 @@ function CharacterSelectListGroupHeaderMixin:OnLeave()
 	self.Highlight:Hide();
 end
 
-function CharacterSelectListGroupHeaderMixin:OnClick()
-	local parentGroup = self:GetParent();
-	local parentGroupElementData = parentGroup:GetElementData();
-	parentGroupElementData.collapsed = not parentGroupElementData.collapsed;
+function CharacterSelectListGroupHeaderMixin:OnClick(button)
+	if button == "LeftButton" then
+		local parentGroup = self:GetParent();
+		local parentGroupElementData = parentGroup:GetElementData();
+		parentGroupElementData.collapsed = not parentGroupElementData.collapsed;
 
-	parentGroup:OnExpandedChanged();
+		parentGroup:OnExpandedChanged();
+	elseif button =="RightButton" then
+		-- Mirror how we enable/disable AddGroupButton
+		local servicesEnabled = not CharSelectServicesFlowFrame:ShouldDisableButtons();
+		local undeleting = CharacterSelect.undeleting;
+		local redemptionInProgress = AccountReactivationInProgressDialog:IsShown() or GoldReactivateConfirmationDialog:IsShown() or TokenReactivateConfirmationDialog:IsShown();
+		local canEditGroup = servicesEnabled and not undeleting and not redemptionInProgress;
+
+		if not canEditGroup then
+			return;
+		end
+
+		MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
+			rootDescription:SetTag("MENU_CHARACTER_GROUP_OPTIONS");
+
+			local isOnlyGoup = CharacterSelectListUtil.GetTotalGroupCount() == 1;
+			local editGroupText = isOnlyGoup and CHARACTER_GROUP_OPTION_RENAME or CHARACTER_GROUP_OPTION_RENAME_DELETE;
+			rootDescription:CreateButton(editGroupText, function()
+				CharacterListEditGroupFrame:ShowEditGroupFrame(self.groupID, self.groupName, isOnlyGoup);
+			end);
+		end);
+	end
 end
 
 function CharacterSelectListGroupHeaderMixin:OnButtonStateChanged()
@@ -141,11 +164,21 @@ function CharacterSelectListGroupHeaderMixin:OnButtonStateChanged()
 	self.Icon:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
 end
 
+function CharacterSelectListGroupHeaderMixin:Init(elementData)
+	self.groupID = elementData.groupID;
+	self.groupName = elementData.name;
+	self.Text:SetText(self.groupName);
+end
+
 
 CharacterSelectListCharacterMixin = {};
 
 function CharacterSelectListCharacterMixin:OnLoad()
 	self:RegisterForDrag("LeftButton");
+
+	self.Arrow.IntroAnim:SetScript("OnFinished", function()
+		self.Arrow.IdleAnim:PlaySynced();
+	end);
 end
 
 -- We echo the various input down to our child frame, to prevent it from eating the input and stopping drag behavior.
@@ -231,7 +264,7 @@ function CharacterSelectListCharacterMixin:GetCharacterInfo()
 end
 
 function CharacterSelectListCharacterMixin:UpdateVASState()
-	local paidServiceButton = self.PaidService;
+	local paidServiceButton = self.PaidServiceButton;
 	local restoreCharacterServiceFrame = self.RestoreCharacterServiceFrame;
 	local notificationButton = self.InnerContent.NotificationButton;
 
@@ -240,7 +273,7 @@ function CharacterSelectListCharacterMixin:UpdateVASState()
 	notificationButton:SetHasInProgress(false, tooltip1, tooltip2);
 	restoreCharacterServiceFrame:Hide();
 
-	if CharacterServicesFlow_IsShowing() then
+	if CharacterServicesFlow_IsShowing() or CharacterSelectUI.CollectionsFrame:IsShown() then
 		paidServiceButton:Hide();
 		return;
 	end
@@ -248,31 +281,30 @@ function CharacterSelectListCharacterMixin:UpdateVASState()
 	local guid = self.guid;
 	local characterInfo = self:GetCharacterInfo();
 	local vasServiceState, vasServiceErrors, vasProductInfo = CharacterSelectListUtil.GetVASInfoForGUID(guid);
-	local modifyServiceType = true;
 	local serviceType, disableService;
 	if vasServiceState == Enum.VasPurchaseProgress.PaymentPending then
 		tooltip1 = CHARACTER_UPGRADE_PROCESSING;
 		tooltip2 = CHARACTER_STATE_ORDER_PROCESSING;
 		notificationButton:SetHasInProgress(true, tooltip1, tooltip2);
 	elseif vasServiceState == Enum.VasPurchaseProgress.ApplyingLicense and #vasServiceErrors > 0 then
-        local tooltip, desc;
-        local info = StoreFrame_GetVASErrorMessage(guid, vasServiceErrors);
-        if info then
-            if info.other then
-                tooltip = VAS_ERROR_ERROR_HAS_OCCURRED;
-            else
-                tooltip = VAS_ERROR_ADDRESS_THESE_ISSUES;
-            end
-            desc = info.desc;
-        else
-            tooltip = VAS_ERROR_ERROR_HAS_OCCURRED;
-            desc = BLIZZARD_STORE_VAS_ERROR_OTHER;
-        end
+		local tooltip, desc;
+		local info = StoreFrame_GetVASErrorMessage(guid, vasServiceErrors);
+		if info then
+			if info.other then
+				tooltip = VAS_ERROR_ERROR_HAS_OCCURRED;
+			else
+				tooltip = VAS_ERROR_ADDRESS_THESE_ISSUES;
+			end
+			desc = info.desc;
+		else
+			tooltip = VAS_ERROR_ERROR_HAS_OCCURRED;
+			desc = BLIZZARD_STORE_VAS_ERROR_OTHER;
+		end
 
 		tooltip1 = "|cffffd200" .. tooltip .. "|r";
 		tooltip2 = "|cffff2020" .. desc .. "|r";
 		notificationButton:SetHasInProgress(true, tooltip1, tooltip2);
-    elseif characterInfo and characterInfo.boostInProgress then
+	elseif characterInfo and characterInfo.boostInProgress then
 		tooltip1 = CHARACTER_UPGRADE_PROCESSING;
 		tooltip2 = CHARACTER_SERVICES_PLEASE_WAIT;
 		notificationButton:SetHasInProgress(true, tooltip1, tooltip2);
@@ -302,58 +334,49 @@ function CharacterSelectListCharacterMixin:UpdateVASState()
 		end
 	elseif characterInfo and characterInfo.hasFactionChange then
 		serviceType = PAID_FACTION_CHANGE;
-		paidServiceButton.GoldBorder:Show();
-		paidServiceButton.VASIcon:SetTexture("Interface\\Icons\\VAS_FactionChange");
-		paidServiceButton.VASIcon:Show();
-		paidServiceButton.Texture:Hide();
-		-- Paid faction change disabled has been deprecated.
-		-- disableService = PFCDisabled;
+		paidServiceButton.NormalTexture:SetAtlas("glues-characterselect-icon-factionchange", TextureKitConstants.UseAtlasSize);
+		paidServiceButton.HighlightTexture:SetAtlas("glues-characterselect-icon-factionchange-hover", TextureKitConstants.UseAtlasSize);
 		paidServiceButton.tooltip = PAID_FACTION_CHANGE_TOOLTIP;
 		paidServiceButton.disabledTooltip = PAID_FACTION_CHANGE_DISABLED_TOOLTIP;
 	elseif characterInfo and characterInfo.hasRaceChange then
 		serviceType = PAID_RACE_CHANGE;
-		paidServiceButton.GoldBorder:Show();
-		paidServiceButton.VASIcon:SetTexture("Interface\\Icons\\VAS_RaceChange");
-		paidServiceButton.VASIcon:Show();
-		paidServiceButton.Texture:Hide();
-		-- Paid race change disabled has been deprecated.
-		-- disableService = PRCDisabled;
+		paidServiceButton.NormalTexture:SetAtlas("glues-characterSelect-icon-raceChange", TextureKitConstants.UseAtlasSize);
+		paidServiceButton.HighlightTexture:SetAtlas("glues-characterSelect-icon-raceChange-hover", TextureKitConstants.UseAtlasSize);
 		paidServiceButton.tooltip = PAID_RACE_CHANGE_TOOLTIP;
 		paidServiceButton.disabledTooltip = PAID_RACE_CHANGE_DISABLED_TOOLTIP;
 	elseif characterInfo and characterInfo.hasCustomize then
 		serviceType = PAID_CHARACTER_CUSTOMIZATION;
-		paidServiceButton.GoldBorder:Show();
-		paidServiceButton.VASIcon:SetTexture("Interface\\Icons\\VAS_AppearanceChange");
-		paidServiceButton.VASIcon:Show();
-		paidServiceButton.Texture:Hide();
-		disableService = characterInfo.customizeDisabled;
+		paidServiceButton.NormalTexture:SetAtlas("glues-characterSelect-icon-appearanceChange", TextureKitConstants.UseAtlasSize);
+		paidServiceButton.HighlightTexture:SetAtlas("glues-characterSelect-icon-appearanceChange-hover", TextureKitConstants.UseAtlasSize);
 		paidServiceButton.tooltip = PAID_CHARACTER_CUSTOMIZE_TOOLTIP;
 		paidServiceButton.disabledTooltip = PAID_CHARACTER_CUSTOMIZE_DISABLED_TOOLTIP;
+		disableService = characterInfo.customizeDisabled;
 	end
 
-	if modifyServiceType then
-		if serviceType then
-			paidServiceButton:Show();
-			paidServiceButton.serviceType = serviceType;
-			if disableService then
-				paidServiceButton:Disable();
-				paidServiceButton.Texture:SetDesaturated(true);
-				paidServiceButton.GoldBorder:SetDesaturated(true);
-				paidServiceButton.VASIcon:SetDesaturated(true);
-			elseif not paidServiceButton:IsEnabled() then
-				paidServiceButton.Texture:SetDesaturated(false);
-				paidServiceButton.GoldBorder:SetDesaturated(false);
-				paidServiceButton.VASIcon:SetDesaturated(false);
-				paidServiceButton:Enable();
-			end
-		else
-			paidServiceButton:Hide();
+	if serviceType then
+		paidServiceButton:Show();
+		paidServiceButton.serviceType = serviceType;
+		if disableService then
+			paidServiceButton:Disable();
+			paidServiceButton.NormalTexture:SetDesaturated(true);
+		elseif not paidServiceButton:IsEnabled() then
+			paidServiceButton.NormalTexture:SetDesaturated(false);
+			paidServiceButton:Enable();
 		end
+	else
+		paidServiceButton:Hide();
 	end
 end
 
 function CharacterSelectListCharacterMixin:SetArrowButtonShown(shown)
-	self.Arrow:SetShown(shown);
+	if shown and not self.Arrow:IsShown() then
+		self.Arrow:Show();
+		self.Arrow.IntroAnim:Restart();
+	elseif not shown and self.Arrow:IsShown() then
+		self.Arrow.IntroAnim:Stop();
+		self.Arrow.IdleAnim:Stop();
+		self.Arrow:Hide();
+	end
 end
 
 function CharacterSelectListCharacterMixin:UpdateSelectedState()
@@ -868,7 +891,7 @@ function CharacterSelectListCharacterInnerContentMixin:ShowMoveButtons()
 
 	local last = true;
 	local lastCharacterIndex = CharacterSelectListUtil.GetFirstOrLastCharacterIndex(last);
-	local lastIndex = math.max(CharacterSelectListUtil.CharacterGroupSlotCount + 1, lastCharacterIndex);
+	local lastIndex = math.max(CharacterSelectListUtil.GetTotalGroupSlotCount() + 1, lastCharacterIndex);
 	local isLastButton = index == lastIndex;
 	downButton:SetEnabledState(not isLastButton);
 end
@@ -936,42 +959,6 @@ end
 
 function CharacterSelectListEmptyCharacterGlowFadeAnimMixin:OnFinished()
     self:GetParent().InnerContent.DragGlow:Hide();
-end
-
-
-CharacterSelectListPaidServiceMixin = {};
-
-function CharacterSelectListPaidServiceMixin:OnClick()
-	if CharacterSelectUtil.IsAccountLocked() then
-		return;
-	end
-
-	local characterID = self:GetParent():GetCharacterID();
-	local includeEmptySlots = true;
-	local numCharacters = GetNumCharacters(includeEmptySlots);
-	if characterID <= 0 or (characterID > numCharacters) then
-		-- Somehow our character order got borked, scroll to top and get an updated character list.
-		CharacterSelectCharacterFrame.ScrollBox:ScrollToBegin();
-		CharacterCreateFrame:ClearPaidServiceInfo();
-
-		CharacterSelectListUtil.GetCharacterListUpdate();
-		return;
-	end
-
-	CharacterCreateFrame:SetPaidServiceInfo(self.serviceType, characterID);
-
-	PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
-	GlueParent_SetScreen("charcreate");
-end
-
-function CharacterSelectListPaidServiceMixin:OnEnter()
-	GlueTooltip:SetOwner(self, "ANCHOR_LEFT", 4, -8);
-	local text = self:IsEnabled() and self.tooltip or self.disabledTooltip;
-	GlueTooltip:SetText(text, 1.0, 1.0, 1.0);
-end
-
-function CharacterSelectListPaidServiceMixin:OnLeave()
-	GlueTooltip:Hide();
 end
 
 
@@ -1165,6 +1152,42 @@ function CharacterSelectListNotificationButtonMixin:ShowStoreFrameForBoostType(b
 	end
 
 	StoreFrame_SelectBoost(boostType, reason, guid);
+end
+
+
+PaidServiceButtonMixin = {};
+
+function PaidServiceButtonMixin:OnClick()
+	if CharacterSelectUtil.IsAccountLocked() then
+		return;
+	end
+
+	local characterID = self:GetParent():GetCharacterID();
+	local includeEmptySlots = true;
+	local numCharacters = GetNumCharacters(includeEmptySlots);
+	if characterID <= 0 or (characterID > numCharacters) then
+		-- Somehow our character order got borked, scroll to top and get an updated character list.
+		CharacterSelectCharacterFrame.ScrollBox:ScrollToBegin();
+		CharacterCreateFrame:ClearPaidServiceInfo();
+
+		CharacterSelectListUtil.GetCharacterListUpdate();
+		return;
+	end
+
+	CharacterCreateFrame:SetPaidServiceInfo(self.serviceType, characterID);
+
+	PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
+	GlueParent_SetScreen("charcreate");
+end
+
+function PaidServiceButtonMixin:OnEnter()
+	GlueTooltip:SetOwner(self, "ANCHOR_LEFT", 4, -8);
+	local text = self:IsEnabled() and self.tooltip or self.disabledTooltip;
+	GlueTooltip:SetText(text, 1.0, 1.0, 1.0);
+end
+
+function PaidServiceButtonMixin:OnLeave()
+	GlueTooltip:Hide();
 end
 
 

@@ -1,5 +1,15 @@
 MatchCelebrationPartyPoseMixin = CreateFromMixins(PartyPoseMixin);
 
+function MatchCelebrationPartyPoseMixin:OnLoad()
+	PartyPoseMixin.OnLoad(self);
+	PartyPoseUtil.AddDismissClickHandler(self.LeaveButton, self);
+end
+
+function MatchCelebrationPartyPoseMixin:Dismiss()
+	ConfirmOrLeaveLFGParty();
+	PartyPoseMixin.Dismiss(self);
+end
+
 function MatchCelebrationPartyPoseMixin:LoadPartyPose(partyPoseData, forceUpdate)
 	PartyPoseMixin.LoadPartyPose(self, partyPoseData, forceUpdate);
 
@@ -50,13 +60,6 @@ function MatchCelebrationPartyPoseMixin:LoadPartyPose(partyPoseData, forceUpdate
 	self.ExtraButton:SetEnabled(C_PartyPose.HasExtraAction(self.partyPoseData.partyPoseInfo.partyPoseID)); 
 	self.ExtraButton:Show();
 end
-
-MatchCelebrationMainButtonMixin = {};
-
-function MatchCelebrationMainButtonMixin:OnClick()
-	ConfirmOrLeaveLFGParty();
-	HideUIPanel(MatchCelebrationPartyPoseFrame);
-end 
 
 MatchCelebrationExtraButtonMixin = {};
 

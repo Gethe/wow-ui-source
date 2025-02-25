@@ -37,6 +37,7 @@ local VignetteInfo =
 		{
 			Name = "GetRecommendedGroupSize",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -66,6 +67,7 @@ local VignetteInfo =
 		{
 			Name = "GetVignettePosition",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

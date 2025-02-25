@@ -565,9 +565,9 @@ local ItemConstants =
 		{
 			Name = "SubcontainerType",
 			Type = "Enumeration",
-			NumValues = 37,
+			NumValues = 38,
 			MinValue = 0,
-			MaxValue = 36,
+			MaxValue = 37,
 			Fields =
 			{
 				{ Name = "Bag", Type = "SubcontainerType", EnumValue = 0 },
@@ -607,6 +607,7 @@ local ItemConstants =
 				{ Name = "CraftingOrder", Type = "SubcontainerType", EnumValue = 34 },
 				{ Name = "CraftingOrderReagents", Type = "SubcontainerType", EnumValue = 35 },
 				{ Name = "AccountBankTabs", Type = "SubcontainerType", EnumValue = 36 },
+				{ Name = "CurrencyTransfer", Type = "SubcontainerType", EnumValue = 37 },
 			},
 		},
 		{

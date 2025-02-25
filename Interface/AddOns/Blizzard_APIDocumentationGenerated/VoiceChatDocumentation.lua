@@ -334,6 +334,7 @@ local VoiceChat =
 		{
 			Name = "GetProcesses",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{

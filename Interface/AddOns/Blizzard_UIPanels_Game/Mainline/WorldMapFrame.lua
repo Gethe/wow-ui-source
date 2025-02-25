@@ -182,19 +182,3 @@ function TaskPOI_OnLeave(self)
 	GameTooltip:Hide();
     self:OnLegendPinMouseLeave();
 end
-
-function WorldMapPing_StartPingQuest(questID)
-	QuestMapFrame_PingQuestID(questID);
-end
-
-function WorldMapPing_StartPingPOI(poiFrame)
-	-- MAPREFACTORTODO: Reimplement
-end
-
-function WorldMapPing_StopPing(frame)
-	-- MAPREFACTORTODO: Reimplement
-end
-
-function WorldMapPing_UpdatePing(frame, contextData)
-	-- MAPREFACTORTODO: Reimplement
-end

@@ -27,7 +27,6 @@ WardrobeOutfits.xml
 Mainline\NavigationBar.lua
 Mainline\NavigationBar.xml
 UIErrorsFrame.xml
-Mainline\Sound.lua
 DeprecatedTemplates.lua
 DeprecatedTemplates.xml
 Mainline\AlertFrames.lua
