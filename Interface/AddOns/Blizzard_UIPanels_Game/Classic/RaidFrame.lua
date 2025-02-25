@@ -110,7 +110,6 @@ end
 
 function RaidFrameMixin:OnShow()
 	ButtonFrameTemplate_ShowAttic(self:GetParent());
-	self:GetParent().TitleText:SetText(RAID);
 	
 	self:Update();
 	
