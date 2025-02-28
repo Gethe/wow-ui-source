@@ -175,6 +175,8 @@ function ChannelFrameMixin:OnVoiceChannelJoined(statusCode, voiceChannelID, chan
 		if channelType == Enum.ChatChannelType.Communities then
 			-- For community channels, just set the voice channel on the channel button
 			local channelButton = self:GetList():GetButtonForCommunityStream(clubId, streamId);
+			self:GetList():SelectChannelByID(voiceChannelID); -- CLASS-37173: Forces us to update what players are in this channel
+			self:GetRoster():Update();
 			if channelButton then
 				channelButton:SetVoiceChannel(C_VoiceChat.GetChannel(voiceChannelID));
 			end
