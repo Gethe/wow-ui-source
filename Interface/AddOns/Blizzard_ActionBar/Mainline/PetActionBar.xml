@@ -21,7 +21,7 @@
 			<OnLoad method="OnLoad" inherit="append"/>
 			<OnEvent method="OnEvent" inherit="append"/>
 			<PreClick method="PreClick" inherit="append"/>
-			<OnClick method="OnClick" inherit="append"/>
+			<OnClick method="OnClick"/>
 			<OnDragStart method="OnDragStart" inherit="append"/>
 			<OnReceiveDrag method="OnReceiveDrag" inherit="append"/>
 			<OnEnter method="OnEnter" inherit="append"/>
