@@ -140,6 +140,17 @@ function CharacterSelectListUtil.GetIndexFromCharID(charID)
 	return charID;
 end
 
+function CharacterSelectListUtil.GetEmptySlotIndices()
+	local indices = {};
+	for index = 1, #s_characterReorderTranslation do
+		if s_characterReorderTranslation[index] == 0 then
+			table.insert(indices, index);
+		end
+	end
+
+	return indices;
+end
+
 function CharacterSelectListUtil.BuildCharIndexToIDMapping(listSize)
 	local includeEmptySlots = true;
 	listSize = listSize or GetNumCharacters(includeEmptySlots);
@@ -498,15 +509,23 @@ end
 
 function CharacterSelectListUtil.GetNextCharacterIndex(direction)
 	local targetIndex = CharacterSelect.selectedIndex + direction;
+	local emptySlotIndices = CharacterSelectListUtil.GetEmptySlotIndices();
 
 	local function EvaluateElementData(elementData, iter)
 		if elementData.isGroup then
 			for _, data in iter(elementData.characterData) do
-				local characterIndex = CharacterSelectListUtil.GetIndexFromCharID(data.characterID);
-				if characterIndex == targetIndex then
-					if data.isEmpty then
-						targetIndex = targetIndex + direction;
-					else
+				if data.isEmpty then
+					-- Iterate through all empty slot indices, as GetIndexFromCharID would not be reliable
+					-- for empty slots if there are multiple, as all empty slots share a characterID of 0.
+					for index = 1, #emptySlotIndices do
+						if emptySlotIndices[index] == targetIndex then
+							targetIndex = targetIndex + direction;
+							break;
+						end
+					end
+				else
+					local characterIndex = CharacterSelectListUtil.GetIndexFromCharID(data.characterID);
+					if characterIndex == targetIndex then
 						return true;
 					end
 				end
