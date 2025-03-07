@@ -14,8 +14,6 @@ GARRISON_ALERT_CONTEXT_MISSION = {
 	[Enum.GarrisonFollowerType.FollowerType_6_0_Boat] = 4,
 	[Enum.GarrisonFollowerType.FollowerType_7_0_GarrisonFollower] = 5,
 	[Enum.GarrisonFollowerType.FollowerType_8_0_GarrisonFollower] = 6,
-
-	-- TODO:: Replace with the correct flash.
 	[Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower] = 6,
 };
 GARRISON_ALERT_CONTEXT_INVASION = 3;
@@ -739,7 +737,7 @@ function MiniMapTrackingButtonMixin:OnEvent(event, ...)
 	if event == "CVAR_UPDATE" or event == "VARIABLES_LOADED" or event == "SPELLS_CHANGED" then		
 		if event == "CVAR_UPDATE" then
 			local cvarName, value = ...;
-			local isMinimapTrackingCVar = (cvarName == "minimapTrackedInfov3");
+			local isMinimapTrackingCVar = (cvarName == "minimapTrackedInfov4");
 			if not isMinimapTrackingCVar then
 				return;
 			end
@@ -959,7 +957,7 @@ function ExpansionLandingPageMinimapButtonMixin:SetTooltip()
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 
 	if self:IsInMajorFactionRenownMode() then
-		RenownRewardUtil.AddMajorFactionToTooltip(GameTooltip, self.majorFactionID, GenerateClosure(self.SetTooltip, self));
+		RenownRewardUtil.AddMajorFactionLandingPageSummaryToTooltip(GameTooltip, self.majorFactionID, GenerateClosure(self.SetTooltip, self));
 	else
 		GameTooltip:SetText(self.title, 1, 1, 1);
 		GameTooltip:AddLine(self.description, nil, nil, nil, true);

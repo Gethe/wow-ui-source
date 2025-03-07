@@ -217,15 +217,20 @@ function LootJournalItemSetsMixin:ConfigureItemButton(button)
 	local _, itemLink, itemQuality = C_Item.GetItemInfo(button.itemID);
 	button.itemLink = itemLink;
 	itemQuality = itemQuality or Enum.ItemQuality.Epic;	-- sets are most likely rare
-	if ( itemQuality == Enum.ItemQuality.Uncommon ) then
-		button.Border:SetAtlas("loottab-set-itemborder-green", true);
-	elseif ( itemQuality == Enum.ItemQuality.Rare ) then
-		button.Border:SetAtlas("loottab-set-itemborder-blue", true);
-	elseif ( itemQuality == Enum.ItemQuality.Epic ) then
-		button.Border:SetAtlas("loottab-set-itemborder-purple", true);
+	local atlasData = ColorManager.GetAtlasDataForLootJournalSetItemQuality(itemQuality);
+	if atlasData then
+		button.Border:SetAtlas(atlasData.atlas, true);
+
+		if atlasData.overrideColor then
+			button.Border:SetVertexColor(atlasData.overrideColor.r, atlasData.overrideColor.g, atlasData.overrideColor.b);
+		else
+			button.Border:SetVertexColor(1, 1, 1);
+		end
 	end
+
 	local r, g, b = C_Item.GetItemQualityColor(itemQuality);
 	button:GetParent().SetName:SetTextColor(r, g, b);
+
 	self:CheckItemButtonTooltip(button);
 end
 

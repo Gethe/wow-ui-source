@@ -1,4 +1,3 @@
-
 GLUE_SCREENS = {
 	["login"] = 		{ frame = "AccountLogin", 			playMusic = true,	playAmbience = true },
 	["realmlist"] = 	{ frame = "RealmListUI", 			playMusic = true,	playAmbience = false },
@@ -79,9 +78,8 @@ function GlueParentMixin:OnLoad()
 	self:RegisterEvent("OPEN_STATUS_DIALOG");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:RegisterEvent("UI_SCALE_CHANGED");
-	self:RegisterEvent("LUA_WARNING");
 	self:RegisterEvent("SUBSCRIPTION_CHANGED_KICK_IMMINENT");
-	self:RegisterEvent("GAME_ENVIRONMENT_SWITCHED");
+	self:RegisterEvent("ACTIVE_GAME_MODE_UPDATED");
 	self:RegisterEvent("CONNECT_TO_EVENT_REALM_FAILED");
 	-- Events for Global Mouse Down
 	self:RegisterEvent("GLOBAL_MOUSE_DOWN");
@@ -159,19 +157,16 @@ function GlueParentMixin:OnEvent(event, ...)
 		end
 
 		AccountUpgradePanel_UpdateExpandState();
-	elseif ( event == "LUA_WARNING" ) then
-		HandleLuaWarning(...);
 	elseif ( event == "SUBSCRIPTION_CHANGED_KICK_IMMINENT" ) then
 		if not StoreFrame_IsShown() then
 			GlueDialog_Show("SUBSCRIPTION_CHANGED_KICK_WARNING");
 		end
-	elseif ( event == "GAME_ENVIRONMENT_SWITCHED" ) then
-		local environment = ...;
-		local isWoWLabs = environment == Enum.GameEnvironment.WoWLabs;
-		WOW_PROJECT_ID = isWoWLabs and WOW_PROJECT_WOWLABS or WOW_PROJECT_MAINLINE;
-		local screen = isWoWLabs and "plunderstorm" or "charselect";
+	elseif ( event == "ACTIVE_GAME_MODE_UPDATED" ) then
+		local gameMode = ...;
+		local isPlunderstorm = gameMode == Enum.GameMode.Plunderstorm;
+		WOW_PROJECT_ID = isPlunderstorm and WOW_PROJECT_WOWLABS or WOW_PROJECT_MAINLINE;
+		local screen = isPlunderstorm and "plunderstorm" or "charselect";
 		GlueParent_SetScreen(screen);
-		GlueDialog_Hide("SWAPPING_ENVIRONMENT");
 	elseif ( event == "ERROR_CONNECT_TO_EVENT_REALM_FAILED" ) then
 		CharacterSelect.connectingToPlunderstorm = false;
 		C_RealmList.ClearRealmList();
@@ -215,7 +210,7 @@ function GlueParent_GetBestScreen()
 		if CharacterSelect.connectingToPlunderstorm then
 			return "plunderstorm";
 		end
-		local screen = C_GameEnvironmentManager.GetCurrentGameEnvironment() == Enum.GameEnvironment.WoWLabs and "plunderstorm" or "charselect";
+		local screen = C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm and "plunderstorm" or "charselect";
 		return screen;
 	else
 		return "login";
@@ -375,9 +370,7 @@ function GlueParent_EnsureValidScreen()
 	if ( not GlueParent_IsScreenValid(currentScreen) ) then
 		local bestScreen = GlueParent_GetBestScreen();
 
-		LogAuroraClient("ae", "Screen invalid. Changing ",
-			"changingFrom", currentScreen,
-			"changingTo", bestScreen);
+		C_Log.LogMessage(string.format("Screen invalid. Changing from=\"%s\" to=\"%s\"", currentScreen or "none", bestScreen));
 
 		GlueParent_SetScreen(bestScreen);
 	end
@@ -386,7 +379,7 @@ end
 local function GlueParent_UpdateScreenSound(screenInfo)
 	local displayedExpansionLevel = GetClientDisplayExpansionLevel();
 	if ( screenInfo.playMusic ) then
-		local musicSoundKit = C_GameEnvironmentManager.GetCurrentGameEnvironment() == Enum.GameEnvironment.WoWLabs and SOUNDKIT.PLUNDERSTORM_QUEUE_SCREEN_MUSIC or SafeGetExpansionData(EXPANSION_GLUE_MUSIC, displayedExpansionLevel);
+		local musicSoundKit = C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm and SOUNDKIT.PLUNDERSTORM_QUEUE_SCREEN_MUSIC or SafeGetExpansionData(EXPANSION_GLUE_MUSIC, displayedExpansionLevel);
 		PlayGlueMusic(musicSoundKit);
 	end
 	if ( screenInfo.playAmbience ) then
@@ -395,7 +388,7 @@ local function GlueParent_UpdateScreenSound(screenInfo)
 end
 
 local function GlueParent_ChangeScreen(screenInfo, screenTable)
-	LogAuroraClient("ae", "Switching to screen ", "screen", screenInfo.frame);
+	C_Log.LogMessage(string.format("Switching to screen=\"%s\"", screenInfo.frame));
 
 	--Hide all other screens
 	for key, info in pairs(screenTable) do
@@ -897,15 +890,10 @@ function OnExcessiveErrors()
 	-- Glue Implementation, no-op.
 end
 
-local GLUE_PrintHandler =
-    function(...)
-		local printMsg = string.join(" ", tostringall(...));
-		ConsoleAddMessage(printMsg)
-	end
+setprinthandler(function(...)
+	C_Log.LogMessage(string.join(" ", tostringall(...)));
+end);
 
-setprinthandler(GLUE_PrintHandler);
-
-ConsolePrint = print;
 SecureMixin = Mixin;
 CreateFromSecureMixins = CreateFromMixins;
 

@@ -18,6 +18,7 @@ local QuestOffer =
 		{
 			Name = "GetQuestOfferMajorFactionReputationRewards",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{

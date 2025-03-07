@@ -48,11 +48,6 @@ function EditModePresetLayoutManager:GetModernSystemAnchorInfo(system, systemInd
 	return CopyTable(modernSystemInfo.anchorInfo);
 end
 
-function EditModePresetLayoutManager:GetModernSystemAnchorInfo(system, systemIndex)
-	local modernSystemInfo = systemIndex and EDIT_MODE_MODERN_SYSTEM_MAP[system][systemIndex] or EDIT_MODE_MODERN_SYSTEM_MAP[system];
-	return CopyTable(modernSystemInfo.anchorInfo);
-end
-
 function EditModePresetLayoutManager:GetPresetLayoutMapByIndex(layoutIndex)
 	return presetLayoutMapByLayoutIndex[layoutIndex]; 
 end	

@@ -84,7 +84,7 @@ local DIRECT_MACRO_CONDITIONAL_NAMES = {
     "IsLeftShiftKeyDown", "IsRightShiftKeyDown", "IsShiftKeyDown",
     "IsModifierKeyDown", "IsModifiedClick",
     "GetMouseButtonClicked", "GetActionBarPage", "GetBonusBarOffset",
-    "IsMounted", "IsSwimming", "IsSubmerged", "IsFlying", "IsFlyableArea", "IsAdvancedFlyableArea",
+    "IsMounted", "IsSwimming", "IsSubmerged", "IsFlying", "IsFlyableArea", "IsAdvancedFlyableArea", "IsDrivableArea",
     "IsIndoors", "IsOutdoors",
 	"HasVehicleActionBar", "HasOverrideActionBar", "HasTempShapeshiftActionBar",
 	"HasBonusActionBar", "GetBonusBarIndex", "GetVehicleBarIndex", "GetOverrideBarIndex",

@@ -138,7 +138,10 @@ function TradeFrame_UpdateTargetItem(id)
 
 	else
 		buttonText:SetText(name);
-		buttonText:SetTextColor(ITEM_QUALITY_COLORS[quality].r, ITEM_QUALITY_COLORS[quality].g, ITEM_QUALITY_COLORS[quality].b);
+		local colorData = ColorManager.GetColorDataForItemQuality(name);
+		if colorData then
+			buttonText:SetTextColor(colorData.r, colorData.g, colorData.b);
+		end
 	end
 	local tradeItemButton = _G["TradeRecipientItem"..id.."ItemButton"];
 	local tradeItem = _G["TradeRecipientItem"..id];

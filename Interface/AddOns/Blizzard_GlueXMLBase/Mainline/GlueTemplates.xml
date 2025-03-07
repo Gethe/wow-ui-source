@@ -27,7 +27,7 @@
 		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 	</CheckButton>
 
-	<Button name="GameEnvironmentButtonTemplate" mixin="SelectableButtonMixin, GameEnvironmentButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
+	<Button name="GameModeButtonTemplate" mixin="SelectableButtonMixin, GameModeButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
 		<Size x="244" y="122"/>
 		<Layers>
 			<Layer level="OVERLAY">
@@ -55,10 +55,10 @@
 		</Layers>
 		<KeyValues>
 			<!--
-			set the gameEnvironment key to be the value of the game environment you want to switch to, for example:
-			   Enum.GameEnvironment.WoW
-			   Enum.GameEnvironment.WoWLabs
-			<KeyValue key="gameEnvironment" value="Enum.GameEnvironment.WoW" type="global" />
+			set the gameMode key to be the value of the game mode you want to switch to, for example:
+			   Enum.GameMode.Standard
+			   Enum.GameMode.Plunderstorm
+			<KeyValue key="gameMode" value="Enum.GameMode.Standard" type="global" />
 			-->
 		</KeyValues>
 		<Scripts>
@@ -70,7 +70,7 @@
 		</Scripts>
 	</Button>
 
-	<Button name="GameEnvironmentButtonPulsingTemplate" mixin="SelectableButtonMixin, GameEnvironmentButtonPulsingMixin" motionScriptsWhileDisabled="true" virtual="true" inherits="GameEnvironmentButtonTemplate">
+	<Button name="GameModeButtonPulsingTemplate" mixin="SelectableButtonMixin, GameModeButtonPulsingMixin" motionScriptsWhileDisabled="true" virtual="true" inherits="GameModeButtonTemplate">
 		<Size x="244" y="122"/>
 		<Layers>
 			<Layer level="OVERLAY">
@@ -103,7 +103,7 @@
 		</Scripts>
 	</Button>
 
-	<Frame name="GameEnvironmentFrameTemplate" mixin="GameEnvironmentFrameMixin" virtual="true" inherits="ResizeLayoutFrame" hidden="true">
+	<Frame name="GameModeFrameTemplate" mixin="GameModeFrameMixin" virtual="true" inherits="ResizeLayoutFrame" hidden="true">
 		<KeyValues>
 			<KeyValue key="fixedHeight" value="122"/>
 		</KeyValues>
@@ -126,7 +126,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="SelectWoWToggle" inherits="GameEnvironmentButtonTemplate">
+			<Button parentKey="SelectWoWToggle" inherits="GameModeButtonTemplate">
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture parentKey="NormalTexture">
@@ -141,10 +141,10 @@
 					<Anchor point="TOPLEFT" y="0"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="gameEnvironment" value="Enum.GameEnvironment.WoW" type="global" />
+					<KeyValue key="gameMode" value="Enum.GameMode.Standard" type="global" />
 				</KeyValues>
 			</Button>
-			<Button parentKey="SelectWoWLabsToggle" inherits="GameEnvironmentButtonPulsingTemplate">
+			<Button parentKey="SelectWoWLabsToggle" inherits="GameModeButtonPulsingTemplate">
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture parentKey="NormalTexture" file="Interface\Glues\Common\Glues-WoW-PlunderstormLogo">
@@ -197,7 +197,7 @@
 					<Anchor point="LEFT" relativeKey="$parent.SelectWoWToggle" relativePoint="RIGHT" x="-24" y="0"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="gameEnvironment" value="Enum.GameEnvironment.WoWLabs" type="global" />
+					<KeyValue key="gameMode" value="Enum.GameMode.Plunderstorm" type="global" />
 				</KeyValues>
 			</Button>
 		</Frames>

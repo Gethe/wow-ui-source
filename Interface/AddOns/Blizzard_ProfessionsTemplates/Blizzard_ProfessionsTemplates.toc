@@ -2,6 +2,7 @@
 ## Author: Blizzard Entertainment
 ## LoadOnDemand: 1
 ## LoadWith: Blizzard_ProfessionsCrafting, Blizzard_ProfessionsCustomerOrders
+## Dependencies: Blizzard_Colors
 Blizzard_Professions.lua
 Blizzard_ProfessionsRecipeLoader.lua
 Blizzard_ProfessionsTransaction.lua

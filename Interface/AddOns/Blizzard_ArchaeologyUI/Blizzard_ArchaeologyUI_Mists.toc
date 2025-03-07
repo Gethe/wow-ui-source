@@ -1,0 +1,4 @@
+## Title: Blizzard Archaeology UI
+## LoadOnDemand: 1
+Cata\Blizzard_ArchaeologyUI.xml
+Shared\Localization.lua

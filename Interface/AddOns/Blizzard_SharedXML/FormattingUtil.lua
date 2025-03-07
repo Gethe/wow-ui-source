@@ -187,6 +187,26 @@ function FormattingUtil.GetItemCostString(itemID, quantity, colorCode, abbreviat
 	return "";
 end
 
+function FormattingUtil.AddLeadingZeroes(digits, numZeroes, zeroesColor)
+	numZeroes = numZeroes or 7;
+	zeroesColor = zeroesColor or GRAY_FONT_COLOR;
+
+	local digitsString = tostring(digits);
+	local numDigits = #digitsString;
+	if numDigits < numZeroes then
+		local leadingZeroes = "";
+		for i = 1, (numZeroes - numDigits) do
+			leadingZeroes = leadingZeroes.."0";
+		end
+
+		leadingZeroes = zeroesColor:WrapTextInColorCode(leadingZeroes);
+
+		return leadingZeroes .. digits;
+	end
+
+	return digits;
+end
+
 function GetCurrencyString(currencyID, overrideAmount, colorCode, abbreviate)
 	colorCode = colorCode or HIGHLIGHT_FONT_COLOR_CODE;
 

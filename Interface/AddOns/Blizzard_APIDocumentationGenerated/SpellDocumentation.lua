@@ -22,8 +22,20 @@ local Spell =
 			},
 		},
 		{
+			Name = "EnableSpellRangeCheck",
+			Type = "Function",
+			Documentation = { "Used in conjunction with SpellRangeCheckUpdate to inform the UI when a spell goes in or out of range with the current target." },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+				{ Name = "enable", Type = "bool", Nilable = false, Documentation = { "True if changes in range for the spell should dispatch SpellRangeCheckUpdate. False if the spell no longer needs the event." } },
+			},
+		},
+		{
 			Name = "GetDeadlyDebuffInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -38,6 +50,7 @@ local Spell =
 		{
 			Name = "GetMawPowerBorderAtlasBySpellID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -52,6 +65,7 @@ local Spell =
 		{
 			Name = "GetMawPowerLinkBySpellID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -97,6 +111,7 @@ local Spell =
 		{
 			Name = "GetSpellAutoCast",
 			Type = "Function",
+			MayReturnNothing = true,
 			Documentation = { "Returns nil if spell is not found" },
 
 			Arguments =
@@ -128,6 +143,7 @@ local Spell =
 		{
 			Name = "GetSpellCharges",
 			Type = "Function",
+			MayReturnNothing = true,
 			Documentation = { "Returns a table of info about the charges of a charge-accumulating spell; May return nil if spell is not found or is not charge-based" },
 
 			Arguments =
@@ -143,6 +159,7 @@ local Spell =
 		{
 			Name = "GetSpellCooldown",
 			Type = "Function",
+			MayReturnNothing = true,
 			Documentation = { "Returns nil if spell is not found" },
 
 			Arguments =
@@ -158,6 +175,7 @@ local Spell =
 		{
 			Name = "GetSpellDescription",
 			Type = "Function",
+			MayReturnNothing = true,
 			Documentation = { "Returns nil if spell is not found" },
 
 			Arguments =
@@ -173,6 +191,7 @@ local Spell =
 		{
 			Name = "GetSpellIDForSpellIdentifier",
 			Type = "Function",
+			MayReturnNothing = true,
 			Documentation = { "Meant primarily for getting a spell id from a spell name or link; Returns nothing if spell does not exist" },
 
 			Arguments =
@@ -188,6 +207,7 @@ local Spell =
 		{
 			Name = "GetSpellInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 			Documentation = { "Returns nil if spell is not found" },
 
 			Arguments =
@@ -218,6 +238,7 @@ local Spell =
 		{
 			Name = "GetSpellLink",
 			Type = "Function",
+			MayReturnNothing = true,
 			Documentation = { "Returns nil if spell is not found" },
 
 			Arguments =
@@ -234,6 +255,7 @@ local Spell =
 		{
 			Name = "GetSpellLossOfControlCooldown",
 			Type = "Function",
+			MayReturnNothing = true,
 			Documentation = { "Returns nil if spell is not found" },
 
 			Arguments =
@@ -250,6 +272,7 @@ local Spell =
 		{
 			Name = "GetSpellName",
 			Type = "Function",
+			MayReturnNothing = true,
 			Documentation = { "Returns nil if spell is not found" },
 
 			Arguments =
@@ -265,6 +288,7 @@ local Spell =
 		{
 			Name = "GetSpellPowerCost",
 			Type = "Function",
+			MayReturnNothing = true,
 			Documentation = { "Returns a table containing one or more SpellPowerCostInfos, one for each power type this spell costs; May return nil if spell is not found or has no resource costs" },
 
 			Arguments =
@@ -289,6 +313,7 @@ local Spell =
 		{
 			Name = "GetSpellSkillLineAbilityRank",
 			Type = "Function",
+			MayReturnNothing = true,
 			Documentation = { "Returns the rank of a spell that corresponds to an ability within a ranked SkillLine (ex: a crafting Recipe); Returns nil if spell is not found, or isn't part of a ranked SkillLine" },
 
 			Arguments =
@@ -304,6 +329,7 @@ local Spell =
 		{
 			Name = "GetSpellSubtext",
 			Type = "Function",
+			MayReturnNothing = true,
 			Documentation = { "Returns nil if spell is not found" },
 
 			Arguments =
@@ -319,6 +345,7 @@ local Spell =
 		{
 			Name = "GetSpellTexture",
 			Type = "Function",
+			MayReturnNothing = true,
 			Documentation = { "Returns nothing if spell is not found" },
 
 			Arguments =
@@ -335,6 +362,7 @@ local Spell =
 		{
 			Name = "GetSpellTradeSkillLink",
 			Type = "Function",
+			MayReturnNothing = true,
 			Documentation = { "Returns nil if spell is not associated with a trade skill" },
 
 			Arguments =
@@ -665,6 +693,18 @@ local Spell =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
 				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SpellRangeCheckUpdate",
+			Type = "Event",
+			LiteralName = "SPELL_RANGE_CHECK_UPDATE",
+			Documentation = { "Used in conjunction with EnableSpellRangeCheck to inform the UI when a spell goes in or out of range with the current target." },
+			Payload =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+				{ Name = "isInRange", Type = "bool", Nilable = false, Documentation = { "Whether or not the current target is in range of the spell. Should not be used if the 'checksRange' parameter is false." } },
+				{ Name = "checksRange", Type = "bool", Nilable = false, Documentation = { "Can be false if a range check was not made for any reason, for example there is not a current target." } },
 			},
 		},
 		{

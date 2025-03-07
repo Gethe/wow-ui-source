@@ -3342,9 +3342,9 @@ function UnitPopupItemQuality2DescButtonMixin:GetText(contextData)
 end
 
 function UnitPopupItemQuality2DescButtonMixin:GetColor()
-	local itemQualityColor = ITEM_QUALITY_COLORS[self:GetID()];
-	if itemQualityColor then
-		return itemQualityColor.color:GetRGB();
+	local colorData = ColorManager.GetColorDataForItemQuality(self:GetID());
+	if colorData then
+		return colorData.color:GetRGB();
 	end
 	return 1, 1, 1;
 end

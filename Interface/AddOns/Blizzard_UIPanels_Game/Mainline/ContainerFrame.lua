@@ -1695,8 +1695,9 @@ function ContainerFrameItemButtonMixin:UpdateNewItem(quality)
 			self.NewItemTexture:Hide();
 			self.BattlepayItemTexture:Show();
 		else
-			if (quality and NEW_ITEM_ATLAS_BY_QUALITY[quality]) then
-				self.NewItemTexture:SetAtlas(NEW_ITEM_ATLAS_BY_QUALITY[quality]);
+			local atlas = ColorManager.GetAtlasDataForNewItemQuality(quality);
+			if (quality and atlas) then
+				self.NewItemTexture:SetAtlas(atlas);
 			else
 				self.NewItemTexture:SetAtlas("bags-glow-white");
 			end

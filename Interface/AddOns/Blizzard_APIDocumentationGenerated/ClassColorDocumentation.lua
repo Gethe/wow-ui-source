@@ -9,6 +9,7 @@ local ClassColor =
 		{
 			Name = "GetClassColor",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

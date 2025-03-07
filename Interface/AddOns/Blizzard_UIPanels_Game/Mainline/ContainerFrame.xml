@@ -55,7 +55,7 @@
 		</Scripts>
 	</Button>
 
-	<DropdownButton name="ContainerFramePortraitButtonTemplate" mixin="ContainerFramePortraitButtonMixin" propagateKeyboardInput="true" virtual="true">
+	<DropdownButton name="ContainerFramePortraitButtonTemplate" mixin="ContainerFramePortraitButtonMixin" virtual="true">
 		<Size x="50" y="40"/>
 		<Layers>
 			<Layer level="HIGHLIGHT">

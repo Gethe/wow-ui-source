@@ -71,6 +71,7 @@ local AzeriteEmpoweredItem =
 		{
 			Name = "GetPowerInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -85,6 +86,7 @@ local AzeriteEmpoweredItem =
 		{
 			Name = "GetPowerText",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -101,6 +103,7 @@ local AzeriteEmpoweredItem =
 		{
 			Name = "GetSpecsForPower",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

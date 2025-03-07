@@ -1,10 +1,10 @@
 ## Title: Blizzard_AddOnList
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## AllowLoad: Both
 ## Dependencies: Blizzard_SharedXML
-## AllowLoad: both
+## AllowLoad: Both
 ## AllowLoadGameType: mainline
+## SavedVariablesMachine: g_addonCategoriesCollapsed
 Mainline\AddonList.lua
 Mainline\AddonList.xml
 Shared\Localization.lua

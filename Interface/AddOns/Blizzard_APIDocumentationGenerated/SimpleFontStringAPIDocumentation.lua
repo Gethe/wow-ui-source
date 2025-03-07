@@ -49,6 +49,7 @@ local SimpleFontStringAPI =
 		{
 			Name = "FindCharacterIndexAtCoordinate",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -279,6 +280,7 @@ local SimpleFontStringAPI =
 		{
 			Name = "GetTextColor",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -342,6 +344,14 @@ local SimpleFontStringAPI =
 			Returns =
 			{
 				{ Name = "isTruncated", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "OnColorsUpdated",
+			Type = "Function",
+
+			Arguments =
+			{
 			},
 		},
 		{

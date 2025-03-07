@@ -1,0 +1,16 @@
+## Title: Blizzard_GlueXMLBase
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_SharedXML
+## LoadFirst: 1
+## AllowLoad: Glue
+## AllowLoadGameType: mists
+Mists\Constants.lua
+Classic\Localization.lua
+Wrath\Localization.lua
+Classic\GlueTemplates.lua
+Classic\GlueTemplates.xml
+Classic\GlueButtons.lua
+Classic\GlueButtons.xml
+Shared\GlueContextMenu.lua
+Shared\GlueContextMenu.xml

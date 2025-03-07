@@ -158,6 +158,7 @@ local ContributionCollector =
 		{
 			Name = "GetRequiredContributionCurrency",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -173,6 +174,7 @@ local ContributionCollector =
 		{
 			Name = "GetRequiredContributionItem",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

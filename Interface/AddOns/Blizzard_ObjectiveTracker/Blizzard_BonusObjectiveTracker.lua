@@ -69,7 +69,7 @@ function BonusObjectiveTrackerMixin:OnBlockHeaderClick(block, button)
 					local mapID = C_TaskQuest.GetQuestZoneID(questID);
 					if mapID then
 						OpenQuestLog(mapID);
-						WorldMapPing_StartPingQuest(questID);
+						EventRegistry:TriggerEvent("MapCanvas.PingQuestID", questID);
 					end
 				end
 			end
@@ -362,7 +362,8 @@ function BonusObjectiveTrackerMixin:SetUpQuestBlock(block, forceShowCompleted)
 
 	local showAsCompleted = isThreatQuest and isQuestComplete;
 	local hasAddedTimeLeft = false;
-	for objectiveIndex = 1, block.numObjectives do
+	local numObjectives = block.numObjectives or 0;
+	for objectiveIndex = 1, numObjectives do
 		local text, objectiveType, finished = GetQuestObjectiveInfo(questID, objectiveIndex, forceShowCompleted);
 		if text then
 			if finished then

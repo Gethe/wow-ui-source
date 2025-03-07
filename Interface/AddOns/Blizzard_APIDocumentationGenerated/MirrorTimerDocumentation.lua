@@ -8,6 +8,7 @@ local MirrorTimer =
 		{
 			Name = "GetMirrorTimerInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

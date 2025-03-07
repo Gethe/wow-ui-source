@@ -24,3 +24,7 @@ NewSettings["10.2.0"] = {
 NewSettings["11.0.0"] = {
 	"arachnophobiaMode",
 };
+
+NewSettings["11.1.5"] = {
+	"cooldownViewerEnabled",
+};

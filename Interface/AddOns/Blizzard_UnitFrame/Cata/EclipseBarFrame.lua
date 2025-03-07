@@ -21,43 +21,57 @@ ECLIPSE_MARKER_COORDS["none"] 		= { 0.914, 1.0, 0.82, 1.0 };
 ECLIPSE_MARKER_COORDS["sun"] 		= { 0.914, 1.0, 0.641, 0.82 }; 
 ECLIPSE_MARKER_COORDS["moon"] 		= { 1.0, 0.914, 0.641, 0.82 }; 
 
-function EclipseBar_UpdateShown(self)
+EclipseBarFrameMixin = {}
+
+function EclipseBarFrameMixin:ShouldDisplay()
+
+	local _, class = UnitClass("player");
+	local form  = GetShapeshiftFormID();
+	
+	-- Disable rune frame if not a DRUID.
+
+	if class == "DRUID" and (form == MOONKIN_FORM or not form) then
+		if ClassicExpansionAtLeast(LE_EXPANSION_MISTS_OF_PANDARIA) then
+			return GetSpecialization() == SPEC_DRUID_BALANCE;
+		else
+			return GetPrimaryTalentTree() == 1;
+		end
+	end
+
+	return false;
+end
+
+function EclipseBarFrameMixin:UpdateShown()
 	if OverrideActionBar:IsShown() then
 		return;
 	end
 
-	-- Disable rune frame if not a DRUID.
-	local _, class = UnitClass("player");
-	local form  = GetShapeshiftFormID();
-	
-	if  class == "DRUID" and (form == MOONKIN_FORM or not form) then
-		if GetPrimaryTalentTree() == 1 then
-			self.showPercent = GetCVarBool("statusTextPercentage");	
-			if GetCVarBool("playerStatusText") then
-				self.powerText:Show();
-				self.lockShow = true;
-			else
-				self.powerText:Hide();
-				self.lockShow = false;
-			end
-			self:Show();
+	if self:ShouldDisplay() then
+		self.textDisplay = GetCVar("statusTextDisplay");
+		if GetCVarBool("playerStatusText") then
+			self.powerText:Show();
+			self.lockShow = true;
 		else
-			self:Hide();
+			self.powerText:Hide();
+			self.lockShow = false;
 		end
+		self:Show();
 	else
 		self:Hide();
 	end
 	PlayerFrame_AdjustAttachments();
 end
 
-function EclipseBar_Update(self)
+function EclipseBarFrameMixin:Update()
 	local power = UnitPower( self:GetParent().unit, Enum.PowerType.Balance );
 	local maxPower = UnitPowerMax( self:GetParent().unit, Enum.PowerType.Balance );
 	if maxPower == 0 then
 		return;--catch divide by zero
 	end
 	
-	if self.showPercent then 
+	if (self.textDisplay == "BOTH") then
+		self.powerText:SetText("("..abs(power/maxPower*100).."%) "..abs(power).." / "..abs(maxPower));
+	elseif (self.textDisplay == "PERCENT") then
 		self.powerText:SetText(abs(power/maxPower*100).."%");
 	else
 		self.powerText:SetText(abs(power));
@@ -67,15 +81,15 @@ function EclipseBar_Update(self)
 	self.marker:SetPoint("CENTER", xpos, 0);
 end
 
-function EclipseBar_OnLoad(self)
+function EclipseBarFrameMixin:OnLoad()
 	self:RegisterEvent("UPDATE_SHAPESHIFT_FORM");
 	self:RegisterEvent("PLAYER_TALENT_UPDATE");
-	self:RegisterEvent("CVAR_UPDATE");	
-	self:RegisterEvent("UNIT_AURA");
+	self:RegisterEvent("CVAR_UPDATE");
 	self:RegisterEvent("ECLIPSE_DIRECTION_CHANGE");
+	self:RegisterUnitEvent("UNIT_AURA", "player", "vehicle");
 end
 
-function EclipseBar_OnShow(self)
+function EclipseBarFrameMixin:OnShow()
 
 	local direction = GetEclipseDirection();
 	if direction then
@@ -136,10 +150,10 @@ function EclipseBar_OnShow(self)
 	self.hasLunarEclipse = hasLunarEclipse;
 	self.hasSolarEclipse = hasSolarEclipse;
 	
-	EclipseBar_Update(self);
+	self:Update();
 end
 
-function EclipseBar_CheckBuffs(self) 
+function EclipseBarFrameMixin:CheckBuffs() 
 	if not self:IsShown() then
 		return;
 	end
@@ -215,16 +229,16 @@ function EclipseBar_CheckBuffs(self)
 	self.hasSolarEclipse = hasSolarEclipse;
 end 
 
-function EclipseBar_OnEvent(self, event, ...)
+function EclipseBarFrameMixin:OnEvent(event, ...)
 	if event == "UNIT_AURA" then
 		local arg1 = ...;
 		if arg1 ==  PlayerFrame.unit then
-			EclipseBar_CheckBuffs(self);
+			self:CheckBuffs();
 		end
 	elseif event == "ECLIPSE_DIRECTION_CHANGE" then
 		local status = ...;
 		self.marker:SetTexCoord(unpack(ECLIPSE_MARKER_COORDS[status]));
 	else
-		EclipseBar_UpdateShown(self);
+		self:UpdateShown(self);
 	end
 end

@@ -24,6 +24,7 @@ local PetBattles =
 		{
 			Name = "GetIcon",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -39,6 +40,7 @@ local PetBattles =
 		{
 			Name = "GetName",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

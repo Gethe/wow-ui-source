@@ -23,21 +23,21 @@ function PlunderstormLobbyMixin:OnLoad()
 	self:SetBackgroundModel(PlunderstormBackground);
 
 	self:AddDynamicEventMethod(EventRegistry, "FriendsFrame.OnFriendsOnlineUpdated", self.OnFriendsOnlineUpdated);
-	self:AddDynamicEventMethod(EventRegistry, "GameEnvironment.Selected", self.OnGameEnvironmentSelected);
+	self:AddDynamicEventMethod(EventRegistry, "GameMode.Selected", self.OnGameModeSelected);
 	self:AddDynamicEventMethod(EventRegistry, "RealmList.Cancel", self.OnRealmListCancel);
 	self:AddDynamicEventMethod(EventRegistry, "MatchmakingQueueType.PlayerUpdatedPartyList", self.OnPlayerUpdatedPartyList);
 
 	self.NavBar:SetRealmsButtonEnabled(false);
+	self.NavBar:SetCampsButtonEnabled(false);
 end
 
-function PlunderstormLobbyMixin:ChangeGameEnvironment(newEnvironment)
-	assert(newEnvironment);
-	if C_GameEnvironmentManager.GetCurrentGameEnvironment() == newEnvironment then		
+function PlunderstormLobbyMixin:ChangeGameMode(newGameMode)
+	assert(newGameMode);
+	if C_GameRules.GetActiveGameMode() == newGameMode then
 		return;
 	end
 
-	--GlueDialog_Show("SWAPPING_ENVIRONMENT");
-	if newEnvironment == Enum.GameEnvironment.WoWLabs then
+	if newGameMode == Enum.GameMode.Plunderstorm then
 		-- If we changed character order persist it
 		CharacterSelect_SaveCharacterOrder();
 		-- Swap to the Plunderstorm Realm
@@ -53,10 +53,10 @@ function PlunderstormLobbyMixin:ChangeGameEnvironment(newEnvironment)
 	end
 end
 
-function PlunderstormLobbyMixin:OnGameEnvironmentSelected(requestedEnvironment)
-	assert(requestedEnvironment);
-	if C_GameEnvironmentManager.GetCurrentGameEnvironment() ~= requestedEnvironment then
-		self.NavBar.GameEnvironmentButton.SelectionDrawer:ChangeGameEnvironment(requestedEnvironment);
+function PlunderstormLobbyMixin:OnGameModeSelected(requestedGameMode)
+	assert(requestedGameMode);
+	if C_GameRules.GetActiveGameMode() ~= requestedGameMode then
+		self.NavBar.GameModeButton.SelectionDrawer:ChangeGameMode(requestedGameMode);
 	end
 end
 
@@ -82,7 +82,7 @@ function PlunderstormLobbyMixin:OnShow()
     GluePartyPoseFrame:Show();
 	GluePartyPoseFrame:Init();
 
-	self.NavBar.GameEnvironmentButton.SelectionDrawer:SelectRadioButtonForEnvironment(Enum.GameEnvironment.WoWLabs);
+	self.NavBar.GameModeButton.SelectionDrawer:SelectRadioButtonForGameMode(Enum.GameMode.Plunderstorm);
 
 	if BNConnected() then
 		local numInvites = BNGetNumFriendInvites() + C_WoWLabsMatchmaking.GetNumPartyInvites();
@@ -100,7 +100,7 @@ function PlunderstormLobbyMixin:OnShow()
 end
 
 function PlunderstormLobbyMixin:OnRealmListCancel()
-	self.NavBar.GameEnvironmentButton.SelectionDrawer:SelectRadioButtonForEnvironment(Enum.GameEnvironment.WoWLabs);
+	self.NavBar.GameModeButton.SelectionDrawer:SelectRadioButtonForGameMode(Enum.GameMode.Plunderstorm);
 end
 
 function PlunderstormLobbyMixin:OnFriendsOnlineUpdated(numOnlineFriends)

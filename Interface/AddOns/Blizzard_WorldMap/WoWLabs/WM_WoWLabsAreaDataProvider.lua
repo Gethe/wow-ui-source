@@ -37,22 +37,6 @@ local DropIconAtlasFormats = {
 	SelectedHover = "%s-selected",
 };
 
--- TODO:: REPLACE DEBUG AREAS These should be replaced by a request/response flow with the server.
-local DebugDropAreas = {
-    { x = -1615, y = -1802, areaType = Enum.WoWLabsAreaType.PlunderstormDropDense, id = 155569, }, -- Stromgarde
-	{ x = -1312, y = -2080, areaType = Enum.WoWLabsAreaType.PlunderstormDropMedium, id = 155570, }, -- Circle of Elements
-	{ x = -866, y = -2080, areaType = Enum.WoWLabsAreaType.PlunderstormDropDense, id = 155571 }, -- Ar'gorok
-	{ x = -1960, y = -2780, areaType = Enum.WoWLabsAreaType.PlunderstormDropMedium, id = 155572 }, -- Boulderfist Hall
-	{ x = -1523, y = -2963, areaType = Enum.WoWLabsAreaType.PlunderstormDropDense, id = 155573 }, -- Go'Shek Farm
-	{ x = -1792, y = -3331, areaType = Enum.WoWLabsAreaType.PlunderstormDropMedium, id = 155574 }, -- Witherbark Village
-	{ x = -1113, y = -2908, areaType = Enum.WoWLabsAreaType.PlunderstormDropDense, id = 155575 }, -- Dabyrie's Farmstead
-	{ x = -973, y = -3431, areaType = Enum.WoWLabsAreaType.PlunderstormDropMedium, id = 155576 }, -- Hammerfall
-	{ x = -1138, y = -1691, areaType = Enum.WoWLabsAreaType.PlunderstormDropSparse, id = 155577 }, -- North of Stromgarde
-	{ x = -1157, y = -2478, areaType = Enum.WoWLabsAreaType.PlunderstormDropSparse, id = 155578 }, -- Center North
-	{ x = -1689, y = -2380, areaType = Enum.WoWLabsAreaType.PlunderstormDropSparse, id = 155579 }, -- Center South
-	{ x = -1387, y = -3375, areaType = Enum.WoWLabsAreaType.PlunderstormDropSparse, id = 155580 }, -- East
-};
-
 
 WoWLabsAreaDataProviderMixin = CreateFromMixins(MapCanvasDataProviderMixin);
 

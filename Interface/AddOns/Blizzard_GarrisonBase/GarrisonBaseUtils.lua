@@ -1,16 +1,4 @@
 ---------------------------------------------------------------------------------
--- Global Constants
----------------------------------------------------------------------------------
-FOLLOWER_QUALITY_COLORS = {
-	[Enum.GarrFollowerQuality.Common] = ITEM_QUALITY_COLORS[1]; -- Common
-	[Enum.GarrFollowerQuality.Uncommon] = ITEM_QUALITY_COLORS[2]; -- Uncommon
-	[Enum.GarrFollowerQuality.Rare] = ITEM_QUALITY_COLORS[3]; -- Rare
-	[Enum.GarrFollowerQuality.Epic] = ITEM_QUALITY_COLORS[4]; -- Epic
-	[Enum.GarrFollowerQuality.Legendary] = ITEM_QUALITY_COLORS[5]; -- Legendary
-	[Enum.GarrFollowerQuality.Title] = ITEM_QUALITY_COLORS[4]; -- Followers with the title (== 6) quality still appear as epic to players.
-};
-
----------------------------------------------------------------------------------
 -- Display Options
 ---------------------------------------------------------------------------------
 GarrisonFollowerOptions = { };
@@ -452,9 +440,14 @@ function GarrisonFollowerPortraitMixin:SetQuality(quality)
 		self.LevelBorder:SetAtlas("GarrMission_PortraitRing_LevelBorder", true);
 		self.PortraitRing:SetAtlas("GarrMission_PortraitRing_Quality", true);
 		self.PortraitRingQuality:Show();
-		local color = quality and FOLLOWER_QUALITY_COLORS[quality] or nil;
-		if (color) then
-			self:SetQualityColor(color.r, color.g, color.b);
+
+		if quality then
+			local colorData = ColorManager.GetColorDataForFollowerQuality(quality);
+			if colorData then
+				self:SetQualityColor(colorData.r, colorData.g, colorData.b);
+			else
+				self:SetQualityColor(1, 1, 1);
+			end
 		else
 			self:SetQualityColor(1, 1, 1);
 		end

@@ -30,6 +30,7 @@ local SpellBook =
 		{
 			Name = "FindSpellBookSlotForSpell",
 			Type = "Function",
+			MayReturnNothing = true,
 			Documentation = { "If found, returns the first slot position of a SpellBookItem matching the specified spell and criteria" },
 
 			Arguments =
@@ -50,6 +51,7 @@ local SpellBook =
 		{
 			Name = "GetCurrentLevelSpells",
 			Type = "Function",
+			MayReturnNothing = true,
 			Documentation = { "Returns general, class, and active spec spells that are learned at the specified level" },
 
 			Arguments =
@@ -88,6 +90,7 @@ local SpellBook =
 		{
 			Name = "GetSpellBookItemAutoCast",
 			Type = "Function",
+			MayReturnNothing = true,
 			Documentation = { "Returns nothing if item doesn't exist or isn't a spell" },
 
 			Arguments =
@@ -121,6 +124,7 @@ local SpellBook =
 		{
 			Name = "GetSpellBookItemCharges",
 			Type = "Function",
+			MayReturnNothing = true,
 			Documentation = { "Returns a table of info about the charges of a charge-accumulating SpellBookItem; May return nil if item is not found or is not charge-based" },
 
 			Arguments =
@@ -137,6 +141,7 @@ local SpellBook =
 		{
 			Name = "GetSpellBookItemCooldown",
 			Type = "Function",
+			MayReturnNothing = true,
 			Documentation = { "Returns nil if item doesn't exist or if this kind of item doesn't display cooldowns (ex: future or offspec spells)" },
 
 			Arguments =
@@ -153,6 +158,7 @@ local SpellBook =
 		{
 			Name = "GetSpellBookItemDescription",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -168,6 +174,7 @@ local SpellBook =
 		{
 			Name = "GetSpellBookItemInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -199,6 +206,7 @@ local SpellBook =
 		{
 			Name = "GetSpellBookItemLink",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -215,6 +223,7 @@ local SpellBook =
 		{
 			Name = "GetSpellBookItemLossOfControlCooldown",
 			Type = "Function",
+			MayReturnNothing = true,
 			Documentation = { "Returns nil if item doesn't exist or if this kind of item doesn't display cooldowns (ex: future or offspec spells)" },
 
 			Arguments =
@@ -232,6 +241,7 @@ local SpellBook =
 		{
 			Name = "GetSpellBookItemName",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -248,6 +258,7 @@ local SpellBook =
 		{
 			Name = "GetSpellBookItemPowerCost",
 			Type = "Function",
+			MayReturnNothing = true,
 			Documentation = { "Returns a table containing one or more SpellPowerCostInfos, one for each power type a SpellBookItem costs; May return nil if item is not found or has no resource costs" },
 
 			Arguments =
@@ -280,6 +291,7 @@ local SpellBook =
 		{
 			Name = "GetSpellBookItemTexture",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -295,6 +307,7 @@ local SpellBook =
 		{
 			Name = "GetSpellBookItemTradeSkillLink",
 			Type = "Function",
+			MayReturnNothing = true,
 			Documentation = { "Returns nil if SpellBookItem is not associated with a trade skill" },
 
 			Arguments =
@@ -311,6 +324,7 @@ local SpellBook =
 		{
 			Name = "GetSpellBookItemType",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -328,6 +342,7 @@ local SpellBook =
 		{
 			Name = "GetSpellBookSkillLineInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -340,17 +355,9 @@ local SpellBook =
 			},
 		},
 		{
-			Name = "GetTrackedNameplateCooldownSpells",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "spellIDs", Type = "table", InnerType = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "HasPetSpells",
 			Type = "Function",
+			MayReturnNothing = true,
 			Documentation = { "Returns nothing if player has no pet spells" },
 
 			Returns =
@@ -652,16 +659,35 @@ local SpellBook =
 			Name = "SpellUpdateCooldown",
 			Type = "Event",
 			LiteralName = "SPELL_UPDATE_COOLDOWN",
+			Payload =
+			{
+				{ Name = "spellID", Type = "number", Nilable = true, Documentation = { "Can be a base spell or an override spell. A nil value indicates that all cooldowns should be updated, rather than just a specific one." } },
+				{ Name = "baseSpellID", Type = "number", Nilable = true, Documentation = { "Will be set to the base spell if the spellID parameter is an override spell." } },
+			},
 		},
 		{
 			Name = "SpellUpdateIcon",
 			Type = "Event",
 			LiteralName = "SPELL_UPDATE_ICON",
+			Payload =
+			{
+				{ Name = "spellID", Type = "number", Nilable = true, Documentation = { "Always refers to the base spell. A nil value indicates that all icons should be updated, rather than just a specific one." } },
+			},
 		},
 		{
 			Name = "SpellUpdateUsable",
 			Type = "Event",
 			LiteralName = "SPELL_UPDATE_USABLE",
+		},
+		{
+			Name = "SpellUpdateUses",
+			Type = "Event",
+			LiteralName = "SPELL_UPDATE_USES",
+			Payload =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false, Documentation = { "Can be a base spell or override spell." } },
+				{ Name = "baseSpellID", Type = "number", Nilable = true, Documentation = { "Will be set to the base spell if the spellID parameter is an override spell." } },
+			},
 		},
 		{
 			Name = "SpellsChanged",

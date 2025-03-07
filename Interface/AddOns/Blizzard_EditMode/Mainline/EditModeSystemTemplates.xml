@@ -330,4 +330,14 @@
 			<Frame inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
 		</Frames>
 	</Frame>
+
+	<Frame name="EditModeCooldownViewerSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeCooldownViewerSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.CooldownViewer" type="global"/>
+			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Frame inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+		</Frames>
+	</Frame>
 </Ui>

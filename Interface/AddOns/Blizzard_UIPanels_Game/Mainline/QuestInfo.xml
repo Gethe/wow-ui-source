@@ -744,10 +744,6 @@
 				<FontString name="QuestInfoDescriptionText" inherits="QuestFont" justifyH="LEFT">
 					<Size x="285" y="0"/>
 				</FontString>
-				<FontString name="QuestInfoAccountCompletedNotice" inherits="SystemFont_Small2" text="ACCOUNT_COMPLETED_QUEST_NOTICE"  justifyH="LEFT">
-					<Size x="290"/>
-					<Color color="QUEST_ACCOUNT_COMPLETED_NOTICE_FONT_COLOR"/>
-				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>

@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
-	<CheckButton name="SpellFlyoutButtonTemplate" inherits="SmallActionButtonTemplate,SecureFrameTemplate" virtual="true" motionScriptsWhileDisabled="true">
+	<CheckButton name="SpellFlyoutPopupButtonTemplate" inherits="SmallActionButtonTemplate,FlyoutPopupButtonTemplate, SecureFrameTemplate" mixin="SpellFlyoutPopupButtonMixin" virtual="true" motionScriptsWhileDisabled="true">
 		<!-- This doesn't actually use any of the behavior of an ActionButtonTemplate, just the appearance -->
 		<Layers>
 			<Layer level="OVERLAY">
@@ -29,23 +29,11 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad inherit="append">
-				self:RegisterForDrag("LeftButton");
-				_G[self:GetName().."Count"]:SetPoint("BOTTOMRIGHT", 0, 0);
-				self.maxDisplayCount = 99;
-			</OnLoad>
-			<OnClick>
-				SpellFlyoutButton_OnClick(self);
-			</OnClick>
-			<OnEnter>
-				SpellFlyoutButton_SetTooltip(self);
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
-			<OnDragStart>
-				SpellFlyoutButton_OnDrag(self);
-			</OnDragStart>
+			<OnLoad method="OnLoad" inherit="append"/>
+			<OnClick method="OnClick"/>
+			<OnEnter method="SetTooltip"/>
+			<OnLeave method="OnLeave"/>
+			<OnDragStart method="OnDragStart"/>
 		</Scripts>
 		<Animations>
 			<AnimationGroup parentKey="GlyphActivateAnim" setToFinalAlpha="true">
@@ -71,28 +59,12 @@
 		</Animations>
 	</CheckButton>
 
-	<Frame name="SpellFlyout" toplevel="true" hidden="true" frameStrata="DIALOG" frameLevel="10" inherits="SecureFrameTemplate, ResizeLayoutFrame" enableMouse="true">
-		<Frames>
-			<Frame parentKey="Background" setAllPoints="true">
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="End" atlas="UI-HUD-ActionBar-IconFrame-FlyoutButton" useAtlasSize="true"/>
-						<Texture parentKey="HorizontalMiddle" atlas="_UI-HUD-ActionBar-IconFrame-FlyoutMidLeft" useAtlasSize="true" horizTile="true" hidden="true"/>
-						<Texture parentKey="VerticalMiddle" atlas="!UI-HUD-ActionBar-IconFrame-FlyoutMid" useAtlasSize="true" vertTile="true" hidden="true"/>
-						<Texture parentKey="Start" atlas="UI-HUD-ActionBar-IconFrame-FlyoutBottom" useAtlasSize="true"/>
-					</Layer>
-				</Layers>
-				<KeyValues>
-					<KeyValue key="ignoreInlayout" value="true" type="boolean"/>
-				</KeyValues>
-			</Frame>
-			<CheckButton name="SpellFlyoutButton1" inherits="SpellFlyoutButtonTemplate"/>
-		</Frames>
+	<Frame name="SpellFlyout" toplevel="true" hidden="true" frameStrata="DIALOG" frameLevel="10" inherits="SecureFrameTemplate, ResizeLayoutFrame, FlyoutPopupTemplate" mixin="SpellFlyoutMixin" enableMouse="true">
 		<Scripts>
-			<OnLoad function="SpellFlyout_OnLoad"/>
-			<OnShow function="SpellFlyout_OnShow"/>
-			<OnHide function="SpellFlyout_OnHide"/>
-			<OnEvent function="SpellFlyout_OnEvent"/>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
 </Ui>

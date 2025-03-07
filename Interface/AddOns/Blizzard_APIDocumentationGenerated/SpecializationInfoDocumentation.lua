@@ -220,6 +220,16 @@ local SpecializationInfo =
 			},
 		},
 		{
+			Name = "SetPetSpecialization",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "specIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "petNumber", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "SetPvpTalentLocked",
 			Type = "Function",
 
@@ -227,6 +237,20 @@ local SpecializationInfo =
 			{
 				{ Name = "talentID", Type = "number", Nilable = false },
 				{ Name = "locked", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetSpecialization",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "specIndex", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
 			},
 		},
 	},

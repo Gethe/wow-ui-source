@@ -249,7 +249,7 @@ end
 
 function ItemMixin:GetItemQualityColor() -- requires item data to be loaded
 	local itemQuality = self:GetItemQuality();
-	return ITEM_QUALITY_COLORS[itemQuality]; -- may be nil if item data isn't loaded
+	return ColorManager.GetColorDataForItemQuality(itemQuality); -- may be nil if item data isn't loaded
 end
 
 function ItemMixin:GetItemQualityColorRGB() -- requires item data to be loaded

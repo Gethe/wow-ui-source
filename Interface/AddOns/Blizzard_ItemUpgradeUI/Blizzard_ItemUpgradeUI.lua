@@ -144,13 +144,22 @@ function ItemUpgradeMixin:UpdateUpgradeItemInfo()
 
 function ItemUpgradeMixin:ApplyTargetUpgradeLevel(level)
 	self.targetUpgradeLevel = level;
-	
+
 	self.numUpgradeLevels = self.targetUpgradeLevel - self.upgradeInfo.currUpgrade;
 	self.currentUpgradeLevelInfo = self.upgradeInfo.upgradeLevelInfos[1]
 	self.targetUpgradeLevelInfo = self.upgradeInfo.upgradeLevelInfos[self.numUpgradeLevels + 1]
 
-	self.upgradeInfo.itemQualityColor = ITEM_QUALITY_COLORS[self.upgradeInfo.displayQuality].color;
-	self.upgradeInfo.targetQualityColor = self.targetUpgradeLevelInfo and ITEM_QUALITY_COLORS[self.targetUpgradeLevelInfo.displayQuality].color;
+	local colorDataItem = ColorManager.GetColorDataForItemQuality(self.upgradeInfo.displayQuality);
+	if colorDataItem then
+		self.upgradeInfo.itemQualityColor = colorDataItem.color;
+	end
+
+	if self.targetUpgradeLevelInfo then
+		local colorDataTarget = ColorManager.GetColorDataForItemQuality(self.targetUpgradeLevelInfo.displayQuality);
+		if colorDataTarget then
+			self.upgradeInfo.targetQualityColor = colorDataTarget.color;
+		end
+	end
 
 	SetItemButtonTexture(self.UpgradeItemButton, self.upgradeInfo.iconID);
 	SetItemButtonQuality(self.UpgradeItemButton, self.upgradeInfo.displayQuality);

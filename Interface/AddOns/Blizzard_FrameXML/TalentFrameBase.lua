@@ -95,13 +95,15 @@ function TalentFrame_Update(TalentFrame, talentUnit)
 						button.grantedByAura = grantedByAura;
 						restartGlow = true;
 					end
-					
+
 					if( TalentFrame.inspect ) then
 						SetDesaturation(button.icon, not (selected or grantedByAura));
 						button.border:SetShown(selected or grantedByAura);
 						if ( grantedByAura ) then
-							local color = ITEM_QUALITY_COLORS[Enum.ItemQuality.Legendary];
-							button.border:SetVertexColor(color.r, color.g, color.b);
+							local colorData = ColorManager.GetColorDataForItemQuality(Enum.ItemQuality.Legendary);
+							if colorData then
+								button.border:SetVertexColor(colorData.r, colorData.g, colorData.b);
+							end
 						else
 							button.border:SetVertexColor(1, 1, 1);
 						end
@@ -111,7 +113,7 @@ function TalentFrame_Update(TalentFrame, talentUnit)
 						button.Cover:SetShown(button.disabled);
 						button.highlight:SetAlpha((selected or not tierAvailable) and 0 or 1);
 					end
-					
+
 					button:Show();
 				elseif (button) then
 					button:Hide();

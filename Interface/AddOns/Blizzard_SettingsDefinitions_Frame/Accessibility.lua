@@ -35,9 +35,6 @@ local function Register()
 	Settings.SetupCVarCheckbox(category, "enableMovePad", MOVE_PAD, OPTION_TOOLTIP_MOVE_PAD);
 	Settings.LoadAddOnCVarWatcher("enableMovePad", "Blizzard_MovePad");
 
-	--Cinematic Subtitles
-	Settings.SetupCVarCheckbox(category, "movieSubtitle", CINEMATIC_SUBTITLES, OPTION_TOOLTIP_CINEMATIC_SUBTITLES);
-	
 	-- Alternate Full Screen Effects
 	AccessibilityOverrides.CreatePhotosensitivitySetting(category);
 

@@ -110,6 +110,7 @@ function Class_InteractKeyNoKeybindWatcher:GetHelptip()
 		offsetX = 700, 
 		offsetY = 50,
 		hideArrow = true,
+		system = "TutorialInteractKeySetBinding",
 		handlesGlobalMouseEventCallback = function() return true; end,
 	};
 	return helpTipInfo; 
@@ -133,6 +134,7 @@ end
 
 function Class_InteractKeyNoKeybindWatcher:UPDATE_BINDINGS()
 	if (not CanShowInteractKeyNoKeybindTutorial()) then 
+		HelpTip:HideAllSystem("TutorialInteractKeySetBinding");
 		self:StopWatching(); 
 	else	
 		self:EvaluateHelptip(); 

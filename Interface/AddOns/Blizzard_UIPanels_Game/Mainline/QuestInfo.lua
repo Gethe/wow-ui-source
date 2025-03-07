@@ -47,6 +47,8 @@ function QuestInfo_Display(template, parentFrame, acceptButton, material, mapVie
 		end
 	end
 
+	QuestFrame.AccountCompletedNotice:Refresh();
+
 	QuestInfoFrame.questLog = template.questLog;
 	QuestInfoFrame.chooseItems = template.chooseItems;
 	QuestInfoFrame.acceptButton = acceptButton;
@@ -379,21 +381,6 @@ end
 
 function QuestInfo_ShowObjectivesHeader()
 	return QuestInfoObjectivesHeader;
-end
-
-function QuestInfo_ShowAccountCompletedNotice()
-	local questID = GetQuestID();
-	local startingAccountCompletedQuest = C_QuestLog.IsQuestFlaggedCompletedOnAccount(questID);
-
-	if QuestUtil.QuestTextContrastUseLightText() then
-		local overrideTextColor, _overrideTitleColor = GetMaterialTextColors("Stone");
-		QuestInfoAccountCompletedNotice:SetTextColor(overrideTextColor[1], overrideTextColor[2], overrideTextColor[3]);
-	else
-		QuestInfoAccountCompletedNotice:SetTextColor(QUEST_ACCOUNT_COMPLETED_NOTICE_FONT_COLOR:GetRGB());
-	end
-
-	QuestInfoAccountCompletedNotice:SetShown(startingAccountCompletedQuest);
-	return startingAccountCompletedQuest and QuestInfoAccountCompletedNotice or nil;
 end
 
 function QuestInfo_ShowObjectivesText()
@@ -1115,7 +1102,6 @@ QUEST_TEMPLATE_DETAIL = { questLog = nil, chooseItems = nil, contentWidth = 275,
 		QuestInfo_ShowSpecialObjectives, 0, -10,
 		QuestInfo_ShowGroupSize, 0, -10,
 		QuestInfo_ShowRewards, 0, -15,
-		QuestInfo_ShowAccountCompletedNotice, 0, -20,
 		QuestInfo_ShowSpacer, 0, -20,
 	}
 }

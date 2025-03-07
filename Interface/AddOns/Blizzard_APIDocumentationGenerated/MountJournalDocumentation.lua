@@ -95,6 +95,7 @@ local MountJournal =
 		{
 			Name = "GetDisplayedMountAllCreatureDisplayInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -123,6 +124,7 @@ local MountJournal =
 		{
 			Name = "GetDisplayedMountInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -139,7 +141,7 @@ local MountJournal =
 				{ Name = "sourceType", Type = "number", Nilable = false },
 				{ Name = "isFavorite", Type = "bool", Nilable = false },
 				{ Name = "isFactionSpecific", Type = "bool", Nilable = false },
-				{ Name = "faction", Type = "number", Nilable = true },
+				{ Name = "faction", Type = "PvPFaction", Nilable = true },
 				{ Name = "shouldHideOnChar", Type = "bool", Nilable = false },
 				{ Name = "isCollected", Type = "bool", Nilable = false },
 				{ Name = "mountID", Type = "number", Nilable = false },
@@ -149,6 +151,7 @@ local MountJournal =
 		{
 			Name = "GetDisplayedMountInfoExtra",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -195,6 +198,7 @@ local MountJournal =
 		{
 			Name = "GetMountAllCreatureDisplayInfoByID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -255,6 +259,7 @@ local MountJournal =
 		{
 			Name = "GetMountInfoByID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -271,7 +276,7 @@ local MountJournal =
 				{ Name = "sourceType", Type = "number", Nilable = false },
 				{ Name = "isFavorite", Type = "bool", Nilable = false },
 				{ Name = "isFactionSpecific", Type = "bool", Nilable = false },
-				{ Name = "faction", Type = "number", Nilable = true },
+				{ Name = "faction", Type = "PvPFaction", Nilable = true },
 				{ Name = "shouldHideOnChar", Type = "bool", Nilable = false },
 				{ Name = "isCollected", Type = "bool", Nilable = false },
 				{ Name = "mountID", Type = "number", Nilable = false },
@@ -281,6 +286,7 @@ local MountJournal =
 		{
 			Name = "GetMountInfoExtraByID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -317,6 +323,7 @@ local MountJournal =
 		{
 			Name = "GetMountUsabilityByID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -654,7 +661,7 @@ local MountJournal =
 				{ Name = "sourceType", Type = "number", Nilable = false },
 				{ Name = "isFavorite", Type = "bool", Nilable = false },
 				{ Name = "isFactionSpecific", Type = "bool", Nilable = false },
-				{ Name = "faction", Type = "number", Nilable = true },
+				{ Name = "faction", Type = "PvPFaction", Nilable = true },
 				{ Name = "shouldHideOnChar", Type = "bool", Nilable = false },
 				{ Name = "isCollected", Type = "bool", Nilable = false },
 				{ Name = "mountID", Type = "number", Nilable = false },

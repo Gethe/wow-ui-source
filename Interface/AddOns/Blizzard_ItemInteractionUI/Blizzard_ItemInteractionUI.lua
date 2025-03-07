@@ -531,7 +531,11 @@ function ItemInteractionMixin:InteractWithItem()
 
 			local quality = C_Item.GetItemQuality(itemLocation);
 			SetItemButtonQuality(itemFrame, quality);
-			itemFrame.Text:SetTextColor(ITEM_QUALITY_COLORS[quality].color:GetRGB());
+
+			local colorData = ColorManager.GetColorDataForItemQuality(quality);
+			if colorData then
+				itemFrame.Text:SetTextColor(colorData.color:GetRGB());
+			end
 
 			local itemName = C_Item.GetItemName(itemLocation);
 			itemFrame.Text:SetText(itemName);

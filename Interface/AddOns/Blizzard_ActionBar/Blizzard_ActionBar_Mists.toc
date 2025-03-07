@@ -1,0 +1,29 @@
+## Title: Blizzard_ActionBar
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_UIParent, Blizzard_UIParentPanelManager, Blizzard_FrameXML, Blizzard_UnitFrame, Blizzard_ChatFrame
+## LoadFirst: 1
+## AllowLoadGameType: mists
+## AllowLoad: Game
+ActionButtonUtil.lua
+Shared\MainMenuBarMicroButtons.lua
+Cata\MainMenuBarMicroButtons.lua
+Cata\MainMenuBarMicroButtons.xml
+Classic\MainMenuBar.lua
+Classic\MainMenuBar.xml
+Classic\ActionButtonTemplate.xml
+Classic\ActionBarFrame.xml
+Classic\MultiActionBars.xml
+TBC\StanceBar.lua
+TBC\StanceBar.xml
+Classic\OverrideActionBar.lua
+Classic\OverrideActionBar.xml
+Classic\PossessActionBar.lua
+Classic\PossessActionBar.xml
+Classic\PetActionBarFrame.lua
+Classic\PetActionBarFrame.xml
+Classic\MultiCastActionBarFrame.lua
+Classic\MultiCastActionBarFrame.xml
+Cata\SpellFlyout.lua
+Cata\SpellFlyout.xml
+Classic\Localization.lua

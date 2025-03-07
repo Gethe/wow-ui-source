@@ -9,6 +9,7 @@ local Cursor =
 		{
 			Name = "GetCursorItem",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{

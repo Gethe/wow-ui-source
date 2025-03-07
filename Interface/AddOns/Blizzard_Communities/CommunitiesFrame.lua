@@ -1353,11 +1353,11 @@ function CommunitiesFrameMixin:OnClubSelected(clubId)
 	self:TriggerEvent(CommunitiesFrameMixin.Event.ClubSelected, clubId);
 
 	if clubSelected then
-		self:UpdateStreamDropdown(); -- TODO:: Convert this to use the registry system of callbacks.
+		self:UpdateStreamDropdown();
 	end
 
 	if self.CommunitiesList:IsShown() then
-		self.CommunitiesList:OnClubSelected(clubId); -- TODO:: Convert this to use the registry system of callbacks.
+		self.CommunitiesList:OnClubSelected(clubId);
 	end
 
 	self:CheckForTutorials();

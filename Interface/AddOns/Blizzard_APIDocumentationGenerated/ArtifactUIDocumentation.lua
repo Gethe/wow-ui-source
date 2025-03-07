@@ -121,6 +121,7 @@ local ArtifactUI =
 		{
 			Name = "GetAppearanceInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -148,6 +149,7 @@ local ArtifactUI =
 		{
 			Name = "GetAppearanceInfoByID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -175,6 +177,7 @@ local ArtifactUI =
 		{
 			Name = "GetAppearanceSetInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -192,6 +195,7 @@ local ArtifactUI =
 		{
 			Name = "GetArtifactArtInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -201,6 +205,7 @@ local ArtifactUI =
 		{
 			Name = "GetArtifactInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -222,6 +227,7 @@ local ArtifactUI =
 		{
 			Name = "GetArtifactItemID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -240,6 +246,7 @@ local ArtifactUI =
 		{
 			Name = "GetArtifactXPRewardTargetInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -270,6 +277,7 @@ local ArtifactUI =
 		{
 			Name = "GetEquippedArtifactArtInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -279,6 +287,7 @@ local ArtifactUI =
 		{
 			Name = "GetEquippedArtifactInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -300,6 +309,7 @@ local ArtifactUI =
 		{
 			Name = "GetEquippedArtifactItemID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -323,6 +333,7 @@ local ArtifactUI =
 		{
 			Name = "GetEquippedArtifactRelicInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -365,6 +376,7 @@ local ArtifactUI =
 		{
 			Name = "GetItemLevelIncreaseProvidedByRelic",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -445,6 +457,7 @@ local ArtifactUI =
 		{
 			Name = "GetPowerInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -473,6 +486,7 @@ local ArtifactUI =
 		{
 			Name = "GetPowers",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -519,6 +533,7 @@ local ArtifactUI =
 		{
 			Name = "GetRelicInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -536,6 +551,7 @@ local ArtifactUI =
 		{
 			Name = "GetRelicInfoByItemID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -567,6 +583,7 @@ local ArtifactUI =
 		{
 			Name = "GetRelicSlotType",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -581,6 +598,7 @@ local ArtifactUI =
 		{
 			Name = "GetRespecArtifactArtInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -590,6 +608,7 @@ local ArtifactUI =
 		{
 			Name = "GetRespecArtifactInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -620,6 +639,7 @@ local ArtifactUI =
 		{
 			Name = "GetTotalPowerCost",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

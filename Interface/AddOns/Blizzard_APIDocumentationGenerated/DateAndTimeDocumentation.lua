@@ -63,7 +63,7 @@ local DateAndTime =
 
 			Returns =
 			{
-				{ Name = "comparison", Type = "number", Nilable = false },
+				{ Name = "comparison", Type = "number", Nilable = false, Documentation = { "-1 if rhsCalendarTime < lhsCalendarTime, 0 if rhsCalendarTime == lhsCalendarTime, 1 if rhsCalendarTime > lhsCalendarTime" } },
 			},
 		},
 		{

@@ -60,6 +60,7 @@ FlightPointPinMixin = BaseMapPoiPinMixin:CreateSubPin("PIN_FRAME_LEVEL_FLIGHT_PO
 
 function FlightPointPinMixin:OnAcquired(poiInfo)
 	SuperTrackablePoiPinMixin.OnAcquired(self, poiInfo);
+	self:AddTag(MapPinTags.FlightPoint);
 
 	self:ClearNudgeSettings();
 
@@ -87,4 +88,9 @@ end
 
 function FlightPointPinMixin:GetSuperTrackMarkerOffset()
 	return -4, 4;
+end
+
+function FlightPointPinMixin:GetDisplayName()
+	local name = BaseMapPoiPinMixin:GetBestNameAndDescription();
+	return name or "";
 end

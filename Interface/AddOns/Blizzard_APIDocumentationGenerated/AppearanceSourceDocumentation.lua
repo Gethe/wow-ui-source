@@ -16,6 +16,7 @@ local AppearanceSource =
 				{ Name = "categoryID", Type = "TransmogCollectionType", Nilable = false, Default = "None" },
 				{ Name = "playerCanCollect", Type = "bool", Nilable = false },
 				{ Name = "isValidSourceForPlayer", Type = "bool", Nilable = false },
+				{ Name = "canDisplayOnPlayer", Type = "bool", Nilable = false },
 				{ Name = "inventorySlot", Type = "number", Nilable = true },
 				{ Name = "sourceType", Type = "luaIndex", Nilable = true },
 				{ Name = "name", Type = "string", Nilable = true },

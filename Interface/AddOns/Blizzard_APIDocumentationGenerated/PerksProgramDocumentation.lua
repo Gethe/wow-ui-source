@@ -67,6 +67,7 @@ local PerksProgram =
 		{
 			Name = "GetFrozenPerksVendorItemInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -189,6 +190,15 @@ local PerksProgram =
 			},
 		},
 		{
+			Name = "RequestCartCheckout",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "perksVendorItemIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "RequestPendingChestRewards",
 			Type = "Function",
 		},
@@ -285,6 +295,15 @@ local PerksProgram =
 			LiteralName = "PERKS_PROGRAM_OPEN",
 		},
 		{
+			Name = "PerksProgramPurchaseCartSuccess",
+			Type = "Event",
+			LiteralName = "PERKS_PROGRAM_PURCHASE_CART_SUCCESS",
+			Payload =
+			{
+				{ Name = "vendorItemIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "PerksProgramPurchaseSuccess",
 			Type = "Event",
 			LiteralName = "PERKS_PROGRAM_PURCHASE_SUCCESS",
@@ -329,40 +348,6 @@ local PerksProgram =
 
 	Tables =
 	{
-		{
-			Name = "ModelSceneActorData",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "actorID", Type = "number", Nilable = true },
-				{ Name = "scriptTag", Type = "string", Nilable = true },
-				{ Name = "posX", Type = "number", Nilable = true },
-				{ Name = "posY", Type = "number", Nilable = true },
-				{ Name = "posZ", Type = "number", Nilable = true },
-				{ Name = "yaw", Type = "number", Nilable = true },
-				{ Name = "pitch", Type = "number", Nilable = true },
-				{ Name = "roll", Type = "number", Nilable = true },
-				{ Name = "normalizedScale", Type = "number", Nilable = true },
-			},
-		},
-		{
-			Name = "ModelSceneCameraData",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "cameraID", Type = "number", Nilable = true },
-				{ Name = "scriptTag", Type = "string", Nilable = true },
-				{ Name = "targetX", Type = "number", Nilable = true },
-				{ Name = "targetY", Type = "number", Nilable = true },
-				{ Name = "targetZ", Type = "number", Nilable = true },
-				{ Name = "yaw", Type = "number", Nilable = true },
-				{ Name = "pitch", Type = "number", Nilable = true },
-				{ Name = "roll", Type = "number", Nilable = true },
-				{ Name = "defaultZoom", Type = "number", Nilable = true },
-				{ Name = "zoomMin", Type = "number", Nilable = true },
-				{ Name = "zoomMax", Type = "number", Nilable = true },
-			},
-		},
 		{
 			Name = "PerksProgramItemDisplayInfo",
 			Type = "Structure",
@@ -424,6 +409,8 @@ local PerksProgram =
 				{ Name = "itemModifiedAppearanceID", Type = "number", Nilable = false },
 				{ Name = "subItems", Type = "table", InnerType = "PerksVendorSubItemInfo", Nilable = false },
 				{ Name = "uiGroupInfo", Type = "PerksVendorItemUIGroupInfo", Nilable = true },
+				{ Name = "invType", Type = "string", Nilable = false },
+				{ Name = "quality", Type = "ItemQuality", Nilable = false },
 			},
 		},
 		{
@@ -443,7 +430,7 @@ local PerksProgram =
 			{
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "itemID", Type = "number", Nilable = false },
-				{ Name = "itemAppearanceID", Type = "number", Nilable = false },
+				{ Name = "itemModifiedAppearanceID", Type = "number", Nilable = false },
 				{ Name = "invType", Type = "string", Nilable = false },
 				{ Name = "quality", Type = "ItemQuality", Nilable = false },
 			},

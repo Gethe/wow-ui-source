@@ -379,11 +379,9 @@ function QuestFrameGreetingPanel_OnShow()
 			if ( isTrivial ) then
 				questTitleButton:SetFormattedText(TRIVIAL_QUEST_DISPLAY, title);
 				questTitleButton.Icon:SetVertexColor(0.5,0.5,0.5);
-				questTitleButton.Icon:SetAlpha(1);
 			else
 				questTitleButton:SetFormattedText(NORMAL_QUEST_DISPLAY, title);
 				questTitleButton.Icon:SetVertexColor(1,1,1);
-				questTitleButton.Icon:SetAlpha(QuestUtil.GetAvailableQuestIconAlpha(questID));
 			end
 			if QuestUtil.QuestTextContrastUseLightText() then
 				questTitleButton:GetFontString():SetFixedColor(true);

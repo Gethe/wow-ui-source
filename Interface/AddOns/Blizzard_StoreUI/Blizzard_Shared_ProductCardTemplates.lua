@@ -308,7 +308,7 @@ function StoreCardMixin:UpdatePricing(currencyInfo, entryInfo, currencyFormat)
 	self.CurrentPrice:SetText(StoreFrame_GetProductPriceText(entryInfo, currencyFormat));
 	self.NormalPrice:SetText(currencyFormat(entryInfo.sharedData.normalDollars, entryInfo.sharedData.normalCents));
 
-	if bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlag.HiddenPrice) == Enum.BattlepayDisplayFlag.HiddenPrice then
+	if bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlags.HiddenPrice) == Enum.BattlepayDisplayFlags.HiddenPrice then
 		self.NormalPrice:Hide();
 		self.SalePrice:Hide();
 		self.Strikethrough:Hide();
@@ -387,14 +387,14 @@ end
 
 function StoreCardMixin:ShouldShowIcon(entryInfo)
 	local showAnyModel = self:ShouldShowModel(entryInfo);
-	local tryToShowTexture = not showAnyModel or bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlag.CardAlwaysShowsTexture) == Enum.BattlepayDisplayFlag.CardAlwaysShowsTexture;
+	local tryToShowTexture = not showAnyModel or bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlags.CardAlwaysShowsTexture) == Enum.BattlepayDisplayFlags.CardAlwaysShowsTexture;
 
 	return tryToShowTexture;
 end
 
 function StoreCardMixin:ShouldShowModel(entryInfo)
 	local hasAnyCard = #entryInfo.sharedData.cards > 0;
-	local allowShowingModel = bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlag.CardDoesNotShowModel) ~= Enum.BattlepayDisplayFlag.CardDoesNotShowModel;
+	local allowShowingModel = bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlags.CardDoesNotShowModel) ~= Enum.BattlepayDisplayFlags.CardDoesNotShowModel;
 	local showAnyModel = allowShowingModel and hasAnyCard;
 
 	return showAnyModel;
@@ -407,8 +407,8 @@ end
 function StoreCardMixin:ShowIcon(displayData)
 	local icon = displayData.texture or self:GetDefaultIconName();
 	local overrideTexture = displayData.overrideTexture;
-	local useSquareBorder = bit.band(displayData.flags, Enum.BattlepayDisplayFlag.UseSquareIconBorder) == Enum.BattlepayDisplayFlag.UseSquareIconBorder;
-	local useIconBorderWithOverrideTexture = bit.band(displayData.flags, Enum.BattlepayDisplayFlag.UseIconBorderWithOverrideTexture) == Enum.BattlepayDisplayFlag.UseIconBorderWithOverrideTexture;
+	local useSquareBorder = bit.band(displayData.flags, Enum.BattlepayDisplayFlags.UseSquareIconBorder) == Enum.BattlepayDisplayFlags.UseSquareIconBorder;
+	local useIconBorderWithOverrideTexture = bit.band(displayData.flags, Enum.BattlepayDisplayFlags.UseIconBorderWithOverrideTexture) == Enum.BattlepayDisplayFlags.UseIconBorderWithOverrideTexture;
 	local iconItemQuantity = displayData.itemQuantity;
 
 	self.IconBorder:Show();

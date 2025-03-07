@@ -373,6 +373,7 @@
 		<Scripts>
 			<OnLoad function="CommunitiesGuildNewsFrame_OnLoad"/>
 			<OnShow function="CommunitiesGuildNewsFrame_OnShow"/>
+			<OnHide function="CommunitiesGuildNewsFrame_OnHide"/>
 			<OnEvent function="CommunitiesGuildNewsFrame_OnEvent"/>
 		</Scripts>
 	</Frame>

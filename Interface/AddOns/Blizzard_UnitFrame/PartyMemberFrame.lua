@@ -177,6 +177,7 @@ function PartyMemberFrameMixin:ToPlayerArt()
 	self.HealthBarContainer.HealthBar.HealthBarTexture:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOn-Bar-Health", TextureKitConstants.UseAtlasSize);
 
 	if (UNIT_FRAME_SHOW_HEALTH_ONLY) then
+		self.HealthBarContainer.HealthBar:SetHeight(24);
 		self.HealthBarContainer:SetSize(74, 30);
 		self.HealthBarContainer:SetPoint("TOPLEFT", self, "TOPLEFT", 43, -16);
 		self.HealthBarContainer.HealthBar:SetSize(74, 30);
@@ -186,6 +187,7 @@ function PartyMemberFrameMixin:ToPlayerArt()
 		self.HealthBarContainer.HealthBarMask:SetAtlas("plunderstorm-ui-hud-unitframe-party-portraiton-bar-health-mask", TextureKitConstants.UseAtlasSize);
 		self.HealthBarContainer.HealthBarMask:SetPoint("TOPLEFT", -27, 4);
 	else
+		self.HealthBarContainer.HealthBar:SetHeight(10);
 		self.HealthBarContainer:SetWidth(70);
 		self.HealthBarContainer:SetPoint("TOPLEFT", self, "TOPLEFT", 45, -19);
 		self:UpdateHealthBarTextAnchors();
@@ -789,57 +791,6 @@ end
 
 function PartyMemberPetFrameMixin:OnLeave()
 	UnitFrame_OnLeave(self, motion);
-end
-
-PartyBuffFrameMixin={};
-
-function PartyBuffFrameMixin:Setup(unit, index)
-	self.unit = unit;
-	self.index = index;
-end
-
-function PartyBuffFrameMixin:OnUpdate()
-	if ( GameTooltip:IsOwned(self) ) then
-		GameTooltip:SetUnitBuff(self.unit, self.index);
-	end
-end
-
-function PartyBuffFrameMixin:OnEnter()
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetUnitBuff(self.unit, self.index);
-end
-
-function PartyBuffFrameMixin:OnLeave()
-	GameTooltip:Hide();
-end
-
-PartyDebuffFrameMixin = {};
-function PartyDebuffFrameMixin:Setup(unit, index)
-	self.unit = unit;
-	self.index = index;
-end
-
-function PartyDebuffFrameMixin:OnUpdate()
-	if GameTooltip:IsOwned(self) then
-		if self.isBossBuff then
-			GameTooltip:SetUnitBuffByAuraInstanceID(self.unit, self.auraInstanceID, self.filter);
-		else
-			GameTooltip:SetUnitDebuffByAuraInstanceID(self.unit, self.auraInstanceID, self.filter);
-		end
-	end
-end
-
-function PartyDebuffFrameMixin:OnEnter()
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	if self.isBossBuff then
-		GameTooltip:SetUnitBuffByAuraInstanceID(self.unit, self.auraInstanceID, self.filter);
-	else
-		GameTooltip:SetUnitDebuffByAuraInstanceID(self.unit, self.auraInstanceID, self.filter);
-	end
-end
-
-function PartyDebuffFrameMixin:OnLeave()
-	GameTooltip:Hide();
 end
 
 PartyAuraFrameMixin = {};

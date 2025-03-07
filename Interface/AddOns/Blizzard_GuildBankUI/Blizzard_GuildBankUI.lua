@@ -25,7 +25,6 @@ function GuildBankFrameMixin:OnLoad()
 	self:RegisterEvent("GUILDTABARD_UPDATE");
 	self:RegisterEvent("GUILDBANK_UPDATE_TEXT");
 	self:RegisterEvent("GUILDBANK_TEXT_CHANGED");
-	self:RegisterEvent("PLAYER_MONEY");
 	self:RegisterEvent("INVENTORY_SEARCH_UPDATE");
 	-- Set the button id's
 	local index, column, button;
@@ -84,16 +83,16 @@ function GuildBankFrameMixin:OnEvent(event, ...)
 		self:UpdateTabard();
 	elseif ( event == "GUILDBANK_UPDATE_MONEY" or event == "GUILDBANK_UPDATE_WITHDRAWMONEY" ) then
 		self:UpdateWithdrawMoney();
+
+		if ( self.BuyInfo:IsShown() ) then
+			self:UpdateTabBuyingInfo();
+		end
 	elseif ( event == "GUILDBANK_UPDATE_TEXT" ) then
 		self:UpdateTabInfo(...);
 	elseif ( event == "GUILDBANK_TEXT_CHANGED" ) then
 		local arg1 = ...;
 		if ( GetCurrentGuildBankTab() == tonumber(arg1) ) then
 			QueryGuildBankText(arg1);
-		end
-	elseif ( event == "PLAYER_MONEY" ) then
-		if ( self.BuyInfo:IsShown() ) then
-			self:UpdateTabBuyingInfo();
 		end
 	elseif ( event == "INVENTORY_SEARCH_UPDATE" ) then	
 		self:UpdateFiltered();
@@ -257,7 +256,7 @@ function GuildBankFrameMixin:UpdateTabBuyingInfo()
 		-- You've bought all the tabs
 		self.BankTabs[1]:OnClick("LeftButton");
 	else
-		if ( GetMoney() >= tabCost or (GetMoney() + GetGuildBankMoney()) >= tabCost ) then
+		if GetGuildBankMoney() >= tabCost then
 			SetMoneyFrameColor("GuildBankFrameTabCostMoneyFrame", "white");
 			self.BuyInfo.PurchaseButton:Enable();
 		else

@@ -18,6 +18,15 @@ local Connection =
 			Type = "Function",
 		},
 		{
+			Name = "GetNativeRealmID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "nativeRealmID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetNetIpTypes",
 			Type = "Function",
 

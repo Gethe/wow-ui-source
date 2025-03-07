@@ -13,6 +13,7 @@ local CovenantPreview =
 		{
 			Name = "GetCovenantInfoForPlayerChoiceResponseID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

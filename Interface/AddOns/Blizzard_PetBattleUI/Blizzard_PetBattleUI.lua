@@ -1083,14 +1083,20 @@ function PetBattleUnitFrame_UpdateDisplay(self)
 		if (CVarCallbackRegistry:GetCVarValueBool("colorblindMode")) then 
 			self.Name:SetText(self.Name:GetText().." (".._G["BATTLE_PET_BREED_QUALITY"..rarity+1]..")");
 		else
-			self.Border:SetVertexColor(ITEM_QUALITY_COLORS[rarity].r, ITEM_QUALITY_COLORS[rarity].g, ITEM_QUALITY_COLORS[rarity].b);		
-			self.Name:SetVertexColor(ITEM_QUALITY_COLORS[rarity].r, ITEM_QUALITY_COLORS[rarity].g, ITEM_QUALITY_COLORS[rarity].b);
+			local colorData = ColorManager.GetColorDataForItemQuality(rarity);
+			if colorData then
+				self.Border:SetVertexColor(colorData.r, colorData.g,colorData.b);		
+				self.Name:SetVertexColor(colorData.r, colorData.g, colorData.b);
+			end
 		end
 	end
 	
 	if (self.BorderAlive and self.BorderAlive:IsShown()) then
 		local rarity = C_PetBattles.GetBreedQuality(petOwner, petIndex);
-		self.BorderAlive:SetVertexColor(ITEM_QUALITY_COLORS[rarity].r, ITEM_QUALITY_COLORS[rarity].g, ITEM_QUALITY_COLORS[rarity].b);		
+		local colorData = ColorManager.GetColorDataForItemQuality(rarity);
+		if colorData then
+			self.BorderAlive:SetVertexColor(colorData.r, colorData.g, colorData.b);		
+		end
 	end
 	
 	--Update the display of the level

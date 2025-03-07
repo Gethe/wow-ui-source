@@ -503,11 +503,10 @@ end
 
 function DressUpOutfitDetailsPanelMixin:OnKeyDown(key)
 	if key == WARDROBE_CYCLE_KEY and self.mousedOverFrame then
-		self:SetPropagateKeyboardInput(false);
 		self.mousedOverFrame:OnCycleKeyDown();
-	else
-		self:SetPropagateKeyboardInput(true);
+		return false;
 	end
+	return true;
 end
 
 function DressUpOutfitDetailsPanelMixin:MarkDirty()
@@ -864,21 +863,6 @@ function DressUpOutfitDetailsSlotMixin:SetIllusion(slotID, transmogID)
 	return true;
 end
 
-local s_qualityToAtlasColorName = {
-	[Enum.ItemQuality.Poor] = "gray",
-	[Enum.ItemQuality.Common] = "white",
-	[Enum.ItemQuality.Uncommon] = "green",
-	[Enum.ItemQuality.Rare] = "blue",
-	[Enum.ItemQuality.Epic] = "purple",
-	[Enum.ItemQuality.Legendary] = "orange",
-	[Enum.ItemQuality.Artifact] = "artifact",
-	[Enum.ItemQuality.Heirloom] = "account"
-};
-
-function DressUpOutfitDetailsSlot_GetQualityColorName(itemQuality)
-	return s_qualityToAtlasColorName[itemQuality];
-end
-
 function DressUpOutfitDetailsSlotMixin:SetDetails(transmogID, icon, name, useSmallIcon, slotState, isHiddenVisual)
 	-- info for tooltip
 	self.transmogID = transmogID;
@@ -903,7 +887,7 @@ function DressUpOutfitDetailsSlotMixin:SetDetails(transmogID, icon, name, useSma
 		if self.item then
 			nameColor = self.item:GetItemQualityColor().color;
 			local quality = self.item:GetItemQuality();
-			local colorName = DressUpOutfitDetailsSlot_GetQualityColorName(quality);
+			local colorName = ColorManager.GetColorDataForDressUpFrameQuality(quality);
 			borderType = colorName;
 		else
 			borderType = "illusion";

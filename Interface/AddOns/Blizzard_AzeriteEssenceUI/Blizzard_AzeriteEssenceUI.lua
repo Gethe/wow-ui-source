@@ -869,8 +869,11 @@ function AzeriteEssenceButtonMixin:Init(essenceInfo, isAzeriteItemEnabled, slotE
 	self.Name:SetText(essenceInfo.name);
 	local activatedMarker;
 	if essenceInfo.unlocked then
-		local color = isAzeriteItemEnabled and ITEM_QUALITY_COLORS[essenceInfo.rank + 1] or LOCKED_FONT_COLOR;	-- min shown quality is uncommon
-		self.Name:SetTextColor(color.r, color.g, color.b);
+		local color = isAzeriteItemEnabled and ColorManager.GetColorDataForItemQuality(essenceInfo.rank + 1) or LOCKED_FONT_COLOR;	-- min shown quality is uncommon
+		if color then
+			self.Name:SetTextColor(color.r, color.g, color.b);
+		end
+
 		self.Icon:SetDesaturated(not essenceInfo.valid or not isAzeriteItemEnabled);
 		self.Icon:SetVertexColor((isAzeriteItemEnabled and HIGHLIGHT_FONT_COLOR or LOCKED_ICON_COLOR):GetRGB());
 		self.IconCover:SetShown(not isAzeriteItemEnabled);

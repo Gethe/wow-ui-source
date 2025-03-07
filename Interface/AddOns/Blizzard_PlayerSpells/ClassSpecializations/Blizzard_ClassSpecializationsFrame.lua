@@ -457,7 +457,7 @@ function ClassSpecContentFrameMixin:OnActivateClicked()
 	if self:IsVisible() then
 		PlaySound(SOUNDKIT.UI_CLASS_TALENT_SPEC_ACTIVATE);
 	end
-	if SetSpecialization(self.specIndex, false) then
+	if C_SpecializationInfo.SetSpecialization(self.specIndex) then
 		self:GetParent():SetSpecActivateStarted(self.specIndex);
 	end
 	EventRegistry:TriggerEvent("PlayerSpellsFrame.SpecFrame.ActivateSpec");

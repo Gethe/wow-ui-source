@@ -70,7 +70,7 @@
 		<PushedTextOffset x="2" y="-2"/>
 	</Button>
 
-	<Frame name="CinematicsMenu" mixin="CinematicsMenuMixin" inherits="DefaultPanelTemplate" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true" propagateKeyboardInput="false">
+	<Frame name="CinematicsMenu" mixin="CinematicsMenuMixin" inherits="DefaultPanelTemplate" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true">
 		<Size x="819" y="559"/>
 		<Anchors>
 			<Anchor point="CENTER" x="0" y="50"/>
@@ -123,7 +123,7 @@
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 			<OnKeyDown method="OnKeyDown"/>
-			<OnChar function="nop"/>
+			<OnChar method="OnChar"/>
 		</Scripts>
 	</Frame>
 </Ui>

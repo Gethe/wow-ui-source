@@ -294,11 +294,9 @@ function HeroTalentsSelectionMixin:OnKeyDown(key)
 	-- Only intercept the keybind to close the window (so that the Talent frame doesn't get it and close itself instead)
 	if GetBindingFromClick(key) == "TOGGLEGAMEMENU" then
 		self:Hide();
-		self:SetPropagateKeyboardInput(false);
-	-- Otherwise let whatever the key was propagate to other listeners
-	else
-		self:SetPropagateKeyboardInput(true);
+		return false;
 	end
+	return true;
 end
 
 function HeroTalentsSelectionMixin:OnCoverFrameClicked()

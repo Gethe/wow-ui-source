@@ -44,13 +44,28 @@ function EventUtil.AreVariablesLoaded()
 	return GlueParent or (UIParent and UIParent.variablesLoaded);
 end
 
+local eventUtilVariablesLoadedCallbacks = {};
 function EventUtil.ContinueOnVariablesLoaded(callback)
 	if EventUtil.AreVariablesLoaded() then
 		callback();
 		return;
 	end
 
-	EventUtil.ContinueAfterAllEvents(callback, "VARIABLES_LOADED");
+	table.insert(eventUtilVariablesLoadedCallbacks, callback);
+end
+
+local secureexecuterange = secureexecuterange;
+local eventUtilContinueOnVariablesLoadedTriggered = false;
+function EventUtil.TriggerOnVariablesLoaded()
+	if eventUtilContinueOnVariablesLoadedTriggered then
+		-- If TriggerOnVariablesLoaded has been called once already, don't do anything further.
+    	return;
+	end
+	eventUtilContinueOnVariablesLoadedTriggered = true;
+
+	secureexecuterange(eventUtilVariablesLoadedCallbacks, function(_, callback)
+		callback();
+	end);
 end
 
 function EventUtil.ContinueOnAddOnLoaded(addOnName, callback)

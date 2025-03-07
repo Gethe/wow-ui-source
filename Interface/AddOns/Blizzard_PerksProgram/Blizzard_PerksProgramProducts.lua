@@ -18,6 +18,7 @@ function PerksProgramProductsFrameMixin:OnLoad()
 	EventRegistry:RegisterCallback("PerksProgramModel.OnProductSelectedAfterModel", self.OnProductSelectedAfterModel, self);
 	EventRegistry:RegisterCallback("PerksProgram.SortFieldSet", self.SortFieldSet, self);
 	EventRegistry:RegisterCallback("PerksProgram.AllDataRefresh", self.AllDataRefresh, self);
+	EventRegistry:RegisterCallback("PerksProgram.UpdateCartShown", self.OnShoppingCartVisibilityUpdated, self);
 
 	local faction = UnitFactionGroup("player");
 	if faction and (PLAYER_FACTION_GROUP[faction] == "Horde") then 		
@@ -100,9 +101,21 @@ function PerksProgramProductsFrameMixin:Init()
 	end);
 	ScrollUtil.InitScrollBoxListWithScrollBar(scrollContainer.ScrollBox, scrollContainer.ScrollBar, view);
 
+	local function ProductSelected(elementData)
+		-- Always hide the cart when a new product is selected
+		-- IMPORTANT: Note on timing here, we want the frame to be hidden before we select an item,
+		-- but we don't want to trigger the other associated cart visibility updates until after
+		-- the item has been selected. This is to handle some ModelScene selection logic that breaks
+		-- if we ONLY rely on the event being signaled after the fact
+		local showCart = false;
+		self.PerksProgramShoppingCartFrame:SetShown(showCart);
+		self:OnProductSelected(elementData);
+		EventRegistry:TriggerEvent("PerksProgram.UpdateCartShown", showCart);
+	end
+
 	local function OnSelectionChanged(o, elementData, selected)
 		if selected then
-			self:OnProductSelected(elementData);
+			ProductSelected(elementData);
 		end
 
 		local button = scrollContainer.ScrollBox:FindFrame(elementData);
@@ -114,7 +127,7 @@ function PerksProgramProductsFrameMixin:Init()
 	scrollContainer.selectionBehavior:RegisterCallback(SelectionBehaviorMixin.Event.OnSelectionChanged, OnSelectionChanged, self);
 	EventRegistry:RegisterCallback("PerksProgram.OnFilterChanged", self.OnFilterChanged, self);
 
-	self.FrozenProductContainer:Init(function(itemInfo) self:OnProductSelected(itemInfo) end);
+	self.FrozenProductContainer:Init(function(itemInfo) ProductSelected(itemInfo); end);
 end
 
 function PerksProgramProductsFrameMixin:OnEvent(event, ...)
@@ -193,6 +206,11 @@ function PerksProgramProductsFrameMixin:OnProductSelected(productItemInfo)
 end
 
 function PerksProgramProductsFrameMixin:OnProductSelectedAfterModel(data)
+	if data.isCartData then
+		-- Cart items can show as selections event though they aren't
+		return;
+	end
+
 	C_PerksProgram.ItemSelectedTelemetry(data.perksVendorItemID);
 end
 
@@ -460,6 +478,26 @@ local function ProductSortComparator(lhs, rhs)
 	return  lhsValue > rhsValue;
 end
 
+function PerksProgramProductsFrameMixin:OnShoppingCartVisibilityUpdated(cartShown)
+	local selectedItem = self:GetSelectedProduct();
+	if selectedItem then
+		self.preCartSelectedItem = selectedItem;
+	end
+
+	if cartShown then
+		local scrollContainer = self.ProductsScrollBoxContainer;
+		scrollContainer.selectionBehavior:ClearSelections();
+		self.FrozenProductContainer:SetSelected(false);
+		self.selectedProductInfo = nil;
+	elseif not selectedItem then
+		if not self.preCartSelectedItem or not self:TrySelectProduct(self.preCartSelectedItem) then
+			self:SelectFirstProduct();
+		end
+
+		self.preCartSelectedItem = nil;
+	end
+end
+
 function PerksProgramProductsFrameMixin:UpdateProducts(resetSelection)
 	local previouslySelectedProduct = self:GetSelectedProduct();
 
@@ -567,7 +605,7 @@ function PerksProgramProductsFrameMixin:SelectFirstProduct()
 end
 
 function PerksProgramProductsFrameMixin:SelectNextProduct()
-	if self.FrozenProductContainer:IsSelected() then
+	if self.FrozenProductContainer:IsSelected() or self.PerksProgramShoppingCartFrame:IsShown() then
 		return;
 	end
 
@@ -579,7 +617,7 @@ function PerksProgramProductsFrameMixin:SelectNextProduct()
 end
 
 function PerksProgramProductsFrameMixin:SelectPreviousProduct()
-	if self.FrozenProductContainer:IsSelected() then
+	if self.FrozenProductContainer:IsSelected()  or self.PerksProgramShoppingCartFrame:IsShown() then
 		return;
 	end
 
@@ -672,6 +710,8 @@ PerksProgramCurrencyFrameMixin = {};
 function PerksProgramCurrencyFrameMixin:OnLoad()
 	self:RegisterEvent("PERKS_PROGRAM_CURRENCY_REFRESH");
 	self:RegisterEvent("CHEST_REWARDS_UPDATED_FROM_SERVER");
+
+	EventRegistry:RegisterCallback("PerksProgram.UpdateCartShown", self.OnUpdateCartShown, self);
 
 	local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CURRENCY_ID_PERKS_PROGRAM_DISPLAY_INFO);
 	self.tooltip = PerksProgramFrame.PerksProgramTooltip;
@@ -774,6 +814,19 @@ end
 
 function PerksProgramCurrencyFrameMixin:OnLeave()
 	self.tooltip:Hide();
+end
+
+function PerksProgramCurrencyFrameMixin:OnUpdateCartShown(cartShown)
+	self:ClearAllPoints();
+	local parent = self:GetParent();
+
+	if cartShown then
+		self:SetPoint("RIGHT", parent.PerksProgramShoppingCartFrame, "RIGHT", 0, 0);
+		self:SetPoint("BOTTOM", parent.PerksProgramShoppingCartFrame, "TOP", 0, 15);
+	else
+		self:SetPoint("RIGHT", parent.ProductsScrollBoxContainer, "RIGHT", 0, 0);
+		self:SetPoint("BOTTOM", parent.ProductsScrollBoxContainer, "TOP", 0, 15);
+	end
 end
 
 ----------------------------------------------------------------------------------

@@ -177,6 +177,19 @@ local function AchievementFrame_GetOrSelectCurrentCategory()
 	return category;
 end
 
+local function AchievementFrame_OnAchievementLinkedInChat(achievementID)
+	local chatType = ChatEdit_GetActiveChatType();
+	if chatType == "WHISPER" then		
+		C_AchievementTelemetry.LinkAchievementInWhisper(achievementID);
+	elseif chatType == "CHANNEL" then
+		local editBox = ChatEdit_GetActiveWindow();
+		local _localID, _channelName, _instanceID, isCommunitiesChannel = GetChannelName(ChatEdit_GetChannelTarget(editBox))
+		if isCommunitiesChannel then
+			C_AchievementTelemetry.LinkAchievementInClub(achievementID);
+		end
+	end
+end
+
 -- [[ AchievementFrame ]] --
 
 function AchievementFrame_ToggleAchievementFrame(toggleStatFrame, toggleGuildView)
@@ -258,6 +271,8 @@ function AchievementFrame_OnShow (self)
 	PlaySound(SOUNDKIT.ACHIEVEMENT_MENU_OPEN);
 	AchievementFrame.Header.Points:SetText(BreakUpLargeNumbers(GetTotalAchievementPoints()));
 	UpdateMicroButtons();
+
+	C_AchievementTelemetry.ShowAchievements();
 end
 
 function AchievementFrame_OnHide (self)
@@ -992,6 +1007,10 @@ function AchievementTemplateMixin:ProcessClick(buttonName, down)
 			local achievementLink = GetAchievementLink(elementData.id);
 			if achievementLink then
 				handled = ChatEdit_InsertLink(achievementLink);
+				if handled then
+					AchievementFrame_OnAchievementLinkedInChat(elementData.id);
+				end
+
 				if not handled and SocialPostFrame and Social_IsShown() then
 					Social_InsertLink(achievementLink);
 					handled = true;
@@ -2411,6 +2430,7 @@ function AchievementFrameSummaryAchievement_OnClick(self)
 		local achievementLink = GetAchievementLink(self.id);
 		if ( achievementLink ) then
 			if ( ChatEdit_InsertLink(achievementLink) ) then
+				AchievementFrame_OnAchievementLinkedInChat(self.id);
 				return;
 			elseif ( SocialPostFrame and Social_IsShown() ) then
 				Social_InsertLink(achievementLink);

@@ -70,9 +70,9 @@ local AccountConstants =
 		{
 			Name = "AccountTransType",
 			Type = "Enumeration",
-			NumValues = 60,
+			NumValues = 62,
 			MinValue = 0,
-			MaxValue = 59,
+			MaxValue = 61,
 			Fields =
 			{
 				{ Name = "ProxyForwarder", Type = "AccountTransType", EnumValue = 0 },
@@ -135,6 +135,8 @@ local AccountConstants =
 				{ Name = "CharacterItems", Type = "AccountTransType", EnumValue = 57 },
 				{ Name = "CurrencyTransferLog", Type = "AccountTransType", EnumValue = 58 },
 				{ Name = "LgVendorPurchase", Type = "AccountTransType", EnumValue = 59 },
+				{ Name = "SaveWarbandGroups", Type = "AccountTransType", EnumValue = 60 },
+				{ Name = "Profile", Type = "AccountTransType", EnumValue = 61 },
 			},
 		},
 		{
@@ -182,6 +184,25 @@ local AccountConstants =
 				{ Name = "MountsCollections", Type = "DisableAccountProfilesFlags", EnumValue = 4 },
 				{ Name = "PetsCollections", Type = "DisableAccountProfilesFlags", EnumValue = 8 },
 				{ Name = "ItemsCollections", Type = "DisableAccountProfilesFlags", EnumValue = 16 },
+			},
+		},
+		{
+			Name = "ItemCollectionType",
+			Type = "Enumeration",
+			NumValues = 9,
+			MinValue = 0,
+			MaxValue = 7,
+			Fields =
+			{
+				{ Name = "ItemCollectionNone", Type = "ItemCollectionType", EnumValue = 0 },
+				{ Name = "ItemCollectionToy", Type = "ItemCollectionType", EnumValue = 1 },
+				{ Name = "ItemCollectionHeirloom", Type = "ItemCollectionType", EnumValue = 2 },
+				{ Name = "ItemCollectionTransmog", Type = "ItemCollectionType", EnumValue = 3 },
+				{ Name = "ItemCollectionTransmogSetFavorite", Type = "ItemCollectionType", EnumValue = 4 },
+				{ Name = "ItemCollectionRuneforgeLegendaryAbility", Type = "ItemCollectionType", EnumValue = 5 },
+				{ Name = "ItemCollectionTransmogIllusion", Type = "ItemCollectionType", EnumValue = 6 },
+				{ Name = "ItemCollectionWarbandScene", Type = "ItemCollectionType", EnumValue = 7 },
+				{ Name = "NumItemCollectionTypes", Type = "ItemCollectionType", EnumValue = 7 },
 			},
 		},
 	},

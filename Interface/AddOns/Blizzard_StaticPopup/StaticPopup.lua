@@ -11,6 +11,22 @@ local function GetFullscreenFrame()
 	return fullscreenFrameOverride or GetAppropriateTopLevelParent();
 end
 
+local function StaticPopup_UpdateSubText(dialog, info)
+	if info.subtextIsTimer and info.timeFormatter then
+		dialog.SubText:SetText(info.subText:format(info.timeFormatter:Format(dialog.timeleft)));
+	else
+		dialog.SubText:SetText(info.subText);
+	end
+end
+
+local function StaticPopup_GetTimeLeft(dialog, info)
+	if info.autoSetTimeRemainingDataKey then
+		return dialog.data[info.autoSetTimeRemainingDataKey];
+	end
+
+	return info.timeout or 0;
+end
+
 function StaticPopup_SetFullScreenFrame(frame)
 	if frame then
 		fullscreenFrameOverride = frame;
@@ -158,8 +174,12 @@ function StaticPopup_Resize(dialog, which)
 		if ( dialog.SubText:IsShown() ) then
 			height = height + dialog.SubText:GetHeight() + 8;
 			-- Adding a bit more vertical space to prevent the text from feeling cramped
-			if ( info.normalSizedSubText and info.compactItemFrame) then
-				height = height + 18;
+			if info.normalSizedSubText then
+				if info.compactItemFrame then
+					height = height + 18;
+				else
+					height = height + 13;
+				end
 			end
 		end
 
@@ -257,6 +277,9 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 	end
 	if ( info.OnCancel and info.OnButton2 ) then
 		error("Dialog "..which.. " cannot have both OnCancel and OnButton2");
+	end
+	if ( info.editBoxSecureText and not issecure() ) then
+		error("Dialog "..which.. " cannot be shown from a tainted context");
 	end
 
 	if ( UnitIsDeadOrGhost("player") and not info.whileDead ) then
@@ -442,7 +465,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		if ( info.maxBytes ) then
 			editBox:SetMaxBytes(info.maxBytes);
 		end
-		editBox:SetText("");
+
 		if ( info.editBoxWidth ) then
 			editBox:SetWidth(info.editBoxWidth);
 		else
@@ -518,17 +541,16 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 
 	-- Set the miscellaneous variables for the dialog
 	dialog.which = which;
-	dialog.timeleft = info.timeout or 0;
+	dialog.data = data;
+	dialog.timeleft = StaticPopup_GetTimeLeft(dialog, info);
 	dialog.hideOnEscape = info.hideOnEscape;
 	dialog.exclusive = info.exclusive;
 	dialog.enterClicksFirstButton = info.enterClicksFirstButton;
 	dialog.insertedFrame = insertedFrame;
-	if ( info.subText ) then
+	dialog.SubText:SetShown(info.subText ~= nil);
+	if info.subText then
 		dialog.SubText:SetFontObject(info.normalSizedSubText and "GameFontNormal" or "GameFontNormalSmall");
-		dialog.SubText:SetText(info.subText);
-		dialog.SubText:Show();
-	else
-		dialog.SubText:Hide();
+		StaticPopup_UpdateSubText(dialog, info);
 	end
 
 	if ( insertedFrame ) then
@@ -549,8 +571,6 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		_G[dialog:GetName().."MoneyFrame"]:SetPoint("TOP", dialog.text, "BOTTOM", 0, -5);
 		_G[dialog:GetName().."MoneyInputFrame"]:SetPoint("TOP", dialog.text, "BOTTOM", 0, -5);
 	end
-	-- Clear out data
-	dialog.data = data;
 
 	-- Set the buttons of the dialog
 	local button1 = _G[dialog:GetName().."Button1"];
@@ -735,23 +755,24 @@ local SpellConfirmationFormatter = CreateFromMixins(SecondsFormatterMixin);
 SpellConfirmationFormatter:Init(0, SecondsFormatter.Abbreviation.None, true, true);
 
 function StaticPopup_OnUpdate(dialog, elapsed)
-	if ( dialog.timeleft > 0 ) then
+	if dialog.timeleft > 0 then
 		local which = dialog.which;
-		local timeleft = dialog.timeleft - elapsed;
-		if ( timeleft <= 0 ) then
-			if ( not StaticPopupDialogs[which].timeoutInformationalOnly ) then
-				dialog.timeleft = 0;
-				local OnCancel = StaticPopupDialogs[which].OnCancel;
-				if ( OnCancel ) then
-					OnCancel(dialog, dialog.data, "timeout");
+		local dialogInfo = StaticPopupDialogs[which];
+		dialog.timeleft = math.max(dialog.timeleft - elapsed, 0);
+
+		if dialog.timeleft <= 0 then
+			if ( not dialogInfo.timeoutInformationalOnly ) then
+				if dialogInfo.OnCancel then
+					dialogInfo.OnCancel(dialog, dialog.data, "timeout");
 				end
 				dialog:Hide();
 			end
 			return;
 		end
-		dialog.timeleft = timeleft;
 
-		if ( (which == "DEATH") or
+		if dialogInfo.subtextIsTimer and dialogInfo.timeFormatter then
+			StaticPopup_UpdateSubText(dialog, dialogInfo);
+		elseif ( (which == "DEATH") or
 		     (which == "CAMP")  or
 			 (which == "PLUNDERSTORM_LEAVE") or 
 			 (which == "QUIT") or
@@ -766,8 +787,8 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 			 (which == "SPELL_CONFIRMATION_PROMPT") or
 			 (which == "PREMADE_GROUP_LEADER_CHANGE_DELIST_WARNING") or
 			 (which == "ANIMA_DIVERSION_CONFIRM_CHANNEL")) then
-			local text = _G[dialog:GetName().."Text"];
-			timeleft = ceil(timeleft);
+			local text = dialog.text;
+			local timeleft = math.ceil(dialog.timeleft);
 			if ( (which == "INSTANCE_BOOT") or (which == "GARRISON_BOOT") ) then
 				if( GetClassicExpansionLevel() < LE_EXPANSION_WRATH_OF_THE_LICH_KING ) then
 					if ( timeleft < 60 ) then
@@ -813,6 +834,7 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 			StaticPopup_Resize(dialog, which);
 		end
 	end
+
 	if ( dialog.startDelay ) then
 		local which = dialog.which;
 		local timeleft = dialog.startDelay - elapsed;
@@ -870,7 +892,30 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 	end
 end
 
-function StaticPopup_EditBoxOnEnterPressed(self)
+-- This is intended to be used to continue ticking dialogs while the entire UI is hidden
+function StaticPopup_UpdateAll(elapsed)
+	for i = 1, STATICPOPUP_NUMDIALOGS do
+		local dialog = StaticPopup_GetDialog(i);
+		if dialog and dialog:IsShown() and not dialog:IsVisible() then
+			StaticPopup_OnUpdate(dialog, elapsed);
+		end
+	end
+end
+
+StaticPopupEditBoxMixin = {};
+
+local StaticPopupEditBoxAttributes = {
+	ClearEditBox = "clear-editbox",
+};
+
+function StaticPopupEditBoxMixin:OnAttributeChanged(attr)
+	if attr == StaticPopupEditBoxAttributes.ClearEditBox then
+		self:SetText("");
+		self:SetSecureText(false);
+	end
+end
+
+function StaticPopupEditBoxMixin:OnEnterPressed()
 	local EditBoxOnEnterPressed, which, dialog;
 	local parent = self:GetParent();
 	if ( parent.which ) then
@@ -889,14 +934,14 @@ function StaticPopup_EditBoxOnEnterPressed(self)
 	end
 end
 
-function StaticPopup_EditBoxOnEscapePressed(self)
+function StaticPopupEditBoxMixin:OnEscapePressed()
 	local EditBoxOnEscapePressed = StaticPopupDialogs[self:GetParent().which].EditBoxOnEscapePressed;
 	if ( EditBoxOnEscapePressed ) then
 		EditBoxOnEscapePressed(self, self:GetParent().data);
 	end
 end
 
-function StaticPopup_EditBoxOnTextChanged(self, userInput)
+function StaticPopupEditBoxMixin:OnTextChanged(userInput)
 	if ( not self.hasAutoComplete or not AutoCompleteEditBox_OnTextChanged(self, userInput) ) then
 		local EditBoxOnTextChanged = StaticPopupDialogs[self:GetParent().which].EditBoxOnTextChanged;
 		if ( EditBoxOnTextChanged ) then
@@ -904,6 +949,10 @@ function StaticPopup_EditBoxOnTextChanged(self, userInput)
 		end
 	end
 	self.Instructions:SetShown(self:GetText() == "");
+end
+
+function StaticPopupEditBoxMixin:ClearText()
+	self:SetAttribute(StaticPopupEditBoxAttributes.ClearEditBox, true);
 end
 
 function StaticPopup_OnLoad(self)
@@ -921,14 +970,15 @@ function StaticPopup_OnShow(self)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 
 	local dialog = StaticPopupDialogs[self.which];
-	local OnShow = dialog.OnShow;
-
-	if ( OnShow ) then
-		OnShow(self, self.data);
+	
+	if dialog.OnShow then
+		dialog.OnShow(self, self.data);
 	end
+
 	if ( dialog.hasMoneyInputFrame ) then
 		_G[self:GetName().."MoneyInputFrameGold"]:SetFocus();
 	end
+
 	if ( dialog.enterClicksFirstButton ) then
 		self:SetScript("OnKeyDown", StaticPopup_OnKeyDown);
 	end
@@ -944,6 +994,7 @@ function StaticPopup_OnHide(self)
 	if ( OnHide ) then
 		OnHide(self, self.data);
 	end
+	self.editBox:ClearText();
 	self.extraFrame:Hide();
 	if ( dialog.enterClicksFirstButton ) then
 		self:SetScript("OnKeyDown", nil);

@@ -48,6 +48,23 @@ function ColorPickerFrameMixin:OnShow()
         self.Content.ColorPicker:SetWidth(200);
         self:SetWidth(331);
     end
+
+	self:RegisterEvent("GLOBAL_MOUSE_DOWN");
+end
+
+function ColorPickerFrameMixin:OnHide()
+	self:UnregisterEvent("GLOBAL_MOUSE_DOWN");
+end
+
+function ColorPickerFrameMixin:OnEvent(event, ...)
+	if event == "GLOBAL_MOUSE_DOWN" then
+		if self:IsShown() and not DoesAncestryIncludeAny(self, GetMouseFoci()) then
+			if self.cancelFunc then
+				self.cancelFunc(self.previousValues);
+			end
+			self:Hide();
+		end
+	end
 end
 
 function ColorPickerFrameMixin:OnKeyDown(key)

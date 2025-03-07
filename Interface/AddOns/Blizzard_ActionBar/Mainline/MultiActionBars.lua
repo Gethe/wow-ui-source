@@ -60,7 +60,12 @@ local function GetMultiActionBars()
 end
 
 local function UpdateMultiActionBar(frame, var, pageVar)
-	if (var and IsNormalActionBarState()) then
+	if var == nil then
+		-- if var is nil that means settings were not loaded when this was called, so do nothing
+		return;
+	end
+
+	if var and IsNormalActionBarState() then
 		frame:SetShown(true);
 		VIEWABLE_ACTION_BAR_PAGES[pageVar] = nil;
 	else

@@ -1,10 +1,10 @@
 ## Title: Blizzard_FrameXML
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_UIParent, Blizzard_UIParentPanelManager, Blizzard_SettingsDefinitions_Frame, Blizzard_ItemButton, Blizzard_FrameXMLUtil, Blizzard_UIPanelTemplates, Blizzard_GameTooltip
+## Dependencies: Blizzard_UIParent, Blizzard_UIParentPanelManager, Blizzard_SettingsDefinitions_Frame, Blizzard_ItemButton, Blizzard_FrameXMLUtil, Blizzard_UIPanelTemplates, Blizzard_GameTooltip, Blizzard_Colors
 ## LoadFirst: 1
 ## AllowLoad: Game
-## AllowLoadGameType: wowlabs
+## AllowLoadGameType: plunderstorm
 Shared\Localization.lua
 AchievementDisplayFrame.xml
 RewardTrackTemplates.xml
@@ -27,7 +27,6 @@ WardrobeOutfits.xml
 Mainline\NavigationBar.lua
 Mainline\NavigationBar.xml
 UIErrorsFrame.xml
-Mainline\Sound.lua
 DeprecatedTemplates.lua
 DeprecatedTemplates.xml
 Mainline\AlertFrames.lua

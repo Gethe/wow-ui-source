@@ -159,7 +159,7 @@ function RealmList_Update(retainScrollPosition)
 
 	local kioskRealmAddr = GetKioskAutoRealmAddress();
 	if kioskRealmAddr then
-		local containsKioskRealm = dataProvider:ContainsElementDataByPredicate(function(elementData)
+		local containsKioskRealm = dataProvider:ContainsByPredicate(function(elementData)
 			return elementData == kioskRealmAddr;
 		end);
 		if containsKioskRealm then

@@ -52,9 +52,13 @@ function ProfessionsCrafterOrderRewardTooltipMixin:SetReward(reward)
 		end
 	end
 
-	local itemQualityColor = ITEM_QUALITY_COLORS[itemQuality or Enum.ItemQuality.Common];
-	local itemDisplayText = itemQualityColor.color:WrapTextInColorCode(itemName or "");
-	self.RewardName:SetText(itemDisplayText);
+	local colorData = ColorManager.GetColorDataForItemQuality(itemQuality or Enum.ItemQuality.Common);
+	if colorData then
+		local itemDisplayText = colorData.color:WrapTextInColorCode(itemName or "");
+		self.RewardName:SetText(itemDisplayText);
+	else
+		self.RewardName:SetText(itemName or "");
+	end
 
 	self:SetHeight(self.Reward:GetHeight());
 	self:SetWidth(self.Reward:GetWidth() + self.RewardName:GetWidth() + 20);
@@ -915,9 +919,13 @@ function ProfessionsCrafterOrderViewMixin:SetOrder(order)
             local itemLink = craftedItem:GetItemLink();
             local quality = craftedItem:GetItemQuality();
             Professions.SetupOutputIconCommon(self.OrderDetails.FulfillmentForm.ItemIcon, schematic.quantityMin, schematic.quantityMax, icon, itemLink, quality);
-    
-            local color = craftedItem:GetItemQualityColor().color;
-            local itemNameText = WrapTextInColor(craftedItem:GetItemName(), color);
+
+			local itemNameText = craftedItem:GetItemName();
+			local colorData = craftedItem:GetItemQualityColor();
+			if colorData then
+				itemNameText = WrapTextInColor(itemNameText, colorData.color);
+			end
+
             self.OrderDetails.FulfillmentForm.ItemName:SetWidth(500);
             self.OrderDetails.FulfillmentForm.ItemName:SetText(itemNameText);
             self.OrderDetails.FulfillmentForm.ItemName:SetWidth(self.OrderDetails.FulfillmentForm.ItemName:GetStringWidth());

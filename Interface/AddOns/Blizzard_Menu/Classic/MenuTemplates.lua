@@ -26,21 +26,6 @@ function WowStyle1DropdownMixin:OnSizeChanged(width, height)
 	end
 end
 
-function WowStyle1FilterDropdownMixin:GetBackgroundAtlas()
-	if self:IsEnabled() then
-		if self:IsDownOver() then
-			return "common-dropdown-classic-b-button-pressedhover";
-		elseif self:IsOver() then
-			return "common-dropdown-classic-b-button-hover";
-		elseif self:IsDown() then
-			return "common-dropdown-classic-b-button-pressed";
-		else
-			return "common-dropdown-classic-b-button";
-		end
-	end
-	return "common-dropdown-b-button-disabled";
-end
-
 function WowStyle1ArrowDropdownMixin:OnButtonStateChanged()
 	local atlas = GetWowStyle1ArrowButtonState(self);
 	self.Arrow:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);

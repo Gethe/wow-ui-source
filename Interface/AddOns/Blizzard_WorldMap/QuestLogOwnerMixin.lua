@@ -157,9 +157,11 @@ end
 function QuestLogOwnerMixin:SetQuestLogPanelShown(shown)
 	if self.QuestLog and shown ~= self.QuestLog:IsShown() then
 		if shown then
+			SetUIPanelAttribute(WorldMapFrame, "extraWidth", self.QuestLog:GetPanelExtraWidth());
 			self:SetWidth(self.minimizedWidth + self.questLogWidth);
 			self.QuestLog:Show();
 		else
+			SetUIPanelAttribute(WorldMapFrame, "extraWidth", 0);
 			self:SetWidth(self.minimizedWidth);
 			self.QuestLog:Hide();
 		end

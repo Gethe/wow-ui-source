@@ -814,6 +814,7 @@ function EditModeManagerFrameMixin:InitializeAccountSettings()
 	self.AccountSettings:SetStatusTrackingBar2Shown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowStatusTrackingBar2));
 	self.AccountSettings:SetDurabilityFrameShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowDurabilityFrame));
 	self.AccountSettings:SetPetFrameShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowPetFrame));
+	self.AccountSettings:SetCooldownViewerShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowCooldownViewer));
 end
 
 function EditModeManagerFrameMixin:OnAccountSettingChanged(changedSetting, newValue)
@@ -1677,6 +1678,12 @@ function EditModeAccountSettingsMixin:OnLoad()
 	self.settingsCheckButtons.ArchaeologyBar = self.SettingsContainer.ArchaeologyBar;
 	self.settingsCheckButtons.ArchaeologyBar:SetCallback(onArchaeologyBarCheckboxChecked);
 
+	local function onCooldownViewerCheckboxChecked(isChecked, isUserInput)
+		self:SetCooldownViewerShown(isChecked, isUserInput);
+	end
+	self.settingsCheckButtons.CooldownViewer = self.SettingsContainer.CooldownViewer;
+	self.settingsCheckButtons.CooldownViewer:SetCallback(onCooldownViewerCheckboxChecked);
+
 	self:LayoutSettings();
 end
 
@@ -1733,6 +1740,7 @@ function EditModeAccountSettingsMixin:OnEditModeEnter()
 	self:RefreshTimerBars();
 	self:RefreshVehicleSeatIndicator();
 	self:RefreshArchaeologyBar();
+	self:RefreshCooldownViewer();
 end
 
 function EditModeAccountSettingsMixin:OnEditModeExit()
@@ -2325,6 +2333,34 @@ function EditModeAccountSettingsMixin:RefreshArchaeologyBar()
 		ArcheologyDigsiteProgressBar:HighlightSystem();
 	else
 		ArcheologyDigsiteProgressBar:ClearHighlight();
+	end
+end
+
+function EditModeAccountSettingsMixin:SetCooldownViewerShown(shown, isUserInput)
+	if isUserInput then
+		EditModeManagerFrame:OnAccountSettingChanged(Enum.EditModeAccountSetting.ShowCooldownViewer, shown);
+		self:RefreshCooldownViewer();
+	else
+		self.settingsCheckButtons.CooldownViewer:SetControlChecked(shown);
+	end
+end
+
+function EditModeAccountSettingsMixin:RefreshCooldownViewer()
+	local showCooldownViewer = self.settingsCheckButtons.CooldownViewer:IsControlChecked();
+
+	local cooldownViewerFrames = {EssentialCooldownViewer, UtilityCooldownViewer, BuffIconCooldownViewer, BuffBarCooldownViewer};
+	assertsafe(#cooldownViewerFrames == Enum.EditModeCooldownViewerSystemIndicesMeta.NumValues, "Missing cooldown viewer frame.");
+
+	if showCooldownViewer then
+		for _, cooldownViewer in ipairs(cooldownViewerFrames) do
+			cooldownViewer:SetIsEditing(true);
+			cooldownViewer:HighlightSystem();
+		end
+	else
+		for _, cooldownViewer in ipairs(cooldownViewerFrames) do
+			cooldownViewer:SetIsEditing(false);
+			cooldownViewer:ClearHighlight();
+		end
 	end
 end
 

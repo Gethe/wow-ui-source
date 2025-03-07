@@ -7,6 +7,15 @@ local DelvesUI =
 	Functions =
 	{
 		{
+			Name = "GetCompanionInfoForActivePlayer",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "playerCompanionInfoID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetCreatureDisplayInfoForCompanion",
 			Type = "Function",
 
@@ -42,8 +51,8 @@ local DelvesUI =
 
 			Arguments =
 			{
-				{ Name = "companionID", Type = "number", Nilable = true },
 				{ Name = "curioType", Type = "CurioType", Nilable = false },
+				{ Name = "companionID", Type = "number", Nilable = true },
 			},
 
 			Returns =
@@ -150,8 +159,8 @@ local DelvesUI =
 
 			Arguments =
 			{
-				{ Name = "companionID", Type = "number", Nilable = true },
 				{ Name = "roleType", Type = "CompanionRoleType", Nilable = false },
+				{ Name = "companionID", Type = "number", Nilable = true },
 			},
 
 			Returns =
@@ -288,13 +297,14 @@ local DelvesUI =
 		{
 			Name = "CompanionRoleType",
 			Type = "Enumeration",
-			NumValues = 2,
+			NumValues = 3,
 			MinValue = 0,
-			MaxValue = 1,
+			MaxValue = 2,
 			Fields =
 			{
 				{ Name = "Dps", Type = "CompanionRoleType", EnumValue = 0 },
 				{ Name = "Heal", Type = "CompanionRoleType", EnumValue = 1 },
+				{ Name = "Tank", Type = "CompanionRoleType", EnumValue = 2 },
 			},
 		},
 		{

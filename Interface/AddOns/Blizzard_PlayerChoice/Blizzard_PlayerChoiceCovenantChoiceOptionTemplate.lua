@@ -9,7 +9,7 @@ function PlayerChoiceCovenantChoiceOptionTemplateMixin:OnLoad()
 	self.OptionText:SetJustifyH("CENTER");
 
 	self.OptionButtonsContainer:SetPoint("TOP", self.OptionText, "BOTTOM", 0, -10);
-	self.OptionButtonsContainer.buttonTemplate = "PlayerChoiceSmallerOptionButtonTemplate";
+	self.OptionButtonsContainer.buttonFrameTemplate = "PlayerChoiceSmallerOptionButtonFrameTemplate";
 end
 
 -- We don't need a filler frame, Covenant Choice options are always the same size
@@ -37,9 +37,13 @@ end
 function PlayerChoiceCovenantChoiceOptionTemplateMixin:SetupButtons()
 	-- Grab the last button and remove it. That will be the preview covenant button and we want to handle it separately
 	local previewButtonInfo = table.remove(self.optionInfo.buttons);
+	previewButtonInfo.showCheckmark = false;
+	previewButtonInfo.hideButtonShowText = false;
 	self.PreviewButton:Setup(previewButtonInfo, self.optionInfo);
 
-	self.OptionButtonsContainer:Setup(self.optionInfo);
+	-- Covenant Choice doesn't support showing buttons as a list
+	local showAsListNo = false;
+	self.OptionButtonsContainer:Setup(self.optionInfo, showAsListNo);
 end
 
 function PlayerChoiceCovenantChoiceOptionTemplateMixin:OnUpdate()

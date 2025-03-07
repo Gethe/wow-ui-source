@@ -394,8 +394,12 @@ function TorghastLevelPickerRewardCircleMixin:AddCurrencyToTooltip(currency, too
 	if (tooltip) then
 		if currency.isCurrencyContainer then
 			local text = JAILERS_TOWER_CURRENCY_REWARD_CONTAINER:format(currency.texture, currency.name);
-			local color = ITEM_QUALITY_COLORS[currency.quality];
-			tooltip:AddLine(text, color.r, color.g, color.b);
+			local colorData = ColorManager.GetColorDataForItemQuality(currency.quality);
+			if colorData then
+				tooltip:AddLine(text, colorData.r, colorData.g, colorData.b);
+			else
+				tooltip:AddLine(text);
+			end
 		else
 			local text = JAILERS_TOWER_CURRENCY_REWARD_FORMAT:format(currency.texture, currency.quantity, currency.name);
 			tooltip:AddLine(text, HIGHLIGHT_FONT_COLOR:GetRGB());
@@ -443,72 +447,76 @@ function TorghastLevelPickerRewardCircleMixin:Init()
 end 
 
 function TorghastLevelPickerRewardCircleMixin:OnEnter()
-	self:RefreshTooltip(); 
+	self:RefreshTooltip();
 end 
 
 function TorghastLevelPickerRewardCircleMixin:RefreshTooltip()
-	if (not self:IsMouseOver()) then 
+	if not self:IsMouseOver() then
 		return;
-	end 
+	end
 
-	if (self.lockedState) then
+	if self.lockedState then
 		EmbeddedItemTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		local timeLockedError = IsJailersTowerLayerTimeLocked(self.index);
 		if (timeLockedError) then
 			GameTooltip_AddErrorLine(EmbeddedItemTooltip, timeLockedError, true);
-		elseif (UnitInParty("player")) then 
+		elseif (UnitInParty("player")) then
 			GameTooltip_AddErrorLine(EmbeddedItemTooltip, JAILERS_TOWER_LEVEL_PICKER_PARTY_LOCK, true);
-		else 
+		else
 			GameTooltip_AddErrorLine(EmbeddedItemTooltip, JAILERS_TOWER_REWARD_LOCKED, true);
-		end 
-		EmbeddedItemTooltip:Show(); 
-		return; 
-	end 
+		end
 
-	if(self.completeState) then 
+		EmbeddedItemTooltip:Show();
+		return;
+	end
+
+	if self.completeState then
 		EmbeddedItemTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		local completeString = C_GossipInfo.GetCompletedOptionDescriptionString() or ""; 
+		local completeString = C_GossipInfo.GetCompletedOptionDescriptionString() or "";
 		GameTooltip_AddNormalLine(EmbeddedItemTooltip, completeString, true)
-		EmbeddedItemTooltip:Show(); 
-		return; 
-	end 
+		EmbeddedItemTooltip:Show();
+		return;
+	end
 
-	if (not self.currencyRewards and not self.itemRewards) then 
-		return; 
-	end 
+	if not self.currencyRewards and not self.itemRewards then
+		return;
+	end
 
 	EmbeddedItemTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip_SetTitle(EmbeddedItemTooltip, JAILERS_TOWER_REWARDS_TITLE, HIGHLIGHT_FONT_COLOR, true);
 
-	for _, currencyReward in ipairs(self.currencyRewards) do 
+	for _, currencyReward in ipairs(self.currencyRewards) do
 		GameTooltip_AddBlankLineToTooltip(EmbeddedItemTooltip);
 		self:AddCurrencyToTooltip(currencyReward, EmbeddedItemTooltip);
-	end 
+	end
 
-	for i, itemReward in ipairs(self.itemRewards) do 
+	for i, itemReward in ipairs(self.itemRewards) do
 		GameTooltip_AddBlankLineToTooltip(EmbeddedItemTooltip);
-		if(i == 1) then 
+		if i == 1 then
 			EmbeddedItemTooltip_SetItemByID(EmbeddedItemTooltip.ItemTooltip, itemReward.id)
-		else 
+		else
 			local text;
 			if itemReward.quantity > 1 then
 				text = string.format(JAILERS_TOWER_ITEM_REWARD_TOOLTIP_WITH_COUNT_FORMAT, itemReward.texture, HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(itemReward.quantity), itemReward.name);
 			else
 				text = string.format(JAILERS_TOWER_ITEM_REWARD_TOOLTIP_FORMAT, itemReward.texture, itemReward.name);
 			end
+
 			if text then
-				local color = ITEM_QUALITY_COLORS[itemReward.quality];
-				EmbeddedItemTooltip:AddLine(text, color.r, color.g, color.b);
+				local colorData = ColorManager.GetColorDataForItemQuality(itemReward.quality);
+				if colorData then
+					EmbeddedItemTooltip:AddLine(text, colorData.r, colorData.g, colorData.b);
+				end
 			end
 		end
-	end 
+	end
 
-	if(self.index and self.index > 1) then 
+	if self.index and self.index > 1 then
 		GameTooltip_SetBottomText(EmbeddedItemTooltip, JAILERS_TOWER_REWARD_HIGH_DIFFICULTY, NORMAL_FONT_COLOR);
-	end 
+	end
 
-	EmbeddedItemTooltip:Show(); 
-end 
+	EmbeddedItemTooltip:Show();
+end
 
 function TorghastLevelPickerRewardCircleMixin:OnLeave()
 	EmbeddedItemTooltip:Hide();

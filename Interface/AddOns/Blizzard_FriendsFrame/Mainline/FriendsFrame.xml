@@ -1214,7 +1214,6 @@
 			<OnShow function="FriendsFrame_OnShow"/>
 			<OnHide function="FriendsFrame_OnHide"/>
 			<OnEvent function="FriendsFrame_OnEvent"/>
-			<OnMouseWheel function=""/>
 		</Scripts>
 	</Frame>
 	<Frame name="AddFriendFrame" parent="UIParent" hidden="true" frameStrata="DIALOG">

@@ -36,7 +36,6 @@ GossipAvailableQuestButtonMixin = CreateFromMixins(GossipSharedAvailableQuestBut
 
 function GossipAvailableQuestButtonMixin:Setup(questInfo)
 	QuestUtil.ApplyQuestIconOfferToTextureForQuestID(self.Icon, questInfo.questID, questInfo.isLegendary, questInfo.frequency, questInfo.isRepeatable, questInfo.isImportant, questInfo.isMeta);
-	self.Icon:SetAlpha(QuestUtil.GetAvailableQuestIconAlpha(questInfo.questID));
 	GossipSharedAvailableQuestButtonMixin.Setup(self, questInfo);
 end
 
@@ -47,6 +46,7 @@ function GossipActiveQuestButtonMixin:Setup(questInfo)
 end
 
 GossipFrameMixin = CreateFromMixins(GossipFrameSharedMixin);
+
 function GossipFrameMixin:OnLoad()
 	self:RegisterEvent("QUEST_LOG_UPDATE");
 	self:UpdateScrollBox();
@@ -58,22 +58,10 @@ function GossipFrameMixin:OnLoad()
 end
 
 function GossipFrameMixin:HandleShow(textureKit)
-	GossipFrameSharedMixin.HandleShow(self);
-	self.Background:SetAtlas(self:GetBackgroundTexture(textureKit), TextureKitConstants.UseAtlasSize);
+	GossipFrameSharedMixin.HandleShow(self, textureKit);
+	self:RegisterBackgroundTexture(self.Background, textureKit);
 	self.FriendshipStatusBar:Update();
 	self:Update();
-end
-
-local backgroundTextureKit = "QuestBG-%s";
-function GossipFrameMixin:GetBackgroundTexture(textureKit)
-	if (textureKit) then
-		local backgroundAtlas = GetFinalNameFromTextureKit(backgroundTextureKit, textureKit);
-		local atlasInfo = C_Texture.GetAtlasInfo(backgroundAtlas);
-		if(atlasInfo) then
-			return backgroundAtlas;
-		end
-	end
-	return QuestUtil.GetDefaultQuestBackgroundTexture();
 end
 
 function GossipFrameMixin:OnEvent(event, ...)

@@ -214,8 +214,8 @@
 	<Scripts>
 		<OnShow method="OnShow"/>
 		<OnHide method="OnHide"/>
-		<OnLoad method="OnLoad" inherit="prepend"/>
-		<OnEvent method="OnEvent" inherit="prepend"/>
+		<OnLoad method="OnLoad"/>
+		<OnEvent method="OnEvent"/>
 		<OnKeyDown method="OnKeyDown"/>
 	</Scripts>
 </Frame>

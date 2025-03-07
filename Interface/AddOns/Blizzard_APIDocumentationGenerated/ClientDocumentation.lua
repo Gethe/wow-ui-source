@@ -8,6 +8,11 @@ local Client =
 		{
 			Name = "FlashClientIcon",
 			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "briefly", Type = "bool", Nilable = false, Default = false },
+			},
 		},
 		{
 			Name = "GetBillingTimeRested",

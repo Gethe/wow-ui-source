@@ -33,6 +33,7 @@ local InvasionInfo =
 		{
 			Name = "GetInvasionInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

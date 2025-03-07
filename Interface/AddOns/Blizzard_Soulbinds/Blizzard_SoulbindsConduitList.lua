@@ -118,12 +118,14 @@ function ConduitListConduitButtonMixin:Init(conduitData)
 	self.IconPulse:SetTexture(icon);
 
 	local conduitQuality = C_Soulbinds.GetConduitQuality(conduitData.conduitID, conduitData.conduitRank);
-	local color = ITEM_QUALITY_COLORS[conduitQuality];
-	local r, g, b = color.r, color.g, color.b;
-	self.IconOverlay:SetVertexColor(r, g, b);
-	self.IconOverlay2:SetVertexColor(r, g, b);
-	self.IconOverlayDark:SetVertexColor(0, 0, 0);
-	self.ConduitName:SetTextColor(r, g, b);
+	local colorData = ColorManager.GetColorDataForItemQuality(conduitQuality);
+	if colorData then
+		local r, g, b = colorData.r, colorData.g, colorData.b;
+		self.IconOverlay:SetVertexColor(r, g, b);
+		self.IconOverlay2:SetVertexColor(r, g, b);
+		self.IconOverlayDark:SetVertexColor(0, 0, 0);
+		self.ConduitName:SetTextColor(r, g, b);
+	end
 
 	local conduitSpecName = conduitData.conduitSpecName;
 	if conduitSpecName then

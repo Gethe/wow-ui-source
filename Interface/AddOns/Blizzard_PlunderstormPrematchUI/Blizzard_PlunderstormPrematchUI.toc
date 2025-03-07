@@ -1,7 +1,7 @@
 ## Title: Blizzard Plunderstorm Prematch UI
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## AllowLoadGameType: wowlabs
+## AllowLoadGameType: plunderstorm
 ## AllowLoad: Game
 
 Blizzard_PlunderstormPrematchUI.lua

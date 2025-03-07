@@ -111,6 +111,7 @@ local Map =
 		{
 			Name = "GetMapArtID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -125,6 +126,7 @@ local Map =
 		{
 			Name = "GetMapArtLayerTextures",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -140,6 +142,7 @@ local Map =
 		{
 			Name = "GetMapArtLayers",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -182,6 +185,7 @@ local Map =
 		{
 			Name = "GetMapChildrenInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -198,6 +202,7 @@ local Map =
 		{
 			Name = "GetMapDisplayInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -212,6 +217,7 @@ local Map =
 		{
 			Name = "GetMapGroupID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -226,6 +232,7 @@ local Map =
 		{
 			Name = "GetMapGroupMembersInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -240,6 +247,7 @@ local Map =
 		{
 			Name = "GetMapHighlightInfoAtPosition",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -263,6 +271,7 @@ local Map =
 		{
 			Name = "GetMapHighlightPulseInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -284,6 +293,7 @@ local Map =
 		{
 			Name = "GetMapInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -298,6 +308,7 @@ local Map =
 		{
 			Name = "GetMapInfoAtPosition",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -315,6 +326,7 @@ local Map =
 		{
 			Name = "GetMapLevels",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -346,6 +358,7 @@ local Map =
 		{
 			Name = "GetMapPosFromWorldPos",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -363,6 +376,7 @@ local Map =
 		{
 			Name = "GetMapRectOnMap",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -413,6 +427,7 @@ local Map =
 		{
 			Name = "GetUserWaypoint",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -422,6 +437,7 @@ local Map =
 		{
 			Name = "GetUserWaypointFromHyperlink",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -436,6 +452,7 @@ local Map =
 		{
 			Name = "GetUserWaypointHyperlink",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -445,6 +462,7 @@ local Map =
 		{
 			Name = "GetUserWaypointPositionForMap",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -459,6 +477,7 @@ local Map =
 		{
 			Name = "GetWorldPosFromMapPos",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -524,6 +543,15 @@ local Map =
 			},
 		},
 		{
+			Name = "OpenWorldMap",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "RequestPreloadMap",
 			Type = "Function",
 
@@ -571,7 +599,7 @@ local Map =
 			LiteralName = "WORLD_MAP_OPEN",
 			Payload =
 			{
-				{ Name = "uiMapID", Type = "number", Nilable = false },
+				{ Name = "uiMapID", Type = "number", Nilable = true },
 			},
 		},
 		{

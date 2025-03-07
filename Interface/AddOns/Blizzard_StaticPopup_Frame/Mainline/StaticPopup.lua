@@ -4469,3 +4469,19 @@ StaticPopupDialogs["REMIX_END_OF_EVENT_NOTICE"] = {
     text = REMIX_END_OF_EVENT_NOTICE,
     button1 = OKAY,
 }
+
+StaticPopupDialogs["CONFIRM_PROFESSION_RESPEC"] = {
+	text = PROFESSION_RESPEC_CONFIRMATION,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(self) C_TradeSkillUI.ConfirmProfessionRespec(); HideUIPanel(ProfessionsFrame); end,
+	OnCancel = function(self) C_TradeSkillUI.CancelProfessionRespec(); end,
+	OnUpdate = function(self, elapsed)
+		if ( not C_TradeSkillUI.CheckRespecNPC() ) then
+			StaticPopup_Hide("CONFIRM_PROFESSION_RESPEC");
+		end
+	end,
+	hideOnEscape = true,
+	timeout = 0,
+	exclusive = true,
+}

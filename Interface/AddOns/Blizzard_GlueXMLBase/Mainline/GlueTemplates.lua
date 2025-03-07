@@ -81,33 +81,33 @@ function GlueTemplates_SetDisabledTabState(tab)
 end
 
 ---------------------------------------------------
--- GAME ENVIRONMENT BUTTON MIXIN
-GameEnvironmentButtonMixin = {};
+-- GAME MODE BUTTON MIXIN
+GameModeButtonMixin = {};
 
-local GameEnvironmentButtonScales = {
-	[Enum.GameEnvironment.WoW] = 0.9,
-	[Enum.GameEnvironment.WoWLabs] = 0.68,
+local GameModeButtonScales = {
+	[Enum.GameMode.Standard] = 0.9,
+	[Enum.GameMode.Plunderstorm] = 0.68,
 };
 
-function GameEnvironmentButtonMixin:OnLoad()
+function GameModeButtonMixin:OnLoad()
 	SelectableButtonMixin.OnLoad(self);
 	self:SetAlpha(0.5);
 
-	self.selectedScale = GameEnvironmentButtonScales[self.gameEnvironment];
+	self.selectedScale = GameModeButtonScales[self.gameMode];
 	self.deselectedScale = self.selectedScale - 0.09;
 end
 
-function GameEnvironmentButtonMixin:OnShow()
+function GameModeButtonMixin:OnShow()
 	self:SetAlpha(self:IsSelected() and 1 or 0.5);
 end
 
-function GameEnvironmentButtonMixin:OnEnter()
+function GameModeButtonMixin:OnEnter()
 	if not self:IsSelected() then
 		self:SetAlpha(1.0);
 	end
 end
 
-function GameEnvironmentButtonMixin:OnLeave()
+function GameModeButtonMixin:OnLeave()
 	if not self:IsSelected() then
 		self:SetAlpha(0.5);
 	end
@@ -118,12 +118,12 @@ local LimitedTimeEventTextScale = {
 	deselected = 0.85,
 };
 
-function GameEnvironmentButtonMixin:SetSelectedState(selected)
+function GameModeButtonMixin:SetSelectedState(selected)
 	SelectableButtonMixin.SetSelectedState(self, selected);
 	self.SelectionArrow:SetShown(selected);
 	self.BackgroundGlowTop:SetShown(selected);
 	self.BackgroundGlowBottom:SetShown(selected);
-	
+
 	self.NormalTexture:SetScale(selected and self.selectedScale or self.deselectedScale);
 
 	if self.LimitedTimeEventText then
@@ -134,11 +134,11 @@ function GameEnvironmentButtonMixin:SetSelectedState(selected)
 end
 
 ---------------------------------------------------
--- GAME ENVIRONMENT BUTTON PULSING MIXIN
-GameEnvironmentButtonPulsingMixin = CreateFromMixins(GameEnvironmentButtonMixin);
+-- GAME MODE BUTTON PULSING MIXIN
+GameModeButtonPulsingMixin = CreateFromMixins(GameModeButtonMixin);
 
-function GameEnvironmentButtonPulsingMixin:OnLoad()
-	GameEnvironmentButtonMixin.OnLoad(self);
+function GameModeButtonPulsingMixin:OnLoad()
+	GameModeButtonMixin.OnLoad(self);
 
 	self.PulseTexture:SetTexture(self.NormalTexture:GetTexture());
 	self.PulseTexture:SetSize(self.NormalTexture:GetSize());
@@ -149,35 +149,35 @@ function GameEnvironmentButtonPulsingMixin:OnLoad()
 	self:SetPulsePlaying(true);
 end
 
-function GameEnvironmentButtonPulsingMixin:RefreshScale()
+function GameModeButtonPulsingMixin:RefreshScale()
 	local selected = self:IsSelected();
 	self.PulseTexture:SetScale(selected and self.selectedScale or self.deselectedScale);
 	self.PulseTextureTwo:SetScale(selected and self.selectedScale or self.deselectedScale);
 end
 
-function GameEnvironmentButtonPulsingMixin:OnShow()
-	GameEnvironmentButtonMixin.OnShow(self);
+function GameModeButtonPulsingMixin:OnShow()
+	GameModeButtonMixin.OnShow(self);
 
 	self:SetPulsePlaying(true);
 end
 
-function GameEnvironmentButtonPulsingMixin:OnEnter()
-	GameEnvironmentButtonMixin.OnEnter(self);
+function GameModeButtonPulsingMixin:OnEnter()
+	GameModeButtonMixin.OnEnter(self);
 
 	self:SetPulsePlaying(false);
 end
 
-function GameEnvironmentButtonPulsingMixin:OnLeave()
-	GameEnvironmentButtonMixin.OnLeave(self);
+function GameModeButtonPulsingMixin:OnLeave()
+	GameModeButtonMixin.OnLeave(self);
 
 	self:SetPulsePlaying(true);
 end
 
-function GameEnvironmentButtonPulsingMixin:OnSelected(newSelected)
+function GameModeButtonPulsingMixin:OnSelected(newSelected)
 	self:SetPulsePlaying(not newSelected);
 end
 
-function GameEnvironmentButtonPulsingMixin:SetPulsePlaying(playing)
+function GameModeButtonPulsingMixin:SetPulsePlaying(playing)
 	playing = playing and not self:IsSelected();
 	if self.pulsePlaying == playing then
 		return;
@@ -199,26 +199,25 @@ function GameEnvironmentButtonPulsingMixin:SetPulsePlaying(playing)
 end
 
 ---------------------------------------------------
--- GAME ENVIRONMENT FRAME MIXIN
-GameEnvironmentFrameMixin = {};
-function GameEnvironmentFrameMixin:OnLoad()
+-- GAME MODE FRAME MIXIN
+GameModeFrameMixin = {};
+function GameModeFrameMixin:OnLoad()
 	self.buttonGroup = CreateRadioButtonGroup();
 	self.buttonGroup:AddButton(self.SelectWoWToggle);
 	self.buttonGroup:AddButton(self.SelectWoWLabsToggle);
-	self.environments = {Enum.GameEnvironment.WoW, Enum.GameEnvironment.WoWLabs};
-	self.buttonGroup:RegisterCallback(ButtonGroupBaseMixin.Event.Selected, self.SelectGameEnvironment, self);
+	self.buttonGroup:RegisterCallback(ButtonGroupBaseMixin.Event.Selected, self.SelectGameMode, self);
 
-	self:TryShowEnvironmentButtons();
+	self:TryShowGameModeButtons();
 end
 
-function GameEnvironmentFrameMixin:OnShow()
+function GameModeFrameMixin:OnShow()
 	ResizeLayoutMixin.OnShow(self);
 
-	self:TryShowEnvironmentButtons();
+	self:TryShowGameModeButtons();
 end
 
-function GameEnvironmentFrameMixin:TryShowEnvironmentButtons()
-	self.shouldShowButtons = C_GameEnvironmentManager.GetCurrentEventRealmQueues() ~= Enum.EventRealmQueues.None;
+function GameModeFrameMixin:TryShowGameModeButtons()
+	self.shouldShowButtons = C_GameRules.GetCurrentEventRealmQueues() ~= Enum.EventRealmQueues.None;
 
 	local currentExpansionLevel = AccountUpgradePanel_GetBannerInfo();
 	if currentExpansionLevel and self.shownExpansionLevel ~= currentExpansionLevel then
@@ -232,21 +231,20 @@ function GameEnvironmentFrameMixin:TryShowEnvironmentButtons()
 	self:Layout();
 end
 
-function GameEnvironmentFrameMixin:OnKeyDown(key)
+function GameModeFrameMixin:OnKeyDown(key)
 	if key == "ESCAPE" and self:IsShown() then
-		EventRegistry:TriggerEvent("GameEnvironmentFrame.Hide");
+		EventRegistry:TriggerEvent("GameModeFrame.Hide");
 	end
 end
 
-function GameEnvironmentFrameMixin:ChangeGameEnvironment(newEnvironment)
-	assert(newEnvironment);
+function GameModeFrameMixin:ChangeGameMode(newGameMode)
+	assert(newGameMode);
 
-	if C_GameEnvironmentManager.GetCurrentGameEnvironment() == newEnvironment then		
+	if C_GameRules.GetActiveGameMode() == newGameMode then
 		return;
 	end
 
-	--GlueDialog_Show("SWAPPING_ENVIRONMENT");
-	if newEnvironment == Enum.GameEnvironment.WoWLabs then
+	if newGameMode == Enum.GameMode.Plunderstorm then
 		-- If we changed character order persist it
 		CharacterSelectListUtil.SaveCharacterOrder();
 		-- Swap to the Plunderstorm Realm
@@ -263,25 +261,30 @@ function GameEnvironmentFrameMixin:ChangeGameEnvironment(newEnvironment)
 	end
 end
 
-function GameEnvironmentFrameMixin:SelectRadioButtonForEnvironment(requestedEnvironment)
-	self.SelectWoWToggle:SetSelectedState(requestedEnvironment == Enum.GameEnvironment.WoW);
-	self.SelectWoWLabsToggle:SetSelectedState(requestedEnvironment == Enum.GameEnvironment.WoWLabs);
-	self.SelectWoWLabsToggle:SetPulsePlaying(requestedEnvironment ~= Enum.GameEnvironment.WoWLabs);
-
-	EventRegistry:TriggerEvent("GameEnvironment.UpdateNavBar");
-end
-
-function GameEnvironmentFrameMixin:SelectGameEnvironment(button, buttonIndex)
-	local requestedEnvironment = button.gameEnvironment;
-	assert(requestedEnvironment);
-
-	EventRegistry:TriggerEvent("GameEnvironment.Selected", requestedEnvironment);
-end
-
-function GameEnvironmentFrameMixin:GetSelectedGameEnvironment()
-	if self.SelectWoWLabsToggle:IsSelected() then
-		return Enum.GameEnvironment.WoWLabs;
+function GameModeFrameMixin:SelectRadioButtonForGameMode(requestedGameMode)
+	for i, button in ipairs(self.buttonGroup:GetButtons()) do
+		button:SetSelectedState(requestedGameMode == button.gameMode);
+		if button.SetPulsePlaying then
+			button:SetPulsePlaying(requestedGameMode ~= button.gameMode);
+		end
 	end
 
-	return Enum.GameEnvironment.WoW;
+	EventRegistry:TriggerEvent("GameMode.UpdateNavBar");
+end
+
+function GameModeFrameMixin:SelectGameMode(button, _buttonIndex)
+	local requestedGameMode = button.gameMode;
+	assert(requestedGameMode);
+
+	EventRegistry:TriggerEvent("GameMode.Selected", requestedGameMode);
+end
+
+function GameModeFrameMixin:GetSelectedGameMode()
+	local selectedButtons = self.buttonGroup:GetSelectedButtons();
+	if #selectedButtons == 0 then
+		return Enum.GameMode.Standard;
+	end
+
+	-- We should never have more than one selected button.
+	return selectedButtons[1].gameMode;
 end

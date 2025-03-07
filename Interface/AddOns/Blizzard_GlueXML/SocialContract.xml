@@ -102,7 +102,7 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad inherit="prepend" method="OnLoad"/>
+			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 			<OnKeyDown function="nop"/>

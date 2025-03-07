@@ -22,6 +22,7 @@ local ScrappingMachineUI =
 		{
 			Name = "GetCurrentPendingScrapItemLocationByIndex",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -45,6 +46,7 @@ local ScrappingMachineUI =
 		{
 			Name = "GetScrappingMachineName",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{

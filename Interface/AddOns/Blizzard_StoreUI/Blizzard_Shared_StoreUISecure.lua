@@ -638,7 +638,7 @@ function StoreFrame_GetProductCardTemplate(cardType, flags)
 	elseif cardType == Enum.BattlepayCardType.LargeVeritcalPageableCardWithBuyButton then
 		return "VerticalLargePageableStoreCardWithBuyButtonTemplate"
 	elseif cardType == Enum.BattlepayCardType.FullCardWithBuyButton then
-		if bit.band(flags, Enum.BattlepayDisplayFlag.UseHorizontalLayoutForFullCard) == Enum.BattlepayDisplayFlag.UseHorizontalLayoutForFullCard then
+		if bit.band(flags, Enum.BattlepayDisplayFlags.UseHorizontalLayoutForFullCard) == Enum.BattlepayDisplayFlags.UseHorizontalLayoutForFullCard then
 			return "HorizontalFullStoreCardWithBuyButtonTemplate";
 		else
 			return "VerticalFullStoreCardWithBuyButtonTemplate";
@@ -664,7 +664,7 @@ function StoreFrame_FilterEntries(entries)
 
 		local completelyOwned = StoreFrame_IsCompletelyOwned(entryInfo);
 		local partiallyOwned = StoreFrame_IsPartiallyOwned(entryInfo);
-		local hideWhenOwned = bit.band(sharedData.flags, Enum.BattlepayDisplayFlag.HideWhenOwned) ~= 0;
+		local hideWhenOwned = bit.band(sharedData.flags, Enum.BattlepayDisplayFlags.HideWhenOwned) ~= 0;
 
 		local expansionTooHigh = (sharedData.eligibility == Enum.PurchaseEligibility.ExpansionTooHigh);
 		local expansionTooLow = (sharedData.eligibility == Enum.PurchaseEligibility.ExpansionTooLow);
@@ -1045,7 +1045,7 @@ end
 
 function StoreFrame_DoesProductGroupShowOwnedAsDisabled(groupID)
 	local productGroupInfo = C_StoreSecure.GetProductGroupInfo(groupID);
-	return bit.band(productGroupInfo.flags, Enum.BattlepayProductGroupFlag.DisableOwnedProducts) == Enum.BattlepayProductGroupFlag.DisableOwnedProducts;
+	return bit.band(productGroupInfo.flags, Enum.BattlepayProductGroupFlags.DisableOwnedProducts) == Enum.BattlepayProductGroupFlags.DisableOwnedProducts;
 end
 
 function StoreFrame_IsProductGroupDisabled(groupID)
@@ -1055,9 +1055,9 @@ function StoreFrame_IsProductGroupDisabled(groupID)
 	end
 
 	local displayAsDisabled = productGroupInfo.disabledTooltip ~= nil and not StoreFrame_DoesProductGroupHavePurchasableItems(groupID);
-	local enabledForTrial = bit.band(productGroupInfo.flags, Enum.BattlepayProductGroupFlag.EnabledForTrial) == Enum.BattlepayProductGroupFlag.EnabledForTrial;
+	local enabledForTrial = bit.band(productGroupInfo.flags, Enum.BattlepayProductGroupFlags.EnabledForTrial) == Enum.BattlepayProductGroupFlags.EnabledForTrial;
 	local trialRestricted = IsTrialAccount() and not enabledForTrial;
-	local enabledForVeteran = bit.band(productGroupInfo.flags, Enum.BattlepayProductGroupFlag.EnabledForVeteran) == Enum.BattlepayProductGroupFlag.EnabledForVeteran;
+	local enabledForVeteran = bit.band(productGroupInfo.flags, Enum.BattlepayProductGroupFlags.EnabledForVeteran) == Enum.BattlepayProductGroupFlags.EnabledForVeteran;
 	local veteranRestricted = IsVeteranTrialAccount() and not enabledForVeteran;
 	return displayAsDisabled or trialRestricted or veteranRestricted;
 end
@@ -1076,8 +1076,8 @@ function StoreCategoryFrame_SetGroupID(self, groupID)
 	self.IconFrame:SetDesaturated(disabled);
 	self.Text:SetFontObject(disabled and "GameFontDisable" or "GameFontNormal");
 
-	local enabledForTrial = bit.band(productGroupInfo.flags, Enum.BattlepayProductGroupFlag.EnabledForTrial) == Enum.BattlepayProductGroupFlag.EnabledForTrial;
-	local enabledForVeteran = bit.band(productGroupInfo.flags, Enum.BattlepayProductGroupFlag.EnabledForVeteran) == Enum.BattlepayProductGroupFlag.EnabledForVeteran;
+	local enabledForTrial = bit.band(productGroupInfo.flags, Enum.BattlepayProductGroupFlags.EnabledForTrial) == Enum.BattlepayProductGroupFlags.EnabledForTrial;
+	local enabledForVeteran = bit.band(productGroupInfo.flags, Enum.BattlepayProductGroupFlags.EnabledForVeteran) == Enum.BattlepayProductGroupFlags.EnabledForVeteran;
 	if IsTrialAccount() and not enabledForTrial then
 		self.disabledTooltip = STORE_CATEGORY_TRIAL_DISABLED_TOOLTIP;
 	elseif IsVeteranTrialAccount() and not enabledForVeteran then

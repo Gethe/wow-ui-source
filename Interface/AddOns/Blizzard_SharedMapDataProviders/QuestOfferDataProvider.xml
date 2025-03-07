@@ -20,16 +20,34 @@
 		</Layers>
 	</Frame>
 
-	<Frame name="QuestHubPinTemplate" inherits="AreaPOIPinTemplate, HeightIndicatorMapPinTemplate" mixin="QuestHubPinMixin, QuestHubPinGlowMixin" virtual="true">
+	<Frame name="SuppressedPinTooltipTemplate" inherits="ResizeLayoutFrame" mixin="SuppressedPinTooltipMixin" virtual="true">
 		<Layers>
-			<Layer level="ARTWORK" textureSubLevel="1">
-				<Texture parentKey="PriorityQuest" atlas="QuestNormal">
-					<Size x="18" y="18" />
+			<Layer level="ARTWORK">
+				<Texture parentKey="Container">
+					<Size x="20" y="20"/>
 					<Anchors>
-						<Anchor point="CENTER" relativePoint="BOTTOM" x="0" y="6"/>
+						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>
+				<FontString parentKey="Title" inherits="GameFontNormal" justifyH="LEFT" justifyV="MIDDLE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Container" relativePoint="TOPRIGHT" x="5" y="0"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Container" relativePoint="BOTTOMRIGHT" x="5" y="0"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers>
 	</Frame>
+
+	<Frame name="SuppressedPinTooltipContainerTemplate" inherits="ResizeLayoutFrame" mixin="SuppressedPinTooltipContainerMixin" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">		
+				<FontString parentKey="AdditionalItems" inherits="GameTooltipText" justifyH="LEFT">
+					<Color color="NORMAL_FONT_COLOR"/>
+				</FontString>
+			</Layer>
+		</Layers>		
+	</Frame>
+
+	<Frame name="QuestHubPinTemplate" inherits="AreaPOIPinTemplate, HeightIndicatorMapPinTemplate" mixin="QuestHubPinMixin, QuestHubPinGlowMixin" virtual="true"/>
 </Ui>

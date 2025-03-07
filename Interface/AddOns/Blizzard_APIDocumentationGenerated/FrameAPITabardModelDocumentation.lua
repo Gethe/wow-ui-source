@@ -19,6 +19,19 @@ local FrameAPITabardModel =
 			},
 		},
 		{
+			Name = "GetLowerBorderFile",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "file", Type = "fileID", Nilable = false },
+			},
+		},
+		{
 			Name = "GetLowerEmblemFile",
 			Type = "Function",
 
@@ -33,6 +46,19 @@ local FrameAPITabardModel =
 		},
 		{
 			Name = "GetUpperBackgroundFileName",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "file", Type = "fileID", Nilable = false },
+			},
+		},
+		{
+			Name = "GetUpperBorderFile",
 			Type = "Function",
 
 			Arguments =

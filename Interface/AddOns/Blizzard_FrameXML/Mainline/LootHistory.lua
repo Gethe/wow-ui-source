@@ -37,8 +37,12 @@ function LootHistoryElementMixin:SetTooltip()
 
 	local item = Item:CreateFromItemLink(self.dropInfo.itemHyperlink);
 	local itemQuality = item:GetItemQuality();
-	local qualityColor = ITEM_QUALITY_COLORS[itemQuality].color;
-	GameTooltip_SetTitle(GameTooltip, qualityColor:WrapTextInColorCode(item:GetItemName()));
+	local colorData = ColorManager.GetColorDataForItemQuality(itemQuality);
+	if colorData then
+		GameTooltip_SetTitle(GameTooltip, colorData.color:WrapTextInColorCode(item:GetItemName()));
+	else
+		GameTooltip_SetTitle(GameTooltip, item:GetItemName());
+	end
 
 	if self.dropInfo.allPassed then
 		local allPassedFrame = tooltipLinePool:Acquire();
@@ -100,12 +104,15 @@ function LootHistoryElementMixin:Init(dropInfo)
 
 	self.dropInfo = dropInfo;
 
+	self.ItemName:SetText(item:GetItemName());
+
 	local item = Item:CreateFromItemLink(dropInfo.itemHyperlink);
 	local itemQuality = item:GetItemQuality();
-	local qualityColor = ITEM_QUALITY_COLORS[itemQuality].color;
+	local colorData = ColorManager.GetColorDataForItemQuality(itemQuality);
+	if colorData then
+		self.ItemName:SetVertexColor(colorData.color:GetRGB());
+	end
 
-	self.ItemName:SetText(item:GetItemName());
-	self.ItemName:SetVertexColor(qualityColor:GetRGB());
 	SetItemButtonQuality(self.Item, itemQuality, dropInfo.itemHyperlink);
 	self.Item.icon:SetTexture(item:GetItemIcon());
 

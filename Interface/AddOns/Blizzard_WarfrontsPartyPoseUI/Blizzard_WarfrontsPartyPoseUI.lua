@@ -129,6 +129,7 @@ function WarfrontsPartyPoseMixin:OnLoad()
 	self:RegisterEvent("QUEST_LOOT_RECEIVED");
 	self:RegisterEvent("QUEST_CURRENCY_LOOT_RECEIVED");
 	PartyPoseMixin.OnLoad(self);
+	PartyPoseUtil.AddDismissClickHandler(self.LeaveButton, self);
 	self.isPlayingRewards = false;
 end
 
@@ -173,4 +174,9 @@ function WarfrontsPartyPoseMixin:OnEvent(event, ...)
 			end
 		end
 	end
+end
+
+function WarfrontsPartyPoseMixin:Dismiss()
+	LeaveInstanceParty();
+	PartyPoseMixin.Dismiss(self);
 end

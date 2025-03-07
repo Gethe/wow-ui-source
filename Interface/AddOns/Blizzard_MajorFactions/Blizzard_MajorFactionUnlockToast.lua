@@ -67,7 +67,7 @@ function MajorFactionUnlockToastMixin:PlayMajorFactionUnlockToast(majorFactionID
 	if majorFactionData then
 		TopBannerManager_Show(self, {
 			name = majorFactionData.name,
-			factionColor = self:GetFactionColorByTextureKit(majorFactionData.textureKit),
+			factionColor = majorFactionData.factionFontColor and majorFactionData.factionFontColor.color or HIGHLIGHT_FONT_COLOR,
 			textureKit = majorFactionData.textureKit,
 			celebrationSoundKit = majorFactionData.celebrationSoundKit,
 			expansionID = majorFactionData.expansionID,
@@ -79,6 +79,7 @@ function MajorFactionUnlockToastMixin:PlayBanner(data)
 	self.FactionName:SetText(data.name);
 	self.FactionName:SetTextColor(data.factionColor:GetRGB());
 	self:SetMajorFactionTextureKit(data.textureKit);
+	self:SetMajorFactionSwirlEffects(data.expansionID);
 
 	local expansionLayoutInfo = ExpansionLayoutInfo[data.expansionID] or ExpansionLayoutInfo[LE_EXPANSION_DRAGONFLIGHT];
 	self:SetMajorFactionExpansionLayoutInfo(expansionLayoutInfo);

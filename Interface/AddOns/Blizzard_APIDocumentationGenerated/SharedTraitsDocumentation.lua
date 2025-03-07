@@ -141,6 +141,7 @@ local SharedTraits =
 		{
 			Name = "GetConditionInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -156,6 +157,7 @@ local SharedTraits =
 		{
 			Name = "GetConfigIDBySystemID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -170,6 +172,7 @@ local SharedTraits =
 		{
 			Name = "GetConfigIDByTreeID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -184,6 +187,7 @@ local SharedTraits =
 		{
 			Name = "GetConfigInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -212,6 +216,7 @@ local SharedTraits =
 		{
 			Name = "GetDefinitionInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -226,6 +231,7 @@ local SharedTraits =
 		{
 			Name = "GetEntryInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -265,6 +271,7 @@ local SharedTraits =
 		{
 			Name = "GetNodeInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -280,6 +287,7 @@ local SharedTraits =
 		{
 			Name = "GetStagedChanges",
 			Type = "Function",
+			MayReturnNothing = true,
 			Documentation = { "Returns IDs of Trait Nodes with pending changes, grouped by the type of change; Returns nothing if there are no pending changes" },
 
 			Arguments =
@@ -311,6 +319,7 @@ local SharedTraits =
 		{
 			Name = "GetSubTreeInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -326,6 +335,7 @@ local SharedTraits =
 		{
 			Name = "GetSystemIDByTreeID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -357,6 +367,7 @@ local SharedTraits =
 		{
 			Name = "GetTraitDescription",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -372,6 +383,7 @@ local SharedTraits =
 		{
 			Name = "GetTraitSystemFlags",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -386,6 +398,7 @@ local SharedTraits =
 		{
 			Name = "GetTraitSystemWidgetSetID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -430,6 +443,7 @@ local SharedTraits =
 		{
 			Name = "GetTreeInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -445,6 +459,7 @@ local SharedTraits =
 		{
 			Name = "GetTreeNodes",
 			Type = "Function",
+			MayReturnNothing = true,
 			Documentation = { "Returns a list of nodeIDs, sorted ascending, for a given treeID. Contains nodes for all class specializations." },
 
 			Arguments =

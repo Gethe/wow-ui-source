@@ -4,19 +4,13 @@ function LootItemExtendedMixin:Init(itemLink, originalQuantity, specID, isCurren
 	local itemName, itemTexture, quantity, itemRarity;
 	itemName, itemTexture, quantity, itemRarity, itemLink = ItemUtil.GetItemDetails(itemLink, originalQuantity, isCurrency);
 
-	local atlas = LOOT_BORDER_BY_QUALITY[itemRarity];
-	local desaturate = false;
-	if (not atlas) then
-		atlas = "loottoast-itemborder-gold";
-		desaturate = true;
-	end
+	local atlas = ColorManager.GetAtlasDataForLootBorderItemQuality(itemRarity) or "loottoast-itemborder-white";
 
 	self.IconOverlay:SetVertexColor(1, 1, 1);
 	self.IconOverlay:SetScale(1);
 	self.IconOverlay2:SetScale(1);
 
 	self:SetIconBorderAtlas(atlas);
-	self:SetIconBorderDesaturated(desaturate);
 	self:SetTexture(itemTexture);
 	self:SetIconDrawLayer(iconDrawLayer or "BORDER");
 	self:SetIconBorderShown(isIconBorderShown or false);
@@ -26,8 +20,10 @@ function LootItemExtendedMixin:Init(itemLink, originalQuantity, specID, isCurren
 	if C_Soulbinds.IsItemConduitByItemInfo(itemLink) then
 		self:SetIconOverlayAtlas("ConduitIconFrame");
 		self:SetIconOverlay2Atlas("ConduitIconFrame-Corners");
-		local color = BAG_ITEM_QUALITY_COLORS[itemRarity];
-		self.IconOverlay:SetVertexColor(color.r, color.g, color.b);
+		local color = ColorManager.GetColorDataForBagItemQuality(itemRarity);
+		if color then
+			self.IconOverlay:SetVertexColor(color.r, color.g, color.b);
+		end
 		local scale = .8;
 		self.IconOverlay:SetScale(scale);
 		self.IconOverlay2:SetScale(scale);
@@ -44,7 +40,7 @@ function LootItemExtendedMixin:Init(itemLink, originalQuantity, specID, isCurren
 	self:StopAnimArrows();
 
 	if isUpgraded then
-		local upgradeTexture = LOOTUPGRADEFRAME_QUALITY_TEXTURES[itemRarity or Enum.ItemQuality.Uncommon];
+		local upgradeTexture = ColorManager.GetAtlasDataForLootUpgradeQuality(itemRarity or Enum.ItemQuality.Uncommon);
 		self:SetArrowUpgradeTexture(upgradeTexture);
 	else
 		self:SetArrowUpgradeTexture(nil);

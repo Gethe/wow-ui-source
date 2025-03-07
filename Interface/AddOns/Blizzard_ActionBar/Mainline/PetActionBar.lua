@@ -218,7 +218,9 @@ end
 
 PetActionButtonMixin = {}
 
-function PetActionButtonMixin:OnLoad()
+function PetActionButtonMixin:PetActionButtonMixin_OnLoad()
+	SmallActionButtonMixin.SmallActionButtonMixin_OnLoad(self);
+
 	self:RegisterForDrag("LeftButton", "RightButton");
 	self:RegisterForClicks("AnyUp");
 	self:RegisterEvent("UPDATE_BINDINGS");
@@ -227,18 +229,20 @@ function PetActionButtonMixin:OnLoad()
 	self.cooldown:SetSwipeColor(0, 0, 0);
 end
 
-function PetActionButtonMixin:OnEvent(event, ...)
+function PetActionButtonMixin:PetActionButtonMixin_OnEvent(event, ...)
 	if ( event == "UPDATE_BINDINGS" or event == "GAME_PAD_ACTIVE_CHANGED" ) then
 		self:SetHotkeys();
 		return;
 	end
 end
 
-function PetActionButtonMixin:PreClick()
+function PetActionButtonMixin:PetActionButtonMixin_PreClick()
 	self:SetChecked(false);
 end
 
-function PetActionButtonMixin:OnClick(button)
+function PetActionButtonMixin:PetActionButtonMixin_OnClick(button, down)
+	QuickKeybindButtonTemplateMixin.QuickKeybindButtonOnClick(self, button, down);
+
 	if ( not KeybindFrames_InQuickKeybindMode() ) then
 		if ( IsModifiedClick() and IsModifiedClick("PICKUPACTION") ) then
 			PickupPetAction(self:GetID());
@@ -253,7 +257,9 @@ function PetActionButtonMixin:OnClick(button)
 	end
 end
 
-function PetActionButtonMixin:OnDragStart()
+function PetActionButtonMixin:PetActionButtonMixin_OnDragStart()
+	BaseActionButtonMixin.BaseActionButtonMixin_OnDragStart(self);
+
 	if ( not Settings.GetValue("lockActionBars") or IsModifiedClick("PICKUPACTION")) then
 		self:SetChecked(false);
 		PickupPetAction(self:GetID());
@@ -261,7 +267,7 @@ function PetActionButtonMixin:OnDragStart()
 	end
 end
 
-function PetActionButtonMixin:OnReceiveDrag()
+function PetActionButtonMixin:PetActionButtonMixin_OnReceiveDrag()
 	local cursorType = GetCursorInfo();
 	if (cursorType == "petaction") then
 		self:SetChecked(false);
@@ -270,7 +276,10 @@ function PetActionButtonMixin:OnReceiveDrag()
 	end
 end
 
-function PetActionButtonMixin:OnEnter()
+function PetActionButtonMixin:PetActionButtonMixin_OnEnter()
+	BaseActionButtonMixin.BaseActionButtonMixin_OnEnter(self);
+	QuickKeybindButtonTemplateMixin.QuickKeybindButtonOnEnter(self);
+
 	if ( not self.tooltipName ) then
 		return;
 	end
@@ -299,11 +308,14 @@ function PetActionButtonMixin:OnEnter()
 	end
 end
 
-function PetActionButtonMixin:OnLeave()
+function PetActionButtonMixin:PetActionButtonMixin_OnLeave()
+	QuickKeybindButtonTemplateMixin.QuickKeybindButtonOnLeave(self);
+	BaseActionButtonMixin.BaseActionButtonMixin_OnLeave(self);
+
 	GameTooltip:Hide();
 end
 
-function PetActionButtonMixin:OnUpdate(elapsed)
+function PetActionButtonMixin:PetActionButtonMixin_OnUpdate(elapsed)
 	if ( self:IsFlashing() ) then
 		local flashtime = self.flashtime;
 		flashtime = flashtime - elapsed;

@@ -22,6 +22,10 @@ function SetCVarBitfield(name, index, value, scriptCVar)
 	return C_CVar.SetCVarBitfield(name, index, value, scriptCVar);
 end
 
+function SetCVarToDefault(name)
+	SetCVar(name, GetCVarDefault(name))
+end
+
 function GetCVarBitfield(name, index)
 	return C_CVar.GetCVarBitfield(name, index);
 end
@@ -135,6 +139,10 @@ end
 
 function CVarCallbackRegistry:SetCVarCachable(cvar)
 	self.cachable[cvar] = true;
+end
+
+function CVarCallbackRegistry:ClearCache(cvar)
+	self.cvarValueCache[cvar] = nil;
 end
 
 function CVarCallbackRegistry:RegisterCVarChangedCallback(func, owner, ...)

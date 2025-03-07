@@ -33,15 +33,6 @@ local PlayerScript =
 			},
 		},
 		{
-			Name = "AreAccountAchievementsHidden",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "result", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "AutoEquipCursorItem",
 			Type = "Function",
 		},
@@ -75,6 +66,7 @@ local PlayerScript =
 		{
 			Name = "CanLootUnit",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -542,7 +534,7 @@ local PlayerScript =
 			Returns =
 			{
 				{ Name = "lifetimeHonorableKills", Type = "number", Nilable = false },
-				{ Name = "lifetimeMaxPVPRank", Type = "number", Nilable = false },
+				{ Name = "lifetimeMaxPVPRank", Type = "PvPRanks", Nilable = false },
 			},
 		},
 		{
@@ -622,6 +614,7 @@ local PlayerScript =
 		{
 			Name = "GetPlayerInfoByGUID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -721,6 +714,7 @@ local PlayerScript =
 		{
 			Name = "GetRestState",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -743,6 +737,7 @@ local PlayerScript =
 		{
 			Name = "GetRuneCooldown",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -759,6 +754,7 @@ local PlayerScript =
 		{
 			Name = "GetRuneCount",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -996,6 +992,15 @@ local PlayerScript =
 			Returns =
 			{
 				{ Name = "newlyBoosted", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsDrivableArea",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1245,6 +1250,7 @@ local PlayerScript =
 		{
 			Name = "PlayerEffectiveAttackPower",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -1387,15 +1393,6 @@ local PlayerScript =
 			Returns =
 			{
 				{ Name = "result", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "ShowAccountAchievements",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "hide", Type = "bool", Nilable = false, Default = false },
 			},
 		},
 		{

@@ -93,7 +93,9 @@ function PlunderstormBasicsContainerFrameMixin:OnEvent(event)
 		-- No need to check which currency was updated since there should be only one in Plunderstorm.
 		self:UpdatePlunderAmount();
 	elseif event == "STORE_FRONT_STATE_UPDATED" then
-		self.PlunderstoreToggle:SetEnabled(C_AccountStore.GetStoreFrontState(Constants.AccountStoreConsts.PlunderstormStoreFrontID) == Enum.AccountStoreState.Available);
+		if self.PlunderstoreToggle then
+			self.PlunderstoreToggle:SetEnabled(C_AccountStore.GetStoreFrontState(Constants.AccountStoreConsts.PlunderstormStoreFrontID) == Enum.AccountStoreState.Available);
+		end
 	end
 end
 

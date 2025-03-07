@@ -286,6 +286,11 @@ function Class_TutorialBase:_Shutdown()
 	-- Unregister all Events, Functions and Scripts
 	Dispatcher:UnregisterAll(self);
 
+	-- Unregister all CBR
+	-- Missing implementation here. Recommend having all of the tutorials
+	-- register events using CBR handle container and then unregister all
+	-- callbacks here.
+
 	if (self.OnShutdown) then
 		self:OnShutdown()
 	end

@@ -234,6 +234,15 @@ function EditModeSystemMixin:ClearDirtySetting(setting)
 	self.dirtySettings[setting] = nil;
 end
 
+function EditModeSystemMixin:AnySettingsDirty()
+	for _, setting in pairs(self.dirtySettings) do
+		if setting ~= nil then
+			return true;
+		end
+	end
+	return false;
+end
+
 function EditModeSystemMixin:TrySetCompositeNumberSettingValue(setting, newValue)
 	local settingDisplayInfo = self.settingDisplayInfoMap[setting];
 	if not settingDisplayInfo or not settingDisplayInfo.isCompositeNumberSetting then
@@ -366,10 +375,14 @@ function EditModeSystemMixin:UpdateSystem(systemInfo)
 	self:AnchorSelectionFrame();
 	EditModeSystemSettingsDialog:UpdateDialog(self);
 
+	local anySettingsDirty = self:AnySettingsDirty();
+
 	local entireSystemUpdate = true;
 	for _, settingInfo in ipairs(systemInfo.settings) do
 		self:UpdateSystemSetting(settingInfo.setting, entireSystemUpdate);
 	end
+
+	self:OnUpdateSystem(anySettingsDirty);
 end
 
 function EditModeSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
@@ -384,6 +397,11 @@ function EditModeSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
 	if self:IsSettingDirty(setting) then
 		EditModeManagerFrame:MirrorSetting(self.system, self.systemIndex, setting, self:GetSettingValue(setting));
 	end
+end
+
+-- Override in derived mixins that need to know when a system update occurs.
+function EditModeSystemMixin:OnUpdateSystem(anySettingsDirty)
+
 end
 
 function EditModeSystemMixin:IsInitialized()
@@ -2170,7 +2188,7 @@ function EditModeMicroMenuSystemMixin:UpdateSystemSettingOrder()
 end
 
 function EditModeMicroMenuSystemMixin:UpdateSystemSettingSize()
-	MicroMenu:SetScaleAdjustment(self:GetSettingValue(Enum.EditModeMicroMenuSetting.Size) / 100);
+	MicroMenu:SetNormalScale(self:GetSettingValue(Enum.EditModeMicroMenuSetting.Size) / 100);
 end
 
 function EditModeMicroMenuSystemMixin:UpdateSystemSettingEyeSize()
@@ -2235,7 +2253,7 @@ function EditModeBagsSystemMixin:UpdateDisplayInfoOptions(displayInfo)
 	return updatedDisplayInfo;
 end
 
-function EditModeBagsSystemMixin:UpdateSystemSettingOrientation()
+function EditModeBagsSystemMixin:UpdateSystemSettingOrientation(entireSystemUpdate)
 	self.isHorizontal = self:DoesSettingValueEqual(Enum.EditModeBagsSetting.Orientation, Enum.BagsOrientation.Horizontal);
 
 	-- If this is for an entire system update then no need to update direction
@@ -2265,7 +2283,7 @@ function EditModeBagsSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate
 	end
 
 	if setting == Enum.EditModeBagsSetting.Orientation and self:HasSetting(Enum.EditModeBagsSetting.Orientation) then
-		self:UpdateSystemSettingOrientation();
+		self:UpdateSystemSettingOrientation(entireSystemUpdate);
 	elseif setting == Enum.EditModeBagsSetting.Direction and self:HasSetting(Enum.EditModeBagsSetting.Direction) then
 		self:UpdateSystemSettingDirection();
 	elseif setting == Enum.EditModeBagsSetting.Size and self:HasSetting(Enum.EditModeBagsSetting.Size) then
@@ -2458,6 +2476,166 @@ function EditModeArchaeologyBarSystemMixin:UpdateSystemSetting(setting, entireSy
 	end
 
 	self:ClearDirtySetting(setting);
+end
+
+EditModeCooldownViewerSystemMixin = {};
+
+function EditModeCooldownViewerSystemMixin:OnEditModeExit()
+	EditModeSystemMixin.OnEditModeExit(self);
+
+	self:SetIsEditing(false);
+end
+
+function EditModeCooldownViewerSystemMixin:ShouldShowSetting(setting)
+	if not EditModeSystemMixin.ShouldShowSetting(self, setting) then
+		return false;
+	end
+
+	if self.systemIndex == Enum.EditModeCooldownViewerSystemIndices.Essential then
+		if setting == Enum.EditModeCooldownViewerSetting.BarContent
+		or setting == Enum.EditModeCooldownViewerSetting.HideWhenInactive then
+			return false;
+		end
+	end
+
+	if self.systemIndex == Enum.EditModeCooldownViewerSystemIndices.Utility then
+		if setting == Enum.EditModeCooldownViewerSetting.BarContent
+		or setting == Enum.EditModeCooldownViewerSetting.HideWhenInactive then
+			return false;
+		end
+	end
+
+	if self.systemIndex == Enum.EditModeCooldownViewerSystemIndices.BuffIcon then
+		if setting == Enum.EditModeCooldownViewerSetting.IconLimit
+		or setting == Enum.EditModeCooldownViewerSetting.BarContent then
+			return false;
+		end
+	end
+
+	if self.systemIndex == Enum.EditModeCooldownViewerSystemIndices.BuffBar then
+		if setting == Enum.EditModeCooldownViewerSetting.Orientation
+		or setting == Enum.EditModeCooldownViewerSetting.IconLimit
+		or setting == Enum.EditModeCooldownViewerSetting.IconDirection then
+			return false;
+		end
+	end
+
+	return true;
+end
+
+function EditModeCooldownViewerSystemMixin:UpdateDisplayInfoOptions(displayInfo)
+	local updatedDisplayInfo = displayInfo;
+
+	if displayInfo.setting == Enum.EditModeCooldownViewerSetting.IconDirection then
+		updatedDisplayInfo = CopyTable(displayInfo);
+
+		if self:DoesSettingValueEqual(Enum.EditModeCooldownViewerSetting.Orientation, Enum.CooldownViewerOrientation.Horizontal) then
+			updatedDisplayInfo.options[1].text = _G["HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_ICON_DIRECTION_LEFT"];
+			updatedDisplayInfo.options[2].text = _G["HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_ICON_DIRECTION_RIGHT"];
+		else
+			updatedDisplayInfo.options[1].text = _G["HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_ICON_DIRECTION_DOWN"];
+			updatedDisplayInfo.options[2].text = _G["HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_ICON_DIRECTION_UP"];
+		end
+	end
+
+	return updatedDisplayInfo;
+end
+
+function EditModeCooldownViewerSystemMixin:UpdateSystemSettingOrientation()
+	self.orientationSetting = self:GetSettingValue(Enum.EditModeCooldownViewerSetting.Orientation);
+end
+
+function EditModeCooldownViewerSystemMixin:UpdateSystemSettingIconLimit()
+	self.iconLimit = self:GetSettingValue(Enum.EditModeCooldownViewerSetting.IconLimit);
+end
+
+function EditModeCooldownViewerSystemMixin:UpdateSystemSettingIconDirection()
+	self.iconDirection = self:GetSettingValue(Enum.EditModeCooldownViewerSetting.IconDirection);
+end
+
+function EditModeCooldownViewerSystemMixin:UpdateSystemSettingIconSize()
+	local iconSizeSetting = self:GetSettingValue(Enum.EditModeCooldownViewerSetting.IconSize);
+	self.iconScale = iconSizeSetting / 100;
+end
+
+function EditModeCooldownViewerSystemMixin:UpdateSystemSettingIconPadding()
+	self.iconPadding = self:GetSettingValue(Enum.EditModeCooldownViewerSetting.IconPadding);
+end
+
+function EditModeCooldownViewerSystemMixin:UpdateSystemSettingOpacity()
+	local opacitySetting = self:GetSettingValue(Enum.EditModeCooldownViewerSetting.Opacity);
+	self:SetAlpha(opacitySetting / 100);
+end
+
+function EditModeCooldownViewerSystemMixin:UpdateSystemSettingVisibleSetting()
+	self.visibleSetting = self:GetSettingValue(Enum.EditModeCooldownViewerSetting.VisibleSetting);
+	self:UpdateShownState();
+end
+
+function EditModeCooldownViewerSystemMixin:UpdateSystemSettingBarContent()
+	if self.SetBarContent then
+		self:SetBarContent(self:GetSettingValue(Enum.EditModeCooldownViewerSetting.BarContent));
+	end
+end
+
+function EditModeCooldownViewerSystemMixin:UpdateSystemSettingHideWhenInactive()
+	self:SetHideWhenInactive(self:GetSettingValue(Enum.EditModeCooldownViewerSetting.HideWhenInactive) == 1);
+end
+
+function EditModeCooldownViewerSystemMixin:UpdateSystemSettingShowTimer()
+	self:SetTimerShown(self:GetSettingValue(Enum.EditModeCooldownViewerSetting.ShowTimer) == 1);
+end
+
+function EditModeCooldownViewerSystemMixin:UseSettingAltName(setting)
+	if setting == Enum.EditModeCooldownViewerSetting.IconLimit then
+		return not self:DoesSettingValueEqual(Enum.EditModeCooldownViewerSetting.Orientation, Enum.CooldownViewerOrientation.Vertical);
+	end
+
+	return false;
+end
+
+function EditModeCooldownViewerSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
+	EditModeSystemMixin.UpdateSystemSetting(self, setting, entireSystemUpdate);
+
+	if not self:IsSettingDirty(setting) then
+		return;
+	end
+
+	if setting == Enum.EditModeCooldownViewerSetting.Orientation and self:HasSetting(Enum.EditModeCooldownViewerSetting.Orientation) then
+		self:UpdateSystemSettingOrientation(entireSystemUpdate);
+	elseif setting == Enum.EditModeCooldownViewerSetting.IconLimit and self:HasSetting(Enum.EditModeCooldownViewerSetting.IconLimit) then
+		self:UpdateSystemSettingIconLimit();
+	elseif setting == Enum.EditModeCooldownViewerSetting.IconDirection and self:HasSetting(Enum.EditModeCooldownViewerSetting.IconDirection) then
+		self:UpdateSystemSettingIconDirection();
+	elseif setting == Enum.EditModeCooldownViewerSetting.IconSize and self:HasSetting(Enum.EditModeCooldownViewerSetting.IconSize) then
+		self:UpdateSystemSettingIconSize();
+	elseif setting == Enum.EditModeCooldownViewerSetting.IconPadding and self:HasSetting(Enum.EditModeCooldownViewerSetting.IconPadding) then
+		self:UpdateSystemSettingIconPadding();
+	elseif setting == Enum.EditModeCooldownViewerSetting.Opacity and self:HasSetting(Enum.EditModeCooldownViewerSetting.Opacity) then
+		self:UpdateSystemSettingOpacity();
+	elseif setting == Enum.EditModeCooldownViewerSetting.VisibleSetting and self:HasSetting(Enum.EditModeCooldownViewerSetting.VisibleSetting) then
+		self:UpdateSystemSettingVisibleSetting();
+	elseif setting == Enum.EditModeCooldownViewerSetting.BarContent and self:HasSetting(Enum.EditModeCooldownViewerSetting.BarContent) then
+		self:UpdateSystemSettingBarContent();
+	elseif setting == Enum.EditModeCooldownViewerSetting.HideWhenInactive and self:HasSetting(Enum.EditModeCooldownViewerSetting.HideWhenInactive) then
+		self:UpdateSystemSettingHideWhenInactive();
+	elseif setting == Enum.EditModeCooldownViewerSetting.ShowTimer and self:HasSetting(Enum.EditModeCooldownViewerSetting.ShowTimer) then
+		self:UpdateSystemSettingShowTimer();
+	end
+
+	if not entireSystemUpdate then
+		self:RefreshLayout();
+	end
+
+	self:ClearDirtySetting(setting);
+end
+
+function EditModeCooldownViewerSystemMixin:OnUpdateSystem(anySettingsDirty)
+	EditModeSystemMixin.OnUpdateSystem(self, anySettingsDirty);
+
+	if anySettingsDirty then
+		self:RefreshLayout();
+	end
 end
 
 local EditModeSystemSelectionLayout =

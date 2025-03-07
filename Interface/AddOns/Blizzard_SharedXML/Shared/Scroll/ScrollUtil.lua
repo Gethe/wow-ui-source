@@ -446,11 +446,22 @@ function SelectionBehaviorMixin:ToggleSelectElementData(elementData)
 
 	local newSelected = not oldSelected;
 	self:SetElementDataSelected_Internal(elementData, newSelected);
+	return newSelected;
 end
 
 function SelectionBehaviorMixin:SelectFirstElementData(predicate)
 	-- Select the first element which satisfies the predicate
 	for index, elementData in self.scrollBox:EnumerateDataProviderEntireRange() do
+		if not predicate or predicate(elementData) then
+			self:SelectElementData(elementData);
+			return;
+		end
+	end
+end
+
+function SelectionBehaviorMixin:SelectLastElementData(predicate)
+	-- Select the last element which satisfies the predicate
+	for index, elementData in self.scrollBox:ReverseEnumerateDataProviderEntireRange() do
 		if not predicate or predicate(elementData) then
 			self:SelectElementData(elementData);
 			return;
@@ -470,6 +481,11 @@ function SelectionBehaviorMixin:SelectOffsetElementData(offset, predicate)
 	local dataProvider = self.scrollBox:GetDataProvider();
 	if dataProvider then
 		local currentElementData = self:GetFirstSelectedElementData();
+		if currentElementData == nil then
+			-- Cannot do a relative selection without at least one selection.
+			error("Attempted to select an adjacent element without an existing selection.")
+		end
+
 		local currentIndex = dataProvider:FindIndex(currentElementData);
 		local offsetIndex = currentIndex + offset;
 		local searchOffset = offset > 0 and 1 or -1;
@@ -538,7 +554,7 @@ function SelectionBehaviorMixin:Select(frame)
 end
 
 function SelectionBehaviorMixin:ToggleSelect(frame)
-	self:ToggleSelectElementData(frame:GetElementData());
+	return self:ToggleSelectElementData(frame:GetElementData());
 end
 
 function ScrollUtil.AddSelectionBehavior(scrollBox, ...)

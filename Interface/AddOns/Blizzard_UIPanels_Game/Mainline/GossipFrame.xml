@@ -2,9 +2,6 @@
 ..\..\Blizzard_SharedXML\UI.xsd">
 	<Frame name="GossipFramePanelTemplate" virtual="true">
 		<Size x="384" y="512"/>
-		<Anchors>
-			<Anchor point="TOPLEFT"/>
-		</Anchors>
 		<Layers>
 			<Layer level="BORDER">
 				<Texture parentKey="MaterialTopLeft">
@@ -34,7 +31,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	<Frame name="GossipFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate" mixin="GossipFrameMixin">
+	<UIThemeContainerFrame name="GossipFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate" mixin="GossipFrameMixin">
 		<Size x="338" y="496"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -47,6 +44,9 @@
 		</Layers>
 		<Frames>
 			<Frame parentKey="GreetingPanel" inherits="GossipFramePanelTemplate" hidden="false">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>			
 				<Frames>
 					<Button parentKey="GoodbyeButton" inherits="UIPanelButtonTemplate" text="GOODBYE">
 						<Size x="78" y="22"/>
@@ -86,8 +86,8 @@
 			<OnHide method="OnHide"/>
 			<OnMouseWheel function=""/>
 		</Scripts>
-	</Frame>
-	<Button name="GossipTitleButtonTemplate" virtual="true" mixin="GossipTitleButtonMixin" hidden="false">
+	</UIThemeContainerFrame>
+	<Button name="GossipTitleButtonArtTemplate" virtual="true">
 		<Size x="300" y="16"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -99,10 +99,6 @@
 				</Texture>
 			</Layer>
 		</Layers>
-		<Scripts>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-		</Scripts>
 		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
 		<ButtonText>
 			<Size x="275" y="0"/>
@@ -111,5 +107,11 @@
 			</Anchors>
 		</ButtonText>
 		<NormalFont style="QuestFontLeft"/>
+	</Button>	
+	<Button name="GossipTitleButtonTemplate" inherits="GossipTitleButtonArtTemplate" mixin="GossipTitleButtonMixin" virtual="true">
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
 	</Button>
 </Ui>

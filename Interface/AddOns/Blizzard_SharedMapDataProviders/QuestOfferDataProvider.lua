@@ -248,7 +248,7 @@ function QuestOfferDataProviderMixin:IsSuppressionDisabled(mapID, questHubPin)
 		return true;
 	end
 
-	local isAtMaxZoom = self:IsAtMaxZoom();
+	local isAtMaxZoom = self:GetMap():IsAtMaxZoom();
 
 	-- Optional
 	if questHubPin then
@@ -268,33 +268,17 @@ function QuestOfferDataProviderMixin:GetLinkedQuestHub(questOffer)
 	return self:GetPinSuppressor()[questOffer.questID];
 end
 
-function QuestOfferDataProviderMixin:CheckQuestIsRelatedToHub(questID, questHubPin)
+function QuestOfferDataProviderMixin:CheckQuestIsLinkedToHub(questID, questHubPin)
 	local suppressor = self:GetPinSuppressor();
-	local isRelated = suppressor[questID] == questHubPin;
-	if not isRelated then
-		isRelated = C_QuestHub.IsQuestCurrentlyRelatedToHub(questID, questHubPin:GetPoiInfo().areaPoiID);
-		if isRelated then
+	local isLinked = suppressor[questID] == questHubPin;
+	if not isLinked then
+		isLinked = C_QuestHub.IsQuestCurrentlyRelatedToHub(questID, questHubPin:GetPoiInfo().areaPoiID);
+		if isLinked then
 			suppressor[questID] = questHubPin;
 		end
 	end
 
 	return isRelated;
-end
-
-function QuestOfferDataProviderMixin:RefreshRelatedQuests(questHubPin)
-	-- Early out if nothing could be related to this hub
-	if self:IsSuppressionDisabled(self:GetMap():GetMapID(), questHubPin) then
-		return {};
-	end
-
-	local relatedQuests = {};
-	for questID, questOffer in pairs(self:GetQuestOffers()) do
-		if self:CheckQuestIsRelatedToHub(questID, questHubPin) then
-			table.insert(relatedQuests, questOffer);
-		end
-	end
-
-	return relatedQuests;
 end
 
 function QuestOfferDataProviderMixin:CheckAddQuestOfferPins(mapID)
@@ -346,16 +330,9 @@ end
 function QuestOfferDataProviderMixin:OnMapChanged()
 	self:RequestQuestLinesForMap();
 
-	-- Catch-22, to refresh data we need anim values, and they will update later
-	-- but to get those anim values we need to refresh data.
-	-- Use defaults until then.
-	self:SetTargetAnimValue(0);
-	self:SetCurrentAnimProgress(0);
-
+	-- NOTE: This comes later because we used to need to do some animation data updates here before refresh all data was called.
+	-- Nuking all the animation stuff for the time being while I rebuild it.
 	MapCanvasDataProviderMixin.OnMapChanged(self);
-	self:SetTargetAnimValue(self:CalculateTargetAnimValue());
-	self:SetCurrentAnimProgress(self:GetTargetAnimValue());
-	self:RunPinOnUpdate();
 end
 
 function QuestOfferDataProviderMixin:OnEvent(event, ...)
@@ -381,48 +358,6 @@ function QuestOfferDataProviderMixin:RequestQuestLinesForMap()
 	end
 end
 
-function QuestOfferDataProviderMixin:OnCanvasScaleChanged()
-	if self:CheckUpdateMaxZoom() then
-		self:SetTargetAnimValue(self:CalculateTargetAnimValue());
-		self:GetMap():RegisterDataProviderOnUpdate(self);
-	end
-end
-
-function QuestOfferDataProviderMixin:CheckUpdateMaxZoom()
-	local isMaxZoom = self:GetMap():IsAtMaxZoom();
-	if self.isMaxZoom ~= isMaxZoom then
-		self.isMaxZoom = isMaxZoom;
-		return true;
-	end
-
-	return false;
-end
-
-function QuestOfferDataProviderMixin:IsAtMaxZoom()
-	self:CheckUpdateMaxZoom();
-	return self.isMaxZoom;
-end
-
-function QuestOfferDataProviderMixin:GetCurrentAnimProgress()
-	return self.animProgress;
-end
-
-function QuestOfferDataProviderMixin:SetCurrentAnimProgress(progress)
-	self.animProgress = progress;
-end
-
-function QuestOfferDataProviderMixin:GetTargetAnimValue()
-	return self.targetAnimValue;
-end
-
-function QuestOfferDataProviderMixin:SetTargetAnimValue(targetValue)
-	self.targetAnimValue = targetValue;
-end
-
-function QuestOfferDataProviderMixin:CalculateTargetAnimValue()
-	return self:IsSuppressionDisabled(self:GetMap():GetMapID()) and 1 or 0;
-end
-
 function QuestOfferDataProviderMixin:OnAdded(mapCanvas)
 	MapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
 	self:GetMap():RegisterCallback("SetBounty", self.SetBounty, self);
@@ -431,28 +366,6 @@ end
 function QuestOfferDataProviderMixin:OnRemoved(mapCanvas)
 	self:GetMap():UnregisterCallback("SetBounty", self);
 	MapCanvasDataProviderMixin.OnRemoved(self, mapCanvas);
-end
-
-function QuestOfferDataProviderMixin:OnUpdate()
-	local targetValue = self:GetTargetAnimValue();
-	local currentProgress = FrameDeltaLerp(self:GetCurrentAnimProgress(), targetValue, 0.05);
-	if ApproximatelyEqual(currentProgress, targetValue, 0.01) then
-		currentProgress = targetValue;
-		self:GetMap():UnregisterDataProviderOnUpdate(self);
-	end
-
-	self:SetCurrentAnimProgress(currentProgress);
-	self:RunPinOnUpdate();
-end
-
-function QuestOfferDataProviderMixin:RunPinOnUpdate()
-	for pin in self:GetMap():EnumeratePinsByTemplate("QuestOfferPinTemplate") do
-		pin:ApplyAnimation();
-	end
-
-	for pin in self:GetMap():EnumeratePinsByTemplate("QuestHubPinTemplate") do
-		pin:ApplyAnimation();
-	end
 end
 
 function QuestOfferDataProviderMixin:SetBounty(bountyQuestID, bountyFactionID, bountyFrameType)
@@ -495,12 +408,10 @@ end
 
 function QuestOfferPinMixin:OnAcquired(questOffer)
 	SuperTrackablePinMixin.OnAcquired(self, questOffer);
+	self:AddTag(MapPinTags.QuestOffer);
 
 	self.mapID = self:GetMap():GetMapID();
 	Mixin(self, questOffer);
-
-	self:SetLinkedHub(self.dataProvider:GetLinkedQuestHub(self));
-	self:CheckCreateAnimationData();
 
 	self:UseFrameLevelType("PIN_FRAME_LEVEL_QUEST_OFFER", self.pinLevel);
 	self:SetHeightIndicator(self.floorLocation);
@@ -508,73 +419,14 @@ function QuestOfferPinMixin:OnAcquired(questOffer)
 
 	self.Texture:SetAtlas(self.questIcon);
 	self.Texture:SetAlpha(self.pinAlpha);
-
-	self:ApplyAnimation();
-end
-
-function QuestOfferPinMixin:SetLinkedHub(linkedHub)
-	self.linkedHub = linkedHub;
-end
-
-function QuestOfferPinMixin:GetLinkedHub()
-	return self.linkedHub;
-end
-
-function QuestOfferPinMixin:CheckCreateAnimationData()
-	local linkedHub = self:GetLinkedHub();
-	if linkedHub then
-		local startX, startY = linkedHub:GetPosition();
-		self.linkedHubPos = CreateVector2D(startX, startY);
-
-		local endX, endY = self.x, self.y;
-		self.positionAnimVec = CreateVector2D(endX, endY):Subtract(self.linkedHubPos);
-	else
-		self.linkedHubPos = nil;
-		self.positionAnimVec = nil;
-	end
-end
-
-function QuestOfferPinMixin:GetAnimatedPosition(progress)
-	if self.positionAnimVec then
-		local x, y = Vector2D_ScaleBy(progress, self.positionAnimVec:GetXY());
-		return Vector2D_Add(x, y, self.linkedHubPos:GetXY());
-	else
-		return self.x, self.y;
-	end
-end
-
-function QuestOfferPinMixin:GetAnimationProgress()
-	local dataProvider = self.dataProvider;
-	local linkedHub = self:GetLinkedHub();
-
-	-- There are two cases for not having a linked hub: looking at a city map, quest is not actually linked to a hub.
-	if not linkedHub then
-		return 1;
-	elseif not dataProvider:IsCityMap() and dataProvider:IsQuestHubForCityMap(linkedHub) then
-		return 0;
-	end
-
-	return EasingUtil.InOutCubic(dataProvider:GetCurrentAnimProgress());
-end
-
-function QuestOfferPinMixin:ApplyAnimation()
-	self:CheckCreateAnimationData()
-	local progress = self:GetAnimationProgress();
-	self:SetAlpha(progress);
-	self:SetShown(progress > 0.02);
-
-	local x, y = self:GetAnimatedPosition(progress);
-	self:SetPosition(x, y);
 end
 
 function QuestOfferPinMixin:OnMouseEnter()
 	TaskPOI_OnEnter(self);
-	self:OnLegendPinMouseEnter();
 end
 
 function QuestOfferPinMixin:OnMouseLeave()
 	TaskPOI_OnLeave(self);
-	self:OnLegendPinMouseLeave();
 end
 
 function QuestOfferPinMixin:GetSuperTrackData()
@@ -585,27 +437,40 @@ function QuestOfferPinMixin:GetQuestClassification()
 	return self.questClassification;
 end
 
+function QuestOfferPinMixin:GetDisplayName()
+	return self.questName;
+end
+
 QuestHubPinMixin = {};
 
 function QuestHubPinMixin:OnAcquired(poiInfo)
-	AreaPOIPinMixin.OnAcquired(self, poiInfo);
-	self:ConsolidateRelatedQuests();
-	self:UpdatePriorityQuestDisplay();
+	self.poiInfo = poiInfo;
+	self:SetDataProvider(poiInfo.dataProvider); -- catch-22 issue.
 
+	self:BuildRelatedQuests(self);
 	self:SetIsQuestHubForCityMap(self.dataProvider:IsQuestHubForCityMap(self));
-	self:ApplyAnimation();
+	AreaPOIPinMixin.OnAcquired(self, poiInfo);	
 end
 
-function QuestHubPinMixin:GetAnimationProgress()
-	if self:IsQuestHubForCityMap() then
-		return 1;
+function QuestHubPinMixin:BuildRelatedQuests()
+	self.relatedQuests = {};
+
+	local dataProvider = self:GetDataProvider();
+
+	-- Early out if nothing could be related to this hub
+	if dataProvider:IsSuppressionDisabled(dataProvider:GetMap():GetMapID(), self) then
+		return;
 	end
 
-	return EasingUtil.InOutQuadratic(1 - self.dataProvider:GetCurrentAnimProgress());
+	for questID, questOffer in pairs(dataProvider:GetQuestOffers()) do
+		if dataProvider:CheckQuestIsLinkedToHub(questID, self) then
+			self.relatedQuests[questOffer.questID] = questOffer;
+		end
+	end
 end
 
-function QuestHubPinMixin:ApplyAnimation()
-	self.PriorityQuest:SetAlpha(self:GetAnimationProgress());
+function QuestHubPinMixin:GetRelatedQuests()
+	return self.relatedQuests;
 end
 
 function QuestHubPinMixin:SetIsQuestHubForCityMap(isForCity)
@@ -616,7 +481,209 @@ function QuestHubPinMixin:IsQuestHubForCityMap()
 	return self.isForCity;
 end
 
-local function SortConsolidatedQuestsComparator(questOffer1, questOffer2)
+local function DetermineHigherPriorityPin(pin1, pin2)
+	if not pin1 then
+		return pin2;
+	end
+
+	if not pin2 then
+		return pin1;
+	end
+
+	-- This is programmer design, needs feedback and iteration
+	-- Prefer showing active content over quest offers unless the quest offer is campaign or important.
+	local pin1IsQuestOffer = pin1:MatchesTag(MapPinTags.QuestOffer);
+	local pin2IsQuestOffer = pin2:MatchesTag(MapPinTags.QuestOffer);
+	local pin1HighPriorityQuestOffer = pin1IsQuestOffer and pin1.questClassification <= Enum.QuestClassification.Campaign;
+	local pin2HighPriorityQuestOffer = pin2IsQuestOffer and pin2.questClassification <= Enum.QuestClassification.Campaign;
+	if pin1HighPriorityQuestOffer or pin2HighPriorityQuestOffer then
+		return pin1HighPriorityQuestOffer and pin1 or pin2;
+	end
+
+	local pin1IsEvent = pin1:MatchesTag(MapPinTags.Event);
+	local pin2IsEvent = pin2:MatchesTag(MapPinTags.Event);
+	if pin1IsEvent or pin2IsEvent then
+		return pin1IsEvent and pin1 or pin2;
+	end
+	
+	local pin1IsWorldQuest = pin1:MatchesTag(MapPinTags.WorldQuest);
+	local pin2IsWorldQuest = pin2:MatchesTag(MapPinTags.WorldQuest);
+	if pin1IsWorldQuest or pin2IsWorldQuest then
+		return pin1IsWorldQuest and pin1 or pin2;
+	end
+
+	local pin1IsBonusObjective = pin1:MatchesTag(MapPinTags.BonusObjective);
+	local pin2IsBonusObjective = pin2:MatchesTag(MapPinTags.BonusObjective);
+	if pin1IsBonusObjective or pin2IsBonusObjective then
+		return pin1IsBonusObjective and pin1 or pin2;
+	end
+
+	if pin1IsQuestOffer or pin2IsQuestOffer then
+		return pin1IsQuestOffer and pin1 or pin2;
+	end
+	
+	return pin1; -- fallback, last pin that was considered better remains better.
+end
+
+function QuestHubPinMixin:UpdatePriorityQuestDisplay()
+	local currentDisplay = self.priorityDisplayFrame;
+	if currentDisplay then
+		self.priorityDisplayFrame = nil;
+		FrameCloneManager:Release(currentDisplay);
+	end
+
+	local pins = self:GetSuppressedPins();
+	if not pins then
+		return;
+	end
+	
+	local bestPin;
+	for pin, active in pairs(pins) do
+		if active then
+			bestPin = DetermineHigherPriorityPin(bestPin, pin);
+		end
+	end
+
+	if bestPin then
+		local clone = FrameCloneManager:Clone(bestPin, self);
+		self.priorityDisplayFrame = clone;
+		clone:ClearAllPoints();
+		clone:SetPoint("CENTER", self, "BOTTOM", 0, 6);
+		clone:Show();
+		clone:SetAlpha(1);
+		clone:SetScale(0.85);
+	end
+end
+
+function QuestHubPinMixin:ShouldMouseButtonBePassthrough(button)
+	return false;
+end
+
+function QuestHubPinMixin:GetLinkedUIMapID()
+	return self:GetPoiInfo().linkedUiMapID;
+end
+
+local MAX_DISPLAYED_CONTENT_ITEMS_IN_TOOLTIP = 3;
+
+local suppressedTooltipSections =
+{
+	-- Other Suppressed Pins (not quest offers)
+	{
+		suppressedPinIndex = 1,
+		header = QUEST_HUB_TOOLTIP_AVAILABLE_CONTENT_HEADER,
+		maxItems = MAX_DISPLAYED_CONTENT_ITEMS_IN_TOOLTIP,
+		moreItemsRemainingString = QUEST_HUB_TOOLTIP_MORE_QUESTS_REMAINING,
+	},
+
+	-- Suppressed Quest Offers
+	{
+		suppressedPinIndex = 2,
+		header = QUEST_HUB_TOOLTIP_AVAILABLE_QUESTS_HEADER,
+		maxItems = MAX_DISPLAYED_CONTENT_ITEMS_IN_TOOLTIP,
+		moreItemsRemainingString = QUEST_HUB_TOOLTIP_MORE_QUESTS_REMAINING,
+	},
+};
+
+function QuestHubPinMixin:AddCustomTooltipData(tooltip)
+	self:ResetSuppressedPinTooltipPool();
+
+	local suppressedPins = { self:GetSuppressedPinsSorted() };
+	for index, formatData in ipairs(suppressedTooltipSections) do
+		self:AddSuppressedPinsToTooltip(tooltip, suppressedPins, formatData);
+	end
+
+	-- Since this isn't using the base pin, just have it add the instructions manually.
+	if self:GetLinkedUIMapID() then
+		GameTooltip_AddInstructionLine(tooltip, MAP_LINK_POI_TOOLTIP_INSTRUCTION_LINE, false);
+	end
+end
+
+function QuestHubPinMixin:AddSuppressedPinsToTooltip(tooltip, allSuppressedPins, formatData)
+	local suppressedPins = allSuppressedPins[formatData.suppressedPinIndex];
+	local count = #suppressedPins;
+	if count > 0 then
+		GameTooltip_AddBlankLineToTooltip(tooltip);
+		GameTooltip_AddHighlightLine(tooltip, formatData.header);
+
+		local overflowCount = count - formatData.maxItems;
+		local needsOverflowLine = overflowCount > 1;
+		local container = self:GetSuppressedPinTooltipContainer(formatData);
+
+		for displayIndex, pin in ipairs(suppressedPins) do
+			if not needsOverflowLine or displayIndex <= formatData.maxItems then
+				self:AddSuppressedPinToTooltipContainer(container, pin);
+			else
+				break;
+			end
+		end
+
+		if needsOverflowLine then
+			container:SetAdditionalItemsText(formatData.moreItemsRemainingString:format(count - formatData.maxItems));
+		end		
+
+		container:Layout();
+		GameTooltip_InsertFrame(tooltip, container, 0);
+	end
+end
+
+function QuestHubPinMixin:ShouldAddSuppressedPinToTooltip(pin)
+	-- Making the assumption that if this is being called the pin is already known to be suppressed.
+	return not pin:MatchesAnyTag(MapPinTags.FlightPoint);
+end
+
+function QuestHubPinMixin:AddSuppressedPinToTooltipContainer(container, pin)
+	container:AddLine(self:CreatePinTooltipFrame(pin));
+end
+
+function QuestHubPinMixin:CreatePinTooltipFrame(pin)
+	local pool = self:GetOrCreateSuppressedPinTooltipPool();
+	local frame = pool:Acquire();
+	frame:SetupFromPin(pin);
+	return frame;
+end
+
+function QuestHubPinMixin:GetOrCreateSuppressedPinTooltipPool()
+	if not self.suppressedPinPool then 
+		self.suppressedPinPool = CreateFramePool("Frame", GetAppropriateTopLevelParent(), "SuppressedPinTooltipTemplate");
+	end
+
+	return self.suppressedPinPool;
+end
+
+function QuestHubPinMixin:ResetSuppressedPinTooltipPool()
+	if self.suppressedPinPool then
+		self.suppressedPinPool:ReleaseAll();
+	end
+end
+
+function QuestHubPinMixin:GetSuppressedPinTooltipContainer(formatData)
+	if not self.suppressedPinTooltipContainers then
+		self.suppressedPinTooltipContainers = {};
+	end
+
+	if not self.suppressedPinTooltipContainers[formatData.suppressedPinIndex] then
+		self.suppressedPinTooltipContainers[formatData.suppressedPinIndex] = CreateFrame("Frame", nil, nil, "SuppressedPinTooltipContainerTemplate");
+	end
+
+	local container = self.suppressedPinTooltipContainers[formatData.suppressedPinIndex];
+	container:Reset();
+	return container;
+end
+
+function QuestHubPinMixin:OnMouseClickAction(button)
+	-- Trust that this will work and that QuestHubPinMixin implements all necessary APIs
+	MapLinkPinMixin.OnMouseClickAction(self, button);
+end
+
+function QuestHubPinMixin:IsPinSuppressor()
+	return true;
+end
+
+function QuestHubPinMixin:GetSuppressedPins()
+	return self.suppressedPins;
+end
+
+local function SortQuestOffer(questOffer1, questOffer2)
 	if questOffer1.pinLevel ~= questOffer2.pinLevel then
 		return questOffer1.pinLevel > questOffer2.pinLevel;
 	end
@@ -642,68 +709,116 @@ local function SortConsolidatedQuestsComparator(questOffer1, questOffer2)
 	return questOffer1.questID < questOffer2.questID;
 end
 
-function QuestHubPinMixin:ConsolidateRelatedQuests()
-	self.relatedQuests = self:GetDataProvider():RefreshRelatedQuests(self);
-	table.sort(self.relatedQuests, SortConsolidatedQuestsComparator);
-end
+local function SortSuppressedPins(pin1, pin2)
+	local pin1Type = pin1:MatchesTag(MapPinTags.Event);
+	local pin2Type = pin2:MatchesTag(MapPinTags.Event);
 
-function QuestHubPinMixin:UpdatePriorityQuestDisplay()
-	local relatedQuests = self:GetRelatedQuests();
-	local priorityQuest = relatedQuests and relatedQuests[1];
-
-	self.PriorityQuest:SetShown(priorityQuest ~= nil);
-	if priorityQuest then
-		self.PriorityQuest:SetAtlas(priorityQuest.questIcon);
+	-- Events first
+	if (pin1Type or pin2Type) and pin1Type ~= pin2Type then
+		return pin1Type;
 	end
-end
 
-function QuestHubPinMixin:GetRelatedQuests()
-	return GetOrCreateTableEntry(self, "relatedQuests");
-end
+	pin1Type = pin1:MatchesTag(MapPinTags.WorldQuest);
+	pin2Type = pin2:MatchesTag(MapPinTags.WorldQuest);
 
-function QuestHubPinMixin:ShouldMouseButtonBePassthrough(button)
-	return false;
-end
-
-function QuestHubPinMixin:GetLinkedUIMapID()
-	return self:GetPoiInfo().linkedUiMapID;
-end
-
-function QuestHubPinMixin:AddCustomTooltipData(tooltip)
-	self:AddRelatedQuestsToTooltip(tooltip);
-
-	-- Since this isn't using the base pin, just have it add the instructions manually.
-	if self:GetLinkedUIMapID() then
-		GameTooltip_AddInstructionLine(tooltip, MAP_LINK_POI_TOOLTIP_INSTRUCTION_LINE, false);
+	-- World quests second
+	if (pin1Type or pin2Type) and pin1Type ~= pin2Type then
+		return pin1Type;
 	end
+
+	pin1Type = pin1:MatchesTag(MapPinTags.BonusObjective);
+	pin2Type = pin2:MatchesTag(MapPinTags.BonusObjective);
+
+	-- Bonus Objectives third
+	if (pin1Type or pin2Type) and pin1Type ~= pin2Type then
+		return pin1Type;
+	end
+	
+	-- If the types are the same, alphabetical ordering
+	local strCmpResult = strcmputf8i(pin1:GetDisplayName(), pin2:GetDisplayName());
+	if (strCmpResult ~= 0) then
+		return strCmpResult < 0;
+	end
+
+	-- Arbitrary ordering if all else fails
+	return tostring(pin1) < tostring(pin2);
 end
 
-local MAX_DISPLAYED_QUESTS_IN_TOOLTIP = 3;
-
-function QuestHubPinMixin:AddRelatedQuestsToTooltip(tooltip)
-	local relatedQuests = self:GetRelatedQuests();
-	local relatedQuestCount = #relatedQuests;
-	if relatedQuestCount > 0 then
-		GameTooltip_AddBlankLineToTooltip(tooltip);
-		GameTooltip_AddHighlightLine(tooltip, QUEST_HUB_TOOLTIP_AVAILABLE_QUESTS_HEADER);
-
-		local overflowQuestCount = #relatedQuests - MAX_DISPLAYED_QUESTS_IN_TOOLTIP;
-		local needsOverflowLine = overflowQuestCount > 1;
-
-		for displayIndex, questOffer in ipairs(relatedQuests) do
-			if not needsOverflowLine or displayIndex <= MAX_DISPLAYED_QUESTS_IN_TOOLTIP then
-				GameTooltip_AddNormalLine(tooltip, CreateAtlasMarkup(questOffer.questIcon) .. " " .. questOffer.questName);
-			else
-				GameTooltip_AddNormalLine(tooltip, QUEST_HUB_TOOLTIP_MORE_QUESTS_REMAINING:format(relatedQuestCount - MAX_DISPLAYED_QUESTS_IN_TOOLTIP));
-				break;
+function QuestHubPinMixin:GetSuppressedPinsSorted()
+	local pins = self:GetSuppressedPins();
+	local orderedPins = {};
+	local orderedQuestOffers = {};
+	if pins then
+		for pin, active in pairs(pins) do
+			if active then
+				if pin:MatchesTag(MapPinTags.QuestOffer) then
+					table.insert(orderedQuestOffers, pin);
+				elseif self:ShouldAddSuppressedPinToTooltip(pin) then
+					table.insert(orderedPins, pin);
+				end
 			end
 		end
 	end
+
+	table.sort(orderedPins, SortSuppressedPins);
+	table.sort(orderedQuestOffers, SortQuestOffer);
+
+	return orderedPins, orderedQuestOffers;
 end
 
-function QuestHubPinMixin:OnMouseClickAction(button)
-	-- Trust that this will work and that QuestHubPinMixin implements all necessary APIs
-	MapLinkPinMixin.OnMouseClickAction(self, button);
+function QuestHubPinMixin:ShouldSuppressPin(pin)
+	if self.isSuppressionDisabled then
+		return false;
+	end
+
+	-- Pins that can't be supertracked or are supertracked are never suppressed.
+	if not pin.IsSuperTracked or pin:IsSuperTracked() then
+		return false;
+	end
+
+	local isSuppressionCandidate = pin:MatchesAnyTag(MapPinTags.Event, MapPinTags.WorldQuest, MapPinTags.BonusObjective, MapPinTags.FlightPoint);
+	
+	if isSuppressionCandidate and self:Intersects(pin) then
+		return true;
+	end
+
+	if self:IsRelatedQuestOfferPin(pin) then
+		return true;
+	end
+
+	return false;
+end
+
+function QuestHubPinMixin:IsRelatedQuestOfferPin(pin)
+	if pin:MatchesTag(MapPinTags.QuestOffer) then
+		return self:GetDataProvider():GetLinkedQuestHub(pin) == self;
+	end
+
+	return false;
+end
+
+function QuestHubPinMixin:ResetSuppression()
+	local suppressedPins = self:GetSuppressedPins();
+	if suppressedPins then
+		for pin in pairs(suppressedPins) do
+			pin:ClearSuppression();
+		end
+	end
+
+	self.suppressedPins = nil;
+	self.isSuppressionDisabled = self:GetDataProvider():IsSuppressionDisabled(self:GetMap():GetMapID(), self);
+end
+
+function QuestHubPinMixin:TrackSuppressedPin(pin)
+	if not self.suppressedPins then
+		self.suppressedPins = {};
+	end
+
+	self.suppressedPins[pin] = true;
+end
+
+function QuestHubPinMixin:FinalizeSuppression()
+	self:UpdatePriorityQuestDisplay();
 end
 
 -- Hardcoding the QID for now since this is a rare case. If you find yourself
@@ -729,7 +844,7 @@ function QuestHubPinGlowMixin:OnReleased()
 end
 
 function QuestHubPinGlowMixin:GetHighlightType() -- override
-	for _, quest in ipairs(self:GetRelatedQuests()) do
+	for _, quest in pairs(self:GetRelatedQuests()) do
 		if GLOW_HUB_QUESTS[quest.questID] then
 			local lastResetStartTimeAcknowledgement = GLOW_HUB_QUESTS_ACKNOWLEDGED[quest.questID];
 			local questAcknowledgedThisWeek = lastResetStartTimeAcknowledgement and lastResetStartTimeAcknowledgement == C_DateAndTime.GetWeeklyResetStartTime();
@@ -757,10 +872,62 @@ function QuestHubPinGlowMixin:AcknowledgeGlow()
 	end
 
 	self.AnimatedHighlight:EndBackgroundPulses();
-	local relatedQuests = self:GetRelatedQuests();
-	for _, quest in ipairs(relatedQuests) do
+	for _, quest in pairs(self:GetRelatedQuests()) do
 		if (GLOW_HUB_QUESTS[quest.questID]) then
 			GLOW_HUB_QUESTS_ACKNOWLEDGED[quest.questID] = C_DateAndTime.GetWeeklyResetStartTime();
 		end
 	end
+end
+
+SuppressedPinTooltipMixin = {};
+
+function SuppressedPinTooltipMixin:SetupFromPin(pin)
+	-- TODO: Finish actual set up using data from the pin
+	self.Title:SetText(pin:GetDisplayName());
+
+	if self.clonedPin then
+		FrameCloneManager:Release(self.clonedPin);
+	end
+
+	self.clonedPin = FrameCloneManager:Clone(pin, self);
+	local clonedPin = self.clonedPin;
+	clonedPin:ClearAllPoints();
+	clonedPin:SetPoint("CENTER", self.Container);
+
+	-- hacks?
+	clonedPin:Show();
+	clonedPin:SetAlpha(1);
+	clonedPin:SetScale(0.9);
+end
+
+SuppressedPinTooltipContainerMixin = {};
+
+function SuppressedPinTooltipContainerMixin:Reset()
+	self:SetParent(GetAppropriateTopLevelParent());
+	self:ClearAllPoints();
+	self:SetPoint("TOPLEFT");
+	self:Show();
+	self.AdditionalItems:Hide();
+
+	self.lines = {};
+end
+
+function SuppressedPinTooltipContainerMixin:AddLine(line)
+	local previousLine = self.lines[#self.lines];
+	table.insert(self.lines, line);
+	
+	line:ClearAllPoints();
+	line:SetParent(self);
+	line:Show();
+
+	if previousLine then
+		line:SetPoint("TOPLEFT", previousLine, "BOTTOMLEFT");
+	else
+		line:SetPoint("TOPLEFT");
+	end
+end
+
+function SuppressedPinTooltipContainerMixin:SetAdditionalItemsText(text)
+	self.AdditionalItems:SetText(text);
+	self:AddLine(self.AdditionalItems);
 end

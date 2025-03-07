@@ -1,0 +1,15 @@
+## Title: Blizzard_UnitPopup
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_UnitPopupShared, Blizzard_VoiceToggleButton
+## AllowLoad: game
+## AllowLoadGameType: mists
+UnitPopupSlider.lua
+UnitPopupSlider.xml
+UnitPopupCustomControls.lua
+UnitPopupCustomControls.xml
+Classic\UnitPopupUtils.lua
+Classic\UnitPopupButtons_Shared.lua
+Wrath\UnitPopupButtons.lua
+Wrath\UnitPopupMenus.lua
+TBC\UnitPopup.lua

@@ -448,6 +448,20 @@ function SetItemRef(link, text, button, chatFrame)
 		-- local links only
 		EventRegistry:TriggerEvent("SetItemRef", link, text, button, chatFrame);
 		return;
+	elseif ( strsub(link, 1, 12) == "warbandScene" ) then
+		local _, warbandSceneID = strsplit(":", link);
+		local warbandSceneInfo = C_WarbandScene.GetWarbandSceneEntry(tonumber(warbandSceneID));
+		if warbandSceneInfo then
+			ItemRefTooltip:ClearHandlerInfo();
+			ItemRefTooltip:SetOwner(UIParent, "ANCHOR_PRESERVE");
+
+			local isOwned = C_WarbandScene.HasWarbandScene(warbandSceneInfo.warbandSceneID);
+			SharedCollectionUtil.ShowWarbandSceneEntryTooltip(ItemRefTooltip, warbandSceneInfo, isOwned);
+		end
+		return;
+	elseif ( strsub(link, 1, 8) == "eventpoi" ) then
+		local _, areaPoiID = strsplit(":", link);
+		OpenMapToEventPoi(tonumber(areaPoiID));
 	end
 	if ( IsModifiedClick() ) then
 		local fixedLink = GetFixedLink(text);
@@ -464,8 +478,13 @@ end
 function GetFixedLink(text, quality)
 	local startLink = strfind(text, "|H");
 	if ( not strfind(text, "|c") ) then
+		local colorData = nil;
 		if ( quality ) then
-			return (gsub(text, "(|H.+|h.+|h)", ITEM_QUALITY_COLORS[quality].hex.."%1|r", 1));
+			colorData = ColorManager.GetColorDataForItemQuality(quality);
+		end
+
+		if ( colorData ) then
+			return (gsub(text, "(|H.+|h.+|h)", colorData.hex.."%1|r", 1));
 		elseif ( strsub(text, startLink + 2, startLink + 6) == "quest" ) then
 			--We'll always color it yellow. We really need to fix this for Cata. (It will appear the correct color in the chat log)
 			return (gsub(text, "(|H.+|h.+|h)", "|cffffff00%1|r", 1));
@@ -696,7 +715,7 @@ function DisplayDungeonScoreLink(link)
 	local sortTable = { };
 	for i = DUNGEON_SCORE_LINK_INDEX_START, (#splits), DUNGEON_SCORE_LINK_ITERATE do
 		local mapChallengeModeID = tonumber(splits[i]);
-		local completedInTime = tonumber(splits[i + 1]); 
+		local completedInTime = splits[i + 1] == "1";
 		local level = tonumber(splits[i + 2]);
 
 		local mapName = C_ChallengeMode.GetMapUIInfo(mapChallengeModeID);

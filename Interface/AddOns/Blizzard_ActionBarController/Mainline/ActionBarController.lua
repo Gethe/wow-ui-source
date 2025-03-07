@@ -215,6 +215,7 @@ function ValidateActionBarTransition()
 		end
 
 		if OverrideActionBar:IsShown() then
+			ResetMicroMenuPosition();
 			BeginActionBarTransition(OverrideActionBar, nil);
 		end
 	elseif CURRENT_ACTION_BAR_STATE == LE_ACTIONBAR_STATE_OVERRIDE then

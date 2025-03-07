@@ -16,9 +16,10 @@ function MapCanvasMixin:OnLoad()
 	self.pinsToNudge = {};
 	self.pinFrameLevelsManager = CreateFromMixins(MapCanvasPinFrameLevelsManagerMixin);
 	self.pinFrameLevelsManager:Initialize();
-	self.mouseClickHandlers = {};
-	self.globalPinMouseActionHandlers = {};
-	self.cursorHandlers = {};
+	self.mouseClickHandlers = MapCanvasSecureUtil.CreateHandlerRegistry();
+	self.globalPinMouseActionHandlers = MapCanvasSecureUtil.CreateHandlerRegistry();
+	self.cursorHandlers = MapCanvasSecureUtil.CreateHandlerRegistry();
+	self.pinSuppressors = {};
 
 	self:EvaluateLockReasons();
 
@@ -27,6 +28,7 @@ end
 
 function MapCanvasMixin:OnUpdate()
 	ClearCachedActivitiesForPlayer();
+	self:UpdatePinSuppression();
 	self:UpdatePinNudging();
 	self:ProcessCursorHandlers();
 	self:RunDataProviderOnUpdate();
@@ -183,12 +185,55 @@ function MapCanvasMixin:RemoveDataProviderEvent(event)
 	end
 end
 
-function MapCanvasMixin:SetPinNudgingDirty(dirty)
-	self.pinNudgingDirty = dirty;
+function MapCanvasMixin:SetPinNudgingDirty()
+	self.pinNudgingDirty = true;
+end
+
+function MapCanvasMixin:AddPinToNudge(pin)
+	table.insert(self.pinsToNudge, pin);
+end
+
+function MapCanvasMixin:IsPinNudgingDirty()
+	return self.pinNudgingDirty or (self.pinsToNudge and #self.pinsToNudge > 0);
+end
+
+function MapCanvasMixin:ExecuteOnPinsToNudge(callbackAllPins, callbackSpecificPins, ...)
+	if self.pinNudgingDirty then
+		self:ExecuteOnAllPins(callbackAllPins, ...);
+	elseif #self.pinsToNudge then
+		secureexecuterange(self.pinsToNudge, callbackSpecificPins, ...);
+	end
+end
+
+function MapCanvasMixin:MarkPinNudgingClean()
+	self.pinNudgingDirty = false;
+	self.pinsToNudge = {};
+end
+
+function MapCanvasMixin:SetPinSuppressionDirty()
+	self.pinSuppressionDirty = true;
+end
+
+function MapCanvasMixin:IsPinSuppressionDirty()
+	return self.pinSuppressionDirty;
+end
+
+function MapCanvasMixin:MarkPinSuppressionClean()
+	self.pinSuppressionDirty = false;
+end
+
+function MapCanvasMixin:SetPinPostProcessDirty()
+	self:SetPinNudgingDirty();
+	self:SetPinSuppressionDirty();
 end
 
 do
 	local function OnPinReleased(pinPool, pin)
+		local map = pin:GetMap();
+		if map then
+			map:UnregisterPin(pin);
+		end
+
 		Pool_HideAndClearAnchors(pinPool, pin);
 		pin:OnReleased();
 
@@ -256,6 +301,8 @@ do
 		-- dynamic setups that requires input propagation adjustment.
 		pin:CheckMouseButtonPassthrough("RightButton");
 
+		self:RegisterPin(pin);
+
 		return pin;
 	end
 end
@@ -287,7 +334,7 @@ end
 
 function MapCanvasMixin:RemovePin(pin)
 	if pin:GetNudgeSourceRadius() > 0 then
-		self.pinNudgingDirty = true;
+		self:SetPinPostProcessDirty();
 	end
 
 	self.pinPools[pin.pinTemplate]:Release(pin);
@@ -318,6 +365,24 @@ do
 	function MapCanvasMixin:ExecuteOnAllPins(callback, ...)
 		secureexecuterange(self.pinPools, MapCanvasExecuteOnPinPools, callback, ...);
 	end
+end
+
+function MapCanvasMixin:RegisterPin(pin)
+	if pin:IsPinSuppressor() and not tContains(self.pinSuppressors, pin) then
+		table.insert(self.pinSuppressors, pin);
+		self:SetPinSuppressionDirty();
+	end
+end
+
+function MapCanvasMixin:UnregisterPin(pin)
+	if pin:IsPinSuppressor() then
+		tDeleteItem(self.pinSuppressors, pin);
+		self:SetPinSuppressionDirty();
+	end	
+end
+
+function MapCanvasMixin:GetPinSuppressors()
+	return self.pinSuppressors;
 end
 
 function MapCanvasMixin:AcquireAreaTrigger(namespace)
@@ -389,6 +454,42 @@ function MapCanvasMixin:UpdateAreaTriggers(scrollRect)
 	self:TryRefreshingDebugAreaTriggers();
 end
 
+do
+	local function DoPinSuppression(targetPin, mapCanvas)
+		-- If the pin was already suppressed by another suppressor it doesn't need a check.
+		if targetPin:IsSuppressed() then
+			return;
+		end
+
+		for index, suppressor in ipairs(mapCanvas:GetPinSuppressors()) do
+			if suppressor:ShouldSuppressPin(targetPin) then
+				suppressor:TrackSuppressedPin(targetPin);
+				targetPin:SetSuppressed(suppressor);
+			end
+		end
+	end
+
+	function MapCanvasMixin:UpdatePinSuppression()
+		if self:IsPinSuppressionDirty() then
+			-- Every time the user zooms in or out suppression needs to be rechecked for each pin that was suppressed.
+			-- So restore the state to be in the right position and visible.			
+			for index, suppressor in ipairs(self:GetPinSuppressors()) do
+				suppressor:ResetSuppression();
+			end
+
+			-- Now check each pin to see if it needs to be suppressed.
+			self:ExecuteOnAllPins(DoPinSuppression, self);
+
+			-- Finalize suppressors so they can do any necessary updates afterwards
+			for index, suppressor in ipairs(self:GetPinSuppressors()) do
+				suppressor:FinalizeSuppression();
+			end
+
+			self:MarkPinSuppressionClean();
+		end
+	end
+end
+
 function SquaredDistanceBetweenPoints(firstX, firstY, secondX, secondY)
 	local xDiff = firstX - secondX;
 	local yDiff = firstY - secondY;
@@ -440,27 +541,20 @@ end
 
 do
 	local function MapCanvasCalculatePinNudgingCallback(targetPin, mapCanvas)
-		mapCanvas:CalculatePinNudging(targetPin);
+		if targetPin:GetMap() == mapCanvas then
+			mapCanvas:CalculatePinNudging(targetPin);
+		end
+	end
+	
+	local function MapCanvasCalculatePinNudgingCallbackSpecificPins(pinIndex, pin, mapCanvas)
+		MapCanvasCalculatePinNudgingCallback(pin, mapCanvas);
 	end
 
 	function MapCanvasMixin:UpdatePinNudging()
-		if not self.pinNudgingDirty and #self.pinsToNudge == 0 then
-			return;
+		if self:IsPinNudgingDirty() then
+			self:ExecuteOnPinsToNudge(MapCanvasCalculatePinNudgingCallback, MapCanvasCalculatePinNudgingCallbackSpecificPins, self);
+			self:MarkPinNudgingClean();
 		end
-
-		if self.pinNudgingDirty then
-			self:ExecuteOnAllPins(MapCanvasCalculatePinNudgingCallback, self);
-		else
-			for _, targetPin in ipairs(self.pinsToNudge) do
-				-- It's possible this pin was unattached before this update had a chance to run.
-				if targetPin:GetMap() == self then
-					self:CalculatePinNudging(targetPin);
-				end
-			end
-		end
-
-		self.pinNudgingDirty = false;
-		self.pinsToNudge = {};
 	end
 end
 
@@ -579,9 +673,9 @@ function MapCanvasMixin:SetPinPosition(pin, normalizedX, normalizedY, insetIndex
 	if not pin:IgnoresNudging() then
 		if pin:GetNudgeSourceRadius() > 0 then
 			-- If we nudge other things we need to recalculate all nudging.
-			self.pinNudgingDirty = true;
+			self:SetPinNudgingDirty();
 		else
-			self.pinsToNudge[#self.pinsToNudge + 1] = pin;
+			self:AddPinToNudge(pin);
 		end
 	end
 end
@@ -638,8 +732,12 @@ do
 		pin[methodName](pin, ...);
 	end
 
-	function MapCanvasMixin:CallMethodOnPinsAndDataProviders(methodName, ...)
+	function MapCanvasMixin:CallMethodOnDataProviders(methodName, ...)
 		secureexecuterange(self.dataProviders, MapCanvasCallMethodOnDataProvidersCallback, methodName, ...);
+	end	
+
+	function MapCanvasMixin:CallMethodOnPinsAndDataProviders(methodName, ...)
+		self:CallMethodOnDataProviders(methodName, ...);
 		self:ExecuteOnAllPins(MapCanvasCallMethodOnPinsCallback, methodName, ...);
 	end
 end
@@ -678,6 +776,7 @@ function MapCanvasMixin:OnCanvasScaleChanged()
 	end
 
 	self:CallMethodOnPinsAndDataProviders("OnCanvasScaleChanged");
+	self:SetPinSuppressionDirty();
 end
 
 function MapCanvasMixin:OnCanvasPanChanged()
@@ -889,76 +988,44 @@ function MapCanvasMixin:NavigateToCursor(ignoreZoneMapPositionData)
 	return false;
 end
 
-local function PrioritySorter(left, right)
-	return left.priority > right.priority;
-end
-
 -- Add a function that will be checked when the canvas is clicked
 -- If the function returns true then handling will stop
 -- A priority can optionally be specified, higher priority values will be called first
 function MapCanvasMixin:AddCanvasClickHandler(handler, priority)
-	table.insert(self.mouseClickHandlers, { handler = handler, priority = priority or 0 });
-	table.sort(self.mouseClickHandlers, PrioritySorter);
+	self.mouseClickHandlers:AddHandler(handler, priority);
 end
 
 function MapCanvasMixin:RemoveCanvasClickHandler(handler, priority)
-	for i, handlerInfo in ipairs(self.mouseClickHandlers) do
-		if handlerInfo.handler == handler and (not priority or handlerInfo.priority == priority) then
-			table.remove(self.mouseClickHandlers, i);
-			break;
-		end
-	end
+	self.mouseClickHandlers:RemoveHandler(handler, priority);
 end
 
 function MapCanvasMixin:ProcessCanvasClickHandlers(button, cursorX, cursorY)
-	for i, handlerInfo in ipairs(self.mouseClickHandlers) do
-		local success, stopChecking = xpcall(handlerInfo.handler, CallErrorHandler, self, button, cursorX, cursorY);
-		if success and stopChecking then
-			return true;
-		end
-	end
-	return false;
+	local success, stopChecking = self.mouseClickHandlers:InvokeHandlers(self, button, cursorX, cursorY);
+	return success, stopChecking;
 end
 
 -- Add a function that will be checked when any pin is clicked
 -- If the function returns true then handling will stop
 -- A priority can optionally be specified, higher priority values will be called first
 function MapCanvasMixin:AddGlobalPinMouseActionHandler(handler, priority)
-	table.insert(self.globalPinMouseActionHandlers, { handler = handler, priority = priority or 0 });
-	table.sort(self.globalPinMouseActionHandlers, PrioritySorter);
+	self.globalPinMouseActionHandlers:AddHandler(handler, priority);
 end
 
 function MapCanvasMixin:RemoveGlobalPinMouseActionHandler(handler, priority)
-	for i, handlerInfo in ipairs(self.globalPinMouseActionHandlers) do
-		if handlerInfo.handler == handler and (not priority or handlerInfo.priority == priority) then
-			table.remove(self.globalPinMouseActionHandlers, i);
-			break;
-		end
-	end
+	self.globalPinMouseActionHandlers:RemoveHandler(handler, priority);
 end
 
 function MapCanvasMixin:ProcessGlobalPinMouseActionHandlers(mouseAction, button)
-	for i, handlerInfo in ipairs(self.globalPinMouseActionHandlers) do
-		local success, stopChecking = xpcall(handlerInfo.handler, CallErrorHandler, self, mouseAction, button);
-		if success and stopChecking then
-			return true;
-		end
-	end
-	return false;
+	local success, stopChecking = self.globalPinMouseActionHandlers:InvokeHandlers(self, mouseAction, button);
+	return success, stopChecking;
 end
 
 function MapCanvasMixin:AddCursorHandler(handler, priority)
-	table.insert(self.cursorHandlers, { handler = handler, priority = priority or 0 });
-	table.sort(self.cursorHandlers, PrioritySorter);
+	self.cursorHandlers:AddHandler(handler, priority);
 end
 
 function MapCanvasMixin:RemoveCursorHandler(handler, priority)
-	for i, handlerInfo in ipairs(self.cursorHandlers) do
-		if handlerInfo.handler == handler and (not priority or handlerInfo.priority == priority) then
-			table.remove(self.cursorHandlers, i);
-			break;
-		end
-	end
+	self.cursorHandlers:RemoveHandler(handler, priority);
 end
 
 function MapCanvasMixin:ProcessCursorHandlers()
@@ -972,13 +1039,11 @@ function MapCanvasMixin:ProcessCursorHandlers()
 	end
 	-- pins have a .owningMap, our pins should be pointing to us
 	if self.ScrollContainer:IsMouseMotionFocus() or isFocusOwningMap then
-		for i, handlerInfo in ipairs(self.cursorHandlers) do
-			local success, cursor = xpcall(handlerInfo.handler, CallErrorHandler, self);
-			if success and cursor then
-				self.lastCursor = cursor;
-				SetCursor(cursor);
-				return;
-			end
+		local success, cursor = self.cursorHandlers:InvokeHandlers(self);
+		if success and cursor then
+			self.lastCursor = cursor;
+			SetCursor(cursor);
+			return;
 		end
 	end
 	if self.lastCursor then

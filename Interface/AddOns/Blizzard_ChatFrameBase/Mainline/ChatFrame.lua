@@ -18,6 +18,10 @@ MAX_COUNTDOWN_SECONDS = 3600; -- One Hour
 ACTIVE_CHAT_EDIT_BOX = nil;
 LAST_ACTIVE_CHAT_EDIT_BOX = nil;
 
+DevTools_AddMessageHandler(function(msg)
+	DEFAULT_CHAT_FRAME:AddMessage(msg);
+end);
+
 function GetBNPlayerLink(name, linkDisplayText, bnetIDAccount, lineID, chatType, chatTarget)
 	return LinkUtil.FormatLink("BNplayer", linkDisplayText, name, bnetIDAccount, lineID or 0, chatType, chatTarget);
 end
@@ -1247,7 +1251,8 @@ end
 
 -- We want to prefer spells for /cast and items for /use but we can use either
 SecureCmdList["CAST"] = function(msg)
-	if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
+	-- GAME RULES TODO:: This should be an explicit game rule.
+	if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
 		return;
 	end
 
@@ -1264,7 +1269,8 @@ SecureCmdList["CAST"] = function(msg)
 end
 
 SecureCmdList["USE"] = function(msg)
-	if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
+	-- GAME RULES TODO:: This should be an explicit game rule.
+	if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
 		return;
 	end
 
@@ -1280,7 +1286,8 @@ SecureCmdList["USE"] = function(msg)
 end
 
 SecureCmdList["CASTRANDOM"] = function(msg)
-	if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
+	-- GAME RULES TODO:: This should be an explicit game rule.
+	if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
 		return;
 	end
 
@@ -1298,7 +1305,8 @@ end
 SecureCmdList["USERANDOM"] = SecureCmdList["CASTRANDOM"];
 
 SecureCmdList["CASTSEQUENCE"] = function(msg)
-	if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
+	-- GAME RULES TODO:: This should be an explicit game rule.
+	if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
 		return;
 	end
 
@@ -1693,7 +1701,8 @@ SecureCmdList["EQUIP_SET"] = function(msg)
 end
 
 SecureCmdList["WORLD_MARKER"] = function(msg)
-	if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
+	-- GAME RULES TODO:: This should be an explicit game rule.
+	if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
 		return;
 	end
 
@@ -1713,7 +1722,8 @@ SecureCmdList["CLEAR_WORLD_MARKER"] = function(msg)
 end
 
 SecureCmdList["SUMMON_BATTLE_PET"] = function(msg)
-	if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
+	-- GAME RULES TODO:: This should be an explicit game rule.
+	if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
 		return;
 	end
 
@@ -1729,7 +1739,8 @@ SecureCmdList["SUMMON_BATTLE_PET"] = function(msg)
 end
 
 SecureCmdList["RANDOMPET"] = function(msg)
-	if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
+	-- GAME RULES TODO:: This should be an explicit game rule.
+	if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
 		return;
 	end
 
@@ -1739,7 +1750,8 @@ SecureCmdList["RANDOMPET"] = function(msg)
 end
 
 SecureCmdList["RANDOMFAVORITEPET"] = function(msg)
-	if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
+	-- GAME RULES TODO:: This should be an explicit game rule.
+	if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
 		return;
 	end
 
@@ -1749,7 +1761,8 @@ SecureCmdList["RANDOMFAVORITEPET"] = function(msg)
 end
 
 SecureCmdList["DISMISSBATTLEPET"] = function(msg)
-	if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
+	-- GAME RULES TODO:: This should be an explicit game rule.
+	if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
 		return;
 	end
 
@@ -1770,7 +1783,8 @@ SecureCmdList["PET_DISMISS"] = function(msg)
 end
 
 SecureCmdList["USE_TOY"] = function(msg)
-	if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
+	-- GAME RULES TODO:: This should be an explicit game rule.
+	if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
 		return;
 	end
 
@@ -2012,7 +2026,8 @@ SlashCmdList["TRADE"] = function(msg)
 end
 
 SlashCmdList["INSPECT"] = function(msg)
-	if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
+	-- GAME RULES TODO:: This should be an explicit game rule.
+	if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
 		return;
 	end
 
@@ -2626,11 +2641,11 @@ end
 function ChatFrame_WargameTargetsVerifyBNetAccounts(target1, target2)
 	local bnetIDGameAccount1 = BNet_GetBNetIDAccountFromCharacterName(target1) or BNet_GetBNetIDAccount(target1);
 	if not bnetIDGameAccount1 then
-		ConsolePrint("Failed to find StartSpectatorSoloShuffleWarGame target1:", target1);
+		C_Log.LogErrorMessage("Failed to find StartSpectatorSoloShuffleWarGame target1:", target1);
 	end
 	local bnetIDGameAccount2 = BNet_GetBNetIDAccountFromCharacterName(target2) or BNet_GetBNetIDAccount(target2);
 	if not bnetIDGameAccount2 then
-		ConsolePrint("Failed to find StartSpectatorSoloShuffleWarGame target2:", target2);
+		C_Log.LogErrorMessage("Failed to find StartSpectatorSoloShuffleWarGame target2:", target2);
 	end
 	return bnetIDGameAccount1, bnetIDGameAccount2;
 end
@@ -3517,7 +3532,7 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 		local oldLevel, newLevel, real = ...;
 		if real and oldLevel ~= 0 and newLevel ~= 0 then
 			if newLevel > oldLevel then
-				local chatLinkLevelToastsDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.ChatLinkLevelToastsDisabled);
+				local chatLinkLevelToastsDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.ChatLinkLevelToastsDisabled) or C_PlayerInfo.IsPlayerNPERestricted();
 				local levelstring = not chatLinkLevelToastsDisabled and format(LEVEL_UP, newLevel, newLevel) or format(LEVEL_UP_NO_LINK, newLevel);
 				local info = ChatTypeInfo["SYSTEM"];
 				self:AddMessage(levelstring, info.r, info.g, info.b, info.id);
@@ -3716,6 +3731,10 @@ function ChatFrame_GetMentorChannelStatus(entityStatus, channelRuleSet)
 	return Enum.PlayerMentorshipStatus.None;
 end
 
+local function GetAssertPFlagMessage(specialFlag)
+	return string.format("'pflag' at _G[CHAT_FLAG_%s] doesn't exist.", specialFlag);
+end
+
 local function GetPFlag(specialFlag, zoneChannelID, localChannelID)
 	if specialFlag ~= "" then
 		if specialFlag == "GM" or specialFlag == "DEV" then
@@ -3730,7 +3749,9 @@ local function GetPFlag(specialFlag, zoneChannelID, localChannelID)
 				return NPEV2_CHAT_USER_TAG_NEWCOMER;
 			end
 		else
-			return _G["CHAT_FLAG_"..specialFlag];
+			local pflag = _G["CHAT_FLAG_"..specialFlag];
+			assertsafe(pflag ~= nil, GetAssertPFlagMessage, specialFlag);
+			return pflag or "";
 		end
 	end
 
@@ -3771,6 +3792,16 @@ local function FlashTabIfNotShown(frame, info, type, chatGroup, chatTarget)
 			end
 		end
 	end
+end
+
+local function GetAssertOutMessageFormatKeyMessage(type)
+	return string.format("'formatKey' at _G[CHAT_%s_TYPE] doesn't exist.", type);
+end
+
+local function GetOutMessageFormatKey(type)
+	local formatKey = _G["CHAT_"..type.."_GET"];
+	assertsafe(formatKey ~= nil, GetAssertOutMessageFormatKeyMessage, type);
+	return formatKey or "";
 end
 
 function ChatFrame_MessageEventHandler(self, event, ...)
@@ -3922,7 +3953,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			self:AddMessage(CHAT_RESTRICTED_TRIAL, info.r, info.g, info.b, info.id);
 		elseif ( type == "CHANNEL_LIST") then
 			if(channelLength > 0) then
-				self:AddMessage(format(_G["CHAT_"..type.."_GET"]..arg1, tonumber(arg8), arg4), info.r, info.g, info.b, info.id);
+				self:AddMessage(format(GetOutMessageFormatKey(type)..arg1, tonumber(arg8), arg4), info.r, info.g, info.b, info.id);
 			else
 				self:AddMessage(arg1, info.r, info.g, info.b, info.id);
 			end
@@ -4102,26 +4133,26 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 				if ( usingDifferentLanguage ) then
 					local languageHeader = "["..arg3.."] ";
 					if ( showLink and (arg2 ~= "") ) then
-						outMsg = format(_G["CHAT_"..type.."_GET"]..languageHeader..message, pflag..playerLink);
+						outMsg = format(GetOutMessageFormatKey(type)..languageHeader..message, pflag..playerLink);
 					else
-						outMsg = format(_G["CHAT_"..type.."_GET"]..languageHeader..message, pflag..arg2);
+						outMsg = format(GetOutMessageFormatKey(type)..languageHeader..message, pflag..arg2);
 					end
 				else
 					if ( not showLink or arg2 == "" ) then
 						if ( type == "TEXT_EMOTE" ) then
 							outMsg = message;
 						else
-							outMsg = format(_G["CHAT_"..type.."_GET"]..message, pflag..arg2, arg2);
+							outMsg = format(GetOutMessageFormatKey(type)..message, pflag..arg2, arg2);
 						end
 					else
 						if ( type == "EMOTE" ) then
-							outMsg = format(_G["CHAT_"..type.."_GET"]..message, pflag..playerLink);
+							outMsg = format(GetOutMessageFormatKey(type)..message, pflag..playerLink);
 						elseif ( type == "TEXT_EMOTE") then
 							outMsg = string.gsub(message, arg2, pflag..playerLink, 1);
 						elseif (type == "GUILD_ITEM_LOOTED") then
 							outMsg = string.gsub(message, "$s", GetPlayerLink(arg2, playerLinkDisplayText));
 						else
-							outMsg = format(_G["CHAT_"..type.."_GET"]..message, pflag..playerLink);
+							outMsg = format(GetOutMessageFormatKey(type)..message, pflag..playerLink);
 						end
 					end
 				end
@@ -4277,7 +4308,8 @@ function ChatFrame_OpenChat(text, chatFrame, desiredCursorPosition)
 
 	local editBox = ChatEdit_ChooseBoxForSend(chatFrame);
 
-	if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
+	-- GAME RULES TODO:: This should be an explicit game rule.
+	if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
 		if not HAS_INITIALIZED_DEFAULT_CHAT_CHANNEL then
 			HAS_INITIALIZED_DEFAULT_CHAT_CHANNEL = true;
 
@@ -4642,7 +4674,8 @@ function ChatEdit_ResetChatType(self)
 		self:SetAttribute("chatType", "SAY");
 	end
 
-	if ( C_Glue.IsOnGlueScreen() and C_GameEnvironmentManager.GetCurrentGameEnvironment() == Enum.GameEnvironment.WoWLabs and IsInGroup(LE_PARTY_CATEGORY_HOME) ) then
+	-- GAME RULES TODO:: The game modes portion here should be an explicit game rule.
+	if ( C_Glue.IsOnGlueScreen() and (C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm) and IsInGroup(LE_PARTY_CATEGORY_HOME) ) then
 		self:SetAttribute("chatType", "PARTY");
 	end
 
@@ -4789,6 +4822,11 @@ end
 
 function ChatEdit_GetLastActiveWindow()
 	return LAST_ACTIVE_CHAT_EDIT_BOX;
+end
+
+function ChatEdit_GetActiveChatType()
+	local editBox = ChatEdit_GetActiveWindow();
+	return editBox and editBox:GetAttribute("chatType") or nil;
 end
 
 function ChatEdit_FocusActiveWindow()

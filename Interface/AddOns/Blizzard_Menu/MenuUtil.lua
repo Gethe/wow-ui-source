@@ -98,6 +98,10 @@ end
 function MenuUtil.ShowTooltip(owner, func, ...)
 	local tooltip = GetAppropriateTooltip();
 	tooltip:SetOwner(owner, "ANCHOR_RIGHT");
+
+	local window = owner:GetWindow();
+	tooltip:SetWindow(window);
+
 	func(tooltip, ...);
 	tooltip:Show();
 end

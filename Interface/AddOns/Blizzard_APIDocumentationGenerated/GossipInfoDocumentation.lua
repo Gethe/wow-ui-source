@@ -67,6 +67,7 @@ local GossipInfo =
 		{
 			Name = "GetFriendshipReputation",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -250,7 +251,7 @@ local GossipInfo =
 			{
 				{ Name = "gossipID", Type = "number", Nilable = false },
 				{ Name = "text", Type = "string", Nilable = false },
-				{ Name = "cost", Type = "number", Nilable = false },
+				{ Name = "cost", Type = "WOWMONEY", Nilable = false },
 			},
 		},
 		{

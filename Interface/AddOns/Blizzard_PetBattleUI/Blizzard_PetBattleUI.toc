@@ -1,6 +1,7 @@
 ## Title: Blizzard Pet Battle UI
 ## LoadOnDemand: 0
 ## AllowLoadGameType: standard
+## Dependencies: Blizzard_Colors
 Blizzard_PetBattleUIPatchwerks.xml
 Blizzard_PetBattleUI.xml
 Localization.lua

@@ -1,4 +1,5 @@
 ## Title: Black Market UI
 ## LoadOnDemand: 1
+## Dependencies: Blizzard_Colors
 Blizzard_BlackMarketUI.xml
 Localization.lua

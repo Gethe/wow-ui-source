@@ -443,6 +443,7 @@
 							</OnLoad>
 						</Scripts>
 					</Frame>
+					<Frame parentKey="CollectionsFrame" inherits="GlueCollectionsTemplate" hidden="true"/>
 					<Frame parentKey="VisibilityFramesContainer" name="VisibilityFramesContainer" setAllPoints="true" useParentLevel="true">
 						<Layers>
 							<Layer level="ARTWORK">
@@ -1158,15 +1159,7 @@
 					</Button>
 				</Frames>
 				<Animations>
-					<AnimationGroup parentKey="FadeIn" setToFinalAlpha="true">
-						<Alpha fromAlpha="0" toAlpha="1" duration="0.75" order="1"/>
-						<Scripts>
-							<OnFinished>
-								CharacterServicesMaster_UpdateServiceButton();
-							</OnFinished>
-						</Scripts>
-					</AnimationGroup>
-					<AnimationGroup parentKey="MapFadeIn" setToFinalAlpha="true">
+					<AnimationGroup parentKey="MapFadeIn" setToFinalAlpha="false">
 						<Alpha childKey="FadeInBackground" fromAlpha="1" toAlpha="0" duration=".3" order="1"/>
 					</AnimationGroup>
 				</Animations>

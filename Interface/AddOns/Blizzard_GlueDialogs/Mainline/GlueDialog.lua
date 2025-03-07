@@ -412,14 +412,6 @@ StaticPopupDialogs["CONFIRM_REMOVE_FRIEND"] = {
 	hideOnEscape = 1
 };
 
-StaticPopupDialogs["SWAPPING_ENVIRONMENT"] = {
-    text = "SWAPPING_ENVIRONMENT",
-    button1 = nil,
-    button2 = nil,
-    ignoreKeys = true,
-    spinner = true,
-}
-
 StaticPopupDialogs["ACCOUNT_CONVERSION_DISPLAY"] = {
 	text = ACCOUNT_CONVERSION_IN_PROGRESS,
 	button1 = nil,
@@ -455,6 +447,18 @@ StaticPopupDialogs["ACCOUNT_STORE_BEGIN_PURCHASE_OR_REFUND"] = {
 			C_AccountStore.BeginPurchase(itemInfo.id);
 		end
 	end
+};
+
+StaticPopupDialogs["CONFIRM_DELETE_CHARACTER_GROUP"] = {
+	text = CONFIRM_DELETE_CHARACTER_GROUP_TEXT,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function()
+		if GlueDialog.data then
+			GlueDialog.data();
+		end
+	end,
+	cover = true
 };
 
 local function GlueDialog_SetCustomOnHideScript(self, script)

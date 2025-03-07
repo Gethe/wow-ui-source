@@ -302,6 +302,7 @@ function CharacterFrameMixin:Collapse()
 	end
 	self.InsetRight:Hide();
 	PaperDollFrame_SetLevel();
+	self:RefreshDisplay();
 end
 
 function CharacterFrameMixin:Expand()
@@ -315,6 +316,7 @@ function CharacterFrameMixin:Expand()
 	PaperDollFrame_UpdateSidebarTabs();
 	self.InsetRight:Show();
 	PaperDollFrame_SetLevel();
+	self:RefreshDisplay();
 end
 
 function CharacterFrameCorruption_OnLoad(self)

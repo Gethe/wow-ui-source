@@ -1,11 +1,6 @@
 MapLegendMixin = { };
 
 function MapLegendMixin:OnLoad()
-	self.BackButton:SetScript("OnClick", function()
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-		self:OnBackClicked();
-	  end);
-
 	self:SetupCategories();
 	self.ScrollFrame.ScrollChild:Layout();
 
@@ -90,10 +85,6 @@ function MapLegendMixin:SetupCategories()
 	end
 end
 
-function MapLegendMixin:OnBackClicked()
-	EventRegistry:TriggerEvent("HideMapLegend");
-end
-
 MapLegendButtonMixin = { };
 
 function MapLegendButtonMixin:OnEnter()
@@ -120,7 +111,7 @@ function MapLegendButtonMixin:InitilizeButton(buttonInfo, index)
 		self.IconBack:SetAtlas(buttonInfo.BackgroundAtlas, TextureKitConstants.UseAtlasSize);
 		self.IconBack:Show();
 		-- Adjusting IconBack so the circle of the BackgroundAtlas ("UI-QuestPoi-QuestNumber") aligns with other circle atlases.
-		self.IconBack:SetPoint("LEFT", -1, 0);
+		self.IconBack:SetPoint("LEFT", -2, 0);
 	else
 		self.IconBack:SetPoint("LEFT", 0, 0);
 	end

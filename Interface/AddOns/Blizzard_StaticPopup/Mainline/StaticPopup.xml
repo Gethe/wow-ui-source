@@ -113,8 +113,11 @@
 			<Button name="$parentButton3" inherits="StaticPopupButtonTemplate" parentKey="button3" id="3"/>
 			<Button name="$parentButton4" inherits="StaticPopupButtonTemplate" parentKey="button4" id="4"/>
 			<Button name="$parentExtraButton" inherits="StaticPopupButtonTemplate" parentKey="extraButton" id="5"/>
-			<EditBox name="$parentEditBox" historyLines="1" hidden="true" inherits="AutoCompleteEditBoxTemplate">
+			<EditBox name="$parentEditBox" parentKey="editBox" historyLines="1" hidden="true" inherits="AutoCompleteEditBoxTemplate" mixin="StaticPopupEditBoxMixin">
 				<Size x="130" y="32"/>
+				<KeyValues>
+					<KeyValue key="addHighlightedText" value="true" type="boolean"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="BOTTOM" x="0" y="45"/>
 				</Anchors>
@@ -147,19 +150,10 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnEnterPressed>
-						StaticPopup_EditBoxOnEnterPressed(self);
-					</OnEnterPressed>
-					<OnEscapePressed>
-						StaticPopup_EditBoxOnEscapePressed(self);
-					</OnEscapePressed>
-					<OnTextChanged>
-						StaticPopup_EditBoxOnTextChanged(self, userInput);
-					</OnTextChanged>
-					<OnLoad>
-						self:GetParent().editBox = self;
-						self.addHighlightedText = true;
-					</OnLoad>
+					<OnAttributeChanged method="OnAttributeChanged"/>
+					<OnEnterPressed method="OnEnterPressed"/>
+					<OnEscapePressed method="OnEscapePressed"/>
+					<OnTextChanged method="OnTextChanged"/>
 				</Scripts>
 				<FontString inherits="ChatFontNormal"/>
 			</EditBox>
@@ -234,16 +228,10 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnUpdate>
-				StaticPopup_OnUpdate(self, elapsed);
-			</OnUpdate>
-			<OnEvent function="StaticPopup_OnEvent" />
-			<OnShow>
-				StaticPopup_OnShow(self);
-			</OnShow>
-			<OnHide>
-				StaticPopup_OnHide(self);
-			</OnHide>
+			<OnUpdate function="StaticPopup_OnUpdate"/>
+			<OnEvent function="StaticPopup_OnEvent"/>
+			<OnShow function="StaticPopup_OnShow"/>
+			<OnHide function="StaticPopup_OnHide"/>
 			<OnLoad function="StaticPopup_OnLoad"/>
 			<OnHyperlinkClick function="StaticPopup_OnHyperlinkClick"/>
 			<OnHyperlinkEnter function="StaticPopup_OnHyperlinkEnter"/>

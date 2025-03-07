@@ -93,6 +93,7 @@ end
 ProfessionSpellButtonMixin = {};
 
 function ProfessionSpellButtonMixin:OnLoad()
+	FlyoutButtonMixin.OnLoad(self);
 	self:RegisterForDrag("LeftButton");
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 end
@@ -138,6 +139,7 @@ function ProfessionSpellButtonMixin:OnHide()
 end
 
 function ProfessionSpellButtonMixin:OnEnter()
+	FlyoutButtonMixin.OnEnter(self);
 	local slotIndex = ProfessionsBook_GetSpellBookItemSlot(self);
 	if ( not slotIndex ) then
 		return;
@@ -167,6 +169,7 @@ function ProfessionSpellButtonMixin:OnEnter()
 end
 
 function ProfessionSpellButtonMixin:OnLeave()
+	FlyoutButtonMixin.OnLeave(self);
 	ClearOnBarHighlightMarks();
 
 	-- Update action bar highlights
@@ -193,9 +196,9 @@ function ProfessionSpellButtonMixin:OnClick(button)
 	end
 
 	if (itemType == Enum.SpellBookItemType.Flyout) then
-		SpellFlyout:Toggle(actionID, self, "RIGHT", 1, false, self.offSpecID, true);
+		local isActionBar, showFullTooltip, reason = false, true, nil;
+		SpellFlyout:Toggle(self, actionID, isActionBar, self.offSpecID, showFullTooltip, reason);
 		SpellFlyout:SetBorderColor(181/256, 162/256, 90/256);
-		SpellFlyout:SetBorderSize(42);
 	else
 		C_SpellBook.CastSpellBookItem(slotIndex, activeSpellBank);
 	end
@@ -262,6 +265,7 @@ function ProfessionSpellButtonMixin:UpdateDragSpell()
 end
 
 function ProfessionSpellButtonMixin:OnDragStart()
+	FlyoutButtonMixin.OnDragStart(self);
 	self.spellGrabbed = true;
 	self:UpdateDragSpell();
 end
@@ -338,6 +342,12 @@ function ProfessionSpellButtonMixin:UpdateButton()
 		end);
 	end
 	self.IconTexture:SetTexture(spellBookItemInfo.iconID);
+
+	if (spellBookItemInfo.itemType == Enum.SpellBookItemType.Flyout) then
+		self:SetPopup(SpellFlyout);
+	else
+		self:ClearPopup();
+	end
 
 	self:UpdateSelection();
 end

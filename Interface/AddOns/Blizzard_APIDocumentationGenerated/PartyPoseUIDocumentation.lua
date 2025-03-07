@@ -18,6 +18,7 @@ local PartyPoseUI =
 		{
 			Name = "GetPartyPoseInfoByID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -32,6 +33,7 @@ local PartyPoseUI =
 		{
 			Name = "GetPartyPoseInfoByMapID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

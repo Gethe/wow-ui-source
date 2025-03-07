@@ -26,7 +26,7 @@
 		</Layers>
 		<Frames>
 			<EditBox parentKey="SearchBox" mixin="CharSelectSearchMixin" inherits="SearchBoxTemplate" letters="80">
-				<Size x="347" y="24"/>
+				<Size x="297" y="24"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="19" y="-25"/>
 				</Anchors>
@@ -35,6 +35,18 @@
 					<OnTextChanged method="OnTextChanged"/>
 				</Scripts>
 			</EditBox>
+			<Button parentKey="AddGroupButton" inherits="UIButtonTemplate">
+				<Size x="42" y="42"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.SearchBox" relativePoint="RIGHT" x="10" y="0"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="buttonArtKit" value="128-redbutton-plus" type="string"/>
+					<KeyValue key="tooltipText" value="ADD_CHARACTER_GROUP_TOOLTIP" type="global"/>
+					<KeyValue key="tooltipTextColor" value="HIGHLIGHT_FONT_COLOR" type="global"/>
+					<KeyValue key="tooltipAnchor" value="ANCHOR_TOP" type="string"/>
+				</KeyValues>
+			</Button>
 			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="-75" y="-67"/>

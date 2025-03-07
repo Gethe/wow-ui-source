@@ -1,7 +1,7 @@
 ## Title: Blizzard_FrameXMLUtil
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_SharedXMLGame
+## Dependencies: Blizzard_SharedXMLGame, Blizzard_Colors
 ## AllowLoad: Game
 ## AllowLoadGameType: mainline
 Mainline\ArenaUtil.lua
@@ -39,3 +39,5 @@ Mainline\Cooldown.xml
 Localization.lua
 DragonridingUtil.lua
 Mainline\MinimapUtil.lua
+AreaPoiUtil.lua
+Mainline\ReputationUtil.lua

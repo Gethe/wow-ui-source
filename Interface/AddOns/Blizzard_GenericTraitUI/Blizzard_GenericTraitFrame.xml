@@ -71,7 +71,8 @@
 					<Layer level="OVERLAY">
 						<FontString parentKey="Title" inherits="Fancy24Font">
 							<Anchors>
-								<Anchor point="TOP" relativeKey="$parent" relativePoint="TOP" x="0" y="-10"/>
+								<Anchor point="TOPLEFT" x="0" y="-10"/>
+								<Anchor point="TOPRIGHT" x="0" y="-10"/>
 							</Anchors>
 							<Color r="1" g="1" b="1"/>
 						</FontString>
@@ -79,7 +80,8 @@
 					<Layer level="ARTWORK">
 						<Texture parentKey="TitleDivider" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="TOP" relativeKey="$parent" relativePoint="BOTTOM" />
+								<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" />
+								<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" />
 							</Anchors>
 						</Texture>
 					</Layer>

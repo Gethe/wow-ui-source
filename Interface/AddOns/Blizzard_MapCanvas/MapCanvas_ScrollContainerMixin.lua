@@ -219,7 +219,7 @@ end
 function MapCanvasScrollControllerMixin:SetCanvasSize(width, height)
 	self.Child:SetSize(width, height);
 	self.Child.TiledBackground:SetSize(width * 2, height * 2);
-	self:GetMap():SetPinNudgingDirty(true);
+	self:GetMap():SetPinPostProcessDirty();
 	self:CalculateScaleExtents();
 	self:CalculateScrollExtents();
 	self:GetMap():OnCanvasSizeChanged();

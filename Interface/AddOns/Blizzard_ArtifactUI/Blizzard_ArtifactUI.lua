@@ -247,8 +247,12 @@ end
 function ArtifactUIMixin:OnKnowledgeEnter(knowledgeFrame)
 	GameTooltip:SetOwner(knowledgeFrame, "ANCHOR_BOTTOMRIGHT", -25, 27);
 	local artifactArtInfo = C_ArtifactUI.GetArtifactArtInfo();
-	local color = ITEM_QUALITY_COLORS[Enum.ItemQuality.Artifact];
-	GameTooltip:SetText(artifactArtInfo.titleName, color.r, color.g, color.b);
+	local colorData = ColorManager.GetColorDataForItemQuality(Enum.ItemQuality.Artifact);
+	if colorData then
+		GameTooltip:SetText(artifactArtInfo.titleName, colorData.r, colorData.g, colorData.b);
+	else
+		GameTooltip:SetText(artifactArtInfo.titleName);
+	end
 
 	GameTooltip:AddLine(ARTIFACTS_NUM_PURCHASED_RANKS:format(C_ArtifactUI.GetTotalPurchasedRanks()), HIGHLIGHT_FONT_COLOR:GetRGB());
 

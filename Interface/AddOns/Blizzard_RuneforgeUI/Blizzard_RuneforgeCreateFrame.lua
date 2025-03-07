@@ -70,7 +70,12 @@ function RuneforgeCreateFrameMixin:ShowCraftConfirmation()
 	local function StaticPopupItemFrameCallback(itemFrame)
 		itemFrame:SetItemLocation(itemLocation);
 		SetItemButtonQuality(itemFrame, quality);
-		itemFrame.Text:SetTextColor(ITEM_QUALITY_COLORS[quality].color:GetRGB());
+
+		local colorData = ColorManager.GetColorDataForItemQuality(quality);
+		if colorData then
+			itemFrame.Text:SetTextColor(colorData.color:GetRGB());
+		end
+
 		itemFrame.Text:SetText(itemName);
 		itemFrame.Count:Hide();
 	end

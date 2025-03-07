@@ -5,6 +5,7 @@
 			<OnLoad function="AlertFrameSystems_Register"/>
 		</Scripts>
 	</Frame>
+
 	<Button name="DungeonCompletionAlertFrameRewardTemplate" parentArray="RewardFrames" virtual="true">
 		<Size x="36" y="36"/>
 		<Layers>
@@ -844,13 +845,13 @@
 				</Alpha>
 			</AnimationGroup>
 		</Animations>
-    <Frames>
-      <Frame parentKey="lootItem" inherits="LootItemExtended">
-        <Anchors>
-          <Anchor point="TOPLEFT" x="22" y="-23"/>
-        </Anchors>
-      </Frame>
-    </Frames>
+		<Frames>
+			<Frame parentKey="lootItem" inherits="LootItemExtended">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="22" y="-23"/>
+				</Anchors>
+			</Frame>
+		</Frames>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture parentKey="Background" file="Interface\LootFrame\LootToast">
@@ -2636,17 +2637,29 @@
 		</Layers>
 	</ContainedAlertFrame>
 
-  <ContainedAlertFrame name="NewToyAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" mixin="NewToyAlertFrameMixin" inherits="ItemAlertFrameTemplate">
-    <Layers>
-      <Layer level="BACKGROUND" textureSubLevel="1">
-        <Texture parentKey="Background" atlas="LootToast-MoreAwesome" useAtlasSize="true">
-          <Anchors>
-            <Anchor point="CENTER"/>
-          </Anchors>
-        </Texture>
-      </Layer>
-    </Layers>
-  </ContainedAlertFrame>
+	<ContainedAlertFrame name="NewToyAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" mixin="NewToyAlertFrameMixin" inherits="ItemAlertFrameTemplate">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="Background" atlas="LootToast-MoreAwesome" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</ContainedAlertFrame>
+
+	<ContainedAlertFrame name="NewWarbandSceneAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" mixin="NewWarbandSceneAlertFrameMixin" inherits="ItemAlertFrameTemplate">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="Background" atlas="loottoast-camp" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="2" y="-3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</ContainedAlertFrame>
 
 	<ContainedAlertFrame name="NewRuneforgePowerAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" mixin="NewRuneforgePowerAlertFrameMixin" inherits="ItemAlertFrameTemplate">
 		<Layers>

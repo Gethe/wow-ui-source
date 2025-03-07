@@ -346,6 +346,13 @@
 									<KeyValue key="advancedLayoutIndex" value="7" type="number"/>
 								</KeyValues>
 							</Frame>
+							<Frame parentKey="CooldownViewer" inherits="EditModeManagerSettingCheckButtonTemplate">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_COOLDOWN_VIEWER_LABEL" type="global"/>
+									<KeyValue key="category" value="EditModeManagerOptionsCategory.Combat" type="global"/>
+									<KeyValue key="advancedLayoutIndex" value="8" type="number"/>
+								</KeyValues>
+							</Frame>
 
 							<!-- Misc Settings -->
 							<Frame parentKey="TalkingHeadFrame" inherits="EditModeManagerSettingCheckButtonTemplate">

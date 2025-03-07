@@ -52,29 +52,31 @@ local CharacterCustomizationShared =
 		{
 			Name = "ChrModelFeatureFlags",
 			Type = "Enumeration",
-			NumValues = 6,
-			MinValue = 1,
-			MaxValue = 32,
+			NumValues = 8,
+			MinValue = 0,
+			MaxValue = 64,
 			Fields =
 			{
+				{ Name = "None", Type = "ChrModelFeatureFlags", EnumValue = 0 },
 				{ Name = "Summons", Type = "ChrModelFeatureFlags", EnumValue = 1 },
 				{ Name = "Forms", Type = "ChrModelFeatureFlags", EnumValue = 2 },
 				{ Name = "Identity", Type = "ChrModelFeatureFlags", EnumValue = 4 },
-				{ Name = "DragonCompanions", Type = "ChrModelFeatureFlags", EnumValue = 8 },
+				{ Name = "Deprecated0", Type = "ChrModelFeatureFlags", EnumValue = 8 },
 				{ Name = "Mounts", Type = "ChrModelFeatureFlags", EnumValue = 16 },
 				{ Name = "HunterPets", Type = "ChrModelFeatureFlags", EnumValue = 32 },
+				{ Name = "Players", Type = "ChrModelFeatureFlags", EnumValue = 64 },
 			},
 		},
 		{
-			Name = "CustomizationScope",
+			Name = "NewCharGear",
 			Type = "Enumeration",
 			NumValues = 2,
 			MinValue = 0,
 			MaxValue = 1,
 			Fields =
 			{
-				{ Name = "Player", Type = "CustomizationScope", EnumValue = 0 },
-				{ Name = "DragonCompanion", Type = "CustomizationScope", EnumValue = 1 },
+				{ Name = "Start", Type = "NewCharGear", EnumValue = 0 },
+				{ Name = "Preview", Type = "NewCharGear", EnumValue = 1 },
 			},
 		},
 		{

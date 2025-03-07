@@ -2,7 +2,7 @@
 ## Author: Blizzard Entertainment
 ## RequiredDep: Blizzard_MapCanvas, Blizzard_SharedMapDataProviders
 ## LoadOnDemand: 0
-## AllowLoadGameType: wowlabs
+## AllowLoadGameType: plunderstorm
 
 QuestLogOwnerMixin.lua
 MapTexturePreloader.lua

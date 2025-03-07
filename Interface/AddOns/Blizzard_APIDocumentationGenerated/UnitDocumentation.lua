@@ -31,6 +31,7 @@ local Unit =
 		{
 			Name = "ClosestGameObjectPosition",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -47,6 +48,7 @@ local Unit =
 		{
 			Name = "ClosestUnitPosition",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -96,6 +98,7 @@ local Unit =
 		{
 			Name = "GetUnitChargedPowerPoints",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -181,6 +184,7 @@ local Unit =
 		{
 			Name = "GetUnitPowerBarInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -195,6 +199,7 @@ local Unit =
 		{
 			Name = "GetUnitPowerBarInfoByID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -325,6 +330,7 @@ local Unit =
 		{
 			Name = "GetVehicleUIIndicator",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -340,6 +346,7 @@ local Unit =
 		{
 			Name = "GetVehicleUIIndicatorSeat",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -778,6 +785,7 @@ local Unit =
 		{
 			Name = "UnitClass",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -794,6 +802,7 @@ local Unit =
 		{
 			Name = "UnitClassBase",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -845,7 +854,8 @@ local Unit =
 
 			Returns =
 			{
-				{ Name = "result", Type = "cstring", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "id", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -859,7 +869,8 @@ local Unit =
 
 			Returns =
 			{
-				{ Name = "result", Type = "cstring", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "id", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -885,6 +896,7 @@ local Unit =
 		{
 			Name = "UnitDetailedThreatSituation",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -1215,6 +1227,21 @@ local Unit =
 			Returns =
 			{
 				{ Name = "result", Type = "luaIndex", Nilable = true },
+			},
+		},
+		{
+			Name = "UnitInOtherParty",
+			Type = "Function",
+			Documentation = { "Checks whether this unit cannot see your party chat because it is in an instance group" },
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "inOtherParty", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1574,6 +1601,35 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitIsGroupAssistant",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isAssistant", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitIsGroupLeader",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "partyCategory", Type = "luaIndex", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "isLeader", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitIsInMyGuild",
 			Type = "Function",
 
@@ -1857,6 +1913,20 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitLeadsAnyGroup",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isLeader", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitLevel",
 			Type = "Function",
 
@@ -1940,6 +2010,20 @@ local Unit =
 			Returns =
 			{
 				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitOwnerGUID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "ownerGUID", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{
@@ -2094,6 +2178,7 @@ local Unit =
 		{
 			Name = "UnitPowerBarTimerInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -2142,6 +2227,7 @@ local Unit =
 		{
 			Name = "UnitPowerType",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -2203,6 +2289,7 @@ local Unit =
 		{
 			Name = "UnitRace",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -2530,6 +2617,7 @@ local Unit =
 		{
 			Name = "UnitVehicleSeatInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -2579,6 +2667,7 @@ local Unit =
 		{
 			Name = "UnitWidgetSet",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -3863,6 +3952,24 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitCreatureFamilyResult",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "id", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitCreatureTypeResult",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "id", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitPowerBarInfo",
 			Type = "Structure",
 			Fields =
@@ -3883,6 +3990,7 @@ local Unit =
 				{ Name = "flashAtMinPower", Type = "bool", Nilable = false },
 				{ Name = "fractionalCounter", Type = "bool", Nilable = false },
 				{ Name = "animateNumbers", Type = "bool", Nilable = false },
+				{ Name = "attachTooltipToBar", Type = "bool", Nilable = false },
 			},
 		},
 	},

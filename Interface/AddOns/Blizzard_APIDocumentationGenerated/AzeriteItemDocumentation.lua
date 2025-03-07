@@ -9,6 +9,7 @@ local AzeriteItem =
 		{
 			Name = "FindActiveAzeriteItem",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -18,6 +19,7 @@ local AzeriteItem =
 		{
 			Name = "GetAzeriteItemXPInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

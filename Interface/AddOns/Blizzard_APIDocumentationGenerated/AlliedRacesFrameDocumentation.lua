@@ -9,6 +9,7 @@ local AlliedRacesFrame =
 		{
 			Name = "GetAllRacialAbilitiesFromID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -23,6 +24,7 @@ local AlliedRacesFrame =
 		{
 			Name = "GetRaceInfoByID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

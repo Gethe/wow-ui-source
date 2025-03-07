@@ -12,7 +12,7 @@ LFGEnabledList = nil;
 --DEBUG FIXME:
 function LFGDebug(text, ...)
 	if ( GetCVarBool("lfgDebug") ) then
-		ConsolePrint("LFGLua: "..format(text, ...));
+		C_Log.LogMessage("LFGLua: "..format(text, ...));
 	end
 end
 
@@ -1359,9 +1359,11 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
 		parentFrame.randomList.randomID = dungeonID;
 		parentFrame.randomList:Show();
 		parentFrame.encounterList:SetPoint("LEFT", parentFrame.randomList, "RIGHT", 5, 0);
+		parentFrame.title:SetPoint("TOPRIGHT", -16, -8);
 	else
 		parentFrame.randomList:Hide();
 		parentFrame.encounterList:SetPoint("LEFT", parentFrame.randomList, "LEFT", 0, 0);
+		parentFrame.title:SetPoint("TOPRIGHT", 0, -8);
 	end
 
 	parentFrame.encounterList.dungeonID = dungeonID;
@@ -2327,4 +2329,10 @@ end
 
 function LFGRoleShortagePulseAnimMixin:OnStop()
 	self:GetParent():CancelPulseEffect();
+end
+
+LFGRewardFrameTemplateTitleMixin = {};
+function LFGRewardFrameTemplateTitleMixin:OnLoad()
+	self:SetFontObject(QuestTitleFontBlackShadow);
+	self:SetText(LFG_TYPE_RANDOM_DUNGEON);
 end

@@ -11,6 +11,10 @@ local PetJournalInfo =
 			Type = "Function",
 		},
 		{
+			Name = "ClearSearchFilter",
+			Type = "Function",
+		},
+		{
 			Name = "GetDisplayIDByIndex",
 			Type = "Function",
 
@@ -70,8 +74,18 @@ local PetJournalInfo =
 			},
 		},
 		{
+			Name = "GetOwnedPetIDs",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "ownedPetIDs", Type = "table", InnerType = "WOWGUID", Nilable = false },
+			},
+		},
+		{
 			Name = "GetPetAbilityInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -88,6 +102,7 @@ local PetJournalInfo =
 		{
 			Name = "GetPetAbilityListTable",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -102,6 +117,7 @@ local PetJournalInfo =
 		{
 			Name = "GetPetInfoTableByPetID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -116,6 +132,7 @@ local PetJournalInfo =
 		{
 			Name = "GetPetLoadOutInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -145,6 +162,15 @@ local PetJournalInfo =
 				{ Name = "isSummonable", Type = "bool", Nilable = false },
 				{ Name = "error", Type = "PetJournalError", Nilable = false },
 				{ Name = "errorText", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSearchFilter",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "filterText", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -204,6 +230,15 @@ local PetJournalInfo =
 			Arguments =
 			{
 				{ Name = "battlePetGUID", Type = "WOWGUID", Nilable = false },
+			},
+		},
+		{
+			Name = "SetSearchFilter",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "filterText", Type = "cstring", Nilable = false },
 			},
 		},
 		{

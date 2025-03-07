@@ -56,6 +56,20 @@ local SimpleFontAPI =
 			},
 		},
 		{
+			Name = "GetFontObjectForAlphabet",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "alphabet", Type = "FontAlphabet", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "font", Type = "SimpleFont", Nilable = false },
+			},
+		},
+		{
 			Name = "GetIndentedWordWrap",
 			Type = "Function",
 

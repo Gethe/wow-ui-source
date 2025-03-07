@@ -27,6 +27,14 @@ local SimpleFrameAPI =
 			},
 		},
 		{
+			Name = "ClearAlphaGradient",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+		},
+		{
 			Name = "CreateFontString",
 			Type = "Function",
 
@@ -565,6 +573,20 @@ local SimpleFrameAPI =
 			},
 		},
 		{
+			Name = "IsDrawLayerEnabled",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "layer", Type = "DrawLayer", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsEventRegistered",
 			Type = "Function",
 
@@ -836,6 +858,16 @@ local SimpleFrameAPI =
 			Arguments =
 			{
 				{ Name = "alpha", Type = "SingleColorValue", Nilable = false },
+			},
+		},
+		{
+			Name = "SetAlphaGradient",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "gradient", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
 			},
 		},
 		{

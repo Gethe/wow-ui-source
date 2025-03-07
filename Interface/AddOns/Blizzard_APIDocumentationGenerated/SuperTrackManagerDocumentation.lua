@@ -30,6 +30,7 @@ local SuperTrackManager =
 		{
 			Name = "GetNextWaypointForMap",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -46,6 +47,7 @@ local SuperTrackManager =
 		{
 			Name = "GetSuperTrackedContent",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -56,6 +58,7 @@ local SuperTrackManager =
 		{
 			Name = "GetSuperTrackedItemName",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -66,6 +69,7 @@ local SuperTrackManager =
 		{
 			Name = "GetSuperTrackedMapPin",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
