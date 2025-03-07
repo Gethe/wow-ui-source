@@ -9,11 +9,7 @@ local l10nTable = {
 	koKR = {},
 	ptBR = {},
 	ptPT = {},
-	ruRU = {
-		localizeFrames = function()
-			AddonListOkayButton:SetWidth(100);
-		end,
-	},
+	ruRU = {},
 	zhCN = {},
 	zhTW = {},
 };
