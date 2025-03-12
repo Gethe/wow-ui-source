@@ -45,6 +45,10 @@ function ScrollBoxViewMixin:SetPanExtent(panExtent)
 	self.panExtent = panExtent;
 end
 
+function ScrollBoxViewMixin:SetMaxPanExtent(maxPanExtent)
+	self.maxPanExtent = maxPanExtent;
+end
+
 function ScrollBoxViewMixin:SetScrollBox(scrollBox)
 	self.scrollBox = scrollBox;
 

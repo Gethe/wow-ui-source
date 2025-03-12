@@ -146,6 +146,15 @@ function CooldownViewerItemMixin:SetLinkedSpell(linkedSpellID)
 	return true;
 end
 
+function CooldownViewerItemMixin:GetLinkedSpell()
+	local cooldownInfo = self:GetCooldownInfo();
+	if not cooldownInfo then
+		return nil;
+	end
+
+	return cooldownInfo.linkedSpellID;
+end
+
 function CooldownViewerItemMixin:UpdateLinkedSpell(spellID)
 	local cooldownInfo = self:GetCooldownInfo();
 	if not cooldownInfo then
@@ -180,8 +189,8 @@ function CooldownViewerItemMixin:OnEvent(event, ...)
 			self:RefreshData();
 		end
 	elseif event == "SPELL_UPDATE_COOLDOWN" then
-		local spellID, baseSpellID = ...;
-		if self:NeedsCooldownUpdate(spellID, baseSpellID) then
+		local spellID, baseSpellID, _category, startRecoveryCategory = ...;
+		if self:NeedsCooldownUpdate(spellID, baseSpellID, startRecoveryCategory) then
 			self:RefreshData();
 		end
 	elseif event == "UNIT_AURA" then
@@ -190,6 +199,10 @@ function CooldownViewerItemMixin:OnEvent(event, ...)
 			-- If the aura instance was removed or updated, then the item needs to be refreshed.
 			if self.auraInstanceID ~= nil then
 				if unitAuraUpdateInfo.removedAuraInstanceIDs ~= nil and tContains(unitAuraUpdateInfo.removedAuraInstanceIDs, self.auraInstanceID) then
+					if self.auraSpellID == self:GetLinkedSpell() then
+						self:SetLinkedSpell(nil);
+					end
+
 					self.auraInstanceID = nil;
 					self.auraSpellID = nil;
 					self:RefreshData();
@@ -366,13 +379,17 @@ function CooldownViewerItemMixin:IsActivationOverlayActive()
 	return self.SpellActivationAlert and self.SpellActivationAlert:IsShown();
 end
 
-function CooldownViewerItemMixin:NeedsCooldownUpdate(spellID, baseSpellID)
+function CooldownViewerItemMixin:NeedsCooldownUpdate(spellID, baseSpellID, startRecoveryCategory)
 	-- A nill spellID indicates all cooldowns should be updated.
 	if spellID == nil then
 		return true;
 	end
 
 	if self:UpdateLinkedSpell(spellID) then
+		return true;
+	end
+
+	if startRecoveryCategory == Constants.SpellCooldownConsts.GLOBAL_RECOVERY_CATEGORY then
 		return true;
 	end
 
@@ -587,12 +604,19 @@ function CooldownViewerCooldownItemMixin:CacheCooldownValues()
 		self.cooldownDuration = spellCooldownInfo.duration;
 		self.cooldownModRate = spellCooldownInfo.modRate;
 		self.cooldownSwipeColor = CreateColor(0, 0, 0, 0.7);
-		self.cooldownDesaturated = true;
 		self.cooldownShowDrawEdge = false;
 		self.cooldownShowSwipe = true;
 		self.cooldownUseAuraDisplayTime = false;
-		self.cooldownPlayFlash = true;
 		self.cooldownPaused = false;
+
+		if spellCooldownInfo.activeCategory == Constants.SpellCooldownConsts.GLOBAL_RECOVERY_CATEGORY then
+			self.cooldownDesaturated = false;
+			self.cooldownPlayFlash = false;
+		else
+			self.cooldownDesaturated = true;
+			self.cooldownPlayFlash = true;
+		end
+
 		return;
 	end
 

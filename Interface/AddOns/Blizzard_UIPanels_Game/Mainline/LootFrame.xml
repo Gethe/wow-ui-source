@@ -95,6 +95,9 @@
 	</Frame>
 
 	<Frame name="LootFrameMoneyElementTemplate" mixin="LootFrameElementMixin" inherits="LootFrameElementTemplate" virtual="true">
+		<KeyValues>
+				<KeyValue key="ignoreColorOverrides" value="true" type="boolean"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Text" inherits="GameFontNormal" justifyH="LEFT">

@@ -142,11 +142,3 @@ end
 
 function WardrobeItemsCollectionMixin:OnUpdate()
 end
-
-function WardrobeItemsCollectionMixin:DressUpVisual(visualInfo)
-	if self.transmogLocation:IsAppearance() then
-		local sourceID = self:GetAnAppearanceSourceFromVisual(visualInfo.visualID, nil);
-		DressUpVisual(sourceID);
-	end
-end
-

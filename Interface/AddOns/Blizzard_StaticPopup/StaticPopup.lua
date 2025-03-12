@@ -491,9 +491,9 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		_G[dialog:GetName().."MoneyFrame"]:Hide();
 		-- Set OnEnterPress for money input frames
 		if ( info.EditBoxOnEnterPressed ) then
-			moneyInputFrame.gold:SetScript("OnEnterPressed", StaticPopup_EditBoxOnEnterPressed);
-			moneyInputFrame.silver:SetScript("OnEnterPressed", StaticPopup_EditBoxOnEnterPressed);
-			moneyInputFrame.copper:SetScript("OnEnterPressed", StaticPopup_EditBoxOnEnterPressed);
+			moneyInputFrame.gold:SetScript("OnEnterPressed", StaticPopupEditBoxMixin.OnEnterPressed);
+			moneyInputFrame.silver:SetScript("OnEnterPressed", StaticPopupEditBoxMixin.OnEnterPressed);
+			moneyInputFrame.copper:SetScript("OnEnterPressed", StaticPopupEditBoxMixin.OnEnterPressed);
 		else
 			moneyInputFrame.gold:SetScript("OnEnterPressed", nil);
 			moneyInputFrame.silver:SetScript("OnEnterPressed", nil);
@@ -916,6 +916,10 @@ function StaticPopupEditBoxMixin:OnAttributeChanged(attr)
 end
 
 function StaticPopupEditBoxMixin:OnEnterPressed()
+	-- Note: This function can be invoked standalone on editboxes that don't
+	-- have the mixin applied - see handling of hasMoneyInputFrame in
+	-- StaticPopup_Show.
+
 	local EditBoxOnEnterPressed, which, dialog;
 	local parent = self:GetParent();
 	if ( parent.which ) then

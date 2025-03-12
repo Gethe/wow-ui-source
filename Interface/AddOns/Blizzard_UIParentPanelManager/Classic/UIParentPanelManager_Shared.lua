@@ -335,6 +335,7 @@ local function FramePositionDelegate_OnAttributeChanged(self, attribute)
 end
 
 local FramePositionDelegate = CreateFrame("FRAME");
+FramePositionDelegate:SetForbidden();
 FramePositionDelegate:SetScript("OnAttributeChanged", FramePositionDelegate_OnAttributeChanged);
 
 function FramePositionDelegate:ShowUIPanel(frame, force)

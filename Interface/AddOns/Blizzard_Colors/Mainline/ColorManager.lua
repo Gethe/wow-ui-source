@@ -12,6 +12,8 @@ function ColorManager.UpdateColorData()
 		ColorManager.UpdateColorsForWorldQuestQuality();
 		ColorManager.UpdateColorsForFollowerQuality();
 	end
+
+	EventRegistry:TriggerEvent("ColorManager.OnColorDataUpdated");
 end
 
 function ColorManager.UpdateColorsForItemQuality()
@@ -47,23 +49,6 @@ Color Accessing
 Ensure if editing method names/adding new methods, that corresponding edits are reflected in classic.
 ]]--
 
-function ColorManager.GetColorDataForBagItemQuality(quality)
-	local overrideQuality = ITEM_QUALITY_OVERRIDES[quality];
-	if overrideQuality then
-		local overrideInfo = C_ColorOverrides.GetColorOverrideInfo(overrideQuality);
-		if overrideInfo then
-			return overrideInfo.overrideColor;
-		end
-	end
-
-	local color = BAG_ITEM_QUALITY_COLORS[quality];
-	if not color then
-		return nil;
-	end
-
-	return color;
-end
-
 function ColorManager.GetColorDataForItemQuality(quality)
 	local colorData = ITEM_QUALITY_COLORS[quality];
 	if not colorData then
@@ -71,6 +56,16 @@ function ColorManager.GetColorDataForItemQuality(quality)
 	end
 
 	-- ITEM_QUALITY_COLORS is populated in a way that already takes override colors into account.
+	return colorData;
+end
+
+-- Version that does not take color overrides into account.
+function ColorManager.GetDefaultColorDataForItemQuality(quality)
+	local colorData = nil;
+
+	local color = C_ColorOverrides.GetDefaultColorForQuality(quality);
+	colorData = { r = color.r, g = color.g, b = color.b, hex = color:GenerateHexColorMarkup(), color = color };
+
 	return colorData;
 end
 
@@ -92,6 +87,28 @@ function ColorManager.GetColorDataForFollowerQuality(quality)
 
 	-- FOLLOWER_QUALITY_COLORS derives from ITEM_QUALITY_COLORS, and is populated in a way that already takes override colors into account.
 	return colorData;
+end
+
+function ColorManager.GetColorDataForBagItemQuality(quality)
+	local overrideQuality = ITEM_QUALITY_OVERRIDES[quality];
+	if overrideQuality then
+		local overrideInfo = C_ColorOverrides.GetColorOverrideInfo(overrideQuality);
+		if overrideInfo then
+			return overrideInfo.overrideColor;
+		end
+	end
+
+	return ColorManager.GetDefaultColorDataForBagItemQuality(quality);
+end
+
+-- Version that does not take color overrides into account.
+function ColorManager.GetDefaultColorDataForBagItemQuality(quality)
+	local color = BAG_ITEM_QUALITY_COLORS[quality];
+	if not color then
+		return nil;
+	end
+
+	return color;
 end
 
 function ColorManager.GetAtlasDataForAuctionHouseItemQuality(quality)

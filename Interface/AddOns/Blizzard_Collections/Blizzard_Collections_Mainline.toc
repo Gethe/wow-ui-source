@@ -6,15 +6,15 @@
 ## AllowLoad: game
 ## Dependencies: Blizzard_ClassMenu, Blizzard_Flyout, Blizzard_PagedContent, Blizzard_Colors
 ## AllowLoadGameType: mainline
-Blizzard_CollectionTemplates.xml
-Blizzard_Collections.xml
-Blizzard_MountCollection.lua
-Blizzard_MountCollection.xml
-Blizzard_PetCollection.xml
-Blizzard_ToyBox.xml
-Blizzard_HeirloomCollection.xml
-Blizzard_Wardrobe_Sets.xml
-Blizzard_Wardrobe.xml
-Blizzard_WarbandSceneCollection.lua
-Blizzard_WarbandSceneCollection.xml
+Mainline\Blizzard_CollectionTemplates.xml
+Mainline\Blizzard_Collections.xml
+Mainline\Blizzard_MountCollection.lua
+Mainline\Blizzard_MountCollection.xml
+Shared\Blizzard_PetCollection.xml
+Mainline\Blizzard_ToyBox.xml
+Mainline\Blizzard_HeirloomCollection.xml
+Mainline\Blizzard_Wardrobe_Sets.xml
+Mainline\Blizzard_Wardrobe.xml
+Mainline\Blizzard_WarbandSceneCollection.lua
+Mainline\Blizzard_WarbandSceneCollection.xml
 Localization.lua

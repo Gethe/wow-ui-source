@@ -720,7 +720,6 @@ function CharacterCreateWhileMouseDown_Update(elapsed)
 end
 
 CharacterCreateIconButtonMixin = {};
-CharacterCreateScrollFrameMixin = {};
 
 function CharacterCreateIconButtonMixin:OnMouseDown()
     local shadowSizeDown = self.shadowSizeDown or 52
@@ -755,15 +754,4 @@ function CharacterCreate_MoreInfoToggle(self)
 		CharacterCreateRaceInfoFrame:Show();
 		CharacterCreateClassInfoFrame:Show();
 	end
-end
-
-function CharacterCreateScrollFrameMixin:OnLoad()
-	CharacterCreateRaceScrollFrameScrollBar:ClearAllPoints();
-	CharacterCreateRaceScrollFrameScrollBar:SetPoint("TOPLEFT", CharacterCreateRaceScrollFrame, "TOPRIGHT", 7, 4);
-	CharacterCreateRaceScrollFrameScrollBar:SetPoint("BOTTOMLEFT", CharacterCreateRaceScrollFrame, "BOTTOMRIGHT", 7, 12);
-	GlueScrollFrame_OnScrollRangeChanged(self);
-end
-
-function CharacterCreateScrollFrameMixin:OnScrollRangeChanged(xrange, yrange)
-	GlueScrollFrame_OnScrollRangeChanged(self, yrange);
 end

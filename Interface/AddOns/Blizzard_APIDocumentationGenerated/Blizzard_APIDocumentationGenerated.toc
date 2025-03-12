@@ -424,6 +424,7 @@ SimpleHTMLSharedDocumentation.lua
 SocialConstantsDocumentation.lua
 SoftTargetConstantsDocumentation.lua
 SpellBookConstantsDocumentation.lua
+SpellConstantsDocumentation.lua
 SpellSharedDocumentation.lua
 TextureSharedDocumentation.lua
 TimeDocumentation.lua

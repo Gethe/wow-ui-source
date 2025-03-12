@@ -39,6 +39,20 @@ local ColorOverrides =
 			},
 		},
 		{
+			Name = "GetDefaultColorForQuality",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "quality", Type = "ItemQuality", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "color", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
+			},
+		},
+		{
 			Name = "RemoveColorOverride",
 			Type = "Function",
 

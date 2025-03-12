@@ -208,9 +208,7 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
-			<PreClick>
-				self:SetChecked(false);
-			</PreClick>
+			<PreClick method="PreClick"/>
 			<OnClick method="OnClick" />
 			<OnShow method="OnShow" />
 			<OnHide method="OnHide" />
@@ -278,9 +276,7 @@
 		<Scripts>
 			<OnLoad method="OnLoad" />
 			<OnEvent method="OnEvent" />
-			<PreClick>
-				self:SetChecked(false);
-			</PreClick>
+			<PreClick method="PreClick" />
 			<OnClick method="OnClick" />
 			<OnShow method="OnShow" />
 			<OnHide method="OnHide" />

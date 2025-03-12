@@ -150,7 +150,7 @@ local Container =
 			Returns =
 			{
 				{ Name = "inSet", Type = "bool", Nilable = false },
-				{ Name = "setList", Type = "cstring", Nilable = false },
+				{ Name = "setList", Type = "string", Nilable = false },
 			},
 		},
 		{

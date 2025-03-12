@@ -63,6 +63,7 @@ local GenericTraitFrameLayoutOptions = {
 
 	Visions = {
 		Title = GENERIC_TRAIT_FRAME_VISIONS_TITLE,
+		BackgroundAtlas = "talenttree-horrificvision-background",
 	},
 };
 

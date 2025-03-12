@@ -12,6 +12,12 @@ ITEM_QUALITY_OVERRIDES = {
 	[Enum.ItemQuality.Heirloom] = Enum.ColorOverride.ItemQualityAccount
 };
 
+ITEM_QUALITY_COLORS = { };
+
+WORLD_QUEST_QUALITY_COLORS = { };
+
+FOLLOWER_QUALITY_COLORS = { };
+
 BAG_ITEM_QUALITY_COLORS = {
 	[Enum.ItemQuality.Common] = COMMON_GRAY_COLOR,
 	[Enum.ItemQuality.Uncommon] = UNCOMMON_GREEN_COLOR,
@@ -22,12 +28,6 @@ BAG_ITEM_QUALITY_COLORS = {
 	[Enum.ItemQuality.Heirloom] = HEIRLOOM_BLUE_COLOR,
 	[Enum.ItemQuality.WoWToken] = HEIRLOOM_BLUE_COLOR
 };
-
-ITEM_QUALITY_COLORS = { };
-
-WORLD_QUEST_QUALITY_COLORS = { };
-
-FOLLOWER_QUALITY_COLORS = { };
 
 AUCTION_HOUSE_ITEM_QUALITY_ICON_BORDER_ATLASES = {
 	[Enum.ItemQuality.Poor] = "auctionhouse-itemicon-border-gray",
