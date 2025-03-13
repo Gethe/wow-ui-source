@@ -65,6 +65,7 @@ local EquipmentManager =
 		{
 			Name = "GetEquipmentSetAssignedSpec",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -79,6 +80,7 @@ local EquipmentManager =
 		{
 			Name = "GetEquipmentSetForSpec",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -93,6 +95,7 @@ local EquipmentManager =
 		{
 			Name = "GetEquipmentSetID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -116,6 +119,7 @@ local EquipmentManager =
 		{
 			Name = "GetEquipmentSetInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -138,6 +142,7 @@ local EquipmentManager =
 		{
 			Name = "GetIgnoredSlots",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -152,6 +157,7 @@ local EquipmentManager =
 		{
 			Name = "GetItemIDs",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -166,6 +172,7 @@ local EquipmentManager =
 		{
 			Name = "GetItemLocations",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

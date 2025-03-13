@@ -266,14 +266,10 @@ function UnitPopupAchievementButtonMixin:OnClick(contextData)
 	InspectAchievements(contextData.unit);
 end
 
-function UnitPopupSetRoleTankButton:IsEnabled()
-	return true;
-end
+function UnitPopupSelectRoleButtonMixin:CanShow(contextData)
+	if not IsInGroup() then
+		return false;
+	end
 
-function UnitPopupSetRoleHealerButton:IsEnabled()
-	return true;
-end
-
-function UnitPopupSetRoleDpsButton:IsEnabled()
-	return true;
+	return UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") or UnitIsUnit(contextData.unit, "player"); 
 end

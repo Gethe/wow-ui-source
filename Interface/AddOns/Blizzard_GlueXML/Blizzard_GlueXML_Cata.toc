@@ -20,8 +20,8 @@ Cata\RealmList.xml
 Classic\CharacterServicesPatchwerk.xml
 Classic\CharacterSelect.lua
 TBC\CharacterSelect.xml
-Classic\AccountReactivate.lua
-Classic\AccountReactivate.xml
+Shared\AccountReactivate.lua
+Shared\AccountReactivate.xml
 Classic\KioskModeSplash.lua
 Classic\KioskModeSplash.xml
 Classic\CharacterServicesShared.lua

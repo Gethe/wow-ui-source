@@ -61,6 +61,7 @@ local SimpleRegionAPI =
 		{
 			Name = "GetVertexColor",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

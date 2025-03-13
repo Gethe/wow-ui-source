@@ -1,6 +1,7 @@
 ## Title: Blizzard Developer Console
 ## Author: Blizzard Entertainment
 ## SavedVariablesMachine: Blizzard_Console_SavedVars
+## RequiredDep: Blizzard_CommandLineUtil
 ## AllowLoad: Both
 
 Blizzard_Console_AutoComplete.lua

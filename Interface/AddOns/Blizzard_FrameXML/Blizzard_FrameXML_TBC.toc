@@ -179,7 +179,6 @@ UIErrorsFrame.xml
 AutoComplete.xml
 StaticPopup.xml
 ..\Blizzard_SharedXML\DialogUtil.lua
-Classic\Sound.lua
 DeprecatedTemplates.lua
 DeprecatedTemplates.xml
 ..\Blizzard_SharedXML\Settings\GameplaySettingsGroup.lua

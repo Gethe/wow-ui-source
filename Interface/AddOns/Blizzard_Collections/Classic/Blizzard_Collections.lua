@@ -10,30 +10,6 @@ function CollectionsJournal_GetTab(self)
 	return PanelTemplates_GetSelectedTab(self);
 end
 
-local function ShouldShowHeirloomTabHelpTip()
-	if GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HEIRLOOM_JOURNAL_TAB) or Kiosk.IsEnabled() then
-		return false;
-	end
-
-	if PetJournal_HelpPlate and HelpPlate_IsShowing(PetJournal_HelpPlate) then
-		return false;
-	end
-
-	return C_Heirloom.ShouldShowHeirloomHelp();
-end
-
-local function ShouldShowWardrobeTabHelpTip()
-	if GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_JOURNAL_TAB) or Kiosk.IsEnabled() then
-		return false;
-	end
-
-	if PetJournal_HelpPlate and HelpPlate_IsShowing(PetJournal_HelpPlate) then
-		return false;
-	end
-
-	return true;
-end
-
 function CollectionsJournal_ValidateTab(tabNum)
 	return true;
 end
@@ -63,6 +39,17 @@ function CollectionsJournal_UpdateSelectedTab(self)
 	PetJournal:SetShown(selected == 2);
 	ToyBox:SetShown(selected == 3);
 	HeirloomsJournal:SetShown(selected == 4);
+
+	-- don't touch the wardrobe frame if it's used by the transmogrifier
+	if ( WardrobeCollectionFrame and WardrobeCollectionFrame:GetParent() == self or not WardrobeCollectionFrame:GetParent():IsShown() ) then
+		if ( selected == 5 ) then
+			HideUIPanel(WardrobeFrame);
+			WardrobeCollectionFrame:SetContainer(self);
+		else
+			WardrobeCollectionFrame:Hide();
+		end
+	end
+
 	self:SetTitle(GetTitleText(selected));
 
     EventRegistry:TriggerEvent("CollectionsJournal.TabSet", CollectionsJournal, selected);

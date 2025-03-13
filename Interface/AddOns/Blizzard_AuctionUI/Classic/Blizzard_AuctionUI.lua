@@ -239,7 +239,38 @@ StaticPopupDialogs["TOKEN_AUCTIONABLE_TOKEN_OWNED"] = {
 	hideOnEscape = true,
 }
 
+StaticPopupDialogs["AUCTION_HOUSE_POST_WARNING"] = {
+	text = NORMAL_FONT_COLOR:WrapTextInColorCode(CONFIRM_AUCTION_POSTING_TEXT),
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function ()
+		AuctionsCreateAuctionButton:ConfirmPost()
+	end,
+	OnHide = function()
+		AuctionFrame_SetDialogOverlayShown(false);
+	end,
+
+	showAlert = true,
+	hideOnEscape = 1,
+	timeout = 0,
+	whileDead = 1,
+}
+
+StaticPopupDialogs["AUCTION_HOUSE_POST_ERROR"] = {
+	text = NORMAL_FONT_COLOR:WrapTextInColorCode(AUCTION_POSTING_ERROR_TEXT),
+	button1 = OKAY,
+	OnHide = function()
+		AuctionFrame_SetDialogOverlayShown(false);
+	end,
+	showAlert = true,
+	hideOnEscape = 1,
+	timeout = 0,
+	whileDead = 1,
+}
+
 function AuctionFrame_OnLoad (self)
+	self:RegisterEvent("AUCTION_HOUSE_POST_WARNING");
+	self:RegisterEvent("AUCTION_HOUSE_POST_ERROR");
 
 	-- Tab Handling code
 	PanelTemplates_SetNumTabs(self, 3);
@@ -342,6 +373,23 @@ function AuctionFrame_OnShow (self)
 	PlaySound(SOUNDKIT.AUCTION_WINDOW_OPEN);
 
 	SetUpSideDressUpFrame(self, 840, 1020, "TOPLEFT", "TOPRIGHT", -2, -28);
+end
+
+function AuctionFrame_OnEvent(self, event, ...)
+	if event == "AUCTION_HOUSE_POST_WARNING" then
+		AuctionFrame_ShowPostConfirmationDialog("AUCTION_HOUSE_POST_WARNING");
+	elseif event == "AUCTION_HOUSE_POST_ERROR" then
+		AuctionFrame_ShowPostConfirmationDialog("AUCTION_HOUSE_POST_ERROR");
+	end
+end
+
+function AuctionFrame_SetDialogOverlayShown(shown)
+	AuctionFrame.DialogOverlay:SetShown(shown);
+end
+
+function AuctionFrame_ShowPostConfirmationDialog(which)
+	AuctionFrame_SetDialogOverlayShown(true);
+	StaticPopup_Show(which);
 end
 
 function AuctionFrameTab_OnClick(self, button, down)
@@ -2245,20 +2293,50 @@ function CloseAuctionStaticPopups()
 	StaticPopup_Hide("BUYOUT_AUCTION");
 	StaticPopup_Hide("BID_AUCTION");
 	StaticPopup_Hide("CANCEL_AUCTION");
+	StaticPopup_Hide("AUCTION_HOUSE_POST_WARNING");
+	StaticPopup_Hide("AUCTION_HOUSE_POST_ERROR");
 end
 
-function AuctionsCreateAuctionButton_OnClick()
-	if (C_WowTokenPublic.IsAuctionableWowToken(select(10, GetAuctionSellItemInfo()))) then
+AuctionPostMixin = {};
+
+function AuctionPostMixin:OnClick()
+	local itemId, itemGUID = select(10, GetAuctionSellItemInfo());
+	if (C_WowTokenPublic.IsAuctionableWowToken(itemId)) then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
-		C_WowTokenPublic.SellToken();
+		C_WowTokenUI.StartTokenSell(itemGUID);
 	else
 		LAST_ITEM_START_BID = MoneyInputFrame_GetCopper(StartPrice);
 		LAST_ITEM_BUYOUT = MoneyInputFrame_GetCopper(BuyoutPrice);
 		DropCursorMoney();
 		PlaySound(SOUNDKIT.LOOT_WINDOW_COIN_SOUND);
 		local startPrice, buyoutPrice = GetPrices();
-		PostAuction(startPrice, buyoutPrice, AuctionFrameAuctions.duration, AuctionsStackSizeEntry:GetNumber(), AuctionsNumStacksEntry:GetNumber());
+		self:StartPost(startPrice, buyoutPrice, AuctionFrameAuctions.duration, AuctionsStackSizeEntry:GetNumber(), AuctionsNumStacksEntry:GetNumber(), false);
 	end
+end
+
+function AuctionPostMixin:StartPost(...)
+	if PostAuction(...) then
+		self:ClearPost();
+	else
+		self:CachePendingPost(...);
+	end
+end
+
+function AuctionPostMixin:ConfirmPost()
+	if self.pendingPost then
+		local startPrice, buyoutPrice, duration, quantity, numStacks = SafeUnpack(self.pendingPost);
+		PostAuction(startPrice, buyoutPrice, duration, quantity, numStacks, true)
+		self:ClearPost();
+		return true;
+	end
+end
+
+function AuctionPostMixin:CachePendingPost(...)
+	self.pendingPost = SafePack(...);
+end
+
+function AuctionPostMixin:ClearPost()
+	self.pendingPost = nil;
 end
 
 function SetMaxStackSize()

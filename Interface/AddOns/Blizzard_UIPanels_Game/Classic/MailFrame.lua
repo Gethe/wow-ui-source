@@ -517,6 +517,11 @@ function OpenMail_Update()
 	-- Is an invoice
 	if ( isInvoice ) then
 		local invoiceType, itemName, playerName, bid, buyout, deposit, consignment, moneyDelay, etaHour, etaMin, count, commerceAuction = GetInboxInvoiceInfo(InboxFrame.openMailID);
+
+		if ( not IsUsingLegacyAuctionClient() and invoiceType and  playerName == nil) then
+			playerName = (invoiceType == "buyer") and AUCTION_HOUSE_MAIL_MULTIPLE_SELLERS or AUCTION_HOUSE_MAIL_MULTIPLE_BUYERS;
+		end
+
 		if ( playerName ) then
 			-- Setup based on whether player is the buyer or the seller
 			local buyMode;

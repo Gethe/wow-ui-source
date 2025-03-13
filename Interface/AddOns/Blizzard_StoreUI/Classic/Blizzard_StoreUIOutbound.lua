@@ -49,6 +49,10 @@ function StoreOutbound.IsCharacterSelectUndeleting()
 	return securecall("CharacterSelect_IsUndeleting");
 end
 
+function StoreOutbound.OnCharacterBoostDelivered(BoostType, BoostDeliveredUsageGUID, BoostDeliveredUsageReason)
+	return securecall("CharacterUpgradePopup_OnCharacterBoostDelivered", BoostType, BoostDeliveredUsageGUID, BoostDeliveredUsageReason);
+end
+
 function StoreOutbound.UpdateDialogs()
 	securecall("GlueParent_UpdateDialogs");
 end

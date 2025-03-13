@@ -5,9 +5,9 @@ local GossipConstants =
 		{
 			Name = "GossipNpcOption",
 			Type = "Enumeration",
-			NumValues = 58,
+			NumValues = 63,
 			MinValue = 0,
-			MaxValue = 57,
+			MaxValue = 62,
 			Fields =
 			{
 				{ Name = "None", Type = "GossipNpcOption", EnumValue = 0 },
@@ -68,6 +68,11 @@ local GossipConstants =
 				{ Name = "ForgeMaster", Type = "GossipNpcOption", EnumValue = 55 },
 				{ Name = "CharacterBanker", Type = "GossipNpcOption", EnumValue = 56 },
 				{ Name = "AccountBanker", Type = "GossipNpcOption", EnumValue = 57 },
+				{ Name = "ProfessionRespec", Type = "GossipNpcOption", EnumValue = 58 },
+				{ Name = "Placeholder_1", Type = "GossipNpcOption", EnumValue = 59 },
+				{ Name = "Placeholder_2", Type = "GossipNpcOption", EnumValue = 60 },
+				{ Name = "Placeholder_3", Type = "GossipNpcOption", EnumValue = 61 },
+				{ Name = "Placeholder_4", Type = "GossipNpcOption", EnumValue = 62 },
 			},
 		},
 		{
@@ -84,13 +89,14 @@ local GossipConstants =
 		{
 			Name = "GossipOptionRecFlags",
 			Type = "Enumeration",
-			NumValues = 2,
+			NumValues = 3,
 			MinValue = 1,
-			MaxValue = 2,
+			MaxValue = 4,
 			Fields =
 			{
 				{ Name = "QuestLabelPrepend", Type = "GossipOptionRecFlags", EnumValue = 1 },
 				{ Name = "HideOptionIDFromClient", Type = "GossipOptionRecFlags", EnumValue = 2 },
+				{ Name = "PlayMovieLabelPrepend", Type = "GossipOptionRecFlags", EnumValue = 4 },
 			},
 		},
 	},

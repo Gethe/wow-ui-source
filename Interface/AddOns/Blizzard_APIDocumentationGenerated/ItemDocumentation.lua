@@ -195,6 +195,7 @@ local Item =
 		{
 			Name = "GetDetailedItemLevelInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -301,6 +302,7 @@ local Item =
 		{
 			Name = "GetItemGem",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -317,6 +319,7 @@ local Item =
 		{
 			Name = "GetItemGemID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -388,6 +391,7 @@ local Item =
 		{
 			Name = "GetItemInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -418,6 +422,7 @@ local Item =
 		{
 			Name = "GetItemInfoInstant",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -651,6 +656,7 @@ local Item =
 		{
 			Name = "GetItemSpecInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -665,6 +671,7 @@ local Item =
 		{
 			Name = "GetItemSpell",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -680,6 +687,7 @@ local Item =
 		{
 			Name = "GetItemSubClassInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -696,6 +704,7 @@ local Item =
 		{
 			Name = "GetItemUniqueness",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -706,6 +715,24 @@ local Item =
 			{
 				{ Name = "limitCategory", Type = "number", Nilable = false },
 				{ Name = "limitMax", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetItemUniquenessByID",
+			Type = "Function",
+			MayReturnNothing = true,
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isUnique", Type = "bool", Nilable = false },
+				{ Name = "limitCategoryName", Type = "cstring", Nilable = true },
+				{ Name = "limitCategoryCount", Type = "number", Nilable = true },
+				{ Name = "limitCategoryID", Type = "number", Nilable = true },
 			},
 		},
 		{

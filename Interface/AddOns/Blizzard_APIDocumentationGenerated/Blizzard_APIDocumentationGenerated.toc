@@ -8,6 +8,7 @@
 AccountInfoDocumentation.lua
 AccountStoreDocumentation.lua
 AchievementInfoDocumentation.lua
+AchievementTelemetryDocumentation.lua
 ActionBarFrameDocumentation.lua
 AddOnProfilerDocumentation.lua
 AddOnsDocumentation.lua
@@ -61,6 +62,7 @@ EncounterInfoDocumentation.lua
 EncounterJournalDocumentation.lua
 EndOfMatchUIDocumentation.lua
 EquipmentManagerDocumentation.lua
+EventSchedulerUIDocumentation.lua
 EventUtilsDocumentation.lua
 ExpansionDocumentation.lua
 ExpansionInfoDocumentation.lua
@@ -226,6 +228,7 @@ TrainerDocumentation.lua
 TraitConfigDocumentation.lua
 TransmogDocumentation.lua
 TransmogItemsDocumentation.lua
+TransmogSetsDocumentation.lua
 TutorialDocumentation.lua
 UIActionDocumentation.lua
 UIColorDocumentation.lua
@@ -273,6 +276,7 @@ SystemDocumentation.lua
 TradeSkillUIDocumentation.lua
 AccountConstantsDocumentation.lua
 ActionDocumentation.lua
+AddOnProfilerConstantsDocumentation.lua
 AppearanceSourceDocumentation.lua
 ArrowCalloutConstantsDocumentation.lua
 AuctionHouseConstantsDocumentation.lua
@@ -300,6 +304,7 @@ DamageConstantsDocumentation.lua
 DelvesConstantsDocumentation.lua
 EditModeManagerSharedDocumentation.lua
 EncounterJournalConstantsDocumentation.lua
+EventSchedulerConstantsDocumentation.lua
 ExpansionLandingPageConstantsDocumentation.lua
 FrameAPIModelSceneFrameSharedDocumentation.lua
 GARRISON_FOLLOWER_TYPEConstantsDocumentation.lua
@@ -316,6 +321,7 @@ ItemConstantsDocumentation.lua
 ItemSharedDocumentation.lua
 LFGConstantsDocumentation.lua
 LevelConstantsDocumentation.lua
+LogConstantsDocumentation.lua
 LootConstantsDocumentation.lua
 MapConstantsDocumentation.lua
 MatrixSharedDocumentation.lua
@@ -369,6 +375,7 @@ TraitConstantsDocumentation.lua
 TransmogSharedDocumentation.lua
 UIActionConstantsDocumentation.lua
 UIButtonSharedDocumentation.lua
+UIColorSharedDocumentation.lua
 UIFileAssetSharedDocumentation.lua
 UIMapPinSharedDocumentation.lua
 UIModelInfoSharedDocumentation.lua
@@ -377,12 +384,14 @@ UITextureAssetSharedDocumentation.lua
 UITextureConstantsDocumentation.lua
 UIWidgetManagerSharedDocumentation.lua
 UiModelSceneConstantsDocumentation.lua
+UiRpcRequestManagerConstantsDocumentation.lua
 UnitConstantsDocumentation.lua
 UnitSexConstantsDocumentation.lua
 UnitSharedDocumentation.lua
 ValidateNameConstantsDocumentation.lua
 VectorSharedDocumentation.lua
 VignetteConstantsDocumentation.lua
+WarbandSceneInfoConstantsDocumentation.lua
 WeeklyRewardsSharedDocumentation.lua
 AuctionHouseConstants_ClassicDocumentation.lua
 CurrencyConstants_ClassicDocumentation.lua

@@ -37,6 +37,7 @@ local Reforge =
 		{
 			Name = "GetReforgeItemInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -51,6 +52,7 @@ local Reforge =
 		{
 			Name = "GetReforgeItemStats",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -79,6 +81,7 @@ local Reforge =
 		{
 			Name = "GetSourceReforgeStats",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -97,6 +100,7 @@ local Reforge =
 		{
 			Name = "SetReforgeFromCursorItem",
 			Type = "Function",
+			MayReturnNothing = true,
 		},
 	},
 

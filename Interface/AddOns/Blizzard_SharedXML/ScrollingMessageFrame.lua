@@ -98,6 +98,20 @@ function ScrollingMessageFrameMixin:TransformMessages(predicate, transformFuncti
 	end
 end
 
+function ScrollingMessageFrameMixin:ForEachVisibleLineText(op)
+	-- Reverse order so the lines can be logically evaluated top-down.
+	for index, visibleLine in ipairs_reverse(self.visibleLines) do
+		op(visibleLine:GetText());
+	end
+end
+
+function ScrollingMessageFrameMixin:ForEachMessageInfoText(op)
+	for index = 1, self:GetNumMessages() do
+		local messageText = self:GetMessageInfo(index);
+		op(messageText);
+	end
+end
+
 function ScrollingMessageFrameMixin:SetScrollAllowed(allowed)
 	self.allowScroll = allowed;
 end
@@ -166,6 +180,15 @@ end
 
 function ScrollingMessageFrameMixin:GetOnTextCopiedCallback()
 	return self.onTextCopiedCallback;
+end
+
+
+function ScrollingMessageFrameMixin:SetOnLineRightClickedCallback(onLineRightClickedCallback)
+	self.onLineRightClickedCallback = onLineRightClickedCallback;
+end
+
+function ScrollingMessageFrameMixin:GetOnLineRightClickedCallback()
+	return self.onLineRightClickedCallback;
 end
 
 function ScrollingMessageFrameMixin:SetScrollOffset(offset)
@@ -330,8 +353,8 @@ function ScrollingMessageFrameMixin:OnPreSizeChanged()
 	self:MarkLayoutDirty();
 end
 
-function ScrollingMessageFrameMixin:OnPostMouseDown()
-	if self:IsTextCopyable() then
+function ScrollingMessageFrameMixin:OnPostMouseDown(buttonName, inside)
+	if (buttonName == "LeftButton") and self:IsTextCopyable() then
 		self:ResetAllFadeTimes();
 		self:RefreshIfNecessary();
 		self:UpdateFading();
@@ -341,21 +364,30 @@ function ScrollingMessageFrameMixin:OnPostMouseDown()
 	end
 end
 
-function ScrollingMessageFrameMixin:OnPostMouseUp()
-	if self:IsSelectingText() then
-		local x, y = self:GetScaledCursorPosition();
-		local selectedText = self:GatherSelectedText(x, y);
+function ScrollingMessageFrameMixin:OnPostMouseUp(buttonName, inside)
+	if buttonName == "LeftButton" then
+		if self:IsSelectingText() then
+			local x, y = self:GetScaledCursorPosition();
+			local selectedText = self:GatherSelectedText(x, y);
 
-		local numCopied = nil;
-		if selectedText then
-			local REMOVE_MARKUP = true;
-			numCopied = CopyToClipboard(selectedText, REMOVE_MARKUP);
+			local numCopied = nil;
+			if selectedText then
+				local REMOVE_MARKUP = true;
+				numCopied = CopyToClipboard(selectedText, REMOVE_MARKUP);
+			end
+
+			self:ResetSelectingText();
+
+			if numCopied and selectedText and self.onTextCopiedCallback then
+				self.onTextCopiedCallback(self, selectedText, numCopied);
+			end
 		end
-
-		self:ResetSelectingText();
-
-		if numCopied and selectedText and self.onTextCopiedCallback then
-			self.onTextCopiedCallback(self, selectedText, numCopied);
+	elseif buttonName == "RightButton" then
+		if self.onLineRightClickedCallback then
+			local x, y = self:GetScaledCursorPosition();
+			local _, visibleLineIndex = self:FindCharacterAndLineIndexAtCoordinate(x, y);
+			local visibleLine = self.visibleLines[visibleLineIndex];
+			self.onLineRightClickedCallback(self, visibleLineIndex, visibleLine:GetText());
 		end
 	end
 end

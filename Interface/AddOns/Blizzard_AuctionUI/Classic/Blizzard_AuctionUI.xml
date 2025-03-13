@@ -2391,7 +2391,7 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Button name="AuctionsCreateAuctionButton" inherits="UIPanelButtonTemplate" text="CREATE_AUCTION">
+					<Button name="AuctionsCreateAuctionButton" inherits="UIPanelButtonTemplate" mixin="AuctionPostMixin" text="CREATE_AUCTION">
 						<Size>
 							<AbsDimension x="191" y="20"/>
 						</Size>
@@ -2403,7 +2403,7 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnClick function="AuctionsCreateAuctionButton_OnClick"/>
+							<OnClick method="OnClick"/>
 						</Scripts>
 					</Button>
 					<Frame name="AuctionsBlockFrame" enableMouse="true" hidden="true">
@@ -2441,14 +2441,21 @@
 					<OnEvent function="AuctionFrameAuctions_OnEvent"/>
 				</Scripts>
 			</Frame>
+			<Button parentKey="DialogOverlay" frameLevel="1000" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="0" y="-22"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad function="AuctionFrame_OnLoad"/>
 			<OnShow function="AuctionFrame_OnShow"/>
+			<OnEvent function="AuctionFrame_OnEvent"/>
 			<OnHide>
 				PlaySound(SOUNDKIT.AUCTION_WINDOW_CLOSE);
-				StaticPopup_Hide("BUYOUT_AUCTION");
-				StaticPopup_Hide("CANCEL_AUCTION");
+				CloseAuctionStaticPopups();
+				AuctionFrame_SetDialogOverlayShown(false);
 				WowTokenGameTimeTutorial:Hide();
 				CloseSideDressUpFrame(self);
 				SetAuctionsTabShowing(false);

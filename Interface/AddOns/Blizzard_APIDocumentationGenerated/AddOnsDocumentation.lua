@@ -40,6 +40,20 @@ local AddOns =
 			},
 		},
 		{
+			Name = "DoesAddOnHaveLoadError",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "uiAddon", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hadError", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "EnableAddOn",
 			Type = "Function",
 
@@ -152,6 +166,20 @@ local AddOns =
 			Returns =
 			{
 				{ Name = "disallowed", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsAddOnDefaultEnabled",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "uiAddon", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "defaultEnabled", Type = "bool", Nilable = false },
 			},
 		},
 		{

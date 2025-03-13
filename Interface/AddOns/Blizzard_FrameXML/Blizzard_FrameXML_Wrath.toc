@@ -17,10 +17,10 @@ SecureHoverDriver.lua
 Classic\SecureTemplates.xml
 SecureHandlerTemplates.xml
 SecureGroupHeaders.xml
+WardrobeOutfits.xml		   
 Classic\NavigationBar.lua
 Classic\NavigationBar.xml
 Classic\CharacterFrameTemplates.xml
-Classic\Sound.lua
 DeprecatedTemplates.lua
 DeprecatedTemplates.xml
 Classic\AlertFrames.lua

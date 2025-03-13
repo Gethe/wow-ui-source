@@ -38,6 +38,7 @@ local QuestLog =
 		{
 			Name = "GetQuestInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -52,6 +53,7 @@ local QuestLog =
 		{
 			Name = "GetQuestObjectives",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -66,6 +68,7 @@ local QuestLog =
 		{
 			Name = "GetQuestsOnMap",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -304,6 +307,7 @@ local QuestLog =
 				{ Name = "finished", Type = "bool", Nilable = false },
 				{ Name = "numFulfilled", Type = "number", Nilable = false },
 				{ Name = "numRequired", Type = "number", Nilable = false },
+				{ Name = "objectiveType", Type = "QuestObjectiveType", Nilable = true },
 			},
 		},
 	},

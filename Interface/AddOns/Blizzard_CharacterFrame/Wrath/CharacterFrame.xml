@@ -134,9 +134,9 @@
 					<AbsDimension x="109" y="12"/>
 				</Size>
 				<Anchors>
-					<Anchor point="CENTER">
+					<Anchor point="TOP">
 						<Offset>
-							<AbsDimension x="6" y="232"/>
+							<AbsDimension x="6" y="-20"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -144,7 +144,7 @@
 					<Layer>
 						<FontString name="CharacterNameText" inherits="GameFontNormal" text="NAME">
 							<Size>
-								<AbsDimension x="300" y="12"/>
+								<AbsDimension x="300" y="10"/>
 							</Size>
 							<Anchors>
 								<Anchor point="CENTER"/>

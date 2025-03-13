@@ -210,7 +210,7 @@
 	Rewards panel
 *******************************************************************************
 -->
-	<Frame name="CommunitiesGuildRewardsFrameTemplate" virtual="true">
+	<Frame name="CommunitiesGuildRewardsFrameTemplate" mixin="CommunitiesGuildRewardsFrameMixin" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Bg" file="Interface\ClassTrainerFrame\TrainerTextures">
@@ -244,9 +244,10 @@
 			</EventFrame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="CommunitiesGuildRewardsFrame_OnLoad"/>
-			<OnShow function="CommunitiesGuildRewardsFrame_OnShow"/>
-			<OnEvent function="CommunitiesGuildRewardsFrame_OnEvent"/>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
 </Ui>

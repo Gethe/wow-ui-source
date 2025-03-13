@@ -84,6 +84,7 @@ local ClubFinder =
 		{
 			Name = "GetClubTypeFromFinderGUID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -325,6 +326,7 @@ local ClubFinder =
 		{
 			Name = "PlayerGetClubInvitationList",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{

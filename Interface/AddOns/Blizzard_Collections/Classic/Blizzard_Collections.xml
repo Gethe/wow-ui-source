@@ -4,7 +4,7 @@
 		<Scripts>
 			<OnClick>
 				CollectionsJournal_SetTab(self:GetParent(), self:GetID());
-				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
+				PlaySound(SOUNDKIT.UI_TOYBOX_TABS);
 			</OnClick>
 		</Scripts>
 	</Button>
@@ -35,12 +35,17 @@
 					<Anchor point="LEFT" relativeTo="$parentTab3" relativePoint="RIGHT" x="-16" y="0"/>
 				</Anchors>
 			</Button>
+			<Button name="$parentTab5" inherits="CollectionsJournalTab" text="WARDROBE" id="5">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentTab4" relativePoint="RIGHT" x="-16" y="0"/>
+				</Anchors>
+			</Button>
 		</Frames>
 
 		<Scripts>
 			<OnLoad>
 				self:SetTitle(COLLECTIONS);
-				PanelTemplates_SetNumTabs(self, 4);
+				PanelTemplates_SetNumTabs(self, 5);
 
 				SetPortraitToTexture(self.portrait, "Interface\\CHARACTERFRAME\\TempPortrait");
 				PanelTemplates_SetTab(self, tonumber(GetCVar("petJournalTab")) or 1);

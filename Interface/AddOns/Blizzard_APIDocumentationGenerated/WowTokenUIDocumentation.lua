@@ -6,6 +6,15 @@ local WowTokenUI =
 
 	Functions =
 	{
+		{
+			Name = "StartTokenSell",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "tokenGUID", Type = "WOWGUID", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -94,6 +103,11 @@ local WowTokenUI =
 			Name = "TokenSellConfirmRequired",
 			Type = "Event",
 			LiteralName = "TOKEN_SELL_CONFIRM_REQUIRED",
+		},
+		{
+			Name = "TokenSellConfirmed",
+			Type = "Event",
+			LiteralName = "TOKEN_SELL_CONFIRMED",
 		},
 		{
 			Name = "TokenSellResult",

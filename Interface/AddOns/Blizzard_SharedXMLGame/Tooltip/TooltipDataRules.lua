@@ -208,7 +208,5 @@ function TooltipDataRules.WorldLootObjectPickUpIndicator(tooltip, tooltipData)
 	end
 
 	EventRegistry:TriggerEvent("WorldLootObjectTooltip.Shown", inventoryType, tooltip, tooltipData.id, tooltipData.worldLootObjectGUID); 
-
-	-- TODO:: Anchor the spell pickup indicator to the tooltip here.
 end
 TooltipDataProcessor.AddTooltipPostCall(TooltipTypeEnums.Spell, TooltipDataRules.WorldLootObjectPickUpIndicator);

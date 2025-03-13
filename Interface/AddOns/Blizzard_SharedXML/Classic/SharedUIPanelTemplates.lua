@@ -1351,6 +1351,10 @@ function PanelDragBarMixin:OnDragStart()
 		continueDragStart = target.onDragStartCallback(self);
 	end
 
+	if self.onDragStartCallback then
+		continueDragStart = self.onDragStartCallback(self);
+	end
+
 	if continueDragStart then
 		target:StartMoving();
 	end
@@ -1368,6 +1372,10 @@ function PanelDragBarMixin:OnDragStop()
 		continueDragStop = target.onDragStopCallback(self);
 	end
 
+	if self.onDragStopCallback then
+		continueDragStop = self.onDragStopCallback(self);
+	end
+
 	if continueDragStop then
 		target:StopMovingOrSizing();
 	end
@@ -1375,6 +1383,14 @@ function PanelDragBarMixin:OnDragStop()
 	if SetCursor then
 		SetCursor(nil);
 	end
+end
+
+function PanelDragBarMixin:SetOnDragStartCallback(onDragStartCallback)
+	self.onDragStartCallback = onDragStartCallback;
+end
+
+function PanelDragBarMixin:SetOnDragStopCallback(onDragStopCallback)
+	self.onDragStopCallback = onDragStopCallback;
 end
 
 NumericInputBoxMixin = {};
@@ -1446,16 +1462,26 @@ function PanelResizeButtonMixin:Init(target, minWidth, minHeight, maxWidth, maxH
 	target:SetScript("OnSizeChanged", function(target, width, height)
 		originalTargetOnSizeChanged(target, width, height);
 
+		local newWidth = width;
 		if width < self.minWidth then
-			target:SetWidth(self.minWidth);
+			newWidth = self.minWidth;
+			target:SetWidth(newWidth);
 		elseif self.maxWidth and width > self.maxWidth then
-			target:SetWidth(self.maxWidth);
+			newWidth = self.maxWidth;
+			target:SetWidth(newWidth);
 		end
 
+		local newHeight = height;
 		if height < self.minHeight then
-			target:SetHeight(self.minHeight);
+			newHeight = self.minHeight;
+			target:SetHeight(newHeight);
 		elseif self.maxHeight and height > self.maxHeight then
-			target:SetHeight(self.maxHeight);
+			newHeight = self.maxHeight;
+			target:SetHeight(newHeight);
+		end
+
+		if self.resizeCallback then
+			self.resizeCallback(self, newWidth, newHeight, self.isActive);
 		end
 	end);
 
@@ -1545,6 +1571,10 @@ end
 
 function PanelResizeButtonMixin:SetOnResizeStoppedCallback(resizeStoppedCallback)
 	self.resizeStoppedCallback = resizeStoppedCallback;
+end
+
+function PanelResizeButtonMixin:SetOnResizeCallback(resizeCallback)
+	self.resizeCallback = resizeCallback;
 end
 
 IconSelectorPopupFrameTemplateMixin = {};
@@ -2072,6 +2102,62 @@ function SearchBoxListMixin:OnFocusGained()
 	self:SetSearchPreviewSelection(1);
 end
 
+LevelRangeFrameMixin = {};
+
+function LevelRangeFrameMixin:OnLoad()
+	self.MinLevel.nextEditBox = self.MaxLevel;
+	self.MaxLevel.nextEditBox = self.MinLevel;
+
+	local function OnTextChanged(...)
+		self:OnLevelRangeChanged();
+	end
+	self.MinLevel:SetScript("OnTextChanged", OnTextChanged);
+	self.MaxLevel:SetScript("OnTextChanged", OnTextChanged);
+end
+
+function LevelRangeFrameMixin:OnHide()
+	self:FixLevelRange();
+end
+
+function LevelRangeFrameMixin:SetLevelRangeChangedCallback(levelRangeChangedCallback)
+	self.levelRangeChangedCallback = levelRangeChangedCallback;
+end
+
+function LevelRangeFrameMixin:OnLevelRangeChanged()
+	if self.levelRangeChangedCallback then
+		local minLevel, maxLevel = self:GetLevelRange();
+		self.levelRangeChangedCallback(minLevel, maxLevel);
+	end
+end
+
+function LevelRangeFrameMixin:FixLevelRange()
+	local maxLevel = self.MaxLevel:GetNumber();
+	if maxLevel == 0 then
+		return;
+	end
+
+	local minLevel = self.MinLevel:GetNumber();
+	if minLevel > maxLevel then
+		self:SetMinLevel(maxLevel);
+	end
+end
+
+function LevelRangeFrameMixin:SetMinLevel(minLevel)
+	self.MinLevel:SetNumber(minLevel);
+end
+
+function LevelRangeFrameMixin:SetMaxLevel(maxLevel)
+	self.MaxLevel:SetNumber(maxLevel);
+end
+
+function LevelRangeFrameMixin:Reset()
+	self.MinLevel:SetText("");
+	self.MaxLevel:SetText("");
+end
+
+function LevelRangeFrameMixin:GetLevelRange()
+	return self.MinLevel:GetNumber(), self.MaxLevel:GetNumber();
+end
 
 -- Allows inheriting buttons to override OnLoad and OnShow
 ButtonControllerMixin = {};

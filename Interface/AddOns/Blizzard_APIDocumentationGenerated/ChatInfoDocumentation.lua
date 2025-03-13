@@ -23,6 +23,7 @@ local ChatInfo =
 		{
 			Name = "GetChannelInfoFromIdentifier",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -37,6 +38,7 @@ local ChatInfo =
 		{
 			Name = "GetChannelRosterInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -2269,9 +2271,9 @@ local ChatInfo =
 		{
 			Name = "SendAddonMessageResult",
 			Type = "Enumeration",
-			NumValues = 10,
+			NumValues = 11,
 			MinValue = 0,
-			MaxValue = 9,
+			MaxValue = 10,
 			Fields =
 			{
 				{ Name = "Success", Type = "SendAddonMessageResult", EnumValue = 0 },
@@ -2284,6 +2286,7 @@ local ChatInfo =
 				{ Name = "InvalidChannel", Type = "SendAddonMessageResult", EnumValue = 7 },
 				{ Name = "ChannelThrottle", Type = "SendAddonMessageResult", EnumValue = 8 },
 				{ Name = "GeneralError", Type = "SendAddonMessageResult", EnumValue = 9 },
+				{ Name = "NotInGuild", Type = "SendAddonMessageResult", EnumValue = 10 },
 			},
 		},
 		{

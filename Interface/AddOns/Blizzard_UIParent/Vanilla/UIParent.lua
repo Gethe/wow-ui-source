@@ -130,6 +130,8 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("AUCTION_HOUSE_SHOW");
 	self:RegisterEvent("AUCTION_HOUSE_CLOSED");
 	self:RegisterEvent("AUCTION_HOUSE_DISABLED");
+	self:RegisterEvent("AUCTION_HOUSE_SHOW_FORMATTED_NOTIFICATION");
+	self:RegisterEvent("AUCTION_HOUSE_SHOW_NOTIFICATION")
 
 	-- Events for trade skill UI handling
 	self:RegisterEvent("TRADE_SKILL_SHOW");
@@ -228,7 +230,11 @@ function UIParentLoadAddOn(name)
 end
 
 function AuctionFrame_LoadUI()
-	UIParentLoadAddOn("Blizzard_AuctionUI");
+	if( IsUsingLegacyAuctionClient() ) then
+		UIParentLoadAddOn("Blizzard_AuctionUI");
+	else
+		UIParentLoadAddOn("Blizzard_AuctionHouseUI");
+	end
 end
 
 function BattlefieldMap_LoadUI()
@@ -980,6 +986,9 @@ function UIParent_OnEvent(self, event, ...)
 		end
 	elseif ( event == "AUCTION_HOUSE_DISABLED" ) then
 		StaticPopup_Show("AUCTION_HOUSE_DISABLED");
+	elseif ( event == "AUCTION_HOUSE_SHOW_NOTIFICATION" or event == "AUCTION_HOUSE_SHOW_FORMATTED_NOTIFICATION" ) then
+		local auctionHouseNotification, formatArg = ...;
+		Chat_AddSystemMessage(ChatFrameUtil.GetAuctionHouseNotificationText(auctionHouseNotification, formatArg));
 
 	-- Events for trade skill UI handling
 	elseif ( event == "TRADE_SKILL_SHOW" ) then
@@ -2168,7 +2177,8 @@ function AnimatedShine_OnUpdate(elapsed)
 end
 
 function ConsolePrint(...)
-	ConsoleAddMessage(string.join(" ", tostringall(...)));
+	local printMsg = string.join(" ", tostringall(...));
+	C_Log.LogMessage(Enum.LogPriority.Normal, printMsg);
 end
 
 function LFD_IsEmpowered()
@@ -2409,17 +2419,7 @@ NUMBER_ABBREVIATION_DATA = {
 	{ breakpoint = 1000000,		abbreviation = SECOND_NUMBER_CAP_NO_SPACE,	significandDivisor = 100000,		fractionDivisor = 10 },
 	{ breakpoint = 10000,		abbreviation = FIRST_NUMBER_CAP_NO_SPACE,	significandDivisor = 1000,		fractionDivisor = 1 },
 	{ breakpoint = 1000,		abbreviation = FIRST_NUMBER_CAP_NO_SPACE,	significandDivisor = 100,		fractionDivisor = 10 },
-}
-
-function AbbreviateNumbers(value)
-	for i, data in ipairs(NUMBER_ABBREVIATION_DATA) do
-		if value >= data.breakpoint then
-			local finalValue = math.floor(value / data.significandDivisor) / data.fractionDivisor;
-			return finalValue .. data.abbreviation;
-		end
-	end
-	return tostring(value);
-end
+};
 
 function IsInLFDBattlefield()
 	return false;

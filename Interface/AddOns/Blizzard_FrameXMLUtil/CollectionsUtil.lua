@@ -477,14 +477,26 @@ function CollectionWardrobeUtil.GetSlotVisibilityWarning(model, transmogLocation
 	return nil;
 end
 
-function CollectionWardrobeUtil.GetAppearanceVisibilityWarning(appearanceID)
-	if not C_TransmogCollection.CanAppearanceBeDisplayedOnPlayer(appearanceID) then
+function CollectionWardrobeUtil.AreAllSourcesDisplayableOnPlayer(sources)
+	if sources then
+		for _index, sourceInfo in ipairs(sources) do
+			if not sourceInfo.canDisplayOnPlayer then
+				return false;
+			end
+		end
+	end
+
+	return true;
+end
+
+function CollectionWardrobeUtil.GetAppearanceVisibilityWarning(sources)
+	if not CollectionWardrobeUtil.AreAllSourcesDisplayableOnPlayer(sources) then
 		return TRANSMOG_SLOT_APPEARANCE_INVISIBLE;
 	end
 
 	return nil;
 end
 
-function CollectionWardrobeUtil.GetBestVisibilityWarning(model, transmogLocation, appearanceID)
-	return CollectionWardrobeUtil.GetAppearanceVisibilityWarning(appearanceID) or CollectionWardrobeUtil.GetSlotVisibilityWarning(model, transmogLocation);
+function CollectionWardrobeUtil.GetBestVisibilityWarning(model, transmogLocation, sources)
+	return CollectionWardrobeUtil.GetAppearanceVisibilityWarning(sources) or CollectionWardrobeUtil.GetSlotVisibilityWarning(model, transmogLocation);
 end

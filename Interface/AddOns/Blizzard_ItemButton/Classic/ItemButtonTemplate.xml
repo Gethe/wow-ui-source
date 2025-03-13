@@ -1,81 +1,6 @@
  <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
 
-	 <Button name="ItemButton" registerForClicks="LeftButtonUp, RightButtonUp" mixin="ItemButtonMixin" intrinsic="true">
-		<KeyValues>
-			<!-- Show system-specific highlight when this item button matches the current context. -->
-			<KeyValue key="showMatchHighlight" value="true" type="boolean"/>
-
-			<!--
-			Set a function to use to get item context match results. This will automatically enable item context highlighting.
-			Should take self as the only parameter and return an ItemButtonUtil.ItemContextMatchResult.
-			<KeyValue key="GetItemContextMatchResult" value="BagButton_GetItemContextMatchResult" type="global"/>
-			-->
-		</KeyValues>
-		<Size x="37" y="37"/>
-		<Layers>
-			<Layer level="BORDER">
-				<Texture name="$parentIconTexture" parentKey="icon"/>
-			</Layer>
-			<Layer level="ARTWORK">
-				<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT" hidden="true" parentKey="Count">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="-5" y="2"/>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentStock" parentKey="Stock" inherits="NumberFontNormalYellow" justifyH="LEFT" hidden="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="-2"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="4">
-				<Texture name="$parentSearchOverlay" parentKey="searchOverlay" setAllPoints="true" hidden="true">
-					<Color r="0" g="0" b="0" a="0.8"/>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="5">
-				<Texture parentKey="ItemContextOverlay" setAllPoints="true" hidden="true"/>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
-					<Size x="37" y="37"/>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="1">
-				<Texture parentKey="IconOverlay" hidden="true">
-					<Size x="37" y="37"/>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="2">
-				<Texture parentKey="IconOverlay2" hidden="true">
-					<Size x="37" y="37"/>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnShow method="PostOnShow" intrinsicOrder="postcall"/>
-			<OnHide method="PostOnHide" intrinsicOrder="postcall"/>
-			<OnEvent method="PostOnEvent" intrinsicOrder="postcall"/>
-		</Scripts>
-		<NormalTexture name="$parentNormalTexture" parentKey="NormalTexture" file="Interface\Buttons\UI-Quickslot2">
-			<Size x="64" y="64"/>
-			<Anchors>
-				<Anchor point="CENTER" x="0" y="-1"/>
-			</Anchors>
-		</NormalTexture>
-		<PushedTexture parentKey="PushedTexture" file="Interface\Buttons\UI-Quickslot-Depress"/>
-		<HighlightTexture parentKey="HighlightTexture" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
-	</Button>
  	<Button name="ItemButtonTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true">
 		<Size>
 			<AbsDimension x="37" y="37"/>
@@ -264,4 +189,65 @@
 			</Layer>
 		</Layers>
 	</Button>
- </Ui>
+
+	 <Button name="GiantItemButtonTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true">
+		 <Size x="54" y="54"/>
+		 <Layers>
+			 <Layer level="BACKGROUND">
+				 <Texture parentKey="EmptyBackground" atlas="auctionhouse-itemicon-empty"/>
+			 </Layer>
+			 <Layer level="BORDER">
+				 <Texture parentKey="Icon">
+					 <Size x="50" y="50"/>
+					 <Anchors>
+						 <Anchor point="TOPLEFT" x="2" y="-2"/>
+					 </Anchors>
+					 <TexCoords left="0" right="1" top="0" bottom="1"/>
+				 </Texture>
+			 </Layer>
+			 <Layer level="OVERLAY">
+				 <Texture parentKey="IconBorder" atlas="auctionhouse-itemicon-border-white" hidden="true">
+					 <Anchors>
+						 <Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT"/>
+						 <Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT"/>
+					 </Anchors>
+				 </Texture>
+			 </Layer>
+			 <Layer level="OVERLAY" textureSubLevel="1">
+				 <Texture parentKey="IconOverlay" hidden="true">
+					 <Anchors>
+						 <Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT"/>
+						 <Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT"/>
+					 </Anchors>
+				 </Texture>
+			 </Layer>
+			 <Layer level="OVERLAY" textureSubLevel="2">
+				 <Texture parentKey="IconOverlay2" hidden="true">
+					 <Anchors>
+						 <Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT"/>
+						 <Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT"/>
+					 </Anchors>
+				 </Texture>
+			 </Layer>
+			 <Layer level="OVERLAY">
+				 <FontString parentKey="Count" inherits="NumberFontNormal" justifyH="RIGHT" hidden="true">
+					 <Anchors>
+						 <Anchor point="BOTTOMRIGHT" x="-5" y="2"/>
+					 </Anchors>
+				 </FontString>
+			 </Layer>
+		 </Layers>
+		 <PushedTexture file="Interface\Buttons\UI-Quickslot-Depress">
+			 <Anchors>
+				 <Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT"/>
+				 <Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT"/>
+			 </Anchors>
+		 </PushedTexture>
+		 <HighlightTexture parentKey="Highlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD">
+			 <Anchors>
+				 <Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT"/>
+				 <Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT"/>
+			 </Anchors>
+		 </HighlightTexture>
+	 </Button>
+	 </Ui>

@@ -24,7 +24,6 @@ function TalentEdgeBaseMixin:UpdateState()
 end
 
 
--- TODO:: Replace the art for this to be a generic edge template.
 TalentEdgeStraightMixin = {};
 
 local ActiveEdgeFrameLevel = 100;

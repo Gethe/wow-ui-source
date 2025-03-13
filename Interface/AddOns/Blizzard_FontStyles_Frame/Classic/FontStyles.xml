@@ -128,6 +128,97 @@
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
 
+	<Font name="GameFontNormalSmallBattleNetBlueLeft" inherits="GameFontNormalSmall" justifyH="LEFT" virtual="true" >
+		<Color r="0.510" g="0.773" b="1.0"/>
+	</Font>
+
+	<Font name="Number13FontWhite" inherits="Number13Font" virtual="true" >
+		<Color r="1.0" g="1.0" b="1.0"/>
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+	</Font>
+
+	<Font name="Number13FontYellow" inherits="Number13Font" virtual="true" >
+		<Color r="1.0" g="0.82" b="0"/>
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+	</Font>
+
+	<Font name="Number13FontGray" inherits="Number13Font" virtual="true" >
+		<Color r="0.5" g="0.5" b="0.5"/>
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+	</Font>
+
+	<Font name="PriceFontWhite" inherits="PriceFont" virtual="true" >
+		<Color r="1.0" g="1.0" b="1.0"/>
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+	</Font>
+
+	<Font name="PriceFontGray" inherits="PriceFont" virtual="true" >
+		<Color r="0.5" g="0.5" b="0.5"/>
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+	</Font>
+
+	<Font name="PriceFontRed" inherits="PriceFont" virtual="true" >
+		<Color r="1.0" g="0.1" b="0.1"/>
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+	</Font>
+
+	<Font name="PriceFontGreen" inherits="PriceFont" virtual="true" >
+		<Color r="0.1" g="1" b="0.1"/>
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+	</Font>
+	
+	<Font name="Number14FontGray" inherits="NumberFont_Normal_Med" virtual="true" >
+		<Color r="0.5" g="0.5" b="0.5"/>
+		<Shadow x="1" y="-1">
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+	</Font>
+
+	<Font name="Number15FontWhite" inherits="Number15Font" virtual="true" >
+		<Color r="1.0" g="1.0" b="1.0"/>
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+	</Font>
+
 	<Font name="QuestTitleFont" inherits="QuestFont_Shadow_Huge" virtual="true">
 		<Color r="0" g="0" b="0"/>
 	</Font>

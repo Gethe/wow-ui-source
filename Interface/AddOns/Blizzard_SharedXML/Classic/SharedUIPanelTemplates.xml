@@ -531,8 +531,8 @@
 						</Texture>
 						<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.portrait" x="2" y="0"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.portrait" x="-2" y="4"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.portrait" x="2" y="-2"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.portrait" x="-5" y="4"/>
 							</Anchors>
 							<MaskedTextures>
 								<MaskedTexture childKey="portrait"/>
@@ -795,67 +795,19 @@
 	This is the inner frame used by ButtonFrameTemplate
 *******************************************************************************
 -->
+
 	<Frame name="InsetFrameTemplate" useParentLevel="true" virtual="true">
-		<Size x="64" y="64"/>
+		<KeyValues>
+			<KeyValue key="layoutType" value="InsetFrameTemplate" type="string"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-5">
-				<Texture name="$parentBg" file="Interface\FrameGeneral\UI-Background-Marble" horizTile="true" vertTile="true" parentKey="Bg">
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-						<Anchor point="BOTTOMRIGHT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="BORDER" textureSubLevel="-5">
-				<Texture name="$parentInsetTopLeftCorner" inherits="UI-Frame-InnerTopLeft" parentKey="InsetBorderTopLeft">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Bg"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentInsetTopRightCorner" inherits="UI-Frame-InnerTopRight" parentKey="InsetBorderTopRight">
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.Bg"/>
-					</Anchors>
-				</Texture>
-
-				<Texture name="$parentInsetBotLeftCorner" inherits="UI-Frame-InnerBotLeftCorner" parentKey="InsetBorderBottomLeft">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Bg" y="-1"/>
-					</Anchors>
-				</Texture>
-
-				<Texture name="$parentInsetBotRightCorner" inherits="UI-Frame-InnerBotRight" parentKey="InsetBorderBottomRight">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Bg" y="-1"/>
-					</Anchors>
-				</Texture>
-
-				<Texture name="$parentInsetTopBorder" inherits="_UI-Frame-InnerTopTile" parentKey="InsetBorderTop">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.InsetBorderTopLeft" relativePoint="TOPRIGHT"/>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.InsetBorderTopRight" relativePoint="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentInsetBottomBorder" inherits="_UI-Frame-InnerBotTile" parentKey="InsetBorderBottom">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.InsetBorderBottomLeft" relativePoint="BOTTOMRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.InsetBorderBottomRight" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentInsetLeftBorder" inherits="!UI-Frame-InnerLeftTile" parentKey="InsetBorderLeft">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.InsetBorderTopLeft" relativePoint="BOTTOMLEFT" x="0" y="0" />
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.InsetBorderBottomLeft" relativePoint="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentInsetRightBorder" inherits="!UI-Frame-InnerRightTile" parentKey="InsetBorderRight">
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.InsetBorderTopRight" relativePoint="BOTTOMRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.InsetBorderBottomRight" relativePoint="TOPRIGHT"/>
-					</Anchors>
-				</Texture>
+				<Texture parentKey="Bg" name="$parentBg" file="Interface\FrameGeneral\UI-Background-Marble" horizTile="true" vertTile="true" setAllPoints="true"/>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Frame parentKey="NineSlice" useParentLevel="true" inherits="NineSlicePanelTemplate"/>
+		</Frames>
 	</Frame>
 
 <!--
@@ -1813,6 +1765,48 @@
 			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</Frame>
+	
+	<Button name="ColumnDisplayButtonShortTemplate" virtual="true">
+		<Size x="10" y="19"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Left" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size x="5" y="19"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.078125" top="0" bottom="0.59375"/>
+				</Texture>
+				<Texture parentKey="Right" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size x="4" y="19"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.90625" right="0.96875" top="0" bottom="0.59375"/>
+				</Texture>
+				<Texture parentKey="Middle" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size x="0" y="19"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT"/>
+					</Anchors>
+					<TexCoords left="0.078125" right="0.90625" top="0" bottom="0.59375"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<ButtonText parentKey="Text">
+			<Anchors>
+				<Anchor point="LEFT" x="8" y="0"/>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GameFontHighlightSmall"/>
+		<HighlightTexture file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="TOPLEFT" x="0" y="0"/>
+				<Anchor point="BOTTOMRIGHT" x="4" y="-2"/>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
 
 	<Button name="ColumnDisplayButtonTemplate" virtual="true">
 		<Size x="10" y="24"/>
@@ -1986,7 +1980,9 @@
 			</Scripts>
 		</Button>
 
-		<Button name="IconButtonTemplate" mixin="IconButtonMixin" inherits="UIButtonTemplate" virtual="true">
+	<Button name="BigRedExitButtonTemplate" inherits="UIPanelCloseButtonNoScripts" virtual="true"/>
+
+	<Button name="IconButtonTemplate" mixin="IconButtonMixin" inherits="UIButtonTemplate" virtual="true">
 		<!--
 		icon: texture file to be displayed on the button.
 		iconSize: size for square icons. iconSize/{iconWidth iconHeight}/useAtlasSize are exclusive.
@@ -2065,7 +2061,7 @@
 
 	<Button name="RefreshButtonTemplate" inherits="SquareIconButtonTemplate" virtual="true">
 		<KeyValues>
-			<KeyValue key="iconAtlas" value="UI-RefreshButton" type="string"/>
+			<KeyValue key="icon" value="Interface\Buttons\UI-RefreshButton" type="string"/>
 		</KeyValues>
 	</Button>
 
@@ -2588,6 +2584,39 @@
 		</Scripts>
 	</Button>
 
+	<EditBox name="LevelRangeEditBoxTemplate" inherits="InputBoxTemplate" letters="3" numeric="true" autoFocus="false" virtual="true">
+		<Size x="28" y="16"/>
+	</EditBox>
+
+	<Frame name="LevelRangeFrameTemplate" mixin="LevelRangeFrameMixin" virtual="true">
+		<Size x="80" y="22"/>
+		<Frames>
+			<EditBox parentKey="MinLevel" inherits="LevelRangeEditBoxTemplate">
+				<Anchors>
+					<Anchor point="LEFT" x="8" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Dash" inherits="GameFontHighlightSmall" text="-">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent" relativePoint="RIGHT" x="0" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</EditBox>
+			<EditBox parentKey="MaxLevel" inherits="LevelRangeEditBoxTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.MinLevel" relativePoint="RIGHT" x="10" y="0"/>
+				</Anchors>
+			</EditBox>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+	
 	<Frame name="BottomPopupScrollBoxTemplate" frameStrata="DIALOG" virtual="true">
 		<Size x="600" y="400"/>
 		<Anchors>

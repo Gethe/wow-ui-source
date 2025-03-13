@@ -241,7 +241,6 @@ function CommunitiesChatMixin:DisplayChat()
 	local streamViewMarker = C_Club.GetStreamViewMarker(clubId, streamId);
 	for index, message in ipairs(messages) do
 		if streamViewMarker and message.messageId.epoch > streamViewMarker then
-			-- TODO:: We also need to add this while backfilling messages.
 			self:AddUnreadNotification();
 			streamViewMarker = nil;
 		end

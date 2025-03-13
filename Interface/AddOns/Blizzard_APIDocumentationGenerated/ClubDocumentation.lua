@@ -405,6 +405,7 @@ local Club =
 		{
 			Name = "GetInfoFromLastCommunityChatLine",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -476,6 +477,7 @@ local Club =
 		{
 			Name = "GetLastTicketResponse",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

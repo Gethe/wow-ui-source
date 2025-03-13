@@ -1,12 +1,5 @@
 function AccountReactivate_ReactivateNow()
-	local info = C_StoreSecure.GetProductGroupInfo(WOW_GAME_TIME_CATEGORY_ID);
-	if info then
-		StoreFrame_SelectGameTimeProduct();
-		ToggleStoreUI();
-	else
-		PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
-		LoadURLIndex(22);
-	end
+	StoreInterfaceUtil.OpenToSubscriptionProduct();
 end
 
 function AccountReactivate_Cancel()
@@ -32,7 +25,6 @@ function AccountReactivate_CloseDialogs(preserveSubscription)
 end
 
 function ReactivateAccountDialog_OnLoad(self)
-	self:SetHeight( 60 + self.Description:GetHeight() + 64 );
 	self:RegisterEvent("TOKEN_BUY_CONFIRM_REQUIRED");
 	self:RegisterEvent("TOKEN_REDEEM_CONFIRM_REQUIRED");
 	self:RegisterEvent("TOKEN_STATUS_CHANGED");
@@ -208,7 +200,7 @@ end
 
 function ReactivateAccountDialog_Open()
 	local self = ReactivateAccountDialog;
-	if (not ReactivateAccountDialog_CanOpen()) then
+	if (not ReactivateAccountDialog_CanOpen() or CAN_BUY_RESULT_FOUND == LE_TOKEN_RESULT_ERROR_NOT_ENOUGH_PURCHASED_GAME_TIME) then
 		self:Hide();
 		return;
 	end
@@ -235,7 +227,16 @@ function ReactivateAccountDialog_Open()
 	else
 		self:Hide();
 	end
+	self:SetHeight( 60 + self.Description:GetHeight() + 70 );
 	CharacterSelect_UpdateButtonState();
+end
+
+local function SafeGetTokenMarketPrice()
+	local enabled = C_WowTokenPublic.GetCommerceSystemStatus();
+	if enabled then
+		local marketPrice = C_WowTokenPublic.GetCurrentMarketPrice();
+		return enabled, marketPrice;
+	end
 end
 
 function SubscriptionRequestDialog_Open()
@@ -244,7 +245,7 @@ function SubscriptionRequestDialog_Open()
 	end
 	AccountReactivate_CloseDialogs(true);
 	local self = SubscriptionRequestDialog;
-	local enabled = C_WowTokenPublic.GetCommerceSystemStatus();
+	local enabled, marketPrice = SafeGetTokenMarketPrice();
 
 	if (C_WowTokenGlue.GetTokenCount() > 0 and enabled) then
 		self.redeem = true;
@@ -252,30 +253,30 @@ function SubscriptionRequestDialog_Open()
 		self.ButtonDivider:Show();
 		self.Reactivate:Show();
 		self.Reactivate:Enable();
-		self:SetHeight(self.Text:GetHeight() + 16 + self.ButtonDivider:GetHeight() + self.Accept:GetHeight() + 40 + self.Reactivate:GetHeight());
-	elseif (C_WowTokenGlue.CanVeteranBuy() and C_WowTokenPublic.GetCurrentMarketPrice() and enabled) then
+		self:SetHeight(self.Text:GetHeight() + 16 + self.ButtonDivider:GetHeight() + self.Accept:GetHeight() + 50 + self.Reactivate:GetHeight());
+	elseif (C_WowTokenGlue.CanVeteranBuy() and marketPrice and enabled) then
 		self.redeem = false;
-		self.Reactivate:SetText(ACCOUNT_REACTIVATE_ACCEPT:format(GetMoneyString(C_WowTokenPublic.GetCurrentMarketPrice(), true)));
+		self.Reactivate:SetText(ACCOUNT_REACTIVATE_ACCEPT:format(GetMoneyString(marketPrice, true)));
 		self.ButtonDivider:Show();
 		self.Reactivate:Show();
-		self.Reactivate:SetEnabled(C_WowTokenPublic.GetCurrentMarketPrice() > 0);
-		self:SetHeight(self.Text:GetHeight() + 16 + self.ButtonDivider:GetHeight() + self.Accept:GetHeight() + 40 + self.Reactivate:GetHeight());
-	elseif (CAN_BUY_RESULT_FOUND == LE_TOKEN_RESULT_SUCCESS_NO and enabled) then
-		self.Reactivate.tooltip = ERR_NOT_ENOUGH_GOLD;
-		self.Reactivate:SetText(ACCOUNT_REACTIVATE_ACCEPT:format(GetMoneyString(C_WowTokenPublic.GetCurrentMarketPrice(), true)));
+		self.Reactivate:SetEnabled(marketPrice > 0);
+		self:SetHeight(self.Text:GetHeight() + 16 + self.ButtonDivider:GetHeight() + self.Accept:GetHeight() + 50 + self.Reactivate:GetHeight());
+	elseif (CAN_BUY_RESULT_FOUND == LE_TOKEN_RESULT_SUCCESS_NO and enabled and marketPrice) then
+		self.Reactivate.tooltip = ACCOUNT_REACTIVATE_ERR_NOT_ENOUGH_GOLD_TOOLTIP;
+		self.Reactivate:SetText(ACCOUNT_REACTIVATE_ACCEPT:format(GetMoneyString(marketPrice, true)));
 		self.ButtonDivider:Show();
 		self.Reactivate:Show();
 		self.Reactivate:Disable();
-		self:SetHeight(self.Text:GetHeight() + 16 + self.ButtonDivider:GetHeight() + self.Accept:GetHeight() + 40 + self.Reactivate:GetHeight());
+		self:SetHeight(self.Text:GetHeight() + 16 + self.ButtonDivider:GetHeight() + self.Accept:GetHeight() + 50 + self.Reactivate:GetHeight());
 	else
 		self.ButtonDivider:Hide();
 		self.Reactivate:Hide();
-		self:SetHeight(self.Text:GetHeight() + 16 + self.Accept:GetHeight() + 40);
+		self:SetHeight(self.Text:GetHeight() + 16 + self.Accept:GetHeight() + 50);
 	end
 
 
 	self:Show();
-	if (not C_WowTokenPublic.GetCurrentMarketPrice()) then
+	if (not marketPrice) then
 		ReactivateAccount_UpdateMarketPrice();
 	end
 	CharacterSelect_UpdateButtonState();

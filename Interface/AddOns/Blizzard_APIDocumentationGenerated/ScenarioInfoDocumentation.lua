@@ -9,6 +9,7 @@ local ScenarioInfo =
 		{
 			Name = "GetCriteriaInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -23,6 +24,7 @@ local ScenarioInfo =
 		{
 			Name = "GetCriteriaInfoByStep",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -52,6 +54,7 @@ local ScenarioInfo =
 		{
 			Name = "GetScenarioInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -61,6 +64,7 @@ local ScenarioInfo =
 		{
 			Name = "GetScenarioStepInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

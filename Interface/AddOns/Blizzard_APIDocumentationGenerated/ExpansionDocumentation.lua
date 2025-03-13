@@ -59,6 +59,7 @@ local Expansion =
 		{
 			Name = "GetExpansionForLevel",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

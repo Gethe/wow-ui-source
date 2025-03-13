@@ -21,7 +21,6 @@ WardrobeOutfits.xml
 Classic\NavigationBar.lua
 Classic\NavigationBar.xml
 Cata\CharacterFrameTemplates.xml
-Classic\Sound.lua
 DeprecatedTemplates.lua
 DeprecatedTemplates.xml
 Classic\AlertFrames.lua

@@ -1,0 +1,14 @@
+## Title: Blizzard Customization UI
+## Author: Blizzard Entertainment
+## AllowLoad: Both
+## LoadOnDemand: 1
+
+Blizzard_CustomizationUtil.lua
+Blizzard_CustomizationTemplates.lua
+Blizzard_CustomizationTemplates.xml
+Blizzard_CustomizationOptionTemplates.lua
+Blizzard_CustomizationOptionTemplates.xml
+Blizzard_CustomizationAudioInterface.lua
+Blizzard_CustomizationAudioInterface.xml
+Blizzard_CustomizationUI.lua
+Blizzard_CustomizationUI.xml
