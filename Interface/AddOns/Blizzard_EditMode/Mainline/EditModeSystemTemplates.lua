@@ -2478,7 +2478,7 @@ function EditModeArchaeologyBarSystemMixin:UpdateSystemSetting(setting, entireSy
 	self:ClearDirtySetting(setting);
 end
 
-EditModeCooldownViewerSystemMixin = {};
+EditModeCooldownViewerSystemMixin = CreateFromMixins(EditModeSystemMixin);
 
 function EditModeCooldownViewerSystemMixin:OnEditModeExit()
 	EditModeSystemMixin.OnEditModeExit(self);

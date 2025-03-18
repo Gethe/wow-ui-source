@@ -494,9 +494,9 @@ function PlayerTalentFrame_OnHide()
 		end
 	end
 	
-	if (unsavedChanges and TalentMicroButtonAlertText and TalentMicroButtonAlert) then
-		TalentMicroButtonAlertText:SetText(TALENT_MICRO_BUTTON_UNSAVED_CHANGES);
-		TalentMicroButtonAlert:SetHeight(TalentMicroButtonAlertText:GetHeight()+42);
+	if (unsavedChanges) then
+		TalentMicroButtonAlert.Text:SetText(TALENT_MICRO_BUTTON_UNSAVED_CHANGES);
+		TalentMicroButtonAlert:SetHeight(TalentMicroButtonAlert.Text:GetHeight() + 42);
 		TalentMicroButtonAlert:Show();
 	end	
 end
@@ -1567,7 +1567,7 @@ function PlayerTalentTab_OnClick(self)
 end
 
 function PlayerTalentTab_OnEvent(self, event, ...)
-	if ( UnitLevel("player") == (SHOW_TALENT_LEVEL - 1) and PanelTemplates_GetSelectedTab(PlayerTalentFrame) ~= self:GetID() ) then
+	if ( C_SpecializationInfo.CanPlayerUseTalentUI() and PanelTemplates_GetSelectedTab(PlayerTalentFrame) ~= self:GetID() ) then
 		SetButtonPulse(self, 60, 0.75);
 	end
 end

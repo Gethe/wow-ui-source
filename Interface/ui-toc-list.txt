@@ -42,6 +42,7 @@ Interface\AddOns\Blizzard_Channels\Blizzard_Channels.toc
 Interface\AddOns\Blizzard_CharacterCreate\Blizzard_CharacterCreate.toc
 Interface\AddOns\Blizzard_CharacterCustomize\Blizzard_CharacterCustomize.toc
 Interface\AddOns\Blizzard_CharacterFrame\Blizzard_CharacterFrame_Mists.toc
+Interface\AddOns\Blizzard_CharacterSelectNavBar\Blizzard_CharacterSelectNavBar.toc
 Interface\AddOns\Blizzard_ChatFrameBase\Blizzard_ChatFrameBase_Mainline.toc
 Interface\AddOns\Blizzard_ChatFrameUtil\Blizzard_ChatFrameUtil.toc
 Interface\AddOns\Blizzard_ChatFrame\Blizzard_ChatFrame_Mainline.toc
@@ -122,6 +123,7 @@ Interface\AddOns\Blizzard_FriendsFrame\Blizzard_FriendsFrame.toc
 Interface\AddOns\Blizzard_GMChatUI\Blizzard_GMChatUI.toc
 Interface\AddOns\Blizzard_GameMenu\Blizzard_GameMenu_Mainline.toc
 Interface\AddOns\Blizzard_GameMenu\Blizzard_GameMenu_WoWLabs.toc
+Interface\AddOns\Blizzard_GameModeSelect\Blizzard_GameModeSelect.toc
 Interface\AddOns\Blizzard_GameTooltip\Blizzard_GameTooltip_Mainline.toc
 Interface\AddOns\Blizzard_GarrisonBase\Blizzard_GarrisonBase.toc
 Interface\AddOns\Blizzard_GarrisonTemplates\Blizzard_GarrisonTemplates.toc

@@ -423,7 +423,7 @@ function ToggleAchievementFrame(stats)
 end
 
 function ToggleTalentFrame()
-	if (UnitLevel("player") < SHOW_TALENT_LEVEL) then
+	if (not C_SpecializationInfo.CanPlayerUseTalentSpecUI()) then
 		return;
 	end
 
@@ -1067,10 +1067,6 @@ function UIParent_OnEvent(self, event, ...)
 			MoneyFrame_Update(dialog:GetName().."MoneyFrame", arg1);
 			-- open the talent UI to the player's active talent group...just so the player knows
 			-- exactly which talent spec he is wiping
-			TalentFrame_LoadUI();
-			if ( PlayerTalentFrame_Open ) then
-				PlayerTalentFrame_Open(false, GetActiveTalentGroup());
-			end
 		end
 	elseif ( event == "CONFIRM_BARBERS_CHOICE" ) then
 		HideUIPanel(GossipFrame);

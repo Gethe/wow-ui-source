@@ -243,7 +243,7 @@ function EventToastManagerFrameMixin:IsCurrentlyToasting()
 end
 
 function EventToastManagerFrameMixin:NeedsOnUpdate()
-	return not self.hideAutomatically;
+	return self.hideAutomatically;
 end
 
 function EventToastManagerFrameMixin:OverrideOnUpdate(_elapsed)

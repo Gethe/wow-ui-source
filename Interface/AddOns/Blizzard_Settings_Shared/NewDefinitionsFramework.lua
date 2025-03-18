@@ -14,3 +14,7 @@ function IsNewSettingInCurrentVersion(variable)
 
 	return false;
 end
+
+function CurrentVersionHasNewSettings()
+	return NewSettings[version] ~= nil;
+end

@@ -82,8 +82,6 @@ function AreaPOIEventPinMixin:OnMouseLeave()
 end
 
 function AreaPOIEventPinMixin:DisableInheritedMotionScriptsWarning()
-	-- The area pin will override these anyway, we don't need to handle
-	-- onEnter/Leave for the POIButton
 	return true;
 end
 

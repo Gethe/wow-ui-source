@@ -14,7 +14,7 @@ local EncodingUtil =
 			Arguments =
 			{
 				{ Name = "source", Type = "stringView", Nilable = false },
-				{ Name = "method", Type = "CompressionMethod", Nilable = false },
+				{ Name = "method", Type = "CompressionMethod", Nilable = false, Default = "Deflate" },
 				{ Name = "level", Type = "CompressionLevel", Nilable = false, Default = "Default" },
 			},
 
@@ -40,14 +40,13 @@ local EncodingUtil =
 			},
 		},
 		{
-			Name = "DecompressString",
+			Name = "DecodeHex",
 			Type = "Function",
 			MayReturnNothing = true,
 
 			Arguments =
 			{
-				{ Name = "source", Type = "stringView", Nilable = false },
-				{ Name = "method", Type = "CompressionMethod", Nilable = false },
+				{ Name = "source", Type = "string", Nilable = false },
 			},
 
 			Returns =
@@ -56,9 +55,38 @@ local EncodingUtil =
 			},
 		},
 		{
-			Name = "DeserializeJSON",
+			Name = "DecompressString",
 			Type = "Function",
 			MayReturnNothing = true,
+
+			Arguments =
+			{
+				{ Name = "source", Type = "stringView", Nilable = false },
+				{ Name = "method", Type = "CompressionMethod", Nilable = false, Default = "Deflate" },
+			},
+
+			Returns =
+			{
+				{ Name = "output", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "DeserializeCBOR",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "source", Type = "stringView", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "value", Type = "LuaValueVariant", Nilable = true },
+			},
+		},
+		{
+			Name = "DeserializeJSON",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -87,13 +115,43 @@ local EncodingUtil =
 			},
 		},
 		{
-			Name = "SerializeJSON",
+			Name = "EncodeHex",
 			Type = "Function",
 			MayReturnNothing = true,
 
 			Arguments =
 			{
+				{ Name = "source", Type = "stringView", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "output", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "SerializeCBOR",
+			Type = "Function",
+
+			Arguments =
+			{
 				{ Name = "value", Type = "LuaValueVariant", Nilable = true },
+				{ Name = "options", Type = "CBORSerializationOptions", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "output", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "SerializeJSON",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "value", Type = "LuaValueVariant", Nilable = true },
+				{ Name = "options", Type = "JSONSerializationOptions", Nilable = true },
 			},
 
 			Returns =
@@ -145,6 +203,22 @@ local EncodingUtil =
 				{ Name = "Deflate", Type = "CompressionMethod", EnumValue = 0 },
 				{ Name = "Zlib", Type = "CompressionMethod", EnumValue = 1 },
 				{ Name = "Gzip", Type = "CompressionMethod", EnumValue = 2 },
+			},
+		},
+		{
+			Name = "CBORSerializationOptions",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "ignoreSerializationErrors", Type = "bool", Nilable = false, Default = false, Documentation = { "If true, attempt to ignore errors from unsupported values and instead replace them where applicable with 'undefined' CBOR items." } },
+			},
+		},
+		{
+			Name = "JSONSerializationOptions",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "ignoreSerializationErrors", Type = "bool", Nilable = false, Default = false, Documentation = { "If true, attempt to ignore errors from unsupported values and instead replace them where applicable with 'null' JSON values." } },
 			},
 		},
 	},

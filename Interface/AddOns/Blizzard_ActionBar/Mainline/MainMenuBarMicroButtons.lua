@@ -1514,6 +1514,14 @@ function StoreMicroButtonMixin:OnEvent(event, ...)
 	end
 end
 
+function StoreMicroButtonMixin:GetButtonContext()
+	return self.buttonContext;
+end
+
+function StoreMicroButtonMixin:OnClick()
+	ToggleStoreUI(self:GetButtonContext());
+end
+
 function StoreMicroButtonMixin:EvaluateAlertVisibility(level)
 	local alertShown = false;
 	if (IsTrialAccount()) then

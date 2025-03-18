@@ -507,10 +507,13 @@ function ResizeLayoutMixin:Layout()
 	if fw and fh then
 		self:SetSize(fw, fh);
 	elseif left and right and top and bottom then
-		local minw = self.minimumWidth;
-		local maxw = self.maximumWidth;
 		local width = GetSize((right - left) + self:GetWidthPadding(), fw, self.minimumWidth, self.maximumWidth);
 		local height = GetSize((top - bottom) + self:GetHeightPadding(), fh, self.minimumHeight, self.maximumHeight);
+
+		self:SetSize(width, height);
+	else
+		local width = GetSize(1, fw, self.minimumWidth, self.maximumWidth);
+		local height = GetSize(1, fh, self.minimumHeight, self.maximumHeight);
 
 		self:SetSize(width, height);
 	end

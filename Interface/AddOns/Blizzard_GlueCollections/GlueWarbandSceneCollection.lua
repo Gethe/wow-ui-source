@@ -61,7 +61,21 @@ function GlueWarbandSceneJounalMixin:OnLoad()
 	self.ApplyForAllCheckbox:ClearAllPoints();
 	self.ApplyForAllCheckbox:SetPoint("LEFT", self.ApplyButton, "LEFT", -applyForAllWidth, -3);
 
-	self.IconsFrame.Icons:SetElementTemplateData(WarbandSceneTemplates);
+	local icons = self.IconsFrame.Icons;
+	icons:SetElementTemplateData(WarbandSceneTemplates);
+	icons:SetPagingControls(icons.Controls.PagingControls);
+	icons.Controls.PagingControls:SetOverridePagedContentFrame(icons);
+
+	local showOwned = icons.Controls.ShowOwned;
+	showOwned:SetWidth(showOwned.Checkbox:GetWidth() + showOwned.Text:GetWidth() + showOwned.Text.anchorSpacing);
+
+	showOwned.Checkbox:SetScript("OnClick", function()
+		self.activeSearchParams.ownedOnly = not self.activeSearchParams.ownedOnly;
+
+		local entries = C_WarbandScene.SearchWarbandSceneEntries(self.activeSearchParams);
+		local retainCurrentPage = true;
+		self:SetJournalEntries(entries, retainCurrentPage);
+	end);
 
 	-- Initial filters
 	self.activeSearchParams = {

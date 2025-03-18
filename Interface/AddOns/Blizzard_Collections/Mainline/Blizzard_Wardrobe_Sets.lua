@@ -703,12 +703,21 @@ function WardrobeSetsCollectionMixin:DisplaySet(setID)
 end
 
 function WardrobeSetsCollectionMixin:SetItemFrameQuality(itemFrame)
-	if ( itemFrame.collected ) then
+	if itemFrame.collected then
 		local quality = C_TransmogCollection.GetSourceInfo(itemFrame.sourceID).quality;
-		local atlas = ColorManager.GetAtlasDataForWardrobeSetItemQuality(quality);
-		if atlas then
-			itemFrame.IconBorder:SetAtlas(atlas, true);
+		local atlasData = ColorManager.GetAtlasDataForWardrobeSetItemQuality(quality);
+		if atlasData then
+			itemFrame.IconBorder:SetAtlas(atlasData.atlas, true);
+
+			if atlasData.overrideColor then
+				itemFrame.IconBorder:SetVertexColor(atlasData.overrideColor.r, atlasData.overrideColor.g, atlasData.overrideColor.b);
+			else
+				itemFrame.IconBorder:SetVertexColor(1, 1, 1);
+			end
 		end
+	else
+		itemFrame.IconBorder:SetAtlas("loottab-set-itemborder-white", true);
+		itemFrame.IconBorder:SetVertexColor(1, 1, 1);
 	end
 end
 

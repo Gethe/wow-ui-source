@@ -673,37 +673,37 @@ function CharacterSelectListUtil.SetScrollListInteractiveState(state)
 end
 
 function CharacterSelectListUtil.GetGroupWarbandSceneInfo()
-	local groupInfo = {};
-	for _, elementData in CharacterSelectCharacterFrame.ScrollBox:EnumerateDataProviderEntireRange() do
-		if elementData.isGroup then
-			local groupWarbandSceneInfo = {
-				groupID = elementData.groupID,
-				name = elementData.name,
-				warbandSceneID = elementData.warbandSceneID
+	local groupWarbandSceneInfo = {};
+
+	local groupsInfo = GetCharacterListGroupsInfo();
+	if groupsInfo then
+		for _, groupInfo in ipairs(groupsInfo) do
+			local info = {
+				groupID = groupInfo.groupID,
+				name = groupInfo.name,
+				warbandSceneID = groupInfo.warbandSceneID
 			};
-			table.insert(groupInfo, groupWarbandSceneInfo);
+			table.insert(groupWarbandSceneInfo, info);
 		end
 	end
 
-	return groupInfo;
+	return groupWarbandSceneInfo;
 end
 
 function CharacterSelectListUtil.GetTotalGroupCount()
-	local groupCount = 0;
-	for _, elementData in CharacterSelectCharacterFrame.ScrollBox:EnumerateDataProviderEntireRange() do
-		if elementData.isGroup then
-			groupCount = groupCount + 1;
-		end
-	end
-	return groupCount;
+	local groupsInfo = GetCharacterListGroupsInfo();
+	return groupsInfo and #groupsInfo or 0;
 end
 
 function CharacterSelectListUtil.GetTotalGroupSlotCount()
 	local groupSlotCount = 0;
-	for _, elementData in CharacterSelectCharacterFrame.ScrollBox:EnumerateDataProviderEntireRange() do
-		if elementData.isGroup then
-			groupSlotCount = groupSlotCount + elementData.characterSlots;
+
+	local groupsInfo = GetCharacterListGroupsInfo();
+	if groupsInfo then
+		for _, groupInfo in ipairs(groupsInfo) do
+			groupSlotCount = groupSlotCount + groupInfo.numCharSlots;
 		end
 	end
+
 	return groupSlotCount;
 end

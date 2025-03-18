@@ -363,6 +363,7 @@ CursorConstDocumentation.lua
 DamageConstantsDocumentation.lua
 DelvesConstantsDocumentation.lua
 EditModeManagerSharedDocumentation.lua
+EncodingUtilConstantsDocumentation.lua
 EncounterJournalConstantsDocumentation.lua
 EventSchedulerConstantsDocumentation.lua
 ExpansionLandingPageConstantsDocumentation.lua

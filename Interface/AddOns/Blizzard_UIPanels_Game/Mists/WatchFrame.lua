@@ -1403,8 +1403,7 @@ function WatchFrameQuestPOI_OnClick(self, button)
 		WorldMapFrame_SelectQuestById(self.questID);
 		QuestPOI_SelectButtonByQuestID(WorldMapFrame, self.questID)
 	end
-	--SetSuperTrackedQuestID(self.questID);
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 function WatchFrame_SetWidth(width)

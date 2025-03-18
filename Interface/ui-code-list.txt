@@ -309,6 +309,10 @@ Interface\AddOns\Blizzard_CharacterCustomize\Blizzard_CharacterCustomize.lua
 Interface\AddOns\Blizzard_CharacterCustomize\Blizzard_CharacterCustomize.toc
 Interface\AddOns\Blizzard_CharacterCustomize\Blizzard_CharacterCustomize.xml
 Interface\AddOns\Blizzard_CharacterFrame\Blizzard_CharacterFrame_Mists.toc
+Interface\AddOns\Blizzard_CharacterFrame\Mists\PaperDollFrame.xml
+Interface\AddOns\Blizzard_CharacterSelectNavBar\Blizzard_CharacterSelectNavBar.toc
+Interface\AddOns\Blizzard_CharacterSelectNavBar\CharacterSelectNavBar.lua
+Interface\AddOns\Blizzard_CharacterSelectNavBar\CharacterSelectNavBar.xml
 Interface\AddOns\Blizzard_ChatFrameBase\Blizzard_ChatFrameBase_Mainline.toc
 Interface\AddOns\Blizzard_ChatFrameBase\Mainline\ChannelFrameButtonMixin.lua
 Interface\AddOns\Blizzard_ChatFrameBase\Mainline\ChatAlertFrameMixin.lua
@@ -802,8 +806,6 @@ Interface\AddOns\Blizzard_FrameXML\Mainline\Localization.lua
 Interface\AddOns\Blizzard_FrameXML\Mainline\LootHistory.lua
 Interface\AddOns\Blizzard_FrameXML\Mainline\LootHistory.xml
 Interface\AddOns\Blizzard_FrameXML\Mainline\LowHealthFrame.xml
-Interface\AddOns\Blizzard_FrameXML\Mainline\MovieFrame.lua
-Interface\AddOns\Blizzard_FrameXML\Mainline\MovieFrame.xml
 Interface\AddOns\Blizzard_FrameXML\Mainline\NavigationBar.lua
 Interface\AddOns\Blizzard_FrameXML\Mainline\NavigationBar.xml
 Interface\AddOns\Blizzard_FrameXML\Mainline\RaidWarning.xml
@@ -821,9 +823,12 @@ Interface\AddOns\Blizzard_FrameXML\Mainline\TutorialFrame.lua
 Interface\AddOns\Blizzard_FrameXML\Mainline\TutorialFrame.xml
 Interface\AddOns\Blizzard_FrameXML\Mainline\ZoneText.lua
 Interface\AddOns\Blizzard_FrameXML\Mainline\ZoneText.xml
+Interface\AddOns\Blizzard_FrameXML\Mists\SecureTemplates.lua
 Interface\AddOns\Blizzard_FrameXML\Mists\WorldStateFrame.xml
 Interface\AddOns\Blizzard_FrameXML\MotionSickness.lua
 Interface\AddOns\Blizzard_FrameXML\MotionSickness.xml
+Interface\AddOns\Blizzard_FrameXML\MovieFrame.lua
+Interface\AddOns\Blizzard_FrameXML\MovieFrame.xml
 Interface\AddOns\Blizzard_FrameXML\PVPHonorSystem.lua
 Interface\AddOns\Blizzard_FrameXML\PVPHonorSystem.xml
 Interface\AddOns\Blizzard_FrameXML\PVPUITemplates.lua
@@ -885,6 +890,9 @@ Interface\AddOns\Blizzard_GameMenu\Standard\GameMenuFrame.lua
 Interface\AddOns\Blizzard_GameMenu\Standard\GameMenuFrame.xml
 Interface\AddOns\Blizzard_GameMenu\WoWLabs\GameMenuFrame.lua
 Interface\AddOns\Blizzard_GameMenu\WoWLabs\GameMenuFrame.xml
+Interface\AddOns\Blizzard_GameModeSelect\Blizzard_GameModeSelect.toc
+Interface\AddOns\Blizzard_GameModeSelect\GameModeSelect.lua
+Interface\AddOns\Blizzard_GameModeSelect\GameModeSelect.xml
 Interface\AddOns\Blizzard_GameTooltip\Blizzard_GameTooltip_Mainline.toc
 Interface\AddOns\Blizzard_GameTooltip\HealthBar.lua
 Interface\AddOns\Blizzard_GameTooltip\Mainline\GameTooltip.lua
@@ -986,8 +994,6 @@ Interface\AddOns\Blizzard_GlueXML\Mainline\CharacterSelect\CharacterSelectListBu
 Interface\AddOns\Blizzard_GlueXML\Mainline\CharacterSelect\CharacterSelectListElements.lua
 Interface\AddOns\Blizzard_GlueXML\Mainline\CharacterSelect\CharacterSelectListElements.xml
 Interface\AddOns\Blizzard_GlueXML\Mainline\CharacterSelect\CharacterSelectListUtil.lua
-Interface\AddOns\Blizzard_GlueXML\Mainline\CharacterSelect\CharacterSelectNavBar.lua
-Interface\AddOns\Blizzard_GlueXML\Mainline\CharacterSelect\CharacterSelectNavBar.xml
 Interface\AddOns\Blizzard_GlueXML\Mainline\CharacterSelect\CharacterSelectTemplates.lua
 Interface\AddOns\Blizzard_GlueXML\Mainline\CharacterSelect\CharacterSelectTemplates.xml
 Interface\AddOns\Blizzard_GlueXML\Mainline\CharacterSelect\CharacterSelectUI.lua

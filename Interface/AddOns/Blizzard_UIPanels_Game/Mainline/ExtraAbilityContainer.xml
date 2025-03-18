@@ -8,7 +8,7 @@
 			<KeyValue key="spacing" value="-30" type="number"/>
 			<KeyValue key="minimumWidth" value="250" type="number"/>
 			<KeyValue key="fixedHeight" value="120" type="number"/>
-			<KeyValue key="layoutIndex" value="9" type="number"/>
+			<KeyValue key="layoutIndex" value="12" type="number"/>
 			<KeyValue key="hideWhenActionBarIsOverriden" value="false" type="boolean"/>
 		</KeyValues>
 		<Scripts>

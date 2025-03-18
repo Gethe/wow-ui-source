@@ -4,7 +4,7 @@ StaticPopupDialogs["CONFIRM_REMOVE_GLYPH"] = {
 	button2 = NO,
 	OnAccept = function (self)
 		local talentGroup = PlayerTalentFrame and PlayerTalentFrame.talentGroup or 1;
-		if ( talentGroup == GetActiveTalentGroup() ) then
+		if ( talentGroup == GetActiveSpecGroup() ) then
 			RemoveGlyphFromSocket(self.data.id);
 		end
 	end,

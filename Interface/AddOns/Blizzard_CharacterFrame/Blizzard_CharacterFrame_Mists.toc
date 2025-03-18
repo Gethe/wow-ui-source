@@ -10,6 +10,6 @@ Classic\DressUpFrames.xml
 Cata\CharacterFrame.lua
 Cata\CharacterFrame.xml
 Cata\PaperDollFrame.lua
-Cata\PaperDollFrame.xml
+Mists\PaperDollFrame.xml
 Cata\PetPaperDollFrame.lua
 Cata\PetPaperDollFrame.xml

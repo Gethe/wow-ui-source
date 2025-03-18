@@ -1,0 +1,7 @@
+## Title: Blizzard_GameModeSelect
+## Author: Blizzard Entertainment
+## Dependencies: Blizzard_SharedXML
+## AllowLoad: Glue
+## AllowLoadGameType: mainline
+GameModeSelect.lua
+GameModeSelect.xml

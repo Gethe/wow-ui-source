@@ -257,7 +257,7 @@
 		</Scripts>
 	</Button>
 
-	<Frame name="CharacterSelect" toplevel="true" parent="GlueParent" inherits="CallbackRegistrantTemplate" mixin="CharacterSelectFrameMixin" setAllPoints="true" enableKeyboard="true" hidden="true" propagateMouseInput="Motion">
+	<Frame name="CharacterSelect" toplevel="true" parent="GlueParent" mixin="CharacterSelectFrameMixin" setAllPoints="true" enableKeyboard="true" hidden="true" propagateMouseInput="Motion">
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="LeftBlackBar">

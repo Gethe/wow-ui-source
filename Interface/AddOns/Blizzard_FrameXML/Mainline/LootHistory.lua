@@ -104,9 +104,10 @@ function LootHistoryElementMixin:Init(dropInfo)
 
 	self.dropInfo = dropInfo;
 
+	local item = Item:CreateFromItemLink(dropInfo.itemHyperlink);
+
 	self.ItemName:SetText(item:GetItemName());
 
-	local item = Item:CreateFromItemLink(dropInfo.itemHyperlink);
 	local itemQuality = item:GetItemQuality();
 	local colorData = ColorManager.GetColorDataForItemQuality(itemQuality);
 	if colorData then

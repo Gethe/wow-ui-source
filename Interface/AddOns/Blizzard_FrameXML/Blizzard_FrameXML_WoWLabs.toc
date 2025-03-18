@@ -58,8 +58,8 @@ Mainline\ColorPickerFrame.xml
 Mainline\RatingMenuFrame.xml
 TalentFrameBase.lua
 TalentFrameTemplates.xml
-Mainline\MovieFrame.lua
-Mainline\MovieFrame.xml
+MovieFrame.lua
+MovieFrame.xml
 BossBannerToast.xml
 EventToastManager.xml
 EquipmentManager.lua

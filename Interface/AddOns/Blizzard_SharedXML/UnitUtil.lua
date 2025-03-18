@@ -8,7 +8,7 @@ end
 
 function IsPlayerInitialSpec()
 	if(GetSpecialization() == nil) then
-		return false
+		return false;
 	end
 
 	return GetSpecialization() > GetNumSpecializations();

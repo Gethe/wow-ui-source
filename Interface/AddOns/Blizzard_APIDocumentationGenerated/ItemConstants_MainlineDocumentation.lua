@@ -54,9 +54,9 @@ local ItemConstants_Mainline =
 		{
 			Name = "PointsModifierSourceType",
 			Type = "Enumeration",
-			NumValues = 68,
+			NumValues = 69,
 			MinValue = 0,
-			MaxValue = 67,
+			MaxValue = 68,
 			Fields =
 			{
 				{ Name = "PlayerLevel", Type = "PointsModifierSourceType", EnumValue = 0 },
@@ -127,6 +127,7 @@ local ItemConstants_Mainline =
 				{ Name = "FirstTimeQuestCompletionRewards", Type = "PointsModifierSourceType", EnumValue = 65 },
 				{ Name = "PointsModifierSet", Type = "PointsModifierSourceType", EnumValue = 66 },
 				{ Name = "CurrencyMaxWeeklyDelta", Type = "PointsModifierSourceType", EnumValue = 67 },
+				{ Name = "RaidEncounterLevel", Type = "PointsModifierSourceType", EnumValue = 68 },
 			},
 		},
 		{

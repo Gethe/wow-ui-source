@@ -591,6 +591,10 @@ function GameTooltip_Hide()
 	GameTooltip_HideBattlePetTooltip();
 end
 
+function GameTooltip_HideTooltip(tooltip)
+	tooltip:Hide();
+end
+
 function GameTooltip_HideResetCursor()
 	GameTooltip:Hide();
 	ResetCursor();

@@ -127,7 +127,10 @@ function CharacterSelectNavBarMixin:OnLoad()
 			GetAppropriateTooltip():Hide();
 		end);
 	else
-		self.StoreButton = self.ButtonTray:AddControl(nil, ToggleStoreUI);
+		local function ToggleStoreUIForCharSelectNavBar()
+			ToggleStoreUI("CharSelectNavBar");
+		end
+		self.StoreButton = self.ButtonTray:AddControl(nil, ToggleStoreUIForCharSelectNavBar);
 	end
 
 	self.MenuButton = self.ButtonTray:AddControl(CHARACTER_SELECT_NAV_BAR_MENU, GlueMenuFrameUtil.ShowMenu);

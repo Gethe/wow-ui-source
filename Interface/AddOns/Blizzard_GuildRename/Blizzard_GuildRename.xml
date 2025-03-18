@@ -116,10 +116,14 @@
 					<OnShow method="OnShow"/>
 				</Scripts>
 			</Frame>
-			<Button parentKey="ContextButton" inherits="UIPanelButtonNoTooltipResizeToFitTemplate" text="GOODBYE">
+			<Button parentKey="ContextButton" inherits="UIPanelButtonNoTooltipResizeToFitTemplate" mixin="GuildRenameContextButtonMixin" motionScriptsWhileDisabled="true" text="GOODBYE">
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" x="-6" y="4"/>
 				</Anchors>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
 			</Button>
 			<Frame parentKey="MoneyFrame" inherits="SmallMoneyFrameTemplate">
 				<Anchors>

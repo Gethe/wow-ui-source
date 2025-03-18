@@ -16,15 +16,11 @@ local function ExitPlunderstormLobby()
     C_Login.DisconnectFromServer();
 end
 
-g_newGameModeAvailableAcknowledged = g_newGameModeAvailableAcknowledged or nil;
-
 PlunderstormLobbyMixin = { };
 function PlunderstormLobbyMixin:OnLoad()
 	self:SetBackgroundModel(PlunderstormBackground);
 
 	self:AddDynamicEventMethod(EventRegistry, "FriendsFrame.OnFriendsOnlineUpdated", self.OnFriendsOnlineUpdated);
-	self:AddDynamicEventMethod(EventRegistry, "GameMode.Selected", self.OnGameModeSelected);
-	self:AddDynamicEventMethod(EventRegistry, "RealmList.Cancel", self.OnRealmListCancel);
 	self:AddDynamicEventMethod(EventRegistry, "MatchmakingQueueType.PlayerUpdatedPartyList", self.OnPlayerUpdatedPartyList);
 
 	self.NavBar:SetRealmsButtonEnabled(false);
@@ -53,13 +49,6 @@ function PlunderstormLobbyMixin:ChangeGameMode(newGameMode)
 	end
 end
 
-function PlunderstormLobbyMixin:OnGameModeSelected(requestedGameMode)
-	assert(requestedGameMode);
-	if C_GameRules.GetActiveGameMode() ~= requestedGameMode then
-		self.NavBar.GameModeButton.SelectionDrawer:ChangeGameMode(requestedGameMode);
-	end
-end
-
 function PlunderstormLobbyMixin:OnShow()
 	CallbackRegistrantMixin.OnShow(self);
 
@@ -82,8 +71,6 @@ function PlunderstormLobbyMixin:OnShow()
     GluePartyPoseFrame:Show();
 	GluePartyPoseFrame:Init();
 
-	self.NavBar.GameModeButton.SelectionDrawer:SelectRadioButtonForGameMode(Enum.GameMode.Plunderstorm);
-
 	if BNConnected() then
 		local numInvites = BNGetNumFriendInvites() + C_WoWLabsMatchmaking.GetNumPartyInvites();
 		self.PlunderstormLobbyFriendsButton.Flash.Anim:SetPlaying(numInvites > 0);
@@ -94,13 +81,6 @@ function PlunderstormLobbyMixin:OnShow()
 	local isFrontEndChatEnabled = C_GameRules.IsGameRuleActive(Enum.GameRule.FrontEndChat);
 	GeneralDockManager:SetShown(isFrontEndChatEnabled);
 	ChatFrame1:SetShown(isFrontEndChatEnabled);
-
-	-- Plunderstorm has been seen as a mode
-	g_newGameModeAvailableAcknowledged = 1;
-end
-
-function PlunderstormLobbyMixin:OnRealmListCancel()
-	self.NavBar.GameModeButton.SelectionDrawer:SelectRadioButtonForGameMode(Enum.GameMode.Plunderstorm);
 end
 
 function PlunderstormLobbyMixin:OnFriendsOnlineUpdated(numOnlineFriends)

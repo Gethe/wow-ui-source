@@ -69,6 +69,18 @@ function CooldownViewerItemMixin:OnCooldownIDSet()
 
 	self:ClearEditModeData();
 
+	-- If one of the item's linked spells currenly has an active aura, it needs to be linked now because
+	-- the UNIT_AURA event for it may have already happened and there might not be another one. e.g. the
+	-- case of an infinite duration aura.
+	if self.cooldownInfo and self.cooldownInfo.linkedSpellIDs then
+		for _, spellID in ipairs(self.cooldownInfo.linkedSpellIDs) do
+			local auraData = C_UnitAuras.GetPlayerAuraBySpellID(spellID);
+			if auraData then
+				self:SetLinkedSpell(spellID);
+			end
+		end
+	end
+
 	self:RefreshData();
 end
 
@@ -84,6 +96,8 @@ end
 
 function CooldownViewerItemMixin:OnCooldownIDCleared()
 	self.cooldownInfo = nil;
+	self.auraInstanceID = nil;
+	self.auraSpellID = nil;
 
 	self:UnregisterEvent("COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED");
 	self:UnregisterEvent("SPELL_UPDATE_COOLDOWN");
@@ -279,6 +293,11 @@ function CooldownViewerItemMixin:GetSpellChargeInfo()
 end
 
 function CooldownViewerItemMixin:GetSpellTexture()
+	local linkedSpellID = self:GetLinkedSpell();
+	if linkedSpellID then
+		return C_Spell.GetSpellTexture(linkedSpellID);
+	end
+
 	-- Intentionally always use the base spell when calling C_Spell.GetSpellTexture. Its internal logic will handle the override if needed.
 	local spellID = self:GetBaseSpellID();
 	if not spellID then
@@ -1120,6 +1139,10 @@ function CooldownViewerBuffBarItemMixin:GetNameText()
 		return C_Spell.GetSpellName(spellID);
 	end
 
+	if self:HasEditModeData() then
+		return HUD_EDIT_MODE_COOLDOWN_VIEWER_EXAMPLE_BUFF_NAME;
+	end
+
 	return "";
 end
 
@@ -1177,8 +1200,6 @@ function CooldownViewerMixin:GetItemFrames()
 end
 
 function CooldownViewerMixin:OnLoad()
-	EditModeSystemMixin.OnSystemLoad(self);
-
 	local itemResetCallback = function(pool, itemFrame)
 		Pool_HideAndClearAnchors(pool, itemFrame);
 		itemFrame:ClearCooldownID();
@@ -1337,6 +1358,10 @@ function CooldownViewerMixin:GetStride()
 	return self.iconLimit;
 end
 
+function CooldownViewerMixin:NeedsMinimumHeight()
+	return self.isManagedFrame and self.ignoreFramePositionManager ~= true and self.defaultReservedMinimumHeight;
+end
+
 function CooldownViewerMixin:RefreshLayout()
 	self.itemFramePool:ReleaseAll();
 
@@ -1364,6 +1389,17 @@ function CooldownViewerMixin:RefreshLayout()
 	itemContainerFrame.childYPadding = self.iconPadding;
 
 	itemContainerFrame.stride = self:GetStride();
+
+	-- As long as they're being managed, some of the panels need to set a minimium height to prevent 
+	-- any frames with a lower layout index (e.g. the cast bar) from moving up or down in response to
+	-- changes in the panel's data resizing its height. But don't set a minimum height if the player
+	-- moves the frame and it's no longer managed so they don't have to fight that behavior to position
+	-- the frame exactly how they want.
+	if self:NeedsMinimumHeight() then
+		self.minimumHeight = (self.defaultReservedMinimumHeight * self.iconScale);
+	else
+		self.minimumHeight = nil;
+	end
 
 	if self:IsShown() then
 		self:RefreshData();
@@ -1430,9 +1466,16 @@ end
 
 function CooldownViewerMixin:RefreshItemsShown()
 	local needsLayout = false;
+	local anyItemsShown = false;
 
 	for itemFrame in self.itemFramePool:EnumerateActive() do
 		needsLayout = self:RefreshItemShown(itemFrame) or needsLayout;
+		anyItemsShown = anyItemsShown or itemFrame:IsShown();
+	end
+
+	if anyItemsShown ~= self.anyItemsShown then
+		self.anyItemsShown = anyItemsShown;
+		needsLayout = true;
 	end
 
 	-- Any item being shown or hidden requires a layout.
@@ -1448,24 +1491,54 @@ function CooldownViewerMixin:SetTimerShown(shownSetting)
 end
 
 ---------------------------------------------------------------------------------------------------
-EssentialCooldownViewerMixin = CreateFromMixins(CooldownViewerMixin);
+EssentialCooldownViewerMixin = CreateFromMixins(CooldownViewerMixin, EditModeCooldownViewerSystemMixin, UIParentManagedFrameMixin, GridLayoutFrameMixin);
 
 function EssentialCooldownViewerMixin:OnLoad()
+	EditModeCooldownViewerSystemMixin.OnSystemLoad(self);
 	CooldownViewerMixin.OnLoad(self);
 end
 
+function EssentialCooldownViewerMixin:OnShow()
+	LayoutMixin.OnShow(self);
+	UIParentManagedFrameMixin.OnShow(self);
+end
+
+function EssentialCooldownViewerMixin:OnEvent(event, ...)
+	CooldownViewerMixin.OnEvent(self, event, ...);
+end
+
 ---------------------------------------------------------------------------------------------------
-UtilityCooldownViewerMixin = CreateFromMixins(CooldownViewerMixin);
+UtilityCooldownViewerMixin = CreateFromMixins(CooldownViewerMixin, EditModeCooldownViewerSystemMixin, UIParentManagedFrameMixin, GridLayoutFrameMixin);
 
 function UtilityCooldownViewerMixin:OnLoad()
+	EditModeCooldownViewerSystemMixin.OnSystemLoad(self);
 	CooldownViewerMixin.OnLoad(self);
 end
 
+function UtilityCooldownViewerMixin:OnShow()
+	LayoutMixin.OnShow(self);
+	UIParentManagedFrameMixin.OnShow(self);
+end
+
+function UtilityCooldownViewerMixin:OnEvent(event, ...)
+	CooldownViewerMixin.OnEvent(self, event, ...);
+end
+
 ---------------------------------------------------------------------------------------------------
-BuffIconCooldownViewerMixin = CreateFromMixins(CooldownViewerMixin);
+BuffIconCooldownViewerMixin = CreateFromMixins(CooldownViewerMixin, EditModeCooldownViewerSystemMixin, UIParentManagedFrameMixin, GridLayoutFrameMixin);
 
 function BuffIconCooldownViewerMixin:OnLoad()
+	EditModeCooldownViewerSystemMixin.OnSystemLoad(self);
 	CooldownViewerMixin.OnLoad(self);
+end
+
+function BuffIconCooldownViewerMixin:OnShow()
+	LayoutMixin.OnShow(self);
+	UIParentManagedFrameMixin.OnShow(self);
+end
+
+function BuffIconCooldownViewerMixin:OnEvent(event, ...)
+	CooldownViewerMixin.OnEvent(self, event, ...);
 end
 
 function BuffIconCooldownViewerMixin:GetStride()
@@ -1474,10 +1547,19 @@ function BuffIconCooldownViewerMixin:GetStride()
 end
 
 ---------------------------------------------------------------------------------------------------
-BuffBarCooldownViewerMixin = CreateFromMixins(CooldownViewerMixin);
+BuffBarCooldownViewerMixin = CreateFromMixins(CooldownViewerMixin, EditModeCooldownViewerSystemMixin, GridLayoutFrameMixin);
 
 function BuffBarCooldownViewerMixin:OnLoad()
+	EditModeCooldownViewerSystemMixin.OnSystemLoad(self);
 	CooldownViewerMixin.OnLoad(self);
+end
+
+function BuffBarCooldownViewerMixin:OnShow()
+	LayoutMixin.OnShow(self);
+end
+
+function BuffBarCooldownViewerMixin:OnEvent(event, ...)
+	CooldownViewerMixin.OnEvent(self, event, ...);
 end
 
 function BuffBarCooldownViewerMixin:GetStride()

@@ -121,10 +121,6 @@ function GuildRenameFrameMixin:GetNameChangeRequestStatus()
 		return permissionStatus;
 	end
 
-	if self:GetCurrentGuildMoney() < self:GetRenameCost() then
-		return Enum.GuildErrorType.NotEnoughMoney;
-	end
-
 	if self:IsRenameCooldownActive() then
 		return Enum.GuildErrorType.InCooldown;
 	end
@@ -136,17 +132,16 @@ function GuildRenameFrameMixin:HasStatus()
 	return self.status ~= nil;
 end
 
-function GuildRenameFrameMixin:CanRequestNameChange()
-	return self:GetNameChangeRequestStatus() == Enum.GuildErrorType.Success;
-end
+function GuildRenameFrameMixin:GetExecuteNameChangeStatus()
+	if self:GetCurrentGuildMoney() < self:GetRenameCost() then
+		return Enum.GuildErrorType.NotEnoughMoney;
+	end
 
-function GuildRenameFrameMixin:CanExecuteNameChange()
-	-- All permissions and requirements to request a name change are met, AND the name check status is successful.
 	if not self:GetNameCheckPassed()  then
-		return false;
+		return Enum.GuildErrorType.NameInvalid;
 	end
 	
-	return self:CanRequestNameChange();
+	return self:GetNameChangeRequestStatus();
 end
 
 function GuildRenameFrameMixin:HasRenamePermission()
@@ -191,7 +186,7 @@ end
 
 function GuildRenameFrameMixin:IsRenameCooldownActive()
 	if self.status and self.status.nextRenameTime then
-		if self.status.nextRenameTime == 0 or GetServerTime() < self.status.nextRenameTime then
+		if self.status.nextRenameTime ~= 0 and GetServerTime() < self.status.nextRenameTime then
 			return true;
 		end
 	end
@@ -245,7 +240,8 @@ function GuildRenameFrameMixin:BeginInteraction()
 end
 
 function GuildRenameFrameMixin:GetRenameModeFromStatus()
-	if self:CanRequestNameChange() then
+	local status = self:GetNameChangeRequestStatus();
+	if status == Enum.GuildErrorType.Success then
 		return GuildRenameMode.DoRename;
 	end
 
@@ -283,14 +279,12 @@ do
 		[GuildRenameMode.DoRename] = function(self)
 			self.MoneyFrame:Show();
 			MoneyFrame_Update(self.MoneyFrame, self:GetCurrentGuildMoney());
-			self.ContextButton:SetText(GUILD_RENAME_COMMAND_DO_RENAME);
-			self.ContextButton:SetEnabled(self:CanExecuteNameChange());
+			self.ContextButton:SetToGuildRename(self:GetExecuteNameChangeStatus());
 		end,
 
 		[GuildRenameMode.Title] = function(self)
 			self.MoneyFrame:Hide();
-			self.ContextButton:SetText(GOODBYE);
-			self.ContextButton:SetEnabled(true);
+			self.ContextButton:SetToGoodbye();
 		end,
 	};
 
@@ -339,7 +333,7 @@ function GuildRenameFlowMixin:OnLoad()
 end
 
 function GuildRenameFlowMixin:CheckRequestNameChange()
-	if self:GetManager():CanExecuteNameChange() then
+	if self:GetManager():GetExecuteNameChangeStatus() == Enum.GuildErrorType.Success then
 		StaticPopup_Show("CONFIRM_PURCHASE_GUILD_RENAME", GetMoneyString(self:GetManager():GetRenameCost(), true, true), self:GetDesiredName(), { desiredName = self:GetDesiredName() });
 	end
 end
@@ -459,6 +453,33 @@ function GuildRenameTitleFlowMixin:UpdateFromStatus()
 		self.RenameOption:Hide();
 		self.RefundOption:Hide();
 	end
+end
+
+GuildRenameContextButtonMixin = {};
+
+function GuildRenameContextButtonMixin:SetToGuildRename(renameStatus)
+	self.renameStatus = renameStatus;
+	self:SetText(GUILD_RENAME_COMMAND_DO_RENAME);
+	self:SetEnabled(renameStatus == Enum.GuildErrorType.Success);
+end
+
+function GuildRenameContextButtonMixin:SetToGoodbye()
+	self.renameStatus = nil;
+	self:SetText(GOODBYE);
+	self:SetEnabled(true);
+end
+
+function GuildRenameContextButtonMixin:OnEnter()
+	if self.renameStatus and self.renameStatus ~= Enum.GuildErrorType.Success then
+		local tooltip = GetAppropriateTooltip();
+		tooltip:SetOwner(self, "ANCHOR_RIGHT");
+		tooltip:SetText(GetGuildError(self.renameStatus));
+		tooltip:Show();
+	end
+end
+
+function GuildRenameContextButtonMixin:OnLeave()
+	GameTooltip_HideTooltip(GetAppropriateTooltip());
 end
 
 StaticPopupDialogs["CONFIRM_PURCHASE_GUILD_RENAME"] = {

@@ -278,11 +278,14 @@
 				<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-Shop-Mouseover" useAtlasSize="true" alphaMode="BLEND" hidden="true"/>
 			</Layer>
 		</Layers>
+		<KeyValues>
+			<KeyValue key="buttonContext" value="StoreMicroButton" type="string"/>
+		</KeyValues>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow function="MicroButton_KioskModeDisable" inherit="append"/>
 			<OnEvent method="OnEvent"/>
-			<OnClick function="ToggleStoreUI"/>
+			<OnClick method="OnClick"/>
 		</Scripts>
 	</Button>
 

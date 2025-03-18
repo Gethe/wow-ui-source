@@ -37,10 +37,53 @@
 						</Anchors>
 						<Frames>
 							<Frame parentKey="View" parentArray="ViewFrames" setAllPoints="true"/>
-							<Frame parentKey="PagingControls" inherits="PagingControlsHorizontalTemplate">
+							<Frame parentKey="Controls" inherits="HorizontalLayoutFrame">
+								<Size x="1" y="1"/>
 								<Anchors>
 									<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="21"/>
 								</Anchors>
+								<KeyValues>
+									<KeyValue key="spacing" value="25" type="number"/>
+								</KeyValues>
+								<Frames>
+									<Frame parentKey="ShowOwned">
+										<Size x="20" y="20"/>
+										<KeyValues>
+											<KeyValue key="layoutIndex" value="1" type="number"/>
+											<KeyValue key="align" value="center" type="string"/>
+										</KeyValues>
+										<Frames>
+											<CheckButton parentKey="Checkbox">
+												<Size x="18" y="18"/>
+												<Anchors>
+													<Anchor point="TOPLEFT"/>
+												</Anchors>
+												<NormalTexture atlas="checkbox-minimal" useAtlasSize="true"/>
+												<PushedTexture atlas="checkbox-minimal" useAtlasSize="true"/>
+												<CheckedTexture atlas="checkmark-minimal" useAtlasSize="true"/>
+												<DisabledCheckedTexture atlas="checkmark-minimal-disabled" useAtlasSize="true"/>
+											</CheckButton>
+										</Frames>
+										<Layers>
+											<Layer level="ARTWORK">
+												<FontString parentKey="Text" inherits="GameFontNormal" maxLines="1" justifyH="LEFT" text="WARBAND_SCENE_COLLECTION_FILTER_OWNED">
+													<KeyValues>
+														<KeyValue key="anchorSpacing" value="4" type="number"/>
+													</KeyValues>
+													<Anchors>
+														<Anchor point="LEFT" relativeKey="$parent.Checkbox" relativePoint="RIGHT" x="4"/>
+													</Anchors>
+												</FontString>
+											</Layer>
+										</Layers>
+									</Frame>
+									<Frame parentKey="PagingControls" inherits="PagingControlsHorizontalTemplate">
+										<KeyValues>
+											<KeyValue key="layoutIndex" value="2" type="number"/>
+											<KeyValue key="bottomPadding" value="3" type="number"/>
+										</KeyValues>
+									</Frame>
+								</Frames>
 							</Frame>
 						</Frames>
 					</Frame>
