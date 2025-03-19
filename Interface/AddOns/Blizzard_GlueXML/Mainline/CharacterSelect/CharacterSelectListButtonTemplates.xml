@@ -1,0 +1,48 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\Blizzard_SharedXML\UI.xsd">
+	<Button name="CharacterSelectListMoveButtonTemplate" mixin="CharacterSelectListMoveButtonMixin" motionScriptsWhileDisabled="true" virtual="true" hidden="true">
+		<!--
+			moveOffset: set the amount of offset that characters move in the scroll list when clicked (1 for down, -1 for up)
+			arrowNormal: The atlas texture to use for the normal arrow state of the move button.
+			arrowPressed: The atlas texture to use for the pressed arrow state of the move button.
+			arrowHighlight: The atlas texture to use for the highlight arrow state of the move button.
+			<KeyValues>
+				<KeyValue key="moveOffset" value="1" type="number"/>
+				<KeyValye key="arrowNormal" value="glues-characterselect-icon-arrowup" type="string"/>
+				<KeyValye key="arrowPressed" value="glues-characterselect-icon-arrowup-pressed" type="string"/>
+				<KeyValye key="arrowHighlight" value="glues-characterselect-icon-arrowup-hover" type="string"/>
+			</KeyValues>
+		-->
+		<Size x="32" y="32"/>
+		<!-- insets to stop a flickering bug when mousing right on the edge -->
+		<HitRectInsets>
+			<AbsInset left="1" right="1" top="1" bottom="1"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<!-- Not using HighlightTexture so we can layer behind button contents. -->
+				<Texture parentKey="Highlight" atlas="glues-characterselect-button-card-hover" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="Arrow">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnMouseDown method="OnMouseDown"/> 
+			<OnMouseUp method="OnMouseUp"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+</Ui>

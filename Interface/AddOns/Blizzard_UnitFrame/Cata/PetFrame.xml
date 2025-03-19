@@ -1,0 +1,224 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="PetFrameBarSegmentTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="fillTexture" value="Interface\TargetingFrame\UI-StatusBar" type="string"/>
+		</KeyValues>
+	</Frame>
+	
+	<Button name="PetFrame" frameStrata="LOW" toplevel="true" inherits="SecureUnitButtonTemplate" parent="PlayerFrame">
+		<Size x="128" y="53"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" x="80" y="-60"/>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="7" right="66" top="6" bottom="7"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="PetFrameFlash" file="Interface\TargetingFrame\UI-PartyFrame-Flash" hidden="true">
+					<Size x="128" y="64"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-4" y="11"/>
+					</Anchors>
+					<TexCoords left="0" right="1.0" top="1.0" bottom="0"/>
+				</Texture>
+				<Texture name="PetPortrait">
+					<Size x="37" y="37"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-6"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame setAllPoints="true">
+				<Frames>
+					<Frame setAllPoints="true">
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="PetFrameTexture" file="Interface\TargetingFrame\UI-SmallTargetingFrame">
+									<Size x="128" y="64"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="0" y="-2"/>
+									</Anchors>
+								</Texture>
+								<FontString name="PetHitIndicator" hidden="true" inherits="NumberFontNormalHuge">
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="TOPLEFT" x="28" y="-27"/>
+									</Anchors>
+								</FontString>
+								<FontString name="PetFrameHealthBarText" inherits="TextStatusBarText">
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="TOPLEFT" x="82" y="-26"/>
+									</Anchors>
+								</FontString>
+								<FontString name="PetFrameHealthBarTextLeft" inherits="TextStatusBarText">
+									<Anchors>
+										<Anchor point="LEFT" x="45" y="3"/>
+									</Anchors>
+								</FontString>
+								<FontString name="PetFrameHealthBarTextRight" inherits="TextStatusBarText">
+									<Anchors>
+										<Anchor point="RIGHT" x="-8" y="3"/>
+									</Anchors>
+								</FontString>
+								<FontString name="PetFrameManaBarText" inherits="TextStatusBarText">
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="TOPLEFT" x="82" y="-38"/>
+									</Anchors>
+								</FontString>
+								<FontString name="PetFrameManaBarTextLeft" inherits="TextStatusBarText">
+									<Anchors>
+										<Anchor point="LEFT" x="45" y="-8"/>
+									</Anchors>
+								</FontString>
+								<FontString name="PetFrameManaBarTextRight" inherits="TextStatusBarText">
+									<Anchors>
+										<Anchor point="RIGHT" x="-8" y="-8"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+							<Layer level="ARTWORK">
+								<FontString name="PetName" inherits="GameFontNormalSmall">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" x="52" y="33"/>
+									</Anchors>
+								</FontString>
+								<Texture name="PetAttackModeTexture" file="Interface\TargetingFrame\UI-Player-AttackStatus" alphaMode="ADD" hidden="true">
+									<Size x="76" y="64"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="6" y="-9"/>
+									</Anchors>
+									<TexCoords left="0.703125" right="1.0" top="0" bottom="1.0"/>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+			</Frame>
+			<StatusBar name="PetFrameHealthBar" inherits="TextStatusBar">
+				<Size x="69" y="8"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="47" y="-22"/>
+				</Anchors>
+				<Frames>
+					<Frame name="PetFrameMyHealPredictionBar" inherits="PetFrameBarSegmentTemplate, MyHealPredictionBarTemplate"/>
+					<Frame name="PetFrameOtherHealPredictionBar" inherits="PetFrameBarSegmentTemplate, OtherHealPredictionBarTemplate"/>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						TextStatusBar_Initialize(self);
+						self.textLockable = 1;
+						self.cvar = "statusText";
+						self.cvarLabel = "STATUS_TEXT_PET";
+					</OnLoad>
+					<OnValueChanged function="UnitFrameHealthBar_OnValueChanged"/>
+					<OnSizeChanged>
+						UnitFrameHealPredictionBars_UpdateSize(self:GetParent());
+					</OnSizeChanged>
+				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+			</StatusBar>
+			<StatusBar name="$parentMyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
+			<StatusBar name="$parentOtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
+			<StatusBar name="PetFrameManaBar" inherits="TextStatusBar">
+				<Size x="69" y="8"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="47" y="-29"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						TextStatusBar_Initialize(self);
+						self.textLockable = 1;
+						self.cvar = "statusText";
+						self.cvarLabel = "STATUS_TEXT_PET";
+					</OnLoad>
+				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="0" g="0" b="1.0"/>
+			</StatusBar>
+			<Button name="$parentDebuff1" inherits="PartyDebuffFrameTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="48" y="-42"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetUnitDebuff(PetFrame.unit, self:GetID());
+					</OnEnter>
+				</Scripts>
+			</Button>
+			<Button name="$parentDebuff2" inherits="PartyDebuffFrameTemplate" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentDebuff1" relativePoint="RIGHT" x="2" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetUnitDebuff(PetFrame.unit, self:GetID());
+					</OnEnter>
+				</Scripts>
+			</Button>
+			<Button name="$parentDebuff3" inherits="PartyDebuffFrameTemplate" id="3">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentDebuff2" relativePoint="RIGHT" x="2" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetUnitDebuff(PetFrame.unit, self:GetID());
+					</OnEnter>
+				</Scripts>
+			</Button>
+			<Button name="$parentDebuff4" inherits="PartyDebuffFrameTemplate" id="4">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentDebuff3" relativePoint="RIGHT" x="2" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetUnitDebuff(PetFrame.unit, self:GetID());
+					</OnEnter>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad function="PetFrame_OnLoad"/>
+			<OnEvent function="PetFrame_OnEvent"/>
+			<OnShow>
+				UnitFrame_Update(self);
+				PetFrame_Update(self);
+				TotemFrame:Update();
+				-- this will happen in TotemFrame:Update
+				--PlayerFrame_AdjustAttachments();
+			</OnShow>
+			<OnHide>
+				TotemFrame:Update();
+				-- this will happen in TotemFrame:Update
+				--PlayerFrame_AdjustAttachments();
+			</OnHide>
+			<OnUpdate function="PetFrame_OnUpdate"/>
+			<OnEnter>
+				UnitFrame_OnEnter(self);
+				PartyMemberBuffTooltip:SetPoint("TOPLEFT", self, "TOPLEFT", 60, -35);
+				PartyMemberBuffTooltip_Update(self);
+			</OnEnter>
+			<OnLeave>
+				UnitFrame_OnLeave(self);
+				PartyMemberBuffTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	<StatusBar name="PetCastingBarFrame" toplevel="true" parent="UIParent" hidden="true" inherits="CastingBarFrameTemplate">
+		<Size x="195" y="13"/>
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="CastingBarFrame" relativePoint="TOP" x="0" y="12"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad function="PetCastingBarFrame_OnLoad"/>
+			<OnEvent function="PetCastingBarFrame_OnEvent"/>
+		</Scripts>
+	</StatusBar>
+</Ui>

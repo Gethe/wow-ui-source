@@ -1,0 +1,192 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Script file="Colorblind.lua"/>
+
+	<Texture name="ColorblindExampleIconTemplate2" virtual="true">
+		<Size x="54" y="54" />
+		<TexCoords left=".140625" right=".859375" top=".140625" bottom=".859375"/>
+	</Texture>
+
+	<FontString name="ColorblindItemQualityTemplate2" parentArray="ItemQuality" inherits="OptionsFontSmall" justifyH="LEFT" justifyV="TOP" virtual="true">
+		<Size x="0" y="14"/>
+	</FontString>
+
+	<Frame name="ColorblindSelectorTemplate" mixin="ColorblindSelectorMixin" virtual="true">
+		<Size y="200"/>
+		<Frames>
+			<Frame parentKey="ColorblindExamples" setAllPoints="true">
+				<Size y="280" />
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="ColorWheel" atlas="colorblind-colorwheel" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="-325" y="-4"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Hostile" atlas="colorblind-bar-red" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="5" y="105"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="HostileLabel" text="COLORBLIND_HOSTILE" inherits="OptionsFontSmall">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.Hostile" relativePoint="TOPLEFT" x="5" y="3" />
+							</Anchors>
+							<Color r="0.5" g="0.5" b="0.5"/>
+						</FontString>
+						<Texture parentKey="Neutral" atlas="colorblind-bar-yellow" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Hostile" relativePoint="BOTTOMLEFT" y="-30" />
+							</Anchors>
+						</Texture>
+						<FontString parentKey="NeutralLabel" text="COLORBLIND_NEUTRAL" inherits="OptionsFontSmall">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.Neutral" relativePoint="TOPLEFT" x="5" y="3" />
+							</Anchors>
+							<Color r="0.5" g="0.5" b="0.5"/>
+						</FontString>
+						<Texture parentKey="Friendly" atlas="colorblind-bar-green" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Neutral" relativePoint="BOTTOMLEFT" y="-30" />
+							</Anchors>
+						</Texture>
+						<FontString parentKey="FriendlyLabel" text="COLORBLIND_FRIENDLY" inherits="OptionsFontSmall">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.Friendly" relativePoint="TOPLEFT" x="5" y="3" />
+							</Anchors>
+							<Color r="0.5" g="0.5" b="0.5"/>
+						</FontString>
+						<Texture parentKey="ExampleIcon1" file="Interface\Icons\Achievement_Character_Nightelf_Female" inherits="ColorblindExampleIconTemplate2">
+							<Anchors>
+								<Anchor point="BOTTOM" x="100" y="72"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="ExampleIcon2" file="Interface\Icons\Achievement_Character_Dwarf_Male" inherits="ColorblindExampleIconTemplate2">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.ExampleIcon1" relativePoint="RIGHT" x="10" />
+							</Anchors>
+						</Texture>
+						<Texture parentKey="ExampleIcon3" file="Interface\Icons\Achievement_Character_Troll_Male" inherits="ColorblindExampleIconTemplate2">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.ExampleIcon2" relativePoint="RIGHT" x="10" />
+							</Anchors>
+						</Texture>
+						<Texture parentKey="ExampleIcon4" file="Interface\Icons\ClassIcon_Monk" inherits="ColorblindExampleIconTemplate2">
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.ExampleIcon1" relativePoint="BOTTOM" y="-10" />
+							</Anchors>
+						</Texture>
+						<Texture parentKey="ExampleIcon5" file="Interface\Icons\Spell_Shadow_Metamorphosis" inherits="ColorblindExampleIconTemplate2">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.ExampleIcon4" relativePoint="RIGHT" x="10" />
+							</Anchors>
+						</Texture>
+						<Texture parentKey="ExampleIcon6" file="Interface\Icons\Ability_Hunter_Camouflage" inherits="ColorblindExampleIconTemplate2">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.ExampleIcon5" relativePoint="RIGHT" x="10" />
+							</Anchors>
+						</Texture>
+						<FontString parentKey="ItemQualityText" text="COLORBLIND_ITEM_QUALITY" inherits="OptionsFontSmall" justifyH="LEFT">
+							<Size x="112" y="10"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Friendly" relativePoint="BOTTOMLEFT" x="5" y="-16"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="ItemQuality1" parentArray="ItemQualities" inherits="OptionsFontSmall" justifyH="LEFT">
+							<Size x="0" y="10"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ItemQualityText" relativePoint="BOTTOMLEFT" x="0" y="-16"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="ItemQuality2" parentArray="ItemQualities" inherits="OptionsFontSmall" justifyH="LEFT">
+							<Size x="0" y="10"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ItemQuality1" relativePoint="TOPRIGHT" x="8" y="0"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="ItemQuality3" parentArray="ItemQualities" inherits="OptionsFontSmall" justifyH="LEFT">
+							<Size x="0" y="10"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ItemQuality2" relativePoint="TOPRIGHT" x="8" y="0"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="ItemQuality4" parentArray="ItemQualities" inherits="OptionsFontSmall" justifyH="LEFT">
+							<Size x="0" y="10"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ItemQuality3" relativePoint="TOPRIGHT" x="8" y="0"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="ItemQuality5" parentArray="ItemQualities" inherits="OptionsFontSmall" justifyH="LEFT">
+							<Size x="0" y="10"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ItemQuality4" relativePoint="TOPRIGHT" x="8" y="0"/>
+							</Anchors>
+						</FontString>
+						<FontString inherits="ColorblindItemQualityTemplate2">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ItemQualityText" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="ExampleIcon1Border">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ExampleIcon1" x="-1" y="1" />
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ExampleIcon1" x="1" y="-1" />
+							</Anchors>
+							<Color r=".214" g=".214" b=".214" />
+						</Texture>
+						<Texture parentKey="ExampleIcon2Border">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ExampleIcon2" x="-1" y="1" />
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ExampleIcon2" x="1" y="-1" />
+							</Anchors>
+							<Color r=".214" g=".214" b=".214" />
+						</Texture>
+						<Texture parentKey="ExampleIcon3Border">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ExampleIcon3" x="-1" y="1" />
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ExampleIcon3" x="1" y="-1" />
+							</Anchors>
+							<Color r=".214" g=".214" b=".214" />
+						</Texture>
+						<Texture parentKey="ExampleIcon4Border">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ExampleIcon4" x="-1" y="1" />
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ExampleIcon4" x="1" y="-1" />
+							</Anchors>
+							<Color r=".214" g=".214" b=".214" />
+						</Texture>
+						<Texture parentKey="ExampleIcon5Border">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ExampleIcon5" x="-1" y="1" />
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ExampleIcon5" x="1" y="-1" />
+							</Anchors>
+							<Color r=".214" g=".214" b=".214" />
+						</Texture>
+						<Texture parentKey="ExampleIcon6Border">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ExampleIcon6" x="-1" y="1" />
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ExampleIcon6" x="1" y="-1" />
+							</Anchors>
+							<Color r=".214" g=".214" b=".214" />
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString parentKey="Instructions" text="COLORBLIND_OPTIONS_INSTRUCTIONS" inherits="GameFontNormal" justifyH="LEFT">
+					<Size x="550" />
+					<Anchors>
+						<Anchor point="TOPLEFT" x="5" y="-10"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>

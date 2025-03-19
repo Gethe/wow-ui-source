@@ -1,0 +1,620 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Script file="Blizzard_ProfessionsCustomerOrdersForm.lua"/>
+
+	<Button name="ProfessionsCustomerListingsElementTemplate" mixin="ProfessionsCustomerListingsElementMixin" virtual="true">
+		<Size y="20"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="HighlightTexture" atlas="auctionhouse-ui-row-highlight" alphaMode="ADD" setAllPoints="true" hidden="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="ProfessionsCustomerOrderFormTemplate" mixin="ProfessionsCustomerOrderFormMixin" enableMouse="true" virtual="true">
+		<Size x="815" y="480"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="RecipeHeader" atlas="CraftingOrders-Header-Frame" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="8" y="-10"/>
+					</Anchors>					
+				</Texture>
+				<FontString parentKey="RecipeName" inherits="GameFontNormalMed2" justifyH="LEFT">
+					<Size x="415" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="90" y="-29"/>
+					</Anchors>
+				</FontString>
+
+				<FontString parentKey="RecraftRecipeName" inherits="GameFontHighlightMed2" justifyH="LEFT">
+					<Size x="305" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="TOPLEFT" x="200" y="-37"/>
+					</Anchors>
+				</FontString>
+
+				<FontString parentKey="ProfessionText" inherits="GameFontNormalSmall">
+					<Size x="0" y="0"/>
+					<!-- Anchored dynamically -->
+					<Color color="LIGHTGRAY_FONT_COLOR"/>
+				</FontString>
+
+				<FontString parentKey="OrderStateText" inherits="GameFontNormal" text="PROFESSIONS_ORDER_COMPLETE" justifyH="RIGHT" parentArray="committedRegions">
+					<Size x="0" y="0"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-10" y="-10"/>
+					</Anchors>					
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="MinimumQualityIcon">
+					<!-- Anchored dynamically -->
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="LeftPanelBackground" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" x="-295" y="0"/>
+				</Anchors>				
+				<Frames>
+					<Frame parentKey="NineSlice" useParentLevel="true" inherits="NineSlicePanelTemplate">
+						<KeyValues>
+							<KeyValue key="layoutType" value="InsetFrameTemplate" type="string"/>
+						</KeyValues>
+					</Frame>
+				</Frames>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" atlas="auctionhouse-background-index" useAtlasSize="false" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="RightPanelBackground" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.LeftPanelBackground" relativePoint="TOPRIGHT" x="0" y="0"/>
+					<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+				</Anchors>				
+				<Frames>
+					<Frame parentKey="NineSlice" useParentLevel="true" inherits="NineSlicePanelTemplate">
+						<KeyValues>
+							<KeyValue key="layoutType" value="InsetFrameTemplate" type="string"/>
+						</KeyValues>
+					</Frame>
+				</Frames>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" atlas="auctionhouse-background-index" useAtlasSize="false" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Button parentKey="BackButton" text="PROFESSIONS_CRAFTING_FORM_BACK" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true">
+				<Size x="107" y="22"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="55" y="28"/>
+				</Anchors>
+			</Button>
+
+			<CheckButton parentKey="FavoriteButton" mixin="ProfessionsFavoriteButtonMixin" hidden="true">
+				<Size x="20" y="18"/>
+				<NormalTexture parentKey="NormalTexture" atlas="auctionhouse-icon-favorite"/>
+				<HighlightTexture parentKey="HighlightTexture" atlas="auctionhouse-icon-favorite-off" alphaMode="ADD"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.RecipeHeader" x="-5" y="-5"/>
+				</Anchors>
+			</CheckButton>
+
+			<Button parentKey="OutputIcon" inherits="ProfessionsOutputButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="30" y="-24"/>
+				</Anchors>
+			</Button>
+
+			<Frame parentKey="MinimumQuality" parentArray="uncommittedRegions">
+				<Size x="300" y="20"/>
+				<!-- Repositioned dynamically -->
+				<Frames>
+					<DropdownButton parentKey="Dropdown" inherits="WowStyle1DropdownTemplate" parentArray="uncommittedRegions">
+						<Anchors>
+							<Anchor point="RIGHT"/>
+						</Anchors>
+					</DropdownButton>
+				</Frames>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" inherits="GameFontNormal" justifyH="RIGHT" text="PROFESSIONS_CRAFTING_FORM_MIN_QUALITY">
+							<Size x="250" y="20"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent.Dropdown" relativePoint="LEFT" x="-5" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<DropdownButton parentKey="OrderRecipientDropdown" inherits="WowStyle1DropdownTemplate" parentArray="uncommittedRegions">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-10" y="-11"/>
+				</Anchors>
+			</DropdownButton>
+			
+			<EditBox parentKey="OrderRecipientTarget" letters="77" historyLines="0" autoFocus="false" inherits="InputBoxTemplate, AutoCompleteEditBoxTemplate" frameLevel="500" hidden="true"
+			parentArray="uncommittedRegions">
+				<Size x="145" y="25"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.OrderRecipientDropdown" relativePoint="BOTTOMRIGHT" x="0" y="-1"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString inherits="GameFontNormal" text="MAIL_TO_LABEL" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT" x="-12" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						AutoCompleteEditBox_SetAutoCompleteSource(self, GetAutoCompleteResults, AUTOCOMPLETE_LIST.CRAFTINGORDER.include, AUTOCOMPLETE_LIST.CRAFTINGORDER.exclude);
+						self.addHighlightedText = true;
+						self.autoCompleteContext = "craftingorder";
+					</OnLoad>
+					<OnTabPressed>
+						AutoCompleteEditBox_OnTabPressed(self)
+					</OnTabPressed>
+					<OnEditFocusLost>
+						AutoCompleteEditBox_OnEditFocusLost(self);
+						EditBox_ClearHighlight(self);
+						self:GetParent():UpdateListOrderButton();
+					</OnEditFocusLost>
+					<OnEnterPressed>
+						AutoCompleteEditBox_OnEnterPressed(self);
+						self:GetParent():UpdateListOrderButton();
+					</OnEnterPressed>
+					<OnEscapePressed>
+						if ( not AutoCompleteEditBox_OnEscapePressed(self) ) then
+							EditBox_ClearFocus(self);
+						end
+						self:GetParent():UpdateListOrderButton();
+					</OnEscapePressed>
+					<OnTextChanged>
+						AutoCompleteEditBox_OnTextChanged(self, userInput);
+					</OnTextChanged>
+				</Scripts>
+				<FontString inherits="ChatFontNormal"/>
+			</EditBox>
+
+			<Frame parentKey="OrderRecipientDisplay" parentArray="committedRegions">
+				<Size x="1" y="50"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-290" y="-45"/>
+				</Anchors>				
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="PostedTo" inherits="GameFontNormal" justifyH="LEFT" justifyV="MIDDLE">
+							<Size x="0" y="20"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="15" y="0"/>
+							</Anchors>							
+						</FontString>
+						<FontString parentKey="Crafter" inherits="GameFontNormal" text="PROFESSIONS_ORDER_CRAFTER" justifyH="LEFT" justifyV="MIDDLE">
+							<Size x="0" y="20"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.PostedTo" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="CrafterValue" inherits="GameFontHighlight" justifyH="LEFT" justifyV="MIDDLE">
+							<Size x="0" y="20"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Crafter" relativePoint="RIGHT" x="5" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<DropdownButton parentKey="SocialDropdown" inherits="UIMenuButtonStretchTemplate">
+						<Size x="22" y="22"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.CrafterValue" relativePoint="RIGHT" x="5" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture file="Interface\Buttons\SquareButtonTextures" parentKey="icon">
+									<Size x="12" y="12"/>
+									<Anchors>
+										<Anchor point="CENTER" x="0" y="0"/>
+									</Anchors>
+									<TexCoords left="0.45312500" right="0.64062500" top="0.20312500" bottom="0.01562500"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+					</DropdownButton>
+				</Frames>
+			</Frame>
+
+			<Frame parentKey="RecraftSlot" inherits="ProfessionsRecraftSlotTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="hideBackdrop" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="13" y="-4"/>
+				</Anchors>						
+			</Frame>
+
+			<Frame parentKey="ReagentContainer">
+				<Size x="490"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="10" y="-95"/>
+					<Anchor point="BOTTOMLEFT" x="10" y="10"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="Reagents" inherits="ProfessionsReagentContainerTemplate">
+						<KeyValues>
+							<KeyValue key="labelText" value="PROFESSIONS_CUSTOMER_REAGENT_CONTAINER_LABEL" type="global"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="10" y="-10"/>
+						</Anchors>
+					</Frame>
+					
+					<Frame parentKey="OptionalReagents" inherits="ProfessionsReagentContainerTemplate">
+						<KeyValues>
+							<KeyValue key="labelText" value="PROFESSIONS_CUSTOMER_OPTIONAL_REAGENT_CONTAINER_LABEL" type="global"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Reagents" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="RecraftInfoText" inherits="GameFontHighlight" text="PROFESSIONS_RECRAFT_ORDER_INSTRUCTION" justifyH="LEFT">
+							<Size x="400" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.$parent.RecraftSlot" relativePoint="BOTTOMLEFT" x="15" y="-15"/>
+							</Anchors>
+							<Color color="GRAY_FONT_COLOR"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame parentKey="PaymentContainer">
+				<Size x="305"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeKey="$parent.ReagentContainer" x="5" y="0"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" relativeKey="$parent.ReagentContainer" x="5" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Tip" text="PROFESSIONS_CRAFTING_FORM_TIP" inherits="GameFontNormal" justifyH="RIGHT">
+							<Size x="110" y="40"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="-150"/>
+							</Anchors>
+						</FontString>
+
+						<FontString parentKey="Duration" inherits="GameFontNormal" justifyH="RIGHT" parentArray="uncommittedRegions">
+							<Size x="110" y="40"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Tip" relativePoint="BOTTOMLEFT" y="0"/>
+							</Anchors>
+						</FontString>
+
+						<FontString parentKey="TimeRemaining" text="PROFESSIONS_ORDER_TIME_REMAINING" inherits="GameFontNormal" justifyH="RIGHT" parentArray="committedRegions">
+							<Size x="110" y="40"/>
+							<KeyValues>
+								<KeyValue key="hideWhenCompleted" value="true" type="boolean"/>
+							</KeyValues>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Tip" relativePoint="BOTTOMLEFT" y="0"/>
+							</Anchors>
+						</FontString>
+
+						<FontString parentKey="PostingFee" text="PROFESSIONS_CRAFTING_FORM_POSTING_FEE" inherits="GameFontNormal" justifyH="RIGHT">
+							<Size x="110" y="40"/>
+							<!-- Anchored dynamically -->
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Duration" relativePoint="BOTTOMLEFT" y="0"/>
+							</Anchors>
+						</FontString>
+						
+						<FontString parentKey="TotalPrice" text="PROFESSIONS_CRAFTING_FORM_TOTAL_PRICE" inherits="GameFontNormal" justifyH="RIGHT">
+							<Size x="110" y="40"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.PostingFee" relativePoint="BOTTOMLEFT" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="NoteEditBox">
+						<Size y="144" x="300"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="17" y="0"/>
+						</Anchors>						
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="Border" atlas="CraftingOrders-NoteFrameNarrow" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" x="0" y="-17"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame parentKey="TitleBox">
+								<Anchors>
+									<Anchor point="TOPLEFT" x="16" y="0"/>
+									<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="-24" y="-23"/>
+								</Anchors>									
+								<Layers>
+									<Layer level="OVERLAY">
+										<FontString parentKey="Title" inherits="GameFontNormal" text="PROFESSIONS_NOTE_TO_CRAFTER" justifyH="LEFT">
+											<Size x="200" y="1"/>
+											<Anchors>
+												<Anchor point="LEFT" x="10" y="0"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+
+							<Frame parentKey="ScrollingEditBox" inherits="ScrollingEditBoxTemplate" frameStrata="HIGH">
+								<KeyValues>
+									<KeyValue key="fontName" value="GameFontHighlight" type="string"/>
+									<KeyValue key="defaultText" value="PROFESSIONS_CRAFTING_FORM_OPTIONAL_MESSAGE" type="global"/>
+									<KeyValue key="maxLetters" value="250" type="number"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.TitleBox" relativePoint="BOTTOMLEFT" x="10" y="-3"/>
+									<Anchor point="BOTTOMRIGHT" x="-32" y="5"/>
+								</Anchors>
+							</Frame>
+						</Frames>
+					</Frame>
+
+					<Frame parentKey="TipMoneyInputFrame" inherits="LargeMoneyInputFrameTemplate" parentArray="uncommittedRegions">
+						<KeyValues>
+							<KeyValue key="hideCopper" value="false" type="boolean"/>
+						</KeyValues>
+						<Size x="200" y="33"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.Tip" relativePoint="RIGHT" x="10"/>
+						</Anchors>
+					</Frame>
+
+					<Button parentKey="ViewListingsButton" registerForClicks="LeftButtonUp, LeftButtonDown" parentArray="uncommittedRegions">
+						<Size x="27" y="26"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.TipMoneyInputFrame" relativePoint="RIGHT" x="-48" y="2"/>
+						</Anchors>
+						<Scripts>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>			
+						<NormalTexture parentKey="NormalTexture" atlas="UI-CraftingOrderIcon-Up"/>
+						<HighlightTexture parentKey="HighlightTexture" atlas="UI-CraftingOrderIcon-Up" alphaMode="ADD" alpha="0.3"/>
+						<PushedTexture parentKey="PushedTexture" atlas="UI-CraftingOrderIcon-Down"/>
+					</Button>
+
+					<Frame parentKey="TipMoneyDisplayFrame" inherits="MoneyDisplayFrameTemplate" parentArray="committedRegions">
+						<Size x="200" y="33"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.Tip" relativePoint="RIGHT" x="10"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="hideCopper" value="true" type="boolean"/>
+							<KeyValue key="leftAlign" value="true" type="boolean"/>
+							<KeyValue key="useAuctionHouseIcons" value="true" type="boolean"/>
+							<KeyValue key="alwaysShowGold" value="true" type="boolean"/>
+						</KeyValues>
+					</Frame>
+
+					<DropdownButton parentKey="DurationDropdown" inherits="WowStyle1DropdownTemplate" parentArray="uncommittedRegions">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.Duration" relativePoint="RIGHT" x="10"/>
+						</Anchors>
+					</DropdownButton>
+					
+					<Frame parentKey="TimeRemainingDisplay" parentArray="committedRegions">
+						<Size x="140" y="30"/>
+						<KeyValues>
+							<KeyValue key="hideWhenCompleted" value="true" type="boolean"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.TimeRemaining" relativePoint="RIGHT" x="10"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Text" inherits="GameFontHighlight" justifyH="LEFT" setAllPoints="true"/>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame parentKey="PostingFeeMoneyDisplayFrame" inherits="MoneyDisplayFrameTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.PostingFee" relativePoint="RIGHT" x="10"/>
+							<Anchor point="RIGHT"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="hideCopper" value="true" type="boolean"/>
+							<KeyValue key="leftAlign" value="true" type="boolean"/>
+							<KeyValue key="useAuctionHouseIcons" value="true" type="boolean"/>
+						</KeyValues>
+					</Frame>
+
+					<Frame parentKey="TotalPriceMoneyDisplayFrame" inherits="MoneyDisplayFrameTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.TotalPrice" relativePoint="RIGHT" x="10"/>
+							<Anchor point="RIGHT"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="hideCopper" value="true" type="boolean"/>
+							<KeyValue key="leftAlign" value="true" type="boolean"/>
+							<KeyValue key="useAuctionHouseIcons" value="true" type="boolean"/>
+						</KeyValues>
+					</Frame>
+					
+					<Button parentKey="ListOrderButton" inherits="UIPanelButtonTemplate" text="PROFESSIONS_CRAFTING_FORM_LIST_ORDER" motionScriptsWhileDisabled="true" parentArray="uncommittedRegions">
+						<Size x="160" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOM" x="0" y="20"/>
+						</Anchors>
+						<Scripts>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
+					</Button>
+
+					<Button parentKey="CancelOrderButton" inherits="UIPanelButtonTemplate" text="PROFESSIONS_CRAFTING_FORM_CANCEL_ORDER" motionScriptsWhileDisabled="true" parentArray="committedRegions">
+						<Size x="160" y="22"/>
+						<KeyValues>
+							<KeyValue key="hideWhenCompleted" value="true" type="boolean"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="BOTTOM" x="70" y="-34"/>
+						</Anchors>											
+						<Scripts>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+
+			<Frame parentKey="TrackRecipeCheckbox" inherits="ResizeLayoutFrame" scale="0.9">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.RecipeHeader" x="5" y="2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" inherits="GameFontNormalSmall">
+							<Size x="0" y="0"/>
+							<Anchors>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<CheckButton parentKey="Checkbox" inherits="UICheckButtonTemplate">
+						<Size x="26" y="26"/>
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.Text" relativePoint="LEFT" x="2" y="0"/>
+						</Anchors>
+					</CheckButton>
+				</Frames>
+			</Frame>
+
+			<CheckButton parentKey="AllocateBestQualityCheckbox" inherits="UICheckButtonTemplate">
+				<Size x="26" y="26"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ReagentContainer" x="6" y="-3"/>
+				</Anchors>
+			</CheckButton>
+		
+			<Frame parentKey="QualityDialog" inherits="ProfessionsQualityDialogTemplate" frameStrata="DIALOG" hidden="true">
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="CurrentListings" inherits="DefaultPanelTemplate">
+				<Size x="285" y="450"/>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="RIGHT" x="0" y="15"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="OrderList">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="10" y="-27"/>
+							<Anchor point="BOTTOMRIGHT" x="-2" y="35"/>
+						</Anchors>						
+						<Layers>
+							<Layer>
+								<Texture parentKey="Background" atlas="auctionhouse-background-index" useAtlasSize="false">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="3" y="-22"/>
+										<Anchor point="BOTTOMRIGHT"  x="-30" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame parentKey="HeaderContainer">
+								<Size y="20"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" x="3" y="-1"/>
+									<Anchor point="TOPRIGHT" x="-25" y="-1"/>
+								</Anchors>
+							</Frame>
+							<Frame parentKey="NineSlice" useParentLevel="true" inherits="NineSlicePanelTemplate">
+								<KeyValues>
+									<KeyValue key="layoutType" value="InsetFrameTemplate" type="string"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="TOPLEFT" x="0" y="-19"/>
+									<Anchor point="BOTTOMRIGHT" x="-27" y="0"/>
+								</Anchors>
+							</Frame>
+							<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
+									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT"/>
+								</Anchors>
+							</Frame>
+							<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.NineSlice" relativePoint="TOPRIGHT" x="8" y="-7"/>
+									<Anchor point="BOTTOMLEFT" relativeKey="$parent.NineSlice" relativePoint="BOTTOMRIGHT" x="8" y="3"/>
+								</Anchors>
+							</EventFrame>
+							<Frame parentKey="LoadingSpinner" inherits="SpinnerTemplate" hidden="true" frameLevel="2000">
+								<Size x="80" y="80"/>
+								<Anchors>
+									<Anchor point="CENTER" x="0" y="0"/>
+								</Anchors>
+							</Frame>
+						</Frames>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString parentKey="ResultsText" inherits="GameFontNormal" hidden="true">
+									<Anchors>
+										<Anchor point="TOP" relativeKey="$parent.ScrollBox" relativePoint="TOP" x="0" y="-20"/>
+										<Anchor point="LEFT" x="45"/>
+										<Anchor point="RIGHT" x="-67"/>
+									</Anchors>
+									<Shadow>
+										<Offset>
+											<AbsDimension x="1" y="-1"/>
+										</Offset>
+										<Color r="0" g="0" b="0"/>
+									</Shadow>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+
+					<Button parentKey="CloseButton" inherits="UIPanelButtonTemplate" text="CLOSE">
+						<Size x="120" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOM" x="0" y="8"/>
+						</Anchors>
+					</Button>
+				</Frames>
+			</Frame>	
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

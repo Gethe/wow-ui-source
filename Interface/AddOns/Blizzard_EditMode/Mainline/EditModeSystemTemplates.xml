@@ -1,0 +1,333 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="EditModeSystemTemplate" mixin="EditModeSystemMixin" virtual="true" clampedToScreen="true">
+		<Scripts>
+			<OnLoad method="OnSystemLoad"/>
+			<OnHide method="OnSystemHide"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="EditModeSystemSelectionBaseTemplate" parentKey="Selection" inherits="NineSliceCodeTemplate" mixin="EditModeSystemSelectionBaseMixin" ignoreParentAlpha="true" frameStrata="MEDIUM" frameLevel="1000" toplevel="true" enableMouse="true" registerForDrag="LeftButton" dontSavePosition="true" virtual="true">
+		<Size x="1" y="1"/>
+		<KeyValues>
+			<KeyValue key="highlightTextureKit" value="editmode-actionbar-highlight" type="string"/>
+			<KeyValue key="selectedTextureKit" value="editmode-actionbar-selected" type="string"/>
+			<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnDragStart method="OnDragStart"/>
+			<OnDragStop method="OnDragStop"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="EditModeSystemSelectionTemplate" inherits="EditModeSystemSelectionBaseTemplate" mixin="EditModeSystemSelectionMixin" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Label" inherits="GameFontHighlightLarge" mixin="ShrinkUntilTruncateFontStringMixin" setAllPoints="true" ignoreParentScale="true" hidden="true">
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="EditModeSystemSelectionDoubleLabelTemplate" inherits="EditModeSystemSelectionBaseTemplate" mixin="EditModeSystemSelectionDoubleLabelMixin" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="HorizontalLabel" inherits="GameFontHighlightLarge" mixin="ShrinkUntilTruncateFontStringMixin" setAllPoints="true" ignoreParentScale="true" hidden="true">
+				</FontString>
+				<FontString parentKey="VerticalLabel" inherits="GameFontHighlightLarge" degrees="90" ignoreParentScale="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" x="-8" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="EditModeActionBarSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeActionBarSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.ActionBar" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_ACTION_BAR_LABEL" type="global"/>
+			<KeyValue key="addSystemIndexToName" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Frame inherits="EditModeSystemSelectionDoubleLabelTemplate" setAllPoints="true" hidden="true"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="EditModeUnitFrameSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeUnitFrameSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.UnitFrame" type="global"/>
+		</KeyValues>
+		<Frames>
+			<Frame inherits="EditModeSystemSelectionDoubleLabelTemplate" setAllPoints="true" hidden="true"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="EditModeBossUnitFrameSystemTemplate" inherits="EditModeUnitFrameSystemTemplate" mixin="EditModeBossUnitFrameSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="systemIndex" value="Enum.EditModeUnitFrameSystemIndices.Boss" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_BOSS_FRAMES_LABEL" type="global"/>
+			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+			<KeyValue key="breakSnappedFramesOnSave" value="true" type="boolean"/>
+			<KeyValue key="alwaysUseTopRightAnchor" value="true" type="boolean"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="EditModeArenaUnitFrameSystemTemplate" inherits="EditModeUnitFrameSystemTemplate" mixin="EditModeArenaUnitFrameSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="systemIndex" value="Enum.EditModeUnitFrameSystemIndices.Arena" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_ARENA_FRAMES_LABEL" type="global"/>
+			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+			<KeyValue key="breakSnappedFramesOnSave" value="true" type="boolean"/>
+			<KeyValue key="alwaysUseTopRightAnchor" value="true" type="boolean"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="EditModeMinimapSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeMinimapSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.Minimap" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_MINIMAP_LABEL" type="global"/>
+		</KeyValues>
+		<Frames>
+			<Frame inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="EditModeCastBarSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeCastBarSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.CastBar" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_CAST_BAR_LABEL" type="global"/>
+			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Frame inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="EditModeEncounterBarSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeEncounterBarSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.EncounterBar" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_ENCOUNTER_BAR_LABEL" type="global"/>
+			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Frame inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="EditModeExtraAbilitiesSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeExtraAbilitiesSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.ExtraAbilities" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_EXTRA_ABILITIES_LABEL" type="global"/>
+			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Frame inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="EditModeAuraFrameSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeAuraFrameSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.AuraFrame" type="global"/>
+			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Frame inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="EditModeTalkingHeadFrameSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeTalkingHeadFrameSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.TalkingHeadFrame" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_TALKING_HEAD_FRAME_LABEL" type="global"/>
+			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Frame inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="EditModeChatFrameSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeChatFrameSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.ChatFrame" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_CHAT_FRAME_LABEL" type="global"/>
+		</KeyValues>
+		<Frames>
+			<Frame inherits="EditModeSystemSelectionTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-32" y="60"/>
+					<Anchor point="BOTTOMRIGHT" x="25" y="-32"/>
+				</Anchors>
+			</Frame>
+			<Button parentKey="EditModeResizeButton" mixin="EditModeChatFrameResizeButtonMixin" frameStrata="HIGH" toplevel="true" hidden="true">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Selection" y="26"/>
+				</Anchors>
+				<Scripts>
+					<OnMouseDown method="OnMouseDown"/>
+					<OnMouseUp method="OnMouseUp"/>
+				</Scripts>
+				<NormalTexture file="Interface\ChatFrame\UI-ChatIM-SizeGrabber-Up"/>
+				<HighlightTexture file="Interface\ChatFrame\UI-ChatIM-SizeGrabber-Highlight"/>
+				<PushedTexture file="Interface\ChatFrame\UI-ChatIM-SizeGrabber-Down"/>
+			</Button>
+		</Frames>
+	</Frame>
+
+	<Frame name="EditModeVehicleLeaveButtonSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeVehicleLeaveButtonSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.VehicleLeaveButton" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_VEHICLE_LEAVE_BUTTON_LABEL" type="global"/>
+			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+			<KeyValue key="useDefaultAnchors" value="ACTION_BARS_USE_DEFAULT_ANCHORS" type="global"/>
+		</KeyValues>
+		<Frames>
+			<Frame inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+		</Frames>
+		<Scripts>
+			<OnShow method="EditModeVehicleLeaveButtonSystem_OnShow"/>
+			<OnHide method="EditModeVehicleLeaveButtonSystem_OnHide"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="EditModeLootFrameSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeLootFrameSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.LootFrame" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_LOOT_FRAME_LABEL" type="global"/>
+			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Frame inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="EditModeHudTooltipSystemTemplate" inherits="EditModeSystemTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.HudTooltip" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_HUD_TOOLTIP_LABEL" type="global"/>
+		</KeyValues>
+		<Frames>
+			<Frame inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="EditModeObjectiveTrackerSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeObjectiveTrackerSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.ObjectiveTracker" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_OBJECTIVE_TRACKER_LABEL" type="global"/>
+			<KeyValue key="breakSnappedFramesOnSave" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Frame inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="EditModeMicroMenuSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeMicroMenuSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.MicroMenu" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_MICRO_MENU_LABEL" type="global"/>
+		</KeyValues>
+		<Frames>
+			<Frame inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="EditModeBagsSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeBagsSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.Bags" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_BAGS_LABEL" type="global"/>
+		</KeyValues>
+		<Frames>
+			<Frame inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="EditModeStatusTrackingBarSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeStatusTrackingBarSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.StatusTrackingBar" type="global"/>
+		</KeyValues>
+		<Frames>
+			<Frame inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="EditModeStatusTrackingBar1SystemTemplate" inherits="EditModeStatusTrackingBarSystemTemplate" mixin="EditModeStatusTrackingBar1SystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="systemIndex" value="Enum.EditModeStatusTrackingBarSystemIndices.StatusTrackingBar1" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_STATUS_TRACKING_BAR_LABEL" type="global"/>
+			<KeyValue key="addSystemIndexToName" value="true" type="boolean"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="EditModeStatusTrackingBar2SystemTemplate" inherits="EditModeStatusTrackingBarSystemTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="systemIndex" value="Enum.EditModeStatusTrackingBarSystemIndices.StatusTrackingBar2" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_STATUS_TRACKING_BAR_LABEL" type="global"/>
+			<KeyValue key="addSystemIndexToName" value="true" type="boolean"/>
+			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="EditModeDurabilityFrameSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeDurabilityFrameSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.DurabilityFrame" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_DURABILITY_FRAME_LABEL" type="global"/>
+			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Frame inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="EditModePlayerFrameSystemTemplate" inherits="EditModeUnitFrameSystemTemplate" mixin="EditModePlayerFrameSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="systemIndex" value="Enum.EditModeUnitFrameSystemIndices.Player" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_PLAYER_FRAME_LABEL" type="global"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="EditModePetFrameSystemTemplate" inherits="EditModeUnitFrameSystemTemplate" mixin="EditModePetFrameSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="systemIndex" value="Enum.EditModeUnitFrameSystemIndices.Pet" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_PET_FRAME_LABEL" type="global"/>
+			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="EditModeTimerBarsSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeTimerBarsSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.TimerBars" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_TIMER_BARS_LABEL" type="global"/>
+			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Frame inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="EditModeVehicleSeatIndicatorSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeVehicleSeatIndicatorSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.VehicleSeatIndicator" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_VEHICLE_SEAT_INDICATOR_LABEL" type="global"/>
+			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Frame inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="EditModeArchaeologyBarSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeArchaeologyBarSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.ArchaeologyBar" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_ARCHAEOLOGY_BAR_LABEL" type="global"/>
+			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Frame inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+		</Frames>
+	</Frame>
+</Ui>

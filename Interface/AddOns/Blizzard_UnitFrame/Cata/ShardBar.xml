@@ -1,0 +1,157 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+  <Script file="ShardBar.lua"/>
+  
+	  
+	<!-- Patchwerk texture info  size=64,128
+	<Texture name="UI-WarlockShard-Shard.png" >
+		<Size x="17" y="16"/>	
+		<TexCoords left="0.01562500" right="0.28125000" top="0.00781250" bottom="0.13281250"/>	
+	</Texture>
+	<Texture name="UI-WarlockShard-ShardGlow.png" >
+		<Size x="26" y="23"/>	
+		<TexCoords left="0.01562500" right="0.42187500" top="0.14843750" bottom="0.32812500"/>	
+	</Texture>
+	<Texture name="UI-WarlockShard-Smoke.png" >
+		<Size x="32" y="32"/>	
+		<TexCoords left="0.01562500" right="0.51562500" top="0.34375000" bottom="0.59375000"/>	
+	</Texture>
+	<Texture name="UI-WarlockShard-BG.png" >
+		<Size x="52" y="29"/>	
+		<TexCoords left="0.01562500" right="0.82812500" top="0.60937500" bottom="0.83593750"/>	
+		Interface\\PlayerFrame\\
+	</Texture-->
+
+	  
+  
+  
+  
+  <Frame name="ShardTemplate" virtual="true" hidden="false">
+		<Animations>
+			<AnimationGroup parentKey="animIn">
+				<Alpha target="$parentFill" fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
+				<Alpha target="$parentGlow" fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
+				<Alpha target="$parentGlow" fromAlpha="0" toAlpha="1" duration="0.1" order="2"/>
+				<Scripts>
+					<OnPlay>
+						self:GetParent().shardFill:Show();
+					</OnPlay>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="animOut">
+				<Alpha		target="$parentFill" fromAlpha="1" toAlpha="0" duration="0.2" order="1"/>
+				<Alpha		target="$parentSmokeA" fromAlpha="0" toAlpha="1" duration="0.1" order="1"/>
+				<Alpha		target="$parentSmokeB" fromAlpha="0" toAlpha="1" duration="0.1" order="1"/>
+				<Rotation 	target="$parentSmokeA" duration="0.3" order="1" degrees="63"/>
+				<Rotation	target="$parentSmokeB" duration="0.4" order="1" degrees="-52"/>
+				<Scale 		target="$parentSmokeA" fromScaleX="1.0" fromScaleY="1.0" toScaleX="1.2" toScaleY="1.2" duration="0.3" order="1"/>
+				<Scale		target="$parentSmokeB" fromScaleX="1.2" fromScaleY="1.2" toScaleX="2.5" toScaleY="2.5" duration="0.4" order="1"/>
+				<Alpha		target="$parentSmokeA" fromAlpha="1" toAlpha="0" duration="0.25" order="2"/>
+				<Alpha		target="$parentSmokeB" fromAlpha="1" toAlpha="0" duration="0.25" order="2"/>
+				<Scale		target="$parentSmokeA" fromScaleX="2.5" fromScaleY="2.5" toScaleX="0.4" toScaleY="0.4" duration="0.25" order="2"/>
+				<Scale		target="$parentSmokeB" fromScaleX="2.5" fromScaleY="2.5" toScaleX="0.4" toScaleY="0.4" duration="0.25" order="2"/>
+				<Scripts>
+					<OnFinished>
+						self:GetParent().shardFill:Hide();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Size x="52" y="29"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentGlow"  file="Interface\PlayerFrame\UI-WarlockShard" parentKey="shardGlow" alphaMode="ADD">
+					<Size x="26" y="23"/>	
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-2" y="1"/>
+					</Anchors>
+					<TexCoords left="0.01562500" right="0.42187500" top="0.14843750" bottom="0.32812500"/>	
+				</Texture>
+				<Texture name="$parentSmokeA" file="Interface\PlayerFrame\UI-WarlockShard" parentKey="shardSmokeA">
+					<Size x="32" y="32"/>	
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-8" y="5"/>
+					</Anchors>
+					<TexCoords left="0.01562500" right="0.51562500" top="0.34375000" bottom="0.59375000"/>	
+				</Texture>			
+				<Texture name="$parentSmokeB" file="Interface\PlayerFrame\UI-WarlockShard" parentKey="shardSmokeB">
+					<Size x="32" y="32"/>	
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentSmokeA"/>
+					</Anchors>
+					<TexCoords right="0.01562500" left="0.51562500" bottom="0.34375000" top="0.59375000"/>	
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentFill" file="Interface\PlayerFrame\UI-WarlockShard" parentKey="shardFill">
+					<Size x="17" y="16"/>	
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3" y="-2"/>
+					</Anchors>
+					<TexCoords left="0.01562500" right="0.28125000" top="0.00781250" bottom="0.13281250"/>	
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture file="Interface\PlayerFrame\UI-WarlockShard">
+					<Size x="52" y="29"/>	
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-5" y="3"/>
+					</Anchors>
+					<TexCoords left="0.01562500" right="0.82812500" top="0.60937500" bottom="0.83593750"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self.shardFill:Hide();
+				self.shardGlow:SetAlpha(0.0);
+				self.shardSmokeA:SetAlpha(0.0);
+				self.shardSmokeB:SetAlpha(0.0);
+			</OnLoad>
+		</Scripts>
+  </Frame>
+
+	<Frame name="ShardBarFrame" parent="PlayerFrame" frameStrata="LOW" toplevel="true" hidden="false">
+		<Animations>
+			<AnimationGroup parentKey="showAnim">
+				<Alpha duration="0.5" order="1"/>
+				<Scripts>
+					<OnFinished>
+						self:GetParent():SetAlpha(1.0);
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Size>
+		  <AbsDimension x="110" y="25"/>
+		</Size>
+		<Anchors>
+		  <Anchor point="TOP" relativeTo="PlayerFrame" relativePoint="BOTTOM">
+			<Offset>
+			  <AbsDimension x="50" y="34"/>
+			</Offset>
+		  </Anchor>
+		</Anchors>
+		<Frames>
+			<Frame name="$parentShard1" inherits="ShardTemplate" parentKey="shard1">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+			</Frame>	
+			<Frame name="$parentShard2" inherits="ShardTemplate" parentKey="shard2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentShard1" relativePoint="TOPLEFT" x="35"/>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentShard3" inherits="ShardTemplate" parentKey="shard3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentShard2" relativePoint="TOPLEFT" x="35"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="ShardBar_OnLoad"/>
+			<OnEvent function="ShardBar_OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

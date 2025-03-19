@@ -1,0 +1,187 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<!-- Copied from store for now -->
+	<Frame name="AccountStoreInsetFrameTemplate" virtual="true">
+		<Size x="64" y="64" />
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-5">
+				<Texture parentKey="Bg" file="Interface\BlackMarket\BlackMarketBackground-Tile" horizTile="true" vertTile="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" />
+						<Anchor point="BOTTOMRIGHT" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-2">
+				<Texture>
+					<Anchors>
+						<Anchor point="TOPLEFT" />
+						<Anchor point="BOTTOMRIGHT" />
+					</Anchors>
+					<Color r="1" g="1" b="1" />
+					<Gradient orientation="VERTICAL">
+						<MaxColor r="0" g="0" b="0" a="0.34" />
+						<MinColor r="0" g="0" b="0" a="0.5" />
+					</Gradient>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="-5">
+				<Texture parentKey="InsetBorderTopLeft" inherits="UI-Frame-InnerTopLeft">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Bg" />
+					</Anchors>
+				</Texture>
+				<Texture parentKey="InsetBorderTopRight" inherits="UI-Frame-InnerTopRight">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Bg" />
+					</Anchors>
+				</Texture>
+				<Texture parentKey="InsetBorderBottomLeft" inherits="UI-Frame-InnerBotLeftCorner">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Bg" y="-1" />
+					</Anchors>
+				</Texture>
+				<Texture parentKey="InsetBorderBottomRight" inherits="UI-Frame-InnerBotRight">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Bg" y="-1" />
+					</Anchors>
+				</Texture>
+				<Texture parentKey="InsetBorderTop" inherits="_UI-Frame-InnerTopTile">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.InsetBorderTopLeft" relativePoint="TOPRIGHT" />
+						<Anchor point="TOPRIGHT" relativeKey="$parent.InsetBorderTopRight" relativePoint="TOPLEFT" />
+					</Anchors>
+				</Texture>
+				<Texture parentKey="InsetBorderBottom" inherits="_UI-Frame-InnerBotTile">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.InsetBorderBottomLeft" relativePoint="BOTTOMRIGHT" />
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.InsetBorderBottomRight" relativePoint="BOTTOMLEFT" />
+					</Anchors>
+				</Texture>
+				<Texture parentKey="InsetBorderLeft" inherits="!UI-Frame-InnerLeftTile">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.InsetBorderTopLeft" relativePoint="BOTTOMLEFT" x="0" y="0" />
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.InsetBorderBottomLeft" relativePoint="TOPLEFT" />
+					</Anchors>
+				</Texture>
+				<Texture parentKey="InsetBorderRight" inherits="!UI-Frame-InnerRightTile">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.InsetBorderTopRight" relativePoint="BOTTOMRIGHT" />
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.InsetBorderBottomRight" relativePoint="TOPRIGHT" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="AccountStoreFrame" mixin="AccountStoreMixin" frameStrata="HIGH" parent="UIParent" inherits="PortraitFrameTemplate, PingReceiverAttributeTemplate" enableMouse="true" hidden="true" toplevel="true">
+		<Size x="800" y="537" />
+		<Anchors>
+			<Anchor point="LEFT" x="50" y="0" />
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="PageText" inherits="GameFontHighlight" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="-98" y="29" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="LeftInset" useParentLevel="true" inherits="AccountStoreInsetFrameTemplate">
+				<Size x="192" y="496" />
+				<Anchors>
+					<Anchor point="TOPLEFT" x="4" y="-40" />
+					<Anchor point="BOTTOMLEFT" x="4" y="6" />
+				</Anchors>
+			</Frame>
+			<Frame parentKey="RightInset" useParentLevel="true" inherits="AccountStoreInsetFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-6" y="-40" />
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.LeftInset" relativePoint="BOTTOMRIGHT" x="2" y="0" />
+				</Anchors>
+			</Frame>
+			<Frame parentKey="LeftDisplay" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.LeftInset" relativePoint="TOPLEFT" x="3" y="-3" />
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.LeftInset" relativePoint="BOTTOMRIGHT" x="-3" y="3" />
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\Store\Store-Main" setAllPoints="true" >
+							<TexCoords left="0.00097656" right="0.18261719" top="0.46289063" bottom="0.93652344"/>	
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="RightDisplay" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.RightInset" relativePoint="TOPLEFT" x="3" y="-3" />
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RightInset" relativePoint="BOTTOMRIGHT" x="-3" y="3" />
+				</Anchors>
+				<Frames>
+					<Frame parentKey="ShadowOverlay" inherits="ShadowOverlayTemplate" useParentLevel="true" setAllPoints="true" />
+				</Frames>
+			</Frame>
+			<Frame parentKey="CategoryList" inherits="AccountStoreCategoryListTemplate">
+				<Size x="162" y="496" />
+				<Anchors>
+					<Anchor point="TOPLEFT" x="12" y="-44" />
+					<Anchor point="BOTTOM" x="0" y="8" />
+				</Anchors>
+			</Frame>
+			<Frame parentKey="StoreDisplay" inherits="AccountStoreItemDisplayTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.CategoryList" relativePoint="TOPRIGHT" x="28" y="0" />
+					<Anchor point="BOTTOMRIGHT" x="-10" y="10" />
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnShow method="OnShow" />
+			<OnHide method="OnHide" />
+		</Scripts>
+	</Frame>
+
+	<Frame name="FullscreenAccountStoreContainer" toplevel="true" hidden="true" parent="UIParent" enableMouse="true" enableKeyboard="true" mixin="FullscreenAccountStoreContainerMixin">
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+			<Anchor point="BOTTOMRIGHT"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="FullscreenBackground">
+					<Color r="0" g="0" b="0" a="0.7"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+
+		<Frames>
+			<Button parentKey="LeaveStoreButton" text="WOW_LABS_RETURN_TO_MATCH_DETAILS" inherits="BigRedThreeSliceButtonTemplate" mixin="FullscreenLeaveAccountStoreButtonMixin">
+				<Size y="32"/>
+				<Anchors>
+					<Anchor point="BOTTOM" y="32"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnClick method="OnClick"/>
+				</Scripts>
+
+				<NormalFont style="GameFontNormalLarge"/>
+				<HighlightFont style="GameFontHighlightLarge"/>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnKeyDown method="OnKeyDown"/>
+		</Scripts>
+	</Frame>
+</Ui>

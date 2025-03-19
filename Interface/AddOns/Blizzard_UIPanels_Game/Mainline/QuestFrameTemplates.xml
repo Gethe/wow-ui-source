@@ -1,0 +1,188 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="QuestFramePanelTemplate" virtual="true">
+		<Size x="384" y="512"/>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Bg" name="$parentBg" atlas="QuestBG-Parchment" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-62"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentMaterialTopLeft" parentKey="MaterialTopLeft">
+					<Size x="239" y="300"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-62"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentMaterialTopRight" parentKey="MaterialTopRight">
+					<Size x="64" y="300"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentMaterialTopLeft" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentMaterialBotLeft" parentKey="MaterialBotLeft">
+					<Size x="239" y="138"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentMaterialTopLeft" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentMaterialBotRight" parentKey="MaterialBotRight">
+					<Size x="64" y="138"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentMaterialTopLeft" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SealMaterialBG" hidden="true">
+					<Size x="299" y="407"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-62"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Button name="QuestItemTemplate" inherits="LargeItemButtonTemplate" virtual="true">
+		<Scripts>
+			<OnEnter>
+				if ( self:GetAlpha() > 0 ) then
+					if (self.objectType == "item") then
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						local showCollectionText = false;
+						GameTooltip:SetQuestItem(self.type, self:GetID(), showCollectionText);
+						GameTooltip_ShowCompareItem(GameTooltip);
+					elseif (self.objectType == "currency") then
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetQuestCurrency(self.type, self:GetID());
+					end
+				end
+				CursorUpdate(self);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+				ResetCursor();
+			</OnLeave>
+			<OnUpdate>
+				CursorOnUpdate(self, elapsed);
+			</OnUpdate>
+			<OnClick>
+				if (self.objectType == "item") then
+					HandleModifiedItemClick(GetQuestItemLink(self.type, self:GetID()));
+				end
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Button name="QuestSpellTemplate" hidden="true" virtual="true">
+		<Size x="157" y="56"/>
+		<HitRectInsets left="0" right="0" top="0" bottom="14"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon" name="$parentIconTexture">
+					<Size x="39" y="39"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10" y="-2"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="NameFrame" name="$parentNameFrame" file="Interface\QuestFrame\UI-QuestItemNameFrame">
+					<Size x="128" y="64"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="-12" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentSpellBorder" file="Interface\Spellbook\Spellbook-Parts">
+					<Size x="70" y="65"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" x="2" y="0"/>
+					</Anchors>
+					<TexCoords left="0.00390625" right="0.27734375" top="0.44140625" bottom="0.69531250"/>
+				</Texture>
+				<FontString parentKey="Name" name="$parentName" inherits="GameFontHighlight" justifyH="LEFT" >
+					<Size  x="90" y="36"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.NameFrame"  x="17" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				if (self.spellID) then
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GameTooltip:SetSpellByID(self.spellID);
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				if ( IsModifiedClick("CHATLINK") and self.spellID) then
+					local spellLink = C_Spell.GetSpellLink(self.spellID);
+					ChatEdit_InsertLink(spellLink);
+				end
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Button name="QuestTitleButtonTemplate" virtual="true">
+		<Size x="300" y="16"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentQuestIcon" file="Interface\GossipFrame\AvailableQuestIcon" parentKey="Icon">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" x="4" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				QuestTitleButton_OnClick(self, button, down);
+			</OnClick>
+		</Scripts>
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
+		<ButtonText>
+			<Size x="275" y="0"/>
+			<Anchors>
+				<Anchor point="TOPLEFT" x="20" y="0"/>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="QuestFontLeft"/>
+	</Button>
+	<ScrollFrame name="QuestScrollFrameTemplate" inherits="ScrollFrameTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="scrollBarX" value="9" type="number"/>
+			<KeyValue key="scrollBarTopY" value="-2" type="number"/>
+		</KeyValues>
+		<Size x="300" y="403"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="QuestFrame" x="5" y="-65"/>
+		</Anchors>
+	</ScrollFrame>
+	<Frame name="QuestAccountCompletedNoticeTemplate" mixin="QuestAccountCompletedNoticeMixin" virtual="true">
+		<Size x="50" y="14"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontNormalSmall" maxLines="1" text="ACCOUNT_COMPLETED_QUEST_NOTICE_LABEL">
+					<Color color="DISABLED_FONT_COLOR"/>
+				</FontString>
+				<Texture parentKey="AccountCompletedIcon" useAtlasSize="true" atlas="warband-completed-icon" scale="0.9">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Text" relativePoint="BOTTOMLEFT" x="1" y="-13"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+</Ui>

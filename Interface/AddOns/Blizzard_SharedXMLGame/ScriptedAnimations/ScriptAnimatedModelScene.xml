@@ -1,0 +1,15 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<ModelScene name="ScriptAnimatedModelSceneTemplate" mixin="ScriptAnimatedModelSceneMixin" inherits="NonInteractableModelSceneMixinTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="useViewInsetNormalization" value="true" type="boolean"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnUpdate method="OnUpdate"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</ModelScene>
+</Ui>

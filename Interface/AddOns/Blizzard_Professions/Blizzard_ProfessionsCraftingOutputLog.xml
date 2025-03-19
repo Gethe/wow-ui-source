@@ -1,0 +1,147 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Script file="Blizzard_ProfessionsCraftingOutputLog.lua"/>
+
+	<Frame name="ProfessionsOutputLogExtraRowTemplate" virtual="true">
+		<Size y="31"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Bracket" atlas="Professions-Results-Bracket">
+					<Size x="10" y="19"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="13" y="-2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="ProfessionsOutputLogExtraIconRowTemplate" inherits="ProfessionsOutputLogExtraRowTemplate" virtual="true">
+		<Frames>
+			<ItemButton parentKey="Item" scale=".6">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Bracket" relativePoint="RIGHT" x="5" y="-10"/>
+				</Anchors>
+			</ItemButton>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontHighlightSmall" justifyH="LEFT" justifyV="MIDDLE" enableMouse="true">
+					<Size x="150" y="30"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Item" relativePoint="RIGHT" x="7" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="ProfessionsOutputLogExtraIconsRowTemplate" inherits="ProfessionsOutputLogExtraRowTemplate" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontHighlightSmall" justifyH="LEFT" justifyV="MIDDLE" maxLines="2" enableMouse="true">
+					<Size x="150" y="30"/>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="ProfessionsCraftingOutputLogElementTemplate" mixin="ProfessionsCraftingOutputLogElementMixin" virtual="true">
+		<Size x="157" y="46"/>
+		<Frames>
+			<Frame parentKey="ItemContainer">
+				<Size y="46"/>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="TOPRIGHT"/>
+				</Anchors>
+				<Frames>
+					<ItemButton parentKey="Item">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="5" y="-4"/>
+						</Anchors>
+					</ItemButton>
+				</Frames>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="NameFrame" atlas="looting_itemcard_bg">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="0"/>
+								<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture parentKey="BorderFrame" atlas="looting_itemcard_stroke_normal">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="0"/>
+								<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP" maxLines="2">
+							<Size x="148" y="30"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Item" relativePoint="TOPRIGHT" x="8" y="-1"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="CritFrame" atlas="Professions-Results-InspiredCreation" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="0"/>
+								<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="HighlightNameFrame" alphaMode="ADD" atlas="looting_itemcard_stroke_clickstate" alpha="0.7" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="0"/>
+								<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="PushedNameFrame" alphaMode="ADD" atlas="looting_itemcard_stroke_clickstate" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="0"/>
+								<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="2">
+						<FontString parentKey="CritText" inherits="GameFontNormalTiny" text="PROFESSIONS_OUTPUT_INGENUITY" justifyH="RIGHT" enableMouse="true">
+							<Size x="140" y="0"/>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="-8" y="1"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="Multicraft" parentArray="Rows" inherits="ProfessionsOutputLogExtraIconRowTemplate"/>
+			<Frame parentKey="Resources" parentArray="Rows" inherits="ProfessionsOutputLogExtraIconsRowTemplate"/>
+			<Frame parentKey="BonusCraft" parentArray="Rows" inherits="ProfessionsOutputLogExtraIconsRowTemplate"/>
+		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="ShowAnim" looping="NONE" setToFinalAlpha="true">
+				<Alpha duration=".15" fromAlpha="0" toAlpha="1" smoothing="IN"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="ProfessionsCraftingOutputLogTemplate" mixin="ProfessionsCraftingOutputLogMixin" inherits="ScrollingFlatPanelTemplate" virtual="true">
+		<Size x="76" y="290"/>
+		<KeyValues>
+			<KeyValue key="panelTitle" value="PROFESSIONS_CRAFT_OUTPUT_TITLE" type="global"/>
+			<KeyValue key="panelMaxHeight" value="290" type="number"/>
+			<KeyValue key="panelWidth" value="220" type="number"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

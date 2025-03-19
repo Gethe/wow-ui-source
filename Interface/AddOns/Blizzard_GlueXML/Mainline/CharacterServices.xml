@@ -1,0 +1,663 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="CharacterServicesBlockTemplate" virtual="true">
+		<Size x="350" y="200"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="StepLabel" inherits="GameFontNormalSmall2" text="SERVICES_STEP">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="29" y="-37"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="StepNumber" atlas="vas-number-1" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.StepLabel" relativePoint="BOTTOM" x="-2" y="-2"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Checkmark" atlas="vas-icon-checkmark" useAtlasSize="true" hidden="true" >
+					<Anchors>
+						<Anchor point="TOPLEFT" x="17" y="-42"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="StepActiveLabel" font="SystemFont_Large" justifyH="LEFT">
+					<Size x="230"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.StepNumber" relativePoint="RIGHT" x="30" y="2"/>
+					</Anchors>
+					<Color r="1" g="1" b="1"/>
+				</FontString>
+				<FontString parentKey="StepFinishedLabel" inherits="GameFontNormalMed3" justifyH="LEFT" hidden="true" >
+					<Size x="230" y="20"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Checkmark" relativePoint="RIGHT" x="13" y="20"/>
+					</Anchors>
+					<Color r="0.5" g="0.5" b="0.5"/>
+				</FontString>
+				<FontString parentKey="ResultsLabel" inherits="GameFontNormalMed3" justifyH="LEFT" hidden="true" maxLines="2">
+					<Size x="230" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.StepFinishedLabel" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+					</Anchors>
+					<Color r="1" g="1" b="1"/>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<CheckButton name="CharacterUpgradeSelectSpecRadioButtonTemplate" inherits="UIRadialButtonTemplate" mixin="CharacterUpgradeSelectSpecRadioButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="SpecOverlay" file="Interface\AchievementFrame\UI-Achievement-IconFrame">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="4" y="2"/>
+					</Anchors>
+					<Size x="38" y="38"/>
+					<TexCoords left="0" right="0.5625" top="0" bottom="0.5625"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="RoleIcon" atlas="UI-LFG-RoleIcon-Generic-Micro-GroupFinder">
+					<Size x="17" y="17"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.SpecOverlay" relativePoint="CENTER" x="11" y="-10"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="HoverGlow" atlas="vas-selection-hover" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="LEFT" x="-53" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SelectGlow" atlas="vas-selection-active" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="LEFT" x="-53" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="SpecIcon">
+					<Size x="28" y="28"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.SpecOverlay" relativePoint="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="SpecName" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP" wordwrap="false">
+					<Size x="150" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.SpecOverlay" relativePoint="TOPRIGHT" x="6" y="-8"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="RoleName" inherits="GameFontNormal" justifyH="LEFT">
+					<Size x="75" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.SpecName" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+					</Anchors>
+					<Color r="0.5" g="0.5" b="0.5"/>
+				</FontString>
+				<FontString parentKey="Recommended" inherits="GameFontNormal" justifyH="LEFT" text="CHAR_SPEC_RECOMMENEDED">
+					<Size x="150" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.RoleName" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+					</Anchors>
+					<Color r="0.1172" g="1.0" b="0.0"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<HitRectInsets>
+			<AbsInset left="0" right="-220" top="-20" bottom="-20"/>
+		</HitRectInsets>
+		<Scripts>
+			<OnClick function="CharacterUpgradeSelectSpecRadioButton_OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</CheckButton>
+
+	<CheckButton name="CharacterUpgradeSelectFactionRadioButtonTemplate" inherits="UIRadialButtonTemplate" mixin="CharacterUpgradeSelectFactionRadioButtonMixin" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentFactionOverlay" file="Interface\AchievementFrame\UI-Achievement-IconFrame" parentKey="Frame">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="5" y="0"/>
+					</Anchors>
+					<Size x="46" y="46"/>
+					<TexCoords left="0" right="0.5625" top="0" bottom="0.5625"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="HoverGlow" atlas="vas-selection-hover" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="LEFT" x="-53" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SelectGlow" atlas="vas-selection-active" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="LEFT" x="-53" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture name="$parentFactionIcon" parentKey="FactionIcon">
+					<Size x="38" y="38"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Frame" relativePoint="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentFactionName" inherits="GameFontNormalLarge" justifyH="LEFT" parentKey="FactionName">
+					<Size x="150" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Frame" relativePoint="RIGHT" x="6" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<HitRectInsets>
+			<AbsInset left="0" right="-220" top="-20" bottom="-20"/>
+		</HitRectInsets>
+		<Scripts>
+			<OnClick function="CharacterUpgradeSelectFactionRadioButton_OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</CheckButton>
+
+	<Frame name="CharacterServicesBonusResultTemplate" virtual="true">
+		<Size x="200" y="20"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" inherits="services-icon-bonus">
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Label" inherits="GameFontNormal" justifyH="LEFT">
+					<Size x="200" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="4" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="CharacterUpgradeSelectCharacterFrame" parent="CharSelectServicesFlowFrame" inherits="CharacterServicesBlockTemplate" hidden="true" frameStrata="DIALOG">
+		<Size x="350" y="310"/>
+		<Frames>
+			<Frame parentKey="ControlsFrame" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="OrLabel" inherits="GameFontNormalMed3" text="SERVICES_CONJUNCTION_OR" hidden="true">
+							<Color r="0.5" g="0.5" b="0.5"/>
+						</FontString>
+						<FontString parentKey="OrLabel2" inherits="GameFontNormalMed3" text="SERVICES_CONJUNCTION_OR" hidden="true">
+							<Color r="0.5" g="0.5" b="0.5"/>
+						</FontString>
+						<FontString parentKey="ClassTrialButtonHintText" inherits="GameFontNormalMed3" justifyH="LEFT" justifyV="TOP" hidden="true" text="SERVICES_TRIAL_BOOST_HINT">
+							<Size x="230" y="45"/>
+							<Color r="0.5" g="0.5" b="0.5"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="CreateCharacterButton" inherits="GlueButtonSmallTemplate" text="CREATE_NEW_CHARACTER" hidden="true">
+						<Size x="207" y="40"/>
+						<Scripts>
+							<OnClick function="CharacterUpgradeCreateCharacter_OnClick"/>
+						</Scripts>
+					</Button>
+					<Button parentKey="CreateCharacterClassTrialButton" inherits="GlueButtonSmallTemplate" text="CHARACTER_UPGRADE_POPUP_TRY_NEW_CLASS" hidden="true">
+						<Size x="207" y="40"/>
+						<Scripts>
+							<OnClick function="CharacterUpgradeClassTrial_OnClick"/>
+						</Scripts>
+					</Button>
+					<Frame parentKey="BonusLabel">
+						<Size x="325" y="40"/>
+						<!-- Set in lua because flow frame is not available here yet -->
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="BonusIcon" inherits="services-icon-bonus-large">
+									<Anchors>
+										<Anchor point="LEFT" x="0" y="4"/>
+									</Anchors>
+								</Texture>
+								<FontString parentKey="BonusText" inherits="GameFontNormal" text="CHARACTER_UPGRADE_PROFESSION_BOOST" spacing="4" justifyV="TOP" justifyH="LEFT">
+									<Size x="300" y="0"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.BonusIcon" relativePoint="TOPRIGHT" x="8" y="-3"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+			</Frame>
+			<Frame parentArray="BonusResults" inherits="CharacterServicesBonusResultTemplate"/>
+			<Frame parentKey="NoBonusResult" hidden="true">
+				<Size x="200" y="20"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ResultsLabel" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" inherits="services-icon-bonus-red">
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="Label" inherits="GameFontNormal" justifyH="LEFT" text="CHARACTER_UPGRADE_NO_VETERAN_BONUS">
+							<Size x="200" y="0"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="4" y="0"/>
+							</Anchors>
+							<Color r="1" g="0" b="0"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", -60);
+						GlueTooltip:AddLine(CHARACTER_UPGRADE_PROFESSION_BOOST, 1, 1, 1, 1, true);
+						GlueTooltip:Show();
+					</OnEnter>
+					<OnLeave>
+						GlueTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="CharacterUpgradeSelectCharacterFrame_OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="CharacterUpgradeMaxCharactersFrame" parent="CharSelectServicesFlowFrame" hidden="true" frameStrata="DIALOG">
+		<Size x="400" y="250"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" inherits="GameFontHighlightLarge" justifyV="TOP" text="CHARACTER_SERVICES_NO_ELIGIBLE_CHARACTERS">
+					<Size x="320" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" x="30" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="CloseButton" inherits="GlueButtonSmallTemplate" text="CLOSE">
+				<Size x="140" y="28"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Label" relativePoint="BOTTOM" x="0" y="-40"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CharSelectServicesFlowFrame:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+
+	<Frame name="CharacterUpgradeSelectSpecFrame" parent="CharSelectServicesFlowFrame" inherits="CharacterServicesBlockTemplate" hidden="true" frameStrata="DIALOG">
+		<Size x="350" y="380"/>
+		<Frames>
+			<Frame parentKey="ControlsFrame" setAllPoints="true"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="CharacterUpgradeSelectFactionFrame" parent="CharSelectServicesFlowFrame" inherits="CharacterServicesBlockTemplate" hidden="true" frameStrata="DIALOG">
+		<Size x="350" y="185"/>
+		<Frames>
+			<Frame parentKey="ControlsFrame" setAllPoints="true">
+				<Frames>
+					<CheckButton parentKey="HordeButton" parentArray="FactionButtons" inherits="CharacterUpgradeSelectFactionRadioButtonTemplate">
+						<KeyValues>
+							<KeyValue key="factionID" value="0" type="number"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="89" y="-100"/>
+						</Anchors>
+					</CheckButton>
+					<CheckButton parentKey="AllianceButton" parentArray="FactionButtons" inherits="CharacterUpgradeSelectFactionRadioButtonTemplate">
+						<KeyValues>
+							<KeyValue key="factionID" value="1" type="number"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.HordeButton" relativePoint="BOTTOM" x="0" y="-35"/>
+						</Anchors>
+					</CheckButton>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="CharacterUpgradeSelectFactionFrame_OnLoad"/>
+			<OnHide function="CharacterUpgradeSelectFactionFrame_ClearChecked"/>
+		</Scripts>
+	</Frame>
+
+	<Button name="RPEUpgradeMinimizedFrame" parent="VisibilityFramesContainer" mixin="RPEUpgradeMinimizedFrameMixin" hidden="true" frameStrata="HIGH">
+		<Size x="362" y="95"/>
+		<Anchors>
+			<Anchor point="LEFT" x="4" y="0"/>
+			<Anchor point="BOTTOM" relativeTo="CharacterSelectBackButton" relativePoint="TOP" x="0" y="20"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BackgroundRPE" atlas="gearupdate-minimized-bg" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-2" y="-8"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="BackgroundFrame" atlas="vas-bg-frame">
+					<Size x="362" y="89"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-1" y="-8"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" atlas="gearUpdate-main-icon" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10" y="-1" />
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Title" inherits="GameFontNormalHuge2Outline" justifyH="LEFT" justifyV="MIDDLE" text="RPE_GEAR_UPDATE">
+					<Size x="210" y="48"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="10" y="-8" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="ExpandButton" inherits="UIButtonTemplate">
+				<Size x="28" y="28"/>
+				<KeyValues>
+					<KeyValue key="buttonArtKit" value="128-redbutton-plus" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-11" y="-15"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="RPEUpgradeInfoSubFrameTemplate" frameStrata="DIALOG" virtual="true">
+		<Size x="300" y="40"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Background" atlas="gearupdate-line-item-bg" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT" x="0" y="-2"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Bullet" atlas="gearupdate-arrow-bullet-point" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT" x="0" y="-5"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Text" inherits="GameFontHighlightLarge" justifyH="LEFT" justifyV="MIDDLE">
+					<Size x="300" y="40"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Bullet" relativePoint="RIGHT" x="8" y="3"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="RPEUPgradeInfoFrame" parent="CharSelectServicesFlowFrame" hidden="true" frameStrata="DIALOG" setAllPoints="true">
+		<Frames>
+			<Frame parentKey="ControlsFrame" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Glow" atlas="gearupdate-glow-filigree" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOP" x="-1" y="-3" />
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Icon" atlas="gearupdate-main-icon" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOP" x="-6" y="-16" />
+							</Anchors>
+						</Texture>
+						<FontString parentKey="Title" inherits="GameFontHighlightHuge2" justifyH="CENTER" justifyV="TOP" text="RPE_GEAR_UPDATE">
+							<Size x="260" y="0"/>
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.Glow" relativePoint="BOTTOM" x="5" y="-23" />
+							</Anchors>
+						</FontString>
+						<FontString parentKey="Header" inherits="GameFontNormalLarge" justifyH="CENTER" justifyV="TOP" spacing="4" text="RPE_GEAR_UPDATE_SUMMARY">
+							<Size x="325" y="90"/>
+							<Color r="1" g="1" b=".2"/>
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="-5" y="-10" />
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="Line1" inherits="RPEUpgradeInfoSubFrameTemplate" setAllPoints="true">
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.Header" relativePoint="BOTTOM" x="-9" y="-23"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="Line2" inherits="RPEUpgradeInfoSubFrameTemplate" setAllPoints="true">
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.Line1" relativePoint="BOTTOM" x="0" y="-4"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="Line3" inherits="RPEUpgradeInfoSubFrameTemplate" setAllPoints="true">
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.Line2" relativePoint="BOTTOM" x="0" y="-4"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+		</Scripts>
+	</Frame>
+
+	<Frame name="RPEUpgradeSelectSpecFrame" parent="CharSelectServicesFlowFrame" hidden="true" frameStrata="DIALOG" setAllPoints="true">
+		<Frames>
+			<Frame parentKey="ControlsFrame" setAllPoints="true">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="HeaderBackground" atlas="gearupdate-header-bg" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-5"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="FrameHeader" inherits="GameFontHighlightHuge" justifyH="CENTER" justifyV="MIDDLE" text="RPE_GEAR_UPDATE_CAPS">
+							<Size x="260" y="20"/>
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-18"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="CharacterHeader" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="MIDDLE" text="RPE_GEAR_UPDATE_CHARACTER">
+							<Size x="260" y="40"/>
+							<Color r=".7" g=".7" b=".7"/>
+							<Anchors>
+								<Anchor point="TOP" x="-18" y="-58"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="SpecHeader" inherits="GameFontHighlightLarge" justifyH="LEFT" justifyV="MIDDLE" text="RPE_GEAR_UPDATE_SELECT_SPEC">
+							<Size x="260" y="40"/>
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.CharacterHeader" relativePoint="BOTTOM" x="0" y="-96"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="CharacterBlock">
+						<Size x="296" y="86"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.CharacterHeader" relativePoint="BOTTOMLEFT" x="1" y="5"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="BackgroundFrame" atlas="gearupdate-frame-done">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="-1" y="1"/>
+										<Anchor point="BOTTOMRIGHT" x="1" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Name" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="MIDDLE">
+									<Size x="210" y="26"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="67" y="-19"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="Level" inherits="GameFontHighlightMedium" justifyH="LEFT" justifyV="MIDDLE">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+									</Anchors>
+								</FontString>
+								<Texture parentKey="CharacterCheckmark" atlas="vas-icon-checkmark" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="3" y="-15" />
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame parentKey="SpecBlock">
+						<Size x="296" y="281"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.SpecHeader" relativePoint="BOTTOMLEFT" x="1" y="5"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="BackgroundFrame" atlas="gearupdate-frame-active">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="-1" y="1"/>
+										<Anchor point="BOTTOMRIGHT" x="1" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="RPEUpgradeReviewFrame" parent="CharSelectServicesFlowFrame" hidden="true" frameStrata="DIALOG" setAllPoints="true">
+		<Frames>
+			<Frame parentKey="ControlsFrame" setAllPoints="true">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="HeaderBackground" atlas="gearupdate-header-bg" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-5"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="FrameHeader" inherits="GameFontHighlightHuge" justifyH="CENTER" justifyV="MIDDLE" text="RPE_GEAR_UPDATE_CAPS">
+							<Size x="260" y="20"/>
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-18"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="CharacterHeader" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="MIDDLE" text="RPE_GEAR_UPDATE_CHARACTER">
+							<Size x="260" y="40"/>
+							<Color r=".7" g=".7" b=".7"/>
+							<Anchors>
+								<Anchor point="TOP" x="-18" y="-58"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="SpecHeader" inherits="GameFontHighlightLarge" justifyH="LEFT" justifyV="MIDDLE" text="RPE_GEAR_UPDATE_SELECT_SPEC">
+							<Size x="260" y="40"/>
+							<Color r=".7" g=".7" b=".7"/>
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.CharacterHeader" relativePoint="BOTTOM" x="0" y="-96"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="CharacterBlock">
+						<Size x="296" y="86"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.CharacterHeader" relativePoint="BOTTOMLEFT" x="1" y="5"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="BackgroundFrame" atlas="gearupdate-frame-done">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="-1" y="1"/>
+										<Anchor point="BOTTOMRIGHT" x="1" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Name" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="MIDDLE">
+									<Size x="210" y="26"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="67" y="-19"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="Level" inherits="GameFontHighlightMedium" justifyH="LEFT" justifyV="MIDDLE">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+									</Anchors>
+								</FontString>
+								<Texture parentKey="CharacterCheckmark" atlas="vas-icon-checkmark" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="3" y="-15" />
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame parentKey="SpecBlock">
+						<Size x="296" y="86"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.SpecHeader" relativePoint="BOTTOMLEFT" x="1" y="5"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="BackgroundFrame" atlas="gearupdate-frame-done">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="-1" y="1"/>
+										<Anchor point="BOTTOMRIGHT" x="1" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<FontString parentKey="SpecName" inherits="GameFontHighlightMedium" justifyH="LEFT" justifyV="MIDDLE">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="67" y="-36"/>
+									</Anchors>
+								</FontString>
+								<Texture parentKey="SpecCheckmark" atlas="vas-icon-checkmark" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="3" y="-15"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+			</Frame>
+		</Frames>
+	</Frame>
+</Ui>

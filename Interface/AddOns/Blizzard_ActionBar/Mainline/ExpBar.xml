@@ -1,0 +1,44 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="ExpStatusBarTemplate" useParentLevel="true" inherits="StatusTrackingBarTemplate" hidden="true" mixin="ExpBarMixin" virtual="true">
+		<Size x="804" y="11"/>
+		<KeyValues>
+			<KeyValue key="fadeOutEntireBarAtMaxLevel" value="true" type="boolean"/>
+			<KeyValue key="isExpBar" value="true" type="boolean"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK" textureSubLevel="-1">
+				<Texture parentKey="ExhaustionLevelFillBar" atlas="UI-HUD-ExperienceBar-Fill-Prediction">
+					<Size x="0" y="11"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="ExhaustionTick" hidden="true" frameStrata="MEDIUM" mixin="ExhaustionTickMixin">
+				<Size x="10" y="14"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.ExhaustionLevelFillBar" relativePoint="RIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnEvent method="OnEvent"/>
+					<OnEnter method="ExhaustionToolTipText"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+				<NormalTexture parentKey="Normal" atlas="UI-HUD-ExperienceBar-Frame-Pip"/>
+				<HighlightTexture parentKey="Highlight" atlas="UI-HUD-ExperienceBar-Frame-Pip-Mouseover" alphaMode="ADD"/>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -1,0 +1,338 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+
+	<GameTooltip name="GameTooltipTemplate" mixin="GameTooltipDataMixin" inherits="SharedTooltipTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="supportsDataRefresh" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<StatusBar parentKey="StatusBar" name="$parentStatusBar" mixin="GameTooltipUnitHealthBarMixin" hidden="true">
+				<Size x="0" y="8"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="2" y="-1"/>
+					<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" x="-2" y="-1"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnUpdate method="OnUpdate"/>
+					<OnValueChanged>
+						HealthBar_OnValueChanged(self, value);
+					</OnValueChanged>
+				</Scripts>
+				<BarTexture name="$parentTexture" file="Interface\TargetingFrame\UI-TargetingFrame-BarFill"/>
+			</StatusBar>
+		</Frames>
+		<Scripts>
+			<OnLoad inherit="prepend" function="GameTooltip_OnLoad"/>
+			<OnHide function="GameTooltip_OnHide"/>
+			<OnTooltipSetDefaultAnchor>
+				GameTooltip_SetDefaultAnchor(self, UIParent);
+			</OnTooltipSetDefaultAnchor>
+			<OnTooltipCleared>
+				GameTooltip_ClearMoney(self);
+				SharedTooltip_ClearInsertedFrames(self);
+			</OnTooltipCleared>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</GameTooltip>
+
+	<Frame name="InternalEmbeddedItemTooltipTemplate" virtual="true">
+		<Size x="100" y="100"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size x="28" y="28"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Count" inherits="NumberFontNormalSmall" justifyH="RIGHT" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="0" y="2"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Text" inherits="GameTooltipText" justifyV="MIDDLE">
+					<Size x="128" y="28"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="8" y="0"/>
+						<Anchor point="RIGHT" x="-10" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
+					<Size x="28" y="28"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="IconOverlay" hidden="true">
+					<Size x="28" y="28"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="IconOverlay2" hidden="true">
+					<Size x="28" y="28"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<GameTooltip name="$parentTooltip" parentKey="Tooltip" inherits="GameTooltipTemplate">
+				<KeyValues>
+					<KeyValue key="IsEmbedded" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="0" y="10"/>
+				</Anchors>
+				<Scripts>
+					<OnSizeChanged>
+						EmbeddedItemTooltip_UpdateSize(self:GetParent());
+					</OnSizeChanged>
+				</Scripts>
+			</GameTooltip>
+			<Frame name="$parentGarrisonFollowerTooltip" parentKey="FollowerTooltip" inherits="GarrisonFollowerTooltipContentsTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<GameTooltip name="ShoppingTooltipTemplate" mixin="TooltipDataHandlerMixin" inherits="SharedTooltipTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="textLeft1Font" value="GameFontNormalSmall" type="string"/>
+			<KeyValue key="textRight1Font" value="GameFontNormal" type="string"/>
+			<KeyValue key="textLeft2Font" value="GameFontNormal" type="string"/>
+			<KeyValue key="textRight2Font" value="GameFontHighlightSmall" type="string"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentTextLeft3" inherits="GameFontHighlightSmall" justifyH="LEFT" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTextLeft2" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentTextRight3" inherits="GameFontHighlightSmall" justifyH="RIGHT" hidden="true">
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parentTextLeft3" relativePoint="LEFT" x="40" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentTextLeft4" inherits="GameTooltipTextSmall" justifyH="LEFT" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTextLeft3" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentTextRight4" inherits="GameFontHighlightSmall" justifyH="RIGHT" hidden="true">
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parentTextLeft4" relativePoint="LEFT" x="40" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				GameTooltip_OnLoad(self);
+			</OnLoad>
+			<OnTooltipCleared>
+				GameTooltip_ClearMoney(self);
+				SharedTooltip_ClearInsertedFrames(self);
+				GameTooltip_ClearStyle(self);
+				self:ClearHandlerInfo();
+			</OnTooltipCleared>
+		</Scripts>
+	</GameTooltip>
+
+	<StatusBar name="TooltipStatusBarTemplate" virtual="true">
+		<Size x="0" y="12"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Text" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="LEFT" x="5" y="0"/>
+					</Anchors>
+				</FontString>
+				<Texture file="Interface\Tooltips\UI-StatusBar-Border">
+					<Size x="128" y="16"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-2" y="2"/>
+						<Anchor point="TOPRIGHT" x="2" y="-2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self:SetStatusBarColor(0, 1.0, 0);
+			</OnLoad>
+		</Scripts>
+		<BarTexture name="$parentTexture" file="Interface\TargetingFrame\UI-TargetingFrame-BarFill"/>
+	</StatusBar>
+
+	<!-- Large status bar with 2 dividers -->
+	<Frame name="TooltipProgressBarTemplate" virtual="true">
+		<Size x="219" y="25"/>
+		<Frames>
+			<StatusBar parentKey="Bar" drawLayer="BACKGROUND" minValue="0" maxValue="100" defaultValue="0">
+				<Size x="215" y="15"/>
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="BorderLeft" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
+							<Size x="9" y="22"/>
+							<Anchors>
+								<Anchor point="LEFT" x="-3" y="0"/>
+							</Anchors>
+							<TexCoords left="0.007843" right="0.043137" top="0.193548" bottom="0.774193"/>
+						</Texture>
+						<Texture parentKey="BorderRight" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
+							<Size x="9" y="22"/>
+							<Anchors>
+								<Anchor point="RIGHT" x="3" y="0"/>
+							</Anchors>
+							<TexCoords left="0.043137" right="0.007843" top="0.193548" bottom="0.774193"/>
+						</Texture>
+						<Texture parentKey="BorderMid" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.BorderLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BorderRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+							<TexCoords left="0.113726" right="0.1490196" top="0.193548" bottom="0.774193"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="LeftDivider" file="Interface\GuildFrame\GuildFrame">
+							<Size x="7" y="14"/>
+							<Anchors>
+								<Anchor point="LEFT" x="66" y="0"/>
+							</Anchors>
+							<TexCoords left="0.41601563" right="0.42285156" top="0.91796875" bottom="0.94531250"/>
+						</Texture>
+						<Texture parentKey="RightDivider" file="Interface\GuildFrame\GuildFrame">
+							<Size x="7" y="14"/>
+							<Anchors>
+								<Anchor point="RIGHT" x="-66" y="0"/>
+							</Anchors>
+							<TexCoords left="0.41601563" right="0.42285156" top="0.91796875" bottom="0.94531250"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="1">
+						<FontString parentKey="Label" inherits="GameFontHighlightMedium" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="-1">
+						<Texture>
+							<Color r="0.04" g="0.07" b="0.18"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="0.26" g="0.42" b="1"/>
+			</StatusBar>
+		</Frames>
+	</Frame>
+
+	<GameTooltip name="ShoppingTooltip1" clampedToScreen="true" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="ShoppingTooltipTemplate"/>
+	<GameTooltip name="ShoppingTooltip2" clampedToScreen="true" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="ShoppingTooltipTemplate"/>
+
+	<Frame name="GameTooltipDefaultContainer" frameStrata="LOW" inherits="EditModeHudTooltipSystemTemplate" parent="UIParent" hidden="true">
+		<Size x="250" y="150"/>
+		<Anchors>
+			<Anchor point="BOTTOMRIGHT" x="-9" y="85"/>
+		</Anchors>
+	</Frame>
+
+	<GameTooltip name="GameTooltip" inherits="GameTooltipTemplate" parent="UIParent">
+		<KeyValues>
+			<KeyValue key="supportsItemComparison" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="ItemTooltip" inherits="InternalEmbeddedItemTooltipTemplate" hidden="true">
+				<Size x="100" y="100"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="10" y="13"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="yspacing" value="13" type="number"/>
+				</KeyValues>
+				<Scripts>
+					<OnLoad inherit="prepend">
+						self.Tooltip.shoppingTooltips = { ShoppingTooltip1, ShoppingTooltip2 };
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow function="GameTooltip_OnShow"/>
+			<OnUpdate function="GameTooltip_OnUpdate"/>
+		</Scripts>
+	</GameTooltip>
+
+	<GameTooltip name="EmbeddedItemTooltip" inherits="GameTooltipTemplate" parent="UIParent">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="BottomFontString" font="GameFontNormal" justifyH="LEFT" justifyV="TOP" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="10" y="10"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="ItemTooltip" inherits="InternalEmbeddedItemTooltipTemplate" hidden="true">
+				<Size x="100" y="100"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomFontString" relativePoint="TOPLEFT" x="0" y="10"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad inherit="prepend">
+						self.Tooltip.shoppingTooltips = { ShoppingTooltip1, ShoppingTooltip2 };
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad inherit="prepend">
+				self.shoppingTooltips = { ShoppingTooltip1, ShoppingTooltip2 };
+			</OnLoad>
+			<OnUpdate function="GameTooltip_OnUpdate"/>
+			<OnShow function="GameTooltip_CalculatePadding"/>
+			<OnHide inherit="prepend">
+				self.ItemTooltip:Hide();
+				self:SetPadding(0, 0, 0, 0);
+				self.BottomFontString:Hide();
+			</OnHide>
+		</Scripts>
+	</GameTooltip>
+
+	<GameTooltip name="GameNoHeaderTooltip" inherits="GameTooltipTemplate">
+		<KeyValues>
+			<KeyValue key="textLeft1Font" value="GameTooltipText" type="string"/>
+			<KeyValue key="textRight1Font" value="GameTooltipText" type="string"/>
+			<KeyValue key="textLeft2Font" value="GameTooltipText" type="string"/>
+			<KeyValue key="textRight2Font" value="GameTooltipText" type="string"/>
+		</KeyValues>
+	</GameTooltip>
+
+	<GameTooltip name="GameSmallHeaderTooltip" inherits="GameTooltipTemplate" parent="UIParent">
+		<KeyValues>
+			<KeyValue key="textLeft1Font" value="SystemFont_Med2" type="string"/>
+			<KeyValue key="textRight1Font" value="SystemFont_Med2" type="string"/>
+			<KeyValue key="textLeft2Font" value="GameTooltipText" type="string"/>
+			<KeyValue key="textRight2Font" value="GameTooltipText" type="string"/>
+		</KeyValues>
+	</GameTooltip>
+</Ui>

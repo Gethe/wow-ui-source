@@ -1,0 +1,62 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Texture name="ActionBarFlyoutButton-FlyoutTop" file="Interface\Buttons\ActionBarFlyoutButton" virtual="true" >
+		<Size x="37" y="22"/>
+		<TexCoords left="0.01562500" right="0.59375000" top="0.74218750" bottom="0.91406250"/>
+	</Texture>
+
+	<CheckButton name="SpellFlyoutButtonTemplate" inherits="ActionButtonTemplate,SecureFrameTemplate" virtual="true">
+		<!-- This doesn't actually use any of the behavior of an ActionButtonTemplate, just the appearance -->
+		<Size x="28" y="28"/>
+		<Scripts>
+			<OnLoad>
+				self:RegisterForDrag("LeftButton");
+				_G[self:GetName().."Count"]:SetPoint("BOTTOMRIGHT", 0, 0);
+				self.maxDisplayCount = 99;
+				_G[self:GetName().."Icon"]:SetTexCoord(4/64, 60/64, 4/64, 60/64);
+			</OnLoad>
+			<OnClick>
+				SpellFlyoutButton_OnClick(self);
+			</OnClick>
+			<OnEnter>
+				SpellFlyoutButton_SetTooltip(self);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnDragStart>
+				if (not self:GetParent().isActionBar or not GetCVarBool("lockActionBars") or IsModifiedClick("PICKUPACTION")) then
+				if (self.spellID) then
+				PickupSpell(self.spellID);
+				end
+				end
+			</OnDragStart>
+		</Scripts>
+		<NormalTexture/>
+	</CheckButton>
+
+	<Frame name="SpellFlyout" hidden="true" frameStrata="DIALOG" frameLevel="10" inherits="SecureFrameTemplate" enableMouse="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="SpellFlyoutBackgroundEnd" inherits="ActionBarFlyoutButton-FlyoutTop" parentKey="BgEnd"/>
+				<Texture name="SpellFlyoutHorizontalBackground" file="Interface\Buttons\ActionBarFlyoutButton-FlyoutMidLeft" parentKey="HorizBg" horizTile="true" hidden="true">
+					<Size x="32" y="37"/>
+					<TexCoords left="0" right="1" top="0" bottom="0.578125"/>
+				</Texture>
+				<Texture name="SpellFlyoutVerticalBackground" file="Interface\Buttons\ActionBarFlyoutButton-FlyoutMid" parentKey="VertBg" vertTile="true" hidden="true">
+					<Size x="37" y="32"/>
+					<TexCoords left="0" right="0.578125" top="0" bottom="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="SpellFlyoutButton1" inherits="SpellFlyoutButtonTemplate"/>
+		</Frames>
+		<Scripts>
+			<OnLoad function="SpellFlyout_OnLoad"/>
+			<OnShow function="SpellFlyout_OnShow"/>
+			<OnHide function="SpellFlyout_OnHide"/>
+			<OnEvent function="SpellFlyout_OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

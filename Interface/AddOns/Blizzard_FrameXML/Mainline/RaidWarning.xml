@@ -1,0 +1,74 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="RaidBossEmoteFrameTemplate" hidden="true" virtual="true">
+		<Size x="512" y="80"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="slot1" inherits="GameFontNormalHuge" justifyH="CENTER" hidden="true">
+					<Size x="800" y="0"/>
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="slot2" inherits="GameFontNormalHuge" justifyH="CENTER" hidden="true">
+					<Size x="800" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.slot1" relativePoint="BOTTOM"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad function="RaidBossEmoteFrame_OnLoad"/>
+			<OnUpdate function="RaidNotice_OnUpdate"/>
+			<OnEvent function="RaidBossEmoteFrame_OnEvent"/>
+		</Scripts>
+	</Frame>
+	<Frame name="RaidWarningFrame" parent="UIParent" frameStrata="HIGH" toplevel="true" hidden="true">
+		<Size x="512" y="70"/>
+		<Anchors>
+			<Anchor point="TOP" relativeTo="UIErrorsFrame" relativePoint="BOTTOM"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="RaidWarningFrameSlot1" inherits="GameFontNormalHuge" justifyH="CENTER" hidden="true">
+					<Size x="800" y="0"/>
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</FontString>
+				<FontString name="RaidWarningFrameSlot2" inherits="GameFontNormalHuge" justifyH="CENTER" hidden="true">
+					<Size x="800" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="RaidWarningFrameSlot1" relativePoint="BOTTOM"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad function="RaidWarningFrame_OnLoad"/>
+			<OnEvent function="RaidWarningFrame_OnEvent"/>
+			<OnUpdate function="RaidNotice_OnUpdate"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="RaidBossEmoteFrame" inherits="RaidBossEmoteFrameTemplate" parent="UIParent" frameStrata="HIGH" toplevel="true">
+		<KeyValues>
+			<KeyValue key="controlPrivateAnchor" value="true" type="boolean"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="TOP" relativeTo="RaidWarningFrame" relativePoint="BOTTOM"/>
+		</Anchors>
+	</Frame>
+
+	<Frame name="PrivateRaidBossEmoteFrameAnchor" mixin="PrivateRaidBossEmoteFrameAnchorMixin" inherits="PingTopLevelPassThroughAttributeTemplate" parent="UIParent" frameStrata="HIGH" toplevel="true">
+		<Size x="512" y="80"/>
+		<Anchors>
+			<Anchor point="TOP" relativeTo="RaidBossEmoteFrame" relativePoint="TOP"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+</Ui>

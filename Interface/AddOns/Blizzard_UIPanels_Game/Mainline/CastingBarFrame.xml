@@ -1,0 +1,510 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="CastingBarFrameStagePipTemplate" useParentLevel="true" virtual="true">
+		<Size x="7" y="10"/>
+		<Layers>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture parentKey="BasePip" atlas="ui-castingbar-empower-pip" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Frame name="CastingBarFrameStagePipFXTemplate" inherits="CastingBarFrameStagePipTemplate" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="PipGlow" alpha="0" alphaMode="BLEND" atlas="cast-empowered-pipflare" useAtlasSize="true" scale="0.5">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="FlakesBottom" alpha="0" alphaMode="ADD" atlas="Cast_Empowered_FlakesS01" useAtlasSize="true" scale="0.5">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="FlakesTop" alpha="0" alphaMode="ADD" atlas="Cast_Empowered_FlakesS02" useAtlasSize="true" scale="0.5">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="FlakesTop02" alpha="0" alphaMode="ADD" atlas="Cast_Empowered_FlakesS03" useAtlasSize="true" scale="0.5">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="FlakesBottom02" alpha="0" alphaMode="ADD" atlas="Cast_Empowered_FlakesS03" useAtlasSize="true" scale="0.5">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="StageAnim" looping="NONE" setToFinalAlpha="true">
+				<Alpha childKey="PipGlow" duration="0.0" order="1" fromAlpha="0" toAlpha="0" smoothing="NONE"/>
+				<Alpha childKey="PipGlow" duration="0.1" order="1" fromAlpha="0.1" toAlpha="1" startDelay="0" smoothing="NONE"/>
+				<Alpha childKey="PipGlow" duration="0.25" order="1" fromAlpha="1" toAlpha="0" startDelay="0.1" smoothing="OUT"/>
+				<Translation childKey="FlakesBottom" duration="0.3" order="1" offsetX="0" offsetY="-30" smoothing="OUT"/>
+				<Rotation childKey="FlakesBottom" duration="0.3" order="1" degrees="90" smoothing="OUT">
+					<Origin point="CENTER"/>
+				</Rotation>
+				<Alpha childKey="FlakesBottom" duration="0.1" order="1" fromAlpha="0.1" toAlpha="1" smoothing="NONE"/>
+				<Alpha childKey="FlakesBottom" duration="0.25" order="1" fromAlpha="1" toAlpha="0" startDelay="0.1" smoothing="NONE"/>
+				<Translation childKey="FlakesTop" duration="0.3" order="1" offsetX="0" offsetY="30" smoothing="OUT"/>
+				<Rotation childKey="FlakesTop" duration="0.3" order="1" degrees="-90" smoothing="OUT">
+					<Origin point="CENTER"/>
+				</Rotation>
+				<Alpha childKey="FlakesTop" duration="0.1" order="1" fromAlpha="0.1" toAlpha="1" smoothing="NONE"/>
+				<Alpha childKey="FlakesTop" duration="0.25" order="1" fromAlpha="1" toAlpha="0" startDelay="0.1" smoothing="NONE"/>
+				<Translation childKey="FlakesTop02" duration="0.3" order="1" offsetX="0" offsetY="35" smoothing="IN"/>
+				<Rotation childKey="FlakesTop02" duration="0.3" order="1" degrees="60" smoothing="OUT">
+					<Origin point="CENTER"/>
+				</Rotation>
+				<Alpha childKey="FlakesTop02" duration="0.1" order="1" fromAlpha="0.1" toAlpha="1" smoothing="NONE"/>
+				<Alpha childKey="FlakesTop02" duration="0.25" order="1" fromAlpha="1" toAlpha="0" startDelay="0.1" smoothing="NONE"/>
+				<Translation childKey="FlakesBottom02" duration="0.3" order="1" offsetX="0" offsetY="-35" smoothing="IN"/>
+				<Rotation childKey="FlakesBottom02" duration="0.3" order="1" degrees="-60" smoothing="OUT">
+					<Origin point="CENTER"/>
+				</Rotation>
+				<Alpha childKey="FlakesBottom02" duration="0.1" order="1" fromAlpha="0.1" toAlpha="1" smoothing="NONE"/>
+				<Alpha childKey="FlakesBottom02" duration="0.25" order="1" fromAlpha="1" toAlpha="0" startDelay="0.1" smoothing="NONE"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+	<Frame name="CastingBarFrameStageTierTemplate" useParentLevel="true" virtual="true">
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+			<Anchor point="BOTTOMRIGHT"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="4">
+				<Texture parentKey="Normal" atlas="ui-castingbar-tier1-empower"/>
+				<Texture parentKey="Disabled" atlas="ui-castingbar-disabled-tier1-empower"/>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="5">
+				<Texture parentKey="Glow" atlas="ui-castingbar-glow-tier1-empower" alpha="0" alphaMode="ADD"/>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="FlashAnim" setToFinalAlpha="true">
+				<Alpha childKey="Glow" fromAlpha="0" toAlpha="1" duration="0.01"/>
+				<Alpha childKey="Glow" fromAlpha="1" toAlpha="0" duration="0.5"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="FinishAnim">
+				<Alpha childKey="Glow" fromAlpha="0" toAlpha="1" duration="0.1"/>
+				<Alpha childKey="Glow" fromAlpha="1" toAlpha="1" duration="1.0"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+	<StatusBar name="CastingBarFrameAnimsTemplate" virtual="true">
+		<Animations>
+			<AnimationGroup parentKey="FadeOutAnim" setToFinalAlpha="true">
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.3" startDelay="0.2"/>
+				<Scripts>
+					<OnFinished function="CastingBarAnim_OnFadeOutFinish"/>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="HoldFadeOutAnim" setToFinalAlpha="true">
+				<Alpha fromAlpha="1" toAlpha="1" duration="1.0" order="1"/>
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.3" order="2"/>
+				<Scripts>
+					<OnFinished function="CastingBarAnim_OnFadeOutFinish"/>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+	</StatusBar>
+
+	<!-- WARNING: TargetsVisibleWhilePlayingAnimGroupTemplate is likely to fail to find its targets since they're defined
+		in a child frame, which will cause the base frame to be hidden instead. That's ok with CastingBarFrameTemplate
+		since the template is split and CastingBarFrameBaseTemplate will load first. -->
+	<StatusBar name="CastingBarFrameAnimsFXTemplate" inherits="CastingBarFrameAnimsTemplate" virtual="true">
+		<Animations>
+			<AnimationGroup parentKey="FlashLoopingAnim" looping="NONE" setToFinalAlpha="true">
+				<Alpha childKey="Flash" fromAlpha="1" toAlpha="1" duration="1.0" order="1"/>
+				<Alpha childKey="Flash" fromAlpha="1" toAlpha="0" duration="0.2" order="2"/>
+				<Alpha childKey="Flash" fromAlpha="0" toAlpha="1" duration="0.2" order="3"/>
+				<Alpha childKey="Flash" fromAlpha="1" toAlpha="0" duration="0.15" order="4"/>
+				<Alpha childKey="Flash" fromAlpha="0" toAlpha="1" duration="0.15" order="5"/>
+				<Alpha childKey="Flash" fromAlpha="1" toAlpha="0" duration="0.1" order="6"/>
+				<Alpha childKey="Flash" fromAlpha="0" toAlpha="1" duration="0.1" order="7"/>
+				<Alpha childKey="Flash" fromAlpha="1" toAlpha="0" duration="0.1" order="8"/>
+				<Alpha childKey="Flash" fromAlpha="0" toAlpha="1" duration="0.1" order="9"/>
+				<Alpha childKey="ChargeGlow" fromAlpha="1" toAlpha="1" duration="1.0" order="1"/>
+				<Alpha childKey="ChargeGlow" fromAlpha="1" toAlpha="0" duration="0.2" order="2"/>
+				<Alpha childKey="ChargeGlow" fromAlpha="0" toAlpha="1" duration="0.2" order="3"/>
+				<Alpha childKey="ChargeGlow" fromAlpha="1" toAlpha="0" duration="0.15" order="4"/>
+				<Alpha childKey="ChargeGlow" fromAlpha="0" toAlpha="1" duration="0.15" order="5"/>
+				<Alpha childKey="ChargeGlow" fromAlpha="1" toAlpha="0" duration="0.1" order="6"/>
+				<Alpha childKey="ChargeGlow" fromAlpha="0" toAlpha="1" duration="0.1" order="7"/>
+				<Alpha childKey="ChargeGlow" fromAlpha="1" toAlpha="0" duration="0.1" order="8"/>
+				<Alpha childKey="ChargeGlow" fromAlpha="0" toAlpha="1" duration="0.1" order="9"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="FlashAnim" setToFinalAlpha="true">
+				<Alpha childKey="Flash" fromAlpha="0" toAlpha="1" duration="0.2"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="StageFlash" setToFinalAlpha="true">
+				<Alpha childKey="ChargeFlash" fromAlpha="0" toAlpha="1" duration="0.0"/>
+				<Alpha childKey="ChargeFlash" fromAlpha="1" toAlpha="0" duration="0.3"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="StageFinish" setToFinalAlpha="true">
+				<Alpha childKey="ChargeFlash" fromAlpha="0" toAlpha="1" duration="0.1"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="StandardFinish" inherits="TargetsVisibleWhilePlayingAnimGroupTemplate" looping="REPEAT" setToFinalAlpha="true">
+				<Translation childKey="EnergyGlow" duration="0.5" order="1" offsetX="0" offsetY="220" smoothing="NONE"/>
+				<Translation childKey="Flakes01" duration="0.5" order="1" offsetX="0" offsetY="100" startDelay="0" smoothing="IN"/>
+				<Translation childKey="Flakes02" duration="0.5" order="1" offsetX="0" offsetY="90" smoothing="OUT"/>
+				<Translation childKey="Flakes03" duration="0.5" order="1" offsetX="0" offsetY="25" startDelay="0.25" smoothing="IN"/>
+				<Alpha childKey="EnergyGlow" fromAlpha="0" toAlpha="1" duration="0.0"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="CraftingFinish" looping="NONE" setToFinalAlpha="true">
+				<Translation childKey="Shine" duration="0.5" order="1" offsetX="0" offsetY="180" smoothing="NONE"/>
+				<Alpha childKey="Shine" fromAlpha="0" toAlpha="1" duration="0.0"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="ChannelFinish" looping="NONE" setToFinalAlpha="true">
+				<Translation childKey="WispMask" duration="0.5" order="1" offsetX="50" offsetY="0" smoothing="NONE"/>
+				<Translation childKey="Sparkles01" duration="0.5" order="1" offsetX="40" offsetY="0" smoothing="IN"/>
+				<Translation childKey="Sparkles02" duration="0.5" order="1" offsetX="20" offsetY="0" startDelay="0.1" smoothing="IN_OUT"/>
+				<Rotation childKey="Sparkles01" duration="0.5" order="1" degrees="45" smoothing="NONE">
+					<Origin point="CENTER"/>
+				</Rotation>
+				<Rotation childKey="Sparkles02" duration="0.5" order="1" degrees="-45" startDelay="0.1" smoothing="NONE">
+					<Origin point="CENTER"/>
+				</Rotation>
+				<Alpha childKey="BaseGlow" duration="0.3" order="1" fromAlpha="0" toAlpha="0.5" smoothing="NONE"/>
+				<Alpha childKey="WispGlow" duration="0.0" order="1" fromAlpha="0" toAlpha="1" smoothing="NONE"/>
+				<Alpha childKey="Sparkles01" duration="0.0" order="1" fromAlpha="0" toAlpha="1" smoothing="NONE"/>
+				<Alpha childKey="Sparkles02" duration="0.0" order="1" fromAlpha="0" toAlpha="1" smoothing="NONE"/>
+				<Alpha childKey="BaseGlow" duration="0.2" order="2" fromAlpha="0.5" toAlpha="0" smoothing="NONE"/>
+				<Alpha childKey="WispGlow" duration="0.5" order="2" fromAlpha="1" toAlpha="0" smoothing="NONE"/>
+				<Alpha childKey="Sparkles01" duration="0.5" order="2" fromAlpha="1" toAlpha="0" smoothing="NONE"/>
+				<Alpha childKey="Sparkles02" duration="0.5" order="2" fromAlpha="1" toAlpha="0" smoothing="NONE"/>
+				<Scale childKey="BaseGlow" duration="0.5" order="1" fromScaleX="1" fromScaleY="1" toScaleX="4" toScaleY="1" smoothing="NONE"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="InterruptGlowAnim" looping="NONE" setToFinalAlpha="true">
+				<Alpha childKey="InterruptGlow" duration="0.0" order="1" fromAlpha="0" toAlpha="1" smoothing="NONE"/>
+				<Alpha childKey="InterruptGlow" duration="1.0" order="2" fromAlpha="1" toAlpha="0" smoothing="NONE"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="InterruptShakeAnim" looping="NONE" setToFinalAlpha="true">
+				<Translation duration="0.1" order="1" offsetX="0" offsetY="0" smoothing="NONE"/>
+				<Translation duration="0.0" order="2" offsetX="-1" offsetY="1" startDelay="0.05" smoothing="NONE"/>
+				<Translation duration="0.0" order="3" offsetX="1" offsetY="-2" startDelay="0.05" smoothing="NONE"/>
+				<Translation duration="0.0" order="4" offsetX="1" offsetY="2" startDelay="0.05" smoothing="NONE"/>
+				<Translation duration="0.0" order="5" offsetX="-1" offsetY="-1" startDelay="0.05" smoothing="NONE"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="InterruptSparkAnim" looping="NONE" setToFinalAlpha="true">
+				<Alpha childKey="Spark" duration="0.1" order="1" fromAlpha="1" toAlpha="1" smoothing="NONE"/>
+				<Scripts>
+					<OnFinished function="CastingBarAnim_OnInterruptSparkAnimFinish"/>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+	</StatusBar>
+	<StatusBar name="CastingBarFrameBaseTemplate" mixin="CastingBarMixin" drawLayer="BORDER" virtual="true">
+		<BarTexture atlas="ui-castingbar-filling-standard" useAtlasSize="true"/>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="0">
+				<Texture parentKey="DropShadow" atlas="castbar_shadow_embedded" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="3" y="-3"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="TextBorder" atlas="ui-castingbar-textbox">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="-12"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="InterruptGlow" alpha="0" alphaMode="ADD" atlas="cast_interrupt_outerglow" useAtlasSize="true" scale="0.5">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ChargeGlow" hidden="true" atlas="cast_empowered_outerglow" useAtlasSize="true" scale="0.5">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="Background" atlas="ui-castingbar-background">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-1" y="1"/>
+						<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="EnergyGlow" alpha="0" alphaMode="ADD" atlas="Cast_Standard_GlowLine" useAtlasSize="true" scale="0.51">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-100"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="EnergyMask" alpha="1" alphaMode="BLEND" atlas="Cast_Standard_LineTextureMask" useAtlasSize="true" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE" scale="0.5">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="EnergyGlow"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="4">
+				<Texture parentKey="BorderShield" atlas="ui-castingbar-shield" hidden="true">
+					<Size x="29" y="33"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-27" y="4"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Icon">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT" x="-5" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Border" atlas="ui-castingbar-frame">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-2" y="2"/>
+						<Anchor point="BOTTOMRIGHT" x="2" y="-2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="5">
+				<Texture parentKey="Flakes01" alphaMode="ADD" atlas="Cast_Standard_Flakes01" useAtlasSize="true" scale="0.5">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-25"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Flakes02" alphaMode="ADD" atlas="Cast_Standard_Flakes02" useAtlasSize="true" scale="0.5">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-45"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Flakes03" alphaMode="ADD" atlas="Cast_Standard_Flakes03" useAtlasSize="true" scale="0.5">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-25"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BaseGlow" alpha="0" alphaMode="ADD" atlas="Channel_WispGlow2" useAtlasSize="true" scale="0.5">
+					<Anchors>
+						<Anchor point="LEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="WispGlow" alpha="0" alphaMode="ADD" atlas="Cast_Channel_WispGlow" useAtlasSize="true" scale="0.5">
+					<Anchors>
+						<Anchor point="LEFT" x="25" y="0"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="WispMask" alpha="1" alphaMode="BLEND" atlas="Cast_Channel_WispMask" useAtlasSize="true" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE" scale="0.5">
+					<Anchors>
+						<Anchor point="LEFT" x="-90" y="-2"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="WispGlow"/>
+					</MaskedTextures>
+				</MaskTexture>
+				<Texture parentKey="Sparkles01" alpha="0" alphaMode="BLEND" atlas="Cast_Channel_Sparkles_01" useAtlasSize="true" scale="0.5">
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Sparkles02" alpha="0" alphaMode="BLEND" atlas="Cast_Channel_Sparkles_02" useAtlasSize="true" scale="0.5">
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="Flash" atlas="ui-castingbar-full-glow-standard" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-1" y="1"/>
+						<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ChargeFlash" alpha="0" atlas="ui-castingbar-full-glow-standard" alphaMode="ADD" setAllPoints="true"/>
+				<FontString parentKey="Text" inherits="GameFontHighlightSmall">
+					<Size x="185" y="16"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-10"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="CastTimeText" inherits="GameFontHighlightLarge">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="10" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="Spark" atlas="ui-castingbar-pip">
+					<Size x="8" y="20"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Shine" alpha="0" alphaMode="ADD" atlas="Cast_Crafting_ShineWipe" useAtlasSize="true" scale="0.5">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-110"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="CraftingMask" alpha="1" alphaMode="BLEND" atlas="Cast_Crafting_LineTextureMask" useAtlasSize="true" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE" scale="0.5">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Shine"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="3">
+				<Texture parentKey="StandardGlow" alpha="1" alphaMode="ADD" atlas="cast_standard_pipglow" hidden="true">
+					<Size x="37" y="12"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT" relativeKey="$parent.Spark" x="2" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="CraftGlow" alpha="1" alphaMode="ADD" atlas="cast_crafting_pipglow" hidden="true">
+					<Size x="37" y="12"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT" relativeKey="$parent.Spark" x="2" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ChannelShadow" alpha="1" alphaMode="BLEND" atlas="cast_channel_pipshadow" hidden="true">
+					<Size x="11" y="11"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT" relativeKey="$parent.Spark" x="1" y="0"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="BorderMask" atlas="cast_standard_barmask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Size x="256" y="13"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="StandardGlow"/>
+						<MaskedTexture childKey="CraftGlow"/>
+						<MaskedTexture childKey="ChannelShadow"/>
+						<MaskedTexture childKey="EnergyGlow"/>
+						<MaskedTexture childKey="Flakes01"/>
+						<MaskedTexture childKey="Flakes02"/>
+						<MaskedTexture childKey="Flakes03"/>
+						<MaskedTexture childKey="Shine"/>
+						<MaskedTexture childKey="BaseGlow"/>
+						<MaskedTexture childKey="WispGlow"/>
+						<MaskedTexture childKey="Sparkles01"/>
+						<MaskedTexture childKey="Sparkles02"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self:OnLoad(nil, true, false);
+			</OnLoad>
+			<OnEvent method="OnEvent" />
+			<OnUpdate method="OnUpdate" />
+			<OnShow method="OnShow" />
+		</Scripts>
+	</StatusBar>
+
+	<StatusBar name="CastingBarFrameTemplate" inherits="CastingBarFrameBaseTemplate, CastingBarFrameAnimsFXTemplate" virtual="true"/>
+
+	<StatusBar name="SmallCastingBarFrameTemplate" mixin="CastingBarMixin" inherits="CastingBarFrameAnimsTemplate" drawLayer="BORDER" virtual="true">
+		<Size x="150" y="20"/>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="0">
+				<Texture parentKey="TextBorder" atlas="ui-castingbar-textbox">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="-12"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Background" atlas="ui-castingbar-background">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BorderShield" atlas="ui-castingbar-shield" hidden="true">
+					<Size x="29" y="33"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-27" y="4"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size x="20" y="20"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT" x="-2" y="-5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Border" atlas="ui-castingbar-frame">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-1" y="2"/>
+						<Anchor point="BOTTOMRIGHT" x="1" y="-2"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Spark" atlas="ui-castingbar-pip">
+					<Size x="6" y="16"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Flash" atlas="ui-castingbar-full-glow-standard" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-1" y="1"/>
+						<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Text" inherits="SystemFont_Shadow_Small">
+					<Size x="0" y="16"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="-8"/>
+						<Anchor point="TOPRIGHT" x="0" y="-8"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self:OnLoad(nil, true, false);
+			</OnLoad>
+			<OnEvent method="OnEvent" />
+			<OnUpdate method="OnUpdate" />
+			<OnShow method="OnShow" />
+		</Scripts>
+	</StatusBar>
+
+	<StatusBar name="PlayerCastingBarFrame" toplevel="true" inherits="CastingBarFrameTemplate, UIParentBottomManagedFrameTemplate, EditModeCastBarSystemTemplate" fixedFrameStrata="true" frameStrata="HIGH" mixin="PlayerCastingBarMixin">
+		<Size x="208" y="11"/>
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="2" type="number"/>
+			<KeyValue key="bottomPadding" value="8" type="number"/>
+			<KeyValue key="playCastFX" value="true" type="boolean"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad" inherit="append"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</StatusBar>
+
+	<StatusBar name="OverlayPlayerCastingBarFrame" toplevel="true" inherits="CastingBarFrameTemplate" parent="UIParent" hidden="true" frameStrata="HIGH" mixin="OverlayPlayerCastingBarMixin">
+		<Size x="208" y="11"/>
+		<KeyValues>
+			<KeyValue key="playCastFX" value="true" type="boolean"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="CENTER" x="0" y="0"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</StatusBar>
+</Ui>

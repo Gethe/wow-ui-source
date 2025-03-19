@@ -1,0 +1,62 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Script file="Blizzard_SpellBookTemplates.lua"/>
+	
+	<Frame name="SpellBookHeaderTemplate" mixin="SpellBookHeaderMixin" virtual="true">
+		<Size x="300" y="51"/>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Backplate" atlas="spellbook-list-backplate" alpha="0.65">
+					<Size x="416" y="106"/>
+					<Anchors>
+						<Anchor point="LEFT" x="-85" y="10"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="SystemFont_Huge2" setAllPoints="true" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-8" y="0"/>
+						<Anchor point="TOPRIGHT" x="-60"/>
+					</Anchors>
+					<Color color="SPELLBOOK_FONT_COLOR" />
+				</FontString>
+				<Texture parentKey="Border" atlas="spellbook-divider">
+					<Size y="11"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-32"/>
+						<Anchor point="BOTTOMRIGHT" x="-60"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Button name="SpellBookCategoryTabTemplate" inherits="TabSystemButtonTemplate" mixin="SpellBookCategoryTabMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="isTabOnTop" value="true" type="boolean"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="NewSpellsGlow" atlas="SquareMask" setAllPoints="true" hidden="true">
+					<Color r="1" g="0" b="0" />
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="NewSpellsGlowAnim" setToFinalAlpha="true" inherits="TargetsVisibleWhilePlayingAnimGroupTemplate">
+				<Alpha childKey="NewSpellsGlow" fromAlpha=".5" toAlpha="1" duration="1" order="1" smoothing="NONE"/>
+				<Alpha childKey="NewSpellsGlow" fromAlpha="1" toAlpha=".5" duration="1" order="2" smoothing="NONE"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+		
+	</Button>
+</Ui>

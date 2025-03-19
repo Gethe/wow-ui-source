@@ -1,0 +1,566 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Script file="OverrideActionBar.lua"/>
+	<CheckButton name="OverrideActionBarButtonTemplate" inherits="ActionBarButtonTemplate" mixin="OverrideActionBarButtonMixin" virtual="true">
+		<Size x="45" y="45"/>
+		<Scripts>
+			<OnLoad inherit="append">
+				self:SetFrameLevel(self:GetFrameLevel() + 2);
+				local cooldown = _G[self:GetName().."Cooldown"];
+				cooldown:SetFrameLevel(cooldown:GetFrameLevel() + 2);
+			</OnLoad>
+		</Scripts>
+	</CheckButton>
+
+	<Frame name="OverrideActionBar" mixin="OverrideActionBarMixin" frameStrata="MEDIUM" parent="UIParent" enableMouse="true" toplevel="true" hidden="true">
+		<Animations>
+			<AnimationGroup parentKey="slideOut">
+				<Translation offsetX="0" offsetY="-180" duration="0.4" order="1"/>
+				<Scripts>
+					<OnFinished>
+						if OverrideActionBar.hideOnFinish then
+							OverrideActionBar:Hide();
+						end
+						ValidateActionBarTransition();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Size x="1000" y="100"/>
+		<Anchors>
+			<Anchor point="BOTTOM" x="0" y="0"/>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentEndCapL" parentKey="EndCapL">
+					<Size x="178" y="152"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>				
+					<TexCoords left="0.001953125" right="0.3496094" top="0.6992188" bottom="0.9960938"/>
+				</Texture>
+				<Texture name="$parentEndCapR" parentKey="EndCapR">
+					<Size x="178" y="152"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords  left="0.3496094" right="0.001953125" top="0.6992188" bottom="0.9960938"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="1">
+				<Texture name="$parentDivider2" parentKey="Divider2">
+					<Size x="48" y="112"/>
+					<Anchors>
+						<Anchor point="BOTTOM" x="103"/>
+					</Anchors>
+					<TexCoords left="0.4042969" right="0.4980469" top="0.3632813" bottom="0.5820313"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="0">
+				<Texture name="$parentBG" parentKey="_BG" horizTile="true">
+					<Size x="256" y="94"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parentEndCapL" relativePoint="BOTTOMRIGHT" x="-45"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentEndCapR" relativePoint="BOTTOMLEFT" x="45"/>
+					</Anchors>
+					<TexCoords left="0" right="1" top="0.1738281" bottom="0.3574219"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture name="$parentMicroBGL" parentKey="MicroBGL">
+					<Size x="20" y="84"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parentDivider2" relativePoint="BOTTOMRIGHT" x="-20"/>
+					</Anchors>
+					<TexCoords left="0.3046875" right="0.34375002" top="0.359375" bottom="0.5234375"/>
+				</Texture>
+				<Texture name="$parentMicroBGMid" parentKey="_MicroBGMid">
+					<Size x="135" y="84"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentMicroBGL" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.34375002" right="0.36328128" top="0.359375" bottom="0.5234375"/>
+				</Texture>
+				<Texture name="$parentMicroBGR" parentKey="MicroBGR">
+					<Size x="20" y="84"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentMicroBGMid" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.36328128" right="0.4023438" top="0.359375" bottom="0.5234375"/>
+				</Texture>
+				<Texture name="$parentButtonBGR" parentKey="ButtonBGR">
+					<Size x="20" y="84"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentDivider2" relativePoint="BOTTOMLEFT" x="20"/>
+					</Anchors>
+					<TexCoords left="0.36328128" right="0.4023438" top="0.359375" bottom="0.5234375"/>
+				</Texture>
+				<Texture name="$parentButtonBGMid" parentKey="_ButtonBGMid">
+					<Size x="335" y="84"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parentButtonBGR" relativePoint="LEFT"/>
+					</Anchors>
+					<TexCoords left="0.34375002" right="0.36328128" top="0.359375" bottom="0.5234375"/>
+				</Texture>
+				<Texture name="$parentButtonBGL" parentKey="ButtonBGL">
+					<Size x="20" y="84"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parentButtonBGMid" relativePoint="LEFT"/>
+					</Anchors>
+					<TexCoords left="0.3046875" right="0.34375002" top="0.359375" bottom="0.5234375"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="0">
+				<Texture name="$parentBorder" parentKey="_Border" horizTile="true">
+					<Size x="256" y="36"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentBG" y="18"/>
+						<Anchor point="TOPRIGHT" relativeTo="$parentBG" y="18"/>
+					</Anchors>
+					<TexCoords left="0" right="1" top="0.001953125" bottom="0.07226563"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentPitchFrame" parentKey="pitchFrame">
+				<Size x="100" y="100"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentButtonBGL" relativePoint="BOTTOMLEFT" x="-5"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER" textureSubLevel="1">
+						<Texture name="$parentDivider1" parentKey="Divider1">
+							<Size x="48" y="112"/>
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="BOTTOMRIGHT"/>
+							</Anchors>
+							<TexCoords left="0.4042969" right="0.4980469" top="0.7792969" bottom="0.9980469"/>
+						</Texture>
+					</Layer>					
+					<Layer level="BORDER" textureSubLevel="-1">			
+						<Texture name="$parentPitchOverlay" parentKey="PitchOverlay">
+							<Size x="26" y="94"/>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentDivider1" relativePoint="BOTTOMLEFT" x="18"/>
+							</Anchors>
+							<TexCoords left="0.3515625" right="0.4023438" top="0.8125" bottom="0.9960938"/>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="0">
+						<Texture name="$parentPitchBG" parentKey="PitchBG">
+							<Size x="10" y="74"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeTo="$parentPitchOverlay" y="-5"/>
+							</Anchors>
+							<TexCoords left="0.1699219" right="0.1894531" top="0.359375" bottom="0.5039063"/>
+						</Texture>
+						<Texture name="$parentPitchButtonBG" parentKey="PitchButtonBG">
+							<Size x="58" y="94"/>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentPitchOverlay" relativePoint="BOTTOMLEFT" x="8"/>
+							</Anchors>
+							<TexCoords left="0.5" right="0.6132813" top="0.359375" bottom="0.5429688"/>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="1">
+						<Texture name="$parentPitchMarker" parentKey="PitchMarker" alphaMode="ADD">
+							<Size x="10" y="14"/>
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="BOTTOM" relativeTo="$parentPitchOverlay" y="30"/>
+							</Anchors>
+							<TexCoords left="0.2734375" right="0.2929688" top="0.359375" bottom="0.3867188"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="$parentPitchUpButton" parentKey="PitchUpButton">
+						<Size x="34" y="34"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeTo="$parentPitchButtonBG" x="0" y="14"/>
+						</Anchors>
+						<Scripts>
+							<OnMouseDown function="VehicleAimUpStart"/>
+							<OnMouseUp function="VehicleAimUpStop"/>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip_SetTitle(GameTooltip, AIM_UP);
+								GameTooltip:Show();
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
+						<NormalTexture>
+							<TexCoords left="0.001953125" right="0.06835938" top="0.4433594" bottom="0.5097656"/>
+						</NormalTexture>
+						<PushedTexture>
+							<TexCoords left="0.0703125" right="0.1367188" top="0.4433594" bottom="0.5097656"/>
+						</PushedTexture>
+						<HighlightTexture alphaMode="ADD">
+							<TexCoords left="0.6992188" right="0.765625" top="0.359375" bottom="0.4257813"/>
+						</HighlightTexture>
+					</Button>
+					<Button name="$parentPitchDownButton" parentKey="PitchDownButton">
+						<Size x="34" y="34"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeTo="$parentPitchButtonBG" x="0" y="-22"/>
+						</Anchors>
+						<Scripts>
+							<OnMouseDown function="VehicleAimDownStart"/>
+							<OnMouseUp function="VehicleAimDownStop"/>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip_SetTitle(GameTooltip, AIM_DOWN);
+								GameTooltip:Show();
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
+						<NormalTexture>
+							<TexCoords left="0.2890625" right="0.3554688" top="0.5644531" bottom="0.6308594"/>
+						</NormalTexture>
+						<PushedTexture>
+							<TexCoords left="0.2890625" right="0.3554688" top="0.6308594" bottom="0.6972656"/>
+						</PushedTexture>
+						<HighlightTexture alphaMode="ADD">
+							<TexCoords left="0.6992188" right="0.765625" top="0.359375" bottom="0.4257813"/>
+						</HighlightTexture>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						--Used to set the skin
+						local parent = self:GetParent();
+						parent.Divider1 = self.Divider1;
+						parent.PitchOverlay = self.PitchOverlay;
+						parent.PitchButtonBG = self.PitchButtonBG;
+						parent.PitchBG = self.PitchBG;
+						parent.PitchMarker = self.PitchMarker;
+						parent.PitchUpButton = self.PitchUpButton;
+						parent.PitchDownButton = self.PitchDownButton;
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentLeaveFrame" parentKey="leaveFrame" useParentLevel="true">
+				<Size x="100" y="100"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parentMicroBGR" relativePoint="BOTTOMRIGHT" x="5"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER" textureSubLevel="1">
+						<Texture name="$parentDivider3" parentKey="Divider3">
+							<Size x="48" y="112"/>
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+							<TexCoords left="0.1933594" right="0.2871094" top="0.4785156" bottom="0.6972656"/>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="1">
+						<Texture name="$parentExitBG" parentKey="ExitBG">
+							<Size x="70" y="94"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeTo="$parentDivider3" relativePoint="BOTTOMRIGHT" x="-20"/>
+							</Anchors>
+							<TexCoords left="0.3613281" right="0.4980469" top="0.5839844" bottom="0.7675781"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="$parentLeaveButton" parentKey="LeaveButton">
+						<Size x="42" y="42"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeTo="$parentExitBG" x="0" y="-5"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								OverrideActionBar:Leave();
+							</OnClick>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip_SetTitle(GameTooltip, LEAVE_VEHICLE);
+								GameTooltip:Show();
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
+						<NormalTexture>
+							<TexCoords left="0.0859375" right="0.1679688" top="0.359375" bottom="0.4414063"/>
+						</NormalTexture>
+						<PushedTexture>
+							<TexCoords left="0.001953125" right="0.08398438" top="0.359375" bottom="0.4414063"/>
+						</PushedTexture>
+						<HighlightTexture alphaMode="ADD">
+							<TexCoords left="0.6152344" right="0.6972656" top="0.359375" bottom="0.4414063"/>
+						</HighlightTexture>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						--Used to set the skin
+						local parent = self:GetParent();
+						parent.Divider3 = self.Divider3;
+						parent.ExitBG = self.ExitBG;
+						parent.LeaveButton = self.LeaveButton;
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<StatusBar name="$parentExpBar" inherits="TextStatusBar" parentKey="xpBar">
+				<Size x="100" y="16"/>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentBG" x="0" y="27"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="0">
+						<Texture>
+							<Color r="0.0" g="0.0" b="0.0" a="0.5"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="1">
+						<Texture name="$parentXpMid" parentKey="XpMid" horizTile="true">
+							<Size x="400" y="50"/>
+							<Anchors>
+								<Anchor point="TOP" x="0" y="8"/>
+							</Anchors>
+							<TexCoords left="0" right="1" top="0.07421875" bottom="0.171875"/>
+						</Texture>
+						<Texture name="$parentXpL" parentKey="XpL">
+							<Size x="20" y="50"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativeTo="$parentXpMid" relativePoint="LEFT"/>
+							</Anchors>
+							<TexCoords left="0.2324219" right="0.2714844" top="0.359375" bottom="0.4570313"/>
+						</Texture>
+						<Texture name="$parentXpR" parentKey="XpR">
+							<Size x="20" y="50"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentXpMid" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0.1914063" right="0.2304688" top="0.359375" bottom="0.4570313"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="$parentOverlayFrame" frameStrata="DIALOG">
+						<Anchors>
+							<Anchor point="TOPLEFT" y="-3"/>
+							<Anchor point="BOTTOMRIGHT" y="2"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="$parentText" inherits="TextStatusBarText" parentKey="text">
+									<Anchors>
+										<Anchor point="CENTER" x="0" y="1"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								self:GetParent():SetBarText(self.text);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						self:InitializeTextStatusBar();
+						self:RegisterEvent("PLAYER_ENTERING_WORLD");
+						self:RegisterEvent("PLAYER_XP_UPDATE");
+						self.textLockable = 1;
+						self.cvar = "xpBarText";
+						self.cvarLabel = "XP_BAR_TEXT";
+						self.alwaysPrefix = true;
+						self:SetBarTextPrefix(XP);
+					</OnLoad>
+					<OnEvent>
+						if ( event == "CVAR_UPDATE" ) then
+							self:TextStatusBarOnEvent(event, ...);
+						else
+							StatusTrackingBarManager:UpdateBarsShown();
+						end
+					</OnEvent>
+					<OnShow>
+						if ( GetCVar("xpBarText") == "1" ) then
+							self:UpdateTextString();
+						end
+						self:SetFrameLevel(self:GetParent():GetFrameLevel() - 1);
+					</OnShow>					
+					<OnEnter>
+						self:UpdateTextString();
+						self:ShowStatusBarText();
+						--ExhaustionTick.timer = 1;
+						local label = XPBAR_LABEL;
+						if ( GameLimitedMode_IsActive() ) then
+							local rLevel = GetRestrictedAccountData();
+							if UnitLevel("player") >= rLevel then
+								label = label.." "..RED_FONT_COLOR_CODE..CAP_REACHED_TRIAL.."|r";
+							end
+						end
+					</OnEnter>
+					<OnLeave>
+						self:HideStatusBarText();
+						GameTooltip:Hide();
+						---ExhaustionTick.timer = nil;
+					</OnLeave>
+					<OnUpdate>
+						--ExhaustionTick_OnUpdate(ExhaustionTick, elapsed);
+					</OnUpdate>
+					<OnValueChanged>
+						if (not self:IsShown()) then
+							return;
+						end
+						self:OnStatusBarValueChanged();
+					</OnValueChanged>
+				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="0.58" g="0.0" b="0.55"/>
+			</StatusBar>
+			<StatusBar name="$parentHealthBar" drawLayer="ARTWORK" inherits="TextStatusBar" orientation="VERTICAL" rotatesTexture="true" parentKey="healthBar">
+				<Size x="38" y="92"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentEndCapL" x="-35" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBackground" parentKey="HealthBarBG">
+							<Size x="48" y="94"/>
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+							<TexCoords left="0.09765625" right="0.1914063" top="0.5136719" bottom="0.6972656"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture name="$parentOverlay" parentKey="HealthBarOverlay">
+							<Size x="48" y="94"/>
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+							<TexCoords left="0.001953125" right="0.09570313" top="0.5136719" bottom="0.6972656"/>
+						</Texture>
+						<FontString name="$parentText" inherits="VehicleMenuBarStatusBarText" parentKey="text">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="3"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						--Used to set the skin
+						local parent = self:GetParent();
+						parent.HealthBarBG = self.HealthBarBG;
+						parent.HealthBarOverlay = self.HealthBarOverlay;
+						
+						self:InitializeTextStatusBar();
+						self.textLockable = 1;
+						self.cvar = "statusText";
+						self.cvarLabel = "STATUS_TEXT_PLAYER";
+						self.showPercentage = true;
+						self.prefix = HEALTH;
+						self.tooltipAnchorPoint = "ANCHOR_LEFT";
+						self.alwaysShow = true;
+						self.ignoreNoUnit = true;
+						self.unitFrame = self:GetParent();
+						UnitFrameHealthBar_Initialize("vehicle", self, self.text, true);
+						UnitFrameHealthBar_Update(self, "vehicle");
+					</OnLoad>
+					<OnValueChanged>
+						UnitFrameHealthBar_OnValueChanged(self, value);
+						OverrideActionBar_StatusBars_ShowTooltip(self);
+					</OnValueChanged>
+					<OnEnter function="OverrideActionBar_StatusBars_ShowTooltip"/>
+				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+			</StatusBar>
+			<StatusBar name="$parentPowerBar" drawLayer="ARTWORK" inherits="TextStatusBar" orientation="VERTICAL" rotatesTexture="true"  parentKey="powerBar">
+				<Size x="38" y="92"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parentEndCapR" x="35" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBackground" parentKey="PowerBarBG">
+							<Size x="48" y="94"/>
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+							<TexCoords left="0.09765625" right="0.1914063" top="0.5136719" bottom="0.6972656"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture name="$parentOverlay" parentKey="PowerBarOverlay">
+							<Size x="48" y="94"/>
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+							<TexCoords left="0.001953125" right="0.09570313" top="0.5136719" bottom="0.6972656"/>
+						</Texture>
+						<FontString name="$parentText" inherits="VehicleMenuBarStatusBarText" parentKey="parentKey">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="3"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						--Used to set the skin
+						local parent = self:GetParent();
+						parent.PowerBarBG = self.PowerBarBG;
+						parent.PowerBarOverlay = self.PowerBarOverlay;
+					
+						self:InitializeTextStatusBar();
+						self.textLockable = 1;
+						self.cvar = "statusText";
+						self.cvarLabel = "STATUS_TEXT_PLAYER";
+						self.showPercentage = true;
+						self.tooltipAnchorPoint = "ANCHOR_RIGHT";
+						self.alwaysShow = true;
+						self.ignoreNoUnit = true;
+						self.unitFrame = self:GetParent();
+						UnitFrameManaBar_Initialize ("vehicle", self, self.text, true);
+						UnitFrameManaBar_Update(self, "vehicle");
+					</OnLoad>
+					<OnValueChanged function="OverrideActionBar_StatusBars_ShowTooltip"/>
+					<OnEnter function="OverrideActionBar_StatusBars_ShowTooltip"/>
+				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+			</StatusBar>
+			
+			<CheckButton name="$parentButton1" inherits="OverrideActionBarButtonTemplate" id="1" parentKey="SpellButton1">
+				<Anchors>
+					<!--Anchor point="BOTTOM" x="-234" y="17"/-->
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton2" inherits="OverrideActionBarButtonTemplate" id="2" parentKey="SpellButton2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton1" relativePoint="RIGHT" x="6" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton3" inherits="OverrideActionBarButtonTemplate" id="3" parentKey="SpellButton3">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton2" relativePoint="RIGHT" x="6" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton4" inherits="OverrideActionBarButtonTemplate" id="4" parentKey="SpellButton4">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton3" relativePoint="RIGHT" x="6" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton5" inherits="OverrideActionBarButtonTemplate" id="5" parentKey="SpellButton5">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton4" relativePoint="RIGHT" x="6" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton6" inherits="OverrideActionBarButtonTemplate" id="6" parentKey="SpellButton6">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton5" relativePoint="RIGHT" x="6" y="0"/>
+				</Anchors>
+			</CheckButton>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

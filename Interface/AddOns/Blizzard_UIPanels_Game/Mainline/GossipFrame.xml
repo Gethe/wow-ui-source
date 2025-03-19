@@ -1,0 +1,115 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="GossipFramePanelTemplate" virtual="true">
+		<Size x="384" y="512"/>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="MaterialTopLeft">
+					<Size x="239" y="241"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="21" y="-75"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentMaterialTopRight">
+					<Size x="64" y="241"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.MaterialTopLeft" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentMaterialBotLeft">
+					<Size x="239" y="128"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.MaterialTopLeft" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentMaterialBotRight">
+					<Size x="64" y="128"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.MaterialTopLeft" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Frame name="GossipFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate" mixin="GossipFrameMixin">
+		<Size x="338" y="496"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-62"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="GreetingPanel" inherits="GossipFramePanelTemplate" hidden="false">
+				<Frames>
+					<Button parentKey="GoodbyeButton" inherits="UIPanelButtonTemplate" text="GOODBYE">
+						<Size x="78" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativeTo="GossipFrame" relativePoint="BOTTOMRIGHT" x="-6" y="4"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								HideUIPanel(GossipFrame);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+						<Size x="300" y="403"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="8" y="-65"/>
+						</Anchors>
+					</Frame>
+					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="6" y="-3"/>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="6" y="3"/>
+						</Anchors>
+					</EventFrame>
+				</Frames>
+			</Frame>
+			<StatusBar parentKey="FriendshipStatusBar" inherits="NPCFriendshipStatusBarTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="80" y="-41"/>
+				</Anchors>
+			</StatusBar>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnEvent method="OnEvent"/>
+			<OnHide method="OnHide"/>
+			<OnMouseWheel function=""/>
+		</Scripts>
+	</Frame>
+	<Button name="GossipTitleButtonTemplate" virtual="true" mixin="GossipTitleButtonMixin" hidden="false">
+		<Size x="300" y="16"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon" file="Interface\QuestFrame\UI-Quest-BulletPoint">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3" y="1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
+		<ButtonText>
+			<Size x="275" y="0"/>
+			<Anchors>
+				<Anchor point="LEFT" x="20" y="0"/>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="QuestFontLeft"/>
+	</Button>
+</Ui>

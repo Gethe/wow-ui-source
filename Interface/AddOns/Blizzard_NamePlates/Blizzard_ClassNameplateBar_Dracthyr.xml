@@ -1,0 +1,22 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+  <Script file="Blizzard_ClassNameplateBar_Dracthyr.lua"/>
+ 		
+	<Frame name="ClassNameplateBarDracthyrFrame" inherits="EssencePlayerFrameTemplate, ClassNameplateBarFrame" mixin="ClassNameplateBar, ClassNameplateBarDracthyr" ignoreParentScale="true">
+		<Size x="160" y="20"/>
+		<KeyValues>
+			<KeyValue key="shouldShowBarFunc" value="ClassNameplateBarDracthyr.SetupDracthyr" type="global"/>
+			<KeyValue key="resourceBarMixin" value="ClassNameplateBar" type="global"/>
+			<KeyValue key="class" value="EVOKER" type="string"/>
+			<KeyValue key="unit" value="player" type="string"/>
+			<KeyValue key="topPadding" value="0" type="number"/>
+		</KeyValues>
+	</Frame>
+
+	<StatusBar name="ClassNameplateEbonMightBarFrame" inherits="ClassNameplateAlternatePowerBarBaseTemplate, EvokerEbonMightBarTemplate" mixin="ClassNameplateEbonMightBar">
+		<KeyValues>
+			<KeyValue key="scale" value="1"/>
+			<KeyValue key="unit" value="player" type="string"/>
+		</KeyValues>
+	</StatusBar>
+</Ui>

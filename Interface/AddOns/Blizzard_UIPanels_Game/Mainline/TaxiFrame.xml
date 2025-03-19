@@ -1,0 +1,49 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Button name="TaxiButtonTemplate" hidden="true" parent="TaxiFrame" virtual="true">
+		<Size x="16" y="16"/>
+		<Anchors>
+			<Anchor point="BOTTOMRIGHT"/>
+		</Anchors>
+		<Scripts>
+            <OnEnter>
+				TaxiNodeOnButtonEnter(self, motion);
+			</OnEnter>
+            <OnLeave>
+				TaxiNodeOnButtonLeave(self, motion);
+			</OnLeave>
+ 			<OnClick>
+				TakeTaxiNode(self:GetID());
+			</OnClick>
+		</Scripts>
+		<HighlightTexture file="Interface\TaxiFrame\UI-Taxi-Icon-Highlight">
+			<Size x="32" y="32"/>
+			<Anchors>
+				<Anchor point="CENTER" x="0" y="0"/>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
+	<Frame name="TaxiFrame" toplevel="true" movable="true" hidden="true" parent="UIParent" enableMouse="true" inherits="BasicFrameTemplateWithInset">
+		<Size x="590" y="608"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" x="0" y="-104"/>
+		</Anchors>
+		<Frames>
+			<Frame name="TaxiRouteMap">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.InsetBg"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.InsetBg"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="TaxiFrame_OnLoad"/>
+			<OnEvent function="TaxiFrame_OnEvent"/>
+			<OnShow function="TaxiFrame_OnShow" />
+			<OnHide>
+				CloseTaxiMap();
+				PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
+			</OnHide>
+		</Scripts>
+	</Frame>
+</Ui>

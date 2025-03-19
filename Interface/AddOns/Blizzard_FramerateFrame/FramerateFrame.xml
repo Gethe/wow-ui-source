@@ -1,0 +1,26 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Script file="FramerateFrame.lua"/>
+	<Frame name="FramerateFrame" mixin="FramerateFrameMixin" inherits="ResizeLayoutFrame" hidden="true" parent="WorldFrame">
+		<Size x="12" y="12"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" inherits="SystemFont_Shadow_Med1" text="FRAMERATE_LABEL">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="FramerateText" inherits="SystemFont_Shadow_Med1">
+					<Anchors>
+						<Anchor point ="LEFT" relativeKey="$parent.Label" relativePoint="RIGHT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Frame>
+</Ui>

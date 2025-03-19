@@ -1,0 +1,65 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Script file="AlternatePowerBarBase.lua"/>
+
+	<StatusBar name="AlternatePowerBarBaseTemplate" mixin="AlternatePowerBarBaseMixin" inherits="TextStatusBar" virtual="true">
+		<!-- 
+			powerName: Key used for looking up art info for a particular bar type
+			baseMixin: The ui-context-specific base mixin used by a particular template (ex: PlayerFrameAlternatePowerBarBaseTemplate or ClassNameplateAlternatePowerBarBaseMixin)
+					   Provides bar implementations with a way to generically call the right base implementation within an overriden function (ex: self.baseMixin.Initialize(self); )
+		 -->
+		<KeyValues>
+			<KeyValue key="powerName" value="MANA" type="string" />
+			<KeyValue key="baseMixin" value="nil" type="global" />
+		</KeyValues>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<FontString name="$parentText" inherits="TextStatusBarText">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="LeftText" inherits="TextStatusBarText">
+					<Anchors>
+						<Anchor point="LEFT" x="2" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="RightText" inherits="TextStatusBarText">
+					<Anchors>
+						<Anchor point="RIGHT" x="-2" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="3">
+				<MaskTexture parentKey="PowerBarMask" atlas="UI-HUD-UnitFrame-Player-PortraitOn-Bar-Mana-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-2" y="3"/>
+					</Anchors>
+				</MaskTexture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</StatusBar>
+
+	<StatusBar name="PlayerFrameAlternatePowerBarBaseTemplate" mixin="PlayerFrameAlternatePowerBarBaseMixin" inherits="AlternatePowerBarBaseTemplate" parent="PlayerFrameAlternatePowerBarArea" useParentLevel="true" virtual="true">
+		<KeyValues>
+			<KeyValue key="baseMixin" value="PlayerFrameAlternatePowerBarBaseMixin" type="global" />
+		</KeyValues>
+		<Size x="124" y="9"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" x="85" y="-73"/>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="4">
+				<Texture parentKey="Spark" inherits="TextStatusBarSparkTemplate"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</StatusBar>
+</Ui>

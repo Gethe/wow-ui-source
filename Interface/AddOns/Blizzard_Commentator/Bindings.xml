@@ -1,0 +1,184 @@
+<Bindings>
+	<!-- Commentator Bindings -->	
+	<Binding name="COMMENTATORRESET" category="BINDING_HEADER_COMMENTATOR">
+		Commentator:Reset();
+	</Binding>
+	
+	<Binding name="COMMENTATORMOVESPEEDINCREASE" header="COMMENTATORCAMERA" category="BINDING_HEADER_COMMENTATOR">
+		Commentator:ModifyCameraSpeed(1);
+	</Binding>
+	<Binding name="COMMENTATORMOVESPEEDDECREASE" category="BINDING_HEADER_COMMENTATOR">
+		Commentator:ModifyCameraSpeed(-1);
+	</Binding>
+	
+	<Binding name="COMMENTATORZOOMIN" category="BINDING_HEADER_COMMENTATOR">
+		C_Commentator.ZoomIn();
+	</Binding>
+	<Binding name="COMMENTATORZOOMOUT" category="BINDING_HEADER_COMMENTATOR">
+		C_Commentator.ZoomOut();
+	</Binding>
+	<Binding name="COMMENTATORRESETZOOM" category="BINDING_HEADER_COMMENTATOR">
+		C_Commentator.ResetFoVTarget();
+	</Binding>
+	<Binding name="TOGGLE_SMART_CAMERA" category="BINDING_HEADER_COMMENTATOR">
+		C_Commentator.SetUseSmartCamera(not C_Commentator.IsUsingSmartCamera());
+	</Binding>
+	<Binding name="TOGGLE_SMART_CAMERA_LOCK" category="BINDING_HEADER_COMMENTATOR">
+		C_Commentator.SetSmartCameraLocked(not C_Commentator.IsSmartCameraLocked());
+	</Binding>>
+
+	<Binding name="COMMENTATORLOOKATNONE" category="BINDING_HEADER_COMMENTATOR">
+		C_Commentator.ClearCameraTarget();
+	</Binding>
+	
+	
+	<Binding name="CYCLEFOLLOWTRANSITONSPEED" category="BINDING_HEADER_COMMENTATOR">
+		CycleFollowCameraTransitionPreset();
+	</Binding>
+	<Binding name="FORCEFOLLOWTRANSITON" category="BINDING_HEADER_COMMENTATOR">
+		C_Commentator.ForceFollowTransition();
+	</Binding>
+	<Binding name="TOGGLESMOOTHFOLLOWTRANSITIONS" category="BINDING_HEADER_COMMENTATOR">
+		C_Commentator.SetSmoothFollowTransitioning(not C_Commentator.GetSmoothFollowTransitioning());
+	</Binding>
+	<Binding name="TOGGLECAMERACOLLISION" category="BINDING_HEADER_COMMENTATOR">
+		C_Commentator.SetCameraCollision(not C_Commentator.GetCameraCollision());
+	</Binding>
+
+	
+	<Binding name="TEAM_1_ADD_SCORE" header="COMMENTATORSCORING" category="BINDING_HEADER_COMMENTATOR">
+		Commentator.Scoreboard:AddScore(1)
+	</Binding>
+	<Binding name="TEAM_2_ADD_SCORE" category="BINDING_HEADER_COMMENTATOR">
+		Commentator.Scoreboard:AddScore(2)
+	</Binding>
+	<Binding name="TEAM_1_REMOVE_SCORE" category="BINDING_HEADER_COMMENTATOR">
+		Commentator.Scoreboard:RemoveScore(1)
+	</Binding>
+	<Binding name="TEAM_2_REMOVE_SCORE" category="BINDING_HEADER_COMMENTATOR">
+		Commentator.Scoreboard:RemoveScore(2)
+	</Binding>
+	<Binding name="RESET_SCORE_COUNT" category="BINDING_HEADER_COMMENTATOR">
+		Commentator.Scoreboard:ResetScores()
+	</Binding>
+	<Binding name="SWAPUNITFRAMES" category="BINDING_HEADER_COMMENTATOR">
+		Commentator:SwapTeams();
+	</Binding>
+	<Binding name="CHECK_FOR_SCOREBOARD" category="BINDING_HEADER_COMMENTATOR">
+		Commentator:CheckScoreboard();
+	</Binding>
+	<Binding name="TOGGLE_FRAME_LOCK" category="BINDING_HEADER_COMMENTATOR">
+		Commentator:ToggleFrameLock();
+	</Binding>
+
+	<Binding name="COMMENTATORFOLLOW1" header="COMMENTATORFOLLOW" category="BINDING_HEADER_COMMENTATOR">
+		Commentator:ObservePlayer(1, 1, TOURNAMENT_OBSERVE_PLAYER_PRIMARY);
+	</Binding>
+	<Binding name="COMMENTATORFOLLOW2" category="BINDING_HEADER_COMMENTATOR">
+		Commentator:ObservePlayer(1, 2, TOURNAMENT_OBSERVE_PLAYER_PRIMARY);
+	</Binding>
+	<Binding name="COMMENTATORFOLLOW3" category="BINDING_HEADER_COMMENTATOR">
+		Commentator:ObservePlayer(1, 3, TOURNAMENT_OBSERVE_PLAYER_PRIMARY);
+	</Binding>
+	<Binding name="COMMENTATORFOLLOW4" category="BINDING_HEADER_COMMENTATOR">
+		Commentator:ObservePlayer(1, 4, TOURNAMENT_OBSERVE_PLAYER_PRIMARY);
+	</Binding>
+	<Binding name="COMMENTATORFOLLOW5" category="BINDING_HEADER_COMMENTATOR">
+		Commentator:ObservePlayer(1, 5, TOURNAMENT_OBSERVE_PLAYER_PRIMARY);
+	</Binding>
+	<Binding name="COMMENTATORFOLLOW6" category="BINDING_HEADER_COMMENTATOR">
+		Commentator:ObservePlayer(1, 6, TOURNAMENT_OBSERVE_PLAYER_PRIMARY);
+	</Binding>
+	<Binding name="COMMENTATORFOLLOW7" category="BINDING_HEADER_COMMENTATOR">
+		Commentator:ObservePlayer(2, 1, TOURNAMENT_OBSERVE_PLAYER_PRIMARY);
+	</Binding>
+	<Binding name="COMMENTATORFOLLOW8" category="BINDING_HEADER_COMMENTATOR">
+		Commentator:ObservePlayer(2, 2, TOURNAMENT_OBSERVE_PLAYER_PRIMARY);
+	</Binding>
+	<Binding name="COMMENTATORFOLLOW9" category="BINDING_HEADER_COMMENTATOR">
+		Commentator:ObservePlayer(2, 3, TOURNAMENT_OBSERVE_PLAYER_PRIMARY);
+	</Binding>
+	<Binding name="COMMENTATORFOLLOW10" category="BINDING_HEADER_COMMENTATOR">
+		Commentator:ObservePlayer(2, 4, TOURNAMENT_OBSERVE_PLAYER_PRIMARY);
+	</Binding>
+	<Binding name="COMMENTATORFOLLOW11" category="BINDING_HEADER_COMMENTATOR">
+		Commentator:ObservePlayer(2, 5, TOURNAMENT_OBSERVE_PLAYER_PRIMARY);
+	</Binding>
+	<Binding name="COMMENTATORFOLLOW12" category="BINDING_HEADER_COMMENTATOR">
+		Commentator:ObservePlayer(2, 6, TOURNAMENT_OBSERVE_PLAYER_PRIMARY);
+	</Binding>
+	
+	<Binding name="COMMENTATORFOLLOW1SNAP" header="COMMENTATORFOLLOWSNAP" category="BINDING_HEADER_COMMENTATOR">
+		Commentator:ObservePlayer(1, 1, TOURNAMENT_OBSERVE_PLAYER_PRIMARY_SNAP);
+	</Binding>
+	<Binding name="COMMENTATORFOLLOW2SNAP" category="BINDING_HEADER_COMMENTATOR">
+		Commentator:ObservePlayer(1, 2, TOURNAMENT_OBSERVE_PLAYER_PRIMARY_SNAP);
+	</Binding>
+	<Binding name="COMMENTATORFOLLOW3SNAP" category="BINDING_HEADER_COMMENTATOR">
+		Commentator:ObservePlayer(1, 3, TOURNAMENT_OBSERVE_PLAYER_PRIMARY_SNAP);
+	</Binding>
+	<Binding name="COMMENTATORFOLLOW4SNAP" category="BINDING_HEADER_COMMENTATOR">
+		Commentator:ObservePlayer(1, 4, TOURNAMENT_OBSERVE_PLAYER_PRIMARY_SNAP);
+	</Binding>
+	<Binding name="COMMENTATORFOLLOW5SNAP" category="BINDING_HEADER_COMMENTATOR">
+		Commentator:ObservePlayer(1, 5, TOURNAMENT_OBSERVE_PLAYER_PRIMARY_SNAP);
+	</Binding>
+	<Binding name="COMMENTATORFOLLOW6SNAP" category="BINDING_HEADER_COMMENTATOR">
+		Commentator:ObservePlayer(1, 6, TOURNAMENT_OBSERVE_PLAYER_PRIMARY_SNAP);
+	</Binding>
+	<Binding name="COMMENTATORFOLLOW7SNAP" category="BINDING_HEADER_COMMENTATOR">
+		Commentator:ObservePlayer(2, 1, TOURNAMENT_OBSERVE_PLAYER_PRIMARY_SNAP);
+	</Binding>
+	<Binding name="COMMENTATORFOLLOW8SNAP" category="BINDING_HEADER_COMMENTATOR">
+		Commentator:ObservePlayer(2, 2, TOURNAMENT_OBSERVE_PLAYER_PRIMARY_SNAP);
+	</Binding>
+	<Binding name="COMMENTATORFOLLOW9SNAP" category="BINDING_HEADER_COMMENTATOR">
+		Commentator:ObservePlayer(2, 3, TOURNAMENT_OBSERVE_PLAYER_PRIMARY_SNAP);
+	</Binding>
+	<Binding name="COMMENTATORFOLLOW10SNAP" category="BINDING_HEADER_COMMENTATOR">
+		Commentator:ObservePlayer(2, 4, TOURNAMENT_OBSERVE_PLAYER_PRIMARY_SNAP);
+	</Binding>
+	<Binding name="COMMENTATORFOLLOW11SNAP" category="BINDING_HEADER_COMMENTATOR">
+		Commentator:ObservePlayer(2, 5, TOURNAMENT_OBSERVE_PLAYER_PRIMARY_SNAP);
+	</Binding>
+	<Binding name="COMMENTATORFOLLOW12SNAP" category="BINDING_HEADER_COMMENTATOR">
+		Commentator:ObservePlayer(2, 6, TOURNAMENT_OBSERVE_PLAYER_PRIMARY_SNAP);
+	</Binding>
+	
+	<Binding name="COMMENTATORLOOKAT1" header="COMMENTATORLOOKAT" category="BINDING_HEADER_COMMENTATOR">
+		Commentator:ObservePlayer(1, 1, TOURNAMENT_OBSERVE_PLAYER_SECONDARY);
+	</Binding>
+	<Binding name="COMMENTATORLOOKAT2" category="BINDING_HEADER_COMMENTATOR">
+		Commentator:ObservePlayer(1, 2, TOURNAMENT_OBSERVE_PLAYER_SECONDARY);
+	</Binding>
+	<Binding name="COMMENTATORLOOKAT3" category="BINDING_HEADER_COMMENTATOR">
+		Commentator:ObservePlayer(1, 3, TOURNAMENT_OBSERVE_PLAYER_SECONDARY);
+	</Binding>
+	<Binding name="COMMENTATORLOOKAT4" category="BINDING_HEADER_COMMENTATOR">
+		Commentator:ObservePlayer(1, 4, TOURNAMENT_OBSERVE_PLAYER_SECONDARY);
+	</Binding>
+	<Binding name="COMMENTATORLOOKAT5" category="BINDING_HEADER_COMMENTATOR">
+		Commentator:ObservePlayer(1, 5, TOURNAMENT_OBSERVE_PLAYER_SECONDARY);
+	</Binding>
+	<Binding name="COMMENTATORLOOKAT6" category="BINDING_HEADER_COMMENTATOR">
+		Commentator:ObservePlayer(1, 6, TOURNAMENT_OBSERVE_PLAYER_SECONDARY);
+	</Binding>
+	<Binding name="COMMENTATORLOOKAT7" category="BINDING_HEADER_COMMENTATOR">
+		Commentator:ObservePlayer(2, 1, TOURNAMENT_OBSERVE_PLAYER_SECONDARY);
+	</Binding>
+	<Binding name="COMMENTATORLOOKAT8" category="BINDING_HEADER_COMMENTATOR">
+		Commentator:ObservePlayer(2, 2, TOURNAMENT_OBSERVE_PLAYER_SECONDARY);
+	</Binding>
+	<Binding name="COMMENTATORLOOKAT9" category="BINDING_HEADER_COMMENTATOR">
+		Commentator:ObservePlayer(2, 3, TOURNAMENT_OBSERVE_PLAYER_SECONDARY);
+	</Binding>
+	<Binding name="COMMENTATORLOOKAT10" category="BINDING_HEADER_COMMENTATOR">
+		Commentator:ObservePlayer(2, 4, TOURNAMENT_OBSERVE_PLAYER_SECONDARY);
+	</Binding>
+	<Binding name="COMMENTATORLOOKAT11" category="BINDING_HEADER_COMMENTATOR">
+		Commentator:ObservePlayer(2, 5, TOURNAMENT_OBSERVE_PLAYER_SECONDARY);
+	</Binding>
+	<Binding name="COMMENTATORLOOKAT12" category="BINDING_HEADER_COMMENTATOR">
+		Commentator:ObservePlayer(2, 6, TOURNAMENT_OBSERVE_PLAYER_SECONDARY);
+	</Binding>
+</Bindings>

@@ -1,0 +1,100 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+
+    <Frame name="MapLegendFrameTemplate" enableMouse="true" mixin="MapLegendMixin" virtual="true">
+      <Size x="286" y="0"/>
+			<Frames>
+        <Frame parentKey="BorderFrame" inherits="QuestLogBorderFrameTemplate"/>
+					<ScrollFrame parentKey="ScrollFrame" name="MapLegendScrollFrame" inherits="ScrollFrameTemplate">
+						<KeyValues>
+							<KeyValue key="scrollBarX" value="8" type="number"/>
+							<KeyValue key="scrollBarTopY" value="2" type="number"/>
+							<KeyValue key="scrollBarBottomY" value="-4" type="number"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="Background" atlas="QuestLog-main-background" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+										<Anchor point="BOTTOMRIGHT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<ScrollChild>
+							<Frame parentKey="ScrollChild" inherits="VerticalLayoutFrame">
+								<KeyValues>
+									<KeyValue key="leftPadding" value="12" type="number"/>
+									<KeyValue key="topPadding" value="25" type="number"/>
+									<KeyValue key="spacing" value="10" type="number"/>
+								</KeyValues>
+							</Frame>
+						</ScrollChild>
+					</ScrollFrame>
+      </Frames>
+			<Layers>
+				<Layer level="ARTWORK">
+					<FontString parentKey="TitleText" inherits="Game15Font_Shadow" wordwrap="false" text="MAP_LEGEND_FRAME_LABEL">
+						<Anchors>
+							<Anchor point="BOTTOM" relativeKey="$parent.BorderFrame" relativePoint="TOP" x="-1" y="3"/>
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+			<Scripts>
+				<OnLoad method="OnLoad"/>
+			</Scripts>
+    </Frame>
+
+    <Frame name="MapLegendCategoryTemplate" virtual="true" inherits="ResizeLayoutFrame">
+        <Size x="286" y="200"/>
+        <Layers>
+            <Layer level="ARTWORK">
+                <FontString parentKey="TitleText" inherits="Game12Font" justifyH="LEFT" text="">
+                    <Size x="250"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" y="14"/>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+    </Frame>
+
+    <Button name="MapLegendButtonTemplate" virtual="true" mixin="MapLegendButtonMixin">
+		<Size x="143" y="32"/>
+		<Layers>
+            <Layer level="BACKGROUND" textureSubLevel="-1">
+                <Texture parentKey="IconBack" file="Interface\QuestFrame\UI-Quest-BulletPoint" hidden="true">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+            </Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon" file="Interface\QuestFrame\UI-Quest-BulletPoint">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.IconBack"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+		<HighlightTexture atlas="Options_List_Active" alphaMode="ADD"/>
+		<ButtonText wordwrap="false">
+			<Size x="115" y="30"/>
+			<Anchors>
+				<Anchor point="LEFT" x="32" y="0"/>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GameFontNormalLeft"/>
+	</Button>
+</Ui>

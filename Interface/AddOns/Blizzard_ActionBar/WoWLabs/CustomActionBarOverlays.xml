@@ -1,0 +1,113 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="PlunderstormBarCapTooltipTemplate" mixin="PlunderstormBarCapTooltipMixin" virtual="true">
+		<Size x="38" y="38"/>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="PlunderstormOffensiveBarCap" parent="MultiBarBottomLeft" frameLevel="500">
+		<KeyValues>
+			<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+		</KeyValues>
+		<Size x="354" y="48"/>
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="-10" y="-13"/>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="TopBorder" atlas="plunderstorm-actionbar-topper-offensive" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="OffensiveTooltipFrame" inherits="PlunderstormBarCapTooltipTemplate">
+				<KeyValues>
+					<KeyValue key="tooltip" value="WOW_LABS_OFFENSIVE_TOOLTIP" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="CENTER" x="-102" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="UtilityTooltipFrame" inherits="PlunderstormBarCapTooltipTemplate">
+				<KeyValues>
+					<KeyValue key="tooltip" value="WOW_LABS_UTILITY_TOOLTIP" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="CENTER" x="33" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="ItemTooltipFrame" inherits="PlunderstormBarCapTooltipTemplate">
+				<KeyValues>
+					<KeyValue key="tooltip" value="WOW_LABS_ITEM_SLOT_TOOLTIP" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="CENTER" x="136" y="0"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="PlunderstormAttackBarCap" parent="MainMenuBar" frameLevel="500">
+		<KeyValues>
+			<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+		</KeyValues>
+		<Size x="80" y="48"/>
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="ActionButton1" relativePoint="TOP" x="2" y="-13"/>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="TopBorder" atlas="plunderstorm-actionbar-topper-attack" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="TooltipFrame" inherits="PlunderstormBarCapTooltipTemplate">
+				<KeyValues>
+					<KeyValue key="tooltip" value="WOW_LABS_ATTACK_TOOLTIP" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="PlunderstormPotionBarCap" parent="MainMenuBar" frameLevel="500">
+		<KeyValues>
+			<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+		</KeyValues>
+		<Size x="80" y="48"/>
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="ActionButton2" relativePoint="TOP" x="-2" y="-13"/>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="TopBorder" atlas="plunderstorm-actionbar-topper-potion" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="TooltipFrame" inherits="PlunderstormBarCapTooltipTemplate">
+				<KeyValues>
+					<KeyValue key="tooltip" value="WOW_LABS_HEAL_TOOLTIP" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+</Ui>

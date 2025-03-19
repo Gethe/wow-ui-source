@@ -1,0 +1,1001 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Script file="Blizzard_ChallengesUI.lua"/>
+	<Frame name="MythicPlusSeasonChangesNoticeTemplate" frameStrata="DIALOG" enableMouse="true" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture parentKey="BottomLeftCorner" atlas="parchmentpopup-bottomleft">
+					<Size x="167" y="167"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BottomRightCorner" atlas="parchmentpopup-bottomright">
+					<Size x="167" y="167"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="TopLeftCorner" atlas="parchmentpopup-topleft">
+					<Size x="167" y="167"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="TopRightCorner" atlas="parchmentpopup-topright">
+					<Size x="167" y="167"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="3">
+				<Texture parentKey="BottomBorder" atlas="parchmentpopup-bottom">
+					<Size x="256" y="167"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomLeftCorner" relativePoint="BOTTOMRIGHT" y="2"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRightCorner" relativePoint="BOTTOMLEFT" y="2"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="TopBorder" atlas="parchmentpopup-top">
+					<Size x="256" y="167"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeftCorner" relativePoint="TOPRIGHT" y="-1"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.TopRightCorner" relativePoint="TOPLEFT" y="-1"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LeftBorder" atlas="parchmentpopup-left">
+					<Size x="167" y="256"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeftCorner" relativePoint="BOTTOMLEFT" x="2"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomLeftCorner" relativePoint="TOPLEFT" x="2"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RightBorder" atlas="parchmentpopup-right">
+					<Size x="167" y="256"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.TopRightCorner" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRightCorner" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="4">
+				<Texture parentKey="LeftHide" atlas="parchmentpopup-hide-left" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeftCorner" relativePoint="BOTTOMLEFT" x="10" y="10"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LeftHide2" atlas="parchmentpopup-hide-left" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomLeftCorner" relativePoint="TOPLEFT" x="10" y="-10"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RightHide" atlas="parchmentpopup-hide-right" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.TopRightCorner" relativePoint="BOTTOMRIGHT" x="-8" y="8"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RightHide2" atlas="parchmentpopup-hide-right" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRightCorner" relativePoint="TOPRIGHT" x="-10" y="-10"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BottomHide" atlas="parchmentpopup-hide-bottom" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomLeftCorner" relativePoint="BOTTOMRIGHT" x="-10" y="11"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BottomHide2" atlas="parchmentpopup-hide-bottom" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRightCorner" relativePoint="BOTTOMLEFT" x="15" y="11"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="parchmentpopup-background">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="20" y="-20"/>
+						<Anchor point="BOTTOMRIGHT" x="-20" y="20"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="5">
+				<Texture parentKey="TopLeftFiligree" atlas="parchmentpopup-filigree" alphaMode="ADD" alpha=".45" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="5" y ="2"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="TopRightFiligree" atlas="parchmentpopup-filigree" alphaMode="ADD" alpha=".45" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-5" y="2"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="6">
+				<FontString parentKey="NewSeason" inherits="Game40Font" text="NEW_SEASON_YAY">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-67"/>
+					</Anchors>
+					<Color r="0" g="0" b="0"/>
+				</FontString>
+				<FontString parentKey="SeasonDescription" font="SystemFont_Med3" justifyH="CENTER" justifyV="MIDDLE" wordwrap="true" text="MYTHIC_PLUS_SEASON_DESC1">
+					<Size x="380" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.NewSeason" relativePoint="BOTTOM" y="-14"/>
+					</Anchors>
+					<Color r="0.2824" g="0.0157" b="0.0157"/>
+				</FontString>
+				<FontString parentKey="SeasonDescription2" font="SystemFont_Med3" justifyH="CENTER" justifyV="MIDDLE" wordwrap="true" text="MYTHIC_PLUS_SEASON_DESC2">
+					<Size x="380" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.SeasonDescription" relativePoint="BOTTOM" x="0" y="-14"/>
+					</Anchors>
+					<Color r="0.2824" g="0.0157" b="0.0157"/>
+				</FontString>
+				<FontString parentKey="SeasonDescription3" font="SystemFont_Med3" justifyH="CENTER" justifyV="MIDDLE" wordwrap="true">
+					<Size x="380" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.SeasonDescription2" relativePoint="BOTTOM" x="0" y="-14"/>
+					</Anchors>
+					<Color r="0.2824" g="0.0157" b="0.0157"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Affix" inherits="ChallengesKeystoneFrameAffixTemplate">
+				<Size x="77" y="77"/>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.SeasonDescription3" y="-92"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="AffixBorder" atlas="mythicplus-popup-ring" useAtlasSize="true"/>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Portrait">
+							<Size x="70" y="70"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.AffixBorder"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow>
+						self.Border:Hide();
+					</OnShow>
+				</Scripts>
+			</Frame>
+			<Button parentKey="Leave" inherits="UIPanelButtonNoTooltipTemplate" text="CLOSE">
+				<Size x="125" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.Background" y="21"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						MythicPlusSeasonChangeNoticeOnCloseClick(self);
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+	<Frame name="ChallengesKeystoneFrameAffixTemplate" parentArray="Affixes" enableMouse="true" virtual="true" mixin="ChallengesKeystoneFrameAffixMixin">
+		<Size x="52" y="52"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Border" atlas="ChallengeMode-AffixRing-Lg" setAllPoints="true"/>
+				<FontString parentKey="Percent" inherits="SystemFont_Shadow_Large_Outline">
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.Border" x="0" y="-4"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Portrait">
+					<Size x="50" y="50"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Border"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="ChallengesKeystoneFrame" hidden="true" parent="UIParent" mixin="ChallengesKeystoneFrameMixin" frameStrata="HIGH">
+		<Size x="398" y="548"/>
+		<Anchors>
+			<Anchor point="CENTER" x="0" y="40"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture atlas="ChallengeMode-KeystoneFrame" setAllPoints="true"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="RuneBG" hidden="false" alpha="1" alphaMode="BLEND" atlas="ChallengeMode-RuneBG">
+					<Size x="360" y="360"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="60"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="InstructionBackground">
+					<Size x="374" y="60"/>
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="80"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.8"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="BgBurst2" hidden="false" alpha="0" alphaMode="ADD" atlas="ChallengeMode-Runes-BackgroundBurst" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="61"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Divider" atlas="ChallengeMode-ThinDivider" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.InstructionBackground" relativePoint="TOP"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="DungeonName" inherits="QuestFont_Enormous" hidden="true">
+					<Size x="350" y="0"/>
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.Divider" relativePoint="TOP" x="0" y="4"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="PowerLevel" inherits="QuestFont_Enormous" hidden="true">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-30"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="TimeLimit" inherits="GameFontHighlightLarge" hidden="true">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Divider" relativePoint="TOP" x="0" y="-6"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Instructions" inherits="GameFontHighlightLarge2" text="CHALLENGE_MODE_INSERT_KEYSTONE">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.InstructionBackground"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="PentagonLines" hidden="false" alpha="0" alphaMode="BLEND" atlas="ChallengeMode-Runes-LineGlow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.RuneBG" x="0" y="6"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LargeCircleGlow" hidden="false" alpha="0" alphaMode="BLEND" atlas="ChallengeMode-Runes-InnerCircleGlow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.RuneBG" x="0" y="5"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SmallCircleGlow" hidden="false" alpha="0" alphaMode="BLEND" atlas="ChallengeMode-Runes-SmallCircleGlow">
+					<Size x="130" y="130"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.RuneBG" x="0" y="1"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Shockwave" hidden="false" alpha="0" alphaMode="ADD" atlas="ChallengeMode-Runes-Shockwave" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="60"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Shockwave2" hidden="false" alpha="0" alphaMode="ADD" atlas="ChallengeMode-Runes-Shockwave" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="60"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RunesLarge" hidden="false" alpha="0.15" alphaMode="BLEND" atlas="ChallengeMode-Runes-Large">
+					<Size x="196" y="196"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="61"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="GlowBurstLarge" hidden="false" alpha="0" alphaMode="ADD" atlas="ChallengeMode-Runes-GlowBurstLarge" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.RunesLarge" x="-1" y="-3"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RunesSmall" hidden="false" alpha="0.15" alphaMode="BLEND" atlas="ChallengeMode-Runes-Small">
+					<Size x="125" y="125"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="61"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="GlowBurstSmall" hidden="false" alpha="0" alphaMode="BLEND" atlas="ChallengeMode-Runes-GlowBurstLarge" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="60"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="SlotBG" hidden="false" alpha="1" alphaMode="BLEND" atlas="ChallengeMode-KeystoneSlotBG" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="61"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RuneCircleT" hidden="false" alpha="0" alphaMode="BLEND" atlas="ChallengeMode-Runes-CircleGlow">
+					<Size x="48" y="48"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.RuneBG" x="0" y="126"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RuneCircleR" hidden="false" alpha="0" alphaMode="BLEND" atlas="ChallengeMode-Runes-CircleGlow">
+					<Size x="48" y="48"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.RuneBG" x="118" y="40"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RuneCircleBR" hidden="false" alpha="0" alphaMode="BLEND" atlas="ChallengeMode-Runes-CircleGlow">
+					<Size x="48" y="48"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.RuneBG" x="73" y="-98"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RuneCircleBL" hidden="false" alpha="0" alphaMode="BLEND" atlas="ChallengeMode-Runes-CircleGlow">
+					<Size x="48" y="48"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.RuneBG" x="-73" y="-98"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RuneCircleL" hidden="false" alpha="0" alphaMode="BLEND" atlas="ChallengeMode-Runes-CircleGlow">
+					<Size x="48" y="48"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.RuneBG" x="-118" y="40"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="3">
+				<Texture parentKey="KeystoneFrame" hidden="false" alpha="1" alphaMode="BLEND" atlas="ChallengeMode-KeystoneSlotFrame" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="61"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RuneT" hidden="false" alpha="0" alphaMode="BLEND" atlas="ChallengeMode-Runes-T-Glow">
+					<Size x="40" y="40"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.RuneCircleT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RuneR" hidden="false" alpha="0" alphaMode="BLEND" atlas="ChallengeMode-Runes-R-Glow">
+					<Size x="40" y="40"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.RuneCircleR" x="-1" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RuneBR" hidden="false" alpha="0" alphaMode="BLEND" atlas="ChallengeMode-Runes-BR-Glow">
+					<Size x="40" y="40"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.RuneCircleBR" x="-1" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RuneBL" hidden="false" alpha="0" alphaMode="BLEND" atlas="ChallengeMode-Runes-BL-Glow">
+					<Size x="40" y="40"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.RuneCircleBL" x="-1" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RuneL" hidden="false" alpha="0" alphaMode="BLEND" atlas="ChallengeMode-Runes-L-Glow">
+					<Size x="40" y="40"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.RuneCircleL"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LargeRuneGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="ChallengeMode-Runes-GlowLarge">
+					<Size x="198" y="199"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="61"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SmallRuneGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="ChallengeMode-Runes-GlowSmall">
+					<Size x="129" y="129"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="61"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="4">
+				<Texture parentKey="KeystoneSlotGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="ChallengeMode-KeystoneSlotFrameGlow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="60"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-8" y="-9"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="StartButton" inherits="UIPanelButtonTemplate" text="CHALLENGE_MODE_START_CHALLENGE">
+				<Size x="120" y="24"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="20"/>
+				</Anchors>
+				<Scripts>
+					<OnShow>
+						self:SetWidth(self:GetTextWidth() + 60);
+					</OnShow>
+					<OnClick>
+						self:GetParent():StartChallengeMode();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="KeystoneSlot" enableMouse="true" mixin="ChallengesKeystoneSlotMixin">
+				<Size x="48" y="48"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.SlotBG"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="2">
+						<Texture parentKey="Texture" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnEvent method="OnEvent"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
+					<OnReceiveDrag method="OnReceiveDrag"/>
+					<OnDragStart method="OnDragStart"/>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+			<Frame hidden="true" inherits="ChallengesKeystoneFrameAffixTemplate"/>
+		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="InsertedAnim" setToFinalAlpha="true">
+				<Alpha childKey="KeystoneSlotGlow" duration="0.15" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="PentagonLines" startDelay="0.15" smoothing="IN" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="PentagonLines" startDelay="0.55" smoothing="IN_OUT" duration="1" order="1" fromAlpha="1" toAlpha="0.55"/>
+				<Alpha childKey="LargeCircleGlow" startDelay="0.05" smoothing="IN" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="LargeCircleGlow" startDelay="0.35" smoothing="IN_OUT" duration="1" order="1" fromAlpha="1" toAlpha="0.55"/>
+				<Alpha childKey="SmallCircleGlow" smoothing="IN" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="SmallCircleGlow" startDelay="0.25" smoothing="IN_OUT" duration="1" order="1" fromAlpha="1" toAlpha="0.55"/>
+				<Alpha childKey="RuneCircleT" startDelay="0.35" duration="0.35" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="RuneT" startDelay="0.45" smoothing="OUT" duration="0.45" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="RuneCircleR" startDelay="0.35" duration="0.35" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="RuneR" startDelay="0.45" smoothing="OUT" duration="0.45" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="RuneCircleBR" startDelay="0.35" duration="0.35" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="RuneBR" startDelay="0.45" smoothing="OUT" duration="0.45" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="RuneCircleBL" startDelay="0.35" duration="0.35" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="RuneBL" startDelay="0.45" smoothing="OUT" duration="0.45" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="RuneCircleL" startDelay="0.35" duration="0.35" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="RuneL" startDelay="0.45" smoothing="OUT" duration="0.45" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scripts>
+					<OnFinished>
+						self:GetParent().PulseAnim:Play();
+						self:GetParent().StartButton:Enable();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="PulseAnim" setToFinalAlpha="true" looping="REPEAT">
+				<Alpha childKey="BgBurst2" duration="1.5" order="1" fromAlpha="0" toAlpha="0.75"/>
+				<Alpha childKey="BgBurst2" startDelay="1.5" duration="1.5" order="1" fromAlpha="0.75" toAlpha="0"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="RunesLargeRotateAnim" looping="REPEAT">
+				<Rotation childKey="RunesLarge" duration="60" order="1" degrees="-360"/>
+				<Rotation childKey="LargeRuneGlow" duration="60" order="1" degrees="-360"/>
+				<Rotation childKey="GlowBurstLarge" duration="60" order="1" degrees="-360"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="RunesLargeAnim" setToFinalAlpha="true">
+				<Alpha childKey="RunesLarge" smoothing="OUT" duration="0.25" order="1" fromAlpha="0.15" toAlpha="1"/>
+				<Alpha childKey="LargeRuneGlow" startDelay="0.1" smoothing="OUT" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="LargeRuneGlow" startDelay="0.6" smoothing="IN" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="GlowBurstLarge" startDelay="0.25" smoothing="OUT" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="GlowBurstLarge" startDelay="0.5" smoothing="IN" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="GlowBurstLarge" smoothing="OUT" duration="0.5" order="1" fromScaleX="0.8" fromScaleY="0.8" toScaleX="1" toScaleY="1"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="RunesSmallRotateAnim" looping="REPEAT">
+				<Rotation childKey="RunesSmall" duration="60" order="1" degrees="360"/>
+				<Rotation childKey="SmallRuneGlow" duration="60" order="1" degrees="360"/>
+				<Rotation childKey="GlowBurstSmall" duration="60" order="1" degrees="360"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="RunesSmallAnim" setToFinalAlpha="true">
+				<Alpha childKey="RunesSmall" smoothing="OUT" duration="0.25" order="1" fromAlpha="0.15" toAlpha="1"/>
+				<Alpha childKey="SmallRuneGlow" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="SmallRuneGlow" startDelay="0.5" smoothing="IN" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="GlowBurstSmall" smoothing="OUT" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="GlowBurstSmall" startDelay="0.25" smoothing="IN" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="GlowBurstSmall" smoothing="OUT" duration="0.5" order="1" fromScaleX="0.5" fromScaleY="0.5" toScaleX="0.65" toScaleY="0.65"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnMouseUp method="OnMouseUp"/>
+		</Scripts>
+	</Frame>
+
+    <Frame name="ChallengeModeBannerPartyMemberTemplate" parentArray="PartyMembers" alpha="0" virtual="true" mixin="ChallengeModeBannerPartyMemberMixin">
+        <Size x="61" y="61"/>
+        <Layers>
+            <Layer level="OVERLAY">
+                <Texture parentKey="Border" atlas="BossBanner-PortraitBorder" setAllPoints="true"/>
+            </Layer>
+            <Layer level="OVERLAY" textureSubLevel="1">
+                 <Texture parentKey="RoleIcon" atlas="UI-LFG-RoleIcon-Generic-Micro-GroupFinder">
+					<Size x="20" y="20"/>
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.Border" x="0" y="-8"/>
+					</Anchors>
+				</Texture>
+            </Layer>
+            <Layer level="ARTWORK">
+                <Texture parentKey="Portrait">
+                    <Size x="59" y="59"/>
+                    <Anchors>
+                        <Anchor point="CENTER" relativeKey="$parent.Border"/>
+                    </Anchors>
+                </Texture>
+                <FontString parentKey="Name" inherits="GameFontNormal">
+                    <Anchors>
+                        <Anchor point="TOP" relativeKey="$parent.Border" relativePoint="BOTTOM" x="0" y="-8"/>
+                    </Anchors>
+                </FontString>
+             </Layer>
+        </Layers>
+        <Animations>
+			<AnimationGroup parentKey="AnimIn" setToFinalAlpha="true">
+				<Alpha startDelay="0.2" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
+            </AnimationGroup>
+            <AnimationGroup parentKey="AnimOut" setToFinalAlpha="true">
+				<Alpha duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+            </AnimationGroup>
+        </Animations>
+    </Frame>
+
+    <Frame name="ChallengeModeCompleteBanner" parent="UIParent" hidden="true" alpha="1" mixin="ChallengeModeCompleteBannerMixin">
+		<Size x="128" y="356"/>
+		<Anchors>
+			<Anchor point="TOP" x="0" y="-120"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="BannerTop" hidden="false" alpha="0" alphaMode="BLEND" atlas="BossBanner-BgBanner-Top" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-44"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BannerTopGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="BossBanner-BgBanner-Top" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-44"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BannerBottom" hidden="false" alpha="0" alphaMode="BLEND" atlas="BossBanner-BgBanner-Bottom" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BannerBottomGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="BossBanner-BgBanner-Bottom" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BannerMiddle" alpha="0" atlas="BossBanner-BgBanner-Mid" alphaMode="BLEND" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.BannerTop" x="-100" y="-34"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BannerBottom" x="100" y="25"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BannerMiddleGlow" alpha="0" atlas="BossBanner-BgBanner-Mid" alphaMode="ADD" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.BannerTop" x="-100" y="-34"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BannerBottom" x="100" y="25"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="SkullCircle" hidden="false" alpha="0" alphaMode="BLEND" atlas="ChallengeMode-SpikeyStar">
+                    <Size x="100" y="100"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.BannerTop" x="0" y="46"/>
+					</Anchors>
+				</Texture>
+        <FontString parentKey="Level" inherits="GameFontNormalWTF2Outline" text="13">
+          <Anchors>
+              <Anchor point="CENTER" relativeKey="$parent.SkullCircle"/>
+          </Anchors>
+			  </FontString>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="BottomFillagree" hidden="false" alpha="0" alphaMode="BLEND" atlas="BossBanner-BottomFillagree" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="8"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RightFillagree" hidden="false" alpha="0" alphaMode="BLEND" atlas="BossBanner-RightFillagree" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.SkullCircle" x="10" y="6"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LeftFillagree" hidden="false" alpha="0" alphaMode="BLEND" atlas="BossBanner-LeftFillagree" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.SkullCircle" x="-10" y="6"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Title" inherits="QuestFont_Enormous" justifyH="CENTER" alpha="0">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.BannerTop" x="0" y="-61"/>
+					</Anchors>
+				</FontString>
+        <FontString parentKey="DescriptionLineOne" inherits="GameFontHighlightLarge" justifyH="CENTER" alpha="0">
+            <Anchors>
+                <Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-8"/>
+            </Anchors>
+        </FontString>
+        <FontString parentKey="DescriptionLineTwo" inherits="GameFontHighlightLarge" justifyH="CENTER" alpha="0">
+          <Anchors>
+              <Anchor point="TOP" relativeKey="$parent.DescriptionLineOne" relativePoint="BOTTOM" x="0" y="-2"/>
+          </Anchors>
+        </FontString>
+				<FontString parentKey="DescriptionLineThree" inherits="GameFontHighlightLarge" justifyH="CENTER" alpha="0">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.DescriptionLineTwo" relativePoint="BOTTOM" x="0" y="-21"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+        <Texture parentKey="Glow" hidden="false" atlas="ChallengeMode-SoftYellowGlow">
+            <Size x="106" y="106"/>
+            <Anchors>
+                <Anchor point="CENTER" relativeKey="$parent.SkullCircle"/>
+            </Anchors>
+        </Texture>
+			</Layer>
+		</Layers>
+        <Frames>
+            <Frame hidden="true" inherits="ChallengeModeBannerPartyMemberTemplate"/>
+        </Frames>
+		<Animations>
+			<AnimationGroup parentKey="AnimIn" setToFinalAlpha="true">
+				<Scale childKey="SkullCircle" duration="0.15" order="1" fromScaleX="5" fromScaleY="5" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="SkullCircle" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="BannerTop" startDelay="0.2" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="BannerTop" startDelay="0.1" duration="0.3" order="2" fromScaleX="0.1" fromScaleY="1" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="BannerBottom" startDelay="0.2" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="BannerBottom" startDelay="0.1" duration="0.3" order="2" fromScaleX="0.1" fromScaleY="1" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="BannerMiddle" startDelay="0.2" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="BannerMiddle" startDelay="0.1" duration="0.3" order="2" fromScaleX="0.1" fromScaleY="1" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="BottomFillagree" duration="0.15" order="2" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="RightFillagree" duration="0.1" order="2" fromAlpha="0" toAlpha="1"/>
+				<Translation childKey="RightFillagree" startDelay="0.15" duration="0.15" order="2" offsetX="37" offsetY="0"/>
+				<Scale childKey="RightFillagree" startDelay="0.15" duration="0.15" order="2" fromScaleX="0.5" fromScaleY="0.5" toScaleX="1" toScaleY="1">
+					<Origin point="BOTTOMLEFT"/>
+				</Scale>
+				<Alpha childKey="LeftFillagree" duration="0.1" order="2" fromAlpha="0" toAlpha="1"/>
+				<Translation childKey="LeftFillagree" startDelay="0.15" duration="0.15" order="2" offsetX="-37" offsetY="0"/>
+				<Scale childKey="LeftFillagree" startDelay="0.15" duration="0.15" order="2" fromScaleX="0.5" fromScaleY="0.5" toScaleX="1" toScaleY="1">
+					<Origin point="BOTTOMRIGHT"/>
+				</Scale>
+				<Alpha childKey="BannerTopGlow" startDelay="0.9" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="BannerTopGlow" startDelay="0.9" duration="0.5" order="2" fromScaleX="0.5" fromScaleY="1" toScaleX="1.6" toScaleY="1"/>
+				<Alpha childKey="BannerTopGlow" startDelay="1.1" duration="0.6" order="2" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="BannerBottomGlow" startDelay="0.9" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="BannerBottomGlow" startDelay="0.9" duration="0.5" order="2" fromScaleX="0.5" fromScaleY="1" toScaleX="1.6" toScaleY="1"/>
+				<Alpha childKey="BannerBottomGlow" startDelay="1.1" duration="0.6" order="2" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="BannerMiddleGlow" startDelay="0.9" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="BannerMiddleGlow" startDelay="0.9" duration="0.5" order="2" fromScaleX="0.5" fromScaleY="1" toScaleX="1.6" toScaleY="1"/>
+				<Alpha childKey="BannerMiddleGlow" startDelay="1.1" duration="0.6" order="2" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Title" startDelay="0.2" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="DescriptionLineOne" startDelay="0.2" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="DescriptionLineTwo" startDelay="0.2" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="DescriptionLineThree" startDelay="0.2" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Glow" duration="0.1" order="2" fromAlpha="0" toAlpha="1"/>
+				<Scripts>
+					<OnPlay>
+						local banner = self:GetParent();
+						banner.LeftFillagree:SetPoint("CENTER", banner.SkullCircle, "CENTER", -10, 0);
+						banner.RightFillagree:SetPoint("CENTER", banner.SkullCircle, "CENTER", 10, 0);
+					</OnPlay>
+					<OnFinished>
+						local banner = self:GetParent();
+						banner.LeftFillagree:SetPoint("CENTER", banner.SkullCircle, "CENTER", -47, 0);
+						banner.RightFillagree:SetPoint("CENTER", banner.SkullCircle, "CENTER", 47, 0);
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="AnimOut">
+				<Alpha duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scripts>
+					<OnFinished function="ChallengeModeCompleteBanner_OnAnimOutFinished"/>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnMouseDown method="OnMouseDown"/>
+		</Scripts>
+	</Frame>
+
+    <Frame name="ChallengesDungeonIconFrameTemplate" parentArray="DungeonIcons" frameStrata="HIGH" mixin="ChallengesDungeonIconMixin" virtual="true">
+        <Size x="52" y="52"/>
+        <Layers>
+            <Layer level="BORDER">
+                <Texture atlas="ChallengeMode-DungeonIconFrame" setAllPoints="true"/>
+            </Layer>
+            <Layer level="BACKGROUND">
+                <Texture parentKey="Icon">
+                    <Size x="50" y="50"/>
+                    <Anchors>
+                        <Anchor point="CENTER"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="BORDER" textureSubLevel="2">
+                <FontString parentKey="HighestLevel" inherits="SystemFont_Huge1_Outline" justifyH="CENTER">
+                    <Anchors>
+                        <Anchor point="TOP" x="0" y="-4"/>
+                    </Anchors>
+                    <Color r="1.0" g="1.0" b="1.0"/>
+					<Shadow>
+						<Offset>
+							<AbsDimension x="1" y="-1"/>
+						</Offset>
+						<Color r="0" g="0" b="0"/>
+					</Shadow>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Scripts>
+            <OnEnter method="OnEnter"/>
+            <OnLeave function="GameTooltip_Hide"/>
+        </Scripts>
+    </Frame>
+
+	<Frame name="ChallengesFrame" useParentLevel="true" setAllPoints="true" mixin="ChallengesFrameMixin" parent="PVEFrame" hidden="true">
+		<Frames>
+			<Frame name="$parentInset" useParentLevel="true" inherits="InsetFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="4" y="-20" />
+					<Anchor point="BOTTOMRIGHT" x="-4" y="4" />
+				</Anchors>
+			</Frame>
+            <ScrollFrame parentKey="WeeklyInfo" mixin="ChallengesFrameWeeklyInfoMixin">
+                <Size x="550" y="392"/>
+                <Anchors>
+                    <Anchor point="TOPLEFT" x="6" y="-12"/>
+                </Anchors>
+                <ScrollChild>
+                    <Frame parentKey="Child">
+                        <Size x="550" y="392"/>
+                        <Anchors>
+                            <Anchor point="TOPLEFT"/>
+                        </Anchors>
+                        <Layers>
+                            <Layer level="ARTWORK">
+                                <FontString parentKey="ThisWeekLabel" inherits="GameFontNormalHuge" text="CHALLENGE_MODE_THIS_WEEK">
+                                    <Anchors>
+                                        <Anchor point="TOP" y="-25"/>
+                                    </Anchors>
+                                    <Color r="1.0" g="1.0" b="1.0"/>
+                                    <Shadow>
+                                        <Offset>
+                                            <AbsDimension x="1" y="-1"/>
+                                        </Offset>
+                                        <Color r="0" g="0" b="0"/>
+                                    </Shadow>
+                                </FontString>
+                                <FontString parentKey="Description" inherits="GameFontNormalMed2" justifyH="CENTER" hidden="true" text="MYTHIC_PLUS_MISSING_KEYSTONE_MESSAGE">
+                                    <Size x="430" />
+                                    <Anchors>
+                                        <Anchor point="CENTER" x="0" y="0"/>
+                                    </Anchors>
+                                </FontString>
+                                <FontString parentKey="SeasonBest" inherits="GameFontNormalMed2" text="MYTHIC_PLUS_SEASON_BEST">
+                                    <Anchors>
+                                        <Anchor point="BOTTOMLEFT" x="10" y="15"/>
+                                    </Anchors>
+																		<Color r="1.0" g="1.0" b="1.0"/>
+                                    <Shadow>
+                                        <Offset>
+                                            <AbsDimension x="1" y="-1"/>
+                                        </Offset>
+                                        <Color r="0" g="0" b="0"/>
+                                    </Shadow>
+                                </FontString>
+                            </Layer>
+									<Layer level="BACKGROUND">
+										<Texture parentKey="RuneBG" hidden="false" alpha="0.6" alphaMode="BLEND" atlas="ChallengeMode-RuneBG" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="CENTER" x="-100" y="50"/>
+											</Anchors>
+										</Texture>
+										<Texture parentKey="RunesLarge" hidden="false" alpha="0.08" alphaMode="BLEND" atlas="ChallengeMode-Runes-Large" useAtlasSize="true">
+												<Anchors>
+														<Anchor point="CENTER" relativeKey="$parent.RuneBG" y="0"/>
+												</Anchors>
+										</Texture>
+										<Texture parentKey="RunesSmall" hidden="false" alpha="0.08" alphaMode="BLEND" atlas="ChallengeMode-Runes-Small" useAtlasSize="true">
+												<Anchors>
+														<Anchor point="CENTER" relativeKey="$parent.RuneBG" x="-1" y="0"/>
+												</Anchors>
+										</Texture>
+								</Layer>
+								<Layer level="BACKGROUND" textureSubLevel="1">
+										<Texture parentKey="LargeRuneGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="ChallengeMode-Runes-GlowLarge" useAtlasSize="true">
+												<Anchors>
+														<Anchor point="TOPLEFT" y="-2"/>
+												</Anchors>
+										</Texture>
+										<Texture parentKey="SmallRuneGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="ChallengeMode-Runes-GlowSmall" useAtlasSize="true">
+												<Anchors>
+														<Anchor point="TOPLEFT" x="-1" y="0"/>
+												</Anchors>
+										</Texture>
+								</Layer>
+							</Layers>
+						<Frames>
+							<Frame parentKey="AffixesContainer" inherits="HorizontalLayoutFrame">
+								<Size x="1" y="1"/>
+								<KeyValues>
+									<KeyValue key="spacing" value="10" type="number"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="TOP" relativeKey="$parent.ThisWeekLabel" relativePoint="BOTTOM" x="0" y="-10"/>
+								</Anchors>
+							</Frame>
+							<Frame parentKey="WeeklyChest" hidden="true" mixin="ChallengeModeWeeklyChestMixin">
+								<Size x="67" y="67"/>
+								<Anchors>
+									<Anchor point="CENTER" x="0" y="-5"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString parentKey="RunStatus" inherits="GameFontNormalMed2" justifyH="CENTER">
+											<Size x="430" />
+											<Anchors>
+												<Anchor point="TOP" relativePoint="TOP" y="43"/>
+											</Anchors>
+										</FontString>
+										<Texture parentKey="Icon" scale="0.6" useAtlasSize="true">
+											<Size x="257" y="226"/>
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+									<Layer level="HIGHLIGHT">
+										<Texture parentKey="Highlight" alphaMode="ADD" alpha=".2" scale="0.6" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+									<Layer level="OVERLAY">
+										<Texture parentKey="AnimTexture" atlas="gficon-chest-evergreen-greatvault-collect" useAtlasSize="true" alphaMode="ADD" scale="0.6">
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+											<Animations>
+												<AnimationGroup parentKey="Anim" looping="REPEAT">
+													<Alpha startDelay="0" duration="1" order="1" fromAlpha="0" toAlpha="0.5"/>
+													<Alpha startDelay="1" duration="1" order="1" fromAlpha="0.5" toAlpha="0"/>
+												</AnimationGroup>
+											</Animations>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnEnter method="OnEnter"/>
+									<OnLeave method="OnLeave"/>
+									<OnMouseUp method="OnMouseUp"/>
+								</Scripts>
+							</Frame>
+							<Button parentKey="DungeonScoreInfo" mixin="DungeonScoreInfoMixin" hidden="true">
+								<Size x="200" y="70"/>
+								<Anchors>
+									<Anchor point="TOP" relativeKey="$parent.WeeklyChest" relativePoint="BOTTOM" x="0" y="-30"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString parentKey="Title" justifyV="TOP" inherits="GameFontHighlightMedium" text="DUNGEON_SCORE">
+											<Size x="200" y="0"/>
+											<Anchors>
+												<Anchor point="TOP"/>
+											</Anchors>
+										</FontString>
+										<FontString parentKey="Score" justifyV="TOP" inherits="SystemFont_Huge2">
+											<Size x="200" y="0"/>
+											<Anchors>
+												<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-5"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnEnter method="OnEnter"/>
+									<OnLeave method="OnLeave"/>
+									<OnClick method="OnClick"/>
+								</Scripts>
+							</Button>
+						</Frames>
+					<Animations>
+					  <AnimationGroup parentKey="RunesSmallRotateAnim" looping="REPEAT">
+						  <Rotation childKey="RunesSmall" duration="160" order="1" degrees="360"/>
+						  <Rotation childKey="SmallRuneGlow" duration="160" order="1" degrees="360"/>
+					  </AnimationGroup>
+					  <AnimationGroup parentKey="RunesLargeRotateAnim" looping="REPEAT">
+						  <Rotation childKey="RunesLarge" duration="160" order="1" degrees="-360"/>
+						  <Rotation childKey="LargeRuneGlow" duration="160" order="1" degrees="-360"/>
+					  </AnimationGroup>
+						<AnimationGroup parentKey="RunesLargeAnim" looping="REPEAT">
+							<Alpha childKey="LargeRuneGlow" startDelay="0" duration="3" order="1" fromAlpha="0" toAlpha="0.05"/>
+							<Alpha childKey="LargeRuneGlow" startDelay="3" duration="3" order="1" fromAlpha="0.05" toAlpha="0"/>
+						</AnimationGroup>
+						<AnimationGroup parentKey="RunesSmallAnim" looping="REPEAT">
+							<Alpha childKey="SmallRuneGlow" startDelay="0" duration="2" order="1" fromAlpha="0" toAlpha="0.05"/>
+							<Alpha childKey="SmallRuneGlow" startDelay="2" duration="2" order="1" fromAlpha="0.05" toAlpha="0"/>
+						</AnimationGroup>
+					</Animations>
+					<Scripts>
+						<OnShow>
+							self.RunesSmallRotateAnim:Play();
+							self.RunesLargeRotateAnim:Play();
+							self.RunesLargeAnim:Play();
+							self.RunesSmallAnim:Play();
+						</OnShow>
+						<OnHide>
+							self.RunesSmallRotateAnim:Stop();
+							self.RunesLargeRotateAnim:Stop();
+							self.RunesLargeAnim:Stop();
+							self.RunesSmallAnim:Stop();
+						</OnHide>
+					</Scripts>
+				</Frame>
+				</ScrollChild>
+            </ScrollFrame>
+            <Frame inherits="ChallengesDungeonIconFrameTemplate" hidden="true"/>
+				<Frame parentKey="SeasonChangeNoticeFrame" hidden="true" inherits="MythicPlusSeasonChangesNoticeTemplate">
+					<Size x="545" y="390"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y ="-12"/>
+					</Anchors>
+				</Frame>
+		</Frames>
+        <Layers>
+            <Layer level="BACKGROUND" textureSubLevel="1">
+                <Texture parentKey="Background">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parentInset"/>
+                        <Anchor point="BOTTOMRIGHT" relativeTo="$parentInset"/>
+                    </Anchors>
+					<TexCoords left="0.057" right="0.705" top="0.092" bottom="0.564"/>
+					<Gradient orientation="VERTICAL">
+						<MinColor r="0" g="0" b="0" a="0"/>
+						<MaxColor r="1" g="1" b="1" a="0.5"/>
+					</Gradient>
+                </Texture>
+            </Layer>
+            <Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture atlas="insetshadow">
+					<Size x="549" y="395"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background" x="3" y="-3"/>
+					</Anchors>
+				</Texture>
+            </Layer>
+        </Layers>
+        <Scripts>
+            <OnLoad method="OnLoad"/>
+            <OnEvent method="OnEvent"/>
+            <OnShow method="OnShow"/>
+            <OnHide method="OnHide"/>
+        </Scripts>
+	</Frame>
+</Ui>

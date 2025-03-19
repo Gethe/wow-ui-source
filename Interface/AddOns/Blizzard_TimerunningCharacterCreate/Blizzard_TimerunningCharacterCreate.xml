@@ -1,0 +1,470 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="TimerunningCreateCharacterButtonGlowTemplate" mixin="TimerunningCreateCharacterButtonGlowMixin" inherits="EasyFrameAnimationsTemplate" virtual="true">
+		<Size y="32"/>
+		<Frames>
+			<Frame parentKey="FrameBase" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="FrameBase" atlas="timerunning-redbutton-backglow" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="RotatingGlow" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="GlowCircle" alphaMode="ADD" atlas="timerunning-redbutton-glow" useAtlasSize="true" snapToPixelGrid="false" texelSnappingBias="0" scale="1.4">
+							<Anchors>
+								<Anchor point="LEFT" x="-2"/>
+								<Anchor point="RIGHT" x="2"/>
+							</Anchors>
+						</Texture>
+						<MaskTexture parentKey="FrameMask" atlas="timerunning-redbutton-glow-mask" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+							<Anchors>
+								<Anchor point="LEFT" x="1"/>
+								<Anchor point="RIGHT" x="-1"/>
+							</Anchors>
+							<Size y="188"/>
+							<MaskedTextures>
+								<MaskedTexture childKey="GlowCircle"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup looping="REPEAT" setToFinalAlpha="true">
+						<Rotation childKey="GlowCircle" duration="12" order="1" degrees="360">
+							<Origin point="CENTER"/>
+						</Rotation>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnSizeChanged method="OnSizeChanged"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="TimerunningCreateCharacterButtonGlow" parent="CharSelectCreateCharacterButton" inherits="TimerunningCreateCharacterButtonGlowTemplate" frameLevel="3">
+		<KeyValues>
+			<KeyValue key="frameMaskOverrideHeight" value="296" type="number"/>
+			<KeyValue key="frameMaskOverrideAnchorLeft" value="0" type="number"/>
+			<KeyValue key="frameMaskOverrideAnchorRight" value="0" type="number"/>
+		</KeyValues>
+		<Size y="49"/>
+		<Anchors>
+			<Anchor point="LEFT" x="-3"/>
+			<Anchor point="RIGHT" x="3"/>
+		</Anchors>
+	</Frame>
+
+	<Frame name="TimerunningFirstTimeDialog" mixin="TimerunningFirstTimeDialogMixin" ignoreParentScale="true" parent="GlueParent" frameStrata="DIALOG" setAllPoints="true" enableMouse="true" enableKeyboard="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="FullscreenDarken" setAllPoints="true" alpha="0.8">
+					<Color color="BLACK_FONT_COLOR"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="InfoPanel">
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Size x="575" y="370"/>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="Border" atlas="ui-frame-chamfered" setAllPoints="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-17" y="14"/>
+								<Anchor point="BOTTOMRIGHT" x="17" y="-31"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER" textureSubLevel="1">
+						<Texture parentKey="Background" atlas="timerunning-infographic-background">
+							<Anchors>
+								<Anchor point="CENTER" y="-8"/>
+							</Anchors>
+							<Size x="576" y="382"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="LogoFX" atlas="timerunning-infographic-logo-fx" useAtlasSize="true" scale="0.7">
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="TOPLEFT" x="175" y="-70"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="1">
+						<Texture parentKey="Logo" atlas="timerunning-infographic-logo-en" useAtlasSize="true" scale="0.7">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.LogoFX"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="TopDescription" inherits="GameFontNormalOutline" text="TIMERUNNING_POPUP_PANDARIA_TOP_DESCRIPTION" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Logo" relativePoint="RIGHT" x="-40" y="3"/>
+							</Anchors>
+							<Size x="210"/>
+						</FontString>
+						<FontString parentKey="QuestsHeader" inherits="GameFontHighlightMed2Outline" text="TIMERUNNING_POPUP_QUESTS_HEADER" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.Logo" relativePoint="BOTTOM" x="-15" y="44"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="QuestsBullet" atlas="timerunning-infographic-bullet" useAtlasSize="true" scale="0.6">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT" relativeKey="$parent.QuestsHeader" x="-7"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="QuestsDescription" inherits="GameFontNormalSmallOutline" text="TIMERUNNING_POPUP_QUESTS_DESCRIPTION" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.QuestsHeader" relativePoint="BOTTOMLEFT" y="-3"/>
+							</Anchors>
+							<Size x="220"/>
+						</FontString>
+						<FontString parentKey="ItemsHeader" inherits="GameFontHighlightMed2Outline" text="TIMERUNNING_POPUP_ITEMS_HEADER" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.QuestsDescription" relativePoint="BOTTOMLEFT" y="-21"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="ItemsBullet" atlas="timerunning-infographic-bullet" useAtlasSize="true" scale="0.6">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT" relativeKey="$parent.ItemsHeader" x="-7"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="ItemsDescription" inherits="GameFontNormalSmallOutline" text="TIMERUNNING_POPUP_ITEMS_DESCRIPTION" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ItemsHeader" relativePoint="BOTTOMLEFT" y="-3"/>
+							</Anchors>
+							<Size x="220"/>
+						</FontString>
+						<FontString parentKey="RewardsHeader" inherits="GameFontHighlightMed2Outline" text="TIMERUNNING_POPUP_REWARDS_HEADER" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ItemsDescription" relativePoint="BOTTOMLEFT" y="-21"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="RewardsBullet" atlas="timerunning-infographic-bullet" useAtlasSize="true" scale="0.6">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT" relativeKey="$parent.RewardsHeader" x="-7"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="RewardsDescription" inherits="GameFontNormalSmallOutline" text="TIMERUNNING_POPUP_REWARDS_DESCRIPTION" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.RewardsHeader" relativePoint="BOTTOMLEFT" y="-3"/>
+							</Anchors>
+							<Size x="220"/>
+						</FontString>
+						<Texture parentKey="RewardsBird" atlas="timerunning-infographic-rewards" useAtlasSize="true" scale="0.7">
+							<Anchors>
+								<Anchor point="CENTER" x="193" y="-8"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="3" y="3"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="CreateButton" inherits="GlueButtonSmallTemplate">
+						<Anchors>
+							<Anchor point="BOTTOM" x="0" y="5"/>
+						</Anchors>
+						<Size x="300" y="28"/>
+						<Frames>
+							<Frame parentKey="Glow" inherits="TimerunningCreateCharacterButtonGlowTemplate" frameLevel="1">
+								<Anchors>
+									<Anchor point="LEFT" x="-3"/>
+									<Anchor point="RIGHT" x="3"/>
+								</Anchors>						
+							</Frame>
+						</Frames>
+					</Button>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnKeyDown method="OnKeyDown"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="TimerunningChoiceDialogTemplate" mixin="TimerunningChoiceDialogMixin" ignoreParentScale="true" frameStrata="DIALOG" virtual="true">
+		<Size x="220" y="190"/>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="Border" atlas="ui-frame-chamfered" setAllPoints="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-11" y="11"/>
+						<Anchor point="BOTTOMRIGHT" x="11" y="-11"/>
+					</Anchors>
+					<Size x="425" y="425"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Header" inherits="GameFontHighlightMed2">
+					<Anchors>
+						<Anchor point="TOP" y="-20" />
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Description" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="CENTER" y="6"/>
+					</Anchors>
+					<Size x="150"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+	<Button name="TimerunningChoiceInfoButtonTemplate" mixin="TimerunningChoiceInfoButtonMixin" virtual="true">
+		<Anchors>
+			<Anchor point="TOPLEFT" x="-6" y="6"/>
+		</Anchors>
+		<Size x="30" y="30"/>
+		<NormalTexture parentKey="LetterI" file="Interface\common\help-i">
+			<Size x="30" y="30"/>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture file="Interface\common\help-i" alphaMode="ADD" hidden="true">
+			<Size x="30" y="30"/>
+			<Anchors>
+				<Anchor point="CENTER" relativeKey="$parent.LetterI"/>
+			</Anchors>
+			<Color r="1" g="1" b="1" a=".2"/>
+		</HighlightTexture>
+		<Scripts>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+	
+	<Frame name="TimerunningChoiceSandCornersTemplate" hidden="false" inherits="AnimateWhileShownTemplate" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="FlipbookTopLeft" alphaMode="ADD" atlas="timerunning-fx-cornerswoop-flipbook" snapToPixelGrid="false" texelSnappingBias="0">
+					<Size x="146" y="166"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-15" y="11"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="FlipbookBottomRight" alphaMode="ADD" atlas="timerunning-fx-cornerswoop-flipbook" rotation="180" snapToPixelGrid="false" texelSnappingBias="0">
+					<Size x="146" y="166"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="15" y="-11"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup looping="REPEAT" setToFinalAlpha="true">
+				<FlipBook childKey="FlipbookTopLeft" duration="2" order="1" flipBookRows="7" flipBookColumns="9" flipBookFrames="63" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+				<FlipBook childKey="FlipbookBottomRight" duration="2" order="1" flipBookRows="7" flipBookColumns="9" flipBookFrames="63" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+	
+	<Frame name="TimerunningChoiceFrameGlowTemplate" hidden="false" inherits="AnimateWhileShownTemplate" virtual="true">
+		<Frames>
+			<Frame parentKey="FrameBase" setAllPoints="true" useParentLevel="true">
+				<Layers>
+					<Layer level="ARTWORK" textureSubLevel="1">
+						<Texture parentKey="FrameBase" alphaMode="ADD" atlas="timerunning-dialog-framebackglow" setAllPoints="true"/>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="2">
+						<Texture parentKey="FrameTop" atlas="timerunning-dialog-frametop" setAllPoints="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="4" y="-4"/>
+								<Anchor point="BOTTOMRIGHT" x="-4" y="4"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="RotatingGlow" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-99" y="90"/>
+					<Anchor point="BOTTOMRIGHT" x="99" y="-90"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="GlowCircle" alphaMode="ADD" atlas="timerunning-dialog-frameglow" setAllPoints="true" snapToPixelGrid="false" texelSnappingBias="0">
+						</Texture>
+						<MaskTexture parentKey="FrameMask" atlas="timerunning-dialog-fixedsize-frameglow-mask" setAllPoints="true" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+							<MaskedTextures>
+								<MaskedTexture childKey="GlowCircle"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup looping="REPEAT" setToFinalAlpha="true">
+						<Rotation childKey="GlowCircle" duration="12" order="1" degrees="360">
+							<Origin point="CENTER"/>
+						</Rotation>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+		</Frames>
+	</Frame>
+		
+	<Frame name="TimerunningEventBannerGlowTemplate" hidden="false" inherits="AnimateWhileShownTemplate" virtual="true">
+		<Frames>
+			<Frame parentKey="FrameBase" setAllPoints="true" useParentLevel="true">
+				<Layers>
+					<Layer level="ARTWORK" textureSubLevel="1">
+						<Texture parentKey="FrameBase" alphaMode="ADD" atlas="timerunning-dialog-framebackglow" setAllPoints="true"/>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="2">
+						<MaskTexture parentKey="FrameMask" atlas="timerunning-active-event-mask" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+							<Size x="365" y="365"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="FrameBase"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="RotatingGlow" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-86" y="86"/>
+					<Anchor point="BOTTOMRIGHT" x="86" y="-86"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="GlowCircle" alphaMode="ADD" atlas="timerunning-redbutton-glow" snapToPixelGrid="false" texelSnappingBias="0">
+							<Size x="340" y="340"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>			
+						</Texture>
+						<MaskTexture parentKey="FrameMask" atlas="timerunning-active-event-mask" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+							<Size x="365" y="365"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="GlowCircle"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup looping="REPEAT" setToFinalAlpha="true">
+						<Rotation childKey="GlowCircle" duration="12" order="1" degrees="360">
+							<Origin point="CENTER"/>
+						</Rotation>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+		</Frames>
+	</Frame>
+		
+	<Frame name="TimerunningChoicePopup" mixin="TimerunningChoicePopupMixin" parent="GlueParent" frameStrata="DIALOG" setAllPoints="true" enableMouse="true" enableKeyboard="true" hidden="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="FullscreenDarken" setAllPoints="true" alpha="0.8">
+					<Color color="BLACK_FONT_COLOR"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="TimerunningChoiceDialogCreateStandard" inherits="TimerunningChoiceDialogTemplate">
+				<KeyValues>
+					<KeyValue key="headerText" value="TIMERUNNING_CHOICE_STANDARD_HEADER" type="global"/>
+					<KeyValue key="descriptionText" value="TIMERUNNING_CHOICE_STANDARD_DESCRIPTION" type="global"/>
+					<KeyValue key="isTimerunning" value="false" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="CENTER" x="-120" y="10"/>
+				</Anchors>
+				<Frames>
+					<Button parentKey="SelectButton" inherits="GlueButtonSmallTemplate" text="TIMERUNNING_CHOICE_SELECT">
+						<Anchors>
+							<Anchor point="BOTTOM" x="0" y="20"/>
+						</Anchors>
+					</Button>
+				</Frames>
+			</Frame>
+			<Frame name="TimerunningChoiceDialogCreateTimerunning" inherits="TimerunningChoiceDialogTemplate">
+				<KeyValues>
+					<KeyValue key="headerText" value="TIMERUNNING_CHOICE_TIMERUNNING_HEADER" type="global"/>
+					<KeyValue key="descriptionText" value="TIMERUNNING_CHOICE_PANDARIA_DESCRIPTION" type="global"/>
+					<KeyValue key="isTimerunning" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="CENTER" x="120" y="10"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="Glow" inherits="TimerunningChoiceFrameGlowTemplate" setAllPoints="true" useParentLevel="true"/>
+					<Frame parentKey="SandCorners" inherits="TimerunningChoiceSandCornersTemplate" setAllPoints="true"/>
+					<Button parentKey="InfoButton" inherits="TimerunningChoiceInfoButtonTemplate"/>
+					<Button parentKey="SelectButton" inherits="GlueButtonSmallTemplate" text="TIMERUNNING_CHOICE_SELECT">
+						<Anchors>
+							<Anchor point="BOTTOM" x="0" y="20"/>
+						</Anchors>
+					</Button>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnKeyDown method="OnKeyDown"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+	
+	<Button name="TimerunningEventBanner" mixin="TimerunningEventBannerMixin" parent="VisibilityFramesContainer" frameStrata="HIGH" enableMouse="true">
+		<Anchors>
+			<Anchor point="TOPLEFT" x="271" y="-13"/>
+		</Anchors>
+		<Size x="317" y="106"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Header" text="TIMERUNNING_BANNER_PANDARIA_HEADER" inherits="GameFontHighlight">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="84" y="-20"/>
+						<Anchor point="BOTTOMRIGHT" x="-25" y="50"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="TimeLeft" inherits="GameFontHighlightLarge2">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Header" relativePoint="BOTTOM" x="0" y="6"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Glow" inherits="TimerunningEventBannerGlowTemplate" setAllPoints="true" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="4" y="-8"/>
+					<Anchor point="BOTTOMRIGHT" x="-10" y="11"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<NormalTexture parentKey="Border" atlas="timerunning-glues-active-event" setAllPoints="true"/>
+		<PushedTexture atlas="timerunning-glues-active-event-pressed" setAllPoints="true"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+</Ui>

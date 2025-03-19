@@ -1,0 +1,663 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Script file="Blizzard_VoidStorageUI.lua"/>
+	
+<!--
+<Texture name="EtherealFrame-CornerTopLeft.png" >
+	<Size x="64" y="64"/>	
+	<TexCoords left="0.00781250" right="0.50781250" top="0.00195313" bottom="0.12695313"/>	
+</Texture>
+<Texture name="EtherealIconFrame-Transmogrified.png" >
+	<Size x="58" y="57"/>	
+	<TexCoords left="0.52343750" right="0.97656250" top="0.00195313" bottom="0.11328125"/>	
+</Texture>
+<Texture name="EtherealFrame-CornerBottomRight.png" >
+	<Size x="64" y="63"/>	
+	<TexCoords left="0.00781250" right="0.50781250" top="0.13085938" bottom="0.25390625"/>	
+</Texture>
+<Texture name="EtherealIconFrame.png" >
+	<Size x="58" y="57"/>	
+	<TexCoords left="0.52343750" right="0.97656250" top="0.13085938" bottom="0.24218750"/>	
+</Texture>
+<Texture name="EtherealFrame-CornerBottomLeft.png" >
+	<Size x="64" y="63"/>	
+	<TexCoords left="0.00781250" right="0.50781250" top="0.25781250" bottom="0.38085938"/>	
+</Texture>
+<Texture name="EtherealIconFrame-Transition.png" >
+	<Size x="58" y="57"/>	
+	<TexCoords left="0.52343750" right="0.97656250" top="0.25781250" bottom="0.36914063"/>	
+</Texture>
+<Texture name="EtherealFrame-CornerTopRight.png" >
+	<Size x="64" y="63"/>	
+	<TexCoords left="0.00781250" right="0.50781250" top="0.38476563" bottom="0.50781250"/>	
+</Texture>
+<Texture name="EtherealIconFrame-PendingGlow.png" >
+	<Size x="58" y="57"/>	
+	<TexCoords left="0.52343750" right="0.97656250" top="0.38476563" bottom="0.49609375"/>	
+</Texture>
+<Texture name="Icon-RestoreItem.png" >
+	<Size x="34" y="34"/>	
+	<TexCoords left="0.00781250" right="0.27343750" top="0.51171875" bottom="0.57812500"/>	
+</Texture>
+<Texture name="Icon-CantTransmogrify.png" >
+	<Size x="34" y="34"/>	
+	<TexCoords left="0.28906250" right="0.55468750" top="0.51171875" bottom="0.57812500"/>	
+</Texture>
+<Texture name="EtherealIconFrameGrabber-Bottom.png" >
+	<Size x="49" y="20"/>	
+	<TexCoords left="0.57031250" right="0.95312500" top="0.51171875" bottom="0.55078125"/>	
+</Texture>
+<Texture name="EtherealIconFrameGrabber-Side.png" >
+	<Size x="20" y="49"/>	
+	<TexCoords left="0.00781250" right="0.16406250" top="0.58203125" bottom="0.67773438"/>	
+</Texture>
+<Texture name="RestoreButton.png" >
+	<Size x="24" y="22"/>	
+	<TexCoords left="0.17968750" right="0.36718750" top="0.58203125" bottom="0.62500000"/>	
+</Texture>
+*** vertical ***
+<Texture name="!EtherealFrame-Right.png" vertTile="true" >
+	<Size x="23" y="64"/>	
+	<TexCoords left="0.01562500" right="0.37500000" top="0.00000000" bottom="1.00000000"/>	
+</Texture>
+<Texture name="!EtherealFrame-Left.png" vertTile="true" >
+	<Size x="23" y="64"/>	
+	<TexCoords left="0.40625000" right="0.76562500" top="0.00000000" bottom="1.00000000"/>	
+</Texture>
+*** horizontal ***
+<Texture name="_EtherealFrame-Bottom.png" horizTile="true" >
+	<Size x="64" y="23"/>	
+	<TexCoords left="0.00000000" right="1.00000000" top="0.01562500" bottom="0.37500000"/>	
+</Texture>
+<Texture name="_EtherealFrame-Top.png" horizTile="true" >
+	<Size x="64" y="23"/>	
+	<TexCoords left="0.00000000" right="1.00000000" top="0.40625000" bottom="0.76562500"/>	
+</Texture>
+*** void ***
+<Texture name="UI-Voidstorage-Top.png" >
+	<Size x="337" y="82"/>	
+	<TexCoords left="0.00195313" right="0.66015625" top="0.00195313" bottom="0.16210938"/>	
+</Texture>
+<Texture name="UI-Voidstorage-ItemBG.png" >
+	<Size x="41" y="41"/>	
+	<TexCoords left="0.66406250" right="0.74414063" top="0.00195313" bottom="0.08203125"/>	
+</Texture>
+<Texture name="UI-Voidstorage-DepositArrow.png" >
+	<Size x="27" y="46"/>	
+	<TexCoords left="0.74804688" right="0.80078125" top="0.00195313" bottom="0.09179688"/>	
+</Texture>
+<Texture name="UI-Voidstorage-WithdrawArrow.png" >
+	<Size x="27" y="46"/>	
+	<TexCoords left="0.80468750" right="0.85742188" top="0.00195313" bottom="0.09179688"/>	
+</Texture>
+<Texture name="UI-Voidstorage-BankBG.png" >
+	<Size x="241" y="175"/>	
+	<TexCoords left="0.00195313" right="0.47265625" top="0.16601563" bottom="0.50781250"/>	
+</Texture>
+-->
+	<Button name="VoidStorageItemButtonTemplate" virtual="true">
+		<Size x="37" y="37"/>	
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBg" file="Interface\VoidStorage\VoidStorage.png">
+					<Size x="41" y="41"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<TexCoords left="0.66406250" right="0.74414063" top="0.00195313" bottom="0.08203125"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentIconTexture" parentKey="icon"/>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
+					<Size x="37" y="37"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentSearchOverlay" parentKey="searchOverlay" setAllPoints="true" hidden="true">
+					<Color r="0" g="0" b="0" a="0.8"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="IconOverlay" hidden="true">
+					<Size x="37" y="37"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+		<Scripts>
+			<OnLoad function="VoidStorageItemButton_OnLoad"/>
+			<OnClick function="VoidStorageItemButton_OnClick"/>
+			<OnEnter function="VoidStorageItemButton_OnEnter"/>
+			<OnDragStart function="VoidStorageItemButton_OnDrag"/>
+			<OnReceiveDrag function="VoidStorageItemButton_OnDrag"/>
+			<OnLeave function="VoidStorageItemButton_OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="VoidStorageAntsFrameTemplate" virtual="true" hidden="true">
+		<Size x="37" y="37"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentInnerGlow" parentKey="innerGlow" file="Interface\SpellActivationOverlay\IconAlert" setAllPoints="true">
+					<Size x="53" y="53"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<TexCoords left="0.00781250" right="0.50781250" top="0.27734375" bottom="0.52734375"/>
+				</Texture>
+				<Texture name="$parentOuterGlow" parentKey="outerGlow" file="Interface\SpellActivationOverlay\IconAlert" setAllPoints="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<TexCoords left="0.00781250" right="0.50781250" top="0.27734375" bottom="0.52734375"/>
+				</Texture>
+			</Layer>			
+			<Layer level="OVERLAY">
+				<Texture name="$parentAnts" parentKey="ants" file="Interface\SpellActivationOverlay\IconAlertAnts">
+					<Size x="44" y="44"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnUpdate>
+				AnimateTexCoords(self.ants, 256, 256, 48, 48, 22, elapsed, 0.01);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+	
+	<CheckButton name="VoidStorageTabTemplate" virtual="true">
+		<Size x="32" y="32"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\SpellBook\SpellBook-SkillLineTab">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-3" y="11"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				VoidStorage_SetPageNumber(self:GetID());
+			</OnClick>
+		</Scripts>
+		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
+	</CheckButton>
+
+	<Frame name="VoidStorageInsetFrameTemplate" inherits="InsetFrameTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-6">
+				<Texture file="Interface\VoidStorage\VoidStorage.png">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3" y="-3"/>
+						<Anchor point="BOTTOMRIGHT" x="-3" y="2"/>
+					</Anchors>
+					<TexCoords left="0.00195313" right="0.47265625" top="0.16601563" bottom="0.50781250"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="VoidStorageFrame" toplevel="true" parent="UIParent" hidden="true" enableMouse="true">
+		<Size x="718" y="436"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture name="$parentMarbleBg" file="Interface\FrameGeneral\UI-Background-Marble" horizTile="true" vertTile="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="2" y="-21"/>
+						<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture setAllPoints="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="2" y="-21"/>
+						<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+					</Anchors>
+					<Color r="0.302" g="0.102" b="0.204" a="0.5"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="3">
+				<Texture name="$parentLines" file="Interface\Transmogrify\EtherealLines.png" horizTile="true" vertTile="true" alpha="0.3">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="2" y="-21"/>
+						<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="VoidStorageContentFrame" setAllPoints="true">
+				<Frames>
+					<Frame name="VoidStorageDepositFrame" inherits="VoidStorageInsetFrameTemplate">
+						<Size x="145" y="138"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="34" y="-48"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString inherits="GameFontHighlight" text="DEPOSIT">
+									<Anchors>
+										<Anchor point="BOTTOM" relativeTo="VoidStorageDepositFrame" relativePoint="TOP" x="0" y="3"/>
+									</Anchors>
+								</FontString>
+								<Texture file="Interface\VoidStorage\VoidStorage.png">
+									<Size x="27" y="46"/>
+									<Anchors>
+										<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" x="-4" y="0"/>
+									</Anchors>
+									<TexCoords left="0.74804688" right="0.80078125" top="0.00195313" bottom="0.09179688"/>
+								</Texture>	
+							</Layer>
+						</Layers>
+						<Frames>
+							<Button name="VoidStorageDepositButton1" inherits="VoidStorageItemButtonTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" x="10" y="-8"/>
+								</Anchors>
+							</Button>
+						</Frames>
+					</Frame>
+					<Frame name="VoidStorageWithdrawFrame" inherits="VoidStorageInsetFrameTemplate">
+						<Size x="145" y="138"/>
+						<Anchors>
+							<Anchor point="TOP" relativeTo="VoidStorageDepositFrame" relativePoint="BOTTOM" x="0" y="-22"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString inherits="GameFontHighlight" text="WITHDRAW">
+									<Anchors>
+										<Anchor point="BOTTOM" relativeTo="VoidStorageWithdrawFrame" relativePoint="TOP" x="0" y="3"/>
+									</Anchors>
+								</FontString>
+								<Texture file="Interface\VoidStorage\VoidStorage.png">
+									<Size x="27" y="46"/>
+									<Anchors>
+										<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" x="-1" y="0"/>
+									</Anchors>
+									<TexCoords left="0.80468750" right="0.85742188" top="0.00195313" bottom="0.09179688"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Button name="VoidStorageWithdrawButton1" inherits="VoidStorageItemButtonTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" x="10" y="-8"/>
+								</Anchors>
+							</Button>
+						</Frames>
+					</Frame>
+					<Frame name="VoidStorageStorageFrame" inherits="VoidStorageInsetFrameTemplate">
+						<Size x="481" y="347"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="VoidStorageDepositFrame" relativePoint="TOPRIGHT" x="22" y="-4"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString inherits="GameFontHighlight" text="VOID_STORAGE">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativeTo="VoidStorageStorageFrame" relativePoint="TOPLEFT" x="16" y="3"/>
+									</Anchors>
+								</FontString>
+								<Texture name="$parentLine1">
+									<Size x="2" y="343"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="97" y="-2"/>
+									</Anchors>
+									<Color r="0.1451" g="0.0941" b="0.1373" a="0.8"/>
+								</Texture>
+								<Texture name="$parentLine2">
+									<Size x="2" y="343"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="192" y="-2"/>
+									</Anchors>
+									<Color r="0.1451" g="0.0941" b="0.1373" a="0.8"/>
+								</Texture>
+								<Texture name="$parentLine3">
+									<Size x="2" y="343"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="287" y="-2"/>
+									</Anchors>
+									<Color r="0.1451" g="0.0941" b="0.1373" a="0.8"/>
+								</Texture>
+								<Texture name="$parentLine4">
+									<Size x="2" y="343"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="382" y="-2"/>
+									</Anchors>
+									<Color r="0.1451" g="0.0941" b="0.1373" a="0.8"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Button name="VoidStorageStorageButton1" inherits="VoidStorageItemButtonTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" x="10" y="-8"/>
+								</Anchors>
+							</Button>
+						</Frames>
+					</Frame>
+					<Frame name="VoidStorageCostFrame" inherits="VoidStorageInsetFrameTemplate">
+						<Size x="145" y="44"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="VoidStorageWithdrawFrame"/>
+							<Anchor point="BOTTOM" relativeTo="VoidStorageStorageFrame"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString inherits="GameFontNormal" text="COSTS_LABEL">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="8" y="-6"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Button name="VoidStorageTransferButton" inherits="UIPanelButtonTemplate" text="TRANSFER">
+								<Size x="143" y="22"/>
+								<Anchors>
+									<Anchor point="BOTTOM" x="0" y="2"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										local numDeposits = GetNumVoidTransferDeposit();
+										local numWithdrawals = GetNumVoidTransferWithdrawal();
+										self:Disable();
+										if ( ExecuteVoidTransfer() ) then
+											-- was successful so play an appropriate sound
+											if ( numDeposits == 0 ) then
+												PlaySound(SOUNDKIT.UI_VOID_STORAGE_WITHDRAW);
+											elseif ( numWithdrawals == 0 ) then
+												PlaySound(SOUNDKIT.UI_VOID_STORAGE_DEPOSIT);
+											else
+												PlaySound(SOUNDKIT.UI_VOID_STORAGE_BOTH);
+											end
+										end
+									</OnClick>
+								</Scripts>
+							</Button>
+							<Frame name="VoidStorageMoneyFrame" inherits="SmallMoneyFrameTemplate">
+								<Anchors>
+									<Anchor point="TOPRIGHT" x="8" y="-6"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										SmallMoneyFrame_OnLoad(self);
+										MoneyFrame_SetType(self, "STATIC");
+									</OnLoad>
+								</Scripts>
+							</Frame>
+						</Frames>
+					</Frame>
+				</Frames>
+			</Frame>
+			<Frame name="VoidStorageBorderFrame" setAllPoints="true" inherits="BasicFrameTemplate">
+				<Layers>
+					<Layer level="BORDER" textureSubLevel="-2">
+						<Texture name="$parentCornerTL" file="Interface\Transmogrify\Textures.png">
+							<Size x="64" y="64"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-2" y="-18"/>
+							</Anchors>
+							<TexCoords left="0.00781250" right="0.50781250" top="0.00195313" bottom="0.12695313"/>
+						</Texture>
+						<Texture name="$parentCornerTR" file="Interface\Transmogrify\Textures.png">
+							<Size x="64" y="64"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="0" y="-18"/>
+							</Anchors>
+							<TexCoords left="0.00781250" right="0.50781250" top="0.38476563" bottom="0.50781250"/>
+						</Texture>
+						<Texture name="$parentCornerBL" file="Interface\Transmogrify\Textures.png">
+							<Size x="64" y="64"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="-2" y="-1"/>
+							</Anchors>
+							<TexCoords left="0.00781250" right="0.50781250" top="0.25781250" bottom="0.38085938"/>	
+						</Texture>
+						<Texture name="$parentCornerBR" file="Interface\Transmogrify\Textures.png">
+							<Size x="64" y="64"/>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="0" y="-1"/>
+							</Anchors>
+							<TexCoords left="0.00781250" right="0.50781250" top="0.13085938" bottom="0.25390625"/>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER" textureSubLevel="-3">
+						<Texture name="$parentLeftEdge" file="Interface\Transmogrify\VerticalTiles.png" vertTile="true">
+							<Size x="23" y="64"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentCornerTL" relativePoint="BOTTOMLEFT" x="3" y="16"/>
+								<Anchor point="BOTTOMLEFT" relativeTo="$parentCornerBL" relativePoint="TOPLEFT" x="3" y="-16"/>
+							</Anchors>
+							<TexCoords left="0.40625000" right="0.76562500" top="0.00000000" bottom="1.00000000"/>
+						</Texture>
+						<Texture name="$parentRightEdge" file="Interface\Transmogrify\VerticalTiles.png" vertTile="true">
+							<Size x="23" y="64"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeTo="$parentCornerTR" relativePoint="BOTTOMRIGHT" x="-3" y="16"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentCornerBR" relativePoint="TOPRIGHT" x="-3" y="-16"/>
+							</Anchors>
+							<TexCoords left="0.01562500" right="0.37500000" top="0.00000000" bottom="1.00000000"/>
+						</Texture>
+						<Texture name="$parentBottomEdge" file="Interface\Transmogrify\HorizontalTiles.png" horizTile="true">
+							<Size x="64" y="23"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeTo="$parentCornerBL" relativePoint="BOTTOMRIGHT" x="-30" y="4"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentCornerBR" relativePoint="BOTTOMLEFT" x="30" y="4"/>
+							</Anchors>
+							<TexCoords left="0.00000000" right="1.00000000" top="0.01562500" bottom="0.37500000"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="-1">
+						<Texture name="$parentTopEdge" file="Interface\Transmogrify\HorizontalTiles.png" horizTile="true">
+							<Size x="64" y="23"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="2" y="-3"/>
+								<Anchor point="TOPRIGHT" x="-2" y="-3"/>
+							</Anchors>
+							<TexCoords left="0.00000000" right="1.00000000" top="0.40625000" bottom="0.76562500"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="2">
+						<Texture name="$parentHeader" file="Interface\VoidStorage\VoidStorage.png">
+							<Size x="337" y="82"/>
+							<Anchors>
+								<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="TOP" x="0" y="-19"/>
+							</Anchors>
+							<TexCoords left="0.00195313" right="0.66015625" top="0.00195313" bottom="0.16210938"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="$parentMouseBlockFrame" setAllPoints="true" enableMouse="true" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="2" y="-22"/>
+							<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+						</Anchors>
+					</Frame>
+					<Frame name="VoidStoragePurchaseFrame" hidden="true">
+						<Size x="418" y="236"/>
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND" textureSubLevel="-6">
+								<Texture name="$parentMarbleBg" file="Interface\FrameGeneral\UI-Background-Marble" horizTile="true" vertTile="true">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="8" y="-8"/>
+										<Anchor point="BOTTOMRIGHT" x="-8" y="8"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="BACKGROUND" textureSubLevel="-5">
+								<Texture setAllPoints="true">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="8" y="-8"/>
+										<Anchor point="BOTTOMRIGHT" x="-8" y="8"/>
+									</Anchors>
+									<Color r="0.302" g="0.102" b="0.204" a="0.5"/>
+								</Texture>
+							</Layer>
+							<Layer level="BACKGROUND" textureSubLevel="-2">
+								<Texture name="$parentCornerTL" file="Interface\Transmogrify\Textures.png">
+									<Size x="64" y="64"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="0" y="0"/>
+									</Anchors>
+									<TexCoords left="0.00781250" right="0.50781250" top="0.00195313" bottom="0.12695313"/>
+								</Texture>
+								<Texture name="$parentCornerTR" file="Interface\Transmogrify\Textures.png">
+									<Size x="64" y="64"/>
+									<Anchors>
+										<Anchor point="TOPRIGHT" x="0" y="0"/>
+									</Anchors>
+									<TexCoords left="0.00781250" right="0.50781250" top="0.38476563" bottom="0.50781250"/>
+								</Texture>
+								<Texture name="$parentCornerBL" file="Interface\Transmogrify\Textures.png">
+									<Size x="64" y="64"/>
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" x="0" y="0"/>
+									</Anchors>
+									<TexCoords left="0.00781250" right="0.50781250" top="0.25781250" bottom="0.38085938"/>	
+								</Texture>
+								<Texture name="$parentCornerBR" file="Interface\Transmogrify\Textures.png">
+									<Size x="64" y="64"/>
+									<Anchors>
+										<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+									</Anchors>
+									<TexCoords left="0.00781250" right="0.50781250" top="0.13085938" bottom="0.25390625"/>
+								</Texture>
+							</Layer>
+							<Layer level="BACKGROUND" textureSubLevel="-3">
+								<Texture name="$parentTopEdge" file="Interface\Transmogrify\HorizontalTiles.png" horizTile="true">
+									<Size x="64" y="23"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="$parentCornerTL" relativePoint="TOPRIGHT" x="-30" y="-5"/>
+										<Anchor point="TOPRIGHT" relativeTo="$parentCornerTR" relativePoint="TOPLEFT" x="30" y="-5"/>
+									</Anchors>
+									<TexCoords left="0.00000000" right="1.00000000" top="0.40625000" bottom="0.76562500"/>
+								</Texture>
+								<Texture name="$parentLeftEdge" file="Interface\Transmogrify\VerticalTiles.png" vertTile="true">
+									<Size x="23" y="64"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="$parentCornerTL" relativePoint="BOTTOMLEFT" x="4" y="16"/>
+										<Anchor point="BOTTOMLEFT" relativeTo="$parentCornerBL" relativePoint="TOPLEFT" x="4" y="-16"/>
+									</Anchors>
+									<TexCoords left="0.40625000" right="0.76562500" top="0.00000000" bottom="1.00000000"/>
+								</Texture>
+								<Texture name="$parentRightEdge" file="Interface\Transmogrify\VerticalTiles.png" vertTile="true">
+									<Size x="23" y="64"/>
+									<Anchors>
+										<Anchor point="TOPRIGHT" relativeTo="$parentCornerTR" relativePoint="BOTTOMRIGHT" x="-4" y="16"/>
+										<Anchor point="BOTTOMRIGHT" relativeTo="$parentCornerBR" relativePoint="TOPRIGHT" x="-4" y="-16"/>
+									</Anchors>
+									<TexCoords left="0.01562500" right="0.37500000" top="0.00000000" bottom="1.00000000"/>
+								</Texture>
+								<Texture name="$parentBottomEdge" file="Interface\Transmogrify\HorizontalTiles.png" horizTile="true">
+									<Size x="64" y="23"/>
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativeTo="$parentCornerBL" relativePoint="BOTTOMRIGHT" x="-30" y="4"/>
+										<Anchor point="BOTTOMRIGHT" relativeTo="$parentCornerBR" relativePoint="BOTTOMLEFT" x="30" y="4"/>
+									</Anchors>
+									<TexCoords left="0.00000000" right="1.00000000" top="0.01562500" bottom="0.37500000"/>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<FontString name="$parentLabel" inherits="GameFontNormal" text="VOID_STORAGE_WELCOME">
+									<Anchors>
+										<Anchor point="TOP" x="0" y="-32"/>
+									</Anchors>
+								</FontString>
+								<FontString name="$parentDescription" inherits="GameFontHighlight" text="VOID_STORAGE_WELCOME_TEXT">
+									<Anchors>
+										<Anchor point="TOP" relativeTo="$parentLabel" relativePoint="BOTTOM" x="0" y="-20"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Button name="VoidStoragePurchaseButton" inherits="UIPanelButtonTemplate" text="UNLOCK_VOID_STORAGE">
+								<Size x="204" y="22"/>
+								<Anchors>
+									<Anchor point="BOTTOM" x="0" y="36"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										PlaySound(SOUNDKIT.UI_VOID_STORAGE_UNLOCK);
+										UnlockVoidStorage();
+									</OnClick>
+								</Scripts>
+							</Button>
+							<Frame name="VoidStoragePurchaseMoneyFrame" inherits="SmallMoneyFrameTemplate">
+								<Anchors>
+									<Anchor point="BOTTOM" relativeTo="VoidStoragePurchaseButton" relativePoint="TOP" x="0" y="4"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString parentKey="PrefixText" inherits="GameFontNormal" text="COSTS_LABEL">
+											<Anchors>
+												<Anchor point="LEFT" x="0" y="0"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnLoad>
+										SmallMoneyFrame_OnLoad(self);
+										MoneyFrame_SetType(self, "STATIC");
+									</OnLoad>
+								</Scripts>
+							</Frame>
+						</Frames>
+					</Frame>
+				</Frames>
+			</Frame>
+			<CheckButton parentKey="Page1" inherits="VoidStorageTabTemplate" id="1">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="TOPRIGHT" x="0" y="-60"/>
+				</Anchors>
+				<NormalTexture file="Interface\Icons\INV_Enchant_EssenceCosmicGreater"/>
+			</CheckButton>
+			<CheckButton parentKey="Page2" inherits="VoidStorageTabTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Page1" relativePoint="BOTTOM" x="0" y="-16"/>
+				</Anchors>
+				<NormalTexture file="Interface\Icons\INV_Enchant_EssenceArcaneLarge"/>
+			</CheckButton>
+		</Frames>
+		<Scripts>
+			<OnLoad function="VoidStorageFrame_OnLoad"/>
+			<OnEvent function="VoidStorageFrame_OnEvent"/>
+			<OnShow function="VoidStorageFrame_OnShow"/>
+			<OnHide function="VoidStorageFrame_OnHide"/>
+		</Scripts>
+	</Frame>
+
+	<EditBox name="VoidItemSearchBox" inherits="BagSearchBoxTemplate" parent="VoidStorageFrame" letters="15">
+		<Size x="130" y="20"/>
+		<Anchors>
+			<Anchor point="TOPRIGHT" x="-50" y="-28"/>
+		</Anchors>
+	</EditBox>
+</Ui>
