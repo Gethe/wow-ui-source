@@ -1,6 +1,0 @@
-<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
-	<ModelScene name="GlobalFXDialogModelScene" frameStrata="DIALOG" inherits="ScriptAnimatedModelSceneTemplate" parent="UIParent" setAllPoints="true" enableMouse="false"/>
-	<ModelScene name="GlobalFXMediumModelScene" frameStrata="MEDIUM" inherits="ScriptAnimatedModelSceneTemplate" parent="UIParent" setAllPoints="true" enableMouse="false"/>
-	<ModelScene name="GlobalFXBackgroundModelScene"  frameStrata="LOW" drawLayer="BACKGROUND" inherits="ScriptAnimatedModelSceneTemplate" parent="UIParent" setAllPoints="true" enableMouse="false"/>
-</Ui>
