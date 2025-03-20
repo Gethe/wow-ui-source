@@ -578,8 +578,6 @@ Interface\AddOns\Blizzard_FrameXML\Classic\LootHistory.xml
 Interface\AddOns\Blizzard_FrameXML\Classic\LowHealthFrame.xml
 Interface\AddOns\Blizzard_FrameXML\Classic\MirrorTimer.lua
 Interface\AddOns\Blizzard_FrameXML\Classic\MirrorTimer.xml
-Interface\AddOns\Blizzard_FrameXML\Classic\MovieFrame.lua
-Interface\AddOns\Blizzard_FrameXML\Classic\MovieFrame.xml
 Interface\AddOns\Blizzard_FrameXML\Classic\NavigationBar.lua
 Interface\AddOns\Blizzard_FrameXML\Classic\NavigationBar.xml
 Interface\AddOns\Blizzard_FrameXML\Classic\RaidWarning.xml
@@ -608,6 +606,8 @@ Interface\AddOns\Blizzard_FrameXML\GhostFrame.xml
 Interface\AddOns\Blizzard_FrameXML\GuildUtil.lua
 Interface\AddOns\Blizzard_FrameXML\IconIntroAnimation.lua
 Interface\AddOns\Blizzard_FrameXML\IconIntroAnimation.xml
+Interface\AddOns\Blizzard_FrameXML\MovieFrame.lua
+Interface\AddOns\Blizzard_FrameXML\MovieFrame.xml
 Interface\AddOns\Blizzard_FrameXML\RestrictedEnvironment.lua
 Interface\AddOns\Blizzard_FrameXML\RestrictedExecution.lua
 Interface\AddOns\Blizzard_FrameXML\RestrictedFrames.lua
@@ -1422,6 +1422,9 @@ Interface\AddOns\Blizzard_StoreUI\TBC\Blizzard_StoreUI.xml
 Interface\AddOns\Blizzard_StoreUI\TBC\Blizzard_StoreUISecure.lua
 Interface\AddOns\Blizzard_StoreUI\Vanilla\Blizzard_StoreUI.xml
 Interface\AddOns\Blizzard_StoreUI\Vanilla\Blizzard_StoreUISecure.lua
+Interface\AddOns\Blizzard_Subtitles\Blizzard_Subtitles.lua
+Interface\AddOns\Blizzard_Subtitles\Blizzard_Subtitles.toc
+Interface\AddOns\Blizzard_Subtitles\Blizzard_Subtitles.xml
 Interface\AddOns\Blizzard_TalentUI\Blizzard_TalentUI_Cata.toc
 Interface\AddOns\Blizzard_TalentUI\Blizzard_TalentUI_TBC.toc
 Interface\AddOns\Blizzard_TalentUI\Blizzard_TalentUI_Vanilla.toc

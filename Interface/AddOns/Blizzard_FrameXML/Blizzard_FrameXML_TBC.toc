@@ -291,8 +291,8 @@ Classic\Blizzard_TalentUITemplates.xml
 TextToSpeechFrameConstants.lua
 TextToSpeechFrame.xml
 TextToSpeech.xml
-Classic\MovieFrame.lua
-Classic\MovieFrame.xml
+MovieFrame.lua
+MovieFrame.xml
 Classic\RolePoll.xml
 AnimationSystem.lua
 CompactUnitFrame.xml

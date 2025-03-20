@@ -4,7 +4,7 @@
 ## Version: 1.0
 ## LoadOnDemand: 1
 ## AllowLoad: game
-## Dependencies:
+## Dependencies: Blizzard_FrameXMLUtil
 ## AllowLoadGameType: classic
 Classic\Blizzard_CollectionTemplates.lua
 Classic\Blizzard_CollectionTemplates.xml

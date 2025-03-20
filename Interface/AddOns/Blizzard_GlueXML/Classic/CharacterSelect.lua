@@ -141,7 +141,7 @@ function CharacterSelectLockedButtonMixin:OnClick()
 end
 
 local function ShouldShowHighResButton()
-	return not C_BattleNet.AreHighResTexturesInstalled();
+	return AreHighResTexturesAvailable() and not C_BattleNet.AreHighResTexturesInstalled();
 end
 
 function CharacterSelectStoreButton_OnLoad(self)
@@ -2816,25 +2816,22 @@ end
 GameLogoDarkBackdropMixin = {};
 
 function GameLogoDarkBackdropMixin:OnLoad()
-	self:RegisterEvent("GAME_MODE_CHANGED");
+	self:RegisterEvent("GAME_MODE_DISPlAY_INFO_UPDATED");
 	self:Update();
 end
 
 function GameLogoDarkBackdropMixin:OnEvent(event)
-	if event == "GAME_MODE_CHANGED" then
+	if event == "GAME_MODE_DISPlAY_INFO_UPDATED" then
 		self:Update();
 	end
 end
 
 function GameLogoDarkBackdropMixin:Update()
-	local gameModeRecordID = C_GameModeManager.GetCurrentGameModeRecordID();
-	if gameModeRecordID then
-		local gameModeDisplayInfo = C_GameModeManager.GetGameModeDisplayInfo(gameModeRecordID);
-		if gameModeDisplayInfo then
-			if gameModeDisplayInfo.logoUsesDarkBackdrop then
-				self.BackdropTexture:Show();
-				return;
-			end
+	local gameModeDisplayInfo = C_GameRules.GetCurrentGameModeDisplayInfo();
+	if gameModeDisplayInfo then
+		if gameModeDisplayInfo.logoUsesDarkBackdrop then
+			self.BackdropTexture:Show();
+			return;
 		end
 	end
 

@@ -3,6 +3,7 @@ MOVIE_CAPTION_FADE_TIME = 1.0;
 
 function MovieFrame_OnLoad(self)
 	self:RegisterEvent("PLAY_MOVIE");
+	self:RegisterEvent("STOP_MOVIE");
 end
 
 function MovieFrame_OnEvent(self, event, ...)
@@ -11,6 +12,8 @@ function MovieFrame_OnEvent(self, event, ...)
 		if ( movieID ) then
 			MovieFrame_PlayMovie(self, movieID);
 		end
+	elseif (event == "STOP_MOVIE") then
+		MovieFrame_StopMovie(self);
 	end
 end
 
@@ -24,7 +27,17 @@ function MovieFrame_PlayMovie(self, movieID)
 		local userCanceled = false;
 		local didError = true;
 		CinematicFinished(Enum.CinematicType.GameMovie, userCanceled, didError);
+	else
+		CinematicStarted(Enum.CinematicType.GameMovie, movieID);
+		EventRegistry:TriggerEvent("Subtitles.OnMovieCinematicPlay", self);
 	end
+end
+
+function MovieFrame_StopMovie(self)
+	self:StopMovie(movieID);
+	self:Hide();
+	CinematicFinished(Enum.CinematicType.GameMovie);
+	EventRegistry:TriggerEvent("Subtitles.OnMovieCinematicStop");
 end
 
 function MovieFrame_OnShow(self)
@@ -32,10 +45,10 @@ function MovieFrame_OnShow(self)
 	self.uiParentShown = UIParent:IsShown();
 	UIParent:Hide();
 	self:EnableSubtitles(GetCVarBool("movieSubtitle"));
+	SpellStopTargeting();
 end
 
 function MovieFrame_OnHide(self)
-	MovieFrameSubtitleString:Hide();
 	self:StopMovie();
 	WorldFrame:Show();
 	if ( self.uiParentShown ) then
@@ -54,16 +67,12 @@ function MovieFrame_OnCinematicStopped()
 end
 
 function MovieFrame_OnUpdate(self, elapsed)
-	if ( MovieFrameSubtitleString:IsShown() and self.fadingAlpha ) then
+	if ( self.fadingAlpha ) then
 		self.fadingAlpha = self.fadingAlpha + ((elapsed / self.fadeSpeed) * self.fadeDirection);
 		if ( self.fadingAlpha > 1.0 ) then
-			MovieFrameSubtitleString:SetAlpha(1.0);
 			self.fadingAlpha = nil;
 		elseif ( self.fadingAlpha < 0.0 ) then
-			MovieFrameSubtitleString:Hide();
 			self.fadingAlpha = nil;
-		else
-			MovieFrameSubtitleString:SetAlpha(self.fadingAlpha);
 		end
 	end
 end
@@ -83,20 +92,3 @@ function MovieFrame_OnMovieFinished(self, userCanceled)
 		self:Hide();
 	end
 end
-
-function MovieFrame_OnMovieShowSubtitle(self, text)
-	MovieFrameSubtitleString:SetText(text);
-	MovieFrameSubtitleString:Show();
-	self.fadingAlpha = 0.0;
-	self.fadeDirection = 1.0;
-	self.fadeSpeed = MOVIE_CAPTION_FADE_TIME;
-	MovieFrameSubtitleString:SetAlpha(self.fadingAlpha);
-end
-
-function MovieFrame_OnMovieHideSubtitle(self)
-	self.fadingAlpha = 1.0;
-	self.fadeDirection = -1.0;
-	self.fadeSpeed = MOVIE_CAPTION_FADE_TIME / 2;
-	MovieFrameSubtitleString:SetAlpha(self.fadingAlpha);
-end
-

@@ -51,8 +51,8 @@ Cata\WorldStateFrame.xml
 Classic\TalentFrameBase_Shared.lua
 Cata\TalentFrameBase.lua
 Cata\Blizzard_TalentUITemplates.xml
-Classic\MovieFrame.lua
-Classic\MovieFrame.xml
+MovieFrame.lua
+MovieFrame.xml
 Classic\RolePoll.xml
 Classic\StreamingFrame.lua
 Classic\StreamingFrame.xml
