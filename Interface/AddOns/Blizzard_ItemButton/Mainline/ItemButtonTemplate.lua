@@ -7,10 +7,6 @@ ItemButtonConstants =
 	},
 };
 
-local function GetItemButtonIconTexture(button)
-	return button.Icon or button.icon or _G[button:GetName().."IconTexture"];
-end
-
 function GetFormattedItemQuantity(quantity, maxQuantity)
 	if quantity > (maxQuantity or 9999) then
 		return "*";
