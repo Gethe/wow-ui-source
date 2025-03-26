@@ -74,7 +74,7 @@ function GameMenuFrameMixin:InitButtons()
 
 	local optionsButton = self:AddButton(GAMEMENU_OPTIONS, GenerateMenuCallback(GenerateFlatClosure(SettingsPanel.Open, SettingsPanel)));
 
-	if CurrentVersionHasNewSettings() then
+	if CurrentVersionHasNewUnseenSettings() then
 		self.NewOptionsFrame:SetPoint("BOTTOMRIGHT", optionsButton:GetFontString(), "LEFT", 16, -10);
 		self.NewOptionsFrame:Show();
 	else

@@ -604,11 +604,11 @@ function CharacterCreateMixin:Exit()
 	self.RaceAndClassFrame.ClassTrialCheckButton:ResetDesiredState();
 
 	CharacterSelect.backFromCharCreate = true;
-	local fullCharacterCreateDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.FullCharacterCreateDisabled);
-	if not fullCharacterCreateDisabled then
-		GlueParent_SetScreen("charselect");
+	local screenName = C_GameRules.GetGameModeGlueScreenName();
+	if screenName then
+		GlueParent_SetScreen(screenName);
 	else
-		GlueParent_SetScreen("plunderstorm");
+		GlueParent_SetScreen("charselect");
 	end
 end
 
@@ -710,9 +710,9 @@ function CharacterCreateMixin:CreateCharacter()
 		self:UpdateForwardButton();
 
 		C_CharacterCreation.CreateCharacter(self:GetSelectedName(), ZoneChoiceFrame.useNPE, RaceAndClassFrame:GetCreateCharacterFaction());
-		local fullCharacterCreateDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.FullCharacterCreateDisabled);
-		if fullCharacterCreateDisabled then
-			GlueParent_SetScreen("plunderstorm");
+		local screenName = C_GameRules.GetGameModeGlueScreenName();
+		if screenName then
+			GlueParent_SetScreen(screenName);
 		end
 	end
 end

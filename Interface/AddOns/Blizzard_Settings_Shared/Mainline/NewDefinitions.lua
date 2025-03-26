@@ -27,4 +27,13 @@ NewSettings["11.0.0"] = {
 
 NewSettings["11.1.5"] = {
 	"cooldownViewerEnabled",
+	"panelItemQualityColorOverrides",
 };
+
+NewSettingsPredicates["cooldownViewerEnabled"] = function()
+	if not C_CooldownViewer.IsCooldownViewerAvailable() then
+		return false;
+	end
+
+	return true;
+end;

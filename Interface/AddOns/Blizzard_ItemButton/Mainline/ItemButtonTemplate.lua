@@ -219,7 +219,13 @@ end
 local function SetItemButtonQuality_Base(button, quality, itemIDOrLink, suppressOverlays, isBound, ignoreColorOverrides)
 	ClearItemButtonOverlay(button);
 
-	local color = ignoreColorOverrides and ColorManager.GetDefaultColorDataForBagItemQuality(quality) or ColorManager.GetColorDataForBagItemQuality(quality);
+	local color = nil;
+	if ignoreColorOverrides then
+		color = ColorManager.GetDefaultColorDataForBagItemQuality(quality);
+	else
+		color = ColorManager.GetColorDataForBagItemQuality(quality);
+	end
+
 	if color then
 		if itemIDOrLink then
 			if IsArtifactRelicItem(itemIDOrLink) then

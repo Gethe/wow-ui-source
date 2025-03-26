@@ -1,7 +1,7 @@
 ## Title: Blizzard_ArrowCalloutFrame
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_UIParent
+## Dependencies: Blizzard_UIParent, Blizzard_HelpPlate
 ## AllowLoad: game
 ## AllowLoadGameType: plunderstorm
 ArrowCalloutFrame.lua

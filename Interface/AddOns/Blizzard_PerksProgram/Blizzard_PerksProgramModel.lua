@@ -679,7 +679,7 @@ function PerksProgramModelSceneContainerFrameMixin:SetupModelSceneForPets(data, 
 		end
 
 		self.MainModelScene:SetViewInsets(DefaultInsets.left, DefaultInsets.right, DefaultInsets.top, DefaultInsets.bottom);
-		actor:SetModelByCreatureDisplayID(displayID);
+		actor:SetModelByCreatureDisplayID(displayID, true);
 		actor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
 		data.displayData.animationKitID = PET_DEFAULT_ANIM_ID;
 		data.displayData.desiredScale = desiredScale;

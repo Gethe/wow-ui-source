@@ -4,6 +4,7 @@
 ## LoadOnDemand: 1
 ## SavedVariables: g_auctionHouseSortsBySearchContext
 ## SavedVariablesPerCharacter: g_activeBidAuctionIDs
+## Dependencies: Blizzard_HelpPlate
 ## AllowLoad: game
 ## AllowLoadGameType: tbc, wrath, cata, mists
 ## Dependencies: Blizzard_Colors

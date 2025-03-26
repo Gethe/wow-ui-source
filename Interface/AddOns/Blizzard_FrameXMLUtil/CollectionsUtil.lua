@@ -506,3 +506,38 @@ end
 function CollectionWardrobeUtil.GetBestVisibilityWarning(model, transmogLocation, sources)
 	return CollectionWardrobeUtil.GetAppearanceVisibilityWarning(sources) or CollectionWardrobeUtil.GetSlotVisibilityWarning(model, transmogLocation);
 end
+
+function CollectionWardrobeUtil.GetPage(entryIndex, pageSize)
+	return floor((entryIndex-1) / pageSize) + 1;
+end
+
+function CollectionWardrobeUtil.GetAdjustedDisplayIndexFromKeyPress(contentFrame, index, numEntries, key)
+	if ( key == WARDROBE_PREV_VISUAL_KEY ) then
+		index = index - 1;
+		if ( index < 1 ) then
+			index = numEntries;
+		end
+	elseif ( key == WARDROBE_NEXT_VISUAL_KEY ) then
+		index = index + 1;
+		if ( index > numEntries ) then
+			index = 1;
+		end
+	elseif ( key == WARDROBE_DOWN_VISUAL_KEY ) then
+		local newIndex = index + contentFrame.NUM_COLS;
+		if ( newIndex > numEntries ) then
+			-- If you're at the last entry, wrap back around; otherwise go to the last entry.
+			index = index == numEntries and 1 or numEntries;
+		else
+			index = newIndex;
+		end
+	elseif ( key == WARDROBE_UP_VISUAL_KEY ) then
+		local newIndex = index - contentFrame.NUM_COLS;
+		if ( newIndex < 1 ) then
+			-- If you're at the first entry, wrap back around; otherwise go to the first entry.
+			index = index == 1 and numEntries or 1;
+		else
+			index = newIndex;
+		end
+	end
+	return index;
+end

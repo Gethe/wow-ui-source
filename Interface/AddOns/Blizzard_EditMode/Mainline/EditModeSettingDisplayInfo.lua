@@ -795,6 +795,13 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			name = HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_SHOW_TIMER,
 			type = Enum.EditModeSettingDisplayType.Checkbox,
 		},
+
+		-- Show Tooltips
+		{
+			setting = Enum.EditModeCooldownViewerSetting.ShowTooltips,
+			name = HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_SHOW_TOOLTIPS,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
 	},
 };
 

@@ -2,6 +2,7 @@
 ## Author: Blizzard Entertainment
 ## Dependencies: Blizzard_SharedXML
 ## AllowLoad: Glue
-## AllowLoadGameType: mainline
+## AllowLoadGameType: classic
+Classic\GameModeSelectConstants.lua
 GameModeSelect.lua
 GameModeSelect.xml

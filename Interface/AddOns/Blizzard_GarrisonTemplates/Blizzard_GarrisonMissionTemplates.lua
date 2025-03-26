@@ -909,7 +909,7 @@ function GarrisonMission:OnClickViewCompletedMissionsButton()
 	self:GetCompleteDialog():Hide();
 	self.FollowerTab:Hide();
 	self.FollowerList:Hide();
-	HelpPlate_Hide();
+	HelpPlate.Hide();
 	self.MissionComplete:Show();
 	self.MissionCompleteBackground:Show();
 

@@ -221,26 +221,49 @@ function ColorManager.GetAtlasDataForGarrisonShipyardFollowerQuality(quality)
 	return GARRISON_SHIPYARD_FOLLOWER_QUALITY_ATLASES[quality];
 end
 
-function ColorManager.GetAtlasDataForSpellDisplayColor(displayColor)
+function ColorManager.GetAtlasDataForSpellDisplayColor(quality)
 	local atlasData = {
 		atlas = nil,
 		overrideColor = nil
 	};
 
-	local quality = SPELL_DISPLAY_ITEM_QUALITIES[displayColor];
-	if quality then
-		local overrideQuality = ITEM_QUALITY_OVERRIDES[quality];
-		if overrideQuality then
-			local overrideInfo = C_ColorOverrides.GetColorOverrideInfo(overrideQuality);
-			if overrideInfo then
-				atlasData.atlas = "wowlabs-in-world-item-common";
-				atlasData.overrideColor = overrideInfo.overrideColor;
-				return atlasData;
-			end
+	local overrideQuality = ITEM_QUALITY_OVERRIDES[quality];
+	if overrideQuality then
+		local overrideInfo = C_ColorOverrides.GetColorOverrideInfo(overrideQuality);
+		if overrideInfo then
+			atlasData.atlas = "wowlabs-in-world-item-common";
+			atlasData.overrideColor = overrideInfo.overrideColor;
+			return atlasData;
 		end
 	end
 
-	atlasData.atlas = SPELL_DISPLAY_BORDER_COLOR_ATLASES[displayColor];
+	atlasData.atlas = SPELL_DISPLAY_BORDER_COLOR_ATLASES[quality];
+	return atlasData;
+end
+
+function ColorManager.GetAtlasDataForPlayerChoice(quality)
+	local atlasData = {
+		postfixData = nil,
+		overrideColor = nil
+	};
+
+	local overrideQuality = ITEM_QUALITY_OVERRIDES[quality];
+	if overrideQuality then
+		local overrideInfo = C_ColorOverrides.GetColorOverrideInfo(overrideQuality);
+		if overrideInfo then
+			atlasData.postfixData = {
+				circleBorder = "-border-white",
+				portraitBackgroundGlow1 = "-portrait-qualitywhite-01",
+				portraitBackgroundGlow2 = "-portrait-qualitywhite-02",
+				portraitBackgroundTorghast = "",
+				portraitBackgroundCypher = "-white"
+			};
+			atlasData.overrideColor = overrideInfo.overrideColor;
+			return atlasData;
+		end
+	end
+
+	atlasData.postfixData = PLAYER_CHOICE_ATLAS_POSTFIXES[quality];
 	return atlasData;
 end
 

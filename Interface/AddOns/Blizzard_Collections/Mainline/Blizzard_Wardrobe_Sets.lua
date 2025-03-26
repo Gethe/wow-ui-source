@@ -1638,13 +1638,9 @@ function WardrobeSetsTransmogMixin:HandleKey(key)
 	end
 
 	if ( setIndex ) then
-		setIndex = GetAdjustedDisplayIndexFromKeyPress(self, setIndex, #usableSets, key);
+		setIndex = CollectionWardrobeUtil.GetAdjustedDisplayIndexFromKeyPress(self, setIndex, #usableSets, key);
 		self:SelectSet(usableSets[setIndex].setID);
 	end
-end
-
-local function GetPage(entryIndex, pageSize)
-	return floor((entryIndex-1) / pageSize) + 1;
 end
 
 function WardrobeSetsTransmogMixin:ResetPage()
@@ -1654,7 +1650,7 @@ function WardrobeSetsTransmogMixin:ResetPage()
 		self.PagingFrame:SetMaxPages(ceil(#usableSets / self.PAGE_SIZE));
 		for i, set in ipairs(usableSets) do
 			if ( set.setID == self.selectedSetID ) then
-				page = GetPage(i, self.PAGE_SIZE);
+				page = CollectionWardrobeUtil.GetPage(i, self.PAGE_SIZE);
 				break;
 			end
 		end

@@ -123,7 +123,8 @@ Interface\AddOns\Blizzard_FriendsFrame\Blizzard_FriendsFrame.toc
 Interface\AddOns\Blizzard_GMChatUI\Blizzard_GMChatUI.toc
 Interface\AddOns\Blizzard_GameMenu\Blizzard_GameMenu_Mainline.toc
 Interface\AddOns\Blizzard_GameMenu\Blizzard_GameMenu_WoWLabs.toc
-Interface\AddOns\Blizzard_GameModeSelect\Blizzard_GameModeSelect.toc
+Interface\AddOns\Blizzard_GameModeSelect\Blizzard_GameModeSelect_Classic.toc
+Interface\AddOns\Blizzard_GameModeSelect\Blizzard_GameModeSelect_Mainline.toc
 Interface\AddOns\Blizzard_GameTooltip\Blizzard_GameTooltip_Mainline.toc
 Interface\AddOns\Blizzard_GarrisonBase\Blizzard_GarrisonBase.toc
 Interface\AddOns\Blizzard_GarrisonTemplates\Blizzard_GarrisonTemplates.toc
@@ -132,6 +133,8 @@ Interface\AddOns\Blizzard_GenericTraitUI\Blizzard_GenericTraitUI.toc
 Interface\AddOns\Blizzard_GlobalFXModelScenes\Blizzard_GlobalFXModelScenes.toc
 Interface\AddOns\Blizzard_GlueCollections\Blizzard_GlueCollections.toc
 Interface\AddOns\Blizzard_GlueDialogs\Blizzard_GlueDialogs_Mainline.toc
+Interface\AddOns\Blizzard_GlueMenuFrame\Blizzard_GlueMenuFrame_Classic.toc
+Interface\AddOns\Blizzard_GlueMenuFrame\Blizzard_GlueMenuFrame_Mainline.toc
 Interface\AddOns\Blizzard_GlueParent\Blizzard_GlueParent_Mainline.toc
 Interface\AddOns\Blizzard_GlueSavedVariables\Blizzard_GlueSavedVariables.toc
 Interface\AddOns\Blizzard_GlueStubs\Blizzard_GlueStubs.toc
@@ -145,6 +148,7 @@ Interface\AddOns\Blizzard_GuildBankUI\Blizzard_GuildBankUI.toc
 Interface\AddOns\Blizzard_GuildControlUI\Blizzard_GuildControlUI.toc
 Interface\AddOns\Blizzard_GuildRename\Blizzard_GuildRename.toc
 Interface\AddOns\Blizzard_HelpFrame\Blizzard_HelpFrame.toc
+Interface\AddOns\Blizzard_HelpPlate\Blizzard_HelpPlate.toc
 Interface\AddOns\Blizzard_HybridMinimap\Blizzard_HybridMinimap.toc
 Interface\AddOns\Blizzard_IME\Blizzard_IME.toc
 Interface\AddOns\Blizzard_InspectUI\Blizzard_InspectUI.toc

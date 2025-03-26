@@ -308,9 +308,9 @@ local EditModeManagerShared =
 		{
 			Name = "EditModeCooldownViewerSetting",
 			Type = "Enumeration",
-			NumValues = 10,
+			NumValues = 11,
 			MinValue = 0,
-			MaxValue = 9,
+			MaxValue = 10,
 			Fields =
 			{
 				{ Name = "Orientation", Type = "EditModeCooldownViewerSetting", EnumValue = 0 },
@@ -323,6 +323,7 @@ local EditModeManagerShared =
 				{ Name = "BarContent", Type = "EditModeCooldownViewerSetting", EnumValue = 7 },
 				{ Name = "HideWhenInactive", Type = "EditModeCooldownViewerSetting", EnumValue = 8 },
 				{ Name = "ShowTimer", Type = "EditModeCooldownViewerSetting", EnumValue = 9 },
+				{ Name = "ShowTooltips", Type = "EditModeCooldownViewerSetting", EnumValue = 10 },
 			},
 		},
 		{

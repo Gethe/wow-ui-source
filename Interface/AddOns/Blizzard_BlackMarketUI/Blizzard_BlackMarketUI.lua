@@ -83,7 +83,8 @@ function BlackMarketItemMixin:Init(elementData)
 	SetItemButtonQuality(self.Item, quality, link);
 
 	local color = ColorManager.GetColorDataForBagItemQuality(quality);
-	if ( quality and quality >= Enum.ItemQuality.Common and color ) then
+	local qualityCommon = Enum.ItemQuality.Common or Enum.ItemQuality.Standard;
+	if ( quality and quality >= qualityCommon and color ) then
 		self.Name:SetTextColor(color.r, color.g, color.b);
 	else
 		self.Name:SetTextColor(1.0, 0.82, 0);
@@ -181,7 +182,8 @@ function BlackMarketFrame_UpdateHotItem(self)
 		SetItemButtonQuality(self.HotDeal.Item, quality, link);
 
 		local color = ColorManager.GetColorDataForBagItemQuality(quality);
-		if ( quality >= Enum.ItemQuality.Common and color ) then
+		local qualityCommon = Enum.ItemQuality.Common or Enum.ItemQuality.Standard;
+		if ( quality >= qualityCommon and color ) then
 			self.HotDeal.Name:SetTextColor(color.r, color.g, color.b);
 		else
 			self.HotDeal.Name:SetTextColor(1.0, 0.82, 0);

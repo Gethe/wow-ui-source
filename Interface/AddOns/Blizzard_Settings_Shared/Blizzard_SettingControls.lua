@@ -125,6 +125,10 @@ end
 
 SettingsListPanelInitializer = CreateFromMixins(ScrollBoxFactoryInitializerMixin, SettingsSearchableElementMixin);
 
+function SettingsListPanelInitializer:IsNewTagShown()
+	return self.data.panelSetting and IsNewSettingInCurrentVersion(self.data.panelSetting);
+end
+
 SettingsListElementInitializer = CreateFromMixins(ScrollBoxFactoryInitializerMixin, SettingsElementHierarchyMixin, SettingsSearchableElementMixin);
 
 function SettingsListElementInitializer:Init(frameTemplate, data)
@@ -190,6 +194,11 @@ function SettingsListElementInitializer:IsNewTagShown()
 	return setting and IsNewSettingInCurrentVersion(setting:GetVariable());
 end
 
+function SettingsListElementInitializer:MarkSettingAsSeen()
+	local setting = self:GetSetting();
+	MarkNewSettingAsSeen(setting:GetVariable());
+end
+
 function SettingsListElementInitializer:SetSettingIntercept(interceptFunction)
 	self.settingIntercept = interceptFunction;
 end
@@ -247,7 +256,11 @@ function SettingsListElementMixin:Init(initializer)
 
 	self:SetTooltipFunc(GenerateClosure(InitializeSettingTooltip, initializer));
 
-	self.NewFeature:SetShown(initializer:IsNewTagShown());
+	local newTagShown = initializer:IsNewTagShown();
+	self.NewFeature:SetShown(newTagShown);
+	if newTagShown then
+		initializer:MarkSettingAsSeen();
+	end
 end
 
 function SettingsListElementMixin:Release()

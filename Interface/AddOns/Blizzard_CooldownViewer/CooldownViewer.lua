@@ -50,6 +50,16 @@ function CooldownViewerItemMixin:OnLoad()
 	end
 end
 
+function CooldownViewerItemMixin:OnEnter()
+	GameTooltip_SetDefaultAnchor(GameTooltip, self);
+	self:RefreshTooltip();
+	GameTooltip:Show();
+end
+
+function CooldownViewerItemMixin:OnLeave()
+	GameTooltip:Hide();
+end
+
 function CooldownViewerItemMixin:SetCooldownID(cooldownID)
 	if self.cooldownID == cooldownID then
 		return;
@@ -355,11 +365,34 @@ function CooldownViewerItemMixin:RefreshAuraInstance()
 	end
 end
 
+function CooldownViewerItemMixin:UpdateTooltip()
+	if GameTooltip:IsOwned(self) then
+		self:RefreshTooltip();
+	end
+end
+
+function CooldownViewerItemMixin:RefreshTooltip()
+	if self.auraInstanceID then
+		GameTooltip:SetUnitBuffByAuraInstanceID("player", self.auraInstanceID);
+	else
+		local spellID = self:GetSpellID();
+		if spellID then
+			local isPet = false;
+			GameTooltip:SetSpellByID(spellID, isPet);
+		end
+	end
+end
+
 function CooldownViewerItemMixin:SetTimerShown(shownSetting)
 	local cooldownFrame = self:GetCooldownFrame();
 	if cooldownFrame then
 		cooldownFrame:SetHideCountdownNumbers(not shownSetting);
 	end
+end
+
+function CooldownViewerItemMixin:SetTooltipsShown(shownSetting)
+	self:SetMouseClickEnabled(false);
+	self:SetMouseMotionEnabled(shownSetting);
 end
 
 function CooldownViewerItemMixin:IsTimerShown()
@@ -1212,6 +1245,8 @@ function CooldownViewerMixin:OnLoad()
 	self.iconPadding = 5;
 	self.isHorizontal = true;
 	self.iconScale = 1;
+	self.timerShown = true;
+	self.tooltipsShown = true;
 
 	self:RegisterEvent("PLAYER_REGEN_ENABLED");
 	self:RegisterEvent("PLAYER_REGEN_DISABLED");
@@ -1362,14 +1397,24 @@ function CooldownViewerMixin:NeedsMinimumHeight()
 	return self.isManagedFrame and self.ignoreFramePositionManager ~= true and self.defaultReservedMinimumHeight;
 end
 
+function CooldownViewerMixin:NeedsParentLayoutOnRefresh()
+	return self:IsEditing() and self.isManagedFrame and self.ignoreFramePositionManager ~= true;
+end
+
+function CooldownViewerMixin:OnAcquireItemFrame(itemFrame)
+	itemFrame:SetScale(self.iconScale);
+	itemFrame:SetTimerShown(self.timerShown);
+	itemFrame:SetTooltipsShown(self.tooltipsShown);
+end
+
 function CooldownViewerMixin:RefreshLayout()
 	self.itemFramePool:ReleaseAll();
 
 	local itemCount = self:GetItemCount();
 	for i = 1, itemCount do
 		local itemFrame = self.itemFramePool:Acquire();
-		itemFrame:SetScale(self.iconScale);
 		itemFrame.layoutIndex = i;
+		self:OnAcquireItemFrame(itemFrame);
 	end
 
 	local itemContainerFrame = self:GetItemContainerFrame();
@@ -1403,6 +1448,15 @@ function CooldownViewerMixin:RefreshLayout()
 
 	if self:IsShown() then
 		self:RefreshData();
+	end
+
+	-- While in edit mode, changing some of the settings (Icon Size, Orientation, etc) can result
+	-- in a change in height/width. If the panel is still managed, the parent needs to layout immediately.
+	if self:NeedsParentLayoutOnRefresh() then
+		local parent = self:GetParent();
+		if parent and parent.Layout then
+			parent:Layout();
+		end
 	end
 end
 
@@ -1485,8 +1539,18 @@ function CooldownViewerMixin:RefreshItemsShown()
 end
 
 function CooldownViewerMixin:SetTimerShown(shownSetting)
+	self.timerShown = shownSetting;
+
 	for itemFrame in self.itemFramePool:EnumerateActive() do
 		itemFrame:SetTimerShown(shownSetting);
+	end
+end
+
+function CooldownViewerMixin:SetTooltipsShown(shownSetting)
+	self.tooltipsShown = shownSetting;
+
+	for itemFrame in self.itemFramePool:EnumerateActive() do
+		itemFrame:SetTooltipsShown(shownSetting);
 	end
 end
 
@@ -1552,6 +1616,8 @@ BuffBarCooldownViewerMixin = CreateFromMixins(CooldownViewerMixin, EditModeCoold
 function BuffBarCooldownViewerMixin:OnLoad()
 	EditModeCooldownViewerSystemMixin.OnSystemLoad(self);
 	CooldownViewerMixin.OnLoad(self);
+
+	self.barContent = Enum.CooldownViewerBarContent.IconAndName;
 end
 
 function BuffBarCooldownViewerMixin:OnShow()
@@ -1567,7 +1633,15 @@ function BuffBarCooldownViewerMixin:GetStride()
 	return self:GetItemCount();
 end
 
+function BuffBarCooldownViewerMixin:OnAcquireItemFrame(itemFrame)
+	CooldownViewerMixin.OnAcquireItemFrame(self, itemFrame);
+
+	itemFrame:SetBarContent(self.barContent);
+end
+
 function BuffBarCooldownViewerMixin:SetBarContent(barContent)
+	self.barContent = barContent;
+
 	for itemFrame in self.itemFramePool:EnumerateActive() do
 		itemFrame:SetBarContent(barContent);
 	end

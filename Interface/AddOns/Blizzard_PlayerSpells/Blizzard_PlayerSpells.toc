@@ -1,6 +1,6 @@
 ## Title: Blizzard Player Spells
 ## LoadOnDemand: 1
-## Dependencies: Blizzard_SharedTalentUI, Blizzard_PagedContent
+## Dependencies: Blizzard_SharedTalentUI, Blizzard_PagedContent, Blizzard_HelpPlate
 
 ClassSpecializations/Blizzard_ClassSpecializationsFrame.xml
 ClassTalents/Blizzard_ClassTalentUtil.lua

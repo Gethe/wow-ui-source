@@ -871,10 +871,6 @@ function CharacterSelectListCharacterInnerContentMixin:ShowMoveButtons()
 		return;
 	end
 
-	if GetNumCharacters() <= 1 then
-		return;
-	end
-
 	if not CharacterSelectListUtil.CanReorder() then
 		return;
 	end

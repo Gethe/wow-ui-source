@@ -82,21 +82,23 @@ function PlayerChoiceCypherOptionTemplateMixin:GetRarityDescriptionString()
 	return PlayerChoicePowerChoiceTemplateMixin.GetRarityDescriptionString(self);
 end
 
-
-local rarityToPortraitBackgroundPostfix = 
-{
-	[Enum.PlayerChoiceRarity.Common] = "-Common",
-	[Enum.PlayerChoiceRarity.Uncommon] = "-Uncommon",
-	[Enum.PlayerChoiceRarity.Rare] = "-Rare",
-	[Enum.PlayerChoiceRarity.Epic] = "-Epic",
-};
-
 -- override of template method
 function PlayerChoiceCypherOptionTemplateMixin:GetTextureKitRegionTable()
 	local textureRegions = PlayerChoicePowerChoiceTemplateMixin.GetTextureKitRegionTable(self);
+	local atlasData = self:GetAtlasDataForRarity();
 
-	textureRegions.CircleBorder = "UI-Frame-%s-Portrait-Border"; -- overrides base behavior for CircleBorder
-	textureRegions.RarityGlow = "UI-Frame-%s-Portrait-FX-Back"..(rarityToPortraitBackgroundPostfix[self.optionInfo.rarity] or "-Common");
+	self.RarityGlow:SetVertexColor(1, 1, 1);
+	if atlasData then
+		textureRegions.RarityGlow = "UI-Frame-%s-Portrait-FX-Back"..atlasData.postfixData.portraitBackgroundCypher;
+
+		if atlasData.overrideColor then
+			self.RarityGlow:SetVertexColor(atlasData.overrideColor.r, atlasData.overrideColor.g, atlasData.overrideColor.b);
+		end
+	end
+
+	-- Overrides base behavior for CircleBorder.
+	textureRegions.CircleBorder = "UI-Frame-%s-Portrait-Border";
+	self.CircleBorder:SetVertexColor(1, 1, 1);
 
 	return textureRegions;
 end

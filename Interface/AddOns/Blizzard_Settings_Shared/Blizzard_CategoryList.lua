@@ -83,8 +83,7 @@ local function SecureDoesCategoryHaveNewSetting(category)
 	end
 
 	for _, initializer in layout:EnumerateInitializers() do
-		local setting = initializer.data.setting;
-		if setting and IsNewSettingInCurrentVersion(setting:GetVariable()) then
+		if initializer.IsNewTagShown and initializer:IsNewTagShown() then
 			return true;
 		end
 	end

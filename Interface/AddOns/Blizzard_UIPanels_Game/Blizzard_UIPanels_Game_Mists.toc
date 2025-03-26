@@ -1,7 +1,7 @@
 ## Title: Blizzard_UIPanels_Game
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_GameTooltip, Blizzard_UIPanelTemplates, Blizzard_FrameXML, Blizzard_CharacterFrame, Blizzard_ActionBar, Blizzard_Minimap, Blizzard_CastingBar, Blizzard_UnitFrame, Blizzard_AccessibilityTemplates
+## Dependencies: Blizzard_GameTooltip, Blizzard_UIPanelTemplates, Blizzard_FrameXML, Blizzard_CharacterFrame, Blizzard_ActionBar, Blizzard_Minimap, Blizzard_CastingBar, Blizzard_UnitFrame, Blizzard_AccessibilityTemplates, Blizzard_HelpPlate
 ## LoadFirst: 1
 ## AllowLoad: game
 ## AllowLoadGameType: mists

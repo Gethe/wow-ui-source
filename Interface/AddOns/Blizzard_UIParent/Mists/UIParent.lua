@@ -378,6 +378,10 @@ function CollectionsJournal_LoadUI()
 	UIParentLoadAddOn("Blizzard_Collections");
 end
 
+function BlackMarket_LoadUI()
+	UIParentLoadAddOn("Blizzard_BlackMarketUI");
+end
+
 local playerEnteredWorld = false;
 local varsLoaded = false;
 function NPETutorial_AttemptToBegin(event)

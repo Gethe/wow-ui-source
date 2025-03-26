@@ -1,3 +1,15 @@
+local MIN_OPTION_HEIGHT = 439;
+local OPTION_HEIGHT_EPSILON = 0.1;
+local OPTION_DEFAULT_WIDTH = 240;
+local OPTION_DEFAULT_TEXT_WIDTH = 196;
+
+local rarityToItemQuality = {
+	[Enum.PlayerChoiceRarity.Common] = Enum.ItemQuality.Common,
+    [Enum.PlayerChoiceRarity.Uncommon] = Enum.ItemQuality.Uncommon,
+    [Enum.PlayerChoiceRarity.Rare] = Enum.ItemQuality.Rare,
+    [Enum.PlayerChoiceRarity.Epic] = Enum.ItemQuality.Epic
+};
+
 PlayerChoiceBaseOptionTemplateMixin = {};
 
 function PlayerChoiceBaseOptionTemplateMixin:OnLoad()
@@ -55,11 +67,19 @@ function PlayerChoiceBaseOptionTemplateMixin:Setup(optionInfo, frameTextureKit, 
 	self:CollectAlignedSectionMaxHeights();
 end
 
+function PlayerChoiceBaseOptionTemplateMixin:GetItemQualityForRarity(rarity)
+	return rarityToItemQuality[rarity];
+end
+
+function PlayerChoiceBaseOptionTemplateMixin:GetAtlasDataForRarity()
+	local rarity = self.optionInfo.rarity or Enum.PlayerChoiceRarity.Common;
+	local quality = self:GetItemQualityForRarity(rarity);
+	return ColorManager.GetAtlasDataForPlayerChoice(quality);
+end
+
 function PlayerChoiceBaseOptionTemplateMixin:GetFillerFrame()
 	return self.WidgetContainer;
 end
-
-local MIN_OPTION_HEIGHT = 439;
 
 function PlayerChoiceBaseOptionTemplateMixin:GetMinOptionHeight()
 	return MIN_OPTION_HEIGHT;
@@ -105,8 +125,6 @@ function PlayerChoiceBaseOptionTemplateMixin:AlignSections()
 	self:Layout();
 end
 
-local OPTION_HEIGHT_EPSILON = 0.1;
-
 function PlayerChoiceBaseOptionTemplateMixin:SetMinHeight(minHeight)
 	local fillerFrame = self:GetFillerFrame();
 	if not fillerFrame then
@@ -124,8 +142,6 @@ function PlayerChoiceBaseOptionTemplateMixin:SetMinHeight(minHeight)
 	end
 end
 
-local OPTION_DEFAULT_WIDTH = 240;
-
 function PlayerChoiceBaseOptionTemplateMixin:SetupFrame()
 	self.fixedWidth = OPTION_DEFAULT_WIDTH;
 end
@@ -141,8 +157,6 @@ end
 
 function PlayerChoiceBaseOptionTemplateMixin:SetupTextColors()
 end
-
-local OPTION_DEFAULT_TEXT_WIDTH = 196;
 
 function PlayerChoiceBaseOptionTemplateMixin:SetupOptionText()
 	if self.optionInfo.description == "" then

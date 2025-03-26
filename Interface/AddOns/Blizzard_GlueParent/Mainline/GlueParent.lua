@@ -168,7 +168,6 @@ function GlueParentMixin:OnEvent(event, ...)
 		local screen = isPlunderstorm and "plunderstorm" or "charselect";
 		GlueParent_SetScreen(screen);
 	elseif ( event == "ERROR_CONNECT_TO_EVENT_REALM_FAILED" ) then
-		CharacterSelect.connectingToPlunderstorm = false;
 		C_RealmList.ClearRealmList();
 		GlueDialog_Show("ERROR_CONNECT_TO_EVENT_REALM_FAILED");
 	elseif (event == "GLOBAL_MOUSE_DOWN" or event == "GLOBAL_MOUSE_UP") then
@@ -207,11 +206,8 @@ function GlueParent_GetBestScreen()
 	if ( hasRealmList ) then
 		return "realmlist";
 	elseif ( connectedToWoW ) then
-		if CharacterSelect.connectingToPlunderstorm then
-			return "plunderstorm";
-		end
-		local screen = C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm and "plunderstorm" or "charselect";
-		return screen;
+		local screenName = C_GameRules.GetGameModeGlueScreenName() or "charselect";
+		return screenName;
 	else
 		return "login";
 	end

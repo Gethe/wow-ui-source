@@ -2586,6 +2586,10 @@ function EditModeCooldownViewerSystemMixin:UpdateSystemSettingShowTimer()
 	self:SetTimerShown(self:GetSettingValue(Enum.EditModeCooldownViewerSetting.ShowTimer) == 1);
 end
 
+function EditModeCooldownViewerSystemMixin:UpdateSystemSettingShowTooltips()
+	self:SetTooltipsShown(self:GetSettingValue(Enum.EditModeCooldownViewerSetting.ShowTooltips) == 1);
+end
+
 function EditModeCooldownViewerSystemMixin:UseSettingAltName(setting)
 	if setting == Enum.EditModeCooldownViewerSetting.IconLimit then
 		return not self:DoesSettingValueEqual(Enum.EditModeCooldownViewerSetting.Orientation, Enum.CooldownViewerOrientation.Vertical);
@@ -2621,6 +2625,8 @@ function EditModeCooldownViewerSystemMixin:UpdateSystemSetting(setting, entireSy
 		self:UpdateSystemSettingHideWhenInactive();
 	elseif setting == Enum.EditModeCooldownViewerSetting.ShowTimer and self:HasSetting(Enum.EditModeCooldownViewerSetting.ShowTimer) then
 		self:UpdateSystemSettingShowTimer();
+	elseif setting == Enum.EditModeCooldownViewerSetting.ShowTooltips and self:HasSetting(Enum.EditModeCooldownViewerSetting.ShowTooltips) then
+		self:UpdateSystemSettingShowTooltips();
 	end
 
 	if not entireSystemUpdate then

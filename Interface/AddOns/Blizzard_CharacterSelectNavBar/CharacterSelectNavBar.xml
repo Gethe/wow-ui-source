@@ -58,6 +58,19 @@
 	</Button>
 
 	<Frame name="CharacterSelectNavBarTemplate" mixin="CharacterSelectNavBarMixin" inherits="CallbackRegistrantTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="gameModeButtonAvailable" value="true" type="boolean"/>
+			<KeyValue key="storeButtonAvailable" value="true" type="boolean"/>
+			<KeyValue key="menuButtonAvailable" value="true" type="boolean"/>
+			<KeyValue key="realmsButtonAvailable" value="true" type="boolean"/>
+			<KeyValue key="campsButtonAvailable" value="true" type="boolean"/>
+			
+			<!-- If true, game mode drawer is centered on game mode button.
+			     If false, game moder drawer is centered on nav bar. -->
+			<KeyValue key="gameModeDrawerAnchorsToButton" value="true" type="boolean"/>
+
+			<KeyValue key="shopIconSize" value="24" type="number"/>
+		</KeyValues>
 		<Size y="55"/>
 		<Frames>
 			<Frame parentKey="ButtonTray" inherits="HorizontalButtonTrayTemplate">

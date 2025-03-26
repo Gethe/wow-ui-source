@@ -1,3 +1,4 @@
 ## Title: Blizzard Click Binding UI
 ## LoadOnDemand: 1
+## Dependencies: Blizzard_HelpPlate
 Blizzard_ClickBindingUI.xml

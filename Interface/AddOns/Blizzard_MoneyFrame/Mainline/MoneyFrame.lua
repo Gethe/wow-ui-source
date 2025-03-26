@@ -1,5 +1,25 @@
 
-function MoneyFrame_OnLoad (self)
+function MoneyFrame_OnLoadMoneyType(self, moneyType)
+	moneyType = moneyType or self.moneyType;
+
+	--If there's a moneyType we'll use the new way of doing things, otherwise do things the old way
+	if moneyType then
+		local info = MoneyTypeInfo[moneyType];
+		if info then
+			--This way you can just register for the events that you care about
+			if info.OnloadFunc then
+				info.OnloadFunc(self);
+			end
+
+			MoneyFrame_SetType(self, moneyType);
+			return true;
+		end
+	end
+
+	return false;
+end
+
+function MoneyFrame_OnLoad (self, moneyType)
 	self:RegisterEvent("PLAYER_MONEY");
 	self:RegisterEvent("ACCOUNT_MONEY");
 	self:RegisterEvent("PLAYER_TRADE_MONEY");
@@ -7,21 +27,11 @@ function MoneyFrame_OnLoad (self)
 	self:RegisterEvent("SEND_MAIL_MONEY_CHANGED");
 	self:RegisterEvent("SEND_MAIL_COD_CHANGED");
 	self:RegisterEvent("TRIAL_STATUS_UPDATE");
-	MoneyFrame_SetType(self, "PLAYER");
+	MoneyFrame_OnLoadMoneyType(self, moneyType or "PLAYER");
 end
 
 function SmallMoneyFrame_OnLoad(self, moneyType)
-	--If there's a moneyType we'll use the new way of doing things, otherwise do things the old way
-	if ( moneyType ) then
-		local info = MoneyTypeInfo[moneyType];
-		if ( info and info.OnloadFunc ) then
-			--This way you can just register for the events that you care about
-			--Should write OnloadFunc's for all money frames, but don't have time right now
-			info.OnloadFunc(self);
-			self.small = 1;
-			MoneyFrame_SetType(self, moneyType);
-		end
-	else
+	if not MoneyFrame_OnLoadMoneyType(self, moneyType) then
 		--The old sucky way of doing things
 		self:RegisterEvent("PLAYER_MONEY");
 		self:RegisterEvent("ACCOUNT_MONEY");
@@ -30,7 +40,6 @@ function SmallMoneyFrame_OnLoad(self, moneyType)
 		self:RegisterEvent("SEND_MAIL_MONEY_CHANGED");
 		self:RegisterEvent("SEND_MAIL_COD_CHANGED");
 		self:RegisterEvent("TRIAL_STATUS_UPDATE");
-		self.small = 1;
 		MoneyFrame_SetType(self, "PLAYER");
 	end
 end
@@ -77,6 +86,13 @@ function MoneyFrame_OnLeave(moneyFrame)
 	if ( moneyFrame.showTooltip ) then
 		local tooltip = GetAppropriateTooltip();
 		tooltip:Hide();
+	end
+end
+
+function MoneyFrame_OnHide(self)
+	if self.hasPickup == 1 then
+		MoneyInputFrame_ClosePopup();
+		self.hasPickup = 0;
 	end
 end
 
@@ -133,14 +149,24 @@ local function InitCoinButton(button, atlas, iconWidth)
 	button:SetNormalTexture(texture);
 end
 
-function MoneyFrame_Update(frameName, money, forceShow)
-	local frame;
-	if ( type(frameName) == "table" ) then
-		frame = frameName;
-		frameName = frame:GetName();
-	else
-		frame = _G[frameName];
+function MoneyFrame_SetDisplayForced(frame, forceShow)
+	frame.forceShow = forceShow;
+end
+
+local function GetMoneyFrame(frameOrName)
+	local argType = type(frameOrName);
+	if argType == "table" then
+		return frameOrName;
+	elseif argType == "string" then
+		return _G[frameOrName];
 	end
+
+	return nil;
+end
+
+function MoneyFrame_Update(frameName, money, forceShow)
+	local frame = GetMoneyFrame(frameName);
+	forceShow = forceShow or frame.forceShow;
 
 	local info = frame.info;
 	if ( not info ) then
@@ -362,4 +388,18 @@ function AltCurrencyFrame_Update(frameName, texture, cost, canAfford)
 	buttonTexture:SetWidth(iconWidth);
 	buttonTexture:SetHeight(iconWidth);
 	button:SetWidth(button:GetTextWidth() + MONEY_ICON_WIDTH_SMALL);
+end
+
+function SmallDenominationTemplate_OnEnter(self)
+	if not C_Glue.IsOnGlueScreen() then
+		local tooltip = GetAppropriateTooltip();
+		tooltip:SetOwner(self, "ANCHOR_RIGHT");
+		tooltip:SetMerchantCostItem(self.index, self.item);
+	end
+end
+
+function SmallDenominationTemplate_OnLeave(self)
+	local tooltip = GetAppropriateTooltip();
+	tooltip:Hide();
+	ResetCursor();
 end

@@ -157,7 +157,7 @@ function GarrisonFollowerMission:OnHideMainFrame()
 	end
 	GarrisonMissionFrame_ClearMouse();
 	C_Garrison.CloseMissionNPC();
-	HelpPlate_Hide();
+	HelpPlate.Hide();
 	self:HideCompleteMissions(true);
 	MissionCompletePreload_Cancel(self);
 	PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_CLOSE);

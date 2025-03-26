@@ -76,6 +76,11 @@ local textureKitOptions =
 
 local defaultTextureKitOptions = { borderXOffset = 8, backgroundXOffset = 2 };
 
+local function GetStatusBarTextureKitOptions(textureKit)
+	local textureKitOptions = textureKitOptions[textureKit] or {};
+	return setmetatable(textureKitOptions, {__index = defaultTextureKitOptions});
+end
+
 function UIWidgetTemplateStatusBarMixin:SanitizeTextureKits(widgetInfo)
 	widgetInfo.frameTextureKit = widgetInfo.frameTextureKit or "widgetstatusbar";
 	self.frameTextureKit = widgetInfo.frameTextureKit;
@@ -98,7 +103,7 @@ function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo, widgetContainer)
 
 	self:SetupTextures(widgetInfo);
 
-	local texKitOptions = textureKitOptions[self.frameTextureKit] or defaultTextureKitOptions;
+	local texKitOptions = GetStatusBarTextureKitOptions(self.frameTextureKit);
 
 	self.Bar.BorderLeft:SetPoint("LEFT", self.Bar, -texKitOptions.borderXOffset, 0);
 	self.Bar.BorderRight:SetPoint("RIGHT", self.Bar, texKitOptions.borderXOffset , 0);

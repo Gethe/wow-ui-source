@@ -439,6 +439,14 @@ local worldLootObjectTypeIconMap = {
 	[Enum.InventoryType.IndexNonEquipType] = "plunderstorm-icon-item",
 };
 
+local spellDisplayItemQualities = {
+	[Enum.SpellDisplayBorderColor.White] = Enum.ItemQuality.Common,
+	[Enum.SpellDisplayBorderColor.Green] = Enum.ItemQuality.Uncommon,
+	[Enum.SpellDisplayBorderColor.Blue] = Enum.ItemQuality.Rare,
+	[Enum.SpellDisplayBorderColor.Purple] = Enum.ItemQuality.Epic,
+	[Enum.SpellDisplayBorderColor.Orange] = Enum.ItemQuality.Legendary
+};
+
 local function GetWorldLootObjectTypeAtlas(worldLootobjectInfo)
 	if worldLootobjectInfo.atMaxQuality then
 		return "plunderstorm-icon-fullyupgraded";
@@ -588,7 +596,9 @@ function UIWidgetBaseSpellTemplateMixin:SetIconAndBorderDisplay()
 	self:UpdateTypeIcon();
 
 	local isBuff = self.spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Buff;
-	local atlasData = ColorManager.GetAtlasDataForSpellDisplayColor(self.spellInfo.borderColor);
+
+	local quality = spellDisplayItemQualities[self.spellInfo.borderColor];
+	local atlasData = ColorManager.GetAtlasDataForSpellDisplayColor(quality);
 	if self.spellInfo.borderColor ~= Enum.SpellDisplayBorderColor.None then
 		if attachedUnit and isBuff and isWorldLootObject and atlasData.atlas then
 			local offsetX = 4;

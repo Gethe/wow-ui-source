@@ -94,7 +94,6 @@ end
 function PlunderstormLobbyMixin:OnHide()
 	CallbackRegistrantMixin.OnHide(self);
 	FrameUtil.UnregisterFrameForEvents (self,PlunderstormLobbyEvents);
-	CharacterSelect.connectingToPlunderstorm = false;
 
 	FriendsFrame:Hide();
 

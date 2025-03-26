@@ -50,7 +50,7 @@ Classic\ColorPickerFrame.xml
 TBC\WorldStateFrame.lua
 Mists\WorldStateFrame.xml
 Classic\TalentFrameBase_Shared.lua
-Cata\TalentFrameBase.lua
+Mists\TalentFrameBase.lua
 Cata\Blizzard_TalentUITemplates.xml
 Classic\MovieFrame.lua
 Classic\MovieFrame.xml

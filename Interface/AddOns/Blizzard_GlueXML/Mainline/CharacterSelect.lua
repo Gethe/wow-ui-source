@@ -34,7 +34,6 @@ function CharacterSelectFrameMixin:OnLoad()
     self.selectedIndex = 0;
 	self.selectLast = false;
 	self.backFromCharCreate = false;
-	self.connectingToPlunderstorm = false;
 	self.waitingforCharacterList = true;
 	self.showSocialContract = false;
 	self.autoRealmSwap = false;
@@ -408,11 +407,12 @@ function CharacterSelectFrameMixin:OnEvent(event, ...)
         end
 
         if GetNumCharacters() == 0 then
+			local screenName = C_GameRules.GetGameModeGlueScreenName();
 			if self.undeleting then
 				CharacterSelect_EndCharacterUndelete();
 				self.undeleteNoCharacters = true;
 				return;
-			elseif (not self.connectingToPlunderstorm and not self.backFromCharCreate and not self.autoRealmSwap) then
+			elseif (not screenName and not self.backFromCharCreate and not self.autoRealmSwap) then
 				if (IsKioskGlueEnabled()) then
 					GlueParent_SetScreen("kioskmodesplash");
 				else

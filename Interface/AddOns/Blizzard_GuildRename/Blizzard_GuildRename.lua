@@ -1,3 +1,24 @@
+SimpleTooltipRegionMixin = {};
+
+function SimpleTooltipRegionMixin:OnEnter()
+	if self.tooltip then
+		local tooltipFrame = GetAppropriateTooltip();
+		tooltipFrame:SetOwner(self, self.tooltipAnchor or "ANCHOR_RIGHT");
+		local useDefaultColor = nil;
+		local useWordWrap = true;
+		GameTooltip_SetTitle(tooltipFrame, self.tooltip, useDefaultColor, useWordWrap);
+		tooltipFrame:Show();
+	end
+end
+
+function SimpleTooltipRegionMixin:OnLeave()
+	GameTooltip_HideTooltip(GetAppropriateTooltip());
+end
+
+function SimpleTooltipRegionMixin:SetTooltip(tooltip)
+	self.tooltip = tooltip;
+end
+
 local guildErrorLookup = {
 	[Enum.GuildErrorType.Success] = "",
 	[Enum.GuildErrorType.UnknownError] = GUILD_RENAME_ERROR_UNKNOWN,
@@ -54,6 +75,7 @@ function GuildRenameFrameMixin:OnLoad()
 	self:AddModeFrame(GuildRenameMode.DoRename, self.RenameFlow);
 
 	MoneyFrame_SetMaxDisplayWidth(self.MoneyFrame, 160);
+	MoneyFrame_SetDisplayForced(self.MoneyFrame, true);
 end
 
 function GuildRenameFrameMixin:OnShow()
@@ -177,16 +199,16 @@ function GuildRenameFrameMixin:GetRefundAmount()
 end
 
 function GuildRenameFrameMixin:GetRefundTimeRemaining()
-	return math.max(self.status.refundEligibleEndTime - GetServerTime(), 0);
+	return math.max(self.status.refundEligibleEndTime - GetTime(), 0);
 end
 
 function GuildRenameFrameMixin:GetRenameCooldownRemaining()
-	return math.max(self.status.nextRenameTime - GetServerTime(), 0);
+	return math.max(self.status.nextRenameTime - GetTime(), 0);
 end
 
 function GuildRenameFrameMixin:IsRenameCooldownActive()
 	if self.status and self.status.nextRenameTime then
-		if self.status.nextRenameTime ~= 0 and GetServerTime() < self.status.nextRenameTime then
+		if self.status.nextRenameTime ~= 0 and GetTime() < self.status.nextRenameTime then
 			return true;
 		end
 	end
@@ -198,6 +220,25 @@ function GuildRenameFrameMixin:GetPreviousGuildName()
 	return self.status and self.status.oldGuildName or UNKNOWN;
 end
 
+function GuildRenameFrameMixin:IsReservedNameValid()
+	if self.status and self.status.reservedName and self.status.reservedName ~= "" then
+		return GetTime() < self.status.reservedNameExpirationTime;
+	end
+
+	return false;
+end
+
+function GuildRenameFrameMixin:GetReservedName()
+	if self:IsReservedNameValid() then
+		return self.status.reservedName;
+	end
+
+	return nil;
+end
+
+function GuildRenameFrameMixin:NameMatchesExistingReservation(text)
+	return self:GetReservedName() == text;
+end
 
 function GuildRenameFrameMixin:OnGuildRenameNameCheck(desiredName, statusCode, nameErrorToken)
 	self.renameCheckStatusCode = statusCode;
@@ -213,7 +254,12 @@ function GuildRenameFrameMixin:GetNameCheckStatus()
 end
 
 function GuildRenameFrameMixin:OnRequestedGuildRenameResult(guildName, status)
-	self:OnGuildRenameFlowStatusResponse(guildName, status);
+	if status == Enum.GuildErrorType.Success then
+		HideUIPanel(self);
+	else
+		self:OnGuildRenameFlowStatusResponse(guildName, status);
+		self:BeginInteraction();
+	end
 end
 
 function GuildRenameFrameMixin:OnGuildRenameRefundResult(guildName, status)
@@ -223,19 +269,20 @@ end
 function GuildRenameFrameMixin:OnGuildRenameFlowStatusResponse(_guildName, status)
 	if status == Enum.GuildErrorType.Success then
 		self:BeginInteraction(); -- restart the entire interaction to see what state the window should show
-		-- TODO: Or determine that the entire interaction should end once the refund succeeds.
-		-- TODO: The toast system will also register for this event and use it to display the desired toast about the refund
 	else
 		UIErrorsFrame:AddExternalErrorMessage(GetGuildError(status));
 	end
 end
 
 function GuildRenameFrameMixin:BeginInteraction()
-	-- request status, and await response to show appropriate options
-	C_GuildInfo.RequestRenameStatus();
+	-- clear current and request new status, and await response to show appropriate options
+	self.status = nil;
 
-	if not self.status then
+	if C_GuildInfo.RequestRenameStatus() then
 		self:BeginInteractionMode(); -- there won't be a mode yet, but the UI needs to show immediately and enter the waiting state
+	else
+		ChatFrame_DisplaySystemMessageInPrimary(GUILD_RENAME_ERROR_MUST_BE_IN_A_GUILD);
+		HideUIPanel(self);
 	end
 end
 
@@ -277,14 +324,16 @@ do
 	local modeSetupFunctions =
 	{
 		[GuildRenameMode.DoRename] = function(self)
-			self.MoneyFrame:Show();
 			MoneyFrame_Update(self.MoneyFrame, self:GetCurrentGuildMoney());
+			self.MoneyFrame:Show();
 			self.ContextButton:SetToGuildRename(self:GetExecuteNameChangeStatus());
+			self.GuildIcon:UpdateTabard();
 		end,
 
 		[GuildRenameMode.Title] = function(self)
 			self.MoneyFrame:Hide();
 			self.ContextButton:SetToGoodbye();
+			self.GuildIcon:Hide();
 		end,
 	};
 
@@ -319,7 +368,7 @@ function GuildRenameFlowMixin:OnLoad()
 		self.Spinner:SetShown(isUserChange and hasText);
 
 		self:RunCallbackAsync(function()
-			if isUserChange and hasText and editBox:IsVisible() then
+			if hasText and editBox:IsVisible() then
 				C_GuildInfo.RequestRenameNameCheck(text);
 			end
 		end)
@@ -327,6 +376,7 @@ function GuildRenameFlowMixin:OnLoad()
 
 	self.NameBox:SetScript("OnEnterPressed", function(editBox)
 		self:CheckRequestNameChange();
+		editBox:ClearFocus();
 	end);
 
 	MoneyFrame_SetType(self.CostFrame, "STATIC");
@@ -334,12 +384,17 @@ end
 
 function GuildRenameFlowMixin:CheckRequestNameChange()
 	if self:GetManager():GetExecuteNameChangeStatus() == Enum.GuildErrorType.Success then
-		StaticPopup_Show("CONFIRM_PURCHASE_GUILD_RENAME", GetMoneyString(self:GetManager():GetRenameCost(), true, true), self:GetDesiredName(), { desiredName = self:GetDesiredName() });
+		StaticPopup_Show("CONFIRM_PURCHASE_GUILD_RENAME", GetMoneyString(self:GetManager():GetRenameCost(), MoneyStringConstants.SeparateThousands, MoneyStringConstants.CheckGoldThreshold), self:GetDesiredName(), { desiredName = self:GetDesiredName() });
 	end
 end
 
 function GuildRenameFlowMixin:UpdateFromStatus()
 	MoneyFrame_Update(self.CostFrame, self:GetManager():GetRenameCost());
+
+	local reservedName = self:GetManager():GetReservedName();
+	if reservedName then
+		self.NameBox:SetText(reservedName);
+	end
 end
 
 function GuildRenameFlowMixin:GetDesiredName()
@@ -387,15 +442,11 @@ function GuildRenameFlowMixin:OnShow()
 	self:ClearRenameStatus();
 end
 
-local renameCooldownFormatter = CreateFromMixins(SecondsFormatterMixin);
-renameCooldownFormatter:Init(SECONDS_PER_DAY, SecondsFormatter.Abbreviation.None, SecondsFormatterConstants.DontRoundUpLastUnit, SecondsFormatterConstants.ConvertToLower);
-
-local refundTimeFormatter = CreateFromMixins(SecondsFormatterMixin);
-refundTimeFormatter:Init(SECONDS_PER_MIN, SecondsFormatter.Abbreviation.OneLetter, SecondsFormatterConstants.DontRoundUpLastUnit, SecondsFormatterConstants.ConvertToLower);
+local timeFormatter = CreateFromMixins(SecondsFormatterMixin);
+timeFormatter:Init(SECONDS_PER_MIN, SecondsFormatter.Abbreviation.OneLetter, SecondsFormatterConstants.DontRoundUpLastUnit, SecondsFormatterConstants.ConvertToLower);
 
 GuildRenameTitleFlowMixin = CreateFromMixins(GuildRenameManagedFlowMixin, {
-	renameCooldownFormatter = renameCooldownFormatter,
-	refundTimeFormatter = refundTimeFormatter,
+	timeFormatter = timeFormatter,
 });
 
 function GuildRenameTitleFlowMixin:OnLoad()
@@ -408,27 +459,38 @@ function GuildRenameTitleFlowMixin:OnLoad()
 	self.RefundOption:SetScript("OnClick", function(optionFrame, button)
 		if button == "LeftButton" then
 			local manager = self:GetManager();
-			StaticPopup_Show("CONFIRM_GUILD_RENAME_REFUND", manager:GetPreviousGuildName(), GetMoneyString(manager:GetRefundAmount(), true, true), { timeLeft = manager:GetRefundTimeRemaining() });
+
+			local currentGuildName = GetGuildInfo("player");
+			local oldGuildName = manager:GetPreviousGuildName();
+			local refundAmount = GetMoneyString(manager:GetRefundAmount(), MoneyStringConstants.SeparateThousands, MoneyStringConstants.CheckGoldThreshold);
+			local guildRefundDialogText = GUILD_RENAME_REFUND_DIALOG_TEXT:format(currentGuildName, oldGuildName, refundAmount);
+
+			StaticPopup_Show("CONFIRM_GUILD_RENAME_REFUND", guildRefundDialogText, nil, { timeLeft = manager:GetRefundTimeRemaining() });
 		end
 	end);
 end
 
 function GuildRenameTitleFlowMixin:UpdateFromStatus()
 	local manager = self:GetManager();
-	
-	if manager:IsRenameEnabled() then
+
+	self.Description:Hide();
+	self.RenameOption:Hide();
+	self.RefundOption:Hide();
+
+	if manager:IsRenameEnabled() and manager:HasRenamePermission() then
 		self.Description:SetText(GUILD_RENAME_OPTIONS_DESCRIPTION);
+		self.Description:Show();
 
 		local hasPermission = manager:HasRenamePermission();
 		local renameCooldownRemaining = manager:GetRenameCooldownRemaining();
 	
 		self.RenameOption:SetShown(hasPermission or renameCooldownRemaining > 0);
-		self.RenameOption:SetEnabled(hasPermission);
+		self.RenameOption:SetEnabled(hasPermission and renameCooldownRemaining == 0);
 
 		if hasPermission and renameCooldownRemaining <= 0 then
 			self.RenameOption:SetTextAndResize(GUILD_RENAME_OPTIONS_RENAME_AVAILABLE);
 		elseif renameCooldownRemaining > 0 then
-			local timeUntilRename = self.renameCooldownFormatter:Format(renameCooldownRemaining);
+			local timeUntilRename = self:FormatTime(renameCooldownRemaining);
 			self.RenameOption:SetTextAndResize(GUILD_RENAME_OPTIONS_RENAME_COOLDOWN:format(timeUntilRename));
 		end
 
@@ -438,7 +500,7 @@ function GuildRenameTitleFlowMixin:UpdateFromStatus()
 		self.RefundOption:SetEnabled(canRefund);
 
 		if canRefund then
-			local timeUntilRefundExpires = self.refundTimeFormatter:Format(refundTimeRemaining);
+			local timeUntilRefundExpires = self:FormatTime(refundTimeRemaining);
 			self.RefundOption:SetTextAndResize(GUILD_RENAME_OPTIONS_REFUND:format(timeUntilRefundExpires));
 		end
 	else
@@ -447,15 +509,20 @@ function GuildRenameTitleFlowMixin:UpdateFromStatus()
 		manager:SetSpinnerShown(not hasStatus);
 
 		if hasStatus then
-			self.Description:SetText(GUILD_RENAME_OPTIONS_DESCRIPTION_DISABLED);
+			if not manager:HasRenamePermission() then
+				self.Description:SetText(GUILD_RENAME_ERROR_NO_PERMISSION);
+			else
+				self.Description:SetText(GUILD_RENAME_OPTIONS_DESCRIPTION_DISABLED);
+			end
 		end
-
-		self.RenameOption:Hide();
-		self.RefundOption:Hide();
 	end
 end
 
-GuildRenameContextButtonMixin = {};
+function GuildRenameTitleFlowMixin:FormatTime(seconds)
+	return self.timeFormatter:Format(seconds);
+end
+
+GuildRenameContextButtonMixin = CreateFromMixins(SimpleTooltipRegionMixin);
 
 function GuildRenameContextButtonMixin:SetToGuildRename(renameStatus)
 	self.renameStatus = renameStatus;
@@ -471,15 +538,9 @@ end
 
 function GuildRenameContextButtonMixin:OnEnter()
 	if self.renameStatus and self.renameStatus ~= Enum.GuildErrorType.Success then
-		local tooltip = GetAppropriateTooltip();
-		tooltip:SetOwner(self, "ANCHOR_RIGHT");
-		tooltip:SetText(GetGuildError(self.renameStatus));
-		tooltip:Show();
+		self:SetTooltip(GetGuildError(self.renameStatus));
+		SimpleTooltipRegionMixin.OnEnter(self);
 	end
-end
-
-function GuildRenameContextButtonMixin:OnLeave()
-	GameTooltip_HideTooltip(GetAppropriateTooltip());
 end
 
 StaticPopupDialogs["CONFIRM_PURCHASE_GUILD_RENAME"] = {
@@ -495,12 +556,12 @@ StaticPopupDialogs["CONFIRM_PURCHASE_GUILD_RENAME"] = {
 }
 
 StaticPopupDialogs["CONFIRM_GUILD_RENAME_REFUND"] = {
-	text = GUILD_RENAME_REFUND_DIALOG_TEXT,
+	text = "%s", -- Custom text
 	subText = GUILD_RENAME_REFUND_DIALOG_SUBTEXT,
 	subtextIsTimer = true,
 	autoSetTimeRemainingDataKey = "timeLeft",
 	normalSizedSubText = true,
-	timeFormatter = refundTimeFormatter,
+	timeFormatter = timeFormatter,
 	button1 = GUILD_RENAME_DIALOG_CONFIRM_BUTTON,
 	button2 = GUILD_RENAME_DIALOG_CANCEL_BUTTON,
 	OnAccept = function(self)
@@ -510,3 +571,20 @@ StaticPopupDialogs["CONFIRM_GUILD_RENAME_REFUND"] = {
 	timeout = 0,
 	hideOnEscape = 1,
 }
+
+GuildIconDisplayMixin = CreateFromMixins(SimpleTooltipRegionMixin);
+
+function GuildIconDisplayMixin:UpdateTabard()
+	local emblemFilename = select(10, GetGuildLogoInfo());
+	local tabardInfo = C_GuildInfo.GetGuildTabardInfo("player");
+	local hasTabard = emblemFilename and tabardInfo;
+
+	self:SetShown(hasTabard);
+
+	if hasTabard then
+		local color = tabardInfo.backgroundColor;
+		self.TabardBG:SetVertexColor(color.r, color.g, color.b);
+		SetSmallGuildTabardTextures("player", self.Emblem);
+		SetSmallGuildTabardTextures("player", self.HighlightEmblem);
+	end
+end

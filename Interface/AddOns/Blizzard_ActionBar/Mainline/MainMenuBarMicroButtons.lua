@@ -1681,6 +1681,8 @@ function MainMenuMicroButtonMixin:UpdateMicroButton()
 		EnableMicroButtons();
 		self:SetNormal();
 	end
+
+	self:UpdateNotificationIcon();
 end
 
 function MainMenuMicroButtonMixin:OnEnter()
@@ -1697,6 +1699,10 @@ function MainMenuMicroButtonMixin:OnLeave()
 	if ( KeybindFrames_InQuickKeybindMode() ) then
 		self:QuickKeybindButtonOnLeave();
 	end
+end
+
+function MainMenuMicroButtonMixin:UpdateNotificationIcon()
+	self.NotificationOverlay:SetShown(CurrentVersionHasNewUnseenSettings());
 end
 
 MicroMenuMixin = {};

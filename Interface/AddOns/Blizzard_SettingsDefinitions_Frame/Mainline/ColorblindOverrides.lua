@@ -2,10 +2,10 @@ ColorblindOverrides = {}
 
 function ColorblindOverrides.CreateSettings(category, layout)
 	-- Color Overrides
-	local data = { categoryID = category:GetID() };
+	local data = { categoryID = category:GetID(), panelSetting = "panelItemQualityColorOverrides" };
 	local initializer = Settings.CreatePanelInitializer("ItemQualityColorOverrides", data);
 
-	-- Include both the 'Item Quality' and 'Rarity', since the terms are a bit interchangeable players could search for either.
+	-- Include both 'Item Quality' and 'Rarity', since the terms are a bit interchangeable players could search for either.
 	initializer:AddSearchTags(COLORS_ITEM_QUALITY, RARITY);
 	layout:AddInitializer(initializer);
 end
@@ -55,6 +55,8 @@ function ItemQualityColorOverrideMixin:Init(initializer)
 	for index, data in ipairs(ItemQualityColorOverrideMixin.OverrideData) do
 		initializer:AddSearchTags(_G["ITEM_QUALITY"..data.qualityBase.."_DESC"]);
 	end
+
+	self.NewFeature:SetShown(initializer:IsNewTagShown());
 end
 
 function ItemQualityColorOverrideMixin:OnLoad()

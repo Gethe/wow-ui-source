@@ -207,22 +207,18 @@ end
 
 function PetJournal_OnShow(self)
 	PetJournal_UpdatePetList();
-	PetJournal_UpdatePetLoadOut();
-	PetJournal_UpdatePetCard(PetJournalPetCard);
+	PetJournal_UpdatePetLoadOut(true);
+	PetJournal_UpdatePetCard(PetJournalPetCard, true);
 
 	self:RegisterEvent("ACHIEVEMENT_EARNED");
 	PetJournal.AchievementStatus.SumText:SetText(GetCategoryAchievementPoints(PET_ACHIEVEMENT_CATEGORY, true));
 
 	-- check to show the help plate
-	-- HelpPlates currently aren't in MoP; unclear if they will be needed for something else or if we should do this
-	-- in a different way. CLASS-38979
-	if ClassicExpansionAtLeast(LE_EXPANSION_WARLORDS_OF_DRAENOR) then
-		if ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PET_JOURNAL) ) then
-			local helpPlate = PetJournal_HelpPlate;
-			if ( helpPlate and not HelpPlate_IsShowing(helpPlate) ) then
-				HelpPlate_ShowTutorialPrompt( helpPlate, PetJournal.MainHelpButton );
-				SetCVarBitfield( "closedInfoFrames", LE_FRAME_TUTORIAL_PET_JOURNAL, true );
-			end
+	if ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PET_JOURNAL) ) then
+		local helpPlate = PetJournal_HelpPlate;
+		if ( helpPlate and not HelpPlate.IsShowingHelpInfo(helpPlate) ) then
+			HelpPlate.ShowTutorialTooltip( helpPlate, PetJournal.MainHelpButton );
+			SetCVarBitfield( "closedInfoFrames", LE_FRAME_TUTORIAL_PET_JOURNAL, true );
 		end
 	end
 
@@ -232,7 +228,7 @@ end
 function PetJournal_OnHide(self)
 	self:UnregisterEvent("ACHIEVEMENT_EARNED");
 	PetJournal.SpellSelect:Hide();
-	HelpPlate_Hide();
+	HelpPlate.Hide();
 	C_PetJournal.ClearRecentFanfares();
 end
 
@@ -809,7 +805,7 @@ function PetJournal_UpdatePetLoadOut(forceSceneChange)
 
 				local battlePetActor = loadoutPlate.modelScene:GetActorByTag("pet");
 				if ( battlePetActor ) then
-					battlePetActor:SetModelByCreatureDisplayID(displayID);
+					battlePetActor:SetModelByCreatureDisplayID(displayID, true);
 					battlePetActor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
 				end
 
@@ -1493,7 +1489,7 @@ function PetJournal_UpdatePetCard(self, forceSceneChange)
 
 		local battlePetActor = self.modelScene:GetActorByTag("unwrapped");
 		if ( battlePetActor ) then
-			battlePetActor:SetModelByCreatureDisplayID(displayID);
+			battlePetActor:SetModelByCreatureDisplayID(displayID, true);
 			battlePetActor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
 		end
 
@@ -1850,11 +1846,11 @@ PetJournal_HelpPlate = {
 
 function PetJournal_ToggleTutorial()
 	local helpPlate = PetJournal_HelpPlate;
-	if ( helpPlate and not HelpPlate_IsShowing(helpPlate) ) then
-		HelpPlate_Show( helpPlate, PetJournal, PetJournal.MainHelpButton );
+	if ( helpPlate and not HelpPlate.IsShowingHelpInfo(helpPlate) ) then
+		HelpPlate.Show( helpPlate, PetJournal, PetJournal.MainHelpButton );
 		SetCVarBitfield( "closedInfoFrames", LE_FRAME_TUTORIAL_PET_JOURNAL, true );
 		CollectionsJournal_HideTabHelpTips();
 	else
-		HelpPlate_Hide(true);
+		HelpPlate.Hide(true);
 	end
 end

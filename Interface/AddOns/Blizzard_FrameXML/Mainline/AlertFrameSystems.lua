@@ -31,17 +31,21 @@ function GuildChallengeAlertFrame_SetUp(frame, challengeType, count, max)
 	SetLargeGuildTabardTextures("player", frame.EmblemIcon, frame.EmblemBackground, frame.EmblemBorder);
 end
 
-function GuildChallengeAlertFrame_OnClick(self, button, down)
+local function GuildFrameAlertClick(self, button, down)
 	if( AlertFrame_OnClick(self, button, down) ) then
 		return;
 	end
+
 	if ( not GuildFrame or not GuildFrame:IsShown() ) then
 		ToggleGuildFrame();
 	end
-	-- select the Info tab
-	GuildFrame_TabClicked(GuildFrameTab5);
+
+	CommunitiesFrame:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_INFO);
 end
 
+function GuildChallengeAlertFrame_OnClick(self, button, down)
+	GuildFrameAlertClick(self, button, down);
+end
 
 -- [[ DungeonCompletionAlertFrame ]] --
 function DungeonCompletionAlertFrame_OnLoad(self)
@@ -1415,3 +1419,24 @@ function MonthlyActivityAlertFrame_OnClick (self, button, down)
 end
 
 MonthlyActivityAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("MonthlyActivityFrameTemplate", MonthlyActivityAlertFrame_SetUp, 2, 6);
+
+function GuildRenameAlertFrame_SetUp(frame, guildName)
+	frame.GuildName:SetText(guildName);
+	SetLargeGuildTabardTextures("player", frame.GuildTabardEmblem, frame.GuildTabardBackground, frame.GuildTabardBorder);
+end
+
+GuildRenamedAlertMixin = {};
+
+function GuildRenamedAlertMixin:OnClick(button, down)
+	GuildFrameAlertClick(self, button, down);
+end
+
+GuildRenameAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("GuildRenamedAlertFrameTemplate", GuildRenameAlertFrame_SetUp);
+
+function GuildRenameAlertSystem:CheckAddAlert(guildName, status)
+	if status == Enum.GuildErrorType.Success then
+		self:AddAlert(guildName);
+	end
+end
+
+

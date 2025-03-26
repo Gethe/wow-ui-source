@@ -34,6 +34,17 @@ local UIWidgetManagerShared =
 			},
 		},
 		{
+			Name = "UIWidgetFlag",
+			Type = "Enumeration",
+			NumValues = 1,
+			MinValue = 1,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "UniversalWidget", Type = "UIWidgetFlag", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "UIWidgetHorizontalDirection",
 			Type = "Enumeration",
 			NumValues = 2,

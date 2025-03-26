@@ -496,7 +496,7 @@ function CovenantMission:InitiateMissionCompletion(missionInfo)
 	self.FollowerTab:Hide();
 	self.FollowerList:Hide();
 	self.MissionTab:Hide();
-	HelpPlate_Hide();
+	HelpPlate.Hide();
 	self.MissionComplete:Show();
 
 	self.MissionComplete:SetCurrentMission(missionInfo);

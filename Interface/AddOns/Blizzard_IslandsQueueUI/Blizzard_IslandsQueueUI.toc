@@ -3,7 +3,7 @@
 ## Author: Blizzard Entertainment
 ## Version: 1.0
 ## LoadOnDemand: 1
-## RequiredDep: Blizzard_UIWidgets
+## RequiredDep: Blizzard_UIWidgets, Blizzard_HelpPlate
 ## AllowLoadGameType: standard
 
 Blizzard_IslandsQueueUI.lua

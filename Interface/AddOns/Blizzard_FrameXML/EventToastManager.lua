@@ -1,7 +1,6 @@
 
 local textureKitRegionFormatStrings = {
 	["BG1"] = "%s-TitleBG",
-	["BG2"] = "%s-TitleBG",
 };
 
 local textureKitRegionExpandFormatStrings = {
@@ -19,7 +18,6 @@ local textureKitRegionExpandSpaceOverlayFormatStrings = {
 
 local defaultAtlases = {
 	["BG1"] = "legioninvasion-title-bg",
-	["BG2"] = "legioninvasion-title-bg",
 };
 
 local eventToastTextureKitRegions = {
@@ -490,7 +488,6 @@ function EventToastScenarioBaseToastMixin:Setup(toastInfo)
 
 	local usesBGTextures = toastInfo.uiTextureKit or not toastInfo.hideDefaultAtlas;
 	self.BG1:SetShown(usesBGTextures);
-	self.BG2:SetShown(usesBGTextures);
 	self.hideParentAnim = usesBGTextures;
 
 	if(toastInfo.uiTextureKit) then

@@ -256,7 +256,13 @@ function LootFrameElementMixin:Init()
 	self.Text:SetText(item);
 
 	local quality = itemQuality or Enum.ItemQuality.Common;
-	local colorData = self.ignoreColorOverrides and ColorManager.GetDefaultColorDataForItemQuality(quality) or ColorManager.GetColorDataForItemQuality(quality);
+	local colorData = nil;
+	if self.ignoreColorOverrides then
+		colorData = ColorManager.GetDefaultColorDataForItemQuality(quality);
+	else
+		colorData = ColorManager.GetColorDataForItemQuality(quality);
+	end
+
 	if colorData then
 		self.Text:SetVertexColor(colorData.color:GetRGB());
 		self.NameFrame:SetVertexColor(colorData.color:GetRGB());

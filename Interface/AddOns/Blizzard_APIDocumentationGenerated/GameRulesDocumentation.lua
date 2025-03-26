@@ -7,6 +7,29 @@ local GameRules =
 	Functions =
 	{
 		{
+			Name = "AutoConnectToGameModeRealm",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "gameModeRecordID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "DoesGameModeHavePromo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "gameModeRecordID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasPromo", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetActiveGameMode",
 			Type = "Function",
 
@@ -25,12 +48,72 @@ local GameRules =
 			},
 		},
 		{
-			Name = "GetGameModeDisplayInfo",
+			Name = "GetCurrentGameModeDisplayInfo",
 			Type = "Function",
 
 			Returns =
 			{
 				{ Name = "info", Type = "GameModeDisplayInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "GetCurrentGameModeRecordID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "gameModeRecordID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetDisplayedGameModeRecordIDAtIndex",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "displayIndex", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "gameModeRecordID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetGameModeDisplayInfoByRecordID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "gameModeRecordID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "GameModeDisplayInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "GetGameModeGlueScreenName",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "screenName", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "GetGameModePromoGlobalString",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "gameModeRecordID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "promoGlobalString", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -62,6 +145,24 @@ local GameRules =
 			Returns =
 			{
 				{ Name = "frameStrata", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "GetNumDisplayedGameModes",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "numDisplayedGameModes", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "IsCharacterlessLoginActive",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "active", Type = "bool", Nilable = false },
 			},
 		},
 		{

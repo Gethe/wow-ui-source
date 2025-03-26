@@ -255,6 +255,11 @@ local GuildInfo =
 		{
 			Name = "RequestRenameStatus",
 			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "ableToRequest", Type = "bool", Nilable = false },
+			},
 		},
 		{
 			Name = "SetGuildRankOrder",
@@ -555,6 +560,8 @@ local GuildInfo =
 				{ Name = "currentGuildMoney", Type = "WOWMONEY", Nilable = false },
 				{ Name = "result", Type = "GuildErrorType", Nilable = false },
 				{ Name = "oldGuildName", Type = "cstring", Nilable = false },
+				{ Name = "reservedName", Type = "cstring", Nilable = false },
+				{ Name = "reservedNameExpirationTime", Type = "time_t", Nilable = false },
 			},
 		},
 	},

@@ -254,8 +254,8 @@ function ScrollBoxBaseMixin:SetScrollTargetOffset(offset)
 
 		if self:ShouldUseShadowsForEdgeFade() then
 			local hasScrollableExtent = self:HasScrollableExtent();
-			local showLower = hasScrollableExtent and (scrollPercentage > ScrollBoxConstants.ScrollBegin);
-			local showUpper = hasScrollableExtent and self:HasScrollableExtent() and (scrollPercentage < ScrollBoxConstants.ScrollEnd);
+			local showUpper = hasScrollableExtent and (scrollPercentage > ScrollBoxConstants.ScrollBegin);
+			local showLower = hasScrollableExtent and self:HasScrollableExtent() and (scrollPercentage < ScrollBoxConstants.ScrollEnd);
 			self:SetShadowsShown(showLower, showUpper);
 		end
 

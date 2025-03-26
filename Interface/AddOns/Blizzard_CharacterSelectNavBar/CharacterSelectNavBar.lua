@@ -99,57 +99,16 @@ function CharacterSelectNavBarMixin:OnLoad()
 	end
 
 	self.ButtonTray:SetButtonSetup(NavBarButtonSetup);
-
-	local realmsCallback = GenerateFlatClosure(CharacterSelectUtil.ChangeRealm);
-
-	local passNavBarToCallback = true;
-	self.GameModeButton = self.ButtonTray:AddControl(nil, self.ToggleGameModeDrawer, passNavBarToCallback);
-	self.GameModeButton.SelectionDrawer = CreateFrame("FRAME", nil, self.GameModeButton, "GameModeFrameTemplate");
-	self.GameModeButton.SelectionDrawer:SetPoint("TOP", self.GameModeButton, "BOTTOM", 0, -20);
-
-	if self:GetParent() == PlunderstormLobbyFrame then
-		self:RegisterEvent("STORE_FRONT_STATE_UPDATED");
-
-		self.PlunderstoreButton = self.ButtonTray:AddControl(WOWLABS_PLUNDERSTORE_NAV_LABEL, ToggleAccountStoreUI);
-		self.PlunderstoreButton:Disable();
-
-		self.PlunderstoreButton:SetMotionScriptsWhileDisabled(true);
-		self.PlunderstoreButton:SetScript("OnEnter", function(buttonSelf)
-			if not buttonSelf:IsEnabled() then
-				local tooltip = GetAppropriateTooltip();
-				tooltip:SetOwner(buttonSelf, "ANCHOR_BOTTOM");
-				tooltip:SetText(ACCOUNT_STORE_UNAVAILABLE);
-				tooltip:Show();
-			end
-		end);
-
-		self.PlunderstoreButton:SetScript("OnLeave", function()
-			GetAppropriateTooltip():Hide();
-		end);
-	else
-		local function ToggleStoreUIForCharSelectNavBar()
-			ToggleStoreUI("CharSelectNavBar");
-		end
-		self.StoreButton = self.ButtonTray:AddControl(nil, ToggleStoreUIForCharSelectNavBar);
-	end
-
-	self.MenuButton = self.ButtonTray:AddControl(CHARACTER_SELECT_NAV_BAR_MENU, GlueMenuFrameUtil.ShowMenu);
-	self.RealmsButton = self.ButtonTray:AddControl(CHARACTER_SELECT_NAV_BAR_REALMS, realmsCallback);
-	self.CampsButton = self.ButtonTray:AddControl(CHARACTER_SELECT_NAV_BAR_CAMPS, ToggleCollections);
+	self:TrySetUpGameModeButton();
+	self:TrySetUpStoreButton();
+	self:TrySetUpMenuButton();
+	self:TrySetUpRealmsButton();
+	self:TrySetUpCampsButton();
 
 	EventRegistry:RegisterCallback("GameModeFrame.Hide", self.OnGameModeFrameHide, self);
 	EventRegistry:RegisterCallback("GameMode.UpdateNavBar", self.OnGameModeUpdateNavBar, self);
-
-	local function OnCollectionsHide()
-		UpdateButtonStatesForCollections(false);
-	end
-	EventRegistry:RegisterCallback("GlueCollections.OnHide", OnCollectionsHide);
-
-	-- Any specific button setups.
+	
 	self:SetButtonVisuals();
-
-	self.GameModeButton.TutorialBadge:ClearAllPoints();
-	self.GameModeButton.TutorialBadge:SetPoint("CENTER", self.GameModeButton:GetFontString(), "LEFT", -10, 0);
 end
 
 function CharacterSelectNavBarMixin:OnShow()
@@ -189,62 +148,31 @@ function CharacterSelectNavBarMixin:OnGameModeUpdateNavBar()
 	self:UpdateSelectedGameMode();
 end
 
-function CharacterSelectNavBarMixin:ToggleGameModeDrawer()
-	local selectionDrawer = self.GameModeButton.SelectionDrawer;
-	selectionDrawer:SetShown(not selectionDrawer:IsShown());
-
-	local enabled = true;
-	local highlight = selectionDrawer:IsShown();
-	self.GameModeButton:formatButtonTextCallback(enabled, highlight);
-	self.GameModeButton:SetLockHighlight(highlight);
-
+function CharacterSelectNavBarMixin:AddButton(label, controlCallback, ...)
+	local control = self.ButtonTray:AddControl(label, controlCallback, ...);
+	if not self.leftmostButton then
+		self.leftmostButton = control;
+	end
+	self.rightmostButton = control;
+	return control;
 end
 
-function CharacterSelectNavBarMixin:SetButtonVisuals()
-	local leftmostButton = self.GameModeButton;
-	local rightmostButton = self.CampsButton;
-
-	-- The leftmost and rightmost buttons in the nav bar have different textures than the default.
-	leftmostButton.Highlight:ClearAllPoints();
-	leftmostButton.Highlight:SetPoint("TOPLEFT", -45, 0);
-	leftmostButton.Highlight:SetPoint("BOTTOMRIGHT", 0, 0);
-	leftmostButton.Highlight.Backdrop:SetAtlas("glues-characterselect-tophud-selected-left", TextureKitConstants.IgnoreAtlasSize);
-	leftmostButton.Highlight.Line:SetAtlas("glues-characterselect-tophud-selected-line-left", TextureKitConstants.IgnoreAtlasSize);
-	leftmostButton.NormalTexture:SetAtlas("glues-characterselect-tophud-left-bg", TextureKitConstants.IgnoreAtlasSize);
-	leftmostButton.NormalTexture:SetPoint("TOPLEFT", -102, 0);
-	leftmostButton.DisabledTexture:SetAtlas("glues-characterselect-tophud-left-dis-bg", TextureKitConstants.IgnoreAtlasSize);
-	leftmostButton.DisabledTexture:SetPoint("TOPLEFT", -102, 0);
-
-	-- Do not show divider bar on rightmost option.
-	rightmostButton.Bar:Hide();
-	rightmostButton.Highlight:ClearAllPoints();
-	rightmostButton.Highlight:SetPoint("TOPLEFT", 0, 0);
-	rightmostButton.Highlight:SetPoint("BOTTOMRIGHT", 45, 0);
-	rightmostButton.Highlight.Backdrop:SetAtlas("glues-characterselect-tophud-selected-right", TextureKitConstants.IgnoreAtlasSize);
-	rightmostButton.Highlight.Line:SetAtlas("glues-characterselect-tophud-selected-line-right", TextureKitConstants.IgnoreAtlasSize);
-	rightmostButton.NormalTexture:SetAtlas("glues-characterselect-tophud-right-bg", TextureKitConstants.IgnoreAtlasSize);
-	rightmostButton.NormalTexture:SetPoint("BOTTOMRIGHT", 102, 0);
-	rightmostButton.DisabledTexture:SetAtlas("glues-characterselect-tophud-right-dis-bg", TextureKitConstants.IgnoreAtlasSize);
-	rightmostButton.DisabledTexture:SetPoint("BOTTOMRIGHT", 102, 0);
-
-	if self.StoreButton then
-		-- The store button has a custom icon that must match the text state.
-		local function FormatStoreButtonText(self, enabled, highlight)
-			local shopIcon = "glues-characterselect-iconshop";
-			if not enabled then
-				shopIcon = "glues-characterselect-iconshop-dis";
-			elseif highlight then
-				shopIcon = "glues-characterselect-iconshop-hover";
-			end
-			self:SetText(CreateAtlasMarkup(shopIcon, 24, 24, -4)..CHARACTER_SELECT_NAV_BAR_SHOP);
-		end
-		self.StoreButton.formatButtonTextCallback = FormatStoreButtonText;
-
-		local enabled = true;
-		local highlight = false;
-		self.StoreButton:formatButtonTextCallback(enabled, highlight);
-		self.StoreButton:SetWidth(self.StoreButton:GetTextWidth() + CharacterSelectNavBarMixin.NavBarButtonWidthBuffer);
+function CharacterSelectNavBarMixin:TrySetUpGameModeButton()
+	if not self.gameModeButtonAvailable then
+		return;
 	end
+
+	local passNavBarToCallback = true;
+	self.GameModeButton = self:AddButton(nil, self.ToggleGameModeDrawer, passNavBarToCallback);
+	self.GameModeButton.SelectionDrawer = CreateFrame("FRAME", nil, self.GameModeButton, "GameModeFrameTemplate");
+	if self.gameModeDrawerAnchorsToButton then
+		self.GameModeButton.SelectionDrawer:SetPoint("TOP", self.GameModeButton, "BOTTOM", 0, -20);
+	else
+		self.GameModeButton.SelectionDrawer:SetPoint("TOP", self, "BOTTOM", 0, -20);
+	end
+
+	self.GameModeButton.TutorialBadge:ClearAllPoints();
+	self.GameModeButton.TutorialBadge:SetPoint("CENTER", self.GameModeButton:GetFontString(), "LEFT", -10, 0);
 
 	local function FormatGameModeButtonText(gameModeButtonSelf, enabled, highlight)
 		local selectionDownArrow = "glues-characterSelect-icon-arrowDown";
@@ -259,6 +187,116 @@ function CharacterSelectNavBarMixin:SetButtonVisuals()
 	self.GameModeButton.formatButtonTextCallback = FormatGameModeButtonText;
 
 	self:UpdateSelectedGameMode();
+end
+
+function CharacterSelectNavBarMixin:TrySetUpStoreButton()
+	if not self.storeButtonAvailable then
+		return;
+	end
+
+	if self:GetParent() == PlunderstormLobbyFrame then
+		self:RegisterEvent("STORE_FRONT_STATE_UPDATED");
+
+		self.PlunderstoreButton = self:AddButton(WOWLABS_PLUNDERSTORE_NAV_LABEL, ToggleAccountStoreUI);
+		self.PlunderstoreButton:Disable();
+
+		self.PlunderstoreButton:SetMotionScriptsWhileDisabled(true);
+		self.PlunderstoreButton:SetScript("OnEnter", function(buttonSelf)
+			if not buttonSelf:IsEnabled() then
+				local tooltip = GetAppropriateTooltip();
+				tooltip:SetOwner(buttonSelf, "ANCHOR_BOTTOM");
+				tooltip:SetText(ACCOUNT_STORE_UNAVAILABLE);
+				tooltip:Show();
+			end
+		end);
+
+		self.PlunderstoreButton:SetScript("OnLeave", function()
+			GetAppropriateTooltip():Hide();
+		end);
+	else
+		self.StoreButton = self:AddButton(nil, ToggleStoreUI);
+
+		-- The store button has a custom icon that must match the text state.
+		local function FormatStoreButtonText(self, enabled, highlight)
+			local shopIcon = "glues-characterselect-iconshop";
+			if not enabled then
+				shopIcon = "glues-characterselect-iconshop-dis";
+			elseif highlight then
+				shopIcon = "glues-characterselect-iconshop-hover";
+			end
+			self:SetText(CreateAtlasMarkup(shopIcon, self.shopIconSize, self.shopIconSize, -4)..CHARACTER_SELECT_NAV_BAR_SHOP);
+		end
+		self.StoreButton.formatButtonTextCallback = FormatStoreButtonText;
+
+		local enabled = true;
+		local highlight = false;
+		self.StoreButton:formatButtonTextCallback(enabled, highlight);
+		self.StoreButton:SetWidth(self.StoreButton:GetTextWidth() + CharacterSelectNavBarMixin.NavBarButtonWidthBuffer);
+	end
+end
+
+function CharacterSelectNavBarMixin:TrySetUpMenuButton()
+	if not self.menuButtonAvailable then
+		return;
+	end
+
+	self.MenuButton = self:AddButton(CHARACTER_SELECT_NAV_BAR_MENU, GlueMenuFrameUtil.ShowMenu);
+end
+
+function CharacterSelectNavBarMixin:TrySetUpRealmsButton()
+	if not self.realmsButtonAvailable then
+		return;
+	end
+
+	local realmsCallback = GenerateFlatClosure(CharacterSelectUtil.ChangeRealm);
+	self.RealmsButton = self:AddButton(CHARACTER_SELECT_NAV_BAR_REALMS, realmsCallback);
+end
+
+function CharacterSelectNavBarMixin:TrySetUpCampsButton()
+	if not self.campsButtonAvailable then
+		return;
+	end
+
+	self.CampsButton = self:AddButton(CHARACTER_SELECT_NAV_BAR_CAMPS, ToggleCollections);
+	local function OnCollectionsHide()
+		UpdateButtonStatesForCollections(false);
+	end
+	EventRegistry:RegisterCallback("GlueCollections.OnHide", OnCollectionsHide);
+end
+
+function CharacterSelectNavBarMixin:ToggleGameModeDrawer()
+	local selectionDrawer = self.GameModeButton.SelectionDrawer;
+	selectionDrawer:SetShown(not selectionDrawer:IsShown());
+
+	local enabled = true;
+	local highlight = selectionDrawer:IsShown();
+	self.GameModeButton:formatButtonTextCallback(enabled, highlight);
+	self.GameModeButton:SetLockHighlight(highlight);
+end
+
+function CharacterSelectNavBarMixin:SetButtonVisuals()
+	-- The leftmost and rightmost buttons in the nav bar have different textures than the default.
+	self.leftmostButton.Highlight:ClearAllPoints();
+	self.leftmostButton.Highlight:SetPoint("TOPLEFT", -45, 0);
+	self.leftmostButton.Highlight:SetPoint("BOTTOMRIGHT", 0, 0);
+	self.leftmostButton.Highlight.Backdrop:SetAtlas("glues-characterselect-tophud-selected-left", TextureKitConstants.IgnoreAtlasSize);
+	self.leftmostButton.Highlight.Line:SetAtlas("glues-characterselect-tophud-selected-line-left", TextureKitConstants.IgnoreAtlasSize);
+	self.leftmostButton.NormalTexture:SetAtlas("glues-characterselect-tophud-left-bg", TextureKitConstants.IgnoreAtlasSize);
+	self.leftmostButton.NormalTexture:SetPoint("TOPLEFT", -102, 0);
+	self.leftmostButton.DisabledTexture:SetAtlas("glues-characterselect-tophud-left-dis-bg", TextureKitConstants.IgnoreAtlasSize);
+	self.leftmostButton.DisabledTexture:SetPoint("TOPLEFT", -102, 0);
+
+	-- Do not show divider bar on rightmost option.
+	self.rightmostButton.Bar:Hide();
+	self.rightmostButton.Highlight:ClearAllPoints();
+	self.rightmostButton.Highlight:SetPoint("TOPLEFT", 0, 0);
+	self.rightmostButton.Highlight:SetPoint("BOTTOMRIGHT", 45, 0);
+	self.rightmostButton.Highlight.Backdrop:SetAtlas("glues-characterselect-tophud-selected-right", TextureKitConstants.IgnoreAtlasSize);
+	self.rightmostButton.Highlight.Line:SetAtlas("glues-characterselect-tophud-selected-line-right", TextureKitConstants.IgnoreAtlasSize);
+	self.rightmostButton.NormalTexture:SetAtlas("glues-characterselect-tophud-right-bg", TextureKitConstants.IgnoreAtlasSize);
+	self.rightmostButton.NormalTexture:SetPoint("BOTTOMRIGHT", 102, 0);
+	self.rightmostButton.DisabledTexture:SetAtlas("glues-characterselect-tophud-right-dis-bg", TextureKitConstants.IgnoreAtlasSize);
+	self.rightmostButton.DisabledTexture:SetPoint("BOTTOMRIGHT", 102, 0);
 end
 
 function CharacterSelectNavBarMixin:UpdateSelectedGameMode()

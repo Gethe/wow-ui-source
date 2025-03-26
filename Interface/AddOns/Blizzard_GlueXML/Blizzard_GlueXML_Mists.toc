@@ -1,7 +1,7 @@
 ## Title: Blizzard_GlueXML
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_GlueDialogs, Blizzard_LoginWarningDialogs
+## Dependencies: Blizzard_GlueDialogs, Blizzard_LoginWarningDialogs, Blizzard_HelpPlate
 ## LoadFirst: 1
 ## AllowLoad: Glue
 ## AllowLoadGameType: mists

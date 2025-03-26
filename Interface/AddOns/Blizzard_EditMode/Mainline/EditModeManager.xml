@@ -31,7 +31,7 @@
 					<Anchor point="TOPLEFT" x="-20" y="20"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="MainHelpPlateButtonTooltipText" value="EDIT_MODE_HELPTIP_BUTTON_TOOLTIP" type="global"/>
+					<KeyValue key="mainHelpPlateButtonTooltipText" value="EDIT_MODE_HELPTIP_BUTTON_TOOLTIP" type="global"/>
 				</KeyValues>
 				<Scripts>
 					<OnLoad method="OnLoad"/>

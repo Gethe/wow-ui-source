@@ -44,6 +44,11 @@
 					<KeyValue key="spacing" value="10" type="number"/>
 				</KeyValues>
 			</Frame>
+			<Frame parentKey="NewFeature" inherits="NewFeatureLabelTemplate" scale="0.8">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.Header" relativePoint="LEFT" x="16" y="7"/>
+				</Anchors>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

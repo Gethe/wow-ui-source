@@ -412,9 +412,18 @@ function CompanionConfigSlotTemplateMixin:OnMouseDown()
 end
 
 function CompanionConfigSlotTemplateMixin:CheckToggleAllowed()
-    local _, _, distance = ClosestUnitPosition(DELVES_SUPPLIES_CREATURE_ID);
+    local playerMustInteractWithSupplies = false;
     local delveInProgress = C_PartyInfo.IsDelveInProgress();
-    local playerMustInteractWithSupplies = delveInProgress and distance > DELVES_SUPPLIES_MAX_DISTANCE;
+    local _, _, distance = ClosestUnitPosition(DELVES_SUPPLIES_CREATURE_ID);
+
+    -- If we're able to determine the closest delves supplies unit distance, check to see if we're in range and the delve is in progress
+    -- otherwise, assume we're out of range if the delve is in progress.
+    if distance then
+        playerMustInteractWithSupplies = delveInProgress and distance > DELVES_SUPPLIES_MAX_DISTANCE;
+    else
+        playerMustInteractWithSupplies = delveInProgress;
+    end
+
     self.tooltipError = nil;
     self.toggleNotAllowed = false;
 

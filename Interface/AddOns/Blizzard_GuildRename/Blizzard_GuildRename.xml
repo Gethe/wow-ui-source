@@ -96,21 +96,24 @@
 							<Anchor point="TOPRIGHT" relativeKey="$parent.NameBox" relativePoint="BOTTOMRIGHT" x="0" y="-5"/>
 						</Anchors>
 						</FontString>
-						<FontString parentKey="CostLabel" inherits="QuestFont" justifyH="LEFT" text="COSTS_LABEL">
+						<FontString parentKey="CostLabel" inherits="QuestFont" justifyH="LEFT" text="GUILD_RENAME_COSTS_LABEL">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.NameBox" relativePoint="BOTTOMLEFT" x="0" y="-40"/>
-								<Anchor point="TOPRIGHT" relativeKey="$parent.NameBox" relativePoint="BOTTOMRIGHT" x="0" y="-40"/>
-							</Anchors>							
+								<Anchor point="TOPLEFT" relativeKey="$parent.NameBox" relativePoint="BOTTOMLEFT" x="-5" y="-30"/>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.NameBox" relativePoint="BOTTOMRIGHT" x="0" y="-30"/>
+							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>
 					<Frame parentKey="CostFrame" inherits="MoneyFrameTemplate">
+					<KeyValues>
+						<KeyValue key="moneyType" value="STATIC" type="string"/>
+					</KeyValues>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.CostLabel" relativePoint="BOTTOMLEFT" x="-6" y="2"/>
 					</Anchors>
-					</Frame>				
-				</Frames>		
+					</Frame>
+				</Frames>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
 					<OnShow method="OnShow"/>
@@ -125,16 +128,58 @@
 					<OnLeave method="OnLeave"/>
 				</Scripts>
 			</Button>
-			<Frame parentKey="MoneyFrame" inherits="SmallMoneyFrameTemplate">
+			<Frame parentKey="MoneyFrame" inherits="SmallMoneyFrameTemplate" mixin="SimpleTooltipRegionMixin">
+				<KeyValues>
+					<KeyValue key="moneyType" value="STATIC" type="string"/>
+					<KeyValue key="tooltip" value="GUILD_RENAME_GUILD_BANK_MONEY_TOOLTIP" type="global"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.ContextButton" relativePoint="LEFT" x="-6" y="0"/>
 				</Anchors>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="GuildIcon" mixin="GuildIconDisplayMixin" frameStrata="HIGH">
+				<KeyValues>
+					<KeyValue key="tooltip" value="GUILD_RENAME_COSTS_TOOLTIP" type="global"/>
+				</KeyValues>
+				<Size x="41" y="52"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="6" y="-11"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="TabardBG" atlas="UI-HUD-MicroMenu-GuildCommunities-GuildColor-Up" setAllPoints="true"/>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Emblem" file="Interface\GuildFrame\GuildEmblems_01">
+							<Size x="15" y="18"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="2"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="HIGHLIGHT" textureSubLevel="5">
+						<Texture parentKey="HighlightEmblem" file="Interface\GuildFrame\GuildEmblems_01" alphaMode="ADD" alpha="0.5">
+							<Size x="15" y="18"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="2"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
 			</Frame>
 			<Frame parentKey="Spinner" inherits="SpinnerTemplate" frameStrata="HIGH" hidden="true">
 				<Anchors>
 					<Anchor point="CENTER" />
 				</Anchors>
-			</Frame>			
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

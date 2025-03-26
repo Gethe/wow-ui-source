@@ -3,19 +3,28 @@
 g_newGameModeAvailableAcknowledged = g_newGameModeAvailableAcknowledged or nil;
 
 ---------------------------------------------------
+-- LOCAL CONSTANTS
+local GameModeSelectButtonSize = {
+	width = 2 * GameModeSelectFixedHeight,
+	height = GameModeSelectFixedHeight
+};
+
+---------------------------------------------------
 -- GAME MODE BUTTON MIXIN
 GameModeButtonMixin = {};
 
 function GameModeButtonMixin:OnLoad()
 	SelectableButtonMixin.OnLoad(self);
-	self.deselectedScale = self.selectedScale - 0.09;
 
-	-- Because of the CharacterSelect animations, we need to set the initial alpha of the WoW Toggle to 1.
-	self:SetAlpha(self.initAlpha);
+	self:InitSize();
 end
 
 function GameModeButtonMixin:OnShow()
 	self:SetAlpha(self:IsSelected() and 1 or 0.5);
+
+	if self.usingExpansionLogo then
+		self:RefreshStandardLogo();
+	end
 end
 
 function GameModeButtonMixin:OnEnter()
@@ -30,32 +39,104 @@ function GameModeButtonMixin:OnLeave()
 	end
 end
 
-local LimitedTimeEventTextScale = {
-	selected = 0.95,
-	deselected = 0.85,
-};
-
 function GameModeButtonMixin:SetSelectedState(selected)
 	SelectableButtonMixin.SetSelectedState(self, selected);
 	self.SelectionArrow:SetShown(selected);
 	self.BackgroundGlowTop:SetShown(selected);
 	self.BackgroundGlowBottom:SetShown(selected);
 
-	self.NormalTexture:SetScale(selected and self.selectedScale or self.deselectedScale);
-
-	if self.LimitedTimeEventText then
-		self.LimitedTimeEventText:SetScale(selected and LimitedTimeEventTextScale.selected or LimitedTimeEventTextScale.deselected);
-	end
+	self:RefreshScale();
 
 	self:SetAlpha(selected and 1 or 0.5);
 end
 
----------------------------------------------------
--- GAME MODE BUTTON PULSING MIXIN
-GameModeButtonPulsingMixin = CreateFromMixins(GameModeButtonMixin);
+function GameModeButtonMixin:InitSize()
+	self:SetSize(GameModeSelectButtonSize.width, GameModeSelectFixedHeight);
+	self.NormalTexture:SetSize(GameModeSelectButtonSize.width, GameModeSelectButtonSize.height);
+end
 
-function GameModeButtonPulsingMixin:OnLoad()
+function GameModeButtonMixin:SetGameMode(gameModeRecordID)
+	self.gameModeRecordID = gameModeRecordID;
+	local gameModeDisplayInfo = C_GameRules.GetGameModeDisplayInfoByRecordID(self.gameModeRecordID);
+	if gameModeDisplayInfo and gameModeDisplayInfo.logo then
+		self.NormalTexture:SetTexture(gameModeDisplayInfo.logo);
+	else
+		self:RefreshStandardLogo();
+		self.usingExpansionLogo = true;
+	end
+end
+
+function GameModeButtonMixin:RefreshStandardLogo()
+	local currentExpansionLevel = AccountUpgradePanel_GetBannerInfo();
+	if currentExpansionLevel and self.shownExpansionLevel ~= currentExpansionLevel then
+		SetExpansionLogo(self.NormalTexture, currentExpansionLevel);
+		self.shownExpansionLevel = currentExpansionLevel;
+	end
+end
+
+function GameModeButtonMixin:RefreshScale()
+	local selected = self:IsSelected();
+	local textureScale = selected and GameModeSelectNormalTextureScale.selected or GameModeSelectNormalTextureScale.deselected;
+	self.NormalTexture:SetScale(textureScale);
+end
+
+---------------------------------------------------
+-- GAME MODE BUTTON PROMO MIXIN
+GameModeButtonPromoMixin = CreateFromMixins(GameModeButtonMixin);
+
+function GameModeButtonPromoMixin:OnLoad()
 	GameModeButtonMixin.OnLoad(self);
+end
+
+function GameModeButtonPromoMixin:OnShow()
+	GameModeButtonMixin.OnShow(self);
+
+	self:SetPulsePlaying(true);
+
+	local promoGlobalString = C_GameRules.GetGameModePromoGlobalString(self.gameModeRecordID);
+	local promoString = _G[promoGlobalString];
+	self.PromoText.BGLabel:SetText(promoString);
+	self.PromoText.Label:SetText(promoString);
+end
+
+function GameModeButtonPromoMixin:OnEnter()
+	GameModeButtonMixin.OnEnter(self);
+
+	self:SetPulsePlaying(false);
+end
+
+function GameModeButtonPromoMixin:OnLeave()
+	GameModeButtonMixin.OnLeave(self);
+
+	self:SetPulsePlaying(true);
+end
+
+function GameModeButtonPromoMixin:OnSelected(newSelected)
+	self:SetPulsePlaying(not newSelected);
+end
+
+function GameModeButtonPromoMixin:InitSize()
+	self:SetSize(GameModeSelectButtonSize.width, GameModeSelectButtonSize.height);
+
+	-- Shrink the game logo for promo buttons to accommodate promo text.
+	local textureSize = {
+		width = GameModeSelectButtonSize.width * GameModeSelectPromoButtonTextureScale,
+		height = GameModeSelectButtonSize.height * GameModeSelectPromoButtonTextureScale,
+	};
+
+	-- Not using SetScale because scale is used for growing/shrinking the texture on selection/deselection.
+	-- This is just setting the base size that scaling will modify. Promo buttons' default size is scaled to
+	-- accommodate the promo text, but it's handled as size to not conflict with the other scaling.
+	self.NormalTexture:SetSize(textureSize.width, textureSize.height);
+
+	-- Shift the shrunken game mode logo up to accommodate the promo text being under the logo.
+	local heightLoss = GameModeSelectButtonSize.height - textureSize.height;
+	local normalTextureVerticalOffset = 0.5 * heightLoss;
+	self.NormalTexture:SetPoint("CENTER", 0, normalTextureVerticalOffset);
+end
+
+function GameModeButtonPromoMixin:SetGameMode(gameModeRecordID)
+	GameModeButtonMixin.SetGameMode(self, gameModeRecordID);
 
 	self.PulseTexture:SetTexture(self.NormalTexture:GetTexture());
 	self.PulseTexture:SetSize(self.NormalTexture:GetSize());
@@ -66,35 +147,19 @@ function GameModeButtonPulsingMixin:OnLoad()
 	self:SetPulsePlaying(true);
 end
 
-function GameModeButtonPulsingMixin:RefreshScale()
+function GameModeButtonPromoMixin:RefreshScale()
+	GameModeButtonMixin.RefreshScale(self);
+
+	local textureScale = self.NormalTexture:GetScale();
+	self.PulseTexture:SetScale(textureScale);
+	self.PulseTextureTwo:SetScale(textureScale);
+
 	local selected = self:IsSelected();
-	self.PulseTexture:SetScale(selected and self.selectedScale or self.deselectedScale);
-	self.PulseTextureTwo:SetScale(selected and self.selectedScale or self.deselectedScale);
+	local textScale = selected and GameModeSelectPromoTextScale.selected or GameModeSelectPromoTextScale.deselected;
+	self.PromoText:SetScale(textScale);
 end
 
-function GameModeButtonPulsingMixin:OnShow()
-	GameModeButtonMixin.OnShow(self);
-
-	self:SetPulsePlaying(true);
-end
-
-function GameModeButtonPulsingMixin:OnEnter()
-	GameModeButtonMixin.OnEnter(self);
-
-	self:SetPulsePlaying(false);
-end
-
-function GameModeButtonPulsingMixin:OnLeave()
-	GameModeButtonMixin.OnLeave(self);
-
-	self:SetPulsePlaying(true);
-end
-
-function GameModeButtonPulsingMixin:OnSelected(newSelected)
-	self:SetPulsePlaying(not newSelected);
-end
-
-function GameModeButtonPulsingMixin:SetPulsePlaying(playing)
+function GameModeButtonPromoMixin:SetPulsePlaying(playing)
 	playing = playing and not self:IsSelected();
 	if self.pulsePlaying == playing then
 		return;
@@ -120,9 +185,31 @@ end
 GameModeFrameMixin = {};
 function GameModeFrameMixin:OnLoad()
 	self.buttonGroup = CreateRadioButtonGroup();
-	self.buttonGroup:AddButton(self.SelectWoWToggle);
-	self.buttonGroup:AddButton(self.SelectWoWLabsToggle);
+	local numDisplayedGameModes = C_GameRules.GetNumDisplayedGameModes();
+	for i = 1, numDisplayedGameModes do
+		local gameModeRecordID = C_GameRules.GetDisplayedGameModeRecordIDAtIndex(i);
+		local hasPromo = C_GameRules.DoesGameModeHavePromo(gameModeRecordID);
+		local gameModeButton = nil;
+		if hasPromo then
+			gameModeButton = CreateFrame("Button", "Button"..i, self, "GameModePromoButtonTemplate");
+		else
+			gameModeButton = CreateFrame("Button", "Button"..i, self, "GameModeButtonTemplate");
+		end
+
+		gameModeButton:SetGameMode(gameModeRecordID);
+
+		if i == 1 then
+			gameModeButton:SetPoint("TOPLEFT");
+		else
+			local relativeButton = self.buttonGroup:GetAtIndex(i - 1);
+			gameModeButton:SetPoint("LEFT", relativeButton, "RIGHT", GameModeSelectButtonSpacing, 0);
+		end
+
+		self.buttonGroup:AddButton(gameModeButton);
+	end
+
 	self.buttonGroup:RegisterCallback(ButtonGroupBaseMixin.Event.Selected, self.SelectGameMode, self);
+	self:RegisterEvent("GAME_MODE_DISPLAY_INFO_UPDATED");
 
 	self:AddDynamicEventMethod(EventRegistry, "GameMode.Selected", self.OnGameModeSelected);
 	self:AddDynamicEventMethod(EventRegistry, "RealmList.Cancel", self.OnRealmListCancel);	
@@ -134,7 +221,7 @@ function GameModeFrameMixin:OnShow()
 	CallbackRegistrantMixin.OnShow(self);	
 	ResizeLayoutMixin.OnShow(self);
 
-	self:SelectRadioButtonForGameMode(C_GameRules.GetActiveGameMode());
+	self:SelectRadioButtonForGameMode(C_GameRules.GetCurrentGameModeRecordID());
 	self:TryShowGameModeButtons();
 end
 
@@ -148,65 +235,59 @@ function GameModeFrameMixin:OnKeyDown(key)
 	end
 end
 
-function GameModeFrameMixin:OnGameModeSelected(requestedGameMode)
-	assert(requestedGameMode);
-	if C_GameRules.GetActiveGameMode() ~= requestedGameMode then
-		if requestedGameMode ~= Enum.GameMode.Standard then
+function GameModeFrameMixin:OnEvent(event)
+	if event == "GAME_MODE_DISPLAY_INFO_UPDATED" then
+		-- When switching to a different game mode, hide the frame if connection succeeded.
+		if self:IsShown() then
+			EventRegistry:TriggerEvent("GameModeFrame.Hide");
+		end
+	end
+end
+
+function GameModeFrameMixin:OnGameModeSelected(requestedGameModeRecordID)
+	assert(requestedGameModeRecordID);
+	if C_GameRules.GetCurrentGameModeRecordID() ~= requestedGameModeRecordID then
+		if C_GameRules.DoesGameModeHavePromo(requestedGameModeRecordID) then
 			g_newGameModeAvailableAcknowledged = 1;
 		end
 
-		self:ChangeGameMode(requestedGameMode);
+		self:ChangeGameMode(requestedGameModeRecordID);
 	end
 end
 
 function GameModeFrameMixin:OnRealmListCancel()
-	self:SelectRadioButtonForGameMode(C_GameRules.GetActiveGameMode());
+	self:SelectRadioButtonForGameMode(C_GameRules.GetCurrentGameModeRecordID());
 end
 
 function GameModeFrameMixin:TryShowGameModeButtons()
-	self.shouldShowButtons = C_GameRules.GetCurrentEventRealmQueues() ~= Enum.EventRealmQueues.None;
-
-	local currentExpansionLevel = AccountUpgradePanel_GetBannerInfo();
-	if currentExpansionLevel and self.shownExpansionLevel ~= currentExpansionLevel then
-		SetExpansionLogo(self.SelectWoWToggle.NormalTexture, currentExpansionLevel);
-		self.shownExpansionLevel = currentExpansionLevel;
-	end
+	self.shouldShowButtons = (C_GameRules.GetNumDisplayedGameModes() > 1);
 
 	self.buttonGroup:SetShown(self.shouldShowButtons);
 	self.NoGameModesText:SetShown(not self.shouldShowButtons);
 	self.widthPadding = not self.shouldShowButtons and 20 or 0;
+	self.fixedHeight = GameModeSelectFixedHeight;
 	self:Layout();
 end
 
-function GameModeFrameMixin:ChangeGameMode(newGameMode)
-	assert(newGameMode);
+function GameModeFrameMixin:ChangeGameMode(newGameModeRecordID)
+	assert(newGameModeRecordID);
 
-	if C_GameRules.GetActiveGameMode() == newGameMode then
+	if C_GameRules.GetCurrentGameModeRecordID() == newGameModeRecordID then
 		return;
 	end
 
-	if newGameMode == Enum.GameMode.Plunderstorm then
-		-- If we changed character order persist it
+	if not C_GameRules.IsCharacterlessLoginActive() then
 		CharacterSelectListUtil.SaveCharacterOrder();
-		-- Swap to the Plunderstorm Realm
-		C_RealmList.ConnectToEventRealm(GetCVar("plunderStormRealm")); --WOWLABSTODO: Should this CVar thing be hidden from lua?
-		CharacterSelect.connectingToPlunderstorm = true;
-	else
-		-- Ensure we have auto realm select enabled
-		CharacterSelect_SetAutoSwitchRealm(true);
-		C_RealmList.ReconnectExceptCurrentRealm();
-
-		-- Grab the RealmList again and allow the automatic system to select a realm for us
-		C_RealmList.RequestChangeRealmList();
-		CharacterSelect.connectingToPlunderstorm = false;
 	end
+
+	C_GameRules.AutoConnectToGameModeRealm(newGameModeRecordID);
 end
 
-function GameModeFrameMixin:SelectRadioButtonForGameMode(requestedGameMode)
+function GameModeFrameMixin:SelectRadioButtonForGameMode(requestedGameModeRecordID)
 	for i, button in ipairs(self.buttonGroup:GetButtons()) do
-		button:SetSelectedState(requestedGameMode == button.gameMode);
+		button:SetSelectedState(requestedGameModeRecordID == button.gameModeRecordID);
 		if button.SetPulsePlaying then
-			button:SetPulsePlaying(requestedGameMode ~= button.gameMode);
+			button:SetPulsePlaying(requestedGameModeRecordID ~= button.gameModeRecordID);
 		end
 	end
 
@@ -214,18 +295,8 @@ function GameModeFrameMixin:SelectRadioButtonForGameMode(requestedGameMode)
 end
 
 function GameModeFrameMixin:SelectGameMode(button, _buttonIndex)
-	local requestedGameMode = button.gameMode;
-	assert(requestedGameMode);
+	local requestedGameModeRecordID = button.gameModeRecordID;
+	assert(requestedGameModeRecordID);
 
-	EventRegistry:TriggerEvent("GameMode.Selected", requestedGameMode);
-end
-
-function GameModeFrameMixin:GetSelectedGameMode()
-	local selectedButtons = self.buttonGroup:GetSelectedButtons();
-	if #selectedButtons == 0 then
-		return Enum.GameMode.Standard;
-	end
-
-	-- We should never have more than one selected button.
-	return selectedButtons[1].gameMode;
+	EventRegistry:TriggerEvent("GameMode.Selected", requestedGameModeRecordID);
 end
