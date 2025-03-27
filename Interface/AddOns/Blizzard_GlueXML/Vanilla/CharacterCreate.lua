@@ -253,7 +253,7 @@ end
 CharacterCreateConfigurationMixin = {};
 
 function CharacterCreateConfigurationMixin:OnLoad()
-	self:RegisterEvent("GAME_MODE_DISPlAY_INFO_UPDATED");
+	self:RegisterEvent("GAME_MODE_DISPLAY_INFO_UPDATED");
 	local _, _, _, characterCreateOuterBorderXOffset, _ = CharacterCreateOuterBorder1:GetPoint(1);
 	self.defaultCharacterCreateOuterBorderXOffset = characterCreateOuterBorderXOffset;
 	self.defaultCharacterCreateOuterBorder2Height = CharacterCreateOuterBorder2:GetHeight();
@@ -262,7 +262,7 @@ function CharacterCreateConfigurationMixin:OnLoad()
 end
 
 function CharacterCreateConfigurationMixin:OnEvent(event)
-	if event == "GAME_MODE_DISPlAY_INFO_UPDATED" then
+	if event == "GAME_MODE_DISPLAY_INFO_UPDATED" then
 		self:Update();
 	end
 end

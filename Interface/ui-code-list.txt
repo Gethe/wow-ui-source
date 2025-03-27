@@ -230,6 +230,9 @@ Interface\AddOns\Blizzard_CharacterFrame\Wrath\PaperDollFrame.lua
 Interface\AddOns\Blizzard_CharacterFrame\Wrath\PaperDollFrame.xml
 Interface\AddOns\Blizzard_CharacterFrame\Wrath\PetPaperDollFrame.lua
 Interface\AddOns\Blizzard_CharacterFrame\Wrath\PetPaperDollFrame.xml
+Interface\AddOns\Blizzard_CharacterSelectNavBar\Blizzard_CharacterSelectNavBar.toc
+Interface\AddOns\Blizzard_CharacterSelectNavBar\CharacterSelectNavBar.lua
+Interface\AddOns\Blizzard_CharacterSelectNavBar\CharacterSelectNavBar.xml
 Interface\AddOns\Blizzard_ChatFrameBase\Blizzard_ChatFrameBase_Classic.toc
 Interface\AddOns\Blizzard_ChatFrameBase\Classic\ChannelFrameButtonMixin.lua
 Interface\AddOns\Blizzard_ChatFrameBase\Classic\ChatFrame.lua
@@ -653,6 +656,12 @@ Interface\AddOns\Blizzard_GameMenu\Classic\GameMenuFrame.lua
 Interface\AddOns\Blizzard_GameMenu\Classic\GameMenuFrame.xml
 Interface\AddOns\Blizzard_GameMenu\Classic\Localization.lua
 Interface\AddOns\Blizzard_GameMenu\Shared\Localization.lua
+Interface\AddOns\Blizzard_GameModeSelect\Blizzard_GameModeSelect_Classic.toc
+Interface\AddOns\Blizzard_GameModeSelect\Blizzard_GameModeSelect_Mainline.toc
+Interface\AddOns\Blizzard_GameModeSelect\Classic\GameModeSelectConstants.lua
+Interface\AddOns\Blizzard_GameModeSelect\GameModeSelect.lua
+Interface\AddOns\Blizzard_GameModeSelect\GameModeSelect.xml
+Interface\AddOns\Blizzard_GameModeSelect\Mainline\GameModeSelectConstants.lua
 Interface\AddOns\Blizzard_GameTooltip\Blizzard_GameTooltip_Classic.toc
 Interface\AddOns\Blizzard_GameTooltip\Classic\GameTooltip.lua
 Interface\AddOns\Blizzard_GameTooltip\Classic\GameTooltip.xml
@@ -660,6 +669,13 @@ Interface\AddOns\Blizzard_GameTooltip\HealthBar.lua
 Interface\AddOns\Blizzard_GlueDialogs\Blizzard_GlueDialogs_Classic.toc
 Interface\AddOns\Blizzard_GlueDialogs\Classic\GlueDialog.lua
 Interface\AddOns\Blizzard_GlueDialogs\Classic\GlueDialog.xml
+Interface\AddOns\Blizzard_GlueMenuFrame\Blizzard_GlueMenuFrame_Classic.toc
+Interface\AddOns\Blizzard_GlueMenuFrame\Blizzard_GlueMenuFrame_Mainline.toc
+Interface\AddOns\Blizzard_GlueMenuFrame\Classic\GlueMenuFrame.lua
+Interface\AddOns\Blizzard_GlueMenuFrame\Classic\GlueMenuFrame.xml
+Interface\AddOns\Blizzard_GlueMenuFrame\GlueMenuFrameUtil.lua
+Interface\AddOns\Blizzard_GlueMenuFrame\Mainline\GlueMenuFrame.lua
+Interface\AddOns\Blizzard_GlueMenuFrame\Mainline\GlueMenuFrame.xml
 Interface\AddOns\Blizzard_GlueParent\Blizzard_GlueParent_Classic.toc
 Interface\AddOns\Blizzard_GlueParent\Classic\GlueParent.lua
 Interface\AddOns\Blizzard_GlueParent\Classic\GlueParent.xml
@@ -692,7 +708,6 @@ Interface\AddOns\Blizzard_GlueXML\Cata\CharacterCreate.lua
 Interface\AddOns\Blizzard_GlueXML\Cata\CharacterCreate.xml
 Interface\AddOns\Blizzard_GlueXML\Cata\Localization.lua
 Interface\AddOns\Blizzard_GlueXML\Cata\RealmList.xml
-Interface\AddOns\Blizzard_GlueXML\CharacterServicesTemplates.lua
 Interface\AddOns\Blizzard_GlueXML\Classic\AccountLogin.lua
 Interface\AddOns\Blizzard_GlueXML\Classic\AccountLogin.xml
 Interface\AddOns\Blizzard_GlueXML\Classic\CharacterCreate_Shared.lua
@@ -713,12 +728,11 @@ Interface\AddOns\Blizzard_GlueXML\Classic\CharacterServicesPaidRaceChange.xml
 Interface\AddOns\Blizzard_GlueXML\Classic\CharacterServicesPatchwerk.xml
 Interface\AddOns\Blizzard_GlueXML\Classic\CharacterServicesShared.lua
 Interface\AddOns\Blizzard_GlueXML\Classic\CharacterServicesTemplates.xml
+Interface\AddOns\Blizzard_GlueXML\Classic\CharacterServicesTemplatesUtil.lua
 Interface\AddOns\Blizzard_GlueXML\Classic\CinematicsFrame.lua
 Interface\AddOns\Blizzard_GlueXML\Classic\CinematicsFrame.xml
 Interface\AddOns\Blizzard_GlueXML\Classic\GlueGameLogo.lua
 Interface\AddOns\Blizzard_GlueXML\Classic\GlueGameLogo.xml
-Interface\AddOns\Blizzard_GlueXML\Classic\GlueMenuFrame.lua
-Interface\AddOns\Blizzard_GlueXML\Classic\GlueMenuFrame.xml
 Interface\AddOns\Blizzard_GlueXML\Classic\GlueTooltip.lua
 Interface\AddOns\Blizzard_GlueXML\Classic\GlueTooltip.xml
 Interface\AddOns\Blizzard_GlueXML\Classic\HardcoreFrames.lua
@@ -739,6 +753,7 @@ Interface\AddOns\Blizzard_GlueXML\ServerAlert.xml
 Interface\AddOns\Blizzard_GlueXML\Shared\AccountReactivate.lua
 Interface\AddOns\Blizzard_GlueXML\Shared\AccountReactivate.xml
 Interface\AddOns\Blizzard_GlueXML\Shared\CharacterServicesPaidNameChange.lua
+Interface\AddOns\Blizzard_GlueXML\Shared\CharacterServicesTemplates.lua
 Interface\AddOns\Blizzard_GlueXML\SocialContract.lua
 Interface\AddOns\Blizzard_GlueXML\SocialContract.xml
 Interface\AddOns\Blizzard_GlueXML\StarterEditionPopUp.xml
@@ -1600,7 +1615,7 @@ Interface\AddOns\Blizzard_UIParentPanelManager\Blizzard_UIParentPanelManager_Cat
 Interface\AddOns\Blizzard_UIParentPanelManager\Blizzard_UIParentPanelManager_Vanilla.toc
 Interface\AddOns\Blizzard_UIParentPanelManager\Blizzard_UIParentPanelManager_Wrath.toc
 Interface\AddOns\Blizzard_UIParentPanelManager\Cata\UIParentPanelManager.lua
-Interface\AddOns\Blizzard_UIParentPanelManager\Classic\UIParentPanelManager_Shared.lua
+Interface\AddOns\Blizzard_UIParentPanelManager\Classic\UIParentPanelManager.lua
 Interface\AddOns\Blizzard_UIParentPanelManager\Shared\UpdateUIPanelPositions.lua
 Interface\AddOns\Blizzard_UIParentPanelManager\Vanilla\UIParentPanelManager.lua
 Interface\AddOns\Blizzard_UIParentPanelManager\Wrath\UIParentPanelManager.lua

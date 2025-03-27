@@ -97,11 +97,6 @@ local GameRules =
 			Name = "GetGameModeGlueScreenName",
 			Type = "Function",
 
-			Arguments =
-			{
-				{ Name = "gameModeRecordID", Type = "number", Nilable = false },
-			},
-
 			Returns =
 			{
 				{ Name = "screenName", Type = "cstring", Nilable = false },

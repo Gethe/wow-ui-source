@@ -273,6 +273,12 @@ function CharacterSelect_OnEvent(self, event, ...)
             self.undeleteNoCharacters = true;
             return;
         elseif (not CHARACTER_SELECT_BACK_FROM_CREATE and numChars == 0) then
+			local connectedToWoW = select(2, C_Login.GetState());
+			if not connectedToWoW then
+				-- If we're disconnected, don't change screens. We either DC'd or are switching realms and will get a new character list soon.
+				return;
+			end
+
             if (IsKioskGlueEnabled()) then
                 GlueParent_SetScreen("kioskmodesplash");
             elseif not IsWowTokenLimitedModeEnabled() then
@@ -673,6 +679,10 @@ function CharacterSelect_SaveCharacterOrder()
     end
 end
 
+-- This hack enables shared code to call this Mainline API despite Classic not implementing it.
+CharacterSelectListUtil = {};
+CharacterSelectListUtil.SaveCharacterOrder = CharacterSelect_SaveCharacterOrder;
+
 function CharacterSelect_SetRetrievingCharacters(retrieving, success)
     if ( retrieving ~= CharacterSelect.retrievingCharacters ) then
         CharacterSelect.retrievingCharacters = retrieving;
@@ -748,7 +758,7 @@ end
 function CharacterSelect_OnKeyDown(self,key)
     if ( key == "ESCAPE" ) then
         if (C_Login.IsLauncherLogin() ) then
-            GlueMenuFrame:SetShown(not GlueMenuFrame:IsShown());
+            GlueMenuFrameUtil.ToggleMenu();
         elseif (CharSelectServicesFlowFrame:IsShown()) then
             CharSelectServicesFlowFrame:Hide();
         elseif ( CopyCharacterFrame:IsShown() ) then
@@ -2095,11 +2105,17 @@ function CharacterSelect_IsStoreAvailable()
 end
 
 function CharacterSelect_UpdateStoreButton()
-    if ( CharacterSelect_IsStoreAvailable() and not Kiosk.IsEnabled()) then
-        StoreButton:Show();
-    else
-        StoreButton:Hide();
-    end
+	if StoreButton then
+		if ( CharacterSelect_IsStoreAvailable() and not Kiosk.IsEnabled()) then
+			StoreButton:Show();
+		else
+			StoreButton:Hide();
+		end
+	end
+	if CharacterSelectUI.VisibilityFramesContainer.NavBar then
+		local enabled = CharacterSelect_IsStoreAvailable() and not Kiosk.IsEnabled();
+		CharacterSelectUI.VisibilityFramesContainer.NavBar:SetStoreButtonEnabled(enabled);
+	end
 end
 
 StaticPopupDialogs["TOKEN_GAME_TIME_OPTION_NOT_AVAILABLE"] = {
@@ -2157,7 +2173,12 @@ function CharacterSelect_UpdateButtonState()
     CharacterTemplatesFrame.CreateTemplateButton:SetEnabled(servicesEnabled and not undeleting and not redemptionInProgress and not isAccountLocked);
     CharacterSelectMenuButton:SetEnabled(servicesEnabled and not redemptionInProgress);
     CharSelectCreateCharacterButton:SetEnabled(canCreateCharacter and servicesEnabled and not redemptionInProgress and not isAccountLocked and not IsWowTokenLimitedModeEnabled());
-    StoreButton:SetEnabled(servicesEnabled and not undeleting and not redemptionInProgress and not isAccountLocked);
+	if StoreButton then
+		StoreButton:SetEnabled(servicesEnabled and not undeleting and not redemptionInProgress and not isAccountLocked);
+	end
+	if CharacterSelectUI.VisibilityFramesContainer.NavBar then
+		CharacterSelectUI.VisibilityFramesContainer.NavBar:SetStoreButtonEnabled(servicesEnabled and not undeleting and not redemptionInProgress and not isAccountLocked);
+	end
 
 	if CharacterSelect.VASPools then
 		for frame in CharacterSelect.VASPools:EnumerateActive() do
@@ -2225,7 +2246,11 @@ function CharacterSelect_ConditionallyLoadAccountSaveUI()
             AccountSaveFrame:Show();
 
             if (GameRoomBillingFrame:IsShown()) then
-                GameRoomBillingFrame:SetPoint("TOPLEFT", StoreButton, "TOPRIGHT");
+				if StoreButton then
+					GameRoomBillingFrame:SetPoint("TOPLEFT", StoreButton, "TOPRIGHT");
+				else
+					GameRoomBillingFrame:SetPoint("TOPLEFT", CharacterSelectAddonsButton, "TOPRIGHT");
+				end
             end
         end
     elseif AccountSaveFrame then
@@ -2816,12 +2841,12 @@ end
 GameLogoDarkBackdropMixin = {};
 
 function GameLogoDarkBackdropMixin:OnLoad()
-	self:RegisterEvent("GAME_MODE_DISPlAY_INFO_UPDATED");
+	self:RegisterEvent("GAME_MODE_DISPLAY_INFO_UPDATED");
 	self:Update();
 end
 
 function GameLogoDarkBackdropMixin:OnEvent(event)
-	if event == "GAME_MODE_DISPlAY_INFO_UPDATED" then
+	if event == "GAME_MODE_DISPLAY_INFO_UPDATED" then
 		self:Update();
 	end
 end

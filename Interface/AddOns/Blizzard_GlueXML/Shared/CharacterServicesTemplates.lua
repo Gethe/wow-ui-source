@@ -158,10 +158,7 @@ end
 
 function CharacterServicesEditBoxWithAutoCompleteMixin:GetAutoCompleteEntries(text, cursorPosition)
 	local autoCompleteList = self:GetAutoCompleteList();
-	if not autoCompleteList or #autoCompleteList == 0 or text == "" then
-		-- So this is slightly different in Classic. They still show the full list if text is empty
-		-- Mainline has far more realms so we probably want to keep the realm list empty in this case
-		-- and continue to require the user start typing at least 1 character
+	if not autoCompleteList or #autoCompleteList == 0 or CharacterServicesTemplatesUtil:ShouldSkipAutoCompleteRealmList(text) then
 		return {};
 	end
 

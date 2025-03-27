@@ -1,11 +1,3 @@
-
-function GlueMenuFrame_Show()
-	GlueMenuFrame:Show();
-end
-function GlueMenuFrame_Hide()
-	GlueMenuFrame:Hide();
-end
-
 function GlueMenuFrame_OnShow(self)
 	GlueParent_AddModalFrame(self);
 end

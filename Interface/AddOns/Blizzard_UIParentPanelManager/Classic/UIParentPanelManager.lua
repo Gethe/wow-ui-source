@@ -1032,7 +1032,9 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	anchorY = FramePositionDelegate_Override_QuestWatchFrameOffsets(anchorY, rightActionBars, buffsAnchorY);
 
 	-- Update chat dock since the dock could have moved
-	FCF_DockUpdate();
+	if ( FCF_DockUpdate ) then
+		FCF_DockUpdate();
+	end
 
 	if UpdateContainerFrameAnchors then
 		UpdateContainerFrameAnchors();

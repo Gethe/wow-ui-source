@@ -43,7 +43,7 @@
 				<Scripts>
 					<OnShow function="GlueMenuFrameOptionsButton_OnShow"/>
 					<OnClick>
-						GlueMenuFrame_Hide();
+						GlueMenuFrameUtil.HideMenu();
 						GlueParent_ShowOptionsScreen();
 					</OnClick>
 				</Scripts>
@@ -54,7 +54,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						GlueMenuFrame_Hide();
+						GlueMenuFrameUtil.HideMenu();
 						GlueParent_ShowCreditsScreen();
 					</OnClick>
 				</Scripts>
@@ -65,7 +65,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						GlueMenuFrame_Hide();
+						GlueMenuFrameUtil.HideMenu();
 						GlueParent_ShowCinematicsScreen();
 					</OnClick>
 				</Scripts>
@@ -86,7 +86,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						GlueMenuFrame_Hide();
+						GlueMenuFrameUtil.HideMenu();
 					</OnClick>
 				</Scripts>
 			</Button>
