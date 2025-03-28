@@ -273,6 +273,23 @@ function SearchBoxTemplateClearButton_OnClick(self)
 	SearchBoxTemplate_ClearText(self:GetParent());
 end
 
+UIPanelButtonMixin = CreateFromMixins(DisabledTooltipButtonMixin);
+
+function UIPanelButtonMixin:OnEnter()
+	if not self.tooltipDisabled then
+		local defaultTooltipAnchor = "ANCHOR_RIGHT";
+
+		if self.tooltipText then
+			local tooltip = GetAppropriateTooltip();
+			tooltip:SetOwner(self, self.tooltipAnchor or defaultTooltipAnchor);
+			GameTooltip_SetTitle(tooltip, self.tooltipText);
+			tooltip:Show();
+		else
+			DisabledTooltipButtonMixin.OnEnter(self);
+		end
+	end
+end
+
 PanelTabButtonMixin = {};
 
 function PanelTabButtonMixin:OnLoad()

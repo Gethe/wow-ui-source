@@ -97,7 +97,7 @@ function CharacterServicesFlowMixin:Advance(controller)
 			block:OnAdvance();
 		end
 
-		local results = self:BuildResults(self.step);
+		local results = self:GetCurrentResults();
 		if self.OnAdvance then
 			self:OnAdvance(controller, results);
 		end
@@ -243,6 +243,10 @@ end
 
 function CharacterServicesFlowMixin:GetNumSteps()
 	return #self.Steps;
+end
+
+function CharacterServicesFlowMixin:GetCurrentResults()
+	return self:BuildResults(self.step);
 end
 
 function CharacterServicesFlowMixin:IsAllFinished()

@@ -19,6 +19,10 @@ function LinkUtil.SplitLink(link) -- returns linkText and displayText
 	return link:match("^|H(.+)|h(.*)|h$");
 end
 
+function LinkUtil.SplitLinkOptions(linkOptions)
+	return string.split(":", linkOptions);
+end
+
 -- Extract the first link from the text given, ignoring leading and trailing characters.
 -- returns linkType, linkOptions, displayText
 function LinkUtil.ExtractLink(text)

@@ -87,15 +87,15 @@ local function Register()
 			local autoSelfCast = GetCVarBool("autoSelfCast");
 			if not hasSelfCastKey and not autoSelfCast then
 				return 1;
-			elseif autoSelfCast then
+			elseif not hasSelfCastKey and autoSelfCast then
 				return 2;
-			elseif hasSelfCastKey then
+			elseif hasSelfCastKey and not autoSelfCast then
 				return 3;
 			end
-			
+
 			return 4;
 		end
-		
+
 		local function SetValue(value)
 			local selfCastKeySetting = Settings.GetSetting("SELFCAST");
 

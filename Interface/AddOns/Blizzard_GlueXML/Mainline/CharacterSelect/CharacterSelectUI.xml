@@ -101,7 +101,7 @@
 					<Anchor point="TOP" x="3" y="-40"/>
 				</Anchors>
 			</EditBox>
-			<Button parentKey="AcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
+			<Button parentKey="AcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT" motionScriptsWhileDisabled="true">
 				<Size x="120" y="22"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="33" y="-80"/>

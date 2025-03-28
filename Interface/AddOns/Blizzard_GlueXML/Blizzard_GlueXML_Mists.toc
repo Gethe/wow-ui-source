@@ -1,7 +1,7 @@
 ## Title: Blizzard_GlueXML
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_GlueDialogs, Blizzard_LoginWarningDialogs, Blizzard_HelpPlate
+## Dependencies: Blizzard_GlueDialogs, Blizzard_LoginWarningDialogs, Blizzard_HelpPlate, Blizzard_GlueMenuFrame
 ## LoadFirst: 1
 ## AllowLoad: Glue
 ## AllowLoadGameType: mists
@@ -55,8 +55,6 @@ Classic\CinematicsFrame.lua
 Classic\CinematicsFrame.xml
 TBC\CreditsFrame.lua
 TBC\CreditsFrame.xml
-Classic\GlueMenuFrame.lua
-Classic\GlueMenuFrame.xml
 SocialContract.lua
 SocialContract.xml
 Classic\RealmWarning.lua

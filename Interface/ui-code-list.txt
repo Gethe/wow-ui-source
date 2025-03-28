@@ -991,7 +991,6 @@ Interface\AddOns\Blizzard_GlueXMLBase\Shared\GlueContextMenu.xml
 Interface\AddOns\Blizzard_GlueXML\Bindings.xml
 Interface\AddOns\Blizzard_GlueXML\Blizzard_GlueXML_Mainline.toc
 Interface\AddOns\Blizzard_GlueXML\Blizzard_GlueXML_Mists.toc
-Interface\AddOns\Blizzard_GlueXML\CharacterServicesTemplates.lua
 Interface\AddOns\Blizzard_GlueXML\Mainline\AccountLogin.lua
 Interface\AddOns\Blizzard_GlueXML\Mainline\AccountLogin.xml
 Interface\AddOns\Blizzard_GlueXML\Mainline\CharacterLoginUtil.lua
@@ -1028,6 +1027,7 @@ Interface\AddOns\Blizzard_GlueXML\Mainline\CharacterServicesPaidRaceChange.xml
 Interface\AddOns\Blizzard_GlueXML\Mainline\CharacterServicesPatchwerk.xml
 Interface\AddOns\Blizzard_GlueXML\Mainline\CharacterServicesShared.lua
 Interface\AddOns\Blizzard_GlueXML\Mainline\CharacterServicesTemplates.xml
+Interface\AddOns\Blizzard_GlueXML\Mainline\CharacterServicesTemplatesUtil.lua
 Interface\AddOns\Blizzard_GlueXML\Mainline\CinematicsMenu.lua
 Interface\AddOns\Blizzard_GlueXML\Mainline\CinematicsMenu.xml
 Interface\AddOns\Blizzard_GlueXML\Mainline\CreditsFrame.lua
@@ -1052,6 +1052,7 @@ Interface\AddOns\Blizzard_GlueXML\ServerAlert.xml
 Interface\AddOns\Blizzard_GlueXML\Shared\AccountReactivate.lua
 Interface\AddOns\Blizzard_GlueXML\Shared\AccountReactivate.xml
 Interface\AddOns\Blizzard_GlueXML\Shared\CharacterServicesPaidNameChange.lua
+Interface\AddOns\Blizzard_GlueXML\Shared\CharacterServicesTemplates.lua
 Interface\AddOns\Blizzard_GlueXML\SocialContract.lua
 Interface\AddOns\Blizzard_GlueXML\SocialContract.xml
 Interface\AddOns\Blizzard_GlueXML\StarterEditionPopUp.xml
@@ -2286,7 +2287,7 @@ Interface\AddOns\Blizzard_UIPanels_Game\Shared\SocialQueue.lua
 Interface\AddOns\Blizzard_UIPanels_Game\Shared\WorldMapPOIQuantizer.lua
 Interface\AddOns\Blizzard_UIParentPanelManager\Blizzard_UIParentPanelManager_Mainline.toc
 Interface\AddOns\Blizzard_UIParentPanelManager\Blizzard_UIParentPanelManager_Mists.toc
-Interface\AddOns\Blizzard_UIParentPanelManager\Classic\UIParentPanelManager_Shared.lua
+Interface\AddOns\Blizzard_UIParentPanelManager\Classic\UIParentPanelManager.lua
 Interface\AddOns\Blizzard_UIParentPanelManager\Mainline\UIParentPanelManager.lua
 Interface\AddOns\Blizzard_UIParentPanelManager\Shared\UpdateUIPanelPositions.lua
 Interface\AddOns\Blizzard_UIParent\Blizzard_UIParent_Mainline.toc

@@ -39,7 +39,8 @@ Shared\AccountReactivate.xml
 Mainline\KioskModeSplash.lua
 Mainline\KioskModeSplash.xml
 Mainline\CharacterServicesShared.lua
-CharacterServicesTemplates.lua
+Mainline\CharacterServicesTemplatesUtil.lua
+Shared\CharacterServicesTemplates.lua
 Mainline\CharacterServicesTemplates.xml
 Mainline\CharacterServicesCharacterSelector.lua
 Mainline\CharacterServicesCharacterSelector.xml

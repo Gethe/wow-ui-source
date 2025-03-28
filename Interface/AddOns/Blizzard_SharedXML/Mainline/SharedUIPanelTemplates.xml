@@ -322,20 +322,10 @@
 		</HighlightTexture>
 	</Button>
 
-	<Button name="UIPanelButtonTemplate" inherits="UIPanelButtonNoTooltipTemplate" virtual="true">
+	<Button name="UIPanelButtonTemplate" inherits="UIPanelButtonNoTooltipTemplate" mixin="UIPanelButtonMixin" virtual="true">
 		<Scripts>
-			<OnEnter>
-				if(self.tooltipText ~= nil and not self.tooltipDisabled) then
-					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-					GameTooltip_SetTitle(GameTooltip, self.tooltipText);
-					GameTooltip:Show();
-				end
-			</OnEnter>
-			<OnLeave>
-				if(self.tooltipText ~= nil) then
-					GameTooltip:Hide();
-				end
-			</OnLeave>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Button>
 

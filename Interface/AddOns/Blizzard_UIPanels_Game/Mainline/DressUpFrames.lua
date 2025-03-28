@@ -155,7 +155,8 @@ end
 
 function DressUpBattlePetLink(link, forcedFrame)
 	if( link ) then 
-		local _, _, _, linkType, linkID, _, _, _, _, _, battlePetID, battlePetDisplayID = strsplit(":|H", link);
+		local linkType, linkOptions = LinkUtil.ExtractLink(link);
+		local linkID, _, _, _, _, _, battlePetID, battlePetDisplayID = LinkUtil.SplitLinkOptions(linkOptions);
 		if ( linkType == "item") then
 			local _, _, _, creatureID, _, _, _, _, _, _, _, displayID, speciesID = C_PetJournal.GetPetInfoByItemID(tonumber(linkID));
 			if (creatureID and displayID) then
@@ -209,7 +210,8 @@ function DressUpMountLink(link, forcedFrame)
 		local mountID = 0;
 		local shouldSetModelFromHyperlink = false;
 
-		local _, _, _, linkType, linkID = strsplit(":|H", link);
+		local linkType, linkOptions = LinkUtil.ExtractLink(link);
+		local linkID = LinkUtil.SplitLinkOptions(linkOptions);
 		if linkType == "item" then
 			mountID = C_MountJournal.GetMountFromItem(tonumber(linkID));
 		elseif linkType == "spell" then

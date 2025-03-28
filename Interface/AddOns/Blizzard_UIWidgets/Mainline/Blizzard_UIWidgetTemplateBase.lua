@@ -614,6 +614,8 @@ function UIWidgetBaseSpellTemplateMixin:SetIconAndBorderDisplay()
 		elseif not hasBorderTexture then
 			if isBuff then
 				self.Border:SetAtlas("dressingroom-itemborder-small-white", false);
+				self.Border:SetVertexColor(WHITE_FONT_COLOR:GetRGB());
+
 				hasBorderTexture = true;
 			elseif self.spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Circular then
 				local offsetX, offsetY = 0, 0;
@@ -623,7 +625,9 @@ function UIWidgetBaseSpellTemplateMixin:SetIconAndBorderDisplay()
 				end
 
 				self.Border:SetAtlas(textureKit or "Artifacts-PerkRing-Final", false);
-				self.Border:ClearAllPoints(); 
+				self.Border:SetVertexColor(WHITE_FONT_COLOR:GetRGB());
+
+				self.Border:ClearAllPoints();
 				self.Border:SetPoint("TOPLEFT", self.Icon, -offsetX, offsetY); 
 				self.Border:SetPoint("BOTTOMRIGHT", self.Icon, offsetX, -offsetY); 
 				hasBorderTexture = true;
@@ -645,14 +649,14 @@ function UIWidgetBaseSpellTemplateMixin:SetIconAndBorderDisplay()
 			end
 		end
 	else
-		self.Icon:SetVertexColor(1, 1, 1);
+		self.Icon:SetVertexColor(WHITE_FONT_COLOR:GetRGB());
 		-- Only tint if we did not apply a color override.
 		if showBorder and not isWorldLootObject or not atlasData.atlas then
 			local color = spellBorderColorFromTintValue[self.spellInfo.borderColor];
 			if color then
 				self.Border:SetVertexColor(color:GetRGB());
 			else
-				self.Border:SetVertexColor(1, 1, 1);
+				self.Border:SetVertexColor(WHITE_FONT_COLOR:GetRGB());
 			end
 		end
 	end
@@ -728,6 +732,8 @@ end
 
 function UIWidgetBaseSpellTemplateMixin:OnReset()
 	self:ClearOverrideNormalFontColor();
+	self.Border:SetVertexColor(WHITE_FONT_COLOR:GetRGB());
+
 	if self.effectController then
 		self.effectController:CancelEffect();
 		self.effectController = nil;

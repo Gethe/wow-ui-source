@@ -139,7 +139,7 @@ function VASCharacterSelectBlockBase:Initialize(results, wasFromRewind)
 	self.results = nil;
 	self:SetResultsShown(false);
 
-	local fromInitialize = true;
+	local fromInitialize = not wasFromRewind;
 	self:CheckEnable(fromInitialize);
 
 	CharSelectServicesFlowFrame:ClearErrorMessage();
@@ -213,7 +213,7 @@ end
 
 function VASCharacterSelectBlockBase:SaveResultInfo(characterButton, guid)
 	local index = CharacterSelectListUtil.GetIndexFromCharID(characterButton.characterID);
-	self.results = { selectedCharacterGUID = guid, characterButtonID = characterButton.characterID, characterIndex = index };
+	self.results = { selectedCharacterGUID = guid, characterID = characterButton.characterID, characterIndex = index };
 end
 
 function VASCharacterSelectBlockBase:GetResult()

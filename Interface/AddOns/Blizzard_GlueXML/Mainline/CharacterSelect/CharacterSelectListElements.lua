@@ -579,9 +579,17 @@ function CharacterSelectListCharacterInnerContentMixin:SetData(characterInfo)
 	self:UpdateCharacterDisplayInfo();
 	self:UpdateFactionEmblem();
 
-	local filteringByBoostable = CharacterUpgradeCharacterSelectBlock_IsFilteringByBoostable();
-	local enabledByFilter = not filteringByBoostable or CharacterUpgradeCharacterSelectBlock_IsCharacterBoostable(self:GetParent():GetCharacterID());
-	self:SetEnabledState(enabledByFilter);
+	-- If we are in the middle of a VAS flow, ensure enabled state is correct (handles cases like window size changing during flow).
+	-- Gear Update flow doesn't affect enabled state.
+	local enabledState = true;
+	if CharSelectServicesFlowFrame:IsShown() and CharacterServicesMaster.flow and CharacterServicesMaster.flow ~= RPEUpgradeFlow then
+		local servicesSelectedCharacterID = CharacterServicesMaster.flow:GetCurrentResults().characterID;
+		if servicesSelectedCharacterID then
+			enabledState = self:GetParent():GetCharacterID() == servicesSelectedCharacterID;
+		end
+	end
+
+	self:SetEnabledState(enabledState);
 end
 
 function CharacterSelectListCharacterInnerContentMixin:UpdateLastLogin(lastLoginBuild)
