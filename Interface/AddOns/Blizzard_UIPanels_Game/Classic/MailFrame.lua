@@ -518,8 +518,10 @@ function OpenMail_Update()
 	if ( isInvoice ) then
 		local invoiceType, itemName, playerName, bid, buyout, deposit, consignment, moneyDelay, etaHour, etaMin, count, commerceAuction = GetInboxInvoiceInfo(InboxFrame.openMailID);
 
-		if ( not IsUsingLegacyAuctionClient() and invoiceType and  playerName == nil) then
-			playerName = (invoiceType == "buyer") and AUCTION_HOUSE_MAIL_MULTIPLE_SELLERS or AUCTION_HOUSE_MAIL_MULTIPLE_BUYERS;
+		if ( invoiceType and playerName == nil ) then
+			if( not IsUsingLegacyAuctionClient() or commerceAuction ) then 
+				playerName = (invoiceType == "buyer") and AUCTION_HOUSE_MAIL_MULTIPLE_SELLERS or AUCTION_HOUSE_MAIL_MULTIPLE_BUYERS;
+			end
 		end
 
 		if ( playerName ) then
