@@ -362,6 +362,8 @@ function CharacterSelectNavBarMixin:SetStoreButtonEnabled(enabled)
 
 	self:UpdateButtonDividerState(self.GameModeButton);
 	self:UpdateButtonDividerState(self.StoreButton);
+
+	C_StoreSecure.GetPurchaseList();
 end
 
 function CharacterSelectNavBarMixin:SetMenuButtonEnabled(enabled)
