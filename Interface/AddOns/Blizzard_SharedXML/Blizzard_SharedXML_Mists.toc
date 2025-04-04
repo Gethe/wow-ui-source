@@ -176,3 +176,5 @@ AlertFrameIntrinsic.lua
 AlertFrameIntrinsic.xml
 
 Classic\VASErrorLookup.lua
+
+CommonUIPanelTemplates.xml

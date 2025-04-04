@@ -1864,6 +1864,7 @@ Interface\AddOns\Blizzard_SharedXML\ButtonGroup.lua
 Interface\AddOns\Blizzard_SharedXML\CharacterModelFrameMixin.lua
 Interface\AddOns\Blizzard_SharedXML\CircularBuffer.lua
 Interface\AddOns\Blizzard_SharedXML\ColorUtil.lua
+Interface\AddOns\Blizzard_SharedXML\CommonUIPanelTemplates.xml
 Interface\AddOns\Blizzard_SharedXML\CustomBindingButtonMixin.lua
 Interface\AddOns\Blizzard_SharedXML\CustomBindingButtonTemplate.xml
 Interface\AddOns\Blizzard_SharedXML\DataProvider.lua

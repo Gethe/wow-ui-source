@@ -75,7 +75,9 @@ Timer.lua
 Timer.xml
 DestinyFrame.xml
 SharedPetBattleTemplates.xml
+FloatingPetBattleTooltip.lua
 FloatingPetBattleTooltip.xml
+BattlePetTooltip.lua
 BattlePetTooltip.xml
 LossOfControlFrame.xml
 ArtifactToasts.xml

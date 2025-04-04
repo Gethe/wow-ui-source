@@ -56,7 +56,11 @@ function ItemQualityColorOverrideMixin:Init(initializer)
 		initializer:AddSearchTags(_G["ITEM_QUALITY"..data.qualityBase.."_DESC"]);
 	end
 
-	self.NewFeature:SetShown(initializer:IsNewTagShown());
+	local newTagShown = initializer:IsNewTagShown();
+	self.NewFeature:SetShown(newTagShown);
+	if newTagShown then
+		initializer:MarkSettingAsSeen();
+	end
 end
 
 function ItemQualityColorOverrideMixin:OnLoad()

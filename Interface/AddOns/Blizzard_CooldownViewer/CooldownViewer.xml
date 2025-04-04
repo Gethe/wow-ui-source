@@ -276,7 +276,7 @@
 			<KeyValue key="itemTemplate" value="CooldownViewerEssentialItemTemplate" type="string"/>
 			<KeyValue key="cooldownViewerCategory" value="Enum.CooldownViewerCategory.Essential" type="global"/>
 			<KeyValue key="layoutIndex" value="10" type="number"/>
-			<KeyValue key="hideWhenActionBarIsOverriden" value="false" type="boolean"/>
+			<KeyValue key="ignoreInLayoutWhenActionBarIsOverriden" value="true" type="boolean"/>
 		</KeyValues>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
@@ -293,7 +293,7 @@
 			<KeyValue key="itemTemplate" value="CooldownViewerUtilityItemTemplate" type="string"/>
 			<KeyValue key="cooldownViewerCategory" value="Enum.CooldownViewerCategory.Utility" type="global"/>
 			<KeyValue key="layoutIndex" value="11" type="number"/>
-			<KeyValue key="hideWhenActionBarIsOverriden" value="false" type="boolean"/>
+			<KeyValue key="ignoreInLayoutWhenActionBarIsOverriden" value="true" type="boolean"/>
 		</KeyValues>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
@@ -311,7 +311,7 @@
 			<KeyValue key="cooldownViewerCategory" value="Enum.CooldownViewerCategory.TrackedBuff" type="global"/>
 			<KeyValue key="itemActiveStateChangedEvent" value="CooldownViewerItem.Buff.ItemActiveStateChanged" type="string"/>
 			<KeyValue key="layoutIndex" value="9" type="number"/>
-			<KeyValue key="hideWhenActionBarIsOverriden" value="false" type="boolean"/>
+			<KeyValue key="ignoreInLayoutWhenActionBarIsOverriden" value="true" type="boolean"/>
 			<KeyValue key="defaultReservedMinimumHeight" value="40" type="number"/>
 		</KeyValues>
 		<Scripts>

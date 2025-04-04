@@ -41,6 +41,7 @@
 				</Frames>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
+					<OnUpdate method="OnUpdate"/>
 				</Scripts>
 			</Frame>
 			<Frame parentKey="RenameFlow" mixin="GuildRenameFlowMixin" hidden="true">
@@ -98,8 +99,8 @@
 						</FontString>
 						<FontString parentKey="CostLabel" inherits="QuestFont" justifyH="LEFT" text="GUILD_RENAME_COSTS_LABEL">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.NameBox" relativePoint="BOTTOMLEFT" x="-5" y="-30"/>
-								<Anchor point="TOPRIGHT" relativeKey="$parent.NameBox" relativePoint="BOTTOMRIGHT" x="0" y="-30"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.StatusText" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.StatusText" relativePoint="BOTTOMRIGHT" x="0" y="-10"/>
 							</Anchors>
 						</FontString>
 					</Layer>

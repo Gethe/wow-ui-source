@@ -1,5 +1,5 @@
 ## Title: Blizzard_GuildRename
-## LoadOnDemand: 1
+## LoadOnDemand: 0
 ## RequiredDep: Blizzard_UIPanels_Game
 ## AllowLoad: Game
 ## AllowLoadGameType: standard

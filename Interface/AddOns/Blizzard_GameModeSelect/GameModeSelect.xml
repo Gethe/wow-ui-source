@@ -117,7 +117,7 @@
 		</Scripts>
 	</Button>
 
-	<Frame name="GameModeFrameTemplate" mixin="GameModeFrameMixin" virtual="true" inherits="CallbackRegistrantTemplate, ResizeLayoutFrame" hidden="true">
+	<Frame name="GameModeFrameTemplate" mixin="GameModeFrameMixin" virtual="true" inherits="CallbackRegistrantTemplate, ResizeLayoutFrame, DefaultScaleFrame" hidden="true">
 		<KeyValues>
 			<KeyValue key="fixedHeight" value="122"/>
 		</KeyValues>

@@ -198,6 +198,8 @@ AlertFrameIntrinsic.xml
 Mainline\MajorFactionRenownSharedTemplates.lua
 Mainline\MajorFactionRenownSharedTemplates.xml
 
+CommonUIPanelTemplates.xml
+
 ## Deprecated. Retained only for addons
 HybridScrollFrame.lua
 HybridScrollFrame.xml

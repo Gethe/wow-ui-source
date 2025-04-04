@@ -35,6 +35,7 @@ local DelvesConstants =
 			Values =
 			{
 				{ Name = "DELVES_MIN_PLAYER_LEVEL_CONTENT_TUNING_ID", Type = "number", Value = 2677 },
+				{ Name = "DELVES_NORMAL_KEY_CURRENCY_ID", Type = "number", Value = 3028 },
 				{ Name = "DELVES_COMPANION_INFO_SELECTION_CHARACTER_DATA_ELEMENT_ID", Type = "number", Value = 13 },
 			},
 		},

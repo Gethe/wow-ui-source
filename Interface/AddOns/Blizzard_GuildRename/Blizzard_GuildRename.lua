@@ -406,6 +406,8 @@ local statusIcons = {
 	[false] = "common-icon-redx",
 };
 
+local DEFAULT_STATUS_TEXT = " ";
+
 local function GetNameStatusDisplay(statusCode, nameCheckError)
 	if statusCode ~= Enum.GuildErrorType.Success then
 		if statusCode == Enum.GuildErrorType.NameInvalid and nameCheckError then
@@ -415,7 +417,7 @@ local function GetNameStatusDisplay(statusCode, nameCheckError)
 		end
 	end
 
-	return "";
+	return DEFAULT_STATUS_TEXT;
 end
 
 function GuildRenameFlowMixin:UpdateFlowNameStatus()
@@ -431,7 +433,7 @@ end
 function GuildRenameFlowMixin:ClearRenameStatus()
 	self:GetManager():SetNameCheckPassed(false);
 	self.Status:Hide();
-	self.StatusText:SetText("");
+	self.StatusText:SetText(DEFAULT_STATUS_TEXT);
 end
 
 function GuildRenameFlowMixin:OnShow()
@@ -470,6 +472,45 @@ function GuildRenameTitleFlowMixin:OnLoad()
 	end);
 end
 
+function GuildRenameTitleFlowMixin:OnUpdate()
+	self:UpdateOptions();
+end
+
+function GuildRenameTitleFlowMixin:UpdateOptions()
+	local manager = self:GetManager();
+
+	if manager:HasStatus() then
+		local hasPermission = self.hasRenamePermission;
+		local renameCooldownRemaining = manager:GetRenameCooldownRemaining();
+		local refundTimeRemaining = manager:GetRefundTimeRemaining();
+		local showRenameOption = hasPermission or renameCooldownRemaining > 0;
+		local showRefundOption = hasPermission and refundTimeRemaining > 0;
+
+		self.RenameOption:SetShown(showRenameOption);
+
+		if showRenameOption then
+			self.RenameOption:SetEnabled(hasPermission and renameCooldownRemaining == 0);
+
+			if hasPermission and renameCooldownRemaining <= 0 then
+				self.RenameOption:SetTextAndResize(GUILD_RENAME_OPTIONS_RENAME_AVAILABLE);
+			elseif renameCooldownRemaining > 0 then
+				local timeUntilRename = self:FormatTime(renameCooldownRemaining);
+				self.RenameOption:SetTextAndResize(GUILD_RENAME_OPTIONS_RENAME_COOLDOWN:format(timeUntilRename));
+			end
+		end
+
+		local canRefund = hasPermission and refundTimeRemaining > 0;
+		self.RefundOption:SetShown(canRefund);
+
+		if canRefund then
+			self.RefundOption:SetEnabled(true);
+
+			local timeUntilRefundExpires = self:FormatTime(refundTimeRemaining);
+			self.RefundOption:SetTextAndResize(GUILD_RENAME_OPTIONS_REFUND:format(timeUntilRefundExpires));
+		end
+	end
+end
+
 function GuildRenameTitleFlowMixin:UpdateFromStatus()
 	local manager = self:GetManager();
 
@@ -477,32 +518,14 @@ function GuildRenameTitleFlowMixin:UpdateFromStatus()
 	self.RenameOption:Hide();
 	self.RefundOption:Hide();
 
+	self.hasRenamePermission = false;
+
 	if manager:IsRenameEnabled() and manager:HasRenamePermission() then
 		self.Description:SetText(GUILD_RENAME_OPTIONS_DESCRIPTION);
 		self.Description:Show();
 
-		local hasPermission = manager:HasRenamePermission();
-		local renameCooldownRemaining = manager:GetRenameCooldownRemaining();
-	
-		self.RenameOption:SetShown(hasPermission or renameCooldownRemaining > 0);
-		self.RenameOption:SetEnabled(hasPermission and renameCooldownRemaining == 0);
-
-		if hasPermission and renameCooldownRemaining <= 0 then
-			self.RenameOption:SetTextAndResize(GUILD_RENAME_OPTIONS_RENAME_AVAILABLE);
-		elseif renameCooldownRemaining > 0 then
-			local timeUntilRename = self:FormatTime(renameCooldownRemaining);
-			self.RenameOption:SetTextAndResize(GUILD_RENAME_OPTIONS_RENAME_COOLDOWN:format(timeUntilRename));
-		end
-
-		local refundTimeRemaining = manager:GetRefundTimeRemaining();
-		local canRefund = hasPermission and refundTimeRemaining > 0;
-		self.RefundOption:SetShown(canRefund);
-		self.RefundOption:SetEnabled(canRefund);
-
-		if canRefund then
-			local timeUntilRefundExpires = self:FormatTime(refundTimeRemaining);
-			self.RefundOption:SetTextAndResize(GUILD_RENAME_OPTIONS_REFUND:format(timeUntilRefundExpires));
-		end
+		self.hasRenamePermission = manager:HasRenamePermission();
+		self:UpdateOptions();
 	else
 		local hasStatus = manager:HasStatus();
 		self.Description:SetShown(hasStatus);

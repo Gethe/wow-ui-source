@@ -70,3 +70,7 @@ Classic\ClassTrainerFrameTemplates.xml
 Wrath\EquipmentManager.lua
 EquipmentFlyout.xml
 GhostFrame.xml
+FloatingPetBattleTooltip.lua
+FloatingPetBattleTooltip.xml
+BattlePetTooltip.lua
+BattlePetTooltip.xml

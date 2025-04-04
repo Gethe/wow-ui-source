@@ -129,6 +129,12 @@ function SettingsListPanelInitializer:IsNewTagShown()
 	return self.data.panelSetting and IsNewSettingInCurrentVersion(self.data.panelSetting);
 end
 
+function SettingsListPanelInitializer:MarkSettingAsSeen()
+	if self.data.panelSetting then
+		MarkNewSettingAsSeen(self.data.panelSetting);
+	end
+end
+
 SettingsListElementInitializer = CreateFromMixins(ScrollBoxFactoryInitializerMixin, SettingsElementHierarchyMixin, SettingsSearchableElementMixin);
 
 function SettingsListElementInitializer:Init(frameTemplate, data)

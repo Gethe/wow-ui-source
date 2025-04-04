@@ -199,7 +199,7 @@ function DressUpBattlePet(creatureID, displayID, speciesID, link, forcedFrame)
 
 	local battlePetActor = frame.ModelScene:GetActorByTag("pet");
 	if ( battlePetActor ) then
-		battlePetActor:SetModelByCreatureDisplayID(displayID);
+		battlePetActor:SetModelByCreatureDisplayID(displayID, true);
 		battlePetActor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
 	end
 	return true;

@@ -134,6 +134,12 @@ function UIParentManagedFrameContainerMixin:UpdateManagedFramesAlphaState()
 			if(setToAlpha ~= currentFrameAlpha) then
 				frame:SetAlpha(setToAlpha);
 			end
+
+			-- Since the frame isn't actually hidden, give it a way to remove itself from layout
+			-- if that's the desired behavior.
+			if frame.ignoreInLayoutWhenActionBarIsOverriden then
+				frame.ignoreInLayout = isActionBarOverriden;
+			end
 		end
 	end
 end
