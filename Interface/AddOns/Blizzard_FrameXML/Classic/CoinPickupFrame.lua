@@ -1,3 +1,5 @@
+local GetMoneyTypeInfoField = GetMoneyTypeInfoField;
+
 COINFRAME_BINDING_CACHE = {}
 
 function OpenCoinPickupFrame(multiplier, maxMoney, parent)
@@ -7,7 +9,7 @@ function OpenCoinPickupFrame(multiplier, maxMoney, parent)
 
 	if ( GetCursorMoney() > 0 ) then
 		if ( CoinPickupFrame.owner ) then
-			MoneyTypeInfo[parent.moneyType].DropFunc(CoinPickupFrame);
+			GetMoneyTypeInfoField(parent.moneyType, "DropFunc")(CoinPickupFrame);
 			PlaySound(SOUNDKIT.IG_BACKPACK_COIN_SELECT);
 		end
 		CoinPickupFrame:Hide();
@@ -221,7 +223,7 @@ end
 
 function CoinPickupFrameOkay_Click()
 	if ( (CoinPickupFrame.money > 0) and CoinPickupFrame.owner ) then
-		MoneyTypeInfo[CoinPickupFrame.owner.moneyType].PickupFunc(CoinPickupFrame, CoinPickupFrame.money * CoinPickupFrame.multiplier);
+		GetMoneyTypeInfoField(CoinPickupFrame.owner.moneyType, "PickupFunc")(CoinPickupFrame, CoinPickupFrame.money * CoinPickupFrame.multiplier);
 	end
 	CoinPickupFrame:Hide();
 	PlaySound(SOUNDKIT.IG_BACKPACK_COIN_OK);
