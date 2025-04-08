@@ -565,6 +565,20 @@ local SimpleFrameAPI =
 			},
 		},
 		{
+			Name = "IsDrawLayerEnabled",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "layer", Type = "DrawLayer", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsEventRegistered",
 			Type = "Function",
 

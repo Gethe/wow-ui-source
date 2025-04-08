@@ -31,6 +31,7 @@ local Totem =
 		{
 			Name = "GetTotemInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -44,6 +45,7 @@ local Totem =
 				{ Name = "startTime", Type = "number", Nilable = false },
 				{ Name = "duration", Type = "number", Nilable = false },
 				{ Name = "icon", Type = "fileID", Nilable = false },
+				{ Name = "modRate", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -87,6 +89,7 @@ local Totem =
 				{ Name = "startTime", Type = "number", Nilable = false },
 				{ Name = "duration", Type = "number", Nilable = false },
 				{ Name = "icon", Type = "fileID", Nilable = false },
+				{ Name = "modRate", Type = "number", Nilable = false },
 			},
 		},
 	},

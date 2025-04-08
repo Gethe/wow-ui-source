@@ -75,7 +75,7 @@ local PlayerLocation =
 
 			Returns =
 			{
-				{ Name = "sex", Type = "number", Nilable = true },
+				{ Name = "sex", Type = "UnitSex", Nilable = true },
 			},
 		},
 		{

@@ -253,7 +253,7 @@ end
 CharacterCreateConfigurationMixin = {};
 
 function CharacterCreateConfigurationMixin:OnLoad()
-	self:RegisterEvent("GAME_MODE_CHANGED");
+	self:RegisterEvent("GAME_MODE_DISPLAY_INFO_UPDATED");
 	local _, _, _, characterCreateOuterBorderXOffset, _ = CharacterCreateOuterBorder1:GetPoint(1);
 	self.defaultCharacterCreateOuterBorderXOffset = characterCreateOuterBorderXOffset;
 	self.defaultCharacterCreateOuterBorder2Height = CharacterCreateOuterBorder2:GetHeight();
@@ -262,7 +262,7 @@ function CharacterCreateConfigurationMixin:OnLoad()
 end
 
 function CharacterCreateConfigurationMixin:OnEvent(event)
-	if event == "GAME_MODE_CHANGED" then
+	if event == "GAME_MODE_DISPLAY_INFO_UPDATED" then
 		self:Update();
 	end
 end
@@ -270,16 +270,13 @@ end
 function CharacterCreateConfigurationMixin:Update()
 	local extraHeight = 0;
 	local outerBorderFileID = self.defaultBackgroundTexture;
-	
-	local gameModeRecordID = C_GameModeManager.GetCurrentGameModeRecordID();
-	if gameModeRecordID then
-		local gameModeDisplayInfo = C_GameModeManager.GetGameModeDisplayInfo(gameModeRecordID);
-		if gameModeDisplayInfo then
-			extraHeight = gameModeDisplayInfo.characterCreateExtraHeight;
 
-			if (gameModeDisplayInfo.characterCreateOuterBorder) then
-				outerBorderFileID = gameModeDisplayInfo.characterCreateOuterBorder;
-			end
+	local gameModeDisplayInfo = C_GameRules.GetCurrentGameModeDisplayInfo();
+	if gameModeDisplayInfo then
+		extraHeight = gameModeDisplayInfo.characterCreateExtraHeight;
+
+		if (gameModeDisplayInfo.characterCreateOuterBorder) then
+			outerBorderFileID = gameModeDisplayInfo.characterCreateOuterBorder;
 		end
 	end
 

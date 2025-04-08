@@ -1,0 +1,117 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	
+	<Button name="AuctionHouseItemListLineTemplate" mixin="AuctionHouseItemListLineMixin" virtual="true">
+		<Size x="0" y="20"/>
+		<Anchors>
+			<Anchor point="LEFT"/>
+			<Anchor point="RIGHT"/>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="SelectedHighlight" atlas="auctionhouse-ui-row-select" alphaMode="ADD" hidden="true"/>
+
+				<!-- Using a normal texture for highlight to control the behavior. -->
+				<Texture parentKey="HighlightTexture" atlas="auctionhouse-ui-row-highlight" alphaMode="ADD" setAllPoints="true" hidden="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+		<NormalTexture parentKey="NormalTexture" atlas="auctionhouse-rowstripe-1" setAllPoints="true"/>
+	</Button>
+
+	<Button name="AuctionHouseFavoritableLineTemplate" mixin="AuctionHouseFavoritableLineMixin" inherits="AuctionHouseItemListLineTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true"/>
+
+	<Frame name="AuctionHouseItemListHeadersTemplate" virtual="true">
+		<Size x="0" y="19"/>
+	</Frame>
+
+	<Frame name="AuctionHouseItemListTemplate" mixin="AuctionHouseItemListMixin" inherits="AuctionHouseBackgroundTemplate" virtual="true">
+		<KeyValues>
+			<!--
+			hideStripes: Hides the normal texture that usually alternates each line, making all lines invisible.
+			hideRefreshFrame: Hide the refresh frame.
+			refreshFrameXOffset: The x offset (from the topright of the item list) for the refresh frame.
+			refreshFrameYOffset: The y offset (from the topright of the item list) for the refresh frame.
+			<KeyValue key="hideStripes" value="true" type="boolean"/>
+			<KeyValue key="hideRefreshFrame" value="false" type="boolean"/>
+			<KeyValue key="refreshFrameXOffset" value="0" type="number"/>
+			<KeyValue key="refreshFrameYOffset" value="0" type="number"/>
+			-->
+
+			<KeyValue key="layoutType" value="InsetFrameTemplate" type="string"/>
+			<KeyValue key="backgroundYOffset" value="-19" type="number"/>
+			<KeyValue key="backgroundTextureClassic" value="Interface\FrameGeneral\UI-Background-Marble" type="string"/>
+			<KeyValue key="textureXOffsetClassic" value="2" type="number"/>
+			<KeyValue key="textureYOffsetClassic" value="-2" type="number"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="RefreshFrame" inherits="AuctionHouseRefreshFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="HeaderContainer" inherits="AuctionHouseItemListHeadersTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="4" y="-1"/>
+					<Anchor point="TOPRIGHT" x="-26" y="-1"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.HeaderContainer" relativePoint="BOTTOMLEFT" x="0" y="-6"/>
+					<Anchor point="RIGHT" relativeKey="$parent.HeaderContainer" relativePoint="RIGHT"/>
+					<Anchor point="BOTTOM" x="0" y="3"/>
+				</Anchors>
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="WowClassicScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="-3" y="25"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="7" y="-5"/>
+				</Anchors>
+			</EventFrame>
+			<Frame parentKey="LoadingSpinner" inherits="SpinnerTemplate" hidden="true">
+				<Size x="90" y="90"/>
+				<Anchors>
+					<Anchor point="CENTER" x="-12" y="-15"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="SearchingText" inherits="GameFontNormalHuge4" text="SEARCHING">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="10"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="ResultsText" inherits="GameFontNormal" hidden="true">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.ScrollBox" relativePoint="TOP" x="0" y="-45"/>
+						<Anchor point="LEFT" x="45"/>
+						<Anchor point="RIGHT" x="-67"/>
+					</Anchors>
+					<Color color="NORMAL_FONT_COLOR"/>
+					<Shadow>
+						<Offset>
+							<AbsDimension x="1" y="-1"/>
+						</Offset>
+						<Color r="0" g="0" b="0"/>
+					</Shadow>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Frame>
+</Ui>

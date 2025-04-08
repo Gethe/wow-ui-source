@@ -83,6 +83,7 @@ local EncounterJournal =
 		{
 			Name = "GetLootInfoByIndex",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -113,6 +114,7 @@ local EncounterJournal =
 		{
 			Name = "GetSectionInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

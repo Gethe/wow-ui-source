@@ -62,7 +62,6 @@ function CommunitiesStreamDropdownMixin:SetupMenu()
 			local text = GetStreamName(clubId, stream);
 			stream.dropdownText = text;
 			
-			-- TODO:: Support mention-based notifications once we have support for mentions.
 			local notifyAll = streamToNotificationSetting[streamId] == Enum.ClubStreamNotificationFilter.All;
 			if notifyAll and CommunitiesUtil.DoesCommunityStreamHaveUnreadMessages(clubId, streamId) then
 				text = CreateCommunitiesIconNotificationMarkup(text);
@@ -364,6 +363,9 @@ function CommunitiesAddToChatMixin:OnShow()
 		local streamId = self:GetParent():GetSelectedStreamId();
 		local streamInfo = C_Club.GetStreamInfo(clubId, streamId);
 		local channelName = Chat_GetCommunitiesChannelName(clubId, streamId);
+		if not streamInfo then
+			return;
+		end
 		local isGuildStream = streamInfo.streamType == Enum.ClubStreamType.Guild or streamInfo.streamType == Enum.ClubStreamType.Officer;
 	
 		rootDescription:CreateTitle(COMMUNITIES_ADD_TO_CHAT_DROP_DOWN_TITLE);

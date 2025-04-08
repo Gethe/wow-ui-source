@@ -20,6 +20,10 @@ LAST_ACTIVE_CHAT_EDIT_BOX = nil;
 
 CHAT_SHOW_IME = false;
 
+DevTools_AddMessageHandler(function(msg)
+	DEFAULT_CHAT_FRAME:AddMessage(msg);
+end);
+
 function GetChatTimestampFormat()
 	local value = Settings.GetValue("showTimestamps");
 	if value ~= "none" then
@@ -2576,6 +2580,10 @@ SlashCmdList["OPEN_LOOT_HISTORY"] = function(msg)
 	ToggleLootHistoryFrame();
 end
 
+SlashCmdList["RAIDFINDER"] = function(msg)
+	PVEFrame_ToggleFrame("GroupFinderFrame", RaidFinderFrame);
+end
+
 SlashCmdList["API"] = function(msg)
 	APIDocumentation_LoadUI();
 	APIDocumentation:HandleSlashCommand(msg);
@@ -4474,6 +4482,21 @@ function ChatEdit_InsertLink(text)
 		CommunitiesFrame.ChatEditBox:Insert(text);
 		return true;
 	end
+	if ( not IsUsingLegacyAuctionClient() and AuctionHouseFrame and AuctionHouseFrame:IsVisible() ) then
+		local item;
+		if ( strfind(text, "battlepet:") ) then
+			local petName = strmatch(text, "%[(.+)%]");
+			item = petName;
+		elseif ( strfind(text, "item:", 1, true) ) then
+			item = C_Item.GetItemInfo(text);
+		end
+		if ( item ) then
+			if ( AuctionHouseFrame:SetSearchText(item) ) then
+				return true;
+			end
+		end
+	end
+
 	return false;
 end
 
@@ -5253,6 +5276,11 @@ function Chat_GetColoredChatName(chatType, chatTarget)
 		local colorString = format("|cff%02x%02x%02x", info.r * 255, info.g * 255, info.b * 255);
 		return format("%s|Hchannel:%s|h[%s]|h|r", colorString, chatType, _G[chatType]);
 	end
+end
+
+function Chat_AddSystemMessage(messageText)
+	local info = ChatTypeInfo["SYSTEM"];
+	DEFAULT_CHAT_FRAME:AddMessage(messageText, info.r, info.g, info.b, info.id);
 end
 
 local function GetSelectedLanguageID()

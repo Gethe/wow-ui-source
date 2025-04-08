@@ -461,6 +461,10 @@ function PagedContentFrameBaseMixin:DisplayViewsForCurrentPage()
 	self:TriggerEvent(PagedContentFrameBaseMixin.Event.OnUpdate);
 end
 
+-- Override for setting paging controls, useful if the layout has it located elsewhere than a direct child.
+function PagedContentFrameBaseMixin:SetPagingControls(pagingControls)
+	self.PagingControls = pagingControls;
+end
 
 --------- Layout-specific derived mixin functions ---------
 

@@ -56,6 +56,7 @@ local SimpleScriptRegionResizingAPI =
 		{
 			Name = "GetPoint",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -75,6 +76,7 @@ local SimpleScriptRegionResizingAPI =
 		{
 			Name = "GetPointByName",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

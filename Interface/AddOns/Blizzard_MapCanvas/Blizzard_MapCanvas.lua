@@ -107,8 +107,33 @@ function MapCanvasMixin:RemoveDataProviderEvent(event)
 	end
 end
 
-function MapCanvasMixin:SetPinNudgingDirty(dirty)
-	self.pinNudgingDirty = dirty;
+function MapCanvasMixin:SetPinNudgingDirty()
+	self.pinNudgingDirty = true;
+end
+
+function MapCanvasMixin:AddPinToNudge(pin)
+	table.insert(self.pinsToNudge, pin);
+end
+
+function MapCanvasMixin:IsPinNudgingDirty()
+	return self.pinNudgingDirty or (self.pinsToNudge and #self.pinsToNudge > 0);
+end
+
+function MapCanvasMixin:EnumeratePinsToNudge()
+	if self.pinNudgingDirty then
+		return self:EnumerateAllPins();
+	elseif #self.pinsToNudge then
+		return ipairs(self.pinsToNudge);
+	end
+end
+
+function MapCanvasMixin:MarkPinNudgingClean()
+	self.pinNudgingDirty = false;
+	self.pinsToNudge = {};
+end
+
+function MapCanvasMixin:SetPinPostProcessDirty()
+	self:SetPinNudgingDirty();
 end
 
 do
@@ -200,7 +225,7 @@ end
 
 function MapCanvasMixin:RemovePin(pin)
 	if pin:GetNudgeSourceRadius() > 0 then
-		self.pinNudgingDirty = true;
+		self:SetPinNudgingDirty();
 	end
 
 	self.pinPools[pin.pinTemplate]:Release(pin);
@@ -346,22 +371,13 @@ function MapCanvasMixin:CalculatePinNudging(targetPin)
 end
 
 function MapCanvasMixin:UpdatePinNudging()
-	if not self.pinNudgingDirty and #self.pinsToNudge == 0 then
-		return;
-	end
-
-	if self.pinNudgingDirty then
-		for targetPin in self:EnumerateAllPins() do
+	if self:IsPinNudgingDirty() then
+		for targetPin in self:EnumeratePinsToNudge() do
 			self:CalculatePinNudging(targetPin);
 		end
-	else
-		for _, targetPin in ipairs(self.pinsToNudge) do
-			self:CalculatePinNudging(targetPin);
-		end
-	end
 
-	self.pinNudgingDirty = false;
-	self.pinsToNudge = {};
+		self:MarkPinNudgingClean();
+	end
 end
 
 function MapCanvasMixin:TryRefreshingDebugAreaTriggers()
@@ -470,9 +486,9 @@ function MapCanvasMixin:SetPinPosition(pin, normalizedX, normalizedY, insetIndex
 	if not pin:IgnoresNudging() then
 		if pin:GetNudgeSourceRadius() > 0 then
 			-- If we nudge other things we need to recalculate all nudging.
-			self.pinNudgingDirty = true;
+			self:SetPinNudgingDirty();
 		else
-			self.pinsToNudge[#self.pinsToNudge + 1] = pin;
+			self:AddPinToNudge(pin);
 		end
 	end
 end

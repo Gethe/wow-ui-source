@@ -23,6 +23,7 @@ local ConfigurationWarnings =
 		{
 			Name = "GetConfigurationWarningString",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

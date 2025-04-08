@@ -1,4 +1,4 @@
-## Title: Blizzard World Loot Obejct List
+## Title: Blizzard World Loot Object List
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
 ## AllowLoadGameType: wowlabs

@@ -1,0 +1,52 @@
+## Interface: 0
+## Title: Blizzard Auction House UI
+## Secure: 1
+## LoadOnDemand: 1
+## SavedVariables: g_auctionHouseSortsBySearchContext
+## SavedVariablesPerCharacter: g_activeBidAuctionIDs
+## AllowLoad: game
+## AllowLoadGameType: tbc, wrath, cata
+Shared\Blizzard_AuctionHouseUtil.lua
+Classic\Blizzard_AuctionHouseUtil.lua
+Shared\Blizzard_AuctionData.lua
+Classic\Blizzard_AuctionData.lua
+Shared\Blizzard_AuctionHouseSharedTemplates.lua
+Classic\Blizzard_AuctionHouseSharedTemplates.lua
+Shared\Blizzard_AuctionHouseSharedTemplates.xml
+Classic\Blizzard_AuctionHouseSharedTemplates.xml
+Shared\Blizzard_AuctionHouseTableBuilder.lua
+Shared\Blizzard_AuctionHouseTableBuilder.xml
+Shared\Blizzard_AuctionHouseTab.lua
+Classic\Blizzard_AuctionHouseTab.xml
+Shared\Blizzard_AuctionHouseItemList.lua
+Classic\Blizzard_AuctionHouseItemList.xml
+Shared\Blizzard_AuctionHouseCategoriesList.lua
+Classic\Blizzard_AuctionHouseCategoriesList.lua
+Classic\Blizzard_AuctionHouseCategoriesList.xml
+Shared\Blizzard_AuctionHouseSearchBar.lua
+Shared\Blizzard_AuctionHouseSearchBar.xml
+Shared\Blizzard_AuctionHouseBrowseResultsFrame.lua
+Shared\Blizzard_AuctionHouseBrowseResultsFrame.xml
+Shared\Blizzard_AuctionHouseCommoditiesList.lua
+Shared\Blizzard_AuctionHouseCommoditiesList.xml
+Shared\Blizzard_AuctionHouseItemBuyFrame.lua
+Shared\Blizzard_AuctionHouseItemBuyFrame.xml
+Shared\Blizzard_AuctionHouseSellFrame.lua
+Shared\Blizzard_AuctionHouseSellFrame.xml
+Shared\Blizzard_AuctionHouseCommoditiesSellFrame.lua
+Shared\Blizzard_AuctionHouseCommoditiesSellFrame.xml
+Shared\Blizzard_AuctionHouseCommoditiesBuyFrame.lua
+Shared\Blizzard_AuctionHouseCommoditiesBuyFrame.xml
+Shared\Blizzard_AuctionHouseItemSellFrame.lua
+Shared\Blizzard_AuctionHouseItemSellFrame.xml
+Shared\Blizzard_AuctionHouseAuctionsFrame.lua
+Classic\Blizzard_AuctionHouseAuctionsFrame.xml
+Shared\Blizzard_AuctionHouseWoWTokenFrame.lua
+Shared\Blizzard_AuctionHouseWoWTokenFrame.xml
+Shared\Blizzard_AuctionHouseBuyDialog.lua
+Shared\Blizzard_AuctionHouseBuyDialog.xml
+Shared\Blizzard_AuctionHouseMultisell.lua
+Classic\Blizzard_AuctionHouseMultisell.xml
+Shared\Blizzard_AuctionHouseFrame.lua
+Shared\Blizzard_AuctionHouseFrame.xml
+Localization.lua

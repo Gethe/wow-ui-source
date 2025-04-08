@@ -9,6 +9,7 @@ local MerchantFrame =
 		{
 			Name = "GetBuybackItemID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

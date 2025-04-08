@@ -44,6 +44,9 @@
 	<Font name="GlueFontRed" inherits="GlueFontNormal" virtual="true">
 		<Color r="1.0" g="0.1" b="0.1"/>
 	</Font>
+	<Font name="GlueFontYellow" inherits="GlueFontNormal" virtual="true">
+		<Color color="YELLOW_FONT_COLOR"/>
+	</Font>
 	<Font name="GlueFontLightYellow" inherits="GlueFontNormal" virtual="true">
 		<Color r="1.0" g="0.96" b="0.62"/>
 	</Font>

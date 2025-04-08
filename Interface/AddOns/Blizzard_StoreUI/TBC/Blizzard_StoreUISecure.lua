@@ -394,7 +394,7 @@ function StoreFrame_UpdateCard(card, entryID, discountReset, forceModelUpdate)
 	end
 
 	if (card == StoreFrame.SplashSingle) then
-		if bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlag.UseHorizontalLayoutForFullCard) == Enum.BattlepayDisplayFlag.UseHorizontalLayoutForFullCard then
+		if bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlags.UseHorizontalLayoutForFullCard) == Enum.BattlepayDisplayFlags.UseHorizontalLayoutForFullCard then
 			StoreFrameSplashSingle_SetStyle(StoreFrame.SplashSingle, "horizontal", entryInfo.sharedData.overrideBackground);
 		else
 			StoreFrameSplashSingle_SetStyle(StoreFrame.SplashSingle, nil, entryInfo.sharedData.overrideBackground);
@@ -455,9 +455,9 @@ function StoreFrame_UpdateCard(card, entryID, discountReset, forceModelUpdate)
 	StoreProductCard_HideMagnifier(card);
 
 	local hasAnyCard = #entryInfo.sharedData.cards > 0;
-	local allowShowingModel = bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlag.CardDoesNotShowModel) ~= Enum.BattlepayDisplayFlag.CardDoesNotShowModel;
+	local allowShowingModel = bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlags.CardDoesNotShowModel) ~= Enum.BattlepayDisplayFlags.CardDoesNotShowModel;
 	local showAnyModel = allowShowingModel and hasAnyCard;
-	local tryToShowTexture = not showAnyModel or bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlag.CardAlwaysShowsTexture) == Enum.BattlepayDisplayFlag.CardAlwaysShowsTexture;
+	local tryToShowTexture = not showAnyModel or bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlags.CardAlwaysShowsTexture) == Enum.BattlepayDisplayFlags.CardAlwaysShowsTexture;
 
 	if showAnyModel then
 		local showShadows = (card ~= StoreFrame.SplashSingle);
@@ -468,7 +468,7 @@ function StoreFrame_UpdateCard(card, entryID, discountReset, forceModelUpdate)
 
 	-- This is a hack to solve an issue with the Warpath Pack bundle. 
 	-- This should be fixed properly with a flag to hide the icon in a data driven manner
-	local shouldShowWarPathIcon = entryInfo.productID ~= 1121 or not card.isSplash;
+	local shouldShowWarPathIcon = (entryInfo.productID ~= 1121 and entryInfo.productID ~= 975) or not card.isSplash;
 	if not shouldShowWarPathIcon then
 		-- Upgrade Arrow will continue to show if we don't do this separately
 		card.UpgradeArrow:Hide();
@@ -480,7 +480,7 @@ function StoreFrame_UpdateCard(card, entryID, discountReset, forceModelUpdate)
 		StoreProductCard_HideIcon(card);
 	end
 
-	if bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlag.HiddenPrice) == Enum.BattlepayDisplayFlag.HiddenPrice then
+	if bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlags.HiddenPrice) == Enum.BattlepayDisplayFlags.HiddenPrice then
 		card.NormalPrice:Hide();
 		card.SalePrice:Hide();
 		card.Strikethrough:Hide();
@@ -700,7 +700,7 @@ function StoreFrame_FilterEntries(entries)
 		local partiallyOwned = StoreFrame_IsPartiallyOwned(entryInfo);
 
 		if completelyOwned or partiallyOwned then
-			local hideWhenOwned = bit.band(sharedData.flags, Enum.BattlepayDisplayFlag.HideWhenOwned) ~= 0;
+			local hideWhenOwned = bit.band(sharedData.flags, Enum.BattlepayDisplayFlags.HideWhenOwned) ~= 0;
 			if not hideWhenOwned then
 				table.insert(filteredEntries, entryID);
 			end
@@ -885,7 +885,7 @@ end
 
 function StoreFrame_DoesProductGroupShowOwnedAsDisabled(groupID)
 	local productGroupInfo = C_StoreSecure.GetProductGroupInfo(groupID);
-	return bit.band(productGroupInfo.flags, Enum.BattlepayProductGroupFlag.DisableOwnedProducts) == Enum.BattlepayProductGroupFlag.DisableOwnedProducts;
+	return bit.band(productGroupInfo.flags, Enum.BattlepayProductGroupFlags.DisableOwnedProducts) == Enum.BattlepayProductGroupFlags.DisableOwnedProducts;
 end
 
 function StoreFrame_IsProductGroupDisabled(groupID)
@@ -895,9 +895,9 @@ function StoreFrame_IsProductGroupDisabled(groupID)
 	end
 
 	local displayAsDisabled = productGroupInfo.disabledTooltip ~= nil and not StoreFrame_DoesProductGroupHavePurchasableItems(groupID);
-	local enabledForTrial = bit.band(productGroupInfo.flags, Enum.BattlepayProductGroupFlag.EnabledForTrial) == Enum.BattlepayProductGroupFlag.EnabledForTrial;
+	local enabledForTrial = bit.band(productGroupInfo.flags, Enum.BattlepayProductGroupFlags.EnabledForTrial) == Enum.BattlepayProductGroupFlags.EnabledForTrial;
 	local trialRestricted = IsTrialAccount() and not enabledForTrial;
-	local enabledForVeteran = bit.band(productGroupInfo.flags, Enum.BattlepayProductGroupFlag.EnabledForVeteran) == Enum.BattlepayProductGroupFlag.EnabledForVeteran;
+	local enabledForVeteran = bit.band(productGroupInfo.flags, Enum.BattlepayProductGroupFlags.EnabledForVeteran) == Enum.BattlepayProductGroupFlags.EnabledForVeteran;
 	local veteranRestricted = IsVeteranTrialAccount() and not enabledForVeteran;
 	return displayAsDisabled or trialRestricted or veteranRestricted;
 end
@@ -916,8 +916,8 @@ function StoreCategoryFrame_SetGroupID(self, groupID)
 	self.IconFrame:SetDesaturated(disabled);
 	self.Text:SetFontObject(disabled and "GameFontDisable" or "GameFontNormal");
 
-	local enabledForTrial = bit.band(productGroupInfo.flags, Enum.BattlepayProductGroupFlag.EnabledForTrial) == Enum.BattlepayProductGroupFlag.EnabledForTrial;
-	local enabledForVeteran = bit.band(productGroupInfo.flags, Enum.BattlepayProductGroupFlag.EnabledForVeteran) == Enum.BattlepayProductGroupFlag.EnabledForVeteran;
+	local enabledForTrial = bit.band(productGroupInfo.flags, Enum.BattlepayProductGroupFlags.EnabledForTrial) == Enum.BattlepayProductGroupFlags.EnabledForTrial;
+	local enabledForVeteran = bit.band(productGroupInfo.flags, Enum.BattlepayProductGroupFlags.EnabledForVeteran) == Enum.BattlepayProductGroupFlags.EnabledForVeteran;
 	if IsTrialAccount() and not enabledForTrial then
 		self.disabledTooltip = STORE_CATEGORY_TRIAL_DISABLED_TOOLTIP;
 	elseif IsVeteranTrialAccount() and not enabledForVeteran then
@@ -1230,7 +1230,7 @@ function StoreFrame_OnCharacterBoostDelivered(self)
 	if (C_Glue.IsOnGlueScreen() and BoostDeliveredUsageReason and not StoreOutbound.IsCharacterSelectUndeleting()) then
 		self:Hide();
 
-		CharacterUpgradePopup_OnCharacterBoostDelivered(BoostType, BoostDeliveredUsageGUID, BoostDeliveredUsageReason);
+		StoreOutbound.OnCharacterBoostDelivered(BoostType, BoostDeliveredUsageGUID, BoostDeliveredUsageReason);
 	elseif (not C_Glue.IsOnGlueScreen() and StoreFrameHasBeenShown and not StoreOutbound.IsExpansionTrialUpgradeDialogShowing()) then
 		self:Hide();
 
@@ -2702,6 +2702,7 @@ function StoreProductCard_ShowModel(self, entryInfo, showShadows, forceModelUpda
 	if self.Shadows then
 		self.Shadows:SetShown(showShadows);
 	end
+	self.ModelScene:ClearScene();
 	self.ModelScene:SetFromModelSceneID(modelSceneID, forceModelUpdate);
 
 	local hasMultipleModels = #cards > 1;
@@ -2715,10 +2716,28 @@ function StoreProductCard_ShowModel(self, entryInfo, showShadows, forceModelUpda
 			actorTag = baseActorTag;
 		end
 
-		local actor = self.ModelScene:GetActorByTag(actorTag);
-		if actor then
-			actor:SetModelByCreatureDisplayID(card.creatureDisplayInfoID);
-			actor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
+		if card.creatureDisplayInfoID and card.creatureDisplayInfoID > 0 then
+			local actor = self.ModelScene:GetActorByTag(actorTag);
+			SetupItemPreviewActor(actor, card.creatureDisplayInfoID);
+		else
+			local playerRaceName;
+			if C_Glue.IsOnGlueScreen() then
+				local characterGuid = GetCharacterGUID(GetCharacterSelection());
+				if characterGuid then
+					local basicCharacterInfo = GetBasicCharacterInfo(characterGuid);
+					playerRaceName = basicCharacterInfo.raceFilename and basicCharacterInfo.raceFilename:lower();
+				end
+			else
+				local _, raceFilename = UnitRace("player");
+				playerRaceName = raceFilename:lower();
+			end
+
+			local _, _cameraIDs, _actorIDs, flags = C_ModelInfo.GetModelSceneInfoByID(modelSceneID);	
+			local sheatheWeapons = bit.band(flags, Enum.UIModelSceneFlags.SheatheWeapon) == Enum.UIModelSceneFlags.SheatheWeapon;
+			local hideWeapons = bit.band(flags, Enum.UIModelSceneFlags.HideWeapon) == Enum.UIModelSceneFlags.HideWeapon;
+			local autoDress = bit.band(flags, Enum.UIModelSceneFlags.Autodress) == Enum.UIModelSceneFlags.Autodress;
+
+			SetupPlayerForModelScene(self.ModelScene, nil, card.itemModifiedAppearanceIDs, sheatheWeapons, autoDress, hideWeapons, true, playerRaceName);
 		end
 	end
 

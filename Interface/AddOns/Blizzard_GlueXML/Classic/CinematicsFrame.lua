@@ -1,15 +1,41 @@
 function CinematicsFrame_OnLoad(self)
-	local button;
-	local height = 80;
-	local numMovies = math.ceil((GetClientDisplayExpansionLevel() + 1) / 2);
+	local numMovies = GetClientDisplayExpansionLevel() + 1;
+
+	-- Go through all of the button and programatically size and position them based on the key/values set in xml
 	for i = 1, numMovies do
-		button = _G["CinematicsButton"..i];
+		local button = _G["CinematicsButton"..i];
 		if ( not button ) then
 			break;
 		end
-		button:Show();
-		height = height + button:GetHeight() + 8;
+
+		local point, relativeTo, relativePoint, offsetX, offsetY = button:GetPoint();
+
+		if(i == 1) then
+			-- the first button is LEFT anchored, add padding to LEFT and TOP
+			offsetX = self.leftRightPadding;
+			offsetY = -self.topBotPadding;
+		elseif(i == 2) then
+			-- the second button is RIGHT anchored, add padding to RIGHT and TOP
+			offsetX = -self.leftRightPadding;
+			offsetY = -self.topBotPadding;
+		else
+			-- the other buttons anchor relatively to those above them, only add vertical row padding
+			offsetX = 0;
+			offsetY = -self.rowYPadding;
+		end
+
+		if(i == numMovies and math.fmod(numMovies,2) ~= 0) then
+			-- if we are on an odd expansion number, center the last button
+			offsetX = -(self.buttonWidth / 2) + (self.frameWidth / 2) - self.leftRightPadding;
+		end
+
+		button:SetPoint(point, relativeTo, relativePoint, offsetX, offsetY);
+		button:SetSize(self.buttonWidth, self.buttonHeight);
 	end
+
+	-- Calculate and set the total height of the frame
+	local numMovieRows = math.ceil(numMovies / 2);
+	local height = self.topBotPadding + (numMovieRows * self.buttonHeight) + ((numMovieRows - 1) * self.rowYPadding) + self.topBotPadding;
 	CinematicsFrame:SetHeight(height);
 end
 
@@ -122,13 +148,6 @@ function CinematicsFrame_OnShow(self)
 	self:Raise();
 	local numMovies = GetClientDisplayExpansionLevel() + 1;
 
-	-- if we are on an odd expansion number, center the last button
-	if (math.fmod(numMovies,2) ~= 0) then
-		local button = _G["CinematicsButton"..numMovies];
-		local point, relativeTo, relativePoint, offsetX, offsetY = button:GetPoint();
-		button:SetPoint(point, relativeTo, relativePoint, offsetX + 95, offsetY);
-	end
-
 	for i = 1, numMovies do
 		local button = _G["CinematicsButton"..i];
 		if ( not button ) then
@@ -150,7 +169,12 @@ function CinematicsFrame_OnKeyDown(self, key)
 	elseif ( key == "ESCAPE" ) then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 		GlueParent_CloseSecondaryScreen();
-	end	
+	end
+	return false;
+end
+
+function CinematicsFrame_OnChar(self, text)
+	return false;
 end
 
 function CinematicsButton_OnClick(self)

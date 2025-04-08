@@ -19,6 +19,8 @@ function PagingControlsMixin:OnLoad()
 
 	self.PrevPageButton:SetScript("OnClick", GenerateClosure(self.PreviousPage, self));
 	self.NextPageButton:SetScript("OnClick", GenerateClosure(self.NextPage, self));
+
+	self.overridePagedContentFrame = nil;
 end
 
 function PagingControlsMixin:GetMaxPages()
@@ -51,9 +53,9 @@ function PagingControlsMixin:SetCurrentPage(page)
 	self.currentPage = page;
 	self:UpdateControls();
 
-	local parent = self:GetParent();
-	if parent and parent.OnPageChanged then
-		parent:OnPageChanged();
+	local pagedContentFrame = self.overridePagedContentFrame or self:GetParent();
+	if pagedContentFrame and pagedContentFrame.OnPageChanged then
+		pagedContentFrame:OnPageChanged();
 	end
 
 	return true;
@@ -132,4 +134,8 @@ function PagingControlsMixin:OnPageButtonLeave(button)
 	if self.onButtonLeaveCallback then
 		self.onButtonLeaveCallback();
 	end
+end
+
+function PagingControlsMixin:SetOverridePagedContentFrame(frame)
+	self.overridePagedContentFrame = frame;
 end

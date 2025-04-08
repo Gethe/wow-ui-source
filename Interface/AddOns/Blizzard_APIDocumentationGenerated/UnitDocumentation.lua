@@ -8,6 +8,7 @@ local Unit =
 		{
 			Name = "GetUnitPowerBarInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -22,6 +23,7 @@ local Unit =
 		{
 			Name = "GetUnitPowerBarInfoByID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -188,6 +190,7 @@ local Unit =
 		{
 			Name = "UnitClass",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -204,6 +207,7 @@ local Unit =
 		{
 			Name = "UnitClassBase",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -320,6 +324,7 @@ local Unit =
 		{
 			Name = "UnitPowerBarTimerInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -391,6 +396,20 @@ local Unit =
 			Returns =
 			{
 				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitTokenFromGUID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitGUID", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "unitToken", Type = "string", Nilable = true },
 			},
 		},
 	},
@@ -1470,6 +1489,7 @@ local Unit =
 				{ Name = "flashAtMinPower", Type = "bool", Nilable = false },
 				{ Name = "fractionalCounter", Type = "bool", Nilable = false },
 				{ Name = "animateNumbers", Type = "bool", Nilable = false },
+				{ Name = "attachTooltipToBar", Type = "bool", Nilable = false },
 			},
 		},
 	},

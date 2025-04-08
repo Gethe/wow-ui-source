@@ -24,6 +24,7 @@ local MapExploration =
 		{
 			Name = "GetExploredMapTextures",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

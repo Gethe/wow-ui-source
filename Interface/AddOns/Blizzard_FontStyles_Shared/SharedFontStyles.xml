@@ -187,6 +187,12 @@
     <Font name="GameFontNormalHuge3Outline" inherits="SystemFont_Shadow_Outline_Huge3" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>
+	<Font name="GameFontNormalHuge4" inherits="SystemFont_Shadow_Huge4" virtual="true">
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
+	<Font name="GameFontNormalHuge4Outline" inherits="SystemFont_Shadow_Huge4_Outline" virtual="true">
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
   <Font name="GameTooltipHeaderText" inherits="GameTooltipHeader" justifyH="LEFT" virtual="true">
     <Color r="1.0" g="1.0" b="1.0"/>
   </Font>
@@ -202,4 +208,14 @@
   <Font name="IMEHighlight" inherits="System_IME" justifyH="LEFT" virtual="true">
     <Color r="1.0" g="0.82" b="0"/>
   </Font>
+  <Font name="MovieSubtitleFont" inherits="SystemFont22_Shadow_Outline" virtual="true">
+    <Color color="NORMAL_FONT_COLOR"/>
+  </Font>
+
+	<Font name="Number14FontWhite" inherits="NumberFont_Normal_Med" virtual="true" >
+		<Color r="1.0" g="1.0" b="1.0"/>
+		<Shadow x="1" y="-1">
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+	</Font>
 </Ui>

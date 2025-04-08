@@ -179,7 +179,6 @@ UIErrorsFrame.xml
 AutoComplete.xml
 StaticPopup.xml
 ..\Blizzard_SharedXML\DialogUtil.lua
-Classic\Sound.lua
 DeprecatedTemplates.lua
 DeprecatedTemplates.xml
 ..\Blizzard_SharedXML\Settings\GameplaySettingsGroup.lua
@@ -292,8 +291,8 @@ Classic\Blizzard_TalentUITemplates.xml
 TextToSpeechFrameConstants.lua
 TextToSpeechFrame.xml
 TextToSpeech.xml
-Classic\MovieFrame.lua
-Classic\MovieFrame.xml
+MovieFrame.lua
+MovieFrame.xml
 Classic\RolePoll.xml
 AnimationSystem.lua
 CompactUnitFrame.xml

@@ -23,10 +23,11 @@ local AreaPoiInfo =
 		{
 			Name = "GetAreaPOIInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
-				{ Name = "uiMapID", Type = "number", Nilable = false },
+				{ Name = "uiMapID", Type = "number", Nilable = true },
 				{ Name = "areaPoiID", Type = "number", Nilable = false },
 			},
 
@@ -38,6 +39,7 @@ local AreaPoiInfo =
 		{
 			Name = "GetAreaPOITimeLeft",
 			Type = "Function",
+			MayReturnNothing = true,
 			Documentation = { "Returns the number of minutes until the POI expires." },
 
 			Arguments =

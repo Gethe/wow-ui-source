@@ -196,7 +196,9 @@ function WorldLootObjectListMixin:InsertNewWidget(widget)
 	if dummyIndex then
 		self.dataProvider:ReplaceAtIndex(dummyIndex, widget);
 		local existingFrame = self.ScrollBox:FindFrame(widget);
-		existingFrame:Init(widget);
+		if existingFrame then
+			existingFrame:Init(widget);
+		end
 	else
 		self.dataProvider:Insert(widget);
 	end

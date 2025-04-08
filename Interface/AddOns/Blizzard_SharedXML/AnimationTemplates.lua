@@ -58,6 +58,15 @@ function SyncedAnimGroupMixin:PlaySynced(reverse, syncKey)
 	self:Play(reverse, syncedOffset);
 end
 
+-- Useful for cases where animations can be restarted multiple times and have non synced intro animations, so this can be called to start at the correctly lined up state when starting over.
+function SyncedAnimGroupMixin:ClearSyncedStart(syncKey)
+	syncKey = syncKey or self.syncKey or "DEFAULT";
+
+	if s_animGroupSyncTimesByKey[syncKey] then
+		s_animGroupSyncTimesByKey[syncKey] = nil;
+	end
+end
+
 -- Frame mixin for playing or stopping all child Anim Groups based on script calls defined in the template xml being used
 AnimateWhileShownMixin = { };
 

@@ -21,6 +21,7 @@ TBC\ClassColors.lua
 
 LinkUtil.lua
 InterfaceUtil.lua
+UnitUtil.lua
 FormattingUtil.lua
 AccountUtil.lua
 TabGroup.lua
@@ -167,6 +168,8 @@ ModelPreviewFrame.lua
 ModelPreviewFrame.xml
 
 DialogUtil.lua
+
+Classic\Sound.lua
 
 Classic\SharedUtils.lua
 ToolWindowOwnerMixin.lua

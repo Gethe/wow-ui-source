@@ -196,9 +196,7 @@ end
 -- GROUP FINDER
 ---------------------------------------------------------------
 
--- TODO: SHARING PASS
---local groupFrames = { "LFDParentFrame", "RaidFinderFrame", "LFGListPVEStub" }
-local groupFrames = { "LFDParentFrame", "LFGListPVEStub" }
+local groupFrames = { "LFDParentFrame", "RaidFinderFrame", "LFGListPVEStub" }
 
 function GroupFinderFrame_OnLoad(self)
 	SetPortraitToTexture(self.groupButton1.icon, "Interface\\Icons\\INV_Helmet_08");

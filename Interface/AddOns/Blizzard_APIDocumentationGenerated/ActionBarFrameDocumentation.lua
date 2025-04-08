@@ -9,6 +9,7 @@ local ActionBarFrame =
 		{
 			Name = "FindPetActionButtons",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -23,6 +24,7 @@ local ActionBarFrame =
 		{
 			Name = "FindSpellActionButtons",
 			Type = "Function",
+			MayReturnNothing = true,
 			Documentation = { "Returns the list of action bar slots that contain a specified spell." },
 
 			Arguments =
@@ -38,6 +40,7 @@ local ActionBarFrame =
 		{
 			Name = "GetPetActionPetBarIndices",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -267,6 +270,11 @@ local ActionBarFrame =
 			Name = "UpdateBonusActionbar",
 			Type = "Event",
 			LiteralName = "UPDATE_BONUS_ACTIONBAR",
+		},
+		{
+			Name = "UpdateExtraActionbar",
+			Type = "Event",
+			LiteralName = "UPDATE_EXTRA_ACTIONBAR",
 		},
 		{
 			Name = "UpdateMultiCastActionbar",

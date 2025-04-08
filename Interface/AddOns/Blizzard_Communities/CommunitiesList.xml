@@ -86,9 +86,9 @@
 					</Anchors>
 				</Texture>
 				<Texture parentKey="UnreadNotificationIcon" atlas="communities-icon-notification" hidden="true">
-					<Size x="11" y="11"/>
+					<Size x="17" y="17"/>
 					<Anchors>
-						<Anchor point="RIGHT" x="-16" y="0"/>
+						<Anchor point="RIGHT" x="-13" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>

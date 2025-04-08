@@ -653,6 +653,7 @@
 					<ScrollFrame parentKey="MessageScroll" inherits="ClubFinderEditBoxScrollFrameTemplate">
 						<KeyValues>
 							<KeyValue key="instructions" value="CLUB_FINDER_RECRUITING_NOTE" type="global"/>
+							<KeyValue key="maxLetters" value="128" type="number"/>
 						</KeyValues>
 					</ScrollFrame>
 				</Frames>

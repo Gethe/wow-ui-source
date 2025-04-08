@@ -1,0 +1,10 @@
+## Title: Blizzard_GlueXML
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_GlueDialogs, Blizzard_LoginWarningDialogs, Blizzard_CharacterSelectNavBar
+## LoadFirst: 1
+## AllowLoad: Glue
+## AllowLoadGameType: classic
+GlueMenuFrameUtil.lua
+Classic\GlueMenuFrame.lua
+Classic\GlueMenuFrame.xml

@@ -195,7 +195,7 @@
 							<Anchor point="TOP" relativeTo="$parentGroupButton1" relativePoint="BOTTOM" x="0" y="-30" />
 						</Anchors>
 					</Button>
-					<Button name="$parentGroupButton3" inherits="GroupFinderGroupButtonTemplate" parentKey="groupButton3" id="2">
+					<Button name="$parentGroupButton3" inherits="GroupFinderGroupButtonTemplate" parentKey="groupButton3" id="3">
 						<Anchors>
 							<Anchor point="TOP" relativeTo="$parentGroupButton2" relativePoint="BOTTOM" x="0" y="-30" />
 						</Anchors>

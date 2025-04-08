@@ -19,6 +19,10 @@ function JumpToCollectionsTab(tabIndex)
 	end
 end
 
+function DressUpLink(link, forcedFrame)
+	return link and (DressUpItemLink(link, forcedFrame) or DressUpBattlePetLink(link, forcedFrame) or DressUpMountLink(link, forcedFrame));
+end
+
 function DressUpItemLink(link)
 	if( link ) then 
 		if ( C_Item.IsDressableItem(link) ) then

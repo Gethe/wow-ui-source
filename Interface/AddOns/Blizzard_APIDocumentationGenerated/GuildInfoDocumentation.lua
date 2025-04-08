@@ -58,6 +58,7 @@ local GuildInfo =
 		{
 			Name = "GetGuildNewsInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -206,6 +207,7 @@ local GuildInfo =
 		{
 			Name = "QueryGuildMembersForRecipe",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -392,6 +394,11 @@ local GuildInfo =
 			Name = "GuildRewardsList",
 			Type = "Event",
 			LiteralName = "GUILD_REWARDS_LIST",
+		},
+		{
+			Name = "GuildRewardsListUpdate",
+			Type = "Event",
+			LiteralName = "GUILD_REWARDS_LIST_UPDATE",
 		},
 		{
 			Name = "GuildRosterUpdate",

@@ -9,6 +9,7 @@ local SpellBook =
 		{
 			Name = "HasPetSpells",
 			Type = "Function",
+			MayReturnNothing = true,
 			Documentation = { "Returns nothing if player has no pet spells" },
 
 			Returns =

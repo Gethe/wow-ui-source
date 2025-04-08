@@ -1295,7 +1295,6 @@ function CommunitiesMemberListEntryMixin:RefreshExpandedColumns()
 
 	self.Note:SetText(memberInfo.memberNote or "");
 
-	-- TODO:: Replace these hardcoded strings with proper accessors.
 	if self.guildColumnIndex == EXTRA_GUILD_COLUMN_ACHIEVEMENT then
 		if ( memberInfo.achievementPoints ) then
 			self.GuildInfo:SetText(memberInfo.achievementPoints);

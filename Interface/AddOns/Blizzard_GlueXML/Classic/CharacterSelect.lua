@@ -141,7 +141,7 @@ function CharacterSelectLockedButtonMixin:OnClick()
 end
 
 local function ShouldShowHighResButton()
-	return not C_BattleNet.AreHighResTexturesInstalled();
+	return AreHighResTexturesAvailable() and not C_BattleNet.AreHighResTexturesInstalled();
 end
 
 function CharacterSelectStoreButton_OnLoad(self)
@@ -273,9 +273,15 @@ function CharacterSelect_OnEvent(self, event, ...)
             self.undeleteNoCharacters = true;
             return;
         elseif (not CHARACTER_SELECT_BACK_FROM_CREATE and numChars == 0) then
+			local connectedToWoW = select(2, C_Login.GetState());
+			if not connectedToWoW then
+				-- If we're disconnected, don't change screens. We either DC'd or are switching realms and will get a new character list soon.
+				return;
+			end
+
             if (IsKioskGlueEnabled()) then
                 GlueParent_SetScreen("kioskmodesplash");
-            else
+            elseif not IsWowTokenLimitedModeEnabled() then
                 GlueParent_SetScreen("charcreate");
             end
             return;
@@ -673,6 +679,10 @@ function CharacterSelect_SaveCharacterOrder()
     end
 end
 
+-- This hack enables shared code to call this Mainline API despite Classic not implementing it.
+CharacterSelectListUtil = {};
+CharacterSelectListUtil.SaveCharacterOrder = CharacterSelect_SaveCharacterOrder;
+
 function CharacterSelect_SetRetrievingCharacters(retrieving, success)
     if ( retrieving ~= CharacterSelect.retrievingCharacters ) then
         CharacterSelect.retrievingCharacters = retrieving;
@@ -748,7 +758,7 @@ end
 function CharacterSelect_OnKeyDown(self,key)
     if ( key == "ESCAPE" ) then
         if (C_Login.IsLauncherLogin() ) then
-            GlueMenuFrame:SetShown(not GlueMenuFrame:IsShown());
+            GlueMenuFrameUtil.ToggleMenu();
         elseif (CharSelectServicesFlowFrame:IsShown()) then
             CharSelectServicesFlowFrame:Hide();
         elseif ( CopyCharacterFrame:IsShown() ) then
@@ -976,6 +986,7 @@ function UpdateCharacterList(skipSelect)
         local button = _G["CharSelectCharacterButton"..i];
         button.isVeteranLocked = false;
         button.isAccountLocked = isAccountLocked;
+		button.isWowTokenModeLocked = false;
 
         if (button.padlock) then
             CharacterSelect.characterPadlockPool:Release(button.padlock);
@@ -999,7 +1010,7 @@ function UpdateCharacterList(skipSelect)
 
             if ( CharacterSelect.undeleting ) then
                 nameText:SetFormattedText(CHARACTER_SELECT_NAME_DELETED, name);
-            elseif ( locked or isLockedFromOtherChars ) then
+            elseif ( locked or isLockedFromOtherChars or IsWowTokenLimitedModeEnabled() ) then
                 nameText:SetText(name..CHARSELECT_CHAR_INACTIVE_CHAR);
             else
                 nameText:SetText(name);
@@ -1046,6 +1057,10 @@ function UpdateCharacterList(skipSelect)
             else
                 if ( locked ) then
                     button.isVeteranLocked = true;
+				end
+
+				if ( IsWowTokenLimitedModeEnabled() ) then
+					button.isWowTokenModeLocked = true;
                 end
 
                 locationText:SetFontObject("GlueFontDisableSmall");
@@ -1461,7 +1476,7 @@ function CharacterSelect_EnterWorld()
     CharacterSelect_SaveCharacterOrder();
     local guid, _, _, _, _, _, locked = select(15,GetCharacterInfo(GetCharacterSelection()));
 
-    if ( locked ) then
+    if ( locked or IsWowTokenLimitedModeEnabled() ) then
         SubscriptionRequestDialog_Open();
         return;
     end
@@ -1863,15 +1878,17 @@ function AccountUpgradePanel_GetDisplayExpansionLevel()
 end
 
 function AccountUpgradePanel_GetBannerInfo()
-		local currentExpansionLevel = AccountUpgradePanel_GetDisplayExpansionLevel();
-	local shouldShowBanner = false; -- We never want to show the banner for Classic.
-			return currentExpansionLevel, shouldShowBanner;
+	local currentExpansionLevel = AccountUpgradePanel_GetDisplayExpansionLevel();
+	local shouldShowBanner = IsWowTokenLimitedModeEnabled();
+	return currentExpansionLevel, shouldShowBanner;
 end
 
 function AccountUpgradePanel_Update(isExpanded)
 	local currentExpansionLevel, shouldShowBanner, upgradeButtonText, upgradeLogo, upgradeBanner, features = AccountUpgradePanel_GetBannerInfo();
     if ( shouldShowBanner ) then
-		CharSelectAccountUpgradeButton:SetText(upgradeButtonText);
+		if (upgradeButtonText) then
+			CharSelectAccountUpgradeButton:SetText(upgradeButtonText);
+		end
         CharacterSelectServerAlertFrame:SetPoint("TOP", CharSelectAccountUpgradeMiniPanel, "BOTTOM", 0, -35);
         CharSelectAccountUpgradeButton:Show();
         if ( isExpanded ) then
@@ -1901,10 +1918,7 @@ function AccountUpgradePanel_Update(isExpanded)
             CharSelectAccountUpgradeButtonExpandCollapseButton:SetDisabledTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollUp-Disabled");
         else
             CharSelectAccountUpgradePanel:Hide();
-            CharSelectAccountUpgradeMiniPanel:Show();
-
-            CharSelectAccountUpgradeMiniPanel.logo:SetTexture(upgradeLogo);
-            CharSelectAccountUpgradeMiniPanel.banner:SetAtlas(upgradeBanner, true);
+            CharSelectAccountUpgradeMiniPanel:Hide();
 
             CharSelectAccountUpgradeButtonExpandCollapseButton:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Up");
             CharSelectAccountUpgradeButtonExpandCollapseButton:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Down");
@@ -1925,16 +1939,9 @@ function AccountUpgradePanel_ToggleExpandState()
 end
 
 function AccountUpgradePanel_UpdateExpandState()
-    if ( CharacterSelectServerAlertFrame:IsShown() ) then
-        CharSelectAccountUpgradeButton.isExpanded = false;
-        CharSelectAccountUpgradeButton.expandCollapseButton:Hide();
-    elseif ( GameLimitedMode_IsActive() ) then
-        CharSelectAccountUpgradeButton.isExpanded = true;
-        CharSelectAccountUpgradeButton.expandCollapseButton:Hide();
-    else
-        CharSelectAccountUpgradeButton.expandCollapseButton:Show();
-        CharSelectAccountUpgradeButton.expandCollapseButton:Enable();
-    end
+	-- Always hide these in Classic
+    CharSelectAccountUpgradeButton.isExpanded = false;
+    CharSelectAccountUpgradeButton.expandCollapseButton:Hide();
     AccountUpgradePanel_Update(CharSelectAccountUpgradeButton.isExpanded);
 end
 
@@ -2094,15 +2101,21 @@ function CharacterSelect_ActivateFactionChange()
 end
 
 function CharacterSelect_IsStoreAvailable()
-    return C_StorePublic.IsEnabled() and not C_StorePublic.IsDisabledByParentalControls() and GetNumCharacters() > 0 and not GameLimitedMode_IsActive() and not CharacterSelect_IsAccountLocked();
+    return C_StorePublic.IsEnabled() and not C_StorePublic.IsDisabledByParentalControls() and GetNumCharacters() > 0 and not CharacterSelect_IsAccountLocked();
 end
 
 function CharacterSelect_UpdateStoreButton()
-    if ( CharacterSelect_IsStoreAvailable() and not Kiosk.IsEnabled()) then
-        StoreButton:Show();
-    else
-        StoreButton:Hide();
-    end
+	if StoreButton then
+		if ( CharacterSelect_IsStoreAvailable() and not Kiosk.IsEnabled()) then
+			StoreButton:Show();
+		else
+			StoreButton:Hide();
+		end
+	end
+	if CharacterSelectUI.VisibilityFramesContainer.NavBar then
+		local enabled = CharacterSelect_IsStoreAvailable() and not Kiosk.IsEnabled();
+		CharacterSelectUI.VisibilityFramesContainer.NavBar:SetStoreButtonEnabled(enabled);
+	end
 end
 
 StaticPopupDialogs["TOKEN_GAME_TIME_OPTION_NOT_AVAILABLE"] = {
@@ -2159,8 +2172,13 @@ function CharacterSelect_UpdateButtonState()
     ActivateFactionChange.texture:SetDesaturated(not (servicesEnabled and not undeleting and not redemptionInProgress and not isAccountLocked));
     CharacterTemplatesFrame.CreateTemplateButton:SetEnabled(servicesEnabled and not undeleting and not redemptionInProgress and not isAccountLocked);
     CharacterSelectMenuButton:SetEnabled(servicesEnabled and not redemptionInProgress);
-    CharSelectCreateCharacterButton:SetEnabled(canCreateCharacter and servicesEnabled and not redemptionInProgress and not isAccountLocked);
-    StoreButton:SetEnabled(servicesEnabled and not undeleting and not redemptionInProgress and not isAccountLocked);
+    CharSelectCreateCharacterButton:SetEnabled(canCreateCharacter and servicesEnabled and not redemptionInProgress and not isAccountLocked and not IsWowTokenLimitedModeEnabled());
+	if StoreButton then
+		StoreButton:SetEnabled(servicesEnabled and not undeleting and not redemptionInProgress and not isAccountLocked);
+	end
+	if CharacterSelectUI.VisibilityFramesContainer.NavBar then
+		CharacterSelectUI.VisibilityFramesContainer.NavBar:SetStoreButtonEnabled(servicesEnabled and not undeleting and not redemptionInProgress and not isAccountLocked);
+	end
 
 	if CharacterSelect.VASPools then
 		for frame in CharacterSelect.VASPools:EnumerateActive() do
@@ -2188,6 +2206,9 @@ function CharacterSelect_UpdateButtonState()
             -- If our number of visible characters is less than our total number of characters,
 			-- display the Create Character button with a helpful error message.
             CharSelectCreateCharacterButton:SetDisabledTooltip(CHAR_CREATE_UNACTIVATED_CHARACTER_LIMIT);
+		elseif IsWowTokenLimitedModeEnabled() then
+			CharSelectCreateCharacterButton:SetDisabledTooltip(CHAR_CREATE_GAME_TIME_REQUIRED);
+			CharSelectEnterWorldButton:SetDisabledTooltip(CHAR_ENTER_WORLD_GAME_TIME_REQUIRED);
         else
             CharSelectCreateCharacterButton:SetDisabledTooltip(nil);
         end
@@ -2225,7 +2246,11 @@ function CharacterSelect_ConditionallyLoadAccountSaveUI()
             AccountSaveFrame:Show();
 
             if (GameRoomBillingFrame:IsShown()) then
-                GameRoomBillingFrame:SetPoint("TOPLEFT", StoreButton, "TOPRIGHT");
+				if StoreButton then
+					GameRoomBillingFrame:SetPoint("TOPLEFT", StoreButton, "TOPRIGHT");
+				else
+					GameRoomBillingFrame:SetPoint("TOPLEFT", CharacterSelectAddonsButton, "TOPRIGHT");
+				end
             end
         end
     elseif AccountSaveFrame then
@@ -2741,7 +2766,9 @@ end
 CharacterVASMixin = {};
 
 function CharacterVASMixin:OnClick()
-	if IsVASTokenUsable(self.upgradeInfo) then
+	if IsWowTokenLimitedModeEnabled() then
+        GlueDialog_Show("CHARACTER_BOOST_FEATURE_RESTRICTED", CHARACTER_BOOST_YOU_MUST_REACTIVATE);
+	elseif IsVASTokenUsable(self.upgradeInfo) then
 		CharacterUpgradePopup_BeginVASFlow(self.data);
 	end
 end
@@ -2782,7 +2809,7 @@ function CharacterServicesTokenBoost_OnClick(self)
 		else
 			DisplayBattlepayTokenFreeFrame(self);
 		end
-    elseif IsVeteranTrialAccount() then
+    elseif IsVeteranTrialAccount() or IsWowTokenLimitedModeEnabled() then
         GlueDialog_Show("CHARACTER_BOOST_FEATURE_RESTRICTED", CHARACTER_BOOST_YOU_MUST_REACTIVATE);
     elseif IsTrialAccount() then
         GlueDialog_Show("CHARACTER_BOOST_FEATURE_RESTRICTED", CHARACTER_BOOST_YOU_MUST_UPGRADE);
@@ -2814,25 +2841,22 @@ end
 GameLogoDarkBackdropMixin = {};
 
 function GameLogoDarkBackdropMixin:OnLoad()
-	self:RegisterEvent("GAME_MODE_CHANGED");
+	self:RegisterEvent("GAME_MODE_DISPLAY_INFO_UPDATED");
 	self:Update();
 end
 
 function GameLogoDarkBackdropMixin:OnEvent(event)
-	if event == "GAME_MODE_CHANGED" then
+	if event == "GAME_MODE_DISPLAY_INFO_UPDATED" then
 		self:Update();
 	end
 end
 
 function GameLogoDarkBackdropMixin:Update()
-	local gameModeRecordID = C_GameModeManager.GetCurrentGameModeRecordID();
-	if gameModeRecordID then
-		local gameModeDisplayInfo = C_GameModeManager.GetGameModeDisplayInfo(gameModeRecordID);
-		if gameModeDisplayInfo then
-			if gameModeDisplayInfo.logoUsesDarkBackdrop then
-				self.BackdropTexture:Show();
-				return;
-			end
+	local gameModeDisplayInfo = C_GameRules.GetCurrentGameModeDisplayInfo();
+	if gameModeDisplayInfo then
+		if gameModeDisplayInfo.logoUsesDarkBackdrop then
+			self.BackdropTexture:Show();
+			return;
 		end
 	end
 
@@ -3689,6 +3713,9 @@ function CharSelectEnterWorldButton_OnEnter(button)
 		end
 
 		GlueTooltip:SetText(text);
+	elseif ( not button:IsEnabled() and button.disabledTooltip ) then
+		-- This triggers the normal UIButtonTemplate disabled tooltip path
+		button:OnEnter(button);
 	else
 		GlueTooltip:Hide();
 	end

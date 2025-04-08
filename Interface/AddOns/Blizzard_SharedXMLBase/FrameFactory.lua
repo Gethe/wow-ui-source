@@ -33,7 +33,7 @@ function FrameFactoryMixin:Create(parent, frameTemplateOrFrameType, resetterFunc
 	local frame, new = pool:Acquire();
 
 	if not frame then
-		error(string.format("ScrollBoxListViewMixin: Failed to create a frame from pool for frame template or frame type '%s'", frameTemplateOrFrameType));
+		error(string.format("FrameFactoryMixin: Failed to create a frame from pool for frame template or frame type '%s'", frameTemplateOrFrameType));
 	end
 
 	return frame, new, info;

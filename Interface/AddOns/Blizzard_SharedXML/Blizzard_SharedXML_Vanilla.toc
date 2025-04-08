@@ -173,6 +173,8 @@ ModelPreviewFrame.xml
 
 DialogUtil.lua
 
+Classic\Sound.lua
+
 Classic\SharedUtils.lua
 ToolWindowOwnerMixin.lua
 AlertFrameIntrinsic.lua

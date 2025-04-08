@@ -146,6 +146,7 @@ function PaperDollFrame_OnLoad(self)
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("COMBAT_RATING_UPDATE");
 	self:RegisterEvent("UNIT_POWER_UPDATE");
+	self:RegisterEvent("UNIT_NAME_UPDATE");
 
 	self.TitleDropdown:SetWidth(160);
 	self.TitleDropdown:SetDefaultText(PAPERDOLL_SELECT_TITLE);
@@ -253,6 +254,8 @@ function PaperDollFrame_OnEvent(self, event, ...)
 				event == "COMBAT_RATING_UPDATE" or
 				event == "UNIT_POWER_UPDATE") then
 			self:SetScript("OnUpdate", PaperDollFrame_QueuedUpdate);
+		elseif (event == "UNIT_NAME_UPDATE") then
+			self.TitleDropdown:SignalUpdate();
 		end
 	end
 end
@@ -278,8 +281,8 @@ function PaperDoll_IsEquippedSlot(slot)
 end
 
 function CharacterAttributesFrame_OnLoad(self)
-	self.LeftPlayerStatDropdown:SetWidth(100);
-	self.RightPlayerStatDropdown:SetWidth(100);
+	self.LeftPlayerStatDropdown:SetWidth(114);
+	self.RightPlayerStatDropdown:SetWidth(114);
 end
 
 local function IsLeftStatSelected(value)

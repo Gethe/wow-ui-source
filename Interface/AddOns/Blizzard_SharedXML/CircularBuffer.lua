@@ -63,6 +63,10 @@ function CircularBufferMixin:PushBack(element) -- Won't overwrite front
 	return nil;
 end
 
+function CircularBufferMixin:IsValidIndex(index)
+	return index > 0 and index <= self:GetNumElements();
+end
+
 function CircularBufferMixin:GetEntryAtIndex(index)
     if index > 0 and index <= self:GetNumElements() then
         local elementIndex = self:CalculateElementIndex(index);

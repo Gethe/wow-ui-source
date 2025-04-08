@@ -11,14 +11,6 @@ WORLD_RAID_MARKER_ORDER[6] = 3;
 WORLD_RAID_MARKER_ORDER[7] = 6;
 WORLD_RAID_MARKER_ORDER[8] = 5;
 
-NUM_WORLD_RAID_MARKERS_CATA = 5;
-WORLD_RAID_MARKER_ORDER_CATA = {};
-WORLD_RAID_MARKER_ORDER_CATA[1] = 4;
-WORLD_RAID_MARKER_ORDER_CATA[2] = 1;
-WORLD_RAID_MARKER_ORDER_CATA[3] = 2;
-WORLD_RAID_MARKER_ORDER_CATA[4] = 3;
-WORLD_RAID_MARKER_ORDER_CATA[5] = 5;
-
 MINIMUM_RAID_CONTAINER_HEIGHT = 72;
 local RESIZE_HORIZONTAL_OUTSETS = 4;
 local RESIZE_VERTICAL_OUTSETS = 7;
@@ -97,10 +89,6 @@ function CompactRaidFrameManager_SetupRaidMarkerDropdown(self)
 
 	local markerCount = NUM_WORLD_RAID_MARKERS;
 	local markerOrder = WORLD_RAID_MARKER_ORDER;
-	if GetClassicExpansionLevel() <= LE_EXPANSION_CATACLYSM then
-		markerCount = NUM_WORLD_RAID_MARKERS_CATA;
-		markerOrder = WORLD_RAID_MARKER_ORDER_CATA;
-	end
 
 	if self.displayFrame.leaderOptions.raidMarkerDropdown then
 		self.displayFrame.leaderOptions.raidMarkerDropdown:SetupMenu(function(dropdown, rootDescription)
