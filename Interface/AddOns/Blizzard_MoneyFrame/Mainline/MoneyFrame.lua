@@ -1,3 +1,10 @@
+local _, addonTable = ...
+
+local MoneyTypeInfo = addonTable.MoneyTypeInfo;
+
+local COPPER_PER_SILVER = 100;
+local SILVER_PER_GOLD = 100;
+local COPPER_PER_GOLD = COPPER_PER_SILVER * SILVER_PER_GOLD;
 
 function MoneyFrame_OnLoad (self)
 	self:RegisterEvent("PLAYER_MONEY");

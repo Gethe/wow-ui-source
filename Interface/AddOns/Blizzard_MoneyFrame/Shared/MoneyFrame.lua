@@ -1,3 +1,8 @@
+local _, addonTable = ...
+
+local COPPER_PER_SILVER = 100;
+local SILVER_PER_GOLD = 100;
+local COPPER_PER_GOLD = COPPER_PER_SILVER * SILVER_PER_GOLD;
 
 MONEY_ICON_WIDTH = 19;
 MONEY_ICON_WIDTH_SMALL = 13;
@@ -9,7 +14,22 @@ MONEY_TEXT_VADJUST = 0;
 
 COIN_BUTTON_WIDTH = 32;
 
-MoneyTypeInfo = { };
+local MoneyTypeInfo = { };
+addonTable.MoneyTypeInfo = MoneyTypeInfo;
+
+function GetMoneyTypeInfoField(moneyType, field)
+	return MoneyTypeInfo[moneyType][field];
+end
+
+function AddMoneyTypeInfo(moneyType, info)
+	if MoneyTypeInfo[moneyType] then
+		-- Prevent overwriting existing types
+		return;
+	end
+
+	MoneyTypeInfo[moneyType] = info;
+end
+
 MoneyTypeInfo["PLAYER"] = {
 	OnloadFunc = function(self)
 		self:RegisterEvent("TRIAL_STATUS_UPDATE");
@@ -77,6 +97,7 @@ MoneyTypeInfo["AUCTION_TOOLTIP"] = {
 	align = 1,
 	truncateSmallCoins = nil,
 };
+local GetPlayerTradeMoney = GetPlayerTradeMoney;
 MoneyTypeInfo["PLAYER_TRADE"] = {
 	UpdateFunc = function(self)
 		return GetPlayerTradeMoney();
@@ -93,6 +114,7 @@ MoneyTypeInfo["PLAYER_TRADE"] = {
 	collapse = 1,
 	canPickup = 1,
 };
+local GetTargetTradeMoney = GetTargetTradeMoney;
 MoneyTypeInfo["TARGET_TRADE"] = {
 	UpdateFunc = function(self)
 		return GetTargetTradeMoney();
