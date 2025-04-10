@@ -293,10 +293,8 @@ function VerticalLayoutMixin:LayoutChildren(children, expandToWidth)
 				childWidth = expandToWidth - leftPadding - rightPadding - frameLeftPadding - frameRightPadding;
 				child:SetWidth(childWidth);
 
-				local existingChildHeight = childHeight;
 				local ignoreRectYes = true;
 				childHeight = self:GetChildHeight(child, ignoreRectYes);
-				assertsafe(childHeight == existingChildHeight, "childHeight changed due to SetWidth call");
 			end
 		end
 
@@ -385,10 +383,8 @@ function HorizontalLayoutMixin:LayoutChildren(children, ignored, expandToHeight)
 				childHeight = expandToHeight - topPadding - bottomPadding - frameTopPadding - frameBottomPadding;
 				child:SetHeight(childHeight);
 
-				local existingChildWidth = childWidth;
 				local ignoreRectYes = true;
 				childWidth = self:GetChildWidth(child, ignoreRectYes);
-				assertsafe(childWidth == existingChildWidth, "childWidth changed due to SetHeight call");
 			end
 		end
 

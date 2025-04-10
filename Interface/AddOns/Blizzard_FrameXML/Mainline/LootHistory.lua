@@ -352,6 +352,7 @@ function LootHistoryFrameMixin:OnEvent(event, ...)
 		self:SetScript("OnUpdate", nil);
 		self.selectedEncounterID = nil;
 		self.encounterInfo = nil;
+		self.PerfectAnimFrame:StopPerfectRollAnim();
 	elseif event == "LOOT_HISTORY_ONE_HUNDRED_ROLL" then
 		local encounterID, lootListID = ...;
 

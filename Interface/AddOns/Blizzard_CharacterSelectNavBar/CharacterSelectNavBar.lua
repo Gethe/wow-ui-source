@@ -217,14 +217,14 @@ function CharacterSelectNavBarMixin:TrySetUpStoreButton()
 		self.StoreButton = self:AddButton(nil, ToggleStoreUI);
 
 		-- The store button has a custom icon that must match the text state.
-		local function FormatStoreButtonText(self, enabled, highlight)
+		local function FormatStoreButtonText(enabled, highlight)
 			local shopIcon = "glues-characterselect-iconshop";
 			if not enabled then
 				shopIcon = "glues-characterselect-iconshop-dis";
 			elseif highlight then
 				shopIcon = "glues-characterselect-iconshop-hover";
 			end
-			self:SetText(CreateAtlasMarkup(shopIcon, self.shopIconSize, self.shopIconSize, -4)..CHARACTER_SELECT_NAV_BAR_SHOP);
+			self.StoreButton:SetText(CreateAtlasMarkup(shopIcon, self.shopIconSize, self.shopIconSize, -4)..CHARACTER_SELECT_NAV_BAR_SHOP);
 		end
 		self.StoreButton.formatButtonTextCallback = FormatStoreButtonText;
 

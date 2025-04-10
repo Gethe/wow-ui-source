@@ -469,7 +469,8 @@ function CooldownViewerItemMixin:NeedsCooldownUpdate(spellID, baseSpellID, start
 	-- In rare cases, some spells remove their override before the Update Cooldown Event is sent. 
 	-- When this happens the event doesn't correctly reference the base spell, so this logic
 	-- compensates for that to ensure the event causes a refresh.
-	if spellID == self.cooldownInfo.previousOverrideSpellID then
+	local cooldownInfo = self:GetCooldownInfo();
+	if cooldownInfo and spellID == cooldownInfo.previousOverrideSpellID then
 		return true;
 	end
 
