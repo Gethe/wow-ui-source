@@ -568,7 +568,8 @@
 									<KeyValue key="realmsButtonAvailable" value="false" type="boolean"/>
 									<KeyValue key="campsButtonAvailable" value="false" type="boolean"/>
 									<KeyValue key="gameModeDrawerAnchorsToButton" value="false" type="boolean"/>
-									<KeyValue key="shopIconSize" value="24" type="number"/>
+									<KeyValue key="gameModeDrawerScale" value="1.3" type="number"/>
+									<KeyValue key="useDefaultScale" value="true" type="boolean"/>
 								</KeyValues>
 								<Anchors>
 									<Anchor point="TOPLEFT"/>
@@ -928,7 +929,7 @@
 							</OnUpdate>
 						</Scripts>
 					</Button>
-					<Button name="CharacterSelectMenuButton" inherits="GlueButtonSmallTemplate" text="MAINMENU">
+					<Button name="CharacterSelectMenuButton" inherits="GlueButtonSmallTemplate" text="MAINMENU" hidden="true">
 						<Size x="150" y="35"/>
 						<Anchors>
 							<Anchor point="TOP" relativeTo="CharacterSelectAddonsButton" relativePoint="BOTTOM" x="0" y="8"/>
@@ -955,6 +956,51 @@
 								GlueButtonMaster_OnUpdate(self, elapsed);
 								GlueParent_DeathKnightButtonSwap(self);
 							</OnUpdate>
+						</Scripts>
+					</Button>
+					<Button name="StoreButton" inherits="UIPanelGoldButtonTemplate" hidden="true" text="BLIZZARD_STORE">
+						<Size x="164" y="32"/>
+						<Anchors>
+							<Anchor point="BOTTOM" relativeTo="CharacterSelectAddonsButton" relativePoint="TOP" x="1" y="2"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture parentKey="Logo" file="Interface\Store\Store-Main">
+									<Size x="21" y="20"/>
+									<TexCoords left="0.97460938" right="0.99511719" top="0.27148438" bottom="0.29101563"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								local fontString = self:GetFontString();
+								fontString:SetPoint("CENTER", 8, 2);
+								self.Logo:ClearAllPoints();
+								self.Logo:SetPoint("RIGHT", fontString, "LEFT", -2, 0);
+							</OnLoad>
+							<OnClick function="ToggleStoreUI"/>
+							<OnMouseDown>
+								local fontString = self:GetFontString();
+								self.Logo:SetPoint("RIGHT", fontString, "LEFT", -1, -2);
+								self.down = true;
+							</OnMouseDown>
+							<OnMouseUp>
+								local fontString = self:GetFontString();
+								self.Logo:SetPoint("RIGHT", fontString, "LEFT", -2, 0);
+								self.down = false;
+							</OnMouseUp>
+							<OnEnable>
+								self.Logo:SetDesaturated(false);
+								self.Logo:SetAlpha(1);
+							</OnEnable>
+							<OnDisable>
+								self.Logo:SetDesaturated(true);
+								self.Logo:SetAlpha(0.4);
+							</OnDisable>
+							<OnUpdate>
+								CharacterSelectGoldPanelButton_DeathKnightSwap(self);
+							</OnUpdate>
+							<!-- We need to override the templates script because it will reset our textures. -->
 						</Scripts>
 					</Button>
 					<Button name="CopyCharacterButton" inherits="GlueButtonSmallTemplate" hidden="true" text="COPY_CHARACTER">

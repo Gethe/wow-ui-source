@@ -246,11 +246,14 @@ function CharacterSelect_OnLoad(self)
 	self:RegisterEvent("SOCIAL_CONTRACT_STATUS_UPDATE");
     self:RegisterEvent("ACCOUNT_SAVE_ENABLED_UPDATE");
     self:RegisterEvent("ACCOUNT_LOCKED_POST_SAVE_UPDATE");
+	self:RegisterEvent("NAV_BAR_ENABLED_CHANGED");
     SetCharSelectModelFrame("CharacterSelectModel");
 
     CHARACTER_SELECT_BACK_FROM_CREATE = false;
 
     CHARACTER_LIST_OFFSET = 0;
+
+	CharacterSelect_RefreshNavBarEnabledState();
 end
 
 local translationTable = { };	-- for character reordering: key = button index, value = character ID
@@ -432,12 +435,31 @@ function CharacterSelect_OnEvent(self, event, ...)
         CharacterSelect_ConditionallyLoadAccountSaveUI();
     elseif ( event == "ACCOUNT_LOCKED_POST_SAVE_UPDATE") then
         CharacterSelect_UpdateIfUpdateIsNotPending();
+	elseif ( event == "NAV_BAR_ENABLED_CHANGED" ) then
+		CharacterSelect_RefreshNavBarEnabledState();
 	end
 end
 
 function CharacterSelect_UpdateIfUpdateIsNotPending()
 	if ( not IsCharacterListUpdatePending() ) then
 		UpdateCharacterList();
+	end
+end
+
+function CharacterSelect_RefreshNavBarEnabledState()
+	if ( not CharacterSelectUI.VisibilityFramesContainer.NavBar ) then
+		return;
+	end
+
+	CharacterSelectUI.useNavBar = IsNavBarEnabled();
+	if CharacterSelectUI.useNavBar then
+		CharacterSelectUI.VisibilityFramesContainer.NavBar:Show();
+		CharacterSelectMenuButton:Hide();
+		StoreButton:Hide();
+	else
+		CharacterSelectUI.VisibilityFramesContainer.NavBar:Hide();
+		CharacterSelectMenuButton:Show();
+		StoreButton:Show();
 	end
 end
 
@@ -2105,16 +2127,16 @@ function CharacterSelect_IsStoreAvailable()
 end
 
 function CharacterSelect_UpdateStoreButton()
-	if StoreButton then
-		if ( CharacterSelect_IsStoreAvailable() and not Kiosk.IsEnabled()) then
+	local enabled = CharacterSelect_IsStoreAvailable() and not Kiosk.IsEnabled();
+	if CharacterSelectUI.useNavBar then
+		StoreButton:Hide();
+		CharacterSelectUI.VisibilityFramesContainer.NavBar:SetStoreButtonEnabled(enabled);
+	else
+		if enabled then
 			StoreButton:Show();
 		else
 			StoreButton:Hide();
 		end
-	end
-	if CharacterSelectUI.VisibilityFramesContainer.NavBar then
-		local enabled = CharacterSelect_IsStoreAvailable() and not Kiosk.IsEnabled();
-		CharacterSelectUI.VisibilityFramesContainer.NavBar:SetStoreButtonEnabled(enabled);
 	end
 end
 
