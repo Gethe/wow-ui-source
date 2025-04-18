@@ -1,3 +1,0 @@
-## Title: Blizzard Weekly Rewards
-## LoadOnDemand: 1
-Blizzard_WeeklyRewards.xml

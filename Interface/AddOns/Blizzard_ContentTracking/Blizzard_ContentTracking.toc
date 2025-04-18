@@ -1,8 +1,0 @@
-## Title: Blizzard_ContentTracking
-## Author: Blizzard Entertainment
-## DefaultState: enabled
-## Dependencies: Blizzard_FrameXMLBase, Blizzard_ObjectiveTracker
-## AllowLoad: Game
-
-ContentTrackingManager.lua
-ContentTrackingElement.xml

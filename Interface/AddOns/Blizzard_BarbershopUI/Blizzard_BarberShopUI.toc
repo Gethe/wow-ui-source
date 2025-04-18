@@ -1,6 +1,0 @@
-## Title: Blizzard Barber Shop UI
-## Author: Blizzard Entertainment
-## RequiredDep: Blizzard_CharacterCustomize
-## LoadOnDemand: 1
-Blizzard_BarberShopUI.lua
-Blizzard_BarberShopUI.xml

@@ -1,9 +1,0 @@
-## Title: Blizzard PVP UI
-## Author: Blizzard Entertainment
-## Version: 1.0
-## LoadOnDemand: 1
-## AllowLoad: game
-## AllowLoadGameType: mainline
-Blizzard_PVPUI.lua
-Blizzard_PVPUI.xml
-Localization.lua

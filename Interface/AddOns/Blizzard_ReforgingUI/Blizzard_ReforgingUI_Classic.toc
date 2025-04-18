@@ -1,8 +1,0 @@
-## Interface: 0
-## Title: Blizzard Reforging UI
-## Secure: 1
-## LoadOnDemand: 1
-## AllowLoadGameType: classic
-Classic\Blizzard_ReforgingUI.lua
-Classic\Blizzard_ReforgingUI.xml
-Classic\Localization.lua

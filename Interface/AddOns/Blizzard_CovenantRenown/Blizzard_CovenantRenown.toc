@@ -1,4 +1,0 @@
-## Title: Blizzard Covenant Renown
-## Author: Blizzard Entertainment
-## LoadOnDemand: 1
-Blizzard_CovenantRenown.xml

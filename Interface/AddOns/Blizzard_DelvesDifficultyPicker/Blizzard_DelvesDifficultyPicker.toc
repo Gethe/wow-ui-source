@@ -1,7 +1,0 @@
-## Title: Blizzard_DelvesDifficultyPicker 
-## Author: Blizzard Entertainment
-## Version: 1.0
-## LoadOnDemand: 1
-
-Blizzard_DelvesDifficultyPicker.lua
-Blizzard_DelvesDifficultyPicker.xml

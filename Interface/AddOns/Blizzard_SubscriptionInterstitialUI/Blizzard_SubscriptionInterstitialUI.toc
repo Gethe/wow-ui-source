@@ -1,3 +1,0 @@
-## Title: Blizzard Subscription Interstitial UI
-## LoadOnDemand: 1
-Blizzard_SubscriptionInterstitialUI.xml

@@ -1,8 +1,0 @@
-## Title: Blizzard_QueueStatusFrame
-## Author: Blizzard Entertainment
-## DefaultState: enabled
-## Dependencies: Blizzard_ActionBar
-## AllowLoad: game
-## AllowLoadGameType: mainline
-Mainline\QueueStatusFrame.lua
-Mainline\QueueStatusFrame.xml

@@ -1,4 +1,0 @@
-## Title: Blizzard Stable UI
-## AllowLoadGameType: standard
-Blizzard_StableUI.lua
-Blizzard_StableUI.xml

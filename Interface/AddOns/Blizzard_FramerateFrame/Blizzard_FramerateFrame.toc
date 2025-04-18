@@ -1,7 +1,0 @@
-## Title: Blizzard_FramerateFrame
-## Author: Blizzard Entertainment
-## DefaultState: enabled
-## Dependencies: Blizzard_ActionBar
-## AllowLoad: Game
-## AllowLoadGameType: mainline
-FramerateFrame.xml

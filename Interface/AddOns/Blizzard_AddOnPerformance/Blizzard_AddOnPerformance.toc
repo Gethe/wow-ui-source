@@ -1,5 +1,0 @@
-## Title: Blizzard_AddOnPerformance
-## Author: Blizzard Entertainment
-## DefaultState: enabled
-## Dependencies: Blizzard_SharedXML
-AddOnPerformance.lua

@@ -1,8 +1,0 @@
-## Title: Blizzard_QuickJoin
-## Author: Blizzard Entertainment
-## DefaultState: enabled
-## Dependencies: Blizzard_FriendsFrame
-## AllowLoad: Game
-## AllowLoadGameType: mainline
-QuickJoinToast.xml
-QuickJoin.xml

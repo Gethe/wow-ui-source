@@ -1,6 +1,0 @@
-## Title: Blizzard Class Menu
-## Notes: Wardrobe, LootJournal
-## Author: Blizzard Entertainment
-## Version: 1.0
-## AllowLoad: game
-Blizzard_ClassMenu.lua

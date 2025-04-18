@@ -1,8 +1,0 @@
-## Title: Blizzard_ArrowCalloutFrame
-## Author: Blizzard Entertainment
-## DefaultState: enabled
-## Dependencies: Blizzard_UIParent
-## AllowLoad: game
-## AllowLoadGameType: wowlabs
-ArrowCalloutFrame.lua
-ArrowCalloutFrame.xml

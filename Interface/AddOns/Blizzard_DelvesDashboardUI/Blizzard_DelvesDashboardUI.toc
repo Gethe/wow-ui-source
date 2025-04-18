@@ -1,6 +1,0 @@
-## Title: Blizzard_DelvesDashboardUI
-## Dependencies: Blizzard_DelvesCompanionConfiguration
-## LoadOnDemand: 1
-
-Blizzard_DelvesDashboardUI.lua
-Blizzard_DelvesDashboardUI.xml

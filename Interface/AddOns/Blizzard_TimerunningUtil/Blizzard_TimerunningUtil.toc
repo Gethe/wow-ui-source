@@ -1,7 +1,0 @@
-## Title: Blizzard Timerunning Util
-## Author: Blizzard Entertainment
-## DefaultState: enabled
-## AllowLoad: both
-## AllowLoadGameType: mainline
-## Dependencies: Blizzard_SharedXML
-Blizzard_TimerunningUtil.lua

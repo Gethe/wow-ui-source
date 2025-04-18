@@ -1,7 +1,0 @@
-## Title: Blizzard_OverrideActionBar
-## Author: Blizzard Entertainment
-## DefaultState: enabled
-## Dependencies: Blizzard_ActionBar, Blizzard_UnitFrame
-## AllowLoad: Game
-## AllowLoadGameType: mainline
-OverrideActionBar.xml

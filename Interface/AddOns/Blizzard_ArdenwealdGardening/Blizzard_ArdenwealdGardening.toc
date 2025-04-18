@@ -1,5 +1,0 @@
-## Title: Blizzard Ardenweald Gardening
-## Author: Blizzard Entertainment
-## LoadOnDemand: 1
-
-Blizzard_ArdenwealdGardening.xml

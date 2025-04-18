@@ -1,4 +1,0 @@
-## Title: Black Market UI
-## LoadOnDemand: 1
-Blizzard_BlackMarketUI.xml
-Localization.lua

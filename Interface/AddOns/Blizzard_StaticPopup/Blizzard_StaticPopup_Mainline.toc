@@ -1,9 +1,0 @@
-## Title: Blizzard_StaticPopup
-## Author: Blizzard Entertainment
-## DefaultState: enabled
-## Dependencies: Blizzard_FontStyles_Frame, Blizzard_ItemButton
-## AllowLoad: Game
-## AllowLoadGameType: mainline
-Mainline\StaticPopup_Mainline.lua
-StaticPopup.lua
-Mainline\StaticPopup.xml

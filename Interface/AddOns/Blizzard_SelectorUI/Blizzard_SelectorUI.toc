@@ -1,2 +1,0 @@
-## Title: Blizzard Selector UI
-## LoadOnDemand: 1

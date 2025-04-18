@@ -1,3 +1,0 @@
-## Title: Blizzard Click Binding UI
-## LoadOnDemand: 1
-Blizzard_ClickBindingUI.xml

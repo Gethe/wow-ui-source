@@ -1,4 +1,0 @@
-## Title: Blizzard Azerite Essence UI
-## LoadOnDemand: 1
-
-Blizzard_AzeriteEssenceUI.xml

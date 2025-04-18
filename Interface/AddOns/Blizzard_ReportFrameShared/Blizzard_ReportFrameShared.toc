@@ -1,7 +1,0 @@
-## Title: Blizzard_ReportFrameShared
-## Author: Blizzard Entertainment
-## DefaultState: enabled
-## OptionalDep: Blizzard_UIParent, Blizzard_GlueParent
-## AllowLoad: Both
-ReportFrameShared.lua
-ReportFrameShared.xml

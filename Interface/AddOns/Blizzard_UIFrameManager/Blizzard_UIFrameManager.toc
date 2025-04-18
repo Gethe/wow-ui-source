@@ -1,4 +1,0 @@
-## Title: Blizzard_UIFrameManager
-## LoadOnDemand: 0
-Blizzard_UIFrameManager.lua
-Blizzard_UIFrameManager.xml

@@ -1,7 +1,0 @@
-## Title: Blizzard Spell Pick Up Indicator
-## Author: Blizzard Entertainment
-## AllowLoadGameType: mainline
-## AllowLoadByGameMode: plunderstorm
-
-Blizzard_SpellPickUpIndicator.lua
-Blizzard_SpellPickUpIndicator.xml
