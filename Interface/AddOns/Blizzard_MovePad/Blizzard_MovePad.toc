@@ -1,0 +1,5 @@
+## Title: Blizzard MovePad
+## Author: slouken and karl
+## Notes: A clickable movement pad
+## LoadOnDemand: 1
+Blizzard_MovePad.xml

@@ -1,0 +1,11 @@
+## Title: Blizzard_GlueParent
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_GlueXMLBase
+## LoadFirst: 1
+## AllowLoad: Glue
+## AllowLoadGameType: mainline
+## EscalateErrorDuringLoad: 1
+Shared\GlueParentUtil.lua
+Mainline\GlueParent.lua
+Mainline\GlueParent.xml

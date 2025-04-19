@@ -1,0 +1,19 @@
+## Title: Blizzard Professions Templates
+## Author: Blizzard Entertainment
+## LoadOnDemand: 1
+## LoadWith: Blizzard_ProfessionsCrafting, Blizzard_ProfessionsCustomerOrders
+Blizzard_Professions.lua
+Blizzard_ProfessionsRecipeLoader.lua
+Blizzard_ProfessionsTransaction.lua
+Blizzard_ProfessionsTemplates.xml
+Blizzard_ProfessionsRecipeList.xml
+Blizzard_ProfessionsRecipeCrafterDetails.xml
+Blizzard_ProfessionsRecipeReagentSlotBase.xml
+Blizzard_ProfessionsRecipeReagentSlot.xml
+Blizzard_ProfessionsRecipeSalvageSlot.xml
+Blizzard_ProfessionsRecipeEnchantSlot.xml
+Blizzard_ProfessionsRecipeRecraftSlot.xml
+Blizzard_ProfessionsRecipeFlyout.xml
+Blizzard_ProfessionsRecipeFlyoutInstance.lua
+Blizzard_ProfessionsQualityDialog.xml
+Blizzard_ProfessionsRecipeSchematicForm.xml

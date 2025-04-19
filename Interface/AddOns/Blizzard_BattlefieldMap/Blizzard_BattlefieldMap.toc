@@ -1,0 +1,6 @@
+## Title: Blizzard Battlefield Map
+## LoadOnDemand: 1
+## SavedVariablesPerCharacter: BattlefieldMapOptions
+## RequiredDep: Blizzard_MapCanvas Blizzard_SharedMapDataProviders Blizzard_ObjectiveTracker
+Blizzard_BattlefieldMap.xml
+Localization.lua

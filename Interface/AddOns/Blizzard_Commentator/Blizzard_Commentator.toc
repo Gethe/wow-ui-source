@@ -1,0 +1,16 @@
+## Title: Blizzard_Commentator
+## SavedVariables: CommentatorSave
+## LoadOnDemand: 1
+
+FadeToBlack.xml
+CommentatorVictoryFanfare.xml
+
+Blizzard_CommentatorConstants.lua
+Blizzard_CommentatorUtil.lua
+Blizzard_CommentatorScoreboard.xml
+Blizzard_commentatorSpell.xml
+Blizzard_CommentatorSpellTray.xml
+Blizzard_CommentatorModelScene.xml
+Blizzard_CommentatorUnitFrame.xml
+Blizzard_CommentatorNamePlate.xml
+Blizzard_Commentator.xml

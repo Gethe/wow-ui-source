@@ -1,0 +1,8 @@
+## Title: Blizzard Inspect UI
+## LoadOnDemand: 1
+Blizzard_InspectUI.xml
+InspectPaperDollFrame.lua
+InspectPaperDollFrame.xml
+InspectPVPFrame.xml
+InspectGuildFrame.xml
+Localization.lua

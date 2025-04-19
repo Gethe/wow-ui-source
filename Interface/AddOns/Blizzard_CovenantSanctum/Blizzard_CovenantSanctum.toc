@@ -1,0 +1,5 @@
+## Title: Blizzard Covenant Sanctum
+## Author: Blizzard Entertainment
+## LoadOnDemand: 1
+Blizzard_CovenantSanctum.xml
+Blizzard_CovenantSanctumUpgrades.xml

@@ -1,0 +1,113 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Script file="DruidComboPointBar.lua"/>
+
+	<Frame name="DruidComboPointTemplate" mixin="DruidComboPointMixin" virtual="true">
+		<Size x="20" y="20"/>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="BG_Shadow" alphaMode="BLEND" atlas="UF-DruidCP-BG-Shadow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-2"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BG_Active" alphaMode="BLEND" atlas="UF-DruidCP-BG-Active" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BG_Inactive" alphaMode="BLEND" atlas="UF-DruidCP-BG-Dis" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="BG_Glow" alphaMode="BLEND" atlas="UF-DruidCP-BG-Glow" useAtlasSize="true" parentArray="fxTextures">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Point_Deplete" alphaMode="BLEND" atlas="UF-DruidCP-Deplete" useAtlasSize="true" parentArray="fxTextures" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Point_Icon" alphaMode="BLEND" atlas="UF-DruidCP-Icon" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="FX_RingGlow" alphaMode="BLEND" atlas="UF-DruidCP-Ring-Glow" useAtlasSize="true" parentArray="fxTextures">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="FB_Slash" alphaMode="BLEND" atlas="UF-DruidCP-Slash">
+					<Size x="26" y="41"/>
+					<Anchors>
+						<Anchor point="CENTER" x="1" y="3"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Smoke" alphaMode="BLEND" atlas="UF-DruidCP-Smoke" useAtlasSize="true" parentArray="fxTextures">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="15."/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="activateAnim" setToFinalAlpha="true">
+				<Alpha childKey="Point_Icon" fromAlpha="0" toAlpha=".5" duration=".1" order="1"/>
+				<Alpha childKey="Point_Icon" fromAlpha=".5" toAlpha="1" startDelay=".47" duration=".2" order="1"/>
+				<FlipBook childKey="FB_Slash" duration="1" flipBookRows="3" flipBookColumns="8" flipBookFrames="20" flipBookFrameWidth="0" flipBookFrameHeight="0" order="1"/>
+				<Alpha childKey="FX_RingGlow" fromAlpha="0" toAlpha="1" duration=".27" order="1"/>
+				<Alpha childKey="FX_RingGlow" fromAlpha="1" toAlpha="0" startDelay=".27" duration=".47" order="1"/>
+				<Alpha childKey="BG_Active" fromAlpha="0" toAlpha="0" duration=".27" order="1"/>
+				<Alpha childKey="BG_Active" fromAlpha="0" toAlpha="1" startDelay=".27" duration=".01" order="1"/>
+				<Alpha childKey="BG_Inactive" fromAlpha="1" toAlpha="1" duration=".27" order="1"/>
+				<Alpha childKey="BG_Inactive" fromAlpha="1" toAlpha="0" startDelay=".27" duration=".01" order="1"/>
+				<Alpha childKey="BG_Glow" fromAlpha="0" toAlpha="0" duration=".17" order="1"/>
+				<Alpha childKey="BG_Glow" fromAlpha="0" toAlpha="1" startDelay=".17" duration=".13" order="1"/>
+				<Alpha childKey="BG_Glow" fromAlpha="1" toAlpha="0" startDelay=".3" duration=".4" order="1"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="deactivateAnim" setToFinalAlpha="true">
+				<Alpha childKey="Smoke" fromAlpha="1" toAlpha="1" duration=".33" order="1"/>
+				<Alpha childKey="Smoke" fromAlpha="1" toAlpha="0" startDelay=".33" duration=".23" order="1"/>
+				<Translation childKey="Smoke" offsetX="0" offsetY="7" duration=".56" order="1"/>
+				<Alpha childKey="FX_RingGlow" fromAlpha="1" toAlpha="1" duration=".43" order="1"/>
+				<Alpha childKey="FX_RingGlow" fromAlpha="1" toAlpha="0" startDelay=".43" duration=".23" order="1"/>
+				<Alpha childKey="Point_Icon" fromAlpha="1" toAlpha="0" duration=".2" order="1"/>
+				<Alpha childKey="Point_Deplete" fromAlpha="1" toAlpha="1" duration=".23" order="1"/>
+				<Alpha childKey="Point_Deplete" fromAlpha="1" toAlpha="0" startDelay=".23" duration=".2" order="1"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+
+	<Frame name="DruidComboPointBarTemplate" inherits="ClassResourceBarTemplate" mixin="DruidComboPointBarMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="powerToken" value="COMBO_POINTS" type="string"/>
+			<KeyValue key="powerType" value="Enum.PowerType.ComboPoints" type="global"/>
+			<KeyValue key="tooltip1" value="COMBO_POINTS_POWER" type="global"/>
+			<KeyValue key="tooltip2" value="COMBO_POINTS_DRUID_TOOLTIP" type="global"/>
+			<KeyValue key="resourcePointTemplate" value="DruidComboPointTemplate" type="string"/>
+			<KeyValue key="resourcePointSetupFunc" value="DruidComboPointMixin.Setup" type="global"/>
+			<KeyValue key="resourcePointReleaseFunc" value="DruidComboPointMixin.OnRelease" type="global"/>
+			<KeyValue key="shouldShowBarFunc" value="DruidComboPointBarMixin.ShouldShowBar" type="global"/>
+			<KeyValue key="spacing" value="4" type="number"/>
+			<KeyValue key="class" value="DRUID" type="string"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="DruidComboPointBarFrame" inherits="DruidComboPointBarTemplate">
+		<Size x="1" y="60"/>
+		<KeyValues>
+			<KeyValue key="topPadding" value="7" type="number"/>
+			<KeyValue key="showTooltip" value="true" type="boolean"/>
+		</KeyValues>
+	</Frame>
+</Ui>

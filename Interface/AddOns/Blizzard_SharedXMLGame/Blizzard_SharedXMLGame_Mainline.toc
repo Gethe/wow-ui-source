@@ -1,0 +1,20 @@
+## Title: Blizzard_SharedXMLGame
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_SharedXML
+## AllowLoad: Game
+## AllowLoadGameType: mainline
+Tooltip\TooltipUtil.lua
+Tooltip\TooltipDataHandler.lua
+Tooltip\TooltipDataRules.lua
+Tooltip\TooltipComparisonManager.lua
+ScriptedAnimations\ScriptedAnimationEffects.lua
+ScriptedAnimations\ScriptAnimatedModelSceneActor.lua
+ScriptedAnimations\ScriptAnimatedEffectController.lua
+ScriptedAnimations\ScriptAnimatedModelScene.lua
+ScriptedAnimations\ScriptAnimatedModelScene.xml
+StaticModelInfo.lua
+DressUpModelFrameMixin.lua
+LoopingSoundEffect.lua
+Shared\Localization.lua
+Mainline\Localization.lua

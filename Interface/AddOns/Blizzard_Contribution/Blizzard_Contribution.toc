@@ -1,0 +1,3 @@
+## Title: Blizzard Contribution UI
+## LoadOnDemand: 1
+Blizzard_Contribution.xml

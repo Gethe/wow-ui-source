@@ -1,0 +1,4 @@
+## Title: Blizzard Item Interaction UI
+## LoadOnDemand: 1
+
+Blizzard_ItemInteractionUI.xml

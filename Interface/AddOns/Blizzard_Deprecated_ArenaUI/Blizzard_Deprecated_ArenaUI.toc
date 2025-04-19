@@ -1,0 +1,6 @@
+## Title: Blizzard_Deprecated_ArenaUI
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_UnitFrame, Blizzard_DurabilityFrame
+## AllowLoad: Game
+Deprecated_ArenaUI.xml

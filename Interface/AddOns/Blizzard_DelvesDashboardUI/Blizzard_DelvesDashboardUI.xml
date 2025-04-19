@@ -1,0 +1,431 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<!-- Reward animation -->
+	<AnimationGroup name="RewardEarnedAnim" looping="NONE" setToFinalAlpha="true" virtual="true">
+		<Alpha childKey="EarnedCheckmark" duration="0.5" order="1" fromAlpha="0" toAlpha="0"/>
+		<Alpha childKey="EarnedCheckmark" duration="0.0" order="2" fromAlpha="1" toAlpha="1"/>
+		<Alpha childKey="Glow" smoothing="OUT" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
+		<Alpha childKey="Glow" startDelay="0.1" smoothing="IN_OUT" duration="0.3" order="1" fromAlpha="1" toAlpha="1"/>
+		<Alpha childKey="Sparkles" duration="0.5" order="1" fromAlpha="1" toAlpha="1"/>
+		<Alpha childKey="CheckmarkFlipbook" duration="0.25" order="1" fromAlpha="0" toAlpha="0"/>
+		<Alpha childKey="CheckmarkFlipbook" startDelay="0.25" duration="0.25" order="1" fromAlpha="1" toAlpha="1"/>
+		<FlipBook smoothing="OUT" childKey="Sparkles" duration="0.5" order="1" flipBookRows="2" flipBookColumns="7" flipBookFrames="14" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+		<FlipBook startDelay="0.25" endDelay="0" smoothing="NONE" childKey="CheckmarkFlipbook" duration="0.25" order="1" flipBookRows="2" flipBookColumns="4" flipBookFrames="8" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+	</AnimationGroup>
+
+    <!-- Button Panel Template -->
+    <Frame name="DelvesDashboardButtonPanelFrame" mixin="DelvesDashboardButtonPanelFrameMixin" virtual="true">
+		<KeyValues>
+			<!-- If true, this button panel frame will use a highlighted background -->
+			<KeyValue type="boolean" key="isCompanionButtonPanelFrame" value="false"/> 
+		</KeyValues>
+        <Size x="215" y="283"/>
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture parentKey="ButtonPanelBackground" atlas="delves-dashboard-card" useAtlasSize="false">
+                    <Anchors>
+                        <Anchor point="TOPLEFT"/>
+                        <Anchor point="BOTTOMRIGHT"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="ARTWORK">
+                <FontString parentKey="PanelTitle" inherits="GameFontHighlightLarge">
+                    <Size x="180" y="40"/>
+                    <Anchors>
+                        <Anchor point="TOP" y="-25"/>
+                    </Anchors>
+                </FontString>
+                <FontString parentKey="PanelDescription" inherits="GameFontNormalMed2" mixin="AutoScalingFontStringMixin" wordwrap="true" justifyV="TOP">
+                    <KeyValues>
+                        <KeyValue key="minLineHeight" value="12" type="number"/>
+                    </KeyValues>
+                    <Size x="160" y="55"/>
+                    <Anchors>
+                        <Anchor point="TOP" relativeKey="$parent.PanelTitle" relativePoint="BOTTOM" y="3"/>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+    </Frame>
+
+    <!-- Reputation Threshold Templates -->
+	<!-- Reputation Threshold Normal -->
+    <Frame name="ReputationThresholdTemplate" mixin="ReputationThresholdMixin" useParentLevel="true" virtual="true">
+		<Size x="20" y="20"/>
+		<Layers>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="LineComplete" atlas="delves-dashboard-bar-divider-complete" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" x="-2" y="20"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LineIncomplete" atlas="delves-dashboard-bar-divider-incomplete" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="-2" y="20"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Reward" mixin="ReputationThresholdRewardMixin" enableMouse="true" frameStrata="HIGH" setAllPoints="true">
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="Glow" alpha="0" alphaMode="ADD" atlas="delves-dashboard-bar-diamond-complete-glow" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon">
+                            <Size x="30" y="30"/>
+							<Anchors>
+								<Anchor point="CENTER" x="1" y="0"/>
+							</Anchors>
+						</Texture>
+                        <MaskTexture parentKey="CircleMask" atlas="CircleMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Size x="20" y="20"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="2"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="Icon"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="IconBorder" atlas="delves-dashboard-bar-diamond-incomplete" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Sparkles" alpha="0" alphaMode="ADD" atlas="activities-complete-diamond-sparkles">
+							<Size x="70" y="70"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="CheckmarkFlipbook" alpha="0" alphaMode="BLEND" atlas="delves-dashboard-checkmark_flipbook">
+							<Size x="59" y="59"/>
+							<Anchors>
+								<Anchor point="CENTER" x="7" y="-5"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="EarnedCheckmark" atlas="delves-dashboard-checkmark" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="CENTER" x="0" y="2"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+				<Animations>
+					<AnimationGroup parentKey="EarnedAnim" inherits="RewardEarnedAnim"/>
+				</Animations>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<!-- Reputation Threshold Large (used for final reward in track) -->
+	<Frame name="ReputationThresholdLargeTemplate" mixin="ReputationThresholdMixin" useParentLevel="true" virtual="true">
+		<Size x="40" y="40"/>
+		<Frames>
+			<Frame parentKey="Reward" mixin="ReputationThresholdRewardMixin" enableMouse="true" frameStrata="HIGH" setAllPoints="true">
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="Glow" alpha="0" alphaMode="ADD" atlas="delves-dashboard-bar-diamond-complete-glow" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon">
+                            <Size x="50" y="50"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="3"/>
+							</Anchors>
+						</Texture>
+                        <MaskTexture parentKey="CircleMask" atlas="CircleMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Size x="44" y="44"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="3"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="Icon"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="IconBorder" atlas="delves-dashboard-bar-reward-border" useAtlasSize="false">
+							<Size x="56" y="56"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Sparkles" alpha="0" alphaMode="ADD" atlas="activities-complete-diamond-sparkles">
+							<Size x="70" y="70"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="CheckmarkFlipbook" alpha="0" alphaMode="BLEND" atlas="delves-dashboard-checkmark_flipbook">
+							<Size x="59" y="59"/>
+							<Anchors>
+								<Anchor point="CENTER" x="17" y="-10"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="EarnedCheckmark" atlas="delves-dashboard-checkmark" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="CENTER" x="10" y="-3"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+				<Animations>
+					<AnimationGroup parentKey="EarnedAnim" inherits="RewardEarnedAnim"/>
+				</Animations>
+			</Frame>
+		</Frames>
+	</Frame>
+
+    <!-- Delves Dashboard -->
+    <Frame name="DelvesDashboardFrame" useParentLevel="true" setAllPoints="true" mixin="DelvesDashboardFrameMixin" parent="PVEFrame" hidden="true">
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture parentKey="DashboardBackground" atlas="delves-dashboard-background" useAtlasSize="false">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" y="-10"/>
+                        <Anchor point="BOTTOMRIGHT" y="4"/>
+                    </Anchors>
+                </Texture> 
+            </Layer>
+
+            <Layer level="ARTWORK">
+                <FontString parentKey="ReputationBarTitle" inherits="GameFontHighlight" justifyH="LEFT">
+                    <Size x="475" y="25"/>
+                    <Anchors>
+						<Anchor point="TOP" y="-55"/>
+						<Anchor point="LEFT" x="35"/>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+            <!-- Reputation ThresholdBar -->
+			<StatusBar parentKey="ThresholdBar" mixin="DelvesThresholdBarMixin" frameBuffer="true">
+				<BarTexture parentKey="BarFill" atlas="delves-dashboard-bar-fill"/>
+				<Size x="475" y="25"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.ReputationBarTitle" relativePoint="BOTTOM"/>
+                    <Anchor point="LEFT" x="30"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="BarBackgroundGlow" atlas="delves-dashboard-bar-background-glow" alpha="0">
+                            <Size x="475" y="25"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="1">
+						<Texture parentKey="BarBackground" atlas="delves-dashboard-bar-background">
+                            <Size x="485" y="25"/>
+							<Anchors>
+								<Anchor point="CENTER" x="8" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="BarBorder" atlas="delves-dashboard-bar-border">
+                            <Size x="487" y="28"/>
+							<Anchors>
+								<Anchor point="CENTER" x="7" y="-1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="BarBorderGlow" atlas="delves-dashboard-bar-border-glow" alphaMode="ADD" alpha="0">
+                            <Size x="487" y="28"/>
+							<Anchors>
+								<Anchor point="CENTER" x="7" y="-1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="BarFillGlow" atlas="delves-dashboard-bar-fill-glow" alphaMode="ADD" alpha="0">
+                             <Size x="475" y="25"/>
+							<Anchors>
+								<Anchor point="LEFT"/>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="BarEnd" useParentLevel="true">
+						<Size x="16" y="28"/>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture parentKey="line" atlas="delves-dashboard-bar-end">
+                                    <Size x="16" y="28"/>
+									<Anchors>
+										<Anchor point="CENTER" x="0" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+				<Animations>
+					<AnimationGroup parentKey="FadeOutAnim" inherits="TargetsHiddenOnFinishedAnimGroupTemplate" setToFinalAlpha="true">
+						<Alpha duration="2.0" order="1" fromAlpha="1" toAlpha="1"/>
+						<Alpha duration="0.5" order="2" fromAlpha="1" toAlpha="0"/>
+					</AnimationGroup>
+					<AnimationGroup parentKey="GlowAnim" setToFinalAlpha="true">
+						<Alpha childKey="BarBorderGlow" duration="0.25" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="BarBackgroundGlow" duration="0.25" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="BarFillGlow" duration="0.25" fromAlpha="0" toAlpha="1"/>
+					</AnimationGroup>
+				</Animations>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</StatusBar>
+
+            <!-- Button Panels -->
+            <Frame parentKey="ButtonPanelLayoutFrame" inherits="HorizontalLayoutFrame">
+                <KeyValues>
+                    <KeyValue key="spacing" value="5" type="number"/>
+                </KeyValues>
+                <Anchors>
+                    <Anchor point="BOTTOM" y="15"/>
+                </Anchors>
+                <Frames>
+                    <!-- Companion Config Button Panel -->
+                    <Frame parentKey="CompanionConfigButtonPanel" inherits="DelvesDashboardButtonPanelFrame" mixin="CompanionConfigButtonPanelMixin">
+                        <KeyValues>
+                            <KeyValue key="layoutIndex" value="1" type="number"/>
+							<KeyValue type="boolean" key="isCompanionButtonPanelFrame" value="true"/> 
+                        </KeyValues>
+                        <Frames>
+                            <!-- Companion Display -->
+                            <ModelScene parentKey="CompanionModelScene" inherits="NoCameraControlModelSceneMixinTemplate" mixin="CompanionConfigButtonPanelModelSceneMixin">
+                                <Size x="125" y="135"/>
+                                <Anchors>
+                                    <Anchor point="CENTER" y="-19"/>
+                                </Anchors>
+                                <Scripts>
+                                    <OnShow method="OnShow"/>
+                                </Scripts>
+                            </ModelScene>
+                            <!-- Config Button -->
+                            <Button parentKey="CompanionConfigButton" inherits="MagicButtonTemplate" mixin="CompanionConfigButtonPanelMixin" motionScriptsWhileDisabled="true">
+                                <Size x="130" y="30"/>
+                                <Anchors>
+                                    <Anchor point="BOTTOM" y="27"/>
+                                </Anchors>
+                                <Layers>
+                                    <Layer level="OVERLAY">
+                                        <FontString parentKey="ButtonText" inherits="GameFontNormalMed1" justifyH="CENTER" text="DELVES_CONFIGURE_BUTTON">
+                                            <Size x="130" y="30"/>
+                                            <Anchors>
+                                                <Anchor point="CENTER"/>
+                                            </Anchors>
+                                        </FontString>
+                                    </Layer>
+                                </Layers>
+                                <Scripts>
+                                    <OnClick method="OnClick"/>
+                                    <OnEnter method="OnEnter"/>
+                                    <OnLeave function="GameTooltip_Hide"/>
+                                </Scripts>
+                            </Button>
+                        </Frames>
+                        <Scripts>
+                            <OnShow method="OnShow"/>
+                        </Scripts>
+                    </Frame>
+
+                    <!-- Great Vault Button Panel -->
+                    <Frame parentKey="GreatVaultButtonPanel" inherits="DelvesDashboardButtonPanelFrame" mixin="GreatVaultButtonPanelMixin">
+                        <KeyValues>
+                            <KeyValue key="layoutIndex" value="2" type="number"/>
+                        </KeyValues>
+                        <Frames>
+                            <!-- Great Vault Button -->
+                            <Frame parentKey="GreatVaultButton" mixin="GreatVaultButtonMixin">
+                                <Size x="84" y="70"/>
+                                <Anchors>
+                                    <Anchor point="CENTER" x="-1" y="-40"/>
+                                </Anchors>
+                                <Layers>
+                                    <Layer level="ARTWORK">
+                                        <Texture parentKey="ChestTexture" scale="0.65">
+                                            <Anchors>
+                                                <Anchor point="CENTER"/>
+                                            </Anchors>
+                                        </Texture>
+                                    </Layer>
+                                    <Layer level="HIGHLIGHT">
+                                        <Texture parentKey="Highlight" alphaMode="ADD" alpha=".2" scale="0.65">
+                                            <Anchors>
+                                                <Anchor point="CENTER"/>
+                                            </Anchors>
+                                        </Texture>
+                                    </Layer>
+									<Layer level="OVERLAY">
+										<Texture parentKey="AnimTexture" atlas="gficon-chest-evergreen-greatvault-collect" useAtlasSize="true" alphaMode="ADD" scale="0.65">
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+											<Animations>
+												<AnimationGroup parentKey="Anim" looping="REPEAT">
+													<Alpha startDelay="0" duration="1" order="1" fromAlpha="0" toAlpha="0.5"/>
+													<Alpha startDelay="1" duration="1" order="1" fromAlpha="0.5" toAlpha="0"/>
+												</AnimationGroup>
+											</Animations>
+										</Texture>
+									</Layer>
+                                </Layers>
+                                <Scripts>
+                                    <OnShow method="OnShow"/>
+                                    <OnEnter method="OnEnter"/>
+                                    <OnLeave method="OnLeave"/>
+                                    <OnMouseUp method="OnMouseUp"/>
+                                </Scripts>
+                            </Frame>
+                        </Frames>
+                        <Scripts>
+                            <OnShow method="OnShow"/>
+                        </Scripts>
+                    </Frame>
+                </Frames>
+            </Frame>
+        </Frames>
+        <Scripts>
+            <OnLoad method="OnLoad"/>
+            <OnShow method="OnShow"/>
+			<OnEvent method="OnEvent"/>
+        </Scripts>
+    </Frame>
+</Ui>

@@ -1,0 +1,118 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	
+	<Frame name="PlayerChoiceFrame" frameStrata="HIGH" parent="UIParent" toplevel="true" inherits="HorizontalLayoutFrame" mixin="PlayerChoiceFrameMixin" hidden="true" >
+		<Size x="600" y="544"/>
+		<KeyValues>
+			<KeyValue key="fixedWidth" value="100" type="number"/>
+			<KeyValue key="expand" value="true" type="boolean"/>
+			<KeyValue key="skipChildLayout" value="true" type="boolean"/>
+			<KeyValue key="skipLayoutOnShow" value="true" type="boolean"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="BorderOverlay">
+					<!-- Anchoring reset dynamically in PlayerChoiceFrameMixin:SetupFrame -->
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-6" y="6"/>
+						<Anchor point="BOTTOMRIGHT" x="6" y="-6"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate" setAllPoints="true">
+				<!-- Anchoring reset dynamically in PlayerChoiceFrameMixin:SetupFrame  -->
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-6" y="6"/>
+					<Anchor point="BOTTOMRIGHT" x="6" y="-6"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="BlackBackground" frameLevel="450" enableMouse="true" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture setAllPoints="true">
+							<Color color="BLACK_FONT_COLOR" a="0.80"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="Header" inherits="ResizeLayoutFrame" frameLevel="510">
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="TOP" />
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="Texture">
+							<Anchors>
+								<Anchor point="TOP" />
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="Background" clipChildren="true" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" x="-2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="BackgroundTile" horizTile="true" vertTile="true" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="Title">
+				<Size x="500" y="85"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="50" y="-33"/>
+					<Anchor point="TOPRIGHT" x="-50" y="-33"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Left">
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Right">
+							<Anchors>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="-1">
+						<Texture parentKey="Middle" horizTile="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT" x="-60"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT" x="60"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" inherits="SystemFont_Large" justifyH="CENTER">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Middle"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton" frameLevel="510">
+				<Anchors>
+					<Anchor point="TOPRIGHT" />
+				</Anchors>
+			</Button>
+			<ModelScene parentKey="BorderLayerModelScene" drawLayer="BORDER"  inherits="ScriptAnimatedModelSceneTemplate" alpha="0.5" setAllPoints="true"/>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

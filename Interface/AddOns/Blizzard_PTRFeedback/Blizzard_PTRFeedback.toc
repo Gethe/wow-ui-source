@@ -1,0 +1,11 @@
+## Title: PTR Issue Reporter
+## OnlyBetaAndPTR: 1
+## Notes: Tool for gathering issues from PTR
+## SavedVariables: Blizzard_PTRIssueReporter_Saved
+
+Blizzard_PTRFeedback_FrameTemplates.xml
+Blizzard_PTRFeedback.lua
+Blizzard_PTRFeedback_Tooltips.lua
+Blizzard_PTRFeedback_Frames.lua
+Blizzard_PTRFeedback_Events.lua
+Blizzard_Reports.lua

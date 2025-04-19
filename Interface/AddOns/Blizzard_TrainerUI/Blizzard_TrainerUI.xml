@@ -1,0 +1,227 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Script file="Blizzard_TrainerUI.lua"/>
+	
+	
+	
+	
+	
+	
+	<!--	size=512,512
+	<Texture name="Trainer-FrameBg.png" >
+		<Size x="299" y="334"/>	
+		<TexCoords left="0.00195313" right="0.58593750" top="0.00195313" bottom="0.65429688"/>	
+	</Texture>
+	<Texture name="Trainer-ItemBg.png" >
+		<Size x="293" y="47"/>	
+		<TexCoords left="0.00195313" right="0.57421875" top="0.65820313" bottom="0.75000000"/>	
+	</Texture>
+	<Texture name="Trainer-Item-Highlight.png" >
+		<Size x="293" y="47"/>	
+		<TexCoords left="0.00195313" right="0.57421875" top="0.75390625" bottom="0.84570313"/>	
+	</Texture>
+	<Texture name="Trainer-Item-Selected.png" >
+		<Size x="293" y="47"/>	
+		<TexCoords left="0.00195313" right="0.57421875" top="0.84960938" bottom="0.94140625"/>	
+	</Texture-->
+
+	<Button name="ClassTrainerSkillButtonTemplate" virtual="true">
+		<Size x="298" y="47"/>
+		<Frames>
+			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate" parentKey="money">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="5" y="-7"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						SmallMoneyFrame_OnLoad(self);
+						MoneyFrame_SetType(self, "STATIC");
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentIcon" parentKey="icon">
+					<Size x="36" y="36"/>
+					<Anchors>
+						<Anchor point="LEFT" x="6" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentName" inherits="GameFontNormal" justifyH="LEFT" parentKey="name">
+					<Size x="0" y="12"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"  relativeKey="$parent.icon" relativePoint="TOPRIGHT" x="6" y="-1"/>
+						<Anchor point="RIGHT" relativeKey="$parent.money" relativePoint="LEFT" x="-2" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSubText" inherits="SystemFont_Shadow_Small" justifyH="LEFT" justifyV="MIDDLE" parentKey="subText">
+					<Size x="240" y="30"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.name" relativePoint="LEFT" x="0" y="-19"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="selectedTex" file="Interface\ClassTrainerFrame\TrainerTextures" hidden="true" alphaMode="ADD">
+					<TexCoords left="0.00195313" right="0.57421875" top="0.84960938" bottom="0.94140625"/>
+				</Texture>
+				<Texture parentKey="lock" file="Interface\GuildFrame\GuildFrame" hidden="true">
+					<Size x="17" y="21"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.51660156" right="0.53320313" top="0.92578125" bottom="0.96679688"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="disabledBG" hidden="true" alphaMode="MOD">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="2" y="-2"/>
+						<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+					</Anchors>
+					<Color r="0.55" g="0.55" b="0.55" a="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<NormalTexture file="Interface\ClassTrainerFrame\TrainerTextures">
+			<TexCoords left="0.00195313" right="0.57421875" top="0.65820313" bottom="0.75000000"/>
+		</NormalTexture>
+		<HighlightTexture name="$parentHighlight" file="Interface\ClassTrainerFrame\TrainerTextures" alphaMode="ADD">
+			<TexCoords left="0.00195313" right="0.57421875" top="0.75390625" bottom="0.84570313"/>
+		</HighlightTexture>
+		<Scripts>
+			<OnEnter>
+				self.showingTooltip = true;
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 35);
+				GameTooltip:SetTrainerService(self:GetID());
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip_Hide();
+				self.showingTooltip = false;
+			</OnLeave>
+			<OnClick>
+				ClassTrainerSkillButton_OnClick(self, button);
+			</OnClick>
+		</Scripts>
+	</Button>
+	
+	<Frame name="ClassTrainerFrame" inherits="ButtonFrameTemplate" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentMoneyBg" file="Interface\MoneyFrame\UI-MoneyFrame-Border">
+					<Size x="148" y="34"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"  x="5" y="-9"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBg" parentKey="BG" file="Interface\ClassTrainerFrame\TrainerTextures">
+					<TexCoords left="0.00195313" right="0.58593750" top="0.00195313" bottom="0.65429688"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<StatusBar name="ClassTrainerStatusBar" drawLayer="BACKGROUND" minValue="0" maxValue="1" defaultValue="0" enableMouse="false">
+				<Size x="136" y="18"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="64" y="-36"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentSkillRank" inherits="GameFontHighlightSmall" justifyH="CENTER" parentKey="rankText">
+							<Anchors>
+								<Anchor point="CENTER" relativeTo="ClassTrainerStatusBar" x="0" y="0"/>
+							</Anchors>
+						</FontString>
+						<Texture name="$parentLeft" file="Interface\GuildFrame\GuildFrame">
+							<Size x="18" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="-2" y="0"/>
+								<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="-2" y="0"/>
+							</Anchors>
+							<TexCoords left="0.60742188" right="0.62500000" top="0.78710938" bottom="0.82226563"/>
+						</Texture>
+						<Texture name="$parentRight" file="Interface\GuildFrame\GuildFrame">
+							<Size x="18" y="0"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="2" y="0"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT" x="2" y="0"/>
+							</Anchors>
+							<TexCoords left="0.60742188" right="0.62500000" top="0.82617188" bottom="0.86132813"/>
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\GuildFrame\GuildFrame">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT" x="0" y="0"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+							</Anchors>
+							<TexCoords left="0.60742188" right="0.62500000" top="0.74804688" bottom="0.78320313"/>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBackground">
+							<Color r="0" g="0" b="0.75" a="0.5"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						ClassTrainerStatusBarBackground:SetVertexColor(0.0, 0.0, 0.75, 0.5);
+					</OnLoad>
+				</Scripts>
+				<BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
+				<BarColor r="0" g="0" b="1" a="0.5"/>
+			</StatusBar>
+			<DropdownButton parentKey="FilterDropdown" inherits="WowStyle1FilterDropdownTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-13" y="-35"/>
+				</Anchors>
+			</DropdownButton>
+			<Button name="ClassTrainerTrainButton" inherits="MagicButtonTemplate" motionScriptsWhileDisabled="true" text="TRAIN">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" />
+				</Anchors>
+				<Scripts>
+					<OnClick function="ClassTrainerTrainButton_OnClick"/>
+				</Scripts>
+			</Button>
+			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="$parentMoneyBg" x="8" y="6"/>
+				</Anchors>
+			</Frame>
+			<Button name="$parentSkillStepButton" inherits="ClassTrainerSkillButtonTemplate" parentKey="skillStepButton" hidden="true">
+				<Size x="316" y="40"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentInset" x="6" y="-5"/>
+				</Anchors>
+			</Button>
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList" frameStrata="HIGH">
+				<Size x="302" y="330"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parentInset" x="-5" y="5"/>
+				</Anchors>
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar" frameStrata="HIGH">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="5" y="-2"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="-2"/>
+				</Anchors>
+			</EventFrame>
+			<Frame name="$parentBottomInset" useParentLevel="true" inherits="InsetFrameTemplate" parentKey="bottomInset" hidden="true">
+				<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="-6" y="26" />
+						<Anchor point="TOPLEFT" relativeTo="$parentInset" relativePoint="BOTTOMLEFT" x="0" y="-3" />
+					</Anchors>
+			</Frame>
+		</Frames>	
+		<Scripts>
+			<OnLoad function="ClassTrainerFrame_OnLoad"/>
+			<OnShow function="ClassTrainerFrame_OnShow"/>
+			<OnHide function="ClassTrainerFrame_OnHide"/>
+			<OnEvent function="ClassTrainerFrame_OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -1,0 +1,249 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Script file="RogueComboPointBar.lua"/>
+
+	<Frame name="RogueComboPointTemplate" mixin="RogueComboPointMixin" virtual="true">
+		<Size x="20" y="20"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BGShadow" atlas="uf-roguecp-bg-shadow" useAtlasSize="true" alphaMode="BLEND" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-4"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BGActive" atlas="uf-roguecp-bg" useAtlasSize="true" alphaMode="BLEND" texelSnappingBias="0.0" snapToPixelGrid="false" parentArray="fxTextures">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BGInactive" atlas="uf-roguecp-bg-dis" useAtlasSize="true" alphaMode="BLEND" texelSnappingBias="0.0" snapToPixelGrid="false" parentArray="fxTextures">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BGGlow" atlas="uf-roguecp-bg" useAtlasSize="true" alphaMode="BLEND" texelSnappingBias="0.0" snapToPixelGrid="false" parentArray="fxTextures">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="IconUncharged" atlas="uf-roguecp-icon-red" useAtlasSize="true" alphaMode="BLEND" texelSnappingBias="0.0" snapToPixelGrid="false" parentArray="fxTextures">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="IconCharged" atlas="uf-roguecp-icon-blue" useAtlasSize="true" alphaMode="BLEND" texelSnappingBias="0.0" snapToPixelGrid="false" parentArray="fxTextures">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture parentKey="FXUncharged" atlas="uf-roguecp-fx-red" useAtlasSize="true" alphaMode="BLEND" texelSnappingBias="0.0" snapToPixelGrid="false" parentArray="fxTextures">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="FXCharged" atlas="uf-roguecp-fx-blue" useAtlasSize="true" alphaMode="BLEND" texelSnappingBias="0.0" snapToPixelGrid="false" parentArray="fxTextures">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="3">
+				<Texture parentKey="ChargedFrameInactive" atlas="uf-roguecp-bg-anima-dis" useAtlasSize="true" alphaMode="BLEND" texelSnappingBias="0.0" snapToPixelGrid="false" parentArray="fxTextures">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ChargedFrameActive" atlas="uf-roguecp-bg-anima" useAtlasSize="true" alphaMode="BLEND" texelSnappingBias="0.0" snapToPixelGrid="false" parentArray="fxTextures">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ChargedFrameGlow" atlas="uf-roguecp-bg-animaglow" useAtlasSize="true" alphaMode="BLEND" texelSnappingBias="0.0" snapToPixelGrid="false" parentArray="fxTextures">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="FrameGlow" atlas="uf-roguecp-frame-glow" useAtlasSize="true" alphaMode="BLEND" texelSnappingBias="0.0" snapToPixelGrid="false" parentArray="fxTextures">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SlashFBUncharged" atlas="uf-roguecp-slash-red" alphaMode="BLEND" texelSnappingBias="0.0" snapToPixelGrid="false" parentArray="fxTextures">
+					<Size x="43" y="43"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SlashFBCharged" atlas="uf-roguecp-slash-blue" alphaMode="BLEND" texelSnappingBias="0.0" snapToPixelGrid="false" parentArray="fxTextures">
+					<Size x="43" y="43"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<!-- Needed for entering default empty state for the first time -->
+			<AnimationGroup parentKey="unchargedEmpty" setToFinalAlpha="true" parentArray="transitionAnims">
+				<Alpha childKey="BGInactive" fromAlpha="0" toAlpha="1" duration=".1" order="1"/>
+			</AnimationGroup>
+
+			<!-- From Uncharged Empty anims -->
+			<AnimationGroup parentKey="unchargedEmptyToUnchargedFull" setToFinalAlpha="true" parentArray="transitionAnims">
+				<Alpha childKey="SlashFBUncharged" fromAlpha="0" toAlpha="1" duration="0"  order="1"/>
+				<FlipBook childKey="SlashFBUncharged" duration=".57" flipBookRows="3" flipBookColumns="6" flipBookFrames="17" flipBookFrameWidth="0" flipBookFrameHeight="0" order="1"/>
+				<Alpha childKey="IconUncharged" fromAlpha="0" toAlpha=".5" duration=".1"  order="1"/>
+				<Alpha childKey="IconUncharged" fromAlpha=".5" toAlpha="1" startDelay=".27" duration=".27" order="1"/>
+				<Alpha childKey="BGActive" fromAlpha="0" toAlpha="0" duration=".2" order="1"/>
+				<Alpha childKey="BGActive" fromAlpha="0" toAlpha="1" startDelay=".2" duration=".17" order="1"/>
+				<Alpha childKey="BGInactive" fromAlpha="1" toAlpha="1" duration=".37" order="1"/>
+				<Alpha childKey="BGInactive" fromAlpha="1" toAlpha="0" startDelay=".37" duration=".1" order="1"/>
+				<Alpha childKey="BGGlow" fromAlpha="0" toAlpha="1" duration=".17" order="1"/>
+				<Alpha childKey="BGGlow" fromAlpha="1" toAlpha="0" startDelay=".17" duration=".4" order="1"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="unchargedEmptyToChargedFull" setToFinalAlpha="true" parentArray="transitionAnims">
+				<Alpha childKey="SlashFBCharged" fromAlpha="0" toAlpha="1" duration="0"  order="1"/>
+				<FlipBook childKey="SlashFBCharged" duration=".57" flipBookRows="3" flipBookColumns="6" flipBookFrames="17" flipBookFrameWidth="0" flipBookFrameHeight="0" order="1"/>
+				<Alpha childKey="ChargedFrameGlow" fromAlpha="1" toAlpha="1" duration=".17" order="1"/>
+				<Alpha childKey="ChargedFrameGlow" fromAlpha="1" toAlpha="0" startDelay=".17" duration=".33" order="1"/>
+				<Alpha childKey="ChargedFrameActive" fromAlpha="0" toAlpha="0" duration=".2" order="1"/>
+				<Alpha childKey="ChargedFrameActive" fromAlpha="0" toAlpha="1" startDelay=".2" duration=".17" order="1"/>
+				<Alpha childKey="IconCharged" fromAlpha="0" toAlpha=".5" duration=".1" order="1"/>
+				<Alpha childKey="IconCharged" fromAlpha=".5" toAlpha="1" startDelay=".27" duration=".27" order="1"/>
+				<Alpha childKey="ChargedFrameInactive" fromAlpha="0" toAlpha=".5" duration=".1" order="1"/>
+				<Alpha childKey="ChargedFrameInactive" fromAlpha=".5" toAlpha="0" startDelay=".37" duration=".13" order="1"/>
+				<Alpha childKey="BGGlow" fromAlpha="1" toAlpha="0" duration=".47" order="1"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="unchargedEmptyToChargedEmpty" setToFinalAlpha="true" parentArray="transitionAnims">
+				<Alpha childKey="ChargedFrameGlow" fromAlpha="1" toAlpha="1" duration=".17" order="1"/>
+				<Alpha childKey="ChargedFrameGlow" fromAlpha="1" toAlpha="0" startDelay=".17" duration=".33" order="1"/>
+				<Alpha childKey="BGGlow" fromAlpha="1" toAlpha="0" duration=".47" order="1"/>
+				<Alpha childKey="ChargedFrameInactive" fromAlpha="1" toAlpha="1" duration=".17" order="1"/>
+			</AnimationGroup>
+
+			<!-- From Charged Empty anims -->
+			<AnimationGroup parentKey="chargedEmptyToChargedFull" setToFinalAlpha="true" parentArray="transitionAnims">
+				<Alpha childKey="SlashFBCharged" fromAlpha="0" toAlpha="1" duration="0" order="1"/>
+				<FlipBook childKey="SlashFBCharged" duration=".57" flipBookRows="3" flipBookColumns="6" flipBookFrames="17" flipBookFrameWidth="0" flipBookFrameHeight="0" order="1"/>
+				<Alpha childKey="ChargedFrameActive" fromAlpha="0" toAlpha="0" duration=".2" order="1"/>
+				<Alpha childKey="ChargedFrameActive" fromAlpha="0" toAlpha="1" startDelay=".2" duration=".17" order="1"/>
+				<Alpha childKey="IconCharged" fromAlpha="0" toAlpha=".5" duration=".1" order="1"/>
+				<Alpha childKey="IconCharged" fromAlpha=".5" toAlpha="1" startDelay=".27" duration=".27" order="1"/>
+				<Alpha childKey="ChargedFrameInactive" fromAlpha="1" toAlpha=".5" duration=".1" order="1"/>
+				<Alpha childKey="ChargedFrameInactive" fromAlpha=".5" toAlpha="0" startDelay=".37" duration=".13" order="1"/>
+				<Alpha childKey="BGGlow" fromAlpha="1" toAlpha="0" duration=".47" order="1"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="chargedEmptyToUnchargedFull" setToFinalAlpha="true" parentArray="transitionAnims">
+				<Alpha childKey="SlashFBUncharged" fromAlpha="0" toAlpha="1" duration="0" order="1"/>
+				<FlipBook childKey="SlashFBUncharged" duration=".57" flipBookRows="3" flipBookColumns="6" flipBookFrames="17" flipBookFrameWidth="0" flipBookFrameHeight="0" order="1"/>
+				<Alpha childKey="IconUncharged" fromAlpha="0" toAlpha=".5" duration=".1" order="1"/>
+				<Alpha childKey="IconUncharged" fromAlpha=".5" toAlpha="1" startDelay=".27" duration=".27" order="1"/>
+				<Alpha childKey="BGActive" fromAlpha="0" toAlpha="0" duration=".2" order="1"/>
+				<Alpha childKey="BGActive" fromAlpha="0" toAlpha="1" startDelay=".2" duration=".17" order="1"/>
+				<Alpha childKey="BGGlow" fromAlpha="0" toAlpha="1" duration=".17" order="1"/>
+				<Alpha childKey="BGGlow" fromAlpha="1" toAlpha="0" startDelay=".17" duration=".4" order="1"/>
+				<Alpha childKey="ChargedFrameInactive" fromAlpha="1" toAlpha=".5" duration=".1" order="1"/>
+				<Alpha childKey="ChargedFrameInactive" fromAlpha=".5" toAlpha="0" startDelay=".17" duration=".33" order="1"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="chargedEmptyToUnchargedEmpty" setToFinalAlpha="true" parentArray="transitionAnims">
+				<Alpha childKey="ChargedFrameGlow" fromAlpha="1" toAlpha="1" duration=".17" order="1"/>
+				<Alpha childKey="ChargedFrameGlow" fromAlpha="1" toAlpha="0" startDelay=".17" duration=".33" order="1"/>
+				<Alpha childKey="BGGlow" fromAlpha="1" toAlpha="0" duration=".47" order="1"/>
+				<Alpha childKey="ChargedFrameInactive" fromAlpha="1" toAlpha="1" duration=".17" order="1"/>
+				<Alpha childKey="ChargedFrameInactive" fromAlpha="1" toAlpha="0" startDelay=".17" duration=".33" order="1"/>
+				<Alpha childKey="BGInactive" fromAlpha="0" toAlpha="0" duration=".37" order="1"/>
+				<Alpha childKey="BGInactive" fromAlpha="0" toAlpha="1" startDelay=".37" duration=".1" order="1"/>
+			</AnimationGroup>
+
+			<!-- From Uncharged Full anims -->
+			<AnimationGroup parentKey="unchargedFullToUnchargedEmpty" setToFinalAlpha="true" parentArray="transitionAnims">
+				<Alpha childKey="FrameGlow" fromAlpha="1" toAlpha="0" duration=".5" order="1"/>
+				<Alpha childKey="IconUncharged" fromAlpha="1" toAlpha="0" duration=".17" order="1"/>
+				<Alpha childKey="FXUncharged" fromAlpha="1" toAlpha="0" duration=".4" order="1"/>
+				<Alpha childKey="BGActive" fromAlpha="1" toAlpha="1" duration=".2" order="1"/>
+				<Alpha childKey="BGActive" fromAlpha="1" toAlpha="0" startDelay=".2" duration=".17" order="1"/>
+				<Alpha childKey="BGInactive" fromAlpha="0" toAlpha="0" duration=".37" order="1"/>
+				<Alpha childKey="BGInactive" fromAlpha="0" toAlpha="1" startDelay=".37" duration=".1" order="1"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="unchargedFullToChargedFull" setToFinalAlpha="true" parentArray="transitionAnims">
+				<Alpha childKey="ChargedFrameGlow" fromAlpha="1" toAlpha="1" duration=".17" order="1"/>
+				<Alpha childKey="ChargedFrameGlow" fromAlpha="1" toAlpha="0" startDelay=".17" duration=".33" order="1"/>
+				<Alpha childKey="BGGlow" fromAlpha="1" toAlpha="0" duration=".47" order="1"/>
+				<Alpha childKey="ChargedFrameActive" fromAlpha="0" toAlpha="0" duration=".2" order="1"/>
+				<Alpha childKey="ChargedFrameActive" fromAlpha="0" toAlpha="1" startDelay=".2" duration=".17" order="1"/>
+				<Alpha childKey="BGActive" fromAlpha="1" toAlpha="1" duration=".2" order="1"/>
+				<Alpha childKey="BGActive" fromAlpha="1" toAlpha="0" startDelay=".2" duration=".17" order="1"/>
+				<Alpha childKey="IconCharged" fromAlpha="0" toAlpha="0" duration=".27" order="1"/>
+				<Alpha childKey="IconCharged" fromAlpha="0" toAlpha="1" startDelay=".27" duration=".27" order="1"/>
+				<Alpha childKey="IconUncharged" fromAlpha="1" toAlpha="1" duration=".27" order="1"/>
+				<Alpha childKey="IconUncharged" fromAlpha="1" toAlpha="0" startDelay=".27" duration=".27" order="1"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="unchargedFullToChargedEmpty" setToFinalAlpha="true" parentArray="transitionAnims">
+				<Alpha childKey="ChargedFrameGlow" fromAlpha="1" toAlpha="0" duration=".5" order="1"/>
+				<Alpha childKey="IconUncharged" fromAlpha="1" toAlpha="0" duration=".17" order="1"/>
+				<Alpha childKey="FXUncharged" fromAlpha="1" toAlpha="0" duration=".4" order="1"/>
+				<Alpha childKey="BGActive" fromAlpha="1" toAlpha="1" duration=".2" order="1"/>
+				<Alpha childKey="BGActive" fromAlpha="1" toAlpha="0" startDelay=".2" duration=".17" order="1"/>
+				<Alpha childKey="ChargedFrameInactive" fromAlpha="0" toAlpha="0" duration=".17" order="1"/>
+				<Alpha childKey="ChargedFrameInactive" fromAlpha="0" toAlpha="1" startDelay=".17" duration=".33" order="1"/>
+			</AnimationGroup>
+
+			<!-- From Charged Full anims -->
+			<AnimationGroup parentKey="chargedFullToChargedEmpty" setToFinalAlpha="true" parentArray="transitionAnims">
+				<Alpha childKey="ChargedFrameGlow" fromAlpha="1" toAlpha="0" duration=".5" order="1"/>
+				<Alpha childKey="IconCharged" fromAlpha="1" toAlpha="0" duration=".17" order="1"/>
+				<Alpha childKey="FXCharged" fromAlpha="1" toAlpha="0" duration=".4" order="1"/>
+				<Alpha childKey="ChargedFrameInactive" fromAlpha="0" toAlpha="0" duration=".17" order="1"/>
+				<Alpha childKey="ChargedFrameInactive" fromAlpha="0" toAlpha="1" startDelay=".17" duration=".33" order="1"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="chargedFullToUnchargedEmpty" setToFinalAlpha="true" parentArray="transitionAnims">
+				<Alpha childKey="ChargedFrameGlow" fromAlpha="1" toAlpha="0" duration=".5" order="1"/>
+				<Alpha childKey="IconCharged" fromAlpha="1" toAlpha="0" duration=".17" order="1"/>
+				<Alpha childKey="FXCharged" fromAlpha="1" toAlpha="0" duration=".4" order="1"/>
+				<Alpha childKey="ChargedFrameInactive" fromAlpha="0" toAlpha="0" duration=".17" order="1"/>
+				<Alpha childKey="BGInactive" fromAlpha="0" toAlpha="0" duration=".37" order="1"/>
+				<Alpha childKey="BGInactive" fromAlpha="0" toAlpha="1" startDelay=".37" duration=".1" order="1"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="chargedFullToUnchargedFull" setToFinalAlpha="true" parentArray="transitionAnims">
+				<Alpha childKey="ChargedFrameGlow" fromAlpha="1" toAlpha="1" duration=".17" order="1"/>
+				<Alpha childKey="ChargedFrameGlow" fromAlpha="1" toAlpha="0" startDelay=".17" duration=".33" order="1"/>
+				<Alpha childKey="BGGlow" fromAlpha="1" toAlpha="0" duration=".47" order="1"/>
+				<Alpha childKey="ChargedFrameActive" fromAlpha="1" toAlpha="0" duration=".2" order="1"/>
+				<Alpha childKey="BGActive" fromAlpha="0" toAlpha="0" duration=".2" order="1"/>
+				<Alpha childKey="BGActive" fromAlpha="0" toAlpha="1" startDelay=".2" duration=".17" order="1"/>
+				<Alpha childKey="IconCharged" fromAlpha="1" toAlpha="1" duration=".27" order="1"/>
+				<Alpha childKey="IconCharged" fromAlpha="1" toAlpha="0" startDelay=".27" duration=".27" order="1"/>
+				<Alpha childKey="IconUncharged" fromAlpha="0" toAlpha="0" duration=".27" order="1"/>
+				<Alpha childKey="IconUncharged" fromAlpha="0" toAlpha="1" startDelay=".27" duration=".27" order="1"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+
+	<Frame name="RogueComboPointBarTemplate" inherits="ClassResourceBarTemplate" mixin="RogueComboPointBarMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="powerToken" value="COMBO_POINTS" type="string"/>
+			<KeyValue key="powerType" value="Enum.PowerType.ComboPoints" type="global"/>
+			<KeyValue key="tooltip1" value="COMBO_POINTS_POWER" type="global"/>
+			<KeyValue key="tooltip2" value="COMBO_POINTS_ROGUE_TOOLTIP" type="global"/>
+			<KeyValue key="resourcePointTemplate" value="RogueComboPointTemplate" type="string"/>
+			<KeyValue key="resourcePointSetupFunc" value="RogueComboPointMixin.Setup" type="global"/>
+			<KeyValue key="resourcePointReleaseFunc" value="RogueComboPointMixin.OnRelease" type="global"/>
+			<KeyValue key="spacing" value="4" type="number"/>
+			<KeyValue key="class" value="ROGUE" type="string"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="RogueComboPointBarFrame" inherits="RogueComboPointBarTemplate">
+		<KeyValues>
+			<KeyValue key="topPadding" value="10" type="number"/>
+			<KeyValue key="leftPadding" value="0" type="number"/>
+			<KeyValue key="showTooltip" value="true" type="boolean"/>
+		</KeyValues>
+	</Frame>
+</Ui>

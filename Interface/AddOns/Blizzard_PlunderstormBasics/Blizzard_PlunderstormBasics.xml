@@ -1,0 +1,127 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<Button name="PlunderstormAccountStoreToggleTemplate" mixin="PlunderstormAccountStoreToggleMixin" inherits="BigGoldRedThreeSliceButtonTemplate" text="PLUNDERSTORM_PLUNDER_STORE_TITLE" motionScriptsWhileDisabled="true" virtual="true">
+		<Size x="220" y="60"/>
+		<NormalFont style="GameFontNormalHuge" />
+		<DisabledFont style="GameFontDisableHuge" />
+		<Scripts>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="PlunderstormBasicsContainerFrame" mixin="PlunderstormBasicsContainerFrameMixin" inherits="VerticalLayoutFrame" frameLevel="1000" >
+		<Size x="476" y="1"/>
+		<KeyValues>
+			<KeyValue key="fixedWidth" value="476" type="string"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="LEFT" x="46" y="0"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="PlunderstormSwords" atlas="plunderstorm-glues-tutorial-swords" >
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="1" type="number"/>
+						<KeyValue key="topPadding" value="30" type="number"/>
+						<KeyValue key="align" value="center" type="string"/>
+					</KeyValues>
+					<Size x="142" y="121"/>
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="PlunderstormBasicsTitle" inherits="SystemFont_Huge2" text="WOWLABS_GAME_BASICS_TITLE" justifyV="MIDDLE" justifyH="CENTER">
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="2" type="number"/>
+						<KeyValue key="topPadding" value="26" type="number"/>
+						<KeyValue key="align" value="center" type="string"/>
+					</KeyValues>
+					<Size x="343" y="40"/>
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+					<Color color="WHITE_FONT_COLOR"/>
+				</FontString>
+				<Texture parentKey="PlunderstormLine" atlas="plunderstorm-glues-tutorial-line" >
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="3" type="number"/>
+						<KeyValue key="topPadding" value="8" type="number"/>
+						<KeyValue key="align" value="center" type="string"/>
+					</KeyValues>
+					<Size x="343" y="2"/>
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="PlunderstormBasicsBody" inherits="Game16Font" text="WOWLABS_GAME_BASICS_BODY" justifyV="TOP" justifyH="LEFT">
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="4" type="number"/>
+						<KeyValue key="topPadding" value="40" type="number"/>
+						<KeyValue key="bottomPadding" value="60" type="number"/>
+						<KeyValue key="align" value="center" type="string"/>
+					</KeyValues>
+					<Size x="400" y="0"/>
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+					<Color color="NORMAL_FONT_COLOR"/>
+				</FontString>
+				<Texture parentKey="PlunderstormBasicsLine" atlas="plunderstorm-glues-tutorial-line" >
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="5" type="number"/>
+						<KeyValue key="topPadding" value="8" type="number"/>
+						<KeyValue key="align" value="center" type="string"/>
+					</KeyValues>
+					<Size x="343" y="2"/>
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="PlunderDisplay" inherits="NineSlicePanelTemplate" useParentLevel="true" >
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="6" type="number"/>
+					<KeyValue key="topPadding" value="20" type="number"/>
+					<KeyValue key="bottomPadding" value="50" type="number"/>
+					<KeyValue key="align" value="center" type="string"/>
+				</KeyValues>
+				<Size x="400" y="20"/>
+				<Anchors>
+					<Anchor point="TOP"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="PlunderLabel" inherits="SystemFont_Huge2" text="PLUNDER_DISPLAY_LABEL" justifyV="MIDDLE" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+							<Color color="WHITE_FONT_COLOR"/>
+						</FontString>
+						<FontString parentKey="PlunderAmount" inherits="SystemFont_Huge2" justifyV="MIDDLE" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+							<Color color="WHITE_FONT_COLOR"/>
+						</FontString>				
+					</Layer>
+				</Layers>
+			</Button>
+			<Frame parentKey="Border" inherits="NineSlicePanelTemplate" useParentLevel="true" >
+				<KeyValues>
+					<KeyValue key="layoutType" value="PerksProgramProductsPanelTemplate" type="string"/>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

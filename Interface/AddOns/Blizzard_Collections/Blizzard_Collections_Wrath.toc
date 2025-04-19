@@ -1,0 +1,22 @@
+## Title: Blizzard Collections
+## Author: Blizzard Entertainment
+## AllowLoad: game
+## AllowLoadGameType: classic
+## Notes: Collections
+## Version: 1.0
+## LoadOnDemand: 1
+Wrath\Blizzard_CollectionTemplates.lua
+Wrath\Blizzard_CollectionTemplates.xml
+Wrath\Blizzard_Collections.lua
+Wrath\Blizzard_Collections.xml
+Wrath\Blizzard_MountCollection.lua
+Wrath\Blizzard_MountCollection.xml
+Wrath\Blizzard_PetCollection.lua
+Wrath\Blizzard_PetCollection.xml
+Wrath\Blizzard_ToyBox.lua
+Wrath\Blizzard_ToyBox.xml
+Wrath\Blizzard_HeirloomCollection.lua
+Wrath\Blizzard_HeirloomCollection.xml
+Wrath\Blizzard_Wardrobe.lua
+Wrath\Blizzard_Wardrobe.xml
+Wrath\Localization.lua

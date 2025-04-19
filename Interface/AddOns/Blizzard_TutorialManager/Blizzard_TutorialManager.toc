@@ -1,0 +1,15 @@
+## Author: Blizzard Entertainment
+## Title: Blizzard Tutorial Manager
+## Dependencies: Blizzard_Dispatcher
+
+Blizzard_TutorialQueue.lua
+Blizzard_TutorialQuestManager.lua
+Blizzard_TutorialRangeManager.lua
+
+Blizzard_TutorialMainFrame.xml
+Blizzard_TutorialPointerFrame.xml
+Blizzard_TutorialEffects.xml
+
+Blizzard_TutorialBase.lua
+Blizzard_TutorialHelper.lua
+Blizzard_TutorialManager.lua

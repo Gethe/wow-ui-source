@@ -1,0 +1,8 @@
+## Title: Blizzard Anima Diversion UI
+## Author: Blizzard Entertainment
+## Version: 1.0
+## LoadOnDemand: 1
+Blizzard_AnimaDiversionUtil.lua
+AnimaDiversionDataProvider.xml
+AD_WorldQuestDataProvider.xml
+Blizzard_AnimaDiversionUI.xml

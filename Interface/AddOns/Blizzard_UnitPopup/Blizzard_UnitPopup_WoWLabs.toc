@@ -1,0 +1,14 @@
+## Title: Blizzard_UnitPopup
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_UnitPopupShared, Blizzard_ChatFrame
+## AllowLoad: game
+## AllowLoadGameType: wowlabs
+UnitPopupSlider.lua
+UnitPopupSlider.xml
+UnitPopupCustomControls.lua
+UnitPopupCustomControls.xml
+Mainline\UnitPopupUtils.lua
+WoWLabs\UnitPopupButtons.lua
+WoWLabs\UnitPopupMenus.lua
+Mainline\UnitPopup.lua

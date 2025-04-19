@@ -1,0 +1,4 @@
+## Title: Blizzard New Player Guide UI
+## LoadOnDemand: 1
+GuideCriteriaFrame.xml
+GuideFrame.xml

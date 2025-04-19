@@ -1,0 +1,14 @@
+## Author: Blizzard Entertainment
+## Title: Blizzard New Player Experience
+## LoadOnDemand: 1
+## RequiredDep: Blizzard_TutorialManager
+
+Blizzard_TutorialKeyboardMouseFrame.xml
+
+Blizzard_TutorialData.lua
+Blizzard_TutorialWatchers.lua
+Blizzard_TutorialServices.lua
+Blizzard_TutorialTutorials.lua
+Blizzard_TutorialLogic.lua
+
+Blizzard_Tutorial.lua

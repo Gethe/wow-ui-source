@@ -1,0 +1,6 @@
+## Title: Blizzard Void Storage UI
+## Author: Blizzard Entertainment
+## Version: 1.0
+## LoadOnDemand: 1
+Blizzard_VoidStorageUI.xml
+Localization.lua

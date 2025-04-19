@@ -1,0 +1,12 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+    <!-- A base template for secure frames -->
+    <Frame name="SecureFrameTemplate" protected="true" virtual="true"/>
+
+    <!-- A variant of SecureFrameTemplate that will propagate all attribute queries to the parent -->
+    <Frame name="SecureFrameParentPropagationTemplate" inherits="SecureFrameTemplate" virtual="true">
+		<Attributes>
+			<Attribute name="useparent*" type="boolean" value="true"/>
+		</Attributes>
+	</Frame>
+</Ui>

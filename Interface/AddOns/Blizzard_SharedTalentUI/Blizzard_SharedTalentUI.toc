@@ -1,0 +1,10 @@
+## Title: Blizzard Shared Talent UI
+## LoadOnDemand: 0
+## Dependencies: Blizzard_SpellSearch
+
+Blizzard_SharedTalentUtil.lua
+Blizzard_SharedTalentEdgeTemplates.xml
+Blizzard_SharedTalentButtonTemplates.xml
+Blizzard_SharedTalentSelectionTemplates.xml
+Blizzard_SharedTalentFrameTemplates.xml
+Blizzard_SharedTalentFrame.xml

@@ -1,0 +1,20 @@
+## Title: Blizzard Professions
+## Author: Blizzard Entertainment
+## LoadOnDemand: 1
+## AllowLoad: game
+## AllowLoadGameType: mainline
+## Dependencies: Blizzard_ProfessionsTemplates, Blizzard_SharedTalentUI
+## SavedVariablesPerCharacter: g_professionsSpecsSelectedTabs, g_professionsSpecsSelectedPaths
+Blizzard_ProfessionsRankBar.xml
+Blizzard_ProfessionsGuildMemberList.xml
+Blizzard_ProfessionsCraftingOutputLog.xml
+Blizzard_ProfessionsRecipeLevel.xml
+Blizzard_ProfessionsCrafting.xml
+Blizzard_ProfessionsInspectRecipe.xml
+Blizzard_ProfessionsSpecializationsTemplates.xml
+Blizzard_ProfessionsSpecializations.xml
+Blizzard_ProfessionsCrafterOrderView.xml
+Blizzard_ProfessionsCrafterOrderPage.xml
+Blizzard_ProfessionsFrame.xml
+Blizzard_ProfessionsRegistration.lua
+Localization.lua

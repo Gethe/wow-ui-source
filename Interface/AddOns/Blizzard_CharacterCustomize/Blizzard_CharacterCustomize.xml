@@ -1,0 +1,164 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<CheckButton name="CharCustomizeCategoryButtonTemplate" inherits="CustomizationMaskedButtonTemplate" mixin="CustomizationCategoryButtonMixin" virtual="true">
+		<Size x="104" y="105"/>
+		<KeyValues>
+			<KeyValue key="ringAtlas" value="charactercreate-ring-metallight" type="string"/>
+			<KeyValue key="ringWidth" value="108" type="number"/>
+			<KeyValue key="ringHeight" value="109" type="number"/>
+			<KeyValue key="checkedTextureSize" value="93" type="number"/>
+			<KeyValue key="tooltipAnchor" value="ANCHOR_LEFT" type="string"/>
+			<KeyValue key="tooltipXOffset" value="30" type="number"/>
+			<KeyValue key="tooltipYOffset" value="-16" type="number"/>
+			<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
+			<KeyValue key="newTagYOffset" value="15" type="number"/>
+		</KeyValues>
+		<HitRectInsets left="15" right="15" top="15" bottom="15"/>
+	</CheckButton>
+
+	<CheckButton name="CharCustomizeAlteredFormButtonTemplate" inherits="CustomizationMaskedButtonTemplate" mixin="CharCustomizeAlteredFormButtonMixin" virtual="true">
+		<Size x="79" y="79"/>
+		<KeyValues>
+			<KeyValue key="ringAtlas" value="charactercreate-ring-metallight" type="string"/>
+			<KeyValue key="ringWidth" value="139" type="number"/>
+			<KeyValue key="ringHeight" value="140" type="number"/>
+			<KeyValue key="checkedTextureSize" value="118" type="number"/>
+			<KeyValue key="disabledOverlayAlpha" value="0.5" type="number"/>
+			<KeyValue key="tooltipYOffset" value="-5" type="number"/>
+			<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
+			<KeyValue key="flipTextures" value="true" type="boolean"/>
+		</KeyValues>
+	</CheckButton>
+
+	<CheckButton name="CharCustomizeAlteredFormSmallButtonTemplate" inherits="CustomizationMaskedButtonTemplate" mixin="CharCustomizeAlteredFormButtonMixin" virtual="true">
+		<Size x="64" y="64"/>
+		<KeyValues>
+			<KeyValue key="ringAtlas" value="charactercreate-ring-metallight" type="string"/>
+			<KeyValue key="ringWidth" value="109" type="number"/>
+			<KeyValue key="ringHeight" value="110" type="number"/>
+			<KeyValue key="checkedTextureSize" value="93" type="number"/>
+			<KeyValue key="disabledOverlayAlpha" value="0.5" type="number"/>
+			<KeyValue key="tooltipYOffset" value="-5" type="number"/>
+			<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
+			<KeyValue key="flipTextures" value="true" type="boolean"/>
+		</KeyValues>
+	</CheckButton>
+
+	<CheckButton name="CharCustomizeConditionalModelButtonTemplate" inherits="CustomizationMaskedButtonTemplate" mixin="CharCustomizeRidingDrakeButtonMixin" virtual="true">
+		<Size x="64" y="64"/>
+		<KeyValues>
+			<KeyValue key="ringAtlas" value="charactercreate-ring-metallight" type="string"/>
+			<KeyValue key="ringWidth" value="109" type="number"/>
+			<KeyValue key="ringHeight" value="110" type="number"/>
+			<KeyValue key="checkedTextureSize" value="94" type="number"/>
+			<KeyValue key="tooltipYOffset" value="-5" type="number"/>
+			<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
+		</KeyValues>
+	</CheckButton>
+
+	<CheckButton name="CharCustomizeBodyTypeButtonTemplate" inherits="CustomizationMaskedButtonTemplate" mixin="CharCustomizeBodyTypeButtonMixin" virtual="true">
+		<Size x="46" y="46"/>
+		<KeyValues>
+			<KeyValue key="ringAtlas" value="charactercreate-ring-metaldark" type="string"/>
+			<KeyValue key="ringWidth" value="99" type="number"/>
+			<KeyValue key="ringHeight" value="100" type="number"/>
+			<KeyValue key="checkedTextureSize" value="84" type="number"/>
+			<KeyValue key="circleMaskSizeOffset" value="-5" type="number"/>
+			<KeyValue key="tooltipAnchor" value="ANCHOR_BOTTOMRIGHT" type="string"/>
+			<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BlackBG">
+					<Size x="56" y="56"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Color r="0.0" g="0.0" b="0.0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</CheckButton>
+
+	<Frame name="CharCustomizeFrame" mixin="CharCustomizeMixin" inherits="CustomizationFrameBaseTemplate" parent="UIParent" setAllPoints="true">
+		<KeyValues>
+			<KeyValue key="categoryButtonTemplate" value="CharCustomizeCategoryButtonTemplate" type="string"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="AlteredForms" inherits="HorizontalLayoutFrame">
+				<KeyValues>
+					<KeyValue key="spacing" value="18" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-41" y="-37"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="Categories" inherits="SpaceToFitHorizontalLayoutFrame">
+				<KeyValues>
+					<KeyValue key="baseSpacing" value="-21" type="number"/>
+				</KeyValues>
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-20" y="-166"/>
+				</Anchors>
+			</Frame>
+
+			<Button parentKey="RandomizeAppearanceButton" inherits="CustomizationRandomizeAppearanceButtonTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.Categories" relativePoint="LEFT" x="-9"/>
+				</Anchors>
+			</Button>
+
+			<Frame parentKey="Options" inherits="SpaceToFitVerticalLayoutFrame">
+				<Size x="1" y="1"/>
+				<KeyValues>
+					<KeyValue key="baseSpacing" value="32" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<!-- Adjusted in Lua as well -->
+					<Anchor point="TOPRIGHT" x="-33" y="-297"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="SmallButtons" inherits="HorizontalLayoutFrame">
+				<KeyValues>
+					<KeyValue key="spacing" value="-5" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="40" y="-30"/>
+				</Anchors>
+				<Frames>
+					<Button parentKey="ResetCameraButton" inherits="CustomizationResetCameraButtonTemplate" parentArray="ControlButtons">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="1" type="number"/>
+						</KeyValues>
+					</Button>
+					<Button parentKey="ZoomOutButton" inherits="CustomizationZoomOutButtonTemplate" parentArray="ControlButtons">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="2" type="number"/>
+						</KeyValues>
+					</Button>
+					<Button parentKey="ZoomInButton" inherits="CustomizationZoomInButtonTemplate" parentArray="ControlButtons">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="3" type="number"/>
+						</KeyValues>
+					</Button>
+					<Button parentKey="RotateLeftButton" inherits="CustomizationRotateLeftButtonTemplate" parentArray="ControlButtons">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="4" type="number"/>
+						</KeyValues>
+					</Button>
+					<Button parentKey="RotateRightButton" inherits="CustomizationRotateRightButtonTemplate" parentArray="ControlButtons">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="5" type="number"/>
+						</KeyValues>
+					</Button>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+</Ui>

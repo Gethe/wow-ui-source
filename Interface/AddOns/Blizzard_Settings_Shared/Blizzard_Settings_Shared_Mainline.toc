@@ -1,0 +1,28 @@
+## Title: Blizzard_Settings_Shared
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_SharedXML
+## OptionalDep: Blizzard_StaticPopup, Blizzard_GlueDialogs, Blizzard_UIParent
+## AllowLoad: Both
+## AllowLoadGameType: mainline
+NewDefinitionsFramework.lua
+Mainline\NewDefinitions.lua
+Blizzard_SettingsRegistrar.lua
+Blizzard_Settings.lua
+Mainline\Blizzard_Settings.lua
+Blizzard_Category.lua
+Blizzard_CategoryList.xml
+Blizzard_SettingsList.xml
+Blizzard_Setting.lua
+Blizzard_SettingControls.xml
+Mainline\Blizzard_SettingsPanelTemplates.xml
+Blizzard_SettingsPanel.lua
+Blizzard_SettingsPanel.xml
+Blizzard_Keybindings.xml
+Blizzard_Dialogs.lua
+Blizzard_SettingsLayouts.lua
+Blizzard_Registration.lua
+Blizzard_SettingsInbound.lua
+Blizzard_Deprecated.lua
+Mainline\GraphicsOverrides.lua
+Mainline\AudioOverrides.lua

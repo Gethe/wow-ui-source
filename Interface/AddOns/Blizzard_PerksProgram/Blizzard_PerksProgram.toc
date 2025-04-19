@@ -1,0 +1,13 @@
+## Title: Blizzard_PerksProgram
+## Version: 1.0
+## ShowInAddOnList: 0
+## LoadOnDemand: 1
+
+Blizzard_PerksProgramElements.lua
+Blizzard_PerksProgramProducts.lua
+Blizzard_PerksProgramModel.lua
+Blizzard_PerksProgramFooter.lua
+Blizzard_PerksProgram.lua
+Blizzard_PerksProgramElements.xml
+Blizzard_PerksProgram.xml
+Localization.lua

@@ -1,0 +1,29 @@
+## Title: Blizzard_SettingsDefinitions_Frame
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_SettingsDefinitions_Shared
+## AllowLoad: Game
+## AllowLoadGameType: mainline
+Mainline\GameplaySettingsGroup.lua
+Mainline\InterfaceOverrides.lua
+Mainline\ControlsOverrides.lua
+Mainline\CombatOverrides.lua
+Mainline\ActionBarsOverrides.lua
+Mainline\SocialOverrides.lua
+Mainline\ColorblindOverrides.lua
+Mainline\KeybindingsOverrides.lua
+Mainline\AccessibilityOverrides.lua
+Controls.xml
+Interface.xml
+Combat.lua
+ActionBars.lua
+Social.lua
+PingSystem.xml
+Keybindings.xml
+# NOTE: Accessibility.lua should be the only file loaded in classic, only mainline needs the xml, but classic may need an older version of the lua file.
+Accessibility.lua
+Accessibility.xml
+Colorblind.xml
+TextToSpeech.xml
+Mounts.lua
+Subtitles.xml

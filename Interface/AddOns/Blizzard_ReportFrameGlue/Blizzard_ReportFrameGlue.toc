@@ -1,0 +1,6 @@
+## Title: Blizzard_ReportFrameGlue
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_ReportFrameShared
+## AllowLoad: Glue
+ReportFrame.xml

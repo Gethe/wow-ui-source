@@ -1,0 +1,117 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="SettingsPanel" mixin="SettingsPanelMixin" inherits="SettingsFrameTemplate" toplevel="true" hidden="true" movable="true" enableMouse="true" resizable="true" frameStrata="HIGH">
+		<Size x="920" y="724"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture atlas="Options_InnerFrame" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="17" y="-64"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<FontString parentKey="OutputText" inherits="GameFontWhite">
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="24"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="GameTab" inherits="MinimalTabTemplate">
+				<Size y="37"/>
+				<KeyValues>
+					<KeyValue key="tabText" value="SETTINGS_TAB_GAME" type="global"/>
+					<KeyValue key="categorySet" value="Settings.CategorySet.Game" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="32" y="-27"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="AddOnsTab" inherits="MinimalTabTemplate">
+				<Size y="37"/>
+				<KeyValues>
+					<KeyValue key="tabText" value="SETTINGS_TAB_ADDONS" type="global"/>
+					<KeyValue key="categorySet" value="Settings.CategorySet.AddOns" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.GameTab" relativePoint="TOPRIGHT" x="5"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="CloseButton" inherits="UIPanelButtonTemplate">
+				<Size x="96" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-16" y="16"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="ApplyButton" inherits="UIPanelButtonTemplate">
+				<Size x="96" y="22"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.CloseButton" relativePoint="LEFT" x="-2" />
+				</Anchors>
+			</Button>
+			<Frame parentKey="CategoryList" inherits="SettingsCategoryListTemplate">
+				<Size x="199" y="569"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="18" y="-76"/>
+					<Anchor point="BOTTOMLEFT" x="178" y="46"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Container">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.CategoryList" relativePoint="TOPRIGHT" x="16"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.CategoryList" relativePoint="BOTTOMRIGHT" x="16" y="1"/>
+					<Anchor point="RIGHT" x="-22"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="SettingsCanvas" setAllPoints="true"/>
+					<Frame parentKey="SettingsList" inherits="SettingsListTemplate" setAllPoints="true"/>
+				</Frames>
+			</Frame>
+			<EditBox parentKey="SearchBox" inherits="SearchBoxTemplate" autoFocus="false" historyLines="1" bytes="64" frameLevel="5">
+				<Size x="350" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Container" relativePoint="TOPRIGHT" x="4" y="20"/>
+				</Anchors>
+			</EditBox>
+			<Frame parentKey="InputBlocker" setAllPoints="true" hidden="true">
+				<Frames>
+					<Button>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.$parent.CategoryList"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent.CategoryList"/>
+						</Anchors>
+					</Button>
+					<Button>
+						<Size y="120"/>
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="TOPRIGHT"/>
+						</Anchors>
+					</Button>
+					<Button>
+						<Size x="50"/>
+						<Anchors>
+							<Anchor point="TOPRIGHT"/>
+							<Anchor point="BOTTOMRIGHT" y="40"/>
+						</Anchors>
+					</Button>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
+	<GameTooltip name="SettingsTooltip" inherits="SharedTooltipTemplate, TopLevelParentScaleFrameTemplate">
+	</GameTooltip>
+</Ui>

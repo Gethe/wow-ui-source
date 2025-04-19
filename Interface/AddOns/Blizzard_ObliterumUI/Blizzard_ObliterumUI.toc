@@ -1,0 +1,4 @@
+## Title: Blizzard Obliterum Forge UI
+## LoadOnDemand: 1
+
+Blizzard_ObliterumUI.xml

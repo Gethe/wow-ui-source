@@ -1,0 +1,7 @@
+## Title: Blizzard_QuickKeybind
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_SettingsDefinitions_Frame
+## AllowLoad: Game
+## AllowLoadGameType: mainline
+QuickKeybind.xml

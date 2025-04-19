@@ -1,0 +1,224 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Script file="Blizzard_CollectionTemplates.lua"/>
+
+	<StatusBar name="CollectionsProgressBarTemplate" virtual="true">
+		<Size x="196" y="13"/>
+		<Anchors>
+			<Anchor point="TOP" x="0" y="-39"/>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="text" inherits="TextStatusBarText" justifyH="CENTER">
+					<Size x="0" y="9" />
+					<Anchors>
+						<Anchor point="CENTER" y="1" />
+					</Anchors>
+				</FontString>
+				<Texture parentKey="border" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
+					<Size x="205" y="29" />
+					<Anchors>
+						<Anchor point="LEFT" x="-5" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="1"/>
+					</Anchors>
+					<Color r="0.0" g="0.0" b="0.0" a="1.0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<BarTexture file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
+		<BarColor r="0.03125" g="0.85" b="0.0" />
+	</StatusBar>
+
+	<CheckButton name="CollectionsSpellButtonTemplate" inherits="SecureFrameTemplate" virtual="true">
+		<Size x="50" y="50" />
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="iconTexture" setAllPoints="true" hidden="true">
+					<Size x="42" y="42" />
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="1"/>
+					</Anchors>
+					<TexCoords left="0.04347826" right="0.95652173" top="0.04347826" bottom="0.95652173"/>
+				</Texture>
+
+				<Texture parentKey="iconTextureUncollected" setAllPoints="true" alpha=".18" hidden="true" desaturated="true">
+					<Size x="42" y="41" />
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="2"/>
+					</Anchors>
+					<TexCoords left="0.063" right="0.938" top="0.063" bottom="0.917"/>
+				</Texture>
+
+				<Texture parentKey="slotFrameUncollectedInnerGlow" setAllPoints="true" alpha="0.18" hidden="true" atlas="collections-itemborder-uncollected-innerglow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="2"/>
+					</Anchors>
+				</Texture>
+
+				<FontString parentKey="name" inherits="GameFontNormal" maxLines="3" justifyH="LEFT">
+					<Size x="135" y="0" />
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="9" y="3" />
+					</Anchors>
+				</FontString>
+			</Layer>
+
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<FontString parentKey="new" inherits="GameFontHighlight" maxLines="1" justifyH="CENTER" text="NEW_CAPS" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" x="8" y="0" relativePoint="TOPLEFT"/>
+					</Anchors>
+					<Shadow>
+						<Color color="NEW_FEATURE_SHADOW_COLOR"/>
+					</Shadow>
+				</FontString>
+
+				<Texture parentKey="newGlow" atlas="collections-newglow" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.new" x="-20" y="10"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.new" x="20" y="-10"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="slotFrameCollected" atlas="collections-itemborder-collected">
+					<Size x="56" y="56" />
+					<Anchors>
+						<Anchor point="CENTER" x="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="slotFrameUncollected" atlas="collections-itemborder-uncollected" hidden="true" useAtlasSize="false">
+					<Size x="50" y="50" />
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Cooldown parentKey="cooldown" inherits="CooldownFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="5" y="-4"/>
+					<Anchor point="BOTTOMRIGHT" x="-5" y="7"/>
+				</Anchors>
+			</Cooldown>
+			<Frame parentKey="cooldownWrapper" setAllPoints="true">
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="2">
+						<Texture parentKey="slotFavorite" atlas="collections-icon-favorites" useAtlasSize="true" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-12" y="13" relativePoint="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+    
+    <Animations>
+      <AnimationGroup parentKey="IconFadeIn" setToFinalAlpha="true">
+        <Alpha childKey="iconTexture" startDelay="1.0"  fromAlpha="0" toAlpha="1" duration="0.75" order="1"/>
+        <Alpha childKey="slotFrameCollected" startDelay="1.0"  fromAlpha="0" toAlpha="1" duration="0.75" order="1"/>
+      </AnimationGroup>
+    </Animations>
+    
+		<Scripts>
+			<OnEvent function="CollectionsButton_OnEvent"/>
+			
+			<PreClick>
+				self:SetChecked(false);
+			</PreClick>
+
+			<OnShow function="CollectionsSpellButton_OnShow"/>
+			<OnHide function="CollectionsSpellButton_OnHide"/>
+
+			<OnLeave>
+				GameTooltip_Hide();
+				ResetCursor();
+			</OnLeave>
+		</Scripts>
+		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress">
+			<Size x="42" y="42"/>
+			<Anchors>
+				<Anchor point="CENTER" x="0" y="1"/>
+			</Anchors>
+		</PushedTexture>
+		<HighlightTexture parentKey="HighlightTexture" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD">
+			<Size x="48" y="48"/>
+			<Anchors>
+				<Anchor point="CENTER" x="0" y="2"/>
+			</Anchors>
+		</HighlightTexture>
+		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD">
+			<Size x="42" y="42"/>
+			<Anchors>
+				<Anchor point="CENTER" x="0" y="1"/>
+			</Anchors>
+		</CheckedTexture>
+	</CheckButton>
+
+	<FontString name="CollectionsPageTextTemplate" inherits="GameFontWhite" justifyH="RIGHT" virtual="true"/>
+
+	<Button name="CollectionsPrevPageButton" virtual="true">
+		<Size x="32" y="32" />
+		<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+		<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+		<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+	</Button>
+	
+	<Button name="CollectionsNextPageButton" virtual="true">
+		<Size x="32" y="32" />
+		<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+		<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+		<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+	</Button>
+
+	<Frame name="CollectionsPagingFrameTemplate" mixin="CollectionsPagingMixin" virtual="true">
+		<!-- why 33? it makes it so the button textures display without rounding fuzziness on my screen -->
+		<Size x="33" y="32"/>
+		<Frames>
+			<Button parentKey="PrevPageButton" inherits="CollectionsPrevPageButton">
+				<Anchors>
+					<Anchor point="LEFT" x="0" y="0" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():PreviousPage();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="NextPageButton" inherits="CollectionsNextPageButton">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="RIGHT" x="3" y="0" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():NextPage();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="PageText" inherits="CollectionsPageTextTemplate">
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT" x="-11" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>

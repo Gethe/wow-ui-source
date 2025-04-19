@@ -1,0 +1,178 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+
+	<Cooldown name="ArenaUnitFrameCooldownTemplate" inherits="CooldownFrameTemplate" hideCountdownNumbers="true" mixin="ArenaUnitFrameCooldownMixin" virtual="true">
+		<SwipeTexture>
+			<Color r="0" g="0" b="0" a="0.8"/>
+		</SwipeTexture>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Text" inherits="SystemFont_Shadow_Small_Outline" justifyH="CENTER" justifyV="MIDDLE" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnHide method="OnHide"/>
+			<OnCooldownDone method="OnCooldownDone"/>
+		</Scripts>
+	</Cooldown>
+
+	<Frame name="ArenaUnitFrameDebuffTemplate" ignoreParentAlpha="true" hidden="true" mixin="ArenaUnitFrameDebuffMixin" virtual="true">
+		<Size x="27" y="27"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon" file="Interface\ICONS\INV_Misc_QuestionMark.blp" setAllPoints="true"/>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Border" file="Interface\Buttons\UI-Debuff-Overlays">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-1" y="0.5"/>
+						<Anchor point="BOTTOMRIGHT" x="0.5" y="0"/>
+					</Anchors>
+					<TexCoords left="0.296875" right="0.5703125" top="0" bottom="0.515625"/>
+					<Color r="1" g="0" b="0" a="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Cooldown parentKey="Cooldown" inherits="ArenaUnitFrameCooldownTemplate" setAllPoints="true"/>
+		</Frames>
+		<Scripts>
+			<OnEvent method="OnEvent"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="ArenaUnitFrameCcRemoverTemplate" ignoreParentAlpha="true" hidden="true" mixin="ArenaUnitFrameCcRemoverMixin" virtual="true">
+		<Size x="27" y="27"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon" file="Interface\ICONS\INV_Misc_QuestionMark.blp" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Cooldown parentKey="Cooldown" inherits="ArenaUnitFrameCooldownTemplate" setAllPoints="true"/>
+		</Frames>
+		<Scripts>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
+	<StatusBar name="ArenaUnitFrameCastingBarTemplate" ignoreParentAlpha="true" inherits="SmallCastingBarFrameTemplate" hidden="true" virtual="true">
+		<Size x="130" y="10"/>
+	</StatusBar>
+
+	<Frame name="PreMatchArenaUnitFrameTemplate" mixin="PreMatchArenaUnitFrameMixin" parentArray="preMatchUnitFrames" hidden="true" virtual="true">
+		<Size x="1" y="1"/>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="SpecPortraitBorderTexture" file="Interface\Minimap\MiniMap-TrackingBorder">
+					<Size x="50" y="50"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" x="15" y="0"/>
+					</Anchors>
+				</Texture>
+
+				<Texture parentKey="BarTexture" file="Interface\RAIDFRAME\Raid-Bar-Hp-Fill" setAllPoints="true"/>
+			</Layer>
+
+			<Layer level="BACKGROUND">
+				<Texture parentKey="SpecPortraitTexture">
+					<Size x="22" y="22"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.SpecPortraitBorderTexture" x="5" y="-4"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+
+			<Layer level="ARTWORK">
+				<Texture parentKey="RoleIconTexture" file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES">
+					<Size x="12" y="12"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3" y="-2"/>
+					</Anchors>
+				</Texture>
+
+				<FontString parentKey="SpecNameText" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false">
+					<Size y="11"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.RoleIconTexture" relativePoint="TOPRIGHT" x="1" y="-1"/>
+						<Anchor point="TOPRIGHT" x="-3"/>
+					</Anchors>
+				</FontString>
+
+				<FontString parentKey="ClassNameText" inherits="GameFontNormalSmall" justifyH="LEFT" wordwrap="false">
+					<Size y="11"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.SpecNameText" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.SpecNameText" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="StealthedArenaUnitFrameTemplate" mixin="StealthedArenaUnitFrameMixin" parentArray="stealthedUnitFrames" alpha="0.55" hidden="true" virtual="true">
+		<Size x="1" y="1"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BackgroundTexture" file="Interface\RaidFrame\Raid-Bar-Hp-Bg" setAllPoints="true" ignoreParentAlpha="true">
+					<TexCoords left="0" right="1" top="0" bottom="0.53125"/>
+				</Texture>
+			</Layer>
+
+			<Layer level="BORDER">
+				<Texture parentKey="BarTexture" file="Interface\RAIDFRAME\Raid-Bar-Hp-Fill">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="1" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="-1" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+
+			<Layer level="ARTWORK">
+				<Texture parentKey="StealthIcon" file="Interface\ICONS\Ability_Stealth" ignoreParentAlpha="true">
+					<Size x="27" y="27"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" x="-3" y="-2"/>
+					</Anchors>
+				</Texture>
+
+				<Texture parentKey="RoleIconTexture" file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES">
+					<Size x="12" y="12"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3" y="-2"/>
+					</Anchors>
+				</Texture>
+
+				<FontString parentKey="NameText" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false">
+					<Size y="11"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.RoleIconTexture" relativePoint="TOPRIGHT" x="1" y="-1"/>
+						<Anchor point="TOPRIGHT" x="-3"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="CompactArenaFrameTemplate" inherits="CompactPartyFrameTemplate, UIParentRightManagedFrameTemplate, EditModeArenaUnitFrameSystemTemplate" mixin="CompactArenaFrameMixin" hidden="true" virtual="true">
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="12" type="number"/>
+			<KeyValue key="titleText" value="ARENA" type="global"/>
+			<KeyValue key="groupType" value="CompactRaidGroupTypeEnum.Arena" type="global"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="PreMatchFramesContainer" frameLevel="1" setAllPoints="true" hidden="true" mixin="ArenaPreMatchFramesContainerMixin">
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -1,0 +1,9 @@
+## Title: Blizzard_MatchCelebrationPartyPoseUI
+## Notes: End of match celebration screen 
+## Author: Blizzard Entertainment
+## RequiredDep: Blizzard_PartyPoseUI
+## Version: 1.0
+## LoadOnDemand: 1
+
+Blizzard_MatchCelebrationPartyPoseUI.lua
+Blizzard_MatchCelebrationPartyPoseUI.xml

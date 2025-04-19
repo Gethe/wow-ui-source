@@ -1,0 +1,39 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="CharacterSelectToolTrayTemplate" mixin="CharacterSelectToolTrayMixin" virtual="true">
+		<Size x="220" y="44"/>
+		<Frames>
+			<Button parentKey="ExpandBar" inherits="TooltipBackdropTemplate, ExpandBarTemplate">
+				<KeyValues>
+					<KeyValue key="layoutType" value="TooltipGluesLayout" type="string"/>
+					<KeyValue key="backdropColor" value="GLUE_BACKDROP_COLOR" type="global"/>
+					<KeyValue key="backdropColorAlpha" value="0.85" type="number"/>
+					<KeyValue key="backdropBorderColor" value="GLUE_BACKDROP_BORDER_COLOR" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<FontString parentKey="Text" inherits="GlueFontHighlight" text="CHARACTER_SELECT_TESTING_CONTROLS">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Button>
+			<Frame parentKey="Container" inherits="VerticalLayoutFrame">
+				<Anchors>
+					<Anchor point="LEFT"/>
+					<Anchor point="RIGHT"/>
+					<Anchor point="BOTTOM" relativeKey="$parent.ExpandBar" relativePoint="TOP"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>

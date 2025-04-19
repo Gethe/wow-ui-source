@@ -1,0 +1,220 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="AuraButtonArtTemplate" virtual="true">
+		<Size x="30" y="40"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon" file="Interface\ICONS\INV_Misc_QuestionMark.blp">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Count" inherits="NumberFontNormal">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-2" y="2"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Duration" inherits="GameFontNormalSmall" hidden="true" >
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Icon" relativePoint="BOTTOM" />
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="DebuffBorder" file="Interface\Buttons\UI-Debuff-Overlays">
+					<Size x="33" y="32"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+					<TexCoords left="0.296875" right="0.5703125" top="0" bottom="0.515625"/>
+				</Texture>
+				<Texture parentKey="TempEnchantBorder" file="Interface\Buttons\UI-TempEnchant-Border">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Symbol" inherits="TextStatusBarText">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="2" y="-2"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<!-- If you make changes to this, consider making the same changes to PrivateAuraTemplate -->
+	<Button name="AuraButtonTemplate" inherits="AuraButtonArtTemplate" mixin="AuraButtonMixin" virtual="true">
+		<!-- <KeyValues>
+			<KeyValue key="isExample" value="false" type="boolean"/>
+		</KeyValues> -->
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="AuraContainerTemplate" mixin="AuraContainerMixin" virtual="true">
+		<Size x="1" y="1"/>
+		<KeyValues>
+			<KeyValue key="isHorizontal" value="true" type="boolean"/>
+			<KeyValue key="iconStride" value="8" type="number"/>
+			<KeyValue key="iconPadding" value="5" type="number"/>
+			<KeyValue key="iconScale" value="1" type="number"/>
+			<KeyValue key="addIconsToRight" value="false" type="boolean"/>
+			<KeyValue key="addIconsToTop" value="false" type="boolean"/>
+		</KeyValues>
+	</Frame>
+
+	<!-- Used for automatic anchoring of private auras -->
+	<Frame name="BuffFramePrivateAuraAnchorTemplate" mixin="BuffFramePrivateAuraAnchorMixin" parentArray="PrivateAuraAnchors" virtual="true">
+		<Size x="30" y="40"/>
+		<KeyValues>
+			<KeyValue key="isAuraAnchor" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="Icon">
+				<Size x="30" y="30"/>
+				<Anchors>
+					<Anchor point="TOP"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Duration">
+				<!-- This size is an estimate; we don't know how large the text will actually be since it is set in private aura secure code -->
+				<Size x="29" y="11"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Icon" relativePoint="BOTTOM" />
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="AuraFrameTemplate" inherits="EditModeAuraFrameSystemTemplate" mixin="AuraFrameMixin"  virtual="true">
+		<!--
+		<KeyValues>
+			<KeyValue key="maxAuras" value="BUFF_MAX_DISPLAY" type="global"/>
+			<KeyValue key="exampleAuraType" value="Buff" type="string"/>
+		</KeyValues>
+		-->
+		<Frames>
+			<Frame parentKey="AuraContainer" inherits="AuraContainerTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="AuraFrame_OnLoad" inherit="append"/>
+			<OnEvent method="AuraFrame_OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="BuffFrame" parent="UIParent" inherits="AuraFrameTemplate" mixin="BuffFrameMixin" frameStrata="LOW">
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="MinimapCluster" x="-10" y="0" />
+		</Anchors>
+		<KeyValues>
+			<KeyValue key="exampleAuraType" value="Buff" type="string"/>
+			<KeyValue key="maxAuras" value="BUFF_MAX_DISPLAY" type="global"/>
+			<KeyValue key="systemIndex" value="Enum.EditModeAuraFrameSystemIndices.BuffFrame" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_BUFF_FRAME_LABEL" type="global"/>
+		</KeyValues>
+		<Frames>
+			<CheckButton parentKey="CollapseAndExpandButton" mixin="CollapseAndExpandButtonMixin">
+				<Size x="15" y="30"/>
+				<Anchors>
+					<Anchor point="RIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+					<OnLoad method="OnLoad"/>
+				</Scripts>
+				<NormalTexture parentKey="NormalTexture" atlas="bag-arrow" useAtlasSize="false">
+					<Size x="10" y="16"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</NormalTexture>
+				<PushedTexture parentKey="PushedTexture" atlas="bag-arrow" useAtlasSize="false">
+					<Size x="10" y="16"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</PushedTexture>
+				<HighlightTexture parentKey="HighlightTexture" atlas="bag-arrow" alpha=".4" alphaMode="ADD" useAtlasSize="false">
+					<Size x="10" y="16"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</HighlightTexture>
+			</CheckButton>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad" inherit="prepend"/>
+			<OnEvent method="OnEvent" inherit="prepend"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="DebuffFrame" parent="UIParent" inherits="AuraFrameTemplate" mixin="DebuffFrameMixin" frameStrata="LOW">
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="BuffFrame" relativePoint="BOTTOMRIGHT" x="-13" y="-5" />
+		</Anchors>
+		<KeyValues>
+			<KeyValue key="exampleAuraType" value="Debuff" type="string"/>
+			<KeyValue key="maxAuras" value="DEBUFF_MAX_DISPLAY" type="global"/>
+			<KeyValue key="systemIndex" value="Enum.EditModeAuraFrameSystemIndices.DebuffFrame" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_DEBUFF_FRAME_LABEL" type="global"/>
+			<KeyValue key="doNotAnchorDisabledFrames" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="privateAuraAnchor1" inherits="BuffFramePrivateAuraAnchorTemplate">
+				<KeyValues>
+					<KeyValue key="auraIndex" value="1" type="number"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="privateAuraAnchor2" inherits="BuffFramePrivateAuraAnchorTemplate">
+				<KeyValues>
+					<KeyValue key="auraIndex" value="2" type="number"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad" inherit="prepend"/>
+			<!-- OnUpdate set dynamically -->
+		</Scripts>
+	</Frame>
+
+	<Frame name="DeadlyDebuffFrame" parent="UIParent" mixin="DeadlyDebuffFrameMixin" hidden="true" frameStrata="DIALOG" toplevel="true">
+		<Size x="400" y="300"/>
+		<Anchors>
+			<Anchor point="TOP" relativeTo="UIErrorsFrame" relativePoint="BOTTOM"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString parentKey="WarningText" inherits="GameFontNormal">
+					<Size x="400" y="30"/>
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+					<Color color="RED_FONT_COLOR"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="Debuff" inherits="AuraButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.WarningText" relativePoint="BOTTOM" x="0" y="0"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow method ="OnShow"/>
+			<OnHide method ="OnHide"/>
+			<OnEvent method ="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

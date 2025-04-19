@@ -1,0 +1,64 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="UIWidgetManager" toplevel="true" mixin="UIWidgetManagerMixin">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="UIWidgetHorizontalWidgetContainerTemplate" inherits="ResizeLayoutFrame" mixin="UIWidgetHorizontalWidgetContainerMixin" virtual="true">
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="UIWidgetContainerNoResizeTemplate" virtual="true" mixin="UIWidgetContainerMixin">
+		<Size x="1" y="1"/>
+		<KeyValues>
+			<KeyValue key="showAndHideOnWidgetSetRegistration" value="true" type="boolean"/>
+			<KeyValue key="verticalAnchorPoint" value="TOP" type="string"/>
+			<KeyValue key="verticalRelativePoint" value="BOTTOM" type="string"/>
+			<KeyValue key="horizontalAnchorPoint" value="LEFT" type="string"/>
+			<KeyValue key="horizontalRelativePoint" value="RIGHT" type="string"/>
+			<KeyValue key="horizontalAnchorXOffset" value="2" type="number"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+		<Frames>
+			<ModelScene parentKey="FrontModelScene" inherits="ScriptAnimatedModelSceneTemplate" enableMouse="false">
+				<Size x="1" y="1"/>
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
+				<Scripts>
+					<OnLoad>
+						ScriptAnimatedModelSceneMixin.OnLoad(self);
+						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 50);
+						self:SetAllPoints(UIParent);
+					</OnLoad>
+				</Scripts>
+			</ModelScene>
+			<ModelScene parentKey="BackModelScene" inherits="ScriptAnimatedModelSceneTemplate" enableMouse="false">
+				<Size x="1" y="1"/>
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
+				<Scripts>
+					<OnLoad>
+						ScriptAnimatedModelSceneMixin.OnLoad(self);
+						self:SetFrameLevel(self:GetParent():GetFrameLevel() - 1);
+						self:SetAllPoints(UIParent);
+					</OnLoad>
+				</Scripts>
+			</ModelScene>
+		</Frames>
+	</Frame>
+
+
+	<Frame name="UIWidgetContainerTemplate" virtual="true" inherits="UIWidgetContainerNoResizeTemplate, ResizeLayoutFrame" mixin="UIWidgetContainerMixin"/>
+</Ui>

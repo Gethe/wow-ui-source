@@ -1,0 +1,8 @@
+## Title: Blizzard Private Auras UI
+## LoadFirst: 1
+## UseSecureEnvironment: 1
+## RequiredDep: Blizzard_SharedXML, Blizzard_FrameXMLUtil, Blizzard_GameTooltip
+## AllowLoad: game
+## AllowLoadGameType: mainline
+Blizzard_PrivateAurasUI.lua
+Blizzard_PrivateAurasUI.xml

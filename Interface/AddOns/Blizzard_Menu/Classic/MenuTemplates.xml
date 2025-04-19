@@ -1,0 +1,115 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<DropdownButton name="WowStyle1DropdownTemplate" mixin="WowStyle1DropdownMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="menuMixin" value="MenuStyle1Mixin" type="global"/>
+		</KeyValues>
+		<Size x="60" y="24"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="common-dropdown-classic-textholder" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-9" y="8"/>
+						<Anchor point="BOTTOMRIGHT" x="8" y="-9"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Arrow" atlas="common-dropdown-classic-a-buttonDown" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="RIGHT" x="-1" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Text" inherits="GameFontHighlight" wordwrap="false" justifyH="LEFT">
+					<Size x="0" y="10"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Arrow" relativePoint="LEFT"/>
+						<Anchor point="TOPLEFT" x="9" y="-7"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnEnable method="OnEnable"/>
+			<OnDisable method="OnDisable"/>
+			<OnSizeChanged method="OnSizeChanged"/>
+		</Scripts>
+	</DropdownButton>
+
+	<DropdownButton name="WowStyle1ArrowDropdownTemplate" mixin="WowStyle1ArrowDropdownMixin" virtual="true">
+		<Size x="25" y="25"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Arrow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnEnable method="OnEnable"/>
+			<OnDisable method="OnDisable"/>
+		</Scripts>
+	</DropdownButton>
+
+	<DropdownButton name="WowStyle1FilterDropdownTemplate" mixin="WowStyle1FilterDropdownMixin" virtual="true">
+		<Size x="135" y="22"/>
+		<KeyValues>
+			<KeyValue key="text" type="global" value="FILTER"/>
+			<KeyValue key="menuMixin" type="global" value="MenuStyle2Mixin"/>
+			<KeyValue key="menuRelativePoint" type="string" value="BOTTOMLEFT"/>
+			<KeyValue key="menuPointX" type="number" value="6"/>
+			<KeyValue key="menuPointY" type="number" value="2"/>
+			<KeyValue key="resizeToText" type="boolean" value="true"/>
+			<KeyValue key="resizeToTextPadding" type="number" value="60"/>
+		</KeyValues>
+		<Frames>
+			<!--Required by WowStyle1FilterDropdownMixin but is unused in classic.-->
+			<Button parentKey="ResetButton" inherits="UIResetButtonTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOPRIGHT" x="-3" y="0"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="common-dropdown-classic-b-button" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-2" y="2"/>
+						<Anchor point="BOTTOMRIGHT" x="2" y="-2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Text" inherits="GameFontHighlight" wordwrap="false" justifyH="LEFT">
+					<Size x="0" y="20"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-2"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnShow method="OnShow"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnEnable method="OnEnable"/>
+			<OnDisable method="OnDisable"/>
+		</Scripts>
+	</DropdownButton>
+</Ui>

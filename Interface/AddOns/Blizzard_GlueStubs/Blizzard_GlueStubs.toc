@@ -1,0 +1,7 @@
+## Title: Blizzard_GlueStubs
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_GlueXML
+## AllowLoad: glue
+## AllowLoadGameType: mainline
+GlueStubs.xml

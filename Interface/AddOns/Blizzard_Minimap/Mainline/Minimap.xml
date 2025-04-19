@@ -1,0 +1,404 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="MinimapCluster" inherits="EditModeMinimapSystemTemplate, ResizeLayoutFrame" mixin="MinimapClusterMixin" frameStrata="LOW" toplevel="true" enableMouse="true" parent="UIParent">
+		<Size x="256" y="256"/>
+		<Anchors>
+			<Anchor point="TOPRIGHT"/>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="30" right="10" top="0" bottom="30"/>
+		</HitRectInsets>
+		<KeyValues>
+			<KeyValue key="widthPadding" value="20" type="number"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="BorderTop" inherits="NineSliceCodeTemplate">
+				<KeyValues>
+					<KeyValue key="layoutType" value="UniqueCornersLayout" type="string"/>
+					<KeyValue key="layoutTextureKit" value="ui-hud-minimap-button" type="string"/>
+				</KeyValues>
+				<Size x="175" y="16"/>
+				<Anchors>
+					<Anchor point="TOP" x="15" y="-4"/>
+				</Anchors>
+			</Frame>
+			<Button parentKey="ZoneTextButton" mixin="MinimapZoneTextButtonMixin">
+				<Size x="135" y="12"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.BorderTop" x="4" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="MinimapZoneText" inherits="GameFontNormal" nonspacewrap="true" justifyH="LEFT" justifyV="MIDDLE">
+							<Size x="130" y="12"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="1"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnEvent method="OnEvent"/>
+					<OnEnter method="OnEnter"/>
+					<OnClick method="OnClick"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Button>
+			<Frame parentKey="Tracking" hidden="true">
+				<Size x="17" y="17"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.BorderTop" relativePoint="LEFT" x="-2" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" atlas="ui-hud-minimap-button"/>
+					</Layer>
+				</Layers>
+				<Frames>
+					<DropdownButton parentKey="Button" mixin="MiniMapTrackingButtonMixin">
+						<KeyValues>
+							<KeyValue key="menuPoint" type="string" value="TOPRIGHT"/>
+							<KeyValue key="menuRelativePoint" type="string" value="BOTTOMLEFT"/>
+						</KeyValues>
+						<Size x="13" y="14"/>
+						<Anchors>
+							<Anchor point="CENTER" x="0" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnEvent method="OnEvent"/>
+							<OnEnter method="OnEnter"/>
+							<OnLeave method="OnLeave"/>
+						</Scripts>
+						<NormalTexture atlas="ui-hud-minimap-tracking-up"/>
+						<PushedTexture atlas="ui-hud-minimap-tracking-down"/>
+						<HighlightTexture atlas="ui-hud-minimap-tracking-mouseover"/>
+					</DropdownButton>
+				</Frames>
+			</Frame>
+			<Frame parentKey="IndicatorFrame" inherits="HorizontalLayoutFrame">
+				<KeyValues>
+					<KeyValue key="fixedWidth" value="20" type="number"/>
+					<KeyValue key="fixedHeight" value="15" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.Tracking" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="MailFrame" mixin="MiniMapMailFrameMixin" enableMouse="true" hidden="true">
+						<Size x="20" y="15"/>
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="1" type="number"/>
+						</KeyValues>
+						<Layers>
+							<Layer level="ARTWORK" textureSubLevel="0">
+								<Texture name="MiniMapMailIcon" parentKey="MailIcon" atlas="ui-hud-minimap-mail-up" useAtlasSize="true" hidden="true">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="0" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK" textureSubLevel="1">
+								<Texture parentKey="NewMailFlipbook" atlas="UI-HUD-Minimap-Mail-New-Flipbook" alpha="0">
+									<Size x="52" y="52"/>
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent.MailIcon"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="MailReminderFlipbook" atlas="UI-HUD-Minimap-Mail-Reminder-Flipbook" alpha="0">
+									<Size x="52" y="52"/>
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent.MailIcon"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnHide method="OnHide"/>
+							<OnEvent method="OnEvent"/>
+							<OnEnter method="OnEnter"/>
+							<OnLeave method="OnLeave"/>
+						</Scripts>
+						<Animations>
+							<AnimationGroup parentKey="NewMailAnim" mixin="MinimapMailAnimMixin">
+								<Alpha childKey="NewMailFlipbook" duration="0" order="0" fromAlpha="1" toAlpha="1"/>
+								<FlipBook childKey="NewMailFlipbook" smoothing="NONE" duration="0.5" order="1" flipBookRows="5" flipBookColumns="4" flipBookFrames="20" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+								<Scripts>
+									<OnPlay method="OnPlay"/>
+									<OnFinished method="OnFinished"/>
+								</Scripts>
+							</AnimationGroup>
+							<AnimationGroup parentKey="MailReminderAnim" mixin="MinimapMailAnimMixin">
+								<Alpha childKey="MailReminderFlipbook" duration="0" order="0" fromAlpha="1" toAlpha="1"/>
+								<FlipBook childKey="MailReminderFlipbook" smoothing="NONE" duration="0.4" order="1" flipBookRows="3" flipBookColumns="4" flipBookFrames="12" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+								<Scripts>
+									<OnPlay method="OnPlay"/>
+									<OnFinished method="OnFinished"/>
+								</Scripts>
+							</AnimationGroup>
+						</Animations>
+					</Frame>
+					<Frame parentKey="CraftingOrderFrame" mixin="MiniMapCraftingOrderFrameMixin" enableMouse="true" hidden="true">
+						<Size x="20" y="15"/>
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="2" type="number"/>
+						</KeyValues>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture name="MiniMapCraftingOrderIcon" atlas="UI-HUD-Minimap-CraftingOrder-Up" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="0" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnEvent method="OnEvent"/>
+							<OnEnter method="OnEnter"/>
+							<OnLeave method="OnLeave"/>
+						</Scripts>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad function="MiniMapIndicatorFrame_UpdatePosition"/>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="MinimapContainer">
+				<Size x="215" y="226"/>
+				<Anchors>
+					<Anchor point="TOP" relativePoint="TOP" x="10" y="-30"/>
+				</Anchors>
+				<Frames>
+					<Minimap name="Minimap" parentKey="Minimap" mixin="MinimapMixin" enableMouse="true">
+						<Size x="198" y="198"/>
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+						<Frames>
+							<Frame parentKey="ZoomHitArea" enableMouse="true" frameStrata="BACKGROUND">
+								<Size x="40" y="40"/>
+								<Anchors>
+									<Anchor point="CENTER" x="77" y="-77"/>
+								</Anchors>
+							</Frame>
+							<Button parentKey="ZoomIn" mixin="MinimapZoomInButtonMixin" hidden="true">
+								<Size x="17" y="17"/>
+								<Anchors>
+									<Anchor point="CENTER" x="88" y="-68"/>
+								</Anchors>
+								<Scripts>
+									<OnClick method="OnClick"/>
+									<OnEnter method="OnEnter"/>
+									<OnLeave method="OnLeave"/>
+								</Scripts>
+								<NormalTexture atlas="ui-hud-minimap-zoom-in"/>
+								<PushedTexture atlas="ui-hud-minimap-zoom-in-down"/>
+								<DisabledTexture atlas="ui-hud-minimap-zoom-in" desaturated="true"/>
+								<HighlightTexture atlas="ui-hud-minimap-zoom-in-mouseover"/>
+							</Button>
+							<Button parentKey="ZoomOut" mixin="MinimapZoomOutButtonMixin" hidden="true">
+								<Size x="17" y="9"/>
+								<Anchors>
+									<Anchor point="CENTER" x="72" y="-84"/>
+								</Anchors>
+								<Scripts>
+									<OnClick method="OnClick"/>
+									<OnEnter method="OnEnter"/>
+									<OnLeave method="OnLeave"/>
+								</Scripts>
+								<NormalTexture atlas="ui-hud-minimap-zoom-out"/>
+								<PushedTexture atlas="ui-hud-minimap-zoom-out-down"/>
+								<DisabledTexture atlas="ui-hud-minimap-zoom-out" desaturated="true"/>
+								<HighlightTexture atlas="ui-hud-minimap-zoom-out-mouseover"/>
+							</Button>
+							<Frame name="MinimapBackdrop">
+								<Size x="215" y="226"/>
+								<Anchors>
+									<Anchor point="CENTER" relativeTo="Minimap" x="0" y="0"/>
+								</Anchors>
+								<Layers>
+									<Layer level="OVERLAY">
+										<Texture name="MinimapCompassTexture" atlas="ui-hud-minimap-frame">
+											<Size x="215" y="226"/>
+											<Anchors>
+												<Anchor point="CENTER" relativeTo="Minimap" x="0" y="0"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Frames>
+									<Button name="ExpansionLandingPageMinimapButton" mixin="ExpansionLandingPageMinimapButtonMixin" hidden="true">
+										<Size x="53" y="53"/>
+										<KeyValues>
+											<KeyValue key="defaultOffsetX" value="-3" type="number"/>
+											<KeyValue key="defaultOffsetY" value="-150" type="number"/>
+											<KeyValue key="defaultWidth" value="53" type="number"/>
+											<KeyValue key="defaultHeight" value="53" type="number"/>
+											<KeyValue key="defaultGlowWidth" value="46" type="number"/>
+											<KeyValue key="defaultGlowHeight" value="46" type="number"/>
+										</KeyValues>
+										<Anchors>
+											<Anchor point="TOPLEFT" x="-3" y="-150"/>
+										</Anchors>
+										<HitRectInsets>
+											<AbsInset left="5" right="10" top="5" bottom="10"/>
+										</HitRectInsets>
+										<Layers>
+											<Layer level="BORDER">
+												<Texture parentKey="AlertBG" hidden="true" alpha="0" atlas="GarrLanding-MinimapAlertBG" useAtlasSize="true">
+													<Anchors>
+														<Anchor point="RIGHT" relativePoint="CENTER"/>
+													</Anchors>
+												</Texture>
+											</Layer>
+											<Layer level="ARTWORK">
+												<Texture parentKey="LoopingGlow" hidden="true" alpha="0" alphaMode="ADD" atlas="GarrLanding-CircleGlow" useAtlasSize="true">
+													<Anchors>
+														<Anchor point="CENTER"/>
+													</Anchors>
+												</Texture>
+												<Texture parentKey="SideToastGlow" hidden="true" alpha="0" alphaMode="ADD" atlas="GarrLanding-SideToast-Glow" useAtlasSize="true">
+													<Anchors>
+														<Anchor point="CENTER"/>
+													</Anchors>
+												</Texture>
+											</Layer>
+											<Layer level="OVERLAY">
+												<FontString parentKey="AlertText" hidden="true" alpha="0" justifyH="RIGHT" inherits="GameFontHighlightLeft">
+													<Size x="138" y="45"/>
+													<Anchors>
+														<Anchor point="RIGHT" relativePoint="LEFT" x="4" y="0"/>
+													</Anchors>
+												</FontString>
+												<Texture parentKey="CircleGlow" hidden="true" alpha="1" alphaMode="ADD" atlas="GarrLanding-CircleGlow" useAtlasSize="true">
+													<Anchors>
+														<Anchor point="CENTER"/>
+													</Anchors>
+												</Texture>
+												<Texture parentKey="SoftButtonGlow" hidden="true" alpha="1" alphaMode="ADD" atlas="GarrLanding-SideToast-Glow" useAtlasSize="true">
+													<Anchors>
+														<Anchor point="CENTER"/>
+													</Anchors>
+												</Texture>
+											</Layer>
+										</Layers>
+										<Animations>
+											<AnimationGroup parentKey="MinimapLoopPulseAnim" looping="REPEAT">
+												<Alpha childKey="LoopingGlow" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+												<Alpha childKey="LoopingGlow" startDelay="0.5" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+												<Scale childKey="LoopingGlow" duration="0.75" order="1" fromScaleX="0.75" fromScaleY="0.75" toScaleX="1.1" toScaleY="1.1"/>
+												<Scripts>
+													<OnPlay>
+														self:GetParent().LoopingGlow:Show();
+													</OnPlay>
+													<OnStop>
+														self:GetParent().LoopingGlow:Hide();
+													</OnStop>
+													<OnFinished>
+														self:GetParent().LoopingGlow:Hide();
+													</OnFinished>
+												</Scripts>
+											</AnimationGroup>
+											<AnimationGroup parentKey="MinimapPulseAnim" setToFinalAlpha="true">
+												<Alpha childKey="CircleGlow" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
+												<Alpha childKey="CircleGlow" startDelay="0.1" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+												<Scale childKey="CircleGlow" duration="0.25" order="1" fromScaleX="0.75" fromScaleY="0.75" toScaleX="1.75" toScaleY="1.75"/>
+												<Alpha childKey="SoftButtonGlow" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+												<Alpha childKey="SoftButtonGlow" startDelay="0.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+												<Scale childKey="SoftButtonGlow" duration="0.75" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1.5" toScaleY="1.5"/>
+												<Scripts>
+													<OnPlay>
+														self:GetParent().CircleGlow:Show();
+														self:GetParent().SoftButtonGlow:Show();
+													</OnPlay>
+													<OnStop>
+														self:GetParent().CircleGlow:Hide();
+														self:GetParent().SoftButtonGlow:Hide();
+													</OnStop>
+													<OnFinished>
+														self:GetParent().CircleGlow:Hide();
+														self:GetParent().SoftButtonGlow:Hide();
+													</OnFinished>
+												</Scripts>
+											</AnimationGroup>
+											<AnimationGroup parentKey="MinimapAlertAnim" setToFinalAlpha="true">
+												<Alpha childKey="AlertText" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+												<Alpha childKey="AlertBG" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+												<Scale childKey="AlertBG" duration="0.25" order="1" fromScaleX="0.1" fromScaleY="1" toScaleX="1" toScaleY="1">
+													<Origin point="CENTER"/>
+												</Scale>
+												<Alpha childKey="SideToastGlow" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+												<Alpha childKey="SideToastGlow" startDelay="0.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+												<Scale childKey="SideToastGlow" duration="0.5" order="1" fromScaleX="1" fromScaleY="1" toScaleX="2" toScaleY="1">
+													<Origin point="RIGHT"/>
+												</Scale>
+												<Alpha childKey="AlertText" startDelay="5" duration="0.25" order="2" fromAlpha="1" toAlpha="0"/>
+												<Alpha childKey="AlertBG" startDelay="5" duration="0.25" order="2" fromAlpha="1" toAlpha="0"/>
+												<Scale childKey="AlertBG" startDelay="5" duration="0.25" order="2" fromScaleX="1" fromScaleY="1" toScaleX="0.1" toScaleY="1">
+													<Origin point="RIGHT"/>
+												</Scale>
+												<Scripts>
+													<OnPlay>
+														self:GetParent().AlertBG:Show();
+														self:GetParent().AlertText:Show();
+														self:GetParent().SideToastGlow:Show();
+														self:GetParent().MinimapPulseAnim:Play();
+													</OnPlay>
+													<OnStop>
+														self:GetParent().AlertBG:Hide();
+														self:GetParent().AlertText:Hide();
+														self:GetParent().SideToastGlow:Hide();
+														self:GetParent().MinimapPulseAnim:Stop();
+													</OnStop>
+													<OnFinished>
+														self:GetParent().AlertBG:Hide();
+														self:GetParent().AlertText:Hide();
+														self:GetParent().SideToastGlow:Hide();
+														self:GetParent().MinimapPulseAnim:Stop();
+														GarrisonMinimap_CheckQueuedHelpTip(self:GetParent());
+													</OnFinished>
+												</Scripts>
+											</AnimationGroup>
+										</Animations>
+										<Scripts>
+											<OnLoad  method="OnLoad"/>
+											<OnShow method="OnShow"/>
+											<OnHide method="OnHide"/>
+											<OnEvent method="OnEvent"/>
+											<OnClick method="OnClick"/>
+											<OnEnter method="OnEnter"/>
+											<OnLeave method="OnLeave"/>
+										</Scripts>
+										<NormalTexture atlas="GarrLanding-MinimapIcon-Alliance-Up" useAtlasSize="true"/>
+										<PushedTexture atlas="GarrLanding-MinimapIcon-Alliance-Down" useAtlasSize="true"/>
+										<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
+									</Button>
+								</Frames>
+							</Frame>
+						</Frames>
+						<Scripts>
+							<OnMouseUp method="OnClick"/>
+							<OnMouseWheel method="OnMouseWheel"/>
+							<OnLoad method="OnLoad"/>
+							<OnEvent method="OnEvent"/>
+							<OnEnter method="OnEnter"/>
+							<OnLeave method="OnLeave"/>
+						</Scripts>
+					</Minimap>
+				</Frames>
+			</Frame>
+			<Frame parentKey="InstanceDifficulty" inherits="InstanceDifficultyTemplate" mixin="InstanceDifficultyMixin">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.BorderTop" x="0" y="-15"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad" inherit="prepend"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

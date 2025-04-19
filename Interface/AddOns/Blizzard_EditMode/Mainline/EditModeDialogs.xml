@@ -1,0 +1,324 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="EditModeDialogTemplate" enableMouse="true" virtual="true" mixin="EditModeDialogMixin">
+		<Scripts>
+			<OnLoad method="EditModeDialog_OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<EditBox name="EditModeDialogLayoutNameEditBoxTemplate" inherits="InputBoxTemplate" letters="30" mixin="EditModeDialogNameEditBoxMixin" virtual="true">
+		<Size x="260" y="32"/>
+		<Scripts>
+			<OnEnterPressed method="OnEnterPressed"/>
+			<OnEscapePressed method="OnEscapePressed"/>
+			<OnTextChanged method="OnTextChanged"/>
+		</Scripts>
+		<FontString inherits="ChatFontNormal"/>
+	</EditBox>
+
+	<Button name="EditModeDialogButton" inherits="UIPanelButtonTemplate, UIButtonTemplate" virtual="true">
+		<Size x="130" y="22"/>
+	</Button>
+
+	<Frame name="CharacterSpecificLayoutCheckButtonTemplate" inherits="EditModeCheckButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="labelText" value="HUD_EDIT_MODE_CHARACTER_SPECIFIC_LAYOUT" type="global"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="EditModeNewLayoutDialog" inherits="EditModeDialogTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" mixin="EditModeNewLayoutDialogMixin" frameLevel="100">
+		<Size x="320" y="150"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="GameFontHighlight" text="HUD_EDIT_MODE_NAME_LAYOUT_DIALOG_TITLE">
+					<Size x="250"/>
+					<Anchors>
+						<Anchor point="TOP" y="-20"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
+			<EditBox parentKey="LayoutNameEditBox" inherits="EditModeDialogLayoutNameEditBoxTemplate">
+				<Anchors>
+					<Anchor point="TOP" y="-40"/>
+				</Anchors>
+			</EditBox>
+			<Frame parentKey="CharacterSpecificLayoutCheckButton" inherits="CharacterSpecificLayoutCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.LayoutNameEditBox" relativePoint="BOTTOM" y="-2"/>
+				</Anchors>
+			</Frame>
+			<Button parentKey="AcceptButton" inherits="EditModeDialogButton" text="SAVE">
+				<KeyValues>
+					<KeyValue key="disabledTooltip" value="HUD_EDIT_MODE_ERROR_ENTER_NAME" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="25" y="25"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="CancelButton" inherits="EditModeDialogButton" text="CANCEL">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-25" y="25"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad" inherit="append"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="EditModeImportLayoutDialog" inherits="EditModeDialogTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" mixin="EditModeImportLayoutDialogMixin" frameLevel="100">
+		<Size x="320" y="370"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="GameFontHighlight" text="HUD_EDIT_MODE_IMPORT_LAYOUT_DIALOG_TITLE">
+					<Size x="250"/>
+					<Anchors>
+						<Anchor point="TOP" y="-20"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="EditBoxLabel" inherits="GameFontNormal" text="HUD_EDIT_MODE_IMPORT_LAYOUT_DIALOG_EDIT_BOX_LABEL">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="22" y="-40"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="NameEditBoxLabel" inherits="GameFontNormal" text="HUD_EDIT_MODE_IMPORT_LAYOUT_LINK_DIALOG_EDIT_BOX_LABEL">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="22" y="-250"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
+			<ScrollFrame parentKey="ImportBox" inherits="InputScrollFrameTemplate">
+				<Size x="270" y="175"/>
+				<Anchors>
+					<Anchor point="TOP" y="-60"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="maxLetters" value="2000" type="number"/>
+					<KeyValue key="instructions" value="HUD_EDIT_MODE_IMPORT_LAYOUT_INSTRUCTIONS" type="global"/>
+					<KeyValue key="hideCharCount" value="true" type="boolean"/>
+				</KeyValues>
+			</ScrollFrame>
+			<EditBox parentKey="LayoutNameEditBox" inherits="EditModeDialogLayoutNameEditBoxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ImportBox" relativePoint="BOTTOMLEFT" y="-24"/>
+				</Anchors>
+			</EditBox>
+			<Frame parentKey="CharacterSpecificLayoutCheckButton" inherits="CharacterSpecificLayoutCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.LayoutNameEditBox" relativePoint="BOTTOM" y="-2"/>
+				</Anchors>
+			</Frame>
+			<Button parentKey="AcceptButton" inherits="EditModeDialogButton" text="HUD_EDIT_MODE_IMPORT_LAYOUT">
+				<KeyValues>
+					<KeyValue key="disabledTooltip" value="HUD_EDIT_MODE_ERROR_ENTER_IMPORT_STRING_AND_NAME" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="25" y="25"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="CancelButton" inherits="EditModeDialogButton" text="CANCEL">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-25" y="25"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad" inherit="append"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="EditModeImportLayoutLinkDialog" inherits="EditModeDialogTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" mixin="EditModeImportLayoutLinkDialogMixin" frameLevel="100">
+		<Size x="320" y="160"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="GameFontHighlight" text="HUD_EDIT_MODE_IMPORT_LAYOUT_DIALOG_TITLE">
+					<Size x="250"/>
+					<Anchors>
+						<Anchor point="TOP" y="-20"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="NameEditBoxLabel" inherits="GameFontNormal" text="HUD_EDIT_MODE_IMPORT_LAYOUT_LINK_DIALOG_EDIT_BOX_LABEL">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="22" y="-40"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
+			<EditBox parentKey="LayoutNameEditBox" inherits="EditModeDialogLayoutNameEditBoxTemplate">
+				<Anchors>
+					<Anchor point="TOP" y="-50"/>
+				</Anchors>
+			</EditBox>
+			<Frame parentKey="CharacterSpecificLayoutCheckButton" inherits="CharacterSpecificLayoutCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.LayoutNameEditBox" relativePoint="BOTTOM" y="-2"/>
+				</Anchors>
+			</Frame>
+			<Button parentKey="AcceptButton" inherits="EditModeDialogButton" text="HUD_EDIT_MODE_IMPORT_LAYOUT">
+				<KeyValues>
+					<KeyValue key="disabledTooltip" value="HUD_EDIT_MODE_ERROR_ENTER_NAME" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="25" y="25"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="CancelButton" inherits="EditModeDialogButton" text="CANCEL">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-25" y="25"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad" inherit="append"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="EditModeUnsavedChangesDialog" inherits="EditModeDialogTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" mixin="EditModeUnsavedChangesDialogMixin" frameLevel="100">
+		<Size x="450" y="130"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="GameFontHighlight" spacing="10">
+					<Size x="400"/>
+					<Anchors>
+						<Anchor point="TOP" y="-25"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
+			<Button parentKey="SaveAndProceedButton" inherits="EditModeDialogButton">
+				<Size x="160" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="25" y="25"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="ProceedButton" inherits="EditModeDialogButton">
+				<Size x="115" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="22" y="25"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="CancelButton" inherits="EditModeDialogButton" text="CANCEL">
+				<Size x="115" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-25" y="25"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad" inherit="append"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+	
+	<Button name="EditModeSystemSettingsDialogButtonTemplate" inherits="UIPanelButtonTemplate, UIButtonTemplate" virtual="true">
+		<Size x="180" y="28"/>
+	</Button>
+
+	<Button name="EditModeSystemSettingsDialogExtraButtonTemplate" inherits="UIPanelButtonTemplate, UIButtonTemplate" virtual="true">
+		<Size x="330" y="28"/>
+	</Button>
+
+	<Frame name="EditModeSystemSettingsDialog" inherits="EditModeDialogTemplate, ResizeLayoutFrame" parent="UIParent" movable="true" clampedToScreen="true" registerForDrag="LeftButton" dontSavePosition="true" frameStrata="DIALOG"  frameLevel="200" mixin="EditModeSystemSettingsDialogMixin" hidden="true">
+		<Size x="300" y="350"/>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+		<KeyValues>
+			<KeyValue key="widthPadding" value="40" type="number"/>
+			<KeyValue key="heightPadding" value="40" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="GameFontHighlightLarge">
+					<Anchors>
+						<Anchor point="TOP" y="-15"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTranslucentTemplate">
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
+			</Frame>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPRIGHT"/>
+				</Anchors>
+			</Button>
+			<Frame parentKey="Settings" inherits="VerticalLayoutFrame">
+				<Size x="1" y="1"/>
+				<KeyValues>
+					<KeyValue key="spacing" value="2" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-12"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Buttons" inherits="VerticalLayoutFrame">
+				<KeyValues>
+					<KeyValue key="spacing" value="2" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Settings" relativePoint="BOTTOMLEFT" y="-12"/>
+				</Anchors>
+				<Frames>
+					<Button parentKey="RevertChangesButton" inherits="EditModeSystemSettingsDialogButtonTemplate" text="HUD_EDIT_MODE_REVERT_CHANGES">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="1" type="number"/>
+						</KeyValues>
+					</Button>
+				</Frames>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Divider" file="Interface\FriendsFrame\UI-FriendsFrame-OnlineDivider" hidden="true">
+							<Size x="330" y="16"/>
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="2" type="number"/>
+							</KeyValues>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad" inherit="append"/>
+			<OnHide method="OnHide"/>
+			<OnDragStart method="OnDragStart"/>
+			<OnDragStop method="OnDragStop"/>
+			<OnKeyDown method="OnKeyDown"/>
+			<OnKeyUp method="OnKeyUp"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -1,0 +1,451 @@
+<!-- 
+	THIS CODE IS DEPRECATED!
+	Try to avoid adding new features to this code.
+	The new Arena UI can be found in CompactArenaFrame.
+	This deprecated code is the old arena frames which are now only used by battlegrounds for representing flag carriers.
+-->
+
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Script file="Deprecated_ArenaUI.lua"/>
+	<Frame name="DeprecatedArenaBarSegmentTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="fillTexture" value="Interface\TargetingFrame\UI-StatusBar" type="string"/>
+		</KeyValues>
+	</Frame>
+	<StatusBar name="ArenaCastingBarFrameTemplate" mixin="CastingBarMixin" inherits="CastingBarFrameAnimsTemplate" drawLayer="BORDER" virtual="true" hidden="true">
+		<Size x="80" y="14"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture setAllPoints="true">
+					<Color r="0" g="0" b="0" a="0.5"/>
+				</Texture>		
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="BorderShield" file="Interface\CastingBar\UI-CastingBar-Arena-Shield" hidden="true">
+					<Size x="42" y="42"/>
+					<Anchors>
+						<Anchor point="LEFT" x="-25" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Text" inherits="GameFontHighlightSmall">
+					<Size x="80" y="16"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="2"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="Icon">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT" x="-5" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Spark" atlas="ui-castingbar-pip">
+					<Size x="6" y="16"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Flash" alphaMode="ADD"> 
+				<!-- this needs to be here so the generic unit frame code will work right --> 
+					<Size x="256" y="64"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="28"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnEvent method="OnEvent" />
+			<OnUpdate method="OnUpdate" />
+			<OnShow method="OnShow" />
+		</Scripts>
+	</StatusBar>
+	<Button name="ArenaEnemyPetFrameTemplate" frameStrata="LOW" inherits="SecureUnitButtonTemplate" mixin="ArenaEnemyPetFrameMixin" virtual="true" hidden="true">
+		<Size x="77" y="31"/>
+		<KeyValues>
+			<KeyValue key="topPadding" value="-15" type="number"/>
+			<KeyValue key="leftPadding" value="10" type="number"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="TOPLEFT" x="15" y="-25"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentFlash" file="Interface\TargetingFrame\UI-PartyFrame-Flash" hidden="true">
+					<Size x="64" y="32"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="1" y="1"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentPortrait">
+					<Size x="22" y="22"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-3" y="-3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame setAllPoints="true">
+				<Frames>
+					<Frame setAllPoints="true">
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture name="$parentTexture" file="Interface\TargetingFrame\UI-PartyFrame">
+									<Size x="77" y="39"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="0" y="9"/>
+									</Anchors>
+									<TexCoords left="1.0" right="0" top="1.0" bottom="0.0"/>
+								</Texture>
+								<FontString name="$parentName" inherits="GameFontNormalSmall" parentKey="name">
+									<Anchors>
+										<Anchor point="BOTTOMRIGHT" x="-25" y="21"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+			</Frame>
+			<StatusBar name="$parentHealthBar" inherits="TextStatusBar">
+				<Size x="42" y="4"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-28" y="-14"/>
+				</Anchors>
+				<Scripts>
+					<OnValueChanged>
+						UnitFrameHealthBar_OnValueChanged(self, value);
+					</OnValueChanged>
+					<OnMouseUp>
+						self:GetParent():Click(button);
+					</OnMouseUp>
+				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+			</StatusBar>
+			<StatusBar name="$parentManaBar" inherits="TextStatusBar">
+				<Size x="42" y="4"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-28" y="-20"/>
+				</Anchors>
+				<Scripts>
+					<OnMouseUp>
+						self:GetParent():Click(button);
+					</OnMouseUp>
+				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+			</StatusBar>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEnter function="UnitFrame_OnEnter"/>
+			<OnLeave function="UnitFrame_OnLeave"/>
+		</Scripts>
+	</Button>
+	<Button name="ArenaEnemyPrepFrameTemplate" frameStrata="LOW" movable="true" hidden="true" inherits="SecureUnitButtonTemplate" mixin="ArenaEnemyPrepFrameMixin" virtual="true">
+		<Size x="112" y="32"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentClassPortrait" file="Interface\TargetingFrame\UI-Classes-Circles" parentKey="classPortrait">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-11" y="-4"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBackground">
+					<Size x="72" y="17"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="2" y="-10"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.5"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame setAllPoints="true"> <!-- These silly nested frames make it so the health/mana bars are underneath the frame borders like they're supposed to be-->
+				<Frames>
+					<Frame setAllPoints="true">
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="$parentTexture" file="Interface\ArenaEnemyFrame\UI-ArenaTargetingFrame">
+									<Size x="102" y="32"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="0" y="-2"/>
+									</Anchors>
+									<TexCoords left="0.0" right="0.796" top="0.0" bottom="0.5"/>
+								</Texture>
+								<FontString name="$parentName" inherits="GameFontNormalSmall" justifyH="LEFT" parentKey="name">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" x="3" y="24"/>
+									</Anchors>
+								</FontString>
+								<FontString name="$parentHealthBarText" inherits="TextStatusBarText">
+									<Anchors>
+										<Anchor point="CENTER" x="-20" y="3"/>
+									</Anchors>
+								</FontString>
+								<FontString name="$parentHealthBarTextLeft" inherits="TextStatusBarText">
+									<Anchors>
+										<Anchor point="LEFT" x="0" y="3"/>
+									</Anchors>
+								</FontString>
+								<FontString name="$parentHealthBarTextRight" inherits="TextStatusBarText">
+									<Anchors>
+										<Anchor point="RIGHT" x="-36" y="3"/>
+									</Anchors>
+								</FontString>
+								<FontString name="$parentManaBarText" inherits="TextStatusBarText">
+									<Anchors>
+										<Anchor point="CENTER" x="-20" y="-6"/>
+									</Anchors>
+								</FontString>
+								<FontString name="$parentManaBarTextLeft" inherits="TextStatusBarText">
+									<Anchors>
+										<Anchor point="LEFT" x="0" y="-8"/>
+									</Anchors>
+								</FontString>
+								<FontString name="$parentManaBarTextRight" inherits="TextStatusBarText">
+									<Anchors>
+										<Anchor point="RIGHT" x="-36" y="-8"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+							<Layer level="BORDER">	
+								<Texture name="$parentSpecPortrait">
+									<Size x="22" y="22"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="$parentClassPortrait" relativePoint="CENTER" x="4" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<Texture name="$parentStatus" file="Interface\Buttons\UI-Debuff-Overlays" hidden="true">
+									<Size x="36" y="36"/>
+									<TexCoords left="0.0" right="0.2734375" top="0.0" bottom="0.5625"/>
+								</Texture>
+								<Texture name="$parentSpecBorder" file="Interface\Minimap\MiniMap-TrackingBorder">
+									<Size x="50" y="50"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="$parentClassPortrait" relativePoint="CENTER" x="0" y="4"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<Texture name="$parentDisconnect" file="Interface\CharacterFrame\Disconnect-Icon" hidden="true">
+									<Size x="64" y="64"/>
+									<Anchors>
+										<Anchor point="LEFT" x="-7" y="-1"/>
+									</Anchors>
+								</Texture>
+								<Texture name="$parentPVPIcon" hidden="true">
+									<Size x="40" y="40"/>
+									<Anchors>
+										<Anchor point="LEFT" relativePoint="RIGHT" x="-12" y="-10"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+			</Frame>
+			<StatusBar name="$parentHealthBar" inherits="TextStatusBar">
+				<Size x="70" y="8"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="2" y="-12"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:InitializeTextStatusBar();
+						self.textLockable = 1;
+						self.cvar = "statusText";
+						self.cvarLabel = "STATUS_TEXT_PARTY";
+						self.LeftText = _G[self:GetName().."TextLeft"];
+						self.RightText = _G[self:GetName().."TextRight"];
+					</OnLoad>
+					<OnMouseUp>
+						self:GetParent():Click(button);
+					</OnMouseUp>
+					<OnValueChanged>
+						UnitFrameHealthBar_OnValueChanged(self, value);
+					</OnValueChanged>
+				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+			</StatusBar>
+			<StatusBar name="$parentManaBar" inherits="TextStatusBar">
+				<Size x="70" y="8"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="2" y="-20"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:InitializeTextStatusBar();
+						self.textLockable = 1;
+						self.cvar = "statusText";
+						self.cvarLabel = "STATUS_TEXT_PARTY";
+						self.LeftText = _G[self:GetName().."TextLeft"];
+						self.RightText = _G[self:GetName().."TextRight"];
+					</OnLoad>
+					<OnMouseUp>
+						self:GetParent():Click(button);
+					</OnMouseUp>
+				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="0" g="0" b="1.0"/>
+			</StatusBar>
+			<StatusBar parentKey="CastingBar" name="$parentCastingBar" inherits="ArenaCastingBarFrameTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="LEFT" x="-15" y="-3"/>
+				</Anchors>
+			</StatusBar>
+		</Frames>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Button>
+	<Button name="ArenaEnemyMatchFrameTemplate" frameStrata="LOW" movable="true" hidden="true" inherits="ArenaEnemyPrepFrameTemplate, PingableUnitFrameTemplate" mixin="ArenaEnemyMatchFrameMixin" virtual="true">
+		<Frames>
+			<Frame setAllPoints="true">
+				<Frames>
+					<Frame setAllPoints="true">
+						<Layers>
+							<Layer level="OVERLAY" textureSubLevel="1">
+								<Texture name="$parentOverAbsorbGlow" inherits="OverAbsorbGlowTemplate"/>
+								<Texture name="$parentOverHealAbsorbGlow" inherits="OverHealAbsorbGlowTemplate"/>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame name="$parentMyHealPredictionBar" inherits="DeprecatedArenaBarSegmentTemplate, MyHealPredictionBarTemplate"/>
+					<Frame name="$parentOtherHealPredictionBar" inherits="DeprecatedArenaBarSegmentTemplate, OtherHealPredictionBarTemplate"/>
+					<Frame name="$parentHealAbsorbBar" inherits="DeprecatedArenaBarSegmentTemplate, HealAbsorbBarTemplate"/>
+					<Frame name="$parentTotalAbsorbBar" inherits="TotalAbsorbBarTemplate">
+						<KeyValues>
+							<KeyValue key="fillTexture" value="Interface\RaidFrame\Shield-Fill" type="string"/>
+						</KeyValues>
+					</Frame>
+				</Frames>
+			</Frame>
+			<Button name="$parentPetFrame" inherits="ArenaEnemyPetFrameTemplate" parentKey="petFrame"/>
+			<Frame parentKey="CC">
+				<Size x="18" y="18"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="LEFT" x="-12" y="-3"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Cooldown name="$parentCooldown" parentKey="Cooldown" inherits="CooldownFrameTemplate" setAllPoints="true"/>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+			<OnEnter function="UnitFrame_OnEnter"/>
+			<OnLeave function="UnitFrame_OnLeave"/>
+		</Scripts>
+	</Button>
+	<Frame name="ArenaEnemyFramesContainer" inherits="ResizeLayoutFrame, UIParentRightManagedFrameTemplate" mixin="ArenaEnemyFramesContainerMixin">
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="12" type="number"/>
+			<KeyValue key="fixedWidth" value="245" type="number"/>
+		</KeyValues>
+		<Frames>
+			<Frame name="ArenaEnemyPrepFramesContainer" hidden="true" inherits="VerticalLayoutFrame" mixin="ArenaEnemyPrepFramesContainerMixin">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-10"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="spacing" value="10" type="number"/>
+				</KeyValues>
+				<Frames>
+					<Button name="ArenaEnemyPrepFrame1" parentArray="UnitFrames" inherits="ArenaEnemyPrepFrameTemplate" id="1">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="1" type="number"/>
+						</KeyValues>
+					</Button>
+					<Button name="ArenaEnemyPrepFrame2" parentArray="UnitFrames" inherits="ArenaEnemyPrepFrameTemplate" id="2">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="3" type="number"/>
+						</KeyValues>
+					</Button>
+					<Button name="ArenaEnemyPrepFrame3" parentArray="UnitFrames" inherits="ArenaEnemyPrepFrameTemplate" id="3">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="5" type="number"/>
+						</KeyValues>
+					</Button>
+					<Button name="ArenaEnemyPrepFrame4" parentArray="UnitFrames" inherits="ArenaEnemyPrepFrameTemplate" id="4">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="7" type="number"/>
+						</KeyValues>
+					</Button>
+					<Button name="ArenaEnemyPrepFrame5" parentArray="UnitFrames" inherits="ArenaEnemyPrepFrameTemplate" id="5">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="9" type="number"/>
+						</KeyValues>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnEvent method="OnEvent"/>
+					<OnShow method="OnShow"/>
+					<OnHide method="OnHide"/>
+				</Scripts>
+			</Frame>
+
+			<Frame name="ArenaEnemyMatchFramesContainer" hidden="true" inherits="VerticalLayoutFrame" mixin="ArenaEnemyMatchFramesContainerMixin">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-10"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="spacing" value="10" type="number"/>
+				</KeyValues>
+				<Frames>
+					<Button name="ArenaEnemyMatchFrame1" parentArray="UnitFrames" inherits="ArenaEnemyMatchFrameTemplate" id="1">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="1" type="number"/>
+						</KeyValues>
+					</Button>
+					<Button name="ArenaEnemyMatchFrame2" parentArray="UnitFrames" inherits="ArenaEnemyMatchFrameTemplate" id="2">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="3" type="number"/>
+						</KeyValues>
+					</Button>
+					<Button name="ArenaEnemyMatchFrame3" parentArray="UnitFrames" inherits="ArenaEnemyMatchFrameTemplate" id="3">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="5" type="number"/>
+						</KeyValues>
+					</Button>
+					<Button name="ArenaEnemyMatchFrame4" parentArray="UnitFrames" inherits="ArenaEnemyMatchFrameTemplate" id="4">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="7" type="number"/>
+						</KeyValues>
+					</Button>
+					<Button name="ArenaEnemyMatchFrame5" parentArray="UnitFrames" inherits="ArenaEnemyMatchFrameTemplate" id="5">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="9" type="number"/>
+						</KeyValues>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnEvent method="OnEvent"/>
+					<OnShow method="OnShow"/>
+					<OnHide method="OnHide"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Frame>
+</Ui>

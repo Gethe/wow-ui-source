@@ -1,0 +1,470 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Script file="Blizzard_CompactRaidFrameManager.lua"/>
+	<Button name="CRFManagerFilterRoleButtonTemplate" virtual="true" mixin="CRFManagerFilterRoleButtonMixin">
+		<Size x="64" y="26"/>
+		<NormalFont style="GameFontNormalSmall"/>
+		<HighlightFont style="GameFontHighlightSmall"/>
+		<DisabledFont style="GameFontDisableSmall"/>
+		<NormalTexture atlas="common-button-tertiary-normal-small"/>
+		<PushedTexture atlas="common-button-tertiary-pressed-small"/>
+		<DisabledTexture atlas="common-button-tertiary-disabled-small"/>
+		<Scripts>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method ="OnLeave"/>
+		</Scripts>
+	</Button>
+	<Button name="CRFManagerFilterGroupButtonTemplate" virtual="true" mixin="CRFManagerFilterGroupButtonMixin">
+		<Size x="45" y="34"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="PlayerIndicator" atlas="GM-indicator-player" useAtlasSize="true" hidden="false">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-2" y="-2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<NormalFont style="GameFontNormal"/>
+		<HighlightFont style="GameFontHighlight"/>
+		<DisabledFont style="GameFontDisable"/>
+		<NormalTexture atlas="common-button-tertiary-normal"/>
+		<PushedTexture atlas="common-button-tertiary-pressed"/>
+		<DisabledTexture atlas="common-button-tertiary-disabled"/>
+		<Scripts>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method ="OnLeave"/>
+		</Scripts>
+	</Button>
+	<Frame name="CRFManagerRoleMarkerCheckTemplate" virtual="true" mixin="CRFManagerRoleMarkerCheckMixin">
+		<Size x="34" y="34"/>
+		<Frames>
+			<CheckButton inherits="UICheckButtonTemplate" parentKey="checkButton">
+				<Size x="17" y="17"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent" relativePoint="LEFT"/>
+				</Anchors>
+			</CheckButton>
+			<Frame parentKey="icon">
+				<Size x="17" y="17"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.checkButton" relativePoint="TOPRIGHT" x="-2" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="icon"/>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+	<Button name="CRFManagerRaidIconButtonTemplate" virtual="true" registerForClicks="LeftButtonUp,RightButtonUp" mixin="CRFManagerRaidIconButtonMixin">
+		<Size x="35" y="35"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="backgroundTexture" atlas="GM-button-marker-available" useAtlasSize="false">
+					<Size x="44" y="44"/>
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="markerTexture">
+					<Size x="26" y="26"/>
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="CENTER" x="0" y="1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnClick method="OnClick"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+	<Frame name="CRFManagerTooltipTemplate" virtual="true" mixin="CRFM_TooltipMixin">
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+	<Button name="CRFManagerMarkerTabTemplate" virtual="true" mixin="CRFManagerMarkerTabMixin">
+		<Size x="70" y="15"/>
+		<NormalFont style="GameFontNormalSmall"/>
+		<HighlightFont style="GameFontHighlightSmall"/>
+		<NormalTexture atlas="GM-tab-inActive"/>
+		<Scripts>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+	<Frame name="CRFManagerDividerVertical" virtual ="true">
+		<Size x="2" y="40"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture atlas="GM-bgOpen-divider-vertical">
+					<Size x="2" y="31"/>
+					<Anchors>
+						<Anchor point ="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Frame name="CRFManagerDividerHorizontal" virtual ="true">
+		<Size x="222" y="2"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture atlas="GM-bgOpen-divider-horizontal">
+					<Size x="215" y="2"/>
+					<Anchors>
+						<Anchor point ="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Frame name="CompactRaidFrameManager" enableMouse="true" frameStrata="MEDIUM" hidden="true" toplevel="true" parent="UIParent">
+		<Size x="222" y="140"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="UIParent" relativePoint="TOPLEFT" x="7" y="-140"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentBG-leads" parentKey="BGLeads" atlas="GM-bgOpen-leads" hidden="true" parentArray="backgrounds">
+					<Size x="222" y="474"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBG-assists" parentKey="BGAssists" atlas="GM-bgOpen-assists" hidden="true" parentArray="backgrounds">
+					<Size x="222" y="432"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBG-regulars" parentKey="BGRegulars"  atlas="GM-bgOpen-regulars" hidden="true" parentArray="backgrounds">
+					<Size x="222" y="267"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBG-party-leads" parentKey="BGPartyLeads"  atlas="GM-bgOpen-party-leads" hidden="true" parentArray="backgrounds">
+					<Size x="222" y="344"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBG-party-regulars" parentKey="BGPartyRegulars"  atlas="GM-bgOpen-party-regulars" hidden="true" parentArray="backgrounds">
+					<Size x="222" y="238"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentToggleButtonForward" parentKey="toggleButtonForward" mixin="RaidFrameToggleButtonMixin">
+				<Size x="16" y="35"/>
+				<KeyValues>
+					<KeyValue key="hoverTex" value="gm-btnforward-hover" type="string"/>
+					<KeyValue key="normalTex" value="gm-btnforward-normal" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="RIGHT" x="-7" y="-20"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnClick method ="OnClick"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+				<NormalTexture atlas="gm-btnforward-normal"/>
+				<PushedTexture atlas="gm-btnforward-pressed"/>
+				<DisabledTexture atlas="gm-btnforward-disabled"/>
+			</Button>
+			<Button name="$parentToggleButtonBack" parentKey="toggleButtonBack" mixin="RaidFrameToggleButtonMixin" hidden="true">
+				<Size x="16" y="35"/>
+				<KeyValues>
+					<KeyValue key="hoverTex" value="gm-btnback-hover" type="string"/>
+					<KeyValue key="normalTex" value="gm-btnback-normal" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="RIGHT" x="-7" y="-20"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnClick method ="OnClick"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+				<NormalTexture atlas="gm-btnback-normal"/>
+				<PushedTexture atlas="gm-btnback-pressed"/>
+				<DisabledTexture atlas="gm-btnback-disabled"/>
+			</Button>
+			<Frame name="$parentDisplayFrame" parentKey="displayFrame" flattenRenderLayers="true" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentRaidMembersLabel" inherits="GameFontNormalMed3" text="RAID" parentKey="label">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="10" y="-15"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentRaidMemberCountLabel" parentKey="memberCountLabel" justifyH="RIGHT" inherits="GameFontNormalMed3" text="10/10">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="-30" y="-15"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<DropdownButton parentKey="ModeControlDropdown" name="$parentModeControlDropdown" inherits="WowStyle1DropdownTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="10" y="-10"/>
+						</Anchors>
+					</DropdownButton>
+					<Button name="$parentOptionsButton" inherits="UIPanelInfoButton">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="-12" y="-13"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								Settings.OpenToCategory(Settings.INTERFACE_CATEGORY_ID, RAID_FRAMES_LABEL);
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Frame name="$parentOptionFlowContainer" parentKey="optionsFlowContainer">
+						<Size x="222" y="474"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="-10" y="-48"/>
+						</Anchors>
+					</Frame>
+					<Frame name="$parentFilterOptions" parentKey="filterOptions">
+						<Size x="222" y="95"/>
+						<Frames>
+							<Button name="$parentFilterRoleTank" inherits="CRFManagerFilterRoleButtonTemplate" parentKey="filterRoleTank" mixin="RaidFrameFilterRoleTankMixin">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="19" y="4"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad method="OnLoad"/>
+								</Scripts>
+							</Button>
+							<Button name="$parentFilterRoleHealer" inherits="CRFManagerFilterRoleButtonTemplate" parentKey="filterRoleHealer" mixin="RaidFrameFilterRoleHealerMixin">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parentFilterRoleTank" relativePoint="RIGHT"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad method="OnLoad"/>
+								</Scripts>
+							</Button>
+							<Button name="$parentFilterRoleDamager" inherits="CRFManagerFilterRoleButtonTemplate" parentKey="filterRoleDamager" mixin="RaidFrameFilterRoleDamagerMixin">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parentFilterRoleHealer" relativePoint="RIGHT"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad method="OnLoad"/>
+								</Scripts>
+							</Button>
+						</Frames>
+					</Frame>
+					<Frame name="$TankMarkerCheckButton" parentKey="tankMarker" inherits="CRFManagerRoleMarkerCheckTemplate" hidden="true">
+						<Size x="34" y="34"/>
+						<KeyValues>
+							<KeyValue key="id" value="0" type="number"/>
+						</KeyValues>
+					</Frame>
+					<Frame name="$HealerMarkerCheckButton" parentKey="healerMarker" inherits="CRFManagerRoleMarkerCheckTemplate" hidden="true">
+						<Size x="34" y="34"/>
+						<KeyValues>
+							<KeyValue key="id" value="1" type="number"/>
+						</KeyValues>
+					</Frame>
+					<Button name="$parentEditMode" parentKey="editMode" inherits="CRFManagerTooltipTemplate" mixin="RaidFrameEditModeMixin">
+						<Size x="40" y="40"/>
+						<NormalTexture/>
+						<KeyValues>
+							<KeyValue key="tooltip" value="CRF_EDIT_MODE" type="global"/>
+							<KeyValue key="atlasKey" value="GM-icon-menu" type="string"/>
+						</KeyValues>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnShow method="OnShow"/>
+							<OnClick method="OnClick"/>
+						</Scripts>
+					</Button>
+					<Button name="$parentSettings" parentKey="settings" inherits="CRFManagerTooltipTemplate" mixin="RaidFrameSettingsMixin">
+						<Size x="40" y="40"/>
+						<NormalTexture/>
+						<KeyValues>
+							<KeyValue key="tooltip" value="CRF_SETTINGS" type="global"/>
+							<KeyValue key="atlasKey" value="GM-icon-settings" type="string"/>
+						</KeyValues>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnClick method="OnClick"/>
+						</Scripts>
+					</Button>
+					<Button name="$parentHiddenModeToggle" parentKey="hiddenModeToggle" inherits="CRFManagerTooltipTemplate" mixin="RaidFrameHiddenModeToggleMixin">
+						<Size x="40" y="40"/>
+						<NormalTexture/>
+						<KeyValues>
+							<KeyValue key="tooltip" value="CRF_HIDE_GROUPS" type="global"/>
+							<KeyValue key="atlasKey" value="GM-icon-visible" type="string"/>
+						</KeyValues>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnClick method="OnClick"/>
+						</Scripts>
+					</Button>
+					<CheckButton name="$parentEveryoneIsAssistButton" parentKey="everyoneIsAssistButton" hidden="true" inherits="CRFManagerTooltipTemplate" mixin="RaidFrameEveryoneIsAssistMixin" motionScriptsWhileDisabled="true">
+						<Size x="40" y="40"/>
+						<NormalTexture/>
+						<KeyValues>
+							<KeyValue key="tooltip" value="CRF_ALL_ASSIST" type="global"/>
+							<KeyValue key="disabledTooltipText" value="ALL_ASSIST_NOT_LEADER_ERROR" type="global"/>
+							<KeyValue key="atlasKey" value="GM-icon-assist" type="string"/>
+						</KeyValues>
+						<CheckedTexture atlas="GM-icon-assistActive" />
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnEvent method="OnEvent"/>
+							<OnClick method="OnClick"/>
+						</Scripts>
+					</CheckButton>
+					<DropdownButton name="$parentDifficulty" parentKey="difficulty" inherits="CRFManagerTooltipTemplate" mixin="CRFM_DifficultyDropdownMixin" motionScriptsWhileDisabled="true" hidden="true">
+						<Size x="40" y="40"/>
+						<NormalTexture/>
+						<KeyValues>
+							<KeyValue key="tooltip" value="CRF_DIFFICULTY" type="global"/>
+							<KeyValue key="disabledTooltipText" value="ALL_ASSIST_NOT_LEADER_ERROR" type="global"/>
+							<KeyValue key="atlasKey" value="GM-icon-visible" type="string"/>
+						</KeyValues>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+						</Scripts>
+					</DropdownButton>
+					<Button name="$parentInitiateReadyCheck" parentKey="readyCheckButton" inherits="CRFManagerTooltipTemplate" mixin="RaidFrameReadyCheckMixin">
+						<Size x="40" y="40"/>
+						<NormalTexture/>
+						<KeyValues>
+							<KeyValue key="tooltip" value="CRF_READY_CHECK" type="global"/>
+							<KeyValue key="atlasKey" value="GM-icon-readyCheck" type="string"/>
+						</KeyValues>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnClick method="OnClick"/>
+						</Scripts>
+					</Button>
+					<Button name="$parentInitiateRolePoll" parentKey="rolePollButton" inherits="CRFManagerTooltipTemplate" mixin="RaidFrameRolePollMixin">
+						<Size x="40" y="40"/>
+						<NormalTexture/>
+						<KeyValues>
+							<KeyValue key="tooltip" value="CRF_ROLE_POLL" type="global"/>
+							<KeyValue key="atlasKey" value="GM-icon-roles" type="string"/>
+						</KeyValues>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnClick method="OnClick"/>
+						</Scripts>
+					</Button>
+					<Button name="$parentCountdown" parentKey="countdownButton" inherits="CRFManagerTooltipTemplate" mixin="RaidFrameCountdownMixin">
+						<Size x="40" y="40"/>
+						<NormalTexture/>
+						<KeyValues>
+							<KeyValue key="tooltip" value="CRF_COUNTDOWN" type="global"/>
+							<KeyValue key="atlasKey" value="GM-icon-countdown" type="string"/>
+						</KeyValues>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnClick method="OnClick"/>
+						</Scripts>
+					</Button>
+					<Frame name="$parentRaidMarkers" mixin="CRFRaidMarkersMixin" parentKey="raidMarkers" hidden="true">
+						<Size x="222" y="122"/>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="$parentBG-regular" atlas="GM-tab-body">
+									<Size x="194" y="85"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="19" y="-30"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Button name="$parentRaidMarkerUnitTab" parentKey="raidMarkerUnitTab" inherits="CRFManagerMarkerTabTemplate" parentArray="Tabs" text="GROUPMANAGER_UNIT_MARKER">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="20" y="-15"/>
+								</Anchors>
+							</Button>
+							<Button name="$parentRaidMarkerGroundTab" parentKey="raidMarkerGroundTab" inherits="CRFManagerMarkerTabTemplate" parentArray="Tabs" text="GROUPMANAGER_GROUND_MARKER">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentRaidMarkerUnitTab" relativePoint="TOPRIGHT" x="5" y="0"/>
+								</Anchors>
+							</Button>
+						</Frames>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+						</Scripts>
+					</Frame>
+					<Frame parentKey="RestrictPingsLabel">
+						<Size x="1" y="18"/>
+						<Layers>
+							<Layer>
+								<FontString parentKey="Label" inherits="GameFontNormal" text="RAID_MANAGER_RESTRICT_PINGS_TO">
+									<Anchors>
+										<Anchor point="LEFT" relativePoint="LEFT" x="0" y="2"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					<DropdownButton parentKey="RestrictPingsDropdown" name="$parentRestrictPingsDropdown" inherits="WowStyle1DropdownTemplate"/>
+				</Frames>
+			</Frame>
+			<Frame name="parentBottomButtons" parentKey="BottomButtons">
+				<Size x="222" y="40"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="10"/>
+				</Anchors>
+				<Frames>
+					<Button name="$parentLeavePartyButton" inherits="UIPanelButtonTemplate" mixin="LeavePartyButtonMixin" text="PARTY_LEAVE">
+						<Size x="160" y="24"/>
+						<Anchors>
+							<Anchor point="TOP" relativePoint="TOP" x="0" y="5"/>
+						</Anchors>
+						<Scripts>
+							<OnClick method="OnClick"/>
+						</Scripts>
+					</Button>
+					<Button name="$parentLeaveInstanceGroupButton" inherits="UIPanelButtonTemplate, TruncatedButtonTemplate" mixin="LeaveInstanceGroupButtonMixin" text="INSTANCE_PARTY_LEAVE">
+						<Size x="160" y="24"/>
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentLeavePartyButton" relativePoint="BOTTOM" x="0" y="-5"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnUpdate method="OnUpdate"/>
+							<OnClick method="OnClick"/>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="CompactRaidFrameManager_OnLoad"/>
+			<OnEvent function="CompactRaidFrameManager_OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

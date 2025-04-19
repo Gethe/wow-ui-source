@@ -1,0 +1,10 @@
+## Title: Blizzard Runeforge UI
+## LoadOnDemand: 1
+
+Blizzard_RuneforgePowerList.xml
+Blizzard_RuneforgeModifierSlot.xml
+Blizzard_RuneforgeItemSlot.xml
+Blizzard_RuneforgeCreateFrame.xml
+Blizzard_RuneforgeCraftingFrame.xml
+Blizzard_RuneforgeCraftingTooltip.xml
+Blizzard_RuneforgeFrame.xml

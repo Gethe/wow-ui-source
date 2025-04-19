@@ -1,0 +1,16 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Script file="Blizzard_ClassNameplateBar_Druid.lua"/>
+
+	<Frame name="ClassNameplateBarFeralDruidFrame" inherits="DruidComboPointBarTemplate, ClassNameplateBarFrame" mixin="ClassNameplateBar, ClassNameplateBarFeralDruid" ignoreParentScale="true">
+		<Size x="80" y="13"/>
+		<KeyValues>
+			<KeyValue key="scale" value="0.7"/>
+			<KeyValue key="resourceBarMixin" value="ClassNameplateBar" type="global"/>
+			<KeyValue key="unit" value="player" type="string"/>
+			<KeyValue key="spacing" value="6" type="number"/>
+			<KeyValue key="paddingOverride" value="-7" type="number"/>
+			<KeyValue key="shouldShowBarFunc" value="ClassNameplateBarFeralDruid.ShouldShowBar" type="global"/>
+		</KeyValues>
+	</Frame>
+</Ui>

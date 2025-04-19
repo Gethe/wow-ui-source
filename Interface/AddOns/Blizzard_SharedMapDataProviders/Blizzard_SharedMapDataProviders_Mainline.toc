@@ -1,0 +1,52 @@
+## Title: Blizzard Shared Map Data Providers
+## Author: Blizzard Entertainment
+## Version: 1.0
+## LoadOnDemand: 1
+## AllowLoad: game
+## AllowLoadGameType: mainline
+## SavedVariables: GLOW_HUB_QUESTS_ACKNOWLEDGED
+
+MapPinTags.lua
+FrameCloneManager.lua
+SharedMapPoiTemplates.xml
+QuestDataProvider.xml
+ContentTrackingDataProvider.xml
+GroupMembersDataProvider.xml
+WorldQuestDataProvider.xml
+ZoneLabelDataProvider.xml
+ClickToZoomDataProvider.xml
+AreaPOIDataProvider.xml
+AreaPOIEventDataProvider.lua
+AreaPOIEventDataProvider.xml
+MapExplorationDataProvider.xml
+MapHighlightDataProvider.xml
+AreaLabelDataProvider.xml
+BattlefieldFlagDataProvider.xml
+BonusObjectiveDataProvider.xml
+VehicleDataProvider.xml
+QuestOfferDataProvider.lua
+QuestOfferDataProvider.xml
+EncounterJournalDataProvider.xml
+FogOfWarDataProvider.xml
+PlunderstormCircleDataProvider.xml
+DeathMapDataProvider.xml
+QuestBlobDataProvider.xml
+ScenarioDataProvider.xml
+VignetteDataProvider.xml
+InvasionDataProvider.xml
+GossipDataProvider.xml
+FlightPointDataProvider.xml
+PetTamerDataProvider.xml
+DigSiteDataProvider.xml
+GarrisonPlotDataProvider.xml
+DungeonEntranceDataProvider.xml
+BannerDataProvider.xml
+ContributionCollectorDataProvider.xml
+MapLinkDataProvider.xml
+SelectableGraveyardDataProvider.xml
+QuestSessionDataProvider.lua
+WaypointLocationDataProvider.xml
+DragonridingRaceDataProvider.xml
+DelveEntranceDataProvider.xml
+SuperTrackWaypointDataProvider.lua
+SuperTrackWaypointDataProvider.xml

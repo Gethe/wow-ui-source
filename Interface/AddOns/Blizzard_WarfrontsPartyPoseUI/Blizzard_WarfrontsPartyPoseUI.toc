@@ -1,0 +1,9 @@
+## Title: Blizzard_WarfrontsPartyPoseUI
+## Notes: Okay, maybe not the ideal location for a party.. (Warfronts End Screen) 
+## Author: Blizzard Entertainment
+## RequiredDep: Blizzard_PartyPoseUI
+## Version: 1.0
+## LoadOnDemand: 1
+
+Blizzard_WarfrontsPartyPoseUI.lua
+Blizzard_WarfrontsPartyPoseUI.xml

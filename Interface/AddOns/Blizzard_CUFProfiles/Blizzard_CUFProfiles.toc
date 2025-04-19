@@ -1,0 +1,5 @@
+## Title: Blizzard_CUFProfiles
+## LoadOnDemand: 0
+## AllowLoadByGameMode: standard
+
+Blizzard_CompactUnitFrameProfiles.lua

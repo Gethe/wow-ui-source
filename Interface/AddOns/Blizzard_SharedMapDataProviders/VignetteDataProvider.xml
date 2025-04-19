@@ -1,0 +1,104 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Script file="VignetteDataProvider.lua"/>
+
+	<Frame name="VignettePinTemplate" enableMouseMotion="true" inherits="LegendHighlightableMapPoiPinTemplate, SuperTrackableMapPinTemplate" mixin="VignettePinMixin" virtual="true">
+		<Size x="30" y="30"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Texture">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="HighlightTexture" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Texture"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Texture"/>
+					</Anchors>
+					<Color r="1.0" g="1.0" b="1.0" a="0.2"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Button name="VignettePinPOIButtonTemplate" enableMouseMotion="true" inherits="LegendHighlightableMapPoiPinTemplate, POIButtonTemplate" mixin="VignettePinPOIButtonMixin" virtual="true"/>
+
+	<Frame name="FyrakkFlightVignettePinTemplate" enableMouseMotion="true" inherits="SuperTrackableMapPinTemplate" mixin="FyrakkFlightVignettePinMixin" virtual="true">
+		<Size x="40" y="40"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="FlameBoundsBottom" alpha=".5" alphaMode="BLEND" atlas="Fyrakk_Bounds2" useAtlasSize="true" parentArray="Textures">
+					<Anchors>
+						<Anchor point="CENTER" x="1.5" y="7"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Shadow" alpha=".4" alphaMode="BLEND" atlas="Fyrakk_Shadow" parentArray="Textures">
+					<Size x="60" y="60"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-30"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="0">
+				<Texture parentKey="Trail" alpha="1" alphaMode="BLEND" atlas="Fyrakk_Flame_Trail2" useAtlasSize="true" parentArray="Textures">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-50"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="FyrakkIcon" alpha="1" alphaMode="BLEND" atlas="Fyrakk-Flying-Flame" parentArray="Textures">
+					<Size x="70" y="70"/>
+					<Anchors>
+						<Anchor point="CENTER" x="1.5" y="-10"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="FyrakkFlame" alpha="1" alphaMode="BLEND" atlas="Fyrakk_Flame_FX" parentArray="Textures">
+					<Size x="52" y="86"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="FlameBoundsTop" alpha="1" alphaMode="BLEND" atlas="Fyrakk_Bounds1" useAtlasSize="true" parentArray="Textures">
+					<Anchors>
+						<Anchor point="CENTER" x="1.7" y="25"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="1">
+				<Texture parentKey="FlameTrail2" alpha="1" alphaMode="BLEND" atlas="Fyrakk_Flame_Trail" useAtlasSize="true" parentArray="Textures">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="2">
+				<Texture parentKey="FlameTrail" alpha="1" alphaMode="BLEND" atlas="Fyrakk_Flame_Trail" useAtlasSize="true" parentArray="Textures">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-8"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="Anim" looping="REPEAT" setToFinalAlpha="true">
+				<FlipBook childKey="FyrakkFlame" duration="1.33" order="1" flipBookRows="8" flipBookColumns="6" flipBookFrames="44" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+				<Alpha childKey="FlameTrail" duration=".63" order="1" fromAlpha="0" toAlpha="1"/>
+				<Translation startDelay="0" childKey="FlameTrail" duration=".63" order="1" offsetX="0" offsetY="-2"/>
+				<Alpha startDelay=".63" childKey="FlameTrail" duration=".6" order="1" fromAlpha="1" toAlpha="0"/>
+				<Translation startDelay=".63" childKey="FlameTrail" duration=".6" order="1" offsetX="0" offsetY="-5"/>
+				<Alpha startDelay="0" childKey="FlameTrail2" duration=".23" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha startDelay=".23" childKey="FlameTrail2" duration=".33" order="1" fromAlpha="1" toAlpha="1"/>
+				<Alpha startDelay=".33" childKey="FlameTrail2" duration=".77" order="1" fromAlpha="1" toAlpha="0"/>
+				<Translation childKey="FlameTrail2" duration="1.33" order="1" offsetX="0" offsetY="-10"/>
+				<Alpha childKey="Trail" duration=".66" order="1" fromAlpha=".5" toAlpha="0"/>
+				<Alpha startDelay=".66" childKey="Trail" duration=".66" order="1" fromAlpha="0" toAlpha=".5"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+</Ui>

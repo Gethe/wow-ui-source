@@ -1,0 +1,244 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Script file="RuneFrame.lua" />
+	<Frame name="RuneButtonIndividualTemplate" mixin="RuneButtonMixin" virtual="true" hidden="false">
+		<Size x="24" y="24"/>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="0">
+				<Texture parentKey="BG_Shadow" alphaMode="BLEND" atlas="UF-DKRunes-BGShadow" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="BG_Inactive" alphaMode="BLEND" atlas="UF-DKRunes-BGDis" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BG_Active" alphaMode="BLEND" atlas="UF-DKRunes-BGActive" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="0">
+				<Texture parentKey="Rune_Inactive" alphaMode="BLEND" atlas="UF-DKRunes-SkullDis" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="Rune_Grad" alphaMode="BLEND" atlas="UF-DKRunes-Blood-SkullGrad" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Rune_Lines" alphaMode="BLEND" atlas="UF-DKRunes-Blood-SkullLines" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture parentKey="Rune_Active" alphaMode="BLEND" atlas="UF-DKRunes-Blood-SkullActive" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="3">
+				<Texture parentKey="Rune_Mid" alphaMode="BLEND" atlas="UF-DKRunes-Blood-SkullMid" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Rune_Eyes" alphaMode="BLEND" atlas="UF-DKRunes-Blood-Eyes" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="Glow" alphaMode="BLEND" atlas="UF-DKRunes-Blood-FilledGlwA" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Glow2" alphaMode="BLEND" atlas="UF-DKRunes-Blood-FilledGlwB" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Smoke" alphaMode="BLEND" atlas="UF-DKRunes-Blood-Smoke" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-4"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Cooldown parentKey="Cooldown" setAllPoints="false" reverse="true" drawBling="false" hideCountdownNumbers="true" useCircularEdge="true">
+				<Size x="27" y="27"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<EdgeTexture file="Interface\PlayerFrame\DK-BloodUnholy-Rune-CDSpark"/>
+				<SwipeTexture>
+					<Color r="1" g="1" b="1" a="1"/>
+				</SwipeTexture>
+			</Cooldown>
+			<Frame parentKey="DepleteVisuals" setAllPoints="true">
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="2">
+						<Texture parentKey="Rune_Inactive" alphaMode="BLEND" atlas="UF-DKRunes-SkullDis" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Rune_Lines" alphaMode="BLEND" atlas="UF-DKRunes-Blood-SkullLines" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FB_RuneDeplete" alphaMode="BLEND" atlas="UF-DKRunes-BloodDeplete" texelSnappingBias="0.0" snapToPixelGrid="false">
+							<Size x="20" y="36"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="10"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Glow2" alphaMode="BLEND" atlas="UF-DKRunes-Blood-FilledGlwB" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="DepleteAnim" setToFinalAlpha="true" inherits="VisibleWhilePlayingAnimGroupTemplate">
+						<Alpha childKey="Rune_Inactive" fromAlpha="1" toAlpha="1" duration="0.1" order="1"/>
+						<Alpha childKey="FB_RuneDeplete" fromAlpha="0" toAlpha="1" duration="0.1" order="1"/>
+						<Alpha childKey="Rune_Inactive" fromAlpha="1" toAlpha=".4" duration=".67" order="1"/>
+						<FlipBook childKey="FB_RuneDeplete" duration="1" flipBookRows="4" flipBookColumns="6" flipBookFrames="23" flipBookFrameWidth="0" flipBookFrameHeight="0" order="1"/>
+						<Alpha childKey="Glow2" fromAlpha="1" toAlpha="0" duration=".4" order="1"/>
+						<Alpha childKey="Rune_Lines" fromAlpha="1" toAlpha="1" duration=".4" order="1"/>
+						<Alpha childKey="Rune_Lines" fromAlpha="1" toAlpha="0" startDelay=".4" duration=".43" order="1"/>
+						<Alpha childKey="FB_RuneDeplete" fromAlpha="1" toAlpha="0" startDelay="1" duration="0.1" order="1"/>
+						<Alpha childKey="Rune_Inactive" fromAlpha=".4" toAlpha="0" startDelay="1" duration="0.1" order="1"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+		</Frames>
+		<KeyValues>
+			<!-- Total cooldown timing CooldownFillAnim was animated for; its speed is modified at runtime based on actual cooldown timing compared to this number -->
+			<KeyValue key="cooldownFillAnimBasisSeconds" value="8" type="number"/>
+			<!-- How many seconds before the cooldown ends should we start the CooldownEndingAnim -->
+			<KeyValue key="cooldownEndingOffsetSeconds" value="0.67" type="number"/>
+		</KeyValues>
+		<Animations>
+			<!-- Speed of this anim is modified at runtime based on actual cooldown timing versus the value of cooldownFillAnimBasisSeconds -->
+			<AnimationGroup parentKey="CooldownFillAnim" setToFinalAlpha="true">
+				<Alpha childKey="Rune_Mid" fromAlpha="0" toAlpha="0" duration="0.1" order="1"/>
+				<Alpha childKey="Rune_Eyes" fromAlpha="0" toAlpha="0" duration="0.1" order="1"/>
+				<Alpha childKey="Smoke" fromAlpha="0" toAlpha="0" duration="0.1" order="1"/>
+				<Alpha childKey="Glow" fromAlpha="0" toAlpha="0" duration="0.1" order="1"/>
+				<Alpha childKey="Rune_Grad" fromAlpha="0" toAlpha="0" duration=".86" order="1"/>
+				<Alpha childKey="Rune_Lines" fromAlpha="0" toAlpha="0" startDelay=".85" duration="0.1" order="1"/>
+				<Alpha childKey="Rune_Lines" fromAlpha="0" toAlpha=".16" startDelay=".86" duration="3.18" order="1"/>
+				<Alpha childKey="Rune_Grad" fromAlpha="0" toAlpha=".3" startDelay=".86" duration="3.18" order="1"/>
+				<Alpha childKey="Rune_Lines" fromAlpha=".16" toAlpha=".3" startDelay="4" duration="2.83" order="1"/>
+			</AnimationGroup>
+			<!-- This anim starts just before cooldown end based on value of cooldownEndingOffsetSeconds -->
+			<AnimationGroup parentKey="CooldownEndingAnim" setToFinalAlpha="true">
+				<Alpha childKey="Rune_Mid" fromAlpha="0" toAlpha="1" duration=".47" order="1"/>
+				<Alpha childKey="Rune_Eyes" fromAlpha="0" toAlpha="1" startDelay="0.24" duration=".43" order="1"/>
+				<Alpha childKey="Smoke" fromAlpha="0" toAlpha="1" startDelay="0.34" duration=".5" order="1"/>
+				<Translation childKey="Smoke" offsetX="0" offsetY="12" startDelay="0.34" duration=".7" order="1"/>
+				<Alpha childKey="Rune_Lines" fromAlpha="1" toAlpha="0" startDelay="0.67" duration=".17" order="1"/>
+				<Alpha childKey="Rune_Grad" fromAlpha="1" toAlpha="0" startDelay="0.67" duration=".01" order="1"/>
+				<Alpha childKey="Rune_Inactive" fromAlpha="1" toAlpha="0" startDelay="0.67" duration=".01" order="1"/>
+				<Alpha childKey="BG_Active" fromAlpha="0" toAlpha="1" startDelay="0.67" duration=".01" order="1"/>
+				<Alpha childKey="BG_Inactive" fromAlpha="1" toAlpha="0" startDelay="0.67" duration=".01" order="1"/>
+				<Alpha childKey="Glow" fromAlpha="1" toAlpha="1" startDelay="0.67" duration="0" order="1"/>
+				<Alpha childKey="Glow2" fromAlpha="1" toAlpha="1" startDelay="0.67" duration="0" order="1"/>
+				<Alpha childKey="Rune_Active" fromAlpha="0" toAlpha="1" startDelay="0.77" duration="0.01" order="1"/>
+				<Alpha childKey="Rune_Mid" fromAlpha="1" toAlpha="0" startDelay="0.77" duration=".4" order="1"/>
+				<Alpha childKey="Smoke" fromAlpha="1" toAlpha="0" startDelay="0.83" duration=".2" order="1"/>
+				<Alpha childKey="Glow" fromAlpha="1" toAlpha="0" startDelay="0.84" duration=".23" order="1"/>
+				<Alpha childKey="Glow2" fromAlpha="1" toAlpha="0" startDelay="1" duration=".17" order="1"/>
+				<Alpha childKey="Rune_Eyes" fromAlpha="1" toAlpha="0" startDelay="1.14" duration=".5" order="1"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="EmptyAnim" setToFinalAlpha="true">
+				<Alpha childKey="BG_Active" fromAlpha="0" toAlpha="0" duration="0.1" order="1"/>
+				<Alpha childKey="BG_Inactive" fromAlpha="1" toAlpha="1" duration="0.1" order="1"/>
+				<Alpha childKey="Rune_Active" fromAlpha="0" toAlpha="0" duration="0.1" order="1"/>
+				<Alpha childKey="Rune_Inactive" fromAlpha="1" toAlpha=".4" duration="0.1" order="1"/>
+				<Alpha childKey="Rune_Lines" fromAlpha="1" toAlpha="0" duration="0.1" order="1"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="RuneFrameTemplate" mixin="RuneFrameMixin" inherits="HorizontalLayoutFrame, PlayerFrameBottomManagedFrameTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="spacing" value="-1" type="number"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="Rune1" parentArray="Runes" inherits="RuneButtonIndividualTemplate">
+				<KeyValues>
+					<KeyValue key="runeIndex" value="1" type="number"/>
+					<KeyValue key="layoutIndex" value="6" type="number"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="Rune2" parentArray="Runes" inherits="RuneButtonIndividualTemplate">
+				<KeyValues>
+					<KeyValue key="runeIndex" value="2" type="number"/>
+					<KeyValue key="layoutIndex" value="5" type="number"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="Rune3" parentArray="Runes" inherits="RuneButtonIndividualTemplate">
+				<KeyValues>
+					<KeyValue key="runeIndex" value="3" type="number"/>
+					<KeyValue key="layoutIndex" value="4" type="number"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="Rune4" parentArray="Runes" inherits="RuneButtonIndividualTemplate">
+				<KeyValues>
+					<KeyValue key="runeIndex" value="4" type="number"/>
+					<KeyValue key="layoutIndex" value="3" type="number"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="Rune5" parentArray="Runes" inherits="RuneButtonIndividualTemplate">
+				<KeyValues>
+					<KeyValue key="runeIndex" value="5" type="number"/>
+					<KeyValue key="layoutIndex" value="2" type="number"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="Rune6" parentArray="Runes" inherits="RuneButtonIndividualTemplate">
+				<KeyValues>
+					<KeyValue key="runeIndex" value="6" type="number"/>
+					<KeyValue key="layoutIndex" value="1" type="number"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="RuneFrame" parent="PlayerFrame" frameStrata="LOW" toplevel="true" hidden="false" inherits="RuneFrameTemplate" scale="0.95">
+		<Size x="130" y="24" />
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="2" type="number"/>
+			<KeyValue key="topPadding" value="6" type="number"/>
+			<KeyValue key="leftPadding" value="-5" type="number"/>
+			<KeyValue key="showTooltip" value="true" type="boolean"/>
+			<KeyValue key="tooltip" value="RUNES_TOOLTIP" type="global"/>
+			<KeyValue key="tooltipTitle" value="COMBAT_TEXT_RUNE_DEATH" type="global"/>
+		</KeyValues>
+	</Frame>
+</Ui>
