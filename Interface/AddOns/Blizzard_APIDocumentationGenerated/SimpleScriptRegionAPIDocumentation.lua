@@ -19,6 +19,32 @@ local SimpleScriptRegionAPI =
 			},
 		},
 		{
+			Name = "CanPropagateMouseClicks",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "canPropagate", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "CanPropagateMouseMotion",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "canPropagate", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CollapsesLayout",
 			Type = "Function",
 
@@ -400,19 +426,6 @@ local SimpleScriptRegionAPI =
 			Returns =
 			{
 				{ Name = "enabled", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "IsPropagateMouseBlocked",
-			Type = "Function",
-
-			Arguments =
-			{
-			},
-
-			Returns =
-			{
-				{ Name = "blocked", Type = "bool", Nilable = false },
 			},
 		},
 		{
