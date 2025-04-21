@@ -38,6 +38,10 @@ local HIDE_MOST = {
 	PVPMatchResults = "hidden",
 	UIWidgetTopCenterContainerFrame = "hidden",
 	PetActionBar = "hidden",
+	EssentialCooldownViewer = "hidden",
+	UtilityCooldownViewer = "hidden",
+	BuffIconCooldownViewer = "hidden",
+	BuffBarCooldownViewer = "hidden",
 }
 
 local SPECTATING_DISPLAY = { 
@@ -59,7 +63,11 @@ local SPECTATING_DISPLAY = {
 	PVPMatchResults = "hidden",
 	StatusTrackingBarManager = "hidden",
 	ContainerFrameCombinedBags = "hidden",
-	TargetFrameToT = "hidden"
+	TargetFrameToT = "hidden",
+	EssentialCooldownViewer = "hidden",
+	UtilityCooldownViewer = "hidden",
+	BuffIconCooldownViewer = "hidden",
+	BuffBarCooldownViewer = "hidden",
 }
 
 --------Data on what locks exist and what frames are ruled by them--------

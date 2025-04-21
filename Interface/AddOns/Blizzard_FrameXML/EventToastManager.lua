@@ -1295,6 +1295,18 @@ function EventToastScoreboardMixin:Setup(toastInfo)
 	if toastInfo.uiWidgetSetID then
 		self.WidgetContainer:RegisterForWidgetSet(toastInfo.uiWidgetSetID, DefaultWidgetLayout);
 	end
+
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+end
+
+function EventToastScoreboardMixin:OnEvent(event)
+	-- Scoreboard widgets can be dependent on a specific area. If the player leaves
+	-- without closing the scoreboard, hide it automatically.
+	if event == "PLAYER_ENTERING_WORLD" then
+		if not self.WidgetContainer:HasAnyWidgetsShowing() then
+			self:Hide();
+		end
+	end
 end
 
 function EventToastScoreboardMixin:OnHide()

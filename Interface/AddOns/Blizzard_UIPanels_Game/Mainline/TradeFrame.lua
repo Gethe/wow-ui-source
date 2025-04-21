@@ -17,6 +17,7 @@ function TradeFrame_OnLoad(self)
 	TradeRecipientMoneyInset.Bg:SetAlpha(0);
 	TradeRecipientEnchantInset.Bg:SetAlpha(0.1);
 	TradeRecipientMoneyBg:SetAlpha(0.6);
+	TradePlayerInputMoneyFrame:SetForbidden(true);
 end
 
 function TradeFrame_OnShow(self)

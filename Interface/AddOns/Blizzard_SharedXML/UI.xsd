@@ -155,6 +155,7 @@
 		<xs:restriction base="xs:NMTOKEN">
 			<xs:enumeration value="Motion"/>
 			<xs:enumeration value="Clicks"/>
+			<xs:enumeration value="Blocked"/>
 			<xs:enumeration value="Both"/>
 		</xs:restriction>
 	</xs:simpleType>

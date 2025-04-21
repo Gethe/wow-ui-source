@@ -403,6 +403,19 @@ local SimpleScriptRegionAPI =
 			},
 		},
 		{
+			Name = "IsPropagateMouseBlocked",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "blocked", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsProtected",
 			Type = "Function",
 
