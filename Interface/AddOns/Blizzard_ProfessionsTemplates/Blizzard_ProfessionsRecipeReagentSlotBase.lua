@@ -77,16 +77,15 @@ end
 
 function ProfessionsReagentSlotButtonMixin:SetSlotQuality(quality)
 	if quality then
-		if quality == Enum.ItemQuality.Common then
-			self.IconBorder:SetAtlas("Professions-Slot-Frame", TextureKitConstants.IgnoreAtlasSize);
-		elseif quality == Enum.ItemQuality.Uncommon then
-			self.IconBorder:SetAtlas("Professions-Slot-Frame-Green", TextureKitConstants.IgnoreAtlasSize);
-		elseif quality == Enum.ItemQuality.Rare then
-			self.IconBorder:SetAtlas("Professions-Slot-Frame-Blue", TextureKitConstants.IgnoreAtlasSize);
-		elseif quality == Enum.ItemQuality.Epic then
-			self.IconBorder:SetAtlas("Professions-Slot-Frame-Epic", TextureKitConstants.IgnoreAtlasSize);
-		elseif quality == Enum.ItemQuality.Legendary then
-			self.IconBorder:SetAtlas("Professions-Slot-Frame-Legendary", TextureKitConstants.IgnoreAtlasSize);
+		local atlasData = ColorManager.GetAtlasDataForProfessionsItemQuality(quality);
+		if atlasData.atlas then
+			self.IconBorder:SetAtlas(atlasData.atlas, TextureKitConstants.IgnoreAtlasSize);
+
+			if atlasData.overrideColor then
+				self.IconBorder:SetVertexColor(atlasData.overrideColor.r, atlasData.overrideColor.g, atlasData.overrideColor.b);
+			else
+				self.IconBorder:SetVertexColor(1, 1, 1);
+			end
 		end
 		self.IconBorder:Show();
 	end

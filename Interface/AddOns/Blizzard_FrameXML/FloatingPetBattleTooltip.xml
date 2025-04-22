@@ -1,6 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
-	<Script file="FloatingPetBattleTooltip.lua"/>
 	<Frame name="FloatingPetBattleAbilityTooltip" inherits="SharedPetBattleAbilityTooltipTemplate" movable="true" toplevel="true">
 		<Anchors>
 			<Anchor point="BOTTOM" x="0" y="80"/>

@@ -4,6 +4,7 @@
 ## LoadOnDemand: 1
 ## SavedVariables: g_auctionHouseSortsBySearchContext
 ## SavedVariablesPerCharacter: g_activeBidAuctionIDs
+## Dependencies: Blizzard_Colors, Blizzard_HelpPlate
 ## AllowLoad: game
 ## AllowLoadGameType: mainline
 Shared\Blizzard_AuctionHouseUtil.lua

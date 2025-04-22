@@ -60,5 +60,5 @@
 	</Frame>
 
 
-	<Frame name="UIWidgetContainerTemplate" virtual="true" inherits="UIWidgetContainerNoResizeTemplate, ResizeLayoutFrame" mixin="UIWidgetContainerMixin"/>
+	<Frame name="UIWidgetContainerTemplate" virtual="true" inherits="UIWidgetContainerNoResizeTemplate, ResizeLayoutFrame" mixin="UIWidgetContainerResizeMixin"/>
 </Ui>

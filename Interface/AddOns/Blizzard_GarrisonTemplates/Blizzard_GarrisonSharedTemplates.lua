@@ -1619,7 +1619,11 @@ end
 
 function GarrisonFollower_DisplayUpgradeConfirmation(followerInfo, upgradeType)
 	local text;
-	local followerName = FOLLOWER_QUALITY_COLORS[followerInfo.quality].hex..followerInfo.name..FONT_COLOR_CODE_CLOSE;
+	local followerName = followerInfo.name;
+	local colorData = ColorManager.GetColorDataForFollowerQuality(followerInfo.quality);
+	if colorData then
+		followerName = colorData.hex..followerInfo.name..FONT_COLOR_CODE_CLOSE;
+	end
 
 	if ( upgradeType == "CONFIRM_FOLLOWER_TEMPORARY_ABILITY" ) then
 		text = followerName;
@@ -2307,9 +2311,12 @@ function GarrisonFollowerTabMixin:ShowFollower(followerID, followerList)
 	if(portraitFrame) then
 		GarrisonMissionPortrait_SetFollowerPortrait(portraitFrame, followerInfo);
 	end
+
 	self.Name:SetText(followerInfo.name);
-	local color = FOLLOWER_QUALITY_COLORS[followerInfo.quality];
-	self.Name:SetVertexColor(color.r, color.g, color.b);
+	local colorData = ColorManager.GetColorDataForFollowerQuality(followerInfo.quality);
+	if colorData then
+		self.Name:SetVertexColor(colorData.r, colorData.g, colorData.b);
+	end
 
 	if (followerInfo.isTroop) then
 		self.DurabilityFrame:Show();
@@ -2349,8 +2356,10 @@ function GarrisonFollowerTabMixin:ShowFollower(followerID, followerList)
 		self.AbilitiesFrame.SpecializationLabel:SetShown(false);
 		self:UpdateCombatantStats(followerInfo);
 		self:UpdateAutoSpellAbilities(followerInfo);
-		local commonColoring = FOLLOWER_QUALITY_COLORS[Enum.GarrFollowerQuality.Common];
-		self.Name:SetVertexColor(commonColoring.r, commonColoring.g, commonColoring.b);
+		colorData = ColorManager.GetColorDataForFollowerQuality(Enum.GarrFollowerQuality.Common);
+		if colorData then
+			self.Name:SetVertexColor(colorData.r, colorData.g, colorData.b);
+		end
 	end
 
 	-- gear	/ source

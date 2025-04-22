@@ -31,7 +31,7 @@
 					<Anchor point="TOPLEFT" x="-20" y="20"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="MainHelpPlateButtonTooltipText" value="EDIT_MODE_HELPTIP_BUTTON_TOOLTIP" type="global"/>
+					<KeyValue key="mainHelpPlateButtonTooltipText" value="EDIT_MODE_HELPTIP_BUTTON_TOOLTIP" type="global"/>
 				</KeyValues>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
@@ -344,6 +344,13 @@
 									<KeyValue key="labelText" value="HUD_EDIT_MODE_ENCOUNTER_BAR_LABEL" type="global"/>
 									<KeyValue key="category" value="EditModeManagerOptionsCategory.Combat" type="global"/>
 									<KeyValue key="advancedLayoutIndex" value="7" type="number"/>
+								</KeyValues>
+							</Frame>
+							<Frame parentKey="CooldownViewer" inherits="EditModeManagerSettingCheckButtonTemplate">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_COOLDOWN_VIEWER_LABEL" type="global"/>
+									<KeyValue key="category" value="EditModeManagerOptionsCategory.Combat" type="global"/>
+									<KeyValue key="advancedLayoutIndex" value="8" type="number"/>
 								</KeyValues>
 							</Frame>
 

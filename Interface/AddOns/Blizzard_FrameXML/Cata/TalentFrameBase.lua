@@ -6,7 +6,6 @@ MAX_NUM_TALENTS = 28;
 PLAYER_TALENTS_PER_TIER = 5;
 PET_TALENTS_PER_TIER = 3;
 
-DEFAULT_TALENT_SPEC = "spec1";
 DEFAULT_TALENT_TAB = 1;
 
 TALENT_BUTTON_SIZE_DEFAULT = 32;
@@ -17,9 +16,6 @@ INITIAL_TALENT_OFFSET_Y_DEFAULT = 20;
 TALENT_GOLD_BORDER_WIDTH = 5;
 
 TALENT_HYBRID_ICON = "Interface\\Icons\\Ability_DualWieldSpecialization";
-
-
-
 
 local min = min;
 local max = max;

@@ -24,17 +24,17 @@ end
 
 function SpellBookFrameTutorialsMixin:ShowHelpPlates()
 	self:UpdateHelpPlates();
-	HelpPlate_Show(SpellBookFrame_HelpPlates, self, self.HelpPlateButton);
+	HelpPlate.Show(SpellBookFrame_HelpPlates, self, self.HelpPlateButton);
 end
 
 function SpellBookFrameTutorialsMixin:HideHelpPlates(userToggled)
 	if self:AreHelpPlatesShowing() then
-		HelpPlate_Hide(userToggled);
+		HelpPlate.Hide(userToggled);
 	end
 end
 
 function SpellBookFrameTutorialsMixin:AreHelpPlatesShowing()
-	return HelpPlate_IsShowing(SpellBookFrame_HelpPlates);
+	return HelpPlate.IsShowingHelpInfo(SpellBookFrame_HelpPlates);
 end
 
 function SpellBookFrameTutorialsMixin:ToggleHelpPlates()
@@ -48,7 +48,7 @@ end
 function SpellBookFrameTutorialsMixin:UpdateHelpPlates()
 	-- Scale multiplier required to convert positions relative to this frame's scale to be relative to HelpPlate's scale
 	-- Particularly needed because PlayerSpells uses "checkFit" UIPanel setting which adjusts its scale
-	local relativeScale = self:GetEffectiveScale() / HelpPlate_GetEffectiveScale();
+	local relativeScale = self:GetEffectiveScale() / HelpPlate.GetEffectiveScale();
 
 	local width = self.isMinimized and self.minimizedWidth or self.maximizedWidth;
 	SpellBookFrame_HelpPlates.FrameSize = { width = width * relativeScale, height = self:GetHeight() * relativeScale };

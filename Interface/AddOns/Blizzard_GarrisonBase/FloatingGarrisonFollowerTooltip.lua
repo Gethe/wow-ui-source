@@ -377,10 +377,14 @@ end
 function GarrisonFollowerTooltipTemplate_SetShipyardFollower(tooltipFrame, data, xpWidth)
 	tooltipFrame.garrisonFollowerID = data.garrisonFollowerID;
 	tooltipFrame.name = data.name;
-	
-	local color = FOLLOWER_QUALITY_COLORS[data.quality];
+
 	tooltipFrame.Name:SetText(data.name);
-	tooltipFrame.Name:SetTextColor(color.r, color.g, color.b);
+
+	local colorData = ColorManager.GetColorDataForFollowerQuality(data.quality);
+	if colorData then
+		tooltipFrame.Name:SetTextColor(colorData.r, colorData.g, colorData.b);
+	end
+
 	local bottomWidget = tooltipFrame.Name;
 	if ( data.spec ) then
 		local classSpecName = C_Garrison.GetFollowerClassSpecName(data.garrisonFollowerID);
@@ -655,12 +659,22 @@ function FloatingGarrisonMission_Show(garrMissionID, garrMissionDBID)
 			end
 
 			if (reward.quality) then
-				rewardText = rewardText..ITEM_QUALITY_COLORS[reward.quality + 1].hex..reward.title..FONT_COLOR_CODE_CLOSE;
-			elseif (reward.itemID) then 
+				local colorData = ColorManager.GetColorDataForItemQuality(reward.quality + 1);
+				if colorData then
+					rewardText = rewardText..colorData.hex..reward.title..FONT_COLOR_CODE_CLOSE;
+				else
+					rewardText = rewardText..reward.title;
+				end
+			elseif (reward.itemID) then
 				local itemName, _, itemRarity, _, _, _, _, _, _, itemTexture = C_Item.GetItemInfo(reward.itemID);
 				if itemName then
-					rewardText = rewardText..ITEM_QUALITY_COLORS[itemRarity].hex..itemName..FONT_COLOR_CODE_CLOSE;
-				else  
+					local colorData = ColorManager.GetColorDataForItemQuality(itemRarity);
+					if colorData then
+						rewardText = rewardText..colorData.hex..itemName..FONT_COLOR_CODE_CLOSE;
+					else
+						rewardText = rewardText..itemName;
+					end
+				else
 					rewardText = RED_FONT_COLOR:GenerateHexColorMarkup()..RETRIEVING_DATA..FONT_COLOR_CODE_CLOSE;
 				end
 			elseif (reward.followerXP) then

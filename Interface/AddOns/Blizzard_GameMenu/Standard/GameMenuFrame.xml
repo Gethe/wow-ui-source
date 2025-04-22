@@ -14,5 +14,12 @@
 			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>
 		</Scripts>
+		<Frames>
+			<Frame parentKey="NewOptionsFrame" inherits="NewFeatureLabelTemplate" scale="0.8">
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Frame>
+		</Frames>
 	</Frame>
 </Ui>

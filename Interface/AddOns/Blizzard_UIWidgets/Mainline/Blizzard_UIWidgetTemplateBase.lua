@@ -349,24 +349,17 @@ function UIWidgetBaseCurrencyTemplateMixin:Setup(widgetContainer, currencyInfo, 
 	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer, tooltipLoc);
 	self:SetOverrideNormalFontColor(overrideFontColor);
 
-	local function SetUpFontString(fontString, text)
+	local function SetUpFontString(fontstring, text)
 		if customFont then
-			fontString:SetText(text);
-			fontString:SetFontObject(customFont);
+			fontstring:SetText(text);
+			fontstring:SetFontObject(customFont);
 		else
 			local hAlignType = Enum.WidgetTextHorizontalAlignmentType.Left;
-			fontString:Setup(text, currencyInfo.textFontType, currencyInfo.textSizeType, enabledState, hAlignType);
+			fontstring:Setup(text, currencyInfo.textFontType, currencyInfo.textSizeType, enabledState, hAlignType);
 		end
 	end
 
-	SetUpFontString(self.Text, currencyInfo.text);
-
-	local showFlash = currencyInfo.updateAnimType == Enum.UIWidgetUpdateAnimType.Flash;
-	if showFlash and self.previousText and self.previousText ~= currencyInfo.text then
-		self.Flash:Play();
-	end
-
-	self.previousText = currencyInfo.text;
+	WidgetUtil.UpdateTextWithAnimation(self, GenerateClosure(SetUpFontString, self.Text), currencyInfo.updateAnimType, currencyInfo.text);
 
 	self:SetTooltip(currencyInfo.tooltip, GetTextColorForEnabledState(tooltipEnabledState or enabledState));
 
@@ -440,18 +433,18 @@ local spellBorderColorFromTintValue = {
 	[Enum.SpellDisplayBorderColor.Blue] = RARE_BLUE_COLOR,
 }
 
-local spellBorderFromColorValue = { 
-	[Enum.SpellDisplayBorderColor.White] = "wowlabs-in-world-item-common",
-	[Enum.SpellDisplayBorderColor.Orange] = "wowlabs-in-world-item-legendary",
-	[Enum.SpellDisplayBorderColor.Purple] = "wowlabs-in-world-item-epic",
-	[Enum.SpellDisplayBorderColor.Green] = "wowlabs-in-world-item-uncommon",
-	[Enum.SpellDisplayBorderColor.Blue] = "wowlabs-in-world-item-rare",
-}
-
 local worldLootObjectTypeIconMap = {
 	[Enum.InventoryType.IndexEquipablespellOffensiveType] = "plunderstorm-icon-offensive",
 	[Enum.InventoryType.IndexEquipablespellUtilityType] = "plunderstorm-icon-utility",
 	[Enum.InventoryType.IndexNonEquipType] = "plunderstorm-icon-item",
+};
+
+local spellDisplayItemQualities = {
+	[Enum.SpellDisplayBorderColor.White] = Enum.ItemQuality.Common,
+	[Enum.SpellDisplayBorderColor.Green] = Enum.ItemQuality.Uncommon,
+	[Enum.SpellDisplayBorderColor.Blue] = Enum.ItemQuality.Rare,
+	[Enum.SpellDisplayBorderColor.Purple] = Enum.ItemQuality.Epic,
+	[Enum.SpellDisplayBorderColor.Orange] = Enum.ItemQuality.Legendary
 };
 
 local function GetWorldLootObjectTypeAtlas(worldLootobjectInfo)
@@ -479,6 +472,11 @@ function UIWidgetBaseSpellTemplateMixin:OnEvent(event, ...)
 		-- We know the info will be updated but the exact timing is not predictable.
 		self.updateTimeRemaining = 1;
 		self:SetScript("OnUpdate", self.OnUpdate);
+	elseif event == "COLOR_OVERRIDE_UPDATED" then
+		local overrideType = ...;
+		self:SetIconAndBorderDisplay();
+	elseif event == "COLOR_OVERRIDES_RESET" then
+		self:SetIconAndBorderDisplay();
 	end
 end
 
@@ -500,10 +498,11 @@ function UIWidgetBaseSpellTemplateMixin:ShouldContinueOnUpdate()
 end
 
 function UIWidgetBaseSpellTemplateMixin:Setup(widgetContainer, spellInfo, width, textureKit, tooltipLoc)
+	self.spellInfo = spellInfo;
+
 	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer, tooltipLoc);
 	SetupTextureKitsFromRegionInfo(textureKit, self, spellTextureKitRegionInfo);
 	local hasAmountBorderTexture = self.AmountBorder:IsShown();
-	local hasBorderTexture = self.Border:IsShown();
 
 	self.StackCount:ClearAllPoints();
 	if hasAmountBorderTexture then
@@ -512,55 +511,7 @@ function UIWidgetBaseSpellTemplateMixin:Setup(widgetContainer, spellInfo, width,
 		self.StackCount:SetPoint("BOTTOMRIGHT", self.Icon, -2, 2);
 	end
 
-	local spellData = C_Spell.GetSpellInfo(spellInfo.spellID);
-	self.Icon:SetTexture(spellData and spellData.iconID or [[Interface\Icons\INV_Misc_QuestionMark]]);
-	self.Icon:SetDesaturated(spellInfo.enabledState == Enum.WidgetEnabledState.Disabled);
-	local iconSize = GetWidgetIconSize(spellInfo.iconSizeType);
-	self.Icon:SetSize(iconSize, iconSize);
-
-	self.Border:ClearAllPoints(); 
-	self.Border:SetPoint("TOPLEFT", self.Icon, 0, 0); 
-	self.Border:SetPoint("BOTTOMRIGHT", self.Icon, 0, 0); 
-
-	self:UpdateTypeIcon();
-
-	local isBuff = spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Buff; 
-	if spellInfo.borderColor ~= Enum.SpellDisplayBorderColor.None then
-		local parent = self:GetParent();
-		local attachedUnit = parent and parent.attachedUnit;
-		if attachedUnit and isBuff and C_WorldLootObject.IsWorldLootObject(attachedUnit) and spellBorderFromColorValue[spellInfo.borderColor] then
-			local borderTexture = spellBorderFromColorValue[spellInfo.borderColor];
-			local offsetX = 4; 
-			local offsetY = 4; 
-			self.Border:SetAtlas(borderTexture, true);
-			self.Border:SetPoint("TOPLEFT", self.Icon, -offsetX, offsetY); 
-			self.Border:SetPoint("BOTTOMRIGHT", self.Icon, offsetX, -offsetY); 
-			hasBorderTexture = true; 
-		else
-			if not hasBorderTexture then
-				if isBuff then
-					self.Border:SetAtlas("dressingroom-itemborder-small-white", false);
-					hasBorderTexture = true;
-				elseif spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Circular then
-					local offsetX, offsetY = 0, 0; 
-					if(textureKit == "itembelt-frame") then
-						offsetX = 4; 
-						offsetY = 4; 
-					end 
-
-					self.Border:SetAtlas(textureKit or "Artifacts-PerkRing-Final", false);
-					self.Border:ClearAllPoints(); 
-					self.Border:SetPoint("TOPLEFT", self.Icon, -offsetX, offsetY); 
-					self.Border:SetPoint("BOTTOMRIGHT", self.Icon, offsetX, -offsetY); 
-					hasBorderTexture = true;
-				end
-			end
-		end
-	end
-
-	if not hasBorderTexture then
-		self.Border:SetAtlas("UI-Frame-IconBorder", false);
-	end
+	self:SetIconAndBorderDisplay();
 
 	local iconWidth = self.Icon:GetWidth();
 	local textWidth = 0;
@@ -571,12 +522,13 @@ function UIWidgetBaseSpellTemplateMixin:Setup(widgetContainer, spellInfo, width,
 	self.Text:SetWidth(textWidth);
 	self.Text:SetHeight(0);
 
-	local textShown = ( spellInfo.textShownState == Enum.SpellDisplayTextShownStateType.Shown );
+	local textShown = ( self.spellInfo.textShownState == Enum.SpellDisplayTextShownStateType.Shown );
 	self.Text:SetShown(textShown);
 
 	if textShown then
-		local text = (spellInfo.text == "") and spellData.name or spellInfo.text;
-		self.Text:Setup(text, spellInfo.textFontType, spellInfo.textSizeType, spellInfo.enabledState, spellInfo.hAlignType);
+		local spellData = C_Spell.GetSpellInfo(self.spellInfo.spellID);
+		local text = (self.spellInfo.text == "" and spellData) and spellData.name or self.spellInfo.text;
+		self.Text:Setup(text, self.spellInfo.textFontType, self.spellInfo.textSizeType, self.spellInfo.enabledState, self.spellInfo.hAlignType);
 
 		if textWidth == 0 then
 			textWidth = self.Text:GetWidth();
@@ -588,46 +540,128 @@ function UIWidgetBaseSpellTemplateMixin:Setup(widgetContainer, spellInfo, width,
 		end
 	end
 
-	if spellInfo.stackDisplay > 0 then
+	if self.spellInfo.stackDisplay > 0 then
 		self.StackCount:Show();
-		self.StackCount:SetText(spellInfo.stackDisplay);
+		self.StackCount:SetText(self.spellInfo.stackDisplay);
 	else
 		self.StackCount:Hide();
 		self.AmountBorder:Hide();
 	end
 
-	local showBorder = (spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Buff) or ((spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Circular) and hasBorderTexture);
+	self.DebuffBorder:SetShown(self.spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Debuff);
+	self.IconMask:SetShown(self.spellInfo.iconDisplayType ~= Enum.SpellDisplayIconDisplayType.Circular);
+	self.CircleMask:SetShown(self.spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Circular);
+	self.EarnedCheck:SetShown(self.spellInfo.showAsEarned);
 
-	if spellInfo.tint ~= Enum.SpellDisplayTint.None then
-		if spellInfo.tint == Enum.SpellDisplayTint.Red then
+	local widgetHeight = math.max(self.Icon:GetHeight(), self.Text:GetHeight());
+	self:SetEnabledState(self.spellInfo.enabledState);
+	self.spellID = self.spellInfo.spellID;
+	self:SetTooltip(self.spellInfo.tooltip);
+
+	self:SetWidth(math.max(iconWidth + textWidth, 1));
+	self:SetHeight(math.max(widgetHeight, 1));
+end
+
+function UIWidgetBaseSpellTemplateMixin:SetIconAndBorderDisplay()
+	if not self.spellInfo then
+		return;
+	end
+
+	local parent = self:GetParent();
+	local attachedUnit = parent and parent.attachedUnit;
+	local isWorldLootObject = attachedUnit and C_WorldLootObject.IsWorldLootObject(attachedUnit);
+	if isWorldLootObject and not self.colorOverrideEventsRegistered then
+		self:RegisterEvent("COLOR_OVERRIDE_UPDATED");
+		self:RegisterEvent("COLOR_OVERRIDES_RESET");
+		self.colorOverrideEventsRegistered = true;
+	elseif not isWorldLootObject and self.colorOverrideEventsRegistered then
+		self:UnregisterEvent("COLOR_OVERRIDE_UPDATED");
+		self:UnregisterEvent("COLOR_OVERRIDES_RESET");
+		self.colorOverrideEventsRegistered = false;
+	end
+
+	local hasBorderTexture = self.Border:IsShown();
+	local spellData = C_Spell.GetSpellInfo(self.spellInfo.spellID);
+
+	self.Icon:SetTexture(spellData and spellData.iconID or [[Interface\Icons\INV_Misc_QuestionMark]]);
+	self.Icon:SetDesaturated(self.spellInfo.enabledState == Enum.WidgetEnabledState.Disabled);
+
+	local iconSize = GetWidgetIconSize(self.spellInfo.iconSizeType);
+	self.Icon:SetSize(iconSize, iconSize);
+
+	self.Border:ClearAllPoints();
+	self.Border:SetPoint("TOPLEFT", self.Icon, 0, 0);
+	self.Border:SetPoint("BOTTOMRIGHT", self.Icon, 0, 0);
+
+	self:UpdateTypeIcon();
+
+	local isBuff = self.spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Buff;
+
+	local quality = spellDisplayItemQualities[self.spellInfo.borderColor];
+	local atlasData = ColorManager.GetAtlasDataForSpellDisplayColor(quality);
+	if self.spellInfo.borderColor ~= Enum.SpellDisplayBorderColor.None then
+		if attachedUnit and isBuff and isWorldLootObject and atlasData.atlas then
+			local offsetX = 4;
+			local offsetY = 4;
+			self.Border:SetAtlas(atlasData.atlas, true);
+			if atlasData.overrideColor then
+				self.Border:SetVertexColor(atlasData.overrideColor.r, atlasData.overrideColor.g, atlasData.overrideColor.b);
+			end
+
+			self.Border:SetPoint("TOPLEFT", self.Icon, -offsetX, offsetY);
+			self.Border:SetPoint("BOTTOMRIGHT", self.Icon, offsetX, -offsetY);
+			hasBorderTexture = true;
+		elseif not hasBorderTexture then
+			if isBuff then
+				self.Border:SetAtlas("dressingroom-itemborder-small-white", false);
+				self.Border:SetVertexColor(WHITE_FONT_COLOR:GetRGB());
+
+				hasBorderTexture = true;
+			elseif self.spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Circular then
+				local offsetX, offsetY = 0, 0;
+				if(textureKit == "itembelt-frame") then
+					offsetX = 4;
+					offsetY = 4;
+				end
+
+				self.Border:SetAtlas(textureKit or "Artifacts-PerkRing-Final", false);
+				self.Border:SetVertexColor(WHITE_FONT_COLOR:GetRGB());
+
+				self.Border:ClearAllPoints();
+				self.Border:SetPoint("TOPLEFT", self.Icon, -offsetX, offsetY); 
+				self.Border:SetPoint("BOTTOMRIGHT", self.Icon, offsetX, -offsetY); 
+				hasBorderTexture = true;
+			end
+		end
+	end
+
+	if not hasBorderTexture then
+		self.Border:SetAtlas("UI-Frame-IconBorder", false);
+	end
+
+	local showBorder = (self.spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Buff) or ((self.spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Circular) and hasBorderTexture);
+
+	if self.spellInfo.tint ~= Enum.SpellDisplayTint.None then
+		if self.spellInfo.tint == Enum.SpellDisplayTint.Red then
 			self.Icon:SetVertexColor(1, 0, 0);
 			if showBorder then
 				self.Border:SetVertexColor(1, 0, 0);
 			end
 		end
 	else
-		local color = spellBorderColorFromTintValue[spellInfo.borderColor];
-		self.Icon:SetVertexColor(1, 1, 1);
-		if showBorder and color then
-			self.Border:SetVertexColor(color:GetRGB());
-		elseif showBorder and not color then
-			self.Border:SetVertexColor(1, 1, 1);
+		self.Icon:SetVertexColor(WHITE_FONT_COLOR:GetRGB());
+		-- Only tint if we did not apply a color override.
+		if showBorder and not isWorldLootObject or not atlasData.atlas then
+			local color = spellBorderColorFromTintValue[self.spellInfo.borderColor];
+			if color then
+				self.Border:SetVertexColor(color:GetRGB());
+			else
+				self.Border:SetVertexColor(WHITE_FONT_COLOR:GetRGB());
+			end
 		end
 	end
 
 	self.Border:SetShown(showBorder);
-	self.DebuffBorder:SetShown(spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Debuff);
-	self.IconMask:SetShown(spellInfo.iconDisplayType ~= Enum.SpellDisplayIconDisplayType.Circular);
-	self.CircleMask:SetShown(spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Circular);
-	self.EarnedCheck:SetShown(spellInfo.showAsEarned);
-	
-	local widgetHeight = math.max(self.Icon:GetHeight(), self.Text:GetHeight());
-	self:SetEnabledState(spellInfo.enabledState);
-	self.spellID = spellInfo.spellID;
-	self:SetTooltip(spellInfo.tooltip);
-
-	self:SetWidth(math.max(iconWidth + textWidth, 1));
-	self:SetHeight(math.max(widgetHeight, 1));
 end
 
 function UIWidgetBaseSpellTemplateMixin:UpdateTypeIcon()
@@ -698,9 +732,17 @@ end
 
 function UIWidgetBaseSpellTemplateMixin:OnReset()
 	self:ClearOverrideNormalFontColor();
+	self.Border:SetVertexColor(WHITE_FONT_COLOR:GetRGB());
+
 	if self.effectController then
 		self.effectController:CancelEffect();
 		self.effectController = nil;
+	end
+
+	if self.colorOverrideEventsRegistered then
+		self:UnregisterEvent("COLOR_OVERRIDE_UPDATED");
+		self:UnregisterEvent("COLOR_OVERRIDES_RESET");
+		self.colorOverrideEventsRegistered = false;
 	end
 end
 
@@ -764,6 +806,7 @@ function UIWidgetBaseStatusBarTemplateMixin:SanitizeAndSetStatusBarValues(barInf
 	self.value = barInfo.barValue;
 	self.barMin = barInfo.barMin;
 	self.barMax = barInfo.barMax;
+	self.partitionValues = barInfo.partitionValues;
 
 	if self.barMin > 0 and self.barMin == self.barMax and self.value == self.barMax then
 		-- If all 3 values are the same and greater than 0, show the bar as full
@@ -796,6 +839,10 @@ end
 function UIWidgetBaseStatusBarTemplateMixin:Setup(widgetContainer, barInfo, tooltipLoc)
 	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer, tooltipLoc);
 
+	self.frameTextureKit = barInfo.frameTextureKit;
+	self.textureKit = barInfo.textureKit or "white";
+
+	self:UpdateBarFill();
 	self:SanitizeAndSetStatusBarValues(barInfo);
 	self:SetMinMaxValues(self.barMin, self.barMax);
 	self:InitPartitions(barInfo.partitionValues, barInfo.frameTextureKit);
@@ -838,9 +885,44 @@ function UIWidgetBaseStatusBarTemplateMixin:UpdateBar(elapsed)
 	end
 end
 
+local fillTextureKitFormatString = "%s-fill-%s";
+local textureKitToBarFillPartitions = {
+	["ui-frame-dastardlyduos-progressbar"] = { "Green", "Yellow", "Orange", "Red" },
+};
+
+function UIWidgetBaseStatusBarTemplateMixin:GetBarFillTextureKit(displayedValue)
+	local barFillPartitions = textureKitToBarFillPartitions[self.frameTextureKit];
+	if displayedValue and barFillPartitions then
+		for i, partitionValue in ipairs(self.partitionValues) do
+			if displayedValue > partitionValue then
+				return barFillPartitions[i] or self.textureKit;
+			end
+		end
+
+		return barFillPartitions[#barFillPartitions] or self.textureKit;
+	end
+
+	return self.textureKit;
+end
+
+function UIWidgetBaseStatusBarTemplateMixin:UpdateBarFill(displayedValue)
+	if self.frameTextureKit then
+		local textureKit = self:GetBarFillTextureKit(displayedValue);
+		local fillAtlas = fillTextureKitFormatString:format(self.frameTextureKit, textureKit);
+		local fillAtlasInfo = C_Texture.GetAtlasInfo(fillAtlas);
+		if fillAtlasInfo and fillAtlas ~= self.lastFillAtlas then
+			self:SetStatusBarTexture(fillAtlas);
+			self:SetHeight(fillAtlasInfo.height);
+			self:GetStatusBarTexture():SetHorizTile(fillAtlasInfo.tilesHorizontally);
+			self.lastFillAtlas = fillAtlas;
+		end
+	end
+end
+
 function UIWidgetBaseStatusBarTemplateMixin:DisplayBarValue()
 	self:SetValue(self.displayedValue);
 	self:SetBarText(math.ceil(self.displayedValue));
+	self:UpdateBarFill(self.displayedValue);
 	self:UpdatePartitions(self.displayedValue);
 
 	if self.Spark then
@@ -1012,7 +1094,7 @@ function UIWidgetBaseTextureAndTextTemplateMixin:OnLoad()
 	UIWidgetTemplateTooltipFrameMixin.OnLoad(self);
 end
 
-function UIWidgetBaseTextureAndTextTemplateMixin:Setup(widgetContainer, text, tooltip, frameTextureKit, textureKit, textSizeType, layoutIndex, tooltipLoc)
+function UIWidgetBaseTextureAndTextTemplateMixin:Setup(widgetContainer, text, tooltip, frameTextureKit, textureKit, textSizeType, layoutIndex, tooltipLoc, textFormatType, updateAnimType)
 	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer, tooltipLoc);
 	self.layoutIndex = layoutIndex;
 
@@ -1031,7 +1113,14 @@ function UIWidgetBaseTextureAndTextTemplateMixin:Setup(widgetContainer, text, to
 
 	self.Text:SetFontObject(GetTextSizeFont(textSizeType));
 
-	self.Text:SetText(text);
+	local function SetText(updatedText)
+		local finalText = WidgetUtil.FormatTextByType(updatedText, textFormatType);
+		self.Text:SetText(finalText);
+		self:MarkDirty();
+	end
+
+	WidgetUtil.UpdateTextWithAnimation(self, SetText, updateAnimType, text);
+
 	self:SetTooltip(tooltip);
 	SetupTextureKitOnFrame(frameTextureKit, self.Background, bgTextureKitFmt, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 	SetupTextureKitOnFrame(textureKit, self.Foreground, fgTextureKitFmt, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
@@ -1432,9 +1521,12 @@ local function GetJustifyH(hAlignType)
 	end
 end
 
-function UIWidgetBaseTextMixin:Setup(text, fontType, textSizeType, enabledState, hAlignType)
+function UIWidgetBaseTextMixin:Setup(text, fontType, textSizeType, enabledState, hAlignType, textFormatType)
 	self:SetFontObject(GetTextFont(fontType, textSizeType));
-	self:SetJustifyH(GetJustifyH(hAlignType))
+	self:SetJustifyH(GetJustifyH(hAlignType));
+
+	textFormatType = textFormatType or Enum.UIWidgetTextFormatType.None;
+	text = WidgetUtil.FormatTextByType(text, textFormatType);
 	self:SetText(text);
 
 	if enabledState then
@@ -1513,7 +1605,12 @@ end
 function UIWidgetBaseItemTemplateMixin:Setup(widgetContainer, itemInfo, widgetSizeSetting, tooltipLoc)
 	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer, tooltipLoc);
 
+	self.itemID = itemInfo.itemID;
+	self.tooltipEnabled = itemInfo.tooltipEnabled;
+	local itemName, _, quality, _, _, _, _, _, _, itemTexture = C_Item.GetItemInfo(self.itemID);
+	self.quality = quality;
 	local iconSize = GetWidgetIconSize(itemInfo.iconSizeType);
+
 	self.Icon:SetSize(iconSize, iconSize);
 	self.IconBorder:SetSize(iconSize, iconSize);
 	self.IconOverlay:SetSize(iconSize, iconSize);
@@ -1521,29 +1618,23 @@ function UIWidgetBaseItemTemplateMixin:Setup(widgetContainer, itemInfo, widgetSi
 
 	local earnedCheckSize = GetEarnedCheckSize(itemInfo.iconSizeType);
 	self.EarnedCheck:SetSize(earnedCheckSize, earnedCheckSize);
+	self.EarnedCheck:SetShown(itemInfo.showAsEarned);
 
 	self.Count:SetFontObject(GetItemCountTextSizeFont(itemInfo.iconSizeType));
 
-	local itemName, _, quality, _, _, _, _, _, _, itemTexture = C_Item.GetItemInfo(itemInfo.itemID);
 	self.Icon:SetTexture(itemTexture);
-	SetItemButtonQuality(self, quality, itemInfo.itemID);
 	SetItemButtonCount(self, itemInfo.stackCount or 1);
+	self:SetDisplayColor();
 
-	local qualityColor = ITEM_QUALITY_COLORS[quality];
-	self.ItemName:SetTextColor(qualityColor.r, qualityColor.g, qualityColor.b);
 	local itemNameEnabledState = GetOverrideValueIfActive(itemInfo.itemNameCustomColorOverrideState, itemInfo.itemNameCustomColor);
-
-	self.EarnedCheck:SetShown(itemInfo.showAsEarned);
-
 	local LEFT_ALIGN = Enum.WidgetTextHorizontalAlignmentType.Left;
-
 	local widgetWidth, widgetHeight;
 	if itemInfo.textDisplayStyle == Enum.ItemDisplayTextDisplayStyle.WorldQuestReward then
 		self.ItemName:Hide()
 		self.InfoText:Hide();
 		self.NameFrame:Hide();
 
-		self:ShowEmbeddedTooltip(itemInfo.itemID);
+		self:ShowEmbeddedTooltip(self.itemID);
 
 		widgetWidth = iconSize + self.Tooltip:GetWidth() + 10;
 		widgetHeight = math.max(iconSize, self.Tooltip:GetHeight());
@@ -1610,12 +1701,20 @@ function UIWidgetBaseItemTemplateMixin:Setup(widgetContainer, itemInfo, widgetSi
 		end
 	end
 
-	self.itemID = itemInfo.itemID;
-	self.tooltipEnabled = itemInfo.tooltipEnabled;
 	self:SetTooltip(itemInfo.overrideTooltip);
-
 	self:SetWidth(widgetWidth);
 	self:SetHeight(widgetHeight);
+
+	-- Note this is not registering for COLOR_OVERRIDE events, beacuse this UI references data that would only be up to date after that event fires.
+	EventRegistry:RegisterCallback("ColorManager.OnColorDataUpdated", self.SetDisplayColor, self);
+end
+
+function UIWidgetBaseItemTemplateMixin:SetDisplayColor()
+	SetItemButtonQuality(self, self.quality, self.itemID);
+	local colorData = ColorManager.GetColorDataForItemQuality(self.quality);
+	if colorData then
+		self.ItemName:SetTextColor(colorData.r, colorData.g, colorData.b);
+	end
 end
 
 function UIWidgetBaseItemTemplateMixin:OnEnter()
@@ -1636,6 +1735,8 @@ end
 
 function UIWidgetBaseItemTemplateMixin:OnReset()
 	self:HideEmbeddedTooltip();
+
+	EventRegistry:UnregisterCallback("ColorManager.OnColorDataUpdated", self);
 end
 
 UIWidgetBaseIconTemplateMixin = CreateFromMixins(UIWidgetTemplateTooltipFrameMixin);

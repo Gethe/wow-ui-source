@@ -1,0 +1,87 @@
+## Title: Blizzard_UIPanels_Game
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_GameTooltip, Blizzard_UIPanelTemplates, Blizzard_FrameXML, Blizzard_CharacterFrame, Blizzard_ActionBar, Blizzard_Minimap, Blizzard_CastingBar, Blizzard_UnitFrame, Blizzard_AccessibilityTemplates, Blizzard_HelpPlate
+## LoadFirst: 1
+## AllowLoad: game
+## AllowLoadGameType: mists
+Classic\SpellBookFrame.lua
+Cata\SpellBookProfessions.lua
+Mists\SpellBookFrame.lua
+Mists\SpellBookFrame.xml
+Classic\SkillFrame.lua
+Classic\SkillFrame.xml
+Classic\ReputationFrame.lua
+Cata\ReputationFrame.lua
+Cata\ReputationFrame.xml
+Cata\HonorFrame.lua
+Classic\HonorFrame_Shared.lua
+Classic\HonorFrameTemplates.xml
+Cata\HonorFrame.xml
+Wrath\QuestFrameTemplates.xml
+TBC\QuestFrame.lua
+TBC\QuestFrame.xml
+Wrath\QuestPOI.lua
+Wrath\QuestPOI.xml
+Wrath\QuestLogFrame.lua
+Cata\QuestLogFrame.lua
+Cata\QuestLogFrame.xml
+Wrath\QuestInfo.lua
+Wrath\QuestInfo.xml
+Mists\WatchFrame.lua
+Mists\WatchFrame.xml
+TBC\MerchantFrame.lua
+TBC\MerchantFrame.xml
+Classic\TradeFrame.lua
+Classic\TradeFrame.xml
+Wrath\ContainerFrame.lua
+Classic\ContainerFrame_Shared.lua
+Classic\ContainerFrame.xml
+Classic\LootFrame.lua
+Classic\LootFrame.xml
+Classic\ItemTextFrame.lua
+Classic\ItemTextFrame.xml
+Classic\TaxiFrame.lua
+Classic\TaxiFrame.xml
+Classic\ItemRef.lua
+Classic\ItemRef.xml
+Classic\ProductChoice.lua
+Classic\ProductChoice.xml
+Classic\FriendsFrame.lua
+Classic\FriendsFrame.xml
+Classic\RaidFrame.lua
+Wrath\RaidFrame.xml
+Classic\UnitPositionFrameTemplates.lua
+Classic\UnitPositionFrameTemplates.xml
+Shared\WorldMapPOIQuantizer.lua
+Wrath\QuestMapFrame.lua
+Wrath\QuestMapFrame.xml
+Classic\TabardFrame.lua
+Classic\TabardFrame.xml
+Cata\PetStable.lua
+Cata\PetStable.xml
+TBC\BankFrame.lua
+TBC\BankFrame.xml
+Shared\SocialQueue.lua
+Classic\GuildRegistrarFrame.lua
+Classic\GuildRegistrarFrame.xml
+Classic\PetitionFrame.lua
+Classic\PetitionFrame.xml
+Shared\GossipFrameShared.lua
+Shared\GossipFrameShared.xml
+Classic\GossipFrame.lua
+Classic\GossipFrame.xml
+Classic\MailFrame.lua
+Classic\MailFrame.xml
+Wrath\VehicleSeatIndicator.lua
+Wrath\VehicleSeatIndicator.xml
+Classic\RatingMenuFrame.xml
+Classic\PVPFrameBase.lua
+Cata\PVPFrame.lua
+Classic\PVPFrameTemplates.xml
+Cata\PVPFrame.xml
+Classic\ArenaRegistrarFrame.lua
+Classic\ArenaRegistrarFrame.xml
+Shared\PlayerInteractionFrameManager.lua
+Shared\PlayerInteractionFrameManager.xml
+Classic\Localization.lua

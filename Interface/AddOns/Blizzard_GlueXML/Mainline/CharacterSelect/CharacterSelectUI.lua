@@ -475,8 +475,8 @@ function CharacterSelectUIMixin:IsCollectionsActive()
 	return self.CollectionsFrame:IsShown();
 end
 
-function CharacterSelectUIMixin:SetGameEnvironmentEnabled(enabled)
-	self.VisibilityFramesContainer.NavBar:SetGameEnvironmentButtonEnabled(enabled);
+function CharacterSelectUIMixin:SetGameModeSelectionEnabled(enabled)
+	self.VisibilityFramesContainer.NavBar:SetGameModeButtonEnabled(enabled);
 end
 
 function CharacterSelectUIMixin:SetMenuEnabled(enabled)
@@ -702,6 +702,7 @@ function CharacterDeletionDialogMixin:DeleteCharacter()
 	DeleteCharacter(self.characterGuid);
 	self:Hide();
 	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
+	CharacterSelectCharacterFrame:ClearSearch();
 	GlueDialog_Show("CHAR_DELETE_IN_PROGRESS");
 end
 
@@ -736,6 +737,7 @@ function CharacterListEditGroupFrameMixin:OnLoad()
 	end);
 
 	self.EditBox:SetScript("OnTextChanged", function()
+		self.AcceptButton.disabledTooltip = nil;
 		self.AcceptButton:SetEnabled(self.EditBox:GetText() ~= "");
 	end);
 end
@@ -749,13 +751,21 @@ function CharacterListEditGroupFrameMixin:OnHide()
 end
 
 function CharacterListEditGroupFrameMixin:OnAccept()
+	local groupName = self.EditBox:GetText();
+
+	if ShouldCheckWarbandGroupNames() and not IsValidWarbandGroupName(groupName) then
+		self.AcceptButton:SetDisabledState(true, NAME_NOT_AVAILABLE, "ANCHOR_BOTTOMLEFT");
+		self.AcceptButton:OnEnter();
+		return;
+	end
+
 	if self.groupID == nil then
 		-- Save any moves before we add, so characters don't jump back to previous positions.
 		-- We save off the pending action to run after things finish updating.
 		CharacterSelectListUtil.SaveCharacterOrder();
-		CharacterSelectCharacterFrame:SetPendingGroupCreation(self.EditBox:GetText());
+		CharacterSelectCharacterFrame:SetPendingGroupCreation(groupName);
 		CharacterSelectListUtil.GetCharacterListUpdate();
-	elseif UpdateCharacterListGroup(self.groupID, self.EditBox:GetText()) then
+	elseif UpdateCharacterListGroup(self.groupID, groupName) then
 		CharacterSelectCharacterFrame:UpdateCharacterSelection();
 	end
 	self:Hide();

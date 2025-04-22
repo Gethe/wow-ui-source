@@ -52,9 +52,13 @@ function ProfessionsCrafterOrderRewardTooltipMixin:SetReward(reward)
 		end
 	end
 
-	local itemQualityColor = ITEM_QUALITY_COLORS[itemQuality or Enum.ItemQuality.Common];
-	local itemDisplayText = itemQualityColor.color:WrapTextInColorCode(itemName or "");
-	self.RewardName:SetText(itemDisplayText);
+	local colorData = ColorManager.GetColorDataForItemQuality(itemQuality or Enum.ItemQuality.Common);
+	if colorData then
+		local itemDisplayText = colorData.color:WrapTextInColorCode(itemName or "");
+		self.RewardName:SetText(itemDisplayText);
+	else
+		self.RewardName:SetText(itemName or "");
+	end
 
 	self:SetHeight(self.Reward:GetHeight());
 	self:SetWidth(self.Reward:GetWidth() + self.RewardName:GetWidth() + 20);

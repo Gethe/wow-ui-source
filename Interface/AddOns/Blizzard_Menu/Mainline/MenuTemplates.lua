@@ -38,23 +38,6 @@ function WowStyle1DropdownMixin:GetArrowAtlas()
 	return GetWowStyle1ArrowButtonState(self);
 end
 
-function WowStyle1FilterDropdownMixin:GetBackgroundAtlas()
-	if self:IsEnabled() then
-		if self:IsDownOver() then
-			return "common-dropdown-b-button-pressedhover";
-		elseif self:IsOver() then
-			return "common-dropdown-b-button-hover";
-		elseif self:IsDown() then
-			return "common-dropdown-b-button-pressed";
-		elseif self:IsMenuOpen() then	
-			return "common-dropdown-b-button-open";
-		else
-			return "common-dropdown-b-button";
-		end
-	end
-	return "common-dropdown-b-button-disabled";
-end
-
 function WowStyle1ArrowDropdownMixin:OnButtonStateChanged()
 	local atlas = nil;
 	if self.hasShadow then

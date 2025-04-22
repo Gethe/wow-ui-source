@@ -256,7 +256,35 @@
 					</Anchors>
 				</FontString>
 			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="SoftGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="OBJFX_Glow" useAtlasSize="true">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="StarBurst" hidden="false" alpha="0" alphaMode="ADD" atlas="OBJFX_StarBurst" useAtlasSize="true">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.SoftGlow"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="Flash" setToFinalAlpha="true">
+				<Alpha childKey="SoftGlow" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="SoftGlow" startDelay="0.25" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="SoftGlow" duration="0.25" order="1" fromScaleX="0.5" fromScaleY="0.5" toScaleX="0.8" toScaleY="0.8"/>
+				<Alpha childKey="StarBurst" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="StarBurst" startDelay="0.25" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="StarBurst" duration="0.25" order="1" fromScaleX="0.5" fromScaleY="0.5" toScaleX="1" toScaleY="1"/>
+			</AnimationGroup>
+		</Animations>
 	</Frame>
 
 	<Frame name="UIWidgetBaseControlZoneTemplate" inherits="UIWidgetTemplateTooltipFrame, ResizeLayoutFrame" mixin="UIWidgetBaseControlZoneTemplateMixin" virtual="true">

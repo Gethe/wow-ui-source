@@ -29,8 +29,8 @@
 		</Layers>
 
 		<Scripts>
-			<OnLoad method="OnLoad" inherit="prepend"/>
-			<OnEvent method="OnEvent" inherit="prepend"/>
+			<OnLoad method="OnLoad" />
+			<OnEvent method="OnEvent" />
 		</Scripts>
 	</Frame>
 </Ui>

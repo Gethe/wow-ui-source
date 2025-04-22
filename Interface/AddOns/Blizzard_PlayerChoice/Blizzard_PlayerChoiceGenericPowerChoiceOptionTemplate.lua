@@ -1,13 +1,5 @@
 PlayerChoiceGenericPowerChoiceOptionTemplateMixin = {};
 
-local rarityToGlowPostfix =
-{
-	[Enum.PlayerChoiceRarity.Common] = 		{ glow1 = "-portrait-qualitygeneric-01", 	glow2 = "-portrait-qualitygeneric-02" },
-	[Enum.PlayerChoiceRarity.Uncommon] = 	{ glow1 = "-portrait-qualityuncommon-01", 	glow2 = "-portrait-qualityuncommon-02" },
-	[Enum.PlayerChoiceRarity.Rare] = 		{ glow1 = "-portrait-qualityrare-01", 		glow2 = "-portrait-qualityrare-02" },
-	[Enum.PlayerChoiceRarity.Epic] = 		{ glow1 = "-portrait-qualityepic-01", 		glow2 = "-portrait-qualityepic-02" },
-};
-
 function PlayerChoiceGenericPowerChoiceOptionTemplateMixin:OnLoad()
 	PlayerChoicePowerChoiceTemplateMixin.OnLoad(self);
 	self.CircleBorder.topPadding = 15;
@@ -17,12 +9,23 @@ end
 
 function PlayerChoiceGenericPowerChoiceOptionTemplateMixin:GetTextureKitRegionTable()
 	local useTextureRegions = PlayerChoicePowerChoiceTemplateMixin.GetTextureKitRegionTable(self);
-	local rarity = self.optionInfo.rarity or Enum.PlayerChoiceRarity.Common;
-	local rarityGlows = rarityToGlowPostfix[rarity];
-	useTextureRegions.ArtworkGlow1 = "UI-Frame-%s"..rarityGlows.glow1;
-	useTextureRegions.ArtworkGlow2 = "UI-Frame-%s"..rarityGlows.glow2;
+	local atlasData = self:GetAtlasDataForRarity();
+
+	self.ArtworkGlow1:SetVertexColor(1, 1, 1);
+	self.ArtworkGlow2:SetVertexColor(1, 1, 1);
+	if atlasData then
+		useTextureRegions.ArtworkGlow1 = "UI-Frame-%s"..atlasData.postfixData.portraitBackgroundGlow1;
+		useTextureRegions.ArtworkGlow2 = "UI-Frame-%s"..atlasData.postfixData.portraitBackgroundGlow2;
+
+		if atlasData.overrideColor then
+			self.ArtworkGlow1:SetVertexColor(atlasData.overrideColor.r, atlasData.overrideColor.g, atlasData.overrideColor.b);
+			self.ArtworkGlow2:SetVertexColor(atlasData.overrideColor.r, atlasData.overrideColor.g, atlasData.overrideColor.b);
+		end
+	end
 
 	useTextureRegions.CircleBorder = "UI-Frame-%s-Portrait-Border";
+	self.CircleBorder:SetVertexColor(1, 1, 1);
+
 	return useTextureRegions;
 end
 

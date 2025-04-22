@@ -14,6 +14,17 @@ MICRO_BUTTONS = {
 	"HelpMicroButton",
 }
 
+function OverrideMicroMenuPosition(parent, anchor, anchorTo, relAnchor, x, y, isStacked)
+	UpdateMicroButtonsParent(parent);
+	MoveMicroButtons(anchor, anchorTo, relAnchor, x, y, isStacked);
+end
+
+function UpdateMicroButtonsParent(parent)
+	for i=1, #MICRO_BUTTONS do
+		_G[MICRO_BUTTONS[i]]:SetParent(parent);
+	end
+end
+
 function MoveMicroButtons(anchor, anchorTo, relAnchor, x, y, isStacked)
 	CharacterMicroButton:ClearAllPoints();
 	CharacterMicroButton:SetPoint(anchor, anchorTo, relAnchor, x, y);
@@ -48,7 +59,7 @@ function UpdateMicroButtons()
 	if ( PlayerTalentFrame and PlayerTalentFrame:IsShown() ) then
 		TalentMicroButton:SetButtonState("PUSHED", true);
 	else
-		if ( playerLevel < SHOW_SPEC_LEVEL ) then
+		if ( not C_SpecializationInfo.CanPlayerUseTalentSpecUI() ) then
 			TalentMicroButton:Hide();
 			AchievementMicroButton:SetPoint("BOTTOMLEFT", "TalentMicroButton", "BOTTOMLEFT", 0, 0);
 		else

@@ -3,7 +3,7 @@
 ## DefaultState: enabled
 ## Dependencies: Blizzard_SettingsDefinitions_Frame, Blizzard_UIParent, Blizzard_BuffFrame, Blizzard_UIPanels_Game, Blizzard_ActionBar, Blizzard_TextStatusBar
 ## AllowLoad: Game
-## AllowLoadGameType: wowlabs
+## AllowLoadGameType: plunderstorm
 Mainline\BuilderSpenderFrame.lua
 Mainline\BuilderSpenderFrame.xml
 UnitPowerBarAlt.xml

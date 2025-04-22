@@ -3,6 +3,21 @@ local GameRulesConstants =
 	Tables =
 	{
 		{
+			Name = "EventRealmQueues",
+			Type = "Enumeration",
+			NumValues = 5,
+			MinValue = 0,
+			MaxValue = 8,
+			Fields =
+			{
+				{ Name = "None", Type = "EventRealmQueues", EnumValue = 0 },
+				{ Name = "PlunderstormSolo", Type = "EventRealmQueues", EnumValue = 1 },
+				{ Name = "PlunderstormDuo", Type = "EventRealmQueues", EnumValue = 2 },
+				{ Name = "PlunderstormTrio", Type = "EventRealmQueues", EnumValue = 4 },
+				{ Name = "PlunderstormTraining", Type = "EventRealmQueues", EnumValue = 8 },
+			},
+		},
+		{
 			Name = "GameRuleFlags",
 			Type = "Enumeration",
 			NumValues = 3,

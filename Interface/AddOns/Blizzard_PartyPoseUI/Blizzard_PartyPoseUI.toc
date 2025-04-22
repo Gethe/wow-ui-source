@@ -3,6 +3,7 @@
 ## Author: Blizzard Entertainment
 ## Version: 1.0
 ## LoadOnDemand: 1
+## Dependencies: Blizzard_Colors
 
 Blizzard_PartyPoseUI.lua
 Blizzard_PartyPoseUI.xml

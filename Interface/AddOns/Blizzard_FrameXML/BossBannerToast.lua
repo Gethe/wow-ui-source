@@ -73,9 +73,13 @@ end
 function BossBanner_ConfigureLootFrame(lootFrame, data)
 	local itemName, itemLink, itemRarity, _, _, _, _, _, _, itemTexture, _, _, _, _, _, setID = C_Item.GetItemInfo(data.itemLink);
 	lootFrame.ItemName:SetText(itemName);
-	local rarityColor = ITEM_QUALITY_COLORS[itemRarity];
-	lootFrame.ItemName:SetTextColor(rarityColor.r, rarityColor.g, rarityColor.b);
-	lootFrame.Background:SetVertexColor(rarityColor.r, rarityColor.g, rarityColor.b);
+
+	local colorData = ColorManager.GetColorDataForItemQuality(itemRarity);
+	if colorData then
+		lootFrame.ItemName:SetTextColor(colorData.r, colorData.g, colorData.b);
+		lootFrame.Background:SetVertexColor(colorData.r, colorData.g, colorData.b);
+	end
+
 	lootFrame.Icon:SetTexture(itemTexture);
 
 	SetItemButtonQuality(lootFrame.IconHitBox, itemRarity, data.itemLink);

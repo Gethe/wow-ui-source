@@ -85,19 +85,26 @@ end
 
 StanceButtonMixin = {}
 
-function StanceButtonMixin:OnLoad()
+function StanceButtonMixin:StanceButtonMixin_OnLoad()
+	SmallActionButtonMixin.SmallActionButtonMixin_OnLoad(self);
+
 	self.cooldown:SetSwipeColor(0, 0, 0);
 	self:RegisterForClicks("AnyUp");
 end
 
-function StanceButtonMixin:OnClick()
+function StanceButtonMixin:StanceButtonMixin_OnClick(button, down)
+	QuickKeybindButtonTemplateMixin.QuickKeybindButtonOnClick(self, button, down);
+
 	if ( not KeybindFrames_InQuickKeybindMode() ) then
 		self:SetChecked(not self:GetChecked());
 		StanceBar:Select(self:GetID());
 	end
 end
 
-function StanceButtonMixin:OnEnter()
+function StanceButtonMixin:StanceButtonMixin_OnEnter()
+	BaseActionButtonMixin.BaseActionButtonMixin_OnEnter(self);
+	QuickKeybindButtonTemplateMixin.QuickKeybindButtonOnEnter(self);
+
 	if ( GetCVarBool("UberTooltips") or KeybindFrames_InQuickKeybindMode() ) then
 		GameTooltip_SetDefaultAnchor(GameTooltip, self);
 	else
@@ -107,7 +114,10 @@ function StanceButtonMixin:OnEnter()
 	self.UpdateTooltip = self.OnEnter;
 end
 
-function StanceButtonMixin:OnLeave()
+function StanceButtonMixin:StanceButtonMixin_OnLeave()
+	BaseActionButtonMixin.BaseActionButtonMixin_OnLeave(self);
+	QuickKeybindButtonTemplateMixin.QuickKeybindButtonOnLeave(self);
+
 	GameTooltip_Hide();
 end
 

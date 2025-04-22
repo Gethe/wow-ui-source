@@ -60,6 +60,11 @@ local GenericTraitFrameLayoutOptions = {
 		PanOffset = { x = 140, y = -35 },
 		FrameSize = { Width = 350, Height = 575 },
 	},
+
+	Visions = {
+		Title = GENERIC_TRAIT_FRAME_VISIONS_TITLE,
+		BackgroundAtlas = "talenttree-horrificvision-background",
+	},
 };
 
 local GenericTraitFrameLayouts = {
@@ -79,6 +84,9 @@ local GenericTraitFrameLayouts = {
 
 	-- D.R.I.V.E
 	[1056] = GenericTraitFrameLayoutOptions.DRIVE,
+
+	-- Visions
+	[1057] = GenericTraitFrameLayoutOptions.Visions,
 };
 
 function GetGenericTraitFrameLayoutInfo(treeID)

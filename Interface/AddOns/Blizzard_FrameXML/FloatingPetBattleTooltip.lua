@@ -105,7 +105,10 @@ function BattlePetTooltipTemplate_SetBattlePet(tooltipFrame, data)
 	tooltipFrame.speciesID = data.speciesID; -- For the button
 	tooltipFrame.Name:SetText(data.name);
 	if (data.breedQuality ~= -1) then
-		tooltipFrame.Name:SetTextColor(ITEM_QUALITY_COLORS[data.breedQuality].r, ITEM_QUALITY_COLORS[data.breedQuality].g, ITEM_QUALITY_COLORS[data.breedQuality].b);
+		local colorData = ColorManager.GetColorDataForItemQuality(data.breedQuality);
+		if colorData then
+			tooltipFrame.Name:SetTextColor(colorData.r, colorData.g, colorData.b);
+		end
 	else
 		tooltipFrame.Name:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 	end

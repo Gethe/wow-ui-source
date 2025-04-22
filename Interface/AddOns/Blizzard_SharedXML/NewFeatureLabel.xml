@@ -44,8 +44,8 @@ UI.xsd">
 			</AnimationGroup>
 		</Animations>
 		<Scripts>
-			<OnShow inherit="prepend" method="OnShow"/>
-			<OnLoad inherit="prepend" method="OnLoad"/>
+			<OnShow method="NewFeatureLabel_OnShow" inherit="prepend"/>
+			<OnLoad method="OnLoad"/>
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>

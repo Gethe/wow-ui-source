@@ -268,6 +268,15 @@ local SpecializationInfo =
 			},
 		},
 		{
+			Name = "ConfirmPetUnlearn",
+			Type = "Event",
+			LiteralName = "CONFIRM_PET_UNLEARN",
+			Payload =
+			{
+				{ Name = "cost", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "ConfirmTalentWipe",
 			Type = "Event",
 			LiteralName = "CONFIRM_TALENT_WIPE",

@@ -122,6 +122,20 @@ local AddOns =
 			},
 		},
 		{
+			Name = "GetAddOnInterfaceVersion",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "uiAddon", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "interfaceVersion", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAddOnMetadata",
 			Type = "Function",
 

@@ -70,7 +70,7 @@ local whoSortValue = 1;
 FRIENDSFRAME_SUBFRAMES = { "FriendsListFrame", "QuickJoinFrame", "IgnoreListFrame", "WhoFrame", "RecruitAFriendFrame", "RaidFrame" };
 FRIENDSFRAME_PLUNDERSTORM_SUBFRAMES = { "FriendsListFrame", "IgnoreListFrame" };
 function FriendsFrame_ShowSubFrame(frameName)
-	local subFrames = C_GameEnvironmentManager.GetCurrentGameEnvironment() == Enum.GameEnvironment.WoWLabs and FRIENDSFRAME_PLUNDERSTORM_SUBFRAMES or FRIENDSFRAME_SUBFRAMES;
+	local subFrames = C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm and FRIENDSFRAME_PLUNDERSTORM_SUBFRAMES or FRIENDSFRAME_SUBFRAMES;
 	for index, value in pairs(subFrames) do
 		if ( value == frameName ) then
 			_G[value]:Show()
@@ -122,7 +122,8 @@ function FriendsFrame_ShouldShowSummonButton(self)
 end
 
 function FriendsFrame_SummonButton_Update (self)
-	if C_Glue.IsOnGlueScreen() or (C_GameEnvironmentManager.GetCurrentGameEnvironment() == Enum.GameEnvironment.WoWLabs) then
+	-- GAME RULES TODO:: The game mode portion here should be an explicit game rule.
+	if C_Glue.IsOnGlueScreen() or (C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm) then
 		return;
 	end
 
@@ -335,7 +336,7 @@ end
 
 function FriendsFrame_OnShow(self)
 	local onGlues =  C_Glue.IsOnGlueScreen();
-	local inPlunderstorm = C_GameEnvironmentManager.GetCurrentGameEnvironment() == Enum.GameEnvironment.WoWLabs;
+	local inPlunderstorm = C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm;
 	if not onGlues and not inPlunderstorm then
 		playerRealmID = GetRealmID();
 		playerRealmName = GetRealmName();
@@ -365,7 +366,7 @@ function FriendsFrame_OnShow(self)
 	FriendsFrame_Update();
 	FriendsTabHeaderTab1:OnClick();
 
-	EventRegistry:RegisterCallback("GameEnvironment.Selected", function()
+	EventRegistry:RegisterCallback("GameMode.Selected", function()
 		self:Hide();
 	end, self);
 
@@ -445,14 +446,14 @@ function FriendsFrame_UpdateQuickJoinTab(numGroups)
 end
 
 function FriendsFrame_OnHide(self)
-	if not C_Glue.IsOnGlueScreen() and (C_GameEnvironmentManager.GetCurrentGameEnvironment() ~= Enum.GameEnvironment.WoWLabs) then
+	if not C_Glue.IsOnGlueScreen() and (C_GameRules.GetActiveGameMode() ~= Enum.GameMode.Plunderstorm) then
 		UpdateMicroButtons();
 		RaidInfoFrame:Hide();
 		RecruitAFriendFrame:UpdateRAFTutorialTips();
 	end;
 	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 	
-	local subFrames = C_GameEnvironmentManager.GetCurrentGameEnvironment() == Enum.GameEnvironment.WoWLabs and FRIENDSFRAME_PLUNDERSTORM_SUBFRAMES or FRIENDSFRAME_SUBFRAMES;
+	local subFrames = C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm and FRIENDSFRAME_PLUNDERSTORM_SUBFRAMES or FRIENDSFRAME_SUBFRAMES;
 	for index, value in pairs(subFrames) do
 		if ( value == "RaidFrame" ) then
 			if ( RaidFrame:GetParent() == FriendsFrame ) then
@@ -465,7 +466,7 @@ function FriendsFrame_OnHide(self)
 	FriendsFriendsFrame:Hide();
 	FriendsTabHeader.Tab3.New:Hide();
 
-	EventRegistry:UnregisterCallback("GameEnvironment.Selected", self);	
+	EventRegistry:UnregisterCallback("GameMode.Selected", self);	
 end
 
 FriendsTabHeaderMixin = {};
@@ -662,7 +663,7 @@ function FriendsList_CanWhisperFriend(friendType, friendIndex)
 end
 
 local function InWoWLabs()
-	return C_GameEnvironmentManager.GetCurrentGameEnvironment() == Enum.GameEnvironment.WoWLabs;
+	return C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm;
 end
 
 function FriendsList_Update(forceUpdate)
@@ -733,7 +734,7 @@ function FriendsList_Update(forceUpdate)
 		dataProvider:Insert({id=bnetFriendIndex, buttonType=FRIENDS_BUTTON_TYPE_BNET});
 	end
 
-	if C_GameEnvironmentManager.GetCurrentGameEnvironment() ~= Enum.GameEnvironment.WoWLabs then
+	if C_GameRules.GetActiveGameMode() ~= Enum.GameMode.Plunderstorm then
 		-- online WoW friends
 		for i = 1, numWoWOnline do
 			dataProvider:Insert({id=i, buttonType=FRIENDS_BUTTON_TYPE_WOW});
@@ -750,7 +751,7 @@ function FriendsList_Update(forceUpdate)
 		dataProvider:Insert({id=bnetFriendIndex, buttonType=FRIENDS_BUTTON_TYPE_BNET});
 	end
 	
-	if C_GameEnvironmentManager.GetCurrentGameEnvironment() ~= Enum.GameEnvironment.WoWLabs then
+	if C_GameRules.GetActiveGameMode() ~= Enum.GameMode.Plunderstorm then
 		-- offline WoW friends
 		for i = 1, numWoWOffline do
 			dataProvider:Insert({id=i+numWoWOnline, buttonType=FRIENDS_BUTTON_TYPE_WOW});
@@ -1009,7 +1010,8 @@ end
 SummonButtonMixin = {};
 
 function SummonButtonMixin:OnLoad()
-	if C_GameEnvironmentManager.GetCurrentGameEnvironment() ~= Enum.GameEnvironment.WoWLabs then
+	-- GAME RULES TODO:: This should be an explicit game rule.
+	if C_GameRules.GetActiveGameMode() ~= Enum.GameMode.Plunderstorm then
 		local normalTexture = self:GetNormalTexture();
 		normalTexture:ClearAllPoints();
 		normalTexture:SetPoint("CENTER");
@@ -1740,7 +1742,8 @@ function FriendsFrame_UpdateFriendButton(button, elementData)
 		button:OnEnter();
 	end
 
-	if C_GameEnvironmentManager.GetCurrentGameEnvironment() ~= Enum.GameEnvironment.WoWLabs then
+	-- GAME RULES TODO:: This should be an explicit game rule.
+	if C_GameRules.GetActiveGameMode() ~= Enum.GameMode.Plunderstorm then
 		-- show cross faction helptip on first online cross faction friend
 		if hasTravelPassButton and isCrossFactionInvite and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_CROSS_FACTION_INVITE) then
 			local helpTipInfo = {

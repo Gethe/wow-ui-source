@@ -1251,7 +1251,8 @@ end
 
 -- We want to prefer spells for /cast and items for /use but we can use either
 SecureCmdList["CAST"] = function(msg)
-	if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
+	-- GAME RULES TODO:: This should be an explicit game rule.
+	if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
 		return;
 	end
 
@@ -1268,7 +1269,8 @@ SecureCmdList["CAST"] = function(msg)
 end
 
 SecureCmdList["USE"] = function(msg)
-	if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
+	-- GAME RULES TODO:: This should be an explicit game rule.
+	if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
 		return;
 	end
 
@@ -1284,7 +1286,8 @@ SecureCmdList["USE"] = function(msg)
 end
 
 SecureCmdList["CASTRANDOM"] = function(msg)
-	if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
+	-- GAME RULES TODO:: This should be an explicit game rule.
+	if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
 		return;
 	end
 
@@ -1302,7 +1305,8 @@ end
 SecureCmdList["USERANDOM"] = SecureCmdList["CASTRANDOM"];
 
 SecureCmdList["CASTSEQUENCE"] = function(msg)
-	if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
+	-- GAME RULES TODO:: This should be an explicit game rule.
+	if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
 		return;
 	end
 
@@ -1697,7 +1701,8 @@ SecureCmdList["EQUIP_SET"] = function(msg)
 end
 
 SecureCmdList["WORLD_MARKER"] = function(msg)
-	if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
+	-- GAME RULES TODO:: This should be an explicit game rule.
+	if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
 		return;
 	end
 
@@ -1717,7 +1722,8 @@ SecureCmdList["CLEAR_WORLD_MARKER"] = function(msg)
 end
 
 SecureCmdList["SUMMON_BATTLE_PET"] = function(msg)
-	if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
+	-- GAME RULES TODO:: This should be an explicit game rule.
+	if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
 		return;
 	end
 
@@ -1733,7 +1739,8 @@ SecureCmdList["SUMMON_BATTLE_PET"] = function(msg)
 end
 
 SecureCmdList["RANDOMPET"] = function(msg)
-	if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
+	-- GAME RULES TODO:: This should be an explicit game rule.
+	if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
 		return;
 	end
 
@@ -1743,7 +1750,8 @@ SecureCmdList["RANDOMPET"] = function(msg)
 end
 
 SecureCmdList["RANDOMFAVORITEPET"] = function(msg)
-	if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
+	-- GAME RULES TODO:: This should be an explicit game rule.
+	if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
 		return;
 	end
 
@@ -1753,7 +1761,8 @@ SecureCmdList["RANDOMFAVORITEPET"] = function(msg)
 end
 
 SecureCmdList["DISMISSBATTLEPET"] = function(msg)
-	if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
+	-- GAME RULES TODO:: This should be an explicit game rule.
+	if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
 		return;
 	end
 
@@ -1774,7 +1783,8 @@ SecureCmdList["PET_DISMISS"] = function(msg)
 end
 
 SecureCmdList["USE_TOY"] = function(msg)
-	if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
+	-- GAME RULES TODO:: This should be an explicit game rule.
+	if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
 		return;
 	end
 
@@ -2016,7 +2026,8 @@ SlashCmdList["TRADE"] = function(msg)
 end
 
 SlashCmdList["INSPECT"] = function(msg)
-	if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
+	-- GAME RULES TODO:: This should be an explicit game rule.
+	if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
 		return;
 	end
 
@@ -2630,11 +2641,11 @@ end
 function ChatFrame_WargameTargetsVerifyBNetAccounts(target1, target2)
 	local bnetIDGameAccount1 = BNet_GetBNetIDAccountFromCharacterName(target1) or BNet_GetBNetIDAccount(target1);
 	if not bnetIDGameAccount1 then
-		ConsolePrint("Failed to find StartSpectatorSoloShuffleWarGame target1:", target1);
+		C_Log.LogErrorMessage("Failed to find StartSpectatorSoloShuffleWarGame target1:", target1);
 	end
 	local bnetIDGameAccount2 = BNet_GetBNetIDAccountFromCharacterName(target2) or BNet_GetBNetIDAccount(target2);
 	if not bnetIDGameAccount2 then
-		ConsolePrint("Failed to find StartSpectatorSoloShuffleWarGame target2:", target2);
+		C_Log.LogErrorMessage("Failed to find StartSpectatorSoloShuffleWarGame target2:", target2);
 	end
 	return bnetIDGameAccount1, bnetIDGameAccount2;
 end
@@ -4297,7 +4308,8 @@ function ChatFrame_OpenChat(text, chatFrame, desiredCursorPosition)
 
 	local editBox = ChatEdit_ChooseBoxForSend(chatFrame);
 
-	if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
+	-- GAME RULES TODO:: This should be an explicit game rule.
+	if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
 		if not HAS_INITIALIZED_DEFAULT_CHAT_CHANNEL then
 			HAS_INITIALIZED_DEFAULT_CHAT_CHANNEL = true;
 
@@ -4662,7 +4674,8 @@ function ChatEdit_ResetChatType(self)
 		self:SetAttribute("chatType", "SAY");
 	end
 
-	if ( C_Glue.IsOnGlueScreen() and C_GameEnvironmentManager.GetCurrentGameEnvironment() == Enum.GameEnvironment.WoWLabs and IsInGroup(LE_PARTY_CATEGORY_HOME) ) then
+	-- GAME RULES TODO:: The game modes portion here should be an explicit game rule.
+	if ( C_Glue.IsOnGlueScreen() and (C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm) and IsInGroup(LE_PARTY_CATEGORY_HOME) ) then
 		self:SetAttribute("chatType", "PARTY");
 	end
 

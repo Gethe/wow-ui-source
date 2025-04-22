@@ -27,7 +27,10 @@ function RuneforgeLegendaryPowerLootJournalMixin:OnPowerSet(oldPowerID, newPower
 
 	local isAvailable = powerInfo.state == Enum.RuneforgePowerState.Available;
 	if isAvailable then
-		self.Name:SetTextColor(LEGENDARY_ORANGE_COLOR:GetRGBA());
+		local colorData = ColorManager.GetColorDataForItemQuality(Enum.ItemQuality.Legendary);
+		if colorData then
+			self.Name:SetTextColor(colorData.r, colorData.g, colorData.b);
+		end
 		self.Icon:SetDesaturation(powerInfo.matchesCovenant and 0 or 0.75);
 	else
 		self.Name:SetTextColor(DISABLED_FONT_COLOR:GetRGBA());

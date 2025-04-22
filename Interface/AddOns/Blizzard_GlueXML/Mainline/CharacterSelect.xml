@@ -257,7 +257,7 @@
 		</Scripts>
 	</Button>
 
-	<Frame name="CharacterSelect" toplevel="true" parent="GlueParent" inherits="CallbackRegistrantTemplate" mixin="CharacterSelectFrameMixin" setAllPoints="true" enableKeyboard="true" hidden="true" propagateMouseInput="Motion">
+	<Frame name="CharacterSelect" toplevel="true" parent="GlueParent" mixin="CharacterSelectFrameMixin" setAllPoints="true" enableKeyboard="true" hidden="true" propagateMouseInput="Motion">
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="LeftBlackBar">
@@ -1159,14 +1159,6 @@
 					</Button>
 				</Frames>
 				<Animations>
-					<AnimationGroup parentKey="FadeIn" setToFinalAlpha="true">
-						<Alpha fromAlpha="0" toAlpha="1" duration="0.75" order="1"/>
-						<Scripts>
-							<OnFinished>
-								CharacterServicesMaster_UpdateServiceButton();
-							</OnFinished>
-						</Scripts>
-					</AnimationGroup>
 					<AnimationGroup parentKey="MapFadeIn" setToFinalAlpha="false">
 						<Alpha childKey="FadeInBackground" fromAlpha="1" toAlpha="0" duration=".3" order="1"/>
 					</AnimationGroup>

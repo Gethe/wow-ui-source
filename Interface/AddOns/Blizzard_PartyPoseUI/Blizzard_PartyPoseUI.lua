@@ -73,10 +73,12 @@ end
 
 function PartyPoseRewardsMixin:SetRewardsQuality(quality)
 	if (quality) then
-		local atlasTexture = LOOT_BORDER_BY_QUALITY[quality];
+		local atlasTexture = ColorManager.GetAtlasDataForLootBorderItemQuality(quality);
 		self.IconBorder:SetAtlas(atlasTexture, true);
-		local color = ITEM_QUALITY_COLORS[quality];
-		self.Name:SetVertexColor(color.r, color.g, color.b);
+		local colorData = ColorManager.GetColorDataForItemQuality(quality);
+		if colorData then
+			self.Name:SetVertexColor(colorData.r, colorData.g, colorData.b);
+		end
 	else
 		self.IconBorder:SetTexture([[Interface\Common\WhiteIconFrame]]);
 		self.Name:SetVertexColor(HIGHLIGHT_FONT_COLOR:GetRGB());

@@ -1,7 +1,7 @@
 ## Title: Blizzard_UIParent
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_FrameXMLBase, Blizzard_ObjectAPI
+## Dependencies: Blizzard_FrameXMLBase, Blizzard_ObjectAPI, Blizzard_Colors
 ## AllowLoad: game
 ## AllowLoadGameType: mainline
 ChatBubbleTemplates.xml

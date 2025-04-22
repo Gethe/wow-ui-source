@@ -136,3 +136,10 @@ end
 function BaseNineSliceDialog_OnCloseClick(self)
 	self:GetParent():GetParent():OnCloseClick();
 end
+
+function SetBasicMessageDialogText(text, force)
+	if ( force or not BasicMessageDialog:IsShown()) then
+		BasicMessageDialog.Text:SetText(text);
+		BasicMessageDialog:Show();
+	end
+end

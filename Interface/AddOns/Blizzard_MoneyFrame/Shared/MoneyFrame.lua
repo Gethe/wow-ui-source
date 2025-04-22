@@ -229,6 +229,15 @@ MoneyTypeInfo["GUILDBANKCASHFLOW"] = {
 	showSmallerCoins = "Backpack",
 };
 
+MoneyTypeInfo["REFORGE"] = {
+	UpdateFunc = function(self)
+		return self.staticMoney;
+	end,
+
+	collapse = 1,
+	showSmallerCoins = "Backpack",
+};
+
 function MoneyFrame_UpdateTrialErrorButton(self)
 	local money = (GetMoney() - GetCursorMoney() - GetPlayerTradeMoney());
 	if self.trialErrorButton then

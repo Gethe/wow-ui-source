@@ -71,7 +71,12 @@ StaticPopupDialogs["GARRISON_SHIP_DECOMMISSION"] = {
 	end,
 	OnShow = function(self)
 		local quality = C_Garrison.GetFollowerQuality(self.data);
-		local name = FOLLOWER_QUALITY_COLORS[quality].hex..C_Garrison.GetFollowerName(self.data)..FONT_COLOR_CODE_CLOSE;
+		local name = C_Garrison.GetFollowerName(self.data);
+		local colorData = ColorManager.GetColorDataForFollowerQuality(quality);
+		if colorData then
+			name = colorData.hex..name..FONT_COLOR_CODE_CLOSE;
+		end
+
 		self.text:SetFormattedText(GARRISON_SHIP_DECOMMISSION_CONFIRMATION, name);
 	end,
 	showAlert = 1,
@@ -365,9 +370,13 @@ function GarrisonShipyardMission:AssignFollowerToMission(frame, info)
 		PlaySound(SOUNDKIT.UI_GARRISON_SHIPYARD_PLACE_SUBMARINE);
 	end
 	self:SetFollowerPortrait(frame, info, false, false);
-	local color = FOLLOWER_QUALITY_COLORS[info.quality];
+
 	frame.Name:SetText(format(GARRISON_SHIPYARD_SHIP_NAME, info.name));
-	frame.Name:SetTextColor(color.r, color.g, color.b);
+	local colorData = ColorManager.GetColorDataForFollowerQuality(info.quality);
+	if colorData then
+		frame.Name:SetTextColor(colorData.r, colorData.g, colorData.b);
+	end
+
 	frame.Name:Show();
 	frame.NameBG:Show();
 	if (frame.Name:GetNumLines() > 1) then
@@ -798,8 +807,10 @@ function GarrisonShipyardMissionComplete:SetFollowerLevel(followerFrame, followe
 	end
 	followerFrame.XP.level = followerInfo.level;
 	followerFrame.XP.quality = followerInfo.quality;
-	local color = FOLLOWER_QUALITY_COLORS[followerInfo.quality];
-	followerFrame.Name:SetTextColor(color.r, color.g, color.b);
+	local colorData = ColorManager.GetColorDataForFollowerQuality(followerInfo.quality);
+	if colorData then
+		followerFrame.Name:SetTextColor(colorData.r, colorData.g, colorData.b);
+	end
 end
 
 function GarrisonShipyardMissionComplete:DetermineFailedEncounter(missionID, succeeded, followerDeaths)
@@ -1813,16 +1824,18 @@ function GarrisonShipyardFollowerList:ShowFollower(followerID, hideCounters)
 
 	local atlas = followerInfo.textureKit .. "-List";
 	followerTab.Portrait:SetAtlas(atlas, false);
-	local color = FOLLOWER_QUALITY_COLORS[followerInfo.quality];
+
 	followerTab.BoatName:SetText(format(GARRISON_SHIPYARD_SHIP_NAME, followerInfo.name));
-	followerTab.BoatName:SetVertexColor(color.r, color.g, color.b);
+	local colorData = ColorManager.GetColorDataForFollowerQuality(followerInfo.quality);
+	if colorData then
+		followerTab.BoatName:SetVertexColor(colorData.r, colorData.g, colorData.b);
+	end
+
 	followerTab.BoatType:SetText(followerInfo.className);
-	if (followerInfo.quality == Enum.ItemQuality.Epic) then
-		followerTab.Quality:SetAtlas("ShipMission_BoatRarity-Epic", true);
-	elseif (followerInfo.quality == Enum.ItemQuality.Rare) then
-		followerTab.Quality:SetAtlas("ShipMission_BoatRarity-Rare", true);
-	else
-		followerTab.Quality:SetAtlas("ShipMission_BoatRarity-Uncommon", true);
+
+	local qualityAtlas = ColorManager.GetAtlasDataForGarrisonShipyardFollowerQuality(followerInfo.quality) or ColorManager.GetAtlasDataForGarrisonShipyardFollowerQuality(Enum.ItemQuality.Uncommon);
+	if qualityAtlas then
+		followerTab.Quality:SetAtlas(qualityAtlas, true);
 	end
 
 	-- Follower cannot be upgraded anymore
@@ -1959,24 +1972,24 @@ function GarrisonShipyardFollowerList_InitButton(button, elementData)
 	button.BoatType:SetText(follower.className);
 	button.Status:SetText(follower.status);
 	button.Selection:SetShown(GarrisonShipyardFrame.selectedFollower == button.id);
-	
-	if (follower.quality == Enum.ItemQuality.Epic) then
-		button.Quality:SetAtlas("ShipMission_BoatRarity-Epic", true);
-	elseif (follower.quality == Enum.ItemQuality.Rare) then
-		button.Quality:SetAtlas("ShipMission_BoatRarity-Rare", true);
-	else
-		button.Quality:SetAtlas("ShipMission_BoatRarity-Uncommon", true);
+
+	local atlas = ColorManager.GetAtlasDataForGarrisonShipyardFollowerQuality(follower.quality) or ColorManager.GetAtlasDataForGarrisonShipyardFollowerQuality(Enum.ItemQuality.Uncommon);
+	if atlas then
+		button.Quality:SetAtlas(atlas, true);
 	end
-	
+
 	if (follower.status) then
 		button.BusyFrame:Show();
 		button.BusyFrame.Texture:SetColorTexture(unpack(GARRISON_FOLLOWER_BUSY_COLOR));
 	else
 		button.BusyFrame:Hide();
 	end
-	
-	local color = FOLLOWER_QUALITY_COLORS[follower.quality];
-	button.BoatName:SetTextColor(color.r, color.g, color.b);
+
+	local colorData = ColorManager.GetColorDataForFollowerQuality(follower.quality);
+	if colorData then
+		button.BoatName:SetTextColor(colorData.r, colorData.g, colorData.b);
+	end
+
 	if (follower.xp == 0 or follower.levelXP == 0) then
 		button.XPBar:Hide();
 	else

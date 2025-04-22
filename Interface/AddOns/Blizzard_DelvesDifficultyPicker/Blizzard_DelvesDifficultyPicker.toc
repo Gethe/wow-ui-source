@@ -2,6 +2,6 @@
 ## Author: Blizzard Entertainment
 ## Version: 1.0
 ## LoadOnDemand: 1
-
+## Dependencies: Blizzard_Colors
 Blizzard_DelvesDifficultyPicker.lua
 Blizzard_DelvesDifficultyPicker.xml

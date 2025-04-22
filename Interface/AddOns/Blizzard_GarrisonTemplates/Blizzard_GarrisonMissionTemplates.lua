@@ -909,7 +909,7 @@ function GarrisonMission:OnClickViewCompletedMissionsButton()
 	self:GetCompleteDialog():Hide();
 	self.FollowerTab:Hide();
 	self.FollowerList:Hide();
-	HelpPlate_Hide();
+	HelpPlate.Hide();
 	self.MissionComplete:Show();
 	self.MissionCompleteBackground:Show();
 
@@ -2068,12 +2068,12 @@ end
 function GarrisonMissionFrame_SetItemRewardDetails(frame)
 	local itemName, _, itemRarity, _, _, _, _, _, _, itemTexture = C_Item.GetItemInfo(frame.itemLink or frame.itemID);
 	frame.Icon:SetTexture(itemTexture);
-	local color = ITEM_QUALITY_COLORS[itemRarity];
-	if(color) then
-		if (frame.Name and itemName) then
-			frame.Name:SetText(color.hex..itemName..FONT_COLOR_CODE_CLOSE);
+	local colorData = ColorManager.GetColorDataForItemQuality(itemRarity);
+	if colorData then
+		if frame.Name and itemName then
+			frame.Name:SetText(colorData.hex..itemName..FONT_COLOR_CODE_CLOSE);
 		end
-		frame.IconBorder:SetVertexColor(color.r, color.g, color.b);
+		frame.IconBorder:SetVertexColor(colorData.r, colorData.g, colorData.b);
 		frame.IconBorder:Show();
 	end
 end
@@ -2087,9 +2087,9 @@ function GarrisonMissionPage_SetReward(frame, reward, missionComplete)
 	frame.currencyQuantity = nil;
 	frame.tooltip = nil;
 	frame.bonusAbilityID = nil;
-	if (reward.itemID) then
+	if reward.itemID then
 		frame.itemID = reward.itemID;
-		if ( reward.quantity > 1 ) then
+		if reward.quantity > 1 then
 			frame.Quantity:SetText(reward.quantity);
 			frame.Quantity:Show();
 		end
@@ -2097,8 +2097,8 @@ function GarrisonMissionPage_SetReward(frame, reward, missionComplete)
 	else
 		frame.Icon:SetTexture(reward.icon);
 		frame.title = reward.title
-		if (reward.currencyID and reward.quantity) then
-			if (reward.currencyID == 0) then
+		if reward.currencyID and reward.quantity then
+			if reward.currencyID == 0 then
 				frame.tooltip = GetMoneyString(reward.quantity);
 				frame.currencyID = 0;
 				frame.currencyQuantity = reward.quantity;
@@ -2119,31 +2119,36 @@ function GarrisonMissionPage_SetReward(frame, reward, missionComplete)
 				frame.Name:SetTextColor(currencyColor:GetRGB());
 				frame.Icon:SetTexture(currencyTexture);
 
-				if (currencyQuality) then
+				if currencyQuality then
 					SetItemButtonQuality(frame, currencyQuality, frame.currencyID);
 				end
 
-				if ( not missionComplete and currencyQuantity > 1 ) then
+				if not missionComplete and currencyQuantity > 1 then
 					frame.Quantity:SetTextColor(currencyColor:GetRGB());
 					frame.Quantity:SetText(currencyQuantity);
 					frame.Quantity:Show();
 				end
 			end
-		elseif (reward.bonusAbilityID) then
+		elseif reward.bonusAbilityID then
 			frame.bonusAbilityID = reward.bonusAbilityID;
 			frame.icon = reward.icon;
 			frame.name = reward.name;
 			frame.description = reward.description;
 			frame.duration = reward.duration;
-			if (frame.Name) then
+			if frame.Name then
 				frame.Name:SetText(reward.name);
 			end
 		else
 			frame.tooltip = reward.tooltip;
-			if (frame.Name) then
-				if (reward.quality) then
-					frame.Name:SetText(ITEM_QUALITY_COLORS[reward.quality + 1].hex..frame.title..FONT_COLOR_CODE_CLOSE);
-				elseif (reward.followerXP) then
+			if frame.Name then
+				if reward.quality then
+					local colorData = ColorManager.GetColorDataForItemQuality(reward.quality + 1);
+					if colorData then
+						frame.Name:SetText(colorData.hex..frame.title..FONT_COLOR_CODE_CLOSE);
+					else
+						frame.Name:SetText(frame.title);
+					end
+				elseif reward.followerXP then
 					frame.Name:SetFormattedText(GARRISON_REWARD_XP_FORMAT, BreakUpLargeNumbers(reward.followerXP));
 				else
 					frame.Name:SetText(frame.title);

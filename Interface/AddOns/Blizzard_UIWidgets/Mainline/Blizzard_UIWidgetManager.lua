@@ -58,7 +58,7 @@ function UIWidgetContainerMixin:MarkDirtyLayout()
 	self.dirtyLayout = true;
 
 	-- To optimize performance, only set OnUpdate while marked dirty.
-	self:SetScript("OnUpdate", UIWidgetContainerMixin.OnUpdate);
+	self:SetScript("OnUpdate", self.OnUpdate);
 end
 
 function UIWidgetContainerMixin:MarkCleanLayout()
@@ -66,16 +66,15 @@ function UIWidgetContainerMixin:MarkCleanLayout()
 	self:SetScript("OnUpdate", nil);
 end
 
-function UIWidgetContainerMixin:SetModelScenesShown(shown)
-	self.FrontModelScene:SetShown(shown);
-	self.BackModelScene:SetShown(shown);
-end
-
-function UIWidgetContainerMixin:OnUpdate(elapsed)
-	-- Handle layout updates
+function UIWidgetContainerMixin:OnUpdate(_elapsed)
 	if self.dirtyLayout then
 		self:UpdateWidgetLayout();
 	end
+end
+
+function UIWidgetContainerMixin:SetModelScenesShown(shown)
+	self.FrontModelScene:SetShown(shown);
+	self.BackModelScene:SetShown(shown);
 end
 
 local BottomPoints = {
@@ -211,7 +210,7 @@ function DefaultWidgetLayout(widgetContainerFrame, sortedWidgets, skipContainerL
 	end
 
 	if not skipContainerLayout then
-		widgetContainerFrame:Layout();
+		FunctionUtil.SafeInvokeMethod(widgetContainerFrame, "Layout");
 	end
 end
 
@@ -601,8 +600,34 @@ function UIWidgetContainerMixin:UpdateWidgetLayout()
 	table.sort(sortedWidgets, SortWidgets);
 
 	self.numWidgetsShowing = #sortedWidgets;
+
+	-- We mark dirty first because layoutFunc calls :Layout directly by default (see DefaultWidgetLayout).
+	FunctionUtil.SafeInvokeMethod(self, "MarkDirty");
 	self:layoutFunc(sortedWidgets);
 	self:MarkCleanLayout();
+end
+
+UIWidgetContainerResizeMixin = CreateFromMixins(OverrideLayoutFrameOnUpdateMixin);
+
+-- Override and call the base in your derived mixin.
+function UIWidgetContainerResizeMixin:NeedsOnUpdate()
+	return self.dirtyLayout;
+end
+
+function UIWidgetContainerResizeMixin:MarkDirtyLayout()
+	self.dirtyLayout = true;
+
+	-- To optimize performance, only set OnUpdate while marked dirty.
+	self:UpdateOnUpdateRegistration();
+end
+
+function UIWidgetContainerResizeMixin:MarkCleanLayout()
+	self.dirtyLayout = false;
+	self:UpdateOnUpdateRegistration();
+end
+
+function UIWidgetContainerResizeMixin:OverrideOnUpdate(_elapsed)
+	self:UpdateWidgetLayout();
 end
 
 UIWidgetManagerMixin = {};

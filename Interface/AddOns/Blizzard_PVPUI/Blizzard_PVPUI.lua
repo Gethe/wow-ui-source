@@ -328,7 +328,7 @@ function PVPQueueFrame_OnLoad(self)
 	self.CategoryButton4.Name:SetText(WOW_LABS_PLUNDERSTORM_CATEGORY);
 
 	-- If Plunderstorm is available, we have some different anchoring
-	local plunderstormAvailable = C_GameEnvironmentManager.GetCurrentEventRealmQueues() ~= Enum.EventRealmQueues.None and C_LobbyMatchmakerInfo.GetQueueFromMainlineEnabled();
+	local plunderstormAvailable = C_GameRules.GetCurrentEventRealmQueues() ~= Enum.EventRealmQueues.None and C_LobbyMatchmakerInfo.GetQueueFromMainlineEnabled();
 	local overrideAnchoringParent = self.CategoryButton2;
 	local categoryButtonOffsets = -101;
 	if plunderstormAvailable then

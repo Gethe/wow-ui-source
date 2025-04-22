@@ -124,6 +124,8 @@ function TutorialManager:Finished(tutorialKey)
 	self:DebugLog("    FINISHED: "..tutorialKey);
 	local tutorial = self:GetTutorial(tutorialKey);
 	if tutorial then
+		tutorial:Complete();
+		
 		TutorialQueue:NotifyDone(tutorial);
 	end
 end

@@ -762,6 +762,19 @@ function AddonListMixin:UpdatePerformance()
 	self:UpdateOverallMetric(perfUI.Peak, ADDON_LIST_PERFORMANCE_PEAK_CPU, Enum.AddOnProfilerMetric.PeakTime);
 end
 
+function AddonListMixin:UpdateAddOnMemoryUsage()
+	-- Expensive call - update once when shown, not in OnUpdate, only once per 15 sec
+	-- For addon performance display, which is not shown in glues
+	if not InGlue() then
+		local now = GetTime();
+		local SECONDS_BETWEEN_MEMORY_UPDATE = 15;
+		if not self.lastMemoryUpdate or now > self.lastMemoryUpdate + SECONDS_BETWEEN_MEMORY_UPDATE then
+			self.lastMemoryUpdate = now;
+			UpdateAddOnMemoryUsage();
+		end
+	end
+end
+
 function AddonList_HasOutOfDate()
 	local hasOutOfDate = false;
 	for i=1, C_AddOns.GetNumAddOns() do
@@ -972,16 +985,7 @@ function AddonListEntryMixin:OnLoad()
 	self:SetScript("OnEnter", function()
 		AddonTooltip:SetOwner(self, "ANCHOR_RIGHT", -270, 0);
 
-		-- Expensive call - update once when shown, not in OnUpdate, only once per 15 sec
-		-- For addon performance display, which is not shown in glues
-		if not InGlue() then
-			local now = GetTime();
-			local SECONDS_BETWEEN_MEMORY_UPDATE = 15;
-			if not self.lastMemoryUpdate or now > self.lastMemoryUpdate + SECONDS_BETWEEN_MEMORY_UPDATE then
-				self.lastMemoryUpdate = now;
-				UpdateAddOnMemoryUsage();
-			end
-		end
+		AddonList:UpdateAddOnMemoryUsage()
 
 		AddonTooltip_Update(self);
 		AddonTooltip:Show();

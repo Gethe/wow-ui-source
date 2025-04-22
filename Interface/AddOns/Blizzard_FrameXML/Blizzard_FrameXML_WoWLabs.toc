@@ -1,10 +1,10 @@
 ## Title: Blizzard_FrameXML
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_UIParent, Blizzard_UIParentPanelManager, Blizzard_SettingsDefinitions_Frame, Blizzard_ItemButton, Blizzard_FrameXMLUtil, Blizzard_UIPanelTemplates, Blizzard_GameTooltip
+## Dependencies: Blizzard_UIParent, Blizzard_UIParentPanelManager, Blizzard_SettingsDefinitions_Frame, Blizzard_ItemButton, Blizzard_FrameXMLUtil, Blizzard_UIPanelTemplates, Blizzard_GameTooltip, Blizzard_Colors
 ## LoadFirst: 1
 ## AllowLoad: Game
-## AllowLoadGameType: wowlabs
+## AllowLoadGameType: plunderstorm
 Shared\Localization.lua
 AchievementDisplayFrame.xml
 RewardTrackTemplates.xml
@@ -58,8 +58,8 @@ Mainline\ColorPickerFrame.xml
 Mainline\RatingMenuFrame.xml
 TalentFrameBase.lua
 TalentFrameTemplates.xml
-Mainline\MovieFrame.lua
-Mainline\MovieFrame.xml
+MovieFrame.lua
+MovieFrame.xml
 BossBannerToast.xml
 EventToastManager.xml
 EquipmentManager.lua
@@ -75,7 +75,9 @@ Timer.lua
 Timer.xml
 DestinyFrame.xml
 SharedPetBattleTemplates.xml
+FloatingPetBattleTooltip.lua
 FloatingPetBattleTooltip.xml
+BattlePetTooltip.lua
 BattlePetTooltip.xml
 LossOfControlFrame.xml
 ArtifactToasts.xml

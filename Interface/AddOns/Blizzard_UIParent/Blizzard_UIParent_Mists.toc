@@ -1,0 +1,15 @@
+## Title: Blizzard_UIParent
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_FrameXMLBase, Blizzard_ObjectAPI
+## LoadFirst: 1
+## AllowLoad: game
+## AllowLoadGameType: mists
+ChatBubbleTemplates.xml
+Classic\WorldFrame.lua
+Classic\WorldFrame.xml
+Classic\UIParentDebugMenu.lua
+Shared\UIParent.lua
+Mists\UIParent.lua
+Classic\UIParent.xml
+Shared\Localization.lua

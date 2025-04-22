@@ -200,8 +200,13 @@ end
 
 function MerchantFrameItem_UpdateQuality(self, link, isBound)
 	local quality = link and select(3, C_Item.GetItemInfo(link)) or nil;
-	if ( quality ) then
-		self.Name:SetTextColor(ITEM_QUALITY_COLORS[quality].r, ITEM_QUALITY_COLORS[quality].g, ITEM_QUALITY_COLORS[quality].b);
+	if quality then
+		local colorData = ColorManager.GetColorDataForItemQuality(quality);
+		if colorData then
+			self.Name:SetTextColor(colorData.r, colorData.g, colorData.b);
+		else
+			self.Name:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+		end
 	else
 		self.Name:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 		MerchantFrame_RegisterForQualityUpdates();

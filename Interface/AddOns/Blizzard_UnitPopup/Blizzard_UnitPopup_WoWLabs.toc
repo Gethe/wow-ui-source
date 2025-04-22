@@ -3,7 +3,7 @@
 ## DefaultState: enabled
 ## Dependencies: Blizzard_UnitPopupShared, Blizzard_ChatFrame
 ## AllowLoad: game
-## AllowLoadGameType: wowlabs
+## AllowLoadGameType: plunderstorm
 UnitPopupSlider.lua
 UnitPopupSlider.xml
 UnitPopupCustomControls.lua

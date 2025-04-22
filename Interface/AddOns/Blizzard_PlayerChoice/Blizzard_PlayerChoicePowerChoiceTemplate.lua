@@ -41,16 +41,23 @@ end
 
 function PlayerChoicePowerChoiceTemplateMixin:OnEnter()
 	GameTooltip:SetOwner(self.OptionText, "ANCHOR_RIGHT");
-	if self.optionInfo.rarityColor then
-		GameTooltip_AddColoredLine(GameTooltip, self.optionInfo.header, self.optionInfo.rarityColor);
+
+	local colorData = nil;
+	if self.optionInfo.rarity then
+		local quality = self:GetItemQualityForRarity(self.optionInfo.rarity);
+		colorData = ColorManager.GetColorDataForItemQuality(quality);
+	end
+
+	if colorData then
+		GameTooltip_AddColoredLine(GameTooltip, self.optionInfo.header, colorData.color);
+
+		local rarityStringIndex = self.optionInfo.rarity + 1;
+		local rarityText = _G["ITEM_QUALITY"..rarityStringIndex.."_DESC"];
+		GameTooltip_AddColoredLine(GameTooltip, rarityText, colorData.color);
 	else
 		GameTooltip_AddHighlightLine(GameTooltip, self.optionInfo.header);
 	end
-	if self.optionInfo.rarity and self.optionInfo.rarityColor then
-		local rarityStringIndex = self.optionInfo.rarity + 1;
-		local rarityText = _G["ITEM_QUALITY"..rarityStringIndex.."_DESC"];
-		GameTooltip_AddColoredLine(GameTooltip, rarityText, self.optionInfo.rarityColor);
-	end
+
 	GameTooltip_AddNormalLine(GameTooltip, self.optionInfo.description);
 	GameTooltip:Show();
 end
@@ -106,22 +113,22 @@ local textureKitRegions = {
 
 local NUM_BG_STYLES = 3;
 
-local rarityToCircleBorderPostfix = 
-{
-	[Enum.PlayerChoiceRarity.Common] = "-border",
-	[Enum.PlayerChoiceRarity.Uncommon] = "-QualityUncommon-border",
-	[Enum.PlayerChoiceRarity.Rare] = "-QualityRare-border",
-	[Enum.PlayerChoiceRarity.Epic] = "-QualityEpic-border",
-};
-
 -- May be overriden by inheriting frame
 function PlayerChoicePowerChoiceTemplateMixin:GetTextureKitRegionTable()
 	local useTextureRegions = CopyTable(textureKitRegions);
+	local atlasData = self:GetAtlasDataForRarity();
+
+	self.CircleBorder:SetVertexColor(1, 1, 1);
+	if atlasData then
+		useTextureRegions.CircleBorder = "UI-Frame-%s-Portrait"..atlasData.postfixData.circleBorder;
+
+		if atlasData.overrideColor then
+			self.CircleBorder:SetVertexColor(atlasData.overrideColor.r, atlasData.overrideColor.g, atlasData.overrideColor.b);
+		end
+	end
 
 	local styleNum = mod(self.layoutIndex - 1, NUM_BG_STYLES) + 1;
 	useTextureRegions.Background = useTextureRegions.Background.."-Style"..styleNum;
-
-	useTextureRegions.CircleBorder = "UI-Frame-%s-Portrait"..(rarityToCircleBorderPostfix[self.optionInfo.rarity] or "-border");
 
 	return useTextureRegions;
 end
@@ -172,12 +179,20 @@ end
 
 function PlayerChoicePowerChoiceTemplateMixin:SetupTextColors()
 	local fontColors = self:GetOptionFontColors();
-	if self.optionInfo.rarityColor then
-		self.Header.Text:SetTextColor(self.optionInfo.rarityColor:GetRGBA());
-	else
-		self.Header.Text:SetTextColor(fontColors.title:GetRGBA());
+
+	local colorData = nil;
+	if self.optionInfo.rarity then
+		local quality = self:GetItemQualityForRarity(self.optionInfo.rarity);
+		colorData = ColorManager.GetColorDataForItemQuality(quality);
 	end
-	self.OptionText:SetTextColor(fontColors.description:GetRGBA());
+
+	if colorData then
+		self.Header.Text:SetTextColor(colorData.color:GetRGB());
+	else
+		self.Header.Text:SetTextColor(fontColors.title:GetRGB());
+	end
+
+	self.OptionText:SetTextColor(fontColors.description:GetRGB());
 end
 
 local OPTION_TEXT_WIDTH = 160;

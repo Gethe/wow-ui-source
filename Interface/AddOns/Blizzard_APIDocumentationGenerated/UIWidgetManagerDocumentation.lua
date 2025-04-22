@@ -641,25 +641,6 @@ local UIWidgetManager =
 			},
 		},
 		{
-			Name = "SpellDisplayBorderColor",
-			Type = "Enumeration",
-			NumValues = 9,
-			MinValue = 0,
-			MaxValue = 8,
-			Fields =
-			{
-				{ Name = "None", Type = "SpellDisplayBorderColor", EnumValue = 0 },
-				{ Name = "Black", Type = "SpellDisplayBorderColor", EnumValue = 1 },
-				{ Name = "White", Type = "SpellDisplayBorderColor", EnumValue = 2 },
-				{ Name = "Red", Type = "SpellDisplayBorderColor", EnumValue = 3 },
-				{ Name = "Yellow", Type = "SpellDisplayBorderColor", EnumValue = 4 },
-				{ Name = "Orange", Type = "SpellDisplayBorderColor", EnumValue = 5 },
-				{ Name = "Purple", Type = "SpellDisplayBorderColor", EnumValue = 6 },
-				{ Name = "Green", Type = "SpellDisplayBorderColor", EnumValue = 7 },
-				{ Name = "Blue", Type = "SpellDisplayBorderColor", EnumValue = 8 },
-			},
-		},
-		{
 			Name = "SpellDisplayIconDisplayType",
 			Type = "Enumeration",
 			NumValues = 4,
@@ -785,17 +766,6 @@ local UIWidgetManager =
 			},
 		},
 		{
-			Name = "UIWidgetFlag",
-			Type = "Enumeration",
-			NumValues = 1,
-			MinValue = 1,
-			MaxValue = 1,
-			Fields =
-			{
-				{ Name = "UniversalWidget", Type = "UIWidgetFlag", EnumValue = 1 },
-			},
-		},
-		{
 			Name = "UIWidgetFontType",
 			Type = "Enumeration",
 			NumValues = 3,
@@ -843,6 +813,20 @@ local UIWidgetManager =
 				{ Name = "Hidden", Type = "UIWidgetRewardShownState", EnumValue = 0 },
 				{ Name = "ShownEarned", Type = "UIWidgetRewardShownState", EnumValue = 1 },
 				{ Name = "ShownUnearned", Type = "UIWidgetRewardShownState", EnumValue = 2 },
+			},
+		},
+		{
+			Name = "UIWidgetTextFormatType",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "None", Type = "UIWidgetTextFormatType", EnumValue = 0 },
+				{ Name = "TimeOneLevel", Type = "UIWidgetTextFormatType", EnumValue = 1 },
+				{ Name = "TimeTwoLevel", Type = "UIWidgetTextFormatType", EnumValue = 2 },
+				{ Name = "LeadingZeroesWithSixDigits", Type = "UIWidgetTextFormatType", EnumValue = 3 },
 			},
 		},
 		{
@@ -902,13 +886,14 @@ local UIWidgetManager =
 		{
 			Name = "UIWidgetUpdateAnimType",
 			Type = "Enumeration",
-			NumValues = 2,
+			NumValues = 3,
 			MinValue = 0,
-			MaxValue = 1,
+			MaxValue = 2,
 			Fields =
 			{
 				{ Name = "None", Type = "UIWidgetUpdateAnimType", EnumValue = 0 },
 				{ Name = "Flash", Type = "UIWidgetUpdateAnimType", EnumValue = 1 },
+				{ Name = "FlashAndAnimateNumber", Type = "UIWidgetUpdateAnimType", EnumValue = 2 },
 			},
 		},
 		{
@@ -1815,6 +1800,8 @@ local UIWidgetManager =
 				{ Name = "tooltip", Type = "string", Nilable = false },
 				{ Name = "tooltipLoc", Type = "UIWidgetTooltipLocation", Nilable = false },
 				{ Name = "textSizeType", Type = "UIWidgetTextureAndTextSizeType", Nilable = false },
+				{ Name = "textFormatType", Type = "UIWidgetTextFormatType", Nilable = false },
+				{ Name = "updateAnimType", Type = "UIWidgetUpdateAnimType", Nilable = false },
 				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
 				{ Name = "textureKit", Type = "textureKit", Nilable = false },
 				{ Name = "frameTextureKit", Type = "textureKit", Nilable = false },

@@ -13,10 +13,11 @@ local COMPANION_CONFIG_ON_SHOW_EVENTS = {
     "TRAIT_CONFIG_UPDATED",
 };
 
-local borderColorForRarity = {
-    [Enum.CurioRarity.Uncommon] = UNCOMMON_GREEN_COLOR,
-    [Enum.CurioRarity.Rare] = RARE_BLUE_COLOR,
-    [Enum.CurioRarity.Epic] = EPIC_PURPLE_COLOR,
+local curioRarityToItemQuality = {
+	[Enum.CurioRarity.Common] = Enum.ItemQuality.Common,
+    [Enum.CurioRarity.Uncommon] = Enum.ItemQuality.Uncommon,
+    [Enum.CurioRarity.Rare] = Enum.ItemQuality.Rare,
+    [Enum.CurioRarity.Epic] = Enum.ItemQuality.Epic
 };
 
 local function GetCompanionCurrentLevel()
@@ -517,7 +518,7 @@ function CompanionConfigSlotTemplateMixin:PopulateOptionsList()
         local activeEntryID = self:HasActiveEntry() and self.selectionNodeInfo.activeEntry.entryID;
         local dataProvider = CreateDataProvider();
         local buttonCount = 0;
-    
+
         for id, entryInfo in pairs(self.selectionNodeOptions) do
             local isUnseen = false;
             for _, unseenID in ipairs(self.unseenCurios) do
@@ -526,10 +527,10 @@ function CompanionConfigSlotTemplateMixin:PopulateOptionsList()
                     break;
                 end
             end
-    
+
             local additionalEntryInfo = C_Traits.GetEntryInfo(self.configID, id);
             local selectedEntryRarity = Enum.CurioRarity.Common;
-    
+
             if additionalEntryInfo then
                 for _, conditionID in ipairs(additionalEntryInfo.conditionIDs) do
                     local conditionInfo = C_Traits.GetConditionInfo(self.configID, conditionID, true);
@@ -538,7 +539,10 @@ function CompanionConfigSlotTemplateMixin:PopulateOptionsList()
                     end
                 end
             end
-    
+
+			local quality = curioRarityToItemQuality[selectedEntryRarity];
+			local colorData = ColorManager.GetColorDataForItemQuality(quality);
+
             dataProvider:Insert({
                 entryID = id,
                 name = entryInfo.name,
@@ -548,7 +552,7 @@ function CompanionConfigSlotTemplateMixin:PopulateOptionsList()
                 spellID = entryInfo.spellID,
                 description = entryInfo.description,
                 isUnseen = isUnseen,
-                borderColor = borderColorForRarity[selectedEntryRarity],
+                borderColor = colorData and colorData.color,
             });
             buttonCount = buttonCount + 1;
         end
@@ -559,7 +563,7 @@ function CompanionConfigSlotTemplateMixin:PopulateOptionsList()
         dataProvider:SetSortComparator(SlotDataNameSort);
 
         self.OptionsList.ScrollBox:SetDataProvider(dataProvider);
-    
+
         local buttonHeight = C_XMLUtil.GetTemplateInfo("CompanionConfigListButtonTemplate").height;
         self.OptionsList:SetHeight(buttonCount * buttonHeight);
     end);

@@ -72,7 +72,14 @@ function GameMenuFrameMixin:InitButtons()
 	-- A few settings are disabled without a tooltip in Kiosk mode.
 	local isKioskDisabled = Kiosk.IsEnabled();
 
-	self:AddButton(GAMEMENU_OPTIONS, GenerateMenuCallback(GenerateFlatClosure(SettingsPanel.Open, SettingsPanel)));
+	local optionsButton = self:AddButton(GAMEMENU_OPTIONS, GenerateMenuCallback(GenerateFlatClosure(SettingsPanel.Open, SettingsPanel)));
+
+	if CurrentVersionHasNewUnseenSettings() then
+		self.NewOptionsFrame:SetPoint("BOTTOMRIGHT", optionsButton:GetFontString(), "LEFT", 16, -10);
+		self.NewOptionsFrame:Show();
+	else
+		self.NewOptionsFrame:Hide();
+	end
 
 	if C_StorePublic.IsEnabled() then
 		local disabledByParentalControls = C_StorePublic.IsDisabledByParentalControls();

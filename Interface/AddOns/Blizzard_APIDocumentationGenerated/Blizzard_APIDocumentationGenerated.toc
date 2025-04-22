@@ -40,6 +40,7 @@ ClientDocumentation.lua
 ClientSceneDocumentation.lua
 ClubDocumentation.lua
 ClubFinderDocumentation.lua
+ColorOverridesDocumentation.lua
 CombatLogDocumentation.lua
 CompactUnitFramesDocumentation.lua
 ConfigurationWarningsDocumentation.lua
@@ -48,6 +49,7 @@ ConsoleDocumentation.lua
 ConsoleScriptCollectionDocumentation.lua
 ContainerDocumentation.lua
 ContributionCollectorDocumentation.lua
+CooldownViewerDocumentation.lua
 CreatureInfoDocumentation.lua
 CurrencyInfoDocumentation.lua
 CursorDocumentation.lua
@@ -58,6 +60,7 @@ DebugToggleDocumentation.lua
 Deprecated_11_0_0Documentation.lua
 DuelInfoDocumentation.lua
 EditModeManagerDocumentation.lua
+EncodingUtilDocumentation.lua
 EncounterInfoDocumentation.lua
 EncounterJournalDocumentation.lua
 EndOfMatchUIDocumentation.lua
@@ -82,7 +85,6 @@ FrameScriptDocumentation.lua
 FriendListDocumentation.lua
 GMTicketInfoDocumentation.lua
 GameCursorDocumentation.lua
-GameEnvironmentManagerDocumentation.lua
 GameErrorDocumentation.lua
 GamePadDocumentation.lua
 GameRulesDocumentation.lua
@@ -109,6 +111,7 @@ LoadingScreenDocumentation.lua
 LobbyMatchmakerInfoDocumentation.lua
 LocaleDocumentation.lua
 LocalizationDocumentation.lua
+LogDocumentation.lua
 LootDocumentation.lua
 LossOfControlDocumentation.lua
 MacOptionsDocumentation.lua
@@ -127,6 +130,7 @@ ParentalControlsDocumentation.lua
 PartyInfoDocumentation.lua
 PartyPoseUIDocumentation.lua
 PerformanceDocumentation.lua
+PetBattlesDocumentation.lua
 PetInfoDocumentation.lua
 PetJournalInfoDocumentation.lua
 PingManagerDocumentation.lua
@@ -228,6 +232,7 @@ TrainerDocumentation.lua
 TraitConfigDocumentation.lua
 TransmogDocumentation.lua
 TransmogItemsDocumentation.lua
+TransmogSetsDocumentation.lua
 TutorialDocumentation.lua
 UIActionDocumentation.lua
 UIColorDocumentation.lua
@@ -302,7 +307,6 @@ MajorFactionsDocumentation.lua
 MapDocumentation.lua
 MythicPlusInfoDocumentation.lua
 PerksActivitiesDocumentation.lua
-PetBattlesDocumentation.lua
 PlayerChoiceDocumentation.lua
 PlayerMentorshipDocumentation.lua
 ProfessionSpecUIDocumentation.lua
@@ -320,7 +324,6 @@ SystemDocumentation.lua
 TalkingHeadDocumentation.lua
 TimerunningUIDocumentation.lua
 TradeSkillUIDocumentation.lua
-TransmogSetsDocumentation.lua
 UIFrameManagerDocumentation.lua
 UIModifiedInstanceDocumentation.lua
 WarCampaignDocumentation.lua
@@ -351,28 +354,32 @@ CinematicConstantsDocumentation.lua
 ClientSettingsDocumentation.lua
 ClubSharedDocumentation.lua
 ColorDocumentation.lua
+ColorOverrideConstantsDocumentation.lua
 CommentatorSharedDocumentation.lua
 ContentTrackingTypesDocumentation.lua
+CooldownViewerConstantsDocumentation.lua
 CurrencyConstantsDocumentation.lua
 CursorConstDocumentation.lua
 DamageConstantsDocumentation.lua
 DelvesConstantsDocumentation.lua
 EditModeManagerSharedDocumentation.lua
+EncodingUtilConstantsDocumentation.lua
 EncounterJournalConstantsDocumentation.lua
 EventSchedulerConstantsDocumentation.lua
 ExpansionLandingPageConstantsDocumentation.lua
 FrameAPIModelSceneFrameSharedDocumentation.lua
 GARRISON_FOLLOWER_TYPEConstantsDocumentation.lua
 GARRISON_TYPEConstantsDocumentation.lua
-GameEnvironmentConstantsDocumentation.lua
 GamePadConstDocumentation.lua
 GameRulesConstantsDocumentation.lua
 GarrisonConstantsDocumentation.lua
 GossipConstantsDocumentation.lua
 GroupFinderConstantsDocumentation.lua
+GuildConstantsDocumentation.lua
 GuildInfoSharedDocumentation.lua
 InputConstantsDocumentation.lua
 ItemConstantsDocumentation.lua
+ItemQualitiesDocumentation.lua
 ItemSharedDocumentation.lua
 LFGConstantsDocumentation.lua
 LevelConstantsDocumentation.lua
@@ -418,6 +425,7 @@ SimpleHTMLSharedDocumentation.lua
 SocialConstantsDocumentation.lua
 SoftTargetConstantsDocumentation.lua
 SpellBookConstantsDocumentation.lua
+SpellConstantsDocumentation.lua
 SpellSharedDocumentation.lua
 TextureSharedDocumentation.lua
 TimeDocumentation.lua

@@ -21,6 +21,18 @@ function ToggleLFGFrame()
 	end
 end
 
+function ReverseQuestObjective(text, objectiveType)
+	if ( objectiveType == "spell" ) then
+		return text;
+	end
+	local _, _, arg1, arg2 = string.find(text, "(.*):%s(.*)");
+	if ( arg1 and arg2 ) then
+		return arg2.." "..arg1;
+	else
+		return text;
+  end
+end
+
 -- Note: Numeric abbreviation data is presently defined in game-specific files.
 NUMBER_ABBREVIATION_DATA = {};
 
@@ -121,6 +133,12 @@ function UIParentManagedFrameContainerMixin:UpdateManagedFramesAlphaState()
 			local currentFrameAlpha = frame:GetAlpha();
 			if(setToAlpha ~= currentFrameAlpha) then
 				frame:SetAlpha(setToAlpha);
+			end
+
+			-- Since the frame isn't actually hidden, give it a way to remove itself from layout
+			-- if that's the desired behavior.
+			if frame.ignoreInLayoutWhenActionBarIsOverriden then
+				frame.ignoreInLayout = isActionBarOverriden;
 			end
 		end
 	end

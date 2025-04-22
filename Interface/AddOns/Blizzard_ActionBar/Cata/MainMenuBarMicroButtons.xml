@@ -168,7 +168,6 @@
 				self.tooltipText = MicroButtonTooltipText(TALENTS, "TOGGLETALENTS");
 				self.newbieText = NEWBIE_TOOLTIP_TALENTS;
 
-				self.minLevel = SHOW_TALENT_LEVEL;
 				self:RegisterEvent("PLAYER_LEVEL_UP");
 				self:RegisterEvent("UPDATE_BINDINGS");
 			</OnLoad>
@@ -544,4 +543,16 @@
 			</OnClick>
 		</Scripts>
 	</Button>
+
+	<Frame name="TalentMicroButtonAlert" inherits="MicroButtonAlertTemplate">
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="TalentMicroButton" relativePoint="TOP" x="0" y="-8"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				MicroButtonAlert_OnLoad(self);
+				self.Text:SetText(TALENT_MICRO_BUTTON_SPEC_TUTORIAL);
+			</OnLoad>
+		</Scripts>
+	</Frame>
 </Ui>

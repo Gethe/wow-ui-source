@@ -591,6 +591,10 @@ function GameTooltip_Hide()
 	GameTooltip_HideBattlePetTooltip();
 end
 
+function GameTooltip_HideTooltip(tooltip)
+	tooltip:Hide();
+end
+
 function GameTooltip_HideResetCursor()
 	GameTooltip:Hide();
 	ResetCursor();
@@ -623,8 +627,13 @@ function GameTooltip_AddQuest(self, questIDArg)
 		self.worldQuest = true;
 		local tagInfo = C_QuestLog.GetQuestTagInfo(self.questID);
 		local quality = tagInfo and tagInfo.quality or Enum.WorldQuestQuality.Common;
-		local color = WORLD_QUEST_QUALITY_COLORS[quality].color;
-		GameTooltip_SetTitle(GameTooltip, title, color);
+
+		local colorData = ColorManager.GetColorDataForWorldQuestQuality(quality)
+		if colorData then
+			GameTooltip_SetTitle(GameTooltip, title, colorData.color);
+		else
+			GameTooltip_SetTitle(GameTooltip, title);
+		end
 
 		if C_QuestLog.IsAccountQuest(questID) then
 			GameTooltip_AddColoredLine(GameTooltip, ACCOUNT_QUEST_LABEL, ACCOUNT_WIDE_FONT_COLOR);

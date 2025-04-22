@@ -97,10 +97,10 @@ end
 
 function MonthlyActivities_ToggleTutorial()
 	local helpPlate = MonthlyActivities_HelpPlate;
-	if ( helpPlate and not HelpPlate_IsShowing(helpPlate) ) then
-		HelpPlate_Show( helpPlate, EncounterJournal.MonthlyActivitiesFrame, EncounterJournal.MonthlyActivitiesFrame.HelpButton );
+	if ( helpPlate and not HelpPlate.IsShowingHelpInfo(helpPlate) ) then
+		HelpPlate.Show( helpPlate, EncounterJournal.MonthlyActivitiesFrame, EncounterJournal.MonthlyActivitiesFrame.HelpButton );
 	else
-		HelpPlate_Hide(true);
+		HelpPlate.Hide(true);
 	end
 end
 
@@ -827,8 +827,8 @@ function MonthlyActivitiesFrameMixin:OnHide()
 	end
 
 	local helpPlate = MonthlyActivities_HelpPlate;
-	if ( helpPlate and HelpPlate_IsShowing(helpPlate) ) then
-		HelpPlate_Hide(false);
+	if ( helpPlate and HelpPlate.IsShowingHelpInfo(helpPlate) ) then
+		HelpPlate.Hide(false);
 	end
 
 	self:SetSelectedActivityID(nil);

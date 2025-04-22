@@ -537,11 +537,12 @@ function POIButtonMixin:OnClick(button)
 end
 
 function POIButtonMixin:OnEnter()
+	local tooltip = GetAppropriateTooltip();
 	if (self:GetStyle() == POIButtonUtil.Style.QuestComplete) and not self:IsEnabled() then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip_SetTitle(GameTooltip, QUEST_SESSION_ON_HOLD_TOOLTIP_TITLE);
-		GameTooltip_AddNormalLine(GameTooltip, QUEST_SESSION_ON_HOLD_TOOLTIP_TEXT);
-		GameTooltip:Show();
+		tooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip_SetTitle(tooltip, QUEST_SESSION_ON_HOLD_TOOLTIP_TITLE);
+		GameTooltip_AddNormalLine(tooltip, QUEST_SESSION_ON_HOLD_TOOLTIP_TEXT);
+		tooltip:Show();
 	else
 		local questID = self:GetQuestID();
 		if questID and self:GetParent().useHighlightManager then
@@ -557,8 +558,9 @@ function POIButtonMixin:OnEnter()
 end
 
 function POIButtonMixin:OnLeave()
-	if GameTooltip:GetOwner() == self then
-		GameTooltip:Hide();
+	local tooltip = GetAppropriateTooltip();
+	if tooltip:GetOwner() == self then
+		tooltip:Hide();
 	end
 
 	if self:GetQuestID() and self:GetParent().useHighlightManager then

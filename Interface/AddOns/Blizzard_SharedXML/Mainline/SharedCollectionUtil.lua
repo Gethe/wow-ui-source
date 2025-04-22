@@ -2,7 +2,12 @@ SharedCollectionUtil = {};
 
 function SharedCollectionUtil.ShowWarbandSceneEntryTooltip(tooltip, warbandSceneInfo, isOwned)
 	-- Assumes that anchoring will be handled by calling location.
-	GameTooltip_AddColoredLine(tooltip, warbandSceneInfo.name, warbandSceneInfo.qualityColor);
+	local colorData = ColorManager.GetColorDataForItemQuality(warbandSceneInfo.quality);
+	if colorData then
+		GameTooltip_AddColoredLine(tooltip, warbandSceneInfo.name, colorData.color);
+	else
+		GameTooltip_AddHighlightLine(tooltip, warbandSceneInfo.name);
+	end
 
 	-- Random entry doesn't show certain parts of normal tooltip info.
 	local isRandomEntry = warbandSceneInfo.warbandSceneID == C_WarbandScene.GetRandomEntryID();

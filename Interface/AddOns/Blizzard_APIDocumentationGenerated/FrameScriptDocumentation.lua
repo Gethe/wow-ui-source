@@ -66,6 +66,16 @@ local FrameScript =
 			},
 		},
 		{
+			Name = "GetSourceLocation",
+			Type = "Function",
+			MayReturnNothing = true,
+
+			Returns =
+			{
+				{ Name = "location", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "RunScript",
 			Type = "Function",
 

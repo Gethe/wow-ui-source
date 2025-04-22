@@ -107,6 +107,16 @@
 						<Anchor point="TOP" y="-3"/>
 					</Anchors>
 				</FontString>
+				<Texture parentKey="LabelBG">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Label"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LabelBGDivider">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.LabelBG" relativePoint="TOP"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 	</Frame>

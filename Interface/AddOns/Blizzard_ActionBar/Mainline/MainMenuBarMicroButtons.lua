@@ -1514,6 +1514,14 @@ function StoreMicroButtonMixin:OnEvent(event, ...)
 	end
 end
 
+function StoreMicroButtonMixin:GetButtonContext()
+	return self.buttonContext;
+end
+
+function StoreMicroButtonMixin:OnClick()
+	ToggleStoreUI(self:GetButtonContext());
+end
+
 function StoreMicroButtonMixin:EvaluateAlertVisibility(level)
 	local alertShown = false;
 	if (IsTrialAccount()) then
@@ -1673,6 +1681,8 @@ function MainMenuMicroButtonMixin:UpdateMicroButton()
 		EnableMicroButtons();
 		self:SetNormal();
 	end
+
+	self:UpdateNotificationIcon();
 end
 
 function MainMenuMicroButtonMixin:OnEnter()
@@ -1689,6 +1699,10 @@ function MainMenuMicroButtonMixin:OnLeave()
 	if ( KeybindFrames_InQuickKeybindMode() ) then
 		self:QuickKeybindButtonOnLeave();
 	end
+end
+
+function MainMenuMicroButtonMixin:UpdateNotificationIcon()
+	self.NotificationOverlay:SetShown(CurrentVersionHasNewUnseenSettings());
 end
 
 MicroMenuMixin = {};

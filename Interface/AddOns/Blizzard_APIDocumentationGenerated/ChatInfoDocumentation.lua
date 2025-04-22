@@ -21,6 +21,15 @@ local ChatInfo =
 			},
 		},
 		{
+			Name = "DropCautionaryChatMessage",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "confirmNumber", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetChannelInfoFromIdentifier",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -469,6 +478,15 @@ local ChatInfo =
 			},
 		},
 		{
+			Name = "SendCautionaryChatMessage",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "confirmNumber", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "SwapChatChannelsByChannelIndex",
 			Type = "Function",
 
@@ -526,6 +544,25 @@ local ChatInfo =
 			{
 				{ Name = "languageId", Type = "number", Nilable = false },
 				{ Name = "canSpeakLanguage", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "CautionaryChannelMessage",
+			Type = "Event",
+			LiteralName = "CAUTIONARY_CHANNEL_MESSAGE",
+			Payload =
+			{
+				{ Name = "confirmNumber", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "CautionaryChatMessage",
+			Type = "Event",
+			LiteralName = "CAUTIONARY_CHAT_MESSAGE",
+			Payload =
+			{
+				{ Name = "chatLineID", Type = "number", Nilable = false },
+				{ Name = "confirmNumber", Type = "number", Nilable = false },
 			},
 		},
 		{

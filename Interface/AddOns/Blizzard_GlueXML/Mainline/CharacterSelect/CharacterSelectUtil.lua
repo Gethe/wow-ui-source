@@ -49,6 +49,7 @@ end
 function CharacterSelectUtil.ChangeRealm()
 	PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_DEL_CHARACTER);
 	CharacterSelectListUtil.SaveCharacterOrder();
+	CharacterSelectCharacterFrame:ClearSearch();
 	CharacterSelectUtil.SetAutoSwitchRealm(false);
 	C_RealmList.RequestChangeRealmList();
 end

@@ -854,7 +854,8 @@ local Unit =
 
 			Returns =
 			{
-				{ Name = "result", Type = "cstring", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "id", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -868,7 +869,8 @@ local Unit =
 
 			Returns =
 			{
-				{ Name = "result", Type = "cstring", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "id", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -1228,6 +1230,21 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitInOtherParty",
+			Type = "Function",
+			Documentation = { "Checks whether this unit cannot see your party chat because it is in an instance group" },
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "inOtherParty", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitInParty",
 			Type = "Function",
 
@@ -1584,6 +1601,35 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitIsGroupAssistant",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isAssistant", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitIsGroupLeader",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "partyCategory", Type = "luaIndex", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "isLeader", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitIsInMyGuild",
 			Type = "Function",
 
@@ -1867,6 +1913,20 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitLeadsAnyGroup",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isLeader", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitLevel",
 			Type = "Function",
 
@@ -1950,6 +2010,20 @@ local Unit =
 			Returns =
 			{
 				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitOwnerGUID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "ownerGUID", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{
@@ -3875,6 +3949,24 @@ local Unit =
 				{ Name = "spellID", Type = "number", Nilable = false },
 				{ Name = "isEmpowered", Type = "bool", Nilable = false },
 				{ Name = "numEmpowerStages", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitCreatureFamilyResult",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "id", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitCreatureTypeResult",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "id", Type = "number", Nilable = false },
 			},
 		},
 		{

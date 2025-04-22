@@ -3217,8 +3217,9 @@ function AdventureJournal_Reward_OnEnter(self)
 
 			SetItemButtonQuality(frame.Item1, quality, rewardData.itemLink);
 
-			if (quality > Enum.ItemQuality.Common and BAG_ITEM_QUALITY_COLORS[quality]) then
-				frame.Item1.text:SetTextColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
+			local item1Color = ColorManager.GetColorDataForBagItemQuality(quality);
+			if (quality > Enum.ItemQuality.Common and item1Color) then
+				frame.Item1.text:SetTextColor(item1Color.r, item1Color.g, item1Color.b);
 			end
 
 			local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(rewardData.currencyType);
@@ -3228,8 +3229,10 @@ function AdventureJournal_Reward_OnEnter(self)
 			frame.Item2:Show();
 
 			SetItemButtonQuality(frame.Item2, quality);
-			if (quality > Enum.ItemQuality.Common and BAG_ITEM_QUALITY_COLORS[quality]) then
-				frame.Item2.text:SetTextColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
+
+			local item2Color = ColorManager.GetColorDataForBagItemQuality(quality);
+			if (quality > Enum.ItemQuality.Common and item2Color) then
+				frame.Item2.text:SetTextColor(item2Color.r, item2Color.g, item2Color.b);
 			end
 
 			if ( rewardData.currencyQuantity and rewardData.currencyQuantity > 1 ) then

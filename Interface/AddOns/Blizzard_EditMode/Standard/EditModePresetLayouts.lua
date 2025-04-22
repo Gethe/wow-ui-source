@@ -616,6 +616,97 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 			offsetY = 0,
 		},
 	},
+
+	[Enum.EditModeSystem.CooldownViewer] = {
+		[Enum.EditModeCooldownViewerSystemIndices.Essential] = {
+			settings = {
+				[Enum.EditModeCooldownViewerSetting.Orientation] = Enum.CooldownViewerOrientation.Horizontal,
+				[Enum.EditModeCooldownViewerSetting.IconLimit] = 12,
+				[Enum.EditModeCooldownViewerSetting.IconDirection] = Enum.CooldownViewerIconDirection.Right,
+				[Enum.EditModeCooldownViewerSetting.IconSize] = 5,
+				[Enum.EditModeCooldownViewerSetting.IconPadding] = 2,
+				[Enum.EditModeCooldownViewerSetting.Opacity] = 100,
+				[Enum.EditModeCooldownViewerSetting.VisibleSetting] = Enum.CooldownViewerVisibleSetting.Always,
+				-- [Enum.EditModeCooldownViewerSetting.BarContent] = Enum.CooldownViewerBarContent.IconAndName,
+				[Enum.EditModeCooldownViewerSetting.HideWhenInactive] = 1,
+				[Enum.EditModeCooldownViewerSetting.ShowTimer] = 1,
+				[Enum.EditModeCooldownViewerSetting.ShowTooltips] = 1,
+			},
+			anchorInfo = {
+				point = "BOTTOM",
+				relativeTo = "UIParent",
+				relativePoint = "BOTTOM",
+				offsetX = 0,
+				offsetY = 310,
+			},
+		},
+		[Enum.EditModeCooldownViewerSystemIndices.Utility] = {
+			settings = {
+				[Enum.EditModeCooldownViewerSetting.Orientation] = Enum.CooldownViewerOrientation.Horizontal,
+				[Enum.EditModeCooldownViewerSetting.IconLimit] = 7,
+				[Enum.EditModeCooldownViewerSetting.IconDirection] = Enum.CooldownViewerIconDirection.Right,
+				[Enum.EditModeCooldownViewerSetting.IconSize] = 5,
+				[Enum.EditModeCooldownViewerSetting.IconPadding] = 2,
+				[Enum.EditModeCooldownViewerSetting.Opacity] = 100,
+				[Enum.EditModeCooldownViewerSetting.VisibleSetting] = Enum.CooldownViewerVisibleSetting.Always,
+				-- [Enum.EditModeCooldownViewerSetting.BarContent] = Enum.CooldownViewerBarContent.IconAndName,
+				[Enum.EditModeCooldownViewerSetting.HideWhenInactive] = 1,
+				[Enum.EditModeCooldownViewerSetting.ShowTimer] = 1,
+				[Enum.EditModeCooldownViewerSetting.ShowTooltips] = 1,
+			},
+			anchorInfo = {
+				point = "BOTTOM",
+				relativeTo = "UIParent",
+				relativePoint = "BOTTOM",
+				offsetX = 0,
+				offsetY = 240,
+			},
+		},
+		[Enum.EditModeCooldownViewerSystemIndices.BuffIcon] = {
+			settings = {
+				[Enum.EditModeCooldownViewerSetting.Orientation] = Enum.CooldownViewerOrientation.Horizontal,
+				[Enum.EditModeCooldownViewerSetting.IconLimit] = 1,
+				[Enum.EditModeCooldownViewerSetting.IconDirection] = Enum.CooldownViewerIconDirection.Right,
+				[Enum.EditModeCooldownViewerSetting.IconSize] = 5,
+				[Enum.EditModeCooldownViewerSetting.IconPadding] = 5,
+				[Enum.EditModeCooldownViewerSetting.Opacity] = 100,
+				[Enum.EditModeCooldownViewerSetting.VisibleSetting] = Enum.CooldownViewerVisibleSetting.Always,
+				-- [Enum.EditModeCooldownViewerSetting.BarContent] = Enum.CooldownViewerBarContent.IconAndName,
+				[Enum.EditModeCooldownViewerSetting.HideWhenInactive] = 1,
+				[Enum.EditModeCooldownViewerSetting.ShowTimer] = 1,
+				[Enum.EditModeCooldownViewerSetting.ShowTooltips] = 1,
+			},
+			anchorInfo = {
+				point = "BOTTOM",
+				relativeTo = "UIParent",
+				relativePoint = "BOTTOM",
+				offsetX = 0,
+				offsetY = 370,
+			},
+		},
+		[Enum.EditModeCooldownViewerSystemIndices.BuffBar] = {
+			settings = {
+				[Enum.EditModeCooldownViewerSetting.Orientation] = Enum.CooldownViewerOrientation.Vertical,
+				[Enum.EditModeCooldownViewerSetting.IconLimit] = 1,
+				[Enum.EditModeCooldownViewerSetting.IconDirection] = Enum.CooldownViewerIconDirection.Left,
+				[Enum.EditModeCooldownViewerSetting.IconSize] = 5,
+				[Enum.EditModeCooldownViewerSetting.IconPadding] = 5,
+				[Enum.EditModeCooldownViewerSetting.Opacity] = 100,
+				[Enum.EditModeCooldownViewerSetting.VisibleSetting] = Enum.CooldownViewerVisibleSetting.Always,
+				[Enum.EditModeCooldownViewerSetting.BarContent] = Enum.CooldownViewerBarContent.IconAndName,
+				[Enum.EditModeCooldownViewerSetting.HideWhenInactive] = 1,
+				[Enum.EditModeCooldownViewerSetting.ShowTimer] = 1,
+				[Enum.EditModeCooldownViewerSetting.ShowTooltips] = 1,
+			},
+			anchorInfo = {
+				point = "BOTTOM",
+				relativeTo = "UIParent",
+				relativePoint = "BOTTOM",
+				offsetX = 420,
+				offsetY = 430,
+			},
+		},
+	},
 };
 
 EDIT_MODE_CLASSIC_SYSTEM_MAP =
@@ -1231,4 +1322,6 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 			offsetY = 0,
 		},
 	},
+
+	[Enum.EditModeSystem.CooldownViewer] = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.CooldownViewer];
 };

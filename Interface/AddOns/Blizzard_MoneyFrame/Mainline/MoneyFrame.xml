@@ -87,24 +87,16 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				MoneyFrame_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				MoneyFrame_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnShow>
-				MoneyFrame_UpdateMoney(self);
-			</OnShow>
-			<OnHide>
-				if ( self.hasPickup == 1 ) then
-					MoneyInputFrame_ClosePopup();
-					self.hasPickup = 0;
-				end
-			</OnHide>
+			<OnLoad function="MoneyFrame_OnLoad"/>
+			<OnEvent function="MoneyFrame_OnEvent"/>
+			<OnShow function="MoneyFrame_UpdateMoney"/>
+			<OnHide function="MoneyFrame_OnHide"/>
 		</Scripts>
 	</Frame>
 	<Frame name="SmallMoneyFrameTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="small" value="1" type="number"/>
+		</KeyValues>
 		<Size x="128" y="13"/>
 		<Frames>
 			<Frame name="$parentTrialErrorButton" parentKey="trialErrorButton" hidden="true">
@@ -209,38 +201,17 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				SmallMoneyFrame_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				MoneyFrame_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnShow>
-				MoneyFrame_UpdateMoney(self);
-			</OnShow>
-			<OnHide>
-				if ( self.hasPickup == 1 ) then
-					MoneyInputFrame_ClosePopup();
-					self.hasPickup = 0;
-				end
-			</OnHide>
+			<OnLoad function="SmallMoneyFrame_OnLoad"/>
+			<OnEvent function="MoneyFrame_OnEvent"/>
+			<OnShow function="MoneyFrame_UpdateMoney"/>
+			<OnHide function="MoneyFrame_OnHide"/>
 		</Scripts>
 	</Frame>
 	<Button name="SmallDenominationTemplate" virtual="true">
 		<Size x="32" y="13"/>
 		<Scripts>
-			<OnEnter>
-				if not C_Glue.IsOnGlueScreen() then
-					local tooltip = GetAppropriateTooltip();
-					tooltip:SetOwner(self, "ANCHOR_RIGHT");
-					tooltip:SetMerchantCostItem(self.index, self.item);
-				end
-			</OnEnter>
-			<OnLeave>
-				local tooltip = GetAppropriateTooltip();
-				tooltip:Hide();
-				ResetCursor();
-			</OnLeave>
+			<OnEnter function="SmallDenominationTemplate_OnEnter"/>
+			<OnLeave function="SmallDenominationTemplate_OnLeave"/>
 		</Scripts>
 		<ButtonText name="$parentText" parentKey="Text">
 			<Anchors>
@@ -294,9 +265,7 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				SmallMoneyFrame_OnLoad(self);
-			</OnLoad>
+			<OnLoad function="SmallMoneyFrame_OnLoad"/>
 		</Scripts>
 	</Frame>
 </Ui>

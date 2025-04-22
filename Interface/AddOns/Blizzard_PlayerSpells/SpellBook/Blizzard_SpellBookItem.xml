@@ -238,7 +238,7 @@
 							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-1.5" y="1"/>
 						</Anchors>
 					</Frame>
-					<Cooldown parentKey="Cooldown" inherits="CooldownFrameTemplate" drawEdge="false" useParentLevel="true">
+					<Cooldown parentKey="Cooldown" inherits="CooldownFrameTemplate" drawEdge="false" useParentLevel="true" hideCountdownNumbers="true">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.Icon" x="2" y="-2"/>
 							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-2" y="2"/>

@@ -241,6 +241,21 @@ local LFGListInfo =
 			},
 		},
 		{
+			Name = "GetAvailableActivityGroups",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "categoryID", Type = "number", Nilable = false },
+				{ Name = "filter", Type = "number", Nilable = false, Default = 0 },
+			},
+
+			Returns =
+			{
+				{ Name = "activityIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetFilteredSearchResults",
 			Type = "Function",
 

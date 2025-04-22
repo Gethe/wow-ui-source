@@ -304,7 +304,7 @@
 							<Anchor point="BOTTOM" relativeKey="$parent.ProductsScrollBoxContainer" relativePoint="TOP" y="22"/>
 						</Anchors>
 					</DropdownButton>
-					<Frame parentKey="PerksProgramProductDetailsContainerFrame" inherits="VerticalLayoutFrame" frameLevel="1000">
+					<Frame parentKey="PerksProgramProductDetailsContainerFrame" inherits="VerticalLayoutFrame" mixin="PerksProgramProductDetailsContainerMixin" frameLevel="1000">
 						<KeyValues>
 							<KeyValue key="fixedWidth" value="360" type="string"/>
 						</KeyValues>
@@ -342,17 +342,18 @@
 							<Frame parentKey="SetDetailsScrollBoxContainer" mixin="PerksProgramSetDetailsListMixin" hidden="true">
 								<KeyValues>
 									<KeyValue key="layoutIndex" value="40" type="number"/>
+									<KeyValue key="topPadding" value="30" type="number"/>
 									<KeyValue key="bottomPadding" value="45" type="number"/>
 									<KeyValue key="align" value="center" type="string"/>
 								</KeyValues>
 								<!-- Height is set dynamically via code in PerksProgramSetDetailsListMixin:Init -->
-								<Size x="255" y="200" />
+								<Size x="280" y="200" />
 								<Layers>
 									<Layer level="ARTWORK">
 										<FontString text="PERKS_PROGRAM_SET_SELECTION_DESC" justifyH="CENTER" inherits="GameFontNormalMed3">
 											<Color color="DISABLED_FONT_COLOR"/>
 											<Anchors>
-												<Anchor point="BOTTOM" relativePoint="TOP" y="10"/>
+												<Anchor point="BOTTOM" relativePoint="TOP" y="40"/>
 											</Anchors>
 										</FontString>
 									</Layer>
@@ -377,6 +378,133 @@
 								</KeyValues>
 							</Frame>
 						</Frames>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+						</Scripts>
+					</Frame>
+					<Frame parentKey="PerksProgramShoppingCartFrame" mixin="PerksProgramShoppingCartMixin" frameLevel="1000" hidden="true">
+						<Size x="400" y="900"/>
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.PerksProgramProductDetailsContainerFrame" y="-25"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString parentKey="Title" inherits="GameFontNormalHuge">
+									<Anchors>
+										<Anchor point="TOP" y="-24"/>
+									</Anchors>
+								</FontString>
+								<Texture parentKey="TopDivider" atlas="perks-divider-short" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-12"/>
+										<Anchor point="LEFT" x="30" y="0"/>
+										<Anchor point="RIGHT" x="-30" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Button parentKey="CloseButton" inherits="UIPanelCloseButtonNoScripts" frameLevel="990">
+								<Size x="24" y="24"/>
+								<Anchors>
+									<Anchor point="TOPRIGHT" x="-16" y="-16"/>
+								</Anchors>
+							</Button>
+							<Frame parentKey="ItemList" mixin="PerksProgramCartDetailsListMixin">
+								<KeyValues>
+									<KeyValue key="maxItemsToShow" type="number" value="8"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.TopDivider" relativePoint="BOTTOMLEFT" x="12" y="-24"/>
+									<Anchor point="BOTTOMRIGHT" x="-36" y="100"/>
+								</Anchors>
+								<Frames>
+									<Frame parentKey="ScrollBox" inherits="WowScrollBoxList" setAllPoints="true"/>
+									<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar" frameLevel="2500">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="12" y="-4"/>
+											<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="12" y="8"/>
+										</Anchors>
+									</EventFrame>
+								</Frames>
+								<Scripts>
+									<OnLoad method="OnLoad"/>
+								</Scripts>
+							</Frame>
+						</Frames>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture parentKey="BottomDivider" atlas="perks-divider-short" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOP" relativeKey="$parent.ItemList" relativePoint="BOTTOM" x="0" y="-12"/>
+										<Anchor point="LEFT" x="30" y="0"/>
+										<Anchor point="RIGHT" x="-30" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Button parentKey="ClearCartButton" inherits="PerksProgramUIButtonTemplate" mixin="PerksProgramClearCartButtonMixin">
+								<Size x="64" y="64"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.BottomDivider" relativePoint="BOTTOMLEFT" y="-12"/>
+								</Anchors>
+								<KeyValues>
+									<KeyValue key="perksProgramOnClickMethod" value="ClearCart" type="string"/>
+									<KeyValue key="buttonArtKit" value="128-RedButton-Delete" type="string"/>
+								</KeyValues>
+							</Button>
+							<Button parentKey="PurchaseCartButton" inherits="PerksProgramButtonTemplate" mixin="PerksProgramPurchaseCartButtonMixin">
+								<KeyValues>
+									<KeyValue key="perksProgramOnClickMethod" value="ConfirmPurchaseCart" type="string"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="BOTTOMLEFT" relativeKey="$parent.ClearCartButton" relativePoint="BOTTOMRIGHT" x="8" y="0"/>
+									<Anchor point="TOPRIGHT" relativeKey="$parent.BottomDivider" relativePoint="BOTTOMRIGHT" y="-12"/>
+								</Anchors>
+								<Frames>
+									<Frame parentKey="TextContainer" inherits="HorizontalLayoutFrame">
+										<KeyValues>
+											<KeyValue key="spacing" value="8" type="number"/>
+										</KeyValues>
+										<Anchors>
+											<Anchor point="CENTER"/>
+										</Anchors>
+										<Layers>
+											<Layer level="OVERLAY">
+												<Texture parentKey="PriceIcon">
+													<Size x="24" y="24"/>
+													<KeyValues>
+														<KeyValue key="layoutIndex" value="2" type="number"/>
+														<KeyValue key="align" value="center" type="string"/>
+													</KeyValues>
+												</Texture>
+											</Layer>
+										</Layers>
+										<Frames>
+											<Frame parentKey="PriceContainer" inherits="PerksProductPriceContainerHugeTemplate">
+												<KeyValues>
+													<KeyValue key="layoutIndex" value="1" type="number"/>
+													<KeyValue key="align" value="center" type="string"/>
+												</KeyValues>
+											</Frame>
+										</Frames>
+									</Frame>
+									<Frame parentKey="Spinner" inherits="SpinnerTemplate" alpha="0.5" hidden="true">
+										<Size x="18" y="18"/>
+									</Frame>
+								</Frames>
+							</Button>
+							<Frame parentKey="Background" inherits="NineSlicePanelTemplate" frameLevel="980">
+								<KeyValues>
+									<KeyValue key="layoutType" value="PerksProgramProductsPanelTemplate" type="string"/>
+									<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+								</KeyValues>
+							</Frame>
+						</Frames>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+						</Scripts>
 					</Frame>
 				</Frames>
 				<Layers>
@@ -426,7 +554,7 @@
 							<KeyValue key="tooltipAnchor" value="ANCHOR_BOTTOM" type="string"/>
 						</KeyValues>						
 						<Anchors>
-							<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-68" y="-72"/>
+							<Anchor point="TOPLEFT" relativePoint="TOP" x="149" y="-56"/>
 						</Anchors>						
 					</CheckButton>
 					<CheckButton parentKey="NormalFormButton" inherits="RingedMaskedButtonTemplate" mixin="PerksProgramAlteredFormButtonMixin" frameLevel="1000">
@@ -557,6 +685,33 @@
 							<KeyValue key="perksProgramOnClickMethod" value="ConfirmPurchase" type="string"/>
 						</KeyValues>
 						<Frames>
+							<Frame parentKey="PriceLayoutContainer" inherits="HorizontalLayoutFrame">
+								<KeyValues>
+									<KeyValue key="spacing" value="8" type="number"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="CENTER"/>
+								</Anchors>
+								<Frames>
+									<Frame parentKey="PriceContainer" inherits="PerksProductPriceContainerHugeTemplate">
+										<KeyValues>
+											<KeyValue key="layoutIndex" value="1" type="number"/>
+											<KeyValue key="align" value="center" type="string"/>
+										</KeyValues>
+									</Frame>
+								</Frames>
+								<Layers>
+									<Layer level="OVERLAY">
+										<Texture parentKey="PriceIcon">
+											<Size x="20" y="20"/>
+											<KeyValues>
+												<KeyValue key="layoutIndex" value="2" type="number"/>
+												<KeyValue key="align" value="center" type="string"/>
+											</KeyValues>
+										</Texture>
+									</Layer>
+								</Layers>
+							</Frame>
 							<Frame parentKey="Spinner" inherits="SpinnerTemplate" alpha="0.5" hidden="true">
 								<Size x="18" y="18"/>
 							</Frame>
@@ -576,10 +731,59 @@
 							<KeyValue key="perksProgramOnClickMethod" value="ConfirmRefund" type="string"/>
 						</KeyValues>
 					</Button>
+					<Button parentKey="AddToCartButton" inherits="PerksProgramButtonTemplate" mixin="PerksProgramTruncatedTextTooltipButtonMixin" frameLevel="2000" ignoreParentScale="true" text="PERKS_PROGRAM_CART_ADD" hidden="false">
+						<Size x="180" y="46"/>
+						<Anchors>
+							<Anchor point="BOTTOM" relativeKey="$parent.PurchaseButton" relativePoint="TOP" x="0" y="20"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="perksProgramOnClickMethod" value="AddToCart" type="string"/>
+						</KeyValues>
+						<Scripts>
+							<OnSizeChanged method="OnSizeChanged"/>
+						</Scripts>
+					</Button>
+					<Button parentKey="RemoveFromCartButton" inherits="PerksProgramButtonTemplate" mixin="PerksProgramTruncatedTextTooltipButtonMixin" frameLevel="2000" ignoreParentScale="true" text="PERKS_PROGRAM_CART_REMOVE" hidden="true">
+						<Size x="180" y="46"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.AddToCartButton"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="perksProgramOnClickMethod" value="RemoveFromCart" type="string"/>
+						</KeyValues>
+						<Scripts>
+							<OnSizeChanged method="OnSizeChanged"/>
+						</Scripts>
+					</Button>
+					<Button parentKey="ViewCartButton" inherits="PerksProgramUIButtonTemplate" mixin="PerksProgramViewCartButtonMixin" frameLevel="2000" ignoreParentScale="true" hidden="false" motionScriptsWhileDisabled="true">
+						<Size x="46" y="46"/>
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.PurchaseButton" relativePoint="LEFT" x="-16" y="0"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="perksProgramOnClickMethod" value="ViewCart" type="string"/>
+							<KeyValue key="buttonArtKit" value="128-RedButton-ShoppingCart" type="string"/>
+						</KeyValues>
+
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture parentKey="ItemCountBG" atlas="tokens-counterbg" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="TOPLEFT" x="3" y="-3"/>
+									</Anchors>
+								</Texture>
+								<FontString parentKey="ItemCountText" inherits="GameFontHighlight">
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent.ItemCountBG" x="0" y="3"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Button>
 					<Frame parentKey="ErrorIndicator" frameLevel="2000" ignoreParentScale="true" enableMouse="true" hidden="true" mixin="PerksProgramErrorIndicatorMixin">
 						<Size x="52" y="52"/>
 						<Anchors>
-							<Anchor point="RIGHT" relativeKey="$parent.PurchaseButton" relativePoint="LEFT" x="-15" y="0"/>
+							<Anchor point="RIGHT" relativeKey="$parent.ViewCartButton" relativePoint="LEFT" x="-15" y="0"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">

@@ -400,6 +400,7 @@
 			<OnEnter method="BaseActionButtonMixin_OnEnter"/>
 			<OnLeave method="BaseActionButtonMixin_OnLeave"/>
 			<OnDragStart method="BaseActionButtonMixin_OnDragStart"/>
+			<OnAttributeChanged method="BaseActionButtonMixin_OnAttributeChanged"/>
 		</Scripts>
 
 		<NormalTexture name="$parentNormalTexture" parentKey="NormalTexture" atlas="UI-HUD-ActionBar-IconFrame">

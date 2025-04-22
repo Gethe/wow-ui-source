@@ -365,7 +365,7 @@ SECURE_ACTIONS.flyout =
         function (self, unit, button)
             local flyoutId = SecureButton_GetModifiedAttribute(self, "spell", button);
             local isActionBar, specID, showFullTooltip, reason = true, 0, false, nil;
-            SpellFlyout:Toggle(button, flyoutId, isActionBar, specID, showFullTooltip, reason);
+            SpellFlyout:Toggle(self, flyoutId, isActionBar, specID, showFullTooltip, reason);
         end;
 
 SECURE_ACTIONS.multispell =
@@ -704,6 +704,16 @@ local function OnActionButtonPressAndHoldRelease(self, inputButton)
 	PerformAction(self, button, unit, actionType, false);
 end
 
+function SecureActionButton_ShouldUseOnKeyDown(self)
+	local useOnKeyDown = SecureButton_GetAttribute(self, "useOnKeyDown");
+
+	if useOnKeyDown == nil then
+		useOnKeyDown = GetCVarBool("ActionButtonUseKeyDown");
+	end
+
+	return useOnKeyDown;
+end
+
 function SecureActionButton_OnClick(self, inputButton, down, isKeyPress, isSecureAction)
 	-- Why are we adding extra arguments, 'isKeyPress' and 'isSecureAction', to an _OnClick handler?
 	-- We want to prevent mouse actions from triggering press-and-hold behavior for now, but we do want to allow AddOns
@@ -712,7 +722,7 @@ function SecureActionButton_OnClick(self, inputButton, down, isKeyPress, isSecur
 	-- a key press not a mouse press for 'useOnKeyDown' purposes.
 	local isSecureMousePress = not isKeyPress and isSecureAction;
 	local pressAndHoldAction = SecureButton_GetAttribute(self, "pressAndHoldAction");
-	local useOnKeyDown = not isSecureMousePress and (GetCVarBool("ActionButtonUseKeyDown") or pressAndHoldAction);
+	local useOnKeyDown = not isSecureMousePress and (SecureActionButton_ShouldUseOnKeyDown(self) or pressAndHoldAction);
 	local clickAction = (down and useOnKeyDown) or (not down and not useOnKeyDown);
 	local releasePressAndHoldAction = (not down) and (pressAndHoldAction or GetCVarBool("ActionButtonUseKeyHeldSpell"));
 

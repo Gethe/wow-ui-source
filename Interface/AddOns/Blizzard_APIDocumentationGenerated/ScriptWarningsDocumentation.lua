@@ -16,7 +16,6 @@ local ScriptWarnings =
 			LiteralName = "LUA_WARNING",
 			Payload =
 			{
-				{ Name = "warnType", Type = "number", Nilable = false },
 				{ Name = "warningText", Type = "cstring", Nilable = false },
 			},
 		},

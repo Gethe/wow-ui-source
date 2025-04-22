@@ -347,6 +347,14 @@ local SimpleFontStringAPI =
 			},
 		},
 		{
+			Name = "OnColorsUpdated",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+		},
+		{
 			Name = "SetAlphaGradient",
 			Type = "Function",
 

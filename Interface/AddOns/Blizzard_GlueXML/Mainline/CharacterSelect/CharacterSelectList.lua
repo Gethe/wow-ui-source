@@ -579,3 +579,7 @@ function CharacterSelectListMixin:EvaluateHelptips()
 	};
 	HelpTip:Show(self.AddGroupButton, addGroupHelpTipInfo);
 end
+
+function CharacterSelectListMixin:ClearSearch()
+	self.SearchBox:SetText("");
+end

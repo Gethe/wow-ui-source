@@ -1296,7 +1296,7 @@ function BossTargetFrameMixin:OnShow()
 	BossTargetFrameContainer:UpdateSize();
 end
 
-function BossTargetFrameMixin:OnHide()
+function BossTargetFrameMixin:BossTarget_OnHide()
 	BossTargetFrameContainer:UpdateSize();
 end
 

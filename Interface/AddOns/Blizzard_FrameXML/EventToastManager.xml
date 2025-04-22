@@ -214,7 +214,6 @@
 
 			<AnimationGroup parentKey="NewStageTextureKit" setToFinalAlpha="true">
 				<Scale childKey="BG1" duration="0.33" order="1" fromScaleX="0.001" fromScaleY="1" toScaleX="1" toScaleY="1"/>
-				<Scale childKey="BG2" duration="0.33" order="1" fromScaleX="0.001" fromScaleY="1" toScaleX="1" toScaleY="1"/>
 				<Alpha childKey="Background" duration="0" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="Title" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="SubTitle" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
@@ -248,16 +247,6 @@
 			</Layer>
 			<Layer level="BORDER">
 				<Texture parentKey="BG1" hidden="true" alphaMode="BLEND" atlas="legioninvasion-title-bg" setAllPoints="true">
-					<KeyValues>
-						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
-					</KeyValues>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="BORDER" textureSubLevel="1">
-				<Texture parentKey="BG2" hidden="true" alphaMode="ADD" atlas="legioninvasion-title-bg" setAllPoints="true">
 					<KeyValues>
 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 					</KeyValues>
@@ -1387,5 +1376,66 @@
 				</Texture>
 			</Layer>
 		</Layers>
+	</Frame>
+
+	<Frame name="EventToastScoreboardTemplate" mixin="EventToastScoreboardMixin" inherits="ResizeLayoutFrame, EventToastAnimationsTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="animInStartDelay" value="0" type="number"/>
+			<KeyValue key="widthPadding" value="50" type="number"/>
+			<KeyValue key="heightPadding" value="80" type="number"/>
+			<KeyValue key="minimumWidth" value="300" type="number"/>
+			<KeyValue key="minimumHeight" value="200" type="number"/>
+		</KeyValues>
+		<Size x="1" y="1"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="TopLine" atlas="UI-Frame-DastardlyDuos-Line-Top" useAtlasSize="true">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BottomLine" atlas="UI-Frame-DastardlyDuos-Line-bottom" useAtlasSize="true">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Background" atlas="UI-Frame-DastardlyDuos-BG-Black" useAtlasSize="true">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.TopLine" relativePoint="BOTTOM" x="0" y="5"/>
+						<Anchor point="BOTTOM" relativeKey="$parent.BottomLine" relativePoint="TOP" x="0" y="-5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="WidgetContainer" hidden="true" inherits="UIWidgetContainerTemplate">
+				<Anchors>
+					<Anchor point="TOP" x="0" y="-22"/>
+				</Anchors>
+			</Frame>
+			<Button parentKey="CloseButton" inherits="SharedButtonSmallTemplate" text="CLOSE">
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="20" />
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnEvent method="OnEvent"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
 	</Frame>
 </Ui>

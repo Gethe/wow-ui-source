@@ -1,0 +1,76 @@
+## Title: Blizzard_FrameXML
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_UIParent, Blizzard_SettingsDefinitions_Frame, Blizzard_ItemButton, Blizzard_FrameXMLUtil, Blizzard_GameTooltip, Blizzard_UIPanelTemplates, Blizzard_UnitPopup
+## LoadFirst: 1
+## AllowLoad: Game
+## AllowLoadGameType: mists
+Shared\Localization.lua
+Wrath\SparkleFrame.lua
+Wrath\SparkleFrame.xml
+CustomBindingManager.lua
+CustomBindingHandler.lua
+Classic\SecureTemplatesBase.xml
+Mists\SecureTemplates.lua
+Classic\SecureTemplates_Shared.lua
+SecureStateDriver.lua
+SecureHoverDriver.lua
+Classic\SecureTemplates.xml
+SecureHandlerTemplates.xml
+SecureGroupHeaders.xml
+WardrobeOutfits.xml
+Classic\NavigationBar.lua
+Classic\NavigationBar.xml
+Cata\CharacterFrameTemplates.xml
+DeprecatedTemplates.lua
+DeprecatedTemplates.xml
+Classic\AlertFrames.lua
+Classic\AlertFrames.xml
+Classic\AlertFrameSystems.lua
+Classic\AlertFrameSystems.xml
+Classic\MirrorTimer.lua
+Classic\MirrorTimer.xml
+Classic\CoinPickupFrame.lua
+Classic\CoinPickupFrame.xml
+Classic\StackSplitFrame.lua
+Classic\StackSplitFrame.xml
+Classic\ZoneText.lua
+Classic\ZoneText.xml
+GuildUtil.lua
+Classic\TutorialFrame.lua
+Classic\TutorialFrame.xml
+Shared\LowHealthFrame.lua
+Classic\LowHealthFrame.xml
+Classic\CombatFeedback.lua
+Classic\RaidWarning.xml
+Shared\CinematicFrame.lua
+Shared\CinematicFrame.xml
+Classic\ColorPickerFrame.lua
+Classic\ColorPickerFrame.xml
+TBC\WorldStateFrame.lua
+Mists\WorldStateFrame.xml
+Classic\TalentFrameBase_Shared.lua
+Mists\TalentFrameBase.lua
+Cata\Blizzard_TalentUITemplates.xml
+MovieFrame.lua
+MovieFrame.xml
+Classic\RolePoll.xml
+Classic\StreamingFrame.lua
+Classic\StreamingFrame.xml
+IconIntroAnimation.lua
+IconIntroAnimation.xml
+Timer.lua
+Timer.xml
+DestinyFrame.xml
+SharedPetBattleTemplates.lua
+SharedPetBattleTemplates.xml
+Classic\LootHistory.lua
+Classic\LootHistory.xml
+Classic\ClassTrainerFrameTemplates.xml
+Wrath\EquipmentManager.lua
+EquipmentFlyout.xml
+GhostFrame.xml
+FloatingPetBattleTooltip.lua
+FloatingPetBattleTooltip.xml
+BattlePetTooltip.lua
+BattlePetTooltip.xml

@@ -829,7 +829,7 @@ local Item =
 
 			Arguments =
 			{
-				{ Name = "quality", Type = "number", Nilable = false },
+				{ Name = "quality", Type = "ItemQuality", Nilable = false },
 			},
 
 			Returns =
@@ -965,6 +965,20 @@ local Item =
 				{ Name = "limitCategoryName", Type = "cstring", Nilable = true },
 				{ Name = "limitCategoryCount", Type = "number", Nilable = true },
 				{ Name = "limitCategoryID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetItemUpgradeInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemUpgradeInfo", Type = "ItemUpgradeInfo", Nilable = true },
 			},
 		},
 		{
@@ -1708,6 +1722,18 @@ local Item =
 				{ Name = "expansionID", Type = "number", Nilable = false },
 				{ Name = "setID", Type = "number", Nilable = true },
 				{ Name = "isCraftingReagent", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ItemUpgradeInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "currentLevel", Type = "number", Nilable = false },
+				{ Name = "maxLevel", Type = "number", Nilable = false },
+				{ Name = "maxItemLevel", Type = "number", Nilable = false },
+				{ Name = "trackString", Type = "cstring", Nilable = true },
+				{ Name = "trackStringID", Type = "number", Nilable = true },
 			},
 		},
 	},

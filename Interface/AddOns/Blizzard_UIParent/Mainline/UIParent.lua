@@ -74,19 +74,6 @@ UIMenus = {
 	"DropDownList3",
 };
 
-ITEM_QUALITY_COLORS = { };
-for i = 0, Enum.ItemQualityMeta.NumValues - 1 do
-	local r, g, b = C_Item.GetItemQualityColor(i);
-	local color = CreateColor(r, g, b, 1);
-	ITEM_QUALITY_COLORS[i] = { r = r, g = g, b = b, hex = color:GenerateHexColorMarkup(), color = color };
-end
-
-WORLD_QUEST_QUALITY_COLORS = {
-	[Enum.WorldQuestQuality.Common] = ITEM_QUALITY_COLORS[Enum.ItemQuality.Common];
-	[Enum.WorldQuestQuality.Rare] = ITEM_QUALITY_COLORS[Enum.ItemQuality.Rare];
-	[Enum.WorldQuestQuality.Epic] = ITEM_QUALITY_COLORS[Enum.ItemQuality.Epic];
-};
-
 function UIParent_OnLoad(self)
 	self:RegisterEvent("PLAYER_LOGIN");
 	self:RegisterEvent("PLAYER_DEAD");
@@ -261,9 +248,6 @@ function UIParent_OnLoad(self)
 
 	-- Events for Player Choice
 	self:RegisterEvent("PLAYER_CHOICE_UPDATE");
-
-	-- Lua warnings
-	self:RegisterEvent("LUA_WARNING");
 
 	-- Garrison
 	self:RegisterEvent("GARRISON_MISSION_NPC_OPENED");
@@ -1410,6 +1394,7 @@ function UIParent_OnEvent(self, event, ...)
 		NPETutorial_AttemptToBegin(event);
 
 		StoreFrame_CheckForFree(event);
+		EventUtil.TriggerOnVariablesLoaded();
 	elseif ( event == "PLAYER_LOGIN" ) then
 		TimeManager_LoadUI();
 		-- You can override this if you want a Combat Log replacement
@@ -1537,7 +1522,13 @@ function UIParent_OnEvent(self, event, ...)
 		StaticPopup_Hide("QUIT");
 	elseif ( event == "LOOT_BIND_CONFIRM" ) then
 		local texture, item, quantity, currencyID, quality, locked = GetLootSlotInfo(arg1);
-		local dialog = StaticPopup_Show("LOOT_BIND", ITEM_QUALITY_COLORS[quality].hex..item.."|r");
+		local textArg1 = item;
+		local colorData = ColorManager.GetColorDataForItemQuality(quality);
+		if colorData then
+			textArg1 = colorData.hex..item.."|r";
+		end
+
+		local dialog = StaticPopup_Show("LOOT_BIND", textArg1);
 		if ( dialog ) then
 			dialog.data = arg1;
 		end
@@ -1826,9 +1817,15 @@ function UIParent_OnEvent(self, event, ...)
 		GroupLootContainer_AddRoll(arg1, arg2);
 	elseif ( event == "CONFIRM_LOOT_ROLL" ) then
 		local texture, name, count, quality, bindOnPickUp = GetLootRollItemInfo(arg1);
-		local dialog = StaticPopup_Show("CONFIRM_LOOT_ROLL", ITEM_QUALITY_COLORS[quality].hex..name.."|r");
-		if ( dialog ) then
-			dialog.text:SetFormattedText(arg3, ITEM_QUALITY_COLORS[quality].hex..name.."|r");
+		local textArg1 = name;
+		local colorData = ColorManager.GetColorDataForItemQuality(quality);
+		if colorData then
+			textArg1 = colorData.hex..name.."|r";
+		end
+
+		local dialog = StaticPopup_Show("CONFIRM_LOOT_ROLL", textArg1);
+		if dialog then
+			dialog.text:SetFormattedText(arg3, textArg1);
 			StaticPopup_Resize(dialog, "CONFIRM_LOOT_ROLL");
 			dialog.data = arg1;
 			dialog.data2 = arg2;
@@ -1860,9 +1857,15 @@ function UIParent_OnEvent(self, event, ...)
 		StaticPopup_Show("SAVED_VARIABLES_TOO_LARGE", addonName);
 	elseif ( event == "CONFIRM_DISENCHANT_ROLL" ) then
 		local texture, name, count, quality, bindOnPickUp = GetLootRollItemInfo(arg1);
-		local dialog = StaticPopup_Show("CONFIRM_LOOT_ROLL", ITEM_QUALITY_COLORS[quality].hex..name.."|r");
-		if ( dialog ) then
-			dialog.text:SetFormattedText(LOOT_NO_DROP_DISENCHANT, ITEM_QUALITY_COLORS[quality].hex..name.."|r");
+		local textArg1 = name;
+		local colorData = ColorManager.GetColorDataForItemQuality(quality);
+		if colorData then
+			textArg1 = colorData.hex..name.."|r";
+		end
+
+		local dialog = StaticPopup_Show("CONFIRM_LOOT_ROLL", textArg1);
+		if dialog then
+			dialog.text:SetFormattedText(LOOT_NO_DROP_DISENCHANT, textArg1);
 			StaticPopup_Resize(dialog, "CONFIRM_LOOT_ROLL");
 			dialog.data = arg1;
 			dialog.data2 = arg2;
@@ -2188,8 +2191,6 @@ function UIParent_OnEvent(self, event, ...)
 		PlayerChoice_LoadUI();
 		PlayerChoiceFrame:TryShow();
 		PlayerChoiceToggle_TryShow();
-	elseif ( event == "LUA_WARNING" ) then
-		HandleLuaWarning(...);
 	elseif ( event == "GARRISON_MISSION_NPC_OPENED") then
 		local followerType = ...;
 		if followerType ~= Enum.GarrisonFollowerType.FollowerType_7_0_GarrisonFollower then
@@ -3349,14 +3350,6 @@ function AnimatedShine_OnUpdate(elapsed)
 			shine4:SetPoint("CENTER", parent, "BOTTOMRIGHT", -(value.timer-speed*3)/speed*distance, 0);
 		end
 	end
-end
-
-
-
-
-function ConsolePrint(...)
-	local printMsg = string.join(" ", tostringall(...));
-	C_Log.LogMessage(Enum.LogPriority.Normal, printMsg);
 end
 
 function LFD_IsEmpowered()

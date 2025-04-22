@@ -481,6 +481,11 @@ function SelectionBehaviorMixin:SelectOffsetElementData(offset, predicate)
 	local dataProvider = self.scrollBox:GetDataProvider();
 	if dataProvider then
 		local currentElementData = self:GetFirstSelectedElementData();
+		if currentElementData == nil then
+			-- Cannot do a relative selection without at least one selection.
+			error("Attempted to select an adjacent element without an existing selection.")
+		end
+
 		local currentIndex = dataProvider:FindIndex(currentElementData);
 		local offsetIndex = currentIndex + offset;
 		local searchOffset = offset > 0 and 1 or -1;

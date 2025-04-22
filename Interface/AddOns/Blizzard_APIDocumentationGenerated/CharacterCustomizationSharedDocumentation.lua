@@ -68,6 +68,18 @@ local CharacterCustomizationShared =
 			},
 		},
 		{
+			Name = "NewCharGear",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Start", Type = "NewCharGear", EnumValue = 0 },
+				{ Name = "Preview", Type = "NewCharGear", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "CharCustomizationCategory",
 			Type = "Structure",
 			Fields =

@@ -2,7 +2,7 @@
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
 ## Dependencies: Blizzard_UIPanels_Game
-## AllowLoadGameType: wowlabs
+## AllowLoadGameType: plunderstorm
 ## AllowLoad: Game
 SpectateFrame.lua
 SpectateFrame.xml

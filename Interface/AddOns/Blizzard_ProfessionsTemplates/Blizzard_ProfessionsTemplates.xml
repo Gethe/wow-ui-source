@@ -240,16 +240,17 @@
 	<Frame name="ProfessionsCustomerTableCellStatusTemplate" mixin="ProfessionsCustomerTableCellStatusMixin" inherits="ProfessionsTableCellTextTemplate" virtual="true"/>
 	<Frame name="ProfessionsCustomerTableCellTypeTemplate" mixin="ProfessionsCustomerTableCellTypeMixin" inherits="ProfessionsTableCellTextTemplate" virtual="true"/>
 	<Frame name="ProfessionsCustomerTableCellExpirationTemplate" mixin="ProfessionsCustomerTableCellExpirationMixin" passThroughButtons="LeftButton, RightButton" virtual="true">
-		<Size x="60" y="16"/>
+		<Size x="0" y="16"/>
 		<Scripts>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
 		</Scripts>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<FontString parentKey="Text" inherits="Number14FontGray" justifyH="CENTER">
+				<FontString parentKey="Text" inherits="Number14FontGray" justifyH="RIGHT">
 					<Anchors>
-						<Anchor point="CENTER"/>
+						<Anchor point="TOPLEFT" x="-30" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="-33" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>

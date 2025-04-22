@@ -250,9 +250,9 @@ local ItemConstants =
 		{
 			Name = "ItemGemColor",
 			Type = "Enumeration",
-			NumValues = 30,
+			NumValues = 31,
 			MinValue = 1,
-			MaxValue = 536870912,
+			MaxValue = 1073741824,
 			Fields =
 			{
 				{ Name = "Meta", Type = "ItemGemColor", EnumValue = 1 },
@@ -285,6 +285,7 @@ local ItemConstants =
 				{ Name = "SingingThunder", Type = "ItemGemColor", EnumValue = 134217728 },
 				{ Name = "SingingSea", Type = "ItemGemColor", EnumValue = 268435456 },
 				{ Name = "SingingWind", Type = "ItemGemColor", EnumValue = 536870912 },
+				{ Name = "FutureUse", Type = "ItemGemColor", EnumValue = 1073741824 },
 			},
 		},
 		{
@@ -329,25 +330,6 @@ local ItemConstants =
 			},
 		},
 		{
-			Name = "ItemQuality",
-			Type = "Enumeration",
-			NumValues = 9,
-			MinValue = 0,
-			MaxValue = 8,
-			Fields =
-			{
-				{ Name = "Poor", Type = "ItemQuality", EnumValue = 0 },
-				{ Name = "Common", Type = "ItemQuality", EnumValue = 1 },
-				{ Name = "Uncommon", Type = "ItemQuality", EnumValue = 2 },
-				{ Name = "Rare", Type = "ItemQuality", EnumValue = 3 },
-				{ Name = "Epic", Type = "ItemQuality", EnumValue = 4 },
-				{ Name = "Legendary", Type = "ItemQuality", EnumValue = 5 },
-				{ Name = "Artifact", Type = "ItemQuality", EnumValue = 6 },
-				{ Name = "Heirloom", Type = "ItemQuality", EnumValue = 7 },
-				{ Name = "WoWToken", Type = "ItemQuality", EnumValue = 8 },
-			},
-		},
-		{
 			Name = "ItemReagentSubclass",
 			Type = "Enumeration",
 			NumValues = 3,
@@ -385,9 +367,9 @@ local ItemConstants =
 		{
 			Name = "ItemSocketType",
 			Type = "Enumeration",
-			NumValues = 30,
+			NumValues = 31,
 			MinValue = 0,
-			MaxValue = 29,
+			MaxValue = 30,
 			Fields =
 			{
 				{ Name = "None", Type = "ItemSocketType", EnumValue = 0 },
@@ -420,6 +402,7 @@ local ItemConstants =
 				{ Name = "SingingThunder", Type = "ItemSocketType", EnumValue = 27 },
 				{ Name = "SingingSea", Type = "ItemSocketType", EnumValue = 28 },
 				{ Name = "SingingWind", Type = "ItemSocketType", EnumValue = 29 },
+				{ Name = "FutureUse", Type = "ItemSocketType", EnumValue = 30 },
 			},
 		},
 		{
@@ -649,6 +632,10 @@ local ItemConstants =
 				{ Name = "NUM_ITEM_ENCHANTMENT_SOCKETS", Type = "number", Value = 3 },
 				{ Name = "MAX_LOOT_OBJECT_ITEMS", Type = "number", Value = 31 },
 				{ Name = "INVALID_TRANSACTION_BANK_TAB_SLOT", Type = "number", Value = 0xFF },
+				{ Name = "DEFAULT_ITEM_SAVE_VERSION", Type = "number", Value = 2 },
+				{ Name = "CURRENT_ITEM_SAVE_VERSION", Type = "number", Value = DEFAULT_ITEM_SAVE_VERSION },
+				{ Name = "DEFAULT_ARTIFACT_POWERS_VERSION", Type = "number", Value = 1 },
+				{ Name = "CURRENT_ARTIFACT_POWERS_VERSION", Type = "number", Value = DEFAULT_ARTIFACT_POWERS_VERSION },
 			},
 		},
 		{

@@ -4,6 +4,8 @@ RANGE_INDICATOR = "●";
 COOLDOWN_TYPE_LOSS_OF_CONTROL = 1;
 COOLDOWN_TYPE_NORMAL = 2;
 
+local countdownForCooldownsCVarName = "countdownForCooldowns";
+
 ACTION_HIGHLIGHT_MARKS = { };
 ON_BAR_HIGHLIGHT_MARKS = { };
 
@@ -209,12 +211,21 @@ function ActionBarButtonEventsFrameMixin:OnLoad()
 	self:RegisterUnitEvent("UNIT_FLAGS", "pet");
 	self:RegisterUnitEvent("UNIT_AURA", "pet");
 	self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED");
+
+	CVarCallbackRegistry:SetCVarCachable(countdownForCooldownsCVarName);
+	CVarCallbackRegistry:RegisterCallback(countdownForCooldownsCVarName, self.OnCountdownForCooldownsChanged, self);
 end
 
 function ActionBarButtonEventsFrameMixin:OnEvent(event, ...)
 	-- pass event down to the buttons
 	for k, frame in pairs(self.frames) do
 		frame:OnEvent(event, ...);
+	end
+end
+
+function ActionBarButtonEventsFrameMixin:OnCountdownForCooldownsChanged()
+	for k, frame in pairs(self.frames) do
+		ActionButton_UpdateCooldownNumberHidden(frame);
 	end
 end
 
@@ -458,7 +469,7 @@ function ActionBarActionButtonMixin:UpdateHotkeys(actionButtonType)
     end
 	
 	self.bindingAction = actionButtonType..id;
-	if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
+	if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
 		self.bindingAction = "WOWLABS_"..self.bindingAction;
 	end
     local hotkey = self.HotKey;
@@ -499,6 +510,7 @@ function ActionBarActionButtonMixin:UpdatePressAndHoldAction()
 end
 
 function ActionBarActionButtonMixin:OnAttributeChanged(name, value)
+	BaseActionButtonMixin.BaseActionButtonMixin_OnAttributeChanged(self, name, value);
 	self:UpdateAction();
 end
 
@@ -721,6 +733,12 @@ function ActionBarActionButtonMixin:UpdateCount()
 	end
 end
 
+-- Determine whether cooldowns display countdown numbers for action bar buttons and spell flyout buttons.
+function ActionButton_UpdateCooldownNumberHidden(actionButton)
+	local shouldBeHidden = actionButton.cooldown.currentCooldownType == COOLDOWN_TYPE_LOSS_OF_CONTROL or CVarCallbackRegistry:GetCVarValueBool(countdownForCooldownsCVarName) ~= true;
+	actionButton.cooldown:SetHideCountdownNumbers(shouldBeHidden);
+end
+
 -- Shared between action bar buttons and spell flyout buttons.
 function ActionButton_UpdateCooldown(self)
 	local locStart, locDuration;
@@ -785,8 +803,8 @@ function ActionButton_UpdateCooldown(self)
 		if ( self.cooldown.currentCooldownType ~= COOLDOWN_TYPE_LOSS_OF_CONTROL ) then
 			self.cooldown:SetEdgeTexture("Interface\\Cooldown\\UI-HUD-ActionBar-LoC");
 			self.cooldown:SetSwipeColor(0.17, 0, 0);
-			self.cooldown:SetHideCountdownNumbers(true);
 			self.cooldown.currentCooldownType = COOLDOWN_TYPE_LOSS_OF_CONTROL;
+			ActionButton_UpdateCooldownNumberHidden(self);
 		end
 
 		CooldownFrame_Set(self.cooldown, locStart, locDuration, true, true, modRate);
@@ -796,10 +814,9 @@ function ActionButton_UpdateCooldown(self)
 		if ( self.cooldown.currentCooldownType ~= COOLDOWN_TYPE_NORMAL ) then
 			self.cooldown:SetEdgeTexture("Interface\\Cooldown\\UI-HUD-ActionBar-SecondaryCooldown");
 			self.cooldown:SetSwipeColor(0, 0, 0);
-			self.cooldown:SetHideCountdownNumbers(false);
 			self.cooldown.currentCooldownType = COOLDOWN_TYPE_NORMAL;
+			ActionButton_UpdateCooldownNumberHidden(self);
 		end
-
 
 		self.cooldown:SetScript("OnCooldownDone", ActionButtonCooldown_OnCooldownDone, locStart > 0);
 
@@ -916,7 +933,7 @@ function ActionButton_HideOverlayGlow(button)
 		button.SpellActivationAlert.ProcStartAnim:Stop();
 	end
 
-	if button:IsVisible() then
+	if button.SpellActivationAlert:IsShown() then
  		button.SpellActivationAlert:Hide();
 	end
 end
@@ -1348,16 +1365,7 @@ end
 
 -- Shared between action bar buttons and spell flyout buttons
 function ActionBarActionButtonMixin:UpdateFlyout(isButtonDownOverride)
-	if not self.HasPopup then
-		return;
-	end
-
-	local actionType = GetActionInfo(self.action);
-	if (actionType == "flyout" and SpellFlyout) then
-		self:SetPopup(SpellFlyout);
-	else
-		self:ClearPopup();
-	end
+	BaseActionButtonMixin.UpdateFlyout(self, isButtonDownOverride);
 end
 
 function ActionBarActionButtonMixin:SetButtonStateOverride(state)
@@ -1445,6 +1453,7 @@ function BaseActionButtonMixin:BaseActionButtonMixin_OnLoad()
 	FlyoutButtonMixin.OnLoad(self);
 
 	self:UpdateButtonArt();
+	self:UpdateFlyout();
 
 	self.NormalTexture:SetDrawLayer("OVERLAY");
 	self.PushedTexture:SetDrawLayer("OVERLAY");
@@ -1460,6 +1469,10 @@ end
 
 function BaseActionButtonMixin:BaseActionButtonMixin_OnDragStart()
 	FlyoutButtonMixin.OnDragStart(self);
+end
+
+function BaseActionButtonMixin:BaseActionButtonMixin_OnAttributeChanged(name, value)
+	self:UpdateFlyout();
 end
 
 function BaseActionButtonMixin:GetShowGrid()
@@ -1507,6 +1520,59 @@ function BaseActionButtonMixin:UpdateButtonArt()
 		self:SetPushedAtlas("UI-HUD-ActionBar-IconFrame-AddRow-Down");
 		self.PushedTexture:SetDrawLayer("OVERLAY");
 		self.PushedTexture:SetSize(51, 51);
+	end
+end
+
+-- Shared between action bar buttons and spell flyout buttons
+function BaseActionButtonMixin:UpdateFlyout(isButtonDownOverride)
+	if not self.HasPopup then
+		return;
+	end
+
+	-- Attempt to resolve the action on this button to a flyout, either by
+	-- having the secure "type" attribute explicitly set to "flyout" or by
+	-- configuring it as a regular "action" with a slot ID that itself holds
+	-- a flyout.
+	--
+	-- This is intended to support case where a button inherits from a
+	-- fully-featured button template such as ActionBarButtonTemplate, or
+	-- a barebones combo of ActionButtonTemplate + SecureActionButtonTemplate.
+
+	local effectiveButton = SecureButton_GetEffectiveButton(self);
+	local popupDirection = SecureButton_GetModifiedAttribute(self, "flyoutDirection", effectiveButton);
+	local actionType = SecureButton_GetModifiedAttribute(self, "type", effectiveButton);
+
+	if actionType == nil or actionType == "action" then
+		local slotID;
+
+		if self.CalculateAction then
+			slotID = self:CalculateAction();
+		else
+			slotID = self.action;
+		end
+
+		if slotID then
+			actionType = GetActionInfo(slotID);
+		end
+	end
+
+	-- If an explicit popup direction hasn't been supplied and the button is on an action bar then use the direction from the action bar.
+	if not popupDirection and self.bar then
+		popupDirection = self.bar:GetSpellFlyoutDirection();
+	end
+
+	-- FlyoutButtonMixin stores the direction of the popout on a field
+	-- on the button itself, which needs securely updating from the value
+	-- stored in the attribute if defined.
+
+	if popupDirection then
+		self:SetPopupDirection(popupDirection);
+	end
+
+	if actionType == "flyout" and SpellFlyout then
+		self:SetPopup(SpellFlyout);
+	else
+		self:ClearPopup();
 	end
 end
 

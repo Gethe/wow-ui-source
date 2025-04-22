@@ -15,8 +15,8 @@ function assertsafe(cond, msgStringOrFunction, ...)
 		end
 
 		SetErrorCallstackHeight(GetCallstackHeight() - 1); -- report error from the previous function
-		if HandleLuaError then
-			HandleLuaError(error);
+		if geterrorhandler() then
+			geterrorhandler()(error);
 		elseif ProcessExceptionClient then
 			ProcessExceptionClient(error);
 		end

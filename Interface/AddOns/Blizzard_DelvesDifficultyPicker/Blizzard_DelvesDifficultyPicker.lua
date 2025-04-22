@@ -517,10 +517,10 @@ function DelveRewardsContainerFrameMixin:SetRewards()
 			if IsCurrencyContainer then 
 				local name, texture, quantity, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(reward.id, quantity);
 				table.insert(rewardInfo, {id = reward.id, texture = texture, quantity = quantity, quality = quality, name = name, isCurrencyContainer = true});
-			else 
+			else
 				local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(reward.id);
 				table.insert(rewardInfo, {id = reward.id, texture = currencyInfo.iconFileID, quantity = reward.quantity, quality = currencyInfo.quality, name = currencyInfo.name, isCurrencyContainer = false});
-			end 
+			end
 		end
 	end
 
@@ -536,35 +536,39 @@ function DelveRewardsContainerFrameMixin:SetRewards()
 		if #rewardInfo > 0 then
 			local buttons = {};
 			for i, reward in ipairs(rewardInfo) do
-				if i > MAX_NUM_REWARDS then 
+				if i > MAX_NUM_REWARDS then
 					break;
 				else
 					local button = self.rewardPool:Acquire();
-	
+
 					SetItemButtonTexture(button, reward.texture);
 					SetItemButtonQuality(button, reward.quality);
 					button.Name:SetText(reward.name);
-					button.Name:SetTextColor(ITEM_QUALITY_COLORS[reward.quality].color:GetRGB());
-	
+
+					local colorData = ColorManager.GetColorDataForItemQuality(reward.quality);
+					if colorData then
+						button.Name:SetTextColor(colorData.color:GetRGB());
+					end
+
 					if reward.quantity and reward.quantity > 1 then
 						SetItemButtonCount(button, reward.quantity);
 					end
-	
+
 					tinsert(buttons, button);
 					button.id = reward.id;
 					button.context = reward.context;
 					button:Show();
 				end
 			end
-	
+
 			local vertPadding = 5;
 			local buttonHeight = C_XMLUtil.GetTemplateInfo("DelveRewardItemButtonTemplate").height;
 			self:SetHeight(self.RewardText:GetHeight() + ((buttonHeight + vertPadding) * #rewardInfo));
-	
+
 			local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRight, 1, 0, vertPadding);
 			local anchor = CreateAnchor("TOP", self.RewardText, "BOTTOM", 20, -5);
 			AnchorUtil.GridLayout(buttons, anchor, layout);
-	
+
 			self:Show();
 		end
 	end);

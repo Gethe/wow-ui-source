@@ -1,7 +1,7 @@
 ## Title: Blizzard_UnitPopupShared
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_SharedXML
+## Dependencies: Blizzard_SharedXML, Blizzard_Colors
 ## OptionalDeps: Blizzard_GlueXML, Blizzard_FrameXMLBase
 ## AllowLoad: both
 ## AllowLoadGameType: mainline

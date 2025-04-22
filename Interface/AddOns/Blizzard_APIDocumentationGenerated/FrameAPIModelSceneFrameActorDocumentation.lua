@@ -294,24 +294,6 @@ local FrameAPIModelSceneFrameActor =
 			},
 		},
 		{
-			Name = "SetPlayerModelFromGlues",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "characterIndex", Type = "number", Nilable = true },
-				{ Name = "sheatheWeapons", Type = "bool", Nilable = false, Default = false },
-				{ Name = "autoDress", Type = "bool", Nilable = false, Default = true },
-				{ Name = "hideWeapons", Type = "bool", Nilable = false, Default = false },
-				{ Name = "usePlayerNativeForm", Type = "bool", Nilable = false, Default = true },
-			},
-
-			Returns =
-			{
-				{ Name = "success", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "SetSheathed",
 			Type = "Function",
 
@@ -337,22 +319,6 @@ local FrameAPIModelSceneFrameActor =
 			Arguments =
 			{
 				{ Name = "use", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "TryOn",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "itemLinkOrItemModifiedAppearanceID", Type = "cstring", Nilable = false },
-				{ Name = "handSlotName", Type = "cstring", Nilable = true },
-				{ Name = "spellEnchantmentID", Type = "number", Nilable = false, Default = 0 },
-			},
-
-			Returns =
-			{
-				{ Name = "reason", Type = "ItemTryOnReason", Nilable = true },
 			},
 		},
 		{

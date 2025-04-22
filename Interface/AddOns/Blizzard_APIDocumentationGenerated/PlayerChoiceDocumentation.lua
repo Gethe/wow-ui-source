@@ -146,7 +146,6 @@ local PlayerChoice =
 				{ Name = "widgetSetID", Type = "number", Nilable = true },
 				{ Name = "spellID", Type = "number", Nilable = true },
 				{ Name = "rarity", Type = "PlayerChoiceRarity", Nilable = true },
-				{ Name = "rarityColor", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = true },
 				{ Name = "typeArtID", Type = "number", Nilable = true },
 				{ Name = "headerIconAtlasElement", Type = "string", Nilable = true },
 				{ Name = "subHeader", Type = "string", Nilable = true },

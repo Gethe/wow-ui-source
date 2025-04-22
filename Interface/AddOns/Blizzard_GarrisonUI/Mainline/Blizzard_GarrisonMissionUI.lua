@@ -157,7 +157,7 @@ function GarrisonFollowerMission:OnHideMainFrame()
 	end
 	GarrisonMissionFrame_ClearMouse();
 	C_Garrison.CloseMissionNPC();
-	HelpPlate_Hide();
+	HelpPlate.Hide();
 	self:HideCompleteMissions(true);
 	MissionCompletePreload_Cancel(self);
 	PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_CLOSE);
@@ -532,7 +532,13 @@ StaticPopupDialogs["DEACTIVATE_FOLLOWER"] = {
 	end,
 	OnShow = function(self)
 		local quality = C_Garrison.GetFollowerQuality(self.data);
-		local name = FOLLOWER_QUALITY_COLORS[quality].hex..C_Garrison.GetFollowerName(self.data)..FONT_COLOR_CODE_CLOSE;
+
+		local name = C_Garrison.GetFollowerName(self.data);
+		local colorData = ColorManager.GetColorDataForFollowerQuality(quality);
+		if colorData then
+			name = colorData.hex..name..FONT_COLOR_CODE_CLOSE;
+		end
+
 		local cost = GetMoneyString(C_Garrison.GetFollowerActivationCost());
 		local uses = C_Garrison.GetNumFollowerDailyActivations();
 		self.text:SetFormattedText(GARRISON_DEACTIVATE_FOLLOWER_CONFIRMATION, name, cost, uses);
@@ -552,7 +558,13 @@ StaticPopupDialogs["ACTIVATE_FOLLOWER"] = {
 	end,
 	OnShow = function(self)
 		local quality = C_Garrison.GetFollowerQuality(self.data);
-		local name = FOLLOWER_QUALITY_COLORS[quality].hex..C_Garrison.GetFollowerName(self.data)..FONT_COLOR_CODE_CLOSE;
+
+		local name = C_Garrison.GetFollowerName(self.data);
+		local colorData = ColorManager.GetColorDataForFollowerQuality(quality);
+		if colorData then
+			name = colorData.hex..name..FONT_COLOR_CODE_CLOSE;
+		end
+
 		local followerInfo = C_Garrison.GetFollowerInfo(self.data);
 		local uses = C_Garrison.GetNumFollowerActivationsRemaining(GarrisonFollowerOptions[followerInfo.followerTypeID].garrisonType);
 		self.text:SetFormattedText(GARRISON_ACTIVATE_FOLLOWER_CONFIRMATION, name, uses);
@@ -1057,18 +1069,36 @@ function GarrisonMissionButton_SetInProgressTooltip(missionInfo, showRewards)
 		GameTooltip:AddLine(REWARDS);
 		for id, reward in pairs(missionInfo.rewards) do
 			if (reward.quality) then
-				GameTooltip:AddLine(ITEM_QUALITY_COLORS[reward.quality + 1].hex..reward.title..FONT_COLOR_CODE_CLOSE);
+				local tooltipText = reward.title;
+				local colorData = ColorManager.GetColorDataForItemQuality(reward.quality + 1);
+				if colorData then
+					tooltipText = colorData.hex..reward.title..FONT_COLOR_CODE_CLOSE;
+				end
+
+				GameTooltip:AddLine(tooltipText);
 			elseif (reward.itemID) then
 				local itemName, _, itemRarity, _, _, _, _, _, _, itemTexture = C_Item.GetItemInfo(reward.itemID);
 				if itemName then
-					GameTooltip:AddLine(ITEM_QUALITY_COLORS[itemRarity].hex..itemName..FONT_COLOR_CODE_CLOSE);
+					local tooltipText = itemName;
+					local colorData = ColorManager.GetColorDataForItemQuality(itemRarity);
+					if colorData then
+						tooltipText = colorData.hex..itemName..FONT_COLOR_CODE_CLOSE;
+					end
+
+					GameTooltip:AddLine(tooltipText);
 				end
 			elseif (reward.followerXP) then
 				GameTooltip:AddLine(reward.title, 1, 1, 1);
             elseif (reward.currencyID and C_CurrencyInfo.IsCurrencyContainer(reward.currencyID, reward.quantity)) then
                 local name, texture, quantity, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(reward.currencyID, reward.quantity);
                 if name then
-					GameTooltip:AddLine(ITEM_QUALITY_COLORS[quality].hex..name..FONT_COLOR_CODE_CLOSE);
+					local tooltipText = name;
+					local colorData = ColorManager.GetColorDataForItemQuality(quality);
+					if colorData then
+						tooltipText = colorData.hex..name..FONT_COLOR_CODE_CLOSE;
+					end
+
+					GameTooltip:AddLine(tooltipText);
 				end
 			else
 				GameTooltip:AddLine(reward.title, 1, 1, 1);

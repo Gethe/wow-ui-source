@@ -1,6 +1,0 @@
-## Title: Blizzard_ScriptError
-## Author: Blizzard Entertainment
-## DefaultState: enabled
-## AllowLoad: Both
-## EscalateErrorDuringLoad: 1
-Blizzard_ScriptError.lua

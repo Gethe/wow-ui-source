@@ -412,14 +412,6 @@ StaticPopupDialogs["CONFIRM_REMOVE_FRIEND"] = {
 	hideOnEscape = 1
 };
 
-StaticPopupDialogs["SWAPPING_ENVIRONMENT"] = {
-    text = "SWAPPING_ENVIRONMENT",
-    button1 = nil,
-    button2 = nil,
-    ignoreKeys = true,
-    spinner = true,
-}
-
 StaticPopupDialogs["ACCOUNT_CONVERSION_DISPLAY"] = {
 	text = ACCOUNT_CONVERSION_IN_PROGRESS,
 	button1 = nil,

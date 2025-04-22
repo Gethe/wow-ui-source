@@ -125,6 +125,8 @@ end
 function WorldMapMixin:OnLoad()
 	RegisterUIPanel(self, { area = "left", pushable = 0, xoffset = 0, yoffset = 0, whileDead = 1, minYOffset = 0, maximizePoint = "TOP", allowOtherPanels = 1 });
 
+	self.needUpdateDisplayState = true;
+
 	MapCanvasMixin.OnLoad(self);
 
 	self:SetupTitle();
@@ -165,8 +167,7 @@ function WorldMapMixin:OnEvent(event, ...)
 		C_WowLabsDataManager.QuerySelectedWoWLabsArea();
 		C_WowLabsDataManager.QueryWoWLabsAreaInfo();
 	elseif event == "VARIABLES_LOADED" then
-		local displayState = self:GetOpenDisplayState();
-		self:SetDisplayState(displayState);
+		self.needUpdateDisplayState = true;
 	elseif event == "DISPLAY_SIZE_CHANGED" or event == "UI_SCALE_CHANGED" then
 		if self:IsMaximized() then
 			self:UpdateMaximizedSize();
@@ -330,6 +331,12 @@ function WorldMapMixin:OnMapChanged()
 end
 
 function WorldMapMixin:OnShow()
+	if self.needUpdateDisplayState then
+		local displayState = self:GetOpenDisplayState();
+		self:SetDisplayState(displayState);
+		self.needUpdateDisplayState = nil;
+	end
+
 	local frameStrata = C_GameRules.GetGameRuleAsFrameStrata(Enum.GameRule.WorldMapFrameStrata);
 	if frameStrata and frameStrata ~= "UNKNOWN" then
 		self:SetFrameStrata(frameStrata);
@@ -461,45 +468,45 @@ end
 
 function WorldMapTutorialMixin:CheckAndShowTooltip()
 	if (not NewPlayerExperience or not NewPlayerExperience.IsActive) and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WORLD_MAP_FRAME) then
-		if not HelpPlate_IsShowing(self.helpInfo) then
-			HelpPlate_ShowTutorialPrompt(self.helpInfo, self);
+		if not HelpPlate.IsShowingHelpInfo(self.helpInfo) then
+			HelpPlate.ShowTutorialTooltip(self.helpInfo, self);
 			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WORLD_MAP_FRAME, true);
 		end
 	end
 end
 
 function WorldMapTutorialMixin:CheckAndHideHelpInfo()
-	if HelpPlate_IsShowing(self.helpInfo) then
-		HelpPlate_Hide();
+	if HelpPlate.IsShowingHelpInfo(self.helpInfo) then
+		HelpPlate.Hide();
 	end
 
-	if HelpPlateTooltip_IsShowing(self.helpInfo) then
-		HelpPlate_TooltipHide();
+	if HelpPlate.IsShowingTutorialTooltip(self.helpInfo) then
+		HelpPlate.HideTooltip();
 		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WORLD_MAP_FRAME, false);
 	end
 end
 
 function WorldMapTutorialMixin:ToggleHelpInfo()
 	local mapFrame = self:GetParent():GetParent();
-	if ( not HelpPlate_IsShowing(self.helpInfo) and mapFrame:IsShown()) then
+	if ( not HelpPlate.IsShowingHelpInfo(self.helpInfo) and mapFrame:IsShown()) then
 		self:SetHelpInfo3();
-		HelpPlate_Show(self.helpInfo, mapFrame, self, true);
+		HelpPlate.Show(self.helpInfo, mapFrame, self);
 		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WORLD_MAP_FRAME, true);
 		EventRegistry:RegisterCallback("QuestLog.SetDisplayMode", self.UpdateHelpInfo, self);
 	else
-		HelpPlate_Hide(true);
+		HelpPlate.Hide(true);
 		EventRegistry:UnregisterCallback("QuestLog.SetDisplayMode", self);
 	end
 end
 
 function WorldMapTutorialMixin:UpdateHelpInfo()
-	if not HelpPlate_IsShowing(self.helpInfo) then
+	if not HelpPlate.IsShowingHelpInfo(self.helpInfo) then
 		return;
 	end
 
 	self:SetHelpInfo3();
 	local mapFrame = self:GetParent():GetParent();
-		HelpPlate_Show(self.helpInfo, mapFrame, self, true);
+		HelpPlate.Show(self.helpInfo, mapFrame, self);
 end
 
 function WorldMapTutorialMixin:SetHelpInfo3()

@@ -155,7 +155,8 @@ end
 
 function DressUpBattlePetLink(link, forcedFrame)
 	if( link ) then 
-		local _, _, _, linkType, linkID, _, _, _, _, _, battlePetID, battlePetDisplayID = strsplit(":|H", link);
+		local linkType, linkOptions = LinkUtil.ExtractLink(link);
+		local linkID, _, _, _, _, _, battlePetID, battlePetDisplayID = LinkUtil.SplitLinkOptions(linkOptions);
 		if ( linkType == "item") then
 			local _, _, _, creatureID, _, _, _, _, _, _, _, displayID, speciesID = C_PetJournal.GetPetInfoByItemID(tonumber(linkID));
 			if (creatureID and displayID) then
@@ -198,7 +199,7 @@ function DressUpBattlePet(creatureID, displayID, speciesID, link, forcedFrame)
 
 	local battlePetActor = frame.ModelScene:GetActorByTag("pet");
 	if ( battlePetActor ) then
-		battlePetActor:SetModelByCreatureDisplayID(displayID);
+		battlePetActor:SetModelByCreatureDisplayID(displayID, true);
 		battlePetActor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
 	end
 	return true;
@@ -209,7 +210,8 @@ function DressUpMountLink(link, forcedFrame)
 		local mountID = 0;
 		local shouldSetModelFromHyperlink = false;
 
-		local _, _, _, linkType, linkID = strsplit(":|H", link);
+		local linkType, linkOptions = LinkUtil.ExtractLink(link);
+		local linkID = LinkUtil.SplitLinkOptions(linkOptions);
 		if linkType == "item" then
 			mountID = C_MountJournal.GetMountFromItem(tonumber(linkID));
 		elseif linkType == "spell" then
@@ -863,21 +865,6 @@ function DressUpOutfitDetailsSlotMixin:SetIllusion(slotID, transmogID)
 	return true;
 end
 
-local s_qualityToAtlasColorName = {
-	[Enum.ItemQuality.Poor] = "gray",
-	[Enum.ItemQuality.Common] = "white",
-	[Enum.ItemQuality.Uncommon] = "green",
-	[Enum.ItemQuality.Rare] = "blue",
-	[Enum.ItemQuality.Epic] = "purple",
-	[Enum.ItemQuality.Legendary] = "orange",
-	[Enum.ItemQuality.Artifact] = "artifact",
-	[Enum.ItemQuality.Heirloom] = "account"
-};
-
-function DressUpOutfitDetailsSlot_GetQualityColorName(itemQuality)
-	return s_qualityToAtlasColorName[itemQuality];
-end
-
 function DressUpOutfitDetailsSlotMixin:SetDetails(transmogID, icon, name, useSmallIcon, slotState, isHiddenVisual)
 	-- info for tooltip
 	self.transmogID = transmogID;
@@ -902,7 +889,7 @@ function DressUpOutfitDetailsSlotMixin:SetDetails(transmogID, icon, name, useSma
 		if self.item then
 			nameColor = self.item:GetItemQualityColor().color;
 			local quality = self.item:GetItemQuality();
-			local colorName = DressUpOutfitDetailsSlot_GetQualityColorName(quality);
+			local colorName = ColorManager.GetColorDataForDressUpFrameQuality(quality);
 			borderType = colorName;
 		else
 			borderType = "illusion";

@@ -1226,6 +1226,7 @@ function QuestMapFrame_ReturnFromQuestDetails()
 end
 
 function QuestMapFrame_OpenToQuestDetails(questID)
+	QuestMapFrame:SetDisplayMode(QuestLogDisplayMode.Quests);
 	OpenQuestLog();
 	QuestMapFrame_ShowQuestDetails(questID);
 end

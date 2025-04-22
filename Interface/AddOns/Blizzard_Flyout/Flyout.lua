@@ -20,7 +20,7 @@ function FlyoutButtonMixin:OnHide()
 	self:ClosePopup();
 end
 
-function FlyoutButtonMixin:OnClick()
+function FlyoutButtonMixin:Flyout_OnClick()
 	self:TogglePopup();
 end
 
@@ -81,6 +81,16 @@ function FlyoutButtonMixin:GetPopupDirection()
 	return self.popupDirection or "DOWN";
 end
 
+function FlyoutButtonMixin:SetPopupDirection(popupDirection)
+	if self.popupDirection == popupDirection then
+		return;
+	end
+
+	self.popupDirection = popupDirection;
+	self:UpdateArrowPosition();
+	self:UpdateArrowRotation();
+end
+
 function FlyoutButtonMixin:IsPopupOpen()
 	local popup = self.popup;
 	return popup and popup:IsAttachedToButton(self);
@@ -91,7 +101,7 @@ function FlyoutButtonMixin:TogglePopup()
 	if isPopupOpen then
 		EventRegistry:UnregisterCallback(FlyoutPopupEvent_Hidden, self);
 		self.popup:DetatchFromButton();
-	else
+	elseif self:HasPopup() then
 		EventRegistry:RegisterCallback(FlyoutPopupEvent_Hidden, function() self:OnPopupHidden(); end, self);
 		self.popup:AttachToButton(self);
 	end
@@ -182,7 +192,7 @@ function FlyoutButtonMixin:UpdateArrowTexture()
 end
 
 function FlyoutButtonMixin:UpdateBorderShadow()
-	if self:IsPopupOpen() or self:IsOver() then
+	if self:HasPopup() and (self:IsPopupOpen() or self:IsOver()) then
 		self.BorderShadow:Show();
 	else
 		self.BorderShadow:Hide();

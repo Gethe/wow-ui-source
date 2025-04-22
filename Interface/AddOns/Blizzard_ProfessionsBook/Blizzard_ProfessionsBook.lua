@@ -77,7 +77,7 @@ end
 
 function ProfessionsBookFrame_OnHide(self)
 	ProfessionsBookFrame_HideStaticPopups();
-	HelpPlate_Hide();
+	HelpPlate.Hide();
 	ProfessionsBookFrame_PlayCloseSound();
 	EventRegistry:TriggerEvent("ProfessionsBookFrame.Hide");
 
@@ -509,10 +509,10 @@ ProfessionsFrame_HelpPlate = {
 function ProfessionsBook_ToggleTutorial()
 	local helpPlate = ProfessionsFrame_HelpPlate;
 	local tutorial = LE_FRAME_TUTORIAL_PROFESSIONS;
-	if ( not HelpPlate_IsShowing(helpPlate) and ProfessionsBookFrame:IsShown()) then
-		HelpPlate_Show( helpPlate, ProfessionsBookFrame, ProfessionsBookFrame.MainHelpButton );
+	if ( not HelpPlate.IsShowingHelpInfo(helpPlate) and ProfessionsBookFrame:IsShown()) then
+		HelpPlate.Show( helpPlate, ProfessionsBookFrame, ProfessionsBookFrame.MainHelpButton );
 		SetCVarBitfield( "closedInfoFrames", tutorial, true );
 	else
-		HelpPlate_Hide(true);
+		HelpPlate.Hide(true);
 	end
 end

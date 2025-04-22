@@ -169,7 +169,7 @@ function AreaPOIPinMixin:OnMouseEnter()
 	end
 
 	EventRegistry:TriggerEvent("AreaPOIPin.MouseOver", self, tooltipShown, self.poiInfo.areaPoiID, self:GetDisplayName());
-    self:OnLegendPinMouseEnter();
+	self:OnLegendPinMouseEnter();
 
 	if self.highlightWorldQuestsOnHover then
 		self:GetMap():TriggerEvent("HighlightMapPins.WorldQuests", self.pinHoverHighlightType);
@@ -202,9 +202,9 @@ function AreaPOIPinMixin:OnMouseLeave()
 		self:GetMap():TriggerEvent("HighlightMapPins.Vignettes", nil);
 	end
 
-    self:OnLegendPinMouseLeave();
+	self:OnLegendPinMouseLeave();
 
-	GameTooltip:Hide();
+	GetAppropriateTooltip():Hide();
 end
 
 function AreaPOIPinMixin:GetDisplayName()
