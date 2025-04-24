@@ -3542,6 +3542,10 @@ function UnitPopupSelectRoleButtonMixin:CanShow(contextData)
 		return false;
 	end
 
+	if UnitInPartyIsAI(contextData.unit) then
+		return false;
+	end
+
 	return UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") or UnitIsUnit(contextData.unit, "player");
 end
 

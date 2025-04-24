@@ -61,6 +61,7 @@ function NamePlateDriverMixin:OnLoad()
 		["NameplatePersonalClickThrough"] = true,
 		["NamePlateHorizontalScale"] = true,
 		["NamePlateClassificationScale"] = true,
+		["nameplateShowPersonalCooldowns"] = true,
 		["NamePlateMaximumClassificationScale"] = true,
 		["nameplateClassResourceTopInset"] = true,
 	};
@@ -800,8 +801,9 @@ function NameplateBuffContainerMixin:UpdateBuffs(unit, unitAuraUpdateInfo, auraS
 
 	self.buffPool:ReleaseAll();
 
-	-- Player buffs that aren't friendly buffs will be shown in Cooldown Manager
-	if UnitIsUnit(unit, "player") and self ~= PersonalFriendlyBuffFrame then
+	-- Only display personal buffs on the personal resource display if "show personal cooldowns" option is set. 
+	local shouldShowPersonalBuffs = GetCVarBool("nameplateShowPersonalCooldowns");
+	if not shouldShowPersonalBuffs and (UnitIsUnit(unit, "player") and self ~= PersonalFriendlyBuffFrame) then
 		return;
 	end
 	
