@@ -3,8 +3,7 @@
 ## DefaultState: enabled
 ## Dependencies: Blizzard_SharedXML
 ## AllowLoad: Game
-## SuppressLocalTableRef: 1
-## AllowLoadGameType: tbc, wrath, cata
+## AllowLoadGameType: tbc, wrath, cata, mists
 LoopingSoundEffect.lua
 ScriptedAnimations\ScriptedAnimationEffects.lua
 ScriptedAnimations\ScriptAnimatedModelSceneActor.lua

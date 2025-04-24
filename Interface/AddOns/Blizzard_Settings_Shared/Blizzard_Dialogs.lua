@@ -65,7 +65,7 @@ local function DefineGameSettingsTimedRevertDialog()
 		fullScreenCover = true,
 	};
 
-	if IsOnGlueScreen() then
+	if C_Glue.IsOnGlueScreen() then
 		StaticPopupDialogs["GAME_SETTINGS_TIMED_CONFIRMATION"].OnUpdate = function(self, elapsed)
 			self.duration = self.duration - elapsed;
 			local time = math.max(self.duration + 1, 1);

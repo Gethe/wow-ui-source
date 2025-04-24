@@ -98,7 +98,6 @@ function ChannelListMixin:Update()
 	-- Then add community streams
 	local clubs = C_Club.GetSubscribedClubs();
 
-	Communities_LoadUI();
 	CommunitiesFrame.CommunitiesList:PredictFavorites(clubs);
 	CommunitiesUtil.SortClubs(clubs);
 
@@ -354,108 +353,62 @@ do
 	end
 end
 
-local function ChannelListDropDown_Initialize(dropdown)
-	local count = 0;
-	local info;
-	local channelFrame = dropdown.channelFrame;
-	local channel = dropdown.channel;
-	local channelName = channel:GetChannelName();
-	local category = channel:GetCategory();
-
-	if channel:ChannelSupportsText() then
-		if channelFrame:IsCategoryCustom(category) then
-			-- SET PASSWORD if it is a custom Channel and is owner
-			if IsDisplayChannelOwner() then
-				info = UIDropDownMenu_CreateInfo();
-				info.text = CHAT_PASSWORD;
-				info.notCheckable = 1;
-				info.func = function() StaticPopup_Show("CHANNEL_PASSWORD", channelName, nil, channelName); end;
-				UIDropDownMenu_AddButton(info);
-				count = count + 1;
-			end
-
-			-- INVITE if it is a custom Channel and is owner
-			if IsDisplayChannelModerator() then
-				info = UIDropDownMenu_CreateInfo();
-				info.text = PARTY_INVITE;
-				info.notCheckable = 1;
-				info.func = function() StaticPopup_Show("CHANNEL_INVITE", channelName, nil, channelName); end;
-				UIDropDownMenu_AddButton(info);
-				count = count + 1;
-			end
-		end
-
-		-- JOIN if it is a Global Channel
-		if channelFrame:IsCategoryGlobal(category) and not channel:IsActive() then
-			info = UIDropDownMenu_CreateInfo();
-			info.text = CHAT_JOIN;
-			info.notCheckable = 1;
-			info.func = function() JoinPermanentChannel(channelName); end;
-			UIDropDownMenu_AddButton(info);
-			count = count + 1;
-		end
-
-		-- LEAVE Channel if not a group channel
-		if not channelFrame:IsCategoryGroup(category) and channel:IsActive() then
-			info = UIDropDownMenu_CreateInfo();
-			info.text = CHAT_LEAVE;
-			info.notCheckable = 1;
-			info.func = function()
-				LeaveChannelByName(channelName);
-
-				if dropdown.voiceChannelID then
-					C_VoiceChat.LeaveChannel(dropdown.voiceChannelID);
-				end
-			end
-			UIDropDownMenu_AddButton(info);
-			count = count + 1;
-		end
-	end
-
-	-- Voice only channels are a total hack and being removed at some point...still discussing whether or not we want to
-	-- add a voice component to text chat channels
-	if channel:ChannelSupportsVoice() and channel:IsUserCreatedChannel() then
-		-- also allow leaving voice-only channels while they still exist...
-		info = UIDropDownMenu_CreateInfo();
-		info.text = CHAT_LEAVE;
-		info.notCheckable = 1;
-		info.func = function()
-			C_VoiceChat.LeaveChannel(dropdown.voiceChannelID);
-		end
-		UIDropDownMenu_AddButton(info);
-		count = count + 1;
-	end
-
-	if count > 0 then
-		info = UIDropDownMenu_CreateInfo();
-		info.text = CANCEL;
-		info.notCheckable = 1;
-		info.func = function() HideDropDownMenu(1); end;
-		UIDropDownMenu_AddButton(info);
-	end
-end
-
 function ChannelListMixin:ShowDropdown(channel)
-	HideDropDownMenu(1);
-
-	if channel then
-		local dropdown = self:GetChannelFrame():GetDropdown();
-		dropdown.channelFrame = self:GetChannelFrame();
-		dropdown.channelID = channel:GetChannelID();
-		dropdown.voiceChannelID = channel:ChannelSupportsVoice() and channel:GetVoiceChannelID() or nil;
-		dropdown.channel = channel;
-
-		dropdown.initialize = ChannelListDropDown_Initialize;
-		dropdown.displayMode = "MENU";
-		dropdown.onHide = function() dropdown.channelID = nil; end;
-		ToggleDropDownMenu(1, nil, dropdown, "cursor");
+	if not channel then
+		return;
 	end
-end
 
-function ChannelListMixin:UpdateDropdownForChannel(dropdown, channelID)
-	-- This channelID is currently always a text channel, it may have a voice component, but
-	-- that should be tracked on the channel list button.
-	if channelID == dropdown.channelID then
-		self:ShowDropdown(self:GetButtonForTextChannelID(channelID));
-	end
+	MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
+		rootDescription:SetTag("MENU_CHANNEL_LIST");
+
+		local channelFrame = self:GetChannelFrame();
+		local channelName = channel:GetChannelName();
+		local voiceChannelID = channel:ChannelSupportsVoice() and channel:GetVoiceChannelID() or nil;
+
+		if channel:ChannelSupportsText() then
+			local category = channel:GetCategory();
+			if channelFrame:IsCategoryCustom(category) then
+
+				if IsChannelOwner(channel.name) then
+					rootDescription:CreateButton(CHAT_PASSWORD, function()
+						StaticPopup_Show("CHANNEL_PASSWORD", channelName, nil, channelName);
+					end);
+				end
+
+				if IsChannelModerator(channel.name) or IsChannelOwner(channel.name) then
+					rootDescription:CreateButton(PARTY_INVITE, function()
+						StaticPopup_Show("CHANNEL_INVITE", channelName, nil, channelName);
+					end);
+				end
+
+			end
+
+			-- JOIN if it is a Global Channel
+			if channelFrame:IsCategoryGlobal(category) and not channel:IsActive() then
+				rootDescription:CreateButton(CHAT_JOIN, function()
+					JoinPermanentChannel(channelName);
+				end);
+			end
+
+			-- LEAVE Channel if not a group channel
+			if not channelFrame:IsCategoryGroup(category) and channel:IsActive() then
+				rootDescription:CreateButton(CHAT_LEAVE, function()
+					LeaveChannelByName(channelName);
+
+					if voiceChannelID then
+						C_VoiceChat.LeaveChannel(voiceChannelID);
+					end
+				end);
+			end
+		end
+
+		-- Voice only channels are a total hack and being removed at some point...still discussing whether or not we want to
+		-- add a voice component to text chat channels
+		if voiceChannelID and channel:ChannelSupportsVoice() and channel:IsUserCreatedChannel() then
+			rootDescription:CreateButton(CHAT_LEAVE, function()
+				C_VoiceChat.LeaveChannel(voiceChannelID);
+			end);
+		end
+	end);
+	
 end

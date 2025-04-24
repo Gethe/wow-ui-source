@@ -17,6 +17,8 @@ local WorldStateInfo =
 			Payload =
 			{
 				{ Name = "initiatedBy", Type = "WOWGUID", Nilable = false },
+				{ Name = "informChat", Type = "bool", Nilable = false },
+				{ Name = "initiatedByName", Type = "string", Nilable = true },
 			},
 		},
 		{
@@ -28,6 +30,8 @@ local WorldStateInfo =
 				{ Name = "initiatedBy", Type = "WOWGUID", Nilable = false },
 				{ Name = "timeRemaining", Type = "time_t", Nilable = false },
 				{ Name = "totalTime", Type = "time_t", Nilable = false },
+				{ Name = "informChat", Type = "bool", Nilable = false },
+				{ Name = "initiatedByName", Type = "string", Nilable = true },
 			},
 		},
 		{
@@ -36,7 +40,7 @@ local WorldStateInfo =
 			LiteralName = "START_TIMER",
 			Payload =
 			{
-				{ Name = "timerType", Type = "luaIndex", Nilable = false },
+				{ Name = "timerType", Type = "StartTimerType", Nilable = false },
 				{ Name = "timeRemaining", Type = "time_t", Nilable = false },
 				{ Name = "totalTime", Type = "time_t", Nilable = false },
 			},
@@ -47,7 +51,7 @@ local WorldStateInfo =
 			LiteralName = "STOP_TIMER_OF_TYPE",
 			Payload =
 			{
-				{ Name = "timerType", Type = "luaIndex", Nilable = false },
+				{ Name = "timerType", Type = "StartTimerType", Nilable = false },
 			},
 		},
 		{

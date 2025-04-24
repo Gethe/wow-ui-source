@@ -65,6 +65,7 @@ local PlayerInfo =
 		{
 			Name = "GetPlayerCharacterData",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{

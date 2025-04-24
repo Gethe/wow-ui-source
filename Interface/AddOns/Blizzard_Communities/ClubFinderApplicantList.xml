@@ -44,7 +44,6 @@
 				</Scripts>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
-			<Frame parentKey="RightClickDropdown" inherits="UIDropDownMenuTemplate" hidden="true"/>
 		</Frames>
 		<Layers>
 			<Layer level="OVERLAY">
@@ -78,19 +77,19 @@
 						<Anchor point="LEFT" relativeKey="$parent.Name" relativePoint="RIGHT" x="8" y="0"/>
 					</Anchors>
 				</FontString>
-				<Texture parentKey="RoleIcon1" hidden="true" atlas="UI-LFG-RoleIcon-Generic-Micro">
+				<Texture parentKey="RoleIcon1" hidden="true" atlas="UI-LFG-RoleIcon-Generic-Micro-GroupFinder">
 					<Size x="18" y="18"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Name" relativePoint="RIGHT" x="10" y="0"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="RoleIcon2" hidden="true" atlas="UI-LFG-RoleIcon-Generic-Micro">
+				<Texture parentKey="RoleIcon2" hidden="true" atlas="UI-LFG-RoleIcon-Generic-Micro-GroupFinder">
 					<Size x="18" y="18"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.RoleIcon1" relativePoint="RIGHT" x="3" y="0"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="RoleIcon3" hidden="true" atlas="UI-LFG-RoleIcon-Generic-Micro">
+				<Texture parentKey="RoleIcon3" hidden="true" atlas="UI-LFG-RoleIcon-Generic-Micro-GroupFinder">
 					<Size x="18" y="18"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.RoleIcon2" relativePoint="RIGHT" x="3" y="0"/>
@@ -111,10 +110,9 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
-			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
 		</Scripts>
 		<NormalTexture setAllPoints="true" file="Interface\GuildFrame\GuildFrame">
 			<TexCoords left="0.36230469" right="0.38183594" top="0.95898438" bottom="0.99804688"/>
@@ -150,7 +148,6 @@
 					</Layer>
 				</Layers>
 			</EventFrame>
-			<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate"/>
 			<Frame parentKey="InsetFrame" inherits="InsetFrameTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="-3" y="3"/>

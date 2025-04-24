@@ -4,9 +4,9 @@ CLASS_TRAINER_SKILL_HEIGHT = 16;
 MAX_LEARNABLE_PROFESSIONS = 2;
 
 -- Trainer Filter Default Values
-TRAINER_FILTER_AVAILABLE = 1;
-TRAINER_FILTER_UNAVAILABLE = 1;
-TRAINER_FILTER_USED = 0;
+TRAINER_FILTER_AVAILABLE_BOOL = true;
+TRAINER_FILTER_UNAVAILABLE_BOOL = true;
+TRAINER_FILTER_USED_BOOL = false;
 
 SKILL_TEXT_WIDTH = 270;
 
@@ -33,13 +33,24 @@ StaticPopupDialogs["CONFIRM_PROFESSION"] = {
 	hideOnEscape = 1
 };
 
+local function IsSelected(filter)
+	return GetTrainerServiceTypeFilter(filter);
+end
+
+local function SetSelected(filter)
+	ClassTrainerFrame.filterPending = true;
+	SetTrainerServiceTypeFilter(filter, not IsSelected(filter));
+end
+
 function ClassTrainerFrame_Show()
 	ShowUIPanel(ClassTrainerFrame);
 	if ( not ClassTrainerFrame:IsVisible() ) then
 		CloseTrainer();
 		return;
 	end
+end
 
+function ClassTrainerFrame_OnShow(self)
 	ClassTrainerTrainButton:Disable();
 	--Reset scrollbar
 	ClassTrainerListScrollFrameScrollBar:SetMinMaxValues(0, 0);
@@ -49,6 +60,28 @@ function ClassTrainerFrame_Show()
 	ClassTrainerFrame_Update();
 	UpdateMicroButtons();
 
+	SetTrainerServiceTypeFilter("available", TRAINER_FILTER_AVAILABLE_BOOL);
+	SetTrainerServiceTypeFilter("unavailable", TRAINER_FILTER_UNAVAILABLE_BOOL);
+	SetTrainerServiceTypeFilter("used", TRAINER_FILTER_USED_BOOL);
+
+	self.FilterDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_TRAINER_FILTER");
+
+		rootDescription:CreateCheckbox(GREEN_FONT_COLOR:WrapTextInColorCode(AVAILABLE), IsSelected, SetSelected, "available");
+		rootDescription:CreateCheckbox(RED_FONT_COLOR:WrapTextInColorCode(UNAVAILABLE), IsSelected, SetSelected, "unavailable");
+		rootDescription:CreateCheckbox(GRAY_FONT_COLOR:WrapTextInColorCode(USED), IsSelected, SetSelected, "used");
+	end);
+
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
+end
+
+function ClassTrainerFrame_OnHide()
+	CloseTrainer();
+	UpdateMicroButtons();
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
+	if ( StaticPopup_Visible("CONFIRM_PROFESSION") ) then
+		StaticPopup_Hide("CONFIRM_PROFESSION");
+	end
 end
 
 function ClassTrainerFrame_Hide()
@@ -61,14 +94,11 @@ function ClassTrainerFrame_OnLoad(self)
 	self:RegisterEvent("TRAINER_SERVICE_INFO_NAME_UPDATE");
 	self:RegisterEvent("ADDON_LOADED");
 	ClassTrainerDetailScrollFrame.scrollBarHideable = 1;
+
+	self.FilterDropdown:SetWidth(130);
 end
 
 function ClassTrainerFrame_OnEvent(self, event, ...)
-	if ( event == "ADDON_LOADED" and arg1 == "Blizzard_TrainerUI" ) then
-		SetTrainerServiceTypeFilter("available", TRAINER_FILTER_AVAILABLE);
-		SetTrainerServiceTypeFilter("unavailable", TRAINER_FILTER_UNAVAILABLE);
-		SetTrainerServiceTypeFilter("used", TRAINER_FILTER_USED);
-	end
 	if ( not self:IsVisible() ) then
 		return;
 	end
@@ -209,6 +239,7 @@ function ClassTrainerFrame_Update()
 				end
 
 				-- Cost Stuff
+				local _;
 				moneyCost, _ = GetTrainerServiceCost(skillIndex);
 				if ( serviceType == "available" ) then
 					skillButton:SetNormalFontObject("GameFontNormalLeftGreen");
@@ -511,65 +542,4 @@ function ClassTrainer_SetToClassTrainer()
 	ClassTrainerListScrollFrame:SetHeight(184);
 	ClassTrainerDetailScrollFrame:SetHeight(119);
 	ClassTrainerHorizontalBarLeft:SetPoint("TOPLEFT", "ClassTrainerFrame", "TOPLEFT", 15, -275);
-end
-
--- Dropdown functions
-function ClassTrainerFrameFilterDropDown_OnLoad(self)
-	UIDropDownMenu_Initialize(self, ClassTrainerFrameFilterDropDown_Initialize);
-	UIDropDownMenu_SetText(self, FILTER);
-	UIDropDownMenu_SetWidth(self, 130);
-end
-
-function ClassTrainerFrameFilterDropDown_Initialize()
-	-- Available button
-	local info = {};
-	local checked = nil;
-	if ( GetTrainerServiceTypeFilter("available") ) then
-		checked = 1;
-	end
-	info.text = GREEN_FONT_COLOR_CODE..AVAILABLE..FONT_COLOR_CODE_CLOSE;
-	info.value = "available";
-	info.func = ClassTrainerFrameFilterDropDown_OnClick;
-	info.checked = checked;
-	info.keepShownOnClick = 1;
-	info.classicChecks = true;
-	UIDropDownMenu_AddButton(info);
-
-	-- Unavailable button
-	info = {};
-	checked = nil;
-	if ( GetTrainerServiceTypeFilter("unavailable") ) then
-		checked = 1;
-	end
-	info.text = RED_FONT_COLOR_CODE..UNAVAILABLE..FONT_COLOR_CODE_CLOSE;
-	info.value = "unavailable";
-	info.func = ClassTrainerFrameFilterDropDown_OnClick;
-	info.checked = checked;
-	info.keepShownOnClick = 1;
-	info.classicChecks = true;
-	UIDropDownMenu_AddButton(info);
-
-	-- Already Known button
-	info = {};
-	checked = nil;
-	if ( GetTrainerServiceTypeFilter("used") ) then
-		checked = 1;
-	end
-	info.text = GRAY_FONT_COLOR_CODE..USED..FONT_COLOR_CODE_CLOSE;
-	info.value = "used";
-	info.func = ClassTrainerFrameFilterDropDown_OnClick;
-	info.checked = checked;
-	info.keepShownOnClick = 1;
-	info.classicChecks = true;
-	UIDropDownMenu_AddButton(info);
-end
-
-function ClassTrainerFrameFilterDropDown_OnClick(self)
-	if ( UIDropDownMenuButton_GetChecked(self) ) then
-		setglobal("TRAINER_FILTER_"..strupper(self.value), 1);
-		SetTrainerServiceTypeFilter(self.value, 1);
-	else
-		setglobal("TRAINER_FILTER_"..strupper(self.value), 0);
-		SetTrainerServiceTypeFilter(self.value, 0);
-	end
 end

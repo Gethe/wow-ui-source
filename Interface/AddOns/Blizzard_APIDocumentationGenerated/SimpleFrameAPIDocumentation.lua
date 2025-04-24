@@ -27,6 +27,14 @@ local SimpleFrameAPI =
 			},
 		},
 		{
+			Name = "ClearAlphaGradient",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+		},
+		{
 			Name = "CreateFontString",
 			Type = "Function",
 
@@ -123,6 +131,20 @@ local SimpleFrameAPI =
 			Returns =
 			{
 				{ Name = "clipsChildren", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "DoesHyperlinkPropagateToParent",
+			Type = "Function",
+			Documentation = { "Returns whether hyperlink events (ex. OnHyperlinkEnter, OnHyperlinkLeave, OnHyperlinkClick) are propagated to this frame's parent." },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "canPropagate", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -341,6 +363,21 @@ local SimpleFrameAPI =
 			},
 		},
 		{
+			Name = "GetHighestFrameLevel",
+			Type = "Function",
+			Documentation = { "Returns the highest framelevel of the frame and its first order children, or all children if iterateAllChildren is true." },
+
+			Arguments =
+			{
+				{ Name = "iterateAllChildren", Type = "bool", Nilable = false, Default = false },
+			},
+
+			Returns =
+			{
+				{ Name = "frameLevel", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetHitRectInsets",
 			Type = "Function",
 
@@ -531,6 +568,11 @@ local SimpleFrameAPI =
 			{
 				{ Name = "delegate", Type = "SimpleFrame", Nilable = false },
 			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
 		},
 		{
 			Name = "IsClampedToScreen",
@@ -543,6 +585,20 @@ local SimpleFrameAPI =
 			Returns =
 			{
 				{ Name = "clampedToScreen", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsDrawLayerEnabled",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "layer", Type = "DrawLayer", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isEnabled", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -704,6 +760,19 @@ local SimpleFrameAPI =
 			},
 		},
 		{
+			Name = "IsUsingParentLevel",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "usingParentLevel", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsVisible",
 			Type = "Function",
 
@@ -804,6 +873,16 @@ local SimpleFrameAPI =
 			Arguments =
 			{
 				{ Name = "alpha", Type = "SingleColorValue", Nilable = false },
+			},
+		},
+		{
+			Name = "SetAlphaGradient",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "gradient", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
 			},
 		},
 		{
@@ -942,6 +1021,16 @@ local SimpleFrameAPI =
 			},
 		},
 		{
+			Name = "SetHyperlinkPropagateToParent",
+			Type = "Function",
+			Documentation = { "Enables or disables propagating hyperlink events (ex. OnHyperlinkEnter, OnHyperlinkLeave, OnHyperlinkClick) to this frame's parent." },
+
+			Arguments =
+			{
+				{ Name = "canPropagate", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetHyperlinksEnabled",
 			Type = "Function",
 
@@ -1059,6 +1148,15 @@ local SimpleFrameAPI =
 			Arguments =
 			{
 				{ Name = "userPlaced", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetUsingParentLevel",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "usingParentLevel", Type = "bool", Nilable = false },
 			},
 		},
 		{

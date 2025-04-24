@@ -1,3 +1,5 @@
+-- This is currently empty, but these changes are going in as a hotfix.
+-- In an effort to minimize risk and other issues, leaving the file around.
 local l10nTable = {
 	deDE = {},
 	enGB = {},
@@ -10,20 +12,8 @@ local l10nTable = {
 	ptBR = {},
 	ptPT = {},
 	ruRU = {},
-	zhCN = {
-		localize = function()
-			GMChatStatusFrameDescription:SetWidth(190);
-			GMChatStatusFrameTitleText:SetPoint("TOPLEFT", GMChatStatusFrameBorderLeft, "TOPRIGHT", 0, -14);
-			GMChatStatusFrameDescription:SetPoint("TOPLEFT", GMChatStatusFrameTitleText, "BOTTOMLEFT", 0, 2);
-		end,
-	},
-	zhTW = {
-		localize = function()
-			GMChatStatusFrameDescription:SetWidth(190);
-			GMChatStatusFrameTitleText:SetPoint("TOPLEFT", GMChatStatusFrameBorderLeft, "TOPRIGHT", 0, -15);
-			GMChatStatusFrameDescription:SetPoint("TOPLEFT", GMChatStatusFrameTitleText, "BOTTOMLEFT", 0, 2);
-		end,
-	},
+	zhCN = {},
+	zhTW = {},
 };
 
 SetupLocalization(l10nTable);

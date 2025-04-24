@@ -185,12 +185,10 @@ function CompanionButton_OnDrag(self)
 end
 
 function CompanionButton_OnClick(self, button)
-	local selected, selectedID;
+	local selectedID;
 	if ( PetPaperDollFrameCompanionFrame.mode == "CRITTER" ) then
-		selected = PetPaperDollFrame_FindCompanionIndex(PetPaperDollFrameCompanionFrame.idCritter);
 		selectedID = PetPaperDollFrameCompanionFrame.idCritter;
 	elseif ( PetPaperDollFrameCompanionFrame.mode == "MOUNT" ) then
-		selected = PetPaperDollFrame_FindCompanionIndex(PetPaperDollFrameCompanionFrame.idMount);
 		selectedID = PetPaperDollFrameCompanionFrame.idMount;
 	end
 
@@ -404,14 +402,10 @@ function PetPaperDollFrame_SetResistances()
 	local positive;
 	local negative;
 	local base;
-	local index;
 	local text;
 	local frame;
 	for i=1, NUM_PET_RESISTANCE_TYPES, 1 do
-		index = i + 1;
-		if ( i == NUM_PET_RESISTANCE_TYPES ) then
-			index = 1;
-		end
+
 		text = _G["PetMagicResText"..i];
 		frame = _G["PetMagicResFrame"..i];
 		

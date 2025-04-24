@@ -58,6 +58,7 @@ local GossipInfo =
 		{
 			Name = "GetFriendshipReputation",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -214,7 +215,7 @@ local GossipInfo =
 			{
 				{ Name = "gossipID", Type = "number", Nilable = false },
 				{ Name = "text", Type = "string", Nilable = false },
-				{ Name = "cost", Type = "number", Nilable = false },
+				{ Name = "cost", Type = "WOWMONEY", Nilable = false },
 			},
 		},
 		{
@@ -297,6 +298,7 @@ local GossipInfo =
 				{ Name = "overrideIconID", Type = "fileID", Nilable = true },
 				{ Name = "selectOptionWhenOnlyOption", Type = "bool", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
+				{ Name = "failureDescription", Type = "string", Nilable = true },
 			},
 		},
 		{
@@ -325,6 +327,7 @@ local GossipInfo =
 				{ Name = "isIgnored", Type = "bool", Nilable = false },
 				{ Name = "questID", Type = "number", Nilable = false },
 				{ Name = "isImportant", Type = "bool", Nilable = false },
+				{ Name = "isMeta", Type = "bool", Nilable = false },
 			},
 		},
 	},

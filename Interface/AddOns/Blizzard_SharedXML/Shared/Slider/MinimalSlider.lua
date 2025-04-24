@@ -155,7 +155,7 @@ local function ConfigureSlider(self, color, alpha)
 	self.MaxText:SetVertexColor(r, g, b);
 end
 
-function MinimalSliderWithSteppersMixin:SetEnabled_(enabled)
+function MinimalSliderWithSteppersMixin:SetEnabled(enabled)
 	if enabled then
 		ConfigureSlider(self, NORMAL_FONT_COLOR, 1.0);
 	else

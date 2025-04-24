@@ -5,11 +5,14 @@
 ------
 
 LFG_INVITE_POPUP_DEFAULT_HEIGHT = 180;
+LFGLockList = nil;
+LFGCollapseList = nil;
+LFGEnabledList = nil;
 
 --DEBUG FIXME:
 function LFGDebug(text, ...)
 	if ( GetCVarBool("lfgDebug") ) then
-		ConsolePrint("LFGLua: "..format(text, ...));
+		C_Log.LogMessage("LFGLua: "..format(text, ...));
 	end
 end
 
@@ -55,17 +58,27 @@ LFG_INSTANCE_INVALID_CODES = { --Any other codes are unspecified conditions (e.g
     "ENGAGED_IN_PVP",
     "NO_SPEC",
 	"CANNOT_RUN_ANY_CHILD_DUNGEON",
-	[1001] = "LEVEL_TOO_LOW",
-	[1002] = "LEVEL_TOO_HIGH",
-	[1022] = "QUEST_NOT_COMPLETED",
-	[1025] = "MISSING_ITEM",
-	-- These are handled separately in LFGConstructDeclinedMessage
-	-- [1029] WRONG_TIME_RANGE
-	-- [1030] WRONG_TIME
-	-- [1031] WRONG_WORLD_STATE_EXPRESSION
-	[1034] = "ACHIEVEMENT_NOT_COMPLETED",
 	[10000] = "TEMPORARILY_DISABLED",
 }
+LFG_INSTANCE_CONDITION_FAILED_CODES = {
+	[1] = "LEVEL_TOO_LOW",
+	[2] = "LEVEL_TOO_HIGH",
+	[22] = "QUEST_NOT_COMPLETED",
+	[25] = "MISSING_ITEM",
+	-- These are handled separately in LFGConstructDeclinedMessage
+	-- [29] WRONG_TIME_RANGE
+	-- [30] WRONG_TIME
+	-- [31] WRONG_WORLD_STATE_EXPRESSION
+	[34] = "ACHIEVEMENT_NOT_COMPLETED",
+}
+
+local function GetLFGInstanceErrorString(who, reason, subreason)
+	local errorKey = LFG_INSTANCE_INVALID_CODES[reason];
+	if reason == Enum.LFGSlotInvalidReason.PlayerConditionFailed then
+		errorKey = LFG_INSTANCE_CONDITION_FAILED_CODES[subreason];
+	end
+	return _G["INSTANCE_UNAVAILABLE_"..who.."_"..(errorKey or "OTHER")];
+end
 
 LFG_ROLE_SHORTAGE_RARE = 1;
 LFG_ROLE_SHORTAGE_UNCOMMON = 2;
@@ -244,7 +257,7 @@ function LFGEventFrame_OnEvent(self, event, ...)
 	elseif ( event == "LFG_INVALID_ERROR_MESSAGE" ) then
 		local reason, reasonArg1, reasonArg2 = ...;
 		local info = ChatTypeInfo["SYSTEM"];
-		DEFAULT_CHAT_FRAME:AddMessage(format(_G["INSTANCE_UNAVAILABLE_SELF_"..(LFG_INSTANCE_INVALID_CODES[reason] or "OTHER")], "",reasonArg1, reasonArg2), info.r, info.g, info.b, info.id);
+		DEFAULT_CHAT_FRAME:AddMessage(format(GetLFGInstanceErrorString("SELF", reason, reasonarg1), "", reasonArg1, reasonArg2), info.r, info.g, info.b, info.id);
 	elseif event == "SHOW_LFG_EXPAND_SEARCH_PROMPT" then
 		StaticPopup_Show("LFG_QUEUE_EXPAND");
 	end
@@ -454,7 +467,7 @@ end
 
 function LFG_UpdateRoleCheckboxes(category, lfgID, tankButton, healButton, dpsButton, leaderButton)
 	local mode, submode = GetLFGMode(category, lfgID);
-	local inParty, joined, queued, noPartialClear, achievements, lfgComment, slotCount, category, leader, tank, healer, dps = GetLFGInfoServer(category, lfgID);
+	local inParty, joined, queued, noPartialClear, achievements, lfgComment, slotCount, _category, leader, tank, healer, dps = GetLFGInfoServer(category, lfgID);
 	if ( mode ~= "queued" and mode ~= "listed" and mode ~= "suspended" ) then
 		leader, tank, healer, dps = GetLFGRoles();
 	end
@@ -531,12 +544,12 @@ function LFDRoleButton_OnEnter(self)
 	elseif ( self.disabledTooltip and not self:IsEnabled() ) then
 		GameTooltip:AddLine(self.disabledTooltip, 1, 0, 0, true);
 	elseif ( self.lockedIndicator:IsShown() ) then
-		local dungeonID = LFDQueueFrame.type;
+		local queueDungeonID = LFDQueueFrame.type;
 		local roleID = self:GetID();
 		local reasons;
 		GameTooltip:SetText(ERR_ROLE_UNAVAILABLE, 1.0, 1.0, 1.0, true);
-		if ( type(dungeonID) == "number" ) then
-			local textTable = LFGRoleButton_LockReasonsTextTable(dungeonID, roleID);
+		if ( type(queueDungeonID) == "number" ) then
+			local textTable = LFGRoleButton_LockReasonsTextTable(queueDungeonID, roleID);
 			for text,_ in pairs( textTable ) do
 				GameTooltip:AddLine(text, nil, nil, nil, true);
 			end
@@ -583,19 +596,19 @@ function LFGConstructDeclinedMessage(dungeonID)
 	local hasTimeRestriction = false;
 	for i=1, GetLFDLockPlayerCount() do
 		local playerName, lockedReason, subReason1, subReason2, secondReasonID, secondReasonString = GetLFDLockInfo(dungeonID, i);
-		if ( lockedReason == 1029 or lockedReason == 1030 or lockedReason == 1031 ) then --WRONG_TIME_RANGE, WRONG_TIME, WRONG_WORLD_STATE_EXPRESSION
+		if ( lockedReason == Enum.LFGSlotInvalidReason.PlayerConditionFailed and (subReason1 == 29 or subReason1 == 30 or subReason1 == 31) ) then --WRONG_TIME_RANGE, WRONG_TIME, WRONG_WORLD_STATE_EXPRESSION
 			hasTimeRestriction = true;
 		elseif ( lockedReason ~= 0 ) then
 			local who;
 			if ( i == 1 ) then
-				who = "SELF_";
+				who = "SELF";
 			else
-				who = "OTHER_";
+				who = "OTHER";
 			end
 			local text = secondReasonString;
 			if( not text ) then
 				local id = secondReasonID or lockedReason;
-				text = format(_G["INSTANCE_UNAVAILABLE_"..who..(LFG_INSTANCE_INVALID_CODES[id] or "OTHER")], playerName, subReason1, subReason2)
+				text = format(GetLFGInstanceErrorString(who, lockedReason, subReason1), playerName, subReason1, subReason2)
 			end
 			if ( returnVal ) then
 				returnVal = returnVal.."\n"..text;
@@ -1210,7 +1223,7 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
 		end
 	end
 	background:SetTexture(backgroundTexture);
-
+	
 	local lastFrame = parentFrame.rewardsLabel;
 	if ( isTimewalker ) then
 		parentFrame.rewardsDescription:SetText(LFD_RANDOM_REWARD_EXPLANATION2);
@@ -1751,8 +1764,6 @@ function LFGList_DefaultFilterFunction(dungeonID, maxLevelDiff)
 	else
 		return false;
 	end
-
-	return true;
 end
 
 function LFG_QueueForInstanceIfEnabled(category, queueID)
@@ -2096,10 +2107,10 @@ end
 
 function LFGRandomList_OnEnter(self)
 	local randomID = self.randomID;
-	local _, _, subtypeID, _, _, _, _, _, _, _, _, _, _, _, _, _, _, isTimewalker = GetLFGDungeonInfo(randomID);
+	local _, _, subtypeID, _, _, _, _, _, _, _, _, _, _, _, _, _, _, isTimewalkerRandom = GetLFGDungeonInfo(randomID);
 
 	local titleText, emptyText, subText;
-	if ( isTimewalker ) then
+	if ( isTimewalkerRandom ) then
 		titleText, emptyText, subText = INCLUDED_DUNGEONS, INCLUDED_DUNGEONS_TIMEWALKER_EMPTY, nil;
 	elseif ( subtypeID == LFG_SUBTYPEID_SCENARIO ) then
 		titleText, emptyText, subText = INCLUDED_SCENARIOS, INCLUDED_SCENARIOS_EMPTY, INCLUDED_SCENARIOS_SUBTEXT;
@@ -2120,7 +2131,7 @@ function LFGRandomList_OnEnter(self)
 		GameTooltip:AddLine(" ");
 		for i=1, numDungeons do
 			local dungeonID = GetDungeonForRandomSlot(randomID, i);
-			local name, typeID, subtypeID, minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, expansionLevel, groupID, textureFilename, difficulty, maxPlayers, description, isHoliday, _, _, isTimewalker = GetLFGDungeonInfo(dungeonID);
+			local name, typeID, _subtypeID, minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, expansionLevel, groupID, textureFilename, difficulty, maxPlayers, description, isHoliday, _, _, isTimewalker = GetLFGDungeonInfo(dungeonID);
 			local rangeText;
 			if ( minLevel == maxLevel ) then
 				rangeText = format(LFD_LEVEL_FORMAT_SINGLE, minLevel);
@@ -2197,7 +2208,7 @@ function LFGRoleButton_LockReasonsTextTable(dungeonID, roleID, textTable)
 	local reasons = GetLFDRoleLockInfo(dungeonID, roleID);
 	textTable = textTable or {};
 	for i = 1, #reasons do
-		local text = reasons[i].reason_string or _G["INSTANCE_UNAVAILABLE_SELF_"..(LFG_INSTANCE_INVALID_CODES[reasons[i].reason_id] or "OTHER")];
+		local text = reasons[i].reason_string or GetLFGInstanceErrorString("SELF", reasons[i].reason_id, reasons[i].sub_reason);
 		textTable[text] = true;
 	end
 

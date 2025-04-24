@@ -51,6 +51,7 @@ local PetInfo =
 			Payload =
 			{
 				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "petNumber", Type = "number", Nilable = true },
 				{ Name = "declinedName1", Type = "cstring", Nilable = true },
 				{ Name = "declinedName2", Type = "cstring", Nilable = true },
 				{ Name = "declinedName3", Type = "cstring", Nilable = true },

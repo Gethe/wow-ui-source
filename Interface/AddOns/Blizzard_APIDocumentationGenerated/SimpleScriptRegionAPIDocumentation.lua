@@ -19,6 +19,19 @@ local SimpleScriptRegionAPI =
 			},
 		},
 		{
+			Name = "CollapsesLayout",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "collapsesLayout", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "EnableMouse",
 			Type = "Function",
 
@@ -48,6 +61,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "GetBottom",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -61,6 +75,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "GetCenter",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -89,6 +104,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "GetLeft",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -102,6 +118,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "GetRect",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -118,6 +135,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "GetRight",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -131,6 +149,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "GetScaledRect",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -190,6 +209,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "GetTop",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -248,6 +268,20 @@ local SimpleScriptRegionAPI =
 			},
 		},
 		{
+			Name = "Intersects",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "region", Type = "ScriptRegion", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "intersects", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsAnchoringRestricted",
 			Type = "Function",
 
@@ -258,6 +292,19 @@ local SimpleScriptRegionAPI =
 			Returns =
 			{
 				{ Name = "isRestricted", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsCollapsed",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "isCollapsed", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -356,6 +403,19 @@ local SimpleScriptRegionAPI =
 			},
 		},
 		{
+			Name = "IsPropagateMouseBlocked",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "blocked", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsProtected",
 			Type = "Function",
 
@@ -409,6 +469,15 @@ local SimpleScriptRegionAPI =
 			},
 		},
 		{
+			Name = "SetCollapsesLayout",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "collapsesLayout", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetMouseClickEnabled",
 			Type = "Function",
 
@@ -445,11 +514,21 @@ local SimpleScriptRegionAPI =
 			},
 		},
 		{
-			Name = "SetProtected",
+			Name = "SetPropagateMouseClicks",
 			Type = "Function",
 
 			Arguments =
 			{
+				{ Name = "propagate", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetPropagateMouseMotion",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "propagate", Type = "bool", Nilable = false },
 			},
 		},
 		{

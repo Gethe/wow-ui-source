@@ -258,7 +258,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="$parentRaceFilter" inherits="UIDropDownMenuTemplate" enableMouse="true" parentKey="raceFilterDropDown" hidden="true">
+			<DropdownButton name="$parentRaceFilter" inherits="WowStyle1DropdownTemplate" parentKey="RaceFilterDropdown" hidden="true">
 				<Anchors>
 					<Anchor point="TOPRIGHT"  x="-30" y="-50"/>
 				</Anchors>
@@ -272,7 +272,7 @@
 						ArchaeologyFrame.rankBar:SetPoint("TOP", 20, -60);
 					</OnHide>
 				</Scripts>
-			</Frame>
+			</DropdownButton>
 			<StatusBar name="$parentRankBar" drawLayer="BACKGROUND" enableMouse="false" parentKey="rankBar">
 				<Size x="246" y="13"/>
 				<Anchors>
@@ -778,7 +778,7 @@
 								ArchaeologyFrame.currentFrame = ArchaeologyFrame.completedPage;
 								ArchaeologyFrame.artifactPage:Hide();
 								ArchaeologyFrame.completedPage:Show();
-								ArchaeologyFrame.raceFilterDropDown:Show();
+								ArchaeologyFrame.RaceFilterDropdown:Show();
 								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 							</OnClick>
 						</Scripts>

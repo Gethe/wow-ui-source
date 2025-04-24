@@ -711,7 +711,7 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<CheckButton name="ReputationDetailAtWarCheckBox">
+					<CheckButton name="ReputationDetailAtWarCheckbox">
 						<Size>
 							<AbsDimension x="26" y="26"/>
 						</Size>
@@ -768,12 +768,12 @@
 						</CheckedTexture>
 						<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 					</CheckButton>
-					<CheckButton name="ReputationDetailInactiveCheckBox" inherits="OptionsSmallCheckButtonTemplate">
+					<CheckButton name="ReputationDetailInactiveCheckbox" inherits="OptionsSmallCheckButtonTemplate">
 						<Size>
 							<AbsDimension x="26" y="26"/>
 						</Size>
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="ReputationDetailAtWarCheckBoxText" relativePoint="RIGHT">
+							<Anchor point="LEFT" relativeTo="ReputationDetailAtWarCheckboxText" relativePoint="RIGHT">
 								<Offset>
 									<AbsDimension x="3" y="0"/>
 								</Offset>
@@ -798,12 +798,12 @@
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</CheckButton>
-					<CheckButton name="ReputationDetailMainScreenCheckBox" inherits="OptionsSmallCheckButtonTemplate">
+					<CheckButton name="ReputationDetailMainScreenCheckbox" inherits="OptionsSmallCheckButtonTemplate">
 						<Size>
 							<AbsDimension x="26" y="26"/>
 						</Size>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="ReputationDetailAtWarCheckBox" relativePoint="BOTTOMLEFT">
+							<Anchor point="TOPLEFT" relativeTo="ReputationDetailAtWarCheckbox" relativePoint="BOTTOMLEFT">
 								<Offset>
 									<AbsDimension x="0" y="3"/>
 								</Offset>

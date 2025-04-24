@@ -86,9 +86,9 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="RatingMenuButtonOkay" inherits="OptionsButtonTemplate" text="OKAY">
+			<Button name="RatingMenuButtonOkay" inherits="UIPanelButtonTemplate" text="OKAY">
 				<Size>
-					<AbsDimension x="100" y="21"/>
+					<AbsDimension x="90" y="21"/>
 				</Size>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT">

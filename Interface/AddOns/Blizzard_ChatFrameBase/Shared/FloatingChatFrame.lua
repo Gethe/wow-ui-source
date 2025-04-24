@@ -8,14 +8,14 @@ function FCF_IsChatWindowIndexActive(chatWindowIndex)
 		return true;
 	end
 
-	local chatFrame = _G["ChatFrame"..chatWindowIndex];
+	local chatFrame = FCF_GetChatFrameByID(chatWindowIndex);
 	return (chatFrame and chatFrame.isDocked);
 end
 
 function FCF_IterateActiveChatWindows(callback)
 	for i = 1, NUM_CHAT_WINDOWS do
 		if ( FCF_IsChatWindowIndexActive(i) ) then
-			local chatFrame = _G["ChatFrame"..i];
+			local chatFrame = FCF_GetChatFrameByID(i);
 			if callback(chatFrame, i) then
 				break;
 			end

@@ -1,0 +1,10 @@
+## Title: Blizzard_CompactRaidFrames
+## SavedVariables: Blizzard_CompactRaidFrameManager_FilterOptions
+## AllowLoad: game
+## AllowLoadGameType: mists
+Blizzard_CompactRaidFrameReservationManager.lua
+Blizzard_CompactRaidFrameContainer.xml
+Wrath\Blizzard_CompactRaidFrameManager.lua
+Blizzard_CompactRaidFrameManager_Shared.lua
+Cata\Blizzard_CompactRaidFrameManager.xml
+Localization.lua

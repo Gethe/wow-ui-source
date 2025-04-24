@@ -573,8 +573,8 @@ function CounterBar_SetStyle(self, useFractional, animNumbers, maxValue)
 			if digit == COUNTERBAR_LEADING_ZERO_INDEX then
 				digit = COUNTERBAR_SLASH_INDEX;
 			end
-			l,r,t,b = CounterBar_GetNumberCoord(digit);
-			digitFrame.number:SetTexCoord(l,r,t,b);
+			local left,right,top,bottom = CounterBar_GetNumberCoord(digit);
+			digitFrame.number:SetTexCoord(left,right,top,bottom);
 			digitFrame.numberMask:Hide();
 		end
 		startIndex = startIndex + maxDigits + 1;
@@ -604,6 +604,7 @@ end
 
 
 function CounterBar_GetDigit(count, isFirstDigit)
+	local digit;
 	if count > 0 or isFirstDigit then
 		digit = mod(count, 10);
 	else
@@ -818,9 +819,9 @@ function PlayerBuffTimerManager_UpdateTimers(self)
 		duration, expiration, barID, auraID = UnitPowerBarTimerInfo("player", index);
 	end
 	
-	for auraID, timer in pairs(PlayerBuffTimers) do
+	for timerAuraID, timer in pairs(PlayerBuffTimers) do
 		if ( timer.flagForHide ) then
-			PlayerBuffTimers[auraID] = nil;
+			PlayerBuffTimers[timerAuraID] = nil;
 			if ( not timer.isCounter ) then
 				UnitPowerBarAlt_TearDown(timer);
 			end

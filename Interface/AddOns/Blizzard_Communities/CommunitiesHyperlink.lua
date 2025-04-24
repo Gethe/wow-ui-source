@@ -39,8 +39,6 @@ end
 function CommunitiesHyperlink.OnClickReference(clubId)
 	local clubInfo = C_Club.GetClubInfo(clubId);
 	if clubInfo then
-		Communities_LoadUI();
-		
 		if not CommunitiesFrame:IsShown() then
 			ShowUIPanel(CommunitiesFrame);
 		end

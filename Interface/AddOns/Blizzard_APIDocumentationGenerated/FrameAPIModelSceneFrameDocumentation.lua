@@ -316,6 +316,7 @@ local FrameAPIModelSceneFrame =
 		{
 			Name = "Project3DPointTo2D",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

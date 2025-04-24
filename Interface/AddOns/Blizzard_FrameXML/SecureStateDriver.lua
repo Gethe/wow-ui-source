@@ -67,7 +67,7 @@ local wipe = table.wipe;
 
 -- Check to see if a frame is registered
 function UnitWatchRegistered(frame)
-        return not (unitExistsWatchers[frame] == nil);
+        return unitExistsWatchers[frame] ~= nil;
 end
 
 local function SecureStateDriverManager_UpdateUnitWatch(frame, doState)

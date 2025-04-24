@@ -1,26 +1,3 @@
----------------
---NOTE - Please do not change this section without talking to the UI team
-local _, tbl = ...;
-if tbl then
-	tbl.SecureCapsuleGet = SecureCapsuleGet;
-
-	local function Import(name)
-		tbl[name] = tbl.SecureCapsuleGet(name);
-	end
-
-	Import("IsOnGlueScreen");
-
-	if ( tbl.IsOnGlueScreen() ) then
-		tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
-	end
-
-	setfenv(1, tbl);
-
-Import("table");
-Import("ipairs");
-
-end
----------------
 
 local explicitParameterMsg = "Parameter 'excludeCollapsed' is required.";
 
@@ -124,8 +101,18 @@ function TreeNodeMixin:Insert(data)
 	return self:InsertNode(node);
 end
 
-function TreeNodeMixin:InsertNode(node)
-	table.insert(self.nodes, node);
+function TreeNodeMixin:InsertNodeAtIndex(data, insertIndex)
+	local node = CreateTreeNode(self.dataProvider, self, data);
+	return self:InsertNode(node, insertIndex);
+end
+
+function TreeNodeMixin:InsertNode(node, insertIndex)
+	if insertIndex then
+		table.insert(self.nodes, insertIndex, node);
+	else
+		table.insert(self.nodes, node);
+	end
+
 	self:Invalidate();
 
 	self:Sort();
@@ -264,6 +251,10 @@ end
 
 function TreeDataProviderMixin:Insert(data)
 	return self.node:Insert(data);
+end
+
+function TreeDataProviderMixin:InsertAtIndex(data, index)
+	return self.node:InsertNodeAtIndex(data, index);
 end
 
 function TreeDataProviderMixin:Remove(node)

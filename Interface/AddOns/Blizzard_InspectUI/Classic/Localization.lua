@@ -25,13 +25,11 @@ local l10nTable = {
 	zhCN = {
 		localize = function()
 			LocalizeInspectTabs_zh();
-			InspectTalentFrameSpentPoints:SetPoint("BOTTOMLEFT", 30, 85); -- +0, -1
 		end,
 	},
 	zhTW = {
 		localize = function()
 			LocalizeInspectTabs_zh();
-			InspectTalentFrameSpentPoints:SetPoint("BOTTOMLEFT", 30, 83); -- +0, -3
 		end,
 	},
 };

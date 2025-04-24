@@ -16,4 +16,4 @@ end
 
 function StringSplitIntoTable(sep, string)
 	return { strsplit(sep, string) };
-end		
+end

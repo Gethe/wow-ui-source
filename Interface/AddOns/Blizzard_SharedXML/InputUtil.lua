@@ -1,21 +1,3 @@
-local _, tbl = ...;
-if tbl then
-	tbl.SecureCapsuleGet = SecureCapsuleGet;
-
-	local function Import(name)
-		tbl[name] = tbl.SecureCapsuleGet(name);
-	end
-
-	Import("IsOnGlueScreen");
-
-	if ( tbl.IsOnGlueScreen() ) then
-		tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
-	end
-
-	setfenv(1, tbl);
-
-	Import("GetCursorPosition");
-end
 
 InputUtil = {};
 
@@ -23,4 +5,19 @@ function InputUtil.GetCursorPosition(parent)
 	local x, y = GetCursorPosition();
 	local scale = parent:GetEffectiveScale();
 	return x / scale, y / scale;
+end
+
+function InputUtil.AnchorRegionToCursor(region, point)
+	local parent = GetAppropriateTopLevelParent();
+	local x, y = InputUtil.GetCursorPosition(parent);
+	
+	-- Accounts for the letterboxing that causes the UI origin to be shifted
+	-- closer to the position of the cursor.
+	local _, _, _, pointX, _ = parent:GetPointByName("TOPLEFT");
+	if pointX then
+		x = x - pointX;
+	end
+
+	region:ClearAllPoints();
+	region:SetPoint(point, parent, "BOTTOMLEFT", x, y);
 end

@@ -30,7 +30,7 @@ local function Animation_OnUpdate(self, elapsed)
 	totalElapsed = totalElapsed + elapsed;
 	local isAnyFrameAnimating = false;
 	for frame, frameTable in pairs(AnimatingFrames) do
-		for frameTable, animTable in pairs(frameTable) do
+		for _, animTable in pairs(frameTable) do
 			if ( animTable ~= 0 ) then
 				Animation_UpdateFrame(frame, totalElapsed - frame.animStartTime, animTable);
 				isAnyFrameAnimating = true;

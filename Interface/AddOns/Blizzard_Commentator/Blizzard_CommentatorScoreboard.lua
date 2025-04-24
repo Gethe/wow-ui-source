@@ -90,9 +90,9 @@ function CommentatorScoreboardMixin:SetScore(teamName, score)
 		C_Commentator.SetSeriesScore(teamName1, teamName2, teamName, score);
 		
 		for teamIndex = 1, 2 do
-			local score = self:GetScore(names[teamIndex]);
+			local teamScore = self:GetScore(names[teamIndex]);
 			local scoreLabel = self.ScoreLabels[teamIndex];
-			scoreLabel:SetText(score);
+			scoreLabel:SetText(teamScore);
 		end
 	end
 end

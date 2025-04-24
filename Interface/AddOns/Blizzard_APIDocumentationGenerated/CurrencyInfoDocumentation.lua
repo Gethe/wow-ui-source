@@ -9,6 +9,7 @@ local CurrencyInfo =
 		{
 			Name = "GetBasicCurrencyInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -68,6 +69,7 @@ local CurrencyInfo =
 		{
 			Name = "GetCurrencyContainerInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -83,6 +85,7 @@ local CurrencyInfo =
 		{
 			Name = "GetCurrencyInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -97,6 +100,7 @@ local CurrencyInfo =
 		{
 			Name = "GetCurrencyInfoFromLink",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -142,6 +146,11 @@ local CurrencyInfo =
 	Events =
 	{
 		{
+			Name = "AccountCharacterCurrencyDataReceived",
+			Type = "Event",
+			LiteralName = "ACCOUNT_CHARACTER_CURRENCY_DATA_RECEIVED",
+		},
+		{
 			Name = "CurrencyDisplayUpdate",
 			Type = "Event",
 			LiteralName = "CURRENCY_DISPLAY_UPDATE",
@@ -151,7 +160,7 @@ local CurrencyInfo =
 				{ Name = "quantity", Type = "number", Nilable = true },
 				{ Name = "quantityChange", Type = "number", Nilable = true },
 				{ Name = "quantityGainSource", Type = "number", Nilable = true },
-				{ Name = "quantityLostSource", Type = "number", Nilable = true },
+				{ Name = "destroyReason", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -183,8 +192,10 @@ local CurrencyInfo =
 			{
 				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "description", Type = "cstring", Nilable = false },
+				{ Name = "currencyID", Type = "number", Nilable = false },
 				{ Name = "isHeader", Type = "bool", Nilable = false },
 				{ Name = "isHeaderExpanded", Type = "bool", Nilable = false },
+				{ Name = "currencyListDepth", Type = "number", Nilable = false },
 				{ Name = "isTypeUnused", Type = "bool", Nilable = false },
 				{ Name = "isShowInBackpack", Type = "bool", Nilable = false },
 				{ Name = "quantity", Type = "number", Nilable = false },
@@ -199,6 +210,11 @@ local CurrencyInfo =
 				{ Name = "totalEarned", Type = "number", Nilable = false },
 				{ Name = "discovered", Type = "bool", Nilable = false },
 				{ Name = "useTotalEarnedForMaxQty", Type = "bool", Nilable = false },
+				{ Name = "isAccountWide", Type = "bool", Nilable = false },
+				{ Name = "isAccountTransferable", Type = "bool", Nilable = false },
+				{ Name = "transferPercentage", Type = "number", Nilable = true },
+				{ Name = "rechargingCycleDurationMS", Type = "number", Nilable = false },
+				{ Name = "rechargingAmountPerCycle", Type = "number", Nilable = false },
 			},
 		},
 	},

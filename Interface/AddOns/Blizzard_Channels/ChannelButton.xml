@@ -39,7 +39,7 @@
 		<HighlightTexture parentKey="HighlightTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture parentKey="Collapsed" atlas="voicechat-channellist-category-minus" hidden="true" useatlassize="true">
+				<Texture parentKey="Collapsed" atlas="voicechat-channellist-category-minus" hidden="true" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOPRIGHT" x="-8" y="-6"/>
 					</Anchors>

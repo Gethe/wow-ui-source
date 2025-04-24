@@ -10,7 +10,9 @@ function MacroPopupFrameMixin:OnShow()
 
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	self.iconDataProvider = self:GetMacroFrame():RefreshIconDataProvider();
-	self.BorderBox.IconTypeDropDown:SetSelectedValue(IconSelectorPopupFrameIconFilterTypes.All);
+
+	self:SetIconFilter(IconSelectorPopupFrameIconFilterTypes.All);
+
 	self:Update();
 	self.BorderBox.IconSelectorEditBox:OnTextChanged();
 
@@ -68,13 +70,15 @@ function MacroPopupFrameMixin:Update()
 	elseif ( self.mode == IconSelectorPopupFrameModes.Edit ) then
 		local macroFrame = self:GetMacroFrame();
 		local actualIndex = macroFrame:GetMacroDataIndex(macroFrame:GetSelectedIndex());
-		local name = GetMacroInfo(actualIndex);
-		self.BorderBox.IconSelectorEditBox:SetText(name);
-		self.BorderBox.IconSelectorEditBox:HighlightText();
+		local name = C_Macro.GetMacroName(actualIndex);
+		if ( name ) then
+			self.BorderBox.IconSelectorEditBox:SetText(name);
+			self.BorderBox.IconSelectorEditBox:HighlightText();
 
-		local texture = macroFrame.SelectedMacroButton:GetIconTexture();
-		self.IconSelector:SetSelectedIndex(self:GetIndexOfIcon(texture));
-		self.BorderBox.SelectedIconArea.SelectedIconButton:SetIconTexture(texture);
+			local texture = C_Macro.GetSelectedMacroIcon(actualIndex);
+			self.IconSelector:SetSelectedIndex(self:GetIndexOfIcon(texture));
+			self.BorderBox.SelectedIconArea.SelectedIconButton:SetIconTexture(texture);
+		end
 	end
 
 	local getSelection = GenerateClosure(self.GetIconByIndex, self);
@@ -108,10 +112,10 @@ function MacroPopupFrameMixin:OkayButton_OnClick()
 		index = EditMacro(actualIndex, text, iconTexture) - macroFrame.macroBase;
 	end
 
-	macroFrame:SelectMacro(index);
+	local scrollToSelected = true;
+	macroFrame:SelectMacro(index, scrollToSelected);
 
-	local retainScrollPosition = true;
-	macroFrame:Update(retainScrollPosition);
+	macroFrame:Update();
 end
 
 function MacroPopupFrameMixin:GetMacroFrame()

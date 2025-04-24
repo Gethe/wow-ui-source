@@ -15,6 +15,20 @@ local Item =
 			Type = "Function",
 		},
 		{
+			Name = "CanBeRefunded",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canBeRefunded", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CanItemTransmogAppearance",
 			Type = "Function",
 
@@ -181,6 +195,7 @@ local Item =
 		{
 			Name = "GetDetailedItemLevelInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -233,6 +248,7 @@ local Item =
 				{ Name = "includeBank", Type = "bool", Nilable = false, Default = false },
 				{ Name = "includeUses", Type = "bool", Nilable = false, Default = false },
 				{ Name = "includeReagentBank", Type = "bool", Nilable = false, Default = false },
+				{ Name = "includeAccountBank", Type = "bool", Nilable = false, Default = false },
 			},
 
 			Returns =
@@ -286,6 +302,7 @@ local Item =
 		{
 			Name = "GetItemGem",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -297,6 +314,22 @@ local Item =
 			{
 				{ Name = "gemName", Type = "string", Nilable = false },
 				{ Name = "gemLink", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "GetItemGemID",
+			Type = "Function",
+			MayReturnNothing = true,
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "gemID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -358,6 +391,7 @@ local Item =
 		{
 			Name = "GetItemInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -388,6 +422,7 @@ local Item =
 		{
 			Name = "GetItemInfoInstant",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -407,6 +442,20 @@ local Item =
 		},
 		{
 			Name = "GetItemInventorySlotInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "inventorySlot", Type = "InventoryType", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "GetItemInventorySlotKey",
 			Type = "Function",
 
 			Arguments =
@@ -518,6 +567,34 @@ local Item =
 			},
 		},
 		{
+			Name = "GetItemNumAddedSockets",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "socketCount", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetItemNumSockets",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "socketCount", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetItemQuality",
 			Type = "Function",
 
@@ -551,7 +628,7 @@ local Item =
 
 			Arguments =
 			{
-				{ Name = "quality", Type = "number", Nilable = false },
+				{ Name = "quality", Type = "ItemQuality", Nilable = false },
 			},
 
 			Returns =
@@ -579,6 +656,7 @@ local Item =
 		{
 			Name = "GetItemSpecInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -593,6 +671,7 @@ local Item =
 		{
 			Name = "GetItemSpell",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -608,6 +687,7 @@ local Item =
 		{
 			Name = "GetItemSubClassInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -624,6 +704,7 @@ local Item =
 		{
 			Name = "GetItemUniqueness",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -634,6 +715,24 @@ local Item =
 			{
 				{ Name = "limitCategory", Type = "number", Nilable = false },
 				{ Name = "limitMax", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetItemUniquenessByID",
+			Type = "Function",
+			MayReturnNothing = true,
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isUnique", Type = "bool", Nilable = false },
+				{ Name = "limitCategoryName", Type = "cstring", Nilable = true },
+				{ Name = "limitCategoryCount", Type = "number", Nilable = true },
+				{ Name = "limitCategoryID", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -1101,6 +1200,18 @@ local Item =
 				{ Name = "expansionID", Type = "number", Nilable = false },
 				{ Name = "setID", Type = "number", Nilable = true },
 				{ Name = "isCraftingReagent", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ItemUpgradeInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "currentLevel", Type = "number", Nilable = false },
+				{ Name = "maxLevel", Type = "number", Nilable = false },
+				{ Name = "maxItemLevel", Type = "number", Nilable = false },
+				{ Name = "trackString", Type = "cstring", Nilable = true },
+				{ Name = "trackStringID", Type = "number", Nilable = true },
 			},
 		},
 	},

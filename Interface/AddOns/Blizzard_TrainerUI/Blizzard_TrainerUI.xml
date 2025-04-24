@@ -181,19 +181,11 @@
 					</Button>
 				</Frames>
 			</Frame>
-			<Frame name="ClassTrainerFrameFilterDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+			<DropdownButton parentKey="FilterDropdown" inherits="WowStyle1FilterDropdownTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-26" y="-64"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT"  x="-44" y="-67"/>
 				</Anchors>
-				<Scripts>
-					<OnLoad function="ClassTrainerFrameFilterDropDown_OnLoad"/>
-					<OnShow function="ClassTrainerFrameFilterDropDown_OnLoad"/>
-				</Scripts>
-			</Frame>
+			</DropdownButton>
 			<Frame name="ClassTrainerSkillHighlightFrame" hidden="true">
 				<Size>
 					<AbsDimension x="293" y="16"/>
@@ -525,24 +517,9 @@ inherits="GameFontHighlightSmall" justifyH="LEFT">
 		</Frames>
 		<Scripts>
 			<OnLoad function="ClassTrainerFrame_OnLoad"/>
-			<OnShow>
-				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
-				SetTrainerServiceTypeFilter("available", TRAINER_FILTER_AVAILABLE);
-				SetTrainerServiceTypeFilter("unavailable", TRAINER_FILTER_UNAVAILABLE);
-				SetTrainerServiceTypeFilter("used", TRAINER_FILTER_USED);
-			</OnShow>
-			<OnHide>
-				CloseTrainer();
-				UpdateMicroButtons();
-				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
-				if ( StaticPopup_Visible("CONFIRM_PROFESSION") ) then
-				StaticPopup_Hide("CONFIRM_PROFESSION");
-				end
-			</OnHide>
+			<OnShow function="ClassTrainerFrame_OnShow"/>
+			<OnHide function="ClassTrainerFrame_OnHide"/>
 			<OnEvent function="ClassTrainerFrame_OnEvent"/>
-			<OnMouseWheel>
-				return;
-			</OnMouseWheel>
 		</Scripts>
 	</Frame>
 </Ui>

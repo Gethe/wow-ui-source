@@ -38,7 +38,6 @@ function BattlegroundChatFiltersMixin:OnLoad()
 		end
 	end	
 	
-	local chatString;
 	for _, str in next, FILTERED_BG_CHAT_SUBTRACT_GLOBALS do	
 		chatString = _G[str];
 		if ( chatString ) then
@@ -104,7 +103,7 @@ function BattlegroundChatFiltersMixin:OnUpdate(elapsed)
 			end
 		end
 		
-		local addedPlayers, playerString = 0;
+		local addedPlayers = 0;
 		for i in next, ADDED_PLAYERS do
 			if ( not playerString ) then
 				playerString = i;

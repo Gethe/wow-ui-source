@@ -483,7 +483,7 @@ function QuestFrameItems_Update(questState)
 		_G[questItemName..i]:Hide();
 	end
 
-	local questItem, name, texture, isUsable, numItems = 1;
+	local questItem, name, texture, isUsable, numItems, quality = 1;
 	local rewardsCount = 0;
 
 	-- Setup choosable rewards

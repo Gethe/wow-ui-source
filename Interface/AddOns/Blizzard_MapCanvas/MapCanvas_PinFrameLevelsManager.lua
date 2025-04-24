@@ -37,7 +37,7 @@ function MapCanvasPinFrameLevelsManagerMixin:AddDefinition(frameLevelType, range
 			return false;
 		end
 
-		for frameLevelType, definition in pairs(self.definitions) do
+		for _, definition in pairs(self.definitions) do
 			if definition.startLevel > targetLevel + comparisonMod then
 				definition.startLevel = definition.startLevel + range;
 			end
@@ -48,7 +48,7 @@ function MapCanvasPinFrameLevelsManagerMixin:AddDefinition(frameLevelType, range
 			return false;
 		end
 
-		for frameLevelType, definition in pairs(self.definitions) do
+		for _, definition in pairs(self.definitions) do
 			if definition.startLevel < targetLevel + comparisonMod then
 				definition.startLevel = definition.startLevel - range;
 			end

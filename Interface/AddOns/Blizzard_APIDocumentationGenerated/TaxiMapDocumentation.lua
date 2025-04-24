@@ -41,6 +41,11 @@ local TaxiMap =
 	Events =
 	{
 		{
+			Name = "TaxiNodeStatusChanged",
+			Type = "Event",
+			LiteralName = "TAXI_NODE_STATUS_CHANGED",
+		},
+		{
 			Name = "TaximapClosed",
 			Type = "Event",
 			LiteralName = "TAXIMAP_CLOSED",
@@ -95,6 +100,7 @@ local TaxiMap =
 				{ Name = "atlasName", Type = "cstring", Nilable = false },
 				{ Name = "faction", Type = "FlightPathFaction", Nilable = false },
 				{ Name = "textureKitPrefix", Type = "string", Nilable = true },
+				{ Name = "isUndiscovered", Type = "bool", Nilable = false },
 			},
 		},
 		{

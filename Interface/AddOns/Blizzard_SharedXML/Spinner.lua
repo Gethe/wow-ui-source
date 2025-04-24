@@ -1,74 +1,78 @@
----------------
---NOTE - Please do not change this section without understanding the full implications of the secure environment
---We usually don't want to call out of this environment from this file. Calls should usually go through Outbound
-local _, tbl = ...;
-
-if tbl then
-	tbl.SecureCapsuleGet = SecureCapsuleGet;
-
-	local function Import(name)
-		tbl[name] = tbl.SecureCapsuleGet(name);
-	end
-
-	Import("IsOnGlueScreen");
-
-	if ( tbl.IsOnGlueScreen() ) then
-		tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
-		Import("C_StoreGlue");
-	end
-
-	Import("C_Texture");
-
-	setfenv(1, tbl);
-end
-----------------
 
 SpinnerMixin = {};
 
 function SpinnerMixin:OnShow()
+	if self.Shadow then
+		self.Shadow:SetAlpha(self:GetShadowAlpha());
+		self:UpdateShadowSize();
+		self:SetScript("OnSizeChanged", self.OnSizeChanged);
+	end
+
     self.Anim:Restart();
 end
 
 function SpinnerMixin:OnHide()
+	self:SetScript("OnSizeChanged", nil);
     self.Anim:Stop();
+end
+
+function SpinnerMixin:OnSizeChanged()
+	self:UpdateShadowSize();
 end
 
 function SpinnerMixin:SetDesaturated(desaturated)
     self.Ring:SetDesaturated(desaturated);
     self.Sparks:SetDesaturated(desaturated);
+
+	if self.Shadow then
+		self.Shadow:SetDesaturated(desaturated);
+	end
 end
 
+function SpinnerMixin:GetShadowAlpha()
+	return self.shadowAlpha or 0.5;
+end
+
+function SpinnerMixin:SetShadowEnabled(enabled)
+	if self.shadowEnabled ~= enabled then
+		self.shadowEnabled = enabled;
+
+		if enabled and not self.Shadow then
+			self.Shadow = self:CreateTexture(nil, "BACKGROUND");
+			self.Shadow:SetAtlas("Spinner_Shadow", TextureKitConstants.UseAtlasSize);
+			self.Shadow:SetAlpha(self:GetShadowAlpha());
+			self.Shadow:SetPoint("CENTER");
+		end
+
+		self:UpdateShadowSize();
+
+		if self.Shadow then
+			self.Shadow:SetShown(enabled);
+		end
+	end
+end
+
+function SpinnerMixin:UpdateShadowSize()
+	if self.Shadow then
+		if not self.shadowSizeScalar then
+			local ringAtlas = self.Ring:GetAtlas();
+			local shadowAtlas = self.Shadow:GetAtlas();
+			local ringAtlasInfo = C_Texture.GetAtlasInfo(ringAtlas);
+			local shadowAtlasInfo = C_Texture.GetAtlasInfo(shadowAtlas);
+			self.shadowSizeScalar = shadowAtlasInfo.width / ringAtlasInfo.width;
+		end
+
+		local width, height  = self:GetSize();
+		self.Shadow:SetSize(width * self.shadowSizeScalar, height * self.shadowSizeScalar);
+	end
+end
+
+function SpinnerMixin:UpdateTheme(useDarkMode)
+	self:SetShadowEnabled(not useDarkMode);
+end
 
 SpinnerWithShadowMixin = {};
 
-function SpinnerWithShadowMixin:SpinnerWithShadow_OnShow()
-	self.Shadow:SetAlpha(self.shadowAlpha);
-	self:UpdateShadowSize();
-	self:SetScript("OnSizeChanged", self.OnSizeChanged);
-end
-
-function SpinnerWithShadowMixin:SpinnerWithShadow_OnHide()
-	self:SetScript("OnSizeChanged", nil);
-end
-
-function SpinnerWithShadowMixin:OnSizeChanged()
-	self:UpdateShadowSize();
-end
-
-function SpinnerWithShadowMixin:UpdateShadowSize()
-	if not self.shadowSizeScalar then
-		local ringAtlas = self.Ring:GetAtlas();
-		local shadowAtlas = self.Shadow:GetAtlas();
-		local ringAtlasInfo = C_Texture.GetAtlasInfo(ringAtlas);
-		local shadowAtlasInfo = C_Texture.GetAtlasInfo(shadowAtlas);
-		self.shadowSizeScalar = shadowAtlasInfo.width / ringAtlasInfo.width;
-	end
-
-	local width, height  = self:GetSize();
-	self.Shadow:SetSize(width * self.shadowSizeScalar, height * self.shadowSizeScalar);
-end
-
-function SpinnerWithShadowMixin:SetDesaturated(desaturated)
-	SpinnerMixin.SetDesaturated(self, desaturated);
-	self.Shadow:SetDesaturated(desaturated);
+function SpinnerWithShadowMixin:SpinnerWithShadow_OnLoad()
+	self:SetShadowEnabled(true);
 end

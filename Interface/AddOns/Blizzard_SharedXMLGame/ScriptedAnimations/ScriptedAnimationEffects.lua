@@ -5,8 +5,8 @@ local UIParentShakeFrequency = 0.001;
 
 
 local function GetDirectionVector(source, target)
-	local sourceX, sourceY = source:GetCenter();
-	local targetX, targetY = target:GetCenter();
+	local sourceX, sourceY = GetScaledCenter(source);
+	local targetX, targetY = GetScaledCenter(target);
 	return CreateVector2D(targetX - sourceX, targetY - sourceY);
 end
 
@@ -21,8 +21,8 @@ local function GetProgress(elapsed, duration)
 end
 
 local function LinearTrajectory(source, target, elapsed, duration)
-	local sourceX, sourceY = source:GetCenter();
-	local targetX, targetY = target:GetCenter();
+	local sourceX, sourceY = GetScaledCenter(source);
+	local targetX, targetY = GetScaledCenter(target);
 	local progress = GetProgress(elapsed, duration);
 	local positionX = Lerp(sourceX, targetX, progress);
 	local positionY = Lerp(sourceY, targetY, progress);
@@ -43,7 +43,7 @@ local function GenerateCurveTrajectory(curveMagnitude)
 		direction:ScaleBy(progress);
 		direction:Add(curveDirection);
 
-		local sourceX, sourceY = source:GetCenter();
+		local sourceX, sourceY = GetScaledCenter(source);
 		local deltaX, deltaY = direction:GetXY();
 		return sourceX + deltaX, sourceY + deltaY;
 	end
@@ -62,16 +62,18 @@ local function RandomCurveTrajectory(source, target, elapsed, duration)
 end
 
 local function SourceStaticTrajectory(source, target, elapsed, duration)
-	return source:GetCenter();
+	local sourceX, sourceY = GetScaledCenter(source);
+	return sourceX, sourceY;
 end
 
 local function TargetStaticTrajectory(source, target, elapsed, duration)
-	return target:GetCenter();
+	local targetX, targetY = GetScaledCenter(target);
+	return targetX, targetY;
 end
 
 local function HalfwayStaticTrajectory(source, target, elapsed, duration)
-	local sourceCenterX, sourceCenterY = source:GetCenter();
-	local targetCenterX, targetCenterY = target:GetCenter();
+	local sourceCenterX, sourceCenterY = GetScaledCenter(source);
+	local targetCenterX, targetCenterY = GetScaledCenter(target);
 	return sourceCenterX + ((targetCenterX - sourceCenterX) / 2.0), sourceCenterY + ((targetCenterY - sourceCenterY) / 2.0);
 end
 
@@ -163,13 +165,13 @@ local function GenerateAttackCollisionFunction(pullbackMagnitude)
 		local function AttackCollisionVariationCallback(elapsed, duration)
 			local progress = elapsed / duration;
 			if progress < PullbackPercentage then
-				local progress = progress / PullbackPercentage;
+				progress = progress / PullbackPercentage;
 				return pullbackDistanceX * progress, pullbackDistanceY * progress;
 			elseif progress < ForwardThreshold then
-				local progress = (progress - PullbackPercentage) / ForwardPercentage;
+				progress = (progress - PullbackPercentage) / ForwardPercentage;
 				return pullbackDistanceX + forwardDistanceX * progress, pullbackDistanceY + forwardDistanceY * progress;
 			else
-				local progress = (progress - ForwardThreshold) / BackwardPercentage;
+				progress = (progress - ForwardThreshold) / BackwardPercentage;
 				return distanceX * (1.0 - progress), distanceY * (1.0 - progress);
 			end
 		end

@@ -1,3 +1,21 @@
+UnitPopupAttachableFrameMixin = {};
+
+function UnitPopupAttachableFrameMixin:GetDesiredSize()
+	return self:GetWidth(), self:GetHeight();
+end
+
+function UnitPopupAttachableFrameMixin:SetContextData(contextData)
+	self.contextData = contextData;
+end
+
+function UnitPopupAttachableFrameMixin:GetContextData()
+	return self.contextData;
+end
+
+function UnitPopupAttachableFrameMixin:OnAttach()
+	-- Derive. Called after the context data is assigned and the frame is shown.
+end
+
 UnitPopupVoiceMemberInfoMixin = {};
 
 function UnitPopupVoiceMemberInfoMixin:GetPlayerLocation()
@@ -24,7 +42,19 @@ function UnitPopupVoiceToggleButtonMixin:OnLeave()
 	ExecuteFrameScript(self:GetParent():GetParent(), "OnLeave");
 end
 
-UnitPopupVoiceLevelsMixin = {};
+UnitPopupVoiceLevelsMixin = CreateFromMixins(UnitPopupAttachableFrameMixin);
+
+function UnitPopupVoiceLevelsMixin:GetVoiceChannelID()
+	return self:GetContextData().voiceChannelID;
+end
+
+function UnitPopupVoiceLevelsMixin:GetVoiceMemberID()
+	return self:GetContextData().voiceMemberID;
+end
+
+function UnitPopupVoiceLevelsMixin:GetVoiceChannel()
+	return self:GetContextData().voiceChannel;
+end
 
 function UnitPopupVoiceLevelsMixin:OnLoad()
 	local function UpdateText(slider, value, isMouse)
@@ -42,7 +72,7 @@ function UnitPopupVoiceLevelsMixin:OnHide()
 	self.Toggle:UnregisterEvents();
 end
 
-function UnitPopupVoiceLevelsMixin:OnSetOwningButton()
+function UnitPopupVoiceLevelsMixin:OnAttach()
 	self.Toggle:UpdateVisibleState();
 	self.Slider:UpdateVisibleState();
 end
@@ -50,8 +80,8 @@ end
 UnitPopupToggleMuteMixin = {};
 
 function UnitPopupToggleMuteMixin:IsForPublicChannel()
-	local contextData = self:GetParent():GetContextData();
-	return contextData and IsPublicVoiceChannel(contextData.voiceChannel);
+	local voiceChannel = self:GetParent():GetVoiceChannel();
+	return voiceChannel and IsPublicVoiceChannel(voiceChannel);
 end
 
 function UnitPopupToggleMuteMixin:OnLoad()
@@ -119,25 +149,24 @@ UnitPopupToggleUserMuteMixin = {};
 
 function UnitPopupToggleUserMuteMixin:IsMuted()
 	local contextData = self:GetParent():GetContextData();
-	if contextData and contextData.playerLocation then
+	if contextData.playerLocation then
 		return C_VoiceChat.IsMemberMuted(contextData.playerLocation);
-	else
-		return false;
 	end
+	return false;
 end
 
 function UnitPopupToggleUserMuteMixin:IsSilenced()
-	local contextData = self:GetParent():GetContextData();
-	if contextData and contextData.voiceChannelID and contextData.voiceMemberID then
-		return C_VoiceChat.IsMemberSilenced(contextData.voiceChannelID, contextData.voiceMemberID);
-	else
-		return false;
+	local voiceChannelID = self:GetParent():GetVoiceChannelID();
+	if voiceChannelID then
+		local voiceMemberID = self:GetParent():GetVoiceMemberID();	
+		return C_VoiceChat.IsMemberSilenced(voiceChannelID, voiceMemberID);
 	end
+	return false;
 end
 
 function UnitPopupToggleUserMuteMixin:ToggleMuted()
 	local contextData = self:GetParent():GetContextData();
-	if contextData and contextData.playerLocation then
+	if contextData.playerLocation then
 		C_VoiceChat.ToggleMemberMuted(contextData.playerLocation);
 	end
 end

@@ -43,6 +43,18 @@ local TransmogShared =
 			},
 		},
 		{
+			Name = "TransmogIllusionFlags",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 1,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "HideUntilCollected", Type = "TransmogIllusionFlags", EnumValue = 1 },
+				{ Name = "PlayerConditionGrantsOnLogin", Type = "TransmogIllusionFlags", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "TransmogModification",
 			Type = "Enumeration",
 			NumValues = 2,
@@ -70,9 +82,9 @@ local TransmogShared =
 		{
 			Name = "TransmogSource",
 			Type = "Enumeration",
-			NumValues = 10,
+			NumValues = 11,
 			MinValue = 0,
-			MaxValue = 9,
+			MaxValue = 10,
 			Fields =
 			{
 				{ Name = "None", Type = "TransmogSource", EnumValue = 0 },
@@ -85,6 +97,7 @@ local TransmogShared =
 				{ Name = "Achievement", Type = "TransmogSource", EnumValue = 7 },
 				{ Name = "Profession", Type = "TransmogSource", EnumValue = 8 },
 				{ Name = "NotValidForTransmog", Type = "TransmogSource", EnumValue = 9 },
+				{ Name = "TradingPost", Type = "TransmogSource", EnumValue = 10 },
 			},
 		},
 		{
@@ -102,18 +115,22 @@ local TransmogShared =
 		{
 			Name = "TransmogUseErrorType",
 			Type = "Enumeration",
-			NumValues = 7,
+			NumValues = 11,
 			MinValue = 0,
-			MaxValue = 6,
+			MaxValue = 10,
 			Fields =
 			{
 				{ Name = "None", Type = "TransmogUseErrorType", EnumValue = 0 },
 				{ Name = "PlayerCondition", Type = "TransmogUseErrorType", EnumValue = 1 },
 				{ Name = "Skill", Type = "TransmogUseErrorType", EnumValue = 2 },
 				{ Name = "Ability", Type = "TransmogUseErrorType", EnumValue = 3 },
-				{ Name = "Faction", Type = "TransmogUseErrorType", EnumValue = 4 },
+				{ Name = "Reputation", Type = "TransmogUseErrorType", EnumValue = 4 },
 				{ Name = "Holiday", Type = "TransmogUseErrorType", EnumValue = 5 },
 				{ Name = "HotRecheckFailed", Type = "TransmogUseErrorType", EnumValue = 6 },
+				{ Name = "Class", Type = "TransmogUseErrorType", EnumValue = 7 },
+				{ Name = "Race", Type = "TransmogUseErrorType", EnumValue = 8 },
+				{ Name = "Faction", Type = "TransmogUseErrorType", EnumValue = 9 },
+				{ Name = "ItemProficiency", Type = "TransmogUseErrorType", EnumValue = 10 },
 			},
 		},
 	},

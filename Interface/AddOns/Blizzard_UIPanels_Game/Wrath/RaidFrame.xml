@@ -36,52 +36,62 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	<Frame name="RaidInfoInstanceTemplate" virtual="true">
+	<Button name="RaidInfoInstanceTemplate" virtual="true" mixin="RaidInstanceFrameMixin">
 		<Size>
 			<AbsDimension x="300" y="30"/>
 		</Size>
+		<Scripts>
+			<OnEnter method="OnHover"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<FontString name="$parentName" inherits="GameFontNormal">
+				<FontString name="$parentName" inherits="GameFontNormal" parentKey="Name">
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="5" y="-10"/>
+								<AbsDimension x="5" y="-5"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentDifficulty" inherits="GameFontHighlightSmall">
+				<FontString name="$parentDifficulty" inherits="GameFontHighlightSmall" parentKey="Difficulty">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentName" relativePoint="BOTTOMLEFT">
+						<Anchor point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="5" y="0"/>
+								<AbsDimension x="5" y="-18"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentReset" inherits="GameFontHighlightSmall">
+				<FontString name="$parentReset" inherits="GameFontHighlightSmall" parentKey="Reset">
 					<Anchors>
 						<Anchor point="TOPRIGHT" >
 							<Offset>
-								<AbsDimension x="-10" y="-11"/>
+								<AbsDimension x="-10" y="-6"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentID" inherits="GameFontDisableSmall">
+				<FontString name="$parentID" inherits="GameFontDisableSmall" parentKey="ID">
 					<Anchors>
-						<Anchor point="TOPRIGHT" relativeTo="$parentReset" relativePoint="BOTTOMRIGHT">
+						<Anchor point="TOPRIGHT">
 							<Offset>
-								<AbsDimension x="0" y="0"/>
+								<AbsDimension x="-10" y="-18"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
-	</Frame>
-	<Frame name="RaidParentFrame"  toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate">
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="TOPLEFT" x="-10" y="-2"/>
+				<Anchor point="BOTTOMRIGHT" x="10" y="-4"/>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
+	<Frame name="RaidParentFrame"  toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate" mixin="RaidParentFrameMixin">
 		<Frames>
 			<Button name="$parentTab1" inherits="CharacterFrameTabButtonTemplate" text="RAID" id="1">
 				<Anchors>
@@ -113,7 +123,6 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad function="RaidParentFrame_OnLoad"/>
 			<OnShow>
 				UpdateMicroButtons();
 				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
@@ -125,9 +134,10 @@
 				UpdateMicroButtons();
 				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 			</OnHide>
+			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</Frame>
-	<Frame name="RaidFrame"><!-- Parent set dynamically.   See ClaimRaidFrame()  -->
+	<Frame name="RaidFrame" mixin="RaidFrameMixin"><!-- Parent set dynamically.   See ClaimRaidFrame()  -->
 		<Frames>
 			<CheckButton name="RaidFrameAllAssistCheckButton" parent="RaidFrame" motionScriptsWhileDisabled="true" inherits="UICheckButtonTemplate">
 				<Size x="24" y="24"/>
@@ -208,7 +218,7 @@
 				<HighlightFont style="GameFontHighlightSmall"/>
 				<DisabledFont style="GameFontDisableSmall"/>
 			</Button>
-			<Frame name="RaidInfoFrame" inherits="BackdropTemplate" enableMouse="true" hidden="true">
+			<Frame name="RaidInfoFrame" inherits="BackdropTemplate" enableMouse="true" hidden="true" mixin="RaidInfoFrameMixin">
 				<KeyValues>
 					<KeyValue key="backdropInfo" value="BACKDROP_DARK_DIALOG_32_32" type="global"/>
 				</KeyValues>
@@ -314,13 +324,16 @@
 					</Frame>
 					<Button name="RaidInfoCloseButton" inherits="UIPanelCloseButton">
 						<Anchors>
-							<Anchor point="TOPRIGHT" x="-3" y="-3"/>
+							<Anchor point="TOPRIGHT" x="-2" y="-2"/>
 						</Anchors>
 					</Button>
-					<ScrollFrame name="RaidInfoScrollFrame" inherits="UIPanelScrollFrameTemplate">
+					<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 						<Size>
 							<AbsDimension x="295" y="160"/>
 						</Size>
+						<KeyValues>
+							<KeyValue key="wheelPanScalar" value="0.35" type="number"/>
+						</KeyValues>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -328,226 +341,16 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-									<Size>
-										<AbsDimension x="30" y="125"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-											<Offset>
-												<AbsDimension x="-2" y="5"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-									<TexCoords left="0" right="0.484375" top="0" bottom="0.5"/>
-								</Texture>
-								<Texture name="$parentBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-									<Size>
-										<AbsDimension x="30" y="105"/>
-									</Size>
-									<Anchors>
-										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-											<Offset>
-												<AbsDimension x="-2" y="-1"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-									<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
-								</Texture>
-							</Layer>
-						</Layers>
-						<ScrollChild>
-							<Frame name="RaidInfoScrollChildFrame" enableMouse="true">
-								<Size>
-									<AbsDimension x="300" y="40"/>
-								</Size>
-								<Frames>
-									<Frame name="RaidInfoInstance1" inherits="RaidInfoInstanceTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT">
-												<Offset>
-													<AbsDimension x="0" y="-5"/>
-												</Offset>
-											</Anchor>
-										</Anchors>
-									</Frame>
-									<Frame name="RaidInfoInstance2" inherits="RaidInfoInstanceTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="RaidInfoInstance1" relativePoint="BOTTOMLEFT">
-												<Offset>
-													<AbsDimension x="0" y="0"/>
-												</Offset>
-											</Anchor>
-										</Anchors>
-									</Frame>
-									<Frame name="RaidInfoInstance3" inherits="RaidInfoInstanceTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="RaidInfoInstance2" relativePoint="BOTTOMLEFT">
-												<Offset>
-													<AbsDimension x="0" y="0"/>
-												</Offset>
-											</Anchor>
-										</Anchors>
-									</Frame>
-									<Frame name="RaidInfoInstance4" inherits="RaidInfoInstanceTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="RaidInfoInstance3" relativePoint="BOTTOMLEFT">
-												<Offset>
-													<AbsDimension x="0" y="0"/>
-												</Offset>
-											</Anchor>
-										</Anchors>
-									</Frame>
-									<Frame name="RaidInfoInstance5" inherits="RaidInfoInstanceTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="RaidInfoInstance4" relativePoint="BOTTOMLEFT">
-												<Offset>
-													<AbsDimension x="0" y="0"/>
-												</Offset>
-											</Anchor>
-										</Anchors>
-									</Frame>
-									<Frame name="RaidInfoInstance6" inherits="RaidInfoInstanceTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="RaidInfoInstance5" relativePoint="BOTTOMLEFT">
-												<Offset>
-													<AbsDimension x="0" y="0"/>
-												</Offset>
-											</Anchor>
-										</Anchors>
-									</Frame>
-									<Frame name="RaidInfoInstance7" inherits="RaidInfoInstanceTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="RaidInfoInstance6" relativePoint="BOTTOMLEFT">
-												<Offset>
-													<AbsDimension x="0" y="0"/>
-												</Offset>
-											</Anchor>
-										</Anchors>
-									</Frame>
-									<Frame name="RaidInfoInstance8" inherits="RaidInfoInstanceTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="RaidInfoInstance7" relativePoint="BOTTOMLEFT">
-												<Offset>
-													<AbsDimension x="0" y="0"/>
-												</Offset>
-											</Anchor>
-										</Anchors>
-									</Frame>
-									<Frame name="RaidInfoInstance9" inherits="RaidInfoInstanceTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="RaidInfoInstance8" relativePoint="BOTTOMLEFT">
-												<Offset>
-													<AbsDimension x="0" y="0"/>
-												</Offset>
-											</Anchor>
-										</Anchors>
-									</Frame>
-									<Frame name="RaidInfoInstance10" inherits="RaidInfoInstanceTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="RaidInfoInstance9" relativePoint="BOTTOMLEFT">
-												<Offset>
-													<AbsDimension x="0" y="0"/>
-												</Offset>
-											</Anchor>
-										</Anchors>
-									</Frame>
-									<Frame name="RaidInfoInstance11" inherits="RaidInfoInstanceTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="RaidInfoInstance10" relativePoint="BOTTOMLEFT">
-												<Offset>
-													<AbsDimension x="0" y="0"/>
-												</Offset>
-											</Anchor>
-										</Anchors>
-									</Frame>
-									<Frame name="RaidInfoInstance12" inherits="RaidInfoInstanceTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="RaidInfoInstance11" relativePoint="BOTTOMLEFT">
-												<Offset>
-													<AbsDimension x="0" y="0"/>
-												</Offset>
-											</Anchor>
-										</Anchors>
-									</Frame>
-									<Frame name="RaidInfoInstance13" inherits="RaidInfoInstanceTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="RaidInfoInstance12" relativePoint="BOTTOMLEFT">
-												<Offset>
-													<AbsDimension x="0" y="0"/>
-												</Offset>
-											</Anchor>
-										</Anchors>
-									</Frame>
-									<Frame name="RaidInfoInstance14" inherits="RaidInfoInstanceTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="RaidInfoInstance13" relativePoint="BOTTOMLEFT">
-												<Offset>
-													<AbsDimension x="0" y="0"/>
-												</Offset>
-											</Anchor>
-										</Anchors>
-									</Frame>
-									<Frame name="RaidInfoInstance15" inherits="RaidInfoInstanceTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="RaidInfoInstance14" relativePoint="BOTTOMLEFT">
-												<Offset>
-													<AbsDimension x="0" y="0"/>
-												</Offset>
-											</Anchor>
-										</Anchors>
-									</Frame>
-									<Frame name="RaidInfoInstance16" inherits="RaidInfoInstanceTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="RaidInfoInstance15" relativePoint="BOTTOMLEFT">
-												<Offset>
-													<AbsDimension x="0" y="0"/>
-												</Offset>
-											</Anchor>
-										</Anchors>
-									</Frame>
-									<Frame name="RaidInfoInstance17" inherits="RaidInfoInstanceTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="RaidInfoInstance16" relativePoint="BOTTOMLEFT">
-												<Offset>
-													<AbsDimension x="0" y="0"/>
-												</Offset>
-											</Anchor>
-										</Anchors>
-									</Frame>
-									<Frame name="RaidInfoInstance18" inherits="RaidInfoInstanceTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="RaidInfoInstance17" relativePoint="BOTTOMLEFT">
-												<Offset>
-													<AbsDimension x="0" y="0"/>
-												</Offset>
-											</Anchor>
-										</Anchors>
-									</Frame>
-									<Frame name="RaidInfoInstance19" inherits="RaidInfoInstanceTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="RaidInfoInstance18" relativePoint="BOTTOMLEFT">
-												<Offset>
-													<AbsDimension x="0" y="0"/>
-												</Offset>
-											</Anchor>
-										</Anchors>
-									</Frame>
-									<Frame name="RaidInfoInstance20" inherits="RaidInfoInstanceTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="RaidInfoInstance19" relativePoint="BOTTOMLEFT">
-												<Offset>
-													<AbsDimension x="0" y="0"/>
-												</Offset>
-											</Anchor>
-										</Anchors>
-									</Frame>
-								</Frames>
-							</Frame>
-						</ScrollChild>
-					</ScrollFrame>
+					</Frame>
+					<EventFrame parentKey="ScrollBar" inherits="WowClassicScrollBar">
+						<KeyValues>
+							<KeyValue key="wheelPanScalar" value="0.35" type="number"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="-3"/>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+						</Anchors>
+					</EventFrame>
 					<Button name="RaidInfoCancelButton" inherits="UIPanelButtonTemplate" text="CLOSE">
 						<Size>
 							<AbsDimension x="90" y="20"/>
@@ -576,18 +379,18 @@
 					<OnHide>
 						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 					</OnHide>
+					<OnLoad method="OnLoad" inherit="prepend"/>
+					<OnEvent method="OnEvent"/>
 				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="RaidFrame_OnLoad"/>
-			<OnShow>
-				RaidFrame_OnShow(self);
-			</OnShow>
 			<OnHide>
 				UpdateMicroButtons();
 			</OnHide>
-			<OnEvent function="RaidFrame_OnEvent"/>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnEvent method="OnEvent"/>
 		</Scripts>
 		<HitRectInsets>
 			<AbsInset left="0" right="100" top="0" bottom="100"/>

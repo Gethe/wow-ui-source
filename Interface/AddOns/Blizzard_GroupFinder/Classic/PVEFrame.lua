@@ -155,18 +155,6 @@ function PVEFrame_ShowFrame(sidePanelName, selection)
 	end
 end
 
-function PVEFrame_UpdateTabs(self)
-	self = self or PVEFrame;
-	for i = 1, self.numTabs do
-		local state = "normal";
-		local tab = self["tab"..i];
-		if ( tab.panel.GetState ) then
-			state = tab.panel:GetState();
-		end
-		-- do something with state
-	end
-end
-
 function PVEFrame_TabOnClick(self)
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 	PVEFrame_ShowFrame(panels[self:GetID()].name);
@@ -208,9 +196,7 @@ end
 -- GROUP FINDER
 ---------------------------------------------------------------
 
--- TODO: SHARING PASS
---local groupFrames = { "LFDParentFrame", "RaidFinderFrame", "LFGListPVEStub" }
-local groupFrames = { "LFDParentFrame", "LFGListPVEStub" }
+local groupFrames = { "LFDParentFrame", "RaidFinderFrame", "LFGListPVEStub", "ScenarioFinderFrame" }
 
 function GroupFinderFrame_OnLoad(self)
 	SetPortraitToTexture(self.groupButton1.icon, "Interface\\Icons\\INV_Helmet_08");
@@ -219,6 +205,8 @@ function GroupFinderFrame_OnLoad(self)
 	self.groupButton2.name:SetText(RAID_FINDER_PVEFRAME);
 	SetPortraitToTexture(self.groupButton3.icon, "Interface\\Icons\\Achievement_General_StayClassy");
 	self.groupButton3.name:SetText(LFGLIST_NAME);
+	SetPortraitToTexture(self.groupButton4.icon, "Interface\\Icons\\Icon_Scenarios");
+	self.groupButton4.name:SetText(SCENARIOS_PVEFRAME);
 
 	GroupFinderFrame_EvaluateButtonVisibility(self);
 
@@ -259,7 +247,7 @@ function GroupFinderFrame_EvaluateButtonVisibility(self)
 		GroupFinderFrameButton_SetEnabled(self.groupButton2, true);
 	end
 
-	visible = C_LFGInfo.IsPremadeGroupEnabled();
+	visible = C_LFGList.IsPremadeGroupFinderEnabled();
 	canUse, failureReason = C_LFGInfo.CanPlayerUsePremadeGroup();
 	if not visible then
 		self.groupButton3:Hide();
@@ -271,6 +259,20 @@ function GroupFinderFrame_EvaluateButtonVisibility(self)
 		self.groupButton3:Show();
 		self.groupButton3.tooltip = nil;
 		GroupFinderFrameButton_SetEnabled(self.groupButton3, true);
+	end
+
+	visible = (ScenariosList and #ScenariosList > 0) or false
+	canUse, failureReason = C_LFGInfo.CanPlayerUseScenarioFinder();
+	if not visible then
+		self.groupButton4:Hide();
+	elseif not canUse then
+		self.groupButton4:Show();
+		GroupFinderFrameButton_SetEnabled(self.groupButton4, false);
+		self.groupButton4.tooltip = failureReason;
+	else
+		self.groupButton4:Show();
+		self.groupButton4.tooltip = nil;
+		GroupFinderFrameButton_SetEnabled(self.groupButton4, true);
 	end
 end
 
@@ -329,6 +331,7 @@ function GroupFinderFrame_OnShow(self)
 	PVEFrame:SetTitle(GROUP_FINDER);
 	GroupFinderFrame_EvaluateButtonVisibility(self);
 	GroupFinderFrame_EvaluateHelpTips(self);
+	ScenarioQueueFrame_Update();
 end
 
 function GroupFinderFrame_ShowGroupFrame(frame)

@@ -155,14 +155,14 @@ function CraftFrame_Update()
 
 	CraftHighlightFrame:Hide();
 
-	local craftIndex, craftName, craftButton, craftButtonSubText, craftButtonCost, craftButtonText;
+	local craftName, craftSubSpellName, craftType, numAvailable, isExpanded, trainingPointCost, requiredLevel;
 	for i=1, CRAFTS_DISPLAYED, 1 do
-		craftIndex = i + craftOffset;
+		local craftIndex = i + craftOffset;
 		craftName, craftSubSpellName, craftType, numAvailable, isExpanded, trainingPointCost, requiredLevel = GetCraftInfo(craftIndex);
-		craftButton = getglobal("Craft"..i);
-		craftButtonSubText = getglobal("Craft"..i.."SubText");
-		craftButtonCost = getglobal("Craft"..i.."Cost");
-		craftButtonText = getglobal("Craft"..i.."Text");
+		local craftButton = getglobal("Craft"..i);
+		local craftButtonSubText = getglobal("Craft"..i.."SubText");
+		local craftButtonCost = getglobal("Craft"..i.."Cost");
+		local craftButtonText = getglobal("Craft"..i.."Text");
 		if ( craftIndex <= numCrafts ) then
 			-- Set button widths if scrollbar is shown or hidden
 			if ( CraftListScrollFrame:IsVisible() ) then
@@ -246,7 +246,7 @@ function CraftFrame_Update()
 	local numHeaders = 0;
 	local notExpanded = 0;
 	for i=1, numCrafts, 1 do
-		local craftName, craftSubSpellName, craftType, numAvailable, isExpanded = GetCraftInfo(i);
+		craftName, craftSubSpellName, craftType, numAvailable, isExpanded = GetCraftInfo(i);
 		if ( craftName and craftType == "header" ) then
 			numHeaders = numHeaders + 1;
 			if ( not isExpanded ) then

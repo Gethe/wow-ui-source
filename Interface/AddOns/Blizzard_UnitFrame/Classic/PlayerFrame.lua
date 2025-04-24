@@ -1,23 +1,38 @@
 REQUIRED_REST_HOURS = 5;
 
+PLAYER_FRAME_UNLOCKED = PLAYER_FRAME_UNLOCKED or nil;
+PLAYER_FRAME_CASTBARS_SHOWN = PLAYER_FRAME_CASTBARS_SHOWN or nil;
+
 function PlayerFrame_OnLoad(self)
 	PlayerFrameHealthBar.LeftText = PlayerFrameHealthBarTextLeft;
 	PlayerFrameHealthBar.RightText = PlayerFrameHealthBarTextRight;
 	PlayerFrameManaBar.LeftText = PlayerFrameManaBarTextLeft;
 	PlayerFrameManaBar.RightText = PlayerFrameManaBarTextRight;
 
+	local healthBar = PlayerFrame_GetHealthBar();
+	local manaBar = PlayerFrame_GetManaBar();
 	UnitFrame_Initialize(self, "player", PlayerName, PlayerPortrait,
-						 PlayerFrameHealthBar, PlayerFrameHealthBarText,
-						 PlayerFrameManaBar, PlayerFrameManaBarText,
+						 healthBar,
+						 PlayerFrameHealthBarText,
+						 manaBar,
+						 PlayerFrameManaBarText,
 						 nil, nil, nil,
-						 PlayerFrameMyHealPredictionBar, PlayerFrameOtherHealPredictionBar,
-						 PlayerFrameTotalAbsorbBar, PlayerFrameTotalAbsorbBarOverlay, PlayerFrameOverAbsorbGlow,
-						 PlayerFrameOverHealAbsorbGlow, PlayerFrameHealAbsorbBar, PlayerFrameHealAbsorbBarLeftShadow,
-						 PlayerFrameHealAbsorbBarRightShadow, PlayerFrameManaCostPredictionBar);
+						 healthBar.MyHealPredictionBar,
+						 healthBar.OtherHealPredictionBar,
+						 healthBar.TotalAbsorbBar,
+						 healthBar.TotalAbsorbBarOverlay,
+						 healthBar.OverAbsorbGlow,
+						 healthBar.OverHealAbsorbGlow,
+						 healthBar.HealAbsorbBar,
+						 healthBar.HealAbsorbBarLeftShadow,
+						 healthBar.HealAbsorbBarRightShadow,
+						 manaBar.ManaCostPredictionBar);
 
 	self.statusCounter = 0;
 	self.statusSign = -1;
+
 	CombatFeedback_Initialize(self, PlayerHitIndicator, 30);
+
 	PlayerFrame_Update();
 	self:RegisterEvent("UNIT_LEVEL");
 	self:RegisterEvent("UNIT_FACTION");
@@ -49,12 +64,39 @@ function PlayerFrame_OnLoad(self)
 
 	self:SetClampRectInsets(20, 0, 0, 0);
 
-	local showmenu = function()
-		ToggleDropDownMenu(1, nil, PlayerFrameDropDown, "PlayerFrame", 106, 27);
-	end
 	UIParent_UpdateTopFramePositions();
-	SecureUnitButton_OnLoad(self, "player", showmenu);
+
+	local function OpenContextMenu(frame, unit, button, isKeyPress)
+		local which = nil;
+		local contextData = {
+			fromPlayerFrame = true;
+		};
+
+		if self.unit == "vehicle" then
+			which = "VEHICLE";
+			contextData.unit = "vehicle";
+		else
+			which = "SELF";
+			contextData.unit = "player";
+		end
+		UnitPopup_OpenMenu(which, contextData);
+	end
+
+	SecureUnitButton_OnLoad(self, "player", OpenContextMenu);
 end
+
+--
+-- Helper functions to access frequently needed UI.
+--
+
+function PlayerFrame_GetHealthBar()
+	return PlayerFrame.HealthBar;
+end
+
+function PlayerFrame_GetManaBar()
+	return PlayerFrame.ManaBar;
+end
+
 
 --This is overwritten in LocalizationPost for different languages.
 function PlayerFrame_UpdateLevelTextAnchor(level)
@@ -496,19 +538,6 @@ function PlayerFrame_UpdateGroupIndicator()
 	end
 end
 
-function PlayerFrameDropDown_OnLoad (self)
-	UIDropDownMenu_SetInitializeFunction(self, PlayerFrameDropDown_Initialize);
-	UIDropDownMenu_SetDisplayMode(self, "MENU");
-end
-
-function PlayerFrameDropDown_Initialize ()
-	if ( PlayerFrame.unit == "vehicle" ) then
-		UnitPopup_ShowMenu(PlayerFrameDropDown, "VEHICLE", "vehicle");
-	else
-		UnitPopup_ShowMenu(PlayerFrameDropDown, "SELF", "player");
-	end
-end
-
 function PlayerFrame_UpdatePlaytime()
 	if ( PartialPlayTime() ) then
 		PlayerPlayTimeIcon:SetTexture("Interface\\CharacterFrame\\UI-Player-PlayTimeTired");
@@ -689,12 +718,12 @@ function PlayerFrame_HideVehicleTexture()
 		PlayerFrame.classPowerBar:Setup();
 	elseif ( class == "SHAMAN" ) then
 		if (TotemFrame) then
-			TotemFrame_Update();
+			TotemFrame:Update();
 		end
 	elseif ( class == "DEATHKNIGHT" ) then
 		RuneFrame:Show();
 	elseif ( class == "PRIEST" and PriestBarFrame) then
-		PriestBarFrame_CheckAndShow();
+		PriestBarFrame:CheckAndShow();
 	end
 end
 

@@ -33,16 +33,18 @@
 		</Layers>
 		<Scripts>
 			<OnEnter>
-				local index, current, max, gold, maxGold = GetGuildChallengeInfo(self.orderIndex);
-				if ( index ) then
-					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-					GameTooltip:SetText(_G["GUILD_CHALLENGE_LABEL"..index]);
-					GameTooltip:AddLine(" ")
-					GameTooltip:AddLine(_G["GUILD_CHALLENGE_TOOLTIP"..index], 1, 1, 1, true);
-					GameTooltip:AddLine(" ")
-					local goldString = GetMoneyString(maxGold * COPPER_PER_SILVER * SILVER_PER_GOLD);
-					GameTooltip:AddLine(string.format(GUILD_CHALLENGE_REWARD_GOLD, goldString), 1, 1, 1, true);
-					GameTooltip:Show();
+				if (self.orderIndex) then
+					local index, current, max, gold, maxGold = GetGuildChallengeInfo(self.orderIndex);
+					if ( index ) then
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(_G["GUILD_CHALLENGE_LABEL"..index]);
+						GameTooltip:AddLine(" ")
+						GameTooltip:AddLine(_G["GUILD_CHALLENGE_TOOLTIP"..index], 1, 1, 1, true);
+						GameTooltip:AddLine(" ")
+						local goldString = GetMoneyString(maxGold * COPPER_PER_SILVER * SILVER_PER_GOLD);
+						GameTooltip:AddLine(string.format(GUILD_CHALLENGE_REWARD_GOLD, goldString), 1, 1, 1, true);
+						GameTooltip:Show();
+					end
 				end
 			</OnEnter>
 			<OnLeave>
@@ -64,7 +66,7 @@
 						<Anchor point="TOPLEFT" x="10" y="35"/>
 					</Anchors>
 				</FontString>
-				<Texture name="$parentBar1Left" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+				<Texture name="$parentBar1Left" parentKey="Bar1Left" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
 					<Size x="256" y="16"/>
 					<Anchors>
 						<Anchor point="LEFT" x="-4" y="0"/>
@@ -73,7 +75,7 @@
 					</Anchors>
 					<TexCoords left="0" right="1.0" top="0" bottom="0.25"/>
 				</Texture>
-				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+				<Texture parentKey="HorizontalBar" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
 					<Size x="70" y="16"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentBar1Left" relativePoint="RIGHT"/>
@@ -114,7 +116,7 @@
 					</Anchors>
 					<TexCoords left="0.00097656" right="0.31445313" top="0.93164063" bottom="0.97460938"/>
 				</Texture>
-				<Texture name="$parentHeader2" file="Interface\GuildFrame\GuildFrame">
+				<Texture name="$parentHeader2" parentKey="Header2" file="Interface\GuildFrame\GuildFrame">
 					<Size x="280" y="22"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentBar1Left" relativePoint="TOPLEFT" x="7" y="-11"/>
@@ -128,7 +130,7 @@
 					</Anchors>
 					<TexCoords left="0.00097656" right="0.31445313" top="0.93164063" bottom="0.97460938"/>
 				</Texture>
-				<Texture file="Interface\GuildFrame\GuildChallenges">	<!-- challenges BG -->
+				<Texture parentKey="BG" file="Interface\GuildFrame\GuildChallenges">	<!-- challenges BG -->
 					<Size x="280" y="109"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Header1" relativePoint="BOTTOMLEFT" x="0" y="0"/>
@@ -137,13 +139,13 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString	name="$parentHeader1Label" inherits="GameFontNormal" text="GUILD_FRAME_CHALLENGES">
+				<FontString	name="$parentHeader1Label" parentKey="Header1Label" inherits="GameFontNormal" text="GUILD_FRAME_CHALLENGES">
 					<Size x="0" y="0"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Header1" x="10" y="0"/>
 					</Anchors>
 				</FontString>	
-				<FontString	inherits="GameFontNormal" text="GUILD_MOTD_LABEL">
+				<FontString parentKey="Header2Label"	inherits="GameFontNormal" text="GUILD_MOTD_LABEL">
 					<Size x="0" y="0"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentHeader2" x="10" y="0"/>

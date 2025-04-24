@@ -5,9 +5,9 @@ local EncounterJournalConstants =
 		{
 			Name = "JournalEncounterFlags",
 			Type = "Enumeration",
-			NumValues = 6,
+			NumValues = 7,
 			MinValue = 1,
-			MaxValue = 32,
+			MaxValue = 64,
 			Fields =
 			{
 				{ Name = "Obsolete", Type = "JournalEncounterFlags", EnumValue = 1 },
@@ -16,6 +16,7 @@ local EncounterJournalConstants =
 				{ Name = "HordeOnly", Type = "JournalEncounterFlags", EnumValue = 8 },
 				{ Name = "NoMap", Type = "JournalEncounterFlags", EnumValue = 16 },
 				{ Name = "InternalOnly", Type = "JournalEncounterFlags", EnumValue = 32 },
+				{ Name = "DoNotDisplayEncounter", Type = "JournalEncounterFlags", EnumValue = 64 },
 			},
 		},
 		{

@@ -41,6 +41,7 @@ local BarberShop =
 		{
 			Name = "GetAvailableCustomizations",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -68,6 +69,7 @@ local BarberShop =
 		{
 			Name = "GetCurrentCharacterData",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -106,6 +108,15 @@ local BarberShop =
 			Returns =
 			{
 				{ Name = "chrModelID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "HasAlteredForm",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasAlteredForm", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -155,7 +166,7 @@ local BarberShop =
 
 			Arguments =
 			{
-				{ Name = "sex", Type = "number", Nilable = false },
+				{ Name = "sex", Type = "UnitSex", Nilable = false },
 			},
 
 			Returns =
@@ -233,12 +244,23 @@ local BarberShop =
 			},
 		},
 		{
+			Name = "SetPortraitTexture",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "texture", Type = "SimpleTexture", Nilable = false },
+				{ Name = "raceID", Type = "number", Nilable = false },
+				{ Name = "sex", Type = "UnitSex", Nilable = false },
+			},
+		},
+		{
 			Name = "SetSelectedSex",
 			Type = "Function",
 
 			Arguments =
 			{
-				{ Name = "sex", Type = "number", Nilable = false },
+				{ Name = "sex", Type = "UnitSex", Nilable = false },
 			},
 		},
 		{
@@ -257,6 +279,7 @@ local BarberShop =
 			Arguments =
 			{
 				{ Name = "chrModelID", Type = "number", Nilable = true },
+				{ Name = "spellShapeshiftFormID", Type = "number", Nilable = true },
 			},
 		},
 		{

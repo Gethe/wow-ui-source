@@ -1,15 +1,17 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\UI.xsd">
+	<!--Move/create to ScrollUtil.xml-->
 	<Frame name="ScrollBoxDragIndicatorTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture>
+				<Texture parentKey="Texture">
 					<Color r="1" g="1" b="1" a=".5"/>
 				</Texture>
 			</Layer>
 		</Layers>
 	</Frame>
 
+	<!--Move/create to ScrollUtil.xml-->
 	<Frame name="ScrollBoxDragBoxTemplate" inherits="ScrollBoxDragIndicatorTemplate" virtual="true"/>
 	<Frame name="ScrollBoxDragLineTemplate" inherits="ScrollBoxDragIndicatorTemplate" virtual="true">
 		<Size x="1" y="2"/>
@@ -17,6 +19,8 @@
 
 	<Frame name="ScrollBoxBaseTemplate" clipChildren="true" mixin="ScrollBoxBaseMixin" virtual="true">
 		<KeyValues>
+			<!--Warning! Interpolation is not intended for use in live. If this is desired in a tools capacity, ensure
+			'canInterpolateScroll' is also enabled on the scrollbar.-->
 			<KeyValue key="canInterpolateScroll" value="false" type="boolean"/>
 			<KeyValue key="debugInspectionSystem" value="ScrollBox" type="string"/>
 			<!--

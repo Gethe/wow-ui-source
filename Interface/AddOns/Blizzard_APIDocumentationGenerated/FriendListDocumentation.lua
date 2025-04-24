@@ -75,6 +75,7 @@ local FriendList =
 		{
 			Name = "GetFriendInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -89,6 +90,7 @@ local FriendList =
 		{
 			Name = "GetFriendInfoByIndex",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -172,6 +174,7 @@ local FriendList =
 		{
 			Name = "GetWhoInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -408,6 +411,7 @@ local FriendList =
 			Payload =
 			{
 				{ Name = "friendId", Type = "number", Nilable = false },
+				{ Name = "isCompanionApp", Type = "bool", Nilable = false, Default = false },
 			},
 		},
 		{
@@ -417,6 +421,7 @@ local FriendList =
 			Payload =
 			{
 				{ Name = "friendId", Type = "number", Nilable = false },
+				{ Name = "isCompanionApp", Type = "bool", Nilable = false, Default = false },
 			},
 		},
 		{
@@ -486,6 +491,20 @@ local FriendList =
 			LiteralName = "MUTELIST_UPDATE",
 		},
 		{
+			Name = "NewMatchmakingPartyInvite",
+			Type = "Event",
+			LiteralName = "NEW_MATCHMAKING_PARTY_INVITE",
+		},
+		{
+			Name = "RejectedMatchmakingPartyInvite",
+			Type = "Event",
+			LiteralName = "REJECTED_MATCHMAKING_PARTY_INVITE",
+			Payload =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "WhoListUpdate",
 			Type = "Event",
 			LiteralName = "WHO_LIST_UPDATE",
@@ -508,6 +527,7 @@ local FriendList =
 				{ Name = "level", Type = "number", Nilable = false },
 				{ Name = "dnd", Type = "bool", Nilable = false },
 				{ Name = "afk", Type = "bool", Nilable = false },
+				{ Name = "rafLinkType", Type = "RafLinkType", Nilable = false },
 			},
 		},
 		{
@@ -523,6 +543,7 @@ local FriendList =
 				{ Name = "area", Type = "string", Nilable = false },
 				{ Name = "filename", Type = "string", Nilable = true },
 				{ Name = "gender", Type = "number", Nilable = false },
+				{ Name = "timerunningSeasonID", Type = "number", Nilable = true },
 			},
 		},
 	},

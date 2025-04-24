@@ -41,7 +41,7 @@ end
 function CommunitiesGuildPerksButton_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 36, 0);
 
-	local spellLink = GetSpellLink(self.spellID);
+	local spellLink = C_Spell.GetSpellLink(self.spellID);
 	GameTooltip:SetHyperlink(spellLink);
 end
 
@@ -51,12 +51,16 @@ end
 
 function CommunitiesGuildPerksButton_OnClick(self)
 	if ( IsModifiedClick("CHATLINK") ) then
-		local spellLink = GetSpellLink(self.spellID);
+		local spellLink = C_Spell.GetSpellLink(self.spellID);
 		ChatEdit_LinkItem(nil, spellLink);
 	end
 end
 
 function CommunitiesGuildPerks_Update(self)
-	local dataProvider = CreateDataProviderByIndexCount(GetNumGuildPerks());
-	self.ScrollBox:SetDataProvider(dataProvider);
+	if (GetNumGuildPerks() > 0) then
+		local dataProvider = CreateDataProviderByIndexCount(GetNumGuildPerks());
+		self.ScrollBox:SetDataProvider(dataProvider);		
+	else
+		self:Hide();
+	end
 end

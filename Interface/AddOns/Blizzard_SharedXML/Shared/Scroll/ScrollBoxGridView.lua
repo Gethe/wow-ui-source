@@ -55,7 +55,7 @@ function ScrollBoxListGridViewMixin:RequiresFullUpdateOnScrollTargetSizeChange()
 	return true;
 end
 
-function ScrollBoxListGridViewMixin:SetHorizontal(isHorizontal)
+function ScrollBoxListGridViewMixin:SetHorizontal(isHorizontal) -- luacheck: ignore 312 (value of argument 'isHorizontal' is overwritten before use)
 	-- Horizontal layout not supported at this time.
 	isHorizontal = false;
 	ScrollDirectionMixin.SetHorizontal(self, isHorizontal);

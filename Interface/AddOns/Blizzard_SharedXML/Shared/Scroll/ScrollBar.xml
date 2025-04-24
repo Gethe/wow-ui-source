@@ -2,6 +2,8 @@
 ..\..\UI.xsd">
 	<EventFrame name="ScrollBarBaseTemplate" mixin="ScrollBarMixin" virtual="true">
 		<KeyValues>
+			<!--Warning! Interpolation is not intended for use in live. If this is desired in a tools capacity, ensure
+			'canInterpolateScroll' is also enabled on the scrollbox.-->
 			<KeyValue key="canInterpolateScroll" value="false" type="boolean"/>
 			<KeyValue key="useProportionalThumb" value="true" type="boolean"/>
 			<KeyValue key="snapToInterval" value="false" type="boolean"/>

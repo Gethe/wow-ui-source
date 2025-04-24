@@ -608,7 +608,6 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="PVPDropDown" inherits="UIDropDownMenuTemplate"/>
 			<Button name="PVPTeamDetailsCloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeTo="PVPTeamDetails" relativePoint="TOPRIGHT">

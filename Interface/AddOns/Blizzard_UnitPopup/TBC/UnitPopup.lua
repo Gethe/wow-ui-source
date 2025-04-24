@@ -55,7 +55,7 @@ function SetRaidDifficulties(primaryRaid, difficultyID)
 		local newDifficulty = RAID_DIFFICULTY_MAP[difficultyID][size];
 		SetLegacyRaidDifficultyID(newDifficulty, force);
 	else
-		local otherDifficulty = GetRaidDifficultyID();
+		otherDifficulty = GetRaidDifficultyID();
 		local size = RAID_DIFFICULTY_SIZES[difficultyID];
 		local newDifficulty = RAID_DIFFICULTY_MAP[otherDifficulty][size];
 		SetLegacyRaidDifficultyID(newDifficulty);
@@ -76,6 +76,4 @@ function CheckToggleDifficulty(toggleDifficultyID, difficultyID)
 			return toggleDifficultyID == difficultyID;
 		end
 	end
-
-	return false;
 end

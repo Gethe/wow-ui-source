@@ -5,9 +5,9 @@ local TraitConstants =
 		{
 			Name = "NodeOpFailureReason",
 			Type = "Enumeration",
-			NumValues = 25,
+			NumValues = 26,
 			MinValue = 0,
-			MaxValue = 24,
+			MaxValue = 25,
 			Fields =
 			{
 				{ Name = "None", Type = "NodeOpFailureReason", EnumValue = 0 },
@@ -35,6 +35,7 @@ local TraitConstants =
 				{ Name = "LevelTooLow", Type = "NodeOpFailureReason", EnumValue = 22 },
 				{ Name = "TreeFlaggedNoRefund", Type = "NodeOpFailureReason", EnumValue = 23 },
 				{ Name = "NodeNeverPurchasable", Type = "NodeOpFailureReason", EnumValue = 24 },
+				{ Name = "AccountDataNoMatch", Type = "NodeOpFailureReason", EnumValue = 25 },
 			},
 		},
 		{
@@ -77,15 +78,16 @@ local TraitConstants =
 		{
 			Name = "TraitConditionType",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 5,
 			MinValue = 0,
-			MaxValue = 3,
+			MaxValue = 4,
 			Fields =
 			{
 				{ Name = "Available", Type = "TraitConditionType", EnumValue = 0 },
 				{ Name = "Visible", Type = "TraitConditionType", EnumValue = 1 },
 				{ Name = "Granted", Type = "TraitConditionType", EnumValue = 2 },
 				{ Name = "Increased", Type = "TraitConditionType", EnumValue = 3 },
+				{ Name = "DisplayError", Type = "TraitConditionType", EnumValue = 4 },
 			},
 		},
 		{
@@ -234,14 +236,15 @@ local TraitConstants =
 		{
 			Name = "TraitNodeType",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 3,
 			Fields =
 			{
 				{ Name = "Single", Type = "TraitNodeType", EnumValue = 0 },
 				{ Name = "Tiered", Type = "TraitNodeType", EnumValue = 1 },
 				{ Name = "Selection", Type = "TraitNodeType", EnumValue = 2 },
+				{ Name = "SubTreeSelection", Type = "TraitNodeType", EnumValue = 3 },
 			},
 		},
 		{
@@ -260,13 +263,14 @@ local TraitConstants =
 		{
 			Name = "TraitSystemFlag",
 			Type = "Enumeration",
-			NumValues = 2,
+			NumValues = 3,
 			MinValue = 1,
-			MaxValue = 2,
+			MaxValue = 4,
 			Fields =
 			{
 				{ Name = "AllowMultipleLoadoutsPerTree", Type = "TraitSystemFlag", EnumValue = 1 },
 				{ Name = "ShowSpendConfirmation", Type = "TraitSystemFlag", EnumValue = 2 },
+				{ Name = "AllowEditInCombat", Type = "TraitSystemFlag", EnumValue = 4 },
 			},
 		},
 		{
@@ -286,7 +290,7 @@ local TraitConstants =
 			Type = "Constants",
 			Values =
 			{
-				{ Name = "MAX_COMBAT_TRAIT_CONFIGS", Type = "number", Value = 10 },
+				{ Name = "MAX_COMBAT_TRAIT_CONFIGS", Type = "number", Value = 40 },
 				{ Name = "COMMIT_COMBAT_TRAIT_CONFIG_CHANGES_SPELL_ID", Type = "number", Value = 384255 },
 				{ Name = "INSPECT_TRAIT_CONFIG_ID", Type = "number", Value = -1 },
 				{ Name = "STARTER_BUILD_TRAIT_CONFIG_ID", Type = "number", Value = -2 },

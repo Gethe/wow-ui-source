@@ -1,3 +1,5 @@
+-- luacheck: ignore 111 (setting non-standard global variable)
+
 local function LocalizeTradeFrame_zh()
 	TradeFramePlayerEnchantText:SetPoint("TOPLEFT", TradeFrame, 15, -357);
 end
@@ -15,7 +17,7 @@ local function LocalizeWhoFrame_zh()
 		_G["WhoFrameButton" .. i .. "Name"]:SetPoint("TOPLEFT", 10, -2);
 	end
 
-	WhoFrameDropDown:SetPoint("TOPLEFT", WhoFrameColumnHeader2, "TOPLEFT", -15, 1);
+	WhoFrameDropdown:SetPoint("TOPLEFT", WhoFrameColumnHeader2, "TOPLEFT", -15, 1);
 end
 
 local function LocalizeGuildFrame_zh()

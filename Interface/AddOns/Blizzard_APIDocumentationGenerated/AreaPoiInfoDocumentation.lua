@@ -23,10 +23,11 @@ local AreaPoiInfo =
 		{
 			Name = "GetAreaPOIInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
-				{ Name = "uiMapID", Type = "number", Nilable = false },
+				{ Name = "uiMapID", Type = "number", Nilable = true },
 				{ Name = "areaPoiID", Type = "number", Nilable = false },
 			},
 
@@ -38,6 +39,7 @@ local AreaPoiInfo =
 		{
 			Name = "GetAreaPOITimeLeft",
 			Type = "Function",
+			MayReturnNothing = true,
 			Documentation = { "Returns the number of minutes until the POI expires." },
 
 			Arguments =
@@ -87,6 +89,7 @@ local AreaPoiInfo =
 				{ Name = "position", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
 				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "description", Type = "cstring", Nilable = true },
+				{ Name = "linkedUiMapID", Type = "number", Nilable = true },
 				{ Name = "textureIndex", Type = "number", Nilable = true },
 				{ Name = "tooltipWidgetSet", Type = "number", Nilable = true },
 				{ Name = "iconWidgetSet", Type = "number", Nilable = true },
@@ -98,6 +101,7 @@ local AreaPoiInfo =
 				{ Name = "addPaddingAboveTooltipWidgets", Type = "bool", Nilable = true },
 				{ Name = "highlightWorldQuestsOnHover", Type = "bool", Nilable = false },
 				{ Name = "highlightVignettesOnHover", Type = "bool", Nilable = false },
+				{ Name = "isCurrentEvent", Type = "bool", Nilable = false },
 			},
 		},
 	},

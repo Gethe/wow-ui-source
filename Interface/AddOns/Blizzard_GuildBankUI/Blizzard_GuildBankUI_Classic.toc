@@ -1,6 +1,6 @@
 ## Title: Blizzard_GuildBankUI
 ## LoadOnDemand: 1
 ## AllowLoad: game
-## AllowLoadGameType: tbc, wrath, cata
+## AllowLoadGameType: tbc, wrath, cata, mists
 TBC\Blizzard_GuildBankUI.lua
 TBC\Blizzard_GuildBankUI.xml

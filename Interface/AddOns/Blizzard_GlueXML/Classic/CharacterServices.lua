@@ -373,8 +373,12 @@ local function resetScripts(button)
 		MoveCharacter(index, index + 1);
 	end);
 	button:SetScript("OnEnter", function(self)
-		if ( self.isVeteranLocked ) then
-			GlueTooltip:SetText(CHARSELECT_CHAR_LIMITED_TOOLTIP, nil, nil, nil, nil, true);
+		if ( (self.isVeteranLocked or self.isWowTokenModeLocked) and CharSelectAccountUpgradeButton:IsEnabled()) then
+			local text = CHARSELECT_CHAR_LIMITED_TOOLTIP;
+			if (self.isWowTokenModeLocked) then
+				text = CHARSELECT_CHAR_SUB_LIMITED_TOOLTIP;
+			end
+			GlueTooltip:SetText(text, nil, nil, nil, nil, true);
 			GlueTooltip:Show();
 			GlueTooltip:SetOwner(self, "ANCHOR_LEFT", -16, -5);
 			CharSelectAccountUpgradeButtonPointerFrame:Show();

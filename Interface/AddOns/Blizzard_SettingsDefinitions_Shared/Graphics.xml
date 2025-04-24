@@ -17,7 +17,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="DropDown" inherits="SettingsSelectionPopoutWithButtonsTemplate">
+			<Frame parentKey="Control" inherits="SettingsDropdownWithButtonsTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativePoint="CENTER" x="-40"/>
 				</Anchors>
@@ -81,7 +81,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="SettingsAdvancedWideCheckBoxSliderTemplate" mixin="SettingsAdvancedCheckBoxSliderMixin" virtual="true">
+	<Frame name="SettingsAdvancedWideCheckboxSliderTemplate" mixin="SettingsAdvancedCheckboxSliderMixin" virtual="true">
 		<Size y="26"/>
 		<Anchors>
 			<Anchor point="TOPRIGHT"/>
@@ -96,7 +96,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<CheckButton parentKey="CheckBox" inherits="SettingsCheckBoxTemplate">
+			<CheckButton parentKey="Checkbox" inherits="SettingsCheckboxTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativePoint="CENTER" x="-80" y="0"/>
 				</Anchors>
@@ -250,7 +250,7 @@
 
 			<Frame parentKey="RaidQualityControls" inherits="SettingsAdvancedQualityControlsTemplate" setAllPoints="true">
 				<Frames>
-					<Frame parentKey="GraphicsQuality" parentArray="Controls" inherits="SettingsAdvancedWideCheckBoxSliderTemplate">
+					<Frame parentKey="GraphicsQuality" parentArray="Controls" inherits="SettingsAdvancedWideCheckboxSliderTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" x="4" y="-35"/>
 							<Anchor point="TOPRIGHT" x="-16" y="-35"/>

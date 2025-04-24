@@ -21,11 +21,6 @@ function CommunitiesGuildNewsButtonMixin:Init(elementData)
 end
 
 function CommunitiesGuildNewsFrame_OnLoad(self)
-	QueryGuildNews();
-	self:RegisterEvent("GUILD_NEWS_UPDATE");
-	self:RegisterEvent("GUILD_MOTD");
-	self:RegisterEvent("GUILD_ROSTER_UPDATE");
-	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	local fontString = self.SetFiltersButton:GetFontString();
 	self.SetFiltersButton:SetHeight(fontString:GetHeight() + 4);
 	self.SetFiltersButton:SetWidth(fontString:GetWidth() + 4);
@@ -45,23 +40,26 @@ function CommunitiesGuildNewsFrame_OnLoad(self)
 end
 
 function CommunitiesGuildNewsFrame_OnShow(self)
+	self:RegisterEvent("GUILD_NEWS_UPDATE");
+	self:RegisterEvent("GUILD_MOTD");
+	self:RegisterEvent("GUILD_ROSTER_UPDATE");
+	self:RegisterEvent("CALENDAR_UPDATE_GUILD_EVENTS");
+
+	C_Calendar.OpenCalendar();
+	QueryGuildNews();
+	-- GuildNewsSort will cause a GUILD_NEWS_UPDATE event to get signalled, and CommunitiesGuildNews_Update will get called.
 	GuildNewsSort(0);	-- normal sort, taking into account filters and stickies
 end
 
 function CommunitiesGuildNewsFrame_OnHide(self)
-	if ( self.DropDown.newsIndex ) then
-		CloseDropDownMenus();
-	end
+	self:UnregisterEvent("GUILD_NEWS_UPDATE");
+	self:UnregisterEvent("GUILD_MOTD");
+	self:UnregisterEvent("GUILD_ROSTER_UPDATE");
+	self:UnregisterEvent("CALENDAR_UPDATE_GUILD_EVENTS");
 end
 
 function CommunitiesGuildNewsFrame_OnEvent(self, event)
-	if event == "PLAYER_ENTERING_WORLD" then
-		QueryGuildNews();
-	else
-		if ( self:IsShown() ) then
-			CommunitiesGuildNews_Update(self);
-		end
-	end
+	CommunitiesGuildNews_Update(self);
 end
 
 function CommunitiesGuildNews_Update(self)
@@ -95,11 +93,6 @@ function CommunitiesGuildNews_Update(self)
 	-- update tooltip
 	if ( self.activeButton ) then
 		CommunitiesGuildNewsButton_OnEnter(self.activeButton);
-	end
-
-	-- hide dropdown menu
-	if ( self.DropDown.newsIndex ) then
-		CloseDropDownMenus();
 	end
 
 	if ( numNews == 0 and haveMOTD == 0 and numEvents == 0 ) then
@@ -225,7 +218,6 @@ function CommunitiesGuildNewsButton_AnchorTooltip(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 end
 
-
 function CommunitiesGuildEventButton_OnClick(self, button)
 	if ( button == "LeftButton" ) then
 		if ( CalendarFrame ) then
@@ -239,14 +231,41 @@ end
 
 function CommunitiesGuildNewsButton_OnClick(self, button)
 	if ( button == "RightButton" ) then
-		local dropDown = self:GetParent():GetParent():GetParent().DropDown;
-		if ( dropDown.newsIndex ~= self.index ) then
-			CloseDropDownMenus();
+		-- we don't have any options for these combinations
+		local newsType = self.newsInfo.newsType;
+		if (newsType == NEWS_DUNGEON_ENCOUNTER) or (newsType == NEWS_GUILD_LEVEL) or (newsType == NEWS_GUILD_CREATE) and (not CanEditMOTD()) then
+			return;
 		end
-		dropDown.newsIndex = self.index;
-		dropDown.newsInfo = self.newsInfo;
-		dropDown.onHide = GuildNewsDropDown_OnHide;
-		ToggleDropDownMenu(1, nil, dropDown, "cursor", 3, -3);
+
+		MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
+			rootDescription:SetTag("MENU_GUILD_NEWS");
+
+			local titleText = (newsType == NEWS_GUILD_CREATE) and GUILD_CREATION or self.newsInfo.whatText;
+			rootDescription:CreateTitle(titleText);
+
+			if (newsType == NEWS_PLAYER_ACHIEVEMENT) or (newsType == NEWS_GUILD_ACHIEVEMENT) then
+				rootDescription:CreateButton(GUILD_NEWS_VIEW_ACHIEVEMENT, function()
+					OpenAchievementFrameToAchievement(self.newsInfo.newsDataID);
+				end);
+			elseif IsLootNews(newsType) then
+				rootDescription:CreateButton(GUILD_NEWS_VIEW_ACHIEVEMENT, function()
+					-- whatText has the hyperlink text
+					ChatEdit_LinkItem(self.newsInfo.newsDataID, self.newsInfo.whatText);
+				end);
+			end
+
+			if CanEditMOTD() then
+				if self.newsInfo.isSticky then
+					rootDescription:CreateButton(GUILD_NEWS_REMOVE_STICKY, function()
+						GuildNewsSetSticky(self.index, 0);
+					end);
+				else
+					rootDescription:CreateButton(GUILD_NEWS_MAKE_STICKY, function()
+						GuildNewsSetSticky(self.index, 1);
+					end);
+				end
+			end
+		end);
 	end
 end
 
@@ -256,69 +275,6 @@ function CommunitiesGuildNewsButton_OnLeave(self)
 
 	local guildNewsFrame = self:GetParent():GetParent():GetParent();
 	guildNewsFrame.BossModel:Hide();
-end
-
---****** Dropdown **************************************************************
-
-function CommunitiesGuildNewsDropDown_OnLoad(self)
-	UIDropDownMenu_Initialize(self, CommunitiesGuildNewsDropDown_Initialize, "MENU");
-end
-
-function CommunitiesGuildNewsDropDown_Initialize(self)
-	if not self.newsInfo then
-		return;
-	end
-
-	-- we don't have any options for these combinations
-	if ( ( self.newsInfo.newsType == NEWS_DUNGEON_ENCOUNTER or self.newsInfo.newsType == NEWS_GUILD_LEVEL or self.newsInfo.newsType == NEWS_GUILD_CREATE ) and not CanEditMOTD() ) then
-		return;
-	end
-
-	local info = UIDropDownMenu_CreateInfo();
-	info.notCheckable = 1;
-	info.isTitle = 1;
-	if ( self.newsInfo.newsType == NEWS_GUILD_CREATE ) then
-		info.text = GUILD_CREATION;
-	else
-		info.text = self.newsInfo.whatText;
-	end
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-	info = UIDropDownMenu_CreateInfo();
-	info.notCheckable = 1;
-
-	if ( self.newsInfo.newsType == NEWS_PLAYER_ACHIEVEMENT or self.newsInfo.newsType == NEWS_GUILD_ACHIEVEMENT ) then
-		info.func = function (button, ...) OpenAchievementFrameToAchievement(...); end;
-		info.text = GUILD_NEWS_VIEW_ACHIEVEMENT;
-		info.arg1 = self.newsInfo.newsDataID;
-		UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-	elseif ( IsLootNews(self.newsInfo.newsType) ) then
-		info.func = function (button, ...) ChatEdit_LinkItem(...) end;
-		info.text = GUILD_NEWS_LINK_ITEM;
-		info.arg1 = self.newsInfo.newsDataID;
-		info.arg2 = self.newsInfo.whatText; -- whatText has the hyperlink text
-		UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-	end
-	if ( CanEditMOTD() ) then
-		info.arg1 = self.newsIndex;
-		if ( self.newsInfo.isSticky ) then
-			info.text = GUILD_NEWS_REMOVE_STICKY;
-			info.arg2 = 0;
-		else
-			info.text = GUILD_NEWS_MAKE_STICKY;
-			info.arg2 = 1;
-		end
-		info.func = CommunitiesGuildNewsDropDown_SetSticky;
-		UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-	end
-end
-
-function CommunitiesGuildNewsDropDown_OnHide(self)
-	self.newsIndex = nil;
-	self.newsInfo = nil;
-end
-
-function CommunitiesGuildNewsDropDown_SetSticky(button, newsIndex, value)
-	GuildNewsSetSticky(newsIndex, value);
 end
 
 --****** Popup *****************************************************************
@@ -339,6 +295,8 @@ function CommunitiesGuildNewsFiltersFrame_OnShow(self)
 			checkbox:SetChecked(false);
 		end
 	end
+
+	CommunitiesGuildNewsFiltersFrame_HideInvalidFilters(self);
 end
 
 function CommunitiesGuildNewsFilter_OnClick(self)
@@ -351,4 +309,19 @@ function CommunitiesGuildNewsFilter_OnClick(self)
 		setting = 0;
 	end
 	SetGuildNewsFilter(self:GetID(), setting);
+end
+
+function CommunitiesGuildNewsFiltersFrame_HideInvalidFilters(self)
+	if not C_AchievementInfo.AreGuildAchievementsEnabled() then
+		self.GuildAchievement:Hide();
+	end
+
+	if not CanShowAchievementUI() then
+		self.Achievement:Hide();
+	end
+
+	if not C_GuildInfo.IsEncounterGuildNewsEnabled() then
+		self.DungeonEncounter:Hide();
+	end
+
 end

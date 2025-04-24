@@ -311,15 +311,13 @@
 					</OnLoad>
 					<OnEvent>
 						if ( event == "SKILL_LINES_CHANGED" ) then
-							TradeSkillFrame_Update();
+							TradeSkillFrame_Update(self);
 						end
 					</OnEvent>
 				</Scripts>
 				<BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar" />
 				<BarColor r="0.25" g="0.25" b="0.75" />
 			</StatusBar>
-
-
 			<Frame name="TradeSkillExpandButtonFrame">
 				<Size>
 					<AbsDimension x="54" y="32"/>
@@ -386,40 +384,24 @@
 					</Button>
 				</Frames>
 			</Frame>
-			<Frame name="TradeSkillInvSlotDropDown" inherits="UIDropDownMenuTemplate" id="2">
+			<DropdownButton parentKey="InvSlotDropdown" name="TradeSkillInvSlotDropdown" inherits="WowStyle1DropdownTemplate" id="2">
 				<Anchors>
 					<Anchor point="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="-25" y="-66"/>
+							<AbsDimension x="-45" y="-66"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						TradeSkillInvSlotDropDown_OnLoad(self);
-					</OnLoad>
-					<OnShow>
-						TradeSkillInvSlotDropDown_OnShow(self);
-					</OnShow>
-				</Scripts>
-			</Frame>
-			<Frame name="TradeSkillSubClassDropDown" inherits="UIDropDownMenuTemplate" id="1">
+			</DropdownButton>
+			<DropdownButton parentKey="SubClassDropdown" name="TradeSkillSubClassDropdown" inherits="WowStyle1DropdownTemplate" id="1">
 				<Anchors>
-					<Anchor point="RIGHT" relativeTo="TradeSkillInvSlotDropDown" relativePoint="LEFT">
+					<Anchor point="RIGHT" relativeTo="TradeSkillInvSlotDropdown" relativePoint="LEFT">
 						<Offset>
-							<AbsDimension x="35" y="0"/>
+							<AbsDimension x="-5" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						TradeSkillSubClassDropDown_OnLoad(self);
-					</OnLoad>
-					<OnShow>
-						TradeSkillSubClassDropDown_OnShow(self);
-					</OnShow>
-				</Scripts>
-			</Frame>
+			</DropdownButton>
 
 			<Frame name="TradeSkillHighlightFrame" hidden="true">
 				<Size>
@@ -950,24 +932,11 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				TradeSkillFrame_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				TradeSkillFrame_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnShow>
-				TradeSkillFrame_OnShow(self);
-				TradeSkillInputBox:SetNumber(1);
-				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
-			</OnShow>
-			<OnHide>
-				CloseTradeSkill();
-				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
-			</OnHide>
-			<OnMouseWheel>
-				return;
-			</OnMouseWheel>
+			<OnLoad function="TradeSkillFrame_OnLoad"/>
+			<OnEvent function="TradeSkillFrame_OnEvent"/>
+			<OnShow function="TradeSkillFrame_OnShow"/>
+			<OnHide function="TradeSkillFrame_OnHide"/>
+			<OnMouseWheel function="TradeSkillFrame_OnMouseWheel"/>
 		</Scripts>
 	</Frame>
 </Ui>

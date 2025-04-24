@@ -66,6 +66,7 @@ local PlayerScript =
 		{
 			Name = "CanLootUnit",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -125,10 +126,6 @@ local PlayerScript =
 		},
 		{
 			Name = "ConfirmBinder",
-			Type = "Function",
-		},
-		{
-			Name = "ConfirmPetUnlearn",
 			Type = "Function",
 		},
 		{
@@ -221,6 +218,15 @@ local PlayerScript =
 			},
 		},
 		{
+			Name = "GetLootSpecialization",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "specializationID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetMastery",
 			Type = "Function",
 
@@ -277,6 +283,7 @@ local PlayerScript =
 		{
 			Name = "GetRestState",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -386,6 +393,20 @@ local PlayerScript =
 			Returns =
 			{
 				{ Name = "newlyBoosted", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsItemPreferredArmorType",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isItemPreferredArmorType", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -532,6 +553,15 @@ local PlayerScript =
 			},
 		},
 		{
+			Name = "SetLootSpecialization",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "specializationID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "SetTaxiBenchmarkMode",
 			Type = "Function",
 
@@ -623,6 +653,18 @@ local PlayerScript =
 
 	Tables =
 	{
+		{
+			Name = "PlayerAttackPowerInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "mainHandAttackPower", Type = "number", Nilable = false },
+				{ Name = "offHandAttackPower", Type = "number", Nilable = false },
+				{ Name = "rangedAttackPower", Type = "number", Nilable = false },
+				{ Name = "baseAttackPower", Type = "number", Nilable = false },
+				{ Name = "baseRangedAttackPower", Type = "number", Nilable = false },
+			},
+		},
 	},
 };
 

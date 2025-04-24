@@ -8,6 +8,11 @@ local Client =
 		{
 			Name = "FlashClientIcon",
 			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "briefly", Type = "bool", Nilable = false, Default = false },
+			},
 		},
 		{
 			Name = "GetBillingTimeRested",
@@ -39,6 +44,15 @@ local Client =
 			Returns =
 			{
 				{ Name = "framerate", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "IsCpuBound",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isCpuBound", Type = "bool", Nilable = true },
 			},
 		},
 		{

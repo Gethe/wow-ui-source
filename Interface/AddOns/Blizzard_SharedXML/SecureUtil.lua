@@ -1,30 +1,3 @@
---------------------------------------------------
---NOTE - Please do not change this section without understanding the full implications of the secure environment
-local _, tbl = ...;
-if tbl then
-	tbl.SecureCapsuleGet = SecureCapsuleGet;
-
-	local function Import(name)
-		tbl[name] = tbl.SecureCapsuleGet(name);
-	end
-
-	Import("IsOnGlueScreen");
-
-	if ( tbl.IsOnGlueScreen() ) then
-		tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
-		Import("C_StoreGlue");
-	end
-
-	setfenv(1, tbl);
-	
-	Import("error");
-	Import("getmetatable");
-	Import("ipairs");
-	Import("Round");
-	Import("Enum");
-	Import("GetFontStringMetatable");
-end
---------------------------------------------------
 
 -- Mix this into a FontString to have it resize until it stops truncating, or gets too small
 ShrinkUntilTruncateFontStringMixin = {};
@@ -131,18 +104,19 @@ function AutoScalingFontStringMixin:ScaleTextToFit()
 end
 
 --------------------------------------------------
-function SetupPlayerForModelScene(modelScene, overrideActorName, itemModifiedAppearanceIDs, sheatheWeapons, autoDress, hideWeapons, useNativeForm)
+function SetupPlayerForModelScene(modelScene, overrideActorName, itemModifiedAppearanceIDs, sheatheWeapons, autoDress, hideWeapons, useNativeForm, playerRaceName, playerGender)
 	if not modelScene then
 		return;
 	end
 
-	local actor = modelScene:GetPlayerActor(overrideActorName);
+	local actor = modelScene:GetPlayerActor(overrideActorName, playerRaceName, playerGender);
 	if actor then
 		sheatheWeapons = (sheatheWeapons == nil) or sheatheWeapons;
 		hideWeapons = (hideWeapons == nil) or hideWeapons;
 		useNativeForm = (useNativeForm == nil) or useNativeForm;
-		if IsOnGlueScreen() then
-			actor:SetPlayerModelFromGlues(sheatheWeapons, autoDress, hideWeapons, useNativeForm);
+		if C_Glue.IsOnGlueScreen() then
+			local characterIndex = nil;  -- defaults to selected character.
+			actor:SetPlayerModelFromGlues(characterIndex, sheatheWeapons, autoDress, hideWeapons, useNativeForm);
 		else
 			actor:SetModelByUnit("player", sheatheWeapons, autoDress, hideWeapons, useNativeForm);
 		end

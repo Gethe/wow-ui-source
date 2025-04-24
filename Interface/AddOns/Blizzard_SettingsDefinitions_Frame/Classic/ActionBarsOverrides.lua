@@ -3,10 +3,10 @@ ActionBarsOverrides = {}
 function ActionBarsOverrides.CreateActionBarVisibilitySettings(category, ActionBarSettingsTogglesCache, ActionBarSettingsLastCacheTime, ActionBarSettingsCacheTimeout)
 		local actionBars = 
 		{
-			{variable = "PROXY_SHOW_ACTIONBAR_2", label = OPTION_SHOW_ACTION_BAR:format(2), tooltip = OPTION_TOOLTIP_SHOW_MULTIBAR1, uvar = "SHOW_MULTI_ACTIONBAR_1" },
-			{variable = "PROXY_SHOW_ACTIONBAR_3", label = OPTION_SHOW_ACTION_BAR:format(3), tooltip = OPTION_TOOLTIP_SHOW_MULTIBAR2, uvar = "SHOW_MULTI_ACTIONBAR_2" },
-			{variable = "PROXY_SHOW_ACTIONBAR_4", label = OPTION_SHOW_ACTION_BAR:format(4), tooltip = OPTION_TOOLTIP_SHOW_MULTIBAR3, uvar = "SHOW_MULTI_ACTIONBAR_3" },
-			{variable = "PROXY_SHOW_ACTIONBAR_5", label = OPTION_SHOW_ACTION_BAR:format(5), tooltip = OPTION_TOOLTIP_SHOW_MULTIBAR4, uvar = "SHOW_MULTI_ACTIONBAR_4" },
+			{variable = "PROXY_SHOW_ACTIONBAR_2", label = OPTION_SHOW_ACTION_BAR:format(2), tooltip = OPTION_TOOLTIP_SHOW_MULTIBAR1 },
+			{variable = "PROXY_SHOW_ACTIONBAR_3", label = OPTION_SHOW_ACTION_BAR:format(3), tooltip = OPTION_TOOLTIP_SHOW_MULTIBAR2 },
+			{variable = "PROXY_SHOW_ACTIONBAR_4", label = OPTION_SHOW_ACTION_BAR:format(4), tooltip = OPTION_TOOLTIP_SHOW_MULTIBAR3 },
+			{variable = "PROXY_SHOW_ACTIONBAR_5", label = OPTION_SHOW_ACTION_BAR:format(5), tooltip = OPTION_TOOLTIP_SHOW_MULTIBAR4 },
 		};
 
 		local function GetActionBarToggle(index)
@@ -26,8 +26,6 @@ function ActionBarsOverrides.CreateActionBarVisibilitySettings(category, ActionB
 
 			ActionBarSettingsTogglesCache[index] = value;
 
-			_G[actionBars[index].uvar] = value;
-
 			SetActionBarToggles(unpack(ActionBarSettingsTogglesCache));
 			MultiActionBar_Update();
 		end
@@ -42,10 +40,10 @@ function ActionBarsOverrides.CreateActionBarVisibilitySettings(category, ActionB
 			end
 
 			local defaultValue = false;
-			local setting = Settings.RegisterProxySetting(category, data.variable, Settings.DefaultVarLocation,
+			local setting = Settings.RegisterProxySetting(category, data.variable,
 				Settings.VarType.Boolean, data.label, defaultValue, GetValue, SetValue);
 			actionBars[index].setting = setting;
-			actionBars[index].initializer = Settings.CreateCheckBox(category, setting, data.tooltip);
+			actionBars[index].initializer = Settings.CreateCheckbox(category, setting, data.tooltip);
 
 			-- For the Right Bars, you can't turn on 4 if you don't have 3 enabled
 			if(index == 4) then
@@ -59,21 +57,11 @@ end
 
 function ActionBarsOverrides.AdjustActionBarSettings(category)
 	-- Always Show Action Bars
-	local defaultValue = false;
-	local function GetValue()
-		return GetCVarBool("alwaysShowActionBars");
-	end
-		
-	local function SetValue(value)
-		SetCVar("alwaysShowActionBars", value);
+	local setting = Settings.SetupCVarCheckbox(category, "alwaysShowActionBars", ALWAYS_SHOW_MULTIBARS_TEXT, OPTION_TOOLTIP_ALWAYS_SHOW_MULTIBARS);
+	setting:SetValueChangedCallback(function(value)
 		MultiActionBar_UpdateGridVisibility();
-	end
-		
-	local setting = Settings.RegisterProxySetting(category, "PROXY_ALWAYS_SHOW_ACTION_BARS", Settings.DefaultVarLocation, 
-		Settings.VarType.Boolean, ALWAYS_SHOW_MULTIBARS_TEXT, defaultValue, GetValue, SetValue);
-	Settings.CreateCheckBox(category, setting, OPTION_TOOLTIP_ALWAYS_SHOW_MULTIBARS);
+	end);
 end
-
 function ActionBarsOverrides.RunSettingsCallback(callback)
 	callback();
 end

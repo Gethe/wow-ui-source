@@ -1,28 +1,3 @@
----------------
---NOTE - Please do not change this section without talking to the UI team
-local _, tbl = ...;
-if tbl then
-	tbl.SecureCapsuleGet = SecureCapsuleGet;
-
-	local function Import(name)
-		tbl[name] = tbl.SecureCapsuleGet(name);
-	end
-
-	Import("IsOnGlueScreen");
-
-	if ( tbl.IsOnGlueScreen() ) then
-		tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
-	end
-
-	setfenv(1, tbl);
-
-Import("table");
-Import("select");
-Import("ipairs");
-Import("math");
-
-end
----------------
 
 ScrollBoxLinearPaddingMixin = CreateFromMixins(ScrollBoxPaddingMixin);
 
@@ -112,11 +87,12 @@ function ScrollBoxLinearBaseViewMixin:GetElementIndent(frame)
 end
 
 function ScrollBoxLinearBaseViewMixin:GetLayoutFunction()
+	local elementStretchDisabled = self:IsElementStretchDisabled();
 	local setPoint = self:IsHorizontal() and ScrollBoxViewUtil.SetHorizontalPoint or ScrollBoxViewUtil.SetVerticalPoint;
 	local scrollTarget = self:GetScrollTarget();
 	local function Layout(index, frame, offset)
 		local indent = self:GetElementIndent(frame);
-		return setPoint(frame, offset, indent, scrollTarget);
+		return setPoint(frame, offset, indent, elementStretchDisabled, scrollTarget);
 	end
 	return Layout;
 end
@@ -200,6 +176,10 @@ end
 
 function ScrollBoxLinearViewMixin:RequiresFullUpdateOnScrollTargetSizeChange()
 	return true;
+end
+
+function ScrollBoxLinearViewMixin:GetDataScrollOffset(scrollBox)
+	return scrollBox:GetUpperPadding();
 end
 
 function ScrollBoxLinearViewMixin:RecalculateExtent(scrollBox)

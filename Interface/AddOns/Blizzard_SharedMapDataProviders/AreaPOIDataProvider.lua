@@ -30,6 +30,7 @@ function AreaPOIDataProviderMixin:RefreshAllData(fromOnShow)
 	for i, areaPoiID in ipairs(areaPOIs) do
 		local poiInfo = C_AreaPoiInfo.GetAreaPOIInfo(mapID, areaPoiID);
 		if poiInfo then
+			poiInfo.dataProvider = self;
 			self:GetMap():AcquirePin(self:GetPinTemplate(), poiInfo);
 		end
 	end

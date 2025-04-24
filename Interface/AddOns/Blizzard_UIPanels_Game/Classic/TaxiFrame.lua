@@ -146,8 +146,8 @@ function TaxiNodeOnButtonEnter(button)
 		for i=1, numNodes  do
 			local currType = TaxiNodeGetType(i);
 			if ( currType == "DISTANT" ) then
-				local button = _G["TaxiButton"..i];
-				button:Hide();
+				local taxiButton = _G["TaxiButton"..i];
+				taxiButton:Hide();
 			end
 		end
 	end
@@ -176,10 +176,10 @@ function TaxiNodeOnButtonEnter(button)
 				DrawLine(line, "TaxiRouteMap", sX, sY, dX, dY, 32, TAXIROUTE_LINEFACTOR);
 				line:Show();
 
-				local type = TaxiNodeGetType(dstSlot);
-				if ( type == "DISTANT" ) then
-					local button = _G["TaxiButton"..dstSlot];
-					button:Show();
+				local dstType = TaxiNodeGetType(dstSlot);
+				if ( dstType == "DISTANT" ) then
+					local taxiButton = _G["TaxiButton"..dstSlot];
+					taxiButton:Show();
 				end
 			else
 				line:Hide();

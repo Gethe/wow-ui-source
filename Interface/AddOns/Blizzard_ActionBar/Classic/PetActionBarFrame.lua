@@ -1,6 +1,5 @@
 PETACTIONBAR_SLIDETIME = 0.09;
-PETACTIONBAR_YPOS = 97;
-PETACTIONBAR_XPOS = 36;
+PETACTIONBAR_YOFFSET = 0;
 NUM_PET_ACTION_SLOTS = 10;
 
 PET_DEFENSIVE_TEXTURE = "Interface\\Icons\\Ability_Defend";
@@ -14,6 +13,8 @@ PET_DISMISS_TEXTURE = "Interface\\Icons\\Spell_Shadow_Teleport";
 PET_MOVE_TO_TEXTURE = "Interface\\Icons\\Ability_Hunter_Pet_Goto";
 
 PET_ACTION_HIGHLIGHT_MARKS = {};
+
+PetActionBarMixin = {};
 
 function ClearPetActionHighlightMarks()
 	PET_ACTION_HIGHLIGHT_MARKS = {};
@@ -109,27 +110,23 @@ function PetActionBarFrame_IsAboveStance(ignoreShowing)
 end
 
 function PetActionBarFrame_OnUpdate(self, elapsed)
-	local yPos;
-	if ( self.slideTimer and (self.slideTimer < self.timeToSlide) ) then
+	if (self.slideTimer == nil) then
+		self.slideTimer = self.timeToSlide;
+	end
+	self.slideProgress = self.slideTimer / self.timeToSlide;
+
+	if (self.slideTimer < self.timeToSlide) then
 		self.completed = nil;
 		if ( self.mode == "show" ) then
-			yPos = (self.slideTimer/self.timeToSlide) * PETACTIONBAR_YPOS;
-			self:SetPoint("TOPLEFT", self:GetParent(), "BOTTOMLEFT", PETACTIONBAR_XPOS, yPos);
 			self:Show();
-		elseif ( self.mode == "hide" ) then
-			yPos = (1 - (self.slideTimer/self.timeToSlide)) * PETACTIONBAR_YPOS;
-			self:SetPoint("TOPLEFT", self:GetParent(), "BOTTOMLEFT", PETACTIONBAR_XPOS, yPos);
 		end
-		self.slideTimer = self.slideTimer + elapsed;
-	else
+		self.slideTimer = min(self.slideTimer + elapsed, self.timeToSlide);
+		self:UpdatePositionValues();
+	elseif (not self.completed) then
 		self.completed = 1;
-		if ( self.mode == "show" ) then
-			self:SetPoint("TOPLEFT", self:GetParent(), "BOTTOMLEFT", PETACTIONBAR_XPOS, PETACTIONBAR_YPOS);
-			--Move the chat frame and edit box up a bit
-		elseif ( self.mode == "hide" ) then
-			self:SetPoint("TOPLEFT", self:GetParent(), "BOTTOMLEFT", PETACTIONBAR_XPOS, 0);
+		self:UpdatePositionValues();
+		if ( self.mode == "hide" ) then
 			self:Hide();
-			--Move the chat frame and edit box back down to original position
 		end
 		self.mode = "none";
 	end
@@ -239,25 +236,43 @@ function PetActionBar_UpdateCooldowns()
 	end
 end
 
-function PetActionBar_UpdatePositionValues()
-	if ( PetActionBarFrame_IsAboveStance(true) ) then
-		PETACTIONBAR_XPOS = 36;
-	elseif ( MainMenuBarVehicleLeaveButton and MainMenuBarVehicleLeaveButton:IsShown() ) then
-		PETACTIONBAR_XPOS = MainMenuBarVehicleLeaveButton:GetRight() + 20;
-	elseif ( StanceBarFrame and GetNumShapeshiftForms() > 0 ) then
-		PETACTIONBAR_XPOS = StanceBarFrame.StanceButtons[GetNumShapeshiftForms()]:GetRight() + 20;
-	elseif ( MultiCastActionBarFrame and HasMultiCastActionBar() ) then
-		PETACTIONBAR_XPOS = 500;
-	else
-		PETACTIONBAR_XPOS = 36;
+function PetActionBarMixin:UpdatePositionValues()
+	local xPos = 36;
+	local horizontalAnchorRelativePoint = "LEFT";
+	local horizontalAnchorFrame = self:GetParent();
+	if (MainMenuBarVehicleLeaveButton and MainMenuBarVehicleLeaveButton:IsShown()) then
+		xPos = 20;
+		horizontalAnchorRelativePoint = "RIGHT";
+		horizontalAnchorFrame = MainMenuBarVehicleLeaveButton;
+	elseif (StanceBarFrame and GetNumShapeshiftForms() > 0) then
+		xPos = 20;
+		horizontalAnchorRelativePoint = "RIGHT";
+		horizontalAnchorFrame = StanceBarFrame.StanceButtons[GetNumShapeshiftForms()];
+	elseif (MultiCastActionBarFrame and HasMultiCastActionBar()) then
+		xPos = 500;
 	end
+	self:SetPoint("LEFT", horizontalAnchorFrame, horizontalAnchorRelativePoint, xPos, 0);
+
+	local yPos = 0;
+	local yPosWhenShowing = PETACTIONBAR_YOFFSET;
+	local slideDistance = self:GetParent():GetHeight() + self:GetHeight() + yPosWhenShowing;
+	local yPosWhenHidden = -slideDistance;
+	local verticalAnchorFrame = self:GetParent();
+	if (self.slideProgress == nil) then
+		self.slideProgress = 1;
+	end
+	if (self.mode == "show" or self.mode == "none") then
+		yPos = Lerp(yPosWhenHidden, yPosWhenShowing, self.slideProgress);
+	elseif (self.mode == "hide") then
+		yPos = Lerp(yPosWhenShowing, yPosWhenHidden, self.slideProgress);
+	end
+	self:SetPoint("BOTTOM", verticalAnchorFrame, "TOP", 0, yPos);
 end
 
 function ShowPetActionBar(doNotSlide)
 	if ( PetHasActionBar() and PetActionBarFrame.showgrid == 0 and (PetActionBarFrame.mode ~= "show") and (not PetActionBarFrame.locked or doNotSlide) and not PetActionBarFrame.ctrlPressed ) then
-		PetActionBar_UpdatePositionValues();
+		PetActionBarFrame:UpdatePositionValues();
 		if ( MainMenuBar.busy or UnitHasVehicleUI("player") or doNotSlide ) then
-			PetActionBarFrame:SetPoint("TOPLEFT", PetActionBarFrame:GetParent(), "BOTTOMLEFT", PETACTIONBAR_XPOS, PETACTIONBAR_YPOS);
 			PetActionBarFrame.state = "top";
 			PetActionBarFrame:Show();
 		else
@@ -275,7 +290,7 @@ end
 function HidePetActionBar()
 	if ( PetActionBarFrame.showgrid == 0 and PetActionBarFrame:IsShown() and not PetActionBarFrame.locked and not PetActionBarFrame.ctrlPressed ) then
 		if ( MainMenuBar.busy ) then
-			PetActionBarFrame:SetPoint("TOPLEFT", PetActionBarFrame:GetParent(), "BOTTOMLEFT", PETACTIONBAR_XPOS, 0);
+			PetActionBarFrame:UpdatePositionValues();
 			PetActionBarFrame.state = "bottom";
 			PetActionBarFrame:Hide();
 		else

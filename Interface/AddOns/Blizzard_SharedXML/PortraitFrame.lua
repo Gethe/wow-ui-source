@@ -1,27 +1,3 @@
---------------------------------------------------
---NOTE - Please do not change this section without understanding the full implications of the secure environment
-local _, tbl = ...;
-if tbl then
-	tbl.SecureCapsuleGet = SecureCapsuleGet;
-
-	local function Import(name)
-		tbl[name] = tbl.SecureCapsuleGet(name);
-	end
-
-	Import("IsOnGlueScreen");
-
-	if ( tbl.IsOnGlueScreen() ) then
-		tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
-		Import("C_StoreGlue");
-	end
-
-	setfenv(1, tbl);
-
-	Import("SetPortraitToTexture");
-	Import("SetPortraitTexture");
-	Import("C_Container");
-end
---------------------------------------------------
 
 TitledPanelMixin = {};
 
@@ -90,7 +66,7 @@ function PortraitFrameMixin:SetPortraitAtlasRaw(atlas, ...)
 end
 
 function PortraitFrameMixin:SetPortraitToClassIcon(classFilename)
-	self:SetPortraitToAsset("Interface/TargetingFrame/UI-Classes-Circles");
+	self:SetPortraitTextureRaw("Interface/TargetingFrame/UI-Classes-Circles");
 	local left, right, bottom, top = unpack(CLASS_ICON_TCOORDS[string.upper(classFilename)]);
 	self:SetPortraitTexCoord(left, right, bottom, top);
 end

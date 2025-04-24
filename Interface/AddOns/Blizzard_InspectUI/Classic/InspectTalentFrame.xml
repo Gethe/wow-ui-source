@@ -225,30 +225,30 @@
 							<TexCoords left="0.3046875" right="0.31640625" top="0.421875" bottom="0.5625"/>
 						</Texture>
 						<Texture name="$parentBorderMiddle" file="Interface\Buttons\UI-Button-Borders2">
-				<Anchors>
+							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentBorderLeft" relativePoint="TOPRIGHT"/>
 								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBorderRight" relativePoint="BOTTOMLEFT"/>
 							</Anchors>
-					<TexCoords left="0.01171875" right="0.3046875" top="0.421875" bottom="0.5625"/>
-				</Texture>
+							<TexCoords left="0.01171875" right="0.3046875" top="0.421875" bottom="0.5625"/>
+						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
 						<FontString name="InspectTalentFrameSpentPointsText" inherits="GameFontNormalSmall" justifyH="LEFT">
 							<Size x="0" y="15"/>
-				<Anchors>
-					<Anchor point="LEFT">
-						<Offset x="12" y="1"/>
+							<Anchors>
+								<Anchor point="LEFT">
+									<Offset x="12" y="1"/>
 								</Anchor>
 							</Anchors>
 						</FontString>
 						<FontString name="InspectTalentFrameTalentPointsText" inherits="GameFontNormalSmall" justifyH="RIGHT">
 							<Size x="0" y="15"/>
-						<Anchors>
+							<Anchors>
 								<Anchor point="RIGHT">
 									<Offset x="-12" y="1"/>
-					</Anchor>
-				</Anchors>
-				</FontString>
+								</Anchor>
+							</Anchors>
+						</FontString>
 					</Layer>
 				</Layers>
 				<Scripts>

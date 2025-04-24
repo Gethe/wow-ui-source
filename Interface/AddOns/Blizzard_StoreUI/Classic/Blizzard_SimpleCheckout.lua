@@ -1,24 +1,3 @@
----------------
---NOTE - Please do not change this section without talking to Dan
---We usually don't want to call out of this environment from this file. Calls should usually go through Outbound
-local _, tbl = ...;
-tbl.SecureCapsuleGet = SecureCapsuleGet;
-
-local function Import(name)
-	tbl[name] = tbl.SecureCapsuleGet(name);
-end
-
-Import("IsOnGlueScreen");
-Import("GetPhysicalScreenSize");
-Import("GetScreenDPIScale");
-
-if ( tbl.IsOnGlueScreen() ) then
-	tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
-end
-
-setfenv(1, tbl);
-----------------
-
 
 SimpleCheckoutMixin = {};
 
@@ -45,7 +24,7 @@ function SimpleCheckoutMixin:OnEvent(event, ...)
 		self:CalculateDesiredSize();
 		self:RecalculateSize();
 	elseif (event == "SUBSCRIPTION_CHANGED_KICK_IMMINENT") then
-		if (IsOnGlueScreen()) then
+		if (C_Glue.IsOnGlueScreen()) then
 			self.closeShopOnHide = true;
 		end
 	end
@@ -63,7 +42,7 @@ function SimpleCheckoutMixin:OnHide()
 	self:UnregisterEvent("DISPLAY_SIZE_CHANGED");
 	self:UnregisterEvent("SUBSCRIPTION_CHANGED_KICK_IMMINENT");
 	
-	if (IsOnGlueScreen() and self.closeShopOnHide) then
+	if (C_Glue.IsOnGlueScreen() and self.closeShopOnHide) then
 		_G.SetStoreUIShown(false);
 		_G.GlueDialog_Show("SUBSCRIPTION_CHANGED_KICK_WARNING");
 		self.closeShopOnHide = false;

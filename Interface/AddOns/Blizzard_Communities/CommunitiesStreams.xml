@@ -140,7 +140,7 @@
 					</OnLoad>
 				</Scripts>
 			</ScrollFrame>
-			<CheckButton parentKey="TypeCheckBox" inherits="UICheckButtonTemplate">
+			<CheckButton parentKey="TypeCheckbox" inherits="UICheckButtonTemplate">
 				<Size x="20" y="20"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.TypeLabel" relativePoint="LEFT" x="-3" y="0"/>
@@ -202,15 +202,11 @@
 					<KeyValue key="OnCancel" value="CommunitiesNotificationSettingsDialogCancelButton_OnClick" type="global"/>
 				</KeyValues>
 			</Frame>
-			<Frame parentKey="CommunitiesListDropDownMenu" inherits="CommunitiesListDropDownMenuTemplate">
-				<Size x="40" y="28"/>
+			<DropdownButton parentKey="CommunitiesListDropdown" inherits="CommunitiesListDropdownTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-10" y="-22"/>
+					<Anchor point="TOPRIGHT" x="-20" y="-22"/>
 				</Anchors>
-				<KeyValues>
-					<KeyValue key="width" value="160" type="number"/>
-				</KeyValues>
-			</Frame>
+			</DropdownButton>
 			<ScrollFrame parentKey="ScrollFrame" inherits="ScrollFrameTemplate">
 				<KeyValues>
 					<KeyValue key="scrollBarX" value="5" type="number"/>
@@ -289,48 +285,29 @@
 			<OnShow method="OnShow"/>
 		</Scripts>
 	</Frame>
-	
-	<DropDownToggleButton name="AddToChatButtonTemplate" inherits="UIMenuButtonStretchTemplate" mixin="CommunitiesAddToChatMixin" virtual="true">
+
+	<DropdownButton name="AddToChatButtonTemplate" inherits="WowStyle1ArrowDropdownTemplate" mixin="CommunitiesAddToChatMixin" virtual="true">
 		<Layers>
-			<Layer level="ARTWORK" textureSubLevel="1">
-				<Texture file="Interface\Buttons\SquareButtonTextures" parentKey="icon">
-					<Size x="12" y="12"/>
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-					<TexCoords left="0.45312500" right="0.64062500" top="0.20312500" bottom="0.01562500"/>
-				</Texture>
-			</Layer>
 			<Layer>
 				<FontString parentKey="Label" inherits="GameFontNormalSmall" text="COMMUNITIES_ADD_TO_CHAT">
 					<Anchors>
-						<Anchor point="RIGHT" relativeKey="$parent" relativePoint="LEFT" x="-1" y="0.5"/>
+						<Anchor point="RIGHT" relativeKey="$parent" relativePoint="LEFT" x="-5" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
-		<Frames>
-			<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate">
-				<Size x="10" y="10"/>
-				<Scripts>
-					<OnLoad function="CommunitiesAddToChatDropDown_OnLoad"/>
-				</Scripts>
-			</Frame>
-		</Frames>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnMouseDown method="OnMouseDown"/>
+			<OnShow method="OnShow"/>
 		</Scripts>
-	</DropDownToggleButton>
+	</DropdownButton>
 		
-	<Frame name="StreamDropDownMenuTemplate" inherits="UIDropDownMenuTemplate" mixin="CommunitiesStreamDropDownMixin" virtual="true">
-		<Size x="40" y="28"/>
+	<DropdownButton name="StreamDropdownTemplate" inherits="WowStyle1DropdownTemplate" mixin="CommunitiesStreamDropdownMixin" virtual="true">
 		<Frames>
 			<Frame parentKey="NotificationOverlay" frameLevel="100" setAllPoints="true" hidden="true">
 				<Layers>
 					<Layer level="OVERLAY">
 						<Texture parentKey="UnreadNotificationIcon" atlas="communities-icon-notification">
-							<Size x="11" y="11"/>
+							<Size x="17" y="17"/>
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOPRIGHT" x="-19" y="-4"/>
 							</Anchors>
@@ -342,5 +319,5 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 		</Scripts>
-	</Frame>
+	</DropdownButton>
 </Ui>

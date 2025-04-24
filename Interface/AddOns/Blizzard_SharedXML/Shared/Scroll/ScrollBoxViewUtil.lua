@@ -1,25 +1,3 @@
----------------
---NOTE - Please do not change this section without talking to the UI team
-local _, tbl = ...;
-if tbl then
-	tbl.SecureCapsuleGet = SecureCapsuleGet;
-
-	local function Import(name)
-		tbl[name] = tbl.SecureCapsuleGet(name);
-	end
-
-	Import("IsOnGlueScreen");
-
-	if ( tbl.IsOnGlueScreen() ) then
-		tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
-	end
-
-	setfenv(1, tbl);
-
-Import("math");
-
-end
----------------
 
 ScrollBoxViewUtil = {};
 
@@ -28,16 +6,20 @@ function ScrollBoxViewUtil.CalculateSpacingUntil(index, stride, spacing)
 end
 
 -- Points are cleared first to avoid some complications related to drag and drop.
-function ScrollBoxViewUtil.SetHorizontalPoint(frame, offset, indent, scrollTarget)
+function ScrollBoxViewUtil.SetHorizontalPoint(frame, offset, indent, elementStretchDisabled, scrollTarget)
 	frame:ClearAllPoints();
 	frame:SetPoint("TOPLEFT", scrollTarget, "TOPLEFT", offset, -indent);
-	frame:SetPoint("BOTTOMLEFT", scrollTarget, "BOTTOMLEFT", offset, 0);
+	if not elementStretchDisabled then
+		frame:SetPoint("BOTTOMLEFT", scrollTarget, "BOTTOMLEFT", offset, 0);
+	end
 	return frame:GetWidth();
 end
 
-function ScrollBoxViewUtil.SetVerticalPoint(frame, offset, indent, scrollTarget)
+function ScrollBoxViewUtil.SetVerticalPoint(frame, offset, indent, elementStretchDisabled, scrollTarget)
 	frame:ClearAllPoints();
 	frame:SetPoint("TOPLEFT", scrollTarget, "TOPLEFT", indent, -offset);
-	frame:SetPoint("TOPRIGHT", scrollTarget, "TOPRIGHT", 0, -offset);
+	if not elementStretchDisabled then
+		frame:SetPoint("TOPRIGHT", scrollTarget, "TOPRIGHT", 0, -offset);
+	end
 	return frame:GetHeight();
 end

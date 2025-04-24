@@ -100,9 +100,7 @@ function HonorFrame_SetLevel()
 end
 
 function HonorFrame_SetGuild()
-	local guildName;
-	local rank;
-	guildName, title, rank = GetGuildInfo("player");
+	local guildName, title, rank = GetGuildInfo("player");
 	if ( guildName ) then
 		HonorGuildText:Show();
 		HonorGuildText:SetFormattedText(GUILD_TITLE_TEMPLATE, title, guildName);

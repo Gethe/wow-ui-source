@@ -1,199 +1,12 @@
+local _, addonTable = ...
 
-MONEY_ICON_WIDTH = 19;
-MONEY_ICON_WIDTH_SMALL = 13;
+local MoneyTypeInfo = addonTable.MoneyTypeInfo;
 
-MONEY_BUTTON_SPACING = -4;
-MONEY_BUTTON_SPACING_SMALL = -4;
+local COPPER_PER_SILVER = 100;
+local SILVER_PER_GOLD = 100;
+local COPPER_PER_GOLD = COPPER_PER_SILVER * SILVER_PER_GOLD;
 
-MONEY_TEXT_VADJUST = 0;
-
-COIN_BUTTON_WIDTH = 32;
-
-MoneyTypeInfo = { };
-MoneyTypeInfo["PLAYER"] = {
-	OnloadFunc = function(self)
-		self:RegisterEvent("TRIAL_STATUS_UPDATE");
-	end,
-
-	UpdateFunc = function(self)
-		return MoneyFrame_UpdateTrialErrorButton(self);
-	end,
-
-	PickupFunc = function(self, amount)
-		PickupPlayerMoney(amount);
-	end,
-
-	DropFunc = function(self)
-		DropCursorMoney();
-	end,
-
-	collapse = 1,
-	canPickup = 1,
-	showSmallerCoins = "Backpack"
-};
-MoneyTypeInfo["STATIC"] = {
-	UpdateFunc = function(self)
-		return self.staticMoney;
-	end,
-
-	collapse = 1,
-};
-MoneyTypeInfo["AUCTION"] = {
-	UpdateFunc = function(self)
-		return self.staticMoney;
-	end,
-	showSmallerCoins = "Backpack",
-	fixedWidth = 1,
-	collapse = 1,
-	truncateSmallCoins = nil,
-};
-MoneyTypeInfo["AUCTION_TOOLTIP"] = {
-	UpdateFunc = function(self)
-		return self.staticMoney;
-	end,
-	showSmallerCoins = "Backpack",
-	fixedWidth = 1,
-	collapse = 1,
-	align = 1,
-	truncateSmallCoins = nil,
-};
-MoneyTypeInfo["PLAYER_TRADE"] = {
-	UpdateFunc = function(self)
-		return GetPlayerTradeMoney();
-	end,
-
-	PickupFunc = function(self, amount)
-		PickupTradeMoney(amount);
-	end,
-
-	DropFunc = function(self)
-		AddTradeMoney();
-	end,
-
-	collapse = 1,
-	canPickup = 1,
-};
-MoneyTypeInfo["TARGET_TRADE"] = {
-	UpdateFunc = function(self)
-		return GetTargetTradeMoney();
-	end,
-
-	collapse = 1,
-};
-MoneyTypeInfo["SEND_MAIL"] = {
-	UpdateFunc = function(self)
-		return GetSendMailMoney();
-	end,
-
-	PickupFunc = function(self, amount)
-		PickupSendMailMoney(amount);
-	end,
-
-	DropFunc = function(self)
-		AddSendMailMoney();
-	end,
-
-	collapse = nil,
-	canPickup = 1,
-	showSmallerCoins = "Backpack",
-};
-MoneyTypeInfo["SEND_MAIL_COD"] = {
-	UpdateFunc = function(self)
-		return GetSendMailCOD();
-	end,
-
-	PickupFunc = function(self, amount)
-		PickupSendMailCOD(amount);
-	end,
-
-	DropFunc = function(self)
-		AddSendMailCOD();
-	end,
-
-	collapse = 1,
-	canPickup = 1,
-};
-MoneyTypeInfo["GUILDBANK"] = {
-	OnloadFunc = function(self)
-		self:RegisterEvent("GUILDBANK_UPDATE_MONEY");
-	end,
-
-	UpdateFunc = function(self)
-		return (GetGuildBankMoney() - GetCursorMoney());
-	end,
-
-	PickupFunc = function(self, amount)
-		PickupGuildBankMoney(amount);
-	end,
-
-	DropFunc = function(self)
-		DropCursorMoney();
-	end,
-
-	collapse = 1,
-	showSmallerCoins = "Backpack",
-};
-
-MoneyTypeInfo["GUILDBANKWITHDRAW"] = {
-	OnloadFunc = function(self)
-		self:RegisterEvent("GUILDBANK_UPDATE_WITHDRAWMONEY");
-	end,
-
-	UpdateFunc = function(self)
-		self:GetParent():UpdateWithdrawMoney();
-		return nil;
-	end,
-
-	collapse = 1,
-	showSmallerCoins = "Backpack",
-};
-
-MoneyTypeInfo["GUILD_REPAIR"] = {
-	UpdateFunc = function(self)
-		return self.staticMoney;
-	end,
-
-	collapse = 1,
-	showSmallerCoins = "Backpack",
-};
-
-MoneyTypeInfo["TOOLTIP"] = {
-	UpdateFunc = function(self)
-		return self.staticMoney;
-	end,
-	showSmallerCoins = "Backpack",
-	collapse = 1,
-	truncateSmallCoins = nil,
-};
-
-MoneyTypeInfo["REFORGE"] = {
-	UpdateFunc = function(self)
-		return self.staticMoney;
-	end,
-	collapse = 1,
-	showSmallerCoins = "Backpack",
-};
-
-MoneyTypeInfo["GUILDBANKCASHFLOW"] = {
-	OnloadFunc = function(self)
-		self:RegisterEvent("GUILDBANKLOG_UPDATE");
-	end,
-	UpdateFunc = function(self)
-		GuildBankFrame_UpdateCashFlowMoney();
-		return nil;
-	end,
-	collapse = 1,
-	showSmallerCoins = "Backpack",
-};
-
-MoneyTypeInfo["BLACKMARKET"] = {
-	UpdateFunc = function(self)
-		return self.staticMoney;
-	end,
-	showSmallerCoins = nil,
-	fixedWidth = 1,
-	collapse = 1,
-};
+MONEY_INPUT_MAX_GOLD_DIGITS = 6;
 
 function MoneyFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_MONEY");
@@ -506,7 +319,7 @@ function MoneyFrame_Update(frameName, money, forceShow)
 	frame.moneyWidth = width;
 
 	-- attach text now that denominations have been computed
-	local prefixText = _G[frameName.."PrefixText"];
+	local prefixText = frameName and _G[frameName.."PrefixText"];
 	if ( prefixText ) then
 		if ( prefixText:GetText() and money > 0 ) then
 			prefixText:Show();
@@ -526,7 +339,7 @@ function MoneyFrame_Update(frameName, money, forceShow)
 			prefixText:Hide();
 		end
 	end
-	local suffixText = _G[frameName.."SuffixText"];
+	local suffixText = frameName and _G[frameName.."SuffixText"];
 	if ( suffixText ) then
 		if ( suffixText:GetText() and money > 0 ) then
 			suffixText:Show();
@@ -576,9 +389,9 @@ function MoneyFrame_AccumulateAlignmentWidths(frameName, widths)
 	end
 
 	local prefixFrame = _G[frameName.."PrefixText"];
-	local goldButton = self.GoldButton;
-	local silverButton = self.SilverButton;
-	local copperButton = self.CopperButton;
+	local goldButton = frame.GoldButton;
+	local silverButton = frame.SilverButton;
+	local copperButton = frame.CopperButton;
 
 	if (prefixFrame) then
 		widths.prefix = math.max(widths.prefix or 0, prefixFrame:GetWidth());
@@ -621,9 +434,9 @@ function MoneyFrame_UpdateAlignment(frameName, widths)
 	frame.alignMoneyWidth = widths.money;
 
 	local prefixFrame = _G[frameName.."PrefixText"];
-	local goldButton = self.GoldButton;
-	local silverButton = self.SilverButton;
-	local copperButton = self.CopperButton;
+	local goldButton = frame.GoldButton;
+	local silverButton = frame.SilverButton;
+	local copperButton = frame.CopperButton;
 
 	local update = false;
 
@@ -664,60 +477,6 @@ function MoneyFrame_ResetAlignment(frameName)
 	frame.alignMoneyWidth = nil;
 end
 
-function MoneyFrame_UpdateTrialErrorButton(self)
-	local money = (GetMoney() - GetCursorMoney() - GetPlayerTradeMoney());
-	if self.trialErrorButton then
-		local _, rMoney = GetRestrictedAccountData();
-		local moneyIsRestricted = GameLimitedMode_IsActive() and money >= rMoney;
-		self.trialErrorButton:SetShown(moneyIsRestricted);
-	end
-
-	return money;
-end
-
-
-function SetMoneyFrameColorByFrame(moneyFrame, color)
-	local fontObject;
-	if ( moneyFrame.small ) then
-		if ( color == "yellow" ) then
-			fontObject = NumberFontNormalRightYellow;
-		elseif ( color == "red" ) then
-			fontObject = NumberFontNormalRightRed;
-		elseif ( color == "gray" ) then
-			fontObject = NumberFontNormalRightGray;
-		else
-			fontObject = NumberFontNormalRight;
-		end
-	else
-		if ( color == "yellow"  ) then
-			fontObject = NumberFontNormalLargeRightYellow;
-		elseif ( color == "red" ) then
-			fontObject = NumberFontNormalLargeRightRed;
-		elseif ( color == "gray" ) then
-			fontObject = NumberFontNormalLargeRightGray;
-		else
-			fontObject = NumberFontNormalLargeRight;
-		end
-	end
-
-	local goldButton = moneyFrame.GoldButton;
-	local silverButton = moneyFrame.SilverButton;
-	local copperButton = moneyFrame.CopperButton;
-
-	goldButton:SetNormalFontObject(fontObject);
-	silverButton:SetNormalFontObject(fontObject);
-	copperButton:SetNormalFontObject(fontObject);
-end
-
-function SetMoneyFrameColor(frameName, color)
-	local moneyFrame = _G[frameName];
-	if ( not moneyFrame ) then
-		return;
-	end
-	
-	SetMoneyFrameColorByFrame(moneyFrame, color);
-end
-
 function AltCurrencyFrame_Update(frameName, texture, cost, canAfford)
 	local iconWidth;
 	local button = _G[frameName];
@@ -741,9 +500,3 @@ function AltCurrencyFrame_Update(frameName, texture, cost, canAfford)
 	buttonTexture:SetHeight(iconWidth);
 	button:SetWidth(button:GetTextWidth() + MONEY_ICON_WIDTH_SMALL);
 end
-
-function GetDenominationsFromCopper(money)
-	return C_CurrencyInfo.GetCoinText(money, " ");
-end
-
-

@@ -405,6 +405,7 @@ local Club =
 		{
 			Name = "GetInfoFromLastCommunityChatLine",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -471,6 +472,23 @@ local Club =
 			Returns =
 			{
 				{ Name = "invitations", Type = "table", InnerType = "ClubSelfInvitationInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetLastTicketResponse",
+			Type = "Function",
+			MayReturnNothing = true,
+
+			Arguments =
+			{
+				{ Name = "ticket", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "error", Type = "ClubErrorType", Nilable = false },
+				{ Name = "info", Type = "ClubInfo", Nilable = true },
+				{ Name = "showError", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1541,6 +1559,7 @@ local Club =
 				{ Name = "isRemoteChat", Type = "bool", Nilable = true },
 				{ Name = "overallDungeonScore", Type = "number", Nilable = true },
 				{ Name = "faction", Type = "PvPFaction", Nilable = true },
+				{ Name = "timerunningSeasonID", Type = "number", Nilable = true },
 			},
 		},
 		{

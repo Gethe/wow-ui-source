@@ -48,7 +48,7 @@ function TutorialFrame_Update(currentTutorial)
 	-- Go through the queue and reanchor the buttons
 	local button;
 	LAST_TUTORIAL_BUTTON_SHOWN = nil;
-	for index, value in ipairs(TUTORIALFRAME_QUEUE) do
+	for _, value in ipairs(TUTORIALFRAME_QUEUE) do
 		button = _G[value[2]];
 		if ( LAST_TUTORIAL_BUTTON_SHOWN and LAST_TUTORIAL_BUTTON_SHOWN ~= button ) then
 			button:SetPoint("BOTTOM", LAST_TUTORIAL_BUTTON_SHOWN, "BOTTOM", 36, 0);
@@ -119,7 +119,7 @@ end
 
 function TutorialFrame_CheckIntro()
 	for i=1, MAX_TUTORIAL_ALERTS do
-		button = _G["TutorialFrameAlertButton"..i];
+		local button = _G["TutorialFrameAlertButton"..i];
 		if ( button.id == 42 ) then
 			button:Click();
 			TutorialFrame:SetPoint("BOTTOM", "UIParent", "CENTER", 0, -90);

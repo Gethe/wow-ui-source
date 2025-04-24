@@ -28,14 +28,12 @@ function CommentatorNamePlateMixin:OnLoad()
 	-- functionality as possible without redefining it in the XML.
 	self:GetHealthBar().border:ClearAllPoints();
 	self:GetHealthBar().border = CreateFrame("FRAME", nil, self:GetHealthBar(), "CommentatorNamePlateFullBorderTemplate");
-	self:GetHealthBar():SetStatusBarAtlas("_Bar-mid");
 	self:GetHealthBar():SetHeight(BarHeight);
 	
 	if (self:GetCastBar()) then
 		self:GetCastBar():SetScript("OnShow", nil);
 		self:GetCastBar().Border:SetAlpha(0);
 		self:GetCastBar().border = CreateFrame("FRAME", nil, self:GetCastBar(), "CommentatorNamePlateFullBorderTemplate");
-		self:GetCastBar():SetStatusBarAtlas("_Bar-mid");
 	
 		self:GetCastBar().Flash:ClearAllPoints();
 		self:GetCastBar().Flash:SetAllPoints();

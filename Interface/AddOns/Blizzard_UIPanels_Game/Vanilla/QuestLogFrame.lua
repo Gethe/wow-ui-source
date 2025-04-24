@@ -133,6 +133,7 @@ function QuestLog_Update(self)
 
 	local questIndex, questLogTitle, questTitleTag, questNumGroupMates, questNormalText, questHighlight, questCheck;
 	local questLogTitleText, level, questTag, isHeader, isCollapsed, isComplete, color;
+	local frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isBounty, isStory, isHidden, isScaling;
 	local numPartyMembers, partyMembersOnQuest, tempWidth, textWidth;
 	for i=1, QUESTS_DISPLAYED, 1 do
 		questIndex = i + FauxScrollFrame_GetOffset(QuestLogListScrollFrame);
@@ -271,8 +272,7 @@ function QuestLog_Update(self)
 	local notExpanded = 0;
 	-- Somewhat redundant loop, but cleaner than the alternatives
 	for i=1, numEntries, 1 do
-		local index = i;
-		local questLogTitleText, level, questTag, isHeader, isCollapsed = GetQuestLogTitle(i);
+		questLogTitleText, level, questTag, isHeader, isCollapsed = GetQuestLogTitle(i);
 		if ( questLogTitleText and isHeader ) then
 			numHeaders = numHeaders + 1;
 			if ( isCollapsed ) then
@@ -743,7 +743,7 @@ function AutoQuestWatch_Insert(questIndex, watchTimer)
 		AddQuestWatch(questIndex);
 	else
 		local lowestTimer = MAX_QUEST_WATCH_TIMER;
-		local lowestIndex;
+		local lowestIndex, lowestID;
 		for index, value in ipairs(QUEST_WATCH_LIST) do
 			if ( ( value.timer <= lowestTimer ) and ( value.timer ~= QUEST_WATCH_NO_EXPIRE ) ) then
 				lowestTimer = value.timer;

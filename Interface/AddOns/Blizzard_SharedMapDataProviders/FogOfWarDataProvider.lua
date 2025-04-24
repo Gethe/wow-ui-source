@@ -3,8 +3,6 @@ FogOfWarDataProviderMixin = CreateFromMixins(MapCanvasDataProviderMixin);
 function FogOfWarDataProviderMixin:OnAdded(mapCanvas)
 	MapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
 
-	self:GetMap():SetPinTemplateType("FogOfWarPinTemplate", "FogOfWarFrame");
-
 	local pin = self:GetMap():AcquirePin("FogOfWarPinTemplate");
 	pin.dataProvider = self;
 	pin:SetPosition(0.5, 0.5);

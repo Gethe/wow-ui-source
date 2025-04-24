@@ -9,6 +9,7 @@ local ItemUpgrade =
 		{
 			Name = "GetItemHyperlink",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{

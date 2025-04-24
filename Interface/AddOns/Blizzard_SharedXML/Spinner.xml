@@ -25,22 +25,11 @@ UI.xsd">
     </Frame>
 
     <Frame name="SpinnerWithShadowTemplate" inherits="SpinnerTemplate" virtual="true" mixin="SpinnerWithShadowMixin">
-        <Size x="142" y="142"/>
         <KeyValues>
             <KeyValue key="shadowAlpha" value="0.5" type="number"/> <!-- Set this to adjust the background shadow's alpha -->
         </KeyValues>
-        <Layers>
-            <Layer level="BACKGROUND">
-                <Texture parentKey="Shadow" atlas="Spinner_Shadow" alphaMode="BLEND" alpha="0.5" useAtlasSize="true">
-                    <Anchors>
-                        <Anchor point="CENTER"/>
-                    </Anchors>
-                </Texture>
-            </Layer>
-        </Layers>
         <Scripts>
-            <OnShow method="SpinnerWithShadow_OnShow" inherit="prepend"/>
-            <OnHide method="SpinnerWithShadow_OnHide" inherit="prepend"/>
+			<OnLoad method="SpinnerWithShadow_OnLoad" />
         </Scripts>
     </Frame>
 

@@ -82,7 +82,7 @@ function CRFSort_Role(token1, token2)
 	return CRFSort_Alphabetical(token1, token2);
 end
 
-local filterOptions = {
+local defaultFilterOptions = {
 	[1] = true,
 	[2] = true,
 	[3] = true,
@@ -97,10 +97,22 @@ local filterOptions = {
 	displayRoleDAMAGER = true;
 }
 
+Blizzard_CompactRaidFrameManager_FilterOptions = nil
+
 function CompactRaidFrameManager_GetFilterOptions(index)
-	return filterOptions[index];
+
+	if not Blizzard_CompactRaidFrameManager_FilterOptions then
+		Blizzard_CompactRaidFrameManager_FilterOptions = defaultFilterOptions
+	end
+
+	return Blizzard_CompactRaidFrameManager_FilterOptions[index];
 end
 
 function CompactRaidFrameManager_SetFilterOptions(index, newValue)
-	filterOptions[index] = newValue;
+
+	if not Blizzard_CompactRaidFrameManager_FilterOptions then
+		Blizzard_CompactRaidFrameManager_FilterOptions = defaultFilterOptions
+	end
+
+	Blizzard_CompactRaidFrameManager_FilterOptions[index] = newValue;
 end

@@ -47,8 +47,33 @@ local LFGInfo =
 			},
 		},
 		{
+			Name = "CanPlayerUseScenarioFinder",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canUse", Type = "bool", Nilable = false },
+				{ Name = "failureReason", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GetAllEntriesForCategory",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "category", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "lfgDungeonIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetDungeonInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -77,6 +102,20 @@ local LFGInfo =
 			{
 				{ Name = "maxLevel", Type = "number", Nilable = true },
 				{ Name = "isLevelReduced", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "HideNameFromUI",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "dungeonID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "shouldHide", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -122,15 +161,6 @@ local LFGInfo =
 		},
 		{
 			Name = "IsLFREnabled",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "enabled", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "IsPremadeGroupEnabled",
 			Type = "Function",
 
 			Returns =

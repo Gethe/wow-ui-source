@@ -73,16 +73,13 @@
 			</Anchors>
 		</NormalTexture>
 	</CheckButton>
-	<Frame name="PetActionBarFrame" parent="MainMenuBar" enableMouse="true" frameStrata="LOW" hidden="true">
+	<Frame name="PetActionBarFrame" parent="MainMenuBar" enableMouse="true" frameStrata="LOW" hidden="true" mixin="PetActionBarMixin">
 		<Size>
 			<AbsDimension x="509" y="43"/>
 		</Size>
 		<Anchors>
-			<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
-				<Offset>
-					<AbsDimension x="40" y="112"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-4"/>
+			<Anchor point="LEFT" relativePoint="LEFT" x="40" y="0"/>
 		</Anchors>
 		<Layers>
 			<Layer level="OVERLAY">

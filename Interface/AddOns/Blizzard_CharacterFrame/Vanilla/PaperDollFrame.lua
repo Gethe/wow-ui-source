@@ -92,9 +92,7 @@ function PaperDollFrame_SetLevel()
 end
 
 function PaperDollFrame_SetGuild()
-	local guildName;
-	local rank;
-	guildName, title, rank = GetGuildInfo("player");
+	local guildName, title, rank = GetGuildInfo("player");
 	if ( guildName ) then
 		CharacterGuildText:Show();
 		CharacterGuildText:SetFormattedText(GUILD_TITLE_TEMPLATE, title, guildName);
@@ -218,6 +216,7 @@ function PaperDollFrame_SetResistances()
 		local unitLevel = UnitLevel("player");
 		unitLevel = max(unitLevel, 20);
 		local magicResistanceNumber = resistance/unitLevel;
+		local resistanceLevel;
 		if ( magicResistanceNumber > 5 ) then
 			resistanceLevel = RESISTANCE_EXCELLENT;
 		elseif ( magicResistanceNumber > 3.75 ) then
@@ -243,13 +242,12 @@ function PaperDollFrame_SetArmor(unit, prefix)
 		prefix = "Character";
 	end
 
-	local base, effectiveArmor, armor, posBuff, negBuff = UnitArmor(unit);
+	local base, effectiveArmor, _armor, posBuff, negBuff = UnitArmor(unit);
 
 	if (unit ~= "player") then
 		--[[ In 1.12.0, UnitArmor didn't report positive / negative buffs for units that weren't the active player.
 			 This hack replicates that behavior for the UI. ]]
 		base = effectiveArmor;
-		armor = effectiveArmor;
 		posBuff = 0;
 		negBuff = 0;
 	end
@@ -816,7 +814,7 @@ function PaperDollItemSlotButton_Update(self)
 		end
 		self.hasItem = 1;
 	else
-		local textureName = self.backgroundTextureName;
+		textureName = self.backgroundTextureName;
 		if ( self.checkRelic and UnitHasRelicSlot("player") ) then
 			textureName = "Interface\\Paperdoll\\UI-PaperDoll-Slot-Relic.blp";
 		end

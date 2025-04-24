@@ -16,6 +16,16 @@ local InteractionManagerFrameInfo = {
 		frame = "BankFrame",
 		showFunc = "BankFrame_Open"
 	}, 
+	[Enum.PlayerInteractionType.CharacterBanker] = 
+	{ 
+		frame = "BankFrame",
+		showFunc = "BankFrame_Open"
+	}, 
+	[Enum.PlayerInteractionType.AccountBanker] = 
+	{ 
+		frame = "BankFrame",
+		showFunc = "BankFrame_Open"
+	}, 
 	[Enum.PlayerInteractionType.Trainer] = 
 	{ 
 		frame = "ClassTrainerFrame",
@@ -168,8 +178,13 @@ local InteractionManagerFrameInfo = {
 							EventRegistry:TriggerEvent("MajorFactionRenownMixin.MajorFactionRenownRequest", majorFactionID);
 							ShowUIPanel(MajorFactionRenownFrame);
 						end
-					end;
-	}
+					end,
+	},
+	[Enum.PlayerInteractionType.GuildRename] = {
+		frame = "GuildRenameFrame",
+		loadFunc = function() UIParentLoadAddOn("Blizzard_GuildRename"); end,
+		showFunc = function() GuildRenameFrame:BeginInteraction(); end,
+	},
 };
 
 PlayerInteractionFrameManagerMixin = { };

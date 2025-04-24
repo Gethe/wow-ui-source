@@ -1,4 +1,5 @@
 ## Title: Blizzard_CompactRaidFrames
+## SavedVariables: Blizzard_CompactRaidFrameManager_FilterOptions
 ## AllowLoad: game
 ## AllowLoadGameType: cata
 Blizzard_CompactRaidFrameReservationManager.lua

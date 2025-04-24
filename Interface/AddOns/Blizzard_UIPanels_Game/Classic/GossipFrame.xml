@@ -2,9 +2,6 @@
 ..\..\Blizzard_SharedXML\UI.xsd">
 	<Frame name="GossipFramePanelTemplate" virtual="true">
 		<Size x="384" y="512"/>
-		<Anchors>
-			<Anchor point="TOPLEFT"/>
-		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture file="Interface\QuestFrame\UI-QuestGreeting-TopLeft">
@@ -42,37 +39,25 @@
 			</Layer>
 			<Layer level="BORDER">
 				<Texture name="$parentMaterialTopLeft">
-					<Size>
-						<AbsDimension x="239" y="241"/>
-					</Size>
+					<Size x="239" y="241"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="21" y="-75"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="21" y="-75"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentMaterialTopRight">
-					<Size>
-						<AbsDimension x="64" y="241"/>
-					</Size>
+					<Size x="64" y="241"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentMaterialTopLeft" relativePoint="TOPRIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentMaterialBotLeft">
-					<Size>
-						<AbsDimension x="239" y="128"/>
-					</Size>
+					<Size x="239" y="128"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentMaterialTopLeft" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentMaterialBotRight">
-					<Size>
-						<AbsDimension x="64" y="128"/>
-					</Size>
+					<Size x="64" y="128"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentMaterialTopLeft" relativePoint="BOTTOMRIGHT"/>
 					</Anchors>
@@ -80,7 +65,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	<Frame name="GossipFrame" toplevel="true" parent="UIParent" movable="true" mixin="GossipFrameMixin, PortraitFrameMixin" enableMouse="true" hidden="true">
+	<UIThemeContainerFrame name="GossipFrame" toplevel="true" parent="UIParent" movable="true" mixin="GossipFrameMixin, PortraitFrameMixin" enableMouse="true" hidden="true">
 		<Size x="384" y="512"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" x="0" y="-104"/>
@@ -100,11 +85,11 @@
 							<Size x="60" y="60"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="7" y="-6"/>
-						</Anchors>
-					</Texture>
-				</Layer>
-					</Layers>
-		</Frame>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
 			<Frame parentKey="TitleContainer">
 				<Size x="3000" y="14"/>
 				<Anchors>
@@ -131,6 +116,9 @@
 				</Anchors>
 			</Button>
 			<Frame parentKey="GreetingPanel" inherits="GossipFramePanelTemplate" hidden="false">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture file="Interface\QuestFrame\UI-Quest-BotLeftPatch">
@@ -177,7 +165,7 @@
 			<OnEvent method="OnEvent"/>
 			<OnMouseWheel function=""/>
 		</Scripts>
-	</Frame>
+	</UIThemeContainerFrame>
 
 	<StatusBar name="NPCFriendshipStatusBar" parent="GossipFrame" hidden="true">
 		<Size x="230" y="14"/>

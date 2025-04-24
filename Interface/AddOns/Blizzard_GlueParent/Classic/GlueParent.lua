@@ -8,12 +8,13 @@ GLUE_SCREENS = {
 };
 
 GLUE_SECONDARY_SCREENS = {
-	["cinematics"] =	{ frame = "CinematicsFrame", 	playMusic = true,	playAmbience = false,	fullScreen = false,	showSound = SOUNDKIT.GS_TITLE_OPTIONS },
-	["credits"] = 		{ frame = "CreditsFrame", 		playMusic = false,	playAmbience = false,	fullScreen = true,	showSound = SOUNDKIT.GS_TITLE_CREDITS },
+	["cinematics"] =		{ frame = "CinematicsFrame", 				playMusic = true,	playAmbience = false,	fullScreen = false,	showSound = SOUNDKIT.GS_TITLE_OPTIONS },
+	["credits"] = 			{ frame = "CreditsFrame", 					playMusic = false,	playAmbience = false,	fullScreen = true,	showSound = SOUNDKIT.GS_TITLE_CREDITS },
 	-- Bug 477070 We have some rare race condition crash in the sound engine that happens when the MovieFrame's "showSound" sound plays at the same time the movie audio is starting.
 	-- Removing the showSound from the MovieFrame in attempt to avoid the crash, until we can actually find and fix the bug in the sound engine.
-	["movie"] = 		{ frame = "MovieFrame", 		playMusic = false,	playAmbience = false,	fullScreen = true },
-	["options"] = 		{ frame = "SettingsPanel",	playMusic = true,	playAmbience = false,	fullScreen = false,	showSound = SOUNDKIT.GS_TITLE_OPTIONS },
+	["movie"] = 			{ frame = "MovieFrame", 					playMusic = false,	playAmbience = false,	fullScreen = true },
+	["photosensitivity"] =	{ frame = "PhotosensitivityWarningFrame",	playMusic = false,	playAmbience = false,	fullScreen = true },
+	["options"] = 			{ frame = "SettingsPanel",					playMusic = true,	playAmbience = false,	fullScreen = false,	showSound = SOUNDKIT.GS_TITLE_OPTIONS },
 };
 
 ACCOUNT_SUSPENDED_ERROR_CODE = 53;
@@ -50,14 +51,13 @@ end
 
 function GlueParent_OnLoad(self)
 	-- alias GlueParent to UIParent
-	UIParent = self;
+	UIParent = self; -- luacheck: ignore 111 (setting non-standard global variable)
 
 	self:RegisterEvent("FRAMES_LOADED");
 	self:RegisterEvent("LOGIN_STATE_CHANGED");
 	self:RegisterEvent("OPEN_STATUS_DIALOG");
 	self:RegisterEvent("REALM_LIST_UPDATED");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
-	self:RegisterEvent("LUA_WARNING");
 	self:RegisterEvent("SUBSCRIPTION_CHANGED_KICK_IMMINENT");
 	self:RegisterEvent("KIOSK_SESSION_SHUTDOWN");
 	self:RegisterEvent("KIOSK_SESSION_EXPIRED");
@@ -71,9 +71,8 @@ function GlueParent_OnEvent(self, event, ...)
 		LocalizeFrames();
 		GlueParent_EnsureValidScreen();
 		GlueParent_UpdateDialogs();
-		GlueParent_CheckCinematic();
-		if ( AccountLogin:IsVisible() ) then
-			SetGameLogo(AccountLogin.UI.GameLogo);
+		if not GlueParent_CheckPhotosensitivity() then
+			GlueParent_CheckCinematic();
 		end
 	elseif ( event == "LOGIN_STATE_CHANGED" ) then
 		GlueParent_EnsureValidScreen();
@@ -85,8 +84,6 @@ function GlueParent_OnEvent(self, event, ...)
 		RealmList_Update();
 	elseif ( event == "DISPLAY_SIZE_CHANGED" ) then
 		OnDisplaySizeChanged(self);
-	elseif ( event == "LUA_WARNING" ) then
-		HandleLuaWarning(...);
 	elseif ( event == "SUBSCRIPTION_CHANGED_KICK_IMMINENT" ) then
 		if not StoreFrame_IsShown() then
 			GlueDialog_Show("SUBSCRIPTION_CHANGED_KICK_WARNING");
@@ -96,10 +93,6 @@ function GlueParent_OnEvent(self, event, ...)
 	elseif (event == "KIOSK_SESSION_EXPIRATION_CHANGED") then
 		GlueDialog_Show("OKAY", KIOSK_SESSION_TIMER_CHANGED);
 	end
-end
-
-function SecureCapsuleGet(name)
-	return _G[name];
 end
 
 function nop()
@@ -291,17 +284,14 @@ function GlueParent_EnsureValidScreen()
 	if ( not GlueParent_IsScreenValid(currentScreen) ) then
 		local bestScreen = GlueParent_GetBestScreen();
 
-		LogAuroraClient("ae", "Screen invalid. Changing",
-			"changingFrom", currentScreen,
-			"changingTo", bestScreen);
-
+		C_Log.LogMessage(string.format("Screen invalid. Changing from=\"%s\" to=\"%s\"", currentScreen or "none", bestScreen));
+		
 		GlueParent_SetScreen(bestScreen);
 	end
 end
 
 local function GlueParent_ChangeScreen(screenInfo, screenTable)
-	LogAuroraClient("ae", "Switching to screen",
-			"screen", screenInfo.frame);
+	C_Log.LogMessage(string.format("Switching to screen=\"%s\"", screenInfo.frame));
 
 	--Hide all other screens
 	for key, info in pairs(screenTable) do
@@ -711,36 +701,6 @@ end
 
 function IsKioskGlueEnabled()
 	return Kiosk.IsEnabled() and not IsCompetitiveModeEnabled();
-end
-
-
-function GetDisplayedExpansionLogo(expansionLevel, desiredReleaseType)
-	local expansionInfo = GetExpansionDisplayInfo(expansionLevel, desiredReleaseType);
-
-	if expansionInfo then
-		return expansionInfo.logo;
-	end
-
-	return nil;
-end
-
-
-function SetGameLogo(texture, desiredExpansionLevel, desiredReleaseType)
-	local expansionLevel = desiredExpansionLevel or GetClientDisplayExpansionLevel();
-	local releaseType = desiredReleaseType or LE_RELEASE_TYPE_CLASSIC;
-
-	if(GetCNLogoReleaseType) then
-		releaseType = GetCNLogoReleaseType();
-	end
-
-	local logo = GetDisplayedExpansionLogo(expansionLevel, releaseType);
-
-	if logo then
-		texture:SetTexture(logo);
-		texture:Show();
-	else
-		texture:Hide();
-	end
 end
 
 function UpgradeAccount()

@@ -6,7 +6,6 @@ MAX_NUM_TALENTS = 40;
 PLAYER_TALENTS_PER_TIER = 5;
 PET_TALENTS_PER_TIER = 3;
 
-DEFAULT_TALENT_SPEC = "spec1";
 DEFAULT_TALENT_TAB = 1;
 
 TALENT_BUTTON_SIZE = 32;
@@ -39,11 +38,11 @@ function TalentFrame_Update(TalentFrame)
 		-- even though we have inspection data for more than one talent group, we're only showing one for now
 		isActiveTalentGroup = true;
 	else
-		isActiveTalentGroup = TalentFrame.talentGroup == GetActiveTalentGroup(TalentFrame.inspect, TalentFrame.pet);
+		isActiveTalentGroup = TalentFrame.talentGroup == C_SpecializationInfo.GetActiveSpecGroup(TalentFrame.inspect, TalentFrame.pet);
 	end
 	-- Setup Frame
 	local base;
-	local _, name, _, icon, pointsSpent, background, previewPointsSpent = GetTalentTabInfo(selectedTab, TalentFrame.inspect, TalentFrame.pet, TalentFrame.talentGroup);
+	local _, name, _, icon, _, _, pointsSpent, background, previewPointsSpent = C_SpecializationInfo.GetSpecializationInfo(selectedTab, TalentFrame.inspect, TalentFrame.pet, nil, nil, TalentFrame.talentGroup);
 	if ( name ) then
 		base = "Interface\\TalentFrame\\"..background.."-";
 	else
@@ -87,9 +86,9 @@ function TalentFrame_Update(TalentFrame)
 		local button = _G[buttonName];
 		if ( i <= numTalents ) then
 			-- Set the button info
-			local name, iconTexture, tier, column, rank, maxRank, meetsPrereq, previewRank, meetsPreviewPrereq, isExceptional =
+			local talentName, iconTexture, tier, column, rank, maxRank, meetsPrereq, previewRank, meetsPreviewPrereq, isExceptional =
 				GetTalentInfo(selectedTab, i, TalentFrame.inspect, TalentFrame.pet, TalentFrame.talentGroup);
-			if ( name ) then
+			if ( talentName ) then
 				local displayRank;
 				if ( preview ) then
 					displayRank = previewRank;

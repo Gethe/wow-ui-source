@@ -514,7 +514,6 @@ function CreateKeybindingEntryInitializer(bindingIndex, search)
 		else
 			return GetBindingText(binding2);
 		end
-		assert(false);
 	end;
 
 	initializer.MatchesSearchTags = function(self, words)

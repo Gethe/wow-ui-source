@@ -1,4 +1,5 @@
 function AlertFrameSystems_Register()
+	-- luacheck: ignore 111 (setting non-standard global variable)
 	GuildChallengeAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("GuildChallengeAlertFrameTemplate", GuildChallengeAlertFrame_SetUp);
 	DungeonCompletionAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("DungeonCompletionAlertFrameTemplate", DungeonCompletionAlertFrame_SetUp);
 	ScenarioAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("ScenarioAlertFrameTemplate", ScenarioAlertFrame_SetUp);
@@ -16,6 +17,7 @@ function AlertFrameSystems_Register()
 	LegendaryItemAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("LegendaryItemAlertFrameTemplate", LegendaryItemAlertFrame_SetUp);
 	NewPetAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("NewPetAlertFrameTemplate", NewPetAlertFrame_SetUp);
 	NewMountAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("NewMountAlertFrameTemplate", NewMountAlertFrame_SetUp);
+	NewToyAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewToyAlertFrameTemplate", NewToyAlertFrame_SetUp);
 end
 
 -- [[ GuildChallengeAlertFrame ]] --
@@ -293,7 +295,6 @@ function AchievementAlertFrame_SetUp(frame, achievementID, alreadyEarned)
 	local shieldPoints = frame.Shield.Points;
 	local shieldIcon = frame.Shield.Icon;
 	local unlocked = frame.Unlocked;
-	local oldCheevo = frame.OldAchievement;
 
 	displayName:SetText(name);
 
@@ -303,86 +304,75 @@ function AchievementAlertFrame_SetUp(frame, achievementID, alreadyEarned)
 		local guildName = frame.GuildName;
 		local guildBorder = frame.GuildBorder;
 		local guildBanner = frame.GuildBanner;
-		if ( not frame.guildDisplay or frame.oldCheevo) then
-			frame.oldCheevo = nil
-			shieldPoints:Show();
-			shieldIcon:Show();
-			oldCheevo:Hide();
-			frame.guildDisplay = true;
-			frame:SetHeight(104);
-			local background = frame.Background;
-			background:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Guild");
-			background:SetTexCoord(0.00195313, 0.62890625, 0.00195313, 0.19140625);
-			background:SetPoint("TOPLEFT", -2, 2);
-			background:SetPoint("BOTTOMRIGHT", 8, 8);
-			local iconBorder = frame.Icon.Overlay;
-			iconBorder:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Guild");
-			iconBorder:SetTexCoord(0.25976563,0.40820313,0.50000000,0.64453125);
-			iconBorder:SetPoint("CENTER", 0, 1);
-			frame.Icon:SetPoint("TOPLEFT", -26, 2);
-			displayName:SetPoint("BOTTOMLEFT", 79, 37);
-			displayName:SetPoint("BOTTOMRIGHT", -79, 37);
-			frame.Shield:SetPoint("TOPRIGHT", -15, -28);
-			shieldPoints:SetPoint("CENTER", 7, 5);
-			shieldPoints:SetVertexColor(0, 1, 0);
-			shieldIcon:SetTexCoord(0, 0.5, 0.5, 1);
-			unlocked:SetPoint("TOP", -1, -36);
-			unlocked:SetText(GUILD_ACHIEVEMENT_UNLOCKED);
-			guildName:Show();
-			guildBanner:Show();
-			guildBorder:Show();
-			frame.glow:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Guild");
-			frame.glow:SetTexCoord(0.00195313, 0.74804688, 0.19531250, 0.49609375);
-			frame.shine:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Guild");
-			frame.shine:SetTexCoord(0.75195313, 0.91601563, 0.19531250, 0.35937500);
-			frame.shine:SetPoint("BOTTOMLEFT", 0, 16);
-		end
+		frame.oldCheevo = nil
+		shieldPoints:Show();
+		shieldIcon:Show();
+		frame:SetHeight(104);
+		local background = frame.Background;
+		background:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Guild");
+		background:SetTexCoord(0.00195313, 0.62890625, 0.00195313, 0.19140625);
+		background:SetPoint("TOPLEFT", -2, 2);
+		background:SetPoint("BOTTOMRIGHT", 8, 8);
+		local iconBorder = frame.Icon.Overlay;
+		iconBorder:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Guild");
+		iconBorder:SetTexCoord(0.25976563,0.40820313,0.50000000,0.64453125);
+		iconBorder:SetPoint("CENTER", 0, 1);
+		frame.Icon:SetPoint("TOPLEFT", -26, 2);
+		displayName:SetPoint("BOTTOMLEFT", 79, 37);
+		displayName:SetPoint("BOTTOMRIGHT", -79, 37);
+		frame.Shield:SetPoint("TOPRIGHT", -15, -28);
+		shieldPoints:SetPoint("CENTER", 7, 5);
+		shieldPoints:SetVertexColor(0, 1, 0);
+		shieldIcon:SetTexCoord(0, 0.5, 0.5, 1);
+		unlocked:SetPoint("TOP", -1, -36);
+		unlocked:SetText(GUILD_ACHIEVEMENT_UNLOCKED);
+		guildName:Show();
+		guildBanner:Show();
+		guildBorder:Show();
+		frame.glow:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Guild");
+		frame.glow:SetTexCoord(0.00195313, 0.74804688, 0.19531250, 0.49609375);
+		frame.shine:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Guild");
+		frame.shine:SetTexCoord(0.75195313, 0.91601563, 0.19531250, 0.35937500);
+		frame.shine:SetPoint("BOTTOMLEFT", 0, 16);
 		guildName:SetText(GetGuildInfo("player"));
 		SetSmallGuildTabardTextures("player", nil, guildBanner, guildBorder);
 	else
-		if ( frame.guildDisplay  or frame.oldCheevo) then
-			frame.oldCheevo = nil
-			shieldPoints:Show();
-			shieldIcon:Show();
-			oldCheevo:Hide();
-			frame.guildDisplay = nil;
-			frame:SetHeight(88);
-			local background = frame.Background;
-			background:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Alert-Background");
-			background:SetTexCoord(0, 0.605, 0, 0.703);
-			background:SetPoint("TOPLEFT", 0, 0);
-			background:SetPoint("BOTTOMRIGHT", 0, 0);
-			local iconBorder = frame.Icon.Overlay;
-			iconBorder:SetTexture("Interface\\AchievementFrame\\UI-Achievement-IconFrame");
-			iconBorder:SetTexCoord(0, 0.5625, 0, 0.5625);
-			iconBorder:SetPoint("CENTER", -1, 2);
-			frame.Icon:SetPoint("TOPLEFT", -26, 16);
-			displayName:SetPoint("BOTTOMLEFT", 72, 36);
-			displayName:SetPoint("BOTTOMRIGHT", -60, 36);
-			frame.Shield:SetPoint("TOPRIGHT", -10, -13);
-			shieldPoints:SetPoint("CENTER", 7, 2);
-			shieldPoints:SetVertexColor(1, 1, 1);
-			shieldIcon:SetTexCoord(0, 0.5, 0, 0.45);
-			unlocked:SetPoint("TOP", 7, -23);
-			unlocked:SetText(ACHIEVEMENT_UNLOCKED);
-			frame.GuildName:Hide();
-			frame.GuildBorder:Hide();
-			frame.GuildBanner:Hide();
-			frame.glow:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Alert-Glow");
-			frame.glow:SetTexCoord(0, 0.78125, 0, 0.66796875);
-			frame.shine:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Alert-Glow");
-			frame.shine:SetTexCoord(0.78125, 0.912109375, 0, 0.28125);
-			frame.shine:SetPoint("BOTTOMLEFT", 0, 8);
-		end
+		frame.oldCheevo = nil
+		shieldPoints:Show();
+		shieldIcon:Show();
+		frame:SetHeight(88);
+		local background = frame.Background;
+		background:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Alert-Background");
+		background:SetTexCoord(0, 0.605, 0, 0.703);
+		background:SetPoint("TOPLEFT", 0, 0);
+		background:SetPoint("BOTTOMRIGHT", 0, 0);
+		local iconBorder = frame.Icon.Overlay;
+		iconBorder:SetTexture("Interface\\AchievementFrame\\UI-Achievement-IconFrame");
+		iconBorder:SetTexCoord(0, 0.5625, 0, 0.5625);
+		iconBorder:SetPoint("CENTER", -1, 2);
+		frame.Icon:SetPoint("TOPLEFT", -26, 16);
+		displayName:SetPoint("BOTTOMLEFT", 72, 36);
+		displayName:SetPoint("BOTTOMRIGHT", -60, 36);
+		frame.Shield:SetPoint("TOPRIGHT", -10, -13);
+		shieldPoints:SetPoint("CENTER", 7, 2);
+		shieldPoints:SetVertexColor(1, 1, 1);
+		shieldIcon:SetTexCoord(0, 0.5, 0, 0.45);
+		unlocked:SetPoint("TOP", 7, -23);
+		unlocked:SetText(ACHIEVEMENT_UNLOCKED);
+		frame.GuildName:Hide();
+		frame.GuildBorder:Hide();
+		frame.GuildBanner:Hide();
+		frame.glow:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Alert-Glow");
+		frame.glow:SetTexCoord(0, 0.78125, 0, 0.66796875);
+		frame.shine:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Alert-Glow");
+		frame.shine:SetTexCoord(0.78125, 0.912109375, 0, 0.28125);
+		frame.shine:SetPoint("BOTTOMLEFT", 0, 8);
 
 		if (alreadyEarned) then
-			frame.oldCheevo = true;
 			shieldPoints:Hide();
 			shieldIcon:Hide();
-			oldCheevo:Show();
-			displayName:SetPoint("BOTTOMLEFT", 72, 37);
-			displayName:SetPoint("BOTTOMRIGHT", -25, 37);
-			unlocked:SetPoint("TOP", 21, -23);
+			unlocked:SetPoint("TOP", 15, -23);
+			displayName:SetPoint("TOP", unlocked, "BOTTOM", 0, -10);
 		end
 	end
 
@@ -471,8 +461,11 @@ LOOTWONALERTFRAME_VALUES={
 function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specID, isCurrency, showFactionBG, lootSource, lessAwesome, isUpgraded, wonRoll, showRatedBG)
 	local itemName, itemHyperLink, itemRarity, itemTexture, _;
 	if (isCurrency) then
-		local currencyID = C_CurrencyInfo.GetCurrencyIDFromLink(itemLink); 
-		itemName, _, itemTexture, _, _, _, _, itemRarity = GetCurrencyInfo(itemLink);
+		local currencyID = C_CurrencyInfo.GetCurrencyIDFromLink(itemLink);
+		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyID);
+		itemName = currencyInfo.name;
+		itemTexture = currencyInfo.iconFileID;
+		itemRarity = currencyInfo.quality;
 		itemName, itemTexture, quantity, itemRarity = CurrencyContainerUtil.GetCurrencyContainerInfoForAlert(currencyID, quantity, itemName, itemTexture, itemRarity); 
 		if ( lootSource == LOOT_SOURCE_GARRISON_CACHE ) then
 			itemName = format(GARRISON_RESOURCES_LOOT, quantity);
@@ -725,11 +718,11 @@ function StorePurchaseAlertFrame_OnClick(self, button, down)
 			OpenBag(slot);
 		end
 	elseif (self.type == Enum.StoreDeliveryType.Mount) then
-		ToggleCollectionsJournal(1);
+		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS);
 	elseif (self.type == Enum.StoreDeliveryType.Battlepet) then
-		ToggleCollectionsJournal(2);
+		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_PETS);
 	elseif (self.type == Enum.StoreDeliveryType.Collection) then
-		ToggleCollectionsJournal(5);
+		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_TOYS);
 	end
 end
 
@@ -1112,4 +1105,27 @@ function NewMountAlertFrameMixin:OnClick(button, down)
 
 	SetCollectionsJournalShown(true, COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS);
 	MountJournal_SelectByMountID(self.mountID);
+end
+
+-- [[ NewToyAlertFrame ]] --
+
+function NewToyAlertFrame_SetUp(frame, toyID)
+	frame:SetUp(toyID);
+end
+
+NewToyAlertFrameMixin = CreateFromMixins(ItemAlertFrameMixin);
+
+function NewToyAlertFrameMixin:SetUp(toyID)
+	self.toyID = toyID;
+
+	local itemID, toyName, icon, isFavorite, hasFanfare, itemQuality = C_ToyBox.GetToyInfo(self.toyID);
+	self:SetUpDisplay(icon, itemQuality, toyName, YOU_COLLECTED_LABEL);
+end
+
+function NewToyAlertFrameMixin:OnClick(button, down)
+	if AlertFrame_OnClick(self, button, down) then
+		return;
+	end
+
+	ToggleToyCollection(self.toyID);
 end

@@ -4,6 +4,10 @@ local TOOLTIP_MAX_NUM_OF_CALENDER_EVENTS = 5;
 
 CommunitiesCalendarButtonMixin = {};
 
+function CommunitiesCalendarButtonMixin:ShouldEverShow()
+	return C_GuildInfo.AreGuildEventsEnabled();
+end
+
 function CommunitiesCalendarButtonMixin:GetCommunitiesFrame()
 	return self:GetParent();
 end

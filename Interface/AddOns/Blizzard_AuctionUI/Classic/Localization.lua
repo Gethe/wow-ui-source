@@ -7,7 +7,7 @@ end
 local l10nTable = {
 	deDE = {
 		localize = function()
-			UIDropDownMenu_SetWidth(PriceDropDown, 100);
+			PriceDropdown:SetWidth(100);
 		end,
 	},
 	enGB = {
@@ -33,7 +33,7 @@ local l10nTable = {
 			BrowseLevelHyphen:SetPoint("LEFT", "BrowseMinLevel", "RIGHT", -1, 1);
 			BrowseMinLevel:SetPoint("TOPLEFT", "BrowseLevelText", "BOTTOMLEFT", 7, -6);
 			BrowseMaxLevel:SetPoint("LEFT", "BrowseMinLevel", "RIGHT", 10, 0);
-			BrowseDropDown:SetPoint("TOPLEFT", "BrowseLevelText", "BOTTOMRIGHT", 10, 0);
+			BrowseDropdown:SetPoint("TOPLEFT", "BrowseLevelText", "BOTTOMRIGHT", 10, 0);
 
 			LocalizeWoWToken();
 		end,
@@ -79,8 +79,8 @@ local l10nTable = {
 			-- Auction Browse Headers
 			BrowseLevelText:SetPoint("BOTTOMLEFT", "AuctionFrameBrowse", "TOPLEFT", 230, -56);
 			BrowseMinLevel:SetPoint("TOPLEFT", "BrowseLevelText", "BOTTOMLEFT", 3, -3);
-			BrowseDropDown:SetPoint("TOPLEFT", "BrowseLevelText", "BOTTOMRIGHT", -5, 4);
-			BrowseDropDownName:SetPoint("BOTTOMLEFT", "BrowseDropDown", "TOPLEFT", 20, -3);
+			BrowseDropdown:SetPoint("TOPLEFT", "BrowseLevelText", "BOTTOMRIGHT", -5, 4);
+			BrowseDropdownName:SetPoint("BOTTOMLEFT", "BrowseDropdown", "TOPLEFT", 20, -3);
 
 			-- Bid Tab Headers
 			BidDurationSort:SetWidth(90);
@@ -103,8 +103,8 @@ local l10nTable = {
 			-- Auction Headers
 			BrowseLevelText:SetPoint("BOTTOMLEFT", "AuctionFrameBrowse", "TOPLEFT", 230, -56);
 			BrowseMinLevel:SetPoint("TOPLEFT", "BrowseLevelText", "BOTTOMLEFT", 3, -2);
-			BrowseDropDown:SetPoint("TOPLEFT", "BrowseLevelText", "BOTTOMRIGHT", -5, 4);
-			BrowseDropDownName:SetPoint("BOTTOMLEFT", "BrowseDropDown", "TOPLEFT", 20, -3);
+			BrowseDropdown:SetPoint("TOPLEFT", "BrowseLevelText", "BOTTOMRIGHT", -5, 4);
+			BrowseDropdownName:SetPoint("BOTTOMLEFT", "BrowseDropdown", "TOPLEFT", 20, -3);
 
 			-- Bid Tab Headers
 			BidDurationSort:SetWidth(90);

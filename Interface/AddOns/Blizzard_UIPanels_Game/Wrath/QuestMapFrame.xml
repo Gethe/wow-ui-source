@@ -157,7 +157,6 @@
 	<Frame name="QuestMapFrame" enableMouse="true" mixin="QuestLogMixin" hidden="true">
 		<Size x="286" y="0"/>
 		<Frames>
-			<Frame name="QuestMapQuestOptionsDropDown" inherits="UIDropDownMenuTemplate" hidden="true"/>
 			<ScrollFrame parentKey="QuestsFrame" name="QuestScrollFrame" inherits="ScrollFrameTemplate">
 				<KeyValues>
 					<KeyValue key="scrollBarX" value="0" type="number"/>

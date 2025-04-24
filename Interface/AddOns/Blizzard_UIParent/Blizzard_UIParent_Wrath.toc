@@ -2,7 +2,6 @@
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
 ## Dependencies: Blizzard_FrameXMLBase, Blizzard_ObjectAPI
-## SuppressLocalTableRef: 1
 ## LoadFirst: 1
 ## AllowLoad: game
 ## AllowLoadGameType: wrath
@@ -10,7 +9,7 @@ ChatBubbleTemplates.xml
 Classic\WorldFrame.lua
 Classic\WorldFrame.xml
 Classic\UIParentDebugMenu.lua
+Shared\UIParent.lua
 Wrath\UIParent.lua
 Classic\UIParent.xml
 Shared\Localization.lua
-Shared\UIParent.lua

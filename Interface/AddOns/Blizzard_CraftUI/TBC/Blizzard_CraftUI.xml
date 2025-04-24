@@ -197,7 +197,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="CraftFrameFilterDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+			<DropdownButton parentKey="Dropdown" inherits="WowStyle1DropdownTemplate">
 				<Anchors>
 					<Anchor point="TOPRIGHT">
 						<Offset>
@@ -205,12 +205,7 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						CraftFrameFilterDropDown_OnLoad();
-					</OnLoad>
-				</Scripts>
-			</Frame>
+			</DropdownButton>
 			<CheckButton name="CraftFrameAvailableFilterCheckButton" inherits="UICheckButtonTemplate">
 				<Size>
 					<AbsDimension x="24" y="24"/>

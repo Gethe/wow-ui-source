@@ -119,7 +119,6 @@
 				</Scripts>
 			</Frame>
 
-			<Frame parentKey="Dropdown" hidden="true"/>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

@@ -30,7 +30,7 @@ end
 function ScrollBoxSelectorMixin:UpdateSelections()
 	if self.initialized then
 		local dataProvider = CreateIndexRangeDataProvider(self:GetNumSelections());
-		self.ScrollBox:SetDataProvider(dataProvider);
+		self.ScrollBox:SetDataProvider(dataProvider, self.retainScrollPosition);
 	end
 end
 
@@ -82,7 +82,7 @@ end
 
 function ScrollBoxSelectorMixin:ScrollToSelectedIndex()
 	local targetIndex = self:GetSelectedIndex() or 1;
-	self:ScrollToElementDataIndex(targetIndex, ScrollBoxConstants.AlignCenter, ScrollBoxConstants.NoScrollInterpolation);
+	self:ScrollToElementDataIndex(targetIndex, ScrollBoxConstants.AlignCenter);
 end
 
 function ScrollBoxSelectorMixin:ScrollToElementDataIndex(...)

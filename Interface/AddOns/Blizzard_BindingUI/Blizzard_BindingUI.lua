@@ -6,6 +6,8 @@ DEFAULT_BINDINGS = 0;
 ACCOUNT_BINDINGS = 1;
 CHARACTER_BINDINGS = 2;
 
+CONFIRMED_DELETING_CHARACTER_SPECIFIC_BINDINGS = nil;
+
 UIPanelWindows["KeyBindingFrame"] = { area = "center", pushable = 0, whileDead = 1 };
 
 StaticPopupDialogs["CONFIRM_DELETING_CHARACTER_SPECIFIC_BINDINGS"] = {

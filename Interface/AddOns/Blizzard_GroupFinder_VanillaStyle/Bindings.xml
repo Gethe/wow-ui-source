@@ -1,0 +1,11 @@
+<Bindings>
+	<Binding name="TOGGLEGROUPFINDER" category="BINDING_HEADER_INTERFACE">
+		ToggleLFGParentFrame();
+	</Binding>
+	<Binding name="TOGGLELFGLISTINGTAB" category="BINDING_HEADER_INTERFACE">
+		ToggleLFGParentFrame(1);
+	</Binding>
+	<Binding name="TOGGLELFGBROWSETAB" category="BINDING_HEADER_INTERFACE">
+		ToggleLFGParentFrame(2);
+	</Binding>
+</Bindings>

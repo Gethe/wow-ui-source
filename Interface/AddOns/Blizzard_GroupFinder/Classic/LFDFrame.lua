@@ -1,17 +1,3 @@
-EXPANSION_LEVEL = GetExpansionLevel(); --This can change while logged in, when an expansion releases
-
-LFD_MAX_REWARDS = 2;
-
-NUM_LFD_CHOICE_BUTTONS = 15;
-
-NUM_LFD_MEMBERS = 5;
-
-LFD_STATISTIC_CHANGE_TIME = 10; --In secs.
-
-LFD_PROPOSAL_FAILED_CLOSE_TIME = 5;
-
-LFD_NUM_ROLES = 3;
-
 -------------------------------------
 -----------LFD Frame--------------
 -------------------------------------
@@ -89,7 +75,6 @@ function LFDFrame_OnEvent(self, event, ...)
 			if ( not LFDQueueFrame.type or (type(LFDQueueFrame.type) == "number" and not IsLFGDungeonJoinable(LFDQueueFrame.type)) ) then
 				local bestChoice = GetRandomDungeonBestChoice();
 				if ( bestChoice ) then
-					UIDropDownMenu_Initialize(LFDQueueFrameTypeDropDown, LFDQueueFrameTypeDropDown_Initialize);
 					LFDQueueFrame_SetType(bestChoice);
 				end
 			end
@@ -358,70 +343,70 @@ function LFDQueueFrameExpandOrCollapseButton_OnClick(self, button)
 	LFDQueueFrame_Update();
 end
 
-function LFDQueueFrameTypeDropDown_SetUp(self)
-	UIDropDownMenu_SetWidth(self, 180);
-	UIDropDownMenu_Initialize(self, LFDQueueFrameTypeDropDown_Initialize);
-	UIDropDownMenu_SetSelectedValue(LFDQueueFrameTypeDropDown, LFDQueueFrame.type);
+function LFDQueueFrame_OnLoad(self)
+	self.TypeDropdown:SetWidth(200);
 end
 
-function LFDQueueFrameTypeDropDown_Initialize()
-	local info = UIDropDownMenu_CreateInfo();
+function LFDQueueFrame_OnShow(self)
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
+	QueueUpdater:RequestInfo();
+	QueueUpdater:AddRef();
 
-	info.text = SPECIFIC_DUNGEONS;
-	info.value = "specific";
-	info.func = LFDQueueFrameTypeDropDownButton_OnClick;
-	info.checked = LFDQueueFrame.type == info.value;
-	UIDropDownMenu_AddButton(info);
+	self.TypeDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_LFD_FRAME");
 
-	for i=1, GetNumRandomDungeons() do
-		local id, name = GetLFGRandomDungeonInfo(i);
-		local isAvailableForAll, isAvailableForPlayer, hideIfNotJoinable = IsLFGDungeonJoinable(id);
-		if isAvailableForPlayer or not hideIfNotJoinable then
-			if isAvailableForAll then
-				info.text = name;
-				info.value = id;
-				info.isTitle = nil;
-				info.func = LFDQueueFrameTypeDropDownButton_OnClick;
-				info.disabled = nil;
-				info.checked = (LFDQueueFrame.type == info.value);
-				info.tooltipWhileDisabled = nil;
-				info.tooltipOnButton = nil;
-				info.tooltipTitle = nil;
-				info.tooltipText = nil;
-				UIDropDownMenu_AddButton(info);
-			else
-				info.text = name;
-				info.value = id;
-				info.isTitle = nil;
-				info.func = nil;
-				info.disabled = 1;
-				info.checked = nil;
-				info.tooltipWhileDisabled = 1;
-				info.tooltipOnButton = 1;
-				info.tooltipTitle = YOU_MAY_NOT_QUEUE_FOR_THIS;
-				info.tooltipText = LFGConstructDeclinedMessage(id);
-				UIDropDownMenu_AddButton(info);
+		local function IsSelected(dungeonType)
+			return LFDQueueFrame.type == dungeonType;
+		end
+
+		local function SetSelected(dungeonType)
+			LFDQueueFrame_SetTypeInternal(dungeonType);
+		end
+
+		rootDescription:CreateRadio(SPECIFIC_DUNGEONS, IsSelected, SetSelected, "specific");
+
+		for i=1, GetNumRandomDungeons() do
+			local id, name = GetLFGRandomDungeonInfo(i);
+			local isAvailableForAll, isAvailableForPlayer, hideIfNotJoinable = IsLFGDungeonJoinable(id);
+			if isAvailableForPlayer or not hideIfNotJoinable then
+				if isAvailableForAll then
+					rootDescription:CreateRadio(name, IsSelected, SetSelected, id);
+				else
+					local radio = rootDescription:CreateRadio(name, IsSelected, SetSelected, id);
+					radio:SetEnabled(false);
+					radio:SetTooltip(function(tooltip, description)
+						GameTooltip_SetTitle(tooltip, YOU_MAY_NOT_QUEUE_FOR_THIS);
+						GameTooltip_AddErrorLine(tooltip, LFGConstructDeclinedMessage(id));
+					end);
+				end
 			end
 		end
-	end
+	end);
 end
 
-function LFDQueueFrameTypeDropDownButton_OnClick(self)
-	LFDQueueFrame_SetType(self.value);
+function LFDQueueFrame_OnHide(self)
+	QueueUpdater:RemoveRef();
 end
 
-function LFDQueueFrame_SetType(value)	--"specific" for the list or the record id for a single dungeon
+-- "specific" for the list or the record id for a single dungeon
+function LFDQueueFrame_SetTypeInternal(value)	
 	LFDQueueFrame.type = value;
-	UIDropDownMenu_SetSelectedValue(LFDQueueFrameTypeDropDown, value);
 
 	if ( value == "specific" ) then
 		LFDQueueFrame_SetTypeSpecificDungeon();
+	elseif ( value == "follower" ) then
+		LFDQueueFrame_SetTypeFollowerDungeon();
 	else
 		local name, typeID, subtypeID, minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, expansionLevel, groupID, textureFilename, difficulty, maxPlayers, description, isHoliday, _, _, isTimeWalker = GetLFGDungeonInfo(value);
 		LFDQueueFrame_SetTypeRandomDungeon(isHoliday and not isTimeWalker);
 		LFDQueueFrameRandom_UpdateFrame();
 	end
 	LFDQueueFrame_UpdateRoleButtons();
+end
+
+function LFDQueueFrame_SetType(value)
+	LFDQueueFrame_SetTypeInternal(value);
+	LFDQueueFrame.TypeDropdown:GenerateMenu();
 end
 
 function LFDQueueFrame_SetTypeRandomDungeon(hideCooldown)

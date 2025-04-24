@@ -1,30 +1,3 @@
----------------
---NOTE - Please do not change this section without understanding the full implications of the secure environment
---We usually don't want to call out of this environment from this file. Calls should usually go through Outbound
-local _, tbl = ...;
-
-if tbl then
-	tbl.SecureCapsuleGet = SecureCapsuleGet;
-
-	local function Import(name)
-		tbl[name] = tbl.SecureCapsuleGet(name);
-	end
-
-	Import("IsOnGlueScreen");
-
-	if ( tbl.IsOnGlueScreen() ) then
-		tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
-		Import("C_StoreGlue");
-	end
-
-	setfenv(1, tbl);
-
-	Import("GenerateClosure");
-	Import("Saturate");
-	Import("WithinRangeExclusive");
-	Import("math");
-end
-----------------
 
 ScrollBarMixin = CreateFromMixins(CallbackRegistryMixin, ScrollControllerMixin, EventFrameMixin);
 ScrollBarMixin:GenerateCallbackEvents(
@@ -156,10 +129,6 @@ function ScrollBarMixin:EnableInternalPriority()
 	self.internalPriority = true;
 end
 
-function ScrollBarMixin:EnableSnapToInterval(snapToInterval)
-	self.snapToInterval = true;
-end
-
 function ScrollBarMixin:SetScrollPercentage(scrollPercentage, forceImmediate)
 	-- While steppers, track, or thumb is held, attempts to change the scroll percentage
 	-- externally are discarded. This is to prevent scroll bars from jittering when receiving
@@ -177,19 +146,8 @@ function ScrollBarMixin:SetScrollPercentage(scrollPercentage, forceImmediate)
 	end
 end
 
+
 function ScrollBarMixin:SetScrollPercentageInternal(scrollPercentage)
-	-- Constrains the scroll percentage to intervals. This is useful for SMF where message
-	-- lines are never partially visible and it is undesirable to have the thumb position change
-	-- without actually causing any messages to scroll.
-	if self.snapToInterval then
-		local visibleExtentPercentage = self:GetVisibleExtentPercentage();
-		if visibleExtentPercentage > 0 then
-			local intervals = math.floor((1 / visibleExtentPercentage) + MathUtil.Epsilon);
-			local r = intervals - 1;
-			scrollPercentage = math.min(math.floor(scrollPercentage / visibleExtentPercentage), r) / math.max(r, 1);
-		end
-	end
-	
 	ScrollControllerMixin.SetScrollPercentage(self, scrollPercentage);
 	
 	self:Update();
@@ -315,7 +273,6 @@ function ScrollBarMixin:CanCursorStepInDirection(direction)
 			return c < self:GetLower(self:GetThumb());
 		end
 	end
-	return false;
 end
 
 function ScrollBarMixin:IsThumbMouseDown()

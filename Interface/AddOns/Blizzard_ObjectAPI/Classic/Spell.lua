@@ -40,7 +40,7 @@ function SpellMixin:GetSpellName()
 end
 
 function SpellMixin:GetSpellSubtext()
-	return GetSpellSubtext(self:GetSpellID());
+	return C_Spell.GetSpellSubtext(self:GetSpellID());
 end
 
 function SpellMixin:GetSpellDescription()

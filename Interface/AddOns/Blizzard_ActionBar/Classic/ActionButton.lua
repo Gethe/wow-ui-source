@@ -13,6 +13,8 @@ RANGE_INDICATOR = "●";
 COOLDOWN_TYPE_LOSS_OF_CONTROL = 1;
 COOLDOWN_TYPE_NORMAL = 2;
 
+local countdownForCooldownsCVarName = "countdownForCooldowns";
+
 -- Table of actionbar pages and whether they're viewable or not
 VIEWABLE_ACTION_BAR_PAGES = {1, 1, 1, 1, 1, 1};
 
@@ -200,12 +202,21 @@ function ActionBarButtonEventsFrame_OnLoad(self)
 	self:RegisterEvent("UNIT_FLAGS");
 	self:RegisterEvent("UNIT_AURA");
 	self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED");
+
+	CVarCallbackRegistry:SetCVarCachable(countdownForCooldownsCVarName);
+	CVarCallbackRegistry:RegisterCallback(countdownForCooldownsCVarName, ActionBarButtonEventsFrame_OnCountdownForCooldownsChanged, self);
 end
 
 function ActionBarButtonEventsFrame_OnEvent(self, event, ...)
 	-- pass event down to the buttons
 	for k, frame in pairs(self.frames) do
 		ActionButton_OnEvent(frame, event, ...);
+	end
+end
+
+function ActionBarButtonEventsFrame_OnCountdownForCooldownsChanged(self)
+	for k, frame in pairs(self.frames) do
+		ActionButton_UpdateCooldownNumberHidden(frame);
 	end
 end
 
@@ -236,6 +247,7 @@ function ActionBarActionEventsFrame_OnLoad(self)
 	self:RegisterEvent("SPELL_UPDATE_ICON");
 	self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW");
 	self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE");
+	self:RegisterEvent("UPDATE_SUMMONPETS_ACTION");
 end
 
 function ActionBarActionEventsFrame_OnEvent(self, event, ...)
@@ -549,13 +561,19 @@ function ActionButton_UpdateCount(self)
 	end
 end
 
+-- Determine whether cooldowns display countdown numbers for action bar buttons and spell flyout buttons.
+function ActionButton_UpdateCooldownNumberHidden(actionButton)
+	local shouldBeHidden = CVarCallbackRegistry:GetCVarValueBool(countdownForCooldownsCVarName) ~= true;
+	actionButton.cooldown:SetHideCountdownNumbers(shouldBeHidden);
+end
+
 function ActionButton_UpdateCooldown(self)
 	local start, duration, enable, charges, maxCharges, chargeStart, chargeDuration;
 	local modRate = 1.0;
 	local chargeModRate = 1.0;
 	if ( self.spellID ) then
 		start, duration, enable, modRate = GetSpellCooldown(self.spellID);
-		charges, maxCharges, chargeStart, chargeDuration, chargeModRate = GetSpellCharges(self.spellID);
+		charges, maxCharges, chargeStart, chargeDuration, chargeModRate = C_Spell.GetSpellCharges(self.spellID);
 	else
 		start, duration, enable, modRate = GetActionCooldown(self.action);
 		charges, maxCharges, chargeStart, chargeDuration, chargeModRate = GetActionCharges(self.action);
@@ -564,8 +582,8 @@ function ActionButton_UpdateCooldown(self)
 	if ( self.cooldown.currentCooldownType ~= COOLDOWN_TYPE_NORMAL ) then
 		self.cooldown:SetEdgeTexture("Interface\\Cooldown\\edge");
 		self.cooldown:SetSwipeColor(0, 0, 0);
-		self.cooldown:SetHideCountdownNumbers(false);
 		self.cooldown.currentCooldownType = COOLDOWN_TYPE_NORMAL;
+		ActionButton_UpdateCooldownNumberHidden(self);
 	end
 
 	if ( charges and maxCharges and maxCharges > 1 and charges < maxCharges ) then
@@ -587,7 +605,7 @@ end
 local numChargeCooldowns = 0;
 local function CreateChargeCooldownFrame(parent)
 	numChargeCooldowns = numChargeCooldowns + 1;
-	cooldown = CreateFrame("Cooldown", "ChargeCooldown"..numChargeCooldowns, parent, "CooldownFrameTemplate");
+	local cooldown = CreateFrame("Cooldown", "ChargeCooldown"..numChargeCooldowns, parent, "CooldownFrameTemplate");
 	cooldown:SetHideCountdownNumbers(true);
 	cooldown:SetDrawSwipe(false);
 
@@ -948,7 +966,7 @@ function ActionButton_UpdateFlyout(self)
 	if (actionType == "flyout") then
 		-- Update border and determine arrow position
 		local arrowDistance;
-		if ((SpellFlyout and SpellFlyout:IsShown() and SpellFlyout:GetParent() == self) or GetMouseFocus() == self) then
+		if ((SpellFlyout and SpellFlyout:IsShown() and SpellFlyout:GetParent() == self) or self:IsMouseMotionFocus()) then
 			self.FlyoutBorder:Show();
 			self.FlyoutBorderShadow:Show();
 			arrowDistance = 5;

@@ -1,10 +1,5 @@
 local l10n_Spanish = {
 	localizeFrames = function()
-		-- To accomodate Groups tab.
-		FriendsFrameTab1:SetPoint("BOTTOMLEFT", -6, -30);
-		for i=2,5 do
-			_G["FriendsFrameTab"..i]:SetPoint("LEFT", "FriendsFrameTab"..i-1, "RIGHT", -18, 0);
-		end
 	end,
 };
 
@@ -20,14 +15,9 @@ local l10nTable = {
 			StackSplitCancelButton:SetDisabledFontObject(SystemFont_Small);
 			StackSplitCancelButton:SetHighlightFontObject(SystemFont_Small);
 
-			UIDropDownMenu_SetWidth(FriendsFriendsFrameDropDown, 146);
+			FriendsFriendsFrameDropdown:SetWidth(146);
 
 			SideDressUpModelResetButton:SetWidth(105);
-
-			-- To accomodate Groups tab.
-			for i=2,5 do
-				_G["FriendsFrameTab"..i]:SetPoint("LEFT", "FriendsFrameTab"..i-1, "RIGHT", -16, 0);
-			end
 		end,
 	},
 
@@ -38,19 +28,18 @@ local l10nTable = {
 
 	frFR = {
 		localizeFrames = function()
-			UIDropDownMenu_SetWidth(FriendsFriendsFrameDropDown, 136);
+			FriendsFriendsFrameDropdown:SetWidth(136);
 		end,
 	},
 
 	itIT = {
 		localizeFrames = function()
-			UIDropDownMenu_SetWidth(FriendsFriendsFrameDropDown, 136);
+			FriendsFriendsFrameDropdown:SetWidth(136);
 		end,
 	},
 
 	koKR = {
 		localizeFrames = function()
-			PlayerFrameHealthBarText:AdjustPointsOffset(50, 3);
 			PetFrameHealthBarText:SetPoint("CENTER", PetFrameHealthBarText:GetParent(), "TOPLEFT", 81, -26);
 			PetFrameManaBarText:SetPoint("CENTER", PetFrameManaBarText:GetParent(), "TOPLEFT", 81, -35);
 
@@ -76,9 +65,6 @@ local l10nTable = {
 				_G[tabName.."Text"]:SetPoint("CENTER", tabName, "CENTER", 0, 5);
 			end
 
-			-- Player Frame
-			PlayerFrameHealthBarText:AdjustPointsOffset(50, 3);
-
 			-- Pet Frame
 			PetFrameHealthBarText:SetPoint("CENTER", PetFrameHealthBarText:GetParent(), "TOPLEFT", 82, -26);
 			PetFrameManaBarText:SetPoint("CENTER", PetFrameManaBarText:GetParent(), "TOPLEFT", 82, -34);
@@ -89,9 +75,6 @@ local l10nTable = {
 			end
 
 			MIN_CHARACTER_SEARCH = 1;
-
-			-- Interface Options
-			InterfaceOptionsSocialPanelProfanityFilter:Disable();
 
 			-- Honor stuff
 			HonorFrameCurrentSessionTitle:SetPoint("TOPLEFT", "HonorFrame", "TOPLEFT", 36, -111);
@@ -115,23 +98,12 @@ local l10nTable = {
 				_G[tabName.."Text"]:SetPoint("CENTER", tabName, "CENTER", 0, 5);
 			end
 
-			-- Player Frame
-			PlayerFrameHealthBarText:AdjustPointsOffset(50, 3);
-
 			-- Pet Frame
 			PetFrameHealthBarText:SetPoint("CENTER", PetFrameHealthBarText:GetParent(), "TOPLEFT", 82, -25);
 			PetFrameManaBarText:SetPoint("CENTER", PetFrameManaBarText:GetParent(), "TOPLEFT", 82, -36);
 
 			-- Trade Frame
 			TradeFramePlayerEnchantText:SetPoint("TOPLEFT", TradeFrame, 26, -371);
-
-			-- Video options
-			Advanced_UIScaleSliderLow:SetText(SMALL);
-			Advanced_UIScaleSliderHigh:SetText(LARGE);
-
-			-- Audio options
-			AudioOptionsSoundPanelSoundChannelsDropDownLabel:SetPoint("BOTTOM",  AudioOptionsSoundPanelSoundChannelsDropDown, "TOP", 0, 0);
-			AudioOptionsSoundPanelHardwareDropDownLabel:SetPoint("BOTTOM",  AudioOptionsSoundPanelHardwareDropDown, "TOP", 0, 1);
 
 			MIN_CHARACTER_SEARCH = 1;
 

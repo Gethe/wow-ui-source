@@ -23,6 +23,7 @@ local EditModeManager =
 		{
 			Name = "ConvertStringToLayoutInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -50,6 +51,20 @@ local EditModeManager =
 			Returns =
 			{
 				{ Name = "layoutInfo", Type = "EditModeLayouts", Nilable = false },
+			},
+		},
+		{
+			Name = "IsValidLayoutName",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isApproved", Type = "bool", Nilable = false },
 			},
 		},
 		{

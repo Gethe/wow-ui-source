@@ -1,0 +1,8 @@
+## Title: Blizzard_LevelUpDisplay
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## AllowLoad: game
+## AllowLoadGameType: cata
+Cata\LevelUpDisplay.lua
+Cata\LevelUpDisplay.xml
+Localization.lua

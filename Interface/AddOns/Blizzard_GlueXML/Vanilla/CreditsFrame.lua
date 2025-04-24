@@ -16,11 +16,13 @@ end
 
 function CreditsFrame_Update(self)
 	PlayCreditsMusic(GLUE_CREDITS_SOUND_KITS[CreditsFrame.creditsType]);
+	self.GameLogo:SetExpansion(LE_EXPANSION_CLASSIC);
 	if (CreditsFrame.creditsType == CREDITS_TYPE_CLASSIC) then
-		SetGameLogo(CreditsFrame.CreditsLogo, LE_EXPANSION_CLASSIC, LE_RELEASE_TYPE_CLASSIC);
+		self.GameLogo:SetReleaseType(LE_RELEASE_TYPE_CLASSIC);
 	elseif (CreditsFrame.creditsType == CREDITS_TYPE_VANILLA) then
-		SetGameLogo(CreditsFrame.CreditsLogo, LE_EXPANSION_CLASSIC, LE_RELEASE_TYPE_ORIGINAL);
+		self.GameLogo:SetReleaseType(LE_RELEASE_TYPE_ORIGINAL);
 	end
+	self.GameLogo:SetGameMode(0);
 	
 	CreditsFrame_SetSpeed(CREDITS_SCROLL_RATE_PLAY);
 	CreditsScrollFrame:SetVerticalScroll(0);

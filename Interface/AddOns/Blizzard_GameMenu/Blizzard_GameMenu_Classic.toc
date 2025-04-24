@@ -6,4 +6,4 @@
 ## AllowLoadGameType: classic
 Classic\GameMenuFrame.lua
 Classic\GameMenuFrame.xml
-Shared\Localization.lua
+Classic\Localization.lua

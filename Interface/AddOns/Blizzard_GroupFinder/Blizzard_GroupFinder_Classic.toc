@@ -3,7 +3,8 @@
 ## DefaultState: enabled
 ## Dependencies: Blizzard_GameTooltip, Blizzard_UIPanelTemplates
 ## AllowLoad: game
-## AllowLoadGameType: classic
+## AllowLoadGameType: tbc, wrath, cata, mists
+Classic\Constants.lua
 Classic\QueueUpdater.lua
 Classic\PVEFrame.lua
 Classic\PVEFrame.xml
@@ -16,3 +17,8 @@ Classic\LFGList.xml
 Classic\PVPHelper.lua
 Classic\PVPHelper.xml
 Classic\Localization.lua
+Shared\RaidFinder.lua
+Shared\RaidFinder.xml
+Shared\ScenarioFinder_Shared.lua
+Classic\ScenarioFinder.lua
+Shared\ScenarioFinder.xml

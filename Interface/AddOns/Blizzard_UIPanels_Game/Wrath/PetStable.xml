@@ -39,15 +39,15 @@
 				GameTooltip:Hide();
 			</OnLeave>
 			<OnClick>
-				if ( ClickStablePet(self:GetID()) ) then
+				if ( ClickStablePet(self:GetID() + 1) ) then
 					PetStable_Update();
 				end
 			</OnClick>
 			<OnDragStart>
-				PickupStablePet(self:GetID());
+				PickupStablePet(self:GetID() + 1);
 			</OnDragStart>
 			<OnReceiveDrag>
-				if ( ClickStablePet(self:GetID()) ) then
+				if ( ClickStablePet(self:GetID() + 1) ) then
 					PetStable_Update();
 				end
 			</OnReceiveDrag>

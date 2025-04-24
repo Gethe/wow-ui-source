@@ -404,3 +404,11 @@ function MapCanvasPinMixin:ApplyFrameLevel()
 	local frameLevel = self:GetMap():GetPinFrameLevelsManager():GetValidFrameLevel(self.pinFrameLevelType, self.pinFrameLevelIndex);
 	self:SetFrameLevel(frameLevel);
 end
+
+function MapCanvasPinMixin:GetDataProvider()
+	return self.dataProvider;
+end
+
+function MapCanvasPinMixin:SetDataProvider(dataProvider)
+	self.dataProvider = dataProvider;
+end

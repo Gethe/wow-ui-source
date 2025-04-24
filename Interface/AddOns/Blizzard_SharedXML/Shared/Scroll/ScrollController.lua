@@ -1,30 +1,3 @@
----------------
---NOTE - Please do not change this section without understanding the full implications of the secure environment
---We usually don't want to call out of this environment from this file. Calls should usually go through Outbound
-local _, tbl = ...;
-
-if tbl then
-	tbl.SecureCapsuleGet = SecureCapsuleGet;
-
-	local function Import(name)
-		tbl[name] = tbl.SecureCapsuleGet(name);
-	end
-
-	Import("IsOnGlueScreen");
-
-	if ( tbl.IsOnGlueScreen() ) then
-		tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
-		Import("C_StoreGlue");
-	end
-
-	setfenv(1, tbl);
-
-	Import("GetScaledCursorPosition");
-	Import("Saturate");
-	Import("CreateInterpolator");
-	Import("ApproximatelyEqual");
-end
-----------------
 
 ScrollDirectionMixin = {};
 
@@ -76,6 +49,7 @@ ScrollControllerMixin.Directions =
 }
 
 function ScrollControllerMixin:OnLoad()
+	self.isScrollController = true;
 	self.panExtentPercentage = .1;
 	self.allowScroll = true;
 
@@ -85,18 +59,54 @@ function ScrollControllerMixin:OnLoad()
 end
 
 function ScrollControllerMixin:OnMouseWheel(value)
+	local panFactor = 1.0;
 	if value < 0 then
-		self:ScrollInDirection(self:GetWheelPanPercentage(), ScrollControllerMixin.Directions.Increase);
+		self:ScrollIncrease(panFactor);
 	else
-		self:ScrollInDirection(self:GetWheelPanPercentage(), ScrollControllerMixin.Directions.Decrease);
+		self:ScrollDecrease(panFactor);
 	end
 end
 
-function ScrollControllerMixin:ScrollInDirection(scrollPercentage, direction)
-	if self:IsScrollAllowed() then
-		local delta = scrollPercentage * direction;
-		self:SetScrollPercentage(Saturate(self:GetScrollPercentage() + delta));
+-- Constrains the scroll percentage to intervals, which can be used to prevent elements
+-- from being partially clipped when dragging the scrollbar thumb. See most uses of
+-- ScrollingMessageFrame for an example.
+function ScrollControllerMixin:EnableSnapToInterval()
+	self.snapToInterval = true;
+end
+
+function ScrollControllerMixin:GetIntervalRange()
+	local visibleExtentPercentage = self:GetVisibleExtentPercentage();
+	if visibleExtentPercentage > 0 then
+		local intervals = math.floor((1 / visibleExtentPercentage) + MathUtil.Epsilon);
+		return intervals - 1;
 	end
+	return 0;
+end
+
+function ScrollControllerMixin:ScrollIncrease(panFactor)
+	local panPercentage = self:GetWheelPanPercentage() * (panFactor or 1.0);
+	self:ScrollInDirection(panPercentage, ScrollControllerMixin.Directions.Increase);
+end
+
+function ScrollControllerMixin:ScrollDecrease(panFactor)
+	local panPercentage = self:GetWheelPanPercentage() * (panFactor or 1.0);
+	self:ScrollInDirection(panPercentage, ScrollControllerMixin.Directions.Decrease);
+end
+
+function ScrollControllerMixin:ScrollInDirection(scrollPercentage, direction)
+	if not self:IsScrollAllowed() then
+		return;
+	end
+
+	if self.snapToInterval then
+		local range = self:GetIntervalRange();
+		if range > 0 then
+			scrollPercentage = math.max(1 / range, scrollPercentage);
+		end
+	end
+
+	local delta = scrollPercentage * direction;
+	self:SetScrollPercentage(Saturate(self:GetScrollPercentage() + delta));
 end
 
 function ScrollControllerMixin:GetPanExtentPercentage()
@@ -124,6 +134,14 @@ function ScrollControllerMixin:IsAtEnd()
 end
 
 function ScrollControllerMixin:SetScrollPercentage(scrollPercentage)
+	if self.snapToInterval then
+		local range = self:GetIntervalRange();
+		if range > 0 then
+			local percentage = 1 / range;
+			scrollPercentage = Round(scrollPercentage / percentage) / range;
+		end
+	end
+
 	self.scrollPercentage = Saturate(scrollPercentage);
 end
 
@@ -154,4 +172,8 @@ end
 
 function ScrollControllerMixin:SetScrollAllowed(allowScroll)
 	self.allowScroll = allowScroll;
+end
+
+function IsScrollController(object)
+	return object.isScrollController;
 end

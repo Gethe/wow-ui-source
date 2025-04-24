@@ -1,30 +1,3 @@
----------------
---NOTE - Please do not change this section without talking to Dan
-local _, tbl = ...;
-if tbl then
-	tbl.SecureCapsuleGet = SecureCapsuleGet;
-
-	local function Import(name)
-		tbl[name] = tbl.SecureCapsuleGet(name);
-	end
-
-	Import("IsOnGlueScreen");
-
-	if ( tbl.IsOnGlueScreen() ) then
-		tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
-	end
-
-	setfenv(1, tbl);
-	
-	Import("error");
-	Import("select");
-	Import("assert");
-	Import("unpack");
-	Import("math");
-	Import("Clamp");
-	Import("PercentageBetween");
-end
----------------
 
 local function CatmullRom_CalculatePointOnCurveHelper(t, tSquared, tCubed, p1, p2, p3, p4)
 	local term1 = 2.0 * p2 + (p3 - p1) * t;

@@ -3,7 +3,7 @@ SocialContractFrameMixin = {};
 function SocialContractFrameMixin:SetBodyText(text)
 	self.ScrollBox.Text:SetText(text);
 	self.ScrollBox:FullUpdate(ScrollBoxConstants.UpdateImmediately);
-	self.ScrollBox:ScrollToBegin(ScrollBoxConstants.NoScrollInterpolation);
+	self.ScrollBox:ScrollToBegin();
 	self.isRead = false;
 end
 

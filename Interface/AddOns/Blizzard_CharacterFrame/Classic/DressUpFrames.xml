@@ -122,32 +122,12 @@
 			<OnHide function="SideDressUpFrame_OnHide"/>
 		</Scripts>
 	</Frame>
-	<Frame name="DressUpFrame" toplevel="true" enableMouse="true" parent="UIParent" hidden="true">
-		<Size x="384" y="512"/>
-		<Anchors>
-			<Anchor point="TOPLEFT" x="0" y="-104"/>
-		</Anchors>
-		<HitRectInsets>
-			<AbsInset left="0" right="30" top="0" bottom="75"/>
-		</HitRectInsets>
+	<Frame name="DressUpFrame" toplevel="true" enableMouse="true" parent="UIParent" hidden="true" inherits="ButtonFrameTemplate">
 		<Frames>
-			<Button name="DressUpFrameCloseButton" inherits="UIPanelCloseButton">
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-30" y="-8"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
 			<Button name="DressUpFrameCancelButton" inherits="UIPanelButtonTemplate" text="CLOSE">
 				<Size x="80" y="22"/>
 				<Anchors>
-					<Anchor point="CENTER" relativePoint="BOTTOMRIGHT">
-						<Offset>
-							<AbsDimension x="-80" y="90"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="CENTER" relativePoint="TOPLEFT" x="293" y="-409"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="HideParentPanel"/>
@@ -170,19 +150,13 @@
 					<AbsDimension x="316" y="351"/>
 				</Size>
 				<Anchors>
-					<Anchor point="BOTTOM">
-						<Offset>
-							<AbsDimension x="-11" y="85"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOM" x="0" y="28"/>
 				</Anchors>
 				<Frames>
 					<Button name="DressUpModelFrameRotateRightButton">
-						<Size>
-							<AbsDimension x="35" y="35"/>
-						</Size>
+						<Size x="35" y="35"/>
 				<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPLEFT"/>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="0" y="-20"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -199,9 +173,7 @@
 						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 					</Button>
 					<Button name="DressUpModelFrameRotateLeftButton">
-						<Size>
-							<AbsDimension x="35" y="35"/>
-						</Size>
+						 <Size x="35" y="35"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="DressUpModelFrameRotateRightButton" relativePoint="TOPRIGHT"/>
 						</Anchors>
@@ -243,125 +215,47 @@
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="DressUpFramePortrait">
-					<Size>
-						<AbsDimension x="60" y="60"/>
-					</Size>
+					<Size x="60" y="60"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="7" y="-6"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="7" y="-6"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
-					<Size>
-						<AbsDimension x="128" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="256" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\PaperDollInfoFrame\SkillFrame-BotLeft">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-256"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\PaperDollInfoFrame\SkillFrame-BotRight">
-					<Size>
-						<AbsDimension x="128" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="256" y="-256"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
 				<FontString name="DressUpFrameTitleText" parentKey="TitleText" inherits="GameFontHighlight" text="DRESSUP_FRAME">
-					<Size>
-						<AbsDimension x="300" y="14"/>
-					</Size>
+					<Size x="300" y="14"/>
 					<Anchors>
-						<Anchor point="TOP" relativePoint="TOP">
-							<Offset>
-								<AbsDimension x="0" y="-17"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" relativePoint="TOP" x="0" y="-4"/>
 					</Anchors>
 				</FontString>
 				<FontString name="DressUpFrameDescriptionText" inherits="GameFontNormalSmall" text="DRESSUP_FRAME_INSTRUCTIONS">
-					<Size>
-						<AbsDimension x="260" y="36"/>
-					</Size>
+					<Size x="260" y="36"/>
 					<Anchors>
-						<Anchor point="CENTER" relativeTo="DressUpFrameTitleText" relativePoint="BOTTOM">
-							<Offset>
-								<AbsDimension x="10" y="-22"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="CENTER" relativeTo="DressUpFrameTitleText" relativePoint="BOTTOM" x="18" y="-37"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="BGTopLeft" name="$parentBackgroundTopLeft">
-					<Size>
-						<AbsDimension x="256" y="255"/>
-					</Size>
+					<Size x="256" y="255"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="22" y="-76"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="10" y="-65"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="BGTopRight" name="$parentBackgroundTopRight">
-					<Size>
-						<AbsDimension x="62" y="255"/>
-					</Size>
+					<Size x="62" y="255"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentBackgroundTopLeft" relativePoint="TOPRIGHT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="$parentBackgroundTopLeft" relativePoint="TOPRIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="BGBottomLeft" name="$parentBackgroundBot">
-					<Size>
-						<AbsDimension x="256" y="128"/>
-					</Size>
+					<Size x="256" y="128"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentBackgroundTopLeft" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="BGBottomRight" name="$parentBackgroundBot">
-					<Size>
-						<AbsDimension x="62" y="128"/>
-					</Size>
+					<Size x="62" y="128"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentBackgroundTopLeft" relativePoint="BOTTOMRIGHT"/>
 					</Anchors>

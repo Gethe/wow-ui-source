@@ -6,6 +6,8 @@
 	So with buttons of size 20, .dynamic(0) should return 0,0 and .dynamic(34) should return 1,14
 -----------------------------------------------------------------------------------------------]]--
 
+local envTable = GetCurrentEnvironment();
+
 local round = function (num) return math.floor(num + .5); end
 
 function HybridScrollFrame_OnLoad (self)
@@ -248,7 +250,7 @@ function HybridScrollFrame_CreateButtons (self, buttonTemplate, initialOffsetX, 
 
 	self.buttonHeight = round(buttonHeight) - offsetY;
 
-	local numButtons = math.ceil(self:GetHeight() / buttonHeight) + 1;
+	numButtons = math.ceil(self:GetHeight() / buttonHeight) + 1;
 
 	for i = #buttons + 1, numButtons do
 		button = CreateFrame("BUTTON", buttonName and (buttonName .. i) or nil, scrollChild, buttonTemplate);
@@ -323,11 +325,11 @@ end
 
 function HybridScrollBar_Disable(scrollBar)
 	scrollBar:Disable();
-	local scrollDownButton = scrollBar.ScrollDownButton or _G[scrollBar:GetName().."ScrollDownButton"];
+	local scrollDownButton = scrollBar.ScrollDownButton or envTable[scrollBar:GetName().."ScrollDownButton"];
 	if scrollDownButton then
 		scrollDownButton:Disable();
 	end
-	local scrollUpButton = scrollBar.ScrollUpButton or _G[scrollBar:GetName().."ScrollUpButton"];
+	local scrollUpButton = scrollBar.ScrollUpButton or envTable[scrollBar:GetName().."ScrollUpButton"];
 	if scrollUpButton then
 		scrollUpButton:Disable();
 	end

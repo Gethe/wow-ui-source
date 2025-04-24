@@ -31,7 +31,7 @@
 			<OnEnter function="CharacterCreateRaceButton_OnEnter"/>
 			<OnLeave function="CharacterCreateRaceButton_OnLeave"/>
 		</Scripts>
-		<NormalTexture name="$parentNormalTexture" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Races"/>
+		<NormalTexture name="$parentNormalTexture" parentKey="normalTexture" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Races"/>
 	</CheckButton>
 	<CheckButton name="CharacterCreateClassButtonTemplate" inherits="CharacterCreateIconButtonTemplate" virtual="true">
 		<Layers>
@@ -740,33 +740,14 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Frame name="CharacterCreateWoWLogo">
-								<Size>
-									<AbsDimension x="256" y="128"/>
-								</Size>
+							<Frame parentKey="GameLogo" inherits="GlueGameLogoTemplate">
+								<KeyValues>
+									<KeyValue key="useShrunkenLogoHeight" value="true" type="boolean"/>
+								</KeyValues>
+								<Size x="196" y="98"/>
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="CharacterCreateFrame">
-										<Offset>
-											<AbsDimension x="3" y="14"/>
-										</Offset>
-									</Anchor>
+									<Anchor point="TOPLEFT" x="34" y="-3" relativeTo="CharacterCreateFrame"/>
 								</Anchors>
-								<Layers>
-									<Layer level="ARTWORK">
-										<Texture name="CharacterCreateLogo">
-											<Size>
-												<AbsDimension x="196" y="98"/>
-											</Size>
-											<Anchors>
-												<Anchor point="TOP" relativePoint="TOPLEFT">
-													<Offset>
-														<AbsDimension x="129" y="-17"/>
-													</Offset>
-												</Anchor>
-											</Anchors>
-										</Texture>
-									</Layer>
-								</Layers>
 							</Frame>
 							<CheckButton name="CharacterCreateRaceButton1" inherits="CharacterCreateRaceButtonTemplate" id="1">
 								<Anchors>
@@ -1080,12 +1061,8 @@
 							</Layer>
 						</Layers>
 						<Scripts>
-							<OnEscapePressed>
-								CharacterCreate_Back();
-							</OnEscapePressed>
-							<OnEnterPressed>
-								CharacterCreate_Okay();
-							</OnEnterPressed>
+							<OnEscapePressed function="CharacterCreate_Back"/>
+							<OnEnterPressed function="CharacterCreate_Forward"/>
 						</Scripts>
 						<FontString inherits="GlueEditBoxFont"/>
 						<TextInsets>
@@ -1214,9 +1191,7 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnClick>
-								CharacterCreate_Okay();
-							</OnClick>
+							<OnClick function="CharacterCreate_Forward"/>
 						</Scripts>
 					</Button>
 				</Frames>

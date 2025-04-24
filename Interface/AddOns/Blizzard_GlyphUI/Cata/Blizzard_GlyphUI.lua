@@ -1,29 +1,10 @@
-NUM_GLYPH_SLOTS = 9;
-
 GLYPH_TYPE_MAJOR = 1;
 GLYPH_TYPE_MINOR = 2;
+-- Note that prime glyphs are not used in Mists and beyond
 GLYPH_TYPE_PRIME = 3;
 
 SHOW_INSCRIPTION_LEVEL = 25;
 
-GLYPH_ID_MINOR_1 = 2;
-GLYPH_ID_MAJOR_1 = 1;
-GLYPH_ID_PRIME_1 = 7;
-GLYPH_ID_MINOR_2 = 3;
-GLYPH_ID_MAJOR_2 = 4;
-GLYPH_ID_PRIME_2 = 8;
-GLYPH_ID_MINOR_3 = 5;
-GLYPH_ID_MAJOR_3 = 6;
-GLYPH_ID_PRIME_3 = 9;
---[[
-    7
-  4 2 1
-   3 5
-8   6   9
-]]--
-
-GLYPH_STRING = { PRIME_GLYPH, MAJOR_GLYPH, MINOR_GLYPH}
-GLYPH_STRING_PLURAL = { PRIME_GLYPHS, MAJOR_GLYPHS, MINOR_GLYPHS}
 
 GLYPH_HEADER_BUTTON_HEIGHT = 23;
 GLYPH_BUTTON_HEIGHT = 40;
@@ -32,20 +13,6 @@ GLYPH_BUTTON_OFFSET = 1;
 GLYPH_FILTER_KNOWN = 8;
 GLYPH_FILTER_UNKNOWN = 16;
 
-
-GLYPH_TYPE_INFO = {};
-GLYPH_TYPE_INFO[GLYPH_TYPE_PRIME] =  {
-	ring = { size = 82, left = 0.85839844, right = 0.93847656, top = 0.22265625, bottom = 0.30273438 };
-	highlight = { size = 96, left = 0.85839844, right = 0.95214844, top = 0.30468750, bottom = 0.39843750 };
-}
-GLYPH_TYPE_INFO[GLYPH_TYPE_MAJOR] =  {
-	ring = { size = 66, left = 0.85839844, right = 0.92285156, top = 0.00097656, bottom = 0.06542969 };
-	highlight = { size = 80, left = 0.85839844, right = 0.93652344, top = 0.06738281, bottom = 0.14550781 };
-}
-GLYPH_TYPE_INFO[GLYPH_TYPE_MINOR] =  {
-	ring = { size = 61, left = 0.92480469, right = 0.98437500, top = 0.00097656, bottom = 0.06054688 };
-	highlight = { size = 75, left = 0.85839844, right = 0.93164063, top = 0.14746094, bottom = 0.22070313 };
-}
 
 local slotAnimations = {};
 ---local TOPLEFT, TOP, TOPRIGHT, BOTTOMRIGHT, BOTTOM, BOTTOMLEFT = 3, 1, 5, 4, 2, 6;
@@ -67,14 +34,14 @@ local GLYPH_DURATION_MODIFIERS = { 1.25, 1.5, 1.8 };
 function GlyphFrame_Toggle ()
 	TalentFrame_LoadUI();
 	if ( PlayerTalentFrame_ToggleGlyphFrame ) then
-		PlayerTalentFrame_ToggleGlyphFrame(GetActiveTalentGroup());
+		PlayerTalentFrame_ToggleGlyphFrame(C_SpecializationInfo.GetActiveSpecGroup());
 	end
 end
 
 function GlyphFrame_Open ()
 	TalentFrame_LoadUI();
 	if ( PlayerTalentFrame_OpenGlyphFrame ) then
-		PlayerTalentFrame_OpenGlyphFrame(GetActiveTalentGroup());
+		PlayerTalentFrame_OpenGlyphFrame(C_SpecializationInfo.GetActiveSpecGroup());
 	end
 end
 
@@ -89,18 +56,52 @@ function GlyphFrame_OnLoad (self)
 	self:RegisterEvent("PLAYER_LEVEL_UP");
 	
 	self.scrollFrame.update = GlyphFrame_UpdateGlyphList;
-	self.scrollFrame.stepSize = 12;
 	self.scrollFrame.scrollBar.doNotHide = true;
 	self.scrollFrame.dynamic = GlyphFrame_CalculateScroll;
 	HybridScrollFrame_CreateButtons(self.scrollFrame, "GlyphSpellButtonTemplate", 0, -1, "TOPLEFT", "TOPLEFT", 0, -GLYPH_BUTTON_OFFSET, "TOP", "BOTTOM");
+
+	GlyphFrame_SetupFilterDropdown(self);
 end
 
+function GlyphFrame_SetupFilterDropdown (self)
+	self.FilterDropdown:SetWidth(170);
+	self.FilterDropdown:SetDefaultText(ALL_GLYPHS);
+
+	local function IsSelected(filter)
+		return IsGlyphFlagSet(filter);
+	end
+
+	local function SetSelected(filter)
+		ToggleGlyphFilter(filter);
+		GlyphFrame_UpdateGlyphList();
+	end
+
+	self.FilterDropdown:SetSelectionText(function(selections)
+		local known = IsGlyphFlagSet(GLYPH_FILTER_KNOWN);
+		local unknown = IsGlyphFlagSet(GLYPH_FILTER_UNKNOWN);
+		if known and unknown then
+			return ALL_GLYPHS;
+		elseif known then
+			return USED;
+		elseif unknown then
+			return UNAVAILABLE;
+		end
+		return NONE;
+	end);
+
+	self.FilterDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_GLYPH_FILTER");
+
+		rootDescription:CreateCheckbox(USED, IsSelected, SetSelected, GLYPH_FILTER_KNOWN); 
+		rootDescription:CreateCheckbox(UNAVAILABLE, IsSelected, SetSelected, GLYPH_FILTER_UNKNOWN); 
+	end);
+end
 
 function GlyphFrame_OnShow (self)
 	GlyphFrame_Update(self);
 	ButtonFrameTemplate_HideAttic(PlayerTalentFrame);
-	PlayerTalentFrameInset:SetPoint("BOTTOMRIGHT",  -197,  PANEL_INSET_BOTTOM_OFFSET);
-	PlayerTalentFrameActivateButton:SetPoint( "TOpRIGHT", -205, -35);
+	PlayerTalentFrameInset:SetPoint("BOTTOMRIGHT",  -197,  BOTTOM_RIGHT_OFFSET);
+	--PlayerTalentFrameActivateButton:SetPoint( "TOPRIGHT", -205, -35);
 	SetGlyphNameFilter("");
 	GlyphFrame_UpdateGlyphList ();
 
@@ -111,7 +112,7 @@ end
 function GlyphFrame_OnHide (self)
 	ButtonFrameTemplate_ShowAttic(PlayerTalentFrame);
 	ButtonFrameTemplate_ShowButtonBar(PlayerTalentFrame);
-	PlayerTalentFrameActivateButton:SetPoint( "TOPRIGHT", -10, -30);
+	--PlayerTalentFrameActivateButton:SetPoint( "TOPRIGHT", -10, -30);
 	
 	_G["PlayerTalentFrame".."BtnCornerLeft"]:Show();
 	_G["PlayerTalentFrame".."BtnCornerRight"]:Show();
@@ -185,7 +186,7 @@ end
 function GlyphFrame_Update (self)
 	local isActiveTalentGroup =
 		PlayerTalentFrame and not PlayerTalentFrame.pet and
-		PlayerTalentFrame.talentGroup == GetActiveTalentGroup(PlayerTalentFrame.pet);
+		PlayerTalentFrame.talentGroup == C_SpecializationInfo.GetActiveSpecGroup(PlayerTalentFrame.pet);
 	
 	SetDesaturation(GlyphFrame.background, not isActiveTalentGroup);
 
@@ -296,21 +297,11 @@ function GlyphFrame_UpdateGlyphList ()
 		end
 	end
 	
-	local totalHeight = (numGlyphs-3) * (GLYPH_BUTTON_HEIGHT + 0);
-	totalHeight = totalHeight + (3 * (GLYPH_HEADER_BUTTON_HEIGHT + 0));
-	HybridScrollFrame_Update(scrollFrame, totalHeight+5, 330);
-	
-	local known =  IsGlyphFlagSet(GLYPH_FILTER_KNOWN);
-	local unknown =  IsGlyphFlagSet(GLYPH_FILTER_UNKNOWN);
-	if known and unknown then
-		UIDropDownMenu_SetText(GlyphFrameFilterDropDown, ALL_GLYPHS);
-	elseif known then
-		UIDropDownMenu_SetText(GlyphFrameFilterDropDown, USED);
-	elseif unknown then
-		UIDropDownMenu_SetText(GlyphFrameFilterDropDown, UNAVAILABLE);
-	else
-		UIDropDownMenu_SetText(GlyphFrameFilterDropDown, NONE);
-	end
+	local totalHeight = (numGlyphs-NUM_GLYPH_OFFSET) * (GLYPH_BUTTON_HEIGHT + 0);
+	totalHeight = totalHeight + (NUM_GLYPH_OFFSET * (GLYPH_HEADER_BUTTON_HEIGHT + 0));
+	HybridScrollFrame_Update(scrollFrame, totalHeight+HEIGHT_OFFSET, 330);
+
+	GlyphFrame.FilterDropdown:GenerateMenu();
 end
 
 
@@ -392,31 +383,6 @@ function GlyphFrame_OnTextChanged(self)
 	SetGlyphNameFilter(text);
 	GlyphFrame_UpdateGlyphList();
 end
-
-
-function GlyphFrameFilter_Modify(self, arg1)
-	ToggleGlyphFilter(arg1);
-	GlyphFrame_UpdateGlyphList ();
-end 
-
-
-function GlyphFrameFilter_Initialize()
-	local info = UIDropDownMenu_CreateInfo();
-	info.isNotRadio = true;
-	info.func = GlyphFrameFilter_Modify;
-	
-	
-	info.text = USED;
-	info.checked = IsGlyphFlagSet(GLYPH_FILTER_KNOWN);
-	info.arg1 = GLYPH_FILTER_KNOWN
-	UIDropDownMenu_AddButton(info);
-	
-	info.text = UNAVAILABLE;
-	info.checked = IsGlyphFlagSet(GLYPH_FILTER_UNKNOWN);
-	info.arg1 = GLYPH_FILTER_UNKNOWN
-	UIDropDownMenu_AddButton(info);
-end 
-
 
 --------------------------------------------------------------------------------
 ------------------  Glyph Button Functions     ---------------------------
@@ -515,8 +481,8 @@ function GlyphFrameGlyph_SetGlyphType (glyph, glyphType)
 		glyph.highlight:SetHeight(info.highlight.size);
 		glyph.highlight:SetTexCoord(info.highlight.left, info.highlight.right, info.highlight.top, info.highlight.bottom);
 		
-		glyph.glyph:SetWidth(info.ring.size - 4);
-		glyph.glyph:SetHeight(info.ring.size - 4);
+		glyph.glyph:SetWidth(info.ring.size - GLYPH_SIZE_OFFSET);
+		glyph.glyph:SetHeight(info.ring.size - GLYPH_SIZE_OFFSET);
 		glyph.glyph:SetAlpha(0.75);
 	end
 end
@@ -544,7 +510,7 @@ function GlyphFrameGlyph_OnClick (self, button)
 		if link then
 			ChatEdit_InsertLink(link);
 		end
-	elseif talentGroup == GetActiveTalentGroup()  then
+	elseif talentGroup == C_SpecializationInfo.GetActiveSpecGroup()  then
 		local glyphName;
 		if button == "RightButton" then
 			if  IsShiftKeyDown() then

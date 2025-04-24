@@ -168,7 +168,6 @@
 				self.tooltipText = MicroButtonTooltipText(TALENTS, "TOGGLETALENTS");
 				self.newbieText = NEWBIE_TOOLTIP_TALENTS;
 
-				self.minLevel = SHOW_TALENT_LEVEL;
 				self:RegisterEvent("PLAYER_LEVEL_UP");
 				self:RegisterEvent("UPDATE_BINDINGS");
 			</OnLoad>
@@ -223,16 +222,25 @@
 			</OnClick>
 		</Scripts>
 	</Button>
-	<Button name="GuildMicroButton" inherits="MainMenuBarMicroButton" mixin="GuildMicroButtonMixin">
+	<Button name="SocialsMicroButton" inherits="MainMenuBarMicroButton" mixin="SocialsMicroButtonMixin">
+		<!-- Note: SocialMicroButton and GuildMicroButton occupy the same space. Only one will be visible at a time. -->
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="QuestLogMicroButton" relativePoint="BOTTOMRIGHT" x="-3" y="0"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow function="MicroButton_KioskModeDisable" inherit="append"/>
+			<OnClick method="OnClick" inherit="append"/>
+		</Scripts>
+	</Button>
+	<Button name="GuildMicroButton" inherits="MainMenuBarMicroButton" mixin="GuildMicroButtonMixin" hidden="true">
+		<!-- Note: SocialMicroButton and GuildMicroButton occupy the same space. Only one will be visible at a time. -->
 		<KeyValues>
 			<KeyValue key="commandName" value="TOGGLEGUILDTAB" type="string"/>
 		</KeyValues>
 		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="QuestLogMicroButton" relativePoint="BOTTOMRIGHT">
-				<Offset>
-					<AbsDimension x="-3" y="0"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="CENTER" relativeTo="SocialsMicroButton" relativePoint="CENTER"/>
 		</Anchors>
 		<Frames>
 			<Frame parentKey="NotificationOverlay" frameLevel="100" setAllPoints="true" hidden="true"/>
@@ -466,13 +474,6 @@
 				if ( self.down ) then
 					self.down = nil; -- I'm pretty sure none of this should ever get run.
 					if ( not GameMenuFrame:IsShown() ) then
-						if ( VideoOptionsFrame:IsShown() ) then
-							VideoOptionsFrameCancel:Click();
-						elseif ( AudioOptionsFrame:IsShown() ) then
-							AudioOptionsFrameCancel:Click();
-						elseif ( InterfaceOptionsFrame:IsShown() ) then
-							InterfaceOptionsFrameCancel:Click();
-						end
 						CloseMenus();
 						CloseAllWindows()
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
@@ -492,13 +493,6 @@
 					self.down = nil;
 					if ( self:IsMouseOver() ) then
 						if ( not GameMenuFrame:IsShown() ) then
-							if ( VideoOptionsFrame:IsShown() ) then
-								VideoOptionsFrameCancel:Click();
-							elseif ( AudioOptionsFrame:IsShown() ) then
-								AudioOptionsFrameCancel:Click();
-							elseif ( InterfaceOptionsFrame:IsShown() ) then
-								InterfaceOptionsFrameCancel:Click();
-							end
 							CloseMenus();
 							CloseAllWindows()
 							PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
@@ -549,4 +543,16 @@
 			</OnClick>
 		</Scripts>
 	</Button>
+
+	<Frame name="TalentMicroButtonAlert" inherits="MicroButtonAlertTemplate">
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="TalentMicroButton" relativePoint="TOP" x="0" y="-8"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				MicroButtonAlert_OnLoad(self);
+				self.Text:SetText(TALENT_MICRO_BUTTON_SPEC_TUTORIAL);
+			</OnLoad>
+		</Scripts>
+	</Frame>
 </Ui>

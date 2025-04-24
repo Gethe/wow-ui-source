@@ -64,12 +64,7 @@ local Minimap =
 
 			Returns =
 			{
-				{ Name = "name", Type = "cstring", Nilable = false },
-				{ Name = "textureFileID", Type = "fileID", Nilable = false },
-				{ Name = "active", Type = "bool", Nilable = false },
-				{ Name = "type", Type = "cstring", Nilable = false },
-				{ Name = "subType", Type = "number", Nilable = false },
-				{ Name = "spellID", Type = "number", Nilable = true },
+				{ Name = "trackingInfo", Type = "MinimapScriptTrackingInfo", Nilable = true },
 			},
 		},
 		{
@@ -107,6 +102,16 @@ local Minimap =
 			Type = "Event",
 			LiteralName = "MINIMAP_UPDATE_ZOOM",
 		},
+		{
+			Name = "PlayerInsideQuestBlobStateChanged",
+			Type = "Event",
+			LiteralName = "PLAYER_INSIDE_QUEST_BLOB_STATE_CHANGED",
+			Payload =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+				{ Name = "isInside", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Tables =
@@ -126,7 +131,7 @@ local Minimap =
 			Fields =
 			{
 				{ Name = "name", Type = "cstring", Nilable = false },
-				{ Name = "textureFileID", Type = "fileID", Nilable = false },
+				{ Name = "texture", Type = "fileID", Nilable = false },
 				{ Name = "active", Type = "bool", Nilable = false },
 				{ Name = "type", Type = "cstring", Nilable = false },
 				{ Name = "subType", Type = "number", Nilable = false },

@@ -210,7 +210,7 @@
 	Rewards panel
 *******************************************************************************
 -->
-	<Frame name="CommunitiesGuildRewardsFrameTemplate" virtual="true">
+	<Frame name="CommunitiesGuildRewardsFrameTemplate" mixin="CommunitiesGuildRewardsFrameMixin" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Bg" file="Interface\ClassTrainerFrame\TrainerTextures">
@@ -242,18 +242,12 @@
 					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="3" y="1"/>
 				</Anchors>
 			</EventFrame>
-			<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate" hidden="true">
-				<Size x="10" y="10"/>
-				<Scripts>
-					<OnLoad function="CommunitiesGuildRewardsDropDown_OnLoad"/>
-				</Scripts>
-			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="CommunitiesGuildRewardsFrame_OnLoad"/>
-			<OnShow function="CommunitiesGuildRewardsFrame_OnShow"/>
-			<OnEvent function="CommunitiesGuildRewardsFrame_OnEvent"/>
-			<OnHide function="CommunitiesGuildRewardsFrame_OnHide"/>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
 </Ui>

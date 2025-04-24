@@ -56,10 +56,12 @@ local SimpleScriptRegionResizingAPI =
 		{
 			Name = "GetPoint",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
 				{ Name = "anchorIndex", Type = "luaIndex", Nilable = false, Default = 0 },
+				{ Name = "resolveCollapsed", Type = "bool", Nilable = false, Default = false },
 			},
 
 			Returns =
@@ -74,10 +76,12 @@ local SimpleScriptRegionResizingAPI =
 		{
 			Name = "GetPointByName",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
 				{ Name = "point", Type = "FramePoint", Nilable = false },
+				{ Name = "resolveCollapsed", Type = "bool", Nilable = false, Default = false },
 			},
 
 			Returns =

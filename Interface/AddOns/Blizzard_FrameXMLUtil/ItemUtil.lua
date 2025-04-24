@@ -14,6 +14,8 @@ ItemButtonUtil.ItemContextEnum = {
 	ItemConversion = 11,
 	ItemRecrafting = 12,
 	JumpUpgradeTrack = 13,
+	AccountBankDepositing = 14,
+	Enchanting = 15,
 };
 
 ItemButtonUtil.ItemContextMatchResult = {
@@ -66,6 +68,10 @@ function ItemButtonUtil.GetItemContext()
 		return ItemButtonUtil.ItemContextEnum.UpgradableItem;
 	elseif C_Spell.TargetSpellJumpsUpgradeTrack() then
 		return ItemButtonUtil.ItemContextEnum.JumpUpgradeTrack;
+	elseif BankFrame and BankFrame:IsVisible() and BankFrame:GetActiveBankType() == Enum.BankType.Account then
+		return ItemButtonUtil.ItemContextEnum.AccountBankDepositing;
+	elseif C_Spell.TargetSpellIsEnchanting() then
+		return ItemButtonUtil.ItemContextEnum.Enchanting;
 	end
 	return nil;
 end
@@ -75,6 +81,12 @@ function ItemButtonUtil.OpenAndFilterBags(frame)
 
 	local openedCount = OpenAllBagsMatchingContext(frame);
 	frame.closeBagsOnHide = openedCount > 0;
+end
+
+function ItemButtonUtil.OpenAndFilterCharacterFrame()
+	ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
+
+	ShowCharacterFrameIfMatchesContext();
 end
 
 function ItemButtonUtil.CloseFilteredBags(frame)
@@ -142,6 +154,10 @@ function ItemButtonUtil.GetItemContextMatchResultForItem(itemLocation)
 			return ItemButtonUtil.ItemContextMatchResult.Mismatch;
 		elseif itemContext == ItemButtonUtil.ItemContextEnum.JumpUpgradeTrack then
 			return C_Item.DoesItemMatchTrackJump(itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
+		elseif itemContext == ItemButtonUtil.ItemContextEnum.AccountBankDepositing then
+			return C_Bank.IsItemAllowedInBankType(Enum.BankType.Account, itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
+		elseif itemContext == ItemButtonUtil.ItemContextEnum.Enchanting then
+			return C_Item.DoesItemMatchTargetEnchantingSpell(itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
 		else
 			return ItemButtonUtil.ItemContextMatchResult.DoesNotApply;
 		end
@@ -158,6 +174,23 @@ function ItemButtonUtil.GetItemContextMatchResultForContainer(bagID)
 	local itemLocation = ItemLocation:CreateEmpty();
 	for slotIndex = 1, ContainerFrame_GetContainerNumSlots(bagID) do
 		itemLocation:SetBagAndSlot(bagID, slotIndex);
+		if ItemButtonUtil.GetItemContextMatchResultForItem(itemLocation) == ItemButtonUtil.ItemContextMatchResult.Match then
+			return ItemButtonUtil.ItemContextMatchResult.Match;
+		end
+	end
+	
+	return ItemButtonUtil.ItemContextMatchResult.Mismatch;
+end
+
+function ItemButtonUtil.GetItemContextMatchResultForPaperDollFrame()
+	if ItemButtonUtil.GetItemContext() == nil then
+		return ItemButtonUtil.ItemContextMatchResult.DoesNotApply;
+	end
+	
+	local itemLocation = ItemLocation:CreateEmpty();
+	local numInvSlots = (INVSLOT_LAST_EQUIPPED - INVSLOT_FIRST_EQUIPPED) + 1;
+	for slotIndex = 1, numInvSlots do
+		itemLocation:SetEquipmentSlot(slotIndex);
 		if ItemButtonUtil.GetItemContextMatchResultForItem(itemLocation) == ItemButtonUtil.ItemContextMatchResult.Match then
 			return ItemButtonUtil.ItemContextMatchResult.Match;
 		end
@@ -200,11 +233,12 @@ function ItemUtil.PickupBagItem(itemLocation)
 	end
 end
 
-function ItemUtil.GetCraftingReagentCount(itemID)
+function ItemUtil.GetCraftingReagentCount(itemID, characterInventoryOnly)
 	local includeBank = true;
 	local includeUses = false;
 	local includeReagentBank = true;
-	return C_Item.GetItemCount(itemID, includeBank, includeUses, includeReagentBank);
+	local includeAccountBank = not characterInventoryOnly;
+	return C_Item.GetItemCount(itemID, includeBank, includeUses, includeReagentBank, includeAccountBank);
 end
 
 function ItemUtil.IterateBagSlots(bag, callback)
@@ -307,7 +341,7 @@ function ItemUtil.TransformItemGUIDsToItems(itemGUIDs)
 	return items;
 end
 
-function ItemUtil.TransformItemLocationItemsToGUIDItems(items)
+function ItemUtil.TransformItemLocationItemsToGUIDItems(itemLocations)
 	local items = {};
 	for index, itemLocation in ipairs(itemLocations) do
 		table.insert(items, Item:CreateFromItemLocation(itemLocation));

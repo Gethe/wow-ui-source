@@ -84,12 +84,6 @@ function UnitFrame_Initialize (self, unit, name, portrait, healthbar, healthtext
 	self.healAbsorbBarLeftShadow = healAbsorbBarLeftShadow;
 	self.healAbsorbBarRightShadow = healAbsorbBarRightShadow;
 	self.myManaCostPredictionBar = myManaCostPredictionBar;
-	if ( self.myHealPredictionBar ) then
-		self.myHealPredictionBar:ClearAllPoints();
-	end
-	if ( self.otherHealPredictionBar ) then
-		self.otherHealPredictionBar:ClearAllPoints();
-	end
 	if ( self.totalAbsorbBar ) then
 		self.totalAbsorbBar:ClearAllPoints();
 	end
@@ -123,9 +117,11 @@ function UnitFrame_Initialize (self, unit, name, portrait, healthbar, healthtext
 		self.healAbsorbBarRightShadow:ClearAllPoints();
 	end
 	if (self.healthbar) then
+		self.healthbar.breakUpLargeNumbers = C_CVar.GetCVarBool("breakUpLargeNumbers");
 		self.healthbar.capNumericDisplay = true;
 	end
 	if (self.manabar) then
+		self.manabar.breakUpLargeNumbers = C_CVar.GetCVarBool("breakUpLargeNumbers");
 		self.manabar.capNumericDisplay = true;
 	end
 	UnitFrameHealthBar_Initialize(unit, healthbar, healthtext, true);
@@ -253,6 +249,26 @@ end
 local MAX_INCOMING_HEAL_OVERFLOW = 1.0;
 function UnitFrameHealPredictionBars_Update(frame)
 	if ( not frame.myHealPredictionBar and not frame.otherHealPredictionBar and not frame.healAbsorbBar and not frame.totalAbsorbBar ) then
+		return;
+	end
+
+	if (not UnitFrame_IsHealPredictionEnabled()) then
+		if (frame.myHealPredictionBar) then
+			frame.myHealPredictionBar:Hide();
+		end
+
+		if (frame.otherHealPredictionBar) then
+			frame.otherHealPredictionBar:Hide();
+		end
+
+		if (frame.healAbsorbBar) then
+			frame.healAbsorbBar:Hide();
+		end
+
+		if (frame.totalAbsorbBar) then
+			frame.totalAbsorbBar:Hide();
+		end
+
 		return;
 	end
 
@@ -925,8 +941,8 @@ function UnitFrame_UpdateThreatIndicator(indicator, numericIndicator, unit)
 			end
 
 			if ( numericIndicator ) then
-				if ( ShowNumericThreat() and not (UnitClassification(indicator.unit) == "minus") ) then
-					local isTanking, status, percentage, rawPercentage = UnitDetailedThreatSituation(indicator.feedbackUnit, indicator.unit);
+				if ( ShowNumericThreat() and UnitClassification(indicator.unit) ~= "minus" ) then
+					local isTanking, detailedStatus, percentage, rawPercentage = UnitDetailedThreatSituation(indicator.feedbackUnit, indicator.unit);
 					local display = rawPercentage;
 					if ( isTanking ) then
 						display = UnitThreatPercentageOfLead(indicator.feedbackUnit, indicator.unit);
@@ -935,7 +951,7 @@ function UnitFrame_UpdateThreatIndicator(indicator, numericIndicator, unit)
 					if ( display and display ~= 0 ) then
 						display = min(display, MAX_DISPLAYED_THREAT_PERCENT);
 						numericIndicator.text:SetText(format("%1.0f", display).."%");
-						numericIndicator.bg:SetVertexColor(GetThreatStatusColor(status));
+						numericIndicator.bg:SetVertexColor(GetThreatStatusColor(detailedStatus));
 						numericIndicator:Show();
 					else
 						numericIndicator:Hide();

@@ -17,12 +17,12 @@ function ContainerFrame_UpdateQuestItem(frame, itemIndex, itemButton)
 
 	local questInfo = C_Container.GetContainerItemQuestInfo(id, itemButton:GetID());
 
-	questTexture = _G[name.."Item"..itemIndex.."IconQuestTexture"];
+	local questTexture = _G[name.."Item"..itemIndex.."IconQuestTexture"];
 
-	if ( questInfo.questId and not questInfo.isActive ) then
+	if ( questInfo.questID and not questInfo.isActive ) then
 		questTexture:SetTexture(TEXTURE_ITEM_QUEST_BANG);
 		questTexture:Show();
-	elseif ( questInfo.questId or questInfo.isQuestItem ) then
+	elseif ( questInfo.questID or questInfo.isQuestItem ) then
 		questTexture:SetTexture(TEXTURE_ITEM_QUEST_BORDER);
 		questTexture:Show();		
 	else

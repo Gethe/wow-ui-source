@@ -1,6 +1,8 @@
-local function ShouldShowRegulationOverlay()
-	return SHOW_KOREAN_RATINGS or (SHOW_CHINA_AGE_APPROPRIATENESS_WARNING and not C_Login.WasEverLauncherLogin());
+function ShouldShowRegulationOverlay()
+	return KoreanRatings:ShouldShow() or ChinaAgeAppropriatenessWarning:ShouldShow() or TaiwanFraudWarning:ShouldShow();
 end
+
+local selectedSavedAccount = nil;
 
 function AccountLogin_OnLoad(self)
 	local version, internalVersion, date, _, versionType, buildType = GetBuildInfo();
@@ -14,10 +16,25 @@ function AccountLogin_OnLoad(self)
 	self:RegisterEvent("LAUNCHER_LOGIN_STATUS_CHANGED");
 	self:RegisterEvent("SHOULD_RECONNECT_TO_REALM_LIST");
 
+	local function OnLoginWarningDialogClosed()
+		if PhotosensitivityWarningFrame:GetLockedByOtherWarning() then
+			PhotosensitivityWarningFrame:TryShow();
+		else
+			AccountLogin_Update();
+			AccountLogin_CheckAutoLogin();
+		end
+	end
+	EventRegistry:RegisterCallback("LoginWarningDialogs.DialogClosed", OnLoginWarningDialogClosed);
+
 	AccountLogin_CheckLoginState(self);
 
 	local year = date:sub(#date - 3, #date);
 	self.UI.BlizzDisclaimer:SetText(BLIZZ_DISCLAIMER_FORMAT:format(year));
+
+	local defaultText = nil;
+	self.UI.AccountsDropdown:SetWidth(234);
+
+	AccountLoginDropdown_SetupList();
 end
 
 function AccountLogin_OnEvent(self, event, ...)
@@ -46,7 +63,7 @@ function AccountLogin_CheckLoginState(self)
 	-- authenticator
 	local tokenEntryShown = false;
 	if ( auroraState == LE_AURORA_STATE_ENTER_EXTRA_AUTH ) then
-		authType = C_Login.GetExtraAuthInfo();
+		local authType = C_Login.GetExtraAuthInfo();
 		if ( authType == LE_AUTH_AUTHENTICATOR ) then
 			tokenEntryShown = true;
 		end
@@ -60,7 +77,6 @@ function AccountLogin_CheckLoginState(self)
 end
 
 function AccountLogin_OnShow(self)
-	SetGameLogo(self.UI.GameLogo);
 	self.UI.AccountEditBox:SetText("");
 	AccountLogin_UpdateSavedData(self);
     CharacterCreate_CancelReincarnation(); -- If we're back at this screen, we're not reincarnating
@@ -69,31 +85,16 @@ function AccountLogin_OnShow(self)
 end
 
 function AccountLogin_Update()
-	local showButtonsAndStuff = true;
-    local shouldCheckSystemReqs = true;
-	if ( ShouldShowRegulationOverlay() ) then
-		showButtonsAndStuff = false;
-		if ( SHOW_KOREAN_RATINGS ) then
-			KoreanRatings:Show();
-		elseif ( SHOW_CHINA_AGE_APPROPRIATENESS_WARNING ) then
-			ChinaAgeAppropriatenessWarning:Show();
-		end
-	else
-		KoreanRatings:Hide();
-		ChinaAgeAppropriatenessWarning:Hide();
-	end
+	local showedRegulationOverlay = KoreanRatings:TryShow() or ChinaAgeAppropriatenessWarning:TryShow() or TaiwanFraudWarning:TryShow();
+	local showButtonsAndStuff = not showedRegulationOverlay;
 
 	local isLauncherLogin = C_Login.IsLauncherLogin();
 	if ( isLauncherLogin ) then
 		showButtonsAndStuff = false;
-        shouldCheckSystemReqs = false;
 	end
 
-	if (isLauncherLogin or ShouldShowRegulationOverlay()) then
-		ServerAlert_Disable(ServerAlertFrame);
-	else
-		ServerAlert_Enable(ServerAlertFrame);
-	end
+	local shouldSuppressServerAlert = isLauncherLogin or showedRegulationOverlay;
+	ServerAlertFrame:SetSuppressed(shouldSuppressServerAlert);
 
 	--Cached login
 	CachedLoginFrameContainer_Update(AccountLogin.UI.CachedLoginFrameContainer);
@@ -116,12 +117,17 @@ function AccountLogin_Update()
 	if ( GetSavedAccountName() ~= "" and GetSavedAccountList() ~= "" and not isReconnectMode) then
 		AccountLogin.UI.PasswordEditBox:SetPoint("BOTTOM", -2, 250);
 		AccountLogin.UI.LoginButton:SetPoint("BOTTOM", 0, 183);
-		AccountLogin.UI.AccountsDropDown:SetShown(showButtonsAndStuff);
+		AccountLogin.UI.AccountsDropdown:SetShown(showButtonsAndStuff);
+
+		if showButtonsAndStuff then
+			-- Account list information may have changed so we need to regenerate the menu.
+			AccountLogin.UI.AccountsDropdown:GenerateMenu();
+		end
 	else
 		AccountLogin.UI.PasswordEditBox:SetPoint("BOTTOM", -2, 270);
 		AccountLogin.UI.LoginButton:SetPoint("BOTTOM", 0, 203);
-		AccountLogin.UI.AccountsDropDown:Hide();
-	end
+		AccountLogin.UI.AccountsDropdown:Hide();
+	end	
 end
 
 function AccountLogin_UpdateSavedData(self)
@@ -133,7 +139,7 @@ function AccountLogin_UpdateSavedData(self)
 		AccountLogin_FocusPassword();
 	end
 
-	AccountLoginDropDown_SetupList();
+	AccountLoginDropdown_SetupList();
 end
 
 function AccountLogin_OnKeyDown(self, key)
@@ -191,8 +197,10 @@ function CachedLoginButton_OnClick(self)
 
 	local account = self:GetParent().account;
 	C_Login.CachedLogin(account);
-	if ( AccountLoginDropDown:IsShown() ) then
-		C_Login.SelectGameAccount(UIDropDownMenu_GetSelectedValue(AccountLoginDropDown));
+
+	if ( AccountLogin.UI.AccountsDropdown:IsShown() ) then
+		local accountStr = AccountLogin_GetPendingSavedAccountString();
+		C_Login.SelectGameAccount(accountStr);
 	end
 
 	AccountLogin.UI.PasswordEditBox:SetText("");
@@ -220,8 +228,9 @@ function AccountLogin_Login()
 	else
 		local username = AccountLogin.UI.AccountEditBox:GetText();
 		C_Login.Login(string.gsub(username, "||", "|"), AccountLogin.UI.PasswordEditBox);
-		if ( AccountLoginDropDown:IsShown() ) then
-			C_Login.SelectGameAccount(UIDropDownMenu_GetSelectedValue(AccountLoginDropDown));
+		if ( AccountLogin.UI.AccountsDropdown:IsShown() ) then
+			local accountStr = AccountLogin_GetPendingSavedAccountString();
+			C_Login.SelectGameAccount(accountStr);
 		end
 	end
 
@@ -371,40 +380,46 @@ end
 -- Accounts dropdown
 -- =============================================================
 
-function AccountLoginDropDown_OnLoad(self)
-	UIDropDownMenu_SetWidth(self, 134);
-	UIDropDownMenu_SetSelectedValue(self, 1);
-	AccountLoginDropDownText:SetJustifyH("LEFT");
-	AccountLoginDropDown_SetupList();
-	UIDropDownMenu_Initialize(self, AccountLoginDropDown_Initialize);
-end
+local function AccountLogin_GetSavedAccountList()
+	local accounts = {};
 
-function AccountLoginDropDown_OnClick(self)
-	UIDropDownMenu_SetSelectedValue(AccountLoginDropDown, self.value);
-end
-
-function AccountLoginDropDown_Initialize()
-	local selectedValue = UIDropDownMenu_GetSelectedValue(AccountLoginDropDown);
-	local list = AccountLoginDropDown.list;
-	for i = 1, #list do
-		list[i].checked = (list[i].text == selectedValue);
-		UIDropDownMenu_AddButton(list[i]);
-	end
-end
-
-function AccountLoginDropDown_SetupList()
-	AccountLoginDropDown.list = {};
-	local i = 1;
 	for str in string.gmatch(GetSavedAccountList(), "([%w!]+)|?") do
-		local selected = false;
-		if ( strsub(str, 1, 1) == "!" ) then
-			selected = true;
+		local selected = strsub(str, 1, 1) == "!";
+		if selected then
 			str = strsub(str, 2, #str);
-			UIDropDownMenu_SetSelectedValue(AccountLoginDropDown, str);
-			UIDropDownMenu_SetText(AccountLoginDropDown, str);
 		end
-		AccountLoginDropDown.list[i] = { ["text"] = str, ["value"] = str, ["selected"] = selected, func = AccountLoginDropDown_OnClick };
-		i = i + 1;
+
+		table.insert(accounts, {str = str, selected = selected});
+	end
+
+	return accounts;
+end
+
+function AccountLogin_GetPendingSavedAccountString()
+	return selectedSavedAccount.str;
+end
+
+do
+	local function IsSelected(account)
+		return selectedSavedAccount and (selectedSavedAccount.str == account.str);
+	end
+
+	local function SetSelected(account)
+		selectedSavedAccount = account;
+	end
+	
+	function AccountLoginDropdown_SetupList()
+		selectedSavedAccount = FindValueInTableIf(AccountLogin_GetSavedAccountList(), function(account)
+			return account.selected;
+		end);
+	
+		AccountLogin.UI.AccountsDropdown:SetupMenu(function(dropdown, rootDescription)
+			rootDescription:SetTag("MENU_ACCOUNT_LOGIN");
+
+			for index, account in ipairs(AccountLogin_GetSavedAccountList()) do
+				rootDescription:CreateRadio(account.str, IsSelected, SetSelected, account);
+			end
+		end);
 	end
 end
 
@@ -534,50 +549,4 @@ end
 function AccountLogin_LaunchCommunitySite()
 	PlaySound(SOUNDKIT.GS_LOGIN_NEW_ACCOUNT);
 	LaunchURL(COMMUNITY_URL);
-end
-
--- =============================================================
--- Korean Ratings
--- =============================================================
-
-local KOREAN_RATINGS_AUTO_CLOSE_TIMER; -- seconds until automatically closing
-function KoreanRatings_OnLoad(self)
-	if ( WasScreenFirstDisplayed() ) then
-		KoreanRatings_ScreenDisplayed(self);
-	else
-		self:RegisterEvent("SCREEN_FIRST_DISPLAYED");
-	end
-end
-
-function KoreanRatings_OnEvent(self, event, ...)
-	if ( event == "SCREEN_FIRST_DISPLAYED" ) then
-		KoreanRatings_ScreenDisplayed(self);
-		self:UnregisterEvent("SCREEN_FIRST_DISPLAYED");
-	end
-end
-
-function KoreanRatings_ScreenDisplayed(self)
-	self:SetScript("OnUpdate", KoreanRatings_OnUpdate);
-end
-
-function KoreanRatings_OnShow(self)
-	self.locked = true;
-	KOREAN_RATINGS_AUTO_CLOSE_TIMER = 3;
-	KoreanRatingsText:SetTextHeight(10); -- this is just dumb ... sort out this bug later.
-	KoreanRatingsText:SetTextHeight(50);
-end
-
-function KoreanRatings_OnUpdate(self, elapsed)
-	KOREAN_RATINGS_AUTO_CLOSE_TIMER = KOREAN_RATINGS_AUTO_CLOSE_TIMER - elapsed;
-	if ( KOREAN_RATINGS_AUTO_CLOSE_TIMER <= 0 ) then
-		SHOW_KOREAN_RATINGS = false;
-		AccountLogin_Update();
-		AccountLogin_CheckAutoLogin();
-	end
-end
-
-function ChinaAgeAppropriatenessWarning_Close()
-	SHOW_CHINA_AGE_APPROPRIATENESS_WARNING = false;
-	AccountLogin_Update();
-	AccountLogin_CheckAutoLogin();
 end

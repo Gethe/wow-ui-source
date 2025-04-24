@@ -1,3 +1,5 @@
+local envTable = GetCurrentEnvironment();
+
 BindingUtil = {};
 
 local metaKeys =
@@ -138,7 +140,7 @@ function CreateKeyChordStringUsingMetaKeyState(key)
 end
 
 function GetBindingName(binding)
-	local bindingName = _G["BINDING_NAME_"..binding];
+	local bindingName = envTable["BINDING_NAME_"..binding];
 	if ( bindingName ) then
 		return bindingName;
 	end

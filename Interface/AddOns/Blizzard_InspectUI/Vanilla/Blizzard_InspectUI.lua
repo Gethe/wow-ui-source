@@ -23,13 +23,14 @@ function InspectFrame_OnLoad(self)
 	PanelTemplates_SetTab(self, 1);
 end
 
-function InspectFrame_OnEvent(self, event, unit, ...)
-
-	if(event == "INSPECT_READY" and InspectFrame.unit and (UnitGUID(InspectFrame.unit) == unit)) then
-		ShowUIPanel(InspectFrame);
-		InspectFrame_UpdateTabs();
+function InspectFrame_OnEvent(self, event, ...)
+	if(event == "INSPECT_READY") then
+		local unit = ...;
+		if (InspectFrame.unit and (UnitGUID(InspectFrame.unit) == unit)) then
+			ShowUIPanel(InspectFrame);
+			InspectFrame_UpdateTabs();
+		end
 	end
-
 
 	if ( not self:IsShown() ) then
 		return;

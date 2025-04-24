@@ -53,6 +53,7 @@ function SetCharacterRace(id)
 	local race, fileString = C_CharacterCreation.GetNameForRace(CharacterCreate.selectedRace);
 	CharacterCreateRaceLabel:SetText(race);
 	fileString = strupper(fileString);
+	local gender;
 	if ( C_CharacterCreation.GetSelectedSex() == Enum.UnitSex.Male ) then
 		gender = "MALE";
 	else
@@ -65,7 +66,7 @@ function SetCharacterRace(id)
 	-- Loop over all the ability strings we can find and concatenate them into a giant block.
 	local abilityIndex = 1;
 	local tempText = _G["ABILITY_INFO_"..fileString..abilityIndex];
-	abilityText = "";
+	local abilityText = "";
 	if (tempText) then
 		abilityText = tempText;
 		abilityIndex = abilityIndex + 1;
@@ -247,4 +248,42 @@ function CharacterCreate_CancelReincarnation()
     CharacterCreateRandomName:Enable();
 	CharacterReincarnatePopUpDialog:Hide();
 	C_Reincarnation.StopReincarnation();
+end
+
+CharacterCreateConfigurationMixin = {};
+
+function CharacterCreateConfigurationMixin:OnLoad()
+	self:RegisterEvent("GAME_MODE_DISPLAY_INFO_UPDATED");
+	local _, _, _, characterCreateOuterBorderXOffset, _ = CharacterCreateOuterBorder1:GetPoint(1);
+	self.defaultCharacterCreateOuterBorderXOffset = characterCreateOuterBorderXOffset;
+	self.defaultCharacterCreateOuterBorder2Height = CharacterCreateOuterBorder2:GetHeight();
+	self.defaultBackgroundTexture = CharacterCreateOuterBorder2:GetTexture();
+	self:Update();
+end
+
+function CharacterCreateConfigurationMixin:OnEvent(event)
+	if event == "GAME_MODE_DISPLAY_INFO_UPDATED" then
+		self:Update();
+	end
+end
+
+function CharacterCreateConfigurationMixin:Update()
+	local extraHeight = 0;
+	local outerBorderFileID = self.defaultBackgroundTexture;
+
+	local gameModeDisplayInfo = C_GameRules.GetCurrentGameModeDisplayInfo();
+	if gameModeDisplayInfo then
+		extraHeight = gameModeDisplayInfo.characterCreateExtraHeight;
+
+		if (gameModeDisplayInfo.characterCreateOuterBorder) then
+			outerBorderFileID = gameModeDisplayInfo.characterCreateOuterBorder;
+		end
+	end
+
+	CharacterCreateOuterBorder2:SetHeight(self.defaultCharacterCreateOuterBorder2Height + extraHeight);
+	CharacterCreateOuterBorder1:SetPoint("TOP", self.defaultCharacterCreateOuterBorderXOffset, extraHeight);
+
+	CharacterCreateOuterBorder1:SetTexture(outerBorderFileID);
+	CharacterCreateOuterBorder2:SetTexture(outerBorderFileID);
+	CharacterCreateOuterBorder3:SetTexture(outerBorderFileID);
 end

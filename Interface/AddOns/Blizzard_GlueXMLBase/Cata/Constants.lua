@@ -81,6 +81,7 @@ EXPANSION_HIGH_RES_BG = {
 	[LE_EXPANSION_BURNING_CRUSADE] = "Interface\\Glues\\Models\\UI_MainMenu_BurningCrusade\\UI_MainMenu_BurningCrusade.m2",
 	[LE_EXPANSION_WRATH_OF_THE_LICH_KING] = "Interface\\Glues\\Models\\UI_MainMenu_Northrend\\UI_MainMenu_Northrend.M2",
 	[LE_EXPANSION_CATACLYSM] = "Interface\\Glues\\Models\\UI_MainMenu_Cataclysm\\UI_MainMenu_Cataclysm.M2",
+	[LE_EXPANSION_MISTS_OF_PANDARIA] = "Interface\\Glues\\MODELS\\UI_MainMenu_Pandaria\\UI_MainMenu_Pandaria.m2",
 };
 
 EXPANSION_LOW_RES_BG = {
@@ -88,6 +89,7 @@ EXPANSION_LOW_RES_BG = {
 	[LE_EXPANSION_BURNING_CRUSADE] =	"Interface\\Glues\\Models\\UI_MAINMENU\\UI_MainMenu.m2",
 	[LE_EXPANSION_WRATH_OF_THE_LICH_KING] =			"Interface\\Glues\\Models\\UI_MAINMENU\\UI_MainMenu.m2",
 	[LE_EXPANSION_CATACLYSM] =			"Interface\\Glues\\Models\\UI_MAINMENU\\UI_MainMenu.m2",
+	[LE_EXPANSION_MISTS_OF_PANDARIA] =			"Interface\\Glues\\Models\\UI_MAINMENU\\UI_MainMenu.m2",
 };
 
 --Movie

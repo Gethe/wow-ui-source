@@ -27,7 +27,7 @@ function MapUtil.ShouldMapTypeShowQuests(mapType)
 end
 
 function MapUtil.ShouldShowTask(mapID, info)
-	return (mapID == info.mapID) and HaveQuestData(info.questId);
+	return (mapID == info.mapID) and HaveQuestData(info.questID);
 end
 
 function MapUtil.MapHasUnlockedBounties(mapID)
@@ -91,7 +91,7 @@ function MapUtil.GetRelatedBountyZoneMaps(mapID)
 			if continentBountySetID == targetBountySetID then
 				-- add all child zones
 				local zones = C_Map.GetMapChildrenInfo(continentInfo.mapID, Enum.UIMapType.Zone, ALL_DESCENDANTS);
-				for i, zoneInfo in ipairs(zones) do
+				for _, zoneInfo in ipairs(zones) do
 					tinsert(bountyMaps, zoneInfo.mapID);
 				end
 			end

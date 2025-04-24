@@ -79,7 +79,7 @@ function ModelSceneControlFrameMixin:UpdateLayout()
 	local vPadding = 0;
 	local buttonSize = 32;
 	local totalHeight = buttonSize;
-	local totalWidth = 0 + hPadding;
+	local totalWidth = 2; -- Initial non-zero total width to prevent flickering from negataive padding
 
 	local function LayoutButton(button)
 		button:ClearAllPoints();

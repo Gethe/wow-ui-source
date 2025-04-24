@@ -81,6 +81,7 @@ function SetCharacterRace(id)
 	local race, fileString = C_CharacterCreation.GetNameForRace(CharacterCreate.selectedRace);
 	CharacterCreateRaceLabel:SetText(race);
 	fileString = strupper(fileString);
+	local gender;
 	if ( C_CharacterCreation.GetSelectedSex() == Enum.UnitSex.Male ) then
 		gender = "MALE";
 	else
@@ -93,7 +94,7 @@ function SetCharacterRace(id)
 	-- Loop over all the ability strings we can find and concatenate them into a giant block.
 	local abilityIndex = 1;
 	local tempText = _G["ABILITY_INFO_"..fileString..abilityIndex];
-	abilityText = "";
+	local abilityText = "";
 	if (tempText) then
 		abilityText = tempText;
 		abilityIndex = abilityIndex + 1;
@@ -176,13 +177,12 @@ function SetCharacterClass(id)
 	local classData = C_CharacterCreation.GetSelectedClass();
 	local abilityIndex = 0;
 	local tempText = _G["CLASS_INFO_"..classData.fileName..abilityIndex];
-	abilityText = "";
+	local abilityText = "";
 	while ( tempText ) do
 		abilityText = abilityText..tempText.."\n\n";
 		abilityIndex = abilityIndex + 1;
 		tempText = _G["CLASS_INFO_"..classData.fileName..abilityIndex];
 	end
-	local classData = C_CharacterCreation.GetSelectedClass();
 	local coords = CLASS_ICON_TCOORDS[strupper(classData.fileName)];
 	CharacterCreateClassIcon:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
 	CharacterCreateClassLabel:SetText(classData.name);

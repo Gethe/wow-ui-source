@@ -1,6 +1,6 @@
 ## Title: Blizzard WoW Token UI
-## LoadOnDemand: 0
-..\Blizzard_SharedXML\Classic\SecureCurrencyUtil.lua
-..\Blizzard_SharedXML\SecureUIPanelTemplates.lua
+## LoadFirst: 1
+## RequiredDep: Blizzard_SharedXML, Blizzard_UIParent
+## UseSecureEnvironment: 1
 Blizzard_WowTokenUI.xml
 Blizzard_WowTokenUIInsecure.xml

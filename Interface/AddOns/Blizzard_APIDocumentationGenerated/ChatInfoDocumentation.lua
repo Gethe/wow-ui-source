@@ -21,8 +21,18 @@ local ChatInfo =
 			},
 		},
 		{
+			Name = "DropCautionaryChatMessage",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "confirmNumber", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetChannelInfoFromIdentifier",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -37,6 +47,7 @@ local ChatInfo =
 		{
 			Name = "GetChannelRosterInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -192,6 +203,25 @@ local ChatInfo =
 			},
 		},
 		{
+			Name = "IsLoggingChat",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsLoggingCombat",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+				{ Name = "advanced", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsPartyChannelType",
 			Type = "Function",
 
@@ -206,6 +236,20 @@ local ChatInfo =
 			},
 		},
 		{
+			Name = "IsTimerunningPlayer",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "playerGUID", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isTimerunning", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsValidChatLine",
 			Type = "Function",
 
@@ -217,6 +261,20 @@ local ChatInfo =
 			Returns =
 			{
 				{ Name = "isValid", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsValidCombatFilterName",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isApproved", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -275,6 +333,15 @@ local ChatInfo =
 			},
 		},
 		{
+			Name = "SendCautionaryChatMessage",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "confirmNumber", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "SwapChatChannelsByChannelIndex",
 			Type = "Function",
 
@@ -312,6 +379,25 @@ local ChatInfo =
 				{ Name = "text", Type = "cstring", Nilable = false },
 				{ Name = "channel", Type = "cstring", Nilable = false },
 				{ Name = "senderID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "CautionaryChannelMessage",
+			Type = "Event",
+			LiteralName = "CAUTIONARY_CHANNEL_MESSAGE",
+			Payload =
+			{
+				{ Name = "confirmNumber", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "CautionaryChatMessage",
+			Type = "Event",
+			LiteralName = "CAUTIONARY_CHAT_MESSAGE",
+			Payload =
+			{
+				{ Name = "chatLineID", Type = "number", Nilable = false },
+				{ Name = "confirmNumber", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -400,6 +486,16 @@ local ChatInfo =
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
 				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ChatLoggingChanged",
+			Type = "Event",
+			LiteralName = "CHAT_LOGGING_CHANGED",
+			Payload =
+			{
+				{ Name = "whichLog", Type = "number", Nilable = false },
+				{ Name = "isEnabled", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -2081,6 +2177,26 @@ local ChatInfo =
 			LiteralName = "CLEAR_BOSS_EMOTES",
 		},
 		{
+			Name = "DailyResetInstanceWelcome",
+			Type = "Event",
+			LiteralName = "DAILY_RESET_INSTANCE_WELCOME",
+			Payload =
+			{
+				{ Name = "mapname", Type = "cstring", Nilable = false },
+				{ Name = "timeLeft", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "InstanceResetWarning",
+			Type = "Event",
+			LiteralName = "INSTANCE_RESET_WARNING",
+			Payload =
+			{
+				{ Name = "warningMessage", Type = "cstring", Nilable = false },
+				{ Name = "timeLeft", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "LanguageListChanged",
 			Type = "Event",
 			LiteralName = "LANGUAGE_LIST_CHANGED",
@@ -2192,9 +2308,9 @@ local ChatInfo =
 		{
 			Name = "SendAddonMessageResult",
 			Type = "Enumeration",
-			NumValues = 10,
+			NumValues = 11,
 			MinValue = 0,
-			MaxValue = 9,
+			MaxValue = 10,
 			Fields =
 			{
 				{ Name = "Success", Type = "SendAddonMessageResult", EnumValue = 0 },
@@ -2207,6 +2323,7 @@ local ChatInfo =
 				{ Name = "InvalidChannel", Type = "SendAddonMessageResult", EnumValue = 7 },
 				{ Name = "ChannelThrottle", Type = "SendAddonMessageResult", EnumValue = 8 },
 				{ Name = "GeneralError", Type = "SendAddonMessageResult", EnumValue = 9 },
+				{ Name = "NotInGuild", Type = "SendAddonMessageResult", EnumValue = 10 },
 			},
 		},
 		{

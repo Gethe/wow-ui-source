@@ -2,7 +2,6 @@
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
 ## Dependencies: Blizzard_GameTooltip, Blizzard_UIPanelTemplates, Blizzard_FrameXML, Blizzard_ActionBar, Blizzard_TextStatusBar
-## SuppressLocalTableRef: 1
 ## LoadFirst: 1
 ## AllowLoad: game
 ## AllowLoadGameType: vanilla

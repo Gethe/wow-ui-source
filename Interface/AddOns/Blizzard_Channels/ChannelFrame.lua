@@ -27,7 +27,6 @@ do
 
 		self:RegisterEvent("MUTELIST_UPDATE");
 		self:RegisterEvent("IGNORELIST_UPDATE");
-		self:RegisterEvent("CHANNEL_FLAGS_UPDATED");
 		self:RegisterEvent("CHANNEL_COUNT_UPDATE");
 		self:RegisterEvent("CHANNEL_ROSTER_UPDATE");
 		self:RegisterEvent("VOICE_CHAT_LOGIN");
@@ -101,8 +100,6 @@ function ChannelFrameMixin:OnEvent(event, ...)
 		self:MarkDirty("UpdateRoster");
 	elseif event == "IGNORELIST_UPDATE" then
 		self:MarkDirty("UpdateRoster");
-	elseif event == "CHANNEL_FLAGS_UPDATED" then
-		self:GetList():UpdateDropdownForChannel(self:GetDropdown(), ...);
 	elseif event == "CHAT_MSG_CHANNEL_NOTICE_USER" then
 		local channelName = select(9, ...);
 		self:UpdateChannelByNameIfSelected(channelName);
@@ -173,15 +170,13 @@ function ChannelFrameMixin:GetRoster()
 	return self.ChannelRoster;
 end
 
-function ChannelFrameMixin:GetDropdown()
-	return self.Dropdown;
-end
-
 function ChannelFrameMixin:OnVoiceChannelJoined(statusCode, voiceChannelID, channelType, clubId, streamId)
 	if statusCode == Enum.VoiceChatStatusCode.Success then
 		if channelType == Enum.ChatChannelType.Communities then
 			-- For community channels, just set the voice channel on the channel button
 			local channelButton = self:GetList():GetButtonForCommunityStream(clubId, streamId);
+			self:GetList():SelectChannelByID(voiceChannelID); -- CLASS-37173: Forces us to update what players are in this channel
+			self:GetRoster():Update();
 			if channelButton then
 				channelButton:SetVoiceChannel(C_VoiceChat.GetChannel(voiceChannelID));
 			end
@@ -527,7 +522,7 @@ function ChannelFrameMixin:SetVoiceChannelActiveState(voiceChannelID, isActive)
 	self:UpdateVoiceChannelIfSelected(voiceChannelID);
 end
 
-function ChannelFrameMixin:OnCountUpdate(id, count)
+function ChannelFrameMixin:OnCountUpdate(id, _count)
 	local name, header, collapsed, channelNumber, count, active, category, channelType = GetChannelDisplayInfo(id);
 	if self:IsCategoryGroup(category) and count then
 		local channelButton = self:GetList():GetButtonForTextChannelID(id);

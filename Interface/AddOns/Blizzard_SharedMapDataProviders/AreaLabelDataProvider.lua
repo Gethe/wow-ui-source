@@ -66,7 +66,8 @@ function AreaLabelFrameMixin:OnUpdate()
 	self:ClearLabel(MAP_AREA_LABEL_TYPE.AREA_NAME);
 	local map = self.dataProvider:GetMap();
 	if map:IsCanvasMouseFocus() then
-		local name, description;
+		local name;
+		local description; -- luacheck: ignore 221 (variable 'description' is never set)
 		local mapID = map:GetMapID();
 		local normalizedCursorX, normalizedCursorY = map:GetNormalizedCursorPosition();
 		local positionMapInfo = C_Map.GetMapInfoAtPosition(mapID, normalizedCursorX, normalizedCursorY);		

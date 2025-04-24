@@ -86,47 +86,6 @@ StaticPopupDialogs["ERROR_CINEMATIC"] = {
 	button2 = nil,
 }
 
-StaticPopupDialogs["CONFIRM_RESET_VIDEO_SETTINGS"] = {
-	text = CONFIRM_RESET_SETTINGS,
-	button1 = ALL_SETTINGS,
-	button2 = CURRENT_SETTINGS,
-	button3 = CANCEL,
-	showAlert = 1,
-	OnAccept = function ()
-		VideoOptionsFrame_SetAllToDefaults();
-	end,
-	OnCancel = function ()
-		VideoOptionsFrame_SetCurrentToDefaults();
-	end,
-	escapeHides = true,
-}
-
-StaticPopupDialogs["RESET_SERVER_SETTINGS"] = {
-	text = RESET_SERVER_SETTINGS,
-	button1 = OKAY,
-	button2 = CANCEL,
-	OnAccept = function ()
-		GlueParent.ScreenFrame.OptionsResetFrame:Show();
-		-- Switch the reset settings button to cancel mode
-		VideoOptionsFrameReset:SetText(CANCEL_RESET);
-		VideoOptionsFrameReset:SetScript("OnClick", VideoOptionsFrameReset_OnClick_Cancel);
-		SetClearConfigData(true);
-	end,
-}
-
-StaticPopupDialogs["CANCEL_RESET_SETTINGS"] = {
-	text = CANCEL_RESET_SETTINGS,
-	button1 = OKAY,
-	button2 = CANCEL,
-	OnAccept = function ()
-		GlueParent.ScreenFrame.OptionsResetFrame:Hide();
-		-- Switch the reset settings button back to reset mode
-		VideoOptionsFrameReset:SetText(RESET_SETTINGS);
-		VideoOptionsFrameReset:SetScript("OnClick", VideoOptionsFrameReset_OnClick_Reset);
-		SetClearConfigData(false);
-	end,
-}
-
 StaticPopupDialogs["CLIENT_RESTART_ALERT"] = {
 	text = CLIENT_RESTART_ALERT,
 	button1 = OKAY,
@@ -355,6 +314,16 @@ StaticPopupDialogs["SUBSCRIPTION_CHANGED_KICK_WARNING"] = {
 	anchorOffsetY = 150,
 }
 
+StaticPopupDialogs["DOWNLOAD_HIGH_RES_TEXTURES"] = {
+    text = IsMacClient() and HD_TEXTURES_DLG_TEXT_MAC or HD_TEXTURES_DLG_TEXT,
+    button1 = IsMacClient() and HD_TEXTURES_DLG_ACCEPT_MAC or HD_TEXTURES_DLG_ACCEPT,
+    button2 = CANCEL,
+    escapeHides = true,
+	OnAccept = function()
+		C_BattleNet.InstallHighResTextures();
+	end,
+};
+
 StaticPopupDialogs["REALM_IS_LOCKED"] = {
 	text = CHAR_CREATE_ONLY_EXISTING,
 	button1 = CONTINUE,
@@ -363,6 +332,37 @@ StaticPopupDialogs["REALM_IS_LOCKED"] = {
 		RealmList_OnConnectToRealm();
 	end
 }
+
+function GlueDialog_EditBoxOnEnterPressed(self)
+	local EditBoxOnEnterPressed, which, dialog;
+	local parent = self:GetParent();
+	if ( parent.which ) then
+		which = parent.which;
+		dialog = parent;
+	elseif ( parent:GetParent().which ) then
+		-- This is needed if this is a money input frame since it's nested deeper than a normal edit box
+		which = parent:GetParent().which;
+		dialog = parent:GetParent();
+	end
+	EditBoxOnEnterPressed = StaticPopupDialogs[which].EditBoxOnEnterPressed;
+	if ( EditBoxOnEnterPressed ) then
+		EditBoxOnEnterPressed(self, dialog.data);
+	end
+end
+
+function GlueDialog_EditBoxOnEscapePressed(self)
+	local EditBoxOnEscapePressed = StaticPopupDialogs[self:GetParent().which].EditBoxOnEscapePressed;
+	if ( EditBoxOnEscapePressed ) then
+		EditBoxOnEscapePressed(self, self:GetParent().data);
+	end
+end
+
+function GlueDialog_EditBoxOnTextChanged(self, userInput)
+	local EditBoxOnTextChanged = StaticPopupDialogs[self:GetParent().which].EditBoxOnTextChanged;
+	if ( EditBoxOnTextChanged ) then
+		EditBoxOnTextChanged(self, self:GetParent().data);
+	end
+end
 
 function GlueDialog_Queue(which, text, data)
 	table.insert(QUEUED_GLUE_DIALOGS, {which = which, text = text, data = data});
@@ -689,6 +689,10 @@ function GlueDialog_OnLoad(self)
 	GlueDialogText.origWidth = GlueDialogText:GetWidth();
 	GlueDialogBackground.origWidth = GlueDialogBackground:GetWidth();
 	GlueDialogBackground.alertWidth = 600;
+end
+
+function GlueDialog_GetVisible()
+	return GlueDialog.which;
 end
 
 function GlueDialog_OnShow(self)

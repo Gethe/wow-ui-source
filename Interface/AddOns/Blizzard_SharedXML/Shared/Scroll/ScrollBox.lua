@@ -1,27 +1,3 @@
----------------
---NOTE - Please do not change this section without talking to the UI team
-local _, tbl = ...;
-if tbl then
-	tbl.SecureCapsuleGet = SecureCapsuleGet;
-
-	local function Import(name)
-		tbl[name] = tbl.SecureCapsuleGet(name);
-	end
-
-	Import("IsOnGlueScreen");
-
-	if ( tbl.IsOnGlueScreen() ) then
-		tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
-	end
-
-	setfenv(1, tbl);
-
-	Import("CopyValuesAsKeys");
-	Import("GenerateClosure");
-	Import("ApproximatelyEqual");
-	Import("WithinRangeExclusive");
-end
----------------
 
 -- Common event definitions as a work-around for derivation problems with CallbackRegistryMixin.
 BaseScrollBoxEvents =
@@ -206,6 +182,61 @@ function ScrollBoxBaseMixin:Layout()
 	end
 end
 
+function ScrollBoxBaseMixin:SetEdgeFadeLength(length)
+	-- Each length is the size of the alpha gradient to use when more data is available to be scrolled into view
+	-- Create the base vector assuming that the orientation is vertical and swap if not.
+	self.edgeFade = CreateVector2D(0, math.abs(length));
+	
+	if self:IsHorizontal() then
+		local y, x = self.edgeFade:GetXY(); -- swapped!!
+		self.edgeFade:SetXY(x, y); -- do the swap.
+	end
+end
+
+function ScrollBoxBaseMixin:HasEdgeFade()
+	return self.edgeFade ~= nil;
+end
+
+function ScrollBoxBaseMixin:ApplyEdgeFade(...)
+	if self:HasEdgeFade() then
+		for i = 1, select("#", ...) do
+			local strength = Saturate(select(i, ...));
+			self:SetAlphaGradient(i - 1, self.edgeFade:Clone():ScaleBy(strength));
+		end
+	end
+end
+
+function ScrollBoxBaseMixin:CalculateEdgeFade()
+	local firstStrength, secondStrength = 1, 1;
+	local offset = self:GetScrollPercentage();
+	if offset ~= nil then
+		if offset < 0.15 then
+			firstStrength = ClampedPercentageBetween(offset, 0, 0.15);
+		end
+
+		if offset > 0.85 then
+			secondStrength = 1 - ClampedPercentageBetween(offset, 0.85, 1);
+		end
+
+		return firstStrength, secondStrength;
+	end
+
+	return 0, 0;
+end
+
+function ScrollBoxBaseMixin:ClearEdgeFade()
+	self:ClearAlphaGradient();
+	self.edgeFade = nil;
+end
+
+function ScrollBoxBaseMixin:ShouldUseShadowsForEdgeFade()
+	return self.alwaysUseShadowsForEdgeFade or not self:HasEdgeFade();
+end
+
+function ScrollBoxBaseMixin:SetUseShadowsForEdgeFade(useShadows)
+	self.alwaysUseShadowsForEdgeFade = useShadows;
+end
+
 function ScrollBoxBaseMixin:SetScrollTargetOffset(offset)
 	local view = self:GetView();
 	if view then
@@ -220,11 +251,15 @@ function ScrollBoxBaseMixin:SetScrollTargetOffset(offset)
 
 		local scrollPercentage = self:GetScrollPercentage();
 		self:TriggerEvent(BaseScrollBoxEvents.OnScroll, scrollPercentage, self:GetVisibleExtentPercentage(), self:GetPanExtentPercentage());
-		
-		local hasScrollableExtent = self:HasScrollableExtent();
-		local showLower = hasScrollableExtent and (scrollPercentage > ScrollBoxConstants.ScrollBegin);
-		local showUpper = hasScrollableExtent and self:HasScrollableExtent() and (scrollPercentage < ScrollBoxConstants.ScrollEnd);
-		self:SetShadowsShown(showUpper, showLower);
+
+		if self:ShouldUseShadowsForEdgeFade() then
+			local hasScrollableExtent = self:HasScrollableExtent();
+			local showUpper = hasScrollableExtent and (scrollPercentage > ScrollBoxConstants.ScrollBegin);
+			local showLower = hasScrollableExtent and self:HasScrollableExtent() and (scrollPercentage < ScrollBoxConstants.ScrollEnd);
+			self:SetShadowsShown(showLower, showUpper);
+		end
+
+		self:ApplyEdgeFade(self:CalculateEdgeFade());
 	end
 end
 
@@ -301,7 +336,7 @@ end
 function ScrollBoxBaseMixin:ScrollToFrame(frame, alignment, noInterpolation)
 	local offset = self:SelectPointComponent(frame);
 	local frameExtent = self:GetFrameExtent(frame);
-	self:ScrollToOffset(offset, frameExtent, alignment, noInterpolation);
+	self:ScrollToOffsetWithAdjustment(offset, frameExtent, alignment, noInterpolation);
 end
 
 function ScrollBoxBaseMixin:CalculatePanExtentPercentage()
@@ -336,7 +371,9 @@ function ScrollBoxBaseMixin:SetScrollAllowed(allowScroll)
 end
 
 function ScrollBoxBaseMixin:GetDerivedScrollRange()
-	return math.max(0, self:GetDerivedExtent() - self:GetVisibleExtent());
+	local derivedExtent = self:GetDerivedExtent();
+	local visibleExtent = self:GetVisibleExtent();
+	return math.max(0, derivedExtent - visibleExtent);
 end
 
 function ScrollBoxBaseMixin:GetDerivedScrollOffset()
@@ -359,12 +396,16 @@ function ScrollBoxBaseMixin:SanitizeAlignment(alignment, extent)
 	return alignment and Saturate(alignment) or ScrollBoxConstants.AlignCenter;
 end
 
-function ScrollBoxBaseMixin:ScrollToOffset(offset, frameExtent, alignment, noInterpolation)
+function ScrollBoxBaseMixin:ScrollToOffsetWithAdjustment(offset, frameExtent, alignment, noInterpolation)
 	alignment = self:SanitizeAlignment(alignment, frameExtent);
 	local alignedOffset = offset + (frameExtent * alignment) - (self:GetVisibleExtent() * alignment);
+	self:ScrollToOffset(alignedOffset, noInterpolation);
+end
+
+function ScrollBoxBaseMixin:ScrollToOffset(offset, noInterpolation)
 	local scrollRange = self:GetDerivedScrollRange();
 	if scrollRange > 0 then
-		local scrollPercentage = alignedOffset / scrollRange;
+		local scrollPercentage = offset / scrollRange;
 		self:SetScrollPercentage(scrollPercentage, noInterpolation);
 	end
 end
@@ -495,6 +536,7 @@ ScrollBoxListMixin:GenerateCallbackEvents(
 		"OnReleasedFrame",
 		"OnDataRangeChanged",
 		"OnUpdate",
+		"OnDataProviderReassigned",
 	}
 );
 
@@ -516,6 +558,7 @@ function ScrollBoxListMixin:SetView(view)
 	ScrollBoxBaseMixin.SetView(self, view);
 
 	view:RegisterCallback(ScrollBoxListViewMixin.Event.OnDataChanged, self.OnViewDataChanged, self);
+	view:RegisterCallback(ScrollBoxListViewMixin.Event.OnDataProviderReassigned, self.OnViewDataProviderReassigned, self);
 	view:RegisterCallback(ScrollBoxListViewMixin.Event.OnAcquiredFrame, self.OnViewAcquiredFrame, self);
 	view:RegisterCallback(ScrollBoxListViewMixin.Event.OnInitializedFrame, self.OnViewInitializedFrame, self);
 	view:RegisterCallback(ScrollBoxListViewMixin.Event.OnReleasedFrame, self.OnViewReleasedFrame, self);
@@ -562,6 +605,14 @@ end
 
 function ScrollBoxListMixin:EnumerateDataProvider(indexBegin, indexEnd)
 	return self:GetView():EnumerateDataProvider(indexBegin, indexEnd);
+end
+
+function ScrollBoxListMixin:ReverseEnumerateDataProviderEntireRange()
+	return self:GetView():ReverseEnumerateDataProviderEntireRange();
+end
+
+function ScrollBoxListMixin:ReverseEnumerateDataProvider(indexBegin, indexEnd)
+	return self:GetView():ReverseEnumerateDataProvider(indexBegin, indexEnd);
 end
 
 function ScrollBoxListMixin:FindElementData(index)
@@ -663,6 +714,10 @@ function ScrollBoxListMixin:OnViewDataChanged()
 	self:FullUpdate(ScrollBoxConstants.UpdateImmediately);
 end
 
+function ScrollBoxListMixin:OnViewDataProviderReassigned()
+	self:TriggerEvent(ScrollBoxListMixin.Event.OnDataProviderReassigned);
+end
+
 function ScrollBoxListMixin:Rebuild(retainScrollPosition)
 	local view = self:GetView();
 	if view then
@@ -703,6 +758,10 @@ function ScrollBoxListMixin:Update(forceLayout)
 		return;
 	end
 
+	if not view:IsInitialized() then
+		return;
+	end
+	
 	self:SetUpdateLocked(true);
 
 	local changed = view:ValidateDataRange(self);
@@ -733,63 +792,78 @@ a collapsed tree node, either a bounds error or an incorrect scroll will happen.
 ScrollToElementData and ScrollToElementDataByPredicate to correctly scroll (and expand to) the desired element.
 ]]--
 
-function ScrollBoxListMixin:ScrollToNearest(dataIndex, noInterpolation)
-	self:ScrollToElementDataIndex(dataIndex, ScrollBoxConstants.AlignNearest, noInterpolation);
+function ScrollBoxListMixin:IsScrollToDataIndexSafe()
+	local view = self:GetView();
+	return view and view:IsScrollToDataIndexSafe();
 end
 
-function ScrollBoxListMixin:ScrollToNearestByPredicate(predicate, noInterpolation)
+function ScrollBoxListMixin:ScrollToNearest(dataIndex, offset, noInterpolation)
+	self:ScrollToElementDataIndex(dataIndex, ScrollBoxConstants.AlignNearest, offset, noInterpolation);
+end
+
+function ScrollBoxListMixin:ScrollToNearestByPredicate(predicate, offset, noInterpolation)
 	self:ScrollToElementDataByPredicate(predicate, ScrollBoxConstants.AlignNearest, noInterpolation);
 end
 
-function ScrollBoxListMixin:ScrollToElementDataIndex(dataIndex, alignment, noInterpolation)
-	alignment = alignment or ScrollBoxConstants.AlignCenter;
-
-	if alignment == ScrollBoxConstants.AlignNearest then
-		local scrollOffset = self:GetDerivedScrollOffset();
-		if self:GetExtentUntil(dataIndex) > (scrollOffset + self:GetVisibleExtent()) then
-			alignment = ScrollBoxConstants.AlignEnd;
-		elseif self:GetExtentUntil(dataIndex) < scrollOffset then
-			alignment = ScrollBoxConstants.AlignBegin;
-		else
-			-- Already in view
-			return;
-		end
-	end
-
-	local elementData = self:Find(dataIndex);
-	if elementData then
-		local extent = self:GetExtentUntil(dataIndex);
-		local elementExtent = self:GetElementExtent(dataIndex);
-		self:ScrollToOffset(extent, elementExtent, alignment, noInterpolation);
-		return elementData;
-	end
-end
-
-function ScrollBoxListMixin:ScrollToElementData(elementData, alignment, noInterpolation)
+function ScrollBoxListMixin:ScrollToElementDataIndex(dataIndex, alignment, offset, noInterpolation)
 	local view = self:GetView();
 	if not view then
 		return;
 	end
 
+	local elementData = self:Find(dataIndex);
+	if not elementData then
+		return nil;
+	end
+	
+	offset = offset or 0;
 	alignment = alignment or ScrollBoxConstants.AlignCenter;
 
-	-- Particular views may have preparatory steps before the scroll can occur. For instance,
-	-- tree view must expand each of the element's ancestor nodes before scroll box can find the
-	-- desired element. This can be overwritten by each view, but isn't generally necessary.
+	local extentUntil = self:GetExtentUntil(dataIndex);
+	local elementExtent = self:GetElementExtent(dataIndex);
+
+	if alignment == ScrollBoxConstants.AlignNearest then
+		local scrollOffset = self:GetDerivedScrollOffset();
+		if (extentUntil + elementExtent) > (scrollOffset + self:GetVisibleExtent()) then
+			alignment = ScrollBoxConstants.AlignEnd;
+		elseif extentUntil < scrollOffset then
+			alignment = ScrollBoxConstants.AlignBegin;
+		else
+			-- Already fully in view
+			return;
+		end
+	end
+
+	local extent = extentUntil - offset;
+	self:ScrollToOffsetWithAdjustment(extent, elementExtent, alignment, noInterpolation);
+	return elementData;
+end
+
+function ScrollBoxListMixin:ScrollToElementData(elementData, alignment, offset, noInterpolation)
+	local view = self:GetView();
+	if not view then
+		return;
+	end
+
+	offset = offset or 0;
+	alignment = alignment or ScrollBoxConstants.AlignCenter;
+
+	-- Tree view must expand each of the element's ancestor nodes in order for the desired element to be displayed. 
 	view:PrepareScrollToElementData(elementData);
 
 	local dataIndex = self:FindElementDataIndex(elementData);
 	if dataIndex then
-		return self:ScrollToElementDataIndex(dataIndex, alignment, noInterpolation);
+		return self:ScrollToElementDataIndex(dataIndex, alignment, offset, noInterpolation);
 	end
 end
 
-function ScrollBoxListMixin:ScrollToElementDataByPredicate(predicate, alignment, noInterpolation)
+function ScrollBoxListMixin:ScrollToElementDataByPredicate(predicate, alignment, offset, noInterpolation)
 	local view = self:GetView();
 	if not view then
 		return;
 	end
 	
+	offset = offset or 0;
 	alignment = alignment or ScrollBoxConstants.AlignCenter;
 
 	-- See comment adjacent to PrepareScrollToElementData above
@@ -797,7 +871,7 @@ function ScrollBoxListMixin:ScrollToElementDataByPredicate(predicate, alignment,
 
 	local dataIndex = self:FindElementDataIndexByPredicate(predicate);
 	if dataIndex then
-		return self:ScrollToElementDataIndex(dataIndex, alignment, noInterpolation);
+		return self:ScrollToElementDataIndex(dataIndex, alignment, offset, noInterpolation);
 	end
 end
 
@@ -834,13 +908,23 @@ function ScrollBoxMixin:Update(forceLayout)
 	if self:IsUpdateLocked() then
 		return;
 	end
-	self:SetUpdateLocked(true);
 
+	local view = self:GetView();
+	if not view then
+		return;
+	end
+
+	if not view:IsInitialized() then
+		return;
+	end
+
+	self:SetUpdateLocked(true);
+	
 	if forceLayout then
 		self:Layout();
 	end
 
-	self:SetScrollTargetOffset(self:GetDerivedScrollOffset());
+	self:SetScrollTargetOffset(self:GetDerivedScrollOffset() - view:GetDataScrollOffset(self));
 
 	self:SetUpdateLocked(false);
 end

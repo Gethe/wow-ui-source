@@ -45,6 +45,15 @@ local PaperDollInfo =
 			},
 		},
 		{
+			Name = "IsRangedSlotShown",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isShown", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "OffhandHasShield",
 			Type = "Function",
 
@@ -66,16 +75,6 @@ local PaperDollInfo =
 
 	Events =
 	{
-		{
-			Name = "ActiveTalentGroupChanged",
-			Type = "Event",
-			LiteralName = "ACTIVE_TALENT_GROUP_CHANGED",
-			Payload =
-			{
-				{ Name = "changedTo", Type = "number", Nilable = false },
-				{ Name = "changedFrom", Type = "number", Nilable = false },
-			},
-		},
 		{
 			Name = "CharacterPointsChanged",
 			Type = "Event",
@@ -152,11 +151,6 @@ local PaperDollInfo =
 				{ Name = "equipmentSlot", Type = "number", Nilable = false },
 				{ Name = "hasCurrent", Type = "bool", Nilable = false },
 			},
-		},
-		{
-			Name = "PlayerTalentUpdate",
-			Type = "Event",
-			LiteralName = "PLAYER_TALENT_UPDATE",
 		},
 		{
 			Name = "PreviewPetTalentPointsChanged",

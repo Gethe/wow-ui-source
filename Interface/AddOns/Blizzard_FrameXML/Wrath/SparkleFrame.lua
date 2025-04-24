@@ -128,9 +128,6 @@ end
 local cos = cos;
 local sin = sin;
 
-local cosTable = {};
-local sinTable = {};
-
 function Sparkle:RadialTranslate (elapsed)
 	-- Parameters for RadialTranslate:
 	-- relativePoint, radius, startDegree, stopDegree, duration
@@ -141,23 +138,6 @@ function Sparkle:RadialTranslate (elapsed)
 	local range = startDegree - stopDegree;
 	local position = self.elapsed/duration
 	local degree = math.floor(startDegree + (range * position));
-	
-	local xPos, yPos
-	local cosVal = cosTable[degree];
-	if ( cosVal ) then
-		xPos = offsetX + (radius * cosVal);
-	else
-		cosTable[degree] = cos(degree);
-		xPos = offsetX + (radius * cosTable[degree]);
-	end
-	
-	local sinVal = sinTable[degree];
-	if ( sinVal ) then
-		yPos = offsetY + (radius * sinVal);
-	else
-		sinTable[degree] = sin(degree);
-		yPos = offsetY + (radius + sinTable[degree]);
-	end
 	
 	local xPos = offsetX + (radius * cos(degree));
 	local yPos = offsetY + (radius * sin(degree));

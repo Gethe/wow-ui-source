@@ -263,8 +263,8 @@
 			<OnLoad inherit="prepend" function="GameTooltip_OnLoad"/>
 		</Scripts>
 	</Frame>
-	<Frame name="PartyMemberBackground" inherits="" parent="UIParent" frameStrata="LOW" enableMouse="true" hidden="true">
-				<KeyValues>
+	<Frame name="PartyMemberBackground" inherits="BackdropTemplate" parent="UIParent" frameStrata="LOW" enableMouse="true" hidden="true">
+		<KeyValues>
 			<KeyValue key="backdropInfo" value="BACKDROP_PARTY_32_32" type="global"/>
 		</KeyValues>
 		<Size>

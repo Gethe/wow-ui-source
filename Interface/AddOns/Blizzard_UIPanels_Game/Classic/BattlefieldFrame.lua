@@ -126,8 +126,8 @@ function BattlefieldFrame_Update()
 		-- Set queued status
 		buttonStatus:SetText("");
 		local queueStatus, queueMapName, queueInstanceID;
-		for i=1, MAX_BATTLEFIELD_QUEUES do
-			queueStatus, queueMapName, queueInstanceID = GetBattlefieldStatus(i);
+		for battlefieldIndex=1, MAX_BATTLEFIELD_QUEUES do
+			queueStatus, queueMapName, queueInstanceID = GetBattlefieldStatus(battlefieldIndex);
 			if ( queueStatus ~= "none" and queueMapName.." "..queueInstanceID == button.title ) then
 				if ( queueStatus == "queued" ) then
 					buttonStatus:SetText(BATTLEFIELD_QUEUE_STATUS);

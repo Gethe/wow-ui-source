@@ -1,9 +1,8 @@
 ## Title: Blizzard_GlueXMLBase
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_FontStyles_Glue, Blizzard_SharedXML
+## Dependencies: Blizzard_SharedXML
 ## LoadFirst: 1
-## SuppressLocalTableRef: 1
 ## AllowLoad: Glue
 ## AllowLoadGameType: wrath
 Wrath\Constants.lua

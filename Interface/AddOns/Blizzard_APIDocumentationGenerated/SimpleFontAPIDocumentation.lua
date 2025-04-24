@@ -56,6 +56,20 @@ local SimpleFontAPI =
 			},
 		},
 		{
+			Name = "GetFontObjectForAlphabet",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "alphabet", Type = "FontAlphabet", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "font", Type = "SimpleFont", Nilable = false },
+			},
+		},
+		{
 			Name = "GetIndentedWordWrap",
 			Type = "Function",
 
@@ -171,6 +185,15 @@ local SimpleFontAPI =
 				{ Name = "fontFile", Type = "cstring", Nilable = false },
 				{ Name = "height", Type = "uiFontHeight", Nilable = false },
 				{ Name = "flags", Type = "TBFFlags", Nilable = false },
+			},
+		},
+		{
+			Name = "SetFontHeight",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "height", Type = "number", Nilable = false },
 			},
 		},
 		{

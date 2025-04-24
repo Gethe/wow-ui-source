@@ -1,27 +1,3 @@
----------------
---NOTE - Please do not change this section without talking to Dan
-local _, tbl = ...;
-if tbl then
-	tbl.SecureCapsuleGet = SecureCapsuleGet;
-
-	local function Import(name)
-		tbl[name] = tbl.SecureCapsuleGet(name);
-	end
-
-	Import("IsOnGlueScreen");
-
-	if ( tbl.IsOnGlueScreen() ) then
-		tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
-	end
-
-	setfenv(1, tbl);
-
-	Import("ipairs");
-	Import("GetFinalNameFromTextureKit");
-	Import("C_Texture");
-	Import("Vector2DMixin");
-end
----------------
 
 --[[
 	Nine-slice utility for creating themed background frames without rewriting a lot of boilerplate code.
@@ -111,7 +87,10 @@ local function SetupPieceVisuals(piece, setupInfo, pieceLayout, textureKit, user
 	local info = C_Texture.GetAtlasInfo(atlasName);
 	piece:SetHorizTile(info and info.tilesHorizontally or false);
 	piece:SetVertTile(info and info.tilesVertically or false);
-	piece:SetAtlas(atlasName, true);
+
+	if info then
+		piece:SetAtlas(atlasName, true);
+	end
 end
 
 local function SetupCorner(container, piece, setupInfo, pieceLayout)

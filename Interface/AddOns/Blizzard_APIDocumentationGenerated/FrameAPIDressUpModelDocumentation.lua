@@ -41,6 +41,34 @@ local FrameAPIDressUpModel =
 			},
 		},
 		{
+			Name = "GetItemTransmogInfo",
+			Type = "Function",
+			MayReturnNothing = true,
+
+			Arguments =
+			{
+				{ Name = "inventorySlot", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemTransmogInfo", Type = "ItemTransmogInfo", Mixin = "ItemTransmogInfoMixin", Nilable = false },
+			},
+		},
+		{
+			Name = "GetItemTransmogInfoList",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "infoList", Type = "table", InnerType = "ItemTransmogInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetObeyHideInTransmogFlag",
 			Type = "Function",
 

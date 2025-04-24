@@ -45,7 +45,7 @@ ARENABANNER_SMALLFONT = "GameFontNormalSmall"
 
 
 function PVPFrame_ExpansionSpecificOnLoad(self)
-	PanelTemplates_SetNumTabs(self, 3)
+	PanelTemplates_SetNumTabs(self, 4)
 	PVPFrame_TabClicked(PVPFrameTab1);
 	SetPortraitToTexture(PVPFramePortrait,"Interface\\BattlefieldFrame\\UI-Battlefield-Icon");
 	
@@ -161,6 +161,8 @@ function PVPFrame_UpdateTabs()
 		PVPFrameTab2:Click();
 	elseif (selectedTab == 3) then
 		PVPFrameTab3:Click();
+	elseif (selectedTab == 4) then
+		PVPFrameTab4:Click();
 	end
 end
 
@@ -276,18 +278,14 @@ end
 
 ---- NEW PVP FRAME FUNCTIONS
 
-function PVPHonor_Update()
-	PVPFrame_UpdateCurrency(self);
-end
-
 function PVPFrame_UpdateCurrency(self)
 	local currencyID = PVPFrameCurrency.currencyID;
-	local currencyName, currencyAmount;
+	local currencyInfo;
 	if ( currencyID ) then
-		currencyName, currencyAmount = GetCurrencyInfo(currencyID);
+		currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyID);
 	end
 
-	if ( currencyName and (currencyAmount > 0)) then
+	if ( currencyInfo and currencyInfo.name and currencyInfo.quantity) then
 		-- show conquest bar?
 		if ( currencyID == Constants.CurrencyConsts.CONQUEST_POINTS_CURRENCY_ID ) then
 			PVPFrameCurrency:Hide();
@@ -299,9 +297,9 @@ function PVPFrame_UpdateCurrency(self)
 
 			local tier1Limit = arenaCurrencyInfo.maxQuantity;
 			local tier2Limit = bgCurrencyInfo.maxQuantity;
-			local tier1Quantity = arenaCurrencyInfo.quantity;
-			local tier2Quantity = bgCurrencyInfo.quantity;
-			local pointsThisWeek = conquestCurrencyInfo.quantity;
+			local tier1Quantity = arenaCurrencyInfo.totalEarned;
+			local tier2Quantity = bgCurrencyInfo.totalEarned;
+			local pointsThisWeek = conquestCurrencyInfo.totalEarned;
 			local maxPointsThisWeek = conquestCurrencyInfo.maxQuantity;
 
 			-- if BG limit is below arena, swap them
@@ -311,11 +309,11 @@ function PVPFrame_UpdateCurrency(self)
 			end
 
 			CapProgressBar_Update(PVPFrameConquestBar, tier1Quantity, tier1Limit, tier2Quantity, tier2Limit, pointsThisWeek, maxPointsThisWeek, false);
-			PVPFrameConquestBar.label:SetText(currencyName);
+			PVPFrameConquestBar.label:SetText(currencyInfo.name);
 		else
 			PVPFrameCurrency:Show();
 			PVPFrameConquestBar:Hide();
-			PVPFrameCurrencyValue:SetText(currencyAmount);
+			PVPFrameCurrencyValue:SetText(currencyInfo.quantity);
 		end
 	else
 		PVPFrameCurrency:Hide();
@@ -335,7 +333,7 @@ function PVPFrameConquestBar_OnEnter(self)
 	local bgCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CONQUEST_BG_META_CURRENCY_ID);
 	local arenaCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CONQUEST_ARENA_META_CURRENCY_ID);
 
-	local pointsThisWeek = conquestCurrencyInfo.quantity;
+	local pointsThisWeek = conquestCurrencyInfo.totalEarned;
 	local maxPointsThisWeek = conquestCurrencyInfo.maxQuantity;
 	
 	local r, g, b = 1, 1, 1;
@@ -352,14 +350,14 @@ function PVPFrameConquestBar_OnEnter(self)
 	else
 		r, g, b = 1, 1, 1;
 	end
-	GameTooltip:AddDoubleLine(" -"..FROM_RATEDBG, bgCurrencyInfo.quantity, r, g, b, r, g, b);	
+	GameTooltip:AddDoubleLine(" -"..FROM_RATEDBG, bgCurrencyInfo.totalEarned, r, g, b, r, g, b);	
 	
 	if ( capped ) then
 		r, g, b = 0.5, 0.5, 0.5;
 	else
 		r, g, b = 1, 1, 1;
 	end
-	GameTooltip:AddDoubleLine(" -"..FROM_ARENA, arenaCurrencyInfo.quantity, r, g, b, r, g, b);
+	GameTooltip:AddDoubleLine(" -"..FROM_ARENA, arenaCurrencyInfo.totalEarned, r, g, b, r, g, b);
 
 	GameTooltip:Show();
 end
@@ -394,7 +392,7 @@ function PVPFrame_TabClicked(self)
 	PVPFrameRightButton:Hide();
 	PVPFrame.panel1:Hide();	
 	PVPFrame.panel2:Hide();	
-	--PVPFrame.panel3:Hide();
+	PVPFrame.panel3:Hide();
 	PVPFrame.panel4:Hide();
 	
 	PVPFrame.lowLevelFrame:Hide();
@@ -416,7 +414,7 @@ function PVPFrame_TabClicked(self)
 		PVPFrameCurrencyLabel:SetText(HONOR);
 		PVPFrameCurrencyIcon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Honor-"..factionGroup);
 		PVPFrameCurrency.currencyID = Constants.CurrencyConsts.CLASSIC_HONOR_CURRENCY_ID;
-	elseif index == 3 then -- War games
+	elseif index == 4 then -- War games
 		PVPFrame.panel4:Show();
 		PVPFrame.TankIcon:Hide();
 		PVPFrame.HealerIcon:Hide();
@@ -445,6 +443,15 @@ function PVPFrame_TabClicked(self)
 		PVPFrameCurrencyLabel:SetText(PVP_CONQUEST);
 		PVPFrameCurrencyIcon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Conquest-"..factionGroup);
 		PVPFrameCurrency.currencyID = Constants.CurrencyConsts.CONQUEST_POINTS_CURRENCY_ID;
+	elseif index == 3 then -- Arena Management
+		PVPFrameLeftButton:Hide();
+		PVPFrameLeftButton:Disable();
+		PVPFrame.TankIcon:Hide();
+		PVPFrame.HealerIcon:Hide();
+		PVPFrame.DPSIcon:Hide();
+		PVPFrame.panel3:Show();	
+		PVPFrameArenaIcon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Conquest-"..factionGroup);
+		PVPFrameCurrency.currencyID = none;
 	end
 	
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
@@ -936,8 +943,39 @@ function PVPConquestFrame_ButtonClicked(button)
 end
 
 --  PVPTeamManagementFrame
-function PVPTeam_Update()
+function PVPTeamManagementFrame_ToggleSeasonal(self)	
+	if ( PVPFrame.seasonStats ) then
+		PVPFrame.seasonStats = nil;
+		PvP_WeeklyText:SetText(ARENA_WEEKLY_STATS);
+	else
+		PVPFrame.seasonStats = 1;
+		PvP_WeeklyText:SetText(ARENA_SEASON_STATS);
+	end
+	PVPTeam_Update();
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+end
 
+-- PVP Honor Data
+function PVPHonor_Update()
+	local hk, cp, dk, contribution, rank, highestRank, rankName, rankNumber;
+
+	-- Yesterday's values
+	hk = GetPVPYesterdayStats();
+	PVPHonorYesterdayKills:SetText(hk);
+
+	-- Lifetime values
+	hk =  GetPVPLifetimeStats();
+	PVPHonorLifetimeKills:SetText(hk);
+
+	local honorCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CLASSIC_HONOR_CURRENCY_ID);
+	PVPFrameHonorPoints:SetText(honorCurrencyInfo.quantity);
+
+	local arenaCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CONQUEST_POINTS_CURRENCY_ID);
+	PVPFrameArenaPoints:SetText(arenaCurrencyInfo.quantity)	
+	
+	-- Today's values
+	hk = GetPVPSessionStats();
+	PVPHonorTodayKills:SetText(hk);
 end
 
 ---- PVP PopUp Functions
@@ -1072,7 +1110,7 @@ function GetRandomBGHonorCurrencyBonuses()
 	local honorLoss,_,_, currencyRewardsLoss = C_PvP.GetRandomBGLossRewards();
 	local conquestWin, conquestLoss = 0, 0;
 
-	if (not (GetCurrentArenaSeason() == NO_ARENA_SEASON)) then 
+	if GetCurrentArenaSeason() ~= NO_ARENA_SEASON then 
 		if(currencyRewardsWin) then
 			for i, reward in ipairs(currencyRewardsWin) do
 				if reward.id == Constants.CurrencyConsts.CONQUEST_POINTS_CURRENCY_ID then
@@ -1098,7 +1136,7 @@ function GetHolidayBGHonorCurrencyBonuses()
 	local honorLoss,_,_, currencyRewardsLoss = C_PvP.GetHolidayBGLossRewards();
 	local conquestWin, conquestLoss = 0, 0;
 
-	if (not (GetCurrentArenaSeason() == NO_ARENA_SEASON)) then
+	if GetCurrentArenaSeason() ~= NO_ARENA_SEASON then
 		if(currencyRewardsWin) then
 			for i, reward in ipairs(currencyRewardsWin) do
 				if reward.id == Constants.CurrencyConsts.CONQUEST_POINTS_CURRENCY_ID then

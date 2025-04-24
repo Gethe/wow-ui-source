@@ -547,7 +547,8 @@
 		<Scripts>
 			<OnShow>
 				UpdateMicroButtonsParent(MainMenuBarArtFrame);
-				MoveMicroButtons("BOTTOMLEFT", MainMenuBarArtFrame, "BOTTOMLEFT", 552, 2, false);
+				local xOffSet = MICRO_BUTTONS_X_OFFSET or 0;
+				MoveMicroButtons("BOTTOMLEFT", MainMenuBarArtFrame, "BOTTOMLEFT", 552 + xOffSet, 2, false);
 			</OnShow>
 		</Scripts>
 	</Frame>

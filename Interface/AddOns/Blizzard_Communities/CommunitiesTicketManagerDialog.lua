@@ -26,6 +26,24 @@ local INVITE_MANAGER_COLUMN_INFO = {
 	},
 };
 
+local DEFAULT_EXPIRES_OPTION = 2;
+local EXPIRES_OPTIONS = {
+	10 * 60, -- 10 minutes
+	30 * 60, -- 30 minutes
+	1 * 60 * 60, -- 1 hour
+	24 * 60 * 60, -- 1 day
+	0, -- never
+};
+
+local DEFAULT_USES_OPTION = 3;
+local USES_OPTIONS = {
+	1,
+	10,
+	50,
+	100,
+	0, -- unlimited
+};
+
 function CommunitiesTicketManagerDialog_Open(clubId, streamId)
 	CommunitiesTicketManagerDialog:SetClubId(clubId);
 	CommunitiesTicketManagerDialog:SetStreamId(streamId);
@@ -75,74 +93,6 @@ function ClubTicketUtil.IsTicketExpired(ticket)
 	return ticket.expirationTime ~= 0 and ticket.expirationTime / 1000000 < GetServerTime()
 end
 
-local DEFAULT_USES_OPTION = 3;
-local USES_OPTIONS = {
-	1,
-	10,
-	50,
-	100,
-	0, -- unlimited
-};
-
-function CommunitiesTicketManagerDialogUsesDropDown_Initialize(self)
-	for i, option in ipairs(USES_OPTIONS) do
-		local info = UIDropDownMenu_CreateInfo();
-		local text = nil;
-		if option == 0 then
-			text = COMMUNITIES_INVITE_MANAGER_USES_UNLIMITED;
-		else
-			text = COMMUNITIES_INVITE_MANAGER_USES:format(option);
-		end
-		
-		info.text = text;
-		info.value = i;
-		info.func = function (button)
-			CommunitiesTicketManagerDialog:SetUses(option);
-			UIDropDownMenu_SetSelectedValue(self, button.value);
-		end;
-		
-		info.checked = function()
-			return CommunitiesTicketManagerDialog:GetUses() == option;
-		end;
-		
-		UIDropDownMenu_AddButton(info);
-	end
-end
-
-local DEFAULT_EXPIRES_OPTION = 2;
-local EXPIRES_OPTIONS = {
-	10 * 60, -- 10 minutes
-	30 * 60, -- 30 minutes
-	1 * 60 * 60, -- 1 hour
-	24 * 60 * 60, -- 1 day
-	0, -- never
-};
-
-function CommunitiesTicketManagerDialogExpiresDropDown_Initialize(self)
-	for i, option in ipairs(EXPIRES_OPTIONS) do
-		local info = UIDropDownMenu_CreateInfo();
-		local text = nil;
-		if option == 0 then
-			text = COMMUNITIES_INVITE_MANAGER_EXPIRES_NEVER;
-		else
-			text = SecondsToTime(option, true, true);
-		end
-		
-		info.text = text;
-		info.value = i;
-		info.func = function (button)
-			CommunitiesTicketManagerDialog:SetExpirationTime(option);
-			UIDropDownMenu_SetSelectedValue(self, button.value);
-		end;
-		
-		info.checked = function()
-			return CommunitiesTicketManagerDialog:GetExpirationTime() == option;
-		end;
-		
-		UIDropDownMenu_AddButton(info);
-	end
-end
-
 CommunitiesTicketEntryMixin = {};
 
 function CommunitiesTicketEntryMixin:OnUpdate()
@@ -164,7 +114,7 @@ function CommunitiesTicketEntryMixin:OnEnter()
 end
 
 function CommunitiesTicketEntryMixin:OnLeave()
-	if GetMouseFocus() ~= self.CopyLinkButton then
+	if not self.CopyLinkButton:IsMouseMotionFocus() then
 		self.CopyLinkButton:Hide();
 	end
 	
@@ -254,15 +204,49 @@ function CommunitiesTicketManagerDialogMixin:OnLoad()
 
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.InviteManager.ScrollBox, self.InviteManager.ScrollBar, view);
 
-	UIDropDownMenu_SetWidth(self.UsesDropDownMenu, 115);
-	self.UsesDropDownMenu.Text:SetJustifyH("LEFT");
-	UIDropDownMenu_Initialize(self.UsesDropDownMenu, CommunitiesTicketManagerDialogUsesDropDown_Initialize);
-	UIDropDownMenu_SetSelectedValue(self.UsesDropDownMenu, DEFAULT_USES_OPTION);
-	
-	UIDropDownMenu_SetWidth(self.ExpiresDropDownMenu, 115);
-	self.ExpiresDropDownMenu.Text:SetJustifyH("LEFT");
-	UIDropDownMenu_Initialize(self.ExpiresDropDownMenu, CommunitiesTicketManagerDialogExpiresDropDown_Initialize);
-	UIDropDownMenu_SetSelectedValue(self.ExpiresDropDownMenu, DEFAULT_EXPIRES_OPTION);
+	self.UsesDropdown:SetWidth(135);
+	self.ExpiresDropdown:SetWidth(135);
+
+	self:SetupUsesDropdown();
+	self:SetupExpiresDropdown();
+end
+
+function CommunitiesTicketManagerDialogMixin:SetupUsesDropdown()
+	local function IsSelected(option)
+		return CommunitiesTicketManagerDialog:GetUses() == option;
+	end
+
+	local function SetSelected(option)
+		CommunitiesTicketManagerDialog:SetUses(option);
+	end
+
+	self.UsesDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_COMMUNITIES_DIALOG_USES");
+
+		for index, option in ipairs(USES_OPTIONS) do
+			local text = (option == 0) and COMMUNITIES_INVITE_MANAGER_USES_UNLIMITED or COMMUNITIES_INVITE_MANAGER_USES:format(option);
+			rootDescription:CreateRadio(text, IsSelected, SetSelected, option);
+		end
+	end);
+end
+
+function CommunitiesTicketManagerDialogMixin:SetupExpiresDropdown()
+	local function IsSelected(option)
+		return CommunitiesTicketManagerDialog:GetExpirationTime() == option;
+	end
+
+	local function SetSelected(option)
+		CommunitiesTicketManagerDialog:SetExpirationTime(option);
+	end
+
+	self.ExpiresDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_COMMUNITIES_DIALOG_EXPIRES");
+
+		for index, option in ipairs(EXPIRES_OPTIONS) do
+			local text = (option == 0) and COMMUNITIES_INVITE_MANAGER_EXPIRES_NEVER or SecondsToTime(option, true, true);
+			rootDescription:CreateRadio(text, IsSelected, SetSelected, option);
+		end
+	end);
 end
 
 function CommunitiesTicketManagerDialogMixin:OnShow()
@@ -403,10 +387,10 @@ local PIECES_SHOWN_IN_EXPANDED_VIEW = {
 	Separator = true,
 	InviteManager = true,
 	NewLinkLabel = true,
-	ExpiresDropDownLabel = true,
-	ExpiresDropDownMenu = true,
-	UsesDropDownLabel = true,
-	UsesDropDownMenu = true,
+	ExpiresDropdownLabel = true,
+	ExpiresDropdown = true,
+	UsesDropdownLabel = true,
+	UsesDropdown = true,
 	GenerateLinkButton = true,
 };
 

@@ -2,13 +2,26 @@
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_WorldMapTemplates.lua"/>
 
-	<Frame name="WorldMapFloorNavigationFrameTemplate" frameStrata="HIGH" inherits="UIDropDownMenuTemplate" mixin="WorldMapFloorNavigationFrameMixin" virtual="true">
+	<DropdownButton name="WorldMapFloorNavigationFrameTemplate" frameStrata="HIGH" inherits="WowStyle1DropdownTemplate" mixin="WorldMapFloorNavigationFrameMixin" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString inherits="GameFontNormalSmall" text="FLOOR" parentKey="header">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="20" y="10"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 		</Scripts>
-	</Frame>
+	</DropdownButton>
 
-	<Button name="WorldMapTrackingOptionsButtonTemplate" frameStrata="HIGH" mixin="WorldMapTrackingOptionsButtonMixin" virtual="true">
+	<DropdownButton name="WorldMapTrackingOptionsButtonTemplate" frameStrata="HIGH" mixin="WorldMapTrackingOptionsButtonMixin" virtual="true">
 		<Size x="32" y="32"/>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-1">
@@ -54,17 +67,12 @@
 				</Texture>
 			</Layer>
 		</Layers>
-		<Frames>
-			<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate" clampedToScreen="true" hidden="true"/>
-		</Frames>
 		<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnClick method="OnClick"/>
 			<OnMouseDown method="OnMouseDown"/>
 			<OnMouseUp method="OnMouseUp"/>
 		</Scripts>
-	</Button>
+	</DropdownButton>
 
 	<Frame name="WorldMapNavBarButtonTemplate" inherits="NavButtonTemplate" mixin="WorldMapNavBarButtonMixin" virtual="true"/>
 

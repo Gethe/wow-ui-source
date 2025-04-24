@@ -52,7 +52,7 @@ function CommentatorMixin:OnLoad()
 	
 	local resetterCb = function(pool, frame)
 		frame:Reset();
-		FramePool_HideAndClearAnchors(pool, frame);
+		Pool_HideAndClearAnchors(pool, frame);
 	end;
 
 	self.unitFramePool = CreateFramePool("BUTTON", self, "CommentatorUnitFrameTemplate", resetterCb);

@@ -42,7 +42,7 @@ function SpellFlyoutButton_UpdateCooldown(self)
 end
 
 function SpellFlyoutButton_UpdateState(self)
-	if ( IsCurrentSpell(self.spellID) ) then
+	if ( C_Spell.IsCurrentSpell(self.spellID) ) then
 		self:SetChecked(1);
 	else
 		self:SetChecked(nil);
@@ -50,7 +50,7 @@ function SpellFlyoutButton_UpdateState(self)
 end
 
 function SpellFlyoutButton_UpdateUsable(self)
-	local isUsable, notEnoughtMana = IsUsableSpell(self.spellID);
+	local isUsable, notEnoughMana = C_Spell.IsSpellUsable(self.spellID);
 	local name = self:GetName();
 	local icon = _G[name.."Icon"];
 	if ( isUsable or not self:GetParent().isActionBar) then
@@ -66,7 +66,7 @@ function SpellFlyoutButton_UpdateCount (self)
 	local text = _G[self:GetName().."Count"];
 
 	if ( IsConsumableSpell(self.spellID)) then
-		local count = GetSpellCount(self.spellID);
+		local count = C_Spell.GetSpellCastCount(self.spellID);
 		if ( count > (self.maxDisplayCount or 9999 ) ) then
 			text:SetText("*");
 		else
@@ -165,7 +165,7 @@ function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActio
 	local prevButton = nil;
 	local numButtons = 0;
 	for i=1, numSlots do
-		local spellID, overrideSpellID, isKnown, spellName = GetFlyoutSlotInfo(flyoutID, i);
+		local spellID, overrideSpellID, isKnownSlot, spellName = GetFlyoutSlotInfo(flyoutID, i);
 		local visible = true;
 		
 		-- Ignore Call Pet spells if there isn't a pet in that slot
@@ -174,7 +174,7 @@ function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActio
 			visible = false;
 		end
 		
-		if (isKnown and visible) then
+		if (isKnownSlot and visible) then
 			local button = _G["SpellFlyoutButton"..numButtons+1];
 			if (not button) then
 				button = CreateFrame("CHECKBUTTON", "SpellFlyoutButton"..numButtons+1, SpellFlyout, "SpellFlyoutButtonTemplate");

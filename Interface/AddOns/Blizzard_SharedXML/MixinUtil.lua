@@ -350,3 +350,26 @@ function DirtiableMixin:MarkDirty()
 
 	self.dirty = true;
 end
+
+MixinUtil = {};
+
+-- Calls an owned function on each entry of a table of mixin instances, checking that the instance does define that function
+function MixinUtil.CallMethodOnAllSafe(instances, methodName, ...)
+	if not instances then
+		return;
+	end
+
+	for _, instance in ipairs(instances) do
+		if instance[methodName] then
+			instance[methodName](instance, ...);
+		end
+	end
+end
+
+-- Check existence of an element, then invoke the provided method by name with its arguments if it exists.
+-- e.g. frame.Text:SetText("text") -> CallMethodSafe(frame.Text, "SetText", "text");
+function MixinUtil.CallMethodSafe(element, methodName, ...)
+	if element then
+		element[methodName](element, ...);
+	end
+end

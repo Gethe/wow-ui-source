@@ -17,12 +17,6 @@
 	<Frame name="CreditsFrame" toplevel="true" parent="GlueParent" setAllPoints="true" enableKeyboard="true" hidden="true">
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture parentKey="CreditsLogo" file="Interface\Glues\Common\Glues-WoW-MPLogo">
-					<Size x="256" y="128"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="3" y="-7"/>
-					</Anchors>
-				</Texture>
 				<Texture name="CreditsArt1">
 					<Size x="256" y="256"/>
 					<Anchors>
@@ -282,6 +276,12 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="GameLogo" inherits="GlueGameLogoTemplate">
+				<Size x="256" y="128"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="3" y="-7"/>
+				</Anchors>
+			</Frame>
 			<ScrollFrame name="CreditsScrollFrame">
 				<Size x="250" y="740"/>
 				<Anchors>

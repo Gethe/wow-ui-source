@@ -40,13 +40,32 @@ function EventUtil.ContinueAfterAllEvents(callback, ...)
 	obj:Init(callback, ...);
 end
 
+function EventUtil.AreVariablesLoaded()
+	return GlueParent or (UIParent and UIParent.variablesLoaded);
+end
+
+local eventUtilVariablesLoadedCallbacks = {};
 function EventUtil.ContinueOnVariablesLoaded(callback)
-	if GlueParent or (UIParent and UIParent.variablesLoaded) then
+	if EventUtil.AreVariablesLoaded() then
 		callback();
 		return;
 	end
 
-	EventUtil.ContinueAfterAllEvents(callback, "VARIABLES_LOADED");
+	table.insert(eventUtilVariablesLoadedCallbacks, callback);
+end
+
+local secureexecuterange = secureexecuterange;
+local eventUtilContinueOnVariablesLoadedTriggered = false;
+function EventUtil.TriggerOnVariablesLoaded()
+	if eventUtilContinueOnVariablesLoadedTriggered then
+		-- If TriggerOnVariablesLoaded has been called once already, don't do anything further.
+    	return;
+	end
+	eventUtilContinueOnVariablesLoadedTriggered = true;
+
+	secureexecuterange(eventUtilVariablesLoadedCallbacks, function(_, callback)
+		callback();
+	end);
 end
 
 function EventUtil.ContinueOnAddOnLoaded(addOnName, callback)
@@ -57,6 +76,15 @@ function EventUtil.ContinueOnAddOnLoaded(addOnName, callback)
 	end
 
 	EventUtil.RegisterOnceFrameEventAndCallback("ADDON_LOADED", callback, addOnName);
+end
+
+function EventUtil.ContinueOnPlayerLogin(callback)
+	if IsLoggedIn() then
+		callback();
+		return;
+	end
+
+	EventUtil.RegisterOnceFrameEventAndCallback("PLAYER_LOGIN", callback);
 end
 
 -- ... are optional event arguments that are required to match before the callback is invoked.

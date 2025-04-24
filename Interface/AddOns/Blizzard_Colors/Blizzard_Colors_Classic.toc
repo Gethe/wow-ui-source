@@ -1,0 +1,6 @@
+## Title: Blizzard_Colors
+## Author: Blizzard Entertainment
+## AllowLoad: Game
+## AllowLoadGameType: classic
+## Dependencies: Blizzard_SharedXMLBase, Blizzard_FrameXML, Blizzard_UIParent
+Classic\ColorManager.lua

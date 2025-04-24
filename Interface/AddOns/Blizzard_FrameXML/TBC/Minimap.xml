@@ -255,15 +255,6 @@
 								</Texture>
 							</Layer>
 						</Layers>
-						<Frames>
-							<Frame name="MiniMapBattlefieldDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
-								<Scripts>
-									<OnLoad>
-										MiniMapBattlefieldDropDown_OnLoad(self);
-									</OnLoad>
-								</Scripts>
-							</Frame>
-						</Frames>
 						<Scripts>
 							<OnLoad>
 								self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
@@ -287,22 +278,7 @@
 							<OnLeave>
 								GameTooltip:Hide();
 							</OnLeave>
-							<OnClick>
-								-- Hide tooltip
-								if ( MiniMapBattlefieldFrame.status == "active") then
-									GameTooltip:Hide();
-									if ( button == "RightButton" ) then
-										ToggleDropDownMenu(1, nil, MiniMapBattlefieldDropDown, "MiniMapBattlefieldFrame", 10, -5);
-									elseif ( IsShiftKeyDown() ) then
-										ToggleBattlefieldMap();
-									else
-										ToggleWorldStateScoreFrame();
-									end
-								elseif ( button == "RightButton" ) then
-									GameTooltip:Hide();
-									ToggleDropDownMenu(1, nil, MiniMapBattlefieldDropDown, "MiniMapBattlefieldFrame", 10, -5);
-								end
-							</OnClick>
+							<OnClick function="MiniMapBattlefieldFrame_OnClick"/>
 						</Scripts>
 					</Button>
 					<Frame name="MinimapBackdrop">
@@ -405,7 +381,7 @@
 								</PushedTexture>
 								<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
 							</Button>
-							<Button name="MiniMapTracking" enableMouse="true">
+							<Frame name="MiniMapTracking">
 								<Size x="33" y="33"/>
 								<Anchors>
 									<Anchor point="TOPLEFT">
@@ -455,42 +431,49 @@
 										</Texture>
 									</Layer>
 								</Layers>
-								<Scripts>
-									<OnLoad>
-										self:RegisterEvent("MINIMAP_UPDATE_TRACKING");
-										MiniMapTracking_Update();
-										MiniMapTrackingBackground:SetAlpha(0.6);
-									</OnLoad>
-									<OnEvent>
-										if ( event == "MINIMAP_UPDATE_TRACKING" ) then
-											MiniMapTracking_Update();
-										end
-									</OnEvent>
-									<OnMouseUp>
-										if ( GameTooltip:GetOwner() == this ) then
-											GameTooltip:Hide();
-										end
-										ToggleDropDownMenu(1, nil, MiniMapTrackingDropDown, "MiniMapTracking", 0, -5);
-									</OnMouseUp>
-									<OnEnter>
-										GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-										GameTooltip:SetText(TRACKING, 1, 1, 1);
-										GameTooltip:AddLine(MINIMAP_TRACKING_TOOLTIP_NONE, nil, nil, nil, true);
-										GameTooltip:Show();
-									</OnEnter>
-									<OnLeave>
-										GameTooltip:Hide();
-									</OnLeave>
-								</Scripts>
 								<Frames>
-									<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" clampedToScreen="true" id="1" hidden="true">
+									<DropdownButton name="$parentButton" mixin="MiniMapTrackingButtonMixin">
+										<Size x="32" y="32"/>
+										<Anchors>
+											<Anchor point="TOPLEFT"/>
+										</Anchors>
+										<Layers>
+											<Layer level="BORDER">
+												<Texture name="$parentBorder" file="Interface\Minimap\MiniMap-TrackingBorder">
+													<Size x="54" y="54"/>
+													<Anchors>
+														<Anchor point="TOPLEFT"/>
+													</Anchors>
+												</Texture>
+											</Layer>
+											<Layer level="OVERLAY">
+												<Texture name="$parentShine" file="Interface\ComboFrame\ComboPoint" alphaMode="ADD" hidden="true">
+													<Size x="27" y="27"/>
+													<Anchors>
+														<Anchor point="TOPLEFT">
+															<Offset x="2" y="-2"/>
+														</Anchor>
+													</Anchors>
+													<TexCoords left="0.5625" right="1" top="0" bottom="1"/>
+												</Texture>
+											</Layer>
+										</Layers>
 										<Scripts>
-											<OnLoad function="MiniMapTrackingDropDown_OnLoad"/>
-											<OnEvent function="MiniMapTrackingDropDown_OnEvent"/>
+											<OnLoad method="OnLoad"/>
+											<OnEvent method="OnEvent"/>
+											<OnEnter method="OnEnter"/>
+											<OnLeave method="OnLeave"/>
 										</Scripts>
-									</Frame>
+										<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
+									</DropdownButton>
 								</Frames>
-							</Button>
+								<Scripts>
+									<OnLoad method="OnLoad"/>
+									<OnEvent method="OnEvent"/>
+									<OnEnter method="OnEnter"/>
+									<OnLeave method="OnLeave"/>
+								</Scripts>
+							</Frame>
 							<Button name="MiniMapLFGFrame" hidden="true" inherits="MiniMapButtonTemplate">
 								<Size>
 									<AbsDimension x="33" y="33"/>
@@ -525,40 +508,13 @@
 											<Anchor point="CENTER"/>
 										</Anchors>
 									</Frame>
-									<Frame name="MiniMapLFGDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
-										<Scripts>
-											<OnLoad>
-												MiniMapLFGDropDown_OnLoad(self);
-											</OnLoad>
-										</Scripts>
-									</Frame>
 								</Frames>
 								<Scripts>
-									<OnLoad>
-										self:RegisterEvent("LFG_LIST_ACTIVE_ENTRY_UPDATE");
-										self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-										self:SetFrameLevel(self:GetFrameLevel()+1)
-									</OnLoad>
-									<OnClick>
-										if ( button == "RightButton" ) then
-											ToggleDropDownMenu(1, nil, MiniMapLFGDropDown, "MiniMapLFGFrame", 10, -5);
-										else
-											PVEFrame_ToggleFrame();
-										end
-									</OnClick>
-									<OnEvent>
-										if ( event == "LFG_LIST_ACTIVE_ENTRY_UPDATE" ) then
-											if ( C_LFGList.HasActiveEntryInfo() ) then
-												self:Show();
-											else
-												self:Hide();
-											end
-										end
-									</OnEvent>
+									<OnLoad function="MiniMapLFGFrame_OnLoad"/>
+									<OnClick function="MiniMapLFGFrame_OnClick"/>
+									<OnEvent function="MiniMapLFGFrame_OnEvent"/>
 									<OnEnter function="MiniMapLFGFrame_OnEnter"/>
-									<OnLeave>
-										GameTooltip:Hide();
-									</OnLeave>
+									<OnLeave function="MiniMapLFGFrame_OnLeave"/>
 								</Scripts>						
 								<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
 							</Button>	

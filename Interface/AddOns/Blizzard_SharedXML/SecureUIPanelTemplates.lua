@@ -1,35 +1,4 @@
 
----------------
---NOTE - Please do not change this section without understanding the full implications of the secure environment
---We usually don't want to call out of this environment from this file. Calls should usually go through Outbound
-local _, tbl = ...;
-
-if tbl then
-	tbl.SecureCapsuleGet = SecureCapsuleGet;
-
-	local function Import(name)
-		tbl[name] = tbl.SecureCapsuleGet(name);
-	end
-
-	Import("IsOnGlueScreen");
-
-	if ( tbl.IsOnGlueScreen() ) then
-		tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
-		Import("C_StoreGlue");
-	end
-
-	setfenv(1, tbl);
-
-	Import("math");
-	Import("PlaySound");
-	Import("SOUNDKIT");
-	Import("SCROLL_FRAME_SCROLL_BAR_TEMPLATE");
-	Import("SCROLL_FRAME_SCROLL_BAR_OFFSET_LEFT");
-	Import("SCROLL_FRAME_SCROLL_BAR_OFFSET_TOP");
-	Import("SCROLL_FRAME_SCROLL_BAR_OFFSET_BOTTOM");
-end
-----------------
-
 function EditBox_OnTabPressed(self)
 	if ( self.previousEditBox and IsShiftKeyDown() ) then
 		self.previousEditBox:SetFocus();
@@ -110,7 +79,7 @@ end
 -- mouse to highlight those partially-seen lines; otherwise you won't be able to use the mouse to move the
 -- cursor above or below the current scroll area of the edit box.
 function ScrollingEdit_OnUpdate(self, elapsed, scrollFrame)
-	local height, range, scroll, size, cursorOffset;
+	local height, range, scroll, cursorOffset;
 	if ( self.handleCursorChange ) then
 		if ( not scrollFrame ) then
 			scrollFrame = self:GetParent();
@@ -118,7 +87,6 @@ function ScrollingEdit_OnUpdate(self, elapsed, scrollFrame)
 		height = scrollFrame:GetHeight();
 		range = scrollFrame:GetVerticalScrollRange();
 		scroll = scrollFrame:GetVerticalScroll();
-		size = height + range;
 		cursorOffset = -self.cursorOffset;
 
 		if ( math.floor(height) <= 0 or math.floor(range) <= 0 ) then

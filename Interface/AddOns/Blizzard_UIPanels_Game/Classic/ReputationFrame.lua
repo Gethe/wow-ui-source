@@ -17,6 +17,7 @@ MAX_PLAYER_LEVEL_TABLE[0] = 60;
 MAX_PLAYER_LEVEL_TABLE[1] = 70;
 MAX_PLAYER_LEVEL_TABLE[2] = 80;
 MAX_PLAYER_LEVEL_TABLE[3] = 85;
+MAX_PLAYER_LEVEL_TABLE[4] = 90;
 MAX_PLAYER_LEVEL = 0;
 REPUTATIONFRAME_ROWSPACING = 23;
 
@@ -41,7 +42,7 @@ end
 function ReputationFrame_Update()
 	local numFactions = GetNumFactions();
 	local factionIndex, factionRow, factionTitle, factionStanding, factionBar, factionButton, factionLeftLine, factionBottomLine, factionBackground, color, tooltipStanding;
-	local name, description, standingID, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed, hasRep, isWatched, isChild;
+	local name, description, standingID, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed, hasRep, isWatched, isChild, factionID;
 	local atWarIndicator, rightBarTexture;
 
 	local previousBigTexture = ReputationFrameTopTreeTexture;	--In case we have a line going off the panel to the top
@@ -57,8 +58,6 @@ function ReputationFrame_Update()
 
 	local gender = UnitSex("player");
 	
-	local i;
-	
 	local offScreenFudgeFactor = 5;
 	local previousBigTextureRows = 0;
 	local previousBigTextureRows2 = 0;
@@ -73,7 +72,7 @@ function ReputationFrame_Update()
 		factionStanding = _G["ReputationBar"..i.."ReputationBarFactionStanding"];
 		factionBackground = _G["ReputationBar"..i.."Background"];
 		if ( factionIndex <= numFactions ) then
-			name, description, standingID, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed, hasRep, isWatched, isChild = GetFactionInfo(factionIndex);
+			name, description, standingID, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed, hasRep, isWatched, isChild, factionID = GetFactionInfo(factionIndex);
 			factionTitle:SetText(name);
 			if ( isCollapsed ) then
 				factionButton:SetNormalTexture("Interface\\Buttons\\UI-PlusButton-Up");
@@ -82,8 +81,29 @@ function ReputationFrame_Update()
 			end
 			factionRow.index = factionIndex;
 			factionRow.isCollapsed = isCollapsed;
-			local factionStandingtext = GetText("FACTION_STANDING_LABEL"..standingID, gender);
-			factionStanding:SetText(factionStandingtext);
+
+			local colorIndex = standingID;
+			local factionStandingtext;
+
+			-- check if this is a friendship faction 
+			local isCappedFriendship;
+			local repInfo = C_GossipInfo.GetFriendshipReputation(factionID);
+			
+			if (repInfo.friendshipFactionID > 0) then
+				factionStandingtext = repInfo.reaction;
+				if ( repInfo.nextThreshold ) then
+					barMin, barMax, barValue = repInfo.reactionThreshold, repInfo.nextThreshold, repInfo.standing;
+				else
+					-- max rank, make it look like a full bar
+					barMin, barMax, barValue = 0, 1, 1;
+					isCappedFriendship = true;
+				end
+				colorIndex = 5; -- always color friendships green
+				factionRow.friendshipID = repInfo.friendshipFactionID; -- for doing friendship tooltip
+			else
+				factionStandingtext = GetText("FACTION_STANDING_LABEL"..standingID, gender);
+				factionRow.friendshipID = nil;
+			end
 
 			--Normalize Values
 			barMax = barMax - barMin;
@@ -91,10 +111,15 @@ function ReputationFrame_Update()
 			barMin = 0;
 			
 			factionRow.standingText = factionStandingtext;
-			factionRow.tooltip = HIGHLIGHT_FONT_COLOR_CODE.." "..barValue.." / "..barMax..FONT_COLOR_CODE_CLOSE;
+			factionStanding:SetText(factionStandingtext);
+			if ( isCappedFriendship ) then
+				factionRow.tooltip = nil;
+			else
+				factionRow.tooltip = HIGHLIGHT_FONT_COLOR_CODE.." "..barValue.." / "..barMax..FONT_COLOR_CODE_CLOSE;
+			end
 			factionBar:SetMinMaxValues(0, barMax);
 			factionBar:SetValue(barValue);
-			local color = FACTION_BAR_COLORS[standingID];
+			color = FACTION_BAR_COLORS[colorIndex];
 			factionBar:SetStatusBarColor(color.r, color.g, color.b);
 			
 			if ( isHeader and not isChild ) then
@@ -148,33 +173,33 @@ function ReputationFrame_Update()
 					ReputationDetailFactionName:SetText(name);
 					ReputationDetailFactionDescription:SetText(description);
 					if ( atWarWith ) then
-						ReputationDetailAtWarCheckBox:SetChecked(1);
+						ReputationDetailAtWarCheckbox:SetChecked(1);
 					else
-						ReputationDetailAtWarCheckBox:SetChecked(nil);
+						ReputationDetailAtWarCheckbox:SetChecked(nil);
 					end
 					if ( canToggleAtWar and (not isHeader)) then
-						ReputationDetailAtWarCheckBox:Enable();
-						ReputationDetailAtWarCheckBoxText:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+						ReputationDetailAtWarCheckbox:Enable();
+						ReputationDetailAtWarCheckboxText:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 					else
-						ReputationDetailAtWarCheckBox:Disable();
-						ReputationDetailAtWarCheckBoxText:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+						ReputationDetailAtWarCheckbox:Disable();
+						ReputationDetailAtWarCheckboxText:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 					end
 					if ( not isHeader ) then
-						ReputationDetailInactiveCheckBox:Enable();
-						ReputationDetailInactiveCheckBoxText:SetTextColor(ReputationDetailInactiveCheckBoxText:GetFontObject():GetTextColor());
+						ReputationDetailInactiveCheckbox:Enable();
+						ReputationDetailInactiveCheckboxText:SetTextColor(ReputationDetailInactiveCheckboxText:GetFontObject():GetTextColor());
 					else
-						ReputationDetailInactiveCheckBox:Disable();
-						ReputationDetailInactiveCheckBoxText:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+						ReputationDetailInactiveCheckbox:Disable();
+						ReputationDetailInactiveCheckboxText:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 					end
 					if ( IsFactionInactive(factionIndex) ) then
-						ReputationDetailInactiveCheckBox:SetChecked(1);
+						ReputationDetailInactiveCheckbox:SetChecked(1);
 					else
-						ReputationDetailInactiveCheckBox:SetChecked(nil);
+						ReputationDetailInactiveCheckbox:SetChecked(nil);
 					end
 					if ( isWatched ) then
-						ReputationDetailMainScreenCheckBox:SetChecked(1);
+						ReputationDetailMainScreenCheckbox:SetChecked(1);
 					else
-						ReputationDetailMainScreenCheckBox:SetChecked(nil);
+						ReputationDetailMainScreenCheckbox:SetChecked(nil);
 					end
 					_G["ReputationBar"..i.."ReputationBarHighlight1"]:Show();
 					_G["ReputationBar"..i.."ReputationBarHighlight2"]:Show();
@@ -191,9 +216,8 @@ function ReputationFrame_Update()
 		ReputationDetailFrame:Hide();
 	end
 	
-	local i = NUM_
 	for i = (NUM_FACTIONS_DISPLAYED + factionOffset + 1), numFactions, 1 do
-		local name, description, standingID, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed, hasRep, isWatched, isChild  = GetFactionInfo(i);
+		name, description, standingID, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed, hasRep, isWatched, isChild  = GetFactionInfo(i);
 		if not name then break; end
 		
 		if ( isHeader and not isChild ) then

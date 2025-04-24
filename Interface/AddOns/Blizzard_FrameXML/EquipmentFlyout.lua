@@ -327,6 +327,9 @@ function EquipmentFlyout_UpdateItems()
 		numItemButtons = EQUIPMENTFLYOUT_ITEMS_PER_PAGE;
 	end
 	
+	-- A Flyout without a parent won't scale correctly.
+	assertsafe(flyoutSettings.parent, "Flyout must have a parent.");
+
 	flyout:SetParent(flyoutSettings.parent);
 	flyout:SetFrameStrata("HIGH");
 	flyout:ClearAllPoints();
@@ -598,7 +601,7 @@ end
 
 function EquipmentFlyoutPopoutButton_HideAll()
 	local flyout = EquipmentFlyoutFrame;
-	if ( flyout.button and flyout.button.popoutButton.flyoutLocked ) then
+	if ( flyout.button and flyout.button.popoutButton and flyout.button.popoutButton.flyoutLocked ) then
 		flyout:Hide();
 	end
 	for _, button in pairs(popoutButtons) do

@@ -110,11 +110,11 @@
 				<HighlightFont style="GameFontHighlightSmall"/>
 				<DisabledFont style="GameFontDisableSmall"/>
 			</Button>
-			<Frame parentKey="RankDropdown" inherits="UIDropDownMenuTemplate">
+			<DropdownButton parentKey="RankDropdown" inherits="WowStyle1DropdownTemplate">
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.RankLabel" relativePoint="RIGHT" x="-16" y="-3"/>
+					<Anchor point="LEFT" relativeKey="$parent.RankLabel" relativePoint="RIGHT" x="10" y="0"/>
 				</Anchors>
-			</Frame>
+			</DropdownButton>
 			<Frame parentKey="NoteBackground" enableMouse="true" inherits="TooltipBackdropTemplate">
 				<Size x="181" y="40"/>
 				<Anchors>

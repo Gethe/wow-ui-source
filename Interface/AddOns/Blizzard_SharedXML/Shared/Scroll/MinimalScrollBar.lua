@@ -1,28 +1,3 @@
----------------
---NOTE - Please do not change this section without understanding the full implications of the secure environment
---We usually don't want to call out of this environment from this file. Calls should usually go through Outbound
-local _, tbl = ...;
-
-if tbl then
-	tbl.SecureCapsuleGet = SecureCapsuleGet;
-
-	local function Import(name)
-		tbl[name] = tbl.SecureCapsuleGet(name);
-	end
-
-	Import("IsOnGlueScreen");
-
-	if ( tbl.IsOnGlueScreen() ) then
-		tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
-		Import("C_StoreGlue");
-	end
-
-	setfenv(1, tbl);
-
-	Import("TextureKitConstants");
-	Import("C_Texture");
-end
-----------------
 
 MinimalScrollBarStepperScriptsMixin = CreateFromMixins(ButtonStateBehaviorMixin);
 
@@ -80,11 +55,11 @@ function MinimalScrollBarThumbScriptsMixin:OnSizeChanged(width, height)
 	local info = C_Texture.GetAtlasInfo(self.Middle:GetAtlas());
 	if self.isHorizontal then
 		self.Middle:SetWidth(width);
-		local u = width / info.width;
+		local u = math.min(width / info.width, 1);
 		self.Middle:SetTexCoord(0, u, 0, 1);
 	else
 		self.Middle:SetHeight(height);
-		local v = height / info.height;
+		local v = math.min(height / info.height, 1);
 		self.Middle:SetTexCoord(0, 1, 0, v);
 	end
 end

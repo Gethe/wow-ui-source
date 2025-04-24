@@ -55,7 +55,19 @@ COPPER_PER_SILVER = 100;
 SILVER_PER_GOLD = 100;
 COPPER_PER_GOLD = COPPER_PER_SILVER * SILVER_PER_GOLD;
 
-function GetMoneyString(money, separateThousands)
+local COPPER_PER_SILVER = COPPER_PER_SILVER;
+local SILVER_PER_GOLD = SILVER_PER_GOLD;
+local COPPER_PER_GOLD = COPPER_PER_GOLD;
+
+MoneyStringConstants =
+{
+	SeparateThousands = true,
+	DontSeparateThousands = false,
+	CheckGoldThreshold = true,
+	DontCheckGoldThreshold = false,
+};
+
+function GetMoneyString(money, separateThousands, checkGoldThreshold)
 	local goldString, silverString, copperString;
 	local gold = floor(money / (COPPER_PER_SILVER * SILVER_PER_GOLD));
 	local silver = floor((money - (gold * COPPER_PER_SILVER * SILVER_PER_GOLD)) / COPPER_PER_SILVER);
@@ -79,6 +91,8 @@ function GetMoneyString(money, separateThousands)
 		copperString = COPPER_AMOUNT_TEXTURE:format(copper, 0, 0);
 	end
 
+	copper = FormatDisplayCopper(checkGoldThreshold, gold, silver, copper);
+
 	local moneyString = "";
 	local separator = "";
 	if ( gold > 0 ) then
@@ -94,6 +108,10 @@ function GetMoneyString(money, separateThousands)
 	end
 
 	return moneyString;
+end
+
+function FormatDisplayCopper(checkGoldThreshold, gold, silver, copper)
+	return (checkGoldThreshold and gold > Constants.MoneyFormattingConstants.GOLD_REWARD_THRESHOLD_TO_HIDE_COPPER ) and 0 or copper;
 end
 
 function FormatPercentage(percentage, roundToNearestInteger)
@@ -179,6 +197,26 @@ function FormattingUtil.GetItemCostString(itemID, quantity, colorCode, abbreviat
 	end
 
 	return "";
+end
+
+function FormattingUtil.AddLeadingZeroes(digits, numZeroes, zeroesColor)
+	numZeroes = numZeroes or 7;
+	zeroesColor = zeroesColor or GRAY_FONT_COLOR;
+
+	local digitsString = tostring(digits);
+	local numDigits = #digitsString;
+	if numDigits < numZeroes then
+		local leadingZeroes = "";
+		for i = 1, (numZeroes - numDigits) do
+			leadingZeroes = leadingZeroes.."0";
+		end
+
+		leadingZeroes = zeroesColor:WrapTextInColorCode(leadingZeroes);
+
+		return leadingZeroes .. digits;
+	end
+
+	return digits;
 end
 
 function GetCurrencyString(currencyID, overrideAmount, colorCode, abbreviate)

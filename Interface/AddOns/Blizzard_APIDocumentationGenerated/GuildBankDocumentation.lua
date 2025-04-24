@@ -6,6 +6,15 @@ local GuildBank =
 
 	Functions =
 	{
+		{
+			Name = "IsGuildBankEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =

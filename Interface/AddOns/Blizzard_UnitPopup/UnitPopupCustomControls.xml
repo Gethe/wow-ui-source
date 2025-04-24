@@ -33,7 +33,7 @@
 			<Anchor point="RIGHT" relativeKey="$parent.Text" relativePoint="LEFT" x="-5" y="0"/>
 		</Anchors>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
+			<OnLoad method="OnLoad" inherit="append"/>
 		</Scripts>
 	</Slider>
 
@@ -45,7 +45,7 @@
 		</Anchors>
 	</Frame>
 
-	<Frame name="UnitPopupVoiceLevelsTemplate" inherits="UIDropDownCustomMenuEntryTemplate" mixin="UnitPopupVoiceLevelsMixin" virtual="true">
+	<Frame name="UnitPopupVoiceLevelsTemplate" mixin="UnitPopupVoiceLevelsMixin" virtual="true">
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
@@ -53,7 +53,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="UnitPopupVoiceSpeakerVolume" inherits="UnitPopupVoiceLevelsTemplate">
+	<Frame name="UnitPopupVoiceSpeakerVolumeTemplate" inherits="UnitPopupVoiceLevelsTemplate" virtual="true">
 		<Size x="200" y="16"/>
 		<Frames>
 			<Frame parentKey="Text" inherits="UnitPopupVoiceTextTemplate"/>
@@ -62,7 +62,7 @@
 		</Frames>
 	</Frame>
 
-	<Frame name="UnitPopupVoiceMicrophoneVolume" inherits="UnitPopupVoiceLevelsTemplate">
+	<Frame name="UnitPopupVoiceMicrophoneVolumeTemplate" inherits="UnitPopupVoiceLevelsTemplate" virtual="true">
 		<Size x="200" y="16"/>
 		<Frames>
 			<Frame parentKey="Text" inherits="UnitPopupVoiceTextTemplate"/>
@@ -71,7 +71,7 @@
 		</Frames>
 	</Frame>
 
-	<Frame name="UnitPopupVoiceUserVolume" inherits="UnitPopupVoiceLevelsTemplate">
+	<Frame name="UnitPopupVoiceUserVolumeTemplate" inherits="UnitPopupVoiceLevelsTemplate" virtual="true">
 		<Size x="200" y="16"/>
 		<Frames>
 			<Frame parentKey="Text" inherits="UnitPopupVoiceTextTemplate"/>

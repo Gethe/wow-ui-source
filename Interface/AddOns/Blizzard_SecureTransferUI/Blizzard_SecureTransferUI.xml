@@ -2,7 +2,7 @@
 ..\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_SecureTransferUIOutbound.lua"/>
 	<Script file="Blizzard_SecureTransferUI.lua"/>
-	<ScopedModifier forbidden="true" scriptsUseGivenEnv="true">
+	<ScopedModifier forbidden="true">
         <Button name="SecureTransferButtonTemplate" virtual="true">
 			<Size x="40" y="22" />
 			<Layers>

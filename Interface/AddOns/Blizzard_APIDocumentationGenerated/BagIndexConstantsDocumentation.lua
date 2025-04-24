@@ -16,11 +16,12 @@ local BagIndexConstants =
 		{
 			Name = "BagIndex",
 			Type = "Enumeration",
-			NumValues = 17,
-			MinValue = -4,
-			MaxValue = 12,
+			NumValues = 23,
+			MinValue = -5,
+			MaxValue = 17,
 			Fields =
 			{
+				{ Name = "Accountbanktab", Type = "BagIndex", EnumValue = -5 },
 				{ Name = "Bankbag", Type = "BagIndex", EnumValue = -4 },
 				{ Name = "Reagentbank", Type = "BagIndex", EnumValue = -3 },
 				{ Name = "Keyring", Type = "BagIndex", EnumValue = -2 },
@@ -38,6 +39,11 @@ local BagIndexConstants =
 				{ Name = "BankBag_5", Type = "BagIndex", EnumValue = 10 },
 				{ Name = "BankBag_6", Type = "BagIndex", EnumValue = 11 },
 				{ Name = "BankBag_7", Type = "BagIndex", EnumValue = 12 },
+				{ Name = "AccountBankTab_1", Type = "BagIndex", EnumValue = 13 },
+				{ Name = "AccountBankTab_2", Type = "BagIndex", EnumValue = 14 },
+				{ Name = "AccountBankTab_3", Type = "BagIndex", EnumValue = 15 },
+				{ Name = "AccountBankTab_4", Type = "BagIndex", EnumValue = 16 },
+				{ Name = "AccountBankTab_5", Type = "BagIndex", EnumValue = 17 },
 			},
 		},
 	},

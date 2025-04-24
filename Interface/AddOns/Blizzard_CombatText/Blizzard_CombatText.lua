@@ -16,6 +16,7 @@ COMBAT_TEXT_LOCATIONS = {};
 COMBAT_TEXT_X_ADJUSTMENT = 80;
 COMBAT_TEXT_Y_SCALE = 1;
 COMBAT_TEXT_X_SCALE = 1;
+COMBAT_TEXT_SCROLL_FUNCTION = nop;
 
 CVarCallbackRegistry:SetCVarCachable("floatingCombatTextLowManaHealth");
 CVarCallbackRegistry:SetCVarCachable("floatingCombatTextAuras");
@@ -51,7 +52,7 @@ COMBAT_TEXT_TYPE_INFO["PARRY"] = {r = 1, g = 0.1, b = 0.1, isStaggered = 1, cvar
 COMBAT_TEXT_TYPE_INFO["EVADE"] = {r = 1, g = 0.1, b = 0.1, isStaggered = 1, cvar = "floatingCombatTextDodgeParryMiss"};
 COMBAT_TEXT_TYPE_INFO["IMMUNE"] = {r = 1, g = 0.1, b = 0.1, cvar = "floatingCombatTextDodgeParryMiss"};
 COMBAT_TEXT_TYPE_INFO["DEFLECT"] = {r = 1, g = 0.1, b = 0.1,cvar = "floatingCombatTextDodgeParryMiss"};
---COMBAT_TEXT_TYPE_INFO["REFLECT"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
+--COMBAT_TEXT_TYPE_INFO["REFLECT"] = {r = 1, g = 0.1, b = 0.1, cvar = "floatingCombatTextDodgeParryMiss"};
 COMBAT_TEXT_TYPE_INFO["RESIST"] = {r = 1, g = 0.1, b = 0.1, cvar = "floatingCombatTextDamageReduction"};
 COMBAT_TEXT_TYPE_INFO["BLOCK"] = {r = 1, g = 0.1, b = 0.1, cvar = "floatingCombatTextDamageReduction"};
 COMBAT_TEXT_TYPE_INFO["ABSORB"] = {r = 1, g = 0.1, b = 0.1, cvar = "floatingCombatTextDamageReduction"};
@@ -70,7 +71,7 @@ COMBAT_TEXT_TYPE_INFO["SPELL_ABSORB"] = {r = 0.79, g = 0.3, b = 0.85, cvar = "fl
 COMBAT_TEXT_TYPE_INFO["PERIODIC_HEAL"] = {r = 0.1, g = 1, b = 0.1, show = 1};
 --COMBAT_TEXT_TYPE_INFO["PERIODIC_HEAL_CRIT"] = {r = 0.1, g = 1, b = 0.1, show = 1};
 COMBAT_TEXT_TYPE_INFO["ENERGIZE"] = {r = 0.1, g = 0.1, b = 1, cvar = "floatingCombatTextEnergyGains"};
---COMBAT_TEXT_TYPE_INFO["PERIODIC_ENERGIZE"] = {r = 0.1, g = 0.1, b = 1, var = "COMBAT_TEXT_SHOW_MANA"};
+--COMBAT_TEXT_TYPE_INFO["PERIODIC_ENERGIZE"] = {r = 0.1, g = 0.1, b = 1, cvar = "floatingCombatTextEnergyGains"};
 COMBAT_TEXT_TYPE_INFO["SPELL_CAST"] = {r = 0.1, g = 1, b = 0.1, show = 1};
 COMBAT_TEXT_TYPE_INFO["SPELL_AURA_END"] = {r = 0.1, g = 1, b = 0.1,cvar = "floatingCombatTextAuraFade"};
 COMBAT_TEXT_TYPE_INFO["SPELL_AURA_END_HARMFUL"] = {r = 1, g = 0.1, b = 0.1, cvar = "floatingCombatTextAuraFade"};
@@ -90,14 +91,14 @@ COMBAT_TEXT_TYPE_INFO["MANA_LOW"] = {r = 1, g = 0.1, b = 0.1, cvar = "floatingCo
 COMBAT_TEXT_TYPE_INFO["ENTERING_COMBAT"] = {r = 1, g = 0.1, b = 0.1, cvar = "floatingCombatTextCombatState"};
 COMBAT_TEXT_TYPE_INFO["LEAVING_COMBAT"] = {r = 1, g = 0.1, b = 0.1, cvar = "floatingCombatTextCombatState"};
 COMBAT_TEXT_TYPE_INFO["COMBO_POINTS"] = {r = 0.1, g = 0.1, b = 1, cvar = "floatingCombatTextComboPoints"};
---COMBAT_TEXT_TYPE_INFO["RUNE"] = {r = 0.1, g = 0.1, b = 1, var = "COMBAT_TEXT_SHOW_ENERGIZE"};
+--COMBAT_TEXT_TYPE_INFO["RUNE"] = {r = 0.1, g = 0.1, b = 1, cvar = "floatingCombatTextEnergyGains"};
 --COMBAT_TEXT_TYPE_INFO["PERIODIC_HEAL_ABSORB"] = {r = 0.1, g = 1, b = 0.1, show = 1};
 --COMBAT_TEXT_TYPE_INFO["HEAL_CRIT_ABSORB"] = {r = 0.1, g = 1, b = 0.1, show = 1};
 --COMBAT_TEXT_TYPE_INFO["HEAL_ABSORB"] = {r = 0.1, g = 1, b = 0.1, show = 1};
 --COMBAT_TEXT_TYPE_INFO["ABSORB_ADDED"] = {r = 0.1, g = 1, b = 0.1, show = 1};
 
 
-COMBAT_TEXT_TYPE_INFO["PROC_RESISTED"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_RESISTANCES"};
+COMBAT_TEXT_TYPE_INFO["PROC_RESISTED"] = {r = 1, g = 0.1, b = 0.1, cvar = "floatingCombatTextDamageReduction"};
 
 local FrameEvents =
 {

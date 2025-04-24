@@ -2,6 +2,8 @@
 -- New shared constants should be added to this
 --
 
+local envTable = GetCurrentEnvironment();
+
 -- faction
 PLAYER_FACTION_GROUP = { [0] = "Horde", [1] = "Alliance", Horde = 0, Alliance = 1 };
 
@@ -51,8 +53,8 @@ end
 
 function SetGamepadBindingStrings(mainBinding, abbrBinding, name, opt_abbrName)
 	local abbrName = opt_abbrName or name;
-	_G[mainBinding] = ("|A:Gamepad_%s_64:24:24|a"):format(name);
-	_G[abbrBinding] = ("|A:Gamepad_%s_32:14:14|a"):format(abbrName);
+	envTable[mainBinding] = ("|A:Gamepad_%s_64:24:24|a"):format(name);
+	envTable[abbrBinding] = ("|A:Gamepad_%s_32:14:14|a"):format(abbrName);
 end
 -- Generic GamePad button labels
 SetGamepadBindingStrings("KEY_PADDUP",			"KEY_ABBR_PADDUP",			"Gen_Up");

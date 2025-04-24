@@ -7,6 +7,15 @@ local BattleNet =
 	Functions =
 	{
 		{
+			Name = "AreHighResTexturesInstalled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "installed", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAccountInfoByGUID",
 			Type = "Function",
 
@@ -107,6 +116,10 @@ local BattleNet =
 				{ Name = "gameAccountInfo", Type = "BNetGameAccountInfo", Nilable = true },
 			},
 		},
+		{
+			Name = "InstallHighResTextures",
+			Type = "Function",
+		},
 	},
 
 	Events =
@@ -159,11 +172,11 @@ local BattleNet =
 				{ Name = "characterLevel", Type = "number", Nilable = true },
 				{ Name = "richPresence", Type = "string", Nilable = true },
 				{ Name = "playerGuid", Type = "WOWGUID", Nilable = true },
-				{ Name = "isWowMobile", Type = "bool", Nilable = false },
 				{ Name = "canSummon", Type = "bool", Nilable = false },
 				{ Name = "hasFocus", Type = "bool", Nilable = false },
 				{ Name = "regionID", Type = "number", Nilable = false },
 				{ Name = "isInCurrentRegion", Type = "bool", Nilable = false },
+				{ Name = "timerunningSeasonID", Type = "number", Nilable = true },
 			},
 		},
 	},

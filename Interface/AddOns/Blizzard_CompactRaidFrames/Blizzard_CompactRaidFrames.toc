@@ -1,4 +1,5 @@
 ## Title: Blizzard Compact Raid Frames
+## SavedVariables: Blizzard_CompactRaidFrameManager_FilterOptions
 ## AllowLoad: game
 ## AllowLoadGameType: vanilla, tbc
 Blizzard_CompactRaidFrameReservationManager.lua

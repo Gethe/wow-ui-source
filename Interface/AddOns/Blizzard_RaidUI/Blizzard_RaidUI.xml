@@ -1,6 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
-	<Script file="Blizzard_RaidUI.lua"/>
 	<Button name="RaidClassButtonTemplate" hidden="true" virtual="true">
 		<Size x="18" y="18"/>
 		<Layers>
@@ -220,7 +219,7 @@
 			</OnLoad>
 			<OnClick>
 				if ( button == "RightButton" ) then
-					RaidGroupButton_ShowMenu(self);
+					RaidGroupButton_OpenMenu(self);
 				else
 					SecureUnitButton_OnClick(self, button);
 				end
@@ -419,7 +418,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<StatusBar name="$parentHealthBar" drawLayer="ARTWORK" inherits="TextStatusBar" enableMouse="false">
+			<StatusBar name="$parentHealthBar" drawLayer="ARTWORK" inherits="TextStatusBar" enableMouse="false" propagateMouseInput="Clicks">
 				<Size x="51" y="5"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="3" y="-12"/>
@@ -446,7 +445,7 @@
 							UnitFrameHealthBar_OnValueChanged(self, value);
 						end
 					</OnValueChanged>
-				</Scripts>
+					</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
 			<StatusBar name="$parentManaBar" drawLayer="ARTWORK" inherits="TextStatusBar" enableMouse="false">
@@ -502,7 +501,8 @@
 					</OnValueChanged>
 					<OnMouseUp>
 						if ( button == "RightButton" ) then
-							ToggleDropDownMenu(1, nil, _G[self:GetParent():GetParent():GetName().."DropDown"]);
+							local pulloutFrame = self:GetParent():GetParent();
+							RaidPulloutFrameTemplate_CreateContextMenu(pulloutFrame);
 						else
 							SecureUnitButton_OnClick(self, button);
 						end
@@ -694,16 +694,6 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
-				<Anchors>
-					<Anchor point="TOP" x="0" y="0"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						RaidPulloutDropDown_OnLoad(self);
-					</OnLoad>
-				</Scripts>
-			</Frame>
 			<Frame name="$parentMenuBackdrop" inherits="TooltipBackdropTemplate" setAllPoints="true" alpha=".7">
 				<KeyValues>
 					<KeyValue key="backdropBorderColor" value="GRAY_FONT_COLOR" type="global"/>
@@ -739,7 +729,7 @@
 			</OnDragStop>
 			<OnClick>
 				if (button == "RightButton") then
-					ToggleDropDownMenu(1, nil, _G[self:GetName().."DropDown"]);
+					RaidPulloutFrameTemplate_CreateContextMenu(self);
 				end
 			</OnClick>
 			<OnMouseUp>
@@ -768,7 +758,7 @@
 		<HighlightFont style="GameFontHighlightSmall"/>
 		<DisabledFont style="GameFontDisableSmall"/>
 	</Button>
-	<Button name="RaidClassButton15"  parent="RaidFrame" inherits="RaidClassButtonTemplate" id="14">
+	<Button name="RaidClassButton15"  parent="RaidFrame" inherits="RaidClassButtonTemplate" id="15">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="RaidFrame" relativePoint="BOTTOMRIGHT" x="0" y="16"/>
 		</Anchors>

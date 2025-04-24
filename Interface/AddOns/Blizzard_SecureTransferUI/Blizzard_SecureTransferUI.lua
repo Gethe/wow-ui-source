@@ -1,38 +1,3 @@
----------------
---NOTE - Please do not change this section without talking to Jacob
---We usually don't want to call out of this environment from this file. Calls should usually go through Outbound
-local _, tbl = ...;
-tbl.SecureCapsuleGet = SecureCapsuleGet;
-
-local function Import(name)
-	tbl[name] = tbl.SecureCapsuleGet(name);
-end
-
-setfenv(1, tbl);
-----------------
-
-Import("C_SecureTransfer");
-Import("C_Timer");
-Import("select");
-Import("string");
-Import("math");
-Import("type");
-Import("GetCVar");
-Import("CANCEL");
-Import("OKAY");
-Import("GOLD_AMOUNT_SYMBOL");
-Import("GOLD_AMOUNT_TEXTURE");
-Import("GOLD_AMOUNT_TEXTURE_STRING");
-Import("SILVER_AMOUNT_SYMBOL");
-Import("SILVER_AMOUNT_TEXTURE");
-Import("SILVER_AMOUNT_TEXTURE_STRING");
-Import("COPPER_AMOUNT_SYMBOL");
-Import("COPPER_AMOUNT_TEXTURE");
-Import("COPPER_AMOUNT_TEXTURE_STRING");
-Import("SEND_ITEMS_TO_STRANGER_WARNING");
-Import("SEND_MONEY_TO_STRANGER_WARNING");
-Import("TRADE_ACCEPT_CONFIRMATION");
-Import("ACCEPT");
 
 local function formatLargeNumber(amount)
 	amount = tostring(amount);
@@ -207,7 +172,7 @@ function SecureTransferDialog_OnShow(self)
 end
 
 function SecureTransferDialog_OnHide(self)
-    Outbound.UpdateSendMailButton();
+    SecureTransferOutbound.UpdateSendMailButton();
     currentDialog = nil;
 end
 

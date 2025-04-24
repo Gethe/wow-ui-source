@@ -36,8 +36,11 @@ function GlueTooltip_SetOwner(self, owner, anchor, xOffset, yOffset )
 	yOffset = yOffset or 0;
 
 	self:ClearAllPoints();
+	-- Fix for calling with ANCHOR_NONE and having points become nil
 	local points = tooltipAnchorPointMapping[anchor];
-	self:SetPoint(points.myPoint, owner, points.ownerPoint, xOffset, yOffset);
+	if(points ~= nil) then
+		self:SetPoint(points.myPoint, owner, points.ownerPoint, xOffset, yOffset);
+	end	
 	self:Show();
 end
 
@@ -82,7 +85,7 @@ function GlueTooltip_AddLine(self, text, r, g, b, wrap)
 	r = r or self.defaultColor.r;
 	g = g or self.defaultColor.g;
 	b = b or self.defaultColor.b;
-	a = 1;
+	local a = 1;
 	-- find a free line
 	local freeLine;
 	for i = 1, GLUETOOLTIP_NUM_LINES do
@@ -129,4 +132,3 @@ function GlueTooltip_AddLine(self, text, r, g, b, wrap)
 	end
 	self:SetHeight(height);
 end
-

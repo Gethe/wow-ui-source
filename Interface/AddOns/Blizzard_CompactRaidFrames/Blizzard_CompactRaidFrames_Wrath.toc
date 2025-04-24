@@ -1,5 +1,6 @@
 ## Title: Blizzard_CompactRaidFrames
 ## LoadOnDemand: 0
+## SavedVariables: Blizzard_CompactRaidFrameManager_FilterOptions
 ## AllowLoad: game
 ## AllowLoadGameType: wrath
 Blizzard_CompactRaidFrameReservationManager.lua

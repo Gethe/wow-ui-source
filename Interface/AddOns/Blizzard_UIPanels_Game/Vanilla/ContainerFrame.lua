@@ -12,7 +12,7 @@ end
 function ContainerFrame_UpdateQuestItem(frame, itemIndex, itemButton)
 	-- Just hide the quest texture if it exists
 	local name = frame:GetName();
-	questTexture = _G[name.."Item"..itemIndex.."IconQuestTexture"];
+	local questTexture = _G[name.."Item"..itemIndex.."IconQuestTexture"];
 
 	if(questTexture) then
 		questTexture:Hide();

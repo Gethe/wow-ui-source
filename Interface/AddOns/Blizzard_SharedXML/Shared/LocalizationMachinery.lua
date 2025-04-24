@@ -19,7 +19,13 @@ end
 -- Intentionally global, this is called later when all of the UI that needs l10n is loaded.
 function LocalizeFrames()
 	for index, callback in ipairs(localizeFramesCallbacks) do
-		callback();
+		-- If an error occurs (e.g. a frame in the original file was renamed) report the problem but don't stop execution so the loc teams aren't blocked.
+		local ok, message = pcall(callback);
+		if not ok then
+			if ScriptErrorsFrame then
+				ScriptErrorsFrame:Warn("Error in localization callback " .. message);
+			end
+		end
 	end
 
 	localizeFramesCallbacks = {};

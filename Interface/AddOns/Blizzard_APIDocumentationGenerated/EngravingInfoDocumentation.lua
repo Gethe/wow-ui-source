@@ -12,7 +12,7 @@ local EngravingInfo =
 
 			Arguments =
 			{
-				{ Name = "category", Type = "number", Nilable = false },
+				{ Name = "category", Type = "InventoryType", Nilable = false },
 			},
 		},
 		{
@@ -21,7 +21,7 @@ local EngravingInfo =
 
 			Arguments =
 			{
-				{ Name = "category", Type = "number", Nilable = false },
+				{ Name = "category", Type = "InventoryType", Nilable = false },
 			},
 		},
 		{
@@ -43,7 +43,7 @@ local EngravingInfo =
 
 			Arguments =
 			{
-				{ Name = "category", Type = "number", Nilable = false },
+				{ Name = "category", Type = "InventoryType", Nilable = false },
 			},
 		},
 		{
@@ -83,7 +83,7 @@ local EngravingInfo =
 
 			Returns =
 			{
-				{ Name = "category", Type = "number", Nilable = true },
+				{ Name = "category", Type = "InventoryType", Nilable = true },
 			},
 		},
 		{
@@ -92,7 +92,7 @@ local EngravingInfo =
 
 			Arguments =
 			{
-				{ Name = "equipmentSlot", Type = "number", Nilable = true },
+				{ Name = "equipmentSlot", Type = "InventoryType", Nilable = true },
 			},
 
 			Returns =
@@ -113,7 +113,7 @@ local EngravingInfo =
 
 			Returns =
 			{
-				{ Name = "categories", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "categories", Type = "table", InnerType = "InventoryType", Nilable = false },
 			},
 		},
 		{
@@ -122,7 +122,7 @@ local EngravingInfo =
 
 			Arguments =
 			{
-				{ Name = "equipmentSlot", Type = "number", Nilable = false },
+				{ Name = "equipmentSlot", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -151,7 +151,7 @@ local EngravingInfo =
 
 			Arguments =
 			{
-				{ Name = "category", Type = "number", Nilable = false },
+				{ Name = "category", Type = "InventoryType", Nilable = false },
 				{ Name = "ownedOnly", Type = "bool", Nilable = false },
 			},
 
@@ -166,7 +166,7 @@ local EngravingInfo =
 
 			Arguments =
 			{
-				{ Name = "category", Type = "number", Nilable = false },
+				{ Name = "category", Type = "InventoryType", Nilable = false },
 			},
 
 			Returns =
@@ -189,7 +189,7 @@ local EngravingInfo =
 
 			Arguments =
 			{
-				{ Name = "equipmentSlot", Type = "number", Nilable = false },
+				{ Name = "equipmentSlot", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -330,7 +330,7 @@ local EngravingInfo =
 				{ Name = "itemEnchantmentID", Type = "number", Nilable = false },
 				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "iconTexture", Type = "number", Nilable = false },
-				{ Name = "equipmentSlot", Type = "number", Nilable = false },
+				{ Name = "equipmentSlot", Type = "InventoryType", Nilable = false },
 				{ Name = "level", Type = "number", Nilable = false },
 				{ Name = "learnedAbilitySpellIDs", Type = "table", InnerType = "number", Nilable = false },
 			},

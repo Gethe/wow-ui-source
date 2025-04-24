@@ -7,6 +7,15 @@ local AchievementInfo =
 	Functions =
 	{
 		{
+			Name = "AreGuildAchievementsEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetRewardItemID",
 			Type = "Function",
 

@@ -11,17 +11,12 @@ WORLD_RAID_MARKER_ORDER[6] = 3;
 WORLD_RAID_MARKER_ORDER[7] = 6;
 WORLD_RAID_MARKER_ORDER[8] = 5;
 
-NUM_WORLD_RAID_MARKERS_CATA = 5;
-WORLD_RAID_MARKER_ORDER_CATA = {};
-WORLD_RAID_MARKER_ORDER_CATA[1] = 4;
-WORLD_RAID_MARKER_ORDER_CATA[2] = 1;
-WORLD_RAID_MARKER_ORDER_CATA[3] = 2;
-WORLD_RAID_MARKER_ORDER_CATA[4] = 3;
-WORLD_RAID_MARKER_ORDER_CATA[5] = 5;
-
 MINIMUM_RAID_CONTAINER_HEIGHT = 72;
 local RESIZE_HORIZONTAL_OUTSETS = 4;
 local RESIZE_VERTICAL_OUTSETS = 7;
+
+CUF_SHOW_BORDER = nil;
+CUF_HORIZONTAL_GROUPS = nil;
 
 function CompactRaidFrameManager_OnLoad(self)
 	self.container = CompactRaidFrameContainer;
@@ -50,6 +45,8 @@ function CompactRaidFrameManager_OnLoad(self)
 
 	--Set up the options flow container
 	FlowContainer_Initialize(self.displayFrame.optionsFlowContainer);
+
+	CompactRaidFrameManager_SetupRaidMarkerDropdown(self);
 end
 
 local settings = { --[["Managed",]] "Locked", "SortMode", "KeepGroupsTogether", "DisplayPets", "DisplayMainTankAndAssist", "IsShown", "ShowBorders" };
@@ -77,27 +74,63 @@ function CompactRaidFrameManager_OnEvent(self, event, ...)
 	end
 end
 
-function CompactRaidFrameManagerDisplayFrameProfileSelector_SetUp(self)
-	UIDropDownMenu_SetWidth(self, 165);
-	UIDropDownMenu_Initialize(self, CompactRaidFrameManagerDisplayFrameProfileSelector_Initialize);
-end
+function CompactRaidFrameManager_SetupRaidMarkerDropdown(self)
+	local function IsSelected(index)
+		return IsRaidMarkerActive(index);
+	end
 
-function CompactRaidFrameManagerDisplayFrameProfileSelector_Initialize()
-	local info = UIDropDownMenu_CreateInfo();
+	local function SetSelected(index)
+		if IsSelected(index) then
+			ClearRaidMarker(index);
+		else
+			PlaceRaidMarker(index);
+		end
+	end
 
-	for i=1, GetNumRaidProfiles() do
-		local name = GetRaidProfileName(i);
-		info.text = name;
-		info.value = name;
-		info.func = CompactRaidFrameManagerDisplayFrameProfileSelector_OnClick;
-		info.checked = GetActiveRaidProfile() == info.value;
-		UIDropDownMenu_AddButton(info);
+	local markerCount = NUM_WORLD_RAID_MARKERS;
+	local markerOrder = WORLD_RAID_MARKER_ORDER;
+
+	if self.displayFrame.leaderOptions.raidMarkerDropdown then
+		self.displayFrame.leaderOptions.raidMarkerDropdown:SetupMenu(function(dropdown, rootDescription)
+			for i=1, markerCount do
+				local index = markerOrder[i];
+				local text =_G["WORLD_MARKER"..index];
+				rootDescription:CreateCheckbox(text, IsSelected, SetSelected, index);
+			end
+
+			rootDescription:CreateButton(REMOVE_WORLD_MARKERS, function()
+				rootDescription:SetTag("MENU_COMPACT_RAID_FRAME_MARKERS");
+
+				local allMarkerIndex = nil;
+				ClearRaidMarker(allMarkerIndex);
+			end);
+		end);
 	end
 end
 
-function CompactRaidFrameManagerDisplayFrameProfileSelector_OnClick(self)
-	local profile = self.value;
-	CompactUnitFrameProfiles_ActivateRaidProfile(profile);
+function CompactRaidFrameManagerDisplayFrameProfileSelector_OnLoad(self)
+	WowStyle1DropdownMixin.OnLoad(self);
+
+	self:SetWidth(165);
+end
+
+function CompactRaidFrameManagerDisplayFrameProfileSelector_OnShow(self)
+	local function IsSelected(name)
+		return GetActiveRaidProfile() == name;
+	end
+	
+	local function SetSelected(name)
+		CompactUnitFrameProfiles_ActivateRaidProfile(name);
+	end
+
+	self:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_COMPACT_RAID_FRAME_DISPLAY_PROFILES");
+
+		for i=1, GetNumRaidProfiles() do
+			local name = GetRaidProfileName(i);
+			rootDescription:CreateRadio(name, IsSelected, SetSelected, name);
+		end
+	end);
 end
 
 function CompactRaidFrameManager_UpdateShown(self)
@@ -148,6 +181,7 @@ function CompactRaidFrameManager_UpdateOptionsFlowContainer(self)
 
 	if ( GetDisplayedAllyFrames() == "raid" ) then
 		FlowContainer_AddObject(container, self.displayFrame.profileSelector);
+		FlowContainer_SetStartingOffset(container, 20, 0);
 		self.displayFrame.profileSelector:Show();
 	else
 		self.displayFrame.profileSelector:Hide();
@@ -231,47 +265,6 @@ function CompactRaidFrameManager_UpdateOptionsFlowContainer(self)
 		self.displayFrame.leaderOptions.readyCheckButton:Disable();
 		self.displayFrame.leaderOptions.readyCheckButton:SetAlpha(0.5);
 	end
-end
-
-local function RaidWorldMarker_OnClick(self, arg1, arg2, checked)
-	if ( checked ) then
-		ClearRaidMarker(arg1);
-	else
-		PlaceRaidMarker(arg1);
-	end
-end
-
-local function ClearRaidWorldMarker_OnClick(self, arg1, arg2, checked)
-	ClearRaidMarker();
-end
-
-function CRFManager_RaidWorldMarkerDropDown_Update()
-	local info = UIDropDownMenu_CreateInfo();
-
-	info.isNotRadio = true;
-
-	local markerCount = NUM_WORLD_RAID_MARKERS;
-	local markerOrder = WORLD_RAID_MARKER_ORDER;
-	if GetClassicExpansionLevel() <= LE_EXPANSION_CATACLYSM then
-		markerCount = NUM_WORLD_RAID_MARKERS_CATA;
-		markerOrder = WORLD_RAID_MARKER_ORDER_CATA;
-	end
-
-	for i=1, markerCount do
-		local index = markerOrder[i];
-		info.text = _G["WORLD_MARKER"..index];
-		info.func = RaidWorldMarker_OnClick;
-		info.checked = IsRaidMarkerActive(index);
-		info.arg1 = index;
-		UIDropDownMenu_AddButton(info);
-	end
-
-
-	info.notCheckable = 1;
-	info.text = REMOVE_WORLD_MARKERS;
-	info.func = ClearRaidWorldMarker_OnClick;
-	info.arg1 = nil;	--Remove everything
-	UIDropDownMenu_AddButton(info);
 end
 
 function CompactRaidFrameManager_UpdateDisplayCounts(self)
