@@ -408,13 +408,14 @@ function SetItemRef(link, text, button, chatFrame)
 		return;
 	elseif ( strsub(link, 1, 21) ==  "reportcensoredmessage" ) then 
 		local hyperlinkLineID = tonumber(select(2, strsplit(":", link)));
+		local playerLocation = PlayerLocation:CreateFromChatLineID(hyperlinkLineID);
 		local reportTarget = C_ChatInfo.GetChatLineSenderGUID(hyperlinkLineID);
 		local playerName = C_ChatInfo.GetChatLineSenderName(hyperlinkLineID);
 
 		local reportInfo = ReportInfo:CreateReportInfoFromType(Enum.ReportType.Chat);
 		reportInfo:SetReportTarget(reportTarget);
 		reportInfo:SetReportedChatInline();
-		ReportFrame:InitiateReport(reportInfo, playerName);
+		ReportFrame:InitiateReport(reportInfo, playerName, playerLocation);
 		return; 
 	elseif ( strsub(link, 1, 12) ==  "dungeonScore" ) then 
 		DisplayDungeonScoreLink(link);

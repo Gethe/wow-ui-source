@@ -840,7 +840,9 @@ function EmbeddedItemTooltip_SetSpellByQuestReward(self, spellID, questID)
 		self:Show();
 		EmbeddedItemTooltip_PrepareForFollower(self);
 		local data = GarrisonFollowerTooltipTemplate_BuildDefaultDataForID(spellInfo.garrFollowerID);
-		GarrisonFollowerTooltipTemplate_SetGarrisonFollower(self.FollowerTooltip, data);
+		if data then
+			GarrisonFollowerTooltipTemplate_SetGarrisonFollower(self.FollowerTooltip, data);
+		end
 		EmbeddedItemTooltip_UpdateSize(self);
 		return true;
 	elseif spellInfo.name and spellInfo.texture then
