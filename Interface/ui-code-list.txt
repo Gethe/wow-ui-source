@@ -53,6 +53,7 @@ Interface\AddOns\Blizzard_ActionBar\Mainline\ActionButtonOverrides.lua
 Interface\AddOns\Blizzard_ActionBar\Mainline\ActionButtonTemplate.xml
 Interface\AddOns\Blizzard_ActionBar\Mainline\ArtifactBar.lua
 Interface\AddOns\Blizzard_ActionBar\Mainline\ArtifactBar.xml
+Interface\AddOns\Blizzard_ActionBar\Mainline\AssistedCombatManager.lua
 Interface\AddOns\Blizzard_ActionBar\Mainline\AzeriteBar.lua
 Interface\AddOns\Blizzard_ActionBar\Mainline\AzeriteBar.xml
 Interface\AddOns\Blizzard_ActionBar\Mainline\ExpBar.lua
@@ -87,6 +88,8 @@ Interface\AddOns\Blizzard_ActionBar\Mainline\StatusTrackingBar.lua
 Interface\AddOns\Blizzard_ActionBar\Mainline\StatusTrackingBar.xml
 Interface\AddOns\Blizzard_ActionBar\Mainline\StatusTrackingBarTemplate.xml
 Interface\AddOns\Blizzard_ActionBar\Mainline\StatusTrackingManager.lua
+Interface\AddOns\Blizzard_ActionBar\Shared\ActionButtonSpellAlerts.lua
+Interface\AddOns\Blizzard_ActionBar\Shared\ActionButtonSpellAlerts.xml
 Interface\AddOns\Blizzard_ActionBar\Shared\MainMenuBarMicroButtons.lua
 Interface\AddOns\Blizzard_ActionBar\Standard\ActionBarConstants.lua
 Interface\AddOns\Blizzard_ActionBar\WoWLabs\ActionBarConstants.lua
@@ -589,6 +592,7 @@ Interface\AddOns\Blizzard_Deprecated\Deprecated_11_0_2.lua
 Interface\AddOns\Blizzard_Deprecated\Deprecated_11_0_5.lua
 Interface\AddOns\Blizzard_Deprecated\Deprecated_11_0_7.lua
 Interface\AddOns\Blizzard_Deprecated\Deprecated_11_1_5.lua
+Interface\AddOns\Blizzard_Deprecated\Deprecated_11_1_7.lua
 Interface\AddOns\Blizzard_Deprecated_ArenaUI\Blizzard_Deprecated_ArenaUI.toc
 Interface\AddOns\Blizzard_Deprecated_ArenaUI\Deprecated_ArenaUI.lua
 Interface\AddOns\Blizzard_Deprecated_ArenaUI\Deprecated_ArenaUI.xml
@@ -1853,6 +1857,7 @@ Interface\AddOns\Blizzard_SharedXML\AnimationTemplates.lua
 Interface\AddOns\Blizzard_SharedXML\AnimationTemplates.xml
 Interface\AddOns\Blizzard_SharedXML\Backdrop.lua
 Interface\AddOns\Blizzard_SharedXML\Backdrop.xml
+Interface\AddOns\Blizzard_SharedXML\BenchmarkUtil.lua
 Interface\AddOns\Blizzard_SharedXML\BindingUtil.lua
 Interface\AddOns\Blizzard_SharedXML\Blizzard_RadialWheel.lua
 Interface\AddOns\Blizzard_SharedXML\Blizzard_RadialWheel.xml
@@ -2196,6 +2201,8 @@ Interface\AddOns\Blizzard_UIFrameManager\Blizzard_UIFrameManager.xml
 Interface\AddOns\Blizzard_UIPanelTemplates\Blizzard_UIPanelTemplates_Mainline.toc
 Interface\AddOns\Blizzard_UIPanelTemplates\Mainline\AutoCastTemplates.lua
 Interface\AddOns\Blizzard_UIPanelTemplates\Mainline\AutoCastTemplates.xml
+Interface\AddOns\Blizzard_UIPanelTemplates\Mainline\UIPanelSpellButtonFrame.lua
+Interface\AddOns\Blizzard_UIPanelTemplates\Mainline\UIPanelSpellButtonFrame.xml
 Interface\AddOns\Blizzard_UIPanelTemplates\Mainline\UIPanelTemplates.lua
 Interface\AddOns\Blizzard_UIPanelTemplates\Mainline\UIPanelTemplates.xml
 Interface\AddOns\Blizzard_UIPanels_Game\Blizzard_UIPanels_Game_Mainline.toc
@@ -2318,6 +2325,8 @@ Interface\AddOns\Blizzard_UIWidgets\Mainline\Blizzard_UIWidgetTemplateBase.lua
 Interface\AddOns\Blizzard_UIWidgets\Mainline\Blizzard_UIWidgetTemplateBase.xml
 Interface\AddOns\Blizzard_UIWidgets\Mainline\Blizzard_UIWidgetTemplateBulletTextList.lua
 Interface\AddOns\Blizzard_UIWidgets\Mainline\Blizzard_UIWidgetTemplateBulletTextList.xml
+Interface\AddOns\Blizzard_UIWidgets\Mainline\Blizzard_UIWidgetTemplateButtonHeader.lua
+Interface\AddOns\Blizzard_UIWidgets\Mainline\Blizzard_UIWidgetTemplateButtonHeader.xml
 Interface\AddOns\Blizzard_UIWidgets\Mainline\Blizzard_UIWidgetTemplateCaptureBar.lua
 Interface\AddOns\Blizzard_UIWidgets\Mainline\Blizzard_UIWidgetTemplateCaptureBar.xml
 Interface\AddOns\Blizzard_UIWidgets\Mainline\Blizzard_UIWidgetTemplateCaptureZone.lua

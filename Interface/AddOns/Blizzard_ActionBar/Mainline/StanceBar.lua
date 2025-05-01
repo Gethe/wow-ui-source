@@ -43,7 +43,7 @@ function StanceBarMixin:UpdateState()
 	for i, button in pairs(self.actionButtons) do
 		icon = button.icon;
 		if ( i <= numForms ) then
-			texture, isActive, isCastable = GetShapeshiftFormInfo(i);
+			texture, isActive, isCastable, button.spellID = GetShapeshiftFormInfo(i);
 			icon:SetTexture(texture);
 
 			--Cooldown stuffs

@@ -517,7 +517,8 @@ function MonthlyActivitiesThresholdMixin:SetThresholdInfo(thresholdInfo, showLin
 		self.RewardItem:SetRewardItem(thresholdInfo.itemReward);
 		-- any progress AFTER the reward item is considered "bonus".  This is only relevant
 		-- when the reward item is NOT at the end
-		BonusThresholdLevel = thresholdInfo.requiredContributionAmount;
+		local requiredContrib = thresholdInfo.requiredContributionAmount;
+		BonusThresholdLevel = BonusThresholdLevel and math.min(BonusThresholdLevel, requiredContrib) or requiredContrib;
 	end
 end
 
@@ -1608,6 +1609,9 @@ end
 function MonthlyActivitiesRewardButtonMixin:SetRewardItem(itemId)
 	self:SetItem(itemId);
 	self.rewardItemId = itemId;
+
+	-- Never show the overlays on these
+	ClearItemButtonOverlay(self);
 end
 
 function MonthlyActivitiesRewardButtonMixin:OnEnter()

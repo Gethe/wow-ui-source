@@ -71,15 +71,32 @@
 					<Anchor point="TOPLEFT" x="70" y="-19"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="HidePassivesCheckButton" inherits="ResizeCheckButtonTemplate">
-				<KeyValues>
-					<KeyValue key="labelText" value="SPELLBOOK_FILTER_PASSIVES" type="global"/>
-					<KeyValue key="labelFont" value="GameFontNormalMed2" type="string"/>
-					<KeyValue key="disabledLabelFont" value="GameFontDisableMed2" type="string"/>
-				</KeyValues>
+			<DropdownButton parentKey="SettingsDropdown" inherits="UIPanelIconDropdownButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-30" y="-10" />
+					<Anchor point="TOPRIGHT" x="-30" y="-17" />
 				</Anchors>
+			</DropdownButton>
+			<Frame parentKey="AssistedCombatRotationSpellFrame" inherits="UIPanelSpellButtonFrameTemplate" mixin="AssistedCombatRotationSpellFrameMixin">
+				<KeyValues>
+					<KeyValue key="labelText" value="ASSISTED_COMBAT_ROTATION_SPELLBOOK_LABEL" type="global"/>
+					<KeyValue key="resizeToText" value="true" type="boolean"/>
+					<KeyValue key="textPadLeft" value="13" type="number"/>
+					<KeyValue key="textPadRight" value="5" type="number"/>
+					<KeyValue key="tooltipAnchor" value="ANCHOR_BOTTOMLEFT" type="string"/>
+				</KeyValues>
+				<Size x="120" y="33"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-20" y="-7"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture atlas="UI-HUD-RotationHelper-SpellbookDivider" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
 			</Frame>
 			<EditBox parentKey="SearchBox" inherits="SpellSearchBoxTemplate" hidden="false">
 				<KeyValues>
@@ -87,8 +104,7 @@
 				</KeyValues>
 				<Size x="300" y="30"/>
 				<Anchors>
-					<!-- Anchors modified at runtime based on minimized state -->
-					<Anchor point="RIGHT" relativeKey="$parent.HidePassivesCheckButton" relativePoint="LEFT" x="-30"/>
+					<Anchor point="RIGHT" relativeKey="$parent.SettingsDropdown" relativePoint="LEFT" x="-5"/>
 				</Anchors>
 			</EditBox>
 			<Frame parentKey="SearchPreviewContainer" inherits="SpellSearchPreviewContainerTemplate" hidden="true" frameLevel="200">

@@ -1,6 +1,5 @@
 local MOUNT_BUTTON_HEIGHT = 46;
 local PLAYER_MOUNT_LEVEL = 20;
-local SUMMON_RANDOM_FAVORITE_MOUNT_SPELL = 150544;
 local LOCKED_EQUIPMENT_LABEL_COLOR = CreateColor(0.450, 0.392, 0.341);
 local DESATURATED_EQUIPMENT_LABEL_COLOR = CreateColor(0.502, 0.502, 0.502);
 
@@ -982,27 +981,18 @@ function MountJournal_SetAllSourceFilters(value)
 end
 
 --------------------------------------------------
--- Random Favorite Mount Button Mixin
-MountJournalSummonRandomFavoriteButtonMixin = {};
+-- Random Favorite Mount Spell Mixin
+MountJournalSummonRandomFavoriteSpellFrameMixin = {};
 
-function MountJournalSummonRandomFavoriteButtonMixin:OnLoad()
-	self.spellID = SUMMON_RANDOM_FAVORITE_MOUNT_SPELL;
-	local spellIcon = C_Spell.GetSpellTexture(self.spellID);
-	self.texture:SetTexture(spellIcon);
-	-- Use the global string instead of the spellName from the db here so that we can have custom newlines in the string
-	self.spellname:SetText(MOUNT_JOURNAL_SUMMON_RANDOM_FAVORITE_MOUNT);
-	self:RegisterForDrag("LeftButton");
-end
-
-function MountJournalSummonRandomFavoriteButtonMixin:OnClick()
+function MountJournalSummonRandomFavoriteSpellFrameMixin:OnIconClick()
 	C_MountJournal.SummonByID(0);
 end
 
-function MountJournalSummonRandomFavoriteButtonMixin:OnDragStart()
+function MountJournalSummonRandomFavoriteSpellFrameMixin:OnIconDragStart()
 	C_MountJournal.Pickup(0);
 end
 
-function MountJournalSummonRandomFavoriteButtonMixin:OnEnter()
+function MountJournalSummonRandomFavoriteSpellFrameMixin:OnIconEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetMountBySpellID(self.spellID);
 end

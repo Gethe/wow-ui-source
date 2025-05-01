@@ -798,7 +798,7 @@ function EditModeManagerFrameMixin:InitializeAccountSettings()
 	self.AccountSettings:SetRaidFramesShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowRaidFrames));
 	self.AccountSettings:SetActionBarShown(StanceBar, self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowStanceBar));
 	if(PetActionBar) then 
-	self.AccountSettings:SetActionBarShown(PetActionBar, self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowPetActionBar));
+		self.AccountSettings:SetActionBarShown(PetActionBar, self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowPetActionBar));
 	end 
 	self.AccountSettings:SetActionBarShown(PossessActionBar, self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowPossessActionBar));
 	self.AccountSettings:SetCastBarShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowCastBar));
@@ -1082,17 +1082,24 @@ function EditModeManagerFrameMixin:UpdateDropdownOptions()
 		rootDescription:SetTag("MENU_EDIT_MODE_MANAGER");
 
 		local lastLayoutType = nil;
+		local addedCharacterSpecificHeader = false;
 		for _, layoutTbl in ipairs(layoutTbls) do
 			local layoutInfo = layoutTbl.layoutInfo;
 			local index = layoutTbl.index;
 			local layoutType = layoutInfo.layoutType;
 
+			if layoutType == Enum.EditModeLayoutType.Character and not addedCharacterSpecificHeader then
+				addedCharacterSpecificHeader = true;
+				rootDescription:CreateTitle(characterLayoutHeaderText);
+			end
+
 			if lastLayoutType and lastLayoutType ~= layoutType then
 				rootDescription:CreateDivider();
 			end
+
 			lastLayoutType = layoutType;
 
-			local isUserLayout = layoutType == Enum.EditModeLayoutType.Account or layoutType == Enum.EditModeLayoutType.Server;
+			local isUserLayout = layoutType == Enum.EditModeLayoutType.Account or layoutType == Enum.EditModeLayoutType.Character;
 			local isPreset = layoutType == Enum.EditModeLayoutType.Preset;
 			local text = isPreset and HUD_EDIT_MODE_PRESET_LAYOUT:format(layoutInfo.layoutName) or layoutInfo.layoutName;
 
@@ -1155,10 +1162,6 @@ function EditModeManagerFrameMixin:UpdateDropdownOptions()
 					end);
 				end);
 			end
-		end
-
-		if hasCharacterLayouts then
-			rootDescription:CreateTitle(characterLayoutHeaderText);
 		end
 
 		rootDescription:CreateDivider();
@@ -1440,6 +1443,22 @@ end
 function EditModeManagerFrameMixin:CanEnterEditMode()
 	local editModeDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.EditModeDisabled);
 	return (not editModeDisabled) and (not C_PlayerInfo.IsPlayerNPERestricted()) and TableIsEmpty(self.FramesBlockingEditMode);
+end
+
+function EditModeManagerFrameMixin:GetBestLayoutIndex(layoutInfo)
+	return layoutInfo.layoutIndex or Enum.EditModePresetLayouts.Modern;
+end
+
+function EditModeManagerFrameMixin:GetDefaultAnchor(frame)
+	local layoutInfo = self:GetActiveLayoutInfo();
+
+	if layoutInfo.layoutType == Enum.EditModeLayoutType.Override then
+		local layoutIndex = self:GetBestLayoutIndex(layoutInfo);
+		return EditModePresetLayoutManager:GetOverrideLayoutSystemAnchorInfo(layoutIndex, frame.system, frame.systemIndex);
+	end
+
+	-- Assume we want preset since this is default anchoring and there is not an override active
+	return EditModePresetLayoutManager:GetPresetLayoutSystemAnchorInfo(Enum.EditModePresetLayouts.Modern, frame.system, frame.systemIndex);
 end
 
 EditModeGridMixin = {}

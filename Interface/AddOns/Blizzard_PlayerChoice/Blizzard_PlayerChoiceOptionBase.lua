@@ -377,10 +377,15 @@ function PlayerChoiceBaseOptionButtonFrameTemplateMixin:Setup(buttonInfo, option
 	self:Layout();
 end
 
+function PlayerChoiceBaseOptionButtonFrameTemplateMixin:OnReset()
+	FunctionUtil.SafeInvokeMethod(self.Button, "OnReset");
+end
+
 PlayerChoiceBaseOptionButtonTemplateMixin = {};
 
 function PlayerChoiceBaseOptionButtonTemplateMixin:OnLoad()
 	self.parentOption = self:GetParent():GetParent():GetParent();
+	self.disabledFont = self:GetDisabledFontObject();
 end
 
 local COMPLETED_ATLAS_MARKUP = CreateAtlasMarkup("common-icon-checkmark", 16, 16);
@@ -406,6 +411,10 @@ function PlayerChoiceBaseOptionButtonTemplateMixin:Setup(buttonInfo, optionInfo)
 
 	self:SetEnabled(enabledState);
 
+	if buttonInfo.selected then
+		self:SetPushed(buttonInfo.selected);
+	end
+
 	self.confirmation = buttonInfo.confirmation;
 	self.tooltip = buttonInfo.tooltip;
 	self.rewardQuestID = buttonInfo.rewardQuestID;
@@ -413,6 +422,11 @@ function PlayerChoiceBaseOptionButtonTemplateMixin:Setup(buttonInfo, optionInfo)
 	self.optionID = optionInfo.id;
 	self.soundKitID = buttonInfo.soundKitID;
 	self.keepOpenAfterChoice = buttonInfo.keepOpenAfterChoice;
+end
+
+function PlayerChoiceBaseOptionButtonTemplateMixin:OnReset()
+	self.pushed = false;
+	self:SetDisabledFontObject(self.disabledFont);
 end
 
 function PlayerChoiceBaseOptionButtonTemplateMixin:OnConfirm()
@@ -526,6 +540,18 @@ function PlayerChoiceBaseOptionButtonTemplateMixin:OnLeave()
 	self.UpdateTooltip = nil;
 end
 
+function PlayerChoiceBaseOptionButtonTemplateMixin:SetPushed(pushed)
+	self.pushed = pushed;
+	self:SetEnabled(not pushed);
+
+	self:SetDisabledFontObject(pushed and self:GetNormalFontObject() or self.disabledFont);
+
+	local buttonTextureStateKey = pushed and "Down" or "Up";
+	self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-"..buttonTextureStateKey);
+	self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-"..buttonTextureStateKey);
+	self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-"..buttonTextureStateKey);
+end
+
 PlayerChoiceBaseOptionButtonsContainerMixin = {};
 
 function PlayerChoiceBaseOptionButtonsContainerMixin:OnLoad()
@@ -554,7 +580,7 @@ function PlayerChoiceBaseOptionButtonsContainerMixin:Setup(optionInfo, showAsLis
 	self.buttonFramePool:ReleaseAll();
 
 	local buttonFrameTemplate = showAsList and self.listButtonFrameTemplate or self.buttonFrameTemplate;
-	self.buttonFramePool:GetOrCreatePool("Frame", self, buttonFrameTemplate);
+	self.buttonFramePool:GetOrCreatePool("Frame", self, buttonFrameTemplate, GenerateClosure(self.OptionButtonResetter, self));
 
 	local buttonFrames = {};
 	for buttonIndex, buttonInfo in ipairs(optionInfo.buttons) do
@@ -565,6 +591,12 @@ function PlayerChoiceBaseOptionButtonsContainerMixin:Setup(optionInfo, showAsLis
 	end
 
 	AnchorUtil.GridLayout(buttonFrames, self.initialAnchor, self.layout);
+end
+
+function PlayerChoiceBaseOptionButtonsContainerMixin:OptionButtonResetter(framePool, optionButton, _new)
+	Pool_HideAndClearAnchors(framePool, optionButton);
+
+	FunctionUtil.SafeInvokeMethod(optionButton, "OnReset");
 end
 
 function PlayerChoiceBaseOptionButtonsContainerMixin:DisableButtons()

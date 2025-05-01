@@ -27,6 +27,7 @@ PredictedSetting.lua
 SecureUtil.lua
 Classic\SecureCurrencyUtil.lua
 TimeUtil.lua
+BenchmarkUtil.lua
 EasingUtil.lua
 PixelUtilSecure.lua
 PixelUtil.lua

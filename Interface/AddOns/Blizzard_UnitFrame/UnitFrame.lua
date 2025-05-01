@@ -400,10 +400,10 @@ function UnitFrame_UpdateTooltip (self)
 end
 
 --[[
-	Previous way to set the mana bar type was by coloring the mana bar (or using an atlas texture for
-	certain cases).  Current way uses atlas textures exclusively, with a mask (done in each frame)
-	making the older existing atlas textures fit to the frame shape.  Once all unit frames have been
-	converted to the new flow, this method and any associated data pieces can be removed safely.
+	Previous way to set the mana bar type (prior to 10.0.0) was by coloring the mana bar (or using an atlas texture for certain cases).
+	Certain older unit frames still use this flow, such as vechicles (if they have a power bar) and arena frames.
+
+	Current way (10.0.0 onwards) for most unit frames uses atlas textures exclusively, with a mask (done in each frame) making the older existing atlas textures fit to the frame shape.
 ]]--
 function UnitFrameManaBar_UpdateTypeOld(manaBar)
 	if ( not manaBar ) then

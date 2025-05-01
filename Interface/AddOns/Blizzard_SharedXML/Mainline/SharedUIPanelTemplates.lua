@@ -3025,3 +3025,13 @@ end
 function LevelRangeFrameMixin:GetLevelRange()
 	return self.MinLevel:GetNumber(), self.MaxLevel:GetNumber();
 end
+
+UIPanelIconDropdownButtonMixin = { };
+
+function UIPanelIconDropdownButtonMixin:OnMouseDown()
+	self.Icon:AdjustPointsOffset(1, -1);
+end
+
+function UIPanelIconDropdownButtonMixin:OnMouseUp(button, upInside)
+	self.Icon:AdjustPointsOffset(-1, 1);
+end

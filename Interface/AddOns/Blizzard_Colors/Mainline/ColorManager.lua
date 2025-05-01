@@ -269,8 +269,7 @@ end
 
 -- |cnIQ<ItemQuality>:<your text here>|r - Named color token specifically for Item Qualities (IQ) which takes override colors into account.
 function ColorManager.GetFormattedStringForItemQuality(text, quality)
-	local colorString = string.format("|cnIQ%d:", quality);
-	return colorString..text.."|r";
+	return string.format("|cnIQ%d:%s|r", quality, text);
 end
 
 EventRegistry:RegisterFrameEventAndCallback("ACCOUNT_CVARS_LOADED", ColorManager.UpdateColorData, ColorManager);

@@ -114,6 +114,7 @@ LocalizationDocumentation.lua
 LogDocumentation.lua
 LootDocumentation.lua
 LossOfControlDocumentation.lua
+LuaTableUtilDocumentation.lua
 MacOptionsDocumentation.lua
 MapExplorationDocumentation.lua
 MerchantFrameDocumentation.lua
@@ -265,6 +266,7 @@ AlliedRacesFrameDocumentation.lua
 AnimaDiversionUIDocumentation.lua
 ArdenwealdGardeningDocumentation.lua
 ArtifactUIDocumentation.lua
+AssistedCombatDocumentation.lua
 CVarDocumentation.lua
 ChallengeModeInfoDocumentation.lua
 ChromieTimeUIDocumentation.lua

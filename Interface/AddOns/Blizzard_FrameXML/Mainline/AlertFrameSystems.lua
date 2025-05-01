@@ -892,7 +892,7 @@ function GarrisonFollowerAlertFrame_OnEnter(self)
 	if ( link ) then
 		GarrisonFollowerTooltip:ClearAllPoints();
 		GarrisonFollowerTooltip:SetPoint("BOTTOM", self, "TOP");
-		local _, garrisonFollowerID, quality, level, itemLevel, ability1, ability2, ability3, ability4, trait1, trait2, trait3, trait4, spec1 = strsplit(":", link);
+		local _colorToken, _linkType, garrisonFollowerID, quality, level, itemLevel, ability1, ability2, ability3, ability4, trait1, trait2, trait3, trait4, spec1 = strsplit(":", link);
 		GarrisonFollowerTooltip_Show(tonumber(garrisonFollowerID), false, tonumber(quality), tonumber(level), 0, 0, tonumber(itemLevel), tonumber(spec1), tonumber(ability1), tonumber(ability2), tonumber(ability3), tonumber(ability4), tonumber(trait1), tonumber(trait2), tonumber(trait3), tonumber(trait4));
 	end
 end

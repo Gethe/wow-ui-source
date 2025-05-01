@@ -78,6 +78,15 @@ function EventUtil.ContinueOnAddOnLoaded(addOnName, callback)
 	EventUtil.RegisterOnceFrameEventAndCallback("ADDON_LOADED", callback, addOnName);
 end
 
+function EventUtil.ContinueOnPlayerLogin(callback)
+	if IsLoggedIn() then
+		callback();
+		return;
+	end
+
+	EventUtil.RegisterOnceFrameEventAndCallback("PLAYER_LOGIN", callback);
+end
+
 -- ... are optional event arguments that are required to match before the callback is invoked.
 function EventUtil.RegisterOnceFrameEventAndCallback(frameEvent, callback, ...)
 	local handle = nil;

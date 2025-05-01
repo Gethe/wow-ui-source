@@ -41,7 +41,8 @@ local CooldownViewer =
 
 			Returns =
 			{
-				{ Name = "available", Type = "bool", Nilable = false },
+				{ Name = "isAvailable", Type = "bool", Nilable = false },
+				{ Name = "failureReason", Type = "string", Nilable = false },
 			},
 		},
 	},

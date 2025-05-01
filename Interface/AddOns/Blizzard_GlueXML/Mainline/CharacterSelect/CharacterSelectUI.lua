@@ -157,9 +157,13 @@ function CharacterSelectUIMixin:OnEvent(event, ...)
 		else
 			GlueDialog_Hide("ACCOUNT_CONVERSION_DISPLAY");
 
+			-- Show the retrieving character list dialog again once conversion is complete if needed.
 			if CharacterSelect.retrievingCharacters then
-				-- Show the retrieving character list dialog again once conversion is complete if needed.
-				GlueDialog_Show("RETRIEVING_CHARACTER_LIST");
+				-- Do not stop showing the login queue dialog if currently showing.
+				local visibleGlueDialog = GlueDialog_GetVisible();
+				if visibleGlueDialog ~= "QUEUED_WITH_FCM" and visibleGlueDialog ~= "QUEUED_NORMAL" then
+					GlueDialog_Show("RETRIEVING_CHARACTER_LIST");
+				end
 			end
 		end
 	elseif event == "ACCOUNT_CVARS_LOADED" then

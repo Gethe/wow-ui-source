@@ -264,16 +264,10 @@ function SpellBookSearchMixin:EnableSearchResultsMode()
 	self.isInSearchResultsMode = true;
 	-- Clear our active tab
 	self:SetTab(nil);
-	-- Disable "Hide Passives" toggle while in search mode
-	self.HidePassivesCheckButton:SetControlEnabled(false);
-	self.HidePassivesCheckButton:SetTooltipText(SPELLBOOK_SEARCH_HIDE_PASSIVES_DISABLED);
 end
 
 function SpellBookSearchMixin:DisableSearchResultsMode(skipTabReset)
 	self.isInSearchResultsMode = false;
-	-- Re-enable "Hide Passives" toggle
-	self.HidePassivesCheckButton:SetControlEnabled(true);
-	self.HidePassivesCheckButton:SetTooltipText(nil);
 	if not skipTabReset then
 		self:ResetToFirstAvailableTab();
 	end

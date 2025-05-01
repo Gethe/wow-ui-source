@@ -8,6 +8,15 @@ SpellBookFrameTutorialsMixin = {};
 
 function SpellBookFrameTutorialsMixin:OnLoad()
 	self.HelpPlateButton:SetScript("OnClick", function() self:ToggleHelpPlates(); end);
+
+	EventRegistry:RegisterCallback("PlayerSpellsFrame.OnManualMinimize",function()
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PLAYER_SPELLS_MINIMIZE, true);
+		self:CheckShowHelpTips();
+	end);
+end
+
+function SpellBookFrameTutorialsMixin:OnShow()
+	self:CheckShowHelpTips();
 end
 
 function SpellBookFrameTutorialsMixin:OnHide()
@@ -94,12 +103,13 @@ function SpellBookFrameTutorialsMixin:CheckShowHelpTips()
 
 	HelpTip:HideAllSystem(helpTipSystem);
 
+	-- Helptips are parented to UIParent so they don't scale down with the spellbook frame
+
 	local activeCategoryMixin = self:GetActiveCategoryMixin();
 	local showNewlyBoostedHelptip = activeCategoryMixin
 									and activeCategoryMixin:GetSpellBank() == Enum.SpellBookSpellBank.Player
 									and IsCharacterNewlyBoosted()
 									and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BOOSTED_SPELL_BOOK);
-
 	if showNewlyBoostedHelptip then
 		-- If boosted, find the first locked spell and display a tip next to it
 		local firstLockedSpellFrame = nil;
@@ -124,5 +134,37 @@ function SpellBookFrameTutorialsMixin:CheckShowHelpTips()
 			HelpTip:Show(UIParent, helpTipInfo, firstLockedSpellFrame);
 			return;
 		end
+	end
+
+	local showAssistedCombatRotationHelptip = AssistedCombatManager:HasActionSpell() and not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_ASSISTED_COMBAT_ROTATION_DRAG_SPELL);
+	if showAssistedCombatRotationHelptip then
+		local helpTipInfo = {
+			text = ASSISTED_COMBAT_ROTATION_DRAG_HELPTIP,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			targetPoint = HelpTip.Point.BottomEdgeCenter,
+			system = helpTipSystem,
+			onAcknowledgeCallback = function() self:CheckShowHelpTips(); end,
+			cvarBitfield = "closedInfoFramesAccountWide",
+			bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_ASSISTED_COMBAT_ROTATION_DRAG_SPELL,
+		};
+		HelpTip:Show(UIParent, helpTipInfo, self.AssistedCombatRotationSpellFrame.Button);
+		return;
+	end
+
+	local showMinimizeHelptip = not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PLAYER_SPELLS_MINIMIZE)
+								and PlayerSpellsFrame.MaximizeMinimizeButton:IsShown()
+								and not PlayerSpellsFrame.MaximizeMinimizeButton:IsMinimized();
+	if showMinimizeHelptip then
+		local helpTipInfo = {
+			text = PLAYER_SPELLS_FRAME_MINIMIZE_TIP,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			targetPoint = HelpTip.Point.BottomEdgeCenter,
+			system = helpTipSystem,
+			onAcknowledgeCallback = function() self:CheckShowHelpTips(); end,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_PLAYER_SPELLS_MINIMIZE,
+		};
+		HelpTip:Show(UIParent, helpTipInfo, PlayerSpellsFrame.MaximizeMinimizeButton);
+		return;
 	end
 end

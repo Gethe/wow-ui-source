@@ -136,6 +136,21 @@ local AddOns =
 			},
 		},
 		{
+			Name = "GetAddOnLocalTable",
+			Type = "Function",
+			Documentation = { "Returns the addon table (passed as the second argument of ... to files) for any addon that opts in through setting AllowAddOnTableAccess: 1 in the toc file. Insecure code cannot query addon tables from Blizzard addons." },
+
+			Arguments =
+			{
+				{ Name = "name", Type = "uiAddon", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "table", Type = "LuaValueVariant", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAddOnMetadata",
 			Type = "Function",
 

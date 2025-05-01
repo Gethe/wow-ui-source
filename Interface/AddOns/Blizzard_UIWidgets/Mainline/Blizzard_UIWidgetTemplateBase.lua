@@ -16,7 +16,6 @@ end
 function UIWidgetTemplateTooltipFrameMixin:Setup(widgetContainer, tooltipLoc)
 	self.disableTooltip = widgetContainer.disableWidgetTooltips;
 	self:UpdateMouseEnabled();
-	self:SetMouseClickEnabled(false);
 	self:SetTooltipLocation(tooltipLoc);
 
 	if self.mouseOver then
@@ -1841,4 +1840,54 @@ end
 function UIWidgetBaseIconTemplateMixin:StopAnims()
 	self.GlowPulseAnim:Stop();
 	self.Glow:Hide();
+end
+
+UIWidgetBaseButtonTemplateMixin = {};
+
+function UIWidgetBaseButtonTemplateMixin:SetMouse(disableMouse)
+	local useMouse = not disableMouse;
+	self:EnableMouse(useMouse)
+	self:SetMouseClickEnabled(true);
+end
+
+local iconAtlasPostfix =
+{
+	[Enum.UIWidgetButtonIconType.Exit]	= "exit",
+	[Enum.UIWidgetButtonIconType.Speak] = "speak",
+	[Enum.UIWidgetButtonIconType.Undo]	= "undo",
+	[Enum.UIWidgetButtonIconType.Checkmark] = "checkmark",
+	[Enum.UIWidgetButtonIconType.RedX] = "redx",
+}
+
+local buttonIconFormatString = "common-icon-%s";
+local defaultButtonIconPostfix = "checkmark";
+
+function UIWidgetBaseButtonTemplateMixin:GetIconAtlasName(buttonInfo)
+	local postfix = iconAtlasPostfix[buttonInfo.icon] or defaultButtonIconPostfix;
+	return buttonIconFormatString:format(postfix);
+end
+
+function UIWidgetBaseButtonTemplateMixin:Setup(widgetContainer, buttonInfo)
+	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
+	self.spellID = buttonInfo.spellID;
+	self:SetTooltip(buttonInfo.tooltip);
+
+	local iconAtlas = self:GetIconAtlasName(buttonInfo);
+	self.Icon:SetAtlas(iconAtlas);
+end
+
+function UIWidgetBaseButtonTemplateMixin:OnEnter()
+	if self.tooltip == "" then 
+		self:SetTooltipOwner();
+		local isPetSpellNo, showSubtextYes = false, true;
+		EmbeddedItemTooltip:SetSpellByID(self.spellID, isPetSpellNo, showSubtextYes);
+		EmbeddedItemTooltip:Show();
+	else
+		UIWidgetTemplateTooltipFrameMixin.OnEnter(self);
+	end
+end
+
+function UIWidgetBaseButtonTemplateMixin:OnClick()
+	local unitTokenNil, tryToggleSpellYes = nil, true;
+	CastSpellByID(self.spellID, unitTokenNil, tryToggleSpellYes);
 end

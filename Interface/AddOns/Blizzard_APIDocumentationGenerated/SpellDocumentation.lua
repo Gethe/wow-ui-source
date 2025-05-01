@@ -33,6 +33,21 @@ local Spell =
 			},
 		},
 		{
+			Name = "GetBaseSpell",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+				{ Name = "spec", Type = "number", Nilable = false, Default = 0, Documentation = { "Which Class Specialization to consider, as overrides may vary by Spec; Defaults to player's current Spec" } },
+			},
+
+			Returns =
+			{
+				{ Name = "baseSpellID", Type = "number", Nilable = false, Documentation = { "Returns the spellID passed in if there is no override" } },
+			},
+		},
+		{
 			Name = "GetDeadlyDebuffInfo",
 			Type = "Function",
 			MayReturnNothing = true,

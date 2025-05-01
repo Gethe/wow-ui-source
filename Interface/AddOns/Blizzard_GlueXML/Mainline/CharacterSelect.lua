@@ -285,7 +285,11 @@ function CharacterSelect_SetRetrievingCharacters(retrieving, success)
         CharacterSelect.retrievingCharacters = retrieving;
 
         if ( retrieving ) then
-            GlueDialog_Show("RETRIEVING_CHARACTER_LIST");
+			-- Do not stop showing the login queue dialog if currently showing.
+			local visibleGlueDialog = GlueDialog_GetVisible();
+			if ( visibleGlueDialog ~= "QUEUED_WITH_FCM" and visibleGlueDialog ~= "QUEUED_NORMAL" ) then
+				GlueDialog_Show("RETRIEVING_CHARACTER_LIST");
+			end
         else
             if ( success ) then
                 GlueDialog_Hide("RETRIEVING_CHARACTER_LIST");
@@ -1477,6 +1481,7 @@ function CharacterSelect_UpdateButtonState()
 	local boostInProgress = guid and GetServiceCharacterInfo(guid).boostInProgress == true;
 	local isAccountLocked = CharacterSelectUtil.IsAccountLocked();
 	local isCollectionsActive = CharacterSelectUI:IsCollectionsActive();
+	local isStoreAvailable = CharacterSelectUtil.IsStoreAvailable();
 
 	-- Note: enterWorldError will be nil in most cases.
 	local allowedToEnterWorld, enterWorldError = CharacterSelect_AllowedToEnterWorld();
@@ -1498,7 +1503,7 @@ function CharacterSelect_UpdateButtonState()
 
 	-- Nav bar buttons.
 	CharacterSelectUI:SetGameModeSelectionEnabled(servicesEnabled and not undeleting and not redemptionInProgress and not isCollectionsActive);
-	CharacterSelectUI:SetStoreEnabled(servicesEnabled and not undeleting and not redemptionInProgress and not isAccountLocked and not isCollectionsActive);
+	CharacterSelectUI:SetStoreEnabled(servicesEnabled and not undeleting and not redemptionInProgress and not isAccountLocked and not isCollectionsActive and isStoreAvailable);
 	CharacterSelectUI:SetMenuEnabled(servicesEnabled and not redemptionInProgress and not isCollectionsActive);
 	CharacterSelectUI:SetChangeRealmEnabled(servicesEnabled and not undeleting and not redemptionInProgress and not isCollectionsActive);
 	CharacterSelectUI:SetEditCampEnabled(servicesEnabled and not undeleting and not redemptionInProgress);

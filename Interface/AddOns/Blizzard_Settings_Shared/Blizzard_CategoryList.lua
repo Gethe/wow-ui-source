@@ -97,13 +97,7 @@ function SettingsCategoryListButtonMixin:Init(initializer)
 	self.Label:SetText(category:GetName());
 	self.Toggle:SetShown(category:HasSubcategories());
 
-	local hasNewFeatureRegions = self.NewFeature.BGLabel and self.NewFeature.Label;
-	local showNewFeature = hasNewFeatureRegions and securecallfunction(SecureDoesCategoryHaveNewSetting, category);
-	if showNewFeature then
-		self.NewFeature.BGLabel:SetPoint("RIGHT", 0.5, -0.5);
-		self.NewFeature.Label:SetPoint("RIGHT", 0, 0);
-	end
-	self.NewFeature:SetShown(showNewFeature);
+	self:RefreshNewFeature();
 
 	self:SetExpanded(category:IsExpanded());
 	self:SetSelected(g_selectionBehavior:IsSelected(self));
@@ -124,6 +118,18 @@ function SettingsCategoryListButtonMixin:SetExpanded(expanded)
 		self.Toggle:SetNormalTexture("common-button-dropdown-closed");
 		self.Toggle:SetPushedTexture("common-button-dropdown-closedpressed");
 	end
+end
+
+function SettingsCategoryListButtonMixin:RefreshNewFeature()
+	local initializer = self:GetElementData();
+	local category = initializer.data.category;
+	local hasNewFeatureRegions = self.NewFeature.BGLabel and self.NewFeature.Label;
+	local showNewFeature = hasNewFeatureRegions and securecallfunction(SecureDoesCategoryHaveNewSetting, category);
+	if showNewFeature then
+		self.NewFeature.BGLabel:SetPoint("RIGHT", 0.5, -0.5);
+		self.NewFeature.Label:SetPoint("RIGHT", 0, 0);
+	end
+	self.NewFeature:SetShown(showNewFeature);
 end
 
 SettingsCategoryListMixin = CreateFromMixins(CallbackRegistryMixin);
@@ -411,4 +417,10 @@ function SettingsCategoryListMixin:CreateCategories()
 	self.elementList = self:GenerateElementList();
 	local dataProvider = CreateDataProvider(self.elementList);
 	self.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
+end
+
+function SettingsCategoryListMixin:RefreshNewFeatures()
+	self.ScrollBox:ForEachFrame(function(button)
+		FunctionUtil.SafeInvokeMethod(button, "RefreshNewFeature");
+	end);
 end

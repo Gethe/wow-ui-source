@@ -109,6 +109,14 @@ function CharacterSelectNavBarMixin:OnLoad()
 	EventRegistry:RegisterCallback("GameMode.UpdateNavBar", self.OnGameModeUpdateNavBar, self);
 	
 	self:SetButtonVisuals();
+
+	-- Hack fix to scale nav bar to look correct size in Classic, which does not use Default UI Scale the
+	-- same as Mainline. Should have been able to inherit DefaultScaleFrame, but that resulted in
+	-- self.ButtonTray not sizing to its children correctly.
+	if self.useDefaultScale then
+		local defaultScale = GetDefaultScale();
+		self:SetScale(defaultScale);
+	end
 end
 
 function CharacterSelectNavBarMixin:OnShow()
@@ -165,6 +173,7 @@ function CharacterSelectNavBarMixin:TrySetUpGameModeButton()
 	local passNavBarToCallback = true;
 	self.GameModeButton = self:AddButton(nil, self.ToggleGameModeDrawer, passNavBarToCallback);
 	self.GameModeButton.SelectionDrawer = CreateFrame("FRAME", nil, self.GameModeButton, "GameModeFrameTemplate");
+	self.GameModeButton.SelectionDrawer:SetScale(self.gameModeDrawerScale);
 	if self.gameModeDrawerAnchorsToButton then
 		self.GameModeButton.SelectionDrawer:SetPoint("TOP", self.GameModeButton, "BOTTOM", 0, -20);
 	else
@@ -187,6 +196,8 @@ function CharacterSelectNavBarMixin:TrySetUpGameModeButton()
 	self.GameModeButton.formatButtonTextCallback = FormatGameModeButtonText;
 
 	self:UpdateSelectedGameMode();
+	self.GameModeButton:SetWidth(self.GameModeButton:GetTextWidth() + CharacterSelectNavBarMixin.NavBarButtonWidthBuffer);
+	self.ButtonTray:Layout();
 end
 
 function CharacterSelectNavBarMixin:TrySetUpStoreButton()
@@ -224,7 +235,7 @@ function CharacterSelectNavBarMixin:TrySetUpStoreButton()
 			elseif highlight then
 				shopIcon = "glues-characterselect-iconshop-hover";
 			end
-			self.StoreButton:SetText(CreateAtlasMarkup(shopIcon, self.shopIconSize, self.shopIconSize, -4)..CHARACTER_SELECT_NAV_BAR_SHOP);
+			self.StoreButton:SetText(CreateAtlasMarkup(shopIcon, 24, 24, -4)..CHARACTER_SELECT_NAV_BAR_SHOP);
 		end
 		self.StoreButton.formatButtonTextCallback = FormatStoreButtonText;
 
@@ -303,9 +314,6 @@ function CharacterSelectNavBarMixin:UpdateSelectedGameMode()
 	local enabled = true;
 	local highlight = false;
 	self.GameModeButton:formatButtonTextCallback(enabled, highlight);
-	self.GameModeButton:SetWidth(self.GameModeButton:GetTextWidth() + CharacterSelectNavBarMixin.NavBarButtonWidthBuffer);
-
-	self.ButtonTray:Layout();
 end
 
 function CharacterSelectNavBarMixin:UpdateButtonDividerState(button)

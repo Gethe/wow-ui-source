@@ -5,4 +5,5 @@ Deprecated_11_0_2.lua
 Deprecated_11_0_5.lua
 Deprecated_11_0_7.lua
 Deprecated_11_1_5.lua
+Deprecated_11_1_7.lua
 11_0_0_SpellBookAPITransitionGuide.lua

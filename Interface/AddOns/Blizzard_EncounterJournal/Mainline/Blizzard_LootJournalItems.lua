@@ -3,6 +3,10 @@ LootJournalItemsMixin = { };
 function LootJournalItemsMixin:OnLoad()
 	self:SetView(LOOT_JOURNAL_ITEM_SETS);
 	self:RegisterEvent("LOOT_JOURNAL_ITEM_UPDATE");
+	EventUtil.ContinueOnPlayerLogin(function() self:SetClassAndSpecFiltersFromSpecialization(); end);
+end
+
+function LootJournalItemsMixin:SetClassAndSpecFiltersFromSpecialization()
 	local _, _, classID = UnitClass("player");
 	local specID = GetSpecializationInfo(GetSpecialization());
 	self:SetClassAndSpecFilters(classID, specID);

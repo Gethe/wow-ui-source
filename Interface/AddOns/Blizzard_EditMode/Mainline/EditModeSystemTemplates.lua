@@ -1484,6 +1484,8 @@ function EditModeBossUnitFrameSystemMixin:UpdateShownState()
 	for index, bossFrame in ipairs(self.BossTargetFrames) do
 		bossFrame:UpdateShownState();
 	end
+
+	UIParent_ManageFramePositions();
 end
 
 EditModeArenaUnitFrameSystemMixin = {};

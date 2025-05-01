@@ -127,6 +127,7 @@ function CharacterCreateMixin:OnEvent(event, ...)
 
 			self.RaceAndClassFrame.ClassTrialCheckButton:ResetDesiredState();
 			GlueParent_SetScreen("charselect");
+			C_Log.LogMessage("From CharacterCreateMixin:OnEvent");
 		else
 			showError = errorCode;
 		end
@@ -142,6 +143,7 @@ function CharacterCreateMixin:OnEvent(event, ...)
 		if success then
 			GlueDialog_Hide("PAID_SERVICE_IN_PROGRESS");
 			GlueParent_SetScreen("charselect");
+			C_Log.LogMessage("From RACE_FACTION_CHANGE_RESULT");
 		else
 			showError = errorCode;
 		end
@@ -152,6 +154,7 @@ function CharacterCreateMixin:OnEvent(event, ...)
 		if success then
 			GlueDialog_Hide("PAID_SERVICE_IN_PROGRESS");
 			GlueParent_SetScreen("charselect");
+			C_Log.LogMessage("From CUSTOMIZE_CHARACTER_RESULT");
 		else
 			showError = errorCode;
 		end
@@ -609,6 +612,7 @@ function CharacterCreateMixin:Exit()
 		GlueParent_SetScreen(screenName);
 	else
 		GlueParent_SetScreen("charselect");
+		C_Log.LogMessage("From CharacterCreateMixin:Exit");
 	end
 end
 
@@ -713,6 +717,7 @@ function CharacterCreateMixin:CreateCharacter()
 		local screenName = C_GameRules.GetGameModeGlueScreenName();
 		if screenName then
 			GlueParent_SetScreen(screenName);
+			C_Log.LogMessage("From CharacterCreateMixin:CreateCharacter");
 		end
 	end
 end

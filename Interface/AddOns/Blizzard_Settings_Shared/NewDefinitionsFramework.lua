@@ -16,7 +16,11 @@ function IsNewSettingInCurrentVersion(variable)
 	if currentNewSettings then
 		for _, var in ipairs(currentNewSettings) do
 			if variable == var then
-				return true;
+				local newSettingPredicate = NewSettingsPredicates[var];
+				if not newSettingPredicate or InvokeSettingPredicate(newSettingPredicate) == true then
+					return true;
+				end
+				break;
 			end
 		end
 	end

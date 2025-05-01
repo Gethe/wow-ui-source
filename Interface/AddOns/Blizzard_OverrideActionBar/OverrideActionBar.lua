@@ -305,7 +305,7 @@ local START_JOB_SPELL_ID = 455055;
 function OverrideActionBarButtonMixin:EvaluateTutorials(spellType, id)
 	local showedTutorial = false;
 	local spellID = (spellType == "spell") and id;
-	if self.glowShowing and spellID == START_JOB_SPELL_ID then
+	if ActionButtonSpellAlertManager:HasAlert(self) and spellID == START_JOB_SPELL_ID then
 		local startJobHelpTipInfo = {
 			text = DRIVE_START_JOB_HELP_TIP,
 			buttonStyle = HelpTip.ButtonStyle.Close,

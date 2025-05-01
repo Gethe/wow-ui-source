@@ -168,6 +168,8 @@ function SettingsPanelMixin:OnShow()
 
 	self:CallRefreshOnCanvases();
 	self:CheckTutorials(); 
+
+	categories:RefreshNewFeatures();
 end
 
 function SettingsPanelMixin:CheckTutorials()

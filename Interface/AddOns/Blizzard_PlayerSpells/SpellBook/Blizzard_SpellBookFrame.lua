@@ -36,6 +36,7 @@ SpellBookFrameMixin = CreateFromMixins(SpellBookFrameTutorialsMixin, SpellBookSe
 function SpellBookFrameMixin:OnLoad()
 	TabSystemOwnerMixin.OnLoad(self);
 	self:SetTabSystem(self.CategoryTabSystem);
+	self.CategoryTabSystem:SetScript("OnSizeChanged", GenerateClosure(self.ResizeSearchBox, self));
 
 	self.categoryMixins = {
 		CreateAndInitFromMixin(SpellBookClassCategoryMixin, self);
@@ -50,13 +51,16 @@ function SpellBookFrameMixin:OnLoad()
 	self.PagedSpellsFrame:SetElementTemplateData(Templates);
 	self.PagedSpellsFrame:RegisterCallback(PagedContentFrameBaseMixin.Event.OnUpdate, self.OnPagedSpellsUpdate, self);
 
-	local initialHidePassives = GetCVarBool("spellBookHidePassives");
-	local isUserInput = false;
-	self.HidePassivesCheckButton:SetControlChecked(initialHidePassives, isUserInput);
-	self.HidePassivesCheckButton:SetCallback(GenerateClosure(self.OnHidePassivesToggled, self));
+	self:SetupSettingsDropdown();
 
 	FrameUtil.RegisterFrameForEvents(self, SpellBookLifetimeEvents);
 	EventRegistry:RegisterCallback("ClickBindingFrame.UpdateFrames", self.OnClickBindingUpdate, self);
+	EventRegistry:RegisterCallback("AssistedCombatManager.OnSetActionSpell", function(o)
+		self:UpdateAttic();
+		self:CheckShowHelpTips();
+	end);
+	EventRegistry:RegisterCallback("AssistedCombatManager.OnSetCanHighlightSpellbookSpells", self.MarkSpellDataDirty, self);
+	EventRegistry:RegisterCallback("AssistedCombatManager.OnSetUseAssistedHighlight", self.MarkSpellDataDirty, self);
 
 	-- If already in the world (ie due to load on demand), make sure to register for in-world events
 	if IsPlayerInWorld() then
@@ -80,18 +84,8 @@ function SpellBookFrameMixin:OnPagedSpellsUpdate()
 	EventRegistry:TriggerEvent("PlayerSpellsFrame.SpellBookFrame.DisplayedSpellsChanged");
 end
 
-function SpellBookFrameMixin:OnHidePassivesToggled(isChecked, isUserInput)
-	SetCVar("spellBookHidePassives", isChecked);
-	local forceUpdateSpellGroups, resetCurrentPage = true, false;
-	self:UpdateDisplayedSpells(forceUpdateSpellGroups, resetCurrentPage);
-
-	if isUserInput then
-		local checkboxSound = isChecked and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON or SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF;
-		PlaySound(checkboxSound);
-	end
-end
-
 function SpellBookFrameMixin:OnShow()
+	self:UpdateAttic();
 	self:UpdateAllSpellData();
 
 	if not self:GetTab() and not self:IsInSearchResultsMode() then
@@ -106,6 +100,8 @@ function SpellBookFrameMixin:OnShow()
 	if InClickBindingMode() then
 		ClickBindingFrame:SetFocusedFrame(self:GetParent());
 	end
+
+	SpellBookFrameTutorialsMixin.OnShow(self);
 end
 
 function SpellBookFrameMixin:OnHide()
@@ -162,6 +158,48 @@ function SpellBookFrameMixin:OnEvent(event, ...)
 	end
 end
 
+function SpellBookFrameMixin:SetupSettingsDropdown()
+	local function IsSelected()
+		return GetCVarBool("spellBookHidePassives");
+	end
+
+	local function SetSelected()
+		SetCVar("spellBookHidePassives", not IsSelected());
+		local forceUpdateSpellGroups, resetCurrentPage = true, false;
+		self:UpdateDisplayedSpells(forceUpdateSpellGroups, resetCurrentPage);
+	end
+
+	local function IsEnabled()
+		return not self:IsInSearchResultsMode();
+	end
+
+	self.SettingsDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_SPELL_BOOK_SETTINGS");
+		local checkbox = rootDescription:CreateCheckbox(SPELLBOOK_FILTER_PASSIVES, IsSelected, SetSelected);
+		checkbox:SetEnabled(IsEnabled);
+		checkbox:SetTooltip(function(tooltip, elementDescription)
+			if not IsEnabled() then
+				GameTooltip_AddHighlightLine(tooltip, SPELLBOOK_SEARCH_HIDE_PASSIVES_DISABLED);
+			end
+		end);
+	end);
+end
+
+function SpellBookFrameMixin:UpdateAttic()
+	self.SettingsDropdown:ClearAllPoints();
+	if AssistedCombatManager:HasActionSpell() then
+		self.AssistedCombatRotationSpellFrame:Show();
+		local actionSpelID = AssistedCombatManager:GetActionSpellID();
+		self.AssistedCombatRotationSpellFrame:SetSpellID(actionSpelID);
+		self.SettingsDropdown:SetPoint("TOP", 0, -17);
+		self.SettingsDropdown:SetPoint("RIGHT", self.AssistedCombatRotationSpellFrame, "LEFT", -11, 0);
+	else
+		self.AssistedCombatRotationSpellFrame:Hide();
+		self.SettingsDropdown:SetPoint("TOPRIGHT", -30, -17);
+	end
+	self:ResizeSearchBox();
+end
+
 function SpellBookFrameMixin:SetTab(tabID)
 	TabSystemOwnerMixin.SetTab(self, tabID);
 
@@ -181,10 +219,6 @@ function SpellBookFrameMixin:SetMinimized(shouldBeMinimized)
 		-- Minimizing requires shortening TopBar and adjusting the right UV to prevent it from looking squished.
 		self.TopBar:SetTexCoord(0, self.minimizedWidth / self.topBarFullWidth, 0, 1);
 		self.TopBar:SetWidth(self.minimizedWidth);
-
-		self.SearchBox:ClearAllPoints();
-		self.SearchBox:SetPoint("RIGHT", self.HidePassivesCheckButton, "LEFT", -15, 0);
-		self.SearchBox:SetPoint("LEFT", self.CategoryTabSystem, "RIGHT", 10, 10);
 	elseif self.isMinimized and not shouldBeMinimized then
 		self.isMinimized = false;
 		self:SetWidth(self.maximizedWidth);
@@ -196,12 +230,10 @@ function SpellBookFrameMixin:SetMinimized(shouldBeMinimized)
 		-- Maximizing requires lenghtening TopBar and adjusting the right UV to prevent it from looking stretched.
 		self.TopBar:SetTexCoord(0, self.maximizedWidth / self.topBarFullWidth, 0, 1);
 		self.TopBar:SetWidth(self.maximizedWidth);
-
-		self.SearchBox:ClearAllPoints();
-		self.SearchBox:SetPoint("RIGHT", self.HidePassivesCheckButton, "LEFT", -30, 0);
 	end
 
 	if minimizedChanged then
+		self:ResizeSearchBox();
 		for _, minimizedPiece in ipairs(self.minimizedArt) do
 			minimizedPiece:SetShown(self.isMinimized);
 		end
@@ -211,6 +243,19 @@ function SpellBookFrameMixin:SetMinimized(shouldBeMinimized)
 
 		self:UpdateTutorialsForFrameSize();
 	end
+end
+
+local SEARCH_BOX_MAX_WIDTH = 300;
+local SEARCH_BOX_LEFT_SPACING = 10;
+function SpellBookFrameMixin:ResizeSearchBox()
+	local width = SEARCH_BOX_MAX_WIDTH;
+	local leftEdge = self.CategoryTabSystem:GetRight();
+	local rightEdge = self.SearchBox:GetRight();
+	if leftEdge and rightEdge then
+		local space = rightEdge - leftEdge - SEARCH_BOX_LEFT_SPACING;
+		width = math.min(space, SEARCH_BOX_MAX_WIDTH);
+	end
+	self.SearchBox:SetWidth(width);
 end
 
 -- Expects a PlayerSpellsUtil.SpellBookCategories value
@@ -356,6 +401,13 @@ function SpellBookFrameMixin:OnActiveCategoryChanged()
 	self:UpdateDisplayedSpells(forceUpdateSpellGroups, resetCurrentPage);
 end
 
+function SpellBookFrameMixin:MarkSpellDataDirty()
+	self.spellDataDirty = true;
+	if self:IsVisible() then
+		self:UpdateAllSpellData();
+	end
+end
+
 function SpellBookFrameMixin:UpdateAllSpellData(resetCurrentPage)
 	self.isUpdatingAllSpellData = true;
 	local activeTabID = self:GetTab();
@@ -381,11 +433,12 @@ function SpellBookFrameMixin:UpdateAllSpellData(resetCurrentPage)
 	if isActiveCategoryUnavailable then
 		self:ResetToFirstAvailableTab();
 	else
-		local forceUpdateSpellGroups = didActiveCategorySpellGroupsChange;
+		local forceUpdateSpellGroups = self.spellDataDirty or didActiveCategorySpellGroupsChange;
 		self:UpdateDisplayedSpells(forceUpdateSpellGroups, resetCurrentPage);
 	end
 
 	self.isUpdatingAllSpellData = false;
+	self.spellDataDirty = false;
 end
 
 function SpellBookFrameMixin:UpdateDisplayedSpells(forceUpdateSpellGroups, resetCurrentPage)
@@ -420,8 +473,12 @@ end
 -- Creates an instance of ShouldDisplaySpellBookItem with injected state checks to prevent needlessly repeating expensive checks over every single SpellBookItem
 function SpellBookFrameMixin:GetSpellBookItemFilterInstance()
 	local isKioskEnabled = Kiosk.IsEnabled();
-	local isHidingPassives = self.HidePassivesCheckButton:IsControlEnabled() and self.HidePassivesCheckButton:IsControlChecked();
+	local isHidingPassives = self:IsHidingPassives();
 	return GenerateClosure(self.ShouldDisplaySpellBookItem, self, isKioskEnabled, isHidingPassives);
+end
+
+function SpellBookFrameMixin:IsHidingPassives()
+	return not self:IsInSearchResultsMode() and GetCVarBool("spellBookHidePassives");
 end
 
 function SpellBookFrameMixin:ShouldDisplaySpellBookItem(isKioskEnabled, isHidingPassives, slotIndex, spellBank)
@@ -489,4 +546,108 @@ end
 function SpellBookFrameMixin:OnPagingButtonLeave()
 	local reverse = true;
 	self.BookCornerFlipbook.Anim:Play(reverse);
+end
+
+AssistedCombatRotationSpellFrameMixin = { };
+
+function AssistedCombatRotationSpellFrameMixin:OnIconEnter()
+	UIPanelSpellButtonFrameMixin.OnIconEnter(self);
+	AssistedCombatManager:SetCanHighlightSpellbookSpells(true);
+	self:ShowTooltip();
+end
+
+function AssistedCombatRotationSpellFrameMixin:OnIconLeave()
+	UIPanelSpellButtonFrameMixin.OnIconLeave(self);
+	AssistedCombatManager:SetCanHighlightSpellbookSpells(false);
+end
+
+function AssistedCombatRotationSpellFrameMixin:OnIconDragStart()
+	HelpTip:Acknowledge(UIParent, ASSISTED_COMBAT_ROTATION_DRAG_HELPTIP);
+	UIPanelSpellButtonFrameMixin.OnIconDragStart(self);
+end
+
+function AssistedCombatRotationSpellFrameMixin:OnIconClick(frame, button)
+	if button == "RightButton" then
+		self.showRotationSpells = not self.showRotationSpells;
+		self:ShowTooltip();
+	end
+end
+
+function AssistedCombatRotationSpellFrameMixin:UpdateTooltip()
+	-- nop because this one runs every TOOLTIP_UPDATE_TIME but
+	-- our tooltip isn't a spell so constant updates aren't needed
+end
+
+function AssistedCombatRotationSpellFrameMixin:ShowTooltip()
+	local instructionText = ASSISTED_COMBAT_ROTATION_SPELLS_LIST_SHOW;
+	local tooltip = GameTooltip;
+	GameTooltip_SetTitle(tooltip, ASSISTED_COMBAT_ROTATION, HIGHLIGHT_FONT_COLOR);
+	GameTooltip_AddNormalLine(tooltip, AssistedCombatManager:GetActionSpellDescription());
+	GameTooltip_AddBlankLineToTooltip(tooltip);
+
+	if self.showRotationSpells then
+		instructionText = ASSISTED_COMBAT_ROTATION_SPELLS_LIST_HIDE;
+
+		local spellInfos = { };
+		-- there are spells with different IDs but same name, like the shaman Earthquake talent choice node
+		local function TryInsertSpell(spellID)
+			local newInfo = C_Spell.GetSpellInfo(spellID);
+			newInfo.isKnown = IsPlayerSpell(spellID);
+			for i, spellInfo in ipairs(spellInfos) do
+				if newInfo.name == spellInfo.name then
+					-- on a name match, prefer the known one
+					if newInfo.isKnown == spellInfo.isKnown or not newInfo.isKnown then
+						return;
+					end
+					table.remove(spellInfos, i);
+					break;
+				end
+			end
+			table.insert(spellInfos, newInfo);
+		end
+
+		local rotationSpells = C_AssistedCombat.GetRotationSpells();
+		for i, spellID in ipairs(rotationSpells) do
+			spellID = C_Spell.GetOverrideSpell(spellID);
+			TryInsertSpell(spellID);
+		end
+
+		table.sort(spellInfos, function(lhs, rhs)
+			if lhs.isKnown ~= rhs.isKnown then
+				return lhs.isKnown;
+			end
+			return strcmputf8i(lhs.name, rhs.name) < 0;
+		end);
+
+		local textureSettings = {
+			width = 32,
+			height = 32,
+			anchor = Enum.TooltipTextureAnchor.LeftCenter,
+			margin = { left = 0, right = 8, top = 0, bottom = 4 },
+		};
+
+		for i, spellInfo in ipairs(spellInfos) do
+			if spellInfo.isKnown then
+				GameTooltip_AddHighlightLine(tooltip, spellInfo.name);
+				textureSettings.desaturation = 0;
+			else
+				GameTooltip_AddDisabledLine(tooltip, spellInfo.name);
+				textureSettings.desaturation = 1;
+			end
+			if i == #spellInfos then
+				textureSettings.margin.bottom = 0;
+			end
+			tooltip:AddTexture(spellInfo.originalIconID, textureSettings);
+		end
+
+		GameTooltip_AddBlankLineToTooltip(tooltip);
+	end
+
+	if not C_ActionBar.HasAssistedCombatActionButtons() then
+		GameTooltip_AddColoredLine(tooltip, SPELLBOOK_SPELL_NOT_ON_ACTION_BAR, LIGHTBLUE_FONT_COLOR);
+	end
+
+	GameTooltip_AddDisabledLine(tooltip, instructionText);
+
+	tooltip:Show();
 end

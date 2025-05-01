@@ -5,6 +5,9 @@
 ## AllowLoadGameType: standard
 ## AllowLoad: Game
 ActionButtonUtil.lua
+Shared\ActionButtonSpellAlerts.lua
+Shared\ActionButtonSpellAlerts.xml
+Mainline\AssistedCombatManager.lua
 Mainline\MainMenuBarMicroButtons.lua
 Mainline\MainMenuBarMicroButtons.xml
 Mainline\StatusTrackingBar.lua

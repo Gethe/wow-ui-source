@@ -171,6 +171,12 @@
 						<Texture parentKey="ClickBindingIconCover" setAllPoints="true" hidden="true">
 							<Color r="0" g="0" b="0" a="0.3"/>
 						</Texture>
+						<Texture parentKey="AssistedCombatIconCover" atlas="UI-HUD-RotationHelper-SpellbookGlow" hidden="true">
+							<Size x="36" y="36"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
 						<Texture parentKey="GlyphIcon" hidden="true" alpha="1" alphaMode="BLEND" atlas="GlyphIcon-Spellbook" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="TOPRIGHT" x="5" y="4"/>

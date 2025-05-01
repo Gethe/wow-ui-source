@@ -18,6 +18,17 @@ local ActionBarFrame =
 			},
 		},
 		{
+			Name = "FindAssistedCombatActionButtons",
+			Type = "Function",
+			MayReturnNothing = true,
+			Documentation = { "Returns the list of action bar slots that contain the Assisted Combat action spell." },
+
+			Returns =
+			{
+				{ Name = "slots", Type = "table", InnerType = "luaIndex", Nilable = false },
+			},
+		},
+		{
 			Name = "FindFlyoutActionButtons",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -61,6 +72,16 @@ local ActionBarFrame =
 			Returns =
 			{
 				{ Name = "slots", Type = "table", InnerType = "luaIndex", Nilable = false },
+			},
+		},
+		{
+			Name = "ForceUpdateAction",
+			Type = "Function",
+			Documentation = { "Force updates some internals for an action button slot." },
+
+			Arguments =
+			{
+				{ Name = "slotID", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -135,6 +156,15 @@ local ActionBarFrame =
 			},
 		},
 		{
+			Name = "HasAssistedCombatActionButtons",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasButtons", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "HasFlyoutActionButtons",
 			Type = "Function",
 
@@ -188,6 +218,21 @@ local ActionBarFrame =
 			Returns =
 			{
 				{ Name = "hasSpellActionButtons", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsAssistedCombatAction",
+			Type = "Function",
+			Documentation = { "Returns whether the given action button contains the Assisted Combat action spell." },
+
+			Arguments =
+			{
+				{ Name = "slotID", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isAssistedCombatAction", Type = "bool", Nilable = false },
 			},
 		},
 		{

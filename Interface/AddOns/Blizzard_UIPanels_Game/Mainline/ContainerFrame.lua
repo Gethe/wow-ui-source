@@ -1127,6 +1127,10 @@ function ContainerFrame_UpdateLockedItem(bagID, slotID)
 	local info = C_Container.GetContainerItemInfo(bagID, slotID);
 	local locked = info and info.isLocked;
 	SetItemButtonDesaturated(itemButton, locked);
+
+	if itemButton:IsMouseMotionFocus() then
+		itemButton:OnEnter();
+	end
 end
 
 function ContainerFrame_GenerateFrame(frame, size, id)

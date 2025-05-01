@@ -2470,8 +2470,9 @@ function UIParent_UpdateTopFramePositions()
 	end
 
 	if BuffFrame:IsInDefaultPosition() then
-		local y = -(buffOffset + 13)
-		BuffFrame:SetPoint("TOPRIGHT", MinimapCluster, "TOPLEFT", -10, y);
+		local anchor = EditModeManagerFrame:GetDefaultAnchor(BuffFrame);
+		BuffFrame:ClearAllPoints();
+		BuffFrame:SetPoint(anchor.point, anchor.relativeTo, anchor.relativePoint, anchor.offsetX, anchor.offsetY - buffOffset);
 	end
 end
 
