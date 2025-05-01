@@ -1199,10 +1199,10 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 	-- display spec info in the scrollframe
 	local scrollChild = self.spellsScroll.child;
 	local id, name, description, icon = C_SpecializationInfo.GetSpecializationInfo(shownSpec, false, self.isPet);
-	if (not id) then
+	if (id == 0) then
 		-- We can't get information about specializations before entering the world. In
 		-- that case, just return, and we'll update things later.
-		return
+		return;
 	end
 	SetPortraitToTexture(scrollChild.specIcon, icon);
 	scrollChild.specName:SetText(name);

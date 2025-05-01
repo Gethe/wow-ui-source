@@ -49,8 +49,6 @@ local shared_l10nTable = {
 			AUTH_PARENTAL_CONTROL_URL = "http://www.wow-europe.com/en/account/";
 			REALM_TYPE_TOURNAMENT_WARNING = "This account is currently not flagged to participate in the tournament realms.\n\nFor more information regarding the World of Warcraft Arena Tournament, please visit: www.wow-europe.com.";
 			REALM_HELP_FRAME_URL = "<a href=\"http://www.wow-europe.com\">www.wow-europe.com</a>";
-			SERVER_ALERT_URL = "http://eu.launcher.battle.net/service/tbc-client/alert/en-gb";
-			SERVER_ALERT_BETA_URL = "http://beta.wow-europe.com/en/alert";
 			LOGIN_GAME_ACCOUNT_LOCKED = "<html><body><p align=\"CENTER\">Access to your account has been temporarily disabled. Please contact support for more information at: <a href=\"https://www.wow-europe.com/account/account-error.html\">https://www.wow-europe.com/account/account-error.html</a></p></body></html>";
 
 			LOGIN_BAD_SERVER_PROOF = "<html><body><p align=\"CENTER\">You are connecting to an invalid game server. Please contact Technical Support for assistance at: <a href=\"http://eu.blizzard.com/support/index.xml?gameId=11&amp;rootCategoryId=2088\">http://eu.blizzard.com/support/index.xml?gameId=11&amp;rootCategoryId=2088</a></p></body></html>";
@@ -154,8 +152,6 @@ local shared_l10nTable = {
 			AUTH_PARENTAL_CONTROL_URL = "http://eu.battle.net/account/";
 			REALM_TYPE_TOURNAMENT_WARNING = "Esta conta não está sinalizada para participar de reinos de torneio.\n\nPara obter mais informações sobre o Torneio de Arena do World of Warcraft, visite: http://eu.battle.net/wow/pt/game/.";
 			REALM_HELP_FRAME_URL = "<a href=\"http://eu.battle.net/wow/pt\">http://eu.battle.net/wow/</a>";
-			SERVER_ALERT_URL = "http://eu.launcher.battle.net/service/tbc-client/alert/pt-pt";
-			SERVER_ALERT_BETA_URL = "http://beta.wow-europe.com/pt/alert";
 			LOGIN_GAME_ACCOUNT_LOCKED = "<html><body><p align=\"CENTER\">O acesso à sua conta foi temporariamente desativado. Entre em contato com o suporte para obter mais informações em <a href=\"http://eu.blizzard.com/support/index.xml?locale=pt_PT\">http://eu.blizzard.com/support/</a></p></body></html>";
 
 			LOGIN_BAD_SERVER_PROOF = "<html><body><p align=\"CENTER\">Você está se conectando a um servidor inválido de jogo. Entre em contato com o Suporte Técnico para obter ajuda em <a href=\"http://eu.blizzard.com/support/index.xml?locale=pt_PT\">http://eu.blizzard.com/support/</a></p></body></html>";

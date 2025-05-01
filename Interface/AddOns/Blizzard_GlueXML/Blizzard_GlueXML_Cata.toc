@@ -18,8 +18,10 @@ Classic\AccountLogin.xml
 TBC\RealmList.lua
 Cata\RealmList.xml
 Classic\CharacterServicesPatchwerk.xml
+Classic\CharacterSelect\CharacterSelectUI.lua
+Classic\CharacterSelect\CharacterSelectUI.xml
 Classic\CharacterSelect.lua
-TBC\CharacterSelect.xml
+Classic\CharacterSelect.xml
 Shared\AccountReactivate.lua
 Shared\AccountReactivate.xml
 Classic\KioskModeSplash.lua

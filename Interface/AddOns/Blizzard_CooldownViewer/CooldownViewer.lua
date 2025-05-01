@@ -56,9 +56,11 @@ function CooldownViewerItemMixin:OnLoad()
 end
 
 function CooldownViewerItemMixin:OnEnter()
-	GameTooltip_SetDefaultAnchor(GameTooltip, self);
-	self:RefreshTooltip();
-	GameTooltip:Show();
+	if self:IsDisplayed() then
+		GameTooltip_SetDefaultAnchor(GameTooltip, self);
+		self:RefreshTooltip();
+		GameTooltip:Show();
+	end
 end
 
 function CooldownViewerItemMixin:OnLeave()
@@ -67,6 +69,10 @@ end
 
 function CooldownViewerItemMixin:SetViewerFrame(viewerFrame)
 	self.viewerFrame = viewerFrame;
+end
+
+function CooldownViewerItemMixin:IsDisplayed()
+	return self:GetAlpha() > 0;
 end
 
 function CooldownViewerItemMixin:SetCooldownID(cooldownID)
@@ -1398,7 +1404,8 @@ function CooldownViewerMixin:ShouldBeShown()
 		return false;
 	end
 
-	if not C_CooldownViewer.IsCooldownViewerAvailable() then
+	local isAvailable, _failureReason = C_CooldownViewer.IsCooldownViewerAvailable();
+	if not isAvailable then
 		return false;
 	end
 
@@ -1422,6 +1429,7 @@ end
 function CooldownViewerMixin:OnIsEditingChanged()
 	self:UpdateShownState();
 	self:RefreshLayout();
+	self:GetItemContainerFrame():Layout();
 end
 
 function CooldownViewerMixin:SetIsEditing(isEditing)
@@ -1438,7 +1446,7 @@ function CooldownViewerMixin:IsEditing()
 	return self.isEditing;
 end
 
-function CooldownViewerMixin:OnHideWhenInactiveChanged()
+function CooldownViewerMixin:OnHideWhenInactiveChanged(entireSystemUpdate)
 	if self.itemActiveStateChangedEvent then
 		-- Only need to listen for the event if it will result in a layout change.
 		if self.hideWhenInactive then
@@ -1448,18 +1456,20 @@ function CooldownViewerMixin:OnHideWhenInactiveChanged()
 		end
 
 		-- Changes to the setting may result in items being shown or hidden.
-		self:RefreshItemsShown();
+		if not entireSystemUpdate then
+			self:RefreshItemsShown();
+		end
 	end
 end
 
-function CooldownViewerMixin:SetHideWhenInactive(hideWhenInactive)
+function CooldownViewerMixin:SetHideWhenInactive(hideWhenInactive, entireSystemUpdate)
 	if self.hideWhenInactive == hideWhenInactive then
 		return;
 	end
 
 	self.hideWhenInactive = hideWhenInactive;
 
-	self:OnHideWhenInactiveChanged();
+	self:OnHideWhenInactiveChanged(entireSystemUpdate);
 end
 
 function CooldownViewerMixin:GetHideWhenInactive()
@@ -1489,10 +1499,8 @@ function CooldownViewerMixin:GetItemCount()
 	local cooldownIDs = self:GetCooldownIDs();
 	local itemCount = cooldownIDs and #cooldownIDs or 0;
 
-	if self:IsEditing() then
-		local editModeMinimumItemCount = 2;
-		itemCount = math.max(itemCount, editModeMinimumItemCount);
-	end
+	local minimumItemCount = 2;
+	itemCount = math.max(itemCount, minimumItemCount);
 
 	return itemCount;
 end
@@ -1525,6 +1533,7 @@ function CooldownViewerMixin:OnAcquireItemFrame(itemFrame)
 	itemFrame:SetScale(self.iconScale);
 	itemFrame:SetTimerShown(self.timerShown);
 	itemFrame:SetTooltipsShown(self.tooltipsShown);
+	itemFrame:SetAlpha(0);
 end
 
 function CooldownViewerMixin:RefreshLayout()
@@ -1618,6 +1627,10 @@ function CooldownViewerMixin:ShouldItemBeShown(itemFrame)
 		return true;
 	end
 
+	if not itemFrame:GetCooldownID() then
+		return false;
+	end
+
 	if self:GetHideWhenInactive() then
 		return itemFrame:IsActive();
 	end
@@ -1627,9 +1640,11 @@ end
 
 function CooldownViewerMixin:RefreshItemShown(itemFrame)
 	local shouldItemBeShown = self:ShouldItemBeShown(itemFrame);
-	local isItemShown = itemFrame:IsShown();
+	local isItemShown = itemFrame:IsDisplayed();
 
-	itemFrame:SetShown(shouldItemBeShown);
+	-- Always show all items to preserve layout and use alpha to 'hide' inactive items when appropriate.
+	itemFrame:SetShown(true);
+	itemFrame:SetAlpha(shouldItemBeShown and 1.0 or 0.0);
 
 	-- Return true if the shown state changed to indicate to the caller that a layout is needed.
 	return shouldItemBeShown ~= isItemShown;
@@ -1641,7 +1656,7 @@ function CooldownViewerMixin:RefreshItemsShown()
 
 	for itemFrame in self.itemFramePool:EnumerateActive() do
 		needsLayout = self:RefreshItemShown(itemFrame) or needsLayout;
-		anyItemsShown = anyItemsShown or itemFrame:IsShown();
+		anyItemsShown = anyItemsShown or itemFrame:IsDisplayed();
 	end
 
 	if anyItemsShown ~= self.anyItemsShown then

@@ -158,7 +158,7 @@ function ArchaeologyFrame_OnShow(self)
 	local _, _, arch = GetProfessions();
 	if arch then
 		local name, texture, rank, maxRank = GetProfessionInfo(arch);
-		SetPortraitToTexture(self.portrait, texture);
+		self:SetPortraitToAsset(texture);
 		self.rankBar:SetMinMaxValues(0, maxRank);
 		self.rankBar:SetValue(rank);
 		self.rankBar.text:SetText(rank.."/"..maxRank);
@@ -221,7 +221,7 @@ function ArchaeologyFrame_OnEvent(self, event, ...)
 		local _, _, arch = GetProfessions();
 		if arch then
 			local name, texture, rank, maxRank = GetProfessionInfo(arch);
-			SetPortraitToTexture(self.portrait, texture);
+			self:SetPortraitToAsset(texture);
 			self.rankBar:SetMinMaxValues(0, maxRank);
 			self.rankBar:SetValue(rank);
 			self.rankBar.text:SetText(rank.."/"..maxRank);
@@ -434,6 +434,7 @@ function ArchaeologyFrame_UpdateComplete(self)
 
 	if IsArtifactCompletionHistoryAvailable() then
 		local i = 1;
+		local skip = false;
 		while i<=ARCHAEOLOGY_MAX_COMPLETED_SHOWN+1 do
 			if outOfArtifacts  or buttonSkip > 0 then
 				if i<=ARCHAEOLOGY_MAX_COMPLETED_SHOWN then
@@ -441,12 +442,20 @@ function ArchaeologyFrame_UpdateComplete(self)
 					buttonSkip = buttonSkip-1;
 				end
 			else
-				local failed = false;
+				local done = false;
 				local rareStatus = self.currData.onRare;
+				skip = false;
+
 				name, description, rarity, icon, spellDescription,  _, _, spellID, firstCompletionTime, completionCount = GetArtifactInfoByRace(self.currData.raceIndex, self.currData.projectIndex);
+
 				if not name then
 					if self.raceFilter ~= 0 then
-						outOfArtifacts = true;
+						self.currData.projectIndex = 1;
+						if self.currData.onRare then
+							self.currData.onRare = false;
+						else	-- WE ARE DONE
+							outOfArtifacts = true;
+						end
 					else
 						self.currData.raceIndex = self.currData.raceIndex+1;
 						self.currData.projectIndex = 1;
@@ -459,25 +468,12 @@ function ArchaeologyFrame_UpdateComplete(self)
 							end
 						end
 					end
-					failed = true;
-				elseif self.currData.onRare and rarity==0 then -- common item
-					if self.raceFilter == 0 then
-						self.currData.raceIndex = self.currData.raceIndex+1;
-						self.currData.projectIndex = 1;
-					else
-						self.currData.onRare = false;
+					done = true;
+				else
+					if( (self.currData.onRare ~= (rarity == 1)) or (completionCount ==  0) ) then
+						skip = true;
+						self.currData.projectIndex = self.currData.projectIndex+1;
 					end
-					if self.currData.raceIndex > numRaces then
-						self.currData.onRare = false;
-						self.currData.raceIndex = 1;
-					end
-					failed = true;
-				elseif not self.currData.onRare and rarity~=0 then
-					self.currData.projectIndex = self.currData.projectIndex+1;
-					failed = true;
-				elseif completionCount ==  0 then
-					self.currData.projectIndex = self.currData.projectIndex+1;
-					failed = true;
 				end
 
 				if rareStatus ~= self.currData.onRare and i > 1 then -- we have switched to common
@@ -486,7 +482,7 @@ function ArchaeologyFrame_UpdateComplete(self)
 					buttonSkip = 2 + mod(i+1,2);
 				end
 
-				if not failed  and  i<=ARCHAEOLOGY_MAX_COMPLETED_SHOWN then
+				if not done and not skip and i<=ARCHAEOLOGY_MAX_COMPLETED_SHOWN then
 					raceName = GetArchaeologyRaceInfo(self.currData.raceIndex);
 					local projectButton = self["artifact"..i];
 					projectButton:Show();
@@ -517,11 +513,14 @@ function ArchaeologyFrame_UpdateComplete(self)
 						projectButton:Enable();
 					end
 					self.currData.projectIndex = self.currData.projectIndex+1;
-				elseif failed then
+				elseif done then
 					i = i-1; -- Try this loop again with new race and artifact
 				end
 			end
-			i=i+1;
+			
+			if(not skip) then
+				i=i+1;
+			end
 		end
 	else
 		for i=1,ARCHAEOLOGY_MAX_COMPLETED_SHOWN do

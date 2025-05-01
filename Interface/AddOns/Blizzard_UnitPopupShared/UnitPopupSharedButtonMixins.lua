@@ -1700,7 +1700,7 @@ function UnitPopupLootSpecializationDefaultButtonMixin:GetText(contextData)
 	local specIndex = C_SpecializationInfo.GetSpecialization();
 	if specIndex then
 	local sex = UnitSex("player");
-		local isInspect, isPet, inspectTarget = false, false, false;
+		local isInspect, isPet, inspectTarget = false, false, nil;
 		local specID, specName = C_SpecializationInfo.GetSpecializationInfo(specIndex, isInspect, isPet, inspectTarget, sex);
 		if specName then
 			return format(LOOT_SPECIALIZATION_DEFAULT, specName);
@@ -1728,7 +1728,7 @@ function UnitPopupLootSpecialization1ButtonMixin:GetText(contextData)
 	local specIndex = self:GetSpecIndex();
 	if specIndex then
 	local sex = UnitSex("player");
-		local isInspect, isPet, inspectTarget = false, false, false;
+		local isInspect, isPet, inspectTarget = false, false, nil;
 		local specID, specName = C_SpecializationInfo.GetSpecializationInfo(specIndex, isInspect, isPet, inspectTarget, sex);
 		if specName then
 			return specName;
@@ -1744,7 +1744,7 @@ end
 function UnitPopupLootSpecialization1ButtonMixin:GetSpecID()
 	local specIndex = self:GetSpecIndex();
 	local sex = UnitSex("player");
-	local isInspect, isPet, inspectTarget = false, false, false;
+	local isInspect, isPet, inspectTarget = false, false, nil;
 	local specID = C_SpecializationInfo.GetSpecializationInfo(specIndex, isInspect, isPet, inspectTarget, sex);
 	return specID or -1;
 end
@@ -3539,6 +3539,10 @@ function UnitPopupSelectRoleButtonMixin:CanShow(contextData)
 	end
 
 	if HasLFGRestrictions() then
+		return false;
+	end
+
+	if UnitInPartyIsAI(contextData.unit) then
 		return false;
 	end
 

@@ -13,3 +13,8 @@ end
 function ColorManager.GetColorDataForWorldQuestQuality(quality)
 	return WORLD_QUEST_QUALITY_COLORS[quality];
 end
+
+function ColorManager.GetFormattedStringForItemQuality(text, quality)
+	local colorData = ColorManager.GetColorDataForItemQuality(quality);
+	return colorData.color:WrapTextInColorCode(text);
+end

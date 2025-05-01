@@ -430,7 +430,9 @@ function PTR_IssueReporter.GetStandaloneSurveyFrame()
         PTR_IssueReporter.StandaloneSurvey:SetParent(GetAppropriateTopLevelParent())
         PTR_IssueReporter.StandaloneSurvey.SurveyFrame:SetParent(GetAppropriateTopLevelParent())
 	end      
-    
+    PTR_IssueReporter.StandaloneSurvey:SetFrameStrata("FULLSCREEN")
+	PTR_IssueReporter.StandaloneSurvey.SurveyFrame:SetFrameStrata("FULLSCREEN")
+
     return PTR_IssueReporter.StandaloneSurvey
 end
 ----------------------------------------------------------------------------------------------------

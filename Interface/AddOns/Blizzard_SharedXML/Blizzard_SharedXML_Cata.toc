@@ -84,6 +84,9 @@ Shared\Scroll\TrimScrollBar.xml
 Classic\Scroll\TrimScrollBar.xml
 Shared\Scroll\ScrollTemplates.lua
 Shared\Scroll\ScrollTemplates.xml
+Shared\ButtonTray\ButtonTrayUtil.lua
+Shared\ButtonTray\ButtonTray.lua
+Shared\ButtonTray\ButtonTray.xml
 Dump.lua
 
 Shared\Selector\Blizzard_SelectorUI.lua

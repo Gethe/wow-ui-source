@@ -414,6 +414,8 @@ BASE_ENEMY_PARRY_CHANCE = {
 
 DUAL_WIELD_HIT_PENALTY = 19.0;
 
+local RANGED_OR_MAINHAND_SLOT_NUM = 18;
+
 function PaperDollFrame_OnLoad (self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("CHARACTER_POINTS_CHANGED");
@@ -455,6 +457,10 @@ function PaperDollFrame_OnLoad (self)
 		verticalAnchorX = 0,
 		verticalAnchorY = 0,
 	};
+
+	if (not C_PaperDollInfo.IsRangedSlotShown()) then
+		RANGED_OR_MAINHAND_SLOT_NUM = 16;
+	end
 end
 
 function PaperDoll_IsEquippedSlot (slot)
@@ -773,9 +779,17 @@ function PaperDollFrame_SetStat(statFrame, unit, statIndex)
 				local baseInt = min(20, effectiveStat);
 				local moreInt = effectiveStat - baseInt
 				if (GetOverrideSpellPowerByAP() > 0) then
-					statFrame.tooltip2 = format(STAT4_NOSPELLPOWER_TOOLTIP, baseInt + moreInt*MANA_PER_INTELLECT, GetSpellCritChanceFromIntellect("player"));
+					if ClassicExpansionAtLeast(LE_EXPANSION_MISTS_OF_PANDARIA) then
+						statFrame.tooltip2 = format(STAT4_NOSPELLPOWER_TOOLTIP, GetSpellCritChanceFromIntellect("player"));
+					else
+						statFrame.tooltip2 = format(STAT4_NOSPELLPOWER_TOOLTIP, baseInt + moreInt*MANA_PER_INTELLECT, GetSpellCritChanceFromIntellect("player"));
+					end
 				else
-					statFrame.tooltip2 = format(statFrame.tooltip2, baseInt + moreInt*MANA_PER_INTELLECT, max(0, effectiveStat-10), GetSpellCritChanceFromIntellect("player"));
+					if ClassicExpansionAtLeast(LE_EXPANSION_MISTS_OF_PANDARIA) then
+						statFrame.tooltip2 = format(statFrame.tooltip2, max(0, effectiveStat-10), GetSpellCritChanceFromIntellect("player"));
+					else
+						statFrame.tooltip2 = format(statFrame.tooltip2, baseInt + moreInt*MANA_PER_INTELLECT, max(0, effectiveStat-10), GetSpellCritChanceFromIntellect("player"));
+					end
 				end
 			else
 				statFrame.tooltip2 = STAT_USELESS_TOOLTIP;
@@ -1110,8 +1124,8 @@ function PaperDollFrame_SetRangedDPS(statFrame, unit)
 	local text = _G[statFrame:GetName().."StatText"];
 
 	-- If no ranged attack then set to n/a
-	local hasRelic = UnitHasRelicSlot(unit);	
-	local rangedTexture = GetInventoryItemTexture("player", 18);
+	local hasRelic = UnitHasRelicSlot(unit);
+	local rangedTexture = GetInventoryItemTexture("player", RANGED_OR_MAINHAND_SLOT_NUM);
 	if ( rangedTexture and not hasRelic ) then
 		PaperDollFrame.noRanged = nil;
 	else
@@ -1234,7 +1248,7 @@ function PaperDollFrame_SetRangedAttack(statFrame, unit)
 	local text = _G[statFrame:GetName().."StatText"];
 
 	-- If no ranged texture then set stats to n/a
-	local rangedTexture = GetInventoryItemTexture("player", 18);
+	local rangedTexture = GetInventoryItemTexture("player", RANGED_OR_MAINHAND_SLOT_NUM);
 	if ( rangedTexture and not hasRelic ) then
 		PaperDollFrame.noRanged = nil;
 	else
@@ -1275,7 +1289,7 @@ function PaperDollFrame_SetRangedDamage(statFrame, unit)
 
 	-- If no ranged attack then set to n/a
 	local hasRelic = UnitHasRelicSlot(unit);	
-	local rangedTexture = GetInventoryItemTexture("player", 18);
+	local rangedTexture = GetInventoryItemTexture("player", RANGED_OR_MAINHAND_SLOT_NUM);
 	if ( rangedTexture and not hasRelic ) then
 		PaperDollFrame.noRanged = nil;
 	else

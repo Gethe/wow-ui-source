@@ -1,8 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\Blizzard_SharedXML\UI.xsd">
-	<Script file="Blizzard_ArchaeologyUI.lua"/>
+..\Blizzard_SharedXML\UI.xsd">
 
-<!--size=512,256
+	<!--size=512,256
 <Texture name="Arch-Icon-Header.png" >
 	<Size x="370" y="79"/>	
 	<TexCoords left="0.00195313" right="0.72460938" top="0.00390625" bottom="0.31250000"/>	
@@ -64,11 +63,11 @@
 	<TexCoords left="0.41992188" right="0.47265625" top="0.45703125" bottom="0.58593750"/>	
 </Texture>-->
 
-	
-	
-	
-	
-	
+
+
+
+
+
 	<Button name="ArchaeologyRaceTemplate" virtual="true" alpha="0.83">
 		<Animations>
 			<AnimationGroup parentKey="readyAnim" looping="REPEAT">
@@ -76,7 +75,7 @@
 				<Alpha target="$parentGlow" fromAlpha="1" toAlpha="0" duration="0.9" order="2"/>
 			</AnimationGroup>
 		</Animations>
-		
+
 		<Size x="82" y="93"/>
 		<Layers>
 			<Layer>
@@ -112,7 +111,7 @@
 				self:SetAlpha(0.83);
 			</OnEnable>
 		</Scripts>
-		
+
 		<NormalTexture file="Interface\Archeology\Arch-TempLogo">
 			<TexCoords left="0.0" right="0.5703" top="0.0" bottom="0.6484"/>
 		</NormalTexture>
@@ -120,7 +119,7 @@
 			<TexCoords left="0.0" right="0.5703" top="0.0" bottom="0.6484"/>
 			<Color r="0.5" g="0.5" b="1" a="0.3"/>
 		</HighlightTexture>
-	</Button>	
+	</Button>
 	<Button name="ArchaeologyArtifactTemplate" motionScriptsWhileDisabled="true" virtual="true" hidden="true">
 		<Size x="200" y="44"/>
 		<Layers>
@@ -168,12 +167,12 @@
 				GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
 				GameTooltip:AddLine(self.artifactName:GetText(), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
 				GameTooltip:AddLine(self.spellDescription, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
-				
+
 				GameTooltip:AddLine(" ");
-				
+
 				local adate = date("*t", self.firstCompletionTime);
 				GameTooltip:AddLine(ARCHAEOLOGY_TIMESTAMP.." |cffffffff"..FormatShortDate(adate.day, adate.month, adate.year).." "..
-												GameTime_GetFormattedTime(adate.hour, adate.min, true).."|r");
+				GameTime_GetFormattedTime(adate.hour, adate.min, true).."|r");
 				GameTooltip:AddLine(string.format(ARCHAEOLOGY_COMPLETION, self.completionCount));
 				GameTooltip:Show();
 			</OnEnter>
@@ -219,19 +218,19 @@
 			</OnDisable>
 		</Scripts>
 		<NormalTexture file="Interface\Archeology\ArchaeologyParts">
-			<Size x="51" y="56"/>	
+			<Size x="51" y="56"/>
 			<TexCoords left="0.11132813" right="0.21093750" top="0.56250000" bottom="0.78125000"/>
 		</NormalTexture>
 		<HighlightTexture file="Interface\Archeology\ArchaeologyParts" alphaMode="ADD">
-			<Size x="51" y="56"/>	
+			<Size x="51" y="56"/>
 			<TexCoords left="0.11132813" right="0.21093750" top="0.56250000" bottom="0.78125000"/>
 			<Color r="0.8" g="0.8" b="0.8" a="0.4"/>
 		</HighlightTexture>
 	</Button>
-	
-	
-	
-	
+
+
+
+
 
 	<Frame name="ArchaeologyFrame" toplevel="true" enableMouse="true" hidden="true" parent="UIParent" inherits="ButtonFrameTemplate" frameStrata="MEDIUM">
 		<Size x="550" y="525"/>
@@ -533,7 +532,7 @@
 							<Size x="380" y="0"/>
 							<Color r="0.25" g="0.13" b="0"/>
 						</FontString>
-						
+
 						<FontString name="$parentTitle" inherits="SystemFont_Med3" justifyH="CENTER" text="ARCHAEOLOGY_COMPLETED" parentKey="titleBig">
 							<Anchors>
 								<Anchor point="TOP" x="0" y="-55"/>
@@ -554,7 +553,7 @@
 							<Size x="54" y="34"/>
 							<TexCoords left="0.00195313" right="0.10742188" top="0.56250000" bottom="0.69531250"/>
 						</Texture>
-						
+
 						<FontString name="$parentTitleTop" inherits="SystemFont_Med1" justifyH="CENTER" parentKey="titleTop">
 							<Anchors>
 								<Anchor point="TOP" x="0" y="-55"/>
@@ -575,7 +574,7 @@
 							<Size x="42" y="27"/>
 							<TexCoords left="0.00195313" right="0.08398438" top="0.84375000" bottom="0.94921875"/>
 						</Texture>
-						
+
 						<FontString name="$parentTitleMid" inherits="SystemFont_Med1" justifyH="CENTER" parentKey="titleMid" text="ARCHAEOLOGY_COMMON_COMPLETED">
 							<Anchors>
 								<Anchor point="TOP" x="0" y="-55"/>
@@ -904,9 +903,9 @@
 					</Frame>
 				</Frames>
 			</Frame>
-			<Button name="$parentInfoButton" inherits="UIPanelInfoButton" parentKey="infoButton" id="0">
+			<Button name="$parentInfoButton" inherits="MainHelpPlateButton" parentKey="infoButton" id="0">
 				<Anchors>
-					<Anchor point="TOPLEFT"  x="60" y="-3" />
+					<Anchor point="TOPLEFT" x="39" y="20"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -942,7 +941,7 @@
 							<Size x="54" y="34"/>
 							<TexCoords left="0.00195313" right="0.10742188" top="0.56250000" bottom="0.69531250"/>
 						</Texture>
-						
+
 						<Texture name="$parentDigTex" file="Interface\Archeology\Arch-Help">
 							<Size x="480" y="243"/>
 							<Anchors>

@@ -77,11 +77,11 @@ Interface\AddOns\Blizzard_AddOnList\Classic\AddonList.xml
 Interface\AddOns\Blizzard_AddOnList\Shared\Localization.lua
 Interface\AddOns\Blizzard_AddOnPerformance\AddOnPerformance.lua
 Interface\AddOns\Blizzard_AddOnPerformance\Blizzard_AddOnPerformance.toc
+Interface\AddOns\Blizzard_ArchaeologyUI\Blizzard_ArchaeologyUI.lua
+Interface\AddOns\Blizzard_ArchaeologyUI\Blizzard_ArchaeologyUI.xml
 Interface\AddOns\Blizzard_ArchaeologyUI\Blizzard_ArchaeologyUI_Cata.toc
 Interface\AddOns\Blizzard_ArchaeologyUI\Blizzard_ArchaeologyUI_Mists.toc
-Interface\AddOns\Blizzard_ArchaeologyUI\Cata\Blizzard_ArchaeologyUI.lua
-Interface\AddOns\Blizzard_ArchaeologyUI\Cata\Blizzard_ArchaeologyUI.xml
-Interface\AddOns\Blizzard_ArchaeologyUI\Shared\Localization.lua
+Interface\AddOns\Blizzard_ArchaeologyUI\Localization.lua
 Interface\AddOns\Blizzard_ArenaUI\Blizzard_ArenaUI.lua
 Interface\AddOns\Blizzard_ArenaUI\Blizzard_ArenaUI.toc
 Interface\AddOns\Blizzard_ArenaUI\Blizzard_ArenaUI.xml
@@ -506,8 +506,8 @@ Interface\AddOns\Blizzard_DeprecatedSoundScript\Blizzard_DeprecatedSoundScript.t
 Interface\AddOns\Blizzard_DeprecatedSoundScript\Deprecated_SoundScript.lua
 Interface\AddOns\Blizzard_DeprecatedSpecialization\Blizzard_DeprecatedSpecialization.toc
 Interface\AddOns\Blizzard_DeprecatedSpecialization\Deprecated_Specialization_Cata.lua
-Interface\AddOns\Blizzard_DeprecatedSpecialization\Deprecated_Specialization_Mainline.lua
 Interface\AddOns\Blizzard_DeprecatedSpecialization\Deprecated_Specialization_Mists.lua
+Interface\AddOns\Blizzard_DeprecatedSpecialization\Deprecated_Specialization_Standard.lua
 Interface\AddOns\Blizzard_DeprecatedSpecialization\Deprecated_Specialization_TBC.lua
 Interface\AddOns\Blizzard_DeprecatedSpecialization\Deprecated_Specialization_Vanilla.lua
 Interface\AddOns\Blizzard_DeprecatedSpecialization\Deprecated_Specialization_Wrath.lua
@@ -785,6 +785,9 @@ Interface\AddOns\Blizzard_GlueXML\Classic\AccountLogin.lua
 Interface\AddOns\Blizzard_GlueXML\Classic\AccountLogin.xml
 Interface\AddOns\Blizzard_GlueXML\Classic\CharacterCreate_Shared.lua
 Interface\AddOns\Blizzard_GlueXML\Classic\CharacterSelect.lua
+Interface\AddOns\Blizzard_GlueXML\Classic\CharacterSelect.xml
+Interface\AddOns\Blizzard_GlueXML\Classic\CharacterSelect\CharacterSelectUI.lua
+Interface\AddOns\Blizzard_GlueXML\Classic\CharacterSelect\CharacterSelectUI.xml
 Interface\AddOns\Blizzard_GlueXML\Classic\CharacterServices.lua
 Interface\AddOns\Blizzard_GlueXML\Classic\CharacterServices.xml
 Interface\AddOns\Blizzard_GlueXML\Classic\CharacterServicesCharacterSelector.lua
@@ -834,7 +837,6 @@ Interface\AddOns\Blizzard_GlueXML\SocialContract.xml
 Interface\AddOns\Blizzard_GlueXML\StarterEditionPopUp.xml
 Interface\AddOns\Blizzard_GlueXML\TBC\CharacterCreate.lua
 Interface\AddOns\Blizzard_GlueXML\TBC\CharacterCreate.xml
-Interface\AddOns\Blizzard_GlueXML\TBC\CharacterSelect.xml
 Interface\AddOns\Blizzard_GlueXML\TBC\CreditsFrame.lua
 Interface\AddOns\Blizzard_GlueXML\TBC\CreditsFrame.xml
 Interface\AddOns\Blizzard_GlueXML\TBC\Localization.lua
@@ -842,7 +844,6 @@ Interface\AddOns\Blizzard_GlueXML\TBC\RealmList.lua
 Interface\AddOns\Blizzard_GlueXML\TBC\RealmList.xml
 Interface\AddOns\Blizzard_GlueXML\Vanilla\CharacterCreate.lua
 Interface\AddOns\Blizzard_GlueXML\Vanilla\CharacterCreate.xml
-Interface\AddOns\Blizzard_GlueXML\Vanilla\CharacterSelect.xml
 Interface\AddOns\Blizzard_GlueXML\Vanilla\CreditsFrame.lua
 Interface\AddOns\Blizzard_GlueXML\Vanilla\CreditsFrame.xml
 Interface\AddOns\Blizzard_GlueXML\Vanilla\Localization.lua

@@ -35,7 +35,17 @@ local function Register()
 	end);
 
 	InterfaceOverrides.RunSettingsCallback(function()
-		Settings.SetupCVarCheckbox(category, "cooldownViewerEnabled", ENABLE_COOLDOWN_VIEWER, ENABLE_COOLDOWN_VIEWER_TOOLTIP);
+		local tooltipFn = function()
+			local isAvailable, failureReason = C_CooldownViewer.IsCooldownViewerAvailable();
+			if isAvailable then
+				return ENABLE_COOLDOWN_VIEWER_TOOLTIP;
+			else
+				return format("%s|n|n%s", ENABLE_COOLDOWN_VIEWER_TOOLTIP, failureReason);
+			end
+		end
+
+		local _setting, initializer = Settings.SetupCVarCheckbox(category, "cooldownViewerEnabled", ENABLE_COOLDOWN_VIEWER, tooltipFn);
+		initializer:AddModifyPredicate(C_CooldownViewer.IsCooldownViewerAvailable);
 	end);
 
 	Settings.RegisterCategory(category, SETTING_GROUP_GAMEPLAY);
