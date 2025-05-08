@@ -337,6 +337,8 @@ function CombatText_OnEvent(self, event, ...)
 		message = COMBAT_TEXT_DEFLECT;
 	elseif ( messageType == "SPELL_REFLECT" ) then
 		message = COMBAT_TEXT_REFLECT;
+	elseif ( messageType == "SPELL_MISFIRE" ) then
+		message = COMBAT_TEXT_MISFIRE;
 	elseif ( messageType == "BLOCK" or messageType == "SPELL_BLOCK" ) then
 		if ( arg3 ) then
 			-- Partial block

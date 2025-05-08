@@ -31,4 +31,22 @@ do
 		end
 		return masterySpell1, masterySpell2;
 	end
+
+	-- Use C_SpecializationInfo.GetTalentInfo instead.
+	GetTalentInfo = function(talentTier, talentColumn, specGroupIndex, isInspect, target)
+		local talentInfoQuery = {};
+		talentInfoQuery.tier = talentTier;
+		talentInfoQuery.column = talentColumn;
+		talentInfoQuery.groupIndex = specGroupIndex;
+		talentInfoQuery.isInspect = isInspect;
+		talentInfoQuery.target = target;
+		local talentInfo = C_SpecializationInfo.GetTalentInfo(talentInfoQuery);
+		if not talentInfo then
+			return nil;
+		end
+
+		return talentInfo.talentID, talentInfo.name, talentInfo.icon, talentInfo.selected,
+			talentInfo.available, talentInfo.spellID, talentInfo.isPVPTalentUnlocked, talentInfo.tier,
+			talentInfo.column, talentInfo.known, talentInfo.isGrantedByAura;
+	end
 end

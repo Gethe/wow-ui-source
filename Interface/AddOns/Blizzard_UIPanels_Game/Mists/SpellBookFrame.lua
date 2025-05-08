@@ -850,7 +850,14 @@ end
 
 function SpellBookCoreAbilitiesMixin:UpdateTabs()
 	local numSpecs = GetNumSpecializations();
-	local currentSpec = C_SpecializationInfo.GetSpecialization();
+	local currentSpec;
+
+	if ( not IsPlayerInitialSpec() ) then
+		currentSpec = C_SpecializationInfo.GetSpecialization();
+	else
+		currentSpec = nil;
+	end
+
 	local index = 1;
 	local tab;
 	if ( currentSpec ) then
@@ -892,8 +899,14 @@ end
 function SpellBook_UpdateCoreAbilitiesTab()
 	SpellBookFrame:UpdatePages();
 	SpellBookCoreAbilitiesFrame:UpdateTabs();
+	local currentSpec;
+
+	if ( not IsPlayerInitialSpec() ) then
+		currentSpec = C_SpecializationInfo.GetSpecialization();
+	else
+		currentSpec = nil;
+	end
 	
-	local currentSpec = C_SpecializationInfo.GetSpecialization();
 	local desaturate = currentSpec and (currentSpec ~= SpellBookCoreAbilitiesFrame.selectedSpec);
 	local specID, displayName = C_SpecializationInfo.GetSpecializationInfo(SpellBookCoreAbilitiesFrame.selectedSpec);
 	local draggable = false;

@@ -7,6 +7,15 @@ local PaperDollInfo =
 	Functions =
 	{
 		{
+			Name = "CanAutoEquipCursorItem",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canAutoEquip", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetArmorEffectiveness",
 			Type = "Function",
 
@@ -42,6 +51,20 @@ local PaperDollInfo =
 			Returns =
 			{
 				{ Name = "minItemLevel", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "IsInventorySlotEnabled",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "slotName", Type = "stringView", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isEnabled", Type = "bool", Nilable = false },
 			},
 		},
 		{

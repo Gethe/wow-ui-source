@@ -472,7 +472,7 @@ function PVPHonor_ButtonClicked(self)
 end
 
 function PVPHonorFrame_ResetInfo()
-	if not PVPHonorFrame.selectedIsWorldPvp then
+	if not PVPHonorFrame.selectedIsWorldPvp and PVPHonorFrame.selectedPvpID then
 		RequestBattlegroundInstanceInfo(PVPHonorFrame.selectedPvpID);
 	end
 	PVPHonor_UpdateInfo();

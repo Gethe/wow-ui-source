@@ -87,65 +87,69 @@ function TalentFrame_Update(TalentFrame)
 		local button = _G[buttonName];
 		if ( i <= numTalents ) then
 			-- Set the button info
-			local talentName, iconTexture, tier, column, rank, maxRank, meetsPrereq, previewRank, meetsPreviewPrereq, isExceptional =
-				GetTalentInfo(selectedTab, i, TalentFrame.inspect, TalentFrame.pet, TalentFrame.talentGroup);
-			if ( talentName ) then
+			local talentInfoQuery = {};
+			talentInfoQuery.specializationIndex = selectedTab;
+			talentInfoQuery.talentIndex = i;
+			talentInfoQuery.isInspect = TalentFrame.inspect;
+			talentInfoQuery.isPet = TalentFrame.pet;
+			talentInfoQuery.groupIndex = TalentFrame.talentGroup;
+			local talentInfo = C_SpecializationInfo.GetTalentInfo(talentInfoQuery);
+
+			if ( talentInfo ) then
 				local displayRank;
 				if ( preview ) then
-					displayRank = previewRank;
+					displayRank = talentInfo.previewRank;
 				else
-					displayRank = rank;
+					displayRank = talentInfo.rank;
 				end
 
 				_G[buttonName.."Rank"]:SetText(displayRank);
-				SetTalentButtonLocation(button, tier, column);
-				TalentFrame.TALENT_BRANCH_ARRAY[tier][column].id = button:GetID();
+				SetTalentButtonLocation(button, talentInfo.tier, talentInfo.column);
+				TalentFrame.TALENT_BRANCH_ARRAY[talentInfo.tier][talentInfo.column].id = button:GetID();
 			
 				-- If player has no talent points or this is the inactive talent group then show only talents with points in them
 				if ( (unspentPoints <= 0 or not isActiveTalentGroup) and displayRank == 0 ) then
-				forceDesaturated = 1;
-			else
-				forceDesaturated = nil;
-			end
-
-			-- is this talent's tier unlocked?
-			if ( ((tier - 1) * (TalentFrame.pet and PET_TALENTS_PER_TIER or PLAYER_TALENTS_PER_TIER) <= tabPointsSpent) ) then
-				tierUnlocked = 1;
-			else
-				tierUnlocked = nil;
-			end
-
-			SetItemButtonTexture(button, iconTexture);
-
-			-- Talent must meet prereqs or the player must have no points to spend
-			local prereqsSet =
-				TalentFrame_SetPrereqs(TalentFrame, tier, column, forceDesaturated, tierUnlocked, preview,
-				GetTalentPrereqs(selectedTab, i, TalentFrame.inspect, TalentFrame.pet, TalentFrame.talentGroup));
-			if ( prereqsSet and ((preview and meetsPreviewPrereq) or (not preview and meetsPrereq)) ) then
-				SetItemButtonDesaturated(button, nil);
-
-				if ( displayRank < maxRank ) then
-				-- Rank is green if not maxed out
-					_G[buttonName.."Slot"]:SetVertexColor(0.1, 1.0, 0.1);
-					_G[buttonName.."Rank"]:SetTextColor(GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
-				else
-					_G[buttonName.."Slot"]:SetVertexColor(1.0, 0.82, 0);
-					_G[buttonName.."Rank"]:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+					forceDesaturated = 1;
 				end
-				_G[buttonName.."RankBorder"]:Show();
-				_G[buttonName.."Rank"]:Show();
-			else
-				SetItemButtonDesaturated(button, 1, 0.65, 0.65, 0.65);
-					_G[buttonName.."Slot"]:SetVertexColor(0.5, 0.5, 0.5);
-				if ( rank == 0 ) then
-						_G[buttonName.."RankBorder"]:Hide();
-						_G[buttonName.."Rank"]:Hide();
+
+				-- is this talent's tier unlocked?
+				if ( ((talentInfo.tier - 1) * (TalentFrame.pet and PET_TALENTS_PER_TIER or PLAYER_TALENTS_PER_TIER) <= tabPointsSpent) ) then
+					tierUnlocked = 1;
 				else
-						_G[buttonName.."RankBorder"]:SetVertexColor(0.5, 0.5, 0.5);
-						_G[buttonName.."Rank"]:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+					tierUnlocked = nil;
 				end
-			end
-			button:Show();
+
+				SetItemButtonTexture(button, talentInfo.icon);
+
+				-- Talent must meet prereqs or the player must have no points to spend
+				local prereqsSet =
+					TalentFrame_SetPrereqs(TalentFrame, talentInfo.tier, talentInfo.column, forceDesaturated, tierUnlocked, preview,
+					GetTalentPrereqs(selectedTab, i, TalentFrame.inspect, TalentFrame.pet, TalentFrame.talentGroup));
+				if ( prereqsSet and ((preview and talentInfo.meetsPreviewPrereq) or (not preview and talentInfo.meetsPrereq)) ) then
+					SetItemButtonDesaturated(button, nil);
+
+					if ( displayRank < talentInfo.maxRank ) then
+					-- Rank is green if not maxed out
+						_G[buttonName.."Slot"]:SetVertexColor(0.1, 1.0, 0.1);
+						_G[buttonName.."Rank"]:SetTextColor(GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
+					else
+						_G[buttonName.."Slot"]:SetVertexColor(1.0, 0.82, 0);
+						_G[buttonName.."Rank"]:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+					end
+					_G[buttonName.."RankBorder"]:Show();
+					_G[buttonName.."Rank"]:Show();
+				else
+					SetItemButtonDesaturated(button, 1, 0.65, 0.65, 0.65);
+						_G[buttonName.."Slot"]:SetVertexColor(0.5, 0.5, 0.5);
+					if ( talentInfo.rank == 0 ) then
+							_G[buttonName.."RankBorder"]:Hide();
+							_G[buttonName.."Rank"]:Hide();
+					else
+							_G[buttonName.."RankBorder"]:SetVertexColor(0.5, 0.5, 0.5);
+							_G[buttonName.."Rank"]:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+					end
+				end
+				button:Show();
 			else
 				button:Hide();
 			end

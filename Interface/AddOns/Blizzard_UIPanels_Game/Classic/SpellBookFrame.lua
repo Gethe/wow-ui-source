@@ -78,7 +78,11 @@ SpellBookFrameMixin = {};
 
 function SpellBookFrameMixin:OnShow()
     if (SpellBookCoreAbilitiesFrame) then
-		SpellBookCoreAbilitiesFrame.selectedSpec = C_SpecializationInfo.GetSpecialization() or 1;
+		if ( not IsPlayerInitialSpec() ) then
+			SpellBookCoreAbilitiesFrame.selectedSpec = C_SpecializationInfo.GetSpecialization() or 1;
+		else
+			SpellBookCoreAbilitiesFrame.selectedSpec = 1;
+		end
     end
 	self:Update();
 	

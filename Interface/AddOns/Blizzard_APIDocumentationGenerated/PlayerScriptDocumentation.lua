@@ -218,6 +218,28 @@ local PlayerScript =
 			},
 		},
 		{
+			Name = "GetExpertise",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "mainhandExpertise", Type = "number", Nilable = false },
+				{ Name = "offhandExpertise", Type = "number", Nilable = false },
+				{ Name = "rangedExpertise", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetExpertisePercent",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "mainhandExpertisePercent", Type = "number", Nilable = false },
+				{ Name = "offhandExpertisePercent", Type = "number", Nilable = false },
+				{ Name = "rangedExpertisePercent", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetLootSpecialization",
 			Type = "Function",
 
@@ -236,12 +258,40 @@ local PlayerScript =
 			},
 		},
 		{
+			Name = "GetMasteryEffect",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "masteryEffect", Type = "number", Nilable = false },
+				{ Name = "bonusCoefficient", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetModResilienceDamageReduction",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetNormalizedRealmName",
 			Type = "Function",
 
 			Returns =
 			{
 				{ Name = "result", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "GetOverrideAPBySpellPower",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -264,6 +314,24 @@ local PlayerScript =
 		},
 		{
 			Name = "GetPVPTimer",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPvpPowerDamage",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPvpPowerHealing",
 			Type = "Function",
 
 			Returns =

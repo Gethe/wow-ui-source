@@ -771,7 +771,7 @@
 					</ItemButton>
 					<ItemButton name="CharacterMainHandSlot" inherits="PaperDollItemSlotButtonBottomTemplate">
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" x="130" y="16"/>
+							<Anchor point="BOTTOMLEFT" x="106" y="16"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -787,6 +787,16 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="CharacterMainHandSlot" relativePoint="TOPRIGHT" x="5" y="0"/>
 						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<!-- From MoP onward, the secondary hand slot is the bottom-right slot. -->
+								<Texture parentKey="BottomRightSlotTexture" inherits="Char-Slot-Bottom-Right">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="$parentFrame" relativePoint="TOPRIGHT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
 					</ItemButton>
 					<ItemButton name="CharacterRangedSlot" inherits="PaperDollItemSlotButtonBottomTemplate">
 						<Anchors>
@@ -794,7 +804,8 @@
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture inherits="Char-Slot-Bottom-Right">
+								<!-- Prior to MoP, the ranged slot is the bottom-right slot. -->
+								<Texture parentKey="BottomRightSlotTexture" inherits="Char-Slot-Bottom-Right">
 									<Anchors>
 										<Anchor point="TOPLEFT" relativeTo="$parentFrame" relativePoint="TOPRIGHT"/>
 									</Anchors>

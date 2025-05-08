@@ -66,37 +66,44 @@ function TalentFrame_Update(TalentFrame, talentUnit)
 			local restartGlow = false;
 			for column=1, NUM_TALENT_COLUMNS do
 				-- Set the button info
-				local talentID, name, iconTexture, selected, available = GetTalentInfo(tier, column, TalentFrame.talentGroup, TalentFrame.inspect, talentUnit);
+				local talentInfoQuery = {};
+				talentInfoQuery.tier = tier;
+				talentInfoQuery.column= column;
+				talentInfoQuery.groupIndex = TalentFrame.talentGroup;
+				talentInfoQuery.isInspect = TalentFrame.inspect;
+				talentInfoQuery.target = talentUnit;
+				local talentInfo = C_SpecializationInfo.GetTalentInfo(talentInfoQuery);
+
 				local button = talentRow["talent"..column];
 				button.tier = tier;
 				button.column = column;
 
-				if (button and name) then
-					button:SetID(talentID);
+				if (button and talentInfo) then
+					button:SetID(talentInfo.talentID);
 
-					SetItemButtonTexture(button, iconTexture);
+					SetItemButtonTexture(button, talentInfo.icon);
 					if(button.name ~= nil) then
-						button.name:SetText(name);
+						button.name:SetText(talentInfo.name);
 					end
 
 					if(button.knownSelection ~= nil) then
-						if ( selected ) then
+						if ( talentInfo.selected ) then
 							button.knownSelection:Show();
 							button.knownSelection:SetDesaturated(disable);
 						else
 							button.knownSelection:Hide();
 						end
 					end
-					button.shouldGlow = (available and not selected) and talentUnit == "player";
+					button.shouldGlow = (talentInfo.available and not talentInfo.selected) and talentUnit == "player";
 					
 					if( TalentFrame.inspect ) then
-						SetDesaturation(button.icon, not selected);
-						button.border:SetShown(selected);
+						SetDesaturation(button.icon, not talentInfo.selected);
+						button.border:SetShown(talentInfo.selected);
 					else
 						button.disabled = (not tierAvailable or disable);
-						SetDesaturation(button.icon, (button.disabled or (selectedTalent ~= 0 and not selected)));
+						SetDesaturation(button.icon, (button.disabled or (selectedTalent ~= 0 and not talentInfo.selected)));
 						button.highlight:SetAlpha((selected or not tierAvailable) and 0 or 1);
-						button.learnSelection:SetShown((available and not disable) and (talentRow.selectionId == talentID));
+						button.learnSelection:SetShown((talentInfo.available and not disable) and (talentRow.selectionId == talentInfo.talentID));
 						if (button.learnSelection:IsShown()) then
 							numTalentSelections = numTalentSelections + 1;
 						end

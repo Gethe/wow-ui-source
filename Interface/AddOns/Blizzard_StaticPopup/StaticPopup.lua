@@ -194,8 +194,12 @@ function StaticPopup_Resize(dialog, which)
 	end
 end
 
+local function GetStaticPopupToken(systemPrefix, notificationType)
+	return (systemPrefix or "NOTIFICATION_")..(notificationType or "GENERIC");
+end
+
 function StaticPopup_ShowNotification(systemPrefix, notificationType, message)
-	local staticPopupToken = (systemPrefix or "NOTIFICATION_")..(notificationType or "GENERIC");
+	local staticPopupToken = GetStaticPopupToken(systemPrefix, notificationType);
 
 	if StaticPopupDialogs[staticPopupToken] == nil then
 		StaticPopupDialogs[staticPopupToken] = {
@@ -214,6 +218,11 @@ function StaticPopup_ShowNotification(systemPrefix, notificationType, message)
 	local text_arg1 = nil;
 	local text_arg2 = nil;
 	StaticPopup_Show(staticPopupToken, text_arg1, text_arg2, message);
+end
+
+function StaticPopup_HideNotification(systemPrefix, notificationType)
+	local staticPopupToken = GetStaticPopupToken(systemPrefix, notificationType);
+	StaticPopup_Hide(staticPopupToken);
 end
 
 function StaticPopup_ShowGenericConfirmation(text, callback, insertedFrame)

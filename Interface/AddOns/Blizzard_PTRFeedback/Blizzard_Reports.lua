@@ -157,12 +157,16 @@ function PTR_IssueReporter.CreateReports()
         for s in value:gmatch("[^-]+") do
             table.insert(IDString, s)
         end
-        
-        local name, icon, _, _, _, _, _, _, _, _, _, tID = GetTalentInfo(talentTabID, tonumber(IDString[2]))
-        talentID = tID
 
-        if icon then
-            return icon
+		local talentInfoQuery = {};
+		talentInfoQuery.specializationIndex = talentTabID;
+		talentInfoQuery.talentIndex = tonumber(IDString[2]);
+        local talentInfo = C_SpecializationInfo.GetTalentInfo(talentInfoQuery);
+        if talentInfo then
+            talentID = talentInfo.talentID;
+            if talentInfo.icon then
+                return talentInfo.icon;
+            end
         end
         return 0
     end

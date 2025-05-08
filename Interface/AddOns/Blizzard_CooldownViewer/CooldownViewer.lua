@@ -56,11 +56,9 @@ function CooldownViewerItemMixin:OnLoad()
 end
 
 function CooldownViewerItemMixin:OnEnter()
-	if self:IsDisplayed() then
-		GameTooltip_SetDefaultAnchor(GameTooltip, self);
-		self:RefreshTooltip();
-		GameTooltip:Show();
-	end
+	GameTooltip_SetDefaultAnchor(GameTooltip, self);
+	self:RefreshTooltip();
+	GameTooltip:Show();
 end
 
 function CooldownViewerItemMixin:OnLeave()
@@ -69,10 +67,6 @@ end
 
 function CooldownViewerItemMixin:SetViewerFrame(viewerFrame)
 	self.viewerFrame = viewerFrame;
-end
-
-function CooldownViewerItemMixin:IsDisplayed()
-	return self:GetAlpha() > 0;
 end
 
 function CooldownViewerItemMixin:SetCooldownID(cooldownID)
@@ -103,6 +97,7 @@ function CooldownViewerItemMixin:OnCooldownIDSet()
 	end
 
 	self:RefreshData();
+	self:UpdateShownState();
 end
 
 function CooldownViewerItemMixin:ClearCooldownID()
@@ -121,6 +116,7 @@ function CooldownViewerItemMixin:OnCooldownIDCleared()
 	self:ClearTotemData();
 
 	self:RefreshData();
+	self:UpdateShownState();
 end
 
 function CooldownViewerItemMixin:ClearAuraInfo()
@@ -134,6 +130,15 @@ end
 
 function CooldownViewerItemMixin:ClearTotemData()
 	self.totemData = nil;
+end
+
+function CooldownViewerItemMixin:SetIsEditing(isEditing)
+	self.isEditing = isEditing;
+	self:UpdateShownState();
+end
+
+function CooldownViewerItemMixin:IsEditing()
+	return self.isEditing;
 end
 
 function CooldownViewerItemMixin:SetEditModeData(index)
@@ -427,6 +432,38 @@ function CooldownViewerItemMixin:RefreshTooltip()
 	end
 end
 
+function CooldownViewerItemMixin:SetHideWhenInactive(hideWhenInactive)
+	self.hideWhenInactive = hideWhenInactive;
+	self:UpdateShownState();
+end
+
+function CooldownViewerItemMixin:ShouldBeShown()
+	if self:GetCooldownID() then
+		if not self.allowHideWhenInactive then
+			return true;
+		end
+
+		if not self.hideWhenInactive then
+			return true;
+		end
+
+		if self:IsActive() then
+			return true;
+		end
+	end
+
+	if self:IsEditing() then
+		return true;
+	end
+
+	return false;
+end
+
+function CooldownViewerItemMixin:UpdateShownState()
+	local shouldBeShown = self:ShouldBeShown();
+	self:SetShown(shouldBeShown);
+end
+
 function CooldownViewerItemMixin:SetTimerShown(shownSetting)
 	local cooldownFrame = self:GetCooldownFrame();
 	if cooldownFrame then
@@ -452,9 +489,7 @@ function CooldownViewerItemMixin:ShouldBeActive()
 end
 
 function CooldownViewerItemMixin:OnActiveStateChanged()
-	if self.activeStateChangedEvent then
-		EventRegistry:TriggerEvent(self.activeStateChangedEvent, self);
-	end
+	self:UpdateShownState();
 end
 
 function CooldownViewerItemMixin:SetIsActive(active)
@@ -1309,7 +1344,7 @@ function CooldownViewerMixin:OnShow()
 	-- Events passed directly to the items.
 	self:RegisterEvent("COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED");
 	self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
-	self:RegisterEvent("UNIT_AURA");
+	self:RegisterUnitEvent("UNIT_AURA", "player");
 	self:RegisterEvent("PLAYER_TOTEM_UPDATE");
 end
 
@@ -1327,12 +1362,6 @@ end
 
 function CooldownViewerMixin:OnCooldownViewerEnabledCVarChanged()
 	self:UpdateShownState();
-
-	-- Depending on the initial data, when first turning the feature on, the parent may need to layout
-	-- to account for the size of the panel.
-	if self:IsShown() and self:IsEditModeManaged() then
-		self:ForceUpdateParentLayout();
-	end
 end
 
 function CooldownViewerMixin:OnEvent(event, ...)
@@ -1425,13 +1454,6 @@ function CooldownViewerMixin:ShouldBeShown()
 	return true;
 end
 
--- Override in derived mixins that need to know when this setting changes.
-function CooldownViewerMixin:OnIsEditingChanged()
-	self:UpdateShownState();
-	self:RefreshLayout();
-	self:GetItemContainerFrame():Layout();
-end
-
 function CooldownViewerMixin:SetIsEditing(isEditing)
 	if self.isEditing == isEditing then
 		return;
@@ -1439,37 +1461,24 @@ function CooldownViewerMixin:SetIsEditing(isEditing)
 
 	self.isEditing = isEditing;
 
-	self:OnIsEditingChanged();
+	self:RefreshLayout();
+	self:UpdateShownState();
 end
 
 function CooldownViewerMixin:IsEditing()
 	return self.isEditing;
 end
 
-function CooldownViewerMixin:OnHideWhenInactiveChanged(entireSystemUpdate)
-	if self.itemActiveStateChangedEvent then
-		-- Only need to listen for the event if it will result in a layout change.
-		if self.hideWhenInactive then
-			EventRegistry:RegisterCallback(self.itemActiveStateChangedEvent, self.OnItemActiveStateChanged, self);
-		else
-			EventRegistry:UnregisterCallback(self.itemActiveStateChangedEvent, self);
-		end
-
-		-- Changes to the setting may result in items being shown or hidden.
-		if not entireSystemUpdate then
-			self:RefreshItemsShown();
-		end
-	end
-end
-
-function CooldownViewerMixin:SetHideWhenInactive(hideWhenInactive, entireSystemUpdate)
+function CooldownViewerMixin:SetHideWhenInactive(hideWhenInactive)
 	if self.hideWhenInactive == hideWhenInactive then
 		return;
 	end
 
 	self.hideWhenInactive = hideWhenInactive;
 
-	self:OnHideWhenInactiveChanged(entireSystemUpdate);
+	for itemFrame in self.itemFramePool:EnumerateActive() do
+		itemFrame:SetHideWhenInactive(hideWhenInactive);
+	end
 end
 
 function CooldownViewerMixin:GetHideWhenInactive()
@@ -1509,31 +1518,13 @@ function CooldownViewerMixin:GetStride()
 	return self.iconLimit;
 end
 
-function CooldownViewerMixin:IsEditModeManaged()
-	return self.isManagedFrame and self.ignoreFramePositionManager ~= true;
-end
-
-function CooldownViewerMixin:NeedsMinimumHeight()
-	return self.defaultReservedMinimumHeight and self:IsEditModeManaged();
-end
-
-function CooldownViewerMixin:NeedsParentLayoutOnRefresh()
-	return self:IsEditing() and self:IsEditModeManaged();
-end
-
-function CooldownViewerMixin:ForceUpdateParentLayout()
-	local parent = self:GetParent();
-	if parent and parent.Layout then
-		parent:Layout();
-	end
-end
-
 function CooldownViewerMixin:OnAcquireItemFrame(itemFrame)
 	itemFrame:SetViewerFrame(self);
 	itemFrame:SetScale(self.iconScale);
 	itemFrame:SetTimerShown(self.timerShown);
 	itemFrame:SetTooltipsShown(self.tooltipsShown);
-	itemFrame:SetAlpha(0);
+	itemFrame:SetHideWhenInactive(self.hideWhenInactive);
+	itemFrame:SetIsEditing(self.isEditing);
 end
 
 function CooldownViewerMixin:RefreshLayout()
@@ -1564,26 +1555,11 @@ function CooldownViewerMixin:RefreshLayout()
 
 	itemContainerFrame.stride = self:GetStride();
 
-	-- As long as they're being managed, some of the panels need to set a minimium height to prevent 
-	-- any frames with a lower layout index (e.g. the cast bar) from moving up or down in response to
-	-- changes in the panel's data resizing its height. But don't set a minimum height if the player
-	-- moves the frame and it's no longer managed so they don't have to fight that behavior to position
-	-- the frame exactly how they want.
-	if self:NeedsMinimumHeight() then
-		self.minimumHeight = (self.defaultReservedMinimumHeight * self.iconScale);
-	else
-		self.minimumHeight = nil;
-	end
-
 	if self:IsShown() then
 		self:RefreshData();
 	end
 
-	-- While in edit mode, changing some of the settings (Icon Size, Orientation, etc) can result
-	-- in a change in height/width. If the panel is still managed, the parent needs to layout immediately.
-	if self:NeedsParentLayoutOnRefresh() then
-		self:ForceUpdateParentLayout();
-	end
+	self:GetItemContainerFrame():Layout();
 end
 
 function CooldownViewerMixin:GetCooldownIDs()
@@ -1609,64 +1585,6 @@ function CooldownViewerMixin:RefreshData()
 				itemFrame:ClearEditModeData();
 			end
 		end
-	end
-
-	self:RefreshItemsShown();
-end
-
-function CooldownViewerMixin:OnItemActiveStateChanged(itemFrame)
-	-- If a change in active state results in a change in shown state, then a layout is needed.
-	if self:RefreshItemShown(itemFrame) then
-		self:GetItemContainerFrame():Layout();
-	end
-end
-
-function CooldownViewerMixin:ShouldItemBeShown(itemFrame)
-	-- Show all items while editing so the player can see the contents of the UI.
-	if self:IsEditing() then
-		return true;
-	end
-
-	if not itemFrame:GetCooldownID() then
-		return false;
-	end
-
-	if self:GetHideWhenInactive() then
-		return itemFrame:IsActive();
-	end
-
-	return true;
-end
-
-function CooldownViewerMixin:RefreshItemShown(itemFrame)
-	local shouldItemBeShown = self:ShouldItemBeShown(itemFrame);
-	local isItemShown = itemFrame:IsDisplayed();
-
-	-- Always show all items to preserve layout and use alpha to 'hide' inactive items when appropriate.
-	itemFrame:SetShown(true);
-	itemFrame:SetAlpha(shouldItemBeShown and 1.0 or 0.0);
-
-	-- Return true if the shown state changed to indicate to the caller that a layout is needed.
-	return shouldItemBeShown ~= isItemShown;
-end
-
-function CooldownViewerMixin:RefreshItemsShown()
-	local needsLayout = false;
-	local anyItemsShown = false;
-
-	for itemFrame in self.itemFramePool:EnumerateActive() do
-		needsLayout = self:RefreshItemShown(itemFrame) or needsLayout;
-		anyItemsShown = anyItemsShown or itemFrame:IsDisplayed();
-	end
-
-	if anyItemsShown ~= self.anyItemsShown then
-		self.anyItemsShown = anyItemsShown;
-		needsLayout = true;
-	end
-
-	-- Any item being shown or hidden requires a layout.
-	if needsLayout then
-		self:GetItemContainerFrame():Layout();
 	end
 end
 

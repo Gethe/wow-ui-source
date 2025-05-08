@@ -246,7 +246,11 @@ function UIParentLoadAddOn(name)
 end
 
 function AuctionFrame_LoadUI()
-	UIParentLoadAddOn("Blizzard_AuctionUI");
+	if( IsUsingLegacyAuctionClient() ) then
+		UIParentLoadAddOn("Blizzard_AuctionUI");
+	else
+		UIParentLoadAddOn("Blizzard_AuctionHouseUI");
+	end
 end
 
 function BattlefieldMap_LoadUI()

@@ -61,7 +61,7 @@ Classic\TabardFrame.xml
 Cata\PetStable.lua
 Cata\PetStable.xml
 TBC\BankFrame.lua
-TBC\BankFrame.xml
+Mists\BankFrame.xml
 Shared\SocialQueue.lua
 Classic\GuildRegistrarFrame.lua
 Classic\GuildRegistrarFrame.xml

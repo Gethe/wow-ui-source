@@ -170,13 +170,8 @@ function ScriptErrorsFrameMixin:Update()
 end
 
 local function GetNavigationButtonEnabledStates(count, index)
-	local canNavigateToPrevious = false;
-	local canNavigateToNext = false;
-	if count > 1 then
-		canNavigateToPrevious = index > 1;
-		canNavigateToNext = index < count;
-	end
-
+	local canNavigateToPrevious = count > 1;
+	local canNavigateToNext = count > 1;
 	return canNavigateToPrevious, canNavigateToNext;
 end
 
@@ -196,7 +191,7 @@ function ScriptErrorsFrameMixin:GetCount()
 end
 
 function ScriptErrorsFrameMixin:ChangeDisplayedIndex(delta)
-	self.index = Clamp(self.index + delta, 0, self:GetCount());
+	self.index = Wrap(self.index + delta, self:GetCount());
 	self:Update();
 end
 

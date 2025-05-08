@@ -246,6 +246,7 @@
 		<Scripts>
 			<OnLoad inherit="prepend">
 				GameTooltip_OnLoad(self);
+				self.shoppingTooltips = { ShoppingTooltip1, ShoppingTooltip2 };
 			</OnLoad>
 			<OnHide>
 				GameTooltip_OnHide(self);

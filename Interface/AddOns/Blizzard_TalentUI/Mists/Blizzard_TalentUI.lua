@@ -698,9 +698,17 @@ function PlayerTalentFrameTalent_OnClick(self, button)
 			-- if there is something else already learned for this tier, display a dialog about unlearning that one.
 			if ( button == "LeftButton" and not selected ) then
 				local tierAvailable, selectedTalentColumn, tierUnlockLevel = GetTalentTierInfo(self.tier, PlayerTalentFrame.talentGroup, PlayerTalentFrame.inspect, "player");
-				local selectedTalentID = GetTalentInfo(tier, selectedTalentColumn, PlayerTalentFrame.talentGroup, PlayerTalentFrame.inspect, "player");
 				if (selectedTalentColumn ~= 0) then
-					StaticPopup_Show("CONFIRM_UNLEARN_AND_SWITCH_TALENT", nil, nil, {tier = self.tier, oldID = selectedTalentID, id = self:GetID()});
+					local talentInfoQuery = {};
+					talentInfoQuery.tier = tier;
+					talentInfoQuery.column = selectedTalentColumn;
+					talentInfoQuery.groupIndex = PlayerTalentFrame.talentGroup;
+					talentInfoQuery.isInspect = PlayerTalentFrame.inspect;
+					talentInfoQuery.target = "player";
+					local talentInfo = C_SpecializationInfo.GetTalentInfo(talentInfoQuery);
+					if talentInfo then
+						StaticPopup_Show("CONFIRM_UNLEARN_AND_SWITCH_TALENT", nil, nil, {tier = self.tier, oldID = talentInfo.talentID, id = self:GetID()});
+					end
 				end
 			end
 		end

@@ -1111,15 +1111,32 @@ end
 
 function PlayerTalentFrameTalent_OnEvent(self, event, ...)
 	if ( GameTooltip:IsOwned(self) ) then
-		local talentID = select(12, GetTalentInfo(self:GetParent().talentTree, self:GetID(), PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup));
-		GameTooltip:SetTalent(talentID, PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup);
+		local talentInfoQuery = {};
+		talentInfoQuery.specializationIndex = PanelTemplates_GetSelectedTab(PlayerTalentFrame);
+		talentInfoQuery.talentIndex = self:GetID();
+		talentInfoQuery.isInspect = PlayerTalentFrame.inspect;
+		talentInfoQuery.isPet = PlayerTalentFrame.pet;
+		talentInfoQuery.groupIndex = PlayerTalentFrame.talentGroup;
+		local talentInfo = C_SpecializationInfo.GetTalentInfo(talentInfoQuery);
+		if talentInfo then
+			GameTooltip:SetTalent(talentInfo.talentID, PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup);
+		end
 	end
 end
 
 function PlayerTalentFrameTalent_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	local talentID = select(12, GetTalentInfo(self:GetParent().talentTree, self:GetID(), PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup));
-	GameTooltip:SetTalent(talentID, PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup);
+
+	local talentInfoQuery = {};
+	talentInfoQuery.specializationIndex = PanelTemplates_GetSelectedTab(PlayerTalentFrame);
+	talentInfoQuery.talentIndex = self:GetID();
+	talentInfoQuery.isInspect = PlayerTalentFrame.inspect;
+	talentInfoQuery.isPet = PlayerTalentFrame.pet;
+	talentInfoQuery.groupIndex = PlayerTalentFrame.talentGroup;
+	local talentInfo = C_SpecializationInfo.GetTalentInfo(talentInfoQuery);
+	if talentInfo then
+		GameTooltip:SetTalent(talentInfo.talentID, PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup);
+	end
 	self.UpdateTooltip = PlayerTalentFrameTalent_OnEnter;
 end
 

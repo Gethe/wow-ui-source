@@ -20,3 +20,9 @@ function PetBattleXPBar_OnLeave(self)
 	HideTextStatusBarText(self);
 	GameTooltip:Hide();
 end
+
+MicroButtonFrameMixin = {};
+
+function MicroButtonFrameMixin:OnShow()
+	OverrideMicroMenuPosition(self, "TOPLEFT", self, "TOPLEFT", -10, 27, true);
+end

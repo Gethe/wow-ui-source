@@ -19,10 +19,16 @@ local function Register()
 		initializer:AddModifyPredicate(C_AssistedCombat.IsAssistedCombatHighlightAvailable);
 
 		local onClickFn = function(checked)
-			if checked then
+			if checked and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ASSISTED_HIGHLIGHT_ENABLED_POPUP) then
 				local systemPrefix = "SETTINGS";
 				local notificationType = "ASSISTED_HIGHLIGHT";
 				StaticPopup_ShowNotification(systemPrefix, notificationType, ASSISTED_COMBAT_HIGHLIGHT_DIALOG_WARNING);
+				local OnSettingsPanelHide = function()
+					EventRegistry:UnregisterCallback("SettingsPanel.OnHide", notificationType);
+					StaticPopup_HideNotification(systemPrefix, notificationType);
+				end
+				EventRegistry:RegisterCallback("SettingsPanel.OnHide", OnSettingsPanelHide, notificationType);
+				SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ASSISTED_HIGHLIGHT_ENABLED_POPUP, true);
 			end
 			return false;
 		end

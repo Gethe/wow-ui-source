@@ -1777,6 +1777,72 @@
 											</Frame>
 										</Frames>
 									</Frame>
+									<Frame name="CharacterUpgradeMaxLevelWarningFrame" frameStrata="DIALOG" hidden="true">
+										<Size x="480" y="260"/>
+										<Anchors>
+											<Anchor point="CENTER" relativeTo="GlueParent" relativePoint="CENTER" x="0" y="0"/>
+										</Anchors>
+										<Frames>
+											<Frame name="CharacterUpgradeMaxLevelWarningBackground" inherits="BackdropTemplate">
+												<KeyValues>
+													<KeyValue key="backdropInfo" value="BACKDROP_DARK_DIALOG_32_32" type="global"/>
+												</KeyValues>
+												<Size x="480" y="261"/>
+												<Anchors>
+													<Anchor point="CENTER" x="0" y="0"/>
+												</Anchors>
+												<Layers>
+													<Layer level="ARTWORK">
+														<FontString parentKey="Text" inherits="GameFontNormalMed2" text="This Character is already max level">
+															<Size x="430" y="0"/>
+															<Anchors>
+																<Anchor point="TOP" x="0" y="-24"/>
+															</Anchors>
+															<Color r="1" g="1" b="1"/>
+														</FontString>
+														<FontString parentKey="CharacterDetails" inherits="GlueFontNormalHuge" text="Thrall Level 1 Orc Warrior">
+															<Size x="430" y="0"/>
+															<Anchors>
+																<Anchor point="TOP" relativeKey="$parent.Text" relativePoint="BOTTOM" x="0" y="-23"/>
+															</Anchors>
+														</FontString>
+													</Layer>
+												</Layers>
+												<Frames>
+													<Button parentKey="ConfirmButton" inherits="GlueButtonSmallTemplate" text="CHARACTER_UPGRADE_FINISH_LABEL">
+														<Size x="160" y="34"/>
+														<Anchors>
+															<Anchor point="BOTTOMRIGHT" relativeTo="CharacterUpgradeMaxLevelWarningBackground" relativePoint="BOTTOM">
+																<Offset x="20" y="16"/>
+															</Anchor>
+														</Anchors>
+														<Scripts>
+															<OnShow function="CharacterUpgradeMaxLevelWarningFrameConfirmButton_OnShow"/>
+															<OnClick function="CharacterUpgradeMaxLevelWarningFrameConfirmButton_OnClick"/>
+															<OnUpdate>
+																CharacterUpgradeMaxLevelWarningFrameConfirmButton_Update(self, elapsed);
+															</OnUpdate>
+														</Scripts>
+													</Button>
+													<Button parentKey="CancelButton" inherits="GlueButtonSmallTemplate" text="CANCEL">
+														<Size x="100" y="34"/>
+														<Anchors>
+															<Anchor point="LEFT" relativeKey="$parent.ConfirmButton" relativePoint="RIGHT" x="6" y="0"/>
+														</Anchors>
+														<Scripts>
+															<OnClick function="CharacterUpgradeMaxLevelWarningFrameCancelButton_OnClick"/>
+															<OnUpdate function="GlueParent_DeathKnightButtonSwap"/>
+														</Scripts>
+													</Button>
+												</Frames>
+												<Scripts>
+													<OnLoad inherit="prepend">
+														self.Text:SetSpacing(4);
+													</OnLoad>
+												</Scripts>
+											</Frame>
+										</Frames>
+									</Frame>
 								</Frames>
 								<Scripts>
 									<OnShow>
@@ -1793,7 +1859,6 @@
 									</OnHide>
 								</Scripts>
 							</Frame>
-
 							<Button name="CreateCharacterButtonSpecial" inherits="GlueButtonSmallTemplate" hidden="true" text="CREATE_NEW_CHARACTER">
 								<Size x="200" y="45"/>
 								<Anchors>
@@ -1964,6 +2029,50 @@
 									</OnHide>
 								</Scripts>
 							</Frame>
+							<Frame name="BillingWarningFrame" hidden="true">
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString name="BillingWarningText" inherits="GlueFontHighlight">
+											<Size x="300" y="0"/>
+											<Anchors>
+												<Anchor point="BOTTOM" relativeTo="CharacterSelect" relativePoint="BOTTOMLEFT" x="200" y="120"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Frames>
+									<Button name="BillingWarningButton" inherits="GlueButtonTemplate" text="MANAGE_ACCOUNT">
+										<Anchors>
+											<Anchor point="BOTTOM" relativeTo="CharacterSelect" relativePoint="BOTTOMLEFT" x="200" y="50"/>
+										</Anchors>
+										<Scripts>
+											<OnClick>
+												CharacterSelect_ManageAccount();
+											</OnClick>
+										</Scripts>
+									</Button>
+								</Frames>
+							</Frame>
+							<Frame name="GameRoomBillingFrame" hidden="true" inherits="TooltipBackdropTemplate">
+								<KeyValues>
+									<KeyValue key="layoutType" value="TooltipGluesLayout" type="string"/>
+								</KeyValues>
+								<Size x="255" y="60"/>
+								<Anchors>
+									<!-- Anchor is also conditionally updated in lua -->
+									<Anchor point="TOP" relativeTo="CharacterSelectServerAlertFrame" relativePoint="BOTTOM" x="0" y="0"/>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<FontString name="GameRoomBillingFrameText" inherits="GlueFontNormalSmall" justifyH="LEFT">
+											<Size x="235" y="0"/>
+											<Anchors>
+												<Anchor point="TOPLEFT" x="13" y="-10"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
 						</Frames>
 					</Frame>
 					<Button parentKey="VisibilityToggleButton" inherits="UIButtonTemplate">
@@ -1985,50 +2094,6 @@
 						<Alpha fromAlpha="0" toAlpha="1" duration="0.75" order="1"/>
 					</AnimationGroup>
 				</Animations>
-			</Frame>
-			<Frame name="BillingWarningFrame" hidden="true">
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString name="BillingWarningText" inherits="GlueFontHighlight">
-							<Size x="300" y="0"/>
-							<Anchors>
-								<Anchor point="BOTTOM" relativeTo="CharacterSelect" relativePoint="BOTTOMLEFT" x="200" y="120"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Button name="BillingWarningButton" inherits="GlueButtonTemplate" text="MANAGE_ACCOUNT">
-						<Anchors>
-							<Anchor point="BOTTOM" relativeTo="CharacterSelect" relativePoint="BOTTOMLEFT" x="200" y="50"/>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								CharacterSelect_ManageAccount();
-							</OnClick>
-						</Scripts>
-					</Button>
-				</Frames>
-			</Frame>
-			<Frame name="GameRoomBillingFrame" hidden="true" inherits="TooltipBackdropTemplate">
-				<KeyValues>
-					<KeyValue key="layoutType" value="TooltipGluesLayout" type="string"/>
-				</KeyValues>
-				<Size x="255" y="60"/>
-				<Anchors>
-					<!-- Anchor is also conditionally updated in lua -->
-					<Anchor point="TOP" relativeTo="CharacterSelectServerAlertFrame" relativePoint="BOTTOM" x="0" y="0"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<FontString name="GameRoomBillingFrameText" inherits="GlueFontNormalSmall" justifyH="LEFT">
-							<Size x="235" y="0"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="13" y="-10"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
 			</Frame>
 		</Frames>
 		<Scripts>

@@ -2,9 +2,7 @@
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_ItemSocketingUI.lua"/>
 	<Button name="ItemSocketingSocketButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="40" y="40"/>
-		</Size>
+		<Size x="40" y="40"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentRight" file="Interface\ItemSocketingFrame\UI-ItemSockets">
@@ -12,21 +10,21 @@
 					<Anchors>
 						<Anchor point="LEFT" relativePoint="CENTER" x="5" y="5"/>
 					</Anchors>
-					<TexCoords left="0.28515625" right="0.565" top="0" bottom="0.21484375"/>
+				<TexCoords left="0.28515625" right="0.565" top="0" bottom="0.21484375"/>
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
 				<Texture file="Interface\ItemSocketingFrame\UI-ItemSockets">
 					<Size x="72" y="74"/>
 					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
+						<Anchor point="CENTER"/>
 					</Anchors>
 					<TexCoords left="0.71875" right="1" top="0.7109375" bottom="1"/>
 				</Texture>
-				<Texture name="$parentBackground" file="Interface\ItemSocketingFrame\UI-ItemSockets">
+				<Texture parentKey="Background" name="$parentBackground">
 					<Size x="43" y="44"/>
 					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
+						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -34,57 +32,39 @@
 				<Texture name="$parentIconTexture" parentKey="icon">
 					<Size x="38" y="38"/>
 					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-				<!--<Texture name="$parentBorder" file="Interface\ItemSocketingFrame\UI-ItemSockets">
-					<Size>
-						<AbsDimension x="53" y="53"/>
-					</Size>
-					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>-->
-			</Layer>
-			<Layer level="OVERLAY">
-				<FontString name="$parentColor" inherits="TextStatusBarText" text="Color" hidden="true">
-					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
-				</FontString>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
 			<Frame name="$parentShine" inherits="AnimatedShineTemplate">
 				<Anchors>
-					<Anchor point="CENTER">
-						<Offset>
-							<AbsDimension x="-1" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="CENTER" x="1" />
 				</Anchors>
 			</Frame>
-			<Frame name="$parentBracketFrame" setAllPoints="true">
+			<Frame parentKey="BracketFrame" name="$parentBracketFrame" setAllPoints="true">
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture name="$parentClosedBracket" file="Interface\ItemSocketingFrame\UI-ItemSockets">
+						<Texture parentKey="ClosedBracket" name="$parentClosedBracket">
 							<Size x="53" y="53"/>
 							<Anchors>
-								<Anchor point="CENTER" x="0" y="0"/>
+								<Anchor point="CENTER"/>
 							</Anchors>
-							<TexCoords left="0.5546875" right="0.7578125" top="0" bottom="0.20703125"/>
 						</Texture>
-						<Texture name="$parentOpenBracket" file="Interface\ItemSocketingFrame\UI-ItemSockets">
+						<Texture parentKey="OpenBracket" name="$parentOpenBracket">
 							<Size x="61" y="57"/>
 							<Anchors>
-								<Anchor point="CENTER" x="0" y="-1"/>
+								<Anchor point="CENTER"/>
 							</Anchors>
-							<TexCoords left="0.7578125" right="0.9921875" top="0" bottom="0.22265625"/>
 						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString parentKey="ColorText" inherits="TextStatusBarText" text="Color" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
 					</Layer>
 				</Layers>
 			</Frame>
@@ -140,119 +120,285 @@
 		<TexCoords left="0.62890625" right="0.67187500" top="0.00390625" bottom="0.05078125"/>	
 	</Texture>
 	
-	<Frame name="ItemSocketingFrame" toplevel="true" parent="UIParent" enableMouse="true" hidden="true">
-		<Size>
-			<AbsDimension x="354" y="467"/>
-		</Size>
-		<Anchors>
-			<Anchor point="TOPLEFT">
-				<Offset>
-					<AbsDimension x="0" y="-104"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<HitRectInsets>
-			<AbsInset left="0" right="0" top="0" bottom="29"/>
-		</HitRectInsets>
+	<Frame name="ItemSocketingFrame" toplevel="true" parent="UIParent" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate">
 		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="ItemSocketingFramePortrait">
-					<Size>
-						<AbsDimension x="60" y="60"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="7" y="-6"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="BORDER">
-				<Texture file="Interface\ItemSocketingFrame\UI-ItemSocketingFrame">
-					<Size>
-						<AbsDimension x="512" y="512"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
+			<Layer level="OVERLAY">
 				<FontString inherits="GameFontNormal" text="ITEM_SOCKETING">
 					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="16" y="-19"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" x="15" y="-5"/>
 					</Anchors>
 				</FontString>
 			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="ParchmentFrame-Top" file="Interface\ItemSocketingFrame\UI-ItemSocketingFrame-_tile" horizTile="true" >
+					<Size x="256" y="42"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="2" y="-21"/>
+						<Anchor point="TOPRIGHT" x="-4" y="-21"/>
+					</Anchors>
+					<TexCoords left="0.00000000" right="1.00000000" top="0.37500000" bottom="0.70312500"/>	
+				</Texture>
+				<Texture parentKey="ParchmentFrame-Bottom" file="Interface\ItemSocketingFrame\UI-ItemSocketingFrame-_tile" horizTile="true" >
+					<Size x="256" y="22"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="2" y="3"/>
+						<Anchor point="BOTTOMRIGHT" x="-4" y="3"/>
+					</Anchors>
+					<TexCoords left="0.00000000" right="1.00000000" top="0.18750000" bottom="0.35937500"/>	
+				</Texture>
+				<Texture parentKey="ParchmentFrame-Left" file="Interface\ItemSocketingFrame\UI-ItemSocketParchementFrame-Left" vertTile="true">
+					<Size x="9" y="128"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="2" y="-62"/>
+						<Anchor point="BOTTOMLEFT" x="2" y="25"/>
+					</Anchors>
+					<TexCoords left="0" right="0.75" top="0" bottom="1"/>
+				</Texture>
+				<Texture parentKey="ParchmentFrame-Right" file="Interface\ItemSocketingFrame\UI-ItemSocketParchementFrame-Left" vertTile="true">
+					<Size x="5" y="128"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-4" y="-62"/>
+						<Anchor point="BOTTOMRIGHT" x="-4" y="25"/>
+					</Anchors>
+					<TexCoords left="0" right="0.75" top="0" bottom="1"/>
+				</Texture>
+				<Texture parentKey="SocketFrame-Left" file="Interface\ItemSocketingFrame\UI-ItemSocketingFrame">
+					<Size x="158" y="51"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="11" y="26"/>
+					</Anchors>
+					<TexCoords left="0.00390625" right="0.62109375" top="0.00390625" bottom="0.20312500"/>	
+				</Texture>
+				<Texture parentKey="SocketFrame-Right" file="Interface\ItemSocketingFrame\UI-ItemSocketingFrame">
+					<Size x="158" y="51"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="-11" y="26"/>
+					</Anchors>
+					<TexCoords left="0.00390625" right="0.62109375" top="0.21093750" bottom="0.41015625"/>	
+				</Texture>
+				<Texture parentKey="ButtonFrame-Left" file="Interface\ItemSocketingFrame\UI-ItemSocketingFrame">
+					<Size x="4" y="21"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-167" y="4"/>
+					</Anchors>
+					<TexCoords left="0.62890625" right="0.64453125" top="0.05859375" bottom="0.14062500"/>	
+				</Texture>
+				<Texture parentKey="ButtonFrame-Right" file="Interface\ItemSocketingFrame\UI-ItemSocketingFrame">
+					<Size x="4" y="21"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="-5" y="4"/>
+					</Anchors>
+					<TexCoords left="0.65234375" right="0.66796875" top="0.05859375" bottom="0.14062500"/>	
+				</Texture>
+				<Texture parentKey="ButtonBorder-Mid" file="Interface\ItemSocketingFrame\UI-ItemSocketingFrame-_tile" horizTile="true" >
+					<Size x="100" y="21"/>	
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ButtonFrame-Left" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.ButtonFrame-Right" relativePoint="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0.00000000" right="1.00000000" top="0.00781250" bottom="0.17187500"/>	
+				</Texture>
+				<Texture parentKey="GoldBorder-BottomRight" file="Interface\Common\UI-Goldborder">
+					<Size x="66" y="55"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="-10" y="79"/>
+					</Anchors>
+					<TexCoords left="0.26171875" right="0.51953125" top="0.00781250" bottom="0.43750000"/>	
+				</Texture>
+				<Texture parentKey="GoldBorder-BottomLeft" file="Interface\Common\UI-Goldborder">
+					<Size x="66" y="55"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="11" y="79"/>
+					</Anchors>
+					<TexCoords left="0.26171875" right="0.51953125" top="0.45312500" bottom="0.88281250"/>	
+				</Texture>
+				<Texture parentKey="GoldBorder-TopRight" file="Interface\Common\UI-Goldborder">
+					<Size x="66" y="55"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-10" y="-64"/>
+					</Anchors>
+					<TexCoords left="0.52734375" right="0.78515625" top="0.00781250" bottom="0.43750000"/>	
+				</Texture>
+				<Texture parentKey="GoldBorder-TopLeft" file="Interface\Common\UI-Goldborder">
+					<Size x="66" y="55"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="11" y="-64"/>
+					</Anchors>
+					<TexCoords left="0.52734375" right="0.78515625" top="0.45312500" bottom="0.88281250"/>	
+				</Texture>
+				<Texture parentKey="GoldBorder-Left" file="Interface\Common\UI-Goldborder-!tile" vertTile="true" >
+					<Size x="9" y="128"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.GoldBorder-TopLeft" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.GoldBorder-BottomLeft" relativePoint="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0.00781250" right="0.07812500" top="0.00000000" bottom="1.00000000"/>	
+				</Texture>
+				<Texture parentKey="GoldBorder-Right" file="Interface\Common\UI-Goldborder-!tile" vertTile="true" >
+					<Size x="9" y="128"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.GoldBorder-TopRight" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.GoldBorder-BottomRight" relativePoint="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.00781250" right="0.07812500" top="0.00000000" bottom="1.00000000"/>	
+				</Texture>
+				<Texture parentKey="GoldBorder-Top" file="Interface\Common\UI-Goldborder-_tile" horizTile="true" >
+					<Size x="256" y="9"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.GoldBorder-TopLeft" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.GoldBorder-TopRight" relativePoint="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0.00000000" right="1.00000000" top="0.01562500" bottom="0.15625000"/>	
+				</Texture>
+				<Texture parentKey="GoldBorder-Bottom" file="Interface\Common\UI-Goldborder-_tile" horizTile="true" >
+					<Size x="256" y="9"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.GoldBorder-BottomLeft" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.GoldBorder-BottomRight" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.00000000" right="1.00000000" top="0.01562500" bottom="0.15625000"/>	
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="BackgroundColor">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="20" y="-74"/>
+						<Anchor point="BOTTOMRIGHT" x="-20" y="80"/>
+					</Anchors>
+					<Color r="0.078125" g="0.12109375" b="0.21484375" a="0.4"/>
+				</Texture>
+				<Texture parentKey="BackgroundHighlight" file="Interface\ItemSocketingFrame\UI-ItemSocketingFrame" virtual="true" >
+					<Size x="128" y="128"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="20" y="-74"/>
+						<Anchor point="BOTTOMRIGHT" x="-20" y="80"/>
+					</Anchors>
+					<TexCoords left="0.00390625" right="0.50390625" top="0.41796875" bottom="0.91796875"/>
+				</Texture>
+				<Texture parentKey="BorderShadow-TopLeftCorner" file="Interface\Common\UI-Goldborder">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="20" y="-74"/>
+					</Anchors>
+					<TexCoords left="0.12890625" right="0.25390625" top="0.00781250" bottom="0.25781250"/>	
+				</Texture>
+				<Texture parentKey="BorderShadow-TopRightCorner" file="Interface\Common\UI-Goldborder">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-20" y="-74"/>
+					</Anchors>
+					<TexCoords left="0.25390625" right="0.12890625" top="0.00781250" bottom="0.25781250"/>	
+				</Texture>
+				<Texture parentKey="BorderShadow-BottomLeftCorner" file="Interface\Common\UI-Goldborder">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="20" y="88"/>
+					</Anchors>
+					<TexCoords left="0.12890625" right="0.25390625" top="0.25781250" bottom="0.00781250"/>	
+				</Texture>
+				<Texture parentKey="BorderShadow-BottomRightCorner" file="Interface\Common\UI-Goldborder">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="-20" y="88"/>
+					</Anchors>
+					<TexCoords left="0.25390625" right="0.12890625" top="0.25781250" bottom="0.00781250"/>	
+				</Texture>
+				<Texture parentKey="BorderShadow-Top" file="Interface\Common\UI-Goldborder-_tile" horizTile="true" >
+					<Size x="256" y="32"/>	
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.BorderShadow-TopLeftCorner" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.BorderShadow-TopRightCorner" relativePoint="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0.00000000" right="1.00000000" top="0.18750000" bottom="0.68750000"/>	
+				</Texture>
+				<Texture parentKey="BorderShadow-Left" file="Interface\Common\UI-Goldborder-!tile" vertTile="true" >
+					<Size x="32" y="128"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.BorderShadow-TopLeftCorner" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BorderShadow-BottomLeftCorner" relativePoint="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0.34375000" right="0.59375000" top="0.00000000" bottom="1.00000000"/>	
+				</Texture>
+				<Texture parentKey="BorderShadow-Bottom" file="Interface\Common\UI-Goldborder-_tile" horizTile="true" >
+					<Size x="256" y="32"/>	
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BorderShadow-BottomLeftCorner" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BorderShadow-BottomRightCorner" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.00000000" right="1.00000000" top="0.68750000" bottom="0.18750000"/>	
+				</Texture>
+				<Texture parentKey="BorderShadow-Right" file="Interface\Common\UI-Goldborder-!tile" vertTile="true" >
+					<Size x="32" y="128"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.BorderShadow-TopRightCorner" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BorderShadow-BottomRightCorner" relativePoint="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.59375000" right="0.34375000" top="0.00000000" bottom="1.00000000"/>	
+				</Texture>
+				<Texture parentKey="BottomLeftNub" inherits="NubTemplate">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="6" y="20"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BottomRightNub" inherits="NubTemplate">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="-5" y="20"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="MiddleLeftNub" inherits="NubTemplate">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="6" y="72"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="MiddleRightNub" inherits="NubTemplate">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="-5" y="72"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="TopLeftNub" inherits="NubTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="6" y="-57"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="TopRightNub" inherits="NubTemplate">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-5" y="-57"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Frames>
-			<ScrollFrame name="ItemSocketingScrollFrame" inherits="UIPanelScrollFrameTemplate">
-				<Size x="269" y="255"/>
+			<EventScrollFrame parentKey="ScrollFrame" name="ItemSocketingScrollFrame" inherits="ScrollFrameTemplate">
+				<KeyValues>
+					<KeyValue key="scrollBarHideIfUnscrollable" value="true" type="boolean"/>
+					<KeyValue key="scrollBarX" value="-14" type="number"/>
+					<KeyValue key="scrollBarTopY" value="-5" type="number"/>
+					<KeyValue key="scrollBarBottomY" value="1" type="number"/>
+				</KeyValues>
+				<Size x="293" y="258"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="32" y="-89"/>
+					<Anchor point="TOPLEFT" x="22" y="-74"/>
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture name="$parentBottom" file="Interface\Common\UI-Goldborder" >
-							<Size x="30" y="32"/>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-2" y="-4"/>
-							</Anchors>
-							<TexCoords left="0.00390625" right="0.12109375" top="0.00781250" bottom="0.25781250"/>	
-						</Texture>
-						<Texture name="$parentTop" file="Interface\Common\UI-Goldborder" >
-							<Size x="30" y="32"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-2" y="2"/>
-							</Anchors>
-							<TexCoords left="0.00390625" right="0.12109375" top="0.27343750" bottom="0.52343750"/>	
-						</Texture>
-						<Texture name="$parentMiddle" file="Interface\Common\UI-Goldborder-!tile" vertTile="true" >
-							<Size x="30" y="128"/>
-							<Anchors>
-								<Anchor point="TOPRIGHT" relativeTo="$parentTop" relativePoint="BOTTOMRIGHT"/>
-								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottom" relativePoint="TOPRIGHT"/>
-							</Anchors>
-							<TexCoords left="0.09375000" right="0.32812500" top="0.00000000" bottom="1.00000000"/>	
-						</Texture>
-						
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad>
-						self.scrollBarHideable = 1;
-						UIPanelScrollFrame_OnLoad(self);
-						ScrollFrame_OnScrollRangeChanged(self, 0, 0);
-					</OnLoad>
-					<OnScrollRangeChanged>
-						ScrollFrame_OnScrollRangeChanged(self, 0, yrange);
-						ItemSocketingSocketButton_OnScrollRangeChanged(self);
-					</OnScrollRangeChanged>
-				</Scripts>
 				<ScrollChild>
 					<Frame name="ItemSocketingScrollChild">
-						<Size x="259" y="250"/>
+						<Size x="259" y="254"/>
 						<Frames>
-							<GameTooltip name="ItemSocketingDescription" inherits="GameTooltipTemplate" setAllPoints="true" hidden="false">
+							<GameTooltip name="ItemSocketingDescription" clampedToScreen="false" inherits="GameTooltipTemplate" setAllPoints="true" hidden="false">
 								<KeyValues>
+									<KeyValue key="supportsDataRefresh" value="true" type="boolean"/>
 									<KeyValue key="IsEmbedded" value="true" type="boolean"/>
 								</KeyValues>
-							</GameTooltip>							
+								<Scripts>
+									<OnUpdate function="GameTooltip_OnUpdate"/>
+								</Scripts>
+							</GameTooltip>
 						</Frames>
 					</Frame>
 				</ScrollChild>
-			</ScrollFrame>
-			<Button name="ItemSocketingSocket1" inherits="ItemSocketingSocketButtonTemplate" id="1">
+			</EventScrollFrame>
+			<Button name="ItemSocketingSocket1" parentArray="Sockets" inherits="ItemSocketingSocketButtonTemplate" id="1">
 				<Anchors>
-					<Anchor point="BOTTOM" relativeTo="ItemSocketingFrame" x="0" y="37"/>
+					<Anchor point="BOTTOM" relativeTo="ItemSocketingFrame" x="100" y="99"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -266,7 +412,7 @@
 					</Layer>
 				</Layers>
 			</Button>
-			<Button name="ItemSocketingSocket2" inherits="ItemSocketingSocketButtonTemplate" id="2">
+			<Button name="ItemSocketingSocket2" parentArray="Sockets" inherits="ItemSocketingSocketButtonTemplate" id="2">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="ItemSocketingSocket1" relativePoint="RIGHT" x="40" y="0"/>
 				</Anchors>
@@ -282,7 +428,7 @@
 					</Layer>
 				</Layers>
 			</Button>
-			<Button name="ItemSocketingSocket3" inherits="ItemSocketingSocketButtonTemplate" id="3">
+			<Button name="ItemSocketingSocket3" parentArray="Sockets" inherits="ItemSocketingSocketButtonTemplate" id="3">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="ItemSocketingSocket2" relativePoint="RIGHT" x="40" y="0"/>
 				</Anchors>
@@ -301,7 +447,7 @@
 			<Button name="ItemSocketingSocketButton" text="SOCKET_GEMS">
 				<Size x="162" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" x="-10" y="33"/>
+					<Anchor point="BOTTOMRIGHT" x="-5" y="3"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -359,15 +505,6 @@
 				<DisabledFont style="GameFontDisable"/>
 				<HighlightFont style="GameFontHighlight"/>
 				<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
-			</Button>
-			<Button name="ItemSocketingCloseButton" inherits="UIPanelCloseButton">
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-1" y="-9"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
 			</Button>
 		</Frames>
 		<Scripts>

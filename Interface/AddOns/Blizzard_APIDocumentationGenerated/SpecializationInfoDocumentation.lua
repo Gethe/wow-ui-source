@@ -116,6 +116,20 @@ local SpecializationInfo =
 			},
 		},
 		{
+			Name = "GetTalentInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "query", Type = "TalentInfoQuery", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "TalentInfoResult", Nilable = true },
+			},
+		},
+		{
 			Name = "IsInitialized",
 			Type = "Function",
 
@@ -264,6 +278,46 @@ local SpecializationInfo =
 				{ Name = "inspectTarget", Type = "string", Nilable = true },
 				{ Name = "sex", Type = "number", Nilable = true },
 				{ Name = "groupIndex", Type = "luaIndex", Nilable = true },
+			},
+		},
+		{
+			Name = "TalentInfoQuery",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "groupIndex", Type = "luaIndex", Nilable = true },
+				{ Name = "isInspect", Type = "bool", Nilable = false, Default = false },
+				{ Name = "tier", Type = "luaIndex", Nilable = true },
+				{ Name = "column", Type = "luaIndex", Nilable = true },
+				{ Name = "target", Type = "UnitToken", Nilable = true },
+				{ Name = "specializationIndex", Type = "luaIndex", Nilable = true },
+				{ Name = "talentIndex", Type = "luaIndex", Nilable = true },
+				{ Name = "isPet", Type = "bool", Nilable = false, Default = false },
+			},
+		},
+		{
+			Name = "TalentInfoResult",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "talentID", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "icon", Type = "fileID", Nilable = false },
+				{ Name = "tier", Type = "luaIndex", Nilable = false },
+				{ Name = "column", Type = "luaIndex", Nilable = false },
+				{ Name = "selected", Type = "bool", Nilable = false, Default = false },
+				{ Name = "available", Type = "bool", Nilable = false, Default = false },
+				{ Name = "spellID", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "isPVPTalentUnlocked", Type = "bool", Nilable = false, Default = false },
+				{ Name = "known", Type = "bool", Nilable = false, Default = false },
+				{ Name = "grantedByAura", Type = "bool", Nilable = false, Default = false },
+				{ Name = "rank", Type = "luaIndex", Nilable = false },
+				{ Name = "maxRank", Type = "luaIndex", Nilable = false },
+				{ Name = "meetsPrereq", Type = "bool", Nilable = false, Default = false },
+				{ Name = "previewRank", Type = "luaIndex", Nilable = false },
+				{ Name = "meetsPreviewPrereq", Type = "bool", Nilable = false, Default = false },
+				{ Name = "isExceptional", Type = "bool", Nilable = false, Default = false },
+				{ Name = "hasGoldBorder", Type = "bool", Nilable = false, Default = false },
 			},
 		},
 	},

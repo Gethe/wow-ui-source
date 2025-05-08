@@ -14,15 +14,32 @@ end
 
 function InspectTalentFrameTalent_OnEvent(self, event, ...)
 	if ( GameTooltip:IsOwned(self) ) then
-		local talentID = select(12, GetTalentInfo(PanelTemplates_GetSelectedTab(InspectTalentFrame), self:GetID(), InspectTalentFrame.inspect, InspectTalentFrame.pet, InspectTalentFrame.talentGroup));
-		GameTooltip:SetTalent(talentID, InspectTalentFrame.inspect, InspectTalentFrame.pet, InspectTalentFrame.talentGroup);
+		local talentInfoQuery = {};
+		talentInfoQuery.specializationIndex = PanelTemplates_GetSelectedTab(InspectTalentFrame);
+		talentInfoQuery.talentIndex = self:GetID();
+		talentInfoQuery.isInspect = InspectTalentFrame.inspect;
+		talentInfoQuery.isPet = InspectTalentFrame.pet;
+		talentInfoQuery.groupIndex = InspectTalentFrame.talentGroup;
+		local talentInfo = C_SpecializationInfo.GetTalentInfo(talentInfoQuery);
+		if talentInfo then
+			GameTooltip:SetTalent(talentInfo.talentID, InspectTalentFrame.inspect, InspectTalentFrame.pet, InspectTalentFrame.talentGroup);
+		end
 	end
 end
 
 function InspectTalentFrameTalent_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	local talentID = select(12, GetTalentInfo(PanelTemplates_GetSelectedTab(InspectTalentFrame), self:GetID(), InspectTalentFrame.inspect, InspectTalentFrame.pet, InspectTalentFrame.talentGroup));
-	GameTooltip:SetTalent(talentID, InspectTalentFrame.inspect, InspectTalentFrame.pet, InspectTalentFrame.talentGroup);
+
+	local talentInfoQuery = {};
+	talentInfoQuery.specializationIndex = PanelTemplates_GetSelectedTab(InspectTalentFrame);
+	talentInfoQuery.talentIndex = self:GetID();
+	talentInfoQuery.isInspect = InspectTalentFrame.inspect;
+	talentInfoQuery.isPet = InspectTalentFrame.pet;
+	talentInfoQuery.groupIndex = InspectTalentFrame.talentGroup;
+	local talentInfo = C_SpecializationInfo.GetTalentInfo(talentInfoQuery);
+	if talentInfo then
+		GameTooltip:SetTalent(talentInfo.talentID, InspectTalentFrame.inspect, InspectTalentFrame.pet, InspectTalentFrame.talentGroup);
+	end
 end
 
 function InspectTalentFrame_UpdateTabs()

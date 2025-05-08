@@ -259,9 +259,7 @@ function PaperDollFrame_SetArmor(unit, prefix)
 
 	PaperDollFormatStat(ARMOR, base, posBuff, negBuff, frame, text);
 	local playerLevel = UnitLevel(unit);
-	local armorReduction = effectiveArmor/((85 * playerLevel) + 400);
-	armorReduction = 100 * (armorReduction/(armorReduction + 1));
-	
+	local armorReduction = PaperDollFrame_GetArmorReduction(effectiveArmor, playerLevel);
 	frame.tooltip2 = format(ARMOR_TOOLTIP, playerLevel, armorReduction);
 end
 
@@ -611,6 +609,10 @@ function PaperDollFrame_SetDefense(unit, prefix)
 		negBuff = modifier;
 	end
 	PaperDollFormatStat(DEFENSE_COLON, base, posBuff, negBuff, frame, text);
+end
+
+function PaperDollFrame_GetArmorReduction(armor, attackerLevel)
+	return C_PaperDollInfo.GetArmorEffectiveness(armor, attackerLevel) * 100;
 end
 
 function PaperDollFormatStat(name, base, posBuff, negBuff, frame, textString)

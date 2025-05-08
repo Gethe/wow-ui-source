@@ -320,6 +320,7 @@ GARRISON_TYPEConstantsDocumentation.lua
 GamePadConstDocumentation.lua
 GameRulesConstantsDocumentation.lua
 GarrisonConstantsDocumentation.lua
+GlyphConstantsDocumentation.lua
 GossipConstantsDocumentation.lua
 GroupFinderConstantsDocumentation.lua
 GuildConstantsDocumentation.lua

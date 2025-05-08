@@ -54,17 +54,21 @@ local function CheckAndSetArtStyle(actionButton)
 		return;
 	end
 
-	local useAltGlow = AssistedCombatManager:ShouldDowngradeSpellAlertForButton(actionButton);
 	local isRecommendedAssistedHighlightButton = AssistedCombatManager:IsRecommendedAssistedHighlightButton(actionButton);
-	if useAltGlow then
-		alertFrame.ProcStartFlipbook:Hide();
-		alertFrame.ProcLoopFlipbook:Hide();
-		alertFrame.ProcAltGlow:Show();
-	elseif self.useAltGlow and not isRecommendedAssistedHighlightButton then
+
+	if not isRecommendedAssistedHighlightButton and AssistedCombatManager:ShouldDowngradeSpellAlertForButton(actionButton) then
 		alertFrame.ProcStartFlipbook:Hide();
 		alertFrame.ProcLoopFlipbook:Hide();
 		alertFrame.ProcAltGlow:Show();
 	else
+		-- use blue art for assisted highlight
+		if isRecommendedAssistedHighlightButton then
+			alertFrame.ProcStartFlipbook:SetAtlas("rotationhelper-procstartblue-flipbook");
+			alertFrame.ProcLoopFlipbook:SetAtlas("rotationhelper-procloopblue-flipbook", TextureKitConstants.UseAtlasSize);
+		else
+			alertFrame.ProcStartFlipbook:SetAtlas("UI-HUD-ActionBar-Proc-Start-Flipbook");
+			alertFrame.ProcLoopFlipbook:SetAtlas("UI-HUD-ActionBar-Proc-Loop-Flipbook", TextureKitConstants.UseAtlasSize);
+		end
 		alertFrame.ProcStartFlipbook:Show();
 		alertFrame.ProcLoopFlipbook:Show();
 		alertFrame.ProcAltGlow:Hide();
