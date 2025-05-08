@@ -1959,6 +1959,8 @@ Interface\AddOns\Blizzard_SharedXML\PropertyFontString.xml
 Interface\AddOns\Blizzard_SharedXML\PropertySlider.lua
 Interface\AddOns\Blizzard_SharedXML\PropertySlider.xml
 Interface\AddOns\Blizzard_SharedXML\RegionUtil.lua
+Interface\AddOns\Blizzard_SharedXML\ScaleToFitFrame.lua
+Interface\AddOns\Blizzard_SharedXML\ScaleToFitFrame.xml
 Interface\AddOns\Blizzard_SharedXML\ScriptAnimationUtil.lua
 Interface\AddOns\Blizzard_SharedXML\ScrollableTabsContainer.lua
 Interface\AddOns\Blizzard_SharedXML\ScrollableTabsContainer.xml

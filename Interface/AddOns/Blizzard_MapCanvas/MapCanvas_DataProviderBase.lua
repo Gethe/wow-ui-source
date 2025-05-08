@@ -140,7 +140,7 @@ function MapCanvasDataProviderMixin:UpdatePing()
 	if not self.pingPin or not self.pingPin:IsActive() then
 		return;
 	end
-	
+
 	local idKey, id = self.pingPin:GetID();
 	local targetPin = self:GetPingTargetPin(idKey, id);
 	if not targetPin then
@@ -230,9 +230,11 @@ function MapCanvasPinMixin:AddIconWidgets()
 end
 
 function MapCanvasPinMixin:OnClick(...)
-	if self:GetMap():ProcessGlobalPinMouseActionHandlers(MapCanvasMixin.MouseAction.Click, ...) then
+	local map = self:GetMap();
+	if map and map:ProcessGlobalPinMouseActionHandlers(MapCanvasMixin.MouseAction.Click, ...) then
 		return;
 	end
+
 	if self.OnMouseClickAction then
 		self:OnMouseClickAction(...);
 	end
@@ -254,18 +256,24 @@ function MapCanvasPinMixin:OnMouseLeave()
 end
 
 function MapCanvasPinMixin:OnMouseDown(...)
-	if self:GetMap():ProcessGlobalPinMouseActionHandlers(MapCanvasMixin.MouseAction.Down, ...) then
+	local map = self:GetMap();
+	if map and map:ProcessGlobalPinMouseActionHandlers(MapCanvasMixin.MouseAction.Down, ...) then
 		return;
+	elseif not map then
+		self:ReportPinError("Invalid map for pin (level [%s]) where last map used was [%s]", tostring(self:GetFrameLevelType()), tostring(self:GetLastDisplayMap()));
 	end
+
 	if self.OnMouseDownAction then
 		self:OnMouseDownAction(...);
 	end
 end
 
 function MapCanvasPinMixin:OnMouseUp(...)
-	if self:GetMap():ProcessGlobalPinMouseActionHandlers(MapCanvasMixin.MouseAction.Up, ...) then
+	local map = self:GetMap();
+	if map and map:ProcessGlobalPinMouseActionHandlers(MapCanvasMixin.MouseAction.Up, ...) then
 		return;
 	end
+
 	if self.OnMouseUpAction then
 		self:OnMouseUpAction(...);
 	end
@@ -609,4 +617,23 @@ function MapCanvasPinMixin:GetDisplayName()
 	-- Override in your mixin if needed.
 	-- Purposefully asserting here because this should only be called when it can return useful info.
 	assertsafe(false);
+end
+
+function MapCanvasPinMixin:SetOwningMap(map)
+	self.owningMap = map;
+	self.lastOwningMapID = map and map:GetMapID() or 0;
+end
+
+function MapCanvasPinMixin:GetOwningMap()
+	return self.owningMap;
+end
+
+function MapCanvasPinMixin:GetLastDisplayMap()
+	return self.lastOwningMapID;
+end
+
+function MapCanvasPinMixin:ReportPinError(fmt, ...)
+	if ProcessExceptionClient then
+		ProcessExceptionClient(fmt:format(...));
+	end
 end

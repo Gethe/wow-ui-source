@@ -81,6 +81,10 @@ function CharacterServicesCharacterSelectorMixin:ProcessCharacterFromBlock(frame
 	end
 
 	local function CharacterServicesOnClick()
+		if not frame:CanSelect() then
+			return;
+		end
+
 		local serviceInfo = block:GetServiceInfoByCharacterID(frame.characterID);
 		if not serviceInfo.isEligible then
 			return;
@@ -99,10 +103,6 @@ function CharacterServicesCharacterSelectorMixin:ProcessCharacterFromBlock(frame
 		if serviceInfo.checkTrialBoost then
 			local trialBoostFlowGuid = serviceInfo.isTrialBoost and playerguid or nil;
 			CharacterUpgradeFlow:SetTrialBoostGuid(trialBoostFlowGuid);
-		end
-
-		if not frame:CanSelect() then
-			return;
 		end
 
 		-- Fixes cases of selecting a character, backing out, then selecting them again causing visual issues.

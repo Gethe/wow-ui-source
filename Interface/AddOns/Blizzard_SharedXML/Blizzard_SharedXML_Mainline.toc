@@ -44,6 +44,8 @@ ManagedLayoutFrame.lua
 ManagedLayoutFrame.xml
 SpaceToFitLayoutFrame.lua
 SpaceToFitLayoutFrame.xml
+ScaleToFitFrame.lua
+ScaleToFitFrame.xml
 BulletPoint.lua
 BulletPoint.xml
 KeyCommand.lua

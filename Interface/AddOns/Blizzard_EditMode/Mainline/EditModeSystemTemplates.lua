@@ -2580,8 +2580,8 @@ function EditModeCooldownViewerSystemMixin:UpdateSystemSettingBarContent()
 	end
 end
 
-function EditModeCooldownViewerSystemMixin:UpdateSystemSettingHideWhenInactive(entireSystemUpdate)
-	self:SetHideWhenInactive(self:GetSettingValue(Enum.EditModeCooldownViewerSetting.HideWhenInactive) == 1, entireSystemUpdate);
+function EditModeCooldownViewerSystemMixin:UpdateSystemSettingHideWhenInactive()
+	self:SetHideWhenInactive(self:GetSettingValue(Enum.EditModeCooldownViewerSetting.HideWhenInactive) == 1);
 end
 
 function EditModeCooldownViewerSystemMixin:UpdateSystemSettingShowTimer()
@@ -2624,7 +2624,7 @@ function EditModeCooldownViewerSystemMixin:UpdateSystemSetting(setting, entireSy
 	elseif setting == Enum.EditModeCooldownViewerSetting.BarContent and self:HasSetting(Enum.EditModeCooldownViewerSetting.BarContent) then
 		self:UpdateSystemSettingBarContent();
 	elseif setting == Enum.EditModeCooldownViewerSetting.HideWhenInactive and self:HasSetting(Enum.EditModeCooldownViewerSetting.HideWhenInactive) then
-		self:UpdateSystemSettingHideWhenInactive(entireSystemUpdate);
+		self:UpdateSystemSettingHideWhenInactive();
 	elseif setting == Enum.EditModeCooldownViewerSetting.ShowTimer and self:HasSetting(Enum.EditModeCooldownViewerSetting.ShowTimer) then
 		self:UpdateSystemSettingShowTimer();
 	elseif setting == Enum.EditModeCooldownViewerSetting.ShowTooltips and self:HasSetting(Enum.EditModeCooldownViewerSetting.ShowTooltips) then

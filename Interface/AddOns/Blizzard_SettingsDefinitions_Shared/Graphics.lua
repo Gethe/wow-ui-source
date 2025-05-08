@@ -703,6 +703,7 @@ local function Register()
 			AddValidatedCVarOption(container, cvar, 1, VIDEO_OPTIONS_BUILTIN);
 			AddValidatedCVarOption(container, cvar, 2, VIDEO_OPTIONS_NVIDIA_REFLEX);
 			AddValidatedCVarOption(container, cvar, 3, VIDEO_OPTIONS_NVIDIA_REFLEX_BOOST);
+			AddValidatedCVarOption(container, cvar, 4, VIDEO_OPTIONS_INTEL_XELL);
 			return container:GetData();
 		end
 

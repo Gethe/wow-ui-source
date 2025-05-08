@@ -183,7 +183,7 @@ function AddonList_HasAnyChanged()
 	for i=1,C_AddOns.GetNumAddOns() do
 		local character = nil;
 		if (not InGlue()) then
-			character = UnitName("player");
+			character = GetAddonCharacter();
 		end
 		local enabled = (C_AddOns.GetAddOnEnableState(i, character) > Enum.AddOnEnableState.None);
 		local reason = select(5,C_AddOns.GetAddOnInfo(i))
@@ -251,7 +251,8 @@ function AddonListMixin:OnLoad()
 		self.outOfDate = C_AddOns.IsAddonVersionCheckEnabled() and AddonList_HasOutOfDate();
 		self.outOfDateIndexes = {};
 		for i=1,C_AddOns.GetNumAddOns() do
-			self.startStatus[i] = (C_AddOns.GetAddOnEnableState(i, UnitName("player")) > Enum.AddOnEnableState.None);
+			local character = GetAddonCharacter();
+			self.startStatus[i] = (C_AddOns.GetAddOnEnableState(i, character) > Enum.AddOnEnableState.None);
 			if (select(5, C_AddOns.GetAddOnInfo(i)) == "INTERFACE_VERSION") then
 				tinsert(self.outOfDateIndexes, i);
 			end
@@ -359,7 +360,7 @@ function AddonList_InitAddon(entry, treeNode)
 	local checkboxState = C_AddOns.GetAddOnEnableState(addonIndex, character);
 	local enabled;
 	if ( not InGlue() ) then
-		enabled = (C_AddOns.GetAddOnEnableState(addonIndex, UnitName("player")) > Enum.AddOnEnableState.None);
+		enabled = (C_AddOns.GetAddOnEnableState(addonIndex, character) > Enum.AddOnEnableState.None);
 	else
 		enabled = (checkboxState > Enum.AddOnEnableState.None);
 	end
@@ -781,7 +782,7 @@ function AddonList_HasOutOfDate()
 		local name, title, notes, loadable, reason = C_AddOns.GetAddOnInfo(i);
 		local character = nil;
 		if (not InGlue()) then
-			character = UnitName("player");
+			character = GetAddonCharacter();
 		end
 		local enabled = (C_AddOns.GetAddOnEnableState(i, character) > Enum.AddOnEnableState.None);
 		if ( enabled and not loadable and reason == "INTERFACE_VERSION" ) then
@@ -807,7 +808,7 @@ function AddonList_DisableOutOfDate()
 		local name, title, notes, loadable, reason = C_AddOns.GetAddOnInfo(i);
 		local character = nil;
 		if (not InGlue()) then
-			character = UnitName("player");
+			character = GetAddonCharacter();
 		end
 		local enabled = (C_AddOns.GetAddOnEnableState(i, character) > Enum.AddOnEnableState.None);
 		if ( enabled and not loadable and reason == "INTERFACE_VERSION" ) then

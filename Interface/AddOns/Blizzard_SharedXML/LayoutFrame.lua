@@ -35,7 +35,7 @@ function BaseLayoutMixin:AddLayoutChildren(layoutChildren, ...)
 		local region = select(i, ...);
 		-- Individual regions can be ignored or every region can be ignored and require individual opt-in.
 		local canInclude = (not region.ignoreInLayout) and (not self.ignoreAllChildren or region.includeInLayout);
-		if region:IsShown() and canInclude and (self:IgnoreLayoutIndex() or region.layoutIndex) then
+		if (region:IsShown() or region.includeAsLayoutChildWhenHidden) and canInclude and (self:IgnoreLayoutIndex() or region.layoutIndex) then
 			layoutChildren[#layoutChildren + 1] = region;
 		end
 	end

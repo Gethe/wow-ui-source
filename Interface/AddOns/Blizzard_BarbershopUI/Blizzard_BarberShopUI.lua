@@ -48,6 +48,8 @@ function BarberShopMixin:OnShow()
 
 	self:UpdateSex();
 
+	CharCustomizeFrame.GetAlteredFormsUnsafeLeftSpace = GenerateClosure(self.GetAlteredFormsUnsafeLeftSpace, self);
+
 	local reset = true;
 	self:UpdateCharCustomizationFrame(reset);
 
@@ -77,7 +79,7 @@ function BarberShopMixin:UpdateSex()
 	if C_BarberShop.GetViewingChrModel() then
 		self.BodyTypes:Hide();
 	else
-		self.BodyTypes:MarkDirty();
+		self.BodyTypes:Layout();
 		self.BodyTypes:Show();
 	end
 end
@@ -136,6 +138,15 @@ function BarberShopMixin:UpdateCharCustomizationFrame(alsoReset)
 	CharCustomizeFrame:SetCustomizations(customizationCategoryData);
 
 	self:UpdateButtons();
+end
+
+function BarberShopMixin:GetAlteredFormsUnsafeLeftSpace()
+	local unsafeLeftSpaceBodyTypes = self.BodyTypes:IsShown() and self.BodyTypes:GetRight();
+	if unsafeLeftSpaceBodyTypes then
+		return unsafeLeftSpaceBodyTypes + 10;
+	end
+
+	return CharCustomizeMixin.GetAlteredFormsUnsafeLeftSpace(CharCustomizeFrame);
 end
 
 function BarberShopMixin:SetCustomizationChoice(optionID, choiceID)

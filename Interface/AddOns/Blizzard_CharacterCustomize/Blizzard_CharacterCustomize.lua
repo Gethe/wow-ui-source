@@ -168,6 +168,7 @@ function CharCustomizeMixin:OnLoad()
 	self.alteredFormsPools:CreatePool("CHECKBUTTON", self.AlteredForms, "CharCustomizeAlteredFormSmallButtonTemplate");
 
 	self.Categories:SetFixedMaxSpace(400);
+	self.AlteredForms:SetRefreshCallback(GenerateClosure(self.UpdateAlteredFormsMaxWidth, self));
 end
 
 function CharCustomizeMixin:OnShow()
@@ -215,6 +216,18 @@ function CharCustomizeMixin:UpdateAlteredFormButtons()
 	end
 
 	self.AlteredForms:Layout();
+end
+
+function CharCustomizeMixin:GetAlteredFormsUnsafeLeftSpace()
+	return self.SmallButtons:GetRight();
+end
+
+function CharCustomizeMixin:UpdateAlteredFormsMaxWidth()
+	local totalScreenWidth = UIParent:GetWidth();
+	local _point, _relativeTo, _relativePoint, alteredFormsRightOffset = self.AlteredForms:GetPoint(1);
+	local alteredFormsMaxWidth = totalScreenWidth - self:GetAlteredFormsUnsafeLeftSpace() + alteredFormsRightOffset;	-- alteredFormsRightOffset is negative, so add it
+
+	self.AlteredForms:SetMaxWidth(alteredFormsMaxWidth);
 end
 
 function CharCustomizeMixin:SetSelectedData(selectedRaceData, selectedSexID, viewingAlteredForm)

@@ -75,6 +75,10 @@ function AssistedCombatManager:ShouldHighlightSpellbookSpell(spellID)
 end
 
 function AssistedCombatManager:IsHighlightableSpellbookSpell(spellID)
+	if not spellID then
+		return;
+	end
+
 	if not self:IsRotationSpell(spellID) then
 		-- try the base spell in case of overrides
 		local baseSpellID = C_Spell.GetBaseSpell(spellID);
@@ -172,7 +176,7 @@ function AssistedCombatManager:OnActionButtonActionChanged(actionButton)
 
 	local spellID = self:GetActionButtonSpellForAssistedHighlight(actionButton);
 	self.assistedHighlightCandidateActionButtons[actionButton] = spellID;
-	self:SetAssistedHighlightFrameShown(actionButton, spellID == self.lastNextCastSpellID);
+	self:SetAssistedHighlightFrameShown(actionButton, spellID and spellID == self.lastNextCastSpellID);
 end
 
 -- Will return a spellID for an actionButton that holds a rotation spell (ignoring AssistedRotation button)

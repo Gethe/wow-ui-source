@@ -5,6 +5,7 @@
 		<Size x="50" y="50"/>
 		<KeyValues>
 			<KeyValue key="cooldownFont" value="GameFontHighlightHugeOutline" type="string"/>
+			<KeyValue key="includeAsLayoutChildWhenHidden" value="true" type="boolean"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -75,6 +76,7 @@
 		<Size x="30" y="30"/>
 		<KeyValues>
 			<KeyValue key="cooldownFont" value="GameFontHighlightOutline" type="string"/>
+			<KeyValue key="includeAsLayoutChildWhenHidden" value="true" type="boolean"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -144,7 +146,8 @@
 	<Frame name="CooldownViewerBuffIconItemTemplate" mixin="CooldownViewerBuffIconItemMixin" virtual="true">
 		<Size x="40" y="40"/>
 		<KeyValues>
-			<KeyValue key="activeStateChangedEvent" value="CooldownViewerItem.Buff.ItemActiveStateChanged" type="string"/>
+			<KeyValue key="allowHideWhenInactive" value="true" type="boolean"/>
+			<KeyValue key="includeAsLayoutChildWhenHidden" value="true" type="boolean"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -193,7 +196,8 @@
 	<Frame name="CooldownViewerBuffBarItemTemplate" mixin="CooldownViewerBuffBarItemMixin" virtual="true">
 		<Size x="220" y="30"/>
 		<KeyValues>
-			<KeyValue key="activeStateChangedEvent" value="CooldownViewerItem.BuffBar.ItemActiveStateChanged" type="string"/>
+			<KeyValue key="allowHideWhenInactive" value="true" type="boolean"/>
+			<KeyValue key="includeAsLayoutChildWhenHidden" value="true" type="boolean"/>
 		</KeyValues>
 		<Frames>
 			<Frame parentKey="Icon" frameLevel="512">
@@ -309,10 +313,8 @@
 			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_SYSTEM_TRACKED_BUFFS" type="global"/>
 			<KeyValue key="itemTemplate" value="CooldownViewerBuffIconItemTemplate" type="string"/>
 			<KeyValue key="cooldownViewerCategory" value="Enum.CooldownViewerCategory.TrackedBuff" type="global"/>
-			<KeyValue key="itemActiveStateChangedEvent" value="CooldownViewerItem.Buff.ItemActiveStateChanged" type="string"/>
 			<KeyValue key="layoutIndex" value="9" type="number"/>
 			<KeyValue key="ignoreInLayoutWhenActionBarIsOverriden" value="true" type="boolean"/>
-			<KeyValue key="defaultReservedMinimumHeight" value="40" type="number"/>
 		</KeyValues>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
@@ -328,7 +330,6 @@
 			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_SYSTEM_TRACKED_BUFF_BARS" type="global"/>
 			<KeyValue key="itemTemplate" value="CooldownViewerBuffBarItemTemplate" type="string"/>
 			<KeyValue key="cooldownViewerCategory" value="Enum.CooldownViewerCategory.TrackedBar" type="global"/>
-			<KeyValue key="itemActiveStateChangedEvent" value="CooldownViewerItem.BuffBar.ItemActiveStateChanged" type="string"/>
 		</KeyValues>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
