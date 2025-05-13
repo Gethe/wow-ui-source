@@ -192,14 +192,19 @@ function AreaPOIPinMixin:TryShowTooltip()
 end
 
 function AreaPOIPinMixin:OnMouseLeave()
-	self:GetMap():TriggerEvent("ClearAreaLabel", MAP_AREA_LABEL_TYPE.POI);
+	local map = self:GetMap();
+	if map then
+		map:TriggerEvent("ClearAreaLabel", MAP_AREA_LABEL_TYPE.POI);
 
-	if self.highlightWorldQuestsOnHover then
-		self:GetMap():TriggerEvent("HighlightMapPins.WorldQuests", nil);
-	end
+		if self.highlightWorldQuestsOnHover then
+			map:TriggerEvent("HighlightMapPins.WorldQuests", nil);
+		end
 
-	if self.highlightVignettesOnHover then
-		self:GetMap():TriggerEvent("HighlightMapPins.Vignettes", nil);
+		if self.highlightVignettesOnHover then
+			map:TriggerEvent("HighlightMapPins.Vignettes", nil);
+		end
+	else
+		self:ReportPinError("Invalid map for areaPOI pin[%s] where last map used was [%s]", tostring(self:GetAreaPOIID()), tostring(self:GetLastDisplayMap()));
 	end
 
 	self:OnLegendPinMouseLeave();
@@ -213,4 +218,8 @@ end
 
 function AreaPOIPinMixin:HasDisplayName()
 	return self.poiInfo.name and self.poiInfo.name ~= "";
+end
+
+function AreaPOIPinMixin:GetAreaPOIID()
+	return self.poiInfo and self.poiInfo.areaPoiID;
 end

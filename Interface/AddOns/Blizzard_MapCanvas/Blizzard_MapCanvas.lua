@@ -238,7 +238,7 @@ do
 		pin:OnReleased();
 
 		pin.pinTemplate = nil;
-		pin.owningMap = nil;
+		pin:SetOwningMap(nil);
 	end
 
 	local function OnPinMouseUp(pin, button, upInside)
@@ -257,7 +257,7 @@ do
 		local pin, newPin = self.pinPools[pinTemplate]:Acquire();
 
 		pin.pinTemplate = pinTemplate;
-		pin.owningMap = self;
+		pin:SetOwningMap(self);
 
 		if newPin then
 			local isMouseClickEnabled = pin:IsMouseClickEnabled();
@@ -1046,6 +1046,7 @@ function MapCanvasMixin:ProcessCursorHandlers()
 			return;
 		end
 	end
+
 	if self.lastCursor then
 		self.lastCursor = nil;
 		ResetCursor();
