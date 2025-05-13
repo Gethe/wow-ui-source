@@ -4,13 +4,13 @@
 ## Dependencies: Blizzard_FrameXMLBase, Blizzard_ObjectAPI
 ## LoadFirst: 1
 ## AllowLoad: game
-## AllowLoadGameType: mists
+## AllowLoadGameType: tbc
 ChatBubbleTemplates.xml
 Classic\WorldFrame.lua
 Classic\WorldFrame.xml
 Classic\UIParentDebugMenu.lua
 Classic\UIParent.lua
 Shared\UIParent.lua
-Mists\UIParent.lua
+TBC\UIParent.lua
 Classic\UIParent.xml
 Shared\Localization.lua

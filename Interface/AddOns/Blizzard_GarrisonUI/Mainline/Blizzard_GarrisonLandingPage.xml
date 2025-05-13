@@ -442,12 +442,9 @@
 							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 							GameTooltip:SetText(GARRISON_SHIPYARD_NO_SHIPS_TOOLTIP, nil, nil, nil, nil, true);
 							GameTooltip:Show();
-						else
-							GarrisonLandingPageTab_OnEnter(self);
 						end
 					</OnEnter>
 					<OnLeave>
-						GarrisonLandingPageTab_OnLeave(self);
 						GameTooltip_Hide(self);
 					</OnLeave>
 				</Scripts>

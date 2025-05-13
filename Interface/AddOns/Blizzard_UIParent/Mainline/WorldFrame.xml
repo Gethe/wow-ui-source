@@ -18,7 +18,7 @@
 		 /script WorldFrame:SetUserPlaced(false);
 		 and then log out or reload the UI
 	-->
-	<WorldFrame name="WorldFrame" movable="true" resizable="true" clipChildren="true" setAllPoints="true" frameLevel="1" propagateMouseInput="Both">
+	<WorldFrame name="WorldFrame" movable="true" resizable="true" clipChildren="true" setAllPoints="true" frameLevel="1" propagateMouseInput="Both" retainClickThroughOverride="true">
 		<Scripts>
 			<OnLoad function="WorldFrame_OnLoad"/>
 			<OnUpdate function="WorldFrame_OnUpdate"/>

@@ -624,12 +624,15 @@ function Class_QuestCompleteHelp:ShowHelp()
 	end
 	ObjectiveTrackerFrame:ForEachModule(FindQuestAnchorFrame);
 
-	assertsafe(questAnchorFrame, "Quest not found in objective tracker.");
-
 	if questAnchorFrame and questAnchorFrame:IsShown() then
 		local xOffset = -40;
 		local yOffset = 5;
-		self:ShowPointerTutorial(NPEV2_QUEST_COMPLETE_HELP, "RIGHT", questAnchorFrame, xOffset, yOffset, nil, "RIGHT");
+		self:ShowPointerTutorial(NPEV2_QUEST_COMPLETE_HELP, "RIGHT", questAnchorFrame, xOffset, yOffset, "LEFT");
+	-- Fallback case if the quest was untracked.
+	else
+		local xOffset = -40;
+		local yOffset = -10;
+		self:ShowPointerTutorial(NPEV2_QUEST_COMPLETE_HELP, "RIGHT", ObjectiveTrackerFrame, xOffset, yOffset, "TOPLEFT");
 	end
 end
 

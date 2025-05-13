@@ -71,12 +71,11 @@
 		<Size x="45" y="45"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture parentKey="Flipbook" atlas="UI-HUD-ActionBar-Proc-Loop-Flipbook">
+				<Texture parentKey="Flipbook" atlas="rotationhelper_ants_flipbook">
 					<Size x="66" y="66"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
-					<Color r="0" g="1" b="0"/>
 					<Animations>
 						<AnimationGroup parentKey="Anim" looping="REPEAT" setToFinalAlpha="true">
 							<FlipBook duration="1" order="0" flipBookRows="6" flipBookColumns="5" flipBookFrames="30" flipBookFrameWidth="0" flipBookFrameHeight="0"/>

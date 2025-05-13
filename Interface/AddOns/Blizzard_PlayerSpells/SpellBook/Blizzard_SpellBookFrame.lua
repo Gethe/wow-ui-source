@@ -592,7 +592,7 @@ function AssistedCombatRotationSpellFrameMixin:ShowTooltip()
 		-- there are spells with different IDs but same name, like the shaman Earthquake talent choice node
 		local function TryInsertSpell(spellID)
 			local newInfo = C_Spell.GetSpellInfo(spellID);
-			newInfo.isKnown = IsPlayerSpell(spellID);
+			newInfo.isKnown = IsSpellKnownOrOverridesKnown(spellID);
 			for i, spellInfo in ipairs(spellInfos) do
 				if newInfo.name == spellInfo.name then
 					-- on a name match, prefer the known one

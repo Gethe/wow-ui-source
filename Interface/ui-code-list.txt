@@ -2302,6 +2302,7 @@ Interface\AddOns\Blizzard_UIParentPanelManager\Mainline\UIParentPanelManager.lua
 Interface\AddOns\Blizzard_UIParentPanelManager\Shared\UpdateUIPanelPositions.lua
 Interface\AddOns\Blizzard_UIParent\Blizzard_UIParent_Mainline.toc
 Interface\AddOns\Blizzard_UIParent\Blizzard_UIParent_Mists.toc
+Interface\AddOns\Blizzard_UIParent\Blizzard_UIParent_TBC.toc
 Interface\AddOns\Blizzard_UIParent\ChatBubbleTemplates.xml
 Interface\AddOns\Blizzard_UIParent\Mainline\UIParent.lua
 Interface\AddOns\Blizzard_UIParent\Mainline\UIParent.xml

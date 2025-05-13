@@ -150,21 +150,4 @@ function SpellBookFrameTutorialsMixin:CheckShowHelpTips()
 		HelpTip:Show(UIParent, helpTipInfo, self.AssistedCombatRotationSpellFrame.Button);
 		return;
 	end
-
-	local showMinimizeHelptip = not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PLAYER_SPELLS_MINIMIZE)
-								and PlayerSpellsFrame.MaximizeMinimizeButton:IsShown()
-								and not PlayerSpellsFrame.MaximizeMinimizeButton:IsMinimized();
-	if showMinimizeHelptip then
-		local helpTipInfo = {
-			text = PLAYER_SPELLS_FRAME_MINIMIZE_TIP,
-			buttonStyle = HelpTip.ButtonStyle.Close,
-			targetPoint = HelpTip.Point.BottomEdgeCenter,
-			system = helpTipSystem,
-			onAcknowledgeCallback = function() self:CheckShowHelpTips(); end,
-			cvarBitfield = "closedInfoFrames",
-			bitfieldFlag = LE_FRAME_TUTORIAL_PLAYER_SPELLS_MINIMIZE,
-		};
-		HelpTip:Show(UIParent, helpTipInfo, PlayerSpellsFrame.MaximizeMinimizeButton);
-		return;
-	end
 end
