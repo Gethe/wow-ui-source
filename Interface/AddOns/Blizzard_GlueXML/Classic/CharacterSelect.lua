@@ -1,8 +1,3 @@
-CHARACTER_SELECT_ROTATION_START_X = nil;
-CHARACTER_SELECT_INITIAL_FACING = nil;
-
-CHARACTER_ROTATION_CONSTANT = 0.6;
-
 MAX_CHARACTERS_DISPLAYED = 10;
 MAX_CHARACTERS_DISPLAYED_BASE = MAX_CHARACTERS_DISPLAYED;
 
@@ -486,6 +481,9 @@ function CharacterSelect_OnShow(self)
     local FROM_LOGIN_STATE_CHANGE = false;
     CharacterSelect_UpdateState(FROM_LOGIN_STATE_CHANGE);
 
+	-- If for any reason we had the UI disabled, turn it back on.
+	CharacterSelectUI:ResetVisibilityState();
+
     -- Gameroom billing stuff (For Korea and China only)
     if ( SHOW_GAMEROOM_BILLING_FRAME ) then
         local paymentPlan, hasFallBackBillingMethod, isGameRoom = GetBillingPlan();
@@ -598,7 +596,7 @@ function CharacterSelect_OnShow(self)
 	end
 
 	local includeSeenWarnings = true;
-	CharacterSelectUI.ConfigurationWarnings:SetShown(#C_ConfigurationWarnings.GetConfigurationWarnings(includeSeenWarnings) > 0);
+	CharacterSelectUI.VisibilityFramesContainer.ConfigurationWarnings:SetShown(#C_ConfigurationWarnings.GetConfigurationWarnings(includeSeenWarnings) > 0);
 end
 
 function CharacterSelect_OnHide(self)
@@ -779,7 +777,10 @@ end
 
 function CharacterSelect_OnKeyDown(self,key)
     if ( key == "ESCAPE" ) then
-        if (C_Login.IsLauncherLogin() ) then
+        if not CharacterSelectUI:GetVisibilityState() then
+			CharacterSelectUI:ToggleVisibilityState();
+			return false;
+        elseif (C_Login.IsLauncherLogin() ) then
             GlueMenuFrameUtil.ToggleMenu();
         elseif (CharSelectServicesFlowFrame:IsShown()) then
             CharSelectServicesFlowFrame:Hide();
@@ -808,6 +809,9 @@ function CharacterSelect_OnKeyDown(self,key)
             return;
         end
         CharacterSelectScrollDown_OnClick();
+	elseif key == "Z" and IsAltKeyDown() then
+		CharacterSelectUI:ToggleVisibilityState();
+		return false;
     end
 end
 
@@ -1578,28 +1582,6 @@ function CharacterSelect_AllowedToEnterWorld()
     return true;
 end
 
-function CharacterSelectFrame_OnMouseDown(button)
-    if ( button == "LeftButton" ) then
-        CHARACTER_SELECT_ROTATION_START_X = GetCursorPosition();
-        CHARACTER_SELECT_INITIAL_FACING = GetCharacterSelectFacing();
-    end
-end
-
-function CharacterSelectFrame_OnMouseUp(button)
-    if ( button == "LeftButton" ) then
-        CHARACTER_SELECT_ROTATION_START_X = nil
-    end
-end
-
-function CharacterSelectFrame_OnUpdate()
-    if ( CHARACTER_SELECT_ROTATION_START_X ) then
-        local x = GetCursorPosition();
-        local diff = (x - CHARACTER_SELECT_ROTATION_START_X) * CHARACTER_ROTATION_CONSTANT;
-        CHARACTER_SELECT_ROTATION_START_X = GetCursorPosition();
-        SetCharacterSelectFacing(GetCharacterSelectFacing() + diff);
-    end
-end
-
 function CharacterSelectRotateRight_OnUpdate(self)
     if ( self:GetButtonState() == "PUSHED" ) then
         SetCharacterSelectFacing(GetCharacterSelectFacing() + CHARACTER_FACING_INCREMENT);
@@ -2185,6 +2167,7 @@ function CharacterSelect_UpdateButtonState()
 
     CharSelectEnterWorldButton:SetEnabled(CharacterSelect_AllowedToEnterWorld());
     CharacterSelectBackButton:SetEnabled(servicesEnabled and not undeleting and not boostInProgress);
+	CharacterSelectUI.VisibilityToggleButton:SetEnabled(servicesEnabled and not undeleting and not redemptionInProgress);
     CharacterSelectDeleteButton:SetEnabled(hasCharacters and servicesEnabled and not undeleting and not redemptionInProgress and not CharacterSelect_IsRetrievingCharacterList() and not isAccountLocked);
     CharSelectChangeRealmButton:SetEnabled(servicesEnabled and not undeleting and not redemptionInProgress);
     CharSelectUndeleteCharacterButton:SetEnabled(canCreateCharacter and servicesEnabled and undeleteEnabled and not undeleteOnCooldown and not redemptionInProgress and not boostInProgress and not isAccountLocked);
@@ -2355,14 +2338,14 @@ function CharacterServicesMaster_UpdateServiceButton()
 		end
 
 		CharacterSelect.VASPools = CreateFramePoolCollection();
-		CharacterSelect.VASPools:CreatePool("BUTTON", CharacterSelectUI.VASTokenContainer, "CharacterBoostTemplate", vasResetter);
-		CharacterSelect.VASPools:CreatePool("BUTTON", CharacterSelectUI.VASTokenContainer, "CharacterVASTemplate", vasResetter);
+		CharacterSelect.VASPools:CreatePool("BUTTON", CharacterSelectUI.VisibilityFramesContainer.VASTokenContainer, "CharacterBoostTemplate", vasResetter);
+		CharacterSelect.VASPools:CreatePool("BUTTON", CharacterSelectUI.VisibilityFramesContainer.VASTokenContainer, "CharacterVASTemplate", vasResetter);
 	end
 
 	CharacterSelect.VASPools:ReleaseAll();
 
     UpgradePopupFrame:Hide();
-    CharacterSelectUI.WarningText:Hide();
+    CharacterSelectUI.VisibilityFramesContainer.WarningText:Hide();
 
     if CharacterSelect.undeleting or CharSelectServicesFlowFrame:IsShown() then
         return;
@@ -2382,12 +2365,12 @@ function CharacterServicesMaster_UpdateServiceButton()
 
     -- support refund notice for Korea
     if hasPurchasedBoost and C_StoreSecure.GetCurrencyID() == CURRENCY_KRW then
-        CharacterSelectUI.WarningText:Show();
+        CharacterSelectUI.VisibilityFramesContainer.WarningText:Show();
     end
 
 	CharacterServicesMaster_UpdateVASButtons(displayOrder);
 	CharacterServicesMaster_UpdateBoostButtons(displayOrder, upgradeInfo);
-	CharacterSelectUI.VASTokenContainer:Layout();
+	CharacterSelectUI.VisibilityFramesContainer.VASTokenContainer:Layout();
 end
 
 function DisplayBattlepayTokens(upgradeInfo, boostType)
@@ -3265,6 +3248,7 @@ function CharacterSelect_StartCharacterUndelete()
     CharacterSelect.undeleting = true;
     CharacterSelect.undeleteChanged = true;
 
+	CharacterSelectUI.VisibilityToggleButton:Hide();
     CharSelectCreateCharacterButton:Hide();
     CharSelectUndeleteCharacterButton:Hide();
     CharSelectBackToActiveButton:Show();
@@ -3285,6 +3269,7 @@ function CharacterSelect_EndCharacterUndelete()
     CharacterSelect.undeleting = false;
     CharacterSelect.undeleteChanged = true;
 
+	CharacterSelectUI.VisibilityToggleButton:Show();
     CharSelectBackToActiveButton:Hide();
     CharSelectCreateCharacterButton:Show();
     CharSelectUndeleteCharacterButton:Show();

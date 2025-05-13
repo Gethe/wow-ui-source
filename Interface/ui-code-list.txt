@@ -712,6 +712,8 @@ Interface\AddOns\Blizzard_GlueXML\Classic\AccountLogin.lua
 Interface\AddOns\Blizzard_GlueXML\Classic\AccountLogin.xml
 Interface\AddOns\Blizzard_GlueXML\Classic\CharacterCreate_Shared.lua
 Interface\AddOns\Blizzard_GlueXML\Classic\CharacterSelect.lua
+Interface\AddOns\Blizzard_GlueXML\Classic\CharacterSelect\CharacterSelectUI.lua
+Interface\AddOns\Blizzard_GlueXML\Classic\CharacterSelect\CharacterSelectUI.xml
 Interface\AddOns\Blizzard_GlueXML\Classic\CharacterServices.lua
 Interface\AddOns\Blizzard_GlueXML\Classic\CharacterServices.xml
 Interface\AddOns\Blizzard_GlueXML\Classic\CharacterServicesCharacterSelector.lua

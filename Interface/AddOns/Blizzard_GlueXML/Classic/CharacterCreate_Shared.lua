@@ -1,8 +1,6 @@
 CHARACTER_FACING_INCREMENT = 2;
 NUM_CHAR_CUSTOMIZATIONS = 5;
 MIN_CHAR_NAME_LENGTH = 2;
-CHARACTER_CREATE_ROTATION_START_X = nil;
-CHARACTER_CREATE_INITIAL_FACING = nil;
 
 FACTION_BACKDROP_COLOR_TABLE = {
 	Alliance = {
@@ -164,6 +162,8 @@ function CharacterCreateMixin:OnLoad()
 	self:RegisterEvent("RACE_FACTION_CHANGE_RESULT");
 	self:RegisterEvent("STORE_VAS_PURCHASE_ERROR");
 	self:RegisterEvent("ASSIGN_VAS_RESPONSE");
+
+	self.RotationConstant = 0.6;
 
 	CharacterCreate:SetSequence(0);
 	CharacterCreate:SetCamera(0);
@@ -388,22 +388,21 @@ end
 
 function CharacterCreateMixin:OnMouseDown(button)
 	if ( button == "LeftButton" ) then
-		CHARACTER_CREATE_ROTATION_START_X = GetCursorPosition();
-		CHARACTER_CREATE_INITIAL_FACING = C_CharacterCreation.GetCharacterCreateFacing();
+		self.lastCursorPosX = GetCursorPosition();
 	end
 end
 
 function CharacterCreateMixin:OnMouseUp(button)
 	if ( button == "LeftButton" ) then
-		CHARACTER_CREATE_ROTATION_START_X = nil
+		self.lastCursorPosX = nil;
 	end
 end
 
 function CharacterCreateMixin:OnUpdate(elapsed)
-	if ( CHARACTER_CREATE_ROTATION_START_X ) then
+	if ( self.lastCursorPosX ) then
 		local x = GetCursorPosition();
-		local diff = (x - CHARACTER_CREATE_ROTATION_START_X) * CHARACTER_ROTATION_CONSTANT;
-		CHARACTER_CREATE_ROTATION_START_X = x;
+		local diff = (x - self.lastCursorPosX) * self.RotationConstant;
+		self.lastCursorPosX = x;
 		C_CharacterCreation.SetCharacterCreateFacing(C_CharacterCreation.GetCharacterCreateFacing() + diff);
 	end
 end

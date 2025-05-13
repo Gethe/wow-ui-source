@@ -1173,6 +1173,16 @@ end
 
 UIButtonMixin = {}
 
+function UIButtonMixin:InitButton()
+	if self.buttonArtKit then
+		self:SetButtonArtKit(self.buttonArtKit);
+	end
+
+	if self.disabledTooltip then
+		self:SetMotionScriptsWhileDisabled(true);
+	end
+end
+
 function UIButtonMixin:OnClick(...)
 	PlaySound(self.onClickSoundKit or SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
@@ -1198,6 +1208,10 @@ function UIButtonMixin:OnEnter()
 
 			if self.tooltipText then
 				local wrap = true;
+				if self.tooltipDisableWrapText then
+					wrap = false;
+				end
+
 				GameTooltip_AddColoredLine(tooltip, self.tooltipText, self.tooltipTextColor or NORMAL_FONT_COLOR, wrap);
 			end
 
@@ -1216,9 +1230,22 @@ function UIButtonMixin:OnLeave()
 	tooltip:Hide();
 end
 
+function UIButtonMixin:SetButtonArtKit(buttonArtKit)
+	self.buttonArtKit = buttonArtKit;
+
+	self:SetNormalAtlas(buttonArtKit);
+	self:SetPushedAtlas(buttonArtKit.."-Pressed");
+	self:SetDisabledAtlas(buttonArtKit.."-Disabled");
+	self:SetHighlightAtlas(buttonArtKit.."-Highlight");
+end
+
 function UIButtonMixin:SetOnClickHandler(onClickHandler, onClickSoundKit)
 	self.onClickHandler = onClickHandler;
 	self.onClickSoundKit = onClickSoundKit;
+end
+
+function UIButtonMixin:GetOnClickSoundKit()
+	return self.onClickSoundKit;
 end
 
 function UIButtonMixin:SetOnEnterHandler(onEnterHandler)
