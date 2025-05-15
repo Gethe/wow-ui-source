@@ -88,7 +88,7 @@ function CommunitiesGuildNews_Update(self)
 	for index = 1, GetNumGuildNews() do
 		dataProvider:Insert({index=index, news=true});
 	end
-	self.ScrollBox:SetDataProvider(dataProvider);
+	self.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
 
 	-- update tooltip
 	if ( self.activeButton ) then

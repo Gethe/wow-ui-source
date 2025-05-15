@@ -12,6 +12,8 @@ Classic\SkillFrame.lua
 Classic\SkillFrame.xml
 Vanilla\ReputationFrame.lua
 Vanilla\ReputationFrame.xml
+Classic\FriendshipStatusBar.lua
+Classic\FriendshipStatusBar.xml
 Vanilla\HonorFrame.lua
 Classic\HonorFrame_Shared.lua
 Classic\HonorFrameTemplates.xml

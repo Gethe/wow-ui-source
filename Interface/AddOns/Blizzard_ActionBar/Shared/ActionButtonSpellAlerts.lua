@@ -110,6 +110,7 @@ do
 	end
 	EventRegistry:RegisterCallback("ActionButton.OnAssistedCombatRotationFrameChanged", RefreshArtStyles);
 	EventRegistry:RegisterCallback("AssistedCombatManager.OnAssistedHighlightSpellChange", RefreshArtStyles);
+	EventRegistry:RegisterCallback("AssistedCombatManager.OnSetUseAssistedHighlight", RefreshArtStyles);
 end
 
 -- public functions

@@ -195,7 +195,7 @@ INVSLOTS_EQUIPABLE_IN_COMBAT = {
 
 -- Container constants
 ITEM_INVENTORY_BANK_BAG_OFFSET	= 4; -- Number of bags before the first bank bag
-CONTAINER_BAG_OFFSET = 19; -- Used for PutItemInBag
+CONTAINER_BAG_OFFSET = 30; -- Used for PutItemInBag
 
 BACKPACK_CONTAINER = Enum.BagIndex.Backpack;
 BANK_CONTAINER = Enum.BagIndex.Bank;

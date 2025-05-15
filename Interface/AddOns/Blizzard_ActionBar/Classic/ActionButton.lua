@@ -110,16 +110,16 @@ local function CheckUseActionButton(button, checkingFromDown)
 	end
 end
 
-local isInPetBattle = false;
+local isInPetBattle = C_PetBattles.IsInBattle;
 local function CheckPetActionButtonEvent(id, isDown)
-	--[[if isInPetBattle() and PetBattleFrame then
+	if isInPetBattle() and PetBattleFrame then
 		if isDown then
 			PetBattleFrame_ButtonDown(id);
 		else
 			PetBattleFrame_ButtonUp(id);
 		end
 		return true;
-	end]]
+	end
 
 	return false;
 end

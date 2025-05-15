@@ -1291,7 +1291,7 @@ function PaperDollFrame_SetAttackPower(statFrame, unit)
 
 	local damageBonus =  BreakUpLargeNumbers(max((base+posBuff+negBuff), 0)/ATTACK_POWER_MAGIC_NUMBER);
 	local spellPower = 0;
-	if (GetOverrideAPBySpellPower() ~= nil) then
+	if (GetOverrideAPBySpellPower() > 0) then
 		local holySchool = 2;
 		-- Start at 2 to skip physical damage
 		spellPower = GetSpellBonusDamage(holySchool);		
@@ -1481,7 +1481,7 @@ function PaperDollFrame_SetRangedAttackPower(statFrame, unit)
 	local text = _G[statFrame:GetName().."StatText"];
 	local base, posBuff, negBuff = UnitRangedAttackPower(unit);
 
-	if (GetOverrideAPBySpellPower() ~= nil) then
+	if (GetOverrideAPBySpellPower() > 0) then
 		local holySchool = 2;
 		-- Start at 2 to skip physical damage
 		local spellPower = GetSpellBonusDamage(holySchool);		

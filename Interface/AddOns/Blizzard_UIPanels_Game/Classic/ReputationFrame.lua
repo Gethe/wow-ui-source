@@ -261,3 +261,32 @@ function ReputationBar_OnClick(self)
 		end
 	end
 end
+
+function ShowFriendshipReputationTooltip(friendshipID, parent, anchor)
+	local friendshipData = C_GossipInfo.GetFriendshipReputation(friendshipID);
+	if not friendshipData or friendshipData.friendshipFactionID < 0 then
+		return;
+	end
+
+	GameTooltip:SetOwner(parent, anchor);
+	local rankInfo = C_GossipInfo.GetFriendshipReputationRanks(friendshipData.friendshipFactionID);
+	if rankInfo.maxLevel > 0 then
+		GameTooltip_SetTitle(GameTooltip, friendshipData.name.." ("..rankInfo.currentLevel.." / "..rankInfo.maxLevel..")", HIGHLIGHT_FONT_COLOR);
+	else
+		GameTooltip_SetTitle(GameTooltip, friendshipData.name, HIGHLIGHT_FONT_COLOR);
+	end
+	
+	GameTooltip_AddBlankLineToTooltip(GameTooltip);
+	GameTooltip:AddLine(friendshipData.text, nil, nil, nil, true);
+	if friendshipData.nextThreshold then
+		local current = friendshipData.standing - friendshipData.reactionThreshold;
+		local max = friendshipData.nextThreshold - friendshipData.reactionThreshold;
+		local wrapText = true;
+		GameTooltip_AddHighlightLine(GameTooltip, friendshipData.reaction.." ("..current.." / "..max..")", wrapText);
+	else
+		local wrapText = true;
+		GameTooltip_AddHighlightLine(GameTooltip, friendshipData.reaction, wrapText);
+	end
+
+	GameTooltip:Show();
+end

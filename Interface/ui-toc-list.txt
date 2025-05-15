@@ -244,6 +244,7 @@ Interface\AddOns\Blizzard_UIParentPanelManager\Blizzard_UIParentPanelManager_Van
 Interface\AddOns\Blizzard_UIParentPanelManager\Blizzard_UIParentPanelManager_Wrath.toc
 Interface\AddOns\Blizzard_UIParent\Blizzard_UIParent_Cata.toc
 Interface\AddOns\Blizzard_UIParent\Blizzard_UIParent_Mists.toc
+Interface\AddOns\Blizzard_UIParent\Blizzard_UIParent_TBC.toc
 Interface\AddOns\Blizzard_UIParent\Blizzard_UIParent_Vanilla.toc
 Interface\AddOns\Blizzard_UIParent\Blizzard_UIParent_Wrath.toc
 Interface\AddOns\Blizzard_UIWidgets\Blizzard_UIWidgets_Classic.toc

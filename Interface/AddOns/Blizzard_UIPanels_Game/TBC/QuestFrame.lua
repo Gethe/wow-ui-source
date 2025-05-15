@@ -345,7 +345,7 @@ end
 
 function QuestFrame_OnShow()
 	PlaySound(SOUNDKIT.IG_QUEST_LIST_OPEN);
-	NPCFriendshipStatusBar_Update(QuestFrame);
+	QuestFrame.FriendshipStatusBar:Update();
 end
 
 function QuestFrame_OnHide()

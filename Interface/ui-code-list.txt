@@ -1635,6 +1635,8 @@ Interface\AddOns\Blizzard_UIPanels_Game\Classic\ContainerFrame.xml
 Interface\AddOns\Blizzard_UIPanels_Game\Classic\ContainerFrame_Shared.lua
 Interface\AddOns\Blizzard_UIPanels_Game\Classic\FriendsFrame.lua
 Interface\AddOns\Blizzard_UIPanels_Game\Classic\FriendsFrame.xml
+Interface\AddOns\Blizzard_UIPanels_Game\Classic\FriendshipStatusBar.lua
+Interface\AddOns\Blizzard_UIPanels_Game\Classic\FriendshipStatusBar.xml
 Interface\AddOns\Blizzard_UIPanels_Game\Classic\GossipFrame.lua
 Interface\AddOns\Blizzard_UIPanels_Game\Classic\GossipFrame.xml
 Interface\AddOns\Blizzard_UIPanels_Game\Classic\GuildRegistrarFrame.lua
@@ -1750,10 +1752,12 @@ Interface\AddOns\Blizzard_UIParentPanelManager\Vanilla\UIParentPanelManager.lua
 Interface\AddOns\Blizzard_UIParentPanelManager\Wrath\UIParentPanelManager.lua
 Interface\AddOns\Blizzard_UIParent\Blizzard_UIParent_Cata.toc
 Interface\AddOns\Blizzard_UIParent\Blizzard_UIParent_Mists.toc
+Interface\AddOns\Blizzard_UIParent\Blizzard_UIParent_TBC.toc
 Interface\AddOns\Blizzard_UIParent\Blizzard_UIParent_Vanilla.toc
 Interface\AddOns\Blizzard_UIParent\Blizzard_UIParent_Wrath.toc
 Interface\AddOns\Blizzard_UIParent\Cata\UIParent.lua
 Interface\AddOns\Blizzard_UIParent\ChatBubbleTemplates.xml
+Interface\AddOns\Blizzard_UIParent\Classic\UIParent.lua
 Interface\AddOns\Blizzard_UIParent\Classic\UIParent.xml
 Interface\AddOns\Blizzard_UIParent\Classic\UIParentDebugMenu.lua
 Interface\AddOns\Blizzard_UIParent\Classic\WorldFrame.lua

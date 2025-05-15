@@ -497,6 +497,11 @@
 					<OnShow function="QuestFrameGreetingPanel_OnShow"/>
 				</Scripts>
  			</Frame>
+			<StatusBar parentKey="FriendshipStatusBar" inherits="NPCFriendshipStatusBarTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="80" y="-41"/>
+				</Anchors>
+			</StatusBar>
  		</Frames>
 		<Scripts>
 			<OnLoad function="QuestFrame_OnLoad"/>

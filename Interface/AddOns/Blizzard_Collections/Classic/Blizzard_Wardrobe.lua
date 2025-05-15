@@ -420,6 +420,40 @@ function TransmogFrameMixin:OnTransmogApplied()
 	end
 end
 
+function TransmogFrameMixin:RemoveRangedSlot()
+	local rangedButtonIdx = nil;
+	local mainHandButton = nil;
+	local offHandButton = nil;
+
+	-- Find the Ranged, Main and offhand buttons
+	for i, slotButton in ipairs(self.SlotButtons) do
+		if (slotButton.slot == "RANGEDSLOT") then
+			rangedButtonIdx = i;
+		elseif (slotButton.slot == "MAINHANDSLOT") then
+			mainHandButton = slotButton;
+		elseif (slotButton.slot == "SECONDARYHANDSLOT") then
+			offHandButton = slotButton;
+		end
+	end
+
+	-- Remove the Ranged button from the list
+	if rangedButtonIdx ~= nil then
+		local rangedButton = table.remove(self.SlotButtons, rangedButtonIdx);
+		rangedButton:Disable();
+		rangedButton:Hide();
+	end
+
+	-- reposition MainHand and Offhand Buttons
+	if mainHandButton ~= nil then
+		local point, relTo, relPoint, x, y = mainHandButton:GetPoint();
+		mainHandButton:SetPoint(point, relTo, relPoint, mainHandButton.twoButtonXPos, y);
+	end
+	if offHandButton ~= nil then
+		local point, relTo, relPoint, x, y = offHandButton:GetPoint();
+		offHandButton:SetPoint(point, relTo, relPoint, offHandButton.twoButtonXPos, y);
+	end
+end
+
 WardrobeOutfitDropdownOverrideMixin = {};
 
 function WardrobeOutfitDropdownOverrideMixin:LoadOutfit(outfitID)
@@ -444,8 +478,10 @@ TransmogSlotButtonMixin = { };
 
 function TransmogSlotButtonMixin:OnLoad()
 	if (self.slot == "RANGEDSLOT" and not C_PaperDollInfo.IsRangedSlotShown()) then
+		self:GetParent():RemoveRangedSlot();
 		return;
 	end
+
 	local slotID, textureName = GetInventorySlotInfo(self.slot);
 	self.slotID = slotID;
 	self.transmogLocation = TransmogUtil.GetTransmogLocation(slotID, self.transmogType, self.modification);
@@ -690,7 +726,7 @@ function TransmogSlotButtonMixin:Update()
 		end
 	end
 
-	local sourceID = WardrobeTransmogFrame_GetDisplayedSource(self)
+	local sourceID = self:GetDisplayedSource();
 	local existingAppearanceSourceID = WardrobeTransmogFrame.Model:GetItemModifiedAppearanceID(self.transmogLocation.slotID);
 
 	local differentAppearances = (existingAppearanceSourceID ~= sourceID)
@@ -705,11 +741,10 @@ function TransmogSlotButtonMixin:Update()
 			end
 		end
 	end
-
 end
 
-function WardrobeTransmogFrame_GetDisplayedSource(slotButton)
-	local baseSourceID, baseVisualID, appliedSourceID, appliedVisualID, pendingSourceID, pendingVisualID, hasPendingUndo, hideVisual = C_Transmog.GetSlotVisualInfo(slotButton.transmogLocation);
+function TransmogSlotButtonMixin:GetDisplayedSource()
+	local baseSourceID, baseVisualID, appliedSourceID, appliedVisualID, pendingSourceID, pendingVisualID, hasPendingUndo, hideVisual = C_Transmog.GetSlotVisualInfo(self.transmogLocation);
 	if ( hideVisual ) then
 		return 0;
 	elseif (hasPendingUndo or appliedSourceID == Constants.Transmog.NoTransmogID) then
