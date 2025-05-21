@@ -108,7 +108,7 @@ MoneyTypeInfo["PLAYER_TRADE"] = {
 	end,
 
 	DropFunc = function(self)
-		AddTradeMoney();
+		C_TradeInfo.AddTradeMoney();
 	end,
 
 	collapse = 1,

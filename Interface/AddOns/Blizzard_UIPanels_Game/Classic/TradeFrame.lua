@@ -16,6 +16,7 @@ function TradeFrame_OnLoad(self)
 	TradeRecipientMoneyInsetBg:SetAlpha(0);
 	TradeRecipientEnchantInsetBg:SetAlpha(0.1);
 	TradeRecipientMoneyBg:SetAlpha(0.6);
+	TradePlayerInputMoneyFrame:SetForbidden();
 end
 
 function TradeFrame_OnShow(self)
@@ -190,7 +191,7 @@ end
 
 function TradeFrame_OnMouseUp()
 	if ( GetCursorMoney() > 0 ) then
-		AddTradeMoney();
+		C_TradeInfo.AddTradeMoney();
 	elseif ( CursorHasItem() ) then
 		local slot = TradeFrame_GetAvailableSlot();
 		if ( slot ) then
@@ -212,7 +213,7 @@ function TradeFrame_UpdateMoney()
 		--MoneyInputFrame_SetTextColor(TradePlayerInputMoneyFrame, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 		TradeFrameTradeButton_Enable();
 	end
-	SetTradeMoney(copper);
+	C_TradeInfo.SetTradeMoney(copper);
 end
 
 function TradeFrame_GetAvailableSlot()
