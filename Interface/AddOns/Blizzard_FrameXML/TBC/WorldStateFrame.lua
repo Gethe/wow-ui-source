@@ -17,6 +17,7 @@ CLASS_BUTTONS = {
 	["WARLOCK"]	= {0.7421875, 0.98828125, 0.25, 0.5},
 	["PALADIN"]		= {0, 0.25, 0.5, 0.75},
 	["DEATHKNIGHT"]	= {0.25, 0.49609375, 0.5, 0.75},
+	["MONK"]	= {0.49609375, 0.7421875, 0.5, 0.75},
 };
 
 function WorldStateScoreFrame_OnLoad(self)
@@ -589,6 +590,25 @@ end
 -- Challenge Mode - only 1 timer for now, needs some work for multiple timers
 --
 
+function WorldStateChallengeMode_OnLoad(self)
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("WORLD_STATE_TIMER_START");
+	self:RegisterEvent("WORLD_STATE_TIMER_STOP");
+end
+
+function WorldStateChallengeMode_OnEvent(self, event, ...)
+	if event == "PLAYER_ENTERING_WORLD" then
+		WorldStateChallengeMode_CheckTimers(GetWorldElapsedTimers());
+	elseif event == "WORLD_STATE_TIMER_START" then
+		local timerID = ...;
+		WorldStateChallengeMode_CheckTimers(timerID);
+	elseif event == "WORLD_STATE_TIMER_STOP" then
+		local timerID = ...;
+		WorldStateChallengeMode_HideTimer(timerID);
+	end
+
+end
+
 -- WatchFrame handler function
 function WorldStateChallengeMode_DisplayTimers(lineFrame, nextAnchor, maxHeight, frameWidth)
 	local self = WorldStateChallengeModeFrame;
@@ -619,7 +639,7 @@ function WorldStateChallengeMode_CheckTimers(...)
 		if ( type == LE_WORLD_ELAPSED_TIMER_TYPE_CHALLENGE_MODE) then
 			local _, _, _, _, _, _, _, mapID = GetInstanceInfo();
 			if ( mapID ) then
-				WorldStateChallengeMode_ShowTimer(timerID, elapsedTime, GetChallengeModeMapTimes(mapID));
+				WorldStateChallengeMode_ShowTimer(timerID, elapsedTime, C_ChallengeMode.GetChallengeModeMapTimes(mapID));
 				return;
 			end
 		end	
@@ -627,13 +647,13 @@ function WorldStateChallengeMode_CheckTimers(...)
 	WorldStateChallengeMode_HideTimer();
 end
 
-function WorldStateChallengeMode_ShowTimer(timerID, elapsedTime, ...)
+function WorldStateChallengeMode_ShowTimer(timerID, elapsedTime, times)
 	local self = WorldStateChallengeModeFrame;
 	if not ( self.medalTimes ) then
 		self.medalTimes = { };
 	end
-	for i = 1, select("#", ...) do
-		self.medalTimes[i] = select(i, ...);
+	for i = 1, #times do
+		self.medalTimes[i] = times[i]
 	end
 	-- not currently being displayed, set up handler
 	if ( not self.timerID ) then
@@ -684,11 +704,11 @@ function WorldStateChallengeModeFrame_UpdateMedal(self, elapsedTime)
 			-- play sound if medal changed
 			if ( self.lastMedalShown and self.lastMedalShown ~= i ) then
 				if ( self.lastMedalShown == CHALLENGE_MEDAL_GOLD ) then
-					PlaySound("UI_Challenges_MedalExpires_GoldtoSilver");
+					PlaySound(SOUNDKIT.UI_CHALLENGES_MEDALEXPIRE_GOLDTOSILVER);
 				elseif ( self.lastMedalShown == CHALLENGE_MEDAL_SILVER ) then
-					PlaySound("UI_Challenges_MedalExpires_SilvertoBronze");
+					PlaySound(SOUNDKIT.UI_CHALLENGES_MEDALEXPIRE_SILVERTOBRONZE);
 				else
-					PlaySound("UI_Challenges_MedalExpires");
+					PlaySound(SOUNDKIT.UI_CHALLENGES_MEDALEXPIRE);
 				end
 			end
 			self.lastMedalShown = i;
@@ -705,7 +725,7 @@ function WorldStateChallengeModeFrame_UpdateMedal(self, elapsedTime)
 	self.medalIcon:Hide();
 	-- play sound if medal changed
 	if ( self.lastMedalShown and self.lastMedalShown ~= 0 ) then
-		PlaySound("UI_Challenges_MedalExpires");
+		PlaySound(SOUNDKIT.UI_CHALLENGES_MEDALEXPIRE);
 	end
 	self.lastMedalShown = 0;
 end
@@ -724,7 +744,7 @@ function WorldStateChallengeModeFrame_UpdateValues(self, elapsedTime)
 		end
 		if (timeLeft == 10) then
 			if (not self.playedSound) then
-				PlaySoundKitID(34154);
+				PlaySound(SOUNDKIT.UI_CHALLENGES_WARNING);
 				self.playedSound = true;
 			end
 		else

@@ -5,6 +5,21 @@ local SpecializationShared =
 
 	Functions =
 	{
+		{
+			Name = "GetSpecializationNameForSpecID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "specID", Type = "number", Nilable = false },
+				{ Name = "gender", Type = "UnitSex", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "name", Type = "cstring", Nilable = true },
+			},
+		},
 	},
 
 	Events =

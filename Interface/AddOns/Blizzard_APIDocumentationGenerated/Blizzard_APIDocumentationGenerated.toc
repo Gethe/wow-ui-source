@@ -32,6 +32,7 @@ BrowserDocumentation.lua
 BuildDocumentation.lua
 CalendarDocumentation.lua
 CameraDocumentation.lua
+ChallengeModeInfoDocumentation.lua
 ChatBubblesDocumentation.lua
 ChatInfoDocumentation.lua
 CinematicDocumentation.lua
@@ -123,6 +124,7 @@ MinimapFrameAPIDocumentation.lua
 MirrorTimerDocumentation.lua
 MountJournalDocumentation.lua
 MovieDocumentation.lua
+MythicPlusInfoDocumentation.lua
 NamePlateManagerDocumentation.lua
 NewItemsDocumentation.lua
 OsDocumentation.lua
@@ -274,6 +276,7 @@ FrameAPITabardModelDocumentation.lua
 LFGListRolesDocumentation.lua
 MailInfoDocumentation.lua
 MapDocumentation.lua
+QuestChoiceDocumentation.lua
 ReforgeDocumentation.lua
 ScriptedAnimationsDocumentation.lua
 SeasonsDocumentation.lua
@@ -339,6 +342,7 @@ MinimapConstantsDocumentation.lua
 ModelAnimationSharedDocumentation.lua
 MoneyConstantsDocumentation.lua
 MountConstantsDocumentation.lua
+MythicPlusInfoSharedDocumentation.lua
 NamePlateDocumentation.lua
 PVPMgrConstantsDocumentation.lua
 PartyConstantsDocumentation.lua

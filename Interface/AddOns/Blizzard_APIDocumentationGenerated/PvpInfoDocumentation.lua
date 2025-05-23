@@ -7,6 +7,15 @@ local PvpInfo =
 	Functions =
 	{
 		{
+			Name = "ClearLocklistMap",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "mapID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetArenaCrowdControlInfo",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -75,6 +84,15 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "GetHolidayBGInfo",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "info", Type = "RandomBGInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetHolidayBGLossRewards",
 			Type = "Function",
 
@@ -101,6 +119,34 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "GetLocklistMap",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "mapID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetLocklistMapName",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "mapName", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "GetOutdoorPvPWaitTime",
 			Type = "Function",
 
@@ -112,6 +158,15 @@ local PvpInfo =
 			Returns =
 			{
 				{ Name = "pvpWaitTime", Type = "time_t", Nilable = false },
+			},
+		},
+		{
+			Name = "GetRandomBGInfo",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "info", Type = "RandomBGInfo", Nilable = false },
 			},
 		},
 		{
@@ -151,6 +206,20 @@ local PvpInfo =
 				{ Name = "itemRewards", Type = "table", InnerType = "BattlefieldItemReward", Nilable = true },
 				{ Name = "currencyRewards", Type = "table", InnerType = "BattlefieldCurrencyReward", Nilable = true },
 				{ Name = "roleShortageBonus", Type = "RoleShortageReward", Nilable = true },
+			},
+		},
+		{
+			Name = "GetWorldPVPAreaInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "WorldPVPBattlegroundInfo", Nilable = false },
 			},
 		},
 		{
@@ -222,6 +291,15 @@ local PvpInfo =
 			Arguments =
 			{
 				{ Name = "playerToken", Type = "UnitToken", Nilable = false },
+			},
+		},
+		{
+			Name = "SetLocklistMap",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "mapID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -636,7 +714,24 @@ local PvpInfo =
 			{
 				{ Name = "canQueue", Type = "bool", Nilable = false },
 				{ Name = "bgID", Type = "number", Nilable = false },
+				{ Name = "bgIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "hasRandomWinToday", Type = "bool", Nilable = false },
+				{ Name = "minLevel", Type = "number", Nilable = false },
+				{ Name = "maxLevel", Type = "number", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "WorldPVPBattlegroundInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "bgID", Type = "number", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "isActive", Type = "bool", Nilable = false },
+				{ Name = "canQueue", Type = "bool", Nilable = false },
+				{ Name = "canEnter", Type = "bool", Nilable = false },
+				{ Name = "startTime", Type = "time_t", Nilable = false },
 				{ Name = "minLevel", Type = "number", Nilable = false },
 				{ Name = "maxLevel", Type = "number", Nilable = false },
 			},

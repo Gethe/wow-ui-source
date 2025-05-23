@@ -1,0 +1,8 @@
+## Interface: 0
+## Title: Blizzard Quest Choice UI
+## Secure: 1
+## LoadOnDemand: 1
+## AllowLoadGameType: mists
+Blizzard_QuestChoice.lua
+Blizzard_QuestChoice.xml
+Localization.lua

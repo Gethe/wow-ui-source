@@ -1055,6 +1055,10 @@
 				</Animations>
 			</Frame>
 		</Frames>
+		<Scripts>
+			<OnLoad function="WorldStateChallengeMode_OnLoad"/>
+			<OnEvent function="WorldStateChallengeMode_OnEvent"/>
+		</Scripts>
 	</Frame>
 	<Frame name="WorldStateChallengeModeTimer" hidden="true">
 		<Scripts>

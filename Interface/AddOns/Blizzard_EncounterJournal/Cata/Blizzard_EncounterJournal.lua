@@ -2344,7 +2344,6 @@ end
 function EJ_ContentTab_OnClick(self)
 	C_EncounterJournal.SetTab(self:GetID());
 	EJ_ContentTab_Select(self:GetID());
-	self:SetDisabledFontObject(GameFontHighlightLarge);
 end
 
 function EJ_ContentTab_Select(id)

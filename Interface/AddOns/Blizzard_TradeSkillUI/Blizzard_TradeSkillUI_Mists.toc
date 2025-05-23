@@ -2,6 +2,6 @@
 ## LoadOnDemand: 1
 ## AllowLoad: game
 ## AllowLoadGameType: mists
-Wrath\Blizzard_TradeSkillUI.lua
-Wrath\Blizzard_TradeSkillUI.xml
+Mists\Blizzard_TradeSkillUI.lua
+Mists\Blizzard_TradeSkillUI.xml
 Localization.lua

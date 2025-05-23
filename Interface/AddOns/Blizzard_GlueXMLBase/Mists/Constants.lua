@@ -382,6 +382,85 @@ CREDITS_ART_INFO = {
 			{ file="CAMEL_01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
 		},
 	},
+
+	[LE_EXPANSION_MISTS_OF_PANDARIA] = {
+		[LE_RELEASE_TYPE_ORIGINAL] = {
+			{ file="Mogu_Monk_Concept", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="MoguRaid_InteriorColor", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Mushan_concept", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="SkyTown", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="interior_temple_color", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Library03", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Bamboo House01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="challenge_rogue", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Chiming Tower01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="foodog_002b", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="challenge_rogue_notused", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="crane01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Dragon Bridge01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Tier13_Shaman01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="dragon_bridge", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="DruidChallenge", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="East Temple Ext01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="ENV_004_BambooForest", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Rabbit", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="easttemple_paintover2a", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="ENV_015_ValleyEternal01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Female_Pandaren", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="foodog_creature", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="forestsprite02", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Goat", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="horde Pandaren", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="koi_03", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Landscape_02Color", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Library02", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="koiman01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="LionMan", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Shadow Pan01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Mantid Knife_colour01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Tier14_DeathKnight01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Mantid_Raid_Interior", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Pandaren Flying Mount03", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Mantis_01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Mogu_MainTemple", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Mantis_03", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="MoguRaid_Dungeon", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Pandaren Monastery01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="easttemple_paintover1", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Monkey_01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Mountains_Colors", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="panda01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Sha_misc_02a", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="PandaClass1", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Tier14_Monk01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Pandaren Clans01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Mantid Tree Fortress03", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Pandaren Lamp Post01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Mogu_BossConcept_New", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Panderan_Brewery", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Panderan_StreetMart", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Mantis_04", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Quilin_concept", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Tier13_Priest01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Salamander", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Pandaren Turtle01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Sha Brethren01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Panderan_lantern_house", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Sha_01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Shadow Pan Sanctum01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Tier13_DeathKnight01a", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Panderan_GhostBrewery", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Tier14_Rogue01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="trip_turtle_city", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="waterdragon_01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Pandaria", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="YaunkaConcept1", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+		},
+		[LE_RELEASE_TYPE_CLASSIC] = {
+			-- TODO: CLASS-37727: Figure out what texture this is supposed to be
+			{ file="crane01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+		},
+	},
 };
 
 GLUE_CREDITS_SOUND_KITS = {
@@ -389,6 +468,7 @@ GLUE_CREDITS_SOUND_KITS = {
 	[LE_EXPANSION_BURNING_CRUSADE]			= SOUNDKIT.MENU_CREDITS02,
 	[LE_EXPANSION_WRATH_OF_THE_LICH_KING]	= SOUNDKIT.MENU_CREDITS03,
 	[LE_EXPANSION_CATACLYSM]				= SOUNDKIT.MENU_CREDITS04,
+	[LE_EXPANSION_MISTS_OF_PANDARIA]		= SOUNDKIT.MENU_CREDITS05,
 };
 
 AUTO_LOGIN_WAIT_TIME = 1.75;

@@ -6,12 +6,16 @@ function IsPlayerGuid(guid)
 	return guid == GetPlayerGuid();
 end
 
-function IsPlayerInitialSpec()
-	if(C_SpecializationInfo.GetSpecialization() == nil) then
+function IsInitialSpec(specializationIndex)
+	if not specializationIndex then
 		return false;
 	end
 
-	return C_SpecializationInfo.GetSpecialization() > GetNumSpecializations();
+	return specializationIndex > GetNumSpecializations();
+end
+
+function IsPlayerInitialSpec()
+	return IsInitialSpec(C_SpecializationInfo.GetSpecialization());
 end
 
 function GetNameAndServerNameFromGUID(unitGUID)

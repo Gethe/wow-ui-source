@@ -311,6 +311,7 @@ function CombatText_OnEvent(self, event, ...)
 				or arg3 == "COMBO_POINTS"
 				or arg3 == "ARCANE_CHARGES" ) then
 			local numPower = UnitPower( "player" , GetPowerEnumFromEnergizeString(arg3) );
+			numPower = numPower + count;
 			message = "<"..numPower.." ".._G[arg3]..">";
 			info = PowerBarColor[arg3];
 			--Display as crit if we're at max power

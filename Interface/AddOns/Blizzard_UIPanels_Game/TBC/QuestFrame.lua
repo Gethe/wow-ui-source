@@ -116,7 +116,7 @@ function QuestFrameRewardPanel_OnShow()
 	if (questPortrait ~= 0) then
 		local questPortraitMount = 0;
 		local questPortraitModelSceneID = nil;
-		QuestFrame_ShowQuestPortrait(QuestFrame, questPortrait, questPortraitMount, questPortraitModelSceneID, questPortraitText, questPortraitName, -32, -70);
+		QuestFrame_ShowQuestPortrait(QuestFrame, questPortrait, questPortraitMount, questPortraitModelSceneID, questPortraitText, questPortraitName, -3, -42);
 	else
 		QuestFrame_HideQuestPortrait();
 	end
@@ -127,7 +127,11 @@ function QuestFrameRewardPanel_OnShow()
 end
 
 function QuestRewardCancelButton_OnClick()
-	DeclineQuest();
+	if(ClassicExpansionAtLeast(LE_EXPANSION_MISTS_OF_PANDARIA)) then
+		HideUIPanel(QuestFrame);
+	else
+		DeclineQuest();
+	end
 	PlaySound(SOUNDKIT.IG_QUEST_CANCEL);
 end
 
@@ -300,8 +304,22 @@ function QuestFrameGreetingPanel_OnShow()
 			local questTitleButton = _G["QuestTitleButton"..i];
 			local questTitleButtonIcon = _G[questTitleButton:GetName().."QuestIcon"];
 			local title, isComplete = GetActiveTitle(i);
-			questTitleButton:SetFormattedText(NORMAL_QUEST_DISPLAY, title);
-			questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\ActiveQuestIcon");
+			if ( IsActiveQuestTrivial(i) ) then
+				questTitleButton:SetFormattedText(TRIVIAL_QUEST_DISPLAY, title);
+				questTitleButtonIcon:SetVertexColor(0.75,0.75,0.75);
+			else
+				questTitleButton:SetFormattedText(NORMAL_QUEST_DISPLAY, title);
+				questTitleButtonIcon:SetVertexColor(1,1,1);
+			end
+			if ( isComplete ) then
+				if ( IsActiveQuestLegendary(i) ) then
+					questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\ActiveLegendaryQuestIcon");
+				else
+					questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\ActiveQuestIcon");
+				end
+			else
+				questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\IncompleteQuestIcon");
+			end
 			questTitleButton:SetHeight(questTitleButton:GetTextHeight() + 2);
 			questTitleButton:SetID(i);
 			questTitleButton.isActive = 1;
@@ -327,8 +345,23 @@ function QuestFrameGreetingPanel_OnShow()
 		for i=(numActiveQuests + 1), (numActiveQuests + numAvailableQuests) do
 			local questTitleButton = _G["QuestTitleButton"..i];
 			local questTitleButtonIcon = _G[questTitleButton:GetName().."QuestIcon"];
-			questTitleButton:SetFormattedText(NORMAL_QUEST_DISPLAY, GetAvailableTitle(i - numActiveQuests));
-			questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\AvailableQuestIcon");
+			local isTrivial, isDaily, isRepeatable, isLegendary = GetAvailableQuestInfo(i - numActiveQuests);
+			if ( isLegendary ) then
+				questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\AvailableLegendaryQuestIcon");
+			elseif ( isDaily ) then
+				questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\DailyQuestIcon");
+			elseif ( isRepeatable ) then
+				questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\DailyActiveQuestIcon");
+			else
+				questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\AvailableQuestIcon");
+			end
+			if ( isTrivial ) then
+				questTitleButton:SetFormattedText(TRIVIAL_QUEST_DISPLAY, GetAvailableTitle(i - numActiveQuests));
+				questTitleButtonIcon:SetVertexColor(0.5,0.5,0.5);
+			else
+				questTitleButton:SetFormattedText(NORMAL_QUEST_DISPLAY, GetAvailableTitle(i - numActiveQuests));
+				questTitleButtonIcon:SetVertexColor(1,1,1);
+			end
 			questTitleButton:SetHeight(questTitleButton:GetTextHeight() + 2);
 			questTitleButton:SetID(i - numActiveQuests);
 			questTitleButton.isActive = 0;
@@ -733,7 +766,7 @@ function QuestFrameDetailPanel_OnShow()
 	QuestDetailScrollFrameScrollBar:SetValue(0);
 	local questPortrait, questPortraitText, questPortraitName, questPortraitMount, questPortraitModelSceneID = GetQuestPortraitGiver();
 	if (questPortrait ~= 0) then
-		QuestFrame_ShowQuestPortrait(QuestFrame, questPortrait, questPortraitMount, questPortraitModelSceneID, questPortraitText, questPortraitName, -32, -70);
+		QuestFrame_ShowQuestPortrait(QuestFrame, questPortrait, questPortraitMount, questPortraitModelSceneID, questPortraitText, questPortraitName, -3, -42);
 	else
 		QuestFrame_HideQuestPortrait();
 	end
@@ -798,7 +831,11 @@ end
 
 
 function QuestDetailDeclineButton_OnClick()
-	DeclineQuest();
+	if(ClassicExpansionAtLeast(LE_EXPANSION_MISTS_OF_PANDARIA)) then
+		HideUIPanel(QuestFrame);
+	else
+		DeclineQuest();
+	end
 	PlaySound(SOUNDKIT.IG_QUEST_CANCEL);
 end
 

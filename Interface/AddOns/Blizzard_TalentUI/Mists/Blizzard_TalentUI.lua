@@ -1038,7 +1038,7 @@ function PlayerSpecTab_Update(self, activeTalentGroup, numTalentGroups)
 		local primaryTree = C_SpecializationInfo.GetSpecialization(false, false, spec.talentGroup);
 		
 		local specInfoCache = talentSpecInfoCache[specIndex];
-		if ( primaryTree and primaryTree > 0 and specInfoCache) then
+		if ( primaryTree and primaryTree > 0 and (not IsInitialSpec(primaryTree)) and specInfoCache) then
 			-- the spec had a primary tab, set the icon to that tab's icon
 			normalTexture:SetTexture(specInfoCache[primaryTree].icon);
 		else

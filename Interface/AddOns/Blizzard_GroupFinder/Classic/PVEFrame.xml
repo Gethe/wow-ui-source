@@ -1,5 +1,12 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
+	
+	<Button name="PVEFrameTabTemplate" inherits="CharacterFrameTabButtonTemplate" parentArray="Tabs" virtual="true">
+		<Scripts>
+			<OnClick function="PVEFrame_TabOnClick"/>
+		</Scripts>
+	</Button>
+
 	<Button name="GroupFinderGroupButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
 		<Size x="203" y="60"/>
 		<Layers>
@@ -151,7 +158,7 @@
 					<Anchor point="BOTTOMLEFT" x="4" y="4" />
 				</Anchors>
 			</Frame>
-			<!--Button name="$parentTab1" inherits="PanelTabButtonTemplate" text="GROUP_FINDER" id="1" parentKey="tab1">
+			<Button name="$parentTab1" inherits="CharacterFrameTabButtonTemplate" text="GROUP_FINDER" id="1" parentKey="tab1">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT">
 						<Offset x="19" y="-30"/>
@@ -161,7 +168,7 @@
 					<OnClick function="PVEFrame_TabOnClick"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentTab2" inherits="PanelTabButtonTemplate" text="PLAYER_V_PLAYER" id="2" parentKey="tab2">
+			<Button name="$parentTab2" inherits="CharacterFrameTabButtonTemplate" text="PLAYER_V_PLAYER" id="2" parentKey="tab2">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT" x="-16" y="0"/>
 				</Anchors>
@@ -169,7 +176,7 @@
 					<OnClick function="PVEFrame_TabOnClick"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentTab3" inherits="PanelTabButtonTemplate" text="CHALLENGES" id="3" parentKey="tab3">
+			<Button name="$parentTab3" inherits="CharacterFrameTabButtonTemplate" text="CHALLENGES" id="3" parentKey="tab3">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab2" relativePoint="RIGHT" x="-16" y="0"/>
 				</Anchors>
@@ -182,13 +189,18 @@
 						end
 					</OnEnter>
 				</Scripts>
-			</Button-->
+			</Button>
 			<Frame name="GroupFinderFrame" useParentLevel="true" setAllPoints="true">
 				<Frames>
 					<Button name="$parentGroupButton1" inherits="GroupFinderGroupButtonTemplate" parentKey="groupButton1" id="1">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="10" y="-70" />
+							<Anchor point="TOPLEFT" x="10" y="-70" />  <!-- This gets adjusted in GroupFinderFrame_EvaluateButtonVisibility() -->
 						</Anchors>
+						<KeyValues>
+							<KeyValue key="altAnchorPoint" value="TOPLEFT" type="string"/>
+							<KeyValue key="altXOffset" value="10" type="int"/>
+							<KeyValue key="altYOffset" value="-100" type="int"/>
+						</KeyValues>
 					</Button>
 					<Button name="$parentGroupButton2" inherits="GroupFinderGroupButtonTemplate" parentKey="groupButton2" id="2">
 						<Anchors>
@@ -199,6 +211,12 @@
 						<Anchors>
 							<Anchor point="TOP" relativeTo="$parentGroupButton2" relativePoint="BOTTOM" x="0" y="-23" />
 						</Anchors>
+						<KeyValues>
+							<KeyValue key="altAnchorPoint" value="TOP" type="string"/>
+							<KeyValue key="altAnchorRelativePoint" value="BOTTOM" type="string"/>
+							<KeyValue key="altXOffset" value="0" type="int"/>
+							<KeyValue key="altYOffset" value="-23" type="int"/>
+						</KeyValues>
 					</Button>
 					<Button name="$parentGroupButton4" inherits="GroupFinderGroupButtonTemplate" parentKey="groupButton4" id="4">
 						<Anchors>
@@ -259,6 +277,7 @@
 					</Layer>
 				</Layers>
 			</Frame>
+
 		</Frames>
 		<Scripts>
 			<OnLoad function="PVEFrame_OnLoad"/>

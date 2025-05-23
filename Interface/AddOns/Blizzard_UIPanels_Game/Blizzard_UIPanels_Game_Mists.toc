@@ -20,12 +20,12 @@ Cata\HonorFrame.lua
 Classic\HonorFrame_Shared.lua
 Classic\HonorFrameTemplates.xml
 Cata\HonorFrame.xml
+Mists\QuestFrameTemplates_MistsSpecific.xml
 Wrath\QuestFrameTemplates.xml
 TBC\QuestFrame.lua
 TBC\QuestFrame.xml
 Wrath\QuestPOI.lua
 Wrath\QuestPOI.xml
-Wrath\QuestLogFrame.lua
 Cata\QuestLogFrame.lua
 Cata\QuestLogFrame.xml
 Wrath\QuestInfo.lua
@@ -80,6 +80,7 @@ Wrath\VehicleSeatIndicator.xml
 Classic\RatingMenuFrame.xml
 Classic\PVPFrameBase.lua
 Cata\PVPFrame.lua
+Mists\PVPFrameHelpers.lua
 Classic\PVPFrameTemplates.xml
 Cata\PVPFrame.xml
 Classic\ArenaRegistrarFrame.lua

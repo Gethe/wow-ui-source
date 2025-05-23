@@ -197,6 +197,13 @@ Interface\AddOns\Blizzard_CastingBar\TBC\CastingBarFrame.xml
 Interface\AddOns\Blizzard_CastingBar\Vanilla\CastingBarFrame.lua
 Interface\AddOns\Blizzard_CastingBar\Vanilla\CastingBarFrame.xml
 Interface\AddOns\Blizzard_CastingBar\Wrath\CastingBarFrame.xml
+Interface\AddOns\Blizzard_ChallengesUI\Blizzard_ChallengesUI_Mists.toc
+Interface\AddOns\Blizzard_ChallengesUI\Mainline\Blizzard_ChallengesUI.lua
+Interface\AddOns\Blizzard_ChallengesUI\Mainline\Blizzard_ChallengesUI.xml
+Interface\AddOns\Blizzard_ChallengesUI\Mainline\Localization.lua
+Interface\AddOns\Blizzard_ChallengesUI\Mists\Blizzard_ChallengesUI.lua
+Interface\AddOns\Blizzard_ChallengesUI\Mists\Blizzard_ChallengesUI.xml
+Interface\AddOns\Blizzard_ChallengesUI\Mists\Localization.lua
 Interface\AddOns\Blizzard_Channels\Blizzard_Channels.toc
 Interface\AddOns\Blizzard_Channels\ChannelButton.lua
 Interface\AddOns\Blizzard_Channels\ChannelButton.xml
@@ -864,6 +871,7 @@ Interface\AddOns\Blizzard_GlyphUI\Wrath\Blizzard_GlyphUI.xml
 Interface\AddOns\Blizzard_GroupFinder\Blizzard_GroupFinder_Classic.toc
 Interface\AddOns\Blizzard_GroupFinder\Blizzard_GroupFinder_Vanilla.toc
 Interface\AddOns\Blizzard_GroupFinder\Classic\Constants.lua
+Interface\AddOns\Blizzard_GroupFinder\Classic\GroupFinderHelpers.lua
 Interface\AddOns\Blizzard_GroupFinder\Classic\LFDFrame.lua
 Interface\AddOns\Blizzard_GroupFinder\Classic\LFDFrame.xml
 Interface\AddOns\Blizzard_GroupFinder\Classic\LFGFrame.lua
@@ -877,6 +885,7 @@ Interface\AddOns\Blizzard_GroupFinder\Classic\PVPHelper.lua
 Interface\AddOns\Blizzard_GroupFinder\Classic\PVPHelper.xml
 Interface\AddOns\Blizzard_GroupFinder\Classic\QueueUpdater.lua
 Interface\AddOns\Blizzard_GroupFinder\Classic\ScenarioFinder.lua
+Interface\AddOns\Blizzard_GroupFinder\Mists\GroupFinderHelpers.lua
 Interface\AddOns\Blizzard_GroupFinder\Shared\RaidFinder.lua
 Interface\AddOns\Blizzard_GroupFinder\Shared\RaidFinder.xml
 Interface\AddOns\Blizzard_GroupFinder\Shared\ScenarioFinder.xml
@@ -940,6 +949,12 @@ Interface\AddOns\Blizzard_ItemSocketingUI\Blizzard_ItemSocketingUI.lua
 Interface\AddOns\Blizzard_ItemSocketingUI\Blizzard_ItemSocketingUI.toc
 Interface\AddOns\Blizzard_ItemSocketingUI\Blizzard_ItemSocketingUI.xml
 Interface\AddOns\Blizzard_ItemSocketingUI\Localization.lua
+Interface\AddOns\Blizzard_ItemUpgradeUI\Blizzard_ItemUpgradeUI_Mainline.toc
+Interface\AddOns\Blizzard_ItemUpgradeUI\Blizzard_ItemUpgradeUI_Mists.toc
+Interface\AddOns\Blizzard_ItemUpgradeUI\Mainline\Blizzard_ItemUpgradeUI.lua
+Interface\AddOns\Blizzard_ItemUpgradeUI\Mainline\Blizzard_ItemUpgradeUI.xml
+Interface\AddOns\Blizzard_ItemUpgradeUI\Mists\Blizzard_ItemUpgradeUI.lua
+Interface\AddOns\Blizzard_ItemUpgradeUI\Mists\Blizzard_ItemUpgradeUI.xml
 Interface\AddOns\Blizzard_Kiosk\Blizzard_Kiosk.lua
 Interface\AddOns\Blizzard_Kiosk\Blizzard_Kiosk.toc
 Interface\AddOns\Blizzard_Kiosk\Blizzard_Kiosk.xml
@@ -1009,6 +1024,8 @@ Interface\AddOns\Blizzard_Minimap\Blizzard_Minimap_Wrath.toc
 Interface\AddOns\Blizzard_Minimap\Cata\Minimap.lua
 Interface\AddOns\Blizzard_Minimap\Cata\Minimap.xml
 Interface\AddOns\Blizzard_Minimap\Classic\GameTime_Shared.lua
+Interface\AddOns\Blizzard_Minimap\Mists\Minimap.lua
+Interface\AddOns\Blizzard_Minimap\Mists\Minimap.xml
 Interface\AddOns\Blizzard_Minimap\Vanilla\GameTime.lua
 Interface\AddOns\Blizzard_Minimap\Vanilla\GameTime.xml
 Interface\AddOns\Blizzard_Minimap\Vanilla\Minimap.lua
@@ -1050,6 +1067,13 @@ Interface\AddOns\Blizzard_PTRFeedback\Blizzard_PTRFeedback_Events.lua
 Interface\AddOns\Blizzard_PTRFeedback\Blizzard_PTRFeedback_Frames.lua
 Interface\AddOns\Blizzard_PTRFeedback\Blizzard_PTRFeedback_Tooltips.lua
 Interface\AddOns\Blizzard_PTRFeedback\Blizzard_Reports.lua
+Interface\AddOns\Blizzard_PVPUI\Blizzard_PVPUI_Mainline.toc
+Interface\AddOns\Blizzard_PVPUI\Blizzard_PVPUI_Mists.toc
+Interface\AddOns\Blizzard_PVPUI\Localization.lua
+Interface\AddOns\Blizzard_PVPUI\Mainline\Blizzard_PVPUI.lua
+Interface\AddOns\Blizzard_PVPUI\Mainline\Blizzard_PVPUI.xml
+Interface\AddOns\Blizzard_PVPUI\Mists\Blizzard_PVPUI.lua
+Interface\AddOns\Blizzard_PVPUI\Mists\Blizzard_PVPUI.xml
 Interface\AddOns\Blizzard_PagedContent\Blizzard_PagedCondensedGridContentFrame.lua
 Interface\AddOns\Blizzard_PagedContent\Blizzard_PagedCondensedGridContentFrame.xml
 Interface\AddOns\Blizzard_PagedContent\Blizzard_PagedContent.toc
@@ -1073,6 +1097,10 @@ Interface\AddOns\Blizzard_PlunderstormPrematchUI\Blizzard_PlunderstormPrematchUI
 Interface\AddOns\Blizzard_PlunderstormPrematchUI\Blizzard_PlunderstormPrematchUI.xml
 Interface\AddOns\Blizzard_PrintHandler\Blizzard_PrintHandler.lua
 Interface\AddOns\Blizzard_PrintHandler\Blizzard_PrintHandler.toc
+Interface\AddOns\Blizzard_QuestChoice\Blizzard_QuestChoice.lua
+Interface\AddOns\Blizzard_QuestChoice\Blizzard_QuestChoice.toc
+Interface\AddOns\Blizzard_QuestChoice\Blizzard_QuestChoice.xml
+Interface\AddOns\Blizzard_QuestChoice\Localization.lua
 Interface\AddOns\Blizzard_QuestTimer\Blizzard_QuestTimer.lua
 Interface\AddOns\Blizzard_QuestTimer\Blizzard_QuestTimer.toc
 Interface\AddOns\Blizzard_QuestTimer\Blizzard_QuestTimer.xml
@@ -1588,6 +1616,8 @@ Interface\AddOns\Blizzard_TradeSkillUI\Blizzard_TradeSkillUI_TBC.toc
 Interface\AddOns\Blizzard_TradeSkillUI\Blizzard_TradeSkillUI_Vanilla.toc
 Interface\AddOns\Blizzard_TradeSkillUI\Blizzard_TradeSkillUI_Wrath.toc
 Interface\AddOns\Blizzard_TradeSkillUI\Localization.lua
+Interface\AddOns\Blizzard_TradeSkillUI\Mists\Blizzard_TradeSkillUI.lua
+Interface\AddOns\Blizzard_TradeSkillUI\Mists\Blizzard_TradeSkillUI.xml
 Interface\AddOns\Blizzard_TradeSkillUI\TBC\Blizzard_TradeSkillUI.lua
 Interface\AddOns\Blizzard_TradeSkillUI\TBC\Blizzard_TradeSkillUI.xml
 Interface\AddOns\Blizzard_TradeSkillUI\Vanilla\Blizzard_TradeSkillUI.lua
@@ -1616,6 +1646,7 @@ Interface\AddOns\Blizzard_UIPanels_Game\Cata\HonorFrame.lua
 Interface\AddOns\Blizzard_UIPanels_Game\Cata\HonorFrame.xml
 Interface\AddOns\Blizzard_UIPanels_Game\Cata\PVPFrame.lua
 Interface\AddOns\Blizzard_UIPanels_Game\Cata\PVPFrame.xml
+Interface\AddOns\Blizzard_UIPanels_Game\Cata\PVPFrameHelpers.lua
 Interface\AddOns\Blizzard_UIPanels_Game\Cata\PetStable.lua
 Interface\AddOns\Blizzard_UIPanels_Game\Cata\PetStable.xml
 Interface\AddOns\Blizzard_UIPanels_Game\Cata\QuestLogFrame.lua
@@ -1678,6 +1709,8 @@ Interface\AddOns\Blizzard_UIPanels_Game\Classic\TradeFrame.xml
 Interface\AddOns\Blizzard_UIPanels_Game\Classic\UnitPositionFrameTemplates.lua
 Interface\AddOns\Blizzard_UIPanels_Game\Classic\UnitPositionFrameTemplates.xml
 Interface\AddOns\Blizzard_UIPanels_Game\Mists\BankFrame.xml
+Interface\AddOns\Blizzard_UIPanels_Game\Mists\PVPFrameHelpers.lua
+Interface\AddOns\Blizzard_UIPanels_Game\Mists\QuestFrameTemplates_MistsSpecific.xml
 Interface\AddOns\Blizzard_UIPanels_Game\Mists\SpellBookFrame.lua
 Interface\AddOns\Blizzard_UIPanels_Game\Mists\SpellBookFrame.xml
 Interface\AddOns\Blizzard_UIPanels_Game\Mists\WatchFrame.lua
@@ -1723,9 +1756,11 @@ Interface\AddOns\Blizzard_UIPanels_Game\Wrath\BattlefieldFrame.xml
 Interface\AddOns\Blizzard_UIPanels_Game\Wrath\ContainerFrame.lua
 Interface\AddOns\Blizzard_UIPanels_Game\Wrath\PVPFrame.lua
 Interface\AddOns\Blizzard_UIPanels_Game\Wrath\PVPFrame.xml
+Interface\AddOns\Blizzard_UIPanels_Game\Wrath\PVPFrameHelpers.lua
 Interface\AddOns\Blizzard_UIPanels_Game\Wrath\PetStable.lua
 Interface\AddOns\Blizzard_UIPanels_Game\Wrath\PetStable.xml
 Interface\AddOns\Blizzard_UIPanels_Game\Wrath\QuestFrameTemplates.xml
+Interface\AddOns\Blizzard_UIPanels_Game\Wrath\QuestFrameTemplates_WrathSpecific.xml
 Interface\AddOns\Blizzard_UIPanels_Game\Wrath\QuestInfo.lua
 Interface\AddOns\Blizzard_UIPanels_Game\Wrath\QuestInfo.xml
 Interface\AddOns\Blizzard_UIPanels_Game\Wrath\QuestLogFrame.lua

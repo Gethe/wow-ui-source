@@ -254,6 +254,7 @@ LEVEL_UP_CLASS_HACKS = {
 function LevelUpDisplay_OnLoad(self)
 	self:RegisterEvent("PLAYER_LEVEL_UP");
 	self:RegisterEvent("UNIT_LEVEL");
+	self:RegisterEvent("CHALLENGE_MODE_NEW_RECORD");
 	self.currSpell = 0;
 end
 
@@ -322,7 +323,7 @@ function LevelUpDisplay_Start(self, beginUnlockList)
 				self.challengeModeBits.MedalIcon:Hide();
 				self.challengeModeBits.BottomFiligree:Hide();
 			end
-			PlaySound("UI_Challenges_NewRecord");
+			PlaySound(SOUNDKIT.UI_CHALLENGES_NEW_RECORD);
 			LevelUpDisplay:SetPoint("TOP", 0, -190);
 			playAnim = self.challengeModeFrame.challengeComplete;
 		else
@@ -435,6 +436,14 @@ function LevelUpDisplay_OnEvent(self, event, ...)
 			self:Show();
 			LevelUpDisplaySide:Hide();
 		end
+	elseif ( event == "CHALLENGE_MODE_NEW_RECORD" ) then
+		local mapID, recordTime, medal = ...;
+		self.type = TOAST_CHALLENGE_MODE_RECORD;
+		self.mapID = mapID;
+		self.recordTime = recordTime;
+		self.medal = medal;
+		LevelUpDisplay_Show(self);
+		PlaySound(SOUNDKIT.UI_CHALLENGES_NEW_RECORD);
 	end
 end
 

@@ -49,6 +49,7 @@
 				QuestLogTitleButton_OnEvent(self, event);
 			</OnEvent>
 			<OnClick>
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 				QuestLogTitleButton_OnClick(self, arg1);
 			</OnClick>
 			<OnEnter>
@@ -125,7 +126,7 @@
 		<Size x="256" y="26"/>
 		<Anchors>
 			<Anchor point="BOTTOMLEFT">
-				<Offset x="18" y="9"/>
+				<Offset x="18" y="6"/>
 			</Anchor>
 		</Anchors>
 		<Frames>
@@ -198,266 +199,66 @@
 			</Button>
 		</Frames>
 	</Frame>
-	<Frame name="QuestLogDetailFrame" toplevel="true" enableMouse="true" parent="UIParent" hidden="true">
-		<Size x="350" y="440"/>
+	<Frame name="QuestLogFrame" toplevel="true" enableMouse="true" parent="UIParent" hidden="true" inherits="ButtonFrameTemplate">
+		<Size x="667" y="496"/>
 		<Anchors>
 			<Anchor point="TOPLEFT"/>
 		</Anchors>
 		<Layers>
-			<Layer level="BACKGROUND">
+			<Layer level="OVERLAY" textureSubLevel="-1">
 				<Texture file="Interface\QuestFrame\UI-QuestLog-BookIcon">
-					<Size>
-						<AbsDimension x="64" y="64"/>
-					</Size>
+					<Size x="64" y="64"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="4" y="-4"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="-9" y="9"/>
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="BORDER">
-				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
-					<Size>
-						<AbsDimension x="94" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPRIGHT"/>
-					</Anchors>
-					<TexCoords left="0.0" right="0.734375" top="0.0" bottom="1.0"/>
-				</Texture>
-				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-BottomLeft">
-					<Size>
-						<AbsDimension x="256" y="184"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT"/>
-					</Anchors>
-					<TexCoords left="0.0" right="1.0" top="0.0" bottom="0.71875"/>
-				</Texture>
-				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-BottomRight">
-					<Size>
-						<AbsDimension x="94" y="184"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT"/>
-					</Anchors>
-					<TexCoords left="0.0" right="0.734375" top="0.0" bottom="0.71875"/>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<Texture name="$parentBackgroundTopLeft" file="Interface\QuestFrame\UI-QuestDetails-TopLeft">
-					<Size>
-						<AbsDimension x="236" y="182"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="20" y="-74"/>
-						</Anchor>
-					</Anchors>
-					<TexCoords left="0.078125" right="1.0" top="0.2890625" bottom="1.0"/>
-				</Texture>
-				<Texture name="$parentBackgroundBottomLeft" file="Interface\QuestFrame\UI-QuestDetails-BotLeft">
-					<Size>
-						<AbsDimension x="236" y="174"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentBackgroundTopLeft" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-					<TexCoords left="0.078125" right="1.0" top="0" bottom="0.6796875"/>
-				</Texture>
-				<Texture name="$parentBackgroundTopRight" file="Interface\QuestFrame\UI-QuestDetails-TopRight">
-					<Size>
-						<AbsDimension x="62" y="182"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentBackgroundTopLeft" relativePoint="TOPRIGHT"/>
-					</Anchors>
-					<TexCoords left="0.0" right="0.5" top="0.2890625" bottom="1.0"/>
-				</Texture>
-				<Texture name="$parentBackgroundBottomRight" file="Interface\QuestFrame\UI-QuestDetails-BotRight">
-					<Size>
-						<AbsDimension x="62" y="174"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentBackgroundTopLeft" relativePoint="BOTTOMRIGHT"/>
-					</Anchors>
-					<TexCoords left="0.0" right="0.5" top="0" bottom="0.6796875"/>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<FontString name="QuestLogDetailTitle" inherits="GameFontNormal" text="QUEST_DETAILS">
-					<Size>
-						<AbsDimension x="300" y="14"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="0" y="-15"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Button name="QuestLogDetailFrameCloseButton" inherits="UIPanelCloseButton">
-				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="4" y="-8"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
-			<ScrollFrame name="QuestLogDetailScrollFrame" inherits="UIPanelScrollFrameTemplate">
-				<Size>
-					<AbsDimension x="298" y="334"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="19" y="-76"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<FontString name="QuestLogDummyText" inherits="GameFontNormal" hidden="true">
-							<Size>
-								<AbsDimension x="0" y="13"/>
-							</Size>
-						</FontString>
-						<Texture name="$parentScrollBackgroundTopLeft" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-							<Size>
-								<AbsDimension x="31" y="256"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-									<Offset>
-										<AbsDimension x="-2" y="5"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-							<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
-						</Texture>
-						<Texture name="$parentScrollBackgroundBottomRight" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-							<Size>
-								<AbsDimension x="31" y="106"/>
-							</Size>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-									<Offset>
-										<AbsDimension x="-2" y="-2"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-							<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
-						</Texture>
-					</Layer>
-				</Layers>
-				<ScrollChild>
-					<Frame name="QuestLogDetailScrollChildFrame">
-						<Size>
-							<AbsDimension x="298" y="333"/>
-						</Size>
-					</Frame>
-				</ScrollChild>
-			</ScrollFrame>
-		</Frames>
-		<Scripts>
-			<OnLoad function="QuestLogDetailFrame_OnLoad"/>
-			<OnShow function="QuestLogDetailFrame_OnShow"/>
-			<OnHide function="QuestLogDetailFrame_OnHide"/>
-		</Scripts>
-	</Frame>
-	<Frame name="QuestLogFrame" toplevel="true" enableMouse="true" parent="UIParent" hidden="true">
-		<Size>
-			<AbsDimension x="682" y="447"/>
-		</Size>
-		<Anchors>
-			<Anchor point="TOPLEFT"/>
-		</Anchors>
-		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture file="Interface\QuestFrame\UI-QuestLog-BookIcon">
-					<Size>
-						<AbsDimension x="64" y="64"/>
-					</Size>
+				<Texture name="$parentPageBg" file="Interface\QuestFrame\QuestBG">
+					<Size x="510" y="620"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="3" y="-4"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="336" y="-62"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBookBg" file="Interface\QuestFrame\QuestBookBG">
+					<Size x="510" y="620"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="6" y="-63"/>
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="BORDER">
-				<Texture file="Interface\QuestFrame\UI-QuestLogDualPane-Left">
-					<Size>
-						<AbsDimension x="512" y="445"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-					<TexCoords left="0.0" right="1.0" top="0.0" bottom="0.86914"/>
-				</Texture>
-				<Texture file="Interface\QuestFrame\UI-QuestLogDualPane-RIGHT">
-					<Size>
-						<AbsDimension x="170" y="445"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPRIGHT"/>
-					</Anchors>
-					<TexCoords left="0.0" right="0.6640625" top="0.0" bottom="0.86914"/>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
+			<Layer level="OVERLAY" textureSubLevel="100">
 				<FontString name="QuestLogTitleText" inherits="GameFontNormal" text="QUEST_LOG">
-					<Size>
-						<AbsDimension x="300" y="14"/>
-					</Size>
+					<Size x="300" y="14"/>
 					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="0" y="-15"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" x="0" y="-3"/>
 					</Anchors>
 				</FontString>
+				<Texture name="QuestDetailTopLeftCorner" inherits="UI-Frame-InnerTopLeft" parentKey="InsetBorderTopLeft">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="QuestLogFrame" relativePoint="TOPRIGHT" x="-334" y="-60"/>
+					</Anchors>
+				</Texture>
+				<Texture name="QuestDetailBotLeftCorner" inherits="UI-Frame-InnerBotLeftCorner">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="QuestLogFrame" relativePoint="BOTTOMRIGHT" x="-334" y="25"/>
+					</Anchors>
+				</Texture>
+				<Texture name="QuestDetailLeftBorder" inherits="!UI-Frame-InnerLeftTile" parentKey="InsetBorderLeft">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="QuestDetailTopLeftCorner" relativePoint="BOTTOMLEFT" x="0" y="0" />
+						<Anchor point="BOTTOMLEFT" relativeTo="QuestDetailBotLeftCorner" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="QuestLogFrameCloseButton" inherits="UIPanelCloseButton">
-				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="2" y="-8"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
 			<Button name="QuestLogFrameCancelButton" inherits="UIPanelButtonTemplate" text="CLOSE">
 				<Size>
 					<AbsDimension x="80" y="22"/>
 				</Size>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT">
-						<Offset>
-							<AbsDimension x="-7" y="14"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOMRIGHT" x="-6" y="4"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -470,11 +271,7 @@
 					<AbsDimension x="48" y="32"/>
 				</Size>
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-25" y="-38"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT" x="-24" y="-27"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -535,15 +332,9 @@
 				</Scripts>
 			</Button>
 			<Frame name="EmptyQuestLogFrame" hidden="true">
-				<Size>
-					<AbsDimension x="302" y="356"/>
-				</Size>
+				<Size x="302" y="396"/>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="19" y="-73"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="5" y="-63"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -555,9 +346,8 @@
 							<TexCoords left="0.0" right="1.0" top="0.0" bottom="1.0"/>
 						</Texture>
 						<Texture name="$parentBackgroundBottomLeft" file="Interface\QuestFrame\UI-QuestLog-Empty-BotLeft">
-							<Size x="256" y="106"/>
+							<Size x="256" y="190"/>
 							<Anchors>
-								<Anchor point="BOTTOMLEFT"/>
 								<Anchor point="TOPRIGHT" relativeTo="$parentBackgroundTopLeft" relativePoint="BOTTOMRIGHT"/>
 							</Anchors>
 							<TexCoords left="0.0" right="1.0" top="0.0" bottom="0.828125"/>
@@ -571,7 +361,7 @@
 							<TexCoords left="0.0" right="0.71875" top="0.0" bottom="1.0"/>
 						</Texture>
 						<Texture name="$parentBackgroundBottomRight" file="Interface\QuestFrame\UI-QuestLog-Empty-BotRight">
-							<Size x="46" y="106"/>
+							<Size x="46" y="190"/>
 							<Anchors>
 								<Anchor point="BOTTOMRIGHT"/>
 								<Anchor point="TOPLEFT" relativeTo="$parentBackgroundTopLeft" relativePoint="BOTTOMRIGHT"/>
@@ -595,148 +385,56 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame name="QuestLogCount">
-				<Size>
-					<AbsDimension x="120" y="20"/>
-				</Size>
+			<Frame name="QuestLogCount" inherits="InsetFrameTemplate3">
+				<Size x="120" y="20"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="70" y="-33"/>
+				</Anchors>
 				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="QuestLogCountTopRight" file="Interface\Common\Common-Input-Border">
-							<Size>
-								<AbsDimension x="8" y="8"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPRIGHT"/>
-							</Anchors>
-							<TexCoords left="0.9375" right="1.0" top="0" bottom="0.25"/>
-						</Texture>
-						<Texture name="QuestLogCountBottomRight" file="Interface\Common\Common-Input-Border">
-							<Size>
-								<AbsDimension x="8" y="8"/>
-							</Size>
-							<Anchors>
-								<Anchor point="BOTTOMRIGHT"/>
-							</Anchors>
-							<TexCoords left="0.9375" right="1.0" top="0.375" bottom="0.625"/>
-						</Texture>
-						<Texture name="QuestLogCountRight" file="Interface\Common\Common-Input-Border">
-							<Size>
-								<AbsDimension x="8" y="0"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOP" relativeTo="QuestLogCountTopRight" relativePoint="BOTTOM"/>
-								<Anchor point="BOTTOM" relativeTo="QuestLogCountBottomRight" relativePoint="TOP"/>
-							</Anchors>
-							<TexCoords left="0.9375" right="1.0" top="0.25" bottom="0.375"/>
-						</Texture>
-						<Texture name="QuestLogCountTopLeft" file="Interface\Common\Common-Input-Border">
-							<Size>
-								<AbsDimension x="8" y="8"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT"/>
-							</Anchors>
-							<TexCoords left="0" right="0.0625" top="0" bottom="0.25"/>
-						</Texture>
-						<Texture name="QuestLogCountBottomLeft" file="Interface\Common\Common-Input-Border">
-							<Size>
-								<AbsDimension x="8" y="8"/>
-							</Size>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT"/>
-							</Anchors>
-							<TexCoords left="0" right="0.0625" top="0.375" bottom="0.625"/>
-						</Texture>
-						<Texture name="QuestLogCountLeft" file="Interface\Common\Common-Input-Border">
-							<Size>
-								<AbsDimension x="8" y="0"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="QuestLogCountTopLeft" relativePoint="BOTTOMLEFT"/>
-								<Anchor point="BOTTOMLEFT" relativeTo="QuestLogCountBottomLeft" relativePoint="TOPLEFT"/>
-							</Anchors>
-							<TexCoords left="0" right="0.0625" top="0.25" bottom="0.375"/>
-						</Texture>
-						<Texture name="QuestLogCountTopMiddle" file="Interface\Common\Common-Input-Border">
-							<Size>
-								<AbsDimension x="100" y="8"/>
-							</Size>
-							<Anchors>
-								<Anchor point="RIGHT" relativeTo="QuestLogCountTopRight" relativePoint="LEFT"/>
-								<Anchor point="LEFT" relativeTo="QuestLogCountTopLeft" relativePoint="RIGHT"/>
-							</Anchors>
-							<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.25"/>
-						</Texture>
-						<Texture name="QuestLogCountMiddleMiddle" file="Interface\Common\Common-Input-Border">
-							<Size>
-								<AbsDimension x="100" y="4"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="QuestLogCountTopLeft" relativePoint="BOTTOMRIGHT"/>
-								<Anchor point="BOTTOMRIGHT" relativeTo="QuestLogCountBottomRight" relativePoint="TOPLEFT"/>
-							</Anchors>
-							<TexCoords left="0.0625" right="0.9375" top="0.25" bottom="0.375"/>
-						</Texture>
-						<Texture name="QuestLogCountBottomMiddle" file="Interface\Common\Common-Input-Border">
-							<Size>
-								<AbsDimension x="100" y="8"/>
-							</Size>
-							<Anchors>
-								<Anchor point="RIGHT" relativeTo="QuestLogCountBottomRight" relativePoint="LEFT"/>
-								<Anchor point="LEFT" relativeTo="QuestLogCountBottomLeft" relativePoint="RIGHT"/>
-							</Anchors>
-							<TexCoords left="0.0625" right="0.9375" top="0.375" bottom="0.625"/>
-						</Texture>
+					<Layer level="ARTWORK">
 						<FontString name="QuestLogQuestCount" inherits="GameFontNormalSmall">
 							<Anchors>
-								<Anchor point="TOPRIGHT" relativeTo="QuestLogCountTopRight" relativePoint="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="1" y="3"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-						<FontString name="QuestLogDailyQuestCount" inherits="GameFontNormalSmall">
-							<Anchors>
-								<Anchor point="TOPRIGHT" relativeTo="QuestLogQuestCount" relativePoint="BOTTOMRIGHT">
-									<Offset>
-										<AbsDimension x="0" y="-2"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.BorderTopRight" relativePoint="BOTTOMLEFT" x="1" y="3"/>
 							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
-				<Frames>
-					<Frame name="QuestLogDailyQuestCountMouseOverFrame" enableMouse="true">
-						<Size>
-							<AbsDimension x="5" y="12"/>
-						</Size>
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="QuestLogDailyQuestCount"/>
-							<Anchor point="RIGHT" relativeTo="QuestLogDailyQuestCount"/>
-						</Anchors>
-						<Scripts>
-							<OnEnter>
-								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-								GameTooltip:SetText(format(QUEST_LOG_DAILY_TOOLTIP, GetMaxDailyQuests(), SecondsToTime(GetQuestResetTime(), nil, 1)));
-							</OnEnter>
-							<OnLeave function="GameTooltip_Hide"/>
-						</Scripts>
-					</Frame>
-				</Frames>
 			</Frame>
 			<ScrollFrame name="QuestLogListScrollFrame" inherits="HybridScrollFrameTemplate">
-				<Size>
-					<AbsDimension x="305" y="335"/>
-				</Size>
+				<Size x="305" y="403"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="QuestLogFrame">
 						<Offset>
-							<AbsDimension x="19" y="-75"/>
+							<AbsDimension x="6" y="-64"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size x="29" y="102"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-6" y="5"/>
+							</Anchors>
+							<TexCoords left="0" right="0.445" top="0" bottom="0.4"/>
+						</Texture>
+						<Texture name="$parentBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size x="29" y="106"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-6" y="-2"/>
+							</Anchors>
+							<TexCoords left="0.515625" right="0.960625" top="0" bottom="0.4140625"/>
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size x="29" y="1"/>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="$parentTop" relativePoint="BOTTOM"/>
+								<Anchor point="BOTTOM" relativeTo="$parentBottom" relativePoint="TOP"/>
+							</Anchors>
+							<TexCoords left="0" right="0.445" top=".75" bottom="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
 				<Frames>
 					<Slider name="$parentScrollBar" inherits="HybridScrollBarTemplate" parentKey="scrollBar">
 						<Anchors>
@@ -761,6 +459,7 @@
 					<Frame name="QuestLogHighlightFrame" hidden="true">
 						<Anchors>
 							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
@@ -786,6 +485,90 @@
 			<OnHide function="QuestLog_OnHide"/>
 			<OnUpdate function="QuestLog_OnUpdate"/>
 			<OnMouseWheel function=""/>
+		</Scripts>
+	</Frame>
+	<Frame name="QuestLogDetailFrame" toplevel="true" enableMouse="true" parent="UIParent" hidden="true" inherits="ButtonFrameTemplate">
+		<Size x="338" y="496"/>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="-1">
+				<Texture file="Interface\QuestFrame\UI-QuestLog-BookIcon">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-6" y="7"/>
+					</Anchors>
+				</Texture>		
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentPageBg" file="Interface\QuestFrame\QuestBG">
+					<Size x="512" y="620"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="6" y="-62"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString name="QuestLogDetailTitle" inherits="GameFontNormal" text="QUEST_DETAILS">
+					<Size x="300" y="14"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-5"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="QuestLogDetailInset" useParentLevel="true" inherits="InsetFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="QuestLogFrame"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="QuestLogFrame"/>
+				</Anchors>
+			</Frame>
+			<ScrollFrame name="QuestLogDetailScrollFrame" inherits="UIPanelScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="298" y="403"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="-55"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size x="31" y="102"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-2" y="6"/>
+							</Anchors>
+							<TexCoords left="0" right="0.484375" top="0" bottom="0.4"/>
+						</Texture>
+						<Texture name="$parentBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size x="31" y="106"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-2" y="-2"/>
+							</Anchors>
+							<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size x="31" y="1"/>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="$parentTop" relativePoint="BOTTOM"/>
+								<Anchor point="BOTTOM" relativeTo="$parentBottom" relativePoint="TOP"/>
+							</Anchors>
+							<TexCoords left="0" right="0.484375" top=".75" bottom="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<ScrollChild>
+					<Frame name="QuestLogDetailScrollChildFrame">
+						<Size x="298" y="403"/>
+					</Frame>
+				</ScrollChild>
+			</ScrollFrame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="QuestLogDetailFrame_OnLoad"/>
+			<OnShow function="QuestLogDetailFrame_OnShow"/>
+			<OnHide function="QuestLogDetailFrame_OnHide"/>
 		</Scripts>
 	</Frame>
 </Ui>

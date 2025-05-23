@@ -4,8 +4,8 @@
 ## Dependencies: Blizzard_UIParent, Blizzard_GameTooltip, Blizzard_QueueStatusFrame
 ## AllowLoad: game
 ## AllowLoadGameType: mists
-Cata\Minimap.lua
-Cata\Minimap.xml
+Mists\Minimap.lua
+Mists\Minimap.xml
 Wrath\GameTime.lua
 Classic\GameTime_Shared.lua
 Wrath\GameTime.xml

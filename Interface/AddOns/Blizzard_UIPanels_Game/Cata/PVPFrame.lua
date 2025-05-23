@@ -79,6 +79,8 @@ function PVPFrame_OnShow()
 	RequestPVPOptionsEnabled();
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 
+	PVPFrame_UpdateSelectedRoles();
+
 	PVPFrameLeftButton_RightSeparator:Hide();
 end
 
@@ -139,18 +141,6 @@ function PVPFrame_ExpansionSpecificOnEvent(self, event, ...)
 	end
 
 	PVP_UpdateAvailableRoles(self.TankIcon, self.HealerIcon, self.DPSIcon);
-end
-
-function TogglePVPFrame()
-	if ( UnitLevel("player") >= SHOW_PVP_LEVEL ) then
-		if ( PVPFrame:IsShown() ) then
-			HideUIPanel(PVPFrame);
-		else
-			ShowUIPanel(PVPFrame);
-			PVPFrame_UpdateTabs();
-		end
-	end
-	UpdateMicroButtons();
 end
 
 function PVPFrame_UpdateTabs()
@@ -369,7 +359,7 @@ function PVPFrame_JoinClicked(self, isParty, wargame)
 			StartWarGame();
 		else
 			if PVPHonorFrame.selectedIsWorldPvp then
-				JoinWorldPVPQueue(true, isParty, PVPHonorFrame.bgTypeScrollBox.selectionID);
+				JoinWorldPVPQueue(false, isParty, PVPHonorFrame.bgTypeScrollBox.selectionID);
 			else 
 				JoinBattlefield(0, isParty);
 			end

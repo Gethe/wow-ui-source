@@ -34,12 +34,7 @@ WORLD_QUEST_QUALITY_COLORS = {
 	[LE_WORLD_QUEST_QUALITY_EPIC] = ITEM_QUALITY_COLORS[LE_ITEM_QUALITY_EPIC];
 };
 
--- Protecting from addons since we use this in GetScaledCursorDelta which is used in secure code.
-local _UIParentGetEffectiveScale;
-local _UIParentRef;
 function UIParent_OnLoad(self)
-	_UIParentGetEffectiveScale = self.GetEffectiveScale;
-	_UIParentRef = self;
 	self:RegisterEvent("PLAYER_LOGIN");
 	self:RegisterEvent("PLAYER_DEAD");
 	self:RegisterEvent("SELF_RES_SPELL_CHANGED");
@@ -131,6 +126,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("BARBER_SHOP_CLOSE");
 	self:RegisterEvent("RAISED_AS_GHOUL");
 	self:RegisterEvent("LFG_ENABLED_STATE_CHANGED");
+	self:RegisterEvent("QUEST_CHOICE_UPDATE");
 
 	-- Events for auction UI handling
 	self:RegisterEvent("AUCTION_HOUSE_SHOW");
@@ -251,6 +247,10 @@ function AuctionFrame_LoadUI()
 	else
 		UIParentLoadAddOn("Blizzard_AuctionHouseUI");
 	end
+end
+
+function QuestChoice_LoadUI()
+	UIParentLoadAddOn("Blizzard_QuestChoice");
 end
 
 function BattlefieldMap_LoadUI()
@@ -384,6 +384,10 @@ end
 
 function BlackMarket_LoadUI()
 	UIParentLoadAddOn("Blizzard_BlackMarketUI");
+end
+
+function ItemUpgrade_LoadUI()
+	UIParentLoadAddOn("Blizzard_ItemUpgradeUI");
 end
 
 local playerEnteredWorld = false;
@@ -1430,13 +1434,9 @@ function UIParent_OnEvent(self, event, ...)
 	-- Quest Choice trigger event
 
 	elseif ( event == "QUEST_CHOICE_UPDATE" ) then
-		local uiTextureKitID = select(4, GetQuestChoiceInfo());
-		if (uiTextureKitID and uiTextureKitID ~= 0) then
-			WarboardQuestChoice_LoadUI();
-			WarboardQuestChoiceFrame:TryShow();
-		else
-			QuestChoice_LoadUI();
-			QuestChoiceFrame:TryShow();
+		QuestChoice_LoadUI();
+		if QuestChoiceFrame then
+			QuestChoiceFrame:Show();
 		end
 	elseif ( event == "GARRISON_ARCHITECT_OPENED") then
 		if (not GarrisonBuildingFrame) then
@@ -1766,7 +1766,7 @@ function GetScaledCursorPosition()
 end
 
 function GetScaledCursorDelta()
-	local uiScale = _UIParentGetEffectiveScale(_UIParentRef);
+	local uiScale = GetAppropriateTopLevelParent():GetEffectiveScale();
 	local x, y = GetCursorDelta();
 	return x / uiScale, y / uiScale;
 end
@@ -2906,4 +2906,27 @@ end
 function UpdateUIParentPosition()
 	local topOffset = GetUIParentOffset();
 	UIParent:SetPoint("TOPLEFT", 0, -topOffset);
+end
+
+function GetTimeStringFromSeconds(timeAmount, hasMS, dropZeroHours)
+	local seconds, ms;
+	-- milliseconds
+	if ( hasMS ) then
+		seconds = floor(timeAmount / 1000);
+		ms = timeAmount - seconds * 1000;
+	else
+		seconds = timeAmount;
+	end
+
+	local hours = floor(seconds / 3600);
+	local minutes = floor((seconds / 60) - (hours * 60));
+	seconds = seconds - hours * 3600 - minutes * 60;
+	if ( hasMS ) then
+		return format(HOURS_MINUTES_SECONDS_MILLISECONDS, hours, minutes, seconds, ms);
+	elseif ( dropZeroHours and hours == 0 ) then
+		return format(MINUTES_SECONDS, minutes, seconds);
+	else
+		return format(HOURS_MINUTES_SECONDS, hours, minutes, seconds);
+	end
+--	end
 end

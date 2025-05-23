@@ -25,9 +25,17 @@ local l10nTable = {
 
 			ServerAlertFrame:SetWidth(350);
 			ServerAlertFrame:SetHeight(400);
+			if(CharCreateAllianceLabel) then
+				CharCreateAllianceLabel:SetFontObject("FactionName_Shadow_MediumLarge");
+			elseif CharacterCreateConfigurationFrame then
+				CharacterCreateConfigurationFrame.AllianceText:SetFontObject("FactionName_Shadow_MediumLarge");
+			end
 
-			CharacterCreateConfigurationFrame.AllianceText:SetFontObject("FactionName_Shadow_MediumLarge");
-			CharacterCreateConfigurationFrame.HordeText:SetFontObject("FactionName_Shadow_MediumLarge");
+			if(CharCreateHordeLabel) then
+				CharCreateHordeLabel:SetFontObject("FactionName_Shadow_MediumLarge");
+			elseif CharacterCreateConfigurationFrame then
+				CharacterCreateConfigurationFrame.HordeText:SetFontObject("FactionName_Shadow_MediumLarge");
+			end
 		end,
 	},
 	ptBR = {},
@@ -37,14 +45,22 @@ local l10nTable = {
 		localize = function()
 			SetCharacterGenderAppend = function(sex)
 				if ( sex == Enum.UnitSex.Male ) then
-					CharacterCreateGenderButtonMaleHighlightText:SetText(MALE);
+					if(CharacterCreateGenderButtonMaleHighlightText ~= nil) then
+						CharacterCreateGenderButtonMaleHighlightText:SetText(MALE);
+					end
 					CharacterCreateGenderButtonMale:LockHighlight();
-					CharacterCreateGenderButtonFemaleHighlightText:SetText("");
+					if(CharacterCreateGenderButtonFemaleHighlightText ~= nil) then
+						CharacterCreateGenderButtonFemaleHighlightText:SetText("");
+					end
 					CharacterCreateGenderButtonFemale:UnlockHighlight();
 				else
-					CharacterCreateGenderButtonMaleHighlightText:SetText("");
+					if(CharacterCreateGenderButtonMaleHighlightText ~= nil) then
+						CharacterCreateGenderButtonMaleHighlightText:SetText("");
+					end
 					CharacterCreateGenderButtonMale:UnlockHighlight();
-					CharacterCreateGenderButtonFemaleHighlightText:SetText(FEMALE);
+					if(CharacterCreateGenderButtonFemaleHighlightText ~= nil) then
+						CharacterCreateGenderButtonFemaleHighlightText:SetText(FEMALE);
+					end
 					CharacterCreateGenderButtonFemale:LockHighlight();
 				end
 			end
@@ -67,7 +83,10 @@ local l10nTable = {
 
 			_G["CharacterSelectLogo"]:SetPoint("TOPLEFT", 5, -5);
 			_G["AccountLogin"].UI.GameLogo:SetPoint("TOPLEFT", 5, -5);
-			_G["CharacterCreateGender"]:Hide();
+			local characterCreateGender = _G["CharacterCreateGender"];
+			if (characterCreateGender ~= nil) then
+				characterCreateGender:Hide();
+			end
 		end,
 	},
 	zhTW = {},

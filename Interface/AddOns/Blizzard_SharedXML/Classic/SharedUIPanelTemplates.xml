@@ -1325,7 +1325,7 @@
 				</Texture>
 				<Texture parentKey="Right" atlas="uiframe-tab-right" useAtlasSize="true" parentArray="TabTextures">
 					<Anchors>
-						<Anchor point="TOPRIGHT" x="7"/>
+						<Anchor point="TOPRIGHT" x="8"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="Middle" atlas="_uiframe-tab-center" useAtlasSize="true" horizTile="true" parentArray="TabTextures">

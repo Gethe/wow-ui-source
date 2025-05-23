@@ -6,6 +6,8 @@
 ## AllowLoadGameType: tbc, wrath, cata, mists
 Classic\Constants.lua
 Classic\QueueUpdater.lua
+Classic\GroupFinderHelpers.lua [AllowLoadGameType  tbc, wrath, cata]
+Mists\GroupFinderHelpers.lua [AllowLoadGameType  mists]
 Classic\PVEFrame.lua
 Classic\PVEFrame.xml
 Classic\LFGFrame.lua

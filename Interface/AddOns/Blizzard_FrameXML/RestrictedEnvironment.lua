@@ -177,9 +177,11 @@ function ENV.UnitWatchRegistered(frameHandle, ...)
 end
 
 local safeActionTypes = {["spell"] = true, ["companion"] = true, ["item"] = true, ["macro"] = true, ["flyout"] = true}
-local function scrubActionInfo(actionType, ...)
-    if ( safeActionTypes[actionType]) then
-        return actionType, ...
+local function scrubActionInfo(actionType, id, subType, ...)
+	if actionType == "spell" and subType == "assistedcombat" then
+		return actionType;
+    elseif safeActionTypes[actionType] then
+        return actionType, id, subType, ...;
     else
         return actionType
     end

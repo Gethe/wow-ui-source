@@ -337,7 +337,7 @@ local CalendarConstants =
 			Type = "Constants",
 			Values =
 			{
-				{ Name = "DEFAULT_CALENDAR_GET_EVENT_TYPE", Type = "CalendarGetEventType", Value = Get },
+				{ Name = "DEFAULT_CALENDAR_GET_EVENT_TYPE", Type = "CalendarGetEventType", Value = Enum.CalendarGetEventType.Get },
 			},
 		},
 	},

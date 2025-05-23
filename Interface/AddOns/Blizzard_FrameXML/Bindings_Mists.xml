@@ -222,6 +222,10 @@
 		end
 	</Binding>
 
+	<Binding name="EXTRAACTIONBUTTON1" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
+		ExtraActionButtonKey(1, keystate == "down")
+	</Binding>
+
 	<Binding name="SHAPESHIFTBUTTON1" category="BINDING_HEADER_ACTIONBAR">
 		StanceBar_Select(1)
 	</Binding>
@@ -1128,7 +1132,7 @@
 		ToggleChannelFrame();
 	</Binding>
 	<Binding name="TOGGLEGROUPFINDER" category="BINDING_HEADER_INTERFACE">
-		PVEFrame_ToggleFrame();
+		PVEFrame_ToggleFrame("GroupFinderFrame");
 	</Binding>
 
 	<!-- Misc header="MISC" -->

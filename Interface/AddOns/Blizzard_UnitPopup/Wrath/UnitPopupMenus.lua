@@ -16,6 +16,7 @@ function UnitPopupMenuSelf:GetEntries()
 		UnitPopupConvertToPartyButtonMixin,
 		UnitPopupDungeonDifficultyButtonMixin,
 		UnitPopupRaidDifficultyButtonMixin, 
+		UnitPopupResetChallengeModeButtonMixin,
 		UnitPopupResetInstancesButtonMixin,
 		UnitPopupOtherSubsectionTitle,
 		UnitPopupVoiceChatButtonMixin, 

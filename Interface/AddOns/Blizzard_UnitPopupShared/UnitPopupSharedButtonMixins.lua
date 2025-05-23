@@ -1067,7 +1067,7 @@ function UnitPopupResetChallengeModeButtonMixin:CanShow(contextData)
 		return false;
 	end
 
-	if not C_ChallengeMode.IsChallengeModeActive() then
+	if not C_ChallengeMode.IsChallengeModeResettable() then
 		return false;
 	end
 
@@ -1079,6 +1079,10 @@ function UnitPopupResetChallengeModeButtonMixin:CanShow(contextData)
 end
 
 function UnitPopupResetChallengeModeButtonMixin:IsEnabled(contextData)
+	if not C_ChallengeMode.GetActiveKeystoneInfo then
+		return true;
+	end
+
 	local energized = select(3, C_ChallengeMode.GetActiveKeystoneInfo());
 	return not energized;
 end
@@ -1413,6 +1417,16 @@ end
 
 function UnitPopupDungeonDifficulty2ButtonMixin:GetDifficultyID()
 	return 2;
+end
+
+UnitPopupDungeonDifficulty3ButtonMixin = CreateFromMixins(UnitPopupDungeonDifficulty1ButtonMixin);
+
+function UnitPopupDungeonDifficulty3ButtonMixin:GetText(contextData)
+	return PLAYER_DIFFICULTY5;
+end
+
+function UnitPopupDungeonDifficulty3ButtonMixin:GetDifficultyID()
+	return 8;
 end
 
 -- Raid Difficulty Buttons
@@ -3637,4 +3651,18 @@ function UnitPopupSetRoleHealerButton:IsEnabled(contextData)
 
 	local canBeTank, canBeHealer, canBeDamager = UnitGetAvailableRoles(contextData.unit);
 	return canBeHealer;
+end
+
+UnitPopupResetChallengeButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
+
+function UnitPopupResetChallengeButtonMixin:GetText(contextData)
+	return RESET_CHALLENGE_MODE;
+end
+
+function UnitPopupResetChallengeButtonMixin:OnClick(contextData)
+	C_ChallengeMode.Reset();
+end
+
+function UnitPopupResetChallengeButtonMixin:CanShow(contextData)
+	return C_ChallengeMode.IsChallengeModeActive();
 end

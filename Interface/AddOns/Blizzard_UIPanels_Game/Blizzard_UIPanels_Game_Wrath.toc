@@ -19,6 +19,7 @@ Vanilla\HonorFrame.lua
 Classic\HonorFrame_Shared.lua
 Classic\HonorFrameTemplates.xml
 Vanilla\HonorFrame.xml
+Wrath\QuestFrameTemplates_WrathSpecific.xml
 Wrath\QuestFrameTemplates.xml
 TBC\QuestFrame.lua
 TBC\QuestFrame.xml
@@ -78,6 +79,7 @@ Wrath\VehicleSeatIndicator.xml
 Classic\RatingMenuFrame.xml
 Classic\PVPFrameBase.lua
 Wrath\PVPFrame.lua
+Wrath\PVPFrameHelpers.lua
 Classic\PVPFrameTemplates.xml
 Wrath\PVPFrame.xml
 Wrath\BattlefieldFrame.lua
