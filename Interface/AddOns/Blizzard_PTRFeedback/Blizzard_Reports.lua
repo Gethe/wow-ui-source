@@ -78,7 +78,7 @@ function PTR_IssueReporter.CreateReports()
     AutoQuestReport:AddDataCollection(baseCollectors + 2, collector.OpenEndedQuestion, "Did you experience any issues?")
     
     questReport:RegisterPopEvent(event.Tooltip, tooltips.quest)
-    AutoQuestReport:RegisterFrameAttachedSurvey(QuestFrame, event.QuestRewardFrameShown, {event.QuestFrameClosed, event.QuestTurnedIn}, -8, 62) 
+    AutoQuestReport:RegisterFrameAttachedSurvey(QuestFrame, event.QuestRewardFrameShown, {event.QuestFrameClosed, event.QuestTurnedIn}, 0, 00) 
     
     ------------------------------------- Spell Reporting ----------------------------------------------
     local GetIconFromSpellID = function(value)
