@@ -57,7 +57,7 @@ runs:
 
     - id: export
       name: Export UI source
-      run: pwsh ./ExportInterfaceFiles.ps1 -Product ${{ inputs.product }} -Region ${{ inputs.region }} -OutputDirectory wow-ui-source
+      run: pwsh ./ExportInterfaceFiles.ps1 -Product ${{ inputs.product }} -Region ${{ inputs.region }} -OutputDirectory wow-ui-source -ErrorAction Stop
       shell: pwsh
 
     - name: Commit UI source

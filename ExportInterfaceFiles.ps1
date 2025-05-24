@@ -97,6 +97,7 @@ function Export-TACTFiles {
     end {
         try {
             $ListFileStream.Close()
+            $PSNativeCommandUseErrorActionPreference = $true
             & TACTTool --buildconfig $BuildConfig --cdnconfig $CDNConfig --mode list --inputvalue $ListFile --output $OutputDirectory
         } finally {
             Remove-Item -Force -ErrorAction Ignore $ListFile
