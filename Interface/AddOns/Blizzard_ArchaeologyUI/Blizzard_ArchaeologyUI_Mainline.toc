@@ -1,0 +1,5 @@
+## Title: Blizzard Archaeology UI
+## LoadOnDemand: 1
+## Dependencies: Blizzard_HelpPlate
+Mainline\Blizzard_ArchaeologyUI.xml
+Shared\Localization.lua

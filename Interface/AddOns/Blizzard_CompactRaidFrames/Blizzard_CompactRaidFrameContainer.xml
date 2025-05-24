@@ -1,0 +1,87 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Script file="Blizzard_CompactRaidFrameContainer.lua"/>
+	<Frame name="CompactRaidFrameContainer" inherits="ResizeLayoutFrame, EditModeUnitFrameSystemTemplate" frameStrata="HIGH" parent="UIParent" mixin="CompactRaidFrameContainerMixin">
+		<KeyValues>
+			<KeyValue key="systemIndex" value="Enum.EditModeUnitFrameSystemIndices.Raid" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_RAID_FRAMES_LABEL" type="global"/>
+			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+			<KeyValue key="breakSnappedFramesOnSave" value="true" type="boolean"/>
+			<KeyValue key="alwaysUseTopLeftAnchor" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Frame name="$parentBorderFrame" parentKey="borderFrame">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="-3" y="5"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentBorderTopLeft" file="Interface\RaidFrame\RaidBorder-UpperLeft">
+							<Size x="32" y="32"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-5" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBorderTopRight" file="Interface\RaidFrame\RaidBorder-UpperRight">
+							<Size x="32" y="32"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBorderBottomLeft" file="Interface\RaidFrame\RaidBorder-BottomLeft">
+							<Size x="32" y="32"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="-5" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBorderBottomRight" file="Interface\RaidFrame\RaidBorder-BottomRight">
+							<Size x="32" y="32"/>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBorderTop" file="Interface\RaidFrame\RaidBorder-UpperMiddle" horizTile="true">
+							<Size x="0" y="16"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentBorderTopLeft" relativePoint="TOPRIGHT" x="0" y="1"/>
+								<Anchor point="TOPRIGHT" relativeTo="$parentBorderTopRight" relativePoint="TOPLEFT" x="0" y="1"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBorderBottom" file="Interface\RaidFrame\RaidBorder-BottomMiddle" horizTile="true">
+							<Size x="0" y="16"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeTo="$parentBorderBottomLeft" relativePoint="BOTTOMRIGHT" x="0" y="-4"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBorderBottomRight" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBorderLeft" file="Interface\RaidFrame\RaidBorder-Left" vertTile="true">
+							<Size x="16" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentBorderTopLeft" relativePoint="BOTTOMLEFT" x="-1" y="0"/>
+								<Anchor point="BOTTOMLEFT" relativeTo="$parentBorderBottomLeft" relativePoint="TOPLEFT" x="-1" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBorderRight" file="Interface\RaidFrame\RaidBorder-Right" vertTile="true">
+							<Size x="16" y="0"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeTo="$parentBorderTopRight" relativePoint="BOTTOMRIGHT" x="2" y="0"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBorderBottomRight" relativePoint="TOPRIGHT" x="2" y="0"/>
+							</Anchors>
+						</Texture>
+						<!--Texture name="$parentBg" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentBorderTopLeft" x="7" y="-6"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBorderBottomRight" x="-7" y="7"/>
+							</Anchors>
+						</Texture-->
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad" inherit="append"/>
+			<OnEvent method="OnEvent"/>
+			<OnSizeChanged method="OnSizeChanged"/>
+		</Scripts>
+	</Frame>
+</Ui>

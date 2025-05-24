@@ -1,0 +1,44 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Frame name="ColorSwatchTemplate" mixin="ColorSwatchMixin" propagateMouseInput="Both" virtual="true">
+		<Size x="16" y="16"/>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-3">
+				<Texture name="$parentSwatchBg" parentKey="SwatchBg" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="14" y="14"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Color color="HIGHLIGHT_FONT_COLOR"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-2">
+				<Texture parentKey="InnerBorder" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="12" y="12"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Color color="BLACK_FONT_COLOR"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture parentKey="Color" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="10" y="10"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Color color="HIGHLIGHT_FONT_COLOR"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnShow>
+				PixelUtil.SetSize(self.SwatchBg, 14, 14);
+				PixelUtil.SetSize(self.InnerBorder, 12, 12);
+				PixelUtil.SetSize(self.Color, 10, 10);
+			</OnShow>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -1,0 +1,8 @@
+## Title: Blizzard Event Trace
+## Version: 1.0
+## LoadOnDemand: 1
+## ShowInDebugList: 1
+## AllowLoad: Both
+## SavedVariables: EventTraceSavedVars
+## IconTexture: Interface\ICONS\inv_misc_note_06
+Blizzard_EventTrace.xml

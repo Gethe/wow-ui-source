@@ -1,0 +1,8 @@
+## Title: Blizzard_Deprecated
+## Notes: C API functions that are exposed for backwards compatibility. They will be removed at the next expansion. Upgrade your code to the new APIs as soon as possible.
+
+Deprecated_11_0_2.lua
+Deprecated_11_0_5.lua
+Deprecated_11_0_7.lua
+Deprecated_11_1_5.lua
+11_0_0_SpellBookAPITransitionGuide.lua

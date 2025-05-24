@@ -1,0 +1,8 @@
+## Title: Blizzard_ItemBeltFrame
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_UIPanels_Game, Blizzard_ActionBar
+## AllowLoadGameType: plunderstorm
+## AllowLoad: Game
+ItemBeltFrame.lua
+ItemBeltFrame.xml

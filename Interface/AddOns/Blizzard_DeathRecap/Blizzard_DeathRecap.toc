@@ -1,0 +1,4 @@
+## Title: Blizzard DeathRecap
+## LoadOnDemand: 1
+Blizzard_DeathRecap.xml
+Localization.lua

@@ -1,0 +1,141 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="UIWidgetTemplateTextureWithAnimation" inherits="UIWidgetBaseTemplate" virtual="true" mixin="UIWidgetTemplateTextureWithAnimationMixin">
+		<Size x="120" y="120"/>
+		<KeyValues>
+			<KeyValue key="defaultTooltipAnchor" value="ANCHOR_BOTTOM" type="string"/>
+			<KeyValue key="tooltipYOffset" value="-20" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BackgroundGlow" useAtlasSize="true" ignoreParentAlpha="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BorderGlow1" useAtlasSize="true" ignoreParentAlpha="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BorderGlow2" useAtlasSize="true" ignoreParentAlpha="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Background" useAtlasSize="true" ignoreParentAlpha="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BorderGlow3" useAtlasSize="true" ignoreParentAlpha="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="TransitionGlow2" useAtlasSize="true" ignoreParentAlpha="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="TransitionGlow3" useAtlasSize="true" ignoreParentAlpha="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="-2">
+				<Texture parentKey="CenterEffect1"  useAtlasSize="true" ignoreParentAlpha="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="CenterEffect2"  useAtlasSize="true" ignoreParentAlpha="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="CenterEffect5"  useAtlasSize="true" ignoreParentAlpha="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="-1">
+				<Texture parentKey="CenterEffect3"  useAtlasSize="true" ignoreParentAlpha="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="CenterEffect4"  useAtlasSize="true" ignoreParentAlpha="true" hidden="true" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="-1">
+				<Texture parentKey="Border" useAtlasSize="true" ignoreParentAlpha="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="TransitionGlow" useAtlasSize="true" ignoreParentAlpha="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BorderGlow4" useAtlasSize="true" ignoreParentAlpha="true" hidden="true" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="CenterEffect1Anim" setToFinalAlpha="true" looping="REPEAT">
+				<Alpha childKey="CenterEffect1" fromAlpha="0" toAlpha="1" order="0" duration="1"/>
+				<Alpha childKey="CenterEffect1" fromAlpha="1" toAlpha="0" order="1" duration="1"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="CenterEffect2Anim" setToFinalAlpha="true" looping="REPEAT">
+				<Alpha childKey="CenterEffect2" fromAlpha="0" toAlpha="1" order="0" duration="1"/>
+				<Alpha childKey="CenterEffect2" fromAlpha="1" toAlpha="0" order="1" duration="1"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="CenterEffect4GlowAnim" looping="REPEAT">
+				<Alpha childKey="CenterEffect4" fromAlpha="0" toAlpha="1" order="0" duration=".5"/>
+				<Alpha childKey="CenterEffect4" fromAlpha="1" toAlpha="0" order="1" duration=".5"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="CenterEffect5Anim" setToFinalAlpha="true" looping="REPEAT">
+				<Alpha childKey="CenterEffect5" fromAlpha="0" toAlpha="1" order="0" duration="1"/>
+				<Alpha childKey="CenterEffect5" fromAlpha="1" toAlpha="0" order="1" duration="1"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="TransitionGlowAnim" setToFinalAlpha="true">
+				<Alpha childKey="TransitionGlow" fromAlpha="0" toAlpha="1" order="0" duration=".2"/>
+				<Alpha childKey="TransitionGlow" fromAlpha="1" toAlpha="0" order="1" duration="2"/>
+				<Alpha childKey="TransitionGlow2" fromAlpha="0" toAlpha="1" order="0" duration=".2"/>
+				<Alpha childKey="TransitionGlow2" fromAlpha="1" toAlpha="0" order="1" duration="2"/>
+				<Alpha childKey="TransitionGlow3" fromAlpha="0" toAlpha="1" order="0" duration=".2"/>
+				<Alpha childKey="TransitionGlow3" fromAlpha="1" toAlpha="0" order="1" duration="2"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="BorderGlow1Anim" setToFinalAlpha="true" looping="REPEAT">
+				<Alpha childKey="BorderGlow1" fromAlpha="0" toAlpha="1" order="0" duration="2"/>
+				<Alpha childKey="BorderGlow1" fromAlpha="1" toAlpha="0" order="1" duration="2"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="BorderGlow2Anim" setToFinalAlpha="true" looping="REPEAT">
+				<Alpha childKey="BorderGlow2" fromAlpha="0" toAlpha="1" order="0" duration="1"/>
+				<Alpha childKey="BorderGlow2" fromAlpha="1" toAlpha="0" order="1" duration="1"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="BorderGlow3Anim" setToFinalAlpha="true" looping="REPEAT">
+				<Alpha childKey="BorderGlow3" fromAlpha="0" toAlpha="1" order="0" duration="2"/>
+				<Alpha childKey="BorderGlow3" fromAlpha="1" toAlpha="0" order="1" duration="2"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="BorderGlow4Anim" setToFinalAlpha="true" looping="REPEAT">
+				<Alpha childKey="BorderGlow4" fromAlpha="0" toAlpha="1" order="0" duration="1"/>
+				<Alpha childKey="BorderGlow4" fromAlpha="1" toAlpha="0" order="1" duration="1"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+</Ui>

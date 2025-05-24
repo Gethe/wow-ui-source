@@ -1,0 +1,34 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Button name="GossipTitleActiveQuestButtonTemplate" virtual="true" inherits="GossipTitleButtonTemplate" mixin="GossipActiveQuestButtonMixin">
+		<Scripts>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+	<Button name="GossipTitleAvailableQuestButtonTemplate" virtual="true" inherits="GossipTitleButtonTemplate" mixin="GossipAvailableQuestButtonMixin">
+		<Scripts>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+	<Button name="GossipTitleOptionButtonTemplate" virtual="true" inherits="GossipTitleButtonTemplate" mixin="GossipOptionButtonMixin">
+		<Scripts>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+	<Frame name="GossipGreetingTextTemplate" mixin="GossipGreetingTextMixin" virtual="true">
+		<Size x="270" y="10"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="GreetingText" inherits="QuestFont" justifyH="LEFT">
+					<Size x="270" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10" y="-10"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+  <Frame name="GossipSpacerFrameTemplate" virtual="true">
+		<Size x="5" y="15"/>
+	</Frame>
+</Ui>

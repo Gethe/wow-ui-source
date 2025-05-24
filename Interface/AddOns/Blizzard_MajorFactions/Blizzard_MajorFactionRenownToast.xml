@@ -1,0 +1,119 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Frame name="MajorFactionsRenownToast" parent="UIParent" hidden="true" mixin="MajorFactionsRenownToastMixin" inherits="MajorFactionCelebrationBannerTemplate">
+		<Size x="128" y="128"/>
+		<Anchors>
+			<Anchor point="TOP" y="-160"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<FontString parentKey="RenownLabel" inherits="QuestFont_30" justifyH="CENTER" justifyV="MIDDLE">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent" relativePoint="TOP" x="0" y="-116"/>
+					</Anchors>
+					<Shadow x="1" y="-1">
+						<Color r="0" g="0" b="0"/>
+					</Shadow>
+				</FontString>
+				<Texture parentKey="RewardIcon" alpha="0">
+					<Size x="52" y="52" />
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.RenownLabel" relativePoint="BOTTOM" x="0" y="-18"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="RewardIconMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Size x="52" y="52" />
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.RewardIcon"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="RewardIcon"/>
+					</MaskedTextures>
+				</MaskTexture>
+				<FontString parentKey="RewardDescription" inherits="SystemFont_Shadow_Med1" justifyH="CENTER" justifyV="TOP">
+					<Size x="256" />
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.RewardIcon" relativePoint="BOTTOM" y="-10"/>
+					</Anchors>
+					<Color r="0.1" g="1.0" b="0.1"/>
+					<Shadow x="1" y="-1">
+						<Color r="0" g="0" b="0"/>
+					</Shadow>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="GlowLineBottom">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.RewardDescription" relativePoint="BOTTOM" y="-15"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="ToastBG" atlas="majorfaction-celebration-toastBG" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.GlowLineBottom" y="8"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="RewardIconRing" alpha="0" atlas="majorfaction-celebration-content-ring" useAtlasSize="false">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.RewardIcon" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="RewardIconMouseOver" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.RewardIcon" />
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RewardIcon" />
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						-- disabled by request
+						self:EnableMouse(false);
+					</OnLoad>
+					<OnEnter>
+						self:GetParent():OnMouseEnter();
+					</OnEnter>
+					<OnLeave>
+						self:GetParent():OnMouseLeave();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="ShowAnim" setToFinalAlpha="true">
+				<Alpha childKey="IconSwirlModelScene" duration="0.25" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Icon" duration="0.25" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="ToastBG" duration="0.25" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="RenownLabel" smoothing="OUT" duration="0.25" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="RewardIconRing" smoothing="OUT" duration="0.25" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="RewardIcon" smoothing="OUT" duration="0.25" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="RewardDescription" smoothing="OUT" duration="0.25" fromAlpha="0" toAlpha="1"/>
+
+				<Alpha parentKey="HoldAlpha" duration="5" fromAlpha="1" toAlpha="1" order="1">
+					<Scripts>
+						<OnPlay>
+							self:GetParent():GetParent():OnHoldAnimStarted();
+						</OnPlay>
+					</Scripts>
+				</Alpha>
+
+				<Alpha parentKey="FadeAlpha" duration="0.75" fromAlpha="1" toAlpha="0" order="2"/>
+				<Scripts>
+					<OnFinished>
+						self:GetParent():OnAnimFinished();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnEvent method="OnEvent" />
+			<OnHide method="OnHide" />
+		</Scripts>
+	</Frame>
+</Ui>

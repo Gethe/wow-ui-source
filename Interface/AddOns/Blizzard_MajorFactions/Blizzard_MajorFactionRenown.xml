@@ -1,0 +1,189 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Frame name="MajorFactionRenownFrame" mixin="MajorFactionRenownMixin" parent="UIParent" hidden="true" toplevel="true" enableMouse="true">
+		<Size x="820" y="578"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="0">
+				<Texture parentKey="Border" hidden="true" />
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="BottomBorderDecoration" hidden="true" />
+				<Texture parentKey="TopRightBorderDecoration" hidden="true" />
+				<Texture parentKey="TopLeftBorderDecoration" hidden="true" />
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="CelebrationModelSceneTarget">
+					<Size x="10" y="10"/>
+					<Anchors>
+						<Anchor point="BOTTOM" y="168"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="TopGlow">
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BottomGlow">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent" relativePoint="CENTER" x="0" y="-112"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate" frameLevel="600" setAllPoints="true" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-8" y="8"/>
+					<Anchor point="BOTTOMRIGHT" x="8" y="-8"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="TopLeftBorder">
+							<Size x="128" y="30"/>
+							<TexCoords left="0" right="0.5" top="0" bottom="1"/>
+						</Texture>
+						<Texture parentKey="TopRightBorder">
+							<Size x="128" y="30"/>
+							<TexCoords left="1" right="0.5" top="0" bottom="1"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="TopLeftBorderDecoration">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.TopLeftBorder" relativePoint="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="TopRightBorderDecoration">
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent.TopRightBorder" relativePoint="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BottomBorderDecoration">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent" relativePoint="BOTTOM"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Button parentKey="LevelSkipButton" inherits="RewardTrackSkipLevelUpButtonTemplate" hidden="true" frameLevel="510">
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="28"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton" frameLevel="610"/>
+			<Frame parentKey="HeaderFrame" mixin="MajorFactionRenownHeaderFrameMixin" frameLevel="510">
+				<Size x="150" y="150"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent" relativePoint="TOP" x="0" y="50"/>
+				</Anchors>
+				<Frames>
+					<Cooldown parentKey="RenownProgressBar" reverse="true" hideCountdownNumbers="true" rotation="180" useParentLevel="true" mixin="MajorFactionRenownTrackProgressBarMixin">
+						<Size x="182" y="220"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent" relativePoint="CENTER" y="-10"/>
+						</Anchors>
+						<SwipeTexture file="Interface\PVPFrame\pvpqueue-sidebar-honorbar-fill"/>
+					</Cooldown>
+				</Frames>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background">
+							<Anchors>
+								<Anchor point="CENTER" y="-10"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Level" inherits="Game24Font">
+							<Shadow x="1" y="-1">
+								<Color r="0" g="0" b="0"/>
+							</Shadow>
+							<Anchors>
+								<Anchor point="BOTTOM" x="0" y="-1"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="Icon">
+							<Size x="80" y="80"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="5"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Frame>
+			<ModelScene parentKey="CelebrationModelScene" inherits="ScriptAnimatedModelSceneTemplate" enableMouse="false">
+				<Size x="500" y="500"/>
+				<Anchors>
+					<Anchor point="BOTTOM" y="26"/>
+				</Anchors>
+			</ModelScene>
+			<Frame parentKey="TrackFrame" inherits="RewardTrackFrameTemplate">
+				<Anchors>
+					<Anchor point="TOP" y="-182"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Glow">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.ClipFrame" relativePoint="CENTER" x="0" y="25"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Title" inherits="Fancy40Font" mixin="AutoScalingFontStringMixin" maxLines="1">
+							<Size x="700"/>
+							<Shadow x="1" y="-1">
+								<Color r="0" g="0" b="0"/>
+							</Shadow>
+							<Anchors>
+								<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="TOP" x="0" y="15"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="AccountWideLabel" inherits="GameFontNormal" text="REPUTATION_TOOLTIP_ACCOUNT_WIDE_LABEL">
+							<Shadow x="1" y="-1">
+								<Color r="0" g="0" b="0"/>
+							</Shadow>
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-7"/>
+							</Anchors>
+							<Color color="ACCOUNT_WIDE_FONT_COLOR"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<KeyValues>
+					<KeyValue key="rewardButtonXOffset" value="30" type="number"/>
+					<KeyValue key="elementTemplate" value="RenownLevelTemplate" type="string"/>
+					<KeyValue key="scrollStartSound" value="SOUNDKIT.UI_MAJOR_FACTION_RENOWN_SLIDE_START" type="global"/>
+					<KeyValue key="scrollCenterChangeSound" value="SOUNDKIT.UI_MAJOR_FACTION_RENOWN_SLIDE_START" type="global"/>
+				</KeyValues>
+			</Frame>
+			<ModelScene parentKey="LevelModelScene" inherits="ScriptAnimatedModelSceneTemplate" frameLevel="100">
+				<Size x="300" y="300"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.TrackFrame"/>
+				</Anchors>
+			</ModelScene>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+			<OnMouseWheel method="OnMouseWheel"/>
+		</Scripts>
+	</Frame>
+</Ui>

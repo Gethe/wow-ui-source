@@ -1,0 +1,35 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Script file="EvokerEbonMightBar.lua"/>
+	<StatusBar name="EvokerEbonMightBarTemplate" mixin="EvokerEbonMightBarMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="powerName" value="EBON_MIGHT" type="string" />
+		</KeyValues>
+	</StatusBar>
+
+	<StatusBar name="EvokerEbonMightBar" mixin="PlayerFrameEvokerEbonMightBarMixin" inherits="PlayerFrameAlternatePowerBarBaseTemplate, EvokerEbonMightBarTemplate">
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="OverflowFill" atlas="Unit_Evoker_EbonMight_Highlight" alphaMode="BLEND" hidden="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="126" y="10"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT" x="0" y="0" />
+					</Anchors>
+				</Texture>
+				<Texture parentKey="OverflowCap" atlas="Unit_Evoker_EbonMight_EndCap" alphaMode="BLEND" hidden="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="10" y="20"/>
+					<Anchors>
+						<Anchor point="RIGHT" x="1" y="0" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="overflowAnim" setToFinalAlpha="true">
+				<Translation childKey="OverflowFill" offsetX="252" offsetY="0" duration=".766" order="1"/>
+				<Alpha childKey="OverflowCap" fromAlpha="0" toAlpha="0" duration=".1" order="1"/>
+				<Alpha childKey="OverflowCap" fromAlpha="0" toAlpha="1" startDelay=".5" duration=".1" order="1"/>
+			</AnimationGroup>
+		</Animations>
+	</StatusBar>
+</Ui>

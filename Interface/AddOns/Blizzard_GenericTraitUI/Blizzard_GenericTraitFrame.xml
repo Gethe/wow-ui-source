@@ -1,0 +1,134 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Frame name="GenericTraitFrame" mixin="GenericTraitFrameMixin" inherits="TalentFrameBaseTemplate" parent="UIParent" toplevel="true" enableMouse="true" hidden="true">
+		<KeyValues>
+			<KeyValue key="getEdgeTemplateType" value="GenericTraitUtil.GetEdgeTemplateType" type="global"/>
+			<KeyValue key="topPadding" value="22" type="number"/>
+			<KeyValue key="leftPadding" value="3" type="number"/>
+			<KeyValue key="bottomPadding" value="3" type="number"/>
+			<KeyValue key="rightPadding" value="3" type="number"/>
+			<KeyValue key="basePanOffsetX" value="0" type="number"/>
+			<KeyValue key="basePanOffsetY" value="0" type="number"/>
+			<KeyValue key="disabledOverlayAlpha" value="0" type="number"/>
+			<KeyValue key="defaultSelectSound" value="SOUNDKIT.UI_CLASS_TALENT_LEARN_TALENT" type="global"/>
+			<KeyValue key="defaultDeselectSound" value="SOUNDKIT.UI_CLASS_TALENT_NODE_REFUND" type="global"/>
+		</KeyValues>
+		<Size x="650" y="750"/>
+
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="BorderOverlay" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-6" y="6"/>
+						<Anchor point="BOTTOMRIGHT" x="6" y="-6"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		
+		<Frames>
+			
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton" frameLevel="5000">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-3" y="-10"/>
+				</Anchors>
+			</Button>
+
+			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="layoutType" value="UniqueCornersLayout" type="string"/>
+					<KeyValue key="layoutTextureKit" value="none" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-6" y="6"/>
+					<Anchor point="BOTTOMRIGHT" x="6" y="-6"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="DetailTop" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOP" x="0" y="-12"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame parentKey="Header">
+				<Size x="500" y="100"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent" relativePoint="TOP" x="0" y="-30"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Title" inherits="Fancy24Font">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="-10"/>
+								<Anchor point="TOPRIGHT" x="0" y="-10"/>
+							</Anchors>
+							<Color r="1" g="1" b="1"/>
+						</FontString>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="TitleDivider" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" />
+								<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" />
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			
+			<Frame parentKey="Inset" inherits="InsetFrameTemplate" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="2" y="-50"/>
+					<Anchor point="BOTTOMRIGHT"  x="-2" y="4"/>
+				</Anchors>
+			</Frame>
+			<Button parentKey="Currency" frameStrata="HIGH" enableMouse="true" mixin="GenericTraitFrameCurrencyFrameMixin">
+				<Size x="100" y="40"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.Header" relativePoint="BOTTOMRIGHT" x="0" y="-20"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="CurrencyBackground" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="RIGHT" x="0" y="-2" />
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString parentKey="UnspentPointsCount" inherits="GameFontNormal" justifyH="RIGHT">
+							<Size x="100" y="0"/>
+							<Anchors>
+								<Anchor point="RIGHT" x="0" y="-3"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Button>
+
+			<ModelScene parentKey="FxModelScene" frameStrata="HIGH" inherits="ScriptAnimatedModelSceneTemplate" frameLevel="4000">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ButtonsParent" relativePoint="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ButtonsParent" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+			</ModelScene>
+			
+		</Frames>
+	</Frame>
+</Ui>

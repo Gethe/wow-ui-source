@@ -1,0 +1,4 @@
+## Title: Blizzard Guild Bank UI
+## LoadOnDemand: 1
+Blizzard_GuildBankUI.xml
+Localization.lua

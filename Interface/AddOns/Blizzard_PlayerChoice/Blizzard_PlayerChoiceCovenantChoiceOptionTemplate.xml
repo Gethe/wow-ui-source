@@ -1,0 +1,78 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="PlayerChoiceCovenantChoiceOptionTemplate" inherits="PlayerChoiceBaseOptionTemplate" mixin="PlayerChoiceCovenantChoiceOptionTemplateMixin" virtual="true">
+		<Size x="252" y="464"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BackgroundShadowSmall" atlas="UI-Frame-Oribos-CardShadowSmall" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="ScrollingBG" alpha="0">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="3">
+				<Texture parentKey="BackgroundShadowLarge" atlas="UI-Frame-Oribos-CardShadowLarge" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="BlackBackground" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.BackgroundShadowLarge"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BackgroundShadowLarge"/>
+					</Anchors>
+					<Color color="BLACK_FONT_COLOR"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<MaskTexture parentKey="ShadowMask" atlas="UI-Frame-Oribos-CardShadowMask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="ScrollingBG"/>
+						<MaskedTexture childKey="BlackBackground"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="PreviewButton" mixin="PlayerChoiceCovenantChoicePreviewButtonMixin" hidden="true">
+				<Size x="30" y="30"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.OptionButtonsContainer" relativePoint="RIGHT" />
+				</Anchors>
+				<NormalTexture atlas="UI-Frame-Oribos-ExtraButton" useAtlasSize="true"/>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnClick method="OnConfirm"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="ScrollingBackgroundAnim" setToFinalAlpha="true">
+				<Alpha childKey="ScrollingBG" fromAlpha=".6" toAlpha="1" duration=".6" order="1"/>
+				<Translation childKey="ScrollingBG" duration="35" order="2" offsetX="300" offsetY="0" smoothing="OUT"/>
+				<Translation childKey="ScrollingBG" duration="35" order="3" offsetX="-300" offsetY="0" smoothing="OUT"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+		</Scripts>
+	</Frame>
+</Ui>

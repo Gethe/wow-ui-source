@@ -1,0 +1,43 @@
+## Title: Blizzard_FrameXMLUtil
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_SharedXMLGame, Blizzard_Colors
+## AllowLoad: Game
+## AllowLoadGameType: mainline
+Mainline\ArenaUtil.lua
+PartyUtil.lua
+Mainline\QuestUtils.lua
+AchievementUtil.lua
+Mainline\MapUtil.lua
+AzeriteUtil.lua
+AzeriteEssenceUtil.lua
+Mainline\AuraUtil.lua
+CalendarUtil.lua
+CommunitiesUtil.lua
+RuneforgeUtil.xml
+ItemUtil.lua
+PVPUtil.lua
+Mainline\TransmogUtil.lua
+DifficultyUtil.lua
+RenownRewardUtil.lua
+TitleUtil.lua
+CollectionsUtil.lua
+ProfessionsUtil.lua
+AdventureGuideUtil.lua
+CampaignUtil.lua
+AnimationSystem.lua
+CurrencyContainer.lua
+CurrencyUtil.lua
+Mainline\RAFUtil.lua
+Mainline\PlayerSpellsUtil.lua
+Mainline\ExpansionUtil.lua
+Mainline\Blizzard_QuestSuperTracking.lua
+FadingFrame.lua
+Mainline\RaidWarning.lua
+Cooldown.lua
+Mainline\Cooldown.xml
+Localization.lua
+DragonridingUtil.lua
+Mainline\MinimapUtil.lua
+AreaPoiUtil.lua
+Mainline\ReputationUtil.lua

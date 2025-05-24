@@ -1,0 +1,5 @@
+## Title: Blizzard_GMChatUI
+## LoadOnDemand: 1
+Blizzard_GMChatUI.lua
+Blizzard_GMChatUI.xml
+Localization.lua

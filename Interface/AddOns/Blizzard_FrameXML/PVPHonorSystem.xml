@@ -1,0 +1,991 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Script file="PVPHonorSystem.lua"/>
+
+	<Frame name="PVPHonorRewardCodeTemplate" virtual="true" mixin="PVPHonorRewardCodeMixin">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="PVPHonorSystemLargeXPBar" virtual="true">
+		<Size x="521" y="45"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Frame" atlas="honorsystem-bar-frame" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Level" inherits="GameFontNormalLarge" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="LEFT" x="24" y="2"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<StatusBar parentKey="Bar" inherits="AnimatedStatusBarTemplate" drawLayer="BORDER" useParentLevel="true">
+				<Size x="471" y="17"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Frame" relativePoint="LEFT" x="40" y="2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" atlas="honorsystem-bar-background" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Frame" relativePoint="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="1">
+						<Texture parentKey="ExhaustionLevelFillBar" atlas="_honorsystem-bar-fill-rested" hidden="true">
+							<Size x="40" y="17"/>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT" x="0" y="0"/>
+							</Anchors>
+							<Color r="1.0" g="1.0" b="1.0" a="1.0"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Spark" atlas="honorsystem-bar-spark" alphaMode="ADD" hidden="true">
+							<Size x="11" y="44"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="ExhaustionTick" hidden="true" frameStrata="DIALOG">
+						<Size x="32" y="32"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.ExhaustionLevelFillBar" relativePoint="RIGHT" x="0" y="-2"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad function="HonorExhaustionTick_OnLoad"/>
+							<OnEvent>
+                                PVPHonorXPBar_Update(self:GetParent():GetParent());
+                            </OnEvent>
+							<OnEnter function="HonorExhaustionToolTipText"/>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
+						<NormalTexture parentKey="Normal" file="Interface\MainMenuBar\UI-ExhaustionTickNormal"/>
+						<HighlightTexture parentKey="Highlight" file="Interface\MainMenuBar\UI-ExhaustionTickHighlight" alphaMode="ADD"/>
+					</Button>
+					<Frame parentKey="OverlayFrame" frameStrata="DIALOG" setAllPoints="true">
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Text" inherits="TextStatusBarText" hidden="true">
+									<Anchors>
+										<Anchor point="CENTER" x="0" y="0"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+				<BarTexture atlas="_honorsystem-bar-fill"/>
+				<Scripts>
+					<OnLoad inherit="prepend">
+						self.OnFinishedCallback = function(...)
+							self:OnAnimFinished(...);
+							self:GetParent().Level:SetText(UnitHonorLevel("player"));
+							PVPHonorXPBar_SetNextAvailable(self:GetParent());
+						end
+					</OnLoad>
+					<OnEnter function="PVPHonorXPBar_OnEnter"/>
+					<OnLeave function="PVPHonorXPBar_OnLeave"/>
+				</Scripts>
+			</StatusBar>
+
+			<Frame parentKey="NextAvailable" enableMouse="true" hidden="true" inherits="PVPHonorRewardCodeTemplate">
+				<Size x="39" y="39"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.Frame" relativePoint="RIGHT" x="22" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Frame" atlas="honorsystem-bar-rewardborder">
+							<Size x="39" y="39"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon">
+							<Size x="29" y="29"/>
+							<Anchors>
+								<Anchor point="CENTER" y="2"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter function="PVPHonorSystemXPBarNextAvailable_OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="PrestigeReward" enableMouse="true" hidden="true">
+				<Size x="60" y="60"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Frame" relativePoint="RIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK" textureSubLevel="1">
+						<Texture parentKey="Border" atlas="honorsystem-bar-rewardborder-prestige" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="2">
+						<Texture parentKey="BorderPulse" atlas="honorsystem-bar-rewardborder-prestige" useAtlasSize="true" alphaMode="ADD" alpha="0">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="3">
+						<Texture parentKey="PrestigeSpin" atlas="honorsystem-bar-rewardborder-prestige-flash" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="PrestigePulse" atlas="honorsystem-bar-rewardborder-prestige-flash" useAtlasSize="true" alphaMode="ADD" alpha="0.25">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="1">
+						<Texture parentKey="PortraitBg" atlas="honorsystem-prestige-laurel-bg-horde">
+							<Size x="48" y="48"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture parentKey="Icon" atlas="honorsystem-icon-prestige-1">
+							<Size x="38" y="38"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="PrestigeSpinAnimation" setToFinalAlpha="true" looping="REPEAT">
+						<Rotation childKey="PrestigeSpin" order="1" duration="30" degrees="-360"/>
+					</AnimationGroup>
+					<AnimationGroup parentKey="PrestigePulseAnimation" setToFinalAlpha="true" looping="REPEAT">
+						<Alpha childKey="PrestigePulse" duration="1.4" order="1" fromAlpha="0.25" toAlpha="0.75"/>
+						<Alpha childKey="PrestigePulse" startDelay="1.4" duration="1.4" order="1" fromAlpha="0.75" toAlpha="0.25"/>
+						<Alpha childKey="BorderPulse" duration="1.4" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="BorderPulse" startDelay="1.4" duration="1.4" order="1" fromAlpha="1" toAlpha="0"/>
+					</AnimationGroup>
+				</Animations>
+				<Frames>
+					<Button parentKey="Accept" inherits="UIPanelButtonTemplate" text="PVP_PRESTIGE_RANK_UP_TITLE">
+						<Size x="100" y="22"/>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.Border" relativePoint="BOTTOM" x="0" y="16"/>
+						</Anchors>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnEnter>
+						if (self.tooltip) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetText(self.tooltip);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="PVPHonorXPBar_OnLoad"/>
+	 		<OnShow function="PVPHonorXPBar_Update"/>
+	 		<OnEvent function="PVPHonorXPBar_Update"/>
+	 	</Scripts>
+	</Frame>
+	<Frame name="PVPHonorSystemSmallXPBar" virtual="true">
+		<Size x="314" y="43"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Frame" atlas="honorsystem-bar-frame-small" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Level" inherits="GameFontNormal" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="LEFT" x="19" y="2"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<StatusBar parentKey="Bar" inherits="AnimatedStatusBarTemplate" drawLayer="BORDER" useParentLevel="true">
+				<Size x="270" y="18"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Frame" relativePoint="LEFT" x="30" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" atlas="honorsystem-bar-background">
+							<Size x="270" y="18"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Frame" relativePoint="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="1">
+						<Texture parentKey="ExhaustionLevelFillBar" atlas="_honorsystem-bar-fill-rested" hidden="true">
+							<Size x="0" y="18"/>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT" x="0" y="0"/>
+							</Anchors>
+							<Color r="1.0" g="1.0" b="1.0" a="1.0"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Spark" atlas="honorsystem-bar-spark" alphaMode="ADD" hidden="true">
+							<Size x="11" y="44"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="ExhaustionTick" hidden="true" frameStrata="DIALOG">
+						<Size x="32" y="32"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.ExhaustionLevelFillBar" relativePoint="RIGHT" x="0" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad function="HonorExhaustionTick_OnLoad"/>
+							<OnEvent>
+                                PVPHonorXPBar_Update(self:GetParent():GetParent());
+                            </OnEvent>
+							<OnEnter function="HonorExhaustionToolTipText"/>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
+						<NormalTexture parentKey="Normal" file="Interface\MainMenuBar\UI-ExhaustionTickNormal"/>
+						<HighlightTexture parentKey="Highlight" file="Interface\MainMenuBar\UI-ExhaustionTickHighlight" alphaMode="ADD"/>
+					</Button>
+					<Frame parentKey="OverlayFrame" frameStrata="DIALOG" setAllPoints="true">
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Text" inherits="TextStatusBarText" hidden="true">
+									<Anchors>
+										<Anchor point="CENTER" x="0" y="3"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+                    <Frame parentKey="Lock" hidden="true">
+                        <Size x="36" y="47"/>
+                        <Anchors>
+                            <Anchor point="CENTER" x="-9" y="3"/>
+                        </Anchors>
+                        <Layers>
+                            <Layer level="ARTWORK">
+                                <Texture atlas="honorsystem-bar-lock" setAllPoints="true"/>
+                            </Layer>
+                            <Layer level="HIGHLIGHT">
+                                <Texture atlas="honorsystem-bar-lock" alpha="0.1" setAllPoints="true"/>
+                            </Layer>
+                        </Layers>
+                        <Scripts>
+                            <OnEnter>
+								GameTooltip:SetOwner(self, 'ANCHOR_RIGHT');
+								GameTooltip:SetText(string.format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, GetMaxLevelForLatestExpansion()));
+								GameTooltip:Show();
+							</OnEnter>
+                            <OnLeave function="GameTooltip_Hide"/>
+                        </Scripts>
+                     </Frame>
+				</Frames>
+				<BarTexture atlas="_honorsystem-bar-fill"/>
+				<Scripts>
+					<OnLoad inherit="prepend">
+						self.OnFinishedCallback = function(...)
+							self:OnAnimFinished(...);
+							self:GetParent().Level:SetText(UnitHonorLevel("player"));
+							PVPHonorXPBar_SetNextAvailable(self:GetParent());
+						end
+					</OnLoad>
+					<OnEnter function="PVPHonorXPBar_OnEnter"/>
+					<OnLeave function="PVPHonorXPBar_OnLeave"/>
+				</Scripts>
+			</StatusBar>
+			<Frame parentKey="NextAvailable" enableMouse="true" hidden="true" inherits="PVPHonorRewardCodeTemplate">
+				<Size x="39" y="39"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.Frame" relativePoint="RIGHT" x="22" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Frame" atlas="honorsystem-bar-rewardborder">
+							<Size x="39" y="39"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon">
+							<Size x="29" y="29"/>
+							<Anchors>
+								<Anchor point="CENTER" y="2"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter function="PVPHonorSystemXPBarNextAvailable_OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="PrestigeReward" enableMouse="true" hidden="true">
+				<Size x="60" y="60"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Frame" relativePoint="RIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK" textureSubLevel="1">
+						<Texture parentKey="Border" atlas="honorsystem-bar-rewardborder-prestige" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="2">
+						<Texture parentKey="BorderPulse" atlas="honorsystem-bar-rewardborder-prestige" useAtlasSize="true" alphaMode="ADD" alpha="0">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="3">
+						<Texture parentKey="PrestigeSpin" atlas="honorsystem-bar-rewardborder-prestige-flash" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="PrestigePulse" atlas="honorsystem-bar-rewardborder-prestige-flash" useAtlasSize="true" alphaMode="ADD" alpha="0.25">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="1">
+						<Texture parentKey="PortraitBg" atlas="honorsystem-prestige-laurel-bg-horde">
+							<Size x="48" y="48"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture parentKey="Icon" atlas="honorsystem-icon-prestige-1">
+							<Size x="38" y="38"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="PrestigeSpinAnimation" setToFinalAlpha="true" looping="REPEAT">
+						<Rotation childKey="PrestigeSpin" order="1" duration="30" degrees="-360"/>
+					</AnimationGroup>
+					<AnimationGroup parentKey="PrestigePulseAnimation" setToFinalAlpha="true" looping="REPEAT">
+						<Alpha childKey="PrestigePulse" duration="1.4" order="1" fromAlpha="0.25" toAlpha="0.75"/>
+						<Alpha childKey="PrestigePulse" startDelay="1.4" duration="1.4" order="1" fromAlpha="0.75" toAlpha="0.25"/>
+						<Alpha childKey="BorderPulse" duration="1.4" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="BorderPulse" startDelay="1.4" duration="1.4" order="1" fromAlpha="1" toAlpha="0"/>
+					</AnimationGroup>
+				</Animations>
+				<Frames>
+					<Button parentKey="Accept" inherits="UIPanelButtonTemplate" text="PVP_PRESTIGE_RANK_UP_TITLE">
+						<Size x="100" y="22"/>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.Border" relativePoint="BOTTOM" x="0" y="16"/>
+						</Anchors>
+						<Scripts>
+							<OnShow>
+								self:SetWidth(self:GetTextWidth()+40);
+							</OnShow>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnEnter>
+						if (self.tooltip) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetText(self.tooltip);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<KeyValues>
+			<KeyValue type="boolean" key="isSmall" value="true"/>
+			<KeyValue type="boolean" key="canPrestigeHere" value="true"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad function="PVPHonorXPBar_OnLoad"/>
+	 		<OnShow function="PVPHonorXPBar_Update"/>
+	 		<OnEvent function="PVPHonorXPBar_Update"/>
+	 	</Scripts>
+	</Frame>
+
+	<Frame name="HonorLevelUpBanner" frameStrata="DIALOG" hidden="true">
+		<Size x="128" y="128"/>
+		<Anchors>
+			<Anchor point="TOP" x="0" y="-133"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon" hidden="false" alpha="0" alphaMode="BLEND" atlas="bonusobjectives-title-icon" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="4"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="Icon2" hidden="false" alpha="0" alphaMode="ADD" atlas="bonusobjectives-title-icon" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="Icon3" hidden="false" alpha="0" alphaMode="ADD" atlas="bonusobjectives-title-icon" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="BG1" hidden="false" alpha="0" alphaMode="BLEND" atlas="bonusobjectives-title-bg" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="1">
+				<Texture parentKey="BG2" hidden="false" alpha="0" alphaMode="ADD" atlas="bonusobjectives-title-bg" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" inherits="GameFontHighlightLarge" text="HONOR_YOUVE_REACHED" alpha="0">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.BG1" x="0" y="18"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Title" inherits="QuestFont_Super_Huge" alpha="0">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Label" relativePoint="BOTTOM" x="0" y="-3"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="TitleFlash" inherits="QuestFont_Super_Huge" alpha="0">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Label" relativePoint="BOTTOM" x="0" y="-3"/>
+					</Anchors>
+					<Color r="1" g="1" b="1"/>
+				</FontString>
+
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
+				<Scale childKey="BG1" duration="0.33" order="1" fromScaleX="0.001" fromScaleY="1" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="BG1" duration="0" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="BG2" duration="0.33" order="1" fromScaleX="0.001" fromScaleY="1" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="BG2" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="BG2" startDelay="0.33" smoothing="IN" duration="0.33" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Title" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Label" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="TitleFlash" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="TitleFlash" startDelay="0.33" smoothing="IN" duration="0.33" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Icon" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="Icon" smoothing="IN" duration="0.33" order="1" fromScaleX="1.4" fromScaleY="1.4" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="Icon2" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Icon2" startDelay="0.33" smoothing="IN" duration="0.33" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="Icon2" smoothing="IN" duration="0.33" order="1" fromScaleX="1.4" fromScaleY="1.4" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="Icon3" duration="0.33" order="1" fromAlpha="0" toAlpha="0.35"/>
+				<Alpha childKey="Icon3" startDelay="0.33" smoothing="IN" duration="0.33" order="1" fromAlpha="0.35" toAlpha="0"/>
+				<Scale childKey="Icon3" smoothing="IN" duration="0.33" order="1" fromScaleX="1.8" fromScaleY="1.8" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="BG1" startDelay="2.5" smoothing="IN" duration="0.46" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Title" startDelay="2.5" smoothing="IN" duration="0.36" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Label" startDelay="2.5" smoothing="IN" duration="0.36" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Icon" startDelay="2.5" smoothing="IN" duration="0.46" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="BG1" startDelay="2.5" smoothing="IN" duration="0.46" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.55" toScaleY="0.55"/>
+				<!--<Scale childKey="Title" startDelay="2.5" smoothing="IN" duration="0.46" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.55" toScaleY="0.55"/>
+				<Scale childKey="Label" startDelay="2.5" smoothing="IN" duration="0.46" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.55" toScaleY="0.55"/>-->
+				<Scale childKey="Icon" startDelay="2.5" smoothing="IN" duration="0.46" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.55" toScaleY="0.55"/>
+				<Scripts>
+					<OnFinished>
+						self:GetParent():Hide();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad function="HonorLevelUpBanner_OnLoad"/>
+			<OnEvent function="HonorLevelUpBanner_OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="PrestigeLevelUpBanner" frameStrata="DIALOG" hidden="true">
+		<Size x="128" y="128"/>
+		<Anchors>
+			<Anchor point="TOP" x="0" y="-270"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="BG1" hidden="false" alpha="0" alphaMode="BLEND" atlas="titleprestige-title-bg" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="IconPlate" hidden="false" alpha="0" alphaMode="BLEND" atlas="titleprestige-prestigeiconplate-alliance" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="111"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Text" hidden="false" alpha="0" inherits="QuestFont_Super_Huge">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.BG1" relativePoint="CENTER" x="0" y="18"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-2">
+				<Texture parentKey="WingLeft" hidden="false" alpha="0" alphaMode="ADD" atlas="titleprestige-wings" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.IconPlate" x="-218" y="66"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="WingRight" hidden="false" alpha="0" alphaMode="ADD" atlas="titleprestige-wings2" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.IconPlate" x="218" y="66"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-3">
+				<Texture parentKey="WingLeft2" hidden="false" alpha="0" alphaMode="ADD" atlas="titleprestige-wings" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.WingLeft"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="WingRight2" hidden="false" alpha="0" alphaMode="ADD" atlas="titleprestige-wings2" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.WingRight"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture parentKey="WingLeftWhite" hidden="false" alpha="0" alphaMode="ADD" atlas="titleprestige-wings-white" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.WingLeft"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="WingLeftWhite2" hidden="false" alpha="0" alphaMode="ADD" atlas="titleprestige-wings-white" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.WingLeft"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="WingRightWhite" hidden="false" alpha="0" alphaMode="ADD" atlas="titleprestige-wings2-white" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.WingRight"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="WingRightWhite2" hidden="false" alpha="0" alphaMode="ADD" atlas="titleprestige-wings2-white" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.WingRight"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Starglow" hidden="false" alpha="0" alphaMode="BLEND" atlas="titleprestige-starglow">
+					<Size x="800" y="500"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.IconPlate" x="0" y="2"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Starglow3" hidden="false" alpha="0" alphaMode="BLEND" atlas="titleprestige-starglow">
+					<Size x="600" y="500"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Starglow" x="0" y="2"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Starcrown" hidden="false" alpha="0" alphaMode="ADD" atlas="titleprestige-starcrown" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.IconPlate" x="0" y="100"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Ember10" hidden="false" alpha="0" alphaMode="ADD" atlas="titleprestige-ember">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Starglow" x="15" y="-15"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Ember9" hidden="false" alpha="0" alphaMode="ADD" atlas="titleprestige-ember">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Starglow" x="-15" y="-15"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Ember8" hidden="false" alpha="0" alphaMode="ADD" atlas="titleprestige-ember">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Starglow" x="15" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Ember7" hidden="false" alpha="0" alphaMode="ADD" atlas="titleprestige-ember">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Starglow" x="-15" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Ember6" hidden="false" alpha="0" alphaMode="ADD" atlas="titleprestige-ember">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Starglow" x="15" y="15"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Ember5" hidden="false" alpha="0" alphaMode="ADD" atlas="titleprestige-ember">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Starglow" x="-15" y="15"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Ember4" hidden="false" alpha="0" alphaMode="ADD" atlas="titleprestige-ember">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Starglow" x="15" y="-15"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Ember3" hidden="false" alpha="0" alphaMode="ADD" atlas="titleprestige-ember">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Starglow" x="-15" y="15"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Ember2" hidden="false" alpha="0" alphaMode="ADD" atlas="titleprestige-ember">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Starglow" x="-15" y="-15"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Ember1" hidden="false" alpha="0" alphaMode="ADD" atlas="titleprestige-ember">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Starglow" x="15" y="15"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="Starglow2" hidden="false" alpha="0" alphaMode="ADD" atlas="titleprestige-starglow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Starglow"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+
+			<Layer level="BORDER" textureSubLevel="1">
+				<Texture parentKey="BG2" hidden="false" alpha="0" alphaMode="ADD" atlas="titleprestige-title-bg" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="IconPlate2" hidden="false" alpha="0" alphaMode="ADD" atlas="titleprestige-prestigeiconplate-alliance" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.IconPlate"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture parentKey="IconPlate3" hidden="false" alpha="0" alphaMode="ADD" atlas="titleprestige-prestigeiconplate-alliance" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.IconPlate"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="3">
+				<Texture parentKey="Wreath" hidden="false" alpha="0" alphaMode="BLEND" atlas="titleprestige-wreath" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.IconPlate" x="0" y="-29"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="5">
+				<Texture parentKey="Wreath3" hidden="false" alpha="0" alphaMode="ADD" atlas="titleprestige-wreath" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Wreath"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="6">
+				<Texture parentKey="Glowcover" hidden="false" alpha="0" alphaMode="ADD" atlas="titleprestige-glowcover" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.IconPlate" x="0" y="7"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="7">
+				<Texture parentKey="Icon" hidden="false" alpha="0" alphaMode="BLEND">
+					<Size x="105" y="105"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.IconPlate" x="-1" y="8"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="Wreath2" hidden="false" alpha="0" alphaMode="ADD" atlas="titleprestige-wreath" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Wreath"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Level" inherits="Game18Font" hidden="false" alpha="0" text="5">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.IconPlate" relativePoint="BOTTOM" x="0" y="24"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="Icon2" hidden="false" alpha="0" alphaMode="ADD">
+					<Size x="105" y="105"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="3">
+				<Texture parentKey="Icon3" hidden="false" alpha="0" alphaMode="ADD">
+					<Size x="105" y="105"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
+				<Scale childKey="BG1" duration="0.33" order="1" fromScaleX="0.001" fromScaleY="1" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="BG1" duration="0" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="BG2" duration="0.33" order="1" fromScaleX="0.001" fromScaleY="1" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="BG2" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="BG2" startDelay="0.33" smoothing="IN" duration="0.33" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Text" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Level" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="IconPlate" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="IconPlate" smoothing="IN" duration="0.33" order="1" fromScaleX="1.4" fromScaleY="1.4" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="IconPlate2" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="IconPlate2" startDelay="0.33" smoothing="IN" duration="0.33" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="IconPlate2" smoothing="IN" duration="0.33" order="1" fromScaleX="1.4" fromScaleY="1.4" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="IconPlate3" duration="0.33" order="1" fromAlpha="0" toAlpha="0.35"/>
+				<Alpha childKey="IconPlate3" startDelay="0.33" smoothing="IN" duration="0.33" order="1" fromAlpha="0.35" toAlpha="0"/>
+				<Scale childKey="IconPlate3" smoothing="IN" duration="0.33" order="1" fromScaleX="1.8" fromScaleY="1.8" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="BG1" startDelay="7.5" smoothing="IN" duration="0.46" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Text" startDelay="7.5" smoothing="IN" duration="0.36" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Level" startDelay="7.5" smoothing="IN" duration="0.46" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="IconPlate" startDelay="7.5" smoothing="IN" duration="0.46" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="BG1" startDelay="7.5" smoothing="IN" duration="0.46" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.55" toScaleY="0.55"/>
+				<!--<Scale childKey="Text" startDelay="7.5" smoothing="IN" duration="0.46" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.55" toScaleY="0.55"/>-->
+				<Scale childKey="Level" startDelay="7.5" smoothing="IN" duration="0.46" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.55" toScaleY="0.55"/>
+				<Scale childKey="IconPlate" startDelay="7.5" smoothing="IN" duration="0.46" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.55" toScaleY="0.55"/>
+				<Translation childKey="Level" startDelay="7.5" duration="0.46" order="1" offsetX="0" offsetY="26"/>
+				<Alpha childKey="Starglow2" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+				<Rotation childKey="Starglow2" duration="20" order="1" degrees="360"/>
+				<Alpha childKey="Starglow3" duration="0.33" order="1" fromAlpha="0" toAlpha="0.3"/>
+				<Alpha childKey="Glowcover" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Glowcover" startDelay="0.33" smoothing="IN" duration="2" order="1" fromAlpha="1" toAlpha="0.5"/>
+				<Alpha childKey="Glowcover" startDelay="2.33" smoothing="IN" duration="2" order="1" fromAlpha="0.5" toAlpha="1"/>
+				<Alpha childKey="Glowcover" startDelay="4.33" smoothing="IN" duration="2" order="1" fromAlpha="1" toAlpha="0.35"/>
+				<Alpha childKey="Glowcover" startDelay="6.33" smoothing="IN" duration="2" order="1" fromAlpha="0.35" toAlpha="1"/>
+				<Alpha childKey="Wreath" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="Wreath" smoothing="IN" duration="0.33" order="1" fromScaleX="3.4" fromScaleY="3.4" toScaleX="1" toScaleY="1"/>
+				<Translation childKey="Wreath" startDelay="0.33" duration="3" order="1" offsetX="0" offsetY="-5"/>
+				<Translation childKey="Wreath" startDelay="3.33" duration="6" order="1" offsetX="0" offsetY="10"/>
+				<Translation childKey="Wreath" startDelay="9.33" duration="6" order="1" offsetX="0" offsetY="-10"/>
+				<Alpha childKey="Wreath2" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Wreath2" startDelay="0.33" smoothing="IN" duration="0.33" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="Wreath2" smoothing="IN" duration="0.33" order="1" fromScaleX="3.4" fromScaleY="3.4" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="Wreath3" duration="0.33" order="1" fromAlpha="0" toAlpha="0.35"/>
+				<Alpha childKey="Wreath3" startDelay="0.33" smoothing="IN" duration="0.33" order="1" fromAlpha="0.35" toAlpha="0"/>
+				<Scale childKey="Wreath3" smoothing="IN" duration="0.33" order="1" fromScaleX="3.8" fromScaleY="3.8" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="Starglow" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Starglow" startDelay="0.33" duration="2" order="1" fromAlpha="1" toAlpha="0.3"/>
+				<Alpha childKey="Starglow" startDelay="2.33" duration="2" order="1" fromAlpha="0.3" toAlpha="1"/>
+				<Alpha childKey="Starglow" startDelay="4.33" duration="2" order="1" fromAlpha="1" toAlpha="0.3"/>
+				<Alpha childKey="Starglow" startDelay="6.33" duration="2" order="1" fromAlpha="0.3" toAlpha="1"/>
+				<Alpha childKey="Starglow" startDelay="7.5" smoothing="IN" duration="0.46" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Starglow2" startDelay="7.5" smoothing="IN" duration="0.46" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Starglow3" startDelay="7.5" smoothing="IN" duration="0.46" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Glowcover" startDelay="7.5" smoothing="IN" duration="0.46" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Wreath" startDelay="7.5" smoothing="IN" duration="0.46" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="Starglow" startDelay="7.5" smoothing="IN" duration="0.46" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.55" toScaleY="0.55"/>
+				<Scale childKey="Starglow2" startDelay="7.5" smoothing="IN" duration="0.46" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.55" toScaleY="0.55"/>
+				<Scale childKey="Starglow3" startDelay="7.5" smoothing="IN" duration="0.46" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.55" toScaleY="0.55"/>
+				<Scale childKey="Glowcover" startDelay="7.5" smoothing="IN" duration="0.46" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.55" toScaleY="0.55"/>
+				<Scale childKey="Wreath" startDelay="7.5" smoothing="IN" duration="0.46" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.55" toScaleY="0.55"/>
+				<Alpha childKey="Icon" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="Icon" smoothing="IN" duration="0.33" order="1" fromScaleX="1.4" fromScaleY="1.4" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="Icon" startDelay="7.5" smoothing="IN" duration="0.46" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="Icon" startDelay="7.5" smoothing="IN" duration="0.46" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.55" toScaleY="0.55"/>
+				<Alpha childKey="Icon2" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Icon2" startDelay="0.33" smoothing="IN" duration="0.33" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="Icon2" smoothing="IN" duration="0.33" order="1" fromScaleX="1.4" fromScaleY="1.4" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="Icon3" duration="0.33" order="1" fromAlpha="0" toAlpha="0.35"/>
+				<Alpha childKey="Icon3" startDelay="0.33" smoothing="IN" duration="0.33" order="1" fromAlpha="0.35" toAlpha="0"/>
+				<Scale childKey="Icon3" smoothing="IN" duration="0.33" order="1" fromScaleX="2.8" fromScaleY="2.8" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="Icon2" startDelay="2.5" duration="1.5" order="1" fromAlpha="0" toAlpha="0.8"/>
+				<Alpha childKey="Icon2" startDelay="4" smoothing="IN" duration="1.5" order="1" fromAlpha="0.8" toAlpha="0"/>
+				<Alpha childKey="Wreath2" startDelay="1.5" duration="2" order="1" fromAlpha="0" toAlpha="0.5"/>
+				<Alpha childKey="Wreath2" startDelay="3.5" smoothing="IN" duration="2" order="1" fromAlpha="0.5" toAlpha="0"/>
+				<Alpha childKey="Wreath2" startDelay="5.5" duration="2" order="1" fromAlpha="0" toAlpha="0.5"/>
+				<Translation childKey="Wreath2" startDelay="0.33" duration="3" order="1" offsetX="0" offsetY="-5"/>
+				<Translation childKey="Wreath2" startDelay="3.33" duration="6" order="1" offsetX="0" offsetY="10"/>
+				<Translation childKey="Wreath2" startDelay="9.33" duration="6" order="1" offsetX="0" offsetY="-10"/>
+				<Alpha childKey="Wreath2" startDelay="7.5" smoothing="IN" duration="0.46" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="Wreath2" startDelay="7.5" smoothing="IN" duration="0.46" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.55" toScaleY="0.55"/>
+				<Alpha childKey="Starcrown" duration="0.33" order="1" fromAlpha="0" toAlpha="0.55"/>
+				<Scale childKey="Starcrown" smoothing="IN" duration="0.33" order="1" fromScaleX="0.001" fromScaleY="0.001" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="Starcrown" startDelay="7.5" smoothing="IN" duration="0.46" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="Starcrown" startDelay="7.5" smoothing="IN" duration="0.46" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.55" toScaleY="0.55">
+					<Origin point="CENTER"/>
+				</Scale>
+				<!--<Alpha childKey="WingLeft" startDelay="0.5" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="WingLeft" startDelay="0.5" smoothing="OUT" duration="0.5" order="1" fromScaleX="0.2" fromScaleY="1" toScaleX="1" toScaleY="1">
+					<Origin point="RIGHT">
+						<Offset x="0" y="-50"/>
+					</Origin>
+				</Scale>
+				<Translation childKey="WingLeft" startDelay="0.5" duration="4" order="1" offsetX="0" offsetY="20"/>
+				<Translation childKey="WingLeft" startDelay="3.5" duration="8" order="1" offsetX="0" offsetY="-40"/>
+				<Translation childKey="WingLeft" startDelay="9.5" duration="8" order="1" offsetX="0" offsetY="40"/>
+				<Alpha childKey="WingLeft" startDelay="7.5" duration="0.26" order="1" fromAlpha="1" toAlpha="0"/>
+				<Rotation childKey="WingLeft" startDelay="7.5" smoothing="OUT" duration="0.46" order="1" degrees="-20">
+					<Origin point="BOTTOMRIGHT">
+						<Offset x="0" y="0"/>
+					</Origin>
+				</Rotation>
+				<Alpha childKey="WingRight" startDelay="0.5" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="WingRight" startDelay="0.5" smoothing="OUT" duration="0.5" order="1" fromScaleX="0.2" fromScaleY="1" toScaleX="1" toScaleY="1">
+					<Origin point="LEFT">
+						<Offset x="0" y="-50"/>
+					</Origin>
+				</Scale>
+				<Translation childKey="WingRight" startDelay="0.5" duration="4" order="1" offsetX="0" offsetY="20"/>
+				<Translation childKey="WingRight" startDelay="3.5" duration="8" order="1" offsetX="0" offsetY="-40"/>
+				<Translation childKey="WingRight" startDelay="9.5" duration="8" order="1" offsetX="0" offsetY="40"/>
+				<Alpha childKey="WingRight" startDelay="7.5" duration="0.26" order="1" fromAlpha="1" toAlpha="0"/>
+				<Rotation childKey="WingRight" startDelay="7.5" smoothing="OUT" duration="0.46" order="1" degrees="20">
+					<Origin point="BOTTOMLEFT">
+						<Offset x="0" y="0"/>
+					</Origin>
+				</Rotation>
+				<Alpha childKey="WingLeftWhite" startDelay="0.67" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="WingLeftWhite" startDelay="1" duration="0.33" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="WingLeftWhite" startDelay="0.5" smoothing="OUT" duration="0.5" order="1" fromScaleX="0.2" fromScaleY="1" toScaleX="1" toScaleY="1">
+					<Origin point="RIGHT">
+						<Offset x="0" y="-50"/>
+					</Origin>
+				</Scale>
+				<Alpha childKey="WingRightWhite" startDelay="0.67" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="WingRightWhite" startDelay="1" duration="0.33" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="WingRightWhite" startDelay="0.5" smoothing="OUT" duration="0.5" order="1" fromScaleX="0.2" fromScaleY="1" toScaleX="1" toScaleY="1">
+					<Origin point="LEFT">
+						<Offset x="0" y="-50"/>
+					</Origin>
+				</Scale>
+				<Alpha childKey="WingLeftWhite2" startDelay="0.67" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="WingLeftWhite2" startDelay="1" duration="0.33" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="WingLeftWhite2" startDelay="0.5" smoothing="OUT" duration="0.5" order="1" fromScaleX="0.2" fromScaleY="1" toScaleX="1" toScaleY="1">
+					<Origin point="RIGHT">
+						<Offset x="0" y="-50"/>
+					</Origin>
+				</Scale>
+				<Alpha childKey="WingRightWhite2" startDelay="0.67" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="WingRightWhite2" startDelay="1" duration="0.33" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="WingRightWhite2" startDelay="0.5" smoothing="OUT" duration="0.5" order="1" fromScaleX="0.2" fromScaleY="1" toScaleX="1" toScaleY="1">
+					<Origin point="LEFT">
+						<Offset x="0" y="-50"/>
+					</Origin>
+				</Scale>
+				<Alpha childKey="WingLeft2" startDelay="0.67" duration="0.33" order="1" fromAlpha="0" toAlpha="0.5"/>
+				<Alpha childKey="WingLeft2" startDelay="1" duration="0.23" order="1" fromAlpha="0.5" toAlpha="0"/>
+				<Scale childKey="WingLeft2" startDelay="0.5" duration="0.5" order="1" fromScaleX="0.2" fromScaleY="1" toScaleX="1.1" toScaleY="1.1">
+					<Origin point="RIGHT">
+						<Offset x="0" y="-50"/>
+					</Origin>
+				</Scale>
+				<Alpha childKey="WingRight2" startDelay="0.67" duration="0.33" order="1" fromAlpha="0" toAlpha="0.5"/>
+				<Alpha childKey="WingRight2" startDelay="1" duration="0.23" order="1" fromAlpha="0.5" toAlpha="0"/>
+				<Scale childKey="WingRight2" startDelay="0.5" duration="0.5" order="1" fromScaleX="0.2" fromScaleY="1" toScaleX="1.1" toScaleY="1.1">
+					<Origin point="LEFT">
+						<Offset x="0" y="-50"/>
+					</Origin>
+				</Scale>-->
+				<Translation childKey="Ember1" duration="3" order="1" offsetX="200" offsetY="200"/>
+				<Alpha childKey="Ember1" startDelay="0.33" duration="0.01" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Ember1" startDelay="0.66" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Translation childKey="Ember2" duration="3" order="1" offsetX="-200" offsetY="-200"/>
+				<Alpha childKey="Ember2" startDelay="0.33" duration="0.01" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Ember2" startDelay="0.66" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Translation childKey="Ember3" duration="3" order="1" offsetX="-200" offsetY="200"/>
+				<Alpha childKey="Ember3" startDelay="0.33" duration="0.01" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Ember3" startDelay="0.66" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Translation childKey="Ember4" duration="3" order="1" offsetX="200" offsetY="-200"/>
+				<Alpha childKey="Ember4" startDelay="0.33" duration="0.01" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Ember4" startDelay="0.66" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Translation childKey="Ember5" duration="3" order="1" offsetX="-300" offsetY="100"/>
+				<Alpha childKey="Ember5" startDelay="0.33" duration="0.01" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Ember5" startDelay="0.66" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Translation childKey="Ember6" duration="3" order="1" offsetX="300" offsetY="100"/>
+				<Alpha childKey="Ember6" startDelay="0.33" duration="0.01" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Ember6" startDelay="0.66" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Translation childKey="Ember7" duration="3" order="1" offsetX="-350" offsetY="0"/>
+				<Alpha childKey="Ember7" startDelay="0.33" duration="0.01" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Ember7" startDelay="0.66" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Translation childKey="Ember8" duration="3" order="1" offsetX="350" offsetY="0"/>
+				<Alpha childKey="Ember8" startDelay="0.33" duration="0.01" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Ember8" startDelay="0.66" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Translation childKey="Ember9" duration="3" order="1" offsetX="-300" offsetY="-100"/>
+				<Alpha childKey="Ember9" startDelay="0.33" duration="0.01" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Ember9" startDelay="0.66" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Translation childKey="Ember10" duration="3" order="1" offsetX="300" offsetY="-100"/>
+				<Alpha childKey="Ember10" startDelay="0.33" duration="0.01" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Ember10" startDelay="0.66" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+                <Scripts>
+					<OnFinished>
+                        self:GetParent():Hide();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+</Ui>

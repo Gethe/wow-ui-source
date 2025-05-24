@@ -1,0 +1,37 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<CheckButton name="StanceButtonTemplate" inherits="QuickKeybindButtonTemplate, SecureFrameTemplate, SmallActionButtonTemplate" mixin="StanceButtonMixin" virtual="true">
+		<Scripts>
+			<OnLoad method="StanceButtonMixin_OnLoad"/>
+			<OnClick method="StanceButtonMixin_OnClick"/>
+			<OnEnter method="StanceButtonMixin_OnEnter"/>
+			<OnLeave method="StanceButtonMixin_OnLeave"/>
+		</Scripts>
+	</CheckButton>
+
+	<Frame name="StanceBar" parent="UIParent" inherits="EditModeActionBarTemplate" mixin="StanceBarMixin" enableMouse="true" frameLevel="70" fixedFrameLevel="true" hidden="true">
+		<Size x="30" y="30"/>
+		<Anchors>
+			<Anchor point="BOTTOM"/>
+		</Anchors>
+
+		<KeyValues>
+			<KeyValue key="buttonTemplate" value="StanceButtonTemplate" type="string"/>
+			<KeyValue key="commandNamePrefix" value="SHAPESHIFT" type="string"/>
+			<KeyValue key="isHorizontal" value="true" type="boolean"/>
+			<KeyValue key="numRows" value="1" type="number"/>
+			<KeyValue key="numButtons" value="10" type="number"/>
+			<KeyValue key="addButtonsToRight" value="true" type="boolean"/>
+			<KeyValue key="addButtonsToTop" value="true" type="boolean"/>
+			<KeyValue key="noSpacers" value="true" type="boolean"/>
+			<KeyValue key="systemIndex" value="Enum.EditModeActionBarSystemIndices.StanceBar" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_STANCE_BAR_LABEL" type="global"/>
+			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+		</KeyValues>
+
+		<Scripts>
+			<OnLoad method="OnLoad" inherit="prepend"/>
+			<OnEvent method="OnEvent" inherit="prepend"/>
+		</Scripts>
+	</Frame>
+</Ui>

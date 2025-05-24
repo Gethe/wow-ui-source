@@ -1,0 +1,14 @@
+## Title: Blizzard Adventure Map UI
+## Author: Blizzard Entertainment
+## RequiredDep: Blizzard_GarrisonTemplates, Blizzard_MapCanvas, Blizzard_SharedMapDataProviders
+## LoadOnDemand: 1
+
+Blizzard_AdventureMapUtils.lua
+
+AM_ZoneSummaryDataProvider.xml
+AM_QuestDialog.xml
+AM_QuestChoiceDataProvider.xml
+AM_QuestOfferDataProvider.xml
+
+Blizzard_AdventureMapInset.xml
+Blizzard_AdventureMap.xml

@@ -1,0 +1,27 @@
+## Title: Blizzard_ChatFrame
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_EditMode, Blizzard_ChatFrameBase, Blizzard_VoiceToggleButton
+## AllowLoad: game
+## AllowLoadGameType: mainline
+Shared\VoiceChatDots.lua
+Shared\VoiceChatDots.xml
+Shared\VoiceChatTranscriptionButton.lua
+Shared\VoiceChatTranscriptionButton.xml
+Mainline\VoiceChatHeadsetButton.lua
+Mainline\VoiceChatHeadsetButton.xml
+Mainline\FloatingChatFrameVoiceChat.xml
+Mainline\FloatingChatFrameAlertFrame.xml
+Mainline\BattlegroundChatFilters.lua
+Mainline\BattlegroundChatFilters.xml
+Shared\VoiceChatTranscriptionFrame.lua
+Mainline\TextToSpeechFrameConstants.lua
+Shared\TextToSpeechCommands.lua
+Shared\TextToSpeechFrame.lua
+Shared\TextToSpeechFrame.xml
+Shared\TextToSpeech.lua
+Shared\TextToSpeech.xml
+Mainline\ChatConfigFrame.lua
+Mainline\ChatConfigFrame.xml
+Shared\ClassTalentHelper.lua
+Mainline\Localization.lua

@@ -1,0 +1,13 @@
+## Title: Blizzard_UIParent
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_FrameXMLBase, Blizzard_ObjectAPI, Blizzard_Colors
+## AllowLoad: game
+## AllowLoadGameType: mainline
+ChatBubbleTemplates.xml
+Mainline\WorldFrame.lua
+Mainline\WorldFrame.xml
+Shared\UIParent.lua
+Mainline\UIParent.lua
+Mainline\UIParent.xml
+Shared\Localization.lua

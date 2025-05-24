@@ -1,0 +1,4 @@
+## Title: Blizzard Scraping Machine UI
+## LoadOnDemand: 1
+
+Blizzard_ScrappingMachineUI.xml

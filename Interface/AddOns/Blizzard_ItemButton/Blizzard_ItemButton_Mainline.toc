@@ -1,0 +1,9 @@
+## Title: Blizzard_ItemButton
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_SharedXML, Blizzard_Colors
+## AllowLoad: Game
+## AllowLoadGameType: mainline
+Shared\ItemButtonTemplate.lua
+Shared\ItemButtonTemplate.xml
+Mainline\ItemButtonTemplate.xml

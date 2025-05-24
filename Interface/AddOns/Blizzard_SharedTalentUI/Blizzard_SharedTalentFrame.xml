@@ -1,0 +1,111 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Script file="Blizzard_SharedTalentFrame.lua"/>
+	
+	<Frame name="TalentFrameBaseTemplate" mixin="TalentFrameBaseMixin" virtual="true">
+		<!--
+		getTemplateType: function to map talent types to template types.
+		getSpecializedMixin: function to map talent types to an additional mixin for the button.
+		getEdgeTemplateType: function to map template types to edge types.
+		buttonSize: size for all talent buttons and displays.
+		topPadding: space around buttons and edges to make room for frames, portraits, etc.
+		leftPadding: space around buttons and edges to make room for frames, portraits, etc.
+		bottomPadding: space around buttons and edges to make room for frames, portraits, etc.
+		rightPadding: space around buttons and edges to make room for frames, portraits, etc.
+		basePanOffsetX: offset X in the zoom area to start anchoring buttons from.
+		basePanOffsetY: offset Y in the zoom area to start anchoring buttons from.
+		enableZoomAndPan: if zooming and panning should be enabled.
+		excludeStagedChangesForCurrencies: if staged changes should be excluded for currency calculations.
+		maximumCommitTime: temporary configuration parameter for commits until we replace with an event-driven system.
+		disabledOverlayAlpha: alpha to set the disabled overlay to. It is shown while a commit is in progress.
+		enableCommitCastBar: if overlay player cast bar should be displayed while commit is in progress.
+		enableCommitSpinner: if a spinner should be played during commit time.
+		enableCommitEndFlash: if background flash should be played on commit completion.
+		getSpecializedChoiceMixin: function to map talent types to an additional mixin for the choice popup display.
+		defaultSelectSound: sound to play if select sound is not specified in an override button template.
+		defaultDeselectSound: sound to play if deselect sound is not specified in an override button template.
+		-->
+		<KeyValues>
+			<KeyValue key="getTemplateType" value="TalentButtonUtil.GetTemplateForTalentType" type="global"/>
+			<KeyValue key="getSpecializedMixin" value="TalentButtonUtil.GetSpecializedMixin" type="global"/>
+			<KeyValue key="getEdgeTemplateType" value="TalentButtonUtil.GetTemplateForEdgeVisualStyle" type="global"/>
+			<KeyValue key="buttonSize" value="40" type="number"/>
+			<KeyValue key="topPadding" value="0" type="number"/>
+			<KeyValue key="leftPadding" value="0" type="number"/>
+			<KeyValue key="bottomPadding" value="0" type="number"/>
+			<KeyValue key="rightPadding" value="0" type="number"/>
+			<KeyValue key="basePanOffsetX" value="0" type="number"/>
+			<KeyValue key="basePanOffsetY" value="0" type="number"/>
+			<KeyValue key="enableZoomAndPan" value="true" type="boolean"/>
+			<KeyValue key="excludeStagedChangesForCurrencies" value="false" type="boolean"/>
+			<KeyValue key="maximumCommitTime" value="3" type="number"/>
+			<KeyValue key="disabledOverlayAlpha" value="0.4" type="number"/>
+			<KeyValue key="enableCommitCastBar" value="false" type="boolean"/>
+			<KeyValue key="enableCommitSpinner" value="false" type="boolean"/>
+			<KeyValue key="enableCommitEndFlash" value="false" type="boolean"/>
+			
+			<!--
+			<KeyValue key="getSpecializedChoiceMixin" value="nil" type="global"/>
+			<KeyValue key="defaultSelectSound" value="SOUNDKIT.FOOBAR" type="global"/>
+			<KeyValue key="defaultDeselectSound" value="SOUNDKIT.FOOBAR" type="global"/>
+			-->
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="AnimationHolder">
+				<Animations>
+					<AnimationGroup parentKey="BackgroundFlashAnim" setToFinalAlpha="true">
+						<Alpha childKey="$parent.BackgroundFlash" startDelay="0" smoothing="IN" duration="1.2" fromAlpha="1" toAlpha="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+
+			<Frame parentKey="ButtonsParent" mixin="TalentFrameBaseButtonsParentMixin" clipChildren="true" frameLevel="1000">
+				<Scripts>
+					<OnUpdate method="OnUpdate"/>
+					<OnMouseDown method="OnMouseDown"/>
+					<OnMouseWheel method="OnMouseWheel"/>
+				</Scripts>
+			</Frame>
+
+			<Frame parentKey="SelectionChoiceFrame" inherits="TalentSelectionChoiceFrameTemplate" enableMouse="true" frameLevel="2000"  fixedFrameLevel="true"/>
+			
+			<Frame parentKey="DisabledOverlay" enableMouse="true" frameLevel="4000" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ButtonsParent" relativePoint="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ButtonsParent" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="GrayOverlay">
+							<Color r="0" g="0" b="0" a="1"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame parentKey="CommitSpinner" inherits="SpinnerTemplate" frameLevel="4001" hidden="true">
+				<Size x="110" y="110"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.DisabledOverlay"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="3">
+				<Texture parentKey="BackgroundFlash" atlas="spec-background" alphaMode="ADD" alpha="0">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ButtonsParent" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ButtonsParent" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<!-- OnUpdate Set dynamically -->
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

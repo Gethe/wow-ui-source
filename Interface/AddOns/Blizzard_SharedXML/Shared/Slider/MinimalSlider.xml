@@ -1,0 +1,99 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\UI.xsd">
+	<Slider name="MinimalSliderTemplate" orientation="HORIZONTAL" mixin="MinimalSliderMixin" enableMouse="true" virtual="true">
+		<Size x="200" y="19"/>
+		<KeyValues>
+			<KeyValue key="obeyStepOnDrag" value="true" type="boolean"/>
+		</KeyValues>
+		<Layers>
+			<Layer>
+				<Texture parentKey="Left" atlas="Minimal_SliderBar_Left" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Right" atlas="Minimal_SliderBar_Right" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Middle" atlas="_Minimal_SliderBar_Middle" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Right" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<ThumbTexture parentKey="Thumb" atlas="Minimal_SliderBar_Button" useAtlasSize="true"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Slider>
+
+	<Frame name="MinimalSliderWithSteppersTemplate" mixin="MinimalSliderWithSteppersMixin" enableMouse="true" virtual="true">
+		<Size x="250" y="40"/>
+		<Frames>
+			<Slider parentKey="Slider" inherits="MinimalSliderTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="19"/>
+					<Anchor point="BOTTOMRIGHT" x="-19"/>
+				</Anchors>
+			</Slider>
+			<Button parentKey="Back">
+				<Size x="11" y="19"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.Slider" relativePoint="LEFT" x="-4"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture atlas="Minimal_SliderBar_Button_Left" useAtlasSize="true"/>
+					</Layer>
+				</Layers>
+			</Button>
+			<Button parentKey="Forward">
+				<Size x="9" y="18"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Slider" relativePoint="RIGHT" x="4"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture atlas="Minimal_SliderBar_Button_Right" useAtlasSize="true"/>
+					</Layer>
+				</Layers>
+			</Button>
+		</Frames>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="LeftText" inherits="GameFontNormal" parentArray="Labels" hidden="true">
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.Slider" relativePoint="LEFT" x="-25"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="RightText" inherits="GameFontNormal" parentArray="Labels" hidden="true">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Slider" relativePoint="RIGHT" x="25"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="TopText" inherits="GameFontNormal" parentArray="Labels" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.Slider" relativePoint="TOP" y="-9"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="MinText" inherits="GameFontNormal" parentArray="Labels" hidden="true">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Slider" relativePoint="BOTTOMLEFT" y="6"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="MaxText" inherits="GameFontNormal" parentArray="Labels" hidden="true">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Slider" relativePoint="BOTTOMRIGHT" y="6"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>

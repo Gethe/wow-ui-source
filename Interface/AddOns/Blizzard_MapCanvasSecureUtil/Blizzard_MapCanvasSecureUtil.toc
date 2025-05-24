@@ -1,0 +1,4 @@
+## Title: Blizzard_MapCanvasSecureUtil
+## LoadFirst: 1
+
+Blizzard_MapCanvasSecureUtil.lua

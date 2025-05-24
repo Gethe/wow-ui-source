@@ -1,0 +1,35 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Frame name="LandingPageExpansionOverlayTemplate" virtual="true">
+		<Size x="880" y="618"/>
+		<Frames>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton" frameLevel="5000">
+			<!-- Anchor this in your Overlay! -->
+				<Scripts>
+					<OnClick>
+						HideUIPanel(ExpansionLandingPage);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Frame parentKey="Border" setAllPoints="true"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="ExpansionLandingPage" parent="UIParent" enableMouse="true" toplevel="true" hidden="true" mixin="ExpansionLandingPageMixin">
+		<Size x="880" y="618"/>
+		<Frames>
+			<Frame parentKey="Overlay">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent" relativePoint="CENTER"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

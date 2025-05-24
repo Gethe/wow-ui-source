@@ -1,0 +1,332 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="EventSchedulerHeaderTemplate" mixin="EventSchedulerBaseLabelMixin" virtual="true">
+		<Size x="295" y="23"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="event-scheduler-title-tab" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" inherits="GameFontNormalMed3">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Background" x="5" y="1"/>
+					</Anchors>
+					<Color color="DISABLED_FONT_COLOR"/>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="EventSchedulerOngoingHeaderTemplate" inherits="EventSchedulerHeaderTemplate" virtual="true">
+		<HitRectInsets left="0" right="0" top="1" bottom="11"/>
+		<Size x="295" y="25"/>
+	</Frame>
+
+	<Frame name="EventSchedulerScheduledHeaderTemplate" inherits="EventSchedulerHeaderTemplate" virtual="true">
+		<HitRectInsets left="0" right="0" top="3" bottom="3"/>
+		<Size x="295" y="29"/>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture parentKey="Timeline">
+					<Size x="2" y="20"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="16" y="5"/>
+					</Anchors>
+					<Color r="0.588" g="0.482" b="0.051"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="EventSchedulerOngoingEntryTemplate" mixin="EventSchedulerOngoingEntryMixin" enableMouse="true" virtual="true">
+		<Size x="295" y="39"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="event-scheduler-ongoing-events-card-incomplete" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Highlight" atlas="event-scheduler-ongoing-events-card-hover" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="LEFT" x="16"/>
+					</Anchors>					
+				</Texture>
+				<Texture parentKey="CheckIcon" atlas="event-scheduler-green-checkmark" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="RIGHT" x="-14" y="-2"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Name" inherits="GameFontHighlight" maxLines="1" justifyH="LEFT">
+					<Size x="250" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="37" y="-5"/>
+					</Anchors>
+					<Color color="EVENT_SCHEDULER_NAME_COLOR"/>
+				</FontString>
+				<FontString parentKey="Location" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" y="-4"/>
+					</Anchors>
+					<Color color="EVENT_SCHEDULER_LOCATION_COLOR"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnMouseUp method="OnMouseUp"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="EventSchedulerScheduledEntryTemplate" mixin="EventSchedulerScheduledEntryMixin" enableMouse="true" virtual="true">
+		<Size x="260" y="37"/>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture parentKey="Timeline">
+					<Size x="2" y="40"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<Color r="0.588" g="0.482" b="0.051"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="event-scheduler-event-card-active" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT" x="2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="Background2" atlas="event-scheduler-event-card-active" useAtlasSize="true" alpha="0">
+					<Anchors>
+						<Anchor point="LEFT" x="2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="TopDot" atlas="event-scheduler-yellow-timeline-dot-dark" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Timeline" relativePoint="TOP"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BottomDotDark" atlas="event-scheduler-yellow-timeline-dot-dark" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Timeline" relativePoint="BOTTOM"/>
+					</Anchors>					
+				</Texture>
+				<Texture parentKey="BottomDotLight" atlas="event-scheduler-yellow-timeline-dot-light" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.BottomDotDark" relativePoint="BOTTOM"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="1">
+				<Texture parentKey="Highlight" atlas="event-scheduler-event-card-hover" useAtlasSize="true" alphaMode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="ReminderIcon" atlas="event-scheduler-reminder-icon" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-16" y="-6"/>
+					</Anchors>					
+				</Texture>
+				<FontString parentKey="Name" inherits="GameFontHighlight" maxLines="1" justifyH="LEFT">
+					<Size x="250" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="22" y="-4"/>
+					</Anchors>
+					<Color color="EVENT_SCHEDULER_NAME_COLOR"/>
+				</FontString>
+				<FontString parentKey="Location" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" y="-5"/>
+					</Anchors>
+					<Color color="EVENT_SCHEDULER_LOCATION_COLOR"/>
+				</FontString>
+				<Texture parentKey="Icon">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="LEFT" x="1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="IconGlow" atlas="eventicon-scheduler-glowing" useAtlasSize="true" alpha="0">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="StartedAnim" setToFinalAlpha="true">
+				<Scale childKey="Icon" duration="0.15" order="1" startDelay="0.3" smoothing="IN" fromScaleX="1" fromScaleY="1" toScaleX="1.25" toScaleY="1.25"/>
+				<Scale childKey="Icon" duration="0.15" order="1" startDelay="0.45" smoothing="OUT" fromScaleX="1" fromScaleY="1" toScaleX="0.8" toScaleY="0.8"/>
+				<Alpha childKey="IconGlow" duration="0.17" order="1" startDelay="0.3" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="IconGlow" duration="0.2" order="1" startDelay="0.47" fromAlpha="1" toAlpha="1"/>
+				<Alpha childKey="IconGlow" duration="0.4" order="1" startDelay="0.67" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="Background" duration="0.5" order="1" startDelay="0.5" smoothing="OUT" fromScaleX="0" fromScaleY="1" toScaleX="1" toScaleY="1">
+					<Origin point="LEFT"/>
+				</Scale>
+				<Alpha childKey="Background" duration="0.05" order="1" startDelay="0.5" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Background2" duration="0.5" order="1" startDelay="0.65" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Background2" duration="0.6" order="1" startDelay="1.15" fromAlpha="1" toAlpha="0"/>				
+			</AnimationGroup>
+				<AnimationGroup parentKey="ExpiredAnim" setToFinalAlpha="true">
+					<Alpha parentKey="Alpha" duration="1.00" order="1" smoothing="IN" fromAlpha="1" toAlpha="0" endDelay="0.05"/>
+				</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnMouseUp method="OnMouseUp"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="EventSchedulerDateLabelTemplate" mixin="EventSchedulerBaseLabelMixin" virtual="true">
+		<Size y="23"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="event-scheduler-time-divider" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" y="-10"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" inherits="GameFontDisableSmall">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Background"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="EventSchedulerHiddenEventsLabelTemplate" mixin="EventSchedulerBaseLabelMixin" virtual="true">
+		<Size y="18"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>			
+	</Frame>
+
+	<Frame name="EventSchedulerNoEventsLabelTemplate" mixin="EventSchedulerBaseLabelMixin" virtual="true">
+		<Size y="39"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" inherits="GameFontDisable">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="EventSchedulerFrameTemplate" enableMouse="true" mixin="EventSchedulerMixin" virtual="true">
+    <Size x="286" y="0"/>
+    <Frames>
+			<Frame parentKey="BorderFrame" inherits="QuestLogBorderFrameTemplate"/>
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" atlas="QuestLog-main-background" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="EmptyText" inherits="Game16Font" text="EVENT_SCHEDULER_NO_EVENTS" hidden="true">
+							<Size x="250"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="8" y="2"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="6" y="-4"/>
+				</Anchors>
+			</EventFrame>
+			<Frame parentKey="LoadingFrame" inherits="SpinnerTemplate" hidden="true">
+				<Size x="70" y="70"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Frame>
+			<DropdownButton parentKey="SettingsDropdown" mixin="QuestLogSettingsButtonMixin" hidden="true">
+				<Size x="15" y="16"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="19" y="25"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" atlas="questlog-icon-setting" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="HIGHLIGHT">
+						<Texture atlas="questlog-icon-setting" useAtlasSize="true" inherits="QuestLogHighlightTextureTemplate">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnMouseDown method="OnMouseDown"/>
+					<OnMouseUp method="OnMouseUp"/>
+				</Scripts>
+			</DropdownButton>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="TitleText" inherits="Game15Font_Shadow" wordwrap="false" text="EVENT_SCHEDULER_FRAME_LABEL">
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.BorderFrame" relativePoint="TOP" x="-1" y="3"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+    <Scripts>
+        <OnLoad method="OnLoad"/>
+				<OnShow method="OnShow"/>
+				<OnHide method="OnHide"/>
+				<OnEvent method="OnEvent"/>
+    </Scripts>
+  </Frame>
+</Ui>

@@ -1,0 +1,242 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<CheckButton name="MultiBar1ButtonTemplate" virtual="true" inherits="ActionBarButtonTemplate">
+		<KeyValues>
+			<KeyValue key="buttonType" value="MULTIACTIONBAR1BUTTON" type="string"/>
+		</KeyValues>
+	</CheckButton>
+
+	<CheckButton name="MultiBar2ButtonTemplate" virtual="true" inherits="ActionBarButtonTemplate">
+		<KeyValues>
+			<KeyValue key="buttonType" value="MULTIACTIONBAR2BUTTON" type="string"/>
+		</KeyValues>
+	</CheckButton>
+
+	<CheckButton name="MultiBar3ButtonTemplate" virtual="true" inherits="ActionBarButtonTemplate">
+		<KeyValues>
+			<KeyValue key="buttonType" value="MULTIACTIONBAR3BUTTON" type="string"/>
+		</KeyValues>
+	</CheckButton>
+
+	<CheckButton name="MultiBar4ButtonTemplate" virtual="true" inherits="ActionBarButtonTemplate">
+		<KeyValues>
+			<KeyValue key="buttonType" value="MULTIACTIONBAR4BUTTON" type="string"/>
+		</KeyValues>
+	</CheckButton>
+
+	<CheckButton name="MultiBar5ButtonTemplate" virtual="true" inherits="ActionBarButtonTemplate">
+		<KeyValues>
+			<KeyValue key="buttonType" value="MULTIACTIONBAR5BUTTON" type="string"/>
+		</KeyValues>
+	</CheckButton>
+
+	<CheckButton name="MultiBar6ButtonTemplate" virtual="true" inherits="ActionBarButtonTemplate">
+		<KeyValues>
+			<KeyValue key="buttonType" value="MULTIACTIONBAR6BUTTON" type="string"/>
+		</KeyValues>
+	</CheckButton>
+
+	<CheckButton name="MultiBar7ButtonTemplate" virtual="true" inherits="ActionBarButtonTemplate">
+		<KeyValues>
+			<KeyValue key="buttonType" value="MULTIACTIONBAR7BUTTON" type="string"/>
+		</KeyValues>
+	</CheckButton>
+
+	<Frame name="MultiBarBottomLeft" inherits="EditModeActionBarTemplate" parent="UIParent" frameStrata="MEDIUM" hidden="true">
+		<Size x="454" y="35"/>
+		<KeyValues>
+			<KeyValue key="buttonTemplate" value="MultiBar1ButtonTemplate" type="string"/>
+			<KeyValue key="commandNamePrefix" value="MULTIACTIONBAR1" type="string"/>
+			<KeyValue key="isHorizontal" value="true" type="boolean"/>
+			<KeyValue key="numRows" value="1" type="number"/>
+			<KeyValue key="numButtons" value="MULTI_BAR_BOTTOM_LEFT_NUM_BUTTONS" type="global"/>
+			<KeyValue key="addButtonsToRight" value="true" type="boolean"/>
+			<KeyValue key="addButtonsToTop" value="true" type="boolean"/>
+			<KeyValue key="showGridEventName" value="ACTIONBAR_SHOWGRID" type="string"/>
+			<KeyValue key="hideGridEventName" value="ACTIONBAR_HIDEGRID" type="string"/>
+			<KeyValue key="systemIndex" value="Enum.EditModeActionBarSystemIndices.Bar2" type="global"/>
+			<KeyValue key="useDefaultAnchors" value="ACTION_BARS_USE_DEFAULT_ANCHORS" type="global"/>
+		</KeyValues>
+		<Attributes>
+			<Attribute name="actionpage" type="number" value="6"/>
+		</Attributes>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="QuickKeybindGlow" atlas="QuickKeybind_TopLeftBar_Glow" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="CENTER" x="-1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="MultiBarBottomRight" inherits="EditModeActionBarTemplate" parent="UIParent" frameStrata="MEDIUM" hidden="true">
+		<Size x="454" y="35"/>
+		<KeyValues>
+			<KeyValue key="buttonTemplate" value="MultiBar2ButtonTemplate" type="string"/>
+			<KeyValue key="commandNamePrefix" value="MULTIACTIONBAR2" type="string"/>
+			<KeyValue key="isHorizontal" value="true" type="boolean"/>
+			<KeyValue key="numRows" value="1" type="number"/>
+			<KeyValue key="numButtons" value="MULTI_BAR_BOTTOM_RIGHT_NUM_BUTTONS" type="global"/>
+			<KeyValue key="addButtonsToRight" value="true" type="boolean"/>
+			<KeyValue key="addButtonsToTop" value="true" type="boolean"/>
+			<KeyValue key="showGridEventName" value="ACTIONBAR_SHOWGRID" type="string"/>
+			<KeyValue key="hideGridEventName" value="ACTIONBAR_HIDEGRID" type="string"/>
+			<KeyValue key="systemIndex" value="Enum.EditModeActionBarSystemIndices.Bar3" type="global"/>
+			<KeyValue key="useDefaultAnchors" value="ACTION_BARS_USE_DEFAULT_ANCHORS" type="global"/>
+		</KeyValues>
+		<Attributes>
+			<Attribute name="actionpage" type="number" value="5"/>
+		</Attributes>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="QuickKeybindGlow" atlas="QuickKeybind_TopRightBar_Glow" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="CENTER" x="-2" y="25"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="MultiBarLeft" inherits="EditModeActionBarTemplate" parent="UIParent" frameStrata="MEDIUM" hidden="true">
+		<Size x="35" y="454"/>
+		<KeyValues>
+			<KeyValue key="buttonTemplate" value="MultiBar4ButtonTemplate" type="string"/>
+			<KeyValue key="commandNamePrefix" value="MULTIACTIONBAR4" type="string"/>
+			<KeyValue key="isHorizontal" value="false" type="boolean"/>
+			<KeyValue key="numRows" value="1" type="number"/>
+			<KeyValue key="numButtons" value="12" type="number"/>
+			<KeyValue key="addButtonsToRight" value="true" type="boolean"/>
+			<KeyValue key="addButtonsToTop" value="false" type="boolean"/>
+			<KeyValue key="showGridEventName" value="ACTIONBAR_SHOWGRID" type="string"/>
+			<KeyValue key="hideGridEventName" value="ACTIONBAR_HIDEGRID" type="string"/>
+			<KeyValue key="systemIndex" value="Enum.EditModeActionBarSystemIndices.RightBar2" type="global"/>
+		</KeyValues>
+		<Attributes>
+			<Attribute name="actionpage" type="number" value="4"/>
+		</Attributes>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="QuickKeybindGlow" atlas="QuickKeybind_SideBar_Glow" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="MultiBarRight" inherits="EditModeActionBarTemplate" parent="UIParent" frameStrata="MEDIUM" hidden="true">
+		<Size x="35" y="454"/>
+		<KeyValues>
+			<KeyValue key="buttonTemplate" value="MultiBar3ButtonTemplate" type="string"/>
+			<KeyValue key="commandNamePrefix" value="MULTIACTIONBAR3" type="string"/>
+			<KeyValue key="isHorizontal" value="false" type="boolean"/>
+			<KeyValue key="numRows" value="1" type="number"/>
+			<KeyValue key="numButtons" value="12" type="number"/>
+			<KeyValue key="addButtonsToRight" value="true" type="boolean"/>
+			<KeyValue key="addButtonsToTop" value="false" type="boolean"/>
+			<KeyValue key="showGridEventName" value="ACTIONBAR_SHOWGRID" type="string"/>
+			<KeyValue key="hideGridEventName" value="ACTIONBAR_HIDEGRID" type="string"/>
+			<KeyValue key="systemIndex" value="Enum.EditModeActionBarSystemIndices.RightBar1" type="global"/>
+		</KeyValues>
+		<Attributes>
+			<Attribute name="actionpage" type="number" value="3"/>
+		</Attributes>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-7">
+				<Texture parentKey="QuickKeybindGlow" atlas="QuickKeybind_SideBar_Glow" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="MultiBar5" inherits="EditModeActionBarTemplate" parent="UIParent" frameStrata="MEDIUM" hidden="true">
+		<Size x="454" y="35"/>
+		<KeyValues>
+			<KeyValue key="buttonTemplate" value="MultiBar5ButtonTemplate" type="string"/>
+			<KeyValue key="commandNamePrefix" value="MULTIACTIONBAR5" type="string"/>
+			<KeyValue key="isHorizontal" value="true" type="boolean"/>
+			<KeyValue key="numRows" value="1" type="number"/>
+			<KeyValue key="numButtons" value="12" type="number"/>
+			<KeyValue key="addButtonsToRight" value="true" type="boolean"/>
+			<KeyValue key="addButtonsToTop" value="true" type="boolean"/>
+			<KeyValue key="showGridEventName" value="ACTIONBAR_SHOWGRID" type="string"/>
+			<KeyValue key="hideGridEventName" value="ACTIONBAR_HIDEGRID" type="string"/>
+			<KeyValue key="systemIndex" value="Enum.EditModeActionBarSystemIndices.ExtraBar1" type="global"/>
+		</KeyValues>
+		<Attributes>
+			<Attribute name="actionpage" type="number" value="13"/>
+		</Attributes>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="QuickKeybindGlow" atlas="QuickKeybind_TopLeftBar_Glow" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="CENTER" x="-1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="MultiBar6" inherits="EditModeActionBarTemplate" parent="UIParent" frameStrata="MEDIUM" hidden="true">
+		<Size x="454" y="35"/>
+		<KeyValues>
+			<KeyValue key="buttonTemplate" value="MultiBar6ButtonTemplate" type="string"/>
+			<KeyValue key="commandNamePrefix" value="MULTIACTIONBAR6" type="string"/>
+			<KeyValue key="isHorizontal" value="true" type="boolean"/>
+			<KeyValue key="numRows" value="1" type="number"/>
+			<KeyValue key="numButtons" value="12" type="number"/>
+			<KeyValue key="addButtonsToRight" value="true" type="boolean"/>
+			<KeyValue key="addButtonsToTop" value="true" type="boolean"/>
+			<KeyValue key="showGridEventName" value="ACTIONBAR_SHOWGRID" type="string"/>
+			<KeyValue key="hideGridEventName" value="ACTIONBAR_HIDEGRID" type="string"/>
+			<KeyValue key="systemIndex" value="Enum.EditModeActionBarSystemIndices.ExtraBar2" type="global"/>
+		</KeyValues>
+		<Attributes>
+			<Attribute name="actionpage" type="number" value="14"/>
+		</Attributes>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="QuickKeybindGlow" atlas="QuickKeybind_TopLeftBar_Glow" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="CENTER" x="-1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="MultiBar7" inherits="EditModeActionBarTemplate" parent="UIParent" frameStrata="MEDIUM" hidden="true">
+		<Size x="454" y="35"/>
+		<KeyValues>
+			<KeyValue key="buttonTemplate" value="MultiBar7ButtonTemplate" type="string"/>
+			<KeyValue key="commandNamePrefix" value="MULTIACTIONBAR7" type="string"/>
+			<KeyValue key="isHorizontal" value="true" type="boolean"/>
+			<KeyValue key="numRows" value="1" type="number"/>
+			<KeyValue key="numButtons" value="12" type="number"/>
+			<KeyValue key="addButtonsToRight" value="true" type="boolean"/>
+			<KeyValue key="addButtonsToTop" value="true" type="boolean"/>
+			<KeyValue key="showGridEventName" value="ACTIONBAR_SHOWGRID" type="string"/>
+			<KeyValue key="hideGridEventName" value="ACTIONBAR_HIDEGRID" type="string"/>
+			<KeyValue key="systemIndex" value="Enum.EditModeActionBarSystemIndices.ExtraBar3" type="global"/>
+		</KeyValues>
+		<Attributes>
+			<Attribute name="actionpage" type="number" value="15"/>
+		</Attributes>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="QuickKeybindGlow" atlas="QuickKeybind_TopLeftBar_Glow" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="CENTER" x="-1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+</Ui>

@@ -1,0 +1,73 @@
+## Title: Blizzard_GlueXML
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_GlueDialogs, Blizzard_LoginWarningDialogs, Blizzard_TimerunningUtil, Blizzard_Menu, Blizzard_MoneyFrame, Blizzard_MatchmakingQueueDisplay, Blizzard_GlueCollections, Blizzard_HelpPlate, Blizzard_GlueMenuFrame, Blizzard_CharacterSelectNavBar
+## LoadFirst: 1
+## AllowLoad: Glue
+## AllowLoadGameType: mainline
+Mainline\Localization.lua
+Mainline\GlueTooltip.xml
+ServerAlert.lua
+ServerAlert.xml
+Mainline\AccountLogin.lua
+Mainline\AccountLogin.xml
+Mainline\RealmList.lua
+Mainline\RealmList.xml
+Mainline\CharacterServicesPatchwerk.xml
+Mainline\CharacterLoginUtil.lua
+Mainline\CharacterSelect\CharacterSelectUtil.lua
+Mainline\CharacterSelect\CharacterSelectListUtil.lua
+Mainline\CharacterSelect\CharacterSelectListButtonTemplates.lua
+Mainline\CharacterSelect\CharacterSelectListButtonTemplates.xml
+Mainline\CharacterSelect\CharacterSelectListElements.lua
+Mainline\CharacterSelect\CharacterSelectListElements.xml
+Mainline\CharacterSelect\CharSelectSearch.lua
+Mainline\CharacterSelect\CharacterSelectList.lua
+Mainline\CharacterSelect\CharacterSelectList.xml
+Mainline\CharacterSelect\CharacterSelectTemplates.lua
+Mainline\CharacterSelect\CharacterSelectTemplates.xml
+Mainline\CharacterSelect\CharacterSelectUI.lua
+Mainline\CharacterSelect\CharacterSelectUI.xml
+Mainline\CharacterSelect.lua
+Mainline\CharacterSelect.xml
+WoWLabs\GluePartyPoseUI.lua
+WoWLabs\GluePartyPoseUI.xml
+WoWLabs\PlunderstormLobby.lua
+WoWLabs\PlunderstormLobby.xml
+Shared\AccountReactivate.lua
+Shared\AccountReactivate.xml
+Mainline\KioskModeSplash.lua
+Mainline\KioskModeSplash.xml
+Mainline\CharacterServicesShared.lua
+Mainline\CharacterServicesTemplatesUtil.lua
+Shared\CharacterServicesTemplates.lua
+Mainline\CharacterServicesTemplates.xml
+Mainline\CharacterServicesCharacterSelector.lua
+Mainline\CharacterServicesCharacterSelector.xml
+Mainline\CharacterServicesFlowMixin.lua
+Mainline\CharacterServices.lua
+Mainline\CharacterServices.xml
+Mainline\CharacterServicesAccountSelector.lua
+Mainline\CharacterServicesAccountSelector.xml
+Mainline\CharacterServicesPaidCharacterTransfer.lua
+Mainline\CharacterServicesPaidCharacterTransfer.xml
+Mainline\CharacterServicesPaidFactionChange.lua
+Mainline\CharacterServicesPaidFactionChange.xml
+Mainline\CharacterServicesPaidRaceChange.lua
+Mainline\CharacterServicesPaidRaceChange.xml
+Shared\CharacterServicesPaidNameChange.lua
+Mainline\CharacterServicesPaidNameChange.lua
+Mainline\CharacterServicesPaidNameChange.xml
+SocialContract.lua
+SocialContract.xml
+PromotionFrame.lua
+PromotionFrame.xml
+StarterEditionPopUp.xml
+Mainline\CinematicsMenu.lua
+Mainline\CinematicsMenu.xml
+MovieFrame.lua
+MovieFrame.xml
+PhotosensitivityWarningFrame.lua
+PhotosensitivityWarningFrame.xml
+Mainline\CreditsFrame.lua
+Mainline\CreditsFrame.xml

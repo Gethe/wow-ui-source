@@ -1,0 +1,4 @@
+## Title: Blizzard Quest Navigation
+## Author: Blizzard Entertainment
+## Version: 1.0
+SuperTrackedFrame.xml

@@ -1,0 +1,7 @@
+## Title: Blizzard_AlliedRacesUI
+## Author: Blizzard Entertainment
+## Version: 1.0
+## LoadOnDemand: 1
+
+Blizzard_AlliedRacesFrameUI.xml 
+Blizzard_AlliedRacesFrameUI.lua

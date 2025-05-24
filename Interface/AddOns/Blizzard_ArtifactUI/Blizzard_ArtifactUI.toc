@@ -1,0 +1,7 @@
+## Title: Blizzard Artifact UI
+## LoadOnDemand: 1
+## Dependencies: Blizzard_Colors
+Blizzard_ArtifactPowerButton.xml
+Blizzard_ArtifactPerks.xml
+Blizzard_ArtifactAppearances.xml
+Blizzard_ArtifactUI.xml

@@ -1,0 +1,173 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Script file="Blizzard_RuneforgePowerList.lua"/>
+
+	<Button name="RuneforgePowerButtonTemplate" mixin="RuneforgePowerButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
+		<KeyValues>
+			<KeyValue key="tooltipOffsetX" value="-15" type="number"/>
+			<KeyValue key="tooltipOffsetY" value="-15" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon">
+					<Size x="58" y="58"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="UnavailableOverlay" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.7"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<MaskTexture parentKey="CircleMask" file="Interface/CharacterFrame/TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT" x="4" y="-4"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT" x="-4" y="4"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+						<MaskedTexture childKey="UnavailableOverlay"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="CovenantSigil" inherits="RuneforgeCovenantSigilTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT" x="-12" y="12"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Button name="RuneforgePowerSlotTemplate" mixin="RuneforgePowerSlotMixin" inherits="RuneforgePowerButtonTemplate" registerForClicks="LeftButtonUp, RightButtonUp" motionScriptsWhileDisabled="true" virtual="true">
+		<Size x="72" y="120"/>
+		<KeyValues>
+			<KeyValue key="tooltipOffsetX" value="-22" type="number"/>
+			<KeyValue key="tooltipOffsetY" value="-22" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="SelectedTexture" atlas="runecarving-icon-power-selected" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ErrorTexture" atlas="runecarving-icon-power-empty-error" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<NormalTexture atlas="runecarving-icon-power-empty" useAtlasSize="true" alpha="0">
+			<Anchors>
+				<Anchor point="CENTER" x="-5" y="2"/>
+			</Anchors>
+		</NormalTexture>
+		<PushedTexture atlas="runecarving-icon-power-pressed" useAtlasSize="true" alpha="0">
+			<Anchors>
+				<Anchor point="CENTER" x="-5" y="2"/>
+			</Anchors>
+		</PushedTexture>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+
+	<Button name="RuneforgePowerTemplate" mixin="RuneforgePowerMixin" inherits="TemplatedListElementTemplate, RuneforgePowerButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
+		<Size x="72" y="72"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Border" atlas="runecarving-menu-power-border" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="SelectedTexture" atlas="runecarving-menu-power-selected" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="RuneforgePowerListTemplate" mixin="RuneforgePowerListMixin" inherits="PagedListTemplate" virtual="true">
+		<Size x="286" y="222"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="OtherSpecializationsLabel" inherits="GameFontNormal" text="RUNEFORGE_LEGENDARY_POWER_LIST_OTHER_SPEC_LABEL" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Color color="GRAY_FONT_COLOR"/>
+				</FontString>
+			</Layer>
+		</Layers>
+
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="RuneforgePowerFrameTemplate" mixin="RuneforgePowerFrameMixin" enableMouse="true" virtual="true">
+		<Size x="300" y="368"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="runecarving-menu-power-background" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Label" inherits="GameFontNormalLarge" text="RUNEFORGE_LEGENDARY_POWER_LIST_LABEL">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-30"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="PowerList" inherits="RuneforgePowerListTemplate">
+				<Anchors>
+					<Anchor point="LEFT" x="13" y="0"/>
+					<Anchor point="TOP" relativeKey="$parent.Label" relativePoint="BOTTOM" x="0" y="-18"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="PageControl" inherits="PagedListHorizontalControlTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="BOTTOM" x="0" y="20"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnMouseWheel method="OnMouseWheel"/>
+		</Scripts>
+	</Frame>
+</Ui>

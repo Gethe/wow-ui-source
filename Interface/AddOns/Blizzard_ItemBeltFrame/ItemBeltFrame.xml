@@ -1,0 +1,73 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+
+	<ItemButton name="ItemBeltButtonTemplate" mixin="ItemBeltButtonMixin" scale="1.40" virtual="true">
+		<Size x="45" y="45"/>
+		<NormalTexture atlas="plunderstorm-actionbar-slot-border">
+			<Size x="60" y="60"/>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture atlas="UI-HUD-ActionBar-IconFrame-Mouseover" alphaMode="ADD"/>
+		<PushedTexture atlas="UI-HUD-ActionBar-IconFrame-Down" alphaMode="ADD"/>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="Icon"/>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BG" atlas="plunderstorm-actionbar-slot-background">
+					<Size x="60" y="60"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="IconMask" atlas="UI-HUD-ActionBar-IconFrame-Mask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="6">
+				<FontString parentKey="HotKey" inherits="NumberFontNormalSmallGray" justifyH="RIGHT">
+					<Size x="32" y="10"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-4" y="-5"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Count" inherits="NumberFontNormalSmallGray" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-5"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Cooldown name="$parentCooldown" drawBling="false" parentKey="Cooldown" inherits="CooldownFrameTemplate">
+				<SwipeTexture file="Interface\PVPFrame\PVP-Separation-Circle-Cooldown-overlay"/>
+			</Cooldown>
+		</Frames>
+		<Scripts> 
+			<OnClick method="OnClick"/>
+			<OnLoad method="OnLoad"/>
+			<OnDragStart method="OnDragStart"/>
+			<OnReceiveDrag method="OnReceiveDrag"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</ItemButton>
+
+	<Frame name="ItemBeltFrame" parent="UIParent" mixin="ItemBeltFrameMixin" frameStrata="LOW" inherits="HorizontalLayoutFrame" toplevel="true" movable="true" enableMouse="true">
+		<Anchors>
+			<Anchor point="LEFT" relativeTo="MultiBarBottomRight" relativePoint="RIGHT" x="4" y="9"/>
+		</Anchors>
+		<Scripts>
+			<OnEvent method="OnEvent"/>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+</Ui>

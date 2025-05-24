@@ -1,0 +1,435 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Script file="Blizzard_ProfessionsRecipeCrafterDetails.lua"/>
+
+	<Frame name="ProfessionsCrafterDetailsStatLineTemplate" mixin="ProfessionsCrafterDetailsStatLineMixin" virtual="true">
+		<Size x="200" y="25"/>
+		<KeyValues>
+			<KeyValue key="displayAsPct" value="true" type="boolean"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString parentKey="LeftLabel" inherits="GameFontHighlight" justifyH="LEFT">
+					<Size x="300" y="20"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="RightLabel" inherits="GameFontHighlight" justifyH="RIGHT">
+					<Size x="150" y="20"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="ProfessionsQualityMeterCapTemplate" virtual="true">
+		<Size x="26" y="26"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon" scale=".6">
+					<Size x="26" y="26"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="AppearIcon" scale=".6">
+					<Size x="55" y="55"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim" looping="NONE">
+							<FlipBook smoothing="NONE" duration=".5" order="1" flipBookRows="3" flipBookColumns="4" flipBookFrames="12" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						</AnimationGroup>
+						
+						<AnimationGroup parentKey="ScaleUp" looping="NONE">
+							<Scale duration=".3" fromScaleY="1" toScaleY="1.3" fromScaleX="1" toScaleX="1.3"/>
+							<Scale startDelay="3" duration=".2" fromScaleY="1.3" toScaleY="1" fromScaleX="1.3" toScaleX="1"/>
+						</AnimationGroup>
+
+						<AnimationGroup parentKey="ScaleUpQuick" looping="NONE">
+							<Scale duration=".3" fromScaleY="1" toScaleY="1.3" fromScaleX="1" toScaleX="1.3"/>
+							<Scale startDelay=".3" duration=".2" fromScaleY="1.3" toScaleY="1" fromScaleX="1.3" toScaleX="1"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+				<Texture parentKey="DissolveIcon" scale=".6" hidden="true">
+					<Size x="72" y="162"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim" looping="NONE">
+							<FlipBook parentKey="Flipbook" smoothing="NONE" duration=".5" order="1" flipBookRows="3" flipBookColumns="4" flipBookFrames="12" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="ProfessionsRecipeCrafterDetailsTemplate" mixin="ProfessionsRecipeCrafterDetailsMixin" inherits="VerticalLayoutFrame" virtual="true">
+		<KeyValues>
+			<KeyValue key="fixedWidth" value="263" type="number"/>
+			<KeyValue key="minimumHeight" value="199" type="number"/>
+			<KeyValue key="bottomPadding" value="12" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BackgroundTop" atlas="Professions-QualityPane-bg-top" useAtlasSize="false">
+					<Size x="263" y="100"/>
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BackgroundBottom" atlas="Professions-QualityPane-bg-bottom" useAtlasSize="false">
+					<Size x="263" y="100"/>
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="-1"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BackgroundMiddle" atlas="Professions-QualityPane-bg-middle" useAtlasSize="false">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.BackgroundTop" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.BackgroundTop" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BackgroundBottom" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BackgroundBottom" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BackgroundMinimized" atlas="Professions-MinimizedView-QualityPane-Bg" useAtlasSize="false" hidden="true">
+					<Size x="315" y="105"/>
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</Texture>
+			
+				<FontString parentKey="Label" inherits="GameFontHighlight" justifyH="CENTER">
+					<Size x="350" y="20"/>
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="1" type="number"/>
+						<KeyValue key="topPadding" value="25" type="number"/>
+						<KeyValue key="align" value="center" type="string"/>
+					</KeyValues>
+				</FontString>
+				<Texture parentKey="Line" atlas="Professions-QualityPane-Divider" useAtlasSize="true">
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="2" type="number"/>
+						<KeyValue key="align" value="center" type="string"/>
+					</KeyValues>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="StatLines" inherits="VerticalLayoutFrame">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="3" type="number"/>
+					<KeyValue key="topPadding" value="15" type="number"/>
+					<KeyValue key="align" value="center" type="string"/>
+					<KeyValue key="minimumHeight" value="65" type="number"/>
+					<KeyValue key="spacing" value="-3" type="number"/>
+				</KeyValues>
+				<Frames>
+					<Frame parentKey="DifficultyStatLine" parentArray="StatLines" inherits="ProfessionsCrafterDetailsStatLineTemplate">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="1" type="number"/>
+							<KeyValue key="statLineType" value="CraftingQualityStatLine.Difficulty" type="global"/>
+							<KeyValue key="displayAsPct" value="false" type="boolean"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="SkillStatLine" parentArray="StatLines" inherits="ProfessionsCrafterDetailsStatLineTemplate">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="2" type="number"/>
+							<KeyValue key="statLineType" value="CraftingQualityStatLine.Skill" type="global"/>
+							<KeyValue key="displayAsPct" value="false" type="boolean"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="ConcentrationStatLine" parentArray="StatLines" inherits="ProfessionsCrafterDetailsStatLineTemplate">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="3" type="number"/>
+							<KeyValue key="statLineType" value="CraftingQualityStatLine.Concentration" type="global"/>
+							<KeyValue key="displayAsPct" value="false" type="boolean"/>
+						</KeyValues>
+					</Frame>
+				</Frames>
+			</Frame>
+			
+			<Frame parentKey="QualityMeter" mixin="ProfessionsQualityMeterMixin">
+				<Size x="250" y="75"/>
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="4" type="number"/>
+					<KeyValue key="align" value="center" type="string"/>
+					<KeyValue key="topPadding" value="-6" type="number"/>
+				</KeyValues>
+				<Frames>
+					<Frame parentKey="Center">
+						<Size x="193" y="36"/>
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="Background">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="3" y="-3"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame parentKey="Fill" frameStrata="HIGH" frameLevel="6">
+								<Size x="1" y="1"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK" textureSubLevel="1">
+										<Texture parentKey="Bar">
+											<Anchors>
+												<Anchor point="TOPLEFT"/>
+											</Anchors>
+											<Animations>
+												<AnimationGroup parentKey="Flipbook" looping="REPEAT" setToFinalAlpha="true">
+													<FlipBook parentKey="Flipbook" smoothing="NONE" duration="1" order="1" flipBookRows="15" flipBookColumns="4" flipBookFrames="60" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+												</AnimationGroup>
+											</Animations>
+										</Texture>
+									</Layer>
+									<Layer level="ARTWORK" textureSubLevel="2">
+										<Texture parentKey="BarHighlight" alphaMode="ADD">
+											<Anchors>
+												<Anchor point="TOPLEFT"/>
+											</Anchors>
+										</Texture>
+										
+										<MaskTexture parentKey="BarMask" atlas="SquareMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+											<Anchors>
+												<Anchor point="TOPLEFT"/>
+											</Anchors>
+											<MaskedTextures>
+												<MaskedTexture childKey="Bar"/>
+											</MaskedTextures>
+										</MaskTexture>
+										<MaskTexture parentKey="BarHighlightMask" atlas="SquareMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+											<MaskedTextures>
+												<MaskedTexture childKey="BarHighlight"/>
+											</MaskedTextures>
+										</MaskTexture>
+									</Layer>
+								</Layers>
+								<Animations>
+									<AnimationGroup parentKey="TransitionOut" looping="NONE" setToFinalAlpha="true">
+										<Alpha childKey="Bar" duration=".5" fromAlpha="1" toAlpha="0" smoothing="NONE"/>
+										<Alpha childKey="BarHighlight" duration=".5" fromAlpha="1" toAlpha="0" smoothing="NONE"/>
+									</AnimationGroup>
+
+									<AnimationGroup parentKey="TransitionOutLate" looping="NONE" setToFinalAlpha="true">
+										<Alpha childKey="Bar" startDelay="3" duration=".5" fromAlpha="1" toAlpha="0" smoothing="NONE"/>
+										<Alpha childKey="BarHighlight" startDelay="3" duration=".5" fromAlpha="1" toAlpha="0" smoothing="NONE"/>
+									</AnimationGroup>
+								</Animations>
+							</Frame>
+						</Frames>
+					</Frame>
+					
+					<Frame parentKey="DividerGlow" frameStrata="HIGH" frameLevel="7">
+						<Size x="1" y="28"/>
+						<Layers>
+							<Layer level="ARTWORK" textureSubLevel="1">
+								<Texture parentKey="DividerGlow" atlas="Professions-QualityBar-DividerGlow" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOP"/>
+										<Anchor point="BOTTOM"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Animations>
+							<AnimationGroup parentKey="TransitionIn" setToFinalAlpha="true" looping="NONE">
+								<Alpha childKey="DividerGlow" duration=".2" fromAlpha="0" toAlpha="1"/>
+							</AnimationGroup>
+
+							<AnimationGroup parentKey="TransitionOut" setToFinalAlpha="true" looping="NONE">
+								<Alpha childKey="DividerGlow" startDelay=".3" duration=".2" fromAlpha="1" toAlpha="0"/>
+							</AnimationGroup>
+						</Animations>
+					</Frame>
+					
+					<Frame parentKey="Border" frameLevel="8">
+						<Size x="193" y="36"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Center"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture atlas="Professions-QualityBar-Frame" useAtlasSize="true"/>
+							</Layer>
+						</Layers>
+					</Frame>
+
+					<Frame parentKey="Marker" frameLevel="9">
+						<Size x="1" y="36"/>
+						<Layers>
+							<Layer level="ARTWORK" textureSubLevel="2">
+								<Texture parentKey="Marker" atlas="Professions-QualityBar-marker" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Animations>
+							<AnimationGroup parentKey="TransitionIn" setToFinalAlpha="true" looping="NONE">
+								<Alpha childKey="Marker" duration=".2" fromAlpha="0" toAlpha="1"/>
+							</AnimationGroup>
+
+							<AnimationGroup parentKey="TransitionOut" setToFinalAlpha="true" looping="NONE">
+								<Alpha childKey="Marker" startDelay=".3" duration=".2" fromAlpha="1" toAlpha="0"/>
+							</AnimationGroup>
+
+							<AnimationGroup parentKey="TransitionOutLate" setToFinalAlpha="true" looping="NONE">
+								<Alpha childKey="Marker" startDelay="3.3" duration=".2" fromAlpha="1" toAlpha="0"/>
+							</AnimationGroup>
+						</Animations>
+					</Frame>
+
+					<Frame parentKey="Flare" frameLevel="10">
+						<Size x="1" y="36"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.DividerGlow"/>
+						</Anchors>
+						<Frames>
+							<Frame parentKey="Fx" alpha="0">
+								<Size x="100" y="100"/>
+								<Anchors>
+									<Anchor point="CENTER"/>
+								</Anchors>
+							</Frame>
+						</Frames>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="Flare" alphaMode="ADD" atlas="Professions-QualityBar-Flare" useAtlasSize="true" alpha="0">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Animations>
+							<AnimationGroup parentKey="FlareTransitionIn" setToFinalAlpha="true" looping="NONE">
+								<Alpha childKey="Flare" toAlpha="1"/>
+								<Scale childKey="Flare" duration=".3" fromScaleY=".4" toScaleY=".7" fromScaleX="1.2" toScaleX=".7"/>
+								<Scale childKey="Flare" startDelay=".3" duration=".2" fromScaleX=".7" toScaleX=".5" fromScaleY="1.2" toScaleY="1.2"/>
+								<Alpha childKey="Flare" startDelay=".3" duration=".2" fromAlpha="1" toAlpha="0"/>
+							</AnimationGroup>
+						
+							<AnimationGroup parentKey="FxTransitionOut" setToFinalAlpha="true" looping="NONE">
+								<Alpha childKey="Fx" toAlpha="1"/>
+								<Alpha childKey="Fx" startDelay=".3" duration=".2" fromAlpha="1" toAlpha="0"/>
+							</AnimationGroup>
+						</Animations>
+					</Frame>
+		
+					<Frame parentKey="InteriorMask">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Center.Fill"/>
+						</Anchors>
+						<Layers>
+							<Layer>
+								<MaskTexture parentKey="GlowMask" atlas="SquareMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+									<MaskedTextures>
+										<MaskedTexture childKey="$parent.DividerGlow.DividerGlow"/>
+									</MaskedTextures>
+								</MaskTexture>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame parentKey="Left" inherits="ProfessionsQualityMeterCapTemplate" frameLevel="11">
+						<Anchors>
+							<!-- Anchored dynamically based on quality -->
+							<Anchor point="RIGHT" relativeKey="$parent.Center" relativePoint="LEFT"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="Right" inherits="ProfessionsQualityMeterCapTemplate" frameLevel="12">
+						<Anchors>
+							<!-- Anchored dynamically based on quality -->
+							<Anchor point="LEFT" relativeKey="$parent.Center" relativePoint="RIGHT"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+				</Scripts>
+			</Frame>
+
+			<Frame parentKey="Spacer">
+				<Size x="1" y="15"/>
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="4" type="number"/>
+					<KeyValue key="align" value="center" type="string"/>
+				</KeyValues>
+			</Frame>
+			
+			<Frame parentKey="CraftingChoicesContainer" inherits="HorizontalLayoutFrame">
+				<Size x="260" y="108"/>
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="5" type="number"/>
+					<KeyValue key="topPadding" value="-32" type="number"/>
+					<KeyValue key="align" value="center" type="string"/>
+				</KeyValues>
+				<Frames>
+					<Frame parentKey="FinishingReagentSlotContainer">
+						<Size x="130" y="108"/>
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="1" type="number"/>
+							<KeyValue key="align" value="center" type="string"/>
+						</KeyValues>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString parentKey="Label" inherits="GameFontNormalSmall" justifyH="CENTER">
+									<Size x="300" y="20"/>
+									<Anchors>
+										<Anchor point="TOP" y="-20"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+			
+					<Frame parentKey="ConcentrateContainer" inherits="ProfessionsConcentrateContainerTemplate">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="2" type="number"/>
+							<KeyValue key="align" value="center" type="string"/>
+						</KeyValues>
+					</Frame>
+				</Frames>
+			</Frame>
+				
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

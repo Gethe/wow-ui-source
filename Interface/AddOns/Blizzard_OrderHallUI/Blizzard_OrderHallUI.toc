@@ -1,0 +1,8 @@
+## Title: Blizzard Order Hall UI
+## Author: Blizzard Entertainment
+## Version: 1.0
+## LoadOnDemand: 1
+
+Blizzard_OrderHallTalents.xml
+Blizzard_OrderHallCommandBar.xml
+Localization.lua

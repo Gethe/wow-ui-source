@@ -1,0 +1,479 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	
+	<Frame name="LevelUpSkillTemplate" virtual="true">
+		<Animations>
+			<AnimationGroup parentKey="sideAnimIn">
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.4" order="2"/>
+				<Scripts>
+					<OnFinished>
+						LevelUpDisplaySide_AnimStep(LevelUpDisplaySide);
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="showAnim">
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.5" order="1" />
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.5" startDelay="1.8" order="2" parentKey="anim2"/>
+				<Scripts>
+					<OnFinished>
+						LevelUpDisplay_AnimStep(LevelUpDisplay, false);
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Size>
+			<AbsDimension x="230" y="44"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentIcon" parentKey="icon">
+					<Size x="36" y="36"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="8" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentName" inherits="GameFontNormalLarge" justifyH="LEFT" parentKey="name">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"  relativeTo="$parentIcon" relativePoint="BOTTOMRIGHT" x="10" y="2"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSubText" inherits="GameFontNormal" justifyH="LEFT" parentKey="flavorText">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parentName" relativePoint="TOPLEFT" x="0" y="1"/>
+					</Anchors>
+					<Color r="0.0" g="1.0" b="0.0"/>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentSubIcon" parentKey="subIcon" file="Interface\LevelUp\LevelUpTex">
+					<Size x="22" y="22"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentIcon" relativePoint="BOTTOMLEFT" x="2" y="2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+
+	<Frame name="LevelUpDisplay" toplevel="true" parent="UIParent" hidden="true" frameStrata="HIGH">
+		<Animations>
+			<AnimationGroup parentKey="hideAnim">
+				<Alpha fromAlpha="1" toAlpha="0" duration="1.0" order="1" />
+				<Scripts>
+					<OnFinished>
+						LevelUpDisplay:Hide();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Size x="418" y="72"/>
+		<Anchors>
+			<Anchor point="TOP" x="0" y="-190"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\LevelUp\LevelUpTex" name="$parentBlackBg" parentKey="blackBg">
+					<Animations>
+						<AnimationGroup parentKey="grow">
+							<Scale scaleX="1.0" scaleY="0.001" duration="0.0" startDelay="1.5" order="1" parentKey="anim1">
+								<Scripts>
+									<OnFinished>
+										self:GetParent():GetParent():Show();
+									</OnFinished>
+								</Scripts>
+								<Origin point="BOTTOM"/>
+							</Scale>
+							<Scale scaleX="1.0" scaleY="1000.0" startDelay="0.25" duration="0.15" order="2">
+								 <Origin point="BOTTOM"/>
+							</Scale>
+						</AnimationGroup>
+					</Animations>
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="0"/>
+					</Anchors>
+					<Size x="326" y="103"/>	
+					<TexCoords left="0.00195313" right="0.63867188" top="0.03710938" bottom="0.23828125"/>
+					<Color r="1.0" g="1.0" b="1.0" a="0.6"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture file="Interface\LevelUp\LevelUpTex" name="$parentGLine2" parentKey="gLine2">
+					<Animations>
+						<AnimationGroup parentKey="grow">
+							<Scale scaleX="0.001" scaleY="1.0" duration="0.0" startDelay="1.5" order="1" parentKey="anim1">
+								<Scripts>
+									<OnFinished>
+										self:GetParent():GetParent():Show();
+									</OnFinished>
+								</Scripts>
+							</Scale>
+							<Scale scaleX="1000.0" scaleY="1.0" duration="0.5" order="2"/>
+						</AnimationGroup>
+					</Animations>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="0"/>
+					</Anchors>
+					<Size x="418" y="7"/>
+				</Texture>
+				<Texture file="Interface\LevelUp\LevelUpTex" name="$parentGLine" parentKey="gLine">
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="0"/>
+					</Anchors>
+					<Size x="418" y="7"/>
+					<Animations>
+						<AnimationGroup parentKey="grow">
+							<Scale scaleX="0.001" scaleY="1.0" duration="0.0" startDelay="1.5" order="1" parentKey="anim1">
+								<Scripts>
+									<OnFinished>
+										self:GetParent():GetParent():Show();
+									</OnFinished>
+								</Scripts>
+							</Scale>
+							<Scale scaleX="1000.0" scaleY="1.0" duration="0.5" order="2"/>
+							<Scripts>
+								<OnPlay>
+									LevelUpDisplayBlackBg:Hide();
+									LevelUpDisplayGLine:Hide();
+									LevelUpDisplayGLine2:Hide();
+									LevelUpDisplayGLine2.grow:Play();
+									LevelUpDisplayBlackBg.grow:Play();
+								</OnPlay>
+							</Scripts>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame  name="$parentLevelFrame" parentKey="levelFrame" alpha="0">
+				<Animations>
+					<AnimationGroup parentKey="levelUp">
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.7" startDelay="1.5" order="1" />
+						<Alpha fromAlpha="1" toAlpha="0" duration="0.5" startDelay="4" order="2"/>
+						<Scripts>
+							<OnPlay>
+								LevelUpDisplayGLine.grow:Play();
+							</OnPlay>
+							<OnFinished>
+								LevelUpDisplay_AnimStep(LevelUpDisplay);
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
+				<Size x="418" y="72"/>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentLevel" inherits="GameFont_Gigantic" justifyH="CENTER" parentKey="levelText">
+							<Anchors>
+								<Anchor point="BOTTOM" x="0" y="5"/>
+							</Anchors>
+							<Color r="1.0" g="0.82" b="0"/>
+						</FontString>
+						<FontString inherits="SystemFont_Shadow_Large" justifyH="CENTER" parentKey="reachedText">
+							<Anchors>
+								<Anchor point="BOTTOM" relativeTo="$parentLevel" relativePoint="TOP" x="0" y="5"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="$parentScenarioFrame" parentKey="scenarioFrame" alpha="0">
+				<Animations>
+					<AnimationGroup parentKey="newStage">
+						<Alpha fromAlpha="0" toAlpha = "1" duration="0.7" endDelay="4.5" order="1"/>
+						<Alpha fromAlpha="1" toAlpha = "0" duration="0.5" order="2"/>
+						<Scripts>
+							<OnPlay>
+								LevelUpDisplay.scenarioFiligree:Show();
+								LevelUpDisplay.extraFrame = LevelUpDisplay.scenarioFiligree;
+								LevelUpDisplayGLine.grow:Play();
+								LevelUpDisplay.scenarioBits.fadeIn:Play();
+							</OnPlay>
+							<OnFinished>
+								LevelUpDisplay_AnimOut();
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
+				<Size x="418" y="72"/>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString inherits="DestinyFontHuge" justifyH="CENTER" parentKey="level">
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-14"/>
+							</Anchors>
+							<Color r="1" g="0.914" b="0.682"/>
+						</FontString>
+						<FontString inherits="SystemFont_Shadow_Large" justifyH="CENTER" parentKey="name">
+							<Anchors>
+								<Anchor point="BOTTOM" x="0" y="8"/>
+							</Anchors>
+							<Color r="1" g="0.831" b="0.381"/>
+						</FontString>
+						<FontString inherits="SystemFont_Shadow_Large" justifyH="CENTER" parentKey="description">
+							<Size x="300" y="0"/>
+							<Anchors>
+								<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="-12"/>
+							</Anchors>
+							<Color r="1" g="0.831" b="0.381"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="scenarioBits" alpha="0" setAllPoints="true">
+				<Animations>
+					<AnimationGroup parentKey="fadeIn">
+						<Alpha fromAlpha="0" toAlpha = "1" duration="0.7" startDelay="0.7" endDelay="3.8" order="1"/>
+						<Alpha fromAlpha="1" toAlpha = "0" duration="0.5" order="2"/>
+					</AnimationGroup>
+				</Animations>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\Scenarios\ScenariosParts" alphaMode="ADD" alpha="0.3">
+							<Size x="249" y="31"/>
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-6"/>
+							</Anchors>
+							<TexCoords left="0.00195313" right="0.48828125" top="0.41796875" bottom="0.47851563"/>
+						</Texture>
+						<Texture file="Interface\Scenarios\ScenariosParts" alphaMode="ADD" alpha="0.3">
+							<Size x="249" y="31"/>
+							<Anchors>
+								<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="0"/>
+							</Anchors>
+							<TexCoords left="0.00195313" right="0.48828125" bottom="0.41796875" top="0.47851563"/>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture file="Interface\Scenarios\ScenariosParts">
+							<Size x="480" y="35"/>
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-6"/>
+							</Anchors>
+							<TexCoords left="0.00195313" right="0.74804688" top="0.00195313" bottom="0.07031250"/>							
+						</Texture>
+						<Texture file="Interface\Scenarios\ScenariosParts">
+							<Size x="480" y="35"/>
+							<Anchors>
+								<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="0"/>
+							</Anchors>
+							<TexCoords left="0.00195313" right="0.74804688" bottom="0.00195313" top="0.07031250"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="scenarioFiligree" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture file="Interface\Scenarios\ScenariosParts">
+							<Size x="61" y="19"/>
+							<Anchors>
+								<Anchor point="TOP" x="0" y="4"/>
+							</Anchors>
+							<TexCoords left="0.75195313" right="0.87109375" top="0.00195313" bottom="0.03906250"/>
+						</Texture>
+						<Texture file="Interface\Scenarios\ScenariosParts">
+							<Size x="61" y="19"/>
+							<Anchors>
+								<Anchor point="BOTTOM" x="0" y="-10"/>
+							</Anchors>
+							<TexCoords left="0.75195313" right="0.87109375" bottom="0.00195313" top="0.03906250"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="$parentChallengeModeFrame" parentKey="challengeModeFrame" alpha="0">
+				<Animations>
+					<AnimationGroup parentKey="challengeComplete">
+						<Alpha fromAlpha="0" toAlpha = "1" duration="0.7" endDelay="2.5" order="1"/>
+						<Alpha fromAlpha="1" toAlpha = "0" duration="0.5" order="2"/>
+						<Scripts>
+							<OnPlay>
+								LevelUpDisplayGLine.grow:Play();
+								if ( not self.showMedal ) then
+									LevelUpDisplay.challengeModeBits.fadeIn:Play();
+								end
+							</OnPlay>
+							<OnFinished>
+								LevelUpDisplay_AnimOut();
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
+				<Size x="418" y="72"/>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString inherits="DestinyFontHuge" justifyH="CENTER" parentKey="MedalEarned">
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-14"/>
+							</Anchors>
+							<Color r="0.87" g="0.80" b="0.61"/>
+						</FontString>
+						<FontString inherits="SystemFont_Shadow_Large" justifyH="CENTER" parentKey="RecordTime">
+							<Anchors>
+								<Anchor point="BOTTOM" x="0" y="8"/>
+							</Anchors>
+							<Color r="1" g="0.82" b="0"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="challengeModeBits" alpha="0" setAllPoints="true">
+				<Animations>
+					<AnimationGroup parentKey="fadeIn">
+						<Alpha fromAlpha="0" toAlpha = "1" duration="0.7" startDelay="0.7" endDelay="2.3" order="1"/>
+						<Alpha fromAlpha="1" toAlpha = "0" duration="0.5" order="2"/>
+					</AnimationGroup>
+				</Animations>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="MedalFlare" file="Interface\Challenges\challenges-main">
+							<Size x="222" y="106"/>
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-8"/>
+							</Anchors>
+							<TexCoords left="0.71972656" right="0.93652344" top="0.00195313" bottom="0.20898438"/>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture file="Interface\Scenarios\ScenariosParts">
+							<Size x="480" y="35"/>
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-6"/>
+							</Anchors>
+							<TexCoords left="0.00195313" right="0.74804688" top="0.00195313" bottom="0.07031250"/>
+						</Texture>
+						<Texture file="Interface\Scenarios\ScenariosParts">
+							<Size x="480" y="35"/>
+							<Anchors>
+								<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="0"/>
+							</Anchors>
+							<TexCoords left="0.00195313" right="0.74804688" bottom="0.00195313" top="0.07031250"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="BottomFiligree" file="Interface\Scenarios\ScenariosParts">
+							<Size x="61" y="19"/>
+							<Anchors>
+								<Anchor point="BOTTOM" x="0" y="-10"/>
+							</Anchors>
+							<TexCoords left="0.75195313" right="0.87109375" bottom="0.00195313" top="0.03906250"/>
+						</Texture>
+						<Texture parentKey="MedalIcon">
+							<Size x="102" y="102"/>
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-22"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="$parentSpellFrame" inherits="LevelUpSkillTemplate" parentKey="spellFrame" alpha="0">
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="5"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="LevelUpDisplay_OnLoad"/>
+			<OnEvent function="LevelUpDisplay_OnEvent"/>
+			<OnShow function="LevelUpDisplay_OnShow"/>
+		</Scripts>
+	</Frame>
+	
+	
+	
+	<Button name="LevelUpDisplaySide" enableMouse="true" toplevel="true" parent="UIParent" hidden="true">
+		<Animations>
+			<AnimationGroup parentKey="fadeIn">
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.0" order="1" />
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.5" order="2" />
+				<Scripts>
+					<OnFinished>
+						LevelUpDisplaySide_AnimStep(LevelUpDisplaySide);
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="fadeOut">
+				<Alpha fromAlpha="1" toAlpha="0" duration="1.0" order="1" />
+				<Scripts>
+					<OnFinished>
+						LevelUpDisplaySide:Hide();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Size x="270" y="65"/>
+		<Anchors>
+			<Anchor point="TOPRIGHT"  relativeTo="LevelUpDisplay" relativePoint="TOPLEFT" x="20" y="20"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\LevelUp\LevelUpTex" name="$parentGoldBg" parentKey="goldBG">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="53"/>
+					</Anchors>
+					<Size x="223" y="115"/>
+				</Texture>
+				<Texture file="Interface\LevelUp\LevelUpTex" name="$parentBlackBg" parentKey="blackBg">
+					<Size x="284" y="296"/>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentGoldBg" relativePoint="BOTTOM"/>
+					</Anchors>
+					<Color r="1.0" g="1.0" b="1.0" a="0.6"/>
+					<TexCoords left="0.00195313" right="0.55664063" top="0.24218750" bottom="0.82031250"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture file="Interface\LevelUp\LevelUpTex" name="$parentDot" parentKey="dot">
+					<Size x="21" y="22"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentGoldBg" relativePoint="BOTTOM" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString name="$parentLevel" inherits="GameFont_Gigantic" justifyH="CENTER" parentKey="levelText">
+					<Anchors>
+						<Anchor point="BOTTOM" relativeTo="$parentGoldBg" relativePoint="BOTTOM" x="0" y="5"/>
+					</Anchors>
+					<Color r="1.0" g="0.82" b="0"/>
+				</FontString>
+				<FontString inherits="SystemFont_Shadow_Large" justifyH="CENTER" parentKey="reachedText">
+					<Anchors>
+						<Anchor point="BOTTOM" relativeTo="$parentLevel" relativePoint="TOP" x="0" y="5"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentUnlockFrame1" inherits="LevelUpSkillTemplate" alpha="0">
+				<Anchors>
+					<Anchor point="TOP"  relativeTo="$parentGoldBg" relativePoint="BOTTOM" x="-20" y="-3"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
+			</OnLoad>
+			<OnHide function="LevelUpDisplaySide_OnHide"/>
+			<OnShow function="LevelUpDisplaySide_OnShow"/>
+			<OnClick function="LevelUpDisplaySide_Remove"/>
+		</Scripts>
+	</Button>
+	
+</Ui>

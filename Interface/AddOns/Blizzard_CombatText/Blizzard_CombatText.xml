@@ -1,0 +1,44 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Script file="Blizzard_CombatText.lua"/>
+	<FontString name="CombatTextTemplate" inherits="CombatTextFont" hidden="true" virtual="true">
+		<Anchors>
+			<Anchor point="TOP" relativeTo="WorldFrame" relativePoint="BOTTOM" x="0" y="384"/>
+		</Anchors>
+	</FontString>
+	<Frame name="CombatText" toplevel="true" parent="UIParent" hidden="false">
+		<Size x="10" y="10"/>
+		<Anchors>
+			<Anchor point="CENTER" x="0" y="0"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="CombatText1" inherits="CombatTextTemplate"/>
+				<FontString name="CombatText2" inherits="CombatTextTemplate"/>
+				<FontString name="CombatText3" inherits="CombatTextTemplate"/>
+				<FontString name="CombatText4" inherits="CombatTextTemplate"/>
+				<FontString name="CombatText5" inherits="CombatTextTemplate"/>
+				<FontString name="CombatText6" inherits="CombatTextTemplate"/>
+				<FontString name="CombatText7" inherits="CombatTextTemplate"/>
+				<FontString name="CombatText8" inherits="CombatTextTemplate"/>
+				<FontString name="CombatText9" inherits="CombatTextTemplate"/>
+				<FontString name="CombatText10" inherits="CombatTextTemplate"/>
+				<FontString name="CombatText11" inherits="CombatTextTemplate"/>
+				<FontString name="CombatText12" inherits="CombatTextTemplate"/>
+				<FontString name="CombatText13" inherits="CombatTextTemplate"/>
+				<FontString name="CombatText14" inherits="CombatTextTemplate"/>
+				<FontString name="CombatText15" inherits="CombatTextTemplate"/>
+				<FontString name="CombatText16" inherits="CombatTextTemplate"/>
+				<FontString name="CombatText17" inherits="CombatTextTemplate"/>
+				<FontString name="CombatText18" inherits="CombatTextTemplate"/>
+				<FontString name="CombatText19" inherits="CombatTextTemplate"/>
+				<FontString name="CombatText20" inherits="CombatTextTemplate"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad function="CombatText_OnLoad"/>
+			<OnEvent function="CombatText_OnEvent"/>
+			<OnUpdate function="CombatText_OnUpdate"/>
+		</Scripts>
+	</Frame>
+</Ui>

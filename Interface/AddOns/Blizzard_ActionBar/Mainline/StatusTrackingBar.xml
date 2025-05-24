@@ -1,0 +1,63 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="StatusTrackingBarContainerTemplate" mixin="StatusTrackingBarContainerMixin" parentArray="barContainers" virtual="true" hidden="true" alpha="0">
+		<Size x="571" y="17"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="BarFrameTexture" atlas="UI-HUD-ExperienceBar-Frame" useAtlasSize="true"/>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="FadeInAnimation" looping="NONE" setToFinalAlpha="true" mixin="StatusTrackingBarContainerAnimationMixin">
+				<Alpha startDelay="0" smoothing="IN_OUT" target="$parent" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scripts>
+					<OnFinished method="OnFinished"/>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="FadeOutAnimation" looping="NONE" setToFinalAlpha="true" mixin="StatusTrackingBarContainerFadeOutAnimationMixin">
+				<Alpha startDelay="0" smoothing="IN_OUT" target="$parent" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scripts>
+					<OnFinished method="OnFinished"/>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="MaxLevelFadeOutAnimation" looping="NONE" setToFinalAlpha="true" mixin="StatusTrackingBarContainerFadeOutAnimationMixin">
+				<Alpha startDelay="1" smoothing="IN_OUT" target="$parent" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scripts>
+					<OnFinished method="OnFinished"/>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad method="StatusTrackingBarContainer_OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="StatusTrackingBarManager" parent="UIParent" frameStrata="MEDIUM" mixin="StatusTrackingManagerMixin">
+		<Size x="571" y="34"/>
+		<Anchors>
+			<Anchor point="BOTTOM"/>
+		</Anchors>
+		<Frames>
+			<Frame name="MainStatusTrackingBarContainer" parentKey="MainStatusTrackingBarContainer" inherits="StatusTrackingBarContainerTemplate, EditModeStatusTrackingBar1SystemTemplate" mixin="EditModeStatusTrackingBarContainerMixin" hidden="true">
+				<Anchors>
+					<Anchor point="BOTTOM"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+				</Scripts>
+			</Frame>
+			<Frame name="SecondaryStatusTrackingBarContainer" parentKey="SecondaryStatusTrackingBarContainer" inherits="StatusTrackingBarContainerTemplate, EditModeStatusTrackingBar2SystemTemplate" mixin="EditModeStatusTrackingBarContainerMixin" hidden="true">
+				<Anchors>
+					<Anchor point="BOTTOM"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

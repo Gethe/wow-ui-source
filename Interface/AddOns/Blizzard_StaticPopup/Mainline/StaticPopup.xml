@@ -1,0 +1,241 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Button name="StaticPopupButtonTemplate" virtual="true">
+		<Size x="128" y="21"/>
+		<Animations>
+			<AnimationGroup parentKey="PulseAnim" looping="BOUNCE">
+				<Alpha childKey="Flash" fromAlpha="0" toAlpha="1" duration="0.5" order="1"/>
+				<Alpha childKey="Flash" fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
+			</AnimationGroup>
+		</Animations>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="Flash" file="Interface\Buttons\UI-Panel-Button-Glow" alphaMode="ADD" alpha="0">
+					<Size x="140" y="40"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<TexCoords left="0.0" right="0.75" top="0.0" bottom="0.609375"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				StaticPopup_OnClick(self:GetParent(), self:GetID());
+			</OnClick>
+		</Scripts>
+		<ButtonText name="$parentText" parentKey="Text">
+			<Anchors>
+				<Anchor point="CENTER">
+					<Offset x="0" y="1"/>
+				</Anchor>
+			</Anchors>
+		</ButtonText>
+		<NormalTexture file="Interface\Buttons\UI-DialogBox-Button-Up">
+			<TexCoords left="0.0" right="1.0" top="0.0" bottom="0.71875"/>
+		</NormalTexture>
+		<PushedTexture file="Interface\Buttons\UI-DialogBox-Button-Down">
+			<TexCoords left="0.0" right="1.0" top="0.0" bottom="0.71875"/>
+		</PushedTexture>
+		<DisabledTexture file="Interface\Buttons\UI-DialogBox-Button-Disabled">
+			<TexCoords left="0.0" right="1.0" top="0.0" bottom="0.71875"/>
+		</DisabledTexture>
+		<HighlightTexture file="Interface\Buttons\UI-DialogBox-Button-Highlight" alphaMode="ADD">
+			<TexCoords left="0.0" right="1.0" top="0.0" bottom="0.71875"/>
+		</HighlightTexture>
+		<NormalFont style="GameFontNormal"/>
+		<DisabledFont style="GameFontDisable"/>
+		<HighlightFont style="GameFontHighlight"/>
+	</Button>
+	<Frame name="StaticPopupTemplate" toplevel="true" enableKeyboard="true" enableMouse="true" frameStrata="DIALOG" hidden="true" hyperlinksEnabled="true" virtual="true">
+		<KeyValues>
+			<KeyValue key="onCloseCallback" value="StaticPopup_OnCloseButtonClicked" type="global" />
+		</KeyValues>
+		<Size x="320" y="72"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" parentKey="text" inherits="GameFontHighlight">
+					<Size x="1" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-16"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="SubText" inherits="GameFontNormalSmall">
+					<Size x="1" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.text" relativePoint="BOTTOM" x="0" y="-6"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="AlertIcon" name="$parentAlertIcon">
+					<Size x="36" y="36"/>
+					<Anchors>
+						<Anchor point="LEFT" x="24" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Separator" hidden="true">
+					<Size x="0" y="1"/>
+					<Anchors>
+						<Anchor point="LEFT" x="30" y="0"/>
+						<Anchor point="RIGHT" x="-30" y="0"/>
+						<Anchor point="BOTTOM" x="0" y="56"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="0.2"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderDarkTemplate"/>
+			<Frame parentKey="CoverFrame" frameLevel="1" enableMouse="true" enableKeyboard="true" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="UIParent"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="UIParent"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="-1">
+						<Texture setAllPoints="true">
+							<Color r="0" g="0" b="0" a="0.5"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnKeyDown function="nop"/>
+					<OnKeyUp function="nop"/>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentExtraFrame" parentKey="extraFrame" enableMouse="true"/>
+			<Button name="$parentCloseButton" parentKey="CloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-3" y="-3"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentButton1" inherits="StaticPopupButtonTemplate" parentKey="button1" id="1"/>
+			<Button name="$parentButton2" inherits="StaticPopupButtonTemplate" parentKey="button2" id="2"/>
+			<Button name="$parentButton3" inherits="StaticPopupButtonTemplate" parentKey="button3" id="3"/>
+			<Button name="$parentButton4" inherits="StaticPopupButtonTemplate" parentKey="button4" id="4"/>
+			<Button name="$parentExtraButton" inherits="StaticPopupButtonTemplate" parentKey="extraButton" id="5"/>
+			<EditBox name="$parentEditBox" parentKey="editBox" historyLines="1" hidden="true" inherits="AutoCompleteEditBoxTemplate" mixin="StaticPopupEditBoxMixin">
+				<Size x="130" y="32"/>
+				<KeyValues>
+					<KeyValue key="addHighlightedText" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="45"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentLeft" file="Interface\ChatFrame\UI-ChatInputBorder-Left2">
+							<Size x="32" y="32"/>
+							<Anchors>
+								<Anchor point="LEFT" x="-10" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentRight" file="Interface\ChatFrame\UI-ChatInputBorder-Right2">
+							<Size x="32" y="32"/>
+							<Anchors>
+								<Anchor point="RIGHT" x="10" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentMid" file="Interface\ChatFrame\UI-ChatInputBorder-Mid2" horizTile="true">
+							<Size x="0" y="32"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT" x="0" y="0"/>
+								<Anchor point="TOPRIGHT" relativeTo="$parentRight" relativePoint="TOPLEFT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Instructions" justifyH="LEFT" justifyV="MIDDLE" inherits="GameFontDisableSmall" setAllPoints="true">
+							<Color r="0.35" g="0.35" b="0.35"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnAttributeChanged method="OnAttributeChanged"/>
+					<OnEnterPressed method="OnEnterPressed"/>
+					<OnEscapePressed method="OnEscapePressed"/>
+					<OnTextChanged method="OnTextChanged"/>
+				</Scripts>
+				<FontString inherits="ChatFontNormal"/>
+			</EditBox>
+			<DropdownButton parentKey="Dropdown" hidden="true" inherits="WowStyle1DropdownTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="45"/>
+				</Anchors>
+			</DropdownButton>
+			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentText" relativePoint="BOTTOM" x="0" y="-5"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						SmallMoneyFrame_OnLoad(self);
+						MoneyFrame_SetType(self, "STATIC");
+						self:GetParent().moneyFrame = self;
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentMoneyInputFrame" inherits="MoneyInputFrameTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentText" relativePoint="BOTTOM" x="0" y="-5"/>
+				</Anchors>
+			</Frame>
+			<ItemButton parentKey="ItemFrame" name="$parentItemFrame" mixin="StaticPopupItemFrameMixin" hidden="true">
+				<Size x="37" y="37"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="8"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentNameFrame" file="Interface\QuestFrame\UI-QuestItemNameFrame">
+							<Size x="140" y="62"/>
+							<Anchors>
+								<Anchor point="LEFT" x="30" y="0"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="Text" name="$parentText" inherits="GameFontNormal" justifyH="LEFT">
+							<Size x="103" y="38"/>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT" x="8" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+					<OnLoad method="OnLoad"/>
+					<OnEvent method="OnEvent"/>
+				</Scripts>
+			</ItemButton>
+			<Frame parentKey="DarkOverlay" setAllPoints="true" hidden="true" frameLevel="500">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="11" y="-11"/>
+					<Anchor point="BOTTOMRIGHT" x="-11" y="11"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture setAllPoints="true">
+							<Color r="0" g="0" b="0" a="0.8"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="Spinner" inherits="SpinnerTemplate" hidden="true" frameLevel="1000">
+				<Size x="60" y="60"/>
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnUpdate function="StaticPopup_OnUpdate"/>
+			<OnEvent function="StaticPopup_OnEvent"/>
+			<OnShow function="StaticPopup_OnShow"/>
+			<OnHide function="StaticPopup_OnHide"/>
+			<OnLoad function="StaticPopup_OnLoad"/>
+			<OnHyperlinkClick function="StaticPopup_OnHyperlinkClick"/>
+			<OnHyperlinkEnter function="StaticPopup_OnHyperlinkEnter"/>
+			<OnHyperlinkLeave function="StaticPopup_OnHyperlinkLeave"/>
+		</Scripts>
+	</Frame>
+</Ui>

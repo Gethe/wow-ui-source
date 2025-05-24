@@ -1,0 +1,241 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="PlayerChoiceBaseCenteredFrame" virtual="true">
+		<KeyValues>
+			<KeyValue key="align" value="center" type="string"/>
+		</KeyValues>
+	</Frame>
+
+	<Font name="PlayerChoiceTextFont" inherits="GameFontBlack" justifyH="LEFT" virtual="true"/>
+
+	<Button name="PlayerChoiceBaseOptionButtonTemplate" inherits="UIPanelButtonTemplate" mixin="PlayerChoiceBaseOptionButtonTemplateMixin" motionScriptsWhileDisabled="true" virtual="true">
+		<Size x="175" y="22"/>
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="2" type="number"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Button name="PlayerChoiceBaseSmallerOptionButtonTemplate" inherits="PlayerChoiceBaseOptionButtonTemplate" virtual="true">
+		<Size x="120" y="22"/>
+	</Button>
+
+	<Frame name="PlayerChoiceBaseOptionButtonFrameTemplate" inherits="HorizontalLayoutFrame" mixin="PlayerChoiceBaseOptionButtonFrameTemplateMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="buttonTemplate" value="PlayerChoiceBaseOptionButtonTemplate" type="string"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="ListText" inherits="GameFontNormal" justifyH="LEFT" hidden="true">
+					<Size x="200" y="22"/>
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="1" type="number"/>
+					</KeyValues>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="PlayerChoiceSmallerOptionButtonFrameTemplate" inherits="PlayerChoiceBaseOptionButtonFrameTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="buttonTemplate" value="PlayerChoiceBaseSmallerOptionButtonTemplate" type="string"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="PlayerChoiceBaseOptionAlignedSection" parentArray="AlignedSections"  mixin="PlayerChoiceBaseOptionAlignedSectionMixin" virtual="true" />
+
+	<Frame name="PlayerChoiceBaseOptionButtonsContainer" inherits="PlayerChoiceBaseCenteredFrame, ResizeLayoutFrame, PlayerChoiceBaseOptionAlignedSection"  mixin="PlayerChoiceBaseOptionButtonsContainerMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="alignedSectionKey" value="buttons" type="string"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="PlayerChoiceBaseOptionTextTemplate" inherits="PlayerChoiceBaseCenteredFrame, PlayerChoiceBaseOptionAlignedSection" mixin="PlayerChoiceBaseOptionTextTemplateMixin" virtual="true">
+		<Size x="196" y="10"/>
+		<KeyValues>
+			<KeyValue key="alignedSectionKey" value="text" type="string"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="String" inherits="PlayerChoiceTextFont" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<SimpleHTML parentKey="HTML" inherits="InlineHyperlinkFrameTemplate" resizeToFitContents="true">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="TOPRIGHT"/>
+				</Anchors>
+				<FontString inherits="PlayerChoiceTextFont" justifyV="TOP"/>
+			</SimpleHTML>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="PlayerChoiceBaseOptionCurrencyRewardTemplate" mixin="PlayerChoiceBaseOptionCurrencyRewardMixin" virtual="true">
+		<Size x="196" y="37"/>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="Icon">
+					<Size x="37" y="37"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Count" inherits="NumberFontNormal">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-5" y="2"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Name" inherits="PlayerChoiceTextFont">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="5"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame">
+					<Size x="37" y="37"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter" />
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+
+	<Button name="PlayerChoiceBaseOptionItemRewardTemplate" mixin="PlayerChoiceBaseOptionItemRewardMixin" virtual="true">
+		<Size x="196" y="37"/>
+		<Frames>
+			<ItemButton parentKey="itemButton">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+			</ItemButton>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Name" inherits="PlayerChoiceTextFont">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.itemButton" relativePoint="TOPRIGHT" x="5"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnEnter method="OnEnter" />
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="PlayerChoiceBaseOptionCurrencyContainerRewardTemplate" mixin="PlayerChoiceBaseOptionCurrencyContainerRewardMixin" virtual="true">
+		<Size x="196" y="37"/>
+		<Frames>
+			<ItemButton parentKey="itemButton">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+			</ItemButton>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Name" inherits="PlayerChoiceTextFont">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.itemButton" relativePoint="TOPRIGHT" x="5"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnEnter method="OnEnter" />
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="PlayerChoiceBaseOptionReputationRewardTemplate" mixin="PlayerChoiceBaseOptionReputationRewardMixin" virtual="true">
+		<Size x="196" y="15"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="PlayerChoiceTextFont">
+					<Anchors>
+						<Anchor point="LEFT"/>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="PlayerChoiceBaseOptionRewardsTemplate" inherits="PlayerChoiceBaseCenteredFrame, PlayerChoiceBaseOptionAlignedSection, VerticalLayoutFrame" mixin="PlayerChoiceBaseOptionRewardsMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="alignedSectionKey" value="rewards" type="string"/>
+			<KeyValue key="spacing" value="8" type="number"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="PlayerChoiceBaseOptionTemplate" mixin="PlayerChoiceBaseOptionTemplateMixin" enableMouse="true" virtual="true">
+		<Frames>
+			<Frame parentKey="OptionText" inherits="PlayerChoiceBaseOptionTextTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="10" type="number"/>
+					<KeyValue key="topPadding" value="20" type="number"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="OptionButtonsContainer" inherits="PlayerChoiceBaseOptionButtonsContainer">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="30" type="number"/>
+					<KeyValue key="topPadding" value="5" type="number"/>
+					<KeyValue key="spacing" value="8" type="number"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="WidgetContainer" inherits="PlayerChoiceBaseCenteredFrame, UIWidgetContainerTemplate" mixin="PlayerChoiceWidgetContainerMixin">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="20" type="number"/>
+					<KeyValue key="topPadding" value="5" type="number"/>
+					<KeyValue key="showAndHideOnWidgetSetRegistration" value="false" type="boolean"/>
+					<KeyValue key="skipLayoutOnShow" value="true" type="boolean"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

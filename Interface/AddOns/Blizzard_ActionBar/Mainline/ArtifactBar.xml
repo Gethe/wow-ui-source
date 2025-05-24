@@ -1,0 +1,27 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="ArtifactStatusBarTemplate" inherits="StatusTrackingBarTemplate" mixin="ArtifactBarMixin" virtual="true">
+		<Size x="804" y="11"/>
+		<KeyValues>
+			<KeyValue key="fadeOutEntireBarAtMaxLevel" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Button parentKey="Tick" hidden="true" frameStrata="MEDIUM" mixin="ArtifactTickMixin">
+				<Size x="10" y="14"/>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+				<NormalTexture parentKey="Normal" atlas="UI-HUD-ExperienceBar-Frame-Pip"/>
+				<HighlightTexture parentKey="Highlight" atlas="UI-HUD-ExperienceBar-Frame-Pip-Mouseover" alphaMode="ADD"/>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+</Ui>

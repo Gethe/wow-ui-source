@@ -1,0 +1,6 @@
+## Title: Blizzard_TokenUI
+Blizzard_CurrencyTransfer.lua
+Blizzard_CurrencyTransfer.xml
+Blizzard_TokenUI.lua
+Blizzard_TokenUI.xml
+Localization.lua

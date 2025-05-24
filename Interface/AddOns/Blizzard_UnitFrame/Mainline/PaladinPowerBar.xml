@@ -1,0 +1,242 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+  <Script file="PaladinPowerBar.lua"/>
+
+  	<!-- Base Rune Template -->
+	<Frame name="PaladinPowerBarRuneTemplate" mixin="PaladinPowerBarRune" virtual="true">
+		<KeyValues>
+			<!-- Available per-rune settings -->
+			<KeyValue key="runeNumber" value="1" type="number"/>
+			<KeyValue key="useBackground" value="false" type="boolean"/>
+			<KeyValue key="fxOffsetY" value="5" type="number"/>
+			<KeyValue key="depleteFlipbookWidth" value="27" type="number"/>
+			<KeyValue key="depleteFlipbookHeight" value="42" type="number"/>
+			<KeyValue key="depleteFlipbookOffsetY" value="7" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="Background" atlas="uf-holypower-rune1"  useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="FX" atlas="uf-holypower-rune1-fx" alphaMode="BLEND" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" y="5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture parentKey="DepleteFlipbook" alphaMode="BLEND" atlas="UF-HolyPower-DepleteRune1" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="27" y="42"/>
+					<Anchors>
+						<Anchor point="CENTER" y="7"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="ActiveTexture" atlas="uf-holypower-rune1-active" alphaMode="BLEND" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="Glow" atlas="uf-holypower-rune1-glow" alphaMode="BLEND" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="3">
+				<Texture parentKey="Blur" atlas="uf-holypower-rune1-blur" alphaMode="BLEND" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="activateAnim" setToFinalAlpha="true">
+				<Alpha childKey="FX" fromAlpha="0" toAlpha="1" duration=".3" order="1"/>
+				<Alpha childKey="FX" fromAlpha="1" toAlpha="0" startDelay=".3" duration=".5" order="1"/>
+				<Alpha childKey="Blur" fromAlpha="1" toAlpha="1" duration=".27" order="1"/>
+				<Alpha childKey="Blur" fromAlpha="1" toAlpha="0" startDelay=".27" duration=".53" order="1"/>
+				<Translation childKey="Blur" offsetX="0" offsetY="2" duration=".8" order="1" smoothing="OUT" />
+				<Alpha childKey="Glow" fromAlpha="0" toAlpha="1" startDelay=".1" duration=".23" order="1"/>
+				<Alpha childKey="Glow" fromAlpha="1" toAlpha="0" startDelay=".23" duration=".57" order="1"/>
+				<Alpha childKey="ActiveTexture" fromAlpha="0" toAlpha="0" duration=".1" order="1"/>
+				<Alpha childKey="ActiveTexture" fromAlpha="0" toAlpha="1" startDelay=".1" duration=".23" order="1"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="readyAnim" looping="NONE" setToFinalAlpha="true">
+				<Alpha childKey="FX" fromAlpha="0" toAlpha="1" duration=".3" order="1"/>
+				<Alpha childKey="FX" fromAlpha="1" toAlpha="0" startDelay=".3" duration=".37" order="1"/>
+				<Alpha childKey="Blur" fromAlpha="1" toAlpha="1" duration=".33" order="1"/>
+				<Alpha childKey="Blur" fromAlpha="1" toAlpha="0" startDelay=".3" duration=".37" order="1"/>
+				<Translation childKey="Blur" offsetX="0" offsetY="3" duration=".67" order="1" smoothing="NONE" />
+				<Alpha childKey="Glow" fromAlpha="0" toAlpha="0" duration=".13" order="1"/>
+				<Alpha childKey="Glow" fromAlpha="0" toAlpha="1" startDelay=".13" duration=".23" order="1"/>
+				<Alpha childKey="Glow" fromAlpha="1" toAlpha="0" startDelay=".23" duration=".3" order="1"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="readyLoopAnim" looping="REPEAT" setToFinalAlpha="true">
+				<Alpha childKey="Glow" fromAlpha="0" toAlpha="1" duration=".5" order="1"/>
+				<Alpha childKey="Glow" fromAlpha="1" toAlpha="0" startDelay=".5" duration=".83" order="1"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="depleteAnim" looping="NONE">
+				<FlipBook childKey="DepleteFlipbook" duration=".87" flipBookRows="5" flipBookColumns="6" flipBookFrames="26" flipBookFrameWidth="0" flipBookFrameHeight="0" order="1"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<!-- Base Rune Holder Template -->
+	<!-- Used by PaladinPowerBarFrame and ClassNameplateBarPaladinFrame -->
+	<Frame name="PaladinPowerBarFrameTemplate" inherits="ClassResourceBarSelfManagedPointsTemplate" mixin="PaladinPowerBar" virtual="true">
+		<Size x="150" y="43"/>
+		<KeyValues>
+			<KeyValue key="powerToken" value="HOLY_POWER" type="string"/>
+			<KeyValue key="powerType" value="Enum.PowerType.HolyPower" type="global"/>
+			<KeyValue key="class" value="PALADIN" type="string"/>
+			<KeyValue key="usePooledResourceButtons" value="false" type="boolean"/>
+		</KeyValues>
+		<HitRectInsets>
+			<AbsInset left="15" right="15" top="7" bottom="7"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-5">
+				<Texture parentKey="Background" atlas="uf-holypower-runeholder" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-3">
+				<Texture parentKey="ActiveTexture" alphaMode="BLEND" atlas="uf-holypower-runeholder-active" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-2">
+				<Texture parentKey="Glow" alphaMode="BLEND" atlas="uf-holypower-runeholder-glow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-2">
+				<Texture parentKey="ThinGlow" alphaMode="BLEND" atlas="uf-holypower-runeholder-thinglow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+  		<!-- Rune Holder Animations -->
+		<Animations>
+			<AnimationGroup parentKey="showAnim" setToFinalAlpha="true">
+				<Alpha duration=".5" order="1" fromAlpha="0" toAlpha="1"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="activateAnim" setToFinalAlpha="true">
+				<Alpha childKey="Glow" fromAlpha="0" toAlpha="1" duration=".1" order="1"/>
+				<Alpha childKey="Glow" fromAlpha="1" toAlpha="1" startDelay=".1" duration=".2" order="1"/>
+				<Alpha childKey="Glow" fromAlpha="1" toAlpha="0" startDelay=".3" duration=".37" order="1"/>
+				<Alpha childKey="ActiveTexture" fromAlpha="0" toAlpha="0" duration=".1" order="1"/>
+				<Alpha childKey="ActiveTexture" fromAlpha="0" toAlpha="1" startDelay=".1" duration=".23" order="1"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="readyAnim" setToFinalAlpha="true">
+				<Alpha childKey="ThinGlow" fromAlpha="1" toAlpha=".7" duration=".67" order="1"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="readyLoopAnim" looping="REPEAT" setToFinalAlpha="true">
+				<Alpha childKey="ThinGlow" fromAlpha=".7" toAlpha="1" duration=".5" order="1"/>
+				<Alpha childKey="ThinGlow" fromAlpha="1" toAlpha=".7" startDelay=".5" duration=".83" order="1"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="depleteAnim" setToFinalAlpha="true">
+				<Alpha childKey="Glow" fromAlpha="1" toAlpha="1" duration=".37" order="1"/>
+				<Alpha childKey="Glow" fromAlpha="1" toAlpha="0" startDelay=".37" duration=".33" order="1"/>
+			</AnimationGroup>
+		</Animations>
+		<Frames>
+			<!-- Individual Runes -->
+			<Frame name="$parentRune1" parentKey="rune1" inherits="PaladinPowerBarRuneTemplate">
+				<KeyValues>
+					<KeyValue key="runeNumber" value="1" type="number"/>
+					<KeyValue key="depleteFlipbookWidth" value="26" type="number"/>
+					<KeyValue key="depleteFlipbookHeight" value="43" type="number"/>
+					<KeyValue key="depleteFlipbookOffsetY" value="7" type="number"/>
+				</KeyValues>
+				<Size x="18" y="18"/>
+				<Anchors>
+					<Anchor point="LEFT" x="18" y="-1"/>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentRune2" parentKey="rune2" inherits="PaladinPowerBarRuneTemplate">
+				<KeyValues>
+					<KeyValue key="runeNumber" value="2" type="number"/>
+					<KeyValue key="depleteFlipbookWidth" value="28" type="number"/>
+					<KeyValue key="depleteFlipbookHeight" value="42" type="number"/>
+					<KeyValue key="depleteFlipbookOffsetY" value="7" type="number"/>
+				</KeyValues>
+				<Size x="20" y="16"/>
+				<Anchors>
+					<Anchor point="LEFT" x="41.6" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentRune3" parentKey="rune3" inherits="PaladinPowerBarRuneTemplate">
+				<KeyValues>
+					<KeyValue key="runeNumber" value="3" type="number"/>
+					<KeyValue key="depleteFlipbookWidth" value="27" type="number"/>
+					<KeyValue key="depleteFlipbookHeight" value="43" type="number"/>
+					<KeyValue key="depleteFlipbookOffsetY" value="9" type="number"/>
+				</KeyValues>
+				<Size x="17" y="15"/>
+				<Anchors>
+					<Anchor point="LEFT" x="68" y="0.5"/>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentRune4" parentKey="rune4" inherits="PaladinPowerBarRuneTemplate">
+				<KeyValues>
+					<KeyValue key="runeNumber" value="4" type="number"/>
+					<KeyValue key="depleteFlipbookWidth" value="27" type="number"/>
+					<KeyValue key="depleteFlipbookHeight" value="42" type="number"/>
+					<KeyValue key="depleteFlipbookOffsetY" value="7" type="number"/>
+				</KeyValues>
+				<Size x="15" y="16"/>
+				<Anchors>
+					<Anchor point="LEFT" x="92" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentRune5" parentKey="rune5" inherits="PaladinPowerBarRuneTemplate">
+				<KeyValues>
+					<KeyValue key="runeNumber" value="5" type="number"/>
+					<KeyValue key="depleteFlipbookWidth" value="27" type="number"/>
+					<KeyValue key="depleteFlipbookHeight" value="44" type="number"/>
+					<KeyValue key="depleteFlipbookOffsetY" value="7" type="number"/>
+				</KeyValues>
+				<Size x="18" y="16"/>
+				<Anchors>
+					<Anchor point="LEFT" x="112.2" y="-1"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+	
+	<Frame name="PaladinPowerBarFrame" inherits="PaladinPowerBarFrameTemplate">
+		<Size x="150" y="43"/>
+		<Anchors>
+			<Anchor point="TOP" relativeTo="PlayerFrame" relativePoint="BOTTOM" x="5" y="5"/>
+		</Anchors>
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="3" type="number"/>
+			<KeyValue key="topPadding" value="-3" type="number"/>
+			<KeyValue key="leftPadding" value="5" type="number"/>
+			<KeyValue key="showTooltip" value="true" type="boolean"/>
+			<KeyValue key="tooltip1" value="HOLY_POWER" type="global"/>
+			<KeyValue key="tooltip2" value="HOLY_POWER_TOOLTIP" type="global"/>
+		</KeyValues>
+	</Frame>
+</Ui>
