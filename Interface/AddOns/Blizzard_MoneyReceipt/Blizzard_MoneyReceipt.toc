@@ -1,3 +1,0 @@
-## Title: Blizzard UI Money Receipt
-## AllowLoadGameType: standard
-Blizzard_MoneyReceipt.lua

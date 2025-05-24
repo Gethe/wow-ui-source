@@ -1,9 +1,0 @@
-## Title: Blizzard Time Manager
-## Author: Blizzard Entertainment
-## LoadOnDemand: 1
-## SavedVariablesPerCharacter: BlizzardStopwatchOptions
-## AllowLoad: game
-## AllowLoadGameType: mainline
-Mainline\Blizzard_TimeManager.lua
-Mainline\Blizzard_TimeManager.xml
-Mainline\Localization.lua

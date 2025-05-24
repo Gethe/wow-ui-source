@@ -1,8 +1,0 @@
-## Title: Blizzard_EnvironmentCleanup
-## Author: Blizzard Entertainment
-## DefaultState: enabled
-## Dependencies: Blizzard_FrameXML, Blizzard_ActionBar, Blizzard_UnitFrame, Blizzard_UIPanels_Game, Blizzard_ChatFrame
-## LoadFirst: 1
-## AllowLoad: Game
-## AllowLoadGameType: mainline
-EnvironmentCleanup.lua

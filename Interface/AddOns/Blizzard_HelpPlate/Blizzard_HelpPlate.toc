@@ -1,5 +1,0 @@
-## Title: Blizzard Help Plate
-## Author: Blizzard Entertainment
-## AllowLoad: Both
-Blizzard_HelpPlate.lua
-Blizzard_HelpPlate.xml

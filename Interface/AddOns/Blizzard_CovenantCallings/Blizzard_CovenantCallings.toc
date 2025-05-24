@@ -1,5 +1,0 @@
-## Title: Blizzard Covenant Callings
-## Author: Blizzard Entertainment
-## LoadOnDemand: 1
-
-CovenantCallings.xml

@@ -1,7 +1,0 @@
-## Title: Blizzard_ReportFrame
-## Author: Blizzard Entertainment
-## DefaultState: enabled
-## Dependencies: Blizzard_ReportFrameShared
-## AllowLoad: Game
-ReportFrame.lua
-ReportFrame.xml

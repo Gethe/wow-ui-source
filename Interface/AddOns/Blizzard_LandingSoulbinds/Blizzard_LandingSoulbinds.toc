@@ -1,7 +1,0 @@
-## Title: Blizzard Landing Soulbinds
-## Author: Blizzard Entertainment
-## LoadOnDemand: 1
-
-Blizzard_LandingSoulbindButton.xml
-Blizzard_LandingRenownButton.xml
-Blizzard_LandingSoulbindPanel.xml

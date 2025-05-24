@@ -1,4 +1,0 @@
-## Title: Blizzard_PrintHandler
-## Author: Blizzard Entertainment
-## AllowLoad: Both
-Blizzard_PrintHandler.lua

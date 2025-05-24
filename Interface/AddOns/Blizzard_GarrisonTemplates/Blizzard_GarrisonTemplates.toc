@@ -1,9 +1,0 @@
-## Title: Blizzard Garrison Templates
-## Author: Blizzard Entertainment
-## Version: 1.0
-## LoadOnDemand: 1
-## Dependencies: Blizzard_Colors, Blizzard_HelpPlate
-Blizzard_GarrisonSharedTemplates.xml
-Blizzard_GarrisonMissionTemplates.xml
-Blizzard_CovenantMissionTemplates.xml
-Localization.lua

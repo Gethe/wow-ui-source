@@ -1,7 +1,0 @@
-## Title: Blizzard_GuildRename
-## LoadOnDemand: 0
-## RequiredDep: Blizzard_UIPanels_Game
-## AllowLoad: Game
-## AllowLoadGameType: standard
-Blizzard_GuildRename.lua
-Blizzard_GuildRename.xml

@@ -1,5 +1,0 @@
-## Author: Blizzard Entertainment
-## Title: Blizzard Hybrid Minimap
-## RequiredDep: Blizzard_MapCanvas
-## LoadOnDemand: 1
-Blizzard_HybridMinimap.xml

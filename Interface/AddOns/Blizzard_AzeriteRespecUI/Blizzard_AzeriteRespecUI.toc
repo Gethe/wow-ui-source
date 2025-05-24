@@ -1,4 +1,0 @@
-## Title: Blizzard Azerite Respec UI
-## LoadOnDemand: 1
-
-Blizzard_AzeriteRespecUI.xml

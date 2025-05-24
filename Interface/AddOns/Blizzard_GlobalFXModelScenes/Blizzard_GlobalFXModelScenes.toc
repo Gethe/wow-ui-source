@@ -1,5 +1,0 @@
-## Title: Blizzard_GlobalFXModelScenes
-## Author: Blizzard Entertainment
-## DefaultState: enabled
-## AllowLoad: Game
-GlobalFXModelScenes.xml

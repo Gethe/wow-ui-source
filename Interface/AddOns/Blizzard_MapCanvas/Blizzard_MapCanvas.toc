@@ -1,7 +1,0 @@
-## Title: Blizzard_MapCanvas
-## LoadOnDemand: 1
-## RequiredDep: Blizzard_SharedXMLBase, Blizzard_MapCanvasSecureUtil
-
-MapCanvas_DataProviderBase.lua
-MapCanvas_PinFrameLevelsManager.lua
-Blizzard_MapCanvas.xml

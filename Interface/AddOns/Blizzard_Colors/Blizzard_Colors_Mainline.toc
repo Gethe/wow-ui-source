@@ -1,7 +1,0 @@
-## Title: Blizzard_Colors
-## Author: Blizzard Entertainment
-## AllowLoad: Both
-## AllowLoadGameType: mainline
-## Dependencies: Blizzard_SharedXMLBase
-Mainline\ColorConstants.lua
-Mainline\ColorManager.lua

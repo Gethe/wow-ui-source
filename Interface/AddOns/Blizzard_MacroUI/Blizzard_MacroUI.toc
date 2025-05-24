@@ -1,8 +1,0 @@
-## Title: Blizzard Macro UI
-## LoadOnDemand: 1
-## AllowLoadGameType: mainline
-Blizzard_MacroDefine.lua
-Blizzard_MacroScrollFrame.xml
-Blizzard_MacroUI.xml
-Blizzard_MacroIconSelector.xml
-Localization.lua

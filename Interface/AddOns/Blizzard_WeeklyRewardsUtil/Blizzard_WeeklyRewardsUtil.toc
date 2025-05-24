@@ -1,3 +1,0 @@
-## Title: Blizzard Weekly Rewards Util
-## LoadOnDemand: 0
-Blizzard_WeeklyRewardsUtil.lua

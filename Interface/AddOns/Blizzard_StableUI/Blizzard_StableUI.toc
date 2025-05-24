@@ -1,5 +1,0 @@
-## Title: Blizzard Stable UI
-## AllowLoadGameType: standard
-## Dependencies: Blizzard_HelpPlate
-Blizzard_StableUI.lua
-Blizzard_StableUI.xml

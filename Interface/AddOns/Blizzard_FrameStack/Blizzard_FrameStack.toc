@@ -1,3 +1,0 @@
-## Title: Blizzard_FrameStack
-## AllowLoad: Both
-FrameStack.lua
