@@ -35,6 +35,9 @@ WORLD_QUEST_QUALITY_COLORS = {
 };
 
 function UIParent_OnLoad(self)
+	-- First register for any shared events
+	UIParent_Shared_OnLoad(self);
+
 	self:RegisterEvent("PLAYER_LOGIN");
 	self:RegisterEvent("PLAYER_DEAD");
 	self:RegisterEvent("SELF_RES_SPELL_CHANGED");
@@ -172,9 +175,6 @@ function UIParent_OnLoad(self)
 
 	-- Invite confirmations
 	self:RegisterEvent("GROUP_INVITE_CONFIRMATION");
-
-	-- Events for Reporting SYSTEM
-	self:RegisterEvent("REPORT_PLAYER_RESULT");
 
 	-- Events for hardcore support
 	self:RegisterEvent("PLAYER_GUILD_UPDATE");
@@ -495,6 +495,9 @@ end
 
 -- UIParent_OnEvent --
 function UIParent_OnEvent(self, event, ...)
+	-- First handle any shared events
+	UIParent_Shared_OnEvent(self, event, ...);
+
 	local arg1, arg2, arg3, arg4, arg5, arg6 = ...;
 	if ( event == "CURRENT_SPELL_CAST_CHANGED" ) then
 		if ( StaticPopup_HasDisplayedFrames() ) then
@@ -1381,16 +1384,6 @@ function UIParent_OnEvent(self, event, ...)
 	elseif (event == "ISLANDS_QUEUE_OPEN") then
 		IslandsQueue_LoadUI();
 		ShowUIPanel(IslandsQueueFrame);
-	-- Events for Reporting system
-	elseif (event == "REPORT_PLAYER_RESULT") then
-		local success = ...;
-		if (success) then
-			UIErrorsFrame:AddExternalErrorMessage(ERR_REPORT_SUBMITTED_SUCCESSFULLY);
-			DEFAULT_CHAT_FRAME:AddMessage(COMPLAINT_ADDED);
-		else
-			UIErrorsFrame:AddExternalErrorMessage(ERR_REPORT_SUBMISSION_FAILED);
-			DEFAULT_CHAT_FRAME:AddMessage(ERR_REPORT_SUBMISSION_FAILED);
-		end
 	elseif (event == "PLAYER_GUILD_UPDATE") then
 		if (CheckHardcoreGuildLeadStatus() and (UnitIsDead("player") or UnitIsGhost("player"))) then
 			ShowHardcoreGuildHandoff();

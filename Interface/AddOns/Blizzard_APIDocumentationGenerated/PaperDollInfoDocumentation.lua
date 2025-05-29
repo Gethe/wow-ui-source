@@ -45,6 +45,46 @@ local PaperDollInfo =
 			},
 		},
 		{
+			Name = "GetGlyphLinkByID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "glyphID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "link", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GetInspectGuildInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitString", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "achievementPoints", Type = "number", Nilable = false },
+				{ Name = "numMembers", Type = "number", Nilable = false },
+				{ Name = "guildName", Type = "string", Nilable = false },
+				{ Name = "realmName", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GetInspectRatedBGData",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "ratedBGData", Type = "InspectRatedBGData", Nilable = false },
+			},
+		},
+		{
 			Name = "GetMinItemLevel",
 			Type = "Function",
 
@@ -243,6 +283,17 @@ local PaperDollInfo =
 	Tables =
 	{
 		{
+			Name = "InspectGuildInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "achievementPoints", Type = "number", Nilable = false },
+				{ Name = "numMembers", Type = "number", Nilable = false },
+				{ Name = "guildName", Type = "string", Nilable = false },
+				{ Name = "realmName", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "InspectPVPData",
 			Type = "Structure",
 			Fields =
@@ -252,6 +303,16 @@ local PaperDollInfo =
 				{ Name = "gamesPlayed", Type = "number", Nilable = false },
 				{ Name = "roundsWon", Type = "number", Nilable = false },
 				{ Name = "roundsPlayed", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "InspectRatedBGData",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "rating", Type = "number", Nilable = false },
+				{ Name = "played", Type = "number", Nilable = false },
+				{ Name = "won", Type = "number", Nilable = false },
 			},
 		},
 	},

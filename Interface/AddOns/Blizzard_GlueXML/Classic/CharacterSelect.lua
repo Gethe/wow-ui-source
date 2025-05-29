@@ -1,5 +1,4 @@
-MAX_CHARACTERS_DISPLAYED = 10;
-MAX_CHARACTERS_DISPLAYED_BASE = MAX_CHARACTERS_DISPLAYED;
+MAX_CHARACTERS_DISPLAYED = 11;
 
 CHARACTER_LIST_OFFSET = 0;
 
@@ -459,6 +458,11 @@ function CharacterSelect_RefreshNavBarEnabledState()
 end
 
 function CharacterSelect_OnShow(self)
+
+	MAX_CHARACTERS_DISPLAYED = CHARACTER_SELECT_MAX_CHARACTERS;
+
+	CharacterSelectCharacterFrame:SetSize(260, CHARACTER_SELECT_HEIGHT);
+
     CharacterCreate_CancelReincarnation(); -- If we're back at this screen, we're not reincarnating
     InitializeCharacterScreenData();
     SetInCharacterSelect(true);
@@ -971,12 +975,6 @@ function UpdateCharacterList(skipSelect)
         CharacterSelect.undeleteChanged = false;
     end
 
-    if ( (CanCreateCharacter() or CharacterSelect.undeleting) and numChars >= MAX_CHARACTERS_DISPLAYED_BASE ) then
-		MAX_CHARACTERS_DISPLAYED = MAX_CHARACTERS_DISPLAYED_BASE - 1;
-    else
-        MAX_CHARACTERS_DISPLAYED = MAX_CHARACTERS_DISPLAYED_BASE;
-    end
-
 	if CharacterSelect.selectLast then
         CHARACTER_LIST_OFFSET = max(numChars - MAX_CHARACTERS_DISPLAYED, 0);
         CharacterSelect.selectedIndex = GetNumCharacters();
@@ -1302,8 +1300,8 @@ function UpdateCharacterList(skipSelect)
 
     UpdateCharacterUndeleteStatus();
 
-    if (MAX_CHARACTERS_DISPLAYED < MAX_CHARACTERS_DISPLAYED_BASE) then
-        for i = MAX_CHARACTERS_DISPLAYED + 1, MAX_CHARACTERS_DISPLAYED_BASE, 1 do
+    if (MAX_CHARACTERS_DISPLAYED < CHARACTER_SELECT_MAX_CHARACTERS) then
+        for i = MAX_CHARACTERS_DISPLAYED + 1, CHARACTER_SELECT_MAX_CHARACTERS, 1 do
             _G["CharSelectCharacterButton"..i]:Hide();
             _G["CharSelectPaidService"..i]:Hide();
             _G["CharacterServicesProcessingIcon"..i]:Hide();
@@ -1334,12 +1332,26 @@ function UpdateCharacterList(skipSelect)
         CharacterSelectCharacterFrame.scrollBar:SetValue(CHARACTER_LIST_OFFSET);
         CharacterSelectCharacterFrame.scrollBar.blockUpdates = nil;
     else
-        CharSelectCreateCharacterButton:SetPoint("BOTTOM", -18, 15);
+        CharSelectCreateCharacterButton:SetPoint("BOTTOM", -18, 10);
         CharSelectBackToActiveButton:SetPoint("BOTTOM", 0, 15);
         CharacterSelectCharacterFrame.scrollBar.blockUpdates = true;	-- keep mousewheel from doing anything
         CharacterSelectCharacterFrame:SetWidth(260);
         CharacterSelectCharacterFrame.scrollBar:Hide();
     end
+	
+	if not CharacterSelect.undeleting then
+		if ( CharacterSelect_UseSpecialCreateButtons() ) then
+			CreateCharacterButtonSpecial:Show();
+			CharSelectUndeleteCharacterButtonSpecial:Show();
+			CharSelectCreateCharacterButton:Hide();
+			CharSelectUndeleteCharacterButton:Hide();
+		else
+			CreateCharacterButtonSpecial:Hide();
+			CharSelectUndeleteCharacterButtonSpecial:Hide();
+			CharSelectCreateCharacterButton:Show();
+			CharSelectUndeleteCharacterButton:Show();
+		end
+	end
 
     if ( (CharacterSelect.selectedIndex == 0) or (CharacterSelect.selectedIndex > numChars) ) then
         CharacterSelect.selectedIndex = 1;
@@ -3281,10 +3293,19 @@ function CharacterSelect_StartCharacterUndelete()
 
 	CharacterSelectUI.VisibilityToggleButton:Hide();
     CharSelectCreateCharacterButton:Hide();
+    CreateCharacterButtonSpecial:Hide();
     CharSelectUndeleteCharacterButton:Hide();
-    CharSelectBackToActiveButton:Show();
+    CharSelectUndeleteCharacterButtonSpecial:Hide();
     CharSelectChangeRealmButton:Hide();
     CharSelectUndeleteLabel:Show();
+
+	if CharacterSelect_UseSpecialCreateButtons() then
+		CharSelectBackToActiveButtonSpecial:Show();
+		CharSelectBackToActiveButton:Hide();
+	else
+		CharSelectBackToActiveButtonSpecial:Hide();
+		CharSelectBackToActiveButton:Show();
+	end
 
     if (CharSelectReincarnateCharacterButton) then
         CharSelectReincarnateCharacterButton:SetShown(false);
@@ -3302,8 +3323,7 @@ function CharacterSelect_EndCharacterUndelete()
 
 	CharacterSelectUI.VisibilityToggleButton:Show();
     CharSelectBackToActiveButton:Hide();
-    CharSelectCreateCharacterButton:Show();
-    CharSelectUndeleteCharacterButton:Show();
+	CharSelectBackToActiveButtonSpecial:Hide();
     CharSelectChangeRealmButton:Show();
     CharSelectUndeleteLabel:Hide();
 
@@ -3323,7 +3343,7 @@ function CharacterSelect_FinishUndelete(guid)
     CharacterSelect.createIndex = 0;
 end
 
-function UpdateCharacterUndeleteStatus()
+function UpdateCharacterUndeleteButton(button)
 	local enabled, onCooldown, cooldown, remaining = GetCharacterUndeleteStatus();
 	local canCreateCharacter = CanCreateCharacter();
 	local charactersAreHidden = GetNumVisibleCharacters() < GetNumCharacters();
@@ -3332,22 +3352,27 @@ function UpdateCharacterUndeleteStatus()
 	CHARACTER_UNDELETE_COOLDOWN = cooldown;
 	CHARACTER_UNDELETE_COOLDOWN_REMAINING = remaining;
 
-	CharSelectUndeleteCharacterButton:SetEnabled(enabled and not onCooldown and canCreateCharacter and not isInBoostFlow() and not isAccountLocked);
+	button:SetEnabled(enabled and not onCooldown and canCreateCharacter and not isInBoostFlow() and not isAccountLocked);
 	if (isInBoostFlow()) then
-		CharSelectUndeleteCharacterButton.tooltip = nil;
+		button.tooltip = nil;
 	elseif (not enabled) then
-		CharSelectUndeleteCharacterButton.tooltip = UNDELETE_TOOLTIP_DISABLED;
+		button.tooltip = UNDELETE_TOOLTIP_DISABLED;
 	elseif (onCooldown) then
 		local timeStr = SecondsToTime(remaining, false, true, 1, false);
-        CharSelectUndeleteCharacterButton:SetTooltipInfo(nil);
-        CharSelectUndeleteCharacterButton:SetDisabledTooltip(UNDELETE_TOOLTIP_COOLDOWN:format(timeStr));
+		button:SetTooltipInfo(nil);
+		button:SetDisabledTooltip(UNDELETE_TOOLTIP_COOLDOWN:format(timeStr));
 	elseif (not canCreateCharacter and charactersAreHidden) then
-        CharSelectUndeleteCharacterButton:SetTooltipInfo(nil);
-        CharSelectUndeleteCharacterButton:SetDisabledTooltip(CHAR_CREATE_UNACTIVATED_CHARACTER_LIMIT);
+		button:SetTooltipInfo(nil);
+		button:SetDisabledTooltip(CHAR_CREATE_UNACTIVATED_CHARACTER_LIMIT);
 	else
-        CharSelectUndeleteCharacterButton:SetTooltipInfo(nil, UNDELETE_TOOLTIP);
-        CharSelectUndeleteCharacterButton:SetDisabledTooltip(nil);
+		button:SetTooltipInfo(nil, UNDELETE_TOOLTIP);
+		button:SetDisabledTooltip(nil);
 	end
+end
+
+function UpdateCharacterUndeleteStatus()
+	UpdateCharacterUndeleteButton(CharSelectUndeleteCharacterButton);
+	UpdateCharacterUndeleteButton(CharSelectUndeleteCharacterButtonSpecial);
 end
 
 -- COPY CHARACTER

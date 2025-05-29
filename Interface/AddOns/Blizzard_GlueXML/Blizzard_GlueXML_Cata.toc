@@ -18,6 +18,7 @@ Classic\AccountLogin.xml
 TBC\RealmList.lua
 Cata\RealmList.xml
 Classic\CharacterServicesPatchwerk.xml
+Vanilla\CharacterSelectConstants.lua
 Classic\CharacterSelect\CharacterSelectUI.lua
 Classic\CharacterSelect\CharacterSelectUI.xml
 Classic\CharacterSelect.lua

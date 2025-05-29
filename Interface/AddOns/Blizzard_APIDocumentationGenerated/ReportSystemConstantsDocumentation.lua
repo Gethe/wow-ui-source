@@ -84,6 +84,21 @@ local ReportSystemConstants =
 				{ Name = "CraftingOrder", Type = "ReportType", EnumValue = 16 },
 			},
 		},
+		{
+			Name = "SendReportResult",
+			Type = "Enumeration",
+			NumValues = 5,
+			MinValue = 0,
+			MaxValue = 4,
+			Fields =
+			{
+				{ Name = "Success", Type = "SendReportResult", EnumValue = 0 },
+				{ Name = "GeneralError", Type = "SendReportResult", EnumValue = 1 },
+				{ Name = "TooManyReports", Type = "SendReportResult", EnumValue = 2 },
+				{ Name = "RequiresChatLine", Type = "SendReportResult", EnumValue = 3 },
+				{ Name = "RequiresChatLineOrVoice", Type = "SendReportResult", EnumValue = 4 },
+			},
+		},
 	},
 };
 

@@ -16,6 +16,7 @@ AdventureJournalDocumentation.lua
 AdventureMapDocumentation.lua
 AreaPoiInfoDocumentation.lua
 ArenaTeamDocumentation.lua
+AssistedCombatDocumentation.lua
 AuctionHouseDocumentation.lua
 AzeriteEmpoweredItemDocumentation.lua
 AzeriteEssenceDocumentation.lua

@@ -36,7 +36,7 @@ TBC\MerchantFrame.lua
 TBC\MerchantFrame.xml
 Classic\TradeFrame.lua
 Classic\TradeFrame.xml
-Wrath\ContainerFrame.lua
+Mists\ContainerFrame.lua
 Classic\ContainerFrame_Shared.lua
 Classic\ContainerFrame.xml
 Classic\LootFrame.lua

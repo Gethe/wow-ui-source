@@ -1629,6 +1629,12 @@ SecureCmdList["PET_AGGRESSIVE"] = function(msg)
 	end
 end
 
+SecureCmdList["PET_ASSIST"] = function(msg)
+	if ( IsPetAssistAvailable() and SecureCmdOptionParse(msg) ) then
+		PetAssistMode();
+	end
+end
+
 SecureCmdList["PET_AUTOCASTON"] = function(msg)
 	local spell = SecureCmdOptionParse(msg);
 	if ( spell ) then
@@ -2581,7 +2587,9 @@ SlashCmdList["OPEN_LOOT_HISTORY"] = function(msg)
 end
 
 SlashCmdList["RAIDFINDER"] = function(msg)
-	PVEFrame_ToggleFrame("GroupFinderFrame", RaidFinderFrame);
+	if C_LFGInfo.IsLFREnabled() then
+		PVEFrame_ToggleFrame("GroupFinderFrame", RaidFinderFrame);
+	end
 end
 
 SlashCmdList["API"] = function(msg)

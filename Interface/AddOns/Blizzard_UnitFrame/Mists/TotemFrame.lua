@@ -22,6 +22,8 @@ function TotemFrameMixin:UpdateClassSpecificLayout()
 		else
 			self:SetPoint("TOPLEFT", PlayerFrame, "BOTTOMLEFT", 99, 38);
 		end
+	elseif ( class == "MONK" ) then
+		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 28, -75);
 	elseif (hasPet and class ~= "SHAMAN") then
 		self:Hide();
 	end

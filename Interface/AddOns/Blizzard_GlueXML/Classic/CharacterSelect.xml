@@ -14,6 +14,63 @@
 			</OnLeave>
 		</Scripts>
 	</Frame>
+	<Button name="CharSelectBackToActiveTemplate" inherits="GlueButtonSmallTemplate" virtual="true" text="CANCEL">
+		<Size x="200" y="45"/>
+		<Scripts>
+			<OnLoad>
+				self:SetWidth(self:GetTextWidth() + 73);
+			</OnLoad>
+			<OnClick>
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+				CharacterSelect_EndCharacterUndelete();
+			</OnClick>
+			<OnUpdate>
+				GlueParent_DeathKnightButtonSwap(self);
+			</OnUpdate>
+		</Scripts>
+	</Button>
+	<Button name="CharSelectUndeleteCharacterButtonTemplate" inherits="GluePanelButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
+		<Size x="52" y="45"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture atlas="characterundelete-RestoreButton" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="-2" y="2" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				if (self.tooltip) then
+					GlueTooltip:SetOwner(self);
+					GlueTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
+				end
+			</OnEnter>
+			<OnLeave>
+				GlueTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+				CharacterSelect_StartCharacterUndelete();
+			</OnClick>
+			<OnMouseDown>
+				self.down = true;
+			</OnMouseDown>
+			<OnMouseUp>
+				self.down = false;
+			</OnMouseUp>
+			<OnUpdate>
+				GlueParent_DeathKnightButtonSwap(self);
+			</OnUpdate>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<!-- We need to override the templates script because it will reset our textures. -->
+			<OnShow/>
+			<OnEnable/>
+			<OnDisable/>
+		</Scripts>
+	</Button>
 	<Button name="CharSelectMoveButtonTemplate" motionScriptsWhileDisabled="true" virtual="true" hidden="true">
 		<Size x="24" y="24"/>
 		<!-- insets to stop a flickering bug when mousing right on the edge -->
@@ -893,7 +950,7 @@
 							<Button name="CharacterSelectBackButton" inherits="GlueButtonSmallTemplate" text="BACK">
 								<Size x="100" y="35"/>
 								<Anchors>
-									<Anchor point="BOTTOMRIGHT" x="-30" y="25"/>
+									<Anchor point="BOTTOMRIGHT" x="-5" y="10"/>
 								</Anchors>
 								<Scripts>
 									<OnClick>
@@ -1039,7 +1096,7 @@
 								</Scripts>
 							</Button>
 							<Button name="CharacterSelectDeleteButton" inherits="GlueButtonSmallTemplate" text="DELETE_CHARACTER">
-								<Size x="165" y="35"/>
+								<Size x="180" y="35"/>
 								<Anchors>
 									<Anchor point="RIGHT" relativeTo="CharacterSelectBackButton" relativePoint="LEFT" x="0" y="0"/>
 								</Anchors>
@@ -1055,7 +1112,7 @@
 								</Scripts>
 							</Button>
 							<Frame name="CharacterSelectCharacterFrame" inherits="TooltipBackdropTemplate">
-								<Size x="260" y="642"/>
+								<Size x="260" y="710"/>
 								<KeyValues>
 									<KeyValue key="layoutType" value="TooltipGluesLayout" type="string"/>
 									<KeyValue key="backdropColor" value="GLUE_BACKDROP_COLOR" type="global"/>
@@ -1218,10 +1275,16 @@
 											<Anchor point="LEFT" x="24" y="0"/>
 										</Anchors>
 									</Button>
+									<Button name="CharSelectCharacterButton11" inherits="CharSelectCharacterButtonTemplate" id="11">
+										<Anchors>
+											<Anchor point="TOP" relativeTo="CharSelectCharacterButton10" relativePoint="BOTTOM" x="0" y="13"/>
+											<Anchor point="LEFT" x="24" y="0"/>
+										</Anchors>
+									</Button>
 									<Button name="CharSelectCreateCharacterButton" inherits="GluePanelButtonTemplate" motionScriptsWhileDisabled="true" text="CREATE_NEW_CHARACTER">
 										<Size x="200" y="45"/>
 										<Anchors>
-											<Anchor point="BOTTOM" x="-18" y="15"/>
+											<Anchor point="BOTTOM" x="0" y="15"/>
 										</Anchors>
 										<Scripts>
 											<OnLoad>
@@ -1247,68 +1310,15 @@
 											<OnDisable/>
 										</Scripts>
 									</Button>
-									<Button name="CharSelectBackToActiveButton" inherits="GlueButtonSmallTemplate" hidden="true" text="CANCEL">
-										<Size x="200" y="45"/>
+									<Button name="CharSelectBackToActiveButton" inherits="CharSelectBackToActiveTemplate" hidden="true" text="CANCEL">
 										<Anchors>
 											<Anchor point="BOTTOM" x="0" y="15"/>
 										</Anchors>
-										<Scripts>
-											<OnLoad>
-												self:SetWidth(self:GetTextWidth() + 73);
-											</OnLoad>
-											<OnClick>
-												PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-												CharacterSelect_EndCharacterUndelete();
-											</OnClick>
-											<OnUpdate>
-												GlueParent_DeathKnightButtonSwap(self);
-											</OnUpdate>
-										</Scripts>
 									</Button>
-									<Button name="CharSelectUndeleteCharacterButton" inherits="GluePanelButtonTemplate" motionScriptsWhileDisabled="true">
-										<Size x="52" y="45"/>
+									<Button name="CharSelectUndeleteCharacterButton" inherits="CharSelectUndeleteCharacterButtonTemplate" motionScriptsWhileDisabled="true">
 										<Anchors>
 											<Anchor point="LEFT" relativeTo="CharSelectCreateCharacterButton" relativePoint="RIGHT" x="-10" y="0"/>
 										</Anchors>
-										<Layers>
-											<Layer level="OVERLAY">
-												<Texture atlas="characterundelete-RestoreButton" useAtlasSize="true">
-													<Anchors>
-														<Anchor point="CENTER" x="-2" y="2" />
-													</Anchors>
-												</Texture>
-											</Layer>
-										</Layers>
-										<Scripts>
-											<OnEnter>
-												if (self.tooltip) then
-													GlueTooltip:SetOwner(self);
-													GlueTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
-												end
-											</OnEnter>
-											<OnLeave>
-												GlueTooltip:Hide();
-											</OnLeave>
-											<OnClick>
-												PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-												CharacterSelect_StartCharacterUndelete();
-											</OnClick>
-											<OnMouseDown>
-												self.down = true;
-											</OnMouseDown>
-											<OnMouseUp>
-												self.down = false;
-											</OnMouseUp>
-											<OnUpdate>
-												GlueParent_DeathKnightButtonSwap(self);
-											</OnUpdate>
-											<OnEnter method="OnEnter"/>
-											<OnLeave method="OnLeave"/>
-											<!-- We need to override the templates script because it will reset our textures. -->
-											<OnShow/>
-											<OnEnable/>
-											<OnDisable/>
-										</Scripts>
 									</Button>
 									<Button name="CharSelectReincarnateCharacterButton" inherits="GluePanelButtonTemplate" motionScriptsWhileDisabled="true" text="REINCARNATE_CHARACTER" hidden="true">
 										<Size x="200" y="45"/>
@@ -1395,6 +1405,12 @@
 											<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT" x="9" y="0"/>
 										</Anchors>
 									</Button>
+									<Button name="CharSelectPaidService11" inherits="CharSelectPaidServiceTemplate" id="11">
+										<Anchors>
+											<Anchor point="TOP" relativeTo="CharSelectCharacterButton11" relativePoint="TOP" x="0" y="6"/>
+											<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT" x="9" y="0"/>
+										</Anchors>
+									</Button>
 
 									<Button name="CharacterServicesProcessingIcon1" inherits="CharacterServicesProcessingIconTemplate" id="1" hidden="true">
 										<Anchors>
@@ -1444,6 +1460,11 @@
 									<Button name="CharacterServicesProcessingIcon10" inherits="CharacterServicesProcessingIconTemplate" id="10" hidden="true">
 										<Anchors>
 											<Anchor point="RIGHT" relativeTo="CharSelectCharacterButton10" relativePoint="LEFT" x="-10" y="4"/>
+										</Anchors>
+									</Button>
+									<Button name="CharacterServicesProcessingIcon11" inherits="CharacterServicesProcessingIconTemplate" id="11" hidden="true">
+										<Anchors>
+											<Anchor point="RIGHT" relativeTo="CharSelectCharacterButton11" relativePoint="LEFT" x="-10" y="4"/>
 										</Anchors>
 									</Button>
 								</Frames>
@@ -1862,7 +1883,7 @@
 							<Button name="CreateCharacterButtonSpecial" inherits="GlueButtonSmallTemplate" hidden="true" text="CREATE_NEW_CHARACTER">
 								<Size x="200" y="45"/>
 								<Anchors>
-									<Anchor point="TOP" relativeTo="CharacterSelectCharacterFrame" relativePoint="BOTTOM" x="-220" y="0"/>
+									<Anchor point="TOP" relativeTo="CharacterSelectCharacterFrame" relativePoint="BOTTOM" x="-260" y="0"/>
 								</Anchors>
 								<Scripts>
 									<OnLoad>
@@ -1876,6 +1897,18 @@
 										GlueParent_DeathKnightButtonSwap(self);
 									</OnUpdate>
 								</Scripts>
+							</Button>
+
+							<Button name="CharSelectBackToActiveButtonSpecial" inherits="CharSelectBackToActiveTemplate" hidden="true" text="CANCEL">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="CharacterSelectCharacterFrame" relativePoint="BOTTOM" x="-260" y="0"/>
+								</Anchors>
+							</Button>
+							
+							<Button name="CharSelectUndeleteCharacterButtonSpecial" inherits="CharSelectUndeleteCharacterButtonTemplate" hidden="true">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="CreateCharacterButtonSpecial" relativePoint="RIGHT" x="-20"/>
+								</Anchors>
 							</Button>
 							<Frame name="CharacterTemplatesFrame" hidden="true" inherits="TooltipBackdropTemplate">
 								<KeyValues>

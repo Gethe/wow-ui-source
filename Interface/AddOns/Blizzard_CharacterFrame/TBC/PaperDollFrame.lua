@@ -222,7 +222,7 @@ local function SetLeftStatSelected(value)
 end
 
 local function IsRightStatSelected(value)
-	return value == GetCVar("playerStatLeftDropdown");
+	return value == GetCVar("playerStatRightDropdown");
 end
 
 local function SetRightStatSelected(value)

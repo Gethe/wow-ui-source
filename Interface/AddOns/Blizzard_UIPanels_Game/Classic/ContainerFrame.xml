@@ -492,4 +492,7 @@
 			</OnShow>
 		</Scripts>
 	</Frame>
+	<EditBox name="BagItemSearchBox" inherits="BagSearchBoxTemplate" parent="ContainerFrame1" letters="15" hidden="true">
+		<Size x="130" y="20"/>
+	</EditBox>
 </Ui>

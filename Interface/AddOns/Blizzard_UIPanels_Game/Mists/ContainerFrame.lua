@@ -31,5 +31,14 @@ function ContainerFrame_UpdateQuestItem(frame, itemIndex, itemButton)
 end
 
 function ContainerFrame_UpdateSearchBox(id, frame)
-	-- no search box in Wrath
+	if ( id == 0 ) then
+		BagItemSearchBox:SetParent(frame);
+		BagItemSearchBox:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -10, -26);
+		BagItemSearchBox.anchorBag = frame;
+		BagItemSearchBox:Show();
+	elseif ( BagItemSearchBox.anchorBag == frame ) then
+		BagItemSearchBox:ClearAllPoints();
+		BagItemSearchBox:Hide();
+		BagItemSearchBox.anchorBag = nil;
+	end
 end

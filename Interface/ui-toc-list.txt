@@ -141,10 +141,7 @@ Interface\AddOns\Blizzard_GuildRename\Blizzard_GuildRename.toc
 Interface\AddOns\Blizzard_HelpFrame\Blizzard_HelpFrame.toc
 Interface\AddOns\Blizzard_HelpPlate\Blizzard_HelpPlate.toc
 Interface\AddOns\Blizzard_IME\Blizzard_IME.toc
-Interface\AddOns\Blizzard_InspectUI\Blizzard_InspectUI_Cata.toc
 Interface\AddOns\Blizzard_InspectUI\Blizzard_InspectUI_Classic.toc
-Interface\AddOns\Blizzard_InspectUI\Blizzard_InspectUI_Mists.toc
-Interface\AddOns\Blizzard_InspectUI\Blizzard_InspectUI_Vanilla.toc
 Interface\AddOns\Blizzard_ItemButton\Blizzard_ItemButton_Classic.toc
 Interface\AddOns\Blizzard_ItemSocketingUI\Blizzard_ItemSocketingUI.toc
 Interface\AddOns\Blizzard_ItemUpgradeUI\Blizzard_ItemUpgradeUI_Mainline.toc
