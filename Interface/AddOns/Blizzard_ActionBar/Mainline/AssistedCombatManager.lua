@@ -264,7 +264,7 @@ function AssistedCombatManager:UpdateAssistedHighlightState(wasActive)
 
 			self.lastNextCastSpellID = nil;
 			self.updateTimeLeft = 0;
-			self.updateFrame:SetScript("OnUpdate", GenerateClosure(self.OnUpdate, self));
+			self.updateFrame:SetScript("OnUpdate", function(_frame, elapsed) self:OnUpdate(elapsed); end);
 
 			EventRegistry:RegisterCallback("ActionButton.OnActionChanged", self.OnActionButtonActionChanged, self);
 			EventRegistry:RegisterFrameEventAndCallback("PLAYER_REGEN_ENABLED", self.OnPlayerRegenChanged, self);
@@ -294,7 +294,7 @@ function AssistedCombatManager:ForceUpdateAtEndOfFrame()
 	self.lastNextCastSpellID = nil;
 end
 
-function AssistedCombatManager:OnUpdate(updateFrame, elapsed)
+function AssistedCombatManager:OnUpdate(elapsed)
 	self.updateTimeLeft = self.updateTimeLeft - elapsed;
 	if self.updateTimeLeft <= 0 then
 		self.updateTimeLeft = self:GetUpdateRate();
@@ -308,6 +308,34 @@ function AssistedCombatManager:OnUpdate(updateFrame, elapsed)
 			EventRegistry:TriggerEvent("AssistedCombatManager.OnAssistedHighlightSpellChange");
 		end
 	end
+end
+
+function AssistedCombatManager:AddSpellTooltipLine(tooltip, spellID, overriddenSpellID)
+	local usingRotation = C_ActionBar.HasAssistedCombatActionButtons();
+	local usingHighlight = self:IsAssistedHighlightActive();
+	if not usingRotation and not usingHighlight then
+		return false;
+	end
+
+	local addLine = self:IsRotationSpell(spellID) or self:IsRotationSpell(overriddenSpellID);
+	-- if still no, check if the overriddenSpellID is itself overriden
+	if not addLine and overriddenSpellID then
+		local overrideSpellID = C_Spell.GetOverrideSpell(overriddenSpellID);
+		addLine = self:IsRotationSpell(overrideSpellID);
+	end
+
+	if addLine then
+		local text = ASSISTED_COMBAT_SPELL_INCLUDED;
+		if not usingRotation then
+			text = ASSISTED_COMBAT_HIGHLIGHT_SPELL_INCLUDED;
+		elseif not usingHighlight then
+			text = ASSISTED_COMBAT_ROTATION_SPELL_INCLUDED;
+		end
+		GameTooltip_AddColoredLine(tooltip, text, LIGHTBLUE_FONT_COLOR);
+		return true;
+	end
+
+	return false;
 end
 
 EventRegistry:RegisterFrameEventAndCallback("SPELLS_CHANGED", AssistedCombatManager.OnSpellsChanged, AssistedCombatManager);

@@ -5,10 +5,39 @@ local function Register()
 	-- Order set in GameplaySettingsGroup.lua
 	category:SetOrder(CUSTOM_GAMEPLAY_SETTINGS_ORDER[ADVANCED_OPTIONS_LABEL]);
 
+	-- Assisted Combat
+	InterfaceOverrides.RunSettingsCallback(function()
+		layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(ASSISTED_COMBAT_LABEL));
+	end);
+
+	-- Assisted Rotation
+	InterfaceOverrides.RunSettingsCallback(function()
+		local tooltipFn = function()
+			local isAvailable, failureReason = C_AssistedCombat.IsAvailable();
+			if isAvailable then
+				return ASSISTED_COMBAT_ROTATION_ACTION_BUTTON_HELPTIP;
+			else
+				return format("%s|n|n%s", ASSISTED_COMBAT_ROTATION_ACTION_BUTTON_HELPTIP, failureReason);
+			end
+		end
+
+		local function OnButtonClick()
+			SetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_ASSISTED_COMBAT_ROTATION_DRAG_SPELL, false);
+			local skipTransitionBackToOpeningPanel = true;
+			SettingsPanel:Close(skipTransitionBackToOpeningPanel);
+			PlayerSpellsUtil.ToggleSpellBookFrame();
+		end
+
+		local addSearchTags = false;
+		local initializer = CreateSettingsButtonInitializer(ASSISTED_COMBAT_ROTATION, ASSISTED_COMBAT_ROTATION_VIEW_SPELLBOOK, OnButtonClick, tooltipFn, addSearchTags, "ASSISTED_COMBAT_ROTATION");
+		initializer:AddModifyPredicate(C_AssistedCombat.IsAvailable);
+		layout:AddInitializer(initializer);
+	end);
+
 	-- Assisted Highlight
 	InterfaceOverrides.RunSettingsCallback(function()
 		local tooltipFn = function()
-			local isAvailable, failureReason = C_AssistedCombat.IsAssistedCombatHighlightAvailable();
+			local isAvailable, failureReason = C_AssistedCombat.IsAvailable();
 			if isAvailable then
 				return OPTION_TOOLTIP_ASSISTED_COMBAT_HIGHLIGHT;
 			else
@@ -16,7 +45,7 @@ local function Register()
 			end
 		end
 		local setting, initializer = Settings.SetupCVarCheckbox(category, "assistedCombatHighlight", ASSISTED_COMBAT_HIGHLIGHT_LABEL, tooltipFn);
-		initializer:AddModifyPredicate(C_AssistedCombat.IsAssistedCombatHighlightAvailable);
+		initializer:AddModifyPredicate(C_AssistedCombat.IsAvailable);
 
 		local onClickFn = function(checked)
 			if checked and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ASSISTED_HIGHLIGHT_ENABLED_POPUP) then

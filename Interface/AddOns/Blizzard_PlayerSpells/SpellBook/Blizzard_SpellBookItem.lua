@@ -512,16 +512,8 @@ function SpellBookItemMixin:OnIconEnter()
 	end
 
 	local spellID = self.spellBookItemInfo.spellID;
-	if not self.spellBookItemInfo.isOffSpec and AssistedCombatManager:IsHighlightableSpellbookSpell(spellID) then
-		local usingRotation = C_ActionBar.HasAssistedCombatActionButtons();
-		local usingHighlight = GetCVarBool("assistedCombatHighlight");
-		local text = ASSISTED_COMBAT_SPELL_INCLUDED;
-		if not usingRotation then
-			text = ASSISTED_COMBAT_HIGHLIGHT_SPELL_INCLUDED;
-		elseif not usingHighlight then
-			text = ASSISTED_COMBAT_ROTATION_SPELL_INCLUDED;
-		end
-		GameTooltip_AddHighlightLine(tooltip, text);
+	if not self.spellBookItemInfo.isOffSpec then
+		AssistedCombatManager:AddSpellTooltipLine(tooltip, spellID);
 	end
 
 	tooltip:Show();

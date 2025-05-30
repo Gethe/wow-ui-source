@@ -544,12 +544,18 @@
 		</Animations>
 	</Frame>
 
-	<Button name="UIWidgetBaseButtonTemplate" inherits="UIWidgetTemplateTooltipFrame" mixin="UIWidgetBaseButtonTemplateMixin" virtual="true">
+	<Button name="UIWidgetBaseButtonTemplate" inherits="UIWidgetTemplateTooltipFrame" mixin="UIWidgetBaseButtonTemplateMixin" motionScriptsWhileDisabled="true" hidden="true" virtual="true">
 		<Size x="48" y="48"/>
 		<HitRectInsets left="6" right="6" top="6" bottom="6"/>
 		<NormalTexture parentKey="NormalTexture" atlas="common-button-square-gray-up"/>
 		<HighlightTexture parentKey="HighlightTexture" alphaMode="ADD" alpha="0.4" atlas="common-button-square-gray-up"/>
 		<PushedTexture parentKey="PushedTexture" atlas="common-button-square-gray-down"/>
+		<DisabledTexture parentKey="NormalTexture" atlas="common-button-square-gray-up" desaturated="true"/>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="Icon">
@@ -560,6 +566,14 @@
 				</Texture>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Cooldown parentKey="cooldown" inherits="CooldownFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Icon" x="-3" y="2"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="3" y="-2"/>
+				</Anchors>
+			</Cooldown>
+		</Frames>
 		<Scripts>
 			<OnClick method="OnClick"/>
 		</Scripts>

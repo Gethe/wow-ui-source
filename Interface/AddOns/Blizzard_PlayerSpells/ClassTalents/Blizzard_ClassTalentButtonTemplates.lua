@@ -206,6 +206,7 @@ function ClassTalentButtonSpendMixin:AddTooltipInstructions(tooltip)
 		local wrap = true;
 		GameTooltip_AddColoredLine(tooltip, statusTooltip, LIGHTBLUE_FONT_COLOR, wrap);
 	end
+	AssistedCombatManager:AddSpellTooltipLine(tooltip, self:GetSpellID(), self:GetOverriddenSpellID());
 
 	TalentButtonSpendMixin.AddTooltipInstructions(self, tooltip);
 end
@@ -397,6 +398,7 @@ function ClassTalentSelectionChoiceMixin:AddTooltipInstructions(tooltip)
 		local wrap = true;
 		GameTooltip_AddColoredLine(tooltip, statusTooltip, LIGHTBLUE_FONT_COLOR, wrap);
 	end
+	AssistedCombatManager:AddSpellTooltipLine(tooltip, self:GetSpellID(), self:GetOverriddenSpellID());
 
 	TalentSelectionChoiceMixin.AddTooltipInstructions(self, tooltip);
 end

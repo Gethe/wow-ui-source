@@ -567,10 +567,7 @@ function AssistedCombatRotationSpellFrameMixin:OnIconDragStart()
 end
 
 function AssistedCombatRotationSpellFrameMixin:OnIconClick(frame, button)
-	if button == "RightButton" then
-		self.showRotationSpells = not self.showRotationSpells;
-		self:ShowTooltip();
-	end
+	-- do nothing
 end
 
 function AssistedCombatRotationSpellFrameMixin:UpdateTooltip()
@@ -579,75 +576,57 @@ function AssistedCombatRotationSpellFrameMixin:UpdateTooltip()
 end
 
 function AssistedCombatRotationSpellFrameMixin:ShowTooltip()
-	local instructionText = ASSISTED_COMBAT_ROTATION_SPELLS_LIST_SHOW;
 	local tooltip = GameTooltip;
 	GameTooltip_SetTitle(tooltip, ASSISTED_COMBAT_ROTATION, HIGHLIGHT_FONT_COLOR);
 	GameTooltip_AddNormalLine(tooltip, AssistedCombatManager:GetActionSpellDescription());
 	GameTooltip_AddBlankLineToTooltip(tooltip);
 
-	if self.showRotationSpells then
-		instructionText = ASSISTED_COMBAT_ROTATION_SPELLS_LIST_HIDE;
-
-		local spellInfos = { };
-		-- there are spells with different IDs but same name, like the shaman Earthquake talent choice node
-		local function TryInsertSpell(spellID)
-			local newInfo = C_Spell.GetSpellInfo(spellID);
-			newInfo.isKnown = IsSpellKnownOrOverridesKnown(spellID);
-			for i, spellInfo in ipairs(spellInfos) do
-				if newInfo.name == spellInfo.name then
-					-- on a name match, prefer the known one
-					if newInfo.isKnown == spellInfo.isKnown or not newInfo.isKnown then
-						return;
-					end
-					table.remove(spellInfos, i);
-					break;
-				end
+	local spellInfos = { };
+	-- there are spells with different IDs but same name, like the shaman Earthquake talent choice node
+	local function TryInsertSpell(spellID)
+		local newInfo = C_Spell.GetSpellInfo(spellID);
+		for i, spellInfo in ipairs(spellInfos) do
+			if newInfo.name == spellInfo.name then
+				table.remove(spellInfos, i);
+				break;
 			end
-			table.insert(spellInfos, newInfo);
 		end
+		table.insert(spellInfos, newInfo);
+	end
 
-		local rotationSpells = C_AssistedCombat.GetRotationSpells();
-		for i, spellID in ipairs(rotationSpells) do
-			spellID = C_Spell.GetOverrideSpell(spellID);
+	local rotationSpells = C_AssistedCombat.GetRotationSpells();
+	for i, spellID in ipairs(rotationSpells) do
+		spellID = C_Spell.GetOverrideSpell(spellID);
+		if IsSpellKnownOrOverridesKnown(spellID) then
 			TryInsertSpell(spellID);
 		end
+	end
 
-		table.sort(spellInfos, function(lhs, rhs)
-			if lhs.isKnown ~= rhs.isKnown then
-				return lhs.isKnown;
-			end
-			return strcmputf8i(lhs.name, rhs.name) < 0;
-		end);
-
-		local textureSettings = {
-			width = 32,
-			height = 32,
-			anchor = Enum.TooltipTextureAnchor.LeftCenter,
-			margin = { left = 0, right = 8, top = 0, bottom = 4 },
-		};
-
-		for i, spellInfo in ipairs(spellInfos) do
-			if spellInfo.isKnown then
-				GameTooltip_AddHighlightLine(tooltip, spellInfo.name);
-				textureSettings.desaturation = 0;
-			else
-				GameTooltip_AddDisabledLine(tooltip, spellInfo.name);
-				textureSettings.desaturation = 1;
-			end
-			if i == #spellInfos then
-				textureSettings.margin.bottom = 0;
-			end
-			tooltip:AddTexture(spellInfo.originalIconID, textureSettings);
+	table.sort(spellInfos, function(lhs, rhs)
+		if lhs.isKnown ~= rhs.isKnown then
+			return lhs.isKnown;
 		end
+		return strcmputf8i(lhs.name, rhs.name) < 0;
+	end);
 
-		GameTooltip_AddBlankLineToTooltip(tooltip);
+	local textureSettings = {
+		width = 32,
+		height = 32,
+		anchor = Enum.TooltipTextureAnchor.LeftCenter,
+		margin = { left = 0, right = 8, top = 0, bottom = 4 },
+	};
+
+	for i, spellInfo in ipairs(spellInfos) do
+		GameTooltip_AddHighlightLine(tooltip, spellInfo.name);
+		if i == #spellInfos then
+			textureSettings.margin.bottom = 0;
+		end
+		tooltip:AddTexture(spellInfo.originalIconID, textureSettings);
 	end
 
 	if not C_ActionBar.HasAssistedCombatActionButtons() then
 		GameTooltip_AddColoredLine(tooltip, SPELLBOOK_SPELL_NOT_ON_ACTION_BAR, LIGHTBLUE_FONT_COLOR);
 	end
-
-	GameTooltip_AddDisabledLine(tooltip, instructionText);
 
 	tooltip:Show();
 end

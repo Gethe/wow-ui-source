@@ -751,6 +751,8 @@ function PerksProgramModelSceneContainerFrameMixin:SetupModelSceneForToys(data, 
 	else -- default Toy Display		
 		local iconTexture = C_Item.GetItemIconByID(data.itemID);
 		self.ToyOverlayFrame.Icon:SetTexture(iconTexture);
+		-- Guarantee the frame data is up to date
+		self.ToyOverlayFrame.DetailsFrame:UpdateDetails(data);
 		self.ToyOverlayFrame:Show();
 		self.MainModelScene:Hide();
 		self.PlayerModelScene:Hide();

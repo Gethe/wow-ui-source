@@ -780,6 +780,18 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "UIWidgetButtonEnabledState",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Disabled", Type = "UIWidgetButtonEnabledState", EnumValue = 0 },
+				{ Name = "Enabled", Type = "UIWidgetButtonEnabledState", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "UIWidgetButtonIconType",
 			Type = "Enumeration",
 			NumValues = 5,
@@ -842,6 +854,19 @@ local UIWidgetManager =
 				{ Name = "Hidden", Type = "UIWidgetRewardShownState", EnumValue = 0 },
 				{ Name = "ShownEarned", Type = "UIWidgetRewardShownState", EnumValue = 1 },
 				{ Name = "ShownUnearned", Type = "UIWidgetRewardShownState", EnumValue = 2 },
+			},
+		},
+		{
+			Name = "UIWidgetSpellButtonCooldownType",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "HideCooldown", Type = "UIWidgetSpellButtonCooldownType", EnumValue = 0 },
+				{ Name = "ShowCooldown", Type = "UIWidgetSpellButtonCooldownType", EnumValue = 1 },
+				{ Name = "ShowCooldownAndDisableOnCooldown", Type = "UIWidgetSpellButtonCooldownType", EnumValue = 2 },
 			},
 		},
 		{
@@ -2013,6 +2038,8 @@ local UIWidgetManager =
 				{ Name = "spellID", Type = "number", Nilable = false },
 				{ Name = "tooltip", Type = "string", Nilable = false },
 				{ Name = "icon", Type = "UIWidgetButtonIconType", Nilable = false },
+				{ Name = "enabledState", Type = "UIWidgetButtonEnabledState", Nilable = false },
+				{ Name = "cooldownType", Type = "UIWidgetSpellButtonCooldownType", Nilable = false },
 			},
 		},
 		{

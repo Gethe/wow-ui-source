@@ -1,3 +1,39 @@
+function UIParent_Shared_OnLoad(self)
+	self:RegisterEvent("REPORT_PLAYER_RESULT");
+end
+
+local sendReportResultToErrorString = {
+	[Enum.SendReportResult.Success] = ERR_REPORT_SUBMITTED_SUCCESSFULLY,
+	[Enum.SendReportResult.GeneralError] = ERR_REPORT_SUBMISSION_FAILED,
+	[Enum.SendReportResult.TooManyReports] = REPORT_RESULT_TOO_MANY_REPORTS,
+	[Enum.SendReportResult.RequiresChatLine] = REPORT_RESULT_REQUIRES_CHAT,
+	[Enum.SendReportResult.RequiresChatLineOrVoice] = REPORT_RESULT_REQUIRES_CHAT_OR_VOICE,
+};
+
+local function GetErrorMessageFromSendReportResult(result)
+	return sendReportResultToErrorString[result] or ERR_REPORT_SUBMISSION_FAILED;
+end
+
+local sendReportResultToChatString = {
+	[Enum.SendReportResult.Success] = COMPLAINT_ADDED,
+	[Enum.SendReportResult.GeneralError] = ERR_REPORT_SUBMISSION_FAILED,
+	[Enum.SendReportResult.TooManyReports] = REPORT_RESULT_TOO_MANY_REPORTS,
+	[Enum.SendReportResult.RequiresChatLine] = REPORT_RESULT_REQUIRES_CHAT,
+	[Enum.SendReportResult.RequiresChatLineOrVoice] = REPORT_RESULT_REQUIRES_CHAT_OR_VOICE,
+};
+
+local function GetChatMessageFromSendReportResult(result)
+	return sendReportResultToChatString[result] or ERR_REPORT_SUBMISSION_FAILED;
+end
+
+function UIParent_Shared_OnEvent(self, event, ...)
+	if event == "REPORT_PLAYER_RESULT" then
+		local result = ...;
+		UIErrorsFrame:AddExternalErrorMessage(GetErrorMessageFromSendReportResult(result));
+		DEFAULT_CHAT_FRAME:AddMessage(GetChatMessageFromSendReportResult(result));
+	end
+end
+
 function OpenAchievementFrameToAchievement(achievementID)
 	if ( not AchievementFrame ) then
 		AchievementFrame_LoadUI();

@@ -1426,7 +1426,7 @@ local PvpInfo =
 			Fields =
 			{
 				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "instanceType", Type = "number", Nilable = false },
+				{ Name = "matchmakingType", Type = "PvPMatchmakingType", Nilable = false },
 				{ Name = "minPlayers", Type = "number", Nilable = false },
 				{ Name = "maxPlayers", Type = "number", Nilable = false },
 				{ Name = "icon", Type = "fileID", Nilable = false },

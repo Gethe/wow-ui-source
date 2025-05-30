@@ -1100,6 +1100,8 @@ function PerksProgramItemDetailsListMixin:Init(data)
 	self.selectedItems = {};
 	self:PopulateItemList();
 
+	self.allItemsSelectionTypeOther = true;
+
 	local dataProvider = CreateDataProvider();
 	for itemIndex, item in ipairs(self.itemList) do
 		self:AddItemToList(dataProvider, itemIndex, item);
@@ -1109,6 +1111,17 @@ function PerksProgramItemDetailsListMixin:Init(data)
 
 	self:UpdateScrollBar();
 	self:RefreshScrollElements();
+
+	if self.allItemsSelectionTypeOther and #self.itemList >= 1 then
+		local firstItem = self.itemList[1];
+		local firstItemFrame = self.ScrollBox:FindFrameByPredicate(function(_frame, otherElementData)
+			return otherElementData.itemID == firstItem.itemID;
+		end);
+		
+		self:OnItemSelected(firstItemFrame, firstItemFrame:GetElementData());
+	end
+	self.allItemsSelectionTypeOther = false;
+
 	self:UpdateSelectedItems();
 
 	local view = self.ScrollBox:GetView();
@@ -1212,6 +1225,10 @@ function PerksProgramItemDetailsListMixin:AddItemToDataProvider(dataProvider, it
 		selected = not self.selectedItems[selectionType];
 	end
 
+	if selectionType ~= "SELECTIONTYPE_OTHER" then
+		self.allItemsSelectionTypeOther = false;
+	end
+
 	local elementData = {
 		 enabled = true,
 		 isItemInfo = true,
@@ -1252,14 +1269,17 @@ function PerksProgramItemDetailsListMixin:OnItemSelected(element, elementData)
 				self:OnItemSelected(overrideButton, overrideItem.elementData);
 			end
 
-			return;
+			-- If we're clicking from one other selection type to another, we want to also select the new one, not just deselect the old
+			if elementData.selectionType ~= "SELECTIONTYPE_OTHER" then
+				return;
+			end
 		end
 	end
 
 	for selectionType, selectedElementData in pairs(self.selectedItems) do
 		if selectedElementData.itemID == elementData.itemID then
 			if elementData.selected then
-				self.selectedItems[selectionType] = nil;
+				DeselectItemByType(self.selectedItems, selectionType);
 
 				if element then
 					element:SetSelected(false);
@@ -1770,6 +1790,10 @@ local function PerksProgramToy_ProcessLines(data)
 end
 
 function PerksProgramToyDetailsFrameMixin:OnProductSelectedAfterModel(data)
+	self:UpdateDetails(data);
+end
+
+function PerksProgramToyDetailsFrameMixin:UpdateDetails(data)
 	self.ProductNameText:SetText(data.name);
 	
 	local _, effectText = PerksProgramToy_ProcessLines(data);

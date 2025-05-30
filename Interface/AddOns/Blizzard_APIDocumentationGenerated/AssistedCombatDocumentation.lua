@@ -39,7 +39,7 @@ local AssistedCombat =
 			},
 		},
 		{
-			Name = "IsAssistedCombatHighlightAvailable",
+			Name = "IsAvailable",
 			Type = "Function",
 
 			Returns =

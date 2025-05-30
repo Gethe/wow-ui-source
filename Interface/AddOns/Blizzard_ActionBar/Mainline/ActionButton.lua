@@ -157,8 +157,9 @@ function ActionButtonUp(id)
 	if button then
 		if ( button:GetButtonState() == "PUSHED" ) then
 			button:SetButtonState("NORMAL");
-			TryUseActionButton(button, false);
 		end
+
+		TryUseActionButton(button, false);
 	end
 end
 

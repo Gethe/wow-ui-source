@@ -14,6 +14,7 @@ local GetFrameHandleFrame = GetFrameHandleFrame;
 
 local IsGamePadEnabled = C_GamePad.IsEnabled;
 local GetGamePadState = C_GamePad.GetDeviceMappedState;
+local GetAssistedCombatSpell = C_AssistedCombat.GetActionSpell;
 
 -- The bare minimum functions that should exist in order to be
 -- useful without being ridiculously restrictive.
@@ -179,7 +180,7 @@ end
 local safeActionTypes = {["spell"] = true, ["companion"] = true, ["item"] = true, ["macro"] = true, ["flyout"] = true}
 local function scrubActionInfo(actionType, id, subType, ...)
 	if actionType == "spell" and subType == "assistedcombat" then
-		return actionType;
+		return actionType, GetAssistedCombatSpell(), subType, ...;
     elseif safeActionTypes[actionType] then
         return actionType, id, subType, ...;
     else
