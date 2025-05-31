@@ -980,7 +980,7 @@ function PaperDollFrame_SetPvpPower(statFrame, unit)
 	if (pvpHealing > pvpDamage) then
 		PaperDollFrame_SetLabelAndText(statFrame, STAT_PVP_POWER, pvpHealing, true, pvpDamage);
 		statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_PVP_POWER).." "..
-			format("%.2F%%", pvpHealing).." ("..SHOW_COMBAT_HEALING..")"..FONT_COLOR_CODE_CLOSE;
+			format("%.2F%%", pvpHealing).." ("..SHOW_COMBAT_HEALING_TEXT..")"..FONT_COLOR_CODE_CLOSE;
 		statFrame.tooltip2 = PVP_POWER_TOOLTIP .. format(PVP_POWER_HEALING_TOOLTIP, pvpPower, pvpHealing, pvpDamage);
 	else
 		PaperDollFrame_SetLabelAndText(statFrame, STAT_PVP_POWER, pvpDamage, true, pvpDamage);
