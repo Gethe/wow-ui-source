@@ -146,6 +146,8 @@ ChatTypeInfo["BN_INLINE_TOAST_ALERT"]					= { sticky = 0, flashTab = true, flash
 ChatTypeInfo["BN_INLINE_TOAST_BROADCAST"]				= { sticky = 0, flashTab = true, flashTabOnGeneral = false };
 ChatTypeInfo["BN_INLINE_TOAST_BROADCAST_INFORM"]		= { sticky = 0, flashTab = true, flashTabOnGeneral = false };
 ChatTypeInfo["BN_WHISPER_PLAYER_OFFLINE"] 				= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["PET_BATTLE_COMBAT_LOG"]					= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["PET_BATTLE_INFO"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["COMMUNITIES_CHANNEL"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["VOICE_TEXT"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 --NEW_CHAT_TYPE -Add the info here.
@@ -303,6 +305,12 @@ ChatTypeGroup["BN_INLINE_TOAST_ALERT"] = {
 	"CHAT_MSG_BN_INLINE_TOAST_ALERT",
 	"CHAT_MSG_BN_INLINE_TOAST_BROADCAST",
 	"CHAT_MSG_BN_INLINE_TOAST_BROADCAST_INFORM",
+};
+ChatTypeGroup["PET_BATTLE_COMBAT_LOG"] = {
+	"CHAT_MSG_PET_BATTLE_COMBAT_LOG",
+};
+ChatTypeGroup["PET_BATTLE_INFO"] = {
+	"CHAT_MSG_PET_BATTLE_INFO",
 };
 ChatTypeGroup["VOICE_TEXT"] = {
 	"CHAT_MSG_VOICE_TEXT",
@@ -4376,12 +4384,13 @@ function ChatEdit_DeactivateChat(editBox)
 end
 
 function ChatEdit_ChooseBoxForSend(preferredChatFrame)
-	if ( (not IsVoiceTranscription(ChatEdit_GetLastActiveWindow().chatFrame)) and GetCVar("chatStyle") == "classic" ) then
+	local lastActiveWindow = ChatEdit_GetLastActiveWindow();
+	if ( (not (lastActiveWindow and IsVoiceTranscription(lastActiveWindow.chatFrame))) and GetCVar("chatStyle") == "classic" ) then
 		return DEFAULT_CHAT_FRAME.editBox;
 	elseif ( preferredChatFrame and preferredChatFrame:IsShown() ) then
 		return preferredChatFrame.editBox;
-	elseif ( ChatEdit_GetLastActiveWindow()  and ChatEdit_GetLastActiveWindow():GetParent():IsShown() ) then
-		return ChatEdit_GetLastActiveWindow();
+	elseif ( lastActiveWindow  and lastActiveWindow:GetParent():IsShown() ) then
+		return lastActiveWindow;
 	else
 		return FCFDock_GetSelectedWindow(GENERAL_CHAT_DOCK).editBox;
 	end

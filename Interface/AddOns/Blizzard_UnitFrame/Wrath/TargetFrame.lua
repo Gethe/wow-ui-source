@@ -345,13 +345,13 @@ function TargetFrame_CheckFaction (self)
 end
 
 function TargetFrame_CheckBattlePet(self)
-	--[[if ( UnitIsWildBattlePet(self.unit) or UnitIsBattlePetCompanion(self.unit) ) then
+	if ( UnitIsWildBattlePet(self.unit) or UnitIsBattlePetCompanion(self.unit) ) then
 		local petType = UnitBattlePetType(self.unit);
 		self.petBattleIcon:SetTexture("Interface\\TargetingFrame\\PetBadge-"..PET_TYPE_SUFFIX[petType]);
 		self.petBattleIcon:Show();
 	else
 		self.petBattleIcon:Hide();
-	end]]
+	end
 end
 
 

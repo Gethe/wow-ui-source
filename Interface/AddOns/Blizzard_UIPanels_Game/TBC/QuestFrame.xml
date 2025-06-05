@@ -66,7 +66,7 @@
 					<Button name="QuestFrameCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
 						<Size x="78" y="22"/>
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT" relativeTo="QuestFrame" relativePoint="BOTTOMRIGHT" x="-39" y="73"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="QuestFrame" relativePoint="BOTTOMRIGHT" x="-6" y="4"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function="QuestRewardCancelButton_OnClick"/>

@@ -335,16 +335,6 @@
 					<Anchor point="TOPLEFT" relativeTo="$parentRewardRow2" relativePoint="BOTTOMLEFT" x="0" y="-22"/>
 				</Anchors>
 			</Frame>
-			<Button name="$parentLeaderboard" inherits="UIGoldBorderButtonTemplate" text="LEADERBOARD">
-				<Size x="105" y="22"/>
-				<Anchors>
-					<Anchor point="BOTTOM" relativeTo="$parentDetails" x="0" y="5"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad function="RaiseFrameLevel"/>
-					<OnClick function="ChallengesFrameLeaderboard_OnClick" />
-				</Scripts>
-			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad function="ChallengesFrame_OnLoad"/>

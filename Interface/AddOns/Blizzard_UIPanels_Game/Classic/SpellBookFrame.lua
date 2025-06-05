@@ -106,12 +106,14 @@ function SpellBookFrameMixin:UpdateSpells()
 		currSpellButton:UpdateButton();
 	end
 
-	if ( SpellBookFrame.bookType == BOOKTYPE_SPELL ) then
-		SpellBookPage1:SetDesaturated(_G["SpellBookSkillLineTab"..SpellBookFrame.selectedSkillLine].isOffSpec);
-		SpellBookPage2:SetDesaturated(_G["SpellBookSkillLineTab"..SpellBookFrame.selectedSkillLine].isOffSpec);
-	else
-		SpellBookPage1:SetDesaturated(0);
-		SpellBookPage2:SetDesaturated(0);
+	if (SpellBookPage1 and SpellBookPage2) then
+		if ( SpellBookFrame.bookType == BOOKTYPE_SPELL ) then
+			SpellBookPage1:SetDesaturated(_G["SpellBookSkillLineTab"..SpellBookFrame.selectedSkillLine].isOffSpec);
+			SpellBookPage2:SetDesaturated(_G["SpellBookSkillLineTab"..SpellBookFrame.selectedSkillLine].isOffSpec);
+		else
+			SpellBookPage1:SetDesaturated(0);
+			SpellBookPage2:SetDesaturated(0);
+		end
 	end
 end
 
