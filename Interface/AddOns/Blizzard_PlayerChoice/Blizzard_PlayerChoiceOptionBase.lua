@@ -427,6 +427,7 @@ end
 function PlayerChoiceBaseOptionButtonTemplateMixin:OnReset()
 	self.pushed = false;
 	self:SetDisabledFontObject(self.disabledFont);
+	self:SetPushed(false);
 end
 
 function PlayerChoiceBaseOptionButtonTemplateMixin:OnConfirm()
