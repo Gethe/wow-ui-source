@@ -64,7 +64,7 @@
 						<FontString name="MinimapZoneText" inherits="GameFontNormal" nonspacewrap="true">
 							<Size x="140" y="12"/>
 							<Anchors>
-								<Anchor point="CENTER" relativePoint="TOP" x="0" y="-6"/>
+								<Anchor point="CENTER" relativePoint="TOP" x="-5" y="-6"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -98,7 +98,7 @@
 						<Anchors>
 							<Anchor point="TOPRIGHT">
 								<Offset>
-									<AbsDimension x="24" y="-52"/>
+									<AbsDimension x="24" y="-37"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -159,66 +159,41 @@
 							<AbsDimension x="33" y="33"/>
 						</Size>
 						<Anchors>
-							<Anchor point="BOTTOMLEFT">
+							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="13" y="-13"/>
+									<AbsDimension x="-10" y="-98"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
 						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture name="MiniMapBattlefieldIcon" file="Interface\BattlefieldFrame\UI-Battlefield-Icon">
-									<Size>
-										<AbsDimension x="32" y="32"/>
-									</Size>
-									<Anchors>
-										<Anchor point="CENTER">
-											<Offset>
-												<AbsDimension x="-1" y="0"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</Texture>
-								<FontString name="BattlefieldIconText" inherits="GameFontNormal" nonspacewrap="true">
-									<Size>
-										<AbsDimension x="32" y="32"/>
-									</Size>
-									<Anchors>
-										<Anchor point="CENTER" relativePoint="CENTER">
-											<Offset>
-												<AbsDimension x="0" y="3"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-							</Layer>
-							<Layer level="ARTWORK">
-								<Texture name="MiniMapBattlefieldBorder" file="Interface\Minimap\MiniMap-TrackingBorder">
+							<Layer level="OVERLAY">
+								<Texture name="$parentBorder" file="Interface\Minimap\MiniMap-TrackingBorder">
 									<Size>
 										<AbsDimension x="52" y="52"/>
 									</Size>
 									<Anchors>
-										<Anchor point="TOPLEFT"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-							<Layer level="BORDER">
-								<Texture name="BattlegroundShine" file="Interface\ComboFrame\ComboPoint" alphaMode="ADD">
-									<Size>
-										<AbsDimension x="32" y="32"/>
-									</Size>
-									<Anchors>
-										<Anchor point="CENTER">
+										<Anchor point="TOPLEFT">
 											<Offset>
-												<AbsDimension x="3" y="3"/>
+												<AbsDimension x="1" y="-1"/>
 											</Offset>
 										</Anchor>
 									</Anchors>
-									<TexCoords left="0.5625" right="1" top="0" bottom="1"/>
-									<Color r="1" g="1" b="1" a="0"/>
 								</Texture>
+								<FontString name="$parentGroupSize" inherits="NumberFontNormalYellow" hidden="true" parentKey="groupSize">
+									<Anchors>
+										<Anchor point="CENTER" x="1" y="0"/>
+									</Anchors>
+								</FontString>
 							</Layer>
 						</Layers>
+						<Frames>
+							<Frame name="$parentIcon" inherits="EyeTemplate" hidden="false" parentKey="Eye">
+								<Size x="30" y="30"/>
+								<Anchors>
+									<Anchor point="CENTER"/>
+								</Anchors>
+							</Frame>
+						</Frames>
 						<Scripts>
 							<OnLoad>
 								self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
@@ -289,22 +264,10 @@
 						</Layers>
 						<Frames>
 							<Button name="MiniMapWorldMapButton">
-								<Size x="33" y="33"/>
+								<Size x="32" y="32"/>
 								<Anchors>
-									<Anchor point="TOPRIGHT" x="-21" y="-1"/>
+									<Anchor point="TOPRIGHT" x="-2" y="23"/>
 								</Anchors>
-								<Layers>
-									<Layer level="OVERLAY">
-										<Texture name="MiniMapWorldBorder" file="Interface\Minimap\MiniMap-TrackingBorder">
-											<Size>
-												<AbsDimension x="52" y="52"/>
-											</Size>
-											<Anchors>
-												<Anchor point="TOPLEFT"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-								</Layers>
 								<Scripts>
 									<OnLoad>
 										self.tooltipText = MicroButtonTooltipText(WORLDMAP_BUTTON, "TOGGLEWORLDMAP");
@@ -323,33 +286,26 @@
 										ToggleWorldMap();
 									</OnClick>
 								</Scripts>
-								<NormalTexture file="Interface\WorldMap\UI-World-Icon">
-									<Size x="20" y="20"/>
-									<Anchors>
-										<Anchor point="CENTER">
-											<Offset>
-												<AbsDimension x="-2" y="2"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
+								<NormalTexture file="Interface\minimap\UI-Minimap-WorldMapSquare">
+									<Size x="32" y="32"/>
+									<TexCoords left="0.0" right="1" top="0" bottom="0.5"/>
 								</NormalTexture>
-								<PushedTexture file="Interface\WorldMap\UI-World-Icon">
-									<Size x="20" y="20"/>
+								<PushedTexture file="Interface\minimap\UI-Minimap-WorldMapSquare">
+									<Size x="32" y="32"/>
+									<TexCoords left="0.0" right="1" top="0.5" bottom="1"/>
+								</PushedTexture>									
+								<HighlightTexture file="Interface\BUTTONS\UI-Common-MouseHilight.png" alphaMode="ADD">
+									<Size x="28" y="28"/>
 									<Anchors>
-										<Anchor point="CENTER">
-											<Offset>
-												<AbsDimension x="-1" y="1"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPRIGHT" x="2" y="-2"/>
 									</Anchors>
-								</PushedTexture>
-								<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
+								</HighlightTexture>
 							</Button>
 							<Frame name="MiniMapTracking">
 								<Size x="32" y="32"/>
 								<Anchors>
 									<Anchor point="TOPLEFT">
-										<Offset x="13" y="-40"/>
+										<Offset x="9" y="-45"/>
 									</Anchor>
 								</Anchors>
 								<Layers>
@@ -365,7 +321,7 @@
 										</Texture>
 									</Layer>
 									<Layer level="ARTWORK">
-										<Texture name="$parentIcon">
+										<Texture name="$parentIcon" file="Interface\Minimap\Tracking\None">
 											<Size x="20" y="20"/>
 											<Anchors>
 												<Anchor point="TOPLEFT">
@@ -464,7 +420,7 @@
 									<OnLeave function="MiniMapLFGFrame_OnLeave"/>
 								</Scripts>						
 								<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
-							</Button>	
+							</Button>
 							<Button name="MinimapZoomIn">
 								<Size>
 									<AbsDimension x="32" y="32"/>
@@ -472,7 +428,7 @@
 								<Anchors>
 									<Anchor point="CENTER">
 										<Offset>
-											<AbsDimension x="71" y="-20"/>
+											<AbsDimension x="72" y="-25"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -501,7 +457,7 @@
 								<Anchors>
 									<Anchor point="CENTER">
 										<Offset>
-											<AbsDimension x="51" y="-39"/>
+											<AbsDimension x="50" y="-43"/>
 										</Offset>
 									</Anchor>
 								</Anchors>

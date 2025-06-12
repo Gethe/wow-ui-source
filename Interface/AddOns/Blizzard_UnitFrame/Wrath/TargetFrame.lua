@@ -79,9 +79,10 @@ function TargetFrame_OnLoad(self, unit, menuFunc)
 	                    threatFrame, "player", _G[thisName.."NumericalThreat"],
 						healthBar.MyHealPredictionBar,
 						healthBar.OtherHealPredictionBar,
-						nil, nil, nil,
-						nil, nil,
-						nil, nil);
+						healthBar.TotalAbsorbBar, healthBar.TotalAbsorbBarOverlay,
+						self.textureFrame.overAbsorbGlow, self.textureFrame.overHealAbsorbGlow,
+						healthBar.HealAbsorbBar, healthBar.HealAbsorbBarLeftShadow,
+						healthBar.HealAbsorbBarRightShadow, nil);
 
 	TargetFrame_Update(self);
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");

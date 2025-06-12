@@ -149,6 +149,10 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 			CompactUnitFrame_UpdateHealthBorder(self);
 		elseif ( event == "GROUP_LEFT" ) then
 			CompactUnitFrame_UpdateHealthBorder(self);
+		elseif ( event == "UNIT_HEAL_ABSORB_AMOUNT_CHANGED" or event == "UNIT_ABSORB_AMOUNT_CHANGED" ) then
+			CompactUnitFrame_UpdateMaxHealth(self);
+			CompactUnitFrame_UpdateHealth(self);
+			CompactUnitFrame_UpdateHealPrediction(self);
 		end
 	end
 end
@@ -253,6 +257,8 @@ function CompactUnitFrame_UpdateUnitEvents(frame)
 	frame:RegisterUnitEvent("PLAYER_FLAGS_CHANGED", unit, displayedUnit);
 	frame:RegisterUnitEvent("UNIT_LEVEL", unit, displayedUnit);
 	frame:RegisterUnitEvent("PLAYER_TARGET_SET_ATTACKING", unit, displayedUnit);
+	frame:RegisterUnitEvent("UNIT_ABSORB_AMOUNT_CHANGED", unit, displayedUnit);
+	frame:RegisterUnitEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED", unit, displayedUnit);
 end
 
 function CompactUnitFrame_UnregisterEvents(frame)
@@ -769,7 +775,7 @@ end
 --If you are making changes here, it is possible you may want to make changes there as well.
 local MAX_INCOMING_HEAL_OVERFLOW = 1.05;
 function CompactUnitFrame_UpdateHealPrediction(frame)
-	if ( not frame.myHealPredictionBar and not frame.otherHealPredictionBar and not frame.healAbsorbBar and not frame.totalAbsorbBar ) then
+	if ( not frame.myHealPrediction and not frame.otherHealPrediction and not frame.healAbsorb and not frame.totalAbsorb ) then
 		return;
 	end
 
@@ -780,7 +786,7 @@ function CompactUnitFrame_UpdateHealPrediction(frame)
 		return;
 	end
 
-	if ( not frame.optionTable.displayHealPrediction ) then
+	if ( not UnitFrame_IsHealPredictionEnabled() ) then
 		frame.myHealPrediction:Hide();
 		frame.otherHealPrediction:Hide();
 		frame.totalAbsorb:Hide();
@@ -795,18 +801,17 @@ function CompactUnitFrame_UpdateHealPrediction(frame)
 
 	local myIncomingHeal = UnitGetIncomingHeals(frame.displayedUnit, "player") or 0;
 	local allIncomingHeal = UnitGetIncomingHeals(frame.displayedUnit) or 0;
-	local totalAbsorb = 0;
+	local totalAbsorb = UnitGetTotalAbsorbs(frame.unit) or 0;
+	local myCurrentHealAbsorb = UnitGetTotalHealAbsorbs(frame.unit) or 0;
 
-	local myCurrentHealAbsorb = 0;
-	if ( frame.healAbsorbBar ) then
-		totalAbsorb = UnitGetTotalAbsorbs(frame.unit) or 0;
-		myCurrentHealAbsorb = UnitGetTotalHealAbsorbs(frame.unit) or 0;
-
-		--We don't fill outside the health bar with healAbsorbs.  Instead, an overHealAbsorbGlow is shown.
-		if ( health < myCurrentHealAbsorb ) then
+	--We don't fill outside the health bar with healAbsorbs.  Instead, an overHealAbsorbGlow is shown.
+	if ( health < myCurrentHealAbsorb ) then
+		if frame.overHealAbsorbGlow then
 			frame.overHealAbsorbGlow:Show();
-			myCurrentHealAbsorb = health;
-		else
+		end
+		myCurrentHealAbsorb = health;
+	else
+		if frame.overHealAbsorbGlow then
 			frame.overHealAbsorbGlow:Hide();
 		end
 	end
@@ -1476,6 +1481,39 @@ DefaultCompactUnitFrameOptions = {
 	allowClassColorsForNPCs = true,
 }
 
+function CompactUnitFrame_SetupHealPredictions(frame)
+	frame.myHealPrediction:ClearAllPoints();
+	frame.myHealPrediction:SetColorTexture(1,1,1);
+	frame.myHealPrediction:SetGradient("VERTICAL", HEALTHBAR_MY_HEAL_PREDICTION_GRADIENT_COLOR1, HEALTHBAR_MY_HEAL_PREDICTION_GRADIENT_COLOR2);
+
+	frame.myHealAbsorb:ClearAllPoints();
+	frame.myHealAbsorb:SetTexture("Interface\\RaidFrame\\Absorb-Fill", true, true);
+	frame.myHealAbsorbLeftShadow:ClearAllPoints();
+	frame.myHealAbsorbRightShadow:ClearAllPoints();
+
+	frame.otherHealPrediction:ClearAllPoints();
+	frame.otherHealPrediction:SetColorTexture(1,1,1);
+	frame.otherHealPrediction:SetGradient("VERTICAL", HEALTHBAR_OTHER_HEAL_PREDICTION_GRADIENT_COLOR1, HEALTHBAR_OTHER_HEAL_PREDICTION_GRADIENT_COLOR2);
+	frame.totalAbsorb:ClearAllPoints();
+	frame.totalAbsorb:SetTexture("Interface\\RaidFrame\\Shield-Fill");
+	frame.totalAbsorb.overlay = frame.totalAbsorbOverlay;
+	frame.totalAbsorbOverlay:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true);	--Tile both vertically and horizontally
+	frame.totalAbsorbOverlay:SetAllPoints(frame.totalAbsorb);
+	frame.totalAbsorbOverlay.tileSize = 32;
+	frame.overAbsorbGlow:ClearAllPoints();
+	frame.overAbsorbGlow:SetTexture("Interface\\RaidFrame\\Shield-Overshield");
+	frame.overAbsorbGlow:SetBlendMode("ADD");
+	frame.overAbsorbGlow:SetPoint("BOTTOMLEFT", frame.healthBar, "BOTTOMRIGHT", -7, 0);
+	frame.overAbsorbGlow:SetPoint("TOPLEFT", frame.healthBar, "TOPRIGHT", -7, 0);
+	frame.overAbsorbGlow:SetWidth(16);
+	frame.overHealAbsorbGlow:ClearAllPoints();
+	frame.overHealAbsorbGlow:SetTexture("Interface\\RaidFrame\\Absorb-Overabsorb");
+	frame.overHealAbsorbGlow:SetBlendMode("ADD");
+	frame.overHealAbsorbGlow:SetPoint("BOTTOMRIGHT", frame.healthBar, "BOTTOMLEFT", 7, 0);
+	frame.overHealAbsorbGlow:SetPoint("TOPRIGHT", frame.healthBar, "TOPLEFT", 7, 0);
+	frame.overHealAbsorbGlow:SetWidth(16);
+end
+
 local NATIVE_UNIT_FRAME_HEIGHT = 36;
 local NATIVE_UNIT_FRAME_WIDTH = 72;
 DefaultCompactUnitFrameSetupOptions = {
@@ -1518,7 +1556,9 @@ function DefaultCompactUnitFrameSetup(frame)
 			frame.powerBar:Hide();
 		end
 	end
-	
+
+	CompactUnitFrame_SetupHealPredictions(frame);
+
 	frame.roleIcon:ClearAllPoints();
 	frame.roleIcon:SetPoint("TOPLEFT", 3, -2);
 	frame.roleIcon:SetSize(12, 12);
@@ -1665,6 +1705,8 @@ function DefaultCompactMiniFrameSetup(frame)
 	frame.healthBar:SetPoint("TOPLEFT", frame, "TOPLEFT", 1, -1);
 	frame.healthBar:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -1, 1);
 	frame.healthBar:SetStatusBarTexture("Interface\\RaidFrame\\Raid-Bar-Hp-Fill", "BORDER");
+	
+	CompactUnitFrame_SetupHealPredictions(frame);
 
 	frame.name:SetPoint("LEFT", 5, 1);
 	frame.name:SetPoint("RIGHT", -3, 1);

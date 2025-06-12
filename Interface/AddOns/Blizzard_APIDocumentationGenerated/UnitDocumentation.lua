@@ -251,6 +251,34 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitGetTotalAbsorbs",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitGetTotalHealAbsorbs",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitGroupRolesAssignedEnum",
 			Type = "Function",
 
@@ -989,6 +1017,15 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitAbsorbAmountChanged",
+			Type = "Event",
+			LiteralName = "UNIT_ABSORB_AMOUNT_CHANGED",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitAttack",
 			Type = "Event",
 			LiteralName = "UNIT_ATTACK",
@@ -1120,6 +1157,15 @@ local Unit =
 			Name = "UnitHappiness",
 			Type = "Event",
 			LiteralName = "UNIT_HAPPINESS",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitHealAbsorbAmountChanged",
+			Type = "Event",
+			LiteralName = "UNIT_HEAL_ABSORB_AMOUNT_CHANGED",
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },

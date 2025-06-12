@@ -77,34 +77,23 @@ function UnitFrame_Initialize (self, unit, name, portrait, healthbar, healthtext
 	self.myHealPredictionBar = myHealPredictionBar;
 	self.otherHealPredictionBar = otherHealPredictionBar
 	self.totalAbsorbBar = totalAbsorbBar;
-	self.totalAbsorbBarOverlay = totalAbsorbBarOverlay;
 	self.overAbsorbGlow = overAbsorbGlow;
 	self.overHealAbsorbGlow = overHealAbsorbGlow;
 	self.healAbsorbBar = healAbsorbBar;
 	self.healAbsorbBarLeftShadow = healAbsorbBarLeftShadow;
 	self.healAbsorbBarRightShadow = healAbsorbBarRightShadow;
 	self.myManaCostPredictionBar = myManaCostPredictionBar;
-	if ( self.totalAbsorbBar ) then
-		self.totalAbsorbBar:ClearAllPoints();
-	end
+
 	if ( self.myManaCostPredictionBar ) then
 		self.myManaCostPredictionBar:ClearAllPoints();
 	end
 
-	if ( self.totalAbsorbBarOverlay ) then
-		self.totalAbsorbBar.overlay = self.totalAbsorbBarOverlay;
-		self.totalAbsorbBarOverlay:SetAllPoints(self.totalAbsorbBar);
-		self.totalAbsorbBarOverlay.tileSize = 32;
-	end
 	if ( self.overAbsorbGlow ) then
 		self.overAbsorbGlow:ClearAllPoints();
 		self.overAbsorbGlow:SetPoint("TOPLEFT", self.healthbar, "TOPRIGHT", -7, 0);
 		self.overAbsorbGlow:SetPoint("BOTTOMLEFT", self.healthbar, "BOTTOMRIGHT", -7, 0);
 	end
-	if ( self.healAbsorbBar ) then
-		self.healAbsorbBar:ClearAllPoints();
-		self.healAbsorbBar:SetTexture("Interface\\RaidFrame\\Absorb-Fill", true, true);
-	end
+
 	if ( self.overHealAbsorbGlow ) then
 		self.overHealAbsorbGlow:ClearAllPoints();
 		self.overHealAbsorbGlow:SetPoint("BOTTOMRIGHT", self.healthbar, "BOTTOMLEFT", 7, 0);
@@ -153,6 +142,12 @@ function UnitFrame_Initialize (self, unit, name, portrait, healthbar, healthtext
 		self:RegisterUnitEvent("UNIT_SPELLCAST_FAILED", unit);
 		self:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", unit);
 	end
+	if ( self.healAbsorbBar ) then
+		self:RegisterUnitEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED", unit);
+	end
+	if ( self.totalAbsorbBar ) then
+		self:RegisterUnitEvent("UNIT_ABSORB_AMOUNT_CHANGED", unit);
+	end
 end
 
 function UnitFrame_SetUnit (self, unit, healthbar, manabar)
@@ -172,6 +167,10 @@ function UnitFrame_SetUnit (self, unit, healthbar, manabar)
 		
 		if ( self.PlayerFrameHealthBarAnimatedLoss ) then
 			self.PlayerFrameHealthBarAnimatedLoss:SetUnitHealthBar(unit, healthbar);
+		end
+
+		if ( self.totalAbsorbBar ) then
+			self:RegisterUnitEvent("UNIT_ABSORB_AMOUNT_CHANGED", unit);
 		end
 	end
 
@@ -202,6 +201,8 @@ function UnitFrame_Update (self, isParty)
 	UnitFramePortrait_Update(self);
 	UnitFrameHealthBar_Update(self.healthbar, self.unit);
 	UnitFrameManaBar_Update(self.manabar, self.unit);
+	UnitFrameHealPredictionBars_UpdateMax(self);
+	UnitFrameHealPredictionBars_Update(self);
 end
 
 function UnitFramePortrait_Update (self)
@@ -230,6 +231,10 @@ function UnitFrame_OnEvent(self, event, ...)
 		elseif ( event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_FAILED" or event == "UNIT_SPELLCAST_SUCCEEDED" ) then
 			local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible, spellID = UnitCastingInfo(unit);
 			UnitFrameManaCostPredictionBars_Update(self, event == "UNIT_SPELLCAST_START", startTime, endTime, spellID);
+		elseif ( event == "UNIT_ABSORB_AMOUNT_CHANGED" ) then
+			UnitFrameHealPredictionBars_Update(self);
+		elseif ( event == "UNIT_HEAL_ABSORB_AMOUNT_CHANGED" ) then
+			UnitFrameHealPredictionBars_Update(self);
 		end
 	elseif ( event == "PORTRAITS_UPDATED" ) then
 		UnitFramePortrait_Update(self);
@@ -288,11 +293,16 @@ function UnitFrameHealPredictionBars_Update(frame)
 		myCurrentHealAbsorb = UnitGetTotalHealAbsorbs(frame.unit) or 0;
 
 		--We don't fill outside the health bar with healAbsorbs.  Instead, an overHealAbsorbGlow is shown.
+
 		if ( health < myCurrentHealAbsorb ) then
-			frame.overHealAbsorbGlow:Show();
+			if frame.overHealAbsorbGlow then
+				frame.overHealAbsorbGlow:Show();
+			end
 			myCurrentHealAbsorb = health;
 		else
-			frame.overHealAbsorbGlow:Hide();
+			if frame.overHealAbsorbGlow then
+				frame.overHealAbsorbGlow:Hide();
+			end
 		end
 	end
 
@@ -360,7 +370,7 @@ function UnitFrameHealPredictionBars_Update(frame)
 
 	--Show myIncomingHeal on the health bar.
 	local incomingHealTexture;
-	if (frame.myHealPredictionBar and (frame.myHealPredictionBar.UpdateFillPosition ~= nil)) then
+	if (frame.myHealPredictionBar and frame.myHealPredictionBar.UpdateFillPosition) then
 		incomingHealTexture = frame.myHealPredictionBar:UpdateFillPosition(healthTexture, myIncomingHeal, -myCurrentHealAbsorbPercent);
 	end
 
@@ -368,7 +378,7 @@ function UnitFrameHealPredictionBars_Update(frame)
 	local xOffset = (myIncomingHeal > 0) and 0 or -myCurrentHealAbsorbPercent;
 
 	--Append otherIncomingHeal on the health bar
-	if (frame.otherHealPredictionBar and (frame.otherHealPredictionBar.UpdateFillPosition ~= nil)) then
+	if (frame.otherHealPredictionBar and frame.otherHealPredictionBar.UpdateFillPosition) then
 		incomingHealTexture = frame.otherHealPredictionBar:UpdateFillPosition(otherHealLeftTexture, otherIncomingHeal, xOffset);
 	end
 
@@ -382,7 +392,7 @@ function UnitFrameHealPredictionBars_Update(frame)
 		appendTexture = incomingHealTexture or healthTexture;
 	end
 
-	if ( frame.totalAbsorbBar and (frame.totalAbsorbBar.UpdateFillPosition ~= nil) ) then
+	if ( frame.totalAbsorbBar and frame.totalAbsorbBar.UpdateFillPosition ) then
 		frame.totalAbsorbBar:UpdateFillPosition(appendTexture, totalAbsorb);
 	end
 end

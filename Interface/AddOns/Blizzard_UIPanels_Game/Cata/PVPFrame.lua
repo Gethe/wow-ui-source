@@ -1022,7 +1022,9 @@ function PVPTimerFrame_OnUpdate(self, elapsed)
 	local keepUpdating = false;
 	if ( BATTLEFIELD_SHUTDOWN_TIMER > 0 ) then
 		keepUpdating = true;
-		BattlefieldIconText:Hide();
+		if(BattlefieldIconText) then
+			BattlefieldIconText:Hide();
+		end
 	else
 		local lowestExpiration = 0;
 		for i = 1, GetMaxBattlefieldID() do
@@ -1035,12 +1037,13 @@ function PVPTimerFrame_OnUpdate(self, elapsed)
 				keepUpdating = true;
 			end
 		end
-
-		if( lowestExpiration > 0 and lowestExpiration <= 10 ) then
-			BattlefieldIconText:SetText(lowestExpiration);
-			BattlefieldIconText:Show();
-		else
-			BattlefieldIconText:Hide();
+		if(BattlefieldIconText) then
+			if( lowestExpiration > 0 and lowestExpiration <= 10 ) then
+				BattlefieldIconText:SetText(lowestExpiration);
+				BattlefieldIconText:Show();
+			else
+				BattlefieldIconText:Hide();
+			end
 		end
 	end
 	

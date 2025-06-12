@@ -6,6 +6,7 @@ MINIMAP_RECORDING_INDICATOR_ON = false;
 
 MINIMAP_EXPANDER_MAXSIZE = 28;
 HUNTER_TRACKING = 1;
+TOWNSFOLK_TRACKING = 2;
 
 LFG_EYE_TEXTURES = { };
 LFG_EYE_TEXTURES["default"] = { file = "Interface\\LFGFrame\\LFG-Eye", width = 512, height = 256, frames = 29, iconSize = 64, delay = 0.1 };
@@ -16,6 +17,32 @@ MAX_BATTLEFIELD_QUEUES = 3;
 
 local BATTLEFIELD_FRAME_FADE_TIME = 0.15
 
+-- Some tracking states require spell casts to complete before the
+-- state is recognized as active, causing the menu to appear unresponsive
+-- and/or delayed when toggling menu selections. This retains the last
+-- desired state so that the dropdown menu can reflect the user's intention.
+local function CreatePredictedTrackingState()
+	local tbl = {};
+	local state = {};
+
+	tbl.SetSelected = function(self, index, selected)
+		state[index] = selected;
+	end
+
+	tbl.IsSelected = function(self, index)
+		return state[index] == true;
+	end
+
+	tbl.ClearSelections = function(self)
+		state = {};
+
+		C_Minimap.ClearAllTracking();
+	end
+
+	return tbl;
+end
+
+local trackingState = CreatePredictedTrackingState();
 
 function Minimap_OnLoad(self)
 	self.fadeOut = nil;
@@ -317,7 +344,8 @@ function MiniMapTracking_Update()
 	local count = C_Minimap.GetNumTrackingTypes();
 	for id = 1, count do
 		local trackingInfo = C_Minimap.GetTrackingInfo(id);
-		if trackingInfo and trackingInfo.active then
+		if trackingInfo then
+			if trackingInfo.active then
 				if (trackingInfo.type == "spell") then 
 					if (currentTexture == trackingInfo.texture) then
 						return;
@@ -330,44 +358,58 @@ function MiniMapTracking_Update()
 				end
 			end
 		end
+	end
 	MiniMapTrackingIcon:SetTexture(bestTexture);
 	MiniMapTrackingShineFadeIn();
+end
+
+local function ToggleTrackingSelected(info)
+	local selected = trackingState:IsSelected(info.index);
+	local newSelected = not selected;
+	C_Minimap.SetTracking(info.index, newSelected);
+	trackingState:SetSelected(info.index, newSelected);
+end
+
+local function IsTrackingActive(info)
+	return trackingState:IsSelected(info.index);
 end
 
 MiniMapTrackingButtonMixin = { };
 
 function MiniMapTrackingButtonMixin:OnLoad()
 	self:RegisterEvent("MINIMAP_UPDATE_TRACKING");
-	MiniMapTracking_Update();
+	self:RegisterEvent("VARIABLES_LOADED");
+	self:RegisterEvent("CVAR_UPDATE");
+	self:RegisterEvent("SPELLS_CHANGED");
 	MiniMapTrackingBackground:SetAlpha(0.6);
-	
-	local function IsSelected(trackingInfo)
-		local info = C_Minimap.GetTrackingInfo(trackingInfo.index);
-		return info and info.active;
-	end
-
-	local function SetSelected(trackingInfo)
-		local selected = IsSelected(trackingInfo);
-		C_Minimap.SetTracking(trackingInfo.index, not selected);
-	end
 
 	self:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_MINIMAP_TRACKING");
 
 		rootDescription:CreateButton(UNCHECK_ALL, function()
+			trackingState:ClearSelections();
 			C_Minimap.ClearAllTracking();
 			return MenuResponse.Refresh;
 		end);
 
 		local hunterInfo = {};
+		local townfolkInfo = {};
 		local regularInfo = {};
+
+		local class = select(2, UnitClass("player"));
+		local isHunterClass = class == "HUNTER";
 	
 		for index = 1, C_Minimap.GetNumTrackingTypes() do
 			local trackingInfo = C_Minimap.GetTrackingInfo(index);
 			trackingInfo.index = index;
 
-			local tbl = (trackingInfo.subType == HUNTER_TRACKING) and hunterInfo or regularInfo;
-			table.insert(tbl, trackingInfo);
+			if isHunterClass and (trackingInfo.subType == HUNTER_TRACKING) then
+				table.insert(hunterInfo, trackingInfo);
+			elseif trackingInfo.subType == TOWNSFOLK_TRACKING then
+				table.insert(townfolkInfo, trackingInfo);
+			else
+				table.insert(regularInfo, trackingInfo);
+			end
 		end
 
 		local function CreateCheckboxWithIcon(parentDescription, trackingInfo)
@@ -377,8 +419,8 @@ function MiniMapTrackingButtonMixin:OnLoad()
 			local texture = trackingInfo.texture;
 			local desc = parentDescription:CreateCheckbox(
 				name,
-				IsSelected,
-				SetSelected,
+				IsTrackingActive,
+				ToggleTrackingSelected,
 				trackingInfo);
 	
 			desc:AddInitializer(function(button, description, menu)
@@ -414,16 +456,40 @@ function MiniMapTrackingButtonMixin:OnLoad()
 				CreateCheckboxWithIcon(hunterMenuDesc, info);
 			end
 		end
+
+		local townfolkCount = #townfolkInfo;
+		if townfolkCount > 0 then
+			local townfolkMenuDesc = rootDescription;
+			if townfolkCount > 1 then
+				townfolkMenuDesc = rootDescription:CreateButton(TOWNSFOLK_TRACKING_TEXT);
+			end
+
+			for index, info in ipairs(townfolkInfo) do
+				CreateCheckboxWithIcon(townfolkMenuDesc, info);
+			end
+		end
 	
 		for index, info in ipairs(regularInfo) do
 			CreateCheckboxWithIcon(rootDescription, info);
 		end
 	end);
+
+	MiniMapTracking_Update();
 end
 
 function MiniMapTrackingButtonMixin:OnEvent(event, arg1)
 	if event == "MINIMAP_UPDATE_TRACKING" then
 		MiniMapTracking_Update();
+	end
+
+	if event == "CVAR_UPDATE" or event == "VARIABLES_LOADED" or event == "SPELLS_CHANGED" or event == "MINIMAP_UPDATE_TRACKING" then
+		-- The initial tracking values are unavailable until these events have fired.
+		for index = 1, C_Minimap.GetNumTrackingTypes() do
+			local trackingInfo = C_Minimap.GetTrackingInfo(index);
+			if trackingInfo then
+				trackingState:SetSelected(index, trackingInfo.active);
+			end
+		end
 	end
 end
 
@@ -789,30 +855,6 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly, mapIndex)
 		else
 			MiniMapBattlefieldFrame:Show();
 		end
-
-		-- Set minimap icon here since it bugs out on login
-		if ( UnitFactionGroup("player") ) then
-			MiniMapBattlefieldIcon:SetTexture("Interface\\BattlefieldFrame\\Battleground-"..UnitFactionGroup("player"));
-		end
 	end
 	PVPFrame.numQueues = numberQueues;
-
-	MiniMapBattlefieldFrame_isArena();
-end
-
-function MiniMapBattlefieldFrame_isArena()
-	-- Set minimap icon here since it bugs out on login
-	local _, _, _, _, _, _, isRankedArena  = GetBattlefieldStatus(1);
-	if (isRankedArena) then
-		MiniMapBattlefieldIcon:SetTexture("Interface\\PVPFrame\\PVP-ArenaPoints-Icon");
-		MiniMapBattlefieldIcon:SetWidth(19);
-		MiniMapBattlefieldIcon:SetHeight(19);
-		MiniMapBattlefieldIcon:SetPoint("CENTER", "MiniMapBattlefieldFrame", "CENTER", -1, 2);
-	elseif ( UnitFactionGroup("player") ) then
-		MiniMapBattlefieldIcon:SetTexture("Interface\\BattlefieldFrame\\Battleground-"..UnitFactionGroup("player"));
-		MiniMapBattlefieldIcon:SetTexCoord(0, 1, 0, 1);
-		MiniMapBattlefieldIcon:SetWidth(32);
-		MiniMapBattlefieldIcon:SetHeight(32);
-		MiniMapBattlefieldIcon:SetPoint("CENTER", "MiniMapBattlefieldFrame", "CENTER", -1, 0);
-	end
 end

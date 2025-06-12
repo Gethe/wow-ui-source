@@ -26,3 +26,11 @@ BOTTOM_RIGHT_OFFSET = 26;
 NUM_GLYPH_OFFSET = 2;
 HEIGHT_OFFSET = 10;
 GLYPH_SIZE_OFFSET = 6;
+
+function ShouldDisplaySpecTextInGlyphSubtext()
+	return true;
+end
+
+function ShouldDisplaySpecIconInBackground()
+	return true;
+end

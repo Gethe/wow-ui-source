@@ -3,7 +3,6 @@
 -------------------------------------------------------
 MAX_LFG_LIST_APPLICATIONS = 5;
 MAX_LFG_LIST_SEARCH_AUTOCOMPLETE_ENTRIES = 6;
-MAX_LFG_LIST_ACTIVITY_DROPDOWN_ENTRIES = 10;
 LFG_LIST_DELISTED_FONT_COLOR = {r=0.3, g=0.3, b=0.3};
 LFG_LIST_COMMENT_FONT_COLOR = {r=0.6, g=0.6, b=0.6};
 GROUP_FINDER_CATEGORY_ID_DUNGEONS = 2;
@@ -701,32 +700,10 @@ function LFGListEntryCreation_SetupActivityDropdown(self)
 	self.ActivityDropdown:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_LFG_FRAME_GROUP_ACTIVITY");
 
-		local useMore = self.selectedFilters == 0;
-
 		local filters = bit.bor(self.baseFilters, self.selectedFilters);
 
 		--Start out displaying everything
 		local activities = C_LFGList.GetAvailableActivities(self.selectedCategory, self.selectedGroup, filters);
-
-		--If we're displaying more than the max, see if we can just display recommended
-		if ( useMore ) then
-			if ( #activities > MAX_LFG_LIST_ACTIVITY_DROPDOWN_ENTRIES ) then
-				filters = bit.bor(filters, Enum.LFGListFilter.Recommended);
-				local recActivities = C_LFGList.GetAvailableActivities(self.selectedCategory, self.selectedGroup, filters);
-
-				if ( #recActivities > 0 ) then
-					--We will prefer recommended activities for the ones that are shown (the rest will go into the "more" section)
-					activities = recActivities;
-				end
-
-				--Just display up to the max number of activities
-				for i=#activities, MAX_LFG_LIST_ACTIVITY_DROPDOWN_ENTRIES, -1 do
-					activities[i] = nil;
-				end
-			else
-				useMore = false;
-			end
-		end
 		
 		local function IsActivitySelected(activityID)
 			return self.selectedActivity == activityID;
@@ -736,17 +713,14 @@ function LFGListEntryCreation_SetupActivityDropdown(self)
 			LFGListEntryCreation_Select(self, nil, nil, nil, activityID);
 		end
 
+		LFGListUtil_SortActivitiesByShortname(activities);
+
+		--In classic we want to display all the groups, so we don't have a "more" button here.
 		for i=1, #activities do
 			local activityID = activities[i];
 			local activityInfo = C_LFGList.GetActivityInfoTable(activityID);
 			local shortName = activityInfo and activityInfo.shortName;
 			rootDescription:CreateRadio(shortName, IsActivitySelected, SetActivitySelected, activityID);
-		end
-
-		if useMore then
-			rootDescription:CreateButton(LFG_LIST_MORE, function()
-				LFGListEntryCreationActivityFinder_Show(self.ActivityFinder, self.selectedCategory, self.selectedGroup, bit.bor(self.baseFilters, self.selectedFilters));
-			end);
 		end
 	end);
 end
@@ -3372,33 +3346,42 @@ function LFGListUtil_OpenBestWindow(toggle)
 	end
 end
 
-function LFGListUtil_SortActivitiesByRelevancyCB(activityID1, activityID2)
-	local activityInfo1 = C_LFGList.GetActivityInfoTable(activityID1);
-	local activityInfo2 = C_LFGList.GetActivityInfoTable(activityID2);
+function LFGListUtil_SortActivitiesByRelevancy(activities)
+	table.sort(activities, function(activityID1, activityID2)
+		local activityInfo1 = C_LFGList.GetActivityInfoTable(activityID1);
+		local activityInfo2 = C_LFGList.GetActivityInfoTable(activityID2);
 
-	if(not activityInfo1 or not activityInfo2) then
-		return false;
-	end
-
-	if ( activityInfo1.minLevel ~= activityInfo2.minLevel ) then
-		return activityInfo1.minLevel > activityInfo2.minLevel;
-	elseif ( activityInfo1.ilvlSuggestion ~= activityInfo2.ilvlSuggestion ) then
-		local myILevel = GetAverageItemLevel();
-
-		if ((activityInfo1.minLevel <= myILevel) ~= (activityInfo2.minLevel <= myILevel) ) then
-			--If one is below our item level and the other above, choose the one we meet
-			return activityInfo1.minLevel < myILevel;
-		else
-			--If both are above or both are below, choose the one closest to our iLevel
-			return math.abs(activityInfo1.ilvlSuggestion - myILevel) < math.abs(activityInfo2.ilvlSuggestion - myILevel);
+		if(not activityInfo1 or not activityInfo2) then
+			return false;
 		end
-	else
-		return strcmputf8i(activityInfo1.fullName, activityInfo2.ilvlSuggestion) < 0;
-	end
+
+		if ( activityInfo1.minLevel ~= activityInfo2.minLevel ) then
+			return activityInfo1.minLevel > activityInfo2.minLevel;
+		elseif ( activityInfo1.ilvlSuggestion ~= activityInfo2.ilvlSuggestion ) then
+			local myILevel = GetAverageItemLevel();
+
+			if ((activityInfo1.minLevel <= myILevel) ~= (activityInfo2.minLevel <= myILevel) ) then
+				--If one is below our item level and the other above, choose the one we meet
+				return activityInfo1.minLevel < myILevel;
+			else
+				--If both are above or both are below, choose the one closest to our iLevel
+				return math.abs(activityInfo1.ilvlSuggestion - myILevel) < math.abs(activityInfo2.ilvlSuggestion - myILevel);
+			end
+		else
+			return strcmputf8i(activityInfo1.fullName, activityInfo2.ilvlSuggestion) < 0;
+		end
+	end);
 end
 
-function LFGListUtil_SortActivitiesByRelevancy(activities)
-	table.sort(activities, LFGListUtil_SortActivitiesByRelevancyCB);
+function LFGListUtil_SortActivitiesByShortname(activities)
+	table.sort(activities, function(activityID1, activityID2)
+		local activityInfo1 = C_LFGList.GetActivityInfoTable(activityID1);
+		local activityInfo2 = C_LFGList.GetActivityInfoTable(activityID2);
+		if activityInfo1 and activityInfo2 then
+			return activityInfo1.shortName < activityInfo2.shortName;
+		end
+		return false;
+	end);
 end
 
 LFG_LIST_ACTIVE_QUEUE_MESSAGE_EVENTS = {

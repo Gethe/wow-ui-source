@@ -43,10 +43,14 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame setAllPoints="true">
+			<Frame parentKey="rightFrame" setAllPoints="true">
 				<Frames>
-					<Frame setAllPoints="true">
+					<Frame parentKey="textFrame" setAllPoints="true">
 						<Layers>
+							<Layer level="ARTWORK" textureSubLevel="1">
+								<Texture parentKey="overAbsorbGlow" inherits="OverAbsorbGlowTemplate" hidden="1"/>
+								<Texture parentKey="overHealAbsorbGlow" inherits="OverHealAbsorbGlowTemplate" hidden="1"/>
+							</Layer>
 							<Layer level="BORDER">
 								<Texture name="PlayerFrameTexture" file="Interface\TargetingFrame\UI-TargetingFrame">
 									<TexCoords left="1.0" right="0.09375" top="0" bottom="0.78125"/>
@@ -298,6 +302,8 @@
 				<Frames>
 					<Frame parentKey="MyHealPredictionBar" inherits="PlayerFrameBarSegmentTemplate, MyHealPredictionBarTemplate"/>
 					<Frame parentKey="OtherHealPredictionBar" inherits="PlayerFrameBarSegmentTemplate, OtherHealPredictionBarTemplate"/>
+					<Frame parentKey="HealAbsorbBar" inherits="PlayerFrameBarSegmentTemplate, HealAbsorbBarTemplate"/>
+					<Frame parentKey="TotalAbsorbBar" inherits="PlayerFrameBarSegmentTemplate, TotalAbsorbBarTemplate"/>
 				</Frames>
 				<Scripts>
 					<OnLoad>

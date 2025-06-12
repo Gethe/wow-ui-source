@@ -390,7 +390,7 @@ TRANSMOG_SLOTS = { };
 -- this will indirectly populate slotIDToName
 do
 	function Add(slotName, transmogType, modification, armorCategoryID)
-		if GetClassicExpansionLevel() >= LE_EXPANSION_MISTS_OF_PANDARIA and slotName == "RANGEDSLOT" then
+		if slotName == "RANGEDSLOT" and not C_PaperDollInfo.IsRangedSlotShown() then
 			return;
 		end
 		local location = TransmogUtil.CreateTransmogLocation(slotName, transmogType, modification);

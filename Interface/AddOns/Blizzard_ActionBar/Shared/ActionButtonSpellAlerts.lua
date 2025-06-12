@@ -111,6 +111,7 @@ do
 	EventRegistry:RegisterCallback("ActionButton.OnAssistedCombatRotationFrameChanged", RefreshArtStyles);
 	EventRegistry:RegisterCallback("AssistedCombatManager.OnAssistedHighlightSpellChange", RefreshArtStyles);
 	EventRegistry:RegisterCallback("AssistedCombatManager.OnSetUseAssistedHighlight", RefreshArtStyles);
+	EventRegistry:RegisterCallback("AssistedCombatManager.RotationSpellsUpdated", RefreshArtStyles);
 end
 
 -- public functions

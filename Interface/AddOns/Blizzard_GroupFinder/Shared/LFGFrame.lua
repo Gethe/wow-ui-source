@@ -147,6 +147,10 @@ local function GetLFGLockList()
 	return lockMap;
 end
 
+local function ScenariosEnabled()
+	return (PVEFrameMixin ~= nil and PVEFrame:ScenariosEnabled()) or (PVEFrameMixin == nil and ScenarioQueueFrame);
+end
+
 function LFGEventFrame_OnEvent(self, event, ...)
 	if ( event == "LFG_UPDATE" ) then
 		LFG_UpdateAllRoleCheckboxes();
@@ -266,8 +270,12 @@ function LFGEventFrame_OnEvent(self, event, ...)
 	LFG_UpdateFindGroupButtons();
 	LFG_UpdateLockedOutPanels();
 	LFGBackfillCover_Update(LFDQueueFrame.PartyBackfill);
-	if(RaidFinderQueueFrame) then
+	if (RaidFinderQueueFrame) then
 		LFGBackfillCover_Update(RaidFinderQueueFrame.PartyBackfill);
+	end
+
+	if (ScenariosEnabled()) then
+		LFGBackfillCover_Update(ScenarioQueueFrame.PartyBackfill);
 	end
 end
 
@@ -358,6 +366,10 @@ function LFG_UpdateFindGroupButtons()
 	if(RaidFinderFrameFindRaidButton_Update) then
 		RaidFinderFrameFindRaidButton_Update();
 	end
+
+	if ScenariosEnabled() and ScenarioQueueFrameFindGroupButton_Update then
+		ScenarioQueueFrameFindGroupButton_Update();
+	end
 end
 
 function LFG_UpdateQueuedList()
@@ -371,6 +383,11 @@ function LFG_UpdateFramesIfShown()
 	if ( LFDParentFrame:IsVisible() ) then
 		LFDQueueFrame_Update();
 		LFDQueueFrameRandom_UpdateFrame();
+	end
+	if ScenariosEnabled() then
+		if ( ScenarioQueueFrame:IsVisible() ) then
+			ScenarioQueueFrame_Update();
+		end
 	end
 end
 
@@ -459,7 +476,6 @@ function LFG_UpdateAllRoleCheckboxes()
 	elseif ( not LFDRoleCheckPopup:IsShown() ) then
 			LFG_UpdateRoleCheckboxes(LE_LFG_CATEGORY_LFD, nil, LFDRoleCheckPopupRoleButtonTank, LFDRoleCheckPopupRoleButtonHealer, LFDRoleCheckPopupRoleButtonDPS);
 	end
-
 	if(RaidFinderQueueFrame) then
 		LFG_UpdateRoleCheckboxes(LE_LFG_CATEGORY_RF, RaidFinderQueueFrame.raid, RaidFinderQueueFrameRoleButtonTank, RaidFinderQueueFrameRoleButtonHealer, RaidFinderQueueFrameRoleButtonDPS, RaidFinderQueueFrameRoleButtonLeader);
 	end
@@ -503,7 +519,6 @@ function LFG_UpdateRolesChangeable()
 			LFG_UpdateAvailableRoles(RaidFinderQueueFrameRoleButtonTank, RaidFinderQueueFrameRoleButtonHealer, RaidFinderQueueFrameRoleButtonDPS, RaidFinderQueueFrameRoleButtonLeader);
 		end
 	end
-
 	--Always update the role check popup
 	LFG_UpdateAvailableRoles(LFDRoleCheckPopupRoleButtonTank, LFDRoleCheckPopupRoleButtonHealer, LFDRoleCheckPopupRoleButtonDPS, nil);
 end
@@ -1051,6 +1066,9 @@ function LFGIsIDHeader(id)
 	return id < 0;
 end
 
+function ScenariosGetNumDungeons()
+	return #ScenariosList;
+end
 -------List filtering functions-----------
 local hasSetUp = false;
 function LFGDungeonList_Setup()
@@ -1061,6 +1079,9 @@ function LFGDungeonList_Setup()
 		LFGLockList = GetLFGLockList();
 
 		LFDQueueFrame_Update();
+		if ScenariosEnabled() then
+			ScenarioQueueFrame_Update();
+		end
 		return true;
 	end
 	return false;
@@ -1188,8 +1209,10 @@ function LFGListRemoveCollapsedChildren(list, hiddenByCollapseList)
 end
 
 --Reward frame functions
+
+
 function LFGRewardsFrame_AdjustFont(self)
-	-- overriden in localization files
+	-- overriden in localization files in Classic
 end
 
 function LFGRewardsFrame_OnLoad(self)
@@ -1223,7 +1246,7 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
 		end
 	end
 	background:SetTexture(backgroundTexture);
-	
+
 	local lastFrame = parentFrame.rewardsLabel;
 	if ( isTimewalker ) then
 		parentFrame.rewardsDescription:SetText(LFD_RANDOM_REWARD_EXPLANATION2);
@@ -1361,9 +1384,11 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
 		parentFrame.randomList.randomID = dungeonID;
 		parentFrame.randomList:Show();
 		parentFrame.encounterList:SetPoint("LEFT", parentFrame.randomList, "RIGHT", 5, 0);
+		parentFrame.title:SetPoint("TOPRIGHT", -16, -8);
 	else
 		parentFrame.randomList:Hide();
 		parentFrame.encounterList:SetPoint("LEFT", parentFrame.randomList, "LEFT", 0, 0);
+		parentFrame.title:SetPoint("TOPRIGHT", 0, -8);
 	end
 
 	parentFrame.encounterList.dungeonID = dungeonID;
@@ -1782,7 +1807,7 @@ function LFG_JoinDungeon(category, joinType, dungeonList, hiddenByCollapseList)
 		return;
 	end
 
-	if ( joinType == "specific" ) then	--Random queue
+	if ( joinType == "specific" or joinType == "follower" ) then
 		ClearAllLFGDungeons(category);
 		for _, queueID in pairs(dungeonList) do
 			LFG_QueueForInstanceIfEnabled(category, queueID);
@@ -1805,7 +1830,7 @@ function LFG_HasRequiredGroupSize(category, joinType, dungeonList, hiddenByColla
 	else
 		numGroupMembers = 1;
 	end
-	if ( joinType == "specific" ) then	--Random queue
+	if ( joinType == "specific" or joinType == "follower" ) then
 		for _, queueID in pairs(dungeonList) do
 			if ( not LFGIsIDHeader(queueID) and LFGEnabledList[queueID] and not LFGLockList[queueID] ) then
 				numRequiredPlayers = select(LFG_RETURN_VALUES.minPlayers, GetLFGDungeonInfo(queueID));
@@ -1852,6 +1877,49 @@ function LFGDungeonList_DisableEntries()
 	LFGDungeonList_Setup();
 	for id,_ in pairs(LFGEnabledList) do
 		LFGDungeonList_SetDungeonEnabled(id, false);
+	end
+end
+
+local function IsValidSelectedEntry(entryID)
+	return LFGEnabledList[entryID] and not LFGIsIDHeader(entryID);
+end
+
+function LFG_BuildSelectedEntriesList(visibleEntryList, hiddenByCollapseEntryList)
+	local selectedIDsList = {};
+
+	if visibleEntryList then
+		for _index, visibleEntryID in pairs(visibleEntryList) do
+			if IsValidSelectedEntry(visibleEntryID) then
+				table.insert(selectedIDsList, visibleEntryID);
+			end
+		end
+	end
+
+	if hiddenByCollapseEntryList then
+		for _index, hiddenByCollapseEntryID in pairs(hiddenByCollapseEntryList) do
+			if IsValidSelectedEntry(hiddenByCollapseEntryID) then
+				table.insert(selectedIDsList, hiddenByCollapseEntryID);
+			end
+		end
+	end
+
+	return selectedIDsList;
+end
+
+function LFG_TryGetCrossFactionQueueFailureMessage(selectedEntryIDs)
+	if not selectedEntryIDs then
+		return;
+	end
+
+	local isQueueingForMultiple = #selectedEntryIDs > 1;
+	for _index, entryID in ipairs(selectedEntryIDs) do
+		if not C_LFGInfo.AreCrossFactionGroupQueuesAllowed(entryID) then
+			return isQueueingForMultiple and ERR_LFG_NO_CROSS_FACTION_PARTIES_MULTIPLE or ERR_LFG_NO_CROSS_FACTION_PARTIES;
+		end
+	
+		if C_LFGInfo.DoesCrossFactionQueueRequireFullPremade(entryID) and not C_LFGInfo.DoesActivePartyMeetPremadeLaunchCount(entryID) then
+			return CROSS_FACTION_RAID_DUNGEON_FINDER_NOT_ENOUGH_MEMBERS_ERROR;
+		end
 	end
 end
 
@@ -2286,4 +2354,10 @@ end
 
 function LFGRoleShortagePulseAnimMixin:OnStop()
 	self:GetParent():CancelPulseEffect();
+end
+
+LFGRewardFrameTemplateTitleMixin = {};
+function LFGRewardFrameTemplateTitleMixin:OnLoad()
+	self:SetFontObject(QuestTitleFontBlackShadow);
+	self:SetText(LFG_TYPE_RANDOM_DUNGEON);
 end

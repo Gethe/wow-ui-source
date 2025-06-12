@@ -110,7 +110,6 @@ function GlyphFrame_OnShow (self)
 end
 
 function GlyphFrame_OnHide (self)
-	ButtonFrameTemplate_ShowAttic(PlayerTalentFrame);
 	ButtonFrameTemplate_ShowButtonBar(PlayerTalentFrame);
 	--PlayerTalentFrameActivateButton:SetPoint( "TOPRIGHT", -10, -30);
 	
@@ -213,6 +212,23 @@ function GlyphFrame_Update (self)
 		self.clearInfo.count:SetText("");
 		self.clearInfo.icon:SetTexture("");
 	end
+
+	-- spec icon
+	if (ShouldDisplaySpecIconInBackground()) then
+		local specialization = C_SpecializationInfo.GetSpecialization(false, false, PlayerTalentFrame.talentGroup);
+		if ( specialization ) then
+			local _, _, _, icon = C_SpecializationInfo.GetSpecializationInfo(specialization, false, self.isPet);
+			local specIcon = GlyphFrame.specIcon;
+			GlyphFrame.specRing:Show();
+			specIcon:Show();
+			SetPortraitToTexture(specIcon, icon);
+			SetDesaturation(specIcon, true);
+			SetDesaturation(GlyphFrame.specRing, not isActiveTalentGroup);
+		else
+			GlyphFrame.specRing:Hide();
+			GlyphFrame.specIcon:Hide();
+		end
+	end
 end
 
 
@@ -238,7 +254,7 @@ function GlyphFrame_UpdateGlyphList ()
 		local button = buttons[i];
 		local index = offset + i;
 		if index <= numGlyphs  then
-			local name, glyphType, isKnown, icon, glyphID = GetGlyphInfo(index);
+			local name, glyphType, isKnown, icon, glyphID, _, subText = GetGlyphInfo(index);
 			if name == "header" then
 				button:Hide();
 				header = _G["GlyphFrameHeader"..currentHeader];
@@ -268,10 +284,20 @@ function GlyphFrame_UpdateGlyphList ()
 				button.icon:SetTexture(icon);
 				button.tooltipName = name;
 				button.glyphID = glyphID;
+
+				local glyphSubText = "";
+				if (ShouldDisplaySpecTextInGlyphSubtext()) then
+					if(subText ~= nil) then
+						glyphSubText = subText;
+					end
+				else
+					glyphSubText = GLYPH_STRING[glyphType];
+				end
+
 				if isKnown then
 					button.icon:SetDesaturated(false);
 					button.name:SetText(name);
-					button.typeName:SetText(GLYPH_STRING[glyphType]);
+					button.typeName:SetText(glyphSubText);
 					button.disabledBG:Hide();
 					if selectedIndex and selectedIndex == index then
 						button.selectedTex:Show();
@@ -282,7 +308,7 @@ function GlyphFrame_UpdateGlyphList ()
 					button.selectedTex:Hide();
 					button.icon:SetDesaturated(true);
 					button.name:SetText(GRAY_FONT_COLOR_CODE..name);
-					button.typeName:SetText(GRAY_FONT_COLOR_CODE..GLYPH_STRING[glyphType]);
+					button.typeName:SetText(GRAY_FONT_COLOR_CODE..glyphSubText);
 					button.disabledBG:Show();
 				end
 				

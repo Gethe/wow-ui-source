@@ -3,6 +3,20 @@ local TradeSkillUITypes =
 	Tables =
 	{
 		{
+			Name = "TradeskillRelativeDifficulty",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "Optimal", Type = "TradeskillRelativeDifficulty", EnumValue = 0 },
+				{ Name = "Medium", Type = "TradeskillRelativeDifficulty", EnumValue = 1 },
+				{ Name = "Easy", Type = "TradeskillRelativeDifficulty", EnumValue = 2 },
+				{ Name = "Trivial", Type = "TradeskillRelativeDifficulty", EnumValue = 3 },
+			},
+		},
+		{
 			Name = "CraftingReagentInfo",
 			Type = "Structure",
 			Fields =
@@ -42,6 +56,7 @@ local TradeSkillUITypes =
 				{ Name = "categoryID", Type = "number", Nilable = false },
 				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "difficulty", Type = "cstring", Nilable = true },
+				{ Name = "relativeDifficulty", Type = "TradeskillRelativeDifficulty", Nilable = true },
 				{ Name = "maxTrivialLevel", Type = "number", Nilable = false },
 				{ Name = "itemLevel", Type = "number", Nilable = false },
 				{ Name = "numAvailable", Type = "number", Nilable = false },

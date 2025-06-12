@@ -38,3 +38,11 @@ BOTTOM_RIGHT_OFFSET = PANEL_INSET_BOTTOM_OFFSET;
 NUM_GLYPH_OFFSET = 3;
 HEIGHT_OFFSET = 5;
 GLYPH_SIZE_OFFSET = 4;
+
+function ShouldDisplaySpecTextInGlyphSubtext()
+	return false;
+end
+
+function ShouldDisplaySpecIconInBackground()
+	return false;
+end

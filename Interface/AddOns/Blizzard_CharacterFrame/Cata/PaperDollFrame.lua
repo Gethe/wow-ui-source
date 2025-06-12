@@ -808,6 +808,8 @@ function PaperDollFrame_SetStat(statFrame, unit, statIndex)
 			local moreStam = effectiveStat - baseStam;
 			statFrame.tooltip2 = format(statFrame.tooltip2, BreakUpLargeNumbers((baseStam + (moreStam*UnitHPPerStamina("player")))*GetUnitMaxHealthModifier("player")));
 		elseif ( statIndex == LE_UNIT_STAT_INTELLECT ) then
+			local baseInt = min(20, effectiveStat);
+			local moreInt = effectiveStat - baseInt;
 			if ( UnitHasMana("player") ) then
 				if (GetOverrideSpellPowerByAP() > 0) then
 					if ClassicExpansionAtLeast(LE_EXPANSION_MISTS_OF_PANDARIA) then
@@ -2142,9 +2144,10 @@ function Mastery_OnEnter(statFrame)
 		title = title..HIGHLIGHT_FONT_COLOR_CODE.." ("..format(masteryFormat, mastery-masteryBonus)..FONT_COLOR_CODE_CLOSE..GREEN_FONT_COLOR_CODE.."+"..format(masteryFormat, masteryBonus)..FONT_COLOR_CODE_CLOSE..HIGHLIGHT_FONT_COLOR_CODE..")";
 	end
 	GameTooltip:SetText(title);
-	
-	local isClassMasteryKnown = IsSpellKnown(CLASS_MASTERY_SPELLS[class]);
-	local isClassMasteryKnownOrUnused = isClassMasteryKnown or ClassicExpansionAtLeast(LE_EXPANSION_MISTS_OF_PANDARIA);
+
+	-- Class mastery spells are not used in MoP.
+	local isClassMasteryKnownOrUnused = ClassicExpansionAtLeast(LE_EXPANSION_MISTS_OF_PANDARIA) or IsSpellKnown(CLASS_MASTERY_SPELLS[class]);
+
 	local primaryTalentTree = C_SpecializationInfo.GetSpecialization();
 	if (isClassMasteryKnownOrUnused and primaryTalentTree) then
 		local masterySpells = C_SpecializationInfo.GetSpecializationMasterySpells(primaryTalentTree);
@@ -3097,22 +3100,18 @@ function PaperDoll_InitStatCategories(defaultOrder, orderCVarName, collapsedCVar
 			 
 			-- Validate the saved order
 			local valid = true;
-			if (#savedOrder == #defaultOrder) then
+			for j, category2 in next, savedOrder do
+				local found = false;
 				for i, category1 in next, defaultOrder do
-					local found = false;
-					for j, category2 in next, savedOrder do
-						if (category1 == category2) then
-							found = true;
-							break;
-						end
-					end
-					if (not found) then
-						valid = false;
+					if (category1 == category2) then
+						found = true;
 						break;
 					end
 				end
-			else
-				valid = false;
+				if (not found) then
+					valid = false;
+					break;
+				end
 			end
 			
 			if (valid) then

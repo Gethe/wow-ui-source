@@ -82,17 +82,21 @@ function PartyMemberFrame_OnLoad (self)
 	self.ManaBar.LeftText = _G[prefix.."ManaBarTextLeft"];
 	self.ManaBar.RightText = _G[prefix.."ManaBarTextRight"];
 
+	local healthBar = self.HealthBar;
+
 	UnitFrame_Initialize(self, self.unitToken,  _G[prefix.."Name"], _G[prefix.."Portrait"],
-		   self.HealthBar,
-		   _G[prefix.."HealthBarText"],
-		   self.ManaBar,
-		   _G[prefix.."ManaBarText"],
-		   _G[prefix.."Flash"], nil, nil,
-		   self.HealthBar.MyHealPredictionBar,
-		   self.HealthBar.OtherHealPredictionBar,
-		   nil, nil, nil,
-		   nil, nil, nil,
-		   nil);
+			healthBar,
+			_G[prefix.."HealthBarText"],
+			self.ManaBar,
+			_G[prefix.."ManaBarText"],
+			_G[prefix.."Flash"], nil, nil,
+			healthBar.MyHealPredictionBar,
+			healthBar.OtherHealPredictionBar,
+			healthBar.TotalAbsorbBar, healthBar.TotalAbsorbBarOverlay,
+			self.textureFrame.childFrame.overAbsorbGlow, self.textureFrame.childFrame.overHealAbsorbGlow,
+			healthBar.HealAbsorbBar, healthBar.HealAbsorbBarLeftShadow,
+			healthBar.HealAbsorbBarRightShadow);
+
 	SetTextStatusBarTextZeroText(_G[prefix.."HealthBar"], DEAD);
 
 	self.statusCounter = 0;

@@ -10,7 +10,7 @@ Classic\GroupFinderHelpers.lua [AllowLoadGameType  tbc, wrath, cata]
 Mists\GroupFinderHelpers.lua [AllowLoadGameType  mists]
 Classic\PVEFrame.lua
 Classic\PVEFrame.xml
-Classic\LFGFrame.lua
+Shared\LFGFrame.lua
 Classic\LFGFrame.xml
 Classic\LFDFrame.lua
 Classic\LFDFrame.xml

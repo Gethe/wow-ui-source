@@ -55,6 +55,7 @@ Cata\Blizzard_TalentUITemplates.xml
 MovieFrame.lua
 MovieFrame.xml
 Classic\RolePoll.xml
+SpellActivationOverlay.xml
 GuildInviteFrame.xml
 Classic\StreamingFrame.lua
 Classic\StreamingFrame.xml

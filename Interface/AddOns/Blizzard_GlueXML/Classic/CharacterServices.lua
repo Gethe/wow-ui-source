@@ -12,8 +12,8 @@ local factionLogoTextures = {
 };
 
 local factionLabels = {
-	[1] = FACTION_HORDE,
-	[2] = FACTION_ALLIANCE,
+	[0] = FACTION_HORDE,
+	[1] = FACTION_ALLIANCE,
 };
 
 -- TODO: Expose enum to Lua?
@@ -87,6 +87,7 @@ StaticPopupDialogs["BOOST_FACTION_CHANGE_IN_PROGRESS"] = {
 };
 
 local CharacterUpgradeCharacterSelectBlock = { FrameName = "CharacterUpgradeSelectCharacterFrame", Back = false, Next = false, Finish = false, AutoAdvance = true, ResultsLabel = SELECT_CHARACTER_RESULTS_LABEL, ActiveLabel = SELECT_CHARACTER_ACTIVE_LABEL, Popup = "BOOST_ALLIED_RACE_HERITAGE_ARMOR_WARNING" };
+local CharacterUpgradeFactionSelectBlock = { FrameName = "CharacterUpgradeFactionSelectFrame", Back = true, Next = true, Finish = false, AutoAdvance = true, SkipOnRewind = true, ResultsLabel = SELECT_FACTION_RESULTS_LABEL, ActiveLabel = SELECT_FACTION_ACTIVE_LABEL};
 local CharacterUpgradeEndStep = { Back = true, Next = false, Finish = true, HiddenStep = true, SkipOnRewind = true };
 
 CharacterServicesFlowPrototype = {};
@@ -97,7 +98,8 @@ CharacterUpgradeFlow = Mixin(
 
 		Steps = {
 			[1] = CharacterUpgradeCharacterSelectBlock,
-			[2] = CharacterUpgradeEndStep,
+			[2] = CharacterUpgradeFactionSelectBlock,
+			[3] = CharacterUpgradeEndStep,
 		},
 	},
 	CharacterServicesFlowMixin
@@ -999,4 +1001,50 @@ function CharacterUpgradeEndStep:OnRewind()
 	if (CharacterUpgradeSecondChanceWarningFrame:IsShown()) then
 		CharacterUpgradeSecondChanceWarningFrame:Hide();
 	end
+end
+
+function CharacterUpgradeFactionSelectBlock:Initialize(results, wasFromRewind)
+	local factionName = C_CharacterServices.GetFactionGroupByIndex(results.charid)
+
+	if FACTION_IDS[factionName] then
+		self.faction = FACTION_IDS[factionName];
+	else
+		self.faction = -1;
+	end
+
+	local function SelectFaction(factionID)
+		self.faction = factionID;
+		CharacterServicesMaster_Update();
+	end
+
+	local hordeText = SELECT_FACTION_RESULTS_FORMAT:format(factionColors[0], FACTION_HORDE);
+	local allianceText = SELECT_FACTION_RESULTS_FORMAT:format(factionColors[1], FACTION_ALLIANCE);
+
+	self.frame.ControlsFrame.Dropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:CreateRadio(hordeText, function() return false; end, SelectFaction, 0);
+		rootDescription:CreateRadio(allianceText, function() return false; end, SelectFaction, 1);
+	end);
+
+	CharacterServicesMaster_Update();
+end
+
+function CharacterUpgradeFactionSelectBlock:IsFinished(wasFromRewind)
+	return self.faction and self.faction >= 0;
+end
+
+function CharacterUpgradeFactionSelectBlock:GetResult()
+	return { faction = self.faction };
+end
+
+function CharacterUpgradeFactionSelectBlock:SkipIf(results)
+	local factionName = C_CharacterServices.GetFactionGroupByIndex(results.charid)
+	return FACTION_IDS[factionName] ~= nil;
+end
+
+
+function CharacterUpgradeFactionSelectBlock:FormatResult()
+	local factionName = factionLabels[self.faction] or "";
+	local color = factionColors[self.faction] or 0
+
+	return SELECT_FACTION_RESULTS_FORMAT:format(color, factionName);
 end

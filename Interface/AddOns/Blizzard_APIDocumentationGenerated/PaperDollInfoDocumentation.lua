@@ -45,20 +45,6 @@ local PaperDollInfo =
 			},
 		},
 		{
-			Name = "GetGlyphLinkByID",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "glyphID", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "link", Type = "string", Nilable = false },
-			},
-		},
-		{
 			Name = "GetInspectGuildInfo",
 			Type = "Function",
 
