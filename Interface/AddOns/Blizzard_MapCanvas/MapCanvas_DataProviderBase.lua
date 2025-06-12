@@ -527,11 +527,11 @@ function MapCanvasPinMixin:ApplyCurrentScale()
 
 	if self.widgetContainer then
 		if self.widgetContainer.FrontModelScene then
-			self.widgetContainer.FrontModelScene:CalculatePixelsPerSceneUnit();
+			self.widgetContainer.FrontModelScene:RefreshModelScene();
 		end
 
 		if self.widgetContainer.BackModelScene then
-			self.widgetContainer.BackModelScene:CalculatePixelsPerSceneUnit();
+			self.widgetContainer.BackModelScene:RefreshModelScene();
 		end
 	end
 end
