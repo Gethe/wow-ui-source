@@ -111,8 +111,8 @@ function SpellBookFrameMixin:UpdateSpells()
 			SpellBookPage1:SetDesaturated(_G["SpellBookSkillLineTab"..SpellBookFrame.selectedSkillLine].isOffSpec);
 			SpellBookPage2:SetDesaturated(_G["SpellBookSkillLineTab"..SpellBookFrame.selectedSkillLine].isOffSpec);
 		else
-			SpellBookPage1:SetDesaturated(0);
-			SpellBookPage2:SetDesaturated(0);
+			SpellBookPage1:SetDesaturated(false);
+			SpellBookPage2:SetDesaturated(false);
 		end
 	end
 end
@@ -498,6 +498,12 @@ function SpellBookFrameMixin:UpdateSkillLineTabs()
 				end
 				skillLineTab.tooltip = name;
 				skillLineTab:Show();
+
+				if (prevTab) then
+					if (isOffSpec and not prevTab.isOffSpec and OFFSEPC_TAB_OFFSET) then
+						skillLineTab:SetPoint("TOPLEFT", prevTab, "BOTTOMLEFT", 0, -OFFSEPC_TAB_OFFSET);
+					end
+				end
 
 				-- Set the selected tab
 				if ( SpellBookFrame.selectedSkillLine == i ) then

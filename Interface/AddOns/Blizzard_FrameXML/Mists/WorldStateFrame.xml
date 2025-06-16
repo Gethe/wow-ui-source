@@ -537,6 +537,16 @@
 						<Anchor point="TOPRIGHT" x="0" y="0"/>
 					</Anchors>
 				</FontString>
+				<FontString name="$parentEnemyTeamAverageBGRating" inherits="GameFontNormalSmall" justifyH="RIGHT" parentKey="enemyTeamAverageRating">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-150" y="80"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentTeamAverageBGRating" inherits="GameFontNormalSmall" justifyH="RIGHT" parentKey="teamAverageRating">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentEnemyTeamAverageBGRating" relativePoint="TOPRIGHT" x="0" y="5"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="-1">
 				<Texture name="WorldStateScoreFrameTopBackground" horizTile="true" file="Interface\WorldStateFrame\WorldStateFinalScoreFrame-TopBackground">

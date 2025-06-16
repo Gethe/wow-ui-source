@@ -392,7 +392,7 @@ function EncounterJournal_OnLoad(self)
 		EJ_ContentTab_SetEnabled(self.raidsTab, false);
 	end
 
-	EJ_SelectTier(EJ_START_TIER);
+	EJ_SelectTier(GetClassicExpansionLevel() + 1);
 	local instanceSelect = EncounterJournal.instanceSelect;
 	EJ_ContentTab_SetEnabled(EncounterJournal.dungeonsTab, true);
 	EJ_ContentTab_SetEnabled(EncounterJournal.raidsTab, true);

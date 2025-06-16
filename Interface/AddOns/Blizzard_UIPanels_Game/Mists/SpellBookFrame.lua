@@ -6,6 +6,8 @@ local strlen = strlen;
 local tinsert = tinsert;
 local tremove = tremove;
 
+OFFSPEC_TAB_OFFSET = 40;
+
 function SpellBookFrameMixin:OnLoad()
 	self:RegisterEvent("SPELLS_CHANGED");
 	self:RegisterEvent("LEARNED_SPELL_IN_TAB");

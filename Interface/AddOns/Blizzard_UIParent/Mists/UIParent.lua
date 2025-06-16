@@ -74,6 +74,11 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("DUEL_OUTOFBOUNDS");
 	self:RegisterEvent("DUEL_INBOUNDS");
 	self:RegisterEvent("DUEL_FINISHED");
+	self:RegisterEvent("PET_BATTLE_PVP_DUEL_REQUESTED");
+	self:RegisterEvent("PET_BATTLE_QUEUE_PROPOSE_MATCH");
+	self:RegisterEvent("PET_BATTLE_QUEUE_PROPOSAL_DECLINED");
+	self:RegisterEvent("PET_BATTLE_QUEUE_PROPOSAL_ACCEPTED");
+	self:RegisterEvent("PET_BATTLE_PVP_DUEL_REQUEST_CANCEL");
 	self:RegisterEvent("TRADE_REQUEST_CANCEL");
 	self:RegisterEvent("CONFIRM_XP_LOSS");
 	self:RegisterEvent("CORPSE_IN_RANGE");

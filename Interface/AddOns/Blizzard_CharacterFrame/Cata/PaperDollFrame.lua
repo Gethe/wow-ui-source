@@ -1274,7 +1274,7 @@ end
 function PaperDollFrame_SetAttackSpeed(statFrame, unit)
 	local speed, offhandSpeed = UnitAttackSpeed(unit);
 
-	local displaySpeed = BreakUpLargeNumbers(speed);
+	local displaySpeed = format("%.2F", speed);
 	if ( offhandSpeed ) then
 		offhandSpeed = format("%.2F", offhandSpeed);
 		displaySpeed =  displaySpeed.." / ".. offhandSpeed;

@@ -76,6 +76,7 @@ function WorldStateScoreFrame_Update()
 		WorldStateScoreFrameHK:Hide();
 
 		-- Reanchor some columns.
+		local firstColumnOffset = 100;
 		WorldStateScoreFrameDamageDone:SetPoint("LEFT", "WorldStateScoreFrameKB", "RIGHT", 0, 0);
 		if ( isRanked ) then
 			WorldStateScoreFrameHonorGainedText:SetText(SCORE_RATING_CHANGE);
@@ -83,13 +84,13 @@ function WorldStateScoreFrame_Update()
 			if ( GetCurrentArenaSeasonUsesTeams() ) then
 				WorldStateScoreFrameTeam:Show();
 				WorldStateScoreFrameHonorGained.sortType = "team";
-				WorldStateScoreFrameKB:SetPoint("LEFT", "WorldStateScoreFrameTeam", "RIGHT", 0, 0);
+				WorldStateScoreFrameKB:SetPoint("LEFT", "WorldStateScoreFrameTeam", "RIGHT", firstColumnOffset, 0);
 			else
-				WorldStateScoreFrameKB:SetPoint("LEFT", "WorldStateScoreFrameName", "RIGHT", 0, 0);
+				WorldStateScoreFrameKB:SetPoint("LEFT", "WorldStateScoreFrameName", "RIGHT", firstColumnOffset, 0);
 			end
 		else
 			WorldStateScoreFrameHonorGained:Hide();
-			WorldStateScoreFrameKB:SetPoint("LEFT", "WorldStateScoreFrameName", "RIGHT", 0, 0);
+			WorldStateScoreFrameKB:SetPoint("LEFT", "WorldStateScoreFrameName", "RIGHT", firstColumnOffset, 0);
 		end
 	else
 		-- Show Tabs
@@ -269,7 +270,7 @@ function WorldStateScoreFrame_Update()
 		else
 			scoreButton:SetWidth(WorldStateScoreFrame.buttonWidth);
 		end
-		
+
 		if ( index <= numScores ) then
 			scoreButton.index = index;
 			name, killingBlows, honorableKills, deaths, honorGained, faction, rank, race, class, classToken, damageDone, healingDone = GetBattlefieldScore(index);
@@ -416,6 +417,23 @@ function WorldStateScoreFrame_Update()
 			scoreButton:Hide();
 		end
 	end
+
+	-- Show average matchmaking rating at the bottom
+	if WorldStateScoreFrame.teamAverageRating ~= nil then
+		if isRatedBG or (isArena and isRegistered) then
+			local _, ourAverageMMR, theirAverageMMR;
+			local myFaction = GetBattlefieldArenaFaction();
+			_, _, _, ourAverageMMR = GetBattlefieldTeamInfo(myFaction);
+			_, _, _, theirAverageMMR = GetBattlefieldTeamInfo((myFaction+1)%2);
+			WorldStateScoreFrame.teamAverageRating:Show();
+			WorldStateScoreFrame.enemyTeamAverageRating:Show();
+			WorldStateScoreFrame.teamAverageRating:SetFormattedText(BATTLEGROUND_YOUR_AVERAGE_RATING, ourAverageMMR);
+			WorldStateScoreFrame.enemyTeamAverageRating:SetFormattedText(BATTLEGROUND_ENEMY_AVERAGE_RATING, theirAverageMMR);
+		else
+			WorldStateScoreFrame.teamAverageRating:Hide();
+			WorldStateScoreFrame.enemyTeamAverageRating:Hide();
+		end
+	end
 	
 	-- Count number of players on each side
 	local numHorde = 0;
@@ -461,7 +479,7 @@ end
 function WorldStateScoreFrame_Resize()
 	local isArena, isRanked = IsActiveBattlefieldArena();
 	local columns;
-	local rightPadding = 30;
+	local rightPadding = 300;
 	local width =  WorldStateScoreFrameName:GetWidth() + WorldStateScoreFrameClass:GetWidth() + rightPadding;
 	if ( isArena ) then
 		columns = 3;
