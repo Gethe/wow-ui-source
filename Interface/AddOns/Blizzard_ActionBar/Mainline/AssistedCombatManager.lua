@@ -32,6 +32,10 @@ function AssistedCombatManager:OnSpellsChanged()
 	elseif self:IsAssistedHighlightActive() then
 		self:UpdateAssistedHighlightCandidateActionButtonsList()
 	end
+
+	-- Because SPELLS_CHANGED fires at the end of frame, systems responding to synchronous events
+	-- would get the wrong info if they rely on AssistedCombatManager:IsRotationSpell or anything that calls it.
+	EventRegistry:TriggerEvent("AssistedCombatManager.RotationSpellsUpdated");
 end
 
 function AssistedCombatManager:SetActionSpell(actionSpellID)
