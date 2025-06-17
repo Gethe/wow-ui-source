@@ -75,6 +75,9 @@ UIMenus = {
 };
 
 function UIParent_OnLoad(self)
+	-- First register for any shared events
+	UIParent_Shared_OnLoad(self);
+
 	self:RegisterEvent("PLAYER_LOGIN");
 	self:RegisterEvent("PLAYER_DEAD");
 	self:RegisterEvent("SELF_RES_SPELL_CHANGED");
@@ -300,9 +303,6 @@ function UIParent_OnLoad(self)
 
 	-- Event(s) for Party Pose
 	self:RegisterEvent("SHOW_PARTY_POSE_UI");
-
-	-- Events for Reporting SYSTEM
-	self:RegisterEvent("REPORT_PLAYER_RESULT");
 
 	-- Events for Global Mouse Down
 	self:RegisterEvent("GLOBAL_MOUSE_DOWN");
@@ -1276,6 +1276,9 @@ end
 
 -- UIParent_OnEvent --
 function UIParent_OnEvent(self, event, ...)
+	-- First handle any shared events
+	UIParent_Shared_OnEvent(self, event, ...);
+
 	local arg1, arg2, arg3, arg4, arg5, arg6 = ...;
 	if ( event == "CURRENT_SPELL_CAST_CHANGED" ) then
 		if ( SpellCanTargetGarrisonFollower(0) or SpellCanTargetGarrisonFollowerAbility(0, 0) ) then
@@ -2334,16 +2337,6 @@ function UIParent_OnEvent(self, event, ...)
 			GenericTraitFrame:SetTreeID(traitTreeID);
 			ShowUIPanel(GenericTraitFrame);
 		end
-	-- Events for Reporting system
-	elseif (event == "REPORT_PLAYER_RESULT") then
-		local success = ...;
-		if (success) then
-			UIErrorsFrame:AddExternalWarningMessage(ERR_REPORT_SUBMITTED_SUCCESSFULLY);
-			DEFAULT_CHAT_FRAME:AddMessage(COMPLAINT_ADDED);
-		else
-			UIErrorsFrame:AddExternalErrorMessage(ERR_REPORT_SUBMISSION_FAILED);
-			DEFAULT_CHAT_FRAME:AddMessage(ERR_REPORT_SUBMISSION_FAILED);
-		end
 	elseif (event == "GLOBAL_MOUSE_DOWN" or event == "GLOBAL_MOUSE_UP") then
 		local buttonID = ...;
 
@@ -2470,8 +2463,9 @@ function UIParent_UpdateTopFramePositions()
 	end
 
 	if BuffFrame:IsInDefaultPosition() then
-		local y = -(buffOffset + 13)
-		BuffFrame:SetPoint("TOPRIGHT", MinimapCluster, "TOPLEFT", -10, y);
+		local anchor = EditModeManagerFrame:GetDefaultAnchor(BuffFrame);
+		BuffFrame:ClearAllPoints();
+		BuffFrame:SetPoint(anchor.point, anchor.relativeTo, anchor.relativePoint, anchor.offsetX, anchor.offsetY - buffOffset);
 	end
 end
 

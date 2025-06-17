@@ -12,12 +12,15 @@ local CURRENCY_TRANSFER_TOGGLE_BUTTON_EVENTS = {
 	"CURRENCY_DISPLAY_UPDATE",
 	"CURRENCY_TRANSFER_FAILED",
 	"ACCOUNT_CHARACTER_CURRENCY_DATA_RECEIVED",
+	"CURRENCY_TRANSFER_INITIATED",
 };
 
 local DISABLED_ERROR_MESSAGE = {
 	[Enum.AccountCurrencyTransferResult.MaxQuantity] = CURRENCY_TRANSFER_DISABLED_MAX_QUANTITY,
 	[Enum.AccountCurrencyTransferResult.NoValidSourceCharacter] = CURRENCY_TRANSFER_DISABLED_NO_VALID_SOURCES,
 	[Enum.AccountCurrencyTransferResult.CannotUseCurrency] = CURRENCY_TRANSFER_DISABLED_UNMET_REQUIREMENTS,
+	[Enum.AccountCurrencyTransferResult.TransactionInProgress] = CURRENCY_TRANSFER_IN_PROGRESS,
+	[Enum.AccountCurrencyTransferResult.CurrencyTransferDisabled] = ERR_CURRENCY_TRANSFER_DISABLED,
 };
 
 function CurrencyTransferToggleButtonMixin:GetDisabledErrorMessage(dataReady, failureReason)
@@ -38,7 +41,7 @@ function CurrencyTransferToggleButtonMixin:OnHide()
 end
 
 function CurrencyTransferToggleButtonMixin:OnEvent(event, ...)
-	if event == "CURRENCY_DISPLAY_UPDATE" or event == "ACCOUNT_CHARACTER_CURRENCY_DATA_RECEIVED" or event == "CURRENCY_TRANSFER_FAILED" then
+	if event == "CURRENCY_DISPLAY_UPDATE" or event == "ACCOUNT_CHARACTER_CURRENCY_DATA_RECEIVED" or event == "CURRENCY_TRANSFER_FAILED" or event == "CURRENCY_TRANSFER_INITIATED" then
 		self:UpdateEnabledState();
 	end
 end
@@ -81,7 +84,8 @@ function CurrencyTransferToggleButtonMixin:UpdateEnabledState()
 	end
 
 	local dataReady = C_CurrencyInfo.IsAccountCharacterCurrencyDataReady();
-	self:SetLoadingSpinnerShown(not dataReady);
+	local transferInProgress = C_CurrencyInfo.IsCurrencyTransferInProgress();
+	self:SetLoadingSpinnerShown(not dataReady or transferInProgress);
 
 	local canTransfer, failureReason = C_CurrencyInfo.CanTransferCurrency(self.currencyID);
 	self:SetEnabled(dataReady and canTransfer);

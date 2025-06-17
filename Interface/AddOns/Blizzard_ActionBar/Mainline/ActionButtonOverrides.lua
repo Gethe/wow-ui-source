@@ -221,7 +221,7 @@ if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
 		-- Update flyout appearance
 		self:UpdateFlyout();
 
-		self:UpdateOverlayGlow();
+		self:UpdateOverlayFrames();
 
 		self:UpdateBorder();
 

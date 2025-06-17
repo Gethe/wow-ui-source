@@ -363,6 +363,21 @@ local SimpleFrameAPI =
 			},
 		},
 		{
+			Name = "GetHighestFrameLevel",
+			Type = "Function",
+			Documentation = { "Returns the highest framelevel of the frame and its first order children, or all children if iterateAllChildren is true." },
+
+			Arguments =
+			{
+				{ Name = "iterateAllChildren", Type = "bool", Nilable = false, Default = false },
+			},
+
+			Returns =
+			{
+				{ Name = "frameLevel", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetHitRectInsets",
 			Type = "Function",
 

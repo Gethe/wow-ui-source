@@ -172,12 +172,8 @@ function RealmList_Update(retainScrollPosition)
 end
 
 function RealmList_UpdateOKButton()
-	if ( not RealmList.selectedRealm ) then
-		RealmListOkButton:Disable();
-		return;
-	end
-
-	local populationState = C_RealmList.GetRealmInfo(RealmList.selectedRealm).populationState;
+	local realmInfo = RealmList.selectedRealm and C_RealmList.GetRealmInfo(RealmList.selectedRealm);
+	local populationState = realmInfo and realmInfo.populationState;
 	RealmListOkButton:SetEnabled(populationState and populationState ~= "OFFLINE");
 end
 
@@ -249,10 +245,12 @@ function RealmList_OnOk()
 		-- If trying to join a Full realm then popup a dialog
 		local realmInfo = C_RealmList.GetRealmInfo(RealmList.selectedRealm);
 
-		if ( realmInfo.populationState == "FULL" and realmInfo.numCharacters == 0 ) then
-			GlueDialog_Show("REALM_IS_FULL");
-		else
-			C_RealmList.ConnectToRealm(RealmList.selectedRealm);
+		if (realmInfo) then
+			if ( realmInfo.populationState == "FULL" and realmInfo.numCharacters == 0 ) then
+				GlueDialog_Show("REALM_IS_FULL");
+			else
+				C_RealmList.ConnectToRealm(RealmList.selectedRealm);
+			end
 		end
 	end
 end

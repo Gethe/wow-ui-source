@@ -296,6 +296,7 @@ local function POIButton_UpdateQuestInProgressStyle(poiButton)
 		POIButton_SetAtlas(poiButton.HighlightTexture, nil, nil, POIButton_GetAtlasInfoHighlight(poiButton));
 	end
 
+	poiButton:UpdateButtonAlpha();
 	poiButton:ClearQuestTagInfo();
 	poiButton:UpdateInProgress();
 	poiButton:UpdateUnderlay();
@@ -393,10 +394,7 @@ local function POIButton_UpdateNormalStyle(poiButton)
 			POIButton_SetAtlas(poiButton.HighlightTexture, nil, nil, "UI-QuestPoiCampaign-InnerGlow");
 		end
 
-		local buttonAlpha = poiButton:CalculateButtonAlpha();
-		poiButton.NormalTexture:SetAlpha(buttonAlpha);
-		poiButton.PushedTexture:SetAlpha(buttonAlpha);
-
+		poiButton:UpdateButtonAlpha();
 		poiButton:ClearQuestTagInfo();
 
 		local questID = poiButton:GetQuestID();
@@ -611,6 +609,12 @@ end
 
 function POIButtonMixin:CalculateButtonAlpha()
 	return (self:GetStyle() == POIButtonUtil.Style.QuestDisabled) and 0 or 1;
+end
+
+function POIButtonMixin:UpdateButtonAlpha()
+	local buttonAlpha = self:CalculateButtonAlpha();
+	self.NormalTexture:SetAlpha(buttonAlpha);
+	self.PushedTexture:SetAlpha(buttonAlpha);
 end
 
 function POIButtonMixin:UpdateInProgress()

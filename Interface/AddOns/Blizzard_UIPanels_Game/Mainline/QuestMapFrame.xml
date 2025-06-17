@@ -649,32 +649,11 @@
 									<OnTextChanged method="OnTextChanged"/>
 								</Scripts>
 							</EditBox>
-							<DropdownButton parentKey="SettingsDropdown" mixin="QuestLogSettingsButtonMixin">
-								<Size x="15" y="16"/>
+							<DropdownButton parentKey="SettingsDropdown" inherits="UIPanelIconDropdownButtonTemplate">
 								<Anchors>
 									<Anchor point="TOPRIGHT" x="19" y="25"/>
 								</Anchors>
-								<Layers>
-									<Layer level="ARTWORK">
-										<Texture parentKey="Icon" atlas="questlog-icon-setting" useAtlasSize="true">
-											<Anchors>
-												<Anchor point="CENTER"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-									<Layer level="HIGHLIGHT">
-										<Texture atlas="questlog-icon-setting" useAtlasSize="true" inherits="QuestLogHighlightTextureTemplate">
-											<Anchors>
-												<Anchor point="CENTER" relativeKey="$parent.Icon"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-								</Layers>
-								<Scripts>
-									<OnMouseDown method="OnMouseDown"/>
-									<OnMouseUp method="OnMouseUp"/>
-								</Scripts>
-							</DropdownButton>							
+							</DropdownButton>
 							<Frame parentKey="BorderFrame" inherits="QuestLogBorderFrameTemplate">
 								<Layers>
 									<Layer level="BACKGROUND">

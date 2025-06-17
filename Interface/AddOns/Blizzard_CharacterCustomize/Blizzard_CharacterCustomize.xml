@@ -85,7 +85,7 @@
 			<KeyValue key="categoryButtonTemplate" value="CharCustomizeCategoryButtonTemplate" type="string"/>
 		</KeyValues>
 		<Frames>
-			<Frame parentKey="AlteredForms" inherits="HorizontalLayoutFrame">
+			<Frame parentKey="AlteredForms" inherits="ScaleToFitHorizontalLayoutFrame">
 				<KeyValues>
 					<KeyValue key="spacing" value="18" type="number"/>
 				</KeyValues>

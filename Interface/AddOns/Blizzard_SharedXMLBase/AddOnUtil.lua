@@ -60,3 +60,8 @@ function AddOnUtil.SetEnableStateForAddOnAndDependencies(addonName, character, e
 	end
 	setter(addonName, character);
 end
+
+function AddOnUtil.IsAddOnEnabledForCurrentCharacter(addonName)
+	local character = UnitGUID("player");
+	return C_AddOns.GetAddOnEnableState(addonName, character) == Enum.AddOnEnableState.All;
+end

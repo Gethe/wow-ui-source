@@ -120,7 +120,7 @@ local ReportSystem =
 			LiteralName = "REPORT_PLAYER_RESULT",
 			Payload =
 			{
-				{ Name = "success", Type = "bool", Nilable = false },
+				{ Name = "result", Type = "SendReportResult", Nilable = false },
 				{ Name = "reportType", Type = "ReportType", Nilable = false },
 			},
 		},

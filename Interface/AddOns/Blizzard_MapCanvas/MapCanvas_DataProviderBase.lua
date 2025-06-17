@@ -524,6 +524,16 @@ function MapCanvasPinMixin:ApplyCurrentScale()
 		self:SetScale(scale);
 		self:ApplyCurrentPosition();
 	end
+
+	if self.widgetContainer then
+		if self.widgetContainer.FrontModelScene then
+			self.widgetContainer.FrontModelScene:RefreshModelScene();
+		end
+
+		if self.widgetContainer.BackModelScene then
+			self.widgetContainer.BackModelScene:RefreshModelScene();
+		end
+	end
 end
 
 function MapCanvasPinMixin:ApplyCurrentAlpha()

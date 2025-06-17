@@ -168,6 +168,8 @@ function SettingsPanelMixin:OnShow()
 
 	self:CallRefreshOnCanvases();
 	self:CheckTutorials(); 
+
+	categories:RefreshNewFeatures();
 end
 
 function SettingsPanelMixin:CheckTutorials()
@@ -197,6 +199,8 @@ function SettingsPanelMixin:OnHide()
 	local checked = Settings.GetValue("PROXY_CHARACTER_SPECIFIC_BINDINGS");
 	local bindingSet = checked and Enum.BindingSet.Character or Enum.BindingSet.Account;
 	SaveBindings(bindingSet);
+
+	EventRegistry:TriggerEvent("SettingsPanel.OnHide");
 end
 
 function SettingsPanelMixin:Commit(unrevertable)

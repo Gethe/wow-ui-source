@@ -16,7 +16,6 @@ end
 function UIWidgetTemplateTooltipFrameMixin:Setup(widgetContainer, tooltipLoc)
 	self.disableTooltip = widgetContainer.disableWidgetTooltips;
 	self:UpdateMouseEnabled();
-	self:SetMouseClickEnabled(false);
 	self:SetTooltipLocation(tooltipLoc);
 
 	if self.mouseOver then
@@ -1841,4 +1840,130 @@ end
 function UIWidgetBaseIconTemplateMixin:StopAnims()
 	self.GlowPulseAnim:Stop();
 	self.Glow:Hide();
+end
+
+UIWidgetBaseButtonTemplateMixin = {};
+
+function UIWidgetBaseButtonTemplateMixin:OnShow()
+	self:UpdateWatchCooldownState();
+end
+
+function UIWidgetBaseButtonTemplateMixin:OnHide()
+	self:UpdateWatchCooldownState();
+end
+
+function UIWidgetBaseButtonTemplateMixin:OnEvent(event, ...)
+	if event == "SPELL_UPDATE_COOLDOWN" then
+		local spellID, baseSpellID = ...;
+		if spellID == self.spellID or baseSpellID == self.spellID then
+			self:UpdateCooldown();
+		end
+	end
+end
+
+function UIWidgetBaseButtonTemplateMixin:OnCooldownDone()
+	self.isSpellOnCooldown = false;
+	self.cooldown:SetScript("OnCooldownDone", nil);
+	self:UpdateEnabledState();
+end
+
+function UIWidgetBaseButtonTemplateMixin:UpdateWatchCooldownState()
+	if self.showCooldown and self:IsShown() and not self.registered then
+		self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
+		self.registered = true;
+	elseif self.registered then
+		self:UnregisterEvent("SPELL_UPDATE_COOLDOWN");
+		self.registered = false;
+	end
+
+	self:UpdateCooldown();
+end
+
+function UIWidgetBaseButtonTemplateMixin:UpdateCooldown()
+	if self.registered then
+		ActionButton_UpdateCooldown(self);
+
+		-- Cooldown frames automatically show & hide themselves when the are actively showing/not showing a cooldown 
+		self.isSpellOnCooldown = self.cooldown:IsShown();
+
+		if self.isSpellOnCooldown then
+			self.cooldown:SetScript("OnCooldownDone", GenerateClosure(self.OnCooldownDone, self));
+		else
+			self.cooldown:SetScript("OnCooldownDone", nil);
+		end
+
+		self:UpdateEnabledState();
+	else
+		self:OnCooldownDone();
+		self.cooldown:Clear();
+	end
+end
+
+function UIWidgetBaseButtonTemplateMixin:SetMouse(disableMouse)
+	local useMouse = not disableMouse;
+	self:EnableMouse(useMouse)
+	self:SetMouseClickEnabled(true);
+end
+
+local iconAtlasPostfix =
+{
+	[Enum.UIWidgetButtonIconType.Exit]	= "exit",
+	[Enum.UIWidgetButtonIconType.Speak] = "speak",
+	[Enum.UIWidgetButtonIconType.Undo]	= "undo",
+	[Enum.UIWidgetButtonIconType.Checkmark] = "checkmark",
+	[Enum.UIWidgetButtonIconType.RedX] = "redx",
+}
+
+local buttonIconFormatString = "common-icon-%s";
+local defaultButtonIconPostfix = "checkmark";
+
+function UIWidgetBaseButtonTemplateMixin:GetIconAtlasName(buttonInfo)
+	local postfix = iconAtlasPostfix[buttonInfo.icon] or defaultButtonIconPostfix;
+	return buttonIconFormatString:format(postfix);
+end
+
+function UIWidgetBaseButtonTemplateMixin:UpdateEnabledState()
+	local isButtonEnabled = (self.enabledState == Enum.UIWidgetButtonEnabledState.Enabled);
+	local showEnabled = isButtonEnabled and (not self.disableOnCooldown or not self.isSpellOnCooldown);
+
+	self:SetEnabled(showEnabled);
+	self.Icon:SetDesaturated(not showEnabled);
+end
+
+function UIWidgetBaseButtonTemplateMixin:Setup(widgetContainer, buttonInfo)
+	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
+	self.spellID = buttonInfo.spellID;
+	self.enabledState = buttonInfo.enabledState;
+	self.showCooldown = (buttonInfo.cooldownType == Enum.UIWidgetSpellButtonCooldownType.ShowCooldown or
+							buttonInfo.cooldownType == Enum.UIWidgetSpellButtonCooldownType.ShowCooldownAndDisableOnCooldown);
+	self.disableOnCooldown = buttonInfo.cooldownType == Enum.UIWidgetSpellButtonCooldownType.ShowCooldownAndDisableOnCooldown;
+	self:SetTooltip(buttonInfo.tooltip);
+
+	local iconAtlas = self:GetIconAtlasName(buttonInfo);
+	self.Icon:SetAtlas(iconAtlas);
+
+	self:UpdateWatchCooldownState();
+	self:UpdateEnabledState()
+end
+
+function UIWidgetBaseButtonTemplateMixin:OnEnter()
+	if self.tooltip == "" then 
+		self:SetTooltipOwner();
+		local isPetSpellNo, showSubtextYes = false, true;
+		EmbeddedItemTooltip:SetSpellByID(self.spellID, isPetSpellNo, showSubtextYes);
+		EmbeddedItemTooltip:Show();
+
+		if self.isSpellOnCooldown then
+			self.UpdateTooltip = self.OnEnter;
+		else
+			self.UpdateTooltip = nil;
+		end
+	else
+		UIWidgetTemplateTooltipFrameMixin.OnEnter(self);
+	end
+end
+
+function UIWidgetBaseButtonTemplateMixin:OnClick()
+	local unitTokenNil, tryToggleSpellYes = nil, true;
+	CastSpellByID(self.spellID, unitTokenNil, tryToggleSpellYes);
 end

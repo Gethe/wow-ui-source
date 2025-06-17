@@ -346,16 +346,14 @@ TutorialData.Alliance = {
 	BraceForImpact = 58208;
 
 	ShowMinimapQuest = 55122;
-	
+
 	UseMapQuest = 54952;
 
 	FirstLootableCreatureID = {150228, 150229};
 
 	ShowAllUIQuest = 58208;
 
-	UseFoodQuest = 55174;
-	FoodItem = 117;
-	FoodSpellCast = 433;
+	SelfHealSpellID = 1231411;
 
 	MultipleQuestsTutorial = {55184, 55186};
 
@@ -364,7 +362,7 @@ TutorialData.Alliance = {
 	UseVendorQuest = 55194;
 
 	LookingForGroupQuest = 55992;
-	
+
 	GetMountQuest = 58908;
 
 	SpecChoiceQuest = 59587;
@@ -451,9 +449,7 @@ TutorialData.Horde = {
 
 	ShowAllUIQuest = 59928;
 
-	UseFoodQuest = 59932;
-	FoodItem = 117;
-	FoodSpellCast = 433;
+	SelfHealSpellID = 1231411;
 
 	MultipleQuestsTutorial = {59938, 59939};
 

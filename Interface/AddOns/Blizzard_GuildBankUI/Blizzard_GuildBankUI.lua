@@ -781,7 +781,6 @@ function GuildBankFrame_UpdateMoneyLog()
 	GuildBankMessageFrame:Clear();
 
 	for i = 1, GetNumGuildBankMoneyTransactions() do
-		local msg;
 		local type, name, amount, year, month, day, hour = GetGuildBankMoneyTransaction(i);
 
 		amount = amount or 0;
@@ -790,6 +789,7 @@ function GuildBankFrame_UpdateMoneyLog()
 		name = NORMAL_FONT_COLOR_CODE..name..FONT_COLOR_CODE_CLOSE;
 		local money = GetDenominationsFromCopper(amount);
 
+		local msg;
 		if ( type == "deposit" ) then
 			msg = GUILDBANK_DEPOSIT_MONEY_FORMAT:format(name, money);
 		elseif ( type == "withdraw" ) then
@@ -806,6 +806,10 @@ function GuildBankFrame_UpdateMoneyLog()
 			end
 		elseif ( type == "depositSummary" ) then
 			msg = GUILDBANK_AWARD_MONEY_SUMMARY_FORMAT:format(money);
+		elseif ( type == "buyRename" ) then
+			msg = GUILDBANK_GUILD_RENAME_PURCHASE:format(name, money);
+		elseif ( type == "refundRename" ) then
+			msg = GUILDBANK_GUILD_RENAME_REFUND:format(name, money);
 		end
 
 		if msg then

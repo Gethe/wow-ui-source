@@ -750,6 +750,7 @@ function HeroTalentsUnlockedAnimFrameMixin:PlayAnim(classID)
 		end
 	end
 
+	PlaySound(SOUNDKIT.UI_HERO_TALENTS_UNLOCKED);
 	self:Show();
 	self.Anim:Restart();
 end

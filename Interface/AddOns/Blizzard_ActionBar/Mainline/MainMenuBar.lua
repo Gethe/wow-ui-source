@@ -368,6 +368,10 @@ function MainMenuBarMixin:UpdateDividers()
 	end
 end
 
+function MainMenuBarMixin:GetEndCapsFrameLevel()
+	return self.EndCaps:GetFrameLevel();
+end
+
 MainActionBarUpButtonMixin = {}
 
 function MainActionBarUpButtonMixin:OnClick()

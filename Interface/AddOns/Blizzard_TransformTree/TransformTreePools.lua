@@ -5,10 +5,10 @@ function TransformTreeFrameNode_Reset(transformTreeFramePool, frame)
 end
 
 function CreateTransformFrameNodePool(frameType, parent, frameTemplate, resetFunc)
-	local function FrameInitializer(frame)
+	local function PostCreate(frame)
 		CreateTransformTreeNodeFromWidget(frame, TransformTreeFrameNodeMixin);
 	end
 
 	local forbidden = false;
-	return CreateSecureFramePool(frameType, parent, frameTemplate, resetFunc or TransformTreeFrameNode_Reset, forbidden, FrameInitializer);
+	return CreateSecureFramePool(frameType, parent, frameTemplate, resetFunc or TransformTreeFrameNode_Reset, forbidden, PostCreate);
 end

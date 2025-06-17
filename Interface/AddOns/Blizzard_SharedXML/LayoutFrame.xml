@@ -79,6 +79,11 @@
 			By default each child is anchored from TOPLEFT of the child to TOPLEFT of the VerticalLayoutFrame
 			Possible choices here are "center" (anchored TOP to TOP) and "right" (anchored TOPRIGHT to TOPRIGHT)
 			<KeyValue key="align" value="center" type="string"/>
+
+			By default, child regions are ignored for layout when hidden. But in specific cases
+			(e.g. keeping a ResizeLayoutFrame a consistent size when children are hidden) it may be
+			desirable to include them.
+			<KeyValue key="includeAsLayoutChildWhenHidden" value="false" type="boolean"/>
 		-->
 	</Frame>
 

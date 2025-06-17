@@ -474,7 +474,7 @@ function PetBattleFrame_UpdateAssignedUnitFrames(self)
 end
 
 function PetBattleFrame_Remove(self)
-	ActionButton_HideOverlayGlow(PetBattleFrame.BottomFrame.CatchButton);
+	ActionButtonSpellAlertManager:HideAlert(PetBattleFrame.BottomFrame.CatchButton);
 	PetBattleFrame.BottomFrame.CatchButton.playedSound = false;
 	self:Hide();
 	RemoveFrameLock("PETBATTLES");
@@ -832,10 +832,10 @@ function PetBattleActionButton_UpdateState(self)
 				PlaySound(SOUNDKIT.UI_PET_BATTLES_TRAP_READY);
 				self.playedSound = true;
 			end
-			ActionButton_ShowOverlayGlow(self);
+			ActionButtonSpellAlertManager:ShowAlert(self);
 		else
 			self.playedSound = false;
-			ActionButton_HideOverlayGlow(self);
+			ActionButtonSpellAlertManager:HideAlert(self);
 		end
 	end
 end

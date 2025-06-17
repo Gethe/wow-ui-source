@@ -730,7 +730,7 @@ function DisplayDungeonScoreLink(link)
 	end
 
 	-- Sort Alphabetically. 
-	table.sort(sortTable, function(a, b) strcmputf8i(a.mapName, b.mapName); end);
+	table.sort(sortTable, function(a, b) return strcmputf8i(a.mapName, b.mapName) < 0; end);
 
 	for i = 1, #sortTable do 
 		local textColor = sortTable[i].completedInTime and HIGHLIGHT_FONT_COLOR or GRAY_FONT_COLOR; 

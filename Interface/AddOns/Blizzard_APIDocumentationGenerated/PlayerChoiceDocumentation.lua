@@ -120,6 +120,7 @@ local PlayerChoice =
 				{ Name = "disabled", Type = "bool", Nilable = false },
 				{ Name = "showCheckmark", Type = "bool", Nilable = false },
 				{ Name = "hideButtonShowText", Type = "bool", Nilable = false },
+				{ Name = "selected", Type = "bool", Nilable = false },
 				{ Name = "confirmation", Type = "string", Nilable = true },
 				{ Name = "tooltip", Type = "string", Nilable = true },
 				{ Name = "rewardQuestID", Type = "number", Nilable = true },

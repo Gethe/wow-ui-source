@@ -304,23 +304,16 @@ end
 -- Low Health Watcher
 -- ------------------------------------------------------------------------------------------------------------
 Class_LowHealthWatcher = class("LowHealthWatcher", Class_TutorialBase);
-function Class_LowHealthWatcher:OnInitialize()
-	self.useFoodQuestID = TutorialData:GetFactionData().UseFoodQuest;
-end
-
 function Class_LowHealthWatcher:OnAdded()
-	if C_QuestLog.IsQuestFlaggedCompleted(self.useFoodQuestID) then
-		TutorialManager:StartWatcher(self:Name());
-	end
+	TutorialManager:StartWatcher(self:Name());
 end
 
 function Class_LowHealthWatcher:StartWatching()
-	if C_QuestLog.IsQuestFlaggedCompleted(self.useFoodQuestID) then
-		Dispatcher:RegisterEvent("UNIT_HEALTH", self);
-		Dispatcher:RegisterEvent("PLAYER_REGEN_DISABLED", self);
-		Dispatcher:RegisterEvent("PLAYER_REGEN_ENABLED", self);
-		self.inCombat = false;
-	end
+	Dispatcher:RegisterEvent("UNIT_HEALTH", self);
+	Dispatcher:RegisterEvent("PLAYER_REGEN_DISABLED", self);
+	Dispatcher:RegisterEvent("PLAYER_REGEN_ENABLED", self);
+
+	self.inCombat = false;
 end
 
 function Class_LowHealthWatcher:StopWatching()
@@ -341,14 +334,11 @@ function Class_LowHealthWatcher:UNIT_HEALTH(arg1)
 	if arg1 == "player" then
 		local isDeadOrGhost = UnitIsDeadOrGhost("player");
 		if (not isDeadOrGhost) and (UnitHealth(arg1)/UnitHealthMax(arg1) <= TutorialData.LOW_HEALTH_PERCENTAGE) and not self.inCombat then
-			Dispatcher:UnregisterEvent("UNIT_HEALTH", self);
-
 			local tutorialData = TutorialData:GetFactionData();
-			local container, slot = TutorialHelper:FindItemInContainer(tutorialData.FoodItem);
-			if container and slot then
-				TutorialManager:Queue(Class_EatFood.name);
+			local button = TutorialHelper:GetActionButtonBySpellID(tutorialData.SelfHealSpellID);
+			if button then
+				TutorialManager:Queue(Class_SelfHeal.name);
 			end
-			TutorialManager:StopWatcher(self:Name());
 		end
 	end
 end

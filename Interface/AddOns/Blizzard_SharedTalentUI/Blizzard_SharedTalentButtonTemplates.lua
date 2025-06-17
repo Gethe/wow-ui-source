@@ -183,6 +183,10 @@ function TalentDisplayMixin:GetSpellID()
 	return (self.definitionInfo ~= nil) and self.definitionInfo.spellID or nil;
 end
 
+function TalentDisplayMixin:GetOverriddenSpellID()
+	return (self.definitionInfo ~= nil) and self.definitionInfo.overriddenSpellID or nil;
+end
+
 function TalentDisplayMixin:GetOverrideIcon()
 	return (self.definitionInfo ~= nil) and self.definitionInfo.overrideIcon or nil;
 end

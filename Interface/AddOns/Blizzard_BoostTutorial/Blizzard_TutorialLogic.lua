@@ -968,7 +968,7 @@ function Class_ActionBarCallout:HighlightPointer(spellID, textID)
 		local finalString = string.format(prompt, binding, spellInfo.name, spellInfo.iconID);
 
 		self:ShowPointerTutorial(finalString, "DOWN", btn);
-		ActionButton_ShowOverlayGlow(btn);
+		ActionButtonSpellAlertManager:ShowAlert(btn);
 
 		return spellID;
 	end
@@ -992,7 +992,7 @@ function Class_ActionBarCallout:DisableActionButtonGlow()
 	for i = 1, 12 do
 		local btn = _G["ActionButton" .. i];
 		if (btn) then
-			ActionButton_HideOverlayGlow(btn);
+			ActionButtonSpellAlertManager:HideAlert(btn);
 		end
 	end
 end

@@ -37,6 +37,9 @@
 
 			- This is used to determine if spacers should be used when hiding buttons. Spacers help keep the bar a static size when buttons are hidden. If this is true then spacers won't be used.
 			<KeyValue key="noSpacers" value="false" type="boolean"/>
+			
+			- If this bar displays an actionbarpage of index NORMAL_BAR_1 through NORMAL_BAR_6 or EXTRA_BAR_1 through EXTRA_BAR_3 (not EXTRA_BAR though)
+			<KeyValue key="isNormalBar" value="false" type="boolean"/>
 		-->
 
 		<Scripts>

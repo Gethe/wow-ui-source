@@ -715,6 +715,8 @@
 			<KeyValue key="respectChildScale" value="true" type="boolean"/>
 		</KeyValues>
 		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
 			<OnShow method="OnShow"/>
 		</Scripts>
 	</Frame>

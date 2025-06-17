@@ -2,7 +2,7 @@ ColorblindOverrides = {}
 
 function ColorblindOverrides.CreateSettings(category, layout)
 	-- Color Overrides
-	local data = { categoryID = category:GetID(), panelSetting = "panelItemQualityColorOverrides" };
+	local data = { categoryID = category:GetID(), newTagID = "panelItemQualityColorOverrides" };
 	local initializer = Settings.CreatePanelInitializer("ItemQualityColorOverrides", data);
 
 	-- Include both 'Item Quality' and 'Rarity', since the terms are a bit interchangeable players could search for either.

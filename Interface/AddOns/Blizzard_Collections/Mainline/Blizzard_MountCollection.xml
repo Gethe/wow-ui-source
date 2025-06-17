@@ -216,51 +216,20 @@
 	
 	<Frame name="MountJournal" parent="CollectionsJournal" setAllPoints="true">
 		<Frames>
-			<Button name="$parentSummonRandomFavoriteButton" parentKey="SummonRandomFavoriteButton" inherits="SecureFrameTemplate" mixin="MountJournalSummonRandomFavoriteButtonMixin">
-				<Size x="33" y="33"/>
+			<Frame parentKey="SummonRandomFavoriteSpellFrame" inherits="UIPanelSpellButtonFrameTemplate" mixin="MountJournalSummonRandomFavoriteSpellFrameMixin">
+				<Size x="206" y="33"/>
+				<KeyValues>
+					<KeyValue key="spellID" value="150544" type="number"/>
+					<KeyValue key="labelText" value="MOUNT_JOURNAL_SUMMON_RANDOM_FAVORITE_MOUNT" type="global"/>
+				</KeyValues>
 				<Anchors>
-					<Anchor point="CENTER" relativePoint="TOPRIGHT" x="-24" y="-42"/>
+					<Anchor point="TOPRIGHT" x="-8" y="-25"/>
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture name="$parentIconTexture" parentKey="texture" file="Interface/ICONS/ACHIEVEMENT_GUILDPERK_MOUNTUP" setAllPoints="true"/>
-					</Layer>
-					<Layer level="OVERLAY">
-						<Texture parentKey="BlackCover" setAllPoints="true" hidden="true">
-							<Color r="0" g="0" b="0" a="0.6"/>
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY" textureSubLevel="1">
-						<Texture name="$parentBorder" inherits="ActionBarFlyoutButton-IconFrame">
-							<Size x="35" y="35"/>
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-						<Texture name="$parentLockIcon" parentKey="LockIcon" file="Interface\PetBattles\PetBattle-LockIcon" setAllPoints="true" hidden="true"/>
-						<FontString name="$parentSpellName" inherits="GameFontNormal" maxLines="2" justifyH="RIGHT" parentKey="spellname" >
-							<Size x="170" y="0"/>
-							<Color r="1" g="1" b="1"/>
-							<Anchors>
-								<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$parentBorder" x="-2" y="0"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad method="OnLoad"/>
-					<OnClick method="OnClick"/>
-					<OnDragStart method="OnDragStart"/>
-					<OnEnter method="OnEnter"/>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
-				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
-				<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
-			</Button>
+			</Frame>
 			<Button parentKey="ToggleDynamicFlightFlyoutButton" mixin="MountJournalToggleDynamicFlightFlyoutButtonMixin" inherits="FlyoutButtonTemplate" frameLevel="1000">
 				<Size x="33" y="33"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeKey="$parent.SummonRandomFavoriteButton" x="-210"/>
+					<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeKey="$parent.SummonRandomFavoriteSpellFrame" x="-4"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">

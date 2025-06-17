@@ -830,104 +830,25 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="$parentHealPetButton" parentKey="HealPetButton" inherits="SecureFrameTemplate">
-				<Size x="33" y="33"/>
+			<Frame parentKey="HealPetSpellFrame" inherits="UIPanelSpellButtonFrameTemplate" mixin="PetJournalHealPetSpellFrameMixin">
+				<Size x="141" y="33"/>	
+				<KeyValues>
+					<KeyValue key="spellID" value="125439" type="number"/>
+				</KeyValues>
 				<Anchors>
-					<Anchor point="CENTER" relativePoint="TOPRIGHT" x="-24" y="-42"/>
+					<Anchor point="TOPRIGHT" x="-8" y="-25"/>
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture name="$parentIconTexture" parentKey="texture" file="Interface\Icons\spell_magic_polymorphrabbit" setAllPoints="true"/>
-					</Layer>
-					<Layer level="OVERLAY">
-						<Texture parentKey="BlackCover" setAllPoints="true" hidden="true">
-							<Color r="0" g="0" b="0" a="0.6"/>
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY" textureSubLevel="1">
-						<Texture name="$parentBorder" inherits="ActionBarFlyoutButton-IconFrame">
-							<Size x="35" y="35"/>
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-						<Texture name="$parentLockIcon" parentKey="LockIcon" file="Interface\PetBattles\PetBattle-LockIcon" setAllPoints="true" hidden="true"/>
-						<FontString name="$parentSpellName" inherits="GameFontNormal" maxLines="2" justifyH="RIGHT" parentKey="spellname">
-							<Anchors>
-								<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$parentBorder" x="-2" y="0"/>
-							</Anchors>
-							<Size x="75" y="0"/>
-							<Color r="1" g="1" b="1"/>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Cooldown name="$parentCooldown" parentKey="cooldown" inherits="CooldownFrameTemplate"/>
-				</Frames>
-				<Scripts>
-					<OnLoad function="PetJournalHealPetButton_OnLoad"/>
-					<OnEvent function="PetJournalHealPetButton_OnEvent"/>
-					<OnClick>
-						CastSpellByID(self.spellID);
-					</OnClick>
-					<OnDragStart function="PetJournalHealPetButton_OnDragStart"/>
-					<OnShow function="PetJournalHealPetButton_OnShow"/>
-					<OnHide function="PetJournalHealPetButton_OnHide"/>
-					<OnEnter function="PetJournalHealPetButton_OnEnter"/>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-				</Scripts>
-				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
-				<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
-			</Button>
-			<Button name="$parentSummonRandomFavoritePetButton" parentKey="SummonRandomFavoritePetButton" inherits="SecureFrameTemplate">
-				<Size x="33" y="33"/>
+			</Frame>
+			<Frame parentKey="SummonRandomPetSpellFrame" inherits="UIPanelSpellButtonFrameTemplate" mixin="PetJournalSummonRandomPetSpellFrameMixin">
+				<Size x="166" y="33"/>
+				<KeyValues>
+					<KeyValue key="spellID" value="243819" type="number"/>
+					<KeyValue key="labelText" value="PET_JOURNAL_SUMMON_RANDOM_FAVORITE_PET" type="global"/>
+				</KeyValues>
 				<Anchors>
-					<Anchor point="CENTER" relativePoint="TOPRIGHT" x="-175" y="-42"/>
+					<Anchor point="TOPRIGHT" x="-159" y="-25"/>
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture name="$parentIconTexture" parentKey="texture" file="Interface/Icons/INV_Pet_BabyMoose" setAllPoints="true"/>
-					</Layer>
-					<Layer level="OVERLAY">
-						<Texture parentKey="BlackCover" setAllPoints="true" hidden="true">
-							<Color r="0" g="0" b="0" a="0.6"/>
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY" textureSubLevel="1">
-						<Texture name="$parentBorder" inherits="ActionBarFlyoutButton-IconFrame">
-							<Size x="35" y="35"/>
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-						<Texture name="$parentLockIcon" parentKey="LockIcon" file="Interface\PetBattles\PetBattle-LockIcon" setAllPoints="true" hidden="true"/>
-						<FontString name="$parentSpellName" inherits="GameFontNormal" maxLines="2" justifyH="RIGHT" parentKey="spellname">
-							<Anchors>
-								<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$parentBorder" x="-2" y="0"/>
-							</Anchors>
-							<Size x="130" y="0"/>
-							<Color r="1" g="1" b="1"/>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Cooldown name="$parentCooldown" parentKey="cooldown" inherits="CooldownFrameTemplate"/>
-				</Frames>
-				<Scripts>
-					<OnLoad function="PetJournalSummonRandomFavoritePetButton_OnLoad"/>
-					<OnShow function="PetJournalSummonRandomFavoritePetButton_OnShow"/>
-					<OnHide function="PetJournalSummonRandomFavoritePetButton_OnHide"/>
-					<OnEvent function="PetJournalSummonRandomFavoritePetButton_OnEvent"/>
-					<OnClick function="PetJournalSummonRandomFavoritePetButton_OnClick"/>
-					<OnDragStart function="PetJournalSummonRandomFavoritePetButton_OnDragStart"/>
-					<OnEnter function="PetJournalSummonRandomFavoritePetButton_OnEnter"/>
-					<OnLeave function="PetJournalSummonRandomFavoritePetButton_OnLeave"/>
-				</Scripts>
-				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
-				<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
-			</Button>
+			</Frame>
 			<Frame name="$parentLeftInset" useParentLevel="true" inherits="InsetFrameTemplate" parentKey="LeftInset">
 				<Size x="260" y="496"/>
 				<Anchors>

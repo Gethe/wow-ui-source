@@ -22,6 +22,7 @@ SmoothStatusBar.lua
 PredictedSetting.lua
 SecureUtil.lua
 TimeUtil.lua
+BenchmarkUtil.lua
 VectorLib.xml
 Mainline\NineSliceLayouts.lua
 NineSlice.lua
@@ -43,6 +44,8 @@ ManagedLayoutFrame.lua
 ManagedLayoutFrame.xml
 SpaceToFitLayoutFrame.lua
 SpaceToFitLayoutFrame.xml
+ScaleToFitFrame.lua
+ScaleToFitFrame.xml
 BulletPoint.lua
 BulletPoint.xml
 KeyCommand.lua

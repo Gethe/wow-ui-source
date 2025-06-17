@@ -2079,19 +2079,13 @@ function WardrobeItemsCollectionMixin:FilterVisuals()
 	local filteredVisualsList = { };
 	local slotID = self.transmogLocation.slotID;
 	for i, visualInfo in ipairs(visualsList) do
-		local skip = false;
-		if visualInfo.restrictedSlotID then
-			skip = (slotID ~= visualInfo.restrictedSlotID);
-		end
-		if not skip then
-			if isAtTransmogrifier then
-				if (visualInfo.isUsable and visualInfo.isCollected) or visualInfo.alwaysShowItem then
-					table.insert(filteredVisualsList, visualInfo);
-				end
-			else
-				if not visualInfo.isHideVisual then
-					table.insert(filteredVisualsList, visualInfo);
-				end
+		if isAtTransmogrifier then
+			if (visualInfo.isUsable and visualInfo.isCollected) or visualInfo.alwaysShowItem then
+				table.insert(filteredVisualsList, visualInfo);
+			end
+		else
+			if not visualInfo.isHideVisual then
+				table.insert(filteredVisualsList, visualInfo);
 			end
 		end
 	end

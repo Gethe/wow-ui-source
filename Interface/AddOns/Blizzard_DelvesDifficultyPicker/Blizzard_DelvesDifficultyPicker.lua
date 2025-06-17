@@ -375,6 +375,11 @@ function DelvesDifficultyPickerFrameMixin:UpdateBountifulWidgetVisualization()
 			self.bountifulAnimFrame.FadeIn:Play();
 			self.bountifulAnimFrame.RaysTranslation:Play();
 		end
+
+		if self.bountifulAnimFrame then
+			self.bountifulAnimFrame:ClearAllPoints();
+			self.bountifulAnimFrame:SetPoint("CENTER", widgetFrame, "CENTER", 0, -3);
+		end
 	end
 end
 
@@ -479,6 +484,8 @@ end
 --[[ Rewards Container + Buttons ]]
 DelveRewardsContainerFrameMixin = {};
 
+local REWARDS_SCROLL_SPACING = 5;
+
 function DelveRewardsContainerFrameMixin:OnLoad()
 	local function RewardResetter(framePool, frame)
 		SetItemButtonTexture(frame, nil);
@@ -491,6 +498,31 @@ function DelveRewardsContainerFrameMixin:OnLoad()
 	end
 
 	self.rewardPool = CreateFramePool("FRAME", self, "DelveRewardItemButtonTemplate", RewardResetter);
+
+	local function InitializeReward(button, rewardInfo)
+		SetItemButtonTexture(button, rewardInfo.texture);
+		SetItemButtonQuality(button, rewardInfo.quality);
+		button.Name:SetText(rewardInfo.name);
+
+		local colorData = ColorManager.GetColorDataForItemQuality(rewardInfo.quality);
+		if colorData then
+			button.Name:SetTextColor(colorData.color:GetRGB());
+		end
+
+		if rewardInfo.quantity and rewardInfo.quantity > 1 then
+			SetItemButtonCount(button, rewardInfo.quantity);
+		end
+
+		button.id = rewardInfo.id;
+		button.context = rewardInfo.context;
+		button:Show();
+	end
+
+	local defaultPad = 5;
+	local view = CreateScrollBoxListLinearView(defaultPad, defaultPad, defaultPad, defaultPad, REWARDS_SCROLL_SPACING);
+	view:SetElementInitializer("DelveRewardItemButtonTemplate", InitializeReward);
+
+	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 end
 
 function DelveRewardsContainerFrameMixin:SetRewards()
@@ -534,40 +566,24 @@ function DelveRewardsContainerFrameMixin:SetRewards()
 		end
 
 		if #rewardInfo > 0 then
-			local buttons = {};
+			local dataProvider = CreateDataProvider();
+
 			for i, reward in ipairs(rewardInfo) do
-				if i > MAX_NUM_REWARDS then
-					break;
-				else
-					local button = self.rewardPool:Acquire();
-
-					SetItemButtonTexture(button, reward.texture);
-					SetItemButtonQuality(button, reward.quality);
-					button.Name:SetText(reward.name);
-
-					local colorData = ColorManager.GetColorDataForItemQuality(reward.quality);
-					if colorData then
-						button.Name:SetTextColor(colorData.color:GetRGB());
-					end
-
-					if reward.quantity and reward.quantity > 1 then
-						SetItemButtonCount(button, reward.quantity);
-					end
-
-					tinsert(buttons, button);
-					button.id = reward.id;
-					button.context = reward.context;
-					button:Show();
-				end
+				dataProvider:Insert(reward);
 			end
 
-			local vertPadding = 5;
-			local buttonHeight = C_XMLUtil.GetTemplateInfo("DelveRewardItemButtonTemplate").height;
-			self:SetHeight(self.RewardText:GetHeight() + ((buttonHeight + vertPadding) * #rewardInfo));
+			local buttonTemplateInfo = C_XMLUtil.GetTemplateInfo("DelveRewardItemButtonTemplate");
+			local buttonHeight = buttonTemplateInfo.height;
+			local numItems = math.min(#rewardInfo, MAX_NUM_REWARDS);
+			local newHeight = self.RewardText:GetHeight() + ((buttonHeight + REWARDS_SCROLL_SPACING) * numItems);
+			self:SetHeight(newHeight);
+			self.ScrollBox:SetHeight(newHeight - REWARDS_SCROLL_SPACING);
 
-			local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRight, 1, 0, vertPadding);
-			local anchor = CreateAnchor("TOP", self.RewardText, "BOTTOM", 20, -5);
-			AnchorUtil.GridLayout(buttons, anchor, layout);
+			local scrollWidthPadding = 4;
+			self.ScrollBox:SetWidth(buttonTemplateInfo.width + scrollWidthPadding);
+
+			self.ScrollBox:SetDataProvider(dataProvider);
+			self.ScrollBar:SetShown((#rewardInfo) > MAX_NUM_REWARDS);
 
 			self:Show();
 		end

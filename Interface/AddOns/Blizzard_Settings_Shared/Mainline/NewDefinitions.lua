@@ -31,9 +31,18 @@ NewSettings["11.1.5"] = {
 };
 
 NewSettingsPredicates["cooldownViewerEnabled"] = function()
-	if not C_CooldownViewer.IsCooldownViewerAvailable() then
-		return false;
-	end
+	return C_CooldownViewer.IsCooldownViewerAvailable();
+end
 
-	return true;
+NewSettings["11.1.7"] = {
+	"ASSISTED_COMBAT_ROTATION",
+	"assistedCombatHighlight",
+};
+
+NewSettingsPredicates["ASSISTED_COMBAT_ROTATION"] = function()
+	return C_AssistedCombat.IsAvailable();
+end;
+
+NewSettingsPredicates["assistedCombatHighlight"] = function()
+	return C_AssistedCombat.IsAvailable();
 end;

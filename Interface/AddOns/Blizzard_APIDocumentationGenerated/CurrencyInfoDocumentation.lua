@@ -415,6 +415,15 @@ local CurrencyInfo =
 			},
 		},
 		{
+			Name = "IsCurrencyTransferInProgress",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "currencyTransferInProgress", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsCurrencyTransferTransactionDataReady",
 			Type = "Function",
 
@@ -549,6 +558,11 @@ local CurrencyInfo =
 			{
 				{ Name = "failureReason", Type = "AccountCurrencyTransferResult", Nilable = false },
 			},
+		},
+		{
+			Name = "CurrencyTransferInitiated",
+			Type = "Event",
+			LiteralName = "CURRENCY_TRANSFER_INITIATED",
 		},
 		{
 			Name = "CurrencyTransferLogUpdate",

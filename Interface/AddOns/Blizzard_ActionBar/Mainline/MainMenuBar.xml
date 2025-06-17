@@ -44,6 +44,7 @@
 			<KeyValue key="systemIndex" value="Enum.EditModeActionBarSystemIndices.MainBar" type="global"/>
 			<KeyValue key="hideEndCaps" value="MAIN_MENU_BAR_HIDE_END_CAPS" type="global"/>
 			<KeyValue key="useDefaultAnchors" value="ACTION_BARS_USE_DEFAULT_ANCHORS" type="global"/>
+			<KeyValue key="isNormalBar" value="true" type="boolean"/>
 		</KeyValues>
 
 		<Layers>

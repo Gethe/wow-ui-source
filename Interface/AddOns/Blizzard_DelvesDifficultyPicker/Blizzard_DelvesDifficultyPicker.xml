@@ -175,6 +175,20 @@
 						</FontString>
 					</Layer>
 				</Layers>
+				<Frames>
+					<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+						<Size x="1" y="1"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.RewardText" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+						</Anchors>
+					</Frame>
+					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="8" y="-2"/>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="8" y="2"/>
+						</Anchors>
+					</EventFrame>
+				</Frames>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
 				</Scripts>

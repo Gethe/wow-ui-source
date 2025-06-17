@@ -167,6 +167,7 @@ function GlueParentMixin:OnEvent(event, ...)
 		WOW_PROJECT_ID = isPlunderstorm and WOW_PROJECT_WOWLABS or WOW_PROJECT_MAINLINE;
 		local screen = isPlunderstorm and "plunderstorm" or "charselect";
 		GlueParent_SetScreen(screen);
+		C_Log.LogMessage("From ACTIVE_GAME_MODE_UPDATED");
 	elseif ( event == "ERROR_CONNECT_TO_EVENT_REALM_FAILED" ) then
 		C_RealmList.ClearRealmList();
 		GlueDialog_Show("ERROR_CONNECT_TO_EVENT_REALM_FAILED");
@@ -369,6 +370,7 @@ function GlueParent_EnsureValidScreen()
 		C_Log.LogMessage(string.format("Screen invalid. Changing from=\"%s\" to=\"%s\"", currentScreen or "none", bestScreen));
 
 		GlueParent_SetScreen(bestScreen);
+		C_Log.LogMessage("From EnsureValidScreen");
 	end
 end
 
@@ -383,8 +385,8 @@ local function GlueParent_UpdateScreenSound(screenInfo)
 	end	
 end
 
-local function GlueParent_ChangeScreen(screenInfo, screenTable)
-	C_Log.LogMessage(string.format("Switching to screen=\"%s\"", screenInfo.frame));
+local function GlueParent_ChangeScreen(screenInfo, screenTable, oldScreen)
+	C_Log.LogMessage(string.format("Switching to screen=\"%s\" (from \"%s\")", screenInfo.frame, oldScreen or 'none'));
 
 	--Hide all other screens
 	for key, info in pairs(screenTable) do
@@ -413,6 +415,7 @@ function GlueParent_IsSecondaryScreenOpen(screen)
 end
 
 function GlueParent_SetScreen(screen)
+	local oldScreen = GlueParent.currentScreen or 'none'
 	local screenInfo = GLUE_SCREENS[screen];
 	if ( screenInfo ) then
 		GlueParent.currentScreen = screen;
@@ -434,7 +437,7 @@ function GlueParent_SetScreen(screen)
 		--If there's a full-screen secondary screen showing right now, we'll wait to show this one.
 		--Once the secondary screen hides, we'll be shown.
 		if ( not suppressScreen ) then
-			GlueParent_ChangeScreen(screenInfo, GLUE_SCREENS);
+			GlueParent_ChangeScreen(screenInfo, GLUE_SCREENS, oldScreen);
 		end
 	end
 end
@@ -467,6 +470,7 @@ local function GlueParent_CloseSecondaryScreenInternal(openingNewScreen)
 end
 
 function GlueParent_OpenSecondaryScreen(screen, contextKey)
+	local oldSecondaryScreen = GlueParent.currentSecondaryScreen or 'none';
 	local screenInfo = GLUE_SECONDARY_SCREENS[screen];
 	if ( screenInfo ) then
 		--Close the last secondary screen
@@ -492,7 +496,7 @@ function GlueParent_OpenSecondaryScreen(screen, contextKey)
 		if ( screenInfo.showSound ) then
 			PlaySound(screenInfo.showSound);
 		end
-		GlueParent_ChangeScreen(screenInfo, GLUE_SECONDARY_SCREENS);
+		GlueParent_ChangeScreen(screenInfo, GLUE_SECONDARY_SCREENS, oldSecondaryScreen);
 		GlueParent_CheckFitSecondaryScreen(screenInfo);
 	end
 end

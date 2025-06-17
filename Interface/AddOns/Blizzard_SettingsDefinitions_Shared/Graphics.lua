@@ -703,6 +703,7 @@ local function Register()
 			AddValidatedCVarOption(container, cvar, 1, VIDEO_OPTIONS_BUILTIN);
 			AddValidatedCVarOption(container, cvar, 2, VIDEO_OPTIONS_NVIDIA_REFLEX);
 			AddValidatedCVarOption(container, cvar, 3, VIDEO_OPTIONS_NVIDIA_REFLEX_BOOST);
+			AddValidatedCVarOption(container, cvar, 4, VIDEO_OPTIONS_INTEL_XELL);
 			return container:GetData();
 		end
 
@@ -1329,9 +1330,8 @@ local function Register()
 		end
 
 		AddCompatSettingsCheckbox("GxCompatOptionalGpuFeatures",		"PROXY_OPT_GPU_FEATURES",	COMPAT_SETTING_OPTIONAL_GPU_FEATURES,	OPTION_TOOLTIP_COMPAT_SETTING_OPTIONAL_GPU_FEATURES);
-		AddCompatSettingsCheckbox("GxCompatDeviceMultiThreading",		"PROXY_DEVICE_MT",			COMPAT_SETTING_DEVICE_MULTITHREADING,	OPTION_TOOLTIP_COMPAT_SETTING_DEVICE_MULTITHREADING);
+		AddCompatSettingsCheckbox("GxCompatAsyncShaderCompilation",		"PROXY_DEVICE_MT",			COMPAT_SETTING_DEVICE_MULTITHREADING,	OPTION_TOOLTIP_COMPAT_SETTING_DEVICE_MULTITHREADING);
 		AddCompatSettingsCheckbox("GxCompatCommandListMultiThreading",	"PROXY_CMDLIST_MT",			COMPAT_SETTING_CMDLIST_MULTITHREADING,	OPTION_TOOLTIP_COMPAT_SETTING_CMDLIST_MULTITHREADING);
-		AddCompatSettingsCheckbox("GxCompatAsyncFrameEnd",				"PROXY_FRAME_OVERLAP",		COMPAT_SETTING_FRAME_OVERLAP,			OPTION_TOOLTIP_COMPAT_SETTING_FRAME_OVERLAP);
 		AddCompatSettingsCheckbox("GxCompatWorkSubmitOptimizations",	"PROXY_ADV_WORK_SUBMIT",	COMPAT_SETTING_ADV_WORK_SUBMIT,			OPTION_TOOLTIP_COMPAT_SETTING_ADV_WORK_SUBMIT);
 	end
 

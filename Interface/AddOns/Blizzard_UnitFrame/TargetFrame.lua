@@ -184,7 +184,7 @@ function TargetFrameMixin:OnEvent(event, ...)
 			bossTargetFrame:UpdateRaidTargetIcon(bossTargetFrame);
 		end
 		UIParent_ManageFramePositions();
-		BossTargetFrameContainer:Show();
+		BossTargetFrameContainer:UpdateShownState();
 	elseif (event == "UNIT_TARGETABLE_CHANGED" and arg1 == self.unit) then
 		self:Update();
 		self:UpdateRaidTargetIcon(self);
@@ -1327,6 +1327,15 @@ function BossTargetFrame_OpenMenu(self)
 end
 
 BossTargetFrameContainerMixin = { };
+
+function BossTargetFrameContainerMixin:OnLoad()
+	EditModeSystemMixin.OnSystemLoad(self);
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+end
+
+function BossTargetFrameContainerMixin:OnEvent(event, ...)
+	self:UpdateShownState();
+end
 
 function BossTargetFrameContainerMixin:UpdateSize()
 	local lastShowingBossFrame;

@@ -44,6 +44,20 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "GetButtonHeaderWidgetVisualizationInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "widgetID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "widgetInfo", Type = "ButtonHeaderWidgetVisualizationInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GetCaptureBarWidgetVisualizationInfo",
 			Type = "Function",
 
@@ -766,6 +780,33 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "UIWidgetButtonEnabledState",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Disabled", Type = "UIWidgetButtonEnabledState", EnumValue = 0 },
+				{ Name = "Enabled", Type = "UIWidgetButtonEnabledState", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "UIWidgetButtonIconType",
+			Type = "Enumeration",
+			NumValues = 5,
+			MinValue = 0,
+			MaxValue = 4,
+			Fields =
+			{
+				{ Name = "Exit", Type = "UIWidgetButtonIconType", EnumValue = 0 },
+				{ Name = "Speak", Type = "UIWidgetButtonIconType", EnumValue = 1 },
+				{ Name = "Undo", Type = "UIWidgetButtonIconType", EnumValue = 2 },
+				{ Name = "Checkmark", Type = "UIWidgetButtonIconType", EnumValue = 3 },
+				{ Name = "RedX", Type = "UIWidgetButtonIconType", EnumValue = 4 },
+			},
+		},
+		{
 			Name = "UIWidgetFontType",
 			Type = "Enumeration",
 			NumValues = 3,
@@ -813,6 +854,19 @@ local UIWidgetManager =
 				{ Name = "Hidden", Type = "UIWidgetRewardShownState", EnumValue = 0 },
 				{ Name = "ShownEarned", Type = "UIWidgetRewardShownState", EnumValue = 1 },
 				{ Name = "ShownUnearned", Type = "UIWidgetRewardShownState", EnumValue = 2 },
+			},
+		},
+		{
+			Name = "UIWidgetSpellButtonCooldownType",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "HideCooldown", Type = "UIWidgetSpellButtonCooldownType", EnumValue = 0 },
+				{ Name = "ShowCooldown", Type = "UIWidgetSpellButtonCooldownType", EnumValue = 1 },
+				{ Name = "ShowCooldownAndDisableOnCooldown", Type = "UIWidgetSpellButtonCooldownType", EnumValue = 2 },
 			},
 		},
 		{
@@ -1133,6 +1187,30 @@ local UIWidgetManager =
 				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
 				{ Name = "enabledState", Type = "WidgetEnabledState", Nilable = false },
 				{ Name = "lines", Type = "table", InnerType = "string", Nilable = false },
+				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
+				{ Name = "textureKit", Type = "textureKit", Nilable = false },
+				{ Name = "frameTextureKit", Type = "textureKit", Nilable = false },
+				{ Name = "hasTimer", Type = "bool", Nilable = false },
+				{ Name = "orderIndex", Type = "number", Nilable = false },
+				{ Name = "widgetTag", Type = "string", Nilable = false },
+				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
+				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
+				{ Name = "modelSceneLayer", Type = "UIWidgetModelSceneLayer", Nilable = false },
+				{ Name = "scriptedAnimationEffectID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "ButtonHeaderWidgetVisualizationInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
+				{ Name = "headerText", Type = "string", Nilable = false },
+				{ Name = "tooltip", Type = "string", Nilable = false },
+				{ Name = "tooltipLoc", Type = "UIWidgetTooltipLocation", Nilable = false },
+				{ Name = "buttons", Type = "table", InnerType = "UIWidgetSpellButtonInfo", Nilable = false },
 				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
 				{ Name = "textureKit", Type = "textureKit", Nilable = false },
 				{ Name = "frameTextureKit", Type = "textureKit", Nilable = false },
@@ -1950,6 +2028,18 @@ local UIWidgetManager =
 			{
 				{ Name = "layoutDirection", Type = "UIWidgetSetLayoutDirection", Nilable = false },
 				{ Name = "verticalPadding", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UIWidgetSpellButtonInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "tooltip", Type = "string", Nilable = false },
+				{ Name = "icon", Type = "UIWidgetButtonIconType", Nilable = false },
+				{ Name = "enabledState", Type = "UIWidgetButtonEnabledState", Nilable = false },
+				{ Name = "cooldownType", Type = "UIWidgetSpellButtonCooldownType", Nilable = false },
 			},
 		},
 		{
