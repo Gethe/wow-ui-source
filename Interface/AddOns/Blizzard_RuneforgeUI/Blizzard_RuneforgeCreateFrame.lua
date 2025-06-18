@@ -4,11 +4,11 @@ StaticPopupDialogs["CONFIRM_RUNEFORGE_LEGENDARY_CRAFT"] = {
 	button1 = YES,
 	button2 = NO,
 
-	OnShow = function(self, data)
-		self.text:SetText(data.title);
+	OnShow = function(dialog, data)
+		dialog:SetText(data.title);
 	end,
 
-	OnAccept = function()
+	OnAccept = function(dialog, data)
 		RuneforgeFrame:CraftItem();
 	end,
 
@@ -68,11 +68,7 @@ function RuneforgeCreateFrameMixin:ShowCraftConfirmation()
 	local popupTitleFormat, itemGUID, itemLocation, quality, itemLevel, itemName, powerID, modifiers = self:GetStaticPopupInfo();
 
 	local function StaticPopupItemFrameCallback(itemFrame)
-		itemFrame:SetItemLocation(itemLocation);
-		SetItemButtonQuality(itemFrame, quality);
-		itemFrame.Text:SetTextColor(ITEM_QUALITY_COLORS[quality].color:GetRGB());
-		itemFrame.Text:SetText(itemName);
-		itemFrame.Count:Hide();
+		itemFrame:DisplayInfoFromStandardCallback(itemLocation, itemName, quality);
 	end
 
 	local function StaticPopupItemFrameOnEnterCallback(itemFrame)

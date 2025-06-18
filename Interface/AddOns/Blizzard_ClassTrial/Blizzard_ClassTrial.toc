@@ -2,5 +2,6 @@
 ## Title: Blizzard ClassTrial
 ## LoadFirst: 1
 ## AllowLoadGameType: standard
-## RequiredDep: Blizzard_SharedXML, Blizzard_ClassTrialSecure, Blizzard_StaticPopup, Blizzard_Minimap
+## RequiredDep: Blizzard_SharedXML, Blizzard_ClassTrialSecure, Blizzard_Minimap
+## OptionalDep: Blizzard_StaticPopup_Glue, Blizzard_StaticPopup_Game
 Blizzard_ClassTrial.xml

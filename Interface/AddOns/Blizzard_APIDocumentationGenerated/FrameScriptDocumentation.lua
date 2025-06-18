@@ -66,6 +66,16 @@ local FrameScript =
 			},
 		},
 		{
+			Name = "GetSourceLocation",
+			Type = "Function",
+			MayReturnNothing = true,
+
+			Returns =
+			{
+				{ Name = "location", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "RunScript",
 			Type = "Function",
 
@@ -81,6 +91,21 @@ local FrameScript =
 			Arguments =
 			{
 				{ Name = "height", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "debugprofilestart",
+			Type = "Function",
+			Documentation = { "Starts a timer for profiling. The final time can be obtained by calling debugprofilestop." },
+		},
+		{
+			Name = "debugprofilestop",
+			Type = "Function",
+			Documentation = { "Returns the time in milliseconds since the last debugprofilestart call." },
+
+			Returns =
+			{
+				{ Name = "elapsedMilliseconds", Type = "number", Nilable = false },
 			},
 		},
 	},

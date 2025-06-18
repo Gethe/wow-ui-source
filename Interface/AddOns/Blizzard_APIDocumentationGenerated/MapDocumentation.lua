@@ -543,6 +543,15 @@ local Map =
 			},
 		},
 		{
+			Name = "OpenWorldMap",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "RequestPreloadMap",
 			Type = "Function",
 
@@ -590,7 +599,7 @@ local Map =
 			LiteralName = "WORLD_MAP_OPEN",
 			Payload =
 			{
-				{ Name = "uiMapID", Type = "number", Nilable = false },
+				{ Name = "uiMapID", Type = "number", Nilable = true },
 			},
 		},
 		{

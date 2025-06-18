@@ -1,3 +1,8 @@
+local _, addonTable = ...
+
+local COPPER_PER_SILVER = 100;
+local SILVER_PER_GOLD = 100;
+local COPPER_PER_GOLD = COPPER_PER_SILVER * SILVER_PER_GOLD;
 
 MONEY_ICON_WIDTH = 19;
 MONEY_ICON_WIDTH_SMALL = 13;
@@ -9,7 +14,22 @@ MONEY_TEXT_VADJUST = 0;
 
 COIN_BUTTON_WIDTH = 32;
 
-MoneyTypeInfo = { };
+local MoneyTypeInfo = { };
+addonTable.MoneyTypeInfo = MoneyTypeInfo;
+
+function GetMoneyTypeInfoField(moneyType, field)
+	return MoneyTypeInfo[moneyType][field];
+end
+
+function AddMoneyTypeInfo(moneyType, info)
+	if MoneyTypeInfo[moneyType] then
+		-- Prevent overwriting existing types
+		return;
+	end
+
+	MoneyTypeInfo[moneyType] = info;
+end
+
 MoneyTypeInfo["PLAYER"] = {
 	OnloadFunc = function(self)
 		self:RegisterEvent("TRIAL_STATUS_UPDATE");
@@ -77,6 +97,7 @@ MoneyTypeInfo["AUCTION_TOOLTIP"] = {
 	align = 1,
 	truncateSmallCoins = nil,
 };
+local GetPlayerTradeMoney = GetPlayerTradeMoney;
 MoneyTypeInfo["PLAYER_TRADE"] = {
 	UpdateFunc = function(self)
 		return GetPlayerTradeMoney();
@@ -87,12 +108,13 @@ MoneyTypeInfo["PLAYER_TRADE"] = {
 	end,
 
 	DropFunc = function(self)
-		AddTradeMoney();
+		C_TradeInfo.AddTradeMoney();
 	end,
 
 	collapse = 1,
 	canPickup = 1,
 };
+local GetTargetTradeMoney = GetTargetTradeMoney;
 MoneyTypeInfo["TARGET_TRADE"] = {
 	UpdateFunc = function(self)
 		return GetTargetTradeMoney();
@@ -207,6 +229,15 @@ MoneyTypeInfo["GUILDBANKCASHFLOW"] = {
 	showSmallerCoins = "Backpack",
 };
 
+MoneyTypeInfo["REFORGE"] = {
+	UpdateFunc = function(self)
+		return self.staticMoney;
+	end,
+
+	collapse = 1,
+	showSmallerCoins = "Backpack",
+};
+
 function MoneyFrame_UpdateTrialErrorButton(self)
 	local money = (GetMoney() - GetCursorMoney() - GetPlayerTradeMoney());
 	if self.trialErrorButton then
@@ -218,37 +249,66 @@ function MoneyFrame_UpdateTrialErrorButton(self)
 	return money;
 end
 
+local MONEY_FRAME_FONT_SMALL = true;
+local MONEY_FRAME_FONT_LARGE = false;
+local MONEY_FRAME_FONT_USER_SCALED = true;
+local MONEY_FRAME_FONT_FIXED_SCALE = false;
+
+local moneyFrameFonts =
+{
+	[MONEY_FRAME_FONT_SMALL] =
+	{
+		[MONEY_FRAME_FONT_USER_SCALED] =
+		{
+			["yellow"] = UserScaledFontNumberNormalRightYellow,
+			["red"] = UserScaledFontNumberNormalRightRed,
+			["gray"] = UserScaledFontNumberNormalRightGray,
+			["default"] = UserScaledFontNumberNormalRight,
+		},
+
+		[MONEY_FRAME_FONT_FIXED_SCALE] =
+		{
+			["yellow"] = NumberFontNormalRightYellow,
+			["red"] = NumberFontNormalRightRed,
+			["gray"] = NumberFontNormalRightGray,
+			["default"] = NumberFontNormalRight,
+		},
+	},
+
+	[MONEY_FRAME_FONT_LARGE] =
+	{
+		-- Not yet supported.
+		[MONEY_FRAME_FONT_USER_SCALED] =
+		{
+			["yellow"] = NumberFontNormalLargeRightYellow,
+			["red"] = NumberFontNormalLargeRightRed,
+			["gray"] = NumberFontNormalLargeRightGray,
+			["default"] = NumberFontNormalLargeRight,
+		},
+
+		[MONEY_FRAME_FONT_FIXED_SCALE] =
+		{
+			["yellow"] = NumberFontNormalLargeRightYellow,
+			["red"] = NumberFontNormalLargeRightRed,
+			["gray"] = NumberFontNormalLargeRightGray,
+			["default"] = NumberFontNormalLargeRight,
+		},
+	},
+};
+
+local function GetMoneyFrameFont(moneyFrame, color)
+	local isSmall = moneyFrame.small ~= nil and moneyFrame.small ~= false and moneyFrame.small ~= 0;
+	local isUserScaled = moneyFrame.isUserScaled ~= nil and moneyFrame.isUserScaled ~= false and moneyFrame.isUserScaled ~= 0;
+	local fonts = moneyFrameFonts[isSmall][isUserScaled];
+	local font = fonts[color];
+	return font or fonts.default;
+end
+
 function SetMoneyFrameColorByFrame(moneyFrame, color)
-	local fontObject;
-	if ( moneyFrame.small ) then
-		if ( color == "yellow" ) then
-			fontObject = NumberFontNormalRightYellow;
-		elseif ( color == "red" ) then
-			fontObject = NumberFontNormalRightRed;
-		elseif ( color == "gray" ) then
-			fontObject = NumberFontNormalRightGray;
-		else
-			fontObject = NumberFontNormalRight;
-		end
-	else
-		if ( color == "yellow"  ) then
-			fontObject = NumberFontNormalLargeRightYellow;
-		elseif ( color == "red" ) then
-			fontObject = NumberFontNormalLargeRightRed;
-		elseif ( color == "gray" ) then
-			fontObject = NumberFontNormalLargeRightGray;
-		else
-			fontObject = NumberFontNormalLargeRight;
-		end
-	end
-
-	local goldButton = moneyFrame.GoldButton;
-	local silverButton = moneyFrame.SilverButton;
-	local copperButton = moneyFrame.CopperButton;
-
-	goldButton:SetNormalFontObject(fontObject);
-	silverButton:SetNormalFontObject(fontObject);
-	copperButton:SetNormalFontObject(fontObject);
+	local fontObject = GetMoneyFrameFont(moneyFrame, color);
+	moneyFrame.GoldButton:SetNormalFontObject(fontObject);
+	moneyFrame.SilverButton:SetNormalFontObject(fontObject);
+	moneyFrame.CopperButton:SetNormalFontObject(fontObject);
 end
 
 function SetMoneyFrameColor(frameName, color)

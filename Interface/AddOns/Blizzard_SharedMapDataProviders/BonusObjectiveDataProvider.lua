@@ -183,7 +183,7 @@ function BonusObjectivePinMixin:OnMouseClickAction(button)
 	POIButtonMixin.OnClick(self, button);
 end
 
-function WorldQuestPinMixin:GetDisplayName()
+function BonusObjectivePinMixin:GetDisplayName()
 	local title = C_TaskQuest.GetQuestInfoByQuestID(self:GetQuestID());
 	return title or "";
 end

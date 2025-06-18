@@ -79,7 +79,7 @@ function Class_AddSpellToActionBarService:SpellBookFrameShow()
 	EventRegistry:RegisterCallback("PlayerSpellsFrame.SpellBookFrame.Hide", self.SpellBookFrameHide, self);
 	EventRegistry:RegisterCallback("PlayerSpellsFrame.SpellBookFrame.DisplayedSpellsChanged", self.SpellBookFrameSpellsChanged, self);
 	self:HidePointerTutorials();
-	ActionButton_HideOverlayGlow(PlayerSpellsMicroButton);
+	ActionButtonSpellAlertManager:HideAlert(PlayerSpellsMicroButton);
 
 	self:StartRemindTimer();
 end

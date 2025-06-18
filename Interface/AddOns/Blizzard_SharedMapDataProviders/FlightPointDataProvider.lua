@@ -89,3 +89,8 @@ end
 function FlightPointPinMixin:GetSuperTrackMarkerOffset()
 	return -4, 4;
 end
+
+function FlightPointPinMixin:GetDisplayName()
+	local name = BaseMapPoiPinMixin:GetBestNameAndDescription();
+	return name or "";
+end

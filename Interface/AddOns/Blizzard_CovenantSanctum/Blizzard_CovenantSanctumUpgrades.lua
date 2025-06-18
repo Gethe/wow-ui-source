@@ -69,15 +69,15 @@ StaticPopupDialogs["CONFIRM_SANCTUM_UPGRADE"] = {
 	text = "",
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function(self)
-		self.data.owner:Upgrade();
+	OnAccept = function(dialog, data)
+		data.owner:Upgrade();
 		local covenantData = GetCovenantData();
 		PlaySound(covenantData.beginResearchSoundKitID);
 	end,
-	OnShow = function(self, data)
+	OnShow = function(dialog, data)
 		if data then
 			local costString = GetGarrisonTalentCostString(data.talent);
-			self.text:SetText(SANCTUM_UPGRADE_CONFIRMATION:format(data.talent.name, data.talent.tier + 1, costString));
+			dialog:SetText(SANCTUM_UPGRADE_CONFIRMATION:format(data.talent.name, data.talent.tier + 1, costString));
 		end
 	end,
 	hideOnEscape = 1,

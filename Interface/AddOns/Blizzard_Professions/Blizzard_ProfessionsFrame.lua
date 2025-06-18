@@ -15,13 +15,13 @@ StaticPopupDialogs["PROFESSIONS_SPECIALIZATION_CONFIRM_CLOSE"] =
 	text = PROFESSIONS_SPECS_CONFIRM_CLOSE,
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function()
+	OnAccept = function(dialog, data)
 		if ProfessionsFrame.SpecPage:HasAnyConfigChanges() then
 			ProfessionsFrame.SpecPage:CommitConfig();
 		end
 		HideUIPanel(ProfessionsFrame);
 	end,
-	OnCancel = function()
+	OnCancel = function(dialog, data)
 		HideUIPanel(ProfessionsFrame);
 	end,
 	hideOnEscape = 1,

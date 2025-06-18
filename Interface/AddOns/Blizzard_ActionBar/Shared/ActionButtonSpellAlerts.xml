@@ -1,0 +1,38 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="ActionButtonSpellAlertTemplate" virtual="true" mixin="ActionButtonSpellAlertMixin" hidden="true">
+			<Layers>
+				<Layer level="ARTWORK">
+					<Texture parentKey="ProcStartFlipbook" atlas="UI-HUD-ActionBar-Proc-Start-Flipbook" alpha="1">
+						<Size x="150" y="150"/>
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+					</Texture>
+					<Texture parentKey="ProcLoopFlipbook" atlas="UI-HUD-ActionBar-Proc-Loop-Flipbook" setAllPoints="true" alpha="0"/>
+					<Texture parentKey="ProcAltGlow" atlas="UI-HUD-RotationHelper-ProcAltGlow" useAtlasSize="true" hidden="true">
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+			</Layers>
+			<Animations>
+				<AnimationGroup parentKey="ProcLoop" looping="REPEAT">
+					<Alpha childKey="ProcLoopFlipbook" duration=".001" order="0" fromAlpha="1" toAlpha="1"/>
+					<FlipBook parentKey="FlipAnim" childKey="ProcLoopFlipbook" duration="1" order="0" flipBookRows="6" flipBookColumns="5" flipBookFrames="30" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+				</AnimationGroup>
+					
+				<AnimationGroup parentKey="ProcStartAnim" setToFinalAlpha="true">
+					<Alpha childKey="ProcStartFlipbook" duration=".001" order="0" fromAlpha="1" toAlpha="1"/>
+					<FlipBook childKey="ProcStartFlipbook" duration="0.7" order="1" flipBookRows="6" flipBookColumns="5" flipBookFrames="30" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+					<Alpha childKey="ProcStartFlipbook" duration=".001" order="2" fromAlpha="1" toAlpha="0"/>
+				</AnimationGroup>
+			</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

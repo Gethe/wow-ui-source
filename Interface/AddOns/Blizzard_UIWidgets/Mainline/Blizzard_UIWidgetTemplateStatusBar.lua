@@ -27,6 +27,11 @@ local doubleTexKitStrings = {
 	["BackgroundGlow"] = "%s-backgroundglow-%s",
 };
 
+local labelTexKitStrings = {
+	["LabelBG"] = "%s-labelbg",
+	["LabelBGDivider"] = "%s-labeldivider",
+};
+
 function UIWidgetTemplateStatusBarMixin:SetupTextures()
 	-- First set textures that only require frameTextureKit
 	SetupTextureKitOnRegions(self.frameTextureKit, self.Bar, singleTexKitStrings, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
@@ -43,6 +48,9 @@ function UIWidgetTemplateStatusBarMixin:SetupTextures()
 			SetupTextureKitOnFrame(self.frameTextureKit, childFrame, singleParamFmt, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize)
 		end
 	end
+
+	-- Then set up the texture kits relative to the label of the status bar as a whole
+	SetupTextureKitOnRegions(self.frameTextureKit, self, labelTexKitStrings, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 end
 
 local barColorFromTintValue = {
@@ -56,7 +64,6 @@ local barColorFromTintValue = {
 	[Enum.StatusBarColorTintValue.Blue] = RARE_BLUE_COLOR,
 }
 
-local fillTextureKitFormatString = "%s-fill-%s";
 local DEFAULT_BAR_WIDTH = 215;
 
 local textureKitOptions =
@@ -64,9 +71,15 @@ local textureKitOptions =
 	["jailerstower-scorebar"] = { borderXOffset = 25 },
 	["plunderstorm-stormbar"] = { borderXOffset = 2 },
 	["junkyard-scorebar"] = { borderXOffset = 14 },
+	["thewarwithin-scenario-barframe"] = { borderXOffset = 10, backgroundXOffset = 10 },
 }
 
-local defaultTextureKitOptions = { borderXOffset = 8 };
+local defaultTextureKitOptions = { borderXOffset = 8, backgroundXOffset = 2 };
+
+local function GetStatusBarTextureKitOptions(textureKit)
+	local textureKitOptions = textureKitOptions[textureKit] or {};
+	return setmetatable(textureKitOptions, {__index = defaultTextureKitOptions});
+end
 
 function UIWidgetTemplateStatusBarMixin:SanitizeTextureKits(widgetInfo)
 	widgetInfo.frameTextureKit = widgetInfo.frameTextureKit or "widgetstatusbar";
@@ -79,15 +92,6 @@ function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo, widgetContainer)
 
 	self:SanitizeTextureKits(widgetInfo);
 
-	local fillAtlas = fillTextureKitFormatString:format(self.frameTextureKit, self.textureKit);
-	local fillAtlasInfo = C_Texture.GetAtlasInfo(fillAtlas);
-	if fillAtlasInfo and fillAtlas ~= self.lastFillAtlas then
-		self.Bar:SetStatusBarTexture(fillAtlas);
-		self.Bar:SetHeight(fillAtlasInfo.height);
-		self.Bar:GetStatusBarTexture():SetHorizTile(fillAtlasInfo.tilesHorizontally);
-		self.lastFillAtlas = fillAtlas;
-	end
-
 	local barColor = barColorFromTintValue[widgetInfo.colorTint];
 	if barColor then 
 		self.Bar:SetStatusBarColor(barColor:GetRGB());
@@ -99,11 +103,14 @@ function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo, widgetContainer)
 
 	self:SetupTextures(widgetInfo);
 
-	local texKitOptions = textureKitOptions[self.frameTextureKit] or defaultTextureKitOptions;
+	local texKitOptions = GetStatusBarTextureKitOptions(self.frameTextureKit);
 
 	self.Bar.BorderLeft:SetPoint("LEFT", self.Bar, -texKitOptions.borderXOffset, 0);
 	self.Bar.BorderRight:SetPoint("RIGHT", self.Bar, texKitOptions.borderXOffset , 0);
 	self.Bar.Spark:SetPoint("CENTER", self.Bar:GetStatusBarTexture(), "RIGHT", 0, 0);
+
+	self.Bar.BGLeft:SetPoint("LEFT", self.Bar, -texKitOptions.backgroundXOffset, 0);
+	self.Bar.BGRight:SetPoint("RIGHT", self.Bar, texKitOptions.backgroundXOffset, 0);
 
 	local barWidth = (widgetInfo.widgetSizeSetting > 0) and widgetInfo.widgetSizeSetting or DEFAULT_BAR_WIDTH;
 	self.Bar:SetWidth(barWidth);
@@ -121,6 +128,24 @@ function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo, widgetContainer)
 		self.Bar:SetPoint("TOP", self.Label, "BOTTOM", 0, -8);
 	else
 		self.Bar:SetPoint("TOP", self, "TOP", 0, -8);
+	end
+
+	local labelBGPadding = 0;
+	-- Visibility is handled by the SetupTextureKitOnRegions call
+	if self.LabelBG:IsShown() then
+		labelBGPadding = self.LabelBG:GetHeight();
+		-- BG is center aligned, so we only want to add half the height minus the height of the Label
+		labelBGPadding = (labelBGPadding / 2) - (labelHeight / 2);
+	end
+
+	if self.LabelBGDivider:IsShown() then
+		-- BG Divider is TOP aligned, so we only want to add half the height
+		labelBGPadding = labelBGPadding + self.LabelBGDivider:GetHeight() / 2;
+	end
+
+	-- If we have a label, we want to adjust anchoring based on if a label BG exists
+	if widgetInfo.text ~= "" then
+		self.Label:SetPoint("TOP", self, "TOP", 0, labelBGPadding ~= 0 and -labelBGPadding or -3);
 	end
 
 	local hasGlows = self.Bar.GlowLeft:IsShown() and self.Bar.GlowRight:IsShown() and self.Bar.GlowCenter:IsShown();
@@ -152,7 +177,7 @@ function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo, widgetContainer)
 
 	local barHeight = self.Bar:GetHeight() + 16;
 
-	local totalHeight = barHeight + labelHeight;
+	local totalHeight = barHeight + labelHeight + labelBGPadding;
 	self:SetHeight(totalHeight);
 
 	self:EvaluateTutorials();

@@ -1,6 +1,7 @@
 ## Title: Blizzard_PlayerChoice
 ## LoadOnDemand: 1
 ## RequiredDeps: Blizzard_UIWidgets
+## Dependencies: Blizzard_Colors
 
 Blizzard_PlayerChoice.lua
 Blizzard_PlayerChoice.xml

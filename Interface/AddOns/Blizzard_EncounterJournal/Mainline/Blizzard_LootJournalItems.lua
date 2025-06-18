@@ -3,8 +3,12 @@ LootJournalItemsMixin = { };
 function LootJournalItemsMixin:OnLoad()
 	self:SetView(LOOT_JOURNAL_ITEM_SETS);
 	self:RegisterEvent("LOOT_JOURNAL_ITEM_UPDATE");
+	EventUtil.ContinueOnPlayerLogin(function() self:SetClassAndSpecFiltersFromSpecialization(); end);
+end
+
+function LootJournalItemsMixin:SetClassAndSpecFiltersFromSpecialization()
 	local _, _, classID = UnitClass("player");
-	local specID = GetSpecializationInfo(GetSpecialization());
+	local specID = C_SpecializationInfo.GetSpecializationInfo(C_SpecializationInfo.GetSpecialization());
 	self:SetClassAndSpecFilters(classID, specID);
 end
 
@@ -95,9 +99,9 @@ end
 function LootJournalItemSetsMixin:GetPreviewClassAndSpec()
 	local classID, specID = self:GetClassAndSpecFilters();
 	if specID == 0 then
-		local spec = GetSpecialization();
+		local spec = C_SpecializationInfo.GetSpecialization();
 		if spec and classID == select(3, UnitClass("player")) then
-			specID = GetSpecializationInfo(spec, nil, nil, nil, UnitSex("player"));
+			specID = C_SpecializationInfo.GetSpecializationInfo(spec, nil, nil, nil, UnitSex("player"));
 		else
 			specID = -1;
 		end
@@ -143,7 +147,7 @@ function LootJournalItemSetsMixin:SetClassAndSpecFilters(newClassFilter, newSpec
 			-- if player's class, choose active spec
 			-- otherwise use 1st spec
 			if classID == newClassFilter then
-				newSpecFilter = GetSpecializationInfo(GetSpecialization());
+				newSpecFilter = C_SpecializationInfo.GetSpecializationInfo(C_SpecializationInfo.GetSpecialization());
 			else
 				local sex = UnitSex("player");
 				newSpecFilter = GetSpecializationInfoForClassID(newClassFilter, 1, sex);
@@ -217,15 +221,20 @@ function LootJournalItemSetsMixin:ConfigureItemButton(button)
 	local _, itemLink, itemQuality = C_Item.GetItemInfo(button.itemID);
 	button.itemLink = itemLink;
 	itemQuality = itemQuality or Enum.ItemQuality.Epic;	-- sets are most likely rare
-	if ( itemQuality == Enum.ItemQuality.Uncommon ) then
-		button.Border:SetAtlas("loottab-set-itemborder-green", true);
-	elseif ( itemQuality == Enum.ItemQuality.Rare ) then
-		button.Border:SetAtlas("loottab-set-itemborder-blue", true);
-	elseif ( itemQuality == Enum.ItemQuality.Epic ) then
-		button.Border:SetAtlas("loottab-set-itemborder-purple", true);
+	local atlasData = ColorManager.GetAtlasDataForLootJournalSetItemQuality(itemQuality);
+	if atlasData then
+		button.Border:SetAtlas(atlasData.atlas, true);
+
+		if atlasData.overrideColor then
+			button.Border:SetVertexColor(atlasData.overrideColor.r, atlasData.overrideColor.g, atlasData.overrideColor.b);
+		else
+			button.Border:SetVertexColor(1, 1, 1);
+		end
 	end
+
 	local r, g, b = C_Item.GetItemQualityColor(itemQuality);
 	button:GetParent().SetName:SetTextColor(r, g, b);
+
 	self:CheckItemButtonTooltip(button);
 end
 

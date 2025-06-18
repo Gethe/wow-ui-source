@@ -261,10 +261,6 @@ UI.xsd">
 				<KeyValues>
 					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 				</KeyValues>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="UIParent"/>
-					<Anchor point="BOTTOMRIGHT" relativeTo="UIParent"/>
-				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture parentKey="Tex" setAllPoints="true">
@@ -354,6 +350,7 @@ UI.xsd">
 		</Layers>
 		<Scripts>
 			<OnLoad method="OnLoad" inherit="prepend"/>
+			<OnShow method="OnShow" inherit="prepend"/>
 		</Scripts>
 	</Frame>
 </Ui>

@@ -178,8 +178,13 @@ local InteractionManagerFrameInfo = {
 							EventRegistry:TriggerEvent("MajorFactionRenownMixin.MajorFactionRenownRequest", majorFactionID);
 							ShowUIPanel(MajorFactionRenownFrame);
 						end
-					end;
-	}
+					end,
+	},
+	[Enum.PlayerInteractionType.GuildRename] = {
+		frame = "GuildRenameFrame",
+		loadFunc = function() UIParentLoadAddOn("Blizzard_GuildRename"); end,
+		showFunc = function() GuildRenameFrame:BeginInteraction(); end,
+	},
 };
 
 PlayerInteractionFrameManagerMixin = { };

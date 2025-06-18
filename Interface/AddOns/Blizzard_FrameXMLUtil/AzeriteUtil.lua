@@ -57,7 +57,7 @@ function AzeriteUtil.GenerateRequiredSpecTooltipLine(powerID)
 
 	local playerSex = UnitSex("player");
 	local _, _, playerClassID = UnitClass("player");
-	local playerSpecID = GetSpecializationInfo(GetSpecialization());
+	local playerSpecID = C_SpecializationInfo.GetSpecializationInfo(C_SpecializationInfo.GetSpecialization());
 
 	local validSpecs;
 	for i, specInfo in ipairs(specs) do

@@ -131,107 +131,6 @@
 		<Size x="9" y="14"/>
 	</Texture>
 
-	<Texture name="HelpPlateArrowDOWN" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
-		<Size x="53" y="21"/>
-		<TexCoords left="0.78515625" right="0.99218750" top="0.54687500" bottom="0.58789063"/>
-	</Texture>
-	<Texture name="HelpPlateArrowUP" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
-		<Size x="53" y="21"/>
-		<TexCoords left="0.78515625" right="0.99218750" bottom="0.54687500" top="0.58789063"/>
-	</Texture>
-	<Texture name="HelpPlateArrow-GlowDOWN" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
-		<Size x="65" y="28"/>
-		<TexCoords left="0.40625000" right="0.66015625" top="0.77343750" bottom="0.82812500"/>
-	</Texture>
-	<Texture name="HelpPlateArrow-GlowUP" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
-		<Size x="65" y="28"/>
-		<TexCoords left="0.40625000" right="0.66015625" bottom="0.77343750" top="0.82812500"/>
-	</Texture>
-	<Texture name="HelpPlateArrow-Shadow" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
-		<Size x="101" y="41"/>
-		<TexCoords left="0.00390625" right="0.39843750" top="0.68359375" bottom="0.76367188"/>
-	</Texture>
-	<Texture name="HelpPlateBox-Glow-BottomRight" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
-		<Size x="11" y="11"/>
-		<TexCoords left="0.94921875" right="0.99218750" top="0.32226563" bottom="0.34375000"/>
-	</Texture>
-	<Texture name="HelpPlateBox-Glow-TopLeft" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
-		<Size x="11" y="11"/>
-		<TexCoords left="0.91796875" right="0.96093750" top="0.65625000" bottom="0.67773438"/>
-	</Texture>
-	<Texture name="HelpPlateBox-Glow-TopRight" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
-		<Size x="11" y="11"/>
-		<TexCoords left="0.12890625" right="0.17187500" top="0.96679688" bottom="0.98828125"/>
-	</Texture>
-	<Texture name="HelpPlateBox-Glow-BottomLeft" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
-		<Size x="11" y="11"/>
-		<TexCoords left="0.30859375" right="0.35156250" top="0.96679688" bottom="0.98828125"/>
-	</Texture>
-	<Texture name="!HelpPlateBox-Glow-Right" file="Interface\TalentFrame\TalentFrame-Vertical2" virtual="true" vertTile="true" >
-		<Size x="11" y="32"/>
-		<TexCoords left="0.20703125" right="0.25000000" top="0.00000000" bottom="1.00000000"/>
-	</Texture>
-	<Texture name="!HelpPlateBox-Glow-Left" file="Interface\TalentFrame\TalentFrame-Vertical2" virtual="true" vertTile="true" >
-		<Size x="11" y="32"/>
-		<TexCoords left="0.25781250" right="0.30078125" top="0.00000000" bottom="1.00000000"/>
-	</Texture>
-	<Texture name="_HelpPlateBox-Glow-Bottom" file="Interface\TalentFrame\TalentFrame-Horizontal2" virtual="true" horizTile="true" >
-		<Size x="32" y="11"/>
-		<TexCoords left="0.00000000" right="1.00000000" top="0.24609375" bottom="0.28906250"/>
-	</Texture>
-	<Texture name="_HelpPlateBox-Glow-Top" file="Interface\TalentFrame\TalentFrame-Horizontal2" virtual="true" horizTile="true" >
-		<Size x="32" y="11"/>
-		<TexCoords left="0.00000000" right="1.00000000" top="0.29687500" bottom="0.33984375"/>
-	</Texture>
-	<Texture name="HelpPlateBox-Shadow-BottomRight" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
-		<Size x="25" y="25"/>
-		<TexCoords left="0.89062500" right="0.98828125" top="0.36523438" bottom="0.41406250"/>
-	</Texture>
-	<Texture name="HelpPlateBox-Shadow-TopLeft" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
-		<Size x="25" y="25"/>
-		<TexCoords left="0.89062500" right="0.98828125" top="0.45703125" bottom="0.50585938"/>
-	</Texture>
-	<Texture name="HelpPlateBox-Shadow-TopRight" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
-		<Size x="25" y="25"/>
-		<TexCoords left="0.66796875" right="0.76562500" top="0.77343750" bottom="0.82226563"/>
-	</Texture>
-	<Texture name="HelpPlateBox-Shadow-BottomLeft" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
-		<Size x="25" y="25"/>
-		<TexCoords left="0.77343750" right="0.87109375" top="0.77343750" bottom="0.82226563"/>
-	</Texture>
-	<Texture name="!HelpPlateBox-Shadow-Left" file="Interface\TalentFrame\TalentFrame-Vertical2" virtual="true" vertTile="true" >
-		<Size x="25" y="32"/>
-		<TexCoords left="0.30859375" right="0.40625000" top="0.00000000" bottom="1.00000000"/>
-	</Texture>
-	<Texture name="!HelpPlateBox-Shadow-Right" file="Interface\TalentFrame\TalentFrame-Vertical2" virtual="true" vertTile="true" >
-		<Size x="25" y="32"/>
-		<TexCoords left="0.41406250" right="0.51171875" top="0.00000000" bottom="1.00000000"/>
-	</Texture>
-	<Texture name="_HelpPlateBox-Shadow-Top" file="Interface\TalentFrame\TalentFrame-Horizontal2" virtual="true" horizTile="true" >
-		<Size x="32" y="25"/>
-		<TexCoords left="0.00000000" right="1.00000000" top="0.34765625" bottom="0.44531250"/>
-	</Texture>
-	<Texture name="_HelpPlateBox-Shadow-Bottom" file="Interface\TalentFrame\TalentFrame-Horizontal2" virtual="true" horizTile="true" >
-		<Size x="32" y="25"/>
-		<TexCoords left="0.00000000" right="1.00000000" top="0.45312500" bottom="0.55078125"/>
-	</Texture>
-	<Texture name="!HelpPlateBox-Right" file="Interface\TalentFrame\TalentFrame-Vertical2" virtual="true" vertTile="true" >
-		<Size x="8" y="32"/>
-		<TexCoords left="0.00390625" right="0.03515625" top="0.00000000" bottom="1.00000000"/>
-	</Texture>
-	<Texture name="!HelpPlateBox-Left" file="Interface\TalentFrame\TalentFrame-Vertical2" virtual="true" vertTile="true" >
-		<Size x="8" y="32"/>
-		<TexCoords left="0.04296875" right="0.07421875" top="0.00000000" bottom="1.00000000"/>
-	</Texture>
-	<Texture name="_HelpPlateBox-Top" file="Interface\TalentFrame\TalentFrame-Horizontal2" virtual="true" horizTile="true" >
-		<Size x="32" y="8"/>
-		<TexCoords left="0.00000000" right="1.00000000" top="0.00390625" bottom="0.03515625"/>
-	</Texture>
-	<Texture name="_HelpPlateBox-Bottom" file="Interface\TalentFrame\TalentFrame-Horizontal2" virtual="true" horizTile="true" >
-		<Size x="32" y="8"/>
-		<TexCoords left="0.00000000" right="1.00000000" top="0.04296875" bottom="0.07421875"/>
-	</Texture>
-
 	<Button name="UIPanelCloseButtonNoScripts" frameLevel="510" virtual="true">
 		<Size x="24" y="24"/>
 		<DisabledTexture atlas="RedButton-Exit-Disabled"/>
@@ -255,16 +154,6 @@
 		<Anchors>
 			<Anchor point="TOPRIGHT" x="1" y="0"/>
 		</Anchors>
-	</Button>
-	<Button name="FloatingFrameCloseButtonDefaultAnchors" inherits="UIPanelCloseButtonNoScripts" virtual="true">
-		<Anchors>
-			<Anchor point="TOPRIGHT" x="2" y="2"/>
-		</Anchors>
-		<Scripts>
-			<OnClick>
-				self:GetParent():Hide();
-			</OnClick>
-		</Scripts>
 	</Button>
 	<Button name="UIStaticPopupSpecialCloseButton" inherits="UIPanelCloseButtonNoScripts" virtual="true">
 		<Scripts>
@@ -423,21 +312,17 @@
 		</HighlightTexture>
 	</Button>
 
-	<Button name="UIPanelButtonTemplate" inherits="UIPanelButtonNoTooltipTemplate" virtual="true">
+	<Button name="UIPanelButtonTemplate" inherits="UIPanelButtonNoTooltipTemplate" mixin="UIPanelButtonMixin" virtual="true">
 		<Scripts>
-			<OnEnter>
-				if(self.tooltipText ~= nil and not self.tooltipDisabled) then
-					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-					GameTooltip_SetTitle(GameTooltip, self.tooltipText);
-					GameTooltip:Show();
-				end
-			</OnEnter>
-			<OnLeave>
-				if(self.tooltipText ~= nil) then
-					GameTooltip:Hide();
-				end
-			</OnLeave>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
+	</Button>
+
+	<Button name="UIPanelButtonUserScaledTemplate" inherits="UIPanelButtonTemplate, UserScaledFrameTemplate" virtual="true">
+		<NormalFont style="UserScaledFontGameNormal"/>
+		<DisabledFont style="UserScaledFontGameDisable"/>
+		<HighlightFont style="UserScaledFontGameHighlight"/>
 	</Button>
 
 	<!--A super simple standard button that will widen on load to fit its text if its
@@ -523,9 +408,7 @@
 	</CheckButton>
 
 	<Slider name="UISliderTemplate" orientation="HORIZONTAL" enableMouse="true" virtual="true">
-		<HitRectInsets>
-			<AbsInset left="0" right="0" top="-10" bottom="-10"/>
-		</HitRectInsets>
+		<HitRectInsets left="0" right="0" top="-10" bottom="-10"/>
 		<Frames>
 			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate" useParentLevel="true">
 				<KeyValues>
@@ -560,162 +443,6 @@
 			</Layer>
 		</Layers>
 	</Slider>
-
-	<!--
-*******************************************************************************
-    GlowBoxArrowTemplate
-	This is a bright yellow arrow with a glow around it
-*******************************************************************************
--->
-	<Frame name="GlowBoxArrowTemplate" virtual="true">
-		<Size x="53" y="21"/>
-
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture name="$parentArrow" parentKey="Arrow" inherits="HelpPlateArrowDOWN">
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="BORDER">
-				<Texture name="$parentGlow" parentKey="Glow" inherits="HelpPlateArrow-GlowDOWN" alphaMode="ADD" alpha="0.5">
-					<Anchors>
-						<Anchor point="TOP"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-	</Frame>
-
-	<!--
-*******************************************************************************
-    GlowBoxTemplate
-	This is a bright yellow box with a glow around it
-*******************************************************************************
--->
-	<Frame name="GlowBoxTemplate" virtual="true">
-		<Layers>
-			<!--
-			<Layer level="BACKGROUND" textureSubLevel="-1">
-				<Texture name="$parentColorBorder" setAllPoints="true">
-					<Color r="1" g="0.82353" b="0"/>
-				</Texture>
-			</Layer>
-			-->
-			<Layer level="BACKGROUND">
-				<Texture name="$parentBg" parentKey="BG">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="1" y="-1"/>
-						<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
-					</Anchors>
-					<Color r="1" g="1" b="1"/>
-					<Gradient orientation="VERTICAL">
-						<MinColor r="0.23" g="0.19" b="0"/>
-						<MaxColor r="0" g="0" b="0"/>
-					</Gradient>
-				</Texture>
-			</Layer>
-			<Layer level="BACKGROUND" textureSubLevel="-1">
-				<Texture name="$parentGlowTopLeft" inherits="HelpPlateBox-Glow-TopLeft" parentKey="GlowTopLeft" alphaMode="ADD">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-6" y="6"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentGlowTopRight" inherits="HelpPlateBox-Glow-TopRight" parentKey="GlowTopRight" alphaMode="ADD">
-					<Anchors>
-						<Anchor point="TOPRIGHT" x="6" y="6"/>
-					</Anchors>
-				</Texture>
-
-				<Texture name="$parentGlowBottomLeft" inherits="HelpPlateBox-Glow-BottomLeft" parentKey="GlowBottomLeft" alphaMode="ADD">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="-6" y="-6"/>
-					</Anchors>
-				</Texture>
-
-				<Texture name="$parentGlowBottomRight" inherits="HelpPlateBox-Glow-BottomRight" parentKey="GlowBottomRight" alphaMode="ADD">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="6" y="-6"/>
-					</Anchors>
-				</Texture>
-
-				<Texture name="$parentGlowTop" inherits="_HelpPlateBox-Glow-Top" parentKey="GlowTop" alphaMode="ADD">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.GlowTopLeft" relativePoint="TOPRIGHT"/>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.GlowTopRight" relativePoint="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentGlowBottom" inherits="_HelpPlateBox-Glow-Bottom" parentKey="GlowBottom" alphaMode="ADD">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.GlowBottomLeft" relativePoint="BOTTOMRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.GlowBottomRight" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentGlowLeft" inherits="!HelpPlateBox-Glow-Left" parentKey="GlowLeft" alphaMode="ADD">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.GlowTopLeft" relativePoint="BOTTOMLEFT"/>
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.GlowBottomLeft" relativePoint="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentGlowRight" inherits="!HelpPlateBox-Glow-Right" parentKey="GlowRight" alphaMode="ADD">
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.GlowTopRight" relativePoint="BOTTOMRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.GlowBottomRight" relativePoint="TOPRIGHT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="BACKGROUND" textureSubLevel="-2">
-				<Texture name="$parentShadowTopLeft" inherits="HelpPlateBox-Shadow-TopLeft" parentKey="ShadowTopLeft" >
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-16" y="16"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentShadowTopRight" inherits="HelpPlateBox-Shadow-TopRight" parentKey="ShadowTopRight" >
-					<Anchors>
-						<Anchor point="TOPRIGHT" x="16" y="16"/>
-					</Anchors>
-				</Texture>
-
-				<Texture name="$parentShadowBottomLeft" inherits="HelpPlateBox-Shadow-BottomLeft" parentKey="ShadowBottomLeft" >
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="-16" y="-16"/>
-					</Anchors>
-				</Texture>
-
-				<Texture name="$parentShadowBottomRight" inherits="HelpPlateBox-Shadow-BottomRight" parentKey="ShadowBottomRight" >
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="16" y="-16"/>
-					</Anchors>
-				</Texture>
-
-				<Texture name="$parentShadowTop" inherits="_HelpPlateBox-Shadow-Top" parentKey="ShadowTop" >
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.ShadowTopLeft" relativePoint="TOPRIGHT"/>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.ShadowTopRight" relativePoint="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentShadowBottom" inherits="_HelpPlateBox-Shadow-Bottom" parentKey="ShadowBottom" >
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.ShadowBottomLeft" relativePoint="BOTTOMRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ShadowBottomRight" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentShadowLeft" inherits="!HelpPlateBox-Shadow-Left" parentKey="ShadowLeft" >
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.ShadowTopLeft" relativePoint="BOTTOMLEFT"/>
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.ShadowBottomLeft" relativePoint="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentShadowRight" inherits="!HelpPlateBox-Shadow-Right" parentKey="ShadowRight" >
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.ShadowTopRight" relativePoint="BOTTOMRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ShadowBottomRight" relativePoint="TOPRIGHT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-	</Frame>
 
 	<Frame name="NineSliceCodeTemplate" mixin="NineSlicePanelMixin" virtual="true">
 		<Scripts>
@@ -1671,6 +1398,7 @@
 	TruncatedButtonTemplate
 	This button template will truncate any text that goes out of the button. If text is truncated,
 	the button will have a tooltip with the full text.
+	meta comment: TooltipIfTruncated, TooltipWhenTruncated
 *******************************************************************************
 -->
 	<Button name="TruncatedButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
@@ -1694,6 +1422,7 @@
 	TruncatedTooltipFontStringWrapperTemplate
 	This frame template will automatically add a tooltip to the frame if the contained FontString is truncated
 	Note that you MUST have a child FontString with ParentKey "Text"
+	meta comment: TooltipIfTruncated, TooltipWhenTruncated
 *******************************************************************************
 -->
 	<Frame name="TruncatedTooltipFontStringWrapperTemplate" inherits="ResizeLayoutFrame" mixin="TruncatedTooltipFontStringWrapperMixin" virtual="true">
@@ -2354,7 +2083,7 @@
 			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</Frame>
-	
+
 	<!-- See DropdownWithSteppersTemplate for dropdown requirements. -->
 	<Frame name="DropdownWithSteppersAndLabelTemplate" inherits="DropdownWithSteppersTemplate" mixin="DropdownWithSteppersAndLabelMixin" virtual="true">
 		<Layers>
@@ -2396,9 +2125,9 @@
 		 frame to be parented to the appropriate top level parent. -->
 	<Frame name="TopLevelParentScaleFrameTemplate" mixin="TopLevelParentScaleFrameMixin" virtual="true">
 		<Scripts>
-			<OnLoad method="OnScaleFrameLoad" inherit="prepend"/>
-			<OnEvent method="OnScaleFrameEvent" inherit="prepend"/>
-			<OnShow method="OnScaleFrameShow" inherit="prepend"/>
+			<OnLoad method="OnScaleFrameLoad" inherit="prepend" />
+			<OnEvent method="OnScaleFrameEvent" inherit="prepend" />
+			<OnShow method="OnScaleFrameShow" inherit="prepend" />
 		</Scripts>
 	</Frame>
 
@@ -3128,7 +2857,7 @@
 			<KeyValue key="rightPadding" value="28" type="number"/>
 			<KeyValue key="spacing" value="0" type="number"/>
 
-			<!-- 
+			<!--
 			dialogHeaderFont: font for the header text
 			<KeyValue key="dialogHeaderFont" value="GameFontNormal" type="string"/>
 			-->
@@ -3219,78 +2948,7 @@
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
-<!--
-*******************************************************************************
-    Help Plate System
-*******************************************************************************
--->
-	<Button name="MainHelpPlateButton" frameLevel="510" virtual="true">
-		<Size x="64" y="64"/>
-		<KeyValues>
-			<!-- Use this to override what tooltip text is shown when mousing over this button -->
-			<KeyValue key="MainHelpPlateButtonTooltipText" value="MAIN_HELP_BUTTON_TOOLTIP" type="global"/>
-		</KeyValues>
-		<HitRectInsets>
-			<AbsInset left="20" right="20" top="20" bottom="20"/>
-		</HitRectInsets>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="I" file="Interface\common\help-i">
-					<Size x="46" y="46"/>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="BORDER">
-				<Texture parentKey="Ring" file="Interface\Minimap\MiniMap-TrackingBorder">
-					<Size x="64" y="64"/>
-					<Anchors>
-						<Anchor point="CENTER" x="12" y="-13"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture parentKey="BigIPulse" file="Interface\common\help-i" alphaMode="ADD" hidden="true">
-					<Size x="46" y="46"/>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="RingPulse" file="Interface\TutorialFrame\minimap-glow" alphaMode="ADD" hidden="true">
-					<Size x="52" y="52"/>
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnEnter function="Main_HelpPlate_Button_OnEnter"/>
-			<OnLeave function="Main_HelpPlate_Button_OnLeave"/>
-			<OnMouseDown>
-				self.I:SetPoint("CENTER", 1, -1);
-			</OnMouseDown>
-			<OnMouseUp>
-				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-				self.I:SetPoint("CENTER", 0, 0);
-			</OnMouseUp>
-			<OnHide function="Main_HelpPlate_Button_OnLeave"/>
-		</Scripts>
-		<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight">
-			<Size x="46" y="46"/>
-			<Anchors>
-				<Anchor point="CENTER" x="-1" y="1"/>
-			</Anchors>
-		</HighlightTexture>
-		<Animations>
-			<AnimationGroup parentKey="Pulse" looping="BOUNCE">
-				<Alpha childKey="BigIPulse" fromAlpha="0.75" toAlpha="0" duration="1.0" smoothing="IN_OUT" order="1"/>
-				<Alpha childKey="RingPulse" fromAlpha="0.5" toAlpha="0" duration="1.0" smoothing="IN_OUT" order="1"/>
-			</AnimationGroup>
-		</Animations>
-	</Button>
-	
+
 	<Button name="UIPanelInfoButton" virtual="true">
 		<Size x="16" y="16"/>
 		<Layers>
@@ -3310,7 +2968,7 @@
 				self.texture:SetPoint("TOPLEFT", 0, 0);
 			</OnMouseUp>
 		</Scripts>
-		<HighlightTexture file="Interface\FriendsFrame\InformationIcon-Highlight" alphaMode="ADD">
+		<HighlightTexture parentKey="HighlightTexture" file="Interface\FriendsFrame\InformationIcon-Highlight" alphaMode="ADD">
 			<Anchors>
 				<Anchor point="TOPLEFT" relativeTo="$parentTexture" relativePoint="TOPLEFT"/>
 			</Anchors>
@@ -3336,4 +2994,28 @@
 			</Layer>
 		</Layers>
 	</Frame>
+
+	<DropdownButton name="UIPanelIconDropdownButtonTemplate" mixin="UIPanelIconDropdownButtonMixin" virtual="true">
+		<Size x="15" y="16"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" atlas="questlog-icon-setting" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture atlas="questlog-icon-setting" useAtlasSize="true" alphaMode="ADD" alpha="0.4">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+		</Scripts>
+	</DropdownButton>
 </Ui>

@@ -3,15 +3,12 @@
 ## DefaultState: enabled
 ## AllowLoad: Both
 ## AllowLoadGameType: mainline
-## Dependencies: Blizzard_SharedXMLBase, Blizzard_PrintHandler, Blizzard_Menu
-## OptionalDep: Blizzard_FontStyles_Glue, Blizzard_FontStyles_Frame
+## Dependencies: Blizzard_Fonts_Shared, Blizzard_SharedXMLBase, Blizzard_PrintHandler, Blizzard_Menu, Blizzard_Colors, Blizzard_HelpPlate
 Shared\LocalizationMachinery.lua
-EnvironmentUtil.lua
 ProjectConstants.lua
 WoWLabs\ProjectConstants.lua
 SharedConstants.lua
 middleclass.lua
-Color.lua
 ColorUtil.lua
 Mainline\ClassColors.lua
 SharedColorConstants.lua
@@ -25,6 +22,7 @@ SmoothStatusBar.lua
 PredictedSetting.lua
 SecureUtil.lua
 TimeUtil.lua
+BenchmarkUtil.lua
 VectorLib.xml
 Mainline\NineSliceLayouts.lua
 NineSlice.lua
@@ -46,6 +44,8 @@ ManagedLayoutFrame.lua
 ManagedLayoutFrame.xml
 SpaceToFitLayoutFrame.lua
 SpaceToFitLayoutFrame.xml
+ScaleToFitFrame.lua
+ScaleToFitFrame.xml
 BulletPoint.lua
 BulletPoint.xml
 KeyCommand.lua
@@ -200,6 +200,8 @@ AlertFrameIntrinsic.lua
 AlertFrameIntrinsic.xml
 Mainline\MajorFactionRenownSharedTemplates.lua
 Mainline\MajorFactionRenownSharedTemplates.xml
+
+CommonUIPanelTemplates.xml
 
 ## Deprecated. Retained only for addons
 HybridScrollFrame.lua

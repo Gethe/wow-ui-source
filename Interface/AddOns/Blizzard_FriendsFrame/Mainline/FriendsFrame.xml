@@ -396,32 +396,35 @@
 	</Button>
 
 	<Button name="WhoListButtonTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true" mixin="WhoListButtonMixin">
-		<Size x="298" y="16"/>
+		<Size x="298"/>
 		<Layers>
 			<Layer level="BORDER">
-				<FontString parentKey="Name" inherits="GameFontNormalSmall" justifyH="LEFT">
-					<Size x="88" y="14"/>
+				<FontString parentKey="Name" inherits="UserScaledFontGameNormalSmall" maxLines="1" justifyH="LEFT" parentArray="FontStrings">
+					<Size x="106"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="10" y="-3"/>
+						<Anchor point="LEFT" x="6"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="Variable" inherits="GameFontHighlightSmall" justifyH="LEFT">
-					<Size x="95" y="14"/>
+				<FontString parentKey="Variable" inherits="UserScaledFontGameNormalSmall" maxLines="1" justifyH="LEFT" parentArray="FontStrings">
+					<Size x="98"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Name" relativePoint="RIGHT" x="0" y="0"/>
+						<Anchor point="LEFT" relativeKey="$parent.Name" relativePoint="RIGHT" x="5"/>
 					</Anchors>
+					<Color color="HIGHLIGHT_FONT_COLOR"/>
 				</FontString>
-				<FontString parentKey="Level" inherits="GameFontHighlightSmall" justifyH="CENTER" wordwrap="false">
-					<Size x="24" y="0"/>
+				<FontString parentKey="Level" inherits="UserScaledFontGameNormalSmall" justifyH="CENTER" maxLines="1" parentArray="FontStrings">
+					<Size x="34"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Variable" relativePoint="RIGHT" x="2" y="0"/>
+						<Anchor point="LEFT" relativeKey="$parent.Variable" relativePoint="RIGHT" x="4"/>
 					</Anchors>
+					<Color color="HIGHLIGHT_FONT_COLOR"/>
 				</FontString>
-				<FontString parentKey="Class" inherits="GameFontHighlightSmall" justifyH="LEFT">
-					<Size x="80" y="8"/>
+				<FontString parentKey="Class" inherits="UserScaledFontGameNormalSmall" maxLines="1" justifyH="LEFT" parentArray="FontStrings">
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Level" relativePoint="RIGHT" x="8" y="0"/>
+						<Anchor point="LEFT" relativeKey="$parent.Level" relativePoint="RIGHT" x="15"/>
+						<Anchor point="RIGHT"/>
 					</Anchors>
+					<Color color="HIGHLIGHT_FONT_COLOR"/>
 				</FontString>
 			</Layer>
 		</Layers>
@@ -430,34 +433,29 @@
 			<OnEnter method="OnEnter"/>
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
-		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD">
-			<Size x="298" y="16"/>
-			<Anchors>
-				<Anchor point="TOP" x="5" y="-2"/>
-			</Anchors>
-		</HighlightTexture>
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" setAllPoints="true" alphaMode="ADD"/>
 	</Button>
 
-	<Button name="WhoFrameColumnHeaderTemplate" virtual="true">
-		<Size x="10" y="24"/>
+	<Button name="WhoFrameColumnHeaderTemplate" mixin="WhoFrameColumnHeaderMixin" virtual="true">
+		<Size x="10" y="28"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Left" name="$parentLeft" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
-					<Size x="5" y="24"/>
+					<Size x="5" y="28"/>
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 					<TexCoords left="0" right="0.078125" top="0" bottom="0.75"/>
 				</Texture>
 				<Texture parentKey="Middle" name="$parentMiddle" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
-					<Size x="53" y="24"/>
+					<Size x="53" y="28"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT"/>
 					</Anchors>
 					<TexCoords left="0.078125" right="0.90625" top="0" bottom="0.75"/>
 				</Texture>
 				<Texture parentKey="Right" name="$parentRight" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
-					<Size x="4" y="24"/>
+					<Size x="4" y="28"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Middle" relativePoint="RIGHT"/>
 					</Anchors>
@@ -466,19 +464,18 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnClick>
-				if ( self.sortType ) then
-					C_FriendList.SortWho(self.sortType);
-				end
-				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-			</OnClick>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
-		<ButtonText>
+		<NormalFont style="UserScaledFontGameHighlightSmall"/>
+		<HighlightFont style="UserScaledFontGameHighlightSmall"/>
+		<ButtonText parentKey="Text" justifyH="LEFT" maxLines="1">
 			<Anchors>
-				<Anchor point="LEFT" x="8" y="0"/>
+				<Anchor point="LEFT" x="8"/>
+				<Anchor point="RIGHT" x="-8"/>
 			</Anchors>
 		</ButtonText>
-		<NormalFont style="GameFontHighlightSmall"/>
 		<HighlightTexture parentKey="HighlightTexture" name="$parentHighlightTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
 			<Anchors>
 				<Anchor point="TOPLEFT" relativeKey="$parent.Left" x="-2" y="5"/>
@@ -493,6 +490,7 @@
 	</Button>
 
 	<Frame name="FriendsFrame" toplevel="true" movable="true" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate">
+		<Size x="385" y="424"/>
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="-1">
 				<Texture name="$parentIcon" file="Interface\FriendsFrame\Battlenet-Portrait">
@@ -517,10 +515,10 @@
 					<KeyValue key="maxTabWidth" value="110" type="number"/>
 				</KeyValues>
 				<Frames>
-					<Frame name="FriendsFrameBattlenetFrame">
+					<Frame name="FriendsFrameBattlenetFrame" parentKey="BattlenetFrame">
 						<Size x="190" y="29"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" x="109" y="-26"/>
+							<Anchor point="TOP" relativeKey="$parent.$parent.TitleContainer" x="40" y="-26"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -552,7 +550,7 @@
 							<Button parentKey="BroadcastButton">
 								<Size x="32" y="32"/>
 								<Anchors>
-									<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" x="2" y="0"/>
+									<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" x="3" y="0"/>
 								</Anchors>
 								<Scripts>
 									<OnClick>
@@ -742,7 +740,7 @@
 					</Frame>
 					<DropdownButton parentKey="StatusDropdown" name="FriendsFrameStatusDropdown" inherits="WowStyle1DropdownTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="52" y="-27"/>
+							<Anchor point="RIGHT" relativeKey="$parent.BattlenetFrame" relativePoint="LEFT" x="-7"/>
 						</Anchors>
 					</DropdownButton>
 					<Button name="FriendsTabHeaderTab1" parentKey="Tab1" inherits="FriendsTabTemplate" text="FRIENDS" id="1">
@@ -834,9 +832,9 @@
 						</Scripts>
 					</Frame>
 					<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
-						<Size x="302" y="307"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="8" y="-87"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent.Inset" x="-22" y="2"/>
 						</Anchors>
 					</Frame>
 					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
@@ -879,29 +877,62 @@
 			</Frame>
 			<Frame name="WhoFrame" setAllPoints="true" hidden="true">
 				<Frames>
-					<Frame name="WhoFrameListInset" inherits="InsetFrameTemplate" frameStrata="MEDIUM">
+					<EditBox name="WhoFrameEditBox" parentKey="EditBox" inherits="SearchBoxTemplate" mixin="WhoFrameEditBoxMixin" autoFocus="false" frameStrata="HIGH" historyLines="32" bytes="256" >
+						<KeyValues>
+							<KeyValue key="instructionText" value="WHO_LIST_SEARCH_INSTRUCTIONS" type="global"/>
+							<KeyValue key="instructionsFontObject" value="UserScaledFontGameDisableSmall" type="global"/>
+						</KeyValues>
+						<Size y="20"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" x="18" y="32"/>
+							<Anchor point="BOTTOMRIGHT" x="-13" y="32"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="Backdrop" atlas="glues-characterSelect-searchbar" useAtlasSize="false">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="-5"/>
+										<Anchor point="BOTTOMRIGHT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad method="OnLoad" inherit="append"/>
+							<OnShow method="OnShow"/>
+							<OnHide method="OnHide"/>
+							<OnEnter method="OnEnter"/>
+							<OnLeave method="OnLeave"/>
+							<OnEnterPressed method="OnEnterPressed"/>
+						</Scripts>
+						<FontString inherits="UserScaledFontGameHighlight" justifyH="LEFT"/>
+					</EditBox>
+					<Frame name="WhoFrameListInset" parentKey="WhoFrameListInset" inherits="InsetFrameTemplate" frameStrata="MEDIUM">
 						<Anchors>
 							<Anchor point="TOPLEFT" x="5" y="-83"/>
-							<Anchor point="BOTTOMRIGHT" x="-5" y="46"/>
+							<Anchor point="BOTTOMRIGHT" x="-5" y="26"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
-								<FontString name="WhoFrameTotals" inherits="GameFontNormalSmall">
-									<Size x="298" y="16"/>
+								<FontString name="WhoFrameTotals" parentKey="WhoFrameTotals" inherits="UserScaledFontGameNormalSmall, UserScaledFontStringTemplate">
+									<KeyValues>
+										<KeyValue key="baseHeight" value="16"/>
+									</KeyValues>
 									<Anchors>
-										<Anchor point="BOTTOM" x="0" y="5"/>
+										<Anchor point="BOTTOMLEFT" relativeKey="$parent.$parent.EditBox" relativePoint="TOPLEFT" y="2"/>
+										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent.EditBox" relativePoint="TOPRIGHT" y="2"/>
 									</Anchors>
 								</FontString>
 							</Layer>
 						</Layers>
 					</Frame>
-					<Button name="WhoFrameColumnHeader1" inherits="WhoFrameColumnHeaderTemplate" text="NAME">
+					<Button name="WhoFrameColumnHeader1" inherits="WhoFrameColumnHeaderTemplate, UserScaledFrameTemplate" text="NAME">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="7" y="-60"/>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.$parent.Inset" relativePoint="TOPLEFT"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								WhoFrameColumn_SetWidth(self, 83);
+								WhoFrameColumn_SetWidth(self, 116);
 								self.sortType = "name";
 							</OnLoad>
 						</Scripts>
@@ -912,8 +943,13 @@
 						</Anchors>
 						<Frames>
 							<DropdownButton name="WhoFrameDropdown" inherits="WowStyle1DropdownTemplate" id="1">
+								<KeyValues>
+									<KeyValue key="dropdownTemplate" value="WowStyle1DropdownTemplate" type="string"/>
+									<KeyValue key="fontObject" value="UserScaledFontGameHighlight" type="global"/>
+								</KeyValues>
 								<Anchors>
-									<Anchor point="TOPLEFT" x="2" y="0"/>
+									<Anchor point="TOPLEFT" y="2"/>
+									<Anchor point="BOTTOMRIGHT" y="-3"/>
 								</Anchors>
 								<Layers>
 									<Layer level="OVERLAY">
@@ -939,13 +975,13 @@
 							</OnLoad>
 						</Scripts>
 					</Button>
-					<Button name="WhoFrameColumnHeader3" inherits="WhoFrameColumnHeaderTemplate" text="LEVEL_ABBR">
+					<Button name="WhoFrameColumnHeader3" parentKey="LevelHeader" inherits="WhoFrameColumnHeaderTemplate" text="LEVEL_ABBR">
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="WhoFrameColumnHeader2" relativePoint="RIGHT" x="-2" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								WhoFrameColumn_SetWidth(self, 32);
+								WhoFrameColumn_SetWidth(self, 54);
 								self.sortType = "level";
 							</OnLoad>
 						</Scripts>
@@ -956,7 +992,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								WhoFrameColumn_SetWidth(self, 92);
+								WhoFrameColumn_SetWidth(self, 86);
 								self.sortType = "class";
 							</OnLoad>
 						</Scripts>
@@ -987,41 +1023,24 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								WhoFrameEditBox_OnEnterPressed(WhoFrameEditBox);
+								WhoFrameEditBox:OnEnterPressed(WhoFrameEditBox);
 								WhoList_SetSelectedButton(nil);
 								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Frame name="WhoFrameEditBoxInset" inherits="InsetFrameTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="5" y="46"/>
-							<Anchor point="BOTTOMRIGHT" x="-5" y="26"/>
-						</Anchors>
-					</Frame>
-					<EditBox name="WhoFrameEditBox" autoFocus="false" frameStrata="HIGH" historyLines="32" bytes="256">
-						<Size x="296" y="32"/>
-						<Anchors>
-							<Anchor point="BOTTOM" x="-10" y="20"/>
-						</Anchors>
-						<Scripts>
-							<OnShow function="EditBox_ClearFocus"/>
-							<OnEnterPressed function="WhoFrameEditBox_OnEnterPressed"/>
-							<OnEscapePressed function="EditBox_ClearFocus"/>
-						</Scripts>
-						<FontString inherits="ChatFontNormal"/>
-					</EditBox>
 					<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 						<Size x="302" y="272"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.$parent.Inset" x="4" y="-4"/>
-							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent.Inset" x="-22" y="39"/>
+							<Anchor point="BOTTOM" relativeKey="$parent.WhoFrameListInset.WhoFrameTotals" relativePoint="TOP" y="1"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent.Inset" x="-22" y="48"/>
 						</Anchors>
 					</Frame>
 					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="5" y="-4"/>
-							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="-13"/>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="-10"/>
 						</Anchors>
 					</EventFrame>
 				</Frames>
@@ -1033,9 +1052,14 @@
 						C_FriendList.SetWhoToUi(false);
 					</OnLoad>
 					<OnShow>
+						EventRegistry:RegisterCallback("TextSizeManager.OnTextScaleUpdated", function()
+							WhoList_Update();
+						end, self);
+
 						C_FriendList.SetWhoToUi(true);
 					</OnShow>
 					<OnHide>
+						EventRegistry:UnregisterCallback("TextSizeManager.OnTextScaleUpdated", self);
 						C_FriendList.SetWhoToUi(false);
 					</OnHide>
 				</Scripts>
@@ -1214,254 +1238,428 @@
 			<OnShow function="FriendsFrame_OnShow"/>
 			<OnHide function="FriendsFrame_OnHide"/>
 			<OnEvent function="FriendsFrame_OnEvent"/>
-			<OnMouseWheel function=""/>
 		</Scripts>
 	</Frame>
-	<Frame name="AddFriendFrame" parent="UIParent" hidden="true" frameStrata="DIALOG">
-		<Size x="446" y="272"/>
+
+	<Frame name="AddFriendIconHolderTemplate" mixin="AddFriendIconHolderMixin" virtual="true">
+		<Size x="100" y="72"/>
+		<!-- 
+			<KeyValues>
+				<KeyValue key="secondaryIcon" value="Interface\FriendsFrame\PlusManz-Horde" type="string"/>
+				<KeyValue key="secondaryIconXOffset" value="-10" type="number"/>
+			</KeyValues>
+		-->
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="FriendIcon" file="Interface\FriendsFrame\PlusManz-PlusManz">
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="SecondaryIcon" file="Interface\FriendsFrame\PlusManz-BattleNet">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.FriendIcon" relativePoint="BOTTOM" y="7"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Button name="AddFriendButtonTemplate" virtual="true">
+		<Size x="131" y="22"/>
+		<KeyValues>
+			<KeyValue key="baseWidth" value="131" type="number"/>
+			<KeyValue key="baseHeight" value="22" type="number"/>
+		</KeyValues>
+		<ButtonText name="$parentText" parentKey="Text">
+			<Anchors>
+				<Anchor point="CENTER">
+					<Offset x="0" y="1"/>
+				</Anchor>
+			</Anchors>
+		</ButtonText>
+		<NormalTexture file="Interface\Buttons\UI-DialogBox-Button-Up">
+			<TexCoords left="0.0" right="1.0" top="0.0" bottom="0.71875"/>
+		</NormalTexture>
+		<PushedTexture file="Interface\Buttons\UI-DialogBox-Button-Down">
+			<TexCoords left="0.0" right="1.0" top="0.0" bottom="0.71875"/>
+		</PushedTexture>
+		<DisabledTexture file="Interface\Buttons\UI-DialogBox-Button-Disabled">
+			<TexCoords left="0.0" right="1.0" top="0.0" bottom="0.71875"/>
+		</DisabledTexture>
+		<HighlightTexture file="Interface\Buttons\UI-DialogBox-Button-Highlight" alphaMode="ADD">
+			<TexCoords left="0.0" right="1.0" top="0.0" bottom="0.71875"/>
+		</HighlightTexture>
+		<NormalFont style="UserScaledFontGameNormal"/>
+		<DisabledFont style="UserScaledFontGameDisable"/>
+		<HighlightFont style="UserScaledFontGameHighlight"/>
+	</Button>
+
+	<Frame name="AddFriendFrame" parent="UIParent" hidden="true" inherits="ResizeLayoutFrame" mixin="AddFriendFrameMixin" frameStrata="DIALOG">
+		<Size x="1" y="1"/>
 		<Frames>
 			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
-			<Frame name="AddFriendInfoFrame" hidden="true">
-				<Size x="446" y="272"/>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButtonNoScripts" mixin="AddFriendCloseButtonMixin" frameLevel="500">
 				<Anchors>
-					<Anchor point="TOPLEFT"/>
+					<Anchor point="TOPRIGHT" x="1"/>
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture file="Interface\FriendsFrame\PlusManz-BattleNet" alpha="0.3">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="62" y="-32" />
-							</Anchors>
-						</Texture>
-						<Texture name="$parentFactionIcon" file="Interface\FriendsFrame\PlusManz-Horde" alpha="0.5" hidden="true">
-							<Anchors>
-								<Anchor point="TOPRIGHT" x="-114" y="-32" />
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY">
-						<Texture name="$parentLeftFriend" file="Interface\FriendsFrame\PlusManz-PlusManz">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="42" y="-42" />
-							</Anchors>
-						</Texture>
-						<Texture name="$parentRightFriend" file="Interface\FriendsFrame\PlusManz-PlusManz">
-							<Anchors>
-								<Anchor point="TOPRIGHT" x="-134" y="-42" />
-							</Anchors>
-						</Texture>
-						<FontString name="$parentLeftTitle" inherits="GameFontNormal" justifyH="LEFT" text="BATTLENET_FRIEND">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativeTo="$parentLeftFriend" x="-2" y="-6"/>
-							</Anchors>
-						</FontString>
-						<FontString name="$parentRightTitle" inherits="GameFontNormal" justifyH="LEFT" text="CHARACTER_FRIEND">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativeTo="$parentRightFriend" x="-2" y="-6"/>
-							</Anchors>
-						</FontString>
-						<FontString inherits="GameFontHighlightSmall" justifyH="LEFT" text="BATTLENET_FRIEND_INFO">
-							<Size x="160" y="0"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentLeftTitle" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
-							</Anchors>
-						</FontString>
-						<FontString inherits="GameFontHighlightSmall" justifyH="LEFT" text="CHARACTER_FRIEND_INFO">
-							<Size x="160" y="0"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentRightTitle" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+			<Frame name="AddFriendInfoFrame" parentKey="InfoFrame" inherits="ResizeLayoutFrame" hidden="true">
+				<Size x="1" y="1"/>
+				<KeyValues>
+					<KeyValue key="widthPadding" value="80" type="number"/>
+					<KeyValue key="heightPadding" value="16" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOP"/>
+				</Anchors>
 				<Frames>
-					<Button name="$parentContinueButton" inherits="UIPanelButtonTemplate" text="CONTINUE">
-						<Size x="131" y="22"/>
+					<Frame parentKey="InfoContainer" inherits="ResizeLayoutFrame">
+						<Size x="1" y="1"/>
 						<Anchors>
-							<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOM" x="0" y="30"/>
+							<Anchor point="TOP" y="-12"/>
+						</Anchors>
+						<Frames>
+							<Frame parentKey="LeftTextContainer" inherits="ResizeLayoutFrame">
+								<Size x="1" y="1"/>
+								<Anchors>
+									<Anchor point="TOP"/>
+									<Anchor point="RIGHT" relativePoint="CENTER" x="-20"/>
+								</Anchors>
+								<KeyValues>
+									<KeyValue key="heightPadding" value="4" type="number"/>
+								</KeyValues>
+								<Frames>
+									<Frame parentKey="IconHolder" inherits="AddFriendIconHolderTemplate">
+										<KeyValues>
+											<KeyValue key="secondaryIcon" value="Interface\FriendsFrame\PlusManz-BattleNet" type="string"/>
+										</KeyValues>
+										<Anchors>
+											<Anchor point="TOP" y="-5"/>
+										</Anchors>
+									</Frame>
+								</Frames>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<FontString parentKey="Title" inherits="UserScaledFontGameNormal, UserScaledFontStringTemplate" justifyH="CENTER" text="BATTLENET_FRIEND">
+											<KeyValues>
+												<KeyValue key="baseWidth" value="200" type="number"/>
+											</KeyValues>
+											<Anchors>
+												<Anchor point="TOP" relativeKey="$parent.IconHolder" relativePoint="BOTTOM" y="-2"/>
+											</Anchors>
+										</FontString>
+										<FontString parentKey="Description" inherits="UserScaledFontGameHighlight" justifyH="LEFT" text="BATTLENET_FRIEND_INFO">
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" y="-2"/>
+												<Anchor point="TOPRIGHT" relativeKey="$parent.Title" relativePoint="BOTTOMRIGHT" y="-2"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+							<Frame parentKey="RightTextContainer" inherits="ResizeLayoutFrame">
+								<Size x="1" y="1"/>
+								<Anchors>
+									<Anchor point="TOP"/>
+									<Anchor point="LEFT" relativePoint="CENTER" x="20"/>
+								</Anchors>
+								<KeyValues>
+									<KeyValue key="heightPadding" value="4" type="number"/>
+								</KeyValues>
+								<Frames>
+									<Frame parentKey="IconHolder" inherits="AddFriendIconHolderTemplate">
+										<KeyValues>
+											<KeyValue key="secondaryIcon" value="Interface\FriendsFrame\PlusManz-Horde" type="string"/>
+											<KeyValue key="secondaryIconXOffset" value="-15" type="number"/>
+										</KeyValues>
+										<Anchors>
+											<Anchor point="TOP" y="-5"/>
+										</Anchors>
+									</Frame>
+								</Frames>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<FontString parentKey="Title" inherits="UserScaledFontGameNormal, UserScaledFontStringTemplate" justifyH="CENTER" text="CHARACTER_FRIEND">
+											<KeyValues>
+												<KeyValue key="baseWidth" value="200" type="number"/>
+											</KeyValues>
+											<Anchors>
+												<Anchor point="TOP" relativeKey="$parent.IconHolder" relativePoint="BOTTOM" y="-2"/>
+											</Anchors>
+										</FontString>
+										<FontString parentKey="Description" inherits="UserScaledFontGameHighlight" justifyH="LEFT" text="CHARACTER_FRIEND_INFO">
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" y="-2"/>
+												<Anchor point="TOPRIGHT" relativeKey="$parent.Title" relativePoint="BOTTOMRIGHT" y="-2"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+						</Frames>
+					</Frame>
+					<Button parentKey="ContinueButton" inherits="AddFriendButtonTemplate, UserScaledFrameTemplate" text="CONTINUE">
+						<Anchors>
+							<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOM" x="0" y="20"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>
 								SetCVar("addFriendInfoShown", 1);
-								AddFriendFrame_ShowEntry();
+								AddFriendFrame:ShowEntry();
 							</OnClick>
 						</Scripts>
 					</Button>
 				</Frames>
 			</Frame>
-			<Frame name="AddFriendEntryFrame" hidden="true">
-				<Size x="384" y="218"/>
+			<Frame name="AddFriendEntryFrame" parentKey="EntryFrame" inherits="ResizeLayoutFrame" hidden="true">
+				<Size x="1" y="1"/>
+				<KeyValues>
+					<KeyValue key="widthPadding" value="40" type="number"/>
+					<KeyValue key="heightPadding" value="8" type="number"/>
+				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPLEFT"/>
+					<Anchor point="TOP"/>
 				</Anchors>
-				<Layers>
-					<Layer level="BORDER">
-						<Texture name="$parentLeftIcon" file="Interface\FriendsFrame\PlusManz-BattleNet" alpha="0.3">
-							<Size x="40" y="40"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="92" y="-50" />
-							</Anchors>
-						</Texture>
-						<Texture name="$parentRightIcon" file="Interface\FriendsFrame\PlusManz-Horde" alpha="0.5" hidden="true">
-							<Size x="40" y="40"/>
-							<Anchors>
-								<Anchor point="TOPRIGHT" x="-82" y="-50" />
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="ARTWORK">
-						<Texture name="$parentLeftFriend" file="Interface\FriendsFrame\PlusManz-PlusManz">
-							<Size x="36" y="36"/>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativeTo="$parentLeftIcon" x="-10" y="-4" />
-							</Anchors>
-						</Texture>
-						<Texture name="$parentRightFriend" file="Interface\FriendsFrame\PlusManz-PlusManz">
-							<Size x="36" y="36"/>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativeTo="$parentRightIcon" x="-10" y="-4" />
-							</Anchors>
-						</Texture>
-						<FontString name="$parentTopTitle" inherits="GameFontNormalLarge" text="ADD_FRIEND" justifyH="CENTER">
-							<Anchors>
-								<Anchor point="TOP" relativePoint="TOP" x="-12" y="-24"/>
-							</Anchors>
-						</FontString>
-						<FontString name="$parentOrLabel" inherits="GameFontNormalLarge" text="OR_CAPS" justifyH="CENTER">
-							<Anchors>
-								<Anchor point="TOP" relativePoint="TOP" x="0" y="-66"/>
-							</Anchors>
-							<Color r="1" g="1" b="1"/>
-						</FontString>
-						<FontString name="$parentLeftTitle" inherits="GameFontNormal" text="BATTLENET_FRIEND" justifyH="CENTER">
-							<Anchors>
-								<Anchor point="TOP" relativeTo="$parentLeftFriend" relativePoint="BOTTOM" x="8" y="4"/>
-							</Anchors>
-						</FontString>
-						<FontString name="$parentRightTitle" inherits="GameFontNormal" text="CHARACTER_FRIEND" justifyH="CENTER">
-							<Anchors>
-								<Anchor point="TOP" relativeTo="$parentRightFriend" relativePoint="BOTTOM" x="8" y="4"/>
-							</Anchors>
-						</FontString>
-						<FontString name="$parentLeftDescription" inherits="GameFontHighlightSmall" text="BATTLENET_FRIEND_LABEL" justifyH="CENTER">
-							<Anchors>
-								<Anchor point="TOP" relativeTo="$parentLeftTitle" relativePoint="BOTTOM" x="0" y="-4"/>
-							</Anchors>
-						</FontString>
-						<FontString name="$parentRightDescription" inherits="GameFontHighlightSmall" text="CHARACTER_FRIEND_LABEL" justifyH="CENTER">
-							<Anchors>
-								<Anchor point="TOP" relativeTo="$parentRightTitle" relativePoint="BOTTOM" x="0" y="-4"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
 				<Frames>
-					<Button name="$parentInfoButton" inherits="UIPanelInfoButton">
+					<Frame parentKey="TitleContainer" inherits="ResizeLayoutFrame">
+						<Size x="1" y="1"/>
+						<KeyValues>
+							<KeyValue key="widthPadding" value="10" type="number"/>
+							<KeyValue key="heightPadding" value="6" type="number"/>
+						</KeyValues>
 						<Anchors>
-							<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentTopTitle" x="8" y="0" />
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								if ( AddFriendNameEditBox:HasFocus() ) then
-									AddFriendFrame.editFocus = AddFriendNameEditBox;
-								else
-									AddFriendFrame.editFocus = nil;
-								end
-								AddFriendFrame_ShowInfo();
-							</OnClick>
-						</Scripts>
-					</Button>
-					<EditBox name="AddFriendNameEditBox" autoFocus="false" letters="255" inherits="AutoCompleteEditBoxTemplate">
-						<Size x="280" y="20"/>
-						<Anchors>
-							<Anchor point="TOP" x="0" y="-130"/>
+							<Anchor point="TOP" y="-24"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
-									<Size x="8" y="20"/>
+								<FontString parentKey="Title" inherits="UserScaledFontGameNormalLarge" text="ADD_FRIEND" justifyH="CENTER">
 									<Anchors>
-										<Anchor point="TOPLEFT" x="-5" y="0"/>
+										<Anchor point="TOP" relativePoint="TOP" x="-12"/>
 									</Anchors>
-									<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
-								</Texture>
-								<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
-									<Size x="8" y="20"/>
-									<Anchors>
-										<Anchor point="RIGHT" x="0" y="0"/>
-									</Anchors>
-									<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
-								</Texture>
-								<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
-									<Size x="0" y="20"/>
-									<Anchors>
-										<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
-										<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT"/>
-									</Anchors>
-									<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
-								</Texture>
-							</Layer>
-							<Layer level="BORDER">
-								<FontString name="$parentFill" inherits="FriendsFont_Small" justifyH="LEFT" justifyV="MIDDLE" text="ENTER_NAME_OR_EMAIL">
-									<Anchors>
-										<Anchor point="LEFT" x="3" y="0"/>
-									</Anchors>
-									<Color r="0.35" g="0.35" b="0.35"/>
 								</FontString>
 							</Layer>
 						</Layers>
-						<Scripts>
-							<OnLoad>
-								AutoCompleteEditBox_SetAutoCompleteSource(self, GetAutoCompleteResults, AUTOCOMPLETE_LIST.ADDFRIEND.include, AUTOCOMPLETE_LIST.ADDFRIEND.exclude);
-								self.addHighlightedText = true;
-							</OnLoad>
-							<OnEnterPressed>
-								if ( not AutoCompleteEditBox_OnEnterPressed(self) and AddFriendEntryFrameAcceptButton:IsEnabled() ) then
-									AddFriendFrame_Accept();
-								end
-							</OnEnterPressed>
-							<OnEscapePressed>
-								self:ClearFocus();
-							</OnEscapePressed>
-							<OnTextChanged function="AddFriendNameEditBox_OnTextChanged"/>
-						</Scripts>
-						<FontString inherits="FriendsFont_Small">
-							<Color r="1" g="1" b="1" />
-						</FontString>
-					</EditBox>
-					<Button name="$parentAcceptButton" inherits="UIPanelButtonTemplate" text="ADD_FRIEND">
-						<Size x="118" y="22"/>
+						<Frames>
+							<Button name="$parentInfoButton" inherits="UIPanelInfoButton, UserScaledFrameTemplate" mixin="AddFriendEntryFrameInfoButtonMixin">
+								<Size x="16" y="16"/>
+								<KeyValues>
+									<KeyValue key="baseWidth" value="16" type="number"/>
+									<KeyValue key="baseHeight" value="16" type="number"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.Title" x="8" y="0" />
+								</Anchors>
+								<Scripts>
+									<OnLoad method="OnLoad"/>
+									<OnClick method="OnClick"/>
+								</Scripts>
+							</Button>
+						</Frames>
+					</Frame>
+					<Frame parentKey="OptionsContainer" inherits="ResizeLayoutFrame">
+						<Size x="1" y="1"/>
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" x="45" y="30"/>
+							<Anchor point="TOP" relativeKey="$parent.TitleContainer" relativePoint="BOTTOM" y="-2"/>
 						</Anchors>
-						<Scripts>
-							<OnClick function="AddFriendFrame_Accept"/>
-						</Scripts>
-					</Button>
-					<Button name="$parentCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
-						<Size x="118" y="22"/>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString parentKey="OrLabel" inherits="UserScaledFontGameNormalLarge" text="OR_CAPS" justifyH="CENTER">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+									<Color r="1" g="1" b="1"/>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame parentKey="LeftTextContainer" inherits="ResizeLayoutFrame">
+								<Size x="1" y="1"/>
+								<Anchors>
+									<Anchor point="TOP"/>
+									<Anchor point="RIGHT" relativeKey="$parent.OrLabel" relativePoint="LEFT" x="-15"/>
+								</Anchors>
+								<KeyValues>
+									<KeyValue key="heightPadding" value="4" type="number"/>
+								</KeyValues>
+								<Frames>
+									<Frame parentKey="IconHolder" inherits="AddFriendIconHolderTemplate">
+										<KeyValues>
+											<KeyValue key="secondaryIcon" value="Interface\FriendsFrame\PlusManz-BattleNet" type="string"/>
+										</KeyValues>
+										<Anchors>
+											<Anchor point="TOP" y="-5"/>
+										</Anchors>
+									</Frame>
+								</Frames>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<FontString parentKey="Title" inherits="UserScaledFontGameNormal, UserScaledFontStringTemplate" justifyH="CENTER" text="BATTLENET_FRIEND">
+											<KeyValues>
+												<KeyValue key="baseWidth" value="150" type="number"/>
+											</KeyValues>
+											<Anchors>
+												<Anchor point="TOP" relativeKey="$parent.IconHolder" relativePoint="BOTTOM" y="-2"/>
+											</Anchors>
+										</FontString>
+										<FontString parentKey="Description" inherits="UserScaledFontGameHighlight" justifyH="CENTER" text="BATTLENET_FRIEND_LABEL">
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" y="-2"/>
+												<Anchor point="TOPRIGHT" relativeKey="$parent.Title" relativePoint="BOTTOMRIGHT" y="-2"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+							<Frame parentKey="RightTextContainer" inherits="ResizeLayoutFrame">
+								<Size x="1" y="1"/>
+								<Anchors>
+									<Anchor point="TOP"/>
+									<Anchor point="LEFT" relativeKey="$parent.OrLabel" relativePoint="RIGHT" x="15"/>
+								</Anchors>
+								<KeyValues>
+									<KeyValue key="heightPadding" value="4" type="number"/>
+								</KeyValues>
+								<Frames>
+									<Frame parentKey="IconHolder" inherits="AddFriendIconHolderTemplate">
+										<KeyValues>
+											<KeyValue key="secondaryIcon" value="Interface\FriendsFrame\PlusManz-Horde" type="string"/>
+											<KeyValue key="secondaryIconXOffset" value="-15" type="number"/>
+										</KeyValues>
+										<Anchors>
+											<Anchor point="TOP" y="-5"/>
+										</Anchors>
+									</Frame>
+								</Frames>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<FontString parentKey="Title" inherits="UserScaledFontGameNormal, UserScaledFontStringTemplate" justifyH="CENTER" text="CHARACTER_FRIEND">
+											<KeyValues>
+												<KeyValue key="baseWidth" value="150" type="number"/>
+											</KeyValues>
+											<Anchors>
+												<Anchor point="TOP" relativeKey="$parent.IconHolder" relativePoint="BOTTOM" y="-2"/>
+											</Anchors>
+										</FontString>
+										<FontString parentKey="Description" inherits="UserScaledFontGameHighlight" justifyH="CENTER" text="CHARACTER_FRIEND_LABEL">
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" y="-2"/>
+												<Anchor point="TOPRIGHT" relativeKey="$parent.Title" relativePoint="BOTTOMRIGHT" y="-2"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+						</Frames>
+					</Frame>
+					<Frame parentKey="EditBoxContainer" inherits="ResizeLayoutFrame">
+						<Size x="1" y="1"/>
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT" x="-50" y="30"/>
+							<Anchor point="BOTTOMLEFT" x="25" y="20"/>
+							<Anchor point="BOTTOMRIGHT" x="-25" y="20"/>
 						</Anchors>
-						<Scripts>
-							<OnClick>
-								StaticPopupSpecial_Hide(AddFriendFrame);
-							</OnClick>
-						</Scripts>
-					</Button>
+						<KeyValues>
+							<KeyValue key="heightPadding" value="10" type="number"/>
+						</KeyValues>
+						<Frames>
+							<EditBox name="AddFriendNameEditBox" parentKey="NameEditBox" autoFocus="false" letters="255" inherits="AutoCompleteEditBoxTemplate, UserScaledFrameTemplate">
+								<Size y="20"/>
+								<KeyValues>
+									<KeyValue key="baseWidth" value="280" type="number"/>
+									<KeyValue key="baseHeight" value="20" type="number"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="TOPLEFT" x="15" y="-3"/>
+									<Anchor point="TOPRIGHT" x="-5" y="-3"/>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<Texture name="$parentLeft" parentKey="Left" file="Interface\Common\Common-Input-Border">
+											<Size x="8"/>
+											<Anchors>
+												<Anchor point="TOPLEFT" x="-5" y="0"/>
+												<Anchor point="BOTTOMLEFT" x="-5" y="0"/>
+											</Anchors>
+											<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
+										</Texture>
+										<Texture name="$parentRight" parentKey="Right" file="Interface\Common\Common-Input-Border">
+											<Size x="8"/>
+											<Anchors>
+												<Anchor point="TOPRIGHT" x="-5" y="0"/>
+												<Anchor point="BOTTOMRIGHT" x="-5" y="0"/>
+											</Anchors>
+											<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
+										</Texture>
+										<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+											<Size x="0" y="20"/>
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
+												<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
+											</Anchors>
+											<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
+										</Texture>
+									</Layer>
+									<Layer level="BORDER">
+										<FontString name="$parentFill" inherits="UserScaledFontGameDisableSmall" justifyH="LEFT" justifyV="MIDDLE" text="ENTER_NAME_OR_EMAIL">
+											<Anchors>
+												<Anchor point="LEFT" relativeKey="$parent.Left" x="3" y="0"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnLoad>
+										UserScaledElementMixin.OnLoad_UserScaledElement(self);
+										AutoCompleteEditBox_SetAutoCompleteSource(self, GetAutoCompleteResults, AUTOCOMPLETE_LIST.ADDFRIEND.include, AUTOCOMPLETE_LIST.ADDFRIEND.exclude);
+										self.addHighlightedText = true;
+									</OnLoad>
+									<OnEnterPressed>
+										if ( not AutoCompleteEditBox_OnEnterPressed(self) and AddFriendEntryFrameAcceptButton:IsEnabled() ) then
+											AddFriendFrame_Accept();
+										end
+									</OnEnterPressed>
+									<OnEscapePressed>
+										self:ClearFocus();
+									</OnEscapePressed>
+									<OnTextChanged function="AddFriendNameEditBox_OnTextChanged"/>
+								</Scripts>
+								<FontString inherits="UserScaledFontGameHighlightSmall" justifyH="LEFT" justifyV="MIDDLE"/>
+							</EditBox>
+							<Button name="$parentAcceptButton" parentKey="AcceptButton" inherits="AddFriendButtonTemplate, UserScaledFrameTemplate" text="ADD_FRIEND">
+								<Anchors>
+									<Anchor point="BOTTOMLEFT" x="8" y="3"/>
+								</Anchors>
+								<Scripts>
+									<OnClick function="AddFriendFrame_Accept"/>
+								</Scripts>
+							</Button>
+							<Button name="$parentCancelButton" parentKey="CancelButton" inherits="AddFriendButtonTemplate, UserScaledFrameTemplate" text="CANCEL">
+								<Anchors>
+									<Anchor point="BOTTOMRIGHT" x="-8" y="3"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										StaticPopupSpecial_Hide(AddFriendFrame);
+									</OnClick>
+								</Scripts>
+							</Button>
+						</Frames>
+					</Frame>
 				</Frames>
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				self.exclusive = true;
-				self.hideOnEscape = true;
-			</OnLoad>
-			<OnShow function="AddFriendFrame_OnShow"/>
-			<OnHide>
-				AddFriendFrame.editFocus = nil;
-				PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
-			</OnHide>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
 

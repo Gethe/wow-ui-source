@@ -543,7 +543,7 @@ is undesirable in the case of the lobby.
 This is a hacky fix, but comes in the interest of not creating further bugs. 
 ]]
 local function GetPlunderstormPlayerExtendedColorOverride(unit, displayedUnit)
-	return C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm 
+	return C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm
 		and UnitIsPlayer(unit) 
 		and not UnitInParty(unit) 
 		and not UnitCanAttack("player", unit)
@@ -583,7 +583,7 @@ function CompactUnitFrame_UpdateHealthColor(frame)
 				-- Use color based on the type of unit (neutral, etc.)
 				if ( frame.optionTable.considerSelectionInCombatAsHostile and CompactUnitFrame_IsOnThreatListWithPlayer(frame.displayedUnit) and not UnitIsFriend("player", frame.unit) ) then
 					r, g, b = 1.0, 0.0, 0.0;
-				elseif ( UnitIsPlayer(frame.displayedUnit) and UnitIsFriend("player", frame.displayedUnit) and C_GameModeManager.GetCurrentGameMode() ~= Enum.GameMode.Plunderstorm ) then
+				elseif ( UnitIsPlayer(frame.displayedUnit) and UnitIsFriend("player", frame.displayedUnit) and C_GameRules.GetActiveGameMode() ~= Enum.GameMode.Plunderstorm ) then
 					-- We don't want to use the selection color for friendly player nameplates because
 					-- it doesn't show player health clearly enough.
 					r, g, b = 0.667, 0.667, 1.0;
@@ -855,7 +855,7 @@ end
 local function IsPlayerEffectivelyTank()
 	local assignedRole = UnitGroupRolesAssigned("player");
 	if ( assignedRole == "NONE" ) then
-		local spec = GetSpecialization();
+		local spec = C_SpecializationInfo.GetSpecialization();
 		return spec and GetSpecializationRole(spec) == "TANK";
 	end
 
@@ -1793,7 +1793,8 @@ end
 
 function CompactUnitFrame_GetOptionUseClassColors(frame, options)
 	-- There are no classes in Plunderstorm
-	if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
+	-- GAME RULES TODO:: This should probably be an explicit game rule.
+	if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
 		return false;
 	end
 

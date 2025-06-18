@@ -73,7 +73,7 @@
 		<Scripts>
 			<OnLoad method="OnLoad" inherit="prepend" />
 			<OnEvent method="OnEvent" inherit="prepend" />
-			<OnShow method="OnShow" />
+			<OnShow method="OnShow" inherit="prepend" />
 			<OnHide method="OnHide" />
 			<OnKeyDown method="OnKeyDown"/>
 		</Scripts>

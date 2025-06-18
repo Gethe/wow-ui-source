@@ -819,7 +819,7 @@ function EventSchedulerReminderManager:AnnounceEvent(eventInfo, time)
 	local uiMapID = nil;
 	local areaPoiInfo = GetEventPOI(uiMapID, eventInfo.areaPoiID);
 	if areaPoiInfo then
-		local nameLink = LinkUtil.FormatLink("eventpoi", "["..areaPoiInfo.name.."]", eventInfo.areaPoiID);
+		local nameLink = LinkUtil.FormatLink(LinkTypes.EventPOI, "["..areaPoiInfo.name.."]", eventInfo.areaPoiID);
 		if time <= 0 then
 			Chat_AddSystemMessage(EVENT_SCHEDULER_CHAT_REMINDER_NOW:format(nameLink));
 		else

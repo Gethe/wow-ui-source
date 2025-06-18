@@ -7,6 +7,16 @@ local AddOnProfiler =
 	Functions =
 	{
 		{
+			Name = "AddMeasuredCallEvent",
+			Type = "Function",
+			Documentation = { "Adds a measured event to any ongoing measured calls. If no such calls are currently taking place, this function does nothing." },
+
+			Arguments =
+			{
+				{ Name = "name", Type = "stringView", Nilable = false, Documentation = { "User-defined string describing the measured event. This should be kept under 48 bytes to avoid memory allocations." } },
+			},
+		},
+		{
 			Name = "AddPerformanceMessageShown",
 			Type = "Function",
 			Documentation = { "Internal API for telemetry." },
@@ -74,6 +84,16 @@ local AddOnProfiler =
 			},
 		},
 		{
+			Name = "GetTicksPerSecond",
+			Type = "Function",
+			Documentation = { "Returns the number of profiling clock ticks that occur within a single real-time second." },
+
+			Returns =
+			{
+				{ Name = "frequency", Type = "BigInteger", Nilable = false },
+			},
+		},
+		{
 			Name = "GetTopKAddOnsForMetric",
 			Type = "Function",
 			Documentation = { "Gets top K AddOns for a given metric." },
@@ -99,6 +119,23 @@ local AddOnProfiler =
 				{ Name = "enabled", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "MeasureCall",
+			Type = "Function",
+			Documentation = { "Performs a profiled measurement of a single function call with any supplied arguments." },
+
+			Arguments =
+			{
+				{ Name = "func", Type = "LuaValueVariant", Nilable = false },
+				{ Name = "unpackedPrimitiveType", Type = "number", Nilable = false, StrideIndex = 1 },
+			},
+
+			Returns =
+			{
+				{ Name = "results", Type = "AddOnProfilerCallResults", Nilable = false },
+				{ Name = "unpackedPrimitiveType", Type = "number", Nilable = false, StrideIndex = 1 },
+			},
+		},
 	},
 
 	Events =
@@ -117,6 +154,30 @@ local AddOnProfiler =
 				{ Name = "addOnName", Type = "string", Nilable = true },
 				{ Name = "metricValue", Type = "number", Nilable = false },
 				{ Name = "thresholdValue", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "AddOnProfilerCallEvent",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false, Documentation = { "User-defined string describing the measured event." } },
+				{ Name = "allocatedBytes", Type = "BigUInteger", Nilable = false, Documentation = { "Snapshot of the allocated byte count when this event was recorded." } },
+				{ Name = "deallocatedBytes", Type = "BigUInteger", Nilable = false, Documentation = { "Snapshot of the deallocated byte count when this event was recorded." } },
+				{ Name = "elapsedMilliseconds", Type = "number", Nilable = false, Documentation = { "Snapshot of the elapsed milliseconds when this event was recorded." } },
+				{ Name = "elapsedTicks", Type = "BigInteger", Nilable = false, Documentation = { "Snapshot of the elapsed tick count when this event was recorded." } },
+			},
+		},
+		{
+			Name = "AddOnProfilerCallResults",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "elapsedMilliseconds", Type = "number", Nilable = false, Documentation = { "Total number of milliseconds spent executing the function." } },
+				{ Name = "elapsedTicks", Type = "BigInteger", Nilable = false, Documentation = { "Total number of profiling clock ticks spent executing the function." } },
+				{ Name = "allocatedBytes", Type = "BigUInteger", Nilable = false, Documentation = { "Total number of bytes allocated during call execution." } },
+				{ Name = "deallocatedBytes", Type = "BigUInteger", Nilable = false, Documentation = { "Total number of bytes deallocated during call execution." } },
+				{ Name = "events", Type = "table", InnerType = "AddOnProfilerCallEvent", Nilable = false, Documentation = { "Events recorded by any AddMeasuredCallEvent calls that took place during function execution." } },
 			},
 		},
 		{

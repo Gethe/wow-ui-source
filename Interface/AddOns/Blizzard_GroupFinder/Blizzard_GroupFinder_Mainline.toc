@@ -8,7 +8,7 @@
 Mainline\QueueUpdater.lua
 Mainline\PVEFrame.lua
 Mainline\PVEFrame.xml
-Mainline\LFGFrame.lua
+Shared\LFGFrame.lua
 Mainline\LFGFrame.xml
 Mainline\LFDFrame.lua
 Mainline\LFDFrame.xml
@@ -20,5 +20,6 @@ Mainline\PvpPopup.lua
 Mainline\PvpPopup.xml
 Mainline\PVPHelper.lua
 Mainline\PVPHelper.xml
+Shared\ScenarioFinder_Shared.lua
 Mainline\ScenarioFinder.lua
-Mainline\ScenarioFinder.xml
+Shared\ScenarioFinder.xml

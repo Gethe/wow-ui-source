@@ -1,7 +1,5 @@
 PlayerSpellsFrameMixin = {};
 
-local PLAYER_SPELLS_HELP_SYSTEM = "PlayerSpellsHelpSystem"
-
 local PlayerSpellsFrameEvents = {
 	"PLAYER_LEAVING_WORLD",
 };
@@ -71,8 +69,6 @@ function PlayerSpellsFrameMixin:OnHide()
 	self.lockInspect = false;
 
 	EventRegistry:TriggerEvent("PlayerSpellsFrame.CloseFrame");
-
-	HelpTip:HideAllSystem(PLAYER_SPELLS_HELP_SYSTEM);
 end
 
 function PlayerSpellsFrameMixin:OnEvent(event)
@@ -158,7 +154,6 @@ function PlayerSpellsFrameMixin:SetTab(tabID)
 
 	self.MaximizeMinimizeButton:SetShown(canNewTabBeMinimized);
 
-	self:UpdateMinimizeHelpTip();
 	self:UpdateFrameTitle();
 	EventRegistry:TriggerEvent("PlayerSpellsFrame.TabSet", PlayerSpellsFrame, tabID);
 	
@@ -366,23 +361,6 @@ function PlayerSpellsFrameMixin:CheckConfirmResetAction(callback, cancelCallback
 	end
 end
 
-function PlayerSpellsFrameMixin:UpdateMinimizeHelpTip()
-	if self.MaximizeMinimizeButton:IsShown() and not self.MaximizeMinimizeButton:IsMinimized() then
-		local helpTipInfo = {
-			text = PLAYER_SPELLS_FRAME_MINIMIZE_TIP,
-			buttonStyle = HelpTip.ButtonStyle.Close,
-			targetPoint = HelpTip.Point.BottomEdgeCenter,
-			system = PLAYER_SPELLS_HELP_SYSTEM,
-			checkCVars = true,
-			cvarBitfield = "closedInfoFrames",
-			bitfieldFlag = LE_FRAME_TUTORIAL_PLAYER_SPELLS_MINIMIZE,
-		};
-		HelpTip:Show(UIParent, helpTipInfo, self.MaximizeMinimizeButton);
-	else
-		HelpTip:Hide(UIParent, PLAYER_SPELLS_FRAME_MINIMIZE_TIP);
-	end
-end
-
 function PlayerSpellsFrameMixin:IsMinimized()
 	return self.isMinimized;
 end
@@ -415,16 +393,15 @@ function PlayerSpellsFrameMixin:OnManualMinimizeClicked()
 	self.manualMinimizeEnabled = true;
 	if not self.isMinimized and self:ShouldManuallyMinimize() then
 		self:SetMinimized(true);
+		EventRegistry:TriggerEvent("PlayerSpellsFrame.OnManualMinimize");
 	end
-
-	-- Clicking the Minimize Button should automatically close the minimize help tip and flag it as seen.
-	HelpTip:AcknowledgeSystem(PLAYER_SPELLS_HELP_SYSTEM, PLAYER_SPELLS_FRAME_MINIMIZE_TIP);
 end
 
 function PlayerSpellsFrameMixin:OnManualMaximizeClicked()
 	self.manualMinimizeEnabled = false;
 	if self.isMinimized then
 		self:ForceMaximize();
+		EventRegistry:TriggerEvent("PlayerSpellsFrame.OnManualMaximize");
 	end
 end
 
@@ -485,8 +462,6 @@ function PlayerSpellsFrameMixin:SetMinimized(shouldBeMinimized)
 		-- The maximized version of the frame should always be center aligned on the screen.
 		SetUIPanelAttribute(self, "centerXOffset", 0);
 	end
-
-	self:UpdateMinimizeHelpTip();
 
 	-- If the panel was previously shown and then hidden to change the "area" attribute, show it again now.
 	if wasShown then

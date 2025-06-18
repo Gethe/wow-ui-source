@@ -92,7 +92,7 @@ UIPanelWindows["ItemTextFrame"] =				{ area = "left",			pushable = 0};
 UIPanelWindows["FriendsFrame"] =				{ area = "left",			pushable = 0,	whileDead = 1 };
 UIPanelWindows["RaidParentFrame"] =				{ area = "left",			pushable = 1,	whileDead = 1 };
 UIPanelWindows["RaidBrowserFrame"] =			{ area = "left",			pushable = 1,	};
-UIPanelWindows["DeathRecapFrame"] =				{ area = "center",			pushable = 0,	whileDead = 1, allowOtherPanels = 1};
+UIPanelWindows["DeathRecapFrame"] =				{ area = "center",			pushable = 0,	yoffset = -116, whileDead = 1, allowOtherPanels = 1};
 UIPanelWindows["WardrobeFrame"] =				{ area = "left",			pushable = 0,	width = 965 };
 UIPanelWindows["AlliedRacesFrame"] =			{ area = "left",			pushable = 1,	whileDead = 1 };
 UIPanelWindows["GuildControlUI"] =				{ area = "left",			pushable = 1,	whileDead = 1,		yoffset = 4, };
@@ -195,6 +195,7 @@ local function FramePositionDelegate_OnAttributeChanged(self, attribute)
 end
 
 local FramePositionDelegate = CreateFrame("FRAME");
+FramePositionDelegate:SetForbidden();
 FramePositionDelegate:SetScript("OnAttributeChanged", FramePositionDelegate_OnAttributeChanged);
 
 function FramePositionDelegate:ShowUIPanel(frame, force, contextKey)
@@ -257,7 +258,7 @@ function FramePositionDelegate:ShowUIPanel(frame, force, contextKey)
 		end
 	end
 
-	-- If we have a "center" frame open, only listen to other "center" open requests
+	-- If we have a "center" frame open, only listen to other "center" open requests, unless the show is being forced.
 	local centerArea, centerPushable;
 	if ( centerFrame ) then
 		centerArea = GetUIPanelAttribute(centerFrame, "area");
@@ -274,7 +275,7 @@ function FramePositionDelegate:ShowUIPanel(frame, force, contextKey)
 					return;
 				end
 			end
-			centerPushable = GetUIPanelAttribute(centerFrame, "pushable") or 0;
+			centerPushable = centerFrame and GetUIPanelAttribute(centerFrame, "pushable") or 0;
 		end
 	end
 

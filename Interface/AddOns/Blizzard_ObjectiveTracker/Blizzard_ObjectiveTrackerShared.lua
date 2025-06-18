@@ -133,16 +133,36 @@ function QuestObjectiveItemButtonMixin:CheckUpdateInsideBlob()
 	self:UpdateInsideBlob(questID, C_Minimap.IsInsideQuestBlob(questID));
 end
 
-function QuestObjectiveItemButtonMixin:UpdateInsideBlob(questID, _inside)
+function QuestObjectiveItemButtonMixin:UpdateInsideBlob(questID, inside)
 	if questID == self:GetAttribute("questID") then
-		local inside = false; -- disabled for now
-		self.Glow:SetShown(inside); -- maybe fade out anim and then stop glow
+		self.GlowAnim.region = self.Glow;
 		if inside then
-			self.GlowAnim:Play();
-		else
-			self.GlowAnim:Stop();
+			self.GlowAnim:BeginPlaying();
 		end
 	end
+end
+
+QuestObjectiveItemGlowAnimMixin = {}
+
+function QuestObjectiveItemGlowAnimMixin:OnLoop()
+	self.loopCount = self.loopCount + 1;
+	if self.loopCount >= 6 then
+		self:StopPlaying();
+	end
+end
+
+function QuestObjectiveItemGlowAnimMixin:BeginPlaying()
+	if not self:IsPlaying() then
+		self.region:Show();
+		self.loopCount = 0;
+		self:SetLooping("BOUNCE");
+		self:Restart();
+	end
+end
+
+function QuestObjectiveItemGlowAnimMixin:StopPlaying()
+	self.region:Hide();
+	self:SetLooping("NONE");
 end
 
 -- *****************************************************************************************************
@@ -198,16 +218,16 @@ end
 		font,							-- font for the reward name
 		label,							-- item name of the reward
 		texture,						-- item icon
-		overlay							-- overlay icon (can be nil) 
+		overlay							-- overlay icon (can be nil)
 	}
 ]]--
 
 function ObjectiveTrackerRewardsToastMixin:ShowRewards(rewards, module, block, headerText, callback)
 	self.Header:SetText(headerText or REWARDS);
 	self.callback = callback;
-	
+
 	self.framePool:ReleaseAll();
-	
+
 	local lastFrame;
 	for i, rewardData in ipairs(rewards) do
 		local frame = self.framePool:Acquire();
@@ -216,7 +236,7 @@ function ObjectiveTrackerRewardsToastMixin:ShowRewards(rewards, module, block, h
 		else
 			frame:SetPoint("TOPLEFT", self.RewardsTop, "BOTTOMLEFT", 25, 0);
 		end
-		
+
 		if rewardData.count > 1 then
 			frame.Count:Show();
 			frame.Count:SetText(rewardData.count);
@@ -234,7 +254,7 @@ function ObjectiveTrackerRewardsToastMixin:ShowRewards(rewards, module, block, h
 		end
 		frame:Show();
 		frame.Anim:Restart();
-			
+
 		lastFrame = frame;
 	end
 
@@ -253,14 +273,14 @@ function ObjectiveTrackerRewardsToastMixin:ShowRewards(rewards, module, block, h
 	else
 		self:SetPoint("TOPRIGHT", container, "BOTTOMLEFT", 20, 16);
 	end
-	
+
 	self:Show();
 	local contentsHeight = 12 + #rewards * 36;
 	self.Anim.RewardsBottomAnim:SetOffset(0, -contentsHeight);
 	self.Anim.RewardsShadowAnim:SetScaleTo(0.8, contentsHeight / 16);
 	self.Anim:Play();
 	PlaySound(SOUNDKIT.UI_BONUS_EVENT_SYSTEM_VIGNETTES);
-end	
+end
 
 function ObjectiveTrackerRewardsToastMixin:OnAnimateRewardsDone()
 	if self.callback then

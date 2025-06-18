@@ -1,6 +1,7 @@
 ## Title: Blizzard Soulbinds
 ## Author: Blizzard Entertainment
 ## LoadOnDemand: 1
+## Dependencies: Blizzard_Colors
 Blizzard_SoulbindsUtil.lua
 Blizzard_SoulbindsTemplates.xml
 Blizzard_SoulbindsSelectButton.xml

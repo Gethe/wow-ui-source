@@ -18,15 +18,15 @@
 			</AnimationGroup>
 		</Animations>
 		<Scripts>
-			<OnLoad method="OnLoad" inherit="append"/>
-			<OnEvent method="OnEvent" inherit="append"/>
-			<PreClick method="PreClick" inherit="append"/>
-			<OnClick method="OnClick" inherit="append"/>
-			<OnDragStart method="OnDragStart" inherit="append"/>
-			<OnReceiveDrag method="OnReceiveDrag" inherit="append"/>
-			<OnEnter method="OnEnter" inherit="append"/>
-			<OnLeave method="OnLeave" inherit="append"/>
-			<OnUpdate method="OnUpdate" inherit="append"/>
+			<OnLoad method="PetActionButtonMixin_OnLoad"/>
+			<OnEvent method="PetActionButtonMixin_OnEvent"/>
+			<PreClick method="PetActionButtonMixin_PreClick"/>
+			<OnClick method="PetActionButtonMixin_OnClick"/>
+			<OnDragStart method="PetActionButtonMixin_OnDragStart"/>
+			<OnReceiveDrag method="PetActionButtonMixin_OnReceiveDrag"/>
+			<OnEnter method="PetActionButtonMixin_OnEnter"/>
+			<OnLeave method="PetActionButtonMixin_OnLeave"/>
+			<OnUpdate method="PetActionButtonMixin_OnUpdate"/>
 		</Scripts>
 	</CheckButton>
 

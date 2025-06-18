@@ -273,6 +273,23 @@ function SearchBoxTemplateClearButton_OnClick(self)
 	SearchBoxTemplate_ClearText(self:GetParent());
 end
 
+UIPanelButtonMixin = CreateFromMixins(DisabledTooltipButtonMixin);
+
+function UIPanelButtonMixin:OnEnter()
+	if not self.tooltipDisabled then
+		local defaultTooltipAnchor = "ANCHOR_RIGHT";
+
+		if self.tooltipText then
+			local tooltip = GetAppropriateTooltip();
+			tooltip:SetOwner(self, self.tooltipAnchor or defaultTooltipAnchor);
+			GameTooltip_SetTitle(tooltip, self.tooltipText);
+			tooltip:Show();
+		else
+			DisabledTooltipButtonMixin.OnEnter(self);
+		end
+	end
+end
+
 PanelTabButtonMixin = {};
 
 function PanelTabButtonMixin:OnLoad()
@@ -3009,22 +3026,12 @@ function LevelRangeFrameMixin:GetLevelRange()
 	return self.MinLevel:GetNumber(), self.MaxLevel:GetNumber();
 end
 
-function Main_HelpPlate_Button_OnEnter(self)
-	Main_HelpPlate_Button_ShowTooltip(self);
-	HelpPlateTooltip.LingerAndFade:Stop();
+UIPanelIconDropdownButtonMixin = { };
+
+function UIPanelIconDropdownButtonMixin:OnMouseDown()
+	self.Icon:AdjustPointsOffset(1, -1);
 end
 
-function Main_HelpPlate_Button_ShowTooltip(self)
-	HelpPlateTooltip.ArrowRIGHT:Show();
-	HelpPlateTooltip.ArrowGlowRIGHT:Show();
-	HelpPlateTooltip:SetPoint("LEFT", self, "RIGHT", 10, 0);
-	HelpPlateTooltip.Text:SetText(self.MainHelpPlateButtonTooltipText or MAIN_HELP_BUTTON_TOOLTIP);
-	HelpPlateTooltip:Show();
-end
-
-function Main_HelpPlate_Button_OnLeave(self)
-	HelpPlateTooltip.ArrowRIGHT:Hide();
-	HelpPlateTooltip.ArrowGlowRIGHT:Hide();
-	HelpPlateTooltip:ClearAllPoints();
-	HelpPlateTooltip:Hide();
+function UIPanelIconDropdownButtonMixin:OnMouseUp(button, upInside)
+	self.Icon:AdjustPointsOffset(-1, 1);
 end

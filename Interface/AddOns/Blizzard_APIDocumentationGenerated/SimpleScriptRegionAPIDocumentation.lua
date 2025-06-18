@@ -19,6 +19,32 @@ local SimpleScriptRegionAPI =
 			},
 		},
 		{
+			Name = "CanPropagateMouseClicks",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "canPropagate", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "CanPropagateMouseMotion",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "canPropagate", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CollapsesLayout",
 			Type = "Function",
 

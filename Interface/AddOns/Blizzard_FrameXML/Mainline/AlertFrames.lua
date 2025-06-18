@@ -498,6 +498,7 @@ function AlertFrameMixin:OnLoad()
 	self:RegisterEvent("SKILL_LINE_SPECS_UNLOCKED");
 	self:RegisterEvent("PERKS_PROGRAM_CURRENCY_AWARDED");
 	self:RegisterEvent("PERKS_ACTIVITY_COMPLETED");
+	self:RegisterEvent("REQUESTED_GUILD_RENAME_RESULT");
 end
 
 function CreateContinuableContainerForLFGRewards()
@@ -732,6 +733,9 @@ function AlertFrameMixin:OnEvent(event, ...)
 	elseif ( event == "PERKS_ACTIVITY_COMPLETED" ) then
 		local perksActivityID = ...;
 		MonthlyActivityAlertSystem:AddAlert(perksActivityID);
+	elseif ( event == "REQUESTED_GUILD_RENAME_RESULT" ) then
+		local guildName, status = ...;
+		GuildRenameAlertSystem:CheckAddAlert(guildName, status);
 	end
 end
 
@@ -866,6 +870,10 @@ function AlertFrame_PlayAnimations(frame)
 	if frame:ManagesOwnOutroAnimation() then
 		AlertFrame_PlayOutroAnimation(frame);
 	end
+end
+
+function AlertFrame_SetDuration(frame, duration)
+	frame.duration = duration;
 end
 
 function AlertFrame_ShowNewAlert(frame)

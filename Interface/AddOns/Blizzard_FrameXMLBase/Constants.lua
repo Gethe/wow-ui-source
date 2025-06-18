@@ -136,39 +136,7 @@ NUM_EVALUATION_TREE_FLAGS				= 2;
 ITEM_UNIQUE_EQUIPPED = -1;
 MAX_NUM_SOCKETS = 3;
 
-BAG_ITEM_QUALITY_COLORS = {
-	[Enum.ItemQuality.Common] = COMMON_GRAY_COLOR,
-	[Enum.ItemQuality.Uncommon] = UNCOMMON_GREEN_COLOR,
-	[Enum.ItemQuality.Rare] = RARE_BLUE_COLOR,
-	[Enum.ItemQuality.Epic] = EPIC_PURPLE_COLOR,
-	[Enum.ItemQuality.Legendary] = LEGENDARY_ORANGE_COLOR,
-	[Enum.ItemQuality.Artifact] = ARTIFACT_GOLD_COLOR,
-	[Enum.ItemQuality.Heirloom] = HEIRLOOM_BLUE_COLOR,
-	[Enum.ItemQuality.WoWToken] = HEIRLOOM_BLUE_COLOR,
-}
-
-NEW_ITEM_ATLAS_BY_QUALITY = {
-	[Enum.ItemQuality.Poor] = "bags-glow-white",
-	[Enum.ItemQuality.Common] = "bags-glow-white",
-	[Enum.ItemQuality.Uncommon] = "bags-glow-green",
-	[Enum.ItemQuality.Rare] = "bags-glow-blue",
-	[Enum.ItemQuality.Epic] = "bags-glow-purple",
-	[Enum.ItemQuality.Legendary] = "bags-glow-orange",
-	[Enum.ItemQuality.Artifact] = "bags-glow-artifact",
-	[Enum.ItemQuality.Heirloom] = "bags-glow-heirloom",
-};
-
 -- Loot
-LOOT_BORDER_BY_QUALITY = {
-	[Enum.ItemQuality.Common] = "loottoast-itemborder-white",
-	[Enum.ItemQuality.Uncommon] = "loottoast-itemborder-green",
-	[Enum.ItemQuality.Rare] = "loottoast-itemborder-blue",
-	[Enum.ItemQuality.Epic] = "loottoast-itemborder-purple",
-	[Enum.ItemQuality.Legendary] = "loottoast-itemborder-orange",
-	[Enum.ItemQuality.Heirloom] = "loottoast-itemborder-heirloom",
-	[Enum.ItemQuality.Artifact] = "loottoast-itemborder-artifact",
-};
-
 LOOT_ROLL_TYPE_PASS = 0;
 LOOT_ROLL_TYPE_NEED = 1;
 LOOT_ROLL_TYPE_GREED = 2;
@@ -240,6 +208,8 @@ EQUIPMENT_SET_ITEM_MISSING = -1;
 --
 -- Combat Log
 --
+
+COMBATLOG_OBJECT_EMPTY					= 0x00000000;
 
 -- Affiliation
 COMBATLOG_OBJECT_AFFILIATION_MINE		= 0x00000001;
@@ -695,9 +665,6 @@ SCENARIO_FLAG_SUPRESS_STAGE_TEXT	= 0x00000002;
 SCENARIO_FLAG_DEPRECATED2			= 0x00000004;
 SCENARIO_FLAG_DEPRECATED3			= 0x00000008;
 
--- Lua Warning types
-LUA_WARNING_TREAT_AS_ERROR = 0;
-
 -- Quest Tags
 QUEST_TAG_ATLAS = {
 	["COMPLETED"] = "questlog-questtypeicon-quest",
@@ -818,14 +785,5 @@ RELIC_TALENT_LINK_STYLE_POTENTIAL = 2;
 RELIC_TALENT_LINK_STYLE_ACTIVE = 3;
 RELIC_TALENT_LINK_STYLE_UPCOMING = 4;
 RELIC_TALENT_LINK_STYLE_AVAILABLE = 5;
-
--- TODO: Need to be able to expose this from client...
-Enum.ChatChannelType = {
-	None = 0,
-	Custom = 1,
-	Private_Party = 2,
-	Public_Party = 3,
-	Communities = 4,
-};
 
 TOOLTIP_INDENT_OFFSET = 10;

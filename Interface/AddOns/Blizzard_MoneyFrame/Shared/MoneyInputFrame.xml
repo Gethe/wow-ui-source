@@ -14,6 +14,14 @@
 						<Anchor point="RIGHT" x="-10" y="2"/>
 					</Anchors>
 				</Texture>
+				<FontString parentKey="Text" inherits="PriceFont" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="RIGHT" x="-10" y="2"/>
+					</Anchors>
+					<Shadow x="1" y="-1">
+						<Color r="0" g="0" b="0"/>
+					</Shadow>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -34,6 +42,7 @@
 			<EditBox parentKey="CopperBox" letters="2" inherits="LargeMoneyInputBoxTemplate">
 				<KeyValues>
 					<KeyValue key="iconAtlas" value="coin-copper" type="string"/>
+					<KeyValue key="displayType" value="MoneyDenominationDisplayType.Copper" type="global"/>
 				</KeyValues>
 				<Size x="50" y="33"/>
 				<Anchors>
@@ -43,6 +52,7 @@
 			<EditBox parentKey="SilverBox" letters="2" inherits="LargeMoneyInputBoxTemplate">
 				<KeyValues>
 					<KeyValue key="iconAtlas" value="coin-silver" type="string"/>
+					<KeyValue key="displayType" value="MoneyDenominationDisplayType.Silver" type="global"/>
 				</KeyValues>
 				<Size x="50" y="33"/>
 				<Anchors>
@@ -52,6 +62,7 @@
 			<EditBox parentKey="GoldBox" letters="7" inherits="LargeMoneyInputBoxTemplate">
 				<KeyValues>
 					<KeyValue key="iconAtlas" value="coin-gold" type="string"/>
+					<KeyValue key="displayType" value="MoneyDenominationDisplayType.Gold" type="global"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="LEFT"/>

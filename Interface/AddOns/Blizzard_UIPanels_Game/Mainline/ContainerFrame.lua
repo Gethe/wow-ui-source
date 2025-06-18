@@ -1127,6 +1127,10 @@ function ContainerFrame_UpdateLockedItem(bagID, slotID)
 	local info = C_Container.GetContainerItemInfo(bagID, slotID);
 	local locked = info and info.isLocked;
 	SetItemButtonDesaturated(itemButton, locked);
+
+	if itemButton:IsMouseMotionFocus() then
+		itemButton:OnEnter();
+	end
 end
 
 function ContainerFrame_GenerateFrame(frame, size, id)
@@ -1695,8 +1699,9 @@ function ContainerFrameItemButtonMixin:UpdateNewItem(quality)
 			self.NewItemTexture:Hide();
 			self.BattlepayItemTexture:Show();
 		else
-			if (quality and NEW_ITEM_ATLAS_BY_QUALITY[quality]) then
-				self.NewItemTexture:SetAtlas(NEW_ITEM_ATLAS_BY_QUALITY[quality]);
+			local atlas = ColorManager.GetAtlasDataForNewItemQuality(quality);
+			if (quality and atlas) then
+				self.NewItemTexture:SetAtlas(atlas);
 			else
 				self.NewItemTexture:SetAtlas("bags-glow-white");
 			end

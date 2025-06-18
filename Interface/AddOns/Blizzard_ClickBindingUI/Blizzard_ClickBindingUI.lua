@@ -51,7 +51,7 @@ StaticPopupDialogs["CONFIRM_LOSE_UNSAVED_CLICK_BINDINGS"] = {
 	text = CLICK_CAST_UNSAVED,
 	button1 = OKAY,
 	button2 = CANCEL,
-	OnAccept = function() HideUIPanel(ClickBindingFrame) end,
+	OnAccept = function(dialog, data) HideUIPanel(ClickBindingFrame) end,
 	timeout = 0,
 	whileDead = 1,
 	showAlert = 1,
@@ -61,7 +61,7 @@ StaticPopupDialogs["CONFIRM_RESET_CLICK_BINDINGS"] = {
 	text = CLICK_CAST_RESET,
 	button1 = OKAY,
 	button2 = CANCEL,
-	OnAccept = function() ClickBindingFrame:ResetToDefaultProfile() end,
+	OnAccept = function(dialog, data) ClickBindingFrame:ResetToDefaultProfile() end,
 	timeout = 0,
 	whileDead = 1,
 	showAlert = 1,
@@ -622,7 +622,7 @@ end
 function ClickBindingFrameMixin:OnEvent(event, ...)
 	if event == "PLAYER_SPECIALIZATION_CHANGED" and self:IsShown() then
 		local unit = (...);
-		if (unit == "player") and (GetSpecialization() ~= self.currentSpec) then
+		if (unit == "player") and (C_SpecializationInfo.GetSpecialization() ~= self.currentSpec) then
 			self:Refresh();
 		end
 	elseif event == "SPELLS_CHANGED" and self:IsShown() then
@@ -653,7 +653,7 @@ function ClickBindingFrameMixin:Refresh()
 	self.ScrollBox:SetDataProvider(self.dataProvider, ScrollBoxConstants.DiscardScrollPosition)
 	self:SetHasNewSlot(true);
 	self:ClearUnboundText();
-	self.currentSpec = GetSpecialization();
+	self.currentSpec = C_SpecializationInfo.GetSpecialization();
 	self.pendingChanges = false;
 end
 

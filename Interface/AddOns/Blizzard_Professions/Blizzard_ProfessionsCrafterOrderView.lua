@@ -52,9 +52,13 @@ function ProfessionsCrafterOrderRewardTooltipMixin:SetReward(reward)
 		end
 	end
 
-	local itemQualityColor = ITEM_QUALITY_COLORS[itemQuality or Enum.ItemQuality.Common];
-	local itemDisplayText = itemQualityColor.color:WrapTextInColorCode(itemName or "");
-	self.RewardName:SetText(itemDisplayText);
+	local colorData = ColorManager.GetColorDataForItemQuality(itemQuality or Enum.ItemQuality.Common);
+	if colorData then
+		local itemDisplayText = colorData.color:WrapTextInColorCode(itemName or "");
+		self.RewardName:SetText(itemDisplayText);
+	else
+		self.RewardName:SetText(itemName or "");
+	end
 
 	self:SetHeight(self.Reward:GetHeight());
 	self:SetWidth(self.Reward:GetWidth() + self.RewardName:GetWidth() + 20);
@@ -419,7 +423,14 @@ function ProfessionsCrafterOrderViewMixin:OnEvent(event, ...)
 			local function Update()
 				-- Clear recrafting so that we go back to the order complete view if we were recrafting
 				self.recraftingOrderID = nil;
-				self:SetOrder(C_CraftingOrders.GetClaimedOrder());
+
+				-- Claimed order may have disappeared by the time animation finishes, close the UI in that case.
+				local order = C_CraftingOrders.GetClaimedOrder();
+				if order then
+					self:SetOrder(order);
+				else
+					self:CloseOrder();
+				end
 			end
 
 			if self.OrderDetails.SchematicForm.Details.QualityMeter.animating then

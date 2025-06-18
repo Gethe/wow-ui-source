@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Frame name="IslandsQueueFrameTutorialTemplate" hidden="true" virtual="true">
-		<Size x="900" y="600"/> 
+		<Size x="900" y="600"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
@@ -11,14 +11,14 @@
 					<Size x="900" y="600"/>
 					<Color r="0" g="0" b="0"/>
 					<Anchors>
-						<Anchor point="CENTER"/> 
+						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="BACKGROUND"> 
+			<Layer level="BACKGROUND">
 				<Texture parentKey="Background" atlas="islands-queue-popup">
 					<Size x="361" y="370"/>
-					<Anchors> 
+					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
@@ -34,11 +34,11 @@
 			<Button parentKey="Leave" inherits="UIPanelButtonNoTooltipTemplate" text="CLOSE">
 				<Size x="125" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOM" relativeKey="$parent.Background" y="55"/> 
+					<Anchor point="BOTTOM" relativeKey="$parent.Background" y="55"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						self:GetParent():Hide(); 
+						self:GetParent():Hide();
 						PlaySound(SOUNDKIT.UI_80_ISLANDS_TUTORIAL_CLOSE);
 						SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ISLANDS_QUEUE_INFO_FRAME, true);
 					</OnClick>
@@ -50,7 +50,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						self:GetParent():Hide(); 
+						self:GetParent():Hide();
 						PlaySound(SOUNDKIT.UI_80_ISLANDS_TUTORIAL_CLOSE);
 						SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ISLANDS_QUEUE_INFO_FRAME, true);
 					</OnClick>
@@ -64,7 +64,7 @@
 			<Layer level="OVERLAY">
 				<FontString parentKey="Title" inherits="GameFontNormal" text="ISLANDS_QUEUE_WEEKLY_QUEST">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-5" y="22"/> 
+						<Anchor point="TOPLEFT" x="-5" y="22"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -83,21 +83,21 @@
 						<Texture parentKey="FillBackground" atlas="_islands-queue-progressbar-background" useAtlasSize="false">
 							<Size x="520" y="21"/>
 							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent" relativePoint="CENTER" x="0" y="0"/> 
+								<Anchor point="CENTER" relativeKey="$parent" relativePoint="CENTER" x="0" y="0"/>
 							</Anchors>
-						</Texture> 
+						</Texture>
 					</Layer>
 					<Layer level="BORDER" textureSubLevel="2">
 						<Texture parentKey="Bar" atlas="islands-queue-progressbar-frame" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.StatusBar" relativePoint="CENTER" x="14" y="-1"/> 
+								<Anchor point="CENTER" x="14" y="-1"/>
 							</Anchors>
-						</Texture> 
+						</Texture>
 					</Layer>
 					<Layer level="OVERLAY" textureSubLevel="3">
 						<Texture parentKey="Spark" hidden="true" atlas="islands-queue-progressbar-spark" useAtlasSize="true" alphaMode="ADD">
 							<Anchors>
-								<Anchor point="RIGHT" relativeKey="$parent.StatusBar" relativePoint="RIGHT" x="5" y="0"/> 
+								<Anchor point="RIGHT" x="5" y="0"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -113,14 +113,14 @@
 			<Button parentKey="QuestReward" mixin="IslandsQueueWeeklyQuestRewardMixin">
 				<Size x="40" y="40"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.OverlayFrame" relativePoint="RIGHT" x="35" y="0"/> 
+					<Anchor point="RIGHT" relativeKey="$parent.OverlayFrame" relativePoint="RIGHT" x="35" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BORDER">
 						<Texture parentKey="Icon" atlas="honorsystem-prestige-laurel-bg-alliance">
 							<Size x="29" y="29"/>
 							<Anchors>
-								<Anchor point="CENTER" x="1"/> 
+								<Anchor point="CENTER" x="1"/>
 							</Anchors>
 						</Texture>
 						<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
@@ -135,7 +135,7 @@
 					<Layer level="OVERLAY">
 						<Texture parentKey="CompletedCheck" atlas="islands-queue-progressbar-checkmark" useAtlasSize="true" hidden="true">
 							<Anchors>
-								<Anchor point="CENTER"/> 
+								<Anchor point="CENTER"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -151,15 +151,15 @@
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 			<OnEnter>
-				self.OverlayFrame.Text:Show(); 
+				self.OverlayFrame.Text:Show();
 			</OnEnter>
 			<OnLeave>
-				self.OverlayFrame.Text:Hide(); 
+				self.OverlayFrame.Text:Hide();
 			</OnLeave>
 		</Scripts>
 	</Frame>
 	<Button name="IslandsQueueFrameDifficultyButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
-		<Size x="39" y="39"/> 
+		<Size x="39" y="39"/>
 		<HighlightTexture parentKey="Highlight" atlas="bags-roundhighlight" alphaMode="ADD" hidden="true">
 			<Size x="31" y="30"/>
 			<Anchors>
@@ -181,17 +181,17 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				self.UpdateTooltip = self:GetScript("OnEnter"); 
+				self.UpdateTooltip = self:GetScript("OnEnter");
 			</OnLoad>
 			<OnClick>
-				self:GetParent():SetActiveDifficulty(self); 
+				self:GetParent():SetActiveDifficulty(self);
 				PlaySound(self.soundkitID);
 			</OnClick>
 			<OnEnter>
 				if (self.tooltipText) then
 					EmbeddedItemTooltip:SetOwner(self, "ANCHOR_RIGHT");
 					GameTooltip_SetTitle(EmbeddedItemTooltip, self.tooltipText, HIGHLIGHT_FONT_COLOR);
-					if (self.notAvailableText) then 
+					if (self.notAvailableText) then
 						GameTooltip_AddColoredLine(EmbeddedItemTooltip, self.notAvailableText, RED_FONT_COLOR, true);
 					end
 					if (HaveQuestData(self.questID) and HaveQuestRewardData(self.questID)) then
@@ -206,16 +206,16 @@
 			</OnEnter>
 			<OnLeave>
 				EmbeddedItemTooltip:Hide();
-			</OnLeave> 
+			</OnLeave>
 		</Scripts>
 	</Button>
 	<Frame name="IslandsQueueScreenDifficultySelector" mixin="IslandsQueueFrameDifficultyMixin" virtual="true">
-		<Size x="433" y="124"/> 
+		<Size x="433" y="124"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Background" atlas="islands-queue-difficultyselector-backboard" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="CENTER" x="0.5"/> 
+						<Anchor point="CENTER" x="0.5"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -224,12 +224,12 @@
 			<Button parentKey="QueueButton" motionScriptsWhileDisabled="true" inherits="UIPanelButtonNoTooltipTemplate" text="FIND_A_GROUP">
 				<Size x="164" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOM" y="27"/> 
+					<Anchor point="BOTTOM" y="27"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						self:GetParent():OnQueueClick(); 
-						PlaySound(SOUNDKIT.UI_80_ISLANDS_TABLE_FIND_GROUP); 
+						self:GetParent():OnQueueClick();
+						PlaySound(SOUNDKIT.UI_80_ISLANDS_TABLE_FIND_GROUP);
 					</OnClick>
 				</Scripts>
 				<Layers>
@@ -247,11 +247,11 @@
 						<Alpha childKey="Flash" duration="2.0" smoothing="IN_OUT" order="1" fromAlpha="1" toAlpha=".15"/>
 					</AnimationGroup>
 				</Animations>
-				<Scripts> 
+				<Scripts>
 					<OnEnter>
 						if (self.TooltipText) then
-							GameTooltip:SetOwner(self, "ANCHOR_RIGHT"); 
-							GameTooltip_SetTitle(GameTooltip, self.TooltipText, RED_FONT_COLOR, true); 
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip_SetTitle(GameTooltip, self.TooltipText, RED_FONT_COLOR, true);
 							GameTooltip:Show();
 						end
 					</OnEnter>
@@ -262,18 +262,18 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad method="OnLoad"/> 
+			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>
 		</Scripts>
-	</Frame> 
+	</Frame>
 	<Frame name="IslandsQueueFrameIslandCardTemplate" virtual="true">
 		<Frames>
 			<Frame parentKey="TitleScroll">
-				<Size x="198" y="58"/> 
+				<Size x="198" y="58"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="3" y="-16"/> 
+					<Anchor point="TOPLEFT" x="3" y="-16"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND" textureSubLevel="-5">
@@ -282,7 +282,7 @@
 				</Layers>
 			</Frame>
 		</Frames>
-	</Frame>	
+	</Frame>
 	<Frame name="IslandsQueueFrameCardFrameTemplate" virtual="true" inherits="UIWidgetContainerTemplate">
 		<Size x="950" y="642"/>
 		<KeyValues>
@@ -292,46 +292,46 @@
 			<Frame parentKey="CenterCard" frameLevel="1000" parentArray="IslandCards" inherits="IslandsQueueFrameIslandCardTemplate">
 				<Size x="438" y="302"/>
 				<Anchors>
-					<Anchor point="CENTER" x="-1" y="-72"/> 
+					<Anchor point="CENTER" x="-1" y="-72"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture parentKey="Background" atlas="islands-queue-card3" useAtlasSize="true"/>
-					</Layer> 
+					</Layer>
 				</Layers>
 			</Frame>
 			<Frame parentKey="LeftCard" frameLevel="500" parentArray="IslandCards" inherits="IslandsQueueFrameIslandCardTemplate">
-				<Size x="457" y="322"/> 
+				<Size x="457" y="322"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="18" y="-19"/> 
+					<Anchor point="TOPLEFT" x="18" y="-19"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture parentKey="Background" atlas="islands-queue-card1" useAtlasSize="true"/>
-					</Layer> 
+					</Layer>
 				</Layers>
 			</Frame>
 			<Frame parentKey="RightCard" frameLevel="100" parentArray="IslandCards" inherits="IslandsQueueFrameIslandCardTemplate">
 				<Size x="451" y="301"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-20" y="-36"/> 
+					<Anchor point="TOPRIGHT" x="-20" y="-36"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture parentKey="Background" atlas="islands-queue-card2" useAtlasSize="true"/>
-					</Layer> 
+					</Layer>
 				</Layers>
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnShow> 
+			<OnShow>
 			</OnShow>
 		</Scripts>
 	</Frame>
 	<Frame name="IslandsQueueFrame" parent="UIParent" hidden="true" frameStrata="HIGH" enableMouse="true" inherits="PortraitFrameTemplate" mixin="IslandsQueueFrameMixin">
-		<Size x="962" y="662"/> 
+		<Size x="962" y="662"/>
 		<Anchors>
-			<Anchor point="CENTER"/> 
+			<Anchor point="CENTER"/>
 		</Anchors>
 		<Layers>
 			<Layer level="BORDER" textureSubLevel="-2">
@@ -391,15 +391,15 @@
 					<Anchors>
 						<Anchor point="CENTER" y="-1"/>
 					</Anchors>
-				</Texture> 
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
 			<Frame parentKey="TitleBanner" frameLevel="1150">
-				<Size x="200" y="40"/> 
+				<Size x="200" y="40"/>
 				<Anchors>
-					<Anchor point="TOP" x="0" y="20"/> 
-				</Anchors> 
+					<Anchor point="TOP" x="0" y="20"/>
+				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
 						<Texture parentKey="Banner" atlas="islands-queue-titlesign" useAtlasSize="true">
@@ -422,21 +422,21 @@
 			</Frame>
 			<Frame parentKey="DifficultySelectorFrame" frameLevel="1250" inherits="IslandsQueueScreenDifficultySelector">
 				<Anchors>
-					<Anchor point="BOTTOM" x="-1" y="8"/> 
+					<Anchor point="BOTTOM" x="-1" y="8"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="WeeklyQuest" hidden="true" frameLevel="1100" inherits="IslandsQueueFrameWeeklyQuestFrameTemplate">
 				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.IslandCardsFrame" x="-15" y="1"/> 
+					<Anchor point="TOP" relativeKey="$parent.IslandCardsFrame" x="-15" y="1"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="TutorialFrame" frameLevel="1200" inherits="IslandsQueueFrameTutorialTemplate">
 				<Anchors>
-					<Anchor point="CENTER"/> 
+					<Anchor point="CENTER"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="ArtOverlayFrame" frameLevel="1300">
-				<Size x="962" y="662"/> 
+				<Size x="962" y="662"/>
 				<Anchors>
 					<Anchor point="CENTER"/>
 				</Anchors>
@@ -491,8 +491,8 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad method="OnLoad"/> 
-			<OnShow method="OnShow"/> 
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>

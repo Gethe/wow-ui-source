@@ -3,8 +3,8 @@ StaticPopupDialogs["CONFIRM_RECRUIT_FOLLOWER"] = {
 	text = GARRISON_CONFIRM_RECRUIT_FOLLOWER,
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function(self)
-		C_Garrison.RecruitFollower(self.data);
+	OnAccept = function(dialog, data)
+		C_Garrison.RecruitFollower(data);
 	end,
 	timeout = 0,
 	hideOnEscape = 1
@@ -286,9 +286,12 @@ function GarrisonRecruitSelectFrame_UpdateRecruits( waiting )
 			frame.Model:InitializeCamera((follower.displayScale or 1) * (displayInfo and displayInfo.followerPageScale or 1));
 			frame.Model:Show();
 			frame.Class:SetAtlas(follower.classAtlas);
-			
-			local color = FOLLOWER_QUALITY_COLORS[follower.quality];
-			frame.Name:SetVertexColor(color.r, color.g, color.b);
+
+			local colorData = ColorManager.GetColorDataForFollowerQuality(follower.quality);
+			if colorData then
+				frame.Name:SetVertexColor(colorData.r, colorData.g, colorData.b);
+			end
+
 			frame.PortraitFrame:SetQuality(follower.quality);
 
 			local abilities = C_Garrison.GetRecruitAbilities(i);
@@ -371,8 +374,14 @@ function GarrisonRecruiterFrame_HireRecruit(self)
 	local followerIndex = self:GetParent():GetID();
 	local followers = C_Garrison.GetAvailableRecruits();
 	local followerName = followers[followerIndex].name;
-	local color = FOLLOWER_QUALITY_COLORS[followers[followerIndex].quality].hex;
-	StaticPopup_Show("CONFIRM_RECRUIT_FOLLOWER", color..followerName..FONT_COLOR_CODE_CLOSE, nil, followerIndex);
+
+	local textArg1 = followerName;
+	local colorData = ColorManager.GetColorDataForFollowerQuality(followers[followerIndex].quality);
+	if colorData then
+		textArg1 = colorData.hex..followerName..FONT_COLOR_CODE_CLOSE;
+	end
+
+	StaticPopup_Show("CONFIRM_RECRUIT_FOLLOWER", textArg1, nil, followerIndex);
 end
 
 -- create or retrieve recruit ability/trait entry

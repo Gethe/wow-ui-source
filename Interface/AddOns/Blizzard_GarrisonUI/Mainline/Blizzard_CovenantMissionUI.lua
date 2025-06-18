@@ -13,8 +13,8 @@ StaticPopupDialogs["COVENANT_MISSIONS_CONFIRM_ADVENTURE"] = {
 	text = COVENANT_MISSIONS_START_MISSION_QUESTION,
 	button1 = COVENANT_MISSIONS_CONFIRM_START_MISSION,
 	button2 = CANCEL,
-	OnAccept = function(self)
-		GarrisonFollowerMission.OnClickStartMissionButton(self.data);
+	OnAccept = function(dialog, data)
+		GarrisonFollowerMission.OnClickStartMissionButton(data);
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -25,8 +25,8 @@ StaticPopupDialogs["COVENANT_MISSIONS_HEAL_CONFIRMATION"] = {
 	text = COVENANT_MISSION_CONFIRM_HEAL_FOLLOWER,
 	button1 = COVENANT_MISSIONS_CONFIRM_START_MISSION,
 	button2 = CANCEL,
-	OnAccept = function(self)
-		C_Garrison.RushHealFollower(self.data.followerID);
+	OnAccept = function(dialog, data)
+		C_Garrison.RushHealFollower(data.followerID);
 		PlaySound(SOUNDKIT.UI_ADVENTURES_HEAL_FOLLOWER);
 	end,
 	timeout = 0,
@@ -38,8 +38,8 @@ StaticPopupDialogs["COVENANT_MISSIONS_HEAL_ALL_CONFIRMATION"] = {
 	text = COVENANT_MISSIONS_CONFIRM_HEAL_ALL,
 	button1 = COVENANT_MISSIONS_HEAL_ALL,
 	button2 = CANCEL,
-	OnAccept = function(self)
-		C_Garrison.RushHealAllFollowers(self.data.followerType);
+	OnAccept = function(dialog, data)
+		C_Garrison.RushHealAllFollowers(data.followerType);
 		PlaySound(SOUNDKIT.UI_ADVENTURES_HEAL_FOLLOWER);
 	end,
 	timeout = 0,
@@ -496,7 +496,7 @@ function CovenantMission:InitiateMissionCompletion(missionInfo)
 	self.FollowerTab:Hide();
 	self.FollowerList:Hide();
 	self.MissionTab:Hide();
-	HelpPlate_Hide();
+	HelpPlate.Hide();
 	self.MissionComplete:Show();
 
 	self.MissionComplete:SetCurrentMission(missionInfo);

@@ -197,7 +197,7 @@
 				<Scripts>
 					<OnEnter method="OnEnter"/>
 					<OnLeave method="OnLeave"/>
-					<OnClick method="OnClick" inherit="prepend"/>
+					<OnClick method="OnClick"/>
 				</Scripts>
 			</Button>
 
@@ -338,7 +338,7 @@
 					<KeyValue key="charCreateOnClickMethod" value="NavForward" type="string"/>
 				</KeyValues>
 				<Scripts>
-					<OnLoad method="OnLoad_NavForward" inherit="append"/>
+					<OnLoad method="OnLoad_NavForward"/>
 				</Scripts>
 			</Button>
 			<Frame parentKey="RaceAndClassFrame" mixin="CharacterCreateRaceAndClassMixin" setAllPoints="true" hidden="true">
@@ -628,8 +628,8 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad method="OnLoad" inherit="prepend"/>
-			<OnEvent method="OnEvent" inherit="prepend"/>
+			<OnLoad method="OnLoad" />
+			<OnEvent method="OnEvent" />
 			<OnShow method="OnShow" />
 			<OnHide method="OnHide" />
 			<OnMouseDown method="OnMouseDown" />

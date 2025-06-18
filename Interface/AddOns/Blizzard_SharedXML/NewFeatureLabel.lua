@@ -12,7 +12,7 @@ function NewFeatureLabelMixin:ClearAlert()
 	self:SetShown(false);
 end
 
-function NewFeatureLabelMixin:OnShow()
+function NewFeatureLabelMixin:NewFeatureLabel_OnShow()
 	if self.animateGlow then
 		self.Fade:Play();
 	end

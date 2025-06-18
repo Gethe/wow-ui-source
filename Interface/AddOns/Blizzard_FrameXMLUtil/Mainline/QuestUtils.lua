@@ -335,52 +335,6 @@ function QuestUtil.SetupWorldQuestButton(button, info, inProgress, selected, isC
 	end
 end
 
-function QuestUtil.QuestTextContrastEnabled()
-	return GetCVarNumberOrDefault("QuestTextContrast") > 0;
-end
-
-function QuestUtil.QuestTextContrastUseLightText()
-	return QuestUtil.ShouldQuestTextContrastSettingUseLightText(GetCVarNumberOrDefault("QuestTextContrast"));
-end
-
-function QuestUtil.ShouldQuestTextContrastSettingUseLightText(questTextContrastSetting)
-	--Use light text when the background is dark
-	return  questTextContrastSetting == 4;
-end
-
-function QuestUtil.GetDefaultQuestBackgroundTexture()
-	return QuestUtil.GetQuestBackgroundAtlas(GetCVarNumberOrDefault("QuestTextContrast"));
-end
-
-function QuestUtil.GetQuestBackgroundAtlas(questTextContrastSetting)
-	if questTextContrastSetting == 0 then
-		return "QuestBG-Parchment";
-	elseif questTextContrastSetting == 1 then
-		return "QuestBG-Parchment-Accessibility";
-	elseif questTextContrastSetting == 2 then
-		return "QuestBG-Parchment-Accessibility2";
-	elseif questTextContrastSetting == 3 then
-		return "QuestBG-Parchment-Accessibility3";
-	elseif questTextContrastSetting == 4 then
-		return "QuestBG-Parchment-Accessibility4";
-	end
-end
-
-function QuestUtil.GetDefaultQuestMapBackgroundTexture()
-	local questAccesibilityBackground = GetCVarNumberOrDefault("QuestTextContrast");
-	if questAccesibilityBackground == 0 then
-		return "QuestDetailsBackgrounds";
-	elseif questAccesibilityBackground == 1 then
-		return "QuestDetailsBackgrounds-Accessibility";
-	elseif questAccesibilityBackground == 2 then
-		return "QuestDetailsBackgrounds-Accessibility_Light";
-	elseif questAccesibilityBackground == 3 then
-		return "QuestDetailsBackgrounds-Accessibility_Medium";
-	elseif questAccesibilityBackground == 4 then
-		return "QuestDetailsBackgrounds-Accessibility_Dark";
-	end
-end
-
 function QuestUtil.IsShowingQuestDetails(questID)
 	return QuestLogPopupDetailFrame_IsShowingQuest(questID);
 end
@@ -871,8 +825,12 @@ function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style)
 				text = string.format(BONUS_OBJECTIVE_REWARD_FORMAT, texture, name);
 			end
 			if text then
-				local color = ITEM_QUALITY_COLORS[quality];
-				tooltip:AddLine(text, color.r, color.g, color.b);
+				local colorData = ColorManager.GetColorDataForItemQuality(quality);
+				if colorData then
+					tooltip:AddLine(text, colorData.r, colorData.g, colorData.b);
+				else
+					tooltip:AddLine(text);
+				end
 			end
 		end
 	end
@@ -972,8 +930,13 @@ function QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, currencyC
 				if isCurrencyContainer then
 					local name, texture, quantity, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyInfo.currencyID, currencyInfo.numItems);
 					local text = BONUS_OBJECTIVE_REWARD_FORMAT:format(texture, name);
-					local color = ITEM_QUALITY_COLORS[quality];
-					tooltip:AddLine(text, color.r, color.g, color.b);
+
+					local colorData = ColorManager.GetColorDataForItemQuality(quality);
+					if colorData then
+						tooltip:AddLine(text, colorData.r, colorData.g, colorData.b);
+					else
+						tooltip:AddLine(text);
+					end
 				else
 					local text = BONUS_OBJECTIVE_REWARD_WITH_COUNT_FORMAT:format(currencyInfo.texture, currencyInfo.numItems, currencyInfo.name);
 					local currencyColor = GetColorForCurrencyReward(currencyInfo.currencyID, currencyInfo.numItems);

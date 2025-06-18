@@ -36,6 +36,20 @@ local Club =
 			},
 		},
 		{
+			Name = "AreMembersReady",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "clubId", Type = "ClubId", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "membersReady", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "AssignMemberRole",
 			Type = "Function",
 
@@ -252,6 +266,15 @@ local Club =
 		{
 			Name = "FocusCommunityStreams",
 			Type = "Function",
+		},
+		{
+			Name = "FocusMembers",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "clubId", Type = "ClubId", Nilable = false },
+			},
 		},
 		{
 			Name = "FocusStream",
@@ -958,6 +981,15 @@ local Club =
 			},
 		},
 		{
+			Name = "UnfocusMembers",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "clubId", Type = "ClubId", Nilable = false },
+			},
+		},
+		{
 			Name = "UnfocusStream",
 			Type = "Function",
 
@@ -1093,6 +1125,15 @@ local Club =
 			{
 				{ Name = "clubId", Type = "ClubId", Nilable = false },
 				{ Name = "memberId", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "ClubMembersUpdated",
+			Type = "Event",
+			LiteralName = "CLUB_MEMBERS_UPDATED",
+			Payload =
+			{
+				{ Name = "clubId", Type = "ClubId", Nilable = false },
 			},
 		},
 		{

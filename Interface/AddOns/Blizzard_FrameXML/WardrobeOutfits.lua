@@ -406,7 +406,7 @@ function WardrobeOutfitManager:SaveLastOutfit(outfitID)
 		return;
 	end
 
-	local currentSpecIndex = GetCVarBool("transmogCurrentSpecOnly") and GetSpecialization() or nil;
+	local currentSpecIndex = GetCVarBool("transmogCurrentSpecOnly") and C_SpecializationInfo.GetSpecialization() or nil;
 	for specIndex = 1, GetNumSpecializations() do
 		if not currentSpecIndex or specIndex == currentSpecIndex then
 			SetCVar("lastTransmogOutfitIDSpec"..specIndex, value);

@@ -12,17 +12,17 @@ GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_6_0_Boat].mission
 --- Static Popups                                                             ---
 ---------------------------------------------------------------------------------
 
-local warningIconText = "|T" .. STATICPOPUP_TEXTURE_ALERT .. ":15:15:0:-2|t";
+local warningIconText = "|T" .. GameDialogAlertTextureName .. ":15:15:0:-2|t";
 StaticPopupDialogs["DANGEROUS_MISSIONS"] = {
 	text = "",
 	button1 = OKAY,
 	button2 = CANCEL,
-	OnShow = function(self)
-		self.text:SetFormattedText(GARRISON_SHIPYARD_DANGEROUS_MISSION_WARNING, warningIconText, warningIconText);
+	OnShow = function(dialog, data)
+		dialog:SetFormattedText(GARRISON_SHIPYARD_DANGEROUS_MISSION_WARNING, warningIconText, warningIconText);
 	end,
-	OnAccept = function(self)
+	OnAccept = function(dialog, data)
 		SetCVar("dangerousShipyardMissionWarningAlreadyShown", "1");
-		self.data:OnClickStartMissionButtonConfirm();
+		data:OnClickStartMissionButtonConfirm();
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -36,25 +36,25 @@ StaticPopupDialogs["GARRISON_SHIP_RENAME"] = {
 	button2 = CANCEL,
 	hasEditBox = 1,
 	maxLetters = 24,
-	OnAccept = function(self)
-		local text = self.editBox:GetText();
-		C_Garrison.RenameFollower(self.data, text);
+	OnAccept = function(dialog, data)
+		local text = dialog:GetEditBox():GetText();
+		C_Garrison.RenameFollower(data, text);
 	end,
-	OnAlt = function(self)
-		C_Garrison.RenameFollower(self.data, "");
+	OnAlt = function(dialog, data)
+		C_Garrison.RenameFollower(data, "");
 	end,
-	EditBoxOnEnterPressed = function(self)
-		local parent = self:GetParent();
-		local text = parent.editBox:GetText();
-		C_Garrison.RenameFollower(parent.data, text);
-		parent:Hide();
+	EditBoxOnEnterPressed = function(editBox, data)
+		local dialog = editBox:GetParent();
+		local text = editBox:GetText();
+		C_Garrison.RenameFollower(data, text);
+		dialog:Hide();
 	end,
-	OnShow = function(self)
-		self.editBox:SetFocus();
+	OnShow = function(dialog, data)
+		dialog:GetEditBox():SetFocus();
 	end,
-	OnHide = function(self)
+	OnHide = function(dialog, data)
 		ChatEdit_FocusActiveWindow();
-		self.editBox:SetText("");
+		dialog:GetEditBox():SetText("");
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -65,14 +65,19 @@ StaticPopupDialogs["GARRISON_SHIP_DECOMMISSION"] = {
 	text = "",
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function(self)
-		C_Garrison.RemoveFollower(self.data, true);
+	OnAccept = function(dialog, data)
+		C_Garrison.RemoveFollower(data, true);
 		PlaySound(SOUNDKIT.UI_GARRISON_SHIPYARD_DECOMISSION_SHIP);
 	end,
-	OnShow = function(self)
-		local quality = C_Garrison.GetFollowerQuality(self.data);
-		local name = FOLLOWER_QUALITY_COLORS[quality].hex..C_Garrison.GetFollowerName(self.data)..FONT_COLOR_CODE_CLOSE;
-		self.text:SetFormattedText(GARRISON_SHIP_DECOMMISSION_CONFIRMATION, name);
+	OnShow = function(dialog, data)
+		local quality = C_Garrison.GetFollowerQuality(data);
+		local name = C_Garrison.GetFollowerName(data);
+		local colorData = ColorManager.GetColorDataForFollowerQuality(quality);
+		if colorData then
+			name = colorData.hex..name..FONT_COLOR_CODE_CLOSE;
+		end
+
+		dialog:SetFormattedText(GARRISON_SHIP_DECOMMISSION_CONFIRMATION, name);
 	end,
 	showAlert = 1,
 	timeout = 0,
@@ -365,9 +370,13 @@ function GarrisonShipyardMission:AssignFollowerToMission(frame, info)
 		PlaySound(SOUNDKIT.UI_GARRISON_SHIPYARD_PLACE_SUBMARINE);
 	end
 	self:SetFollowerPortrait(frame, info, false, false);
-	local color = FOLLOWER_QUALITY_COLORS[info.quality];
+
 	frame.Name:SetText(format(GARRISON_SHIPYARD_SHIP_NAME, info.name));
-	frame.Name:SetTextColor(color.r, color.g, color.b);
+	local colorData = ColorManager.GetColorDataForFollowerQuality(info.quality);
+	if colorData then
+		frame.Name:SetTextColor(colorData.r, colorData.g, colorData.b);
+	end
+
 	frame.Name:Show();
 	frame.NameBG:Show();
 	if (frame.Name:GetNumLines() > 1) then
@@ -798,8 +807,10 @@ function GarrisonShipyardMissionComplete:SetFollowerLevel(followerFrame, followe
 	end
 	followerFrame.XP.level = followerInfo.level;
 	followerFrame.XP.quality = followerInfo.quality;
-	local color = FOLLOWER_QUALITY_COLORS[followerInfo.quality];
-	followerFrame.Name:SetTextColor(color.r, color.g, color.b);
+	local colorData = ColorManager.GetColorDataForFollowerQuality(followerInfo.quality);
+	if colorData then
+		followerFrame.Name:SetTextColor(colorData.r, colorData.g, colorData.b);
+	end
 end
 
 function GarrisonShipyardMissionComplete:DetermineFailedEncounter(missionID, succeeded, followerDeaths)
@@ -1813,16 +1824,18 @@ function GarrisonShipyardFollowerList:ShowFollower(followerID, hideCounters)
 
 	local atlas = followerInfo.textureKit .. "-List";
 	followerTab.Portrait:SetAtlas(atlas, false);
-	local color = FOLLOWER_QUALITY_COLORS[followerInfo.quality];
+
 	followerTab.BoatName:SetText(format(GARRISON_SHIPYARD_SHIP_NAME, followerInfo.name));
-	followerTab.BoatName:SetVertexColor(color.r, color.g, color.b);
+	local colorData = ColorManager.GetColorDataForFollowerQuality(followerInfo.quality);
+	if colorData then
+		followerTab.BoatName:SetVertexColor(colorData.r, colorData.g, colorData.b);
+	end
+
 	followerTab.BoatType:SetText(followerInfo.className);
-	if (followerInfo.quality == Enum.ItemQuality.Epic) then
-		followerTab.Quality:SetAtlas("ShipMission_BoatRarity-Epic", true);
-	elseif (followerInfo.quality == Enum.ItemQuality.Rare) then
-		followerTab.Quality:SetAtlas("ShipMission_BoatRarity-Rare", true);
-	else
-		followerTab.Quality:SetAtlas("ShipMission_BoatRarity-Uncommon", true);
+
+	local qualityAtlas = ColorManager.GetAtlasDataForGarrisonShipyardFollowerQuality(followerInfo.quality) or ColorManager.GetAtlasDataForGarrisonShipyardFollowerQuality(Enum.ItemQuality.Uncommon);
+	if qualityAtlas then
+		followerTab.Quality:SetAtlas(qualityAtlas, true);
 	end
 
 	-- Follower cannot be upgraded anymore
@@ -1959,24 +1972,24 @@ function GarrisonShipyardFollowerList_InitButton(button, elementData)
 	button.BoatType:SetText(follower.className);
 	button.Status:SetText(follower.status);
 	button.Selection:SetShown(GarrisonShipyardFrame.selectedFollower == button.id);
-	
-	if (follower.quality == Enum.ItemQuality.Epic) then
-		button.Quality:SetAtlas("ShipMission_BoatRarity-Epic", true);
-	elseif (follower.quality == Enum.ItemQuality.Rare) then
-		button.Quality:SetAtlas("ShipMission_BoatRarity-Rare", true);
-	else
-		button.Quality:SetAtlas("ShipMission_BoatRarity-Uncommon", true);
+
+	local atlas = ColorManager.GetAtlasDataForGarrisonShipyardFollowerQuality(follower.quality) or ColorManager.GetAtlasDataForGarrisonShipyardFollowerQuality(Enum.ItemQuality.Uncommon);
+	if atlas then
+		button.Quality:SetAtlas(atlas, true);
 	end
-	
+
 	if (follower.status) then
 		button.BusyFrame:Show();
 		button.BusyFrame.Texture:SetColorTexture(unpack(GARRISON_FOLLOWER_BUSY_COLOR));
 	else
 		button.BusyFrame:Hide();
 	end
-	
-	local color = FOLLOWER_QUALITY_COLORS[follower.quality];
-	button.BoatName:SetTextColor(color.r, color.g, color.b);
+
+	local colorData = ColorManager.GetColorDataForFollowerQuality(follower.quality);
+	if colorData then
+		button.BoatName:SetTextColor(colorData.r, colorData.g, colorData.b);
+	end
+
 	if (follower.xp == 0 or follower.levelXP == 0) then
 		button.XPBar:Hide();
 	else

@@ -52,12 +52,18 @@ function RuneforgePowerBaseMixin:OnEnter()
 	if powerInfo then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 
-		GameTooltip_SetTitle(GameTooltip, powerInfo.name, LEGENDARY_ORANGE_COLOR);
-	
+		local powerInfoNameColor = HIGHLIGHT_FONT_COLOR;
+		local colorData = ColorManager.GetColorDataForItemQuality(Enum.ItemQuality.Legendary);
+		if colorData then
+			powerInfoNameColor = colorData.color;
+		end
+
+		GameTooltip_SetTitle(GameTooltip, powerInfo.name, powerInfoNameColor);
+
 		GameTooltip_AddColoredLine(GameTooltip, RUNEFORGE_LEGENDARY_POWER_LABEL, BRIGHTBLUE_FONT_COLOR);
 
 		GameTooltip_AddColoredLine(GameTooltip, powerInfo.description, GREEN_FONT_COLOR);
-	
+
 		if not self.slotNames then
 			self.slotNames = C_LegendaryCrafting.GetRuneforgePowerSlots(self:GetPowerID());
 		end
@@ -295,8 +301,8 @@ end
 
 function RuneforgeUtil.GetPreviewClassAndSpec()
 	local classID = select(3, UnitClass("player"));
-	local spec = GetSpecialization();
-	local specID = spec and GetSpecializationInfo(spec, nil, nil, nil, UnitSex("player")) or nil;
+	local spec = C_SpecializationInfo.GetSpecialization();
+	local specID = spec and C_SpecializationInfo.GetSpecializationInfo(spec, nil, nil, nil, UnitSex("player")) or nil;
 	return classID, specID;
 end
 

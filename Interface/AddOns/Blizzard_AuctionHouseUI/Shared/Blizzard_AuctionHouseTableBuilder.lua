@@ -1,5 +1,3 @@
-local PRICE_DISPLAY_WIDTH = 120;
-local PRICE_DISPLAY_WITH_CHECKMARK_WIDTH = 140;
 local PRICE_DISPLAY_PADDING = 0;
 local BUYOUT_DISPLAY_PADDING = 0;
 local STANDARD_PADDING = 10;
@@ -347,8 +345,8 @@ function AuctionHouseTableExtraInfoMixin:Populate(rowData, dataIndex)
 		local linkType, linkOptions, name = LinkUtil.ExtractLink(rowData.itemLink);
 		if linkType == "battlepet" then
 			local speciesID, level, breedQuality = strsplit(":", linkOptions);
-			local qualityColor = BAG_ITEM_QUALITY_COLORS[tonumber(breedQuality)];
-			self.Text:SetText(qualityColor:WrapTextInColorCode(level));
+			local qualityColor = ColorManager.GetColorDataForBagItemQuality(tonumber(breedQuality));
+			self.Text:SetText(qualityColor and qualityColor:WrapTextInColorCode(level) or level);
 			self.Text:Show();
 		end
 	end
@@ -639,8 +637,10 @@ function AuctionHouseTableCellAuctionsItemLevelMixin:Populate(rowData, dataIndex
 
 	local itemKeyInfo = C_AuctionHouse.GetItemKeyInfo(rowData.itemKey);
 	if itemKeyInfo then
-		local itemQualityColor = ITEM_QUALITY_COLORS[itemKeyInfo.quality];
-		self.Text:SetTextColor(itemQualityColor.color:GetRGB());
+		local colorData = ColorManager.GetColorDataForItemQuality(itemKeyInfo.quality);
+		if colorData then
+			self.Text:SetTextColor(colorData.color:GetRGB());
+		end
 	end
 
 	self.Text:SetText(rowData.itemKey.itemLevel);
@@ -1023,8 +1023,17 @@ function AuctionHouseTableBuilder.GetBrowseListLayout(owner, itemList, extraInfo
 	local function LayoutBrowseListTableBuilder(tableBuilder)
 		tableBuilder:SetColumnHeaderOverlap(2);
 		tableBuilder:SetHeaderContainer(itemList:GetHeaderContainer());
+		
+		local priceWidth = 146;
+		local quantityWidth = 83;
 
-		tableBuilder:AddFixedWidthColumn(owner, PRICE_DISPLAY_PADDING, 146, 0, 14, Enum.AuctionHouseSortOrder.Price, "AuctionHouseTableCellMinPriceTemplate");
+		-- Adjust column sizing when displaying copper values
+		if (C_AuctionHouse.SupportsCopperValues()) then
+			priceWidth = 168;
+			quantityWidth = 60;
+		end
+
+		tableBuilder:AddFixedWidthColumn(owner, PRICE_DISPLAY_PADDING, priceWidth, 0, 14, Enum.AuctionHouseSortOrder.Price, "AuctionHouseTableCellMinPriceTemplate");
 
 		local restrictQualityToFilter = true;
 		local hideItemLevel = extraInfoColumnText ~= nil;
@@ -1037,7 +1046,7 @@ function AuctionHouseTableBuilder.GetBrowseListLayout(owner, itemList, extraInfo
 		end
 
 		local quantityHeaderText = AuctionHouseUtil.GetHeaderNameFromSortOrder(Enum.AuctionHouseSortOrder.Quantity);
-		tableBuilder:AddUnsortableFixedWidthColumn(owner, 0, 83, STANDARD_PADDING, 0, quantityHeaderText, "AuctionHouseTableCellQuantityTemplate");
+		tableBuilder:AddUnsortableFixedWidthColumn(owner, 0, quantityWidth, STANDARD_PADDING, 0, quantityHeaderText, "AuctionHouseTableCellQuantityTemplate");
 		tableBuilder:AddFixedWidthColumn(owner, 0, 29, STANDARD_PADDING, 5, nil, "AuctionHouseTableCellFavoriteTemplate");
 	end
 
@@ -1094,8 +1103,15 @@ function AuctionHouseTableBuilder.GetItemSellListLayout(owner, itemList, isEquip
 		tableBuilder:SetHeaderContainer(itemList:GetHeaderContainer());
 		tableBuilder:SetColumnHeaderOverlap(2);
 
+		local buyoutLeftPadding = 0;
+
+		-- Adjust column padding when displaying copper values
+		if (C_AuctionHouse.SupportsCopperValues()) then
+			buyoutLeftPadding = 20;
+		end
+
 		tableBuilder:AddFixedWidthColumn(owner, PRICE_DISPLAY_PADDING, PRICE_DISPLAY_WIDTH, STANDARD_PADDING, 0, Enum.AuctionHouseSortOrder.Bid, "AuctionHouseTableCellBidTemplate");
-		tableBuilder:AddFillColumn(owner, BUYOUT_DISPLAY_PADDING, 1.0, 0, 0, Enum.AuctionHouseSortOrder.Buyout, "AuctionHouseTableCellItemSellBuyoutTemplate");
+		tableBuilder:AddFillColumn(owner, BUYOUT_DISPLAY_PADDING, 1.0, buyoutLeftPadding, 0, Enum.AuctionHouseSortOrder.Buyout, "AuctionHouseTableCellItemSellBuyoutTemplate");
 
 		if isEquipment then
 			local socketColumn = tableBuilder:AddFixedWidthColumn(owner, 0, 24, 0, STANDARD_PADDING, nil, "AuctionHouseTableCellExtraInfoTemplate");

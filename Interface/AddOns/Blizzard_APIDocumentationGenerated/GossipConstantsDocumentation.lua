@@ -5,9 +5,9 @@ local GossipConstants =
 		{
 			Name = "GossipNpcOption",
 			Type = "Enumeration",
-			NumValues = 63,
+			NumValues = 65,
 			MinValue = 0,
-			MaxValue = 62,
+			MaxValue = 64,
 			Fields =
 			{
 				{ Name = "None", Type = "GossipNpcOption", EnumValue = 0 },
@@ -72,7 +72,9 @@ local GossipConstants =
 				{ Name = "Placeholder_1", Type = "GossipNpcOption", EnumValue = 59 },
 				{ Name = "Placeholder_2", Type = "GossipNpcOption", EnumValue = 60 },
 				{ Name = "Placeholder_3", Type = "GossipNpcOption", EnumValue = 61 },
-				{ Name = "Placeholder_4", Type = "GossipNpcOption", EnumValue = 62 },
+				{ Name = "GuildRename", Type = "GossipNpcOption", EnumValue = 62 },
+				{ Name = "Placeholder_4", Type = "GossipNpcOption", EnumValue = 63 },
+				{ Name = "ItemUpgrade", Type = "GossipNpcOption", EnumValue = 64 },
 			},
 		},
 		{

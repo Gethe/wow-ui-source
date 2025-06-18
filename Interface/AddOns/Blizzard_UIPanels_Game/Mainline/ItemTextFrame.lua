@@ -51,7 +51,7 @@ function ItemTextFrame_OnEvent(self, event, ...)
 
 		-- Set up text colors
 		local textColor, titleColor = GetMaterialTextColors(material);
-		if QuestUtil.QuestTextContrastUseLightText() then
+		if QuestTextContrast.UseLightText() then
 			textColor, titleColor = GetMaterialTextColors("Stone");
 		end
 		if(material == "ParchmentLarge") then
@@ -139,7 +139,7 @@ function ItemTextFrame_OnEvent(self, event, ...)
 			ItemTextMaterialBotLeft:Hide();
 			ItemTextMaterialBotRight:Hide();
 			ItemTextFramePageBg:Show();
-			ItemTextFramePageBg:SetAtlas(QuestUtil.GetDefaultQuestBackgroundTexture());
+			ItemTextFramePageBg:SetAtlas(QuestTextContrast.GetDefaultBackgroundAtlas());
 			ItemTextFramePageBg:SetWidth(299);
 			ItemTextFramePageBg:SetHeight(357);
 		elseif ( material == "ParchmentLarge" ) then

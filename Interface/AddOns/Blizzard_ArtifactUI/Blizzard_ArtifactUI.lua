@@ -4,10 +4,10 @@ StaticPopupDialogs["CONFIRM_ARTIFACT_RESPEC"] = {
 	text = ARTIFACT_RESPEC,
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function(self) C_ArtifactUI.ConfirmRespec(); HideUIPanel(ArtifactFrame); end,
-	OnCancel = function(self) HideUIPanel(ArtifactFrame); end,
-	OnAlt = function(self) HideUIPanel(ArtifactFrame); end,
-	OnUpdate = function(self, elapsed)
+	OnAccept = function(dialog, data) C_ArtifactUI.ConfirmRespec(); HideUIPanel(ArtifactFrame); end,
+	OnCancel = function(dialog, data) HideUIPanel(ArtifactFrame); end,
+	OnAlt = function(dialog, data) HideUIPanel(ArtifactFrame); end,
+	OnUpdate = function(dialog, elapsed)
 		if ( not C_ArtifactUI.CheckRespecNPC() ) then
 			StaticPopup_Hide("CONFIRM_ARTIFACT_RESPEC");
 			HideUIPanel(ArtifactFrame);
@@ -22,10 +22,10 @@ StaticPopupDialogs["CONFIRM_ARTIFACT_RESPEC"] = {
 StaticPopupDialogs["NOT_ENOUGH_POWER_ARTIFACT_RESPEC"] = {
 	text = ARTIFACT_RESPEC_NOT_ENOUGH_POWER,
 	button1 = OKAY,
-	OnAccept = function(self) HideUIPanel(ArtifactFrame); end,
-	OnCancel = function(self) HideUIPanel(ArtifactFrame); end,
-	OnAlt = function(self) HideUIPanel(ArtifactFrame); end,
-	OnUpdate = function(self, elapsed)
+	OnAccept = function(dialog, data) HideUIPanel(ArtifactFrame); end,
+	OnCancel = function(dialog, data) HideUIPanel(ArtifactFrame); end,
+	OnAlt = function(dialog, data) HideUIPanel(ArtifactFrame); end,
+	OnUpdate = function(dialog, elapsed)
 		if ( not C_ArtifactUI.CheckRespecNPC() ) then
 			StaticPopup_Hide("NOT_ENOUGH_POWER_ARTIFACT_RESPEC");
 			HideUIPanel(ArtifactFrame);
@@ -247,8 +247,12 @@ end
 function ArtifactUIMixin:OnKnowledgeEnter(knowledgeFrame)
 	GameTooltip:SetOwner(knowledgeFrame, "ANCHOR_BOTTOMRIGHT", -25, 27);
 	local artifactArtInfo = C_ArtifactUI.GetArtifactArtInfo();
-	local color = ITEM_QUALITY_COLORS[Enum.ItemQuality.Artifact];
-	GameTooltip:SetText(artifactArtInfo.titleName, color.r, color.g, color.b);
+	local colorData = ColorManager.GetColorDataForItemQuality(Enum.ItemQuality.Artifact);
+	if colorData then
+		GameTooltip:SetText(artifactArtInfo.titleName, colorData.r, colorData.g, colorData.b);
+	else
+		GameTooltip:SetText(artifactArtInfo.titleName);
+	end
 
 	GameTooltip:AddLine(ARTIFACTS_NUM_PURCHASED_RANKS:format(C_ArtifactUI.GetTotalPurchasedRanks()), HIGHLIGHT_FONT_COLOR:GetRGB());
 

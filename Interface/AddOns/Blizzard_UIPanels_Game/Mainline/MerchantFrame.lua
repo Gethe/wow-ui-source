@@ -47,10 +47,10 @@ function MerchantFrame_OnLoad(self)
 		local sex = UnitSex("player");
 		
 		for index = 1, GetNumSpecializations() do
-			local isInspect = nil;
-			local isPet = nil;
+			local isInspect = false;
+			local isPet = false;
 			local inspectTarget = nil;
-			local name = select(2, GetSpecializationInfo(index, isInspect, isPet, inspectTarget, sex));
+			local name = select(2, C_SpecializationInfo.GetSpecializationInfo(index, isInspect, isPet, inspectTarget, sex));
 
 			local filter = (LE_LOOT_FILTER_SPEC1 + index) - 1;
 			rootDescription:CreateRadio(name, IsSelected, SetSelected, filter);
@@ -200,8 +200,13 @@ end
 
 function MerchantFrameItem_UpdateQuality(self, link, isBound)
 	local quality = link and select(3, C_Item.GetItemInfo(link)) or nil;
-	if ( quality ) then
-		self.Name:SetTextColor(ITEM_QUALITY_COLORS[quality].r, ITEM_QUALITY_COLORS[quality].g, ITEM_QUALITY_COLORS[quality].b);
+	if quality then
+		local colorData = ColorManager.GetColorDataForItemQuality(quality);
+		if colorData then
+			self.Name:SetTextColor(colorData.r, colorData.g, colorData.b);
+		else
+			self.Name:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+		end
 	else
 		self.Name:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 		MerchantFrame_RegisterForQualityUpdates();

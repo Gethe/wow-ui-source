@@ -438,7 +438,7 @@ function DelvesThresholdBarMixin:OnEnter()
 
 	if renownInfo then
 		local earnedLevels = math.floor(GetCVarNumberOrDefault(DELVES_SEASON_RENOWN_CVAR));
-		local cumulativeRepEarned = (earnedLevels * renownInfo.renownLevelThreshold) + renownInfo.renownReputationEarned
+		local cumulativeRepEarned = (earnedLevels * renownInfo.renownLevelThreshold) + renownInfo.renownReputationEarned;
 		local maxRepForTrack = renownInfo.renownLevelThreshold * MAX_NUM_REWARDS;
 
 		local cumulativeRepEarnedFmt = FormatLargeNumber(cumulativeRepEarned);
@@ -449,7 +449,7 @@ function DelvesThresholdBarMixin:OnEnter()
 			cumulativeRepEarnedFmt = maxRepForTrackFmt;
 		end
 
-		if renownInfo.renownReputationEarned >= maxRepForTrack then
+		if C_MajorFactions.HasMaximumRenown(C_DelvesUI.GetDelvesFactionForSeason()) then
 			repToNextRewardFmt = nil;
 		end
 

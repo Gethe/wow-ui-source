@@ -320,7 +320,7 @@ function ProfessionsCraftingPageMixin:OnHide()
 
 	self.CraftingOutputLog:Close();
 	if self:IsTutorialShown() then
-		HelpPlate_Hide(false);
+		HelpPlate.Hide(false);
 	end
 
 	self:SetOverrideCastBarActive(false);
@@ -955,7 +955,7 @@ function ProfessionsCraftingPageMixin:Refresh(professionInfo)
 	self.TutorialButton:SetShown(not isRuneforging);
 
 	if self:IsTutorialShown() then
-		HelpPlate_Hide(false);
+		HelpPlate.Hide(false);
 	end
 
 	self:ValidateControls();
@@ -1270,18 +1270,18 @@ end
 
 function ProfessionsCraftingPageMixin:ShowTutorial()
 	self:UpdateTutorial();
-	HelpPlate_Show(ProfessionsCraftingPage_HelpPlate, self, self.TutorialButton);
+	HelpPlate.Show(ProfessionsCraftingPage_HelpPlate, self, self.TutorialButton);
 end
 
 function ProfessionsCraftingPageMixin:IsTutorialShown()
-	return HelpPlate_IsShowing(ProfessionsCraftingPage_HelpPlate);
+	return HelpPlate.IsShowingHelpInfo(ProfessionsCraftingPage_HelpPlate);
 end
 
 function ProfessionsCraftingPageMixin:ToggleTutorial()
 	if not self:IsTutorialShown() then
 		self:ShowTutorial();
 	else
-		HelpPlate_Hide(true);
+		HelpPlate.Hide(true);
 	end
 end
 

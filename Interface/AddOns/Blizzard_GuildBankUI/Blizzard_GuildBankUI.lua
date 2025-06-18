@@ -778,36 +778,43 @@ function GuildBankFrame_UpdateLog()
 end
 
 function GuildBankFrame_UpdateMoneyLog()
-	local numTransactions = GetNumGuildBankMoneyTransactions();
-	local type, name, amount, year, month, day, hour;
-	local msg;
-	local money;
 	GuildBankMessageFrame:Clear();
-	for i=1, numTransactions, 1 do
-		type, name, amount, year, month, day, hour = GetGuildBankMoneyTransaction(i);
-		if ( not name ) then
-			name = UNKNOWN;
-		end
+
+	for i = 1, GetNumGuildBankMoneyTransactions() do
+		local type, name, amount, year, month, day, hour = GetGuildBankMoneyTransaction(i);
+
+		amount = amount or 0;
+		name = name or UNKNOWN;
+
 		name = NORMAL_FONT_COLOR_CODE..name..FONT_COLOR_CODE_CLOSE;
-		money = GetDenominationsFromCopper(amount);
+		local money = GetDenominationsFromCopper(amount);
+
+		local msg;
 		if ( type == "deposit" ) then
-			msg = format(GUILDBANK_DEPOSIT_MONEY_FORMAT, name, money);
+			msg = GUILDBANK_DEPOSIT_MONEY_FORMAT:format(name, money);
 		elseif ( type == "withdraw" ) then
-			msg = format(GUILDBANK_WITHDRAW_MONEY_FORMAT, name, money);
+			msg = GUILDBANK_WITHDRAW_MONEY_FORMAT:format(name, money);
 		elseif ( type == "repair" ) then
-			msg = format(GUILDBANK_REPAIR_MONEY_FORMAT, name, money);
+			msg = GUILDBANK_REPAIR_MONEY_FORMAT:format(name, money);
 		elseif ( type == "withdrawForTab" ) then
-			msg = format(GUILDBANK_WITHDRAWFORTAB_MONEY_FORMAT, name, money);
+			msg = GUILDBANK_WITHDRAWFORTAB_MONEY_FORMAT:format(name, money);
 		elseif ( type == "buyTab" ) then
 			if ( amount > 0 ) then
-				msg = format(GUILDBANK_BUYTAB_MONEY_FORMAT, name, money);
+				msg = GUILDBANK_BUYTAB_MONEY_FORMAT:format(name, money);
 			else
-				msg = format(GUILDBANK_UNLOCKTAB_FORMAT, name);
+				msg = GUILDBANK_UNLOCKTAB_FORMAT:format(name);
 			end
 		elseif ( type == "depositSummary" ) then
-			msg = format(GUILDBANK_AWARD_MONEY_SUMMARY_FORMAT, money);
+			msg = GUILDBANK_AWARD_MONEY_SUMMARY_FORMAT:format(money);
+		elseif ( type == "buyRename" ) then
+			msg = GUILDBANK_GUILD_RENAME_PURCHASE:format(name, money);
+		elseif ( type == "refundRename" ) then
+			msg = GUILDBANK_GUILD_RENAME_REFUND:format(name, money);
 		end
-		GuildBankMessageFrame:AddMessage(msg..GUILD_BANK_LOG_TIME:format(RecentTimeDate(year, month, day, hour)) );
+
+		if msg then
+			GuildBankMessageFrame:AddMessage(msg..GUILD_BANK_LOG_TIME:format(RecentTimeDate(year, month, day, hour)) );
+		end
 	end
 end
 

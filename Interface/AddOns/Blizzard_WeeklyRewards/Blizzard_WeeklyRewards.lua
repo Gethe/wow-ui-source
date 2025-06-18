@@ -9,9 +9,9 @@ StaticPopupDialogs["CONFIRM_SELECT_WEEKLY_REWARD"] = {
 	text = WEEKLY_REWARDS_CONFIRM_SELECT,
 	button1 = YES,
 	button2 = CANCEL,
-	OnAccept = function(self)
+	OnAccept = function(dialog, data)
 		PlaySound(SOUNDKIT.UI_WEEKLY_REWARD_CONFIRMED_REWARD);
-		C_WeeklyRewards.ClaimReward(self.data);
+		C_WeeklyRewards.ClaimReward(data);
 		HideUIPanel(WeeklyRewardsFrame);
 	end,
 	timeout = 0,

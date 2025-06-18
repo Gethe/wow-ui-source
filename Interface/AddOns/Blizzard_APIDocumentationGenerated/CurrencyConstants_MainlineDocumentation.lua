@@ -31,9 +31,9 @@ local CurrencyConstants_Mainline =
 		{
 			Name = "CurrencySource",
 			Type = "Enumeration",
-			NumValues = 66,
+			NumValues = 67,
 			MinValue = 0,
-			MaxValue = 65,
+			MaxValue = 66,
 			Fields =
 			{
 				{ Name = "ConvertOldItem", Type = "CurrencySource", EnumValue = 0 },
@@ -102,6 +102,7 @@ local CurrencyConstants_Mainline =
 				{ Name = "PhBuffer_63", Type = "CurrencySource", EnumValue = 63 },
 				{ Name = "SpellSkipLinkedCurrency", Type = "CurrencySource", EnumValue = 64 },
 				{ Name = "AccountTransfer", Type = "CurrencySource", EnumValue = 65 },
+				{ Name = "RenownRepGainInitialVisibility", Type = "CurrencySource", EnumValue = 66 },
 			},
 		},
 	},

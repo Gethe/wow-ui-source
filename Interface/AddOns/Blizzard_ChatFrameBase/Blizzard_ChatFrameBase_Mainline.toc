@@ -6,10 +6,18 @@
 ## AllowLoad: both
 ## AllowLoadGameType: mainline
 Shared\HistoryKeeper.lua
-Mainline\ChatFrame.lua
-Mainline\ChatFrame.xml
+Shared\SlashCommandsRegistry.lua
+Shared\SlashCommands.lua
+Shared\ChatFrameConstants.lua
+Shared\CastRandomManager.lua
+Shared\CastSequenceManager.lua
+Shared\MacroExecutionManager.lua
+[Family]\ChatEmoteConstants.lua
+[Family]\SlashCommandsOverrides.lua
+[Family]\ChatFrame.lua
+[Family]\ChatFrame.xml
 Shared\ChatAlertFrameMixin.lua
-Mainline\ChannelFrameButtonMixin.lua
+[Family]\ChannelFrameButtonMixin.lua
 Shared\FloatingChatFrame.lua
-Mainline\FloatingChatFrame.lua
-Mainline\FloatingChatFrame.xml
+[Family]\FloatingChatFrame.lua
+[Family]\FloatingChatFrame.xml

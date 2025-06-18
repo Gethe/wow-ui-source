@@ -301,7 +301,7 @@ function StableFrameMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, STABLE_FRAME_ON_SHOW_EVENTS);
 
 	ClearPetCursor();
-	HelpPlate_Hide();
+	HelpPlate.Hide();
 	C_StableInfo.ClosePetStables();
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 end
@@ -1050,11 +1050,11 @@ StableFrame_HelpPlate = {
 }
 
 function StableFrameMixin:ToggleHelpPlates()
-	if StableFrame_HelpPlate and not HelpPlate_IsShowing(StableFrame_HelpPlate) then
-		HelpPlate_Show(StableFrame_HelpPlate, self, self.MainHelpButton);
+	if StableFrame_HelpPlate and not HelpPlate.IsShowingHelpInfo(StableFrame_HelpPlate) then
+		HelpPlate.Show(StableFrame_HelpPlate, self, self.MainHelpButton);
 	else
 		local userToggled = true;
-		HelpPlate_Hide(userToggled);
+		HelpPlate.Hide(userToggled);
 	end
 end
 

@@ -537,7 +537,7 @@ StaticPopupDialogs["SOULBIND_CONDUIT_NO_CHANGES_CONFIRMATION"] = {
 	hideOnEscape = 1,
 	showAlert = 1,
 
-	OnButton1 = function(self, callback)
+	OnButton1 = function(dialog, callback)
 		callback();
 	end,
 };

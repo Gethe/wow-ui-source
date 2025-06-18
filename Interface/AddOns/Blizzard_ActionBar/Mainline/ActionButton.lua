@@ -4,6 +4,8 @@ RANGE_INDICATOR = "●";
 COOLDOWN_TYPE_LOSS_OF_CONTROL = 1;
 COOLDOWN_TYPE_NORMAL = 2;
 
+local countdownForCooldownsCVarName = "countdownForCooldowns";
+
 ACTION_HIGHLIGHT_MARKS = { };
 ON_BAR_HIGHLIGHT_MARKS = { };
 
@@ -155,8 +157,9 @@ function ActionButtonUp(id)
 	if button then
 		if ( button:GetButtonState() == "PUSHED" ) then
 			button:SetButtonState("NORMAL");
-			TryUseActionButton(button, false);
 		end
+
+		TryUseActionButton(button, false);
 	end
 end
 
@@ -209,6 +212,9 @@ function ActionBarButtonEventsFrameMixin:OnLoad()
 	self:RegisterUnitEvent("UNIT_FLAGS", "pet");
 	self:RegisterUnitEvent("UNIT_AURA", "pet");
 	self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED");
+
+	CVarCallbackRegistry:SetCVarCachable(countdownForCooldownsCVarName);
+	CVarCallbackRegistry:RegisterCallback(countdownForCooldownsCVarName, self.OnCountdownForCooldownsChanged, self);
 end
 
 function ActionBarButtonEventsFrameMixin:OnEvent(event, ...)
@@ -218,8 +224,20 @@ function ActionBarButtonEventsFrameMixin:OnEvent(event, ...)
 	end
 end
 
+function ActionBarButtonEventsFrameMixin:OnCountdownForCooldownsChanged()
+	for k, frame in pairs(self.frames) do
+		ActionButton_UpdateCooldownNumberHidden(frame);
+	end
+end
+
 function ActionBarButtonEventsFrameMixin:RegisterFrame(frame)
 	tinsert(self.frames, frame);
+end
+
+function ActionBarButtonEventsFrameMixin:ForEachFrame(func)
+	for k, frame in pairs(self.frames) do
+		func(frame);
+	end
 end
 
 ActionBarActionEventsFrameMixin = {};
@@ -264,6 +282,11 @@ function ActionBarActionEventsFrameMixin:OnLoad()
 	self:RegisterUnitEvent("LOSS_OF_CONTROL_ADDED", "player");
 	self:RegisterUnitEvent("LOSS_OF_CONTROL_UPDATE", "player");
 	self:RegisterEvent("SPELL_UPDATE_ICON");
+
+	EventRegistry:RegisterCallback("AssistedCombatManager.OnSetActionSpell", function(o)
+		-- May not be the best way, but it is a unique string which is what the event system cares about
+		self:OnEvent("AssistedCombatManager.OnSetActionSpell");
+	end);
 end
 
 
@@ -458,7 +481,7 @@ function ActionBarActionButtonMixin:UpdateHotkeys(actionButtonType)
     end
 	
 	self.bindingAction = actionButtonType..id;
-	if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
+	if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
 		self.bindingAction = "WOWLABS_"..self.bindingAction;
 	end
     local hotkey = self.HotKey;
@@ -499,6 +522,7 @@ function ActionBarActionButtonMixin:UpdatePressAndHoldAction()
 end
 
 function ActionBarActionButtonMixin:OnAttributeChanged(name, value)
+	BaseActionButtonMixin.BaseActionButtonMixin_OnAttributeChanged(self, name, value);
 	self:UpdateAction();
 end
 
@@ -512,13 +536,19 @@ function ActionBarActionButtonMixin:UpdateAction(force)
 		if self.action and self:IsVisible() then
 			self:RegisterActionBarButtonCheckFrames(self.action);
 		end
+
 		SetActionUIButton(self, action, self.cooldown);
+
+		self:UpdateAssistedCombatRotationFrame();
+
 		self:Update();
 
 		-- If on an action bar and layout fields are set, ask it to update visibility of its buttons
 		if (self.index and self.bar) then
 			self.bar:UpdateShownButtons();
 		end
+
+		EventRegistry:TriggerEvent("ActionButton.OnActionChanged", self);
 	end
 end
 
@@ -604,7 +634,7 @@ function ActionBarActionButtonMixin:Update()
 	-- Update flyout appearance
 	self:UpdateFlyout();
 
-	self:UpdateOverlayGlow();
+	self:UpdateSpellAlert();
 
 	-- Update tooltip
 	if ( GameTooltip:GetOwner() == self ) then
@@ -721,6 +751,12 @@ function ActionBarActionButtonMixin:UpdateCount()
 	end
 end
 
+-- Determine whether cooldowns display countdown numbers for action bar buttons and spell flyout buttons.
+function ActionButton_UpdateCooldownNumberHidden(actionButton)
+	local shouldBeHidden = actionButton.cooldown.currentCooldownType == COOLDOWN_TYPE_LOSS_OF_CONTROL or CVarCallbackRegistry:GetCVarValueBool(countdownForCooldownsCVarName) ~= true;
+	actionButton.cooldown:SetHideCountdownNumbers(shouldBeHidden);
+end
+
 -- Shared between action bar buttons and spell flyout buttons.
 function ActionButton_UpdateCooldown(self)
 	local locStart, locDuration;
@@ -785,8 +821,8 @@ function ActionButton_UpdateCooldown(self)
 		if ( self.cooldown.currentCooldownType ~= COOLDOWN_TYPE_LOSS_OF_CONTROL ) then
 			self.cooldown:SetEdgeTexture("Interface\\Cooldown\\UI-HUD-ActionBar-LoC");
 			self.cooldown:SetSwipeColor(0.17, 0, 0);
-			self.cooldown:SetHideCountdownNumbers(true);
 			self.cooldown.currentCooldownType = COOLDOWN_TYPE_LOSS_OF_CONTROL;
+			ActionButton_UpdateCooldownNumberHidden(self);
 		end
 
 		CooldownFrame_Set(self.cooldown, locStart, locDuration, true, true, modRate);
@@ -796,10 +832,9 @@ function ActionButton_UpdateCooldown(self)
 		if ( self.cooldown.currentCooldownType ~= COOLDOWN_TYPE_NORMAL ) then
 			self.cooldown:SetEdgeTexture("Interface\\Cooldown\\UI-HUD-ActionBar-SecondaryCooldown");
 			self.cooldown:SetSwipeColor(0, 0, 0);
-			self.cooldown:SetHideCountdownNumbers(false);
 			self.cooldown.currentCooldownType = COOLDOWN_TYPE_NORMAL;
+			ActionButton_UpdateCooldownNumberHidden(self);
 		end
-
 
 		self.cooldown:SetScript("OnCooldownDone", ActionButtonCooldown_OnCooldownDone, locStart > 0);
 
@@ -852,82 +887,36 @@ function ClearChargeCooldown(parent)
 	end
 end
 
-
---Overlay stuff
-function ActionButton_SetupOverlayGlow(button)
-	-- If we already have a SpellActivationAlert then just early return. We should already be setup
-	if button.SpellActivationAlert then
-		return;
-	end
-
-	button.SpellActivationAlert = CreateFrame("Frame", nil, button, "ActionBarButtonSpellActivationAlert");
-
-	--Make the height/width available before the next frame:
-	local frameWidth, frameHeight = button:GetSize();
-	button.SpellActivationAlert:SetSize(frameWidth * 1.4, frameHeight * 1.4);
-	button.SpellActivationAlert:SetPoint("CENTER", button, "CENTER", 0, 0);
-	button.SpellActivationAlert:Hide();
-end
-
-function ActionBarActionButtonMixin:UpdateOverlayGlow()
-	local showGlow = false;
+function ActionBarActionButtonMixin:UpdateSpellAlert()
 	local spellType, id, subType  = GetActionInfo(self.action);
-	if spellType == "spell" and IsSpellOverlayed(id) then
-		showGlow = true;
-	elseif spellType == "macro" and id and IsSpellOverlayed(id) then
-		showGlow = true;
+
+	local show = (spellType == "spell" or spellType == "macro") and IsSpellOverlayed(id);
+	if show then
+		ActionButtonSpellAlertManager:ShowAlert(self);
+	else
+		ActionButtonSpellAlertManager:HideAlert(self);
 	end
 
-	self:SetOverlayGlowShown(showGlow);
 	self:EvaluateTutorials(spellType, id);
 end
 
-function ActionBarActionButtonMixin:SetOverlayGlowShown(show)
-	self.glowShowing = show;
+function ActionBarActionButtonMixin:UpdateAssistedCombatRotationFrame()
+	local show = C_ActionBar.IsAssistedCombatAction(self.action);
+	local assistedCombatRotationFrame = self.AssistedCombatRotationFrame;
+	-- create frame if needed
+	if show and not assistedCombatRotationFrame then
+		assistedCombatRotationFrame = CreateFrame("Frame", nil, self, "ActionBarButtonAssistedCombatRotationTemplate");
+		self.AssistedCombatRotationFrame = assistedCombatRotationFrame;
+	end
 
-	if show then
-		ActionButton_ShowOverlayGlow(self);
-	else
-		ActionButton_HideOverlayGlow(self);
+	if assistedCombatRotationFrame then
+		assistedCombatRotationFrame:UpdateState();
 	end
 end
 
 -- Override as needed
 function ActionBarActionButtonMixin:EvaluateTutorials(spellType, id)
 end
-
--- Shared between action button and MainMenuBarMicroButton
-function ActionButton_ShowOverlayGlow(button)
-	ActionButton_SetupOverlayGlow(button);
-
-	if not button.SpellActivationAlert:IsShown() then
-		button.SpellActivationAlert:Show();
-		button.SpellActivationAlert.ProcStartAnim:Play();
-	end
-end
-
--- Shared between action button and MainMenuBarMicroButton
-function ActionButton_HideOverlayGlow(button)
-	if not button.SpellActivationAlert then
-		return;
-	end
-
-	if button.SpellActivationAlert.ProcStartAnim:IsPlaying() then
-		button.SpellActivationAlert.ProcStartAnim:Stop();
-	end
-
-	if button:IsVisible() then
- 		button.SpellActivationAlert:Hide();
-	end
-end
-
-ActionBarOverlayGlowAnimOutMixin = {};
-
-function ActionBarOverlayGlowAnimOutMixin:OnFinished()
-	local frame = self:GetParent();
-	frame:Hide();
-end
-
 
 ActionBarOverlayGlowAnimInMixin = {};
 
@@ -960,23 +949,10 @@ function ActionBarOverlayGlowAnimInMixin:OnFinished()
 	frame.ants:SetAlpha(1.0);
 end
 
-ActionBarButtonSpellActivationAlertMixin = {};
-
-function ActionBarButtonSpellActivationAlertMixin:OnHide()
-	if ( self.ProcLoop:IsPlaying() ) then
-		self.ProcLoop:Stop();
-	end
-end
-
 ActionButtonInterruptAnimInMixin = {};
 function ActionButtonInterruptAnimInMixin:OnFinished()
 	self:GetParent():GetParent():Hide();
 end 
-
-ActionBarButtonSpellActivationAlertProcStartAnimMixin = { }; 
-function ActionBarButtonSpellActivationAlertProcStartAnimMixin:OnFinished()
-	self:GetParent().ProcLoop:Play();
-end
 
 function ActionBarActionButtonMixin:MatchesActiveButtonSpellID(spellID)
 	if(not spellID) then 
@@ -987,7 +963,7 @@ function ActionBarActionButtonMixin:MatchesActiveButtonSpellID(spellID)
 	if actionType == "item" then
 		id = C_ActionBar.GetSpell(self.action);
 	end
-	return id == spellID; 
+	return id == spellID;
 end	
 
 function ActionBarActionButtonMixin:RegisterActionBarButtonCheckFrames(action)
@@ -1066,24 +1042,24 @@ function ActionBarActionButtonMixin:OnEvent(event, ...)
 	elseif ( event == "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW" ) then
 		local actionType, id, subType = GetActionInfo(self.action);
 		if ( actionType == "spell" and id == arg1 ) then
-			ActionButton_ShowOverlayGlow(self);
+			ActionButtonSpellAlertManager:ShowAlert(self);
 		elseif ( actionType == "macro" and subType == "spell" ) then
 			if ( id == arg1 ) then
-				ActionButton_ShowOverlayGlow(self);
+				ActionButtonSpellAlertManager:ShowAlert(self);
 			end
 		elseif (actionType == "flyout" and FlyoutHasSpell(id, arg1)) then
-			ActionButton_ShowOverlayGlow(self);
+			ActionButtonSpellAlertManager:ShowAlert(self);
 		end
 	elseif ( event == "SPELL_ACTIVATION_OVERLAY_GLOW_HIDE" ) then
 		local actionType, id, subType = GetActionInfo(self.action);
 		if ( actionType == "spell" and id == arg1 ) then
-			ActionButton_HideOverlayGlow(self);
+			ActionButtonSpellAlertManager:HideAlert(self);
 		elseif ( actionType == "macro" and subType == "spell" ) then
 			if (id == arg1 ) then
-				ActionButton_HideOverlayGlow(self);
+				ActionButtonSpellAlertManager:HideAlert(self);
 			end
 		elseif (actionType == "flyout" and FlyoutHasSpell(id, arg1)) then
-			ActionButton_HideOverlayGlow(self);
+			ActionButtonSpellAlertManager:HideAlert(self);
 		end
 	elseif ( event == "SPELL_UPDATE_CHARGES" ) then
 		self:UpdateCount();
@@ -1130,6 +1106,8 @@ function ActionBarActionButtonMixin:OnEvent(event, ...)
 			self:PlayTargettingReticleAnim();
 	elseif (event == "UNIT_SPELLCAST_RETICLE_CLEAR") then
 			self:StopTargettingReticleAnim();
+	elseif event == "AssistedCombatManager.OnSetActionSpell" then
+		self:UpdateAssistedCombatRotationFrame();
 	end
 end
 
@@ -1238,8 +1216,10 @@ end
 function ActionBarActionButtonMixin:PlayTargettingReticleAnim()
 	if(self.InterruptDisplay:IsShown()) then 
 		self.InterruptDisplay:Hide(); 
-	end	
-	self.TargetReticleAnimFrame:Setup(); 
+	end
+	if not C_ActionBar.IsAssistedCombatAction(self.action) then
+		self.TargetReticleAnimFrame:Setup();
+	end
 end
 
 function ActionBarActionButtonMixin:StopTargettingReticleAnim()
@@ -1348,16 +1328,7 @@ end
 
 -- Shared between action bar buttons and spell flyout buttons
 function ActionBarActionButtonMixin:UpdateFlyout(isButtonDownOverride)
-	if not self.HasPopup then
-		return;
-	end
-
-	local actionType = GetActionInfo(self.action);
-	if (actionType == "flyout" and SpellFlyout) then
-		self:SetPopup(SpellFlyout);
-	else
-		self:ClearPopup();
-	end
+	BaseActionButtonMixin.UpdateFlyout(self, isButtonDownOverride);
 end
 
 function ActionBarActionButtonMixin:SetButtonStateOverride(state)
@@ -1445,6 +1416,7 @@ function BaseActionButtonMixin:BaseActionButtonMixin_OnLoad()
 	FlyoutButtonMixin.OnLoad(self);
 
 	self:UpdateButtonArt();
+	self:UpdateFlyout();
 
 	self.NormalTexture:SetDrawLayer("OVERLAY");
 	self.PushedTexture:SetDrawLayer("OVERLAY");
@@ -1460,6 +1432,10 @@ end
 
 function BaseActionButtonMixin:BaseActionButtonMixin_OnDragStart()
 	FlyoutButtonMixin.OnDragStart(self);
+end
+
+function BaseActionButtonMixin:BaseActionButtonMixin_OnAttributeChanged(name, value)
+	self:UpdateFlyout();
 end
 
 function BaseActionButtonMixin:GetShowGrid()
@@ -1507,6 +1483,59 @@ function BaseActionButtonMixin:UpdateButtonArt()
 		self:SetPushedAtlas("UI-HUD-ActionBar-IconFrame-AddRow-Down");
 		self.PushedTexture:SetDrawLayer("OVERLAY");
 		self.PushedTexture:SetSize(51, 51);
+	end
+end
+
+-- Shared between action bar buttons and spell flyout buttons
+function BaseActionButtonMixin:UpdateFlyout(isButtonDownOverride)
+	if not self.HasPopup then
+		return;
+	end
+
+	-- Attempt to resolve the action on this button to a flyout, either by
+	-- having the secure "type" attribute explicitly set to "flyout" or by
+	-- configuring it as a regular "action" with a slot ID that itself holds
+	-- a flyout.
+	--
+	-- This is intended to support case where a button inherits from a
+	-- fully-featured button template such as ActionBarButtonTemplate, or
+	-- a barebones combo of ActionButtonTemplate + SecureActionButtonTemplate.
+
+	local effectiveButton = SecureButton_GetEffectiveButton(self);
+	local popupDirection = SecureButton_GetModifiedAttribute(self, "flyoutDirection", effectiveButton);
+	local actionType = SecureButton_GetModifiedAttribute(self, "type", effectiveButton);
+
+	if actionType == nil or actionType == "action" then
+		local slotID;
+
+		if self.CalculateAction then
+			slotID = self:CalculateAction();
+		else
+			slotID = self.action;
+		end
+
+		if slotID then
+			actionType = GetActionInfo(slotID);
+		end
+	end
+
+	-- If an explicit popup direction hasn't been supplied and the button is on an action bar then use the direction from the action bar.
+	if not popupDirection and self.bar then
+		popupDirection = self.bar:GetSpellFlyoutDirection();
+	end
+
+	-- FlyoutButtonMixin stores the direction of the popout on a field
+	-- on the button itself, which needs securely updating from the value
+	-- stored in the attribute if defined.
+
+	if popupDirection then
+		self:SetPopupDirection(popupDirection);
+	end
+
+	if actionType == "flyout" and SpellFlyout then
+		self:SetPopup(SpellFlyout);
+	else
+		self:ClearPopup();
 	end
 end
 
@@ -1687,4 +1716,132 @@ function ActionButtonTextOverlayContainerMixin:OnLoad()
 	local parentActionButton = self:GetParent();
 	parentActionButton.HotKey = self.HotKey;
 	parentActionButton.Count = self.Count;
+end
+
+ActionBarButtonAssistedCombatRotationFrameMixin = { };
+
+function ActionBarButtonAssistedCombatRotationFrameMixin:OnLoad()
+	local actionButton = self:GetParent();
+	local frameWidth, frameHeight = actionButton:GetSize();
+	self:SetSize(frameWidth * 1.4, frameHeight * 1.4);
+	self:SetPoint("CENTER", actionButton, "CENTER", -2, 1);
+
+	if MainMenuBar then
+		self:SetFrameLevel(MainMenuBar:GetEndCapsFrameLevel() + 1);
+	end
+
+	self.updateTimeLeft = 0;
+
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+end
+
+function ActionBarButtonAssistedCombatRotationFrameMixin:OnShow()
+	self:RegisterEvent("PLAYER_REGEN_ENABLED");
+	self:RegisterEvent("PLAYER_REGEN_DISABLED");
+
+	self:UpdateGlow();
+	self:EvaluateTutorials();
+end
+
+function ActionBarButtonAssistedCombatRotationFrameMixin:OnHide()
+	self:UnregisterEvent("PLAYER_REGEN_ENABLED");
+	self:UnregisterEvent("PLAYER_REGEN_DISABLED");
+end
+
+function ActionBarButtonAssistedCombatRotationFrameMixin:OnEvent(event)
+	if event == "PLAYER_ENTERING_WORLD" then
+		self:SetFrameLevel(MainMenuBar:GetEndCapsFrameLevel() + 1);
+		-- action bars go through setup on PEW too so this needs to wait
+		RunNextFrame(function()
+			-- gotta check since we're doing things out of order now
+			if self:IsShown() then
+				self:EvaluateTutorials();
+			end
+		end);
+		self:UnregisterEvent("PLAYER_ENTERING_WORLD");
+	elseif event == "ASSISTED_COMBAT_ACTION_SPELL_CAST" then
+		HelpTip:Acknowledge(UIParent, ASSISTED_COMBAT_ROTATION_ACTION_BUTTON_HELPTIP);
+		self:UnregisterEvent("ASSISTED_COMBAT_ACTION_SPELL_CAST");
+	else
+		self:UpdateGlow();
+	end
+end
+
+function ActionBarButtonAssistedCombatRotationFrameMixin:OnUpdate(elapsed)
+	self.updateTimeLeft = self.updateTimeLeft - elapsed;
+	if self.updateTimeLeft <= 0 then
+		local actionButton = self:GetParent();
+		C_ActionBar.ForceUpdateAction(actionButton.action);
+		self.updateTimeLeft = AssistedCombatManager:GetUpdateRate();
+	end
+end
+
+function ActionBarButtonAssistedCombatRotationFrameMixin:UpdateState()
+	local actionButton = self:GetParent();
+	local show = C_ActionBar.IsAssistedCombatAction(actionButton.action);
+	local isShown = self:IsShown();
+	if show ~= isShown then
+		self:SetShown(show);
+		EventRegistry:TriggerEvent("ActionButton.OnAssistedCombatRotationFrameChanged", actionButton, show);
+	end
+end
+
+function ActionBarButtonAssistedCombatRotationFrameMixin:UpdateGlow()
+	local affectingCombat = UnitAffectingCombat("player");
+	if affectingCombat then
+		self.InactiveTexture:Hide();
+		self.ActiveFrame:Show();
+		self.ActiveFrame.GlowAnim:Play();
+	else
+		self.InactiveTexture:Show();
+		self.ActiveFrame:Hide();
+	end
+end
+
+function ActionBarButtonAssistedCombatRotationFrameMixin:EvaluateTutorials()
+	local actionButton = self:GetParent();
+	if not actionButton.bar then
+		return;
+	end
+
+	if GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_ASSISTED_COMBAT_ROTATION_ACTION_BUTTON) then
+		return;
+	end
+
+	-- the action spell can be dragged to multiple action buttons
+	HelpTip:Hide(UIParent, ASSISTED_COMBAT_ROTATION_ACTION_BUTTON_HELPTIP);
+
+	local targetPoint = HelpTip.Point.TopEdgeCenter;
+	local offsetX = 0;
+	local offsetY = -8;
+
+	local direction = actionButton.bar:GetSpellFlyoutDirection();
+	if direction == "DOWN" then
+		targetPoint = HelpTip.Point.BottomEdgeCenter;
+		offsetX = 0;
+		offsetY = 8;
+	elseif direction == "LEFT" then
+		targetPoint = HelpTip.Point.LeftEdgeCenter;
+		offsetX = 8;
+		offsetY = 0;
+	elseif direction == "RIGHT" then
+		targetPoint = HelpTip.Point.RightEdgeCenter;
+		offsetX = -8;
+		offsetY = 0;
+	end
+
+	local helpTipInfo = {
+		text = ASSISTED_COMBAT_ROTATION_ACTION_BUTTON_HELPTIP,
+		buttonStyle = HelpTip.ButtonStyle.Close,
+		cvarBitfield = "closedInfoFramesAccountWide",
+		bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_ASSISTED_COMBAT_ROTATION_ACTION_BUTTON,
+		targetPoint = targetPoint,
+		offsetX = offsetX,
+		offsetY = offsetY,
+		system = helptipSystem,
+		autoHideWhenTargetHides = true,
+	};
+	HelpTip:Show(UIParent, helpTipInfo, self);
+
+	self:RegisterEvent("ASSISTED_COMBAT_ACTION_SPELL_CAST");
 end

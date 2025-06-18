@@ -136,11 +136,9 @@ function PerksProgramMixin:GetAttackAnimationSetting()
 	return self.attackAnimationPlaying;
 end
 
-function PerksProgramMixin:PlayerSetAttackAnimationOnClick(playAttackAnimation, forceUpdate)
-	if forceUpdate or self:GetAttackAnimationSetting() ~= playAttackAnimation then
-		self.attackAnimationPlaying = playAttackAnimation;
-		EventRegistry:TriggerEvent("PerksProgram.OnPlayerAttackAnimationSet", playAttackAnimation);
-	end
+function PerksProgramMixin:PlayerSetAttackAnimationOnClick(playAttackAnimation)
+	self.attackAnimationPlaying = playAttackAnimation;
+	EventRegistry:TriggerEvent("PerksProgram.OnPlayerAttackAnimationSet", playAttackAnimation);
 end
 
 function PerksProgramMixin:GetUseNativeForm()
@@ -231,6 +229,8 @@ function PerksProgramMixin:OnShow()
 end
 
 function PerksProgramMixin:OnHide()
+	EventRegistry:TriggerEvent("PerksProgram.ClearCart");
+
 	self:UnregisterEvent("Perks_Program_CLOSE");
 
 	StaticPopup_ClearFullScreenFrame();
@@ -315,9 +315,32 @@ function PerksProgramMixin:ConfirmPurchase()
 	data.product = product;
 	data.link = itemLink;
 	data.name = product.name;
-	data.color = {ITEM_QUALITY_COLORS[itemRarity].color:GetRGBA()};
 	data.texture = itemTexture;
+
+	local colorData = ColorManager.GetColorDataForItemQuality(itemRarity);
+	if colorData then
+		data.color = {colorData.color:GetRGBA()};
+	end
+
 	StaticPopup_Show("PERKS_PROGRAM_CONFIRM_PURCHASE", product.price, markup, data);
+end
+
+function PerksProgramMixin:ConfirmPurchaseCart()
+	local cartFrame = self.ProductsFrame.PerksProgramShoppingCartFrame;
+	local currCartItems = cartFrame:GetCartItems();
+	local productList = {};
+	for _, currCartItem in ipairs(currCartItems) do
+		table.insert(productList, currCartItem.perksVendorItemID);
+	end
+
+	local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CURRENCY_ID_PERKS_PROGRAM_DISPLAY_INFO);
+	local priceIconMarkup = CreateTextureMarkup(currencyInfo.iconFileID, 64, 64, 16, 16, 0, 1, 0, 1);
+	local priceText = cartFrame.totalCartPrice .. " " .. priceIconMarkup;
+
+	local data = {};
+	data.products = productList;
+	
+	StaticPopup_Show("PERKS_PROGRAM_CONFIRM_CART_PURCHASE", priceText, #productList, data);
 end
 
 function PerksProgramMixin:CancelPurchaseTimer()
@@ -334,7 +357,16 @@ function PerksProgramMixin:Purchase(data)
 	self.purchaseStateTimer = C_Timer.NewTimer(10, function()
 		StaticPopup_Hide("PERKS_PROGRAM_CONFIRM_PURCHASE");
 		StaticPopup_Show("PERKS_PROGRAM_SLOW_PURCHASE");
-	 end);
+	end);
+end
+
+function PerksProgramMixin:PurchaseCart(data)
+	C_PerksProgram.RequestCartCheckout(data.products);
+	self:CancelPurchaseTimer();
+	self.purchaseStateTimer = C_Timer.NewTimer(10, function()
+		StaticPopup_Hide("PERKS_PROGRAM_CONFIRM_CART_PURCHASE");
+		StaticPopup_Show("PERKS_PROGRAM_SLOW_PURCHASE");
+	end);
 end
 
 function PerksProgramMixin:ConfirmRefund()
@@ -343,13 +375,18 @@ function PerksProgramMixin:ConfirmRefund()
 	local itemName, itemLink, itemRarity, _, _, _, _, _, _, itemTexture = C_Item.GetItemInfo(product.itemID);
 	local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CURRENCY_ID_PERKS_PROGRAM_DISPLAY_INFO);
 	local markup = CreateTextureMarkup(currencyInfo.iconFileID, 64, 64, 16, 16, 0, 1, 0, 1);
-	
+
 	local data = {};
 	data.product = product;
 	data.link = itemLink;
 	data.name = product.name;
-	data.color = {ITEM_QUALITY_COLORS[itemRarity].color:GetRGBA()};
 	data.texture = itemTexture;
+
+	local colorData = ColorManager.GetColorDataForItemQuality(itemRarity);
+	if colorData then
+		data.color = {colorData.color:GetRGBA()};
+	end
+
 	StaticPopup_Show("PERKS_PROGRAM_CONFIRM_REFUND", product.price, markup, data);
 end
 
@@ -366,6 +403,23 @@ function PerksProgramMixin:Refund(data)
 		-- If refund takes an excessively long time then just act like a server error happened so we don't lock up the UI
 		self:SetServerErrorState(true);
 	 end);
+end
+
+function PerksProgramMixin:ViewCart()
+	local showCart = true;
+	EventRegistry:TriggerEvent("PerksProgram.UpdateCartShown", showCart);
+end
+
+function PerksProgramMixin:AddToCart()
+	EventRegistry:TriggerEvent("PerksProgram.AddItemToCart", self:GetSelectedProduct());
+end
+
+function PerksProgramMixin:RemoveFromCart()
+	EventRegistry:TriggerEvent("PerksProgram.RemoveItemFromCart", self:GetSelectedProduct().perksVendorItemID);
+end
+
+function PerksProgramMixin:ClearCart()
+	StaticPopup_Show("PERKS_PROGRAM_CLEAR_CART", #(self.ProductsFrame.PerksProgramShoppingCartFrame:GetCartItems()));
 end
 
 function PerksProgramMixin:OnFrozenItemConfirmationShown()
@@ -533,6 +587,12 @@ function PerksProgramThemeContainerMixin:OnLoad()
 	PositionFrame(self.ProductDetails.Bottom, "TOP", productDetailsBorder, "BOTTOM", 0, 33);
 	PositionFrame(self.ProductDetails.Left, "TOPRIGHT", productDetailsBorder, "TOPLEFT", 10, 90);
 	PositionFrame(self.ProductDetails.Right, "TOPLEFT", productDetailsBorder, "TOPRIGHT", -10, 90);
+
+	EventRegistry:RegisterCallback("PerksProgram.UpdateCartShown", self.UpdateDetailsShown, self);
+end
+
+function PerksProgramThemeContainerMixin:UpdateDetailsShown(cartShown)
+	self.ProductDetails:SetShown(not cartShown);
 end
 
 function PerksProgramThemeContainerMixin:OnShow()

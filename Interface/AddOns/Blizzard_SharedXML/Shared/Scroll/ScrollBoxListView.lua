@@ -573,8 +573,13 @@ function ScrollBoxListViewMixin:GetPanExtent(spacing)
 	if not self.panExtent then
 		return 0;
 	end
+	
+	local panExtent = self.panExtent + spacing;
+	if self.maxPanExtent and (panExtent > self.maxPanExtent) then
+		return self.maxPanExtent;
+	end
 
-	return self.panExtent + spacing;
+	return panExtent;
 end
 
 function ScrollBoxListViewMixin:IsVirtualized()

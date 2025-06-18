@@ -71,6 +71,7 @@ function CharacterSelectUIMixin:OnLoad()
 	self:RegisterEvent("CHARACTER_LIST_MAIL_RECEIVED");
 	self:RegisterEvent("ACCOUNT_CONVERSION_DISPLAY_STATE");
 	self:RegisterEvent("ACCOUNT_CVARS_LOADED");
+	self:RegisterEvent("MAP_SCENE_CHARACTER_UPDATE_OVERLAY_FRAME");
 
 	local function OnCollectionsShow()
 		if self.ModelFFX:IsShown() then
@@ -153,18 +154,27 @@ function CharacterSelectUIMixin:OnEvent(event, ...)
 		local shouldDisplay = ...;
 
 		if shouldDisplay then
-			GlueDialog_Show("ACCOUNT_CONVERSION_DISPLAY");
+			StaticPopup_Show("ACCOUNT_CONVERSION_DISPLAY");
 		else
-			GlueDialog_Hide("ACCOUNT_CONVERSION_DISPLAY");
+			StaticPopup_Hide("ACCOUNT_CONVERSION_DISPLAY");
 
+			-- Show the retrieving character list dialog again once conversion is complete if needed.
 			if CharacterSelect.retrievingCharacters then
-				-- Show the retrieving character list dialog again once conversion is complete if needed.
-				GlueDialog_Show("RETRIEVING_CHARACTER_LIST");
+				-- Do not stop showing the login queue dialog if currently showing.
+				if not StaticPopup_FindVisible("QUEUED_WITH_FCM") and not StaticPopup_FindVisible("QUEUED_NORMAL") then
+					StaticPopup_Show("RETRIEVING_CHARACTER_LIST");
+				end
 			end
 		end
 	elseif event == "ACCOUNT_CVARS_LOADED" then
 		local isExpanded = GetCVarBool("expandWarbandCharacterList");
 		self:ExpandCharacterList(isExpanded);
+	elseif event == "MAP_SCENE_CHARACTER_UPDATE_OVERLAY_FRAME" then
+		local characterID = ...;
+
+		if self.MapScene:IsShown() and not self.FadeInBackground:IsShown() then
+			self:SetupOverlayFrameForCharacter(characterID);
+		end
 	end
 end
 
@@ -475,8 +485,8 @@ function CharacterSelectUIMixin:IsCollectionsActive()
 	return self.CollectionsFrame:IsShown();
 end
 
-function CharacterSelectUIMixin:SetGameEnvironmentEnabled(enabled)
-	self.VisibilityFramesContainer.NavBar:SetGameEnvironmentButtonEnabled(enabled);
+function CharacterSelectUIMixin:SetGameModeSelectionEnabled(enabled)
+	self.VisibilityFramesContainer.NavBar:SetGameModeButtonEnabled(enabled);
 end
 
 function CharacterSelectUIMixin:SetMenuEnabled(enabled)
@@ -702,7 +712,8 @@ function CharacterDeletionDialogMixin:DeleteCharacter()
 	DeleteCharacter(self.characterGuid);
 	self:Hide();
 	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
-	GlueDialog_Show("CHAR_DELETE_IN_PROGRESS");
+	CharacterSelectCharacterFrame:ClearSearch();
+	StaticPopup_Show("CHAR_DELETE_IN_PROGRESS");
 end
 
 
@@ -736,6 +747,7 @@ function CharacterListEditGroupFrameMixin:OnLoad()
 	end);
 
 	self.EditBox:SetScript("OnTextChanged", function()
+		self.AcceptButton.disabledTooltip = nil;
 		self.AcceptButton:SetEnabled(self.EditBox:GetText() ~= "");
 	end);
 end
@@ -749,13 +761,21 @@ function CharacterListEditGroupFrameMixin:OnHide()
 end
 
 function CharacterListEditGroupFrameMixin:OnAccept()
+	local groupName = self.EditBox:GetText();
+
+	if ShouldCheckWarbandGroupNames() and not IsValidWarbandGroupName(groupName) then
+		self.AcceptButton:SetDisabledState(true, NAME_NOT_AVAILABLE, "ANCHOR_BOTTOMLEFT");
+		self.AcceptButton:OnEnter();
+		return;
+	end
+
 	if self.groupID == nil then
 		-- Save any moves before we add, so characters don't jump back to previous positions.
 		-- We save off the pending action to run after things finish updating.
 		CharacterSelectListUtil.SaveCharacterOrder();
-		CharacterSelectCharacterFrame:SetPendingGroupCreation(self.EditBox:GetText());
+		CharacterSelectCharacterFrame:SetPendingGroupCreation(groupName);
 		CharacterSelectListUtil.GetCharacterListUpdate();
-	elseif UpdateCharacterListGroup(self.groupID, self.EditBox:GetText()) then
+	elseif UpdateCharacterListGroup(self.groupID, groupName) then
 		CharacterSelectCharacterFrame:UpdateCharacterSelection();
 	end
 	self:Hide();
@@ -771,7 +791,8 @@ function CharacterListEditGroupFrameMixin:OnDelete()
 	end;
 
 	local formattedText = string.format(StaticPopupDialogs["CONFIRM_DELETE_CHARACTER_GROUP"].text, self.groupName);
-	GlueDialog_Show("CONFIRM_DELETE_CHARACTER_GROUP", formattedText, deleteGroupCallback);
+	local text2 = nil;
+	StaticPopup_Show("CONFIRM_DELETE_CHARACTER_GROUP", formattedText, text2, deleteGroupCallback);
 	self:Hide();
 end
 

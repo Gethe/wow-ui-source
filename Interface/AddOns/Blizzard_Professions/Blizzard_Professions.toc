@@ -3,7 +3,7 @@
 ## LoadOnDemand: 1
 ## AllowLoad: game
 ## AllowLoadGameType: mainline
-## Dependencies: Blizzard_ProfessionsTemplates, Blizzard_SharedTalentUI
+## Dependencies: Blizzard_ProfessionsTemplates, Blizzard_SharedTalentUI, Blizzard_Colors, Blizzard_HelpPlate
 ## SavedVariablesPerCharacter: g_professionsSpecsSelectedTabs, g_professionsSpecsSelectedPaths
 Blizzard_ProfessionsRankBar.xml
 Blizzard_ProfessionsGuildMemberList.xml

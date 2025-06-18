@@ -8,6 +8,9 @@ function PerksProgramFooterFrameMixin:OnLoad()
 	EventRegistry:RegisterCallback("PerksProgramModel.OnProductSelectedAfterModel", self.OnProductSelected, self);
 	EventRegistry:RegisterCallback("PerksProgram.OnModelSceneChanged", self.OnModelSceneChanged, self);
 	EventRegistry:RegisterCallback("PerksProgram.OnServerErrorStateChanged", self.OnServerErrorStateChanged, self);
+	EventRegistry:RegisterCallback("PerksProgram.UpdateCartShown", self.OnShoppingCartVisibilityUpdate, self);
+	EventRegistry:RegisterCallback("PerksProgram.UpdateCart", self.UpdateCartButtons, self);
+	EventRegistry:RegisterCallback("PerksProgram.OnItemSetSelectionUpdated", self.OnItemSetSelectionUpdated, self);
 
 	self.LeaveButton:SetText(PERKS_PROGRAM_LEAVE:format(CreateAtlasMarkup("perks-backarrow", 8, 13, 0, 0)));
 end
@@ -22,19 +25,83 @@ local function GetCheckboxCenteringOffset(checkboxes)
 	return -centeringOffset / 2;
 end
 
+function PerksProgramFooterFrameMixin:OnShoppingCartVisibilityUpdate(cartShown)
+	if cartShown then
+		self:OnShoppingCartShown();
+	end
+end
+
+function PerksProgramFooterFrameMixin:OnShoppingCartShown()
+	self.selectedProductInfo = nil;
+
+	local shoppingCartShown = true;
+
+	self.PurchaseButton:SetShown(not shoppingCartShown);
+	self.RefundButton:SetShown(not shoppingCartShown);
+
+	self.ViewCartButton:SetShown(not shoppingCartShown);
+	self.AddToCartButton:SetShown(not shoppingCartShown);
+	self.RemoveFromCartButton:SetShown(not shoppingCartShown);
+
+	local historyFrame = self.PurchasedHistoryFrame;
+	historyFrame:SetShown(not shoppingCartShown);
+	historyFrame.PurchasedText:SetShown(not shoppingCartShown);
+	historyFrame.PurchasedIcon:SetShown(not shoppingCartShown);
+	historyFrame.RefundText:SetShown(not shoppingCartShown);
+	historyFrame.RefundIcon:SetShown(not shoppingCartShown);
+
+	local cartFrame = PerksProgramFrame.ProductsFrame.PerksProgramShoppingCartFrame;
+	local categoryID = cartFrame:GetSelectedCategoryID();
+	local newProduct = true;
+	local displayData = cartFrame:GetTransmogDisplayData();
+	self:UpdateMountControls(categoryID, newProduct);
+	self:UpdateTransmogControls(categoryID, newProduct, displayData);
+end
+
+function PerksProgramFooterFrameMixin:OnItemSetSelectionUpdated(data, perksVendorCategoryID, selectedItems)
+	local cartFrame = PerksProgramFrame.ProductsFrame.PerksProgramShoppingCartFrame;
+	local newProduct = true;
+	self:UpdateMountControls(perksVendorCategoryID, newProduct);
+	self:UpdateTransmogControls(perksVendorCategoryID, newProduct, data and data.displayData or {});
+end
+
+function PerksProgramFooterFrameMixin:UpdateCartButtons(numCartItems)
+	local cartFrame = PerksProgramFrame.ProductsFrame.PerksProgramShoppingCartFrame;
+	local cartShown = cartFrame:IsShown();
+
+	if not self.selectedProductInfo then
+		return;
+	end
+
+	local itemInCart = cartFrame:FindItemIndex(self.selectedProductInfo.perksVendorItemID) ~= -1;
+	local cartableItem = not self.selectedProductInfo.isFrozen and not self.selectedProductInfo.purchased and not self.selectedProductInfo.refundable and not self.selectedProductInfo.isPurchasePending;
+
+	numCartItems = numCartItems or #(cartFrame:GetCartItems());
+	self.ViewCartButton:SetShown(not cartShown);
+	self.ViewCartButton:SetEnabled(numCartItems > 0);
+	self.ViewCartButton.ItemCountText:SetText(numCartItems);
+	
+	self.AddToCartButton:SetShown(not cartShown and cartableItem and not itemInCart);
+	self.RemoveFromCartButton:SetShown(not cartShown and cartableItem and itemInCart);
+end
+
 function PerksProgramFooterFrameMixin:OnProductSelected(data)
-	local newProduct = not self.selectedProductInfo or self.selectedProductInfo.perksVendorItemID ~= data.perksVendorItemID;
+	local newProduct = not self.selectedProductInfo or self.selectedProductInfo.perksVendorItemID ~= data.perksVendorItemID or self.selectedProductInfo.isCartData;
 	self.selectedProductInfo = data;
+
+	self:UpdateCartButtons();
 
 	local historyFrame = self.PurchasedHistoryFrame;
 	local isPurchased = self.selectedProductInfo.purchased;
 	local isRefundable = self.selectedProductInfo.refundable;
 
-	self.PurchaseButton:SetShown(not isPurchased);
+	local cartFrame = PerksProgramFrame.ProductsFrame.PerksProgramShoppingCartFrame;
+	local cartShown = cartFrame:IsShown();
 
-	self.RefundButton:SetShown(isRefundable);
+	self.PurchaseButton:SetShown(not cartShown and not isPurchased);
+	self.RefundButton:SetShown(not cartShown and isRefundable);
 
-	historyFrame:SetShown(isPurchased);
+	historyFrame:SetShown(not cartShown and isPurchased);
 	historyFrame.PurchasedText:SetShown(isPurchased and not isRefundable);
 	historyFrame.PurchasedIcon:SetShown(isPurchased and not isRefundable);
 	historyFrame.RefundText:SetShown(isRefundable);
@@ -46,6 +113,11 @@ function PerksProgramFooterFrameMixin:OnProductSelected(data)
 	end
 
 	local categoryID = self.selectedProductInfo.perksVendorCategoryID;
+	self:UpdateMountControls(categoryID, newProduct);
+	self:UpdateTransmogControls(categoryID, newProduct, data.displayData);
+end
+
+function PerksProgramFooterFrameMixin:UpdateMountControls(categoryID, newProduct)
 	local showMountCheckboxToggles = categoryID == Enum.PerksVendorCategoryType.Mount;
 	self.TogglePlayerPreview:SetShown(showMountCheckboxToggles);
 
@@ -67,11 +139,12 @@ function PerksProgramFooterFrameMixin:OnProductSelected(data)
 			self.ToggleMountSpecial:SetChecked(false);
 		end
 	end
+end
 
+function PerksProgramFooterFrameMixin:UpdateTransmogControls(categoryID, newProduct, displayData)
 	local showTransmogCheckboxes = categoryID == Enum.PerksVendorCategoryType.Transmog or categoryID == Enum.PerksVendorCategoryType.Transmogset;
 	self.ToggleHideArmor:SetShown(showTransmogCheckboxes);
 
-	local displayData = data.displayData;
 	local showAttackAnimation = showTransmogCheckboxes and (displayData.animationKitID or (displayData.animation and displayData.animation > 0));
 	local attackCheckboxEnabled = C_PerksProgram.IsAttackAnimToggleEnabled();
 	if newProduct then
@@ -85,21 +158,20 @@ function PerksProgramFooterFrameMixin:OnProductSelected(data)
 	end
 
 	if showTransmogCheckboxes then
-		local hideArmor = not(self.selectedProductInfo.displayData.autodress);
+		local hideArmor = not(displayData.autodress);
 		local hideArmorSetting = PerksProgramFrame:GetHideArmorSetting();
 		if hideArmorSetting ~= nil then
 			hideArmor = hideArmorSetting;
 		end
 		self.ToggleHideArmor:SetChecked(hideArmor);
 
-		if attackCheckboxEnabled then
+		if attackCheckboxEnabled and showAttackAnimation then
 			if newProduct then
 				PerksProgramFrame:PlayerSetAttackAnimationOnClick(showAttackAnimation);
 				self.ToggleAttackAnimation:SetChecked(showAttackAnimation);
 			else
-				-- Force update here to guarantee we're in the state stored on the checkbox currently
-				local forceUpdateAnimation = true;
-				PerksProgramFrame:PlayerSetAttackAnimationOnClick(self.ToggleAttackAnimation:GetChecked(), forceUpdateAnimation);
+				local attackAnimationSetting = PerksProgramFrame:GetAttackAnimationSetting();
+				PerksProgramFrame:PlayerSetAttackAnimationOnClick(attackAnimationSetting);
 			end
 		end
 	end

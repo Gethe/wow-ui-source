@@ -161,25 +161,29 @@ end
 
 function GroupLootFrame_OnShow(self)
 	local texture, name, count, quality, bindOnPickUp, canNeed, canGreed, canDisenchant, reasonNeed, reasonGreed, reasonDisenchant, deSkillRequired, canTransmog = GetLootRollItemInfo(self.rollID);
-	if (name == nil) then
+	if name == nil then
 		GroupLootContainer_RemoveFrame(GroupLootContainer, self);
 		return;
 	end
 
 	self.IconFrame.Icon:SetTexture(texture);
-	self.IconFrame.Border:SetAtlas(LOOT_BORDER_BY_QUALITY[quality] or LOOT_BORDER_BY_QUALITY[Enum.ItemQuality.Uncommon]);
+	self.IconFrame.Border:SetAtlas(ColorManager.GetAtlasDataForLootBorderItemQuality(quality) or ColorManager.GetAtlasDataForLootBorderItemQuality(Enum.ItemQuality.Uncommon));
 	self.Name:SetText(name);
-	local color = ITEM_QUALITY_COLORS[quality];
-	self.Name:SetVertexColor(color.r, color.g, color.b);
-	self.Border:SetVertexColor(color.r, color.g, color.b);
-	if ( count > 1 ) then
+
+	local colorData = ColorManager.GetColorDataForItemQuality(quality);
+	if colorData then
+		self.Name:SetVertexColor(colorData.r, colorData.g, colorData.b);
+		self.Border:SetVertexColor(colorData.r, colorData.g, colorData.b);
+	end
+
+	if count > 1 then
 		self.IconFrame.Count:SetText(count);
 		self.IconFrame.Count:Show();
 	else
 		self.IconFrame.Count:Hide();
 	end
 
-	if ( canNeed ) then
+	if canNeed then
 		GroupLootFrame_EnableLootButton(self.NeedButton);
 		self.NeedButton.reason = nil;
 	else
@@ -187,13 +191,13 @@ function GroupLootFrame_OnShow(self)
 		self.NeedButton.reason = _G["LOOT_ROLL_INELIGIBLE_REASON"..reasonNeed];
 	end
 
-	if ( canTransmog ) then
+	if canTransmog then
 		self.TransmogButton:Show();
 		self.GreedButton:Hide();
 	else
 		self.TransmogButton:Hide();
 		self.GreedButton:Show();
-		if ( canGreed) then
+		if canGreed then
 			GroupLootFrame_EnableLootButton(self.GreedButton);
 			self.GreedButton.reason = nil;
 		else
@@ -535,7 +539,7 @@ function EncounterJournalLinkButtonMixin:OnClick()
 
 	local specialization = GetLootSpecialization();
 	if ( specialization == 0 ) then
-		specialization = GetSpecializationInfo(GetSpecialization());
+		specialization = C_SpecializationInfo.GetSpecializationInfo(C_SpecializationInfo.GetSpecialization());
 	end
 	EncounterJournal_SetClassAndSpecFilter(EncounterJournal, select(3, UnitClass("player")), specialization);
 	-- EncounterJournal_OpenJournal takes an itemID but only checks if it exists, not what it is.
@@ -645,9 +649,12 @@ function MasterLooterFrame_Show()
 	local itemFrame = MasterLooterFrame.Item;
 	itemFrame.ItemName:SetText(LootFrame.selectedItemName);
 	itemFrame.Icon:SetTexture(LootFrame.selectedTexture);
-	local colorInfo = ITEM_QUALITY_COLORS[LootFrame.selectedQuality];
-	itemFrame.IconBorder:SetVertexColor(colorInfo.r, colorInfo.g, colorInfo.b);
-	itemFrame.ItemName:SetVertexColor(colorInfo.r, colorInfo.g, colorInfo.b);
+
+	local colorData = ColorManager.GetColorDataForItemQuality(LootFrame.selectedQuality);
+	if colorData then
+		itemFrame.IconBorder:SetVertexColor(colorData.r, colorData.g, colorData.b);
+		itemFrame.ItemName:SetVertexColor(colorData.r, colorData.g, colorData.b);
+	end
 
 	MasterLooterFrame:Show();
 	MasterLooterFrame_UpdatePlayers();
@@ -730,7 +737,13 @@ function MasterLooterPlayerFrame_OnClick(self)
 	MasterLooterFrame.slot = LootFrame.selectedSlot;
 	MasterLooterFrame.candidateId = self.id;
 	if ( LootFrame.selectedQuality >= Constants.LootConsts.MasterLootQualityThreshold ) then
-		StaticPopup_Show("CONFIRM_LOOT_DISTRIBUTION", ITEM_QUALITY_COLORS[LootFrame.selectedQuality].hex..LootFrame.selectedItemName..FONT_COLOR_CODE_CLOSE, self.Name:GetText(), "LootWindow");
+		local textArg1 = LootFrame.selectedItemName;
+		local colorData = ColorManager.GetColorDataForItemQuality(LootFrame.selectedQuality);
+		if colorData then
+			textArg1 = colorData.hex..LootFrame.selectedItemName..FONT_COLOR_CODE_CLOSE;
+		end
+
+		StaticPopup_Show("CONFIRM_LOOT_DISTRIBUTION", textArg1, self.Name:GetText(), "LootWindow");
 	else
 		MasterLooterFrame_GiveMasterLoot();
 	end

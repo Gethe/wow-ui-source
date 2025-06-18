@@ -40,7 +40,7 @@ StaticPopupDialogs["CHARACTER_CREATE_FAILURE"] = {
 	text = "",
 	button1 = OKAY,
 	button2 = nil,
-    OnAccept = function ()
+    OnAccept = function(dialog, data)
 		if CharacterCreateFrame:IsShown() then
 			CharacterCreateFrame:SetMode(CHAR_CREATE_MODE_CUSTOMIZE);
 		end
@@ -127,31 +127,34 @@ function CharacterCreateMixin:OnEvent(event, ...)
 
 			self.RaceAndClassFrame.ClassTrialCheckButton:ResetDesiredState();
 			GlueParent_SetScreen("charselect");
+			C_Log.LogMessage("From CharacterCreateMixin:OnEvent");
 		else
 			showError = errorCode;
 		end
 	elseif event == "RACE_FACTION_CHANGE_STARTED" then
 		local changeType = ...;
 		if changeType == "RACE" then
-			GlueDialog_Show("PAID_SERVICE_IN_PROGRESS", RACE_CHANGE_IN_PROGRESS);
+			StaticPopup_Show("PAID_SERVICE_IN_PROGRESS", RACE_CHANGE_IN_PROGRESS);
 		elseif changeType == "FACTION" then
-			GlueDialog_Show("PAID_SERVICE_IN_PROGRESS", FACTION_CHANGE_IN_PROGRESS);
+			StaticPopup_Show("PAID_SERVICE_IN_PROGRESS", FACTION_CHANGE_IN_PROGRESS);
 		end
 	elseif event == "RACE_FACTION_CHANGE_RESULT" then
 		local success, errorCode = ...;
 		if success then
-			GlueDialog_Hide("PAID_SERVICE_IN_PROGRESS");
+			StaticPopup_Hide("PAID_SERVICE_IN_PROGRESS");
 			GlueParent_SetScreen("charselect");
+			C_Log.LogMessage("From RACE_FACTION_CHANGE_RESULT");
 		else
 			showError = errorCode;
 		end
 	elseif event == "CUSTOMIZE_CHARACTER_STARTED" then
-		GlueDialog_Show("PAID_SERVICE_IN_PROGRESS", CHAR_CUSTOMIZE_IN_PROGRESS);
+		StaticPopup_Show("PAID_SERVICE_IN_PROGRESS", CHAR_CUSTOMIZE_IN_PROGRESS);
 	elseif event == "CUSTOMIZE_CHARACTER_RESULT" then
 		local success, errorCode = ...;
 		if success then
-			GlueDialog_Hide("PAID_SERVICE_IN_PROGRESS");
+			StaticPopup_Hide("PAID_SERVICE_IN_PROGRESS");
 			GlueParent_SetScreen("charselect");
+			C_Log.LogMessage("From CUSTOMIZE_CHARACTER_RESULT");
 		else
 			showError = errorCode;
 		end
@@ -183,7 +186,7 @@ function CharacterCreateMixin:OnEvent(event, ...)
 
 	if showError then
 		self:UpdateForwardButton();
-		GlueDialog_Show("CHARACTER_CREATE_FAILURE", _G[showError]);
+		StaticPopup_Show("CHARACTER_CREATE_FAILURE", _G[showError]);
 	end
 end
 
@@ -198,7 +201,7 @@ function CharacterCreateMixin:OnShow()
 		self.currentPaidServiceName = C_PaidServices.GetName();
 		_, selectedFaction = C_PaidServices.GetCurrentFaction();
 		if not fullCharacterCreateDisabled then
-			NameChoiceFrame.EditBox:SetText(self.currentPaidServiceName);
+			NameChoiceFrame.EditBox:SetText(self.currentPaidServiceName or "");
 		end
 	else
 		self.currentPaidServiceName = nil;
@@ -310,7 +313,8 @@ function CharacterCreateMixin:OnStoreVASPurchaseError()
 				break;
 			end
 		end
-		GlueDialog_Show("CHARACTER_CREATE_VAS_ERROR", displayMsg, exitAfterError);
+		local text2 = nil;
+		StaticPopup_Show("CHARACTER_CREATE_VAS_ERROR", displayMsg, text2, exitAfterError);
 	end
 end
 
@@ -322,7 +326,8 @@ function CharacterCreateMixin:OnAssignVASResponse(token, storeError, vasPurchase
 			CharacterCreateFrame:Exit();
 		else
 			local exitAfterError = not self:IsVASErrorUserFixable(vasPurchaseResult);
-			GlueDialog_Show("CHARACTER_CREATE_VAS_ERROR", errorMsg, exitAfterError);
+			local text2 = nil;
+			StaticPopup_Show("CHARACTER_CREATE_VAS_ERROR", errorMsg, text2, exitAfterError);
 		end
 	end
 end
@@ -522,7 +527,7 @@ function CharacterCreateMixin:SetMode(mode, instantRotate)
 
 		self:SetCameraZoomLevel(0);
 		self:SetModelDressState(true);
-		C_CharacterCreation.SetSelectedPreviewGearType(Enum.PreviewGearType.Awesome);
+		C_CharacterCreation.SetSelectedPreviewGearType(Enum.NewCharGear.Preview);
 
 		if self:IsMode(CHAR_CREATE_MODE_CUSTOMIZE) then
 			self.BottomBackgroundOverlay.FadeIn:Play();
@@ -533,7 +538,7 @@ function CharacterCreateMixin:SetMode(mode, instantRotate)
 			RaceAndClassFrame:PlayCustomizationAnimation();
 
 			C_CharacterCreation.SetBlurEnabled(true);
-			C_CharacterCreation.SetSelectedPreviewGearType(Enum.PreviewGearType.Starting);
+			C_CharacterCreation.SetSelectedPreviewGearType(Enum.NewCharGear.Start);
 
 			self.BottomBackgroundOverlay.FadeOut:Play();
 
@@ -604,11 +609,12 @@ function CharacterCreateMixin:Exit()
 	self.RaceAndClassFrame.ClassTrialCheckButton:ResetDesiredState();
 
 	CharacterSelect.backFromCharCreate = true;
-	local fullCharacterCreateDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.FullCharacterCreateDisabled);
-	if not fullCharacterCreateDisabled then
-		GlueParent_SetScreen("charselect");
+	local screenName = C_GameRules.GetGameModeGlueScreenName();
+	if screenName then
+		GlueParent_SetScreen(screenName);
 	else
-		GlueParent_SetScreen("plunderstorm");
+		GlueParent_SetScreen("charselect");
+		C_Log.LogMessage("From CharacterCreateMixin:Exit");
 	end
 end
 
@@ -698,9 +704,9 @@ end
 
 function CharacterCreateMixin:CreateCharacter()
 	if self.paidServiceType then
-		GlueDialog_Show("CONFIRM_PAID_SERVICE");
+		StaticPopup_Show("CONFIRM_PAID_SERVICE");
 	elseif self.vasType == Enum.ValueAddedServiceType.PaidFactionChange or self.vasType == Enum.ValueAddedServiceType.PaidRaceChange then
-		GlueDialog_Show("CONFIRM_VAS_FACTION_CHANGE");
+		StaticPopup_Show("CONFIRM_VAS_FACTION_CHANGE");
 	else
 		if Kiosk.IsEnabled() then
 			KioskModeSplash:SetAutoEnterWorld(true);
@@ -710,9 +716,10 @@ function CharacterCreateMixin:CreateCharacter()
 		self:UpdateForwardButton();
 
 		C_CharacterCreation.CreateCharacter(self:GetSelectedName(), ZoneChoiceFrame.useNPE, RaceAndClassFrame:GetCreateCharacterFaction());
-		local fullCharacterCreateDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.FullCharacterCreateDisabled);
-		if fullCharacterCreateDisabled then
-			GlueParent_SetScreen("plunderstorm");
+		local screenName = C_GameRules.GetGameModeGlueScreenName();
+		if screenName then
+			GlueParent_SetScreen(screenName);
+			C_Log.LogMessage("From CharacterCreateMixin:CreateCharacter");
 		end
 	end
 end
@@ -2027,17 +2034,11 @@ function CharacterCreateEditBoxMixin:OnEvent(event, ...)
 	end
 end
 
-CharacterCreateNameAvailabilityStateMixin = {};
+CharacterCreateNameAvailabilityStateMixin = CreateFromMixins(TimedCallbackMixin);
 
 function CharacterCreateNameAvailabilityStateMixin:OnLoad()
+	self:SetCheckDelaySeconds(1);
 	self:RegisterEvent("CHECK_CHARACTER_NAME_AVAILABILITY_RESULT");
-end
-
-function CharacterCreateNameAvailabilityStateMixin:ClearTimer()
-	if self.Timer then
-		self.Timer:Cancel();
-		self.Timer = nil;
-	end
 end
 
 function CharacterCreateNameAvailabilityStateMixin:SetupAnchors(tooltip)
@@ -2055,29 +2056,25 @@ function CharacterCreateNameAvailabilityStateMixin:OnEvent(event, ...)
 	end
 end
 
-local CHECK_NAME_WAIT_TIME_SECONDS = 1;
-
 function CharacterCreateNameAvailabilityStateMixin:CheckName(nameToCheck)
 	self:Hide();
 
 	self:UpdateNavBlocker(nil);
-	self:ClearTimer();
-
-	local function checkName()
-		local valid, reason = C_CharacterCreation.IsCharacterNameValid(nameToCheck);
-		if not valid then
-			self:UpdateState(false, _G[reason]);
-			return;
-		end
-
-		-- The name is valid, so next request the availability be checked
-		C_CharacterCreation.RequestCheckNameAvailability(nameToCheck);
-	end
+	self:Cancel();
 
 	if nameToCheck == self.lastRandomName or nameToCheck == CharacterCreateFrame.currentPaidServiceName then
 		self:UpdateState(true);
 	else
-		self.Timer = C_Timer.NewTimer(CHECK_NAME_WAIT_TIME_SECONDS, checkName);
+		self:RunCallbackAsync(function()
+			local valid, reason = C_CharacterCreation.IsCharacterNameValid(nameToCheck);
+			if not valid then
+				self:UpdateState(false, _G[reason]);
+				return;
+			end
+	
+			-- The name is valid, so next request the availability be checked
+			C_CharacterCreation.RequestCheckNameAvailability(nameToCheck);
+		end);
 	end
 end
 

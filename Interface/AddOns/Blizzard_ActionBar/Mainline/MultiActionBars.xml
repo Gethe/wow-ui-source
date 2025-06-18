@@ -15,20 +15,12 @@
 	<CheckButton name="MultiBar3ButtonTemplate" virtual="true" inherits="ActionBarButtonTemplate">
 		<KeyValues>
 			<KeyValue key="buttonType" value="MULTIACTIONBAR3BUTTON" type="string"/>
-			<KeyValue key="popupDirection" value="LEFT" type="string"/>
-			<KeyValue key="popupOffset" value="-4" type="number"/>
-			<KeyValue key="openArrowOffset" value="3" type="number"/>
-			<KeyValue key="closedArrowOffset" value="5" type="number"/>
 		</KeyValues>
 	</CheckButton>
 
 	<CheckButton name="MultiBar4ButtonTemplate" virtual="true" inherits="ActionBarButtonTemplate">
 		<KeyValues>
 			<KeyValue key="buttonType" value="MULTIACTIONBAR4BUTTON" type="string"/>
-			<KeyValue key="popupDirection" value="LEFT" type="string"/>
-			<KeyValue key="popupOffset" value="-4" type="number"/>
-			<KeyValue key="openArrowOffset" value="3" type="number"/>
-			<KeyValue key="closedArrowOffset" value="5" type="number"/>
 		</KeyValues>
 	</CheckButton>
 
@@ -64,6 +56,7 @@
 			<KeyValue key="hideGridEventName" value="ACTIONBAR_HIDEGRID" type="string"/>
 			<KeyValue key="systemIndex" value="Enum.EditModeActionBarSystemIndices.Bar2" type="global"/>
 			<KeyValue key="useDefaultAnchors" value="ACTION_BARS_USE_DEFAULT_ANCHORS" type="global"/>
+			<KeyValue key="isNormalBar" value="true" type="boolean"/>
 		</KeyValues>
 		<Attributes>
 			<Attribute name="actionpage" type="number" value="6"/>
@@ -93,6 +86,7 @@
 			<KeyValue key="hideGridEventName" value="ACTIONBAR_HIDEGRID" type="string"/>
 			<KeyValue key="systemIndex" value="Enum.EditModeActionBarSystemIndices.Bar3" type="global"/>
 			<KeyValue key="useDefaultAnchors" value="ACTION_BARS_USE_DEFAULT_ANCHORS" type="global"/>
+			<KeyValue key="isNormalBar" value="true" type="boolean"/>
 		</KeyValues>
 		<Attributes>
 			<Attribute name="actionpage" type="number" value="5"/>
@@ -121,6 +115,7 @@
 			<KeyValue key="showGridEventName" value="ACTIONBAR_SHOWGRID" type="string"/>
 			<KeyValue key="hideGridEventName" value="ACTIONBAR_HIDEGRID" type="string"/>
 			<KeyValue key="systemIndex" value="Enum.EditModeActionBarSystemIndices.RightBar2" type="global"/>
+			<KeyValue key="isNormalBar" value="true" type="boolean"/>
 		</KeyValues>
 		<Attributes>
 			<Attribute name="actionpage" type="number" value="4"/>
@@ -149,6 +144,7 @@
 			<KeyValue key="showGridEventName" value="ACTIONBAR_SHOWGRID" type="string"/>
 			<KeyValue key="hideGridEventName" value="ACTIONBAR_HIDEGRID" type="string"/>
 			<KeyValue key="systemIndex" value="Enum.EditModeActionBarSystemIndices.RightBar1" type="global"/>
+			<KeyValue key="isNormalBar" value="true" type="boolean"/>
 		</KeyValues>
 		<Attributes>
 			<Attribute name="actionpage" type="number" value="3"/>
@@ -177,6 +173,7 @@
 			<KeyValue key="showGridEventName" value="ACTIONBAR_SHOWGRID" type="string"/>
 			<KeyValue key="hideGridEventName" value="ACTIONBAR_HIDEGRID" type="string"/>
 			<KeyValue key="systemIndex" value="Enum.EditModeActionBarSystemIndices.ExtraBar1" type="global"/>
+			<KeyValue key="isNormalBar" value="true" type="boolean"/>
 		</KeyValues>
 		<Attributes>
 			<Attribute name="actionpage" type="number" value="13"/>
@@ -205,6 +202,7 @@
 			<KeyValue key="showGridEventName" value="ACTIONBAR_SHOWGRID" type="string"/>
 			<KeyValue key="hideGridEventName" value="ACTIONBAR_HIDEGRID" type="string"/>
 			<KeyValue key="systemIndex" value="Enum.EditModeActionBarSystemIndices.ExtraBar2" type="global"/>
+			<KeyValue key="isNormalBar" value="true" type="boolean"/>
 		</KeyValues>
 		<Attributes>
 			<Attribute name="actionpage" type="number" value="14"/>
@@ -233,6 +231,7 @@
 			<KeyValue key="showGridEventName" value="ACTIONBAR_SHOWGRID" type="string"/>
 			<KeyValue key="hideGridEventName" value="ACTIONBAR_HIDEGRID" type="string"/>
 			<KeyValue key="systemIndex" value="Enum.EditModeActionBarSystemIndices.ExtraBar3" type="global"/>
+			<KeyValue key="isNormalBar" value="true" type="boolean"/>
 		</KeyValues>
 		<Attributes>
 			<Attribute name="actionpage" type="number" value="15"/>

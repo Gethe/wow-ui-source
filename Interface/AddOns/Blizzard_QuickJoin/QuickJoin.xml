@@ -2,14 +2,14 @@
 ..\Blizzard_SharedXML\UI.xsd">
 	<Script file="QuickJoin.lua"/>
 
-	<FontString name="QuickJoinButtonMemberTemplate" virtual="true" inherits="GameFontNormalSmall" justifyH="LEFT">
-		<Size x="80" y="16"/>
+	<FontString name="QuickJoinButtonMemberTemplate" virtual="true" inherits="UserScaledFontGameNormalSmall" maxLines="1" justifyH="LEFT">
+		<Size x="120"/>
 	</FontString>
-	<FontString name="QuickJoinButtonQueueTemplate" virtual="true" inherits="GameFontNormalSmall" text="Random Warlords of Draenor Heroic Dungeon or Something" justifyH="LEFT">
-		<Size x="186" y="16"/>
+	<FontString name="QuickJoinButtonQueueTemplate" virtual="true" inherits="UserScaledFontGameNormalSmall" maxLines="1" text="Random Warlords of Draenor Heroic Dungeon or Something" justifyH="LEFT">
+		<Size x="200"/>
 	</FontString>
 	<Button name="QuickJoinButtonTemplate" hyperlinksEnabled="true" mixin="QuickJoinButtonMixin" virtual="true">
-		<Size x="297" y="25"/>
+		<Size x="297"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Background" file="Interface\GuildFrame\GuildFrame">
@@ -21,21 +21,20 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString parentArray="Members" inherits="QuickJoinButtonMemberTemplate">
+				<FontString parentKey="MemberName" parentArray="Members" maxLines="1" inherits="QuickJoinButtonMemberTemplate">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="3" y="-6"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="3" y="-8"/>
 					</Anchors>
 				</FontString>
 				<Texture parentKey="Icon" atlas="socialqueuing-icon-eye" useAtlasSize="false">
 					<Anchors>
-						<!--This gets changed in code-->
-						<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="87" y="-5"/>
+						<Anchor point="LEFT" relativeKey="$parent.MemberName" relativePoint="RIGHT" x="2"/>
 					</Anchors>
 					<Size x="16" y="17"/>
 				</Texture>
-				<FontString parentArray="Queues" inherits="QuickJoinButtonQueueTemplate">
+				<FontString parentKey="QueueName" parentArray="Queues" inherits="QuickJoinButtonQueueTemplate">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="106" y="-6"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.MemberName" relativePoint="TOPRIGHT" x="20"/>
 					</Anchors>
 				</FontString>
 			</Layer>

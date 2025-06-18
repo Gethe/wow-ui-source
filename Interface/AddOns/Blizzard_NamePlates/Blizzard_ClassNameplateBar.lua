@@ -50,7 +50,7 @@ function ClassNameplateBar:MatchesSpec()
 	if ( not self.spec ) then
 		return true;
 	end
-	local myspec = GetSpecialization();
+	local myspec = C_SpecializationInfo.GetSpecialization();
 	return myspec == self.spec;
 end
 

@@ -1,6 +1,6 @@
 
 -- TODO:: WoWLabs temp reintegration changes, let's figure out a better way to support this.
-if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
+if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
 	local WOWLABS_ACTIONBUTTON_MAP = {
 		[61] = { ["INVSLOT"] = INVSLOT_OFFENSIVE_1,	["FRAME"] = "MultiBarBottomLeftButton1"		},
 		[62] = { ["INVSLOT"] = INVSLOT_OFFENSIVE_2,	["FRAME"] = "MultiBarBottomLeftButton2"		},
@@ -221,7 +221,7 @@ if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
 		-- Update flyout appearance
 		self:UpdateFlyout();
 
-		self:UpdateOverlayGlow();
+		self:UpdateOverlayFrames();
 
 		self:UpdateBorder();
 
@@ -271,8 +271,14 @@ if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
 			local shouldShowQuality = itemQuality and itemQuality > 1;
 			self.Border:SetShown(shouldShowQuality);
 			if shouldShowQuality then
-				local color = ITEM_QUALITY_COLORS[itemQuality] or ITEM_QUALITY_COLORS[1];
-				self.Border:SetVertexColor(color.r, color.g, color.b, 1);
+				local colorData = ColorManager.GetColorDataForItemQuality(itemQuality);
+				if not colorData then
+					colorData = ColorManager.GetColorDataForItemQuality(1);
+				end
+
+				if colorData then
+					self.Border:SetVertexColor(colorData.r, colorData.g, colorData.b, 1);
+				end
 			end
 
 			local numPipsToShow = itemQuality and itemQuality or 0;

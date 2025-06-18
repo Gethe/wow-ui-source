@@ -685,13 +685,13 @@ StaticPopupDialogs["CONFIRM_BUY_BANK_TAB"] = {
 	timeout = 0,
 	hideOnEscape = 1,
 
-	OnAccept = function(self)
-		C_Bank.PurchaseBankTab(self.data.bankType);
+	OnAccept = function(dialog, data)
+		C_Bank.PurchaseBankTab(data.bankType);
 	end,
-	OnShow = function(self)
-		local tabCost = C_Bank.FetchNextPurchasableBankTabCost(self.data.bankType);
+	OnShow = function(dialog, data)
+		local tabCost = C_Bank.FetchNextPurchasableBankTabCost(data.bankType);
 		if tabCost then
-			MoneyFrame_Update(self.moneyFrame, tabCost);
+			MoneyFrame_Update(dialog.MoneyFrame, tabCost);
 		end
 	end,
 };
@@ -706,18 +706,18 @@ StaticPopupDialogs["BANK_MONEY_WITHDRAW"] = {
 	timeout = 0,
 	hideOnEscape = 1,
 
-	OnAccept = function(self)
-		local amountToWithdraw = MoneyInputFrame_GetCopper(self.moneyInputFrame);
-		C_Bank.WithdrawMoney(self.data.bankType, amountToWithdraw);
+	OnAccept = function(dialog, data)
+		local amountToWithdraw = MoneyInputFrame_GetCopper(dialog.MoneyInputFrame);
+		C_Bank.WithdrawMoney(data.bankType, amountToWithdraw);
 	end,
-	OnHide = function(self)
-		MoneyInputFrame_ResetMoney(self.moneyInputFrame);
+	OnHide = function(dialog, data)
+		MoneyInputFrame_ResetMoney(dialog.MoneyInputFrame);
 	end,
-	EditBoxOnEnterPressed = function(self)
-		local staticPopup = self:GetParent():GetParent();
-		local amountToWithdraw = MoneyInputFrame_GetCopper(staticPopup.moneyInputFrame);
-		C_Bank.WithdrawMoney(staticPopup.data.bankType, amountToWithdraw);
-		staticPopup:Hide();
+	EditBoxOnEnterPressed = function(editBox, data)
+		local dialog = editBox:GetParent():GetParent();
+		local amountToWithdraw = MoneyInputFrame_GetCopper(dialog.MoneyInputFrame);
+		C_Bank.WithdrawMoney(data.bankType, amountToWithdraw);
+		dialog:Hide();
 	end,
 };
 
@@ -731,18 +731,18 @@ StaticPopupDialogs["BANK_MONEY_DEPOSIT"] = {
 	timeout = 0,
 	hideOnEscape = 1,
 
-	OnAccept = function(self)
-		local amountToDeposit = MoneyInputFrame_GetCopper(self.moneyInputFrame);
-		C_Bank.DepositMoney(self.data.bankType, amountToDeposit);
+	OnAccept = function(dialog, data)
+		local amountToDeposit = MoneyInputFrame_GetCopper(dialog.MoneyInputFrame);
+		C_Bank.DepositMoney(data.bankType, amountToDeposit);
 	end,
-	OnHide = function(self)
-		MoneyInputFrame_ResetMoney(self.moneyInputFrame);
+	OnHide = function(dialog, data)
+		MoneyInputFrame_ResetMoney(dialog.MoneyInputFrame);
 	end,
-	EditBoxOnEnterPressed = function(self)
-		local staticPopup = self:GetParent():GetParent();
-		local amountToDeposit = MoneyInputFrame_GetCopper(staticPopup.moneyInputFrame);
-		C_Bank.DepositMoney(staticPopup.data.bankType, amountToDeposit);
-		staticPopup:Hide();
+	EditBoxOnEnterPressed = function(editBox, data)
+		local dialog = editBox:GetParent():GetParent();
+		local amountToDeposit = MoneyInputFrame_GetCopper(dialog.MoneyInputFrame);
+		C_Bank.DepositMoney(data.bankType, amountToDeposit);
+		dialog:Hide();
 	end,
 };
 
@@ -750,10 +750,10 @@ StaticPopupDialogs["ACCOUNT_BANK_DEPOSIT_NO_REFUND_CONFIRM"] = {
 	text = END_REFUND,
 	button1 = OKAY,
 	button2 = CANCEL,
-	OnCancel = function(self)
+	OnCancel = function(dialog, data)
 		ClearCursor();
 	end,
-	OnAccept = function(self, data)
+	OnAccept = function(dialog, data)
 		if (BankFrame:GetActiveBankType() ~= Enum.BankType.Account) or not C_Bank.CanUseBank(Enum.BankType.Account) or not data.itemToDeposit then
 			return;
 		end
@@ -789,7 +789,7 @@ StaticPopupDialogs["ACCOUNT_BANK_DEPOSIT_ALL_NO_REFUND_CONFIRM"] = {
 	text = ACCOUNT_BANK_DEPOSIT_ALL_NO_REFUND_CONFIRM,
 	button1 = ACCEPT,
 	button2 = CANCEL,
-	OnAccept = function(self)
+	OnAccept = function(dialog, data)
 		C_Bank.AutoDepositItemsIntoBank(Enum.BankType.Account);
 	end,
 	timeout = 0,

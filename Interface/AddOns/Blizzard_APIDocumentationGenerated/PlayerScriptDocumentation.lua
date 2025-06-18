@@ -359,6 +359,17 @@ local PlayerScript =
 			},
 		},
 		{
+			Name = "GetExpertisePercent",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "mainhandExpertisePercent", Type = "number", Nilable = false },
+				{ Name = "offhandExpertisePercent", Type = "number", Nilable = false },
+				{ Name = "rangedExpertisePercent", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetHaste",
 			Type = "Function",
 

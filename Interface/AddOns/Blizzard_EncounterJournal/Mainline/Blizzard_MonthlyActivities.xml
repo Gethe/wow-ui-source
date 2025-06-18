@@ -161,7 +161,7 @@
 		</Scripts>
 	</Button>
 
-	<Frame name="MonthlyActivitiesThresholdTemplate" mixin="MonthlyActivitiesThresholdMixin" useParentLevel="true" virtual="true">
+	<Frame name="MonthlyActivitiesThresholdTemplate" mixin="MonthlyActivitiesThresholdMixin" frameLevel="700" virtual="true">
 		<Size x="40" y="40"/>
 		<Layers>
 			<Layer level="ARTWORK" textureSubLevel="1">
@@ -170,14 +170,20 @@
 						<Anchor point="CENTER" x="0" y="20"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="LineIncomplete" atlas="activities-incomplete-line" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="20"/>
-					</Anchors>
-				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="LineIncomplete" frameLevel="500" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="LineIncompleteTexture" atlas="activities-incomplete-line" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="20"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
 			<ItemButton parentKey="RewardItem" mixin="MonthlyActivitiesRewardButtonMixin" frameStrata="HIGH" hidden="true">
 				<Size x="64" y="64"/>
 				<Anchors>
@@ -270,7 +276,7 @@
 					<OnLeave method="OnLeave"/>
 				</Scripts>
 				<Animations>
-					<AnimationGroup parentKey="EarnedAnim" looping="NONE" setToFinalAlpha="true">
+					<AnimationGroup parentKey="EarnedAnim" looping="NONE" setToFinalAlpha="false">
 						<Alpha childKey="EarnedCheckmark" duration="0.5" order="1" fromAlpha="0" toAlpha="0"/>
 						<Alpha childKey="EarnedCheckmark" duration="0.0" order="2" fromAlpha="1" toAlpha="1"/>
 						<Alpha childKey="Points" duration="0.5" order="1" fromAlpha="0" toAlpha="0"/>

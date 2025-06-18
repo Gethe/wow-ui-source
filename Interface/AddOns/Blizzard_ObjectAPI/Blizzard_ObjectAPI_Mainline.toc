@@ -3,6 +3,7 @@
 ## DefaultState: enabled
 ## AllowLoad: Game
 ## AllowLoadGameType: mainline
+## Dependencies: Blizzard_Colors
 Mainline\ContinuableContainer.lua
 Mainline\ItemLocation.lua
 Mainline\AsyncCallbackSystem.lua

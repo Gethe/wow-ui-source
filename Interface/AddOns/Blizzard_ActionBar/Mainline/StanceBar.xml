@@ -2,10 +2,10 @@
 ..\..\Blizzard_SharedXML\UI.xsd">
 	<CheckButton name="StanceButtonTemplate" inherits="QuickKeybindButtonTemplate, SecureFrameTemplate, SmallActionButtonTemplate" mixin="StanceButtonMixin" virtual="true">
 		<Scripts>
-			<OnLoad method="OnLoad" inherit="append"/>
-			<OnClick method="OnClick" inherit="append"/>
-			<OnEnter method="OnEnter" inherit="append"/>
-			<OnLeave method="OnLeave" inherit="append"/>
+			<OnLoad method="StanceButtonMixin_OnLoad"/>
+			<OnClick method="StanceButtonMixin_OnClick"/>
+			<OnEnter method="StanceButtonMixin_OnEnter"/>
+			<OnLeave method="StanceButtonMixin_OnLeave"/>
 		</Scripts>
 	</CheckButton>
 

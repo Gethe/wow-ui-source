@@ -29,8 +29,8 @@ StaticPopupDialogs["BUYOUT_AUCTION"] = {
 	button2 = CANCEL,
 
 	OnAccept = GenerateClosure(StaticPopup_OnAcceptWithSpinner, BuyoutDialogOnAccept, BuyoutDialogOnEvent, {"AUCTION_HOUSE_PURCHASE_COMPLETED", "AUCTION_HOUSE_SHOW_ERROR"}, 2),
-	OnShow = function(self)
-		MoneyFrame_Update(self.moneyFrame, self.data.buyout);
+	OnShow = function(dialog, data)
+		MoneyFrame_Update(dialog.MoneyFrame, data.buyout);
 	end,
 	hasMoneyFrame = 1,
 	showAlert = 1,
@@ -43,11 +43,11 @@ StaticPopupDialogs["BID_AUCTION"] = {
 	text = BID_AUCTION_CONFIRMATION,
 	button1 = ACCEPT,
 	button2 = CANCEL,
-	OnAccept = function(self)
-		C_AuctionHouse.PlaceBid(self.data.auctionID, self.data.bid);
+	OnAccept = function(dialog, data)
+		C_AuctionHouse.PlaceBid(data.auctionID, data.bid);
 	end,
-	OnShow = function(self)
-		MoneyFrame_Update(self.moneyFrame, self.data.bid);
+	OnShow = function(dialog, data)
+		MoneyFrame_Update(dialog.MoneyFrame, data.bid);
 	end,
 	hasMoneyFrame = 1,
 	showAlert = 1,
@@ -60,10 +60,10 @@ StaticPopupDialogs["PURCHASE_AUCTION_UNIQUE"] = {
 	text = "",
 	button1 = OKAY,
 	button2 = CANCEL,
-	OnShow = function(self, data)
-		self.text:SetText(PURCHASE_UNIQUE_AUCTION_CONFIRMATION:format(data.categoryName));
+	OnShow = function(dialog, data)
+		dialog:SetText(PURCHASE_UNIQUE_AUCTION_CONFIRMATION:format(data.categoryName));
 	end,
-	OnAccept = function(self, data)
+	OnAccept = function(dialog, data)
 		data.callback();
 	end,
 
@@ -78,16 +78,16 @@ StaticPopupDialogs["CANCEL_AUCTION"] = {
 	text = CANCEL_AUCTION_CONFIRMATION,
 	button1 = ACCEPT,
 	button2 = CANCEL,
-	OnAccept = function(self)
-		C_AuctionHouse.CancelAuction(self.data.auctionID);
+	OnAccept = function(dialog, data)
+		C_AuctionHouse.CancelAuction(data.auctionID);
 	end,
-	OnShow = function(self)
-		local cancelCost = C_AuctionHouse.GetCancelCost(self.data.auctionID);
-		MoneyFrame_Update(self.moneyFrame, cancelCost);
+	OnShow = function(dialog, data)
+		local cancelCost = C_AuctionHouse.GetCancelCost(data.auctionID);
+		MoneyFrame_Update(dialog.MoneyFrame, cancelCost);
 		if cancelCost > 0 then
-			self.text:SetText(CANCEL_AUCTION_CONFIRMATION_MONEY);
+			dialog:SetText(CANCEL_AUCTION_CONFIRMATION_MONEY);
 		else
-			self.text:SetText(CANCEL_AUCTION_CONFIRMATION);
+			dialog:SetText(CANCEL_AUCTION_CONFIRMATION);
 		end
 	end,
 	hasMoneyFrame = 1,
@@ -101,12 +101,12 @@ StaticPopupDialogs["AUCTION_HOUSE_POST_WARNING"] = {
 	text = NORMAL_FONT_COLOR:WrapTextInColorCode(CONFIRM_AUCTION_POSTING_TEXT),
 	button1 = ACCEPT,
 	button2 = CANCEL,
-	OnAccept = function ()
+	OnAccept = function(dialog, data)
 		if not AuctionHouseFrame.CommoditiesSellFrame:ConfirmPost() then
 			AuctionHouseFrame.ItemSellFrame:ConfirmPost();
 		end
 	end,
-	OnHide = function()
+	OnHide = function(dialog, data)
 		AuctionHouseFrame:SetDialogOverlayShown(false);
 	end,
 
@@ -119,7 +119,7 @@ StaticPopupDialogs["AUCTION_HOUSE_POST_WARNING"] = {
 StaticPopupDialogs["AUCTION_HOUSE_POST_ERROR"] = {
 	text = NORMAL_FONT_COLOR:WrapTextInColorCode(AUCTION_POSTING_ERROR_TEXT),
 	button1 = OKAY,
-	OnHide = function()
+	OnHide = function(dialog, data)
 		AuctionHouseFrame:SetDialogOverlayShown(false);
 	end,
 	showAlert = true,

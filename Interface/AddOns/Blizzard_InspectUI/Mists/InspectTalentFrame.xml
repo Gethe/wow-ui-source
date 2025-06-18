@@ -1,0 +1,276 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<!-- Talent button template, taken from PlayerTalentButtonTemplate in Blizzard_TalentUI.xml -->
+	<Button name="InspectTalentButtonTemplate" virtual="true" mixin="InspectTalentButtonMixin">
+		<Size x="64" y="64"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentIconTexture" parentKey="icon">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="CENTER" x="-1" y="2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture name="$parentSlot" inherits="Talent-SingleBorder" parentKey="Slot">
+					<Size x="31" y="30"/>
+					<Anchors>
+						<Anchor point="CENTER" x="-1" y="2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentBorder" file="Interface\AchievementFrame\UI-Achievement-Progressive-IconBorder" parentKey="border">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.65625" top="0" bottom="0.65625"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnClick method="OnClick"/>
+			<OnLeave>
+				GameTooltip_Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	
+	<!-- Row of player talents, taken from PlayerTalentRowTemplate in Blizzard_TalentUI.xml -->
+	<Frame name="InspectTalentRowTemplate" virtual="true">
+		<Size x="627" y="50"/>
+		<Frames>
+			<Button name="$parentTalent1" inherits="InspectTalentButtonTemplate" parentKey="talent1">
+				<Anchors>
+					<Anchor point="LEFT" x="-10" y="0"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentTalent2" inherits="InspectTalentButtonTemplate" parentKey="talent2">
+				<Anchors>
+					<Anchor point="LEFT" x="40" y="0"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentTalent3" inherits="InspectTalentButtonTemplate" parentKey="talent3">
+				<Anchors>
+					<Anchor point="LEFT" x="90" y="0"/>
+				</Anchors>
+			</Button>
+		</Frames>
+	</Frame>
+	
+	<!-- Glyph icons (major and minor), taken from GlyphTemplate in Blizzard_GlyphUI.xml, line 138 -->
+	<Button name="InspectGlyphTemplate" virtual="true" mixin="InspectGlyphFrameGlyphMixin">
+		<Size x="72" y="72"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentGlyph" parentKey="glyph" alpha="0.75">
+					<Size x="57" y="57"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentHighlight" file="Interface\TalentFrame\glyph-main" alphaMode="ADD" parentKey="highlight">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentRing" file="Interface\TalentFrame\glyph-main" parentKey="ring">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow function="InspectGlyphFrameGlyph_UpdateSlot"/>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Button>
+	
+	<Frame name="InspectTalentFrame" setAllPoints="true" useParentLevel="true" enableMouse="true" parent="InspectFrame" hidden="true" id="4" mixin="InspectTalentFrameMixin">
+		<Layers>
+			<!-- Blue background behind spec ring -->
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture file="Interface\Common\bluemenu-main">
+					<Size x="325" y="70"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="6" y="-64" />
+					</Anchors>
+					<TexCoords left="0.00390625" right="0.82421875" top="0.18554688" bottom="0.58984375"/>
+				</Texture>
+			</Layer>
+			<!-- Gold border bar separating blue and black areas-->
+			<Layer level="BORDER">
+				<Texture file="Interface\TalentFrame\talent-horiz" horizTile="true">
+					<Size x="0" y="11"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"  x="7" y="-130"/>
+						<Anchor point="TOPRIGHT" x="-9" y="-130"/>
+					</Anchors>
+					<TexCoords left="0.00000000" right="1.00000000" top="0.05468750" bottom="0.14062500"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<!-- Specialization -->
+			<Frame name="Specialization" parentKey="InspectSpec" mixin="InspectTalentFrameSpecMixin">
+				<Size x="300" y="100"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="-45"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentRing" file="Interface\TalentFrame\talent-main" parentKey="ring">
+							<Size x="101" y="101"/>	
+							<Anchors>
+								<Anchor point="TOPLEFT" x="5" y="-3"/>
+							</Anchors>
+							<TexCoords left="0.00390625" right="0.49218750" top="0.00195313" bottom="0.24609375"/>
+						</Texture>
+						<FontString name="$parentSpecName" inherits="BossEmoteNormalHuge" justifyH="BOTTOM" parentKey="specName">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeTo="$parentRing" relativePoint="RIGHT" x="-3" y="1"/>
+							</Anchors>
+							<Color r="0.984375" g="0.828125" b="0"/>
+						</FontString>
+						<Texture name="$parentRoleIcon" file="Interface\LFGFrame\UI-LFG-ICON-ROLES"	parentKey="roleIcon">
+							<Size x="20" y="20"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentRing" relativePoint="RIGHT" x="-5" y="-3" />
+							</Anchors>
+						</Texture>
+						<FontString inherits="GameFontHighlightMedium" parentKey="roleName">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentRoleIcon" relativePoint="RIGHT" x="3" y="1" />
+							</Anchors>
+							<Color r="0.48828125" g="0.50390625" b="0.515625"/>
+						</FontString>
+						<FontString name="$parentDescription" inherits="GameFontWhite" justifyH="LEFT" parentKey="description">
+							<Size x="370" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentRing" relativePoint="BOTTOMLEFT" x="15" y="-8"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="BORDER" textureSubLevel="3">
+						<Texture name="$parentSpecIcon" parentKey="specIcon">
+							<Size x="70" y="70"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeTo="$parentRing" x="-1" y="1" />
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow function="InspectTalentFrameSpec_OnShow"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Frame>
+			
+			<!-- Talents -->
+			<Frame name="Talents" parentKey="InspectTalents">
+				<Size x="300" y="300"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="12" y="0"/>
+				</Anchors>
+				<Frames>
+					<Frame name="$parentTalentRow1" inherits="InspectTalentRowTemplate" parentKey="tier1" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="5" y="-142"/>
+						</Anchors>				
+					</Frame>
+					<Frame name="$parentTalentRow2" inherits="InspectTalentRowTemplate" parentKey="tier2" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentTalentRow1" relativePoint="BOTTOMLEFT" x="0" y="4"/>
+						</Anchors>				
+					</Frame>
+					<Frame name="$parentTalentRow3" inherits="InspectTalentRowTemplate" parentKey="tier3" id="3">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentTalentRow2" relativePoint="BOTTOMLEFT" x="0" y="4"/>
+						</Anchors>				
+					</Frame>
+					<Frame name="$parentTalentRow4" inherits="InspectTalentRowTemplate" parentKey="tier4" id="4">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentTalentRow3" relativePoint="BOTTOMLEFT" x="0" y="4"/>
+						</Anchors>				
+					</Frame>
+					<Frame name="$parentTalentRow5" inherits="InspectTalentRowTemplate" parentKey="tier5" id="5">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentTalentRow4" relativePoint="BOTTOMLEFT" x="0" y="4"/>
+						</Anchors>				
+					</Frame>
+					<Frame name="$parentTalentRow6" inherits="InspectTalentRowTemplate" parentKey="tier6" id="6">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentTalentRow5" relativePoint="BOTTOMLEFT" x="0" y="4"/>
+						</Anchors>				
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnShow function="InspectTalentFrameTalents_OnShow"/>
+					<OnLoad function="InspectTalentFrameTalents_OnLoad"/>
+				</Scripts>
+			</Frame>
+			
+			<!-- Glyphs -->
+			<Frame name="InspectGlyphs" parentKey="InspectGlyphs">
+			<Size x="300" y="300"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="180" y="-150"/>
+				</Anchors>
+				<Frames>
+					<!-- Minor Glyphs -->
+					<Button name="$parentGlyph1" parentKey="Glyph1" inherits="InspectGlyphTemplate" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="65" y="0"/>
+						</Anchors>
+					</Button>
+					<Button name="$parentGlyph3" parentKey="Glyph3" inherits="InspectGlyphTemplate" id="3">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="65" y="-90"/>
+						</Anchors>
+					</Button>
+					<Button name="$parentGlyph5" parentKey="Glyph5" inherits="InspectGlyphTemplate" id="5">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="65" y="-180"/>
+						</Anchors>
+					</Button>	
+					
+					<!-- Major Glyphs -->
+					<Button name="$parentGlyph2" parentKey="Glyph2" inherits="InspectGlyphTemplate" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="0" y="0"/>
+						</Anchors>
+					</Button>
+					<Button name="$parentGlyph4" parentKey="Glyph4" inherits="InspectGlyphTemplate" id="4">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="0" y="-90"/>
+						</Anchors>
+					</Button>
+					<Button name="$parentGlyph6" parentKey="Glyph6" inherits="InspectGlyphTemplate" id="6">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="0" y="-180"/>
+						</Anchors>
+					</Button>
+				</Frames>
+			</Frame>
+			
+		</Frames>
+	<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+	</Scripts>
+	</Frame>
+</Ui>

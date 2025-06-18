@@ -1,7 +1,6 @@
 
 local textureKitRegionFormatStrings = {
 	["BG1"] = "%s-TitleBG",
-	["BG2"] = "%s-TitleBG",
 };
 
 local textureKitRegionExpandFormatStrings = {
@@ -19,7 +18,6 @@ local textureKitRegionExpandSpaceOverlayFormatStrings = {
 
 local defaultAtlases = {
 	["BG1"] = "legioninvasion-title-bg",
-	["BG2"] = "legioninvasion-title-bg",
 };
 
 local eventToastTextureKitRegions = {
@@ -93,6 +91,7 @@ local eventToastTemplatesByToastType = {
 	[Enum.EventToastDisplayType.FlightpointDiscovered] = {template = "EventToastFlightpointDiscoveredTemplate", frameType = "FRAME", hideAutomatically = true,},
 	[Enum.EventToastDisplayType.CapstoneUnlocked] = {template ="EventToastManagerCapstoneUnlockedTemplate", frameType = "FRAME", hideAutomatically = true,},
 	[Enum.EventToastDisplayType.SingleLineWithIcon] = {template = "EventToastManagerSingleLineWithIconTemplate", frameType = "FRAME", hideAutomatically = true,},
+	[Enum.EventToastDisplayType.Scoreboard] = {template = "EventToastScoreboardTemplate", frameType = "FRAME", hideAutomatically = false,},
 };
 
 EventToastManagerMixin = { };
@@ -135,7 +134,7 @@ end
 function EventToastManagerMixin:SetupBlackBGAtlas()
 end
 
-EventToastManagerFrameMixin = CreateFromMixins(EventToastManagerMixin);
+EventToastManagerFrameMixin = CreateFromMixins(EventToastManagerMixin, OverrideLayoutFrameOnUpdateMixin);
 function EventToastManagerFrameMixin:OnLoad()
 	EventToastManagerMixin.OnLoad(self);
 
@@ -180,9 +179,12 @@ function EventToastManagerFrameMixin:Reset()
 	self.GLine2:Hide();
 
 	self.animationsPaused = false;
-	self.hideAutomatically = true;
+	self:SetHideAutomatically(true);
+end
 
-	self:SetScript("OnUpdate", self.OnUpdate);
+function EventToastManagerFrameMixin:SetHideAutomatically(hideAutomatically)
+	self.hideAutomatically = hideAutomatically;
+	self:UpdateOnUpdateRegistration();
 end
 
 function EventToastManagerFrameMixin:EnableBlackBGAnimation(enable)
@@ -225,7 +227,7 @@ end
 
 function EventToastManagerFrameMixin:CloseActiveToasts()
 	if (self.currentDisplayingToast) then
-		self.hideAutomatically = true;
+		self:SetHideAutomatically(true);
 		self.currentDisplayingToast.hideAutomatically = true;
 		self.animationsPaused = false;
 		self.currentDisplayingToast:SetSuppressAnimOut(false);
@@ -238,7 +240,11 @@ function EventToastManagerFrameMixin:IsCurrentlyToasting()
 	return self.currentDisplayingToast;
 end
 
-function EventToastManagerFrameMixin:OnUpdate()
+function EventToastManagerFrameMixin:NeedsOnUpdate()
+	return self.hideAutomatically;
+end
+
+function EventToastManagerFrameMixin:OverrideOnUpdate(_elapsed)
 	local mouseOver = RegionUtil.IsAnyDescendantOfOrSame(GetMouseFoci(), self);
 	if (mouseOver or self:ShouldPause()) then
 		self:PauseAnimations();
@@ -291,12 +297,12 @@ function EventToastManagerFrameMixin:SetupButton(uiTextureKit)
 		return;
 	end
 
-	self:SetScript("OnUpdate", nil);
-
 	local normalTextureAtlas = GetFinalAtlasFromTextureKitIfExists(hideButtonNormalTexture, uiTextureKit);
 	local higlightTextureAtlas = GetFinalAtlasFromTextureKitIfExists(hideButtonHighlightTexture, uiTextureKit);
 	if(normalTextureAtlas) then
 		self.HideButton:SetNormalAtlas(normalTextureAtlas, true);
+	else
+		self.HideButton:Hide();
 	end
 
 	if (higlightTextureAtlas) then
@@ -332,7 +338,7 @@ function EventToastManagerFrameMixin:DisplayToast(firstToast)
 		self.shouldAnim = true;
 		self:EnableBlackBGAnimation(true);
 		self:UpdateAnchor();
-		self.hideAutomatically = toastTable.hideAutomatically;
+		self:SetHideAutomatically(toastTable.hideAutomatically);
 		toast.hideAutomatically = toastTable.hideAutomatically;
 		toast.toastInfo = toastInfo;
 		toast:ClearAllPoints();
@@ -482,7 +488,6 @@ function EventToastScenarioBaseToastMixin:Setup(toastInfo)
 
 	local usesBGTextures = toastInfo.uiTextureKit or not toastInfo.hideDefaultAtlas;
 	self.BG1:SetShown(usesBGTextures);
-	self.BG2:SetShown(usesBGTextures);
 	self.hideParentAnim = usesBGTextures;
 
 	if(toastInfo.uiTextureKit) then
@@ -739,13 +744,16 @@ function EventToastWithIconWithRarityMixin:Setup(toastInfo)
 	EventToastWithIconBaseMixin.Setup(self, toastInfo);
 	local quality = toastInfo.quality;
 
-	if(toastInfo.qualityString) then
+	if toastInfo.qualityString then
 		self.RarityValue:SetText(toastInfo.qualityString);
 	end
 
-	if(quality) then
-		self.IconBorder:SetVertexColor(ITEM_QUALITY_COLORS[quality].color:GetRGB());
-		self.RarityValue:SetTextColor(ITEM_QUALITY_COLORS[quality].color:GetRGB());
+	if quality then
+		local colorData = ColorManager.GetColorDataForItemQuality(quality);
+		if colorData then
+			self.IconBorder:SetVertexColor(colorData.color:GetRGB());
+			self.RarityValue:SetTextColor(colorData.color:GetRGB());
+		end
 	end
 	self.IconBorder:SetShown(quality);
 	self.RarityValue:SetShown(toastInfo.qualityString);
@@ -1153,7 +1161,10 @@ function EventToastAnimationsMixin:BannerPlay()
 	end);
 
 	self.showAnim:Play();
-	self:GetParent():PlayAnim();
+
+	if not self.skipParentAnim then
+		self:GetParent():PlayAnim();
+	end
 
 	if (self.flipbook) then
 		self.flipbook:Restart();
@@ -1212,6 +1223,10 @@ function EventToastAnimationsMixin:ShouldSuppressAnimOut()
 	return not not self.suppressAnimOut;
 end
 
+function EventToastAnimationsMixin:SetSkipParentAnim(skipParentAnim)
+	self.skipParentAnim = skipParentAnim;
+end
+
 function EventToastAnimationsMixin:MouseOverTitle()
 	if(not self.toastInfo or not self.Title or (not self.toastInfo.titleTooltip and not self.toastInfo.titleTooltipUiWidgetSetID)) then
 		return;
@@ -1257,4 +1272,44 @@ EventToastWeeklyContentsMixin = {};
 
 function EventToastWeeklyContentsMixin:OnMouseDown(...)
 	EventToastManagerFrame:OnMouseDown(...);
+end
+
+EventToastScoreboardMixin = {};
+
+function EventToastScoreboardMixin:OnLoad()
+	EventToastAnimationsMixin.OnLoad(self);
+
+	local function HideToast(_buttonSelf)
+		self:Hide();
+	end
+
+	self.CloseButton:SetScript("OnClick", HideToast);
+end
+
+function EventToastScoreboardMixin:Setup(toastInfo)
+	self:Show();
+	self:SetSkipParentAnim(true);
+	self:PlayBanner();
+
+	-- All the contents of the scoreboard are expected to come from widgets.
+	if toastInfo.uiWidgetSetID then
+		self.WidgetContainer:RegisterForWidgetSet(toastInfo.uiWidgetSetID, DefaultWidgetLayout);
+	end
+
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+end
+
+function EventToastScoreboardMixin:OnEvent(event)
+	-- Scoreboard widgets can be dependent on a specific area. If the player leaves
+	-- without closing the scoreboard, hide it automatically.
+	if event == "PLAYER_ENTERING_WORLD" then
+		if not self.WidgetContainer:HasAnyWidgetsShowing() then
+			self:Hide();
+		end
+	end
+end
+
+function EventToastScoreboardMixin:OnHide()
+	self.WidgetContainer:UnregisterForWidgetSet();
+	EventRegistry:TriggerEvent("EventToastManager.CloseActiveToasts");
 end

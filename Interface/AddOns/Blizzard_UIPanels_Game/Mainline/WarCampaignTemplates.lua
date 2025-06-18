@@ -213,11 +213,6 @@ function CampaignHeaderCollapsibleMixin:OnClick(button)
 	end
 
 	if button == "LeftButton" then
-		if self:IsCollapsed() then
-			self.minimumHeight = self.minimumExpandedHeight;
-		else
-			self.minimumHeight = self.minimumCollapsedHeight;
-		end
 		local isCollapsed = self:ToggleCollapsed();
 
 		if isCollapsed then

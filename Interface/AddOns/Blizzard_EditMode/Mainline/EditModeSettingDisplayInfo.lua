@@ -684,6 +684,125 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			formatter = ShowAsPercentage,
 		},
 	},
+
+	[Enum.EditModeSystem.CooldownViewer] =
+	{
+		-- Orientation
+		{
+			setting = Enum.EditModeCooldownViewerSetting.Orientation,
+			name = HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_ORIENTATION,
+			type = Enum.EditModeSettingDisplayType.Dropdown,
+			options =
+			{
+				{value = Enum.CooldownViewerOrientation.Horizontal, text = HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_ORIENTATION_HORIZONTAL},
+				{value = Enum.CooldownViewerOrientation.Vertical, text = HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_ORIENTATION_VERTICAL},
+			},
+		},
+
+		-- Icon Limit
+		{
+			setting = Enum.EditModeCooldownViewerSetting.IconLimit,
+			name = HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_ICON_LIMIT,
+			altName = HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_ICON_LIMIT_ALT,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 1,
+			maxValue = 20,
+		},
+
+		-- Icon Direction
+		{
+			setting = Enum.EditModeCooldownViewerSetting.IconDirection,
+			name = HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_ICON_DIRECTION,
+			type = Enum.EditModeSettingDisplayType.Dropdown,
+			options =
+			{
+				{value = Enum.CooldownViewerIconDirection.Left, text = HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_ICON_DIRECTION_LEFT},
+				{value = Enum.CooldownViewerIconDirection.Right, text = HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_ICON_DIRECTION_RIGHT},
+			},
+		},
+
+		-- IconSize
+		{
+			setting = Enum.EditModeCooldownViewerSetting.IconSize,
+			name = HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_ICON_SIZE,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 50,
+			maxValue = 200,
+			stepSize = 10,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+		},
+
+		-- IconPadding
+		{
+			setting = Enum.EditModeCooldownViewerSetting.IconPadding,
+			name = HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_ICON_PADDING,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 2,
+			maxValue = 10,
+			stepSize = 1,
+		},
+
+		-- Opacity
+		{
+			setting = Enum.EditModeCooldownViewerSetting.Opacity,
+			name = HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_OPACITY,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 50,
+			maxValue = 100,
+			stepSize = 1,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+			hideSystemSelectionOnInteract = true,
+		},
+
+		-- Visible Setting
+		{
+			setting = Enum.EditModeCooldownViewerSetting.VisibleSetting,
+			name = HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_VISIBLE_SETTING,
+			type = Enum.EditModeSettingDisplayType.Dropdown,
+			options = 
+			{
+				{value = Enum.CooldownViewerVisibleSetting.Always, text = HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_VISIBLE_SETTING_ALWAYS},
+				{value = Enum.CooldownViewerVisibleSetting.InCombat, text = HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_VISIBLE_SETTING_IN_COMBAT},
+				{value = Enum.CooldownViewerVisibleSetting.Hidden, text = HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_VISIBLE_SETTING_HIDDEN},
+			},
+		},
+
+		-- Bar Content
+		{
+			setting = Enum.EditModeCooldownViewerSetting.BarContent,
+			name = HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_BAR_CONTENT,
+			type = Enum.EditModeSettingDisplayType.Dropdown,
+			options = 
+			{
+				{value = Enum.CooldownViewerBarContent.IconAndName, text = HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_BAR_CONTENT_TYPE_ICON_AND_NAME},
+				{value = Enum.CooldownViewerBarContent.IconOnly, text = HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_BAR_CONTENT_TYPE_ICON_ONLY},
+				{value = Enum.CooldownViewerBarContent.NameOnly, text = HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_BAR_CONTENT_TYPE_NAME_ONLY},
+			},
+		},
+
+		-- Hide When Inactive
+		{
+			setting = Enum.EditModeCooldownViewerSetting.HideWhenInactive,
+			name = HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_HIDE_WHEN_INACTIVE,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+
+		-- Show Timer
+		{
+			setting = Enum.EditModeCooldownViewerSetting.ShowTimer,
+			name = HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_SHOW_TIMER,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+
+		-- Show Tooltips
+		{
+			setting = Enum.EditModeCooldownViewerSetting.ShowTooltips,
+			name = HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_SHOW_TOOLTIPS,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+	},
 };
 
 local DefaultSettingDisplayInfo = {};

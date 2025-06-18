@@ -68,7 +68,7 @@ function SettingsPanelMixin:OnLoad()
 	local settingsList = self:GetSettingsList();
 	settingsList.Header.DefaultsButton.Text:SetText(SETTINGS_DEFAULTS);
 	settingsList.Header.DefaultsButton:SetScript("OnClick", function(button, buttonName, down)
-		ShowAppropriateDialog("GAME_SETTINGS_APPLY_DEFAULTS");
+		StaticPopup_Show("GAME_SETTINGS_APPLY_DEFAULTS");
 	end);
 
 	self.SearchBox:HookScript("OnTextChanged", GenerateClosure(self.OnSearchTextChanged, self));
@@ -168,6 +168,8 @@ function SettingsPanelMixin:OnShow()
 
 	self:CallRefreshOnCanvases();
 	self:CheckTutorials(); 
+
+	categories:RefreshNewFeatures();
 end
 
 function SettingsPanelMixin:CheckTutorials()
@@ -197,6 +199,8 @@ function SettingsPanelMixin:OnHide()
 	local checked = Settings.GetValue("PROXY_CHARACTER_SPECIFIC_BINDINGS");
 	local bindingSet = checked and Enum.BindingSet.Character or Enum.BindingSet.Account;
 	SaveBindings(bindingSet);
+
+	EventRegistry:TriggerEvent("SettingsPanel.OnHide");
 end
 
 function SettingsPanelMixin:Commit(unrevertable)
@@ -208,7 +212,7 @@ end
 
 function SettingsPanelMixin:Close(skipTransitionBackToOpeningPanel)
 	if self:HasUnappliedSettings() then
-		ShowAppropriateDialog("GAME_SETTINGS_CONFIRM_DISCARD");
+		StaticPopup_Show("GAME_SETTINGS_CONFIRM_DISCARD");
 	else
 		self:ExitWithCommit(skipTransitionBackToOpeningPanel);
 	end
@@ -337,10 +341,10 @@ function SettingsPanelMixin:CommitSettings(unrevertable)
 
 	if #self.revertableSettings > 0 then
 		local duration = 8.0;
-		ShowAppropriateDialog("GAME_SETTINGS_TIMED_CONFIRMATION", nil, nil, duration);
+		StaticPopup_Show("GAME_SETTINGS_TIMED_CONFIRMATION", nil, nil, duration);
 		local function Timer()
 			self:RevertSettings();
-			HideAppropriateDialog("GAME_SETTINGS_TIMED_CONFIRMATION");
+			StaticPopup_Hide("GAME_SETTINGS_TIMED_CONFIRMATION");
 		end
 		self.Timer = C_Timer.NewTimer(duration, Timer);
 	end
@@ -421,8 +425,10 @@ function SettingsPanelMixin:SetAllSettingsToDefaults()
 	self:WipeModifiedTable();
 	self:CheckApplyButton();
 	self:FinalizeCommit(saveBindings, gxRestart, windowUpdate);
-	
+
 	Settings.SafeLoadBindings(Enum.BindingSet.Default);
+
+	EventRegistry:TriggerEvent("Settings.Defaulted");
 end
 
 function SettingsPanelMixin:SetCurrentCategorySettingsToDefaults()
@@ -466,6 +472,8 @@ function SettingsPanelMixin:SetCurrentCategorySettingsToDefaults()
 	if currentCategory == self.keybindingsCategory then
 		Settings.SafeLoadBindings(Enum.BindingSet.Default);
 	end
+
+	EventRegistry:TriggerEvent("Settings.CategoryDefaulted", currentCategory);
 end
 
 function SettingsPanelMixin:HasUnappliedSettings()

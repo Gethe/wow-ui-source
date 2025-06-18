@@ -3,6 +3,7 @@ local COMMUNITIES_MEMBER_LIST_EVENTS = {
 	"CLUB_MEMBER_ADDED",
 	"CLUB_MEMBER_REMOVED",
 	"CLUB_MEMBER_UPDATED",
+	"CLUB_MEMBERS_UPDATED",
 	"CLUB_MEMBER_PRESENCE_UPDATED",
 	"CLUB_STREAMS_LOADED",
 	"VOICE_CHAT_CHANNEL_ACTIVATED",
@@ -494,15 +495,20 @@ function CommunitiesMemberListMixin:OnStreamSelected(streamId)
 	self:UpdateMemberList();
 end
 
-function CommunitiesMemberListMixin:OnClubSelected()
+function CommunitiesMemberListMixin:OnClubSelected(clubId)
 	self:ResetColumnSort();
-	if clubId == C_Club.GetGuildClubId() then
-		C_GuildInfo.GuildRoster();
-	end
 
 	self:UpdateInvitations();
 	self:UpdateMemberList();
 	self:UpdateWatermark();
+
+	if clubId then
+		C_Club.FocusMembers(clubId);
+		local ready = C_Club.AreMembersReady(clubId);
+		self.ScrollBox:SetShown(ready);
+		self.Spinner:SetShown(not ready);
+		self:MarkSortDirty();
+	end
 end
 
 function CommunitiesMemberListMixin:OnCommunitiesDisplayModeChanged(displayMode)
@@ -518,6 +524,7 @@ function CommunitiesMemberListMixin:OnUpdate()
 	if self:IsMemberListDirty() then
 		self:UpdateMemberList();
 		self:ClearMemberListDirty();
+		self:MarkSortDirty();
 	end
 
 	if self:IsSortDirty() then
@@ -614,7 +621,15 @@ function CommunitiesMemberListMixin:RefreshLayout()
 end
 
 function CommunitiesMemberListMixin:OnEvent(event, ...)
-	if event == "CLUB_MEMBER_ADDED" or event == "CLUB_MEMBER_REMOVED" or event == "CLUB_MEMBER_UPDATED" or event == "CLUB_STREAMS_LOADED" then
+	if event == "CLUB_MEMBERS_UPDATED" then
+		local clubId = ...;
+		if clubId == self:GetSelectedClubId() then
+			self:MarkMemberListDirty();
+			local ready = C_Club.AreMembersReady(clubId);
+			self.ScrollBox:SetShown(ready);
+			self.Spinner:SetShown(not ready);
+		end
+	elseif event == "CLUB_MEMBER_ADDED" or event == "CLUB_MEMBER_REMOVED" or event == "CLUB_MEMBER_UPDATED" or event == "CLUB_MEMBERS_UPDATED" or event == "CLUB_STREAMS_LOADED" then
 		local clubId, memberId = ...;
 		if clubId == self:GetSelectedClubId() then
 			self:MarkMemberListDirty();

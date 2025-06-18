@@ -2,12 +2,9 @@
 ..\..\Blizzard_SharedXML\UI.xsd">
 	<Button name="MoneyFrameButtonTemplate" virtual="true">
 		<Scripts>
-			<OnEnter>
-				MoneyFrame_OnEnter(self:GetParent());
-			</OnEnter>
-			<OnLeave>
-				MoneyFrame_OnLeave(self:GetParent());
-			</OnLeave>
+			<OnEnter function="MoneyFrameButton_OnEnter"/>
+			<OnLeave function="MoneyFrameButton_OnLeave"/>
+			<OnClick function="MoneyInputFrameButton_OpenPopup"/>
 		</Scripts>
 	</Button>
 	<Frame name="MoneyFrameTemplate" virtual="true">
@@ -18,11 +15,6 @@
 				<Anchors>
 					<Anchor point="RIGHT" x="-13" y="0"/>
 				</Anchors>
-				<Scripts>
-					<OnClick>
-						MoneyInputFrame_OpenPopup(self:GetParent());
-					</OnClick>
-				</Scripts>
 				<NormalTexture atlas="coin-copper">
 					<Size x="19" y="19"/>
 					<Anchors>
@@ -42,11 +34,6 @@
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.CopperButton" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
-				<Scripts>
-					<OnClick>
-						MoneyInputFrame_OpenPopup(self:GetParent());
-					</OnClick>
-				</Scripts>
 				<NormalTexture atlas="coin-silver">
 					<Size x="19" y="19"/>
 					<Anchors>
@@ -66,11 +53,6 @@
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.SilverButton" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
-				<Scripts>
-					<OnClick>
-						MoneyInputFrame_OpenPopup(self:GetParent());
-					</OnClick>
-				</Scripts>
 				<NormalTexture atlas="coin-gold">
 					<Size x="19" y="19"/>
 					<Anchors>
@@ -87,65 +69,45 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				MoneyFrame_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				MoneyFrame_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnShow>
-				MoneyFrame_UpdateMoney(self);
-			</OnShow>
-			<OnHide>
-				if ( self.hasPickup == 1 ) then
-					MoneyInputFrame_ClosePopup();
-					self.hasPickup = 0;
-				end
-			</OnHide>
+			<OnLoad function="MoneyFrame_OnLoad"/>
+			<OnEvent function="MoneyFrame_OnEvent"/>
+			<OnShow function="MoneyFrame_UpdateMoney"/>
+			<OnHide function="MoneyFrame_OnHide"/>
 		</Scripts>
 	</Frame>
-	<Frame name="SmallMoneyFrameTemplate" virtual="true">
+	<Frame name="SmallMoneyFrameTemplate" mixin="SmallMoneyFrameMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="small" value="1" type="number"/>
+		</KeyValues>
 		<Size x="128" y="13"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentTrialErrorButton" parentKey="trialErrorButton" file="Interface\FriendsFrame\InformationIcon" hidden="true">
+					<Size x="13" y="13"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT" x="-10" y="0" />
+					</Anchors>
+					<Scripts>
+						<OnEnter>
+							local tooltip = GetAppropriateTooltip();
+							tooltip:SetOwner(self, "ANCHOR_BOTTOM");
+							tooltip:AddLine(CAP_REACHED_TRIAL, 1, 0.1, 0.1);
+							tooltip:Show();
+						</OnEnter>
+						<OnLeave>
+							GetAppropriateTooltip():Hide();
+						</OnLeave>
+					</Scripts>
+				</Texture>
+			</Layer>
+		</Layers>
 		<Frames>
-			<Frame name="$parentTrialErrorButton" parentKey="trialErrorButton" hidden="true">
-				<Size x="13" y="13"/>
-				<Anchors>
-					<Anchor point="LEFT"  x="-23" y="0" />
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture name="$parentTexture" file="Interface\FriendsFrame\InformationIcon">
-							<Anchors>
-								<Anchor point="TOPLEFT"/>
-								<Anchor point="BOTTOMRIGHT"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnEnter>
-						local tooltip = GetAppropriateTooltip();
-						tooltip:SetOwner(self, "ANCHOR_BOTTOM");
-						tooltip:AddLine(CAP_REACHED_TRIAL, 1, 0.1, 0.1);
-						tooltip:Show();
-					</OnEnter>
-					<OnLeave>
-						local tooltip = GetAppropriateTooltip();
-						tooltip:Hide();
-					</OnLeave>
-				</Scripts>
-			</Frame>
 			<Button name="$parentCopperButton" parentKey="CopperButton" inherits="MoneyFrameButtonTemplate">
 				<Size x="32" y="13"/>
 				<Anchors>
 					<Anchor point="RIGHT" x="-13" y="0"/>
 				</Anchors>
-				<Scripts>
-					<OnClick>
-						MoneyInputFrame_OpenPopup(self:GetParent());
-					</OnClick>
-				</Scripts>
-				<NormalTexture atlas="coin-copper">
+				<NormalTexture parentKey="NormalTexture" atlas="coin-copper">
 					<Size x="13" y="13"/>
 					<Anchors>
 						<Anchor point="RIGHT"/>
@@ -153,7 +115,7 @@
 				</NormalTexture>
 				<ButtonText name="$parentText" parentKey="Text">
 					<Anchors>
-						<Anchor point="RIGHT" x="-13" y="0"/>
+						<Anchor point="RIGHT" relativeKey="$parent.NormalTexture" relativePoint="LEFT" x="0" y="0"/>
 					</Anchors>
 				</ButtonText>
 				<NormalFont style="NumberFontNormalRight"/>
@@ -164,11 +126,6 @@
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.CopperButton" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
-				<Scripts>
-					<OnClick>
-						MoneyInputFrame_OpenPopup(self:GetParent());
-					</OnClick>
-				</Scripts>
 				<NormalTexture atlas="coin-silver">
 					<Size x="13" y="13"/>
 					<Anchors>
@@ -188,11 +145,6 @@
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.SilverButton" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
-				<Scripts>
-					<OnClick>
-						MoneyInputFrame_OpenPopup(self:GetParent());
-					</OnClick>
-				</Scripts>
 				<NormalTexture atlas="coin-gold">
 					<Size x="13" y="13"/>
 					<Anchors>
@@ -209,38 +161,17 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				SmallMoneyFrame_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				MoneyFrame_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnShow>
-				MoneyFrame_UpdateMoney(self);
-			</OnShow>
-			<OnHide>
-				if ( self.hasPickup == 1 ) then
-					MoneyInputFrame_ClosePopup();
-					self.hasPickup = 0;
-				end
-			</OnHide>
+			<OnLoad function="SmallMoneyFrame_OnLoad"/>
+			<OnEvent function="MoneyFrame_OnEvent"/>
+			<OnShow function="MoneyFrame_UpdateMoney"/>
+			<OnHide function="MoneyFrame_OnHide"/>
 		</Scripts>
 	</Frame>
 	<Button name="SmallDenominationTemplate" virtual="true">
 		<Size x="32" y="13"/>
 		<Scripts>
-			<OnEnter>
-				if not C_Glue.IsOnGlueScreen() then
-					local tooltip = GetAppropriateTooltip();
-					tooltip:SetOwner(self, "ANCHOR_RIGHT");
-					tooltip:SetMerchantCostItem(self.index, self.item);
-				end
-			</OnEnter>
-			<OnLeave>
-				local tooltip = GetAppropriateTooltip();
-				tooltip:Hide();
-				ResetCursor();
-			</OnLeave>
+			<OnEnter function="SmallDenominationTemplate_OnEnter"/>
+			<OnLeave function="SmallDenominationTemplate_OnLeave"/>
 		</Scripts>
 		<ButtonText name="$parentText" parentKey="Text">
 			<Anchors>
@@ -294,9 +225,7 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				SmallMoneyFrame_OnLoad(self);
-			</OnLoad>
+			<OnLoad function="SmallMoneyFrame_OnLoad"/>
 		</Scripts>
 	</Frame>
 </Ui>

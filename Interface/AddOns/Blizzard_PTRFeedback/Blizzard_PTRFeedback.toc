@@ -2,6 +2,7 @@
 ## OnlyBetaAndPTR: 1
 ## Notes: Tool for gathering issues from PTR
 ## SavedVariables: Blizzard_PTRIssueReporter_Saved
+## Dependencies: Blizzard_HelpPlate
 
 Blizzard_PTRFeedback_FrameTemplates.xml
 Blizzard_PTRFeedback.lua

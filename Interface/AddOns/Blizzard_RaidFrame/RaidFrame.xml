@@ -180,17 +180,28 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</CheckButton>
-			<Frame name="RaidFrameNotInRaid" setAllPoints="true">
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString name="RaidFrameRaidDescription" inherits="GameFontNormal" text="RAID_DESCRIPTION" justifyH="LEFT">
-							<Size x="300" y="0"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="15" y="-73"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
+			<Frame name="RaidFrameNotInRaid" parentKey="RaidFrameNotInRaid" setAllPoints="true">
+				<Frames>
+					<Frame parentKey="ScrollingDescription" inherits="ScrollingFontTemplate" frameStrata="HIGH">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="20" y="-73"/>
+							<Anchor point="TOPRIGHT" x="-20" y="-73"/>
+							<Anchor point="BOTTOM" y="34"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="fontName" value="GameFontNormal" type="string"/>
+						</KeyValues>
+					</Frame>
+					<EventFrame parentKey="ScrollingDescriptionScrollBar" inherits="MinimalScrollBar" frameStrata="HIGH">
+						<KeyValues>
+							<KeyValue key="hideIfUnscrollable" value="true" type="boolean"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollingDescription" relativePoint="TOPRIGHT" x="9" y="-1"/>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollingDescription" relativePoint="BOTTOMRIGHT" x="9" y="1"/>
+						</Anchors>
+					</EventFrame>
+				</Frames>
 			</Frame>
 			<Button name="RaidFrameConvertToRaidButton" inherits="UIPanelButtonTemplate" text="CONVERT_TO_RAID">
 				<Size x="115" y="21"/>

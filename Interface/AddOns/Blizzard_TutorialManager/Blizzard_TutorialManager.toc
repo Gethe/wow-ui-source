@@ -1,6 +1,6 @@
 ## Author: Blizzard Entertainment
 ## Title: Blizzard Tutorial Manager
-## Dependencies: Blizzard_Dispatcher
+## Dependencies: Blizzard_Dispatcher, Blizzard_HelpPlate
 
 Blizzard_TutorialQueue.lua
 Blizzard_TutorialQuestManager.lua

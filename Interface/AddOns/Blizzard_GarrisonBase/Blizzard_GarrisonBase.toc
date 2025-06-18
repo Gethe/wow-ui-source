@@ -1,7 +1,7 @@
 ## Title: Blizzard_GarrisonBase
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_UIParent
+## Dependencies: Blizzard_UIParent, Blizzard_Colors
 ## AllowLoadGameType: mainline
 GarrisonBaseUtils.xml
 AdventuresFollowerTooltip.xml

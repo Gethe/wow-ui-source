@@ -333,10 +333,7 @@
 					<OnClick>
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						if ( not IsInRaid(LE_PARTY_CATEGORY_HOME) and GetNumGroupMembers(LE_PARTY_CATEGORY_HOME) + self:GetParent().numMembers + C_LFGList.GetNumInvitedApplicantMembers() > MAX_PARTY_MEMBERS + 1 ) then
-							local dialog = StaticPopup_Show("LFG_LIST_INVITING_CONVERT_TO_RAID");
-							if ( dialog ) then
-								dialog.data = self:GetParent().applicantID;
-							end
+							StaticPopup_Show("LFG_LIST_INVITING_CONVERT_TO_RAID", nil, nil, self:GetParent().applicantID);
 						else
 							C_LFGList.InviteApplicant(self:GetParent().applicantID);
 						end
@@ -369,10 +366,7 @@
 					<OnClick>
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						if ( not IsInRaid(LE_PARTY_CATEGORY_HOME) and GetNumGroupMembers(LE_PARTY_CATEGORY_HOME) + self:GetParent().numMembers + C_LFGList.GetNumInvitedApplicantMembers() > MAX_PARTY_MEMBERS + 1 ) then
-							local dialog = StaticPopup_Show("LFG_LIST_INVITING_CONVERT_TO_RAID");
-							if ( dialog ) then
-								dialog.data = self:GetParent().applicantID;
-							end
+							StaticPopup_Show("LFG_LIST_INVITING_CONVERT_TO_RAID", nil, nil, self:GetParent().applicantID);
 						else
 							C_LFGList.InviteApplicant(self:GetParent().applicantID);
 						end

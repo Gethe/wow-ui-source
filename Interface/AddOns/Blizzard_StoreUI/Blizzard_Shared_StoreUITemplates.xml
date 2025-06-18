@@ -399,7 +399,7 @@
 				<OnShow>
 					self:SetFrameLevel(self:GetParent():GetFrameLevel()+7);
 				</OnShow>
-				<OnKeyDown inherit="append">
+				<OnKeyDown>
 					if (key == "DOWN") then
 						StoreAutoCompleteIncrementSelection(self);
 					elseif (key == "UP") then

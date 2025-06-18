@@ -41,7 +41,7 @@ StaticPopupDialogs["TTS_CONFIRM_SAVE_SETTINGS"] = {
 	text = TTS_CONFIRM_SAVE_SETTINGS,
 	button1 = YES,
 	button2 = CANCEL,
-	OnAccept = function()
+	OnAccept = function(dialog, data)
 		TextToSpeechFrame_LoadLegacySettings();
 		TextToSpeechFrame_Update(TextToSpeechFrame);
 	end,
@@ -186,23 +186,22 @@ end
 
 function TextToSpeechFrame_Update(self)
 	-- Update checkboxes
-	local checkBoxParent = TextToSpeechFramePanelContainer
+	local container = self.PanelContainer;
 
-	checkBoxParent.PlaySoundSeparatingChatLinesCheckButton:SetChecked(C_TTSSettings.GetSetting(Enum.TtsBoolSetting.PlaySoundSeparatingChatLineBreaks));
-	checkBoxParent.AddCharacterNameToSpeechCheckButton:SetChecked(C_TTSSettings.GetSetting(Enum.TtsBoolSetting.AddCharacterNameToSpeech));
-	checkBoxParent.PlayActivitySoundWhenNotFocusedCheckButton:SetChecked(C_TTSSettings.GetSetting(Enum.TtsBoolSetting.PlayActivitySoundWhenNotFocused));
-	checkBoxParent.NarrateMyMessagesCheckButton:SetChecked(C_TTSSettings.GetSetting(Enum.TtsBoolSetting.NarrateMyMessages));
-	checkBoxParent.UseAlternateVoiceForSystemMessagesCheckButton:SetChecked(C_TTSSettings.GetSetting(Enum.TtsBoolSetting.AlternateSystemVoice));
+	container.PlaySoundSeparatingChatLinesCheckButton:SetChecked(C_TTSSettings.GetSetting(Enum.TtsBoolSetting.PlaySoundSeparatingChatLineBreaks));
+	container.AddCharacterNameToSpeechCheckButton:SetChecked(C_TTSSettings.GetSetting(Enum.TtsBoolSetting.AddCharacterNameToSpeech));
+	container.PlayActivitySoundWhenNotFocusedCheckButton:SetChecked(C_TTSSettings.GetSetting(Enum.TtsBoolSetting.PlayActivitySoundWhenNotFocused));
+	container.NarrateMyMessagesCheckButton:SetChecked(C_TTSSettings.GetSetting(Enum.TtsBoolSetting.NarrateMyMessages));
+	container.UseAlternateVoiceForSystemMessagesCheckButton:SetChecked(C_TTSSettings.GetSetting(Enum.TtsBoolSetting.AlternateSystemVoice));
 
 	if ChatConfigTextToSpeechMessageSettingsChatTypeContainer then
 		TextToSpeechFrame_UpdateMessageCheckboxes(ChatConfigTextToSpeechMessageSettingsChatTypeContainer);
 	end
 
-	self.PanelContainer.TtsVoiceDropdown:GenerateMenu();
+	container.TtsVoiceDropdown:GenerateMenu();
 
-	TextToSpeechFrame_UpdateAlternate();
-
-	TextToSpeechFrame_UpdateSliders();
+	TextToSpeechFrame_UpdateAlternate(self);
+	TextToSpeechFrame_UpdateSliders(self);
 
 	ChatConfigTextToSpeechChannelSettings_UpdateCheckboxes();
 end
@@ -221,23 +220,25 @@ function TextToSpeechFrame_UpdateMessageCheckboxes(frame)
 	end
 end
 
-function TextToSpeechFrame_UpdateAlternate()
-	TextToSpeechFrameTtsVoiceAlternateDropdown:GenerateMenu();
+function TextToSpeechFrame_UpdateAlternate(self)
+	local container = self.PanelContainer;
+	container.TtsVoiceAlternateDropdown:GenerateMenu();
 
 	-- Update enabled state
 	local systemEnabled = TextToSpeechFrame_GetChatTypeEnabled("SYSTEM");
 	local color = systemEnabled and WHITE_FONT_COLOR or GRAY_FONT_COLOR;
-	TextToSpeechFramePanelContainer.UseAlternateVoiceForSystemMessagesCheckButton:SetEnabled(systemEnabled);
-	TextToSpeechFramePanelContainer.UseAlternateVoiceForSystemMessagesCheckButton.text:SetTextColor(color:GetRGB());
+	container.UseAlternateVoiceForSystemMessagesCheckButton:SetEnabled(systemEnabled);
+	container.UseAlternateVoiceForSystemMessagesCheckButton.text:SetTextColor(color:GetRGB());
 
 	local enabled = systemEnabled and C_TTSSettings.GetSetting(Enum.TtsBoolSetting.AlternateSystemVoice);
-	TextToSpeechFrameTtsVoiceAlternateDropdown:SetEnabled(enabled);
-	TextToSpeechFramePlaySampleAlternateButton:SetEnabled(enabled);
+	container.TtsVoiceAlternateDropdown:SetEnabled(enabled);
+	container.PlaySampleAlternateButton:SetEnabled(enabled);
 end
 
-function TextToSpeechFrame_UpdateSliders()
-	TextToSpeechFrameAdjustRateSlider:SetValue(C_TTSSettings.GetSpeechRate());
-	TextToSpeechFrameAdjustVolumeSlider:SetValue(C_TTSSettings.GetSpeechVolume());
+function TextToSpeechFrame_UpdateSliders(self)
+	local container = self.PanelContainer;
+	container.AdjustRateSlider.Slider:SetValue(C_TTSSettings.GetSpeechRate());
+	container.AdjustVolumeSlider.Slider:SetValue(C_TTSSettings.GetSpeechVolume());
 end
 
 function TextToSpeechFrameDefaults_OnClick(self, button)
@@ -325,13 +326,58 @@ function TextToSpeechFrame_LoadLegacySettings()
 	SetCVar("TTSUseCharacterSettings", wasCharacterSpecific);
 end
 
+local function TextToSpeechFrame_AddCommands(self)
+	TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_SPEED,
+		function(cmd, rate)
+			if TextToSpeech_SetRate(self, rate) then
+				cmd:GetCommands():SpeakConfirmation(SLASH_TEXTTOSPEECH_CONFIRMATION:format(TEXT_TO_SPEECH_ADJUST_RATE, rate));
+				return true;
+			end
+
+			return false;
+		end,
+		nil, SLASH_TEXTTOSPEECH_HELP_SPEED, TEXTTOSPEECH_RATE_MIN, TEXTTOSPEECH_RATE_MAX
+	);
+
+	TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_VOLUME,
+		function(cmd, volume)
+			if TextToSpeech_SetVolume(self, volume) then
+				cmd:GetCommands():SpeakConfirmation(SLASH_TEXTTOSPEECH_CONFIRMATION:format(TEXT_TO_SPEECH_ADJUST_VOLUME, volume));
+				return true;
+			end
+
+			return false;
+		end,
+		nil, SLASH_TEXTTOSPEECH_HELP_VOLUME, TEXTTOSPEECH_VOLUME_MIN, TEXTTOSPEECH_VOLUME_MAX
+	);
+end
+
 function TextToSpeechFrame_OnLoad(self)
 	self.loaded = false;
 	self.loadedEvents = {};
 	FrameUtil.RegisterFrameForEvents(self, loadEvents);
 
-	self.PanelContainer.TtsVoiceDropdown:SetWidth(200);
-	self.PanelContainer.TtsVoiceAlternateDropdown:SetWidth(200);
+	local container = self.PanelContainer;
+
+	container.TtsVoiceDropdown:SetWidth(200);
+	container.TtsVoiceAlternateDropdown:SetWidth(200);
+
+	container.UseAlternateVoiceForSystemMessagesCheckButton.text:SetText(TEXT_TO_SPEECH_ALTERNATE_SYSTEM_VOICE);
+	container.UseAlternateVoiceForSystemMessagesCheckButton:SetScript("OnClick", function(checkbox, button)
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		C_TTSSettings.SetSetting(Enum.TtsBoolSetting.AlternateSystemVoice, checkbox:GetChecked());
+		TextToSpeechFrame_UpdateAlternate(self);
+	end);
+
+	container.PlaySampleButton:SetScript("OnClick", function()
+		TextToSpeech_PlaySample(Enum.TtsVoiceType.Standard);
+	end);
+
+	container.PlaySampleAlternateButton:SetScript("OnClick", function()
+		TextToSpeech_PlaySample(Enum.TtsVoiceType.Alternate);
+	end);
+
+	TextToSpeechFrame_AddCommands(self);
 
 	self:RegisterEvent("VOICE_CHAT_TTS_PLAYBACK_FAILED");
 	self:RegisterEvent("VOICE_CHAT_TTS_PLAYBACK_FINISHED");
@@ -346,9 +392,20 @@ local function SetupVoiceMenu(dropdown, voiceType)
 		TextToSpeech_SetSelectedVoice(voice, voiceType);
 	end
 
+	local function CreateVoiceRadio(rootDescription, optionValue)
+		local optionText = FormatVoiceText(optionValue);
+
+		local radio = rootDescription:CreateRadio(optionText, IsSelected, SetSelected, optionValue);
+		radio:AddInitializer(function(button, _description, _menu)
+			button.fontString:SetFontObject(UserScaledFontGameHighlight);
+			button.fontString:SetText(optionText);
+			button:SetHeight(button.fontString:GetStringHeight() + (TextSizeManager:GetScale() * 2));
+		end);
+	end
+
 	dropdown:SetupMenu(function(dropdown, rootDescription)
 		for index, voice in ipairs(C_VoiceChat.GetTtsVoices()) do
-			rootDescription:CreateRadio(FormatVoiceText(voice), IsSelected, SetSelected, voice);
+			CreateVoiceRadio(rootDescription, voice);
 		end
 
 		local extent = 20;
@@ -412,7 +469,16 @@ function TextToSpeechFrame_OnEvent(self, event, ...)
 end
 
 function TextToSpeechFrame_OnShow(self)
+	EventRegistry:RegisterCallback("TextSizeManager.OnTextScaleUpdated", function(_owner, scale)
+		TextToSpeechFrame_UpdateElementsForTextScale(self, scale);
+	end, self);
+
 	TextToSpeechFrame_Update(self);
+	TextToSpeechFrame_UpdateElementsForTextScale(self, TextSizeManager:GetScale());
+end
+
+function TextToSpeechFrame_OnHide(self)
+	EventRegistry:UnregisterCallback("TextSizeManager.OnTextScaleUpdated", self);
 end
 
 function TextToSpeechFrame_SetToDefaults()
@@ -516,29 +582,11 @@ function TextToSpeechChatTypeCheckButton_OnClick(self, button)
 	end
 end
 
-function TextToSpeechFramePlaySampleButton_OnClick(self)
-	TextToSpeech_PlaySample(Enum.TtsVoiceType.Standard);
-end
-
-function TextToSpeechFramePlaySampleAlternateButton_OnClick(self)
-	TextToSpeech_PlaySample(Enum.TtsVoiceType.Alternate);
-end
-
-function UseAlternateVoiceForSystemMessagesCheckButton_OnLoad(self)
-	self.text:SetText(TEXT_TO_SPEECH_ALTERNATE_SYSTEM_VOICE);
-end
-
-function UseAlternateVoiceForSystemMessagesCheckButton_OnClick(self)
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	C_TTSSettings.SetSetting(Enum.TtsBoolSetting.AlternateSystemVoice, self:GetChecked());
-	TextToSpeechFrame_UpdateAlternate();
-end
-
-function TextToSpeech_SetRate(rate)
+function TextToSpeech_SetRate(self, rate)
 	rate = tonumber(rate);
 	if type(rate) == "number" then
 		if rate >= TEXTTOSPEECH_RATE_MIN and rate <= TEXTTOSPEECH_RATE_MAX then
-			TextToSpeechFrameAdjustRateSlider:SetValue(Clamp(rate, TEXTTOSPEECH_RATE_MIN, TEXTTOSPEECH_RATE_MAX));
+			self.PanelContainer.AdjustRateSlider.Slider:SetValue(Clamp(rate, TEXTTOSPEECH_RATE_MIN, TEXTTOSPEECH_RATE_MAX));
 			return true;
 		end
 	end
@@ -546,23 +594,42 @@ function TextToSpeech_SetRate(rate)
 	return false;
 end
 
+TTSSettingsSliderMixin = {};
+
+function TTSSettingsSliderMixin:OnTextScaleUpdated(scale)
+	local baseWidth = self:GetBaseSliderSize();
+	self.Slider:SetWidth(baseWidth * scale);
+	self:MarkDirty();
+end
+
+function TTSSettingsSliderMixin:GetBaseSliderSize()
+	return 200, 17;
+end
+
+local function TextToSpeechSlider_OnLoad(self, lowText, highText, labelText, minValue, maxValue, initialValue, onValueChanged)
+	self.Low:SetText(lowText);
+	self.High:SetText(highText);
+	self.Text:SetText(labelText);
+	self.Slider:SetSize(self:GetBaseSliderSize());
+	self.Slider:SetMinMaxValues(minValue, maxValue);
+	self.Slider:SetValueStep(1);
+	self.Slider:SetObeyStepOnDrag(true);
+	self.Slider:SetValue(initialValue);
+	self.Slider:SetScript("OnValueChanged", onValueChanged);
+	self:MarkDirty();
+end
+
 function TextToSpeechFrameAdjustRateSlider_OnLoad(self)
-	self.Low:SetText(SLOW);
-	self.High:SetText(FAST);
-	self:SetMinMaxValues(TEXTTOSPEECH_RATE_MIN, TEXTTOSPEECH_RATE_MAX);
-	self:SetValueStep(1);
-	self:SetValue(C_TTSSettings.GetSpeechRate());
+	TextToSpeechSlider_OnLoad(self, SLOW, FAST, TEXT_TO_SPEECH_ADJUST_RATE, TEXTTOSPEECH_RATE_MIN, TEXTTOSPEECH_RATE_MAX, C_TTSSettings.GetSpeechRate(), function(self, value)
+		C_TTSSettings.SetSpeechRate(value);
+	end);
 end
 
-function TextToSpeechFrameAdjustRateSlider_OnValueChanged(self, value)
-	C_TTSSettings.SetSpeechRate(value);
-end
-
-function TextToSpeech_SetVolume(volume)
+function TextToSpeech_SetVolume(self, volume)
 	volume = tonumber(volume);
 	if type(volume) == "number" then
 		if volume >= TEXTTOSPEECH_VOLUME_MIN and volume <= TEXTTOSPEECH_VOLUME_MAX then
-			TextToSpeechFrameAdjustVolumeSlider:SetValue(Clamp(volume, TEXTTOSPEECH_VOLUME_MIN, TEXTTOSPEECH_VOLUME_MAX));
+			self.PanelContainer.AdjustVolumeSlider.Slider:SetValue(Clamp(volume, TEXTTOSPEECH_VOLUME_MIN, TEXTTOSPEECH_VOLUME_MAX));
 			return true;
 		end
 	end
@@ -571,16 +638,14 @@ function TextToSpeech_SetVolume(volume)
 end
 
 function TextToSpeechFrameAdjustVolumeSlider_OnLoad(self)
-	self.Low:Hide();
-	self.ValueLabel = self.High;
-	self:SetMinMaxValues(TEXTTOSPEECH_VOLUME_MIN, TEXTTOSPEECH_VOLUME_MAX);
-	self:SetValueStep(1);
-	self:SetValue(C_TTSSettings.GetSpeechVolume());
-end
-
-function TextToSpeechFrameAdjustVolumeSlider_OnValueChanged(self, value)
-	C_TTSSettings.SetSpeechVolume(value);
-	self.ValueLabel:SetFormattedText(PERCENTAGE_STRING, math.floor(value));
+	-- NOTE: self.High is used to show the value.
+	local valueLabel = self.High;
+	local value = C_TTSSettings.GetSpeechVolume();
+	local valueText = FormatPercentage(value / 100, true);
+	TextToSpeechSlider_OnLoad(self, "", valueText, TEXT_TO_SPEECH_ADJUST_VOLUME, TEXTTOSPEECH_VOLUME_MIN, TEXTTOSPEECH_VOLUME_MAX, value, function(self, value)
+		C_TTSSettings.SetSpeechVolume(value);
+		valueLabel:SetText(FormatPercentage(value / 100, true));
+	end);
 end
 
 local function TextToSpeech_GetNextVoice(voices, voiceType)
@@ -868,4 +933,85 @@ function TextToSpeechFrame_MessageEventHandler(frame, event, ...)
 			TextToSpeechFrame_PlayMessage(frame, message, chatTypeInfo.id, false, messageFromPlayer);
 		end
 	end
+end
+
+local function GetTTSLayoutColumnCount(scale)
+	if scale > 1 then
+		return 1;
+	else
+		return 2;
+	end
+end
+
+local function GetCheckBoxTextWidthForColumnCount(columnCount)
+	return (columnCount == 2) and 235 or 485;
+end
+
+local function ApplyCheckBoxLayout(checkbox, columnCount)
+	checkbox:ClearAllPoints();
+	checkbox.text:SetSize(GetCheckBoxTextWidthForColumnCount(columnCount), 0);
+end
+
+local function ApplyCheckBoxesLayout(checkboxes, columnCount)
+	local width = GetCheckBoxTextWidthForColumnCount(columnCount);
+	for index, checkbox in ipairs(checkboxes) do
+		checkbox:ClearAllPoints();
+		checkbox.text:SetSize(width, 0);
+	end
+end
+
+function TextToSpeechFrame_UpdateElementsForTextScale(self, scale)
+	scale = scale or TextSizeManager:GetScale();
+	local container = self.PanelContainer;
+
+	local checkboxes =
+	{
+		container.PlaySoundSeparatingChatLinesCheckButton,
+		container.PlayActivitySoundWhenNotFocusedCheckButton,
+		container.AddCharacterNameToSpeechCheckButton,
+		container.NarrateMyMessagesCheckButton,
+	};
+
+	-- Double column layout for scales of <= 1, single column for larger scales.
+	local layoutColumnCount = GetTTSLayoutColumnCount(scale);
+
+	ApplyCheckBoxesLayout(checkboxes, layoutColumnCount);
+
+	-- Force this one to a single column layout style.
+	ApplyCheckBoxLayout(container.UseAlternateVoiceForSystemMessagesCheckButton, GetCheckBoxTextWidthForColumnCount(1));
+
+	if layoutColumnCount == 2 then
+		checkboxes[1]:SetPoint("TOPLEFT", self.PanelContainer, "TOPLEFT", 16, -32);
+		checkboxes[2]:SetPoint("LEFT", checkboxes[1].text, "RIGHT", 16, 0);
+		checkboxes[3]:SetPoint("TOPLEFT", checkboxes[1], "BOTTOMLEFT", 0, -4);
+		checkboxes[4]:SetPoint("LEFT", checkboxes[3].text, "RIGHT", 16, 0);
+
+		container.AdjustRateSlider:ClearAllPoints();
+		container.AdjustRateSlider:SetPoint("TOPRIGHT", container.TextToSpeechFrameSeparator, "BOTTOMRIGHT", -36, -45);
+	else
+		checkboxes[1]:SetPoint("TOPLEFT", self.PanelContainer, "TOPLEFT", 16, -32);
+		checkboxes[2]:SetPoint("TOPLEFT", checkboxes[1], "BOTTOMLEFT", 0, -4);
+		checkboxes[3]:SetPoint("TOPLEFT", checkboxes[2], "BOTTOMLEFT", 0, -4);
+		checkboxes[4]:SetPoint("TOPLEFT", checkboxes[3], "BOTTOMLEFT", 0, -4);
+
+		-- NOTE: This xOffset needs to account for the scaling on the dropdown offset.
+		container.AdjustRateSlider:ClearAllPoints();
+		container.AdjustRateSlider:SetPoint("TOPLEFT", container.PlaySampleAlternateButton, "BOTTOMLEFT", -36 * scale, -26);
+	end
+
+	container.MoreVoicesURLContainer.Text:SetWidth(GetCheckBoxTextWidthForColumnCount(layoutColumnCount));
+
+	container.UseAlternateVoiceForSystemMessagesCheckButton:SetPoint("TOPLEFT", container.PlaySampleButton, "BOTTOMLEFT", 0, -20);
+
+	container.TextToSpeechFrameSeparator:ClearAllPoints();
+	container.TextToSpeechFrameSeparator:SetPoint("TOP", container, "TOP", 0, -(container:GetTop() - checkboxes[4]:GetBottom() + 16));
+	container.TextToSpeechFrameSeparator:SetPoint("LEFT", container, "LEFT", 16, 0);
+	container.TextToSpeechFrameSeparator:SetPoint("RIGHT", container, "RIGHT", -16, 0);
+
+	container.AdjustRateSlider:OnTextScaleUpdated(scale);
+	container.AdjustVolumeSlider:OnTextScaleUpdated(scale);
+
+	-- Hacks for dropdowns until they get added to this system:
+	container.TtsVoiceDropdown:SetScale(scale);
+	container.TtsVoiceAlternateDropdown:SetScale(scale);
 end

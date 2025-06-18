@@ -546,6 +546,119 @@
 		</Scripts>
 	</ContainedAlertFrame>
 
+	<ContainedAlertFrame name="GuildRenamedAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" inherits="AlertFrameTemplate" mixin="GuildRenamedAlertMixin" virtual="true">
+		<Size x="270" y="75"/>
+		<Anchors>
+			<Anchor point="BOTTOM" x="0" y="128"/>
+		</Anchors>
+		<Animations>
+			<AnimationGroup parentKey="animIn">
+				<Alpha fromAlpha="1" toAlpha="0" duration="0" order="1"/>
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="2"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="waitAndAnimOut">
+				<Alpha startDelay="4.05" fromAlpha="1" toAlpha="0" duration="1.5" parentKey="animOut">
+					<Scripts>
+						<OnFinished>
+							self:GetRegionParent():Hide();
+						</OnFinished>
+					</Scripts>
+				</Alpha>
+			</AnimationGroup>
+		</Animations>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture file="Interface\GuildFrame\GuildChallenges">
+					<Size x="270" y="67"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+					<TexCoords left="0.13671875" right="0.66406250" top="0.00390625" bottom="0.26562500"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="1">
+				<Texture parentKey="GuildTabardBackground" atlas="communities-guildbanner-background">
+					<Size x="91" y="85"/>
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="LEFT" x="31" y="-10"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="2">
+				<Texture parentKey="GuildTabardEmblem" file="Interface\GuildFrame\GuildEmblemsLG_01">
+					<Size x="61" y="72"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.GuildTabardBackground" x="0" y="8"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="GuildTabardBorder" atlas="communities-guildbanner-border">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.GuildTabardBackground"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.GuildTabardBackground"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="HeaderLabel" inherits="GameFontNormal" justifyH="LEFT" text="GUILD_RENAME_TOAST_LABEL">
+					<Size x="175" y="18"/>
+					<Anchors>
+						<Anchor point="LEFT" x="72" y="10"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="GuildName" inherits="GameFontGreenLarge, TruncatedTooltipFontStringTemplate" justifyH="LEFT">
+					<Size x="175" y="20"/>
+					<Anchors>
+						<Anchor point="LEFT" x="72" y="-12"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD" hidden="true" parentKey="glow">
+					<Size x="350" y="151"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="animIn">
+							<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
+							<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
+							<Scripts>
+								<OnFinished>
+									self:GetParent():Hide();
+								</OnFinished>
+							</Scripts>
+						</AnimationGroup>
+					</Animations>
+					<TexCoords left="0" right="0.78125" top="0" bottom="0.66796875"/>
+				</Texture>
+				<Texture file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD" hidden="true" parentKey="shine">
+					<Size x="67" y="60"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="0" y="8"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="animIn">
+							<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
+							<Translation offsetX="200" offsetY="0" duration="0.71" order="2"/>
+							<Alpha startDelay="0.35" fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
+							<Scripts>
+								<OnFinished>
+									self:GetParent():Hide();
+								</OnFinished>
+							</Scripts>
+						</AnimationGroup>
+					</Animations>
+					<TexCoords left="0.78125" right="0.912109375" top="0" bottom="0.28125"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</ContainedAlertFrame>
+
 	<ContainedAlertFrame name="ScenarioLegionInvasionAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" inherits="AlertFrameTemplate">
 		<Size x="311" y="78"/>
 		<Anchors>

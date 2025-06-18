@@ -28,13 +28,16 @@ CHAT_FRAME_MIN_WIDTH = 296;
 
 CURRENT_CHAT_FRAME_ID = nil;
 
-CHAT_FRAME_DEFAULT_FONT_SIZE = 14;
+CHAT_FRAME_DEFAULT_FONT_SIZE = 18;
 
 CHAT_FONT_HEIGHTS = {
-	[1] = 12,
-	[2] = 14,
-	[3] = 16,
-	[4] = 18
+	12,
+	14,
+	16,
+	18,
+	20,
+	24,
+	27,
 };
 
 CHAT_FRAME_TEXTURES = {
@@ -652,8 +655,7 @@ function FCF_RemoveAllMessagesFromChanSender(chatFrame, chanSender)
 end
 
 function FCF_RenameChatWindow_Popup()
-	local dialog = StaticPopup_Show("NAME_CHAT");
-	dialog.data = FCF_GetCurrentChatFrameID();
+	StaticPopup_Show("NAME_CHAT", nil, nil, FCF_GetCurrentChatFrameID());
 end
 
 function FCF_NewChatWindow()

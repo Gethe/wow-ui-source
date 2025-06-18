@@ -6,8 +6,8 @@ StaticPopupDialogs["BID_BLACKMARKET"] = {
 	text = BLACK_MARKET_AUCTION_CONFIRMATION,
 	button1 = ACCEPT,
 	button2 = CANCEL,
-	OnAccept = function(self)
-		C_BlackMarket.ItemPlaceBid(self.data.auctionID, self.data.bid);
+	OnAccept = function(dialog, data)
+		C_BlackMarket.ItemPlaceBid(data.auctionID, data.bid);
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -70,9 +70,9 @@ end
 function BlackMarketItemMixin:Init(elementData)
 	local index = elementData.index;
 	local name, texture, quantity, itemType, usable, level, levelType, sellerName, minBid, minIncrement, currBid, youHaveHighBid, numBids, timeLeft, link, marketID, quality = C_BlackMarket.GetItemInfoByIndex(index);
-	
+
 	self.Name:SetText(name);
-		
+
 	self.Item.IconTexture:SetTexture(texture);
 	if ( not usable ) then
 		self.Item.IconTexture:SetVertexColor(1.0, 0.1, 0.1);
@@ -82,8 +82,10 @@ function BlackMarketItemMixin:Init(elementData)
 
 	SetItemButtonQuality(self.Item, quality, link);
 
-	if (quality and quality >= Enum.ItemQuality.Common and BAG_ITEM_QUALITY_COLORS[quality]) then
-		self.Name:SetTextColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
+	local color = ColorManager.GetColorDataForBagItemQuality(quality);
+	local qualityCommon = Enum.ItemQuality.Common or Enum.ItemQuality.Standard;
+	if ( quality and quality >= qualityCommon and color ) then
+		self.Name:SetTextColor(color.r, color.g, color.b);
 	else
 		self.Name:SetTextColor(1.0, 0.82, 0);
 	end
@@ -92,9 +94,9 @@ function BlackMarketItemMixin:Init(elementData)
 	self.Item.Count:SetShown(quantity > 1);
 
 	self.Type:SetText(itemType);
-	
+
 	self.Seller:SetText(sellerName);
-	
+
 	self.Level:SetText(level);
 
 	local bidAmount = currBid;
@@ -104,13 +106,13 @@ function BlackMarketItemMixin:Init(elementData)
 		minNextBid = minBid;
 	end
 	MoneyFrame_Update(self.CurrentBid, bidAmount);
-	
+
 	self.minNextBid = minNextBid;
 	self.YourBid:SetShown(youHaveHighBid);
-	
+
 	self.TimeLeft.Text:SetText(_G["AUCTION_TIME_LEFT"..timeLeft]);
 	self.TimeLeft.tooltip = _G["AUCTION_TIME_LEFT"..timeLeft.."_DETAIL"];
-	
+
 	self.itemLink = link;
 	self.marketID = marketID;
 	self:SetSelected(self:ShouldSelect());
@@ -169,7 +171,7 @@ function BlackMarketFrame_UpdateHotItem(self)
 	local name, texture, quantity, itemType, usable, level, levelType, sellerName, minBid, minIncrement, currBid, youHaveHighBid, numBids, timeLeft, link, marketID, quality = C_BlackMarket.GetHotItem();
 	if ( name ) then
 		self.HotDeal.Name:SetText(name);
-		
+
 		self.HotDeal.Item.IconTexture:SetTexture(texture);
 		if ( not usable ) then
 			self.HotDeal.Item.IconTexture:SetVertexColor(1.0, 0.1, 0.1);
@@ -179,25 +181,27 @@ function BlackMarketFrame_UpdateHotItem(self)
 
 		SetItemButtonQuality(self.HotDeal.Item, quality, link);
 
-		if (quality >= Enum.ItemQuality.Common and BAG_ITEM_QUALITY_COLORS[quality]) then
-			self.HotDeal.Name:SetTextColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
+		local color = ColorManager.GetColorDataForBagItemQuality(quality);
+		local qualityCommon = Enum.ItemQuality.Common or Enum.ItemQuality.Standard;
+		if ( quality >= qualityCommon and color ) then
+			self.HotDeal.Name:SetTextColor(color.r, color.g, color.b);
 		else
 			self.HotDeal.Name:SetTextColor(1.0, 0.82, 0);
 		end
 
 		self.HotDeal.Item.Count:SetText(quantity);
 		self.HotDeal.Item.Count:SetShown(quantity > 1);
-	
+
 		self.HotDeal.Type:SetText(itemType);
-		
+
 		self.HotDeal.Seller:SetText(sellerName);
-		
-		if (level > 1) then
+
+		if ( level > 1 ) then
 			self.HotDeal.Level:SetText(level);
 		else
 			self.HotDeal.Level:SetText("");
 		end
-		
+
 		local bidAmount = currBid;
 		if ( currBid == 0 ) then
 			bidAmount = minBid;

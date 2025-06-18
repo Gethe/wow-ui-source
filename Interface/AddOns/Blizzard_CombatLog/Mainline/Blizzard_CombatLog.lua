@@ -284,6 +284,7 @@ local gsub = _G.gsub;
 local strsub = _G.strsub;
 
 -- Make all the constants upvalues. This prevents the global environment lookup + table lookup each time we use one (and they're used a lot)
+local COMBATLOG_OBJECT_EMPTY = COMBATLOG_OBJECT_EMPTY;
 local COMBATLOG_OBJECT_AFFILIATION_MINE = COMBATLOG_OBJECT_AFFILIATION_MINE;
 local COMBATLOG_OBJECT_AFFILIATION_PARTY = COMBATLOG_OBJECT_AFFILIATION_PARTY;
 local COMBATLOG_OBJECT_AFFILIATION_RAID = COMBATLOG_OBJECT_AFFILIATION_RAID;
@@ -1495,9 +1496,7 @@ function Blizzard_CombatLog_UnitMenuClick(event, unitName, unitGUID, unitFlags)
 		Blizzard_CombatLog_ApplyFilters(Blizzard_CombatLog_CurrentSettings);
 
 	elseif ( event == "SAVE" ) then
-		local dialog = StaticPopup_Show("COPY_COMBAT_FILTER");
-		dialog.data = Blizzard_CombatLog_CurrentSettings;
-
+		StaticPopup_Show("COPY_COMBAT_FILTER", nil, nil, Blizzard_CombatLog_CurrentSettings);
 		return;
 	elseif ( event == "RESET" ) then
 		Blizzard_CombatLog_PreviousSettings = Blizzard_CombatLog_CurrentSettings;
@@ -3406,87 +3405,64 @@ function CreateCombatLogContextMenu(region, tbls)
 	end);
 end
 
--- Override Hyperlink Handlers
--- The SetItemRef() function hook is to be moved out into the core FrameXML.
--- It is currently in the Constants.lua stub file to simulate being moved out to the core.
---
--- The reason is because Blizzard_CombatLog is a LoD addon and can be replaced by the user
--- If the functionality of these new unit/icon/spell/action links is not in the core FrameXML
--- file in ItemRef.lua, then every combat log addon that replaces Blizzard_CombatLog must
--- provide the same functionality.
--- Players may also get all sorts of errors on trying to click on these new linktypes before
--- Blizzard_CombatLog gets loaded.
+LinkUtil.RegisterLinkHandler(LinkTypes.Unit, function(link, text, linkData, contextData)
+	local guid, name = string.split(":", linkData.options);
 
--- Override Hyperlink Handlers
--- This entire function hook should/must be directly integrated into ItemRef.lua
--- The reason is because Blizzard_CombatLog is a LoD addon and can be replaced by the user
--- If the functionality of these new unit/icon/spell/action links is not in the core FrameXML
--- file in ItemRef.lua, then every combat log addon that replaces Blizzard_CombatLog must
--- provide the same functionality.
--- Players may also get all sorts of errors on trying to click on these new linktypes before
--- Blizzard_CombatLog gets loaded.
-local oldSetItemRef = SetItemRef;
-function SetItemRef(link, text, button, chatFrame)
-
-	if ( strsub(link, 1, 4) == "unit") then
-		local _, guid, name = strsplit(":", link);
-        
-		if ( IsModifiedClick("CHATLINK") ) then
-			ChatEdit_InsertLink (name);
-			return;
-		elseif( button == "RightButton") then
-			-- Show Popup Menu
-			CreateCombatLogContextMenu(chatFrame, Blizzard_CombatLog_CreateUnitMenu(name, guid));
-			return;
-		end
-	elseif ( strsub(link, 1, 4) == "icon") then
-		local _, bit, direction = strsplit(":", link);
-		local texture = string.gsub(text,".*|h(.*)|h.*","%1");
-		-- Show Popup Menu
-		if( button == "RightButton") then
-			-- need to fix this to be actual texture
-			CreateCombatLogContextMenu(chatFrame, Blizzard_CombatLog_CreateUnitMenu(Blizzard_CombatLog_BitToBraceCode(tonumber(bit)), nil, tonumber(bit)));
-		elseif ( IsModifiedClick("CHATLINK") ) then
-			ChatEdit_InsertLink (Blizzard_CombatLog_BitToBraceCode(tonumber(bit)));
-		end
+	if ( IsModifiedClick("CHATLINK") ) then
+		ChatEdit_InsertLink (name);
 		return;
-	elseif ( strsub(link, 1,5) == "spell" ) then
-		local _, spellId, glyphId, event = strsplit(":", link);
-		spellId = tonumber (spellId);
-		glyphId = tonumber (glyphId) or 0;
+	elseif( contextData.button == "RightButton") then
+		-- Show Popup Menu
+		CreateCombatLogContextMenu(contextData.frame, Blizzard_CombatLog_CreateUnitMenu(name, guid));
+		return;
+	end
 
-		if ( IsModifiedClick("CHATLINK") ) then
-			if ( spellId > 0 ) then
-				local spellLink = C_Spell.GetSpellLink(spellId, glyphId);
-				if ( ChatEdit_InsertLink(spellLink) ) then
-					return;
-				end
-			else
+	return LinkProcessorResponse.Unhandled;
+end);
+
+LinkUtil.RegisterLinkHandler(LinkTypes.RaidTargetIcon, function(link, text, linkData, contextData)
+	local bit, direction = string.split(":", linkData.options);
+	local texture = string.gsub(text,".*|h(.*)|h.*","%1");
+	-- Show Popup Menu
+	if( contextData.button == "RightButton") then
+		-- need to fix this to be actual texture
+		CreateCombatLogContextMenu(contextData.frame, Blizzard_CombatLog_CreateUnitMenu(Blizzard_CombatLog_BitToBraceCode(tonumber(bit)), nil, tonumber(bit)));
+	elseif ( IsModifiedClick("CHATLINK") ) then
+		ChatEdit_InsertLink (Blizzard_CombatLog_BitToBraceCode(tonumber(bit)));
+	end
+end);
+
+LinkUtil.RegisterLinkHandler(LinkTypes.Spell, function(link, text, linkData, contextData)
+	local spellId, glyphId, event = string.split(":", linkData.options);
+	spellId = tonumber (spellId);
+	glyphId = tonumber (glyphId) or 0;
+
+	if ( IsModifiedClick("CHATLINK") ) then
+		if ( spellId > 0 ) then
+			local spellLink = C_Spell.GetSpellLink(spellId, glyphId);
+			if ( ChatEdit_InsertLink(spellLink) ) then
 				return;
 			end
-		-- Show Popup Menu
-		elseif( button == "RightButton" and event ) then
-			CreateCombatLogContextMenu(chatFrame, Blizzard_CombatLog_CreateSpellMenu(text, spellId, event));
+		else
 			return;
 		end
-	elseif ( strsub(link, 1,6) == "action" ) then
-		local _, event = strsplit(":", link);
-
-		-- Show Popup Menu
-		if( button == "RightButton") then
-			CreateCombatLogContextMenu(chatFrame, Blizzard_CombatLog_CreateActionMenu(event));
-		end
+	-- Show Popup Menu
+	elseif( contextData.button == "RightButton" and event ) then
+		CreateCombatLogContextMenu(contextData.frame, Blizzard_CombatLog_CreateSpellMenu(text, spellId, event));
 		return;
-	elseif ( strsub(link, 1, 19) == "garrfollowerability") then
-		if ( IsModifiedClick("CHATLINK") ) then
-			local _, abilityID = strsplit(":", link);
-			local abilLink = C_Garrison.GetFollowerAbilityLink(abilityID);
-			ChatEdit_InsertLink (abilLink);
-			return;
-		end
 	end
-	oldSetItemRef(link, text, button, chatFrame);
-end
+
+	return LinkProcessorResponse.Unhandled;
+end);
+
+LinkUtil.RegisterLinkHandler(LinkTypes.Action, function(link, text, linkData, contextData)
+	local event = string.split(":", linkData.options);
+
+	-- Show Popup Menu
+	if( contextData.button == "RightButton") then
+		CreateCombatLogContextMenu(contextData.frame, Blizzard_CombatLog_CreateActionMenu(event));
+	end
+end);
 
 function Blizzard_CombatLog_Update_QuickButtons()
 	local baseName = "CombatLogQuickButtonFrame";

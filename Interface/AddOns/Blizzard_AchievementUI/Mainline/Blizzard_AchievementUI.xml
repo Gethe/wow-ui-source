@@ -713,7 +713,8 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString parentKey="Name" inherits="AchievementCriteriaFont" text="Capture the Bone Wastes">
+				<FontString parentKey="Name" inherits="AchievementCriteriaFont, TruncatedTooltipFontStringTemplate" text="Capture the Bone Wastes">
+					<Size x="0" y="15"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Check" relativePoint="RIGHT" x="5" y="2"/>
 					</Anchors>
@@ -1512,7 +1513,9 @@
 		<Layers>
 			<!--Dummies for achievement ScrollBox extents calculation-->
 			<Layer level="OVERLAY">
-				<FontString parentKey="PlaceholderName" inherits="AchievementCriteriaFont" hidden="true"/>
+				<FontString parentKey="PlaceholderName" inherits="AchievementCriteriaFont" hidden="true">
+					<Size x="0" y="15"/>
+				</FontString>
 				<FontString parentKey="PlaceholderHiddenDescription" inherits="AchievementDescriptionFont" hidden="true"/>
 			</Layer>
 

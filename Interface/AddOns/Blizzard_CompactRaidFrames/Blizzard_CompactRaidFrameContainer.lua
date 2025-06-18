@@ -137,7 +137,7 @@ end
 function CompactRaidFrameContainerMixin:TryUpdate()
 	CompactPartyFrame:RefreshMembers();
 
-	if CompactArenaFrame and C_GameModeManager.GetCurrentGameMode() ~= Enum.GameMode.Plunderstorm then
+	if CompactArenaFrame and C_GameRules.GetActiveGameMode() ~= Enum.GameMode.Plunderstorm then
 		CompactArenaFrame:RefreshMembers();
 	end
 
@@ -228,7 +228,7 @@ function CompactRaidFrameContainerMixin:AddGroup(id)
 			tinsert(self.frameUpdateList.mini, groupFrame);
 		end
 	elseif id =="ARENA" then
-		if not CompactArenaFrame_Generate and (C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm) then
+		if not CompactArenaFrame_Generate and (C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm) then
 			return;
 		end
 
@@ -250,7 +250,7 @@ function CompactRaidFrameContainerMixin:AddGroup(id)
 	if id == "PARTY" then
 		CompactPartyFrame:UpdateVisibility();
 	elseif id == "ARENA" then
-		if CompactArenaFrame and C_GameModeManager.GetCurrentGameMode() ~= Enum.GameMode.Plunderstorm then
+		if CompactArenaFrame and C_GameRules.GetActiveGameMode() ~= Enum.GameMode.Plunderstorm then
 			CompactArenaFrame:UpdateVisibility();
 		end
 	else

@@ -39,6 +39,25 @@ local PartyInfo =
 			},
 		},
 		{
+			Name = "CanStartInstanceAbandonVote",
+			Type = "Function",
+			Documentation = { "Returns whether it's possible to start a vote at this time" },
+
+			Returns =
+			{
+				{ Name = "canStart", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ChallengeModeRestrictionsActive",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "restrictionsActive", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ConfirmConvertToRaid",
 			Type = "Function",
 			Documentation = { "Immediately convert to raid with no regard for potentially destructive actions." },
@@ -124,6 +143,49 @@ local PartyInfo =
 			},
 		},
 		{
+			Name = "GetInstanceAbandonShutdownTime",
+			Type = "Function",
+			Documentation = { "Returns the total duration of the shutdown time after a vote passes and how much time is left before it ends" },
+
+			Returns =
+			{
+				{ Name = "durationSeconds", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "timeLeftSeconds", Type = "number", Nilable = false, Default = 0 },
+			},
+		},
+		{
+			Name = "GetInstanceAbandonVoteRequirements",
+			Type = "Function",
+			Documentation = { "Returns values controlling the vote" },
+
+			Returns =
+			{
+				{ Name = "votesRequired", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "keystoneOwnerVoteWeight", Type = "number", Nilable = false, Default = 0 },
+			},
+		},
+		{
+			Name = "GetInstanceAbandonVoteResponse",
+			Type = "Function",
+			Documentation = { "Returns how the player voted, nil for not yet" },
+
+			Returns =
+			{
+				{ Name = "response", Type = "bool", Nilable = true },
+			},
+		},
+		{
+			Name = "GetInstanceAbandonVoteTime",
+			Type = "Function",
+			Documentation = { "Returns the total duration of the vote and how much time is left before it ends" },
+
+			Returns =
+			{
+				{ Name = "durationSeconds", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "timeLeftSeconds", Type = "number", Nilable = false, Default = 0 },
+			},
+		},
+		{
 			Name = "GetInviteConfirmationInvalidQueues",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -187,12 +249,31 @@ local PartyInfo =
 			},
 		},
 		{
+			Name = "GetNumInstanceAbandonGroupVoteResponses",
+			Type = "Function",
+			Documentation = { "Returns how many players have voted either way" },
+
+			Returns =
+			{
+				{ Name = "count", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetRestrictPings",
 			Type = "Function",
 
 			Returns =
 			{
 				{ Name = "restrictTo", Type = "RestrictPingsTo", Nilable = false },
+			},
+		},
+		{
+			Name = "HasChallengeModeLeaver",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasLeaver", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -203,6 +284,24 @@ local PartyInfo =
 			Arguments =
 			{
 				{ Name = "targetName", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "IsChallengeModeActive",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "active", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsChallengeModeKeystoneOwner",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isKeystoneOwner", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -293,6 +392,16 @@ local PartyInfo =
 			},
 		},
 		{
+			Name = "SetInstanceAbandonVoteResponse",
+			Type = "Function",
+			Documentation = { "Vote on whether to abandon instance, true for yes, false for no" },
+
+			Arguments =
+			{
+				{ Name = "response", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetRestrictPings",
 			Type = "Function",
 
@@ -300,6 +409,11 @@ local PartyInfo =
 			{
 				{ Name = "restrictTo", Type = "RestrictPingsTo", Nilable = false },
 			},
+		},
+		{
+			Name = "StartInstanceAbandonVote",
+			Type = "Function",
+			Documentation = { "Start the vote" },
 		},
 	},
 
@@ -369,6 +483,25 @@ local PartyInfo =
 			LiteralName = "GROUP_ROSTER_UPDATE",
 		},
 		{
+			Name = "InstanceAbandonVoteFinished",
+			Type = "Event",
+			LiteralName = "INSTANCE_ABANDON_VOTE_FINISHED",
+			Payload =
+			{
+				{ Name = "votePassed", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "InstanceAbandonVoteStarted",
+			Type = "Event",
+			LiteralName = "INSTANCE_ABANDON_VOTE_STARTED",
+		},
+		{
+			Name = "InstanceAbandonVoteUpdated",
+			Type = "Event",
+			LiteralName = "INSTANCE_ABANDON_VOTE_UPDATED",
+		},
+		{
 			Name = "InstanceBootStart",
 			Type = "Event",
 			LiteralName = "INSTANCE_BOOT_START",
@@ -410,6 +543,10 @@ local PartyInfo =
 			Name = "LeavePartyConfirmation",
 			Type = "Event",
 			LiteralName = "LEAVE_PARTY_CONFIRMATION",
+			Payload =
+			{
+				{ Name = "reason", Type = "LeavePartyConfirmReason", Nilable = false },
+			},
 		},
 		{
 			Name = "PartyInviteCancel",
@@ -537,6 +674,18 @@ local PartyInfo =
 
 	Tables =
 	{
+		{
+			Name = "LeavePartyConfirmReason",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "QuestSync", Type = "LeavePartyConfirmReason", EnumValue = 0 },
+				{ Name = "RestrictedChallengeMode", Type = "LeavePartyConfirmReason", EnumValue = 1 },
+			},
+		},
 		{
 			Name = "PartyRequestJoinRelation",
 			Type = "Enumeration",

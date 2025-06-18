@@ -28,6 +28,14 @@ local SplashScreen =
 				{ Name = "fromGameMenu", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "SendSplashScreenActionLaunchedTelem",
+			Type = "Function",
+		},
+		{
+			Name = "SendSplashScreenCloseTelem",
+			Type = "Function",
+		},
 	},
 
 	Events =

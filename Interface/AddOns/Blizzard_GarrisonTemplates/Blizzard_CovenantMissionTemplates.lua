@@ -480,16 +480,31 @@ function CovenantMissionInfoTooltip_OnEnter(self)
 	GameTooltip_AddHighlightLine(GameTooltip, REWARDS);
 	for id, reward in pairs(missionInfo.rewards) do
 		if (reward.quality) then
-			GameTooltip:AddLine(ITEM_QUALITY_COLORS[reward.quality + 1].hex..reward.title..FONT_COLOR_CODE_CLOSE);
+			local colorData = ColorManager.GetColorDataForItemQuality(reward.quality + 1);
+			if colorData then
+				GameTooltip_AddColoredLine(GameTooltip, reward.title, colorData.color);
+			else
+				GameTooltip:AddLine(reward.title);
+			end
 		elseif (reward.itemID) then
 			local itemName, _, itemRarity, _, _, _, _, _, _, itemTexture = C_Item.GetItemInfo(reward.itemID);
 			if itemName then
-				GameTooltip:AddLine(ITEM_QUALITY_COLORS[itemRarity].hex..itemName..FONT_COLOR_CODE_CLOSE);
+				local colorData = ColorManager.GetColorDataForItemQuality(itemRarity);
+				if colorData then
+					GameTooltip_AddColoredLine(GameTooltip, itemName, colorData.color);
+				else
+					GameTooltip:AddLine(itemName);
+				end
 			end
         elseif (reward.currencyID and C_CurrencyInfo.IsCurrencyContainer(reward.currencyID, reward.quantity)) then
             local name, texture, quantity, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(reward.currencyID, reward.quantity);
             if name then
-				GameTooltip:AddLine(ITEM_QUALITY_COLORS[quality].hex..name..FONT_COLOR_CODE_CLOSE);
+				local colorData = ColorManager.GetColorDataForItemQuality(quality);
+				if colorData then
+					GameTooltip_AddColoredLine(GameTooltip, name, colorData.color);
+				else
+					GameTooltip:AddLine(name);
+				end
 			end
 		else
 			GameTooltip_AddNormalLine(GameTooltip, reward.title);

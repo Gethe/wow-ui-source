@@ -2,7 +2,7 @@
 ## Author: Blizzard Entertainment
 ## Version: 1.0
 ## AllowLoadGameType: standard
-## Dependencies: Blizzard_SharedTalentUI, Blizzard_PagedContent
+## Dependencies: Blizzard_SharedTalentUI, Blizzard_PagedContent, Blizzard_Colors
 
 Blizzard_DelvesCompanionConfiguration.lua
 Blizzard_DelvesCompanionConfiguration.xml

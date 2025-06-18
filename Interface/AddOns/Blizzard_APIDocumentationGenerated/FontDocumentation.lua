@@ -72,6 +72,7 @@ local Font =
 				{ Name = "outline", Type = "cstring", Nilable = false },
 				{ Name = "shadow", Type = "FontScriptShadowInfo", Nilable = true },
 				{ Name = "fontObject", Type = "SimpleFont", Nilable = false },
+				{ Name = "canBeUserScaled", Type = "bool", Nilable = false },
 			},
 		},
 		{

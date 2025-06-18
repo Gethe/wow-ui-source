@@ -108,6 +108,12 @@ local BLACK_LISTED_MESSAGE_TYPES = {
 	[LE_GAME_ERR_OUT_OF_ESSENCE] = true,
 };
 
+function UIErrorsMixin:SetMessageTypeEnabled(messageType, enabled)
+	if messageType then
+		BLACK_LISTED_MESSAGE_TYPES[messageType] = not enabled;
+	end
+end
+
 function UIErrorsMixin:FlashFontString(fontString)
 	if GetCVarBool("flashErrorMessageRepeats") then
 		if self.flashingFontStrings[fontString] then

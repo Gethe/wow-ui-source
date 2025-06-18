@@ -70,9 +70,9 @@ local AccountConstants =
 		{
 			Name = "AccountTransType",
 			Type = "Enumeration",
-			NumValues = 61,
+			NumValues = 62,
 			MinValue = 0,
-			MaxValue = 60,
+			MaxValue = 61,
 			Fields =
 			{
 				{ Name = "ProxyForwarder", Type = "AccountTransType", EnumValue = 0 },
@@ -136,6 +136,7 @@ local AccountConstants =
 				{ Name = "CurrencyTransferLog", Type = "AccountTransType", EnumValue = 58 },
 				{ Name = "LgVendorPurchase", Type = "AccountTransType", EnumValue = 59 },
 				{ Name = "SaveWarbandGroups", Type = "AccountTransType", EnumValue = 60 },
+				{ Name = "Profile", Type = "AccountTransType", EnumValue = 61 },
 			},
 		},
 		{
@@ -167,6 +168,18 @@ local AccountConstants =
 				{ Name = "IsLegacy", Type = "BnetAccountFlag", EnumValue = 131072 },
 				{ Name = "CataLegendaryMountChecked", Type = "BnetAccountFlag", EnumValue = 262144 },
 				{ Name = "CataLegendaryMountObtained", Type = "BnetAccountFlag", EnumValue = 524288 },
+			},
+		},
+		{
+			Name = "ChallengeModeHistoryResult",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Successful", Type = "ChallengeModeHistoryResult", EnumValue = 0 },
+				{ Name = "Leaver", Type = "ChallengeModeHistoryResult", EnumValue = 1 },
 			},
 		},
 		{

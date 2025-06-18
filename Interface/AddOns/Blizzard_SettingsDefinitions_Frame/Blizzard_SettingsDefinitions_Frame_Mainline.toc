@@ -1,7 +1,7 @@
 ## Title: Blizzard_SettingsDefinitions_Frame
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_SettingsDefinitions_Shared
+## Dependencies: Blizzard_SettingsDefinitions_Shared, Blizzard_Colors
 ## AllowLoad: Game
 ## AllowLoadGameType: mainline
 Mainline\GameplaySettingsGroup.lua
@@ -23,7 +23,8 @@ Keybindings.xml
 # NOTE: Accessibility.lua should be the only file loaded in classic, only mainline needs the xml, but classic may need an older version of the lua file.
 Accessibility.lua
 Accessibility.xml
-Colorblind.xml
+Mainline\Colorblind.xml
 TextToSpeech.xml
 Mounts.lua
 Subtitles.xml
+AdvancedOptions.lua

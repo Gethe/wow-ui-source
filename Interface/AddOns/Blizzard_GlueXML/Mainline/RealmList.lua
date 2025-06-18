@@ -172,12 +172,8 @@ function RealmList_Update(retainScrollPosition)
 end
 
 function RealmList_UpdateOKButton()
-	if ( not RealmList.selectedRealm ) then
-		RealmListOkButton:Disable();
-		return;
-	end
-
-	local populationState = C_RealmList.GetRealmInfo(RealmList.selectedRealm).populationState;
+	local realmInfo = RealmList.selectedRealm and C_RealmList.GetRealmInfo(RealmList.selectedRealm);
+	local populationState = realmInfo and realmInfo.populationState;
 	RealmListOkButton:SetEnabled(populationState and populationState ~= "OFFLINE");
 end
 
@@ -250,7 +246,7 @@ function RealmList_OnOk()
 		local realmInfo = C_RealmList.GetRealmInfo(RealmList.selectedRealm);
 
 		if ( realmInfo.populationState == "FULL" and realmInfo.numCharacters == 0 ) then
-			GlueDialog_Show("REALM_IS_FULL");
+			StaticPopup_Show("REALM_IS_FULL");
 		else
 			C_RealmList.ConnectToRealm(RealmList.selectedRealm);
 		end
@@ -271,7 +267,7 @@ function RealmList_ClickButton(self, doubleClick)
 	local name, isTournament, isInvalidLocale = C_RealmList.GetCategoryInfo(RealmList.selectedCategory);
 	if ( isInvalidLocale ) then
 		--Display popup explaining locale specific realms
-		GlueDialog_Show("REALM_LOCALE_WARNING");
+		StaticPopup_Show("REALM_LOCALE_WARNING");
 		return;
 	end
 
@@ -321,7 +317,7 @@ function RealmList_OnShow(self)
 	RealmList_Update();
 
 	if ( not C_RealmList.IsRealmListComplete() ) then
-		GlueDialog_Show("OKAY_MUST_ACCEPT", REALM_LIST_PARTIAL_RESULTS);
+		StaticPopup_Show("OKAY_MUST_ACCEPT", REALM_LIST_PARTIAL_RESULTS);
 	end
 end
 
@@ -347,7 +343,7 @@ function RealmListTab_OnClick(tab)
 		local name, isTournament = C_RealmList.GetCategoryInfo(C_RealmList.GetAvailableCategories()[tab:GetID()]);
 		if ( isTournament ) then
 			--Display popup explaining tournament realms
-			GlueDialog_Show("REALM_TOURNAMENT_WARNING");
+			StaticPopup_Show("REALM_TOURNAMENT_WARNING");
 		end
 		return;
 	end

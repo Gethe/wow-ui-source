@@ -499,7 +499,7 @@ local PlunderstormTutorialStates = {
 PLUNDERSTORM_QUEUE_FROM_MAINLINE_TUTORIAL_STATE = PLUNDERSTORM_QUEUE_FROM_MAINLINE_TUTORIAL_STATE or PlunderstormTutorialStates.NoneAcknowledged;
 
 local function IsPlunderstormAvailable()
-	return C_GameEnvironmentManager.GetCurrentEventRealmQueues() ~= Enum.EventRealmQueues.None and
+	return C_GameRules.GetCurrentEventRealmQueues() ~= Enum.EventRealmQueues.None and
 		C_LobbyMatchmakerInfo.GetQueueFromMainlineEnabled() and
 		not (IsTrialAccount() or IsVeteranTrialAccount()) and
 		not C_PlayerInfo.IsPlayerNPERestricted();

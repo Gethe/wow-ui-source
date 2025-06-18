@@ -37,10 +37,10 @@ if ( InGlue() ) then
 		text = ADDONS_OUT_OF_DATE,
 		button1 = DISABLE_ADDONS,
 		button2 = LOAD_ADDONS,
-		OnAccept = function()
+		OnAccept = function(dialog, data)
 			AddonDialog_Show("CONFIRM_DISABLE_ADDONS");
 		end,
-		OnCancel = function()
+		OnCancel = function(dialog, data)
 			AddonDialog_Show("CONFIRM_LOAD_ADDONS");
 		end,
 	}
@@ -49,11 +49,11 @@ if ( InGlue() ) then
 		text = CONFIRM_LOAD_ADDONS,
 		button1 = OKAY,
 		button2 = CANCEL,
-		OnAccept = function()
+		OnAccept = function(dialog, data)
 			C_AddOns.SetAddonVersionCheck(false);
 			CharacterSelect_CheckDialogStates();
 		end,
-		OnCancel = function()
+		OnCancel = function(dialog, data)
 			AddonDialog_Show("ADDONS_OUT_OF_DATE");
 		end,
 	}
@@ -62,11 +62,11 @@ if ( InGlue() ) then
 		text = CONFIRM_DISABLE_ADDONS,
 		button1 = OKAY,
 		button2 = CANCEL,
-		OnAccept = function()
+		OnAccept = function(dialog, data)
 			AddonList_DisableOutOfDate();
 			CharacterSelect_CheckDialogStates();
 		end,
-		OnCancel = function()
+		OnCancel = function(dialog, data)
 			AddonDialog_Show("ADDONS_OUT_OF_DATE");
 		end,
 	}
@@ -183,7 +183,7 @@ function AddonList_HasAnyChanged()
 	for i=1,C_AddOns.GetNumAddOns() do
 		local character = nil;
 		if (not InGlue()) then
-			character = UnitName("player");
+			character = GetAddonCharacter();
 		end
 		local enabled = (C_AddOns.GetAddOnEnableState(i, character) > Enum.AddOnEnableState.None);
 		local reason = select(5,C_AddOns.GetAddOnInfo(i))
@@ -251,7 +251,8 @@ function AddonListMixin:OnLoad()
 		self.outOfDate = C_AddOns.IsAddonVersionCheckEnabled() and AddonList_HasOutOfDate();
 		self.outOfDateIndexes = {};
 		for i=1,C_AddOns.GetNumAddOns() do
-			self.startStatus[i] = (C_AddOns.GetAddOnEnableState(i, UnitName("player")) > Enum.AddOnEnableState.None);
+			local character = GetAddonCharacter();
+			self.startStatus[i] = (C_AddOns.GetAddOnEnableState(i, character) > Enum.AddOnEnableState.None);
 			if (select(5, C_AddOns.GetAddOnInfo(i)) == "INTERFACE_VERSION") then
 				tinsert(self.outOfDateIndexes, i);
 			end
@@ -328,7 +329,7 @@ end
 local function TriStateCheckbox_SetState(checked, checkButton)
 	local checkedTexture = checkButton.CheckedTexture;
 	if ( not checkedTexture ) then
-		message("Can't find checked texture");
+		SetBasicMessageDialogText("Can't find checked texture");
 	end
 	if ( not checked or checked == Enum.AddOnEnableState.None ) then
 		-- nil or Enum.AddOnEnableState.None means not checked
@@ -359,7 +360,7 @@ function AddonList_InitAddon(entry, treeNode)
 	local checkboxState = C_AddOns.GetAddOnEnableState(addonIndex, character);
 	local enabled;
 	if ( not InGlue() ) then
-		enabled = (C_AddOns.GetAddOnEnableState(addonIndex, UnitName("player")) > Enum.AddOnEnableState.None);
+		enabled = (C_AddOns.GetAddOnEnableState(addonIndex, character) > Enum.AddOnEnableState.None);
 	else
 		enabled = (checkboxState > Enum.AddOnEnableState.None);
 	end
@@ -762,13 +763,26 @@ function AddonListMixin:UpdatePerformance()
 	self:UpdateOverallMetric(perfUI.Peak, ADDON_LIST_PERFORMANCE_PEAK_CPU, Enum.AddOnProfilerMetric.PeakTime);
 end
 
+function AddonListMixin:UpdateAddOnMemoryUsage()
+	-- Expensive call - update once when shown, not in OnUpdate, only once per 15 sec
+	-- For addon performance display, which is not shown in glues
+	if not InGlue() then
+		local now = GetTime();
+		local SECONDS_BETWEEN_MEMORY_UPDATE = 15;
+		if not self.lastMemoryUpdate or now > self.lastMemoryUpdate + SECONDS_BETWEEN_MEMORY_UPDATE then
+			self.lastMemoryUpdate = now;
+			UpdateAddOnMemoryUsage();
+		end
+	end
+end
+
 function AddonList_HasOutOfDate()
 	local hasOutOfDate = false;
 	for i=1, C_AddOns.GetNumAddOns() do
 		local name, title, notes, loadable, reason = C_AddOns.GetAddOnInfo(i);
 		local character = nil;
 		if (not InGlue()) then
-			character = UnitName("player");
+			character = GetAddonCharacter();
 		end
 		local enabled = (C_AddOns.GetAddOnEnableState(i, character) > Enum.AddOnEnableState.None);
 		if ( enabled and not loadable and reason == "INTERFACE_VERSION" ) then
@@ -794,7 +808,7 @@ function AddonList_DisableOutOfDate()
 		local name, title, notes, loadable, reason = C_AddOns.GetAddOnInfo(i);
 		local character = nil;
 		if (not InGlue()) then
-			character = UnitName("player");
+			character = GetAddonCharacter();
 		end
 		local enabled = (C_AddOns.GetAddOnEnableState(i, character) > Enum.AddOnEnableState.None);
 		if ( enabled and not loadable and reason == "INTERFACE_VERSION" ) then
@@ -972,16 +986,7 @@ function AddonListEntryMixin:OnLoad()
 	self:SetScript("OnEnter", function()
 		AddonTooltip:SetOwner(self, "ANCHOR_RIGHT", -270, 0);
 
-		-- Expensive call - update once when shown, not in OnUpdate, only once per 15 sec
-		-- For addon performance display, which is not shown in glues
-		if not InGlue() then
-			local now = GetTime();
-			local SECONDS_BETWEEN_MEMORY_UPDATE = 15;
-			if not self.lastMemoryUpdate or now > self.lastMemoryUpdate + SECONDS_BETWEEN_MEMORY_UPDATE then
-				self.lastMemoryUpdate = now;
-				UpdateAddOnMemoryUsage();
-			end
-		end
+		AddonList:UpdateAddOnMemoryUsage()
 
 		AddonTooltip_Update(self);
 		AddonTooltip:Show();

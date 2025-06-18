@@ -588,7 +588,7 @@ function EncounterJournal_OnShow(self)
 	elseif ( self.encounter.overviewFrame:IsShown() and EncounterJournal.overviewDefaultRole and not EncounterJournal.encounter.overviewFrame.linkSection ) then
 		local spec, role;
 
-		spec = GetSpecialization();
+		spec = C_SpecializationInfo.GetSpecialization();
 		if (spec) then
 			role = GetSpecializationRoleEnum(spec);
 		else
@@ -1699,7 +1699,7 @@ function EncounterJournal_ToggleHeaders(self, doNotShift)
 
 			local spec, role;
 
-			spec = GetSpecialization();
+			spec = C_SpecializationInfo.GetSpecialization();
 			if (spec) then
 				role = GetSpecializationRoleEnum(spec);
 			else
@@ -2344,7 +2344,6 @@ end
 function EJ_ContentTab_OnClick(self)
 	C_EncounterJournal.SetTab(self:GetID());
 	EJ_ContentTab_Select(self:GetID());
-	self:SetDisabledFontObject(GameFontHighlightLarge);
 end
 
 function EJ_ContentTab_Select(id)

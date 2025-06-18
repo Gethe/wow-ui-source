@@ -59,7 +59,8 @@ function TimerunningFirstTimeDialogMixin:OnLoad()
 
 		if GetCVar("showCreateCharacterRealmConfirmDialog") == "1" then
 			local formattedText = string.format(StaticPopupDialogs["CREATE_CHARACTER_REALM_CONFIRMATION"].text, CharacterSelectUtil.GetFormattedCurrentRealmName());
-			GlueDialog_Show("CREATE_CHARACTER_REALM_CONFIRMATION", formattedText, createCharacterCallback);
+			local text2 = nil;
+			StaticPopup_Show("CREATE_CHARACTER_REALM_CONFIRMATION", formattedText, text2, createCharacterCallback);
 		else
 			createCharacterCallback();
 		end
@@ -136,7 +137,7 @@ StaticPopupDialogs["TIMERUNNING_CHOICE_WARNING"] = {
 	button1 = CONTINUE,
 	button2 = CANCEL,
 	text = TIMERUNNING_CHOICE_WARNING,
-	OnAccept = function()
+	OnAccept = function(dialog, data)
 		TimerunningChoicePopup:Hide();
 		CharacterSelectUtil.CreateNewCharacter(Enum.CharacterCreateType.Normal, GetActiveTimerunningSeasonID());
 	end,
@@ -162,7 +163,7 @@ function TimerunningChoiceDialogMixin:OnLoad()
 		end
 
 		if self.isTimerunning and GlueParent_GetCurrentScreen() == "charcreate" then
-			GlueDialog_Show("TIMERUNNING_CHOICE_WARNING");
+			StaticPopup_Show("TIMERUNNING_CHOICE_WARNING");
 		else
 			TimerunningChoicePopup:Hide();
 			CharacterSelectUtil.CreateNewCharacter(Enum.CharacterCreateType.Normal, self.isTimerunning and GetActiveTimerunningSeasonID() or nil);

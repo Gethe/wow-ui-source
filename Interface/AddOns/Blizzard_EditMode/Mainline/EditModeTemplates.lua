@@ -22,7 +22,7 @@ end
 function EditModeSettingDropdownMixin:SetupSetting(settingData)
 	self.setting = settingData.displayInfo.setting;
 	self.Label:SetText(settingData.settingName);
-	
+
 	local function IsSelected(value)
 		return settingData.currentValue == value;
 	end
@@ -46,7 +46,7 @@ function EditModeSettingSliderMixin:OnLoad()
 	self.cbrHandles = EventUtil.CreateCallbackHandleContainer();
 	self.cbrHandles:RegisterCallback(self.Slider, MinimalSliderWithSteppersMixin.Event.OnValueChanged, self.OnSliderValueChanged, self);
 	self.cbrHandles:RegisterCallback(self.Slider, MinimalSliderWithSteppersMixin.Event.OnInteractStart, self.OnSliderInteractStart, self);
-	self.cbrHandles:RegisterCallback(self.Slider, MinimalSliderWithSteppersMixin.Event.OnInteractEnd, self.OnSliderInteractEnd, self);	
+	self.cbrHandles:RegisterCallback(self.Slider, MinimalSliderWithSteppersMixin.Event.OnInteractEnd, self.OnSliderInteractEnd, self);
 end
 
 function EditModeSettingSliderMixin:SetupSetting(settingData)
@@ -214,10 +214,24 @@ end
 
 EditModeCheckButtonMixin = {};
 
+function EditModeCheckButtonMixin:EditModeCheckButton_OnLoad()
+	self.Button:SetScript("OnClick", function(_button, _mouseButton, _isDown)
+		self:OnCheckButtonClick();
+	end);
+
+	self.Button:SetScript("OnEnter", function(_button)
+		self:OnEnter();
+	end);
+
+	self.Button:SetScript("OnLeave", function(_button)
+		self:OnLeave();
+	end);
+end
+
 function EditModeCheckButtonMixin:EditModeCheckButton_OnShow()
 	local shouldEnable = self:ShouldEnable();
 	self.Button:SetEnabled(shouldEnable);
-	self.Label:SetFontObject(shouldEnable and "GameFontHighlightMedium" or "GameFontDisableMed2")
+	self.Label:SetFontObject(shouldEnable and "GameFontHighlightMedium" or "GameFontDisableMed2");
 end
 
 function EditModeCheckButtonMixin:OnEnter()
@@ -226,43 +240,45 @@ function EditModeCheckButtonMixin:OnEnter()
 	local showTooltip = isLabelTruncated or showDisabledTooltip;
 
 	if showTooltip then
-		GameTooltip:SetOwner(self.Button, "ANCHOR_RIGHT");
+		local tooltip = GetAppropriateTooltip();
+		tooltip:SetOwner(self.Button, "ANCHOR_RIGHT");
 
 		if isLabelTruncated then
-			GameTooltip_AddHighlightLine(GameTooltip, self.Label:GetText());
+			GameTooltip_AddHighlightLine(tooltip, self.Label:GetText());
 		end
 
 		if showDisabledTooltip then
-			GameTooltip_AddNormalLine(GameTooltip, self.disabledTooltipText);
+			GameTooltip_AddNormalLine(tooltip, self.disabledTooltipText);
 		end
 
-		GameTooltip:Show();
+		tooltip:Show();
 	end
+
+	self:RunMouseOverCallback(true);
 end
 
 function EditModeCheckButtonMixin:OnLeave()
-	if GameTooltip:GetOwner() == self.Button then
-		GameTooltip:Hide();
+	local tooltip = GetAppropriateTooltip();
+	if tooltip:GetOwner() == self.Button then
+		tooltip:Hide();
 	end
+
+	self:RunMouseOverCallback(false);
+end
+
+function EditModeCheckButtonMixin:RunMouseOverCallback(isMouseOver)
+	if self.mouseOverCallback then
+		self.mouseOverCallback(isMouseOver);
+	end
+end
+
+function EditModeCheckButtonMixin:SetMouseOverCallback(callback)
+	self.mouseOverCallback = callback;
 end
 
 -- Override this to change whether we are enabled on show
 function EditModeCheckButtonMixin:ShouldEnable()
 	return true;
-end
-
-EditModeCheckButtonButtonMixin = {};
-
-function EditModeCheckButtonButtonMixin:OnClick()
-	self:GetParent():OnCheckButtonClick();
-end
-
-function EditModeCheckButtonButtonMixin:OnEnter()
-	EditModeCheckButtonMixin.OnEnter(self:GetParent());
-end
-
-function EditModeCheckButtonButtonMixin:OnLeave()
-	EditModeCheckButtonMixin.OnLeave(self:GetParent());
 end
 
 EditModeManagerSettingCheckButtonMixin = {};

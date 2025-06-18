@@ -320,6 +320,16 @@ local MythicPlusInfo =
 				{ Name = "runScore", Type = "number", Nilable = false },
 			},
 		},
+		{
+			Name = "SeasonTimeInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "bestTime", Type = "number", Nilable = false },
+				{ Name = "lastTime", Type = "number", Nilable = false },
+				{ Name = "medal", Type = "number", Nilable = false },
+			},
+		},
 	},
 };
 

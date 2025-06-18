@@ -58,9 +58,9 @@ StaticPopupDialogs["LOADOUT_IMPORT_ERROR_DIALOG"] = {
 	button1 = OKAY,
 	button2 = nil,
 	timeout = 0,
-	OnAccept = function()
+	OnAccept = function(dialog, data)
 	end,
-	OnCancel = function()
+	OnCancel = function(dialog, data)
 	end,
 	whileDead = 1,
 	hideOnEscape = 1,

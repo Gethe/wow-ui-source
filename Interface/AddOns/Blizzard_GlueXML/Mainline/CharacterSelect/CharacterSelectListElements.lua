@@ -579,9 +579,17 @@ function CharacterSelectListCharacterInnerContentMixin:SetData(characterInfo)
 	self:UpdateCharacterDisplayInfo();
 	self:UpdateFactionEmblem();
 
-	local filteringByBoostable = CharacterUpgradeCharacterSelectBlock_IsFilteringByBoostable();
-	local enabledByFilter = not filteringByBoostable or CharacterUpgradeCharacterSelectBlock_IsCharacterBoostable(self:GetParent():GetCharacterID());
-	self:SetEnabledState(enabledByFilter);
+	-- If we are in the middle of a VAS flow, ensure enabled state is correct (handles cases like window size changing during flow).
+	-- Gear Update flow doesn't affect enabled state.
+	local enabledState = true;
+	if CharSelectServicesFlowFrame:IsShown() and CharacterServicesMaster.flow and CharacterServicesMaster.flow ~= RPEUpgradeFlow then
+		local servicesSelectedCharacterID = CharacterServicesMaster.flow:GetCurrentResults().characterID;
+		if servicesSelectedCharacterID then
+			enabledState = self:GetParent():GetCharacterID() == servicesSelectedCharacterID;
+		end
+	end
+
+	self:SetEnabledState(enabledState);
 end
 
 function CharacterSelectListCharacterInnerContentMixin:UpdateLastLogin(lastLoginBuild)
@@ -868,10 +876,6 @@ end
 
 function CharacterSelectListCharacterInnerContentMixin:ShowMoveButtons()
 	if CharacterSelect.undeleting or CharacterSelectUtil.IsAccountLocked() then
-		return;
-	end
-
-	if GetNumCharacters() <= 1 then
 		return;
 	end
 
@@ -1204,7 +1208,7 @@ function RestoreCharacterServiceButtonMixin:OnClick()
 	local guid = GetCharacterGUID(characterID);
 	CharacterSelect.pendingUndeleteGuid = guid;
 	local timeStr = SecondsToTime(CHARACTER_UNDELETE_COOLDOWN, false, true, 1, false);
-	GlueDialog_Show("UNDELETE_CONFIRM", UNDELETE_CONFIRMATION:format(timeStr));
+	StaticPopup_Show("UNDELETE_CONFIRM", UNDELETE_CONFIRMATION:format(timeStr));
 end
 
 function RestoreCharacterServiceButtonMixin:OnEnter()

@@ -46,7 +46,9 @@
 				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 				self.Bug:SetPoint("CENTER", 0, 0);
 			</OnMouseUp>
-			<OnHide function="Main_HelpPlate_Button_OnLeave"/>
+			<OnHide>
+				HelpPlate.HideTooltip();
+			</OnHide>
 		</Scripts>
 		<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight">
 			<Size x="46" y="46"/>

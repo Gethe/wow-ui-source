@@ -21,6 +21,15 @@ local ChatInfo =
 			},
 		},
 		{
+			Name = "DropCautionaryChatMessage",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "confirmNumber", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetChannelInfoFromIdentifier",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -469,6 +478,27 @@ local ChatInfo =
 			},
 		},
 		{
+			Name = "SendCautionaryChatMessage",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "confirmNumber", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SendChatMessage",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "message", Type = "cstring", Nilable = false },
+				{ Name = "chatType", Type = "SendChatMessageType", Nilable = true, Documentation = { "Chat type string ('SAY', 'EMOTE', etc.). Defaults to 'SAY' if not specified." } },
+				{ Name = "languageID", Type = "number", Nilable = true, Documentation = { "Language to send the message in." } },
+				{ Name = "target", Type = "cstring", Nilable = true, Documentation = { "Name of the player to send a message to. Only applies to chat types that support targeted messages." } },
+			},
+		},
+		{
 			Name = "SwapChatChannelsByChannelIndex",
 			Type = "Function",
 
@@ -526,6 +556,25 @@ local ChatInfo =
 			{
 				{ Name = "languageId", Type = "number", Nilable = false },
 				{ Name = "canSpeakLanguage", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "CautionaryChannelMessage",
+			Type = "Event",
+			LiteralName = "CAUTIONARY_CHANNEL_MESSAGE",
+			Payload =
+			{
+				{ Name = "confirmNumber", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "CautionaryChatMessage",
+			Type = "Event",
+			LiteralName = "CAUTIONARY_CHAT_MESSAGE",
+			Payload =
+			{
+				{ Name = "chatLineID", Type = "number", Nilable = false },
+				{ Name = "confirmNumber", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -2485,6 +2534,17 @@ local ChatInfo =
 				{ Name = "message", Type = "cstring", Nilable = false },
 				{ Name = "chatType", Type = "cstring", Nilable = true, Documentation = { "ChatType, defaults to SLASH_CMD_PARTY." } },
 				{ Name = "target", Type = "cstring", Nilable = true, Documentation = { "Only applies for targeted channels" } },
+			},
+		},
+		{
+			Name = "SendChatMessageParams",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "message", Type = "cstring", Nilable = false },
+				{ Name = "chatType", Type = "SendChatMessageType", Nilable = true, Documentation = { "Chat type string ('SAY', 'EMOTE', etc.). Defaults to 'SAY' if not specified." } },
+				{ Name = "languageID", Type = "number", Nilable = true, Documentation = { "Language to send the message in." } },
+				{ Name = "target", Type = "cstring", Nilable = true, Documentation = { "Name of the player to send a message to. Only applies to chat types that support targeted messages." } },
 			},
 		},
 	},

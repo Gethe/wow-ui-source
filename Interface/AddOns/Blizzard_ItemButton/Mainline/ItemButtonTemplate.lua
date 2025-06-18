@@ -7,10 +7,6 @@ ItemButtonConstants =
 	},
 };
 
-local function GetItemButtonIconTexture(button)
-	return button.Icon or button.icon or _G[button:GetName().."IconTexture"];
-end
-
 function GetFormattedItemQuantity(quantity, maxQuantity)
 	if quantity > (maxQuantity or 9999) then
 		return "*";
@@ -220,24 +216,17 @@ function SetItemButtonBorder(button, asset, isAtlas)
 	end
 end
 
-local qualityToIconBorderAtlas =
-{
-	[Enum.ItemQuality.Poor] = "auctionhouse-itemicon-border-gray",
-	[Enum.ItemQuality.Common] = "auctionhouse-itemicon-border-white",
-	[Enum.ItemQuality.Uncommon] = "auctionhouse-itemicon-border-green",
-	[Enum.ItemQuality.Rare] = "auctionhouse-itemicon-border-blue",
-	[Enum.ItemQuality.Epic] = "auctionhouse-itemicon-border-purple",
-	[Enum.ItemQuality.Legendary] = "auctionhouse-itemicon-border-orange",
-	[Enum.ItemQuality.Artifact] = "auctionhouse-itemicon-border-artifact",
-	[Enum.ItemQuality.Heirloom] = "auctionhouse-itemicon-border-account",
-	[Enum.ItemQuality.WoWToken] = "auctionhouse-itemicon-border-account",
-};
-
-local function SetItemButtonQuality_Base(button, quality, itemIDOrLink, suppressOverlays, isBound)
+local function SetItemButtonQuality_Base(button, quality, itemIDOrLink, suppressOverlays, isBound, ignoreColorOverrides)
 	ClearItemButtonOverlay(button);
 
-	local hasQuality = quality and BAG_ITEM_QUALITY_COLORS[quality];
-	if hasQuality then
+	local color = nil;
+	if ignoreColorOverrides then
+		color = ColorManager.GetDefaultColorDataForBagItemQuality(quality);
+	else
+		color = ColorManager.GetColorDataForBagItemQuality(quality);
+	end
+
+	if color then
 		if itemIDOrLink then
 			if IsArtifactRelicItem(itemIDOrLink) then
 				SetItemButtonBorder(button, [[Interface\Artifacts\RelicIconFrame]]);
@@ -252,28 +241,28 @@ local function SetItemButtonQuality_Base(button, quality, itemIDOrLink, suppress
 			SetItemButtonBorder(button, [[Interface\Common\WhiteIconFrame]]);
 		end
 
-		local color = BAG_ITEM_QUALITY_COLORS[quality];
 		SetItemButtonBorderVertexColor(button, color.r, color.g, color.b);
 	else
 		SetItemButtonBorder(button);
 	end
 end
 
-function SetItemButtonQuality(button, quality, itemIDOrLink, suppressOverlays, isBound)
+function SetItemButtonQuality(button, quality, itemIDOrLink, suppressOverlays, isBound, ignoreColorOverrides)
 	if button then
 		if button.SetItemButtonQuality then
-			button:SetItemButtonQuality(quality, itemIDOrLink, suppressOverlays, isBound);
+			button:SetItemButtonQuality(quality, itemIDOrLink, suppressOverlays, isBound, ignoreColorOverrides);
 		else
-			SetItemButtonQuality_Base(button, quality, itemIDOrLink, suppressOverlays, isBound);
+			SetItemButtonQuality_Base(button, quality, itemIDOrLink, suppressOverlays, isBound, ignoreColorOverrides);
 		end
 	end
 end
 
 local function GetButtonOverlayQualityColor(quality)
-	if not quality or not BAG_ITEM_QUALITY_COLORS[quality] then
+	local color = ColorManager.GetColorDataForBagItemQuality(quality);
+	if not color then
 		quality = Enum.ItemQuality.Common;
 	end
-	return BAG_ITEM_QUALITY_COLORS[quality];
+	return ColorManager.GetColorDataForBagItemQuality(quality);
 end
 
 -- Remember to update the OverlayKeys table if adding an overlay texture here.
@@ -422,8 +411,8 @@ function ItemButtonMixin:SetItemButtonTextureVertexColor(r, g, b)
 	SetItemButtonTextureVertexColor_Base(self, r, g, b);
 end
 
-function ItemButtonMixin:SetItemButtonQuality(quality, itemIDOrLink, suppressOverlays, isBound)
-	SetItemButtonQuality_Base(self, quality, itemIDOrLink, suppressOverlays, isBound);
+function ItemButtonMixin:SetItemButtonQuality(quality, itemIDOrLink, suppressOverlays, isBound, ignoreColorOverrides)
+	SetItemButtonQuality_Base(self, quality, itemIDOrLink, suppressOverlays, isBound, ignoreColorOverrides);
 end
 
 function ItemButtonMixin:SetItemButtonBorderVertexColor(r, g, b)
@@ -436,12 +425,19 @@ end
 
 CircularGiantItemButtonMixin = {}
 
-function CircularGiantItemButtonMixin:SetItemButtonQuality(quality, itemIDOrLink, suppressOverlays, isBound)
+function CircularGiantItemButtonMixin:SetItemButtonQuality(quality, itemIDOrLink, suppressOverlays, isBound, ignoreColorOverrides)
 	ClearItemButtonOverlay(self);
 
 	if quality then
 		local isAtlas = true;
-		SetItemButtonBorder(self, qualityToIconBorderAtlas[quality], isAtlas);
+		local atlasData = ColorManager.GetAtlasDataForAuctionHouseItemQuality(quality);
+		SetItemButtonBorder(self, atlasData.atlas, isAtlas);
+
+		if atlasData.overrideColor then
+			SetItemButtonBorderVertexColor(self, atlasData.overrideColor.r, atlasData.overrideColor.g, atlasData.overrideColor.b);
+		else
+			SetItemButtonBorderVertexColor(self, 1, 1, 1);
+		end
 	else
 		SetItemButtonBorder(self);
 	end

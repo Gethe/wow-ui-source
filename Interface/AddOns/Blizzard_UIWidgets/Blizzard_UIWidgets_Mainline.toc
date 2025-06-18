@@ -1,9 +1,10 @@
 ## Title: Blizzard_UIWidgets
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_Minimap
+## Dependencies: Blizzard_Minimap, Blizzard_Colors
 ## AllowLoad: game
 ## AllowLoadGameType: mainline
+Mainline\Blizzard_WidgetsUtil.lua
 Mainline\Blizzard_UIWidgetManager.lua
 Mainline\Blizzard_UIWidgetManager.xml
 Mainline\Blizzard_UIWidgetAnimationTemplates.lua
@@ -70,6 +71,8 @@ Mainline\Blizzard_UIWidgetTemplateMapPinAnimation.lua
 Mainline\Blizzard_UIWidgetTemplateMapPinAnimation.xml
 Mainline\Blizzard_UIWidgetTemplateScenarioHeaderDelves.lua
 Mainline\Blizzard_UIWidgetTemplateScenarioHeaderDelves.xml
+Mainline\Blizzard_UIWidgetTemplateButtonHeader.lua
+Mainline\Blizzard_UIWidgetTemplateButtonHeader.xml
 Mainline\Blizzard_UIWidgetTopCenterFrame.lua
 Mainline\Blizzard_UIWidgetTopCenterFrame.xml
 Mainline\Blizzard_UIWidgetBelowMinimapFrame.lua

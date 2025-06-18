@@ -1,7 +1,7 @@
 ## Title: Blizzard_GlueParent
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_GlueXMLBase
+## Dependencies: Blizzard_GlueXMLBase, Blizzard_StaticPopup_Glue
 ## LoadFirst: 1
 ## AllowLoad: Glue
 ## AllowLoadGameType: mainline

@@ -431,11 +431,5 @@ local function DebugAnchorGraph(frame, indent, visited, output)
 end
 
 function AnchorUtil.PrintAnchorGraph(frame)
-	-- Printing to multiple places in case the chat frame isn't visible.
-	local str = table.concat(DebugAnchorGraph(frame), "\n");
-	if ConsolePrint then
-	ConsolePrint(str);
-	elseif print then
-	print(str);
-	end
+	C_Log.LogMessage(table.concat(DebugAnchorGraph(frame), "\n"));
 end

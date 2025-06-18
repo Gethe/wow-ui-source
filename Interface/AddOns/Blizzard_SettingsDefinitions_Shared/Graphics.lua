@@ -205,12 +205,11 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 	local function GetSpellDensityOptions()
 		local container = Settings.CreateControlTextContainer();
 		local variable = settingSpellDensity:GetVariable();
-		AddValidatedSettingOption(container, variable, raid, 0, VIDEO_OPTIONS_ONLY_ESSENTIAL, VIDEO_OPTIONS_SPELL_DENSITY_ONLY_ESSENTIAL);
-		AddValidatedSettingOption(container, variable, raid, 1, VIDEO_OPTIONS_SOME, VIDEO_OPTIONS_SPELL_DENSITY_SOME);
-		AddValidatedSettingOption(container, variable, raid, 2, VIDEO_OPTIONS_HALF, VIDEO_OPTIONS_SPELL_DENSITY_HALF);
-		AddValidatedSettingOption(container, variable, raid, 3, VIDEO_OPTIONS_MOST, VIDEO_OPTIONS_SPELL_DENSITY_MOST);
-		AddValidatedSettingOption(container, variable, raid, 4, VIDEO_OPTIONS_DYNAMIC, VIDEO_OPTIONS_SPELL_DENSITY_DYNAMIC);
-		AddValidatedSettingOption(container, variable, raid, 5, VIDEO_OPTIONS_EVERYTHING, VIDEO_OPTIONS_SPELL_DENSITY_EVERYTHING);
+		-- These match the enum values of SPELL_VISUAL_KIT_DENSITY.
+		AddValidatedSettingOption(container, variable, raid, 3, VIDEO_OPTIONS_SFX_DENSITY_PERF, VIDEO_OPTIONS_SFX_DENSITY_PERF_TOOLTIP);
+		AddValidatedSettingOption(container, variable, raid, 1, VIDEO_OPTIONS_SFX_DENSITY_MIN, VIDEO_OPTIONS_SFX_DENSITY_MIN_TOOLTIP);
+		AddValidatedSettingOption(container, variable, raid, 2, VIDEO_OPTIONS_SFX_DENSITY_REDUCED, VIDEO_OPTIONS_SFX_DENSITY_REDUCED_TOOLTIP);
+		AddValidatedSettingOption(container, variable, raid, 4, VIDEO_OPTIONS_SFX_DENSITY_FULL, VIDEO_OPTIONS_SFX_DENSITY_FULL_TOOLTIP);
 		AddRecommended(container, variable);
 		return container:GetData();
 	end
@@ -703,6 +702,7 @@ local function Register()
 			AddValidatedCVarOption(container, cvar, 1, VIDEO_OPTIONS_BUILTIN);
 			AddValidatedCVarOption(container, cvar, 2, VIDEO_OPTIONS_NVIDIA_REFLEX);
 			AddValidatedCVarOption(container, cvar, 3, VIDEO_OPTIONS_NVIDIA_REFLEX_BOOST);
+			AddValidatedCVarOption(container, cvar, 4, VIDEO_OPTIONS_INTEL_XELL);
 			return container:GetData();
 		end
 
@@ -1329,9 +1329,8 @@ local function Register()
 		end
 
 		AddCompatSettingsCheckbox("GxCompatOptionalGpuFeatures",		"PROXY_OPT_GPU_FEATURES",	COMPAT_SETTING_OPTIONAL_GPU_FEATURES,	OPTION_TOOLTIP_COMPAT_SETTING_OPTIONAL_GPU_FEATURES);
-		AddCompatSettingsCheckbox("GxCompatDeviceMultiThreading",		"PROXY_DEVICE_MT",			COMPAT_SETTING_DEVICE_MULTITHREADING,	OPTION_TOOLTIP_COMPAT_SETTING_DEVICE_MULTITHREADING);
+		AddCompatSettingsCheckbox("GxCompatAsyncShaderCompilation",		"PROXY_DEVICE_MT",			COMPAT_SETTING_DEVICE_MULTITHREADING,	OPTION_TOOLTIP_COMPAT_SETTING_DEVICE_MULTITHREADING);
 		AddCompatSettingsCheckbox("GxCompatCommandListMultiThreading",	"PROXY_CMDLIST_MT",			COMPAT_SETTING_CMDLIST_MULTITHREADING,	OPTION_TOOLTIP_COMPAT_SETTING_CMDLIST_MULTITHREADING);
-		AddCompatSettingsCheckbox("GxCompatAsyncFrameEnd",				"PROXY_FRAME_OVERLAP",		COMPAT_SETTING_FRAME_OVERLAP,			OPTION_TOOLTIP_COMPAT_SETTING_FRAME_OVERLAP);
 		AddCompatSettingsCheckbox("GxCompatWorkSubmitOptimizations",	"PROXY_ADV_WORK_SUBMIT",	COMPAT_SETTING_ADV_WORK_SUBMIT,			OPTION_TOOLTIP_COMPAT_SETTING_ADV_WORK_SUBMIT);
 	end
 

@@ -1030,7 +1030,7 @@ function QuestLogQuestDetailsMixin:OnLoad()
 end
 
 function QuestLogQuestDetailsMixin:OnShow()
-	self.Bg:SetAtlas(QuestUtil.GetDefaultQuestMapBackgroundTexture());
+	self.Bg:SetAtlas(QuestTextContrast.GetDefaultDetailsBackgroundAtlas());
 	self:AdjustBackgroundTexture(self.Bg);
 	QuestMapFrame.QuestSessionManagement:SetSuppressed(true);
 end
@@ -1226,6 +1226,7 @@ function QuestMapFrame_ReturnFromQuestDetails()
 end
 
 function QuestMapFrame_OpenToQuestDetails(questID)
+	QuestMapFrame:SetDisplayMode(QuestLogDisplayMode.Quests);
 	OpenQuestLog();
 	QuestMapFrame_ShowQuestDetails(questID);
 end
@@ -1637,6 +1638,7 @@ do
 	AddSpacingPair(QuestLogButtonTypes.HeaderCampaign, QuestLogButtonTypes.HeaderCampaign, 2);
 	AddSpacingPair(QuestLogButtonTypes.Quest, QuestLogButtonTypes.HeaderCampaign, 12);
 	AddSpacingPair(QuestLogButtonTypes.Quest, QuestLogButtonTypes.HeaderCampaignMinimal, 10);
+	AddSpacingPair(QuestLogButtonTypes.HeaderCampaignMinimal, QuestLogButtonTypes.HeaderCampaignMinimal, 6);
 	AddSpacingPair(QuestLogButtonTypes.None, QuestLogButtonTypes.HeaderCallings, 0);
 	AddSpacingPair(QuestLogButtonTypes.Any, QuestLogButtonTypes.HeaderCallings, 10);
 
@@ -1743,12 +1745,24 @@ local function QuestLogQuests_BuildQuestInfoContainer()
 	return questInfoContainer;
 end
 
+local function QuestLogQuests_IsCampaignQuestForSorting(info)
+	if info.questClassification == Enum.QuestClassification.Campaign then
+		return true;
+	end
+
+	if not info.isHeader and info.header and info.header.questClassification == Enum.QuestClassification.Campaign then
+		return true;
+	end
+
+	return false;
+end
+
 local function QuestLogQuests_GetCampaignInfos(questInfoContainer)
 	local infos = {};
 
-	-- questInfoContainer is sorted with all campaigns coming first
+	-- Ideally questInfoContainer is sorted with all campaigns coming first
 	for index, info in ipairs(questInfoContainer) do
-		if info.questClassification == Enum.QuestClassification.Campaign then
+		if QuestLogQuests_IsCampaignQuestForSorting(info) then
 			table.insert(infos, info);
 		else
 			break;
@@ -1770,17 +1784,23 @@ local function QuestLogQuests_GetCovenantCallingsInfos(questInfoContainer)
 	return infos;
 end
 
-local nonNormalQuestClassifications =
-{
-	[Enum.QuestClassification.Campaign] = true,
-	[Enum.QuestClassification.Calling] = true,
-};
+local function QuestLogQuests_IsNormalQuestForSorting(info)
+	if info.questClassification == Enum.QuestClassification.Calling then
+		return false;
+	end
+
+	if QuestLogQuests_IsCampaignQuestForSorting(info) then
+		return false;
+	end
+
+	return true;
+end
 
 local function QuestLogQuests_GetQuestInfos(questInfoContainer)
 	local infos = {};
 
 	for index, info in ipairs(questInfoContainer) do
-		if not nonNormalQuestClassifications[info.questClassification] then
+		if QuestLogQuests_IsNormalQuestForSorting(info) then
 			table.insert(infos, info);
 		end
 	end
@@ -2282,7 +2302,7 @@ function QuestMapLogTitleButton_OnEnter(self)
 
 	GameTooltip:Show();
 	tooltipButton = self;
-    EventRegistry:TriggerEvent("QuestMapLogTitleButton.OnEnter", self, questID);
+	EventRegistry:TriggerEvent("QuestMapLogTitleButton.OnEnter", self, questID);
 	POIButtonHighlightManager:SetHighlight(questID);
 end
 
@@ -2448,7 +2468,7 @@ function QuestLogPopupDetailFrame_Show(questID)
 	QuestLogPopupDetailFrame_Update(true);
 	ShowUIPanel(QuestLogPopupDetailFrame);
 	PlaySound(SOUNDKIT.IG_QUEST_LOG_OPEN);
-	QuestLogPopupDetailFrame.Bg:SetAtlas(QuestUtil.GetDefaultQuestBackgroundTexture());
+	QuestLogPopupDetailFrame.Bg:SetAtlas(QuestTextContrast.GetDefaultBackgroundAtlas());
 
 	-- portrait
 	local questPortrait, questPortraitText, questPortraitName, questPortraitMount, questPortraitModelSceneID = C_QuestLog.GetQuestLogPortraitGiver();

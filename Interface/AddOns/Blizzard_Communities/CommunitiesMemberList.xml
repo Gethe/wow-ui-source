@@ -273,6 +273,12 @@
 					</Layer>
 				</Layers>
 			</Frame>
+			<Frame parentKey="Spinner" inherits="SpinnerTemplate" hidden="true">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="0"/>
+				</Anchors>
+			</Frame>
 			<CheckButton parentKey="ShowOfflineButton" inherits="UICheckButtonTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="0" y="26"/>

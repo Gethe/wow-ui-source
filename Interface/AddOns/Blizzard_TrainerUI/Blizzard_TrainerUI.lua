@@ -14,7 +14,7 @@ StaticPopupDialogs["CONFIRM_PROFESSION"] = {
 	text = format(PROFESSION_CONFIRMATION1, "XXX"),
 	button1 = ACCEPT,
 	button2 = CANCEL,
-	OnAccept = function(self)
+	OnAccept = function(dialog, data)
 		BuyTrainerService(ClassTrainerFrame.selectedService);
 		ClassTrainerFrame.showSkillDetails = 1;
 		ClassTrainerFrame.showDialog = nil;
@@ -22,12 +22,12 @@ StaticPopupDialogs["CONFIRM_PROFESSION"] = {
 		local retainScrollPosition = true;
 		ClassTrainerFrame_Update(retainScrollPosition);
 	end,
-	OnShow = function(self)
+	OnShow = function(dialog, data)
 		local prof1, prof2 = GetProfessions();
 		if ( prof1 and not prof2 ) then
-			self.text:SetFormattedText(PROFESSION_CONFIRMATION2, GetTrainerServiceSkillLine(ClassTrainerFrame.selectedService));
+			dialog:SetFormattedText(PROFESSION_CONFIRMATION2, GetTrainerServiceSkillLine(ClassTrainerFrame.selectedService));
 		elseif ( not prof1 ) then
-			self.text:SetFormattedText(PROFESSION_CONFIRMATION1, GetTrainerServiceSkillLine(ClassTrainerFrame.selectedService));
+			dialog:SetFormattedText(PROFESSION_CONFIRMATION1, GetTrainerServiceSkillLine(ClassTrainerFrame.selectedService));
 		end
 	end,
 	showAlert = 1,

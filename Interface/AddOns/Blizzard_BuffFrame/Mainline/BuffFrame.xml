@@ -114,9 +114,6 @@
 	</Frame>
 
 	<Frame name="BuffFrame" parent="UIParent" inherits="AuraFrameTemplate" mixin="BuffFrameMixin" frameStrata="LOW">
-		<Anchors>
-			<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="MinimapCluster" x="-10" y="0" />
-		</Anchors>
 		<KeyValues>
 			<KeyValue key="exampleAuraType" value="Buff" type="string"/>
 			<KeyValue key="maxAuras" value="BUFF_MAX_DISPLAY" type="global"/>
@@ -195,7 +192,7 @@
 		</Anchors>
 		<Layers>
 			<Layer level="BORDER">
-				<FontString parentKey="WarningText" inherits="GameFontNormal">
+				<FontString parentKey="WarningText" inherits="GameFontNormalHuge">
 					<Size x="400" y="30"/>
 					<Anchors>
 						<Anchor point="TOP"/>
@@ -205,7 +202,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="Debuff" inherits="AuraButtonTemplate">
+			<Button parentKey="Debuff" inherits="AuraButtonTemplate" scale="1.25">
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.WarningText" relativePoint="BOTTOM" x="0" y="0"/>
 				</Anchors>

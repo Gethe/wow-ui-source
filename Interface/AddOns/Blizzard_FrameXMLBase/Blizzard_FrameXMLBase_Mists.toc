@@ -1,0 +1,18 @@
+## Title: Blizzard_FrameXMLBase
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_SharedXML, Blizzard_SharedXMLGame
+## AllowLoad: Game
+## AllowLoadGameType: mists
+Classic\IconDataProvider.lua
+AnimatedStatusBar.lua
+AnimatedStatusBar.xml
+FlowContainer.lua
+Classic\FrameLocks.lua
+PlayerMovementFrameFader.lua
+Classic\Constants.lua
+Shared\Constants.lua
+Wrath\Constants.lua
+Cata\Constants.lua
+Mists\Constants.lua
+TBC\Localization.lua

@@ -71,9 +71,17 @@ function AreaPOIEventPinMixin:OnMouseClickAction(button)
 	POIButtonMixin.OnClick(self, button);
 end
 
+function AreaPOIEventPinMixin:OnMouseEnter()
+	POIButtonMixin.OnEnter(self);
+	AreaPOIPinMixin.OnMouseEnter(self);
+end
+
+function AreaPOIEventPinMixin:OnMouseLeave()
+	POIButtonMixin.OnLeave(self);
+	AreaPOIPinMixin.OnMouseLeave(self);
+end
+
 function AreaPOIEventPinMixin:DisableInheritedMotionScriptsWarning()
-	-- The area pin will override these anyway, we don't need to handle
-	-- onEnter/Leave for the POIButton
 	return true;
 end
 

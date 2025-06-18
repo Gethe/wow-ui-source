@@ -1,3 +1,15 @@
+local MIN_OPTION_HEIGHT = 439;
+local OPTION_HEIGHT_EPSILON = 0.1;
+local OPTION_DEFAULT_WIDTH = 240;
+local OPTION_DEFAULT_TEXT_WIDTH = 196;
+
+local rarityToItemQuality = {
+	[Enum.PlayerChoiceRarity.Common] = Enum.ItemQuality.Common,
+    [Enum.PlayerChoiceRarity.Uncommon] = Enum.ItemQuality.Uncommon,
+    [Enum.PlayerChoiceRarity.Rare] = Enum.ItemQuality.Rare,
+    [Enum.PlayerChoiceRarity.Epic] = Enum.ItemQuality.Epic
+};
+
 PlayerChoiceBaseOptionTemplateMixin = {};
 
 function PlayerChoiceBaseOptionTemplateMixin:OnLoad()
@@ -55,11 +67,19 @@ function PlayerChoiceBaseOptionTemplateMixin:Setup(optionInfo, frameTextureKit, 
 	self:CollectAlignedSectionMaxHeights();
 end
 
+function PlayerChoiceBaseOptionTemplateMixin:GetItemQualityForRarity(rarity)
+	return rarityToItemQuality[rarity];
+end
+
+function PlayerChoiceBaseOptionTemplateMixin:GetAtlasDataForRarity()
+	local rarity = self.optionInfo.rarity or Enum.PlayerChoiceRarity.Common;
+	local quality = self:GetItemQualityForRarity(rarity);
+	return ColorManager.GetAtlasDataForPlayerChoice(quality);
+end
+
 function PlayerChoiceBaseOptionTemplateMixin:GetFillerFrame()
 	return self.WidgetContainer;
 end
-
-local MIN_OPTION_HEIGHT = 439;
 
 function PlayerChoiceBaseOptionTemplateMixin:GetMinOptionHeight()
 	return MIN_OPTION_HEIGHT;
@@ -105,8 +125,6 @@ function PlayerChoiceBaseOptionTemplateMixin:AlignSections()
 	self:Layout();
 end
 
-local OPTION_HEIGHT_EPSILON = 0.1;
-
 function PlayerChoiceBaseOptionTemplateMixin:SetMinHeight(minHeight)
 	local fillerFrame = self:GetFillerFrame();
 	if not fillerFrame then
@@ -124,8 +142,6 @@ function PlayerChoiceBaseOptionTemplateMixin:SetMinHeight(minHeight)
 	end
 end
 
-local OPTION_DEFAULT_WIDTH = 240;
-
 function PlayerChoiceBaseOptionTemplateMixin:SetupFrame()
 	self.fixedWidth = OPTION_DEFAULT_WIDTH;
 end
@@ -141,8 +157,6 @@ end
 
 function PlayerChoiceBaseOptionTemplateMixin:SetupTextColors()
 end
-
-local OPTION_DEFAULT_TEXT_WIDTH = 196;
 
 function PlayerChoiceBaseOptionTemplateMixin:SetupOptionText()
 	if self.optionInfo.description == "" then
@@ -363,10 +377,15 @@ function PlayerChoiceBaseOptionButtonFrameTemplateMixin:Setup(buttonInfo, option
 	self:Layout();
 end
 
+function PlayerChoiceBaseOptionButtonFrameTemplateMixin:OnReset()
+	FunctionUtil.SafeInvokeMethod(self.Button, "OnReset");
+end
+
 PlayerChoiceBaseOptionButtonTemplateMixin = {};
 
 function PlayerChoiceBaseOptionButtonTemplateMixin:OnLoad()
 	self.parentOption = self:GetParent():GetParent():GetParent();
+	self.disabledFont = self:GetDisabledFontObject();
 end
 
 local COMPLETED_ATLAS_MARKUP = CreateAtlasMarkup("common-icon-checkmark", 16, 16);
@@ -392,6 +411,10 @@ function PlayerChoiceBaseOptionButtonTemplateMixin:Setup(buttonInfo, optionInfo)
 
 	self:SetEnabled(enabledState);
 
+	if buttonInfo.selected then
+		self:SetPushed(buttonInfo.selected);
+	end
+
 	self.confirmation = buttonInfo.confirmation;
 	self.tooltip = buttonInfo.tooltip;
 	self.rewardQuestID = buttonInfo.rewardQuestID;
@@ -399,6 +422,12 @@ function PlayerChoiceBaseOptionButtonTemplateMixin:Setup(buttonInfo, optionInfo)
 	self.optionID = optionInfo.id;
 	self.soundKitID = buttonInfo.soundKitID;
 	self.keepOpenAfterChoice = buttonInfo.keepOpenAfterChoice;
+end
+
+function PlayerChoiceBaseOptionButtonTemplateMixin:OnReset()
+	self.pushed = false;
+	self:SetDisabledFontObject(self.disabledFont);
+	self:SetPushed(false);
 end
 
 function PlayerChoiceBaseOptionButtonTemplateMixin:OnConfirm()
@@ -410,8 +439,8 @@ StaticPopupDialogs["CONFIRM_PLAYER_CHOICE"] = {
 	text = "%s",
 	button1 = OKAY,
 	button2 = CANCEL,
-	OnAccept = function(self)
-		self.data.owner:OnConfirm();
+	OnAccept = function(dialog, data)
+		data.owner:OnConfirm();
 	end,
 	hideOnEscape = 1,
 	timeout = 0,
@@ -430,30 +459,29 @@ StaticPopupDialogs["CONFIRM_PLAYER_CHOICE_WITH_CONFIRMATION_STRING"] = {
 	hasEditBox = 1,
 	maxLetters = 32,
 
-	OnAccept = function(self)
-		self.data.owner:OnConfirm();
+	OnAccept = function(dialog, data)
+		data.owner:OnConfirm();
 	end,
-	OnShow = function(self)
-		self.button1:Disable();
-		self.button2:Enable();
-		self.editBox:SetFocus();
+	OnShow = function(dialog, data)
+		dialog:GetButton1():Disable();
+		dialog:GetButton2():Enable();
+		dialog:GetEditBox():SetFocus();
 	end,
-	OnHide = function(self)
-		self.editBox:SetText("");
+	OnHide = function(dialog, data)
+		dialog:GetEditBox():SetText("");
 	end,
-	EditBoxOnEnterPressed = function(self)
-		local parent = self:GetParent();
-		if parent.button1:IsEnabled() then
-			parent.data.owner:OnConfirm();
-			parent:Hide();
+	EditBoxOnEnterPressed = function(editBox, data)
+		local dialog = editBox:GetParent();
+		if dialog:GetButton1():IsEnabled() then
+			data.owner:OnConfirm();
+			dialog:Hide();
 		end
 	end,
-	EditBoxOnTextChanged = function (self)
-		local parent = self:GetParent();
-		StaticPopup_StandardConfirmationTextHandler(self, parent.data.confirmationString);
+	EditBoxOnTextChanged = function(editBox, data)
+		StaticPopup_StandardConfirmationTextHandler(editBox, data.confirmationString);
 	end,
-	EditBoxOnEscapePressed = function(self)
-		self:GetParent():Hide();
+	EditBoxOnEscapePressed = function(editBox, data)
+		editBox:GetParent():Hide();
 		ClearCursor();
 	end
 };
@@ -512,6 +540,18 @@ function PlayerChoiceBaseOptionButtonTemplateMixin:OnLeave()
 	self.UpdateTooltip = nil;
 end
 
+function PlayerChoiceBaseOptionButtonTemplateMixin:SetPushed(pushed)
+	self.pushed = pushed;
+	self:SetEnabled(not pushed);
+
+	self:SetDisabledFontObject(pushed and self:GetNormalFontObject() or self.disabledFont);
+
+	local buttonTextureStateKey = pushed and "Down" or "Up";
+	self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-"..buttonTextureStateKey);
+	self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-"..buttonTextureStateKey);
+	self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-"..buttonTextureStateKey);
+end
+
 PlayerChoiceBaseOptionButtonsContainerMixin = {};
 
 function PlayerChoiceBaseOptionButtonsContainerMixin:OnLoad()
@@ -540,7 +580,7 @@ function PlayerChoiceBaseOptionButtonsContainerMixin:Setup(optionInfo, showAsLis
 	self.buttonFramePool:ReleaseAll();
 
 	local buttonFrameTemplate = showAsList and self.listButtonFrameTemplate or self.buttonFrameTemplate;
-	self.buttonFramePool:GetOrCreatePool("Frame", self, buttonFrameTemplate);
+	self.buttonFramePool:GetOrCreatePool("Frame", self, buttonFrameTemplate, GenerateClosure(self.OptionButtonResetter, self));
 
 	local buttonFrames = {};
 	for buttonIndex, buttonInfo in ipairs(optionInfo.buttons) do
@@ -551,6 +591,12 @@ function PlayerChoiceBaseOptionButtonsContainerMixin:Setup(optionInfo, showAsLis
 	end
 
 	AnchorUtil.GridLayout(buttonFrames, self.initialAnchor, self.layout);
+end
+
+function PlayerChoiceBaseOptionButtonsContainerMixin:OptionButtonResetter(framePool, optionButton, _new)
+	Pool_HideAndClearAnchors(framePool, optionButton);
+
+	FunctionUtil.SafeInvokeMethod(optionButton, "OnReset");
 end
 
 function PlayerChoiceBaseOptionButtonsContainerMixin:DisableButtons()

@@ -1,0 +1,27 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="UserScaledFrameTemplate" mixin="UserScaledElementMixin" virtual="true">
+		<!--
+		<KeyValues>
+			<KeyValue key="baseWidth" value="..." type="number"/> 
+			<KeyValue key="baseHeight" value="..." type="number"/>
+			<KeyValue key="useScaleWeight" value="t/f" type="boolean"/>
+			<KeyValue key="scaleWeight" value="> 0" type="number"/>
+		</KeyValues>
+		-->
+		<Scripts>
+			<OnLoad method="OnLoad_UserScaledElement" inherit="append"/>
+		</Scripts>
+	</Frame>
+
+	<FontString name="UserScaledFontStringTemplate" mixin="UserScaledElementMixin" virtual="true">
+		<!--
+		<KeyValues>
+			See UserScaledFrameTemplate
+		</KeyValues>
+		-->
+		<Scripts>
+			<OnLoad method="OnLoad_UserScaledElement" inherit="append"/>
+		</Scripts>
+	</FontString>
+</Ui>

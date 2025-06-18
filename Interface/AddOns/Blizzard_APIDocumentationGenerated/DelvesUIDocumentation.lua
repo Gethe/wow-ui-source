@@ -256,6 +256,16 @@ local DelvesUI =
 			Documentation = { "Signaled when SpellScript calls change the data for players/parties owning a delve or when the delve is shut down." },
 		},
 		{
+			Name = "DelveAssistAction",
+			Type = "Event",
+			LiteralName = "DELVE_ASSIST_ACTION",
+			Documentation = { "Signaled when an assist action occurs in a delve." },
+			Payload =
+			{
+				{ Name = "data", Type = "DelveAssistActionData", Nilable = false },
+			},
+		},
+		{
 			Name = "DelvesAccountDataElementChanged",
 			Type = "Event",
 			LiteralName = "DELVES_ACCOUNT_DATA_ELEMENT_CHANGED",

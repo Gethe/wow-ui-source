@@ -100,7 +100,7 @@ StaticPopupDialogs["LFG_LIST_INVITING_CONVERT_TO_RAID"] = {
 	text = LFG_LIST_CONVERT_TO_RAID_WARNING,
 	button1 = INVITE,
 	button2 = CANCEL,
-	OnAccept = function(self, applicantID) C_PartyInfo.ConfirmConvertToRaid(); C_LFGList.InviteApplicant(applicantID) end,
+	OnAccept = function(dialog, applicantID) C_PartyInfo.ConfirmConvertToRaid(); C_LFGList.InviteApplicant(applicantID) end,
 	timeout = 0,
 	whileDead = 1,
 	hideOnEscape = 1,
@@ -694,7 +694,7 @@ end
 function LFGListCategorySelection_StartFindGroup(self, questID)
 
 	if not self.selectedCategory then
-		message(LFG_LIST_SELECT_A_CATEGORY);
+		SetBasicMessageDialogText(LFG_LIST_SELECT_A_CATEGORY);
 		return;
 	end
 
@@ -3785,7 +3785,7 @@ local roleRemainingKeyLookup = {
 local function HasRemainingSlotsForLocalPlayerRole(lfgSearchResultID)
 	local roles = C_LFGList.GetSearchResultMemberCounts(lfgSearchResultID);
 	if roles then
-		local playerRole = GetSpecializationRoleEnum(GetSpecialization());
+		local playerRole = GetSpecializationRoleEnum(C_SpecializationInfo.GetSpecialization());
 		if playerRole then
 			local remainingRoleKey = roleRemainingKeyLookup[playerRole];
 			if remainingRoleKey then

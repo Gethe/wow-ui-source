@@ -719,35 +719,35 @@
             <Button name="$parentTab2" inherits="PanelTabButtonTemplate" id="2" text="REAGENT_BANK">
                 <Anchors>
                    <Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT" x="-15" y="0"/>
-                </Anchors>
-                <Scripts>
+				</Anchors>
+			<Scripts>
 					<OnClick function="BankFrame_TabOnClick"/>
-                </Scripts>
-            </Button>
+			</Scripts>
+			</Button>
 			<Button name="$parentTab3" inherits="PanelTabButtonTemplate" id="3" text="ACCOUNT_BANK_PANEL_TITLE">
-                <Anchors>
-                   <Anchor point="LEFT" relativeTo="$parentTab2" relativePoint="RIGHT" x="-15" y="0"/>
-                </Anchors>
-                <Scripts>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentTab2" relativePoint="RIGHT" x="-15" y="0"/>
+				</Anchors>
+				<Scripts>
 					<OnClick function="BankFrame_TabOnClick"/>
-                </Scripts>
-            </Button>
+			</Scripts>
+			</Button>
 
 			<EditBox name="BankItemSearchBox" inherits="BagSearchBoxTemplate" letters="15">
 	            <Size x="110" y="20"/>
 	            <Anchors>
-		            <Anchor point="TOPRIGHT" x="-48" y="-33"/>
+					<Anchor point="TOPRIGHT" x="-48" y="-33"/>
 	            </Anchors>
             </EditBox>
 
-            <Button name="BankItemAutoSortButton" inherits="BankAutoSortButtonTemplate">
-	            <Anchors>
-		            <Anchor point="LEFT" relativeTo="BankItemSearchBox" relativePoint="RIGHT" x="8" y="-1"/>
-	            </Anchors>
-	            <Scripts>
-		            <OnClick function="BankFrame_AutoSortButtonOnClick"/>
-	            </Scripts>
-            </Button>
+			<Button name="BankItemAutoSortButton" inherits="BankAutoSortButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="BankItemSearchBox" relativePoint="RIGHT" x="8" y="-1"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="BankFrame_AutoSortButtonOnClick"/>
+				</Scripts>
+			</Button>
 			<!-- Bank Slots  -->
 			<Frame name="BankSlotsFrame" setAllPoints="true" useParentLevel="true" hidden="false">
 				<KeyValues>

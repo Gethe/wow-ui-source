@@ -3,7 +3,7 @@
 
 	<Frame name="EditModeCheckButtonTemplate" inherits="ResizeCheckButtonBehaviorTemplate" mixin="EditModeCheckButtonMixin" virtual="true">
 		<Frames>
-			<CheckButton parentKey="Button" motionScriptsWhileDisabled="true" mixin="EditModeCheckButtonButtonMixin">
+			<CheckButton parentKey="Button" motionScriptsWhileDisabled="true">
 				<Size x="32" y="32"/>
 				<Anchors>
 					<Anchor point="LEFT"/>
@@ -13,11 +13,6 @@
 				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
 				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
 				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
-				<Scripts>
-					<OnClick method="OnClick"/>
-					<OnEnter method="OnEnter"/>
-					<OnLeave method="OnLeave"/>
-				</Scripts>
 			</CheckButton>
 		</Frames>
 		<Layers>
@@ -31,6 +26,7 @@
 			</Layer>
 		</Layers>
 		<Scripts>
+			<OnLoad method="EditModeCheckButton_OnLoad" inherit="append"/>
 			<OnShow method="EditModeCheckButton_OnShow" inherit="append"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
@@ -81,7 +77,7 @@
 	<Button name="EditModeManagerFrameButtonTemplate" inherits="UIPanelButtonTemplate, UIButtonTemplate" virtual="true">
 		<Size x="220" y="28"/>
 	</Button>
-	
+
 	<Frame name="EditModeSettingDropdownTemplate" inherits="ResizeLayoutFrame" mixin="EditModeSettingDropdownMixin" hidden="true" virtual="true">
 		<KeyValues>
 			<KeyValue key="fixedHeight" value="32" type="number"/>
@@ -167,7 +163,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	
+
 	<Line name="EditModeGridLineTemplate" mixin="EditModeGridLineMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="isGridLine" value="true" type="boolean"/>

@@ -13,6 +13,7 @@ local GenericTraitFrameLayoutOptions = {
 		NineSliceTextureKit = "thewarwithin",
 		NineSliceFormatString = "ui-frame-%s-border",
 		TitleDividerAtlas = "dragonriding-talents-line",
+		TitleDividerShown = true,
 		BackgroundAtlas = "ui-frame-thewarwithin-backgroundtile",
 		HeaderSize = { Width = 500, Height = 50 },
 		FrameSize = { Width = 650, Height = 750 },
@@ -60,6 +61,22 @@ local GenericTraitFrameLayoutOptions = {
 		PanOffset = { x = 140, y = -35 },
 		FrameSize = { Width = 350, Height = 575 },
 	},
+
+	Visions = {
+		Title = GENERIC_TRAIT_FRAME_VISIONS_TITLE,
+		BackgroundAtlas = "talenttree-horrificvision-background",
+	},
+
+	TitanConsole = {
+		Title = GENERIC_TRAIT_FRAME_TITAN_CONSOLE_TITLE,
+		TitleDividerShown = false,
+		BackgroundAtlas = "talenttree-titanconsole-background",
+		HeaderSize = { Width = 430, Height = 50 },
+		FrameSize = { Width = 580, Height = 940 },
+		HeaderOffset = { x = 0, y = -37 },
+		CurrencyOffset = { x = 40, y = -14 },
+		PanOffset = { x = 12, y = -15 },
+	}
 };
 
 local GenericTraitFrameLayouts = {
@@ -79,6 +96,12 @@ local GenericTraitFrameLayouts = {
 
 	-- D.R.I.V.E
 	[1056] = GenericTraitFrameLayoutOptions.DRIVE,
+
+	-- Visions
+	[1057] = GenericTraitFrameLayoutOptions.Visions,
+
+	-- Titan Console (OC Delve)
+	[1061] = GenericTraitFrameLayoutOptions.TitanConsole,
 };
 
 function GetGenericTraitFrameLayoutInfo(treeID)
@@ -148,6 +171,7 @@ function GenericTraitFrameMixin:ApplyLayout(layoutInfo)
 	self.Header.Title:SetText(layoutInfo.Title or "");
 	self.Header:SetSize(layoutInfo.HeaderSize.Width, layoutInfo.HeaderSize.Height);
 	self.Header.TitleDivider:SetAtlas(layoutInfo.TitleDividerAtlas, true);
+	self.Header.TitleDivider:SetShown(layoutInfo.TitleDividerShown);
 	self.Inset:SetShown(layoutInfo.ShowInset);
 	self.Header:SetPoint("TOP", layoutInfo.HeaderOffset.x, layoutInfo.HeaderOffset.y);
 	self.Currency:SetPoint("TOPRIGHT", self.Header, "BOTTOMRIGHT", layoutInfo.CurrencyOffset.x, layoutInfo.CurrencyOffset.y);

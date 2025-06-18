@@ -1,3 +1,62 @@
+LinkTypes = {
+	AADCOpenConfig = "aadcopenconfig",
+	Action = "action",
+	AddOn = "addon",
+	AdventureGuide = "journal",
+	APIDocumentation = "api",
+	AzeriteEssence = "azessence",
+	BattlegroundUI = "battleground",
+	BattlePet = "battlepet",
+	BattlePetAbility = "battlePetAbil",
+	BNPlayer = "BNplayer",
+	BNPlayerCommunity = "BNplayerCommunity",
+	CalendarEvent = "calendarEvent",
+	CensoredMessage = "censoredmessage",
+	CensoredMessageRewrite = "censoredmessagerewrite",
+	CensoredMessageConfirmSend = "censoredmessageconfirmsend",
+	Channel = "channel",
+	ClubFinder = "clubFinder",
+	ClubTicket = "clubTicket",
+	Community = "community",
+	DeathRecap = "death",
+	DelveCompanionConfig = "delvecompanionconfig",
+	DungeonScore = "dungeonScore",
+	EditModeLayout = "layout",
+	EventPOI = "eventpoi",
+	GarrisonFollower = "garrfollower",
+	GarrisonFollowerAbility = "garrfollowerability",
+	GarrisonMission = "garrmission",
+	GMChat = "GMChat",
+	GroupFinderUI = "lfd",
+	Item = "item",
+	LevelUpToast = "levelup",
+	LFGListing = "lfglisting",
+	LootHistory = "lootHistory",
+	MountEquipment = "mountequipment",
+	PerksActivity = "perksactivity",
+	Player = "player",
+	PlayerCommunity = "playerCommunity",
+	PlayerGM = "playerGM",
+	PvPRating = "pvpRating",
+	PvPTalentsUI = "honortalent",
+	PvPUI = "pvpbgs",
+	RaidTargetIcon = "icon",
+	ReportCensoredMessage = "reportcensoredmessage",
+	SpecializationsUI = "specpane",
+	Spell = "spell",
+	StoreCategory = "storecategory",
+	TalentBuild = "talentbuild",
+	TalentsUI = "talentpane",
+	TransmogAppearance = "transmogappearance",
+	TransmogIllusion = "transmogillusion",
+	TransmogOutfit = "outfit",
+	TransmogSet = "transmogset",
+	Unit = "unit",
+	URLIndex = "urlIndex",
+	WarbandScene = "warbandScene",
+	WorldMapWaypoint = "worldmap",
+	WorldQuest = "worldquest",
+};
 
 LinkUtil = {};
 
@@ -12,11 +71,17 @@ function LinkUtil.FormatLink(linkType, linkDisplayText, ...)
 end
 
 function LinkUtil.SplitLinkData(linkData)
-	return string.match(linkData, "(.-):(.*)");
+	local linkType, linkOptions = string.split(":", linkData, 2);
+	linkOptions = linkOptions or "";  -- Could be nil if there's no ":" in linkData.
+	return linkType, linkOptions;
 end
 
 function LinkUtil.SplitLink(link) -- returns linkText and displayText
 	return link:match("^|H(.+)|h(.*)|h$");
+end
+
+function LinkUtil.SplitLinkOptions(linkOptions)
+	return string.split(":", linkOptions);
 end
 
 -- Extract the first link from the text given, ignoring leading and trailing characters.
@@ -66,7 +131,7 @@ end
 
 function GetURLIndexAndLoadURL(self, link)
 	local linkType, index = string.split(":", link);
-	if ( linkType == "urlIndex" ) then
+	if ( linkType == LinkTypes.URLIndex ) then
 		LoadURLIndex(tonumber(index));
 		return true;
 	else
@@ -83,8 +148,56 @@ end
 function GetPlayerLink(characterName, linkDisplayText, lineID, chatType, chatTarget)
 	-- Use simplified link if possible
 	if lineID or chatType or chatTarget then
-		return LinkUtil.FormatLink("player", linkDisplayText, characterName, lineID or 0, chatType or 0, chatTarget or "");
+		return LinkUtil.FormatLink(LinkTypes.Player, linkDisplayText, characterName, lineID or 0, chatType or 0, chatTarget or "");
 	else
-		return LinkUtil.FormatLink("player", linkDisplayText, characterName);
+		return LinkUtil.FormatLink(LinkTypes.Player, linkDisplayText, characterName);
+	end
+end
+
+function GetBNPlayerLink(name, linkDisplayText, bnetIDAccount, lineID, chatType, chatTarget)
+	return LinkUtil.FormatLink(LinkTypes.BNPlayer, linkDisplayText, name, bnetIDAccount, lineID or 0, chatType, chatTarget);
+end
+
+do
+	local s_linkHandlerFunctions = {};
+
+	LinkProcessorResponse = {
+		Unhandled = 1,
+		Handled = 2,
+	};
+
+	function LinkUtil.ProcessLink(link, text, contextData)
+		local linkType, linkOptions = LinkUtil.SplitLinkData(link);
+		local linkData = { type = linkType, options = linkOptions };
+		local handlerFunction = s_linkHandlerFunctions[linkType];
+		local response;
+
+		if handlerFunction then
+			response = handlerFunction(link, text, linkData, contextData);
+
+			if response == nil then
+				response = LinkProcessorResponse.Handled;
+			end
+		else
+			response = LinkProcessorResponse.Unhandled;
+		end
+
+		return response;
+	end
+
+	function LinkUtil.IsLinkHandlerRegistered(linkType)
+		return s_linkHandlerFunctions[linkType] ~= nil;
+	end
+
+	function LinkUtil.RegisterLinkHandler(linkType, handlerFunction)
+		if s_linkHandlerFunctions[linkType] ~= nil then
+			assertsafe(false, string.format("attempted to register a duplicate link handler for '%s'", linkType));
+			return;
+		elseif type(linkType) ~= "string" then
+			assertsafe(false, string.format("attempted to register an invalid link type '%s'", tostring(linkType)));
+			return;
+		end
+
+		s_linkHandlerFunctions[linkType] = handlerFunction;
 	end
 end

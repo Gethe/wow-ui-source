@@ -61,8 +61,8 @@ function NamePlateDriverMixin:OnLoad()
 		["NameplatePersonalClickThrough"] = true,
 		["NamePlateHorizontalScale"] = true,
 		["NamePlateClassificationScale"] = true,
-		["NamePlateMaximumClassificationScale"] = true,
 		["nameplateShowPersonalCooldowns"] = true,
+		["NamePlateMaximumClassificationScale"] = true,
 		["nameplateClassResourceTopInset"] = true,
 	};
 end
@@ -228,7 +228,6 @@ function NamePlateDriverMixin:OnUnitAuraUpdate(unit, unitAuraUpdateInfo)
 	if isPlayer then
 		auraSettings.helpful = true;
 		auraSettings.includeNameplateOnly = true;
-		auraSettings.showPersonalCooldowns = self.showPersonalCooldowns;
 	else
 		if PlayerUtil.HasFriendlyReaction(unit) then
 			if (showDebuffsOnFriendly) then
@@ -254,7 +253,6 @@ function NamePlateDriverMixin:OnUnitAuraUpdate(unit, unitAuraUpdateInfo)
 				helpful = true;
 				includeNameplateOnly = true;
 				showFriendlyBuffs = self.showFriendlyBuffs;
-				showPersonalCooldowns = false;
 			};
 			self.personalFriendlyBuffFrame:UpdateBuffs(nameplate.namePlateUnitToken, unitAuraUpdateInfo, auraSettingsFriendlyBuffs);
 		end
@@ -468,7 +466,6 @@ end
 function NamePlateDriverMixin:UpdateNamePlateOptions()
 	self.showDebuffsOnFriendly = GetCVarBool("nameplateShowDebuffsOnFriendly");
 	self.showFriendlyBuffs = GetCVarBool("nameplateShowFriendlyBuffs");
-	self.showPersonalCooldowns = GetCVarBool("nameplateShowPersonalCooldowns");
 	self.playerHideHealthandPowerBar = GetCVarBool("nameplateHideHealthAndPower");
 
 	DefaultCompactNamePlateEnemyFrameOptions.useClassColors = GetCVarBool("ShowClassColorInNameplate");
@@ -739,6 +736,7 @@ function NameplateBuffContainerMixin:HasActiveBuff(spellID)
 	end
 	return false; 
 end
+
 function NameplateBuffContainerMixin:UpdateBuffs(unit, unitAuraUpdateInfo, auraSettings)
 	local filters = {};
 	if auraSettings.helpful then
@@ -803,6 +801,12 @@ function NameplateBuffContainerMixin:UpdateBuffs(unit, unitAuraUpdateInfo, auraS
 
 	self.buffPool:ReleaseAll();
 
+	-- Only display personal buffs on the personal resource display if "show personal cooldowns" option is set. 
+	local shouldShowPersonalBuffs = GetCVarBool("nameplateShowPersonalCooldowns");
+	if not shouldShowPersonalBuffs and (UnitIsUnit(unit, "player") and self ~= PersonalFriendlyBuffFrame) then
+		return;
+	end
+	
 	if auraSettings.hideAll or not self.isActive then
 		return;
 	end
@@ -829,47 +833,6 @@ function NameplateBuffContainerMixin:UpdateBuffs(unit, unitAuraUpdateInfo, auraS
 		buffIndex = buffIndex + 1;
 		return buffIndex >= BUFF_MAX_DISPLAY;
 	end);
-
-	--Add Cooldowns 
-	if(auraSettings.showPersonalCooldowns and buffIndex < BUFF_MAX_DISPLAY and UnitIsUnit(unit, "player")) then 
-		local nameplateSpells = C_SpellBook.GetTrackedNameplateCooldownSpells(); 
-		for _, spellID in ipairs(nameplateSpells) do 
-			if (not self:HasActiveBuff(spellID) and buffIndex < BUFF_MAX_DISPLAY) then
-				local locStart, locDuration = C_Spell.GetSpellLossOfControlCooldown(spellID);
-				local cooldownInfo = C_Spell.GetSpellCooldown(spellID);
-				if ((locDuration and locDuration ~= 0) or (cooldownInfo and cooldownInfo.duration ~= 0)) then
-					local spellInfo = C_Spell.GetSpellInfo(spellID);
-					if(spellInfo) then 
-						local buff = self.buffPool:Acquire();
-						buff.isBuff = true;
-						buff.layoutIndex = buffIndex;
-						buff.spellID = spellID; 
-						buff.auraInstanceID = nil;
-						buff.Icon:SetTexture(spellInfo.iconID); 
-
-						local chargeInfo = C_Spell.GetSpellCharges(spellID) or {};
-						local charges, maxCharges = chargeInfo.currentCharges, chargeInfo.maxCharges;
-						buff.Cooldown:SetSwipeColor(0, 0, 0);
-
-						if (cooldownInfo and cooldownInfo.duration ~= 0) then
-							CooldownFrame_Set(buff.Cooldown, cooldownInfo.startTime, cooldownInfo.duration, cooldownInfo.isEnabled, true, cooldownInfo.modRate);
-						else
-							CooldownFrame_Set(buff.Cooldown, locStart, locDuration, true, true);
-						end
-
-						if (maxCharges and maxCharges > 1) then
-							buff.CountFrame.Count:SetText(charges);
-							buff.CountFrame.Count:Show();
-						else
-							buff.CountFrame.Count:Hide();
-						end
-						buff:Show();
-						buffIndex = buffIndex + 1;
-					end
-				end
-			end
-		end 
-	end
 
 	self:Layout();
 end

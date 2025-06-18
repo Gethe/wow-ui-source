@@ -138,6 +138,10 @@ function AutoComplete_OnLoad(self)
 	self:RegisterEvent("GUILD_ROSTER_UPDATE");
 end
 
+function AutoComplete_OnShow(self)
+	self:SetParent(GetAppropriateTopLevelParent());
+end
+
 local function CheckRequestGuildRoster(canRequestGuildRoster )
 	local guildsDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.GuildsDisabled);
 	if canRequestGuildRoster and not guildsDisabled then

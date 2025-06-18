@@ -1,7 +1,4 @@
-local ExtraActionStyles = {
-	default = "SpellPush-Frame",
-	[106466] = "SpellPush-Frame-Ysera",
-}
+local DefaultExtraActionStyle = "Interface\\ExtraButton\\Default";
 
 function ExtraActionBar_OnLoad (self)
 	self:RegisterEvent("UPDATE_EXTRA_ACTIONBAR");
@@ -15,8 +12,8 @@ end
 
 function ExtraActionBar_OnShow (self)
 	local _, spellID = GetActionInfo(self.button.action);
-	local texture = ExtraActionStyles[spellID] or ExtraActionStyles["default"];
-	self.button.style:SetTexture("Interface\\UnitPowerBarAlt\\"..texture);
+	local texture = GetOverrideBarSkin() or DefaultExtraActionStyle;
+	self.button.style:SetTexture(texture);
 	UIParent_ManageFramePositions();
 end
 

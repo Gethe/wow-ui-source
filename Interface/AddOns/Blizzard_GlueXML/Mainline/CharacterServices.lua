@@ -367,7 +367,7 @@ function CharacterSelectBlockBase:IsFinished()
 end
 
 function CharacterSelectBlockBase:GetResult()
-	return { charid = self.charid; playerguid = self.playerguid }
+	return { characterID = self.charid; playerguid = self.playerguid };
 end
 
 function CharacterSelectBlockBase:FormatResult()
@@ -631,7 +631,7 @@ function SpecSelectBlockBase:SpecSelectBlockInitializeHelper(results, wasFromRew
 
 	self.specButtonClickedCallback = callback;
 
-	local characterGuid = GetCharacterGUID(results.charid);
+	local characterGuid = GetCharacterGUID(results.characterID);
 	if not characterGuid then
 		return;
 	end
@@ -742,12 +742,12 @@ function CharacterUpgradeFlow:IsUnrevoke()
 	end
 
 	local results = self:BuildResults(self:GetNumSteps());
-	if not results.charid then
+	if not results.characterID then
 		-- We haven't chosen a character yet.
 		return nil;
 	end
 
-	local characterGuid = GetCharacterGUID(results.charid);
+	local characterGuid = GetCharacterGUID(results.characterID);
 	if not characterGuid then
 		return nil;
 	end
@@ -764,12 +764,12 @@ function CharacterUpgradeFlow:ShouldSkipSpecSelect()
 	end
 
 	local results = self:BuildResults(self:GetNumSteps());
-	if not results.charid then
+	if not results.characterID then
 		-- We haven't chosen a character yet.
 		return nil;
 	end
 
-	local characterGuid = GetCharacterGUID(results.charid);
+	local characterGuid = GetCharacterGUID(results.characterID);
 	if not characterGuid then
 		return nil;
 	end
@@ -799,14 +799,14 @@ end
 
 function CharacterUpgradeFlow:OnAdvance(controller, results)
 	if (self.step == 1) then
-		local factionGroup = C_CharacterServices.GetFactionGroupByIndex(results.charid);
+		local factionGroup = C_CharacterServices.GetFactionGroupByIndex(results.characterID);
 		self.Steps[3].SkipOnRewind = (factionGroup ~= "Neutral");
 	end
 end
 
 local function ValidateSpec(results)
 	if not results.spec and CharacterUpgradeFlow:ShouldSkipSpecSelect() then
-		local characterGuid = GetCharacterGUID(results.charid);
+		local characterGuid = GetCharacterGUID(results.characterID);
 		if characterGuid then
 			local basicInfo = GetBasicCharacterInfo(characterGuid);
 			results.spec = basicInfo.specID;
@@ -841,18 +841,18 @@ function CharacterUpgradeFlow:Finish(controller)
 	end
 
 	local results = self:BuildResults(self:GetNumSteps());
-	local guid = GetCharacterGUID(results.charid);
+	local guid = GetCharacterGUID(results.characterID);
 	if self:IsUnrevoke() then
 		C_CharacterServices.RequestManualUnrevoke(guid);
 	else
 
 		if (not results.faction) then
 			-- Non neutral character, convert faction group to id.
-			results.faction = PLAYER_FACTION_GROUP[C_CharacterServices.GetFactionGroupByIndex(results.charid)];
+			results.faction = PLAYER_FACTION_GROUP[C_CharacterServices.GetFactionGroupByIndex(results.characterID)];
 		end
 		if (guid ~= results.playerguid) then
 			-- Bail because guid has changed!
-			message(CHARACTER_UPGRADE_CHARACTER_LIST_CHANGED_ERROR);
+			SetBasicMessageDialogText(CHARACTER_UPGRADE_CHARACTER_LIST_CHANGED_ERROR);
 			self:Restart(controller);
 			return false;
 		end
@@ -1054,7 +1054,7 @@ function CharacterUpgradeFactionSelectBlock:FormatResult()
 end
 
 function CharacterUpgradeFactionSelectBlock:SkipIf(results)
-	return C_CharacterServices.GetFactionGroupByIndex(results.charid) ~= "Neutral";
+	return C_CharacterServices.GetFactionGroupByIndex(results.characterID) ~= "Neutral";
 end
 
 function CharacterUpgradeFactionSelectBlock:OnSkip()
@@ -1159,8 +1159,8 @@ function RPEUpgradeFlow:CanInitialize()
 end
 
 local function SetKeepQuestsAndContinue(keepQuests)
-	return function()
-		GlueDialog.data.keepQuests = keepQuests;
+	return function(dialog, data)
+		data.keepQuests = keepQuests;
 		CharacterServicesMasterFinishButton_OnClick();
     end
 end
@@ -1177,12 +1177,12 @@ StaticPopupDialogs["RPE_UPGRADE_CONFIRM"] = {
     text = RPE_UPGRADE_CONFIRMATION,
     button1 = RPE_CONFIRM,
     button2 = CANCEL,
-    OnAccept = function()
-		GlueDialog.data.warningState = "accepted";
+    OnAccept = function(dialog, data)
+		data.warningState = "accepted";
 		CharacterServicesMasterFinishButton_OnClick();
     end,
-    OnCancel = function()
-		GlueDialog.data.warningState = "declined";
+    OnCancel = function(dialog, data)
+		data.warningState = "declined";
 		CharacterServicesMasterFinishButton_OnClick();
 	end,
 }
@@ -1191,12 +1191,12 @@ function RPEUpgradeFlow:Finish(controller)
 	local results = self:BuildResults(self:GetNumSteps());
 	if (not results.faction) then
 		-- Non neutral character, convert faction group to id.
-		results.faction = PLAYER_FACTION_GROUP[C_CharacterServices.GetFactionGroupByIndex(results.charid)];
+		results.faction = PLAYER_FACTION_GROUP[C_CharacterServices.GetFactionGroupByIndex(results.characterID)];
 	end
-	local guid = GetCharacterGUID(results.charid);
+	local guid = GetCharacterGUID(results.characterID);
 	if (guid ~= results.playerguid) then
 		-- Bail because guid has changed!
-		message(CHARACTER_UPGRADE_CHARACTER_LIST_CHANGED_ERROR);
+		SetBasicMessageDialogText(CHARACTER_UPGRADE_CHARACTER_LIST_CHANGED_ERROR);
 		self:Restart(controller);
 		return false;
 	end
@@ -1212,7 +1212,8 @@ function RPEUpgradeFlow:Finish(controller)
 	if results.warningState == nil then
 		local specName = GetSpecializationNameForSpecID(results.spec);
 		local formattedText = string.format(StaticPopupDialogs["RPE_UPGRADE_CONFIRM"].text, specName);
-		GlueDialog_Show("RPE_UPGRADE_CONFIRM", formattedText, self:GetCurrentStep());
+		local text2 = nil;
+		StaticPopup_Show("RPE_UPGRADE_CONFIRM", formattedText, text2, self:GetCurrentStep());
 		return false;
 	elseif results.warningState == "declined" then
 		self:Restart(controller);
@@ -1222,7 +1223,8 @@ function RPEUpgradeFlow:Finish(controller)
 	elseif results.warningState == "accepted" then
 		local serviceInfo = GetServiceCharacterInfo(guid);
 		if serviceInfo.rpeResetQuestClearAvailable and results.keepQuests == nil then
-			GlueDialog_Show("RPE_UPGRADE_QUEST_CLEAR_CONFIRM", nil, self:GetCurrentStep());
+			local text2 = nil;
+			StaticPopup_Show("RPE_UPGRADE_QUEST_CLEAR_CONFIRM", nil, text2, self:GetCurrentStep());
 			return false;
 		else
 			if results.keepQuests == nil then
@@ -1321,7 +1323,7 @@ local RPESpecButtonLayoutData = {
 }
 
 function RPEUpgradeSpecSelectBlock:Initialize(results, wasFromRewind)
-	local characterGuid = GetCharacterGUID(results.charid);
+	local characterGuid = GetCharacterGUID(results.characterID);
 	if not characterGuid then
 		return;
 	end
@@ -1363,7 +1365,7 @@ function RPEUpgradeReviewBlock:Initialize(results, wasFromRewind)
 	self.keepQuests = nil;
 	self.warningState = nil;
 
-	local characterGuid = GetCharacterGUID(results.charid);
+	local characterGuid = GetCharacterGUID(results.characterID);
 	if not characterGuid then
 		return;
 	end

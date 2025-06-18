@@ -1,3 +1,6 @@
+PRICE_DISPLAY_WIDTH = 145;
+PRICE_DISPLAY_WITH_CHECKMARK_WIDTH = 150;
+
 function AuctionCategoryMixin:AddBulkInventoryTypeCategories(classID, subClassID, inventoryTypes)
 	local inventoryTypeNone = nil;
 	local useParentFilters = true;

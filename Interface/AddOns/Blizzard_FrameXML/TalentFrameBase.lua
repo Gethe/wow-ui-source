@@ -4,7 +4,6 @@ MAX_TALENT_TABS = 4;
 MAX_TALENT_TIERS = 7;
 NUM_TALENT_COLUMNS = 3;
 
-DEFAULT_TALENT_SPEC = "spec1";
 DEFAULT_TALENT_TAB = 1;
 
 local min = min;
@@ -42,7 +41,7 @@ function TalentFrame_Update(TalentFrame, talentUnit)
 		-- even though we have inspection data for more than one talent group, we're only showing one for now
 		disable = false;
 	else
-		disable = ( TalentFrame.talentGroup ~= GetActiveSpecGroup(TalentFrame.inspect) );
+		disable = ( TalentFrame.talentGroup ~= C_SpecializationInfo.GetActiveSpecGroup(TalentFrame.inspect) );
 	end
 	if(TalentFrame.bg ~= nil) then
 		TalentFrame.bg:SetDesaturated(disable);
@@ -64,25 +63,32 @@ function TalentFrame_Update(TalentFrame, talentUnit)
 			local restartGlow = false;
 			for column=1, NUM_TALENT_COLUMNS do
 				-- Set the button info
-				local talentID, name, iconTexture, selected, available, _, _, _, _, _, grantedByAura = GetTalentInfo(tier, column, TalentFrame.talentGroup, TalentFrame.inspect, talentUnit);
+				local talentInfoQuery = {};
+				talentInfoQuery.tier = tier;
+				talentInfoQuery.column= column;
+				talentInfoQuery.groupIndex = TalentFrame.talentGroup;
+				talentInfoQuery.isInspect = TalentFrame.inspect;
+				talentInfoQuery.target = talentUnit;
+				local talentInfo = C_SpecializationInfo.GetTalentInfo(talentInfoQuery);
+
 				local button = talentRow["talent"..column];
 				button.tier = tier;
 				button.column = column;
 				
-				if (button and name) then
-					button:SetID(talentID);
+				if (button and talentInfo) then
+					button:SetID(talentInfo.talentID);
 
-					SetItemButtonTexture(button, iconTexture);
+					SetItemButtonTexture(button, talentInfo.icon);
 					if(button.name ~= nil) then
-						button.name:SetText(name);
+						button.name:SetText(talentInfo.name);
 					end
 
 					if(button.knownSelection ~= nil) then
-						if ( grantedByAura ) then
+						if ( talentInfo.grantedByAura ) then
 							button.knownSelection:Show();
 							button.knownSelection:SetAtlas("Talent-Selection-Legendary");
 							button.knownSelection:SetDesaturated(disable);
-						elseif ( selected ) then
+						elseif ( talentInfo.selected ) then
 							button.knownSelection:Show();
 							button.knownSelection:SetAtlas("Talent-Selection");
 							button.knownSelection:SetDesaturated(disable);
@@ -90,28 +96,30 @@ function TalentFrame_Update(TalentFrame, talentUnit)
 							button.knownSelection:Hide();
 						end
 					end
-					button.shouldGlow = (available and not selected) and talentUnit == "player";
-					if ( button.grantedByAura ~= grantedByAura ) then
-						button.grantedByAura = grantedByAura;
+					button.shouldGlow = (talentInfo.available and not talentInfo.selected) and talentUnit == "player";
+					if ( button.grantedByAura ~= talentInfo.grantedByAura ) then
+						button.grantedByAura = talentInfo.grantedByAura;
 						restartGlow = true;
 					end
-					
+
 					if( TalentFrame.inspect ) then
-						SetDesaturation(button.icon, not (selected or grantedByAura));
-						button.border:SetShown(selected or grantedByAura);
-						if ( grantedByAura ) then
-							local color = ITEM_QUALITY_COLORS[Enum.ItemQuality.Legendary];
-							button.border:SetVertexColor(color.r, color.g, color.b);
+						SetDesaturation(button.icon, not (talentInfo.selected or talentInfo.grantedByAura));
+						button.border:SetShown(talentInfo.selected or talentInfo.grantedByAura);
+						if ( talentInfo.grantedByAura ) then
+							local colorData = ColorManager.GetColorDataForItemQuality(Enum.ItemQuality.Legendary);
+							if colorData then
+								button.border:SetVertexColor(colorData.r, colorData.g, colorData.b);
+							end
 						else
 							button.border:SetVertexColor(1, 1, 1);
 						end
 					else
 						button.disabled = (not tierAvailable or disable);
-						SetDesaturation(button.icon, (button.disabled or (selectedTalent ~= 0 and not selected)) and not grantedByAura);
+						SetDesaturation(button.icon, (button.disabled or (selectedTalent ~= 0 and not talentInfo.selected)) and not talentInfo.grantedByAura);
 						button.Cover:SetShown(button.disabled);
-						button.highlight:SetAlpha((selected or not tierAvailable) and 0 or 1);
+						button.highlight:SetAlpha((talentInfo.selected or not tierAvailable) and 0 or 1);
 					end
-					
+
 					button:Show();
 				elseif (button) then
 					button:Hide();
@@ -175,7 +183,7 @@ function TalentFrame_UpdateSpecInfoCache(cache, inspect, pet, talentGroup)
 	for i = 1, MAX_TALENT_TABS do
 		cache[i] = cache[i] or { };
 		if ( i <= numTabs ) then
-			local id, name, description, icon = GetSpecializationInfo(i, inspect, nil, nil, sex);
+			local id, name, description, icon = C_SpecializationInfo.GetSpecializationInfo(i, inspect, nil, nil, sex);
 
 			-- cache the info we care about
 			cache[i].name = name;
@@ -305,7 +313,7 @@ function PvpTalentSlotMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	local selectedTalentID = self:GetSelectedTalent();
 	if (selectedTalentID) then
-		GameTooltip:SetPvpTalent(selectedTalentID, false, GetActiveSpecGroup(true), self.slotIndex);
+		GameTooltip:SetPvpTalent(selectedTalentID, false, C_SpecializationInfo.GetActiveSpecGroup(true), self.slotIndex);
 	else
 		GameTooltip:SetText(PVP_TALENT_SLOT);
 		if (not slotInfo.enabled) then

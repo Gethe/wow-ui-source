@@ -11,6 +11,19 @@ local PetJournalInfo =
 			Type = "Function",
 		},
 		{
+			Name = "ClearSearchFilter",
+			Type = "Function",
+		},
+		{
+			Name = "DismissSummonedPet",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "petID", Type = "WOWGUID", Nilable = false },
+			},
+		},
+		{
 			Name = "GetDisplayIDByIndex",
 			Type = "Function",
 
@@ -67,6 +80,15 @@ local PetJournalInfo =
 			{
 				{ Name = "maxAllowed", Type = "number", Nilable = false },
 				{ Name = "numPets", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetOwnedPetIDs",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "ownedPetIDs", Type = "table", InnerType = "WOWGUID", Nilable = false },
 			},
 		},
 		{
@@ -152,12 +174,35 @@ local PetJournalInfo =
 			},
 		},
 		{
+			Name = "GetSearchFilter",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "filterText", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "HasFavoritePets",
 			Type = "Function",
 
 			Returns =
 			{
 				{ Name = "hasFavorites", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsCurrentlySummoned",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "petID", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isSummoned", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -208,6 +253,15 @@ local PetJournalInfo =
 			Arguments =
 			{
 				{ Name = "battlePetGUID", Type = "WOWGUID", Nilable = false },
+			},
+		},
+		{
+			Name = "SetSearchFilter",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "filterText", Type = "cstring", Nilable = false },
 			},
 		},
 		{

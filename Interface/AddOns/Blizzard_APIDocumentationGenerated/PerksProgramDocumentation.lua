@@ -190,6 +190,15 @@ local PerksProgram =
 			},
 		},
 		{
+			Name = "RequestCartCheckout",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "perksVendorItemIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "RequestPendingChestRewards",
 			Type = "Function",
 		},
@@ -284,6 +293,15 @@ local PerksProgram =
 			Name = "PerksProgramOpen",
 			Type = "Event",
 			LiteralName = "PERKS_PROGRAM_OPEN",
+		},
+		{
+			Name = "PerksProgramPurchaseCartSuccess",
+			Type = "Event",
+			LiteralName = "PERKS_PROGRAM_PURCHASE_CART_SUCCESS",
+			Payload =
+			{
+				{ Name = "vendorItemIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
 		},
 		{
 			Name = "PerksProgramPurchaseSuccess",
@@ -391,6 +409,8 @@ local PerksProgram =
 				{ Name = "itemModifiedAppearanceID", Type = "number", Nilable = false },
 				{ Name = "subItems", Type = "table", InnerType = "PerksVendorSubItemInfo", Nilable = false },
 				{ Name = "uiGroupInfo", Type = "PerksVendorItemUIGroupInfo", Nilable = true },
+				{ Name = "invType", Type = "string", Nilable = false },
+				{ Name = "quality", Type = "ItemQuality", Nilable = false },
 			},
 		},
 		{
@@ -410,7 +430,7 @@ local PerksProgram =
 			{
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "itemID", Type = "number", Nilable = false },
-				{ Name = "itemAppearanceID", Type = "number", Nilable = false },
+				{ Name = "itemModifiedAppearanceID", Type = "number", Nilable = false },
 				{ Name = "invType", Type = "string", Nilable = false },
 				{ Name = "quality", Type = "ItemQuality", Nilable = false },
 			},

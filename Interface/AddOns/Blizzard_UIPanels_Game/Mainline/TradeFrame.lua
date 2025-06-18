@@ -17,6 +17,7 @@ function TradeFrame_OnLoad(self)
 	TradeRecipientMoneyInset.Bg:SetAlpha(0);
 	TradeRecipientEnchantInset.Bg:SetAlpha(0.1);
 	TradeRecipientMoneyBg:SetAlpha(0.6);
+	TradePlayerInputMoneyFrame:SetForbidden();
 end
 
 function TradeFrame_OnShow(self)
@@ -104,8 +105,10 @@ function TradeFrame_UpdatePlayerItem(id)
 	SetItemButtonTexture(tradeItemButton, texture);
 	SetItemButtonCount(tradeItemButton, numItems);
 
-	local doNotSuppressOverlays = false;
-	SetItemButtonQuality(tradeItemButton, quality, GetTradePlayerItemLink(id), doNotSuppressOverlays, isBound);
+	-- If slot is empty, ignore color overrides for it.
+	local suppressOverlays = false;
+	local ignoreColorOverrides = not texture;
+	SetItemButtonQuality(tradeItemButton, quality, GetTradePlayerItemLink(id), suppressOverlays, isBound, ignoreColorOverrides);
 
 	if ( texture ) then
 		tradeItemButton.hasItem = 1;
@@ -135,10 +138,12 @@ function TradeFrame_UpdateTargetItem(id)
 		else
 			buttonText:SetText("");
 		end
-
 	else
 		buttonText:SetText(name);
-		buttonText:SetTextColor(ITEM_QUALITY_COLORS[quality].r, ITEM_QUALITY_COLORS[quality].g, ITEM_QUALITY_COLORS[quality].b);
+		local colorData = ColorManager.GetColorDataForItemQuality(quality);
+		if colorData then
+			buttonText:SetTextColor(colorData.r, colorData.g, colorData.b);
+		end
 	end
 	local tradeItemButton = _G["TradeRecipientItem"..id.."ItemButton"];
 	local tradeItem = _G["TradeRecipientItem"..id];
@@ -156,7 +161,12 @@ function TradeFrame_UpdateTargetItem(id)
 	if ( not texture and GameTooltip:IsOwned(tradeItemButton) ) then
 		GameTooltip:Hide();
 	end
-	SetItemButtonQuality(tradeItemButton, quality, GetTradeTargetItemLink(id));
+
+	-- If slot is empty, ignore color overrides for it.
+	local suppressOverlays = false;
+	local isBound = false;
+	local ignoreColorOverrides = not texture;
+	SetItemButtonQuality(tradeItemButton, quality, GetTradeTargetItemLink(id), suppressOverlays, isBound, ignoreColorOverrides);
 end
 
 function TradeFrame_SetAcceptState(playerState, targetState)
@@ -194,7 +204,7 @@ end
 
 function TradeFrame_OnMouseUp()
 	if ( GetCursorMoney() > 0 ) then
-		AddTradeMoney();
+		C_TradeInfo.AddTradeMoney();
 	elseif ( CursorHasItem() ) then
 		local slot = TradeFrame_GetAvailableSlot();
 		if ( slot ) then
@@ -216,7 +226,7 @@ function TradeFrame_UpdateMoney()
 		--MoneyInputFrame_SetTextColor(TradePlayerInputMoneyFrame, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 		TradeFrameTradeButton_Enable();
 	end
-	SetTradeMoney(copper);
+	C_TradeInfo.SetTradeMoney(copper);
 end
 
 function TradeFrame_GetAvailableSlot()

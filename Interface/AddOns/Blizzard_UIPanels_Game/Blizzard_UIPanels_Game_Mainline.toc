@@ -1,7 +1,7 @@
 ## Title: Blizzard_UIPanels_Game
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_FrameXML, Blizzard_EditMode, Blizzard_GameTooltip, Blizzard_UIPanelTemplates, Blizzard_POIButton, Blizzard_MoneyFrame
+## Dependencies: Blizzard_FrameXML, Blizzard_EditMode, Blizzard_GameTooltip, Blizzard_UIPanelTemplates, Blizzard_POIButton, Blizzard_MoneyFrame, Blizzard_AccessibilityTemplates, Blizzard_Colors, Blizzard_HelpPlate
 ## AllowLoad: game
 ## AllowLoadGameType: mainline
 Mainline\CastingBarFrame.lua
@@ -48,6 +48,8 @@ Mainline\RoleSelectionTemplate.lua
 Mainline\RoleSelectionTemplate.xml
 Mainline\ItemRef.lua
 Mainline\ItemRef.xml
+Mainline\ItemRefHandlers.lua
+Shared\ItemRefHandlersShared.lua
 Shared\SocialQueue.lua
 Mainline\UnitPositionFrameTemplates.lua
 Mainline\UnitPositionFrameTemplates.xml

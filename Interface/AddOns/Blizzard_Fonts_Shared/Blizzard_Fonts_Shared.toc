@@ -1,6 +1,11 @@
 ## Title: Blizzard_Fonts_Shared
-## Author: Blizzard Entertainment
-## DefaultState: enabled
 ## AllowLoad: Both
 ## Dependencies: Blizzard_LoadLocale
-SharedFonts.xml
+[Family]\SharedFonts.xml
+Shared\Fonts.xml
+[Family]\GlueFonts.xml          [AllowLoad Glue]
+[Family]\Fonts.xml              [AllowLoad Game]
+[Family]\SharedFontStyles.xml
+Shared\FontStyles.xml
+[Family]\GlueFontStyles.xml     [AllowLoad Glue]
+[Family]\FontStyles.xml         [AllowLoad Game]

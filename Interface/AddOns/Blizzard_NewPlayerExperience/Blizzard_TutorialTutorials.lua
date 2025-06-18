@@ -624,12 +624,15 @@ function Class_QuestCompleteHelp:ShowHelp()
 	end
 	ObjectiveTrackerFrame:ForEachModule(FindQuestAnchorFrame);
 
-	assertsafe(questAnchorFrame, "Quest not found in objective tracker.");
-
 	if questAnchorFrame and questAnchorFrame:IsShown() then
 		local xOffset = -40;
 		local yOffset = 5;
-		self:ShowPointerTutorial(NPEV2_QUEST_COMPLETE_HELP, "RIGHT", questAnchorFrame, xOffset, yOffset, nil, "RIGHT");
+		self:ShowPointerTutorial(NPEV2_QUEST_COMPLETE_HELP, "RIGHT", questAnchorFrame, xOffset, yOffset, "LEFT");
+	-- Fallback case if the quest was untracked.
+	else
+		local xOffset = -40;
+		local yOffset = -10;
+		self:ShowPointerTutorial(NPEV2_QUEST_COMPLETE_HELP, "RIGHT", ObjectiveTrackerFrame, xOffset, yOffset, "TOPLEFT");
 	end
 end
 
@@ -2192,18 +2195,18 @@ function Class_HunterTame:OnComplete()
 end
 
 -- ------------------------------------------------------------------------------------------------------------
--- Eat Food
+-- Self Heal
 -- ------------------------------------------------------------------------------------------------------------
-Class_EatFood = class("EatFood", Class_TutorialBase);
-function Class_EatFood:OnInitialize()
+Class_SelfHeal = class("SelfHeal", Class_TutorialBase);
+function Class_SelfHeal:OnInitialize()
 	self.tutorialSuccess = false;
 end
 
-function Class_EatFood:CanBegin()
+function Class_SelfHeal:CanBegin()
 	return true;
 end
 
-function Class_EatFood:OnBegin(args)
+function Class_SelfHeal:OnBegin(args)
 	if self.tutorialSuccess then
 		TutorialManager:Finished(self:Name());
 		return;
@@ -2211,33 +2214,62 @@ function Class_EatFood:OnBegin(args)
 
 	local inCombat = unpack(args);
 	local tutorialData = TutorialData:GetFactionData();
-	local container, slot = TutorialHelper:FindItemInContainer(tutorialData.FoodItem);
-	if container and slot then
+	local button = TutorialHelper:GetActionButtonBySpellID(tutorialData.SelfHealSpellID);
+	if button then
 		self.inCombat = inCombat or false;
-
 		if not self.inCombat then
-			Dispatcher:RegisterEvent("PLAYER_REGEN_DISABLED", self);
-			Dispatcher:RegisterEvent("PLAYER_REGEN_ENABLED", self);
+			Dispatcher:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
 			Dispatcher:RegisterEvent("PLAYER_DEAD", self);
 			Dispatcher:RegisterEvent("UNIT_HEALTH", self);
+			Dispatcher:RegisterEvent("PLAYER_REGEN_DISABLED", self);
+			Dispatcher:RegisterEvent("PLAYER_REGEN_ENABLED", self);
 
-			local key = TutorialHelper:GetBagBinding();
-			local tutorialString = string.format(NPEV2_EAT_FOOD_P1, key);
-			local content = {text = TutorialHelper:FormatString(tutorialString), icon=nil};
-
-			-- Dirty hack to make sure all bags are closed
-			TutorialHelper:CloseAllBags();
-
-			self:ShowScreenTutorial(content, nil, TutorialMainFrameMixin.FramePositions.Low);
-			EventRegistry:RegisterCallback("ContainerFrame.OpenBag", self.BagOpened, self);
+			self:ShowPointerTutorial(TutorialHelper:FormatString(NPEV2_SELF_HEAL_P1), "DOWN", button, 0, 0, nil, "DOWN");
 		end
 	else
 		TutorialManager:Finished(self:Name());
 	end
 end
 
-function Class_EatFood:UNIT_HEALTH(arg1)
-	if ( arg1 == "player" ) then
+function Class_SelfHeal:OnInterrupt(interruptedBy)
+	self.tutorialSuccess = false;
+	TutorialManager:Finished(self:Name());
+end
+
+function Class_SelfHeal:OnComplete()
+	Dispatcher:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
+	Dispatcher:UnregisterEvent("PLAYER_DEAD", self);
+	Dispatcher:UnregisterEvent("UNIT_HEALTH", self);
+	Dispatcher:UnregisterEvent("PLAYER_REGEN_DISABLED", self);
+	Dispatcher:UnregisterEvent("PLAYER_REGEN_ENABLED", self);
+
+	self:HidePointerTutorials();
+	self:HideScreenTutorial();
+end
+
+function Class_SelfHeal:UNIT_SPELLCAST_SUCCEEDED(caster, spelllineID, spellID)
+	local tutorialData = TutorialData:GetFactionData();
+	if spellID == tutorialData.SelfHealSpellID then
+		Dispatcher:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
+
+		self:HidePointerTutorials();
+		local content = {text = TutorialHelper:FormatString(NPEV2_SELF_HEAL_P2), icon=nil};
+		self:ShowScreenTutorial(content);
+
+		self.tutorialSuccess = true;
+		self.Timer = C_Timer.NewTimer(10, function()
+			TutorialManager:Finished(self:Name());
+		end);
+	end
+end
+
+function Class_SelfHeal:PLAYER_DEAD()
+	-- if we get interrupted by Death, start over
+	TutorialManager:Finished(self:Name());
+end
+
+function Class_SelfHeal:UNIT_HEALTH(arg1)
+	if arg1 == "player" then
 		local health = UnitHealth(arg1);
 		local maxHealth = UnitHealthMax(arg1);
 
@@ -2247,75 +2279,14 @@ function Class_EatFood:UNIT_HEALTH(arg1)
 	end
 end
 
-function Class_EatFood:BagOpened(containerFrame)
-	local tutorialData = TutorialData:GetFactionData();
-	local container, slot = TutorialHelper:FindItemInContainer(tutorialData.FoodItem);
-	if not container or not slot then
-		EventRegistry:UnregisterCallback("ContainerFrame.OpenBag", self);
-		TutorialManager:Finished(self:Name());
-		return;
-	end
-
-	if not containerFrame:MatchesBagID(container) then
-		return;
-	end
-	
-	EventRegistry:UnregisterCallback("ContainerFrame.OpenBag", self);
-
-	self:HideScreenTutorial();
-
-	Dispatcher:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
-
-	local itemFrame = TutorialHelper:GetItemContainerFrame(container, slot)
-	if itemFrame then
-		self:ShowPointerTutorial(TutorialHelper:FormatString(NPEV2_EAT_FOOD_P2_BEGIN), "RIGHT", itemFrame, 0, 0, nil, "RIGHT");
-	end
-end
-
-function Class_EatFood:UNIT_SPELLCAST_SUCCEEDED(caster, spelllineID, spellID)
-	local tutorialData = TutorialData:GetFactionData();
-	if spellID == tutorialData.FoodSpellCast then
-		Dispatcher:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
-		self.tutorialSuccess = true;
-		self:HidePointerTutorials();
-		local content = {text = TutorialHelper:FormatString(NPEV2_EAT_FOOD_P2_SUCCEEDED), icon=nil};
-		self:ShowScreenTutorial(content, nil, TutorialMainFrameMixin.FramePositions.Low);
-		self.CloseBagTimer = C_Timer.NewTimer(8, function()
-			TutorialManager:Finished(self:Name());
-		end);
-	end
-end
-
-function Class_EatFood:PLAYER_DEAD()
-	-- if we get interrupted by Death, start over
-	TutorialManager:Finished(self:Name());
-end
-
-function Class_EatFood:PLAYER_REGEN_DISABLED()
+function Class_SelfHeal:PLAYER_REGEN_DISABLED()
 	-- if we get interrupted by Combat, start over
 	self.inCombat = true;
 	TutorialManager:Finished(self:Name());
 end
 
-function Class_EatFood:PLAYER_REGEN_ENABLED()
+function Class_SelfHeal:PLAYER_REGEN_ENABLED()
 	self.inCombat = false;
-end
-
-function Class_EatFood:OnInterrupt(interruptedBy)
-	self.tutorialSuccess = false;
-	TutorialManager:Finished(self:Name());
-end
-
-function Class_EatFood:OnComplete()
-	EventRegistry:UnregisterCallback("ContainerFrame.OpenBag", self);
-	Dispatcher:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
-	Dispatcher:UnregisterEvent("PLAYER_REGEN_DISABLED", self);
-	Dispatcher:UnregisterEvent("PLAYER_REGEN_ENABLED", self);
-	Dispatcher:UnregisterEvent("PLAYER_DEAD", self);
-	Dispatcher:UnregisterEvent("UNIT_HEALTH", self);
-
-	self:HidePointerTutorials();
-	self:HideScreenTutorial();
 end
 
 
@@ -2520,7 +2491,7 @@ function Class_PromptLFG:Restart()
 	if PVEFrame:IsVisible() then
 		self:ShowLFG();
 	else
-		ActionButton_ShowOverlayGlow(LFDMicroButton);
+		ActionButtonSpellAlertManager:ShowAlert(LFDMicroButton);
 		self:ShowPointerTutorial(NPEV2_LFD_INTRO, "DOWN", LFDMicroButton, 0, 10, nil, "DOWN");
 	end
 end
@@ -2545,7 +2516,7 @@ function Class_PromptLFG:CloseTutorialElements()
 		Dispatcher:UnregisterScript(PVEFrame, "OnShow", self.onShowID);
 		self.onShowID = nil;
 	end
-	ActionButton_HideOverlayGlow(LFDMicroButton);
+	ActionButtonSpellAlertManager:HideAlert(LFDMicroButton);
 end
 
 function Class_PromptLFG:OnInterrupt(interruptedBy)
@@ -2554,7 +2525,7 @@ end
 
 function Class_PromptLFG:OnComplete()
 	self:HidePointerTutorials();
-	ActionButton_HideOverlayGlow(LFDMicroButton);
+	ActionButtonSpellAlertManager:HideAlert(LFDMicroButton);
 	self:CloseTutorialElements();
 
 	if self.success == true then
@@ -2728,7 +2699,7 @@ function Class_LookingForGroup:OnComplete()
 
 	self:HidePointerTutorials();
 	self:HideScreenTutorial();
-	ActionButton_HideOverlayGlow(LFDMicroButton);
+	ActionButtonSpellAlertManager:HideAlert(LFDMicroButton);
 
 	if self.success ~= true then
 		if not self.questRemoved then
@@ -2843,7 +2814,7 @@ function Class_MountReceived:NEW_MOUNT_ADDED(data)
 	end
 
 	TutorialHelper:CloseAllBags();
-	ActionButton_ShowOverlayGlow(CollectionsMicroButton)
+	ActionButtonSpellAlertManager:ShowAlert(CollectionsMicroButton)
 	self:HidePointerTutorials();
 
 	self:ShowPointerTutorial(NPEV2_MOUNT_TUTORIAL_P2_NEW_MOUNT_ADDED, "DOWN", CollectionsMicroButton, 0, 10, nil, "DOWN");
@@ -2874,7 +2845,7 @@ function Class_MountReceived:OnComplete()
 	end
 
 	self:HidePointerTutorials();
-	ActionButton_HideOverlayGlow(CollectionsMicroButton);
+	ActionButtonSpellAlertManager:HideAlert(CollectionsMicroButton);
 	if self.proceed == true then
 		TutorialManager:Queue(Class_AddMountToActionBar.name, self.mountData);
 	end

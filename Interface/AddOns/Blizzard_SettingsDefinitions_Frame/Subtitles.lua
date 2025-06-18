@@ -20,15 +20,17 @@ function SubtitlesPreviewMixin:OnLoad()
 		end 
 	end, self);
 
-	EventRegistry:RegisterCallback("CVAR_UPDATE", function(...)
-		local _, cvar = ...;
+	local UpdatePreviewFunc = function(...)
 		local args = {
 			subtitleBackground = GetCVarNumberOrDefault(SUBTITLES_BACKGROUND_CVAR),
 			subtitleBackgroundAlpha = (GetCVarNumberOrDefault(SUBTITLES_BACKGROUND_OPACITY_CVAR) / 100),
 		};
 	
 		self:UpdatePreview(args);
-	end, self);
+	end;
+
+	CVarCallbackRegistry:RegisterCallback(SUBTITLES_BACKGROUND_CVAR, UpdatePreviewFunc, self);
+	CVarCallbackRegistry:RegisterCallback(SUBTITLES_BACKGROUND_OPACITY_CVAR, UpdatePreviewFunc, self);
 end
 
 function SubtitlesPreviewMixin:OnShow()

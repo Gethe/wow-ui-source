@@ -141,6 +141,10 @@ function CVarCallbackRegistry:SetCVarCachable(cvar)
 	self.cachable[cvar] = true;
 end
 
+function CVarCallbackRegistry:ClearCache(cvar)
+	self.cvarValueCache[cvar] = nil;
+end
+
 function CVarCallbackRegistry:RegisterCVarChangedCallback(func, owner, ...)
 	return self:RegisterCallback(CVarCallbackRegistry.Event.OnCVarChanged, func, owner, ...);
 end

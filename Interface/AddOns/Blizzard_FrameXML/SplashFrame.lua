@@ -91,6 +91,7 @@ function SplashFrameMixin:Close()
 	local questID = self.RightFeature.questID;
 	local showQuestDialog = questID and (self.RightFeature.StartQuestButton:IsShown() and self.RightFeature.StartQuestButton:IsEnabled());
 	self.showingQuestDialog = showQuestDialog;
+	C_SplashScreen.SendSplashScreenCloseTelem();
 	HideUIPanel(self);
 
 	if (showQuestDialog) then
@@ -133,6 +134,7 @@ end
 
 function StartQuestButtonMixin:OnClick()
 	self:GetParent():GetParent():Close();
+	C_SplashScreen.SendSplashScreenActionLaunchedTelem();
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 end
 

@@ -97,10 +97,10 @@ end
 
 function MonthlyActivities_ToggleTutorial()
 	local helpPlate = MonthlyActivities_HelpPlate;
-	if ( helpPlate and not HelpPlate_IsShowing(helpPlate) ) then
-		HelpPlate_Show( helpPlate, EncounterJournal.MonthlyActivitiesFrame, EncounterJournal.MonthlyActivitiesFrame.HelpButton );
+	if ( helpPlate and not HelpPlate.IsShowingHelpInfo(helpPlate) ) then
+		HelpPlate.Show( helpPlate, EncounterJournal.MonthlyActivitiesFrame, EncounterJournal.MonthlyActivitiesFrame.HelpButton );
 	else
-		HelpPlate_Hide(true);
+		HelpPlate.Hide(true);
 	end
 end
 
@@ -517,7 +517,8 @@ function MonthlyActivitiesThresholdMixin:SetThresholdInfo(thresholdInfo, showLin
 		self.RewardItem:SetRewardItem(thresholdInfo.itemReward);
 		-- any progress AFTER the reward item is considered "bonus".  This is only relevant
 		-- when the reward item is NOT at the end
-		BonusThresholdLevel = thresholdInfo.requiredContributionAmount;
+		local requiredContrib = thresholdInfo.requiredContributionAmount;
+		BonusThresholdLevel = BonusThresholdLevel and math.min(BonusThresholdLevel, requiredContrib) or requiredContrib;
 	end
 end
 
@@ -827,8 +828,8 @@ function MonthlyActivitiesFrameMixin:OnHide()
 	end
 
 	local helpPlate = MonthlyActivities_HelpPlate;
-	if ( helpPlate and HelpPlate_IsShowing(helpPlate) ) then
-		HelpPlate_Hide(false);
+	if ( helpPlate and HelpPlate.IsShowingHelpInfo(helpPlate) ) then
+		HelpPlate.Hide(false);
 	end
 
 	self:SetSelectedActivityID(nil);
@@ -1608,6 +1609,9 @@ end
 function MonthlyActivitiesRewardButtonMixin:SetRewardItem(itemId)
 	self:SetItem(itemId);
 	self.rewardItemId = itemId;
+
+	-- Never show the overlays on these
+	ClearItemButtonOverlay(self);
 end
 
 function MonthlyActivitiesRewardButtonMixin:OnEnter()

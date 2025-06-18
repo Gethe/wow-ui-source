@@ -296,6 +296,7 @@ function SpellBookItemMixin:UpdateVisuals()
 	self:UpdateClickBindState();
 	self:UpdateBorderAnim();
 	self:UpdateTrainableFX();
+	self:UpdateAssistedCombatState();
 
 	-- If already being hovered, make sure to reset any on-hover state that needs to change
 	if self.Button:IsMouseMotionFocus() then
@@ -364,6 +365,12 @@ function SpellBookItemMixin:UpdateTrainableFX()
 		self.trainableFXController:CancelEffect();
 		self.trainableFXController = nil;
 	end
+end
+
+function SpellBookItemMixin:UpdateAssistedCombatState()
+	local spellID = self.spellBookItemInfo.spellID;
+	local show = not self.spellBookItemInfo.isOffSpec and AssistedCombatManager:ShouldHighlightSpellbookSpell(spellID);
+	self.Button.AssistedCombatIconCover:SetShown(show);
 end
 
 function SpellBookItemMixin:UpdateCooldown()
@@ -502,6 +509,11 @@ function SpellBookItemMixin:OnIconEnter()
 	local actionBarStatusToolTip = self.actionBarStatus and SpellSearchUtil.GetTooltipForActionBarStatus(self.actionBarStatus);
 	if actionBarStatusToolTip then
 		GameTooltip_AddColoredLine(tooltip, actionBarStatusToolTip, LIGHTBLUE_FONT_COLOR);
+	end
+
+	local spellID = self.spellBookItemInfo.spellID;
+	if not self.spellBookItemInfo.isOffSpec then
+		AssistedCombatManager:AddSpellTooltipLine(tooltip, spellID);
 	end
 
 	tooltip:Show();

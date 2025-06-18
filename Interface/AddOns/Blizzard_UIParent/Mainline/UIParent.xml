@@ -48,6 +48,7 @@
 			<KeyValue key="layoutParent" value="UIParentBottomManagedFrameContainer" type="global"/>
 			<KeyValue key="align" value="center" type="string"/>
 			<KeyValue key="hideWhenActionBarIsOverriden" value="true" type="boolean"/>
+			<KeyValue key="ignoreInLayoutWhenActionBarIsOverriden" value="false" type="boolean"/>
 			<KeyValue key="isBottomManagedFrame" value="true" type="boolean"/>
 		</KeyValues>
 	</Frame>

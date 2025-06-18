@@ -1,4 +1,3 @@
-
 GLUE_SCREENS = {
 	["login"] = 		{ frame = "AccountLogin", 			playMusic = true,	playAmbience = true },
 	["realmlist"] = 	{ frame = "RealmListUI", 			playMusic = true,	playAmbience = false },
@@ -79,9 +78,8 @@ function GlueParentMixin:OnLoad()
 	self:RegisterEvent("OPEN_STATUS_DIALOG");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:RegisterEvent("UI_SCALE_CHANGED");
-	self:RegisterEvent("LUA_WARNING");
 	self:RegisterEvent("SUBSCRIPTION_CHANGED_KICK_IMMINENT");
-	self:RegisterEvent("GAME_ENVIRONMENT_SWITCHED");
+	self:RegisterEvent("ACTIVE_GAME_MODE_UPDATED");
 	self:RegisterEvent("CONNECT_TO_EVENT_REALM_FAILED");
 	-- Events for Global Mouse Down
 	self:RegisterEvent("GLOBAL_MOUSE_DOWN");
@@ -123,9 +121,9 @@ function GlueParentMixin:OnStoreFrameClosed(contextKey)
 end
 
 local function IsGlobalMouseEventHandled(buttonName, event)
-	local frames = GetMouseFoci();
-	for _, frame in ipairs(frames) do
-		if frame and frame.HandlesGlobalMouseEvent and frame:HandlesGlobalMouseEvent(buttonName, event) then
+	local regions = GetMouseFoci();
+	for _, region in ipairs(regions) do
+		if region and region.HandlesGlobalMouseEvent and region:HandlesGlobalMouseEvent(buttonName, event) then
 			return true;
 		end
 	end
@@ -149,7 +147,7 @@ function GlueParentMixin:OnEvent(event, ...)
 		GlueParent_UpdateDialogs();
 	elseif ( event == "OPEN_STATUS_DIALOG" ) then
 		local dialog, text = ...;
-		GlueDialog_Show(dialog, text);
+		StaticPopup_Show(dialog, text);
 	elseif ( event == "DISPLAY_SIZE_CHANGED" or event == "NOTCHED_DISPLAY_MODE_CHANGED" ) then
 		OnDisplaySizeChanged(self);
 	elseif ( event == "UI_SCALE_CHANGED" ) then
@@ -159,23 +157,20 @@ function GlueParentMixin:OnEvent(event, ...)
 		end
 
 		AccountUpgradePanel_UpdateExpandState();
-	elseif ( event == "LUA_WARNING" ) then
-		HandleLuaWarning(...);
 	elseif ( event == "SUBSCRIPTION_CHANGED_KICK_IMMINENT" ) then
 		if not StoreFrame_IsShown() then
-			GlueDialog_Show("SUBSCRIPTION_CHANGED_KICK_WARNING");
+			StaticPopup_Show("SUBSCRIPTION_CHANGED_KICK_WARNING");
 		end
-	elseif ( event == "GAME_ENVIRONMENT_SWITCHED" ) then
-		local environment = ...;
-		local isWoWLabs = environment == Enum.GameEnvironment.WoWLabs;
-		WOW_PROJECT_ID = isWoWLabs and WOW_PROJECT_WOWLABS or WOW_PROJECT_MAINLINE;
-		local screen = isWoWLabs and "plunderstorm" or "charselect";
+	elseif ( event == "ACTIVE_GAME_MODE_UPDATED" ) then
+		local gameMode = ...;
+		local isPlunderstorm = gameMode == Enum.GameMode.Plunderstorm;
+		WOW_PROJECT_ID = isPlunderstorm and WOW_PROJECT_WOWLABS or WOW_PROJECT_MAINLINE;
+		local screen = isPlunderstorm and "plunderstorm" or "charselect";
 		GlueParent_SetScreen(screen);
-		GlueDialog_Hide("SWAPPING_ENVIRONMENT");
+		C_Log.LogMessage("From ACTIVE_GAME_MODE_UPDATED");
 	elseif ( event == "ERROR_CONNECT_TO_EVENT_REALM_FAILED" ) then
-		CharacterSelect.connectingToPlunderstorm = false;
 		C_RealmList.ClearRealmList();
-		GlueDialog_Show("ERROR_CONNECT_TO_EVENT_REALM_FAILED");
+		StaticPopup_Show("ERROR_CONNECT_TO_EVENT_REALM_FAILED");
 	elseif (event == "GLOBAL_MOUSE_DOWN" or event == "GLOBAL_MOUSE_UP") then
 		local buttonID = ...;
 		if not IsGlobalMouseEventHandled(buttonID, event) then
@@ -184,7 +179,7 @@ function GlueParentMixin:OnEvent(event, ...)
 	elseif (event == "KIOSK_SESSION_SHUTDOWN" or event == "KIOSK_SESSION_EXPIRED") then
 		GlueParent_SetScreen("kioskmodesplash");
 	elseif (event == "KIOSK_SESSION_EXPIRATION_CHANGED") then
-		GlueDialog_Show("OKAY", KIOSK_SESSION_TIMER_CHANGED);
+		StaticPopup_Show("OKAY", KIOSK_SESSION_TIMER_CHANGED);
 	elseif(event == "SCRIPTED_ANIMATIONS_UPDATE") then
 		ScriptedAnimationEffectsUtil.ReloadDB();
 	end
@@ -212,11 +207,8 @@ function GlueParent_GetBestScreen()
 	if ( hasRealmList ) then
 		return "realmlist";
 	elseif ( connectedToWoW ) then
-		if CharacterSelect.connectingToPlunderstorm then
-			return "plunderstorm";
-		end
-		local screen = C_GameEnvironmentManager.GetCurrentGameEnvironment() == Enum.GameEnvironment.WoWLabs and "plunderstorm" or "charselect";
-		return screen;
+		local screenName = C_GameRules.GetGameModeGlueScreenName() or "charselect";
+		return screenName;
 	else
 		return "login";
 	end
@@ -230,14 +222,19 @@ local function IsHigherPriorityError(errorID, currentErrorID)
 end
 
 local function GlueParent_ShowLastErrorDialog(which, text, data)
-	GlueDialog_Show(which, text, data, C_Login.ClearLastError);
+	local text2 = nil;
+	local insertedFrame = nil;
+	local customOnHideScript = C_Login.ClearLastError;
+	StaticPopup_Show(which, text, text2, data, insertedFrame, customOnHideScript);
 end
 
 local currentlyShowingErrorID = nil;
 function GlueParent_UpdateDialogs()
 	local auroraState, connectedToWoW, wowConnectionState, hasRealmList, waitingForRealmList = C_Login.GetState();
 	local errorID;
-	if ( auroraState == LE_AURORA_STATE_CONNECTING ) then
+	if ( auroraState == LE_AURORA_STATE_WAITING_FOR_NETWORK ) then
+		StaticPopup_Show("CANCEL", LOGIN_STATE_WAITFORNETWORK)
+	elseif ( auroraState == LE_AURORA_STATE_CONNECTING ) then
 		local isQueued, queuePosition, estimatedSeconds = C_Login.GetLogonQueueInfo();
 		if ( isQueued ) then
 			local queueMessage;
@@ -249,9 +246,9 @@ function GlueParent_UpdateDialogs()
 				queueMessage = string.format(BNET_LOGIN_QUEUE_TIME_LEFT, queuePosition, estimatedSeconds / 60);
 			end
 
-			GlueDialog_Show("CANCEL", queueMessage);
+			StaticPopup_Show("CANCEL", queueMessage);
 		else
-			GlueDialog_Show("CANCEL", LOGIN_STATE_CONNECTING);
+			StaticPopup_Show("CANCEL", LOGIN_STATE_CONNECTING);
 		end
 	elseif ( auroraState == LE_AURORA_STATE_NONE and C_Login.GetLastError() ) then
 		local errorCategory, localizedString, debugString, errorCodeString;
@@ -339,9 +336,9 @@ function GlueParent_UpdateDialogs()
 			EventRegistry:TriggerEvent("GlueParent.OnLoginError");
 		end
 	elseif (  waitingForRealmList ) then
-		GlueDialog_Show("REALM_LIST_IN_PROGRESS");
+		StaticPopup_Show("REALM_LIST_IN_PROGRESS");
 	elseif ( wowConnectionState == LE_WOW_CONNECTION_STATE_CONNECTING ) then
-		GlueDialog_Show("CANCEL", GAME_SERVER_LOGIN);
+		StaticPopup_Show("CANCEL", GAME_SERVER_LOGIN);
 	elseif ( wowConnectionState == LE_WOW_CONNECTION_STATE_IN_QUEUE ) then
 		local waitPosition, waitMinutes, hasFCM = C_Login.GetWaitQueueInfo();
 
@@ -356,13 +353,13 @@ function GlueParent_UpdateDialogs()
 
 		if ( hasFCM ) then
 			queueString = queueString .. "\n\n" .. _G["QUEUE_FCM"];
-			GlueDialog_Show("QUEUED_WITH_FCM", queueString);
+			StaticPopup_Show("QUEUED_WITH_FCM", queueString);
 		else
-			GlueDialog_Show("QUEUED_NORMAL", queueString);
+			StaticPopup_Show("QUEUED_NORMAL", queueString);
 		end
-	elseif GlueDialog_GetVisible() ~= "RETRIEVING_CHARACTER_LIST" then
+	else
 		-- JS_TODO: make it so this only cancels state dialogs, like "Connecting"
-		GlueDialog_Hide();
+		StaticPopup_HideAllExcept("RETRIEVING_CHARACTER_LIST");
 	end
 
 	if not errorID then
@@ -375,16 +372,17 @@ function GlueParent_EnsureValidScreen()
 	if ( not GlueParent_IsScreenValid(currentScreen) ) then
 		local bestScreen = GlueParent_GetBestScreen();
 
-		C_Log.LogMessage(Enum.LogPriority.Normal, string.format("Screen invalid. Changing from=\"%s\" to=\"%s\"", currentScreen or "none", bestScreen));
+		C_Log.LogMessage(string.format("Screen invalid. Changing from=\"%s\" to=\"%s\"", currentScreen or "none", bestScreen));
 
 		GlueParent_SetScreen(bestScreen);
+		C_Log.LogMessage("From EnsureValidScreen");
 	end
 end
 
 local function GlueParent_UpdateScreenSound(screenInfo)
 	local displayedExpansionLevel = GetClientDisplayExpansionLevel();
 	if ( screenInfo.playMusic ) then
-		local musicSoundKit = C_GameEnvironmentManager.GetCurrentGameEnvironment() == Enum.GameEnvironment.WoWLabs and SOUNDKIT.PLUNDERSTORM_QUEUE_SCREEN_MUSIC or SafeGetExpansionData(EXPANSION_GLUE_MUSIC, displayedExpansionLevel);
+		local musicSoundKit = C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm and SOUNDKIT.PLUNDERSTORM_QUEUE_SCREEN_MUSIC or SafeGetExpansionData(EXPANSION_GLUE_MUSIC, displayedExpansionLevel);
 		PlayGlueMusic(musicSoundKit);
 	end
 	if ( screenInfo.playAmbience ) then
@@ -392,8 +390,8 @@ local function GlueParent_UpdateScreenSound(screenInfo)
 	end	
 end
 
-local function GlueParent_ChangeScreen(screenInfo, screenTable)
-	C_Log.LogMessage(Enum.LogPriority.Normal, string.format("Switching to screen=\"%s\"", screenInfo.frame));
+local function GlueParent_ChangeScreen(screenInfo, screenTable, oldScreen)
+	C_Log.LogMessage(string.format("Switching to screen=\"%s\" (from \"%s\")", screenInfo.frame, oldScreen or 'none'));
 
 	--Hide all other screens
 	for key, info in pairs(screenTable) do
@@ -422,6 +420,7 @@ function GlueParent_IsSecondaryScreenOpen(screen)
 end
 
 function GlueParent_SetScreen(screen)
+	local oldScreen = GlueParent.currentScreen or 'none'
 	local screenInfo = GLUE_SCREENS[screen];
 	if ( screenInfo ) then
 		GlueParent.currentScreen = screen;
@@ -443,7 +442,7 @@ function GlueParent_SetScreen(screen)
 		--If there's a full-screen secondary screen showing right now, we'll wait to show this one.
 		--Once the secondary screen hides, we'll be shown.
 		if ( not suppressScreen ) then
-			GlueParent_ChangeScreen(screenInfo, GLUE_SCREENS);
+			GlueParent_ChangeScreen(screenInfo, GLUE_SCREENS, oldScreen);
 		end
 	end
 end
@@ -476,6 +475,7 @@ local function GlueParent_CloseSecondaryScreenInternal(openingNewScreen)
 end
 
 function GlueParent_OpenSecondaryScreen(screen, contextKey)
+	local oldSecondaryScreen = GlueParent.currentSecondaryScreen or 'none';
 	local screenInfo = GLUE_SECONDARY_SCREENS[screen];
 	if ( screenInfo ) then
 		--Close the last secondary screen
@@ -501,7 +501,7 @@ function GlueParent_OpenSecondaryScreen(screen, contextKey)
 		if ( screenInfo.showSound ) then
 			PlaySound(screenInfo.showSound);
 		end
-		GlueParent_ChangeScreen(screenInfo, GLUE_SECONDARY_SCREENS);
+		GlueParent_ChangeScreen(screenInfo, GLUE_SECONDARY_SCREENS, oldSecondaryScreen);
 		GlueParent_CheckFitSecondaryScreen(screenInfo);
 	end
 end
@@ -868,7 +868,7 @@ function CheckSystemRequirements(includeSeenWarnings)
 	for i, warning in ipairs(configWarnings) do
 		local text = C_ConfigurationWarnings.GetConfigurationWarningString(warning);
 		if text then
-			GlueDialog_Queue("CONFIGURATION_WARNING", text, { configurationWarning = warning });
+			StaticPopup_Queue("CONFIGURATION_WARNING", text, text2, { configurationWarning = warning });
 		end
 	end
 end
@@ -895,15 +895,10 @@ function OnExcessiveErrors()
 	-- Glue Implementation, no-op.
 end
 
-local GLUE_PrintHandler =
-    function(...)
-		local printMsg = string.join(" ", tostringall(...));
-		C_Log.LogMessage(Enum.LogPriority.Normal, printMsg);
-	end
+setprinthandler(function(...)
+	C_Log.LogMessage(string.join(" ", tostringall(...)));
+end);
 
-setprinthandler(GLUE_PrintHandler);
-
-ConsolePrint = print;
 SecureMixin = Mixin;
 CreateFromSecureMixins = CreateFromMixins;
 

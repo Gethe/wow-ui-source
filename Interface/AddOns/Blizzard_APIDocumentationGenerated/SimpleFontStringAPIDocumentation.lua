@@ -347,6 +347,14 @@ local SimpleFontStringAPI =
 			},
 		},
 		{
+			Name = "OnColorsUpdated",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+		},
+		{
 			Name = "SetAlphaGradient",
 			Type = "Function",
 
@@ -379,6 +387,15 @@ local SimpleFontStringAPI =
 				{ Name = "fontFile", Type = "cstring", Nilable = false },
 				{ Name = "fontHeight", Type = "uiUnit", Nilable = false },
 				{ Name = "flags", Type = "TBFFlags", Nilable = false },
+			},
+		},
+		{
+			Name = "SetFontHeight",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "height", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
