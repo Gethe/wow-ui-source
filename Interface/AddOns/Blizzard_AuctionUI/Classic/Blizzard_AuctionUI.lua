@@ -146,7 +146,7 @@ local function GetPrices()
 	return startPrice,buyoutPrice;
 end
 
-MoneyTypeInfo["AUCTION_DEPOSIT"] = {
+AddMoneyTypeInfo("AUCTION_DEPOSIT", {
 	UpdateFunc = function()
 		if ( not AuctionFrameAuctions.duration ) then
 			AuctionFrameAuctions.duration = 0
@@ -155,14 +155,14 @@ MoneyTypeInfo["AUCTION_DEPOSIT"] = {
 		return GetAuctionDeposit(AuctionFrameAuctions.duration, startPrice, buyoutPrice);
 	end,
 	collapse = 1,
-};
+});
 
-MoneyTypeInfo["AUCTION_DEPOSIT_TOKEN"] = {
+AddMoneyTypeInfo("AUCTION_DEPOSIT_TOKEN", {
 	UpdateFunc = function()
 		return nil;
 	end,
 	collapse = 1,
-};
+});
 
 StaticPopupDialogs["BUYOUT_AUCTION"] = {
 	text = BUYOUT_AUCTION_CONFIRMATION,

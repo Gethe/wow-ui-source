@@ -21,6 +21,16 @@ local StorePublicUI =
 			},
 		},
 		{
+			Name = "EventStoreUISetShown",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "newShown", Type = "bool", Nilable = false },
+				{ Name = "contextKey", Type = "string", Nilable = true },
+			},
+		},
+		{
 			Name = "HasPurchaseableProducts",
 			Type = "Function",
 

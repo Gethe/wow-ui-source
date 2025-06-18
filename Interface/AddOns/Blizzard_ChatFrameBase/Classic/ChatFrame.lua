@@ -20,6 +20,10 @@ LAST_ACTIVE_CHAT_EDIT_BOX = nil;
 
 CHAT_SHOW_IME = false;
 
+DevTools_AddMessageHandler(function(msg)
+	DEFAULT_CHAT_FRAME:AddMessage(msg);
+end);
+
 function GetChatTimestampFormat()
 	local value = Settings.GetValue("showTimestamps");
 	if value ~= "none" then
@@ -142,6 +146,8 @@ ChatTypeInfo["BN_INLINE_TOAST_ALERT"]					= { sticky = 0, flashTab = true, flash
 ChatTypeInfo["BN_INLINE_TOAST_BROADCAST"]				= { sticky = 0, flashTab = true, flashTabOnGeneral = false };
 ChatTypeInfo["BN_INLINE_TOAST_BROADCAST_INFORM"]		= { sticky = 0, flashTab = true, flashTabOnGeneral = false };
 ChatTypeInfo["BN_WHISPER_PLAYER_OFFLINE"] 				= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["PET_BATTLE_COMBAT_LOG"]					= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["PET_BATTLE_INFO"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["COMMUNITIES_CHANNEL"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["VOICE_TEXT"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 --NEW_CHAT_TYPE -Add the info here.
@@ -299,6 +305,12 @@ ChatTypeGroup["BN_INLINE_TOAST_ALERT"] = {
 	"CHAT_MSG_BN_INLINE_TOAST_ALERT",
 	"CHAT_MSG_BN_INLINE_TOAST_BROADCAST",
 	"CHAT_MSG_BN_INLINE_TOAST_BROADCAST_INFORM",
+};
+ChatTypeGroup["PET_BATTLE_COMBAT_LOG"] = {
+	"CHAT_MSG_PET_BATTLE_COMBAT_LOG",
+};
+ChatTypeGroup["PET_BATTLE_INFO"] = {
+	"CHAT_MSG_PET_BATTLE_INFO",
 };
 ChatTypeGroup["VOICE_TEXT"] = {
 	"CHAT_MSG_VOICE_TEXT",
@@ -1625,6 +1637,12 @@ SecureCmdList["PET_AGGRESSIVE"] = function(msg)
 	end
 end
 
+SecureCmdList["PET_ASSIST"] = function(msg)
+	if ( IsPetAssistAvailable() and SecureCmdOptionParse(msg) ) then
+		PetAssistMode();
+	end
+end
+
 SecureCmdList["PET_AUTOCASTON"] = function(msg)
 	local spell = SecureCmdOptionParse(msg);
 	if ( spell ) then
@@ -2552,11 +2570,11 @@ SlashCmdList["SPECTATOR_WARGAME"] = function(msg)
 
 	local bnetIDGameAccount1 = BNet_GetBNetIDAccountFromCharacterName(target1) or BNet_GetBNetIDAccount(target1);
 	if not bnetIDGameAccount1 then
-		ConsolePrint("Failed to find StartSpectatorWarGame target1:", target1);
+		C_Log.LogErrorMessage("Failed to find StartSpectatorWarGame target1:", target1);
 	end
 	local bnetIDGameAccount2 = BNet_GetBNetIDAccountFromCharacterName(target2) or BNet_GetBNetIDAccount(target2);
 	if not bnetIDGameAccount2 then
-		ConsolePrint("Failed to find StartSpectatorWarGame target2:", target2);
+		C_Log.LogErrorMessage("Failed to find StartSpectatorWarGame target2:", target2);
 	end
 	if (area == "" or area == "nil" or area == "0") then area = nil end
 	StartSpectatorWarGame(bnetIDGameAccount1 or target1, bnetIDGameAccount2 or target2, size, area, ValueToBoolean(isTournamentMode));
@@ -2577,7 +2595,9 @@ SlashCmdList["OPEN_LOOT_HISTORY"] = function(msg)
 end
 
 SlashCmdList["RAIDFINDER"] = function(msg)
-	PVEFrame_ToggleFrame("GroupFinderFrame", RaidFinderFrame);
+	if C_LFGInfo.IsLFREnabled() then
+		PVEFrame_ToggleFrame("GroupFinderFrame", RaidFinderFrame);
+	end
 end
 
 SlashCmdList["API"] = function(msg)
@@ -4364,12 +4384,13 @@ function ChatEdit_DeactivateChat(editBox)
 end
 
 function ChatEdit_ChooseBoxForSend(preferredChatFrame)
-	if ( (not IsVoiceTranscription(ChatEdit_GetLastActiveWindow().chatFrame)) and GetCVar("chatStyle") == "classic" ) then
+	local lastActiveWindow = ChatEdit_GetLastActiveWindow();
+	if ( (not (lastActiveWindow and IsVoiceTranscription(lastActiveWindow.chatFrame))) and GetCVar("chatStyle") == "classic" ) then
 		return DEFAULT_CHAT_FRAME.editBox;
 	elseif ( preferredChatFrame and preferredChatFrame:IsShown() ) then
 		return preferredChatFrame.editBox;
-	elseif ( ChatEdit_GetLastActiveWindow()  and ChatEdit_GetLastActiveWindow():GetParent():IsShown() ) then
-		return ChatEdit_GetLastActiveWindow();
+	elseif ( lastActiveWindow  and lastActiveWindow:GetParent():IsShown() ) then
+		return lastActiveWindow;
 	else
 		return FCFDock_GetSelectedWindow(GENERAL_CHAT_DOCK).editBox;
 	end

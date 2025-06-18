@@ -904,6 +904,13 @@
 										</Anchors>
 										<TexCoords left="0.69433594" right="0.74804688" top="0.60351563" bottom="0.72851563"/>
 									</Texture>
+									<Texture name="$parentInfoIconNeutral" file="Interface\PVPFrame\PVP-Conquest-Misc" hidden="true">
+										<Size x="55" y="64"/>
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="$parentInfoBG" x="5" y="0"/>
+										</Anchors>
+										<TexCoords left="0.69433594" right="0.74804688" top="0.60351563" bottom="0.72851563"/>
+									</Texture>
 								</Layer>
 								<Layer level="OVERLAY">
 									<FontString name="$parentTitle" inherits="GameFontNormalMed3" justifyH="LEFT" parentKey="title" text="ARENA_BATTLES">

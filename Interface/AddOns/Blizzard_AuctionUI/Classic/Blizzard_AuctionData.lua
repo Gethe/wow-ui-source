@@ -321,6 +321,10 @@ function AuctionCategoryMixin:HasFlag(flag)
 	return not not (self.flags and self.flags[flag]);
 end
 
+local function HasValidSubClasses(classID)
+	return GetAuctionItemSubClasses(classID);
+end
+
 do -- Weapons
 	local weaponsCategory = AuctionFrame_CreateCategory(AUCTION_CATEGORY_WEAPONS);
 
@@ -423,7 +427,7 @@ end
 
 do -- Consumables (SubClasses Added in TBC)
 	local consumablesCategory = AuctionFrame_CreateCategory(AUCTION_CATEGORY_CONSUMABLES);
-	if ClassicExpansionAtLeast(LE_EXPANSION_BURNING_CRUSADE) then
+	if ClassicExpansionAtLeast(LE_EXPANSION_BURNING_CRUSADE) and HasValidSubClasses(Enum.ItemClass.Consumable) then
 		consumablesCategory:GenerateSubCategoriesAndFiltersFromSubClass(Enum.ItemClass.Consumable);
 	else
 		consumablesCategory:AddFilter(Enum.ItemClass.Consumable);
@@ -439,7 +443,7 @@ end
 
 do -- Trade Goods (SubClasses Added in TBC)
 	local tradeGoodsCategory = AuctionFrame_CreateCategory(AUCTION_CATEGORY_TRADE_GOODS);
-	if ClassicExpansionAtLeast(LE_EXPANSION_BURNING_CRUSADE) then
+	if ClassicExpansionAtLeast(LE_EXPANSION_BURNING_CRUSADE) and HasValidSubClasses(Enum.ItemClass.Tradegoods)then
 		tradeGoodsCategory:GenerateSubCategoriesAndFiltersFromSubClass(Enum.ItemClass.Tradegoods);
 	else
 		tradeGoodsCategory:AddFilter(Enum.ItemClass.Tradegoods);
@@ -462,7 +466,11 @@ end
 
 do -- Recipes
 	local recipesCategory = AuctionFrame_CreateCategory(AUCTION_CATEGORY_RECIPES);
-	recipesCategory:GenerateSubCategoriesAndFiltersFromSubClass(Enum.ItemClass.Recipe);
+	if HasValidSubClasses(Enum.ItemClass.Recipe)then
+		recipesCategory:GenerateSubCategoriesAndFiltersFromSubClass(Enum.ItemClass.Recipe);
+	else
+		recipesCategory:AddFilter(Enum.ItemClass.Recipe);
+	end
 end
 
 do -- Reagent (Changed to a ItemClass.Miscellaneous and other ClassIDs in TBC)
@@ -475,7 +483,11 @@ end
 do -- Gems (Added in TBC)
 	if ClassicExpansionAtLeast(LE_EXPANSION_BURNING_CRUSADE) then
 		local gemsCategory = AuctionFrame_CreateCategory(AUCTION_CATEGORY_GEMS);
-		gemsCategory:GenerateSubCategoriesAndFiltersFromSubClass(Enum.ItemClass.Gem);
+		if HasValidSubClasses(Enum.ItemClass.Gem)then
+			gemsCategory:GenerateSubCategoriesAndFiltersFromSubClass(Enum.ItemClass.Gem);
+		else
+			gemsCategory:AddFilter(Enum.ItemClass.Gem);
+		end
 	end
 end
 

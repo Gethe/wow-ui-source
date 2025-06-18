@@ -1,6 +1,7 @@
 ## Title: Blizzard Auction UI
 ## LoadOnDemand: 1
 ## Author: Blizzard Entertainment
+## Dependencies: Blizzard_HelpPlate
 ## AllowLoad: game
 ## AllowLoadGameType: classic
 Classic\Blizzard_AuctionData.lua

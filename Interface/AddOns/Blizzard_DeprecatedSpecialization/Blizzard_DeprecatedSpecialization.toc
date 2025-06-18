@@ -3,5 +3,6 @@
 ## Author: Blizzard Entertainment
 ## Version: 1.0
 ## LoadOnDemand: 0
+## AllowLoadGameType: classic, standard
 
-Deprecated_Specialization.lua
+Deprecated_Specialization_[Game].lua

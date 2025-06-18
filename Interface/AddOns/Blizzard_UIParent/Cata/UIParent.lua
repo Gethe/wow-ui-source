@@ -35,6 +35,9 @@ WORLD_QUEST_QUALITY_COLORS = {
 };
 
 function UIParent_OnLoad(self)
+	-- First register for any shared events
+	UIParent_Shared_OnLoad(self);
+
 	self:RegisterEvent("PLAYER_LOGIN");
 	self:RegisterEvent("PLAYER_DEAD");
 	self:RegisterEvent("SELF_RES_SPELL_CHANGED");
@@ -47,7 +50,6 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("CHANNEL_PASSWORD_REQUEST");
 	self:RegisterEvent("PARTY_INVITE_REQUEST");
 	self:RegisterEvent("PARTY_INVITE_CANCEL");
-	self:RegisterEvent("GUILD_INVITE_REQUEST");
 	self:RegisterEvent("ARENA_TEAM_INVITE_REQUEST");
 	self:RegisterEvent("GUILD_INVITE_CANCEL");
 	self:RegisterEvent("PLAYER_CAMPING");
@@ -177,9 +179,6 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("TRIAL_CAP_REACHED_MONEY");
 	self:RegisterEvent("TRIAL_CAP_REACHED_LEVEL");
 
-	-- Lua warnings
-	self:RegisterEvent("LUA_WARNING");
-
 	-- debug menu
 	self:RegisterEvent("DEBUG_MENU_TOGGLED");
 
@@ -194,9 +193,6 @@ function UIParent_OnLoad(self)
 
 	-- Invite confirmations
 	self:RegisterEvent("GROUP_INVITE_CONFIRMATION");
-
-	-- Events for Reporting SYSTEM
-	self:RegisterEvent("REPORT_PLAYER_RESULT");
 
 	--Event(s) for soft targetting
 	self:RegisterEvent("PLAYER_SOFT_INTERACT_CHANGED");
@@ -427,7 +423,7 @@ function ToggleAchievementFrame(stats)
 end
 
 function ToggleTalentFrame()
-	if (UnitLevel("player") < SHOW_TALENT_LEVEL) then
+	if (not C_SpecializationInfo.CanPlayerUseTalentSpecUI()) then
 		return;
 	end
 
@@ -655,6 +651,9 @@ end
 
 -- UIParent_OnEvent --
 function UIParent_OnEvent(self, event, ...)
+	-- First handle any shared events
+	UIParent_Shared_OnEvent(self, event, ...);
+
 	local arg1, arg2, arg3, arg4, arg5, arg6 = ...;
 	if ( event == "CURRENT_SPELL_CAST_CHANGED" ) then
 		if ( StaticPopup_HasDisplayedFrames() ) then
@@ -684,6 +683,7 @@ function UIParent_OnEvent(self, event, ...)
 		TargetFrame_OnVariablesLoaded();
 
 		StoreFrame_CheckForFree(event);
+		EventUtil.TriggerOnVariablesLoaded();
 	elseif ( event == "PLAYER_LOGIN" ) then
 		TimeManager_LoadUI();
 		-- You can override this if you want a Combat Log replacement
@@ -759,8 +759,6 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "PARTY_INVITE_CANCEL" ) then
 		StaticPopup_Hide("PARTY_INVITE");
 		StaticPopupSpecial_Hide(LFGInvitePopup);
-	elseif ( event == "GUILD_INVITE_REQUEST" ) then
-		StaticPopup_Show("GUILD_INVITE", arg1, arg2);
 	elseif ( event == "GUILD_INVITE_CANCEL" ) then
 		StaticPopup_Hide("GUILD_INVITE");
 	elseif ( event == "ARENA_TEAM_INVITE_REQUEST" ) then
@@ -1077,7 +1075,7 @@ function UIParent_OnEvent(self, event, ...)
 			-- exactly which talent spec he is wiping
 			TalentFrame_LoadUI();
 			if ( PlayerTalentFrame_Open ) then
-				PlayerTalentFrame_Open(false, GetActiveTalentGroup());
+				PlayerTalentFrame_Open(false, C_SpecializationInfo.GetActiveSpecGroup());
 			end
 		end
 	elseif ( event == "CONFIRM_BARBERS_CHOICE" ) then
@@ -1446,8 +1444,6 @@ function UIParent_OnEvent(self, event, ...)
 			QuestChoice_LoadUI();
 			QuestChoiceFrame:TryShow();
 		end
-	elseif ( event == "LUA_WARNING" ) then
-		HandleLuaWarning(...);
 	elseif ( event == "GARRISON_ARCHITECT_OPENED") then
 		if (not GarrisonBuildingFrame) then
 			Garrison_LoadUI();
@@ -1582,16 +1578,6 @@ function UIParent_OnEvent(self, event, ...)
 	elseif (event == "ISLANDS_QUEUE_OPEN") then
 		IslandsQueue_LoadUI(); 
 		ShowUIPanel(IslandsQueueFrame); 
-	-- Events for Reporting system
-	elseif (event == "REPORT_PLAYER_RESULT") then
-		local success = ...;
-		if (success) then
-			UIErrorsFrame:AddExternalErrorMessage(ERR_REPORT_SUBMITTED_SUCCESSFULLY);
-			DEFAULT_CHAT_FRAME:AddMessage(COMPLAINT_ADDED);
-		else
-			UIErrorsFrame:AddExternalErrorMessage(ERR_REPORT_SUBMISSION_FAILED);
-			DEFAULT_CHAT_FRAME:AddMessage(ERR_REPORT_SUBMISSION_FAILED);
-		end
 	elseif(event == "PLAYER_SOFT_INTERACT_CHANGED") then
 		if(GetCVarBool("softTargettingInteractKeySound")) then
 			local previousTarget, currentTarget = ...;
@@ -2359,10 +2345,6 @@ function AnimatedShine_OnUpdate(elapsed)
 			shine4:SetPoint("CENTER", parent, "BOTTOMRIGHT", -(value.timer-speed*3)/speed*distance, 0);
 		end
 	end
-end
-
-function ConsolePrint(...)
-	ConsoleAddMessage(string.join(" ", tostringall(...)));
 end
 
 function LFD_IsEmpowered()

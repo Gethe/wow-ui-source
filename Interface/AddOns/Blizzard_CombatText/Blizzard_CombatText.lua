@@ -311,6 +311,7 @@ function CombatText_OnEvent(self, event, ...)
 				or arg3 == "COMBO_POINTS"
 				or arg3 == "ARCANE_CHARGES" ) then
 			local numPower = UnitPower( "player" , GetPowerEnumFromEnergizeString(arg3) );
+			numPower = numPower + count;
 			message = "<"..numPower.." ".._G[arg3]..">";
 			info = PowerBarColor[arg3];
 			--Display as crit if we're at max power
@@ -337,6 +338,8 @@ function CombatText_OnEvent(self, event, ...)
 		message = COMBAT_TEXT_DEFLECT;
 	elseif ( messageType == "SPELL_REFLECT" ) then
 		message = COMBAT_TEXT_REFLECT;
+	elseif ( messageType == "SPELL_MISFIRE" ) then
+		message = COMBAT_TEXT_MISFIRE;
 	elseif ( messageType == "BLOCK" or messageType == "SPELL_BLOCK" ) then
 		if ( arg3 ) then
 			-- Partial block

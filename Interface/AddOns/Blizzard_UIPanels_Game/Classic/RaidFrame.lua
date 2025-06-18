@@ -51,7 +51,7 @@ function RaidInfoFrameMixin:OnLoad()
 			button.Name:SetText(instanceName);
 		end
 
-		if button.Difficult then
+		if button.Difficulty then
 			button.Difficulty:SetText(instanceDifficulty);
 		end
 
@@ -110,7 +110,6 @@ end
 
 function RaidFrameMixin:OnShow()
 	ButtonFrameTemplate_ShowAttic(self:GetParent());
-	self:GetParent().TitleText:SetText(RAID);
 	
 	self:Update();
 	

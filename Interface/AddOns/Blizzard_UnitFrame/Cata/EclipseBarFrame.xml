@@ -1,6 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
-  <Script file="EclipseBarFrame.lua"/>
 
 <!--size=256,128
 	<Texture name="EclipseBarActivate_Moon.png" >
@@ -45,7 +44,7 @@
 	</Texture>
 -->
   
-	<Frame name="EclipseBarFrame" parent="PlayerFrame" frameStrata="LOW" toplevel="true" hidden="true">
+	<Frame name="EclipseBarFrame" parent="PlayerFrame" frameStrata="LOW" toplevel="true" hidden="true" mixin="EclipseBarFrameMixin">
 		<Animations>
 			<AnimationGroup parentKey="sunActivate">
 				<Alpha target="$parentSunBar" 		fromAlpha="0" toAlpha="1" duration="0.6" order="1"/>
@@ -120,6 +119,9 @@
 			</Offset>
 		  </Anchor>
 		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="4" right="4" top="6" bottom="6"/>
+		</HitRectInsets>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture name="$parentBar" file="Interface\PlayerFrame\UI-DruidEclipse">
@@ -209,16 +211,21 @@
 		<Scripts>
 			<OnEnter>
 				self.powerText:Show();
+				GameTooltip_SetDefaultAnchor(GameTooltip, self);
+				GameTooltip:SetText(BALANCE, 1, 1, 1);
+				GameTooltip:AddLine(BALANCE_TOOLTIP, nil, nil, nil, true);
+				GameTooltip:Show();
 			</OnEnter>
 			<OnLeave>
 				if not self.lockShow then
 					self.powerText:Hide();
 				end
+				GameTooltip:Hide();
 			</OnLeave>
-			<OnLoad function="EclipseBar_OnLoad"/>
-			<OnShow function="EclipseBar_OnShow"/>
-			<OnEvent function="EclipseBar_OnEvent"/>
-			<OnUpdate function="EclipseBar_Update"/>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnEvent method="OnEvent"/>
+			<OnUpdate method="Update"/>
 		</Scripts>
 	</Frame>
 </Ui>

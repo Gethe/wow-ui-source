@@ -40,20 +40,6 @@ local TransmogItems =
 			},
 		},
 		{
-			Name = "CanAppearanceBeDisplayedOnPlayer",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "itemAppearanceID", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "canAppearanceBeDisplayedOnPlayer", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "ClearNewAppearance",
 			Type = "Function",
 
@@ -136,6 +122,7 @@ local TransmogItems =
 		{
 			Name = "GetAppearanceInfoBySource",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -150,6 +137,7 @@ local TransmogItems =
 		{
 			Name = "GetAppearanceSourceDrops",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -164,6 +152,7 @@ local TransmogItems =
 		{
 			Name = "GetAppearanceSourceInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -186,6 +175,7 @@ local TransmogItems =
 		{
 			Name = "GetAppearanceSources",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -202,6 +192,7 @@ local TransmogItems =
 		{
 			Name = "GetCategoryAppearances",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -231,6 +222,7 @@ local TransmogItems =
 		{
 			Name = "GetCategoryForItem",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -245,6 +237,7 @@ local TransmogItems =
 		{
 			Name = "GetCategoryInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -301,6 +294,7 @@ local TransmogItems =
 		{
 			Name = "GetItemInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -314,8 +308,24 @@ local TransmogItems =
 			},
 		},
 		{
+			Name = "GetItemTransmogInfoListFromOutfitHyperlink",
+			Type = "Function",
+			MayReturnNothing = true,
+
+			Arguments =
+			{
+				{ Name = "hyperlink", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "list", Type = "table", InnerType = "ItemTransmogInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetLatestAppearance",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -344,6 +354,7 @@ local TransmogItems =
 		{
 			Name = "GetOutfitInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -359,6 +370,7 @@ local TransmogItems =
 		{
 			Name = "GetOutfitItemTransmogInfoList",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -382,6 +394,7 @@ local TransmogItems =
 		{
 			Name = "GetPairedArtifactAppearance",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -396,6 +409,7 @@ local TransmogItems =
 		{
 			Name = "GetSourceIcon",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -410,6 +424,7 @@ local TransmogItems =
 		{
 			Name = "GetSourceInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -424,6 +439,7 @@ local TransmogItems =
 		{
 			Name = "GetSourceItemID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -438,6 +454,7 @@ local TransmogItems =
 		{
 			Name = "GetSourceRequiredHoliday",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -803,6 +820,8 @@ local TransmogItems =
 				{ Name = "appearanceIsUsable", Type = "bool", Nilable = false },
 				{ Name = "appearanceNumSources", Type = "number", Nilable = false },
 				{ Name = "sourceIsKnown", Type = "bool", Nilable = false },
+				{ Name = "canDisplayOnPlayer", Type = "bool", Nilable = false },
+				{ Name = "isAnySourceValidForPlayer", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -842,9 +861,9 @@ local TransmogItems =
 				{ Name = "isCollected", Type = "bool", Nilable = false },
 				{ Name = "isFavorite", Type = "bool", Nilable = false },
 				{ Name = "isHideVisual", Type = "bool", Nilable = false },
+				{ Name = "canDisplayOnPlayer", Type = "bool", Nilable = false },
 				{ Name = "uiOrder", Type = "number", Nilable = false },
 				{ Name = "exclusions", Type = "number", Nilable = false },
-				{ Name = "restrictedSlotID", Type = "luaIndex", Nilable = true },
 				{ Name = "isUsable", Type = "bool", Nilable = false },
 				{ Name = "hasRequiredHoliday", Type = "bool", Nilable = false },
 				{ Name = "hasActiveRequiredHoliday", Type = "bool", Nilable = false },

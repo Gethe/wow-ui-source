@@ -1,6 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
-	<Script file="Blizzard_RaidUI.lua"/>
 	<Button name="RaidClassButtonTemplate" hidden="true" virtual="true">
 		<Size x="18" y="18"/>
 		<Layers>
@@ -759,7 +758,7 @@
 		<HighlightFont style="GameFontHighlightSmall"/>
 		<DisabledFont style="GameFontDisableSmall"/>
 	</Button>
-	<Button name="RaidClassButton15"  parent="RaidFrame" inherits="RaidClassButtonTemplate" id="14">
+	<Button name="RaidClassButton15"  parent="RaidFrame" inherits="RaidClassButtonTemplate" id="15">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="RaidFrame" relativePoint="BOTTOMRIGHT" x="0" y="16"/>
 		</Anchors>

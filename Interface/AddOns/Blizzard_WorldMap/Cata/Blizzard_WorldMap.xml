@@ -504,7 +504,7 @@
 					</OnClick>
 					<OnEnter>
 						WorldMapTooltip:SetOwner(self, "ANCHOR_LEFT");
-						WorldMapTooltip:SetText(OPTION_TOOLTIP_SHOW_DIG_SITES, nil, nil, nil, nil, 1);
+						WorldMapTooltip:SetText(OPTION_TOOLTIP_SHOW_DIG_SITES_ON_MAP, nil, nil, nil, nil, 1);
 					</OnEnter>
 					<OnLeave>
 						WorldMapTooltip:Hide();

@@ -358,61 +358,6 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<!--<Frame name="$parentExtraBagSlotsHelpBox" parentKey="ExtraBagSlotsHelpBox" inherits="GlowBoxTemplate" enableMouse="true" frameStrata="DIALOG">
-				<Size x="220" y="100"/>
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPLEFT" x="-2" y="-206"/>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture parentKey="Arrow" inherits="HelpPlateArrowDOWN">
-							<Size x="53" y="21"/>
-							<Anchors>
-								<Anchor point="LEFT" relativePoint="RIGHT" x="-6" y="0"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="BORDER">
-						<Texture parentKey="ArrowGlow" inherits="HelpPlateArrow-GlowDOWN" alphaMode="ADD" alpha="0.5">
-							<Size x="53" y="21"/>
-							<Anchors>
-								<Anchor point="LEFT" relativePoint="RIGHT" x="-5" y="0"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY">
-						<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="BACKPACK_AUTHENTICATOR_EXTRA_SLOTS_ADDED">
-							<Size x="188" y="0"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="16" y="-20"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
-						<Anchors>
-							<Anchor point="TOPRIGHT" x="6" y="6"/>
-						</Anchors>
-						<Scripts>
-							<OnClick inherit="append">
-								SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BAG_SLOTS_AUTHENTICATOR, true);
-							</OnClick>
-						</Scripts>
-					</Button>
-				</Frames>
-				<Scripts>
-					<OnLoad>
-						self.Text:SetSpacing(4);
-						SetClampedTextureRotation(self.Arrow, 270);
-						SetClampedTextureRotation(self.ArrowGlow, 270);
-					</OnLoad>
-					<OnShow>
-						self:SetHeight(self.Text:GetHeight() + 42);
-						self:SetFrameLevel(self:GetParent():GetFrameLevel()+10);
-					</OnShow>
-				</Scripts>
-			</Frame>-->
 			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="0" y="-1"/>
@@ -547,4 +492,7 @@
 			</OnShow>
 		</Scripts>
 	</Frame>
+	<EditBox name="BagItemSearchBox" inherits="BagSearchBoxTemplate" parent="ContainerFrame1" letters="15" hidden="true">
+		<Size x="130" y="20"/>
+	</EditBox>
 </Ui>

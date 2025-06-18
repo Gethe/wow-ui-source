@@ -66,7 +66,6 @@ function CommunitiesCreateDialogMixin:SetClubType(clubType)
 	if avatarIdList then
 		self:SetAvatarId(avatarIdList[math.random(1, #avatarIdList)]);
 	else
-		-- TODO:: Is there anything better we can do here?
 		self:SetAvatarId(1);
 	end
 end

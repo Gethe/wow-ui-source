@@ -829,7 +829,8 @@ function UnitPopupGuildPromoteButtonMixin:CanShow(contextData)
 		return false;
 	end
 
-	return contextData.name ~= UnitNameUnmodified("player");
+	local playerName, playerServer = UnitFullName("player");
+	return playerName ~= contextData.name or playerServer ~= contextData.server;
 end
 
 function UnitPopupGuildPromoteButtonMixin:OnClick(contextData)
@@ -1066,7 +1067,7 @@ function UnitPopupResetChallengeModeButtonMixin:CanShow(contextData)
 		return false;
 	end
 
-	if not C_ChallengeMode.IsChallengeModeActive() then
+	if not C_ChallengeMode.IsChallengeModeResettable() then
 		return false;
 	end
 
@@ -1078,6 +1079,10 @@ function UnitPopupResetChallengeModeButtonMixin:CanShow(contextData)
 end
 
 function UnitPopupResetChallengeModeButtonMixin:IsEnabled(contextData)
+	if not C_ChallengeMode.GetActiveKeystoneInfo then
+		return true;
+	end
+
 	local energized = select(3, C_ChallengeMode.GetActiveKeystoneInfo());
 	return not energized;
 end
@@ -1414,6 +1419,16 @@ function UnitPopupDungeonDifficulty2ButtonMixin:GetDifficultyID()
 	return 2;
 end
 
+UnitPopupDungeonDifficulty3ButtonMixin = CreateFromMixins(UnitPopupDungeonDifficulty1ButtonMixin);
+
+function UnitPopupDungeonDifficulty3ButtonMixin:GetText(contextData)
+	return PLAYER_DIFFICULTY5;
+end
+
+function UnitPopupDungeonDifficulty3ButtonMixin:GetDifficultyID()
+	return 8;
+end
+
 -- Raid Difficulty Buttons
 UnitPopupRaidDifficultyButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
 
@@ -1679,7 +1694,7 @@ function UnitPopupSelectLootSpecializationButtonMixin:GetTooltipText()
 end
 
 function UnitPopupSelectLootSpecializationButtonMixin:CanShow(contextData)
-	return GetSpecialization();
+	return C_SpecializationInfo.GetSpecialization();
 end
 
 function UnitPopupSelectLootSpecializationButtonMixin:GetEntries()
@@ -1696,11 +1711,11 @@ end
 UnitPopupLootSpecializationDefaultButtonMixin = CreateFromMixins(UnitPopupRadioButtonMixin);
 
 function UnitPopupLootSpecializationDefaultButtonMixin:GetText(contextData)
-	local specIndex = GetSpecialization();
+	local specIndex = C_SpecializationInfo.GetSpecialization();
 	if specIndex then
 	local sex = UnitSex("player");
-		local isInspect, isPet, inspectTarget = false, false, false;
-		local specID, specName = GetSpecializationInfo(specIndex, isInspect, isPet, inspectTarget, sex);
+		local isInspect, isPet, inspectTarget = false, false, nil;
+		local specID, specName = C_SpecializationInfo.GetSpecializationInfo(specIndex, isInspect, isPet, inspectTarget, sex);
 		if specName then
 			return format(LOOT_SPECIALIZATION_DEFAULT, specName);
 		end
@@ -1727,8 +1742,8 @@ function UnitPopupLootSpecialization1ButtonMixin:GetText(contextData)
 	local specIndex = self:GetSpecIndex();
 	if specIndex then
 	local sex = UnitSex("player");
-		local isInspect, isPet, inspectTarget = false, false, false;
-		local specID, specName = GetSpecializationInfo(specIndex, isInspect, isPet, inspectTarget, sex);
+		local isInspect, isPet, inspectTarget = false, false, nil;
+		local specID, specName = C_SpecializationInfo.GetSpecializationInfo(specIndex, isInspect, isPet, inspectTarget, sex);
 		if specName then
 			return specName;
 		end
@@ -1743,8 +1758,8 @@ end
 function UnitPopupLootSpecialization1ButtonMixin:GetSpecID()
 	local specIndex = self:GetSpecIndex();
 	local sex = UnitSex("player");
-	local isInspect, isPet, inspectTarget = false, false, false;
-	local specID = GetSpecializationInfo(specIndex, isInspect, isPet, inspectTarget, sex);
+	local isInspect, isPet, inspectTarget = false, false, nil;
+	local specID = C_SpecializationInfo.GetSpecializationInfo(specIndex, isInspect, isPet, inspectTarget, sex);
 	return specID or -1;
 end
 
@@ -3342,9 +3357,9 @@ function UnitPopupItemQuality2DescButtonMixin:GetText(contextData)
 end
 
 function UnitPopupItemQuality2DescButtonMixin:GetColor()
-	local itemQualityColor = ITEM_QUALITY_COLORS[self:GetID()];
-	if itemQualityColor then
-		return itemQualityColor.color:GetRGB();
+	local colorData = ColorManager.GetColorDataForItemQuality(self:GetID());
+	if colorData then
+		return colorData.color:GetRGB();
 	end
 	return 1, 1, 1;
 end
@@ -3541,6 +3556,10 @@ function UnitPopupSelectRoleButtonMixin:CanShow(contextData)
 		return false;
 	end
 
+	if UnitInPartyIsAI(contextData.unit) then
+		return false;
+	end
+
 	return UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") or UnitIsUnit(contextData.unit, "player");
 end
 
@@ -3632,4 +3651,18 @@ function UnitPopupSetRoleHealerButton:IsEnabled(contextData)
 
 	local canBeTank, canBeHealer, canBeDamager = UnitGetAvailableRoles(contextData.unit);
 	return canBeHealer;
+end
+
+UnitPopupResetChallengeButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
+
+function UnitPopupResetChallengeButtonMixin:GetText(contextData)
+	return RESET_CHALLENGE_MODE;
+end
+
+function UnitPopupResetChallengeButtonMixin:OnClick(contextData)
+	C_ChallengeMode.Reset();
+end
+
+function UnitPopupResetChallengeButtonMixin:CanShow(contextData)
+	return C_ChallengeMode.IsChallengeModeActive();
 end

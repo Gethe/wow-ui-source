@@ -58,7 +58,6 @@ function GlueParent_OnLoad(self)
 	self:RegisterEvent("OPEN_STATUS_DIALOG");
 	self:RegisterEvent("REALM_LIST_UPDATED");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
-	self:RegisterEvent("LUA_WARNING");
 	self:RegisterEvent("SUBSCRIPTION_CHANGED_KICK_IMMINENT");
 	self:RegisterEvent("KIOSK_SESSION_SHUTDOWN");
 	self:RegisterEvent("KIOSK_SESSION_EXPIRED");
@@ -85,8 +84,6 @@ function GlueParent_OnEvent(self, event, ...)
 		RealmList_Update();
 	elseif ( event == "DISPLAY_SIZE_CHANGED" ) then
 		OnDisplaySizeChanged(self);
-	elseif ( event == "LUA_WARNING" ) then
-		HandleLuaWarning(...);
 	elseif ( event == "SUBSCRIPTION_CHANGED_KICK_IMMINENT" ) then
 		if not StoreFrame_IsShown() then
 			GlueDialog_Show("SUBSCRIPTION_CHANGED_KICK_WARNING");
@@ -287,17 +284,14 @@ function GlueParent_EnsureValidScreen()
 	if ( not GlueParent_IsScreenValid(currentScreen) ) then
 		local bestScreen = GlueParent_GetBestScreen();
 
-		LogAuroraClient("ae", "Screen invalid. Changing",
-			"changingFrom", currentScreen,
-			"changingTo", bestScreen);
-
+		C_Log.LogMessage(string.format("Screen invalid. Changing from=\"%s\" to=\"%s\"", currentScreen or "none", bestScreen));
+		
 		GlueParent_SetScreen(bestScreen);
 	end
 end
 
 local function GlueParent_ChangeScreen(screenInfo, screenTable)
-	LogAuroraClient("ae", "Switching to screen",
-			"screen", screenInfo.frame);
+	C_Log.LogMessage(string.format("Switching to screen=\"%s\"", screenInfo.frame));
 
 	--Hide all other screens
 	for key, info in pairs(screenTable) do

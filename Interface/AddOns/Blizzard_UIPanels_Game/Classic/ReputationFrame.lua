@@ -17,6 +17,7 @@ MAX_PLAYER_LEVEL_TABLE[0] = 60;
 MAX_PLAYER_LEVEL_TABLE[1] = 70;
 MAX_PLAYER_LEVEL_TABLE[2] = 80;
 MAX_PLAYER_LEVEL_TABLE[3] = 85;
+MAX_PLAYER_LEVEL_TABLE[4] = 90;
 MAX_PLAYER_LEVEL = 0;
 REPUTATIONFRAME_ROWSPACING = 23;
 
@@ -41,7 +42,7 @@ end
 function ReputationFrame_Update()
 	local numFactions = GetNumFactions();
 	local factionIndex, factionRow, factionTitle, factionStanding, factionBar, factionButton, factionLeftLine, factionBottomLine, factionBackground, color, tooltipStanding;
-	local name, description, standingID, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed, hasRep, isWatched, isChild;
+	local name, description, standingID, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed, hasRep, isWatched, isChild, factionID;
 	local atWarIndicator, rightBarTexture;
 
 	local previousBigTexture = ReputationFrameTopTreeTexture;	--In case we have a line going off the panel to the top
@@ -71,7 +72,7 @@ function ReputationFrame_Update()
 		factionStanding = _G["ReputationBar"..i.."ReputationBarFactionStanding"];
 		factionBackground = _G["ReputationBar"..i.."Background"];
 		if ( factionIndex <= numFactions ) then
-			name, description, standingID, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed, hasRep, isWatched, isChild = GetFactionInfo(factionIndex);
+			name, description, standingID, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed, hasRep, isWatched, isChild, factionID = GetFactionInfo(factionIndex);
 			factionTitle:SetText(name);
 			if ( isCollapsed ) then
 				factionButton:SetNormalTexture("Interface\\Buttons\\UI-PlusButton-Up");
@@ -80,8 +81,29 @@ function ReputationFrame_Update()
 			end
 			factionRow.index = factionIndex;
 			factionRow.isCollapsed = isCollapsed;
-			local factionStandingtext = GetText("FACTION_STANDING_LABEL"..standingID, gender);
-			factionStanding:SetText(factionStandingtext);
+
+			local colorIndex = standingID;
+			local factionStandingtext;
+
+			-- check if this is a friendship faction 
+			local isCappedFriendship;
+			local repInfo = C_GossipInfo.GetFriendshipReputation(factionID);
+			
+			if (repInfo.friendshipFactionID > 0) then
+				factionStandingtext = repInfo.reaction;
+				if ( repInfo.nextThreshold ) then
+					barMin, barMax, barValue = repInfo.reactionThreshold, repInfo.nextThreshold, repInfo.standing;
+				else
+					-- max rank, make it look like a full bar
+					barMin, barMax, barValue = 0, 1, 1;
+					isCappedFriendship = true;
+				end
+				colorIndex = 5; -- always color friendships green
+				factionRow.friendshipID = repInfo.friendshipFactionID; -- for doing friendship tooltip
+			else
+				factionStandingtext = GetText("FACTION_STANDING_LABEL"..standingID, gender);
+				factionRow.friendshipID = nil;
+			end
 
 			--Normalize Values
 			barMax = barMax - barMin;
@@ -89,10 +111,15 @@ function ReputationFrame_Update()
 			barMin = 0;
 			
 			factionRow.standingText = factionStandingtext;
-			factionRow.tooltip = HIGHLIGHT_FONT_COLOR_CODE.." "..barValue.." / "..barMax..FONT_COLOR_CODE_CLOSE;
+			factionStanding:SetText(factionStandingtext);
+			if ( isCappedFriendship ) then
+				factionRow.tooltip = nil;
+			else
+				factionRow.tooltip = HIGHLIGHT_FONT_COLOR_CODE.." "..barValue.." / "..barMax..FONT_COLOR_CODE_CLOSE;
+			end
 			factionBar:SetMinMaxValues(0, barMax);
 			factionBar:SetValue(barValue);
-			color = FACTION_BAR_COLORS[standingID];
+			color = FACTION_BAR_COLORS[colorIndex];
 			factionBar:SetStatusBarColor(color.r, color.g, color.b);
 			
 			if ( isHeader and not isChild ) then
@@ -233,4 +260,33 @@ function ReputationBar_OnClick(self)
 			ReputationFrame_Update();
 		end
 	end
+end
+
+function ShowFriendshipReputationTooltip(friendshipID, parent, anchor)
+	local friendshipData = C_GossipInfo.GetFriendshipReputation(friendshipID);
+	if not friendshipData or friendshipData.friendshipFactionID < 0 then
+		return;
+	end
+
+	GameTooltip:SetOwner(parent, anchor);
+	local rankInfo = C_GossipInfo.GetFriendshipReputationRanks(friendshipData.friendshipFactionID);
+	if rankInfo.maxLevel > 0 then
+		GameTooltip_SetTitle(GameTooltip, friendshipData.name.." ("..rankInfo.currentLevel.." / "..rankInfo.maxLevel..")", HIGHLIGHT_FONT_COLOR);
+	else
+		GameTooltip_SetTitle(GameTooltip, friendshipData.name, HIGHLIGHT_FONT_COLOR);
+	end
+	
+	GameTooltip_AddBlankLineToTooltip(GameTooltip);
+	GameTooltip:AddLine(friendshipData.text, nil, nil, nil, true);
+	if friendshipData.nextThreshold then
+		local current = friendshipData.standing - friendshipData.reactionThreshold;
+		local max = friendshipData.nextThreshold - friendshipData.reactionThreshold;
+		local wrapText = true;
+		GameTooltip_AddHighlightLine(GameTooltip, friendshipData.reaction.." ("..current.." / "..max..")", wrapText);
+	else
+		local wrapText = true;
+		GameTooltip_AddHighlightLine(GameTooltip, friendshipData.reaction, wrapText);
+	end
+
+	GameTooltip:Show();
 end

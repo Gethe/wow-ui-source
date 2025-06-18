@@ -154,6 +154,268 @@
 			<OnHide function="LootFrame_OnHide"/>
 		</Scripts>
 	</Frame>
+	<Frame name="BonusRollFrameTemplate" parent="UIParent" frameLevel="5" toplevel="true" frameStrata="DIALOG" hidden="true" virtual="true">
+		<Size x="286" y="76"/>	
+		<Animations>
+			<AnimationGroup parentKey="StartRollAnim">
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.25" order="1" targetKey="$parent.$parent.PromptFrame"/>
+				<Alpha fromAlpha="0" toAlpha="0" duration="0.25" order="1" targetKey="$parent.$parent.RollingFrame"/>
+				<Scripts>
+					<OnPlay>
+						local parent = self:GetParent();
+						parent.RollingFrame:Show();
+						parent.RollingFrame:SetAlpha(0);
+						parent.PromptFrame:Show();
+						parent.PromptFrame:SetAlpha(1);
+					</OnPlay>
+					<OnFinished>
+						local parent = self:GetParent();
+						parent.RollingFrame:SetAlpha(1);
+						parent.PromptFrame:Hide();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="FinishRollAnim">
+				<!--Scale scaleX="0.5" scaleY="0.5" duration="0" order="1" targetKey="$parent.$parent.RollingFrame.LootSpinnerFinalText"/-->
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.2" order="1" targetKey="$parent.$parent.RollingFrame.Label"/>
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="2" targetKey="$parent.$parent.RollingFrame.LootSpinnerFinalText"/>
+				<!--Scale scaleX="3" scaleY="3" duration="5" order="2" targetKey="$parent.$parent.RollingFrame.LootSpinnerFinalText"/>
+				<Scale scaleX="0.66" scaleY="0.66" duration="5" order="2" startDelay="5" targetKey="$parent.$parent.RollingFrame.LootSpinnerFinalText"/-->
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.375" order="3" startDelay="0.5" targetKey="$parent.$parent.WhiteFade"/>
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.3" order="4"/>
+				<Scripts>
+					<OnFinished>
+						local parent = self:GetParent();
+						BonusRollFrame_FinishedFading(parent);
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<!--BonusRoll-Toast-->
+				<Texture parentKey="Background" file="Interface\LootFrame\LootToast" setAllPoints="true">
+					<TexCoords left="0.28222656" right="0.56152344" top="0.00390625" bottom="0.30078125"/>	
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<!--BonusRoll-LootSpinnerBG-->
+				<Texture parentKey="LootSpinnerBG" file="Interface\LootFrame\LootToast">
+					<Size x="42" y="42"/>	
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT" x="11" y="-12"/>
+					</Anchors>
+					<TexCoords left="0.23828125" right="0.27929688" top="0.74218750" bottom="0.90625000"/>	
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<!--ItemBorder-Gold-->
+				<Texture parentKey="IconBorder" file="Interface\LootFrame\LootToast">
+					<Size x="42" y="42"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.LootSpinnerBG" relativePoint="CENTER" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.73242188" right="0.78906250" top="0.57421875" bottom="0.80078125"/>	
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="SpecIcon">
+					<Size x="24" y="24"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-2" y="3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="3">
+				<Texture parentKey="SpecRing" file="Interface/Minimap/MiniMap-TrackingBorder">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-10" y="10"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="4">
+				<Texture parentKey="WhiteFade" alphaMode="ADD" alpha="0">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3" y="-3"/>
+						<Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
+					</Anchors>
+					<Color r="1" g="1" b="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="RollingFrame" useParentLevel="true" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Label" inherits="GameFontNormalLarge" text="BONUS_ROLL_ROLLING" justifyH="CENTER" justifyV="MIDDLE">
+							<Size x="135" y="38"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="60" y="-15"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="LootSpinner" file="Interface\LootFrame\BonusRoll-LootSpinnerAnim">
+							<Size x="64" y="64"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.$parent.LootSpinnerBG" relativePoint="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="LootSpinnerFinal" file="Interface\LootFrame\LootToast" hidden="true">
+							<Size x="31" y="30"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.$parent.LootSpinnerBG" relativePoint="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="LootSpinnerFinalText" inherits="GameFontNormalLarge" text="BONUS_ROLL_ROLLING" justifyH="CENTER" justifyV="MIDDLE" alpha="0">
+							<Size x="135" y="38"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="60" y="-15"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="DieIcon" file="Interface\Buttons\UI-GroupLoot-Dice-Up" alpha="0.5">
+							<Size x="36" y="36"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeKey="$parent" relativePoint="TOPRIGHT" x="-30" y="-15"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="PromptFrame" useParentLevel="true" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" file="Interface\Icons\INV_Misc_Dice_02">
+							<Size x="36" y="36"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.$parent.Background" x="14" y="-15"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="InfoFrame">
+						<Size x="135" y="38"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT" x="60" y="-15"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Label" inherits="GameFontNormalLarge" justifyH="LEFT" text="BONUS_LOOT_LABEL">
+									<Size x="0" y="0"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="0" y="0"/>
+										<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="RIGHT" x="0" y="0"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="Cost" inherits="GameFontHighlight" justifyH="LEFT">
+									<Size x="0" y="0"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="LEFT" x="0" y="0"/>
+										<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip:SetText(BONUS_ROLL_TOOLTIP_TITLE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+								GameTooltip:AddLine(BONUS_ROLL_TOOLTIP_TEXT, nil, nil, nil, true);
+								GameTooltip:Show();
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
+					</Frame>
+					<StatusBar parentKey="Timer" drawLayer="ARTWORK" minValue="0" maxValue="60000" defaultValue="0">
+						<Size x="190" y="9"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="BOTTOMLEFT" x="6" y="6"/>
+						</Anchors>
+						<BarTexture parentKey="Bar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar" />
+						<BarColor r="1.0" g="1.0" b="0" />
+					</StatusBar>
+					<Button parentKey="RollButton">
+						<Size x="32" y="32"/>
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="-48" y="-16"/>
+						</Anchors>
+						<Scripts>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip:SetText(ROLL);
+								GameTooltip:Show();
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide"/>
+							<OnClick>
+								AcceptSpellConfirmationPrompt(self:GetParent():GetParent().spellID);
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-GroupLoot-Dice-Up"/>
+						<HighlightTexture file="Interface\Buttons\UI-GroupLoot-Dice-Highlight" alphaMode="ADD"/>
+						<PushedTexture file="Interface\Buttons\UI-GroupLoot-Dice-Down"/>
+					</Button>
+					<Button parentKey="PassButton">
+						<Size x="32" y="32"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.RollButton" relativePoint="RIGHT" x="5" y="3"/>
+						</Anchors>
+						<Scripts>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip:SetText(PASS);
+								GameTooltip:Show();
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide"/>
+							<OnClick>
+								DeclineSpellConfirmationPrompt(self:GetParent():GetParent().spellID);
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-GroupLoot-Pass-Up"/>
+						<HighlightTexture file="Interface\Buttons\UI-GroupLoot-Pass-Highlight" alphaMode="ADD"/>
+						<PushedTexture file="Interface\Buttons\UI-GroupLoot-Pass-Down"/>
+					</Button>
+				</Frames>
+			</Frame>
+			<Frame parentKey="BlackBackgroundHoist" setAllPoints="true">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.$parent.PromptFrame.Timer" relativePoint="TOPLEFT" x="0" y="0"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent.PromptFrame.Timer" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+							</Anchors>
+							<Color r="0" g="0" b="0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="CurrentCountFrame" useParentLevel="true">
+				<Size x="82" y="18"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT" x="-6" y="6"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" inherits="GameFontHighlight" justifyH="RIGHT" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetCurrencyByID(self:GetParent().currencyID);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="BonusRollFrame_OnLoad"/>
+			<OnEvent function="BonusRollFrame_OnEvent"/>
+			<OnShow function="BonusRollFrame_OnShow"/>
+			<OnHide function="BonusRollFrame_OnHide"/>
+			<OnUpdate function="BonusRollFrame_OnUpdate"/>
+		</Scripts>
+	</Frame>
 	<Frame name="GroupLootFrameTemplate" inherits="BackdropTemplate" parent="UIParent" toplevel="true" frameStrata="DIALOG" hidden="true" virtual="true">
 		<Size x="243" y="84"/>
 		<Layers>
@@ -363,6 +625,25 @@
 	<Frame name="GroupLootFrame2" inherits="GroupLootFrameTemplate" id="2"/>
 	<Frame name="GroupLootFrame3" inherits="GroupLootFrameTemplate" id="3"/>
 	<Frame name="GroupLootFrame4" inherits="GroupLootFrameTemplate" id="4"/>
+	<Frame name="BonusRollFrame" inherits="BonusRollFrameTemplate"/>
+
+	<ContainedAlertFrame name="BonusRollLootWonFrame" inherits="LootWonAlertFrameTemplate">
+		<Scripts>
+			<OnLoad inherit="append" function="BonusRollLootWonFrame_OnLoad"/>
+			<OnHide>
+				GroupLootContainer_RemoveFrame(GroupLootContainer, self);
+			</OnHide>
+			<OnClick function="LootWonAlertFrame_OnClick"/>
+		</Scripts>
+	</ContainedAlertFrame>
+	<ContainedAlertFrame name="BonusRollMoneyWonFrame" inherits="MoneyWonAlertFrameTemplate">
+		<Scripts>
+			<OnLoad inherit="append" function="BonusRollMoneyWonFrame_OnLoad"/>
+			<OnHide>
+				GroupLootContainer_RemoveFrame(GroupLootContainer, self);
+			</OnHide>
+		</Scripts>
+	</ContainedAlertFrame>
 
 	<Button name="MasterLooterPlayerTemplate" virtual="true">
 		<Size x="98" y="23"/>

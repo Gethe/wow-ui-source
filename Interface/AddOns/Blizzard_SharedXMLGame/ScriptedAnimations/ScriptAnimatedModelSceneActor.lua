@@ -72,7 +72,7 @@ function ScriptAnimatedModelSceneActorMixin:SetEffect(effectDescription, source,
 
 	local effectAnimationSpeed = effectDescription.animationSpeed;
 	if effectAnimationSpeed == 0 then
-		-- TODO:: Calculate the animation speed to complete 1 full cycle in the effect's duration.
+		-- Note: we could alternatively calculate the animation speed to complete 1 full cycle in the effect's duration.
 		effectAnimationSpeed = 1.0;
 	end
 

@@ -706,6 +706,17 @@
 						<OnLeave function="StoreProductCardCheckmark_OnLeave"/>
 					</Scripts>
 				</Frame>
+				<Button parentKey="BuyButton" inherits="StoreButtonTemplate" motionScriptsWhileDisabled="true">
+					<Size x="210" y="35" />
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="22" />
+					</Anchors>
+					<Scripts>
+						<OnClick function="StoreFrameBuyButton_OnClick" />
+						<OnEnter function="StoreProductCardBuyButton_OnEnter" />
+						<OnLeave function="StoreProductCardBuyButton_OnLeave" />
+					</Scripts>
+				</Button>
 			</Frames>
 			<Scripts>
 				<OnEnter function="StoreProductCard_OnEnter" />
@@ -1044,6 +1055,22 @@
 						<OnLeave function="StoreFrameBuyButton_OnLeave" />
 					</Scripts>
 				</Button>
+				<Frame parentKey="Checkmark" hidden="true">
+					<Size x="27" y="27"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-6" y="-8"/>
+					</Anchors>
+					<Layers>
+						<Layer level="OVERLAY">
+							<Texture inherits="store-icon-checkmark" setAllPoints="true"/>
+						</Layer>
+					</Layers>
+					<Scripts>
+						<OnShow function="StoreCardDetail_SetLayerAboveModelScene"/>
+						<OnEnter function="StoreProductCardCheckmark_OnEnter"/>
+						<OnLeave function="StoreProductCardCheckmark_OnLeave"/>
+					</Scripts>
+				</Frame>
 			</Frames>
 			<Scripts>
 				<OnLoad function="StoreProductCard_OnLoad" />

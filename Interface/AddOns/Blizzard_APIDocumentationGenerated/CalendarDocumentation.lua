@@ -132,6 +132,7 @@ local Calendar =
 		{
 			Name = "ContextMenuGetEventIndex",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -236,6 +237,7 @@ local Calendar =
 		{
 			Name = "EventGetInvite",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -250,6 +252,7 @@ local Calendar =
 		{
 			Name = "EventGetInviteResponseTime",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -510,6 +513,7 @@ local Calendar =
 		{
 			Name = "GetDayEvent",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -535,6 +539,7 @@ local Calendar =
 		{
 			Name = "GetEventIndex",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -560,6 +565,7 @@ local Calendar =
 		{
 			Name = "GetEventInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -584,6 +590,7 @@ local Calendar =
 		{
 			Name = "GetGuildEventInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -598,6 +605,7 @@ local Calendar =
 		{
 			Name = "GetGuildEventSelectionInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -612,6 +620,7 @@ local Calendar =
 		{
 			Name = "GetHolidayInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -711,6 +720,7 @@ local Calendar =
 		{
 			Name = "GetRaidInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

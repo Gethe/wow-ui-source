@@ -183,6 +183,10 @@ function TalentDisplayMixin:GetSpellID()
 	return (self.definitionInfo ~= nil) and self.definitionInfo.spellID or nil;
 end
 
+function TalentDisplayMixin:GetOverriddenSpellID()
+	return (self.definitionInfo ~= nil) and self.definitionInfo.overriddenSpellID or nil;
+end
+
 function TalentDisplayMixin:GetOverrideIcon()
 	return (self.definitionInfo ~= nil) and self.definitionInfo.overrideIcon or nil;
 end
@@ -1542,7 +1546,6 @@ function TalentButtonSelectMixin:UpdateIconTexture()
 	if self:HasSelectedEntryID() then
 		TalentDisplayMixin.UpdateIconTexture(self);
 	else
-		-- TODO:: Better empty state.
 		self.Icon:SetTexture([[Interface\Icons\INV_Misc_QuestionMark]]);
 	end
 end

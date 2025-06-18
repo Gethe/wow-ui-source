@@ -7,8 +7,20 @@ local ActionBarFrame =
 	Functions =
 	{
 		{
+			Name = "EnableActionRangeCheck",
+			Type = "Function",
+			Documentation = { "Used in conjunction with ActionRangeCheckUpdate to inform the UI when an action goes in or out of range with its current target." },
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+				{ Name = "enable", Type = "bool", Nilable = false, Documentation = { "True if changes in range for the action should dispatch ActionRangeCheckUpdate. False if the action no longer needs the event." } },
+			},
+		},
+		{
 			Name = "FindPetActionButtons",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -23,6 +35,7 @@ local ActionBarFrame =
 		{
 			Name = "FindSpellActionButtons",
 			Type = "Function",
+			MayReturnNothing = true,
 			Documentation = { "Returns the list of action bar slots that contain a specified spell." },
 
 			Arguments =
@@ -38,6 +51,7 @@ local ActionBarFrame =
 		{
 			Name = "GetPetActionPetBarIndices",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -198,11 +212,12 @@ local ActionBarFrame =
 			Name = "ActionRangeCheckUpdate",
 			Type = "Event",
 			LiteralName = "ACTION_RANGE_CHECK_UPDATE",
+			Documentation = { "Used in conjunction with EnableActionRangeCheck to inform the UI when an action goes in or out of range with its current target." },
 			Payload =
 			{
 				{ Name = "slot", Type = "luaIndex", Nilable = false },
-				{ Name = "isInRange", Type = "bool", Nilable = false },
-				{ Name = "checksRange", Type = "bool", Nilable = false },
+				{ Name = "isInRange", Type = "bool", Nilable = false, Documentation = { "Whether or not the current target is in range of the action. Should not be used if the 'checksRange' parameter is false." } },
+				{ Name = "checksRange", Type = "bool", Nilable = false, Documentation = { "Can be false if a range check was not made for any reason, for example there is not a current target." } },
 			},
 		},
 		{

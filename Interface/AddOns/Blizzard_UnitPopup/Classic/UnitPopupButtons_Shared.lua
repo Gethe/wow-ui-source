@@ -474,6 +474,7 @@ function UnitPopupDungeonDifficultyButtonMixin:GetEntries()
 	return { 
 		UnitPopupDungeonDifficulty1ButtonMixin, 
 		UnitPopupDungeonDifficulty2ButtonMixin,
+		UnitPopupDungeonDifficulty3ButtonMixin,
 	}
 end 
 

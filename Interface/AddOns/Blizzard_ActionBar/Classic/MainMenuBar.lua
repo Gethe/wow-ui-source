@@ -76,7 +76,7 @@ function MainMenuBar_OnLoad(self)
 	MainMenuBar.state = "player";
 	MainMenuBarPageNumber:SetText(GetActionBarPage());
 
-	if ClassicExpansionAtLeast(LE_EXPANSION_WRATH_OF_THE_LICH_KING) then
+	if (ClassicExpansionAtLeast(LE_EXPANSION_WRATH_OF_THE_LICH_KING) and GetClassicExpansionLevel() < LE_EXPANSION_MISTS_OF_PANDARIA) then
 		--starting in 3.4.3 we need to make space for the new Collections micro button
 		UpdateMainMenuBarArt(self);
 	else
@@ -152,16 +152,16 @@ function MainMenuBar_UpdateExperienceBars(newLevel)
 		-- if it's a different faction, save possible friendship id
 		if ( ReputationWatchBar.factionID ~= factionID ) then
 			ReputationWatchBar.factionID = factionID;
-			ReputationWatchBar.friendshipID = nil;--GetFriendshipReputation(factionID);
+			ReputationWatchBar.friendshipID = C_GossipInfo.GetFriendshipReputation(factionID);
 			ReputationWatchBar.StatusBar:Reset();
 		end
 
 		local isCapped;
 		-- do something different for friendships
-		if ( ReputationWatchBar.friendshipID ) then
-			local friendID, friendRep, friendMaxRep, friendName, friendText, friendTexture, friendTextLevel, friendThreshold, nextFriendThreshold = GetFriendshipReputation(factionID);
-			if ( nextFriendThreshold ) then
-				min, max, value = friendThreshold, nextFriendThreshold, friendRep;
+		if ( ReputationWatchBar.friendshipID and ReputationWatchBar.friendshipID > 0) then
+			local repInfo = C_GossipInfo.GetFriendshipReputation(factionID);
+			if ( repInfo.nextThreshold ) then
+				min, max, value = repInfo.reactionThreshold, repInfo.nextThreshold, repInfo.standing;
 			else
 				-- max rank, make it look like a full bar
 				min, max, value = 0, 1, 1;

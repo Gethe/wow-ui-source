@@ -19,9 +19,9 @@ local ReportSystemConstants =
 		{
 			Name = "ReportMinorCategory",
 			Type = "Enumeration",
-			NumValues = 17,
+			NumValues = 19,
 			MinValue = 1,
-			MaxValue = 65536,
+			MaxValue = 262144,
 			Fields =
 			{
 				{ Name = "TextChat", Type = "ReportMinorCategory", EnumValue = 1 },
@@ -41,6 +41,8 @@ local ReportSystemConstants =
 				{ Name = "Name", Type = "ReportMinorCategory", EnumValue = 16384 },
 				{ Name = "HarmfulToMinors", Type = "ReportMinorCategory", EnumValue = 32768 },
 				{ Name = "Disruption", Type = "ReportMinorCategory", EnumValue = 65536 },
+				{ Name = "TerroristAndViolentExtremistContent", Type = "ReportMinorCategory", EnumValue = 131072 },
+				{ Name = "ChildSexualExploitationAndAbuse", Type = "ReportMinorCategory", EnumValue = 262144 },
 			},
 		},
 		{
@@ -80,6 +82,21 @@ local ReportSystemConstants =
 				{ Name = "PvPScoreboard", Type = "ReportType", EnumValue = 14 },
 				{ Name = "PvPGroupMember", Type = "ReportType", EnumValue = 15 },
 				{ Name = "CraftingOrder", Type = "ReportType", EnumValue = 16 },
+			},
+		},
+		{
+			Name = "SendReportResult",
+			Type = "Enumeration",
+			NumValues = 5,
+			MinValue = 0,
+			MaxValue = 4,
+			Fields =
+			{
+				{ Name = "Success", Type = "SendReportResult", EnumValue = 0 },
+				{ Name = "GeneralError", Type = "SendReportResult", EnumValue = 1 },
+				{ Name = "TooManyReports", Type = "SendReportResult", EnumValue = 2 },
+				{ Name = "RequiresChatLine", Type = "SendReportResult", EnumValue = 3 },
+				{ Name = "RequiresChatLineOrVoice", Type = "SendReportResult", EnumValue = 4 },
 			},
 		},
 	},

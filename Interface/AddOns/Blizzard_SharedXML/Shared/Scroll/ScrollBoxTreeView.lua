@@ -153,7 +153,15 @@ function ScrollBoxListTreeListViewMixin:GetLayoutFunction()
 	local scrollTarget = self:GetScrollTarget();
 	local function Layout(index, frame, offset)
 		local elementData = frame:GetElementData();
-		local indent = (elementData:GetDepth() - 1) * self:GetElementIndent();
+
+		local indent = nil;
+		if self.elementIndentCalculator then
+			indent = self.elementIndentCalculator(elementData);
+		end
+
+		if indent == nil then
+			indent = (elementData:GetDepth() - 1) * self:GetElementIndent();
+		end
 		return setPoint(frame, offset, indent, elementStretchDisabled, scrollTarget);
 	end
 	return Layout;

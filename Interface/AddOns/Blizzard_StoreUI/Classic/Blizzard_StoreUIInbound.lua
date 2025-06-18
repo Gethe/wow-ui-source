@@ -3,7 +3,12 @@ SwapToGlobalEnvironment();
 
 --All of these functions should be safe to call by tainted code. They should only communicate with secure code via SetAttribute and GetAttribute.
 function StoreFrame_SetShown(shown)
+	local wasShown = StoreFrame_IsShown();
 	StoreFrame:SetAttribute("action", shown and "Show" or "Hide");
+	-- Notify the store that shown was toggled
+	if wasShown ~= shown then
+		C_StorePublic.EventStoreUISetShown(shown, nil);
+	end
 end
 
 function StoreFrame_IsShown()

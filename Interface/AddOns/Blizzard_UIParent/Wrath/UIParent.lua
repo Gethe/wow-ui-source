@@ -35,6 +35,9 @@ WORLD_QUEST_QUALITY_COLORS = {
 };
 
 function UIParent_OnLoad(self)
+	-- First register for any shared events
+	UIParent_Shared_OnLoad(self);
+
 	self:RegisterEvent("PLAYER_LOGIN");
 	self:RegisterEvent("PLAYER_DEAD");
 	self:RegisterEvent("SELF_RES_SPELL_CHANGED");
@@ -170,9 +173,6 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("TRIAL_CAP_REACHED_MONEY");
 	self:RegisterEvent("TRIAL_CAP_REACHED_LEVEL");
 
-	-- Lua warnings
-	self:RegisterEvent("LUA_WARNING");
-
 	-- debug menu
 	self:RegisterEvent("DEBUG_MENU_TOGGLED");
 
@@ -187,9 +187,6 @@ function UIParent_OnLoad(self)
 
 	-- Invite confirmations
 	self:RegisterEvent("GROUP_INVITE_CONFIRMATION");
-
-	-- Events for Reporting SYSTEM
-	self:RegisterEvent("REPORT_PLAYER_RESULT");
 
 	--Event(s) for soft targetting
 	self:RegisterEvent("PLAYER_SOFT_INTERACT_CHANGED");
@@ -408,7 +405,7 @@ function ToggleAchievementFrame(stats)
 end
 
 function ToggleTalentFrame()
-	if (UnitLevel("player") < SHOW_TALENT_LEVEL) then
+	if (not C_SpecializationInfo.CanPlayerUseTalentUI()) then
 		return;
 	end
 
@@ -626,6 +623,9 @@ end
 
 -- UIParent_OnEvent --
 function UIParent_OnEvent(self, event, ...)
+	-- First handle any shared events
+	UIParent_Shared_OnEvent(self, event, ...);
+
 	local arg1, arg2, arg3, arg4, arg5, arg6 = ...;
 	if ( event == "CURRENT_SPELL_CAST_CHANGED" ) then
 		if ( StaticPopup_HasDisplayedFrames() ) then
@@ -655,6 +655,7 @@ function UIParent_OnEvent(self, event, ...)
 		TargetFrame_OnVariablesLoaded();
 
 		StoreFrame_CheckForFree(event);
+		EventUtil.TriggerOnVariablesLoaded();
 	elseif ( event == "PLAYER_LOGIN" ) then
 		TimeManager_LoadUI();
 		-- You can override this if you want a Combat Log replacement
@@ -1037,7 +1038,7 @@ function UIParent_OnEvent(self, event, ...)
 			-- exactly which talent spec he is wiping
 			TalentFrame_LoadUI();
 			if ( PlayerTalentFrame_Open ) then
-				PlayerTalentFrame_Open(false, GetActiveTalentGroup());
+				PlayerTalentFrame_Open(false, C_SpecializationInfo.GetActiveSpecGroup());
 			end
 		end
 	elseif ( event == "CONFIRM_BARBERS_CHOICE" ) then
@@ -1382,8 +1383,6 @@ function UIParent_OnEvent(self, event, ...)
 			QuestChoice_LoadUI();
 			QuestChoiceFrame:TryShow();
 		end
-	elseif ( event == "LUA_WARNING" ) then
-		HandleLuaWarning(...);
 	elseif ( event == "GARRISON_ARCHITECT_OPENED") then
 		if (not GarrisonBuildingFrame) then
 			Garrison_LoadUI();
@@ -1518,16 +1517,6 @@ function UIParent_OnEvent(self, event, ...)
 	elseif (event == "ISLANDS_QUEUE_OPEN") then
 		IslandsQueue_LoadUI(); 
 		ShowUIPanel(IslandsQueueFrame); 
-	-- Events for Reporting system
-	elseif (event == "REPORT_PLAYER_RESULT") then
-		local success = ...;
-		if (success) then
-			UIErrorsFrame:AddExternalErrorMessage(ERR_REPORT_SUBMITTED_SUCCESSFULLY);
-			DEFAULT_CHAT_FRAME:AddMessage(COMPLAINT_ADDED);
-		else
-			UIErrorsFrame:AddExternalErrorMessage(ERR_REPORT_SUBMISSION_FAILED);
-			DEFAULT_CHAT_FRAME:AddMessage(ERR_REPORT_SUBMISSION_FAILED);
-		end
 	elseif(event == "PLAYER_SOFT_INTERACT_CHANGED") then
 		if(GetCVarBool("softTargettingInteractKeySound")) then
 			local previousTarget, currentTarget = ...;
@@ -2297,10 +2286,6 @@ function AnimatedShine_OnUpdate(elapsed)
 	end
 end
 
-function ConsolePrint(...)
-	ConsoleAddMessage(string.join(" ", tostringall(...)));
-end
-
 function LFD_IsEmpowered()
 	--Solo players are always empowered.
 	if ( not IsInGroup() ) then
@@ -2541,17 +2526,7 @@ NUMBER_ABBREVIATION_DATA = {
 	{ breakpoint = 1000000,		abbreviation = SECOND_NUMBER_CAP_NO_SPACE,	significandDivisor = 100000,		fractionDivisor = 10 },
 	{ breakpoint = 10000,		abbreviation = FIRST_NUMBER_CAP_NO_SPACE,	significandDivisor = 1000,		fractionDivisor = 1 },
 	{ breakpoint = 1000,		abbreviation = FIRST_NUMBER_CAP_NO_SPACE,	significandDivisor = 100,		fractionDivisor = 10 },
-}
-
-function AbbreviateNumbers(value)
-	for i, data in ipairs(NUMBER_ABBREVIATION_DATA) do
-		if value >= data.breakpoint then
-			local finalValue = math.floor(value / data.significandDivisor) / data.fractionDivisor;
-			return finalValue .. data.abbreviation;
-		end
-	end
-	return tostring(value);
-end
+};
 
 function IsInLFDBattlefield()
 	return false;

@@ -410,14 +410,6 @@
 		<Size x="198" y="33"/>
 		<TexCoords left="0.00390625" right="0.77734375" top="0.54687500" bottom="0.61132813"/>
 	</Texture>
-	<Texture name="HelpPlateArrowDOWN" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
-		<Size x="53" y="21"/>
-		<TexCoords left="0.78515625" right="0.99218750" top="0.54687500" bottom="0.58789063"/>
-	</Texture>
-	<Texture name="HelpPlateArrowUP" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
-		<Size x="53" y="21"/>
-		<TexCoords left="0.78515625" right="0.99218750" bottom="0.54687500" top="0.58789063"/>
-	</Texture>
 	<Texture name="Talent-PrimaryHighlight-TopLeft" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
 		<Size x="9" y="9"/>
 		<TexCoords left="0.78515625" right="0.82031250" top="0.59179688" bottom="0.60937500"/>
@@ -449,10 +441,6 @@
 	<Texture name="Talent-PointBg-Green" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
 		<Size x="20" y="19"/>
 		<TexCoords left="0.91796875" right="0.99609375" top="0.61523438" bottom="0.65234375"/>
-	</Texture>
-	<Texture name="HelpPlateArrow-Shadow" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
-		<Size x="101" y="41"/>
-		<TexCoords left="0.00390625" right="0.39843750" top="0.68359375" bottom="0.76367188"/>
 	</Texture>
 	<Texture name="PetTalent-PetIconBorder" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
 		<Size x="54" y="54"/>
@@ -509,14 +497,6 @@
 	<Texture name="GoldLockIcon" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
 		<Size x="17" y="21"/>
 		<TexCoords left="0.92968750" right="0.99609375" top="0.68359375" bottom="0.72460938"/>
-	</Texture>
-	<Texture name="HelpPlateArrow-GlowDOWN" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
-		<Size x="65" y="28"/>
-		<TexCoords left="0.40625000" right="0.66015625" top="0.77343750" bottom="0.82812500"/>
-	</Texture>
-	<Texture name="HelpPlateArrow-GlowUP" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
-		<Size x="65" y="28"/>
-		<TexCoords left="0.40625000" right="0.66015625" bottom="0.77343750" top="0.82812500"/>
 	</Texture>
 	<Texture name="TalentHeader-PointCircle-Gold" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
 		<Size x="23" y="23"/>
@@ -584,14 +564,6 @@
 		<TexCoords left="0.01562500" right="0.12500000" top="0.00000000" bottom="1.00000000"/>
 	</Texture>
 
-	<Texture name="!HelpPlateBox-Right" file="Interface\TalentFrame\TalentFrame-Vertical2" virtual="true" vertTile="true" >
-		<Size x="8" y="32"/>
-		<TexCoords left="0.00390625" right="0.03515625" top="0.00000000" bottom="1.00000000"/>
-	</Texture>
-	<Texture name="!HelpPlateBox-Left" file="Interface\TalentFrame\TalentFrame-Vertical2" virtual="true" vertTile="true" >
-		<Size x="8" y="32"/>
-		<TexCoords left="0.04296875" right="0.07421875" top="0.00000000" bottom="1.00000000"/>
-	</Texture>
 	<Texture name="!TalentCover-Overlay-Left" file="Interface\TalentFrame\TalentFrame-Vertical2" virtual="true" vertTile="true" >
 		<Size x="8" y="32"/>
 		<TexCoords left="0.08203125" right="0.11328125" top="0.00000000" bottom="1.00000000"/>
@@ -645,14 +617,6 @@
 		<TexCoords left="0.00000000" right="1.00000000" top="0.32031250" bottom="0.60156250"/>
 	</Texture>
 
-	<Texture name="_HelpPlateBox-Top" file="Interface\TalentFrame\TalentFrame-Horizontal2" virtual="true" horizTile="true" >
-		<Size x="32" y="8"/>
-		<TexCoords left="0.00000000" right="1.00000000" top="0.00390625" bottom="0.03515625"/>
-	</Texture>
-	<Texture name="_HelpPlateBox-Bottom" file="Interface\TalentFrame\TalentFrame-Horizontal2" virtual="true" horizTile="true" >
-		<Size x="32" y="8"/>
-		<TexCoords left="0.00000000" right="1.00000000" top="0.04296875" bottom="0.07421875"/>
-	</Texture>
 	<Texture name="_TalentCover-Overlay-Bottom" file="Interface\TalentFrame\TalentFrame-Horizontal2" virtual="true" horizTile="true" >
 		<Size x="32" y="8"/>
 		<TexCoords left="0.00000000" right="1.00000000" top="0.08203125" bottom="0.11328125"/>
@@ -684,164 +648,6 @@
 		<Size x="32" y="32"/>
 	</Texture>
 
-<!--
-*******************************************************************************
-    GlowBoxArrowTemplate
-	This is a bright yellow arrow with a glow around it
-*******************************************************************************
--->
-	<Frame name="GlowBoxArrowTemplate" virtual="true">
-		<Size x="53" y="21"/>
-
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture name="$parentArrow" parentKey="Arrow" inherits="HelpPlateArrowDOWN">
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="BORDER">
-				<Texture name="$parentGlow" parentKey="Glow" inherits="HelpPlateArrow-GlowDOWN" alphaMode="ADD" alpha="0.5">
-					<Anchors>
-						<Anchor point="TOP"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-	</Frame>
-
-<!--
-*******************************************************************************
-    ThinBorderTemplate
-	Thin box to highlight areas with. Just add color!
-*******************************************************************************
--->
-	<Frame name="ThinBorderTemplate" virtual="true">
-		<Size x="100" y="100"/>
-		<Layers>
-			<Layer level="BORDER">
-				<Texture parentKey="TopLeft" parentArray="Textures" file="Interface\Common\ThinBorder2-Corner">
-					<Size x="8" y="8"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-3" y="3"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="TopRight" parentArray="Textures" file="Interface\Common\ThinBorder2-Corner">
-					<Size x="8" y="8"/>
-					<Anchors>
-						<Anchor point="TOPRIGHT" x="3" y="3"/>
-					</Anchors>
-					<TexCoords left="1" right="0" top="0" bottom="1"/>
-				</Texture>
-				<Texture parentKey="BottomLeft" parentArray="Textures" file="Interface\Common\ThinBorder2-Corner">
-					<Size x="8" y="8"/>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="-3" y="-3"/>
-					</Anchors>
-					<TexCoords left="0" right="1" top="1" bottom="0"/>
-				</Texture>
-				<Texture parentKey="BottomRight" parentArray="Textures" file="Interface\Common\ThinBorder2-Corner">
-					<Size x="8" y="8"/>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="3" y="-3"/>
-					</Anchors>
-					<TexCoords left="1" right="0" top="1" bottom="0"/>
-				</Texture>
-
-				<Texture parentKey="Top" parentArray="Textures" file="Interface\Common\ThinBorder2-Top">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeft" relativePoint="TOPRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.TopRight" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="Bottom" parentArray="Textures" file="Interface\Common\ThinBorder2-Top">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.BottomLeft" relativePoint="TOPRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRight" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-					<TexCoords left="0" right="1" top="1" bottom="0"/>
-				</Texture>
-
-				<Texture parentKey="Left" parentArray="Textures" file="Interface\Common\ThinBorder2-Left">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeft" relativePoint="BOTTOMLEFT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomLeft" relativePoint="TOPRIGHT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="Right" parentArray="Textures" file="Interface\Common\ThinBorder2-Left">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.TopRight" relativePoint="BOTTOMLEFT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRight" relativePoint="TOPRIGHT"/>
-					</Anchors>
-					<TexCoords left="1" right="0" top="0" bottom="1"/>
-				</Texture>
-			</Layer>
-		</Layers>
-	</Frame>
-
-	<Frame name="GlowBorderTemplate" virtual="true">
-		<Size x="100" y="100"/>
-		<Layers>
-			<Layer level="BORDER">
-				<Texture parentKey="TopLeft" parentArray="Textures" file="Interface\Common\GlowBorder-Corner" alphaMode="ADD">
-					<Size x="16" y="16"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-8" y="8"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="TopRight" parentArray="Textures" file="Interface\Common\GlowBorder-Corner" alphaMode="ADD">
-					<Size x="16" y="16"/>
-					<Anchors>
-						<Anchor point="TOPRIGHT" x="8" y="8"/>
-					</Anchors>
-					<TexCoords left="1" right="0" top="0" bottom="1"/>
-				</Texture>
-				<Texture parentKey="BottomLeft" parentArray="Textures" file="Interface\Common\GlowBorder-Corner" alphaMode="ADD">
-					<Size x="16" y="16"/>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="-8" y="-8"/>
-					</Anchors>
-					<TexCoords left="0" right="1" top="1" bottom="0"/>
-				</Texture>
-				<Texture parentKey="BottomRight" parentArray="Textures" file="Interface\Common\GlowBorder-Corner" alphaMode="ADD">
-					<Size x="16" y="16"/>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="8" y="-8"/>
-					</Anchors>
-					<TexCoords left="1" right="0" top="1" bottom="0"/>
-				</Texture>
-
-				<Texture parentKey="Top" parentArray="Textures" file="Interface\Common\GlowBorder-Top" alphaMode="ADD">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeft" relativePoint="TOPRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.TopRight" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="Bottom" parentArray="Textures" file="Interface\Common\GlowBorder-Top" alphaMode="ADD">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.BottomLeft" relativePoint="TOPRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRight" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-					<TexCoords left="0" right="1" top="1" bottom="0"/>
-				</Texture>
-
-				<Texture parentKey="Left" parentArray="Textures" file="Interface\Common\GlowBorder-Left" alphaMode="ADD">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeft" relativePoint="BOTTOMLEFT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomLeft" relativePoint="TOPRIGHT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="Right" parentArray="Textures" file="Interface\Common\GlowBorder-Left" alphaMode="ADD">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.TopRight" relativePoint="BOTTOMLEFT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRight" relativePoint="TOPRIGHT"/>
-					</Anchors>
-					<TexCoords left="1" right="0" top="0" bottom="1"/>
-				</Texture>
-			</Layer>
-		</Layers>
-	</Frame>
 <!--
 *******************************************************************************
     BasicFrameTemplate
@@ -1688,169 +1494,6 @@
 				</Texture>
 			</Layer>
 		</Layers>
-	</Frame>
-
-<!--
-*******************************************************************************
-    Help Plate System
-*******************************************************************************
--->
-	<Button name="HelpPlate" parent="UIParent" hidden="true" toplevel="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG">
-		<Size x="100" y="100"/>
-<!--
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture setAllPoints="true">
-					<Color r="0" g="0" b="0" a="0.5"/>
-				</Texture>
-			</Layer>
-		</Layers>
--->
-	</Button>
-
-	<Frame name="HelpPlateTooltip" inherits="GlowBoxTemplate" parent="UIParent" hidden="true" frameStrata="FULLSCREEN_DIALOG" frameLevel="2">
-		<Size x="220" y="100"/>
-		<Layers>
-			<Layer level="OVERLAY">
-				<FontString parentKey="Text" inherits="GameFontHighlightLeft">
-					<Size x="200" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="15" y="-15"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-			<Layer level="ARTWORK">
-				<Texture parentKey="ArrowUP" inherits="HelpPlateArrowDOWN" hidden="true">
-					<Size x="53" y="21"/>
-					<Anchors>
-						<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="3"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="ArrowDOWN" inherits="HelpPlateArrowUP" hidden="true">
-					<Size x="53" y="21"/>
-					<Anchors>
-						<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-3"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="ArrowRIGHT" inherits="HelpPlateArrowDOWN" hidden="true">
-					<Size x="53" y="21"/>
-					<Anchors>
-						<Anchor point="RIGHT" relativePoint="LEFT" x="3" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="ArrowLEFT" inherits="HelpPlateArrowDOWN" hidden="true">
-					<Size x="53" y="21"/>
-					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT" x="-3" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="BORDER">
-				<Texture parentKey="ArrowGlowUP" inherits="HelpPlateArrow-GlowDOWN" hidden="true" alphaMode="ADD" alpha="0.5">
-					<Size x="53" y="21"/>
-					<Anchors>
-						<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="3"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="ArrowGlowDOWN" inherits="HelpPlateArrow-GlowUP" hidden="true" alphaMode="ADD" alpha="0.5">
-					<Size x="53" y="21"/>
-					<Anchors>
-						<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-3"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="ArrowGlowRIGHT" inherits="HelpPlateArrow-GlowDOWN" hidden="true" alphaMode="ADD" alpha="0.5">
-					<Size x="53" y="21"/>
-					<Anchors>
-						<Anchor point="RIGHT" relativePoint="LEFT" x="3" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="ArrowGlowLEFT" inherits="HelpPlateArrow-GlowDOWN" hidden="true" alphaMode="ADD" alpha="0.5">
-					<Size x="53" y="21"/>
-					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT" x="-3" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Animations>
-			<AnimationGroup parentKey="LingerAndFade">
-				<Alpha childKey="FadeOut" startDelay="5" fromAlpha="1" toAlpha="0" duration="1" smoothing="IN_OUT" order="2"/>
-				<Scripts>
-					<OnFinished>
-						self:GetParent():Hide();
-					</OnFinished>
-				</Scripts>
-			</AnimationGroup>
-		</Animations>
-		<Scripts>
-			<OnLoad>
-				self.Text:SetSpacing(4);
-				SetClampedTextureRotation(self.ArrowLEFT, 270);
-				SetClampedTextureRotation(self.ArrowRIGHT, 90);
-				SetClampedTextureRotation(self.ArrowGlowLEFT, 270);
-				SetClampedTextureRotation(self.ArrowGlowRIGHT, 90);
-			</OnLoad>
-			<OnShow>
-				self:SetHeight(self.Text:GetHeight()+30);
-			</OnShow>
-		</Scripts>
-	</Frame>
-
-	<Button name="HelpPlateButton" virtual="true" frameStrata="DIALOG" hidden="true">
-		<Size x="46" y="46"/>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="HelpI" hidden="false" alpha="1" alphaMode="BLEND" file="Interface\common\help-i"/>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture parentKey="HelpIGlow" hidden="false" alpha="1" alphaMode="ADD" file="Interface\common\help-i"/>
-				<Texture parentKey="BgGlow" hidden="false" alpha="1" alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
-			</Layer>
-		</Layers>
-		<!--<Scripts>
-			<OnLoad function="HelpPlate_Button_OnLoad"/>
-			<OnShow function="HelpPlate_Button_OnShow"/>
-			<OnEnter function="HelpPlate_Button_OnEnter"/>
-			<OnLeave function="HelpPlate_Button_OnLeave"/>
-		</Scripts>-->
-		<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight">
-			<Size x="46" y="46"/>
-			<Anchors>
-				<Anchor point="CENTER" x="-1" y="-1"/>
-			</Anchors>
-		</HighlightTexture>
-		<Animations>
-			<AnimationGroup parentKey="Pulse" setToFinalAlpha="true" looping="REPEAT">
-				<Alpha childKey="HelpIGlow" duration="0.5" order="1" fromAlpha="0.25" toAlpha="1"/>
-				<Alpha childKey="HelpIGlow" startDelay="0.5" duration="1" order="1" fromAlpha="1" toAlpha="0.25"/>
-				<Alpha childKey="BgGlow" duration="0.5" order="1" fromAlpha="0.25" toAlpha="1"/>
-				<Alpha childKey="BgGlow" startDelay="0.5" duration="1" order="1" fromAlpha="1" toAlpha="0.25"/>
-			</AnimationGroup>
-		</Animations>
-	</Button>
-
-	<Frame name="HelpPlateBox" inherits="ThinBorderTemplate" virtual="true" hidden="true">
-		<Size x="200" y="200"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="BG">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="0"/>
-						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
-					</Anchors>
-					<Color r="0" g="0" b="0" a="0.4"/>
-				</Texture>
-			</Layer>
-		</Layers>
-		<!--<Scripts>
-			<OnLoad function="HelpPlateBox_OnLoad"/>
-			<OnEnter function="HelpPlateBox_OnEnter"/>
-			<OnLeave function="HelpPlateBox_OnLeave"/>
-		</Scripts>-->
-	</Frame>
-
-	<Frame name="HelpPlateBoxHighlight" inherits="GlowBorderTemplate" virtual="true" hidden="true">
-		<Size x="200" y="200"/>
 	</Frame>
 
 <!--

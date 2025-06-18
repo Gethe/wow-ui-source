@@ -703,6 +703,7 @@ local function Register()
 			AddValidatedCVarOption(container, cvar, 1, VIDEO_OPTIONS_BUILTIN);
 			AddValidatedCVarOption(container, cvar, 2, VIDEO_OPTIONS_NVIDIA_REFLEX);
 			AddValidatedCVarOption(container, cvar, 3, VIDEO_OPTIONS_NVIDIA_REFLEX_BOOST);
+			AddValidatedCVarOption(container, cvar, 4, VIDEO_OPTIONS_INTEL_XELL);
 			return container:GetData();
 		end
 
@@ -998,21 +999,6 @@ local function Register()
 		end
 
 		Settings.SetupCVarDropdown(category, cvar, Settings.VarType.Number, GetOptions, RT_SHADOW_QUALITY, OPTION_TOOLTIP_RT_SHADOW_QUALITY);
-	end
-
-	-- Ambient Occlusion Type
-	do
-		local cvar = "ResolvedSSAOType";
-
-		local function GetOptions()
-			local container = Settings.CreateControlTextContainer();
-			AddValidatedCVarOption(container, cvar, 0, GX_ADAPTER_AUTO_DETECT);
-			AddValidatedCVarOption(container, cvar, 1, SSAO_TYPE_ASSAO);
-			AddValidatedCVarOption(container, cvar, 2, SSAO_TYPE_CACAO);
-			return container:GetData();
-		end
-
-		Settings.SetupCVarDropdown(category, cvar, Settings.VarType.Number, GetOptions, SSAO_TYPE_LABEL, OPTION_TOOLTIP_SSAO);
 	end
 
 	-- Resample Quality
@@ -1344,9 +1330,8 @@ local function Register()
 		end
 
 		AddCompatSettingsCheckbox("GxCompatOptionalGpuFeatures",		"PROXY_OPT_GPU_FEATURES",	COMPAT_SETTING_OPTIONAL_GPU_FEATURES,	OPTION_TOOLTIP_COMPAT_SETTING_OPTIONAL_GPU_FEATURES);
-		AddCompatSettingsCheckbox("GxCompatDeviceMultiThreading",		"PROXY_DEVICE_MT",			COMPAT_SETTING_DEVICE_MULTITHREADING,	OPTION_TOOLTIP_COMPAT_SETTING_DEVICE_MULTITHREADING);
+		AddCompatSettingsCheckbox("GxCompatAsyncShaderCompilation",		"PROXY_DEVICE_MT",			COMPAT_SETTING_DEVICE_MULTITHREADING,	OPTION_TOOLTIP_COMPAT_SETTING_DEVICE_MULTITHREADING);
 		AddCompatSettingsCheckbox("GxCompatCommandListMultiThreading",	"PROXY_CMDLIST_MT",			COMPAT_SETTING_CMDLIST_MULTITHREADING,	OPTION_TOOLTIP_COMPAT_SETTING_CMDLIST_MULTITHREADING);
-		AddCompatSettingsCheckbox("GxCompatAsyncFrameEnd",				"PROXY_FRAME_OVERLAP",		COMPAT_SETTING_FRAME_OVERLAP,			OPTION_TOOLTIP_COMPAT_SETTING_FRAME_OVERLAP);
 		AddCompatSettingsCheckbox("GxCompatWorkSubmitOptimizations",	"PROXY_ADV_WORK_SUBMIT",	COMPAT_SETTING_ADV_WORK_SUBMIT,			OPTION_TOOLTIP_COMPAT_SETTING_ADV_WORK_SUBMIT);
 	end
 

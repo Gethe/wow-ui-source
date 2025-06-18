@@ -23,7 +23,7 @@
 			</EventFrame>
 		</Frames>
 		<Scripts>
-			<OnLoad inherit="prepend" method="OnLoad"/>
+			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</Frame>
 
@@ -81,7 +81,7 @@
 			<Frame parentKey="NewFeature" inherits="NewFeatureLabelTemplate" frameStrata="HIGH" scale=".8" frameLevel="100" hidden="true">
 				<Size x="1" y="1"/>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" x="-4" y="-8" relativeKey="$parent.Label" relativePoint="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" x="-4" y="-10" relativeKey="$parent.Label" relativePoint="LEFT"/>
 				</Anchors>
 			</Frame>
 		</Frames>

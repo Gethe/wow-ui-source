@@ -322,11 +322,11 @@ StaticPopupDialogs["CONFIRM_UPGRADE_ITEM"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function()
-		UpgradeItem();
+		C_ItemUpgrade.UpgradeItem(1);
 		PlaySound(SOUNDKIT.UI_REFORGING_REFORGE);
 	end,
 	OnCancel = function()
-		ItemUpgradeFrame_Update();
+		ItemUpgradeFrame:Update();
 	end,
 	OnShow = function()
 

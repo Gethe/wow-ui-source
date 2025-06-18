@@ -24,6 +24,7 @@ local QuestInfoSystem =
 		{
 			Name = "GetQuestRewardSpells",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

@@ -135,7 +135,7 @@ function CombatOverrides.AdjustCombatSettings(category)
 	Settings.SetupCVarCheckbox(category, "floatingCombatTextCombatHealing", SHOW_COMBAT_HEALING_TEXT, OPTION_TOOLTIP_SHOW_COMBAT_HEALING);
 	Settings.SetOnValueChangedCallback("floatingCombatTextCombatHealing", UpdateFloatingCombatTextSafe);
 
-	if ClassicExpansionAtLeast(LE_EXPANSION_BURNING_CRUSADE) then
+	if ClassicExpansionAtLeast(LE_EXPANSION_BURNING_CRUSADE) and ClassicExpansionAtMost(LE_EXPANSION_CATACLYSM) then
 		-- Auto Attack/Auto Shot
 		Settings.SetupCVarCheckbox(category, "autoRangedCombat", AUTO_RANGED_COMBAT_TEXT, OPTION_TOOLTIP_AUTO_RANGED_COMBAT);
 		Settings.SetOnValueChangedCallback("autoRangedCombat", UpdateFloatingCombatTextSafe);

@@ -1173,6 +1173,16 @@ end
 
 UIButtonMixin = {}
 
+function UIButtonMixin:InitButton()
+	if self.buttonArtKit then
+		self:SetButtonArtKit(self.buttonArtKit);
+	end
+
+	if self.disabledTooltip then
+		self:SetMotionScriptsWhileDisabled(true);
+	end
+end
+
 function UIButtonMixin:OnClick(...)
 	PlaySound(self.onClickSoundKit or SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
@@ -1198,6 +1208,10 @@ function UIButtonMixin:OnEnter()
 
 			if self.tooltipText then
 				local wrap = true;
+				if self.tooltipDisableWrapText then
+					wrap = false;
+				end
+
 				GameTooltip_AddColoredLine(tooltip, self.tooltipText, self.tooltipTextColor or NORMAL_FONT_COLOR, wrap);
 			end
 
@@ -1216,9 +1230,22 @@ function UIButtonMixin:OnLeave()
 	tooltip:Hide();
 end
 
+function UIButtonMixin:SetButtonArtKit(buttonArtKit)
+	self.buttonArtKit = buttonArtKit;
+
+	self:SetNormalAtlas(buttonArtKit);
+	self:SetPushedAtlas(buttonArtKit.."-Pressed");
+	self:SetDisabledAtlas(buttonArtKit.."-Disabled");
+	self:SetHighlightAtlas(buttonArtKit.."-Highlight");
+end
+
 function UIButtonMixin:SetOnClickHandler(onClickHandler, onClickSoundKit)
 	self.onClickHandler = onClickHandler;
 	self.onClickSoundKit = onClickSoundKit;
+end
+
+function UIButtonMixin:GetOnClickSoundKit()
+	return self.onClickSoundKit;
 end
 
 function UIButtonMixin:SetOnEnterHandler(onEnterHandler)
@@ -1351,6 +1378,10 @@ function PanelDragBarMixin:OnDragStart()
 		continueDragStart = target.onDragStartCallback(self);
 	end
 
+	if self.onDragStartCallback then
+		continueDragStart = self.onDragStartCallback(self);
+	end
+
 	if continueDragStart then
 		target:StartMoving();
 	end
@@ -1368,6 +1399,10 @@ function PanelDragBarMixin:OnDragStop()
 		continueDragStop = target.onDragStopCallback(self);
 	end
 
+	if self.onDragStopCallback then
+		continueDragStop = self.onDragStopCallback(self);
+	end
+
 	if continueDragStop then
 		target:StopMovingOrSizing();
 	end
@@ -1375,6 +1410,14 @@ function PanelDragBarMixin:OnDragStop()
 	if SetCursor then
 		SetCursor(nil);
 	end
+end
+
+function PanelDragBarMixin:SetOnDragStartCallback(onDragStartCallback)
+	self.onDragStartCallback = onDragStartCallback;
+end
+
+function PanelDragBarMixin:SetOnDragStopCallback(onDragStopCallback)
+	self.onDragStopCallback = onDragStopCallback;
 end
 
 NumericInputBoxMixin = {};
@@ -1446,16 +1489,26 @@ function PanelResizeButtonMixin:Init(target, minWidth, minHeight, maxWidth, maxH
 	target:SetScript("OnSizeChanged", function(target, width, height)
 		originalTargetOnSizeChanged(target, width, height);
 
+		local newWidth = width;
 		if width < self.minWidth then
-			target:SetWidth(self.minWidth);
+			newWidth = self.minWidth;
+			target:SetWidth(newWidth);
 		elseif self.maxWidth and width > self.maxWidth then
-			target:SetWidth(self.maxWidth);
+			newWidth = self.maxWidth;
+			target:SetWidth(newWidth);
 		end
 
+		local newHeight = height;
 		if height < self.minHeight then
-			target:SetHeight(self.minHeight);
+			newHeight = self.minHeight;
+			target:SetHeight(newHeight);
 		elseif self.maxHeight and height > self.maxHeight then
-			target:SetHeight(self.maxHeight);
+			newHeight = self.maxHeight;
+			target:SetHeight(newHeight);
+		end
+
+		if self.resizeCallback then
+			self.resizeCallback(self, newWidth, newHeight, self.isActive);
 		end
 	end);
 
@@ -1545,6 +1598,10 @@ end
 
 function PanelResizeButtonMixin:SetOnResizeStoppedCallback(resizeStoppedCallback)
 	self.resizeStoppedCallback = resizeStoppedCallback;
+end
+
+function PanelResizeButtonMixin:SetOnResizeCallback(resizeCallback)
+	self.resizeCallback = resizeCallback;
 end
 
 IconSelectorPopupFrameTemplateMixin = {};

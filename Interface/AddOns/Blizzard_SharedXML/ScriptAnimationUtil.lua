@@ -139,3 +139,42 @@ function ScriptAnimationUtil.StartScriptAnimation(region, variationCallback, dur
 
 	return CancelScriptAnimation;
 end
+
+function ScriptAnimationUtil.StartScriptAnimationGeneric(region, variationCallback, duration, frequency, onFinish)
+	if not ScriptAnimationUtil.GetScriptAnimationLock(region) then
+		if onFinish then
+			onFinish();
+		end
+		return nop;
+	end
+
+	local function CancelScriptAnimation()
+		if region.scriptAnimationTicker then
+			variationCallback(region, duration, duration);
+			region.scriptAnimationTicker:Cancel();
+			region.scriptAnimationTicker = nil;
+			ScriptAnimationUtil.ReleaseScriptAnimationLock(region);
+			if onFinish then
+				onFinish();
+			end
+		end
+	end
+
+	local startTime = GetTime();
+	local endTime = startTime + duration;
+
+	local function TranslationTickerFunction()
+		local currentTime = GetTime();
+		local finished = currentTime >= endTime;
+		if finished then
+			CancelScriptAnimation();
+		else
+			local elapsedTime = currentTime - startTime;
+			variationCallback(region, elapsedTime, duration);
+		end
+	end
+
+	region.scriptAnimationTicker = C_Timer.NewTicker(frequency or 0.01, TranslationTickerFunction);
+
+	return CancelScriptAnimation;
+end

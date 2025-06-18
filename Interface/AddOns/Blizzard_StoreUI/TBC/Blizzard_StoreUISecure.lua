@@ -36,6 +36,7 @@ local SILVER_PER_GOLD = 100;
 local COPPER_PER_GOLD = COPPER_PER_SILVER * SILVER_PER_GOLD;
 local WOW_SERVICES_CATEGORY_ID = 22;
 local PI = math.pi;
+local TRANSMOG_CATEGORY_ID = 139;
 
 local CHARACTER_TRANSFER_FACTION_BUNDLE_PRODUCT_ID = 239;
 local CHARACTER_TRANSFER_PRODUCT_ID = 189;
@@ -342,6 +343,8 @@ function StoreFrame_UpdateCard(card, entryID, discountReset, forceModelUpdate)
 		local text = BLIZZARD_STORE_BUY;
 		if (info.browseBuyButtonText) then
 			text = info.browseBuyButtonText;
+		elseif (selectedCategoryID == TRANSMOG_CATEGORY_ID) then
+			text = currencyFormat(entryInfo.sharedData.currentDollars, entryInfo.sharedData.currentCents);
 		end
 		card.BuyButton:SetText(text);
 
@@ -394,7 +397,7 @@ function StoreFrame_UpdateCard(card, entryID, discountReset, forceModelUpdate)
 	end
 
 	if (card == StoreFrame.SplashSingle) then
-		if bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlag.UseHorizontalLayoutForFullCard) == Enum.BattlepayDisplayFlag.UseHorizontalLayoutForFullCard then
+		if bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlags.UseHorizontalLayoutForFullCard) == Enum.BattlepayDisplayFlags.UseHorizontalLayoutForFullCard then
 			StoreFrameSplashSingle_SetStyle(StoreFrame.SplashSingle, "horizontal", entryInfo.sharedData.overrideBackground);
 		else
 			StoreFrameSplashSingle_SetStyle(StoreFrame.SplashSingle, nil, entryInfo.sharedData.overrideBackground);
@@ -455,12 +458,12 @@ function StoreFrame_UpdateCard(card, entryID, discountReset, forceModelUpdate)
 	StoreProductCard_HideMagnifier(card);
 
 	local hasAnyCard = #entryInfo.sharedData.cards > 0;
-	local allowShowingModel = bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlag.CardDoesNotShowModel) ~= Enum.BattlepayDisplayFlag.CardDoesNotShowModel;
+	local allowShowingModel = bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlags.CardDoesNotShowModel) ~= Enum.BattlepayDisplayFlags.CardDoesNotShowModel;
 	local showAnyModel = allowShowingModel and hasAnyCard;
-	local tryToShowTexture = not showAnyModel or bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlag.CardAlwaysShowsTexture) == Enum.BattlepayDisplayFlag.CardAlwaysShowsTexture;
+	local tryToShowTexture = not showAnyModel or bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlags.CardAlwaysShowsTexture) == Enum.BattlepayDisplayFlags.CardAlwaysShowsTexture;
 
 	if showAnyModel then
-		local showShadows = (card ~= StoreFrame.SplashSingle);
+		local showShadows = (card ~= StoreFrame.SplashSingle and selectedCategoryID ~= TRANSMOG_CATEGORY_ID);
 		StoreProductCard_ShowModel(card, entryInfo, showShadows, forceModelUpdate);
 	else
 		StoreProductCard_HideModel(card);
@@ -468,7 +471,7 @@ function StoreFrame_UpdateCard(card, entryID, discountReset, forceModelUpdate)
 
 	-- This is a hack to solve an issue with the Warpath Pack bundle. 
 	-- This should be fixed properly with a flag to hide the icon in a data driven manner
-	local shouldShowWarPathIcon = entryInfo.productID ~= 1121 or not card.isSplash;
+	local shouldShowWarPathIcon = (entryInfo.productID ~= 1121 and entryInfo.productID ~= 975) or not card.isSplash;
 	if not shouldShowWarPathIcon then
 		-- Upgrade Arrow will continue to show if we don't do this separately
 		card.UpgradeArrow:Hide();
@@ -480,7 +483,7 @@ function StoreFrame_UpdateCard(card, entryID, discountReset, forceModelUpdate)
 		StoreProductCard_HideIcon(card);
 	end
 
-	if bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlag.HiddenPrice) == Enum.BattlepayDisplayFlag.HiddenPrice then
+	if bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlags.HiddenPrice) == Enum.BattlepayDisplayFlags.HiddenPrice then
 		card.NormalPrice:Hide();
 		card.SalePrice:Hide();
 		card.Strikethrough:Hide();
@@ -652,10 +655,10 @@ function StoreFrame_SetNormalCategory(forceModelUpdate, numCardsPerPage)
 	products = StoreFrame_FilterEntries(products);
 	local numTotal = #products;
 
-	for i = 1, numCardsPerPage do
+	for i = 1, NUM_STORE_PRODUCT_CARDS do
 		local card = self.ProductCards[i];
 		local entryID = products[i + numCardsPerPage * (pageNum - 1)];
-		if ( not entryID ) then
+		if ( not entryID or i > numCardsPerPage) then
 			card:Hide();
 		else
 			StoreFrame_UpdateCard(card, entryID, nil, forceModelUpdate);
@@ -700,7 +703,7 @@ function StoreFrame_FilterEntries(entries)
 		local partiallyOwned = StoreFrame_IsPartiallyOwned(entryInfo);
 
 		if completelyOwned or partiallyOwned then
-			local hideWhenOwned = bit.band(sharedData.flags, Enum.BattlepayDisplayFlag.HideWhenOwned) ~= 0;
+			local hideWhenOwned = bit.band(sharedData.flags, Enum.BattlepayDisplayFlags.HideWhenOwned) ~= 0;
 			if not hideWhenOwned then
 				table.insert(filteredEntries, entryID);
 			end
@@ -721,11 +724,28 @@ function StoreFrame_SetCategory(forceModelUpdate)
 	elseif productGroupInfo and productGroupInfo.displayType == Enum.BattlepayGroupDisplayType.DoubleWide then
 		StoreFrame_SetCardStyle(StoreFrame, "double-wide", NUM_STORE_PRODUCT_CARDS_PER_ROW / 2);
 		StoreFrame_SetNormalCategory(forceModelUpdate, NUM_STORE_PRODUCT_CARDS / 2);
+	elseif(selectedCategoryID == TRANSMOG_CATEGORY_ID) then
+		StoreFrame_SetCardStyle(StoreFrame, "transmog", NUM_STORE_PRODUCT_CARDS_PER_ROW / 2);
+		StoreFrame_SetNormalCategory(forceModelUpdate, NUM_STORE_PRODUCT_CARDS / 4);		
 	else
 		StoreFrame_SetCardStyle(StoreFrame, nil, NUM_STORE_PRODUCT_CARDS_PER_ROW);
 		StoreFrame_SetNormalCategory(forceModelUpdate, NUM_STORE_PRODUCT_CARDS);
 	end
 	StoreFrame_CheckMarketPriceUpdates();
+	StoreFrame_UpdateCategoryPaginationLayout();
+end
+
+function StoreFrame_UpdateCategoryPaginationLayout()
+	local self = StoreFrame;
+	if(selectedCategoryID == TRANSMOG_CATEGORY_ID) then
+		self.PrevPageButton:SetPoint("BOTTOMRIGHT", -57, 18);
+		self.NextPageButton:SetPoint("BOTTOMRIGHT", -22, 18);
+		self.PageText:SetPoint("BOTTOMRIGHT", -98, 28);
+	else
+		self.PrevPageButton:SetPoint("BOTTOMRIGHT", -57, 36);
+		self.NextPageButton:SetPoint("BOTTOMRIGHT", -22, 36);
+		self.PageText:SetPoint("BOTTOMRIGHT", -98, 46);
+	end
 end
 
 function StoreFrame_FindPageForBoost(boostType)
@@ -776,6 +796,8 @@ function StoreFrame_SetCardStyle(self, style, numPerRow)
 		card.style = style;
 		if style == "double-wide" then
 			card:SetWidth(146 * 2);
+			card:SetHeight(209);
+			card.Card:SetSize(146, 209);
 			card.Card:SetAtlas("shop-card-bundle", true);
 			card.Card:SetTexCoord(0, 1, 0, 1);
 
@@ -789,8 +811,11 @@ function StoreFrame_SetCardStyle(self, style, numPerRow)
 			card.ProductName:ClearAllPoints();
 			card.ProductName:SetPoint("BOTTOM", 0, 33);
 
+			card.CurrentPrice:Show();
 			card.CurrentPrice:ClearAllPoints();
 			card.CurrentPrice:SetPoint("BOTTOM", 0, 23);
+
+			card.BuyButton:Hide();
 
 			if i > (numPerRow * NUM_STORE_PRODUCT_CARD_ROWS) then
 				card:Hide();
@@ -802,8 +827,35 @@ function StoreFrame_SetCardStyle(self, style, numPerRow)
 					card:SetPoint("TOPLEFT", self.ProductCards[i - 1], "TOPRIGHT", 0, 0);
 				end
 			end
+		elseif style == "transmog" then
+
+			card:SetWidth(286);
+			card:SetHeight(433);
+			card.Card:SetAtlas("store-card-transmog", true);
+			card.Card:SetTexCoord(0, 1, 0, 1);
+			card.Card:SetSize(286, 433);
+
+			card.ProductName:SetWidth(250);
+			card.ProductName:ClearAllPoints();
+			card.ProductName:SetPoint("BOTTOM", 0, 50);
+
+			card.CurrentPrice:Hide();
+
+			card.BuyButton:Show();			
+
+			if i > (numPerRow * NUM_STORE_PRODUCT_CARD_ROWS) then
+				card:Hide();
+			elseif i ~= 1 then
+				card:ClearAllPoints();
+				if i % numPerRow == 1 then
+					card:SetPoint("TOP", self.ProductCards[i - numPerRow], "BOTTOM", 0, 0);
+				else
+					card:SetPoint("TOPLEFT", self.ProductCards[i - 1], "TOPRIGHT", 10, 0);
+				end
+			end
 		else
 			card:SetWidth(146);
+			card:SetHeight(209);
 			card.Card:SetSize(146, 209);
 			card.Card:SetTexture("Interface\\Store\\Store-Main");
 			card.Card:SetTexCoord(0.18457031, 0.32714844, 0.64550781, 0.84960938);
@@ -820,8 +872,11 @@ function StoreFrame_SetCardStyle(self, style, numPerRow)
 			card.ProductName:ClearAllPoints();
 			card.ProductName:SetPoint("BOTTOM", 0, 42);
 
+			card.CurrentPrice:Show();
 			card.CurrentPrice:ClearAllPoints();
 			card.CurrentPrice:SetPoint("BOTTOM", 0, 32);
+
+			card.BuyButton:Hide();
 
 			if i ~= 1 then
 				card:ClearAllPoints();
@@ -833,7 +888,7 @@ function StoreFrame_SetCardStyle(self, style, numPerRow)
 			end
 		end
 
-		if i % numPerRow == 0 then
+		if i % numPerRow == 0 or selectedCategoryID == TRANSMOG_CATEGORY_ID then
 			tooltipSides[card] = "LEFT";
 		else
 			tooltipSides[card] = "RIGHT";
@@ -885,7 +940,7 @@ end
 
 function StoreFrame_DoesProductGroupShowOwnedAsDisabled(groupID)
 	local productGroupInfo = C_StoreSecure.GetProductGroupInfo(groupID);
-	return bit.band(productGroupInfo.flags, Enum.BattlepayProductGroupFlag.DisableOwnedProducts) == Enum.BattlepayProductGroupFlag.DisableOwnedProducts;
+	return bit.band(productGroupInfo.flags, Enum.BattlepayProductGroupFlags.DisableOwnedProducts) == Enum.BattlepayProductGroupFlags.DisableOwnedProducts;
 end
 
 function StoreFrame_IsProductGroupDisabled(groupID)
@@ -895,9 +950,9 @@ function StoreFrame_IsProductGroupDisabled(groupID)
 	end
 
 	local displayAsDisabled = productGroupInfo.disabledTooltip ~= nil and not StoreFrame_DoesProductGroupHavePurchasableItems(groupID);
-	local enabledForTrial = bit.band(productGroupInfo.flags, Enum.BattlepayProductGroupFlag.EnabledForTrial) == Enum.BattlepayProductGroupFlag.EnabledForTrial;
+	local enabledForTrial = bit.band(productGroupInfo.flags, Enum.BattlepayProductGroupFlags.EnabledForTrial) == Enum.BattlepayProductGroupFlags.EnabledForTrial;
 	local trialRestricted = IsTrialAccount() and not enabledForTrial;
-	local enabledForVeteran = bit.band(productGroupInfo.flags, Enum.BattlepayProductGroupFlag.EnabledForVeteran) == Enum.BattlepayProductGroupFlag.EnabledForVeteran;
+	local enabledForVeteran = bit.band(productGroupInfo.flags, Enum.BattlepayProductGroupFlags.EnabledForVeteran) == Enum.BattlepayProductGroupFlags.EnabledForVeteran;
 	local veteranRestricted = IsVeteranTrialAccount() and not enabledForVeteran;
 	return displayAsDisabled or trialRestricted or veteranRestricted;
 end
@@ -916,8 +971,8 @@ function StoreCategoryFrame_SetGroupID(self, groupID)
 	self.IconFrame:SetDesaturated(disabled);
 	self.Text:SetFontObject(disabled and "GameFontDisable" or "GameFontNormal");
 
-	local enabledForTrial = bit.band(productGroupInfo.flags, Enum.BattlepayProductGroupFlag.EnabledForTrial) == Enum.BattlepayProductGroupFlag.EnabledForTrial;
-	local enabledForVeteran = bit.band(productGroupInfo.flags, Enum.BattlepayProductGroupFlag.EnabledForVeteran) == Enum.BattlepayProductGroupFlag.EnabledForVeteran;
+	local enabledForTrial = bit.band(productGroupInfo.flags, Enum.BattlepayProductGroupFlags.EnabledForTrial) == Enum.BattlepayProductGroupFlags.EnabledForTrial;
+	local enabledForVeteran = bit.band(productGroupInfo.flags, Enum.BattlepayProductGroupFlags.EnabledForVeteran) == Enum.BattlepayProductGroupFlags.EnabledForVeteran;
 	if IsTrialAccount() and not enabledForTrial then
 		self.disabledTooltip = STORE_CATEGORY_TRIAL_DISABLED_TOOLTIP;
 	elseif IsVeteranTrialAccount() and not enabledForVeteran then
@@ -1265,7 +1320,7 @@ function StoreFrame_UpdateBuyButton()
 		return;
 	end
 
-	if (StoreFrame.SplashSingle:IsShown() or StoreFrame.SplashPairFirst:IsShown()) then
+	if (StoreFrame.SplashSingle:IsShown() or StoreFrame.SplashPairFirst:IsShown() or selectedCategoryID == TRANSMOG_CATEGORY_ID) then
 		self.BuyButton:Hide();
 	else
 		self.BuyButton:Show();
@@ -2421,7 +2476,7 @@ function StoreProductCard_UpdateState(card)
 		local entryInfo = C_StoreSecure.GetEntryInfo(entryID);
 		local enableHighlight = card:GetID() ~= selectedEntryID and not isRotating and (entryInfo.sharedData.productDecorator ~= Enum.BattlepayProductDecorator.VasService or C_Glue.IsOnGlueScreen());
 		card.HighlightTexture:SetAlpha(enableHighlight and 1 or 0);
-		if (not card.Description and card:IsMouseMotionFocus()) then
+		if (not card.Description and (card:IsMouseMotionFocus() or card.BuyButton:IsMouseMotionFocus())) then
 			if (isRotating) then
 				StoreTooltip:Hide()
 			else
@@ -2479,7 +2534,7 @@ function StoreProductCard_UpdateState(card)
 		card.Magnifier:SetAlpha(enableMagnifier and 1 or 0);
 	end
 	if ( card.SelectedTexture ) then
-		card.SelectedTexture:SetShown(card:GetID() == selectedEntryID);
+		card.SelectedTexture:SetShown(card:GetID() == selectedEntryID and selectedCategoryID ~= TRANSMOG_CATEGORY_ID);
 	end
 end
 
@@ -2512,7 +2567,7 @@ function StoreProductCard_OnEnter(self)
 	local entryInfo = C_StoreSecure.GetEntryInfo(self:GetID());
 	if (entryInfo.sharedData.productDecorator ~= Enum.BattlepayProductDecorator.VasService or C_Glue.IsOnGlueScreen()) then
 		if (self.HighlightTexture) then
-			self.HighlightTexture:SetShown(selectedEntryID ~= self:GetID());
+			self.HighlightTexture:SetShown(selectedEntryID ~= self:GetID() and selectedCategoryID ~= TRANSMOG_CATEGORY_ID);
 		end
 
 		StoreProductCard_UpdateMagnifier(self);
@@ -2528,6 +2583,16 @@ function StoreProductCard_OnLeave(self)
 		StoreProductCard_HideMagnifier(self);
 	end
 	StoreTooltip:Hide();
+end
+
+function StoreProductCardBuyButton_OnEnter(self)
+	local parent = self:GetParent();
+	StoreProductCard_OnEnter(parent);
+end
+
+function StoreProductCardBuyButton_OnLeave(self)
+	local parent = self:GetParent();
+	StoreProductCard_OnLeave(parent);
 end
 
 function StoreProductCard_CheckShowStorePreviewOnClick(self)
@@ -2702,6 +2767,7 @@ function StoreProductCard_ShowModel(self, entryInfo, showShadows, forceModelUpda
 	if self.Shadows then
 		self.Shadows:SetShown(showShadows);
 	end
+	self.ModelScene:ClearScene();
 	self.ModelScene:SetFromModelSceneID(modelSceneID, forceModelUpdate);
 
 	local hasMultipleModels = #cards > 1;
@@ -2715,10 +2781,28 @@ function StoreProductCard_ShowModel(self, entryInfo, showShadows, forceModelUpda
 			actorTag = baseActorTag;
 		end
 
-		local actor = self.ModelScene:GetActorByTag(actorTag);
-		if actor then
-			actor:SetModelByCreatureDisplayID(card.creatureDisplayInfoID);
-			actor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
+		if card.creatureDisplayInfoID and card.creatureDisplayInfoID > 0 then
+			local actor = self.ModelScene:GetActorByTag(actorTag);
+			SetupItemPreviewActor(actor, card.creatureDisplayInfoID);
+		else
+			local playerRaceName;
+			if C_Glue.IsOnGlueScreen() then
+				local characterGuid = GetCharacterGUID(GetCharacterSelection());
+				if characterGuid then
+					local basicCharacterInfo = GetBasicCharacterInfo(characterGuid);
+					playerRaceName = basicCharacterInfo.raceFilename and basicCharacterInfo.raceFilename:lower();
+				end
+			else
+				local _, raceFilename = UnitRace("player");
+				playerRaceName = raceFilename:lower();
+			end
+
+			local _, _cameraIDs, _actorIDs, flags = C_ModelInfo.GetModelSceneInfoByID(modelSceneID);	
+			local sheatheWeapons = bit.band(flags, Enum.UIModelSceneFlags.SheatheWeapon) == Enum.UIModelSceneFlags.SheatheWeapon;
+			local hideWeapons = bit.band(flags, Enum.UIModelSceneFlags.HideWeapon) == Enum.UIModelSceneFlags.HideWeapon;
+			local autoDress = bit.band(flags, Enum.UIModelSceneFlags.Autodress) == Enum.UIModelSceneFlags.Autodress;
+
+			SetupPlayerForModelScene(self.ModelScene, nil, card.itemModifiedAppearanceIDs, sheatheWeapons, autoDress, hideWeapons, true, playerRaceName);
 		end
 	end
 

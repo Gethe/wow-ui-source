@@ -9,6 +9,7 @@ local CurrencyInfo =
 		{
 			Name = "GetBasicCurrencyInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -68,6 +69,7 @@ local CurrencyInfo =
 		{
 			Name = "GetCurrencyContainerInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -83,6 +85,7 @@ local CurrencyInfo =
 		{
 			Name = "GetCurrencyInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -97,6 +100,7 @@ local CurrencyInfo =
 		{
 			Name = "GetCurrencyInfoFromLink",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

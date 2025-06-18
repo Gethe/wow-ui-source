@@ -659,3 +659,214 @@ function LootFrame_AdjustTextLocation(next, prev)
 	-- Overwritten in localized files
 	return;
 end
+
+
+function BonusRollFrame_StartBonusRoll(spellID, text, duration, currencyID)
+	local frame = BonusRollFrame;
+
+	if ( not currencyID or currencyID == 0 ) then
+		currencyID = BONUS_ROLL_REQUIRED_CURRENCY;
+	end
+
+	local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyID);
+
+	if not currencyInfo then
+		return;
+	end
+	
+	local count = currencyInfo.quantity;
+	local icon = currencyInfo.iconFileID;
+
+	if ( count == 0 ) then
+		return;
+	end
+
+	--Stop any animations that might still be playing
+	frame.StartRollAnim:Stop();
+
+	frame.state = "prompt";
+	frame.spellID = spellID;
+	frame.endTime = time() + duration;
+	frame.remaining = duration;
+	frame.currencyID = currencyID;
+
+	local numRequired = 1;
+	frame.PromptFrame.InfoFrame.Cost:SetFormattedText(BONUS_ROLL_COST, numRequired, icon);
+	frame.CurrentCountFrame.Text:SetFormattedText(BONUS_ROLL_CURRENT_COUNT, count, icon);
+	frame.PromptFrame.Timer:SetMinMaxValues(0, duration);
+	frame.PromptFrame.Timer:SetValue(duration);
+	frame.PromptFrame.RollButton:Enable();
+	frame.PromptFrame:Show();
+	frame.RollingFrame:Hide();
+	
+	local specID = GetLootSpecialization();
+	if ( specID and specID > 0 ) then
+		local id, name, description, texture, background, role, class = GetSpecializationInfoByID(specID);
+		frame.SpecIcon:SetTexture(texture);
+		frame.SpecIcon:Show();
+		frame.SpecRing:Show();
+	else
+		frame.SpecIcon:Hide();
+		frame.SpecRing:Hide();
+	end
+
+	GroupLootContainer_AddFrame(GroupLootContainer, frame);
+end
+
+function BonusRollFrame_CloseBonusRoll()
+	local frame = BonusRollFrame;
+	if ( frame.state == "prompt" ) then
+		GroupLootContainer_RemoveFrame(GroupLootContainer, frame);
+	end
+end
+
+function BonusRollFrame_OnLoad(self)
+	self:RegisterEvent("BONUS_ROLL_STARTED");
+	self:RegisterEvent("BONUS_ROLL_FAILED");
+	self:RegisterEvent("BONUS_ROLL_RESULT");
+	self:RegisterEvent("PLAYER_LOOT_SPEC_UPDATED");
+	self:RegisterEvent("BONUS_ROLL_DEACTIVATE");
+	self:RegisterEvent("BONUS_ROLL_ACTIVATE");
+end
+
+function BonusRollFrame_OnEvent(self, event, ...)
+	if ( event == "BONUS_ROLL_FAILED" ) then
+		self.state = "finishing";
+		self.rewardType = nil;
+		self.rewardLink = nil;
+		self.rewardQuantity = nil;
+		self.rewardSpecID = nil;
+		self.RollingFrame.LootSpinner:Hide();
+		self.RollingFrame.LootSpinnerFinal:Hide();
+		self.FinishRollAnim:Play();
+	elseif ( event == "BONUS_ROLL_STARTED" ) then
+		self.state = "rolling";
+		self.animFrame = 0;
+		self.animTime = 0;
+		PlaySound(31579);	--UI_BonusLootRoll_Start
+		--Make sure we don't keep playing the sound ad infinitum.
+		if ( self.rollSound ) then
+			StopSound(self.rollSound);
+		end
+		local _, soundHandle = PlaySound(31580);	--UI_BonusLootRoll_Loop
+		self.rollSound = soundHandle;
+		self.RollingFrame.LootSpinner:Show();
+		self.RollingFrame.LootSpinnerFinal:Hide();
+		self.StartRollAnim:Play();
+	elseif ( event == "BONUS_ROLL_RESULT" ) then
+		local rewardType, rewardLink, rewardQuantity, rewardSpecID = ...;
+		self.state = "slowing";
+		self.rewardType = rewardType;
+		self.rewardLink = rewardLink;
+		self.rewardQuantity = rewardQuantity;
+		self.rewardSpecID = rewardSpecID;
+		self.StartRollAnim:Finish();
+	elseif ( event == "PLAYER_LOOT_SPEC_UPDATED" ) then
+		local specID = GetLootSpecialization();
+		if ( specID and specID > 0 ) then
+			local id, name, description, texture, background, role, class = GetSpecializationInfoByID(specID);
+			self.SpecIcon:SetTexture(texture);
+			self.SpecIcon:Show();
+			self.SpecRing:Show();
+		else
+			self.SpecIcon:Hide();
+			self.SpecRing:Hide();
+		end
+	elseif ( event == "BONUS_ROLL_DEACTIVATE" ) then
+		self.PromptFrame.RollButton:Disable();
+	elseif ( event == "BONUS_ROLL_ACTIVATE" ) then
+		if ( self.state == "prompt" ) then
+			self.PromptFrame.RollButton:Enable();
+		end
+	end
+end
+
+local finalAnimFrame = {
+	item = 2,
+	currency = 6,
+	money = 6,
+}
+
+local finalTextureTexCoords = {
+	item = {0.59570313, 0.62597656, 0.875, 0.9921875},
+	currency = {0.56347656, 0.59375, 0.875, 0.9921875},
+	money = {0.56347656, 0.59375, 0.875, 0.9921875},
+}
+
+function BonusRollFrame_OnUpdate(self, elapsed)
+	if ( self.state == "prompt" ) then
+		self.remaining = self.remaining - elapsed;
+		self.PromptFrame.Timer:SetValue(max(0, self.remaining));
+	elseif ( self.state == "rolling" ) then
+		self.animTime = self.animTime + elapsed;
+		if ( self.animTime > 0.05 ) then
+			BonusRollFrame_AdvanceLootSpinnerAnim(self);
+		end
+	elseif ( self.state == "slowing" ) then
+		self.animTime = self.animTime + elapsed;
+		if ( self.animFrame == finalAnimFrame[self.rewardType] ) then
+			self.state = "finishing";
+			if ( self.rollSound ) then
+				StopSound(self.rollSound);
+			end
+			self.rollSound = nil;
+			PlaySound(31581);	--UI_BonusLootRoll_End
+			self.RollingFrame.LootSpinner:Hide();
+			self.RollingFrame.LootSpinnerFinal:Show();
+			self.RollingFrame.LootSpinnerFinal:SetTexCoord(unpack(finalTextureTexCoords[self.rewardType]));
+			self.RollingFrame.LootSpinnerFinalText:SetText(_G["BONUS_ROLL_REWARD_"..string.upper(self.rewardType)]);
+			self.FinishRollAnim:Play();
+		elseif ( self.animTime > 0.1 ) then --Slow it down
+			BonusRollFrame_AdvanceLootSpinnerAnim(self);
+		end
+	end
+end
+
+function BonusRollFrame_AdvanceLootSpinnerAnim(self)
+	self.animTime = 0;
+	self.animFrame = (self.animFrame + 1) % 8;
+	local top = floor(self.animFrame / 4) * 0.5;
+	local left = (self.animFrame % 4) * 0.25;
+	self.RollingFrame.LootSpinner:SetTexCoord(left, left + 0.25, top, top + 0.5);
+end
+
+function BonusRollFrame_OnShow(self)
+	self.PromptFrame.Timer:SetFrameLevel(self:GetFrameLevel() - 1);
+	self.BlackBackgroundHoist:SetFrameLevel(self.PromptFrame.Timer:GetFrameLevel() - 1);
+	--Update the remaining time in case we were hidden for some reason
+	if ( self.state == "prompt" ) then
+		self.remaining = self.endTime - time();
+	end
+end
+
+function BonusRollFrame_OnHide(self)
+	--Make sure we don't keep playing the sound ad infinitum.
+	if ( self.rollSound ) then
+		StopSound(self.rollSound);
+	end
+	self.rollSound = nil;
+end
+
+function BonusRollFrame_FinishedFading(self)
+	if ( self.rewardType == "item" ) then
+		GroupLootContainer_ReplaceFrame(GroupLootContainer, self, BonusRollLootWonFrame);
+		LootWonAlertFrame_SetUp(BonusRollLootWonFrame, self.rewardLink, self.rewardQuantity, nil, nil, self.rewardSpecID);
+		AlertFrame_PlayIntroAnimation(BonusRollLootWonFrame);
+		AlertFrame_PlayOutAnimation(BonusRollLootWonFrame, 3);
+	elseif ( self.rewardType == "money" ) then
+		GroupLootContainer_ReplaceFrame(GroupLootContainer, self, BonusRollMoneyWonFrame);
+		MoneyWonAlertFrame_SetUp(BonusRollMoneyWonFrame, self.rewardQuantity);
+		AlertFrame_PlayIntroAnimation(BonusRollMoneyWonFrame);
+		AlertFrame_PlayOutAnimation(BonusRollMoneyWonFrame, 3);
+	else
+		GroupLootContainer_RemoveFrame(GroupLootContainer, self);
+	end
+end
+
+function BonusRollLootWonFrame_OnLoad(self)
+	self:SetAlertContainer(AlertFrame);
+end
+
+function BonusRollMoneyWonFrame_OnLoad(self)
+	self:SetAlertContainer(AlertFrame);
+end

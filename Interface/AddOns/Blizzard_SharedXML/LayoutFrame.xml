@@ -1,151 +1,157 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
-			<Frame name="BaseLayoutFrameTemplate" virtual="true">
-				<Scripts>
-					<OnShow method="OnShow"/>
-				</Scripts>
-			</Frame>
+	<Frame name="BaseLayoutFrameTemplate" virtual="true">
+		<Scripts>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
 
-			<Frame name="VerticalLayoutFrame" virtual="true" inherits="BaseLayoutFrameTemplate" mixin="LayoutMixin, VerticalLayoutMixin">
-			<!--
-			<KeyValues>
-				Use fixedWidth/fixedHeight if you want a fixed size; otherwise size will be dynamically
-				calculated based on the sizes of child frames
-				<KeyValue key="fixedWidth" value="300" type="number"/>
-				<KeyValue key="fixedHeight" value="300" type="number"/>
+	<Frame name="VerticalLayoutFrame" virtual="true" inherits="BaseLayoutFrameTemplate" mixin="LayoutMixin, VerticalLayoutMixin">
+		<!--
+		<KeyValues>
+			Use fixedWidth/fixedHeight if you want a fixed size; otherwise size will be dynamically
+			calculated based on the sizes of child frames
+			<KeyValue key="fixedWidth" value="300" type="number"/>
+			<KeyValue key="fixedHeight" value="300" type="number"/>
 
-				<KeyValue key="minimumWidth" value="300" type="number"/>
-				<KeyValue key="minimumHeight" value="300" type="number"/>
-				<KeyValue key="maximumWidth" value="300" type="number"/>
-				<KeyValue key="maximumHeight" value="300" type="number"/>
+			<KeyValue key="minimumWidth" value="300" type="number"/>
+			<KeyValue key="minimumHeight" value="300" type="number"/>
+			<KeyValue key="maximumWidth" value="300" type="number"/>
+			<KeyValue key="maximumHeight" value="300" type="number"/>
 
-				If expand is set to true, the frame will expand to the width of the widest child.
-				If you have fixedWidth set, the frame width will be the the maximum of fixedWidth
-				and the width of the widest child.
-				<KeyValue key="expand" value="true" type="boolean"/>
+			If expand is set to true, the frame will expand to the width of the widest child.
+			If you have fixedWidth set, the frame width will be the the maximum of fixedWidth
+			and the width of the widest child.
+			<KeyValue key="expand" value="true" type="boolean"/>
 
-				Padding values for the 4 sides of the frame
-				<KeyValue key="topPadding" value="35" type="number"/>
-				<KeyValue key="bottomPadding" value="10" type="number"/>
-				<KeyValue key="leftPadding" value="10" type="number"/>
-				<KeyValue key="rightPadding" value="10" type="number"/>
+			Padding values for the 4 sides of the frame
+			<KeyValue key="topPadding" value="35" type="number"/>
+			<KeyValue key="bottomPadding" value="10" type="number"/>
+			<KeyValue key="leftPadding" value="10" type="number"/>
+			<KeyValue key="rightPadding" value="10" type="number"/>
 
-				Spacing is the number of pixels between child elements
-				<KeyValue key="spacing" value="10" type="number"/>
+			Spacing is the number of pixels between child elements
+			<KeyValue key="spacing" value="10" type="number"/>
 
-				Determines if child scale is taken into account when laying out children
-				<KeyValue key="respectChildScale" value="true" type="boolean"/>
-				
-				The childLayoutDirection keyValue controls which direction we layout the child frames in
-				By default the child frames are anchored top to bottom (actual point used depends on the align keyvalue on each child frame)
-				Possible choices here are "topToBottom" and "bottomToTop"
-				<KeyValue key="childLayoutDirection" value="topToBottom" type="string"/>
-	
-				Setting skipChildLayout to true prevents Layout from being called on child LayoutFrames when Layout is called on the parent
-				Useful for cases where child layout frames need to have Layout called in custom ways (e.g. PlayerChoiceOptions inside PlayerChoiceFrame)
-				<KeyValue key="skipChildLayout" value="false" type="boolean"/>
+			Determines if child scale is taken into account when laying out children
+			<KeyValue key="respectChildScale" value="true" type="boolean"/>
 
-				Setting skipLayoutOnShow to true prevents Layout from being called when the frame is shown
-				Useful for cases where Layout is called separately and/or using custom logic (e.g. the widget container inside PlayerChoiceOptions, which is used as a filler frame)
-				<KeyValue key="skipLayoutOnShow" value="false" type="boolean"/>
-			</KeyValues>
-			-->
+			The childLayoutDirection keyValue controls which direction we layout the child frames in
+			By default the child frames are anchored top to bottom (actual point used depends on the align keyvalue on each child frame)
+			Possible choices here are "topToBottom" and "bottomToTop"
+			<KeyValue key="childLayoutDirection" value="topToBottom" type="string"/>
 
-			<!--
-				FontStrings, Textures and Frames can have the following key/value pairs
+			Setting skipChildLayout to true prevents Layout from being called on child LayoutFrames when Layout is called on the parent
+			Useful for cases where child layout frames need to have Layout called in custom ways (e.g. PlayerChoiceOptions inside PlayerChoiceFrame)
+			<KeyValue key="skipChildLayout" value="false" type="boolean"/>
 
-				layoutIndex is required to be included in the layout system. You can choose not to have
-				a layoutIndex, in which case this region/frame should be anchored separately
-				<KeyValue key="layoutIndex" value="3" type="number"/>
+			Setting skipLayoutOnShow to true prevents Layout from being called when the frame is shown
+			Useful for cases where Layout is called separately and/or using custom logic (e.g. the widget container inside PlayerChoiceOptions, which is used as a filler frame)
+			<KeyValue key="skipLayoutOnShow" value="false" type="boolean"/>
 
-				Some LayoutFrames (like ResizeLayoutFrame) set ignoreLayoutIndex to true, meaning that layoutIndex is completely ignored, and ALL child regions are processed in the layout.
-				If you want to keep a region out of the layout calculations for these LayoutFrames you must set ignoreInLayout to true
-				<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+			Setting usePreciseChildSizes to true will turn off the rounding we normally perform when getting the size of child frames for layout purposes
+			WARNING: Turning this on will cause layout frames that need to update while they are showing to sometimes "jiggle" on update
+			<KeyValue key="usePreciseChildSizes" value="false" type="boolean"/>
+		</KeyValues>
+		-->
 
-				Padding values for the 4 sides of the region/frame
-				<KeyValue key="topPadding" value="20" type="number"/>
-				<KeyValue key="bottomPadding" value="10" type="number"/>
-				<KeyValue key="leftPadding" value="10" type="number"/>
-				<KeyValue key="rightPadding" value="10" type="number"/>
+		<!--
+			FontStrings, Textures and Frames can have the following key/value pairs
 
-				If expand is set to true, the region/frame will expand to fit the parent layout frame
-				<KeyValue key="expand" value="true" type="boolean"/>
-				
-				The align keyValue can be used to control how this child is anchored relative to the VerticalLayoutFrame.
-				By default each child is anchored from TOPLEFT of the child to TOPLEFT of the VerticalLayoutFrame
-				Possible choices here are "center" (anchored TOP to TOP) and "right" (anchored TOPRIGHT to TOPRIGHT)
-				<KeyValue key="align" value="center" type="string"/>
-			-->
-		</Frame>
+			layoutIndex is required to be included in the layout system. You can choose not to have
+			a layoutIndex, in which case this region/frame should be anchored separately
+			<KeyValue key="layoutIndex" value="3" type="number"/>
 
-		<Frame name="HorizontalLayoutFrame" virtual="true" inherits="BaseLayoutFrameTemplate" mixin="LayoutMixin, HorizontalLayoutMixin">
-			<!-- Uses the same key/value pairs as VerticalLayoutFrame EXCEPT for: 
+			Some LayoutFrames (like ResizeLayoutFrame) set ignoreLayoutIndex to true, meaning that layoutIndex is completely ignored, and ALL child regions are processed in the layout.
+			If you want to keep a region out of the layout calculations for these LayoutFrames you must set ignoreInLayout to true
+			<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+
+			Padding values for the 4 sides of the region/frame
+			<KeyValue key="topPadding" value="20" type="number"/>
+			<KeyValue key="bottomPadding" value="10" type="number"/>
+			<KeyValue key="leftPadding" value="10" type="number"/>
+			<KeyValue key="rightPadding" value="10" type="number"/>
+
+			If expand is set to true, the region/frame will expand to fit the parent layout frame
+			<KeyValue key="expand" value="true" type="boolean"/>
 			
-				The align keyValue does the same thing as VerticalLayoutFrame, but the valid values are different.
-				Just like VerticalLayoutFrame, by default each child is anchored from TOPLEFT of the child to TOPLEFT of the HorizontalLayoutFrame
-				Possible choices here are "center" (anchored LEFT to LEFT) and "bottom" (anchored BOTTOMLEFT to BOTTOMLEFT)
-				<KeyValue key="align" value="center" type="string"/>
+			The align keyValue can be used to control how this child is anchored relative to the VerticalLayoutFrame.
+			By default each child is anchored from TOPLEFT of the child to TOPLEFT of the VerticalLayoutFrame
+			Possible choices here are "center" (anchored TOP to TOP) and "right" (anchored TOPRIGHT to TOPRIGHT)
+			<KeyValue key="align" value="center" type="string"/>
 
-				The childLayoutDirection keyValue does the same thing as VerticalLayoutFrame, but the valid values are different.
-				By default the child frames are anchored left to right (actual point used depends on the align keyvalue on each child frame)
-				Possible choices here are "leftToRight" and "rightToLeft"
-				<KeyValue key="childLayoutDirection" value="leftToRight" type="string"/>
-			
-				Determines if child scale is taken into account when laying out children
-				<KeyValue key="respectChildScale" value="true" type="boolean"/>
-			-->
-		</Frame>
+			By default, child regions are ignored for layout when hidden. But in specific cases
+			(e.g. keeping a ResizeLayoutFrame a consistent size when children are hidden) it may be
+			desirable to include them.
+			<KeyValue key="includeAsLayoutChildWhenHidden" value="false" type="boolean"/>
+		-->
+	</Frame>
 
-		<Frame name="ResizeLayoutFrame" virtual="true" inherits="BaseLayoutFrameTemplate" mixin="ResizeLayoutMixin">
-			<Size x="1" y="1"/>
-			<!--
-			<KeyValues>
-				ResizeLayoutFrame simply resizes based on the extents of it's child frames & regions.
-				You will need to set the anchors of all children & regions yourself.
-				Note that layoutIndex is NOT required to be included in the ResizeLayoutFrame system (and it does nothing if it is set).
+	<Frame name="HorizontalLayoutFrame" virtual="true" inherits="BaseLayoutFrameTemplate" mixin="LayoutMixin, HorizontalLayoutMixin">
+		<!-- Uses the same key/value pairs as VerticalLayoutFrame EXCEPT for: 
+		
+			The align keyValue does the same thing as VerticalLayoutFrame, but the valid values are different.
+			Just like VerticalLayoutFrame, by default each child is anchored from TOPLEFT of the child to TOPLEFT of the HorizontalLayoutFrame
+			Possible choices here are "center" (anchored LEFT to LEFT) and "bottom" (anchored BOTTOMLEFT to BOTTOMLEFT)
+			<KeyValue key="align" value="center" type="string"/>
 
-				Because we set ignoreLayoutIndex to true on ResizeLayoutFrame, you must specifically use the ignoreInLayout keyValue if you want something to not be included in the size calculation
+			The childLayoutDirection keyValue does the same thing as VerticalLayoutFrame, but the valid values are different.
+			By default the child frames are anchored left to right (actual point used depends on the align keyvalue on each child frame)
+			Possible choices here are "leftToRight" and "rightToLeft"
+			<KeyValue key="childLayoutDirection" value="leftToRight" type="string"/>
+		-->
+	</Frame>
 
-				Use fixedWidth/fixedHeight if you want a fixed size; otherwise size will be dynamically
-				calculated based on the sizes of child frames
-				<KeyValue key="fixedWidth" value="300" type="number"/>
-				<KeyValue key="fixedHeight" value="300" type="number"/>
-				<KeyValue key="widthPadding" value="300" type="number"/>
-				<KeyValue key="heightPadding" value="300" type="number"/>
-				<KeyValue key="minimumWidth" value="300" type="number"/>
-				<KeyValue key="minimumHeight" value="300" type="number"/>
-				<KeyValue key="maximumWidth" value="300" type="number"/>
-				<KeyValue key="maximumHeight" value="300" type="number"/>
-				<KeyValue key="skipChildLayout" value="false" type="boolean"/>
-				<KeyValue key="skipLayoutOnShow" value="false" type="boolean"/>
-				<KeyValue key="ignoreAllChildren" value="false" type="boolean"/>
-			</KeyValues>
-			-->
-		</Frame>
+	<Frame name="ResizeLayoutFrame" virtual="true" inherits="BaseLayoutFrameTemplate" mixin="ResizeLayoutMixin">
+		<Size x="1" y="1"/>
+		<!--
+		<KeyValues>
+			ResizeLayoutFrame simply resizes based on the extents of it's child frames & regions.
+			You will need to set the anchors of all children & regions yourself.
+			Note that layoutIndex is NOT required to be included in the ResizeLayoutFrame system (and it does nothing if it is set).
 
-		<Frame name="GridLayoutFrame" inherits="ResizeLayoutFrame" virtual="true" mixin="GridLayoutFrameMixin">
-			<!-- 
+			Because we set ignoreLayoutIndex to true on ResizeLayoutFrame, you must specifically use the ignoreInLayout keyValue if you want something to not be included in the size calculation
+		
+			Use fixedWidth/fixedHeight if you want a fixed size; otherwise size will be dynamically
+			calculated based on the sizes of child frames
+			<KeyValue key="fixedWidth" value="300" type="number"/>
+			<KeyValue key="fixedHeight" value="300" type="number"/>
+			<KeyValue key="widthPadding" value="300" type="number"/>
+			<KeyValue key="heightPadding" value="300" type="number"/>
+			<KeyValue key="minimumWidth" value="300" type="number"/>
+			<KeyValue key="minimumHeight" value="300" type="number"/>
+			<KeyValue key="maximumWidth" value="300" type="number"/>
+			<KeyValue key="maximumHeight" value="300" type="number"/>
+			<KeyValue key="skipChildLayout" value="false" type="boolean"/>
+			<KeyValue key="skipLayoutOnShow" value="false" type="boolean"/>
+			<KeyValue key="ignoreAllChildren" value="false" type="boolean"/>
+		</KeyValues>
+		-->
+	</Frame>
+
+	<Frame name="GridLayoutFrame" inherits="ResizeLayoutFrame" virtual="true" mixin="GridLayoutFrameMixin">
+		<!-- 
 		Dynamically places child frames into a grid layout based on grid flow defined by KeyValue settings
 
-			<KeyValues>
-				- Space in between laid out frames
-				<KeyValue key="childXPadding" value="0" type="number"/>
-				<KeyValue key="childYPadding" value="0" type="number"/>
+		<KeyValues>
+			- Space in between laid out frames
+			<KeyValue key="childXPadding" value="0" type="number"/>
+			<KeyValue key="childYPadding" value="0" type="number"/>
 
-				- This is whether the layout is horizontal. If it is not horizontal then it will be vertical.
-				<KeyValue key="isHorizontal" value="true" type="boolean"/>
-	
-				- This is the number of frames per row/column (based on whether the grid is horizontal or vertical)
-				<KeyValue key="stride" value="1" type="number"/>
-	
-				- This is the direction the layout grows as it adds frames horizontally. If true, new frames will be added to the right. If false, new frames will be added to the left.
-				<KeyValue key="layoutFramesGoingRight" value="true" type="boolean"/>
-	
-				- This is the direction the layout grows as it adds frames vertically. If true, new frames will be added to the top. If false, new frames will be added to the bottom.
-				<KeyValue key="layoutFramesGoingUp" value="true" type="boolean"/>
-			</KeyValues>
-			-->
-		</Frame>
+			- This is whether the layout is horizontal. If it is not horizontal then it will be vertical.
+			<KeyValue key="isHorizontal" value="true" type="boolean"/>
+
+			- This is the number of frames per row/column (based on whether the grid is horizontal or vertical)
+			<KeyValue key="stride" value="1" type="number"/>
+
+			- This is the direction the layout grows as it adds frames horizontally. If true, new frames will be added to the right. If false, new frames will be added to the left.
+			<KeyValue key="layoutFramesGoingRight" value="true" type="boolean"/>
+
+			- This is the direction the layout grows as it adds frames vertically. If true, new frames will be added to the top. If false, new frames will be added to the bottom.
+			<KeyValue key="layoutFramesGoingUp" value="true" type="boolean"/>
+		</KeyValues>
+		-->
+	</Frame>
 
 	<Frame name="StaticGridLayoutFrame" inherits="BaseLayoutFrameTemplate" virtual="true" mixin="StaticGridLayoutFrameMixin">
 		<!-- 

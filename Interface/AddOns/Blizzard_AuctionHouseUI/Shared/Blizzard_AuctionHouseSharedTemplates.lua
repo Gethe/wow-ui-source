@@ -300,7 +300,13 @@ function AuctionHouseItemDisplayMixin:SetItemInternal(item)
 
 	local displayText = self:GetItemDisplayText(itemName, itemLevel, isPet);
 
-	self.Name:SetText(ITEM_QUALITY_COLORS[itemQuality].color:WrapTextInColorCode(displayText));
+	local nameText = displayText;
+	local colorData = ColorManager.GetColorDataForItemQuality(itemQuality);
+	if colorData then
+		nameText = colorData.color:WrapTextInColorCode(displayText);
+	end
+
+	self.Name:SetText(nameText);
 
 	self.ItemButton:UnlockHighlight();
 

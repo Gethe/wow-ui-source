@@ -345,8 +345,8 @@ function AuctionHouseTableExtraInfoMixin:Populate(rowData, dataIndex)
 		local linkType, linkOptions, name = LinkUtil.ExtractLink(rowData.itemLink);
 		if linkType == "battlepet" then
 			local speciesID, level, breedQuality = strsplit(":", linkOptions);
-			local qualityColor = BAG_ITEM_QUALITY_COLORS[tonumber(breedQuality)];
-			self.Text:SetText(qualityColor:WrapTextInColorCode(level));
+			local qualityColor = ColorManager.GetColorDataForBagItemQuality(tonumber(breedQuality));
+			self.Text:SetText(qualityColor and qualityColor:WrapTextInColorCode(level) or level);
 			self.Text:Show();
 		end
 	end
@@ -637,8 +637,10 @@ function AuctionHouseTableCellAuctionsItemLevelMixin:Populate(rowData, dataIndex
 
 	local itemKeyInfo = C_AuctionHouse.GetItemKeyInfo(rowData.itemKey);
 	if itemKeyInfo then
-		local itemQualityColor = ITEM_QUALITY_COLORS[itemKeyInfo.quality];
-		self.Text:SetTextColor(itemQualityColor.color:GetRGB());
+		local colorData = ColorManager.GetColorDataForItemQuality(itemKeyInfo.quality);
+		if colorData then
+			self.Text:SetTextColor(colorData.color:GetRGB());
+		end
 	end
 
 	self.Text:SetText(rowData.itemKey.itemLevel);

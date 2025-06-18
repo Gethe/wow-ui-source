@@ -186,8 +186,7 @@ function CommunitiesListMixin:Update()
 	local clubs = self:GetCommunitiesList();
 	local playerIsInGuild = IsInGuild();
 	self:ValidateTickets();
-	
-	-- TODO:: Determine if this player is at the maximum number of allowed clubs or not.
+
 	-- We probably need to change the create flow as well, since it's possible you are
 	-- allowed to create more bnet groups, but not more wow communities or vice versa.
 	local dataProvider = CreateDataProvider();

@@ -1,0 +1,65 @@
+## Title: Blizzard_GlueXML
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_GlueDialogs, Blizzard_LoginWarningDialogs, Blizzard_HelpPlate, Blizzard_GlueMenuFrame
+## LoadFirst: 1
+## AllowLoad: Glue
+## AllowLoadGameType: mists
+Classic\Localization.lua
+Cata\Localization.lua
+Classic\GlueTooltip.lua
+Classic\GlueTooltip.xml
+ServerAlert.lua
+ServerAlert.xml
+Classic\GlueGameLogo.lua
+Classic\GlueGameLogo.xml
+Classic\AccountLogin.lua
+Classic\AccountLogin.xml
+TBC\RealmList.lua
+Cata\RealmList.xml
+Mists\CharacterSelectConstants.lua
+Classic\CharacterServicesPatchwerk.xml
+Classic\CharacterSelect\CharacterSelectUI.lua
+Classic\CharacterSelect\CharacterSelectUI.xml
+Classic\CharacterSelect.lua
+Classic\CharacterSelect.xml
+Shared\AccountReactivate.lua
+Shared\AccountReactivate.xml
+Classic\KioskModeSplash.lua
+Classic\KioskModeSplash.xml
+Classic\CharacterServicesShared.lua
+Classic\CharacterServicesTemplatesUtil.lua
+Shared\CharacterServicesTemplates.lua
+Classic\CharacterServicesTemplates.xml
+Classic\CharacterServicesFlowMixin.lua
+Classic\CharacterServices.lua
+Classic\CharacterServices.xml
+Shared\CharacterServicesPaidNameChange.lua
+Classic\CharacterServicesPaidNameChange.lua
+Classic\CharacterServicesPaidNameChange.xml
+Classic\CharacterServicesPaidCharacterTransfer.lua
+Classic\CharacterServicesPaidCharacterTransfer.xml
+Classic\CharacterServicesPaidFactionChange.lua
+Classic\CharacterServicesPaidFactionChange.xml
+Classic\CharacterServicesPaidRaceChange.lua
+Classic\CharacterServicesPaidRaceChange.xml
+Classic\CharacterServicesCharacterSelector.lua
+Classic\CharacterServicesCharacterSelector.xml
+Mists\CharacterCreate.lua
+Classic\CharacterCreate_Shared.lua
+Mists\CharacterCreate.xml
+PromotionFrame.lua
+PromotionFrame.xml
+StarterEditionPopUp.xml
+MovieFrame.lua
+MovieFrame.xml
+PhotosensitivityWarningFrame.lua
+PhotosensitivityWarningFrame.xml
+Classic\CinematicsFrame.lua
+Classic\CinematicsFrame.xml
+TBC\CreditsFrame.lua
+TBC\CreditsFrame.xml
+SocialContract.lua
+SocialContract.xml
+Classic\RealmWarning.lua
+Classic\RealmWarning.xml

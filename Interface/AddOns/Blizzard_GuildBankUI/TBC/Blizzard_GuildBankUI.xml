@@ -904,4 +904,13 @@
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
+	<EditBox name="GuildItemSearchBox" inherits="BagSearchBoxTemplate" parent="GuildBankFrame" mixin="GuildItemSearchBoxMixin" letters="15">
+		<Size x="130" y="20" />
+		<Anchors>
+			<Anchor point="TOPRIGHT" x="-15" y="-36" />
+		</Anchors>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</EditBox>
 </Ui>

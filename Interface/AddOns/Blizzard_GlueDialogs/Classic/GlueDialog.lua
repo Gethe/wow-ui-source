@@ -333,6 +333,37 @@ StaticPopupDialogs["REALM_IS_LOCKED"] = {
 	end
 }
 
+function GlueDialog_EditBoxOnEnterPressed(self)
+	local EditBoxOnEnterPressed, which, dialog;
+	local parent = self:GetParent();
+	if ( parent.which ) then
+		which = parent.which;
+		dialog = parent;
+	elseif ( parent:GetParent().which ) then
+		-- This is needed if this is a money input frame since it's nested deeper than a normal edit box
+		which = parent:GetParent().which;
+		dialog = parent:GetParent();
+	end
+	EditBoxOnEnterPressed = StaticPopupDialogs[which].EditBoxOnEnterPressed;
+	if ( EditBoxOnEnterPressed ) then
+		EditBoxOnEnterPressed(self, dialog.data);
+	end
+end
+
+function GlueDialog_EditBoxOnEscapePressed(self)
+	local EditBoxOnEscapePressed = StaticPopupDialogs[self:GetParent().which].EditBoxOnEscapePressed;
+	if ( EditBoxOnEscapePressed ) then
+		EditBoxOnEscapePressed(self, self:GetParent().data);
+	end
+end
+
+function GlueDialog_EditBoxOnTextChanged(self, userInput)
+	local EditBoxOnTextChanged = StaticPopupDialogs[self:GetParent().which].EditBoxOnTextChanged;
+	if ( EditBoxOnTextChanged ) then
+		EditBoxOnTextChanged(self, self:GetParent().data);
+	end
+end
+
 function GlueDialog_Queue(which, text, data)
 	table.insert(QUEUED_GLUE_DIALOGS, {which = which, text = text, data = data});
 end
@@ -658,6 +689,10 @@ function GlueDialog_OnLoad(self)
 	GlueDialogText.origWidth = GlueDialogText:GetWidth();
 	GlueDialogBackground.origWidth = GlueDialogBackground:GetWidth();
 	GlueDialogBackground.alertWidth = 600;
+end
+
+function GlueDialog_GetVisible()
+	return GlueDialog.which;
 end
 
 function GlueDialog_OnShow(self)

@@ -1,0 +1,6 @@
+## Title: Blizzard_GuildBankUI
+## LoadOnDemand: 1
+## AllowLoad: game
+## AllowLoadGameType: mists
+TBC\Blizzard_GuildBankUI.lua
+Mists\Blizzard_GuildBankUI.xml

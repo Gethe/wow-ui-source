@@ -18,6 +18,7 @@ function AlertFrameSystems_Register()
 	NewPetAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("NewPetAlertFrameTemplate", NewPetAlertFrame_SetUp);
 	NewMountAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("NewMountAlertFrameTemplate", NewMountAlertFrame_SetUp);
 	NewToyAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewToyAlertFrameTemplate", NewToyAlertFrame_SetUp);
+	ChallengeModeAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("ChallengeModeAlertFrameTemplate", ChallengeModeAlertFrame_SetUp)
 end
 
 -- [[ GuildChallengeAlertFrame ]] --
@@ -1128,4 +1129,111 @@ function NewToyAlertFrameMixin:OnClick(button, down)
 	end
 
 	ToggleToyCollection(self.toyID);
+end
+
+ChallengeModeAlertFrameRewardMixin = {}
+ChallengeModeAlertFrameMixin = {}
+
+-- [[ ChallengeModeAlertFrame ]] --
+CHALLENGE_MODE_MAX_REWARDS = 2;
+function ChallengeModeAlertFrame_SetUp(frame, ...)
+	frame:SetUp(...);
+end
+
+function ChallengeModeAlertFrameMixin:SetReward(index, rewardData)
+	local frame = self["reward"..index];
+
+	local icon = 0;
+
+	if rewardData.isCurrency then
+		local info = C_CurrencyInfo.GetBasicCurrencyInfo(rewardData.rewardID);
+		if info then
+			icon = info.icon;
+		end
+	else
+		icon = C_Item.GetItemIconByID(rewardData.rewardID);
+	end
+
+	SetPortraitToTexture(frame.texture, icon);
+	frame.itemID = rewardData.rewardID;
+	frame.isCurrency = rewardData.isCurrency;
+	frame:Show();
+end
+
+function ChallengeModeAlertFrameMixin:SetUp(mapID, medal, completionTime, moneyAmount, rewards)
+	PlaySound(SOUNDKIT.LFG_REWARDS);
+
+	local numRewards = #rewards;
+	self.mapID = mapID;
+
+	--Set up the rewards
+	local rewardsOffset = 0;
+
+	if ( moneyAmount > 0 ) then
+		SetPortraitToTexture(self.reward1.texture, "Interface\\Icons\\inv_misc_coin_02");
+		self.reward1.itemID = 0;
+		self.reward1.moneyAmount = moneyAmount
+		self.reward1:Show();
+		rewardsOffset = 1;
+	end
+
+	for i = 1, numRewards do
+		local frameID = (i + rewardsOffset);
+		local reward = self["reward"..frameID];
+		if ( not reward ) then
+			reward = CreateFrame("FRAME", "ChallengeModeRewardToast"..frameID, self, "ChallengeModeAlertFrameRewardTemplate");
+			CHALLENGE_MODE_MAX_REWARDS = frameID;
+			self["reward"..frameID] = reward
+		end
+		self:SetReward(frameID, rewards[i]);
+	end
+
+	local usedButtons = numRewards + rewardsOffset;
+	--Hide the unused ones
+	for i = usedButtons + 1, CHALLENGE_MODE_MAX_REWARDS do
+		if self["reward"..i] then
+			self["reward"..i]:Hide();
+		end
+	end
+
+	if ( usedButtons > 0 ) then
+		--Set up positions
+		local spacing = 36;
+		self.reward1:SetPoint("TOP", self, "TOP", -spacing/2 * usedButtons + 41, 10);
+		for i = 2, usedButtons do
+			self["reward"..i]:SetPoint("CENTER", self["reward" .. (i-1)], "CENTER", spacing, 0);
+		end
+	end
+
+	--Set up the text and icon
+	if ( CHALLENGE_MEDAL_TEXTURES[medal] ) then
+		self.medalIcon:SetTexture(CHALLENGE_MEDAL_TEXTURES[medal]);
+		self.medalIcon:Show();
+	else
+		self.medalIcon:Hide();
+	end
+	self.time:SetText(GetTimeStringFromSeconds(completionTime, true));
+	self.dungeonTexture:SetTexture("Interface\\Icons\\achievement_bg_wineos_underxminutes");
+end
+
+function ChallengeModeAlertFrameRewardMixin:OnEnter()
+	AlertFrame_PauseOutAnimation(self:GetParent());
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	if ( self.itemID == 0 and self.moneyAmount ) then
+		if ( self.moneyAmount > 0 ) then
+			GameTooltip:AddLine(YOU_RECEIVED);
+			SetTooltipMoney(GameTooltip, self.moneyAmount, nil);
+		end
+	elseif ( self.isCurrency ) then
+		GameTooltip:SetCurrencyByID(self.itemID);
+	else
+		GameTooltip:SetItemByID(self.itemID);
+	end
+	GameTooltip:Show();
+end
+
+function ChallengeModeAlertFrameRewardMixin:OnLeave()
+	AlertFrame_ResumeOutAnimation(self:GetParent());
+	
+	GameTooltip:Hide();
 end

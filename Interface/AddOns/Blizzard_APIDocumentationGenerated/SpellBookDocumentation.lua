@@ -9,6 +9,7 @@ local SpellBook =
 		{
 			Name = "HasPetSpells",
 			Type = "Function",
+			MayReturnNothing = true,
 			Documentation = { "Returns nothing if player has no pet spells" },
 
 			Returns =
@@ -101,16 +102,37 @@ local SpellBook =
 			Name = "SpellUpdateCooldown",
 			Type = "Event",
 			LiteralName = "SPELL_UPDATE_COOLDOWN",
+			Payload =
+			{
+				{ Name = "spellID", Type = "number", Nilable = true, Documentation = { "Can be a base spell or an override spell. A nil value indicates that all cooldowns should be updated, rather than just a specific one." } },
+				{ Name = "baseSpellID", Type = "number", Nilable = true, Documentation = { "Will be set to the base spell if the spellID parameter is an override spell." } },
+				{ Name = "category", Type = "number", Nilable = true, Documentation = { "If the spellID parameter is set, the cooldown category of the spell. A nil value indicates the spell does not have a cooldown category." } },
+				{ Name = "startRecoveryCategory", Type = "number", Nilable = true, Documentation = { "If the spellID parameter is set, the cooldown start recovery category of the spell. A nil value indicates the spell does not have a cooldown start recovery category." } },
+			},
 		},
 		{
 			Name = "SpellUpdateIcon",
 			Type = "Event",
 			LiteralName = "SPELL_UPDATE_ICON",
+			Payload =
+			{
+				{ Name = "spellID", Type = "number", Nilable = true, Documentation = { "Always refers to the base spell. A nil value indicates that all icons should be updated, rather than just a specific one." } },
+			},
 		},
 		{
 			Name = "SpellUpdateUsable",
 			Type = "Event",
 			LiteralName = "SPELL_UPDATE_USABLE",
+		},
+		{
+			Name = "SpellUpdateUses",
+			Type = "Event",
+			LiteralName = "SPELL_UPDATE_USES",
+			Payload =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false, Documentation = { "Can be a base spell or override spell." } },
+				{ Name = "baseSpellID", Type = "number", Nilable = true, Documentation = { "Will be set to the base spell if the spellID parameter is an override spell." } },
+			},
 		},
 		{
 			Name = "SpellsChanged",

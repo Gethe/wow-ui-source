@@ -71,7 +71,8 @@ local INVITE_RESTRICTION_WOW_PROJECT_CLASSIC = 8;
 local INVITE_RESTRICTION_WOW_PROJECT_BCC = 9;
 local INVITE_RESTRICTION_WOW_PROJECT_WRATH = 10;
 local INVITE_RESTRICTION_WOW_PROJECT_CATACLYSM = 11;
-local INVITE_RESTRICTION_NONE = 12;
+local INVITE_RESTRICTION_WOW_PROJECT_MISTS = 12;
+local INVITE_RESTRICTION_NONE = 13;
 
 local FriendListEntries = { };
 local playerNativeRealmID;
@@ -2307,6 +2308,8 @@ function FriendsFrame_GetInviteRestriction(index)
 					restriction = max(INVITE_RESTRICTION_WOW_PROJECT_WRATH, restriction);
 				elseif(wowProjectID == WOW_PROJECT_CATACLYSM_CLASSIC) then
 					restriction = max(INVITE_RESTRICTION_WOW_PROJECT_CATACLYSM, restriction);
+				elseif(wowProjectID == WOW_PROJECT_MISTS_CLASSIC) then
+					restriction = max(INVITE_RESTRICTION_WOW_PROJECT_MISTS, restriction);
 				elseif(wowProjectID == WOW_PROJECT_MAINLINE) then
 					restriction = max(INVITE_RESTRICTION_WOW_PROJECT_MAINLINE, restriction);
 				else
@@ -2353,6 +2356,8 @@ function FriendsFrame_GetInviteRestrictionText(restriction)
 		return ERR_TRAVEL_PASS_WRONG_PROJECT; -- ERR_TRAVEL_PASS_WRONG_PROJECT_WRATH_OVERRIDE
 	elseif ( restriction == INVITE_RESTRICTION_WOW_PROJECT_CATACLYSM ) then
 		return ERR_TRAVEL_PASS_WRONG_PROJECT; -- ERR_TRAVEL_PASS_WRONG_PROJECT_CATACLYSM_OVERRIDE
+	elseif ( restriction == INVITE_RESTRICTION_WOW_PROJECT_MISTS ) then
+		return ERR_TRAVEL_PASS_WRONG_PROJECT; -- ERR_TRAVEL_PASS_WRONG_PROJECT_MISTS_OVERRIDE
 	else
 		return "";
 	end

@@ -160,8 +160,15 @@ function ArenaEnemyFrame_UpdatePlayer(self, useCVars)--At some points, we need t
 		self.classPortrait:SetTexCoord(unpack(CLASS_ICON_TCOORDS[class]));
 	end
 
-	self.specPortrait:SetTexture(nil);
-	self.specBorder:Hide();
+	local specID = GetArenaOpponentSpec(id);
+	if (specID and specID > 0) then 
+		local _, _, _, specIcon = GetSpecializationInfoByID(specID);
+		self.specBorder:Show();
+		SetPortraitToTexture(self.specPortrait, specIcon);
+	else
+		self.specPortrait:SetTexture(nil);
+		self.specBorder:Hide();
+	end
 	
 	-- When not in an arena, show their faction icon (these are really flag carriers, not arena opponents)
 	local _, instanceType = IsInInstance();
@@ -252,7 +259,7 @@ function ArenaEnemyFrame_OnEvent(self, event, unit, ...)
 			ArenaEnemyFrame_UpdatePlayer(self);
 		elseif ( event == "ARENA_COOLDOWNS_UPDATE" ) then
 			ArenaEnemyFrame_UpdateCrowdControl(self);
-		elseif ( event == "UNIT_MAXHEALTH" or event == "UNIT_HEAL_PREDICTION" ) then
+		elseif ( event == "UNIT_MAXHEALTH" or event == "UNIT_HEAL_PREDICTION" or event == "UNIT_ABSORB_AMOUNT_CHANGED" or event == "UNIT_HEAL_ABSORB_AMOUNT_CHANGED" ) then
 			ArenaEnemyFrame_UpdatePredictionBars(self);
 		elseif ( event == "ARENA_CROWD_CONTROL_SPELL_UPDATE" ) then
 			local unitTarget, spellID, itemID = ...;
@@ -530,6 +537,21 @@ end
 -----------------------------------------------------------------------------
 --Arena preparation stuff, shows class and spec of opponents during countdown
 ------------------------------------------------------------------------------
+
+function ArenaPrepFrames_OnLoad(self)
+	self:RegisterEvent("ARENA_PREP_OPPONENT_SPECIALIZATIONS");
+	local numOpps = GetNumArenaOpponentSpecs();
+	if (numOpps and numOpps > 0) then
+		ArenaPrepFrames_OnEvent(self, "ARENA_PREP_OPPONENT_SPECIALIZATIONS");
+	end
+end
+
+function ArenaPrepFrames_OnEvent(self, event, ...) --also called in OnLoad
+	if (event == "ARENA_PREP_OPPONENT_SPECIALIZATIONS") then
+		ArenaPrepFrames_UpdateFrames();
+		self:Show()
+	end
+end
 
 function ArenaPrepFrames_OnShow(self)
 	--DurabilityFrame:SetAlerts();

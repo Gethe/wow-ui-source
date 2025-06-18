@@ -79,6 +79,8 @@ function PVPFrame_OnShow()
 	RequestPVPOptionsEnabled();
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 
+	PVPFrame_UpdateSelectedRoles();
+
 	PVPFrameLeftButton_RightSeparator:Hide();
 end
 
@@ -139,18 +141,6 @@ function PVPFrame_ExpansionSpecificOnEvent(self, event, ...)
 	end
 
 	PVP_UpdateAvailableRoles(self.TankIcon, self.HealerIcon, self.DPSIcon);
-end
-
-function TogglePVPFrame()
-	if ( UnitLevel("player") >= SHOW_PVP_LEVEL ) then
-		if ( PVPFrame:IsShown() ) then
-			HideUIPanel(PVPFrame);
-		else
-			ShowUIPanel(PVPFrame);
-			PVPFrame_UpdateTabs();
-		end
-	end
-	UpdateMicroButtons();
 end
 
 function PVPFrame_UpdateTabs()
@@ -369,7 +359,7 @@ function PVPFrame_JoinClicked(self, isParty, wargame)
 			StartWarGame();
 		else
 			if PVPHonorFrame.selectedIsWorldPvp then
-				JoinWorldPVPQueue(true, isParty, PVPHonorFrame.bgTypeScrollBox.selectionID);
+				JoinWorldPVPQueue(false, isParty, PVPHonorFrame.bgTypeScrollBox.selectionID);
 			else 
 				JoinBattlefield(0, isParty);
 			end
@@ -472,7 +462,7 @@ function PVPHonor_ButtonClicked(self)
 end
 
 function PVPHonorFrame_ResetInfo()
-	if not PVPHonorFrame.selectedIsWorldPvp then
+	if not PVPHonorFrame.selectedIsWorldPvp and PVPHonorFrame.selectedPvpID then
 		RequestBattlegroundInstanceInfo(PVPHonorFrame.selectedPvpID);
 	end
 	PVPHonor_UpdateInfo();
@@ -1032,7 +1022,9 @@ function PVPTimerFrame_OnUpdate(self, elapsed)
 	local keepUpdating = false;
 	if ( BATTLEFIELD_SHUTDOWN_TIMER > 0 ) then
 		keepUpdating = true;
-		BattlefieldIconText:Hide();
+		if(BattlefieldIconText) then
+			BattlefieldIconText:Hide();
+		end
 	else
 		local lowestExpiration = 0;
 		for i = 1, GetMaxBattlefieldID() do
@@ -1045,12 +1037,13 @@ function PVPTimerFrame_OnUpdate(self, elapsed)
 				keepUpdating = true;
 			end
 		end
-
-		if( lowestExpiration > 0 and lowestExpiration <= 10 ) then
-			BattlefieldIconText:SetText(lowestExpiration);
-			BattlefieldIconText:Show();
-		else
-			BattlefieldIconText:Hide();
+		if(BattlefieldIconText) then
+			if( lowestExpiration > 0 and lowestExpiration <= 10 ) then
+				BattlefieldIconText:SetText(lowestExpiration);
+				BattlefieldIconText:Show();
+			else
+				BattlefieldIconText:Hide();
+			end
 		end
 	end
 	
@@ -1293,9 +1286,9 @@ function WarGamesFrame_InitButton(button, elementData)
 	local battleGroundID = elementData.battleGroundID;
 
 	if(localizedName == "header") then
-		if ( gameType == INSTANCE_TYPE_BG ) then
+		if ( gameType == Enum.PvpMatchmakingType.Battleground ) then
 			button.NameText:SetText(BATTLEGROUND);
-		elseif ( gameType == INSTANCE_TYPE_ARENA ) then
+		elseif ( gameType == Enum.PvpMatchmakingType.Arena ) then
 			button.NameText:SetText(ARENA);
 		else
 			button.NameText:SetText(UNKNOWN);
@@ -1314,7 +1307,7 @@ function WarGamesFrame_InitButton(button, elementData)
 		button.name = localizedName;
 		button.shortDescription = shortDescription;
 		button.longDescription = longDescription;
-		if ( gameType == INSTANCE_TYPE_ARENA ) then
+		if ( gameType == Enum.PvpMatchmakingType.Arena ) then
 			minPlayers = 2;
 			button.SizeText:SetText(WARGAME_ARENA_SIZES);
 			button.InfoText:SetFormattedText(WARGAME_MINIMUM, minPlayers, minPlayers);
@@ -1439,7 +1432,7 @@ function WarGameStartButton_GetErrorTooltip()
 		end
 		local groupSize = GetNumGroupMembers();
 		-- how about a nice game of arena?
-		if ( pvpType == INSTANCE_TYPE_ARENA ) then
+		if ( pvpType == Enum.PvpMatchmakingType.Arena ) then
 			if ( groupSize ~= 2 and groupSize ~= 3 and groupSize ~= 5 ) then
 				return string.format(WARGAME_REQ_ARENA, name, RED_FONT_COLOR_CODE);
 			end

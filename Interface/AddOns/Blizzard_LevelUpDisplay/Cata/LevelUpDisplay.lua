@@ -1,5 +1,12 @@
 LEVEL_UP_TYPE_CHARACTER = "character";	--Name used in globalstring LEVEL_UP
 LEVEL_UP_TYPE_PET = "pet" -- Name used in globalstring PET_LEVEL_UP
+LEVEL_UP_TYPE_SCENARIO = "scenario";
+TOAST_QUEST_BOSS_EMOTE = "questbossemote";
+TOAST_PET_BATTLE_WINNER = "petbattlewinner";
+TOAST_PET_BATTLE_CAPTURE = "petbattlecapturetoast";
+TOAST_PET_BATTLE_LEVELUP = "petbattleleveluptoast";
+TOAST_PET_BATTLE_LOOT = "petbattleloot";
+TOAST_CHALLENGE_MODE_RECORD = "challengemode";
 
 LEVEL_UP_EVENTS = {
 --  Level  = {unlock}
@@ -20,6 +27,7 @@ local levelUpTexCoords = {
 		dot = { 0.64257813, 0.68359375, 0.18750000, 0.23046875 },
 		goldBG = { 0.56054688, 0.99609375, 0.24218750, 0.46679688 },
 		gLine = { 0.00195313, 0.81835938, 0.01953125, 0.03320313 },
+		gLineDelay = 1.5,
 	},
 	[LEVEL_UP_TYPE_PET] = {
 		dot = { 0.64257813, 0.68359375, 0.18750000, 0.23046875 },
@@ -27,7 +35,48 @@ local levelUpTexCoords = {
 		gLine = { 0.00195313, 0.81835938, 0.01953125, 0.03320313 },
 		tint = {1, 0.5, 0.25},
 		textTint = {1, 0.7, 0.25},
+		gLineDelay = 1.5,
 	},
+	[TOAST_PET_BATTLE_WINNER] = {
+		gLine = { 0.00195313, 0.81835938, 0.01953125, 0.03320313 },
+		tint = {1, 0.5, 0.25},
+		textTint = {1, 0.7, 0.25},
+		gLineDelay = 1.5,
+	},
+	[TOAST_PET_BATTLE_CAPTURE] = {
+		gLine = { 0.00195313, 0.81835938, 0.01953125, 0.03320313 },
+		tint = {1, 0.5, 0.25},
+		textTint = {1, 0.7, 0.25},
+		gLineDelay = 1.5,
+	},
+	[TOAST_PET_BATTLE_LEVELUP] = {
+		gLine = { 0.00195313, 0.81835938, 0.01953125, 0.03320313 },
+		tint = {1, 0.5, 0.25},
+		textTint = {1, 0.7, 0.25},
+		gLineDelay = 1.5,
+	},
+	[TOAST_PET_BATTLE_LOOT] = {
+		gLine = { 0.00195313, 0.81835938, 0.01953125, 0.03320313 },
+		tint = {1, 0.5, 0.25},
+		textTint = {1, 0.7, 0.25},
+		gLineDelay = 1.5,
+	},
+	[LEVEL_UP_TYPE_SCENARIO] = {
+		gLine = { 0.00195313, 0.81835938, 0.00195313, 0.01562500 },
+		tint = {1, 0.996, 0.745},
+		gLineDelay = 0,
+	},
+	[TOAST_QUEST_BOSS_EMOTE] = {
+		gLine = { 0.00195313, 0.81835938, 0.01953125, 0.03320313 },
+		tint = {1, 0.996, 0.745},
+		textTint = {1, 0.7, 0.25},
+		gLineDelay = 0,
+	},
+	[TOAST_CHALLENGE_MODE_RECORD] = {
+		gLine = { 0.00195313, 0.81835938, 0.00195313, 0.01562500 },
+		tint = {0.777, 0.698, 0.451},
+		gLineDelay = 0,
+	},	
 }
 
 LEVEL_UP_TYPES = {
@@ -205,10 +254,172 @@ LEVEL_UP_CLASS_HACKS = {
 function LevelUpDisplay_OnLoad(self)
 	self:RegisterEvent("PLAYER_LEVEL_UP");
 	self:RegisterEvent("UNIT_LEVEL");
+	self:RegisterEvent("CHALLENGE_MODE_NEW_RECORD");
 	self.currSpell = 0;
 end
 
+function LevelUpDisplay_Show(self)
+	LevelUpDisplay_Start(self, nil);
+end
 
+function LevelUpDisplay_Start(self, beginUnlockList)
+	if ( self:IsShown() ) then
+		return;
+	end
+
+	if ( not IsPlayerInWorld() ) then
+		-- this is pretty much the zoning-into-a-scenario case
+		self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
+		return;
+	end
+
+	self:Show();
+	ZoneTextFrame:Hide();	--LevelUpDisplay is more important than zoning text
+	SubZoneTextFrame:Hide();
+	
+	local playAnim;
+	if  self.currSpell == 0 then
+		local unlockList = beginUnlockList;
+		if ( not self.type ) then
+			self.type = self.queuedType;
+			unlockList = self.queuedItems;
+			self.queuedType = nil;
+			self.queuedItems = nil;
+		end
+		if ( self.type == LEVEL_UP_TYPE_SCENARIO ) then
+			local name, currentStage, numStages, flags = C_Scenario.GetInfo();
+			if ( currentStage > 0 and currentStage <= numStages ) then
+				local stageName, stageDescription = C_Scenario.GetStepInfo();
+				if( bit.band(flags, SCENARIO_FLAG_SUPRESS_STAGE_TEXT) == SCENARIO_FLAG_SUPRESS_STAGE_TEXT) then
+					-- Bypass the Stage name portion...
+					self.scenarioFrame.level:SetText(stageName);
+					self.scenarioFrame.name:SetText("");
+				else
+					if ( currentStage == numStages ) then
+						self.scenarioFrame.level:SetText(SCENARIO_STAGE_FINAL);
+					else
+						self.scenarioFrame.level:SetFormattedText(SCENARIO_STAGE, currentStage);
+					end
+					self.scenarioFrame.name:SetText(stageName);
+				end
+				self.scenarioFrame.description:SetText(stageDescription);
+				LevelUpDisplay:SetPoint("TOP", 0, -250);
+				playAnim = self.scenarioFrame.newStage;
+			end
+		elseif ( self.type == TOAST_CHALLENGE_MODE_RECORD ) then
+			local medal = self.medal;
+			if ( CHALLENGE_MEDAL_TEXTURES[medal] ) then
+				self.challengeModeFrame.MedalEarned:SetText(_G["CHALLENGE_MODE_MEDALNAME"..medal]);
+				self.challengeModeFrame.RecordTime:SetFormattedText(CHALLENGE_MODE_NEW_BEST, GetTimeStringFromSeconds(self.recordTime / 1000));
+				self.challengeModeBits.MedalFlare:Show();
+				self.challengeModeBits.MedalIcon:SetTexture(CHALLENGE_MEDAL_TEXTURES[medal]);
+				self.challengeModeBits.MedalIcon:Show();
+				self.challengeModeBits.BottomFiligree:Show();
+			else
+				-- no medal earned, still a record time for player
+				self.challengeModeFrame.MedalEarned:SetText(CHALLENGE_MODE_NEW_RECORD);
+				self.challengeModeFrame.RecordTime:SetText(GetTimeStringFromSeconds(self.recordTime / 1000));
+				self.challengeModeBits.MedalFlare:Hide();
+				self.challengeModeBits.MedalIcon:Hide();
+				self.challengeModeBits.BottomFiligree:Hide();
+			end
+			PlaySound(SOUNDKIT.UI_CHALLENGES_NEW_RECORD);
+			LevelUpDisplay:SetPoint("TOP", 0, -190);
+			playAnim = self.challengeModeFrame.challengeComplete;
+		else
+			LevelUpDisplay:SetPoint("TOP", 0, -190);
+			playAnim = self.levelFrame.levelUp;
+			self.levelFrame.reachedText:SetText("");
+			self.levelFrame.levelText:SetText("");
+			self.levelFrame.singleline:SetText("");
+			self.levelFrame.blockText:SetText("");
+			if ( self.type == LEVEL_UP_TYPE_CHARACTER ) then
+				LevelUpDisplay_BuildCharacterList(self);
+				self.levelFrame.reachedText:SetText(LEVEL_UP_YOU_REACHED)
+				self.levelFrame.levelText:SetFormattedText(LEVEL_GAINED,self.level);
+			elseif ( self.type == LEVEL_UP_TYPE_PET ) then
+				LevelUpDisplay_BuildPetList(self);
+				local petName = UnitName("pet");
+				self.levelFrame.reachedText:SetFormattedText(PET_LEVEL_UP_REACHED, petName or "");
+				self.levelFrame.levelText:SetFormattedText(LEVEL_GAINED,self.level);
+			elseif ( self.type == LEVEL_UP_TYPE_GUILD ) then
+				LevelUpDisplay_BuildGuildList(self);
+				local guildName = GetGuildInfo("player");
+				self.levelFrame.reachedText:SetFormattedText(GUILD_LEVEL_UP_YOU_REACHED, guildName);
+				self.levelFrame.levelText:SetFormattedText(LEVEL_GAINED,self.level);
+			elseif ( self.type == TOAST_PET_BATTLE_WINNER ) then
+				LevelUpDisplay_BuildPetBattleWinnerList(self);
+				self.levelFrame.singleline:SetText(self.winnerString);
+				PlaySoundKitID(self.winnerSoundKitID);
+				playAnim = self.levelFrame.fastReveal;
+			elseif (self.type == TOAST_QUEST_BOSS_EMOTE ) then
+				LevelUpDisplay_BuildEmptyList(self);
+				self.levelFrame.blockText:SetText(self.bossText);
+				if (self.sound and self.sound == true) then
+					PlaySound("RaidBossEmoteWarning");
+				end
+				playAnim = self.levelFrame.fastReveal;
+			elseif (self.type == TOAST_PET_BATTLE_CAPTURE ) then
+				self.unlockList = unlockList or {};
+				self.currSpell = 1;
+				self.levelFrame.singleline:SetText(BATTLE_PET_CAPTURED);
+				playAnim = self.levelFrame.fastReveal;
+			elseif ( self.type == TOAST_PET_BATTLE_LOOT ) then
+				self.unlockList = unlockList or {};
+				self.currSpell = 1;
+				self.levelFrame.singleline:SetText(BATTLE_PET_LOOT_RECEIVED);
+				playAnim = self.levelFrame.fastReveal;
+			elseif (self.type == TOAST_PET_BATTLE_LEVELUP ) then
+				self.unlockList = unlockList or {};
+				self.currSpell = 1;
+				self.levelFrame.singleline:SetText(PLAYER_LEVEL_UP);
+				playAnim = self.levelFrame.fastReveal;
+			end
+		end
+
+		if ( playAnim ) then
+			self.gLine:SetTexCoord(unpack(levelUpTexCoords[self.type].gLine));
+			self.gLine2:SetTexCoord(unpack(levelUpTexCoords[self.type].gLine));
+			if (levelUpTexCoords[self.type].tint) then
+				self.gLine:SetVertexColor(unpack(levelUpTexCoords[self.type].tint));
+				self.gLine2:SetVertexColor(unpack(levelUpTexCoords[self.type].tint));
+			else
+				self.gLine:SetVertexColor(1, 1, 1);
+				self.gLine2:SetVertexColor(1, 1, 1);
+			end
+			if (levelUpTexCoords[self.type].textTint) then
+				self.levelFrame.levelText:SetTextColor(unpack(levelUpTexCoords[self.type].textTint));
+			else
+				self.levelFrame.levelText:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+			end
+			self.gLine.grow.anim1:SetStartDelay(levelUpTexCoords[self.type].gLineDelay);
+			self.gLine2.grow.anim1:SetStartDelay(levelUpTexCoords[self.type].gLineDelay);
+			self.blackBg.grow.anim1:SetStartDelay(levelUpTexCoords[self.type].gLineDelay);
+			playAnim:Play();
+			if (levelUpTexCoords[self.type].subIcon) then
+				self.battlePetLevelFrame.subIcon:SetTexCoord(unpack(levelUpTexCoords[self.type].subIcon));
+			end
+		else
+			self:Hide();
+		end
+	end
+end
+
+function LevelUpDisplay_PlayScenario()
+	LevelUpDisplay.type = LEVEL_UP_TYPE_SCENARIO;
+	LevelUpDisplay_Show(LevelUpDisplay);
+end
+
+function LevelUpDisplay_AnimOut(self, fast)
+	self = self or LevelUpDisplay;
+	self.currSpell = 0;
+	self.type = nil;
+	if (fast) then
+		self.fastHideAnim:Play();
+	else
+		self.hideAnim:Play();
+	end
+end
 
 function LevelUpDisplay_OnEvent(self, event, ...)
 	local arg1 = ...;
@@ -225,6 +436,14 @@ function LevelUpDisplay_OnEvent(self, event, ...)
 			self:Show();
 			LevelUpDisplaySide:Hide();
 		end
+	elseif ( event == "CHALLENGE_MODE_NEW_RECORD" ) then
+		local mapID, recordTime, medal = ...;
+		self.type = TOAST_CHALLENGE_MODE_RECORD;
+		self.mapID = mapID;
+		self.recordTime = recordTime;
+		self.medal = medal;
+		LevelUpDisplay_Show(self);
+		PlaySound(SOUNDKIT.UI_CHALLENGES_NEW_RECORD);
 	end
 end
 
@@ -336,7 +555,7 @@ end
 
 
 function LevelUpDisplay_AnimStep(self)
-	if self.currSpell > #self.unlockList then
+	if self.currSpell <= 0 or self.currSpell > #self.unlockList then
 		self.currSpell = 0;
 		self.hideAnim:Play();
 	else

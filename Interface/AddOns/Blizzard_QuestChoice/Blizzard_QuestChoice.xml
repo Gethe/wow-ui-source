@@ -1,0 +1,394 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	
+	<!-- Art pieces to hide border seams -->
+	<Texture name="QuestChoiceLeftHide" file="Interface\QuestionFrame\Question-Main" virtual="true">
+		<Size x="86" y="39"/>	
+		<TexCoords left="0.59765625" right="0.76562500" top="0.00195313" bottom="0.07812500"/>	
+	</Texture>
+	<Texture name="QuestChoiceRightHide" file="Interface\QuestionFrame\Question-Main" virtual="true">
+		<Size x="61" y="32"/>	
+		<TexCoords left="0.76953125" right="0.88867188" top="0.00195313" bottom="0.06445313"/>	
+	</Texture>
+	<Texture name="QuestChoiceTopHide" file="Interface\QuestionFrame\Question-Main" virtual="true">
+		<Size x="33" y="66"/>	
+		<TexCoords left="0.89257813" right="0.95703125" top="0.00195313" bottom="0.13085938"/>	
+	</Texture>
+	<Texture name="QuestChoiceBottomHide" file="Interface\QuestionFrame\Question-Main" virtual="true" >
+		<Size x="33" y="90"/>	
+		<TexCoords left="0.82617188" right="0.89062500" top="0.30468750" bottom="0.48046875"/>	
+	</Texture>
+
+	<Button name="QuestChoiceItemTemplate" virtual="true">
+		<Size x="147" y="41"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentIconTexture" parentKey="Icon">
+					<Size x="39" y="39"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Name" inherits="GameFontBlack" justifyH="LEFT" nonspacewrap="true">
+					<Size x="90" y="36"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentIconTexture" relativePoint="RIGHT" x="5"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT" parentKey="Count">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentIconTexture" x="-1" y="1"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
+				GameTooltip:SetItemByID(self.itemID);
+			</OnEnter>
+			<OnLeave function="GameTooltip_Hide"/>	
+			<OnUpdate>
+				CursorOnUpdate(self, elapsed);
+			</OnUpdate>
+		</Scripts>
+	</Button>
+	<Frame name="QuestChoiceCurrencyTemplate" virtual="true">
+		<Size x="80" y="20"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Quantity" inherits="NumberFontNormalLarge" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="5"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="MouseOver">
+				<Size x="16" y="16"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Icon" />
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						local parent = self:GetParent()
+						if (parent.currencyID) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetCurrencyByID(parent.currencyID);
+						end
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>	
+			</Frame>
+		</Frames>
+		
+	</Frame>
+	<Frame name="QuestChoiceReputationTemplate" virtual="true">
+		<Size x="200" y="15"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentFaction" inherits="QuestFont" parentKey="Faction">
+					<Anchors>
+						<Anchor point="LEFT" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentAmount" inherits="NumberFontNormalLarge" justifyH="LEFT" parentKey="Amount">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentFaction" relativePoint="RIGHT" x="5" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self.Faction:SetHeight(self:GetHeight());
+			</OnLoad>
+			<OnEnter>
+				if (self.tooltip) then
+					GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
+					GameTooltip:SetText(self.tooltip, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+				end
+			</OnEnter>
+			<OnLeave function="GameTooltip_Hide" />
+		</Scripts>
+	</Frame>
+	<Frame name="QuestChoiceRewardsTemplate" virtual="true">
+		<Size x="210" y="10" />
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+		<Frames>
+			<Button parentKey="Item" name="$parentItem" inherits="QuestChoiceItemTemplate" hidden="true" >
+				<Anchors>
+					<Anchor point="TOPLEFT" x="30" y="-5"/>
+				</Anchors>
+			</Button>
+			<Frame parentKey="Currencies" hidden="true">
+				<Size x="200" y="20"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Item" relativePoint="BOTTOMLEFT" x="-30"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="Currency1" inherits="QuestChoiceCurrencyTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="Currency2" inherits="QuestChoiceCurrencyTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.Currency1" relativePoint="RIGHT"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="Currency3" inherits="QuestChoiceCurrencyTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.Currency2" relativePoint="RIGHT"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+			</Frame>
+			<Frame parentKey="ReputationsFrame" hidden="true">					
+				<Size x="210" y="15"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Currencies" relativePoint="BOTTOMLEFT" y="-8"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="Reputation1" inherits="QuestChoiceReputationTemplate" >
+						<Anchors>
+							<Anchor point="TOPLEFT" x="0" y="0"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+			</Frame>			
+		</Frames>
+	</Frame>
+	<Button name="QuestChoiceOptionTemplate" virtual="true">
+		<Size x="210" y="268"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Artwork">
+					<Size x="256" y="128"/> <!-- Actual art should always be 200x100, centered in 256x128-->
+					<Anchors>
+						<Anchor point="TOP" y="14"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="OptionText" inherits="GameFontBlack" justifyH="LEFT" justifyV="TOP">
+					<Size x="200" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" y="-103"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="OptionButton" inherits="UIPanelButtonTemplate">
+				<Size x="175" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOM"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+						local parent = self:GetParent();
+						if (parent.optID) then
+							C_QuestChoice.SendQuestChoiceResponse(parent.optID);
+							HideUIPanel(QuestChoiceFrame);
+						end
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Frame parentKey="Rewards" inherits="QuestChoiceRewardsTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.OptionButton" relativePoint="TOP" y="5"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Button>
+	
+	<Frame name="QuestChoiceFrame" frameStrata="HIGH" hidden="true" enableMouse="true" parent="UIParent" toplevel="true" mixin="QuestChoiceMixin">
+		<Size x="523" y="440"/>
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="BottomLeftCorner" file="Interface\QuestionFrame\Question-Main" virtual="true" >
+					<Size x="209" y="158"/>	
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.00195313" right="0.41015625" top="0.30468750" bottom="0.61328125"/>	
+				</Texture>
+				<Texture parentKey="BottomRightCorner" file="Interface\QuestionFrame\Question-Main" virtual="true" >
+					<Size x="209" y="158"/>	
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.41406250" right="0.82226563" top="0.30468750" bottom="0.61328125"/>	
+				</Texture>
+				<Texture parentKey="TopLeftCorner" file="Interface\QuestionFrame\Question-Main" virtual="true" >
+					<Size x="209" y="158"/>	
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0.00195313" right="0.41015625" top="0.61718750" bottom="0.92578125"/>
+				</Texture>
+				<Texture parentKey="TopRightCorner" file="Interface\QuestionFrame\Question-Main" virtual="true" >
+					<Size x="208" y="158"/>	
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-1"/>
+					</Anchors>
+					<TexCoords left="0.41406250" right="0.82031250" top="0.61718750" bottom="0.92578125"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="-1">
+				<Texture parentKey="BottomBorder" file="Interface\QuestionFrame\Question-HTile" horizTile="true" >
+					<Size x="256" y="86"/>	
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomLeftCorner" relativePoint="BOTTOMRIGHT" y="2"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRightCorner" relativePoint="BOTTOMLEFT" y="2"/>
+					</Anchors>
+					<TexCoords left="0.00000000" right="1.00000000" top="0.17187500" bottom="0.33984375"/>	
+				</Texture>
+				<Texture parentKey="TopBorder" file="Interface\QuestionFrame\Question-HTile" horizTile="true" >
+					<Size x="256" y="91"/>	
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeftCorner" relativePoint="TOPRIGHT" y="-1"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.TopRightCorner" relativePoint="TOPLEFT" y="-1"/>
+					</Anchors>
+					<TexCoords left="0.00000000" right="1.00000000" top="0.34375000" bottom="0.52148438"/>	
+				</Texture>
+				<Texture parentKey="LeftBorder" file="Interface\QuestionFrame\Question-VTile" vertTile="true" >
+					<Size x="93" y="256"/>	
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeftCorner" relativePoint="BOTTOMLEFT" x="2"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomLeftCorner" relativePoint="TOPLEFT" x="2"/>
+					</Anchors>
+					<TexCoords left="0.00390625" right="0.36718750" top="0.00000000" bottom="1.00000000"/>	
+				</Texture>
+				<Texture parentKey="RightBorder" file="Interface\QuestionFrame\Question-VTile" vertTile="true" >
+					<Size x="94" y="256"/>	
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.TopRightCorner" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRightCorner" relativePoint="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.37500000" right="0.74218750" top="0.00000000" bottom="1.00000000"/>	
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="2">
+				<Texture parentKey="LeftHide" inherits="QuestChoiceLeftHide">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeftCorner" relativePoint="BOTTOMLEFT" x="10" y="10"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LeftHide2" inherits="QuestChoiceLeftHide">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomLeftCorner" relativePoint="TOPLEFT" x="10" y="-10"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RightHide" inherits="QuestChoiceRightHide">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.TopRightCorner" relativePoint="BOTTOMRIGHT" x="-8" y="8"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RightHide2" inherits="QuestChoiceRightHide">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRightCorner" relativePoint="TOPRIGHT" x="-10" y="-10"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BottomHide" inherits="QuestChoiceBottomHide">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomLeftCorner" relativePoint="BOTTOMRIGHT" x="-10" y="11"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BottomHide2" inherits="QuestChoiceBottomHide">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRightCorner" relativePoint="BOTTOMLEFT" x="15" y="11"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BG" file="Interface\QuestionFrame\question-background" vertTile="true" horizTile="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="20" y="-20"/>
+						<Anchor point="BOTTOMRIGHT" x="-20" y="20"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="DummyString" inherits="QuestFont" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+					<Size x="0" y="0"/>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="QuestionFrameRight" file="Interface\QuestionFrame\Question-Main">
+					<Size x="220" y="85"/>	
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-42" y="-44"/>
+					</Anchors>
+					<TexCoords left="0.00195313" right="0.43164063" top="0.13476563" bottom="0.30078125"/>	
+				</Texture>
+				<Texture parentKey="QuestionFrameLeft" file="Interface\QuestionFrame\Question-Main" >
+					<Size x="219" y="85"/>	
+					<Anchors>
+						<Anchor point="TOPLEFT" x="42" y="-44"/>
+					</Anchors>
+					<TexCoords left="0.43554688" right="0.86328125" top="0.13476563" bottom="0.30078125"/>	
+				</Texture>
+				<Texture parentKey="QuestionFrameMiddle" file="Interface\QuestionFrame\Question-HTile" horizTile="true">
+					<Size x="256" y="85"/>	
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.QuestionFrameLeft" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.QuestionFrameRight" relativePoint="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0.00000000" right="1.00000000" top="0.00195313" bottom="0.16796875"/>	
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<FontString parentKey="QuestionText" inherits="GameFontHighlightMedium">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.QuestionFrameLeft" />
+						<Anchor point="RIGHT" relativeKey="$parent.QuestionFrameRight" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentOption1" parentKey="Option1" inherits="QuestChoiceOptionTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.QuestionFrameLeft" relativePoint="BOTTOMLEFT" x="4" y="0" />
+				</Anchors>
+			</Frame>
+			<Frame name="$parentOption2" parentKey="Option2" inherits="QuestChoiceOptionTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Option1" relativePoint="TOPRIGHT" x="10" />
+				</Anchors>
+			</Frame>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-10" y="-10" />
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnShow>
+				PlaySound(SOUNDKIT.IG_QUEST_LIST_OPEN);
+			</OnShow>
+			<OnHide>
+				PlaySound(SOUNDKIT.IG_QUEST_LIST_CLOSE);
+			</OnHide>
+		</Scripts>
+	</Frame>
+</Ui>

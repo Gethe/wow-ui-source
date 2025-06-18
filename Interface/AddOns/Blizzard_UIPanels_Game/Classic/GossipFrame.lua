@@ -6,12 +6,14 @@ function GossipFrameMixin:OnLoad()
 	self:RegisterEvent("QUEST_LOG_UPDATE");
 	self:UpdateScrollBox();
 
+	-- shift inset framing over for scrollbar
+	self.Inset:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -27, 24);
 end
 
 function GossipFrameMixin:OnEvent(event, ...)
 	if ( event == "GOSSIP_SHOW" ) then
 		self:HandleShow();
-		NPCFriendshipStatusBar_Update(self);
+		self.FriendshipStatusBar:Update();
 		self:Update();
 	elseif ( event == "GOSSIP_CLOSED" ) then
 		local interactionIsContinuing = ...;
@@ -22,15 +24,23 @@ function GossipFrameMixin:OnEvent(event, ...)
 end
 
 GossipAvailableQuestButtonMixin = CreateFromMixins(GossipSharedAvailableQuestButtonMixin);
-function GossipAvailableQuestButtonMixin:Setup(...)
-	self.Icon:SetTexture("Interface\\GossipFrame\\AvailableQuestIcon");
-	GossipSharedAvailableQuestButtonMixin.Setup(self, ...);
+function GossipAvailableQuestButtonMixin:Setup(questInfo)
+	if (questInfo.isLegendary) then
+		self.Icon:SetTexture("Interface\\GossipFrame\\AvailableLegendaryQuestIcon");
+	else
+		self.Icon:SetTexture("Interface\\GossipFrame\\AvailableQuestIcon");
+	end
+	GossipSharedAvailableQuestButtonMixin.Setup(self, questInfo);
 end
 
 GossipActiveQuestButtonMixin = CreateFromMixins(GossipSharedActiveQuestButtonMixin);
-function GossipActiveQuestButtonMixin:Setup(...)
-	self.Icon:SetTexture("Interface\\GossipFrame\\ActiveQuestIcon");
-	GossipSharedActiveQuestButtonMixin.Setup(self, ...);
+function GossipActiveQuestButtonMixin:Setup(questInfo)
+	if (questInfo.isLegendary) then
+		self.Icon:SetTexture("Interface\\GossipFrame\\ActiveLegendaryQuestIcon");
+	else
+		self.Icon:SetTexture("Interface\\GossipFrame\\ActiveQuestIcon");
+	end
+	GossipSharedActiveQuestButtonMixin.Setup(self, questInfo);
 end
 
 function GossipFrameActiveQuestsUpdate(...)
@@ -43,35 +53,6 @@ function GossipFrameActiveQuestsUpdate(...)
 		self.Icon:SetTexture("Interface\\GossipFrame\\ActiveQuestIcon");
 	end
 	GossipSharedActiveQuestButtonMixin.Setup(self, ...);
-end
-
-function NPCFriendshipStatusBar_Update(frame, factionID --[[ = nil ]])
-	--[[local statusBar = NPCFriendshipStatusBar;
-	local id, rep, maxRep, name, text, texture, reaction, threshold, nextThreshold = GetFriendshipReputation(factionID);
-	statusBar.friendshipFactionID = id;
-	if ( id and id > 0 ) then
-		statusBar:SetParent(frame);
-		-- if max rank, make it look like a full bar
-		if ( not nextThreshold ) then
-			threshold, nextThreshold, rep = 0, 1, 1;
-		end
-		if ( texture ) then
-			statusBar.icon:SetTexture(texture);
-		else
-			statusBar.icon:SetTexture("Interface\\Common\\friendship-heart");
-		end
-		statusBar:SetMinMaxValues(threshold, nextThreshold);
-		statusBar:SetValue(rep);
-		statusBar:ClearAllPoints();
-		statusBar:SetPoint("TOPLEFT", 73, -41);
-		statusBar:Show();
-	else
-		statusBar:Hide();
-	end]]
-end
-
-function NPCFriendshipStatusBar_OnEnter(self)
-	ShowFriendshipReputationTooltip(self.friendshipFactionID, self, "ANCHOR_BOTTOMRIGHT");
 end
 
 function GossipFrameSharedMixin:SetGossipTitle(title)

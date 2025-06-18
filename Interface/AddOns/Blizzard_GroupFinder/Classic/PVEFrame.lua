@@ -4,18 +4,17 @@
 
 PVE_FRAME_BASE_WIDTH = 563;
 
+-- TODO: SHARING PASS (PVEFrame is currently forked)
+-- Note: These need to be uncommented out from PVEFrame.xml as well.
 local panels = {
 	{ name = "GroupFinderFrame", addon = nil },
-	-- TODO: SHARING PASS
-	--{ name = "PVPUIFrame", addon = "Blizzard_PVPUI" },
-	--{ name = "ChallengesFrame", addon = "Blizzard_ChallengesUI", check = function() return UnitLevel("player") >= GetMaxLevelForPlayerExpansion(); end, },
+	{ name = "PVPQueueFrame", addon = "Blizzard_PVPUI" },
+	{ name = "ChallengesFrame", addon = "Blizzard_ChallengesUI", check = function() return UnitLevel("player") >= GetMaxLevelForExpansionLevel(GetExpansionLevel()) and C_ChallengeMode.IsChallengeModeEnabled(); end, },
 }
 
 function PVEFrame_OnLoad(self)
-	if(#panels <= 1) then
-		-- If there is only 1 tab, then we don't need to show tabs
-		self.showTabs = false;
-	end
+	-- If there is only 1 tab, then we don't need to show tabs
+	self.showTabs = (#panels > 1);
 
 	RaiseFrameLevel(self.shadows);
 	PanelTemplates_SetNumTabs(self, #panels);
@@ -36,11 +35,6 @@ function PVEFrame_OnShow(self)
 				PanelTemplates_HideTab(self, index);
 			else
 				PanelTemplates_ShowTab(self, index);
-				if (panel.name == "ChallengesFrame" and not C_MythicPlus.IsMythicPlusActive()) then
-					PanelTemplates_DisableTab(self, index);
-				else
-					PanelTemplates_EnableTab(self, index);
-				end
 			end
 		end
 	end
@@ -49,11 +43,11 @@ end
 function PVEFrame_OnEvent(self, event, ...)
 	if ( event == "AJ_PVP_ACTION" ) then
 		local id = ...;
-		PVEFrame_ShowFrame("PVPUIFrame", "HonorFrame");
+		ShowPVPQueueUI();
 		HonorFrameSpecificList_FindAndSelectBattleground(id);
 		HonorFrame_SetType("specific");
 	elseif ( event == "AJ_PVP_SKIRMISH_ACTION" ) then
-		PVEFrame_ShowFrame("PVPUIFrame", "HonorFrame");
+		ShowPVPQueueUI();
 		HonorFrame_SetType("bonus");
 
 		HonorFrameBonusFrame_SelectButton(HonorFrame.BonusFrame.Arena1Button);
@@ -62,7 +56,7 @@ function PVEFrame_OnEvent(self, event, ...)
 	elseif ( event == "AJ_PVP_LFG_ACTION" ) then
 		PVEFrame_ShowFrame("PVPUIFrame", "LFGListPVPStub");
 	elseif ( event == "AJ_PVP_RBG_ACTION" ) then
-		PVEFrame_ShowFrame("PVPUIFrame", "HonorFrame");
+		ShowPVPQueueUI();
 		HonorFrame_SetType("bonus");
 
 		HonorFrameBonusFrame_SelectButton(HonorFrame.BonusFrame.RandomBGButton);
@@ -95,7 +89,6 @@ function PVEFrame_ToggleFrame(sidePanelName, selection)
 	end
 	PVEFrame_ShowFrame(sidePanelName, selection);
 end
-
 function PVEFrame_ShowFrame(sidePanelName, selection)
 	local self = PVEFrame;
 	-- find side panel
@@ -196,7 +189,7 @@ end
 -- GROUP FINDER
 ---------------------------------------------------------------
 
-local groupFrames = { "LFDParentFrame", "RaidFinderFrame", "LFGListPVEStub" }
+local groupFrames = { "LFDParentFrame", "RaidFinderFrame", "LFGListPVEStub", "ScenarioFinderFrame" }
 
 function GroupFinderFrame_OnLoad(self)
 	SetPortraitToTexture(self.groupButton1.icon, "Interface\\Icons\\INV_Helmet_08");
@@ -205,6 +198,8 @@ function GroupFinderFrame_OnLoad(self)
 	self.groupButton2.name:SetText(RAID_FINDER_PVEFRAME);
 	SetPortraitToTexture(self.groupButton3.icon, "Interface\\Icons\\Achievement_General_StayClassy");
 	self.groupButton3.name:SetText(LFGLIST_NAME);
+	SetPortraitToTexture(self.groupButton4.icon, "Interface\\Icons\\Icon_Scenarios");
+	self.groupButton4.name:SetText(SCENARIOS_PVEFRAME);
 
 	GroupFinderFrame_EvaluateButtonVisibility(self);
 
@@ -235,6 +230,18 @@ function GroupFinderFrame_EvaluateButtonVisibility(self)
 	canUse, failureReason = C_LFGInfo.CanPlayerUseLFR();
 	if not visible then
 		self.groupButton2:Hide();
+
+		-- To avoid a weird gap, move the other buttons around if LFR is off
+		local altAnchorPoint = self.groupButton1.altAnchorPoint;
+		local altAnchorRelativePoint = nil;
+		local altXOffset = tonumber(self.groupButton1.altXOffset);
+		local altYOffset = tonumber(self.groupButton1.altYOffset);
+		self.groupButton1:SetPoint(altAnchorPoint, altXOffset, altYOffset);
+		altAnchorPoint = self.groupButton3.altAnchorPoint;
+		altAnchorRelativePoint = self.groupButton3.altAnchorRelativePoint;
+		altXOffset = tonumber(self.groupButton3.altXOffset);
+		altYOffset = tonumber(self.groupButton3.altYOffset);
+		self.groupButton3:SetPoint(altAnchorPoint, self.groupButton1, altAnchorRelativePoint, altXOffset, altYOffset);
 	elseif not canUse then
 		self.groupButton2:Show();
 		GroupFinderFrameButton_SetEnabled(self.groupButton2, false);
@@ -257,6 +264,20 @@ function GroupFinderFrame_EvaluateButtonVisibility(self)
 		self.groupButton3:Show();
 		self.groupButton3.tooltip = nil;
 		GroupFinderFrameButton_SetEnabled(self.groupButton3, true);
+	end
+
+	visible = (ScenariosList and #ScenariosList > 0) or false
+	canUse, failureReason = C_LFGInfo.CanPlayerUseScenarioFinder();
+	if not visible then
+		self.groupButton4:Hide();
+	elseif not canUse then
+		self.groupButton4:Show();
+		GroupFinderFrameButton_SetEnabled(self.groupButton4, false);
+		self.groupButton4.tooltip = failureReason;
+	else
+		self.groupButton4:Show();
+		self.groupButton4.tooltip = nil;
+		GroupFinderFrameButton_SetEnabled(self.groupButton4, true);
 	end
 end
 
@@ -315,6 +336,7 @@ function GroupFinderFrame_OnShow(self)
 	PVEFrame:SetTitle(GROUP_FINDER);
 	GroupFinderFrame_EvaluateButtonVisibility(self);
 	GroupFinderFrame_EvaluateHelpTips(self);
+	ScenarioQueueFrame_Update();
 end
 
 function GroupFinderFrame_ShowGroupFrame(frame)

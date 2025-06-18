@@ -70,9 +70,9 @@ local AccountConstants =
 		{
 			Name = "AccountTransType",
 			Type = "Enumeration",
-			NumValues = 60,
+			NumValues = 62,
 			MinValue = 0,
-			MaxValue = 59,
+			MaxValue = 61,
 			Fields =
 			{
 				{ Name = "ProxyForwarder", Type = "AccountTransType", EnumValue = 0 },
@@ -135,6 +135,8 @@ local AccountConstants =
 				{ Name = "CharacterItems", Type = "AccountTransType", EnumValue = 57 },
 				{ Name = "CurrencyTransferLog", Type = "AccountTransType", EnumValue = 58 },
 				{ Name = "LgVendorPurchase", Type = "AccountTransType", EnumValue = 59 },
+				{ Name = "SaveWarbandGroups", Type = "AccountTransType", EnumValue = 60 },
+				{ Name = "Profile", Type = "AccountTransType", EnumValue = 61 },
 			},
 		},
 		{

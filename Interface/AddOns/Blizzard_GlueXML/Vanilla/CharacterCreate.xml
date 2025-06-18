@@ -42,7 +42,7 @@
 				GlueTooltip:Hide();
 			</OnLeave>
 		</Scripts>
-		<NormalTexture name="$parentNormalTexture" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Races"/>
+		<NormalTexture name="$parentNormalTexture" parentKey="normalTexture" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Races"/>
 	</CheckButton>
 	<CheckButton name="CharacterCreateClassButtonTemplate" inherits="CharacterCreateIconButtonTemplate" virtual="true">
 		<Layers>
@@ -1020,12 +1020,8 @@
 							</Layer>
 						</Layers>
 						<Scripts>
-							<OnEscapePressed>
-								CharacterCreate_Back();
-							</OnEscapePressed>
-							<OnEnterPressed>
-								CharacterCreate_Okay();
-							</OnEnterPressed>
+							<OnEscapePressed function="CharacterCreate_Back"/>
+							<OnEnterPressed function="CharacterCreate_Forward"/>
 						</Scripts>
 						<FontString inherits="GlueEditBoxFont"/>
 						<TextInsets>
@@ -1198,9 +1194,7 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnClick>
-								CharacterCreate_Okay();
-							</OnClick>
+							<OnClick function="CharacterCreate_Forward"/>
 						</Scripts>
 					</Button>
 				</Frames>

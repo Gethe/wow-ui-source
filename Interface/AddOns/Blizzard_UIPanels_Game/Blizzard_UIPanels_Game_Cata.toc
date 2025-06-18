@@ -1,27 +1,31 @@
 ## Title: Blizzard_UIPanels_Game
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_GameTooltip, Blizzard_UIPanelTemplates, Blizzard_FrameXML, Blizzard_CharacterFrame, Blizzard_ActionBar, Blizzard_Minimap, Blizzard_CastingBar, Blizzard_UnitFrame
+## Dependencies: Blizzard_GameTooltip, Blizzard_UIPanelTemplates, Blizzard_FrameXML, Blizzard_CharacterFrame, Blizzard_ActionBar, Blizzard_Minimap, Blizzard_CastingBar, Blizzard_UnitFrame, Blizzard_AccessibilityTemplates, Blizzard_HelpPlate
 ## LoadFirst: 1
 ## AllowLoad: game
 ## AllowLoadGameType: cata
+Classic\SpellBookFrame.lua
 Cata\SpellBookFrame.lua
+Cata\SpellBookProfessions.lua
 Cata\SpellBookFrame.xml
 Classic\SkillFrame.lua
 Classic\SkillFrame.xml
 Classic\ReputationFrame.lua
 Cata\ReputationFrame.lua
 Cata\ReputationFrame.xml
+Classic\FriendshipStatusBar.lua
+Classic\FriendshipStatusBar.xml
 Cata\HonorFrame.lua
 Classic\HonorFrame_Shared.lua
 Classic\HonorFrameTemplates.xml
 Cata\HonorFrame.xml
+Wrath\QuestFrameTemplates_WrathSpecific.xml
 Wrath\QuestFrameTemplates.xml
 TBC\QuestFrame.lua
 TBC\QuestFrame.xml
 Wrath\QuestPOI.lua
 Wrath\QuestPOI.xml
-Wrath\QuestLogFrame.lua
 Cata\QuestLogFrame.lua
 Cata\QuestLogFrame.xml
 Wrath\QuestInfo.lua
@@ -76,6 +80,7 @@ Wrath\VehicleSeatIndicator.xml
 Classic\RatingMenuFrame.xml
 Classic\PVPFrameBase.lua
 Cata\PVPFrame.lua
+Cata\PVPFrameHelpers.lua
 Classic\PVPFrameTemplates.xml
 Cata\PVPFrame.xml
 Classic\ArenaRegistrarFrame.lua

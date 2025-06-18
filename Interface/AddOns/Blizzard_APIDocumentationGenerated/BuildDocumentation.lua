@@ -23,6 +23,16 @@ local Build =
 				{ Name = "isDebugBuild", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "IsPublicTestClient",
+			Type = "Function",
+			Documentation = { "Reflects the state of the OnlyBetaAndPTR TOC directive" },
+
+			Returns =
+			{
+				{ Name = "isPublicTestClient", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =

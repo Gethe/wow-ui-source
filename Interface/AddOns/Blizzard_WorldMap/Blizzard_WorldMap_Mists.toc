@@ -1,0 +1,14 @@
+## Title: Blizzard World Map UI
+## Author: Blizzard Entertainment
+## RequiredDep: Blizzard_MapCanvas, Blizzard_SharedMapDataProviders
+## AllowLoad: game
+## AllowLoadGameType: mists
+Wrath\QuestLogOwnerMixin.lua
+MapTexturePreloader.lua
+WM_WorldQuestDataProvider.xml
+WM_InvasionDataProvider.xml
+WM_DebugDataProvider.xml
+Blizzard_WorldMapTemplates.xml
+Cata\Blizzard_WorldMap.lua
+Cata\Blizzard_WorldMap.xml
+Blizzard_WorldMapTooltip.xml

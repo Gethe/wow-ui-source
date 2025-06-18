@@ -21,8 +21,18 @@ local ChatInfo =
 			},
 		},
 		{
+			Name = "DropCautionaryChatMessage",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "confirmNumber", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetChannelInfoFromIdentifier",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -37,6 +47,7 @@ local ChatInfo =
 		{
 			Name = "GetChannelRosterInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -322,6 +333,15 @@ local ChatInfo =
 			},
 		},
 		{
+			Name = "SendCautionaryChatMessage",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "confirmNumber", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "SwapChatChannelsByChannelIndex",
 			Type = "Function",
 
@@ -359,6 +379,25 @@ local ChatInfo =
 				{ Name = "text", Type = "cstring", Nilable = false },
 				{ Name = "channel", Type = "cstring", Nilable = false },
 				{ Name = "senderID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "CautionaryChannelMessage",
+			Type = "Event",
+			LiteralName = "CAUTIONARY_CHANNEL_MESSAGE",
+			Payload =
+			{
+				{ Name = "confirmNumber", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "CautionaryChatMessage",
+			Type = "Event",
+			LiteralName = "CAUTIONARY_CHAT_MESSAGE",
+			Payload =
+			{
+				{ Name = "chatLineID", Type = "number", Nilable = false },
+				{ Name = "confirmNumber", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -2269,9 +2308,9 @@ local ChatInfo =
 		{
 			Name = "SendAddonMessageResult",
 			Type = "Enumeration",
-			NumValues = 10,
+			NumValues = 11,
 			MinValue = 0,
-			MaxValue = 9,
+			MaxValue = 10,
 			Fields =
 			{
 				{ Name = "Success", Type = "SendAddonMessageResult", EnumValue = 0 },
@@ -2284,6 +2323,7 @@ local ChatInfo =
 				{ Name = "InvalidChannel", Type = "SendAddonMessageResult", EnumValue = 7 },
 				{ Name = "ChannelThrottle", Type = "SendAddonMessageResult", EnumValue = 8 },
 				{ Name = "GeneralError", Type = "SendAddonMessageResult", EnumValue = 9 },
+				{ Name = "NotInGuild", Type = "SendAddonMessageResult", EnumValue = 10 },
 			},
 		},
 		{

@@ -1,0 +1,8 @@
+## Title: Blizzard_LevelUpDisplay
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## AllowLoad: game
+## AllowLoadGameType: mists
+Cata\LevelUpDisplay.lua
+Mists\LevelUpDisplay.xml
+Localization.lua

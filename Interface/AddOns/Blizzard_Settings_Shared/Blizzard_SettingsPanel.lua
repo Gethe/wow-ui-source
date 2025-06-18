@@ -168,6 +168,8 @@ function SettingsPanelMixin:OnShow()
 
 	self:CallRefreshOnCanvases();
 	self:CheckTutorials(); 
+
+	categories:RefreshNewFeatures();
 end
 
 function SettingsPanelMixin:CheckTutorials()
@@ -197,6 +199,8 @@ function SettingsPanelMixin:OnHide()
 	local checked = Settings.GetValue("PROXY_CHARACTER_SPECIFIC_BINDINGS");
 	local bindingSet = checked and Enum.BindingSet.Character or Enum.BindingSet.Account;
 	SaveBindings(bindingSet);
+
+	EventRegistry:TriggerEvent("SettingsPanel.OnHide");
 end
 
 function SettingsPanelMixin:Commit(unrevertable)
@@ -421,8 +425,10 @@ function SettingsPanelMixin:SetAllSettingsToDefaults()
 	self:WipeModifiedTable();
 	self:CheckApplyButton();
 	self:FinalizeCommit(saveBindings, gxRestart, windowUpdate);
-	
+
 	Settings.SafeLoadBindings(Enum.BindingSet.Default);
+
+	EventRegistry:TriggerEvent("Settings.Defaulted");
 end
 
 function SettingsPanelMixin:SetCurrentCategorySettingsToDefaults()
@@ -466,6 +472,8 @@ function SettingsPanelMixin:SetCurrentCategorySettingsToDefaults()
 	if currentCategory == self.keybindingsCategory then
 		Settings.SafeLoadBindings(Enum.BindingSet.Default);
 	end
+
+	EventRegistry:TriggerEvent("Settings.CategoryDefaulted", currentCategory);
 end
 
 function SettingsPanelMixin:HasUnappliedSettings()

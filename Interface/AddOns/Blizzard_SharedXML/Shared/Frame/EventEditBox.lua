@@ -8,6 +8,8 @@ EventEditBoxMixin:GenerateCallbackEvents(
 		"OnTextChanged",
 		"OnCursorChanged",
 		"OnEscapePressed",
+		"OnEnterPressed",
+		"OnKeyDown",
 		"OnEditFocusGained",
 		"OnEditFocusLost",
 	}
@@ -50,9 +52,15 @@ function EventEditBoxMixin:OnCursorChanged_Intrinsic(x, y, width, height, contex
 end
 
 function EventEditBoxMixin:OnEscapePressed_Intrinsic()
-	self:ClearFocus();
-
 	self:TriggerEvent("OnEscapePressed", self);
+end
+
+function EventEditBoxMixin:OnEnterPressed_Intrinsic()
+	self:TriggerEvent("OnEnterPressed", self);
+end
+
+function EventEditBoxMixin:OnKeyDown_Intrinsic(key)
+	self:TriggerEvent("OnKeyDown", self, key);
 end
 
 function EventEditBoxMixin:OnEditFocusGained_Intrinsic()
@@ -75,9 +83,28 @@ end
 function EventEditBoxMixin:OnEditFocusLost_Intrinsic()
 	self:ClearHighlightText();
 
-	self:TryApplyDefaultText();
+	-- HasFocus() returns 'true' if this event occured while transferred focus to another frame. 
+	-- Conversely, if this event occured due to a call to ClearFocus(), HasFocus returns 'false'.
+	-- Will be discussed to fix, but in the meantime, force ShouldDefault() to return as if focus
+	-- actually was cleared in the former case.
+	self.expectNoFocus = true;
+
+	local text = self:GetText();
+	if self:ShouldDefault(text) then
+		self:ApplyText("");
+	end
 
 	self:TriggerEvent("OnEditFocusLost", self);
+	
+	self.expectNoFocus = false;
+end
+
+function EventEditBoxMixin:ExpectedHasFocus()
+	if self.expectNoFocus then
+		return false;
+	end
+
+	return self:HasFocus();
 end
 
 function EventEditBoxMixin:GetCursorOffset()
@@ -93,7 +120,7 @@ function EventEditBoxMixin:GetFontHeight()
 end
 
 function EventEditBoxMixin:ApplyText(text)
-	self.defaulted = self:IsDefaultTextEnabled() and text == "";
+	self.defaulted = self:ShouldDefault(text);
 	if self.defaulted then
 		self:SetText(self.defaultText);
 
@@ -133,8 +160,25 @@ function EventEditBoxMixin:IsDefaultTextEnabled()
 	return self.defaultText and self.defaultTextEnabled;
 end
 
+function EventEditBoxMixin:ShouldDefault(text)
+	if text ~= "" then
+		return false;
+	end
+
+	if not self:IsDefaultTextEnabled() then
+		return false;
+	end
+
+	if self:ExpectedHasFocus() then
+		return false;
+	end
+
+	return true;
+end
+
 function EventEditBoxMixin:TryApplyDefaultText()
-	if self:IsDefaultTextEnabled() and self:GetText() == "" then
+	local text = self:GetText();
+	if self:ShouldDefault(text) then
 		self:ApplyText("");
 	end
 end

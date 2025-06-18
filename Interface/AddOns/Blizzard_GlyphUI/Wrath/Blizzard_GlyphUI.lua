@@ -33,14 +33,14 @@ local HIGHLIGHT_BASEALPHA = .4;
 function GlyphFrame_Toggle ()
 	TalentFrame_LoadUI();
 	if ( PlayerTalentFrame_ToggleGlyphFrame ) then
-		PlayerTalentFrame_ToggleGlyphFrame(GetActiveTalentGroup());
+		PlayerTalentFrame_ToggleGlyphFrame(C_SpecializationInfo.GetActiveSpecGroup());
 	end
 end
 
 function GlyphFrame_Open ()
 	TalentFrame_LoadUI();
 	if ( PlayerTalentFrame_OpenGlyphFrame ) then
-		PlayerTalentFrame_OpenGlyphFrame(GetActiveTalentGroup());
+		PlayerTalentFrame_OpenGlyphFrame(C_SpecializationInfo.GetActiveSpecGroup());
 	end
 end
 
@@ -240,7 +240,7 @@ function GlyphFrameGlyph_OnClick (self, button)
 			ChatEdit_InsertLink(link);
 		end
 	elseif ( button == "RightButton" ) then
-		if ( IsShiftKeyDown() and talentGroup == GetActiveTalentGroup() ) then
+		if ( IsShiftKeyDown() and talentGroup == C_SpecializationInfo.GetActiveSpecGroup() ) then
 			local glyphName;
 			local _, _, _, glyphSpell = GetGlyphSocketInfo(id, talentGroup);
 			if ( glyphSpell ) then
@@ -248,7 +248,7 @@ function GlyphFrameGlyph_OnClick (self, button)
 				StaticPopup_Show("CONFIRM_REMOVE_GLYPH", nil, nil, {name = glyphName, id = id});
 			end
 		end
-	elseif ( talentGroup == GetActiveTalentGroup() ) then
+	elseif ( talentGroup == C_SpecializationInfo.GetActiveSpecGroup() ) then
 		if ( self.glyph:IsShown() and GlyphMatchesSocket(id) ) then
 			local glyphName;
 			local _, _, _, glyphSpell = GetGlyphSocketInfo(id, talentGroup);
@@ -378,7 +378,7 @@ end
 function GlyphFrame_Update ()
 	local isActiveTalentGroup =
 		PlayerTalentFrame and not PlayerTalentFrame.pet and
-		PlayerTalentFrame.talentGroup == GetActiveTalentGroup(PlayerTalentFrame.pet);
+		PlayerTalentFrame.talentGroup == C_SpecializationInfo.GetActiveSpecGroup(PlayerTalentFrame.pet);
 	SetDesaturation(GlyphFrame.background, not isActiveTalentGroup);
 
 	for i = 1, NUM_GLYPH_SLOTS do

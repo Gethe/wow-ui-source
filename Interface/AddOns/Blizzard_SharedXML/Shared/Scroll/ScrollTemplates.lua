@@ -7,6 +7,8 @@ ScrollingEditBoxMixin:GenerateCallbackEvents(
 		"OnFocusGained",
 		"OnFocusLost",
 		"OnEnterPressed",
+		"OnEscapePressed",
+		"OnKeyDown",
 	}
 );
 
@@ -51,10 +53,32 @@ function ScrollingEditBoxMixin:OnLoad()
 	editBox:RegisterCallback("OnTabPressed", self.OnEditBoxTabPressed, self);
 	editBox:RegisterCallback("OnTextChanged", self.OnEditBoxTextChanged, self);
 	editBox:RegisterCallback("OnEnterPressed", self.OnEditBoxEnterPressed, self);
+	editBox:RegisterCallback("OnEscapePressed", self.OnEditBoxEscapePressed, self);
 	editBox:RegisterCallback("OnCursorChanged", self.OnEditBoxCursorChanged, self);
 	editBox:RegisterCallback("OnEditFocusGained", self.OnEditBoxFocusGained, self);
 	editBox:RegisterCallback("OnEditFocusLost", self.OnEditBoxFocusLost, self);
 	editBox:RegisterCallback("OnMouseUp", self.OnEditBoxMouseUp, self);
+	editBox:RegisterCallback("OnKeyDown", self.OnEditBoxKeyDown, self);
+
+	if self.useDefaultEnterHandling then
+		self:RegisterCallback("OnEnterPressed", function(o, editBox)
+			if editBox:IsMultiLine() then
+				self:Insert("\n");
+			end
+		end);
+	end
+
+	if self.useDefaultEscapeHandling then
+		self:RegisterCallback("OnEscapePressed", function(o, editBox)
+			self:ClearFocus();
+		end);
+	end
+end
+
+function ScrollingEditBoxMixin:UpdateScrollBox()
+	local scrollBox = self:GetScrollBox();
+	scrollBox:FullUpdate(ScrollBoxConstants.UpdateImmediately);
+	scrollBox:ScrollToBegin(ScrollBoxConstants.NoScrollInterpolation);
 end
 
 function ScrollingEditBoxMixin:SetInterpolateScroll(canInterpolateScroll)
@@ -65,6 +89,16 @@ end
 function ScrollingEditBoxMixin:OnShow()
 	local editBox = self:GetEditBox();
 	editBox:TryApplyDefaultText();
+end
+
+function ScrollingEditBoxMixin:SetCursorPosition(pos)
+	local editBox = self:GetEditBox();
+	return editBox:SetCursorPosition(pos)
+end
+
+function ScrollingEditBoxMixin:SetTextInsets(left, right, top, bottom)
+	local editBox = self:GetEditBox();
+	return editBox:SetTextInsets(left, right, top, bottom)
 end
 
 function ScrollingEditBoxMixin:OnMouseDown()
@@ -94,6 +128,10 @@ function ScrollingEditBoxMixin:SetFocus()
 	self:GetEditBox():SetFocus();
 end
 
+function ScrollingEditBoxMixin:HasFocus()
+	return self:GetEditBox():HasFocus();
+end
+
 function ScrollingEditBoxMixin:SetFontObject(fontName)
 	local editBox = self:GetEditBox();
 	editBox:SetFontObject(fontName);
@@ -104,21 +142,31 @@ function ScrollingEditBoxMixin:SetFontObject(fontName)
 	padding:SetBottom(fontHeight * .5);
 
 	scrollBox:SetPanExtent(fontHeight);
-	scrollBox:FullUpdate(ScrollBoxConstants.UpdateImmediately);
-	scrollBox:ScrollToBegin(ScrollBoxConstants.NoScrollInterpolation);
+
+	self:UpdateScrollBox();
 end
 
 function ScrollingEditBoxMixin:ClearText()
 	self:SetText("");
 end
 
+function ScrollingEditBoxMixin:GetText()
+	local editBox = self:GetEditBox();
+	return editBox:GetText();
+end
+
+function ScrollingEditBoxMixin:Insert(text)
+	local editBox = self:GetEditBox();
+	editBox:Insert(text);
+
+	self:UpdateScrollBox();
+end
+
 function ScrollingEditBoxMixin:SetText(text)
 	local editBox = self:GetEditBox();
 	editBox:ApplyText(text);
 
-	local scrollBox = self:GetScrollBox();
-	scrollBox:FullUpdate(ScrollBoxConstants.UpdateImmediately);
-	scrollBox:ScrollToBegin(ScrollBoxConstants.NoScrollInterpolation);
+	self:UpdateScrollBox();
 end
 
 function ScrollingEditBoxMixin:SetDefaultTextEnabled(enabled)
@@ -170,6 +218,14 @@ function ScrollingEditBoxMixin:OnEditBoxTextChanged(editBox, userChanged)
 	scrollBox:FullUpdate(ScrollBoxConstants.UpdateImmediately);
 
 	self:TriggerEvent("OnTextChanged", editBox, userChanged);
+end
+
+function ScrollingEditBoxMixin:OnEditBoxEscapePressed(editBox)
+	self:TriggerEvent("OnEscapePressed", editBox);
+end
+
+function ScrollingEditBoxMixin:OnEditBoxKeyDown(editBox, key)
+	self:TriggerEvent("OnKeyDown", editBox, key);
 end
 
 function ScrollingEditBoxMixin:OnEditBoxEnterPressed(editBox)
