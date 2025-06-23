@@ -1128,7 +1128,7 @@ function ContainerFrame_UpdateLockedItem(bagID, slotID)
 	local locked = info and info.isLocked;
 	SetItemButtonDesaturated(itemButton, locked);
 
-	if itemButton:IsMouseMotionFocus() then
+	if itemButton and itemButton:IsMouseMotionFocus() then
 		itemButton:OnEnter();
 	end
 end
