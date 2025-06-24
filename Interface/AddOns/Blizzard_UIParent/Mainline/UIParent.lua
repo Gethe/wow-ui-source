@@ -1886,11 +1886,11 @@ function UIParent_OnEvent(self, event, ...)
 		StaticPopup_Hide("INSTANCE_BOOT");
 		StaticPopup_Hide("GARRISON_BOOT");
 	elseif ( event == "INSTANCE_LOCK_START" ) then
-		StaticPopup_Show("INSTANCE_LOCK", nil, nil, true);
+		StaticPopup_Show("INSTANCE_LOCK", nil, nil, { enforceTime = true });
 	elseif ( event == "INSTANCE_LOCK_STOP" ) then
 		StaticPopup_Hide("INSTANCE_LOCK");
 	elseif ( event == "INSTANCE_LOCK_WARNING" ) then
-		StaticPopup_Show("INSTANCE_LOCK", nil, nil, false);
+		StaticPopup_Show("INSTANCE_LOCK", nil, nil, { enforceTime = false });
 	elseif ( event == "CONFIRM_TALENT_WIPE" ) then
 		HideUIPanel(GossipFrame);
 		StaticPopupDialogs["CONFIRM_TALENT_WIPE"].text = _G["CONFIRM_TALENT_WIPE_"..arg2];

@@ -219,7 +219,7 @@ function CharCustomizeMixin:UpdateAlteredFormButtons()
 end
 
 function CharCustomizeMixin:GetAlteredFormsUnsafeLeftSpace()
-	return self.SmallButtons:GetRight();
+	return self.SmallButtons:GetRight() - self:GetLeft();
 end
 
 function CharCustomizeMixin:UpdateAlteredFormsMaxWidth()

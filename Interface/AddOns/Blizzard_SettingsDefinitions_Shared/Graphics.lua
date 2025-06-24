@@ -206,10 +206,10 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 		local container = Settings.CreateControlTextContainer();
 		local variable = settingSpellDensity:GetVariable();
 		-- These match the enum values of SPELL_VISUAL_KIT_DENSITY.
-		AddValidatedSettingOption(container, variable, raid, 3, VIDEO_OPTIONS_SFX_DENSITY_PERF, VIDEO_OPTIONS_SFX_DENSITY_PERF_TOOLTIP);
-		AddValidatedSettingOption(container, variable, raid, 1, VIDEO_OPTIONS_SFX_DENSITY_MIN, VIDEO_OPTIONS_SFX_DENSITY_MIN_TOOLTIP);
-		AddValidatedSettingOption(container, variable, raid, 2, VIDEO_OPTIONS_SFX_DENSITY_REDUCED, VIDEO_OPTIONS_SFX_DENSITY_REDUCED_TOOLTIP);
-		AddValidatedSettingOption(container, variable, raid, 4, VIDEO_OPTIONS_SFX_DENSITY_FULL, VIDEO_OPTIONS_SFX_DENSITY_FULL_TOOLTIP);
+		--AddValidatedSettingOption(container, variable, raid, 0, VIDEO_OPTIONS_SFX_DENSITY_PERF, VIDEO_OPTIONS_SFX_DENSITY_PERF_TOOLTIP);
+		AddValidatedSettingOption(container, variable, raid, 0, VIDEO_OPTIONS_SFX_DENSITY_MIN, VIDEO_OPTIONS_SFX_DENSITY_MIN_TOOLTIP);
+		AddValidatedSettingOption(container, variable, raid, 1, VIDEO_OPTIONS_SFX_DENSITY_REDUCED, VIDEO_OPTIONS_SFX_DENSITY_REDUCED_TOOLTIP);
+		AddValidatedSettingOption(container, variable, raid, 2, VIDEO_OPTIONS_SFX_DENSITY_FULL, VIDEO_OPTIONS_SFX_DENSITY_FULL_TOOLTIP);
 		AddRecommended(container, variable);
 		return container:GetData();
 	end

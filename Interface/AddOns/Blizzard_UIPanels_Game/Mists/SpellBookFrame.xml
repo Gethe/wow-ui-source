@@ -537,7 +537,7 @@
 	</Frame>
 
 
-	<CheckButton name="CoreAbilitySpellTemplate" inherits="SecureFrameTemplate" virtual="true">
+	<CheckButton name="CoreAbilitySpellTemplate" inherits="SecureFrameTemplate" mixin="CoreAbilitySpellMixin" virtual="true">
 		<Size x="37" y="37"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -590,34 +590,12 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				self:RegisterForDrag("LeftButton");
-				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-			</OnLoad>
-			<OnClick>
-				if ( IsModifiedClick() ) then
-				ChatEdit_InsertLink(GetSpellLink(self.spellID));
-				else
-				ClearCursor()
-				end
-			</OnClick>
-			<OnDragStart>
-				if ( self.draggable ) then
-				PickupSpell(self.spellID);
-				end
-			</OnDragStart>
-			<OnReceiveDrag>
-				if ( self.draggable ) then
-				PickupSpell(self.spellID);
-				end
-			</OnReceiveDrag>
-			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip:SetSpellByID(self.spellID, false, false, true);
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnLoad method="OnLoad"/>
+			<OnClick method="OnClick"/>
+			<OnDragStart method="OnDragStart"/>
+			<OnReceiveDrag method="OnReceiveDrag"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
 		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD" parentKey="highlightTexture"/>

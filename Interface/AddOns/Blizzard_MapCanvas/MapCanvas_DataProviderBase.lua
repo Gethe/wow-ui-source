@@ -634,6 +634,9 @@ end
 
 function MapCanvasPinMixin:ReportPinError(fmt, ...)
 	if ProcessExceptionClient then
-		ProcessExceptionClient(fmt:format(...));
+		local msg = fmt:format(...);
+		local framesToSkip = 1;
+		ProcessExceptionClient(msg, msg, framesToSkip);
+
 	end
 end

@@ -2460,7 +2460,6 @@ Interface\AddOns\Blizzard_SharedXML\Mainline\UIDropDownMenu.lua
 Interface\AddOns\Blizzard_SharedXML\Mainline\UIDropDownMenu.xml
 Interface\AddOns\Blizzard_SharedXML\Mainline\UIDropDownMenuTemplates.lua
 Interface\AddOns\Blizzard_SharedXML\Mainline\UIDropDownMenuTemplates.xml
-Interface\AddOns\Blizzard_SharedXML\Mainline\VASErrorLookup.lua
 Interface\AddOns\Blizzard_SharedXML\ManagedLayoutFrame.lua
 Interface\AddOns\Blizzard_SharedXML\ManagedLayoutFrame.xml
 Interface\AddOns\Blizzard_SharedXML\MixinUtil.lua
@@ -2563,6 +2562,7 @@ Interface\AddOns\Blizzard_SharedXML\Shared\Slider\MinimalSlider.lua
 Interface\AddOns\Blizzard_SharedXML\Shared\Slider\MinimalSlider.xml
 Interface\AddOns\Blizzard_SharedXML\Shared\Tabs\MinimalTab.lua
 Interface\AddOns\Blizzard_SharedXML\Shared\Tabs\MinimalTab.xml
+Interface\AddOns\Blizzard_SharedXML\Shared\VASErrorLookup.lua
 Interface\AddOns\Blizzard_SharedXML\SmoothStatusBar.lua
 Interface\AddOns\Blizzard_SharedXML\SortUtil.lua
 Interface\AddOns\Blizzard_SharedXML\SpaceToFitLayoutFrame.lua
@@ -2819,8 +2819,6 @@ Interface\AddOns\Blizzard_UIPanels_Game\Mainline\ScrollingFlatPanel.xml
 Interface\AddOns\Blizzard_UIPanels_Game\Mainline\TabardFrame.lua
 Interface\AddOns\Blizzard_UIPanels_Game\Mainline\TabardFrame.xml
 Interface\AddOns\Blizzard_UIPanels_Game\Mainline\TabardModelControlButtonMixin.lua
-Interface\AddOns\Blizzard_UIPanels_Game\Mainline\TaxiFrame.lua
-Interface\AddOns\Blizzard_UIPanels_Game\Mainline\TaxiFrame.xml
 Interface\AddOns\Blizzard_UIPanels_Game\Mainline\TradeFrame.lua
 Interface\AddOns\Blizzard_UIPanels_Game\Mainline\TradeFrame.xml
 Interface\AddOns\Blizzard_UIPanels_Game\Mainline\UnitPositionFrameTemplates.lua
@@ -2847,6 +2845,8 @@ Interface\AddOns\Blizzard_UIPanels_Game\Shared\ItemRefHandlersShared.lua
 Interface\AddOns\Blizzard_UIPanels_Game\Shared\PlayerInteractionFrameManager.lua
 Interface\AddOns\Blizzard_UIPanels_Game\Shared\PlayerInteractionFrameManager.xml
 Interface\AddOns\Blizzard_UIPanels_Game\Shared\SocialQueue.lua
+Interface\AddOns\Blizzard_UIPanels_Game\Shared\TaxiFrame.lua
+Interface\AddOns\Blizzard_UIPanels_Game\Shared\TaxiFrame.xml
 Interface\AddOns\Blizzard_UIPanels_Game\Shared\WorldMapPOIQuantizer.lua
 Interface\AddOns\Blizzard_UIParentPanelManager\Blizzard_UIParentPanelManager_Mainline.toc
 Interface\AddOns\Blizzard_UIParentPanelManager\Blizzard_UIParentPanelManager_Mists.toc
@@ -2955,7 +2955,6 @@ Interface\AddOns\Blizzard_UnitFrame\Cata\EclipseBarFrame.lua
 Interface\AddOns\Blizzard_UnitFrame\Cata\EclipseBarFrame.xml
 Interface\AddOns\Blizzard_UnitFrame\Cata\PaladinPowerBar.lua
 Interface\AddOns\Blizzard_UnitFrame\Cata\PaladinPowerBar.xml
-Interface\AddOns\Blizzard_UnitFrame\Cata\PartyFrameTemplates.xml
 Interface\AddOns\Blizzard_UnitFrame\Cata\PetFrame.lua
 Interface\AddOns\Blizzard_UnitFrame\Cata\PetFrame.xml
 Interface\AddOns\Blizzard_UnitFrame\Cata\PredictiveHealing.lua

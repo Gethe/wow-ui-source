@@ -1152,16 +1152,6 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.SeasonBest" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="ProjectedCapLabel" inherits="GameFontNormalMed3" text="PROJECTED_CONQUEST_CAP">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.SeasonGamesPlayed" relativePoint="BOTTOMLEFT" x="0" y="-13"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="ProjectedCap" inherits="GameFontHighlight" text="">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.ProjectedCapLabel" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
-					</Anchors>
-				</FontString>
 			</Layer>
 		</Layers>
 	</Frame>

@@ -53,7 +53,7 @@ PixelUtilSecure.lua
 PixelUtil.lua
 TableBuilder.lua
 NewFeatureLabel.xml
-Mainline\VASErrorLookup.lua
+Shared\VASErrorLookup.lua
 SelectableButton.lua
 SelectableButton.xml
 ButtonGroup.lua

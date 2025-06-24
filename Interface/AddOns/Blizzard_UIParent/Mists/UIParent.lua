@@ -74,6 +74,11 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("DUEL_OUTOFBOUNDS");
 	self:RegisterEvent("DUEL_INBOUNDS");
 	self:RegisterEvent("DUEL_FINISHED");
+	self:RegisterEvent("PET_BATTLE_PVP_DUEL_REQUESTED");
+	self:RegisterEvent("PET_BATTLE_QUEUE_PROPOSE_MATCH");
+	self:RegisterEvent("PET_BATTLE_QUEUE_PROPOSAL_DECLINED");
+	self:RegisterEvent("PET_BATTLE_QUEUE_PROPOSAL_ACCEPTED");
+	self:RegisterEvent("PET_BATTLE_PVP_DUEL_REQUEST_CANCEL");
 	self:RegisterEvent("TRADE_REQUEST_CANCEL");
 	self:RegisterEvent("CONFIRM_XP_LOSS");
 	self:RegisterEvent("CORPSE_IN_RANGE");
@@ -221,7 +226,6 @@ function UIParent_OnUpdate(self, elapsed)
 	FCF_OnUpdate(elapsed);
 	ButtonPulse_OnUpdate(elapsed);
 	AnimatedShine_OnUpdate(elapsed);
-	PVPTimerFrame_OnUpdate(nil, elapsed);
 	HelpOpenWebTicketButton_OnUpdate(HelpOpenWebTicketButton, elapsed);
 end
 
@@ -1032,11 +1036,11 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "INSTANCE_BOOT_STOP" ) then
 		StaticPopup_Hide("INSTANCE_BOOT");
 	elseif ( event == "INSTANCE_LOCK_START" ) then
-		StaticPopup_Show("INSTANCE_LOCK", nil, nil, true);
+		StaticPopup_Show("INSTANCE_LOCK", nil, nil, { enforceTime = true });
 	elseif ( event == "INSTANCE_LOCK_STOP" ) then
 		StaticPopup_Hide("INSTANCE_LOCK");
 	elseif ( event == "INSTANCE_LOCK_WARNING" ) then
-		StaticPopup_Show("INSTANCE_LOCK", nil, nil, false);
+		StaticPopup_Show("INSTANCE_LOCK", nil, nil, { enforceTime = false });
 	elseif ( event == "CONFIRM_TALENT_WIPE" ) then
 		HideUIPanel(GossipFrame);
 		StaticPopupDialogs["CONFIRM_TALENT_WIPE"].text = _G["CONFIRM_TALENT_WIPE_"..arg2];

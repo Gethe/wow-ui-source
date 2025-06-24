@@ -63,6 +63,7 @@ local function GetSecureMoneyString(money, separateThousands)
 	return moneyString;
 end
 
+--VAS Error message data
 local vasErrorData = {
 	[Enum.VasError.CharacterHasVasPending] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_CHARACTER_HAS_VAS_PENDING,
@@ -98,6 +99,9 @@ local vasErrorData = {
 	[Enum.VasError.MaxCharactersOnServer] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_MAX_CHARACTERS_ON_SERVER,
 	},
+	[Enum.VasError.NoMixedAlliance] = {
+		msg = CHAR_CREATE_PVP_TEAMS_VIOLATION,
+	},
 	[Enum.VasError.DuplicateCharacterName] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_DUPLICATE_CHARACTER_NAME,
 	},
@@ -110,6 +114,9 @@ local vasErrorData = {
 	[Enum.VasError.UnderMinLevelReq] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_UNDER_MIN_LEVEL_REQ,
 	},
+	[Enum.VasError.IneligibleTargetRealm] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_INELIGIBLE_TARGET_REALM,
+	},
 	[Enum.VasError.CharacterTransferTooSoon] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_FACTION_CHANGE_TOO_SOON,
 	},
@@ -117,22 +124,47 @@ local vasErrorData = {
 		msg = BLIZZARD_STORE_VAS_ERROR_CHARACTER_LOCKED,
 		notUserFixable = true,
 	},
+	[Enum.VasError.AllianceNotEligible] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_ALLIANCE_NOT_ELIGIBLE,
+	},
 	[Enum.VasError.TooMuchMoneyForLevel] = {
 		msg = function(character)
 			-- If you update these gold thresholds, be sure to also update:
 			--   - TRANSFER_GOLD_LIMIT_BASE and related
 			--   - The DB script / configs - Ask a DBE to help you
 			local level = character and character.level or 1;
+			local goldCapForLevel = 0;
+			if GetExpansionLevel() >= LE_EXPANSION_WAR_WITHIN then
+				if (level >= 50) then -- level 50+: one million gold
+					goldCapForLevel = 1000000;
+				elseif (level >= 40) then -- level 10-49: two hundred fifty thousand gold
+					goldCapForLevel = 250000;
+				elseif (level >= 10) then -- level 10-49: ten thousand gold
+					goldCapForLevel = 10000;
+				end
+			elseif GetExpansionLevel() >= LE_EXPANSION_WRATH_OF_THE_LICH_KING then
+				-- Additional breakpoints 81, 86, 91, 101, 111 and 121 all cap at 50000
+				if (level > 50) then -- PAY_MONEY_LEVEL_02
+					goldCapForLevel = 50000; -- level 51+: fifty thousand gold
+				elseif (level > 30) then -- PAY_MONEY_LEVEL_01
+					goldCapForLevel = 2500; -- level 31-50: twenty five hundred gold // PAY_MONEY_LIMIT_02
+				else
+					goldCapForLevel = 500; -- level 1-30: five hundred gold // PAY_MONEY_LIMIT_01
+				end
+			else
+				-- Additional breakpoints 61, 71, 81, 81, 100, 110, and 121 all cap at 50000
+				if (level > 50) then -- PAY_MONEY_LEVEL_02
+					goldCapForLevel = 50000; -- level 51+: fifty thousand gold
+				elseif (level > 30) then -- PAY_MONEY_LEVEL_01	
+					goldCapForLevel = 500; -- level 31-50: five hundred gold // PAY_MONEY_LIMIT_02
+				else
+					goldCapForLevel = 100; -- level 1-30: one hundred gold // PAY_MONEY_LIMIT_01
+				end
+			end
+
 			local str = "";
-			if level >= 50 then
-				-- level 50+: one million gold
-				str = GetSecureMoneyString(1000000 * COPPER_PER_SILVER * SILVER_PER_GOLD, true, true);
-			elseif level >= 40 then
-				-- level 10-49: two hundred fifty thousand gold
-				str = GetSecureMoneyString(250000 * COPPER_PER_SILVER * SILVER_PER_GOLD, true, true);
-			elseif level >= 10 then
-				-- level 10-49: ten thousand gold
-				str = GetSecureMoneyString(10000 * COPPER_PER_SILVER * SILVER_PER_GOLD, true, true);
+			if (goldCapForLevel > 0) then
+				str = GetSecureMoneyString(goldCapForLevel * COPPER_PER_SILVER * SILVER_PER_GOLD, true, true);
 			end
 			return string.format(BLIZZARD_STORE_VAS_ERROR_TOO_MUCH_MONEY_FOR_LEVEL, str);
 		end
@@ -164,6 +196,9 @@ local vasErrorData = {
 	},
 	[Enum.VasError.RaceClassComboIneligible] = { --We should still handle this one even though we shortcut it in case something slips through
 		msg = BLIZZARD_STORE_VAS_ERROR_RACE_CLASS_COMBO_INELIGIBLE,
+	},
+	[Enum.VasError.PendingItemAudit] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_PENDING_ITEM_AUDIT,
 	},
 	[Enum.VasError.GuildRankInsufficient] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_NOT_GUILD_MASTER,
@@ -208,6 +243,9 @@ local vasErrorData = {
 		msg = BLIZZARD_STORE_VAS_ERROR_BOOSTED_TOO_RECENTLY,
 		notUserFixable = true,
 	},
+	[Enum.VasError.PvEToPvPTransferNotAllowed] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_PVE_TO_PVP_TRANSFER_NOT_ALLOWED,
+	},
 	[Enum.VasError.NewLeaderInvalid] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_NEW_LEADER_INVALID,
 	},
@@ -223,6 +261,12 @@ local vasErrorData = {
 	[Enum.VasError.InvalidName] = {
 		msg = BLIZZARD_STORE_VAS_INVALID_NAME,
 	},
+	[Enum.VasError.NeedsEraChoice] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_NEEDS_ERA_CHOICE;
+	},
+	[Enum.VasError.ArenaTeamCaptain] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_ARENA_TEAM_CAPTAIN;
+	}
 };
 
 local storeErrorData = {

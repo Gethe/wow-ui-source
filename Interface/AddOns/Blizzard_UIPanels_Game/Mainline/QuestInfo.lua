@@ -664,7 +664,9 @@ function QuestInfo_ShowRewards()
 			end
 		else
 			if ProcessExceptionClient then
-				ProcessExceptionClient(string.format("Bad rewardSpellId from quest '%d' at rewardSpellIndex '%d'", questID, index));
+				local framesToSkip = 0;
+				ProcessExceptionClient(string.format("Bad rewardSpellId from quest '%d' at rewardSpellIndex '%d'", questID, index), "Bad rewardSpellId from quest", framesToSkip);
+
 			end
 		end
 	end

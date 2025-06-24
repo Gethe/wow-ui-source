@@ -40,8 +40,8 @@ Mainline\GroupLootFrame.lua
 Mainline\GroupLootFrame.xml
 Mainline\ItemTextFrame.lua
 Mainline\ItemTextFrame.xml
-Mainline\TaxiFrame.lua
-Mainline\TaxiFrame.xml
+Shared\TaxiFrame.lua
+Shared\TaxiFrame.xml
 Mainline\BankFrame.lua
 Mainline\BankFrame.xml
 Mainline\RoleSelectionTemplate.lua

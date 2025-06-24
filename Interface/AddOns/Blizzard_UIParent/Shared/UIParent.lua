@@ -95,6 +95,23 @@ function UIParentManagedFrameMixin:OnHide()
 	self.layoutParent:RemoveManagedFrame(self);
 end
 
+local function IsActionBarOverriden()
+	return OverrideActionBar and OverrideActionBar:IsShown() or false;
+end
+
+local function UpdateFrameAlphaState(frame, isActionBarOverriden)
+	if frame.hideWhenActionBarIsOverriden then
+		local setToAlpha = isActionBarOverriden and 0 or 1;
+		frame:SetAlpha(setToAlpha);
+
+		-- Since the frame isn't actually hidden, give it a way to remove itself from layout
+		-- if that's the desired behavior.
+		if frame.ignoreInLayoutWhenActionBarIsOverriden then
+			frame.ignoreInLayout = isActionBarOverriden;
+		end
+	end
+end
+
 UIParentManagedFrameContainerMixin = {};
 
 function UIParentManagedFrameContainerMixin:OnLoad()
@@ -123,6 +140,13 @@ function UIParentManagedFrameContainerMixin:AddManagedFrame(frame)
 
 	if not frame:IsShown() then
 		return;
+	end
+
+	-- If the frame is being added to the list while the override action bar is shown it needs to
+	-- have its alpha value updated.
+	local isActionBarOverriden = IsActionBarOverriden();
+	if isActionBarOverriden and not self.showingFrames[frame] then
+		UpdateFrameAlphaState(frame, isActionBarOverriden);
 	end
 
 	self.showingFrames[frame] = frame;
@@ -157,26 +181,22 @@ function UIParentManagedFrameContainerMixin:RemoveManagedFrame(frame)
 		ObjectiveTrackerFrame:UpdateHeight();
 	end
 
+	local isActionBarOverriden = IsActionBarOverriden();
+	if isActionBarOverriden then
+		-- A managed frame flagged to be hidden when the action bar is overridden should no longer be
+		-- hidden if it's no longer managed. Otherwise it can be stuck in a hidden state.
+		local isActionBarOverridenForFrame = false;
+		UpdateFrameAlphaState(frame, isActionBarOverridenForFrame);
+	end
+
 	self:Layout();
 	self.BottomManagedLayoutContainer:Layout();
 end
 
 function UIParentManagedFrameContainerMixin:UpdateManagedFramesAlphaState()
-	local isActionBarOverriden = OverrideActionBar and OverrideActionBar:IsShown();
+	local isActionBarOverriden = IsActionBarOverriden();
 	for frame in pairs(self.showingFrames) do
-		if(frame.hideWhenActionBarIsOverriden) then
-			local setToAlpha = isActionBarOverriden and 0 or 1;
-			local currentFrameAlpha = frame:GetAlpha();
-			if(setToAlpha ~= currentFrameAlpha) then
-				frame:SetAlpha(setToAlpha);
-			end
-
-			-- Since the frame isn't actually hidden, give it a way to remove itself from layout
-			-- if that's the desired behavior.
-			if frame.ignoreInLayoutWhenActionBarIsOverriden then
-				frame.ignoreInLayout = isActionBarOverriden;
-			end
-		end
+		UpdateFrameAlphaState(frame, isActionBarOverriden);
 	end
 end
 

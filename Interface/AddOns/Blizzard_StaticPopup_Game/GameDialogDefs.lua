@@ -2098,9 +2098,8 @@ StaticPopupDialogs["INSTANCE_LOCK"] = {
 	button1 = ACCEPT,
 	button2 = INSTANCE_LEAVE,
 	OnShow = function(dialog, data)
-		local enforceTime = data;
 		local lockTimeleft, isPreviousInstance = GetInstanceLockTimeRemaining();
-		if ( enforceTime and lockTimeleft <= 0 ) then
+		if ( data.enforceTime and lockTimeleft <= 0 ) then
 			dialog:Hide();
 			return;
 		end
@@ -2110,7 +2109,7 @@ StaticPopupDialogs["INSTANCE_LOCK"] = {
 		local type, difficulty;
 		dialog.name, type, difficulty, dialog.difficultyName = GetInstanceInfo();
 
-		if ( not enforceTime ) then
+		if ( not data.enforceTime ) then
 			local name = GetDungeonNameWithDifficulty(dialog.name, dialog.difficultyName);
 			local lockstring = string.format((dialog.isPreviousInstance and INSTANCE_LOCK_WARNING_PREVIOUSLY_SAVED or INSTANCE_LOCK_WARNING), name, SecondsToTime(ceil(lockTimeleft), nil, 1));
 			local time, extending;

@@ -673,9 +673,9 @@ EventSchedulerBaseLabelMixin = { };
 
 function EventSchedulerBaseLabelMixin:Init(data)
 	if data.entryType == EntryType.OngoingHeader then
-		self.Label:SetFormattedText(EVENT_SCHEDULER_ONGOING_HEADER, C_EventScheduler.GetActiveContinentName());
+		self.Label:SetText(EVENT_SCHEDULER_ONGOING_HEADER);
 	elseif data.entryType == EntryType.ScheduledHeader then
-		self.Label:SetFormattedText(EVENT_SCHEDULER_SCHEDULED_HEADER, C_EventScheduler.GetActiveContinentName());
+		self.Label:SetText(EVENT_SCHEDULER_SCHEDULED_HEADER);
 		if data.entryCount == 0 then
 			self.Timeline:Hide();
 		else

@@ -14,7 +14,7 @@ Classic\PlayerFrame.lua
 Classic\PlayerFrame.xml
 Wrath\AlternatePowerBar.lua
 Mists\AlternatePowerBar.xml
-Cata\PartyFrameTemplates.xml
+Classic\PartyFrameTemplates.xml
 Classic\PartyFrame.xml
 Wrath\TargetFrame.lua
 Cata\TargetFrame.xml

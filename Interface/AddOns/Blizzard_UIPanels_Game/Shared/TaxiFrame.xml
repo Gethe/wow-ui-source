@@ -6,13 +6,13 @@
 			<Anchor point="BOTTOMRIGHT"/>
 		</Anchors>
 		<Scripts>
-            <OnEnter>
+			<OnEnter>
 				TaxiNodeOnButtonEnter(self, motion);
 			</OnEnter>
-            <OnLeave>
+			<OnLeave>
 				TaxiNodeOnButtonLeave(self, motion);
 			</OnLeave>
- 			<OnClick>
+			<OnClick>
 				TakeTaxiNode(self:GetID());
 			</OnClick>
 		</Scripts>
