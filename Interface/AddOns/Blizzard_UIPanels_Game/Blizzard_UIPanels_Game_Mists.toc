@@ -43,8 +43,8 @@ Classic\LootFrame.lua
 Classic\LootFrame.xml
 Classic\ItemTextFrame.lua
 Classic\ItemTextFrame.xml
-Classic\TaxiFrame.lua
-Classic\TaxiFrame.xml
+Shared\TaxiFrame.lua
+Shared\TaxiFrame.xml
 Classic\ItemRef.lua
 Classic\ItemRef.xml
 Classic\ProductChoice.lua

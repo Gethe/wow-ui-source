@@ -3522,7 +3522,7 @@ function GearManagerPopupFrameMixin:Update()
 		self.IconSelector:SetSelectedIndex(initialIndex);
 		self.BorderBox.SelectedIconArea.SelectedIconButton:SetIconTexture(self:GetIconByIndex(initialIndex));
 	elseif ( self.mode == IconSelectorPopupFrameModes.Edit ) then
-		local name, texture = C_EquipmentSet.GetEquipmentSetInfo(PaperDollFrame.EquipmentManagerPane.selectedSetID);
+		local name, texture = C_EquipmentSet.GetEquipmentSetInfo(self.setID);
 		self.BorderBox.IconSelectorEditBox:SetText(name);
 		self.BorderBox.IconSelectorEditBox:HighlightText();
 

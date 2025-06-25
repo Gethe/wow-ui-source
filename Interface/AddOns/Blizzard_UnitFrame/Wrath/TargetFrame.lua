@@ -268,6 +268,12 @@ function TargetFrame_CheckLevel (self)
 	if ( UnitIsCorpse(self.unit) ) then
 		self.levelText:Hide();
 		self.highLevelTexture:Show();
+	elseif (UnitIsWildBattlePet(self.unit) or UnitIsBattlePetCompanion(self.unit)) then
+		local petLevel = UnitBattlePetLevel(self.unit);
+		self.levelText:SetVertexColor(1.0, 0.82, 0.0);
+		self.levelText:SetText(petLevel);
+		self.levelText:Show();
+		self.highLevelTexture:Hide();
 	elseif ( targetEffectiveLevel > 0 ) then
 		-- Normal level target
 		self.levelText:SetText(targetEffectiveLevel);

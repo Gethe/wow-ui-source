@@ -226,7 +226,6 @@ function UIParent_OnUpdate(self, elapsed)
 	FCF_OnUpdate(elapsed);
 	ButtonPulse_OnUpdate(elapsed);
 	AnimatedShine_OnUpdate(elapsed);
-	PVPTimerFrame_OnUpdate(nil, elapsed);
 	HelpOpenWebTicketButton_OnUpdate(HelpOpenWebTicketButton, elapsed);
 end
 
