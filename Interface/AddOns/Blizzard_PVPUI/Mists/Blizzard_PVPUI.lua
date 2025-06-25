@@ -909,12 +909,9 @@ function ConquestQueueFrameButton_OnEnter(self)
 	
 	tooltip.SeasonBest:SetText(PVP_BEST_RATING..seasonBest);
 	tooltip.SeasonGamesPlayed:SetText(PVP_GAMES_PLAYED..seasonPlayed);
-
-	tooltip.ProjectedCap:SetText(cap);
 	
 	local maxWidth = max(tooltip.WeeklyBest:GetStringWidth(), tooltip.WeeklyGamesPlayed:GetStringWidth(),
-						tooltip.SeasonBest:GetStringWidth(), tooltip.SeasonGamesPlayed:GetStringWidth(),
-						tooltip.ProjectedCapLabel:GetStringWidth());
+						tooltip.SeasonBest:GetStringWidth(), tooltip.SeasonGamesPlayed:GetStringWidth());
 	
 	tooltip:SetWidth(maxWidth + CONQUEST_TOOLTIP_PADDING);
 	tooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, 0);

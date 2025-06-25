@@ -477,7 +477,7 @@ local function IsBoostFlowValidForCharacter(flowData, classID, level, raceID, bo
 		return false;
 	end
 
-	if level == flowData.level then
+	if level == flowData.level and not revokedCharacterUpgrade then
 		local allowMaxLevelBoost = bit.band(flowData.flags, CHARACTERSERVICEINFO_FLAGS_ALLOW_MAX_LEVEL_BOOST) == CHARACTERSERVICEINFO_FLAGS_ALLOW_MAX_LEVEL_BOOST;
 		if (not allowMaxLevelBoost) or usedMaxLevelBoost then
 			return false;

@@ -500,8 +500,8 @@ function SpellBookFrameMixin:UpdateSkillLineTabs()
 				skillLineTab:Show();
 
 				if (prevTab) then
-					if (isOffSpec and not prevTab.isOffSpec and OFFSEPC_TAB_OFFSET) then
-						skillLineTab:SetPoint("TOPLEFT", prevTab, "BOTTOMLEFT", 0, -OFFSEPC_TAB_OFFSET);
+					if (isOffSpec and not prevTab.isOffSpec and OFFSPEC_TAB_OFFSET) then
+						skillLineTab:SetPoint("TOPLEFT", prevTab, "BOTTOMLEFT", 0, -OFFSPEC_TAB_OFFSET);
 					end
 				end
 
@@ -541,3 +541,38 @@ function SpellBook_UpdatePetTab(showing)
 	SpellBookFrame:UpdateSpells();
 end
 
+CoreAbilitySpellMixin = {}
+
+function CoreAbilitySpellMixin:OnLoad()
+	self:RegisterForDrag("LeftButton");
+	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+end
+
+function CoreAbilitySpellMixin:OnClick()
+	if (IsModifiedClick()) then
+		ChatEdit_InsertLink(GetSpellLink(self.spellID));
+	else
+		ClearCursor()
+	end
+end
+
+function CoreAbilitySpellMixin:OnDragStart()
+	if (self.draggable) then
+		PickupSpell(self.spellID);
+	end
+end
+
+function CoreAbilitySpellMixin:OnReceiveDrag()
+	if (self.draggable) then
+		PickupSpell(self.spellID);
+	end
+end
+
+function CoreAbilitySpellMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetSpellByID(self.spellID, false, false, true);
+end
+
+function CoreAbilitySpellMixin:OnLeave()
+	GameTooltip:Hide();
+end

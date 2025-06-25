@@ -216,6 +216,12 @@ function SpellBookFrameMixin:UpdatePages()
 end
 
 function SpellButtonMixin:OnClick(button)
+
+	if IsModifiedClick() then
+		self:OnModifiedClick(button);
+		return;
+	end
+
 	local slot, slotType = SpellBook_GetSpellBookSlot(self);
 	if ( slot > MAX_SPELLS or slotType == "FUTURESPELL") then
 		return;

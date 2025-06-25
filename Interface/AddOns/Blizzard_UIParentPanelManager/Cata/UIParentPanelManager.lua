@@ -38,6 +38,7 @@ UIPanelWindows["GossipFrame"] =					{ area = "left",			pushable = 0};
 UIPanelWindows["QuestLogFrame"] =				{ area = "doublewide",		pushable = 0,	whileDead = 1 };
 UIPanelWindows["QuestFrame"] =					{ area = "left",			pushable = 0,	whileDead = 1 };
 UIPanelWindows["InspectFrame"] =				{ area = "left",			pushable = 2,	whileDead = 1 };
+UIPanelWindows["TaxiFrame"] =					{ area = "left",			pushable = 0, 	width = 605, height = 580, showFailedFunc = CloseTaxiMap };
 
 -- Resurrected Classic Frames that don't use the new Templates.
 -- The offset and width values help the Classic frames blend in with modern frames that use ButtonFrameTemplate.
@@ -48,7 +49,6 @@ UIPanelWindows["CraftFrame"] =					{ area = "left",			pushable = 4,		xoffset = -
 UIPanelWindows["BankFrame"] =					{ area = "left",			pushable = 6,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
 UIPanelWindows["ArenaRegistrarFrame"] =			{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
 UIPanelWindows["AuctionFrame"] =				{ area = "doublewide",		pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 840 }
-UIPanelWindows["TaxiFrame"] =					{ area = "left",			pushable = 0, 		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	showFailedFunc = CloseTaxiMap };
 UIPanelWindows["ArenaFrame"] =					{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
 UIPanelWindows["PVPParentFrame"] =				{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
 
