@@ -47,7 +47,7 @@ local SpecializationInfo =
 
 			Arguments =
 			{
-				{ Name = "specID", Type = "number", Nilable = false },
+				{ Name = "classID", Type = "number", Nilable = false },
 			},
 
 			Returns =

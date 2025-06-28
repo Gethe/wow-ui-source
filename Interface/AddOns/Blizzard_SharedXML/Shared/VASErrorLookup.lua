@@ -132,37 +132,39 @@ local vasErrorData = {
 			-- If you update these gold thresholds, be sure to also update:
 			--   - TRANSFER_GOLD_LIMIT_BASE and related
 			--   - The DB script / configs - Ask a DBE to help you
-			local str = "";
-			local moneyCapForLevel = 0;
-			if GetExpansionLevel() >= LE_EXPANSION_WRATH_OF_THE_LICH_KING then
-				-- PAY_MONEY_LEVEL_01
-				if (character.level < 31) then
-					-- PAY_MONEY_LIMIT_01
-					moneyCapForLevel = 500 * COPPER_PER_SILVER * SILVER_PER_GOLD;
-				-- PAY_MONEY_LEVEL_02
-				elseif (character.level < 51) then
-					-- PAY_MONEY_LIMIT_02
-					moneyCapForLevel = 2500 * COPPER_PER_SILVER * SILVER_PER_GOLD;
+			local level = character and character.level or 1;
+			local goldCapForLevel = 0;
+			if GetExpansionLevel() >= LE_EXPANSION_WAR_WITHIN then
+				if (level >= 50) then -- level 50+: one million gold
+					goldCapForLevel = 1000000;
+				elseif (level >= 40) then -- level 10-49: two hundred fifty thousand gold
+					goldCapForLevel = 250000;
+				elseif (level >= 10) then -- level 10-49: ten thousand gold
+					goldCapForLevel = 10000;
+				end
+			elseif GetExpansionLevel() >= LE_EXPANSION_WRATH_OF_THE_LICH_KING then
 				-- Additional breakpoints 81, 86, 91, 101, 111 and 121 all cap at 50000
+				if (level > 50) then -- PAY_MONEY_LEVEL_02
+					goldCapForLevel = 50000; -- level 51+: fifty thousand gold
+				elseif (level > 30) then -- PAY_MONEY_LEVEL_01
+					goldCapForLevel = 2500; -- level 31-50: twenty five hundred gold // PAY_MONEY_LIMIT_02
 				else
-					moneyCapForLevel = 50000 * COPPER_PER_SILVER * SILVER_PER_GOLD;
+					goldCapForLevel = 500; -- level 1-30: five hundred gold // PAY_MONEY_LIMIT_01
 				end
 			else
-				-- PAY_MONEY_LEVEL_01
-				if (character.level < 31) then
-					-- PAY_MONEY_LIMIT_01
-					moneyCapForLevel = 100 * COPPER_PER_SILVER * SILVER_PER_GOLD;
-				-- PAY_MONEY_LEVEL_02
-				elseif (character.level < 51) then
-					-- PAY_MONEY_LIMIT_02
-					moneyCapForLevel = 500 * COPPER_PER_SILVER * SILVER_PER_GOLD;
 				-- Additional breakpoints 61, 71, 81, 81, 100, 110, and 121 all cap at 50000
+				if (level > 50) then -- PAY_MONEY_LEVEL_02
+					goldCapForLevel = 50000; -- level 51+: fifty thousand gold
+				elseif (level > 30) then -- PAY_MONEY_LEVEL_01	
+					goldCapForLevel = 500; -- level 31-50: five hundred gold // PAY_MONEY_LIMIT_02
 				else
-					moneyCapForLevel = 50000 * COPPER_PER_SILVER * SILVER_PER_GOLD;
+					goldCapForLevel = 100; -- level 1-30: one hundred gold // PAY_MONEY_LIMIT_01
 				end
 			end
-			if (moneyCapForLevel > 0) then
-				str = GetSecureMoneyString(moneyCapForLevel, true, true);
+
+			local str = "";
+			if (goldCapForLevel > 0) then
+				str = GetSecureMoneyString(goldCapForLevel * COPPER_PER_SILVER * SILVER_PER_GOLD, true, true);
 			end
 			return string.format(BLIZZARD_STORE_VAS_ERROR_TOO_MUCH_MONEY_FOR_LEVEL, str);
 		end
@@ -198,6 +200,18 @@ local vasErrorData = {
 	[Enum.VasError.PendingItemAudit] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_PENDING_ITEM_AUDIT,
 	},
+	[Enum.VasError.GuildRankInsufficient] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_NOT_GUILD_MASTER,
+	},
+	[Enum.VasError.CharacterWithoutGuild] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_NOT_IN_GUILD,
+	},
+	[Enum.VasError.GmSeniorityInsufficient] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_GM_SENORITY_INSUFFICIENT,
+	},
+	[Enum.VasError.AuthenticatorInsufficient] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_AUTHENTICATOR_INSUFFICIENT,
+	},
 	[Enum.VasError.IneligibleMapID] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_INELIGIBLE_MAP_ID,
 	},
@@ -210,22 +224,20 @@ local vasErrorData = {
 	[Enum.VasError.HasHeirloom] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_HAS_HEIRLOOM,
 	},
-	[Enum.VasError.CharLocked] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_CHARACTER_LOCKED,
-		notUserFixable = true,
+	[Enum.VasError.AccountRestricted] = {
+		msg = function(character)
+			if character and character.guid and IsCharacterNPERestricted(character.guid) then
+				return BLIZZARD_STORE_VAS_ERROR_NEW_PLAYER_EXPERIENCE;
+			end
+
+			return BLIZZARD_STORE_VAS_ERROR_OTHER;
+		end,
 	},
 	[Enum.VasError.LastSaveTooDistant] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_LAST_SAVE_TOO_DISTANT,
-	},
-	[Enum.VasError.LastSaveTooRecent] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_LAST_SAVE_TOO_RECENT,
-		notUserFixable = true,
 	},
 	[Enum.VasError.HasCagedBattlePet] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_HAS_CAGED_BATTLE_PET,
-	},
-	[Enum.VasError.LastSaveTooDistant] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_LAST_SAVE_TOO_DISTANT,
 	},
 	[Enum.VasError.BoostedTooRecently] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_BOOSTED_TOO_RECENTLY,
@@ -233,6 +245,21 @@ local vasErrorData = {
 	},
 	[Enum.VasError.PvEToPvPTransferNotAllowed] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_PVE_TO_PVP_TRANSFER_NOT_ALLOWED,
+	},
+	[Enum.VasError.NewLeaderInvalid] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_NEW_LEADER_INVALID,
+	},
+	[Enum.VasError.NeedsLevelSquish] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_LAST_SAVE_TOO_DISTANT,
+	},
+	[Enum.VasError.IsNpeRestricted] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_NEW_PLAYER_EXPERIENCE,
+	},
+	[Enum.VasError.HasCraftingOrders] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_HAS_CRAFTING_ORDERS,
+	},
+	[Enum.VasError.InvalidName] = {
+		msg = BLIZZARD_STORE_VAS_INVALID_NAME,
 	},
 	[Enum.VasError.NeedsEraChoice] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_NEEDS_ERA_CHOICE;

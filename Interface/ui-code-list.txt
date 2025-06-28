@@ -746,14 +746,12 @@ Interface\AddOns\Blizzard_Collections\Mainline\Blizzard_WarbandSceneCollection.l
 Interface\AddOns\Blizzard_Collections\Mainline\Blizzard_WarbandSceneCollection.xml
 Interface\AddOns\Blizzard_Collections\Mainline\Blizzard_Wardrobe.lua
 Interface\AddOns\Blizzard_Collections\Mainline\Blizzard_Wardrobe.xml
-Interface\AddOns\Blizzard_Collections\Mainline\Blizzard_Wardrobe_Sets.lua
-Interface\AddOns\Blizzard_Collections\Mainline\Blizzard_Wardrobe_Sets.xml
 Interface\AddOns\Blizzard_Collections\Shared\Blizzard_PetCollection.lua
 Interface\AddOns\Blizzard_Collections\Shared\Blizzard_PetCollection.xml
+Interface\AddOns\Blizzard_Collections\Shared\Blizzard_Wardrobe_Sets.lua
+Interface\AddOns\Blizzard_Collections\Shared\Blizzard_Wardrobe_Sets.xml
 Interface\AddOns\Blizzard_Collections\Wrath\Blizzard_Wardrobe.lua
 Interface\AddOns\Blizzard_Collections\Wrath\Blizzard_Wardrobe.xml
-Interface\AddOns\Blizzard_Collections\Wrath\Blizzard_Wardrobe_Sets.lua
-Interface\AddOns\Blizzard_Collections\Wrath\Blizzard_Wardrobe_Sets.xml
 Interface\AddOns\Blizzard_Colors\Blizzard_Colors_Classic.toc
 Interface\AddOns\Blizzard_Colors\Classic\ColorManager.lua
 Interface\AddOns\Blizzard_CombatLog\Blizzard_CombatLog_Cata.toc
@@ -1053,6 +1051,7 @@ Interface\AddOns\Blizzard_FrameXML\Classic\ColorPickerFrame.xml
 Interface\AddOns\Blizzard_FrameXML\Classic\CombatFeedback.lua
 Interface\AddOns\Blizzard_FrameXML\Classic\LootHistory.lua
 Interface\AddOns\Blizzard_FrameXML\Classic\LootHistory.xml
+Interface\AddOns\Blizzard_FrameXML\Classic\LossOfControlFrame.lua
 Interface\AddOns\Blizzard_FrameXML\Classic\LowHealthFrame.xml
 Interface\AddOns\Blizzard_FrameXML\Classic\MirrorTimer.lua
 Interface\AddOns\Blizzard_FrameXML\Classic\MirrorTimer.xml
@@ -1801,7 +1800,6 @@ Interface\AddOns\Blizzard_SharedXML\Classic\UIDropDownMenu.lua
 Interface\AddOns\Blizzard_SharedXML\Classic\UIDropDownMenu.xml
 Interface\AddOns\Blizzard_SharedXML\Classic\UIDropDownMenuTemplates.lua
 Interface\AddOns\Blizzard_SharedXML\Classic\UIDropDownMenuTemplates.xml
-Interface\AddOns\Blizzard_SharedXML\Classic\VASErrorLookup.lua
 Interface\AddOns\Blizzard_SharedXML\ColorUtil.lua
 Interface\AddOns\Blizzard_SharedXML\CommonUIPanelTemplates.xml
 Interface\AddOns\Blizzard_SharedXML\CustomBindingButtonMixin.lua
@@ -1921,6 +1919,7 @@ Interface\AddOns\Blizzard_SharedXML\Shared\Slider\MinimalSlider.lua
 Interface\AddOns\Blizzard_SharedXML\Shared\Slider\MinimalSlider.xml
 Interface\AddOns\Blizzard_SharedXML\Shared\Tabs\MinimalTab.lua
 Interface\AddOns\Blizzard_SharedXML\Shared\Tabs\MinimalTab.xml
+Interface\AddOns\Blizzard_SharedXML\Shared\VASErrorLookup.lua
 Interface\AddOns\Blizzard_SharedXML\SmoothStatusBar.lua
 Interface\AddOns\Blizzard_SharedXML\SpaceToFitLayoutFrame.lua
 Interface\AddOns\Blizzard_SharedXML\SpaceToFitLayoutFrame.xml

@@ -1694,7 +1694,7 @@ function UnitPopupSelectLootSpecializationButtonMixin:GetTooltipText()
 end
 
 function UnitPopupSelectLootSpecializationButtonMixin:CanShow(contextData)
-	return C_SpecializationInfo.GetSpecialization();
+	return HasLootSpecializations() and C_SpecializationInfo.GetSpecialization();
 end
 
 function UnitPopupSelectLootSpecializationButtonMixin:GetEntries()
@@ -1760,7 +1760,7 @@ function UnitPopupLootSpecialization1ButtonMixin:GetSpecID()
 	local sex = UnitSex("player");
 	local isInspect, isPet, inspectTarget = false, false, nil;
 	local specID = C_SpecializationInfo.GetSpecializationInfo(specIndex, isInspect, isPet, inspectTarget, sex);
-	return specID or -1;
+	return specID or 0;
 end
 
 function UnitPopupLootSpecialization1ButtonMixin:IsChecked(contextData)
@@ -1768,7 +1768,7 @@ function UnitPopupLootSpecialization1ButtonMixin:IsChecked(contextData)
 end
 
 function UnitPopupLootSpecialization1ButtonMixin:CanShow(contextData)
-	return self:GetSpecID() > -1;
+	return self:GetSpecID() > 0;
 end
 
 function UnitPopupLootSpecialization1ButtonMixin:OnClick(contextData)

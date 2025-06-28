@@ -81,6 +81,7 @@ FloatingPetBattleTooltip.lua
 FloatingPetBattleTooltip.xml
 BattlePetTooltip.lua
 BattlePetTooltip.xml
+LossOfControlFrame.lua
 LossOfControlFrame.xml
 ArtifactToasts.xml
 AzeriteItemToasts.xml

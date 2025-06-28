@@ -471,46 +471,11 @@
 					</OnLeave>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="WorldMapQuestShowObjectives" inherits="OptionsSmallCheckButtonTemplate" hidden="true">
-				<Size x="24" y="24"/>
-				<Scripts>
-					<OnLoad>
-						local text = _G[self:GetName().."Text"];
-						text:SetText(SHOW_QUEST_OBJECTIVES_ON_MAP_TEXT);
-						self:SetPoint("BOTTOMRIGHT", WorldMapFrame, "BOTTOMRIGHT", -15 - text:GetWidth(), 4);
-					</OnLoad>
-					<OnClick>
-						WorldMapQuestShowObjectives_Toggle();
-					</OnClick>
-					<OnEnter>
-						WorldMapTooltip:SetOwner(self, "ANCHOR_LEFT");
-						WorldMapTooltip:SetText(OPTION_TOOLTIP_SHOW_QUEST_OBJECTIVES_ON_MAP, nil, nil, nil, nil, 1);
-					</OnEnter>
-					<OnLeave>
-						WorldMapTooltip:Hide();
-					</OnLeave>
-				</Scripts>
-			</CheckButton>
-			<CheckButton name="WorldMapShowDigsites" inherits="OptionsSmallCheckButtonTemplate" hidden="false">
-				<Size x="24" y="24"/>
-				<Scripts>
-					<OnLoad>
-						local text = _G[self:GetName().."Text"];
-						text:SetText(ARCHAEOLOGY_SHOW_DIG_SITES);
-						self:SetPoint("RIGHT", WorldMapQuestShowObjectives, "LEFT", -30 - text:GetWidth(), 0);
-					</OnLoad>
-					<OnClick>
-						WorldMapArchaeologyShowDigsites_Toggle();
-					</OnClick>
-					<OnEnter>
-						WorldMapTooltip:SetOwner(self, "ANCHOR_LEFT");
-						WorldMapTooltip:SetText(OPTION_TOOLTIP_SHOW_DIG_SITES_ON_MAP, nil, nil, nil, nil, 1);
-					</OnEnter>
-					<OnLeave>
-						WorldMapTooltip:Hide();
-					</OnLeave>
-				</Scripts>
-			</CheckButton>
+			<DropdownButton parentKey="WorldMapOptionsDropDown" inherits="WowStyle1DropdownTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-10" y="5" />
+				</Anchors>
+			</DropdownButton>
 			<Frame parentKey="MaximizeMinimizeFrame" inherits="MaximizeMinimizeButtonFrameTemplate">
 				<Anchors>
 					<Anchor point="RIGHT" relativeTo="WorldMapFrameCloseButton" relativePoint="LEFT">

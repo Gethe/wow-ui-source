@@ -18,3 +18,20 @@ function ColorManager.GetFormattedStringForItemQuality(text, quality)
 	local colorData = ColorManager.GetColorDataForItemQuality(quality);
 	return colorData.color:WrapTextInColorCode(text);
 end
+
+function ColorManager.GetAtlasDataForWardrobeSetItemQuality(quality)
+	local atlasData = {
+		atlas = nil,
+		overrideColor = nil
+	};
+	
+	if ( quality == Enum.ItemQuality.Uncommon ) then
+		atlasData.atlas = "loottab-set-itemborder-green";
+	elseif ( quality == Enum.ItemQuality.Rare ) then
+		atlasData.atlas = "loottab-set-itemborder-blue";
+	elseif ( quality == Enum.ItemQuality.Epic ) then
+		atlasData.atlas = "loottab-set-itemborder-purple";
+	end
+
+	return atlasData;
+end

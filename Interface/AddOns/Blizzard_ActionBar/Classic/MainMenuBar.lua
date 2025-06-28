@@ -149,17 +149,18 @@ function MainMenuBar_UpdateExperienceBars(newLevel)
 	--******************* REPUTATION **************************************
 	if ( showRep and numBarsShowing < 2 ) then
 		local colorIndex = reaction;
+		local repInfo = C_GossipInfo.GetFriendshipReputation(factionID);
+
 		-- if it's a different faction, save possible friendship id
 		if ( ReputationWatchBar.factionID ~= factionID ) then
 			ReputationWatchBar.factionID = factionID;
-			ReputationWatchBar.friendshipID = C_GossipInfo.GetFriendshipReputation(factionID);
+			ReputationWatchBar.friendshipID = repInfo.friendshipFactionID;
 			ReputationWatchBar.StatusBar:Reset();
 		end
 
 		local isCapped;
 		-- do something different for friendships
 		if ( ReputationWatchBar.friendshipID and ReputationWatchBar.friendshipID > 0) then
-			local repInfo = C_GossipInfo.GetFriendshipReputation(factionID);
 			if ( repInfo.nextThreshold ) then
 				min, max, value = repInfo.reactionThreshold, repInfo.nextThreshold, repInfo.standing;
 			else

@@ -178,4 +178,4 @@ ToolWindowOwnerMixin.lua
 AlertFrameIntrinsic.lua
 AlertFrameIntrinsic.xml
 
-Classic\VASErrorLookup.lua
+Shared\VASErrorLookup.lua

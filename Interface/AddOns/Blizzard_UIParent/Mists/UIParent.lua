@@ -554,6 +554,10 @@ function ToggleRaidFrame()
 	ToggleFriendsFrame(FRIEND_TAB_RAID);
 end
 
+function CanShowEncounterJournal()
+	return true;
+end
+
 function ToggleEncounterJournal()
 	if ( Kiosk.IsEnabled() or DISALLOW_FRAME_TOGGLING ) then
 		return;
