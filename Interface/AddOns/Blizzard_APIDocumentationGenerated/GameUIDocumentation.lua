@@ -6,6 +6,21 @@ local GameUI =
 	Functions =
 	{
 		{
+			Name = "GetLevelUpInstances",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "currPlayerLevel", Type = "number", Nilable = false },
+				{ Name = "isRaid", Type = "bool", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "instances", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "SetInWorldUIVisibility",
 			Type = "Function",
 

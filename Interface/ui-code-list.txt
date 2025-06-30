@@ -746,14 +746,12 @@ Interface\AddOns\Blizzard_Collections\Mainline\Blizzard_WarbandSceneCollection.l
 Interface\AddOns\Blizzard_Collections\Mainline\Blizzard_WarbandSceneCollection.xml
 Interface\AddOns\Blizzard_Collections\Mainline\Blizzard_Wardrobe.lua
 Interface\AddOns\Blizzard_Collections\Mainline\Blizzard_Wardrobe.xml
-Interface\AddOns\Blizzard_Collections\Mainline\Blizzard_Wardrobe_Sets.lua
-Interface\AddOns\Blizzard_Collections\Mainline\Blizzard_Wardrobe_Sets.xml
 Interface\AddOns\Blizzard_Collections\Shared\Blizzard_PetCollection.lua
 Interface\AddOns\Blizzard_Collections\Shared\Blizzard_PetCollection.xml
+Interface\AddOns\Blizzard_Collections\Shared\Blizzard_Wardrobe_Sets.lua
+Interface\AddOns\Blizzard_Collections\Shared\Blizzard_Wardrobe_Sets.xml
 Interface\AddOns\Blizzard_Collections\Wrath\Blizzard_Wardrobe.lua
 Interface\AddOns\Blizzard_Collections\Wrath\Blizzard_Wardrobe.xml
-Interface\AddOns\Blizzard_Collections\Wrath\Blizzard_Wardrobe_Sets.lua
-Interface\AddOns\Blizzard_Collections\Wrath\Blizzard_Wardrobe_Sets.xml
 Interface\AddOns\Blizzard_Colors\Blizzard_Colors_Classic.toc
 Interface\AddOns\Blizzard_Colors\Classic\ColorManager.lua
 Interface\AddOns\Blizzard_CombatLog\Blizzard_CombatLog_Cata.toc
@@ -1053,6 +1051,7 @@ Interface\AddOns\Blizzard_FrameXML\Classic\ColorPickerFrame.xml
 Interface\AddOns\Blizzard_FrameXML\Classic\CombatFeedback.lua
 Interface\AddOns\Blizzard_FrameXML\Classic\LootHistory.lua
 Interface\AddOns\Blizzard_FrameXML\Classic\LootHistory.xml
+Interface\AddOns\Blizzard_FrameXML\Classic\LossOfControlFrame.lua
 Interface\AddOns\Blizzard_FrameXML\Classic\LowHealthFrame.xml
 Interface\AddOns\Blizzard_FrameXML\Classic\MirrorTimer.lua
 Interface\AddOns\Blizzard_FrameXML\Classic\MirrorTimer.xml
@@ -1091,6 +1090,8 @@ Interface\AddOns\Blizzard_FrameXML\GuildInviteFrame.xml
 Interface\AddOns\Blizzard_FrameXML\GuildUtil.lua
 Interface\AddOns\Blizzard_FrameXML\IconIntroAnimation.lua
 Interface\AddOns\Blizzard_FrameXML\IconIntroAnimation.xml
+Interface\AddOns\Blizzard_FrameXML\LossOfControlFrame.lua
+Interface\AddOns\Blizzard_FrameXML\LossOfControlFrame.xml
 Interface\AddOns\Blizzard_FrameXML\Mists\SecureTemplates.lua
 Interface\AddOns\Blizzard_FrameXML\Mists\TalentFrameBase.lua
 Interface\AddOns\Blizzard_FrameXML\Mists\WorldStateFrame.xml
@@ -1381,8 +1382,10 @@ Interface\AddOns\Blizzard_LevelUpDisplay\Blizzard_LevelUpDisplay_Cata.toc
 Interface\AddOns\Blizzard_LevelUpDisplay\Blizzard_LevelUpDisplay_Mists.toc
 Interface\AddOns\Blizzard_LevelUpDisplay\Cata\LevelUpDisplay.lua
 Interface\AddOns\Blizzard_LevelUpDisplay\Cata\LevelUpDisplay.xml
+Interface\AddOns\Blizzard_LevelUpDisplay\Cata\LevelUpDisplayConstants.lua
 Interface\AddOns\Blizzard_LevelUpDisplay\Localization.lua
 Interface\AddOns\Blizzard_LevelUpDisplay\Mists\LevelUpDisplay.xml
+Interface\AddOns\Blizzard_LevelUpDisplay\Mists\LevelUpDisplayConstants.lua
 Interface\AddOns\Blizzard_LoadLocale\Blizzard_LoadLocale.toc
 Interface\AddOns\Blizzard_LoadLocale\LoadLocale.lua
 Interface\AddOns\Blizzard_LoginWarningDialogs\Blizzard_LoginWarningDialogs.lua
@@ -1801,7 +1804,6 @@ Interface\AddOns\Blizzard_SharedXML\Classic\UIDropDownMenu.lua
 Interface\AddOns\Blizzard_SharedXML\Classic\UIDropDownMenu.xml
 Interface\AddOns\Blizzard_SharedXML\Classic\UIDropDownMenuTemplates.lua
 Interface\AddOns\Blizzard_SharedXML\Classic\UIDropDownMenuTemplates.xml
-Interface\AddOns\Blizzard_SharedXML\Classic\VASErrorLookup.lua
 Interface\AddOns\Blizzard_SharedXML\ColorUtil.lua
 Interface\AddOns\Blizzard_SharedXML\CommonUIPanelTemplates.xml
 Interface\AddOns\Blizzard_SharedXML\CustomBindingButtonMixin.lua
@@ -1921,6 +1923,7 @@ Interface\AddOns\Blizzard_SharedXML\Shared\Slider\MinimalSlider.lua
 Interface\AddOns\Blizzard_SharedXML\Shared\Slider\MinimalSlider.xml
 Interface\AddOns\Blizzard_SharedXML\Shared\Tabs\MinimalTab.lua
 Interface\AddOns\Blizzard_SharedXML\Shared\Tabs\MinimalTab.xml
+Interface\AddOns\Blizzard_SharedXML\Shared\VASErrorLookup.lua
 Interface\AddOns\Blizzard_SharedXML\SmoothStatusBar.lua
 Interface\AddOns\Blizzard_SharedXML\SpaceToFitLayoutFrame.lua
 Interface\AddOns\Blizzard_SharedXML\SpaceToFitLayoutFrame.xml

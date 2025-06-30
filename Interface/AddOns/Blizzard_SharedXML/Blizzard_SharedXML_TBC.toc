@@ -157,4 +157,4 @@ Classic\Sound.lua
 Classic\SharedUtils.lua
 ToolWindowOwnerMixin.lua
 
-Classic\VASErrorLookup.lua
+Shared\VASErrorLookup.lua

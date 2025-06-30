@@ -142,17 +142,58 @@ function WorldMapMixin:OnEvent(event, ...)
 
 	if event == "VARIABLES_LOADED" then
 		WorldMapZoneMinimapDropdown:GenerateMenu();
-
-		if(GetCVarBool("questHelper")) then
-			WatchFrame.showObjectives = GetCVarBool("questPOI");
-			WorldMapQuestShowObjectives:Show();
-			WorldMapQuestShowObjectives:SetChecked(GetCVarBool("questPOI"));
-		end
-		WorldMapShowDigsites:SetChecked(GetCVarBool("digSites"));
+		Setup_Dropdown(self);
 	elseif event == "DISPLAY_SIZE_CHANGED" or event == "UI_SCALE_CHANGED" then
 		UpdateUIPanelPositions(self);
 		self:SynchronizeDisplayState();
 	end
+end
+
+function Setup_Dropdown(self)
+	self.WorldMapOptionsDropDown:SetWidth(120);
+
+	self.WorldMapOptionsDropDown:SetSelectionText(function(selections)
+		return MAP_OPTIONS_TEXT;
+	end);
+
+	self.WorldMapOptionsDropDown:SetupMenu(function(dropdown, rootDescription)
+
+		local function IsCvarChecked(cvar) 
+			return GetCVarBool(cvar);
+		end
+
+		local function SetCvarChecked(cvar) 
+			SetCVar(cvar, not IsCvarChecked(cvar));
+		end
+
+		if(GetCVarBool("questHelper")) then
+			WatchFrame.showObjectives = GetCVarBool("questPOI");
+
+			local questObjectives = rootDescription:CreateCheckbox(SHOW_QUEST_OBJECTIVES_ON_MAP_TEXT, IsCvarChecked, function(cvar)
+				WatchFrame.showObjectives = IsCvarChecked(cvar) or nil;
+				QuestLog_UpdateMapButton();
+				SetCvarChecked(cvar);
+			end, "questPOI");
+
+			questObjectives:SetTooltip(function(tooltip, elementDescription)
+				GameTooltip_SetTitle(tooltip,  OPTION_TOOLTIP_SHOW_QUEST_OBJECTIVES_ON_MAP);
+			end);
+
+		end
+
+		local digSites = rootDescription:CreateCheckbox(ARCHAEOLOGY_SHOW_DIG_SITES, IsCvarChecked, SetCvarChecked, "digSites");
+		digSites:SetTooltip(function(tooltip, elementDescription)
+			GameTooltip_SetTitle(tooltip,  OPTION_TOOLTIP_SHOW_DIG_SITES_ON_MAP);
+		end);
+
+		local mapEncounters = C_EncounterJournal.GetEncountersOnMap(MapUtil.GetDisplayableMapForPlayer());
+		if (#mapEncounters > 0) then
+			local showBosses = rootDescription:CreateCheckbox(SHOW_BOSSES_ON_MAP_TEXT, IsCvarChecked, SetCvarChecked, "showBosses");
+			showBosses:SetTooltip(function(tooltip, elementDescription)
+				GameTooltip_SetTitle(tooltip,  OPTION_TOOLTIP_SHOW_BOSSES_ON_MAP);
+			end);
+		end
+	end);
 end
 
 function WorldMapMixin:AddStandardDataProviders()
@@ -165,7 +206,7 @@ function WorldMapMixin:AddStandardDataProviders()
 	if ClassicExpansionAtLeast(LE_EXPANSION_WRATH_OF_THE_LICH_KING) then
 		self:AddDataProvider(CreateFromMixins(VehicleDataProviderMixin));
 	end
-	--self:AddDataProvider(CreateFromMixins(EncounterJournalDataProviderMixin));
+	self:AddDataProvider(CreateFromMixins(EncounterJournalDataProviderMixin));
 	--self:AddDataProvider(CreateFromMixins(FogOfWarDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(DeathMapDataProviderMixin));
 	if ClassicExpansionAtLeast(LE_EXPANSION_WRATH_OF_THE_LICH_KING) then
@@ -757,20 +798,6 @@ function WorldMapFrame_SetOpacity(opacity)
 end
 
 -- ============================================ QUEST HELPER ===============================================================================
-function WorldMapQuestShowObjectives_Toggle()
-	local isChecked = WorldMapQuestShowObjectives:GetChecked();
-
-	if ( isChecked ) then
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-		WatchFrame.showObjectives = true;
-	else
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
-		WatchFrame.showObjectives = nil;
-	end
-	QuestLog_UpdateMapButton();
-	SetCVar("questPOI", isChecked);
-end
-
 function WorldMapTrackQuest_Toggle()
 	local isChecked =  WorldMapTrackQuest:GetChecked();
 	if ( isChecked ) then
@@ -784,16 +811,4 @@ function WorldMapTrackQuest_Toggle()
 	_QuestLog_ToggleQuestWatch(questIndex);
 
 	QuestMapFrame_ShowQuestDetails(questID);
-end
-
--- ============================================ Archaeology Digsites ===============================================================================
-function WorldMapArchaeologyShowDigsites_Toggle()
-	local isChecked = WorldMapShowDigsites:GetChecked();
-
-	if ( isChecked ) then
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	else
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
-	end
-	SetCVar("digSites", isChecked);
 end
