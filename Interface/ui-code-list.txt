@@ -1090,6 +1090,8 @@ Interface\AddOns\Blizzard_FrameXML\GuildInviteFrame.xml
 Interface\AddOns\Blizzard_FrameXML\GuildUtil.lua
 Interface\AddOns\Blizzard_FrameXML\IconIntroAnimation.lua
 Interface\AddOns\Blizzard_FrameXML\IconIntroAnimation.xml
+Interface\AddOns\Blizzard_FrameXML\LossOfControlFrame.lua
+Interface\AddOns\Blizzard_FrameXML\LossOfControlFrame.xml
 Interface\AddOns\Blizzard_FrameXML\Mists\SecureTemplates.lua
 Interface\AddOns\Blizzard_FrameXML\Mists\TalentFrameBase.lua
 Interface\AddOns\Blizzard_FrameXML\Mists\WorldStateFrame.xml
@@ -1380,8 +1382,10 @@ Interface\AddOns\Blizzard_LevelUpDisplay\Blizzard_LevelUpDisplay_Cata.toc
 Interface\AddOns\Blizzard_LevelUpDisplay\Blizzard_LevelUpDisplay_Mists.toc
 Interface\AddOns\Blizzard_LevelUpDisplay\Cata\LevelUpDisplay.lua
 Interface\AddOns\Blizzard_LevelUpDisplay\Cata\LevelUpDisplay.xml
+Interface\AddOns\Blizzard_LevelUpDisplay\Cata\LevelUpDisplayConstants.lua
 Interface\AddOns\Blizzard_LevelUpDisplay\Localization.lua
 Interface\AddOns\Blizzard_LevelUpDisplay\Mists\LevelUpDisplay.xml
+Interface\AddOns\Blizzard_LevelUpDisplay\Mists\LevelUpDisplayConstants.lua
 Interface\AddOns\Blizzard_LoadLocale\Blizzard_LoadLocale.toc
 Interface\AddOns\Blizzard_LoadLocale\LoadLocale.lua
 Interface\AddOns\Blizzard_LoginWarningDialogs\Blizzard_LoginWarningDialogs.lua

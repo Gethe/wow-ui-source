@@ -3,6 +3,7 @@
 ## DefaultState: enabled
 ## AllowLoad: game
 ## AllowLoadGameType: cata
+Cata\LevelUpDisplayConstants.lua
 Cata\LevelUpDisplay.lua
 Cata\LevelUpDisplay.xml
 Localization.lua
